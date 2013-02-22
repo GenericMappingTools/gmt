@@ -56,7 +56,7 @@ The *PostScript* code is written to standard output.
 .. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-Rgeo.rst_
 
-.. |Add_-Rx| unicode:: 0x0C .. just an invisible code
+.. |Add_-Rz| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-Rz.rst_
 
 `Optional Arguments <#toc5>`_

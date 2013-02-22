@@ -43,13 +43,11 @@ DiM-filtered data is generally recommended.
 *input\_file.nc*
     The data grid to be filtered.
 **-D**\ *distance\_flag*
-    Distance *flag* tells how grid (x,y) relates to filter *width*, as
-    follows:
+    Distance *flag* tells how grid (x,y) relates to filter *width*, as follows:
 
     *flag* = 0: grid (x,y) same units as *width*, Cartesian distances.
-     *flag* = 1: grid (x,y) in degrees, *width* in kilometers, Cartesian
-    distances.
-     *flag* = 2: grid (x,y) in degrees, *width* in km, dx scaled by
+    *flag* = 1: grid (x,y) in degrees, *width* in kilometers, Cartesian distances.
+    *flag* = 2: grid (x,y) in degrees, *width* in km, dx scaled by
     cos(middle y), Cartesian distances.
 
     The above options are fastest because they allow weight matrix to be
@@ -158,9 +156,8 @@ in order to define a swell in an area extending from 27.5W to 20.5W and
 12.5N to 19.5N, and you want the output value every 2 minute. Using
 cartesian distance calculations, you need:
 
-dimfilter cape\_verde.nc -Gt.nc -Fm220 -Nl8 -D2 -R-27.5/-20.5/12.5/19.5
--I2m -V
- grdfilter t.nc -Gcape\_swell.nc -Fg50 -D2 -V
+dimfilter cape\_verde.nc -Gt.nc -Fm220 -Nl8 -D2 -R-27.5/-20.5/12.5/19.5 -I2m -V
+grdfilter t.nc -Gcape\_swell.nc -Fg50 -D2 -V
 
 Suppose that you found a range of filter widths for a given area, and
 you filtered the given bathymetric data using the range of filter widths

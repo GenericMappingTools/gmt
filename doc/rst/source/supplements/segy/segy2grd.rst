@@ -27,36 +27,21 @@ some of the nodes are not filled in with data. Such unconstrained nodes
 are set to a value specified by the user [Default is NaN]. Nodes with
 more than one value will be set to the average value.
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
 
-*segyfile* is an IEEE floating point SEGY file. Traces are all assumed
-to start at 0 time/depth.
+*segyfile* is an IEEE floating point SEGY file. Traces are all assumed to start at 0 time/depth.
+
 **-G**\ *grdfile*
     *grdfile* is the name of the binary output grid file.
 **-I**
     *x\_inc* [and optionally *y\_inc*] is the grid spacing. Append **m**
     to indicate minutes or **c** to indicate seconds.
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ]
-    *west*, *east*, *south*, and *north* specify the region of interest,
-    and you may specify them in decimal degrees or in
-    [+-]dd:mm[:ss.xxx][W\|E\|S\|N] format. Append **r** if lower left
-    and upper right map coordinates are given instead of w/e/s/n. The
-    two shorthands **-Rg** and **-Rd** stand for global domain (0/360
-    and -180/+180 in longitude respectively, with -90/+90 in latitude).
-    Alternatively, specify the name of an existing grid file and the
-    **-R** settings (and grid spacing, if applicable) are copied from
-    the grid. Using **-R**\ *unit* expects projected (Cartesian)
-    coordinates compatible with chosen **-J** and we inversely project
-    to determine actual rectangular geographic region.
+
+.. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-Rgeo.rst_
 
 `Optional Arguments <#toc5>`_
 -----------------------------
@@ -88,19 +73,14 @@ to start at 0 time/depth.
     coordinates specified in -R
 **-Y**
     Specifies sample interval as *s\_int* if incorrect in the SEGY file
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c].
-**-r**
-    Set pixel node registration [gridline].
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit.
+
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
+
+.. |Add_nodereg| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_nodereg.rst_
+
+.. include:: ../../explain_help.rst_
 
 `Examples <#toc6>`_
 -------------------
@@ -126,5 +106,5 @@ try
 `See Also <#toc7>`_
 -------------------
 
-`*GMT*\ (1) <GMT.html>`_ , `*grd2xyz*\ (1) <grd2xyz.html>`_ ,
-`*grdedit*\ (1) <grdedit.html>`_ , `*pssegy*\ (1) <pssegy.html>`_
+`GMT <GMT.html>`_ , `grd2xyz <grd2xyz.html>`_ ,
+`grdedit <grdedit.html>`_ , `pssegy <pssegy.html>`_

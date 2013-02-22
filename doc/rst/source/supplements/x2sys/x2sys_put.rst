@@ -21,22 +21,15 @@ information for certain tracks (**-D**). The x2sys *TAG* must match the
 tag encoded in the *info.tbf* file. To inquire about tracks in the data
 base, use **x2sys\_get**.
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
 
 *info.tbf*
     Name of a single track bin file. If not given, *stdin* will be read.
-**-T**\ *TAG*
-    Specify the x2sys *TAG* which tracks the attributes of this data
-    type.
+
+.. include:: explain_tag.rst_
 
 `Optional Arguments <#toc5>`_
 -----------------------------
@@ -48,17 +41,11 @@ space is allowed between the option flag and the associated arguments.
     Replace any existing database information for these tracks with the
     new information in the track bin file [Default refuses to process
     tracks already in the database].
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c].
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit.
+
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
+
+.. include:: ../../explain_help.rst_
 
 `Examples <#toc6>`_
 -------------------
@@ -86,5 +73,4 @@ Do not attempt to edit these files by hand.
 `See Also <#toc8>`_
 -------------------
 
-`*x2sys\_binlist*\ (1) <x2sys_binlist.html>`_ ,
-`*x2sys\_get*\ (1) <x2sys_get.html>`_
+`x2sys\_binlist <x2sys_binlist.html>`_ , `x2sys\_get <x2sys_get.html>`_

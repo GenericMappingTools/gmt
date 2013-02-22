@@ -28,33 +28,13 @@ determine which tracks should be compared in a crossover analysis. You
 must run **x2sys\_init** to initialize the tag before you can run the
 indexing.
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
 
-*tracks*
-    Can be one or more ASCII, native binary, or COARDS netCDF 1-D data
-    files. To supply the data files via a text file with a list of
-    tracks (one per record), specify the name of the track list after a
-    leading equal-sign (e.g., =tracks.lis). If the names are missing
-    their file extension we will append the suffix specified for this
-    *TAG*. Track files will be searched for first in the current
-    directory and second in all directories listed in
-    **$X2SYS\_HOME**/*TAG*/*TAG*\ \_paths.txt (if it exists). [If
-    **$X2SYS\_HOME** is not set it will default to
-    **$GMT\_SHAREDIR**/x2sys]. (Note: MGD77 files will also be looked
-    for via **MGD77\_HOME**/mgd77\_paths.txt and \*.gmt files will be
-    searched for via **$GMT\_SHAREDIR**/mgg/gmtfile\_paths).
-**-T**\ *TAG*
-    Specify the x2sys *TAG* which tracks the attributes of this data
-    type.
+.. include:: explain_track.rst_
+.. include:: explain_tag.rst_
 
 `Optional Arguments <#toc5>`_
 -----------------------------
@@ -72,17 +52,11 @@ space is allowed between the option flag and the associated arguments.
     a global region (e.g., **-Rg** or **-Rd**). This option is useful
     for statistics related to trackline density but should not be used
     when preparing bin-index files for the x2sys track data bases.
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c].
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit.
+
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
+
+.. include:: ../../explain_help.rst_
 
 `Examples <#toc6>`_
 -------------------
@@ -101,10 +75,10 @@ x2sys\_binlist \*.nc -TMGD77+ -D > all.tbf
 `See Also <#toc7>`_
 -------------------
 
-`*x2sys\_cross*\ (1) <x2sys_cross.html>`_ ,
-`*x2sys\_datalist*\ (1) <x2sys_datalist.html>`_ ,
-`*x2sys\_get*\ (1) <x2sys_get.html>`_ ,
-`*x2sys\_init*\ (1) <x2sys_init.html>`_ ,
-`*x2sys\_put*\ (1) <x2sys_put.html>`_ ,
-`*x2sys\_report*\ (1) <x2sys_report.html>`_ ,
-`*x2sys\_solve*\ (1) <x2sys_solve.html>`_
+`x2sys\_cross <x2sys_cross.html>`_ ,
+`x2sys\_datalist <x2sys_datalist.html>`_ ,
+`x2sys\_get <x2sys_get.html>`_ ,
+`x2sys\_init <x2sys_init.html>`_ ,
+`x2sys\_put <x2sys_put.html>`_ ,
+`x2sys\_report <x2sys_report.html>`_ ,
+`x2sys\_solve <x2sys_solve.html>`_

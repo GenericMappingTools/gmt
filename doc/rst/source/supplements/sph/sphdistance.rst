@@ -28,13 +28,7 @@ pre-calculated Voronoi polygon file in the format written by
 **sphtriangulate**, thus bypassing the memory- and time-consuming
 triangularization.
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
@@ -45,10 +39,9 @@ space is allowed between the option flag and the associated arguments.
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-*table*
-    One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ])
-    data table file(s) holding a number of data columns. If no tables
-    are given then we read from standard input.
+.. |Add_intables| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_intables.rst_
+
 **-C**
     For large data set you can save some memory (at the expense of more
     processing) by only storing one form of location coordinates
@@ -58,29 +51,9 @@ space is allowed between the option flag and the associated arguments.
 **-E**
     Instead of computing distances, return the ID numbers of the Voronoi
     polygons that each grid node is inside [Default computes distances].
-**-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
-    *x\_inc* [and optionally *y\_inc*] is the grid spacing. Optionally,
-    append a suffix modifier. **Geographical (degrees) coordinates**:
-    Append **m** to indicate arc minutes or **s** to indicate arc
-    seconds. If one of the units **e**, **f**, **k**, **M**, **n** or
-    **u** is appended instead, the increment is assumed to be given in
-    meter, foot, km, Mile, nautical mile or US survey foot,
-    respectively, and will be converted to the equivalent degrees
-    longitude at the middle latitude of the region (the conversion
-    depends on **PROJ\_ELLIPSOID**). If /*y\_inc* is given but set to 0
-    it will be reset equal to *x\_inc*; otherwise it will be converted
-    to degrees latitude. **All coordinates**: If **=** is appended then
-    the corresponding max *x* (*east*) or *y* (*north*) may be slightly
-    adjusted to fit exactly the given increment [by default the
-    increment may be adjusted slightly to fit the given domain].
-    Finally, instead of giving an increment you may specify the *number
-    of nodes* desired by appending **+** to the supplied integer
-    argument; the increment is then recalculated from the number of
-    nodes and the domain. The resulting increment value depends on
-    whether you have selected a gridline-registered or pixel-registered
-    grid; see Appendix B for details. Note: if **-R**\ *grdfile* is used
-    then the grid spacing has already been initialized; use **-I** to
-    override the values.
+
+.. include:: ../../explain_-I.rst_
+
 **-L**\ *unit*
     Specify the unit used for distance calculations. Choose among **d**
     (spherical degree), **e** (m), **f** (feet), **k** (km), **M**
@@ -96,41 +69,31 @@ space is allowed between the option flag and the associated arguments.
     [Default performs the Voronoi construction on input data]. For
     binary data **-bi**\ [*ncols*\ ][*type*\ ] you must specify the node
     information separately (via **-N**).
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ]
-    *west*, *east*, *south*, and *north* specify the region of interest,
-    and you may specify them in decimal degrees or in
-    [+-]dd:mm[:ss.xxx][W\|E\|S\|N] format. Append **r** if lower left
-    and upper right map coordinates are given instead of w/e/s/n. The
-    two shorthands **-Rg** and **-Rd** stand for global domain (0/360
-    and -180/+180 in longitude respectively, with -90/+90 in latitude).
-    Alternatively, specify the name of an existing grid file and the
-    **-R** settings (and grid spacing, if applicable) are copied from
-    the grid. Using **-R**\ *unit* expects projected (Cartesian)
-    coordinates compatible with chosen **-J** and we inversely project
-    to determine actual rectangular geographic region.
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c].
-**-bi**\ [*ncols*\ ][*type*\ ] (\*)
-    Select binary input. [Default is 2 input columns].
-**-bo**\ [*ncols*\ ][*type*\ ] (\*)
-    Select binary output. [Default is same as input].
-**-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
-    Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
-    Select input columns.
-**-r**
-    Set pixel node registration [gridline].
-**-:**\ [**i**\ \|\ **o**] (\*)
-    Swap 1st and 2nd column on input and/or output.
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit.
+
+.. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-Rgeo.rst_
+
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
+
+.. |Add_-bi| replace:: [Default is 2 input columns].
+.. include:: ../../explain_-bi.rst_
+
+.. |Add_-bo| replace:: [Default is same as input].
+.. include:: ../../explain_-bo.rst_
+
+.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-h.rst_
+
+.. include:: ../../explain_-icols.rst_
+
+.. |Add_nodereg| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_nodereg.rst_
+
+.. include:: ../../explain_colon.rst_
+.. include:: ../../explain_help.rst_
+.. include:: ../../explain_precision.rst_
+.. include:: ../../explain_float.rst_
 
 `Ascii Format Precision <#toc6>`_
 ---------------------------------
@@ -175,10 +138,10 @@ sphdistance -Qvoronoi.d -Rg -I1 -Gglobedist.nc
 `See Also <#toc9>`_
 -------------------
 
-`*GMT*\ (1) <GMT.html>`_ ,
-`*sphinterpolate*\ (1) <sphinterpolate.html>`_
-`*sphtriangulate*\ (1) <sphtriangulate.html>`_
-`*triangulate*\ (1) <triangulate.html>`_
+`GMT <GMT.html>`_ ,
+`sphinterpolate <sphinterpolate.html>`_
+`sphtriangulate <sphtriangulate.html>`_
+`triangulate <triangulate.html>`_
 
 `References <#toc10>`_
 ----------------------

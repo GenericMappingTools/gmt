@@ -2,8 +2,7 @@
 x2sys_solve
 ***********
 
-x2sys\_solve - Determine least-squares systematic correction from
-crossovers
+x2sys\_solve - Determine least-squares systematic correction from crossovers
 
 `Synopsis <#toc1>`_
 -------------------
@@ -21,13 +20,7 @@ data quality. Several systematic corrections can be solved for using a
 least-squares approach. Note: Only one data column can be processed at
 the time.
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
@@ -38,9 +31,9 @@ space is allowed between the option flag and the associated arguments.
     then the first two columns are expected to hold the integer track
     IDs; otherwise we expect those columns to hold the text string names
     of the two tracks. If no file is given we will read from *stdin*.
-**-T**\ *TAG*
-    Specify the x2sys *TAG* which tracks the attributes of this data
-    type.
+
+.. include:: explain_tag.rst_
+
 **-C**\ *column*
     Specify which data column you want to process. Needed for proper
     formatting of the output correction table and must match the same
@@ -77,30 +70,24 @@ space is allowed between the option flag and the associated arguments.
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c].
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
+
 **-W**
     Means that each input records has an extra column with the composite
     weight for each crossover record. These are used to obtain a
     weighted least squares solution [no weights]. Append ’u’ to report
     unweighted mean/std [Default, report weighted stats].
-**-bi**\ [*ncols*\ ][*type*\ ] (\*)
-    Select binary input.
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit.
+
+.. |Add_-bi| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-bi.rst_
+
+.. include:: ../../explain_help.rst_
 
 `Examples <#toc6>`_
 -------------------
 
-To fit a simple bias offset to faa for all tracks under the MGD77 tag,
-try
+To fit a simple bias offset to faa for all tracks under the MGD77 tag, try
 
 x2sys\_list COE\_data.txt -V -TMGD77 -Cfaa -Fnc > faa\_coe.txt
 
@@ -128,11 +115,11 @@ x2sys\_solve depth\_coe.txt -V -TMGD77 -Cdepth -Es > coe\_table.txt
 `See Also <#toc7>`_
 -------------------
 
-`*x2sys\_binlist*\ (1) <x2sys_binlist.html>`_ ,
-`*x2sys\_cross*\ (1) <x2sys_cross.html>`_ ,
-`*x2sys\_datalist*\ (1) <x2sys_datalist.html>`_ ,
-`*x2sys\_get*\ (1) <x2sys_get.html>`_ ,
-`*x2sys\_init*\ (1) <x2sys_init.html>`_ ,
-`*x2sys\_list*\ (1) <x2sys_list.html>`_ ,
-`*x2sys\_put*\ (1) <x2sys_put.html>`_ ,
-`*x2sys\_report*\ (1) <x2sys_report.html>`_
+`x2sys\_binlist <x2sys_binlist.html>`_ ,
+`x2sys\_cross <x2sys_cross.html>`_ ,
+`x2sys\_datalist <x2sys_datalist.html>`_ ,
+`x2sys\_get <x2sys_get.html>`_ ,
+`x2sys\_init <x2sys_init.html>`_ ,
+`x2sys\_list <x2sys_list.html>`_ ,
+`x2sys\_put <x2sys_put.html>`_ ,
+`x2sys\_report <x2sys_report.html>`_

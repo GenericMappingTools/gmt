@@ -21,13 +21,7 @@ x2sys\_list - Extract subset from crossover data base
 (or *stdin*) and extract a subset of the crossovers based on the other
 arguments. The output may be ASCII or binary.
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
@@ -35,9 +29,8 @@ space is allowed between the option flag and the associated arguments.
 **-C**\ *column*
     Specify which data column you want to process. Crossovers related to
     this column name must be present in the crossover data base.
-**-T**\ *TAG*
-    Specify the x2sys *TAG* which tracks the attributes of this data
-    type.
+
+.. include:: explain_tag.rst_
 
 `Optional Arguments <#toc5>`_
 -----------------------------
@@ -98,42 +91,30 @@ space is allowed between the option flag and the associated arguments.
 **-Qe**\ \|\ **i**
     Append **e** for external crossovers or **i** for internal
     crossovers only [Default is all crossovers].
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ]
-    *west*, *east*, *south*, and *north* specify the region of interest,
-    and you may specify them in decimal degrees or in
-    [+-]dd:mm[:ss.xxx][W\|E\|S\|N] format. Append **r** if lower left
-    and upper right map coordinates are given instead of w/e/s/n. The
-    two shorthands **-Rg** and **-Rd** stand for global domain (0/360
-    and -180/+180 in longitude respectively, with -90/+90 in latitude).
-    Alternatively, specify the name of an existing grid file and the
-    **-R** settings (and grid spacing, if applicable) are copied from
-    the grid. Using **-R**\ *unit* expects projected (Cartesian)
-    coordinates compatible with chosen **-J** and we inversely project
-    to determine actual rectangular geographic region. For Cartesian
-    data just give *xmin/xmax/ymin/ymax*. This option limits the COEs to
-    those that fall inside the specified domain.
+
+.. |Add_-Rgeo| replace:: For Cartesian
+    data just give *xmin/xmax/ymin/ymax*. This option bases the
+    statistics on those COE that fall inside the specified domain.
+.. include:: ../../explain_-Rgeo.rst_
+
 **-S**\ *track*
     Name of a single track. If given we restrict output to those
     crossovers involving this track [Default output is crossovers
     involving any track pair].
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c].
+
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
+
 **-W**\ [*list*\ ]
     Name of ASCII file with a list of track names and their relative
     weights (one track per record) that should be used to calculate the
     composite crossover weight (output code **w** above). [Default sets
     weights to 1].
-**-bo**\ [*ncols*\ ][*type*\ ] (\*)
-    Select binary output.
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit.
+
+.. |Add_-bo| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-bo.rst_
+
+.. include:: ../../explain_help.rst_
 
 `Examples <#toc6>`_
 -------------------
@@ -155,11 +136,11 @@ faa\_coe.b
 `See Also <#toc7>`_
 -------------------
 
-`*x2sys\_binlist*\ (1) <x2sys_binlist.html>`_ ,
-`*x2sys\_cross*\ (1) <x2sys_cross.html>`_ ,
-`*x2sys\_datalist*\ (1) <x2sys_datalist.html>`_ ,
-`*x2sys\_get*\ (1) <x2sys_get.html>`_ ,
-`*x2sys\_init*\ (1) <x2sys_init.html>`_ ,
-`*x2sys\_put*\ (1) <x2sys_put.html>`_ ,
-`*x2sys\_report*\ (1) <x2sys_report.html>`_ ,
-`*x2sys\_solve*\ (1) <x2sys_solve.html>`_
+`x2sys\_binlist <x2sys_binlist.html>`_ ,
+`x2sys\_cross <x2sys_cross.html>`_ ,
+`x2sys\_datalist <x2sys_datalist.html>`_ ,
+`x2sys\_get <x2sys_get.html>`_ ,
+`x2sys\_init <x2sys_init.html>`_ ,
+`x2sys\_put <x2sys_put.html>`_ ,
+`x2sys\_report <x2sys_report.html>`_ ,
+`x2sys\_solve <x2sys_solve.html>`_

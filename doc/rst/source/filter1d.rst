@@ -76,6 +76,7 @@ options **-L**, **-Q**, and **-S** for unevenly sampled data with gaps.
 `Optional Arguments <#toc5>`_
 -----------------------------
 
+.. |Add_intables| unicode:: 0x0C .. just an invisible code
 .. include:: explain_intables.rst_
 
 **-D**\ *increment*

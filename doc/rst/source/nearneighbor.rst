@@ -95,7 +95,7 @@ supplied].
     or **y** to specify just one direction, otherwise both are assumed.
     [Default is geographic if grid is geographic]. 
 
-.. |Add_perspective| unicode:: 0x0C .. just an invisible code
+.. |Add_nodereg| unicode:: 0x0C .. just an invisible code
 .. include:: explain_nodereg.rst_
 
 .. include:: explain_colon.rst_

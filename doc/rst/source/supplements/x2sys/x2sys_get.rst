@@ -21,20 +21,12 @@ choose a specific region and optionally ask only for tracks that meet
 certain data criteria. Finally, you may select an option to list all
 possible pairs that might generate crossovers.
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
 
-**-T**\ *TAG*
-    Specify the x2sys *TAG* which tracks the attributes of this data
-    type.
+.. include:: explain_tag.rst_
 
 `Optional Arguments <#toc5>`_
 -----------------------------
@@ -44,12 +36,10 @@ space is allowed between the option flag and the associated arguments.
     the center of each bin that has at least one track with the
     specified data.
 **-D**
-    Only report the track names [Default adds the availability of data
-    for each field].
+    Only report the track names [Default adds the availability of data for each field].
 **-F**\ *flags*
     Give a comma-separated list of column names (as described in the
-    definition file) that should be present. [Default selects all data
-    columns].
+    definition file) that should be present. [Default selects all data columns].
 **-G**
     Report data flags (Y or N) for the entire track rather than just for
     the portion that is inside the region set by **-R** [Default].
@@ -67,31 +57,16 @@ space is allowed between the option flag and the associated arguments.
 **-N**\ *flags*
     Give a comma-separated list of column names (as described in the
     definition file) that must be absent.
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ]
-    *west*, *east*, *south*, and *north* specify the region of interest,
-    and you may specify them in decimal degrees or in
-    [+-]dd:mm[:ss.xxx][W\|E\|S\|N] format. Append **r** if lower left
-    and upper right map coordinates are given instead of w/e/s/n. The
-    two shorthands **-Rg** and **-Rd** stand for global domain (0/360
-    and -180/+180 in longitude respectively, with -90/+90 in latitude).
-    Alternatively, specify the name of an existing grid file and the
-    **-R** settings (and grid spacing, if applicable) are copied from
-    the grid. Using **-R**\ *unit* expects projected (Cartesian)
-    coordinates compatible with chosen **-J** and we inversely project
-    to determine actual rectangular geographic region. For Cartesian
+
+.. |Add_-Rgeo| replace:: For Cartesian
     data just give *xmin/xmax/ymin/ymax*. This option limits the tracks
     to those that fall at least partly inside the specified domain.
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c].
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit.
+.. include:: ../../explain_-Rgeo.rst_
+
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
+
+.. include:: ../../explain_help.rst_
 
 `Examples <#toc6>`_
 -------------------
@@ -124,11 +99,11 @@ the selected region, unless **-G** is set.
 `See Also <#toc8>`_
 -------------------
 
-`*x2sys\_binlist*\ (1) <x2sys_binlist.html>`_ ,
-`*x2sys\_cross*\ (1) <x2sys_cross.html>`_ ,
-`*x2sys\_datalist*\ (1) <x2sys_datalist.html>`_ ,
-`*x2sys\_init*\ (1) <x2sys_init.html>`_ ,
-`*x2sys\_list*\ (1) <x2sys_list.html>`_ ,
-`*x2sys\_put*\ (1) <x2sys_put.html>`_ ,
-`*x2sys\_report*\ (1) <x2sys_report.html>`_ ,
-`*x2sys\_solve*\ (1) <x2sys_solve.html>`_
+`x2sys\_binlist <x2sys_binlist.html>`_ ,
+`x2sys\_cross <x2sys_cross.html>`_ ,
+`x2sys\_datalist <x2sys_datalist.html>`_ ,
+`x2sys\_init <x2sys_init.html>`_ ,
+`x2sys\_list <x2sys_list.html>`_ ,
+`x2sys\_put <x2sys_put.html>`_ ,
+`x2sys\_report <x2sys_report.html>`_ ,
+`x2sys\_solve <x2sys_solve.html>`_

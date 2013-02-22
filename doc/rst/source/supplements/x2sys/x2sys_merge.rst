@@ -22,13 +22,7 @@ good reason like file editing NAV correction or whatever, one had to
 recompute only the COEs between the edited files and the rest of the
 database.
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
@@ -47,20 +41,18 @@ space is allowed between the option flag and the associated arguments.
 -------------------
 
 To update the main COE\_data.txt with the new COEs estimations saved in
-the smaller COE\_fresh.txt,
-
-try
+the smaller COE\_fresh.txt, try
 
     x2sys\_merge -ACOE\_data.txt -MCOE\_fresh.txt > COE\_updated.txt
 
 `See Also <#toc7>`_
 -------------------
 
-`*x2sys\_binlist*\ (1) <x2sys_binlist.html>`_ ,
-`*x2sys\_cross*\ (1) <x2sys_cross.html>`_ ,
-`*x2sys\_datalist*\ (1) <x2sys_datalist.html>`_ ,
-`*x2sys\_get*\ (1) <x2sys_get.html>`_ ,
-`*x2sys\_init*\ (1) <x2sys_init.html>`_ ,
-`*x2sys\_list*\ (1) <x2sys_list.html>`_ ,
-`*x2sys\_put*\ (1) <x2sys_put.html>`_ ,
-`*x2sys\_report*\ (1) <x2sys_report.html>`_
+`x2sys\_binlist <x2sys_binlist.html>`_ ,
+`x2sys\_cross <x2sys_cross.html>`_ ,
+`x2sys\_datalist <x2sys_datalist.html>`_ ,
+`x2sys\_get <x2sys_get.html>`_ ,
+`x2sys\_init <x2sys_init.html>`_ ,
+`x2sys\_list <x2sys_list.html>`_ ,
+`x2sys\_put <x2sys_put.html>`_ ,
+`x2sys\_report <x2sys_report.html>`_

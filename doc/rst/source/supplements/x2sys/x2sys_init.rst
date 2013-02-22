@@ -36,13 +36,7 @@ crossovers, use **x2sys\_report** to report crossover statistics or
 corrections. These corrections may be used with **x2sys\_datalist** to
 extract corrected data values for use in subsequent work.
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
@@ -94,38 +88,23 @@ space is allowed between the option flag and the associated arguments.
     miles or knots) or **u** (survey feet or survey feet/s). [Default is
     **-Ndk** **-Nse** (km and m/s) if **-G** is set and **-Ndc** and
     **-Nsc** otherwise (Cartesian units)].
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ]
-    *west*, *east*, *south*, and *north* specify the region of interest,
-    and you may specify them in decimal degrees or in
-    [+-]dd:mm[:ss.xxx][W\|E\|S\|N] format. Append **r** if lower left
-    and upper right map coordinates are given instead of w/e/s/n. The
-    two shorthands **-Rg** and **-Rd** stand for global domain (0/360
-    and -180/+180 in longitude respectively, with -90/+90 in latitude).
-    Alternatively, specify the name of an existing grid file and the
-    **-R** settings (and grid spacing, if applicable) are copied from
-    the grid. Using **-R**\ *unit* expects projected (Cartesian)
-    coordinates compatible with chosen **-J** and we inversely project
-    to determine actual rectangular geographic region. For Cartesian
-    data just give *xin/xmax/ymin/ymax*. This sets the complete domain
-    for the relevant track data set.
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c].
+
+.. |Add_-Rgeo| replace:: For Cartesian
+    data just give *xmin/xmax/ymin/ymax*. This option bases the
+    statistics on those COE that fall inside the specified domain.
+.. include:: ../../explain_-Rgeo.rst_
+
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
+
 **-Wt**\ \|\ **d**\ *gap*
     Give **t** or **d** and append the corresponding maximum time gap
     (in user units; this is typically seconds [Infinity]), or distance
     (for units, see **-N**) gap [Infinity]) allowed between the two data
     points immediately on either side of a crossover. If these limits
-    are exceeded then a data gap is assumed and no COE will be
-    determined.
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit.
+    are exceeded then a data gap is assumed and no COE will be determined.
+
+.. include:: ../../explain_help.rst_
 
 `Definition Files <#toc6>`_
 ---------------------------
@@ -141,16 +120,14 @@ append a trailing # comments. Five directives are recognized:
 
 **BINARY** states that the data files are native binary files.
 
-**NETCDF** states that the data files are COARDS-compliant 1-D netCDF
-files.
+**NETCDF** states that the data files are COARDS-compliant 1-D netCDF files.
 
 **SKIP** takes an integer argument which is either the number of lines
 to skip (when reading ASCII files) or the number of bytes to skip (when
 reading native binary files). Not used with netCDF files.
 
 **GEO** indicates that these files are geographic data sets, with
-periodicities in the *x*-coordinate (longitudes). Alternatively, use
-**-G**.
+periodicities in the *x*-coordinate (longitudes). Alternatively, use **-G**.
 
 **MULTISEG** means each track consists of multiple segments separated by
 a **GMT** segment header (alternatively, use **-m** when defining the
@@ -160,7 +137,7 @@ The column information consists of one line per column in the order the
 columns appear in the data file. For each column you must provide seven
 attributes:
 
- *name type NaN NaN-proxy scale offset oformat*
+*name type NaN NaN-proxy scale offset oformat*
 
 *name* is the name of the column variable. It is expected that you will
 use the special names *lon* (or *x* if Cartesian) and *lat* (or *y*) for
@@ -231,7 +208,7 @@ obs2\ `` `` `` `` a`` `` `` `` N`` `` `` `` 0`` `` `` `` 1`` `` `` `` 
 
 obs3\ `` `` `` `` a`` `` `` `` N`` `` `` `` 0`` `` `` `` 1`` `` `` `` 0`` `` `` `` %7.2f
 
- Next we create the TAG and the TAG directory with the databases for
+Next we create the TAG and the TAG directory with the databases for
 these line track files. Assuming these contain geographic data and that
 we want to keep track of the data distribution at a 1 x 1 degree
 resolution, with distances in km calculated along geodesics and with
@@ -356,10 +333,10 @@ to find it.
 `See Also <#toc8>`_
 -------------------
 
-`*x2sys\_binlist*\ (1) <x2sys_binlist.html>`_ ,
-`*x2sys\_datalist*\ (1) <x2sys_datalist.html>`_ ,
-`*x2sys\_get*\ (1) <x2sys_get.html>`_ ,
-`*x2sys\_list*\ (1) <x2sys_list.html>`_ ,
-`*x2sys\_put*\ (1) <x2sys_put.html>`_ ,
-`*x2sys\_report*\ (1) <x2sys_report.html>`_ ,
-`*x2sys\_solve*\ (1) <x2sys_solve.html>`_
+`x2sys\_binlist <x2sys_binlist.html>`_ ,
+`x2sys\_datalist <x2sys_datalist.html>`_ ,
+`x2sys\_get <x2sys_get.html>`_ ,
+`x2sys\_list <x2sys_list.html>`_ ,
+`x2sys\_put <x2sys_put.html>`_ ,
+`x2sys\_report <x2sys_report.html>`_ ,
+`x2sys\_solve <x2sys_solve.html>`_

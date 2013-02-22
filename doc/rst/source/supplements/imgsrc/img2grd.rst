@@ -37,6 +37,7 @@ is selected you can also request a resampling onto the exact **-R** given.
 **-G**\ *grdfile*
     *grdfile* is the name of the output grid file.
 
+.. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
 
 `Optional Arguments <#toc5>`_

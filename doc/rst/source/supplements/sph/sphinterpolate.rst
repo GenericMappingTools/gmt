@@ -27,13 +27,7 @@ affect the outcome, such as choosing local versus global gradient
 estimation or optimize the tension selection to satisfy one of four
 criteria.
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
@@ -44,33 +38,11 @@ space is allowed between the option flag and the associated arguments.
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-*table*
-    One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ])
-    data table file(s) holding a number of data columns. If no tables
-    are given then we read from standard input.
-**-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
-    *x\_inc* [and optionally *y\_inc*] is the grid spacing. Optionally,
-    append a suffix modifier. **Geographical (degrees) coordinates**:
-    Append **m** to indicate arc minutes or **s** to indicate arc
-    seconds. If one of the units **e**, **f**, **k**, **M**, **n** or
-    **u** is appended instead, the increment is assumed to be given in
-    meter, foot, km, Mile, nautical mile or US survey foot,
-    respectively, and will be converted to the equivalent degrees
-    longitude at the middle latitude of the region (the conversion
-    depends on **PROJ\_ELLIPSOID**). If /*y\_inc* is given but set to 0
-    it will be reset equal to *x\_inc*; otherwise it will be converted
-    to degrees latitude. **All coordinates**: If **=** is appended then
-    the corresponding max *x* (*east*) or *y* (*north*) may be slightly
-    adjusted to fit exactly the given increment [by default the
-    increment may be adjusted slightly to fit the given domain].
-    Finally, instead of giving an increment you may specify the *number
-    of nodes* desired by appending **+** to the supplied integer
-    argument; the increment is then recalculated from the number of
-    nodes and the domain. The resulting increment value depends on
-    whether you have selected a gridline-registered or pixel-registered
-    grid; see Appendix B for details. Note: if **-R**\ *grdfile* is used
-    then the grid spacing has already been initialized; use **-I** to
-    override the values.
+.. |Add_intables| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_intables.rst_
+
+.. include:: ../../explain_-I.rst_
+
 **-Q**\ *mode*\ [/*options*]
     Specify one of four ways to calculate tension factors to preserve
     local shape properties or satisfy arc constraints [Default is no
@@ -91,46 +63,35 @@ space is allowed between the option flag and the associated arguments.
     Smoothing. Optionally append */E/U* [/0/0], where *E* is Expected
     squared error in a typical (scaled) data value, and *U* is Upper
     bound on weighted sum of squares of deviations from data.
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ]
-    *west*, *east*, *south*, and *north* specify the region of interest,
-    and you may specify them in decimal degrees or in
-    [+-]dd:mm[:ss.xxx][W\|E\|S\|N] format. Append **r** if lower left
-    and upper right map coordinates are given instead of w/e/s/n. The
-    two shorthands **-Rg** and **-Rd** stand for global domain (0/360
-    and -180/+180 in longitude respectively, with -90/+90 in latitude).
-    Alternatively, specify the name of an existing grid file and the
-    **-R** settings (and grid spacing, if applicable) are copied from
-    the grid. Using **-R**\ *unit* expects projected (Cartesian)
-    coordinates compatible with chosen **-J** and we inversely project
-    to determine actual rectangular geographic region.
+
+.. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-Rgeo.rst_
+
 **-T**
     Use variable tension (ignored with **-Q**\ 0 [constant]
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c].
+
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
+
 **-Z**
     Before interpolation, scale data by the maximum data range [no
     scaling].
-**-bi**\ [*ncols*\ ][*type*\ ] (\*)
-    Select binary input. [Default is 3 input columns].
-**-bo**\ [*ncols*\ ][*type*\ ] (\*)
-    Select binary output. [Default is same as input].
-**-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
-    Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
-    Select input columns.
-**-r**
-    Set pixel node registration [gridline].
-**-:**\ [**i**\ \|\ **o**] (\*)
-    Swap 1st and 2nd column on input and/or output.
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit.
+
+.. |Add_-bi| replace:: [Default is 3 input columns].
+.. include:: ../../explain_-bi.rst_
+
+.. |Add_-bo| replace:: [Default is same as input].
+.. include:: ../../explain_-bo.rst_
+
+.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-h.rst_
+
+.. include:: ../../explain_colon.rst_
+
+.. |Add_nodereg| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_nodereg.rst_
+
+.. include:: ../../explain_help.rst_
 
 `Ascii Format Precision <#toc6>`_
 ---------------------------------
@@ -167,10 +128,10 @@ sphinterpolate testdata.txt -Rg -I1 -Gsolution.nc
 `See Also <#toc9>`_
 -------------------
 
-`*GMT*\ (1) <GMT.html>`_ , `*greenspline*\ (1) <greenspline.html>`_
-`*sphdistance*\ (1) <sphdistance.html>`_
-`*sphtriangulate*\ (1) <sphtriangulate.html>`_
-`*triangulate*\ (1) <triangulate.html>`_
+`GMT <GMT.html>`_ , `greenspline <greenspline.html>`_
+`sphdistance <sphdistance.html>`_
+`sphtriangulate <sphtriangulate.html>`_
+`triangulate <triangulate.html>`_
 
 `References <#toc10>`_
 ----------------------
@@ -178,6 +139,7 @@ sphinterpolate testdata.txt -Rg -I1 -Gsolution.nc
 Renka, R, J., 1997, Algorithm 772: STRIPACK: Delaunay Triangulation and
 Voronoi Diagram on the Surface of a Sphere, *AMC Trans. Math. Software*,
 **23**\ (3), 416-434.
- Renka, R, J,, 1997, Algorithm 773: SSRFPACK: Interpolation of scattered
+
+Renka, R, J,, 1997, Algorithm 773: SSRFPACK: Interpolation of scattered
 data on the Surface of a Sphere with a surface under tension, *AMC
 Trans. Math. Software*, **23**\ (3), 435-442.
