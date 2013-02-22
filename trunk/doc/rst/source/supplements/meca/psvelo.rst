@@ -32,40 +32,18 @@ Most options are the same as for **psxy**, except **-S**. The
 (**psvelomeca**) is now obsolete. It has been replaced by **psvelo** and
 **psmeca**.
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
 
-*table*
+.. |Add_intables| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_intables.rst_
 
-One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ]) data
-table file(s) holding a number of data columns. If no tables are given
-then we read from standard input.
+.. include:: ../../explain_-J.rst_
 
-**-J**\ *parameters* (\*)
-
-Select map projection.
-
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ]
-
-*west*, *east*, *south*, and *north* specify the region of interest, and
-you may specify them in decimal degrees or in
-[+-]dd:mm[:ss.xxx][W\|E\|S\|N] format. Append **r** if lower left and
-upper right map coordinates are given instead of w/e/s/n. The two
-shorthands **-Rg** and **-Rd** stand for global domain (0/360 and
--180/+180 in longitude respectively, with -90/+90 in latitude).
-Alternatively, specify the name of an existing grid file and the **-R**
-settings (and grid spacing, if applicable) are copied from the grid.
-Using **-R**\ *unit* expects projected (Cartesian) coordinates
-compatible with chosen **-J** and we inversely project to determine
-actual rectangular geographic region.
+.. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-Rgeo.rst_
 
 **-S**
 
@@ -173,8 +151,9 @@ are expected to be in the following columns:
     Modify vector parameters. For vector heads, append vector head
     *size* [Default is 9p]. See VECTOR ATTRIBUTES for specifying
     additional attributes.
-**-B**\ [**p**\ \|\ **s**]\ *parameters* (\*)
-    Set map boundary intervals.
+
+.. include:: ../../explain_-B.rst_
+
 **-D**\ *Sigma\_scale*
     can be used to rescale the uncertainties of velocities (**-Se** and
     **-Sr**) and rotations (**-Sw**). Can be combined with the
@@ -195,85 +174,37 @@ are expected to be in the following columns:
     *icon\_size* sets the unit size in inches. To invert black and white
     pixels, use **-GP** instead of **-Gp**. See **pspatterns** for
     information on individual patterns.
-**-K** (\*)
-    Do not finalize the *PostScript* plot.
+
+.. include:: ../../explain_-K.rst_
+
 **-L**
     Draw lines. Ellipses and fault planes will have their outlines drawn
     using current pen (see **-W**).
 **-N**
     Do **NOT** skip symbols that fall outside the frame boundary
     specified by **-R**. [Default plots symbols inside frame only].
-**-O** (\*)
-    Append to existing *PostScript* plot.
-**-P** (\*)
-    Select "Portrait" plot orientation.
-**-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] (\*)
-    Draw GMT time stamp logo on plot.
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c].
+
+.. include:: ../../explain_-O.rst_
+.. include:: ../../explain_-P.rst_
+.. include:: ../../explain_-U.rst_
+
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
+
 **-W**
     Set pen attributes for velocity arrows, ellipse circumference and
-    fault plane edges. [Defaults: width = default, color = black, style
-    = solid].
-**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-(\*)
-    Shift plot origin.
-**-c**\ *copies* (\*)
-    Specify number of plot copies [Default is 1].
-**-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
-    Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
-    Select input columns.
-**-:**\ [**i**\ \|\ **o**] (\*)
-    Swap 1st and 2nd column on input and/or output.
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit.
+    fault plane edges. [Defaults: width = default, color = black, style = solid].
 
-`Vector Attributes <#toc6>`_
-----------------------------
+.. include:: ../../explain_-XY.rst_
+.. include:: ../../explain_-c.rst_
+.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-h.rst_
 
-Several modifiers may be appended to the vector-producing options to
-specify the placement of vector heads, their shapes, and the
-justification of the vector:
+.. include:: ../../explain_-icols.rst_
+.. include:: ../../explain_colon.rst_
+.. include:: ../../explain_help.rst_
 
-**+a**\ *angle* sets the angle of the vector head apex [30].
-
-**+b** places a vector head at the beginning of the vector path [none].
-
-**+e** places a vector head at the end of the vector path [none].
-
-**+g**-\|\ *fill* turns off vector head fill (if -) or sets the vector
-head fill [Default fill is used, which may be no fill].
-
-**+l** draws half-arrows, using only the left side [both].
-
-**+n**\ *norm* scales down vector attributes (pen thickness, head size)
-with decreasing length, where vectors shorter than *norm* will have
-their attributes scaled by length/\ *norm* [arrow attributes remains
-invariant to length].
-
-**+p**\ [-][*pen*\ ] sets the vector pen attributes. If *pen* has a
-leading - then the head outline is not drawn. [Default pen is used, and
-head outline is drawn]
-
-**+r** draws half-arrows, using only the right side [both].
-
-In addition, all but circular vectors may take these modifiers:
-
-**+j**\ *just* determines how the input *x*,\ *y* point relates to the
-vector. Choose from **b**\ eginning [default], **e**\ nd, or
-**c**\ enter.
-
-**+s** means the input *angle*, *length* is instead the *x*, *y*
-coordinates of the vector end point.
+.. include:: ../../explain_vectors.rst_
 
 `Examples <#toc7>`_
 -------------------
@@ -333,8 +264,7 @@ END
 `See Also <#toc8>`_
 -------------------
 
-`*GMT*\ (1) <GMT.html>`_ , `*psbasemap*\ (1) <psbasemap.html>`_ ,
-`*psxy*\ (1) <psxy.html>`_
+`GMT <GMT.html>`_ , `psbasemap <psbasemap.html>`_ , `psxy <psxy.html>`_
 
 `References <#toc9>`_
 ---------------------

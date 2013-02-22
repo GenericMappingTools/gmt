@@ -32,63 +32,18 @@ mgd77track - Plot track-line map of MGD77 cruises
 **mgd77track** reads NGDC MGD77 cruises and creates *PostScript* code
 that will plot one or more ship tracks on a map using the specified
 projection. The *PostScript* code is written to standard output.
-..include:: explain\_commonitems.rst\_
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
-CUT HERE ------------------------------
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
 
-..include:: mgd77/explain\_ncid.rst\_
+.. include:: explain_ncid.rst_
 
-*NGDC-ids*
-    Can be one or more of five kinds of specifiers:
-
-    1) 8-character NGDC IDs, e.g., 01010083, JA010010etc., etc.
-
-    2) 2-character <agency> codes which will return all cruises from
-    each agency.
-
-    3) 4-character <agency><vessel> codes, which will return all cruises
-    from those vessels.
-
-    4) =<list>, where <list> is a table with NGDC IDs, one per line.
-
-    5) If nothing is specified we return all cruises in the data base.
-
-    (See mgd77info **-L** for agency and vessel codes). The ".mgd77" or
-    ".nc" extensions will automatically be appended, if needed (use
-    **-I** to ignore certain file types). Cruise files will be looked
-    for first in the current directory and second in all directories
-    listed in **$MGD77\_HOME**/mgd77\_paths.txt [If **$MGD77\_HOME** is
-    not set it will default to **$GMT\_SHAREDIR**/mgd77].
-
-    CUT HERE ------------------------------ ..include::
-    explain\_-J.rst\_
-
-**-J**\ *parameters* (\*)
-    Select map projection. CUT HERE ------------------------------
-    ..include:: explain\_-Rgeo.rst\_
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ]
-    *west*, *east*, *south*, and *north* specify the region of interest,
-    and you may specify them in decimal degrees or in
-    [+-]dd:mm[:ss.xxx][W\|E\|S\|N] format. Append **r** if lower left
-    and upper right map coordinates are given instead of w/e/s/n. The
-    two shorthands **-Rg** and **-Rd** stand for global domain (0/360
-    and -180/+180 in longitude respectively, with -90/+90 in latitude).
-    Alternatively, specify the name of an existing grid file and the
-    **-R** settings (and grid spacing, if applicable) are copied from
-    the grid. Using **-R**\ *unit* expects projected (Cartesian)
-    coordinates compatible with chosen **-J** and we inversely project
-    to determine actual rectangular geographic region. CUT HERE
-    ------------------------------
+.. include:: ../../explain_-J.rst_
+ 
+.. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-Rgeo.rst_
 
 `Optional Arguments <#toc5>`_
 -----------------------------
@@ -101,9 +56,9 @@ CUT HERE ------------------------------
     Alternatively, append ,\ *spacing* to place this label every
     *spacing* units apart along the track. Append one of the units **k**
     (km), **n** (nautical mile), **d** (day), or **h** (hour).
-    ..include:: explain\_-B.rst\_
-**-B**\ [**p**\ \|\ **s**]\ *parameters* (\*)
-    Set map boundary intervals. CUT HERE ------------------------------
+    
+.. include:: ../../explain_-B.rst_
+
 **-C**\ **f**\ \|\ **g**\ \|\ **e**
     Select procedure for along-track distance calculation:
      `` `` `` `` **f** Flat Earth distances.
@@ -127,23 +82,21 @@ CUT HERE ------------------------------
     Ignore certain data file formats from consideration. Append
     **a\|c\|t** to ignore MGD77 ASCII, MGD77+ netCDF, or plain table
     files, respectively. The option may be repeated to ignore more than
-    one format. [Default ignores none]. ..include:: explain\_-K.rst\_
-**-K** (\*)
-    Do not finalize the *PostScript* plot. CUT HERE
-    ------------------------------
+    one format. [Default ignores none]. 
+
+.. include:: ../../explain_-K.rst_
+
 **-L**\ *trackticks*
     To put time/distance log-marks on the track. E.g.
     **a**\ 500\ **ka**\ 24\ **ht**\ 6\ **h** means (**a**)nnotate every
     500 km (**k**) and 24 `**h**\ (ours) <h.ours.html>`_ , with
     (**t**)ickmarks every 500 km and 6 hours. Alternatively you may use
-    the modifiers **d** (days) and **n** (nautical miles). ..include::
-    explain\_-O.rst\_
-**-O** (\*)
-    Append to existing *PostScript* plot. CUT HERE
-    ------------------------------ ..include:: explain\_-P.rst\_
-**-P** (\*)
-    Select "Portrait" plot orientation. CUT HERE
-    ------------------------------
+    the modifiers **d** (days) and **n** (nautical miles). 
+
+.. include:: ../../explain_-O.rst_
+
+.. include:: ../../explain_-P.rst_
+
 **-Sa**\ *startdist*\ [**u**\ ]
     Do not plot data that are less than *startdist* meter along track
     from port of departure. Append **k** for km, **m** for miles, or
@@ -159,42 +112,26 @@ CUT HERE ------------------------------
     can specify the 5 comma-separated attributes *markersize*,
     *markercolor*, *markerfontsize*, *markerfont*, and
     *markerfontcolor*. Repeat the **-T** option for each marker type.
-    ..include:: explain\_-U.rst\_
-**-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] (\*)
-    Draw GMT time stamp logo on plot. CUT HERE
-    ------------------------------
+    
+.. include:: ../../explain_-U.rst_
+
 **-W**\ *pen*
     Append *pen* used for the trackline. [Default is 0.25p,black].
-    [Default is solid]. ..include:: explain\_-XY.rst\_
-**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-(\*)
-    Shift plot origin. CUT HERE ------------------------------
-    ..include:: explain\_-V.rst\_
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c]. CUT HERE ------------------------------
-    ..include:: explain\_-c.rst\_
-**-c**\ *copies* (\*)
-    Specify number of plot copies [Default is 1]. CUT HERE
-    ------------------------------ ..include::
-    explain\_perspective.rst\_
-**-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
-(\*)
-    Select perspective view. CUT HERE ------------------------------
-    ..include:: explain\_-t.rst\_
-**-t**\ [*transp*\ ] (\*)
-    Set PDF transparency level. CUT HERE ------------------------------
-    ..include:: explain\_help.rst\_
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit. CUT HERE
-    ------------------------------
+    [Default is solid]. 
+
+.. include:: ../../explain_-XY.rst_
+ 
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
+ 
+.. include:: ../../explain_-c.rst_
+
+.. |Add_perspective| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_perspective.rst_
+ 
+.. include:: ../../explain_-t.rst_
+    
+.. include:: ../../explain_help.rst_
 
 `Examples <#toc6>`_
 -------------------

@@ -33,13 +33,7 @@ ancestor). For line data the header is simply *ID npoints
 hierarchical-level source west east south north*. For more information
 about the file formats, see TECHNICAL INFORMATION below.
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
+..include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
@@ -73,10 +67,9 @@ space is allowed between the option flag and the associated arguments.
     be stored as closed polygons). Use **-Qe** to exclude them and
     **-Qi** to exclude everything else instead [Default outputs all
     polygons].
-**-bo**\ [*ncols*\ ][*type*\ ] (\*)
-    Select binary output.
-**-o**\ *cols*\ [,*...*] (\*)
-    Select output columns.
+
+.. input:: ../../explain_-bo.rst_
+.. input:: ../../explain_-ocols.rst_
 
 `Examples <#toc6>`_
 -------------------
@@ -108,7 +101,7 @@ Mathworks and IDL have made such tools available to their users.
 However, they tend not to update their code and our file structure has
 evolved considerably over time, breaking their code. Here, some general
 technical comments on the binary data files are given.
- **GSHHG**: These files contain completely closed polygons of continents
+**GSHHG**: These files contain completely closed polygons of continents
 and islands (level 1), lakes (level 2), islands-in-lakes (level 3) and
 ponds-in-islands-in-lakes (level 4); a particular level can be extracted
 using the **-N** option. Continents are identified as the first 6
@@ -128,7 +121,7 @@ starting point but then partition the polygons into pieces using a
 resolution-dependent binning system; parts of the world are then rebuilt
 into closed polygons on the fly as needed. For more information on GSHHG
 processing, see Wessel and Smith (1996).
- **WDBII**. These files contain sets of line segments not necessarily in
+**WDBII**. These files contain sets of line segments not necessarily in
 any particular order. Thus, it is not possible to extract information
 pertaining to just one river or one country. Furthermore, the 4 lower
 resolutions derive directly from the full resolution by application of
@@ -158,16 +151,16 @@ classes may be extracted via **-N**.
 Douglas, D. H., and T. K. Peucker, 1973, Algorithms for the reduction of
 the number of points required to represent a digitized line of its
 caricature, *Can. Cartogr., 10*, 112-122.
- Gorny, A. J., 1977, *World Data Bank II General User GuideRep. PB
+Gorny, A. J., 1977, *World Data Bank II General User GuideRep. PB
 271869*, 10pp, Central Intelligence Agency, Washington, DC.
- Soluri, E. A., and V. A. Woodson, 1990, World Vector Shoreline, *Int.
+Soluri, E. A., and V. A. Woodson, 1990, World Vector Shoreline, *Int.
 Hydrograph. Rev., `LXVII(1) <LXVII.html>`_ , 27-35.
- Wessel, P., and W. H. F. Smith, 1996, A global, self-consistent,
+Wessel, P., and W. H. F. Smith, 1996, A global, self-consistent,
 hierarchical, high-resolution shoreline database, *J. Geophys. Res.,
 101(B4)*, 8741-8743.*
 
 `See Also <#toc9>`_
 -------------------
 
-`*GMT*\ (1) <GMT.html>`_ , `*gshhg\_dp*\ (1) <gshhg_dp.html>`_
-`*gshhgtograss*\ (1) <gshhgtograss.html>`_
+`GMT <GMT.html>`_ , `gshhg_dp <gshhg_dp.html>`_
+`gshhgtograss <gshhgtograss.html>`_

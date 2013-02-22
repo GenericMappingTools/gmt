@@ -2,8 +2,7 @@
 dimfilter
 *********
 
-dimfilter - Directional filtering of 2-D gridded files in the space (or
-time) domain
+dimfilter - Directional filtering of 2-D gridded files in the space (or time) domain
 
 `Synopsis <#toc1>`_
 -------------------
@@ -36,13 +35,7 @@ sectors. The output can be rought unless the input data is noise-free.
 Thus, an additional filtering (e.g., Gaussian via **grdfilter**) of the
 DiM-filtered data is generally recommended.
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
@@ -132,63 +125,17 @@ space is allowed between the option flag and the associated arguments.
     MAD, and mean. So, the column with the medians is used to generate
     the regional component and the column with the MADs is used to
     conduct the error analysis.
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c].
-**-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
-    Specify data types of input and/or output columns.
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit.
 
-`Grid File Formats <#toc6>`_
-----------------------------
 
-By default **GMT** writes out grid as single precision floats in a
-COARDS-complaint netCDF file format. However, **GMT** is able to produce
-grid files in many other commonly used grid file formats and also
-facilitates so called "packing" of grids, writing out floating point
-data as 1- or 2-byte integers. To specify the precision, scale and
-offset, the user should add the suffix
-**=**\ *id*\ [**/**\ *scale*\ **/**\ *offset*\ [**/**\ *nan*]], where
-*id* is a two-letter identifier of the grid type and precision, and
-*scale* and *offset* are optional scale factor and offset to be applied
-to all grid values, and *nan* is the value used to indicate missing
-data. When reading grids, the format is generally automatically
-recognized. If not, the same suffix can be added to input grid file
-names. See `**grdreformat**\ (1) <grdreformat.html>`_ and Section 4.20
-of the GMT Technical Reference and Cookbook for more information.
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
 
-When reading a netCDF file that contains multiple grids, **GMT** will
-read, by default, the first 2-dimensional grid that can find in that
-file. To coax **GMT** into reading another multi-dimensional variable in
-the grid file, append **?**\ *varname* to the file name, where *varname*
-is the name of the variable. Note that you may need to escape the
-special meaning of **?** in your shell program by putting a backslash in
-front of it, or by placing the filename and suffix between quotes or
-double quotes. The **?**\ *varname* suffix can also be used for output
-grids to specify a variable name different from the default: "z". See
-`**grdreformat**\ (1) <grdreformat.html>`_ and Section 4.20 of the GMT
-Technical Reference and Cookbook for more information, particularly on
-how to read splices of 3-, 4-, or 5-dimensional grids.
+.. |Add_-f| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-f.rst_
 
-`Geographical And Time Coordinates <#toc7>`_
---------------------------------------------
-
-When the output grid type is netCDF, the coordinates will be labeled
-"longitude", "latitude", or "time" based on the attributes of the input
-data or grid (if any) or on the **-f** or **-R** options. For example,
-both **-f0x** **-f1t** and **-R**\ 90w/90e/0t/3t will result in a
-longitude/time grid. When the x, y, or z coordinate is time, it will be
-stored in the grid as relative time since epoch as specified by
-**TIME\_UNIT** and **TIME\_EPOCH** in the **gmt.conf** file or on the
-command line. In addition, the **unit** attribute of the time variable
-will indicate both this unit and epoch.
+.. include:: ../../explain_help.rst_
+.. include:: ../../explain_grd_inout.rst_
+.. include:: ../../explain_grd_coord.rst_
 
 `Examples <#toc8>`_
 -------------------
@@ -264,4 +211,4 @@ Geosyst.*, **9**, Q03005, doi:10.1029/2007GC001850.
 `See Also <#toc12>`_
 --------------------
 
-`*GMT*\ (1) <GMT.html>`_ , `*grdfilter*\ (1) <grdfilter.html>`_
+`GMT <GMT.html>`_ , `grdfilter <grdfilter.html>`_

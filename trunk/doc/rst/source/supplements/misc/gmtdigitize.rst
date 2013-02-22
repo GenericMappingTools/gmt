@@ -25,22 +25,17 @@ setup procedure and how you will digitize points. The program will
 determine the actual map scale as well as rotation of the paper that is
 taped to the digitizer table. By default the output will go to stdout.
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
 
-**-J**\ *parameters* (\*)
-    Select map projection. For geographic projections you can give 1 as
-    the scale will be solved for anyway.
-**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
-    Specify the region of interest. cut here ---------------
+.. include:: ../../explain_-J.rst_
+|
+|   For geographic projections you can give 1 as the scale will be solved for anyway.
+
+.. |Add_-R| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-R.rst_
 
 `Optional Arguments <#toc5>`_
 -----------------------------
@@ -75,25 +70,20 @@ space is allowed between the option flag and the associated arguments.
 **-S**
     Suppress points that fall outside the specified map region [Default
     outputs all points].
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c]. The program will also duplicate data
-    output to stderr for monitoring.
+
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
+
 **-Zk**\ \|\ **v**
     Append **v** to prompt for a *z*-value and output it as a third data
     column. Append **k** to output the button key as the final data
     column. Both **-Zk** and **-Zv** can be specified. [Default is just
     2 column x,y output].
-**-bo**\ [*ncols*\ ][*type*\ ] (\*)
-    Select binary output.
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit.
+
+.. |Add_-bo| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-bo.rst_
+
+.. include:: ../../explain_help.rst_
 
 `Examples <#toc6>`_
 -------------------
@@ -139,7 +129,6 @@ not matter; it is computed from the region and plot size.
 `See Also <#toc8>`_
 -------------------
 
-`*gmtdefaults*\ (l) <gmtdefaults.l.html>`_ , `*GMT*\ (l) <GMT.l.html>`_
-, `*gmtstitch*\ (l) <gmtstitch.l.html>`_ ,
-`*mapproject*\ (l) <mapproject.l.html>`_ ,
-`*project*\ (l) <project.l.html>`_
+`gmtdefaults <gmtdefaults.l.html>`_ , `GMT <GMT.l.html>`_
+, `gmtstitch <gmtstitch.l.html>`_ ,
+`mapproject <mapproject.l.html>`_ , `project <project.l.html>`_

@@ -22,8 +22,7 @@ pspolar [ *table* ] **-J**\ *parameters*
 ] [
 **-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
 ] [ **-c**\ *copies* ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-]
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] ]
 
 `Description <#toc2>`_
 ----------------------
@@ -43,39 +42,22 @@ Parameters are expected to be in the following columns:
 
         - rarefaction can be d,D,r,R,-
 
-        -
+        - not defined is anything else
 
-    not defined is anything else
-
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
 
-*table*
-    One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ])
-    data table file(s) holding a number of data columns. If no tables
-    are given then we read from standard input.
-**-J**\ *parameters* (\*)
-    Select map projection.
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ]
-    *west*, *east*, *south*, and *north* specify the region of interest,
-    and you may specify them in decimal degrees or in
-    [+-]dd:mm[:ss.xxx][W\|E\|S\|N] format. Append **r** if lower left
-    and upper right map coordinates are given instead of w/e/s/n. The
-    two shorthands **-Rg** and **-Rd** stand for global domain (0/360
-    and -180/+180 in longitude respectively, with -90/+90 in latitude).
-    Alternatively, specify the name of an existing grid file and the
-    **-R** settings (and grid spacing, if applicable) are copied from
-    the grid. Using **-R**\ *unit* expects projected (Cartesian)
-    coordinates compatible with chosen **-J** and we inversely project
-    to determine actual rectangular geographic region.
+.. |Add_intables| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_intables.rst_
+
+.. include:: ../../explain_-J.rst_
+
+.. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-Rgeo.rst_
+
+
 **-D**\ longitude/latitude)
     Maps the bubble at given longitude and latitude point.
 **-M**\ size)
@@ -90,8 +72,8 @@ space is allowed between the option flag and the associated arguments.
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-**-B**\ [**p**\ \|\ **s**]\ *parameters* (\*)
-    Set map boundary intervals.
+.. include:: ../../explain_-B.rst_
+
 **-C**
     Offsets focal mechanisms to the latitude and longitude specified in
     the last two columns of the input file.
@@ -107,30 +89,30 @@ space is allowed between the option flag and the associated arguments.
 **-G**\ *fill*
     Selects filling of symbols for stations in compressional quadrants.
     Set the color [Default is black].
-**-K** (\*)
-    Do not finalize the *PostScript* plot.
+
+.. include:: ../../explain_-K.rst_
+
 **-N**
     Does **not** skip symbols that fall outside map border [Default
     plots points inside border only].
-**-O** (\*)
-    Append to existing *PostScript* plot.
-**-P** (\*)
-    Select "Portrait" plot orientation.
+
+.. include:: ../../explain_-O.rst_
+.. include:: ../../explain_-P.rst_
+
 **-T**\ *angle/form/justify/fontsize in points*
     To write station code. [Default is 0.0/0/5/12].
-**-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] (\*)
-    Draw GMT time stamp logo on plot.
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c].
+
+.. include:: ../../explain_-U.rst_
+
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
+
 **-W**\ *pen*
-    Set current pen attributes [Defaults: width = default, color =
-    black, style = solid].
-**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-(\*)
-    Shift plot origin.
-**-c**\ *copies* (\*)
-    Specify number of plot copies [Default is 1].
+    Set current pen attributes [Defaults: width = default, color = black, style = solid].
+
+.. include:: ../../explain_-XY.rst_
+.. include:: ../../explain_-c.rst_
+
 **-f**\ [pen])
     Outline the beach ball using *pen* or the default pen (see **-W**).
 **-g**\ [pen])
@@ -138,8 +120,9 @@ space is allowed between the option flag and the associated arguments.
     default pen (see **-W**).
 **-h**
     Use special format derived from HYPO71 output
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
-    Select input columns.
+
+.. include:: ../../explain_-icols.rst_
+
 **-s**\ *half-size*/[**V**\ [*v\_width/h\_length/h\_width/shape*\ ]][\ **G**\ *color*][**L**\ ]
     Plots S polarity azimuth. S polarity is in last column. It may be a
     vector (**V** option) or a segment. Give
@@ -148,23 +131,14 @@ space is allowed between the option flag and the associated arguments.
 **-t**\ *pen*
     Set pen color to write station code. Default uses the default pen
     (see **-W**).
-**-:**\ [**i**\ \|\ **o**] (\*)
-    Swap 1st and 2nd column on input and/or output.
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit.
+
+.. include:: ../../explain_colon.rst_
+.. include:: ../../explain_help.rst_
 
 `Examples <#toc6>`_
 -------------------
 
-pspolar -R239/240/34/35.2 -JM8c -N -Sc0.4 -h1 -D39.5/34.5 -M5 << END >
-test.ps
+pspolar -R239/240/34/35.2 -JM8c -N -Sc0.4 -h1 -D39.5/34.5 -M5 << END > test.ps
 
 stat azim ih pol
 
@@ -182,8 +156,7 @@ END
 
 or
 
-pspolar -R239/240/34/35.2 -JM8c -N -Sc0.4 -h1 -D239.5/34.5 -M5 <<END >
-test.ps
+pspolar -R239/240/34/35.2 -JM8c -N -Sc0.4 -h1 -D239.5/34.5 -M5 <<END > test.ps
 
 Date Or. time stat azim ih
 
@@ -201,9 +174,8 @@ END
 
 `See Also <#toc7>`_
 -------------------
-
-`*GMT*\ (1) <GMT.html>`_ , `*psbasemap*\ (1) <psbasemap.html>`_ ,
-`*psxy*\ (1) <psxy.html>`_
+`GMT <GMT.html>`_ , `psbasemap <psbasemap.html>`_ ,
+`psxy <psxy.html>`_
 
 `References <#toc8>`_
 ---------------------

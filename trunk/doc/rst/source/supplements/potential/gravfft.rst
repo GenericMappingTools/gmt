@@ -37,13 +37,7 @@ Given the number of choices this program offers, is difficult to state
 what are options and what are required arguments. It depends on what you
 are doing.
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
@@ -147,49 +141,14 @@ space is allowed between the option flag and the associated arguments.
 **-Z**\ *<zm>[/<zl>]*
     Moho [and swell] average compensation depths. For the “load from
     top” model you only have to provide *zm*, but for the “loading from
-    below” don’t forget *zl*.
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c].
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit.
+    below” don't forget *zl*.
 
-`Grid File Formats <#toc6>`_
-----------------------------
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
 
-By default **GMT** writes out grid as single precision floats in a
-COARDS-complaint netCDF file format. However, **GMT** is able to produce
-grid files in many other commonly used grid file formats and also
-facilitates so called "packing" of grids, writing out floating point
-data as 1- or 2-byte integers. To specify the precision, scale and
-offset, the user should add the suffix
-**=**\ *id*\ [**/**\ *scale*\ **/**\ *offset*\ [**/**\ *nan*]], where
-*id* is a two-letter identifier of the grid type and precision, and
-*scale* and *offset* are optional scale factor and offset to be applied
-to all grid values, and *nan* is the value used to indicate missing
-data. When reading grids, the format is generally automatically
-recognized. If not, the same suffix can be added to input grid file
-names. See `**grdreformat**\ (1) <grdreformat.html>`_ and Section 4.20
-of the GMT Technical Reference and Cookbook for more information.
+.. include:: ../../explain_help.rst_
 
-When reading a netCDF file that contains multiple grids, **GMT** will
-read, by default, the first 2-dimensional grid that can find in that
-file. To coax **GMT** into reading another multi-dimensional variable in
-the grid file, append **?**\ *varname* to the file name, where *varname*
-is the name of the variable. Note that you may need to escape the
-special meaning of **?** in your shell program by putting a backslash in
-front of it, or by placing the filename and suffix between quotes or
-double quotes. The **?**\ *varname* suffix can also be used for output
-grids to specify a variable name different from the default: "z". See
-`**grdreformat**\ (1) <grdreformat.html>`_ and Section 4.20 of the GMT
-Technical Reference and Cookbook for more information, particularly on
-how to read splices of 3-, 4-, or 5-dimensional grids.
+.. include:: ../../explain_grd_inout.rst_
 
 `Considerations <#toc7>`_
 -------------------------
@@ -232,8 +191,7 @@ directly from data. (notice also the negative sign of the argument to
 
 gravfft bat.grd -D600 -Gmoho\_g.grd -A-6000
 
-Now, add it to the sea-bottom anomaly to obtain the MBA anomaly. That
-is:
+Now, add it to the sea-bottom anomaly to obtain the MBA anomaly. That is:
 
 grdmath water\_g.grd moho\_g.grd ADD = mba.grd
 
@@ -299,6 +257,5 @@ Vulc. Res. Volume 156, Issues 1-2, Pages 10-22,
 `See Also <#toc10>`_
 --------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*grdfft*\ (1) <grdfft.html>`_ ,
-`*grdmath*\ (1) <grdmath.html>`_ ,
-`*grdproject*\ (1) <grdproject.html>`_
+`gmt <../../gmt.html>`_ , `grdfft <../../grdfft.html>`_ ,
+`grdmath <../../grdmath.html>`_ , `grdproject <../../grdproject.html>`_

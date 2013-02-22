@@ -43,46 +43,14 @@ option.
 The mgd77sniffer links with Generic Mapping Tools 4.0 or later along
 with the supplemental GMT packages x2sys and mgd77. See
 `http://gmt.soest.hawaii.edu <http://gmt.soest.hawaii.edu>`_ for GMT
-details. Grids for comparison with cruise data may be downloaded via the
-web. ..include:: explain\_commonitems.rst\_
+details. Grids for comparison with cruise data may be downloaded via the web. 
 
-`Common Arguments And Specifications <#toc4>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
-CUT HERE ------------------------------
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc5>`_
 -----------------------------
 
-..include:: mgd77/explain\_ncid.rst\_
-
-*NGDC-ids*
-    Can be one or more of five kinds of specifiers:
-
-    1) 8-character NGDC IDs, e.g., 01010083, JA010010etc., etc.
-
-    2) 2-character <agency> codes which will return all cruises from
-    each agency.
-
-    3) 4-character <agency><vessel> codes, which will return all cruises
-    from those vessels.
-
-    4) =<list>, where <list> is a table with NGDC IDs, one per line.
-
-    5) If nothing is specified we return all cruises in the data base.
-
-    (See mgd77info **-L** for agency and vessel codes). The ".mgd77" or
-    ".nc" extensions will automatically be appended, if needed (use
-    **-I** to ignore certain file types). Cruise files will be looked
-    for first in the current directory and second in all directories
-    listed in **$MGD77\_HOME**/mgd77\_paths.txt [If **$MGD77\_HOME** is
-    not set it will default to **$GMT\_SHAREDIR**/mgd77].
-
-    CUT HERE ------------------------------
+.. include:: explain_ncid.rst_
 
 `Optional Arguments <#toc6>`_
 -----------------------------
@@ -233,7 +201,7 @@ CUT HERE ------------------------------
     Example custom default file contents (see below for units):
 
     +--------------+--------+---------+------------+-----------+
-    | ’## abbrev   | min    | max     | maxSlope   | maxArea   |
+    | ## abbrev    | min    | max     | maxSlope   | maxArea   |
     +--------------+--------+---------+------------+-----------+
     | twt          | 0      | 15      | 1          | 0         |
     +--------------+--------+---------+------------+-----------+
@@ -244,7 +212,7 @@ CUT HERE ------------------------------
     | faa          | -300   | 300     | 100        | 2500      |
     +--------------+--------+---------+------------+-----------+
 
-    Use a dash ’-’ to retain a default limit. Hint: to test your custom
+    Use a dash '-' to retain a default limit. Hint: to test your custom
     limits, try: mgd77sniffer **-Dl** **-L**\ <yourlimitsfile>
 
 **-N**
@@ -252,29 +220,19 @@ CUT HERE ------------------------------
 **-P**
     Flag regression statistics that are outside the specified confidence
     level. (i.e., -P5 flags coefficients m, b, rms, and r that fall
-    outside 95%.) ..include:: explain\_-Rgeo.rst\_
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ]
-    *west*, *east*, *south*, and *north* specify the region of interest,
-    and you may specify them in decimal degrees or in
-    [+-]dd:mm[:ss.xxx][W\|E\|S\|N] format. Append **r** if lower left
-    and upper right map coordinates are given instead of w/e/s/n. The
-    two shorthands **-Rg** and **-Rd** stand for global domain (0/360
-    and -180/+180 in longitude respectively, with -90/+90 in latitude).
-    Alternatively, specify the name of an existing grid file and the
-    **-R** settings (and grid spacing, if applicable) are copied from
-    the grid. Using **-R**\ *unit* expects projected (Cartesian)
-    coordinates compatible with chosen **-J** and we inversely project
-    to determine actual rectangular geographic region. CUT HERE
-    ------------------------------
+    outside 95%.) 
+
+.. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-Rgeo.rst_
+
 **-S**\ **d**\ \|\ **s**\ \|\ **t**
     Specify gradient type for along-track excessive slope checking.
-     **-Sd** Calculate change in z values along track (dz). Output is
+    **-Sd** Calculate change in z values along track (dz). Output is
     given in geophysical units, e.g., mGal.
-     **-Ss** Calculate spatial gradients (dz/ds). Output is given in
+    **-Ss** Calculate spatial gradients (dz/ds). Output is given in
     geophysical units per km along the survey track, e.g., mGal/km.
-     **-St** Calculate time gradients (dz/dt) [default]. Output is given
-    in geophysical units per second along the survey track, e.g.,
-    mGal/sec.
+    **-St** Calculate time gradients (dz/dt) [default]. Output is given
+    in geophysical units per second along the survey track, e.g., mGal/sec.
 **-T**\ *gap*
     Adjusts mgd77sniffer gap handling. By default, data gaps greater
     than 5 km are skipped. Set to zero to de-activate gap skipping.
@@ -285,26 +243,17 @@ CUT HERE ------------------------------
     (**o**)ffsets from grid (requires **-G**\ \|\ **g**), (**s**)peed
     out of range, (**t**)ime warnings, (**v**)alue out of range, (**x**)
     warning summaries. By default ALL warning messages are printed.Not
-    compatible with any **-D** options. ..include:: explain\_-V.rst\_
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c]. CUT HERE ------------------------------
+    compatible with any **-D** options. 
+
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
+
 **-bo**\ [*ncols*\ ][*type*\ ]
-    Output binary data for **-D**\ d\|f\|s\|v option. ..include::
-    explain\_-n.rst\_
-**-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*]
-(\*)
-    Select interpolation mode for grids. CUT HERE
-    ------------------------------ ..include:: explain\_help.rst\_
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit. CUT HERE
-    ------------------------------
+    Output binary data for **-D**\ d\|f\|s\|v option. 
+
+.. include:: ../../explain_-n.rst_
+
+.. include:: ../../explain_help.rst_
 
 `Mgd77 Field Info <#toc7>`_
 ---------------------------
@@ -358,8 +307,7 @@ i2\ `` `` `` `` 2`` `` `` `` -`` `` `` `` -`` `` `` `` 32767
 grdraster 1 -R0/359:55/-90/90 -Getopo5\_hdr.i2
 
 The new grid, etopo5\_hdr.i2 in this example, contains a GMT header and
-can be used in the **-G** option to compare cruise depth with grid
-values.
+can be used in the **-G** option to compare cruise depth with grid values.
 
 `E77 Error Format <#toc9>`_
 ---------------------------
@@ -418,7 +366,7 @@ values.
     types. See below for error code format description.
 
     **Format**
-     <time/distance> <record number> <error code string> <description>
+    <time/distance> <record number> <error code string> <description>
 
     **Sample**
 
@@ -527,9 +475,9 @@ mgd77sniffer 08010001 -Gdepth,/data/GRIDS/etopo5\_hdr.i2
 `See Also <#toc11>`_
 --------------------
 
-`*mgd77list*\ (1) <mgd77list.html>`_ ,
-`*mgd77track*\ (1) <mgd77track.html>`_
-`*x2sys\_init*\ (1) <x2sys_init.html>`_
+`mgd77list <mgd77list.html>`_ ,
+`mgd77track <mgd77track.html>`_
+`x2sys\_init <x2sys_init.html>`_
 
 `References <#toc12>`_
 ----------------------

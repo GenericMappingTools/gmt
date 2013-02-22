@@ -14,8 +14,7 @@ mgd77manage - Manage the content of MGD77+ files
 **-I**\ *abbrev*/*name*/*unit*/**t**/*scale*/*offset*/*comment* ] [
 **-N**\ *unit* ] [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
 **-V**\ [*level*\ ] ] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [
-**-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*]
-]
+**-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*] ]
 
 `Description <#toc2>`_
 ----------------------
@@ -30,46 +29,15 @@ obtained by sampling a grid (choose between GMT grid or a Sandwell/Smith
 Mercator \*.img grid) along track. The new data will be appended to the
 MGD77+ file in the form of an extra data column of specified type. The
 data file will be modified; no new file will be created. For the big
-issues, see the DISCUSSION section below. ..include::
-explain\_commonitems.rst\_
+issues, see the DISCUSSION section below. 
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
-CUT HERE ------------------------------
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
 
-..include:: mgd77/explain\_ncid.rst\_
+.. include:: explain_ncid.rst_
 
-*NGDC-ids*
-    Can be one or more of five kinds of specifiers:
-
-    1) 8-character NGDC IDs, e.g., 01010083, JA010010etc., etc.
-
-    2) 2-character <agency> codes which will return all cruises from
-    each agency.
-
-    3) 4-character <agency><vessel> codes, which will return all cruises
-    from those vessels.
-
-    4) =<list>, where <list> is a table with NGDC IDs, one per line.
-
-    5) If nothing is specified we return all cruises in the data base.
-
-    (See mgd77info **-L** for agency and vessel codes). The ".mgd77" or
-    ".nc" extensions will automatically be appended, if needed (use
-    **-I** to ignore certain file types). Cruise files will be looked
-    for first in the current directory and second in all directories
-    listed in **$MGD77\_HOME**/mgd77\_paths.txt [If **$MGD77\_HOME** is
-    not set it will default to **$GMT\_SHAREDIR**/mgd77].
-
-    CUT HERE ------------------------------
 
 `Optional Arguments <#toc5>`_
 -----------------------------
@@ -208,51 +176,28 @@ CUT HERE ------------------------------
     the terms "values" in the **-A** discussion refer to your text data.
     Furthermore, the discussion on interpolation does not apply and the
     NaN value becomes a "no string" value (see **-E** for what this is).
-    Place quotes around terms with more than one word (e.g., "Corrected
-    Depth").
+    Place quotes around terms with more than one word (e.g., "Corrected Depth").
 **-N**\ *unit*
     Append the distance unit (see UNITS). [Default is **-Nk** (km)].
-    Only relevant when **-Ag**\ \|\ **i** is selected. ..include::
-    explain\_-R.rst\_ ..include explain\_-R.rst\_
-**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
-    Specify the region of interest. cut here --------------- CUT HERE
-    ------------------------------ Only relevant when **-Ag**\ \|\ **i**
-    is selected. ..include:: explain\_-V.rst\_
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c]. CUT HERE ------------------------------
-    ..include:: explain\_-bi.rst\_
-**-bi**\ [*ncols*\ ][*type*\ ] (\*)
-    Select binary input. CUT HERE ------------------------------ This
-    applies to the input 1- or 2-column data files specified under some
+    Only relevant when **-Ag**\ \|\ **i** is selected. 
+
+.. |Add_-R| replace:: Only relevant when **-Ag**\ \|\ **i** is selected. 
+.. include:: ../../explain_-R.rst_
+
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
+    
+.. |Add_-bi| replace:: 
+    This applies to the input 1- or 2-column data files specified under some
     of the **-A** options. The binary input option is only available for
-    numerical data columns. ..include:: explain\_-n.rst\_
-**-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*]
-(\*)
-    Select interpolation mode for grids. CUT HERE
-    ------------------------------ ..include:: explain\_help.rst\_
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit. CUT HERE
-    ------------------------------ ..include:: explain\_distunits.rst\_
+    numerical data columns. 
+.. include:: ../../explain_-bi.rst_
 
-`Units <#toc6>`_
-----------------
+.. include:: ../../explain_-n.rst_
 
-For map distance unit, append *unit* **d** for arc degree, **m** for arc
-minute, and **s** for arc second, or **e** for meter [Default], **f**
-for foot, **k** for km, **M** for statute mile, **n** for nautical mile,
-and **u** for US survey foot. By default we compute such distances using
-a spherical approximation with great circles. Prepend **-** to a
-distance (or the unit is no distance is given) to perform "Flat Earth"
-calculations (quicker but less accurate) or prepend **+** to perform
-exact geodesic calculations (slower but more accurate). CUT HERE
-------------------------------
+.. include:: ../../explain_help.rst_
+
+.. include:: ../../explain_distunits.rst_
 
 `Examples <#toc7>`_
 -------------------
@@ -262,8 +207,7 @@ the cruises 01010047.nc and 01010008.nc, storing the values as mGal\*10
 in a 2-byte short integer, try
 
 mgd77manage 01010047 01010008 -Ai10/1/grav.11.2.img
--Isatgrav/"Geosat/ERS-1 gravity"/"mGal"/s/10/0/"Sandwell/Smith version
-11.2" -V
+-Isatgrav/"Geosat/ERS-1 gravity"/"mGal"/s/10/0/"Sandwell/Smith version 11.2" -V
 
 To append a filtered version of magnetics as an extra data column of
 type float for the cruise 01010047.nc, and interpolate the filtered data
@@ -409,18 +353,18 @@ Luis, and adapted to GMT style by Paul Wessel.
 `See Also <#toc10>`_
 --------------------
 
-`*mgd77convert*\ (1) <mgd77convert.html>`_ ,
-`*mgd77list*\ (1) <mgd77list.html>`_ ,
-`*mgd77info*\ (1) <mgd77info.html>`_ ,
-`*mgd77sniffer*\ (1) <mgd77sniffer.html>`_
-`*mgd77track*\ (1) <mgd77track.html>`_
-`*x2sys\_init*\ (1) <x2sys_init.html>`_
+`gd77convert <mgd77convert.html>`_ ,
+`mgd77list <mgd77list.html>`_ ,
+`mgd77info <mgd77info.html>`_ ,
+`mgd77sniffer <mgd77sniffer.html>`_
+`mgd77track <mgd77track.html>`_
+`x2sys_init <x2sys_init.html>`_
 
 `References <#toc11>`_
 ----------------------
 
 The Marine Geophysical Data Exchange Format - MGD77, see
-`*http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt* <http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_
+`http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt <http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_
 
 IGRF, see
-`*http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html* <http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html>`_
+`http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html <http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html>`_
