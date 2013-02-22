@@ -1,3 +1,5 @@
+.. _-V_full:
+
 **-V**\ [*level*\ ]
     Select verbose mode, which will send progress reports to *stderr*.
     Choose among 6 levels of verbosity; each level adds mode messages:

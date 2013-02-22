@@ -1,3 +1,5 @@
+.. _-U_full:
+
 **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*]
     Draw Unix System time stamp on plot. By adding *just/dx/dy/*, the
     user may specify the justification of the stamp and where the stamp
