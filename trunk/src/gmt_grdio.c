@@ -1622,12 +1622,12 @@ struct GMT_GRID_HEADER *GMT_duplicate_gridheader (struct GMT_CTRL *C, struct GMT
 }
 
 struct GMT_GRID *GMT_duplicate_grid (struct GMT_CTRL *C, struct GMT_GRID *G, bool alloc_data)
-{	/* Duplicates an entire grid, including data. */
+{	/* Duplicates an entire grid, including data if requested. */
 	struct GMT_GRID *Gnew = NULL;
 
 	Gnew = GMT_create_grid (C);
 	GMT_memcpy (Gnew->header, G->header, 1, struct GMT_GRID_HEADER);
-	if (alloc_data) {	/* ALso allocate and duplicate data array */
+	if (alloc_data) {	/* Also allocate and duplicate data array */
 		Gnew->data = GMT_memory_aligned (C, NULL, G->header->size, float);
 		GMT_memcpy (Gnew->data, G->data, G->header->size, float);
 	}
