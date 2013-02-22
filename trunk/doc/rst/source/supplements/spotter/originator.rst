@@ -31,13 +31,7 @@ pseudo-age of the seamount, and the closest distance to the hotspot (in
 km). See option **-:** on how to read (latitude, longitude,height,
 radius, crustal\_age) files.
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
@@ -62,7 +56,7 @@ space is allowed between the option flag and the associated arguments.
     to 10000. Blank lines and records whose first column contains # will
     be ignored. You may prepend a leading + to the filename to indicate
     you wish to invert the rotations.
-     Alternatively, give the filename composed of two plate IDs
+    Alternatively, give the filename composed of two plate IDs
     separated by a hyphen (e.g., PAC-MBL) and we will instead extract
     that rotation from the GPlates rotation database. We return an error
     if the rotation cannot be found. Prepend **+** if you want to invert
@@ -100,10 +94,9 @@ space is allowed between the option flag and the associated arguments.
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-*table*
-    One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ])
-    data table file(s) holding a number of data columns. If no tables
-    are given then we read from standard input.
+.. |Add_intables| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_intables.rst_
+
 **-D**\ *d\_km*
     Sets the flowline sampling interval in km. [Default is 5].
 **-L**\ [*flag*\ ]
@@ -116,39 +109,31 @@ space is allowed between the option flag and the associated arguments.
     Set the maximum age to extend the oldest stage back in time [no
     extension].
 **-Q**\ *r/t*
-Input files only has (*x*,\ *y*,\ *z*); specify constant values for
-*r*,\ *t* that
+    Input files only has (*x*,\ *y*,\ *z*); specify constant values for *r*,\ *t* that
     will be implied for each record.
 **-S**\ [*n\_hs*\ ]
     Set the number of closest hotspots to report [Default is 1].
 **-T**
-    Truncate seamount ages exceeding the upper age set with **-N** [no
-    truncation].
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c].
+    Truncate seamount ages exceeding the upper age set with **-N** [no truncation].
+
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
+
 **-W**\ *maxdist*
     Only report those seamounts whose flowlines came within *maxdist* to
     any hotspot [Default reports all seamounts].
 **-Z**
-    Use the hotspot ID number rather than the name tag in output
-    records.
-**-bi**\ [*ncols*\ ][*type*\ ] (\*)
-    Select binary input. [Default is 5 input columns].
-**-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
-    Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
-    Select input columns.
-**-:**\ [**i**\ \|\ **o**] (\*)
-    Swap 1st and 2nd column on input and/or output.
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit.
+    Use the hotspot ID number rather than the name tag in output records.
+
+.. |Add_-bi| replace:: [Default is 5 input columns].
+.. include:: ../../explain_-bi.rst_
+
+.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-h.rst_../../explain_-V.rst_
+
+.. include:: ../../explain_-icols.rst_
+.. include:: ../../explain_colon.rst_
+.. include:: ../../explain_help.rst_
 
 `Examples <#toc6>`_
 -------------------
@@ -179,16 +164,15 @@ approach was east of the hotspot.
 `See Also <#toc7>`_
 -------------------
 
-`*GMT*\ (1) <GMT.html>`_ , `*grdrotater*\ (1) <grdrotater.html>`_ ,
-`*grdspotter*\ (1) <grdspotter.html>`_ ,
-`*project*\ (1) <project.html>`_ ,
-`*mapproject*\ (1) <mapproject.html>`_ ,
-`*backtracker*\ (1) <backtracker.html>`_ ,
-`*hotspotter*\ (1) <hotspotter.html>`_
+`GMT <GMT.html>`_ , `grdrotater <grdrotater.html>`_ ,
+`grdspotter <grdspotter.html>`_ ,
+`project <project.html>`_ ,
+`mapproject <mapproject.html>`_ ,
+`backtracker <backtracker.html>`_ ,
+`hotspotter <hotspotter.html>`_
 
 `References <#toc8>`_
 ---------------------
 
-Wessel, P., 1999, "Hotspotting" tools released, EOS Trans. AGU, 80 (29),
-p. 319.
+Wessel, P., 1999, "Hotspotting" tools released, EOS Trans. AGU, 80 (29), p. 319.
 

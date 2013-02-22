@@ -24,33 +24,13 @@ a geographic region, and insist that the output from several files be
 separated by a multiple segment header. Only the named data fields will
 be output [Default selects all columns].
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
 
-*tracks*
-    Can be one or more ASCII, native binary, or COARDS netCDF 1-D data
-    files. To supply the data files via a text file with a list of
-    tracks (one per record), specify the name of the track list after a
-    leading equal-sign (e.g., =tracks.lis). If the names are missing
-    their file extension we will append the suffix specified for this
-    *TAG*. Track files will be searched for first in the current
-    directory and second in all directories listed in
-    **$X2SYS\_HOME**/*TAG*/*TAG*\ \_paths.txt (if it exists). [If
-    **$X2SYS\_HOME** is not set it will default to
-    **$GMT\_SHAREDIR**/x2sys]. (Note: MGD77 files will also be looked
-    for via **MGD77\_HOME**/mgd77\_paths.txt and \*.gmt files will be
-    searched for via **$GMT\_SHAREDIR**/mgg/gmtfile\_paths).
-**-T**\ *TAG*
-    Specify the x2sys *TAG* which tracks the attributes of this data
-    type.
+.. include:: explain_track.rst_
+.. include:: explain_tag.rst_
 
 `Optional Arguments <#toc5>`_
 -----------------------------
@@ -77,38 +57,26 @@ space is allowed between the option flag and the associated arguments.
     correction table *TAG*\ \_corrections.txt which is expected to
     reside in the **$X2SYS\_HOME**/*TAG* directory]. For the format of
     this file, see CORRECTIONS below.
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ]
-    *west*, *east*, *south*, and *north* specify the region of interest,
-    and you may specify them in decimal degrees or in
-    [+-]dd:mm[:ss.xxx][W\|E\|S\|N] format. Append **r** if lower left
-    and upper right map coordinates are given instead of w/e/s/n. The
-    two shorthands **-Rg** and **-Rd** stand for global domain (0/360
-    and -180/+180 in longitude respectively, with -90/+90 in latitude).
-    Alternatively, specify the name of an existing grid file and the
-    **-R** settings (and grid spacing, if applicable) are copied from
-    the grid. Using **-R**\ *unit* expects projected (Cartesian)
-    coordinates compatible with chosen **-J** and we inversely project
-    to determine actual rectangular geographic region. For Cartesian
+
+.. |Add_-Rgeo| replace:: For Cartesian
     data just give *xmin/xmax/ymin/ymax*. This option limits the COEs to
     those that fall inside the specified domain.
+.. include:: ../../explain_-Rgeo.rst_
+
 **-S**
     Suppress output records where all the data columns are NaN [Default
     will output all records].
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c].
-**-bo**\ [*ncols*\ ][*type*\ ] (\*)
-    Select binary output.
-**-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
-    Skip or produce header record(s).
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit.
+
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
+
+.. |Add_-bo| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-bo.rst_
+
+.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-h.rst_
+
+.. include:: ../../explain_help.rst_
 
 `Examples <#toc6>`_
 -------------------
@@ -178,12 +146,12 @@ ABC fuel 0.02\*((dist))
 `See Also <#toc8>`_
 -------------------
 
-`*blockmean*\ (1) <blockmean.html>`_ , `*GMT*\ (1) <GMT.html>`_ ,
-`*surface*\ (1) <surface.html>`_ ,
-`*x2sys\_init*\ (1) <x2sys_init.html>`_ ,
-`*x2sys\_datalist*\ (1) <x2sys_datalist.html>`_ ,
-`*x2sys\_get*\ (1) <x2sys_get.html>`_ ,
-`*x2sys\_list*\ (1) <x2sys_list.html>`_ ,
-`*x2sys\_put*\ (1) <x2sys_put.html>`_ ,
-`*x2sys\_report*\ (1) <x2sys_report.html>`_ ,
-`*x2sys\_solve*\ (1) <x2sys_solve.html>`_
+`blockmean <blockmean.html>`_ , `GMT <GMT.html>`_ ,
+`surface <surface.html>`_ ,
+`x2sys\_init <x2sys_init.html>`_ ,
+`x2sys\_datalist <x2sys_datalist.html>`_ ,
+`x2sys\_get <x2sys_get.html>`_ ,
+`x2sys\_list <x2sys_list.html>`_ ,
+`x2sys\_put <x2sys_put.html>`_ ,
+`x2sys\_report <x2sys_report.html>`_ ,
+`x2sys\_solve <x2sys_solve.html>`_

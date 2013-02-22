@@ -29,13 +29,7 @@ fillable segment output; use **-T** to write unique arcs instead. As an
 option, compute the area of each triangle or polygon. The algorithm used
 is STRIPACK.
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
@@ -45,10 +39,9 @@ None.
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-*table*
-    One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ])
-    data table file(s) holding a number of data columns. If no tables
-    are given then we read from standard input.
+.. |Add_intables| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_intables.rst_
+
 **-A**
     Compute the area of the spherical triangles (**-Qd**) or polygons
     (**-Qv**) and write the areas (in chosen units; see **-L**) in the
@@ -84,27 +77,25 @@ None.
     Write the unique arcs of the construction [Default writes fillable
     triangles or polygons]. When used with **-A** we store arc lenght in
     the segment header in chosen unit (see **-L**).
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c].
-**-bi**\ [*ncols*\ ][*type*\ ] (\*)
-    Select binary input. [Default is 2 input columns].
-**-bo**\ [*ncols*\ ][*type*\ ] (\*)
-    Select binary output. [Default is same as input].
-**-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
-    Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
-    Select input columns.
-**-:**\ [**i**\ \|\ **o**] (\*)
-    Swap 1st and 2nd column on input and/or output.
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit.
+
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
+
+.. |Add_-bi| replace:: [Default is 2 input columns].
+.. include:: ../../explain_-bi.rst_
+
+.. |Add_-bo| replace:: [Default is same as input].
+.. include:: ../../explain_-bo.rst_
+
+.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-h.rst_
+
+.. include:: ../../explain_colon.rst_
+
+.. |Add_nodereg| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_nodereg.rst_
+
+.. include:: ../../explain_help.rst_
 
 `Ascii Format Precision <#toc6>`_
 ---------------------------------
@@ -148,9 +139,9 @@ sphtriangulate globalnodes.d -Qd -A > global\_tri.d
 `See Also <#toc9>`_
 -------------------
 
-`*GMT*\ (1) <GMT.html>`_ , `*triangulate*\ (1) <triangulate.html>`_
-`*sphinterpolate*\ (1) <sphinterpolate.html>`_
-`*sphdistance*\ (1) <sphdistance.html>`_
+`GMT <GMT.html>`_ , `triangulate <triangulate.html>`_
+`sphinterpolate <sphinterpolate.html>`_
+`sphdistance <sphdistance.html>`_
 
 `References <#toc10>`_
 ----------------------

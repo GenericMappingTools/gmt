@@ -37,6 +37,7 @@ well.
 `Optional Arguments <#toc5>`_
 -----------------------------
 
+.. |Add_intables| unicode:: 0x0C .. just an invisible code
 .. include:: explain_intables.rst_
 
 **-A**

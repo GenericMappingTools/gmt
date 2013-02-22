@@ -23,13 +23,7 @@ rotation and then add it to the previous rotation. If a file cannot be
 opened we will attempt to decode the file name as a single rotation
 whose parameters are separated by slashes.
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
@@ -73,20 +67,12 @@ space is allowed between the option flag and the associated arguments.
     Place all output poles in the southern hemisphere [Default reports
     positive rotation angles].
 **-T**
-    Transpose the final result, i.e., change the sign of the rotation
-    angles.
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c]. Report statistics of extracted
-    rotations.
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit.
+    Transpose the final result, i.e., change the sign of the rotation angles.
+
+.. |Add_-V| replace:: Report statistics of extracted rotations.
+.. include:: ../../explain_-V.rst_
+
+.. include:: ../../explain_help.rst_
 
 `Examples <#toc6>`_
 -------------------
@@ -109,14 +95,14 @@ To add the final rotations ROT(150.1, 70.5, -20.3) and ROT (145.0, 40.0,
 
 rotconverter 150.1/70.5/-20.3 + 145/40/11.4
 
- which prints out 157.32, -80.44, 11.97.
+which prints out 157.32, -80.44, 11.97.
 
 To make stage rotations suitable for generating flowlines (fracture
 zones) from a model of relative plate motions PL1-PL2.RPM, assuming
 symmetric spreading,, try
 
 rotconverter PL1-PL2.RPM -E -Fs > PL1-PL2\_half.RPM
- rotconverter - PL1-PL2.RPM -E -Fs > PL2-PL1\_half.RPM
+rotconverter - PL1-PL2.RPM -E -Fs > PL2-PL1\_half.RPM
 
 To compute rotations for India relative to a fixed Africa using the
 plate circuit India-Central Indian Basin-Antarctica-Africa, based on the
@@ -127,8 +113,8 @@ rotconverter IND-CIB CIB-ANT ANT-AFR > India\_AFrica.RPM
 `See Also <#toc7>`_
 -------------------
 
-`*backtracker*\ (1) <backtracker.html>`_ ,
-`*grdrotater*\ (1) <grdrotater.html>`_ ,
-`*grdspotter*\ (1) <grdspotter.html>`_ ,
-`*hotspotter*\ (1) <hotspotter.html>`_ ,
-`*originator*\ (1) <originator.html>`_
+`backtracker <backtracker.html>`_ ,
+`grdrotater <grdrotater.html>`_ ,
+`grdspotter <grdspotter.html>`_ ,
+`hotspotter <hotspotter.html>`_ ,
+`originator <originator.html>`_

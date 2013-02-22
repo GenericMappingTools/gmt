@@ -41,6 +41,7 @@ single or double precision storage.
 
 .. include:: explain_-I.rst_
 
+.. |Add_-R| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-R.rst_
 
 **-T**
@@ -96,6 +97,7 @@ single or double precision storage.
 .. |Add_-bo| replace:: [Default is 3 (or 4 if **-Wo** is set)]. **-E** adds 3 additional columns. 
 .. include:: explain_-bo.rst_
 
+.. |Add_-f| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-f.rst_
 
 .. |Add_-h| unicode:: 0x0C .. just an invisible code
@@ -118,19 +120,6 @@ single or double precision storage.
 .. include:: explain_help.rst_
 
 .. include:: explain_precision.rst_
-
-`Ascii Format Precision <#toc6>`_
----------------------------------
-
-The ASCII output formats of numerical data are controlled by parameters
-in your **gmt.conf** file. Longitude and latitude are formatted
-according to **FORMAT\_GEO\_OUT**, whereas other values are formatted
-according to **FORMAT\_FLOAT\_OUT**. Be aware that the format in effect
-can lead to loss of precision in the output, which can lead to various
-problems downstream. If you find the output is not written with enough
-precision, consider switching to binary output (**-bo** if available) or
-specify more decimals using the **FORMAT\_FLOAT\_OUT** setting.
- CUT HERE ------------------------------
 
 `Examples <#toc7>`_
 -------------------

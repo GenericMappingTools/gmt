@@ -43,33 +43,19 @@ text header, which is ignored, 400 byte binary reel header, and 240 byte
 header for each trace) with samples as native real\*4 (IEEE real on all
 the platforms to which I have access)
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
 
 *SEGYfile*
     Seismic data set to be imaged
-**-J**\ *parameters* (\*)
-    Select map projection.
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ]
-    *west*, *east*, *south*, and *north* specify the region of interest,
-    and you may specify them in decimal degrees or in
-    [+-]dd:mm[:ss.xxx][W\|E\|S\|N] format. Append **r** if lower left
-    and upper right map coordinates are given instead of w/e/s/n. The
-    two shorthands **-Rg** and **-Rd** stand for global domain (0/360
-    and -180/+180 in longitude respectively, with -90/+90 in latitude).
-    Alternatively, specify the name of an existing grid file and the
-    **-R** settings (and grid spacing, if applicable) are copied from
-    the grid. Using **-R**\ *unit* expects projected (Cartesian)
-    coordinates compatible with chosen **-J** and we inversely project
-    to determine actual rectangular geographic region.
+
+.. include:: ../../explain_-J.rst_
+
+.. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-Rgeo.rst_
+
 **-D**\ *deviation*
     gives the deviation in X units of the plot for 1.0 on the scaled
     trace.
@@ -78,6 +64,7 @@ space is allowed between the option flag and the associated arguments.
     gray gives the color with which the imagemask is filled.
 **-W**
     Draw wiggle trace.
+
 You *must* specify at least one of **-W** and **-F**.
 
 `Optional Arguments <#toc5>`_
@@ -94,8 +81,9 @@ You *must* specify at least one of **-W** and **-F**.
     locations when using **-T** option.
 **-I**
     Fill negative rather than positive excursions.
-**-K** (\*)
-    Do not finalize the *PostScript* plot.
+
+.. include:: ../../explain_-K.rst_
+
 **-L**
     Override number of samples per trace in reel header (program
     attempts to determine number of samples from each trace header if
@@ -106,10 +94,10 @@ You *must* specify at least one of **-W** and **-F**.
     number of traces that the program attempts to read.
 **-N**
     Normalize trace by dividing by rms amplitude over full trace length.
-**-O** (\*)
-    Append to existing *PostScript* plot.
-**-P** (\*)
-    Select "Portrait" plot orientation.
+
+.. include:: ../../explain_-O.rst_
+.. include:: ../../explain_-P.rst_
+
 **-S**\ *header*
     Read trace locations from trace headers: header is either c for CDP,
     o for offset, or b<num> to read a long starting at byte <num> in the
@@ -124,28 +112,22 @@ You *must* specify at least one of **-W** and **-F**.
     redvel/\|offset\|. Negative velocity removes existing reduction.
     Units should be consistent with offset in trace header and sample
     interval.
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c].
+
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
+
 **-X**\ *scale*
     Multiply trace locations by scale before plotting.
 **-Y**\ *sample\_int*
     Override sample interval in reel header.
 **-Z**
     Do not plot traces with zero rms amplitude.
-**-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
-(\*)
-    Select perspective view.
-**-t**\ [*transp*\ ] (\*)
-    Set PDF transparency level.
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit.
+
+.. |Add_perspective| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_perspective.rst_
+
+.. include:: ../../explain_-t.rst_
+.. include:: ../../explain_help.rst_
 
 `Examples <#toc6>`_
 -------------------
@@ -166,4 +148,4 @@ segy.ps
 `See Also <#toc7>`_
 -------------------
 
-`*GMT*\ (1) <GMT.html>`_ , `*pssegyz*\ (1) <pssegyz.html>`_
+`GMT <GMT.html>`_ , `pssegyz <pssegyz.html>`_

@@ -26,33 +26,13 @@ for both external and internal COEs. As an option, you may choose to
 project all data using one of the map-projections prior to calculating
 the COE.
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
 
-*tracks*
-    Can be one or more ASCII, native binary, or COARDS netCDF 1-D data
-    files. To supply the data files via a text file with a list of
-    tracks (one per record), specify the name of the track list after a
-    leading equal-sign (e.g., =tracks.lis). If the names are missing
-    their file extension we will append the suffix specified for this
-    *TAG*. Track files will be searched for first in the current
-    directory and second in all directories listed in
-    **$X2SYS\_HOME**/*TAG*/*TAG*\ \_paths.txt (if it exists). [If
-    **$X2SYS\_HOME** is not set it will default to
-    **$GMT\_SHAREDIR**/x2sys]. (Note: MGD77 files will also be looked
-    for via **MGD77\_HOME**/mgd77\_paths.txt and \*.gmt files will be
-    searched for via **$GMT\_SHAREDIR**/mgg/gmtfile\_paths).
-**-T**\ *TAG*
-    Specify the x2sys *TAG* which tracks the attributes of this data
-    type.
+.. include:: explain_track.rst_
+.. include:: explain_tag.rst_
 
 `Optional Arguments <#toc5>`_
 -----------------------------
@@ -79,25 +59,17 @@ space is allowed between the option flag and the associated arguments.
 
     **c** Cubic spline interpolation.
 
-**-J**\ *parameters* (\*)
-    Select map projection.
+.. include:: ../../explain_-J.rst_
+
 **-Qe**\ \|\ **i**
     Append **e** for external COEs only, and **i** for internal COEs
     only [Default is all COEs].
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ]
-    *west*, *east*, *south*, and *north* specify the region of interest,
-    and you may specify them in decimal degrees or in
-    [+-]dd:mm[:ss.xxx][W\|E\|S\|N] format. Append **r** if lower left
-    and upper right map coordinates are given instead of w/e/s/n. The
-    two shorthands **-Rg** and **-Rd** stand for global domain (0/360
-    and -180/+180 in longitude respectively, with -90/+90 in latitude).
-    Alternatively, specify the name of an existing grid file and the
-    **-R** settings (and grid spacing, if applicable) are copied from
-    the grid. Using **-R**\ *unit* expects projected (Cartesian)
-    coordinates compatible with chosen **-J** and we inversely project
-    to determine actual rectangular geographic region. For Cartesian
+
+.. |Add_-Rgeo| replace:: For Cartesian
     data just give *xmin/xmax/ymin/ymax*. This option limits the COEs to
     those that fall inside the specified domain.
+.. include:: ../../explain_-Rgeo.rst_
+
 **-Sl**\ \|\ **u**\ \|\ **h**\ *speed*
     Defines window of track speeds. If speeds are outside this window we
     do not calculate a COE. Specify
@@ -106,30 +78,24 @@ space is allowed between the option flag and the associated arguments.
 
     **-Su** sets upper speed [Default is Infinity].
 
-    **-Sh** does not limit the speed but sets a lower speed below which
-    headings
-     will not be computed (i.e., set to NaN) [Default calculates
+    **-Sh** does not limit the speed but sets a lower speed below which headings
+    will not be computed (i.e., set to NaN) [Default calculates
     headings regardless of speed].
 
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c].
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
+
 **-W**\ *size*
     Give the maximum number of data points on either side of the
     crossover to use in the spline interpolation [3].
 **-Z**
     Report the values of each track at the crossover [Default reports
     the crossover value and the mean value].
-**-bo**\ [*ncols*\ ][*type*\ ] (\*)
-    Select binary output.
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit.
+
+.. |Add_-bo| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-bo.rst_
+
+.. include:: ../../explain_help.rst_
 
 `Remarks <#toc6>`_
 ------------------

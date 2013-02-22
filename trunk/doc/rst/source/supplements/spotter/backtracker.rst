@@ -30,13 +30,7 @@ additional data fields after the first 3 columns which must have
 (longitude,latitude,age). See option **-:** on how to read
 (latitude,longitude,age) files.
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
@@ -61,7 +55,7 @@ space is allowed between the option flag and the associated arguments.
     to 10000. Blank lines and records whose first column contains # will
     be ignored. You may prepend a leading + to the filename to indicate
     you wish to invert the rotations.
-     Alternatively, give the filename composed of two plate IDs
+    Alternatively, give the filename composed of two plate IDs
     separated by a hyphen (e.g., PAC-MBL) and we will instead extract
     that rotation from the GPlates rotation database. We return an error
     if the rotation cannot be found.
@@ -75,10 +69,9 @@ space is allowed between the option flag and the associated arguments.
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-*table*
-    One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ])
-    data table file(s) holding a number of data columns. If no tables
-    are given then we read from standard input.
+.. |Add_intables| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_intables.rst_
+
 **-A**\ [*young*/*old*]
     Used in conjunction with **-Lb**\ \|\ **f** to limit the track
     output to those sections whose predicted ages lie between the
@@ -121,8 +114,10 @@ space is allowed between the option flag and the associated arguments.
     also copied to the 4th output column.
 **-T**\ *zero\_age*
     Set the current time [Default is 0 Ma].
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c].
+
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
+
 **-W**\ [**a**\ \|\ **t**]
     Rotates the given input (lon,lat,t) and calculates the confidence
     ellipse for the projected point. The input point *must* have a time
@@ -132,27 +127,20 @@ space is allowed between the option flag and the associated arguments.
     lon, lat. After these 2-3 items, we write azimuth, major, minor (in
     km) for the 95% confidence ellipse. See **-D** for the direction of
     rotation.
-**-bi**\ [*ncols*\ ][*type*\ ] (\*)
-    Select binary input. [Default is 3 input columns].
-**-bo**\ [*ncols*\ ][*type*\ ] (\*)
-    Select binary output. [Default depends on settings].
-**-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
-    Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
-    Select input columns.
-**-o**\ *cols*\ [,*...*] (\*)
-    Select output columns.
-**-:**\ [**i**\ \|\ **o**] (\*)
-    Swap 1st and 2nd column on input and/or output.
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit.
+
+.. |Add_-bi| replace:: [Default is 3 input columns].
+.. include:: ../../explain_-bi.rst_
+
+.. |Add_-bo| replace:: [Default is same as input].
+.. include:: ../../explain_-bo.rst_
+
+.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-h.rst_
+
+.. include:: ../../explain_-icols.rst_
+.. include:: ../../explain_-ocols.rst_
+.. include:: ../../explain_colon.rst_
+.. include:: ../../explain_help.rst_
 
 `Examples <#toc6>`_
 -------------------
@@ -168,7 +156,7 @@ To project flowlines forward from the (x,y,t) points stored in several
 backtracker points.\* -Df -EDC85.d -Lf25 -bo -bi3 > lines.b
 
 This file can then be plotted with **psxy**.
- To compute the predicted Hawaiian hotspot track from 0 to 80 Ma every 1
+To compute the predicted Hawaiian hotspot track from 0 to 80 Ma every 1
 Ma, given a history of hotspot motion file (HIdrift.txt) and a set of
 total reconstruction rotations for the plate (PAC\_APM.d), try
 
@@ -177,12 +165,12 @@ echo 204 19 80 \| backtracker -Df -EPAC\_APM.d -Lb1 > path.d
 `See Also <#toc7>`_
 -------------------
 
-`*GMT*\ (1) <GMT.html>`_ , `*project*\ (1) <project.html>`_ ,
-`*grdrotater*\ (1) <grdrotater.html>`_ ,
-`*grdspotter*\ (1) <grdspotter.html>`_ ,
-`*mapproject*\ (1) <mapproject.html>`_ ,
-`*hotspotter*\ (1) <hotspotter.html>`_ ,
-`*originator*\ (1) <originator.html>`_
+`GMT <GMT.html>`_ , `project <project.html>`_ ,
+`grdrotater <grdrotater.html>`_ ,
+`grdspotter <grdspotter.html>`_ ,
+`mapproject <mapproject.html>`_ ,
+`hotspotter <hotspotter.html>`_ ,
+`originator <originator.html>`_
 
 `References <#toc8>`_
 ---------------------

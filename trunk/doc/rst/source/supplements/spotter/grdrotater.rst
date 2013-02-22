@@ -28,13 +28,7 @@ grid inside the polygon is used to determine the return grid region. The
 outline of the projected region is returned on stdout provided the
 rotated region is not the entire globe.
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
@@ -61,7 +55,7 @@ space is allowed between the option flag and the associated arguments.
     to 10000. Blank lines and records whose first column contains # will
     be ignored. You may prepend a leading + to the filename to indicate
     you wish to invert the rotations.
-     Alternatively, give the filename composed of two plate IDs
+    Alternatively, give the filename composed of two plate IDs
     separated by a hyphen (e.g., PAC-MBL) and we will instead extract
     that rotation from the GPlates rotation database. We return an error
     if the rotation cannot be found.
@@ -82,50 +76,33 @@ space is allowed between the option flag and the associated arguments.
     area of the grid that should be projected [Default projects entire
     grid].
 **-N**
-    Do Not output the rotated polygon outline [Default will write it to
-    stdout].
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ]
-    *west*, *east*, *south*, and *north* specify the region of interest,
-    and you may specify them in decimal degrees or in
-    [+-]dd:mm[:ss.xxx][W\|E\|S\|N] format. Append **r** if lower left
-    and upper right map coordinates are given instead of w/e/s/n. The
-    two shorthands **-Rg** and **-Rd** stand for global domain (0/360
-    and -180/+180 in longitude respectively, with -90/+90 in latitude).
-    Alternatively, specify the name of an existing grid file and the
-    **-R** settings (and grid spacing, if applicable) are copied from
-    the grid. Using **-R**\ *unit* expects projected (Cartesian)
-    coordinates compatible with chosen **-J** and we inversely project
-    to determine actual rectangular geographic region.
+    Do Not output the rotated polygon outline [Default will write it to stdout].
+
+.. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-Rgeo.rst_
+
 **-S**
     Skip the rotation of the grid, just rotate the polygon outline
     (requires **-F**).
 **-T**\ *age*
     Sets the desired age of reconstruction when **-E** is given.
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c].
-**-:**
-    Toggles between (longitude,latitude) and (latitude,longitude)
-    input/output. [Default is (longitude,latitude)].
-**-bi**\ [*ncols*\ ][*type*\ ] (\*)
-    Select binary input. [Default is 2 input columns].
-**-bo**\ [*ncols*\ ][*type*\ ] (\*)
-    Select binary output. [Default is same as input].
-**-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
-    Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
-    Select input columns.
-**-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*]
-(\*)
-    Select interpolation mode for grids.
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit.
+
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
+
+.. |Add_-bi| replace:: [Default is 2 input columns].
+.. include:: ../../explain_-bi.rst_
+
+.. |Add_-bo| replace:: [Default is same as input].
+.. include:: ../../explain_-bo.rst_
+
+.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-h.rst_
+
+.. include:: ../../explain_colon.rst_
+.. include:: ../../explain_-icols.rst_
+.. include:: ../../explain_-n.rst_
+.. include:: ../../explain_help.rst_
 
 `Examples <#toc6>`_
 -------------------
@@ -166,8 +143,8 @@ a polygon (contour).
 `See Also <#toc7>`_
 -------------------
 
-`*backtracker*\ (1) <backtracker.html>`_ ,
-`*grdspotter*\ (1) <grdspotter.html>`_ ,
-`*hotspotter*\ (1) <hotspotter.html>`_ ,
-`*originator*\ (1) <originator.html>`_
-`*rotconverter*\ (1) <rotconverter.html>`_
+`backtracker <backtracker.html>`_ ,
+`grdspotter <grdspotter.html>`_ ,
+`hotspotter <hotspotter.html>`_ ,
+`originator <originator.html>`_
+`rotconverter <rotconverter.html>`_
