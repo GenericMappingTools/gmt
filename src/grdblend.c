@@ -565,7 +565,7 @@ int GMT_grdblend_parse (struct GMTAPI_CTRL *C, struct GRDBLEND_CTRL *Ctrl, struc
 
 int GMT_grdblend (void *V_API, int mode, void *args)
 {
-	unsigned int col, row, nx_360 = 0, k, kk, m, n_blend;
+	unsigned int col, row, nx_360 = 0, k, kk, m, n_blend, nx_final, ny_final;
 	int status, pcol, err, error;
 	bool reformat, wrap_x, write_all_at_once = false;
 	
@@ -754,6 +754,7 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 
 	}
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Processed row %7ld\n", row);
+	nx_final = Grid->header->nx;	ny_final = Grid->header->ny;
 
 	if (write_all_at_once) {	/* Must write entire grid */
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
@@ -761,7 +762,7 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 		}
 	}
 	else {	/* Finish the line-by-line writing */
-		mode = GMT_GRID_HEADER_ONLY;
+		mode = GMT_GRID_HEADER_ONLY | GMT_GRID_ROW_BY_ROW;
 		if (Ctrl->Q.active) mode |= GMT_GRID_NO_HEADER;
 		if (!Ctrl->Q.active && (error = GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, mode, NULL, Ctrl->G.file, Grid))) {
 			Return (error);
@@ -777,7 +778,7 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		char empty[GMT_TEXT_LEN64];
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Blended grid size of %s is %d x %d\n", Ctrl->G.file, Grid->header->nx, Grid->header->ny);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Blended grid size of %s is %d x %d\n", Ctrl->G.file, nx_final, ny_final);
 		if (n_fill == n_tot)
 			GMT_report (GMT, GMT_MSG_VERBOSE, "All nodes assigned values\n");
 		else {
