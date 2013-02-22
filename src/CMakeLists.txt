@@ -175,12 +175,12 @@ set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	gmt_synopsis.h gmt_texture.h gmt_time.h gmt_types.h gmt_unique.h
 	gmt_vector.h gmt_version.h gshhg_version.h pslib.h s_rint.h triangle.h
 	gmt.h gmt_resources.h gmt_define.h gmt_private.h gmt_error_codes.h
-	gmt_bcr.c gmt_calclock.c gmt_cdf.c gmt_customio.c  gmt_error.c
+	gmt_api.c gmt_bcr.c gmt_calclock.c gmt_cdf.c gmt_customio.c  gmt_error.c
 	gmt_fft.c gmt_grdio.c gmt_io.c  gmt_nc.c gmt_notposix.c gmt_proj.c
 	gmt_shore.c gmt_stat.c gmt_support.c gmt_regexp.c gmt_vector.c
 	gmt_parse.c gmt_error_codes.c gshhg_version.c
 	common_math.c common_string.c common_runpath.c compat/qsort.c
-	gmt_module.c gmt_init.c gmt_map.c gmt_plot.c gmt_api.c
+	gmt_module.c gmt_init.c gmt_map.c gmt_plot.c
 	${GMT_PROGS_SRCS} ${GMT_TRIANGLE_SRCS})
 
 # dependencies on generated files
