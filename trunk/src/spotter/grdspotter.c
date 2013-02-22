@@ -616,10 +616,9 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 
 	for (row = 0; row < Z->header->ny; row++) lat_area[row] = area * cos (y_smt[row]);
 	
-	x_cva = GMT_memory (GMT, NULL, G->header->nx, double);
-	for (col = 0; col < G->header->nx; col++) x_cva[col] = GMT_grd_col_to_x (GMT, col, G->header);
-	y_cva = GMT_memory (GMT, NULL, G->header->ny, double);
-	for (row = 0; row < G->header->ny; row++) y_cva[row] = GMT_grd_row_to_y (GMT, row, G->header);
+	x_cva = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, G);
+	y_cva = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, G);
+
 	if (Ctrl->A.file) {
 		if ((A = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->A.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);

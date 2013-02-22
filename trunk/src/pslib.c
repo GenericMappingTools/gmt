@@ -748,11 +748,6 @@ int PSL_plotsymbol (struct PSL_CTRL *PSL, double x, double y, double size[], int
 		case PSL_VECTOR:	/* A zero-, one- or two-headed vector (x,y = tail coordinates) */
 			status = psl_vector (PSL, x, y, size);
 			break;
-#if 0
-		case PSL_VECTOR_OLD:	/* A one- or two-headed vector (x,y = tail coordinates) */
-			status = psl_vector_old (PSL, x, y, size);
-			break;
-#endif
 		default:
 			status = PSL_BAD_SYMBOL;
 			PSL_message (PSL, PSL_MSG_FATAL, "Unknown symbol code %c\n", (int)symbol);

@@ -1484,26 +1484,6 @@ int gmt_getpenwidth (struct GMT_CTRL *C, char *line, struct GMT_PEN *P) {
 	return (GMT_NOERROR);
 }
 
-#if 0
-/* NOT USED ?? */
-int gmt_penunit (struct GMT_CTRL *C, char c, double *pen_scale)
-{
-	int unit;
-	*pen_scale = 1.0;
-	if (c == 'p')
-		unit = GMT_PT;
-	else if (c == 'i')
-		unit = GMT_INCH;
-	else if (c == 'c')
-		unit = GMT_CM;
-	else {	/* For pens, the default unit is dpi; must apply scaling to get inch first */
-		unit = GMT_INCH;
-		(*pen_scale) = 1.0 / C->PSL->init.dpi;
-	}
-	return (unit);
-}
-#endif
-
 int gmt_getpenstyle (struct GMT_CTRL *C, char *line, struct GMT_PEN *P) {
 	unsigned int i, n, pos, unit = GMT_PT;
 	double width;
@@ -1673,27 +1653,6 @@ char *GMT_putpen (struct GMT_CTRL *C, struct GMT_PEN pen)
 
 	return (text);
 }
-
-#if 0
-/* NOT USED ?? */
-bool gmt_is_penwidth (struct GMT_CTRL *C, char *word)
-{
-	int n;
-
-	/* Returns true if we are sure the word is a penwidth string - else false.
-	 * width syntax is <penname> or <floatingpoint>[<unit>] */
-
-	n = strlen (word);
-	if (n == 0) return (false);
-
-	n--;
-	if (strchr (GMT_DIM_UNITS, word[n])) n--;	/* Reduce length by 1; the unit character */
-	if (n < 0) return (false);		/* word only contained a unit character? */
-	if (gmt_name2pen (word) >= 0) return (true);	/* Valid pen name */
-	while (n >= 0 && (word[n] == '.' || isdigit((int)word[n]))) n--;	/* Wind down as long as we find . or integers */
-	return ((n == -1));	/* true if we only found floating point false otherwise */
-}
-#endif
 
 #define GMT_INC_IS_FEET		1
 #define GMT_INC_IS_SURVEY_FEET	2

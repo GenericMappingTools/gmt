@@ -173,12 +173,6 @@ enum PSL_enum_fill {PSL_IS_STROKE = 0,
 	PSL_IS_FILL,
 	PSL_IS_FONT};
 
-#if 0
-/* Positioning types for origin */
-
-#define PSL_ABS			1
-#endif
-
 /* PSL error codes */
 
 enum PSL_enum_err {PSL_BAD_VALUE = -99,	/* Bad value */

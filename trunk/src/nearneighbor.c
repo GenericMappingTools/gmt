@@ -314,10 +314,8 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 	grid_node = GMT_memory (GMT, NULL, Grid->header->nm, struct NEARNEIGHBOR_NODE *);
 	point = GMT_memory (GMT, NULL, n_alloc, struct NEARNEIGHBOR_POINT);
 
-	x0 = GMT_memory (GMT, NULL, Grid->header->nx, double);
-	y0 = GMT_memory (GMT, NULL, Grid->header->ny, double);
-	for (colu = 0; colu < Grid->header->nx; colu++) x0[colu] = GMT_grd_col_to_x (GMT, colu, Grid->header);
-	for (rowu = 0; rowu < Grid->header->ny; rowu++) y0[rowu] = GMT_grd_row_to_y (GMT, rowu, Grid->header);
+	x0 = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, Grid);
+	y0 = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, Grid);
 
 	d_col = GMT_prep_nodesearch (GMT, Grid, Ctrl->S.radius, Ctrl->S.mode, &d_row, &max_d_col);	/* Init d_row/d_col etc */
 

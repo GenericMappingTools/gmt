@@ -84,34 +84,6 @@ struct GMTMGG_REC {	/* Format of old *.gmt file records */
 
 /* Make sure structure sizes are multiples of 8 */
 
-#if 0
-struct X2SYS_TRK_INFO {			/* Structure with info about one track */
-	char name[32];			/* Name of track */
-	int year;			/* Year the track was collected */
-	int nx_int;		/* Total number of internal track cross-over points */
-	int nx_ext;		/* Total number of EXTERN_MSCal track cross-over points */
-	int flag;			/* Processing flags */
-};
-
-struct X2SYS_SET {		/* Structure with info for a data type along the track */
-	char id_set[16];		/* Name of this data type or set */
-	int nx_int;		/* Number of internal data crossovers */
-	int nx_ext;		/* Number of EXTERN_MSCal data crossovers */
-	double mean_int;		/* Mean data internal xover value */
-	double mean_ext;		/* Mean data EXTERN_MSCal xover value */
-	double stdev_int;		/* St. Dev. of the internal data crossovers */
-	double stdev_ext;		/* Same for EXTERN_MSCal xovers */
-	double dc_shift;		/* Best fitting d.c.-shift for data set */
-	double drift_rate;		/* Best fitting drift rate for data set [units/sec] */
-};
-
-struct X2SYS_TRK {			/* Structure for each track */
-	struct X2SYS_TRK_INFO info;	/* Track-level information */
-	struct X2SYS_SET *set;		/* Array of structures; one for each data set */
-	struct X2SYS_TRK *next_track;	/* Pointer to next track */
-};
-#endif
-
 struct X2SYS_XOVER_SET {		/* Structure with info on one data type cross-over values */
 	double x_val;			/* Data cross-over mismatch */
 	double ave;			/* Average data value at crossover */

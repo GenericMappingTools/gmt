@@ -983,19 +983,6 @@ unsigned int gmt_ogr_decode_aspatial_names (struct GMT_CTRL *C, char *record, st
 	return (col);
 }
 
-#if 0	/* NOT USED */
-unsigned int GMT_append_ogr_item (struct GMT_CTRL *C, char *name, unsigned int type, struct GMT_OGR *S)
-{
-	/* Adds one more metadata item to this OGR structure */
-	S->n_aspatial++;
-	S->name = GMT_memory (C, S->name, S->n_aspatial, char *);
-	S->name[S->n_aspatial-1] = strdup (name);
-	S->type = GMT_memory (C, S->type, S->n_aspatial, unsigned int);
-	S->type[S->n_aspatial-1] = type;
-	return (GMT_NOERROR);
-}
-#endif
-
 bool gmt_ogr_parser (struct GMT_CTRL *C, char *record)
 {	/* Parsing of the GMT/OGR vector specification (v 1.0). See Appendix R */
 	return (C->current.io.ogr_parser (C, record));	/* We call either the header or data parser depending on pointer */
@@ -6449,48 +6436,6 @@ bool GMT_not_numeric (struct GMT_CTRL *C, char *text)
 	}
 	return (false);	/* This may in fact be numeric */
 }
-
-#if 0
-int GMT_not_numeric_old (struct GMT_CTRL *C, char *text)
-{
-	/* true if text cannot represent a valid number  However,
-	 * false does not therefore mean we have a valid number because
-	 * <date>T<clock> representations may use all kinds
-	 * of punctuations or letters according to the various format
-	 * settings in gmt.conf.  Here we just rule out things
-	 * that we are sure of. */
-
-	int i, k, n_digits = 0, n_period = 0, period = 0, n_plus = 0, n_minus = 0, len;
-	if (!text) return (true);	/* NULL pointer */
-	if (!(len = strlen (text)))  return (true);	/* Blank string */
-	if (isalpha ((int)text[0])) return (true);	/* Numbers cannot start with letters */
-	if (!(text[0] == '+' || text[0] == '-' || text[0] == '.' || isdigit ((int)text[0]))) return (true);	/* Numbers must be [+|-][.][<digits>] */
-	for (i = 0; text[i]; i++) {	/* Check each character */
-		/* First check for ASCII values that should never appear in any number */
-		if (text[i] < 43) return (true);	/* ASCII 0-42 */
-		if (text[i] == '\'' || text[i] == '/') return (true);
-		if (text[i] > ':' && text[i] < 'D') return (true);
-		if (text[i] > 'E' && text[i] < 'N') return (true);
-		if (text[i] > 'N' && text[i] < 'S') return (true);
-		if (text[i] > 'S' && text[i] < 'W') return (true);
-		if (text[i] > 'W' && text[i] < 'c') return (true);
-		if (text[i] > 'e') return (true);
-		if (isdigit ((int)text[i])) n_digits++;
-		if (text[i] == '.') {
-			n_period++;
-			period = i;
-		}
-		if (text[i] == '+') n_plus++;
-		if (text[i] == '-') n_minus++;
-	}
-	if (n_digits == 0 || n_period > 1 || (n_plus + n_minus) > 2) return (true);
-	if (n_period) {	/* Check if we have filename.ext with ext having no numbers */
-		for (i = period + 1, n_digits = k = 0; text[i]; i++, k++) if (isdigit ((int)text[i])) n_digits++;
-		if (k > 0 && n_digits == 0) return (true);	/* Probably a file */
-	}
-	return (false);	/* This may in fact be numeric */
-}
-#endif
 
 int GMT_conv_intext2dbl (struct GMT_CTRL *C, char *record, unsigned int ncols)
 {

@@ -149,16 +149,6 @@ void Free_gmtmath_Ctrl (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
-#if 0
-void new_table (struct GMT_CTRL *GMT, double ***s, int n_col, int n)
-{	/* First time it is called for a table the the s pointer is NULL */
-	int j;
-	double **p = GMT_memory (GMT, *s, n_col, double *);
-	for (j = 0; j < n_col; j++) p[j] = GMT_memory (GMT, p[j], n, double);
-	*s = p;
-}
-#endif
-
 bool decode_columns (struct GMT_CTRL *GMT, char *txt, bool *skip, unsigned int n_col, unsigned int t_col)
 {
 	unsigned int i, start, stop, pos, col;

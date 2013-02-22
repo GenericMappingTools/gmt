@@ -3703,34 +3703,6 @@ int MGD77_Select_Header_Item (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char 
 	return 0;
 }
 
-
-#if 0
-/* Currently not used in any programs or the library itself */
-int MGD77_View_Line (struct GMT_CTRL *C, FILE *fp, char *MGD77line)	/* View a single MGD77 string */
-{
-/*	char line[MGD77_RECORD_LENGTH];
-	strcpy (MGD77line,line); */
-	if (!(fgets (MGD77line, GMT_BUFSIZ, fp))) return false;	/* Read one line from the file */
-	if (!(fputs (MGD77line, fp))) return false;		/* Put the line back on the stream */
-	return true;
-}
-
-int MGD77_Convert_To_Old_Format (struct GMT_CTRL *C, char *newFormatLine, char *oldFormatLine)
-{
-	int tz;
-	char legid[9], s_tz[6], s_year[5];
-
-	if (newFormatLine[0] != '5') return false;
-	strncpy (legid, &oldFormatLine[mgd77defs[1].start-1], (size_t)mgd77defs[1].length);
-	tz = atoi (strncpy(s_tz, &newFormatLine[mgd77defs[2].start-1], (size_t)mgd77defs[2].length));
-	strncpy(s_year, &newFormatLine[mgd77defs[3].start-1], (size_t)mgd77defs[3].length);
-	if (tz == 99) tz = 9999;  /* Handle the empty case */
-	else tz *= 100;
-	sprintf (oldFormatLine,"3%s%+05d%2d%s", legid, tz, *(s_year + 2), (newFormatLine + mgd77defs[4].start-1));
-	return true;
-}
-#endif
-
 int MGD77_Read_Data_Sequence (struct GMT_CTRL *C, FILE *fp, char *record)
 {
 	if (fgets (record, MGD77_RECORD_LENGTH, fp)) return (1);

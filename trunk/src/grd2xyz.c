@@ -377,8 +377,8 @@ int GMT_grd2xyz (void *V_API, int mode, void *args)
 
 			/* Compute grid node positions once only */
 
-			x = GMT_grd_coord (GMT, G->header, GMT_X);
-			y = GMT_grd_coord (GMT, G->header, GMT_Y);
+			x = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, G);
+			y = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, G);
 			if (Ctrl->C.active) {	/* Replace x,y with col,row */
 				if (Ctrl->C.mode < 2) {
 					GMT_row_loop  (GMT, G, row) y[row] = row + Ctrl->C.mode;

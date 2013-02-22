@@ -1009,20 +1009,6 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 				if (S.G.label_type == 2)	/* Get potential label from segment header */
 					GMT_extract_label (GMT, L->header, S.G.label, L->ogr);
 
-#if 0
-				/* This should never happen, GMT_Read_Data should already take care of this */
-
-				if (polygon && GMT_polygon_is_open (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) {
-					/* Explicitly close polygon so that arc will work */
-					L->n_rows = GMT_malloc3 (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->coord[GMT_Z], 0, L->n_rows+1, double);
-					L->coord[GMT_X][L->n_rows-1] = L->coord[GMT_X][0];
-					L->coord[GMT_Y][L->n_rows-1] = L->coord[GMT_Y][0];
-					L->coord[GMT_Z][L->n_rows-1] = L->coord[GMT_Z][0];
-				}
-
-				n = L->n_rows;
-#endif
-
 				xp = GMT_memory (GMT, NULL, n, double);
 				yp = GMT_memory (GMT, NULL, n, double);
 

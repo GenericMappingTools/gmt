@@ -82,38 +82,6 @@ static void dispose (Grid *_grid)
   grid->value = NULL;
 }
 
-#if 0
-static void dumpGrid (GMTGrid *grid)
-{
-  int outer, inner;
-  GridPoint  gPt;
-  XPoint     xPt;
-  
-  printf("Grid: %s\n", grid->header.title);
-  printf("Width, height = %d x %d\n", grid->header.nx, grid->header.ny);
-  printf("X Coordinates: %f to %f by %f\n",
-  	grid->header.wesn[XLO], grid->header.wesn[XHI], grid->header.inc[GMT_X]);
-  printf("Y Coordinates: %f to %f by %f\n",
-  	grid->header.wesn[YLO], grid->header.wesn[YHI], grid->header.inc[GMT_Y]);
-  if (grid->header.registration == GridCoordNodes)
-    printf("Data points centred on coordinates\n");
-  else if (grid->header.registration == GridCoordPixels)
-    printf("Data points between coordinates\n");  
-  printf("Z range = %f to %f, scale by %f and add %f\n",
-  	grid->header.z_min, grid->header.z_max,
-	grid->header.z_scale_factor, grid->header.z_add_offset);
-  /* Write out the values in same format as grd2xyz uses */	
-  for (outer = 0; outer < grid->header.ny; outer ++) {
-    for (inner = 0; inner < grid->header.nx; inner ++) {
-      xPt.x = inner; xPt.y = outer;
-      GetGridCoords(grid, &xPt, &gPt);
-      printf("%g\t%g\t%g\n", gPt.x, gPt.y, GetGrid(grid, inner, outer));
-    }
-    printf("\n");
-  }
-}
-#endif
-
 static void getIndexes (Grid *_grid, GridPoint *coord, XPoint *index)
 {
   int column, row;

@@ -335,16 +335,6 @@ struct GMT_PLOT_CALCLOCK {
 	struct GMT_GEO_IO geo;
 };
 
-#if 0
-struct GMT_SET_INFO {	/* Single container for user specification of empty data/textset */
-	unsigned int n_tables;	/* Number of tables */
-	uint64_t  n_segments;	/* Number of segments in each table */
-	unsigned int n_columns;	/* Number of columns */
-	uint64_t  n_rows;		/* Number of rows in each column */
-	bool alloc_only;		/* Do NOT set the corresponding counters (i.e., n_segments) */
-};
-#endif
-
 /* Byteswap widths used with gmt_byteswap_file */
 typedef enum {
 	Int16len = 2,
