@@ -94,6 +94,8 @@ programs. No space between the option flag and the associated arguments.
 
 .. include:: explain_-c_full.rst_
 
+.. include:: explain_colon_full.rst_
+
 .. |Add_-f| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-f_full.rst_
 
