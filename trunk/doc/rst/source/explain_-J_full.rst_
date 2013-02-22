@@ -29,99 +29,85 @@ projection names stands for Equal-Area and Conformal, respectively):
 
     **-Jc**\ *lon0/lat0/scale* or **-JC**\ *lon0/lat0/width* (Cassini).
 
-    Give projection center *lon0/lat0* and *scale* (**1:**\ *xxxx* or
-    UNIT/degree).
+        Give projection center *lon0/lat0* and *scale* (**1:**\ *xxxx* or UNIT/degree).
 
     **-Jcyl\_stere**/[*lon0/*\ [*lat0/*\ ]]\ *scale* or
-    **-JCyl\_stere**/[*lon0/*\ [*lat0/*\ ]]\ *width* (Cylindrical
-    Stereographic).
+    **-JCyl\_stere**/[*lon0/*\ [*lat0/*\ ]]\ *width* (Cylindrical Stereographic).
 
-    Give central meridian *lon0* (optional), standard parallel *lat0*
-    (optional), and *scale* along parallel (**1:**\ *xxxx* or
-    UNIT/degree). The standard parallel is typically one of these (but
-    can be any value):
+        Give central meridian *lon0* (optional), standard parallel *lat0*
+        (optional), and *scale* along parallel (**1:**\ *xxxx* or
+        UNIT/degree). The standard parallel is typically one of these (but
+        can be any value):
 
-            66.159467 - Miller's modified Gall
-            55 - Kamenetskiy's First
-            45 - Gall's Stereographic
-            30 - Bolshoi Sovietskii Atlas Mira or Kamenetskiy's Second
-            0 - Braun's Cylindrical
+          * 66.159467 - Miller's modified Gall
+          * 55 - Kamenetskiy's First
+          * 45 - Gall's Stereographic
+          * 30 - Bolshoi Sovietskii Atlas Mira or Kamenetskiy's Second
+          * 0 - Braun's Cylindrical
 
-    **-Jj**\ [*lon0/*\ ]\ *scale* or **-JJ**\ [*lon0/*\ ]\ *width*
-    (Miller Cylindrical Projection).
+    **-Jj**\ [*lon0/*\ ]\ *scale* or **-JJ**\ [*lon0/*\ ]\ *width* (Miller Cylindrical Projection).
 
-    Give the central meridian *lon0* (optional) and *scale*
-    (**1:**\ *xxxx* or UNIT/degree).
+        Give the central meridian *lon0* (optional) and *scale*
+        (**1:**\ *xxxx* or UNIT/degree).
 
-    **-Jm**\ [*lon0/*\ [*lat0/*\ ]]\ *scale* or
-    **-JM**\ [*lon0/*\ [*lat0/*\ ]]\ *width*
+    **-Jm**\ [*lon0/*\ [*lat0/*\ ]]\ *scale* or **-JM**\ [*lon0/*\ [*lat0/*\ ]]\ *width*
 
-    Give central meridian *lon0* (optional), standard parallel *lat0*
-    (optional), and *scale* along parallel (**1:**\ *xxxx* or
-    UNIT/degree).
+        Give central meridian *lon0* (optional), standard parallel *lat0*
+        (optional), and *scale* along parallel (**1:**\ *xxxx* or UNIT/degree).
 
     **-Jo**\ *parameters* (Oblique Mercator **[C]**).
 
-    Specify one of:
+        Specify one of:
 
-        **-Jo**\ [**a**\ ]\ *lon0/lat0/azimuth/scale* or
-        **-JO**\ [**a**\ ]\ *lon0/lat0/azimuth/width*
-        Set projection center *lon0/lat0*, *azimuth* of oblique equator,
-        and *scale*.
-        **-Jo**\ [**b**\ ]\ *lon0/lat0/lon1/lat1/scale* or
-        **-JO**\ [**b**\ ]\ *lon0/lat0/lon1/lat1/scale*
-        Set projection center *lon0/lat0*, another point on the oblique
-        equator *lon1/lat1*, and *scale*.
-        **-Joc**\ *lon0/lat0/lonp/latp/scale* or
-        **-JOc**\ *lon0/lat0/lonp/latp/scale*
-        Set projection center *lon0/lat0*, pole of oblique projection
-        *lonp/latp*, and *scale*.
-        Give *scale* along oblique equator (**1:**\ *xxxx* or
-        UNIT/degree).
+        **-Jo**\ [**a**\ ]\ *lon0/lat0/azimuth/scale* or **-JO**\ [**a**\ ]\ *lon0/lat0/azimuth/width*
+            Set projection center *lon0/lat0*, *azimuth* of oblique equator, and *scale*.
+        **-Jo**\ [**b**\ ]\ *lon0/lat0/lon1/lat1/scale* or **-JO**\ [**b**\ ]\ *lon0/lat0/lon1/lat1/scale*
+            Set projection center *lon0/lat0*, another point on the oblique
+            equator *lon1/lat1*, and *scale*.
+        **-Joc**\ *lon0/lat0/lonp/latp/scale* or **-JOc**\ *lon0/lat0/lonp/latp/scale*
+            Set projection center *lon0/lat0*, pole of oblique projection
+            *lonp/latp*, and *scale*.
+            Give *scale* along oblique equator (**1:**\ *xxxx* or UNIT/degree).
 
     **-Jq**\ [*lon0/*\ [*lat0/*\ ]]\ *scale* or
     **-JQ**\ [*lon0/*\ [*lat0/*\ ]]\ *width* (Cylindrical Equidistant).
 
-    Give the central meridian *lon0* (optional), standard parallel
-    *lat0* (optional), and *scale* (**1:**\ *xxxx* or UNIT/degree). The
-    standard parallel is typically one of these (but can be any value):
+        Give the central meridian *lon0* (optional), standard parallel
+        *lat0* (optional), and *scale* (**1:**\ *xxxx* or UNIT/degree). The
+        standard parallel is typically one of these (but can be any value):
 
-            61.7 - Grafarend and Niermann, minimum linear distortion
-             50.5 - Ronald Miller Equirectangular
-             43.5 - Ronald Miller, minimum continental distortion
-             42 - Grafarend and Niermann
-             37.5 - Ronald Miller, minimum overall distortion
-             0 - Plate Carree, Simple Cylindrical, Plain/Plane Chart
+          * 61.7 - Grafarend and Niermann, minimum linear distortion
+          * 50.5 - Ronald Miller Equirectangular
+          * 43.5 - Ronald Miller, minimum continental distortion
+          * 42 - Grafarend and Niermann
+          * 37.5 - Ronald Miller, minimum overall distortion
+          * 0 - Plate Carree, Simple Cylindrical, Plain/Plane Chart
 
     **-Jt**\ *lon0/*\ [*lat0/*\ ]\ *scale* or
     **-JT**\ *lon0/*\ [*lat0/*\ ]\ *width*
 
-    Give the central meridian *lon0*, central parallel *lat0*
-    (optional), and *scale* (**1:**\ *xxxx* or UNIT/degree).
+        Give the central meridian *lon0*, central parallel *lat0*
+        (optional), and *scale* (**1:**\ *xxxx* or UNIT/degree).
 
-    **-Ju**\ *zone/scale* or **-JU**\ *zone/width* (UTM - Universal
-    Transverse Mercator **[C]**).
+    **-Ju**\ *zone/scale* or **-JU**\ *zone/width* (UTM - Universal Transverse Mercator **[C]**).
 
-    Give the UTM zone (A,B,1-60[C-X],Y,Z)) and *scale* (**1:**\ *xxxx*
-    or UNIT/degree).
-    Zones: If C-X not given, prepend - or + to enforce southern or
-    northern hemisphere conventions [northern if south > 0].
+        Give the UTM zone (A,B,1-60[C-X],Y,Z)) and *scale* (**1:**\ *xxxx* or UNIT/degree).
+        Zones: If C-X not given, prepend - or + to enforce southern or
+        northern hemisphere conventions [northern if south > 0].
 
-    **-Jy**\ [*lon0/*\ [*lat0/*\ ]]\ *scale* or
-    **-JY**\ [*lon0/*\ [*lat0/*\ ]]\ *width* (Cylindrical Equal-Area
-    **[E]**).
+    **-Jy**\ [*lon0/*\ [*lat0/*\ ]]\ *scale* or **-JY**\ [*lon0/*\ [*lat0/*\ ]]\ *width* (Cylindrical Equal-Area **[E]**).
 
-    Give the central meridian *lon0* (optional), standard parallel
-    *lat0* (optional), and *scale* (**1:**\ *xxxx* or UNIT/degree). The
-    standard parallel is typically one of these (but can be any value):
+        Give the central meridian *lon0* (optional), standard parallel
+        *lat0* (optional), and *scale* (**1:**\ *xxxx* or UNIT/degree). The
+        standard parallel is typically one of these (but can be any value):
 
-            50 - Balthasart
-             45 - Gall-Peters
-             37.0666 - Caster
-             37.4 - Trystan Edwards
-             37.5 - Hobo-Dyer
-             30 - Behrman
-             0 - Lambert (default)
+          * 50 - Balthasart
+          * 45 - Gall-Peters
+          * 37.0666 - Caster
+          * 37.4 - Trystan Edwards
+          * 37.5 - Hobo-Dyer
+          * 30 - Behrman
+          * 0 - Lambert (default)
 
     **CONIC PROJECTIONS:**
 
@@ -243,21 +229,21 @@ projection names stands for Equal-Area and Conformal, respectively):
     following:
 
         **d**
-        Data are geographical coordinates (in degrees).
+           Data are geographical coordinates (in degrees).
         **l**
-        Take log10 of values before scaling.
+           Take log10 of values before scaling.
         **p**\ *power*
-        Raise values to *power* before scaling.
+           Raise values to *power* before scaling.
         **t**
-        Input coordinates are time relative to **TIME\_EPOCH**.
+           Input coordinates are time relative to **TIME\_EPOCH**.
         **T**
-        Input coordinates are absolute time.
+           Input coordinates are absolute time.
+
         Default axis lengths (see **gmt.conf**) can be invoked using
         **-JXh** (for landscape); **-JXv** (for portrait) will swap the
         x- and y-axis lengths. The default unit for this installation is
         either cm or inch, as defined in the file **share/gmt.conf**.
-        However, you may change this by editing your **gmt.conf**
-        file(s).
+        However, you may change this by editing your **gmt.conf** file(s).
 
 When **-J** is used without any further arguments, or just with the
 projection type, the arguments of the last used **-J**, or the last used
