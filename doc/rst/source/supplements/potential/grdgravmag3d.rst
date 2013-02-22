@@ -22,13 +22,7 @@ one or (optionally) two grids The output can either be along a given set
 of xy locations or on a grid. This method is not particularly fast but
 allows computing the anomaly of arbitrarily complex shapes.
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
@@ -41,36 +35,29 @@ space is allowed between the option flag and the associated arguments.
     option is mutually exlusive with **-G**.
 **-G**\ *outgrid.nc*
     Output the gravity anomaly at nodes of this grid file.
-**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] (\*)
-    Specify the region of interest. cut here ---------------
+
+.. |Add_-R| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-R.rst_
 
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c].
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
+
 **-L**
     sets level of observation [Default = 0]. That is the height (z) at
     which anomalies are computed.
-**-M**
-    Map units TRUE; x,y in degrees, dist units in m. [Default dist unit
-    = x,y unit]
 **-Z**
     level of reference plane [Default = 0]. Use this option when the
     triangles describe a non-closed surface and the volume is deffined
     from each triangle and this reference level. An example will be the
     whater depth to compute a Bouguer anomaly.
-**-f**\ [**i**\ \|\ **o**]\ *colinfo* (\*)
-    Specify data types of input and/or output columns.
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit.
+
+.. |Add_-f| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-f.rst_
+
+.. include:: ../../explain_help.rst_
 
 `Examples <#toc6>`_
 -------------------
@@ -83,9 +70,7 @@ grdgravmag3d sandy\_bat.grd -C1700 -Z-4300 -M -I1m -Gsandy\_okb.grd -V
 `See Also <#toc7>`_
 -------------------
 
-*GMT*
-
-*GMTGRAVMAG3D*
+`GMT <GMT.html>`_ , `gmtgravmag3d <gmtgravmag3d.html>`_
 
 `Reference <#toc8>`_
 --------------------

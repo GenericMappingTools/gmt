@@ -25,45 +25,14 @@ section or its individual members.
 If you need to know which tracks are crossing through a given region and
 what kinds of geophysical observations are available, consider using the
 x2sys tools to set up a tracks index data base (see **x2sys\_init** for
-more information). ..include:: explain\_commonitems.rst\_
+more information). 
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
-CUT HERE ------------------------------
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
 
-..include:: mgd77/explain\_ncid.rst\_
-
-*NGDC-ids*
-    Can be one or more of five kinds of specifiers:
-
-    1) 8-character NGDC IDs, e.g., 01010083, JA010010etc., etc.
-
-    2) 2-character <agency> codes which will return all cruises from
-    each agency.
-
-    3) 4-character <agency><vessel> codes, which will return all cruises
-    from those vessels.
-
-    4) =<list>, where <list> is a table with NGDC IDs, one per line.
-
-    5) If nothing is specified we return all cruises in the data base.
-
-    (See mgd77info **-L** for agency and vessel codes). The ".mgd77" or
-    ".nc" extensions will automatically be appended, if needed (use
-    **-I** to ignore certain file types). Cruise files will be looked
-    for first in the current directory and second in all directories
-    listed in **$MGD77\_HOME**/mgd77\_paths.txt [If **$MGD77\_HOME** is
-    not set it will default to **$GMT\_SHAREDIR**/mgd77].
-
-    CUT HERE ------------------------------
+.. include:: explain_ncid.rst_
 
 `Optional Arguments <#toc5>`_
 -----------------------------
@@ -97,7 +66,7 @@ CUT HERE ------------------------------
     Optionally, append **v** to also display the vessels and their
     4-character codes for each institution. The following is the list of
     institutions:
-     (01) LAMONT (LDEO), (02) WOODS HOLE O.I., (03) NOAA, (04) US ARMY,
+    (01) LAMONT (LDEO), (02) WOODS HOLE O.I., (03) NOAA, (04) US ARMY,
     (05) NEW ZEALAND, (06) US GEOL. SURVEY, (07) OREGON ST. UNIV, (08)
     U.HAWAII SOEST, (09) US NAVY, (10) UNIV OF TEXAS, (11) RICE UNIV.,
     (12) CANADA, (13) UNIV OF CONN., (14) U.MIAMI (RSMAS), (15) SCRIPPS
@@ -111,20 +80,11 @@ CUT HERE ------------------------------
     (93) CHILE, (J1) HYDR DEPT JAPAN, (J2) GEOL SRVY JAPAN, (J4) UNIV
     TOKYO, (J5) KOBE UNIV, (J7) UNIV OF RYUKYUS, (J8) J.O.D.C. JAPAN,
     (J9) CHIBA UNIV, (JA) INST.POLAR RES., (ZZ) INST NOT CODED.
-    ..include:: explain\_-V.rst\_
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c]. CUT HERE ------------------------------
-    ..include:: explain\_help.rst\_
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit. CUT HERE
-    ------------------------------
+ 
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
+    
+.. include:: ../../explain_help.rst_
 
 `Examples <#toc6>`_
 -------------------
@@ -161,14 +121,14 @@ mgd77info 08 -Ia -Me
 `See Also <#toc7>`_
 -------------------
 
-`*mgd77list*\ (1) <mgd77list.html>`_ ,
-`*mgd77manage*\ (1) <mgd77manage.html>`_ ,
-`*mgd77path*\ (1) <mgd77path.html>`_ ,
-`*mgd77track*\ (1) <mgd77track.html>`_
-`*x2sys\_init*\ (1) <x2sys_init.html>`_
+`mgd77list <mgd77list.html>`_ ,
+`mgd77manage <mgd77manage.html>`_ ,
+`mgd77path <mgd77path.html>`_ ,
+`mgd77track <mgd77track.html>`_
+`x2sys\_init <x2sys_init.html>`_
 
 `References <#toc8>`_
 ---------------------
 
 The Marine Geophysical Data Exchange Format - MGD77, see
-`*http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt*. <http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt.>`_
+`http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt. <http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt.>`_

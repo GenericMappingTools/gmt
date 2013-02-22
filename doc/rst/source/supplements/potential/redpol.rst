@@ -34,13 +34,7 @@ windows, or bins, a set of filter coefficients are calculate and
 reconstruct for each individual point the component filter using a first
 order Taylor series expansion.
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
@@ -62,8 +56,7 @@ space is allowed between the option flag and the associated arguments.
     Note that these two grids do not need to have the same resolution as
     the anomaly grid. Than can be coarser.
 **-F**\ *m/n*
-    The filter window size in terms of row/columns. The default value is
-    25x25.
+    The filter window size in terms of row/columns. The default value is 25x25.
 **-M**\ *m\|r*
     Set boundary conditions. m\|r stands for mirror or replicate edges
     (Default is zero padding).
@@ -78,8 +71,9 @@ space is allowed between the option flag and the associated arguments.
     The size of the moving window in degrees [5].
 **-Z**\ *filter\_grd*
     Write the filter file on disk.
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c].
+
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
 
 `Examples <#toc6>`_
 -------------------

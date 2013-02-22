@@ -61,5 +61,4 @@ the basis for this program.
 `See Also <#toc8>`_
 -------------------
 
-`*GMT*\ (1) <GMT.html>`_ , `*gshhg*\ (1) <gshhg.html>`_ ,
-`*gshhgtograss*\ (1) <gshhgtograss.html>`_
+`GMT <GMT.html>`_ , `gshhg <gshhg.html>`_ , `gshhgtograss <gshhgtograss.html>`_

@@ -12,8 +12,7 @@ img2grd - Extract subset of img file in Mercator or Geographic format
 ] [ **-D**\ [*minlat/maxlat*\ ] ] [ **-E** ] [ **-I**\ *minutes* ] [
 **-M** ] [ **-N**\ *navg* ] [ **-S**\ [*scale*\ ] ] [
 **-V**\ [*level*\ ] ] [ **-W**\ *maxlon* ] [
-**-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*]
-]
+**-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*] ]
 
 `Description <#toc2>`_
 ----------------------
@@ -22,16 +21,9 @@ img2grd - Extract subset of img file in Mercator or Geographic format
 to a grid file. The **-M** option dictates whether or not the Spherical
 Mercator projection of the img file is preserved or if a Geographic grid
 should be written by undoing the Mercator projection. If geographic grid
-is selected you can also request a resampling onto the exact **-R**
-given.
+is selected you can also request a resampling onto the exact **-R** given.
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
@@ -44,18 +36,8 @@ space is allowed between the option flag and the associated arguments.
     **$GMT\_DATADIR**; else it will try to open *imgfile* directly.
 **-G**\ *grdfile*
     *grdfile* is the name of the output grid file.
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ]
-    *west*, *east*, *south*, and *north* specify the region of interest,
-    and you may specify them in decimal degrees or in
-    [+-]dd:mm[:ss.xxx][W\|E\|S\|N] format. Append **r** if lower left
-    and upper right map coordinates are given instead of w/e/s/n. The
-    two shorthands **-Rg** and **-Rd** stand for global domain (0/360
-    and -180/+180 in longitude respectively, with -90/+90 in latitude).
-    Alternatively, specify the name of an existing grid file and the
-    **-R** settings (and grid spacing, if applicable) are copied from
-    the grid. Using **-R**\ *unit* expects projected (Cartesian)
-    coordinates compatible with chosen **-J** and we inversely project
-    to determine actual rectangular geographic region.
+
+.. include:: ../../explain_-Rgeo.rst_
 
 `Optional Arguments <#toc5>`_
 -----------------------------
@@ -123,22 +105,17 @@ space is allowed between the option flag and the associated arguments.
     **-T**\ *2* gets data values at constrained points and NaN at
     interpolated points; **-T**\ *3* gets 1 at constrained points and 0
     at interpolated points [Default is 1].
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c]. Particularly recommended here, as it is
+
+.. |Add_-V| replace:: Particularly recommended here, as it is
     helpful to see how the coordinates are adjusted.
+.. include:: ../../explain_-V.rst_
+
 **-W**\ *maxlon*
     Indicate *maxlon* as the maximum longitude extent of the input img
     file. Versions since 1995 have had *maxlon* = 360.0, while some
     earlier files had *maxlon* = 390.0. [Default is 360.0].
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit.
+
+.. include:: ../../explain_help.rst_
 
 `Geographic Examples <#toc6>`_
 ------------------------------
@@ -169,7 +146,7 @@ that you end of projecting and reprojection the grid, loosing
 short-wavelength detail. Better to use **-M** and plot the grid using a
 linear projection with the same scale as the desired Mercator projection
 (see GMT Example 29).
- To extract data in the region **-R**-40/40/-70/-30 from
+To extract data in the region **-R**-40/40/-70/-30 from
 *world\_grav.img.7.2*, run
 
 Bimg2grd -M world\_grav.img.7.2 -Gmerc\_grav.nc -R-40/40/-70/-30 -V
@@ -183,7 +160,7 @@ Spherical Mercator projection using
 ship.lonlatgrav and use it to sample the merc\_grav.nc, we can do this:
 
 gmtset PROJ\_ ELLIPSOID Sphere
- mapproject -R-40/40/-70.0004681551/-29.9945810754 -Jm1i ship.lonlatgrav
+mapproject -R-40/40/-70.0004681551/-29.9945810754 -Jm1i ship.lonlatgrav
 \| grdtrack -Gmerc\_grav.nc \| mapproject
 -R-40/40/-70.0004681551/-29.9945810754 -Jm1i -I > ship.lonlatgravsat
 
@@ -223,11 +200,9 @@ is 300 pixels per inch. We decide we don’t need that many and we will be
 satisfied with 100 pixels per inch, so we want to average the data into
 3 by 3 squares. (If we want a contour plot we will probably choose to
 average the data much more (e.g., 6 by 6) to get smooth contours.) Since
-2039 isn’t divisible by 3 we will get a different adjusted OPT(R) this
-time:
+2039 isn't divisible by 3 we will get a different adjusted OPT(R) this time:
 
-img2grd -M world\_grav.img.7.2 -Gmerc\_grav\_2.nc -R-40/40/-70/-30 -N3
--V
+img2grd -M world\_grav.img.7.2 -Gmerc\_grav\_2.nc -R-40/40/-70/-30 -N3 -V
 
 This time we find the adjusted region is
 **-R**-40/40/-70.023256525/-29.9368261101 and the output is 800 by 601
@@ -240,16 +215,14 @@ and if we also have a cpt file called "grav.cpt" we can create a color
 shaded relief map like this:
 
 grdimage merc\_grav\_2.nc -Iillum.nc -Cgrav.cpt -Jx0.1i -K > map.ps
- psbasemap -R-40/40/-70.023256525/-29.9368261101 -Jm0.1i -Ba10 -O >>
-map.ps
+psbasemap -R-40/40/-70.023256525/-29.9368261101 -Jm0.1i -Ba10 -O >> map.ps
 
 Suppose you want to obtain only the constrained data values from an img
 file, in lat/lon coordinates. Then run **img2grd** with the **-T**\ 2
 option, use **grd2xyz** to dump the values, pipe through grep -v NaN to
-eliminate NaNs, and pipe through **mapproject** with the inverse
-projection as above.
+eliminate NaNs, and pipe through **mapproject** with the inverse projection as above.
 
 `See Also <#toc8>`_
 -------------------
 
-`*GMT*\ (1) <GMT.html>`_
+`GMT <../../GMT.html>`_

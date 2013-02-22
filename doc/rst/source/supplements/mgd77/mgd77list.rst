@@ -42,45 +42,13 @@ region. Finally, each output record may be required to pass any number
 of logical tests involving data values or bit flags. If multiple cruises
 are requested then they are separated by segment headers.
 
- ..include:: explain\_commonitems.rst\_
-
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
-CUT HERE ------------------------------
+ .. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
 
-..include:: mgd77/explain\_ncid.rst\_
+.. include:: explain_ncid.rst_
 
-*NGDC-ids*
-    Can be one or more of five kinds of specifiers:
-
-    1) 8-character NGDC IDs, e.g., 01010083, JA010010etc., etc.
-
-    2) 2-character <agency> codes which will return all cruises from
-    each agency.
-
-    3) 4-character <agency><vessel> codes, which will return all cruises
-    from those vessels.
-
-    4) =<list>, where <list> is a table with NGDC IDs, one per line.
-
-    5) If nothing is specified we return all cruises in the data base.
-
-    (See mgd77info **-L** for agency and vessel codes). The ".mgd77" or
-    ".nc" extensions will automatically be appended, if needed (use
-    **-I** to ignore certain file types). Cruise files will be looked
-    for first in the current directory and second in all directories
-    listed in **$MGD77\_HOME**/mgd77\_paths.txt [If **$MGD77\_HOME** is
-    not set it will default to **$GMT\_SHAREDIR**/mgd77].
-
-    CUT HERE ------------------------------
 
 **-F**\ *columns*\ [,*logic*][:\ *bittests*]
     The required *columns* string must be a comma-separated list of
@@ -283,25 +251,20 @@ CUT HERE ------------------------------
     (presumably) corrected **depth** using the Carter correction
     formula. Select from
 
-    **-Ac1**\ [,*v*] returns difference between U(\ **twt**, *v*) and
-    **depth** [Default].
+    **-Ac1**\ [,*v*] returns difference between U(\ **twt**, *v*) and **depth** [Default].
 
-    **-Ac2**\ [,*v*] returns difference between U(\ **twt**, *v*) and
-    Carter (**twt**).
+    **-Ac2**\ [,*v*] returns difference between U(\ **twt**, *v*) and Carter (**twt**).
 
-    **-Ac4**\ [,*v*] returns difference between (assumed uncorrected)
-    **depth** and Carter (TU(**depth**)).
+    **-Ac4**\ [,*v*] returns difference between (assumed uncorrected) **depth** and Carter (TU(**depth**)).
 
-    **-Ac8**\ [,*v*] returns difference between U(TC(\ **depth**), *v*)
-    and **depth**.
+    **-Ac8**\ [,*v*] returns difference between U(TC(\ **depth**), *v*) and **depth**.
 
 **-Ad**
     Determines how the **depth** column output is obtained:
 
     **-Ad1** returns **depth** as stored in the data set [Default].
 
-    **-Ad2**\ [,*v*] returns calculated uncorrected depth U(\ **twt**,
-    *v*).
+    **-Ad2**\ [,*v*] returns calculated uncorrected depth U(\ **twt**, *v*).
 
     **-Ad4** returns calculated corrected depth C(\ **twt**).
 
@@ -414,21 +377,11 @@ CUT HERE ------------------------------
 **-Qv**\ *min*/*max*
     Specify an accepted range (*min*/*max*; or just *min* if there is no
     upper limit) of velocities. Records whose track speed falls outside
-    this range are ignored [0/infinity]. ..include::
-    explain\_-Rgeo.rst\_
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ]
-    *west*, *east*, *south*, and *north* specify the region of interest,
-    and you may specify them in decimal degrees or in
-    [+-]dd:mm[:ss.xxx][W\|E\|S\|N] format. Append **r** if lower left
-    and upper right map coordinates are given instead of w/e/s/n. The
-    two shorthands **-Rg** and **-Rd** stand for global domain (0/360
-    and -180/+180 in longitude respectively, with -90/+90 in latitude).
-    Alternatively, specify the name of an existing grid file and the
-    **-R** settings (and grid spacing, if applicable) are copied from
-    the grid. Using **-R**\ *unit* expects projected (Cartesian)
-    coordinates compatible with chosen **-J** and we inversely project
-    to determine actual rectangular geographic region. CUT HERE
-    ------------------------------
+    this range are ignored [0/infinity]. 
+
+.. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-Rgeo.rst_
+
 **-Sa**\ *startdist*\ [unit]
     Do not list data that are less than *startdist* meter along track
     from port of departure. Append **e** for meter, **f** for feet,
@@ -446,10 +399,11 @@ CUT HERE ------------------------------
     when creating the original MGD77 file from which the MGD77+ file
     derives (the option has no effect on plain MGD77 ASCII files).
     Append **m** or **e** to limit the option to the MGD77 or extended
-    columns set only [Default applies to both]. ..include::
-    explain\_-V.rst\_
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c]. CUT HERE ------------------------------
+    columns set only [Default applies to both]. 
+
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
+
 **-W**\ *weight*
     Set the weight for these data. Weight output option must be set in
     **-F**. This is useful if the data are to be processed with the
@@ -458,35 +412,20 @@ CUT HERE ------------------------------
 **-Z**\ *+*\ \|\ **-**
     Append the sign you want for **depth**, **carter**, and **msd**
     values below sea level (**-Z-** gives negative bathymetry) [Default
-    is positive down]. ..include:: explain\_-bo\_full.rst\_
-**-bo**\ [*ncols*\ ][*type*\ ]
-    Select binary output. Append one or more comma-separated
-    combinations of *ncols*/*type*, where *ncols* is the actual number
-    of data columns and *type* must be one of **c**, **u**, **h**,
-    **H**, **i**, **I**, **l**, **L**, **f**, and **d** (see **-bi**).
-    Append **w** or **+L**\ \|\ **B** for byte-swapping. *ncols* is the
-    number of each item in the binary file. If no *ncols* is specified
-    we assume that *type* applies to all columns and that *ncols* is
-    implied by the default output of the program. NetCDF file output is
-    not supported. CUT HERE ------------------------------ **-h** is
-    ignored if **-bo**\ [*ncols*\ ][*type*\ ] is selected. Likewise,
-    string-fields cannot be selected. Note that if time is one of the
-    binary output columns it will be stored as Unix-time (seconds since
-    1970). To read this information in GMT to obtain absolute calendar
-    time will require you to use --TIME\_SYSTEM=1.
+    is positive down]. 
+
+.. include:: ../../explain_-bo_full.rst_
+|
+|   ignored if **-bo**\ [*ncols*][*type*] is selected. Likewise,
+|   string-fields cannot be selected. Note that if time is one of the
+|   binary output columns it will be stored as Unix-time (seconds since
+|   1970). To read this information in GMT to obtain absolute calendar
+|   time will require you to use --TIME\_SYSTEM=1.
+
 **-h**
-    Issue a header record with names for each data field. ..include::
-    explain\_help.rst\_
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit. CUT HERE
-    ------------------------------
+    Issue a header record with names for each data field. 
+
+.. include:: ../../explain_help.rst_
 
 `Examples <#toc6>`_
 -------------------
@@ -523,8 +462,7 @@ To extract dist, faa, and grav12\_2 from all the MGD77+ netCDF files
 whose cruise ids are listed in the file cruises.lis, but only retrieve
 records whose bitflag for faa indicates BAD values, we try
 
-mgd77list ‘cat cruises.lis‘ -E -Ia -F"dist,faa,grav12\_2:+faa" >
-bad\_grav.d
+mgd77list ‘cat cruises.lis‘ -E -Ia -F"dist,faa,grav12\_2:+faa" > bad\_grav.d
 
 To output lon, lat, mag, and faa from all the cruises listed in the file
 cruises.lis, but recalculate the two residuals based on the latest
@@ -613,16 +551,16 @@ corrected by a strange dependency on ship heading and latitude, and
 `See Also <#toc11>`_
 --------------------
 
-`*mgd77convert*\ (1) <mgd77convert.html>`_ ,
-`*mgd77info*\ (1) <mgd77info.html>`_ ,
-`*mgd77manage*\ (1) <mgd77manage.html>`_ ,
-`*mgd77track*\ (1) <mgd77track.html>`_
+`mgd77convert <mgd77convert.html>`_ ,
+`mgd77info <mgd77info.html>`_ ,
+`mgd77manage <mgd77manage.html>`_ ,
+`mgd77track <mgd77track.html>`_
 
 `References <#toc12>`_
 ----------------------
 
 The Marine Geophysical Data Exchange Format - MGD77, see
-`*http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt* <http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_
+`http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt <http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_
 
 IGRF, see
-`*http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html* <http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html>`_
+`http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html <http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html>`_

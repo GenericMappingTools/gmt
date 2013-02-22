@@ -42,7 +42,7 @@ handles byte-swabbing between different architectures.
 `Examples <#toc5>`_
 -------------------
 
-To convert the full GSHHG data set , try
+To convert the full GSHHG data set, try
 
 gshhg2grass gshhs\_f.b
 
@@ -60,5 +60,4 @@ maintenance by Paul Wessel (pwessel@hawaii.edu).
 `See Also <#toc8>`_
 -------------------
 
-`*GMT*\ (1) <GMT.html>`_ , `*gshhs*\ (1) <gshhs.html>`_
-`*gshhs\_dp*\ (1) <gshhs_dp.html>`_
+`GMT <GMT.html>`_ , `gshhs <gshhs.html>`_ `gshhs\_dp <gshhs_dp.html>`_

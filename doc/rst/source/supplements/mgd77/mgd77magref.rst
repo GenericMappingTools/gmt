@@ -19,17 +19,9 @@ mgd77magref - Evaluate the IGRF or CM4 magnetic field models
 ----------------------
 
 **mgd77magref** will evaluate the IGRF or the CM4 geomagnetic models at
-the specified locations and times. ..include::
-explain\_commonitems.rst\_
+the specified locations and times. 
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
-CUT HERE ------------------------------
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
@@ -85,8 +77,7 @@ None.
     Selects output items; *flags* is a string made up of one or more of
     these characters:
 
-    **r** means output all input columns before adding the items below
-    (all in nTesla).
+    **r** means output all input columns before adding the items below (all in nTesla).
 
     **t** means list total field.
 
@@ -102,8 +93,7 @@ None.
 
     **i** means list inclination.
 
-    Append one or more number to indicate the requested field
-    contribution(s):
+    Append one or more number to indicate the requested field contribution(s):
 
     **0** means IGRF field (no combinations allowed)
 
@@ -165,33 +155,22 @@ None.
 **-Sl**\ *low/high*
     Limits the wavelengths of the lithosphere field contribution to the
     band indicated by the low and high spherical harmonic order [14/65].
-    ..include:: explain\_-V.rst\_
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c]. CUT HERE ------------------------------
-    ..include:: explain\_-bi.rst\_
-**-bi**\ [*ncols*\ ][*type*\ ] (\*)
-    Select binary input. CUT HERE ------------------------------
-    [Default is 4 input columns unless **-A** is used]. ..include::
-    explain\_-bo.rst\_
-**-bo**\ [*ncols*\ ][*type*\ ] (\*)
-    Select binary output. CUT HERE ------------------------------
-    [Default is reflected by **-F**]. ..include:: explain\_-h.rst\_
-**-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
-    Skip or produce header record(s). CUT HERE
-    ------------------------------ ..include:: explain\_colon.rst\_
-**-:**\ [**i**\ \|\ **o**] (\*)
-    Swap 1st and 2nd column on input and/or output. CUT HERE
-    ------------------------------ ..include:: explain\_help.rst\_
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit. CUT HERE
-    ------------------------------
+
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
+    
+.. |Add_-bi| replace:: [Default is 4 input columns unless **-A** is used]. 
+.. include:: ../../explain_-bi.rst_
+
+.. |Add_-bo| replace:: [Default is reflected by **-F**]. 
+.. include:: ../../explain_-bo.rst_
+
+.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-h.rst_
+
+.. include:: ../../explain_colon.rst_
+
+.. include:: ../../explain_help.rst_
 
 `Time Settings <#toc6>`_
 ------------------------
@@ -212,24 +191,23 @@ lithospheric and toroidal field at a one point location and decimal time
 
 echo -28 38 0 2000.0 \| mgd77magref -A+y -Ftdi/13456
 
-To do the same as above but at noon (Universal Time) of first May 2001,
-try
+To do the same as above but at noon (Universal Time) of first May 2001, try
 
 echo -28 38 0 2001-05-01T12:00:00 \| mgd77magref -Ftdi/13456
 
 `See Also <#toc8>`_
 -------------------
 
-`*GMT*\ (1) <GMT.html>`_ `*mgd77info*\ (1) <mgd77info.html>`_
-`*mgd77list*\ (1) <mgd77list.html>`_
-`*mgd77manage*\ (1) <mgd77manage.html>`_
-`*mgd77track*\ (1) <mgd77track.html>`_
+`GMT <GMT.html>`_ `mgd77info <mgd77info.html>`_
+`mgd77list <mgd77list.html>`_
+`mgd77manage <mgd77manage.html>`_
+`mgd77track <mgd77track.html>`_
 
 `References <#toc9>`_
 ---------------------
 
 Comprehensive Modeling of the Geomagnetic Field, see
-`*http://denali.gsfc.nasa.gov/cm/*. <http://denali.gsfc.nasa.gov/cm/.>`_
+`http://denali.gsfc.nasa.gov/cm/ <http://denali.gsfc.nasa.gov/cm/>`_
 
 The International Geomagnetic Reference Field (IGRF), see
-`*http://www.iugg.org/IAGA/iaga\_pages/pubs\_prods/igrf.htm*. <http://www.iugg.org/IAGA/iaga_pages/pubs_prods/igrf.htm.>`_
+`http://www.iugg.org/IAGA/iaga\_pages/pubs\_prods/igrf.htm <http://www.iugg.org/IAGA/iaga_pages/pubs_prods/igrf.htm>`_

@@ -39,51 +39,26 @@ Unless **-Q** is used, new file is created with the new coordinates
 (**x**, **y**) and the mechanism (from lower focal half-sphere for
 horizontal plane, to half-sphere behind a vertical plane). When the
 plane is not horizontal,
- - north direction becomes upwards steepest descent direction of the
-plane (u)
- - east direction becomes strike direction of the plane (s)
- - down direction (= north^east) becomes u^s
- Axis angles are defined in the same way as in horizontal plane in the
-new system.
- Moment tensor (initially in r, t, f system that is up, south, east) is
+- north direction becomes upwards steepest descent direction of the plane (u)
+- east direction becomes strike direction of the plane (s)
+- down direction (= north^east) becomes u^s
+Axis angles are defined in the same way as in horizontal plane in the new system.
+Moment tensor (initially in r, t, f system that is up, south, east) is
 defined in (-u^s, -u, s) system.
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
 
-*table*
+.. |Add_intables| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_intables.rst_
 
-One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ]) data
-table file(s) holding a number of data columns. If no tables are given
-then we read from standard input.
+.. include:: ../../explain_-J.rst_
 
-**-J**\ *parameters* (\*)
-
-Select map projection.
-
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ]
-
-*west*, *east*, *south*, and *north* specify the region of interest, and
-you may specify them in decimal degrees or in
-[+-]dd:mm[:ss.xxx][W\|E\|S\|N] format. Append **r** if lower left and
-upper right map coordinates are given instead of w/e/s/n. The two
-shorthands **-Rg** and **-Rd** stand for global domain (0/360 and
--180/+180 in longitude respectively, with -90/+90 in latitude).
-Alternatively, specify the name of an existing grid file and the **-R**
-settings (and grid spacing, if applicable) are copied from the grid.
-Using **-R**\ *unit* expects projected (Cartesian) coordinates
-compatible with chosen **-J** and we inversely project to determine
-actual rectangular geographic region. If frame is defined from
-cross-section parameters (see **-A**) this option is not taken into
-account, but must be present.
+.. |Add_-Rgeo| replace:: If frame is defined from cross-section parameters
+   (see **-A** this option is not taken into account, but must be present.
+.. include:: ../../explain_-Rgeo.rst_
 
 **-A**
 
@@ -228,18 +203,17 @@ the extensive quadrants can be specified with the **-E** option.
 Parameters are expected to be in the following columns:
 
     **1**,\ **2**:
-    longitude, latitude of event (**-:** option interchanges order)
+       longitude, latitude of event (**-:** option interchanges order)
     **3**:
-    depth of event in kilometers
+       depth of event in kilometers
     **4**,\ **5**,\ **6**,\ **7**,\ **8**,\ **9**:
-    mrr, mtt, mff, mrt, mrf, mtf in 10\*exponent dynes-cm
+       mrr, mtt, mff, mrt, mrf, mtf in 10\*exponent dynes-cm
     **10**:
-    exponent
+       exponent
     **11**,\ **12**:
-    Not used; can be 0 0; allows use of the psmeca file format
+       Not used; can be 0 0; allows use of the psmeca file format 
     **13**:
-    Text string to appear above the beach ball (default) or under (add
-    **u**).
+       Text string to appear above the beach ball (default) or under (add **u**).
 
 **-Sx**\ *scale[/fontsize[/offset*\ [**u**\ ]]]
 
@@ -298,16 +272,16 @@ be in the following columns:
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-**-B**\ [**p**\ \|\ **s**]\ *parameters* (\*)
-    Set map boundary intervals.
+.. include:: ../../explain_-B.rst_
+
 **-E**\ *fill*
     Sets color or fill pattern for extensive quadrants [Default is
     white].
 **-G**\ *fill*
-    Sets color or fill pattern for compressional quadrants [Default is
-    black].
-**-K** (\*)
-    Do not finalize the *PostScript* plot.
+    Sets color or fill pattern for compressional quadrants [Default is black].
+
+.. include:: ../../explain_-K.rst_
+
 **-L**\ [*pen*\ ]
     Draws the "beach ball" outline using current pen (see **-W**) or
     sets pen attributes.
@@ -316,32 +290,32 @@ be in the following columns:
 **-N**
     Does **not** skip symbols that fall outside map border [Default
     plots points inside border only].
-**-O** (\*)
-    Append to existing *PostScript* plot.
-**-P** (\*)
-    Select "Portrait" plot orientation.
+
+.. include:: ../../explain_-O.rst_
+.. include:: ../../explain_-P.rst_
+
 **-Q**
     Suppress the production of files with cross-section and mechanism
     information.
 **-T**\ [*num\_of\_planes*\ ]
     Plots the nodal planes and outlines the bubble which is transparent.
     If *num\_of\_planes* is
-     *0*: both nodal planes are plotted;
-     *1*: only the first nodal plane is plotted;
-     *2*: only the second nodal plane is plotted
-     [Default: 0].
-**-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] (\*)
-    Draw GMT time stamp logo on plot.
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c].
+    *0*: both nodal planes are plotted;
+    *1*: only the first nodal plane is plotted;
+    *2*: only the second nodal plane is plotted
+    [Default: 0].
+
+.. include:: ../../explain_-U.rst_
+
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
+
 **-W**
     set pen attributes for text string or default pen attributes for
-    fault plane edges. [Defaults: width = default, color = black, style
-    = solid].
-**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-(\*)
-    Shift plot origin.
+    fault plane edges. [Defaults: width = default, color = black, style = solid].
+
+.. include:: ../../explain_-XY.rst_
+
 **-Z**\ cptfile
     Give a color palette file and let compressive part color be
     determined by the z-value in the third column.
@@ -363,31 +337,23 @@ be in the following columns:
 **-r**\ [*fill*\ ]
     Draw a box behind the label (if any). [Default fill is white]
 **-t**\ [*pen*\ ]
-    Draws the T axis outline using current pen (see **-W**), or sets pen
-    attributes.
-**-c**\ *copies* (\*)
-    Specify number of plot copies [Default is 1].
-**-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
-    Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
-    Select input columns.
-**-:**\ [**i**\ \|\ **o**] (\*)
-    Swap 1st and 2nd column on input and/or output.
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit.
+    Draws the T axis outline using current pen (see **-W**), or sets pen attributes.
+
+.. include:: ../../explain_-c.rst_
+
+.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-h.rst_
+
+.. include:: ../../explain_-icols.rst_
+.. include:: ../../explain_colon.rst_
+
+.. include:: ../../explain_help.rst_
 
 `See Also <#toc6>`_
 -------------------
 
-`*GMT*\ (1) <GMT.html>`_ , `*psbasemap*\ (1) <psbasemap.html>`_ ,
-`*psmeca*\ (1) <psmeca.html>`_ , `*psxy*\ (1) <psxy.html>`_
+`GMT <GMT.html>`_ , `psbasemap <psbasemap.html>`_ ,
+`psmeca <psmeca.html>`_ , `psxy <psxy.html>`_
 
 `References <#toc7>`_
 ---------------------
@@ -399,14 +365,11 @@ Aki, K. and P. Richards, Quantitative Seismology, Freeman, 1980.
 F. A. Dahlen and Jeroen Tromp, Theoretical Seismology, Princeton, 1998,
 p.167. Definition of scalar moment.
 
-Cliff Frohlich, Cliff’s Nodes Concerning Plotting Nodal Lines for P, Sh
-and Sv
+Cliff Frohlich, Cliff’s Nodes Concerning Plotting Nodal Lines for P, Sh and Sv
 
-Seismological Research Letters, Volume 67, Number 1, January-February,
-1996
+Seismological Research Letters, Volume 67, Number 1, January-February, 1996
 
-Thorne Lay, Terry C. Wallace, Modern Global Seismology, Academic Press,
-1995, p.384.
+Thorne Lay, Terry C. Wallace, Modern Global Seismology, Academic Press, 1995, p.384.
 
 W.H. Press, S.A. Teukolsky, W.T. Vetterling, B.P. Flannery, Numerical
 Recipes in C, Cambridge University press (routine jacobi)

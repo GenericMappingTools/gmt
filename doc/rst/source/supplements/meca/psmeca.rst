@@ -36,40 +36,18 @@ generates *PostScript* code that will plot focal mechanisms on a map.
 Most options are the same as for **psxy**. The *PostScript* code is
 written to standard output.
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
-
-All options marked with an asterisk (\*) are common GMT command-line
-options. Their full syntax as well as how to specify pens, pattern
-fills, colors, and fonts can be found in the **gmt** man page. Note: No
-space is allowed between the option flag and the associated arguments.
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
 
-*table*
+.. |Add_intables| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_intables.rst_
 
-One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ]) data
-table file(s) holding a number of data columns. If no tables are given
-then we read from standard input.
+.. include:: ../../explain_-J.rst_
 
-**-J**\ *parameters* (\*)
-
-Select map projection.
-
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ]
-
-*west*, *east*, *south*, and *north* specify the region of interest, and
-you may specify them in decimal degrees or in
-[+-]dd:mm[:ss.xxx][W\|E\|S\|N] format. Append **r** if lower left and
-upper right map coordinates are given instead of w/e/s/n. The two
-shorthands **-Rg** and **-Rd** stand for global domain (0/360 and
--180/+180 in longitude respectively, with -90/+90 in latitude).
-Alternatively, specify the name of an existing grid file and the **-R**
-settings (and grid spacing, if applicable) are copied from the grid.
-Using **-R**\ *unit* expects projected (Cartesian) coordinates
-compatible with chosen **-J** and we inversely project to determine
-actual rectangular geographic region.
+.. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-Rgeo.rst_
 
 **-S**\ *<format><scale>*\ [/**d**]
 
@@ -243,8 +221,8 @@ following columns:
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-**-B**\ [**p**\ \|\ **s**]\ *parameters* (\*)
-    Set map boundary intervals.
+.. include:: ../../explain_-B.rst_
+
 **-C**\ [*pen*\ ][\ **P**\ *pointsize*]
     Offsets focal mechanisms to the longitude, latitude specified in the
     last two columns of the input file before the (optional) text
@@ -261,8 +239,9 @@ following columns:
     Selects filling of focal mechanisms. By convention, the
     compressional quadrants of the focal mechanism beach balls are
     shaded. Set the color [Default is black].
-**-K** (\*)
-    Do not finalize the *PostScript* plot.
+
+.. include:: ../../explain_-K.rst_
+
 **-L**\ *pen*
     Draws the "beach ball" outline with *pen* attributes instead of with
     the default pen set by **-W**.
@@ -271,10 +250,10 @@ following columns:
 **-N**
     Does **not** skip symbols that fall outside frame boundary specified
     by **-R** [Default plots symbols inside frame only].
-**-O** (\*)
-    Append to existing *PostScript* plot.
-**-P** (\*)
-    Select "Portrait" plot orientation.
+
+.. include:: ../../explain_-O.rst_
+.. include:: ../../explain_-P.rst_
+
 **-T**\ [*num\_of\_planes*\ ][\ **/**\ *pen*]
     Plots the nodal planes and outlines the bubble which is transparent.
     If *num\_of\_planes* is
@@ -288,19 +267,19 @@ following columns:
     Append **/**\ *pen* to set the pen attributes for this feature.
     Default pen is as set by **-W**.
 
-**-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] (\*)
-    Draw GMT time stamp logo on plot.
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c].
+.. include:: ../../explain_-U.rst_
+
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
+
 **-W**\ *pen*
     Set pen attributes for all lines and the outline of symbols
     [Defaults: width = default, color = black, style = solid]. This
     setting applies to **-C**, **-L**, **-T**, **-p**, **-t**, and
     **-z**, unless overruled by options to those arguments.
-**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-(\*)
-    Shift plot origin.
+
+.. include:: ../../explain_-XY.rst_
+
 **-Z**\ *cptfile*
     Give a color palette file and let compressive part color be
     determined by the z-value in the third column.
@@ -310,24 +289,25 @@ following columns:
     (**c**) circle, (**d**) diamond, (**h**) hexagon, (**i**) inverse
     triangle, (**p**) point, (**s**) square, (**t**) triangle, (**x**)
     cross. [Default: 6\ **p**/**cc**]
-**-c**\ *copies* (\*)
-    Specify number of plot copies [Default is 1].
+
+.. include:: ../../explain_-c.rst_
+
 **-e**\ *fill*
     Sets the color or fill pattern for the T axis symbol. [Default as
     set by **-E**]
 **-g**\ *fill*
     Sets the color or fill pattern for the P axis symbol. [Default as
     set by **-G**]
-**-h**\ [**i**\ \|\ **o**][*n*\ ] (\*)
-    Skip or produce header record(s).
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*](\*)
-    Select input columns.
+
+.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-h.rst_
+
+.. include:: ../../explain_-icols.rst_
+
 **-o**
-    Use the **psvelomeca** input format without depth in the third
-    column.
+    Use the **psvelomeca** input format without depth in the third column.
 **-p**\ [*pen*\ ]
-    Draws the P axis outline using default pen (see **-W**), or sets pen
-    attributes.
+    Draws the P axis outline using default pen (see **-W**), or sets pen attributes.
 **-r**\ [*fill*\ ]
     Draw a box behind the label (if any). [Default fill is white]
 **-t**\ [*pen*\ ]
@@ -336,17 +316,9 @@ following columns:
 **-z**\ [*pen*\ ]
     Overlay zero trace moment tensor using default pen (see **-W**), or
     sets pen attributes.
-**-:**\ [**i**\ \|\ **o**] (\*)
-    Swap 1st and 2nd column on input and/or output.
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit.
+
+.. include:: ../../explain_colon.rst_
+.. include:: ../../explain_help.rst_
 
 `Examples <#toc6>`_
 -------------------
@@ -364,8 +336,7 @@ END
 `See Also <#toc7>`_
 -------------------
 
-`*GMT*\ (1) <GMT.html>`_ , `*psbasemap*\ (1) <psbasemap.html>`_ ,
-`*psxy*\ (1) <psxy.html>`_
+`GMT <GMT.html>`_ , `psbasemap <psbasemap.html>`_ , `psxy <psxy.html>`_
 
 `References <#toc8>`_
 ---------------------

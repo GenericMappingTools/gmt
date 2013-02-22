@@ -2,8 +2,7 @@
 grdraster
 *********
 
-grdraster - Extract subregion from a binary raster and save as a GMT
-grid
+grdraster - Extract subregion from a binary raster and save as a GMT grid
 
 `Synopsis <#toc1>`_
 -------------------
@@ -49,11 +48,10 @@ gridfile name is given
     will match the given text pattern with the data set description in
     order to determine the data set.
 
+.. |Add_-Rgeo| replace:: If **r** is appended, you may also specify a
+    map projection to define the shape of your region. The output region
+    will be rounded off to the nearest whole grid-step in both dimensions.
 ..include:: ../../explain_-Rgeo.rst_
-    If **r** is appended, you may also
-    specify a map projection to define the shape of your region. The
-    output region will be rounded off to the nearest whole grid-step in
-    both dimensions.
 
 `Optional Arguments <#toc5>`_
 -----------------------------
@@ -72,7 +70,8 @@ gridfile name is given
 ..include:: ../../explain_-bo.rst_
     
 ..include:: ../../explain_-ocols.rst_
-    This option applies only if no **-G** option has been set. 
+|
+|   This option applies only if no **-G** option has been set. 
 
 ..include:: ../../explain_help.rst_
 
@@ -101,6 +100,5 @@ grdraster "2 min Geoware" -R20/25/-10/5 -bo > triplets.b
 `See Also <#toc7>`_
 -------------------
 
-`*gmtdefaults*\ (1) <gmtdefaults.html>`_ , `*GMT*\ (1) <GMT.html>`_ ,
-`*grdsample*\ (1) <grdsample.html>`_ ,
-`*grdfilter*\ (1) <grdfilter.html>`_
+`gmtdefaults <gmtdefaults.html>`_ , `GMT <GMT.html>`_ ,
+`grdsample <grdsample.html>`_ , `grdfilter <grdfilter.html>`_

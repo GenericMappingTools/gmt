@@ -21,31 +21,7 @@ Both pre- and post-Y2K MGD77 formats can be processed.
 `Required Arguments <#toc3>`_
 -----------------------------
 
-..include:: mgd77/explain\_ncid.rst\_
-
-*NGDC-ids*
-    Can be one or more of five kinds of specifiers:
-
-    1) 8-character NGDC IDs, e.g., 01010083, JA010010etc., etc.
-
-    2) 2-character <agency> codes which will return all cruises from
-    each agency.
-
-    3) 4-character <agency><vessel> codes, which will return all cruises
-    from those vessels.
-
-    4) =<list>, where <list> is a table with NGDC IDs, one per line.
-
-    5) If nothing is specified we return all cruises in the data base.
-
-    (See mgd77info **-L** for agency and vessel codes). The ".mgd77" or
-    ".nc" extensions will automatically be appended, if needed (use
-    **-I** to ignore certain file types). Cruise files will be looked
-    for first in the current directory and second in all directories
-    listed in **$MGD77\_HOME**/mgd77\_paths.txt [If **$MGD77\_HOME** is
-    not set it will default to **$GMT\_SHAREDIR**/mgd77].
-
-    CUT HERE ------------------------------
+.. include:: explain_ncid.rst_
 
 **-Fa**\ \|\ **c**\ \|\ **t**
     Specifies the format of the input (From) files. Choose from **a**
@@ -82,20 +58,11 @@ Both pre- and post-Y2K MGD77 formats can be processed.
     Set the level of verification reporting [none] and where to send
     such reports [stderr]. Append a combination of **w** for warnings,
     **e** for errors, and **+** to send such log information to stdout.
-    ..include:: explain\_-V.rst\_
-**-V**\ [*level*\ ] (\*)
-    Select verbosity level [c]. CUT HERE ------------------------------
-    ..include:: explain\_help.rst\_
-**-^** (\*)
-    Print a short message about the syntax of the command, then exits.
-**-?** (\*)
-    Print a full usage (help) message, including the explanation of
-    options, then exits.
-**--version** (\*)
-    Print GMT version and exit.
-**--show-sharedir** (\*)
-    Print full path to GMT share directory and exit. CUT HERE
-    ------------------------------
+ 
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. include:: ../../explain_-V.rst_
+    
+.. include:: ../../explain_help.rst_
 
 `Examples <#toc5>`_
 -------------------
@@ -155,19 +122,19 @@ examined with general-purpose tools such as ncBrowse and ncView.
 `See Also <#toc8>`_
 -------------------
 
-`*mgd77manage*\ (1) <mgd77manage.html>`_ ,
-`*mgd77list*\ (1) <mgd77list.html>`_ ,
-`*mgd77sample*\ (1) <mgd77sample.html>`_ ,
-`*mgd77track*\ (1) <mgd77track.html>`_
-`*x2sys\_init*\ (1) <x2sys_init.html>`_
+`mgd77manage <mgd77manage.html>`_ ,
+`mgd77list <mgd77list.html>`_ ,
+`mgd77sample <mgd77sample.html>`_ ,
+`mgd77track <mgd77track.html>`_
+`x2sys_init <x2sys_init.html>`_
 
 `References <#toc9>`_
 ---------------------
 
 ncBrowse, see
-`*http://www.epic.noaa.gov/java/ncBrowse/* <http://www.epic.noaa.gov/java/ncBrowse/>`_
- ncView, see
-`*http://meteora.ucsd.edu/~pierce/ncview\_home\_page.html* <http://meteora.ucsd.edu/~pierce/ncview_home_page.html>`_
- The Marine Geophysical Data Exchange Format - "MGD77", see
-`*http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt* <http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_
+`http://www.epic.noaa.gov/java/ncBrowse/ <http://www.epic.noaa.gov/java/ncBrowse/>`_
+ncView, see
+`http://meteora.ucsd.edu/~pierce/ncview\_home\_page.html <http://meteora.ucsd.edu/~pierce/ncview_home_page.html>`_
+The Marine Geophysical Data Exchange Format - "MGD77", see
+`http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt <http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_
 

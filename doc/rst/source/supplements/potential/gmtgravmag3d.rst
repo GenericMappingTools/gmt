@@ -11,7 +11,7 @@ method of Okabe
 **gmtgravmag3d** [ **-C**\ *density* ] [ **-D** ] [ **-E**\ *thickness*
 ] [ **-F**\ *xy\_file* ] [ **-G**\ *outputgrid.nc* ] [
 **-H**\ *f\_dec*/*f\_dip*/*m\_int*/*m\_dec*/*m\_dip* ] [
-**-L**\ *z\_observation* ] [ **-M** ]
+**-L**\ *z\_observation* ]
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [ **-S**\ *radius* ] [
 **-T**\ [[*d*\ ]\ *xyz\_file*/*vert\_file*\ [*/m*\ ]]\|[*r\|s*\ ]\ *raw\_file*
 ] [ **-Z**\ *level* ] [ **-V**\ [*level*\ ] ] [
@@ -44,11 +44,13 @@ but allows computing the anomaly of arbitrarily complex shapes.
 **-G**\ *outgrid.nc*
     Output the gravity or magnetic anomaly at nodes of this grid file.
 
+.. |Add_-R| unicode:: 0x0C .. just an invisible code
 .. include:: ../../explain_-R.rst_
 
 `Optional Arguments <#toc5>`_
 -----------------------------
 
+.. |Add_-V| unicode:: 0x0C .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
 **-E**\ [*thickness*\ ]
@@ -58,9 +60,6 @@ but allows computing the anomaly of arbitrarily complex shapes.
 **-L**\ [*z\_observation*\ ]
     sets level of observation [Default = 0]. That is the height (z) at
     which anomalies are computed.
-**-M**
-    Map units TRUE; x,y in degrees, dist units in m. [Default dist unit
-    = x,y unit]
 **-S**\ *radius*
     search radius in km. Triangle centroids that are further away than
     *radius* from current output point will not be taken into account.
@@ -91,6 +90,7 @@ but allows computing the anomaly of arbitrarily complex shapes.
     from each triangle and this reference level. An example will be the
     whater depth to compute a Bouguer anomaly.
 
+.. |Add_-f| unicode:: 0x0C .. just an invisible code
 .. include:: ../../explain_-f.rst_
 
 .. include:: ../../explain_help.rst_
@@ -105,7 +105,7 @@ Suppose you ...
 `See Also <#toc7>`_
 -------------------
 
-*GMT* *GRDGRAVMAG3D*
+`GMT <GMT.html>`_ , `grdgravmag3d <grdgravmag3d.html>`_
 
 `Reference <#toc8>`_
 --------------------
