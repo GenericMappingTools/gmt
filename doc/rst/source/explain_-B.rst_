@@ -1,2 +1,2 @@
-**-B**\ [**p**\ \|\ **s**]\ *parameters* (\*)
+**-B**\ [**p**\ \|\ **s**]\ *parameters* :ref:`(\*) <-B_full>`
     Set map boundary intervals.

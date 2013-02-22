@@ -1,3 +1,5 @@
+.. _-B_full:
+
 **-B**\ [**p**\ \|\ **s**]\ *parameters*
     Set map boundary annotation and tickmark intervals. The format of
     *tickinfo* is

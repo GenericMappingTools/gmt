@@ -1,2 +1,2 @@
-**-bo**\ [*ncols*\ ][*type*\ ] (\*)
+**-bo**\ [*ncols*\ ][*type*\ ] :ref:`(\*) <-bo_full>`
     Select binary output. |Add_-bo|
