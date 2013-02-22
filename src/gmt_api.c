@@ -834,33 +834,6 @@ int GMTAPI_Add_Data_Object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *
 	return (object_ID);		
 }
 
-#if 0	/* NOT USED? */
-int GMTAPI_Get_Item (struct GMTAPI_CTRL *API, int object_ID, int direction)
-{	/* Checks to see if the given object_ID is listed and of the right direction.  If so
- 	 * we return the item number; otherwise return GMTAPI_NOTSET and set API->error to the error code. */
-	unsigned int i;
-	int item, s_value;
-
-	 /* Search for the object in the active list.  However, if object_ID == GMTAPI_NOTSET we pick the first in that direction */
-	
-	for (i = 0, item = GMTAPI_NOTSET; item == GMTAPI_NOTSET && i < API->n_objects; i++) {
-		if (!API->object[i]) continue;	/* Empty object */
-		if (direction == GMTAPI_NOTSET && API->object[i]->ID == object_ID) item = i;	/* Pick the requested object regardless of direction */
-		else if (API->object[i]->ID == object_ID) item = i;					/* Pick the requested object */
-	}
-	if (item == GMTAPI_NOTSET) { API->error = GMT_NOT_A_VALID_ID; return (GMTAPI_NOTSET); }		/* No such object found */
-
-	/* OK, we found the object; is it the right kind (input or output)? */
-	if (direction != GMTAPI_NOTSET && (s_value = API->object[item]->direction) != direction) {
-		/* Passing an input object but it is listed as output, or vice versa */
-		if (direction == GMT_IN)  { API->error = GMT_NOT_INPUT_OBJECT;  return (GMTAPI_NOTSET); }
-		if (direction == GMT_OUT) { API->error = GMT_NOT_OUTPUT_OBJECT; return (GMTAPI_NOTSET); }
-	}
-	/* Here we have been successful in finding the right object */
-	return (item);		
-}
-#endif
-
 int GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, int family, int object_ID, int direction)
 {	/* Checks to see if the given object_ID is listed and of the right direction.  If so
  	 * we return the item number; otherwise return GMTAPI_NOTSET and set API->error to the error code.
@@ -4335,6 +4308,7 @@ void * GMT_Create_Data2 (void *V_API, unsigned int family, unsigned int mode, ui
 	 			if ((new = GMT_create_grid (API->GMT)) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 				if (pad >= 0) GMT_set_pad (API->GMT, pad);	/* Change the default pad; give -1 to leave as is */
 				error = GMTAPI_init_grid (API, NULL, range, inc, registration, new);
+				if (pad >= 0) GMT_set_pad (API->GMT, 2);	/* Change the default pad; give -1 to leave as is */
 			}
 			else {
 				if ((new = data) == NULL) return_null (API, GMT_PTR_IS_NULL);	/* Error if data is NULL */
@@ -4349,6 +4323,7 @@ void * GMT_Create_Data2 (void *V_API, unsigned int family, unsigned int mode, ui
 	 			if ((new = GMT_create_image (API->GMT)) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 				if (pad >= 0) GMT_set_pad (API->GMT, pad);	/* Change the default pad; give -1 to leave as is */
 				error = GMTAPI_init_image (API, NULL, range, inc, registration, new);
+				if (pad >= 0) GMT_set_pad (API->GMT, 2);	/* Change the default pad; give -1 to leave as is */
 			}
 			else {
 				if ((new = data) == NULL) return_null (API, GMT_PTR_IS_NULL);	/* Error if data is NULL */

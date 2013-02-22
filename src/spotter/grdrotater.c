@@ -466,12 +466,10 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, G->header->inc, G->header->registration, GMTAPI_NOTSET, G_rot))) Return (error);
 	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, G_rot))) Return (error);
 
-	grd_x = GMT_memory (GMT, NULL, G_rot->header->nx, double);
-	grd_y = GMT_memory (GMT, NULL, G_rot->header->ny, double);
-	grd_yc = GMT_memory (GMT, NULL, G_rot->header->ny, double);
 	/* Precalculate node coordinates in both degrees and radians */
-	for (row = 0; row < G_rot->header->ny; row++) grd_y[row] = GMT_grd_row_to_y (GMT, row, G_rot->header);
-	for (col = 0; col < G_rot->header->nx; col++) grd_x[col] = GMT_grd_col_to_x (GMT, col, G_rot->header);
+	grd_x = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, G_rot);
+	grd_y = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, G_rot);
+	grd_yc = GMT_memory (GMT, NULL, G_rot->header->ny, double);
 	for (row = 0; row < G_rot->header->ny; row++) grd_yc[row] = GMT_lat_swap (GMT, grd_y[row], GMT_LATSWAP_G2O);
 
 	/* Loop over all nodes in the new rotated grid and find those inside the reconstructed polygon */

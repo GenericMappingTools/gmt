@@ -110,29 +110,6 @@ struct GMT_GRID_ROWBYROW {	/* Holds book-keeping information needed for row-by-r
 	void *v_row;		/* Void Row pointer for any data format */
 };
 
-#if 0
-struct GMT_GRDFILE {
-	size_t size;		/* Bytes per item */
-	size_t n_byte;		/* Number of bytes for row */
-	unsigned int row;	/* Current row */
-	bool check;		/* true if we must replace NaNs with another representation on i/o */
-	bool auto_advance;	/* true if we want to read file sequentially */
-
-	int fid;		/* NetCDF file number */
-	size_t edge[2];		/* Dimension arrays for netCDF files */
-	size_t start[2];	/* same */
-
-	double scale;		/* scale to use for i/o */
-	double offset;		/* offset to use for i/o */
-
-	FILE *fp;		/* File pointer for native files */
-
-	void *v_row;		/* Void Row pointer for any format */
-
-	struct GMT_GRID_HEADER header;	/* Full GMT header for the file */
-};
-#endif
-
 #ifdef __APPLE__ /* Accelerate framework */
 #include <Accelerate/Accelerate.h>
 #undef I /* because otherwise we are in trouble with, e.g., struct GMT_IMAGE *I */

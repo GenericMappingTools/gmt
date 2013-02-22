@@ -589,8 +589,8 @@ int GMT_psmask (void *V_API, int mode, void *args)
 			GMT_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
 			d_col = GMT_prep_nodesearch (GMT, Grid, Ctrl->S.radius, Ctrl->S.mode, &d_row, &max_d_col);
 		}
-		grd_x0 = GMT_grd_coord (GMT, Grid->header, GMT_X);
-		grd_y0 = GMT_grd_coord (GMT, Grid->header, GMT_Y);
+		grd_x0 = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, Grid);
+		grd_y0 = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, Grid);
 
 		inc2[GMT_X] = 0.5 * Grid->header->inc[GMT_X];
 		inc2[GMT_Y] = 0.5 * Grid->header->inc[GMT_Y];

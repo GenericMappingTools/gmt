@@ -1290,17 +1290,10 @@ int GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GMT_GRID_HE
 	if (!global) {
 		if (GMT_x_is_lon (C, GMT_IN)) {
 			/* If longitudes are all west of range or all east of range, try moving them by 360 degrees east or west */
-#if 0
-			if (header->wesn[XHI] < wesn[XLO])
-				header->wesn[XLO] += 360.0, header->wesn[XHI] += 360.0;
-			else if (header->wesn[XLO] > wesn[XHI])
-				header->wesn[XLO] -= 360.0, header->wesn[XHI] -= 360.0;
-#else
 			if (wesn[XHI] < header->wesn[XLO])
 				wesn[XLO] += 360.0, wesn[XHI] += 360.0;
 			else if (wesn[XLO] > header->wesn[XHI])
 				wesn[XLO] -= 360.0, wesn[XHI] -= 360.0;
-#endif
 		}
 		if (header->wesn[XLO] - wesn[XLO] > GMT_SMALL) wesn[XLO] = header->wesn[XLO], error = true;
 		if (wesn[XHI] - header->wesn[XHI] > GMT_SMALL) wesn[XHI] = header->wesn[XHI], error = true;

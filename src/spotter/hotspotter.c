@@ -380,14 +380,13 @@ int GMT_hotspotter (void *V_API, int mode, void *args)
 
 	/* Precalculate coordinates xpos[], ypos[] and scale factors(lat) on the grid */
 
-	xpos = GMT_memory (GMT, NULL, G->header->nx, double);
-	ypos = GMT_memory (GMT, NULL, G->header->ny, double);
+	xpos = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, G_rad);
+	ypos = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, G_rad);
+
 	latfactor  = GMT_memory (GMT, NULL, G->header->ny, double);
 	ilatfactor = GMT_memory (GMT, NULL, G->header->ny, double);
 
-	for (col = 0; col < G->header->nx; col++) xpos[col] = GMT_grd_col_to_x (GMT, col, G_rad->header);
 	for (row = 0; row < G->header->ny; row++) {
-		ypos[row] = GMT_grd_row_to_y (GMT, row, G_rad->header);
 		latfactor[row] = G_rad->header->inc[GMT_X] * cos (ypos[row]);
 		ilatfactor[row] = 1.0 / latfactor[row];
 	}

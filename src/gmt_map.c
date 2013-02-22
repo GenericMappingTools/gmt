@@ -6383,17 +6383,12 @@ int GMT_grd_project (struct GMT_CTRL *C, struct GMT_GRID *I, struct GMT_GRID *O,
 		GMT_exit (EXIT_FAILURE);
 	}
 
-	x_in  = GMT_memory (C, NULL, I->header->nx, double);
-	y_in  = GMT_memory (C, NULL, I->header->ny, double);
-	x_out = GMT_memory (C, NULL, O->header->nx, double);
-	y_out = GMT_memory (C, NULL, O->header->ny, double);
-
 	/* Precalculate grid coordinates */
 
-	GMT_row_loop  (C, I, row_in) y_in[row_in] = GMT_grd_row_to_y (C, row_in, I->header);
-	GMT_col_loop2 (C, I, col_in) x_in[col_in] = GMT_grd_col_to_x (C, col_in, I->header);
-	GMT_row_loop  (C, O, row_out) y_out[row_out] = GMT_grd_row_to_y (C, row_out, O->header);
-	GMT_col_loop2 (C, O, col_out) x_out[col_out] = GMT_grd_col_to_x (C, col_out, O->header);
+	x_in  = GMT_Get_Coord (C->parent, GMT_IS_GRID, GMT_X, I);
+	y_in  = GMT_Get_Coord (C->parent, GMT_IS_GRID, GMT_Y, I);
+	x_out = GMT_Get_Coord (C->parent, GMT_IS_GRID, GMT_X, O);
+	y_out = GMT_Get_Coord (C->parent, GMT_IS_GRID, GMT_Y, O);
 
 	if (GMT_IS_RECT_GRATICULE (C)) {	/* Since lon/lat parallels x/y it pays to precalculate projected grid coordinates up front */
 		x_in_proj  = GMT_memory (C, NULL, I->header->nx, double);
@@ -6547,17 +6542,12 @@ int GMT_img_project (struct GMT_CTRL *C, struct GMT_IMAGE *I, struct GMT_IMAGE *
 		GMT_exit (EXIT_FAILURE);
 	}
 
-	x_in  = GMT_memory (C, NULL, I->header->nx, double);
-	y_in  = GMT_memory (C, NULL, I->header->ny, double);
-	x_out = GMT_memory (C, NULL, O->header->nx, double);
-	y_out = GMT_memory (C, NULL, O->header->ny, double);
-
 	/* Precalculate grid coordinates */
 
-	GMT_row_loop  (C, I, row_in) y_in[row_in] = GMT_grd_row_to_y (C, row_in, I->header);
-	GMT_col_loop2 (C, I, col_in) x_in[col_in] = GMT_grd_col_to_x (C, col_in, I->header);
-	GMT_row_loop  (C, O, row_out) y_out[row_out] = GMT_grd_row_to_y (C, row_out, O->header);
-	GMT_col_loop2 (C, O, col_out) x_out[col_out] = GMT_grd_col_to_x (C, col_out, O->header);
+	x_in  = GMT_Get_Coord (C->parent, GMT_IS_GRID, GMT_X, I);
+	y_in  = GMT_Get_Coord (C->parent, GMT_IS_GRID, GMT_Y, I);
+	x_out = GMT_Get_Coord (C->parent, GMT_IS_GRID, GMT_X, O);
+	y_out = GMT_Get_Coord (C->parent, GMT_IS_GRID, GMT_Y, O);
 
 	if (GMT_IS_RECT_GRATICULE (C)) {	/* Since lon/lat parallels x/y it pays to precalculate projected grid coordinates up front */
 		x_in_proj  = GMT_memory (C, NULL, I->header->nx, double);

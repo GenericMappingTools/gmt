@@ -533,53 +533,6 @@ void initialize_grid (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 	}
 }
 
-#if 0
-void new_initialize_grid (struct SURFACE_INFO *C)
-{	/*
-	 * For the initial gridsize, load constrained nodes with weighted avg of their data;
-	 * and then do something with the unconstrained ones.
-	 */
-	int k, k_index, u_index, block_i, block_j;
-	char *iu = C->iu;
-	double sum_w, sum_zw, weight, x0, y0, dx, dy, dx_scale, dy_scale;
-	float *u = C->Grid->data;
-	struct GMT_GRID_HEADER *h = C->Grid->header;
-
-	dx_scale = 4.0 / C->grid_xinc;
-	dy_scale = 4.0 / C->grid_yinc;
-	C->n_empty = C->block_ny * C->block_nx;
-	k = 0;
-	while (k < C->npoints) {
-		block_i = C->data[k].index / C->block_ny;
-		block_j = C->data[k].index % C->block_ny;
-		x0 = h->wesn[XLO] + block_i*C->grid_xinc;
-		y0 = h->wesn[YLO] + block_j*C->grid_yinc;
-		u_index = C->ij_sw_corner + (block_i*C->my + block_j) * C->grid;
-		k_index = C->data[k].index;
-
-		dy = (C->data[k].y - y0) * dy_scale;
-		dx = (C->data[k].x - x0) * dx_scale;
-		sum_w = 1.0 / (1.0 + dx*dx + dy*dy);
-		sum_zw = C->data[k].z * sum_w;
-		k++;
-
-		while (k < C->npoints && C->data[k].index == k_index) {
-
-			dy = (C->data[k].y - y0) * dy_scale;
-			dx = (C->data[k].x - x0) * dx_scale;
-			weight = 1.0 / (1.0 + dx*dx + dy*dy);
-			sum_zw += C->data[k].z * weight;
-			sum_w += weight;
-			sum_zw += weight*C->data[k].z;
-			k++;
-	 	}
-	 	u[u_index] = (float)(sum_zw/sum_w);
-	 	iu[u_index] = 5;
-	 	C->n_empty--;
-	 }
-}
-#endif
-
 int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_OPTION *options)
 {
 	int i, j, error;

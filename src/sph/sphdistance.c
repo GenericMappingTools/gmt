@@ -408,19 +408,22 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 	}
 	
 	/* OK, time to create and work on the distance grid */
-	
+
+#if 0	
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active, GMTAPI_NOTSET, Grid))) Return (error);
 	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, Grid))) Return (error);
+#endif
 
+	if ((Grid = GMT_Create_Data2 (API, GMT_IS_GRID, GMT_GRID_ALL, NULL, GMT->common.R.wesn, Ctrl->I.inc, \
+		GMT->common.r.active, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Start processing distance grid\n");
 
+	grid_lon = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, Grid);
+	grid_lat = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, Grid);
+
 	nx1 = (Grid->header->registration) ? Grid->header->nx : Grid->header->nx - 1;
-	grid_lon = GMT_memory (GMT, NULL, Grid->header->nx, double);
-	grid_lat = GMT_memory (GMT, NULL, Grid->header->ny, double);
-	for (col = 0; col < Grid->header->nx; col++) grid_lon[col] = GMT_grd_col_to_x (GMT, col, Grid->header);
-	for (row = 0; row < Grid->header->ny; row++) grid_lat[row] = GMT_grd_row_to_y (GMT, row, Grid->header);
-	
+
 	if (Ctrl->Q.active) {	/* Pre-chewed, just get number of nodes */
 		n = Table->n_segments;
 	}
@@ -444,7 +447,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 			node_new = node_stop = V->lend[node];
 			vertex_new = V->listc[node_new];
 
-			/* Each iteration of this DO walks along one side of the polygon,
+			/* Each iteration of this do-loop walks along one side of the polygon,
 			   considering the subtriangle NODE --> VERTEX_LAST --> VERTEX. */
 
 			vertex = 0;
