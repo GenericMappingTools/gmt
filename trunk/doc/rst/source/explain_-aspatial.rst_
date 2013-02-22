@@ -1,2 +1,2 @@
-**-a**\ *col*\ =\ *name*\ [*...*\ ] (\*)
+**-a**\ *col*\ =\ *name*\ [*...*\ ] :ref:`(\*) <-aspatial_full>`
     Set aspatial column associations *col*\ =\ *name*.

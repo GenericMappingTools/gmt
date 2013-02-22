@@ -1,3 +1,5 @@
+.. _-bi_full:
+
 **-bi**\ [*ncols*\ ][*type*\ ]
     Select binary input. Append one or more comma-separated combinations
     of *ncols*\ *type*, where *ncols* is the actual number of data
