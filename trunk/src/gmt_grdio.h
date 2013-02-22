@@ -97,6 +97,7 @@ struct GMT_GRID_ROWBYROW {	/* Holds book-keeping information needed for row-by-r
 	size_t size;		/* Bytes per item [4 for float, 1 for byte, etc] */
 	size_t n_byte;		/* Number of bytes for row */
 	unsigned int row;	/* Current row */
+	bool open;		/* true if we have already opened the file */
 	bool check;		/* true if we must replace NaNs with another representation on i/o */
 	bool auto_advance;	/* true if we want to read file sequentially */
 

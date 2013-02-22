@@ -447,13 +447,16 @@ int gmt_open_grd (struct GMT_CTRL *C, char *file, struct GMT_GRID *G, char mode,
 		magic = false;
 	}
 	if (header) {
-		if (mode == 'r')
+		if (mode == 'r' && !R->open)	/* First time reading the info */
 			GMT_read_grd_info (C, file, G->header);
-		else 
+		else if (R->open)		/* Coming back to update the header */
+			GMT_update_grd_info (C, file, G->header);
+		else				/* First time writing the header */
 			GMT_write_grd_info (C, file, G->header);
 	}
 	else /* Fallback to existing header */
 		GMT_err_trap (GMT_grd_get_format (C, file, G->header, magic));
+	if (R->open) return (GMT_NOERROR);	/* Already set the first time */
 	fmt = C->session.grdformat[G->header->type];
 	if (fmt[0] == 'c') {		/* Open netCDF file, old format */
 		GMT_err_trap (nc_open (G->header->name, cdf_mode[r_w], &R->fid));
@@ -482,6 +485,7 @@ int gmt_open_grd (struct GMT_CTRL *C, char *file, struct GMT_GRID *G, char mode,
 
 	R->size = GMT_grd_data_size (C, G->header->type, &G->header->nan_value);
 	R->check = !GMT_is_dnan (G->header->nan_value);
+	R->open = true;
 
 	if (fmt[1] == 'm')	/* Bit mask */
 		R->n_byte = lrint (ceil (G->header->nx / 32.0)) * R->size;
@@ -1903,7 +1907,8 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, un
 			if (! (mode & GMT_GRID_DATA_ONLY)) {		/* Must init header and read the header information from file */
 				if (row_by_row) {	/* Special row-by-row processing mode */
 					char r_mode = (mode & GMT_GRID_NO_HEADER) ? 'R' : 'r';
-					G_obj->extra = GMT_memory (API->GMT, NULL, 1, struct GMT_GRID_ROWBYROW);
+					/* If we get here more than once we only allocate extra once */
+					if (G_obj->extra == NULL) G_obj->extra = GMT_memory (API->GMT, NULL, 1, struct GMT_GRID_ROWBYROW);
 					if (gmt_open_grd (API->GMT, S_obj->filename, G_obj, r_mode, mode))	/* Open the grid for incremental row reading */
 						return_null (API, GMT_GRID_READ_ERROR);
 				}
@@ -2111,7 +2116,8 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mod
 				GMT_report (API->GMT, GMT_MSG_LONG_VERBOSE, "Updating grid header for file %s\n", S_obj->filename);
 				if (row_by_row) {	/* Special row-by-row processing mode */
 					char w_mode = (mode & GMT_GRID_NO_HEADER) ? 'W' : 'w';
-					G_obj->extra = GMT_memory (API->GMT, NULL, 1, struct GMT_GRID_ROWBYROW);
+					/* Since we may get here twice (initial write; later update) we only allocate extra if NULL */
+					if (G_obj->extra == NULL) G_obj->extra = GMT_memory (API->GMT, NULL, 1, struct GMT_GRID_ROWBYROW);
 					if (gmt_open_grd (API->GMT, S_obj->filename, G_obj, w_mode, mode))	/* Open the grid for incremental row writing */
 						return (GMT_Report_Error (API, GMT_GRID_WRITE_ERROR));
 				}
