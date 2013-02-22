@@ -1,3 +1,5 @@
+.. _nodereg_full:
+
 **-r** (\*)
     Force pixel node registration [Default is gridline registration].
     (Node registrations are defined in **GMT** Technical Reference and

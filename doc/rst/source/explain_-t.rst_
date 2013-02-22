@@ -1,2 +1,2 @@
-**-t**\ [*transp*\ ] (\*)
+**-t**\ [*transp*\ ] :ref:`(more ...) <-t_full>`
     Set PDF transparency level.

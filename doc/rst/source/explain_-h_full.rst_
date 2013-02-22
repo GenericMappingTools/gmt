@@ -1,3 +1,5 @@
+.. _-h_full:
+
 **-h**\ [**i**\ \|\ **o**][*n*\ ]
     Input file(s) has header record(s). If used, the default number of
     header records is **IO\_N\_HEADER\_RECS** [1]. Use **-hi** if only

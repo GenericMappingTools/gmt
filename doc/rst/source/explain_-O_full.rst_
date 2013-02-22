@@ -1,3 +1,5 @@
+.. _-O_full:
+
 **-O**
     Selects Overlay plot mode [Default initializes a new plot system].
     Required for all but the first plot command when building

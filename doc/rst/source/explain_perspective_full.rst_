@@ -1,3 +1,5 @@
+.. _perspective_full:
+
 **-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
     Selects perspective view and sets the azimuth and elevation of the
     viewpoint [180/90]. When **-p** is used in consort with **-Jz** or

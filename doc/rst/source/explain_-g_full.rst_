@@ -1,3 +1,5 @@
+.. _-g_full:
+
 **-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
     Examine the spacing between consecutive data points in order to
     impose breaks in the line. Append **x**\ \|\ **X** or
