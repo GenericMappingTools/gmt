@@ -346,7 +346,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 #endif
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
 		Return (API->error);
 	}
 

@@ -290,7 +290,7 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 			Return (EXIT_FAILURE);
 		}
 
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
 			Return (API->error);
 		}
 

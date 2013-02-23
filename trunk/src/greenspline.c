@@ -1186,7 +1186,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 	for (k = 0; k < n_alloc; k++) X[k] = GMT_memory (GMT, NULL, dimension, double);
 	obs = GMT_memory (GMT, NULL, n_alloc, double);
 
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
 		Return (API->error);
 	}
 	n = m = 0;
@@ -1601,7 +1601,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 		if (Ctrl->G.active && (out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, NULL, Ctrl->G.file)) == GMTAPI_NOTSET) {
 			Return (error);
 		}
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
 	
@@ -1653,7 +1653,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 			else if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes std output */
 				Return (API->error);
 			}
-			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
+			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 				Return (API->error);
 			}
 		}

@@ -538,7 +538,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args)
 		Return (EXIT_FAILURE);
 	}
 
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
 

@@ -363,7 +363,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args)
 	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT,  GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
 		Return (API->error);
 	}
 	
@@ -405,7 +405,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args)
 	allocate = (Ctrl->S.active && (Ctrl->L.norm%2));	/* Will need work array */
 	if (allocate) work = GMT_memory (GMT, NULL, n_data, double);
 
-	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT) != GMT_OK) {
+	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {
 		Return (API->error);	/* Enables data output and sets access mode */
 	}
 
