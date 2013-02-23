@@ -1303,6 +1303,7 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *stat
 		C->current.io.rec_in_tbl_no++;	/* Counts up, regardless of what this record is (data, junk, segment header, etc) */
 		if (C->current.setting.io_header[GMT_IN] && C->current.io.rec_in_tbl_no <= C->current.setting.io_n_header_items) {	/* Must treat first io_n_header_items as headers */
 			p = GMT_fgets (C, line, GMT_BUFSIZ, fp);	/* Get the line */
+			if (C->common.h.delete) continue;	/* Simplest way to replace headers on output is to ignore them on input */
 			strncpy (C->current.io.current_record, line, GMT_BUFSIZ);
 			C->current.io.status = GMT_IO_TABLE_HEADER;
 			//C->current.setting.io_header[GMT_OUT] = true;	/* Turn on table headers on output PW: No! If we get here via -hi then no header output was requested */
@@ -1329,6 +1330,7 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *stat
 		}
 		if (gmt_ogr_parser (C, line)) continue;	/* If we parsed a GMT/OGR record we must go up to top of loop and get the next record */
 		if (line[0] == '#') {	/* Got a file header, copy it and return */
+			if (C->common.h.delete) continue;	/* Simplest way to replace headers on output is to ignore them on input */
 			strncpy (C->current.io.current_record, line, GMT_BUFSIZ);
 			C->current.io.status = GMT_IO_TABLE_HEADER;
 			*status = 0;
@@ -1434,50 +1436,56 @@ void * gmt_ascii_input (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *stat
 
 void * GMT_ascii_textinput (struct GMT_CTRL *C, FILE *fp, unsigned int *n, int *status)
 {
+	bool more = true;
 	char line[GMT_BUFSIZ], *p = NULL;
 
 	/* GMT_ascii_textinput will read one text line and return it, setting
 	 * header or segment flags in the process.
 	 */
 
-	/* First read until we get a non-blank, non-comment record, or reach EOF */
+	while (more) {
+		/* First read until we get a non-blank, non-comment record, or reach EOF */
 
-	C->current.io.rec_no++;		/* Counts up, regardless of what this record is (data, junk, segment header, etc) */
-	C->current.io.rec_in_tbl_no++;	/* Counts up, regardless of what this record is (data, junk, segment header, etc) */
-	while ((p = GMT_fgets (C, line, GMT_BUFSIZ, fp)) && gmt_ogr_parser (C, line)) {	/* Exits loop when we successfully have read a data record */
 		C->current.io.rec_no++;		/* Counts up, regardless of what this record is (data, junk, segment header, etc) */
 		C->current.io.rec_in_tbl_no++;	/* Counts up, regardless of what this record is (data, junk, segment header, etc) */
-	}
-	/* Here we come once any OGR headers have been parsed and we have a real (non-OGR header) record */
-	if (C->current.setting.io_header[GMT_IN] && C->current.io.rec_in_tbl_no <= C->current.setting.io_n_header_items) {	/* Must treat first io_n_header_items as headers */
-		strncpy (C->current.io.current_record, line, GMT_BUFSIZ);
-		C->current.io.status = GMT_IO_TABLE_HEADER;
-		*status = 0;
-		return (NULL);
-	}
-	if (!p) {	/* Ran out of records */
-		C->current.io.status = GMT_IO_EOF;
-		*n = 0;
-		*status = -1;
-		return (NULL);
-	}
-	if (line[0] == '#') {	/* Got a file header, take action and return */
-		strncpy (C->current.io.current_record, line, GMT_BUFSIZ);
-		C->current.io.status = GMT_IO_TABLE_HEADER;
-		*n = 1;
-		*status = 0;
-		return (NULL);
-	}
+		while ((p = GMT_fgets (C, line, GMT_BUFSIZ, fp)) && gmt_ogr_parser (C, line)) {	/* Exits loop when we successfully have read a data record */
+			C->current.io.rec_no++;		/* Counts up, regardless of what this record is (data, junk, segment header, etc) */
+			C->current.io.rec_in_tbl_no++;	/* Counts up, regardless of what this record is (data, junk, segment header, etc) */
+		}
+		/* Here we come once any OGR headers have been parsed and we have a real (non-OGR header) record */
+		if (C->current.setting.io_header[GMT_IN] && C->current.io.rec_in_tbl_no <= C->current.setting.io_n_header_items) {	/* Must treat first io_n_header_items as headers */
+			if (C->common.h.delete) continue;	/* Simplest way to replace headers on output is to ignore them on input */
+			strncpy (C->current.io.current_record, line, GMT_BUFSIZ);
+			C->current.io.status = GMT_IO_TABLE_HEADER;
+			*status = 0;
+			return (NULL);
+		}
+		if (!p) {	/* Ran out of records */
+			C->current.io.status = GMT_IO_EOF;
+			*n = 0;
+			*status = -1;
+			return (NULL);
+		}
+		if (line[0] == '#') {	/* Got a file header, take action and return */
+			if (C->common.h.delete) continue;	/* Simplest way to replace headers on output is to ignore them on input */
+			strncpy (C->current.io.current_record, line, GMT_BUFSIZ);
+			C->current.io.status = GMT_IO_TABLE_HEADER;
+			*n = 1;
+			*status = 0;
+			return (NULL);
+		}
 
-	if (line[0] == C->current.setting.io_seg_marker[GMT_IN]) {	/* Got a segment header, take action and return */
-		C->current.io.status = GMT_IO_SEGMENT_HEADER;
-		GMT_set_segmentheader (C, GMT_OUT, true);	/* Turn on segment headers on output */
-		C->current.io.seg_no++;
-		/* Just save the header content, not the marker and leading whitespace */
-		strncpy (C->current.io.segment_header, GMT_trim_segheader (C, line), GMT_BUFSIZ);
-		*n = 1;
-		*status = 0;
-		return (NULL);
+		if (line[0] == C->current.setting.io_seg_marker[GMT_IN]) {	/* Got a segment header, take action and return */
+			C->current.io.status = GMT_IO_SEGMENT_HEADER;
+			GMT_set_segmentheader (C, GMT_OUT, true);	/* Turn on segment headers on output */
+			C->current.io.seg_no++;
+			/* Just save the header content, not the marker and leading whitespace */
+			strncpy (C->current.io.segment_header, GMT_trim_segheader (C, line), GMT_BUFSIZ);
+			*n = 1;
+			*status = 0;
+			return (NULL);
+		}
+		more = false;	/* Got a valid record */
 	}
 
 	/* Normal data record */
@@ -5113,6 +5121,32 @@ int gmt_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 	return (0);
 }
 
+void gmt_write_multilines (struct GMT_CTRL *C, FILE *fp, char *text, char *prefix) {
+	/* Optional title(s) or remarks provided; could be several lines separated by \n */
+	char p[GMT_BUFSIZ], line[GMT_BUFSIZ];
+	unsigned int pos = 0, k = 0;
+
+	while (GMT_strtok (text, "\\", &pos, p)) {
+		sprintf (line, "# %7s : %s", prefix, &p[k]);
+		GMT_write_tableheader (C, fp, line);
+		k = 1;	/* Need k to skip the n in \n */
+	}
+}
+	
+void GMT_write_newheaders (struct GMT_CTRL *C, FILE *fp)
+{	/* Common ascii header records added on output */
+	if (C->common.b.active[GMT_OUT]) return;		/* No output headers for binary files */
+	if (!C->current.setting.io_header[GMT_OUT]) return;	/* No output headers requested, so don't bother */
+	if (C->common.h.title) {	/* Optional title(s) provided; could be several lines separated by \n */
+		gmt_write_multilines (C, fp, C->common.h.title, "Title");
+	}
+	/* Always write command line */
+	GMT_write_tableheader (C, fp, GMT_create_header_item (C->parent, GMT_COMMENT_IS_COMMAND | GMT_COMMENT_IS_OPTION, C->current.options));
+	if (C->common.h.remark) {	/* Optional remark(s) provided; could be several lines separated by \n */
+		gmt_write_multilines (C, fp, C->common.h.remark, "Remark");
+	}
+}
+
 int GMT_write_table (struct GMT_CTRL *C, void *dest, unsigned int dest_type, struct GMT_DATATABLE *table, bool use_GMT_io, unsigned int io_mode)
 {
 	/* Writes an entire segment data set to file or wherever.
@@ -5184,6 +5218,7 @@ int GMT_write_table (struct GMT_CTRL *C, void *dest, unsigned int dest_type, str
 	if (io_mode < GMT_WRITE_SEGMENT) {
 		if (ascii && C->current.setting.io_header[GMT_OUT]) {
 			for (k = 0; k < table->n_headers; k++) GMT_write_tableheader (C, fp, table->header[k]);
+			GMT_write_newheaders (C, fp);
 		}
 		if (table->ogr) GMT_write_ogr_header (fp, table->ogr);	/* Must write OGR/GMT header */
 	}
@@ -5203,7 +5238,10 @@ int GMT_write_table (struct GMT_CTRL *C, void *dest, unsigned int dest_type, str
 				GMT_exit (EXIT_FAILURE);
 			}
 			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Writing data segment to file %s\n", out_file);
-			if (ascii && C->current.setting.io_header[GMT_OUT]) for (k = 0; k < table->n_headers; k++) GMT_write_tableheader (C, fp, table->header[k]);
+			if (ascii && C->current.setting.io_header[GMT_OUT]) {
+				for (k = 0; k < table->n_headers; k++) GMT_write_tableheader (C, fp, table->header[k]);
+				GMT_write_newheaders (C, fp);
+			}
 		}
 		if (C->current.io.multi_segments[GMT_OUT]) {	/* Want to write segment headers */
 			if (table->segment[seg]->ogr) gmt_build_segheader_from_ogr (C, table->segment[seg]);	/* We have access to OGR metadata */
@@ -5369,6 +5407,7 @@ int gmt_write_texttable (struct GMT_CTRL *C, void *dest, int dest_type, struct G
 	if (io_mode < GMT_WRITE_SEGMENT) {
 		if (C->current.setting.io_header[GMT_OUT]) {
 			for (hdr = 0; hdr < table->n_headers; hdr++) GMT_write_tableheader (C, fp, table->header[hdr]);
+			GMT_write_newheaders (C, fp);
 		}
 	}
 	for (seg = 0; seg < table->n_segments; seg++) {
@@ -5385,7 +5424,10 @@ int gmt_write_texttable (struct GMT_CTRL *C, void *dest, int dest_type, struct G
 				GMT_exit (EXIT_FAILURE);
 			}
 			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Writing Text Table segment to file %s\n", out_file);
-			if (C->current.setting.io_header[GMT_OUT]) for (hdr = 0; hdr < table->n_headers; hdr++) GMT_write_tableheader (C, fp, table->header[hdr]);
+			if (C->current.setting.io_header[GMT_OUT]) {
+				for (hdr = 0; hdr < table->n_headers; hdr++) GMT_write_tableheader (C, fp, table->header[hdr]);
+				GMT_write_newheaders (C, fp);
+			}
 		}
 		if (C->current.io.multi_segments[GMT_OUT]) {	/* Want to write segment headers */
 			if (table->segment[seg]->header) strncpy (C->current.io.segment_header, table->segment[seg]->header, GMT_BUFSIZ);

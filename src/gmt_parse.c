@@ -444,6 +444,8 @@ int GMT_Parse_Common (void *V_API, char *sorted, char *unsorted, struct GMT_OPTI
 	for (opt = options; opt; opt = opt->next)
 		n_errors += GMT_parse_common_options (API->GMT, unsorted, opt->option, opt->arg);
 
+	/* Update [read-only] pointer to the current option list */
+	API->GMT->current.options = options;
 	if (n_errors) return_error (API, GMT_PARSE_ERROR);	/* One or more options failed to parse */
 	return (GMT_OK);
 }

@@ -1,6 +1,6 @@
 #	$Id$
 #
-# Colortable for DMSP-OLS Nighttime Lights Time Series
+# Color table for DMSP-OLS Nighttime Lights Time Series
 # Designed by Andreas Trawoeger.
 #
 # COLOR_MODEL = hsv

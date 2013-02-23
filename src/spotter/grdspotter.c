@@ -212,7 +212,8 @@ int GMT_grdspotter_usage (struct GMTAPI_CTRL *C, int level)
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdspotter <ingrid> -E[+]<rottable> -G<CVAgrid> %s\n", GMT_I_OPT);
 	GMT_message (GMT, "\t%s [-A<agegrid>] [-D[i|p]<grdfile>] [-L<IDgrid>]\n", GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-M] [-N<upper_age>] [-Q<IDinfo>] [-S] [-Tt|-u<age>] [%s] [-W<n_try] [-Z<z_min>[/<z_max>[/<z_inc>]]] [%s]\n\n", GMT_V_OPT, GMT_r_OPT);
+	GMT_message (GMT, "\t[-M] [-N<upper_age>] [-Q<IDinfo>] [-S] [-Tt|-u<age>] [%s] [-W<n_try]\n", GMT_V_OPT);
+	GMT_message (GMT, "\t[-Z<z_min>[/<z_max>[/<z_inc>]]] [%s] [%s]\n\n", GMT_ho_OPT, GMT_r_OPT);
 	
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 	
@@ -241,7 +242,7 @@ int GMT_grdspotter_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-W Get <n_try> bootstrap estimates of maximum CVA location [Default is no bootstrapping].\n");
 	GMT_message (GMT, "\t-Z Ignore nodes with z-value lower than z_min [0] and optionally larger than z_max [Inf].\n");
 	GMT_message (GMT, "\t   Give z_min/z_max/z_inc to make CVA grids for each z-slice {Default makes 1 CVA grid].\n");
-	GMT_explain_options (GMT, "F");
+	GMT_explain_options (GMT, "hF.");
 
 	return (EXIT_FAILURE);
 }

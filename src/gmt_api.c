@@ -605,13 +605,18 @@ void GMTAPI_matrix_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *ar
 	if (mode & GMT_COMMENT_IS_COMMAND) update_txt_item (API, mode, arg, &M->command);
 }
 
-char * create_header_item (struct GMTAPI_CTRL *API, unsigned int mode, void *arg)
+char * GMT_create_header_item (struct GMTAPI_CTRL *API, unsigned int mode, void *arg)
 {
 	char *txt = (mode & GMT_COMMENT_IS_OPTION) ? GMT_Create_Cmd (API, arg) : (char *)arg;
 	static char buffer[GMT_BUFSIZ];
 	GMT_memset (buffer, GMT_BUFSIZ, char);
-	if (mode & GMT_COMMENT_IS_COMMAND) strcat (buffer, " Command: ");
-	if (mode & GMT_COMMENT_IS_REMARK)  strcat (buffer, " Remark: ");
+	if (mode & GMT_COMMENT_IS_TITLE)   strcat (buffer, "  Title :");
+	if (mode & GMT_COMMENT_IS_COMMAND) {
+		strcat (buffer, " Command : ");
+		strcat (buffer, gmt_module_name (API->GMT));
+		strcat (buffer, " ");
+	}
+	if (mode & GMT_COMMENT_IS_REMARK)  strcat (buffer, " Remark : ");
 	strcat (buffer, txt);
 	if (mode & GMT_COMMENT_IS_OPTION) GMT_free (API->GMT, txt);
 	return (buffer);
@@ -621,7 +626,7 @@ void GMTAPI_dataset_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *a
 {	/* Append or replace data table headers with given text or commmand-line options */
 	unsigned int tbl, k;
 	struct GMT_DATATABLE *T = NULL;
-	char *txt = create_header_item (API, mode, arg);
+	char *txt = GMT_create_header_item (API, mode, arg);
 	
 	for (tbl = 0; tbl < D->n_tables; tbl++) {	/* For each table in the dataset */
 		T = D->table[tbl];	/* Short-hand for this table */
@@ -638,7 +643,7 @@ void GMTAPI_textset_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *a
 {	/* Append or replace text table headers with given text or commmand-line options */
 	unsigned int tbl, k;
 	struct GMT_TEXTTABLE *T = NULL;
-	char *txt = create_header_item (API, mode, arg);
+	char *txt = GMT_create_header_item (API, mode, arg);
 	
 	for (tbl = 0; tbl < D->n_tables; tbl++) {	/* For each table in the dataset */
 		T = D->table[tbl];	/* Short-hand for this table */
@@ -654,7 +659,7 @@ void GMTAPI_textset_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *a
 void GMTAPI_cpt_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_PALETTE *P)
 {	/* Append or replace text table headers with given text or commmand-line options */
 	unsigned int k;
-	char *txt = create_header_item (API, mode, arg);
+	char *txt = GMT_create_header_item (API, mode, arg);
 	
 	if (mode & GMT_COMMENT_IS_RESET) {	/* Eliminate all existing headers */
 		for (k = 0; k < P->n_headers; k++) free ((void *)P->header[k]);
@@ -3152,6 +3157,7 @@ int GMT_Begin_IO (void *V_API, unsigned int family, unsigned int direction)
 	API->GMT->current.io.ogr = GMT_OGR_UNKNOWN;
 	API->GMT->current.io.segment_header[0] = API->GMT->current.io.current_record[0] = 0;
 	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT_Begin_IO: %s resource access is now enabled [record-by-record]\n", GMT_direction[direction]);
+	if (direction == GMT_OUT) GMT_Put_Record (API, GMT_WRITE_TABLE_START, NULL);	/* Write standard header block */
 
 	return (GMT_OK);	/* No error encountered */
 }
@@ -3783,6 +3789,9 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 					s = (record) ? record : API->GMT->current.io.current_record;
 					GMT_write_textrecord (API->GMT, S_obj->fp, s);
 					wrote = 1;
+					break;
+				case GMT_WRITE_TABLE_START:	/* Write title and command to start of file; skip if binary */
+					GMT_write_newheaders (API->GMT, S_obj->fp);
 					break;
 				default:
 					GMT_report (API->GMT, GMT_MSG_NORMAL, "GMTAPI: Internal error: GMT_Put_Record called with illegal mode\n");

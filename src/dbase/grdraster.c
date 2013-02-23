@@ -636,7 +636,7 @@ int GMT_grdraster_usage (struct GMTAPI_CTRL *C, int level) {
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdraster <file number>|<text> %s [-G<outgrid>] [%s]\n", GMT_Rgeo_OPT, GMT_Id_OPT);
-	GMT_message (GMT, "\t[-T<table>] [%s] [%s]\n", GMT_bo_OPT, GMT_o_OPT);
+	GMT_message (GMT, "\t[-T<table>] [%s] [%s] [%s]\n", GMT_bo_OPT, GMT_ho_OPT, GMT_o_OPT);
 
 	GMT_message (GMT, "\t<file number> (#) or <text> corresponds to one of the datasets listed.\n");
 	GMT_message (GMT, "\t[<text> can be a unique substring of the description].\n\n");
@@ -667,7 +667,7 @@ int GMT_grdraster_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_explain_options (GMT, "j");
 	GMT_message (GMT, "\t-T Set the filename for output ASCII table with xyz triplets.\n");
 	GMT_message (GMT, "\t   To get binary triplets, see -bo.  Cannot be used with -G.\n");
-	GMT_explain_options (GMT, "VD3o.");
+	GMT_explain_options (GMT, "VD3ho.");
 
 	return (EXIT_FAILURE);
 }
@@ -774,7 +774,7 @@ int GMT_grdraster (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VJRb", "", options)) Return (API->error);
+	if (GMT_Parse_Common (API, "-VJRbh", "", options)) Return (API->error);
 	Ctrl = New_grdraster_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdraster_parse (API, Ctrl, options))) Return (error);
 

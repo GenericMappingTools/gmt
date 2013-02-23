@@ -260,6 +260,7 @@ EXTERN_MSC double Cabs (double A[]);
 /* Sub function needed by GMT_end to free memory used in modules and at end of session */
 
 EXTERN_MSC void GMT_Garbage_Collection (struct GMTAPI_CTRL *C, int level);
+EXTERN_MSC char * GMT_create_header_item (struct GMTAPI_CTRL *API, unsigned int mode, void *arg);
 
 /* For supplements */
 #ifdef GMT_COMPAT

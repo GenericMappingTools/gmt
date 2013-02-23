@@ -117,6 +117,7 @@ struct GMT_CURRENT {
 	struct GMT_PLOT plot;		/* Holds all plotting-related parameters */
 	struct GMT_TIME_CONV time;	/* Holds all time-related parameters */
 	struct GMT_PS ps;		/* Hold parameters related to PS setup */
+	struct GMT_OPTION *options;	/* Pointer to current program's options */
 };
 
 struct GMT_INTERNAL {

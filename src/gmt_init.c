@@ -550,11 +550,14 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 
 		case 'h':	/* Header */
 
-			GMT_message (C, "\t-h[i][<n>][+c][+r][+t<txt>] Input/output file has [%d] Header record(s) [%s]\n", C->current.setting.io_n_header_items, GMT_choice[C->current.setting.io_header[GMT_IN]]);
-			GMT_message (C, "\t   Optionally, append i for input only and/or number of header records.\n");
+			GMT_message (C, "\t-h[i][<n>][+c][+d][+r<remark>][+t<title>] Input/output file has [%d] Header record(s) [%s]\n", C->current.setting.io_n_header_items, GMT_choice[C->current.setting.io_header[GMT_IN]]);
+			GMT_message (C, "\t   Optionally, append i for input only and/or number of header records [0].\n");
+			GMT_message (C, "\t     -hi turns off the writing of headers on output [on].\n");
 			GMT_message (C, "\t   Append +c to add header record with column information.\n");
-			GMT_message (C, "\t   Append +r to replace headers with new ones [Default will append headers].\n");
-			GMT_message (C, "\t   Append +t to add <txt> as an extra header record.\n");
+			GMT_message (C, "\t   Append +d to delete headers before adding new ones [Default will append headers].\n");
+			GMT_message (C, "\t   Append +r to add <remark> to specify a remark record.\n");
+			GMT_message (C, "\t   Append +t to add <title> to specify a title record.\n");
+			GMT_message (C, "\t     (these strings may contain \\n to indicate line-breaks)\n");
 			GMT_message (C, "\t   For binary files, <n> is considered to mean number of bytes.\n");
 			break;
 
@@ -1189,7 +1192,7 @@ int gmt_parse_h_option (struct GMT_CTRL *C, char *item) {
 	unsigned int pos = 0;
 	char p[GMT_BUFSIZ], *c = NULL;
 
-	/* Parse the -h option.  Full syntax: -h[i|o][<nrecs>][+r][+c][+t<comment>] */
+	/* Parse the -h option.  Full syntax: -h[i|o][<nrecs>][+r][+c][+t<title>] */
 
 	/* Note: This forces the io to skip the first <nrecs> records, regardless of what they are.
 	 * In addition, any record starting with # will be considered a comment.
@@ -1197,11 +1200,10 @@ int gmt_parse_h_option (struct GMT_CTRL *C, char *item) {
 	 * input records we found or (b) the program writes a specific number of records built from scratch.
 	 * Use +r to have a program replace existing headers with its own [Default appends].
 	 * Use +c to add a header identifying the various columns + [colno].
-	 * Use +t<txt> to add a specify header comment to the output file.
+	 * Use +t<title> to add a specify header title to the output file.
 	 */
 	if (!item || !item[0]) {	/* Just -h: Nothing further to parse; just set defaults */
 		C->current.setting.io_header[GMT_IN] = C->current.setting.io_header[GMT_OUT] = true;
-		C->current.setting.io_n_header_items = 1;
 		return (GMT_NOERROR);
 	}
 	if (item[0] == 'i')	/* Apply to input only */
@@ -1222,10 +1224,9 @@ int gmt_parse_h_option (struct GMT_CTRL *C, char *item) {
 				C->current.setting.io_n_header_items = i;
 		}
 	}
-	else C->current.setting.io_n_header_items = 1;
 
 	if (col == GMT_IN) {		/* Only input should have header records, set to true unless we gave -h[i]0 */
-		C->current.setting.io_header[GMT_IN] = (C->current.setting.io_n_header_items > 0);
+		C->current.setting.io_header[GMT_IN] = true;
 		C->current.setting.io_header[GMT_OUT] = false;
 	}
 	else if (col == GMT_OUT) {	/* Only output should have header records */
@@ -1233,22 +1234,26 @@ int gmt_parse_h_option (struct GMT_CTRL *C, char *item) {
 		C->current.setting.io_header[GMT_IN] = false;
 	}
 	else {	/* Both in and out may have header records */
-		C->current.setting.io_header[GMT_IN] = (C->current.setting.io_n_header_items > 0);
+		C->current.setting.io_header[GMT_IN] = true;
 		C->current.setting.io_header[GMT_OUT] = true;
 	}
 	
 	if ((c = strchr (item, '+'))) {	/* Found modifiers */
 		while ((GMT_strtok (c, "+", &pos, p))) {
 			switch (p[0]) {
-				case 'r':	/* Replace headers */
-					C->common.h.replace = true;
+				case 'd':	/* Delete existing headers */
+					C->common.h.delete = true;
 					break;
 				case 'c':	/* Add column names record */
 					C->common.h.col_names = true;
 					break;
-				case 't':	/* Add specific text comment */
-					if (C->common.h.comment) free ((void *)C->common.h.comment);
-					C->common.h.comment = strdup (&p[1]);
+				case 'r':	/* Add specific text remark */
+					if (C->common.h.remark) free ((void *)C->common.h.remark);
+					C->common.h.remark = strdup (&p[1]);
+					break;
+				case 't':	/* Add specific text title */
+					if (C->common.h.title) free ((void *)C->common.h.title);
+					C->common.h.title = strdup (&p[1]);
 					break;
 				default:	/* Bad modifier */
 					GMT_report (C, GMT_MSG_NORMAL, "Error: Unrecognized modifier +%c.\n", p[0]);
@@ -1258,6 +1263,7 @@ int gmt_parse_h_option (struct GMT_CTRL *C, char *item) {
 		}
 		
 	}
+	if ((c = strstr (item, "+t"))) *c = '\0';	/* Truncate the -h...+t<txt> option to avoid duplicate title output in command */
 	return (error);
 }
 

@@ -1,6 +1,6 @@
 #	$Id$
 #
-# Colortable for ocean and land with break at sealevel
+# Color table for ocean and land with break at sea level
 # Designed by W.H.F. Smith, NOAA
 #
 # COLOR_MODEL = hsv

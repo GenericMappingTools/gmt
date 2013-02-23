@@ -2,6 +2,14 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-02-22	pwessel
+	* The -h:		Major overhaul of data headers in GMT:
+				1. Header input/output is on by default; turn off output with -hi.
+				2. The default number of header records must be 0 since this
+				   value applies to any record (# records are automatically recognized)
+				3. Added optional modifiers +d (delete existing headers),
+				   +r<remark> (add remark), +t<title> (add title), +c (add column info).
+
 2013-02-18	pwessel
 	* filter1d.c:		Allow -T<t_min>/<t_max>/<t_inc>[+] as for other table makers.
 

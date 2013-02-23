@@ -62,7 +62,7 @@ int GMT_kml2gmt_usage (struct GMTAPI_CTRL *C, int level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: kml2gmt [<kmlfiles>] [-V] [-Z] [%s] [%s] > GMTdata.txt\n", GMT_bo_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "usage: kml2gmt [<kmlfiles>] [-V] [-Z] [%s] [%s] [%s] > GMTdata.txt\n", GMT_bo_OPT, GMT_ho_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -72,7 +72,7 @@ int GMT_kml2gmt_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t<kmlfiles> is one or more KML files from Google Earth or similar.\n");
 	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
 	GMT_message (GMT, "\t-Z Output the z-column from the KML file [Only lon,lat is output].\n");
-	GMT_explain_options (GMT, "VD0:.");
+	GMT_explain_options (GMT, "VD0h:.");
 
 	return (EXIT_FAILURE);
 }
@@ -149,7 +149,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-Vb:", "" GMT_OPT("HMm"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, "-Vbh:", "" GMT_OPT("HMm"), options)) Return (API->error);
 	Ctrl = New_kml2gmt_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_kml2gmt_parse (API, Ctrl, options))) Return (error);
 
