@@ -13,6 +13,8 @@ Contents:
 
    mains
    supplements/supplements
+   api
+.. cookbook
 
 Indices and tables
 ==================
