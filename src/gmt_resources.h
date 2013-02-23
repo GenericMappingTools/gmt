@@ -115,6 +115,10 @@ enum GMT_enum_write {
 	GMT_WRITE_TABLE_START,	/* Write common header block to output (optional title + command line) */
 	GMT_WRITE_NOLF = 16};	/* Do not write LF at end of ascii record, and not increment output rec number */
 
+enum GMT_enum_header {
+	GMT_HEADER_ON = 0,	/* Enable header blocks out as default */
+	GMT_HEADER_OFF};	/* Disable header blocks out as default */
+
 enum GMT_enum_dest {
 	GMT_WRITE_OGR = -1,	/* Output OGR/GMT format [Requires proper -a setting] */
 	GMT_WRITE_SET,			/* Write all output tables and all their segments to one destination [Default] */

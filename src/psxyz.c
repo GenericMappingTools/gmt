@@ -550,7 +550,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 		if (GMT_Init_IO (API, set_type, geometry, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 			Return (API->error);
 		}
-		if (GMT_Begin_IO (API, set_type, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
+		if (GMT_Begin_IO (API, set_type, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
 			Return (API->error);
 		}
 		GMT->current.map.is_world = !(S.symbol == GMT_SYMBOL_ELLIPSE && S.convert_angles);

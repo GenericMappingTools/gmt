@@ -371,10 +371,10 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 		/* Initialize the i/o for doing record-by-record reading/writing */
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_OFF) != GMT_OK) {	/* Enables data input and sets access mode */
 			Return (API->error);
 		}
-		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_OK) {	/* Enables data output and sets access mode */
 			Return (API->error);
 		}
 		do {	/* Keep returning records until we reach EOF */
@@ -544,7 +544,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {
 		Return (API->error);	/* Establishes data input */
 	}
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK, GMT_HEADER_ON) {
 		Return (API->error);	/* Enables data input and sets access mode */
 	}
 	

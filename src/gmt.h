@@ -76,7 +76,7 @@ EXTERN_MSC void * GMT_Get_Record	(void *C, unsigned int mode, int *retval);
 EXTERN_MSC int GMT_Destroy_Session	(void *C);
 EXTERN_MSC int GMT_Register_IO		(void *C, unsigned int family, unsigned int method, unsigned int geometry, unsigned int direction, double wesn[], void *resource);
 EXTERN_MSC int GMT_Init_IO		(void *C, unsigned int family, unsigned int geometry, unsigned int direction, unsigned int mode, unsigned int n_args, void *args);
-EXTERN_MSC int GMT_Begin_IO		(void *C, unsigned int family, unsigned int direction);
+EXTERN_MSC int GMT_Begin_IO		(void *C, unsigned int family, unsigned int direction, unsigned int header);
 EXTERN_MSC int GMT_Status_IO		(void *C, unsigned int mode);
 EXTERN_MSC int GMT_End_IO		(void *C, unsigned int direction, unsigned int mode);
 EXTERN_MSC int GMT_Report_Error		(void *C, int error);

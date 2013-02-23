@@ -575,7 +575,7 @@ int GMT_trend2d (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN) != GMT_OK) {	/* Enables data input and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
 		Return (API->error);
 	}
 	if ((error = read_data_trend2d (GMT,&data, &n_data, &xmin, &xmax, &ymin, &ymax, Ctrl->W.active, &work))) Return (error);
@@ -712,7 +712,7 @@ int GMT_trend2d (void *V_API, int mode, void *args)
 
 	untransform_x_2d (data, n_data, xmin, xmax, ymin, ymax);
 
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT) != GMT_OK) {	/* Enables data output and sets access mode */
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
 	write_output_trend2d (GMT,data, n_data, Ctrl->F.col, Ctrl->n_outputs);

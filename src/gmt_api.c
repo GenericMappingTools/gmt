@@ -3131,12 +3131,13 @@ int GMT_Init_IO_ (unsigned int *family, unsigned int *geometry, unsigned int *di
 }
 #endif
 
-int GMT_Begin_IO (void *V_API, unsigned int family, unsigned int direction)
+int GMT_Begin_IO (void *V_API, unsigned int family, unsigned int direction, unsigned int header)
 {
 	/* Initializes the rec-by-rec i/o mechanism for either input or output (given by direction).
 	 * GMT_Begin_IO must be called before any data i/o is allowed.
 	 * family:	The kind of data must be GMT_IS_DATASET or TEXTSET.
 	 * direction:	Either GMT_IN or GMT_OUT.
+	 * header:	Either GMT_HEADER_ON|OFF, controls the writing of the table start header info block
 	 * Returns:	false if successfull, true if error.
 	 */
 	int error;
@@ -3157,15 +3158,15 @@ int GMT_Begin_IO (void *V_API, unsigned int family, unsigned int direction)
 	API->GMT->current.io.ogr = GMT_OGR_UNKNOWN;
 	API->GMT->current.io.segment_header[0] = API->GMT->current.io.current_record[0] = 0;
 	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT_Begin_IO: %s resource access is now enabled [record-by-record]\n", GMT_direction[direction]);
-	if (direction == GMT_OUT) GMT_Put_Record (API, GMT_WRITE_TABLE_START, NULL);	/* Write standard header block */
+	if (direction == GMT_OUT && header == GMT_HEADER_ON) GMT_Put_Record (API, GMT_WRITE_TABLE_START, NULL);	/* Write standard header block */
 
 	return (GMT_OK);	/* No error encountered */
 }
 
 #ifdef FORTRAN_API
-int GMT_Begin_IO_ (unsigned int *family, unsigned int *direction)
+int GMT_Begin_IO_ (unsigned int *family, unsigned int *direction, unsigned int *header)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Begin_IO (GMT_FORTRAN, *family, *direction));
+	return (GMT_Begin_IO (GMT_FORTRAN, *family, *direction, *header));
 }
 #endif
 

@@ -758,7 +758,7 @@ and textset record-by-record reading and prepares the registered sources for the
 The prototype is
 
 \begin{verbatim}
-int GMT_Begin_IO (void *API, unsigned int family, unsigned int direction);
+int GMT_Begin_IO (void *API, unsigned int family, unsigned int direction, unsigned int mode);
 \end{verbatim}
 where \texttt{family} specifies the resource type to be read or written (see Table \ref{tbl:family};
 only GMT\_IS\_DATASET and GMT\_IS\_TEXTSET are available for record-by-record handling).
@@ -768,6 +768,8 @@ The \texttt{GMT\_Get\_Record} function will not be able to read any data before 
 guess, there is a companion \texttt{GMT\_End\_IO} function that completes, then disables record-by-record data access.  You can use these several
 times to switch modes between registering data resources, doing the importing/exporting, and disabling further
 data access, perhaps to do more registration.  We will discuss \texttt{GMT\_End\_IO} once we are done with the data import.
+The \texttt{mode} option is used to allow output to write table header information (\texttt{GMT\_HEADER\_ON}) or not (\texttt{GMT\_HEADER\_OFF}).
+This is usually on unless you are writing messages and other non-data.
 The function returns TRUE (1) if there is an error; otherwise it returns FALSE (0).
 
 \subsection{Import a data set}
