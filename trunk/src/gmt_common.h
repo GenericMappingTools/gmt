@@ -132,12 +132,13 @@ struct GMT_COMMON {
 		double gap[GMT_N_GAP_METHODS];		/* The critical distances for each criteria */
 		double (*get_dist[GMT_N_GAP_METHODS]) (struct GMT_CTRL *C, int);	/* Pointers to functions that compute those distances */
 	} g;
-	struct h {	/* -h[i|o][<nrecs>][+r][+c][+t<comment>] */
+	struct h {	/* -h[i|o][<nrecs>][+d][+c][+r<remark>][+t<title>] */
 		bool active;
-		bool replace;
+		bool delete;
 		bool col_names;
 		unsigned int n_recs;
-		char *comment;
+		char *title;
+		char *remark;
 	} h;	
 	struct i {	/* -i<col>|<colrange>,.. */
 		bool active;

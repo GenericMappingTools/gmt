@@ -112,6 +112,7 @@ enum GMT_enum_write {
 	GMT_WRITE_TEXT,		/* Write ASCII current record to output */
 	GMT_WRITE_SEGMENT_HEADER,	/* Write segment header record to output */
 	GMT_WRITE_TABLE_HEADER,	/* Write current record as table header to output */
+	GMT_WRITE_TABLE_START,	/* Write common header block to output (optional title + command line) */
 	GMT_WRITE_NOLF = 16};	/* Do not write LF at end of ascii record, and not increment output rec number */
 
 enum GMT_enum_dest {

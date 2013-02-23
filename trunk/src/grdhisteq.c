@@ -86,7 +86,8 @@ int GMT_grdhisteq_usage (struct GMTAPI_CTRL *C, int level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grdhisteq <ingrid> [-G<outgrid>] [-C<n_cells>] [-D[<table>]] [-N[<norm>]] [-Q]\n\t[%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_message (GMT, "usage: grdhisteq <ingrid> [-G<outgrid>] [-C<n_cells>] [-D[<table>]] [-N[<norm>]]\n");
+	GMT_message (GMT, "[-Q]\n\t[%s] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_ho_OPT);
 	
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 	
@@ -98,7 +99,7 @@ int GMT_grdhisteq_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-N Use with -G to make an output grid file with standard normal scores.\n");
 	GMT_message (GMT, "\t   Append <norm> to normalize the scores to <-1,+1>.\n");
 	GMT_message (GMT, "\t-Q Use quadratic intensity scaling [Default is linear].\n");
-	GMT_explain_options (GMT, "RV.");
+	GMT_explain_options (GMT, "RVh.");
 	
 	return (EXIT_FAILURE);
 }
@@ -344,7 +345,7 @@ int GMT_grdhisteq (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VR", "", options)) Return (API->error);
+	if (GMT_Parse_Common (API, "-VRh", "", options)) Return (API->error);
 	Ctrl = New_grdhisteq_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdhisteq_parse (API, Ctrl, options))) Return (error);
 

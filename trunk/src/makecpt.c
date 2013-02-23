@@ -374,7 +374,6 @@ int GMT_makecpt (void *V_API, int mode, void *args)
 	if (Ctrl->D.mode == 1) cpt_flags |= GMT_CPT_EXTEND_BNF;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 	if (Ctrl->F.active) Pout->model = Ctrl->F.model;
 
-	GMT_Add_Comment (API, GMT_IS_CPT, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_RESET | GMT_COMMENT_IS_COMMAND, options, Pout);
 	if (GMT_Write_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, cpt_flags, NULL, Ctrl->Out.file, Pout) != GMT_OK) {
 		Return (API->error);
 	}

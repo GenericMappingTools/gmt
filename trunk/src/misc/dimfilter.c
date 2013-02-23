@@ -109,7 +109,7 @@ int GMT_dimfilter_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "dimfilter %s - Directional filtering of 2-D grdfiles in the Space domain\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: dimfilter <ingrid> -D<distance_flag> -F<type><filter_width>\n");
 	GMT_message (GMT, "\t-G<outgrid> -N<type><n_sectors> [%s]\n", GMT_I_OPT);
-	GMT_message (GMT, "\t[-Q<cols>] [%s] [-T] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
+	GMT_message (GMT, "\t[-Q<cols>] [%s] [-T] [%s] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -144,7 +144,7 @@ int GMT_dimfilter_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   yields the standard deviation while for the median/mode filters we use MAD\n");
 #endif
 	GMT_message (GMT, "\t-T Toggles between grid and pixel registration for output grid [Default is same as input registration]\n");
-	GMT_explain_options (GMT, "Vf");
+	GMT_explain_options (GMT, "Vfh.");
 
 	return (EXIT_FAILURE);
 }
@@ -411,7 +411,7 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "dimfilter", &GMT_cpy);	/* Save current state */
-	if (GMT_Parse_Common (API, "-VfR:", "", options)) Return (API->error);
+	if (GMT_Parse_Common (API, "-VfhR:", "", options)) Return (API->error);
 	Ctrl = New_dimfilter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_dimfilter_parse (API, Ctrl, options))) Return (error);
 

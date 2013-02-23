@@ -1,7 +1,7 @@
 #	$Id$
 #
-# Colormap using in Lab for Satellite Altimetry
-# For folks who hate green in their cpt files
+# Color table using in Lab for Satellite Altimetry
+# For folks who hate green in their color tables
 # Designed by W.H.F. Smith, NOAA
 #
 -32	32/96/255	-28	32/96/255

@@ -262,7 +262,7 @@ shorthand discussed in Section 4.17 of the BD(GMT) Technical Reference and Cookb
 If false, no filename expansion is done [false].
 .TP
 .B IO_HEADER
-(BD(* \-H)) Specifies whether input/output ASCII files have header record(s) or not  [false].
+(BD(* \-H)) Specifies whether input/output ASCII files have header record(s) or not  [true].
 .TP
 .B IO_LONLAT_TOGGLE
 (BD(* \-:)) Set if the first two columns of input and output files contain (latitude,longitude) or (y,x) rather than the expected
@@ -270,7 +270,10 @@ If false, no filename expansion is done [false].
 should be (y,x).  IN means only input has (y,x), while OUT means only output should be (y,x).  [false].
 .TP
 .B IO_N_HEADER_RECS
-Specifies how many header records to expect if OPT(h) is used  [1].
+Specifies how many header records to expect if OPT(h) is used  [0].  Note this will
+skip the specified number of records regardless of what they are.  Since any records
+starting with '#' is automatically considered a header you will only specify a non-zero
+number in order to skip headers that do not conform to that convention.
 .TP
 .B IO_NAN_RECORDS
 Determines what happens when input records containing NaNs for IT(x) or IT(y) (and in some

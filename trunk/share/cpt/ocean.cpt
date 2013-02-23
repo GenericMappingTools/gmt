@@ -1,7 +1,7 @@
 #	$Id$
 #
-# Colortable for oceanic areas as used in Wessel maps
-# Designed by P. Wessel and F. Martinez, SOEST.
+# Color table for oceanic areas as used in Wessel maps
+# Designed by P. Wessel and F. Martinez, SOEST
 #
 -8000	0/0/0		-7000	0/5/25
 -7000	0/5/25		-6000	0/10/50

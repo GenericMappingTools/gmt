@@ -82,7 +82,7 @@ int GMT_grdinfo_usage (struct GMTAPI_CTRL *C, int level) {
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdinfo <grid> [-C] [-F] [-I[<dx>[/<dy>]|-|b]] [-L[0|1|2]] [-M]\n");
-	GMT_message (GMT, "	[%s] [-T[s]<dz>] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
+	GMT_message (GMT, "	[%s] [-T[s]<dz>] [%s] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -105,7 +105,7 @@ int GMT_grdinfo_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-T Given increment dz, return global -Tzmin/zmax/dz in multiples of dz.\n");
 	GMT_message (GMT, "\t   To get a symmetrical range about zero, use -Ts<dz> instead.\n");
-	GMT_explain_options (GMT, "Vf.");
+	GMT_explain_options (GMT, "Vfh.");
 	
 	return (EXIT_FAILURE);
 }
@@ -229,7 +229,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VfR", ">", options)) Return (API->error);
+	if (GMT_Parse_Common (API, "-VfhR", ">", options)) Return (API->error);
 	Ctrl = New_grdinfo_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdinfo_parse (API, Ctrl, options))) Return (error);
 
@@ -584,7 +584,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 		GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 	}
 	else if (Ctrl->T.active) {
-		if (Ctrl->T.mode) {	/* Get a symemtrical range */
+		if (Ctrl->T.mode) {	/* Get a symmetrical range */
 			global_zmin = floor (global_zmin / Ctrl->T.inc) * Ctrl->T.inc;
 			global_zmax = ceil  (global_zmax / Ctrl->T.inc) * Ctrl->T.inc;
 			global_zmax = MAX (fabs (global_zmin), fabs (global_zmax));
