@@ -61,10 +61,10 @@ EXTERN_MSC unsigned int GMT_fft_parse (struct GMT_CTRL *C, char option, char *ar
 
 /* gmt_grdio.c: */
 
-EXTERN_MSC void GMT_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode, double *a);
+EXTERN_MSC void GMT_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned int mode, double *a);
 EXTERN_MSC void GMT_grd_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double xyz[2][3]);
 EXTERN_MSC struct GMT_GRID * GMT_create_grid (struct GMT_CTRL *C);
-EXTERN_MSC struct GMT_GRID * GMT_duplicate_grid (struct GMT_CTRL *C, struct GMT_GRID *G, bool alloc_data);
+EXTERN_MSC struct GMT_GRID * GMT_duplicate_grid (struct GMT_CTRL *C, struct GMT_GRID *G, unsigned int mode);
 EXTERN_MSC struct GMT_GRID_HEADER * GMT_duplicate_gridheader (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h);
 EXTERN_MSC void GMT_grd_init (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, struct GMT_OPTION *options, bool update);
 EXTERN_MSC void GMT_decode_grd_h_info (struct GMT_CTRL *C, char *input, struct GMT_GRID_HEADER *h);

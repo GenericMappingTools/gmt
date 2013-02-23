@@ -705,7 +705,7 @@ int GMT_spectrum1d (void *V_API, int mode, void *args)
 		dim[1] = 0;				/* Don't know about segments yet */
 		dim[2] = 1 + 2 * n_outputs;		/* Number of columns needed output file */
 		dim[3] = C.n_spec;			/* Number of rows */
-		if ((Dout = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error);	/* An empty table for stacked results */
+		if ((Dout = GMT_Create_Data (API, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty table for stacked results */
 	}
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
 		if (one_table) {

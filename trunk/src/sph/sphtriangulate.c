@@ -85,7 +85,7 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 		dim[1] = D->n;	/* Number of segments */
 		dim[2] = 2;	/* Just 2 columns */
 		dim[3] = 3;	/* All segments has 3 rows */
-		if ((Dout[0] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim)) == NULL) {
+		if ((Dout[0] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate\n");
 			GMT_exit (EXIT_FAILURE);
 		}
@@ -93,7 +93,7 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 			dim[1] = 1;	/* Just one segment */
 			dim[2] = 3 + get_area;	/* Here we use 3-4 columns */
 			dim[3] = D->n;	/* One row per node */
-			if ((Dout[1] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim)) == NULL) {
+			if ((Dout[1] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate nodes\n");
 				GMT_exit (EXIT_FAILURE);
 			}
@@ -155,7 +155,7 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 		dim[1] = n_arcs;	/* Number of output arcs = segments */
 		dim[2] = 2;		/* Only use 2 columns */
 		dim[3] = 2;		/* Each arc has 2 rows */
-		if ((Dout[0] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim)) == NULL) {
+		if ((Dout[0] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate arcs\n");
 			GMT_exit (EXIT_FAILURE);
 		}
@@ -205,7 +205,7 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double *lon, dou
 	dim[1] = n;	/* Number of segments is known */
 	dim[2] = 2;	/* Each segment only has 2 columns */
 	dim[3] = (get_arcs) ? 2 : 0;	/* Rows (unknown length if polygons; fixed 2 if arcs) */
-	if ((Dout[0] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim)) == NULL) {
+	if ((Dout[0] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate\n");
 		GMT_exit (EXIT_FAILURE);
 	}
@@ -213,7 +213,7 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double *lon, dou
 		dim[1] = 1;	/* Only need one segment */
 		dim[2] = 2 + get_area;	/* Need 2 or 3 columns */
 		dim[3] = n;	/* One row per node */
-		if ((Dout[1] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim)) == NULL) {
+		if ((Dout[1] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate nodes\n");
 			GMT_exit (EXIT_FAILURE);
 		}
@@ -308,7 +308,7 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double *lon, dou
 		dim[1] = n_arcs;	/* Number of arc segments */
 		dim[2] = 2;		/* Only 2 columns */
 		dim[3] = 2;		/* Each arc needs 2 rows */
-		if ((Dout[0] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim)) == NULL) {
+		if ((Dout[0] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate Voronoi nodes\n");
 			GMT_exit (EXIT_FAILURE);
 		}

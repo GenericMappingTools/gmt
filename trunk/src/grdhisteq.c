@@ -208,7 +208,8 @@ int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *out
 
 	GMT_memcpy (pad, Grid->header->pad, 4, int);	/* Save the original pad */
 	GMT_grd_pad_off (GMT, Grid);	/* Undo pad if one existed so we can sort the entire grid */
-	if (outfile) Orig = GMT_duplicate_grid (GMT, Grid, true); /* Must keep original if readonly */
+	if (outfile) Orig = GMT_Duplicate_Data (GMT->parent, GMT_IS_GRID, GMT_DUPLICATE_DATA, Grid); /* Must keep original if readonly */
+	if (Orig == NULL) GMT_report (GMT, GMT_MSG_NORMAL, "Grid duplication failed - memory error?\n");
 	GMT_sort_array (GMT, Grid->data, Grid->header->nm, GMT_FLOAT);
 	
 	nxy = Grid->header->nm;

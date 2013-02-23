@@ -6223,6 +6223,21 @@ struct GMT_IMAGE *GMT_create_image (struct GMT_CTRL *C)
 	return (I);
 }
 
+struct GMT_IMAGE *GMT_duplicate_image (struct GMT_CTRL *C, struct GMT_IMAGE *I, unsigned int mode)
+{	/* Duplicates an entire image, including data if requested. */
+	struct GMT_IMAGE *Inew = NULL;
+
+	Inew = GMT_create_image (C);
+	GMT_memcpy (Inew, I, 1, struct GMT_IMAGE);
+	GMT_memcpy (Inew->header, I->header, 1, struct GMT_GRID_HEADER);
+	
+	if ((mode & GMT_DUPLICATE_DATA) || (mode & GMT_DUPLICATE_ALLOC)) {	/* Also allocate and possiblhy duplicate data array */
+		Inew->data = GMT_memory_aligned (C, NULL, I->header->size, char);
+		if (mode & GMT_DUPLICATE_DATA) GMT_memcpy (Inew->data, I->data, I->header->size, char);
+	}
+	return (Inew);
+}
+
 void GMT_free_image_ptr (struct GMT_CTRL *C, struct GMT_IMAGE *I, bool free_image)
 {	/* Free contents of image pointer */
 	if (!I) return;	/* Nothing to deallocate */

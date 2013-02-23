@@ -231,7 +231,7 @@ struct GMT_DATASET * get_grid_path (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 	
-	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, dim)) == NULL) return (NULL);	/* An empty table with one segment, two cols */
+	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (NULL);	/* An empty table with one segment, two cols */
 
 	S = D->table[0]->segment[0];	/* Short hand */
 		
@@ -462,9 +462,8 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 		if (GMT->common.R.wesn[XLO] >= GMT->common.R.wesn[XHI]) GMT->common.R.wesn[XHI] += 360.0;
 	}
 	
-	if ((G_rot = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, G->header->inc, G->header->registration, GMTAPI_NOTSET, G_rot))) Return (error);
-	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, G_rot))) Return (error);
+	if ((G_rot = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_ALL, NULL, GMT->common.R.wesn, G->header->inc, \
+		G->header->registration, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 
 	/* Precalculate node coordinates in both degrees and radians */
 	grd_x = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, G_rot);

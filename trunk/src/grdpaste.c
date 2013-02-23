@@ -172,9 +172,6 @@ int GMT_grdpaste (void *V_API, int mode, void *args)
 
 	/* Try to find a common side to join on  */
 
-	if ((C = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	GMT_grd_init (GMT, C->header, options, false);
-
 	if ((A = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file[0], NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
@@ -189,15 +186,13 @@ int GMT_grdpaste (void *V_API, int mode, void *args)
 		Return (EXIT_FAILURE);
 	}
 
-	if (fabs (A->header->inc[GMT_X] - B->header->inc[GMT_X]) < 1.0e-6 && fabs (A->header->inc[GMT_Y] - B->header->inc[GMT_Y]) < 1.0e-6) {
-		C->header->inc[GMT_X] = A->header->inc[GMT_X];
-		C->header->inc[GMT_Y] = A->header->inc[GMT_Y];
-	}
-	else {
+	if (! (fabs (A->header->inc[GMT_X] - B->header->inc[GMT_X]) < 1.0e-6 && fabs (A->header->inc[GMT_Y] - B->header->inc[GMT_Y]) < 1.0e-6)) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Grid intervals do not match!\n");
 		Return (EXIT_FAILURE);
 	}
 
+	if ((C = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, A)) == NULL) Return (API->error);	/* Just to get a header */
+	
 	one_or_zero = A->header->registration == GMT_GRIDLINE_REG;
 	x_noise = GMT_SMALL * C->header->inc[GMT_X];
 	y_noise = GMT_SMALL * C->header->inc[GMT_Y];
@@ -316,9 +311,8 @@ int GMT_grdpaste (void *V_API, int mode, void *args)
 		GMT_report (GMT, GMT_MSG_VERBOSE, format, Ctrl->G.file, C->header->wesn[XLO], C->header->wesn[XHI], C->header->wesn[YLO], C->header->wesn[YHI], C->header->inc[GMT_X], C->header->inc[GMT_Y], C->header->nx, C->header->ny);
 	}
 
-	C->header->registration = A->header->registration;
 	GMT_set_grddim (GMT, C->header);
-	C->data = GMT_memory_aligned (GMT, NULL, C->header->size, float);
+	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, C) == NULL) Return (API->error);
 	A->data = B->data = C->data;	/* A and B share the same final matrix declared for C */
 	A->header->size = B->header->size = C->header->size;	/* Set A & B's size to the same as C */
 	A->header->no_BC = B->header->no_BC = true;	/* We must disable the BC machinery */

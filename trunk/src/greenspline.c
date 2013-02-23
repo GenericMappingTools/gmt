@@ -444,7 +444,14 @@ int GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *Ctrl,
 			Ctrl->I.active = true;
 		}
 		/* Here, -r means toggle the grids registration */
-		GMT->common.r.active = (GMT->common.r.active) ? !Ctrl->R3.offset : Ctrl->R3.offset;
+		if (GMT->common.r.active) {
+			GMT->common.r.active = !Ctrl->R3.offset;
+			GMT->common.r.registration = !Ctrl->R3.offset;
+		}
+		else {
+			GMT->common.r.active = Ctrl->R3.offset;
+			GMT->common.r.registration = Ctrl->R3.offset;
+		}
 	}
 	
 	n_errors += GMT_check_condition (GMT, Ctrl->A.active && GMT_access (GMT, Ctrl->A.file, R_OK), "Syntax error -A: Cannot read file %s!\n", Ctrl->A.file);
@@ -1327,7 +1334,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 			GMT_report (GMT, GMT_MSG_NORMAL, "Error: The mask grid resolution does not match your specified grid spacing\n");
 			Return (EXIT_FAILURE);
 		}
-		if (! (Grid->header->registration == (unsigned int)GMT->common.r.active)) {
+		if (! (Grid->header->registration == GMT->common.r.registration)) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Error: The mask grid registration does not match your specified grid registration\n");
 			Return (EXIT_FAILURE);
 		}
@@ -1345,9 +1352,9 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 		T = Nin->table[0];
 	}
 	else {	/* Fill in an equidistant output table or grid */
-		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
+		if ((Grid = GMT_create_grid (GMT)) == NULL) Return (API->error);
 		Grid->header->wesn[XLO] = Ctrl->R3.range[0];	Grid->header->wesn[XHI] = Ctrl->R3.range[1];
-		Grid->header->registration = (unsigned int)GMT->common.r.active;
+		Grid->header->registration = GMT->common.r.registration;
 		Grid->header->inc[GMT_X] = Ctrl->I.inc[GMT_X];
 		Z.nz = Grid->header->ny = 1;	/* So that output logic will work for lower dimensions */
 		if (dimension > 1) {

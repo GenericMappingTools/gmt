@@ -275,7 +275,7 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 {
 	int error = 0;
 	unsigned int navgsq, navg;	/* navg by navg pixels are averaged if navg > 1; else if navg == 1 do nothing */
-	unsigned int iout, jout, jinstart, jinstop, k, kk, ion, jj, iin, jin2, ii, kstart, *ix = NULL;
+	unsigned int nx, ny, iout, jout, jinstart, jinstop, k, kk, ion, jj, iin, jin2, ii, kstart, *ix = NULL;
 	int in_ID, out_ID = GMTAPI_NOTSET, jin, iinstart, iinstop;
 
 	uint64_t ij;
@@ -413,9 +413,6 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 		Return (GMT_RUNTIME_ERROR);
 	}
 	
-	if ((Merc = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	GMT_grd_init (GMT, Merc->header, options, false);
-
 	GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
 	if (Ctrl->M.active) {
 		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;		/* Since output is no longer lon/lat */
@@ -442,12 +439,12 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 	
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Expects %s to be %d by %d pixels spanning 0/%5.1f/%.8g/%.8g.\n", infile, imgcoord.nxcol, imgcoord.nyrow, dx*imgcoord.nxcol, botlat, toplat);
 
-	if (toplat < Merc->header->wesn[YHI]) {
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: Your top latitude (%.12g) lies outside top latitude of input (%.12g) - now truncated.\n", Merc->header->wesn[YHI], toplat);
+	if (toplat < wesn[YHI]) {
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: Your top latitude (%.12g) lies outside top latitude of input (%.12g) - now truncated.\n", wesn[YHI], toplat);
 		wesn[YHI] = toplat - GMT_CONV_LIMIT;	/* To ensure proper round-off in calculating ny */
 	}
-	if (botlat > Merc->header->wesn[YLO]) {
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: Your bottom latitude (%.12g) lies outside bottom latitude of input (%.12g) - now truncated.\n", Merc->header->wesn[YLO], botlat);
+	if (botlat > wesn[YLO]) {
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: Your bottom latitude (%.12g) lies outside bottom latitude of input (%.12g) - now truncated.\n", wesn[YLO], botlat);
 		wesn[YLO] = botlat + GMT_CONV_LIMIT;	/* To ensure proper round-off in calculating ny */
 	}
 	
@@ -456,7 +453,7 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 	jinstart = navg * lrint (floor (GMT_img_lat_to_ypix (wesn[YHI], &imgcoord) / navg));
 	jinstop  = navg * lrint (ceil  (GMT_img_lat_to_ypix (wesn[YLO], &imgcoord) / navg));
 	/* jinstart <= jinputrow < jinstop  */
-	Merc->header->ny = (int)((jinstop - jinstart) / navg);
+	ny = (int)((jinstop - jinstart) / navg);
 	north2 = wesn[YHI] = GMT_img_ypix_to_lat ((double)jinstart, &imgcoord);
 	south2 = wesn[YLO] = GMT_img_ypix_to_lat ((double)jinstop,  &imgcoord);
 
@@ -466,10 +463,10 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 	/* Reset left and right edges of user area */
 	wesn[XLO] = iinstart * dx;
 	wesn[XHI] = iinstop  * dx;
-	Merc->header->nx = (int)((iinstop - iinstart) / navg);
+	nx = (int)((iinstop - iinstart) / navg);
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, "To fit [averaged] input, your %s is adjusted to -R%.12g/%.12g/%.12g/%.12g.\n", Ctrl->In.file, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
-	GMT_report (GMT, GMT_MSG_VERBOSE, "The output grid size will be %d by %d pixels.\n", Merc->header->nx, Merc->header->ny);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "The output grid size will be %d by %d pixels.\n", nx, ny);
 
 	/* Set iinstart so that it is non-negative, for use to index pixels.  */
 	while (iinstart < 0) iinstart += imgcoord.nx360;
@@ -494,14 +491,14 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 	}
 	else {
 		wesn[XLO] = 0.0;
-		wesn[XHI] = Merc->header->nx * inc[GMT_X];
+		wesn[XHI] = nx * inc[GMT_X];
 		wesn[YLO] = 0.0;
-		wesn[YHI] = Merc->header->ny * inc[GMT_Y];
+		wesn[YHI] = ny * inc[GMT_Y];
 		left = wesn[XLO];
 		bottom = wesn[YLO];
 	}
-	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, wesn, inc, GMT_PIXEL_REG, GMTAPI_NOTSET, Merc))) Return (error);
-	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, Merc))) Return (error);
+	if ((Merc = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_ALL, NULL, wesn, inc, \
+		GMT_PIXEL_REG, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 
 	if (Ctrl->M.active) {
 		sprintf (Merc->header->x_units, "Spherical Mercator projected Longitude, -Jm1, length from %.12g", left);

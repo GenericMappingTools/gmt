@@ -45,10 +45,7 @@ rm -f sm_*_O.txt	# Only consider the closed contours
 # First determine mean location of each closed contour and
 # add it to the file centers.d
 
-rm -f centers.d
-for file in sm_*_C.txt; do
-  $AWK 'BEGIN{x=0;y=0;n=0};{if (NR > 1) {x+=$1;y+=$2;n++}};END{print x/n,y/n}' $file >> centers.d
-done
+gmtspatial -Q -fg sm_*_C.txt > centers.d
 
 # Only plot the ones within 200 km
 

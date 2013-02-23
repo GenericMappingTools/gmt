@@ -614,7 +614,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 				n_boxes = F.n_boxes;
 			
 			dim[3] = n_boxes;
-			if ((D = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) {
+			if ((D = GMT_Create_Data (API, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for spectrum\n");
 				Return (API->error);
 			}

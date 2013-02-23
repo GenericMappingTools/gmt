@@ -646,13 +646,22 @@ not depend on external resources (files, memory locations, etc.), then you
 can obtain a ``blank slate'' by calling
 
 \begin{verbatim}
-void * GMT_Create_Data (void *API, unsigned int family, uint64_t par[]);
+void * GMT_Create_Data (void *API, unsigned int family, unsigned int mode, \
+    uint64_t par[], double *wesn, double *inc, unsigned int registration, \
+    int pad, void *data
 \end{verbatim}
+\index{GMT\_Create\_Data}
 which returns a pointer to the allocated resource.
 Pass \texttt{family} as one of GMT\_IS\_GRID, GMT\_IS\_IMAGE, GMT\_IS\_DATASET, GMT\_IS\_TEXTSET, or GMT\_IS\_CPT,
 or via the modifiers GMT\_IS\_VECTOR or GMT\_IS\_MATRIX when handling user data.
-Depending on the data type chosen you may need to pass additional parameters via
-the \texttt{par} array, as indicated below:
+Depending on the family and your particular way of representing dimensions you may pass
+the additional parameters in one of two ways:
+\begin{enumerate}
+	\item Actual integer dimensions of items needed.
+	\item Physical distances and increments of each dimension.
+\end{enumerate}
+
+For method (1), pass the \texttt{par} array, as indicated below:
 \begin{description}
 	\item [GMT\_IS\_GRID]: An empty GMT\_GRID structure with a header is
 	allocated; the data array is NULL.  The \texttt{par} argument is not used.
@@ -673,60 +682,48 @@ the \texttt{par} array, as indicated below:
 	NULL for a 2-D matrix.
 	
 \end{description}
-In all cases the contents are initialized to zero (i.e., NULL in the case of text).
-Note: if you need to
-duplicate an existing data structure the simplest way is to use \texttt{GMT\_Get\_Data}
-after registering the original structure as the data source.
+In this case, pass \texttt{wesn}, \texttt{inc} as NULL.
+For method (2), you instead pass \texttt{wesn}, \texttt{inc}, and \texttt{registration}
+and leave \textt{par} as NULL.  For grids and images you may
+pass \texttt{pad} to set the padding, or -1 to accept the \GMT\ default.
+The \texttt{mode} determines what is actually allocated when you have chosen grids or
+images.  As for \texttt{GMT\_Read\_Data} you can pass \texttt{GMT\_GRID\_ALL} to
+initialize the header and allocate space for the array.  Alternatively, you can
+pass \texttt{GMT\_GRID\_HEADER\_ONLY} to just initialize the grid or image header, and
+call \textt{GMT\_Create\_Data} a second time, passing \texttt{GMT\_GRID\_DATA\_ONLY}, to allocate space for the array.
+In that second call you pass the pointer returned by the first call as \texttt{data}
+and specify the family; all other arguments should be NULL or 0.
 The function returns a pointer to the data container. In case of an error we return a
 NULL pointer and pass an error code via \texttt{API->error}.
+\index{GMT\_GRID\_ALL}
+\index{GMT\_GRID\_HEADER\_ONLY}
+\index{GMT\_GRID\_DATA\_ONLY}
 
+\section{Duplicate resources}
+\index{Duplicate resources}
+\index{Resources!Duplicate}
+\label{sec:duplicate}
 \index{Duplicate!Data}
 \index{Data!Duplicate}
 
-\subsection{Initialize and allocate resources}
-\index{Initialize and allocate resources}
-\index{Resources!Initialize}
-\index{Resources!Allocate}
-
-The \texttt{GMT\_Create\_Data} function \emph{does not} allocate memory to actually hold
-the arrays associated with the families GMT\_IS\_GRID, GMT\_IS\_IMAGE, GMT\_IS\_VECTOR,
-and GMT\_IS\_MATRIX.  This is partly done because the dimensions of these entities typically
-derive from the user's choice of data domain and data increments, but in other cases no such
-array is required or it is provided via the applications other variables.  Thus, for these
-resources there are two additional steps availble: (1) Initialize the dimensions of the memory
-to be allocated, and (2) actually allocate said memory.  The first step is handled by 
-
-\index{GMT\_Init\_Data}
+Often you have read or created a data resource and then need an identical copy, presumably
+to make modifications to.  Or, you want a copy with the same dimensions and allocated memory,
+except data values should not be duplicated. Alternatively, perhaps you just want to duplicate
+the header and skip the allocation and duplication of the data.  These tasks are addressed by
 
 \begin{verbatim}
-void * GMT_Init_Data (void *API, unsigned int family, \
-    struct GMT_OPTIONS *opt, double *range, double *inc, \
-    unsigned int registration, int pad, void *ptr);
+void * GMT_Duplicate_Data (void *API, unsigned int family, \
+    unsigned int mode, void *data);
 \end{verbatim}
-Pass \texttt{family} as one of GMT\_IS\_GRID, GMT\_IS\_IMAGE, GMT\_IS\_VECTOR or GMT\_IS\_MATRIX.
-If you wish to place your command line into the header of a grid you may pass the pointer to the list
-of program options \texttt{opt} (or NULL).  Use \texttt{range} to specify the minimum and maximum
-value for each dimensions, up to 3 pairs (e.g., xmin xmax ymin ymax zmin zmax). Similarly, use
-\texttt{inc} to give 1, 2, or 3 increments (i.e., xinc, yinc, zinc).  The
-\texttt{registration} parameter indicates gridline-registration or pixel registration of nodes.
-To initialize a grid with complex data, add \texttt{GMT\_GRID\_IS\_COMPLEX\_REAL} to the registration.
-The \texttt{pad} is only used for GMT\_IS\_GRID and GMT\_IS\_IMAGE and sets the number of
-rows and columns used to pad the grid or image.  The \GMT\ default is 2; to accept the default,
-pass GMTAPI\_NOTSET (-1), else we change the pad to match your argument.
-Finally, \texttt{ptr} is the pointer to your resource as allocated by \texttt{GMT\_Create\_Data}.
-Note: GMT\_IS\_VECTOR may not necessarily conform to the concept of a min and max coordinate to go
-along with the data stored in the vector(s).  If so, pass NULL for \texttt{range} and \texttt{inc}
-and instead let \texttt{registration} contain the desired number of rows.
-
-If you wish to allocate memory for the arrays whose dimensions you just specified, call
-
-\index{GMT\_Alloc\_Data}
-
-\begin{verbatim}
-void * GMT_Alloc_Data (void *API, unsigned int family, void *ptr);
-\end{verbatim}
-Again, pass \texttt{family} as one of GMT\_IS\_GRID, GMT\_IS\_IMAGE, GMT\_IS\_VECTOR or GMT\_IS\_MATRIX.
-As before, \texttt{ptr} is the pointer to your resource allocated earlier.
+\index{GMT\_Duplicate\_Data}
+which returns a pointer to the allocated resource.  Specify which \texttt{family} and
+select \texttt{mode} from \texttt{GMT\_DUPLICATE\_DATA}, \texttt{GMT\_DUPLICATE\_ALLOC},
+and \texttt{GMT\_DUPLICATE\_NONE}, as discussed above.  The \texttt{data} is a pointer
+to the resource you wish to duplicate.  In case of an error we return a
+NULL pointer and pass an error code via \texttt{API->error}.
+\index{GMT\_DUPLICATE\_DATA}
+\index{GMT\_DUPLICATE\_ALLOC}
+\index{GMT\_DUPLICATE\_NONE}
 
 \section{Import Data}
 \index{Import!Data}
@@ -1700,9 +1697,7 @@ function GMT_Init_IO (family, geometry, direction, n_args, args)
 function GMT_Begin_IO (family, geometry, direction)
 function GMT_Status_IO (mode)
 function GMT_Create_Data (family, geometry, ipar)
-function GMT_Init_Data (family, options, range, inc, registration, \
-    pad data)
-function GMT_Alloc_Data (family, data)
+function GMT_Duplicate_Data (family, mode, data)
 function GMT_Read_Data (family, method, geometry, mode, wesn, \
     input, data)
 function GMT_Get_Data (ID, mode, data)

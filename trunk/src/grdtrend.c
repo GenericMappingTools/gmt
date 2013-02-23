@@ -529,14 +529,9 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 
 	/* Allocate other required arrays */
 
-	if ((T = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);	/* Pointer for grid with array containing fitted surface  */
-	GMT_memcpy (T->header, G->header, 1, struct GMT_GRID_HEADER);
-	GMT_grd_init (GMT, T->header, options, true);
-	T->data = GMT_memory_aligned (GMT, NULL, G->header->size, float);
+	if ((T = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, G)) == NULL) Return (API->error);	/* Pointer for grid with array containing fitted surface  */
 	if (Ctrl->D.active || Ctrl->N.robust) {	/* If !D but robust, we would only need to allocate the data array */
-		if ((R = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);	/* Pointer for grid with array containing residual surface  */
-		GMT_memcpy (R->header, G->header, 1, struct GMT_GRID_HEADER);
-		R->data = GMT_memory_aligned (GMT, NULL, G->header->size, float);
+		if ((R = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, G)) == NULL) Return (API->error);	/* Pointer for grid with array containing residual surface  */
 	}
 	xval = GMT_memory (GMT, NULL, G->header->nx, double);
 	yval = GMT_memory (GMT, NULL, G->header->ny, double);
@@ -548,8 +543,6 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 
 	/* If a weight array is needed, get one */
 
-	if ((W = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);	/* Pointer for grid with array containing data weights  */
-	GMT_grd_init (GMT, W->header, options, true);
 	if (weighted) {
 		if (!GMT_access (GMT, Ctrl->W.file, R_OK)) {	/* We have weights on input  */
 			if ((W = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->W.file, NULL)) == NULL) {	/* Get header only */
@@ -565,8 +558,8 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 			}
 		}
 		if (set_ones) {
-			W->data = GMT_memory_aligned (GMT, NULL, G->header->size, float);
-			GMT_setnval (W->data, G->header->size, 1.0);
+			if ((W = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, G)) == NULL) Return (API->error);	/* Pointer for grid with unit weights  */
+			GMT_setnval (W->data, W->header->size, 1.0);
 		}
 	}
 

@@ -300,6 +300,7 @@ int GMTAPI_init_image (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, double *
 	return (GMT_OK);
 }
 
+#if 0
 int GMTAPI_init_matrix (struct GMTAPI_CTRL *API, double *range, double *inc, int registration, struct GMT_MATRIX *M)
 {
 	double off = 0.5 * registration;
@@ -307,24 +308,6 @@ int GMTAPI_init_matrix (struct GMTAPI_CTRL *API, double *range, double *inc, int
 	GMT_memcpy (M->range, range, 2 * dims, double);
 	M->n_columns = GMT_get_n (API->GMT, range[XLO], range[XHI], inc[GMT_X], off);
 	M->n_rows = GMT_get_n (API->GMT, range[YLO], range[YHI], inc[GMT_Y], off);
-	return (GMT_OK);
-}
-
-int GMTAPI_init_matrix2 (struct GMTAPI_CTRL *API, uint64_t dim[], double *range, double *inc, int registration, struct GMT_MATRIX *M)
-{
-	double off = 0.5 * registration;
-	int dims = (M->n_layers > 1) ? 3 : 2;
-	if (range == NULL && inc == NULL) {	/* Not an equidistant vector arrangement, use dim */
-		double dummy_range[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};	/* Flag vector as such */
-		GMT_memcpy (M->range, dummy_range, 2 * dims, double);
-		M->n_rows = dim[0];
-		M->n_columns = dim[1];
-	}
-	else {
-		GMT_memcpy (M->range, range, 2 * dims, double);
-		M->n_columns = GMT_get_n (API->GMT, range[XLO], range[XHI], inc[GMT_X], off);
-		M->n_rows = GMT_get_n (API->GMT, range[YLO], range[YHI], inc[GMT_Y], off);
-	}
 	return (GMT_OK);
 }
 
@@ -342,8 +325,27 @@ int GMTAPI_init_vector (struct GMTAPI_CTRL *API, double *range, double *inc, int
 	}
 	return (GMT_OK);
 }
+#endif
 
-int GMTAPI_init_vector2 (struct GMTAPI_CTRL *API, uint64_t dim[], double *range, double *inc, int registration, struct GMT_VECTOR *V)
+int GMTAPI_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *range, double *inc, int registration, struct GMT_MATRIX *M)
+{
+	double off = 0.5 * registration;
+	int dims = (M->n_layers > 1) ? 3 : 2;
+	if (range == NULL && inc == NULL) {	/* Not an equidistant vector arrangement, use dim */
+		double dummy_range[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};	/* Flag vector as such */
+		GMT_memcpy (M->range, dummy_range, 2 * dims, double);
+		M->n_rows = dim[0];
+		M->n_columns = dim[1];
+	}
+	else {
+		GMT_memcpy (M->range, range, 2 * dims, double);
+		M->n_rows = GMT_get_n (API->GMT, range[YLO], range[YHI], inc[GMT_Y], off);
+		M->n_columns = GMT_get_n (API->GMT, range[XLO], range[XHI], inc[GMT_X], off);
+	}
+	return (GMT_OK);
+}
+
+int GMTAPI_init_vector (struct GMTAPI_CTRL *API, uint64_t dim[], double *range, double *inc, int registration, struct GMT_VECTOR *V)
 {
 	if (range == NULL && inc == NULL) {	/* Not an equidistant vector arrangement, use dim */
 		double dummy_range[2] = {0.0, 0.0};	/* Flag vector as such */
@@ -549,12 +551,22 @@ void GMTAPI_GI_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, s
 {	/* Replace or Append either command or remark field with text or commmand-line options */
 	char *txt = (mode | GMT_COMMENT_IS_OPTION) ? GMT_Create_Cmd (API, arg) : (char *)arg;
 	if (mode & GMT_COMMENT_IS_REMARK) {
-		if (mode & GMT_COMMENT_IS_RESET) GMT_memset (H->remark, GMT_GRID_REMARK_LEN160, char);	/* Eliminate previous remark */
-		strncpy (H->remark, txt, GMT_GRID_REMARK_LEN160 - strlen (H->remark));
+		strncpy (H->remark, txt, GMT_GRID_REMARK_LEN160);
 	}
 	else if (mode & GMT_COMMENT_IS_COMMAND) {
-		if (mode & GMT_COMMENT_IS_RESET) GMT_memset (H->command, GMT_GRID_COMMAND_LEN320, char);	/* Eliminate previous command */
-		strncpy (H->command, txt, GMT_GRID_COMMAND_LEN320 - strlen (H->command));
+		strncpy (H->command, txt, GMT_GRID_COMMAND_LEN320);
+	}
+	if (mode & GMT_COMMENT_IS_TITLE) {
+		strncpy (H->title, txt, GMT_GRID_TITLE_LEN80);
+	}
+	if (mode & GMT_COMMENT_IS_NAME_X) {
+		strncpy (H->x_units, txt, GMT_GRID_NAME_LEN256);
+	}
+	if (mode & GMT_COMMENT_IS_NAME_Y) {
+		strncpy (H->y_units, txt, GMT_GRID_NAME_LEN256);
+	}
+	if (mode & GMT_COMMENT_IS_NAME_Z) {
+		strncpy (H->z_units, txt, GMT_GRID_NAME_LEN256);
 	}
 	GMT_free (API->GMT, txt);
 }
@@ -2143,7 +2155,7 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mod
 			if (mode & GMT_GRID_HEADER_ONLY) return (GMT_Report_Error (API, GMT_NOT_A_VALID_MODE));
 			GMT_report (API->GMT, GMT_MSG_LONG_VERBOSE, "Duplicating grid data to GMT_GRID memory location\n");
 			if (!S_obj->region) {	/* No subset, possibly same padding */
-				G_copy = GMT_duplicate_grid (API->GMT, G_obj, true);
+				G_copy = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA, G_obj);
 				if (GMTAPI_need_grdpadding (G_copy->header, API->GMT->current.io.pad)) GMT_grd_pad_on (API->GMT, G_copy, API->GMT->current.io.pad);
 				GMT_BC_init (API->GMT, G_copy->header);	/* Initialize grid interpolation and boundary condition parameters */
 				if (GMT_err_pass (API->GMT, GMT_grd_BC_set (API->GMT, G_copy), "Grid memory")) return (GMT_Report_Error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
@@ -3367,25 +3379,55 @@ void * GMT_Read_Data_ (unsigned int *family, unsigned int *method, unsigned int 
 }
 #endif
 
-void * GMT_Duplicate_Data (void *V_API, unsigned int family, unsigned int mode, double wesn[], void *data)
+void * GMT_Duplicate_Data (void *V_API, unsigned int family, unsigned int mode, void *data)
 {
-	/* Function to make a duplicate of an existing resource.
-	 * Specify which family it is.  The mode depends on the family:
-	 * ... 
-	 * Return: Pointer to data container, or NULL if there were errors (passed back via API->error).
+	/* Create an duplicate container of the requested kind and optionally allocate space
+	 * or duplicate content.
+	 * The known families are GMT_IS_{DATASET,TEXTSET,GRID,CPT,IMAGE}.
+ 	 * Pass mode as one of GMT_DUPLICATE_{NONE|ALLOC|DATA} to just duplicate the
+	 * container and header structures, allocate space of same dimensions as original,
+	 * or allocate space and duplicate contents.
+	 *
+	 * Return: Pointer to new resource, or NULL if an error (set via API->error).
 	 */
+	
 	void *new = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
-	
+
 	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);
-	
-	return (new);	/* Return pointer to the data container */
+
+	switch (family) {	/* dataset, cpt, text, grid , image, vector, matrix */
+		case GMT_IS_GRID:	/* GMT grid, allocate header but not data array */
+			new = GMT_duplicate_grid (API->GMT, data, mode);
+			break;
+#ifdef HAVE_GDAL
+		case GMT_IS_IMAGE:	/* GMT image, allocate header but not data array */
+			new = GMT_duplicate_image (API->GMT, data, mode);
+			break;
+#endif
+		case GMT_IS_DATASET:	/* GMT dataset, allocate the requested tables, segments, rows, and columns */
+			new = GMT_duplicate_dataset (API->GMT, data, 0, mode);
+			break;
+		case GMT_IS_TEXTSET:	/* GMT text dataset, allocate the requested tables, segments, and rows */
+			new = GMT_duplicate_textset (API->GMT, data, mode);
+			break;
+		case GMT_IS_CPT:	/* GMT CPT table, allocate one with space for dim[0] color entries */
+			new = GMT_duplicate_palette (API->GMT, data, mode);
+			break;
+		default:
+			API->error = GMT_WRONG_KIND;
+			break;		
+	}
+	if (API->error) return_null (API, API->error);
+	GMT_report (API->GMT, GMT_MSG_LONG_VERBOSE, "Successfully duplicated a %s\n", GMT_family[family]);
+
+	return (new);
 }
 
 #ifdef FORTRAN_API
-void * GMT_Duplicate_Data_ (unsigned int *family,  unsigned int *mode, double *wesn, void *data)
+void * GMT_Duplicate_Data_ (unsigned int *family,  unsigned int *mode, void *data)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Duplicate_Data (GMT_FORTRAN, *family, *mode, wesn, data));
+	return (GMT_Duplicate_Data (GMT_FORTRAN, *family, *mode, data));
 }
 #endif
 
@@ -4114,7 +4156,7 @@ int GMT_Destroy_Data_ (unsigned int *mode, void *object)
 }
 #endif
 
-//#if 0
+#if 0
 void * GMT_Create_Data (void *V_API, unsigned int family, uint64_t par[])
 {
 	/* Create an empty container of the requested kind; no data are provided.
@@ -4260,13 +4302,16 @@ int GMT_Alloc_Data_ (unsigned int *family, void *container)
 	return (GMT_Alloc_Data (GMT_FORTRAN, *family, container));
 }
 #endif
-//#endif
+#endif
 
-void * GMT_Create_Data2 (void *V_API, unsigned int family, unsigned int mode, uint64_t dim[], double *range, double *inc, unsigned int registration, int pad, void *data)
+void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int mode, uint64_t dim[], double *range, double *inc, unsigned int registration, int pad, void *data)
 {
 	/* Create an empty container of the requested kind and allocate space for content.
 	 * The known families are GMT_IS_{DATASET,TEXTSET,GRID,CPT,IMAGE}, but we
-	 * also allow for creation of the containers for GMT_IS_{VECTOR,MATRIX}.
+	 * also allow for creation of the containers for GMT_IS_{VECTOR,MATRIX}. Note
+	 * that for VECTOR|MATRIX we dont allocate space to hold data as it is the users
+	 * responsibility to hook their data pointers in.  The VECTOR allocates the array
+	 * of column vector type and data pointers.
 	 * There are two ways to define the dimensions needed to actually allocate memory:
 	 * (A) Via uint64_t dim[]:
 	 *   The dim array contains dimensions for tables (par[0] = number of tables,
@@ -4350,15 +4395,13 @@ void * GMT_Create_Data2 (void *V_API, unsigned int family, unsigned int mode, ui
 			n_layers = (dim == NULL) ? 0U : dim[0];
 		 	new = GMT_create_matrix (API->GMT, n_layers);
 			if (pad) GMT_report (API->GMT, GMT_MSG_VERBOSE, "Pad argument (%d) ignored in initialization of %s\n", pad, GMT_family[family]);
-			error = GMTAPI_init_matrix2 (API, dim, range, inc, registration, data);
-			if ((error = gmt_alloc_matrix (API->GMT, data)) != GMT_NOERROR) return_null (API, error);	/* Allocation error */
+			error = GMTAPI_init_matrix (API, dim, range, inc, registration, new);
 			break;
 		case GMT_IS_VECTOR:	/* GMT vector container, allocate one with the requested number of columns & rows */
 			if (dim == NULL) return_null (API, GMT_PTR_IS_NULL);
 	 		new = GMT_create_vector (API->GMT, dim[0]);
 			if (pad) GMT_report (API->GMT, GMT_MSG_VERBOSE, "Pad argument (%d) ignored in initialization of %s\n", pad, GMT_family[family]);
-			error = GMTAPI_init_vector2 (API, dim, range, inc, registration, data);
-			if ((error = gmt_alloc_vectors (API->GMT, data)) != GMT_NOERROR) return_null (API, error);	/* Allocation error */
+			error = GMTAPI_init_vector (API, dim, range, inc, registration, new);
 			break;
 		default:
 			API->error = GMT_WRONG_KIND;
@@ -4371,9 +4414,9 @@ void * GMT_Create_Data2 (void *V_API, unsigned int family, unsigned int mode, ui
 }
 
 #ifdef FORTRAN_API
-void * GMT_Create_Data2_ (unsigned int *family, unsigned int *mode, uint64_t *dim, double *range, double *inc, unsigned int *registration, int *pad, void *container)
+void * GMT_Create_Data_ (unsigned int *family, unsigned int *mode, uint64_t *dim, double *range, double *inc, unsigned int *registration, int *pad, void *container)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Create_Data2 (GMT_FORTRAN, *family, *mode, dim, range, inc, *registration, *pad, container));
+	return (GMT_Create_Data (GMT_FORTRAN, *family, *mode, dim, range, inc, *registration, *pad, container));
 }
 #endif
 

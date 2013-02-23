@@ -78,7 +78,7 @@ EXTERN_MSC void GMT_putdefaults (struct GMT_CTRL *C, char *this_file);
 EXTERN_MSC void GMT_hash_init (struct GMT_CTRL *C, struct GMT_HASH *hashnode , char **keys, unsigned int n_hash, unsigned int n_keys);
 EXTERN_MSC int GMT_getdefpath (struct GMT_CTRL *C, char get, char **path);
 EXTERN_MSC void GMT_extract_label (struct GMT_CTRL *C, char *line, char *label, struct GMT_OGR_SEG *G);
-EXTERN_MSC void GMT_check_lattice (struct GMT_CTRL *C, double *inc, bool *pixel, bool *active);
+EXTERN_MSC void GMT_check_lattice (struct GMT_CTRL *C, double *inc, unsigned int *registration, bool *active);
 EXTERN_MSC int GMT_check_binary_io (struct GMT_CTRL *C, unsigned int n_req);
 EXTERN_MSC char * GMT_putparameter (struct GMT_CTRL *C, char *keyword);
 EXTERN_MSC void GMT_set_pad (struct GMT_CTRL *C, unsigned int npad);

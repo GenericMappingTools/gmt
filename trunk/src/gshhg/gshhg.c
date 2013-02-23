@@ -273,14 +273,14 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 	if (Ctrl->L.active) {	/* Want a text set of headers back */
 		dim[1] = 1;
 		dim[2] = n_alloc = (Ctrl->I.active) ? ((Ctrl->I.mode) ? 6 : 1) : GSHHG_MAXPOL;
-		if ((X = GMT_Create_Data (API, GMT_IS_TEXTSET, dim)) == NULL) {
+		if ((X = GMT_Create_Data (API, GMT_IS_TEXTSET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a text set for GSHHG header features.\n");
 			return (API->error);
 		}
 	}
 	else {
 		dim[1] = n_alloc = 0;
-		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) {
+		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for GSHHG features.\n");
 			return (API->error);
 		}

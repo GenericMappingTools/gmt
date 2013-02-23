@@ -354,25 +354,23 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->G.active) {
-		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
+		double wesn[4], inc[2];
 		/* Use the -R region for output if set; otherwise match grid domain */
-		GMT_memcpy (Gout->header->wesn, (GMT->common.R.active ? GMT->common.R.wesn :
-			GridA->header->wesn), 4, double);
-		GMT_memcpy (Gout->header->inc, (Ctrl->I.active ? Ctrl->I.inc :
-			GridA->header->inc), 2, double);
-		if (Gout->header->wesn[XLO] < GridA->header->wesn[XLO]) error = true;
-		if (Gout->header->wesn[XHI] > GridA->header->wesn[XHI]) error = true;
+		GMT_memcpy (wesn, (GMT->common.R.active ? GMT->common.R.wesn : GridA->header->wesn), 4, double);
+		GMT_memcpy (inc, (Ctrl->I.active ? Ctrl->I.inc : GridA->header->inc), 2, double);
+		if (wesn[XLO] < GridA->header->wesn[XLO]) error = true;
+		if (wesn[XHI] > GridA->header->wesn[XHI]) error = true;
 
-		if (Gout->header->wesn[YLO] < GridA->header->wesn[YLO]) error = true;
-		if (Gout->header->wesn[YHI] > GridA->header->wesn[YHI]) error = true;
+		if (wesn[YLO] < GridA->header->wesn[YLO]) error = true;
+		if (wesn[YHI] > GridA->header->wesn[YHI]) error = true;
 
 		if (error) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "New WESN incompatible with old.\n");
 			Return (EXIT_FAILURE);
 		}
 
-		if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, Gout->header->wesn, Gout->header->inc, GridA->header->registration, GMTAPI_NOTSET, Gout))) Return (error);
-		if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, Gout))) Return (error);
+		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_ALL, NULL, wesn, inc, \
+			GridA->header->registration, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Grid dimensions are nx = %d, ny = %d\n",
 					Gout->header->nx, Gout->header->ny);

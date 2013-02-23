@@ -60,6 +60,7 @@ for all GMT programs.  No space between the option flag and the associated argum
 #include "explain_nodereg_full.txt"
 #include "explain_-s_full.txt"
 #include "explain_-t_full.txt"
+#include "explain_colon_full.txt"
 #include "explain_help.txt"
 #include "explain_color.txt"
 #include "explain_fill.txt"

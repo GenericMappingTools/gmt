@@ -162,7 +162,7 @@ int main (int argc, char **argv)
 		exit (EXIT_FAILURE);
 	}
 	
-	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.active, &Ctrl->I.active);
+	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
 
 	if (n_files > 1) {
 		fprintf (stderr, "%s: Syntax error: Can only handle one input coefficient file\n", gmt_module_name(GMT));
@@ -214,7 +214,7 @@ int main (int argc, char **argv)
 
 	header.x_inc = Ctrl->I.inc[GMT_X];
 	header.y_inc = Ctrl->I.inc[GMT_Y];
-	header.registration = GMT->common.r.active;
+	header.registration = GMT->common.r.registration;
 	GMT_RI_prepare (&header);	/* Ensure -R -I consistency and set nx, ny */
 	GMT_err_fail (GMT_grd_RI_verify (&header, 1), Ctrl->G.file);
 

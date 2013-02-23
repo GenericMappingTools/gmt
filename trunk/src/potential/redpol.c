@@ -1206,23 +1206,12 @@ int GMT_redpol (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	GMT_set_pad (GMT, 2);		/* Reset the default GMT pad */
-
-	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-
-	GMT_memcpy (Gout->header->wesn, wesn_new, 4, double);
-	GMT_memcpy (Gout->header->inc, Gin->header->inc, 2, double);
-	Gout->header->registration = Gin->header->registration;
-	GMT_RI_prepare (GMT, Gout->header);	/* Ensure -R -I consistency and set nx, ny */
-	Gout->header->pad[XLO] = Gout->header->pad[XHI] = Gout->header->pad[YLO] = Gout->header->pad[YHI] = 2;
-	GMT_set_grddim (GMT, Gout->header);	/* SHOULDN'T IT USE GMT->current.io.pad INSTEAD ???? */
-
 	if (GMT->common.R.active) {
-		if (Gout->header->wesn[XLO] < Gin->header->wesn[XLO] || Gout->header->wesn[XHI] > Gin->header->wesn[XHI]) {
+		if (wesn_new[XLO] < Gin->header->wesn[XLO] || wesn_new[XHI] > Gin->header->wesn[XHI]) {
 			GMT_report (GMT, GMT_MSG_NORMAL, " Selected region exceeds the X-boundaries of the grid file!\n");
 			return (EXIT_FAILURE);
 		}
-		else if (Gout->header->wesn[YLO] < Gin->header->wesn[YLO] || Gout->header->wesn[YHI] > Gin->header->wesn[YHI]) {
+		else if (wesn_new[YLO] < Gin->header->wesn[YLO] || wesn_new[YHI] > Gin->header->wesn[YHI]) {
 			GMT_report (GMT, GMT_MSG_NORMAL, " Selected region exceeds the Y-boundaries of the grid file!\n");
 			return (EXIT_FAILURE);
 		}
@@ -1301,21 +1290,20 @@ int GMT_redpol (void *V_API, int mode, void *args) {
 	fi  = TWO_PI / Ctrl->F.ncoef_row;
 	psi = TWO_PI / Ctrl->F.ncoef_col;
 
-	Gout->data = GMT_memory_aligned (GMT, NULL, Gout->header->size, float);
+	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_ALL, NULL, wesn_new, Gin->header->inc, \
+		Gin->header->registration, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 					
 	if (Ctrl->Z.active) {		/* Create one grid to hold the filter coefficients */
-		if ((Gfilt = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-		GMT_grd_init (GMT, Gfilt->header, options, true);
+		double wesn[4], inc[2];
+		wesn[XLO] = 1;	wesn[XHI] = (double)Ctrl->F.ncoef_col;
+		wesn[YLO] = 1;	wesn[YHI] = (double)Ctrl->F.ncoef_row;
+		inc[GMT_X] = inc[GMT_Y] = 1;
+		
+		if ((Gfilt = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_ALL, NULL, wesn, inc, \
+			GMT_PIXEL_REG, 0, NULL)) == NULL) Return (API->error);
 		strcpy (Gfilt->header->title, "Reduction To the Pole filter");
 		strcpy (Gfilt->header->x_units, "radians");
 		strcpy (Gfilt->header->y_units, "radians");
-		Gfilt->header->nx = (int)Ctrl->F.ncoef_col;		Gfilt->header->ny = (int)Ctrl->F.ncoef_row;
-		Gfilt->header->inc[GMT_X] = Gfilt->header->inc[GMT_Y] = 1;
-		Gfilt->header->wesn[XLO] = 1;		Gfilt->header->wesn[XHI] = (double)Ctrl->F.ncoef_col;
-		Gfilt->header->wesn[YLO] = 1;		Gfilt->header->wesn[YHI] = (double)Ctrl->F.ncoef_row;
-		Gfilt->header->z_scale_factor = 1;
-		Gfilt->header->z_add_offset = 0;
-		Gfilt->data = GMT_memory_aligned (GMT, NULL, n_coef, float);
 	}
 
 	for (l = 0; l < n_jlat; l++) {		/* Main loop over the moving windows */

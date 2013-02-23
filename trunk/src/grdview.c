@@ -712,7 +712,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 		binij = GMT_memory (GMT, NULL, Topo->header->nm, struct GRDVIEW_BIN);
 		small = GMT_SMALL * (Z->header->z_max - Z->header->z_min);
 		if (small < 1.0e-7) small = 1.0e-7;	/* Make sure it is not smaller than single-precision EPS */
-		Z_orig = GMT_duplicate_grid (GMT, Z, true);	/* Original copy of Z grid used for contouring */
+		if ((Z_orig = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA, Z)) == NULL) Return (API->error);	/* Original copy of Z grid used for contouring */
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Trace and bin contours...\n");
 		for (c = 0; c < P->n_colors+1; c++) {	/* For each color change */
 

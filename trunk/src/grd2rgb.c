@@ -333,7 +333,7 @@ int GMT_grd2rgb_parse (struct GMTAPI_CTRL *C, struct GRD2RGB_CTRL *Ctrl, struct 
 
 	/* Check that the options selected are mutually consistent */
 
-	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.active, &Ctrl->I.active);
+	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
 
 	if (!Ctrl->C.active) {
 		n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input raster file\n");
@@ -442,6 +442,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args)
 		}
 	}
 	else {
+		int nx, ny;
 		if (GMT_access (GMT, Ctrl->In.file, R_OK)) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Cannot find/open/read file %s\n", Ctrl->In.file);
 			Return (EXIT_FAILURE);
@@ -465,40 +466,37 @@ int GMT_grd2rgb (void *V_API, int mode, void *args)
 			Return (EXIT_FAILURE);
 		}
 
-		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-		Grid->header->registration = (int)GMT->common.r.active;
 		if (!Ctrl->I.active) {
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Assign default dx = dy = 1\n");
 			Ctrl->I.inc[GMT_X] = Ctrl->I.inc[GMT_Y] = 1.0;	Ctrl->I.active = true;
 		}
 		if (!GMT->common.R.active) {	/* R not given, provide default */
 			GMT->common.R.wesn[XLO] = GMT->common.R.wesn[YLO] = 0.0;
-			GMT->common.R.wesn[XHI] = header.width  - 1 + Grid->header->registration;
-			GMT->common.R.wesn[YHI] = header.height - 1 + Grid->header->registration;
+			GMT->common.R.wesn[XHI] = header.width  - 1 + GMT->common.r.registration;
+			GMT->common.R.wesn[YHI] = header.height - 1 + GMT->common.r.registration;
 			GMT->common.R.active = true;
 			GMT_report (GMT, GMT_MSG_VERBOSE, "Assign default -R0/%g/0/%g\n", GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI]);
 		}
 
-		Grid->header->nx = GMT_get_n (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], Ctrl->I.inc[GMT_X], Grid->header->registration);
-		Grid->header->ny = GMT_get_n (GMT, GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], Ctrl->I.inc[GMT_Y], Grid->header->registration);
+		nx = GMT_get_n (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], Ctrl->I.inc[GMT_X], GMT->common.r.registration);
+		ny = GMT_get_n (GMT, GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], Ctrl->I.inc[GMT_Y], GMT->common.r.registration);
 		if (Ctrl->W.active && !Ctrl->I.active) {		/* This isn't correct because it doesn't deal with -r */
-			Grid->header->nx = Ctrl->W.nx;
-			Grid->header->ny = Ctrl->W.ny;
-			Ctrl->I.inc[GMT_X] = GMT_get_inc (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], Grid->header->nx, Grid->header->registration);
-			Ctrl->I.inc[GMT_Y] = GMT_get_inc (GMT, GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], Grid->header->ny, Grid->header->registration);
+			nx = Ctrl->W.nx;
+			ny = Ctrl->W.ny;
+			Ctrl->I.inc[GMT_X] = GMT_get_inc (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], nx, GMT->common.r.registration);
+			Ctrl->I.inc[GMT_Y] = GMT_get_inc (GMT, GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], ny, GMT->common.r.registration);
 		}
-		if (header.width != (int)Grid->header->nx) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Sun rasterfile width and -R -I do not match (%d versus %d)  Need -r?\n", header.width, Grid->header->nx);
+		if (header.width != nx) {
+			GMT_report (GMT, GMT_MSG_NORMAL, "Sun rasterfile width and -R -I do not match (%d versus %d)  Need -r?\n", header.width, nx);
 			Return (EXIT_FAILURE);
 		}
-		if (header.height != (int)Grid->header->ny) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Sun rasterfile height and -R -I do not match (%d versus %d)  Need -r?\n", header.height, Grid->header->ny);
+		if (header.height != ny) {
+			GMT_report (GMT, GMT_MSG_NORMAL, "Sun rasterfile height and -R -I do not match (%d versus %d)  Need -r?\n", header.height, ny);
 			Return (EXIT_FAILURE);
 		}
 
-		/* Allocate space */
-		if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, Ctrl->I.inc, Grid->header->registration, GMTAPI_NOTSET, Grid))) Return (error);
-		if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, Grid))) Return (error);
+		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_ALL, NULL, GMT->common.R.wesn, Ctrl->I.inc, \
+			GMT->common.r.registration, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 		
 		GMT_report (GMT, GMT_MSG_VERBOSE, "nx = %d  ny = %d\n", Grid->header->nx, Grid->header->ny);
 

@@ -272,7 +272,7 @@ double GaussianWeight (double r, double par[])
 	return (exp (r * r * par[GRDFILTER_INV_R_SCALE]));
 }
 
-int init_area_weights (struct GMT_CTRL *GMT, struct GMT_GRID *G, int mode, struct GMT_GRID *A, char *file)
+struct GMT_GRID * init_area_weights (struct GMT_CTRL *GMT, struct GMT_GRID *G, int mode, char *file)
 {
 	/* Precalculate the area weight of each node.  There are several considerations:
 	 * 1. Mercator img grids (d_flag == GRDFILTER_GEO_MERCATOR) has irregular latitude spacing so we
@@ -282,13 +282,13 @@ int init_area_weights (struct GMT_CTRL *GMT, struct GMT_GRID *G, int mode, struc
 	 *    (and the four corners (unless poles) only 1/4 the area of other cells).
 	 */
 	unsigned int row, col;
-	int error;
 	uint64_t ij;
 	double row_weight, col_weight, dy_half = 0.0, dx, y, lat, lat_s, lat_n, s2 = 0.0;
+	struct GMT_GRID *A = NULL;
 	
 	/* Base the area weight grid on the input grid domain and increments. */
-	if ((error = GMT_Init_Data (GMT->parent, GMT_IS_GRID, NULL, G->header->wesn, G->header->inc, G->header->registration, GMTAPI_NOTSET, A))) return (error);
-	if ((error = GMT_Alloc_Data (GMT->parent, GMT_IS_GRID, A))) return (error);
+	if ((A = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_GRID_ALL, NULL, G->header->wesn, G->header->inc, \
+		G->header->registration, GMTAPI_NOTSET, NULL)) == NULL) return (NULL);
 	
 	if (mode > GRDFILTER_XY_CARTESIAN) {	/* Geographic data */
 		if (mode == GRDFILTER_GEO_MERCATOR) dy_half = 0.5 * A->header->inc[GMT_Y];	/* Half img y-spacing */
@@ -327,10 +327,10 @@ int init_area_weights (struct GMT_CTRL *GMT, struct GMT_GRID *G, int mode, struc
 #ifdef DEBUG
 	if (file) {	/* For debug purposes: Save the area weight grid */
 		GMT_report (GMT, GMT_MSG_DEBUG, "Write area weight grid to file %s\n", file);
-		if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, A) != GMT_OK) return (GMT->parent->error);
+		if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, A) != GMT_OK) return (NULL);
 	}
 #endif
-	return (GMT_NOERROR);
+	return (A);
 }
 
 int GMT_grdfilter_usage (struct GMTAPI_CTRL *C, int level)
@@ -566,6 +566,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	double x_out, y_out, wt_sum, value, last_median = 0.0, this_estimate = 0.0;
 	double y_shift = 0.0, x_fix = 0.0, y_fix = 0.0, max_lat, lat_out, w;
 	double merc_range, *weight = NULL, *work_array = NULL, *x_shift = NULL;
+	double wesn[4], inc[2];
 
 	char filter_code[GRDFILTER_N_FILTERS] = {'b', 'c', 'g', 'f', 'o', 'm', 'p', 'l', 'L', 'u', 'U'};
 	char *filter_name[GRDFILTER_N_FILTERS+2] = {"Boxcar", "Cosine Arch", "Gaussian", "Custom", "Operator", "Median", "Mode", "Lower", \
@@ -627,27 +628,26 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 
 	/* Check range of output area and set i,j offsets, etc.  */
 
-	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 	/* Use the -R region for output (if set); otherwise match input grid domain */
-	GMT_memcpy (Gout->header->wesn, (GMT->common.R.active ? GMT->common.R.wesn : Gin->header->wesn), 4, double);
+	GMT_memcpy (wesn, (GMT->common.R.active ? GMT->common.R.wesn : Gin->header->wesn), 4, double);
 	/* Use the -I increments for output (if set); otherwise match input grid increments */
-	GMT_memcpy (Gout->header->inc, (Ctrl->I.active ? Ctrl->I.inc : Gin->header->inc), 2, double);
+	GMT_memcpy (inc, (Ctrl->I.active ? Ctrl->I.inc : Gin->header->inc), 2, double);
 	if (!full_360) {	/* Sanity checks on x-domain if not geographic */
-		if (Gout->header->wesn[XLO] < Gin->header->wesn[XLO]) error = true;
-		if (Gout->header->wesn[XHI] > Gin->header->wesn[XHI]) error = true;
+		if (wesn[XLO] < Gin->header->wesn[XLO]) error = true;
+		if (wesn[XHI] > Gin->header->wesn[XHI]) error = true;
 	}
 	/* Sanity checks on y-domain  */
-	if (Gout->header->wesn[YLO] < Gin->header->wesn[YLO]) error = true;
-	if (Gout->header->wesn[YHI] > Gin->header->wesn[YHI]) error = true;
-	Gout->header->registration = !one_or_zero;
+	if (wesn[YLO] < Gin->header->wesn[YLO]) error = true;
+	if (wesn[YHI] > Gin->header->wesn[YHI]) error = true;
 
 	if (error) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Output grid domain incompatible with input grid domain.\n");
 		Return (EXIT_FAILURE);
 	}
 
-	/* Completely determine the header for the new grid; croak if there are issues.  No grid memory is allocated here. */
-	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, Gout->header->wesn, Gout->header->inc, !one_or_zero, GMTAPI_NOTSET, Gout))) Return (error);
+	/* Allocate space and determine the header for the new grid; croak if there are issues. */
+	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_ALL, NULL, wesn, inc, \
+		!one_or_zero, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 
 	/* We can save time by computing a weight matrix once [or once pr scanline] only
 	   if output grid spacing is a multiple of input grid spacing */
@@ -670,8 +670,6 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 		Ctrl->N.mode = NAN_IGNORE;
 	}
 	
-	/* Allocate space for grid */
-	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, Gout))) Return (error);
 	col_origin = GMT_memory (GMT, NULL, Gout->header->nx, int);
 	if (!fast_way) x_shift = GMT_memory (GMT, NULL, Gout->header->nx, double);
 
@@ -684,11 +682,10 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 		/* Compute the wrap-around delta_nx to use [may differ from nx unless a 360 grid] */
 		nx_wrap = GMT_get_n (GMT, 0.0, 360.0, Gin->header->inc[GMT_X], GMT_PIXEL_REG);	/* So we basically bypass the duplicate point at east */
 	}	
-	if ((A = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 #ifdef DEBUG
-	if ((error = init_area_weights (GMT, Gin, Ctrl->D.mode, A, Ctrl->W.file))) Return (error);	/* Precalculate area weights, save debug grid */
+	if ((A = init_area_weights (GMT, Gin, Ctrl->D.mode, Ctrl->W.file)) == NULL) Return (API->error);	/* Precalculate area weights, save debug grid */
 #else
-	if ((error = init_area_weights (GMT, Gin, Ctrl->D.mode, A, NULL))) Return (error);	/* Precalculate area weights */
+	if ((A = init_area_weights (GMT, Gin, Ctrl->D.mode, NULL)) == NULL) Return (API->error);	/* Precalculate area weights */
 #endif
 	GMT_memset (&F, 1, struct FILTER_INFO);
 

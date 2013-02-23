@@ -160,7 +160,7 @@ int GMT_grdsample_parse (struct GMTAPI_CTRL *C, struct GRDSAMPLE_CTRL *Ctrl, str
 		}
 	}
 
-	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.active, &Ctrl->I.active);
+	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
 
 	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single input grid file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify output file\n");
@@ -177,13 +177,13 @@ int GMT_grdsample_parse (struct GMTAPI_CTRL *C, struct GRDSAMPLE_CTRL *Ctrl, str
 int GMT_grdsample (void *V_API, int mode, void *args) {
 
 	int error = 0;
-	unsigned int row, col;
+	unsigned int row, col, registration;
 	
 	uint64_t ij;
 	
 	char format[GMT_BUFSIZ];
 	
-	double *lon = NULL, lat;
+	double *lon = NULL, lat, wesn[4], inc[2];
 
 	struct GRDSAMPLE_CTRL *Ctrl = NULL;
 	struct GMT_GRID *Gin = NULL, *Gout = NULL;
@@ -213,54 +213,38 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	GMT_memcpy (Gout->header->wesn, (GMT->common.R.active ? GMT->common.R.wesn : Gin->header->wesn), 4, double);
-
-	if (Ctrl->I.active)
-		GMT_memcpy (Gout->header->inc, Ctrl->I.inc, 2, double);
-	else
-		GMT_memcpy (Gout->header->inc, Gin->header->inc, 2, double);
+	GMT_memcpy (wesn, (GMT->common.R.active ? GMT->common.R.wesn : Gin->header->wesn), 4, double);
+	GMT_memcpy (inc, (Ctrl->I.active ? Ctrl->I.inc : Gin->header->inc), 2, double);
 
 	if (Ctrl->T.active)
-		Gout->header->registration = !Gin->header->registration;
+		registration = !Gin->header->registration;
 	else if (GMT->common.r.active)
-		Gout->header->registration = GMT_PIXEL_REG;
+		registration = GMT->common.r.registration;
 	else
-		Gout->header->registration = Gin->header->registration;
-
-	GMT_RI_prepare (GMT, Gout->header);	/* Ensure -R -I consistency and set nx, ny */
-	GMT_set_grddim (GMT, Gout->header);
+		registration = Gin->header->registration;
 
 	if (GMT->common.R.active) {	/* Make sure input grid and output -R has an overlap */
-		if (Gout->header->wesn[YLO] < Gin->header->wesn[YLO] - GMT_SMALL || Gout->header->wesn[YHI] > Gin->header->wesn[YHI] + GMT_SMALL) {
+		if (wesn[YLO] < Gin->header->wesn[YLO] - GMT_SMALL || wesn[YHI] > Gin->header->wesn[YHI] + GMT_SMALL) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Error: Selected region exceeds the Y-boundaries of the grid file!\n");
 			Return (EXIT_FAILURE);
 		}
 		if (GMT_is_geographic (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap */
 			int shift = 0;
-			if (Gin->header->wesn[XHI] < Gout->header->wesn[XLO]) shift += 360;
-			if (Gin->header->wesn[XLO] > Gout->header->wesn[XHI]) shift -= 360;
+			if (Gin->header->wesn[XHI] < wesn[XLO]) shift += 360;
+			if (Gin->header->wesn[XLO] > wesn[XHI]) shift -= 360;
 			if (shift) {	/* Must modify header */
 				Gin->header->wesn[XLO] += shift, Gin->header->wesn[XHI] += shift;
 				GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "File %s region needed longitude adjustment to fit final grid region\n", Ctrl->In.file);
 			}
 		}
-		else if (Gout->header->wesn[XLO] < Gin->header->wesn[XLO] - GMT_SMALL || Gout->header->wesn[XHI] > Gin->header->wesn[XHI] + GMT_SMALL) {
+		else if (wesn[XLO] < Gin->header->wesn[XLO] - GMT_SMALL || wesn[XHI] > Gin->header->wesn[XHI] + GMT_SMALL) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Error: Selected region exceeds the X-boundaries of the grid file!\n");
 			return (EXIT_FAILURE);
 		}
 	}
 
-	if (!Ctrl->I.active) {
-		Gout->header->inc[GMT_X] = GMT_get_inc (GMT, Gout->header->wesn[XLO], Gout->header->wesn[XHI], Gout->header->nx, Gout->header->registration);
-		Gout->header->inc[GMT_Y] = GMT_get_inc (GMT, Gout->header->wesn[YLO], Gout->header->wesn[YHI], Gout->header->ny, Gout->header->registration);
-	}
-
-	GMT_err_fail (GMT, GMT_grd_RI_verify (GMT, Gout->header, 1), Ctrl->G.file);
-
-	Gout->data = GMT_memory_aligned (GMT, NULL, Gout->header->size, float);
-
-	GMT_grd_init (GMT, Gin->header, options, true);
+	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_ALL, NULL, wesn, inc, \
+		registration, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 
 	sprintf (format, "Input  grid (%s/%s/%s/%s) nx = %%d ny = %%d dx = %s dy = %s registration = %%d\n", 
 		GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, 

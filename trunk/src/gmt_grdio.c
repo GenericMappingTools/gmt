@@ -1614,15 +1614,15 @@ struct GMT_GRID_HEADER *GMT_duplicate_gridheader (struct GMT_CTRL *C, struct GMT
 	return (hnew);
 }
 
-struct GMT_GRID *GMT_duplicate_grid (struct GMT_CTRL *C, struct GMT_GRID *G, bool alloc_data)
+struct GMT_GRID *GMT_duplicate_grid (struct GMT_CTRL *C, struct GMT_GRID *G, unsigned int mode)
 {	/* Duplicates an entire grid, including data if requested. */
 	struct GMT_GRID *Gnew = NULL;
 
 	Gnew = GMT_create_grid (C);
 	GMT_memcpy (Gnew->header, G->header, 1, struct GMT_GRID_HEADER);
-	if (alloc_data) {	/* Also allocate and duplicate data array */
+	if ((mode & GMT_DUPLICATE_DATA) || (mode & GMT_DUPLICATE_ALLOC)) {	/* Also allocate and possiblhy duplicate data array */
 		Gnew->data = GMT_memory_aligned (C, NULL, G->header->size, float);
-		GMT_memcpy (Gnew->data, G->data, G->header->size, float);
+		if (mode & GMT_DUPLICATE_DATA) GMT_memcpy (Gnew->data, G->data, G->header->size, float);
 	}
 	return (Gnew);
 }
@@ -1650,7 +1650,7 @@ int GMT_set_outgrid (struct GMT_CTRL *C, struct GMT_GRID *G, struct GMT_GRID **O
 	 * data in it (directly or via the pointer).  */
 
 	if (G->alloc_mode == GMT_READONLY) {	/* Cannot store results in the read-only input array */
-		*Out = GMT_duplicate_grid (C, G, true);
+		*Out = GMT_duplicate_grid (C, G, GMT_DUPLICATE_DATA);
 		(*Out)->alloc_mode = GMT_ALLOCATED;
 		return (true);
 	}
