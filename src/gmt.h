@@ -65,14 +65,13 @@ extern "C" {
  *=====================================================================================
  */
 
-/* 23 Primary API functions */
+/* 22 Primary API functions */
 EXTERN_MSC void * GMT_Create_Session	(char *tag, unsigned int mode);
-EXTERN_MSC void * GMT_Create_Data	(void *C, unsigned int type, uint64_t par[]);
-EXTERN_MSC void * GMT_Create_Data2	(void *C, unsigned int family, unsigned int mode, uint64_t dim[], double *wesn, double *inc, unsigned int registration, int pad, void *data);
+EXTERN_MSC void * GMT_Create_Data	(void *C, unsigned int family, unsigned int mode, uint64_t dim[], double *wesn, double *inc, unsigned int registration, int pad, void *data);
 EXTERN_MSC void * GMT_Get_Data		(void *C, int object_ID, unsigned int mode, void *data);
 EXTERN_MSC void * GMT_Read_Data		(void *C, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], char *input, void *data);
 EXTERN_MSC void * GMT_Retrieve_Data	(void *C, int object_ID);
-EXTERN_MSC void * GMT_Duplicate_Data	(void *C, unsigned int family, unsigned int mode, double wesn[], void *data);
+EXTERN_MSC void * GMT_Duplicate_Data	(void *C, unsigned int family, unsigned int mode, void *data);
 EXTERN_MSC void * GMT_Get_Record	(void *C, unsigned int mode, int *retval);
 EXTERN_MSC int GMT_Destroy_Session	(void *C);
 EXTERN_MSC int GMT_Register_IO		(void *C, unsigned int family, unsigned int method, unsigned int geometry, unsigned int direction, double wesn[], void *resource);
@@ -86,8 +85,6 @@ EXTERN_MSC int GMT_Write_Data		(void *C, unsigned int family, unsigned int metho
 EXTERN_MSC int GMT_Destroy_Data		(void *C, unsigned int mode, void *object);
 EXTERN_MSC int GMT_Put_Record		(void *C, unsigned int mode, void *record);
 EXTERN_MSC int GMT_Encode_ID		(void *C, char *string, int object_ID);
-EXTERN_MSC int GMT_Init_Data		(void *C, unsigned int family, struct GMT_OPTION *opt, double *limits, double *incs, unsigned int registration, int pad, void *data);
-EXTERN_MSC int GMT_Alloc_Data		(void *C, unsigned int family, void *data);
 EXTERN_MSC int GMT_Get_Row		(void *C, int rec_no, struct GMT_GRID *G, float *row);
 EXTERN_MSC int GMT_Put_Row		(void *C, int rec_no, struct GMT_GRID *G, float *row);
 EXTERN_MSC int GMT_Add_Comment		(void *C, unsigned int family, unsigned int mode, void *arg, void *data);

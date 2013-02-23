@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:48:34) [64-bit] [C4] Document from GMT_grdimage
-%%Creator: GMT
-%%For: remko
+%%Title: GMT v5.0.1b_r10984M [64-bit] [C4] Document from grdimage
+%%Creator: GMT5
+%%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 23 12:49:36 2011
+%%CreationDate: Fri Feb 22 16:04:35 2013
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -60,7 +60,7 @@
 /Si {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR FO}!
 /Sj {M MS R dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D MR FO}!
 /Sn {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR FO}!
-/Sp {N 3 -1 roll 0 360 arc F}!
+/Sp {N 3 -1 roll 0 360 arc fs N}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
 /SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
@@ -110,6 +110,11 @@
   count PSL_op_count sub {pop} repeat
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
+}!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -571,8 +576,9 @@ O0
 1800 7020 TM
 
 % PostScript produced by:
-%%GMT:  grdimage AK_gulf_grav.nc -IAK_gulf_grav_i.nc -JM5.5i -Cgrav.cpt -B2f1 -P -K -X1.5i -Y5.85i
+%%GMT: grdimage AK_gulf_grav.nc -IAK_gulf_grav_i.nc -JM5.5i -Cgrav.cpt -B2f1 -P -K -X1.5i -Y5.85i
 %%PROJ: merc -149.00000000 -135.00000000 52.50000000 58.00000000 -778365.558 778365.558 6883340.271 7958413.233 +proj=merc +lon_0=-142 +k=-1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -3375,14 +3381,16 @@ PSL_cliprestore
 6683 4641 M -6766 0 D S
 0 4641 M 0 -4724 D S
 -83 4641 M 0 -4724 D S
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  pscoast -RAK_gulf_grav.nc -JM5.5i -O -K -Di -Ggray -Wthinnest
+%%GMT: pscoast -RAK_gulf_grav.nc -JM5.5i -O -K -Di -Ggray -Wthinnest
 %%PROJ: merc -149.00000000 -135.00000000 52.50000000 58.00000000 -778365.558 778365.558 6883340.271 7958413.233 +proj=merc +lon_0=-142 +k=-1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -4722,14 +4730,16 @@ S
 -4 2 D
 4 10 D
 S
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psscale -D2.75i/-0.4i/4i/0.15ih -Cgrav.cpt -B20f10/:mGal: -O -K
+%%GMT: psscale -D2.75i/-0.4i/4i/0.15ih -Cgrav.cpt -B20f10/:mGal: -O -K
 %%PROJ: xy -60.00000000 60.00000000 0.00000000 0.15000000 -60.000 60.000 0.000 0.150 +xy +a=6371008.771 +b=6371008.771400
+%%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -4854,14 +4864,16 @@ def
 4883 90 M (mGal) ml Z
 0 setlinecap
 -900 660 T
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  pstext -RAK_gulf_grav.nc -JM5.5i -O -K -D0.1i/0.1i -F+f12p,Helvetica-Bold+jLB
+%%GMT: pstext -RAK_gulf_grav.nc -JM5.5i -O -K -D0.1i/0.1i -F+f12p,Helvetica-Bold+jLB
 %%PROJ: merc -149.00000000 -135.00000000 52.50000000 58.00000000 -778365.558 778365.558 6883340.271 7958413.233 +proj=merc +lon_0=-142 +k=-1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -4875,14 +4887,16 @@ PSL_eoclip N
 200 F1
 (Pratt) Z
 PSL_cliprestore
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -RAK_gulf_grav.nc -JM5.5i -O -K -SE -Wthinnest
+%%GMT: psxy -RAK_gulf_grav.nc -JM5.5i -O -K -SE -Wthinnest
 %%PROJ: merc -149.00000000 -135.00000000 52.50000000 58.00000000 -778365.558 778365.558 6883340.271 7958413.233 +proj=merc +lon_0=-142 +k=-1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -4965,14 +4979,16 @@ O1
 -59 14 D
 S
 PSL_cliprestore
+%%EndObject
 0 A
 FQ
 O0
 0 -5820 TM
 
 % PostScript produced by:
-%%GMT:  grdcontour AK_gulf_grav.nc -JM5.5i -C20 -B2f1WSEn -O -K -Y-4.85i -U/-1.25i/-0.75i/Example 18 in Cookbook
+%%GMT: grdcontour AK_gulf_grav.nc -JM5.5i -C20 -B2f1WSEn -O -K -Y-4.85i -UL/-1.25i/-0.75i/Example 18 in Cookbook
 %%PROJ: merc -149.00000000 -135.00000000 52.50000000 58.00000000 -778365.558 778365.558 6883340.271 7958413.233 +proj=merc +lon_0=-142 +k=-1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%BeginObject PSL_Layer_6
 % Begin GMT time-stamp
 V
 -1500 -900 T
@@ -14188,17 +14204,19 @@ PSL_cliprestore
 6683 4641 M -6766 0 D S
 0 4641 M 0 -4724 D S
 -83 4641 M 0 -4724 D S
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -RAK_gulf_grav.nc -JM5.5i -O -K -Wthin,green sm_0_C.txt sm_0_O.txt sm_10_C.txt sm_11_C.txt sm_12_C.txt sm_13_C.txt sm_14_C.txt \
+%%GMT: psxy -RAK_gulf_grav.nc -JM5.5i -O -K -Wthin,green sm_0_C.txt sm_0_O.txt sm_10_C.txt sm_11_C.txt sm_12_C.txt sm_13_C.txt sm_14_C.txt \
 %%GMT:+ sm_15_C.txt sm_16_C.txt sm_17_C.txt sm_18_C.txt sm_19_C.txt sm_1_C.txt sm_1_O.txt sm_20_C.txt sm_21_C.txt sm_22_C.txt sm_23_C.txt \
 %%GMT:+ sm_24_C.txt sm_25_C.txt sm_26_C.txt sm_2_C.txt sm_2_O.txt sm_3_C.txt sm_3_O.txt sm_4_C.txt sm_4_O.txt sm_5_C.txt sm_5_O.txt \
 %%GMT:+ sm_6_C.txt sm_7_C.txt sm_8_C.txt sm_9_C.txt
 %%PROJ: merc -149.00000000 -135.00000000 52.50000000 58.00000000 -778365.558 778365.558 6883340.271 7958413.233 +proj=merc +lon_0=-142 +k=-1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -14972,14 +14990,16 @@ P S
 16 9 D
 16 7 D
 P S
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  pscoast -RAK_gulf_grav.nc -JM5.5i -O -K -Di -Ggray -Wthinnest
+%%GMT: pscoast -RAK_gulf_grav.nc -JM5.5i -O -K -Di -Ggray -Wthinnest
 %%PROJ: merc -149.00000000 -135.00000000 52.50000000 58.00000000 -778365.558 778365.558 6883340.271 7958413.233 +proj=merc +lon_0=-142 +k=-1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%BeginObject PSL_Layer_8
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -16319,14 +16339,16 @@ S
 -4 2 D
 4 10 D
 S
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -RAK_gulf_grav.nc -JM5.5i -O -K -SE -Wthinnest
+%%GMT: psxy -RAK_gulf_grav.nc -JM5.5i -O -K -SE -Wthinnest
 %%PROJ: merc -149.00000000 -135.00000000 52.50000000 58.00000000 -778365.558 778365.558 6883340.271 7958413.233 +proj=merc +lon_0=-142 +k=-1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%BeginObject PSL_Layer_9
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -16409,14 +16431,16 @@ O1
 -59 14 D
 S
 PSL_cliprestore
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -RAK_gulf_grav.nc -JM5.5i -O -K -SC0.04i -Gred -Wthinnest
+%%GMT: psxy -RAK_gulf_grav.nc -JM5.5i -O -K -SC0.04i -Gred -Wthinnest
 %%PROJ: merc -149.00000000 -135.00000000 52.50000000 58.00000000 -778365.558 778365.558 6883340.271 7958413.233 +proj=merc +lon_0=-142 +k=-1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%BeginObject PSL_Layer_10
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -16429,26 +16453,28 @@ PSL_eoclip N
 4 W
 {1 0 0 C} FS
 O1
-24 2728 2809 Sc
-24 3360 2681 Sc
-24 2921 2397 Sc
-24 4072 2092 Sc
-24 2784 1963 Sc
-24 2999 3682 Sc
-24 2804 3178 Sc
-24 1494 3144 Sc
-24 1761 3080 Sc
-24 2994 3032 Sc
-24 2198 2863 Sc
+24 2729 2807 Sc
+24 3361 2679 Sc
+24 2923 2395 Sc
+24 4073 2089 Sc
+24 2786 1961 Sc
+24 3001 3680 Sc
+24 2804 3174 Sc
+24 1495 3141 Sc
+24 1762 3078 Sc
+24 2995 3030 Sc
+24 2199 2861 Sc
 PSL_cliprestore
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -RAK_gulf_grav.nc -JM5.5i -O -K -ST0.1i -Gyellow -Wthinnest pratt.d
+%%GMT: psxy -RAK_gulf_grav.nc -JM5.5i -O -K -ST0.1i -Gyellow -Wthinnest pratt.d
 %%PROJ: merc -149.00000000 -135.00000000 52.50000000 58.00000000 -778365.558 778365.558 6883340.271 7958413.233 +proj=merc +lon_0=-142 +k=-1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%BeginObject PSL_Layer_11
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -16463,14 +16489,16 @@ PSL_eoclip N
 O1
 93 2994 3038 St
 PSL_cliprestore
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -RAK_gulf_grav.nc -JM5.5i -A -O -K -L -Wthin -Gwhite
+%%GMT: psxy -RAK_gulf_grav.nc -JM5.5i -A -O -K -L -Wthin -Gwhite
 %%PROJ: merc -149.00000000 -135.00000000 52.50000000 58.00000000 -778365.558 778365.558 6883340.271 7958413.233 +proj=merc +lon_0=-142 +k=-1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%BeginObject PSL_Layer_12
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -16481,14 +16509,16 @@ O1
 -3771 0 0 788 3771 0 3 236 194 SP
 /FO {fs os}!
 FO
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  pstext -RAK_gulf_grav.nc -JM5.5i -O -F+f14p,Helvetica-Bold+jLM
+%%GMT: pstext -RAK_gulf_grav.nc -JM5.5i -O -F+f14p,Helvetica-Bold+jLM
 %%PROJ: merc -149.00000000 -135.00000000 52.50000000 58.00000000 -778365.558 778365.558 6883340.271 7958413.233 +proj=merc +lon_0=-142 +k=-1 +x_0=0 +y_0=0 +a=6371008.771 +b=6371008.771400
+%%BeginObject PSL_Layer_13
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -16512,6 +16542,7 @@ V MU 0 0 M (Volumes: 382970 mGal\264km) FP 163 F1 (2) FP pathbbox N 4 1 roll pop
 163 F1 (2) Z
 0 -82 G
 PSL_cliprestore
+%%EndObject
 %%PageTrailer
 U
 showpage

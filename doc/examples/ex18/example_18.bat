@@ -43,10 +43,9 @@ del sm_*_O.txt
 REM Now determine centers of each enclosed seamount exceeding 50 mGal but
 REM only plot the ones within 200 km of Pratt seamount.
 
-REM First determine mean location of each closed contour and
-REM add it to the file centers.d using center.awk script
+REM First determine mean location of each closed contour
 
-for %%f in (sm_*_C.txt) do gawk "BEGIN{x=0;y=0;n=0};{if (NR > 1) {x+=$1;y+=$2;n++}};END{print x/n,y/n}" %%f >> centers.d
+gmtspatial -Q -fg sm_*_C.txt > centers.d
 
 REM Only plot the ones within 200 km
 

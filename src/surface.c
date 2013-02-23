@@ -643,8 +643,7 @@ int load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int transfor
 
 	if (C->set_low > 0) {
 		if (C->set_low < 3) {
-			if ((C->Low = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) return (API->error);
-			C->Low->data = GMT_memory_aligned (GMT, NULL, C->mxmy, float);
+			if ((C->Low = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, C->Grid)) == NULL) return (API->error);
 			for (ij = 0; ij < C->mxmy; ij++) C->Low->data[ij] = (float)C->low_limit;
 		}
 		else {
@@ -670,8 +669,7 @@ int load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int transfor
 	}
 	if (C->set_high > 0) {
 		if (C->set_high < 3) {
-			if ((C->High = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) return (API->error);
-			C->High->data = GMT_memory_aligned (GMT, NULL, C->mxmy, float);
+			if ((C->High = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, C->Grid)) == NULL) return (API->error);
 			for (ij = 0; ij < C->mxmy; ij++) C->High->data[ij] = (float)C->high_limit;
 		}
 		else {
@@ -713,7 +711,7 @@ int write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, char *gr
 	index = C->ij_sw_corner;
 	if (GMT->common.r.active) {	/* Pixel registration request. Reset limits to the original extents */
 		GMT_memcpy (C->Grid->header->wesn, C->wesn_orig, 4, double);
-		C->Grid->header->registration = GMT_PIXEL_REG;
+		C->Grid->header->registration = GMT->common.r.registration;
 		/* Must reduce nx,ny by 1 to exclude the extra padding for pixel grids */
 		C->Grid->header->nx--;	C->nx--;
 		C->Grid->header->ny--;	C->ny--;
@@ -1801,8 +1799,8 @@ int GMT_surface (void *V_API, int mode, void *args)
 		/* nx,ny remains the same for now but nodes are in "pixel" position.  Must reduce nx,ny by 1 when we write result */
 	}
 	
-	if ((C.Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, wesn, Ctrl->I.inc, GMT_GRIDLINE_REG, GMTAPI_NOTSET, C.Grid))) Return (error);
+	if ((C.Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_HEADER_ONLY, NULL, wesn, Ctrl->I.inc, \
+		GMT_GRIDLINE_REG, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 	
 	if (C.Grid->header->nx < 4 || C.Grid->header->ny < 4) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Error: Grid must have at least 4 nodes in each direction (you have %d by %d) - abort.\n", C.Grid->header->nx, C.Grid->header->ny);
@@ -1855,7 +1853,7 @@ int GMT_surface (void *V_API, int mode, void *args)
 	
 	if (key == 1) {	/* Data lies exactly on a plane; just return the plane grid */
 		GMT_free (GMT, C.data);
-		if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, C.Grid))) Return (error);
+		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, C.Grid) == NULL) Return (API->error);
 		C.ij_sw_corner = 2 * C.my + 2;			/*  Corners of array of actual data  */
 		replace_planar_trend (&C);
 		if ((error = write_output_surface (GMT, &C, Ctrl->G.file))) Return (error);
@@ -1881,7 +1879,7 @@ int GMT_surface (void *V_API, int mode, void *args)
 
 	C.briggs = GMT_memory (GMT, NULL, C.npoints, struct SURFACE_BRIGGS);
 	C.iu = GMT_memory (GMT, NULL, C.mxmy, char);
-	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, C.Grid))) Return (error);
+	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, C.Grid) == NULL) Return (API->error);
 
 	if (C.radius > 0) initialize_grid (GMT, &C); /* Fill in nodes with a weighted avg in a search radius  */
 

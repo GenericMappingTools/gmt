@@ -28,6 +28,7 @@
 
 enum GMT_enum_cplx {GMT_RE = 0, GMT_IM = 1};	/* Real and imaginary indices */
 
+EXTERN_MSC struct GMT_PALETTE * GMT_duplicate_palette (struct GMT_CTRL *C, struct GMT_PALETTE *P_from, unsigned int mode);
 EXTERN_MSC unsigned int GMT_unit_lookup (struct GMT_CTRL *C, int c, unsigned int unit);
 EXTERN_MSC void GMT_get_annot_label (struct GMT_CTRL *C, double val, char *label, bool do_minutes, bool do_seconds, unsigned int lonlat, bool worldmap);
 EXTERN_MSC unsigned int GMT_coordinate_array (struct GMT_CTRL *C, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double **array, char ***labels);
@@ -276,5 +277,6 @@ EXTERN_MSC void GMT_free_matrix_ptr (struct GMT_CTRL *C, struct GMT_MATRIX *M, b
 EXTERN_MSC void GMT_free_vector_ptr (struct GMT_CTRL *C, struct GMT_VECTOR *V, bool free_vector);
 #ifdef HAVE_GDAL
 EXTERN_MSC void GMT_free_image_ptr (struct GMT_CTRL *C, struct GMT_IMAGE *I, bool free_image);
+EXTERN_MSC struct GMT_IMAGE *GMT_duplicate_image (struct GMT_CTRL *C, struct GMT_IMAGE *I, unsigned int mode);
 #endif
 #endif /* _GMT_INTERNALS_H */

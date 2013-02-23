@@ -213,7 +213,7 @@ int GMT_sphdistance_parse (struct GMTAPI_CTRL *C, struct SPHDISTANCE_CTRL *Ctrl,
 		}
 	}
 
-	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.active, &Ctrl->I.active);
+	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
 
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 3;
 	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] < 3, "Syntax error: Binary input data (-bi) must have at least 3 columns\n");
@@ -409,14 +409,8 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 	
 	/* OK, time to create and work on the distance grid */
 
-#if 0	
-	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active, GMTAPI_NOTSET, Grid))) Return (error);
-	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, Grid))) Return (error);
-#endif
-
-	if ((Grid = GMT_Create_Data2 (API, GMT_IS_GRID, GMT_GRID_ALL, NULL, GMT->common.R.wesn, Ctrl->I.inc, \
-		GMT->common.r.active, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
+	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_ALL, NULL, GMT->common.R.wesn, Ctrl->I.inc, \
+		GMT->common.r.registration, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Start processing distance grid\n");
 
 	grid_lon = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, Grid);

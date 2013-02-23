@@ -998,7 +998,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 	/* Because we are doing single-precision, we cannot subtract incrementally but must start with the
 	 * original grid values and subtract the current contour value. */
 
-	G_orig = GMT_duplicate_grid (GMT, G, true);	/* Original copy of grid used for contouring */
+ 	if ((G_orig = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA, G)) == NULL) Return (EXIT_FAILURE); /* Original copy of grid used for contouring */
 	n_edges = G->header->ny * lrint (ceil (G->header->nx / 16.0));
 	edge = GMT_memory (GMT, NULL, n_edges, unsigned int);	/* Bit flags used to keep track of contours */
 
@@ -1036,7 +1036,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 			}
 		}
 		dim[0] = n_tables;
-		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error);	/* An empty dataset */
+		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty dataset */
 		n_seg_alloc = GMT_memory (GMT, NULL, n_tables, size_t);
 		n_seg = GMT_memory (GMT, NULL, n_tables, uint64_t);
 	}

@@ -280,7 +280,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 	}
 	else {
 		GMT_memcpy (inc, Ctrl->I.inc, 2, double);
-		registration = GMT->common.r.active;
+		registration = GMT->common.r.registration;
 	}
 
 	if (Ctrl->F.active) {	/* Read the user's clip polygon file */
@@ -306,9 +306,8 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 		Return (EXIT_FAILURE);
 	}
 	
-	if ((G_mod = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, inc, registration, GMTAPI_NOTSET, G_mod))) Return (error);
-	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, G_mod))) Return (error);
+	if ((G_mod = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_ALL, NULL, GMT->common.R.wesn, inc, \
+		registration, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 
 	grd_x = GMT_memory (GMT, NULL, G_mod->header->nx, double);
 	grd_y = GMT_memory (GMT, NULL, G_mod->header->ny, double);

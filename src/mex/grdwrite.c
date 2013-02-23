@@ -51,7 +51,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	if ((API = GMT_Create_Session ("GMT/MEX-API", 0U)) == NULL) mexErrMsgTxt ("Failure to create GMT Session\n");
 
 	/* 2. Prepare the GMT grid */
-	if ((G = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) mexErrMsgTxt ("Allocation failure\n");
+	if ((G = GMT_create_grid (API->GMT)) == NULL) mexErrMsgTxt ("Allocation failure\n");
 	GMT_grd_init (API->GMT, G->header, NULL, false);
 
 	/* 3. Load the file name and title (if given) into char strings */

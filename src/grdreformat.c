@@ -166,7 +166,7 @@ int GMT_grdreformat (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the grdreformat main code ----------------------------*/
 
-	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
+	if ((Grid = GMT_create_grid (API->GMT)) == NULL) Return (API->error);
 	GMT_grd_init (GMT, Grid->header, options, false);
 	hmode = (Ctrl->N.active) ? GMT_GRID_NO_HEADER : 0;
 	GMT_err_fail (GMT, GMT_grd_get_format (GMT, Ctrl->IO.file[0], Grid->header, true), Ctrl->IO.file[0]);

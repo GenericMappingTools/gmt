@@ -3427,7 +3427,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 		Template = GMT_alloc_dataset (GMT, D_in, n_columns, 0, GMT_ALLOC_NORMAL);
 	else {		/* Must use -N -T etc to create single segment */
 		dim[2] = n_columns;	dim[3] = n_rows;
-		if ((Template = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (GMT_MEMORY_ERROR);
+		if ((Template = GMT_Create_Data (API, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (GMT_MEMORY_ERROR);
 	}
 	stack[0]->alloc_mode = 1;	/* Allocated locally */
 	Ctrl->N.ncol = n_columns;
@@ -3452,7 +3452,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 	}
 	else {	/* Create orderly output */
 		dim[2] = 2;	dim[3] = n_rows;
-		if ((Time = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (GMT_MEMORY_ERROR);
+		if ((Time = GMT_Create_Data (API, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (GMT_MEMORY_ERROR);
 		info.T = Time->table[0];
 		for (row = 0; row < info.T->segment[0]->n_rows; row++) info.T->segment[0]->coord[0][row] = (row == (info.T->segment[0]->n_rows-1)) ? Ctrl->T.max: Ctrl->T.min + row * Ctrl->T.inc;
 		t_noise = fabs (GMT_SMALL * Ctrl->T.inc);
@@ -3732,7 +3732,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 		uint64_t dim[4] = {1, 1, 1, 0};
 		
 		dim[3] = info.n_roots;
-		if ((R = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error)
+		if ((R = GMT_Create_Data (API, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error)
 		for (kk = 0; kk < info.n_roots; kk++) R->table[0]->segment[0]->coord[GMT_X][kk] = S->coord[info.r_col][kk];
 		GMT_Add_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, R);
 		if (GMT_Write_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_POINT, stack[0]->D->io_mode, NULL, Ctrl->Out.file, R) != GMT_OK) {

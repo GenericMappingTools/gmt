@@ -435,7 +435,6 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 		else
 			one_or_zero = (Gin->header->registration == GMT_PIXEL_REG) ? 0 : 1;
 
-		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 		/* Use the -R region for output if set; otherwise match grid domain */
 		GMT_memcpy (wesn, (GMT->common.R.active ? GMT->common.R.wesn : Gin->header->wesn), 4, double);
 		full_360 = (Ctrl->D.mode && GMT_grd_is_global (GMT, Gin->header));	/* Periodic geographic grid */
@@ -460,8 +459,8 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 		last_median = 0.5 * (Gin->header->z_min + Gin->header->z_max);
 		z_min = Gin->header->z_min;	z_max = Gin->header->z_max;
 
-		if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, wesn, inc, !one_or_zero, GMTAPI_NOTSET, Gout))) Return (error);
-		if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, Gout))) Return (error);
+		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_ALL, NULL, wesn, inc, \
+			!one_or_zero, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 
 		/* We can save time by computing a weight matrix once [or once pr scanline] only
 		   if new grid spacing is multiple of old spacing */
@@ -480,9 +479,7 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 
 #ifdef OBSOLETE
 		if (Ctrl->S.active) {
-			if ((Sout = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-			if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, wesn, inc, !one_or_zero, GMTAPI_NOTSET, Sout))) Return (error);
-			if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, Sout))) Return (error);
+			if ((Sout = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, Gout)) == NULL) Return (API->error);
 		}
 #endif
 		i_origin = GMT_memory (GMT, NULL, Gout->header->nx, int);

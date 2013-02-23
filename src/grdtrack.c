@@ -485,7 +485,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 		}
 		else {	/* Sandwell/Smith Mercator grids */
-			if ((GC[g].G = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
+			if ((GC[g].G = GMT_create_grid (GMT)) == NULL) Return (API->error);
 			GMT_read_img (GMT, Ctrl->G.file[g], GC[g].G, wesn, Ctrl->G.scale[g], Ctrl->G.mode[g], Ctrl->G.lat[g], true);
 			img_conv_needed = true;
 		}
@@ -495,7 +495,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		uint64_t dim[4] = {1, 0, 3, 0};
 		double xyz[2][3];
 		
-		if ((Din = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error);	/* An empty dataset with 1 table */
+		if ((Din = GMT_Create_Data (API, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty dataset with 1 table */
 		GMT_init_distaz (GMT, Ctrl->E.unit, Ctrl->E.mode, GMT_MAP_DIST);
 		if (Ctrl->G.n_grids == 1) {
 			GMT_grd_minmax (GMT, GC[0].G, xyz);
@@ -596,7 +596,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			dim[1] = Dout->n_tables;		/* Number of stacks */
 			dim[2] = 1 + n_step * Ctrl->G.n_grids;	/* Number of columns needed in stack file */
 			dim[3] = n_rows = Dout->table[0]->segment[0]->n_rows;	/* Number of rows */
-			if ((Stack = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) Return (API->error);	/* An empty table for stacked results */
+			if ((Stack = GMT_Create_Data (API, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty table for stacked results */
 			
 			stack = GMT_memory (GMT, NULL, Ctrl->G.n_grids, double *);
 			stacked_val = GMT_memory (GMT, NULL, Ctrl->G.n_grids, double);

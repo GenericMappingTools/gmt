@@ -550,8 +550,11 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 
 		case 'h':	/* Header */
 
-			GMT_message (C, "\t-h[i][<n>] Input/output file has [%d] Header record(s) [%s]\n", C->current.setting.io_n_header_items, GMT_choice[C->current.setting.io_header[GMT_IN]]);
+			GMT_message (C, "\t-h[i][<n>][+c][+r][+t<txt>] Input/output file has [%d] Header record(s) [%s]\n", C->current.setting.io_n_header_items, GMT_choice[C->current.setting.io_header[GMT_IN]]);
 			GMT_message (C, "\t   Optionally, append i for input only and/or number of header records.\n");
+			GMT_message (C, "\t   Append +c to add header record with column information.\n");
+			GMT_message (C, "\t   Append +r to replace headers with new ones [Default will append headers].\n");
+			GMT_message (C, "\t   Append +t to add <txt> as an extra header record.\n");
 			GMT_message (C, "\t   For binary files, <n> is considered to mean number of bytes.\n");
 			break;
 
@@ -1183,15 +1186,20 @@ int GMT_default_error (struct GMT_CTRL *C, char option)
 
 int gmt_parse_h_option (struct GMT_CTRL *C, char *item) {
 	int i, k = 1, error = 0, col = -1;
+	unsigned int pos = 0;
+	char p[GMT_BUFSIZ], *c = NULL;
 
-	/* Parse the -h option.  Full syntax: -h[i][<nrecs>] | -ho */
+	/* Parse the -h option.  Full syntax: -h[i|o][<nrecs>][+r][+c][+t<comment>] */
 
 	/* Note: This forces the io to skip the first <nrecs> records, regardless of what they are.
 	 * In addition, any record starting with # will be considered a comment.
 	 * For output (-ho) no <nrecs> is allowed since either (a) we output the same number of
 	 * input records we found or (b) the program writes a specific number of records built from scratch.
+	 * Use +r to have a program replace existing headers with its own [Default appends].
+	 * Use +c to add a header identifying the various columns + [colno].
+	 * Use +t<txt> to add a specify header comment to the output file.
 	 */
-	if (!item || !item[0]) {	/* Nothing further to parse; just set defaults */
+	if (!item || !item[0]) {	/* Just -h: Nothing further to parse; just set defaults */
 		C->current.setting.io_header[GMT_IN] = C->current.setting.io_header[GMT_OUT] = true;
 		C->current.setting.io_n_header_items = 1;
 		return (GMT_NOERROR);
@@ -1228,6 +1236,28 @@ int gmt_parse_h_option (struct GMT_CTRL *C, char *item) {
 		C->current.setting.io_header[GMT_IN] = (C->current.setting.io_n_header_items > 0);
 		C->current.setting.io_header[GMT_OUT] = true;
 	}
+	
+	if ((c = strchr (item, '+'))) {	/* Found modifiers */
+		while ((GMT_strtok (c, "+", &pos, p))) {
+			switch (p[0]) {
+				case 'r':	/* Replace headers */
+					C->common.h.replace = true;
+					break;
+				case 'c':	/* Add column names record */
+					C->common.h.col_names = true;
+					break;
+				case 't':	/* Add specific text comment */
+					if (C->common.h.comment) free ((void *)C->common.h.comment);
+					C->common.h.comment = strdup (&p[1]);
+					break;
+				default:	/* Bad modifier */
+					GMT_report (C, GMT_MSG_NORMAL, "Error: Unrecognized modifier +%c.\n", p[0]);
+					error++;
+					break;
+			}
+		}
+		
+	}
 	return (error);
 }
 
@@ -1256,7 +1286,7 @@ int gmt_rectR_to_geoR (struct GMT_CTRL *C, char unit, double rect[], double out_
 		return (GMT_MAP_NO_PROJECTION);
 	}
 	/* Create dataset to hold the rect coordinates */
-	if ((In = GMT_Create_Data (C->parent, GMT_IS_DATASET, dim)) == NULL) return (GMT_MEMORY_ERROR);
+	if ((In = GMT_Create_Data (C->parent, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (GMT_MEMORY_ERROR);
 	
 	In->table[0]->segment[0]->coord[GMT_X][0] = rect[XLO];
 	In->table[0]->segment[0]->coord[GMT_Y][0] = rect[YLO];
@@ -1940,7 +1970,7 @@ int gmt_parse_dash_option (struct GMT_CTRL *C, char *text)
 	return (n);
 }
 
-void GMT_check_lattice (struct GMT_CTRL *C, double *inc, bool *pixel, bool *active)
+void GMT_check_lattice (struct GMT_CTRL *C, double *inc, unsigned int *registration, bool *active)
 {	/* Uses provided settings to initialize the lattice settings from
 	 * the -R<grdfile> if it was given; else it does nothing.
 	 */
@@ -1951,9 +1981,9 @@ void GMT_check_lattice (struct GMT_CTRL *C, double *inc, bool *pixel, bool *acti
 		GMT_memcpy (inc, C->current.io.grd_info.grd.inc, 2, double);
 		inc[GMT_Y] = C->current.io.grd_info.grd.inc[GMT_Y];
 	}
-	if (pixel) {	/* An pointer not NULL was passed that indicates grid registration */
+	if (registration) {	/* An pointer not NULL was passed that indicates grid registration */
 		/* If a -r like option was set then toggle grid setting, else use grid setting */
-		*pixel = (*pixel) ? !C->current.io.grd_info.grd.registration : C->current.io.grd_info.grd.registration;
+		*registration = (*registration) ? !C->current.io.grd_info.grd.registration : C->current.io.grd_info.grd.registration;
 	}
 	if (active) *active = true;	/* When 4th arg is not NULL it is set to true (for Ctrl->active args) */
 }
@@ -8514,6 +8544,7 @@ int GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, char 
 		case 'r':
 			error += GMT_more_than_once (C, C->common.r.active);
 			C->common.r.active = true;
+			C->common.r.registration = GMT_PIXEL_REG;
 			break;
 
 		case 's':

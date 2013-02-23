@@ -600,13 +600,13 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	txtcolor[0] = 0;
 
 	dim[2] = 2;	/* We will a 2-row data set for fronts */
-	if ((Front = GMT_Create_Data (API, GMT_IS_DATASET, dim)) == NULL) {
+	if ((Front = GMT_Create_Data (API, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a Front text set for pslegend\n");
 		return (API->error);
 	}
 	dim[2] = GMT_SMALL_CHUNK;	/* We will allocate 3 more textsets; one for text, paragraph text, symbols */
 	for (id = 0; id < N_CMD; id++) {
-		if ((D[id] = GMT_Create_Data (API, GMT_IS_TEXTSET, dim)) == NULL) {
+		if ((D[id] = GMT_Create_Data (API, GMT_IS_TEXTSET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a text set for pslegend\n");
 			Return (API->error);
 		}

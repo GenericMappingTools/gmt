@@ -223,7 +223,7 @@ int GMT_grdmath_parse (struct GMTAPI_CTRL *C, struct GRDMATH_CTRL *Ctrl, struct 
 		}
 	}
 
-	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.active, &Ctrl->I.active);
+	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
 
 	if (missing_equal) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Usage is <operations> = [outfile]\n");
@@ -243,12 +243,8 @@ int GMT_grdmath_parse (struct GMTAPI_CTRL *C, struct GRDMATH_CTRL *Ctrl, struct 
 
 struct GMT_GRID * alloc_stack_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Template)
 {	/* Allocate a new GMT_GRID structure based on dimensions etc of the Template */
-	int error = 0;
-	struct GMT_GRID *New = NULL;
-	if ((New = GMT_Create_Data (GMT->parent, GMT_IS_GRID, NULL)) == NULL) return (NULL);
-	if ((error = GMT_Init_Data (GMT->parent, GMT_IS_GRID, NULL, Template->header->wesn, Template->header->inc, \
-		Template->header->registration, GMTAPI_NOTSET, New))) return (NULL);
-	if ((error = GMT_Alloc_Data (GMT->parent, GMT_IS_GRID, New))) return (NULL);
+	struct GMT_GRID *New = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_GRID_ALL, NULL, Template->header->wesn, Template->header->inc, \
+		Template->header->registration, GMTAPI_NOTSET, NULL);
 	return (New);
 }
 
@@ -3391,7 +3387,6 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 		}
 	}
 
-	if ((info.G = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
 	subset = GMT->common.R.active;
 
 	if (G_in) {	/* We read a gridfile header above, now update columns */
@@ -3409,15 +3404,15 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 				Return (API->error);
 			}
 		}
-		GMT_memcpy (info.G->header, G_in->header, 1, struct GMT_GRID_HEADER);
-		GMT_set_grddim (GMT, info.G->header);			/* To adjust for the pad */
+		if ((info.G = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, G_in)) == NULL) Return (API->error);
 		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G_in) != GMT_OK) {
 			Return (API->error);
 		}
 	}
 	else if (GMT->common.R.active && Ctrl->I.active) {	/* Must create from -R -I [-r] */
 		/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-		if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active, GMTAPI_NOTSET, info.G))) Return (error);
+		if ((info.G = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_HEADER_ONLY, NULL, GMT->common.R.wesn, Ctrl->I.inc, \
+			GMT->common.r.registration, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 	}
 	else {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Expression must contain at least one grid file or -R, -I\n");
@@ -3553,7 +3548,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 					k = n_stored;
 					recall[k] = GMT_memory (GMT, NULL, 1, struct GRDMATH_STORE);
 					recall[k]->label = strdup (label);
-					if (!stack[last]->constant) recall[k]->stored.G = GMT_duplicate_grid (API->GMT, stack[last]->G, true);
+					if (!stack[last]->constant) recall[k]->stored.G = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA, stack[last]->G);
 					new = true;
 					GMT_report (GMT, GMT_MSG_DEBUG, "Stored memory cell %d named %s is created with new information\n", k, label);
 				}

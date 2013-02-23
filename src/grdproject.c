@@ -192,7 +192,7 @@ int GMT_grdproject_parse (struct GMTAPI_CTRL *C, struct GRDPROJECT_CTRL *Ctrl, s
 		}
 	}
 
-	GMT_check_lattice (GMT, Ctrl->D.inc, &GMT->common.r.active, &Ctrl->D.active);
+	GMT_check_lattice (GMT, Ctrl->D.inc, &GMT->common.r.registration, &Ctrl->D.active);
 
 	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
@@ -370,12 +370,13 @@ int GMT_grdproject (void *V_API, int mode, void *args)
 
 		/* if (GMT->common.R.oblique) double_swap (s, e); */  /* Got w/s/e/n, make into w/e/s/n */
 
-		if ((Geo = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-		GMT_memcpy (Geo->header->wesn, wesn, 4, double);
-
 		if ((Rect = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);
 		}
+
+		if ((Geo = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Rect)) == NULL) Return (API->error);	/* Just to get a header we can change */
+
+		GMT_memcpy (Geo->header->wesn, wesn, 4, double);
 
 		offset = Rect->header->registration;	/* Same as input */
 		if (GMT->common.r.active) offset = !offset;	/* Toggle */
@@ -385,7 +386,7 @@ int GMT_grdproject (void *V_API, int mode, void *args)
 		}
 		GMT_err_fail (GMT, GMT_project_init (GMT, Geo->header, Ctrl->D.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
 		GMT_set_grddim (GMT, Geo->header);
-		Geo->data = GMT_memory_aligned (GMT, NULL, Geo->header->size, float);
+		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Geo) == NULL) Return (API->error);
 		GMT_grd_init (GMT, Geo->header, options, true);
 
 		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
@@ -438,7 +439,7 @@ int GMT_grdproject (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 
-		if ((Rect = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
+		if ((Rect = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Geo)) == NULL) Return (API->error);	/* Just to get a header we can change */
 		GMT_memcpy (Rect->header->wesn, GMT->current.proj.rect, 4, double);
 		if (Ctrl->A.active) {	/* Convert from 1:1 scale */
 			if (unit) {	/* Undo the 1:1 unit used */
@@ -470,7 +471,7 @@ int GMT_grdproject (void *V_API, int mode, void *args)
 
 		GMT_err_fail (GMT, GMT_project_init (GMT, Rect->header, Ctrl->D.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
 		GMT_set_grddim (GMT, Rect->header);
-		Rect->data = GMT_memory_aligned (GMT, NULL, Rect->header->size, float);
+		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Rect) == NULL) Return (API->error);
 		GMT_grd_project (GMT, Geo, Rect, false);
 		GMT_grd_init (GMT, Rect->header, options, true);
 

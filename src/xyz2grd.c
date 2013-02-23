@@ -249,7 +249,7 @@ int GMT_xyz2grd_parse (struct GMTAPI_CTRL *C, struct XYZ2GRD_CTRL *Ctrl, struct 
 		}
 	}
 
-	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.active, &Ctrl->I.active);
+	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
 	if (Ctrl->Z.active) {
 		if (Ctrl->S.active) Ctrl->Z.not_grid = true;	/* The row/col organization does not apply */
 		n_errors += GMT_parse_z_io (GMT, ptr_to_arg, &Ctrl->Z);
@@ -408,10 +408,6 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
 
-	/* Here we will need a grid */
-	
-	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, NULL)) == NULL) Return (API->error);
-
 #ifdef GMT_COMPAT	/* PW: This is now done in grdreformat since ESRI Arc Interchange is a recognized format */
 	if (Ctrl->E.active) {	/* Read an ESRI Arc Interchange grid format in ASCII.  This must be a single physical file. */
 		uint64_t n_left;
@@ -424,6 +420,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 			Return (EXIT_FAILURE);
 		}
 		
+		if ((Grid = GMT_create_grid (GMT)) == NULL) Return (API->error);
 		GMT_grd_init (GMT, Grid->header, options, false);
 		Grid->header->registration = GMT_GRIDLINE_REG;
 		GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
@@ -504,8 +501,9 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 	
 	no_data_f = (float)Ctrl->N.value;
 	
-	/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-	if ((error = GMT_Init_Data (API, GMT_IS_GRID, options, GMT->common.R.wesn, Ctrl->I.inc, GMT->common.r.active, GMTAPI_NOTSET, Grid))) Return (error);
+	/* Set up and allocate output grid */
+	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_ALL, NULL, GMT->common.R.wesn, Ctrl->I.inc, \
+		GMT->common.r.registration, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 	
 	Amode = Ctrl->A.active ? Ctrl->A.mode : 'm';
 
@@ -517,8 +515,6 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 	if (Ctrl->D.active) GMT_decode_grd_h_info (GMT, Ctrl->D.information, Grid->header);
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, "nx = %d  ny = %d  nm = %" PRIu64 "  size = %" PRIuS "\n", Grid->header->nx, Grid->header->ny, Grid->header->nm, Grid->header->size);
-
-	if ((error = GMT_Alloc_Data (API, GMT_IS_GRID, Grid))) Return (error);	/* Allow for padding to be restored later */
 
 	GMT_err_fail (GMT, GMT_set_z_io (GMT, &io, Grid), Ctrl->G.file);
 

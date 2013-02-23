@@ -74,7 +74,11 @@ enum GMT_enum_comments {
 	GMT_COMMENT_IS_OPTION	= 1,	/* Comment is a linked list of GMT_OPTION structures */
 	GMT_COMMENT_IS_COMMAND	= 2,	/* Comment goes in to header->command */
 	GMT_COMMENT_IS_REMARK	= 4,	/* Comment goes in to header->remark */
-	GMT_COMMENT_IS_RESET	= 8};	/* Wipe existing header first [append] */
+	GMT_COMMENT_IS_TITLE	= 8,	/* Comment goes in to header->remark */
+	GMT_COMMENT_IS_NAME_X	= 16,	/* Comment goes in to header->remark */
+	GMT_COMMENT_IS_NAME_Y	= 32,	/* Comment goes in to header->remark */
+	GMT_COMMENT_IS_NAME_Z	= 64,	/* Comment goes in to header->remark */
+	GMT_COMMENT_IS_RESET	= 128};	/* Wipe existing header first [append] */
 
 /* Array indices for input/output/stderr variables */
 
@@ -127,6 +131,11 @@ enum GMT_enum_shape {
 	GMT_ALLOC_NORMAL = 0,	/* Normal allocation of new dataset based on shape of input dataset */
 	GMT_ALLOC_VERTICAL,			/* Allocate a single table for data set to hold all input tables by vertical concatenation */
 	GMT_ALLOC_HORIZONTAL};			/* Alocate a single table for data set to hold all input tables by horizontal (paste) concatenations */
+
+enum GMT_enum_duplicate {
+	GMT_DUPLICATE_NONE = 0,	/* Duplicate data set structure but no allocate&copy of data records|grid|image */
+	GMT_DUPLICATE_ALLOC,	/* Duplicate data set structure and allocate space for data records|grid|image, but no copy */
+	GMT_DUPLICATE_DATA};	/* Duplicate data set structure, allocate space for data records|grid|image, and copy */
 
 enum GMT_enum_out {
 	GMT_WRITE_NORMAL = 0,	/* Write header and contents of this entity (table or segment) */
