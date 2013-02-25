@@ -334,8 +334,8 @@ int GMTAPI_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *range, 
 	if (range == NULL && inc == NULL) {	/* Not an equidistant vector arrangement, use dim */
 		double dummy_range[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};	/* Flag vector as such */
 		GMT_memcpy (M->range, dummy_range, 2 * dims, double);
-		M->n_rows = dim[0];
-		M->n_columns = dim[1];
+		M->n_rows = (unsigned int)dim[0];
+		M->n_columns = (unsigned int)dim[1];
 	}
 	else {
 		GMT_memcpy (M->range, range, 2 * dims, double);
@@ -1211,7 +1211,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_
 				GMT_2D_to_index = GMTAPI_get_2D_to_index (M_obj->shape, GMT_GRID_IS_REAL);
 				for (row = 0; row < M_obj->n_rows; row++) {
 					for (col = 0; col < M_obj->n_columns; col++) {
-						ij = GMT_2D_to_index (row, col, M_obj->dim);
+						ij = GMT_2D_to_index (row, col, (int)M_obj->dim);
 						D_obj->table[D_obj->n_tables]->segment[0]->coord[col][row] = GMTAPI_get_val (API, &(M_obj->data), ij, M_obj->type);
 					}
 				}
@@ -1404,7 +1404,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 				for (seg = 0; seg < D_obj->table[tbl]->n_segments; seg++) {
 					for (row = 0; row < D_obj->table[tbl]->segment[seg]->n_rows; row++) {
 						for (col = 0; col < D_obj->table[tbl]->segment[seg]->n_columns; col++) {
-							ij = GMT_2D_to_index (row + offset, col, M_obj->dim);
+							ij = GMT_2D_to_index (row + offset, col, (int)M_obj->dim);
 							GMTAPI_put_val (API, &(M_obj->data), D_obj->table[tbl]->segment[seg]->coord[col][row], ij, M_obj->type);
 						}
 					}
@@ -1824,7 +1824,7 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, 
 			I_obj->data = GMT_memory (API->GMT, NULL, I_obj->header->size, unsigned char);
 			GMT_2D_to_index = GMTAPI_get_2D_to_index (M_obj->shape, mode);
 			GMT_grd_loop (API->GMT, I_obj, row, col, ij) {
-				ij_orig = GMT_2D_to_index (row, col, M_obj->dim);
+				ij_orig = GMT_2D_to_index (row, col, (int)M_obj->dim);
 				I_obj->data[ij] = (char)GMTAPI_get_val (API, &(M_obj->data), ij_orig, M_obj->type);
 			}
 			break;
@@ -2047,7 +2047,7 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, un
 			G_obj->data = GMT_memory_aligned (API->GMT, NULL, G_obj->header->size, float);
 			GMT_2D_to_index = GMTAPI_get_2D_to_index (M_obj->shape, mode);
 			GMT_grd_loop (API->GMT, G_obj, row, col, ij) {
-				ij_orig = GMT_2D_to_index (row, col, M_obj->dim);
+				ij_orig = GMT_2D_to_index (row, col, (int)M_obj->dim);
 				G_obj->data[ij] = (float)GMTAPI_get_val (API, &(M_obj->data), ij_orig, M_obj->type);
 			}
 			GMT_BC_init (API->GMT, G_obj->header);	/* Initialize grid interpolation and boundary condition parameters */
@@ -2220,7 +2220,7 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mod
 			if ((error = GMT_alloc_univector (API->GMT, &(M_obj->data), M_obj->type, size)) != GMT_OK) return (error);
 			GMT_2D_to_index = GMTAPI_get_2D_to_index (M_obj->shape, mode);
 			GMT_grd_loop (API->GMT, G_obj, row, col, ijp) {
-				ij = GMT_2D_to_index (row, col, M_obj->dim);
+				ij = GMT_2D_to_index (row, col, (int)M_obj->dim);
 				GMTAPI_put_val (API, &(M_obj->data), (double)G_obj->data[ijp], ij, M_obj->type);
 			}
 			S_obj->resource = M_obj;	/* Set resource pointer to the matrix */
@@ -3613,7 +3613,7 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval)
 				M_obj = S_obj->resource;
 				GMT_2D_to_index = GMTAPI_get_2D_to_index (M_obj->shape, GMT_GRID_IS_REAL);
 				for (col = n_nan = 0; col < S_obj->n_columns; col++) {	/* We know the number of columns from registration */
-					ij = GMT_2D_to_index (API->current_rec[GMT_IN], col, M_obj->dim);
+					ij = GMT_2D_to_index (API->current_rec[GMT_IN], col, (int)M_obj->dim);
 					API->GMT->current.io.curr_rec[col] = GMTAPI_get_val (API, &(M_obj->data), ij, M_obj->type);
 					if (GMT_is_dnan (API->GMT->current.io.curr_rec[col])) n_nan++;
 				}
@@ -3903,7 +3903,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 			}
 			GMT_2D_to_index = GMTAPI_get_2D_to_index (M_obj->shape, GMT_GRID_IS_REAL);
 			for (col = 0; col < API->GMT->common.b.ncol[GMT_OUT]; col++) {	/* Place the output items */
-				ij = GMT_2D_to_index (API->current_rec[GMT_OUT], col, M_obj->dim);
+				ij = GMT_2D_to_index (API->current_rec[GMT_OUT], col, (int)M_obj->dim);
 				GMTAPI_put_val (API, &(M_obj->data), d[col], ij, M_obj->type);
 			}
 			M_obj->n_rows++;

@@ -2863,7 +2863,7 @@ uint64_t gmt_col_ij (struct GMT_Z_IO *r, struct GMT_GRID *G, uint64_t ij)
 	/* Translates incoming ij (no padding) to gmt_ij (includes padding) for column-structured data */
 
 	r->gmt_j = r->start_row + r->y_step * (ij % r->y_period);
-	r->gmt_i = r->start_col + r->x_step * (ij / r->y_period);
+	r->gmt_i = (unsigned int)(r->start_col + r->x_step * (ij / r->y_period));
 
 	return (GMT_IJP (G->header, r->gmt_j, r->gmt_i));
 }
@@ -2872,7 +2872,7 @@ uint64_t gmt_row_ij (struct GMT_Z_IO *r, struct GMT_GRID *G, uint64_t ij)
 {
 	/* Translates incoming ij (no padding) to gmt_ij (includes padding) for row-structured data */
 
-	r->gmt_j = r->start_row + r->y_step * (ij / r->x_period);
+	r->gmt_j = (unsigned int)(r->start_row + r->y_step * (ij / r->x_period));
 	r->gmt_i = r->start_col + r->x_step * (ij % r->x_period);
 
 	return (GMT_IJP (G->header, r->gmt_j, r->gmt_i));
@@ -4249,8 +4249,8 @@ int gmt_scanf_argtime (struct GMT_CTRL *C, char *s, double *t)
 		return (GMT_IS_ABSTIME);
 	}
 
-	for (i = (negate_year) ? 1 : 0; s[k+i] && s[k+i] != '-'; ++i); /* Goes to first - between yyyy and jjj or yyyy and mm */
-	dash = ++i;				/* Position of first character after the first dash (could be end of string if no dash) */
+	for (i = (negate_year) ? 1 : 0; s[k+i] && s[k+i] != '-'; i++); /* Goes to first - between yyyy and jjj or yyyy and mm */
+	dash = (unsigned int)i++;	/* Position of first character after the first dash (could be end of string if no dash) */
 	while (s[k+i] && !(s[k+i] == '-' || s[k+i] == 'T')) i++;	/* Goto the ending T character or get stuck on a second - */
 	got_yd = ((i - dash) == 3 && s[k+i] == 'T');		/* Must have a field of 3-characters between - and T to constitute a valid day-of-year format */
 
@@ -4542,7 +4542,7 @@ struct GMT_TEXTTABLE * GMT_read_texttable (struct GMT_CTRL *C, void *source, uns
 		}
 		T->segment[seg]->n_rows = row;	/* Number of records in this segment */
 		T->n_records += row;		/* Total number of records so far */
-		T->segment[seg]->id = seg;	/* Internal segment number */
+		T->segment[seg]->id = (unsigned int)seg;	/* Internal segment number */
 
 		/* Reallocate to free up some memory */
 
@@ -5062,7 +5062,7 @@ int gmt_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 		for (seg = col = 0; seg < T->n_segments; seg++) {	/* Free up columns now stored as aspatial values */
 			S = T->segment[seg];
 			for (k = 0; k < T->ogr->n_aspatial; k++) if (C->common.a.col[k] > 0) GMT_free (C, S->coord[C->common.a.col[k]]);
-			for (col = k = 0; k < T->n_columns; k++) {
+			for (k = col = 0; k < T->n_columns; k++) {
 				while (!S->coord[k]) k++;	/* Next available column */
 				S->coord[col++] = S->coord[k];	/* Update pointers */
 			}
@@ -5570,7 +5570,7 @@ struct GMT_TEXTSET * GMT_create_textset (struct GMT_CTRL *C, unsigned int n_tabl
 	
 	D = GMT_memory (C, NULL, 1, struct GMT_TEXTSET);
 	D->table = GMT_memory (C, NULL, n_tables, struct GMT_TEXTTABLE *);
-	D->n_tables = D->n_alloc = n_tables;
+	D->n_alloc = D->n_tables = n_tables;
 	if (!alloc_only) D->n_segments = n_tables * n_segments;
 	for (tbl = 0; tbl < n_tables; tbl++) {
 		D->table[tbl] = GMT_memory (C, NULL, 1, struct GMT_TEXTTABLE);
@@ -5629,9 +5629,9 @@ struct GMT_TEXTSET * GMT_alloc_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *
 	struct GMT_TEXTSET *D = GMT_memory (C, NULL, 1, struct GMT_TEXTSET);
 	
 	if (mode) {	/* Pack everything into a single table */
-		D->n_tables = D->n_alloc = 1;
+		D->n_alloc = D->n_tables = 1;
 		if (mode == GMT_ALLOC_VERTICAL)
-			for (tbl = n_seg = 0; tbl < Din->n_tables; tbl++) n_seg += Din->table[tbl]->n_segments;
+			for (n_seg = tbl = 0; tbl < Din->n_tables; tbl++) n_seg += Din->table[tbl]->n_segments;
 		else /* mode == GMT_ALLOC_HORIZONTAL */
 			n_seg = Din->table[0]->n_segments;
 		D->table = GMT_memory (C, NULL, 1, struct GMT_TEXTTABLE *);
@@ -5641,7 +5641,7 @@ struct GMT_TEXTSET * GMT_alloc_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *
 		D->table[0]->n_headers  = Din->table[0]->n_headers;
 		if (D->table[0]->n_headers) D->table[0]->header = GMT_memory (C, NULL, D->table[0]->n_headers, char *);
 		for (hdr = 0; hdr < D->table[0]->n_headers; hdr++) {	/* Concatenate headers */
-			for (tbl = len = 0; tbl < Din->n_tables; tbl++) len += (strlen (Din->table[tbl]->header[hdr]) + 2);
+			for (len = tbl = 0; tbl < Din->n_tables; tbl++) len += (strlen (Din->table[tbl]->header[hdr]) + 2);
 			D->table[0]->header[hdr] = calloc (len, sizeof (char));
 			strncpy (D->table[0]->header[hdr], Din->table[0]->header[hdr], GMT_BUFSIZ);
 			if (Din->n_tables > 1) GMT_chop (D->table[0]->header[hdr]);	/* Remove newline */
@@ -5664,7 +5664,7 @@ struct GMT_TEXTSET * GMT_alloc_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *
 		}
 	}
 	else {	/* Just copy over the same dataset layout except for columns */
-		D->n_tables = D->n_alloc = Din->n_tables;		/* Same number of tables as input dataset */
+		D->n_alloc = D->n_tables = Din->n_tables;		/* Same number of tables as input dataset */
 		D->n_segments  = Din->n_segments;	/* Same number of segments as input dataset */
 		D->n_records  = Din->n_records;		/* Same number of records as input dataset */
 		D->table = GMT_memory (C, NULL, D->n_tables, struct GMT_TEXTTABLE *);
@@ -5775,7 +5775,7 @@ struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *C, unsigned int n_tabl
 	}
 	D->n_columns = n_columns;
 	D->table = GMT_memory (C, NULL, n_tables, struct GMT_DATATABLE *);
-	D->n_tables = D->n_alloc = n_tables;
+	D->n_alloc = D->n_tables = n_tables;
 	if (!alloc_only) D->n_segments = D->n_tables * n_segments;
 	if (!alloc_only) D->n_records = D->n_segments * n_rows;
 	for (tbl = 0; tbl < n_tables; tbl++) if ((D->table[tbl] = GMT_create_table (C, n_segments, n_columns, n_rows, alloc_only)) == NULL) return (NULL);
@@ -6077,7 +6077,7 @@ struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *C, struct GMT_DATASET *
 	D->min = GMT_memory (C, NULL, D->n_columns, double);
 	D->max = GMT_memory (C, NULL, D->n_columns, double);
 	if (mode) {	/* Pack everything into a single table */
-		D->n_tables = D->n_alloc = 1;
+		D->n_alloc = D->n_tables = 1;
 		if (mode == GMT_ALLOC_VERTICAL)
 			for (tbl = n_seg = 0; tbl < Din->n_tables; tbl++) n_seg += Din->table[tbl]->n_segments;
 		else	/* mode == GMT_ALLOC_HORIZONTAL */
@@ -6116,7 +6116,7 @@ struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *C, struct GMT_DATASET *
 		}
 	}
 	else {	/* Just copy over the same dataset layout except for columns */
-		D->n_tables = D->n_alloc  = Din->n_tables;		/* Same number of tables as input dataset */
+		D->n_alloc  = D->n_tables = Din->n_tables;		/* Same number of tables as input dataset */
 		D->n_segments  = Din->n_segments;	/* Same number of segments as input dataset */
 		D->n_records  = Din->n_records;		/* Same number of records as input dataset */
 		D->table = GMT_memory (C, NULL, D->n_tables, struct GMT_DATATABLE *);

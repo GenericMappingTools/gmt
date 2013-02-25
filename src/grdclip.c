@@ -48,6 +48,7 @@ struct GRDCLIP_CTRL {
 		unsigned int mode;
 		float high, above;
 		float low, below;
+		float between;
 	} S;
 };
 
@@ -73,7 +74,7 @@ int GMT_grdclip_usage (struct GMTAPI_CTRL *C, int level) {
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdclip <ingrid> -G<outgrid> [%s]\n", GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-Sa<high>/<above>] [-Sb<low>/<below>] [%s]\n", GMT_V_OPT);
+	GMT_message (GMT, "\t[-Sa<high>/<above>] [-Sb<low>/<below>] [-Si<low>/<high>/<between>] [%s]\n", GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -83,7 +84,8 @@ int GMT_grdclip_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-Sa will set all data > high to the <above> value.\n");
 	GMT_message (GMT, "\t-Sb will set all data < low to the <below> value.\n");
-	GMT_message (GMT, "\t    <above> and <below> can be any number including NaN.\n");
+	GMT_message (GMT, "\t-Si will set all data >= low and <= high to the <between> value.\n");
+	GMT_message (GMT, "\t    <above>, <below> and <between> can be any number including NaN.\n");
 	GMT_message (GMT, "\t    You must choose at least one -S option setting.\n");
 	GMT_explain_options (GMT, "V.");
 	
@@ -142,6 +144,16 @@ int GMT_grdclip_parse (struct GMTAPI_CTRL *C, struct GRDCLIP_CTRL *Ctrl, struct 
 					else
 						Ctrl->S.below = (txt[0] == 'N' || txt[0] == 'n') ? GMT->session.f_NaN : (float)atof (txt);
 					break;
+				case 'i':
+					Ctrl->S.mode |= 4;
+					n = sscanf (&opt->arg[1], "%f/%f/%s", &Ctrl->S.low, &Ctrl->S.high, txt);
+					if (n != 3) {
+						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -Si option: Expected -Si<low>/<high>/<between>, <between> may be set to NaN\n");
+						n_errors++;
+					}
+					else
+						Ctrl->S.between = (txt[0] == 'N' || txt[0] == 'n') ? GMT->session.f_NaN : (float)atof (txt);
+					break;
 				default:
 					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -S option: Expected -Sa<high>/<above> or -Sb<low>/<below>\n");
 					n_errors++;
@@ -157,6 +169,8 @@ int GMT_grdclip_parse (struct GMTAPI_CTRL *C, struct GRDCLIP_CTRL *Ctrl, struct 
 	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single grid file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->S.mode, "Syntax error -S option: Must specify at least one of -Sa, -Sb\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.mode & 4 && (Ctrl->S.mode & 1 || Ctrl->S.mode & 2),
+			"Syntax error -S option: When specifying -Si cannot do -Sa or -Sb\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -169,7 +183,7 @@ int GMT_grdclip (void *V_API, int mode, void *args) {
 	int error = 0;
 	bool new_grid;
 	
-	uint64_t ij, n_above = 0, n_below = 0;
+	uint64_t ij, n_above = 0, n_below = 0, n_between = 0;
 	
 	double wesn[4];
 	
@@ -209,17 +223,29 @@ int GMT_grdclip (void *V_API, int mode, void *args) {
 
 	new_grid = GMT_set_outgrid (GMT, G, &Out);	/* true if input is a read-only array */
 
-	GMT_grd_loop (GMT, G, row, col, ij) {	/* Checking if extremes are exceeded (need not check NaN) */
-		if (Ctrl->S.mode & 1 && G->data[ij] > Ctrl->S.high) {
-			Out->data[ij] = Ctrl->S.above;
-			n_above++;
+	if (Ctrl->S.mode & 4) {	/* The 'in between' case */
+		GMT_grd_loop (GMT, G, row, col, ij) {
+			if ((G->data[ij] >= Ctrl->S.low && G->data[ij] <= Ctrl->S.high)) {
+				Out->data[ij] = Ctrl->S.between;
+				n_between++;
+			}
+			else if (new_grid)
+				Out->data[ij] = G->data[ij];
+		}	
+	}
+	else {
+		GMT_grd_loop (GMT, G, row, col, ij) {	/* Checking if extremes are exceeded (need not check NaN) */
+			if (Ctrl->S.mode & 1 && G->data[ij] > Ctrl->S.high) {
+				Out->data[ij] = Ctrl->S.above;
+				n_above++;
+			}
+			else if (Ctrl->S.mode & 2 && G->data[ij] < Ctrl->S.low) {
+				Out->data[ij] = Ctrl->S.below;
+				n_below++;
+			}
+			else if (new_grid)
+				Out->data[ij] = G->data[ij];
 		}
-		else if (Ctrl->S.mode & 2 && G->data[ij] < Ctrl->S.low) {
-			Out->data[ij] = Ctrl->S.below;
-			n_below++;
-		}
-		else if (new_grid)
-			Out->data[ij] = G->data[ij];
 	}
 
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Out) != GMT_OK) {
@@ -236,6 +262,12 @@ int GMT_grdclip (void *V_API, int mode, void *args) {
 		if (Ctrl->S.mode & 1) {
 			GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " values > ", n_above);
 			GMT_report (GMT, GMT_MSG_VERBOSE, format, (double)Ctrl->S.high, (double)Ctrl->S.above);
+		}
+		if (Ctrl->S.mode & 4) {
+			sprintf (format, "between %s and %s set to %s\n", GMT->current.setting.format_float_out, 
+				GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
+			GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " values >= <= ", n_between);
+			GMT_report (GMT, GMT_MSG_VERBOSE, format, (double)Ctrl->S.low, (double)Ctrl->S.high, (double)Ctrl->S.between);
 		}
 	}
 
