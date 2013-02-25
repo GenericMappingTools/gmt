@@ -1787,7 +1787,7 @@ void GMT_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode
 		a[0] /= Grid->header->nm;
 		for (row = 0; row < Grid->header->ny; row++) for (col = 0; col < Grid->header->nx; col++) {
 			ij = GMT_IJPR(Grid->header,row,col);
-			Grid->data[ij] -= a[0];
+			Grid->data[ij] -= (float)a[0];
 			z = Grid->data[ij];
 			data_var += z * z;
 		}
@@ -1807,7 +1807,7 @@ void GMT_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode
 		a[0] = 0.5 * (zmin + zmax);	/* Mid value */
 		for (row = 0; row < Grid->header->ny; row++) for (col = 0; col < Grid->header->nx; col++) {
 			ij = GMT_IJPR(Grid->header,row,col);	/* Index to real part of complex array elements */
-			Grid->data[ij] -= a[0];
+			Grid->data[ij] -= (float)a[0];
 			z = Grid->data[ij];
 			data_var += z * z;
 		}
