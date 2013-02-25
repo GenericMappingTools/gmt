@@ -31,7 +31,7 @@ and **-I** arguments. Either **blockmean**, **blockmedian**, or
 **surface** to avoid aliasing short wavelengths. These routines are also
 generally useful for decimating or averaging (*x*,\ *y*,\ *z*) data. You
 can modify the precision of the output format by editing the
-**FORMAT\_FLOAT\_OUT** parameter in your **gmt.conf** file, or you may
+**FORMAT\_FLOAT\_OUT** parameter in your `gmt.conf <gmt.conf.html>`_ file, or you may
 choose binary input and/or output to avoid loss of precision.
 
 .. include:: explain_commonitems.rst_
@@ -50,7 +50,7 @@ choose binary input and/or output to avoid loss of precision.
 *table*
     3 [or 4, see **-W**] column ASCII data table] column ASCII file(s)
     [or binary, see **-bi**\ [*ncols*\ ][*type*\ ]] holding
-    (*x*,\ *y*,\ *z*\ [,*w*]) data values. [*w*\ ] is an optional weight
+    (*x*,\ *y*,\ *z*\ [,\ *w*]) data values. [\ *w*] is an optional weight
     for the data. If no file is specified, **blockmedian** will read
     from standard input.
 **-C**
@@ -60,8 +60,8 @@ choose binary input and/or output to avoid loss of precision.
     Provide Extended report which includes **s** (the L1 scale of the
     median), **l**, the lowest value, and **h**, the high value for each
     block. Output order becomes
-    *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,*w*]. [Default outputs
-    *x*,\ *y*,\ *z*\ [,*w*]. For box-and-whisker calculation, use
+    *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,\ *w*]. [Default outputs
+    *x*,\ *y*,\ *z*\ [,\ *w*]. For box-and-whisker calculation, use
     **-Eb** which will output
     *x*,\ *y*,\ *z*,\ *l*,\ *q25*,\ *q75*,\ *h*\ [,*w*], where *q25* and
     *q75* are the 25% and 75% quantiles, respectively. See **-W** for
@@ -73,7 +73,7 @@ choose binary input and/or output to avoid loss of precision.
     append **-** to instead report the record number of the lower value.
     Note that both **-E**\ [**b**\ ] and **-E**\ **r**\ [**-**\ ] may be
     specified. For **-E**\ **s** we expect input records of the form
-    *x*,\ *y*,\ *z*\ [,*w*],\ *sid*, where *sid* is an unsigned integer
+    *x*,\ *y*,\ *z*\ [,\ *w*],\ *sid*, where *sid* is an unsigned integer
     source id.
 **-Q**
     (Quicker) Finds median *z* and (*x*,\ *y*) at that the median *z*

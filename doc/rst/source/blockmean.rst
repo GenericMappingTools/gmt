@@ -4,8 +4,8 @@ blockmean
 
 blockmean - Block average (*x*,\ *y*,\ *z*) data tables by L2 norm
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 **blockmean** [ *table* ]
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
@@ -13,13 +13,12 @@ blockmean - Block average (*x*,\ *y*,\ *z*) data tables by L2 norm
 **-E** ] [ **-S**\ [**m**\ \|\ **n**\ \|\ **s**\ \|\ **w**] ] [
 **-V**\ [*level*\ ] ] [ **-W**\ [**i**\ \|\ **o**] ] [
 **-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
-**-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
-**-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
+**-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [ **-h**\ [**i**\ \|\ **o**][*n*] ] [
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-o**\ *cols*\ [,*...*] ] [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **blockmean** reads arbitrarily located (*x*,\ *y*,\ *z*) triples [or
 optionally weighted quadruples (*x*,\ *y*,\ *z*,\ *w*)] from standard
@@ -30,26 +29,26 @@ and **-I** arguments. Either **blockmean**, **blockmedian**, or
 **surface** to avoid aliasing short wavelengths. These routines are also
 generally useful for decimating or averaging (*x*,\ *y*,\ *z*) data. You
 can modify the precision of the output format by editing the
-**FORMAT\_FLOAT\_OUT** parameter in your **gmt.conf** file, or you may
+**FORMAT\_FLOAT\_OUT** parameter in your `gmt.conf <gmt.conf.html>`_ file, or you may
 choose binary input and/or output to avoid loss of precision.
 
 .. include:: explain_commonitems.rst_
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 .. include:: explain_-I.rst_
 
 .. |Add_-R| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-R.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 *table*
     3 [or 4, see **-W**] column ASCII data table file(s) [or binary, see
-    **-bi**\ [*ncols*\ ][*type*\ ]] holding (*x*,\ *y*,\ *z*\ [,*w*])
-    data values. [*w*\ ] is an optional weight for the data. If no file
+    **-bi**\ [*ncols*\ ][*type*\ ]] holding (*x*,\ *y*,\ *z*\ [,\ *w*])
+    data values. [\ *w*] is an optional weight for the data. If no file
     is specified, **blockmean** will read from standard input.
 **-C**
     Use the center of the block as the output location [Default uses the
@@ -58,8 +57,8 @@ choose binary input and/or output to avoid loss of precision.
     Provide Extended report which includes **s** (the standard deviation
     about the mean), **l**, the lowest value, and **h**, the high value
     for each block. Output order becomes
-    *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,*w*]. [Default outputs
-    *x*,\ *y*,\ *z*\ [,*w*]. See **-W** for *w* output.
+    *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,\ *w*]. [Default outputs
+    *x*,\ *y*,\ *z*\ [,\ *w*]. See **-W** for *w* output.
 **-S**\ [**m**\ \|\ **n**\ \|\ **s**\ \|\ **w**]
     Use **-Sn** to report the number of points inside each block,
     **-Ss** to report the sum of all *z*-values inside a block, **-Sw**
@@ -104,16 +103,16 @@ choose binary input and/or output to avoid loss of precision.
 .. include:: explain_help.rst_
 .. include:: explain_precision.rst_
 
-`Examples <#toc7>`_
--------------------
+Examples
+--------
 
 To find 5 by 5 minute block mean values from the ASCII data in
 hawaii.xyg, run
 
 blockmean hawaii.xyg -R198/208/18/25 -I5m > hawaii\_5x5.xyg
 
-`See Also <#toc8>`_
--------------------
+See Also
+--------
 
 `blockmedian <blockmedian.html>`_ ,
 `blockmode <blockmode.html>`_ , `gmt <gmt.html>`_ ,

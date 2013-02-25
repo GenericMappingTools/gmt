@@ -4,15 +4,15 @@ grdclip
 
 grdclip - Clip the range of grids
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 **grdclip** *ingrid* **-G**\ *outgrid* [
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
-**-Sa**\ *high/above* ] [ **-Sb**\ *low/below* ] [ **-V**\ [*level*\ ] ]
+**-R**\ *west*/*east*/*south*/*north*\ [**r**] ] [ **-Sa**\ *high/above* ]
+[ **-Sb**\ *low/below* ] [ **-Si**\ *low/high/between* ] [ **-V**\ [*level*] ]
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **grdclip** will set values < *low* to *below* and/or values > *high* to
 *above*. Useful when you want all of a continent or an ocean to fall
@@ -23,16 +23,16 @@ range of data values is required. *above/below* can be any number or NaN
 
 .. include:: explain_commonitems.rst_
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *ingrid*
     The input 2-D binary grid file.
 **-G**\ *outgrid*
     *outgrid* is the modified output grid file.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_-R| replace:: Using the **-R** option
     will select a subsection of *ingrid* grid. If this subsection
@@ -43,6 +43,8 @@ range of data values is required. *above/below* can be any number or NaN
     Set all data[i] > *high* to *above*.
 **-Sb**\ *low/below*
     Set all data[i] < *low* to *below*. 
+**-Si**\ *low/high/below*
+    Set all data[i] >= *low* and <= *high* to *between*. 
 
 .. |Add_-V| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-V.rst_
@@ -51,15 +53,15 @@ range of data values is required. *above/below* can be any number or NaN
 
 .. include:: explain_grd_inout.rst_
 
-`Examples <#toc7>`_
--------------------
+Examples
+--------
 
 To set all values > 70 to NaN and all values < 0 to 0 in file data.nc:
 
 grdclip data.nc -Gnew\_data.nc -Sa70/NaN -Sb0/0 -V
 
-`See Also <#toc8>`_
--------------------
+See Also
+--------
 
 `gmt <gmt.html>`_ , `grdlandmask <grdlandmask.html>`_ ,
 `grdmask <grdmask.html>`_ , `grdmath <grdmath.html>`_ ,
