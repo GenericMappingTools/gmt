@@ -288,7 +288,7 @@ fonts can be found in the **gmt** man page.
     Technical Reference and Cookbook. If false, no filename expansion is
     done [false].
 **IO\_HEADER**
-    (**\* -H**) Specifies whether input/output ASCII files have header
+    (**\* -h**) Specifies whether input/output ASCII files have header
     record(s) or not [false].
 **IO\_LONLAT\_TOGGLE**
     (**\* -:**) Set if the first two columns of input and output files
@@ -298,7 +298,11 @@ fonts can be found in the **gmt** man page.
     IN means only input has (y,x), while OUT means only output should be
     (y,x). [false].
 **IO\_N\_HEADER\_RECS**
-    Specifies how many header records to expect if **-h** is used [1].
+    Specifies how many header records to expect if **-h** is used [0].
+    Note: This will skip the specified number of records regardless of
+    what they are.  Since any records starting with # is automatically
+    considered a header you will only specify a non-zero number in order
+    to skip headers that do not conform to that convention.
 **IO\_NAN\_RECORDS**
     Determines what happens when input records containing NaNs for *x*
     or *y* (and in some cases *z*) are read. Choose between **skip**,

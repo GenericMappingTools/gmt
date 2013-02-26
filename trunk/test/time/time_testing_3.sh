@@ -23,6 +23,6 @@ cat << EOF > tt.answer
 1970-01-01T00:00:03.5	0.875
 1970-01-01T00:00:04.0	1
 EOF
-gmtconvert tt.d -fi0t -fo0T -hi --TIME_SYSTEM=unix --FORMAT_CLOCK_OUT=hh:mm:ss.x > tt.result
+gmtconvert tt.d -fi0t -fo0T --TIME_SYSTEM=unix --FORMAT_CLOCK_OUT=hh:mm:ss.x > tt.result
 
 diff tt.result tt.answer --strip-trailing-cr > fail

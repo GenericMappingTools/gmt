@@ -4,9 +4,9 @@
 # Test the C API for i/o involving grids
 
 function gridset_check {
-	testapi -I$1 -W$2 -Tg -hi
+	testapi -I$1 -W$2 -Tg
 	grdmath gtesti.nc gtesto.nc SUB = tmp.nc
-	N=(`grd2xyz tmp.nc -ZTLa -hi | uniq | wc -l`)
+	N=(`grd2xyz tmp.nc -ZTLa | uniq | wc -l`)
 	if [ $N -ne 1 ]; then
 		echo "gridset_check $1 $2 failed" >> fail
 	fi

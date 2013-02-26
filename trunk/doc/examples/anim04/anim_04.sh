@@ -24,7 +24,7 @@ name=anim_04
 ps=${name}.ps
 
 # Set up flight path
-project -C-73.8333/40.75 -E-80.133/25.75 -G5 -Q -hi > $$.path.d
+project -C-73.8333/40.75 -E-80.133/25.75 -G5 -Q > $$.path.d
 frame=0
 mkdir -p frames
 grdgradient USEast_Coast.nc -A90 -Nt1 -G$${_int}.nc

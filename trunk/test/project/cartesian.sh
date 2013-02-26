@@ -24,12 +24,12 @@ cy=0
 
 makeproj () {
 # Expects azimuth x y
-echo "$2 $3" | project -N -C$cx/$cy -A$1 -Fpqrs -hi
+echo "$2 $3" | project -N -C$cx/$cy -A$1 -Fpqrs
 }
 
 makeaxis () {
 # Expects azimuth file
-project -N -C$cx/$cy -A-$1 -Fpq -hi $2
+project -N -C$cx/$cy -A-$1 -Fpq $2
 }
 
 gmtset PS_CHAR_ENCODING ISOLatin1+

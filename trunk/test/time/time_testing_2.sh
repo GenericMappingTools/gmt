@@ -28,5 +28,5 @@ sample1d -I0.5 << EOF > tt.d
 0	0
 4	1
 EOF
-gmtconvert tt.d -fi0t -fo0T -hi --TIME_SYSTEM=j2000 > tt.result
+gmtconvert tt.d -fi0t -fo0T --TIME_SYSTEM=j2000 > tt.result
 diff tt.result tt.answer --strip-trailing-cr > fail

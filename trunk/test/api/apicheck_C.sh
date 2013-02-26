@@ -4,11 +4,11 @@
 # Test the C API for i/o involving CPTs
 
 function cpt_check {
-	testapi -I$1 -W$2 -Tc -hi
+	testapi -I$1 -W$2 -Tc
 	diff -q --strip-trailing-cr ctest[io].cpt >> fail
 }
 
-makecpt -Cno_green -T0/10/1 -hi > ctesti.cpt
+makecpt -Cno_green -T0/10/1 > ctesti.cpt
 rm -f fail
 # 1. Read File and write CPT via...
 cpt_check f f	# 1a. File
