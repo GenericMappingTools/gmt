@@ -1243,10 +1243,10 @@ int gmt_parse_h_option (struct GMT_CTRL *C, char *item) {
 		while ((GMT_strtok (c, "+", &pos, p))) {
 			switch (p[0]) {
 				case 'd':	/* Delete existing headers */
-					C->common.h.delete = true;
+					C->common.h.mode = GMT_COMMENT_IS_RESET;
 					break;
 				case 'c':	/* Add column names record */
-					C->common.h.col_names = true;
+					C->common.h.add_colnames = true;
 					break;
 				case 'r':	/* Add specific text remark */
 					if (C->common.h.remark) free ((void *)C->common.h.remark);

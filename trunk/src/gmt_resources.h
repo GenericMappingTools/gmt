@@ -74,11 +74,12 @@ enum GMT_enum_comments {
 	GMT_COMMENT_IS_OPTION	= 1,	/* Comment is a linked list of GMT_OPTION structures */
 	GMT_COMMENT_IS_COMMAND	= 2,	/* Comment goes in to header->command */
 	GMT_COMMENT_IS_REMARK	= 4,	/* Comment goes in to header->remark */
-	GMT_COMMENT_IS_TITLE	= 8,	/* Comment goes in to header->remark */
-	GMT_COMMENT_IS_NAME_X	= 16,	/* Comment goes in to header->remark */
-	GMT_COMMENT_IS_NAME_Y	= 32,	/* Comment goes in to header->remark */
-	GMT_COMMENT_IS_NAME_Z	= 64,	/* Comment goes in to header->remark */
-	GMT_COMMENT_IS_RESET	= 128};	/* Wipe existing header first [append] */
+	GMT_COMMENT_IS_TITLE	= 8,	/* Comment goes in to header->title */
+	GMT_COMMENT_IS_NAME_X	= 16,	/* Comment goes in to header->x_units [grids only] */
+	GMT_COMMENT_IS_NAME_Y	= 32,	/* Comment goes in to header->y_units [grids only] */
+	GMT_COMMENT_IS_NAME_Z	= 64,	/* Comment goes in to header->z_units [grids only] */
+	GMT_COMMENT_IS_COLNAMES	= 128,	/* Comment goes in to header->colnames [tables only] */
+	GMT_COMMENT_IS_RESET	= 256};	/* Wipe existing header first [append] */
 
 /* Array indices for input/output/stderr variables */
 

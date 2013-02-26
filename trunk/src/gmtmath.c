@@ -33,9 +33,9 @@
 
 #include "gmt_dev.h"
 
-int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO **M);
-int gmt_find_macro (char *arg, unsigned int n_macros, struct MATH_MACRO *M);
-void gmt_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, struct MATH_MACRO **M);
+EXTERN_MSC int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO **M);
+EXTERN_MSC int gmt_find_macro (char *arg, unsigned int n_macros, struct MATH_MACRO *M);
+EXTERN_MSC void gmt_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, struct MATH_MACRO **M);
 	
 #define GMTMATH_ARG_IS_OPERATOR	 0
 #define GMTMATH_ARG_IS_FILE	-1
@@ -3256,7 +3256,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Perform reverse Polish notation calculations on data tables\n");
 
-	n_macros = gmt_load_macros (GMT, ".gmtmath", &M);	/* Load in any macros */
+	n_macros = gmt_load_macros (GMT, "gmtmath.macros", &M);	/* Load in any macros */
 	if (n_macros) GMT_report (GMT, GMT_MSG_VERBOSE, "Found and loaded %d user macros.\n", n_macros);
 	
 	if (Ctrl->Q.active || Ctrl->S.active) {	/* Turn off table and segment headers in calculator or one-record mode */

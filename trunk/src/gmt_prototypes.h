@@ -132,6 +132,7 @@ EXTERN_MSC struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *C, struct GMT_OPTION
 
 /* gmt_io.c: */
 
+EXTERN_MSC void GMT_set_xycolnames (struct GMT_CTRL *C, char *string);
 EXTERN_MSC p_to_io_func GMT_get_io_ptr (struct GMT_CTRL *C, int direction, enum GMT_swap_direction swap, char type);
 EXTERN_MSC bool GMT_is_ascii_record (struct GMT_CTRL *C);
 EXTERN_MSC void GMT_set_segmentheader (struct GMT_CTRL *C, int direction, bool true_false);

@@ -492,7 +492,7 @@ the width is taken to be given in number of rows.
 ------------------
 
 Users may save their favorite operator combinations as macros via the
-file .gmtmath in their current or user directory. The file may contain
+file *gmtmath.macros* in their current or user directory. The file may contain
 any number of macros (one per record); comment lines starting with # are
 skipped. The format for the macros is **name** = **arg1 arg2 ... arg2**
 : *comment* where **name** is how the macro will be used. When this

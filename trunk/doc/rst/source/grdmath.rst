@@ -532,7 +532,7 @@ arguments or bit-settings <= 0.
 ------------------
 
 Users may save their favorite operator combinations as macros via the
-file .grdmath in their current or user directory. The file may contain
+file *grdmath.macros* in their current or user directory. The file may contain
 any number of macros (one per record); comment lines starting with # are
 skipped. The format for the macros is **name** = **arg1 arg2 ... arg2**
 : *comment* where **name** is how the macro will be used. When this
