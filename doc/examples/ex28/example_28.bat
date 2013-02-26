@@ -17,8 +17,8 @@ REM Save min/max UTM coordinates with enough precision
 grdinfo Kilauea.utm.nc --FORMAT_FLOAT_OUT=%%.10g -C > tmp.txt
 
 REM Use inverse UTM projection to determine the lon/lat of the lower left and upper right corners
-REM LL=`mapproject tmp.txt -Ju5Q/1:1 -F -C -I --FORMAT_GEO_OUT=ddd:mm:ss.x -i1,3 -o0,1 | gawk '{printf "%s/%s\n", $1, $2}'`
-REM UR=`mapproject tmp.txt -Ju5Q/1:1 -F -C -I --FORMAT_GEO_OUT=ddd:mm:ss.x -i2,4 -o0,1 | gawk '{printf "%s/%s\n", $1, $2}'`
+REM LL=`mapproject -hi tmp.txt -Ju5Q/1:1 -F -C -I --FORMAT_GEO_OUT=ddd:mm:ss.x -i1,3 -o0,1 | gawk '{printf "%s/%s\n", $1, $2}'`
+REM UR=`mapproject -hi tmp.txt -Ju5Q/1:1 -F -C -I --FORMAT_GEO_OUT=ddd:mm:ss.x -i2,4 -o0,1 | gawk '{printf "%s/%s\n", $1, $2}'`
 set LL=-155:20:13.3/19:14:51.5
 set UR=-155:05:44.2/19:27:54.6
 

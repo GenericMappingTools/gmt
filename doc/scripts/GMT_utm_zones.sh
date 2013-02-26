@@ -21,7 +21,7 @@ cat << EOF > tt.z.d
 0	90
 0	84
 EOF
-gmtmath -T-174/174/6 T 0 MUL = tt.x.d
+gmtmath -T-174/174/6 -hi T 0 MUL = tt.x.d
 echo '-90' > tt.L.d
 let s=-80
 rm -f tt.y.d
@@ -91,8 +91,8 @@ pstext -R -J -O -K -N -F+f10p,Helvetica-Bold << EOF >> GMT_utm_zones.ps
 -90	87	Y
 +90	87	Z
 EOF
-gmtmath -T-180/174/6 T 3 ADD = | $AWK '{if (NR > 1) printf "%s -90 %d\n", $2, NR}' | pstext -R -J -O -K -N -D0/-0.07i -F+f8p,Times-Italic+jCT >> GMT_utm_zones.ps
-gmtmath -T-180/174/6 T 3 ADD = | $AWK '{if (NR > 1) printf "%s 90 %d\n", $2, NR}' | pstext -R -J -O -K -N -D0/0.07i -F+f8p,Times-Italic+jCB >> GMT_utm_zones.ps
+gmtmath -T-180/174/6 -hi T 3 ADD = | $AWK '{if (NR > 1) printf "%s -90 %d\n", $2, NR}' | pstext -R -J -O -K -N -D0/-0.07i -F+f8p,Times-Italic+jCT >> GMT_utm_zones.ps
+gmtmath -T-180/174/6 -hi T 3 ADD = | $AWK '{if (NR > 1) printf "%s 90 %d\n", $2, NR}' | pstext -R -J -O -K -N -D0/0.07i -F+f8p,Times-Italic+jCB >> GMT_utm_zones.ps
 pstext -R -J -O -K -D0/0.025i -F+f8p,Times-Italic+jCB << EOF >> GMT_utm_zones.ps
 4.5	72	31X
 15	72	33X

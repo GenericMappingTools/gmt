@@ -3259,7 +3259,10 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 	n_macros = gmt_load_macros (GMT, ".gmtmath", &M);	/* Load in any macros */
 	if (n_macros) GMT_report (GMT, GMT_MSG_VERBOSE, "Found and loaded %d user macros.\n", n_macros);
 	
-	if (Ctrl->Q.active || Ctrl->S.active) GMT_set_segmentheader (GMT, GMT_OUT, false);	/* Turn off segment headers in calculator or one-record mode */
+	if (Ctrl->Q.active || Ctrl->S.active) {	/* Turn off table and segment headers in calculator or one-record mode */
+		GMT_set_tableheader (GMT, GMT_OUT, false);
+		GMT_set_segmentheader (GMT, GMT_OUT, false);
+	}
 
 	/* Internally replace the = [file] sequence with a single output option ->file */
 

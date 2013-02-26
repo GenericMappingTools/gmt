@@ -41,8 +41,8 @@ gcc ks.c -lm -o ks
 grdmath -R0/2/0/1 -I$D -r 0 = z.nc
 grdmath -R0/2/0/1 -I0.01 -r 0 = zfine.nc
 makecpt -Crainbow -T0/1/0.2 > tt.cpt
-grd2xyz z.nc | cut -f1,2 | ./ks | xyz2grd -R0/2/0/1 -I$D -Gls.nc -r
-grd2xyz zfine.nc | cut -f1,2 | ./ks | xyz2grd -R0/2/0/1 -I0.01 -Glsfine.nc -r
+grd2xyz -hi z.nc | cut -f1,2 | ./ks | xyz2grd -R0/2/0/1 -I$D -Gls.nc -r
+grd2xyz -hi zfine.nc | cut -f1,2 | ./ks | xyz2grd -R0/2/0/1 -I0.01 -Glsfine.nc -r
 grdview ls.nc -Jx2.5i -JZ1.75 -p155/30 -Ctt.cpt -Wc1p -Qm/lightgray -B0.5/0.2/0.2wSEnZ -K --PS_SCALE_X=0.8 --PS_SCALE_Y=0.8 > $ps
 
 blockmean random.xyz -R -I$D > use.xyz

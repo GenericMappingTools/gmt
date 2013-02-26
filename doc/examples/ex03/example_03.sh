@@ -35,8 +35,8 @@ pposy=`grep "L2 N Hemisphere" report | cut -f2`
 # the great circle.  We use -Q to get the p distance in kilometers, and -S
 # to sort the output into increasing p values.
 #
-project  sat.xyg -C$cposx/$cposy -T$pposx/$pposy -S -Fpz -Q > sat.pg
-project ship.xyg -C$cposx/$cposy -T$pposx/$pposy -S -Fpz -Q > ship.pg
+project  sat.xyg -C$cposx/$cposy -T$pposx/$pposy -S -Fpz -Q -hi > sat.pg
+project ship.xyg -C$cposx/$cposy -T$pposx/$pposy -S -Fpz -Q -hi > ship.pg
 #
 # The minmax utility will report the minimum and maximum values for all columns. 
 # We use this information first with a large -I value to find the appropriate -R
@@ -81,11 +81,11 @@ tail -1 sat.pg >> tmp
 sampr2=`gmtmath tmp -Ca -Sf -o0 LOWER FLOOR =`
 #
 # Now we can use sampr1|2 in gmtmath to make a sampling points file for sample1d:
-gmtmath -T$sampr1/$sampr2/1 -N1/0 T = samp.x
+gmtmath -T$sampr1/$sampr2/1 -hi -N1/0 T = samp.x
 #
 # Now we can resample the projected satellite data:
 #
-sample1d sat.pg -Nsamp.x > samp_sat.pg
+sample1d sat.pg -Nsamp.x -hi > samp_sat.pg
 #
 # For reasons above, we use filter1d to pre-treat the ship data.  We also need to sample it
 # because of the gaps > 1 km we found.  So we use filter1d | sample1d.  We also use the -E
@@ -154,10 +154,10 @@ psxy $R -JX8i/1.1i -O -Y4.25i -Bf100/a0.5f0.1:"Weight":Wesn -Sp0.03i samp_ship.x
 # From this we see that we might want to throw away values where w < 0.6.  So we try that,
 # and this time we also use trend1d to return the residual from the model fit (the 
 # de-trended data):
-trend1d -Fxrw -N2r samp_ship.pg | $AWK '{ if ($3 > 0.6) print $1, $2 }' \
-	| sample1d -Nsamp.x > samp2_ship.pg
-trend1d -Fxrw -N2r samp_sat.pg  | $AWK '{ if ($3 > 0.6) print $1, $2 }' \
-	| sample1d -Nsamp.x > samp2_sat.pg
+trend1d -hi -Fxrw -N2r samp_ship.pg | $AWK '{ if ($3 > 0.6) print $1, $2 }' \
+	| sample1d -Nsamp.x -hi > samp2_ship.pg
+trend1d -hi -Fxrw -N2r samp_sat.pg  | $AWK '{ if ($3 > 0.6) print $1, $2 }' \
+	| sample1d -Nsamp.x -hi > samp2_sat.pg
 #
 # We plot these to see how they look:
 #

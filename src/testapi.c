@@ -65,7 +65,7 @@ int GMT_testapi_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: testapi -If|s|d|c|r[/v|m] -Td|t|g|c|i|v|m -Wf|s|d|c|r[/v|m] [%s]\n", GMT_V_OPT);
+	GMT_message (GMT, "usage: testapi -If|s|d|c|r[/v|m] -Td|t|g|c|i|v|m -Wf|s|d|c|r[/v|m] [%s] [%s]\n", GMT_V_OPT, GMT_h_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -207,7 +207,7 @@ int GMT_testapi (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-V", ">", options)) Return (API->error);
+	if (GMT_Parse_Common (API, "-Vh", ">", options)) Return (API->error);
 	Ctrl = New_testapi_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_testapi_parse (API, Ctrl, options))) Return (error);
 
