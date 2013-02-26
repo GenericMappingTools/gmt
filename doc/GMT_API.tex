@@ -758,7 +758,8 @@ and textset record-by-record reading and prepares the registered sources for the
 The prototype is
 
 \begin{verbatim}
-int GMT_Begin_IO (void *API, unsigned int family, unsigned int direction, unsigned int mode);
+int GMT_Begin_IO (void *API, unsigned int family, unsigned int direction, \
+    unsigned int mode, unsigned int header);
 \end{verbatim}
 where \texttt{family} specifies the resource type to be read or written (see Table \ref{tbl:family};
 only GMT\_IS\_DATASET and GMT\_IS\_TEXTSET are available for record-by-record handling).
@@ -770,6 +771,8 @@ times to switch modes between registering data resources, doing the importing/ex
 data access, perhaps to do more registration.  We will discuss \texttt{GMT\_End\_IO} once we are done with the data import.
 The \texttt{mode} option is used to allow output to write table header information (\texttt{GMT\_HEADER\_ON}) or not (\texttt{GMT\_HEADER\_OFF}).
 This is usually on unless you are writing messages and other non-data.
+The final \texttt{header} argument determines if the common header-block should be written during initialization; choose
+between \texttt{GMT\_HEADER\_ON} (1) and \texttt{GMT\_HEADER\_OFF} (0).
 The function returns TRUE (1) if there is an error; otherwise it returns FALSE (0).
 
 \subsection{Import a data set}
@@ -1388,18 +1391,22 @@ All modules return an error or status code that your program should consider bef
 All header records in incoming datasets are stored in memory.  You may wish to replace these records with
 new information, or append new information to the existing headers.  This is achieved with
 
-\index{GMT\_Add\_Comment}
+\index{GMT\_Set\_Comment}
 
 \begin{verbatim}
-int GMT_Add_Comment (void *API, unsigned int family, unsigned int mode \
+int GMT_Set_Comment (void *API, unsigned int family, unsigned int mode \
     void *arg, void *data)
 \end{verbatim}
 
 Again, \texttt{family} selects which kind of resource is passed via \texttt{data}. The \texttt{mode}
 determines what kind of comment is being considered, how it should be included, and in what form the comment
 passed via \texttt{arg} is.  Table~\cite{tbl:comments} lists the available options, which may be combined
-by adding (bitwise ``or'').  Note: Users can always
-determine if they wish to turn off header output via the common \GMT\ option \Opt(h).
+by adding (bitwise ``or'').  The \texttt{GMT\_Set\_Comment} does not actually output anything but sets the
+relevant comment and header records in the relevant structure.  When a file is written out the information
+will be output as well (Note: Users can always decide if they wish to turn header output on or off via the
+common \GMT\ option \Opt(h).  For record-by-record writing you must enable the header block output when
+you call \texttt{GMT\_Begin\_IO}.
+\index{GMT\_Begin\_IO}
 
 \begin{table}[h]
 \small
@@ -1410,9 +1417,14 @@ GMT\_COMMENT\_IS\_TEXT		&      0	& Comment is a text string \\ \hline
 GMT\_COMMENT\_IS\_OPTION	&      1	& Comment is a linked list of GMT_OPTION structures \\ \hline
 GMT\_COMMENT\_IS\_COMMAND	&      2	& Comment is the command \\ \hline
 GMT\_COMMENT\_IS\_REMARK	&      4	& Comment is the remark \\ \hline
+GMT\_COMMENT\_IS\_TITLE		&      4	& Comment is the title \\ \hline
+GMT\_COMMENT\_IS\_NAME_X	&      4	& Comment is the x variable name (grids only) \\ \hline
+GMT\_COMMENT\_IS\_NAME_Y	&      4	& Comment is the y variable name (grids only) \\ \hline
+GMT\_COMMENT\_IS\_NAME_Z	&      4	& Comment is the z variable name (grids only) \\ \hline
+GMT\_COMMENT\_IS\_COLNAMES	&      4	& Comment is the column names header \\ \hline
 GMT\_COMMENT\_IS\_RESET		&      8	& Comment replaces existing information \\ \hline
 \end{tabular}
-\caption{Enumeration constants as bit-flags defined for specifying comments.}
+\caption{Enumeration constants as bit-flags defined for specifying different types of comments.}
 \label{tbl:comments}
 \index{Resources!Comments!types}
 \end{table}
@@ -1421,10 +1433,11 @@ GMT\_COMMENT\_IS\_RESET		&      8	& Comment replaces existing information \\ \hl
 \index{GMT\_COMMENT\_IS\_COMMAND}
 \index{GMT\_COMMENT\_IS\_REMARK}
 \index{GMT\_COMMENT\_IS\_RESET}
-The \emph{command }and \emph{remark} modifiers to the comment are used to distinguish regular comments from specific fields in the
-header structure of many data resources, such as \texttt{GMT\_GRID}.  For the various table resources (e.g., \texttt{GMT\_DATASET})
+The named modes (\emph{command}, \emph{remark}, \emph{title}, \emph{name\_x,y,z} and \emph{colnames} are used
+to distinguish regular text comments from specific fields in the
+header structures of the data resources, such as \texttt{GMT\_GRID}.  For the various table resources (e.g., \texttt{GMT\_DATASET})
 these modifiers result in a specially formatted comments beginning with ``Command: '' or ``Remark: '', reflecting how this
-type of information is presented via \GMTprog{grdinfo} for \GMT\ grids.
+type of information is encoded in the headers.
 
 \section{Exporting Data}
 \index{Exporting Data}
