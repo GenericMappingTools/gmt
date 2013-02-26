@@ -14,10 +14,10 @@ lat=`tail -n +5 $dia | head -1 | $AWK '{print $3}'`
 alt=`tail -n +7 $dia | head -1 | $AWK '{print $2/1000}'`
 data=`tail -n +27 $dia | head -1 | $AWK '{print $1}'`
 
-IGRF=`echo $lon $lat $alt $data | mgd77magref -Fxyz/0`
+IGRF=`echo $lon $lat $alt $data | mgd77magref -Fxyz/0 -hi`
 
 tail -n +27 $dia | $AWK '{print $1"T"$2, sqrt($4*$4+$5*$5+$6*$6)}' > zz1.dat
-$AWK -v x=$lon -v y=$lat -v z=$alt '{print x, y, z, $1}' zz1.dat | mgd77magref -Frt/923456 | awk '{print $4, $5}' > zz2.dat 
+$AWK -v x=$lon -v y=$lat -v z=$alt '{print x, y, z, $1}' zz1.dat | mgd77magref -Frt/923456 -hi | awk '{print $4, $5}' > zz2.dat 
 # Compute data & model min/max
 m1=(`minmax zz1.dat -C -f0T`)
 m2=(`minmax zz2.dat -C -f0T`)
@@ -42,7 +42,7 @@ station=`tail -n +4 $dia | head -1 | $AWK '{print $3}'`
 echo ${m1[0]} ${t[0]} Station -- $station | pstext -F+f14p,Bookman-Demi+jLB -R -J -N -Xa7.5c -Ya4.7c -O -K >> $ps
 
 # Compute and write the IGRF for this day
-IGRF=`echo $lon $lat $alt $data | mgd77magref -Ft/0 | $AWK '{printf "%.2f\n", $1}'`
+IGRF=`echo $lon $lat $alt $data | mgd77magref -Ft/0 -hi | $AWK '{printf "%.2f\n", $1}'`
 echo ${m1[0]} ${t[0]} IGRF = $IGRF | pstext -F+f15p,Bookman-Demi+jCT -R -J -N -Xa7.5c -Ya3.0c -O -K >> $ps
 
 # Plot histogram of differences with mean removed

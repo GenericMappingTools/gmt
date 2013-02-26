@@ -4,7 +4,7 @@
 # Test the C API for i/o involving datasets
 
 function dataset_check {
-	testapi -I$1 -W$2 -Td
+	testapi -I$1 -W$2 -Td -hi
 	diff -q --strip-trailing-cr dtest[io].txt >> fail
 }
 

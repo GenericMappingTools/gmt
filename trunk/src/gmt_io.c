@@ -275,6 +275,11 @@ void GMT_set_segmentheader (struct GMT_CTRL *C, int direction, bool true_false)
 	C->current.io.multi_segments[direction] = true_false;
 }
 
+void GMT_set_tableheader (struct GMT_CTRL *C, int direction, bool true_false)
+{	/* Enable/Disable table headers for either input or output */
+	C->current.setting.io_header[direction] = true_false;
+}
+
 int gmt_process_binary_input (struct GMT_CTRL *C, unsigned int n_read) {
 	/* Process a binary record to determine what kind of record it is. Return values:
 	 * 0 = regular record; 1 = segment header (all NaNs); 2 = skip this record
