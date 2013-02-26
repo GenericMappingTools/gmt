@@ -134,11 +134,12 @@ struct GMT_COMMON {
 	} g;
 	struct h {	/* -h[i|o][<nrecs>][+d][+c][+r<remark>][+t<title>] */
 		bool active;
-		bool delete;
-		bool col_names;
+		bool add_colnames;
+		unsigned int mode;
 		unsigned int n_recs;
 		char *title;
 		char *remark;
+		char *colnames;	/* Not set by -h but maintained here */
 	} h;	
 	struct i {	/* -i<col>|<colrange>,.. */
 		bool active;

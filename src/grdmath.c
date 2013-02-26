@@ -3337,7 +3337,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 	GMT_memset (recall, GRDMATH_STORE_SIZE, struct GRDMATH_STORE *);
 	GMT_memset (localhashnode, GRDMATH_N_OPERATORS, struct GMT_HASH);
 	for (k = 0; k < GRDMATH_STACK_SIZE; k++) stack[k] = GMT_memory (GMT, NULL, 1, struct GRDMATH_STACK);
-	n_macros = gmt_load_macros (GMT, ".grdmath", &M);	/* Load in any macros */
+	n_macros = gmt_load_macros (GMT, "grdmath.macros", &M);	/* Load in any macros */
 	if (n_macros) GMT_report (GMT, GMT_MSG_VERBOSE, "Found and loaded %d user macros.\n", n_macros);
 	
 	/* Internally replace the = [file] sequence with an output option */

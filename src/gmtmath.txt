@@ -134,7 +134,7 @@ All bitwise operators return NaN if given NaN arguments or bit-settings <= 0.
 (9) TAPER will interpret its argument to be a width in the same units as the time-axis, but if no
 time is provided (i.e., plain data tables) then the width is taken to be given in number of rows.
 .SH MACROS
-Users may save their favorite operator combinations as macros via the file .gmtmath
+Users may save their favorite operator combinations as macros via the file IT(gmtmath.macros)
 in their current or user directory.  The file may contain any number of macros (one
 per record); comment lines starting with # are skipped.  The format for the macros is
 BD(name) = BD(arg1 arg2 ... arg2) : IT(comment)

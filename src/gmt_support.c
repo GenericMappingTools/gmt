@@ -2187,7 +2187,7 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *C, void *source, unsigned in
 
 		c = line[0];
 		if (c == '#') {	/* Possibly a header/comment record */
-			if (C->common.h.delete) continue;	/* Simplest way to replace headers on output is to ignore them on input */
+			if (C->common.h.mode == GMT_COMMENT_IS_RESET) continue;	/* Simplest way to replace headers on output is to ignore them on input */
 			if (!check_headers) continue;	/* Done with the initial header records */
 			if (strstr (line, "$Id:")) master = true;
 			if (master) {
@@ -2808,7 +2808,7 @@ int GMT_write_cpt (struct GMT_CTRL *C, void *dest, unsigned int dest_type, unsig
 	for (i = 0; i < P->n_headers; i++) {	/* First write the old headers */
 		GMT_write_tableheader (C, fp, P->header[i]);
 	}
-	GMT_write_newheaders (C, fp);
+	GMT_write_newheaders (C, fp);	/* Write general header block */
 
 	if (!(P->model & GMT_COLORINT)) {}	/* Write nothing when color interpolation is not forced */
 	else if (P->model & GMT_HSV)

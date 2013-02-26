@@ -126,7 +126,7 @@ All bitwise operators return NaN if given NaN arguments or bit-settings <= 0.
 #include "explain_grd_coord.txt"
 #include "explain_sto_rcl_clr.txt"
 .SH MACROS
-Users may save their favorite operator combinations as macros via the file .grdmath
+Users may save their favorite operator combinations as macros via the file IT(grdmath.macros)
 in their current or user directory.  The file may contain any number of macros (one
 per record); comment lines starting with # are skipped.  The format for the macros is
 BD(name) = BD(arg1 arg2 ... arg2) : IT(comment)

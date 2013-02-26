@@ -622,12 +622,26 @@ char * GMT_create_header_item (struct GMTAPI_CTRL *API, unsigned int mode, void 
 	return (buffer);
 }
 
+int GMTAPI_add_comment (struct GMTAPI_CTRL *API, unsigned int mode, char *txt)
+{	/* Update common.h's various text items */
+	unsigned int k = 0;
+	struct GMT_COMMON *C = &API->GMT->common;	/* Short-hand */
+	
+	if (mode & GMT_COMMENT_IS_TITLE)  { if (C->h.title) free ((void *)C->h.title); C->h.title = strdup (txt); k++; }
+	if (mode & GMT_COMMENT_IS_REMARK) { if (C->h.remark) free ((void *)C->h.remark); C->h.remark = strdup (txt); k++; }
+	if (mode & GMT_COMMENT_IS_COLNAMES) { if (C->h.colnames) free ((void *)C->h.colnames); C->h.colnames = strdup (txt); k++; }
+	return (k);	/* 1 if we did one of the three above; 0 otherwise */
+}
+
 void GMTAPI_dataset_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_DATASET *D)
 {	/* Append or replace data table headers with given text or commmand-line options */
 	unsigned int tbl, k;
 	struct GMT_DATATABLE *T = NULL;
 	char *txt = GMT_create_header_item (API, mode, arg);
 	
+	if (GMTAPI_add_comment (API, mode, txt)) return;	/* Updated one -h item */
+
+	/* Here we process free-form comments; these go into the dataset's header structures */
 	for (tbl = 0; tbl < D->n_tables; tbl++) {	/* For each table in the dataset */
 		T = D->table[tbl];	/* Short-hand for this table */
 		if (mode & GMT_COMMENT_IS_RESET) {	/* Eliminate all existing headers */
@@ -645,6 +659,9 @@ void GMTAPI_textset_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *a
 	struct GMT_TEXTTABLE *T = NULL;
 	char *txt = GMT_create_header_item (API, mode, arg);
 	
+	if (GMTAPI_add_comment (API, mode, txt)) return;	/* Updated one -h item */
+
+	/* Here we process free-form comments; these go into the textset's header structures */
 	for (tbl = 0; tbl < D->n_tables; tbl++) {	/* For each table in the dataset */
 		T = D->table[tbl];	/* Short-hand for this table */
 		if (mode & GMT_COMMENT_IS_RESET) {	/* Eliminate all existing headers */
@@ -661,6 +678,9 @@ void GMTAPI_cpt_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, 
 	unsigned int k;
 	char *txt = GMT_create_header_item (API, mode, arg);
 	
+	if (GMTAPI_add_comment (API, mode, txt)) return;	/* Updated one -h item */
+
+	/* Here we process free-form comments; these go into the CPT's header structures */
 	if (mode & GMT_COMMENT_IS_RESET) {	/* Eliminate all existing headers */
 		for (k = 0; k < P->n_headers; k++) free ((void *)P->header[k]);
 		P->n_headers = 0;
