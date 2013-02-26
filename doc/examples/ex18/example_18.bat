@@ -65,7 +65,7 @@ echo -140.5	53.75 >> tmp
 echo -148.5	53.75 >> tmp
 psxy -R -J -A -O -K -L -Wthin -Gwhite tmp >> %ps%
 echo {printf "-148 53.08 Areas: %%s km@+2@+\n-148 53.42 Volumes: %%s km@+2@+\n", $2, $3} > t
-grdvolume tmp.nc -C50 -Sk -hi | gawk -f t | pstext -R -J -F+f14p,Helvetica-Bold+jLM -O >> %ps%
+grdvolume tmp.nc -C50 -Sk | gawk -f t | pstext -R -J -F+f14p,Helvetica-Bold+jLM -O >> %ps%
 
 REM Clean up
 

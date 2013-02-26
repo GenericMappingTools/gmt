@@ -552,11 +552,11 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 
 			GMT_message (C, "\t-h[i][<n>][+c][+d][+r<remark>][+t<title>] Input/output file has [%d] Header record(s) [%s]\n", C->current.setting.io_n_header_items, GMT_choice[C->current.setting.io_header[GMT_IN]]);
 			GMT_message (C, "\t   Optionally, append i for input only and/or number of header records [0].\n");
-			GMT_message (C, "\t     -hi turns off the writing of headers on output [on].\n");
-			GMT_message (C, "\t   Append +c to add header record with column information.\n");
+			GMT_message (C, "\t     -hi turns off the writing of all headers on output.\n");
+			GMT_message (C, "\t   Append +c to add header record with column information [none].\n");
 			GMT_message (C, "\t   Append +d to delete headers before adding new ones [Default will append headers].\n");
-			GMT_message (C, "\t   Append +r to add <remark> to specify a remark record.\n");
-			GMT_message (C, "\t   Append +t to add <title> to specify a title record.\n");
+			GMT_message (C, "\t   Append +r to add a <remark> comment to the output [none].\n");
+			GMT_message (C, "\t   Append +t to add a <title> comment to the output [none].\n");
 			GMT_message (C, "\t     (these strings may contain \\n to indicate line-breaks)\n");
 			GMT_message (C, "\t   For binary files, <n> is considered to mean number of bytes.\n");
 			break;
@@ -1192,15 +1192,16 @@ int gmt_parse_h_option (struct GMT_CTRL *C, char *item) {
 	unsigned int pos = 0;
 	char p[GMT_BUFSIZ], *c = NULL;
 
-	/* Parse the -h option.  Full syntax: -h[i|o][<nrecs>][+r][+c][+t<title>] */
+	/* Parse the -h option.  Full syntax: -h[i|o][<nrecs>][+c][+d][+r<remark>][+t<title>] */
 
 	/* Note: This forces the io to skip the first <nrecs> records, regardless of what they are.
 	 * In addition, any record starting with # will be considered a comment.
 	 * For output (-ho) no <nrecs> is allowed since either (a) we output the same number of
 	 * input records we found or (b) the program writes a specific number of records built from scratch.
-	 * Use +r to have a program replace existing headers with its own [Default appends].
 	 * Use +c to add a header identifying the various columns + [colno].
-	 * Use +t<title> to add a specify header title to the output file.
+	 * Use +d to have a program delete existing headers in the input [Default appends].
+	 * Use +r<remark> to add a specified header remark to the output file.
+	 * Use +t<title> to add a specified header title to the output file.
 	 */
 	if (!item || !item[0]) {	/* Just -h: Nothing further to parse; just set defaults */
 		C->current.setting.io_header[GMT_IN] = C->current.setting.io_header[GMT_OUT] = true;

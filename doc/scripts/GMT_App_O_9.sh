@@ -8,7 +8,7 @@ grdgradient topo5.nc -Nt1 -A45 -Gtopo5_int.nc
 gmtset FORMAT_GEO_MAP ddd:mm:ssF FONT_ANNOT_PRIMARY +9p FONT_TITLE 22p
 project -E-74/41 -C-17/28 -G10 -Q > great_NY_Canaries.d
 project -E-74/41 -C2.33/48.87 -G100 -Q > great_NY_Paris.d
-km=`echo -17 28 | mapproject -G-74/41/k -fg -hi --FORMAT_FLOAT_OUT=%.0f -o2`
+km=`echo -17 28 | mapproject -G-74/41/k -fg --FORMAT_FLOAT_OUT=%.0f -o2`
 cat << EOF > ttt.cpt
 0	lightred	3	lightred
 3	lightyellow	6	lightyellow

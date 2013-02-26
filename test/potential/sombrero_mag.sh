@@ -12,14 +12,14 @@ grdmath -R0/15/-15/15  -I1  10 = half_pos.nc
 grdpaste half_neg.nc half_pos.nc -Gmag.nc
 
 # Get rough surface description
-grd2xyz sombrero.nc -R-15/15/-15/15 -hi > sombrero_xyz.dat
+grd2xyz sombrero.nc -R-15/15/-15/15 > sombrero_xyz.dat
 
 # Calculate the triangles of the two halves
-triangulate sombrero_xyz.dat -hi > sombrero_tri.dat
+triangulate sombrero_xyz.dat > sombrero_tri.dat
 
 # Now add a fourth column to the xyz files with the magnetization
 # which will be constant but have oposite signals for the two halves.
-grd2xyz mag.nc -o2 -hi > m.dat 
+grd2xyz mag.nc -o2 > m.dat 
 paste sombrero_xyz.dat m.dat > sombrero_xyzm.dat
 
 # Compute the mag anomaly using a F dec=10,dip=60 & M dec=-10,dip=40. Intensity came from mag.nc grid

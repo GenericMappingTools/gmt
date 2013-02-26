@@ -59,8 +59,8 @@ psxy -R -J -O -K -ST0.1i -Gyellow -Wthinnest pratt.d >> $ps
 grdmath -R `cat pratt.d` SDIST = mask.nc
 grdclip mask.nc -Sa200/NaN -Sb200/1 -Gmask.nc
 grdmath AK_gulf_grav.nc mask.nc MUL = tmp.nc
-area=`grdvolume tmp.nc -C50 -Sk -hi | cut -f2`
-volume=`grdvolume tmp.nc -C50 -Sk -hi | cut -f3`
+area=`grdvolume tmp.nc -C50 -Sk | cut -f2`
+volume=`grdvolume tmp.nc -C50 -Sk | cut -f3`
 
 psxy -R -J -A -O -K -L -Wthin -Gwhite >> $ps << END
 -148.5	52.75

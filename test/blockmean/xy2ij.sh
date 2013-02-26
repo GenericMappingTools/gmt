@@ -23,8 +23,8 @@ cat << EOF > pixel.d
 EOF
 # blockman uses GMT_x|y_to_i|j to determine which tiles
 # Using -C gives tile centers via (i,j) -> (x,y)
-blockmean -R0/5/0/5 -I1 -r -hi -C pixel.d > pixel_ij.d
-blockmean -R0/5/0/5 -I1 -r -hi pixel.d > pixel_xy.d
+blockmean -R0/5/0/5 -I1 -r -C pixel.d > pixel_ij.d
+blockmean -R0/5/0/5 -I1 -r pixel.d > pixel_xy.d
 
 # Do gridline registration with a similar data set (mostly offset by 0.5)
 cat << EOF > grid.d
@@ -39,8 +39,8 @@ cat << EOF > grid.d
 5.5	3.35	8
 1.5	2.8	9
 EOF
-blockmean -R0/5/0/5 -I1 -C -hi grid.d > grid_ij.d
-blockmean -R0/5/0/5 -I1 -hi grid.d > grid_xy.d
+blockmean -R0/5/0/5 -I1 -C grid.d > grid_ij.d
+blockmean -R0/5/0/5 -I1 grid.d > grid_xy.d
 
 diff pixel_xy.d "${src:=.}"/pixel_xy.d --strip-trailing-cr  > fail
 diff pixel_ij.d "$src"/pixel_ij.d --strip-trailing-cr >> fail
