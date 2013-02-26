@@ -499,7 +499,7 @@ if (WIN32 AND _debug_build)
 endif (WIN32 AND _debug_build)
 
 # Install public headers
-install (FILES gmt.h gmt_define.h gmt_resources.h gmt_module.h
+install (FILES gmt.h gmt_define.h gmt_resources.h gmt_module.h declspec.h
 	DESTINATION ${GMT_INCDIR}
 	COMPONENT Runtime)
 

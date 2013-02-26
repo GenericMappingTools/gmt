@@ -4451,15 +4451,15 @@ void * GMT_Create_Data_ (unsigned int *family, unsigned int *mode, uint64_t *dim
 #endif
 
 /* Convenience function to get grid or image node */
-int64_t GMT_Get_Node2D (struct GMT_GRID_HEADER *header, int row, int col)
+int64_t GMT_Get_Index (struct GMT_GRID_HEADER *header, int row, int col)
 {
 	return (GMT_IJP (header, row, col));
 }
 
 #ifdef FORTRAN_API
-int GMT_Get_Node2D_ (void *h, int *row, int *col)
+int GMT_Get_Index_ (void *h, int *row, int *col)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Get_Node2D (h, *row, *col));
+	return (GMT_Get_Index (h, *row, *col));
 }
 #endif
 
@@ -4510,9 +4510,9 @@ double * GMT_Get_Coord_ (unsigned int *family, unsigned int *dim, void *containe
 }
 #endif
 
-int GMT_Add_Comment (void *V_API, unsigned int family, unsigned int mode, void *arg, void *container)
+int GMT_Set_Comment (void *V_API, unsigned int family, unsigned int mode, void *arg, void *container)
 {
-	/* Add new header comment or grid command|remark to container */
+	/* Set new header comment or grid command|remark to container */
 	
 	int error = GMT_OK;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);

@@ -332,7 +332,7 @@ int GMT_blockmean (void *V_API, int mode, void *args)
 			sprintf (txt, "\tweight[%d]", k);
 			strcat (header, txt);
 		}
-		if (GMT_Add_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, NULL)) Return (API->error);
+		if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, NULL)) Return (API->error);
 	}
 	
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
