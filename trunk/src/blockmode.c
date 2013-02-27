@@ -34,6 +34,12 @@
 #include "gmt_dev.h"
 #include "block_subs.h"
 
+enum Blockmode_mode {
+	BLOCKMODE_LOW  = -1,
+	BLOCKMODE_AVE  = 0,
+	BLOCKMODE_HIGH = +1
+};
+
 struct BIN_MODE_INFO {	/* Usd for histogram binning */
 	double width;		/* The binning width used */
 	double i_offset;	/* 0.5 if we are to bin using the center the bins on multiples of width, else 0.0 */
@@ -42,7 +48,7 @@ struct BIN_MODE_INFO {	/* Usd for histogram binning */
 	int min, max;		/* The raw min,max bin numbers (min can be negative) */
 	unsigned int n_bins;	/* Number of bins required */
 	unsigned int *count;	/* The histogram counts, to be reset before each spatial block */
-	int mode_choice;	/* For multiple modes: -1 picks lowest, 0 picks average, +1 picks highest */
+	int mode_choice;	/* For multiple modes: BLOCKMODE_LOW picks lowest, BLOCKMODE_AVE picks average, BLOCKMODE_HIGH picks highest */
 };
 
 int GMT_blockmode_usage (struct GMTAPI_CTRL *C, int level)
@@ -64,6 +70,7 @@ int GMT_blockmode_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-D Compute modes via binning using <width>; append +c to center bins. If there are multiple\n");
 	GMT_message (GMT, "\t   modes we return the average mode; append +l or +h to pick the low or high mode instead.\n");
 	GMT_message (GMT, "\t   Cannot be combined with -E, -W and implicitly sets -Q.\n");
+	GMT_message (GMT, "\t   If your data are integers and <width> is not given we default to -D1+c+l\n");
 	GMT_message (GMT, "\t   [Default computes the mode as the Least Median of Squares (LMS) estimate].\n");
 	GMT_message (GMT, "\t-E Extend output with LMS scale (s), low (l), and high (h) value per block, i.e.,\n");
 	GMT_message (GMT, "\t   output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w])]; see -W regarding w.\n");
@@ -114,8 +121,8 @@ int GMT_blockmode_parse (struct GMTAPI_CTRL *C, struct BLOCKMODE_CTRL *Ctrl, str
 					while ((GMT_strtok (c, "+", &pos, p))) {
 						switch (p[0]) {
 							case 'c': Ctrl->D.center = true; break;	/* Center the histogram */
-							case 'l': Ctrl->D.mode = -1; break;	/* Pick low mode */
-							case 'h': Ctrl->D.mode = +1; break;	/* Pick high mode */
+							case 'l': Ctrl->D.mode = BLOCKMODE_LOW; break;	/* Pick low mode */
+							case 'h': Ctrl->D.mode = BLOCKMODE_HIGH; break;	/* Pick high mode */
 							default:	/* Bad modifier */
 								GMT_report (GMT, GMT_MSG_NORMAL, "Error: Unrecognized modifier +%c.\n", p[0]);
 								n_errors++;
@@ -171,13 +178,12 @@ int GMT_blockmode_parse (struct GMTAPI_CTRL *C, struct BLOCKMODE_CTRL *Ctrl, str
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.active && (Ctrl->E.active || Ctrl->W.active), "Syntax error -D option: Cannot be combined with -E or -W\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->D.active && Ctrl->D.width <= 0.0, "Syntax error -D option: Must specify a nonzero binning width\n");
 	n_errors += GMT_check_binary_io (GMT, (Ctrl->W.weighted[GMT_IN]) ? 4 : 3);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-struct BIN_MODE_INFO *bin_setup (struct GMT_CTRL *C, struct BLK_DATA *d, double width, bool center, int mode_choice, uint64_t n, uint64_t k)
+struct BIN_MODE_INFO *bin_setup (struct GMT_CTRL *C, struct BLK_DATA *d, double width, bool center, int mode_choice, bool is_integer, uint64_t n, uint64_t k)
 {
 	/* Estimate mode by finding a maximum in the histogram resulting
 	 * from binning the data with the specified width. Note that the
@@ -188,6 +194,20 @@ struct BIN_MODE_INFO *bin_setup (struct GMT_CTRL *C, struct BLK_DATA *d, double 
 
 	struct BIN_MODE_INFO *B = GMT_memory (C, NULL, 1, struct BIN_MODE_INFO);
 
+	if (is_integer) {	/* Special consideration for integers */
+		double d_intval;
+		if (width == 0.0) {
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "For integer data and no -D<width> specified we default to <width> = 1\n");
+			width = 1.0;
+		}
+		d_intval = (double)lrint (width);
+		if (doubleAlmostEqual (d_intval, width)) {
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "For integer data and integer width we automatically select centered bins and lowest mode\n");
+			center = true;
+			mode_choice = BLOCKMODE_LOW;
+		}
+		GMT_report (C, GMT_MSG_LONG_VERBOSE, "Effective mode option is -D%g+c+l\n", width);
+	}
 	B->i_offset = (center) ? 0.5 : 0.0;
 	B->o_offset = (center) ? 0.0 : 0.5;
 	B->width = width;
@@ -197,6 +217,8 @@ struct BIN_MODE_INFO *bin_setup (struct GMT_CTRL *C, struct BLK_DATA *d, double 
 	B->n_bins = B->max - B->min + 1;
 	B->count = GMT_memory (C, NULL, B->n_bins, unsigned int);
 	B->mode_choice = mode_choice;
+	
+	return (B);
 }
 
 double bin_mode (struct GMT_CTRL *C, struct BLK_DATA *d, uint64_t n, uint64_t k, struct BIN_MODE_INFO *B)
@@ -232,14 +254,14 @@ double bin_mode (struct GMT_CTRL *C, struct BLK_DATA *d, uint64_t n, uint64_t k,
 	for (bin = 0, done = false; !done && bin < B->n_bins; bin++) {	/* Loop over bin counts */
 		if (B->count[bin] < mode_count) continue;	/* Not one of the modes */
 		switch (B->mode_choice) {
-			case -1:	/* Pick lowest mode; we are done */
+			case BLOCKMODE_LOW:	/* Pick lowest mode; we are done */
 				value = ((bin + B->min) + B->o_offset) * B->width;
 				done = true;
 				break;
-			case 0:		/* Get the average of the modes */
+			case BLOCKMODE_AVE:		/* Get the average of the modes */
 				value += ((bin + B->min) + B->o_offset) * B->width;
 				break;
-			case +1:	/* Update highest mode so far, when loop exits we have the hightest mode */
+			case BLOCKMODE_HIGH:	/* Update highest mode so far, when loop exits we have the hightest mode */
 			 	value = ((bin + B->min) + B->o_offset) * B->width;
 				break;
 		}
@@ -320,7 +342,7 @@ double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint6
 
 int GMT_blockmode (void *V_API, int mode, void *args)
 {
-	bool mode_xy, do_extra;
+	bool mode_xy, do_extra, is_integer;
 	
 	int way, error = 0;
 	
@@ -331,7 +353,7 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 	
 	size_t n_alloc = 0, nz_alloc = 0;
 
-	double out[7], wesn[4], i_n_in_cell, weight, *in = NULL, *z_tmp = NULL;
+	double out[7], wesn[4], i_n_in_cell, d_intval, weight, *in = NULL, *z_tmp = NULL;
 
 	char format[GMT_BUFSIZ], *old_format = NULL;
 
@@ -413,6 +435,7 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 	n_read = n_pitched = 0;	/* Initialize counters */
 
 	/* Read the input data */
+	is_integer = true;	/* Until proven otherwise */
 
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
@@ -439,6 +462,11 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 		if (GMT_row_col_out_of_bounds (GMT, in, Grid->header, &row, &col)) continue;	/* Sorry, outside after all */
 
 		/* OK, this point is definitively inside and will be used */
+
+		if (is_integer) {	/* Determine if we still only have integers */
+			d_intval = (double) lrint (in[GMT_Z]);
+			if (!doubleAlmostEqual (d_intval, in[GMT_Z])) is_integer = false;
+		}
 
 		node = GMT_IJP (Grid->header, row, col);		/* Bin node */
 
@@ -467,7 +495,10 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 		GMT_report (GMT, GMT_MSG_VERBOSE, "No data points found inside the region; no output produced");
 		Return (EXIT_SUCCESS);
 	}
-
+	if (Ctrl->D.active && Ctrl->D.width == 0.0 && !is_integer) {
+		GMT_report (GMT, GMT_MSG_NORMAL, "Error -D: No bin width specified and data are not integers\n");
+		Return (EXIT_FAILURE);
+	}
 	if (n_pitched < n_alloc) {
 		n_alloc = n_pitched;
 		data = GMT_malloc (GMT, data, 0, &n_alloc, struct BLK_DATA);
@@ -491,7 +522,7 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 	qsort (data, n_pitched, sizeof (struct BLK_DATA), BLK_compare_index_z);
 
 	if (Ctrl->D.active) {	/* Choose to compute unweighted modes by histogram binning */
-		B = bin_setup (GMT, data, Ctrl->D.width, Ctrl->D.center, Ctrl->D.mode, n_pitched, GMT_Z);
+		B = bin_setup (GMT, data, Ctrl->D.width, Ctrl->D.center, Ctrl->D.mode, is_integer, n_pitched, GMT_Z);
 		Ctrl->Q.active = true;	/* Cannot do modal positions */
 	}
 

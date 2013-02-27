@@ -9,8 +9,8 @@ BD(grdclip) IT(ingrid) OPT(G)IT(outgrid) [ GMT_Rgeo_OPT ]
 BD(grdclip) will set values < IT(low) to IT(below) and/or values > IT(high) to IT(above).  You
 can also specify one or more intervals where all values should be reset to IT(between). Useful
 when you want all of a continent or an ocean to fall into one color or gray shade in image processing,
-when clipping of the range of data values is required, or for reclassification of node values. 
-IT(above/below/between) can be any number or NaN (Not a Number).
+when clipping of the range of data values is required, or for reclassification of data values. 
+IT(above), IT(below) and IT(between) can be any number or NaN (Not a Number).
 You must choose at least one of the OPT(S) options.  Use OPT(R) to only extract a subset of the IT(ingrid) file.
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
