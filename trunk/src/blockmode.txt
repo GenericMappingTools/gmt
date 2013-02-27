@@ -37,8 +37,8 @@ Perform unweighted mode calculation via histogram binning, using the specified h
 Append BD(+c) to center bins so that their mid point is a multiple of IT(width) [uncentered].
 If multiple modes are found for a block we return the average mode.  Append BD(+l) or BD(+h) to
 return the low of high mode instead, respectively.
-If IT(width is not given it will default to 1 provided your data set only
-contains integers.  Also, for integer data and integer bin IT(width we
+If IT(width) is not given it will default to 1 provided your data set only
+contains integers.  Also, for integer data and integer bin IT(width) we
 enforce bin centering (BD(+c)) and select the lowest mode (BD(+l)) if there are multiples.
 [Default mode is normally the Least Median of Squares (LMS) statistic].
 .TP
@@ -93,7 +93,7 @@ To determine the most frequently occurring values per 5x5 block using histogram 
 data representing integer counts, try
 .br
 .sp
-blockmode data.txt -R0/100/0/100 -I5 -r -C -D1+c
+blockmode data.txt -R0/100/0/100 -I5 -r -C -D
 .SH "SEE ALSO"
 .IR blockmean (1),
 .IR blockmedian (1),
