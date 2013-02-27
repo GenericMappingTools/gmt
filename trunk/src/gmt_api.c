@@ -4186,154 +4186,6 @@ int GMT_Destroy_Data_ (unsigned int *mode, void *object)
 }
 #endif
 
-#if 0
-void * GMT_Create_Data (void *V_API, unsigned int family, uint64_t par[])
-{
-	/* Create an empty container of the requested kind; no data are provided.
-	 * The known kinds are GMT_IS_{DATASET,TEXTSET,GRID,CPT}, but we also
-	 * allow the creation of the containers for GMT_IS_{VECTOR,MATRIX}.
-	 * The par array contains dimensions for tables (par[0] = number of tables,
-	 *   par[1] = number of segments per table, par[2] = number of columns,
-	 *   and par[3] = number of rows per segment). The array is ignored for
-	 * CPT and GMT grids. For GMT_IS_VECTOR, par[0] holds the number of columns.
-	 * Return: Pointer to resource, or NULL if an error (set via API->error).
-	 */
-
-	void *data = NULL;
-	unsigned int n_layers;
-	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
-	
-	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);
-	
-	switch (family) {	/* dataset, cpt, text, or grid */
-		case GMT_IS_GRID:	/* GMT grid, allocate header but not data array */
-		 	data = GMT_create_grid (API->GMT);
-			break;
-		case GMT_IS_IMAGE:	/* GMT image, allocate header but not data array */
-		 	data = GMT_create_image (API->GMT);
-			break;
-		case GMT_IS_DATASET:	/* GMT dataset, allocate the requested tables */
-			if (par == NULL) return_null (API, GMT_PTR_IS_NULL);
-			if (par[0] > UINT_MAX || par[2] > UINT_MAX) return_null (API, GMT_DIM_TOO_LARGE);
-			data = GMT_create_dataset (API->GMT, par[0], par[1], par[2], par[3], false);
-			break;
-		case GMT_IS_TEXTSET:	/* GMT text dataset, allocate the requested tables */
-			if (par == NULL) return_null (API, GMT_PTR_IS_NULL);
-			if (par[0] > UINT_MAX) return_null (API, GMT_DIM_TOO_LARGE);
-			data = GMT_create_textset (API->GMT, par[0], par[1], par[2], false);
-			break;
-		case GMT_IS_CPT:	/* GMT CPT table, allocate one with space for par[0] color entries */
-			if (par == NULL) return_null (API, GMT_PTR_IS_NULL);
-		 	data = GMT_create_palette (API->GMT, par[0]);
-			break;
-		case GMT_IS_MATRIX:	/* GMT matrix container, allocate one with the requested number of layers but no contents */
-			n_layers = (par == NULL) ? 0U : par[0];
-		 	data = GMT_create_matrix (API->GMT, n_layers);
-			break;
-		case GMT_IS_VECTOR:	/* GMT vector container, allocate one with the requested number of columns but no contents */
-			if (par == NULL) return_null (API, GMT_PTR_IS_NULL);
-		 	data = GMT_create_vector (API->GMT, par[0]);
-			break;
-		default:
-			API->error = GMT_WRONG_KIND;
-			break;		
-	}
-	if (API->error) return_null (API, API->error);
-	GMT_report (API->GMT, GMT_MSG_LONG_VERBOSE, "Successfully created a new %s\n", GMT_family[family]);
-	
-	return (data);
-}
-
-#ifdef FORTRAN_API
-void * GMT_Create_Data_ (unsigned int *family, uint64_t *par)
-{	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Create_Data (GMT_FORTRAN, *family, par));
-}
-#endif
-
-int GMT_Init_Data (void *V_API, unsigned int family, struct GMT_OPTION *opt, double *range, double *inc, unsigned int registration, int pad, void *container)
-{
-	/* Convert user domain range, increments, and registration into dimensional header settings for the container.
-	 * For grids and images we fill out the GMT_GRID_HEADER; for vectors and matrix we fill out their parameters.
-	 * After this step you may call GMT_Alloc_Data to actually get data space for these resources.
-	 * For complex grids pass registration + GMT_GRID_IS_COMPLEX_REAL,
-	 * pad sets the padding for grids and images, ignored for matrix and vector. Give -1 (GMTAPI_NOTSET) to accept GMT default padding.
-	 */
-	int error = GMT_OK;
-	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
-
-	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
-	if (pad >= 0) GMT_set_pad (API->GMT, pad);	/* Change the default pad; give -1 to leave as is */
-	
-	switch (family) {	/* grid, image, or matrix */
-		case GMT_IS_GRID:	/* GMT grid */
-			error = GMTAPI_init_grid (API, opt, range, inc, registration, container);
-			break;
-		case GMT_IS_IMAGE:	/* GMT image */
-			error = GMTAPI_init_image (API, opt, range, inc, registration, container);
-			break;
-		case GMT_IS_VECTOR:	/* GMT vector */
-			if (pad) GMT_report (API->GMT, GMT_MSG_VERBOSE, "Pad argument (%d) ignored in initialization of %s\n", pad, GMT_family[family]);
-			error = GMTAPI_init_vector (API, range, inc, registration, container);
-			break;
-		case GMT_IS_MATRIX:	/* GMT matrix */
-			if (pad) GMT_report (API->GMT, GMT_MSG_VERBOSE, "Pad argument (%d) ignored in initialization of %s\n", pad, GMT_family[family]);
-			error = GMTAPI_init_matrix (API, range, inc, registration, container);
-			break;
-		default:
-			error = GMT_WRONG_KIND;
-			break;		
-	}
-	
-	return_error (API, error);
-}
-
-#ifdef FORTRAN_API
-int GMT_Init_Data_ (unsigned int *family, struct GMT_OPTION *opt, double *range, double *inc, unsigned int *registration, int *pad, void *container)
-{	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Init_Data (GMT_FORTRAN, *family, opt, range, inc, *registration, *pad, container));
-}
-#endif
-
-int GMT_Alloc_Data (void *V_API, unsigned int family, void *container)
-{
-	/* Allocate data for GMT_GRID, GMT_IMAGE, GMT_VECTOR, or GMT_MATRIX
-	 * based on information provided via their container header.
-	 */
-	int error = GMT_OK;
-	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
-
-	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
-	
-	switch (family) {	/* grid, image, or matrix */
-		case GMT_IS_GRID:	/* GMT grid */
-			error = gmt_alloc_grid (API->GMT, container);
-			break;
-		case GMT_IS_IMAGE:	/* GMT image */
-			error = gmt_alloc_image (API->GMT, container);
-			break;
-		case GMT_IS_VECTOR:	/* GMT vector */
-			error = gmt_alloc_vectors (API->GMT, container);
-			break;
-		case GMT_IS_MATRIX:	/* GMT matrix */
-			error = gmt_alloc_matrix (API->GMT, container);
-			break;
-		default:
-			error = GMT_WRONG_KIND;
-			break;		
-	}
-	
-	return_error (API, error);
-}
-
-#ifdef FORTRAN_API
-int GMT_Alloc_Data_ (unsigned int *family, void *container)
-{	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Alloc_Data (GMT_FORTRAN, *family, container));
-}
-#endif
-#endif
-
 void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int mode, uint64_t dim[], double *range, double *inc, unsigned int registration, int pad, void *data)
 {
 	/* Create an empty container of the requested kind and allocate space for content.
@@ -4392,6 +4244,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int mode, uin
 				if ((error = gmt_alloc_grid (API->GMT, new)) != GMT_NOERROR) return_null (API, error);	/* Allocation error */
 			}
 			break;
+#ifdef HAVE_GDAL
 		case GMT_IS_IMAGE:	/* GMT image, allocate header but not data array */
 			if ((mode & GMT_GRID_DATA_ONLY) == 0) {	/* Create new image unless we only ask for data only */
 				if (data) return_null (API, GMT_PTR_NOT_NULL);	/* Error if data is not NULL */
@@ -4407,6 +4260,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int mode, uin
 				if ((error = gmt_alloc_image (API->GMT, new)) != GMT_NOERROR) return_null (API, error);	/* Allocation error */
 			}
 			break;
+#endif
 		case GMT_IS_DATASET:	/* GMT dataset, allocate the requested tables, segments, rows, and columns */
 			if (dim == NULL) return_null (API, GMT_PTR_IS_NULL);
 			if (dim[0] > UINT_MAX || dim[2] > UINT_MAX) return_null (API, GMT_DIM_TOO_LARGE);
@@ -4483,10 +4337,12 @@ double * GMT_Get_Coord (void *V_API, unsigned int family, unsigned int dim, void
 			if (dim > 1) return_null (API, GMT_DIM_TOO_LARGE);
 			coord = GMTAPI_grid_coord (API, dim, container);
 			break;
+#ifdef HAVE_GDAL
 		case GMT_IS_IMAGE:	/* GMT image */
 			if (dim > 1) return_null (API, GMT_DIM_TOO_LARGE);
 			coord = GMTAPI_image_coord (API, dim, container);
 			break;
+#endif
 		case GMT_IS_VECTOR:	/* GMT vector */
 			if (dim != 1) return_null (API, GMT_DIM_TOO_LARGE);
 			coord = GMTAPI_vector_coord (API, dim, container);
@@ -4523,9 +4379,11 @@ int GMT_Set_Comment (void *V_API, unsigned int family, unsigned int mode, void *
 		case GMT_IS_GRID:	/* GMT grid */
 			GMTAPI_grid_comment (API, mode, arg, container);
 			break;
+#ifdef HAVE_GDAL
 		case GMT_IS_IMAGE:	/* GMT image */
 			GMTAPI_image_comment (API, mode, arg, container);
 			break;
+#endif
 		case GMT_IS_DATASET:	/* GMT dataset */
 			GMTAPI_dataset_comment (API, mode, arg, container);
 			break;

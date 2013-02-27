@@ -6702,6 +6702,7 @@ int GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 	}
 }
 
+#ifdef HAVE_GDAL
 int GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 {
 	/* Set two rows of padding (pad[] can be larger) around data according
@@ -7142,6 +7143,7 @@ int GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 		return (GMT_NOERROR);
 	}
 }
+#endif
 
 bool GMT_y_out_of_bounds (struct GMT_CTRL *C, int *j, struct GMT_GRID_HEADER *h, bool *wrap_180) {
 	/* Adjusts the j (y-index) value if we are dealing with some sort of periodic boundary
