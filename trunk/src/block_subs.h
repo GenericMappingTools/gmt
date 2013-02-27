@@ -45,10 +45,18 @@ struct BLOCK_CTRL {	/* All control options for this program (except common args)
 		unsigned int mode;
 #endif
 	} E;
+	struct G {	/* -G<outfile> */
+		bool active;
+		char *file;
+	} G;
 	struct I {	/* -Idx[/dy] */
 		bool active;
 		double inc[2];
 	} I;
+	struct N {	/* -N<empty> */
+		bool active;
+		double no_data;
+	} N;
 #if !defined(BLOCKMEAN)		/* Only blockmedian & blockmode has a -Q option */
 	struct Q {	/* -Q */
 		bool active;
@@ -60,16 +68,51 @@ struct BLOCK_CTRL {	/* All control options for this program (except common args)
 		double quantile;
 	} T;
 #endif
-#if defined(BLOCKMEAN)		/* Only blockmean has a -S option */
-	struct S {	/* -S[m|w|z] */
+	struct S {	/* -S<item> */
 		bool active;
 		unsigned int mode;
 	} S;
-#endif
 	struct W {	/* -W[i][o] */
 		bool active;
 		bool weighted[2];
 	} W;
+};
+
+enum GMT_grdval_blks {	/* mode for selected item for gridding */
+	BLK_ITEM_MEAN = 0,
+	BLK_ITEM_MEDIAN,
+	BLK_ITEM_MODE,
+	BLK_ITEM_LOW,
+	BLK_ITEM_HIGH,
+	BLK_ITEM_QUARTILE,
+	BLK_ITEM_RANGE,
+	BLK_ITEM_N,
+	BLK_ITEM_WSUM,
+	BLK_ITEM_ZSUM,
+	BLK_ITEM_SOURCE,
+	BLK_ITEM_RECORD,
+	BLK_ITEM_STDEV,
+	BLK_ITEM_L1SCL,
+	BLK_ITEM_LMSSCL,
+	BLK_N_ITEMS};
+
+static char *blk_name[BLK_N_ITEMS] =
+{
+	"mean",
+	"median",
+	"mode",
+	"min",
+	"max",
+	"quartile",
+	"range",
+	"n",
+	"sum_z",
+	"sum_w",
+	"source",
+	"record",
+	"std",
+	"L1scl",
+	"LMSscl"
 };
 
 #if defined(BLOCKMEAN)	/* Only used by blockmean */
@@ -119,6 +162,7 @@ void * NEW_BLK (struct GMT_CTRL *G) {	/* Allocate and initialize a new control s
 }
 
 void FREE_BLK (struct GMT_CTRL *G, struct  BLOCK_CTRL *C) {	/* Deallocate control structure */
+	if (C->G.file) free (C->G.file);	
 	GMT_free (G, C);	
 }
 
