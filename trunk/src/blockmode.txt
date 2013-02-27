@@ -4,7 +4,7 @@
 blockmode \- Block average (IT(x),IT(y),IT(z)) data tables by mode estimation
 .SH SYNOPSIS
 BD(blockmode) [ IT(table) ] GMT_I_OPT GMT_Rx_OPT 
-[ OPT(C) ] [ OPT(E) ] [ OPT(E)BD(r)|BD(s)[BD(-)] ] [ OPT(Q) ] [ GMT_V_OPT ] 
+[ OPT(C) ] [ OPT(D)IT(width)[BD(+c)][BD(+l)|BD(+h)] ] [ OPT(E) ] [ OPT(E)BD(r)|BD(s)[BD(-)] ] [ OPT(Q) ] [ GMT_V_OPT ] 
 [ OPT(W)[BD(i)|BD(o)] ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_h_OPT ] 
 [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
@@ -31,6 +31,12 @@ BD(blockmode) will read from standard input.
 OPT(C)
 Use the center of the block as the output location [Default uses the modal xy location
 (but see OPT(Q))].  OPT(C) overrides OPT(Q).
+.TP
+OPT(D)IT(width)[BD(+c)][BD(+l)|BD(+h)]
+Perform unweighted mode calculation via histogram binning, using the specified histogram IT(width).
+Append BD(+c) to center bins so that their mid point is a multiple of IT(width) [uncentered].
+If multiple modes are found for a block we return the average mode.  Append BD(+l) or BD(+h) to
+return the low of high mode instead, respectively.
 .TP
 OPT(E)
 Provide Extended report which includes BD(s) (the L1 scale of the mode),
@@ -77,6 +83,13 @@ To find 5 by 5 minute block mode estimates from the double precision binary data
 hawaii_b.xyg and output an ASCII table, run:
 .sp
 blockmode hawaii_b.xyg -R198/208/18/25 -I5m -bi3d > hawaii_5x5.xyg
+.br
+.sp
+To determine the most frequently occurring values per 5x5 block using histogram binning, with
+data representing integer counts, try
+.br
+.sp
+blockmode data.txt -R0/100/0/100 -I5 -r -C -D1+c
 .SH "SEE ALSO"
 .IR blockmean (1),
 .IR blockmedian (1),

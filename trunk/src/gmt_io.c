@@ -5138,7 +5138,7 @@ void gmt_write_multilines (struct GMT_CTRL *C, FILE *fp, char *text, char *prefi
 	}
 }
 	
-void GMT_write_newheaders (struct GMT_CTRL *C, FILE *fp)
+void GMT_write_newheaders (struct GMT_CTRL *C, FILE *fp, unsigned int n_cols)
 {	/* Common ascii header records added on output */
 	if (C->common.b.active[GMT_OUT]) return;		/* No output headers for binary files */
 	if (!C->current.setting.io_header[GMT_OUT]) return;	/* No output headers requested, so don't bother */
@@ -5150,8 +5150,24 @@ void GMT_write_newheaders (struct GMT_CTRL *C, FILE *fp)
 	if (C->common.h.remark) {	/* Optional remark(s) provided; could be several lines separated by \n */
 		gmt_write_multilines (C, fp, C->common.h.remark, "Remark");
 	}
-	if (C->common.h.colnames) {	/* Optional column names provided */
-		GMT_write_tableheader (C, fp, C->common.h.colnames);
+	if (C->common.h.add_colnames) {	/* Want output comment with column names */
+		if (C->common.h.colnames)	/* Optional column names already provided */
+			GMT_write_tableheader (C, fp, C->common.h.colnames);
+		else if (n_cols) {	/* Generate names col1[0], col2[1] etc */
+			unsigned int col, first = 1;
+			char record[GMT_BUFSIZ], txt[GMT_TEXT_LEN64];
+			if (n_cols >= 2) {	/* Place x and y first */
+				GMT_set_xycolnames (C, record);
+				first++;
+			}
+			else
+				sprintf (record, "col1[0]");
+			for (col = first; col < n_cols; col++) {
+				sprintf (txt, "\tcol%d[%d]", col+1, col);
+				strcat (record, txt);
+			}
+			GMT_write_tableheader (C, fp, record);
+		}
 	}
 }
 
@@ -5235,7 +5251,7 @@ int GMT_write_table (struct GMT_CTRL *C, void *dest, unsigned int dest_type, str
 	if (io_mode < GMT_WRITE_SEGMENT) {
 		if (ascii && C->current.setting.io_header[GMT_OUT]) {
 			for (k = 0; k < table->n_headers; k++) GMT_write_tableheader (C, fp, table->header[k]);	/* Write any existing header comments */
-			GMT_write_newheaders (C, fp);	/* Write general header block */
+			GMT_write_newheaders (C, fp, table->n_columns);	/* Write general header block */
 		}
 		if (table->ogr) GMT_write_ogr_header (fp, table->ogr);	/* Must write OGR/GMT header */
 	}
@@ -5257,7 +5273,7 @@ int GMT_write_table (struct GMT_CTRL *C, void *dest, unsigned int dest_type, str
 			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Writing data segment to file %s\n", out_file);
 			if (ascii && C->current.setting.io_header[GMT_OUT]) {
 				for (k = 0; k < table->n_headers; k++) GMT_write_tableheader (C, fp, table->header[k]);	/* Write any existing header comments */
-				GMT_write_newheaders (C, fp);	/* Write general header block */
+				GMT_write_newheaders (C, fp, table->n_columns);	/* Write general header block */
 			}
 		}
 		if (C->current.io.multi_segments[GMT_OUT]) {	/* Want to write segment headers */
@@ -5424,7 +5440,7 @@ int gmt_write_texttable (struct GMT_CTRL *C, void *dest, int dest_type, struct G
 	if (io_mode < GMT_WRITE_SEGMENT) {
 		if (C->current.setting.io_header[GMT_OUT]) {
 			for (hdr = 0; hdr < table->n_headers; hdr++) GMT_write_tableheader (C, fp, table->header[hdr]);	/* Write any existing header comments */
-			GMT_write_newheaders (C, fp);	/* Write general header block */
+			GMT_write_newheaders (C, fp, 0);	/* Write general header block */
 		}
 	}
 	for (seg = 0; seg < table->n_segments; seg++) {
@@ -5443,7 +5459,7 @@ int gmt_write_texttable (struct GMT_CTRL *C, void *dest, int dest_type, struct G
 			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Writing Text Table segment to file %s\n", out_file);
 			if (C->current.setting.io_header[GMT_OUT]) {
 				for (hdr = 0; hdr < table->n_headers; hdr++) GMT_write_tableheader (C, fp, table->header[hdr]);	/* Write any existing header comments */
-				GMT_write_newheaders (C, fp);	/* Write general header block */
+				GMT_write_newheaders (C, fp, 0);	/* Write general header block */
 			}
 		}
 		if (C->current.io.multi_segments[GMT_OUT]) {	/* Want to write segment headers */

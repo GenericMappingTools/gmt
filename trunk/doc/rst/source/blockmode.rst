@@ -11,6 +11,7 @@ estimation
 **blockmode** [ *table* ]
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
 **-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] [ **-C** ] [
+**-D**\ *width*\ [**+c**][**+l**\ |\ **+h**\ ] [
 **-E** ] [ **-E**\ **r**\ \|\ **s**\ [**-**\ ] ] [ **-Q** ] [
 **-V**\ [*level*\ ] ] [ **-W**\ [**i**\ \|\ **o**] ] [
 **-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
@@ -55,6 +56,12 @@ choose binary input and/or output to avoid loss of precision.
 **-C**
     Use the center of the block as the output location [Default uses the
     modal xy location (but see **-Q**)]. **-C** overrides **-Q**.
+**-D**\ *width*\ [**+c**][**+l**\ |\ **+h**\ ]
+    Perform unweighted mode calculation via histogram binning, using the
+    specified histogram *width*.  Append **+c** to center bins so that
+    their mid point is a multiple of *width* [uncentered].
+    If multiple modes are found for a block we return the average mode.
+    Append **+l** or **+h** to return the low of high mode instead, respectively.
 **-E**
     Provide Extended report which includes **s** (the L1 scale of the
     mode), **l**, the lowest value, and **h**, the high value for each
@@ -119,6 +126,11 @@ To find 5 by 5 minute block mode estimates from the double precision
 binary data in hawaii\_b.xyg and output an ASCII table, run:
 
 blockmode hawaii\_b.xyg -R198/208/18/25 -I5m -bi3d > hawaii\_5x5.xyg
+
+To determine the most frequently occurring values per 5x5 block using histogram binning, with
+data representing integer counts, try
+
+blockmode data.txt -R0/100/0/100 -I5 -r -C -D1+c
 
 See Also
 --------

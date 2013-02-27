@@ -41,7 +41,7 @@ enum GMT_enum_verbose {GMT_MSG_QUIET = 0,	/* No messages whatsoever */
 EXTERN_MSC const char* g_error_string[];
 
 enum Gmt_error_code {
-	GMT_NOERROR=0,
+	GMT_NOERROR_UNUSED=0,	/* The real GMT_NOERROR is declared in gmt_resources.h and is part of API */
 	GMT_GRDIO_UNKNOWN_FORMAT,
 	GMT_GRDIO_UNKNOWN_TYPE,
 	GMT_GRDIO_UNKNOWN_ID,

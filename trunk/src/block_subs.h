@@ -39,6 +39,14 @@ struct BLOCK_CTRL {	/* All control options for this program (except common args)
 	struct C {	/* -C */
 		bool active;
 	} C;
+#if defined(BLOCKMODE)	/* Only blockmode has a -D option */
+	struct D {	/* -D<binwidth>[+c][+l][+h] */
+		bool active;
+		bool center;
+		int mode;
+		double width;
+	} D;
+#endif
 	struct E {	/* -E */
 		bool active;
 #if !defined(BLOCKMEAN)		/* Blockmedian has -Eb and blockmedian & blockmode has -Er[-] option */

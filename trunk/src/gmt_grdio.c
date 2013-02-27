@@ -1052,8 +1052,14 @@ void GMT_grd_init (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, struct GM
 		header->z_min          = C->session.d_NaN;
 		header->z_max          = C->session.d_NaN;
 		header->nan_value      = C->session.d_NaN;
-		strcpy (header->x_units, "x");
-		strcpy (header->y_units, "y");
+		if (GMT_is_geographic (C, GMT_OUT)) {
+			strcpy (header->x_units, "longitude [degrees_east]");
+			strcpy (header->y_units, "latitude [degrees_north]");
+		}
+		else {
+			strcpy (header->x_units, "x");
+			strcpy (header->y_units, "y");
+		}
 		strcpy (header->z_units, "z");
 		GMT_grd_setpad (C, header, C->current.io.pad); /* Assign default pad */
 	}
@@ -1078,6 +1084,7 @@ void GMT_grd_init (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, struct GM
 			strcat (header->command, argv[i]);
 		}
 		header->command[len] = 0;
+		sprintf (header->title, "Produced by %s", gmt_module_name(C));
 		GMT_Destroy_Args (API, argc, argv);
 	}
 }

@@ -205,7 +205,7 @@ EXTERN_MSC void GMT_init_z_io (struct GMT_CTRL *C, char format[], bool repeat[],
 EXTERN_MSC int GMT_set_z_io (struct GMT_CTRL *C, struct GMT_Z_IO *r, struct GMT_GRID *G);
 EXTERN_MSC void GMT_check_z_io (struct GMT_CTRL *C, struct GMT_Z_IO *r, struct GMT_GRID *G);
 EXTERN_MSC void GMT_init_io_columns (struct GMT_CTRL *C, unsigned int dir);
-EXTERN_MSC void GMT_write_newheaders (struct GMT_CTRL *C, FILE *fp);
+EXTERN_MSC void GMT_write_newheaders (struct GMT_CTRL *C, FILE *fp, unsigned int n_columns);
 
 /* gmt_support.c: */
 

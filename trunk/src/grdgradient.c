@@ -317,7 +317,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args)
 	unsigned int row, col, n;
 	uint64_t ij, ij0, index, n_used = 0;
 	
-	char format[GMT_BUFSIZ];
+	char format[GMT_BUFSIZ], buffer[GMT_GRID_REMARK_LEN160];
 	
 	double dx_grid, dy_grid, x_factor, y_factor, dzdx, dzdy, ave_gradient, wesn[4];
 	double azim, denom, max_gradient = 0.0, min_gradient = 0.0, rpi, lat, output;
@@ -606,28 +606,29 @@ int GMT_grdgradient (void *V_API, int mode, void *args)
 
 	if (Ctrl->A.active) {
 		if (Ctrl->N.active)
-			strcpy (Out->header->title, "Normalized directional derivative(s)");
+			strcpy (buffer, "Normalized directional derivative(s)");
 		else
-			strcpy (Out->header->title, "Directional derivative(s)");
+			strcpy (buffer, "Directional derivative(s)");
 		sprintf (format, "\t%s\t%s\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		GMT_report (GMT, GMT_MSG_VERBOSE, " Min Mean Max sigma intensities:");
 		GMT_report (GMT, GMT_MSG_VERBOSE, format, min_gradient, ave_gradient, max_gradient, Ctrl->N.sigma);
 	}
 	else {
 		if (Ctrl->E.mode > 1)
-			strcpy (Out->header->title, "Lambertian radiance");
+			strcpy (buffer, "Lambertian radiance");
 		else if (Ctrl->E.mode == 1)
-			strcpy (Out->header->title, "Peucker piecewise linear radiance");
+			strcpy (buffer, "Peucker piecewise linear radiance");
 		else
-			strcpy (Out->header->title, "Directions of maximum slopes");
+			strcpy (buffer, "Directions of maximum slopes");
 	}
 
+	if (GMT_Set_Comment (API, GMT_IS_FILE, GMT_COMMENT_IS_REMARK, buffer, Out)) Return (API->error);
 	if (Ctrl->G.active && GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Out) != GMT_OK) {
 		Return (API->error);
 	}
 
 	if (Ctrl->S.active) {
-		strcpy (Slope->header->title, "Magnitude of maximum slopes");
+		if (GMT_Set_Comment (API, GMT_IS_FILE, GMT_COMMENT_IS_REMARK, "Magnitude of maximum slopes", Slope)) Return (API->error);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->S.file, Slope) != GMT_OK) {
 			Return (API->error);
 		}
