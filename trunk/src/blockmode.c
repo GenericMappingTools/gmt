@@ -197,8 +197,6 @@ struct BIN_MODE_INFO *bin_setup (struct GMT_CTRL *C, struct BLK_DATA *d, double 
 	B->n_bins = B->max - B->min + 1;
 	B->count = GMT_memory (C, NULL, B->n_bins, unsigned int);
 	B->mode_choice = mode_choice;
-
-	return (B);
 }
 
 double bin_mode (struct GMT_CTRL *C, struct BLK_DATA *d, uint64_t n, uint64_t k, struct BIN_MODE_INFO *B)

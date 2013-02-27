@@ -16,9 +16,10 @@ Description
 
 **grdclip** will set values < *low* to *below* and/or values > *high* to
 *above*. Useful when you want all of a continent or an ocean to fall
-into one color or gray shade in image processing, or clipping of the
-range of data values is required. *above/below* can be any number or NaN
-(Not a Number). You must choose at least one of **-Sa** or **-Sb**. Use
+into one color or gray shade in image processing, when clipping of the
+range of data values is required, or for reclassification of node values.
+*above/below* can be any number or NaN
+(Not a Number). You must choose at least one of the **-S** options. Use
 **-R** to only extract a subset of the *ingrid* file. 
 
 .. include:: explain_commonitems.rst_
@@ -44,7 +45,8 @@ Optional Arguments
 **-Sb**\ *low/below*
     Set all data[i] < *low* to *below*. 
 **-Si**\ *low/high/below*
-    Set all data[i] >= *low* and <= *high* to *between*. 
+    Set all data[i] >= *low* and <= *high* to *between*.
+    Repeat the option for as many intervals as needed.
 
 .. |Add_-V| unicode:: 0x0C .. just an invisible code
 .. include:: explain_-V.rst_
@@ -59,6 +61,11 @@ Examples
 To set all values > 70 to NaN and all values < 0 to 0 in file data.nc:
 
 grdclip data.nc -Gnew\_data.nc -Sa70/NaN -Sb0/0 -V
+
+To reclassify all values in the 25-30 range to 99, those in 35-39 to 55,
+and all values < 10 to 0 in file classes.nc, try
+
+grdclip classes.nc -Gnew_classes.nc -Si25/30/99 -Si35/39/55 -Sb10/0 -V
 
 See Also
 --------

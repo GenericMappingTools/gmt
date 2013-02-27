@@ -4,6 +4,9 @@
 
 2013-02-27	pwessel
 	* blockmode.c:		Added -D to compute unweighted modes via histogram binning.
+	* grdclip.c:		Continued jluis implementation of -Si for interval reclassification
+				by allowing any number of classes.  Added error checking on all
+				-S? arguments and improved verbose feedback.
 
 2013-02-22	pwessel
 	* The -h:		Major overhaul of data headers in GMT:
