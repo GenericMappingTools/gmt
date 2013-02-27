@@ -42,6 +42,7 @@ enum Gravfft_fields {
 	GRAVFFT_DEFL_EAST,
 	GRAVFFT_DEFL_NORTH	
 };
+
 struct GRAVFFT_CTRL {
 	unsigned int n_par;
 	double *par;
@@ -101,8 +102,8 @@ struct GRAVFFT_CTRL {
 		double rho_mw;		/* mantle-water density contrast */
 	} T;
 	struct GRVF_Z {
-		double zm;			/* mean Moho depth (given by user) */
-		double zl;			/* mean depth of swell compensation (user given) */		
+		double zm;		/* mean Moho depth (given by user) */
+		double zl;		/* mean depth of swell compensation (user given) */		
 	} Z;
 	struct GRVF_misc {	/* -T */
 		bool coherence;
@@ -111,7 +112,7 @@ struct GRAVFFT_CTRL {
 		bool from_below;
 		bool from_top;
 		double z_level;	/* mean bathymetry level computed from data */
-		double rho;		/* general density contrast */
+		double rho;	/* general density contrast */
 	} misc;
 };
 
@@ -299,7 +300,7 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 					Ctrl->T.te = pow ((12.0 * (1.0 - POISSONS_RATIO * POISSONS_RATIO)) * Ctrl->T.te
 					     / YOUNGS_MODULUS, 1./3.);
 				}
-				if (opt->arg[strlen(opt->arg)-2] == '+') {	/* Fagile. Needs further testing */
+				if (opt->arg[strlen(opt->arg)-2] == '+') {	/* Fragile. Needs further testing */
 					Ctrl->T.moho = true;
 					Ctrl->L.mode = 1;	/* Leae trend alone and remove mean */
 				}
@@ -357,10 +358,10 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: gravfft <topo_grd> [<ingrid2>] -G<out_grdfile> [-C<n/wavelength/mean_depth/tbw>]\n");
-	GMT_message (GMT,"\t[-A<z_offset>] [-D<density>] [-E<n_terms>] [-F[f|g|v|n|e]] [-I<wbctk>] [-L[m|h|n]]\n");
-	GMT_message (GMT,"\t[-N%s [-Q] [-T<te/rl/rm/rw>[+m]] [-fg]\n", GMT_FFT_OPT);
-	GMT_message (GMT,"\t[%s] [-Z<zm>[/<zl>]]\n\n", GMT_V_OPT);
+	GMT_message (GMT, "usage: gravfft <topo_grd> [<ingrid2>] -G<outgrid>[-A<z_offset>] [-C<n/wavelength/mean_depth/tbw>]\n");
+	GMT_message (GMT,"\t[-D<density>] [-E<n_terms>] [-F[f|g|v|n|e]] [-I<wbctk>] [-L[m|h|n]]\n");
+	GMT_message (GMT,"\t[-N%s] [-Q] [-T<te/rl/rm/rw>[+m]]\n");
+	GMT_message (GMT,"\t[%s] [-Z<zm>[/<zl>]] [-fg]\n\n", GMT_V_OPT, GMT_FFT_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -371,39 +372,26 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT,"\t-C n/wavelength/mean_depth/tbw Compute admittance curves based on a theoretical model.\n");
 	GMT_message (GMT,"\t   Total profile length in meters = <n> * <wavelength> (unless -Kx is set).\n");
 	GMT_message (GMT,"\t   --> Rest of parametrs are set within -T AND -Z options\n");
-	GMT_message (GMT,"\t   Append dataflags (one or two) of tbw.\n");
-	GMT_message (GMT,"\t     t writes \"elastic plate\" admittance \n");
-	GMT_message (GMT,"\t     b writes \"loading from below\" admittance \n");
-	GMT_message (GMT,"\t     w writes wavelength instead of wavenumber\n");
-	GMT_message (GMT,"\t-D Sets density contrast across surface (used when not -T)\n");
+	GMT_message (GMT,"\t   Append dataflags (one or two) of tbw:\n");
+	GMT_message (GMT,"\t     t writes \"elastic plate\" admittance.\n");
+	GMT_message (GMT,"\t     b writes \"loading from below\" admittance.\n");
+	GMT_message (GMT,"\t     w writes wavelength instead of wavenumber.\n");
+	GMT_message (GMT,"\t-D Sets density contrast across surface (used when not -T).\n");
 	GMT_message (GMT,"\t-I Use <ingrid2> and <topo_grd> to estimate admittance|coherence and write\n");
 	GMT_message (GMT,"\t   it to stdout (-G ignored if set). This grid should contain gravity or geoid\n");
 	GMT_message (GMT,"\t   for the same region of <topo_grd>. Default computes admittance. Output\n");
 	GMT_message (GMT,"\t   contains 3 or 4 columns. Frequency (wavelength), admittance (coherence)\n");
 	GMT_message (GMT,"\t   one sigma error bar and, optionally, a theoretical admittance.\n");
-	GMT_message (GMT,"\t   Append dataflags (one to three) of wbct.\n");
-	GMT_message (GMT,"\t     w writes wavelength instead of wavenumber\n");
-	GMT_message (GMT,"\t     k Use km or wavelength unit [m]\n");
-	GMT_message (GMT,"\t     c computes coherence instead of admittance\" \n");
+	GMT_message (GMT,"\t   Append dataflags (one to three) of wbct:\n");
+	GMT_message (GMT,"\t     w writes wavelength instead of wavenumber.\n");
+	GMT_message (GMT,"\t     k Use km or wavelength unit [m].\n");
+	GMT_message (GMT,"\t     c computes coherence instead of admittance.\n");
 	GMT_message (GMT,"\t     b writes a forth column with \"loading from below\" \n");
-	GMT_message (GMT,"\t       theoretical admittance\n");
+	GMT_message (GMT,"\t       theoretical admittance.\n");
 	GMT_message (GMT,"\t     t writes a forth column with \"elastic plate\" \n");
-	GMT_message (GMT,"\t       theoretical admittance\n");
-	GMT_message (GMT,"\t-Q writes out a grid with the flexural topography (with z positive up)\n");
-	GMT_message (GMT,"\t   whose average depth is at the value set by the option -Z<zm>.\n");
-	GMT_message (GMT,"\t-S Computes predicted gravity|geoid grid due to a subplate load.\n");
-	GMT_message (GMT,"\t   produced by the current bathymetry and the theoretical admittance.\n");
-	GMT_message (GMT,"\t   --> The necessary parametrs are set within -T and -Z options\n");
-	GMT_message (GMT,"\t-T Computes the isostatic compensation. Input file is topo load.\n");
-	GMT_message (GMT,"\t   Append elastic thickness and densities of load, mantle, and\n");
-	GMT_message (GMT,"\t   water, all in SI units. Give average mantle depth via -Z\n");
-	GMT_message (GMT,"\t   If the elastic thickness is > 1e10 it will be interpreted as the\n");
-	GMT_message (GMT,"\t   flexural rigidity (by default it's computed from Te and Young modulus)\n");
-	GMT_message (GMT,"\t   Optionaly append +m to write a grid with the Moho's gravity|geoid effect\n");
-	GMT_message (GMT,"\t   from model selcted by -T\n");
-	GMT_message (GMT,"\t-Z zm[/zl] -> Moho [and swell] average compensation depths\n");
-	GMT_message (GMT,"\t-E number of terms used in Parker expansion [Default = 1]\n");
-	GMT_message (GMT,"\t-F Specify desired geopotential field: compute geoid rather than gravity\n");
+	GMT_message (GMT,"\t       theoretical admittance.\n");
+	GMT_message (GMT,"\t-E number of terms used in Parker's expansion [Default = 1].\n");
+	GMT_message (GMT,"\t-F Specify desired geopotential field:\n");
 	GMT_message (GMT,"\t   f = Free-air anomalies (mGal) [Default].\n");
 	GMT_message (GMT,"\t   g = Geoid anomalies (m).\n");
 	GMT_message (GMT,"\t   v = Vertical Gravity Gradient (VGG; 1 Eovtos = 0.1 mGal/km).\n");
@@ -411,9 +399,22 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT,"\t   n = North deflections of the vertical (micro-radian).\n");
 	GMT_message (GMT,"\t-L Leave trend alone. Do not remove least squares plane from data.\n");
 	GMT_message (GMT,"\t   It applies both to bathymetry as well as <ingrid2> [Default removes plane].\n");
-	GMT_message (GMT, "\t  Append m to just remove mean, h to remove mid-value instead or n to not touch.\n");
-	GMT_message (GMT,"\t   Warning: both -D -T...+m and -Q will implicitly set -L\n");
+	GMT_message (GMT,"\t   Append m to just remove mean, h to remove mid-value instead or n to not touch.\n");
+	GMT_message (GMT,"\t   Warning: both -D -T...+m and -Q will implicitly set -L.\n");
 	GMT_fft_syntax (GMT, 'N', "Choose or inquire about suitable grid dimensions for FFT, and set modifiers:");
+	GMT_message (GMT,"\t-Q writes out a grid with the flexural topography (with z positive up)\n");
+	GMT_message (GMT,"\t   whose average depth is set to the value given by -Z<zm>.\n");
+	GMT_message (GMT,"\t-S Computes predicted geopotential (see -F) grid due to a subplate load\n");
+	GMT_message (GMT,"\t   produced by the current bathymetry and the theoretical admittance.\n");
+	GMT_message (GMT,"\t   The necessary parameters are set within -T and -Z options\n");
+	GMT_message (GMT,"\t-T Computes the isostatic compensation. Input file is topo load.\n");
+	GMT_message (GMT,"\t   Append elastic thickness and densities of load, mantle, and\n");
+	GMT_message (GMT,"\t   water, all in SI units. Give average mantle depth via -Z\n");
+	GMT_message (GMT,"\t   If the elastic thickness is > 1e10 it will be interpreted as the\n");
+	GMT_message (GMT,"\t   flexural rigidity (by default it is computed from Te and Young modulus).\n");
+	GMT_message (GMT,"\t   Optionaly, append +m to write a grid with the Moho's geopotential effect\n");
+	GMT_message (GMT,"\t   (see -F) from model selected by -T.\n");
+	GMT_message (GMT,"\t-Z Specify Moho [and swell] average compensation depths.\n");
 	GMT_explain_options (GMT, "Vf.");
 	return (EXIT_FAILURE);
 }
