@@ -216,7 +216,9 @@ EXTERN_MSC bool GMT_x_is_outside (struct GMT_CTRL *C, double *x, double left, do
 EXTERN_MSC void GMT_set_xy_domain (struct GMT_CTRL *C, double wesn_extended[], struct GMT_GRID_HEADER *h);
 EXTERN_MSC int GMT_BC_init (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h);
 EXTERN_MSC int GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G);
+#ifdef HAVE_GDAL
 EXTERN_MSC int GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *I);
+#endif
 EXTERN_MSC bool GMT_y_out_of_bounds (struct GMT_CTRL *C, int *j, struct GMT_GRID_HEADER *h, bool *wrap_180);
 EXTERN_MSC bool GMT_x_out_of_bounds (struct GMT_CTRL *C, int *i, struct GMT_GRID_HEADER *h, bool wrap_180);
 EXTERN_MSC bool GMT_row_col_out_of_bounds (struct GMT_CTRL *C, double *in, struct GMT_GRID_HEADER *h, unsigned int *row, unsigned int *col);
