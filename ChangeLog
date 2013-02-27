@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-02-27	pwessel
+	* blockmode.c:		Added -D to compute unweighted modes via histogram binning.
+
 2013-02-22	pwessel
 	* The -h:		Major overhaul of data headers in GMT:
 				1. Header input/output is on by default; turn off output with -hi.

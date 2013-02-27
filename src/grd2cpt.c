@@ -159,6 +159,7 @@ int GMT_grd2cpt_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-W Do not interpolate color palette.\n");
 	GMT_message (GMT, "\t-Z Create a continuous color palette [Default is discontinuous, i.e., constant color intervals].\n");
+	GMT_explain_options (GMT, "h.");
 
 	return (EXIT_FAILURE);
 }
@@ -337,7 +338,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VR", ">", options)) Return (API->error);
+	if (GMT_Parse_Common (API, "-VRh", ">", options)) Return (API->error);
 	Ctrl = New_grd2cpt_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grd2cpt_parse (API, Ctrl, options))) Return (error);
 

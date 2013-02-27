@@ -81,6 +81,9 @@ enum GMT_enum_comments {
 	GMT_COMMENT_IS_COLNAMES	= 128,	/* Comment goes in to header->colnames [tables only] */
 	GMT_COMMENT_IS_RESET	= 256};	/* Wipe existing header first [append] */
 
+enum GMT_api_err_enum {
+	GMT_NOERROR = 0};	/* Code when all is well */
+
 /* Array indices for input/output/stderr variables */
 
 enum GMT_io_enum {

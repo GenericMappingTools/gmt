@@ -3812,7 +3812,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 					wrote = 1;
 					break;
 				case GMT_WRITE_TABLE_START:	/* Write title and command to start of file; skip if binary */
-					GMT_write_newheaders (API->GMT, S_obj->fp);
+					GMT_write_newheaders (API->GMT, S_obj->fp, S_obj->n_columns);
 					break;
 				default:
 					GMT_report (API->GMT, GMT_MSG_NORMAL, "GMTAPI: Internal error: GMT_Put_Record called with illegal mode\n");

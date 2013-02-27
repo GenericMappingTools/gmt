@@ -327,6 +327,7 @@ struct GMT_GRID * init_area_weights (struct GMT_CTRL *GMT, struct GMT_GRID *G, i
 #ifdef DEBUG
 	if (file) {	/* For debug purposes: Save the area weight grid */
 		GMT_report (GMT, GMT_MSG_DEBUG, "Write area weight grid to file %s\n", file);
+		if (GMT_Set_Comment (GMT->parent, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "Area weight grid for debugging purposes", A)) return (NULL);
 		if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, A) != GMT_OK) return (NULL);
 	}
 #endif
@@ -1106,7 +1107,11 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 		}
 		GMT_free_grid (GMT, &Gout, true);	/* Was never used due to testing */
 	}
-	else if (Ctrl->F.highpass && L) {
+	else
+#endif
+	if (Ctrl->F.highpass && L) {	/* Save the highpassed-filtered grid instead */
+
+		if (GMT_Set_Comment (GMT->parent, GMT_IS_FILE, GMT_COMMENT_IS_REMARK, "High-pass filtered data", L)) return (GMT->parent->error);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, L) != GMT_OK) {
 			Return (API->error);
 		}
@@ -1116,18 +1121,6 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 	}
-#else
-	if (Ctrl->F.highpass && L) {	/* Save the highpassed-filtered grid instead */
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, L) != GMT_OK) {
-			Return (API->error);
-		}
-	}
-	else {	/* Save filter output */
-		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gout) != GMT_OK) {
-			Return (API->error);
-		}
-	}
-#endif
 
 	Return (EXIT_SUCCESS);
 }
