@@ -4,7 +4,7 @@
 blockmode \- Block average (IT(x),IT(y),IT(z)) data tables by mode estimation
 .SH SYNOPSIS
 BD(blockmode) [ IT(table) ] GMT_I_OPT GMT_Rx_OPT 
-[ OPT(C) ] [ OPT(D)IT(width)[BD(+c)][BD(+l)|BD(+h)] ] [ OPT(E) ] [ OPT(E)BD(r)|BD(s)[BD(-)] ] [ OPT(Q) ] [ GMT_V_OPT ] 
+[ OPT(C) ] [ OPT(D)[IT(width)][BD(+c)][BD(+l)|BD(+h)] ] [ OPT(E) ] [ OPT(E)BD(r)|BD(s)[BD(-)] ] [ OPT(Q) ] [ GMT_V_OPT ] 
 [ OPT(W)[BD(i)|BD(o)] ] [ GMT_b_OPT ] [ GMT_f_OPT ] [ GMT_h_OPT ] 
 [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
@@ -32,11 +32,15 @@ OPT(C)
 Use the center of the block as the output location [Default uses the modal xy location
 (but see OPT(Q))].  OPT(C) overrides OPT(Q).
 .TP
-OPT(D)IT(width)[BD(+c)][BD(+l)|BD(+h)]
+OPT(D)[IT(width)][BD(+c)][BD(+l)|BD(+h)]
 Perform unweighted mode calculation via histogram binning, using the specified histogram IT(width).
 Append BD(+c) to center bins so that their mid point is a multiple of IT(width) [uncentered].
 If multiple modes are found for a block we return the average mode.  Append BD(+l) or BD(+h) to
 return the low of high mode instead, respectively.
+If IT(width is not given it will default to 1 provided your data set only
+contains integers.  Also, for integer data and integer bin IT(width we
+enforce bin centering (BD(+c)) and select the lowest mode (BD(+l)) if there are multiples.
+[Default mode is normally the Least Median of Squares (LMS) statistic].
 .TP
 OPT(E)
 Provide Extended report which includes BD(s) (the L1 scale of the mode),

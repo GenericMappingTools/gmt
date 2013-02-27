@@ -17,8 +17,8 @@ Description
 **grdclip** will set values < *low* to *below* and/or values > *high* to
 *above*. Useful when you want all of a continent or an ocean to fall
 into one color or gray shade in image processing, when clipping of the
-range of data values is required, or for reclassification of node values.
-*above/below* can be any number or NaN
+range of data values is required, or for reclassification of data values.
+*above*, *below* and *between* can be any number or NaN
 (Not a Number). You must choose at least one of the **-S** options. Use
 **-R** to only extract a subset of the *ingrid* file. 
 
@@ -44,7 +44,7 @@ Optional Arguments
     Set all data[i] > *high* to *above*.
 **-Sb**\ *low/below*
     Set all data[i] < *low* to *below*. 
-**-Si**\ *low/high/below*
+**-Si**\ *low/high/between*
     Set all data[i] >= *low* and <= *high* to *between*.
     Repeat the option for as many intervals as needed.
 
