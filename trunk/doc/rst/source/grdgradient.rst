@@ -13,7 +13,7 @@ grdgradient - Compute directional derivative or gradient from a grid
 ] [ **-L**\ *flag* ] [
 **-N**\ [**e**\ ][**t**\ ][*amp*\ ][/\ *sigma*\ [/*offset*]] ] [
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-S**\ *slopefile*
-] [ **-V**\ [*level*\ ] ] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ]
+] [ **-V**\ [*level*\ ] ] [ **-fg**\ ]
 
 `Description <#toc2>`_
 ----------------------
@@ -114,12 +114,19 @@ boundary conditions (see **-L**).
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-.. |Add_-f| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-f.rst_
+**-fg**
+   Geographic grids (dimensions of longitude, latitude) will be converted to
+   meters via a "Flat Earth" approximation using the current ellipsoid parameters.
 
 .. include:: explain_help.rst_
 
-`Hints <#toc6>`_
+`Grid Distance Units <#toc6>`_
+-------------------------
+
+If the grid does not have meter as the horizontal unit, append **+u**\ *unit* to the input file name to convert from the
+specified unit to meter.  If your grid is geographic, convert distances to meters by supplying **-fg** instead.
+
+`Hints <#toc7>`_
 ----------------
 
 If you don't know what **-N** options to use to make an intensity file

@@ -15,7 +15,7 @@ frequency) domain
 **-I**\ [*scale*\ \|\ **g**] ] [ **-L**\ [**h**\ \|\ **m**] ] [
 **-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][\ **+e**\ \|\ **n**\ \|\ **m**][\ **+t**\ *width*][\ **+w**\ [*suffix*\ ]][\ **+z**\ [**p**\ ]]
 ] [ **-S**\ *scale* ] [ **-V**\ [*level*\ ] ] [
-**-f**\ [**i**\ \|\ **o**]\ *colinfo* ]
+**-fg**\ ]
 
 `Description <#toc2>`_
 ----------------------
@@ -120,11 +120,21 @@ to meters using **grdedit** or scale the output with **grdmath**.
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
+**-fg**
+   Geographic grids (dimensions of longitude, latitude) will be converted to
+   meters via a "Flat Earth" approximation using the current ellipsoid parameters.
+
 .. include:: explain_help.rst_
 
 .. include:: explain_grd_inout.rst_
 
-`Considerations <#toc7>`_
+`Grid Distance Units <#toc7>`_
+-------------------------
+
+If the grid does not have meter as the horizontal unit, append **+u**\ *unit* to the input file name to convert from the
+specified unit to meter.  If your grid is geographic, convert distances to meters by supplying **-fg** instead.
+
+`Considerations <#toc8>`_
 -------------------------
 
 netCDF COARDS grids will automatically be recognized as geographic. For
@@ -133,7 +143,7 @@ meters, select **-fg**. If the data are close to either pole, you should
 consider projecting the grid file onto a rectangular coordinate system
 using **grdproject**.
 
-`Examples <#toc8>`_
+`Examples <#toc9>`_
 -------------------
 
 To upward continue the sea-level magnetic anomalies in the file
@@ -174,7 +184,7 @@ grdfft topo.nc -N+w+z -fg -V
 You can now make plots of the data in topo\_taper.nc, topo\_real.nc, and
 topo\_imag.nc.
 
-`See Also <#toc9>`_
+`See Also <#toc10>`_
 -------------------
 
 `gmt <gmt.html>`_ , `grdedit <grdedit.html>`_ ,

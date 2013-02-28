@@ -89,6 +89,60 @@ EXTERN_MSC void gmt_close_grd (struct GMT_CTRL *C, struct GMT_GRID *G);
 
 /* GENERIC I/O FUNCTIONS FOR GRIDDED DATA FILES */
 
+/* First two runctions to deal with modifying a grids x/u units.  This is used because
+ * there are many tools which requires x/y to be in meters but the user may have these
+ * data in km or miles.  Appending +u<unit> addresses this conversion. */
+
+void gmt_grd_parse_xy_units (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h, char *file, unsigned int direction)
+{	/* Decode the optional +u<unit> and determine scales */
+	enum GMT_enum_units u_number;
+	char *c = NULL, *name = (file) ? file : h->name;
+	if (GMT_is_geographic (C, direction)) return;	/* Does not apply to geographic data */
+	if ((c = strstr (name, "+u")) == NULL) return;	/* No +u<unit> modifier found */
+	u_number = GMT_get_unit_number (C, c[2]);		/* Convert char unit to enumeration constant for this unit */
+	if (u_number == GMT_IS_NOUNIT) {
+		GMT_report (C, GMT_MSG_NORMAL, "Grid file x/y unit specification %s was unrecognized (part of file name?) and is ignored.\n", c);
+		return;
+	}
+	/* Got a valid unit */
+	h->xy_unit_to_meter[direction] = C->current.proj.m_per_unit[u_number];	/* Converts unit to meters */
+	h->xy_unit[direction] = u_number;	/* Unit ID */
+	h->xy_adjust[direction] |= 1;		/* Says we have successfully parsed and readied the x/y scaling */
+	c[0] = '\0';	/* Chop off the unit specification from the file name */
+}
+
+void gmt_grd_xy_scale (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h, unsigned int direction)
+{
+	unsigned int k;
+	/* Apply the scaling of wesn,inc as given by the header's xy_* settings.
+	 * After reading a grid it will have wesn/inc in meters.
+	 * Before writing a grid, it may have units changed back to original units
+	 * or scaled to anoter set of units */
+	
+	if (direction == GMT_IN) {
+		if (h->xy_adjust[direction] == 0) return;	/* Nothing to do */
+		if (h->xy_adjust[GMT_IN] & 2) return;		/* Already scaled them */
+		for (k = 0; k < 4; k++) h->wesn[k] *= h->xy_unit_to_meter[GMT_IN];
+		for (k = 0; k < 2; k++) h->inc[k]  *= h->xy_unit_to_meter[GMT_IN];
+		h->xy_adjust[GMT_IN] = 2;	/* Now the grid is ready for use and in meters */
+		GMT_report (C, GMT_MSG_LONG_VERBOSE, "Input grid file x/y unit was converted from %s to meters after reading.\n", C->current.proj.unit_name[h->xy_unit[GMT_IN]]);
+	}
+	else if (direction == GMT_OUT) {	/* grid x/y are assumed to be in meters */
+		if (h->xy_adjust[GMT_OUT] & 1) {	/* Was given a new unit for output */
+			for (k = 0; k < 4; k++) h->wesn[k] /= h->xy_unit_to_meter[GMT_OUT];
+			for (k = 0; k < 2; k++) h->inc[k]  /= h->xy_unit_to_meter[GMT_OUT];
+			h->xy_adjust[GMT_OUT] = 2;	/* Now we are ready for writing */
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Output grid file x/y unit was converted from meters to %s before writing.\n", C->current.proj.unit_name[h->xy_unit[GMT_OUT]]);
+		}
+		else if (h->xy_adjust[GMT_IN] & 2) {	/* Just undo old scaling */
+			for (k = 0; k < 4; k++) h->wesn[k] /= h->xy_unit_to_meter[GMT_IN];
+			for (k = 0; k < 2; k++) h->inc[k]  /= h->xy_unit_to_meter[GMT_IN];
+			h->xy_adjust[GMT_IN] -= 2;	/* Now it is back to where we started */
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Output grid file x/y unit was reverted back from meters to %s before writing.\n", C->current.proj.unit_name[h->xy_unit[GMT_IN]]);
+		}
+	}
+}
+
 /* Routines to see if a particular grd file format is specified as part of filename. */
 
 void gmt_expand_filename (struct GMT_CTRL *C, char *file, char *fname)
@@ -269,7 +323,10 @@ int GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GMT_GRID_HEADER *
 
 	size_t i = 0, j;
 	int val;
+	unsigned int direction = (magic) ? GMT_IN : GMT_OUT;
 	char tmp[GMT_BUFSIZ];
+
+	gmt_grd_parse_xy_units (C, header, file, direction);	/* Parse and strip xy scaling via +u<unit> modifier */
 
 	gmt_expand_filename (C, file, header->name);	/* May append a suffix to header->name */
 
@@ -640,6 +697,8 @@ int GMT_read_grd_info (struct GMT_CTRL *C, char *file, struct GMT_GRID_HEADER *h
 
 	GMT_err_trap ((*C->session.readinfo[header->type]) (C, header));
 
+	gmt_grd_xy_scale (C, header, GMT_IN);	/* Possibly scale wesn,inc */
+
 	/* restore non-default scale, offset, and invalid: */
 	if (scale != 1.0)
 		header->z_scale_factor = scale;
@@ -670,6 +729,7 @@ int GMT_write_grd_info (struct GMT_CTRL *C, char *file, struct GMT_GRID_HEADER *
 
 	GMT_err_trap (GMT_grd_get_format (C, file, header, false));
 
+	gmt_grd_xy_scale (C, header, GMT_OUT);	/* Possibly scale wesn,inc */
 	/* pack z-range: */
 	header->z_min = (header->z_min - header->z_add_offset) / header->z_scale_factor;
 	header->z_max = (header->z_max - header->z_add_offset) / header->z_scale_factor;
@@ -736,6 +796,7 @@ int GMT_write_grd (struct GMT_CTRL *C, char *file, struct GMT_GRID_HEADER *heade
 	GMT_err_trap (GMT_grd_get_format (C, file, header, false));
 	gmt_grd_set_units (C, header);
 	GMT_pack_grid (C, header, grid, k_grd_pack); /* scale and offset */
+	gmt_grd_xy_scale (C, header, GMT_OUT);	/* Possibly scale wesn,inc */
 
 	return ((*C->session.writegrd[header->type]) (C, header, grid, wesn, pad, complex_mode));
 }

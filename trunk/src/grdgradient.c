@@ -115,7 +115,7 @@ int GMT_grdgradient_usage (struct GMTAPI_CTRL *C, int level)
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdgradient <ingrid> -G<outgrid> [-A<azim>[/<azim2>]] [-D[a][o][n]]\n");
 	GMT_message (GMT, "\t[-E[s|p|m]<azim>/<elev>[/<ambient>/<diffuse>/<specular>/<shine>]]\n");
-	GMT_message (GMT, "\t[-N[t|e][<amp>[/<sigma>[/<offset>]]]] [%s]\n\t[-S<slopegrid>] [%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT);
+	GMT_message (GMT, "\t[-N[t|e][<amp>[/<sigma>[/<offset>]]]] [%s]\n\t[-S<slopegrid>] [%s] [-fg] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -147,7 +147,9 @@ int GMT_grdgradient_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t     (and offset) for transform. [sigma, offset estimated from data].\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-S Output file for |grad z|; requires -D.\n");
-	GMT_explain_options (GMT, "Vfn.");
+	GMT_explain_options (GMT, "V");
+	GMT_message (GMT, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
+	GMT_explain_options (GMT, "n.");
 	
 	return (EXIT_FAILURE);
 }

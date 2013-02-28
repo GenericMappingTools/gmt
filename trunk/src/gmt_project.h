@@ -241,6 +241,7 @@ struct GMT_PROJ {
 	struct GMT_LATSWAP_CONSTS GMT_lat_swap_vals;
 
 	enum GMT_enum_units inv_coord_unit;		/* Index to scale that converts input map coordinates to meter before inverting for lon,lat */
+	char unit_name[GMT_N_UNITS][GMT_TEXT_LEN16];	/* Names of the various distance units */
 	double m_per_unit[GMT_N_UNITS];	/* Meters in various units.  Use to scale units to meters */
 	double origin[3];		/* Projected values of the logical origin for the projection (x, y, z) */
 	double rect[4], zmin, zmax;	/* Extreme projected values */

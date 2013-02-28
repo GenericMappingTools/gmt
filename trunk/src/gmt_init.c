@@ -8188,8 +8188,9 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 }
 
 void gmt_init_unit_conversion (struct GMT_CTRL *C) {
-	/* Loads the m_per_unit array with the scaling factors that converts various units to meters */
-	/* See gmt_project.h for enums that can be used as array indices) */
+	/* Loads the m_per_unit array with the scaling factors that converts various units to meters.
+	 * Also sets all the names for the units.
+	 * See gmt_project.h for enums that can be used as array indices) */
 
 	C->current.proj.m_per_unit[GMT_IS_METER]		= 1.0;				/* m in m */
 	C->current.proj.m_per_unit[GMT_IS_KM]			= METERS_IN_A_KM;		/* m in km */
@@ -8200,6 +8201,16 @@ void gmt_init_unit_conversion (struct GMT_CTRL *C) {
 	C->current.proj.m_per_unit[GMT_IS_PT]			= 0.0254 / 72.0;		/* m in point */
 	C->current.proj.m_per_unit[GMT_IS_FOOT]			= METERS_IN_A_FOOT;		/* m in foot */
 	C->current.proj.m_per_unit[GMT_IS_SURVEY_FOOT]		= METERS_IN_A_SURVEY_FOOT;	/* m in US Survey foot */
+	
+	strcpy (C->current.proj.unit_name[GMT_IS_METER],	 "m");
+	strcpy (C->current.proj.unit_name[GMT_IS_KM],		 "km");
+	strcpy (C->current.proj.unit_name[GMT_IS_MILE],		 "mile");
+	strcpy (C->current.proj.unit_name[GMT_IS_NAUTICAL_MILE], "nautical mile");
+	strcpy (C->current.proj.unit_name[GMT_IS_INCH],		 "inch");
+	strcpy (C->current.proj.unit_name[GMT_IS_CM],		 "cm");
+	strcpy (C->current.proj.unit_name[GMT_IS_PT],		 "point");
+	strcpy (C->current.proj.unit_name[GMT_IS_FOOT],		 "foot");
+	strcpy (C->current.proj.unit_name[GMT_IS_SURVEY_FOOT],	 "survey foot");
 }
 
 void GMT_init_scales (struct GMT_CTRL *C, unsigned int unit, double *fwd_scale, double *inv_scale, double *inch_to_unit, double *unit_to_inch, char *unit_name) {

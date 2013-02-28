@@ -595,6 +595,14 @@ void GMT_io_banner (struct GMT_CTRL *C, unsigned int direction)
 		if (direction == GMT_OUT) C->common.b.o_delay = true;
 		return;
 	}
+	if (direction == GMT_IN && C->common.i.active && C->common.b.ncol[GMT_IN] < C->common.i.n_cols) {
+		GMT_report (C, GMT_MSG_NORMAL, "Number of input columns set by -i exceeds those set by -bi!\n");
+		GMT_exit (EXIT_FAILURE);
+	}
+	if (direction == GMT_OUT && C->common.o.active && C->common.b.ncol[GMT_OUT] < C->common.o.n_cols) {
+		GMT_report (C, GMT_MSG_NORMAL, "Number of output columns set by -o exceeds those set by -bo!\n");
+		GMT_exit (EXIT_FAILURE);
+	}
 	GMT_memset (message, GMT_TEXT_LEN256, char);	/* Start with a blank message */
 	for (col = 0; col < C->common.b.ncol[direction]; col++) {	/* For each binary column of data */
 		if (C->current.io.fmt[direction][col].skip < 0) {	/* Must skip n_bytes BEFORE reading this column */
@@ -897,7 +905,7 @@ char *GMT_getsharepath (struct GMT_CTRL *C, const char *subdir, const char *stem
 
 int GMT_access (struct GMT_CTRL *C, const char* filename, int mode)
 {	/* Like access but also checks the GMT_*DIR places */
-	char file[GMT_BUFSIZ];
+	char file[GMT_BUFSIZ], *c = NULL;
 
 	file[0] = '\0';		/* 'Initialize' it so we can test if it's still 'empty' after the sscanf below */
 	if (!filename || !filename[0])
@@ -906,6 +914,7 @@ int GMT_access (struct GMT_CTRL *C, const char* filename, int mode)
 	if (file[0] == '\0')
 		return (-1);		/* It happens for example when parsing grdmath args and it finds an isolated  "=" */
 
+	if ((c = strstr (file, "+u"))) c[0] = '\0';	/* Chop off any x/u unit specification */
 	if (mode == W_OK)
 		return (access (file, mode));	/* When writing, only look in current directory */
 	if (mode == R_OK || mode == F_OK) {	/* Look in special directories when reading or just checking for existance */

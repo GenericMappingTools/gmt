@@ -15,7 +15,7 @@ method of Okabe
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [ **-S**\ *radius* ] [
 **-T**\ [[*d*\ ]\ *xyz\_file*/*vert\_file*\ [*/m*\ ]]\|[*r\|s*\ ]\ *raw\_file*
 ] [ **-Z**\ *level* ] [ **-V**\ [*level*\ ] ] [
-**-f**\ [**i**\ \|\ **o**]\ *colinfo* ]
+**-fg**\ ]
 
 `Description <#toc2>`_
 ----------------------
@@ -90,24 +90,31 @@ but allows computing the anomaly of arbitrarily complex shapes.
     from each triangle and this reference level. An example will be the
     whater depth to compute a Bouguer anomaly.
 
-.. |Add_-f| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-f.rst_
+**-fg**
+   Geographic grids (dimensions of longitude, latitude) will be converted to
+   meters via a "Flat Earth" approximation using the current ellipsoid parameters.
 
 .. include:: ../../explain_help.rst_
 
-`Examples <#toc6>`_
+`Grid Distance Units <#toc6>`_
+-------------------------
+
+If the grid does not have meter as the horizontal unit, append **+u**\ *unit* to the input file name to convert from the
+specified unit to meter.  If your grid is geographic, convert distances to meters by supplying **-fg** instead.
+
+`Examples <#toc7>`_
 -------------------
 
 Suppose you ...
 
 **gmtgravmag3d**
 
-`See Also <#toc7>`_
+`See Also <#toc8>`_
 -------------------
 
 `GMT <GMT.html>`_ , `grdgravmag3d <grdgravmag3d.html>`_
 
-`Reference <#toc8>`_
+`Reference <#toc9>`_
 --------------------
 
 Okabe, M., Analytical expressions for gravity anomalies due to
