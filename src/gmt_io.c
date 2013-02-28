@@ -628,7 +628,7 @@ int GMT_set_cols (struct GMT_CTRL *C, unsigned int direction, unsigned int expec
 
 	if (! (direction == GMT_IN || direction == GMT_OUT)) return (GMT_NOT_A_VALID_DIRECTION);
 	
-	if (C->common.b.ncol[direction]) return (GMT_OK);	/* Already set by -b */
+	if (direction == GMT_IN && C->common.b.ncol[direction]) return (GMT_OK);	/* Already set once by -bi */
 
 	if (expected == 0 && (direction == GMT_OUT || C->common.b.active[direction])) {
 		GMT_report (C, GMT_MSG_NORMAL, "Number of %s columns has not been set\n", mode[direction]);
@@ -638,7 +638,7 @@ int GMT_set_cols (struct GMT_CTRL *C, unsigned int direction, unsigned int expec
 	if (C->common.b.active[direction]) {	/* Must set uninitialized input/output pointers */
 		unsigned int col;
 		char type = (C->common.b.type[direction]) ? C->common.b.type[direction] : 'd';
-		for (col = 0; col < expected; col++) {
+		for (col = C->common.b.ncol[direction]; col < expected; col++) {
 			C->current.io.fmt[direction][col].io = GMT_get_io_ptr (C, direction, C->common.b.swab[direction], type);
 			C->current.io.fmt[direction][col].type = GMT_get_io_type (C, type);
 		}
