@@ -7582,7 +7582,7 @@ int GMT_parse_front (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 
 int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *p, unsigned int mode, bool cmd)
 {
-	/* mode = 0 for 2-D (psxy) and = 1 for 3-D (psxyz); cmd = 1 when called to process command line options */
+	/* mode = 0 for 2-D (psxy) and = 1 for 3-D (psxyz); cmd = true when called to process command line options */
 	int decode_error = 0, bset = 0, j, n, k, slash = 0, colon, col_off = mode, len;
 	bool check = true;
 	unsigned int ju;
