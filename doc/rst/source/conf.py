@@ -215,6 +215,16 @@ man_pages = [
      [u'GMT_TEAM'], 1)
 ]
 
+import glob 
+man_pages = [] 
+for f in glob.glob('*.rst') + glob.glob('*/*.rst'): 
+    man_pages.append(( 
+        f[:-4],                    # source file (no extension) 
+        f[:-4].replace('/', '-'),  # output file (under output dir) 
+        'description of %s' % f,   # description 
+        'A. Author',               # author 
+        1,                         # section 
+    )) 
 
 # -- Options for Epub output ---------------------------------------------------
 
