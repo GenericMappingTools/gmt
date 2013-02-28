@@ -98,7 +98,7 @@ enum GMT_enum_segopt {
 
 /* Get current setting for in/out columns */
 
-#define GMT_get_cols(C,direction) (C->common.b.ncol[direction])
+// #define GMT_get_cols(C,direction) (C->common.b.ncol[direction])
 
 /* Determine if current binary table has header */
 #define GMT_binary_header(GMT,dir) (GMT->common.b.active[dir] && GMT->current.setting.io_header[dir] && GMT->current.setting.io_n_header_items)

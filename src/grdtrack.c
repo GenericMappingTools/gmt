@@ -749,7 +749,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 			/* Data record to process */
 			if (n_out == 0) {
-				n_out = GMT->common.b.ncol[GMT_IN] + Ctrl->G.n_grids;	/* Set # of output cols */
+				n_out = GMT_get_cols (GMT, GMT_IN) + Ctrl->G.n_grids;	/* Get new # of output cols */
 				if ((error = GMT_set_cols (GMT, GMT_OUT, n_out))) Return (error);
 			}
 			n_read++;

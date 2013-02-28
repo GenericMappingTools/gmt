@@ -613,6 +613,40 @@ void GMT_io_banner (struct GMT_CTRL *C, unsigned int direction)
 	GMT_report (C, GMT_MSG_VERBOSE, "%s %d columns via binary records using format %s\n", gmt_direction[direction], C->common.b.ncol[direction], message);
 }
 
+int GMT_get_cols (struct GMT_CTRL *C, unsigned int direction)
+{
+	/* Return the number of columns currently in play in this direction.
+	 * This can be complicated.. For BINARY data:
+	 * On INPUT, a binary file has a known number of columns set via -bi. Internally,
+	 * we read in all those columns into gmt_current_rec.  However, if -i is used then we shuffle
+	 * the read values into the positions implied by -i. Further processing
+	 * is thus concerned with the possibly smaller number of columns than in the file.
+	 * So: n_cols is ncol[GMT_IN], but if -i was set then it is less (i.n_cols).
+	 *
+	 * On OUTPUT, a binary file has its number of columns set via -bo. Internally,
+	 * the number of columns we hold in our array might be much larger if -o is used,
+	 * as we then only write out those columns that are requested.
+	 * So: n_cols is ncol[GMT_OUT], but if -o it is same as input (see above for that!)
+	 *
+	 * For ASCII data it is the same except for on output, where we return the output
+	 * cols as set.
+	 */
+	unsigned int n_cols;
+	if (! (direction == GMT_IN || direction == GMT_OUT)) return (GMT_NOT_A_VALID_DIRECTION);
+
+	if (direction == GMT_IN) {
+		n_cols = (C->common.i.active) ? C->common.i.n_cols : C->common.b.ncol[GMT_IN];
+	}
+	else {
+		unsigned int in_n_cols = (C->common.i.active) ? C->common.i.n_cols : C->common.b.ncol[GMT_IN];
+		if (C->common.b.active[GMT_OUT])
+			n_cols = (C->common.o.active) ? in_n_cols : C->common.b.ncol[GMT_OUT];
+		else
+			n_cols = C->common.b.ncol[GMT_OUT];
+	}
+	return (n_cols);
+}
+
 int GMT_set_cols (struct GMT_CTRL *C, unsigned int direction, unsigned int expected)
 {	/* Initializes the internal GMT->common.b.ncol[] settings.
 	 * direction is either GMT_IN or GMT_OUT.

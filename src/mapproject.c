@@ -679,7 +679,6 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
-	n_output = GMT_get_cols (GMT, GMT_OUT);
 
 	n = n_read_in_seg = 0;
 	do {	/* Keep returning records until we reach EOF */

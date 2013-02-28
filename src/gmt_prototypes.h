@@ -164,6 +164,7 @@ EXTERN_MSC int GMT_ascii_output_col (struct GMT_CTRL *C, FILE *fp, double x, uns
 EXTERN_MSC bool GMT_not_numeric (struct GMT_CTRL *C, char *text);				/* Rules out _some_ text as possible numerics */
 EXTERN_MSC bool GMT_parse_segment_item (struct GMT_CTRL *C, char *in_string, char *pattern, char *out_string);
 EXTERN_MSC int GMT_set_cols (struct GMT_CTRL *C, unsigned int direction, unsigned int expected);
+EXTERN_MSC int GMT_get_cols (struct GMT_CTRL *C, unsigned int direction);
 EXTERN_MSC struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *C, unsigned int n_tables, uint64_t n_segments, unsigned int n_columns, uint64_t n_rows, bool alloc_only);
 EXTERN_MSC struct GMT_DATATABLE * GMT_create_table (struct GMT_CTRL *C, uint64_t n_segments, unsigned int n_columns, uint64_t n_rows, bool alloc_only);
 EXTERN_MSC void GMT_free_textset (struct GMT_CTRL *C, struct GMT_TEXTSET **data);
