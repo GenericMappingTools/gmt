@@ -135,7 +135,7 @@ blockmode hawaii\_b.xyg -R198/208/18/25 -I5m -bi3d > hawaii\_5x5.xyg
 To determine the most frequently occurring values per 5x5 block using histogram binning, with
 data representing integer counts, try
 
-blockmode data.txt -R0/100/0/100 -I5 -r -C -D1+c
+blockmode data.txt -R0/100/0/100 -I5 -r -C -D
 
 See Also
 --------
