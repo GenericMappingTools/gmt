@@ -37,7 +37,7 @@ original .txt files.
   invisible character in cases were we want to use the 'include' without any extra text.
   It than reads like
 
-  .. |Add_-bo| unicode:: 0x0C .. just an invisible code
+  .. |Add_-bo| unicode:: 0x20 .. just an invisible code
   .. include:: explain_-bo.rst_
 
 - One further note about the 'includes' extension. We used *.rst_ as we could have
@@ -49,31 +49,31 @@ original .txt files.
 List of currently includes that use Replacement macros and have to be used as explained above.
 
 .. |Add_-A| replace:: 
-.. |Add_-A| unicode:: 0x0C .. just an invisible code
+.. |Add_-A| unicode:: 0x20 .. just an invisible code
 .. |Add_-R| replace:: 
-.. |Add_-R| unicode:: 0x0C .. just an invisible code
+.. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. |Add_-Rgeo| replace:: 
-.. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
+.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. |Add_-Rz| replace:: 
-.. |Add_-Rz| unicode:: 0x0C .. just an invisible code
+.. |Add_-Rz| unicode:: 0x20 .. just an invisible code
 .. |Add_-V| replace:: 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 
-.. |Add_-f| unicode:: 0x0C .. just an invisible code
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. |Add_-f| replace:: 
-.. |Add_-g| unicode:: 0x0C .. just an invisible code
+.. |Add_-g| unicode:: 0x20 .. just an invisible code
 .. |Add_-g| replace:: 
 
-.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. |Add_-h| replace:: 
 .. |Add_-bo| replace:: 
-.. |Add_-bo| unicode:: 0x0C .. just an invisible code
+.. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. |Add_-bi| replace:: 
-.. |Add_-bi| unicode:: 0x0C .. just an invisible code
+.. |Add_-bi| unicode:: 0x20 .. just an invisible code
 
 .. |Add_nodereg| replace:: 
-.. |Add_nodereg| unicode:: 0x0C .. just an invisible code
+.. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. |Add_perspective| replace:: 
-.. |Add_perspective| unicode:: 0x0C .. just an invisible code
+.. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. |Add_intables| replace:: 
-.. |Add_intables| unicode:: 0x0C .. just an invisible code
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
