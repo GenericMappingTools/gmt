@@ -153,14 +153,14 @@ Optional Arguments
 
 .. include:: ../../explain_grd_inout.rst_
 
-`Grid Distance Units <#toc7>`_
--------------------------
+Grid Distance Units
+-------------------
 
 If the grid does not have meter as the horizontal unit, append **+u**\ *unit* to the input file name to convert from the
 specified unit to meter.  If your grid is geographic, convert distances to meters by supplying **-fg** instead.
 
-`Considerations <#toc8>`_
--------------------------
+Considerations
+--------------
 
 netCDF COARDS grids will automatically be recognized as geographic. For
 other grids geographical grids were you want to convert degrees into
@@ -168,8 +168,8 @@ meters, select **-fg**. If the data are close to either pole, you should
 consider projecting the grid file onto a rectangular coordinate system
 using **grdproject**.
 
-`Examples <#toc9>`_
--------------------
+Examples
+--------
 
 To compute the effect of the water layer above the bat.grd bathymetry
 using 2700 and 1035 for the densities of crust and water and writing the
@@ -255,16 +255,16 @@ long profile using the same parameters as above
 
 gravfft -C400/5000/3000/b -T10000/2700/3300/1035 -Z9000/40000
 
-`References <#toc10>`_
----------------------
+References
+----------
 
 Luis, J.F. and M.C. Neves. 2006, "The isostatic compensation of the
 Azores Plateau: a 3D admittance and coherence analysis. J. Geotermal
 Vulc. Res. Volume 156, Issues 1-2, Pages 10-22,
 `http://dx.doi.org/10.1016/j.jvolgeores.2006.03.010 <http://dx.doi.org/10.1016/j.jvolgeores.2006.03.010>`_
 
-`See Also <#toc11>`_
---------------------
+See Also
+--------
 
 `gmt <../../gmt.html>`_ , `grdfft <../../grdfft.html>`_ ,
 `grdmath <../../grdmath.html>`_ , `grdproject <../../grdproject.html>`_

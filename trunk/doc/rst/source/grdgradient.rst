@@ -4,8 +4,8 @@ grdgradient
 
 grdgradient - Compute directional derivative or gradient from a grid
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 **grdgradient** *in\_grdfile* **-G**\ *out\_grdfile* [
 **-A**\ *azim*\ [/*azim2*] ] [ **-D**\ [**c**\ ][**o**\ ][**n**\ ] ] [
@@ -15,8 +15,8 @@ grdgradient - Compute directional derivative or gradient from a grid
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-S**\ *slopefile*
 ] [ **-V**\ [*level*\ ] ] [ **-fg**\ ]
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **grdgradient** may be used to compute the directional derivative in a
 given direction (**-A**), or the direction (**-S**) [and the magnitude
@@ -27,8 +27,8 @@ boundary conditions (see **-L**).
 
 .. include:: explain_commonitems.rst_
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *in\_grdfile*
     2-D grid file from which to compute directional derivative. (See
@@ -37,8 +37,8 @@ boundary conditions (see **-L**).
     Name of the output grid file for the directional derivative. (See
     GRID FILE FORMATS below).
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-A**\ *azim*\ [/*azim2*]
     Azimuthal direction for a directional derivative; *azim* is the
@@ -120,14 +120,14 @@ boundary conditions (see **-L**).
 
 .. include:: explain_help.rst_
 
-`Grid Distance Units <#toc6>`_
--------------------------
+Grid Distance Units
+-------------------
 
 If the grid does not have meter as the horizontal unit, append **+u**\ *unit* to the input file name to convert from the
 specified unit to meter.  If your grid is geographic, convert distances to meters by supplying **-fg** instead.
 
-`Hints <#toc7>`_
-----------------
+Hints
+-----
 
 If you don't know what **-N** options to use to make an intensity file
 for **grdimage** or **grdview**, a good first try is **-Ne**\ 0.6.
@@ -148,8 +148,8 @@ If you simply need the *x*- or *y*-derivatives of the grid, use
 
 .. include:: explain_grd_inout.rst_
 
-`Examples <#toc8>`_
--------------------
+Examples
+--------
 
 To make a file for illuminating the data in geoid.nc using exp-
 normalized gradients in the range [-0.6,0.6] imitating light sources in
@@ -161,15 +161,15 @@ To find the azimuth orientations of seafloor fabric in the file topo.nc:
 
 grdgradient topo.nc -Dno -Gazimuths.nc -V
 
-`References <#toc9>`_
----------------------
+References
+----------
 
 Horn, B.K.P., Hill-Shading and the Reflectance Map, Proceedings of the
 IEEE, Vol. 69, No. 1, January 1981, pp. 14-47.
 (http://people.csail.mit.edu/bkph/papers/Hill-Shading.pdf)
 
-`See Also <#toc10>`_
---------------------
+See Also
+--------
 
 `gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
 `grdhisteq <grdhisteq.html>`_ ,

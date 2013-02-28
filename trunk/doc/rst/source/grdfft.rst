@@ -128,23 +128,23 @@ to meters using **grdedit** or scale the output with **grdmath**.
 
 .. include:: explain_grd_inout.rst_
 
-`Grid Distance Units <#toc7>`_
--------------------------
+Grid Distance Units
+-------------------
 
 If the grid does not have meter as the horizontal unit, append **+u**\ *unit* to the input file name to convert from the
 specified unit to meter.  If your grid is geographic, convert distances to meters by supplying **-fg** instead.
 
-`Considerations <#toc8>`_
--------------------------
+Considerations
+--------------
 
 netCDF COARDS grids will automatically be recognized as geographic. For
 other grids geographical grids were you want to convert degrees into
 meters, select **-fg**. If the data are close to either pole, you should
 consider projecting the grid file onto a rectangular coordinate system
-using **grdproject**.
+using `grdproject. <grdproject.html>`_
 
-`Examples <#toc9>`_
--------------------
+Examples
+--------
 
 To upward continue the sea-level magnetic anomalies in the file
 mag\_0.nc to a level 800 m above sealevel:
@@ -184,8 +184,8 @@ grdfft topo.nc -N+w+z -fg -V
 You can now make plots of the data in topo\_taper.nc, topo\_real.nc, and
 topo\_imag.nc.
 
-`See Also <#toc10>`_
--------------------
+See Also
+--------
 
 `gmt <gmt.html>`_ , `grdedit <grdedit.html>`_ ,
 `grdmath <grdmath.html>`_ , `grdproject <grdproject.html>`_
