@@ -5,8 +5,8 @@ gmtgravmag3d
 gmtgravmag3d - Compute the gravity/magnetic effect of a body by the
 method of Okabe
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 **gmtgravmag3d** [ **-C**\ *density* ] [ **-D** ] [ **-E**\ *thickness*
 ] [ **-F**\ *xy\_file* ] [ **-G**\ *outputgrid.nc* ] [
@@ -17,8 +17,8 @@ method of Okabe
 ] [ **-Z**\ *level* ] [ **-V**\ [*level*\ ] ] [
 **-fg**\ ]
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **gmtgravmag3d** will compute the gravity or magnetic anomaly of a body
 described by a set of triangles. The output can either be along a given
@@ -27,8 +27,8 @@ but allows computing the anomaly of arbitrarily complex shapes.
 
 .. include:: ../../explain_commonitems.rst_
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 **-C**\ *density*
     Sets body density in SI. This option is mutually exclusive with
@@ -47,17 +47,17 @@ but allows computing the anomaly of arbitrarily complex shapes.
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-R.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
-**-E**\ [*thickness*\ ]
+**-E**\ [*thickness*]
     give layer thickness in m [Default = 0 m]. Use this option only when
     the triangles describe a non-closed surface and you want the anomaly
     of a constant thickness layer.
-**-L**\ [*z\_observation*\ ]
+**-L**\ [*z\_observation*]
     sets level of observation [Default = 0]. That is the height (z) at
     which anomalies are computed.
 **-S**\ *radius*
@@ -96,26 +96,26 @@ but allows computing the anomaly of arbitrarily complex shapes.
 
 .. include:: ../../explain_help.rst_
 
-`Grid Distance Units <#toc6>`_
--------------------------
+Grid Distance Units
+-------------------
 
 If the grid does not have meter as the horizontal unit, append **+u**\ *unit* to the input file name to convert from the
 specified unit to meter.  If your grid is geographic, convert distances to meters by supplying **-fg** instead.
 
-`Examples <#toc7>`_
--------------------
+Examples
+--------
 
 Suppose you ...
 
 **gmtgravmag3d**
 
-`See Also <#toc8>`_
--------------------
+See Also
+--------
 
-`GMT <GMT.html>`_ , `grdgravmag3d <grdgravmag3d.html>`_
+`GMT <../../GMT.html>`_ , `grdgravmag3d <grdgravmag3d.html>`_
 
-`Reference <#toc9>`_
---------------------
+Reference
+---------
 
 Okabe, M., Analytical expressions for gravity anomalies due to
 polyhedral bodies and translation into magnetic anomalies, *Geophysics*,

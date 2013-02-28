@@ -5,17 +5,17 @@ grdgravmag3d
 grdgravmag3d - Compute the gravity effect of a grid by the method of
 Okabe
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 **grdgravmag3d** [ **-C**\ *density* ] [ **-D** ] [ **-F**\ *xy\_file* ]
 [ **-G**\ *outputgrid.nc* ] [ **-L**\ *z\_observation* ] [ **-M** ]
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [ **-S**\ *radius* ] [
-**-Z**\ *level* ] [ **-V**\ [*level*\ ] ] [
+**-R**\ *west*/*east*/*south*/*north*\ [**r**] [ **-S**\ *radius* ] [
+**-Z**\ *level* ] [ **-V**\ [*level*] ] [
 **-fg**\ ]
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **grdgravmag3d** will compute the gravity anomaly of a body described by
 one or (optionally) two grids The output can either be along a given set
@@ -24,8 +24,8 @@ allows computing the anomaly of arbitrarily complex shapes.
 
 .. include:: ../../explain_commonitems.rst_
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 **-C**\ *density*
     Sets body density in SI. This option is mutually exclusive with
@@ -39,8 +39,8 @@ allows computing the anomaly of arbitrarily complex shapes.
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-R.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
@@ -60,27 +60,27 @@ allows computing the anomaly of arbitrarily complex shapes.
 
 .. include:: ../../explain_help.rst_
 
-`Grid Distance Units <#toc6>`_
--------------------------
+Grid Distance Units
+-------------------
 
 If the grid does not have meter as the horizontal unit, append **+u**\ *unit* to the input file name to convert from the
-specified unit to meter.  If your grid is geographic, convert distances to meters by supplying **-fg** instead.
+specified unit to meter. If your grid is geographic, convert distances to meters by supplying **-fg** instead.
 
-`Examples <#toc7>`_
--------------------
+Examples
+--------
 
 Suppose you want to compute the gravity effect of the phantom "Sandy
 Island" together with its not phantom seamount
 
 grdgravmag3d sandy\_bat.grd -C1700 -Z-4300 -M -I1m -Gsandy\_okb.grd -V
 
-`See Also <#toc8>`_
--------------------
+See Also
+--------
 
-`GMT <GMT.html>`_ , `gmtgravmag3d <gmtgravmag3d.html>`_
+`GMT <../../GMT.html>`_ , `gmtgravmag3d <gmtgravmag3d.html>`_
 
-`Reference <#toc9>`_
---------------------
+Reference
+---------
 
 Okabe, M., Analytical expressions for gravity anomalies due to
 polyhedral bodies and translation into magnetic anomalies, *Geophysics*,
