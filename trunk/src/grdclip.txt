@@ -4,10 +4,12 @@
 grdclip \- Clip the range of grids
 .SH SYNOPSIS
 BD(grdclip) IT(ingrid) OPT(G)IT(outgrid) [ GMT_Rgeo_OPT ] 
-[ OPT(Sa)IT(high/above) ] [ OPT(Sb)IT(low/below) ] [ OPT(Si)IT(low/high/between) ] [ GMT_V_OPT ] 
+[ OPT(Sa)IT(high/above) ] [ OPT(Sb)IT(low/below) ] [ OPT(Si)IT(low/high/between) ] [ OPT(Sr)IT(old/new) ] 
+[ GMT_V_OPT ] 
 .SH DESCRIPTION
 BD(grdclip) will set values < IT(low) to IT(below) and/or values > IT(high) to IT(above).  You
-can also specify one or more intervals where all values should be reset to IT(between). Useful
+can also specify one or more intervals where all values should be reset to IT(between), or individual
+values to replace. Such operations are useful
 when you want all of a continent or an ocean to fall into one color or gray shade in image processing,
 when clipping of the range of data values is required, or for reclassification of data values. 
 IT(above), IT(below) and IT(between) can be any number or NaN (Not a Number).
@@ -33,7 +35,12 @@ Set all data[i] < IT(low) to IT(below).
 .TP
 OPT(Si)IT(low/high/between)
 Set all data[i] >= IT(low) and data[i] <= high to IT(between).  Repeat the option
-for as many intervals as needed.
+for as many intervals as are needed.
+.TP
+OPT(Sr)IT(old/new)
+Set all data[i] == IT(low) to IT(new).  This is mostly useful when
+  your data are known to be integer values.  Repeat the option
+for as many replacements as are needed.
 #include "explain_-V.txt"
 #include "explain_help.txt"
 #include "explain_grd_inout.txt"
@@ -43,9 +50,9 @@ To set all values > 70 to NaN and all values < 0 to 0 in file data.nc:
 grdclip data.nc -Gnew_data.nc -Sa70/NaN -Sb0/0 -V
 .br
 .sp
-To reclassify all values in the 25-30 range to 99, those in 35-39 to 55, and all values < 10 to 0 in file classes.nc, try
+To reclassify all values in the 25-30 range to 99, those in 35-39 to 55, exchange 17 for 11 and all values < 10 to 0 in file classes.nc, try
 .sp
-grdclip classes.nc -Gnew_classes.nc -Si25/30/99 -Si35/39/55 -Sb10/0 -V
+grdclip classes.nc -Gnew_classes.nc -Si25/30/99 -Si35/39/55 -Sr17/11 -Sb10/0 -V
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR grdlandmask (1),
