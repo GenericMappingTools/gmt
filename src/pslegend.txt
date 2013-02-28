@@ -88,6 +88,9 @@ When plotting just a symbol, without text, IT(dx2) and IT(text) can be omitted.
 Two BD(psxy) symbols require special attention: front (BD(f)) and vector (BD(v)).  You must prepend
 the length of the desired item to the rest of the symbol argument; this will be used internally to set the
 correct fault or vector length and will be stripped before passing the arguments to BD(psxy).
+A few other symbols (the rectangles, ellipse, wedge, mathangle) require more than a size. If just a single size if given
+the BD(pslegend) will provide reasonable arguments to plot the symbol.  Alternatively, combine the required
+arguments into a single, comma-separated string and use that as the symbol size.
 .TP
 BD(T) IT(paragraph-text)
 One or more of these BD(T) records with IT(paragraph-text) printed with BD(FONT_ANNOT_PRIMARY).

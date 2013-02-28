@@ -305,6 +305,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	char size[GMT_TEXT_LEN256], angle[GMT_TEXT_LEN256], mapscale[GMT_TEXT_LEN256], font[GMT_TEXT_LEN256], lspace[GMT_TEXT_LEN256];
 	char tw[GMT_TEXT_LEN256], jj[GMT_TEXT_LEN256], sarg[GMT_TEXT_LEN256], txtcolor[GMT_TEXT_LEN256] = {""}, buffer[GMT_BUFSIZ];
 	char bar_cpt[GMT_TEXT_LEN256], bar_gap[GMT_TEXT_LEN256], bar_height[GMT_TEXT_LEN256], bar_opts[GMT_BUFSIZ], *opt = NULL;
+	char A[GMT_TEXT_LEN32], B[GMT_TEXT_LEN32], C[GMT_TEXT_LEN32];
 	char *line = NULL, string[GMTAPI_STRLEN];
 #ifdef GMT_COMPAT
 	char save_EOF;
@@ -315,8 +316,8 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 
 	unsigned char *dummy = NULL;
 
-	double x_orig, y_orig, x_off, x, y, x0, y0, L, off_ss, off_tt, V = 0.0, sdim[3] = {0.0, 0.0, 0.0};
-	double half_line_spacing, quarter_line_spacing, one_line_spacing, y_start = 0.0, d_off, height;
+	double x_orig, y_orig, x_off, x, y, r, x0, y0, L, off_ss, off_tt, V = 0.0, sdim[3] = {0.0, 0.0, 0.0};
+	double half_line_spacing, quarter_line_spacing, one_line_spacing, y_start = 0.0, d_off, height, az1, az2;
 
 	struct imageinfo header;
 	struct PSLEGEND_CTRL *Ctrl = NULL;
@@ -876,45 +877,134 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 								sprintf (sub, "%s/%s", symbol, size);
 							else
 								sprintf (sub, "%s%s", symbol, size);
-							if (symbol[0] == 'E' || symbol[0] == 'e') {	/* Ellipse needs more arguments we use minor = 0.65*major, az = 0 */
-								x = GMT_to_inch (GMT, size);
-								sprintf (sarg, "%g %g 0 %gi %gi", x_off + off_ss, y0, x, 0.65 * x);
+							sprintf (sub, "%s", symbol);
+							if (symbol[0] == 'E' || symbol[0] == 'e') {	/* Ellipse */
+								if (strchr (size, ',')) {	/* We got dir,major,minor instead of just size; parse and use */
+									sscanf (size, "%[^,],%[^,],%s", A, B, C);
+									az1 = atof (A);
+									x = GMT_to_inch (GMT, B);
+									y = GMT_to_inch (GMT, C);
+								}
+								else {	/* Ellipse needs more arguments; we use minor = 0.65*major, az = 0 */
+									x = GMT_to_inch (GMT, size);
+									az1 = 0.0;
+									y = 0.65 * x;
+								}
+								sprintf (sarg, "%g %g %g %gi %gi", x_off + off_ss, y0, az1, x, y);
+							}
+							else if (symbol[0] == 'J' || symbol[0] == 'j') {	/* rotated rectangle */
+								if (strchr (size, ',')) {	/* We got dir,w,h instead of just size; parse and use */
+									sscanf (size, "%[^,],%[^,],%s", A, B, C);
+									x = GMT_to_inch (GMT, B);
+									y = GMT_to_inch (GMT, C);
+									sprintf (sarg, "%g %g %s %gi %gi", x_off + off_ss, y0, A, x, y);
+								}
+								else {	/* Rotated rectangle needs more arguments; we use height = 0.65*width, az = 30 */
+									x = GMT_to_inch (GMT, size);
+									sprintf (sarg, "%g %g 30 %gi %gi", x_off + off_ss, y0, x, 0.65 * x);
+								}
 							}
 							else if (symbol[0] == 'V' || symbol[0] == 'v') {	/* Vector needs a prepended length/ string */
-								i = 0;
-								while (size[i] != '/' && size[i]) i++;
-								if (size[i] != '/') {	/* The necessary arguments not supplied! */
-									sprintf (sub, "v0.15i+jc+e");	/* Somewhat arbitrary default */
-									Return (GMT_RUNTIME_ERROR);
+								if (strchr (size, ',')) {	/* We got dir,length */
+									sscanf (size, "%[^,],%s", A, B);
+									az1 = GMT_to_inch (GMT, A);
+									x = GMT_to_inch (GMT, B);
 								}
 								else {
+									az1 = 0.0;
+									x = GMT_to_inch (GMT, size);
+								}
+#ifdef GMT_COMPAT
+								if (strchr (size, '/'))  {	/* The necessary arguments was supplied via GMT4 size arguments */
+									i = 0;
+									while (size[i] != '/' && size[i]) i++;
 									size[i++] = '\0';	/* So GMT_to_inch won't complain */
 									sprintf (sub, "%s%s+jc+e", symbol, &size[i]);
+								}
+								else
+#endif
+								if (!strchr (symbol, '+'))  {	/* The necessary arguments not supplied! */
+									sprintf (sub, "v%gi+jc+e", 0.15*x);	/* Somewhat arbitrary default */
 								}
 								if (txt_c[0] == '-') strcat (sub, "+g-");
 								else { strcat (sub, "+g"); strcat (sub, txt_c);}
 								if (txt_d[0] == '-') strcat (sub, "+p-");
 								else { strcat (sub, "+p"); strcat (sub, txt_d);}
-								x = GMT_to_inch (GMT, size);
-								sprintf (sarg, "%g %g 0 %gi", x_off + off_ss, y0, x);
+								sprintf (sarg, "%g %g %g %gi", x_off + off_ss, y0, az1, x);
 							}
-							else if (symbol[0] == 'r') {	/* Rectangle also need more args, we use h = 0.65*w */
-								x = GMT_to_inch (GMT, size);
-								sprintf (sarg, "%g %g %gi %gi", x_off + off_ss, y0, x, 0.65*x);
+							else if (symbol[0] == 'r') {	/* Rectangle  */
+								if (strchr (size, ',')) {	/* We got w,h */
+									sscanf (size, "%[^,],%s", A, B);
+									x = GMT_to_inch (GMT, A);
+									y = GMT_to_inch (GMT, B);
+								}
+								else {	/* Rectangle also need more args, we use h = 0.65*w */
+									x = GMT_to_inch (GMT, size);
+									y = 0.65 * x;
+								}
+								sprintf (sarg, "%g %g %gi %gi", x_off + off_ss, y0, x, y);
 							}
-							else if (symbol[0] == 'w') {	/* Wedge also need more args; we set fixed az1,2 as -30 30 */
-								x = GMT_to_inch (GMT, size);
-								sprintf (sarg, "%g %g -30 30", x_off + off_ss -0.25*x, y0);
+							else if (symbol[0] == 'R') {	/* Rounded rectangle  */
+								if (strchr (size, ',')) {	/* We got w,h,r */
+									sscanf (size, "%[^,],%[^,],%s", A, B, C);
+									x = GMT_to_inch (GMT, A);
+									y = GMT_to_inch (GMT, B);
+									r = GMT_to_inch (GMT, C);
+								}
+								else {	/* Rounded rectangle also need more args, we use h = 0.65*w and r = 0.1*w */
+									x = GMT_to_inch (GMT, size);
+									y = 0.65 * x;
+									r = 0.1 * x;
+								}
+								sprintf (sarg, "%g %g %gi %gi %gi", x_off + off_ss, y0, x, y, r);
 							}
-							else
-								sprintf (sarg, "%g %g", x_off + off_ss, y0);
+							else if (symbol[0] == 'm') {	/* Math angle  */
+								if (strchr (size, ',')) {	/* We got r,az1,az2 */
+									sscanf (size, "%[^,],%[^,],%s", A, B, C);
+									x = GMT_to_inch (GMT, A);
+									az1 = atof (B);
+									az2 = atof (C);
+								}
+								else {	/* Math angle need more args, we set fixed az1,az22 as 10 45 */
+									x = GMT_to_inch (GMT, size);
+									az1 = 10;	az2 = 45;
+								}
+								sprintf (sarg, "%g %g %gi %g %g", x_off + off_ss -0.25*x, y0, x, az1, az2);
+								if (!strchr (symbol, '+'))  {	/* The necessary arguments not supplied! */
+									sprintf (sub, "m%gi+b+e", 0.2*x);	/* Somewhat arbitrary default */
+								}
+								if (txt_c[0] == '-') strcat (sub, "+g-");
+								else { strcat (sub, "+g"); strcat (sub, txt_c);}
+								if (txt_d[0] == '-') strcat (sub, "+p-");
+								else { strcat (sub, "+p"); strcat (sub, txt_d);}
+							}
+							else if (symbol[0] == 'w') {	/* Wedge also need more args; we set fixed az1,az2 as -30 30 */
+								if (strchr (size, ',')) {	/* We got az1,az2,d */
+									sscanf (size, "%[^,],%[^,],%s", A, B, C);
+									az1 = atof (A);
+									az2 = atof (B);
+									x = GMT_to_inch (GMT, C);
+								}
+								else {
+									x = GMT_to_inch (GMT, size);
+									az1 = -30;	az2 = 30;
+								}
+								sprintf (sarg, "%g %g %gi %g %g", x_off + off_ss -0.25*x, y0, x, az1, az2);
+							}
+							else {
+								x = GMT_to_inch (GMT, size);
+								sprintf (sarg, "%g %g %gi", x_off + off_ss, y0, x);
+							}
 							/* Place pen and fill colors in segment header */
 							sprintf (buffer, ">");
 							strcat (buffer, " -G"); strcat (buffer, txt_c);
 							strcat (buffer, " -W"); strcat (buffer, txt_d);
 							S[SYM]->record[S[SYM]->n_rows++] = strdup (buffer);
+							fprintf (stderr, "%s\n", buffer);
 							if (S[SYM]->n_rows == S[SYM]->n_alloc) S[SYM]->record = GMT_memory (GMT, S[SYM]->record, S[SYM]->n_alloc += GMT_SMALL_CHUNK, char *);
 							sprintf (buffer, "%s %s", sarg, sub);
+							fprintf (stderr, "%s\n", buffer);
+							
 							S[SYM]->record[S[SYM]->n_rows++] = strdup (buffer);
 							if (S[SYM]->n_rows == S[SYM]->n_alloc) S[SYM]->record = GMT_memory (GMT, S[SYM]->record, S[SYM]->n_alloc += GMT_SMALL_CHUNK, char *);
 						}
