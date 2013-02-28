@@ -5,8 +5,8 @@ gravfft
 gravfft - Compute gravitational attraction of 3-D surfaces in the
 wavenumber (or frequency) domain
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 **gravfft** *ingrid* [*ingrid2*\ ] **-G**\ *outfile*
 [-C<n/wavelength/mean\_depth/tbw>] [**-A**\ *z\_offset*] [-D<density>]
@@ -15,15 +15,15 @@ wavenumber (or frequency) domain
 [-Q] [-T<te/rl/rm/rw>[+m]] [**-V**\ [*level*\ ]] [-Z<zm>[/<zl>]]
 [**-f**\ [**i**\ \|\ **o**]\ *colinfo*]
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **gravfft** can be used into two main modes. First one computes the
 gravity/geoid response of a bathymetry file. It will take the 2-D
-forward FFT of a bathymetry grid and compute it’s gravity/geoid response
-using full Parker’s method applied to the chosen model. The available
+forward FFT of a bathymetry grid and compute it's gravity/geoid response
+using full Parker's method applied to the chosen model. The available
 models are the “loading from top”, or elastic plate model, and the
-“loading from below” which accounts for the plate’s response to a
+“loading from below” which accounts for the plate's response to a
 sub-surface load (appropriate for hot spot modeling - if you believe
 them). In both cases, the model parameters are set with **-T** and
 **-Z** options. Second mode computes the admittance or coherence between
@@ -39,8 +39,8 @@ are doing.
 
 .. include:: ../../explain_commonitems.rst_
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *ingrid*
     2-D binary grid file to be operated on. (See GRID FILE FORMATS
@@ -50,8 +50,8 @@ are doing.
     Specify the name of the output grid file or the 1-D spectrum table
     (see **-E**). (See GRID FILE FORMATS below).
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-C**\ *<n/wavelength/mean\_depth/tbw>*
     Compute only the theoretical admittance curves of the selected model
@@ -119,12 +119,11 @@ are doing.
     intermediate grid being passed to the forward FFT; this is likely to
     have been detrended, extended by point-symmetry along all edges, and
     tapered. Append **+w**\ [*suffix*\ ] from which output file name(s)
-    will be created (i.e.,
-    `*ingrid*\ \_IT(prefix) <ingrid_IT.prefix.html>`_ .\ *ext*)
+    will be created (i.e., *ingrid_prefix.ext*)
     [tapered], where *ext* is your file extension. Finally, you may save
     the complex grid produced by the forward FFT by appending **+z**. By
     default we write the real and imaginary components to
-    *ingrid*\ \_IT(real).\ *ext* and *ingrid*\ \_imag.\ *ext*. Append
+    *ingrid*\ \_real.\ *ext* and *ingrid*\ \_imag.\ *ext*. Append
     **p** to save instead the polar form of magnitude and phase to files
     *ingrid*\ \_mag.\ *ext* and *ingrid*\ \_phase.\ *ext*.
 **-Q**
@@ -150,8 +149,8 @@ are doing.
 
 .. include:: ../../explain_grd_inout.rst_
 
-`Considerations <#toc7>`_
--------------------------
+Considerations
+--------------
 
 netCDF COARDS grids will automatically be recognized as geographic. For
 other grids geographical grids were you want to convert degrees into
@@ -159,8 +158,8 @@ meters, select **-fg**. If the data are close to either pole, you should
 consider projecting the grid file onto a rectangular coordinate system
 using **grdproject**.
 
-`Examples <#toc8>`_
--------------------
+Examples
+--------
 
 To compute the effect of the water layer above the bat.grd bathymetry
 using 2700 and 1035 for the densities of crust and water and writing the
@@ -174,7 +173,7 @@ Bouguer anomaly. You may wonder why we are subtracting and not adding.
 After all the Bouger anomaly pretends to correct the mass deficiency
 presented by the water layer, so we should add because water is less
 dense than the rocks below. The answer relyies on the way gravity
-effects are computed by the Parker’s method and practical aspects of
+effects are computed by the Parker's method and practical aspects of
 using the FFT.
 
 grdmath faa.grd water\_g.grd SUB = bouguer.grd
@@ -185,7 +184,7 @@ it to the sea-bottom anomaly. Assuming a 6 km thick crust of density
 compute the water layer anomaly, using 600 (3300 - 2700) as the density
 contrast. But we now have a problem because we need to know the mean
 moho depth. That is when **-A** option comes in hand. Notice that we
-didn’t need to do that before because mean water depth was computed
+didn't need to do that before because mean water depth was computed
 directly from data. (notice also the negative sign of the argument to
 **-A**, remember z positive up):
 
@@ -246,16 +245,16 @@ long profile using the same parameters as above
 
 gravfft -C400/5000/3000/b -T10000/2700/3300/1035 -Z9000/40000
 
-`References <#toc9>`_
----------------------
+References
+----------
 
 Luis, J.F. and M.C. Neves. 2006, "The isostatic compensation of the
 Azores Plateau: a 3D admittance and coherence analysis. J. Geotermal
 Vulc. Res. Volume 156, Issues 1-2, Pages 10-22,
 `http://dx.doi.org/10.1016/j.jvolgeores.2006.03.010 <http://dx.doi.org/10.1016/j.jvolgeores.2006.03.010>`_
 
-`See Also <#toc10>`_
---------------------
+See Also
+--------
 
 `gmt <../../gmt.html>`_ , `grdfft <../../grdfft.html>`_ ,
 `grdmath <../../grdmath.html>`_ , `grdproject <../../grdproject.html>`_
