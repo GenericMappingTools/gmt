@@ -36,13 +36,13 @@ areas.
 
 .. include:: explain_-I.rst_
 
-.. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
+.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-Rgeo.rst_
 
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-.. |Add_-A| unicode:: 0x0C .. just an invisible code
+.. |Add_-A| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-A.rst_
 
 **-D**\ *resolution*\ [**+**\ ]
@@ -66,10 +66,10 @@ areas.
 
     [Default is 0/1/0/1/0 (i.e., 0/1)]. 
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-.. |Add_nodereg| unicode:: 0x0C .. just an invisible code
+.. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
 
 .. include:: explain_help.rst_

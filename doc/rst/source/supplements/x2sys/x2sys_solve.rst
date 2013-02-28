@@ -70,7 +70,7 @@ the time.
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
 **-W**
@@ -79,7 +79,7 @@ the time.
     weighted least squares solution [no weights]. Append ’u’ to report
     unweighted mean/std [Default, report weighted stats].
 
-.. |Add_-bi| unicode:: 0x0C .. just an invisible code
+.. |Add_-bi| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-bi.rst_
 
 .. include:: ../../explain_help.rst_

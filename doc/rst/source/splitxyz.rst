@@ -102,7 +102,7 @@ ASCII format; input may be ASCII or binary (see
     distances are Cartesian in same units as x,y and angles are
     counter-clockwise from horizontal].
     
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 **-Z**
@@ -114,13 +114,13 @@ ASCII format; input may be ASCII or binary (see
 .. |Add_-bo| replace:: [Default is 1-5 output columns as set by **-Q**]. 
 .. include:: explain_-bo.rst_
 
-.. |Add_-f| unicode:: 0x0C .. just an invisible code
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
 **-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
     Do not let a segment have a gap exceeding *gap*; instead, split it into two segments. [Default ignores gaps]. 
 
-.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_

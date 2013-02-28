@@ -72,7 +72,7 @@ order Taylor series expansion.
 **-Z**\ *filter\_grd*
     Write the filter file on disk.
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
 `Examples <#toc6>`_

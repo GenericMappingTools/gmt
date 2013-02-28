@@ -54,10 +54,10 @@ respectively. The *PostScript* code is written to standard output.
 
 .. include:: explain_-J.rst_
 
-.. |Add_-R| unicode:: 0x0C .. just an invisible code
+.. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
-.. |Add_-Rz| unicode:: 0x0C .. just an invisible code
+.. |Add_-Rz| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-Rz.rst_
 
 `Optional Arguments <#toc5>`_
@@ -158,7 +158,7 @@ which are always clipped to the map region.
 
 .. include:: explain_-U.rst_
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 **-W**\ [**-**\ \|\ **+**][*pen*\ ]
@@ -177,20 +177,20 @@ which are always clipped to the map region.
 
 .. include:: explain_-c.rst_
 
-.. |Add_-f| unicode:: 0x0C .. just an invisible code
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
 .. |Add_-g| replace:: The **-g** option is ignored if **-S** is set. 
 .. include:: explain_-g.rst_
 
-.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_
 
 .. include:: explain_colon.rst_
 
-.. |Add_perspective| unicode:: 0x0C .. just an invisible code
+.. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: explain_perspective.rst_
 
 .. include:: explain_-t.rst_

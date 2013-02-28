@@ -94,7 +94,7 @@ radius, crustal\_age) files.
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-.. |Add_intables| unicode:: 0x0C .. just an invisible code
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
 
 **-D**\ *d\_km*
@@ -116,7 +116,7 @@ radius, crustal\_age) files.
 **-T**
     Truncate seamount ages exceeding the upper age set with **-N** [no truncation].
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
 **-W**\ *maxdist*
@@ -128,7 +128,7 @@ radius, crustal\_age) files.
 .. |Add_-bi| replace:: [Default is 5 input columns].
 .. include:: ../../explain_-bi.rst_
 
-.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_../../explain_-V.rst_
 
 .. include:: ../../explain_-icols.rst_

@@ -103,7 +103,7 @@ ASCII unless **-bo**\ [*ncols*\ ][*type*\ ] is set) are as follows:
     [Default = "spectrum"]. To place all the computed output columns in
     a single table, use **-N+**. 
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 **-W**
@@ -116,13 +116,13 @@ ASCII unless **-bo**\ [*ncols*\ ][*type*\ ] is set) are as follows:
 .. |Add_-bo| replace:: [Default is 2 output columns]. 
 .. include:: explain_-bo.rst_
 
-.. |Add_-f| unicode:: 0x0C .. just an invisible code
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
-.. |Add_-g| unicode:: 0x0C .. just an invisible code
+.. |Add_-g| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-g.rst_
 
-.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_

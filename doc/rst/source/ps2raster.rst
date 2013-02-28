@@ -106,7 +106,7 @@ recognized as geotiff.
     PDF file from the list of input PS or PDF files. It requires **-F**
     option. 
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 **-W**\ [**+g**\ ][\ **+t**\ *docname*][\ **+n**\ *layername*][\ **+o**\ *foldername*][\ **+a**\ *altmode*\ [*alt*\ ]][\ **+l**\ *minLOD/maxLOD*][\ **+f**\ *minfade/maxfade*][\ **+u**\ *URL*]

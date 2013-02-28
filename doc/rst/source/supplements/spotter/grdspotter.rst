@@ -63,7 +63,7 @@ give a Cumulative Volcano Amplitude grid (CVA).
 
 .. include:: ../../explain_-I.rst_
 
-.. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
+.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
 
 `Optional Arguments <#toc5>`_
@@ -116,7 +116,7 @@ give a Cumulative Volcano Amplitude grid (CVA).
     use this *fixed\_val* instead in the calculations. [Default uses
     individual node values].
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
 **-Z**\ *z\_min*\ [/*z\_max*\ [/*z\_inc*]]
@@ -125,7 +125,7 @@ give a Cumulative Volcano Amplitude grid (CVA).
     separate CVA grids for each *z*-slice [Default makes one CVA grid].
     Multi-slicing cannot be used with **-M**.
 
-.. |Add_nodereg| unicode:: 0x0C .. just an invisible code
+.. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_nodereg.rst_
 
 .. include:: ../../explain_help.rst_

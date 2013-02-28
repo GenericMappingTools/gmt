@@ -49,7 +49,7 @@ histogram. A cumulative histogram may also be specified.
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-.. |Add_intables| unicode:: 0x0C .. just an invisible code
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
 **-A**
@@ -85,7 +85,7 @@ histogram. A cumulative histogram may also be specified.
 **-Q**
     Draw a cumulative histogram. 
 
-.. |Add_-R| unicode:: 0x0C .. just an invisible code
+.. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
 .. |Add_-Rz| replace:: If not given, **pshistogram** will automatically find reasonable values for the region.
@@ -97,7 +97,7 @@ histogram. A cumulative histogram may also be specified.
 
 .. include:: explain_-U.rst_
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 .. include:: explain_-XY.rst_
@@ -113,15 +113,15 @@ histogram. A cumulative histogram may also be specified.
 
 .. include:: explain_-c.rst_
 
-.. |Add_-f| unicode:: 0x0C .. just an invisible code
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
-.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_
 
-.. |Add_perspective| unicode:: 0x0C .. just an invisible code
+.. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: explain_perspective.rst_
 
 .. include:: explain_-t.rst_

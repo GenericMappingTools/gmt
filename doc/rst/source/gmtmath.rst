@@ -96,22 +96,22 @@ for future use or stored and recalled via named memory locations.
     implies **-Ca**. Alternatively, give the name of a file whose first
     column contains the desired t-coordinates which may be irregular. 
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-.. |Add_-bi| unicode:: 0x0C .. just an invisible code
+.. |Add_-bi| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-bi.rst_
 
 .. |Add_-bo| replace:: [Default is same as input, but see **-o**] 
 .. include:: explain_-bo.rst_
 
-.. |Add_-f| unicode:: 0x0C .. just an invisible code
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
-.. |Add_-g| unicode:: 0x0C .. just an invisible code
+.. |Add_-g| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-g.rst_
 
-.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_

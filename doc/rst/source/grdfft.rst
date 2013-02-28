@@ -117,7 +117,7 @@ to meters using **grdedit** or scale the output with **grdmath**.
     Multiply each element by *scale* in the space domain (after the
     frequency domain operations). [Default is 1.0]. 
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 .. include:: explain_help.rst_

@@ -69,7 +69,7 @@ additional data fields after the first 3 columns which must have
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-.. |Add_intables| unicode:: 0x0C .. just an invisible code
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
 
 **-A**\ [*young*/*old*]
@@ -115,7 +115,7 @@ additional data fields after the first 3 columns which must have
 **-T**\ *zero\_age*
     Set the current time [Default is 0 Ma].
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
 **-W**\ [**a**\ \|\ **t**]
@@ -134,7 +134,7 @@ additional data fields after the first 3 columns which must have
 .. |Add_-bo| replace:: [Default is same as input].
 .. include:: ../../explain_-bo.rst_
 
-.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_
 
 .. include:: ../../explain_-icols.rst_

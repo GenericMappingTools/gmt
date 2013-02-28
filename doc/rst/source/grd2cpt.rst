@@ -109,7 +109,7 @@ line will be used.
     writes out z [Default]. **-Qo** takes log10(z) first, assigns
     colors, and writes out z. 
 
-.. |Add_-R| unicode:: 0x0C .. just an invisible code
+.. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
 **-S**\ *zstart/zstop/zinc* or **-S**\ *n*

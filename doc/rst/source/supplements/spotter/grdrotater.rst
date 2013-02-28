@@ -78,7 +78,7 @@ rotated region is not the entire globe.
 **-N**
     Do Not output the rotated polygon outline [Default will write it to stdout].
 
-.. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
+.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
 
 **-S**
@@ -87,7 +87,7 @@ rotated region is not the entire globe.
 **-T**\ *age*
     Sets the desired age of reconstruction when **-E** is given.
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
@@ -96,7 +96,7 @@ rotated region is not the entire globe.
 .. |Add_-bo| replace:: [Default is same as input].
 .. include:: ../../explain_-bo.rst_
 
-.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_
 
 .. include:: ../../explain_colon.rst_

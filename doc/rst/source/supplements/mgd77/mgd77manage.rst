@@ -184,7 +184,7 @@ issues, see the DISCUSSION section below.
 .. |Add_-R| replace:: Only relevant when **-Ag**\ \|\ **i** is selected. 
 .. include:: ../../explain_-R.rst_
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
     
 .. |Add_-bi| replace:: 

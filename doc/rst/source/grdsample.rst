@@ -49,22 +49,14 @@ have the same registration as the input grid.
 
 .. include:: explain_-I.rst_
 
-.. |Add_-R| unicode:: 0x0C .. just an invisible code
+.. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
 **-T**
     Translate between grid and pixel registration; if the input is
     grid-registered, the output will be pixel-registered and vice-versa.
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
-.. include:: explain_-V.rst_
-
-.. |Add_-f| unicode:: 0x0C .. just an invisible code
-.. include:: explain_-f.rst_
-
-.. include:: explain_-n.rst_
-
-.. |Add_nodereg| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
 
 .. include:: explain_help.rst_

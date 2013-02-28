@@ -94,7 +94,7 @@ extract corrected data values for use in subsequent work.
     statistics on those COE that fall inside the specified domain.
 .. include:: ../../explain_-Rgeo.rst_
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
 **-Wt**\ \|\ **d**\ *gap*

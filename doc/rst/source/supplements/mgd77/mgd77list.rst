@@ -379,7 +379,7 @@ are requested then they are separated by segment headers.
     upper limit) of velocities. Records whose track speed falls outside
     this range are ignored [0/infinity]. 
 
-.. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
+.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
 
 **-Sa**\ *startdist*\ [unit]
@@ -401,7 +401,7 @@ are requested then they are separated by segment headers.
     Append **m** or **e** to limit the option to the MGD77 or extended
     columns set only [Default applies to both]. 
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
 **-W**\ *weight*

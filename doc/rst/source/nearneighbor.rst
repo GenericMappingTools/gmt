@@ -51,7 +51,7 @@ supplied].
     only the nearest value per sector enters into the averaging, not all
     values inside the circle. 
 
-.. |Add_-R| unicode:: 0x0C .. just an invisible code
+.. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
 **-S**\ *search\_radius*\ [*unit*]
@@ -69,7 +69,7 @@ supplied].
 **-E**\ *empty*
     Set the value assigned to empty nodes [NaN]. 
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 **-W**
@@ -80,10 +80,10 @@ supplied].
 .. |Add_-bi| replace:: [Default is 3 (or 4 if **-W** is set) columns]. 
 .. include:: explain_-bi.rst_
 
-.. |Add_-f| unicode:: 0x0C .. just an invisible code
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
-.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_
@@ -95,7 +95,7 @@ supplied].
     or **y** to specify just one direction, otherwise both are assumed.
     [Default is geographic if grid is geographic]. 
 
-.. |Add_nodereg| unicode:: 0x0C .. just an invisible code
+.. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
 
 .. include:: explain_colon.rst_

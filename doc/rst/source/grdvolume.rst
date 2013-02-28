@@ -56,10 +56,10 @@ in designing an Optimal Robust Separator [*Wessel*, 1998].
     versus contour value rather than the contour with the maximum height
     to pick the best contour value (requires **-C**). 
 
-.. |Add_-R| unicode:: 0x0C .. just an invisible code
+.. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 **-Z**\ *fact*\ [/*shift*]
@@ -67,7 +67,7 @@ in designing an Optimal Robust Separator [*Wessel*, 1998].
     is no scaling]. (Numbers in **-C**, **-L** refer to values after
     this scaling has occurred). 
 
-.. |Add_-f| unicode:: 0x0C .. just an invisible code
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
 .. include:: explain_-ocols.rst_

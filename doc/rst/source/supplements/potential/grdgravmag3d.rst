@@ -36,13 +36,13 @@ allows computing the anomaly of arbitrarily complex shapes.
 **-G**\ *outgrid.nc*
     Output the gravity anomaly at nodes of this grid file.
 
-.. |Add_-R| unicode:: 0x0C .. just an invisible code
+.. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-R.rst_
 
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
 **-L**
@@ -54,7 +54,7 @@ allows computing the anomaly of arbitrarily complex shapes.
     from each triangle and this reference level. An example will be the
     whater depth to compute a Bouguer anomaly.
 
-.. |Add_-f| unicode:: 0x0C .. just an invisible code
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-f.rst_
 
 .. include:: ../../explain_help.rst_

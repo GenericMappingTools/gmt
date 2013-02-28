@@ -142,7 +142,7 @@ Optional Arguments
     top” model you only have to provide *zm*, but for the “loading from
     below” don't forget *zl*.
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
 .. include:: ../../explain_help.rst_

@@ -102,7 +102,7 @@ arguments. The output may be ASCII or binary.
     crossovers involving this track [Default output is crossovers
     involving any track pair].
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
 **-W**\ [*list*\ ]
@@ -111,7 +111,7 @@ arguments. The output may be ASCII or binary.
     composite crossover weight (output code **w** above). [Default sets
     weights to 1].
 
-.. |Add_-bo| unicode:: 0x0C .. just an invisible code
+.. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-bo.rst_
 
 .. include:: ../../explain_help.rst_

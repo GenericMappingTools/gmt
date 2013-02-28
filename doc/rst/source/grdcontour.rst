@@ -116,7 +116,7 @@ left (**-Fl** [Default]) or right (**-Fr**) as we move along the contour
 **-Q**\ *cut*
     Do not draw contours with less than *cut* number of points [Draw all contours]. 
 
-.. |Add_-R| unicode:: 0x0C .. just an invisible code
+.. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
 .. |Add_-Rz| replace:: [Default is region defined in the grid file].
@@ -142,7 +142,7 @@ left (**-Fl** [Default]) or right (**-Fr**) as we move along the contour
 
 .. include:: explain_-U.rst_
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 **-W**\ [**+**\ ][*type*\ ]\ *pen*
@@ -165,18 +165,18 @@ left (**-Fl** [Default]) or right (**-Fr**) as we move along the contour
     and that special precautions must be taken when determining
     0-contours. 
 
-.. |Add_-bo| unicode:: 0x0C .. just an invisible code
+.. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-bo.rst_
 
 .. include:: explain_-c.rst_
 
-.. |Add_-f| unicode:: 0x0C .. just an invisible code
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
-.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
-.. |Add_perspective| unicode:: 0x0C .. just an invisible code
+.. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: explain_perspective.rst_
 
 .. include:: explain_-t.rst_

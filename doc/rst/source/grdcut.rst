@@ -46,7 +46,7 @@ will join together two grid files along a common edge.
     nodes on or inside the circle are contained in the subset. If
     **-Sn** is used we set all nodes outside the circle to NaN. 
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 **-Z**\ [**n**\ ]\ *min/max*]
@@ -56,7 +56,7 @@ will join together two grid files along a common edge.
     encountered are simply skipped. Use **-Zn** to consider a NaN to be
     outside the *z*-range. 
 
-.. |Add_-f| unicode:: 0x0C .. just an invisible code
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
 .. include:: explain_help.rst_

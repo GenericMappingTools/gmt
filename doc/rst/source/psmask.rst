@@ -53,16 +53,16 @@ second call to **psmask** using the **-C** option.
 
 .. include:: explain_-J.rst_
 
-.. |Add_-R| unicode:: 0x0C .. just an invisible code
+.. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
-.. |Add_-Rz| unicode:: 0x0C .. just an invisible code
+.. |Add_-Rz| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-Rz.rst_
 
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-.. |Add_intables| unicode:: 0x0C .. just an invisible code
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
 .. include:: explain_-B.rst_
@@ -81,7 +81,7 @@ second call to **psmask** using the **-C** option.
     **-bo**\ [*ncols*\ ][*type*\ ] is used. See **-Q** to exclude small
     polygons from consideration. 
 
-.. |Add_perspective| unicode:: 0x0C .. just an invisible code
+.. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: explain_perspective.rst_
 
 **-G**\ *fill*
@@ -112,7 +112,7 @@ second call to **psmask** using the **-C** option.
 
 .. include:: explain_-U.rst_
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 .. include:: explain_-XY.rst_
@@ -129,7 +129,7 @@ second call to **psmask** using the **-C** option.
 
 .. include:: explain_perspective.rst_
 
-.. |Add_nodereg| unicode:: 0x0C .. just an invisible code
+.. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
 
 .. include:: explain_-t.rst_

@@ -37,12 +37,12 @@ Most options are the same as for **psxy**, except **-S**. The
 `Required Arguments <#toc4>`_
 -----------------------------
 
-.. |Add_intables| unicode:: 0x0C .. just an invisible code
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
 
 .. include:: ../../explain_-J.rst_
 
-.. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
+.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
 
 **-S**
@@ -188,7 +188,7 @@ are expected to be in the following columns:
 .. include:: ../../explain_-P.rst_
 .. include:: ../../explain_-U.rst_
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
 **-W**
@@ -197,7 +197,7 @@ are expected to be in the following columns:
 
 .. include:: ../../explain_-XY.rst_
 .. include:: ../../explain_-c.rst_
-.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_
 
 .. include:: ../../explain_-icols.rst_

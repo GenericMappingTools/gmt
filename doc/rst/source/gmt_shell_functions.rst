@@ -79,10 +79,10 @@ functions made available are:
     double quotes to preserve it as one item.
 **gmt\_get\_region**
     Returns the region in the form w/e/s/n based on the data in table
-    *file(s)*. Optionally add -IIT(dx)/\ *dy* to round off the answer.
+    *file(s)*. Optionally add -I*dx*/\ *dy* to round off the answer.
 **gmt\_get\_gridregion**
     Returns the region in the form w/e/s/n based on the header of a grid
-    *file*. Optionally add -IIT(dx)/\ *dy* to round off the answer.
+    *file*. Optionally add -I*dx*/\ *dy* to round off the answer.
 **gmt\_map\_width**
     Expects the user to give the desired **-R** **-J** settings and
     returns the map width in the current measurement unit.

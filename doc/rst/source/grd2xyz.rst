@@ -51,7 +51,7 @@ output z-values without the (x,y) coordinates; see **-Z** below.
     boundaries of the grid, only the common region will be output. 
 .. include:: explain_-R.rst_
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 ..  include:: explain_-V.rst_
 
 **-W**\ [*weight*\ ]
