@@ -415,7 +415,9 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT,"\t   Optionaly, append +m to write a grid with the Moho's geopotential effect\n");
 	GMT_message (GMT,"\t   (see -F) from model selected by -T.\n");
 	GMT_message (GMT,"\t-Z Specify Moho [and swell] average compensation depths.\n");
-	GMT_explain_options (GMT, "Vf.");
+	GMT_explain_options (GMT, "V");
+	GMT_message (GMT, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
+	GMT_explain_options (GMT, ".");
 	return (EXIT_FAILURE);
 }
 

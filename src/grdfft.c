@@ -577,7 +577,7 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "usage: grdfft <ingrid> [<ingrid2>] [-G<outgrid>|<table>] [-A<azimuth>] [-C<zlevel>]\n");
 	GMT_message (GMT, "\t[-D[<scale>|g]] [-E[r|x|y][w[k]] [-F[r|x|y]<parameters>] [-I[<scale>|g]] [-L[m|h]]\n");
 	GMT_message (GMT, "\t[-N%s] [-S<scale>]\n", GMT_FFT_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [-ho]\n\n", GMT_V_OPT, GMT_f_OPT);
+	GMT_message (GMT, "\t[%s] [-fg] [-ho]\n\n", GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -615,7 +615,8 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   and densities of load, mantle, water, and infill, all in SI units.\n");
 	GMT_message (GMT, "\t   It also implicitly sets -L.\n");
 #endif
-	GMT_explain_options (GMT, "Vf");
+	GMT_explain_options (GMT, "V");
+	GMT_message (GMT, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
 	GMT_message (GMT, "\t-ho Write header record for spectral estimates (requires -E) [no header].\n");
 	GMT_explain_options (GMT, ".");
 	GMT_message (GMT, "\tList operations in the order desired for execution.\n");

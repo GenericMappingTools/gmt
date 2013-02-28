@@ -13,7 +13,7 @@ Synopsis
 [-E<n\_terms>] [-F[f\|g\|v\|n\|e]] [-I<wbctk>] [-L[m\|h\|n]]
 [**-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][\ **+e**\ \|\ **n**\ \|\ **m**][\ **+t**\ *width*][\ **+w**\ [*suffix*\ ]][\ **+z**\ [**p**\ ]]]
 [-Q] [-T<te/rl/rm/rw>[+m]] [**-V**\ [*level*\ ]] [-Z<zm>[/<zl>]]
-[**-f**\ [**i**\ \|\ **o**]\ *colinfo*]
+[**-fg**\ ]
 
 Description
 -----------
@@ -145,12 +145,22 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
+**-fg**
+   Geographic grids (dimensions of longitude, latitude) will be converted to
+   meters via a "Flat Earth" approximation using the current ellipsoid parameters.
+
 .. include:: ../../explain_help.rst_
 
 .. include:: ../../explain_grd_inout.rst_
 
-Considerations
---------------
+`Grid Distance Units <#toc7>`_
+-------------------------
+
+If the grid does not have meter as the horizontal unit, append **+u**\ *unit* to the input file name to convert from the
+specified unit to meter.  If your grid is geographic, convert distances to meters by supplying **-fg** instead.
+
+`Considerations <#toc8>`_
+-------------------------
 
 netCDF COARDS grids will automatically be recognized as geographic. For
 other grids geographical grids were you want to convert degrees into
@@ -158,8 +168,8 @@ meters, select **-fg**. If the data are close to either pole, you should
 consider projecting the grid file onto a rectangular coordinate system
 using **grdproject**.
 
-Examples
---------
+`Examples <#toc9>`_
+-------------------
 
 To compute the effect of the water layer above the bat.grd bathymetry
 using 2700 and 1035 for the densities of crust and water and writing the
@@ -245,16 +255,16 @@ long profile using the same parameters as above
 
 gravfft -C400/5000/3000/b -T10000/2700/3300/1035 -Z9000/40000
 
-References
-----------
+`References <#toc10>`_
+---------------------
 
 Luis, J.F. and M.C. Neves. 2006, "The isostatic compensation of the
 Azores Plateau: a 3D admittance and coherence analysis. J. Geotermal
 Vulc. Res. Volume 156, Issues 1-2, Pages 10-22,
 `http://dx.doi.org/10.1016/j.jvolgeores.2006.03.010 <http://dx.doi.org/10.1016/j.jvolgeores.2006.03.010>`_
 
-See Also
---------
+`See Also <#toc11>`_
+--------------------
 
 `gmt <../../gmt.html>`_ , `grdfft <../../grdfft.html>`_ ,
 `grdmath <../../grdmath.html>`_ , `grdproject <../../grdproject.html>`_

@@ -6,7 +6,7 @@ grdfft \- Do mathematical operations on grids in the wavenumber (or frequency) d
 BD(grdfft) IT(ingrid) [ IT(ingrid2) ] OPT(G)IT(outfile) [ OPT(A)IT(azimuth) ] 
 [ OPT(C)IT(zlevel) ] [ OPT(D)[IT(scale)|BD(g)] ] [ OPT(E)[BD(r)|BD(x)|BD(y)][BD(w)[BD(k)]] ] 
 [ OPT(F)[BD(r)|BD(x)|BD(y)]IT(params) ] [ OPT(I)[IT(scale)|BD(g)] ] [ OPT(L)[BD(h)|BD(m)] ] 
-[ OPT(N)[GMT_FFT_OPT] ] [ OPT(S)IT(scale) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
+[ OPT(N)[GMT_FFT_OPT] ] [ OPT(S)IT(scale) ] [ GMT_V_OPT ] [ OPT(fg) ]
 .SH DESCRIPTION
 BD(grdfft) will take the 2-D forward Fast Fourier Transform and perform one or more mathematical
 operations in the frequency domain before transforming back to the space domain.  An option
@@ -81,9 +81,16 @@ Alternatively, append BD(m) to just remove the mean value or BD(h) to remove the
 OPT(S)IT(scale)
 Multiply each element by IT(scale) in the space domain (after the frequency domain operations).
 [Default is 1.0].
-#include "explain_-V.txt" 
+#include "explain_-V.txt"
+.TP
+OPT(fg)
+Geographic grids (dimensions of longitude, latitude) will be converted to meters via a "Flat Earth" approximation
+using the current ellipsoid parameters.
 #include "explain_help.txt"
 #include "explain_grd_inout.txt"
+.SH GRID DISTANCE UNITS
+If the grid does not have meter as the horizontal unit, supply BD(+u)IT(unit) to the input file name to convert from the
+specified unit to meter.  If your grid is geographic, convert distances to meters by supplying OPT(fg) instead.
 .SH CONSIDERATIONS
 netCDF COARDS grids will automatically be recognized as geographic. For other grids geographical grids
 were you want to convert degrees into meters, select OPT(fg).  If the data are close to either pole,

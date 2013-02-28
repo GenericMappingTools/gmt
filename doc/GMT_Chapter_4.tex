@@ -344,7 +344,8 @@ parallels are rectilinear.
 \item \Opt{R}\emph{xlleft}/\emph{ylleft}/\emph{xuright}/\emph{yuright}\textbf{r}.
 This form is used with map projections that are oblique, making meridians and parallels poor
 choices for map boundaries.  Here, we instead specify the lower left corner and upper right
-corner geographic coordinates, followed by the suffix \textbf{r}.
+corner geographic coordinates, followed by the suffix \textbf{r}.  This form guarantees a rectangular
+map even though lines of equal longitude and latitude are not straight lines.
 \item \Opt{R}\emph{gridfile}.  This will copy the domain settings found for the grid in specified
 file.  Note that depending on the nature of the calling program, this mechanism will also set grid spacing
 and possibly the grid registration (see Section~\ref{sec:grid_registration}).
@@ -1937,7 +1938,7 @@ you will normally have to append \emph{=ID} to the filename if you want \GMT\ to
 than the default.
 
 By default, \GMT\ will create new grid files using the \textbf{nf} format; however,
-this behavior can be overridden by setting the \textbf{GRID\_FORMAT} defaults parameter
+this behavior can be overridden by setting the \textbf{IO|_GRIDFILE\_FORMAT} defaults parameter
 to any of the other recognized values (or by appending \emph{=ID}).
 
 \GMT\ can also read netCDF grid files produced by other software packages, provided the grid files
@@ -2101,6 +2102,29 @@ file intended for masking, i.e., the nodes are either 1 or NaN,
 the bit or mask format file may be as small as 1/32 the size of the
 corresponding grid float format file.
 \index{grid file!formats|)}
+
+\section{Options to change grid coordinates}
+\index{grid file!coordinates}
+\label{sec:grdcoordinates}
+
+A few \GMT\ tools require that the two horizontal dimensions be specified in meters.  One
+example is \GMTprog{grdfft} which must compute the 2-D Fourier transform of a grid and evaluate
+wavenumbers in the proper units (1/meter).  There are two situations where the user may need
+to change the coordinates of the grid passed to such programs:
+\begin{itemize}
+	\item You have a geographic grid (i.e., in longitude and latitude).  Simply supply the
+	      \Opt{fg} option and your grid coordinates will automatically be converted to meters
+	      via a ``Flat Earth'' approximation on the currently selected ellipsoid.
+	\item You have a Cartesian grid but the units are not meters (e.g., they may perhaps be
+	      in km or miles).  In this case you may append the file modifier {\bf +u}{\it unit},
+	      where {\it unit} is one of non-arc units listed in Table~\ref{tbl:distunits}. For
+	      example, reading in the grid \filename{relief.nc} (which has distance units of km)
+	      and converting them to meters is done by specifying the filename as \filename{relief.nc+uk}.
+	      On output, any derived grids will revert to their original units \emph{unless} you
+	      specify another unit modifier to the output grid.  This may be used, for instance,
+	      to save original grid with distances in meters using some other unit.
+\end{itemize}
+This modifier is only allowed when map projections are not selected (or are Cartesian).
 
 \section{Options for COARDS-compliant netCDF files}
 \label{sec:netcdf}

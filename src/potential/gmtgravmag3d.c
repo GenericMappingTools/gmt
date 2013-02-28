@@ -156,8 +156,8 @@ int GMT_gmtgravmag3d_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "usage: gmtgravmag3d [-C<density>] [-G<outgrid>] [-R<w>/<e>/<s></n>]\n");
 	GMT_message (GMT, "\t[-E<thick>] [-F<xy_file>] [-L<z_observation>]\n");
 	GMT_message (GMT, "\t[-H<f_dec>/<f_dip>/<m_int></m_dec>/<m_dip>] [-S<radius>]\n");
-	GMT_message (GMT, "\t[-T<[d]xyz_file>/<vert_file>[/m]|<[r|s]raw_file> [-Z<level>]\n\t[%s] [%s] [%s]\n", 
-		GMT_V_OPT, GMT_f_OPT, GMT_r_OPT);
+	GMT_message (GMT, "\t[-T<[d]xyz_file>/<vert_file>[/m]|<[r|s]raw_file> [-Z<level>]\n\t[%s] [-fg] [%s]\n", 
+		GMT_V_OPT, GMT_r_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -178,7 +178,9 @@ int GMT_gmtgravmag3d_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   'r' and 's' stand for files in raw (x1 y1 z1 x2 ... z3) or STL format.\n");
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-Z z level of reference plane [Default = 0]\n");
-	GMT_explain_options (GMT, "C0fF:.");
+	GMT_explain_options (GMT, "C0");
+	GMT_message (GMT, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
+	GMT_explain_options (GMT, "F:.");
 
 	return (EXIT_FAILURE);
 }

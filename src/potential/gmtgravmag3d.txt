@@ -8,7 +8,7 @@ BD(gmtgravmag3d) [ OPT(C)IT(density) ]
 [ OPT(H)IT(f_dec)/IT(f_dip)/IT(m_int)/IT(m_dec)/IT(m_dip) ] [ OPT(L)IT(z_observation) ] 
 GMT_Rgeo_OPT [ OPT(S)IT(radius) ] 
 [ OPT(T)[[IT(d)]IT(xyz_file)/IT(vert_file)[IT(/m)]]|[IT(r|s)]IT(raw_file) ] 
-[ OPT(Z)IT(level) ] [ GMT_V_OPT ] [ GMT_f_OPT ] [ GMT_r_OPT ]
+[ OPT(Z)IT(level) ] [ GMT_V_OPT ] [ OPT(fg) ] [ GMT_r_OPT ]
 .SH DESCRIPTION
 BD(gmtgravmag3d) will compute the gravity or magnetic anomaly of a body described by a set of triangles. 
 The output can either be along a given set of xy locations or on a grid. This method is not particularly fast 
@@ -61,9 +61,15 @@ closed surface.
 .TP
 OPT(Z)[IT(level)]
 level of reference plane [Default = 0]. Use this option when the triangles describe a non-closed surface and the volume is deffined from each triangle and this reference level. An example will be the whater depth to compute a Bouguer anomaly.
-#include "explain_-f.txt"
+.TP
+OPT(fg)
+Geographic grids (dimensions of longitude, latitude) will be converted to meters via a "Flat Earth" approximation
+using the current ellipsoid parameters.
 #include "explain_help.txt"
 #include "explain_nodereg.txt"
+.SH GRID DISTANCE UNITS
+If the grid does not have meter as the horizontal unit, supply BD(+u)IT(unit) to the input file name to convert from the
+specified unit to meter.  If your grid is geographic, convert distances to meters by supplying OPT(fg) instead.
 .SH EXAMPLES
 Suppose you ...
 .sp

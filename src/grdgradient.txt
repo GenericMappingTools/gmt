@@ -7,7 +7,7 @@ BD(grdgradient) IT(in_grdfile) OPT(G)IT(out_grdfile)
 [ OPT(A)IT(azim)[/IT(azim2)] ] [ OPT(D)[BD(c)][BD(o)][BD(n)] ] 
 [ OPT(E)[BD(s|p)]IT(azim/elev)[/IT(ambient)/IT(diffuse)/IT(specular)/IT(shine)] ] 
 [ OPT(L)IT(flag) ] [ OPT(N)[BD(e)][BD(t)][IT(amp)][/IT(sigma)[/IT(offset)]] ]
-[ GMT_Rgeo_OPT ] [ OPT(S)IT(slopefile) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
+[ GMT_Rgeo_OPT ] [ OPT(S)IT(slopefile) ] [ GMT_V_OPT ] [ OPT(fg) ]
 .SH DESCRIPTION
 BD(grdgradient) may be used to compute the directional derivative  
 in a given direction (OPT(A)),
@@ -124,8 +124,14 @@ OPT(S)IT(slopefile)
 Name of output grid file with scalar magnitudes of gradient vectors.   
 Requires OPT(D) but makes OPT(G) optional.
 #include "explain_-V.txt"
-#include "explain_-f.txt"
+.TP
+OPT(fg)
+Geographic grids (dimensions of longitude, latitude) will be converted to meters via a "Flat Earth" approximation
+using the current ellipsoid parameters.
 #include "explain_help.txt"
+.SH GRID DISTANCE UNITS
+If the grid does not have meter as the horizontal unit, supply BD(+u)IT(unit) to the input file name to convert from the
+specified unit to meter.  If your grid is geographic, convert distances to meters by supplying OPT(fg) instead.
 .SH HINTS
 If you don't know what \fB\-N\fP options to use to make an intensity file for\"'
 BD(grdimage) or BD(grdview), a good first try is OPT(Ne)0.6.
