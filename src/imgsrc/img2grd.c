@@ -480,9 +480,9 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 		int equator;
 		equator = lrint (GMT_img_lat_to_ypix (0.0, &imgcoord));
 		wesn[XLO] = iinstart * inc[GMT_X];
-		wesn[XHI] = wesn[XLO] + Merc->header->nx * inc[GMT_X];
+		wesn[XHI] = wesn[XLO] + nx * inc[GMT_X];
 		wesn[YHI] = (imgcoord.nyrow - jinstart - equator) * inc[GMT_Y];
-		wesn[YLO] = wesn[YHI] - Merc->header->ny * inc[GMT_Y];
+		wesn[YLO] = wesn[YHI] - ny * inc[GMT_Y];
 		left = bottom = 0.0;
 		if (wesn[XHI] > 360.0) {
 			wesn[XHI] -= 360.0;
