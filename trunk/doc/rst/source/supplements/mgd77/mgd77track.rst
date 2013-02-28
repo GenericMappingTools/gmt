@@ -42,7 +42,7 @@ projection. The *PostScript* code is written to standard output.
 
 .. include:: ../../explain_-J.rst_
  
-.. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
+.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
 
 `Optional Arguments <#toc5>`_
@@ -121,12 +121,12 @@ projection. The *PostScript* code is written to standard output.
 
 .. include:: ../../explain_-XY.rst_
  
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
  
 .. include:: ../../explain_-c.rst_
 
-.. |Add_perspective| unicode:: 0x0C .. just an invisible code
+.. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_perspective.rst_
  
 .. include:: ../../explain_-t.rst_

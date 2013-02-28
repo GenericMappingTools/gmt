@@ -53,10 +53,10 @@ via the **-W** option.
 **-L**\ *layer*
     Output only the specified layer (r, g, or b). [Default outputs all 3 layers]. 
 
-.. |Add_-R| unicode:: 0x0C .. just an invisible code
+.. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 **-W**\ *width*/*height*\ [/*n\_bytes*]
@@ -67,7 +67,7 @@ via the **-W** option.
     this might be a bit slow because the guessing algorithm makes uses
     of FFTs. 
 
-.. |Add_nodereg| unicode:: 0x0C .. just an invisible code
+.. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
 
 .. include:: explain_help.rst_

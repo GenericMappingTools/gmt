@@ -40,7 +40,7 @@ of formats, see **-Z** below.)
 
 .. include:: explain_-I.rst_
 
-.. |Add_-R| unicode:: 0x0C .. just an invisible code
+.. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
 `Optional Arguments <#toc5>`_
@@ -78,7 +78,7 @@ of formats, see **-Z** below.)
     must also supply the **-Z** option. The output is written to *zfile*
     (or stdout if not supplied). 
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 **-Z**\ [*flags*\ ]
@@ -134,7 +134,7 @@ of formats, see **-Z** below.)
     to xyz input files; see **-Z** for z tables. 
 .. include:: explain_-bi.rst_
 
-.. |Add_-f| unicode:: 0x0C .. just an invisible code
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
 .. |Add_-h| replace:: Not used with binary data.
@@ -142,7 +142,7 @@ of formats, see **-Z** below.)
 
 .. include:: explain_-icols.rst_
 
-.. |Add_nodereg| unicode:: 0x0C .. just an invisible code
+.. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
 
 .. include:: explain_colon.rst_

@@ -126,10 +126,10 @@ it is plotted with **FONT\_LABEL**
     values will be annotated using the 10^p format [Default is linear
     scale]. 
 
-.. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
+.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-Rgeo.rst_
 
-.. |Add_-Rz| unicode:: 0x0C .. just an invisible code
+.. |Add_-Rz| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-Rz.rst_
 
 **-S**
@@ -145,7 +145,7 @@ it is plotted with **FONT\_LABEL**
 
 .. include:: explain_-U.rst_
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 .. include:: explain_-XY.rst_

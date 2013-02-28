@@ -41,7 +41,7 @@ None.
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-.. |Add_intables| unicode:: 0x0C .. just an invisible code
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
 **-C**
@@ -122,7 +122,7 @@ None.
     polygons of length 4 or 5 that exactly match the **-R** clipping
     polygon. 
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 .. |Add_-bi| replace:: [Default is 2 input columns]. 
@@ -131,13 +131,13 @@ None.
 .. |Add_-bo| replace:: [Default is same as input].
 .. include:: explain_-bo.rst_
 
-.. |Add_-f| unicode:: 0x0C .. just an invisible code
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
-.. |Add_-g| unicode:: 0x0C .. just an invisible code
+.. |Add_-g| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-g.rst_
 
-.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_

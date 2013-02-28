@@ -82,7 +82,7 @@ the COE.
     will not be computed (i.e., set to NaN) [Default calculates
     headings regardless of speed].
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
 **-W**\ *size*
@@ -92,7 +92,7 @@ the COE.
     Report the values of each track at the crossover [Default reports
     the crossover value and the mean value].
 
-.. |Add_-bo| unicode:: 0x0C .. just an invisible code
+.. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-bo.rst_
 
 .. include:: ../../explain_help.rst_

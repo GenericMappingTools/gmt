@@ -156,7 +156,7 @@ None.
     Limits the wavelengths of the lithosphere field contribution to the
     band indicated by the low and high spherical harmonic order [14/65].
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
     
 .. |Add_-bi| replace:: [Default is 4 input columns unless **-A** is used]. 
@@ -165,7 +165,7 @@ None.
 .. |Add_-bo| replace:: [Default is reflected by **-F**]. 
 .. include:: ../../explain_-bo.rst_
 
-.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_
 
 .. include:: ../../explain_colon.rst_

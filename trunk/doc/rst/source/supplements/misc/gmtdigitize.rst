@@ -34,7 +34,7 @@ taped to the digitizer table. By default the output will go to stdout.
 |
 |   For geographic projections you can give 1 as the scale will be solved for anyway.
 
-.. |Add_-R| unicode:: 0x0C .. just an invisible code
+.. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-R.rst_
 
 `Optional Arguments <#toc5>`_
@@ -71,7 +71,7 @@ taped to the digitizer table. By default the output will go to stdout.
     Suppress points that fall outside the specified map region [Default
     outputs all points].
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
 **-Zk**\ \|\ **v**
@@ -80,7 +80,7 @@ taped to the digitizer table. By default the output will go to stdout.
     column. Both **-Zk** and **-Zv** can be specified. [Default is just
     2 column x,y output].
 
-.. |Add_-bo| unicode:: 0x0C .. just an invisible code
+.. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-bo.rst_
 
 .. include:: ../../explain_help.rst_

@@ -78,7 +78,7 @@ location of the most negative input value, and so on.
     exceeds the boundaries of the grid, only the common region will be extracted. 
 .. include:: explain_-R.rst_
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 .. include:: explain_help.rst_

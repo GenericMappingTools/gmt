@@ -41,12 +41,12 @@ written to standard output.
 `Required Arguments <#toc4>`_
 -----------------------------
 
-.. |Add_intables| unicode:: 0x0C .. just an invisible code
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
 
 .. include:: ../../explain_-J.rst_
 
-.. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
+.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
 
 **-S**\ *<format><scale>*\ [/**d**]
@@ -269,7 +269,7 @@ following columns:
 
 .. include:: ../../explain_-U.rst_
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
 **-W**\ *pen*
@@ -299,7 +299,7 @@ following columns:
     Sets the color or fill pattern for the P axis symbol. [Default as
     set by **-G**]
 
-.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_
 
 .. include:: ../../explain_-icols.rst_

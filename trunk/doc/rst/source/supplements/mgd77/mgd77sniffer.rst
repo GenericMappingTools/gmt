@@ -222,7 +222,7 @@ details. Grids for comparison with cruise data may be downloaded via the web.
     level. (i.e., -P5 flags coefficients m, b, rms, and r that fall
     outside 95%.) 
 
-.. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
+.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
 
 **-S**\ **d**\ \|\ **s**\ \|\ **t**
@@ -245,7 +245,7 @@ details. Grids for comparison with cruise data may be downloaded via the web.
     warning summaries. By default ALL warning messages are printed.Not
     compatible with any **-D** options. 
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
 **-bo**\ [*ncols*\ ][*type*\ ]

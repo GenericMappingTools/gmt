@@ -38,7 +38,7 @@ criteria.
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-.. |Add_intables| unicode:: 0x0C .. just an invisible code
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
 
 .. include:: ../../explain_-I.rst_
@@ -64,13 +64,13 @@ criteria.
     squared error in a typical (scaled) data value, and *U* is Upper
     bound on weighted sum of squares of deviations from data.
 
-.. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
+.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
 
 **-T**
     Use variable tension (ignored with **-Q**\ 0 [constant]
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
 **-Z**
@@ -83,12 +83,12 @@ criteria.
 .. |Add_-bo| replace:: [Default is same as input].
 .. include:: ../../explain_-bo.rst_
 
-.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_
 
 .. include:: ../../explain_colon.rst_
 
-.. |Add_nodereg| unicode:: 0x0C .. just an invisible code
+.. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_nodereg.rst_
 
 .. include:: ../../explain_help.rst_

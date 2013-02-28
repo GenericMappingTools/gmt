@@ -39,7 +39,7 @@ triangularization.
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-.. |Add_intables| unicode:: 0x0C .. just an invisible code
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
 
 **-C**
@@ -70,10 +70,10 @@ triangularization.
     binary data **-bi**\ [*ncols*\ ][*type*\ ] you must specify the node
     information separately (via **-N**).
 
-.. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
+.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
@@ -82,12 +82,12 @@ triangularization.
 .. |Add_-bo| replace:: [Default is same as input].
 .. include:: ../../explain_-bo.rst_
 
-.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_
 
 .. include:: ../../explain_-icols.rst_
 
-.. |Add_nodereg| unicode:: 0x0C .. just an invisible code
+.. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_nodereg.rst_
 
 .. include:: ../../explain_colon.rst_

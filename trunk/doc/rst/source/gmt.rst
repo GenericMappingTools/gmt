@@ -86,23 +86,23 @@ programs. No space between the option flag and the associated arguments.
 
 .. include:: explain_-aspatial_full.rst_
 
-.. |Add_-bi| unicode:: 0x0C .. just an invisible code
+.. |Add_-bi| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-bi_full.rst_
 
-.. |Add_-bo| unicode:: 0x0C .. just an invisible code
+.. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-bo_full.rst_
 
 .. include:: explain_-c_full.rst_
 
 .. include:: explain_colon_full.rst_
 
-.. |Add_-f| unicode:: 0x0C .. just an invisible code
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f_full.rst_
 
-.. |Add_-g| unicode:: 0x0C .. just an invisible code
+.. |Add_-g| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-g_full.rst_
 
-.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h_full.rst_
 
 .. include:: explain_-icols_full.rst_

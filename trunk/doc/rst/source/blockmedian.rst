@@ -41,7 +41,7 @@ choose binary input and/or output to avoid loss of precision.
 
 .. include:: explain_-I.rst_
 
-.. |Add_-R| unicode:: 0x0C .. just an invisible code
+.. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
 `Optional Arguments <#toc5>`_
@@ -83,7 +83,7 @@ choose binary input and/or output to avoid loss of precision.
     Sets the *quantile* of the distribution to be returned [Default is
     0.5 which returns the median *z*]. Here, 0 < *quantile* < 1.
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 **-W**\ [**i**\ \|\ **o**]
@@ -101,10 +101,10 @@ choose binary input and/or output to avoid loss of precision.
 .. |Add_-bo| replace:: [Default is 3 (or 4 if **-Wo** is set)]. **-E** adds 3 additional columns.
 .. include:: explain_-bo.rst_
 
-.. |Add_-f| unicode:: 0x0C .. just an invisible code
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
-.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_

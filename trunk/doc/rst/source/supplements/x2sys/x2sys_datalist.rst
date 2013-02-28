@@ -67,13 +67,13 @@ be output [Default selects all columns].
     Suppress output records where all the data columns are NaN [Default
     will output all records].
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
-.. |Add_-bo| unicode:: 0x0C .. just an invisible code
+.. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-bo.rst_
 
-.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_
 
 .. include:: ../../explain_help.rst_

@@ -105,7 +105,7 @@ xyzpqrs letters in **-flags**.
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-.. |Add_intables| unicode:: 0x0C .. just an invisible code
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
 **-A**\ *azimuth*
@@ -148,7 +148,7 @@ xyzpqrs letters in **-flags**.
     *px/py* sets the position of the rotation pole of the projection.
     (Definition 3). 
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 **-W**\ *w\_min*/*w\_max*
@@ -161,13 +161,13 @@ xyzpqrs letters in **-flags**.
 .. |Add_-bo| replace:: [Default is given by **-F** or **-G**]. 
 .. include:: explain_-bo.rst_
 
-.. |Add_-f| unicode:: 0x0C .. just an invisible code
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
-.. |Add_-g| unicode:: 0x0C .. just an invisible code
+.. |Add_-g| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-g.rst_
 
-.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_

@@ -53,16 +53,16 @@ one or more output files (or stdout) and no plot is produced.
 
 .. include:: explain_-J.rst_
 
-.. |Add_-R| unicode:: 0x0C .. just an invisible code
+.. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
-.. |Add_-Rz| unicode:: 0x0C .. just an invisible code
+.. |Add_-Rz| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-Rz.rst_
 
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-.. |Add_intables| unicode:: 0x0C .. just an invisible code
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
 **-A**\ [**-**\ ][*labelinfo*\ ]
@@ -125,7 +125,7 @@ made up of any of the following control arguments:
 
 .. include:: explain_-U.rst_
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 **-W**\ [**+**\ ]\ *pen*
@@ -145,14 +145,14 @@ made up of any of the following control arguments:
 
 .. include:: explain_-c.rst_
 
-.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_
 
 .. include:: explain_colon.rst_
 
-.. |Add_perspective| unicode:: 0x0C .. just an invisible code
+.. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: explain_perspective.rst_
 
 .. include:: explain_-t.rst_

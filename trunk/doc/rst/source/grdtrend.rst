@@ -59,7 +59,7 @@ same locations.
 **-T**\ *trend.nc*
     Write the fitted trend to the file *trend.nc*. 
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 **-W**\ *weight.nc*

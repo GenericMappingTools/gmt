@@ -59,7 +59,7 @@ Both pre- and post-Y2K MGD77 formats can be processed.
     such reports [stderr]. Append a combination of **w** for warnings,
     **e** for errors, and **+** to send such log information to stdout.
  
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
     
 .. include:: ../../explain_help.rst_

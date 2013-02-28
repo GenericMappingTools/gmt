@@ -113,7 +113,7 @@ edge is zero) unless the grid is automatically recognized as periodic.)
     Do *not* skip points that fall outside the domain of the grid(s)
     [Default only output points within grid domain]. 
 
-.. |Add_-R| unicode:: 0x0C .. just an invisible code
+.. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
 **-S**\ *method*/*modifiers*
@@ -143,7 +143,7 @@ edge is zero) unless the grid is automatically recognized as periodic.)
     When more than one grid is sampled this sequence of 1-3 columns are
     repeated for each grid. 
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 **-Z**
@@ -158,13 +158,13 @@ edge is zero) unless the grid is automatically recognized as periodic.)
 .. |Add_-bo| replace:: [Default is one more than input]. 
 .. include:: explain_-bo.rst_
 
-.. |Add_-f| unicode:: 0x0C .. just an invisible code
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
-.. |Add_-g| unicode:: 0x0C .. just an invisible code
+.. |Add_-g| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-g.rst_
 
-.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_

@@ -111,10 +111,10 @@ boundary conditions (see **-L**).
     Name of output grid file with scalar magnitudes of gradient vectors.
     Requires **-D** but makes **-G** optional. 
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-.. |Add_-f| unicode:: 0x0C .. just an invisible code
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
 .. include:: explain_help.rst_

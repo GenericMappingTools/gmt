@@ -56,13 +56,13 @@ input data values.
 
 .. include:: explain_-I.rst_
 
-.. |Add_-R| unicode:: 0x0C .. just an invisible code
+.. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-.. |Add_intables| unicode:: 0x0C .. just an invisible code
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
 **-A**\ *aspect\_ratio*
@@ -131,7 +131,7 @@ input data values.
 .. |Add_-bi| replace:: [Default is 3 input columns]. 
 .. include:: explain_-bi.rst_
 
-.. |Add_-f| unicode:: 0x0C .. just an invisible code
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
 .. |Add_-h| replace:: Not used with binary data.

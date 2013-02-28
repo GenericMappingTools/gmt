@@ -49,7 +49,7 @@ None.
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-.. |Add_intables| unicode:: 0x0C .. just an invisible code
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
 **-Dx**\ \|\ **y**
@@ -80,14 +80,14 @@ None.
     with the Shewchuk [1996] library. Note that **-Z** is ignored on
     output. 
 
-.. |Add_-R| unicode:: 0x0C .. just an invisible code
+.. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
 **-S**
     Output triangles as polygon segments separated by a segment header
     record. Requires Delaunay triangulation. 
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 **-Z**
@@ -100,10 +100,10 @@ None.
 .. |Add_-bo| replace:: [Default is same as input].  Node ids are stored as double triplets. 
 .. include:: explain_-bo.rst_
 
-.. |Add_-f| unicode:: 0x0C .. just an invisible code
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
-.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_

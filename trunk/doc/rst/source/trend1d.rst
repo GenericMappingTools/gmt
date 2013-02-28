@@ -67,7 +67,7 @@ terms in f(x) which significantly reduce the variance in y.
     will be iterative with a default confidence level of 0.51. Or choose
     your own level between 0 and 1. See remarks section. 
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 **-W**
@@ -81,10 +81,10 @@ terms in f(x) which significantly reduce the variance in y.
 .. |Add_-bo| replace:: [Default is 1-5 columns as given by **-F**]. 
 .. include:: explain_-bo.rst_
 
-.. |Add_-f| unicode:: 0x0C .. just an invisible code
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
-.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_

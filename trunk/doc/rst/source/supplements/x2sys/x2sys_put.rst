@@ -42,7 +42,7 @@ base, use **x2sys\_get**.
     new information in the track bin file [Default refuses to process
     tracks already in the database].
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
 .. include:: ../../explain_help.rst_

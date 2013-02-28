@@ -42,7 +42,7 @@ netCDF and native binary grid formats for both input and output.
 
 .. include:: explain_-I.rst_
 
-.. |Add_-R| unicode:: 0x0C .. just an invisible code
+.. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
 `Optional Arguments <#toc5>`_
@@ -89,7 +89,7 @@ netCDF and native binary grid formats for both input and output.
     Requires that the output grid file is a native format (i.e., not
     netCDF). 
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 **-W**
@@ -99,10 +99,10 @@ netCDF and native binary grid formats for both input and output.
 **-Z**\ *scale*
     Scale output values by *scale* before writing to file. [1]. 
 
-.. |Add_-f| unicode:: 0x0C .. just an invisible code
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
-.. |Add_nodereg| unicode:: 0x0C .. just an invisible code
+.. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
 
 .. include:: explain_help.rst_

@@ -179,24 +179,24 @@ None.
     in the *maskgrid* that are not equal to NaN. This option eliminates
     the need to specify options **-R**, **-I**, and **-r**. 
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 .. |Add_-bi| replace:: [Default is 2-4 input
     columns (**x**,\ *w*); the number depends on the chosen dimension].
 .. include:: explain_-bi.rst_
     
-.. |Add_-bo| unicode:: 0x0C .. just an invisible code
+.. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-bo.rst_
 
-.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_
 
 .. include:: explain_-ocols.rst_
 
-.. |Add_nodereg| unicode:: 0x0C .. just an invisible code
+.. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
 
 .. include:: explain_help.rst_

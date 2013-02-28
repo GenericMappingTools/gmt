@@ -31,7 +31,7 @@ read (latitude,longitude,...) files.
 `Required Arguments <#toc4>`_
 -----------------------------
 
-.. |Add_intables| unicode:: 0x0C .. just an invisible code
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
 
 **-E**\ *rotfile*
@@ -64,7 +64,7 @@ read (latitude,longitude,...) files.
 
 .. include:: ../../explain_-I.rst_
 
-.. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
+.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
 
 `Optional Arguments <#toc5>`_
@@ -83,19 +83,19 @@ read (latitude,longitude,...) files.
     Truncate seamount ages exceeding the upper age set with **-N** [no
     truncation].
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
 .. |Add_-bi| replace:: [Default is 5 input columns].
 .. include:: ../../explain_-bi.rst_
 
-.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_../../explain_-V.rst_
 
 .. include:: ../../explain_-icols.rst_
 .. include:: ../../explain_-ocols.rst_
 
-.. |Add_nodereg| unicode:: 0x0C .. just an invisible code
+.. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_nodereg.rst_
 
 .. include:: ../../explain_colon.rst_

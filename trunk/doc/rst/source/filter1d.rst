@@ -76,7 +76,7 @@ options **-L**, **-Q**, and **-S** for unevenly sampled data with gaps.
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-.. |Add_intables| unicode:: 0x0C .. just an invisible code
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
 **-D**\ *increment*
@@ -113,22 +113,22 @@ options **-L**, **-Q**, and **-S** for unevenly sampled data with gaps.
     [Default uses input times]. Append **+** to *t\_inc* if you are
     specifying the number of equidistant points instead. 
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-.. |Add_-bi| unicode:: 0x0C .. just an invisible code
+.. |Add_-bi| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-bi.rst_
 
 .. |Add_-bo| replace:: [Default is same as input].
 .. include:: explain_-bo.rst_
 
-.. |Add_-f| unicode:: 0x0C .. just an invisible code
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
-.. |Add_-g| unicode:: 0x0C .. just an invisible code
+.. |Add_-g| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-g.rst_
 
-.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_

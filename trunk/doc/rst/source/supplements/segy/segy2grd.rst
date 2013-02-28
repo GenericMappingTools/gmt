@@ -40,7 +40,7 @@ more than one value will be set to the average value.
     *x\_inc* [and optionally *y\_inc*] is the grid spacing. Append **m**
     to indicate minutes or **c** to indicate seconds.
 
-.. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
+.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
 
 `Optional Arguments <#toc5>`_
@@ -74,10 +74,10 @@ more than one value will be set to the average value.
 **-Y**
     Specifies sample interval as *s\_int* if incorrect in the SEGY file
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
-.. |Add_nodereg| unicode:: 0x0C .. just an invisible code
+.. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_nodereg.rst_
 
 .. include:: ../../explain_help.rst_

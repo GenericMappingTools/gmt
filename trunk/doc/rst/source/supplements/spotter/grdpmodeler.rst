@@ -80,13 +80,13 @@ prediction; the remainder of the grid is set to NaN.
     Use a fixed age for model evaluation (i.e., override the ages in the
     age grid). This lets you evaluate the model at a snapshot in time.
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: ../../explain_-bi.rst_
 
-.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_
 
 .. include:: ../../explain_-icols.rst_

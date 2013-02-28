@@ -53,7 +53,7 @@ indexing.
     for statistics related to trackline density but should not be used
     when preparing bin-index files for the x2sys track data bases.
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
 .. include:: ../../explain_help.rst_

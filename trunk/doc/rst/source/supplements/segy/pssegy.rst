@@ -53,7 +53,7 @@ the platforms to which I have access)
 
 .. include:: ../../explain_-J.rst_
 
-.. |Add_-Rgeo| unicode:: 0x0C .. just an invisible code
+.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
 
 **-D**\ *deviation*
@@ -113,7 +113,7 @@ You *must* specify at least one of **-W** and **-F**.
     Units should be consistent with offset in trace header and sample
     interval.
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
 **-X**\ *scale*
@@ -123,7 +123,7 @@ You *must* specify at least one of **-W** and **-F**.
 **-Z**
     Do not plot traces with zero rms amplitude.
 
-.. |Add_perspective| unicode:: 0x0C .. just an invisible code
+.. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_perspective.rst_
 
 .. include:: ../../explain_-t.rst_

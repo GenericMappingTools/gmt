@@ -67,16 +67,16 @@ against these paths, the clipping may be deactivated by running
     
 .. include:: explain_-J.rst_
 
-.. |Add_-R| unicode:: 0x0C .. just an invisible code
+.. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
-.. |Add_-Rz| unicode:: 0x0C .. just an invisible code
+.. |Add_-Rz| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-Rz.rst_
 
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-.. |Add_intables| unicode:: 0x0C .. just an invisible code
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
 .. include:: explain_-B.rst_
@@ -102,7 +102,7 @@ against these paths, the clipping may be deactivated by running
 
 .. include:: explain_-U.rst_
 
-.. |Add_-V| unicode:: 0x0C .. just an invisible code
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 .. include:: explain_-XY.rst_
@@ -112,18 +112,18 @@ against these paths, the clipping may be deactivated by running
 
 .. include:: explain_-c.rst_
 
-.. |Add_-f| unicode:: 0x0C .. just an invisible code
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
-.. |Add_-g| unicode:: 0x0C .. just an invisible code
+.. |Add_-g| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-g.rst_
 
-.. |Add_-h| unicode:: 0x0C .. just an invisible code
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_
 
-.. |Add_perspective| unicode:: 0x0C .. just an invisible code
+.. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: explain_perspective.rst_
 
 .. include:: explain_-t.rst_
