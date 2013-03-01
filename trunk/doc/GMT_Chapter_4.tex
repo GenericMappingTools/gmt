@@ -96,7 +96,7 @@ expert users can choose from a range of options as detailed in the \filename{gmt
 \subsubsection{Geodesic distances}
 For the most accurate calculations we use a full ellipsoidal formulation.  Currently,
 we are using Vincenty's [1975] formula\footnote{Vicenty, T. (1975), Direct and inverse solutions
-of geodesics on the ellipsoid with application of nested equations, {\it Surv. Rev., XXII(176)}, 88–93.}.
+of geodesics on the ellipsoid with application of nested equations, {\it Surv. Rev., XXII(176)}, 88--93.}.
 You select this mode of computation by using the \textbf{+} prefix to
 the specified distance (or to the unit itself in cases where no distance is required).
 For instance, a search radius of 20 km using this mode of computation would be set by \Opt{S+}20\textbf{k}.
@@ -107,7 +107,7 @@ For instance, a search radius of 20 km using this mode of computation would be s
 in \textbf{c}m, \textbf{i}nch,
 or \textbf{p}oint (1/72 of an inch)\footnote{\PS\ definition.
 In the typesetting industry a slightly different definition of point
-(1/72.27 inch) is used.}.  There are two ways to ensure that \GMT\ understands
+(1/72.27 inch) is used, presumably to cause needless trouble.}.  There are two ways to ensure that \GMT\ understands
 which unit you intend to use:
 
 \begin{enumerate}
@@ -216,10 +216,10 @@ change the primary annotation font to 12 point Times-Bold in red we run \\
 These changes will remain in effect until they are overridden.
 \item If all you want to achieve is to change a few parameters during
 the execution of a single command but otherwise leave the environment intact, consider
-passing the parameter changes on the command line via the {--}{--}\emph{PAR=value}
+passing the parameter changes on the command line via the \texttt{--}\emph{PAR=value}
 mechanism.  For instance, to temporarily set the output format for floating
 points to have lots of decimals, say, for map projection coordinate output,
-append {--}{--}\textbf{FORMAT\_FLOAT\_OUT}=\%.12lg to the command in question.
+append \texttt{--}\textbf{FORMAT\_FLOAT\_OUT}=\%.16lg to the command in question.
 \item Finally, \GMT\ provides to possibility to override the
 settings only  during the running of a single script, reverting to the original settings
 after the script is run, as if the script was run in ``isolation''. The isolation mode
@@ -580,7 +580,7 @@ add a unit string to each annotation (see Figure~\ref{fig:GMT_-B_linear}).
 
 \GMTfig[h]{GMT_-B_linear}{Linear Cartesian projection axis.  Long tickmarks accompany
 annotations, shorter ticks indicate frame interval.  The axis label is
-optional.  We used \Opt{R}0/12/0/1 \Opt{JX}3/0.4 \Opt{Ba}4\textbf{f}2\textbf{g}1:Frequency::,\protect\%:.}
+optional.  For this example we used \Opt{R}0/12/0/1 \Opt{JX}3i/0.4i \Opt{Ba}4\textbf{f}2\textbf{g}1:Frequency::,\protect\%:.}
 
 \subsubsection{Cartesian log$_{10}$ axes}
 \index{log$_{10}$ axes}
@@ -609,7 +609,7 @@ raised to log$_{10}$ of the value (e.g., $10^{-5}$).
 frame, and grid intervals.  (top) Here, we have chosen to annotate the actual
 values.  Interval = 1 means every whole power of 10, 2 means 1, 2, 5 times
 powers of 10, and 3 means every 0.1 times powers of 10.  We used
-\Opt{R}1/1000/0/1 \Opt{JX}3l/0.4 \Opt{Ba}1\textbf{f}2\textbf{g}3.
+\Opt{R}1/1000/0/1 \Opt{JX}3il/0.4i \Opt{Ba}1\textbf{f}2\textbf{g}3.
 (middle) Here, we have chosen to
 annotate log$_{10}$ of the actual values, with \Opt{Ba}1\textbf{f}2\textbf{g}3\textbf{l}.
 (bottom) We annotate every power of 10 using log$_{10}$ of the actual values
@@ -629,7 +629,7 @@ then equidistant annotations labeled 1, 4, 9, ... will appear.
 
 \GMTfig[h]{GMT_-B_pow}{Exponential or power projection axis.  (top) Using an exponent of 0.5
 yields a $\sqrt{x}$ axis.  Here, intervals refer to actual data values, in
-\Opt{R}0/100/0/1 \Opt{JX}3\textbf{p}0.5/0.4\ \Opt{Ba}20\textbf{f}10\textbf{g}5.
+\Opt{R}0/100/0/1 \Opt{JX}3i\textbf{p}0.5/0.4i\ \Opt{Ba}20\textbf{f}10\textbf{g}5.
 (bottom) Here, intervals refer to projected values, although the annotation
 uses the corresponding unprojected values, as in \Opt{Ba}3\textbf{f}2\textbf{g}1\textbf{p}.}
 
@@ -740,7 +740,7 @@ with an interval annotations on the \emph{x}-axis and irregular annotations on t
 \GMTfig[h]{GMT_-P}{Users can specify Landscape [Default] or Portrait (\Opt{P}) orientation.}
 
 The \Opt{P} option selects Portrait plotting mode\footnote{For historical reasons, the \GMT\
-Default is Landscape, see \GMTprog{gmt.conf} to change this.}.  In general,
+default is Landscape; see \GMTprog{gmt.conf} to change this.}.  In general,
 a plot has an \emph{x}-axis increasing from left to
 right and a \emph{y}-axis increasing from bottom to top.  If the
 paper is turned so that the long dimension of the paper is
@@ -750,7 +750,7 @@ the paper parallels the \emph{y}-axis the orientation is called
 \emph{Portrait} (think of taking pictures with a camera
 and these words make sense).  The
 default Landscape orientation is obtained by translating the origin in the
-\emph{x}-direction (by the width of the chosen paper \textbf{PAPER\_MEDIA)} and then rotating the
+\emph{x}-direction (by the width of the chosen paper \textbf{PS\_MEDIA)} and then rotating the
 coordinate system counterclockwise by 90\DS.  By default the \textbf{PS\_MEDIA} is
 set to Letter (or A4 if SI is chosen); this value must be changed
 when using different media, such as 11" x 17" or large format plotters
@@ -773,8 +773,8 @@ Figure~\ref{fig:GMT_-OK}).  Thus,
 when overlaying several \GMT\ plots we must make sure that the first plot
 call omits the trailer, that all intermediate calls omit both header and
 trailer, and that the final overlay omits the header.
-\Opt{K} omits the trailer which implies that more \PS\ code will be appended
-later [Default terminates the plot system].  \Opt{O} selects Overlay plot
+The \Opt{K} omits the trailer which implies that more \PS\ code will be appended
+later [Default terminates the plot system].  The \Opt{O} selects Overlay plot
 mode and omits the header information [Default initializes a new plot system].
 Most unexpected results for multiple overlay plots can be traced to the
 incorrect use of these options.  If you run only one plot
@@ -786,7 +786,7 @@ only used when stacking plots.
 \index{Timestamp}
 \index{UNIX@\UNIX!timestamp}
 
-\Opt{U} draws \UNIX\ System time stamp.  Optionally, append an arbitrary
+The \Opt{U} option draws \UNIX\ System time stamp.  Optionally, append an arbitrary
 text string (surrounded by double quotes), or the code \textbf{c}, which will
 plot the current command string (Figure~\ref{fig:GMT_-U}).
 
@@ -796,7 +796,7 @@ plot the current command string (Figure~\ref{fig:GMT_-U}).
 \index{\Opt{V} (verbose mode)}
 \index{Verbose (\Opt{V})}
 \label{sec:verbose}
-\Opt{V} selects verbose mode, which will send progress reports to standard error.
+The \Opt{V} option selects verbose mode, which will send progress reports to standard error.
 Even more verbose levels are \Opt{Vl} (long verbose) and \Opt{Vd}
 (debug). Normal verbosity level produces only error and warning messages. This is the default
 or can be selected by using \Opt{Vn}. If compiled with backward-compatibility support, the
@@ -804,7 +804,7 @@ default is \Opt{Vc}, which includes warnings about deprecated usage. Finally, \O
 to run without any warnings or errors.
 This option can also be set by specifying the default \textbf{GMT\_VERBOSE}, as \textbf{quiet},
 \textbf{normal}, \textbf{compat}, \textbf{verbose}, \textbf{long\_verbose}, or \textbf{debug}, in order
-of verbosity.
+of increased verbosity.
 
 \subsection{Plot positioning and layout: The \Opt{X} \Opt{Y} options}
 \index{\Opt{X} (shift plot in $x$)}
@@ -996,16 +996,19 @@ Note: For \Opt{gx} or \Opt{gy} with time data the unit is instead controlled by 
 \index{Header records \Opt{h}}
 \label{sec:header}
 The \Opt{h}[\textbf{i}$|$\textbf{o}][\emph{n\_recs}] option lets \GMT\ know that input file(s) have
-one [Default] or more header records.  If there are more than one header
-record you must specify the number after the \Opt{h} option, e.g., \Opt{h}4.  The
-default number of header records if \Opt{h} is used is one of the many parameters
-in the \filename{gmt.conf} file (\textbf{IO\_N\_HEADER\_RECS}, by default 1),
+\emph{n\_recs} header records [0].  If there are more than one header
+record you must specify the number after the \Opt{h} option, e.g., \Opt{h}4.  
+Note that blank lines and records that start with the character \# are
+automatically considered header records and skipped.  Thus, \emph{n\_recs} refers
+to general text lines that do \emph{not} start with \# and thus must specifically
+be skipped in order for the programs to function properly.  The
+default number of such header records if \Opt{h} is used is one of the many parameters
+in the \filename{gmt.conf} file (\textbf{IO\_N\_HEADER\_RECS}, by default 0),
 but can be overridden by \Opt{h}\emph{n\_header\_recs}.
-Note that blank lines and records that be start with the character \# are
-automatically skipped.  Normally, programs that both read and write tables will
+Normally, programs that both read and write tables will
 output the header records that are found on input.  Use \Opt{hi} to suppress the
-writing of header records.  Use \Opt{ho} to tell programs to output a header record
-identifying each data column.
+writing of header records.  You can use the \Opt{h} options modifiers to to tell programs to output
+extra header records for titles, remarks or column names identifying each data column.
 
 When \Opt{b} is used to indicate binary data the \Opt{h} takes on a slightly different meaning.
 Now, the \emph{n\_recs} argument is taken to mean how many \emph{bytes} should be
@@ -1113,7 +1116,7 @@ which for the example in Figure~\ref{fig:GMT_registration} yields $nx = ny = 4$.
 
 Here, the nodes are centered in the grid cells, i.e., the areas
 between grid lines, and the data points represent the average
-values within each cell (Figure~\ref{fig:GMT_registration}.
+values within each cell (Figure~\ref{fig:GMT_registration}).
 In the case of pixel registration the number of nodes are related
 to region and grid spacing by \\
 
@@ -1215,7 +1218,7 @@ name without any arguments, the program will write the complete
 usage message to standard error (your screen, unless you
 redirect it).  This message explains in detail what all the
 valid arguments are.  If you enter the program name followed
-by a \emph{hyphen} (--) only you will get a shorter version
+by a \emph{hyphen} (-) only you will get a shorter version
 which only shows the command line syntax and no detailed
 explanations.  If you incorrectly specify an option or omit
 a required option, the program will produce syntax errors and
@@ -1307,12 +1310,12 @@ plots, to standard output.  The exceptions are those which may
 create binary netCDF grid files such as \GMTprog{surface} (due to
 the design of netCDF a filename must be provided; however,
 alternative binary output formats allowing piping are available; see Section~\ref{sec:grdformats}).
-With \UNIX\, you can redirect standard output to a file or pipe it
+Most operating systems let you can redirect standard output to a file or pipe it
 into another process.  Error messages, usage messages, and
 verbose comments are written to standard error in all cases.
-You can use \UNIX\ to redirect standard error as well,
+You can usually redirect standard error as well,
 if you want to create a log file of what you are doing.
-The syntax for redirection differ among the main shells (Bash and C-shell).
+The syntax for redirection differ among the main shells (Bash and C-shell) and is a bit limited in DOS.
 
 \section{Input data formats}
 \label{sec:input data}
@@ -1666,13 +1669,13 @@ monotonically increasing but do not need to be consecutive.  The format is
 
 \begin{center}
 \begin{tabular}{lll}
-key$_1$ &  \emph{fill} &  [;\emph{label}] \\
+key$_1$ &  \emph{Fill} &  [;\emph{label}] \\
 \ldots & & \\
-key$_n$ &  \emph{fill} &  [;\emph{label}] \\
+key$_n$ &  \emph{Fill} &  [;\emph{label}] \\
 \end{tabular}
 \end{center}
 
-The \emph{fill} information follows the format given in Section \ref{sec:fill}.
+The \emph{Fill} information follows the format given in Section \ref{sec:fill}.
 While not always applicable to categorical data, the background color (for
 \emph{key}-values $<$ \emph{key$_1$}), foreground color
 (for \emph{key}-values $>$ \emph{key$_{n}$}), and not-a-number (NaN) color (for
@@ -1680,10 +1683,10 @@ While not always applicable to categorical data, the background color (for
 file, but can be overridden by the statements
 
 \begin{center}
-\begin{tabular}{llll}
-B &  R$_{back}$ &  G$_{back}$ &  B$_{back}$ \\
-F &  R$_{fore}$ &  G$_{fore}$ &  B$_{fore}$ \\
-N &  R$_{nan}$ &  G$_{nan}$ &  B$_{nan}$ \\
+\begin{tabular}{ll}
+B &  Fill$_{back}$ \\
+F &  Fill$_{fore}$ \\
+N &  Fill$_{nan}$ \\
 \end{tabular}
 \end{center}
 
@@ -1718,9 +1721,9 @@ file, but can be overridden by the statements
 
 \begin{center}
 \begin{tabular}{ll}
-B &  Color$_{back}$ \\
-F &  Color$_{fore}$ \\
-N &  Color$_{nan}$ \\
+B &  Fill$_{back}$ \\
+F &  Fill$_{fore}$ \\
+N &  Fill$_{nan}$ \\
 \end{tabular}
 \end{center}
 
@@ -1730,10 +1733,7 @@ you prefer the HSV system, set the
 \filename{gmt.conf} parameter accordingly and replace red, green,
 blue with hue, saturation, value.  Color palette tables that contain
 gray-shades only may replace the \emph{r/g/b} triplets with a single gray-shade
-in the 0--255 range.  For CMYK, give four values in the 0--100 range.
-Both the min and max color specifications in one \emph{z}-slice must use
-the same color system, i.e., you cannot mix ``red'' and 0/255/100 on the
-same line.
+in the 0--255 range.  For CMYK, give \emph{c/m/y/k} values in the 0--100 range.
 
 A few programs (i.e., those that plot polygons such as \GMTprog{grdview},
 \GMTprog{psscale}, \GMTprog{psxy} and \GMTprog{psxyz}) can accept pattern fills instead
@@ -1938,7 +1938,7 @@ you will normally have to append \emph{=ID} to the filename if you want \GMT\ to
 than the default.
 
 By default, \GMT\ will create new grid files using the \textbf{nf} format; however,
-this behavior can be overridden by setting the \textbf{IO|_GRIDFILE\_FORMAT} defaults parameter
+this behavior can be overridden by setting the \textbf{IO\_GRIDFILE\_FORMAT} defaults parameter
 to any of the other recognized values (or by appending \emph{=ID}).
 
 \GMT\ can also read netCDF grid files produced by other software packages, provided the grid files
@@ -2103,8 +2103,8 @@ the bit or mask format file may be as small as 1/32 the size of the
 corresponding grid float format file.
 \index{grid file!formats|)}
 
-\section{Options to change grid coordinates}
-\index{grid file!coordinates}
+\section{Modifiers for changing the grid coordinates}
+\index{grid file!change coordinates}
 \label{sec:grdcoordinates}
 
 A few \GMT\ tools require that the two horizontal dimensions be specified in meters.  One
@@ -2114,7 +2114,9 @@ to change the coordinates of the grid passed to such programs:
 \begin{itemize}
 	\item You have a geographic grid (i.e., in longitude and latitude).  Simply supply the
 	      \Opt{fg} option and your grid coordinates will automatically be converted to meters
-	      via a ``Flat Earth'' approximation on the currently selected ellipsoid.
+	      via a ``Flat Earth'' approximation on the currently selected ellipsoid (Note: this
+	      is only possible in those few programs that require this capability.  In general,
+	      \Opt{fg} is used to specify table coordinates).
 	\item You have a Cartesian grid but the units are not meters (e.g., they may perhaps be
 	      in km or miles).  In this case you may append the file modifier {\bf +u}{\it unit},
 	      where {\it unit} is one of non-arc units listed in Table~\ref{tbl:distunits}. For
@@ -2122,11 +2124,16 @@ to change the coordinates of the grid passed to such programs:
 	      and converting them to meters is done by specifying the filename as \filename{relief.nc+uk}.
 	      On output, any derived grids will revert to their original units \emph{unless} you
 	      specify another unit modifier to the output grid.  This may be used, for instance,
-	      to save original grid with distances in meters using some other unit.
+	      to save the original grid with distances in meters using some other unit.
 \end{itemize}
-This modifier is only allowed when map projections are not selected (or are Cartesian).
 
-\section{Options for COARDS-compliant netCDF files}
+For convenience, we also support the inverse translation, i.e., {\bf +U}{\it unit}.  This modifier
+can be used to convert your grid coordinates \emph{from} meters \emph{to} the specified unit.  Example 28
+shows a case where this is being used to change an UTM grid in meters to km.  These modifiers are only
+allowed when map projections are not selected (or are Cartesian).
+
+
+\section{Modifiers for COARDS-compliant netCDF files}
 \label{sec:netcdf}
 \index{grid file!formats!netCDF|(}
 \index{grid file!formats!COARDS|(}
@@ -2233,7 +2240,7 @@ unit of the z-coordinate. The default is simply ``z''.
 \index{grid file!formats!netCDF|)}
 \index{grid file!formats!COARDS|)}
 
-\section{Options for grids and images read and write via GDAL}
+\section{Modifiers to read and write grids and images via GDAL}
 \label{sec:GDAL}
 \index{grid file!formats!GDAL|(}
 
@@ -2307,7 +2314,7 @@ Now, to access this file with \GMT\ we need to use the =gd mechanism and append 
 of the sub-dataset that we want to extract. Here, a simple example using \GMTprog{grdinfo}
 would be
 
-\scriptsize
+\tiny
 \begin{verbatim}
 grdinfo A20030012003365.L3m_YR_NSST_9=gd?HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9:0"
 
@@ -2329,7 +2336,7 @@ according to the equation printed above (``Scaling Equation=(Slope*l3m\_data) + 
 automatically by \GMT. One solution is to do the reading and scaling via \GMTprog{grdmath}
 first, i.e.,
 
-\scriptsize
+\tiny
 \begin{verbatim}
 grdmath A20030012003365.L3m_YR_NSST_9=gd?HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9:0" \
 	0.000717185 MUL -2 ADD = sst.nc
@@ -2395,18 +2402,17 @@ simply reports back how many bad records were skipped during reading; see Sectio
 \item [\$GMT\_SHAREDIR] points to the \GMT\ share directory where all run-time support files
 	such as coastlines, custom symbols, \PS\ macros, color tables, and much more reside.  If this
 	parameter is not set it defaults to the share sub-directory selected during the \GMT\
-	install process (i.e., your answer to question C.9 on the web install form, or specified by the
-	option \filename{--datarootdir} in the \filename{configure} step of the installation), which normally
+	install process (see \filename{README.CMake} if installing from source), which normally
 	is the share directory under the \GMT\ installation directory.
 \item [\$GMT\_DATADIR] points to one or more directories where large and/or widely used data files can
 	be placed.  All \GMT\ programs look in these directories when a file is specified on the
 	command line and it is not present in the current directory.  This allows maintainers to
 	consolidate large data files and to simplify scripting that use these files since the absolute path need not be specified.
 	Separate multiple directories with colons (:); under Windows you use semi-colons (;).  Any directory
-	name that ends in a trailing / will be search recursively (not under Windows).
+	name that ends in a trailing / will be searched recursively (not under Windows).
 \item [\$GMT\_USERDIR] points to a directory where the user may place custom configuration files
 	(e.g., an alternate \filename{coastline.conf} file, preferred default settings in \filename{gmt.conf},
-	custom symbols and color palettes, and
+	custom symbols and color palettes, math macros for \GMTprog{gmtmath} and \GMTprog{grdmath}, and
 	shorthands for gridfile extensions via \filename{.gmt\_io}).  Users may also place their own
 	data files in this directory as \GMT\ programs will search for files given on the command
 	line in both \textbf{\$GMT\_DATADIR} and \textbf{\$GMT\_USERDIR}.

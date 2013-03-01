@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
-%%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:08:59) [64-bit] Document from GMT_pscoast
-%%Creator: GMT
+%%BoundingBox: 0 0 595 842
+%%HiResBoundingBox: 0 0 595 842
+%%Title: GMT v5.0.1b_r11002 [64-bit] [C4] Document from pscoast
+%%Creator: GMT5
 %%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 23 17:39:39 2011
+%%CreationDate: Fri Mar  1 11:17:24 2013
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -60,7 +60,7 @@
 /Si {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR FO}!
 /Sj {M MS R dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D MR FO}!
 /Sn {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR FO}!
-/Sp {N 3 -1 roll 0 360 arc F}!
+/Sp {N 3 -1 roll 0 360 arc fs N}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
 /SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
@@ -110,6 +110,11 @@
   count PSL_op_count sub {pop} repeat
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
+}!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
 }!
 /ISOLatin1+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -555,7 +560,7 @@ end
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
-PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
+PSLevel 1 gt { << /PageSize [595 842] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
 %%Page: 1 1
@@ -564,16 +569,17 @@ PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 V 0.06 0.06 scale
 %%EndPageSetup
 
-/PSL_page_xsize 10200 def
-/PSL_page_ysize 13200 def
+/PSL_page_xsize 9917 def
+/PSL_page_ysize 14033 def
 0 A
 FQ
 O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT:  pscoast -R0/360/-70/70 -Jm1.2e-2i -Ba60f15/a30f15 -Dc -A5000 -Gred -P
+%%GMT: pscoast -R0/360/-70/70 -Jm1.2e-2i -Ba60f15/a30f15 -Dc -A5000 -Gred -P
 %%PROJ: merc 0.00000000 360.00000000 -70.00000000 70.00000000 -20037508.343 20037508.343 -11028513.631 11028513.631 +proj=merc +lon_0=180 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -3822,6 +3828,13 @@ FO
 -10 2 D
 1 -8 D
 FO
+1739 1614 M
+5 -11 D
+4 1 D
+2 12 D
+-17 6 D
+6 -8 D
+FO
 1800 1589 M
 11 -4 D
 -4 17 D
@@ -3830,26 +3843,19 @@ FO
 11 -12 D
 -1 -7 D
 FO
-1757 1577 M
-16 10 D
-0 7 D
--4 -3 D
--14 7 D
-2 -21 D
-FO
-1739 1614 M
-5 -11 D
-4 1 D
-2 12 D
--17 6 D
-6 -8 D
-FO
 1740 1749 M
 17 47 D
 -6 5 D
 -21 -26 D
 -2 -9 D
 12 -17 D
+FO
+1757 1577 M
+16 10 D
+0 7 D
+-4 -3 D
+-14 7 D
+2 -21 D
 FO
 2941 1704 M
 14 7 D
@@ -6196,14 +6202,19 @@ FO
 4968 2895 M 216 0 D S
 0 A
 8 W
--83 0 M 5350 0 D S
--83 -83 M 5350 0 D S
-5184 -83 M 0 3020 D S
-5267 -83 M 0 3020 D S
-5267 2853 M -5350 0 D S
-5267 2937 M -5350 0 D S
-0 2937 M 0 -3020 D S
--83 2937 M 0 -3020 D S
+0 0 M 5184 0 D S
+0 -83 M 5184 0 D S
+5184 0 M 0 2853 D S
+5267 0 M 0 2853 D S
+5184 2853 M -5184 0 D S
+5184 2937 M -5184 0 D S
+0 2853 M 0 -2853 D S
+-83 2853 M 0 -2853 D S
+N 5184 0 83 270 360 arc S
+N 5184 2853 83 360 450 arc S
+N 0 2853 83 90 180 arc S
+N 0 0 83 180 270 arc S
+%%EndObject
 %%PageTrailer
 U
 showpage
