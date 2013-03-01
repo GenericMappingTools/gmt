@@ -3178,7 +3178,7 @@ int GMT_Begin_IO (void *V_API, unsigned int family, unsigned int direction, unsi
 	API->GMT->current.io.ogr = GMT_OGR_UNKNOWN;
 	API->GMT->current.io.segment_header[0] = API->GMT->current.io.current_record[0] = 0;
 	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT_Begin_IO: %s resource access is now enabled [record-by-record]\n", GMT_direction[direction]);
-	if (direction == GMT_OUT && header == GMT_HEADER_ON) GMT_Put_Record (API, GMT_WRITE_TABLE_START, NULL);	/* Write standard header block */
+	if (direction == GMT_OUT && header == GMT_HEADER_ON && !API->GMT->common.b.active[GMT_OUT]) GMT_Put_Record (API, GMT_WRITE_TABLE_START, NULL);	/* Write standard ascii header block */
 
 	return (GMT_OK);	/* No error encountered */
 }
