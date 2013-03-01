@@ -36,26 +36,26 @@ We have used it to prepare some of the grids in the examples (Chapter~\ref{ch:6}
 You can also customize it to read your own data sets.  The package is
 maintained by the \GMT\ developers.
 
-\section{gshhs: GSHHG data extractor}
+\section{gshhg: GSHHG data extractor}
 
-This package contains \GMTprog{gshhs} which you can use to extract
+This package contains \GMTprog{gshhg} which you can use to extract
 shoreline polygons from the Global Self-consistent Hierarchical High-resolution
 Shorelines (GSHHG) available separately from \htmladdnormallinkfoot{NGDC}{http://www.ngdc.noaa.gov/mgg/shorelines/gshhs.html}
-or the \htmladdnormallinkfoot{GSHHG home page}{http://www.soest.hawaii.edu/wessel/gshhs/gshhs.html}
+or the \htmladdnormallinkfoot{GSHHG home page}{http://www.soest.hawaii.edu/pwessel/gshhg}
 (GSHHG is the polygon data base from which
-the \GMT\ coastlines derive).  It also contains \GMTprog{gshhs\_dp}
-for cleverly decimating a shoreline, and \GMTprog{gshhstograss} to convert shoreline
+the \GMT\ coastlines derive).  It also contains \GMTprog{gshhg\_dp}
+for cleverly decimating a shoreline, and \GMTprog{gshhgtograss} to convert shoreline
 segments to the GRASS database format; the latter program is maintained by
 Simon Cox\footnote{Simon.Cox@csiro.au}.
 The package is maintained by Paul Wessel.
 
 \section{imgsrc: gridded altimetry extractor}
 
-This package consists of the program \GMTprog{img2mercgrd} to
+This package consists of the program \GMTprog{img2grd} to
 extract subsets of the global gravity and predicted topography
 solutions derived from satellite altimetry\footnote{For data bases,
 see http://topex.ucsd.edu/marine\_grav/mar\_grav.html.}.  The package
-is maintained by Walter Smith\footnote{Walter.HF.Smith@noaa.gov}.
+is maintained by Walter Smith and Paul Wessel.
 
 \section{meca: seismology and geodesy symbols}
 
@@ -63,9 +63,9 @@ This package contains the programs \GMTprog{pscoupe}, \GMTprog{psmeca},
 \GMTprog{pspolar}, and \GMTprog{psvelo} which are used
 by seismologists and geodesists for plotting focal mechanisms (including
 cross-sections and polarities), error ellipses, velocity arrows, rotational
-wedges, and more.  The package is maintained by
+wedges, and more.  The package was developed by
 Kurt Feigl\footnote{Kurt.Feigl@cnes.fr} and
-Genevieve Patau\footnote{patau@ipgp.jussieu.fr}.
+Genevieve Patau\footnote{patau@ipgp.jussieu.fr} but is now maintained by the \GMT\ team.
 
 \section{mex: Matlab/Octave--\gmt\ interface}
 
@@ -94,10 +94,12 @@ The package is maintained by Paul Wessel.
 
 \section{potential: Geopotential tools}
 
-At the moment, this package contains the programs \GMTprog{redpol}, which
+At the moment, this package contains the programs \GMTprog{gravfft}, which
+performs gravity, isostasy, and admittance calculculation for grids, \GMTprog{redpol}, which
 compute the continuous reduction to the pole, AKA differential RTP for magnetic data,
 and \GMTprog{xyzokb.o}, which computes the gravity or magnetic anomaly of a body by
-the method of Okabe\footnote{Okabe, M., 1979, Analytical expressions for gravity anomalies due to polyhedral bodies and translation into 
+the method of Okabe\footnote{Okabe, M., 1979, Analytical expressions for gravity
+anomalies due to polyhedral bodies and translation into 
 magnetic anomalies, \emph{Geophysics, 44}, 730--741.}.
 The package is maintained by Joaquim Luis and Paul Wessel.
 
