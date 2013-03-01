@@ -6,7 +6,7 @@
 # GMT progs:	makecpt, grdgradient, grdimage, grdinfo, grdmath, pscoast, pstext, mapproject
 # Unix progs:	rm, echo
 #
-ps=new.ps
+ps=example_28.ps
 
 # Get intensity grid and set up a color table
 grdgradient Kilauea.utm.nc -Nt1 -A45 -GKilauea.utm_i.nc
