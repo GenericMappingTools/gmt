@@ -914,7 +914,7 @@ int GMT_access (struct GMT_CTRL *C, const char* filename, int mode)
 	if (file[0] == '\0')
 		return (-1);		/* It happens for example when parsing grdmath args and it finds an isolated  "=" */
 
-	if ((c = strstr (file, "+u"))) c[0] = '\0';	/* Chop off any x/u unit specification */
+	if ((c = strstr (file, "+u")) || (c = strstr (file, "+U"))) c[0] = '\0';	/* Chop off any x/u unit specification */
 	if (mode == W_OK)
 		return (access (file, mode));	/* When writing, only look in current directory */
 	if (mode == R_OK || mode == F_OK) {	/* Look in special directories when reading or just checking for existance */

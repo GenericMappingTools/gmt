@@ -94,11 +94,17 @@ EXTERN_MSC void gmt_close_grd (struct GMT_CTRL *C, struct GMT_GRID *G);
  * data in km or miles.  Appending +u<unit> addresses this conversion. */
 
 void gmt_grd_parse_xy_units (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h, char *file, unsigned int direction)
-{	/* Decode the optional +u<unit> and determine scales */
+{	/* Decode the optional +u|U<unit> and determine scales */
 	enum GMT_enum_units u_number;
+	unsigned int mode = 0;
 	char *c = NULL, *name = (file) ? file : h->name;
 	if (GMT_is_geographic (C, direction)) return;	/* Does not apply to geographic data */
-	if ((c = strstr (name, "+u")) == NULL) return;	/* No +u<unit> modifier found */
+	if ((c = strstr (name, "+u"))) 		/* Found +u<unit> modifier */
+		mode = 0;
+	else if ((c = strstr (name, "+U"))) 	/* Found +U<unit> modifier */
+		mode = 1;
+	else
+		return;	/* No +u|U<unit> modifier found */
 	u_number = GMT_get_unit_number (C, c[2]);		/* Convert char unit to enumeration constant for this unit */
 	if (u_number == GMT_IS_NOUNIT) {
 		GMT_report (C, GMT_MSG_NORMAL, "Grid file x/y unit specification %s was unrecognized (part of file name?) and is ignored.\n", c);
@@ -106,8 +112,10 @@ void gmt_grd_parse_xy_units (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h, char
 	}
 	/* Got a valid unit */
 	h->xy_unit_to_meter[direction] = C->current.proj.m_per_unit[u_number];	/* Converts unit to meters */
+	if (mode) h->xy_unit_to_meter[direction] = 1.0 / h->xy_unit_to_meter[direction];	/* Wanted the inverse */
 	h->xy_unit[direction] = u_number;	/* Unit ID */
 	h->xy_adjust[direction] |= 1;		/* Says we have successfully parsed and readied the x/y scaling */
+	h->xy_mode[direction] = mode;
 	c[0] = '\0';	/* Chop off the unit specification from the file name */
 }
 
@@ -125,20 +133,29 @@ void gmt_grd_xy_scale (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h, unsigned i
 		for (k = 0; k < 4; k++) h->wesn[k] *= h->xy_unit_to_meter[GMT_IN];
 		for (k = 0; k < 2; k++) h->inc[k]  *= h->xy_unit_to_meter[GMT_IN];
 		h->xy_adjust[GMT_IN] = 2;	/* Now the grid is ready for use and in meters */
-		GMT_report (C, GMT_MSG_LONG_VERBOSE, "Input grid file x/y unit was converted from %s to meters after reading.\n", C->current.proj.unit_name[h->xy_unit[GMT_IN]]);
+		if (h->xy_mode[direction])
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Input grid file x/y unit was converted from meters to %s after reading.\n", C->current.proj.unit_name[h->xy_unit[GMT_IN]]);
+		else
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Input grid file x/y unit was converted from %s to meters after reading.\n", C->current.proj.unit_name[h->xy_unit[GMT_IN]]);
 	}
 	else if (direction == GMT_OUT) {	/* grid x/y are assumed to be in meters */
 		if (h->xy_adjust[GMT_OUT] & 1) {	/* Was given a new unit for output */
 			for (k = 0; k < 4; k++) h->wesn[k] /= h->xy_unit_to_meter[GMT_OUT];
 			for (k = 0; k < 2; k++) h->inc[k]  /= h->xy_unit_to_meter[GMT_OUT];
 			h->xy_adjust[GMT_OUT] = 2;	/* Now we are ready for writing */
-			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Output grid file x/y unit was converted from meters to %s before writing.\n", C->current.proj.unit_name[h->xy_unit[GMT_OUT]]);
+			if (h->xy_mode[GMT_OUT])
+				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Output grid file x/y unit was converted from %s to meters before writing.\n", C->current.proj.unit_name[h->xy_unit[GMT_OUT]]);
+			else
+				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Output grid file x/y unit was converted from meters to %s before writing.\n", C->current.proj.unit_name[h->xy_unit[GMT_OUT]]);
 		}
 		else if (h->xy_adjust[GMT_IN] & 2) {	/* Just undo old scaling */
 			for (k = 0; k < 4; k++) h->wesn[k] /= h->xy_unit_to_meter[GMT_IN];
 			for (k = 0; k < 2; k++) h->inc[k]  /= h->xy_unit_to_meter[GMT_IN];
 			h->xy_adjust[GMT_IN] -= 2;	/* Now it is back to where we started */
-			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Output grid file x/y unit was reverted back from meters to %s before writing.\n", C->current.proj.unit_name[h->xy_unit[GMT_IN]]);
+			if (h->xy_mode[GMT_OUT])
+				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Output grid file x/y unit was reverted back to %s from meters before writing.\n", C->current.proj.unit_name[h->xy_unit[GMT_IN]]);
+			else
+				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Output grid file x/y unit was reverted back from meters to %s before writing.\n", C->current.proj.unit_name[h->xy_unit[GMT_IN]]);
 		}
 	}
 }

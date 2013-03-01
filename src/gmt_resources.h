@@ -244,6 +244,7 @@ struct GMT_GRID_HEADER {
 	unsigned int z_offset_autoadust; /* if z_add_offset should be auto-detected */
 					 /* xy_*[] is separate settings for GMT_IN and GMT_OUT */
 	unsigned int xy_adjust[2];	 /* 1 if +u<unit> was parsed and scale set, 3 if xy has been adjusted, 0 otherwise */
+	unsigned int xy_mode[2];	 /* 1 if +U<unit> was parsed, 0 otherwise */
 	unsigned int xy_unit[2];	 /* Unit enum specified via +u<unit> */
 	double xy_unit_to_meter[2];	 /* Scale, given xy_unit, to convert xy from <unit> to meters */
 
