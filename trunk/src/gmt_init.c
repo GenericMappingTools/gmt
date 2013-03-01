@@ -1379,7 +1379,7 @@ int gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 	unsigned int i, icol, pos, error = 0;
 	int got, col_type[2], expect_to_read;
 	bool inv_project = false, scale_coord = false;
-	char text[GMT_BUFSIZ], string[GMT_BUFSIZ];
+	char text[GMT_BUFSIZ], string[GMT_BUFSIZ], r_unit;
 	double p[6];
 
 	/* Parse the -R option.  Full syntax: -R<grdfile> or -Rg or -Rd or -R[g|d]w/e/s/n[/z0/z1][r] */
@@ -1407,22 +1407,42 @@ int gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 		if (GMT_Destroy_Data (C->parent, GMT_ALLOCATED, &G) != GMT_OK) {
 			return (C->parent->error);
 		}
-		GMT_memcpy (C->common.R.wesn, C->current.io.grd_info.grd.wesn, 4, double);
-		C->common.R.wesn[ZLO] = C->current.io.grd_info.grd.z_min;	C->common.R.wesn[ZHI] = C->current.io.grd_info.grd.z_max;
-		C->current.io.grd_info.active = true;
-		return (GMT_NOERROR);
+		if ((C->current.proj.projection == GMT_UTM || C->current.proj.projection == GMT_TM)) {	/* Perhaps we got an [U]TM grid? */
+			if (fabs (C->current.io.grd_info.grd.wesn[XLO]) > 360.0 || fabs (C->current.io.grd_info.grd.wesn[XHI]) > 360.0 \
+			  || fabs (C->current.io.grd_info.grd.wesn[YLO]) > 90.0 || fabs (C->current.io.grd_info.grd.wesn[YHI]) > 90.0) {	/* Yes we did */
+				inv_project = true;
+				r_unit = 'e';	/* Must specify the "missing" leading e for meter */
+				sprintf (string, "%.16g/%.16g/%.16g/%.16g", C->current.io.grd_info.grd.wesn[XLO], C->current.io.grd_info.grd.wesn[XHI], C->current.io.grd_info.grd.wesn[YLO], C->current.io.grd_info.grd.wesn[YHI]);
+			}
+		}
+		if (!inv_project) {
+			GMT_memcpy (C->common.R.wesn, C->current.io.grd_info.grd.wesn, 4, double);
+			C->common.R.wesn[ZLO] = C->current.io.grd_info.grd.z_min;	C->common.R.wesn[ZHI] = C->current.io.grd_info.grd.z_max;
+			C->current.io.grd_info.active = true;
+			return (GMT_NOERROR);
+		}
 	}
-	if (item[0] == 'g' || item[0] == 'd') {	/* Here we have a region appended to -Rd|g */
+	else if (item[0] == 'g' || item[0] == 'd') {	/* Here we have a region appended to -Rd|g */
 		C->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON, C->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
 		strncpy (string, &item[1], GMT_BUFSIZ);
 		C->current.io.geo.range = (item[0] == 'g') ? GMT_IS_0_TO_P360_RANGE : GMT_IS_M180_TO_P180_RANGE;
 	}
 	else if (strchr (GMT_LEN_UNITS2, item[0])) {	/* Specified min/max in projected distance units */
 		strncpy (string, &item[1], GMT_BUFSIZ);
+		r_unit = item[0];	/* The leading unit */
 		if (GMT_IS_LINEAR (C))	/* Just scale up the values */
 			scale_coord = true;
 		else 
 			inv_project = true;
+	}
+	else if (C->current.proj.projection == GMT_UTM || C->current.proj.projection == GMT_TM) {	/* Just _might_ be getting -R in meters, better check */
+		double rect[4];
+		strncpy (string, item, GMT_BUFSIZ);
+		sscanf (string, "%lg/%lg/%lg/%lg", &rect[XLO], &rect[XHI], &rect[YLO], &rect[YHI]);
+		if (fabs (rect[XLO]) > 360.0 || fabs (rect[XHI]) > 360.0 || fabs (rect[YLO]) > 90.0 || fabs (rect[YHI]) > 90.0) {	/* Oh, yeah... */
+			inv_project = true;
+			r_unit = 'e';	/* Must specify the "missing" leading e for meter */
+		}
 	}
 	else	/* Plain old -Rw/e/s/n */
 		strncpy (string, item, GMT_BUFSIZ);
@@ -1473,7 +1493,7 @@ int gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 	if (inv_project) {	/* Convert rectangular distances to geographic corner coordinates */
 		double wesn[4];
 		C->common.R.oblique = false;
-		error += gmt_rectR_to_geoR (C, item[0], p, wesn);
+		error += gmt_rectR_to_geoR (C, r_unit, p, wesn);
 		GMT_memcpy (p, wesn, 4, double);
 		C->common.R.oblique = true;
 	}
