@@ -109,11 +109,16 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     from the margin, printed with **FONT\_ANNOT\_PRIMARY**. Use **-** if
     no *fill* or outline (*pen*) is required. When plotting just a
     symbol, without text, *dx2* and *text* can be omitted. Two **psxy**
-    symbols require special attention: front (**f**) and vector (**v**).
-    You must prepend the length of the desired item to the rest of the
-    symbol argument; this will be used internally to set the correct
-    fault or vector length and will be stripped before passing the
-    arguments to **psxy**.
+    symbols may take special modifiers: front (**f**) and vector (**v**). 
+    You can append modifiers to the symbol and affect how the fronts and
+    vectors are presented (see **psxy** man page for modifiers).
+    **pslegend** will determine default settings for all modifiers and
+    secondary arguments if not provided.  A few other symbols (the rectangles,
+    ellipse, wedge, mathangle) may take more than a single argument size.
+    If just a single size if given then **pslegend** will provide reasonable
+    arguments to plot the symbol.  Alternatively, combine the required
+    arguments into a single, comma-separated string and use that as the
+    symbol size (again, see **psxy** for details on the arguments needed).
 **T** *paragraph-text*
     One or more of these **T** records with *paragraph-text* printed
     with **FONT\_ANNOT\_PRIMARY**. To specify special positioning and
