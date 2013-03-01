@@ -304,7 +304,9 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t     If -SJ rather than -Sj is selected, psxy will expect azimuth, and\n");
 	GMT_message (GMT, "\t     dimensions in km and convert azimuths based on map projection.\n");
 	GMT_message (GMT, "\t     For linear projection we scale dimensions by the map scale.\n");
-	GMT_message (GMT, "\t   Fronts: Give tickgap/ticklen[+l|+r][+<type>][+o<offset>], where\n");
+	GMT_message (GMT, "\t   Fronts: Give <tickgap>[/<ticklen>][+l|+r][+<type>][+o<offset>].\n");
+	GMT_message (GMT, "\t     If <tickgap> is negative it means the number of gaps instead.\n");
+	GMT_message (GMT, "\t     The <ticklen> defaults to 15%% of <tickgap> if not given.  Append\n");
 	GMT_message (GMT, "\t     +l or +r   : Plot symbol to left or right of front [centered]\n");
 	GMT_message (GMT, "\t     +<type>    :  +b(ox), +c(ircle), +f(ault), +s(lip), +t(riangle) [f]\n");
 	GMT_message (GMT, "\t       box      : square when centered, half-square otherwise.\n");
@@ -312,7 +314,7 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t       fault    : centered cross-tick or tick only in specified direction.\n");
 	GMT_message (GMT, "\t       slip     : left-or right-lateral strike-slip arrows.\n");
 	GMT_message (GMT, "\t       triangle : diagonal square when centered, directed triangle otherwise.\n");
-	GMT_message (GMT, "\t     +<offset>  : Plot first symbol when along-front distance is offset [0].\n");
+	GMT_message (GMT, "\t     +o<offset> : Plot first symbol when along-front distance is offset [0].\n");
 	GMT_message (GMT, "\t   Kustom: Append <symbolname> immediately after 'k'; this will look for\n");
 	GMT_message (GMT, "\t     <symbolname>.def in the current directory, in $GMT_USERDIR,\n");
 	GMT_message (GMT, "\t     or in $GMT_SHAREDIR (searched in that order).\n");

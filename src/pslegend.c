@@ -842,16 +842,28 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						x_off = x0 + (Ctrl->D.width / n_columns) * (column_number%n_columns);
 						S[SYM] = D[SYM]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 						if (symbol[0] == 'f') {	/* Front is different, must plot as a line segment */
-							i = 0;
-							while (size[i] != '/' && size[i]) i++;
-							if (size[i] != '/') {
-								GMT_report (GMT, GMT_MSG_NORMAL, "Error: -Sf option must have a tick length\n");
-								Return (EXIT_FAILURE);
+							double length, tlen, gap;
+							char *c = NULL;
+							int n = sscanf (size, "%[^/]/%[^/]/%s", A, B, C);
+							if (n == 3) {	/* Got line length, tickgap, and ticklength */
+								length = GMT_to_inch (GMT, A);	/* The length of the line */
+								tlen = GMT_to_inch (GMT, C);	/* The length of the tick */
 							}
-							size[i] = '\0';	/* Temporarily truncate */
-							x = 0.5 * GMT_to_inch (GMT, size);
-							size[i] = '/';	/* Undo truncation */
-							i++;
+							else if (n == 2 && B[0] != '-') {	/* Got line length and tickgap only */
+								length = GMT_to_inch (GMT, A);	/* The length of the line */
+								gap = GMT_to_inch (GMT, B);	/* The tick gap */
+								tlen = 0.15 * gap;		/* The default length of the tick */
+							}
+							else {	/* Got line length, select defaults for other things */
+								length = GMT_to_inch (GMT, A);	/* The length of the line */
+								strcpy (B, "-1");	/* One centered tick */
+								tlen = 0.15 * length;		/* The default length of the tick */
+							}
+							if ((c = strchr (symbol, '+')))	/* Pass along all the given modifiers */
+								strcpy (sub, c);
+							else	/* The necessary arguments not supplied, provide reasonable defaults */
+								sprintf (sub, "+l+b");	/* Box to the left of the line is our default front symbol */
+							x = 0.5 * length;
 							F = Front->table[0]->segment[0];	/* Since we only will have one segment */
 							F->coord[GMT_X][0] = x_off + off_ss-x;	F->coord[GMT_Y][0] = y0;
 							F->coord[GMT_X][1] = x_off + off_ss+x;	F->coord[GMT_Y][1] = y0;
@@ -862,9 +874,11 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							if (GMT_Encode_ID (API, string, object_ID) != GMT_OK) {	/* Make filename with embedded object ID */
 								Return (API->error);
 							}
-							sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -S%s%s %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], symbol, &size[i], string);
+							sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -Sf%s/%gi%s %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], B, tlen, sub, string);
 							if (txt_c[0] != '-') {strcat (buffer, " -G"); strcat (buffer, txt_c);}
 							if (txt_d[0] != '-') {strcat (buffer, " -W"); strcat (buffer, txt_d);}
+							// fprintf (stderr, "%s\n", buffer);
+							
 							status = GMT_psxy (API, 0, buffer);	/* Plot the front */
 							if (status) {
 								GMT_report (GMT, GMT_MSG_NORMAL, "GMT_psxy returned error %d.\n", status);
@@ -873,10 +887,6 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							API->io_enabled[GMT_IN] = true;	/* UNDOING SETTING BY psxy */
 						}
 						else {	/* Regular symbols */
-							if (symbol[0] == 'k')
-								sprintf (sub, "%s/%s", symbol, size);
-							else
-								sprintf (sub, "%s%s", symbol, size);
 							sprintf (sub, "%s", symbol);
 							if (symbol[0] == 'E' || symbol[0] == 'e') {	/* Ellipse */
 								if (strchr (size, ',')) {	/* We got dir,major,minor instead of just size; parse and use */
@@ -904,8 +914,8 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 									sprintf (sarg, "%g %g 30 %gi %gi", x_off + off_ss, y0, x, 0.65 * x);
 								}
 							}
-							else if (symbol[0] == 'V' || symbol[0] == 'v') {	/* Vector needs a prepended length/ string */
-								if (strchr (size, ',')) {	/* We got dir,length */
+							else if (symbol[0] == 'V' || symbol[0] == 'v') {	/* Vector */
+								if (strchr (size, ',')) {	/* We got dir,length combined */
 									sscanf (size, "%[^,],%s", A, B);
 									az1 = GMT_to_inch (GMT, A);
 									x = GMT_to_inch (GMT, B);
@@ -924,7 +934,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 								else
 #endif
 								if (!strchr (symbol, '+'))  {	/* The necessary arguments not supplied! */
-									sprintf (sub, "v%gi+jc+e", 0.15*x);	/* Somewhat arbitrary default */
+									sprintf (sub, "v%gi+jc+e", 0.25*x);	/* Head size is 15% of length */
 								}
 								if (txt_c[0] == '-') strcat (sub, "+g-");
 								else { strcat (sub, "+g"); strcat (sub, txt_c);}
@@ -1000,10 +1010,10 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							strcat (buffer, " -G"); strcat (buffer, txt_c);
 							strcat (buffer, " -W"); strcat (buffer, txt_d);
 							S[SYM]->record[S[SYM]->n_rows++] = strdup (buffer);
-							fprintf (stderr, "%s\n", buffer);
+							// fprintf (stderr, "%s\n", buffer);
 							if (S[SYM]->n_rows == S[SYM]->n_alloc) S[SYM]->record = GMT_memory (GMT, S[SYM]->record, S[SYM]->n_alloc += GMT_SMALL_CHUNK, char *);
 							sprintf (buffer, "%s %s", sarg, sub);
-							fprintf (stderr, "%s\n", buffer);
+							// fprintf (stderr, "%s\n", buffer);
 							
 							S[SYM]->record[S[SYM]->n_rows++] = strdup (buffer);
 							if (S[SYM]->n_rows == S[SYM]->n_alloc) S[SYM]->record = GMT_memory (GMT, S[SYM]->record, S[SYM]->n_alloc += GMT_SMALL_CHUNK, char *);

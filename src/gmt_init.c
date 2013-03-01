@@ -7541,20 +7541,28 @@ int GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 
 int GMT_parse_front (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 {
-	/* Parser for -Sf */
+	/* Parser for -Sf<tickgap>[/<ticklen>][+l|+r][+<type>][+o<offset>]
+	 * <tickgap> is required and is either a distance in some unit (append c|i|p)
+	 * or it starts with - and gives the number of desired ticks instead.
+	 * <ticklen> defaults to 15% of <tickgap> but is required if the number
+	 * of ticks are specified. */
 	
 	unsigned int pos = 0, k, error = 0;
-	int mods;
+	int mods, n;
 	char p[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
 	
 	for (k = 0; text[k] && text[k] != '+'; k++);	/* Either find the first plus or run out or chars */
 	strncpy (p, text, k); p[k] = 0;
 	mods = (text[k] == '+');
 	if (mods) text[k] = 0;		/* Temporarily chop off the modifiers */
-	sscanf (&text[1], "%[^/]/%s", txt_a, txt_b);
+	n = sscanf (&text[1], "%[^/]/%s", txt_a, txt_b);
 	if (mods) text[k] = '+';	/* Restore the modifiers */
+	if (txt_a[0] == '-' && n == 1) {
+		GMT_report (C, GMT_MSG_NORMAL, "Error option -Sf: Must specify <ticklen> when specifying the number of ticks\n");
+		error++;
+	}
 	S->f.f_gap = (txt_a[0] == '-') ? atof (txt_a) : GMT_to_inch (C, txt_a);
-	S->f.f_len = GMT_to_inch (C, txt_b);
+	S->f.f_len = (n == 1) ? 0.15 * S->f.f_gap : GMT_to_inch (C, txt_b);
 	
 	S->f.f_symbol = GMT_FRONT_FAULT;	/* Default is the fault symbol */
 	S->f.f_sense = GMT_FRONT_CENTERED;	/* Default is centered symbols unless +l or +r is found */
@@ -7563,12 +7571,11 @@ int GMT_parse_front (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 			case 'b':	S->f.f_symbol = GMT_FRONT_BOX;		break;	/* [half-]square front */
 			case 'c':	S->f.f_symbol = GMT_FRONT_CIRCLE;	break;	/* [half-]circle front */
 			case 'f':	S->f.f_symbol = GMT_FRONT_FAULT;	break;	/* Fault front */
-			case 'l':	S->f.f_sense = GMT_FRONT_LEFT;		break;	/* Symbols to the left */
-			case 'r':	S->f.f_sense = GMT_FRONT_RIGHT;		break;	/* Symbols to the right */
+			case 'l':	S->f.f_sense  = GMT_FRONT_LEFT;		break;	/* Symbols to the left */
+			case 'r':	S->f.f_sense  = GMT_FRONT_RIGHT;	break;	/* Symbols to the right */
 			case 's':	S->f.f_symbol = GMT_FRONT_SLIP;		break;	/* Strike-slip front */
 			case 't':	S->f.f_symbol = GMT_FRONT_TRIANGLE;	break;	/* Triangle front */
-			case 'o':
-				S->f.f_off = GMT_to_inch (C, &p[1]);		break;	/* Symbol offset along line */
+			case 'o':	S->f.f_off = GMT_to_inch (C, &p[1]);	break;	/* Symbol offset along line */
 			default:
 				GMT_report (C, GMT_MSG_NORMAL, "Error option -Sf: Bad modifier +%c\n", p[0]);
 				error++;	break;	
@@ -7844,7 +7851,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 			check = false;
 			break;
 
-		case 'f':	/* Fronts: -Sf<spacing>/<size>[+r+l][+f+t+s+c+b][+o<offset>]	[WAS: -Sf<spacing>/<size>[dir][type][:<offset>]	*/
+		case 'f':	/* Fronts: -Sf<spacing>[/<size>][+r+l][+f+t+s+c+b][+o<offset>]	[WAS: -Sf<spacing>/<size>[dir][type][:<offset>]	*/
 			p->symbol = GMT_SYMBOL_FRONT;
 			p->f.f_off = 0.0;	p->f.f_symbol = GMT_FRONT_FAULT;	p->f.f_sense = GMT_FRONT_CENTERED;
 			strncpy (text_cp, text, GMT_TEXT_LEN256);
