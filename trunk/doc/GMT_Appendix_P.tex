@@ -115,8 +115,9 @@ possible different versions in future.  It is indicated by the \textbf{@V} seque
 \begin{table}[h]
 \small
 \centering
-\begin{tabular}{|l|l|l|} \hline
-V & GMT1.0 & Data in this file is stored using v1.0 of the OGR/GMT data format \\ \hline
+\begin{tabular}{lll} \hline
+\textbf{Code}	&	\textbf{Argument}	&	\textbf{Description} \\ \hline \hline
+V & GMT1.0 & Data in this file is stored using v1.0 of the OGR/GMT data format \\
 \end{tabular}
 \label{tbl:Q1}
 \end{table} 
@@ -135,21 +136,21 @@ the header comment line), are listed in Table~\ref{tbl:geometries}.
 \begin{table}[h]
 \small
 \centering
-\begin{tabular}{|l|l|l|} \hline
-\emph{Code}	&	\emph{Geometry}	&	\emph{Description} \\ \hline \hline
+\begin{tabular}{lll} \hline
+\textbf{Code}	&	\textbf{Geometry}	&	\textbf{Description} \\ \hline \hline
 G	&	POINT		&	File with point features \\
-	&			&	(Each point will have it's own attribute/header line preceding the point coordinates) \\ \hline
+	&			&	(Each point will have it's own attribute/header line preceding the point coordinates) \\
 G	&	MULTIPOINT	&	File with a single multipoint feature \\
 	&			&	(All the point features are a single multipoint, with the same attribute/header \\
-	&			&	information) \\ \hline
+	&			&	information) \\
 G	&	LINESTRING	&	File with features comprising multiple single lines  \\
 	&			&	(Effectively the current \GMT\ multiline file, each line feature will have it's own  \\ 
-	&			&	attribute and header data) \\ \hline
+	&			&	attribute and header data) \\
 G	&	MULTILINESTRING	&	File with features comprising a multiline \\
 	&			&	(All the line features in the file are a single multiline feature, only one attribute\\
-	&			&	and header which applies to all the lines) \\ \hline
+	&			&	and header which applies to all the lines) \\
 G	&	POLYGON		&	File with one or more polygons \\
-	&			&	(Similar to a line file, except the features are closed polygons) \\ \hline
+	&			&	(Similar to a line file, except the features are closed polygons) \\
 G	&	MULTIPOLYGON	&	File with a single multipolygon \\
 	&			&	(Similar to a \GMT\ multiline file, except the feature is a closed multipolygon) \\ \hline
 \end{tabular}
@@ -182,11 +183,11 @@ in Table~\ref{tbl:projectspec}.
 \begin{table}[H]
 \small
 \centering
-\begin{tabular}{|l|l|}  \hline
-\emph{Code}	&	\emph{Projection Specification} \\ \hline \hline
-@Je	&	EPSG code for the projection \\ \hline
-@Jg	&	A string representing the projection parameters as used by \GMT\ \\ \hline
-@Jp	&	A string comprising the Proj.4 parameters representing the projection parameters \\ \hline
+\begin{tabular}{ll}  \hline
+\textbf{Code}	&	\textbf{Projection Specification} \\ \hline \hline
+@Je	&	EPSG code for the projection \\
+@Jg	&	A string representing the projection parameters as used by \GMT\ \\
+@Jp	&	A string comprising the Proj.4 parameters representing the projection parameters \\
 @Jw	&	A string comprising the OGR WKT (well known text) representation of the projection parameters \\ \hline
 \end{tabular}
 \label{tbl:projectspec}
@@ -218,7 +219,8 @@ flagged by the \textbf{@N} prefix.
 \begin{table}[H]
 \small
 \centering
-\begin{tabular}{|l|l|l|} \hline
+\begin{tabular}{lll} \hline
+\textbf{Code}	&	\textbf{Argument}	&	\textbf{Description} \\ \hline \hline
 N	&	word$|$word$|$word	&	A ``$|$''-separated string of names of the attribute field names \\ \hline
 \end{tabular}
 \label{tbl:Q3}
@@ -229,7 +231,8 @@ for each of the named fields, using the \textbf{@T} prefix.
 \begin{table}[H]
 \small
 \centering
-\begin{tabular}{|l|l|l|} \hline
+\begin{tabular}{lll} \hline
+\textbf{Code}	&	\textbf{Argument}	&	\textbf{Description} \\ \hline \hline
 T	&	word$|$word$|$word	&		A ``$|$''-separated string of the attribute field data types \\ \hline
 \end{tabular}
 \label{tbl:Q4}

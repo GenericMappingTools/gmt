@@ -81,31 +81,31 @@ Table~\ref{tbl:custsymb}.
 \begin{table}[H]
 \small
 \centering
-\begin{tabular}{|l|c|l|l|} \hline
-Name 		& 	Code		&	Purpose				&	Arguments \\ \hline
-rotate		&	\textbf{R}	& Rotate the coordinate system		& $\alpha$ \\ \hline
-moveto		&	\textbf{M}	& Set a new anchor point 		& $x_0, y_0$  \\ \hline
-drawto		&	\textbf{D}	& Draw line from previous point 	& $x, y$  \\ \hline
-arc		&	\textbf{A}	& Append circular arc to existing path 	& $x_c, y_c, r, \alpha_1, \alpha_2$  \\ \hline
-stroke		&	\textbf{S}	& Stroke existing path only 		&  \\ \hline \hline
-texture		&	\textbf{T}	& Change current pen and fill		&  \\ \hline \hline
-star		&	\textbf{a}	& Plot a star 				& $x, y$,\emph{size}  \\ \hline
-circle		&	\textbf{c}	& Plot a circle 			& $x, y$,\emph{size}  \\ \hline
-diamond		&	\textbf{d}	& Plot a diamond 			& $x, y$,\emph{size}  \\ \hline
-ellipse		&	\textbf{e}	& Plot a ellipse 			& $x, y, \alpha$,\emph{major},\emph{minor}  \\ \hline
-octagon		&	\textbf{g}	& Plot an octagon 			& $x, y$,\emph{size}  \\ \hline
-hexagon		&	\textbf{h}	& Plot a hexagon 			& $x, y$,\emph{size}  \\ \hline
-invtriangle	&	\textbf{i}	& Plot an inverted triangle		& $x, y$,\emph{size}  \\ \hline
-letter		&	\textbf{l}	& Plot a letter 			& $x, y$,\emph{size}, \emph{string}  \\ \hline
-marc		&	\textbf{m}	& Plot a math arc 			& $x, y, r, \alpha_1, \alpha_2$  \\ \hline
-pentagon	&	\textbf{n}	& Plot a pentagon 			& $x, y$,\emph{size}  \\ \hline
-plus		&	\textbf{+}	& Plot a plus sign 			& $x, y$,\emph{size}  \\ \hline
-rect		&	\textbf{r}	& Plot a rectangle 			& $x, y$, \emph{width}, \emph{height}  \\ \hline
-square		&	\textbf{s}	& Plot a square 			& $x, y$,\emph{size}  \\ \hline
-triangle	&	\textbf{t}	& Plot a triangle 			& $x, y$,\emph{size}  \\ \hline
-wedge		&	\textbf{w}	& Plot a wedge 				& $x, y, r, \alpha_1, \alpha_2$  \\ \hline
-cross		&	\textbf{x}	& Plot a cross 				& $x, y$,\emph{size}  \\ \hline
-x-dash		&	\textbf{-}	& Plot a x-dash 			& $x, y$,\emph{size}  \\ \hline
+\begin{tabular}{lcll} \hline
+\textbf{Name} 	& 	\textbf{Code}	&	\textbf{Purpose}		& \textbf{Arguments} \\ \hline \hline
+rotate		&	\textbf{R}	& Rotate the coordinate system		& $\alpha$ \\
+moveto		&	\textbf{M}	& Set a new anchor point 		& $x_0, y_0$  \\
+drawto		&	\textbf{D}	& Draw line from previous point 	& $x, y$  \\
+arc		&	\textbf{A}	& Append circular arc to existing path 	& $x_c, y_c, r, \alpha_1, \alpha_2$  \\
+stroke		&	\textbf{S}	& Stroke existing path only 		&  \\ \hline
+texture		&	\textbf{T}	& Change current pen and fill		&  \\ \hline
+star		&	\textbf{a}	& Plot a star 				& $x, y$,\emph{size}  \\
+circle		&	\textbf{c}	& Plot a circle 			& $x, y$,\emph{size}  \\
+diamond		&	\textbf{d}	& Plot a diamond 			& $x, y$,\emph{size}  \\
+ellipse		&	\textbf{e}	& Plot a ellipse 			& $x, y, \alpha$,\emph{major},\emph{minor}  \\
+octagon		&	\textbf{g}	& Plot an octagon 			& $x, y$,\emph{size}  \\
+hexagon		&	\textbf{h}	& Plot a hexagon 			& $x, y$,\emph{size}  \\
+invtriangle	&	\textbf{i}	& Plot an inverted triangle		& $x, y$,\emph{size}  \\
+letter		&	\textbf{l}	& Plot a letter 			& $x, y$,\emph{size}, \emph{string}  \\
+marc		&	\textbf{m}	& Plot a math arc 			& $x, y, r, \alpha_1, \alpha_2$  \\
+pentagon	&	\textbf{n}	& Plot a pentagon 			& $x, y$,\emph{size}  \\
+plus		&	\textbf{+}	& Plot a plus sign 			& $x, y$,\emph{size}  \\
+rect		&	\textbf{r}	& Plot a rectangle 			& $x, y$, \emph{width}, \emph{height}  \\
+square		&	\textbf{s}	& Plot a square 			& $x, y$,\emph{size}  \\
+triangle	&	\textbf{t}	& Plot a triangle 			& $x, y$,\emph{size}  \\
+wedge		&	\textbf{w}	& Plot a wedge 				& $x, y, r, \alpha_1, \alpha_2$  \\
+cross		&	\textbf{x}	& Plot a cross 				& $x, y$,\emph{size}  \\
+x-dash		&	\textbf{-}	& Plot a x-dash 			& $x, y$,\emph{size}  \\
 y-dash		&	\textbf{y}	& Plot a y-dash 			& $x, y$,\emph{size}  \\ \hline
 \end{tabular}
 \label{tbl:custsymb}
@@ -125,20 +125,20 @@ may use one (and only one) of many logical operators, as listed in Table~\ref{tb
 \begin{table}[H]
 \small
 \centering
-\begin{tabular}{|c|l|} \hline
-Operator 	& 	Purpose					\\ \hline
-$<$ 		& 	Is \emph{var} less than \emph{constant}?		\\ \hline
-$<$= 		& 	Is \emph{var} less than or equal to \emph{constant}?		\\ \hline
-== 		& 	Is \emph{var} equal to \emph{constant}?		\\ \hline
-!= 		& 	Is \emph{var} not equal to \emph{constant}?		\\ \hline
-$>$= 		& 	Is \emph{var} greater than or equal to \emph{constant}?		\\ \hline
-$>$ 		& 	Is \emph{var} greater than \emph{constant}?		\\ \hline
-\% 		& 	Does \emph{var} have a remainder with \emph{constant}?		\\ \hline
-!\% 		& 	Is \emph{var} an exact multiple of \emph{constant}?		\\ \hline
-$<>$ 		& 	Is \emph{var} within the exclusive range of \emph{constant}?	\\ \hline
-[] 		& 	Is \emph{var} within the inclusive range of \emph{constant}?	\\ \hline
-$<$] 		& 	Is \emph{var} within the in/ex-clusive range of \emph{constant}?	\\ \hline
-[$>$		& 	Is \emph{var} within the ex/in-clusive range of \emph{constant}?	\\ \hline
+\begin{tabular}{cl} \hline
+\textbf{Operator} 	& 	\textbf{Purpose}						\\ \hline \hline
+$<$ 		& 	Is \emph{var} less than \emph{constant}?				\\
+$<=$ 		& 	Is \emph{var} less than or equal to \emph{constant}?			\\
+$==$		& 	Is \emph{var} equal to \emph{constant}?					\\
+!= 		& 	Is \emph{var} not equal to \emph{constant}?				\\
+$>=$ 		& 	Is \emph{var} greater than or equal to \emph{constant}?			\\
+$>$ 		& 	Is \emph{var} greater than \emph{constant}?				\\
+\% 		& 	Does \emph{var} have a remainder with \emph{constant}?			\\
+!\% 		& 	Is \emph{var} an exact multiple of \emph{constant}?			\\
+$<>$ 		& 	Is \emph{var} within the exclusive range of \emph{constant}?		\\
+$[\;]$		& 	Is \emph{var} within the inclusive range of \emph{constant}?		\\
+$<]$ 		& 	Is \emph{var} within the in/ex-clusive range of \emph{constant}?	\\
+$[>$		& 	Is \emph{var} within the ex/in-clusive range of \emph{constant}?	\\ \hline
 \end{tabular}
 \label{tbl:custop}
 \caption{List of operators to use for logical tests.  The equality and inequality operators
