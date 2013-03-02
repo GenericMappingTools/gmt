@@ -39,12 +39,12 @@ a unit suffix will be consider to be in meters.  For example, a distance of
 \centering
 \index{Distance units}%
 \index{Units, distance}%
-\begin{tabular}{|l|l||l|l|} \hline
-\multicolumn{1}{|c|}{\emph{Suffix}} & \multicolumn{1}{c|}{\emph{Distance unit}} & \multicolumn{1}{|c|}{\emph{Suffix}} & \multicolumn{1}{c|}{\emph{Distance unit}} \\ \hline
-\textbf{d}	&	Degree of arc	& \textbf{M}	&	Statute mile   \\ \hline
-\textbf{e}	&	Meter [Default]	& \textbf{n}	&	Nautical mile  \\ \hline
-\textbf{f}	&	Foot 		& \textbf{s}	&	Second of arc  \\ \hline
-\textbf{k}	&	Kilometer	& \textbf{u}	&	US Survey foot  \\ \hline
+\begin{tabular}{ll|ll} \hline
+\multicolumn{1}{c}{\textbf{Suffix}} & \multicolumn{1}{c}{\textbf{Distance unit}} & \multicolumn{1}{|c}{\textbf{Suffix}} & \multicolumn{1}{c}{\textbf{Distance unit}} \\ \hline \hline
+\textbf{d}	&	Degree of arc	& \textbf{M}	&	Statute mile   \\
+\textbf{e}	&	Meter [Default]	& \textbf{n}	&	Nautical mile  \\
+\textbf{f}	&	Foot 		& \textbf{s}	&	Second of arc  \\
+\textbf{k}	&	Kilometer	& \textbf{u}	&	US Survey foot  \\
 \textbf{m}	&	Minute of arc	& 		&			\\ \hline
 \end{tabular}
 \caption{Distance units recognized by \gmt\ command line switches.}
@@ -297,31 +297,31 @@ these options in order of importance (some are use a lot more than others).
 \index{\Opt{t} (layer transparency)}%
 \index{\Opt{:} (input and/or output is $y,x$, not $x,y$)}%
 
-\begin{tabular}{|l|l|} \hline
-\multicolumn{1}{|c|}{\emph{Option}}	&	\multicolumn{1}{c|}{\emph{Meaning}} \\ \hline
-\Opt{B}	&	Define tickmarks, annotations, and labels for basemaps and axes  \\ \hline
-\Opt{J}	&	Select a map projection or coordinate transformation  \\ \hline
-\Opt{K}	&	Allow more plot code to be appended to this plot later \\ \hline
-\Opt{O}	&	Allow this plot code to be appended to an existing plot \\ \hline
-\Opt{P}	&	Select Portrait plot orientation [Default is landscape] \\ \hline
-\Opt{R}	&	Define the extent of the map/plot region \\ \hline
-\Opt{U}	&	Plot a time-stamp, by default in the lower left corner of page  \\ \hline
-\Opt{V}	&	Select verbose operation; reporting on progress  \\ \hline
-\Opt{X}	&	Set the \emph{x}-coordinate for the plot origin on the page  \\ \hline
-\Opt{Y}	&	Set the \emph{y}-coordinate for the plot origin on the page  \\ \hline
-\Opt{a}	&	Associate aspatial data from OGR/GMT files with data columns  \\ \hline
-\Opt{b}	&	Select binary input and/or output  \\ \hline
-\Opt{c}	&	Specify the number of plot copies  \\ \hline
-\Opt{f}	&	Specify the data format on a per column basis  \\ \hline
-\Opt{g}	&	Identify data gaps based on supplied criteria  \\ \hline
-\Opt{h}	&	Specify that input/output tables have header record(s)  \\ \hline
-\Opt{i}	&	Specify which input columns to read  \\ \hline
-\Opt{n}	&	Specify grid interpolation settings  \\ \hline
-\Opt{o}	&	Specify which output columns to write  \\ \hline
-\Opt{p}	&	Control perspective views for plots  \\ \hline
-\Opt{r}	&	Set the grid registration to pixel [Default is gridline]  \\ \hline
-\Opt{s}	&	Control output of records containing one or more NaNs  \\ \hline
-\Opt{t}	&	Change layer PDF transparency  \\ \hline
+\begin{tabular}{ll} \hline
+\multicolumn{1}{c}{\textbf{Option}}	&	\multicolumn{1}{c}{\textbf{Meaning}} \\ \hline \hline
+\Opt{B}	&	Define tickmarks, annotations, and labels for basemaps and axes  \\
+\Opt{J}	&	Select a map projection or coordinate transformation  \\
+\Opt{K}	&	Allow more plot code to be appended to this plot later \\
+\Opt{O}	&	Allow this plot code to be appended to an existing plot \\
+\Opt{P}	&	Select Portrait plot orientation [Default is landscape] \\
+\Opt{R}	&	Define the extent of the map/plot region \\
+\Opt{U}	&	Plot a time-stamp, by default in the lower left corner of page  \\
+\Opt{V}	&	Select verbose operation; reporting on progress  \\
+\Opt{X}	&	Set the \emph{x}-coordinate for the plot origin on the page  \\
+\Opt{Y}	&	Set the \emph{y}-coordinate for the plot origin on the page  \\
+\Opt{a}	&	Associate aspatial data from OGR/GMT files with data columns  \\
+\Opt{b}	&	Select binary input and/or output  \\
+\Opt{c}	&	Specify the number of plot copies  \\
+\Opt{f}	&	Specify the data format on a per column basis  \\
+\Opt{g}	&	Identify data gaps based on supplied criteria  \\
+\Opt{h}	&	Specify that input/output tables have header record(s)  \\
+\Opt{i}	&	Specify which input columns to read  \\
+\Opt{n}	&	Specify grid interpolation settings  \\
+\Opt{o}	&	Specify which output columns to write  \\
+\Opt{p}	&	Control perspective views for plots  \\
+\Opt{r}	&	Set the grid registration to pixel [Default is gridline]  \\
+\Opt{s}	&	Control output of records containing one or more NaNs  \\
+\Opt{t}	&	Change layer PDF transparency  \\
 \Opt{:}	&	Assume input geographic data are (\emph{lat,lon}) and not (\emph{lon,lat})  \\ \hline
 \end{tabular}
 \caption{The 24 standardized \gmt\ command line switches.}
@@ -481,17 +481,17 @@ available items are listed in Table~\ref{tbl:inttype}.
 
 By default, all 4 map boundaries (or plot axes) are plotted (denoted \textbf{W}, \textbf{E}, \textbf{S},
 \textbf{N}).  To change this selection, append the codes for those you want
-(e.g., \textbf{WSn}).  In this example, the lower case \textbf{n} denotes to draw the axis and (major and minor) tick marks on the ``northern'' (top) edge of the plot. The upper case \textbf{WS} will annotate the ``western'' and ''southern'' axes with numerals and plot the optional axis label in addition to
+(e.g., \textbf{WSn}).  In this example, the lower case \textbf{n} denotes to draw the axis and (major and minor) tick marks on the ``northern'' (top) edge of the plot. The upper case \textbf{WS} will annotate the ``western'' and ``southern'' axes with numerals and plot the optional axis label in addition to
 draw axis/tick-marks.  The title, if given, will appear centered above the plot.  Unit label or prefix may start with a
 leading -- to suppress the space between it and the annotation.  Normally, equidistant annotations
 occur at multiples of \emph{stride}; you can phase-shift this by appending \emph{phase}, which can be a
 positive or negative number.  Finally, note you may paint the canvas by appending the \textbf{+g}\emph{fill} modifier.
 \begin{table}[H]
 \centering
-\begin{tabular}{|c|l|} \hline
-\emph{Flag}	& \emph{Description} \\ \hline
-\textbf{a}	&	Annotation and major tick spacing \\ \hline
-\textbf{f}	&	Minor tick spacing \\ \hline
+\begin{tabular}{cl} \hline
+\textbf{Flag}	& \textbf{Description} \\ \hline \hline
+\textbf{a}	&	Annotation and major tick spacing \\
+\textbf{f}	&	Minor tick spacing \\
 \textbf{g}	&	Grid line spacing \\ \hline
 \end{tabular}
 \caption{Interval type codes.}
@@ -511,26 +511,26 @@ interpreted as arc minutes and arc seconds, respectively, when a map projection 
 
 \begin{table}[h]
 \centering
-\begin{tabular}{|c|l|l|} \hline
-\emph{Flag}	& \emph{Unit} & \emph{Description} \\ \hline
-\textbf{Y}	&	year		& Plot using all 4 digits \\ \hline
-\textbf{y}	&	year		& Plot using last 2 digits \\ \hline
-\textbf{O}	&	month		& Format annotation using \textbf{FORMAT\_DATE\_MAP} \\ \hline
-\textbf{o}	&	month		& Plot as 2-digit integer (1--12) \\ \hline
-\textbf{U}	&	ISO week	& Format annotation using \textbf{FORMAT\_DATE\_MAP} \\ \hline
-\textbf{u}	&	ISO week	& Plot as 2-digit integer (1--53) \\ \hline
-\textbf{r}	&	Gregorian week	& 7-day stride from start of week (see \textbf{TIME\_WEEK\_START}) \\ \hline
-\textbf{K}	&	ISO weekday	& Plot name of weekday in selected language \\ \hline
-\textbf{k}	&	weekday		& Plot number of day in the week (1-7)  (see \textbf{TIME\_WEEK\_START})\\ \hline
-\textbf{D}	&	date		& Format annotation using \textbf{FORMAT\_DATE\_MAP} \\ \hline
+\begin{tabular}{cll} \hline
+\textbf{Flag}	& \textbf{Unit} & \textbf{Description} \\ \hline \hline
+\textbf{Y}	&	year		& Plot using all 4 digits \\
+\textbf{y}	&	year		& Plot using last 2 digits \\
+\textbf{O}	&	month		& Format annotation using \textbf{FORMAT\_DATE\_MAP} \\
+\textbf{o}	&	month		& Plot as 2-digit integer (1--12) \\
+\textbf{U}	&	ISO week	& Format annotation using \textbf{FORMAT\_DATE\_MAP} \\
+\textbf{u}	&	ISO week	& Plot as 2-digit integer (1--53) \\
+\textbf{r}	&	Gregorian week	& 7-day stride from start of week (see \textbf{TIME\_WEEK\_START}) \\
+\textbf{K}	&	ISO weekday	& Plot name of weekday in selected language \\
+\textbf{k}	&	weekday		& Plot number of day in the week (1-7)  (see \textbf{TIME\_WEEK\_START})\\
+\textbf{D}	&	date		& Format annotation using \textbf{FORMAT\_DATE\_MAP} \\
 \textbf{d}	&	day		& Plot day of month (1--31) or day of year (1--366) \\
-		&			& (see \bf{FORMAT\_DATE\_MAP} \\ \hline
-\textbf{R}	&	day		& Same as \textbf{d}; annotations aligned with week (see \textbf{TIME\_WEEK\_START})\\ \hline
-\textbf{H}	&	hour		& Format annotation using \textbf{FORMAT\_CLOCK\_MAP} \\ \hline
-\textbf{h}	&	hour		& Plot as 2-digit integer (0--24) \\ \hline
-\textbf{M}	&	minute		& Format annotation using \textbf{FORMAT\_CLOCK\_MAP} \\ \hline
-\textbf{m}	&	minute		& Plot as 2-digit integer (0--60) \\ \hline
-\textbf{S}	&	seconds		& Format annotation using \textbf{FORMAT\_CLOCK\_MAP} \\ \hline
+		&			& (see \bf{FORMAT\_DATE\_MAP} \\
+\textbf{R}	&	day		& Same as \textbf{d}; annotations aligned with week (see \textbf{TIME\_WEEK\_START})\\
+\textbf{H}	&	hour		& Format annotation using \textbf{FORMAT\_CLOCK\_MAP} \\
+\textbf{h}	&	hour		& Plot as 2-digit integer (0--24) \\
+\textbf{M}	&	minute		& Format annotation using \textbf{FORMAT\_CLOCK\_MAP} \\
+\textbf{m}	&	minute		& Plot as 2-digit integer (0--60) \\
+\textbf{S}	&	seconds		& Format annotation using \textbf{FORMAT\_CLOCK\_MAP} \\
 \textbf{s}	&	seconds		& Plot as 2-digit integer (0--60) \\ \hline
 \end{tabular}
 \caption{Interval unit codes.}
@@ -1420,13 +1420,13 @@ predefined pen names can be used: default, faint, and \{thin, thick, fat\}[er$|$
 and obese.  Table~\ref{tbl:pennames} shows this list and the corresponding pen widths.
 \begin{table}[h]
 \centering
-\begin{tabular}{|l|c||l|c|} \hline
-\multicolumn{1}{|c|}{\emph{Pen name}}	&	\multicolumn{1}{c|}{\emph{Width}}	&	\multicolumn{1}{|c|}{\emph{Pen name}}	&	\multicolumn{1}{c|}{\emph{Width}} \\ \hline
-faint		&	0	&	thicker		&	1.5p \\ \hline
-default		&	0.25p	&	thickest	&	2p \\ \hline
-thinnest	&	0.25p	&	fat		&	3p \\ \hline
-thinner		&	0.50p	&	fatter		&	6p \\ \hline
-thin		&	0.75p	&	fattest		&	12p \\ \hline
+\begin{tabular}{lc|lc} \hline
+\multicolumn{1}{c}{\textbf{Pen name}}	&	\multicolumn{1}{c|}{\textbf{Width}}	&	\multicolumn{1}{c}{\textbf{Pen name}}	&	\multicolumn{1}{c}{\textbf{Width}} \\ \hline  \hline
+faint		&	0	&	thicker		&	1.5p \\
+default		&	0.25p	&	thickest	&	2p \\
+thinnest	&	0.25p	&	fat		&	3p \\
+thinner		&	0.50p	&	fatter		&	6p \\
+thin		&	0.75p	&	fattest		&	12p \\
 thick		&	1.0p	&	obese		&	18p \\	\hline
 \end{tabular}
 \caption{\gmt\ predefined pen widths.}
@@ -1478,13 +1478,13 @@ Just as with pen width, the default style units are points, but can also be expl
 Table~\ref{tbl:penex} contains additional examples of pen specifications suitable for, say, \GMTprog{psxy}.
 \begin{table}[h]
 \centering
-\begin{tabular}{|l|l|} \hline
-\multicolumn{1}{|c|}{\emph{Pen example}}	&	\multicolumn{1}{c|}{\emph{Comment}} \\ \hline
-\Opt{W}0.5p		&	0.5 point wide line of default color and style \\ \hline
-\Opt{W}green		&	Green line with default width and style \\ \hline
-\Opt{W}thin,red,-	&	Dashed, thin red line \\ \hline
-\Opt{W}fat,.		&	Fat dotted line with default color \\ \hline
-\Opt{W}0.1c,120-1-1	&	Green (in h-s-v) pen, 1~mm thick \\ \hline
+\begin{tabular}{ll} \hline
+\multicolumn{1}{c}{\textbf{Pen example}}	&	\multicolumn{1}{c}{\textbf{Comment}} \\ \hline \hline
+\Opt{W}0.5p		&	0.5 point wide line of default color and style \\
+\Opt{W}green		&	Green line with default width and style \\
+\Opt{W}thin,red,-	&	Dashed, thin red line \\
+\Opt{W}fat,.		&	Fat dotted line with default color \\
+\Opt{W}0.1c,120-1-1	&	Green (in h-s-v) pen, 1~mm thick \\
 \Opt{W}faint,100/0/0/0,..-	&	Very thin, cyan (in c/m/y/k), dot-dot-dashed line \\ \hline
 \end{tabular}
 \caption{A few examples of pen specifications. The default width, color and style are determined by the \textbf{MAP\_DEFAULT\_PEN} parameter.}
@@ -1569,16 +1569,16 @@ Table~\ref{tbl:fillex} contains a few examples of fill specifications.
 
 \begin{table}[h]
 \centering
-\begin{tabular}{|l|l|} \hline
-\multicolumn{1}{|c|}{\emph{Fill example}}	&	\multicolumn{1}{c|}{\emph{Comment}} \\ \hline
-\Opt{G}128		&	Solid gray \\ \hline
-\Opt{G}127/255/0	&	Chartreuse, R/G/B-style \\ \hline
-\Opt{G}\#00ff00 & Green, hexadecimal RGB code \\ \hline
-\Opt{G}25-0.86-0.82	&	Chocolate, h-s-v -- style \\ \hline
-\Opt{G}DarkOliveGreen1	&	One of the named colors \\ \hline
-\Opt{Gp}300/7		&	Simple diagonal hachure pattern in b/w at 300 dpi\\ \hline
-\Opt{Gp}300/7:Bred	&	Same, but with red lines on white \\ \hline
-\Opt{Gp}300/7:BredF-	&	Now the gaps between red lines are transparent \\ \hline
+\begin{tabular}{ll} \hline
+\multicolumn{1}{c}{\textbf{Fill example}}	&	\multicolumn{1}{c}{\textbf{Comment}} \\ \hline\hline
+\Opt{G}128		&	Solid gray \\
+\Opt{G}127/255/0	&	Chartreuse, R/G/B-style \\
+\Opt{G}\#00ff00 & Green, hexadecimal RGB code \\
+\Opt{G}25-0.86-0.82	&	Chocolate, h-s-v -- style \\
+\Opt{G}DarkOliveGreen1	&	One of the named colors \\
+\Opt{Gp}300/7		&	Simple diagonal hachure pattern in b/w at 300 dpi\\
+\Opt{Gp}300/7:Bred	&	Same, but with red lines on white \\
+\Opt{Gp}300/7:BredF-	&	Now the gaps between red lines are transparent \\
 \Opt{Gp}100/marble.ras	&	Using user image of marble as the fill at 100 dpi \\ \hline
 \end{tabular}
 \caption{A few examples of fill specifications.}
@@ -1855,17 +1855,17 @@ hence you must use two percent-signs for each one required in the escape sequenc
 
 \begin{table}[H]
 \centering
-\begin{tabular}{|l|l|} \hline
-\multicolumn{1}{|c|}{\emph{Code}}	&	\multicolumn{1}{c|}{\emph{Effect}} \\ \hline
-@\~	&	Turns symbol font on or off \\ \hline
-@+	&	Turns superscript on or off \\ \hline
-@-	&	Turns subscript on or off \\ \hline
-@\#	&	Turns small caps on or off \\ \hline
-@\_	&	Turns underline on or off \\ \hline
-@\%\emph{fontno}\%	&	Switches to another font; @\%\% resets to previous font \\ \hline
-@:\emph{size}:	&	Switches to another font size; @:: resets to previous size \\ \hline
-@;\emph{color};	&	Switches to another font color; @;; resets to previous color \\ \hline
-@!	&	Creates one composite character of the next two characters \\ \hline
+\begin{tabular}{ll} \hline
+\multicolumn{1}{c}{\textbf{Code}}	&	\multicolumn{1}{c}{\textbf{Effect}} \\ \hline \hline
+@\~	&	Turns symbol font on or off \\
+@+	&	Turns superscript on or off \\
+@-	&	Turns subscript on or off \\
+@\#	&	Turns small caps on or off \\
+@\_	&	Turns underline on or off \\
+@\%\emph{fontno}\%	&	Switches to another font; @\%\% resets to previous font \\
+@:\emph{size}:	&	Switches to another font size; @:: resets to previous size \\
+@;\emph{color};	&	Switches to another font color; @;; resets to previous color \\
+@!	&	Creates one composite character of the next two characters \\
 @@	&	Prints the @ sign itself \\ \hline
 \end{tabular}
 \caption{\gmt\ text escape sequences.}
@@ -1879,14 +1879,14 @@ added (Table~\ref{tbl:scand}):
 
 \begin{table}[H]
 \centering
-\begin{tabular}{|l|l||l|l|} \hline
-\emph{Code} & \emph{Effect}  & \emph{Code} & \emph{Effect} \\ \hline
-@E &  \AE   & @e &  \ae   \\ \hline
-@O &  \O    & @o &  \o    \\ \hline
-@A &  \AA   & @a &  \aa   \\ \hline
-@C &  \c{C} & @c &  \c{c} \\ \hline
-@N &  \~{N} & @n &  \~{n} \\ \hline
-@U &  \"{U} & @u &  \"{u} \\ \hline
+\begin{tabular}{ll|ll} \hline
+\emph{Code} & \emph{Effect}  & \emph{Code} & \emph{Effect} \\ \hline \hline
+@E &  \AE   & @e &  \ae   \\
+@O &  \O    & @o &  \o    \\
+@A &  \AA   & @a &  \aa   \\
+@C &  \c{C} & @c &  \c{c} \\
+@N &  \~{N} & @n &  \~{n} \\
+@U &  \"{U} & @u &  \"{u} \\
 @s &  \ss   &    &        \\ \hline
 \end{tabular}
 \caption{Shortcuts for some European characters.}
