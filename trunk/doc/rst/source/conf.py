@@ -217,7 +217,7 @@ man_pages = [
 
 import glob 
 man_pages = [] 
-for f in glob.glob('*.rst') + glob.glob('*/*.rst'): 
+for f in glob.glob('*.rst') + glob.glob('*/*/*.rst'): 
     man_pages.append(( 
         f[:-4],                    # source file (no extension) 
         f[:-4].replace('/', '-'),  # output file (under output dir) 

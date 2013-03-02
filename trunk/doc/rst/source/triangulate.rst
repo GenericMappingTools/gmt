@@ -5,8 +5,8 @@ triangulate
 triangulate - Do optimal (Delaunay) triangulation and gridding of
 Cartesian table data [method]
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 **triangulate** [ *table* ] [ **-Dx**\ \|\ **y** ] [ **-E**\ *empty* ] [
 **-G**\ *grdfile* ] [
@@ -20,8 +20,8 @@ Cartesian table data [method]
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **triangulate** reads one or more ASCII [or binary] files (or standard
 input) containing x,y[,z] and performs Delaunay triangulation, i.e., it
@@ -41,13 +41,13 @@ selected). This choice is made during the **GMT** installation.
 
 .. include:: explain_commonitems.rst_
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 None.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
@@ -119,8 +119,8 @@ None.
 
 .. include:: explain_float.rst_
 
-`Examples <#toc8>`_
--------------------
+Examples
+--------
 
 To triangulate the points in the file samples.xyz, store the triangle
 information in a binary file, and make a grid for the given area and
@@ -139,13 +139,13 @@ To instead plot the Voronoi cell outlines, try
 triangulate samples.xyz -M -Q -R-100/-90/30/34 **-JM**\ 15\ **c** \|
 psxy -R-100/-90/30/34 **-JM**\ 15\ **c** -W0.5p -B1 > cells.ps
 
-`See Also <#toc9>`_
--------------------
+See Also
+--------
 
 `gmt <gmt.html>`_ , `pscontour <pscontour.html>`_
 
-`References <#toc10>`_
-----------------------
+References
+----------
 
 Watson, D. F., 1982, Acord: Automatic contouring of raw data, *Comp. &
 Geosci.*, **8**, 97-101.
@@ -154,4 +154,4 @@ Shewchuk, J. R., 1996, Triangle: Engineering a 2D Quality Mesh Generator
 and Delaunay Triangulator, First Workshop on Applied Computational
 Geometry (Philadelphia, PA), 124-133, ACM, May 1996.
 
-www.cs.cmu.edu/~quake/triangle.html
+`<www.cs.cmu.edu/~quake/triangle.html>`_

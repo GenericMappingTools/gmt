@@ -8,13 +8,13 @@ pscontour - Contour table data by direct triangulation [method]
 -------------------
 
 **pscontour** [ *table* ] **-C**\ *cptfile* **-J**\ *parameters*
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ] [
+**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**] [
 **-A**\ [**-**\ ][*labelinfo*\ ] ] [
 **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-D**\ [*template*\ ] ] [
 **-G**\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params*
 ] [ **-I** ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [
 **-L**\ *pen* ] [ **-N** ] [ **-O** ] [ **-P** ] [ **-Q**\ *indexfile* ]
-[ **-S** ] [ **-T**\ [**+\|-**\ ][*gap/length*\ ][\ **:**\ [*labels*\ ]]
+[ **-S** ] [ **-T**\ [**+\|-**\ ][*gap/length*\ ][\ **:**\ [*labels*]]
 ] [ **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [
 **-V**\ [*level*\ ] ] [ **-W**\ [**+**\ ]\ *pen* ] [
 **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
@@ -27,13 +27,13 @@ pscontour - Contour table data by direct triangulation [method]
 **-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
 ] [ **-t**\ [*transp*\ ] ] [ **-:**\ [**i**\ \|\ **o**] ]
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **pscontour** reads an ASCII [or binary] xyz-file and produces a raw
 contour plot by triangulation. By default, the optimal Delaunay
 triangulation is performed (using either Shewchuk’s [1996] or Watson’s
-[1982] method as selected during BD(GMT) installation; type **pscontour
+[1982] method as selected during **GMT** installation; type **pscontour
 -** to see which method is selected), but the user may optionally
 provide a second file with network information, such as a triangular
 mesh used for finite element modeling. In addition to contours, the area
@@ -43,8 +43,8 @@ one or more output files (or stdout) and no plot is produced.
 
 .. include:: explain_commonitems.rst_
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 **-C**\ *cptfile*
     name of the color palette file. Must have discrete colors if you
@@ -59,8 +59,8 @@ one or more output files (or stdout) and no plot is produced.
 .. |Add_-Rz| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-Rz.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
@@ -159,8 +159,8 @@ made up of any of the following control arguments:
 
 .. include:: explain_help.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
 To make a raw contour plot from the file topo.xyz and drawing the
 contours (pen = 2) given in the color palette file topo.cpt on a Lambert
@@ -176,8 +176,8 @@ file mesh.ijk, using the colors in temp.cpt, run
 
 pscontour temp.xyz -R0/150/0/100 -Jx0.1i -Ctemp.cpt -G -W0.25p > temp.ps
 
-`Bugs <#toc7>`_
----------------
+Bugs
+----
 
 Sometimes there will appear to be thin lines of the wrong color in the
 image. This is a round-off problem which may be remedied by using a
@@ -188,8 +188,8 @@ them into multisegment files (one for each contour level), try
 
 pscontour topo.txt -C100 -Dcontours\_%.0f.txt
 
-`See Also <#toc8>`_
--------------------
+See Also
+--------
 
 `gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
 `gmtcolors <gmtcolors.html>`_ ,
@@ -200,8 +200,8 @@ pscontour topo.txt -C100 -Dcontours\_%.0f.txt
 , `surface <surface.html>`_ ,
 `triangulate <triangulate.html>`_
 
-`References <#toc9>`_
----------------------
+References
+----------
 
 Watson, D. F., 1982, Acord: Automatic contouring of raw data, *Comp. &
 Geosci.*, **8**, 97-101.

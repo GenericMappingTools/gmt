@@ -141,5 +141,5 @@ Look up the individual man pages for more details and full syntax. Run
 **gmt --help** to list all GMT programs and to show all installation
 directories. For an explanation of the various **GMT** settings in this
 man page (like **FORMAT\_FLOAT\_OUT**), see the man page of the GMT
-configuration file **gmt.conf**. Information is also available on the
+configuration file `gmt.conf <gmt.conf.html>`_. Information is also available on the
 **GMT** home page gmt.soest.hawaii.edu

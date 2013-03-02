@@ -355,14 +355,14 @@ fonts can be found in the **gmt** man page.
     occur for certain oblique projections.) [0p]
 **MAP\_ANNOT\_OBLIQUE**
     This integer is a sum of 6 bit flags (most of which only are
-    relevant for oblique projections): If bit 1 is `set (1) <set.html>`_
-    , annotations will occur wherever a gridline crosses the map
+    relevant for oblique projections): If bit 1 is set (1),
+    annotations will occur wherever a gridline crosses the map
     boundaries, else longitudes will be annotated on the lower and upper
     boundaries only, and latitudes will be annotated on the left and
-    right boundaries only. If bit 2 is `set (2) <set.2.html>`_ , then
-    longitude annotations will be plotted horizontally. If bit 3 is `set
-    (4) <set.4.html>`_ , then latitude annotations will be plotted
-    horizontally. If bit 4 is `set (8) <set.8.html>`_ , then oblique
+    right boundaries only. If bit 2 is set (2), then
+    longitude annotations will be plotted horizontally. If bit 3 is set
+    (4), then latitude annotations will be plotted
+    horizontally. If bit 4 is set (8), then oblique
     tick-marks are extended to give a projection equal to the specified
     tick length. If bit 5 is set (16), tick-marks will be drawn normal
     to the border regardless of gridline angle. If bit 6 is set (32),
@@ -477,7 +477,7 @@ fonts can be found in the **gmt** man page.
 **MAP\_VECTOR\_SHAPE**
     Determines the shape of the head of a vector. Normally (i.e., for
     vector\_shape = 0), the head will be triangular, but can be changed
-    to an `arrow (1) <arrow.html>`_ or an open `V (2) <V.2.html>`_ .
+    to an arrow (1) or an open V (2).
     Intermediate settings give something in between. Negative values (up
     to -2) are allowed as well [0].
 **PROJ\_AUX\_LATITUDE**
@@ -490,83 +490,82 @@ fonts can be found in the **gmt** man page.
 **PROJ\_ELLIPSOID**
     The (case sensitive) name of the ellipsoid used for the map
     projections [WGS-84]. Choose among:
-
-    Airy: Applies to Great Britain (1830)
-     Airy-Ireland: Applies to Ireland in 1965 (1830)
-     Andrae: Applies to Denmark and Iceland (1876)
-     APL4.9: Appl. Physics (1965)
-     ATS77: Average Terrestrial System, Canada Maritime provinces (1977)
-     Australian: Applies to Australia (1965)
-     Bessel: Applies to Central Europe, Chile, Indonesia (1841)
-     Bessel-Namibia: Same as Bessel-Schwazeck (1841)
-     Bessel-NGO1948: Modified Bessel for NGO 1948 (1841)
-     Bessel-Schwazeck: Applies to Namibia (1841)
-     Clarke-1858: Clarke’s early ellipsoid (1858)
-     Clarke-1866: Applies to North America, the Philippines (1866)
-     Clarke-1866-Michigan: Modified Clarke-1866 for Michigan (1866)
-     Clarke-1880: Applies to most of Africa, France (1880)
-     Clarke-1880-Arc1950: Modified Clarke-1880 for Arc 1950 (1880)
-     Clarke-1880-IGN: Modified Clarke-1880 for IGN (1880)
-     Clarke-1880-Jamaica: Modified Clarke-1880 for Jamaica (1880)
-     Clarke-1880-Merchich: Modified Clarke-1880 for Merchich (1880)
-     Clarke-1880-Palestine: Modified Clarke-1880 for Palestine (1880)
-     CPM : Comm. des Poids et Mesures, France (1799)
-     Delambre: Applies to Belgium (1810)
-     Engelis: Goddard Earth Models (1985)
-     Everest-1830: India, Burma, Pakistan, Afghanistan, Thailand (1830)
-     Everest-1830-Kalianpur: Modified Everest for Kalianpur (1956) (1830)
-     Everest-1830-Kertau: Modified Everest for Kertau, Malaysia & Singapore (1830)
-     Everest-1830-Pakistan: Modified Everest for Pakistan (1830)
-     Everest-1830-Timbalai: Modified Everest for Timbalai, Sabah Sarawak (1830)
-     Fischer-1960: Used by NASA for Mercury program (1960)
-     Fischer-1960-SouthAsia: Same as Modified-Fischer-1960 (1960)
-     Fischer-1968: Used by NASA for Mercury program (1968)
-     FlatEarth: As Sphere, but implies fast "Flat Earth" distance calculations (1984)
-     GRS-67: International Geodetic Reference System (1967)
-     GRS-80: International Geodetic Reference System (1980)
-     Hayford-1909: Same as the International 1924 (1909)
-     Helmert-1906: Applies to Egypt (1906)
-     Hough: Applies to the Marshall Islands (1960)
-     Hughes-1980: Hughes Aircraft Company for DMSP SSM/I grid products (1980)
-     IAG-75: International Association of Geodesy (1975)
-     Indonesian: Applies to Indonesia (1974)
-     International-1924: Worldwide use (1924)
-     International-1967: Worldwide use (1967)
-     Kaula: From satellite tracking (1961)
-     Krassovsky: Used in the (now former) Soviet Union (1940)
-     Lerch: For geoid modelling (1979)
-     Maupertius: Really old ellipsoid used in France (1738)
-     Mercury-1960: Same as Fischer-1960 (1960)
-     MERIT-83: United States Naval Observatory (1983)
-     Modified-Airy: Same as Airy-Ireland (1830)
-     Modified-Fischer-1960: Applies to Singapore (1960)
-     Modified-Mercury-1968: Same as Fischer-1968 (1968)
-     NWL-10D: Naval Weapons Lab (Same as WGS-72) (1972)
-     NWL-9D: Naval Weapons Lab (Same as WGS-66) (1966)
-     OSU86F: Ohio State University (1986)
-     OSU91A: Ohio State University (1991)
-     Plessis: Old ellipsoid used in France (1817)
-     SGS-85: Soviet Geodetic System (1985)
-     South-American: Applies to South America (1969)
-     Sphere: The mean radius in WGS-84 (for spherical/plate tectonics
-    applications) (1984)
-     Struve: Friedrich Georg Wilhelm Struve (1860)
-     TOPEX: Used commonly for altimetry (1990)
-     Walbeck: First least squares solution by Finnish astronomer (1819)
-     War-Office: Developed by G. T. McCaw (1926)
-     WGS-60: World Geodetic System (1960)
-     WGS-66: World Geodetic System (1966)
-     WGS-72: World Geodetic System (1972)
-     WGS-84: World Geodetic System [Default] (1984)
-     Moon: Moon (IAU2000) (2000)
-     Mercury: Mercury (IAU2000) (2000)
-     Venus: Venus (IAU2000) (2000)
-     Mars: Mars (IAU2000) (2000)
-     Jupiter: Jupiter (IAU2000) (2000)
-     Saturn: Saturn (IAU2000) (2000)
-     Uranus: Uranus (IAU2000) (2000)
-     Neptune: Neptune (IAU2000) (2000)
-     Pluto: Pluto (IAU2000) (2000)
+|
+|     *Airy*: Applies to Great Britain (1830)
+|     *Airy-Ireland*: Applies to Ireland in 1965 (1830)
+|     *Andrae*: Applies to Denmark and Iceland (1876)
+|     *APL4.9*: Appl. Physics (1965)
+|     *ATS77*: Average Terrestrial System, Canada Maritime provinces (1977)
+|     *Australian*: Applies to Australia (1965)
+|     *Bessel*: Applies to Central Europe, Chile, Indonesia (1841)
+|     *Bessel-Namibia*: Same as Bessel-Schwazeck (1841)
+|     *Bessel-NGO1948*: Modified Bessel for NGO 1948 (1841)
+|     *Bessel-Schwazeck*: Applies to Namibia (1841)
+|     *Clarke-1858*: Clarke's early ellipsoid (1858)
+|     *Clarke-1866*: Applies to North America, the Philippines (1866)
+|     *Clarke-1866-Michigan*: Modified Clarke-1866 for Michigan (1866)
+|     *Clarke-1880*: Applies to most of Africa, France (1880)
+|     *Clarke-1880-Arc1950*: Modified Clarke-1880 for Arc 1950 (1880)
+|     *Clarke-1880-IGN*: Modified Clarke-1880 for IGN (1880)
+|     *Clarke-1880-Jamaica*: Modified Clarke-1880 for Jamaica (1880)
+|     *Clarke-1880-Merchich*: Modified Clarke-1880 for Merchich (1880)
+|     *Clarke-1880-Palestine*: Modified Clarke-1880 for Palestine (1880)
+|     *CPM*: Comm. des Poids et Mesures, France (1799)
+|     *Delambre*: Applies to Belgium (1810)
+|     *Engelis*: Goddard Earth Models (1985)
+|     *Everest-1830*: India, Burma, Pakistan, Afghanistan, Thailand (1830)
+|     *Everest-1830-Kalianpur*: Modified Everest for Kalianpur (1956) (1830)
+|     *Everest-1830-Kertau*: Modified Everest for Kertau, Malaysia & Singapore (1830)
+|     *Everest-1830-Pakistan*: Modified Everest for Pakistan (1830)
+|     *Everest-1830-Timbalai*: Modified Everest for Timbalai, Sabah Sarawak (1830)
+|     *Fischer-1960*: Used by NASA for Mercury program (1960)
+|     *Fischer-1960-SouthAsia*: Same as Modified-Fischer-1960 (1960)
+|     *Fischer-1968*: Used by NASA for Mercury program (1968)
+|     *FlatEarth*: As Sphere, but implies fast "Flat Earth" distance calculations (1984)
+|     *GRS-67*: International Geodetic Reference System (1967)
+|     *GRS-80*: International Geodetic Reference System (1980)
+|     *Hayford-1909*: Same as the International 1924 (1909)
+|     *Helmert-1906*: Applies to Egypt (1906)
+|     *Hough*: Applies to the Marshall Islands (1960)
+|     *Hughes-1980*: Hughes Aircraft Company for DMSP SSM/I grid products (1980)
+|     *IAG-75*: International Association of Geodesy (1975)
+|     *Indonesian*: Applies to Indonesia (1974)
+|     *International-1924*: Worldwide use (1924)
+|     *International-1967*: Worldwide use (1967)
+|     *Kaula*: From satellite tracking (1961)
+|     *Krassovsky*: Used in the (now former) Soviet Union (1940)
+|     *Lerch*: For geoid modelling (1979)
+|     *Maupertius*: Really old ellipsoid used in France (1738)
+|     *Mercury-1960*: Same as Fischer-1960 (1960)
+|     *MERIT-83*: United States Naval Observatory (1983)
+|     *Modified-Airy*: Same as Airy-Ireland (1830)
+|     *Modified-Fischer-1960*: Applies to Singapore (1960)
+|     *Modified-Mercury-1968*: Same as Fischer-1968 (1968)
+|     *NWL-10D*: Naval Weapons Lab (Same as WGS-72) (1972)
+|     *NWL-9D*: Naval Weapons Lab (Same as WGS-66) (1966)
+|     *OSU86F*: Ohio State University (1986)
+|     *OSU91A*: Ohio State University (1991)
+|     *Plessis*: Old ellipsoid used in France (1817)
+|     *SGS-85*: Soviet Geodetic System (1985)
+|     *South-American*: Applies to South America (1969)
+|     *Sphere*: The mean radius in WGS-84 (for spherical/plate tectonics applications) (1984)
+|     *Struve*: Friedrich Georg Wilhelm Struve (1860)
+|     *TOPEX*: Used commonly for altimetry (1990)
+|     *Walbeck*: First least squares solution by Finnish astronomer (1819)
+|     *War-Office*: Developed by G. T. McCaw (1926)
+|     *WGS-60*: World Geodetic System (1960)
+|     *WGS-66*: World Geodetic System (1966)
+|     *WGS-72*: World Geodetic System (1972)
+|     *WGS-84*: World Geodetic System [Default] (1984)
+|     *Moon*: Moon (IAU2000) (2000)
+|     *Mercury*: Mercury (IAU2000) (2000)
+|     *Venus*: Venus (IAU2000) (2000)
+|     *Mars*: Mars (IAU2000) (2000)
+|     *Jupiter*: Jupiter (IAU2000) (2000)
+|     *Saturn*: Saturn (IAU2000) (2000)
+|     *Uranus*: Uranus (IAU2000) (2000)
+|     *Neptune*: Neptune (IAU2000) (2000)
+|     *Pluto*: Pluto (IAU2000) (2000)
 
     Note that for some global projections, **GMT** may use a spherical
     approximation of the ellipsoid chosen, setting the flattening to
@@ -586,7 +585,7 @@ fonts can be found in the **gmt** man page.
     This way a custom ellipsoid (e.g., those used for other planets) may
     be used. Further note that coordinate transformations in
     **mapproject** can also specify specific datums; see the
-    **mapproject** man page for further details and how to view
+    `mapproject <mapproject.html>`_ man page for further details and how to view
     ellipsoid and datum parameters.
 
 **PROJ\_LENGTH\_UNIT**
