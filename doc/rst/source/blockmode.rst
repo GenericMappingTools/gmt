@@ -5,8 +5,8 @@ blockmode
 blockmode - Block average (*x*,\ *y*,\ *z*) data tables by mode
 estimation
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 **blockmode** [ *table* ]
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
@@ -20,8 +20,8 @@ estimation
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-o**\ *cols*\ [,*...*] ] [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **blockmode** reads arbitrarily located (*x*,\ *y*,\ *z*) triples [or
 optionally weighted quadruples (*x*,\ *y*,\ *z*,\ *w*)] from standard
@@ -37,16 +37,16 @@ choose binary input and/or output to avoid loss of precision.
 
 ..  include:: explain_commonitems.rst_
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 .. include:: explain_-I.rst_
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 *table*
     3 [or 4, see **-W**] column ASCII data table file(s) [or binary, see
@@ -65,7 +65,7 @@ choose binary input and/or output to avoid loss of precision.
     If *width* is not given it will default to 1 provided your data set only
     contains integers.  Also, for integer data and integer bin *width* we
     enforce bin centering (**+c**) and select the lowest mode (**+l**) if
-    there are multiples.  [Default mode is normally the Least Median of
+    there are multiples. [Default mode is normally the Least Median of
     Squares (LMS) statistic].
 **-E**
     Provide Extended report which includes **s** (the L1 scale of the
@@ -124,8 +124,8 @@ choose binary input and/or output to avoid loss of precision.
 .. include:: explain_help.rst_
 .. include:: explain_precision.rst_
 
-`Examples <#toc7>`_
--------------------
+Examples
+--------
 
 To find 5 by 5 minute block mode estimates from the double precision
 binary data in hawaii\_b.xyg and output an ASCII table, run:

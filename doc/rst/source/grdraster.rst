@@ -38,16 +38,16 @@ by anonymous ftp and on CD-ROM (see README page in dbase directory).
 Finally, **grdraster** will write xyz-triplets to stdout if no output
 gridfile name is given
 
-`Common Arguments And Specifications <#toc3>`_
-----------------------------------------------
+Common Arguments And Specifications
+-----------------------------------
 
 All options marked with an asterisk (\*) are common GMT command-line
 options. Their full syntax as well as how to specify pens, pattern
 fills, colors, and fonts can be found in the **gmt** man page. Note: No
 space is allowed between the option flag and the associated arguments.
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *filenumber*
     If an integer matching one of the files listed in the
@@ -68,8 +68,8 @@ space is allowed between the option flag and the associated arguments.
     will be rounded off to the nearest whole grid-step in both
     dimensions.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-G**\ *grdfile*
     Name of output grid file. If not set, the grid will be written as
@@ -112,8 +112,8 @@ space is allowed between the option flag and the associated arguments.
 
 .. include:: explain_help.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
 To extract data from raster 1, taking one point every 30 minutes, in an
 area extended beyond 360 degrees to allow later filtering, run
@@ -135,27 +135,32 @@ binary double precision xyz-triplets to standard output:
 
 **grdraster** "2 min Geoware" **-R**\ 20/25/-10/5 **-bo** >! triplets.b
 
-`See Also <#toc7>`_
--------------------
+See Also
+--------
 
 `*gmtdefaults*\ (1) <gmtdefaults.html>`_ , `*GMT*\ (1) <GMT.html>`_ ,
 `*grdsample*\ (1) <grdsample.html>`_ ,
 `*grdfilter*\ (1) <grdfilter.html>`_
 
-`References <#toc8>`_
----------------------
+References
+----------
 
 Wessel, P., W. H. F. Smith, R. Scharroo, and J. Luis, 2011, The Generic
 Mapping Tools (GMT) version 5.0.0b Technical Reference & Cookbook,
 SOEST/NOAA.
- Wessel, P., and W. H. F. Smith, 1998, New, Improved Version of Generic
+
+Wessel, P., and W. H. F. Smith, 1998, New, Improved Version of Generic
 Mapping Tools Released, EOS Trans., AGU, 79 (47), p. 579.
- Wessel, P., and W. H. F. Smith, 1995, New Version of the Generic
+
+Wessel, P., and W. H. F. Smith, 1995, New Version of the Generic
 Mapping Tools Released, EOS Trans., AGU, 76 (33), p. 329.
- Wessel, P., and W. H. F. Smith, 1995, New Version of the Generic
+
+Wessel, P., and W. H. F. Smith, 1995, New Version of the Generic
 Mapping Tools Released,
+
 `http://www.agu.org/eos\_elec/95154e.html, <http://www.agu.org/eos_elec/95154e.html,>`_
 Copyright 1995 by the American Geophysical Union.
- Wessel, P., and W. H. F. Smith, 1991, Free Software Helps Map and
+
+Wessel, P., and W. H. F. Smith, 1991, Free Software Helps Map and
 Display Data, EOS Trans., AGU, 72 (41), p. 441.
 

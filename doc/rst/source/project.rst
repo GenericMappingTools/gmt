@@ -5,8 +5,8 @@ project
 project - Project table data onto lines or great circles, generate
 tracks, or translate coordinates
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 **project** [ *table* ] **-C**\ *cx*/*cy* [ **-A**\ *azimuth* ] [
 **-E**\ *bx*/*by* ] [ **-F**\ *flags* ] [
@@ -22,8 +22,8 @@ tracks, or translate coordinates
 ] [ **-s**\ [*cols*\ ][\ **a**\ \|\ **r**] ] [
 **-:**\ [**i**\ \|\ **o**] ]
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **project** reads arbitrary (*x*, *y*\ [,*z*]) data from standard input
 [or *infile* ] and writes to standard output any combination of (*x*,
@@ -49,11 +49,11 @@ clockwise from North.
 
 To spherically project data along a great circle path, an oblique
 coordinate system is created which has its equator along that path, and
-the zero meridian through the Center. Then the oblique `longitude
-(*p*) <longitude.p.html>`_ corresponds to the distance from the Center
+the zero meridian through the Center. Then the oblique longitude
+(*p*) corresponds to the distance from the Center
 along the great circle, and the oblique latitude (*q*) corresponds to
 the distance perpendicular to the great circle path. When moving in the
-`increasing (*p*) <increasing.p.html>`_ direction, (toward *B* or in the
+increasing (*p*) direction, (toward *B* or in the
 *azimuth* direction), the positive (*q*) direction is to your left. If a
 Pole has been specified, then the positive (*q*) direction is toward the
 pole.
@@ -93,8 +93,8 @@ xyzpqrs letters in **-flags**.
 
 .. include:: explain_commonitems.rst_
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 **-C**\ *cx*/*cy*
     *cx/cy* sets the origin of the projection, in Definition 1 or 2. If
@@ -102,8 +102,8 @@ xyzpqrs letters in **-flags**.
     point through which the oblique zero meridian (*p* = 0) should pass.
     The *cx/cy* is not required to be 90 degrees from the pole.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
@@ -180,8 +180,8 @@ xyzpqrs letters in **-flags**.
 
 .. include:: explain_precision.rst_
 
-`Examples <#toc7>`_
--------------------
+Examples
+--------
 
 To generate points every 10km along a great circle from 10N,50W to 30N,10W:
 
@@ -243,8 +243,8 @@ pole and origin coordinates as the rotation pole and center,
 respectively, and project your file as in the pacific example above.
 This gives coordinates for an oblique small circle.
 
-`See Also <#toc8>`_
--------------------
+See Also
+--------
 
 `fitcircle <fitcircle.html>`_ , `gmt <gmt.html>`_ ,
 `mapproject <mapproject.html>`_ , `grdproject <grdproject.html>`_

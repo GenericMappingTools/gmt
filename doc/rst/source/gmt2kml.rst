@@ -4,8 +4,8 @@ gmt2kml
 
 gmt2kml - Convert GMT data tables to KML files for Google Earth
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 **gmt2kml** [ *table* ] [
 **-A**\ **a**\ \|\ **g**\ \|\ **s**\ [*alt*\ \|\ **x**\ *scale*] ] [
@@ -23,8 +23,8 @@ gmt2kml - Convert GMT data tables to KML files for Google Earth
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-:**\ [**i**\ \|\ **o**] ] [ > *output.kml* ]
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **gmt2kml** reads one or more GMT table file and converts them to a
 single output file using Google Earth’s KML format. Data may represent
@@ -43,13 +43,13 @@ for all features (see also **-A** and **-C**), and *timestart* and
 
 .. include:: explain_commonitems.rst_
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 None.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
@@ -191,8 +191,8 @@ None.
 .. include:: explain_help.rst_
 
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
 To convert a file with point locations (lon, lat) into a KML file with
 red circle symbols, try
@@ -237,15 +237,15 @@ file contours.cpt, try
 
 gmt2kml contours.txt -Fl -Ccontours.cpt > contours.kml
 
-`Limitations <#toc7>`_
-----------------------
+Limitations
+-----------
 
 Google Earth has trouble displaying filled polygons across the Dateline.
 For now you must manually break any polygon crossing the dateline into a
 west and east polygon and plot them separately.
 
-`Making Kmz Files <#toc8>`_
----------------------------
+Making Kmz Files
+----------------
 
 Using the KMZ format is preferred as it takes less space. KMZ is simply
 a KML file and any data files, icons, or images referenced by the KML,
@@ -255,8 +255,8 @@ of folders. Using scripts you can create a composite KML file using the
 **-K**, **-O** options just like you do with GMT plots. See **-T** for
 switching between folders and documents.
 
-`Kml Hierarchy <#toc9>`_
-------------------------
+Kml Hierarchy
+-------------
 
 **GMT** stores the different features in hierarchical folders by feature
 type (when using **-O**, **-K** or **-T/**\ *foldername*), by input file
@@ -317,17 +317,17 @@ a crude example:
 
 [ KML trailer information; not present if **-K** was used ]
 
-`Segment Information <#toc10>`_
--------------------------------
+Segment Information
+-------------------
 
 **gmt2kml** will scan the segment headers for substrings of the form
 **-L**"*some label*\ " [also see **-N** discussion] and **-T**"*some
 text description*\ ". If present, these are parsed to supply name and
 description tags, respectively, for the current feature.
 
-`See Also <#toc11>`_
---------------------
+See Also
+--------
 
-`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
-`*img2google*\ (1) <img2google.html>`_ ,
-`*kml2gmt*\ (1) <kml2gmt.html>`_ , `*ps2raster*\ (1) <ps2raster.html>`_
+`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
+`img2google <img2google.html>`_ ,
+`kml2gmt <kml2gmt.html>`_ , `ps2raster <ps2raster.html>`_

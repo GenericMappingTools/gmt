@@ -4,8 +4,8 @@ filter1d
 
 filter1d - Do time domain filtering of 1-D data tables
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 **filter1d** [ *table* ] **-F**\ *type<width>*\ [*mode*\ ] [
 **-D**\ *increment* ] [ **-E** ] [ **-I**\ *ignore\_val* ] [
@@ -19,8 +19,8 @@ filter1d - Do time domain filtering of 1-D data tables
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-o**\ *cols*\ [,*...*] ]
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **filter1d** is a general time domain filter for multiple column time
 series data. The user specifies which column is the time (i.e., the
@@ -31,8 +31,8 @@ options **-L**, **-Q**, and **-S** for unevenly sampled data with gaps.
 
 .. include:: explain_commonitems.rst_
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 **-F**\ *type<width>*\ [*mode*\ ]
     Sets the filter *type*. Choose among convolution and non-convolution
@@ -73,8 +73,8 @@ options **-L**, **-Q**, and **-S** for unevenly sampled data with gaps.
     In the case of **L**\ \|\ **U** it is possible that no data passes
     the initial sign test; in that case the filter will return 0.0.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
@@ -139,8 +139,8 @@ options **-L**, **-Q**, and **-S** for unevenly sampled data with gaps.
 
 .. include:: explain_precision.rst_
 
-`Examples <#toc7>`_
--------------------
+Examples
+--------
 
 To filter the data set in the file cruise.gmtd containing evenly spaced
 gravity, magnetics, topography, and distance (in m) with a 10 km
@@ -151,13 +151,13 @@ filter1d cruise.gmtd -T0/1.0e5/2000 -FG10000 -N3 -V >
 filtered\_cruise.gmtd
 
 Data along track often have uneven sampling and gaps which we do not
-want to interpolate using **sample1d**. To find the median depth in a 50
+want to interpolate using `sample1d <sample1d.html>`_. To find the median depth in a 50
 km window every 25 km along the track of cruise v3312, stored in
 v3312.dt, checking for gaps of 10km and asymmetry of 0.3:
 
 filter1d v3312.dt -FM50 -T0/100000/25 -L10 -S0.3 > v3312\_filt.dt
 
-`See Also <#toc8>`_
--------------------
+See Also
+--------
 
 `gmt <gmt.html>`_ , `sample1d <sample1d.html>`_

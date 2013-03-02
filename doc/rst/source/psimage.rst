@@ -4,8 +4,8 @@ psimage
 
 psimage - Place images or EPS files on maps
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 **psimage** *imagefile* [ **-W**\ [**-**\ ]\ *width*\ [/*height*] \|
 **-E**\ *dpi* ] [ **-C**\ *xpos*/*ypos*\ [/*justify*] ] [ **-F**\ *pen*
@@ -22,17 +22,17 @@ psimage - Place images or EPS files on maps
 **-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
 ] [ **-t**\ [*transp*\ ] ]
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **psimage** reads an Encapsulated *PostScript* file or a raster image
 file and plots it on a map. The image can be scaled arbitrarily, and
-1-bit raster images can `be (1) <be.html>`_ inverted, i.e., black
-`pixels (on) <pixels.on.html>`_ becomes white (off) and vice versa, `or
-(2) <or.2.html>`_ colorized, by assigning different foreground and
-background colors, `and (3) <and.html>`_ made transparent where one of
+1-bit raster images can be (1) inverted, i.e., black
+pixels (on) becomes white (off) and vice versa, or
+(2) colorized, by assigning different foreground and
+background colors, and (3) made transparent where one of
 back- or foreground is painted only. As an option, the user may choose
-to convert colored raster images to grayscale using TV’s
+to convert colored raster images to grayscale using TV's
 YIQ-transformation. For raster files, the user can select which color to
 be made transparent. The user may also choose to replicate the image
 which, when preceded by appropriate clip paths, may allow larger
@@ -42,15 +42,15 @@ by 146).
 
 .. include:: explain_commonitems.rst_
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *imagefile*
     This must be an Encapsulated *PostScript* (EPS) file or a raster
     image. An EPS file must contain an appropriate BoundingBox. A raster
     file can have a depth of 1, 8, 24, or 32 bits. Only Sun raster files
     are supported natively; other raster formats are automatically
-    converted to the Sun format via ImageMagick’s **convert** program,
+    converted to the Sun format via ImageMagick's **convert** program,
     if installed.
 **-E**\ *dpi*
     Sets the dpi of the image in dots per inch, or use **-W**.
@@ -61,8 +61,8 @@ by 146).
     absolute value and interpolate image to the device resolution using
     the *PostScript* image operator. Alternatively, use **-E**.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-C**\ *xpos*/*ypos*\ [/*justify*]
     Sets position of the image in plot coordinates (inches, cm, etc.)
@@ -138,8 +138,8 @@ no effect when plotting 1-bit images or *PostScript* files.
 
 .. include:: explain_help.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
 To plot the image contained in the 8-bit raster file scanned\_face.ras,
 scaling it to 8 by 10 cm (thereby possibly changing the aspect ratio),
@@ -165,8 +165,8 @@ to be 1 cm wide, use
 
 psimage 1\_bit.ras -Gbbrown -Gfred -N5 -W1c > image.ps
 
-`See Also <#toc7>`_
--------------------
+See Also
+--------
 
 `gmt <gmt.html>`_ , `gmtcolors <gmtcolors.html>`_ ,
 `psxy <psxy.html>`_ `convert <convert.html>`_

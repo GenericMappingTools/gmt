@@ -4,15 +4,15 @@ pscoast
 
 pscoast - Plot continents, shorelines, rivers, and borders on maps
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 **pscoast** **-J**\ *parameters*
 **-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ] [
 **-A**\ *min\_area*\ [/*min\_level*/*max\_level*][\ **+r**\ \|\ **l**][\ **p**\ *percent*]
 ] [ **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [
-**-C**\ [**l**\ \|\ **r**/]*fill* ] [ **-D**\ *resolution*\ [**+**\ ] ]
-[ **-G**\ *fill*\ \|\ **c** ] [ **-I**\ *river*\ [/*pen*] ] [
+**-C**\ [**l**\ \|\ **r**/]\ *fill* ] [ **-D**\ *resolution*\ [**+**\ ] ]
+[ **-G**\ *fill*\ \|\ **c** ] [ **-I**\ *river*\ [/\ *pen*] ] [
 **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [
 **-L**\ [**f**\ ][**x**\ ]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**][\ **+l**\ *label*][\ **+j**\ *just*][\ **+p**\ *pen*][\ **+f**\ *fill*][**+u**\ ]
 ] ] [ **-M** ] [ **-N**\ *border*\ [/*pen*] ] [ **-O** ] [ **-P** ] [
@@ -27,14 +27,14 @@ pscoast - Plot continents, shorelines, rivers, and borders on maps
 **-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
 ] [ **-t**\ [*transp*\ ] ]
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **pscoast** plots grayshaded, colored, or textured land-masses [or
 water-masses] on maps and [optionally] draws coastlines, rivers, and
-political boundaries. Alternatively, it `can (1) <can.html>`_ issue clip
-paths that will contain all land or all water areas, `or
-(2) <or.2.html>`_ dump the data to an ASCII table. The data files come
+political boundaries. Alternatively, it can (1) issue clip
+paths that will contain all land or all water areas, or
+(2) dump the data to an ASCII table. The data files come
 in 5 different resolutions: (**f**)ull, (**h**)igh, (**i**)ntermediate,
 (**l**)ow, and (**c**)rude. The full resolution files amount to more
 than 55 Mb of data and provide great detail; for maps of larger
@@ -48,8 +48,8 @@ The *PostScript* code is written to standard output.
 
 .. include:: explain_commonitems.rst_
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 .. include:: explain_-J.rst_
 
@@ -59,15 +59,15 @@ The *PostScript* code is written to standard output.
 .. |Add_-Rz| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-Rz.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_-A| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-A.rst_
 
 .. include:: explain_-B.rst_
 
-**-C**\ [**l**\ \|\ **r**/]*fill*
+**-C**\ [**l**\ \|\ **r**/]\ *fill*
     Set the shade, color, or pattern for lakes and river-lakes [Default
     is the fill chosen for "wet" areas (**-S**)]. Optionally, specify
     separate fills by prepending **l**/ for lakes and **r**/ for
@@ -193,8 +193,8 @@ The *PostScript* code is written to standard output.
 
 .. include:: explain_help.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
 To plot a green Africa with white outline on blue background, with
 permanent major rivers in thick blue pen, additional major rivers in
@@ -228,8 +228,8 @@ The desired file is then sought for in the alternate directories.
 
 .. include:: explain_gshhs.rst_
 
-`Bugs <#toc8>`_
----------------
+Bugs
+----
 
 The options to fill (**-C** **-G** **-S**) may not always work if the
 Azimuthal equidistant projection is chosen (**-Je**\ \|\ **E**). If the
@@ -267,8 +267,8 @@ lines for Antarctica and is available on CD-ROM. It is published by the
 Scientific Committee on Antarctic Research, Scott Polar Research
 Institute, Lensfield Road, Cambridge CB2 1ER, United Kingdom.
 
-`See Also <#toc9>`_
--------------------
+See Also
+--------
 
 `gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
 `gmtcolors <gmtcolors.html>`_ ,
