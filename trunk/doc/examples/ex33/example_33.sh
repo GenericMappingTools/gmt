@@ -13,7 +13,8 @@ ps=example_33.ps
 # grdcut etopo1m_grd.nc -R118W/107W/49S/42S -Gspac.nc
 makecpt -Crainbow -T-5000/-2000/500 -Z > z.cpt
 grdgradient spac.nc -A15 -Ne0.75 -Gspac_int.nc
-grdimage spac.nc -Ispac_int.nc -Cz.cpt -JM6i -P -Baf -K -Xc --FORMAT_GEO_MAP=dddF -U"Example 33 in Cookbook" > $ps
+grdimage spac.nc -Ispac_int.nc -Cz.cpt -JM6i -P -Baf -K -Xc --FORMAT_GEO_MAP=dddF \
+	-U"Example 33 in Cookbook" > $ps
 # Select two points along the ridge
 cat << EOF > ridge.txt
 -111.6	-43.0
@@ -29,8 +30,8 @@ psxy -R -J -O -K -W0.5p table.txt >> $ps
 # Show upper/lower values encountered as an envelope
 gmtconvert stack.txt -o0,5 > env.txt
 gmtconvert stack.txt -o0,6 -I -T >> env.txt
-psxy -R-200/200/-3500/-2000 -JX6i/3i -Bafg1000:"Distance from ridge (km)":/af:"Depth (m)":WSne \
-	-O -K -Glightgray env.txt -Y6.5i >> $ps
+psxy -R-200/200/-3500/-2000 -Bafg1000:"Distance from ridge (km)":/af:"Depth (m)":WSne \
+	-JX6i/3i -O -K -Glightgray env.txt -Y6.5i >> $ps
 psxy -R -J -O -K -W3p stack.txt >> $ps
 echo "0 -2000 MEDIAN STACKED PROFILE" | pstext -R -J -O -K -Gwhite -F+jTC+f14p -Dj0.1i >> $ps
 psxy -R -J -O -T >> $ps

@@ -93,14 +93,12 @@ pslegend -R -J -Gwhite -Dx7.9c/12.6c/8.0c/BL \
 #  -sOutputFile=$eps_outlined $ps_outlined
 # d. make cropped PDF:
 #ps2raster -P -A -Tf $ps_outlined
-
 # uncomment to do conversation to PDF and PNG
 # you will get a PDF with subsetted TrueType/PostScript fonts embedded
 # which you can still edit with your favorite vector graphics editor
 #export GS_FONTPATH="${PWD}/fonts"
 #ps2raster -P -A -Tf $ps
 #ps2raster -P -A -Tg -E110 $ps
-
 # clean up
 rm -f .gmtcommands* gmt.conf CUSTOM_font_info.d legend.txt ex31CropNoLogo.eps
 

@@ -98,6 +98,7 @@
 unsigned int GMTAPI_n_items (struct GMTAPI_CTRL *API, unsigned int family, unsigned int direction, int *first_ID);
 int GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, int object_ID, unsigned int direction);
 int GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, int family, int object_ID, int direction);
+char *gmt_grdfile_unitscale (char *name);
 
 #ifdef HAVE_DIRENT_H_
 #	include <dirent.h>
@@ -914,7 +915,7 @@ int GMT_access (struct GMT_CTRL *C, const char* filename, int mode)
 	if (file[0] == '\0')
 		return (-1);		/* It happens for example when parsing grdmath args and it finds an isolated  "=" */
 
-	if ((c = strstr (file, "+u")) || (c = strstr (file, "+U"))) c[0] = '\0';	/* Chop off any x/u unit specification */
+	if ((c = gmt_grdfile_unitscale (file))) c[0] = '\0';	/* Chop off any x/u unit specification */
 	if (mode == W_OK)
 		return (access (file, mode));	/* When writing, only look in current directory */
 	if (mode == R_OK || mode == F_OK) {	/* Look in special directories when reading or just checking for existance */
