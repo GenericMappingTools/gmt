@@ -35,6 +35,18 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 `Required Arguments <#toc4>`_
 -----------------------------
 
+**-D**\ [**x**\ ]\ *lon*/*lat*/*width*\ [/*height*]/\ *just*\ [/*dx*/*dy*]
+    Positions the legend and specifies its size. The *just* is a 2-char
+    justification string (see **pstext**) that relates the given
+    position to a point on the rectangular legend box. If you want to
+    specify the position in map plot units (i.e., inches or cm), use
+    **-Dx**; in that case the **-R** and **-J** are optional (provided
+    it is an overlay, i.e., we are using **-O**). Use to optional
+    *dx*/*dy* to shift the legend by that amount in the direction
+    implied by the justification. If *height* is zero or not given then
+    we estimate *height* based the expected vertical extent of the items
+    to be placed. 
+
 `Optional Arguments <#toc5>`_
 -----------------------------
 
@@ -116,7 +128,8 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     secondary arguments if not provided.  A few other symbols (the rectangles,
     ellipse, wedge, mathangle) may take more than a single argument size.
     If just a single size if given then **pslegend** will provide reasonable
-    arguments to plot the symbol.  Alternatively, combine the required
+    arguments to plot the symbol  (See `Defaults <#toc6>`_ ).
+    Alternatively, combine the required
     arguments into a single, comma-separated string and use that as the
     symbol size (again, see **psxy** for details on the arguments needed).
 **T** *paragraph-text*
@@ -136,17 +149,6 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     need to set at least one of the parameters directly, you must
     specify all and set the ones you want to leave at their default
     value to **-**.
-**-D**\ [**x**\ ]\ *lon*/*lat*/*width*\ [/*height*]/\ *just*\ [/*dx*/*dy*]
-    Positions the legend and specifies its size. The *just* is a 2-char
-    justification string (see **pstext**) that relates the given
-    position to a point on the rectangular legend box. If you want to
-    specify the position in map plot units (i.e., inches or cm), use
-    **-Dx**; in that case the **-R** and **-J** are optional (provided
-    it is an overlay, i.e., we are using **-O**). Use to optional
-    *dx*/*dy* to shift the legend by that amount in the direction
-    implied by the justification. If *height* is zero or not given then
-    we estimate *height* based the expected vertical extent of the items
-    to be placed. 
 
 .. include:: explain_-B.rst_
 
@@ -198,7 +200,29 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 
 .. include:: explain_help.rst_
 
-`Examples <#toc6>`_
+`Defaults <#toc6>`_
+-------------------
+
+When attributes are not provided, or extended symbol information (for symbols taking more than just an overall size) are
+not given as comma-separated quantities, **pslegend** will provide the following defaults:
+
+Front: Front symbol is left-side (here, that means upper side) box, with dimensions 30% of the given symbol size.
+
+Vector: Head size is 30% of given symbol size.
+
+Ellipse: Minor axis is 65% of major axis (the symbol size), with an azimuth of 0 degrees.
+
+Rectangle: Height is 65% of width (the symbol size).
+
+Rotated rectangle: Same, with a rotation of 30 degrees.
+
+Rounded rectangle: Same as rectangle, but with corner radius of 10% of width.
+
+Mathangle: Angles are -10 and 45 degrees, with arrow head size 30% of symbol size.
+
+Wedge: Angles are -30 and 30 degrees.
+
+`Examples <#toc7>`_
 -------------------
 
 To add an example of a legend to a Mercator plot (map.ps) with the given
@@ -271,7 +295,7 @@ T so we may have to adjust the box height to get the right size box.
 
 EOF
 
-`Note On Legend Height <#toc7>`_
+`Note On Legend Height <#toc8>`_
 --------------------------------
 
 As **-D** suggests, leaving the *height* off forces a calculation of the
@@ -282,7 +306,7 @@ metrics this estimate will occasionally be off by 1 line. If so, note
 the reported height (with **-V**) and specify a slightly larger or
 smaller height in **-D**.
 
-`Windows Remarks <#toc8>`_
+`Windows Remarks <#toc9>`_
 --------------------------
 
 Note that under Windows, the percent sign (%) is a variable indicator
@@ -293,7 +317,7 @@ This only applies to text inside a script or that otherwise is processed
 by DOS. Data files that are opened and read by **pslegend** do not need
 such duplication.
 
-`See Also <#toc9>`_
+`See Also <#toc10>`_
 -------------------
 
 `gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,

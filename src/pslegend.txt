@@ -19,6 +19,14 @@ annotations will be made using the primary annotation font and size in effect
 (i.e., FONT_ANNOT_PRIMARY)
 #include "explain_commonitems.txt"
 .SH REQUIRED ARGUMENTS
+.TP
+OPT(D)[BD(x)]IT(lon)/IT(lat)/IT(width)[/IT(height)]/IT(just)[/IT(dx)/IT(dy)] 
+Positions the legend and specifies its size.  The IT(just) is a 2-char justification string (see BD(pstext))
+that relates the given position to a point on the rectangular legend box.  If you want to specify the position
+in map plot units (i.e., inches or cm), use OPT(Dx); in that case the OPT(R) and OPT(J) are optional (provided
+it is an overlay, i.e., we are using OPT(O)).  Use to optional IT(dx)/IT(dy) to shift the legend by that amount
+in the direction implied by the justification.  If IT(height) is zero or not given then we estimate IT(height) based
+the expected vertical extent of the items to be placed.
 .SH OPTIONAL ARGUMENTS
 .TP
 IT(textfile)
@@ -89,7 +97,7 @@ Two BD(psxy) symbols may take special modifiers: front (BD(f)) and vector (BD(v)
 to the symbol and affect how the fronts and vectors are presented (see BD(psxy) man page for modifiers).
 BD(pslegend) will determine default settings for all modifiers and secondary arguments if not provided.
 A few other symbols (the rectangles, ellipse, wedge, mathangle) may take more than a single argument size. If just a single size if given
-then BD(pslegend) will provide reasonable arguments to plot the symbol.  Alternatively, combine the required
+then BD(pslegend) will provide reasonable arguments to plot the symbol (See DEFAULTS).  Alternatively, combine the required
 arguments into a single, comma-separated string and use that as the symbol size (again, see BD(psxy) for details on the arguments needed).
 .TP
 BD(T) IT(paragraph-text)
@@ -107,14 +115,6 @@ BD(pslegend) knows what all those values should be, so normally you can leave th
 leave it out all together.
 If you need to set at least one of the parameters directly, you must specify all and set the ones you want to leave
 at their default value to BD(-).
-.TP
-OPT(D)[BD(x)]IT(lon)/IT(lat)/IT(width)[/IT(height)]/IT(just)[/IT(dx)/IT(dy)] 
-Positions the legend and specifies its size.  The IT(just) is a 2-char justification string (see BD(pstext))
-that relates the given position to a point on the rectangular legend box.  If you want to specify the position
-in map plot units (i.e., inches or cm), use OPT(Dx); in that case the OPT(R) and OPT(J) are optional (provided
-it is an overlay, i.e., we are using OPT(O)).  Use to optional IT(dx)/IT(dy) to shift the legend by that amount
-in the direction implied by the justification.  If IT(height) is zero or not given then we estimate IT(height) based
-the expected vertical extent of the items to be placed.
 #include "explain_-B.txt"
 .TP
 OPT(C)IT(dx)/IT(dy)
@@ -146,6 +146,25 @@ Sets the linespacing factor in units of the current annotation font size [1.1].
 #include "explain_perspective.txt"
 #include "explain_-t.txt"
 #include "explain_help.txt"
+.SH DEFAULTS
+When attributes are not provided, or extended symbol information (for symbols taking more than just an overall size) are
+not given as comma-separated quantities, BD(pslegend) will provide the following defaults:
+.br
+Front: Front symbol is left-side (here, that means upper side) box, with dimensions 30% of the given symbol size.
+.br
+Vector: Head size is 30% of given symbol size.
+.br
+Ellipse: Minor axis is 65% of major axis (the symbol size), with an azimuth of 0 degrees.
+.br
+Rectangle: Height is 65% of width (the symbol size).
+.br
+Rotated rectangle: Same, with a rotation of 30 degrees.
+.br
+Rounded rectangle: Same as rectangle, but with corner radius of 10% of width.
+.br
+Mathangle: Angles are -10 and 45 degrees, with arrow head size 30% of symbol size.
+.br
+Wedge: Angles are -30 and 30 degrees.
 .SH EXAMPLES
 To add an example of a legend to a Mercator plot (map.ps) with the given specifications, use
 .br

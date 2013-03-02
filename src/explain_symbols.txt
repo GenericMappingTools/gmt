@@ -7,7 +7,8 @@ this cannot be used in conjunction with GMT_bi_OPT.  Optionally, append
 BD(c), BD(i), or BD(p) to indicate that the size information in the
 input data is in units of cm, inch, or point, respectively [Default is BD(PROJ_LENGTH_UNIT)].
 Note: if you give both size and symbol via the input file you must use BD(PROJ_LENGTH_UNIT) to
-indicate the units used for the symbol size.  If the symbol size is expected via the
+indicate the units used for the symbol size or append the units to the size in the file.
+If the symbol size is expected via the
 #ifdef THREE_D
 fourth
 #else

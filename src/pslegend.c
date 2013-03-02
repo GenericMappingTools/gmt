@@ -256,6 +256,7 @@ int GMT_pslegend_parse (struct GMTAPI_CTRL *C, struct PSLEGEND_CTRL *Ctrl, struc
 	/* Check that the options selected are mutually consistent */
 
 	n_errors += GMT_check_condition (GMT, Ctrl->C.dx < 0.0 || Ctrl->C.dy < 0.0, "Syntax error -C option: clearances cannot be negative!\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->D.active, "Syntax error: The -D option is required!\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.width < 0.0 || Ctrl->D.height < 0.0, "Syntax error -D option: legend box sizes cannot be negative!\n");
 	if (!Ctrl->D.cartesian || !GMT->common.O.active) {	/* Overlays with -Dx does not need -R -J; other cases do */
 		n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
@@ -316,8 +317,8 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 
 	unsigned char *dummy = NULL;
 
-	double x_orig, y_orig, x_off, x, y, r, x0, y0, L, off_ss, off_tt, V = 0.0, sdim[3] = {0.0, 0.0, 0.0};
-	double half_line_spacing, quarter_line_spacing, one_line_spacing, y_start = 0.0, d_off, height, az1, az2;
+	double x_orig, y_orig, x_off, x, y, r, x0, y0, dx, dy, L, off_ss, off_tt, V = 0.0, sdim[3] = {0.0, 0.0, 0.0};
+	double half_line_spacing, quarter_line_spacing, one_line_spacing, y_start = 0.0, d_off, height, az1, az2, m_az;
 
 	struct imageinfo header;
 	struct PSLEGEND_CTRL *Ctrl = NULL;
@@ -852,12 +853,12 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							else if (n == 2 && B[0] != '-') {	/* Got line length and tickgap only */
 								length = GMT_to_inch (GMT, A);	/* The length of the line */
 								gap = GMT_to_inch (GMT, B);	/* The tick gap */
-								tlen = 0.15 * gap;		/* The default length of the tick */
+								tlen = 0.3 * gap;		/* The default length of the tick is 30% of gap */
 							}
 							else {	/* Got line length, select defaults for other things */
 								length = GMT_to_inch (GMT, A);	/* The length of the line */
-								strcpy (B, "-1");	/* One centered tick */
-								tlen = 0.15 * length;		/* The default length of the tick */
+								strcpy (B, "-1");		/* One centered tick */
+								tlen = 0.3 * length;		/* The default length of the tick is 30% of length */
 							}
 							if ((c = strchr (symbol, '+')))	/* Pass along all the given modifiers */
 								strcpy (sub, c);
@@ -934,7 +935,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 								else
 #endif
 								if (!strchr (symbol, '+'))  {	/* The necessary arguments not supplied! */
-									sprintf (sub, "v%gi+jc+e", 0.25*x);	/* Head size is 15% of length */
+									sprintf (sub, "v%gi+jc+e", 0.3*x);	/* Head size is 30% of length */
 								}
 								if (txt_c[0] == '-') strcat (sub, "+g-");
 								else { strcat (sub, "+g"); strcat (sub, txt_c);}
@@ -979,9 +980,12 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 									x = GMT_to_inch (GMT, size);
 									az1 = 10;	az2 = 45;
 								}
-								sprintf (sarg, "%g %g %gi %g %g", x_off + off_ss -0.25*x, y0, x, az1, az2);
+								/* We want to center the arc around its mid-point */
+								m_az = 0.5 * (az1 + az2);
+								dx = 0.25 * x * cosd (m_az);	dy = 0.25 * x * sind (m_az);
+								sprintf (sarg, "%g %g %gi %g %g", x_off + off_ss - dx, y0 - dy, x, az1, az2);
 								if (!strchr (symbol, '+'))  {	/* The necessary arguments not supplied! */
-									sprintf (sub, "m%gi+b+e", 0.2*x);	/* Somewhat arbitrary default */
+									sprintf (sub, "m%gi+b+e", 0.3*x);	/* Double heads, head size 30% of diameter */
 								}
 								if (txt_c[0] == '-') strcat (sub, "+g-");
 								else { strcat (sub, "+g"); strcat (sub, txt_c);}
@@ -999,7 +1003,10 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 									x = GMT_to_inch (GMT, size);
 									az1 = -30;	az2 = 30;
 								}
-								sprintf (sarg, "%g %g %gi %g %g", x_off + off_ss -0.25*x, y0, x, az1, az2);
+								/* We want to center the wedge around its mid-point */
+								m_az = 0.5 * (az1 + az2);
+								dx = 0.25 * x * cosd (m_az);	dy = 0.25 * x * sind (m_az);
+								sprintf (sarg, "%g %g %gi %g %g", x_off + off_ss - dx, y0 - dy, x, az1, az2);
 							}
 							else {
 								x = GMT_to_inch (GMT, size);
@@ -1010,10 +1017,10 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							strcat (buffer, " -G"); strcat (buffer, txt_c);
 							strcat (buffer, " -W"); strcat (buffer, txt_d);
 							S[SYM]->record[S[SYM]->n_rows++] = strdup (buffer);
-							// fprintf (stderr, "%s\n", buffer);
+							fprintf (stderr, "%s\n", buffer);
 							if (S[SYM]->n_rows == S[SYM]->n_alloc) S[SYM]->record = GMT_memory (GMT, S[SYM]->record, S[SYM]->n_alloc += GMT_SMALL_CHUNK, char *);
 							sprintf (buffer, "%s %s", sarg, sub);
-							// fprintf (stderr, "%s\n", buffer);
+							fprintf (stderr, "%s\n", buffer);
 							
 							S[SYM]->record[S[SYM]->n_rows++] = strdup (buffer);
 							if (S[SYM]->n_rows == S[SYM]->n_alloc) S[SYM]->record = GMT_memory (GMT, S[SYM]->record, S[SYM]->n_alloc += GMT_SMALL_CHUNK, char *);
@@ -1108,6 +1115,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 			Return (API->error);	/* Make filename with embedded object ID */
 		}
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -S %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
+		fprintf (stderr, "%s", buffer);
 		if (GMT_psxy (API, 0, buffer) != GMT_OK) {
 			Return (API->error);	/* Plot the symbols */
 		}
