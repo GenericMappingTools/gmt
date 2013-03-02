@@ -7620,10 +7620,17 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 	int one;
 	char txt_c[GMT_TEXT_LEN256];
 #endif
+	if (cmd) {
+		p->base = C->session.d_NaN;
+		p->u = C->current.setting.proj_length_unit;
+	}
+	else {
+		p->read_size = p->read_size_cmd;
+	}
 	p->n_required = p->convert_angles = p->n_nondim = p->base_set = 0;
-	p->user_unit[GMT_X] = p->user_unit[GMT_Y] = p->read_size = p->u_set = false;
+	p->user_unit[GMT_X] = p->user_unit[GMT_Y] = p->u_set = false;
 	p->font = C->current.setting.font_annot[0];
-
+	if (p->read_size)  p->given_size_x = p->given_size_y = p->size_x = p->size_y = 0.0;
 	/* col_off is the col number of first parameter after (x,y) [or (x,y,z) if mode == 1)].
 	   However, if size is not given then that is requred too so col_off++ */
 	
@@ -7644,6 +7651,8 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 		p->size_x = p->size_y = 0.0;
 		symbol_type = '*';
 		col_off++;
+		if (cmd) p->read_size_cmd = true;
+		if (cmd) p->read_symbol_cmd = true;
 	}
 	else if (isdigit ((int)text[0]) || text[0] == '.') {	/* Size, but no symbol given */
 		n = sscanf (text, "%[^/]/%s", txt_a, txt_b);
@@ -7655,6 +7664,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 		else
 			decode_error = true;
 		symbol_type = '*';
+		if (cmd) p->read_symbol_cmd = true;
 	}
 	else if (text[0] == 'l') {	/* Letter symbol is special case */
 		strncpy (text_cp, text, GMT_TEXT_LEN256);
@@ -7726,18 +7736,23 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 			if (p->size_y == 0.0) p->size_y = p->given_size_y;
 			if ((j = gmt_get_unit (C, text[k])) < 0) decode_error = true; else { p->u = j; p->u_set = true;}
 			col_off++;
+			if (cmd) p->read_size_cmd = true;
 		}
-		else if (!text[k] || text[k] == '+') {	/* No size nor unit */
+		else if (!text[k] || text[k] == '+') {	/* No size nor unit, just possible attributes */
 			if (p->size_x == 0.0) p->size_x = p->given_size_x;
 			if (p->size_y == 0.0) p->size_y = p->given_size_y;
 			col_off++;
+			if (cmd) p->read_size_cmd = true;
 		}
 #ifdef GMT_COMPAT
-		else if (!p->v.parsed_v4)	/* Got arrow size (length) */
+		else if (!p->v.parsed_v4) {	/* Got arrow size (length) */
+			if (cmd) p->read_size_cmd = false;
 #else
-		else
+		else {
 #endif
 			p->size_x = p->given_size_x = GMT_to_inch (C, arg), check = false;
+			if (cmd) p->read_size_cmd = false;
+		}
 	}
 	else if (strchr (allowed_symbols[mode], (int) text[0]) && strchr (GMT_DIM_UNITS, (int) text[1])) {	/* Symbol, but no size given (size assumed given on command line), only unit information */
 		n = sscanf (text, "%c", &symbol_type);
@@ -8027,8 +8042,10 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 		case 'P':
 		case 'p':
 			p->symbol = GMT_SYMBOL_DOT;
-			if (p->size_x == 0.0) p->size_x = GMT_DOT_SIZE;
-			check = false;
+			if (p->size_x == 0.0 && !p->read_size) {	/* User forgot to set size */
+				p->size_x = GMT_DOT_SIZE;
+				check = false;
+			}
 			break;
 		case 'q':	/* Quoted lines: -Sq[d|n|l|x]<info>[:<labelinfo>] */
 			p->symbol = GMT_SYMBOL_QUOTED_LINE;
@@ -8201,6 +8218,8 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 		p->n_required++;
 		if (p->symbol == GMT_SYMBOL_COLUMN) p->n_required++;
 	}
+	else
+		p->read_size = false;
 	if (bset || cmd) { /* Since we may not know if we have logarithmic projection at this point, skip the next checks. */ }
 	else if (p->symbol == GMT_SYMBOL_BARX)
 		p->base = (C->current.proj.xyz_projection[GMT_X] == GMT_LOG10) ? 1.0 : 0.0;

@@ -9,7 +9,8 @@ the input data; this cannot be used in conjunction with
 units of cm, inch, or point, respectively [Default is
 **PROJ\_LENGTH\_UNIT**]. Note: if you give both size and symbol via the
 input file you must use **PROJ\_LENGTH\_UNIT** to indicate the units
-used for the symbol size. If the symbol size is expected via the third
+used for the symbol size or append the units to the size in the file.
+If the symbol size is expected via the third
 data column then you may convert those values to symbol sizes by
 appending **+s**\ *scale*\ [/*origin*][**l**\ ] which will compute size
 = (data - *origin*) \* *scale*, where *origin* defaults to 0. If **l**

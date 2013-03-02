@@ -573,12 +573,12 @@ void GMTAPI_GI_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, s
 
 void GMTAPI_grid_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_GRID *G)
 {	/* Replace or Append either command or remark field with text or commmand-line options */
-	return (GMTAPI_GI_comment (API, mode, arg, G->header));
+	GMTAPI_GI_comment (API, mode, arg, G->header);
 }
 
 void GMTAPI_image_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_IMAGE *I)
 {	/* Update either command or remark field with text or commmand-line options */
-	return (GMTAPI_GI_comment (API, mode, arg, I->header));
+	GMTAPI_GI_comment (API, mode, arg, I->header);
 }
 
 void update_txt_item (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, char **header)
