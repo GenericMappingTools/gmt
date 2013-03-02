@@ -48,4 +48,6 @@ EOF
 let sum=`awk -f check.awk check.txt`
 if [ $sum -ne 0 ]; then
 	echo "Checksum is not zero" > fail
+else
+	touch fail
 fi
