@@ -215,16 +215,38 @@ man_pages = [
      [u'GMT_TEAM'], 1)
 ]
 
-import glob 
+
+# The following comes after the help in a sphinx forum
+# https://groups.google.com/forum/#!topic/sphinx-users/AT3JOKN02C8
+# The recipe there is still not perfect as it appends the directory structure
+# to the output file name. A simple hack was to do multiple calls to '.replace'
+# A final annoyance it that it picks all .rst in sight and converts them, including
+# 'list.rst' and others of the same kind used create the toctree.
+
+import os 
 man_pages = [] 
-for f in glob.glob('*.rst') + glob.glob('*/*/*.rst'): 
-    man_pages.append(( 
-        f[:-4],                    # source file (no extension) 
-        f[:-4].replace('/', '-'),  # output file (under output dir) 
-        'description of %s' % f,   # description 
-        'A. Author',               # author 
-        1,                         # section 
-    )) 
+for dirpath, dirnames, filenames in os.walk('.'): 
+    for f in filenames: 
+        if f.endswith('.rst'): 
+            srcfile = os.path.normpath(os.path.join(dirpath, f[:-4])) 
+            outfile = srcfile.replace(os.sep, '-') 
+            outfile = outfile.replace('supplements-', '') 
+            outfile = outfile.replace('dbase-', '') 
+            outfile = outfile.replace('gshhg-', '') 
+            outfile = outfile.replace('imgsrc-', '') 
+            outfile = outfile.replace('meca-', '') 
+            outfile = outfile.replace('mgd77-', '') 
+            outfile = outfile.replace('misc-', '') 
+            outfile = outfile.replace('potential-', '') 
+            outfile = outfile.replace('segy-', '') 
+            outfile = outfile.replace('sph-', '') 
+            outfile = outfile.replace('spotter-', '') 
+            outfile = outfile.replace('x2sys-', '') 
+            man_pages.append((srcfile, 
+                              outfile, 
+                              'description of %s' % outfile, 
+                             'A. Author', 1)) 
+
 
 # -- Options for Epub output ---------------------------------------------------
 
