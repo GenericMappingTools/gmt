@@ -57,10 +57,10 @@ psxy -R -JX -O -Sp0.03i ship.pg >> example_03a.ps
 # typically spaced using $AWK to get the delta-p between points and view it with 
 # "pshistogram".
 #
-$AWK '{ if (NR > 1) print $1 - last1; last1=$1; }' ship.pg | pshistogram  -W0.1 -Gblack -JX3i -K \
-	-X2i -Y1.5i -B:."Ship": -UL/-1.75i/-1.25i/"Example 3b in Cookbook" > example_03b.ps
-$AWK '{ if (NR > 1) print $1 - last1; last1=$1; }' sat.pg  | pshistogram  -W0.1 -Gblack -JX3i -O \
-	-X5i -B:."Sat": >> example_03b.ps
+$AWK '{ if (NR > 1) print $1 - last1; last1=$1; }' ship.pg | pshistogram  -W0.1 -Gblack -JX3i \
+	-K -X2i -Y1.5i -B:."Ship": -UL/-1.75i/-1.25i/"Example 3b in Cookbook" > example_03b.ps
+$AWK '{ if (NR > 1) print $1 - last1; last1=$1; }' sat.pg  | pshistogram  -W0.1 -Gblack -JX3i \
+	-O -X5i -B:."Sat": >> example_03b.ps
 #
 # This experience shows that the satellite values are spaced fairly evenly, with
 # delta-p between 3.222 and 3.418.  The ship values are spaced quite unevenly, with
@@ -113,7 +113,8 @@ gmtconvert -A samp_ship.pg samp_sat.pg -o1,3 | spectrum1d -S256 -D1 -W -C > /dev
 psxy spectrum.coh -Ba1f3p:"Wavelength (km)":/a0.25f0.05:"Coherency@+2@+":WeSn -JX-4il/3.75i \
 	-R1/1000/0/1 -UL/-2.25i/-1.25i/"Example 3 in Cookbook" -P -K -X2.5i -Sc0.07i -Gblack \
 	-Ey/0.5p -Y1.5i > $ps
-echo "3.85 3.6 Coherency@+2@+" | pstext -R0/4/0/3.75 -Jx1i -F+f18p,Helvetica-Bold+jTR -O -K >> $ps
+echo "3.85 3.6 Coherency@+2@+" | pstext -R0/4/0/3.75 -Jx1i -F+f18p,Helvetica-Bold+jTR \
+	-O -K >> $ps
 cat > box.d << END
 2.375	3.75
 2.375	3.25
@@ -173,9 +174,9 @@ psxy -R -JX -O -Sp0.03i samp2_ship.pg >> example_03e.ps
 #
 gmtconvert -A samp2_ship.pg samp2_sat.pg -o1,3 | spectrum1d -S256 -D1 -W -C > /dev/null
 # 
-psxy spectrum.coh -Ba1f3p:"Wavelength (km)":/a0.25f0.05:"Coherency@+2@+":WeSn -JX-4il/3.75i \
-	-R1/1000/0/1 -UL/-2.25i/-1.25i/"Example 3f in Cookbook" -P -K -X2.5i -Sc0.07i -Gblack \
-	-Ey/0.5p -Y1.5i > example_03f.ps
+psxy spectrum.coh -Ba1f3p:"Wavelength (km)":/a0.25f0.05:"Coherency@+2@+":WeSn \
+	-JX-4il/3.75i -R1/1000/0/1 -UL/-2.25i/-1.25i/"Example 3f in Cookbook" -P -K -X2.5i \
+	-Sc0.07i -Gblack -Ey/0.5p -Y1.5i > example_03f.ps
 echo "3.85 3.6 Coherency@+2@+" | pstext -R0/4/0/3.75 -Jx -F+f18p,Helvetica-Bold+jTR -O \
 	-K >> example_03f.ps
 cat > box.d << END

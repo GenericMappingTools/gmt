@@ -93,18 +93,28 @@ EXTERN_MSC void gmt_close_grd (struct GMT_CTRL *C, struct GMT_GRID *G);
  * there are many tools which requires x/y to be in meters but the user may have these
  * data in km or miles.  Appending +u<unit> addresses this conversion. */
 
+char *gmt_grdfile_unitscale (char *name)
+{	/* Determine if this file ends in +u|U<unit>, with <unit> one of the valid Cartesian distance units */
+	char *c = NULL;
+	size_t len = strlen (name);					/* Get length of the file name */
+	if (len < 4) return NULL;					/* Not enough space for name and modifier */
+	c = &name[len-3];						/* c may be +u<unit>, +U<unit> or anything else */
+	if (c[0] != '+') return NULL;					/* Does not start with + */
+	if (! (c[1] == 'u' || c[1] == 'U')) return NULL;		/* Did not have the proper modifier u or U */
+	if (strchr (GMT_LEN_UNITS2, c[2]) == NULL) return NULL;		/* Does no have a valid unit at the end */
+	return c;							/* We passed, return c */
+}
+
 void gmt_grd_parse_xy_units (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h, char *file, unsigned int direction)
 {	/* Decode the optional +u|U<unit> and determine scales */
 	enum GMT_enum_units u_number;
 	unsigned int mode = 0;
-	char *c = NULL, *name = (file) ? file : h->name;
+	char *c = NULL, *name = NULL;
+	
 	if (GMT_is_geographic (C, direction)) return;	/* Does not apply to geographic data */
-	if ((c = strstr (name, "+u"))) 		/* Found +u<unit> modifier */
-		mode = 0;
-	else if ((c = strstr (name, "+U"))) 	/* Found +U<unit> modifier */
-		mode = 1;
-	else
-		return;	/* No +u|U<unit> modifier found */
+	name = (file) ? file : h->name;
+	if ((c = gmt_grdfile_unitscale (name)) == NULL) return;	/* Did not find any modifier */
+	mode = (c[1] == 'u') ? 0 : 1;
 	u_number = GMT_get_unit_number (C, c[2]);		/* Convert char unit to enumeration constant for this unit */
 	if (u_number == GMT_IS_NOUNIT) {
 		GMT_report (C, GMT_MSG_NORMAL, "Grid file x/y unit specification %s was unrecognized (part of file name?) and is ignored.\n", c);

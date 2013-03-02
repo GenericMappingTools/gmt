@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 13 2011 16:10:43) [64-bit] [C4] Document from GMT_grdimage
-%%Creator: GMT
-%%For: remko
+%%Title: GMT v5.0.1b_r11030M [64-bit] [C4] Document from grdimage
+%%Creator: GMT5
+%%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Jun 13 16:54:11 2011
+%%CreationDate: Fri Mar  1 17:10:13 2013
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -60,9 +60,11 @@
 /Si {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR FO}!
 /Sj {M MS R dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D MR FO}!
 /Sn {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR FO}!
-/Sp {N 3 -1 roll 0 360 arc F}!
+/Sp {N 3 -1 roll 0 360 arc fs N}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
+/SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
+  BoxW 0 BoxW BoxH BoxR arct BoxW BoxH 0 BoxH BoxR arct 0 BoxH 0 0 BoxR arct 0 0 BoxW 0 BoxR arct MR FO}!
 /Ss {M 1.414213562 mul dup dup dup -2 div dup G 0 D 0 exch D neg 0 D FO}!
 /St {M MS dup 0 exch G -60 R 1.732050808 mul dup 0 D -120 R 0 D MR FO}!
 /SV {0 exch M 0 D D D D D 0 D FO}!
@@ -108,6 +110,11 @@
   count PSL_op_count sub {pop} repeat
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
+}!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -569,8 +576,9 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT:  grdimage Kilauea.utm.nc -IKilauea.utm_i.nc -CKilauea.cpt -Jx1:160000 -P -K -UExample 28 in Cookbook --FORMAT_FLOAT_OUT=%.10g --FONT_ANNOT_PRIMARY=9p
+%%GMT: grdimage Kilauea.utm.nc -IKilauea.utm_i.nc -CKilauea.cpt -Jx1:160000 -P -K -UExample 28 in Cookbook --FORMAT_FLOAT_OUT=%.10g --FONT_ANNOT_PRIMARY=9p
 %%PROJ: xy 254340.00000000 280020.00000000 2129880.00000000 2153640.00000000 254340.000 280020.000 2129880.000 2153640.000 +xy +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_1
 % Begin GMT time-stamp
 V
 -900 -900 T
@@ -18621,15 +18629,16 @@ lYuor_%(#dFFIR;Sq/DWEQBcg+lB,4Et&jW3q8@;fs6^'n*<=#MVrZfkn#HAG++d3lbM[5RX;jr%'&"]
 !d'XPf"m#Q~>
 U
 PSL_cliprestore
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  pscoast -R-155:20:13.3/19:14:51.5/-155:05:44.2/19:27:54.6r -Ju5Q/1:160000 -O -K -Df+ -Slightblue -W0.5p -B5mg5mNE --FONT_ANNOT_PRIMARY=12p \
-%%GMT:+ --FORMAT_GEO_MAP=ddd:mmF
-%%PROJ: utm 204.55991297 205.00712913 19.14763889 19.56516667 254340.555 280018.864 2129880.744 2153639.419 +proj=utm +zone=5 +a=6378137.000 +b=6356752.314245
+%%GMT: pscoast -RKilauea.utm.nc -Ju5Q/1:160000 -O -K -Df+ -Slightblue -W0.5p -B5mg5mNE --FONT_ANNOT_PRIMARY=12p --FORMAT_GEO_MAP=ddd:mmF
+%%PROJ: utm 204.55990761 205.00714002 19.14763210 19.56517204 254340.000 280020.000 2129880.000 2153640.000 +proj=utm +zone=5 +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -18641,51 +18650,51 @@ O0
 16 11 D
 10 13 D
 -4 15 D
-32 11 D
+33 11 D
 13 12 D
-8 37 D
+7 37 D
 29 43 D
 112 101 D
-10 18 D
+11 18 D
 50 50 D
-28 9 D
-50 40 D
+27 10 D
+50 39 D
 33 41 D
-27 1 D
-49 25 D
+28 1 D
+48 25 D
 30 23 D
-210 1 D
-13 10 D
-7 15 D
-63 58 D
+210 2 D
+13 9 D
+8 15 D
+62 58 D
 31 8 D
-8 11 D
-15 9 D
+9 11 D
+14 9 D
 13 0 D
 30 -26 D
 17 0 D
 37 -34 D
-96 -2 D
-14 6 D
+96 -1 D
+15 5 D
 42 50 D
-29 23 D
+28 23 D
 24 4 D
-21 18 D
-17 7 D
-121 -1 D
-11 17 D
+22 19 D
+16 6 D
+122 -1 D
+10 17 D
 24 12 D
-15 -5 D
-24 25 D
+15 -4 D
+25 24 D
 31 8 D
-36 27 D
+35 27 D
 13 0 D
 25 -16 D
-19 -29 D
-31 -20 D
-156 10 D
-132 -9 D
-13 -39 D
+20 -29 D
+30 -20 D
+166 10 D
+122 -8 D
+13 -40 D
 22 -16 D
 254 -5 D
 51 -50 D
@@ -18693,24 +18702,24 @@ O0
 62 -65 D
 13 -43 D
 19 -25 D
-27 -26 D
-12 -5 D
+27 -25 D
+12 -6 D
 200 -1 D
 24 -24 D
 82 -7 D
 20 -23 D
-60 -6 D
-26 -25 D
+60 -5 D
+26 -26 D
 76 9 D
 14 13 D
 16 0 D
-46 -51 D
+46 -50 D
 150 0 D
-41 -30 D
+41 -31 D
 50 -2 D
 12 4 D
-21 20 D
-29 12 D
+21 21 D
+29 11 D
 34 22 D
 158 0 D
 44 -28 D
@@ -18718,95 +18727,95 @@ O0
 16 -6 D
 18 -19 D
 29 -10 D
-49 -51 D
-9 0 D
-68 67 D
-5 35 D
-54 60 D
-15 12 D
-28 7 D
+49 -50 D
+9 -1 D
+69 67 D
+4 35 D
+55 60 D
+14 13 D
+28 6 D
 33 26 D
 30 6 D
 16 19 D
 14 5 D
-33 -2 D
+33 -1 D
 35 24 D
-148 4 D
+148 3 D
 40 19 D
-43 7 D
-19 19 D
+43 8 D
+19 18 D
 24 8 D
-55 -1 D
-40 29 D
+56 -1 D
+39 29 D
 71 0 D
-25 -29 D
-20 -5 D
-182 -2 D
-14 4 D
-26 24 D
+25 -28 D
+20 -6 D
+182 -1 D
+15 3 D
+25 24 D
 22 1 D
-52 52 D
-99 -2 D
+53 52 D
+98 -2 D
 18 6 D
 35 43 D
 15 41 D
-43 42 D
-14 5 D
+43 43 D
+14 4 D
 107 -6 D
 27 4 D
 34 25 D
-25 -1 D
-20 25 D
-13 6 D
+26 0 D
+19 24 D
+14 6 D
 163 -2 D
-36 -27 D
-168 -8 D
-13 7 D
-20 22 D
+35 -27 D
+168 -7 D
+14 6 D
+19 22 D
 29 -2 D
 24 22 D
 34 8 D
-44 45 D
+45 45 D
 29 8 D
-39 43 D
+38 43 D
 52 20 D
 71 68 D
 16 0 D
-172 174 D
-38 17 D
+173 174 D
+37 17 D
 58 53 D
 25 1 D
-28 24 D
-17 -1 D
+29 25 D
+17 -2 D
 34 25 D
-27 1 D
-73 81 D
-34 7 D
-38 42 D
+26 1 D
+74 81 D
+33 8 D
+38 41 D
 19 7 D
 34 4 D
-29 -8 D
-34 30 D
+30 -8 D
+33 30 D
 68 0 D
 13 6 D
-19 22 D
-56 0 D
-0 -1479 D
--6806 0 D
+19 23 D
+57 0 D
+0 -1480 D
+-6807 0 D
 2544 587 M
 63 2 D
 16 8 D
 17 18 D
-4 13 D
--7 13 D
+5 13 D
+-8 13 D
 -38 45 D
 -14 6 D
--53 -3 D
+-53 -2 D
 -21 -14 D
 -3 -30 D
--9 -17 D
+-8 -18 D
 -12 -10 D
-5 -14 D
+4 -14 D
 14 -15 D
 38 -2 D
 {0.678 0.847 0.902 C} FS
@@ -18818,51 +18827,51 @@ FO
 16 11 D
 10 13 D
 -4 15 D
-32 11 D
+33 11 D
 13 12 D
-8 37 D
+7 37 D
 29 43 D
 112 101 D
-10 18 D
+11 18 D
 50 50 D
-28 9 D
-50 40 D
+27 10 D
+50 39 D
 33 41 D
-27 1 D
-49 25 D
+28 1 D
+48 25 D
 30 23 D
-210 1 D
-13 10 D
-7 15 D
-63 58 D
+210 2 D
+13 9 D
+8 15 D
+62 58 D
 31 8 D
-8 11 D
-15 9 D
+9 11 D
+14 9 D
 13 0 D
 30 -26 D
 17 0 D
 37 -34 D
-96 -2 D
-14 6 D
+96 -1 D
+15 5 D
 42 50 D
-29 23 D
+28 23 D
 24 4 D
-21 18 D
-17 7 D
-121 -1 D
-11 17 D
+22 19 D
+16 6 D
+122 -1 D
+10 17 D
 24 12 D
-15 -5 D
-24 25 D
+15 -4 D
+25 24 D
 31 8 D
-36 27 D
+35 27 D
 13 0 D
 25 -16 D
-19 -29 D
-31 -20 D
-156 10 D
-132 -9 D
-13 -39 D
+20 -29 D
+30 -20 D
+166 10 D
+122 -8 D
+13 -40 D
 22 -16 D
 254 -5 D
 51 -50 D
@@ -18870,24 +18879,24 @@ FO
 62 -65 D
 13 -43 D
 19 -25 D
-27 -26 D
-12 -5 D
+27 -25 D
+12 -6 D
 200 -1 D
 24 -24 D
 82 -7 D
 20 -23 D
-60 -6 D
-26 -25 D
+60 -5 D
+26 -26 D
 76 9 D
 14 13 D
 16 0 D
-46 -51 D
+46 -50 D
 150 0 D
-41 -30 D
+41 -31 D
 50 -2 D
 12 4 D
-21 20 D
-29 12 D
+21 21 D
+29 11 D
 34 22 D
 158 0 D
 44 -28 D
@@ -18895,130 +18904,127 @@ FO
 16 -6 D
 18 -19 D
 29 -10 D
-49 -51 D
-9 0 D
-68 67 D
-5 35 D
-54 60 D
-15 12 D
-28 7 D
+49 -50 D
+9 -1 D
+69 67 D
+4 35 D
+55 60 D
+14 13 D
+28 6 D
 33 26 D
 30 6 D
 16 19 D
 14 5 D
-33 -2 D
+33 -1 D
 35 24 D
-148 4 D
+148 3 D
 40 19 D
-43 7 D
-19 19 D
+43 8 D
+19 18 D
 24 8 D
-55 -1 D
-40 29 D
+56 -1 D
+39 29 D
 71 0 D
-25 -29 D
-20 -5 D
-182 -2 D
-14 4 D
-26 24 D
+25 -28 D
+20 -6 D
+182 -1 D
+15 3 D
+25 24 D
 22 1 D
-52 52 D
-99 -2 D
+53 52 D
+98 -2 D
 18 6 D
 35 43 D
 15 41 D
-43 42 D
-14 5 D
+43 43 D
+14 4 D
 107 -6 D
 27 4 D
 34 25 D
-25 -1 D
-20 25 D
-13 6 D
+26 0 D
+19 24 D
+14 6 D
 163 -2 D
-36 -27 D
-168 -8 D
-13 7 D
-20 22 D
+35 -27 D
+168 -7 D
+14 6 D
+19 22 D
 29 -2 D
 24 22 D
 34 8 D
-44 45 D
+45 45 D
 29 8 D
-39 43 D
+38 43 D
 52 20 D
 71 68 D
 16 0 D
-172 174 D
-38 17 D
+173 174 D
+37 17 D
 58 53 D
 25 1 D
-28 24 D
-17 -1 D
+29 25 D
+17 -2 D
 34 25 D
-27 1 D
-73 81 D
-34 7 D
-38 42 D
+26 1 D
+74 81 D
+33 8 D
+38 41 D
 19 7 D
 34 4 D
-29 -8 D
-34 30 D
+30 -8 D
+33 30 D
 68 0 D
 13 6 D
-19 22 D
-56 0 D
+19 23 D
+57 0 D
 S
 2544 587 M
 63 2 D
 16 8 D
 17 18 D
-4 13 D
--7 13 D
+5 13 D
+-8 13 D
 -38 45 D
 -14 6 D
--53 -3 D
+-53 -2 D
 -21 -14 D
 -3 -30 D
--9 -17 D
+-8 -18 D
 -12 -10 D
-5 -14 D
+4 -14 D
 14 -15 D
 P S
 4 W
 115 0 M
-90 6712 D
-4 303 D
+95 7016 D
 S
 2703 0 M
-90 6957 D
-1 58 D
+91 7016 D
 S
 5291 0 M
-63 5090 D
-25 1925 D
+78 6268 D
+10 748 D
 S
 0 77 M
-3390 -44 D
-2592 -33 D
+4110 -53 D
+1884 -24 D
 S
 0 2802 M
-3220 -42 D
-1883 -24 D
-2020 -25 D
-459 -6 D
+3779 -49 D
+2466 -31 D
+1338 -17 D
 S
 0 5527 M
-3437 -45 D
-2681 -34 D
-1464 -18 D
+3997 -52 D
+2623 -33 D
+963 -12 D
 S
 8 W
-209 7015 M 2 84 D S
-2794 7015 M 1 84 D S
-5379 7015 M 1 84 D S
-7582 2705 M 84 -1 D S
-7582 5430 M 84 -1 D S
+210 7016 M 1 83 D S
+2794 7016 M 1 83 D S
+5379 7016 M 1 83 D S
+7583 2705 M 83 -1 D S
+7583 5430 M 83 -1 D S
 212 7182 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 V -0.778 R (155Ê20©W) bc Z U
@@ -19028,60 +19034,63 @@ V -0.778 R (155Ê20©W) bc Z U
 7749 5428 M V -0.697 R (19Ê25©N) ml Z U
 25 W
 2 setlinecap
-7582 0 M 0 7015 D S
-0 7015 M 7582 0 D S
+7583 0 M 0 7016 D S
+0 7016 M 7583 0 D S
 0 setlinecap
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  pstext -R-155:20:13.3/19:14:51.5/-155:05:44.2/19:27:54.6r -Ju5Q/1:160000 -O -K -F+f12p,Helvetica-Bold+jCB
-%%PROJ: utm 204.55991297 205.00712913 19.14763889 19.56516667 254340.555 280018.864 2129880.744 2153639.419 +proj=utm +zone=5 +a=6378137.000 +b=6356752.314245
+%%GMT: pstext -RKilauea.utm.nc -Ju5Q/1:160000 -O -K -F+f12p,Helvetica-Bold+jCB
+%%PROJ: utm 204.55990761 205.00714002 19.14763210 19.56517204 254340.000 280020.000 2129880.000 2153640.000 +proj=utm +zone=5 +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 clipsave
 0 0 M
-7582 0 D
-0 7015 D
--7582 0 D
+7583 0 D
+0 7016 D
+-7583 0 D
 PSL_eoclip N
-2094 6226 M PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+2095 6226 M PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 200 F1
 (KILAUEA) bc Z
 PSL_cliprestore
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psbasemap -R-155:20:13.3/19:14:51.5/-155:05:44.2/19:27:54.6r -Ju5Q/1:160000 -O -K --FONT_ANNOT_PRIMARY=9p -Lf155:07:30W/19:15:40N/19:23N/5k+l1:16,000+u \
-%%GMT:+ --FONT_LABEL=10p
-%%PROJ: utm 204.55991297 205.00712913 19.14763889 19.56516667 254340.555 280018.864 2129880.744 2153639.419 +proj=utm +zone=5 +a=6378137.000 +b=6356752.314245
+%%GMT: psbasemap -RKilauea.utm.nc -Ju5Q/1:160000 -O -K --FONT_ANNOT_PRIMARY=9p -Lf155:07:30W/19:15:40N/19:23N/5k+l1:16,000+u --FONT_LABEL=10p
+%%PROJ: utm 204.55990761 205.00714002 19.14763210 19.56517204 254340.000 280020.000 2129880.000 2153640.000 +proj=utm +zone=5 +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
 8 W
-5850 293 M 0 63 D S
+5850 294 M 0 62 D S
 {0 A} FS
 O1
--42 295 5850 356 Sb
-6145 293 M 0 63 D S
+-42 296 5850 356 Sb
+6146 294 M 0 62 D S
 {1 A} FS
--42 296 6145 356 Sb
-6441 293 M 0 63 D S
+-42 295 6146 356 Sb
+6441 294 M 0 62 D S
 {0 A} FS
 -42 296 6441 356 Sb
-6737 293 M 0 63 D S
+6737 294 M 0 62 D S
 {1 A} FS
 -42 295 6737 356 Sb
-7032 293 M 0 63 D S
+7032 294 M 0 62 D S
 {0 A} FS
 -42 296 7032 356 Sb
-7328 293 M 0 63 D S
+7328 294 M 0 62 D S
 5850 273 M 0 83 D S
 5850 210 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 150 F0
@@ -19090,15 +19099,16 @@ O1
 7328 210 M (5 km) tc Z
 6589 489 M 167 F0
 (1:16,000) bc Z
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psbasemap -R254.34/280.02/2129.88/2153.64 -Jx1:160 -B5g5:,-@:8:000m:WSne -O --FONT_ANNOT_PRIMARY=10p --MAP_GRID_CROSS_SIZE_PRIMARY=0.1i \
-%%GMT:+ --FONT_LABEL=10p
+%%GMT: psbasemap -RKilauea.utm.nc+Uk -Jx1:160 -B5g5:,-@:8:000m:WSne -O --FONT_ANNOT_PRIMARY=10p --MAP_GRID_CROSS_SIZE_PRIMARY=0.1i --FONT_LABEL=10p
 %%PROJ: xy 254.34000000 280.02000000 2129.88000000 2153.64000000 254.340 280.020 2129.880 2153.640 +xy +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -19300,6 +19310,7 @@ V MU 0 0 M (280) FP 133 F0 (000m) FP pathbbox N pop exch pop add U -2 div 0 G
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -7016 T
 0 setlinecap
+%%EndObject
 %%PageTrailer
 U
 showpage

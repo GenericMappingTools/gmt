@@ -94,8 +94,8 @@ else (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 		# Set TeX FLAGS
 		set (MAKEINDEX_COMPILER_FLAGS "-s ${CMAKE_CURRENT_SOURCE_DIR}/GMT.ist"
 			CACHE STRING "Flags passed to makeindex.")
-		set (PDFLATEX_COMPILER_FLAGS "--interaction=batchmode"
-			CACHE STRING "Silence latex warnings.")
+#		set (PDFLATEX_COMPILER_FLAGS "--interaction=batchmode"
+#			CACHE STRING "Silence latex warnings.")
 
 		# Find LaTeX
 		include (UseLATEX)

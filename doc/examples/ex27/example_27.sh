@@ -36,7 +36,8 @@ pscoast $R -Jm0.25i -Ba10f5WSne -O -K -Gblack --PROJ_ELLIPSOID=Sphere \
 
 #echo 147E 31S 1i 2.5i | psxy -R -J -O -K -Sr -D0.25i/0.05i -Gwhite -W1p \
 #	--PROJ_ELLIPSOID=Sphere >> $ps
-pos=`echo 147E 31S | mapproject -R -J --PROJ_ELLIPSOID=Sphere | $AWK '{printf "%si/%si\n", $1, $2}'`
+pos=`echo 147E 31S | mapproject -R -J --PROJ_ELLIPSOID=Sphere | \
+	$AWK '{printf "%si/%si\n", $1, $2}'`
 psscale -D$pos/2i/0.15i -Cgrav.cpt -B50f10/:mGal: -I -O -T+gwhite+p1p >> $ps
 
 # Clean up

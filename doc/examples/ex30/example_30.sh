@@ -9,8 +9,8 @@
 # Draw generic x-y axes with arrows
 ps=example_30.ps
 
-psbasemap -R0/360/-1.25/1.75 -JX8i/6i -B90f30:,-\\312:/1g10:."Two Trigonometric Functions":WS -K \
-	-U"Example 30 in Cookbook" --MAP_FRAME_TYPE=graph --MAP_VECTOR_SHAPE=0.5 > $ps
+psbasemap -R0/360/-1.25/1.75 -JX8i/6i -B90f30:,-\\312:/1g10:."Two Trigonometric Functions":WS \
+	-K -U"Example 30 in Cookbook" --MAP_FRAME_TYPE=graph --MAP_VECTOR_SHAPE=0.5 > $ps
 
 # Draw sine an cosine curves
 

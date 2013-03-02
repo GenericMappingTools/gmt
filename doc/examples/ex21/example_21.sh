@@ -57,7 +57,8 @@ echo "01-Aug-06	23.8852" > RHAT.pw
 echo "01-Jan-08	23.8852" >> RHAT.pw
 psxy -R -J RHAT.pw -Wthick,- -O -K >> $ps
 gmtset FORMAT_DATE_IN yyyy-mm-dd
-echo "$e 23.8852 PW sell" | pstext -R -J -O -K -Dj0.8i/0.05i -N -F+f12p,Bookman-Demi+jRB >> $ps
+echo "$e 23.8852 PW sell" | pstext -R -J -O -K -Dj0.8i/0.05i -N \
+	-F+f12p,Bookman-Demi+jRB >> $ps
 gmtset FORMAT_DATE_IN dd-o-yy
 
 # Get smaller region for insert for trend since 2004
