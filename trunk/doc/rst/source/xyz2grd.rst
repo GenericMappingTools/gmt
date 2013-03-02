@@ -85,8 +85,8 @@ of formats, see **-Z** below.)
     Read a 1-column ASCII [or binary] table. This assumes that all the
     nodes are present and sorted according to specified ordering
     convention contained in *flags*. If incoming data represents rows,
-    make *flags* start with `**T**\ (op) <T.op.html>`_ if first row is y
-    = ymax or `**B**\ (ottom) <B.ottom.html>`_ if first row is y = ymin.
+    make *flags* start with **T**\ (op) if first row is y
+    = ymax or **B**\ (ottom) if first row is y = ymin.
     Then, append **L** or **R** to indicate that first element is at
     left or right end of row. Likewise for column formats: start with
     **L** or **R** to position first column, and then append **T** or
@@ -155,18 +155,18 @@ of formats, see **-Z** below.)
 
 .. include:: explain_grd_coord.rst_
 
-`Swapping Limitations <#toc9>`_
--------------------------------
+Swapping Limitations
+--------------------
 
 All data types can be read, even 64-bit integers, but internally grids
 are stored using floats. Hence, integer values exceeding the float
-type’s 23-bit mantissa may not be represented exactly. When OPT(S) is
+type's 23-bit mantissa may not be represented exactly. When **-S** is
 used no grids are implied and we read data into an intermediate double
 container. This means all but 64-bit integers can be represented using
-the double type’s 53-bit mantissa.
+the double type's 53-bit mantissa.
 
-`Examples <#toc10>`_
---------------------
+Examples
+--------
 
 To create a grid file from the ASCII data in hawaii\_grv.xyz, use
 
@@ -193,8 +193,8 @@ swap the byte-order with
 
 xyz2grd floats.bin -Snew\_floats.bin -V -Zf
 
-`See Also <#toc11>`_
---------------------
+See Also
+--------
 
 `gmt <gmt.html>`_ , `grd2xyz <grd2xyz.html>`_ , `grdedit <grdedit.html>`_
 `grdreformat <grdreformat.html>`_

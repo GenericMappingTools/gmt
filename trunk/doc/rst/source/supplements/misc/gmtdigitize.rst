@@ -110,15 +110,16 @@ so that it is world read/write-able. Then, stty -F /dev/ttyS0 evenp will
 set the terminal settings, which can be checked with stty -F /dev/ttyS0
 -a. Setup of digitizer: We use the CalComp 2000 ASCII (Save 3) setup,
 which has:
- Mode: Point
- Baud Rate: 9600
- Data Bits: 7
- Parity: Even
- Data Rate: 125 pps
- Resolution: 200 lpi
- Output Format: Format 0
- Emulation: CalComp 2000 ASCII
- (A)We need to make a slight modification to the Preset No 3 settings:
+| Mode: Point
+| Baud Rate: 9600
+| Data Bits: 7
+| Parity: Even
+| Data Rate: 125 pps
+| Resolution: 200 lpi
+| Output Format: Format 0
+| Emulation: CalComp 2000 ASCII
+
+(A)We need to make a slight modification to the Preset No 3 settings:
 (1) 2450 LPI instead of 200, `and (2) <and.2.html>`_ None instead of yes
 for added CR. These modifications can be changed and saved to Preset 3
 on the digitizer but a power outage may reset in back to the factory

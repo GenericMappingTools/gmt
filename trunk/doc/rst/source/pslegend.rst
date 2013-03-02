@@ -37,7 +37,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 
 **-D**\ [**x**\ ]\ *lon*/*lat*/*width*\ [/*height*]/\ *just*\ [/*dx*/*dy*]
     Positions the legend and specifies its size. The *just* is a 2-char
-    justification string (see **pstext**) that relates the given
+    justification string (see `psxy <pstext.html>`_) that relates the given
     position to a point on the rectangular legend box. If you want to
     specify the position in map plot units (i.e., inches or cm), use
     **-Dx**; in that case the **-R** and **-J** are optional (provided
@@ -104,7 +104,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     miles, survey feet) and is justified on top of the scale [t]. Change
     this by giving your own label (append **+l**\ *label*). Change label
     justification with **+j**\ *justification* (choose among l(eft),
-    r(ight), `t(op) <t.op.html>`_ , and `b(ottom) <b.ottom.html>`_ ).
+    r(ight), t(op) , and b(ottom)).
     Apply **+u** to append the unit to all distance annotations along
     the scale. If you want to place a rectangle behind the scale,
     specify suitable **+p**\ *pen* and/or **+f**\ *fill* parameters. All
@@ -116,22 +116,22 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     columns stay in effect until **N** is used again.
 **S** *dx1 symbol size fill pen* [ *dx2 text* ]
     Plots the selected symbol with specified diameter, fill, and outline
-    (see **psxy**). The symbol is centered at *dx1* from the left margin
+    (see `psxy <psxy.html>`_). The symbol is centered at *dx1* from the left margin
     of the column, with the optional explanatory *text* starting *dx2*
     from the margin, printed with **FONT\_ANNOT\_PRIMARY**. Use **-** if
     no *fill* or outline (*pen*) is required. When plotting just a
     symbol, without text, *dx2* and *text* can be omitted. Two **psxy**
     symbols may take special modifiers: front (**f**) and vector (**v**). 
     You can append modifiers to the symbol and affect how the fronts and
-    vectors are presented (see **psxy** man page for modifiers).
+    vectors are presented (see `psxy <psxy.html>`_ man page for modifiers).
     **pslegend** will determine default settings for all modifiers and
     secondary arguments if not provided.  A few other symbols (the rectangles,
     ellipse, wedge, mathangle) may take more than a single argument size.
     If just a single size if given then **pslegend** will provide reasonable
-    arguments to plot the symbol  (See `Defaults <#toc6>`_ ).
+    arguments to plot the symbol  (See :ref:`Defaults <#toc6>`).
     Alternatively, combine the required
     arguments into a single, comma-separated string and use that as the
-    symbol size (again, see **psxy** for details on the arguments needed).
+    symbol size (again, see `psxy <psxy.html>`_ for details on the arguments needed).
 **T** *paragraph-text*
     One or more of these **T** records with *paragraph-text* printed
     with **FONT\_ANNOT\_PRIMARY**. To specify special positioning and
@@ -154,7 +154,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 
 **-C**\ *dx*/*dy*
     Sets the clearance between the legend frame and the internal items
-    [4**p**/4**p**].
+    [4\ **p**/4\ **p**].
 **-F**\ [**+i**\ [[*gap*/]*pen*]][\ **+p**\ *pen*][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*fill*\ ]]]
     Draws a rectangular border around the legend using
     **MAP\_FRAME\_PEN**; specify a different pen with **+p**\ *pen*.
@@ -165,7 +165,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     override this radius by appending another value. Finally, append
     **+s** to draw an offset background shaded region. Here, *dx*/*dy*
     indicates the shift relative to the foreground frame
-    [4**p**/-4\ **p**] and *fill* sets the shading to use [SHADE].
+    [4\ **p**/-4\ **p**] and *fill* sets the shading to use [SHADE].
 **-G**\ *fill*
     Select fill shade, color or pattern of the legend box [Default is no
     fill]. 
@@ -199,6 +199,8 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 .. include:: explain_-t.rst_
 
 .. include:: explain_help.rst_
+
+.. _#toc6:
 
 `Defaults <#toc6>`_
 -------------------
@@ -318,7 +320,7 @@ by DOS. Data files that are opened and read by **pslegend** do not need
 such duplication.
 
 `See Also <#toc10>`_
--------------------
+--------------------
 
 `gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
 `gmtcolors <gmtcolors.html>`_ ,

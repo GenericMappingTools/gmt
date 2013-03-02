@@ -11,7 +11,7 @@ offset, the user should add the suffix
 *id* is a two-letter identifier of the grid type and precision, and
 *scale* and *offset* are optional scale factor and offset to be applied
 to all grid values, and *nan* is the value used to indicate missing
-data. See `**grdreformat**\ (1) <grdreformat.1.html>`_ and Section 4.20
+data. See `grdreformat <grdreformat.html>`_ and Section 4.20
 of the GMT Technical Reference and Cookbook for more information.
 
 When writing a netCDF file, the grid is stored by default with the
