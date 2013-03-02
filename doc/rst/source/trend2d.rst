@@ -5,8 +5,8 @@ trend2d
 trend2d - Fit a [weighted] [robust] polynomial model for z = f(x,y) to
 xyz[w] data
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 **trend2d** [ *table* ] **-F**\ **xyzmrw** **-N**\ *n\_model*\ [**r**\ ]
 [ *xyz[w]file* ] [ **-C**\ *condition\_number* ] [
@@ -17,8 +17,8 @@ xyz[w] data
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-:**\ [**i**\ \|\ **o**] ]
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **trend2d** reads x,y,z [and w] values from the first three [four]
 columns on standard input [or *xyz[w]file*] and fits a regression model
@@ -42,8 +42,8 @@ a regional surface.
 
 .. include:: explain_commonitems.rst_
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 **-F**\ **xyzmrw**
     Specify up to six letters from the set {**x y z m r w**\ } in any
@@ -55,8 +55,8 @@ a regional surface.
     **r** to do a robust fit. E.g., a robust bilinear model is
     **-N**\ *4*\ **r**.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 *table*
     One or more ASCII [or binary, see **-bi**\ [*ncols*\ ][*type*\ ]]
@@ -102,8 +102,8 @@ a regional surface.
 
 .. include:: explain_help.rst_
 
-`Remarks <#toc6>`_
-------------------
+Remarks
+-------
 
 The domain of x and y will be shifted and scaled to [-1, 1] and the
 basis functions are built from Chebyshev polynomials. These have a
@@ -121,7 +121,7 @@ with **-V** are Chebyshev coefficients; they are not numerically
 equivalent to the m#s in the equation described above. The description
 above is to allow the user to match **-N** with the order of the
 polynomial surface. For evaluating Chebyshev polynomials, see
-**grdmath**.
+`grdmath <grdmath.html>`_.
 
 The **-N**\ *n\_model*\ **r** (robust) and **-I** (iterative) options
 evaluate the significance of the improvement in model misfit Chi-Squared
@@ -147,8 +147,8 @@ kept low.
 
 .. include:: explain_precision.rst_
 
-`Examples <#toc8>`_
--------------------
+Examples
+--------
 
 To remove a planar trend from data.xyz by ordinary least squares, use:
 
@@ -163,14 +163,14 @@ significant in fitting data.xyz, use:
 
 trend2d data.xyz -N10r -I -V
 
-`See Also <#toc9>`_
--------------------
+See Also
+--------
 
 `gmt <gmt.html>`_ , `grdmath <grdmath.html>`_ ,
 `grdtrend <grdtrend.html>`_ , `trend1d <trend1d.html>`_
 
-`References <#toc10>`_
-----------------------
+References
+----------
 
 Huber, P. J., 1964, Robust estimation of a location parameter, *Ann.
 Math. Stat.*, **35**, 73-101.
