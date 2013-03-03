@@ -1,14 +1,13 @@
-******
-redpol
-******
+*********
+grdredpol
+*********
 
-redpol - Compute the Continuous Reduction To the Pole, AKA differential
-RTP.
+grdredpol - Compute the Continuous Reduction To the Pole, AKA differential RTP.
 
 `Synopsis <#toc1>`_
 -------------------
 
-**redpol** *anom\_grd* **-G**\ *rtp\_grd* [**-C**\ *<dec/dip>*]
+**grdredpol** *anom\_grd* **-G**\ *rtp\_grd* [**-C**\ *<dec/dip>*]
 [**-E**\ *<dec\_grd/dip\_grd>*] [**-F**\ *<m/n>*] [**-M**\ *<m\|r>*]
 [**-N**\ ] [**-W**\ *<win\_width>*] [
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-T<year>** ] [
@@ -17,7 +16,7 @@ RTP.
 `Description <#toc2>`_
 ----------------------
 
-**redpol** will take a *.nc* file with a magnetic anomaly and compute
+**grdredpol** will take a *.nc* file with a magnetic anomaly and compute
 the reduction to the pole (RTP) anomaly. This anomaly is the one that
 would have been produce if the bodies were magnetized vertically and the
 anomalies were observed at the geomagnetic pole. Standard RTP procedure
@@ -84,12 +83,12 @@ magnetization declination and inclination respectively for an area that
 encloses that of the *anom.grd*, compute the *RTP* using bins of 2
 degrees and a filter of 45 coefficients.
 
-redpol anom.grd -Grtp.grd -W2 -F45/45 -T2010 -Edec.grd/dip.grd -V
+grdredpol anom.grd -Grtp.grd -W2 -F45/45 -T2010 -Edec.grd/dip.grd -V
 
 To compute the same *RTP* but now with the field and magnetization
 vectors collinear and computed from IGRF :
 
-redpol anom.grd -Grtp.grd -W2 -F45/45 -T2010 -V
+grdredpol anom.grd -Grtp.grd -W2 -F45/45 -T2010 -V
 
 `Reference <#toc7>`_
 --------------------
