@@ -6,7 +6,7 @@
 psxyz \- Plot lines, polygons, and symbols in 3-D
 .SH SYNOPSIS
 BD(psxyz) [ IT(table) ] GMT_J_OPT GMT_Jz_OPT GMT_Rgeoz_OPT
-[ GMT_B_OPT ] [ OPT(C)IT(cptfile) ] [ OPT(D)IT(dx)/IT(dy)[IT(dz)] ]
+[ GMT_B_OPT ] [ OPT(C)IT(cptfile) ] [ OPT(D)IT(dx)/IT(dy)[/IT(dz)] ]
 [ OPT(G)IT(fill) ] [ OPT(I)IT(intens) ] [ GMT_K_OPT ] [ OPT(L) ]
 [ OPT(N) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] [ OPT(S)[IT(symbol)][IT(size)|BD(+s)IT(scaling)] ] [ GMT_U_OPT ]
 [ GMT_V_OPT ] [ OPT(W)[BD(-)|BD(+)][IT(pen)] ] [ GMT_X_OPT ] [ GMT_Y_OPT ] [ GMT_a_OPT ] 
@@ -42,7 +42,7 @@ If OPT(S) is not set, then BD(psxyz) expects the user to supply a multisegment f
 (where each segment header contains a OPT(Z)IT(val) string.  The IT(val)
 will control the color of the line or polygon (if OPT(L) is set) via the cpt file.
 .TP
-OPT(D)IT(dx)/IT(dy)[IT(dz)]
+OPT(D)IT(dx)/IT(dy)[/IT(dz)]
 Offset the plot symbol or line locations by the given amounts IT(dx/dy)[IT(dz)] [Default is no offset].
 .TP
 OPT(G)IT(fill)

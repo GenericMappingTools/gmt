@@ -3,7 +3,7 @@
 .SH NAME
 grdtrack \- Sample grids at specified (x,y) locations
 .SH SYNOPSIS
-BD(grdtrack) [ IT(xyfile) ] OPT(G)IT(grd1) OPT(G)IT(grd2) ... [ OPT(A)BD(f)|BD(p)BD(m)|BD(r)|BD(R)[BD(+l)] ] 
+BD(grdtrack) [ IT(xyfile) ] OPT(G)IT(grd1) OPT(G)IT(grd2) ... [ OPT(A)BD(f)|BD(p)|BD(m)|BD(r)|BD(R)[BD(+l)] ] 
 [ OPT(C)IT(length)[BD(u)]/IT(ds)[IT(spacing)][BD(+a)] ] [ OPT(D)IT(dfile) ] [ OPT(E)IT(line)[,IT(line),...][+iIT(inc)[BD(u)]] ] 
 [ OPT(N) ] [ GMT_Rgeo_OPT ] [ OPT(S)IT(method)/IT(modifiers) ][ GMT_V_OPT ] [ OPT(Z) ] [ GMT_b_OPT ] [ GMT_f_OPT ] 
 [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_n_OPT ] [ GMT_o_OPT ] [ GMT_s_OPT ] [ GMT_colon_OPT ]

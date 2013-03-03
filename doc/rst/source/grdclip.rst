@@ -21,7 +21,7 @@ set to IT(between), or replace individual values.  Such operations are useful
 when you want all of a continent or an ocean to fall
 into one color or gray shade in image processing, when clipping of the
 range of data values is required, or for reclassification of data values.
-*above*, *below*, *between* and *new* can be any number or NaN
+*above*, *below*, *between*, *old* and *new* can be any number or even NaN
 (Not a Number). You must choose at least one of the **-S** options. Use
 **-R** to only extract a subset of the *ingrid* file. 
 

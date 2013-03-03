@@ -11,7 +11,7 @@ grdinfo - Extract information from grids
 **-I**\ [*dx*\ [/*dy*]\|\ **-**\ \|\ **b**] ] [
 **-L**\ [**0**\ \|\ **1**\ \|\ **2**] ] [ **-M** ] [
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
-**-T**\ [**s**\ *dz* ] [ **-V**\ [*level*\ ] ] [
+**-T**\ [**s**]\ *dz* ] [ **-V**\ [*level*\ ] ] [
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* ]
 
 `Description <#toc2>`_
@@ -65,7 +65,7 @@ file).
         Report median and L1 scale of z (L1 scale = 1.4826 \* Median
         Absolute Deviation (MAD)).
     **-L2**
-        Report mean, standard deviation, and rms of z.
+        Report mean, standard deviation, and root-mean-square (rms) of z.
 **-M**
     Find and report the location of min/max z-values, and count and
     report the number of nodes set to NaN, if any. 

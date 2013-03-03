@@ -128,9 +128,9 @@ int GMT_psrose_usage (struct GMTAPI_CTRL *C, int level)
 	/* This displays the psrose synopsis and optionally full usage information */
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: psrose [<table>] [-A<sector_angle>[r]] [%s] [-C[<modes>]] [-D] [-G<fill>] [-I]\n", GMT_B_OPT);
+	GMT_message (GMT, "usage: psrose [<table>] [-A[r]<sector_angle>] [%s] [-C[<modes>]] [-D] [-G<fill>] [-I]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[-K] [-L[<wlab>/<elab>/<slab>/<nlab>]] [-M[<size>][<modifiers>]] [-N] [-O] [-P]\n");
-	GMT_message (GMT, "\t[-R<r0>/<r1>/<theta0>/<theta1>] [-S<scale>[n]] [-T] [%s]\n", GMT_U_OPT);
+	GMT_message (GMT, "\t[-R<r0>/<r1>/<theta0>/<theta1>] [-S[n]<scale>] [-T] [%s]\n", GMT_U_OPT);
 	GMT_message (GMT, "\t[%s] [-W[v]<pen>] [%s] [%s] [-Zu|<scale>]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_c_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -138,7 +138,7 @@ int GMT_psrose_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_explain_options (GMT, "<");
 	GMT_message (GMT, "\t-A Sector width in degrees for sector diagram [Default is windrose];\n");
-	GMT_message (GMT, "\t   append r to get rose diagram.\n");
+	GMT_message (GMT, "\t   Use -Ar to get rose diagram.\n");
 	GMT_explain_options (GMT, "B");
 	GMT_message (GMT, "\t   (Remember: radial is x-direction, azimuthal is y-direction).\n");
 	GMT_message (GMT, "\t-C Plot vectors listed in the <modes> file.  If no file, use mean direction.\n");
@@ -159,7 +159,7 @@ int GMT_psrose_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Specify <theta0>/<theta1> = -90/90 or 0/180 (half-circles) or 0/360 only).\n");
 	GMT_message (GMT, "\t   If <r0> = <r1> = 0, psrose will compute a reasonable <r1> value.\n");
 	r = (GMT->current.setting.proj_length_unit == GMT_CM) ? 7.5 : 3.0;
-	GMT_message (GMT, "\t-S Specify the radius of the unit circle in %s [%g]. Normalize r if n is appended.\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit], r);
+	GMT_message (GMT, "\t-S Specify the radius of the unit circle in %s [%g]. Normalize r if -Sn is used.\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit], r);
 	GMT_message (GMT, "\t-T Indicate that the vectors are oriented (two-headed), not directed [Default].\n");
 	GMT_message (GMT, "\t   Ignored if -R sets a half-circle domain.\n");
 	GMT_explain_options (GMT, "UV");
@@ -184,7 +184,7 @@ int GMT_psrose_parse (struct GMTAPI_CTRL *C, struct PSROSE_CTRL *Ctrl, struct GM
 	 */
 
 	int n;
-	unsigned int n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0, k;
 	double range;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
@@ -203,8 +203,9 @@ int GMT_psrose_parse (struct GMTAPI_CTRL *C, struct PSROSE_CTRL *Ctrl, struct GM
 
 			case 'A':	/* Get Sector angle in degrees */
 				Ctrl->A.active = true;
-				Ctrl->A.inc = atof (opt->arg);
-				if (opt->arg[strlen (opt->arg)-1] == 'r') Ctrl->A.rose = true;
+				if (strchr (opt->arg, 'r')) Ctrl->A.rose = true;
+				k = (opt->arg[0] == 'r') ? 1 : 0;
+				Ctrl->A.inc = atof (&opt->arg[k]);
 				break;
 			case 'C':	/* Read mode file and plot directions */
 				Ctrl->C.active = true;
@@ -277,13 +278,12 @@ int GMT_psrose_parse (struct GMTAPI_CTRL *C, struct PSROSE_CTRL *Ctrl, struct GM
 				break;
 			case 'S':	/* Get radius of unit circle in inches */
 				Ctrl->S.active = true;
+				if (strchr (opt->arg, 'n')) Ctrl->S.normalize = true;
 				n = (int)strlen (opt->arg) - 1;
-				if (opt->arg[n] == 'n') {
-					Ctrl->S.normalize = true;
-					opt->arg[n] = 0;	/* Temporarily remove the n */
-				}
-				Ctrl->S.scale = GMT_to_inch (GMT, opt->arg);
-				if (Ctrl->S.normalize) opt->arg[n] = 'n';	/* Put back the n */
+				if (opt->arg[n] == 'n') opt->arg[n] = 0;	/* Temporarily remove the n */
+				k = (opt->arg[0] == 'n') ? 1 : 0;		/* If we got -Sn<radius> */
+				Ctrl->S.scale = GMT_to_inch (GMT, &opt->arg[k]);
+				if (Ctrl->S.normalize && k == 0) opt->arg[n] = 'n';	/* Put back the n */
 				break;
 			case 'T':	/* Oriented instead of directed data */
 				Ctrl->T.active = true;

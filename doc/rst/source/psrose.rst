@@ -7,12 +7,12 @@ psrose - Plot a polar histogram (rose, sector, windrose diagrams)
 `Synopsis <#toc1>`_
 -------------------
 
-**psrose** [ *table* ] [ **-A**\ *sector\_width*\ [**r**\ ] ] [
+**psrose** [ *table* ] [ **-A**\ [**r**]*sector\_width* ] [
 **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ [*mode\_file*\ ] ]
 [ **-D** ] [ **-I** ] [ **-G**\ *fill* ] [ **-I** ] [ **-K** ] [
 **-L**\ [*wlabel*/*elabel*/*slabel*/*nlabel*] ] [ **-M**\ *parameters* ]
 [ **-O** ] [ **-P** ] [ **-R**\ *r0*/*r1*/*az\_0*/*az\_1* ] [
-**-S**\ *radial\_scale*\ [**n**\ ] ] [ **-T** ] [
+**-S**\ [**n**]*radial\_scale* ] [ **-T** ] [
 **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*\ ]
 ] [ **-W**\ [**v**\ ]\ *pen* ] [
 **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
@@ -51,9 +51,9 @@ None.
     actual lengths to unity as well).
 .. include:: explain_intables.rst_
 
-**-A**\ *sector\_width*\ [**r**\ ]
+**-A**\ [**r**]*sector\_width*
     Gives the sector width in degrees for sector and rose diagram.
-    [Default 0 means windrose diagram]. Append **r** to draw rose
+    [Default 0 means windrose diagram]. Use **-Ar** to draw rose
     diagram instead of sector diagram. 
 
 .. include:: explain_-B.rst_
@@ -98,8 +98,8 @@ None.
     Specifies the ’region’ of interest in (r,azimuth) space. r0 is 0, r1
     is max length in units. For azimuth, specify either -90/90 or 0/180
     for half circle plot or 0/360 for full circle.
-**-S**\ *radial\_scale*\ [**n**\ ]
-    Specifies radius of circle. Append **n** to normalize input radii to
+**-S**\ [**n**]*radial\_scale*
+    Specifies radius of circle. Use **-Sn** to normalize input radii to
     go from 0 to 1.
 **-T**
     Specifies that the input data is orientation data (has a 180 degree
@@ -157,7 +157,7 @@ shading outlined by a solid red pen (width = 0.75 points), draw the mean
 azimuth, and shown in Portrait orientation, use:
 
 psrose fault\_segments.az\_r -R0/150/-90/90 -B50g25:"Fault
-length":/g30:."Rose diagram": **-S**\ 3\ **i** -A10r -Glightblue
+length":/g30:."Rose diagram":-S3i -Ar10 -Glightblue
 -W0.75p,red -Z0.001 -C -P -T -: \| lpr
 
 To plot a full circle wind rose diagram of the data in the file
@@ -166,7 +166,7 @@ lines.r\_az, on a circle of radius = 5 cm, grid going out to radius =
 solid pen (width = 0.5 point, and shown in landscape [Default]
 orientation with UNIX timestamp and command line plotted, use:
 
-psrose lines.az\_r -R0/500/0/360 **-S**\ 5\ **c** -Bg100/g45:."Windrose
+psrose lines.az\_r -R0/500/0/360 -S5c -Bg100/g45:."Windrose
 diagram": -W0.5p -Uc \| lpr
 
 `Bugs <#toc8>`_

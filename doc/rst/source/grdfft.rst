@@ -62,13 +62,15 @@ to meters using **grdedit** or scale the output with **grdmath**.
     Estimate power spectrum in the radial direction [**r**\ ]. Place
     **x** or **y** immediately after **-E** to compute the spectrum in
     the x or y direction instead. No grid file is created. If one grid
-    is given then we write f (i.e., frequency or wave number), power[f],
-    and 1 standard deviation in power[f] are written to file set by
-    **-G** [stdout]. If two grids are given we write f, admittance[f], 1
-    standard deviation in admittance[f], coherence[f] and 1 standard
-    deviation in coherence[f] instead. Append **w** to write wavelength
-    instead of frequency. If your grid is geographic you may further
-    append **k** to scale wavelengths from meter [Default] to km.
+    is given then f (i.e., frequency or wave number), power[f],
+    and 1 standard deviation in power[f] are written to the file set by
+    **-G** [stdout]. If two grids are given we write f and 8 quantities:
+    Xpower[f], Ypower[f], coherent power[f], noise power[f], phase[f],
+    admittance[f], gain[f], coherency[f].  Each quantity is followed by
+    its own 1-std dev error estimate, hence the output is 17 columns wide.
+    Append **w** to write wavelength instead of frequency. If your grid
+    is geographic you may further append **k** to scale wavelengths from
+    meter [Default] to km.
 **-F**\ [**r**\ \|\ **x**\ \|\ **y**]\ *params*
     Filter the data. Place **x** or **y** immediately after **-F** to
     filter *x* or *y* direction only; default is isotropic [**r**\ ].

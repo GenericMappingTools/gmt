@@ -104,7 +104,7 @@ int GMT_grdmask_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t     b) Interpret segment z-values (-Z<zval>) as the z-value.\n");
 	GMT_message (GMT, "\t     c) Interpret segment labels (-L<label>) as the z-value.\n");
 	GMT_message (GMT, "\t   Finally, use -Np|P and append origin for running polygon IDs [0].\n");
-	GMT_message (GMT, "\t   For -Nz|z|p|P you may optionally append /<out [0].\n");
+	GMT_message (GMT, "\t   For -Nz|Z|p|P you may optionally append /<out [0].\n");
 	GMT_dist_syntax (GMT, 'S', "Set search radius to identify inside points.");
 	GMT_message (GMT, "\t   Mask nodes are set to <in> or <out> depending on whether they are\n");
 	GMT_message (GMT, "\t   inside the circle of specified radius [0] from the nearest data point.\n");

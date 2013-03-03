@@ -4,7 +4,7 @@
 grdproject \- Forward and inverse map transformation of grids 
 .SH SYNOPSIS
 BD(grdproject) IT(in_grdfile) OPT(G)IT(out_grdfile) GMT_J_OPT
-[ OPT(A)[BD(c|i|p|e|f|k|M|n)] ] [ OPT(C)[IT(dx/dy)] ] [ OPT(D)GMT_inc_OPT ] 
+[ OPT(A)[GMT_DIST_UNIT] ] [ OPT(C)[IT(dx/dy)] ] [ OPT(D)GMT_inc_OPT ] 
 [ OPT(E)IT(dpi) ] [ OPT(I) ] [ OPT(Mc)|BD(i)|BD(p) ] [ GMT_Rgeo_OPT ]
 [ GMT_V_OPT ] [ GMT_n_OPT ] [ GMT_r_OPT ]
 .SH DESCRIPTION
@@ -35,7 +35,7 @@ Specify the name of the output grid file.
 #include "explain_-J.txt"
 .SH OPTIONAL ARGUMENTS
 .TP
-OPT(A)[BD(c|i|p|e|f|k|M|n|u)]
+OPT(A)[GMT_DIST_UNIT]
 Force 1:1 scaling, i.e., output (or input, see OPT(I)) data are in actual projected meters [BD(e)].  To specify other units,
 append BD(f) (foot), BD(k) (km), BD(M) (statute mile), BD(n) (nautical mile), BD(u) (US survey foot), BD(i) (inch), BD(c) (cm), or BD(p) (point).
 Without OPT(A), the output (or input, see OPT(I)) are in the units specified by BD(PROJ_LENGTH_UNIT) (but see OPT(M)).

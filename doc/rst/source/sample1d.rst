@@ -8,7 +8,7 @@ sample1d - Resample 1-D table data using splines
 -------------------
 
 **sample1d** [ *table* ] [
-**-A**\ **f**\ \|\ **p**\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**\ ] ] [
+**-A**\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**\ ] ] [
 **-Fl**\ \|\ **a**\ \|\ **c**\ \|\ **n** ] [ **-I**\ *inc*\ [*unit*\ ] ]
 [ **-N**\ *knotfile* ] [ **-S**\ *start*\ [/*stop*] ] [ **-T**\ *col* ]
 [ **-V**\ [*level*\ ] ] [
@@ -47,7 +47,7 @@ None.
     independent variable (which must be monotonically in/de-creasing)
     and the remaining columns holding other data values. If no file is
     provided, **sample1d** reads from standard input.
-**-A**\ **f**\ \|\ **p**\ **m**\ \|\ **r**\ \|\ **R**
+**-A**\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**
     For track resampling (if **-T**...\ *unit* is set) we can select how
     this is to be performed. Append **f** to keep original points, but
     add intermediate points if needed [Default], **m** as **f**, but

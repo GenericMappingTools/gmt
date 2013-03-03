@@ -1561,7 +1561,7 @@ int GMT_surface_usage (struct GMTAPI_CTRL *C, int level)
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: surface [<table>] -G<outgrid> %s\n", GMT_I_OPT);
 	GMT_message (GMT, "\t%s [-A<aspect_ratio>] [-C<convergence_limit>] [-D<breakline>]\n", GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-Ll<limit>] [-Lu<limit>] [-N<n_iterations>] ] [-S<search_radius>[m|s]] [-T<tension>[i][b]]\n");
+	GMT_message (GMT, "\t[-Ll<limit>] [-Lu<limit>] [-N<n_iterations>] ] [-S<search_radius>[m|s]] [-T[i|b]<tension>]\n");
 	GMT_message (GMT, "\t[-Q] [%s] [-Z<over_relaxation_parameter>] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_colon_OPT);
 
@@ -1596,8 +1596,8 @@ int GMT_surface_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   1 gives a harmonic spline solution (local max/min occur only at data points).\n");
 	GMT_message (GMT, "\t   typically 0.25 or more is good for potential field (smooth) data;\n");
 	GMT_message (GMT, "\t   0.75 or so for topography.  Experiment.\n");
-	GMT_message (GMT, "\t   Append B or b to set tension in boundary conditions only;\n");
-	GMT_message (GMT, "\t   Append I or i to set tension in interior equations only;\n");
+	GMT_message (GMT, "\t   Prepend b to set tension in boundary conditions only;\n");
+	GMT_message (GMT, "\t   Prepend i to set tension in interior equations only;\n");
 	GMT_message (GMT, "\t   No appended letter sets tension for both to same value.\n");
 	GMT_message (GMT, "\t-Q Query for grid sizes that might run faster than your -R -I give.\n");
 	GMT_explain_options (GMT, "V");
@@ -1618,7 +1618,7 @@ int GMT_surface_parse (struct GMTAPI_CTRL *C, struct SURFACE_CTRL *Ctrl, struct 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0;
+	unsigned int n_errors = 0, k;
 	char modifier;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
@@ -1710,14 +1710,21 @@ int GMT_surface_parse (struct GMTAPI_CTRL *C, struct SURFACE_CTRL *Ctrl, struct 
 				break;
 			case 'T':
 				Ctrl->T.active = true;
+				k = 0;
+#ifdef GMT_COMPAT
 				modifier = opt->arg[strlen(opt->arg)-1];
-				if (modifier == 'b' || modifier == 'B') {
-					Ctrl->T.b_tension = atof (opt->arg);
+				if (modifier == 'B') modifier = 'b';
+				else if (modifier == 'I') modifier = 'i';
+				if (!(modifier == 'b' || modifier == 'i'))
+#endif
+					modifier = opt->arg[0], k = 1;
+				if (modifier == 'b') {
+					Ctrl->T.b_tension = atof (&opt->arg[k]);
 				}
-				else if (modifier == 'i' || modifier == 'I') {
-					Ctrl->T.i_tension = atof (opt->arg);
+				else if (modifier == 'i') {
+					Ctrl->T.i_tension = atof (&opt->arg[k]);
 				}
-				else if (modifier >= '0' && modifier <= '9') {
+				else if (modifier == '.' || (modifier >= '0' && modifier <= '9')) {
 					Ctrl->T.i_tension = Ctrl->T.b_tension = atof (opt->arg);
 				}
 				else {

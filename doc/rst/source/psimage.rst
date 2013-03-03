@@ -48,10 +48,9 @@ Required Arguments
 *imagefile*
     This must be an Encapsulated *PostScript* (EPS) file or a raster
     image. An EPS file must contain an appropriate BoundingBox. A raster
-    file can have a depth of 1, 8, 24, or 32 bits. Only Sun raster files
-    are supported natively; other raster formats are automatically
-    converted to the Sun format via ImageMagick's **convert** program,
-    if installed.
+    file can have a depth of 1, 8, 24, or 32 bits and is read via GDAL.
+    If GDAL was not configured during GMT installation then only
+    Sun raster files are supported natively.
 **-E**\ *dpi*
     Sets the dpi of the image in dots per inch, or use **-W**.
 **-W**\ [**-**\ ]\ *width*\ [/*height*]

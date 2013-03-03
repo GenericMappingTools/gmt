@@ -69,7 +69,7 @@ a linear projection in which we assume the ellipse axes are given in the same un
 OPT(Sf)
 BD(f)ront.  OPT(Sf)IT(gap)[/OPT(size)][BD(+l)|BD(+r)][BD(+b+c+f+s+t)][BD(+o)IT(offset)].  Supply distance gap between symbols and symbol size.
 If IT(gap) is negative, it is interpreted to mean the number of symbols along the front instead.  If IT(size) is not given it defaults
-to 15% of the IT(gap) (unless IT(gap) is negative, which means IT(size) is required).  Append BD(+l) or BD(+r) to plot symbols
+to 30% of the IT(gap) (unless IT(gap) is negative, which means IT(size) is required).  Append BD(+l) or BD(+r) to plot symbols
 on the left or right side of the front [Default is centered].  Append BD(+)IT(type) to specify which symbol
 to plot: BD(b)ox, BD(c)ircle, BD(f)ault, BD(s)lip, or BD(t)riangle.  [Default is BD(f)ault].
 Slip means left-lateral or right-lateral strike-slip arrows (centered is not an option).  Append BD(+o)IT(offset) to offset
@@ -134,7 +134,7 @@ pe\fBn\fPtagon.  IT(size) is diameter of circumscribing circle.
 #ifdef THREE_D
 .TP
 OPT(So)
-cBD(o)lumn (3-D) extending from IT(base) to z.  IT(size) sets base width (Use IT(xsize/ysize) if not the same).  Append BD(u) if IT(size) is in x-units
+c\fBo\fPlumn (3-D) extending from IT(base) to z.  IT(size) sets base width (Use IT(xsize/ysize) if not the same).  Append BD(u) if IT(size) is in x-units
 [Default is plot-distance units].  If no IT(size) is given we expect both IT(xsize) and IT(ysize) as two extra data columns.
 By default, IT(base) = 0.  Append {\bf b}[IT(base)] to change this value.  The facet colors will be modified to simulate shading.
 Use OPT(SO) to disable such 3-D illumination.
@@ -183,7 +183,7 @@ BD(t)riangle.  IT(size) is diameter of circumscribing circle.
 #ifdef THREE_D
 .TP
 OPT(Su)
-cBD(u)be (3-D).  IT(size) sets length of all sides. Append BD(u) if IT(size)
+c\fBu\fPbe (3-D).  IT(size) sets length of all sides. Append BD(u) if IT(size)
 is in x-units [Default is plot-distance units].  The facet colors will be modified to simulate shading.
 Use OPT(SU) to disable such 3-D illumination.
 #endif

@@ -5,7 +5,7 @@ surface \- Grid table data using adjustable tension continuous curvature splines
 .SH SYNOPSIS
 BD(surface) [ IT(table) ] OPT(G)IT(outputfile.nc) GMT_I_OPT GMT_Rgeo_OPT [ OPT(A)IT(aspect_ratio) ] 
 [ OPT(C)IT(convergence_limit) ] [ OPT(Ll)IT(lower) ] [ OPT(Lu)IT(upper) ] [ OPT(N)IT(max_iterations) ] [ OPT(Q) ] 
-[ OPT(S)IT(search_radius)[BD(m)|BD(s)] ] [ OPT(T)IT(tension_factor)[BD(i)|BD(b)] ] [ GMT_V_OPT ] 
+[ OPT(S)IT(search_radius)[BD(m)|BD(s)] ] [ OPT(T)[BD(i)|BD(b)]IT(tension_factor) ] [ GMT_V_OPT ] 
 [ OPT(Z)IT(over-relaxation_factor) ] [ GMT_a_OPT ] [ GMT_bi_OPT ] [ GMT_fi_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
 BD(surface) reads randomly-spaced (x,y,z) triples from standard input [or IT(table)] and produces
@@ -65,13 +65,13 @@ or BD(s) for arc seconds.
 This is used to initialize the grid before the first iteration; it is not worth the time unless the
 grid lattice is prime and cannot have regional stages.  [Default = 0.0 and no search is made.]
 .TP
-OPT(T)IT(tension_factor)[BD(i)|BD(b)]
+OPT(T)[BD(i)|BD(b)]IT(tension_factor)
 Tension factor[s].  These must be between 0 and 1.  Tension may be used in the interior solution
 (above equation, where it suppresses spurious oscillations) and in the boundary conditions (where
 it tends to flatten the solution approaching the edges).  Using zero for both values results in
 a minimum curvature surface with free edges, i.e., a natural bicubic spline.
-Use OPT(T)IT(tension_factor)BD(i) to set interior tension, and OPT(T)IT(tension_factor)BD(b)
-to set boundary tension.  If you do not append BD(i) or BD(b), both will be set to the same value.
+Use OPT(T)BD(i)IT(tension_factor) to set interior tension, and OPT(T)BD(b)IT(tension_factor)
+to set boundary tension.  If you do not prepend BD(i) or BD(b), both will be set to the same value.
 [Default = 0 for both gives minimum curvature solution.]
 #include "explain_-V.txt"
 OPT(V3) will report the convergence after each iteration;  OPT(V) will report only after 

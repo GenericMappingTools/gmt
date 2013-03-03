@@ -207,7 +207,7 @@ in the file DSDP.xy on a Mercator map at 5 cm/degree of the area 150E to
 154E, 18N to 23N, with tickmarks every 1 degree and gridlines every 15
 minutes, use
 
-psxy DSDP.xy R150/154/18/23 -Jm5c -Sc0.25c -Gred -B1Bg15m > map.ps
+psxy DSDP.xy R150/154/18/23 -Jm5c -Sc0.25c -Gred -B1g15m > map.ps
 
 To plot the xyz values in the file quakes.xyzm as circles with size
 given by the magnitude in the 4th column and color based on the depth in
@@ -218,7 +218,7 @@ psxy quakes.xyzm -R0/1000/0/1000 -JX6i -Sc -Ccpt -B200 > map.ps
 To plot the file trench.xy on a Mercator map, with white triangles with
 sides 0.25 inch on the left side of the line, spaced every 0.8 inch, use
 
-psxy trench.xy -R150/200/20/50 -Jm0.15i -Sf0.8i/0.1ilt -Gwhite -W -B10 >
+psxy trench.xy -R150/200/20/50 -Jm0.15i -Sf0.8i/0.1i+l+t -Gwhite -W -B10 >
 map.ps
 
 To plot the data in the file misc.d as symbols determined by the code in

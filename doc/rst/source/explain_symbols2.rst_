@@ -10,7 +10,7 @@ units of cm, inch, or point, respectively [Default is
 **PROJ\_LENGTH\_UNIT**]. Note: if you give both size and symbol via the
 input file you must use **PROJ\_LENGTH\_UNIT** to indicate the units
 used for the symbol size or append the units to the size in the file.
-If the symbol size is expected via the third
+If the symbol size is expected via the fourth
 data column then you may convert those values to symbol sizes by
 appending **+s**\ *scale*\ [/*origin*][**l**\ ] which will compute size
 = (data - *origin*) \* *scale*, where *origin* defaults to 0. If **l**
@@ -64,7 +64,7 @@ data column.
 **-Se**
 
 **e**\ llipse. Direction (in degrees counter-clockwise from horizontal),
-major\_axis, and minor\_axis must be found in columns 3, 4, and 5.
+major\_axis, and minor\_axis must be found in columns 4, 5, and 6.
 
 **-SE**
 
@@ -108,8 +108,8 @@ octa\ **g**\ on. *size* is diameter of circumscribing circle.
 **-Sj**
 
 Rotated rectangle. Direction (in degrees counter-clockwise from
-horizontal), x-dimension, and y-dimension must be found in columns 3, 4,
-and 5.
+horizontal), x-dimension, and y-dimension must be found in columns
+4, 5, and 6.
 
 **-SJ**
 
@@ -126,7 +126,8 @@ which we assume the dimensions are given in the same units as **-R**.
 definition file called <name>.def `in (1) <in.1.html>`_ the current
 directory `or (2) <or.2.html>`_ in ~/.gmt `or (3) <or.3.html>`_ in
 **$GMT\_SHAREDIR**/custom. The symbol as defined in that file is of size
-1.0 by default; the appended *size* will scale symbol accordingly. Users
+1.0 by default; the appended *size* will scale symbol accordingly.
+The symbols are plotted in the *x-y* plane.  Users
 may add their own custom \*.def files; see CUSTOM SYMBOLS below.
 
 **-Sl**
@@ -143,7 +144,7 @@ to select a particular font [Default is **FONT\_ANNOT\_PRIMARY**].
 no arrow heads]. The *size* is the length of the vector head. Arc width
 is set by **-W**. The radius of the arc and its start and stop
 directions (in degrees counter-clockwise from horizontal) must be given
-in columns 3-5. See VECTOR ATTRIBUTES for specifying attributes.
+in columns 4-6. See VECTOR ATTRIBUTES for specifying attributes.
 
 **-SM**
 
@@ -154,13 +155,25 @@ Same as **-Sm** but switches to straight angle symbol if angles subtend
 
 pe\ **n**\ tagon. *size* is diameter of circumscribing circle.
 
+**-So**
+
+c\ **o**\ lumn (3-D) extending from *base* to z.  The *size* sets base width
+(Use *xsize/ysize* if not the same).  Append **u** if *size* is in x-units
+[Default is plot-distance units].  If no *size* is given we expect both *xsize*
+and *ysize* as two extra data columns.  By default, *base* = 0.  Append
+**b**\ *base* to change this value.  The facet colors will be modified to
+simulate shading.  Use **-SO** to disable such 3-D illumination.
+If *base* is not appended then we read it from the last input data column.
+
 **-Sp**
 
 **p**\ oint. No size needs to be specified (1 pixel is used).
 
 **-Sq**
 
-**q**\ uoted line, i.e., lines with annotations such as contours. Append
+**q**\ uoted line, i.e., lines with annotations such as contours.
+It is assumed that each individual line has a constant *z* level
+(i.e., each line must lie in the *x-y* plane).  Append
 [**d**\ \|\ **D**\ \|\ **f**\ \|\ **l**\ \|\ **L**\ \|\ **n**\ \|\ **x**\ \|\ **X**]\ *info*\ [:*labelinfo*].
 The required argument controls the placement of labels along the quoted
 lines. Choose among five controlling algorithms:
@@ -319,18 +332,25 @@ the quoted text attributes on a segment-by-segment basis.
 
 **-Sr**
     **r**\ ectangle. No size needs to be specified, but the x- and
-    y-dimensions must be found in columns 3 and 4.
+    y-dimensions must be found in columns 4 and 5.
 **-SR**
     **R**\ ounded rectangle. No size needs to be specified, but the x-
-    and y-dimensions and corner radius must be found in columns 3, 4,
-    and 5.
+    and y-dimensions and corner radius must be found in columns 4, 5,
+    and 6.
 **-Ss**
     **s**\ quare. *size* is diameter of circumscribing circle.
 **-St**
     **t**\ riangle. *size* is diameter of circumscribing circle.
+
+**-Su**
+    c\ **u**\ be (3-D).  The *size)* sets length of all sides. Append
+    **u** if *size* is in x-units [Default is plot-distance units].
+    The facet colors will be modified to simulate shading.
+    Use **-SU** to disable such 3-D illumination.
+
 **-Sv**
     **v**\ ector. Direction (in degrees counter-clockwise from
-    horizontal) and length must be found in columns 3 and 4. The *size*
+    horizontal) and length must be found in columns 4 and 5. The *size*
     is the length of the vector head. Vector width is set by **-W**. See
     VECTOR ATTRIBUTES for specifying attributes.
 **-SV**
@@ -341,7 +361,7 @@ the quoted text attributes on a segment-by-segment basis.
 **-Sw**
     pie **w**\ edge. Start and stop directions (in degrees
     counter-clockwise from horizontal) for pie slice must be found in
-    columns 3 and 4.
+    columns 4 and 5.
 **-SW**
     Same as **-Sw**, except azimuths (in degrees east of north) should
     be given instead of the two directions. The azimuths will be mapped
@@ -350,10 +370,10 @@ the quoted text attributes on a segment-by-segment basis.
 **-Sx**
     cross (x). *size* is diameter of circumscribing circle.
 **-Sy**
-    y-dash (\|). *size* is the length of a short vertical (y-dir) line
+    y-dash (\|). *size* is the length of a short horizontal (y-dir) line
     segment.
 **-S=**
     geovector. Azimuth (in degrees east from north) and length (in km)
-    must be found in columns 3 and 4. The *size* is the length of the
+    must be found in columns 4 and 5. The *size* is the length of the
     vector head. Vector width is set by **-W**. See VECTOR ATTRIBUTES
     for specifying attributes.

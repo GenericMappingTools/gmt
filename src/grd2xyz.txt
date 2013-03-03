@@ -21,7 +21,7 @@ Names of 2-D binary grid files to be converted.
 (See GRID FILE FORMATS below.)
 .SH OPTIONAL ARGUMENTS
 .TP
-OPT(C)[BD(f)]
+OPT(C)[BD(f)|BD(i)]
 Replace the x- and y-coordinates on output with the corresponding column and row numbers.  These
 start at 0 (C-style counting); append BD(f) to start at 1 (Fortran-style counting).  Alternatively,
 append BD(i) to write just the two columns IT(index) and IT(z), where IT(index) is the 1-D indexing

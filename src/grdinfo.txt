@@ -5,7 +5,7 @@ grdinfo \- Extract information from grids
 .SH SYNOPSIS
 BD(grdinfo) IT(grdfiles) [ OPT(C) ] [ OPT(F) ] 
 [ OPT(I)[IT(dx)[/IT(dy)]|BD(-)|BD(b)] ] [ OPT(L)[BD(0)|BD(1)|BD(2)] ] 
-[ OPT(M) ] [ GMT_Rgeo_OPT ] [ OPT(T)[BD(s)IT(dz) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
+[ OPT(M) ] [ GMT_Rgeo_OPT ] [ OPT(T)[BD(s)]IT(dz) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 BD(grdinfo) reads a 2-D binary grid file and reports metadata and various statistics for
 the (IT(x),IT(y),IT(z)) data in the grid file(s).  The output information contains the
@@ -41,7 +41,7 @@ To report the actual grid region, select OPT(I-).  If no argument is given
 then we report the grid increment in the form OPT(I)IT(xinc/yinc).
 If OPT(Ib) is given we write each grid's bounding box polygon instead.
 .TP
-OPT(L)[BD(0)|BD(1)|)2)]
+OPT(L)[BD(0)|BD(1)|BD(2)]
 .TP
 OPT(L0)
 Report range of z after actually scanning the data, not just reporting what the header says.
@@ -50,7 +50,7 @@ OPT(L1)
 Report median and L1 scale of z (L1 scale = 1.4826 * Median Absolute Deviation (MAD)).
 .TP
 OPT(L2)
-Report mean, standard deviation, and rms of z.
+Report mean, standard deviation, and root-mean-square (rms) of z.
 .TP
 OPT(M)
 Find and report the location of min/max z-values, and count and report the number of nodes

@@ -25,6 +25,8 @@ To list the value of the parameter PS_COMMENTS:
 .br
 .sp
 BD(gmtget) PS_COMMENTS
+.br
+.sp
 To get both the values of the parameter GRID_CROSS_SIZE_PRIMARY and GRID_CROSS_SIZE_SECONDARY on one line, try
 .br
 .sp

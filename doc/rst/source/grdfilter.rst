@@ -8,7 +8,7 @@ grdfilter - Filter a grid in the space (or time) domain
 -------------------
 
 **grdfilter** *ingrid* **-D**\ *distance\_flag*
-**-F**\ *<filtertype><width>*\ [/*width2*][*mode*\ ][\ **+q**\ *quantile*]
+**-Fx**\ *width*\ [/*width2*][*mode*\ ][\ **+q**\ *quantile*]
 **-G**\ *outgrid* [
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
 ] [ **-N**\ **i**\ \|\ **p**\ \|\ **r** ] [
@@ -63,13 +63,13 @@ then the output may be less frequently sampled than the input.
     *flag* = 5: grid (x,y) in Mercator **-Jm**\ 1 img units, *width* in
     km, Spherical distance calculation.
 
-**-F**\ *<filtertype><width>*\ [/*width2*][*mode*\ ]
+**-Fx**\ *width*\ [/*width2*][*mode*\ ]
     Sets the filter type. Choose among convolution and non-convolution
-    filters. Use any *filtertype* (listed below) followed by the full
+    filters. Use any filter code **x** (listed below) followed by the full
     diameter *width*. This gives an isotropic filter; append /*width2*
     for a rectangular filter (requires **-Dp** or **-D0**).
 
-    Convolution filters are:
+    Convolution filters (and their codes) are:
 
     (**b**) Boxcar: All weights are equal.
 
@@ -89,7 +89,7 @@ then the output may be less frequently sampled than the input.
     be integer multiples. Weights are assumed to sum to zero so no
     accumulation of weight sums and normalization will be done.
 
-    Non-convolution filters are:
+    Non-convolution filters (and their codes) are:
 
     (**m**) Median: Returns median value. To select another quantile
     append **+q**\ *quantile* in the 0-1 range [Default is 0.5, i.e.,

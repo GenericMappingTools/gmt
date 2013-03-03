@@ -6,7 +6,7 @@
 #define OPT_1	-Jm5c -Sc0.25c
 #define OPT_2	-JX6i
 #define LEN_3 0.8
-#define OPT_3	-Jm0.15i -Sf0.8i/0.1ilt
+#define OPT_3	-Jm0.15i -Sf0.8i/0.1i+l+t
 .SH NAME
 psxy \- Plot lines, polygons, and symbols on maps
 .SH SYNOPSIS
@@ -127,7 +127,7 @@ Mercator map at LEN_2 cm/degree of the area 150E to 154E, 18N to 23N, with tickm
 and gridlines every 15 minutes, use
 .br
 .sp
-psxy DSDP.xy R150/154/18/23 OPT_1 -Gred -B1Bg15m > map.ps
+psxy DSDP.xy R150/154/18/23 OPT_1 -Gred -B1g15m > map.ps
 .sp
 To plot the xyz values in the file quakes.xyzm as circles with size given by the magnitude in the
 4th column and color based on the depth in the third using the color palette cpt on a linear map, use

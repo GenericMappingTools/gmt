@@ -8,7 +8,7 @@ grdtrack - Sample grids at specified (x,y) locations
 -------------------
 
 **grdtrack** [ *xyfile* ] **-G**\ *grd1* **-G**\ *grd2* ... [
-**-A**\ **f**\ \|\ **p**\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**\ ] ] [
+**-A**\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**\ ] ] [
 **-C**\ *length*\ [**u**\ ]/\ *ds*\ [*spacing*\ ][**+a**\ ] ] [
 **-D**\ *dfile* ] [ **-E**\ *line*\ [,*line*,...][+iIT(inc)[**u**\ ]] ]
 [ **-N** ] [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [

@@ -2,7 +2,7 @@
 .TH PSSCALE 1 MANDATE GMT_STRING "Generic Mapping Tools"
 #define LEN_1	7.5
 #define LEN_2	1.25
-#define SCALE	OPT(D)6.5BD(i)/2BD(i)/7.5BD(c)/1.25BD(c)
+#define SCALE	-D6.5i/2i/7.5c/1.25c
 #define LEN_3	6
 #define LEN_4	4
 .SH NAME

@@ -6,7 +6,7 @@ greenspline \- Interpolate using Green's functions for splines in 1-3 dimensions
 BD(greenspline) [ IT(table) ] 
 [ OPT(A)[BD(1)|BD(2)|BD(3)|BD(4)|BD(5),]IT(gradfile) ] [ OPT(C)IT(cut)[/IT(file)] ] 
 [ OPT(D)IT(mode) ] [ OPT(G)IT(grdfile) ]
-[ OPT(I)IT(xinc)[IT(yinc)[IT(zinc)]] ] [ OPT(L) ] [ OPT(N)IT(nodefile) ] [ OPT(Q)IT(az)|IT(x/y/z) ] 
+[ OPT(I)IT(xinc)[/IT(yinc)[/IT(zinc)]] ] [ OPT(L) ] [ OPT(N)IT(nodefile) ] [ OPT(Q)IT(az)|IT(x/y/z) ] 
 [ OPT(R)IT(xmin)/IT(xmax)[/IT(ymin)/IT(ymax)[/IT(zmin)IT(zmax)]] ] 
 [ OPT(S)BD(c|t|g|p|q)[IT(pars)] ] [ OPT(T)IT(maskgrid) ] [ GMT_V_OPT ] [ GMT_bi_OPT ] 
 [ GMT_bo_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_r_OPT ] [ GMT_colon_OPT ]
@@ -84,7 +84,7 @@ output file is a 2-D binary grid file.  Applies to 2-D interpolation only.
 if OPT(G) is not given then this table is written to standard output.  Ignored if OPT(C) or OPT(C)0
 is given.
 .TP
-OPT(I)IT(xinc)[IT(yinc)[IT(zinc)]]
+OPT(I)IT(xinc)[/IT(yinc)[/IT(zinc)]]
 Specify equidistant sampling intervals, on for each dimension, separated by slashes.
 .TP
 OPT(L)
@@ -240,7 +240,7 @@ Wessel, P., and D. Bercovici, 1998, Interpolation with splines in tension: a Gre
 .sp
 Wessel, P., and J. M. Becker, 2008, Interpolation using a generalized Green's function for a spherical surface spline in tension,\"'
 IT(Geophys. J. Int), BD(174), 21\-28.
-.br
+.sp
 Wessel, P., 2009, A general-purpose Green's function interpolator, \fIComputers & Geosciences\fP, \fB35\fP, 1247\-1254, doi:10.1016/j.cageo.2008.08.012.
 .SH "SEE ALSO"
 .IR gmt (1),
