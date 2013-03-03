@@ -42,9 +42,10 @@ append BD(g) to indicate that your data are geoid heights in meters and output s
 OPT(E)[BD(r)|BD(x)|BD(y)][BD(w)[BD(k)]]
 Estimate power spectrum in the radial direction [BD(r)].  Place BD(x) or BD(y) immediately after OPT(E) to
 compute the spectrum in the x or y direction instead.  No grid file is created.
-If one grid is given then we write f (i.e., frequency or wave number), power[f], and 1 standard deviation
-in power[f] are written to file set by OPT(G) [stdout]. If two grids are given we write f,
-admittance[f], 1 standard deviation in admittance[f], coherence[f] and 1 standard deviation in coherence[f] instead.
+If a single grid is given then f (i.e., frequency or wave number), power[f], and 1 standard deviation
+in power[f] are written to the file set by OPT(G) [stdout]. If two grids are given we write f and 8 quantities:
+Xpower[f], Ypower[f], coherent power[f], noise power[f], phase[f], admittance[f], gain[f], coherency[f].
+Each quantity is followed by its own 1-std dev error estimate, hence the output is 17 columns wide.
 Append BD(w) to write wavelength instead of frequency.  If your grid is geographic you may further append BD(k)
 to scale wavelengths from meter [Default] to km.
 .TP

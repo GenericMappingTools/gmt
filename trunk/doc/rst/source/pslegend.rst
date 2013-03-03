@@ -10,7 +10,7 @@ pslegend - Plot legends on maps
 **pslegend** [ *textfile* ]
 **-D**\ [**x**\ ]\ *lon*/*lat*/*width*\ [/*height*]/\ *just*\ [/*dx*/*dy*]
 [ **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ *dx*/*dy* ] [
-**-F**\ [**+r**\ [*radius*\ ]] ] [ **-G**\ *fill* ] [
+**-F**\ [**+i**\ [[*gap*/]*pen*]][\ **+p**\ *pen*][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*fill*\ ]]] ] [
 **-J**\ *parameters* ] [ **-K** ] [ **-L**\ *spacing* ] [ **-O** ] [
 **-P** ] [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
 **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*\ ]
@@ -49,6 +49,59 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 
 `Optional Arguments <#toc5>`_
 -----------------------------
+
+.. include:: explain_-B.rst_
+
+**-C**\ *dx*/*dy*
+    Sets the clearance between the legend frame and the internal items
+    [4\ **p**/4\ **p**].
+**-F**\ [**+i**\ [[*gap*/]*pen*]][\ **+p**\ *pen*][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*fill*\ ]]]
+    Draws a rectangular border around the legend using
+    **MAP\_FRAME\_PEN**; specify a different pen with **+p**\ *pen*.
+    Append **+i** to draw a secondary, inner border as well. We use a
+    *gap* between borders of 2\ **p** and the **MAP\_DEFAULTS\_PEN**
+    unless other values are specified. Append **+r** to draw rounded
+    rectangular borders instead, with a 6\ **p** corner radius. You can
+    override this radius by appending another value. Finally, append
+    **+s** to draw an offset background shaded region. Here, *dx*/*dy*
+    indicates the shift relative to the foreground frame
+    [4\ **p**/-4\ **p**] and *fill* sets the shading to use [SHADE].
+**-G**\ *fill*
+    Select fill shade, color or pattern of the legend box [Default is no
+    fill]. 
+
+.. include:: explain_-J.rst_
+
+.. include:: explain_-K.rst_
+
+**-L**\ *spacing*
+    Sets the linespacing factor in units of the current annotation font size [1.1]. 
+
+.. include:: explain_-O.rst_
+
+.. include:: explain_-P.rst_
+
+.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-R.rst_
+
+.. include:: explain_-U.rst_
+
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-V.rst_
+
+.. include:: explain_-XY.rst_
+
+.. include:: explain_-c.rst_
+
+.. |Add_perspective| unicode:: 0x20 .. just an invisible code
+.. include:: explain_perspective.rst_
+
+.. include:: explain_-t.rst_
+
+.. include:: explain_help.rst_
+
+`Pslegend Codes <#toc6>`_
+-------------------------
 
 *textfile*
     This file contains instruction for the layout of items in the
@@ -128,7 +181,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     secondary arguments if not provided.  A few other symbols (the rectangles,
     ellipse, wedge, mathangle) may take more than a single argument size.
     If just a single size if given then **pslegend** will provide reasonable
-    arguments to plot the symbol  (See :ref:`Defaults <#toc6>`).
+    arguments to plot the symbol  (See :ref:`Defaults <#toc7>`).
     Alternatively, combine the required
     arguments into a single, comma-separated string and use that as the
     symbol size (again, see `psxy <psxy.html>`_ for details on the arguments needed).
@@ -150,59 +203,9 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     specify all and set the ones you want to leave at their default
     value to **-**.
 
-.. include:: explain_-B.rst_
+.. _#toc7:
 
-**-C**\ *dx*/*dy*
-    Sets the clearance between the legend frame and the internal items
-    [4\ **p**/4\ **p**].
-**-F**\ [**+i**\ [[*gap*/]*pen*]][\ **+p**\ *pen*][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*fill*\ ]]]
-    Draws a rectangular border around the legend using
-    **MAP\_FRAME\_PEN**; specify a different pen with **+p**\ *pen*.
-    Append **+i** to draw a secondary, inner border as well. We use a
-    *gap* between borders of 2\ **p** and the **MAP\_DEFAULTS\_PEN**
-    unless other values are specified. Append **+r** to draw rounded
-    rectangular borders instead, with a 6\ **p** corner radius. You can
-    override this radius by appending another value. Finally, append
-    **+s** to draw an offset background shaded region. Here, *dx*/*dy*
-    indicates the shift relative to the foreground frame
-    [4\ **p**/-4\ **p**] and *fill* sets the shading to use [SHADE].
-**-G**\ *fill*
-    Select fill shade, color or pattern of the legend box [Default is no
-    fill]. 
-
-.. include:: explain_-J.rst_
-
-.. include:: explain_-K.rst_
-
-**-L**\ *spacing*
-    Sets the linespacing factor in units of the current annotation font size [1.1]. 
-
-.. include:: explain_-O.rst_
-
-.. include:: explain_-P.rst_
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-R.rst_
-
-.. include:: explain_-U.rst_
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-V.rst_
-
-.. include:: explain_-XY.rst_
-
-.. include:: explain_-c.rst_
-
-.. |Add_perspective| unicode:: 0x20 .. just an invisible code
-.. include:: explain_perspective.rst_
-
-.. include:: explain_-t.rst_
-
-.. include:: explain_help.rst_
-
-.. _#toc6:
-
-`Defaults <#toc6>`_
+`Defaults <#toc7>`_
 -------------------
 
 When attributes are not provided, or extended symbol information (for symbols taking more than just an overall size) are
@@ -224,7 +227,7 @@ Mathangle: Angles are -10 and 45 degrees, with arrow head size 30% of symbol siz
 
 Wedge: Angles are -30 and 30 degrees.
 
-`Examples <#toc7>`_
+`Examples <#toc8>`_
 -------------------
 
 To add an example of a legend to a Mercator plot (map.ps) with the given
@@ -297,7 +300,7 @@ T so we may have to adjust the box height to get the right size box.
 
 EOF
 
-`Note On Legend Height <#toc8>`_
+`Note On Legend Height <#toc9>`_
 --------------------------------
 
 As **-D** suggests, leaving the *height* off forces a calculation of the
@@ -308,7 +311,7 @@ metrics this estimate will occasionally be off by 1 line. If so, note
 the reported height (with **-V**) and specify a slightly larger or
 smaller height in **-D**.
 
-`Windows Remarks <#toc9>`_
+`Windows Remarks <#toc10>`_
 --------------------------
 
 Note that under Windows, the percent sign (%) is a variable indicator
@@ -319,7 +322,7 @@ This only applies to text inside a script or that otherwise is processed
 by DOS. Data files that are opened and read by **pslegend** do not need
 such duplication.
 
-`See Also <#toc10>`_
+`See Also <#toc11>`_
 --------------------
 
 `gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,

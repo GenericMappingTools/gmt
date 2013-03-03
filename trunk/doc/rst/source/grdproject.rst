@@ -8,7 +8,7 @@ grdproject - Forward and inverse map transformation of grids
 -------------------
 
 **grdproject** *in\_grdfile* **-G**\ *out\_grdfile* **-J**\ *parameters*
-[ **-A**\ [**c\|i\|p\|e\|f\|k\|M\|n**\ ] ] [ **-C**\ [*dx/dy*\ ] ] [
+[ **-A**\ [**c\|i\|p\|e\|f\|k\|M\|n\|u**\ ] ] [ **-C**\ [*dx/dy*\ ] ] [
 **-D**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
 ] [ **-E**\ *dpi* ] [ **-I** ] [ **-Mc**\ \|\ **i**\ \|\ **p** ] [
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-V**\ [*level*\ ]

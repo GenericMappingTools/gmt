@@ -37,7 +37,7 @@ output z-values without the (x,y) coordinates; see **-Z** below.
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-**-C**\ [**f**\ ]
+**-C**\ [**f**\ \|\ **i**]
     Replace the x- and y-coordinates on output with the corresponding
     column and row numbers. These start at 0 (C-style counting); append
     **f** to start at 1 (Fortran-style counting). Alternatively, append

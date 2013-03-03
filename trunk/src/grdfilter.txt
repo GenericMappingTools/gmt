@@ -3,7 +3,7 @@
 .SH NAME
 grdfilter \- Filter a grid in the space (or time) domain
 .SH SYNOPSIS
-BD(grdfilter) IT(ingrid) OPT(D)IT(distance_flag) OPT(F)IT(<filtertype><width>)[/IT(width2)][IT(mode)][BD(+q)IT(quantile)] 
+BD(grdfilter) IT(ingrid) OPT(D)IT(distance_flag) OPT(F)BD(x)IT(width)[/IT(width2)][IT(mode)][BD(+q)IT(quantile)] 
 OPT(G)IT(outgrid) [ GMT_I_OPT ] [ OPT(N)BD(i)|BD(p)|BD(r) ] [ GMT_Rgeo_OPT ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_f_OPT ]
 .SH DESCRIPTION
 BD(grdfilter) will filter a IT(.nc) file in the time domain using one
@@ -43,12 +43,12 @@ IT(flag) = 4:  grid (x,y) in degrees, IT(width) in km, Spherical distance calcul
 .sp
 IT(flag) = 5:  grid (x,y) in Mercator OPT(Jm)1 img units, IT(width) in km, Spherical distance calculation.
 .TP
-OPT(F)IT(<filtertype><width>)[/IT(width2)][IT(mode)]
-Sets the filter type.  Choose among convolution and non-convolution filters.  Use any
-IT(filtertype) (listed below) followed by the full diameter IT(width).  This gives
+OPT(F)BD(x)IT(width)[/IT(width2)][IT(mode)]
+Choose among convolution and non-convolution filters.  Specify any
+filter code BD(x) (listed below) followed by the full diameter IT(width).  This gives
 an isotropic filter; append /IT(width2) for a rectangular filter (requires OPT(Dp) or OPT(D0)).
 .sp
-Convolution filters are:
+Convolution filters (and their codes) are:
 .br
 .sp
 (BD(b)) Boxcar: All weights are equal.
@@ -65,7 +65,7 @@ have odd dimensions; also requires OPT(D0) and output spacing must match input s
 have odd dimensions; also requires OPT(D0) and output spacing must match input spacing or be integer multiples.
 Weights are assumed to sum to zero so no accumulation of weight sums and normalization will be done.
 .sp
-Non-convolution filters are:
+Non-convolution filters (and their codes) are:
 .br
 .sp
 (BD(m)) Median: Returns median value. To select another quantile append

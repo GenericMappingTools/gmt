@@ -30,7 +30,7 @@ IT(grdfile)
 The name of a 2-D binary grid file.
 .TP
 OPT(N)IT(n_model)[BD(r)]
-[BD(r)]IT(n_model) sets the number of model parameters to fit.  Append BD(r) for robust fit.
+IT(n_model) sets the number of model parameters to fit.  Append BD(r) for robust fit.
 .SH OPTIONAL ARGUMENTS
 .TP
 OPT(D)IT(diff.nc)

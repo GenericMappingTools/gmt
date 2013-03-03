@@ -14,7 +14,6 @@ Note that using OPT(R) only is equivalent to BD(grdcut) or BD(grdedit \-S).  BD(
 creates a fine mesh from a coarse one; the converse may suffer aliasing unless the data are filtered using
 BD(grdfft) or BD(grdfilter).
 .br
-.sp
 When OPT(R) is omitted, the output grid will cover the same region as the input grid.
 When OPT(I) is omitted, the grid spacing of the output grid will be the same as the input grid.
 Either OPT(r) or OPT(T) can be used to change the grid registration. When omitted, the output grid will

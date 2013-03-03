@@ -42,7 +42,7 @@ same locations.
 *grdfile*
     The name of a 2-D binary grid file.
 **-N**\ *n\_model*\ [**r**\ ]
-    [**r**\ ]\ *n\_model* sets the number of model parameters to fit.
+    *n\_model* sets the number of model parameters to fit.
     Append **r** for robust fit.
 
 `Optional Arguments <#toc5>`_

@@ -40,7 +40,9 @@ PARAMETER
 
 To list the value of the parameter PS\_COMMENTS:
 
-**gmtget** PS\_COMMENTS To get both the values of the parameter
+**gmtget** PS\_COMMENTS
+
+To get both the values of the parameter
 GRID\_CROSS\_SIZE\_PRIMARY and GRID\_CROSS\_SIZE\_SECONDARY on one line, try
 
 **gmtget** GRID\_CROSS\_SIZE\_PRIMARY GRID\_CROSS\_SIZE\_SECONDARY

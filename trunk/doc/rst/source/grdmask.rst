@@ -11,7 +11,7 @@ grdmask - Create mask grid from polygons or point coverage
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [
 **-A**\ [**m**\ \|\ **p**] ] [
-**-N**\ [**i**\ \|\ **I**\ \|\ **p**\ \|\ **P**]\ *values* ] [
+**-N**\ [**z**\ \|\ **Z**\ \|\ **p**\ \|\ **P**]\ *values* ] [
 **-S**\ *search\_radius*\ [*unit*\ ] ] [ **-V**\ [*level*\ ] ] [
 **-bi**\ [*ncols*\ ][*type*\ ] ] [ **-f**\ *colinfo* ] [
 **-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]

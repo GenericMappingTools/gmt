@@ -11,7 +11,7 @@ dimensions
 **greenspline** [ *table* ] [
 **-A**\ [**1**\ \|\ **2**\ \|\ **3**\ \|\ **4**\ \|\ **5**,]\ *gradfile*
 ] [ **-C**\ *cut*\ [/*file*] ] [ **-D**\ *mode* ] [ **-G**\ *grdfile* ]
-[ **-I**\ *xinc*\ [*yinc*\ [*zinc*\ ]] ] [ **-L** ] [ **-N**\ *nodefile*
+[ **-I**\ *xinc*\ [/*yinc*\ [/*zinc*\ ]] ] [ **-L** ] [ **-N**\ *nodefile*
 ] [ **-Q**\ *az*\ \|\ *x/y/z* ] [
 **-R**\ *xmin*/*xmax*\ [/*ymin*/*ymax*\ [/*zmin*\ *zmax*]] ] [
 **-S**\ **c\|t\|g\|p\|q**\ [*pars*\ ] ] [ **-T**\ *maskgrid* ] [
@@ -113,7 +113,7 @@ None.
     **-bo**\ [*ncols*\ ][*type*\ ]) table; if **-G** is not given then
     this table is written to standard output. Ignored if **-C** or
     **-C**\ 0 is given.
-**-I**\ *xinc*\ [*yinc*\ [*zinc*\ ]]
+**-I**\ *xinc*\ [/*yinc*\ [/*zinc*\ ]]
     Specify equidistant sampling intervals, on for each dimension,
     separated by slashes.
 **-L**
@@ -338,6 +338,7 @@ tension: a Green's function approach, *Math. Geol.*, **30**, 77-93.
 Wessel, P., and J. M. Becker, 2008, Interpolation using a generalized
 Green's function for a spherical surface spline in tension, *Geophys. J.
 Int*, **174**, 21-28.
+
 Wessel, P., 2009, A general-purpose Green's function interpolator,
 *Computers & Geosciences*, **35**, 1247-1254, doi:10.1016/j.cageo.2008.08.012.
 

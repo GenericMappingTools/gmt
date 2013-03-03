@@ -11,7 +11,7 @@ psxyz - Plot lines, polygons, and symbols in 3-D
 **-Jz**\ \|\ **Z**\ *parameters*
 **-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ] [
 **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ *cptfile* ] [
-**-D**\ *dx*/*dy*\ [*dz*\ ] ] [ **-G**\ *fill* ] [ **-I**\ *intens* ] [
+**-D**\ *dx*/*dy*\ [/*dz*\ ] ] [ **-G**\ *fill* ] [ **-I**\ *intens* ] [
 **-K** ] [ **-L** ] [ **-N** ] [ **-O** ] [ **-P** ] [ **-Q** ] [
 **-S**\ [*symbol*\ ][\ *size*\ \|\ **+s**\ *scaling*] ] [
 **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*\ ]
@@ -78,7 +78,7 @@ to supply a multisegment file (where each segment header contains a
 **-Z**\ *val* string. The *val* will control the color of the line or
 polygon (if **-L** is set) via the cpt file.
 
-**-D**\ *dx*/*dy*\ [*dz*\ ]
+**-D**\ *dx*/*dy*\ [/*dz*\ ]
 
 Offset the plot symbol or line locations by the given amounts
 *dx/dy*\ [*dz*\ ] [Default is no offset].
@@ -117,7 +117,7 @@ Turn off the automatic sorting of items based on their distance from the
 viewer. The default is to sort the items so that items in the foreground
 are plotted after items in the background. 
 
-.. include:: explain_symbols.rst_
+.. include:: explain_symbols2.rst_
 
 .. include:: explain_-U.rst_
 

@@ -14,7 +14,7 @@ splines
 **-A**\ *aspect\_ratio* ] [ **-C**\ *convergence\_limit* ] [
 **-Ll**\ *lower* ] [ **-Lu**\ *upper* ] [ **-N**\ *max\_iterations* ] [
 **-Q** ] [ **-S**\ *search\_radius*\ [**m**\ \|\ **s**] ] [
-**-T**\ *tension\_factor*\ [**i**\ \|\ **b**] ] [ **-V**\ [*level*\ ] ]
+**-T**\ [**i**\ \|\ **b**] ]\ *tension\_factor* [ **-V**\ [*level*\ ] ]
 [ **-Z**\ *over-relaxation\_factor* ] [
 **-a**\ *col*\ =\ *name*\ [*...*\ ] ] [ **-bi**\ [*ncols*\ ][*type*\ ] ]
 [ **-f**\ *colinfo* ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
@@ -99,15 +99,15 @@ input data values.
     is used to initialize the grid before the first iteration; it is not
     worth the time unless the grid lattice is prime and cannot have
     regional stages. [Default = 0.0 and no search is made.]
-**-T**\ *tension\_factor*\ [**i**\ \|\ **b**]
+**-T**\ [**i**\ \|\ **b**] ]\ *tension\_factor*
     Tension factor[s]. These must be between 0 and 1. Tension may be
     used in the interior solution (above equation, where it suppresses
     spurious oscillations) and in the boundary conditions (where it
     tends to flatten the solution approaching the edges). Using zero for
     both values results in a minimum curvature surface with free edges,
-    i.e., a natural bicubic spline. Use **-T**\ *tension\_factor*\ **i**
-    to set interior tension, and **-T**\ *tension\_factor*\ **b** to set
-    boundary tension. If you do not append **i** or **b**, both will be
+    i.e., a natural bicubic spline. Use **-Ti**\ *tension\_factor*
+    to set interior tension, and **-Tb**\ *tension\_factor* to set
+    boundary tension. If you do not prepend **i** or **b**, both will be
     set to the same value. [Default = 0 for both gives minimum curvature
     solution.] 
 

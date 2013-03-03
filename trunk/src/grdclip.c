@@ -228,6 +228,10 @@ int GMT_grdclip_parse (struct GMTAPI_CTRL *C, struct GRDCLIP_CTRL *Ctrl, struct 
 				GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -Si option: Reclassification case %d overlaps with case %d\n", k, k-1);
 				n_errors++;
 			}
+			if (!Ctrl->S.class[k].replace && (GMT_is_fnan (Ctrl->S.class[k].low) || GMT_is_fnan (Ctrl->S.class[k-1].high))) {
+				GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -Si option: Reclassification case %d contains NaN as high or low value\n", k);
+				n_errors++;
+			}
 		}
 		if (Ctrl->S.mode & GRDCLIP_ABOVE && Ctrl->S.high < Ctrl->S.class[Ctrl->S.n_class-1].high) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -Si option: Your highest reclassification case overlaps with your -Sa selection\n");
@@ -310,6 +314,8 @@ int GMT_grdclip (void *V_API, int mode, void *args) {
 		}
 		else if (Ctrl->S.mode & GRDCLIP_BETWEEN) {	/* Reclassifications */
 			for (k = 0, go = true; go && k < Ctrl->S.n_class; k++) {
+				if ((Ctrl->S.class[k].replace && GMT_is_fnan (Ctrl->S.class[k].low) && GMT_is_fnan (G->data[ij])) || \
+				   (G->data[ij] >= Ctrl->S.class[k].low && G->data[ij] <= Ctrl->S.class[k].high)) {
 				if ((G->data[ij] >= Ctrl->S.class[k].low && G->data[ij] <= Ctrl->S.class[k].high)) {
 					Out->data[ij] = Ctrl->S.class[k].between;
 					Ctrl->S.class[k].n_between++;
