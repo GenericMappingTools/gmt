@@ -1,0 +1,63 @@
+#include "common_options.txt"
+.TH GRDSEAMOUNT 1 MANDATE GMT_STRING "Generic Mapping Tools [potential supplement]"
+.SH NAME
+grdseamount \- Compute synthetic seamount (Gaussian or cone, circular or elliptical) bathymetry
+.SH SYNOPSIS
+BD(grdseamount) GMT_I_OPT GMT_Rgeo_OPT 
+[ OPT(A)[IT(out/in)] ] [ OPT(C) ] [ OPT(G)IT(outgrid) ] [ OPT(L)[IT(cut)] ] [ OPT(N)IT(norm) ] 
+[ OPT(S)IT(r_scale) ] [ OPT(T)[IT(flattening)] ] [ OPT(Z)IT(level) ] [ GMT_V_OPT ] [ GMT_bi_OPT ] [ OPT(fg) ] [ GMT_r_OPT ]
+.SH DESCRIPTION
+BD(grdseamount) will compute the bathymetry for synthetic seamounts given their shape parameters.
+We read a list with seamount locations and sizes and can evaluate either Gaussian or conical shapes,
+which may be circular or elliptical, and optionally truncated.  Various scaling options are available
+to modify the result, including an option to add in a background depth.  The input must contain
+\fIlon, lat, radius, height\fP for each seamount.  For elliptical features (OPT(E)) we expect
+\fIon, lat, azimuth, semi-major, semi-minor, radius, height\fP instead.  If flattening is specified
+(OPT(T)) then a final column with flattening is expected.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+#include "explain_-I.txt"
+#include "explain_-R.txt"
+.SH OPTIONAL ARGUMENTS
+.TP
+OPT(A)IT(out/in)
+Build a mAsk grid, append outside/inside values [1/NaN].
+Here, height is ignored and -L, -N and -Z are disallowed
+.TP
+OPT(C)
+Cone model [Default is Gaussian].
+.TP
+OPT(G)IT(outgrid)
+Sets name of output grdfile.
+#include "explain_-V.txt"
+.TP
+OPT(L)[IT(cut)]
+List area, volume, and mean height for each seamount; NO grid is created.
+Optionally, append the noise-floor cutoff level [0].
+.TP
+OPT(N)[IT(norm)]
+Normalize grid so maximum grid height equals IT(norm).
+.TP
+OPT(S)IT(r_scale)
+Sets optional scale factor for radii [1].
+.TP
+OPT(T)[IT(flattening)]
+Seamounts are to be truncated.  Append IT(flattening), otherwise we expect it in last input column [no truncation].
+.TP
+OPT(Z)
+Add in background depth [0].
+#include "explain_-bi.txt"
+.TP
+OPT(fg)
+Geographic grids (dimensions of longitude, latitude) will be converted to meters via a "Flat Earth" approximation
+using the current ellipsoid parameters.
+#include "explain_-h.txt"
+Not used with binary data.
+#include "explain_-icols.txt"
+#include "explain_nodereg.txt"
+#include "explain_colon.txt"
+#include "explain_help.txt"
+.SH EXAMPLES
+To be added
+.SH "SEE ALSO"
+.IR GMT
