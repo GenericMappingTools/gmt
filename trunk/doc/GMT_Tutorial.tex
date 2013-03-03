@@ -501,7 +501,7 @@ pscoast -R-90/-70/0/20 -JM6i -P -B5g5 -Gchocolate > map.ps
 
 \item Try \Opt{R}270/290/0/20 instead.  What happens to the annotations?
 
-\item Edit your \filename{gmt.conf} file, change \textbf{FORMAT\_GEO\_MAP}
+\item Edit your \filename{gmt.conf} file, change \GMTdef{FORMAT\_GEO\_MAP}
 to another setting (see the \GMTprog{gmt.conf} man page), and plot again.
 
 \item Pick another region and change land color.
@@ -543,7 +543,7 @@ pscoast -R-130/-70/24/52 -JB-100/35/33/45/6i -B10g5:."Conic Projection": \
 
 \begin{enumerate}
 
-\item Change the parameter \textbf{MAP\_GRID\_CROSS\_SIZE\_PRIMARY} to make grid crosses instead of gridlines.
+\item Change the parameter \GMTdef{MAP\_GRID\_CROSS\_SIZE\_PRIMARY} to make grid crosses instead of gridlines.
 
 \item Change \Opt{R} to a rectangular box specification instead of
 minimum and maximum values.
@@ -1032,7 +1032,7 @@ Note that these escape sequences (as well as octal codes) can be
 used anywhere in \GMT\, including in arguments to the \Opt{B} option.
 A chart of octal codes can be found in Appendix F in the \GMT\
 technical reference book.  For accented European characters you must
-set \textbf{PS\_CHAR\_ENCODING} to ISOLatin1 in your \filename{gmt.conf} file.
+set \GMTdef{PS\_CHAR\_ENCODING} to ISOLatin1 in your \filename{gmt.conf} file.
 
 We will demonstrate \GMTprog{pstext} with the following script:
 
@@ -1791,7 +1791,7 @@ In addition, some options may be required:
 \Opt{Qm} & Selects mesh plot \\ \hline
 \Opt{Qs}[\textbf{m}] & Surface plot using polygons; append \textbf{m} to show mesh.  This option allows for \Opt{W} \\ \hline
 \Opt{Qi}\emph{dpi}[\textbf{g}] & Image by scan-line conversion.  Specify \emph{dpi}; append \textbf{g} to force gray-shade image. \\ \hline
-\Opt{Qc}\emph{dpi}[\textbf{g}] & Same as \Opt{Qi} but using PostScript Level 3 to make NaN color transparent. \\ \hline
+\Opt{Qc}\emph{dpi}[\textbf{g}] & Same as \Opt{Qi} but using \PS\ Level 3 to make NaN color transparent. \\ \hline
 \Opt{W}\emph{pen} & Draw contours on top of surface (except with \Opt{Qi} or \Opt{Qc}) \\ \hline
 \end{tabular}
 \caption{The most useful options in \protect\GMTprog{grdview}.}

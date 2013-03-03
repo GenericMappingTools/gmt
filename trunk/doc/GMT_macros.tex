@@ -67,8 +67,9 @@
 \newcommand{\textslbf}[1]{{\slshape\bfseries #1\/}}
 
 \newcommand{\GMTprog}[1]{\GMTprogi{#1}\index{#1@\textsfbf{#1}}}
+\newcommand{\GMTdef}[1]{\textbf{#1}\index{#1@\textsfbf{#1}}}
 
-\newcommand{\script}[2][script]{%
+\newcommand{\script}[2][scripts]{%
    \begingroup
    \renewcommand{\verbfontsize}{\scriptsize} % use smaller font for scripts
    \vspace{0.25\baselineskip}\noindent\hrulefill\vspace{-0.75\baselineskip}%
@@ -82,10 +83,10 @@
 \newcommand{\filename}[1]{\underline{#1}}
 
 \setcounter{topnumber}{2}
-\renewcommand{\topfraction}{.8}
-\setcounter{bottomnumber}{1}
-\renewcommand{\bottomfraction}{.7}
-\setcounter{totalnumber}{3}
+\renewcommand{\topfraction}{.9} % was .8
+\setcounter{bottomnumber}{2} % was 1
+\renewcommand{\bottomfraction}{.8} % was .7
+\setcounter{totalnumber}{5} % was 3
 \renewcommand{\textfraction}{.2}
 \renewcommand{\floatpagefraction}{.7}
 

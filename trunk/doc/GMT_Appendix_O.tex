@@ -48,7 +48,7 @@ The example below shows how \emph{isolation mode} works.
 
 \begin{figure}[h]
 \centering
-\includegraphics[width=\textwidth]{GMT_App_P_2}
+\includegraphics[width=0.75]{GMT_App_P_2}
 \caption{Example created in isolation mode}
 \label{fig:GMT_App_P_2}
 \end{figure}
@@ -63,26 +63,24 @@ in the script and the creation and the removal of the temporary directory is red
 \script{GMT_App_P_2}
 \index{Isolation mode|)}
 
-\section{Using both \gmt\ 3 and 4}
-\index{\GMT, using 3 and 4}
+\section{Using both \gmt\ 4 and 5}
+\index{\GMT, using 4 and 5}
 
-We encourage all \GMT\ users to start using version 4 immediately; it has been tested extensively by
-the \GMT\ team and has benefitted from bug reports for the 3.4.x versions.  Users who still worry about the
-new version breaking things may install \GMT\ 3.4.x versions and 4.x and use our utility \progname{gmtswitch}
+We encourage all \GMT\ users to start using version 5 immediately; it has been tested extensively by
+the \GMT\ team and has benefitted from bug reports for the 4.5.x versions.  Users who still worry about the
+new version breaking things may install \GMT\ 4.5.x versions and 5.x and use our utility \progname{gmtswitch}
 to select their current version should the need to switch arises.  You will find \progname{gmtswitch}
-in the top-level \GMT 4.x directory; install as explained below.
+among the other executables; initialize it as explained below.
 
-Because \GMT\ 4.x is backwards compatible with the 3.4.x series yet maintains its parameters
-and history in separate files (e.g., \filename{.gmtdefaults4} versus \filename{gmt.conf})
+Because \GMT\ 5.x is backwards compatible with the 4.5.x series (provided you configured it that way) yet maintains its parameters
+and history in separate files (e.g., \filename{gmt.conf} versus \filename{.gmtdefaults4})
 it is possible to install and use both versions on the same workstation.  To simplify such
 setups we supply the utility \progname{gmtswitch} which simplifies switching back and forth
-between any number of installed \GMT\ 3-versions and \GMT\ 4.x.  Place the \progname{gmtswitch} Bourne
-shell script in your
-general executable path (not in one of the \GMT\ bin directories) and run it after you have
+between any number of installed \GMT\ 4-versions and \GMT\ 5.x.  Run \progname{gmtswitch} after you have
 finished installing all \GMT\ versions of interest.  The first time you run \progname{gmtswitch}
 it will try to find all the available versions installed on your file system.  The versions
 found will be listed in the file \filename{.gmtversions} in your home directory; each line
-is the full path to a \GMT\ root directory (e.g., /usr/local/GMT3.4.2).  You may
+is the full path to a \GMT\ root directory (e.g., /usr/local/GMT4.5.9).  You may
 manually add or remove entries there at any time.  You are then instructed to make two
 changes to your environment (the details are shell-dependent but explained by \progname{gmtswitch}):
 \begin{enumerate}
@@ -94,5 +92,5 @@ Make those edits, logout, and log and back in again.  The next time you run \pro
 you will be able to switch between versions.  Typing \progname{gmtswitch} with no argument will list the
 available versions in a numerical menu and prompt you to choose one, whereas \progname{gmtswitch} \emph{version}
 will immediately switch to that version (\emph{version} must be a piece of unique text making
-up the full path to a version, e.g., 3.4.2).  If you use \progname{tcsh} or \progname{csh} you may have to type
-``rehash'' to initiate the path changes.
+up the full path to a version, e.g., 4.5.9).  If you use \progname{tcsh} or \progname{csh} you may have to type
+``rehash'' to initiate the path changes.  On Windows, the process is similar [Joaquim, please elaborate].

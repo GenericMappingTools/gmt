@@ -37,7 +37,7 @@ to be labeled.  The codes are:
 \begin{description}
 \item [d:] Full syntax is \textbf{d}\emph{dist}[\textbf{c$|$i$|$p}][/\emph{frac}].
 Place labels according to the distance measured along the projected line on the map.  Append the
-unit you want to measure distances in [Default is taken from \textbf{PROJ\_LENGTH\_UNIT}].
+unit you want to measure distances in [Default is taken from \GMTdef{PROJ\_LENGTH\_UNIT}].
 Starting at the beginning of a line, place labels every \emph{dist} increment of
 distance along the line.  To ensure that closed lines whose total length is less
 than \emph{dist} get annotated, we may append \emph{frac} which will place the first
@@ -52,7 +52,7 @@ or m\textbf{e}ter [Default], \textbf{f}eet, \textbf{k}ilometer, statute \textbf{
 \item [f:] Full syntax is \textbf{f}\emph{fix.txt}[/\emph{slop}[\textbf{c$|$i$|$p}]].  Here, an ASCII file \emph{fix.txt} is
 given which must contain records whose first two columns hold the coordinates of points along
 the lines at which locations the labels should be placed.  Labels will only be placed if the coordinates
-match the line coordinates to within a distance of \emph{slop} (append unit or we use \textbf{PROJ\_LENGTH\_UNIT}).
+match the line coordinates to within a distance of \emph{slop} (append unit or we use \GMTdef{PROJ\_LENGTH\_UNIT}).
 The default \emph{slop} is zero, meaning only exact coordinate matches will do.
 \item [l:] Full syntax is \textbf{l}\emph{line1}[,\emph{line2}[, ...]].  One or more straight line segments
 are specified separated by commas, and labels will be placed at the intersections between these lines and
@@ -108,9 +108,9 @@ fixed percentage of the label font size in use.  The default is 15\%.
 invisible helper lines and points in the label placement algorithms above.
 \item [+d:] Delayed mode, to delay the plotting of the text as text clipping is set instead.
 \item [+f:] Specifies the desired label font, including size or color.  See \GMTprog{pstext} for font names or numbers.  The
-default font is given by \textbf{FONT\_ANNOT\_PRIMARY}.
+default font is given by \GMTdef{FONT\_ANNOT\_PRIMARY}.
 \item [+g:] Selects opaque rather than the default transparent text boxes.  You may optionally append
-the color you want to fill the label boxes; the default is the same as \textbf{PS\_PAGE\_COLOR}.
+the color you want to fill the label boxes; the default is the same as \GMTdef{PS\_PAGE\_COLOR}.
 \item [+j:] Selects the justification of the label relative to the placement points determined
 above.  Normally this is center/mid justified (\textbf{CM} in \GMTprog{pstext} justification parlance) and
 this is indeed the default setting.  Override by using this option and append another justification
@@ -147,7 +147,7 @@ input line segments are given in the multi-segment file format; if not we pick t
 from the file's header record).  We first scan the header for an embedded
 \Opt{L}\emph{label} option; if none is found we instead use the first word following the segment marker [$>$].
 \item [+Ld:] Take the Cartesian plot distances along the line as the label; append \textbf{c$|$i$|$p}
-as the unit [Default is \textbf{PROJ\_LENGTH\_UNIT}].  The label will be formatted according to the \textbf{FORMAT\_FLOAT\_OUT}
+as the unit [Default is \GMTdef{PROJ\_LENGTH\_UNIT}].  The label will be formatted according to the \GMTdef{FORMAT\_FLOAT\_OUT}
 string, \emph{unless} label placement was determined from map distances along the segment lines, in which
 case we determine the appropriate format from the distance value itself. 
 \item [+LD:]  Calculate actual Earth surface distances and use the distance at the label placement point as

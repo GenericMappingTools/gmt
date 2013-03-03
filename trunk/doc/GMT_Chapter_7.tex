@@ -640,7 +640,7 @@ Our illustration is presented in Figure~\ref{fig:example_18}.
 
 \section{Color patterns on maps}
 \index{Example!color patterns|(}
-\index{Example!PostScript inclusions|(}
+\index{Example!PostScript@\PS\ inclusions|(}
 
 \GMT\ 3.1 introduced color patterns and this examples give
 a few cases of how to use this new feature.  We make a phony
@@ -658,9 +658,9 @@ The final panel repeats the top panel except that the land and sea images have c
 (Figure~\ref{fig:example_19}).
 
 \script[examples]{example_19} 
-\GMTex[width=0.9\textwidth]{example_19}{Using color patterns and additional PostScript material in illustrations.}
+\GMTex[scale=0.6]{example_19}{Using color patterns and additional \PS\ material in illustrations.}
 
-\index{Example!PostScript inclusions|)}
+\index{Example!PostScript@\PS\ inclusions|)}
 \index{Example!color patterns|)}
 
 \section{Custom plot symbols}
@@ -684,7 +684,7 @@ a full description of symbol design).  In this Section we will create two new sy
 a volcano and a bulls eye.
 
 \begin{figure}[ht]
-   \centering\includegraphics{GMT_volcano}
+   \centering\includegraphics[scale=0.8]{GMT_volcano}
 \end{figure}
 
 \item After designing the symbol we will encode it using a
@@ -943,7 +943,7 @@ grid using a linear projection with a suitable scale (here 0.25 inches per degre
 To overlay basemaps and features that has geographic longitude/latitude coordinates we must remember
 two key issues:
 \begin{enumerate}
-	\item This is a \emph{spherical} Mercator grid so we must use \textbf{--PROJ\_ELLIPSOID}=Sphere with all
+	\item This is a \emph{spherical} Mercator grid so we must use {-}{-}\GMTdef{PROJ\_ELLIPSOID}=Sphere with all
 	commands that involve projections (or use \GMTprog{gmtset} to change the setting).
 	\item Select Mercator projection and use the same scale that was used with the linear projection.
 \end{enumerate}
@@ -1020,7 +1020,7 @@ The script simply draws a graph basemap, computes sine and cosine and plots them
 indicates on a circle that these quantities are simply the projections of an unit vector on the
 x- and y-axis, at the given angle.
 
-\GMTex{example_30}{Trigonometric functions plotted in graph mode.}
+\GMTex[scale=0.5]{example_30}{Trigonometric functions plotted in graph mode.}
  
 \index{Example!Trigonometric functions plotted in graph mode|)}
 
@@ -1094,14 +1094,16 @@ we did not want to store the 58 MB DEM file, whose location is mentioned in the 
 
 \index{Example!Draping an image over topography|)}
 
+\section{Stacking automatically generated cross-profiles}
+\index{Example!Stacking automatically generated cross-profiles|(}
 
 \script[examples]{example_33}
 
 The script produces the plot in Figure~\ref{fig:example_33}.  Here we demonstrate how \GMTprog{grdtrack} can
-be used to automatically create a suite of crossing profiles of uniform spacing and length, and sample one
+be used to automatically create a suite of crossing profiles of uniform spacing and length and then sample one
 or more grids along these profiles; we also use the median stacking option to create a stacked profile,
-showed above the map.
+showed above the map, with the gray area representing the variations about the stacked median profile.
 
-\GMTex[width=\textwidth]{example_33}{Stacking automatically generated cross-profiles}
+\GMTex[scale=0.6]{example_33}{Stacking automatically generated cross-profiles}
 
 \index{Example!Stacking automatically generated cross-profiles|)}

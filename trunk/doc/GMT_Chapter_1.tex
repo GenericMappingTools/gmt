@@ -12,11 +12,15 @@
 While \GMT\ has served the map-making and data processing needs of scientists since 1988\footnote{Version
 1.0 was then informally released at the Lamont-Doherty Earth Observatory.}, the current global use was
 heralded by the first official release in \emph{EOS Trans. AGU} in the fall of 1991.  Since then,
-\GMT\ has grown to become a standard tool for many users, particularly in the Earth and Ocean Sciences.
+\GMT\ has grown to become a standard tool for many users, particularly in the Earth and Ocean Sciences
+but the global collective of \GMT\ users is incredibly diverse.
 Development has at times been rapid, and numerous releases have seen the light of day since the early
 versions.  For a detailed history of the changes from release to release, see file \filename{ChangeLog}
 in the main \GMT\ directory.  For a nightly snapshot of ongoing activity, see the online
-\htmladdnormallink{ChangeLog}{http://\GMTSITE/gmt/gmt_changelog.php} page.
+\htmladdnormallink{ChangeLog}{http://\GMTSITE/gmt/gmt_changelog.php} page.  For a historical perspective
+of the origins and development of \GMT\, see the video podcast ``20 Years with GMT -- The Generic Mapping
+Tools'' produced following a seminar given by Paul Wessel on the 20th anniversary of \GMT; a link is available
+on the \GMT\ website.
 
 The success of \GMT\ is to a large degree due to the input of the user community. In fact, most of the
 capabilities and options in \GMT\ programs originated as user requests.
@@ -225,7 +229,7 @@ compatibility mode:
 	\item {\bf Table file headers}: For consistency with other common i/o options we now use \Opt{h} instead of \Opt{H}.
 	\item {\bf Segment headers}: These are now automatically detected and hence there is no longer a \Opt{m} (or the older \Opt{M} option).
 	\item {\bf Front symbol}: The syntax for the front symbol has changed from \Opt{Sf}{\it spacing/size}[\Mod{d}][\Mod{t}][:{\it offset}]
-		to \Opt{Sf}{\it spacing/size}[{\bf +r+l}][{\bf +f+t+s+c+b}][\Mod{o}{\it offset}].
+		to \Opt{Sf}{\it spacing}[/{\it size}][{\bf +r+l}][{\bf +f+t+s+c+b}][\Mod{o}{\it offset}].
 	\item {\bf Vector symbol}: With the introduction of geo-vectors there are three kinds of vectors that can be drawn:
 		Cartesian (straight) vectors with \Opt{Sv} or \Opt{SV}, geo-vectors (great circles) with \Opt{S=}, and circular vectors with \Opt{Sm}.
 		These are all composed of a line (controlled by pen settings) and 0--2 arrow heads (control by fill and outline settings).
@@ -299,89 +303,89 @@ compatibility mode:
 
 \begin{table}[H]
 \centering
-\begin{tabular}{|l|l|} \hline
-\emph{Old Name}	& \emph{New Name} \\ \hline
-INPUT\_CLOCK\_FORMAT		&	FORMAT\_CLOCK\_IN \\ \hline
-INPUT\_DATE\_FORMAT		&	FORMAT\_DATE\_IN \\ \hline
-OUTPUT\_CLOCK\_FORMAT		&	FORMAT\_CLOCK\_OUT \\ \hline
-OUTPUT\_DATE\_FORMAT		&	FORMAT\_DATE\_OUT \\ \hline
-OUTPUT\_CLOCK\_FORMAT		&	FORMAT\_CLOCK\_OUT \\ \hline
-OUTPUT\_DEGREE\_FORMAT		&	FORMAT\_GEO\_OUT \\ \hline
-PLOT\_CLOCK\_FORMAT		&	FORMAT\_CLOCK\_MAP \\ \hline
-PLOT\_DATE\_FORMAT		&	FORMAT\_DATE\_MAP \\ \hline
-PLOT\_DEGREE\_FORMAT		&	FORMAT\_GEO\_MAP \\ \hline
-TIME\_FORMAT\_PRIMARY		&	FORMAT\_TIME\_PRIMARY\_MAP \\ \hline
-TIME\_FORMAT\_SECONDARY		&	FORMAT\_TIME\_SECONDARY\_MAP \\ \hline
-D\_FORMAT			&	FORMAT\_FLOAT\_OUT \\ \hline
-UNIX\_TIME\_FORMAT		&	FORMAT\_TIME\_LOGO \\ \hline
-ANNOT\_FONT\_PRIMARY		&	FONT\_ANNOT\_PRIMARY \\ \hline
-ANNOT\_FONT\_SECONDARY		&	FONT\_ANNOT\_SECONDARY \\ \hline
-HEADER\_FONT			&	FONT\_TITLE \\ \hline
-LABEL\_FONT			&	FONT\_LABEL \\ \hline
-ANNOT\_FONT\_SIZE\_PRIMARY	&	FONT\_ANNOT\_PRIMARY \\ \hline
-ANNOT\_FONT\_SIZE\_SECONDARY	&	FONT\_ANNOT\_SECONDARY \\ \hline
-HEADER\_FONT\_SIZE		&	FONT\_TITLE \\ \hline
-ANNOT\_OFFSET\_PRIMARY		&	MAP\_ANNOT\_OFFSET\_PRIMARY \\ \hline
-ANNOT\_OFFSET\_SECONDARY	&	MAP\_ANNOT\_OFFSET\_SECONDARY \\ \hline
-OBLIQUE\_ANNOTATION		&	MAP\_ANNOT\_OBLIQUE \\ \hline
-ANNOT\_MIN\_ANGLE		&	MAP\_ANNOT\_MIN\_SPACING \\ \hline
-Y\_AXIS\_TYPE			&	MAP\_ANNOT\_ORTHO \\ \hline
-DEGREE\_SYMBOL			&	MAP\_DEGREE\_SYMBOL \\ \hline
-BASEMAP\_AXES			&	MAP\_FRAME\_AXES \\ \hline
-BASEMAP\_FRAME\_RGB		&	MAP\_DEFAULT\_PEN \\ \hline
-FRAME\_PEN			&	MAP\_FRAME\_PEN \\ \hline
-BASEMAP\_TYPE			&	MAP\_FRAME\_TYPE \\ \hline
-FRAME\_WIDTH			&	MAP\_FRAME\_WIDTH \\ \hline
-GRID\_CROSS\_SIZE\_PRIMARY	&	MAP\_GRID\_CROSS\_SIZE\_PRIMARY \\ \hline
-GRID\_CROSS\_SIZE\_SECONDARY	&	MAP\_GRID\_CROSS\_SIZE\_SECONDARY \\ \hline
-GRID\_PEN\_PRIMARY		&	MAP\_GRID\_PEN\_PRIMARY \\ \hline
-GRID\_PEN\_SECONDARY		&	MAP\_GRID\_PEN\_SECONDARY \\ \hline
-LABEL\_OFFSET			&	MAP\_LABEL\_OFFSET \\ \hline
-LINE\_STEP			&	MAP\_LINE\_STEP \\ \hline
-UNIX\_TIME			&	MAP\_LOGO \\ \hline
-UNIX\_TIME\_POS			&	MAP\_LOGO\_POS \\ \hline
-X\_ORIGIN			&	MAP\_ORIGIN\_X \\ \hline
-Y\_ORIGIN			&	MAP\_ORIGIN\_Y \\ \hline
-POLAR\_CAP			&	MAP\_POLAR\_CAP \\ \hline
-TICK\_LENGTH			&	MAP\_TICK\_LENGTH\_PRIMARY|SECONDARY \\ \hline
-TICK\_PEN			&	MAP\_TICK\_PEN\_PRIMARY|SECONDARY \\ \hline
+\begin{tabular}{ll} \hline
+\textbf{Old Name}	& \textbf{New Name} \\ \hline\hline
+\textbf{INPUT\_CLOCK\_FORMAT}		&	\GMTdef{FORMAT\_CLOCK\_IN} \\
+\textbf{INPUT\_DATE\_FORMAT}		&	\GMTdef{FORMAT\_DATE\_IN} \\
+\textbf{OUTPUT\_CLOCK\_FORMAT}		&	\GMTdef{FORMAT\_CLOCK\_OUT} \\
+\textbf{OUTPUT\_DATE\_FORMAT}		&	\GMTdef{FORMAT\_DATE\_OUT} \\
+\textbf{OUTPUT\_CLOCK\_FORMAT}		&	\GMTdef{FORMAT\_CLOCK\_OUT} \\
+\textbf{OUTPUT\_DEGREE\_FORMAT}		&	\GMTdef{FORMAT\_GEO\_OUT} \\
+\textbf{PLOT\_CLOCK\_FORMAT}		&	\GMTdef{FORMAT\_CLOCK\_MAP} \\
+\textbf{PLOT\_DATE\_FORMAT}		&	\GMTdef{FORMAT\_DATE\_MAP} \\
+\textbf{PLOT\_DEGREE\_FORMAT}		&	\GMTdef{FORMAT\_GEO\_MAP} \\
+\textbf{TIME\_FORMAT\_PRIMARY}		&	\GMTdef{FORMAT\_TIME\_PRIMARY\_MAP} \\
+\textbf{TIME\_FORMAT\_SECONDARY}	&	\GMTdef{FORMAT\_TIME\_SECONDARY\_MAP} \\
+\textbf{D\_FORMAT}			&	\GMTdef{FORMAT\_FLOAT\_OUT} \\
+\textbf{UNIX\_TIME\_FORMAT}		&	\GMTdef{FORMAT\_TIME\_LOGO} \\
+\textbf{ANNOT\_FONT\_PRIMARY}		&	\GMTdef{FONT\_ANNOT\_PRIMARY} \\
+\textbf{ANNOT\_FONT\_SECONDARY}		&	\GMTdef{FONT\_ANNOT\_SECONDARY} \\
+\textbf{HEADER\_FONT}			&	\GMTdef{FONT\_TITLE} \\
+\textbf{LABEL\_FONT}			&	\GMTdef{FONT\_LABEL} \\
+\textbf{ANNOT\_FONT\_SIZE\_PRIMARY}	&	\GMTdef{FONT\_ANNOT\_PRIMARY} \\
+\textbf{ANNOT\_FONT\_SIZE\_SECONDARY}	&	\GMTdef{FONT\_ANNOT\_SECONDARY} \\
+\textbf{HEADER\_FONT\_SIZE}		&	\GMTdef{FONT\_TITLE} \\
+\textbf{ANNOT\_OFFSET\_PRIMARY}		&	\GMTdef{MAP\_ANNOT\_OFFSET\_PRIMARY} \\
+\textbf{ANNOT\_OFFSET\_SECONDARY}	&	\GMTdef{MAP\_ANNOT\_OFFSET\_SECONDARY} \\
+\textbf{OBLIQUE\_ANNOTATION}		&	\GMTdef{MAP\_ANNOT\_OBLIQUE} \\
+\textbf{ANNOT\_MIN\_ANGLE}		&	\GMTdef{MAP\_ANNOT\_MIN\_SPACING} \\
+\textbf{Y\_AXIS\_TYPE}			&	\GMTdef{MAP\_ANNOT\_ORTHO} \\
+\textbf{DEGREE\_SYMBOL}			&	\GMTdef{MAP\_DEGREE\_SYMBOL} \\
+\textbf{BASEMAP\_AXES}			&	\GMTdef{MAP\_FRAME\_AXES} \\
+\textbf{BASEMAP\_FRAME\_RGB}		&	\GMTdef{MAP\_DEFAULT\_PEN} \\
+\textbf{FRAME\_PEN}			&	\GMTdef{MAP\_FRAME\_PEN} \\
+\textbf{BASEMAP\_TYPE}			&	\GMTdef{MAP\_FRAME\_TYPE} \\
+\textbf{FRAME\_WIDTH}			&	\GMTdef{MAP\_FRAME\_WIDTH} \\
+\textbf{GRID\_CROSS\_SIZE\_PRIMARY}	&	\GMTdef{MAP\_GRID\_CROSS\_SIZE\_PRIMARY} \\
+\textbf{GRID\_CROSS\_SIZE\_SECONDARY}	&	\GMTdef{MAP\_GRID\_CROSS\_SIZE\_SECONDARY} \\
+\textbf{GRID\_PEN\_PRIMARY}		&	\GMTdef{MAP\_GRID\_PEN\_PRIMARY} \\
+\textbf{GRID\_PEN\_SECONDARY}		&	\GMTdef{MAP\_GRID\_PEN\_SECONDARY} \\
+\textbf{LABEL\_OFFSET}			&	\GMTdef{MAP\_LABEL\_OFFSET} \\
+\textbf{LINE\_STEP}			&	\GMTdef{MAP\_LINE\_STEP} \\
+\textbf{UNIX\_TIME}			&	\GMTdef{MAP\_LOGO} \\
+\textbf{UNIX\_TIME\_POS}		&	\GMTdef{MAP\_LOGO\_POS} \\
+\textbf{X\_ORIGIN}			&	\GMTdef{MAP\_ORIGIN\_X} \\
+\textbf{Y\_ORIGIN}			&	\GMTdef{MAP\_ORIGIN\_Y} \\
+\textbf{POLAR\_CAP}			&	\GMTdef{MAP\_POLAR\_CAP} \\
+\textbf{TICK\_LENGTH}			&	\GMTdef{MAP\_TICK\_LENGTH\_PRIMARY|SECONDARY} \\
+\textbf{TICK\_PEN}			&	\GMTdef{MAP\_TICK\_PEN\_PRIMARY|SECONDARY} \\ \hline
 \end{tabular}
 \caption{Renaming of some \gmt\ default parameters.}
 \label{tbl:obsoletedefs1}
 \end{table}
 \begin{table}[H]
 \centering
-\begin{tabular}{|l|l|} \hline
-\emph{Old Name}	& \emph{New Name} \\ \hline
-HEADER\_OFFSET			&	MAP\_TITLE\_OFFSET \\ \hline
-VECTOR\_SHAPE			&	MAP\_VECTOR\_SHAPE \\ \hline
-HSV\_MIN\_SATURATION		&	COLOR\_HSV\_MIN\_S \\ \hline
-HSV\_MAX\_SATURATION		&	COLOR\_HSV\_MAX\_S \\ \hline
-HSV\_MIN\_VALUE			&	COLOR\_HSV\_MIN\_V \\ \hline
-HSV\_MAX\_VALUE			&	COLOR\_HSV\_MAX\_V \\ \hline
-CHAR\_ENCODING			&	PS\_CHAR\_ENCODING \\ \hline
-PS\_COLOR			&	COLOR\_HSV\_MAX\_V \\ \hline
-PAGE\_COLOR			&	PS\_PAGE\_COLOR \\ \hline
-PAGE\_ORIENTATION		&	PS\_PAGE\_ORIENTATION \\ \hline
-PAPER\_MEDIA			&	PS\_MEDIA \\ \hline
-GLOBAL\_X\_SCALE		&	PS\_SCALE\_X \\ \hline
-GLOBAL\_Y\_SCALE		&	PS\_SCALE\_X \\ \hline
-FIELD\_DELIMITER		&	IO\_COL\_SEPARATOR \\ \hline
-GRIDFILE\_FORMAT		&	IO\_GRIDFILE\_FORMAT \\ \hline
-GRIDFILE\_SHORTHAND		&	IO\_GRIDFILE\_SHORTHAND \\ \hline
-NAN\_RECORDS			&	IO\_NAN\_RECORDS \\ \hline
-XY\_TOGGLE			&	IO\_LONLAT\_TOGGLE \\ \hline
-ELLIPSOID			&	PROJ\_ELLIPSOID \\ \hline
-MEASURE\_UNIT			&	PROJ\_LENGTH\_UNIT \\ \hline
-MAP\_SCALE\_FACTOR		&	PROJ\_SCALE\_FACTOR \\ \hline
-HISTORY				&	GMT\_HISTORY \\ \hline
-INTERPOLANT			&	GMT\_INTERPOLANT \\ \hline
-VERBOSE				&	GMT\_VERBOSE \\ \hline
-INTERPOLANT			&	GMT\_INTERPOLANT \\ \hline
-WANT\_LEAP\_SECONDS		&	TIME\_LEAP\_SECONDS \\ \hline
-Y2K\_OFFSET\_YEAR		&	TIME\_Y2K\_OFFSET\_YEAR \\ \hline
-INTERPOLANT			&	GMT\_INTERPOLANT \\ \hline
+\begin{tabular}{ll} \hline
+\textbf{Old Name}	& \textbf{New Name} \\ \hline\hline
+\textbf{HEADER\_OFFSET}			&	\GMTdef{MAP\_TITLE\_OFFSET} \\
+\textbf{VECTOR\_SHAPE}			&	\GMTdef{MAP\_VECTOR\_SHAPE} \\
+\textbf{HSV\_MIN\_SATURATION}		&	\GMTdef{COLOR\_HSV\_MIN\_S} \\
+\textbf{HSV\_MAX\_SATURATION}		&	\GMTdef{COLOR\_HSV\_MAX\_S} \\
+\textbf{HSV\_MIN\_VALUE}		&	\GMTdef{COLOR\_HSV\_MIN\_V} \\
+\textbf{HSV\_MAX\_VALUE}		&	\GMTdef{COLOR\_HSV\_MAX\_V} \\
+\textbf{CHAR\_ENCODING}			&	\GMTdef{PS\_CHAR\_ENCODING} \\
+\textbf{PS\_COLOR}			&	\GMTdef{COLOR\_HSV\_MAX\_V} \\
+\textbf{PAGE\_COLOR}			&	\GMTdef{PS\_PAGE\_COLOR} \\
+\textbf{PAGE\_ORIENTATION}		&	\GMTdef{PS\_PAGE\_ORIENTATION} \\
+\textbf{PAPER\_MEDIA}			&	\GMTdef{PS\_MEDIA} \\
+\textbf{GLOBAL\_X\_SCALE}		&	\GMTdef{PS\_SCALE\_X} \\
+\textbf{GLOBAL\_Y\_SCALE}		&	\GMTdef{PS\_SCALE\_X} \\
+\textbf{FIELD\_DELIMITER}		&	\GMTdef{IO\_COL\_SEPARATOR} \\
+\textbf{GRIDFILE\_FORMAT}		&	\GMTdef{IO\_GRIDFILE\_FORMAT} \\
+\textbf{GRIDFILE\_SHORTHAND}		&	\GMTdef{IO\_GRIDFILE\_SHORTHAND} \\
+\textbf{NAN\_RECORDS}			&	\GMTdef{IO\_NAN\_RECORDS} \\
+\textbf{XY\_TOGGLE}			&	\GMTdef{IO\_LONLAT\_TOGGLE} \\
+\textbf{ELLIPSOID}			&	\GMTdef{PROJ\_ELLIPSOID} \\
+\textbf{MEASURE\_UNIT}			&	\GMTdef{PROJ\_LENGTH\_UNIT} \\
+\textbf{MAP\_SCALE\_FACTOR}		&	\GMTdef{PROJ\_SCALE\_FACTOR} \\
+\textbf{HISTORY}			&	\GMTdef{GMT\_HISTORY} \\
+\textbf{INTERPOLANT}			&	\GMTdef{GMT\_INTERPOLANT} \\
+\textbf{VERBOSE}			&	\GMTdef{GMT\_VERBOSE} \\
+\textbf{INTERPOLANT}			&	\GMTdef{GMT\_INTERPOLANT} \\
+\textbf{WANT\_LEAP\_SECONDS}		&	\GMTdef{TIME\_LEAP\_SECONDS} \\
+\textbf{Y2K\_OFFSET\_YEAR}		&	\GMTdef{TIME\_Y2K\_OFFSET\_YEAR} \\
+\textbf{INTERPOLANT}			&	\GMTdef{GMT\_INTERPOLANT} \\ \hline
 \end{tabular}
-\caption{Renaming of some \gmt\ default parameters.}
+\caption{Renaming of some \gmt\ default parameters, continued.}
 \label{tbl:obsoletedefs2}
 \end{table}
