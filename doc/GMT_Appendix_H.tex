@@ -62,9 +62,16 @@ plane with $r$ increasing to your right, $g$ increasing
 away from you, and $b$ increasing up.  Keep this sense of
 ($r$,$g$,$b$) as you look at the cube.
 
-Now tip the cube such that the black corner faces down and the white corner up. When looking from the top, you can see the hue, contoured in gray solid lines, running around in 360\DS\ counter-clockwise. It starts with shades of red (0\DS), then goes through green (120\DS) and blue (240\DS), back to red.
+Now tip the cube such that the black corner faces down and the white corner up.
+When looking from the top, you can see the hue, contoured in gray solid lines,
+running around in 360\DS\ counter-clockwise. It starts with shades of red (0\DS),
+then goes through green (120\DS) and blue (240\DS), back to red.
 
-On the three faces that are now on the lower side (with the white print) one of ($r$,$g$,$b$) is equal to 0. These three faces meet at the black corner, where $r = g = b = 0$. On these three faces the colors are fully saturated: $s$ = 1. The dashed white lines indicate different levels of $v$, ranging from 0 to 1 with contours every 0.1.
+On the three faces that are now on the lower side (with the white print) one of
+($r$,$g$,$b$) is equal to 0. These three faces meet at the black corner, where
+$r = g = b = 0$. On these three faces the colors are fully saturated: $s$ = 1.
+The dashed white lines indicate different levels of $v$, ranging from 0 to 1
+with contours every 0.1.
 
 On the upper three faces (with the black print), one of ($r$,$g$,$b$) is equal to the
 maximum value.  These three faces meet at the white corner, where
@@ -72,16 +79,20 @@ $r = g = b = 255$.  On these three faces value is at
 its maximum: $v$ = 1 (or 100\%). The dashed black lines indicate varying levels of saturation: $s$ ranges from 0 to
 1 with contours every 0.1.
 
-Now turn the cube around on its vertical axis (running from the black to the white corner). Along the six edges that zigzag around the ``equator'', both saturation and value are maximum, so $s = v = 1$. Twirling the cube around and tracing the zigzag, you will visit six of the eight corners of the
+Now turn the cube around on its vertical axis (running from the black to the white corner).
+Along the six edges that zigzag around the ``equator'', both saturation and value are maximum,
+so $s = v = 1$. Twirling the cube around and tracing the zigzag, you will visit six of the eight corners of the
 cube, with changing hue ($h$):  red (0\DS), yellow (60\DS), green
 (120\DS), cyan (180\DS), blue (240\DS), and magenta
 (300\DS). Three of these are the RGB colors; the other three
 are the CMY colors which are the complement of RGB and are used in many
 color hardcopy devices (see below).  The only cube
 corners you did not visit on this path are the black and white corners.
-They lie on the vertical axis where hue is undefined and $r = g = b$. Any point on this axis is a shade of gray.
+They lie on the vertical axis where hue is undefined and $r = g = b$.
+Any point on this axis is a shade of gray.
 
-Let us call the points where $s = v = 1$ (points along the RYGCBM path described above) the ``pure'' colors.  If we start at a pure color
+Let us call the points where $s = v = 1$ (points along the RYGCBM path
+described above) the ``pure'' colors.  If we start at a pure color
 and we want to whiten it, we can keep $h$ constant and $v = 1$
 while decreasing $s$; this will move us along one of the cube
 faces toward the white point.  If we start at a pure color and we want
@@ -108,7 +119,9 @@ we get to the point where we cannot remove any more gray, at least one
 of ($r$,$g$,$b$) will have become zero and the color is now fully
 saturated; $s = 1$.  Conversely, any point on the gray axis is
 completely undersaturated, so that $s = 0$ there.  Now we see that
-the black point is special, $s$ is both 0 and 1 at the same time. In other words, at the black point saturation in undefined (and so is hue). The convention is to use $h = s = v = 0$ at this point.
+the black point is special, $s$ is both 0 and 1 at the same time.
+In other words, at the black point saturation in undefined (and so is
+hue). The convention is to use $h = s = v = 0$ at this point.
 
 It remains to define value. To do so, try this:
 Take your point in RGB space and construct a line through it so that
@@ -135,7 +148,10 @@ the black point, because $v$ is not equal to $\sqrt{r^2 + g^2 + b^2}/255$.
 Another representation of the HSV space is the color cone illustrated in Figure~\ref{fig:hsv-cone}.
 
 \begin{figure}[h]
-   \parbox[b]{0.54\textwidth}{``Pure'' colors are around the edge of the circular surface at the top. Hue runs counter-clockwise. Saturation decreases to the center. Value increases from zero (black) at the bottom to 1 at the top. Gray shades are along the vertical axis.}%
+   \parbox[b]{0.54\textwidth}{``Pure'' colors are around the edge of the
+    circular surface at the top. Hue runs counter-clockwise. Saturation decreases
+    to the center. Value increases from zero (black) at the bottom to 1 at the top.
+    Gray shades are along the vertical axis.}%
    \hfill%
    \includegraphics[width=0.45\textwidth,bb=0 0 750 508]{hsv-cone.png}%
    \caption{The HSV color space.}
@@ -167,9 +183,9 @@ coordinates of the color.  When the intensity is zero (flat illumination), the d
 are colored according to the CPT file.  If the intensity is
 non-zero, the color is either lightened or darkened depending on the illumination.
 The color is first converted to HSV (if necessary) and then
-darkened by moving ($s$,$v$) toward (\textbf{COLOR\_HSV\_MIN\_S},
-\textbf{COLOR\_HSV\_MIN\_V}) if the intensity is negative, or lightened by sliding ($s$,$v$) toward
-(\textbf{COLOR\_HSV\_MAX\_S}, \textbf{COLOR\_HSV\_MAX\_V}) if the illumination is positive.
+darkened by moving ($s$,$v$) toward (\GMTdef{COLOR\_HSV\_MIN\_S},
+\GMTdef{COLOR\_HSV\_MIN\_V}) if the intensity is negative, or lightened by sliding ($s$,$v$) toward
+(\GMTdef{COLOR\_HSV\_MAX\_S}, \GMTdef{COLOR\_HSV\_MAX\_V}) if the illumination is positive.
 The extremes of the $s$ and $v$ are defined in the \filename{gmt.conf} file and are usually
 chosen so the corresponding points are nearly black ($s$ = 1,
 $v$ = 0) and white ($s$ = 0, $v$ = 1).
@@ -204,6 +220,6 @@ in RGB coordinates.
 Finally, you can imagine that printers work in a different way: they mix different paints to make a color. The more paint, the darker the color, which is the reverse of adding more light. Also, mixing more colored paints does not give you true black, so that means that you really need four colors to do it right. Open up your color printer and you'll probably find four cartridges: cyan, magenta, yellow (often these are combined into one), and black. They form the CMYK system of colors, each value running from 0 to 1 (or 100\%). In \GMT\ CMYK color coding can be achieved using $c$/$m$/$y$/$k$ quadruplets.
 
 Obviously, there is no unique way to go from the 3-dimensional RGB system to the 4-dimensional CMYK system. So, again, there is a lot of hand waving applied in the transformation. Strikingly, CMYK actually covers a smaller color space than RGB. We will not try to explain you the details behind it, just know that there is a transformation needed to go from the colors on your screen to the colors on your printer. It might explain why what you see is not necessarily what you get. If you are really concerned about how your color plots will show up in your PhD thesis, for example, it might be worth trying to save and print all your color plots using the CMYK system. Letting \GMT\ do the conversion to CMYK may avoid
-some nasty surprises when it comes down to printing. To specify the color space of your \PS\ file, set \textbf{PS\_COLOR\_MODEL}
+some nasty surprises when it comes down to printing. To specify the color space of your \PS\ file, set \GMTdef{PS\_COLOR\_MODEL}
 in the \filename{gmt.conf} file to RGB, HSV, or CMYK.
 \index{Color|)}

@@ -286,7 +286,7 @@ width (\Opt{JS}).
 \end{itemize}
 
 A default map scale factor of 0.9996 will be applied by default
-(although you may change this with \textbf{PROJ\_SCALE\_FACTOR}).
+(although you may change this with \GMTdef{PROJ\_SCALE\_FACTOR}).
 However, the setting is ignored when a standard
 parallel has been specified since the scale is then implicitly given.
 We will look at two different types of maps.
@@ -300,8 +300,7 @@ projection and the map boundaries will coincide with lines
 of constant longitude and latitude.  An example is given by
 
 \script{GMT_stereographic_polar}
-\GMTfig[h]{GMT_stereographic_polar}{Polar
-stereographic conformal projection.}
+\GMTfig[h]{GMT_stereographic_polar}{Polar stereographic conformal projection.}
 
 \subsubsection{Rectangular stereographic map} 
 \index{Projection!stereographic!rectangular}
@@ -591,7 +590,7 @@ by specifying:
 
 The optional latitude of origin defaults to Equator if not specified.
 Although defaulting to 1, you can change the map scale factor via
-the \textbf{PROJ\_SCALE\_FACTOR} parameter.
+the \GMTdef{PROJ\_SCALE\_FACTOR} parameter.
 Our example shows a transverse Mercator map of south-east
 Europe and the Middle East with 35\DS E as the central
 meridian:
@@ -654,7 +653,7 @@ or append the latitude modifiers C--H, J--N, P--X) to specify an exact UTM grid 
 
 In order to minimize the distortion in any given zone,
 a scale factor of 0.9996 has been factored into the formulae.
-(although a standard, you can change this with \textbf{PROJ\_SCALE\_FACTOR}).
+(although a standard, you can change this with \GMTdef{PROJ\_SCALE\_FACTOR}).
 This makes the UTM projection a \emph{secant} projection and not
 a \emph{tangent} projection like the transverse Mercator above.
 The scale only varies by 1 part in 1,000 from true scale at
@@ -1073,7 +1072,7 @@ world map ``look'' right\footnote{Robinson provided a table of
 $y$-coordinates for latitudes every 5\DS .  To project values
 for intermediate latitudes one must interpolate the table.
 Different interpolants may result in slightly different maps.
-\gmt\ uses the interpolant selected by the parameter \textbf{GMT\_INTERPOLANT}
+\gmt\ uses the interpolant selected by the parameter \GMTdef{GMT\_INTERPOLANT}
 in the \filename{gmt.conf} file.}.  The scale is true
 along latitudes \PM 38\DS.  The projection was originally
 developed for use by Rand McNally and is currently used by
