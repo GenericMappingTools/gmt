@@ -106,7 +106,7 @@ l l .
 \fBgmtgravmag3d\fP	
 \fBgravfft\fP	
 \fBgrdgravmag3d\fP	
-\fBredpol\fP	
+\fBgrdredpol\fP	
 
 	Supplement \fIsegy\fP:
 \fBpssegy\fP	
