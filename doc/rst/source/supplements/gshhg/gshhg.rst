@@ -33,7 +33,7 @@ ancestor). For line data the header is simply *ID npoints
 hierarchical-level source west east south north*. For more information
 about the file formats, see TECHNICAL INFORMATION below.
 
-..include:: ../../explain_commonitems.rst_
+.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
@@ -68,8 +68,8 @@ about the file formats, see TECHNICAL INFORMATION below.
     **-Qi** to exclude everything else instead [Default outputs all
     polygons].
 
-.. input:: ../../explain_-bo.rst_
-.. input:: ../../explain_-ocols.rst_
+.. include:: ../../explain_-bo.rst_
+.. include:: ../../explain_-ocols.rst_
 
 `Examples <#toc6>`_
 -------------------
@@ -106,10 +106,9 @@ and islands (level 1), lakes (level 2), islands-in-lakes (level 3) and
 ponds-in-islands-in-lakes (level 4); a particular level can be extracted
 using the **-N** option. Continents are identified as the first 6
 polygons and can be extracted via the **-Ic** option. The IDs for the
-continents are Eurasia (0), `Africa (1) <Africa.html>`_ , North `America
-(2) <America.2.html>`_ , South `America (3) <America.html>`_ ,
-`Antarctica (4) <Antarctica.4.html>`_ , and `Australia
-(5) <Australia.html>`_ . Files are sorted on area from large to small.
+continents are Eurasia (0), Africa (1), North America
+(2), South America (3), Antarctica (4), and Australia
+(5). Files are sorted on area from large to small.
 There are two sub-groups for level 2: Regular lakes and the so-called
 "river-lakes", the latter being sections of a river that are so wide to
 warrant a polygon representation. These river-lakes are flagged in the
@@ -133,16 +132,14 @@ who wish to access both data sets can recognize the river-lakes features
 by examining the header structure (see the source code for details);
 they are also the only closed polygons in the WDBII river file. There
 are many levels (classes) in the river file: River-lakes (0), Permanent
-major `rivers (1) <rivers.html>`_ , Additional major `rivers
-(2) <rivers.2.html>`_ , Additional `rivers (3) <rivers.html>`_ , Minor
-`rivers (4) <rivers.4.html>`_ , Intermittent rivers -- `major
-(6) <major.6.html>`_ , Intermittent rivers -- `additional
-(7) <additional.7.html>`_ , Intermittent rivers -- `minor
-(8) <minor.8.html>`_ , Major canals (10), Canals of lesser importance
+major rivers (1), Additional major rivers
+(2), Additional rivers (3), Minor rivers (4), Intermittent rivers -- major
+(6), Intermittent rivers -- additional (7), Intermittent rivers -- minor
+(8), Major canals (10), Canals of lesser importance
 (11), and Canals -- irrigation type (12). For the border file there are
-three levels: National `boundaries (1) <boundaries.html>`_ , Internal
-domestic `boundaries (2) <boundaries.2.html>`_ , and international
-maritime `boundaries (3) <boundaries.html>`_ . Individual levels or
+three levels: National boundaries (1), Internal
+domestic boundaries (2), and international
+maritime boundaries (3). Individual levels or
 classes may be extracted via **-N**.
 
 `References <#toc8>`_
@@ -151,10 +148,13 @@ classes may be extracted via **-N**.
 Douglas, D. H., and T. K. Peucker, 1973, Algorithms for the reduction of
 the number of points required to represent a digitized line of its
 caricature, *Can. Cartogr., 10*, 112-122.
+
 Gorny, A. J., 1977, *World Data Bank II General User GuideRep. PB
 271869*, 10pp, Central Intelligence Agency, Washington, DC.
+
 Soluri, E. A., and V. A. Woodson, 1990, World Vector Shoreline, *Int.
-Hydrograph. Rev., `LXVII(1) <LXVII.html>`_ , 27-35.
+Hydrograph. Rev., LXVII(1), 27-35.
+
 Wessel, P., and W. H. F. Smith, 1996, A global, self-consistent,
 hierarchical, high-resolution shoreline database, *J. Geophys. Res.,
 101(B4)*, 8741-8743.*

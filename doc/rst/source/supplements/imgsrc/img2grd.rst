@@ -188,7 +188,7 @@ To make a Mercator map of the above region, suppose our gmt.conf value
 for **PROJ\_LENGTH\_UNIT** is inch. Then since the above merc\_grav.nc
 file is projected with **-Jm**\ 1i it is 80 inches wide. We can make a
 map 8 inches wide by using **-Jx**\ 0.1i on any map programs applied to
-this grid (e.g., **grdcontour**, **grdimage**, **grdview**), and then
+this grid (e.g., `grdcontour <grdcontour.html>`_, `grdimage <grdimage.html>`_, `grdview <grdview.html>`_), and then
 for overlays which work in lon,lat (e.g., **psxy**, **pscoast**) we can
 use the above adjusted **-R** and **-Jm**\ 0.1 to get the two systems to
 match up.
@@ -201,14 +201,14 @@ is 300 pixels per inch. We decide we don’t need that many and we will be
 satisfied with 100 pixels per inch, so we want to average the data into
 3 by 3 squares. (If we want a contour plot we will probably choose to
 average the data much more (e.g., 6 by 6) to get smooth contours.) Since
-2039 isn't divisible by 3 we will get a different adjusted OPT(R) this time:
+2039 isn't divisible by 3 we will get a different adjusted **-R** this time:
 
 img2grd -M world\_grav.img.7.2 -Gmerc\_grav\_2.nc -R-40/40/-70/-30 -N3 -V
 
 This time we find the adjusted region is
 **-R**-40/40/-70.023256525/-29.9368261101 and the output is 800 by 601
 pixels, a better size for us. Now we can create an artificial
-illumination file for this using **grdgradient**:
+illumination file for this using `grdgradient <grdgradient.html>`_:
 
 grdgradient merc\_grav\_2.nc -Gillum.nc -A0/270 -Ne0.6
 
@@ -216,12 +216,13 @@ and if we also have a cpt file called "grav.cpt" we can create a color
 shaded relief map like this:
 
 grdimage merc\_grav\_2.nc -Iillum.nc -Cgrav.cpt -Jx0.1i -K > map.ps
+
 psbasemap -R-40/40/-70.023256525/-29.9368261101 -Jm0.1i -Ba10 -O >> map.ps
 
 Suppose you want to obtain only the constrained data values from an img
 file, in lat/lon coordinates. Then run **img2grd** with the **-T**\ 2
 option, use **grd2xyz** to dump the values, pipe through grep -v NaN to
-eliminate NaNs, and pipe through **mapproject** with the inverse projection as above.
+eliminate NaNs, and pipe through `mapproject <mapproject.html>`_ with the inverse projection as above.
 
 `See Also <#toc8>`_
 -------------------

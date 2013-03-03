@@ -21,13 +21,13 @@ gmtget - Get individual **GMT** default parameters
 PARAMETER
     Provide one or several parameters of interest. The current value of
     those parameters will be writen to *stdout*. For a complete listing
-    of available parameters and their meaning, see the **gmt.conf** man page.
+    of available parameters and their meaning, see the `gmt.conf <gmt.conf.html>`_ man page.
 
 `Optional Arguments <#toc4>`_
 -----------------------------
 
 **-G**\ *defaultsfile*
-    Name of specific **gmt.conf** file to read [Default looks first in
+    Name of specific `gmt.conf <gmt.conf.html>`_ file to read [Default looks first in
     current directory, then in your home directory, then in ~/.gmt and
     finally in the system defaults].
 **-L**

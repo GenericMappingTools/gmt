@@ -61,7 +61,7 @@ None.
     Choose from **l** (Linear), **a** (Akima spline), **c** (natural
     cubic spline), and **n** (no interpolation: nearest point) [Default
     is **-Fa**]. You may change the default interpolant; see
-    **GMT\_INTERPOLANT** in your **gmt.conf** file.
+    **GMT\_INTERPOLANT** in your `gmt.conf <gmt.conf.html>`_ file.
 **-I**\ *inc*\ [*unit*\ ]
     *inc* defines the sampling interval [Default is the separation
     between the first and second abscissa point in the *infile*]. Append

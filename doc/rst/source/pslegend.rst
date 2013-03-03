@@ -4,8 +4,8 @@ pslegend
 
 pslegend - Plot legends on maps
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 **pslegend** [ *textfile* ]
 **-D**\ [**x**\ ]\ *lon*/*lat*/*width*\ [/*height*]/\ *just*\ [/*dx*/*dy*]
@@ -22,8 +22,8 @@ pslegend - Plot legends on maps
 **-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
 ] [ **-t**\ [*transp*\ ] ]
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **pslegend** will make legends that can be overlaid on maps. It reads
 specific legend-related information from an input file [or stdin].
@@ -312,7 +312,7 @@ the reported height (with **-V**) and specify a slightly larger or
 smaller height in **-D**.
 
 `Windows Remarks <#toc10>`_
---------------------------
+_--------------------------
 
 Note that under Windows, the percent sign (%) is a variable indicator
 (like $ under Unix). To indicate a plain percentage sign in a batch

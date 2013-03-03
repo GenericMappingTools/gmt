@@ -105,9 +105,6 @@ Optional Arguments
 
 .. include:: explain_-c.rst_
 
-.. |Add_perspective| unicode:: 0x20 .. just an invisible code
-.. include:: explain_perspective.rst_
-
 These options are for 1-bit images only. They have no effect when
 plotting other images or *PostScript* files.
 

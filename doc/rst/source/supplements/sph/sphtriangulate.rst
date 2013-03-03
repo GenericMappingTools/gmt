@@ -101,7 +101,7 @@ None.
 ---------------------------------
 
 The ASCII output formats of numerical data are controlled by parameters
-in your **gmt.conf** file. Longitude and latitude are formatted
+in your `gmt.conf <gmt.conf.html>`_ file. Longitude and latitude are formatted
 according to **FORMAT\_GEO\_OUT**, whereas other values are formatted
 according to **FORMAT\_FLOAT\_OUT**. Be aware that the format in effect
 can lead to loss of precision in the output, which can lead to various

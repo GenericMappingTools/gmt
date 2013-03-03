@@ -47,7 +47,7 @@ each other. To learn the octal codes for symbols not available on the
 keyboard and some accented European characters, see Section 4.16 and
 Appendix F in the **GMT** Technical Reference and Cookbook. Note that
 **PS\_CHAR\_ENCODING** must be set to an extended character set in your
-**gmt.conf** file in order to use the accented characters. Using the
+`gmt.conf <gmt.conf.html>`_ file in order to use the accented characters. Using the
 **-G** or **-W** options, a rectangle underlying the text may be plotted
 (does not work for strings with sub/super scripts, symbols, or composite
 characters, except in paragraph mode (**-M**)). 

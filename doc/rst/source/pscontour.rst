@@ -181,7 +181,7 @@ Bugs
 
 Sometimes there will appear to be thin lines of the wrong color in the
 image. This is a round-off problem which may be remedied by using a
-higher value of **PS\_DPI** in the **gmt.conf** file.
+higher value of **PS\_DPI** in the `gmt.conf <gmt.conf.html>`_ file.
 
 To save the triangulated 100-m contour lines in topo.txt and separate
 them into multisegment files (one for each contour level), try
