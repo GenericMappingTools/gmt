@@ -165,7 +165,7 @@ node and suggest that you run **blockmean**, **blockmedian**, or
 message it usually means that your grid spacing is so small that you
 need more decimals in the output format used by **blockm\***. You may
 specify more decimal places by editing the parameter
-**FORMAT\_FLOAT\_OUT** in your **gmt.conf** file prior to running
+**FORMAT\_FLOAT\_OUT** in your `gmt.conf <gmt.conf.html>`_ file prior to running
 **blockm\***, or choose binary input and/or output using single or
 double precision storage.
 

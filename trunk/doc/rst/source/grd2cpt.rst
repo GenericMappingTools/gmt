@@ -41,13 +41,13 @@ whereever values are undefined.
 If the master cpt file includes B, F, and N entries, these will be
 copied into the new master file. If not, the parameters
 **COLOR\_BACKGROUND**, **COLOR\_FOREGROUND**, and **COLOR\_NAN** from
-the **gmt.conf** file or the command line will be used. This default
+the `gmt.conf <gmt.conf.html>`_ file or the command line will be used. This default
 behavior can be overruled using the options **-D**, **-M** or **-N**.
 
 The color model (RGB, HSV or CMYK) of the palette created by **makecpt**
 will be the same as specified in the header of the master cpt file. When
 there is no **COLOR\_MODEL** entry in the master cpt file, the
-**COLOR\_MODEL** specified in the **gmt.conf** file or on the command
+**COLOR\_MODEL** specified in the `gmt.conf <gmt.conf.html>`_ file or on the command
 line will be used. 
 
 .. include:: explain_commonitems.rst_
@@ -98,7 +98,7 @@ line will be used.
     Overrule background, foreground, and NaN colors specified in the
     master cpt file with the values of the parameters
     **COLOR\_BACKGROUND**, **COLOR\_FOREGROUND**, and **COLOR\_NAN**
-    specified in the **gmt.conf** file or on the command line. When
+    specified in the `gmt.conf <gmt.conf.html>`_ file or on the command line. When
     combined with **-D**, only **COLOR\_NAN** is considered.
 **-N**
     Do not write out the background, foreground, and NaN-color fields
@@ -141,9 +141,9 @@ line will be used.
 `Examples <#toc7>`_
 -------------------
 
-Sometimes you don’t want to make a cpt file (yet) but would find it
+Sometimes you don't want to make a cpt file (yet) but would find it
 helpful to know that 90% of your data lie between z1 and z2, something
-you cannot learn from **grdinfo**. So you can do this to see some points
+you cannot learn from `grdinfo <grdinfo.thml>`_. So you can do this to see some points
 on the CDF(Z) curve (use **-V** option to see more):
 
 grd2cpt mydata.nc -V > /dev/null

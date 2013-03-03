@@ -232,7 +232,7 @@ from the central meridian, `and (3) <and.html>`_ same for Cassini
 
 **GMT** will use ellipsoidal formulae if they are implemented and the
 user have selected an ellipsoid as the reference shape (see
-**PROJ\_ELLIPSOID** in **gmt.conf**). The user needs to be aware of a
+**PROJ\_ELLIPSOID** in `gmt.conf <gmt.conf.html>`_). The user needs to be aware of a
 few potential pitfalls: (1) For some projections, such as Transverse
 Mercator, Albers, and Lambert’s conformal conic we use the ellipsoidal
 expressions when the areas mapped are small, and switch to the spherical

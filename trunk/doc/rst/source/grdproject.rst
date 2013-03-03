@@ -77,7 +77,7 @@ than that implied by the extent of the grid file.
 **-Mc**\ \|\ **i**\ \|\ **p**
     Append **c**, **i**, or **p** to indicate that cm, inch, or point
     should be the projected measure unit [Default is set by
-    **PROJ\_LENGTH\_UNIT** in **gmt.conf**]. Cannot be used with **-A**.
+    **PROJ\_LENGTH\_UNIT** in `gmt.conf <gmt.conf.html>`_]. Cannot be used with **-A**.
     
 .. |Add_-R| replace:: You may ask to project only
     a subset of the grid by specifying a smaller input *w/e/s/n* region

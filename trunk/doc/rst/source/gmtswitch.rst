@@ -4,13 +4,13 @@ gmtswitch
 
 gmtswitch - Switching between different GMT versions
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 **gmtswitch** [ D \| *version* ]
 
-`Introduction <#toc2>`_
------------------------
+Introduction
+------------
 
 **gmtswitch** helps you modify your environment to allow for the
 switching back and forth between several installed GMT versions, in
@@ -20,15 +20,15 @@ home directory, then manipulates a symbolic link to point to the GMT
 directory whose executables we wish to use [The Windows version works a
 bit differently; see WINDOWS below].
 
-`Required Arguments <#toc3>`_
------------------------------
+Required Arguments
+------------------
 
 None. If no arguments are given you are presented with a menu of
 installed GMT versions from 1 to *n* and you specify which one you wish
 to switch to.
 
-`Optional Arguments <#toc4>`_
------------------------------
+Optional Arguments
+------------------
 
 **D**
     Select the default GMT version. This is the first entry in the
@@ -39,8 +39,8 @@ to switch to.
     where module is the name of a **GMT** program and the options are
     those that pertain to that particular program.
 
-`Setup <#toc5>`_
-----------------
+Setup
+-----
 
 If you have official versions installed then running gmtswitch the very
 first time will examine your hard disk starting at / and look for
@@ -49,30 +49,28 @@ subversion directories and possibly others you have placed elsewhere.
 The fastest way to get up and running is this:
 
 1. Edit/Create ~/.gmtversions and add the paths to all GMT installations
-you have or care to consider. Each path goes on separate lines and
-points to the top dir of each distribution, e.g.,
-/Users/pwessel/UH/RESEARCH/PROJECTS/GMTdev/GMT4.5.7
+    you have or care to consider. Each path goes on separate lines and
+    points to the top dir of each distribution, e.g.,
+    /Users/pwessel/UH/RESEARCH/PROJECTS/GMTdev/GMT4.5.7
 
 2. In your .bashrc or .[t]csrh or wherever you are maintaining your PATH
-or path variable, remove any directories you have added that contain
-GMT, and add the new path $HOME/this\_gmt/bin (might be $home for csh
-users).
+    or path variable, remove any directories you have added that contain
+    GMT, and add the new path $HOME/this\_gmt/bin (might be $home for csh users).
 
-3. Make the new path take effect (quit/restart terminal, logout/login,
-etc).
+3. Make the new path take effect (quit/restart terminal, logout/login, etc).
 
 4. cd to the most recent GMT directory where a gmtswitch version lives,
-and run gmtswitch with no argument. Select one of the version from the
-menu.
+    and run gmtswitch with no argument. Select one of the version from the
+    menu.
 
 5. If in csh you may have to say rehash afterwards.
 
 6. Type "psxy -" and the synopsis should tell you that you got the
-correct version. You can now run gmtswitch from anywhere; try it out and
-make sure that you can switch between the versions.
+    correct version. You can now run gmtswitch from anywhere; try it out and
+    make sure that you can switch between the versions.
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
 To switch to GMT version 4.5.7 (assuming it was installed as such an not
 via a package manager), try
@@ -89,8 +87,8 @@ gmtswitch
 
 and pick the one you want.
 
-`Beware <#toc7>`_
------------------
+Beware
+------
 
 GMT remembers where it was installed the first time and uses that dir to
 find the default GMT share directory. If you move entire GMT
@@ -98,8 +96,8 @@ installation after compilation then you may have to set GMT\_SHAREDIR to
 point to the top dir in order for things to work. It is best not to move
 things after installation.
 
-`Windows <#toc8>`_
-------------------
+Windows
+-------
 
 Under Windows use gmtswitch.bat which is a batch script that changes the
 Windows PATH variable so that the BIN directory of the preferred version

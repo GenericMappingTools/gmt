@@ -57,7 +57,7 @@ functions made available are:
     of the temporary directory is returned as environment variable
     **GMT\_TMPDIR**. This function also causes **GMT** to run in
     ‘isolation mode’, i.e., all temporary files will be created in
-    **GMT\_TMPDIR** and the **gmt.conf** file will not be adjusted.
+    **GMT\_TMPDIR** and the `gmt.conf <gmt.conf.html>`_ file will not be adjusted.
 **gmt\_remove\_tmpdir**
     Removes the temporary directory and unsets the **GMT\_TMPDIR**
     environment variable.

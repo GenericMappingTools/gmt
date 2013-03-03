@@ -16,7 +16,7 @@ PARAMETER1 [=] *value1* PARAMETER2 [=] *value2* PARAMETER3 [=] *value3*
 ----------------------
 
 **gmtset** will adjust individual **GMT** defaults settings in the
-current directory’s **gmt.conf** file. If no such file exists one will
+current directory's `gmt.conf <gmt.conf.html>`_ file. If no such file exists one will
 be created. The main purpose of **gmtset** is temporarily to change
 certain parameters inside a shell script, e.g., set the dots-per-inch to
 72, run the script, and reset to 1200 dpi. Optionally, you can specify
@@ -31,20 +31,20 @@ disk.
 PARAMETER *value*
     Provide one or several pairs of parameter/value combinations that
     you want to modify. For a complete listing of available parameters
-    and their meaning, see the **gmt.conf** man page.
+    and their meaning, see the `gmt.conf <gmt.conf.html>`_ man page.
 
 `Optional Arguments <#toc4>`_
 -----------------------------
 
 **-C**
-    Convert a .gmtdefaults4 file created by GMT4 to a **gmt.conf** file
+    Convert a .gmtdefaults4 file created by GMT4 to a `gmt.conf <gmt.conf.html>`_ file
     used by GMT5. The original file is retained.
 **-D**\ [**s**\ \|\ **u**]
     Modify the **GMT** defaults based on the system settings. Append
     **u** for US defaults or **s** for SI defaults. [**-D** alone gives
     the version selected at compile time]
 **-G**\ *defaultsfile*
-    Name of specific **gmt.conf** file to read and modify [Default looks
+    Name of specific `gmt.conf <gmt.conf.html>`_ file to read and modify [Default looks
     first in current directory, then in your home directory, then in
     ~/.gmt and finally in the system defaults].
 **-**\ [**BJRXxYycp**\ ]\ *value*
