@@ -7,4 +7,4 @@
     or **+l** to just get regular lakes. Finally, append
     **+p**\ *percent* to exclude polygons whose percentage area of the
     corresponding full-resolution feature is less than *percent*. See
-    GSHHS INFORMATION below for more details. |Add_-A|
+    GSHHG INFORMATION below for more details. |Add_-A|
