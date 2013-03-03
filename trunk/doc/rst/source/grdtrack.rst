@@ -108,7 +108,8 @@ edge is zero) unless the grid is automatically recognized as periodic.)
     one grid is given). Note: No track file is read. Append
     **+i**\ **inc**\ [**u**\ ] to set the sampling interval (append
     appropriate unit). If no increment is given then we default to half
-    the minimum grid interval.
+    the minimum grid interval, and if geographic we select great circle
+    distances in km as the default unit and method.
 **-N**
     Do *not* skip points that fall outside the domain of the grid(s)
     [Default only output points within grid domain]. 

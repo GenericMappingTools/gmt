@@ -69,6 +69,7 @@ EXTERN_MSC int GMT_grdredpol (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_grdreformat (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_grdrotater (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_grdsample (void *api_ctrl, int mode, void *args);
+EXTERN_MSC int GMT_grdseamount (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_grdspotter (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_grdtrack (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_grdtrend (void *api_ctrl, int mode, void *args);

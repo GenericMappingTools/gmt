@@ -51,6 +51,7 @@ grdredpol	potential	Compute the Continuous Reduction To the Pole, AKA differenti
 grdreformat	core	Convert between different grid formats
 grdrotater	spotter	Finite rotation reconstruction of geographic grid
 grdsample	core	Resample a grid onto a new lattice
+grdseamount	potential	Compute synthetic seamount (Gaussian or cone, circular or elliptical) bathymetry
 grdspotter	spotter	Create CVA image from a gravity or topography grid
 grdtrack	core	Sample grids at specified (x,y) locations
 grdtrend	core	Fit trend surface to grids and compute residuals

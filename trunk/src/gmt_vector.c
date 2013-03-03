@@ -1232,7 +1232,7 @@ uint64_t gmt_resample_path_cartesian (struct GMT_CTRL *C, double **x, double **y
 		return (EXIT_FAILURE);
 	}
 	
-	if (mode < GMT_TRACK_SAMPLE_FIX) return (GMT_fix_up_path (C, x, y, n_in, step_out, mode));	/* Insert extra points only */
+	if (mode < GMT_TRACK_SAMPLE_FIX) return (GMT_fix_up_path_cartesian (C, x, y, n_in, step_out, mode));	/* Insert extra points only */
 	
 	dist_in = GMT_dist_array (C, x_in, y_in, n_in, true);	/* Compute cumulative distances along line */
 	if (step_out == 0.0) step_out = (dist_in[n_in-1] - dist_in[0])/100.0;	/* If nothing is selected we get 101 points */

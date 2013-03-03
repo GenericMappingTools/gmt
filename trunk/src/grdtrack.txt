@@ -70,7 +70,8 @@ are IT(lon)/IT(lat) (IT(x)/IT(y) for Cartesian data) or a 2-character XY key tha
 format to specify a point on the map as [LCR][BMT].  In addition, you can use Z-, Z+ to mean
 the global minimum and maximum locations in the grid (only available if only one grid is given).  Note: No track file is read.
 Append BD(+i)BD(inc)[BD(u)] to set the sampling interval (append appropriate unit).  If no increment is given
-then we default to half the minimum grid interval.
+then we default to half the minimum grid interval, and if geographic we select great circle distances in km as the default unit
+and method.
 .TP
 OPT(N)
 Do IT(not) skip points that fall outside the domain of the grid(s) [Default only output points within grid domain].

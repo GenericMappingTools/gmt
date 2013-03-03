@@ -107,6 +107,7 @@ l l .
 \fBgravfft\fP	
 \fBgrdgravmag3d\fP	
 \fBgrdredpol\fP	
+\fBgrdseamount\fP	
 
 	Supplement \fIsegy\fP:
 \fBpssegy\fP	

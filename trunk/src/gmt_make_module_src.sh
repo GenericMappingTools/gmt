@@ -187,7 +187,7 @@ cat << EOF > ${FILE_GMT_MODULE_C}
 #include <stdio.h>
 #include <string.h>
 
-#include "gmt.h"
+#include "gmt_dev.h"
 
 /* sorted array with program paramerters for all GMT modules */
 struct Gmt_moduleinfo g_module[] = {

@@ -5,8 +5,11 @@ LICENSE.TXT in main GMT directory.
 
 This directory contains programs for geopotential calculations.
 
-	redpol - Compute the Continuous Reduction To the Pole, AKA differential RTP
-	xyzokb - Compute the gravity/magnetic anomaly of a body by the method of Okabe
+	gmtgravmag3d	- Compute the grav or mag over ...
+	gravfft		- Compute the grav or mag over ...
+	grdgravmag3d	- Compute the grav or mag over ...
+	grdredpol	- Compute the Continuous Reduction To the Pole, AKA differential RTP
+	grdseamount	- Evaluate bathymetry for synthetic seamounts
+	xyzokb		- Compute the gravity/magnetic anomaly of a body by the method of Okabe
 
-These were provided by J. Luis.
-We hope to expand this supplement considerably over the next year.
+These were provided by J. Luis; grdseamount provided by P. Wessel

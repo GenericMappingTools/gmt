@@ -161,7 +161,8 @@ int GMT_grdtrack_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   are <lon/lat> or a 2-character XY key that uses the \"pstext\"-style justification format\n");
 	GMT_message (GMT, "\t   format to specify a point on the map as [LCR][BMT].  In addition, you can use Z-, Z+ to mean\n");
 	GMT_message (GMT, "\t   the global minimum and maximum locations in the grid.  Note: No track file is read.\n");
-	GMT_message (GMT, "\t   Append +i<inc>[unit] to set the sampling increment [Default is 0.5 x min of (x_inc, y_inc)].\n");
+	GMT_message (GMT, "\t   Append +i<inc>[unit] to set the sampling increment [Default is 0.5 x min of (x_inc, y_inc)n");
+	GMT_message (GMT, "\t   and if geographic data we choose great circle distances in km].\n");
 	GMT_message (GMT, "\t-N Do NOT skip points outside the grid domain [Default only returns points inside domain].\n");
 	GMT_explain_options (GMT, "R");
 	GMT_explain_options (GMT, "V");
@@ -496,6 +497,13 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		double xyz[2][3];
 		
 		if ((Din = GMT_Create_Data (API, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty dataset with 1 table */
+		if (Ctrl->E.unit == 0) {	/* Was not set via -E; default to Cartesian or km (great circle dist) */
+			Ctrl->E.unit = (GMT_is_geographic (GMT, GMT_IN)) ? 'k' : 'X';
+			Ctrl->E.mode = (GMT_is_geographic (GMT, GMT_IN)) ? 2 : 0;
+			/* Set default spacing to half the min grid spacing; convert to km if geographic */
+			Ctrl->E.step = 0.5 * MIN (GC[0].G->header->inc[GMT_X], GC[0].G->header->inc[GMT_Y]);
+			if (GMT_is_geographic (GMT, GMT_IN)) Ctrl->E.step *= GMT->current.proj.DIST_KM_PR_DEG;
+		}
 		GMT_init_distaz (GMT, Ctrl->E.unit, Ctrl->E.mode, GMT_MAP_DIST);
 		if (Ctrl->G.n_grids == 1) {
 			GMT_grd_minmax (GMT, GC[0].G, xyz);
@@ -682,7 +690,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		uint64_t row, seg;
 		struct GMT_DATASEGMENT *Sin = NULL, *Sout = NULL;
 		
-		Dout = GMT_alloc_dataset (GMT, Din, n_cols, 0, GMT_ALLOC_NORMAL);	/* Same table length as Din, but with up to 4 columns (lon, lat, dist, az) */
+		Dout = GMT_alloc_dataset (GMT, Din, n_cols, 0, GMT_ALLOC_NORMAL);	/* Same table length as Din, but with up to n_cols columns (lon, lat, dist, g1, g2, ...) */
 		if (Din->table[0]->n_segments > 1) GMT_set_segmentheader (GMT, GMT_OUT, true);	/* More than one segment triggers -mo */
 		
 		for (seg = 0; seg < Din->table[0]->n_segments; seg++) {	/* For each segment to resample */
