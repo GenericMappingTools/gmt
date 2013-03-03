@@ -559,16 +559,16 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		GMT_fft_save (GMT, Grid[k], GMT_IN, &Ctrl->N.info);	/* If -N..w, write tapered grid to file */
 	}
 				
-	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Call the forward FFT, once per grid */
-		GMT_report (GMT, GMT_MSG_VERBOSE, "forward FFT...\n");
-		if (GMT_fft_2d (GMT, Grid[k]->data, K->nx2, K->ny2, k_fft_fwd, k_fft_complex))
-			Return (EXIT_FAILURE);
-		GMT_fft_save (GMT, Grid[k], GMT_OUT, &Ctrl->N.info);	/* If -N..z, write FFT complex grid to files */
-	}
-
 	if (Ctrl->I.active) {		/* Compute admittance or coherence from data and exit */
 
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Processing gravity file %s\n", Ctrl->In.file[1]);
+
+		for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Call the forward FFT, once per grid */
+			GMT_report (GMT, GMT_MSG_VERBOSE, "forward FFT...\n");
+			if (GMT_fft_2d (GMT, Grid[k]->data, K->nx2, K->ny2, k_fft_fwd, k_fft_complex))
+				Return (EXIT_FAILURE);
+			GMT_fft_save (GMT, Grid[k], GMT_OUT, &Ctrl->N.info);	/* If -N..z, write FFT complex grid to files */
+		}
 
 		do_admittance (GMT, Grid[0], Grid[1], Ctrl, K);
 		GMT_free (GMT, FFT_info[0]);
@@ -581,7 +581,14 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 	if (Ctrl->Q.active || Ctrl->T.moho) {
 		double coeff[3];
+		GMT_report (GMT, GMT_MSG_VERBOSE, "forward FFT...\n");
+		if (GMT_fft_2d (GMT, Grid[0]->data, K->nx2, K->ny2, k_fft_fwd, k_fft_complex)) {
+			Return (EXIT_FAILURE);
+			GMT_fft_save (GMT, Grid[0], GMT_OUT, &Ctrl->N.info);	/* If -N..z, write FFT complex grid to files */
+		}
+
 		do_isostasy__ (GMT, Grid[0], Ctrl, K);
+		
 		if (GMT_fft_2d (GMT, Grid[0]->data, K->nx2, K->ny2, k_fft_inv, k_fft_complex))
 			Return (EXIT_FAILURE);
 
@@ -611,7 +618,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	GMT_memcpy (raised, Grid[0]->data, Grid[0]->header->size, float);
 	GMT_memset (Grid[0]->data, Grid[0]->header->size, float);
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Evatuating for term = 1");
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Evaluating for term = 1");
 
 	for (n = 1; n <= Ctrl->E.n_terms; n++) {
 
@@ -749,9 +756,10 @@ void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL
 				datac[k+1] += (float) (v * raised[k+1]);
 				break;
 			case GRAVFFT_VGG:
-			 	v *= mk;
+			 	v *= 1.0e4 * mk;	/* Scale mGal/m to 0.1 mGal/km = 1 Eotvos */
 				datac[k]   += (float) (v * raised[k]);
 				datac[k+1] += (float) (v * raised[k+1]);
+				break;
 			case GRAVFFT_DEFL_EAST: 
 				if (mk > 0.0) {
 					kx = GMT_fft_any_wave (k, GMT_FFT_K_IS_KX, K);
