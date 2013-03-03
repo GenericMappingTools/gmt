@@ -86,6 +86,7 @@ enum Gmt_module_id {
 	k_mod_grdreformat,
 	k_mod_grdrotater,
 	k_mod_grdsample,
+	k_mod_grdseamount,
 	k_mod_grdspotter,
 	k_mod_grdtrack,
 	k_mod_grdtrend,
