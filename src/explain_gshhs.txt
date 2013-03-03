@@ -1,5 +1,5 @@
-.SH GSHHS INFORMATION
-The coastline database is GSHHS which is compiled from two sources:
+.SH GSHHG INFORMATION
+The coastline database is GSHHG (formerly GSHHS) which is compiled from two sources:
 World Vector Shorelines (WVS) and CIA World Data Bank II (WDBII).
 In particular, all level-1 polygons (ocean-land boundary) are derived
 from the more accurate WVS while all higher level polygons (level 2-4,

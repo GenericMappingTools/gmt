@@ -7,4 +7,4 @@ regular lakes and wide river bodies which we normally include as lakes;
 append BD(+r) to just get river-lakes or BD(+l) to just get regular lakes.
 Finally, append BD(+p)IT(percent) to exclude polygons whose percentage area of
 the corresponding full-resolution feature is less than IT(percent).
-See GSHHS INFORMATION below for more details.
+See GSHHG INFORMATION below for more details.

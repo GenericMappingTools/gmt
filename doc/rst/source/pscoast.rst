@@ -245,7 +245,7 @@ elsewhere. Let us know if you find something out of date.
 
 The full-resolution coastlines are also from a digitizing effort in the
 1970-80s and it is difficult to assess the accuracy. Users who zoom in
-close enough may find that the GSHHS coastline is not matching other
+close enough may find that the GSHHG coastline is not matching other
 data, e.g., satellite images, more recent coastline data, etc. We are
 aware of such mismatches but cannot undertake band-aid solutions each
 time this occurs.
