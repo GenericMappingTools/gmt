@@ -316,7 +316,6 @@ int GMT_grdclip (void *V_API, int mode, void *args) {
 			for (k = 0, go = true; go && k < Ctrl->S.n_class; k++) {
 				if ((Ctrl->S.class[k].replace && GMT_is_fnan (Ctrl->S.class[k].low) && GMT_is_fnan (G->data[ij])) || \
 				   (G->data[ij] >= Ctrl->S.class[k].low && G->data[ij] <= Ctrl->S.class[k].high)) {
-				if ((G->data[ij] >= Ctrl->S.class[k].low && G->data[ij] <= Ctrl->S.class[k].high)) {
 					Out->data[ij] = Ctrl->S.class[k].between;
 					Ctrl->S.class[k].n_between++;
 					go = false;
