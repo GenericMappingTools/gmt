@@ -7,5 +7,5 @@ POTENTIAL
 
    gravfft
    grdgravmag3d
-   redpol
+   grdredpol
    gmtgravmag3d
