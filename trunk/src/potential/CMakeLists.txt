@@ -19,7 +19,7 @@
 
 # source files
 set (SUPPL_LIB_SRCS okbfuns.h okbfuns.c)
-set (SUPPL_PROGS_SRCS redpol.c gmtgravmag3d.c gravfft.c grdgravmag3d.c)
+set (SUPPL_PROGS_SRCS grdredpol.c gmtgravmag3d.c gravfft.c grdgravmag3d.c)
 
 # lib sources
 set (LIB_SRCS ${SUPPL_LIB_SRCS} ${SUPPL_PROGS_SRCS})
