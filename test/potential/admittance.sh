@@ -40,7 +40,7 @@ grdfft z.nc+uk faa_total.nc+uk -Erwk -h+c > adm.txt
 # coherence in red, admittance in blue, theoretical admittance in thick lightgray
 psxy adm.txt -i0,15,16 -R8/512/0/1 -JX-6il/2.75i -O -K -Ba2g3:,km:/af:"Coherence":WSn -Sc0.05i -Gred -Ey0.2c/0.5p,red -X-3.25i -Y3.5i >> $ps
 psxy adm.txt -i0,15 -R -J -O -K -W0.5p,red >> $ps
-psxy adm_t.txt -R8/512/0/70 -J -O -K -W3.0p,lightgray -i0,3s1000 >> $ps
 psxy adm.txt -R8/512/0/70 -J -O -Ba2g3/af:"Admittance (mGal/km)":E -Sc0.05i -Ey0.2c/0.5p,blue -Gblue -K -i0,11s1000,12s1000 >> $ps
 psxy adm.txt -R -J -O -K  -W0.5p,blue -i0,11s1000 >> $ps
+psxy adm_t.txt -R -J -O -K -W0.5p,green -i0,3s1000 >> $ps
 psxy -R -J -O -T >> $ps
