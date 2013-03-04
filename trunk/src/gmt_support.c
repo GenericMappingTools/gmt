@@ -81,6 +81,13 @@
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 
+struct CPT_Z_SCALE {	/* Intenral struct used in the processing of CPT z-scaling */
+	unsigned int z_adjust;	/* 1 if +u<unit> was parsed and scale set, 3 if z has been adjusted, 0 otherwise */
+	unsigned int z_mode;	/* 1 if +U<unit> was parsed, 0 otherwise */
+	unsigned int z_unit;	/* Unit enum specified via +u<unit> */
+	double z_unit_to_meter;	/* Scale, given z_unit, to convert z from <unit> to meters */
+};
+
 EXTERN_MSC double GMT_distance_type (struct GMT_CTRL *C, double lonS, double latS, double lonE, double latE, int id);
 EXTERN_MSC char * GMT_getuserpath (struct GMT_CTRL *C, const char *stem, char *path);	/* Look for user file */
 
@@ -348,6 +355,21 @@ void GMT_memtrack_report (struct GMT_CTRL *C, struct MEMORY_TRACKER *M) {	/* Cal
 	free (M->list_tail);
 }
 #endif
+
+/* There are many tools which requires grid x/y or cpt z to be in meters but the user may have these
+ * data in km or miles.  Appending +u<unit> to the file addresses this conversion. */
+
+char *GMT_file_unitscale (char *name)
+{	/* Determine if this file ends in +u|U<unit>, with <unit> one of the valid Cartesian distance units */
+	char *c = NULL;
+	size_t len = strlen (name);					/* Get length of the file name */
+	if (len < 4) return NULL;					/* Not enough space for name and modifier */
+	c = &name[len-3];						/* c may be +u<unit>, +U<unit> or anything else */
+	if (c[0] != '+') return NULL;					/* Does not start with + */
+	if (! (c[1] == 'u' || c[1] == 'U')) return NULL;		/* Did not have the proper modifier u or U */
+	if (strchr (GMT_LEN_UNITS2, c[2]) == NULL) return NULL;		/* Does no have a valid unit at the end */
+	return c;							/* We passed, return c */
+}
 
 void gmt_rgb_to_hsv (struct GMT_CTRL *C, double rgb[], double hsv[])
 {
@@ -2087,6 +2109,78 @@ int GMT_list_cpt (struct GMT_CTRL *C, char option)
 	return (GMT_NOERROR);
 }
 
+struct CPT_Z_SCALE *gmt_cpt_parse_z_unit (struct GMT_CTRL *C, char *file, unsigned int direction)
+{	/* Decode the optional +u|U<unit> and determine scales */
+	enum GMT_enum_units u_number;
+	unsigned int mode = 0;
+	char *c = NULL;
+	struct CPT_Z_SCALE *Z = NULL;
+	
+	if ((c = GMT_file_unitscale (file)) == NULL) return NULL;	/* Did not find any modifier */
+	mode = (c[1] == 'u') ? 0 : 1;
+	u_number = GMT_get_unit_number (C, c[2]);		/* Convert char unit to enumeration constant for this unit */
+	if (u_number == GMT_IS_NOUNIT) {
+		GMT_report (C, GMT_MSG_NORMAL, "CPT file z unit specification %s was unrecognized (part of file name?) and is ignored.\n", c);
+		return NULL;
+	}
+	/* Got a valid unit */
+	Z = GMT_memory (C, NULL, 1, struct CPT_Z_SCALE);
+	Z->z_unit_to_meter = C->current.proj.m_per_unit[u_number];	/* Converts unit to meters */
+	if (mode) Z->z_unit_to_meter = 1.0 / Z->z_unit_to_meter;	/* Wanted the inverse */
+	Z->z_unit = u_number;	/* Unit ID */
+	Z->z_adjust |= 1;		/* Says we have successfully parsed and readied the x/y scaling */
+	Z->z_mode = mode;
+	c[0] = '\0';	/* Chop off the unit specification from the file name */
+	return (Z);
+}
+
+void gmt_cpt_z_scale (struct GMT_CTRL *C, struct GMT_PALETTE *P, struct CPT_Z_SCALE *Z, unsigned int direction)
+{
+	unsigned int k;
+	double scale = 1.0;
+	/* Apply the scaling of z as given by the header's z_* settings.
+	 * After reading a cpt it will have z in meters.
+	 * Before writing a cpt, it may have units changed back to original units
+	 * or scaled to another set of units */
+	
+	if (direction == GMT_IN) {
+		if (Z) {P->z_adjust[GMT_IN] = Z->z_adjust; P->z_unit[GMT_IN] = Z->z_unit; P->z_mode[GMT_IN] = Z->z_mode; P->z_unit_to_meter[GMT_IN] = Z->z_unit_to_meter; }
+		if (P->z_adjust[GMT_IN] == 0) return;	/* Nothing to do */
+		if (P->z_adjust[GMT_IN] & 2)  return;	/* Already scaled them */
+		scale = P->z_unit_to_meter[GMT_IN];	/* To multiply all z-related entries in the CPT table */
+		P->z_adjust[GMT_IN] = 2;	/* Now the cpt is ready for use and in meters */
+		if (P->z_mode[GMT_IN])
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Input CPT file z unit was converted from meters to %s after reading.\n", C->current.proj.unit_name[P->z_unit[GMT_IN]]);
+		else
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Input CPT file z unit was converted from %s to meters after reading.\n", C->current.proj.unit_name[P->z_unit[GMT_IN]]);
+	}
+	else if (direction == GMT_OUT) {	/* grid x/y are assumed to be in meters */
+		if (Z) {P->z_adjust[GMT_OUT] = Z->z_adjust; P->z_unit[GMT_OUT] = Z->z_unit; P->z_mode[GMT_OUT] = Z->z_mode; P->z_unit_to_meter[GMT_OUT] = Z->z_unit_to_meter; }
+		if (P->z_adjust[GMT_OUT] & 1) {	/* Was given a new unit for output */
+			scale = 1/0 / P->z_unit_to_meter[GMT_OUT];
+			P->z_adjust[GMT_OUT] = 2;	/* Now we are ready for writing */
+			if (P->z_mode[GMT_OUT])
+				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Output CPT file z unit was converted from %s to meters before writing.\n", C->current.proj.unit_name[P->z_unit[GMT_OUT]]);
+			else
+				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Output CPT file z unit was converted from meters to %s before writing.\n", C->current.proj.unit_name[P->z_unit[GMT_OUT]]);
+		}
+		else if (P->z_adjust[GMT_IN] & 2) {	/* Just undo old scaling */
+			scale = 1.0 / P->z_unit_to_meter[GMT_IN];
+			P->z_adjust[GMT_IN] -= 2;	/* Now it is back to where we started */
+			if (P->z_mode[GMT_OUT])
+				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Output CPT file z unit was reverted back to %s from meters before writing.\n", C->current.proj.unit_name[P->z_unit[GMT_IN]]);
+			else
+				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Output CPT file z unit was reverted back from meters to %s before writing.\n", C->current.proj.unit_name[P->z_unit[GMT_IN]]);
+		}
+	}
+	/* If we got here we must scale the CPT's z-values */
+	for (k = 0; k < P->n_colors; k++) {
+		P->range[k].z_high *= scale;
+		P->range[k].z_low  *= scale;
+		P->range[k].i_dz   /= scale;
+	}
+}
+
 struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *C, void *source, unsigned int source_type, unsigned int cpt_flags)
 {
 	/* Opens and reads a color palette file in RGB, HSV, or CMYK of arbitrary length.
@@ -2107,16 +2201,19 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *C, void *source, unsigned in
 	char line[GMT_BUFSIZ], clo[GMT_TEXT_LEN64], chi[GMT_TEXT_LEN64], c, cpt_file[GMT_BUFSIZ];
 	FILE *fp = NULL;
 	struct GMT_PALETTE *X = NULL;
+	struct CPT_Z_SCALE *Z = NULL;	/* For unit manipulations */
 
 	/* Determine input source */
 
 	if (source_type == GMT_IS_FILE) {	/* source is a file name */
 		strncpy (cpt_file, source, GMT_BUFSIZ);
+		Z = gmt_cpt_parse_z_unit (C, cpt_file, GMT_IN);
 		if ((fp = fopen (cpt_file, "r")) == NULL) {
 			GMT_report (C, GMT_MSG_NORMAL, "Error: Cannot open color palette table %s\n", cpt_file);
 			return (NULL);
 		}
 		close_file = true;	/* We only close files we have opened here */
+		
 	}
 	else if (source_type == GMT_IS_STREAM) {	/* Open file pointer given, just copy */
 		fp = (FILE *)source;
@@ -2467,6 +2564,11 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *C, void *source, unsigned in
 
 	if (X->n_headers < n_hdr_alloc) X->header = GMT_memory (C, X->header, X->n_headers, char *);
 
+	if (Z) {
+		gmt_cpt_z_scale (C, X, Z, GMT_IN);
+		GMT_free (C, Z);
+	}
+
 	return (X);
 }
 
@@ -2766,11 +2868,17 @@ int GMT_write_cpt (struct GMT_CTRL *C, void *dest, unsigned int dest_type, unsig
 	double cmyk[5];
 	char format[GMT_BUFSIZ], cpt_file[GMT_BUFSIZ], code[3] = {'B', 'F', 'N'};
 	FILE *fp = NULL;
+	struct CPT_Z_SCALE *Z = NULL;	/* For unit manipulations */
 
 	if (dest_type == GMT_IS_FILE && !dest) dest_type = GMT_IS_STREAM;	/* No filename given, default to stdout */
 
 	if (dest_type == GMT_IS_FILE) {	/* dest is a file name */
 		strncpy (cpt_file, dest, GMT_BUFSIZ);
+		Z = gmt_cpt_parse_z_unit (C, cpt_file, GMT_OUT);
+		if ((Z = gmt_cpt_parse_z_unit (C, cpt_file, GMT_OUT))) {
+			gmt_cpt_z_scale (C, P, Z, GMT_OUT);
+			GMT_free (C, Z);
+		}
 		if ((fp = fopen (cpt_file, "w")) == NULL) {
 			GMT_report (C, GMT_MSG_NORMAL, "Cannot create file %s\n", cpt_file);
 			return (EXIT_FAILURE);

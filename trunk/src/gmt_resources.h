@@ -519,6 +519,10 @@ struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
 	unsigned int has_pattern;	/* true if cpt file contains any patterns */
 	unsigned int skip;		/* true if current z-slice is to be skipped */
 	unsigned int categorical;	/* true if CPT applies to categorical data */
+	unsigned int z_adjust[2];	/* 1 if +u<unit> was parsed and scale set, 3 if z has been adjusted, 0 otherwise */
+	unsigned int z_mode[2];	 	/* 1 if +U<unit> was parsed, 0 otherwise */
+	unsigned int z_unit[2];	 	/* Unit enum specified via +u<unit> */
+	double z_unit_to_meter[2];	/* Scale, given z_unit, to convert z from <unit> to meters */
 };
 
 /*============================================================ */
