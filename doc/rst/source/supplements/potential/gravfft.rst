@@ -9,10 +9,10 @@ Synopsis
 --------
 
 **gravfft** *ingrid* [*ingrid2*\ ] **-G**\ *outfile*
-[-C<n/wavelength/mean\_depth/tbw>] [**-A**\ *z\_offset*] [-D<density>]
-[-E<n\_terms>] [-F[f\|g\|v\|n\|e]] [-I<wbctk>] [-L[m\|h\|n]]
-[**-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][\ **+e**\ \|\ **n**\ \|\ **m**][\ **+t**\ *width*][\ **+w**\ [*suffix*\ ]][\ **+z**\ [**p**\ ]]]
-[-Q] [-T<te/rl/rm/rw>[+m]] [**-V**\ [*level*\ ]] [-Z<zm>[/<zl>]]
+[**-C**\ <n/wavelength/mean\_depth/tbw>] [**-A**\ *z\_offset*] [**-D**\ <density>]
+[**-E**\ <n\_terms>] [**-F**\ [f\|g\|v\|n\|e]] [**-I**\ <wbctk>] [**-L**\ [m\|h\|n]]
+[**-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][\ **+e**\ \|\ **n**\ \|\ **m**][\ **+t**\ *width*][\ **+w**\ [*suffix*]][\ **+z**\ [**p**]]]
+[**-Q**\ ] [**-T**\ <te/rl/rm/rw>[+m]] [**-V**\ [*level*\ ]] [**-Z**\ <zm>[/<zl>]]
 [**-fg**\ ]
 
 Description
@@ -32,7 +32,7 @@ Optionally, the model admittance may also be calculated. The horizontal
 dimensions of the grdfiles are assumed to be in meters. Geographical
 grids may be used by specifying the **-fg** option that scales degrees
 to meters. If you have grids with dimensions in km, you could change
-this to meters using **grdedit** or scale the output with **grdmath**.
+this to meters using `grdedit <grdedit.html>`_ or scale the output with `grdmath <grdmath.html>`_.
 Given the number of choices this program offers, is difficult to state
 what are options and what are required arguments. It depends on what you
 are doing.
@@ -64,7 +64,7 @@ Optional Arguments
     Sets density contrast across surface. Used, for example, to compute
     the gravity attraction of the water layer that can later be combined
     with the free-air anomaly to get the Bouguer anomaly. In this case
-    do not use **-T**. It also implicitly sets **-L**
+    do not use **-T**. It also implicitly sets **-L**\ m
 **-E**\ *n\_terms*
     Number of terms used in Parker expansion (limit is 10, otherwise
     terms depending on n will blow out the program) [Default = 1]
@@ -130,13 +130,21 @@ Optional Arguments
     Writes out a grid with the flexural topography (with z positive up)
     whose average was set by **-Z**\ *zm* and model parameters by **-T**
     (and output by **-G**). That is the “gravimetric Moho”. **-Q**
-    implicitly sets **-L**
+    implicitly sets **-L**\ m
 **-S**
     Computes predicted gravity or geoid grid due to a subplate load
     produced by the current bathymetry and the theoretical model. The
     necessary parameters are set within **-T** and **-Z** options. The
-    number of powers in Parker expansion is restricted to 1 (default’s).
+    number of powers in Parker expansion is restricted to 1 (default's).
     See an example further down.
+**-T**\ *<te/rl/rm/rw>[+m]*
+    Compute the isostatic compensation from the topography load (input grid file) on
+    an elastic plate of thickness *te*. Also append densities for load, mantle, and
+    water in SI units. Give average mantle depth via **-Z**. If the elastic thickness
+    is > 1e10 it will be interpreted as the flexural rigidity (by default it is
+    computed from *te* and Young modulus). Optionaly, append *+m* to write a grid
+    with the Moho's geopotential effect (see **-F**) from model selected by **-T**. 
+    If *te* = 0 then the Airy response is returned. **-T** implicitly sets **-L**\ m
 **-Z**\ *<zm>[/<zl>]*
     Moho [and swell] average compensation depths. For the “load from
     top” model you only have to provide *zm*, but for the “loading from
