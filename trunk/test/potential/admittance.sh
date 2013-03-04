@@ -1,39 +1,38 @@
 #!/bin/sh
 #	$Id$
 #
-# Compute admittance for synthetic data created by grdfft etc.
+# Compute admittance for synthetic model and data.
 ps=admittance.ps
-
-# 4 panels of topo and grav, with top profile of admittance & coherence
+order=4
 # NOT FINISHED
-# 1. Create a bathymetry data set with 3 seamounts
-grdmath -R0/512/0/512 -I4 -r \
-	310 290 CDIST 40 DIV 2 POW 4.5 MUL NEG EXP 3000 MUL \
-	290 205 CDIST 50 DIV 2 POW 4.5 MUL NEG EXP 4000 MUL ADD \
-	210 280 CDIST 60 DIV 2 POW 4.5 MUL NEG EXP 2500 MUL ADD = z.nc
-grdedit z.nc -R0/512000/0/512000	# Change to km
-makecpt -Crainbow -T-5000/0/500 -Z > z.cpt
-makecpt -Crainbow -T-5000/0/500 -Z > w.cpt
-grdimage z.nc -Cz.cpt -JX3i -P -BaWSne > $ps
-exit
-makecpt -Crainbow -T-100/100/10 -Z > g.cpt
-grdimage z.nc -Cz.cpt -J3i -P -BaWSne -K > $ps
-# 2. COmpute flexure
-gravfft z.nc -T12000/2600/3300/1000 -Q -Z-12000 -N1024/1024+w -L -Gmoho_flex.nc
-# 3. Gravity from flexure
-gravfft moho_flex.nc -T30000/2600/3300/1000+ -Ff -E4 -Gfaa_flex.nc
-grdimage z.nc -Cz.cpt -J3i -P -BaWSne -K > $ps
-# 4. Gavity from flexure and seamounts
-
-gravfft z.nc -Ff -E4 -Gfaa_load.nc
-gravfft bathy_1m.nc geoid_1m.nc -Iwk  -fg > adm.txt
-grdfft  bathy_1m.nc geoid_1m.nc -Ewk  -fg > cross.txt
-
-# coh: gravfft in red, grdfft in green
-psxy coh.txt -R3/1000/0/1 -JX-6il/4.5i -P -Ba1g3:"Wavelength (km)":/afg:"Coherence":WSne -Sc0.05i -Gred -Ey0.2c/0.5p,red -K -X1.25i > $ps
-psxy cross.txt -R -J -O -K -Sp -Ey0.1c/0.5p,green -i0,15,16 >> $ps
-psxy cross.txt -R -J -O -K -W0.25p,green -i0,15,16 >> $ps
-# adm: gravfft in red, grdfft in green
-psxy adm.txt -R3/1000/0/2 -JX-6il/4.5i -O -Ba1g3:"Wavelength (km)":/afg:"Admittance (mGal/km)":WSne -Sc0.05i -Ey0.2c/0.5p,red -Gred -K -i0,1s1000,2s1000 -Y5.3i >> $ps
-psxy cross.txt -R -J -O -K -Sp -Ey0.1c/0.5p,green -i0,11s1000,12s1000 >> $ps
-psxy cross.txt -R -J -O -W0.25p,green -i0,11s1000,12s1000 >> $ps
+# 1. Create a bathymetry data set with 3 circular Gaussian seamounts
+grdseamount -R0/512/0/512 -I4 -r -Gz.nc -Z-5000 << EOF
+310 290 40 3000
+290 205 50 4000
+210 280 60 2500
+EOF
+# 2. LL Map: Bathymetry load + flexural contours
+makecpt -Crainbow -T-5000/-1000/500 -Z > z.cpt
+grdimage z.nc -Cz.cpt -JX3i -P -BaWSne -K -Y0.75i > $ps
+makecpt -Crainbow -T-50/250/10 -Z > g.cpt
+# Compute flexure and overlay on bathymetry
+gravfft z.nc+uk -T12000/2800/3300/1000 -Q -Z12000 -N1024/1024+w -L -Gmoho_flex.nc
+grdcontour moho_flex.nc -J -O -K -C100 -A500 >> $ps
+# 3. LR Map: Gravity from flexure of Moho only
+gravfft moho_flex.nc+uk -Ff -E$order -D500 -Gfaa_flex.nc
+grdimage faa_flex.nc -Cg.cpt -J -O -K -BaWSne -X3.5i >> $ps
+# 4. ML Map: Gravity from seamounts only
+gravfft z.nc+uk -Ff -E$order -D1800 -Gfaa_z.nc
+grdimage faa_z.nc -Cg.cpt -J -O -K -BaWsne -X-3.5i -Y3.25i >> $ps
+# 5. MR Map: Total gravity model
+grdmath faa_flex.nc faa_z.nc ADD = faa_total.nc
+grdimage faa_total.nc -Cg.cpt -J -O -K -BaWsne -X3.5i >> $ps
+# Compute admittance and coherence between topo and gravity
+#gravfft z.nc+uk faa_total.nc+uk -Iwk > adm.txt
+grdfft z.nc+uk faa_total.nc+uk -Erwk -h+c > adm.txt
+# coherence in red, admittance in green
+psxy adm.txt -i0,15,16 -R8/512/0/1 -JX-6il/2.75i -O -K -Ba2g3:,km:/af:"Coherence":WSn -Sc0.05i -Gred -Ey0.2c/0.5p,red -X-3.25i -Y3.5i >> $ps
+psxy adm.txt -i0,15 -R -J -O -K -W0.5p,red >> $ps
+psxy adm.txt -R8/512/0/70 -J -O -Ba2g3/af:"Admittance (mGal/km)":E -Sc0.05i -Ey0.2c/0.5p,green -Ggreen -K -i0,11s1000,12s1000 >> $ps
+psxy adm.txt -R -J -O -K  -W0.5p,green -i0,11s1000 >> $ps
+psxy -R -J -O -T >> $ps
