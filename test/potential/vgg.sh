@@ -15,21 +15,21 @@ grdimage smt.nc -R-100/100/-100/100 -JX3i -P -BagWSne -Ct.cpt -K > $ps
 grdtrack -Gsmt.nc -ELM/RM > smt.trk
 psxy -R -J -O -K -W1p smt.trk >> $ps
 # 2. Compute the FAA anomaly
-#gravfft smt.nc+uk -D1700 -L -Nf -Fv -E$n -Gfaa.nc
+#gravfft smt.nc+uk -D1700 -Nf -Ff -E$n -Gfaa.nc
 grdtrack -Gfaa.nc -ELM/RM > faa.trk
 psxy -R -J -O -K -W1p faa.trk >> $ps
 # BR plot the FAA anomaly
 makecpt -Crainbow -T-300/300/25 -Z > t.cpt
 grdimage faa.nc -R-100/100/-100/100 -JX3i -O -BagwSne -Ct.cpt -K -X3.5i >> $ps
 # 3. Compute the VGG anomaly
-#gravfft smt.nc+uk -D1700 -L -Nf -Fv -E$n -Gvgg.nc
+#gravfft smt.nc+uk -D1700 -Nf -Fv -E$n -Gvgg.nc
 # ML plot the VGG anomaly
 makecpt -Crainbow -T-400/400/25 -Z > t.cpt
 grdimage vgg.nc -R-100/100/-100/100 -JX3i -O -BagwSne -Ct.cpt -K -X-3.5i -Y3.25i >> $ps
 grdtrack -Gvgg.nc -ELM/RM > vgg.trk
 psxy -R -J -O -K -W1p vgg.trk >> $ps
 # 4. Compute the geoid anomaly
-#gravfft smt.nc+uk -D1700 -L -Nf -Fg -E$n -Ggeoid.nc
+#gravfft smt.nc+uk -D1700 -Nf -Fg -E$n -Ggeoid.nc
 # MR plot the VGG anomaly
 makecpt -Crainbow -T0/5/0.25 -Z > t.cpt
 grdimage geoid.nc -R-100/100/-100/100 -JX3i -O -BagwSne -Ct.cpt -K -X3.5i >> $ps
