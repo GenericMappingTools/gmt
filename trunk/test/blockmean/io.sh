@@ -21,32 +21,22 @@ gmtconvert ascii_i.txt -bod > bin_i.b
 # 2. do basic blockmean ascii/bin i/o with no -i/-o
 blockmean -R0/5/0/5 -I1 -r ascii_i.txt > ascii_o.txt
 blockmean -R0/5/0/5 -I1 -r bin_i.b -bi8d -bod | gmtconvert -bi3d > bin_o.txt
-gmtmath -T -Sl ascii_o.txt bin_o.txt SUB SUM = check.txt
+gmtmath -T -Sl ascii_o.txt bin_o.txt SUB SUM = io_answer.txt
 
 # 3. Same as 2, but with selecting cols 3-5 via -i
 blockmean -R0/5/0/5 -I1 -r ascii_i.txt -i3-5 > ascii_o.txt
 blockmean -R0/5/0/5 -I1 -r bin_i.b -bi8d -i3-5 -bod | gmtconvert -bi3d > bin_o.txt
-gmtmath -T -Sl ascii_o.txt bin_o.txt SUB SUM = >> check.txt
+gmtmath -T -Sl ascii_o.txt bin_o.txt SUB SUM = >> io_answer.txt
 
 # 4. Same 2-3, but just output cols 2,0 via -o
 blockmean -R0/5/0/5 -I1 -r ascii_i.txt -o2,0 > ascii_o.txt
 blockmean -R0/5/0/5 -I1 -r bin_i.b -bi8d -o2,0 -bo2d | gmtconvert -bi2d > bin_o.txt
-gmtmath -T -Sl ascii_o.txt bin_o.txt SUB SUM = >> check.txt
+gmtmath -T -Sl ascii_o.txt bin_o.txt SUB SUM = >> io_answer.txt
 
 # 5. Same 5, but with selecting cols 3-5 via -i and output cols 2,0 via -o
 blockmean -R0/5/0/5 -I1 -r ascii_i.txt -i3-5 -o2,0 > ascii_o.txt
 blockmean -R0/5/0/5 -I1 -r bin_i.b -bi8d -i3-5 -o2,0 -bo2d | gmtconvert -bi2d > bin_o.txt
-gmtmath -T -Sl ascii_o.txt bin_o.txt SUB SUM = >> check.txt
+gmtmath -T -Sl ascii_o.txt bin_o.txt SUB SUM = >> io_answer.txt
 
-cat << EOF > check.awk
-BEGIN {	sum = 0; }
-{
-	for (i = 1; i <= NF; i++) sum += \$i;
-}
-END { print sum; }
-EOF
-touch fail
-let sum=`awk -f check.awk check.txt`
-if [ $sum -ne 0 ]; then
-	echo "Checksum is not zero" > fail
-fi
+diff io_answer.txt  "$src"/io_answer.txt --strip-trailing-cr > fail
+rm -f ascii_i.txt ascii_o.txt bin_o.txt bin_i.b
