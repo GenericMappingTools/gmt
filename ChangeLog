@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-03-03	pwessel
+	* gmt_grdio.c:		Enabled scaling of grid header domain via +u|U<unit>
+	* gmt_support.c:	Enabled scaling of cpt domain via +u|U<unit>
+
 2013-02-27	pwessel
 	* blockmode.c:		Added -D to compute unweighted modes via histogram binning. Added
 				automatic detection of integer data, defaulting to center bins.

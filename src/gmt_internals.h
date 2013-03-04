@@ -117,6 +117,7 @@ EXTERN_MSC int64_t GMT_splitinteger (double value, int epsilon, double *doublepa
 EXTERN_MSC bool GMT_is_gleap (int gyear);
 EXTERN_MSC void GMT_str_tolower (char *string);
 EXTERN_MSC void GMT_str_toupper (char *string);
+EXTERN_MSC char *GMT_file_unitscale (char *name);
 
 /* Functions declared in gmt_proj.c */
 
