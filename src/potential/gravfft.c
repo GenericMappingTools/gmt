@@ -214,7 +214,7 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 				}
 				Ctrl->D.active = true;
 				Ctrl->misc.rho = atof (opt->arg);
-				Ctrl->L.mode = 1;	/* Leae trend alone and remove mean */
+				Ctrl->L.mode = 1;	/* Leave trend alone and remove mean */
 				break;
 			case 'E':
 				Ctrl->E.n_terms = atoi (opt->arg);
@@ -285,7 +285,7 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 #endif
 			case 'Q':
 				Ctrl->Q.active = true;
-				Ctrl->L.mode = 1;	/* Leae trend alone and remove mean */
+				Ctrl->L.mode = 1;	/* Leave trend alone and remove mean */
 				break;
 			case 'S':
 				Ctrl->S.active = true;
@@ -302,7 +302,7 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 				}
 				if (opt->arg[strlen(opt->arg)-2] == '+') {	/* Fragile. Needs further testing */
 					Ctrl->T.moho = true;
-					Ctrl->L.mode = 1;	/* Leae trend alone and remove mean */
+					Ctrl->L.mode = 1;	/* Leave trend alone and remove mean */
 				}
 				break;
 			case 'Z':
@@ -554,7 +554,10 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 	/* Detrend (if requested), extend (if requested) and taper (if requested) the grids */
 	for (k = 0; k < Ctrl->In.n_grids; k++) {
-		if (!(Ctrl->L.active) && Ctrl->L.mode != 3) GMT_grd_detrend (GMT, Grid[k], Ctrl->L.mode, coeff[k]);
+		if (!(Ctrl->L.active) && Ctrl->L.mode != 3) {
+			GMT_grd_detrend (GMT, Grid[k], Ctrl->L.mode, coeff[k]);
+			Ctrl->misc.z_level = fabs (coeff[0][0]);	/* Need absolute value or level removed for uppward continuation */
+		}
 		GMT_fft_taper (GMT, Grid[k], &Ctrl->N.info);
 		GMT_fft_save (GMT, Grid[k], GMT_IN, &Ctrl->N.info);	/* If -N..w, write tapered grid to file */
 	}
