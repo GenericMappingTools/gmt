@@ -1,71 +1,61 @@
     **+a**\ *angle*
-
-    For annotations at a fixed angle, **+an** for line-normal, or
-    **+ap** for line-parallel [Default].
+       For annotations at a fixed angle, **+an** for line-normal, or
+       **+ap** for line-parallel [Default].
 
     **+c**\ *dx*\ [/*dy*]
-
-    Sets the clearance between label and optional text box. Append
-    **c**\ \|\ **i**\ \|\ **p** to specify the unit or % to indicate a
-    percentage of the label font size [15%].
+       Sets the clearance between label and optional text box. Append
+       **c**\ \|\ **i**\ \|\ **p** to specify the unit or % to indicate a
+       percentage of the label font size [15%].
 
     **+d**
-
-    Turns on debug which will draw helper points and lines to illustrate
-    the workings of the quoted line setup.
+       Turns on debug which will draw helper points and lines to illustrate
+       the workings of the quoted line setup.
 
     **+e**
-
-    Delay the plotting of the text. This is used to build a clip path
-    based on the text, then lay down other overlays while that clip path
-    is in effect, then turning of clipping with psclip **-Ct** which
-    finally plots the original text.
+       Delay the plotting of the text. This is used to build a clip path
+       based on the text, then lay down other overlays while that clip path
+       is in effect, then turning of clipping with psclip **-Ct** which
+       finally plots the original text.
 
     **+f**\ *font*
-
-    Sets the desired font [Default **FONT\_ANNOT\_PRIMARY** with its
-    size changed to 9p].
+       Sets the desired font [Default **FONT\_ANNOT\_PRIMARY** with its
+       size changed to 9p].
 
     **+g**\ [*color*\ ]
-
-    Selects opaque text boxes [Default is transparent]; optionally
-    specify the color [Default is **PS\_PAGE\_COLOR**].
+       Selects opaque text boxes [Default is transparent]; optionally
+       specify the color [Default is **PS\_PAGE\_COLOR**].
 
     **+j**\ *just*
-
-    Sets label justification [Default is MC]. Ignored when
-    **-SqN**\ \|\ **n**\ +\|-1 is used.
+       Sets label justification [Default is MC]. Ignored when
+       **-SqN**\ \|\ **n**\ +\|-1 is used.
 
     **+l**\ *label*
-
-    Sets the constant label text.
+       Sets the constant label text.
 
     **+L**\ *flag*
-
-    Sets the label text according to the specified flag:
+       Sets the label text according to the specified flag:
 
         **+Lh**
-        Take the label from the current segment header (first scan for
-        an embedded **-L**\ *label* option, if not use the first word
-        following the segment flag). For multiple-word labels, enclose
-        entire label in double quotes.
+            Take the label from the current segment header (first scan for
+            an embedded **-L**\ *label* option, if not use the first word
+            following the segment flag). For multiple-word labels, enclose
+            entire label in double quotes.
         **+Ld**
-        Take the Cartesian plot distances along the line as the label;
-        append **c**\ \|\ **i**\ \|\ **p** as the unit [Default is
-        **PROJ\_LENGTH\_UNIT**].
+            Take the Cartesian plot distances along the line as the label;
+            append **c**\ \|\ **i**\ \|\ **p** as the unit [Default is
+            **PROJ\_LENGTH\_UNIT**].
         **+LD**
-        Calculate actual map distances; append
-        **d\|e\|f\|k\|n\|M\|n\|s** as the unit [Default is
-        **d**\ (egrees), unless label placement was based on map
-        distances along the lines in which case we use the same unit
-        specified for that algorithm]. Requires a map projection to be
-        used.
+            Calculate actual map distances; append
+            **d\|e\|f\|k\|n\|M\|n\|s** as the unit [Default is
+            **d**\ (egrees), unless label placement was based on map
+            distances along the lines in which case we use the same unit
+            specified for that algorithm]. Requires a map projection to be used.
         **+Lf**
-        Use text after the 2nd column in the fixed label location file
-        as the label. Requires the fixed label location setting.
+            Use text after the 2nd column in the fixed label location file
+            as the label. Requires the fixed label location setting.
         **+Lx**
-        As **+Lh** but use the headers in the *xfile.d* instead.
-        Requires the crossing file option.
+            As **+Lh** but use the headers in the *xfile.d* instead.
+            Requires the crossing file option.
 
     **+n**\ *dx*\ [/*dy*]
         Nudges the placement of labels by the specified amount (append

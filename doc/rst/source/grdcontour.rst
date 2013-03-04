@@ -8,7 +8,7 @@ grdcontour - Make contour map using a grid
 -------------------
 
 **grdcontour** *grid* **-C**\ *cont\_int*\ \|\ *cpt*
-**-J**\ *parameters* [ **-A**\ [**-**\ \|\ *annot\_int*][*labelinfo*\ ]
+**-J**\ *parameters* [ **-A**\ [**-**\ \|\ *annot\_int*][*labelinfo*]
 ] [ **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-D**\ *template* ] [
 **-F**\ [**l**\ \|\ **r**] ] [
 **-G**\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params*
@@ -16,17 +16,17 @@ grdcontour - Make contour map using a grid
 [ **-O** ] [ **-P** ] [ **-Q**\ *cut* ] [
 **-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ] ] [
 **-S**\ *smoothfactor* ] [
-**-T**\ [**+\|-**\ ][*gap/length*\ ][\ **:**\ [*labels*\ ]] ] [
-**-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*\ ]
+**-T**\ [**+\|-**][*gap/length*][\ **:**\ [*labels*]] ] [
+**-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*]
 ] [ **-W**\ [**+**\ ][*type*\ ]\ *pen* ] [
-**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
+**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\]
 ] [
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-] [ **-Z**\ [*factor*\ [/*shift*]][**p**\ ] ] [
-**-bo**\ [*ncols*\ ][*type*\ ] ] [ **-c**\ *copies* ] [ **-ho**\ [*n*\ ]
+**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**]]
+] [ **-Z**\ [*factor*\ [/*shift*]][**p**] ] [
+**-bo**\ [*ncols*\ ][*type*\ ] ] [ **-c**\ *copies* ] [ **-ho**\ [*n*]
 ] [
 **-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
-] [ **-t**\ [*transp*\ ] ]
+] [ **-t**\ [*transp*] ]
 
 `Description <#toc2>`_
 ----------------------
@@ -35,8 +35,7 @@ grdcontour - Make contour map using a grid
 tracing each contour through the grid. *PostScript* code is generated
 and sent to standard output. Various options that affect the plotting
 are available. Alternatively, the x/y/z positions of the contour lines
-may be saved to one or more output files (or stdout) and no plot is
-produced. 
+may be saved to one or more output files (or stdout) and no plot is produced. 
 
 .. include:: explain_commonitems.rst_
 
@@ -50,24 +49,23 @@ produced.
     ways:
 
     (1) If *cont\_int* has the suffix ".cpt" and can be opened as a
-    file, it is assumed to be a color palette table. The color
-    boundaries are then used as contour levels. If the cpt-file has
-    annotation flags in the last column then those contours will be
-    annotated. By default all contours are labeled; use **-A-** to
-    disable all annotations.
+        file, it is assumed to be a color palette table. The color
+        boundaries are then used as contour levels. If the cpt-file has
+        annotation flags in the last column then those contours will be
+        annotated. By default all contours are labeled; use **-A-** to
+        disable all annotations.
 
     (2) If *cont\_int* is a file but not a cpt-file, it is expected to
-    contain contour levels in column 1 and a
-    `C(ontour) <C.ontour.html>`_ OR `A(nnotate) <A.nnotate.html>`_ in
-    col 2. The levels marked C (or c) are contoured, the levels marked A
-    (or a) are contoured and annotated. Optionally, a third column may
-    be present and contain the fixed annotation angle for this contour
-    level.
+        contain contour levels in column 1 and a
+        C(ontour) OR A(nnotate) in
+        col 2. The levels marked C (or c) are contoured, the levels marked A
+        (or a) are contoured and annotated. Optionally, a third column may
+        be present and contain the fixed annotation angle for this contour
+        level.
 
     (3) If no file is found, then *cont\_int* is interpreted as a
-    constant contour interval. If **-A** is set and **-C** is not, then
-    the contour interval is set equal to the specified annotation
-    interval.
+        constant contour interval. If **-A** is set and **-C** is not, then
+        the contour interval is set equal to the specified annotation interval.
 
     If a file is given and **-T** is set, then only contours marked with
     upper case C or A will have tickmarks. In all cases the contour
@@ -78,24 +76,21 @@ produced.
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-**-A**\ [**-**\ \|\ *annot\_int*][*labelinfo*\ ]
-
-*annot\_int* is annotation interval in data units; it is ignored if
-contour levels are given in a file. [Default is no annotations]. Append
-**-** to disable all annotations implied by **-C**. The optional
-*labelinfo* controls the specifics of the label formatting and consists
-of a concatenated string made up of any of the following control
-arguments:
+**-A**\ [**-**\ \|\ *annot\_int*][*labelinfo*]
+    *annot\_int* is annotation interval in data units; it is ignored if
+    contour levels are given in a file. [Default is no annotations]. Append
+    **-** to disable all annotations implied by **-C**. The optional
+    *labelinfo* controls the specifics of the label formatting and consists
+    of a concatenated string made up of any of the following control arguments:
 
 .. include:: explain_labelinfo.rst_
 
 .. include:: explain_-B.rst_
 
 **-F**\ [**l**\ \|\ **r**]
-
-Force dumped contours to be oriented so that higher z-values are to the
-left (**-Fl** [Default]) or right (**-Fr**) as we move along the contour
-[Default is arbitrary orientation]. Requires **-D**.
+    Force dumped contours to be oriented so that higher z-values are to the
+    left (**-Fl** [Default]) or right (**-Fr**) as we move along the contour
+    [Default is arbitrary orientation]. Requires **-D**.
 
 **-G**
 
@@ -129,7 +124,7 @@ left (**-Fl** [Default]) or right (**-Fr**) as we move along the contour
     Will draw tickmarks pointing in the downward direction every *gap*
     along the innermost closed contours. Append *gap* and tickmark
     length (append units as **c**, **i**, or **p**) or use defaults
-    [15**p**/3**p**]. User may choose to tick only local highs or local
+    [15\ **p**/3\ **p**]. User may choose to tick only local highs or local
     lows by specifying **-T+** or **-T-**, respectively. Append
     **:**\ *labels* to annotate the centers of closed innermost contours
     (i.e, the local lows and highs). If no *labels* is appended we use -
