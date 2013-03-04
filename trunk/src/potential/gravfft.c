@@ -350,6 +350,10 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 					"Error: not all parameters for computing \"loading from below\" admittance were set\n");
 	}
 
+	n_errors += GMT_check_condition (GMT, (Ctrl->misc.from_top || Ctrl->misc.from_below) && 
+			!(Ctrl->F.mode == GRAVFFT_FAA || Ctrl->F.mode == GRAVFFT_GEOID), 
+				"Syntax error: Theoretical admittances are only defined for FAA or GEOID.\n");
+
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
@@ -950,8 +954,10 @@ void load_from_below_admitt(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, str
 		freq = (k + 1) * delta_k;
 		earth_curvature = (sphericity) ? (2 * earth_rad * freq) / (4 * M_PI * earth_rad * freq + 1) : 1.;
 		t1 = earth_curvature * (twopi * GRAVITATIONAL_CONST);
-		if (!Ctrl->F.active) t1 *= 1.0e5;		/* to have it in mGals */
-		if (Ctrl->F.active) t1 /= (NORMAL_GRAVITY * freq * twopi);
+		if (Ctrl->F.mode == GRAVFFT_FAA)
+			t1 *= 1.0e5;     /* to have it in mGals */
+		else                 /* Must be the GEOID case */
+			t1 /= (NORMAL_GRAVITY * freq * twopi);
 		t2 = Ctrl->T.rho_cw * exp(-twopi * freq * Ctrl->misc.z_level) + 
 			Ctrl->T.rho_mc * exp(-twopi * freq * Ctrl->Z.zm);
 		t3 = -(Ctrl->T.rho_mw + Ctrl->T.rho_mc * pow(freq,4.) * alfa) * exp(-twopi * freq * Ctrl->Z.zl);
@@ -984,8 +990,10 @@ void load_from_top_admitt(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struc
 		freq = (k + 1) * delta_k;
 		earth_curvature = (sphericity) ? (2 * earth_rad * freq) / (4 * M_PI * earth_rad * freq + 1) : 1.;
 		t1 = earth_curvature * (twopi * GRAVITATIONAL_CONST);
-		if (!Ctrl->F.active) t1 *= 1.0e5;		/* to have it in mGals */
-		if (Ctrl->F.active) t1 /= (NORMAL_GRAVITY * freq * twopi);
+		if (Ctrl->F.mode == GRAVFFT_FAA)
+			t1 *= 1.0e5;     /* to have it in mGals */
+		else                 /* Must be the GEOID case */
+			t1 /= (NORMAL_GRAVITY * freq * twopi);
 		t2 = exp(-twopi * freq * Ctrl->misc.z_level) - exp(-twopi * freq * Ctrl->Z.zm) / (1 + alfa*pow(freq,4.));   
 		z_from_top[k] = t1 * Ctrl->T.rho_cw * t2;
 	}
@@ -1021,8 +1029,10 @@ void load_from_top_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRA
 			t = pow (mk, p);
 		earth_curvature = (sphericity) ? (2 * earth_rad * mk) / (4 * M_PI * earth_rad * mk + 1) : 1.;
 		t1 = earth_curvature * (twopi * GRAVITATIONAL_CONST);
-		if (!Ctrl->F.active) t1 *= 1.0e5;		/* to have it in mGals */
-		if (Ctrl->F.active) t1 /= (NORMAL_GRAVITY * mk * twopi);
+		if (Ctrl->F.mode == GRAVFFT_FAA)
+			t1 *= 1.0e5;     /* to have it in mGals */
+		else                 /* Must be the GEOID case */
+			t1 /= (NORMAL_GRAVITY * mk * twopi);
 		t2 = exp(-twopi * mk * Ctrl->misc.z_level) - exp(-twopi * mk * Ctrl->Z.zm) / (1 + alfa*pow(mk,4.));
 		datac[k] += (float) ((Ctrl->T.rho_cw * t1 * t2) * t / f * raised[k]);
 		datac[k+1] += (float) ((Ctrl->T.rho_cw * t1 * t2) * t / f * raised[k+1]);
@@ -1059,8 +1069,10 @@ void load_from_below_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct G
 			t = pow (mk, p);
 		earth_curvature = (sphericity) ? (2 * earth_rad * mk) / (4 * M_PI * earth_rad * mk + 1) : 1.;
 		t1 = earth_curvature * (twopi * GRAVITATIONAL_CONST);
-		if (!Ctrl->F.active) t1 *= 1.0e5;		/* to have it in mGals */
-		if (Ctrl->F.active) t1 /= (NORMAL_GRAVITY * mk * twopi);
+		if (Ctrl->F.mode == GRAVFFT_FAA)
+			t1 *= 1.0e5;     /* to have it in mGals */
+		else                 /* Must be the GEOID case */
+			t1 /= (NORMAL_GRAVITY * mk * twopi);
 		t2 = Ctrl->T.rho_cw * exp(-twopi * mk * Ctrl->misc.z_level) + 
 			 Ctrl->T.rho_mc * exp(-twopi * mk * Ctrl->Z.zm);
 		t3 = -(Ctrl->T.rho_mw + Ctrl->T.rho_mc * pow(mk,4.) * alfa) * exp(-twopi * mk * Ctrl->Z.zl);
