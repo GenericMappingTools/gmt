@@ -54,7 +54,7 @@ a unit suffix will be consider to be in meters.  For example, a distance of
 \subsection{Distance calculations}
 
 The calculation of distances on Earth (or other planetary bodies) depends on the
-ellipsoidal parameters of the body (via {\GMTdef{PROJ\_ELLIPSOID}) and the method of computation.  \GMT\ offers
+ellipsoidal parameters of the body (via \GMTdef{PROJ\_ELLIPSOID}) and the method of computation.  \GMT\ offers
 three alternatives that trade off accuracy and computation time.
 
 \subsubsection{Flat Earth distances}
@@ -87,8 +87,8 @@ is required (typically for a limited surface area).  For instance, a search radi
 mode of computation would be specified as \Opt{S}5000\textbf{f}.
 
 Note: There are two additional \gmt\ defaults that control how great circle (and Flat Earth) distances are computed. One concerns the selection
-of the ``mean radius''.  This is selected by {\GMTdef{PROJ\_MEAN\_RADIUS}, which selects one of several possible
-representative radii.  The second is {\GMTdef{PROJ\_AUX\_LATITUDE}, which converts geodetic latitudes into one of
+of the ``mean radius''.  This is selected by \GMTdef{PROJ\_MEAN\_RADIUS}, which selects one of several possible
+representative radii.  The second is \GMTdef{PROJ\_AUX\_LATITUDE}, which converts geodetic latitudes into one of
 several possible auxiliary latitudes that are better suited for the spherical approximation.  While both settings
 have default values to best approximate geodesic distances ({\it authalic} mean radius and latitudes),
 expert users can choose from a range of options as detailed in the \filename{gmt.conf} man page.
