@@ -29,8 +29,8 @@ grdimage faa_flex.nc -Cg.cpt -J -O -K -BaWSne -X3.5i >> $ps
 gravfft z.nc+uk -Ff -E$order -D1800 -Gfaa_z.nc
 grdimage faa_z.nc -Cg.cpt -J -O -K -BaWsne -X-3.5i -Y3.25i >> $ps
 
-# 5. MR Map: Total gravity model
-grdmath faa_flex.nc faa_z.nc ADD = faa_total.nc
+# 5. MR Map: Total gravity model + 0.5 mGal noise
+grdmath faa_flex.nc faa_z.nc ADD 0 0.5 NRAND ADD = faa_total.nc
 grdimage faa_total.nc -Cg.cpt -J -O -K -BaWsne -X3.5i >> $ps
 
 # Compute admittance, both data and theoretical, and coherence between topo and gravity
@@ -38,9 +38,11 @@ gravfft z.nc+uk faa_total.nc+uk -Iwkt -Ff -Z12000 -T12000/2800/3300/1000 > adm_t
 grdfft z.nc+uk faa_total.nc+uk -Erwk -h+c > adm.txt
 
 # coherence in red, admittance in blue, theoretical admittance in thick lightgray
-psxy adm.txt -i0,15,16 -R8/512/0/1 -JX-6il/2.75i -O -K -Ba2g3:,km:/af:"Coherence":WSn -Sc0.05i -Gred -Ey0.2c/0.5p,red -X-3.25i -Y3.5i >> $ps
+psxy adm.txt -i0,15,16 -R8/512/0/1 -JX-6il/2.75i -O -K -Ba2g3:,km:/af:"Coherence":WSn -Sc0.05i \
+	-Gred -Ey0.2c/0.5p,red -X-3.25i -Y3.5i --FONT_LABEL=16p,Helvetica,red >> $ps
 psxy adm.txt -i0,15 -R -J -O -K -W0.5p,red >> $ps
-psxy adm.txt -R8/512/0/70 -J -O -Ba2g3/af:"Admittance (mGal/km)":E -Sc0.05i -Ey0.2c/0.5p,blue -Gblue -K -i0,11s1000,12s1000 >> $ps
+psxy adm.txt -R8/512/0/70 -J -O -Ba2g3/af:"Admittance (mGal/km)":E -Sc0.05i -Ey0.2c/0.5p,blue \
+	-Gblue -K -i0,11s1000,12s1000  --FONT_LABEL=16p,Helvetica,blue >> $ps
 psxy adm.txt -R -J -O -K  -W0.5p,blue -i0,11s1000 >> $ps
 psxy adm_t.txt -R -J -O -K -W0.5p,green -i0,3s1000 >> $ps
 psxy -R -J -O -T >> $ps
