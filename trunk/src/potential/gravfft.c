@@ -766,20 +766,20 @@ void do_parker (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL
 				datac[k+1] += (float) (v * raised[k+1]);
 				break;
 			case GRAVFFT_DEFL_EAST: 
-				if (mk > 0.0) {
+				if (mk > 0.0) {	/* Scale tan (xslope) ~ slope to microradians */
 					kx = GMT_fft_any_wave (k, GMT_FFT_K_IS_KX, K);
 					v *= 1.e6 * (-kx / (MGAL_AT_45 * mk));
 				}
 				datac[k]   += (float) (-v * raised[k+1]);
-				datac[k+1] += (float) (v * raised[k]);
+				datac[k+1] += (float) ( v * raised[k]);
 				break;
 			case GRAVFFT_DEFL_NORTH:
-				if (mk > 0.0) {
+				if (mk > 0.0) {	/* Scale tan (yslope) ~ slope to microradians */
 					ky = GMT_fft_any_wave (k, GMT_FFT_K_IS_KY, K);
 					v *= 1.e6 * (-ky / (MGAL_AT_45 * mk));
 				}
-				datac[k]   += (float) (-v * raised[k+1]);
-				datac[k+1] += (float) (v * raised[k]);
+				datac[k]   += (float) ( v * raised[k+1]);
+				datac[k+1] += (float) (-v * raised[k]);
 				break;
 		}
 	}
