@@ -400,7 +400,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT,"\t-L Leave trend alone. Do not remove least squares plane from data.\n");
 	GMT_message (GMT,"\t   It applies both to bathymetry as well as <ingrid2> [Default removes plane].\n");
 	GMT_message (GMT,"\t   Append m to just remove mean, h to remove mid-value instead or n to not touch.\n");
-	GMT_message (GMT,"\t   Warning: both -D -T...+m and -Q will implicitly set -L.\n");
+	GMT_message (GMT,"\t   Warning: both -D -T...+m and -Q will implicitly set -Lm.\n");
 	GMT_fft_syntax (GMT, 'N', "Choose or inquire about suitable grid dimensions for FFT, and set modifiers:");
 	GMT_message (GMT,"\t-Q writes out a grid with the flexural topography (with z positive up)\n");
 	GMT_message (GMT,"\t   whose average depth is set to the value given by -Z<zm>.\n");
@@ -608,6 +608,8 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			GMT_free (GMT, K);
+			GMT_free (GMT, topo);
+			GMT_free (GMT, raised);
 			Return (EXIT_SUCCESS);
 		}
 		else {
