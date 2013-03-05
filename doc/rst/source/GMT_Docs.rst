@@ -248,7 +248,7 @@ What is new in `GMT <http://gmt.soest.hawaii.edu>`__ 5.x?
 capabilities of the previous versions while adding new tricks to many of
 the tools. Furthermore, we have added system-wide capabilities for
 handling PDF transparency, dealing with GIS aspatial data, and
-eliminated the need for the ``-m`` option. Our *PostScript* library
+eliminated the need for the **-m** option. Our *PostScript* library
 `PSL <PSL.html>`__ has seen a complete rewrite as well
 and produce shorter and more compact *PostScript*. However, the big news
 is for developers who wish to leverage *GMT* in their own applications.
@@ -268,7 +268,7 @@ Some new default parameters have been added as well, such as
 Cartesian plots are horizontal or orthogonal to the individual axes.
 
 Because of the default name changes and other command-line changes (such
-as making ``-m`` obsolete), we recommend that users of *GMT* 4 consider
+as making **-m** obsolete), we recommend that users of *GMT* 4 consider
 learning the new rules and defaults. However, to ease the transition to
 *GMT* 5 you may use the enable-compat switch when running configure ,
 thus allowing the use of many obsolete default names and command
@@ -318,11 +318,11 @@ Below is a list of improvements that affect several
 #. Programs that read data tables can now process multi-segment tables
    automatically. This means programs that did not have this capability
    (e.g., `filter1d <filter1d.html>`_) now can filter
-   segments separately; consequently, there is no longer a ``-m``
+   segments separately; consequently, there is no longer a **-m**
    option.
 
 #. Programs that read data tables can now process the aspatial metadata
-   in OGR/GMT files with the new ``-a`` option. These are produced by
+   in OGR/GMT files with the new **-a** option. These are produced by
    ***ogr2ogr*** (a GDAL tool) when selecting the -f “GMT” output
    format. See Appendix Q for an explanation of the OGR/GMT file format.
    Because all GIS information is encoded via *GMT* comment lines these
@@ -330,18 +330,18 @@ Below is a list of improvements that affect several
    skipped).
 
 #. Programs that read data tables can control which columns to read and
-   in what order with the new ``-i`` option.
+   in what order with the new **-i** option.
 
 #. Programs that write data tables can control which columns to write
-   and in what order with the new ``-o`` option.
+   and in what order with the new **-o** option.
 
 #. Programs that write data tables can specify a custom binary format
-   using the enhanced ``-b`` option.
+   using the enhanced **-b** option.
 
 #. Programs that read data tables can control how records with NaNs are
-   handled with the new ``-s`` option.
+   handled with the new **-s** option.
 
-#. Programs that read grids can use new common option ``-n`` to control
+#. Programs that read grids can use new common option **-n** to control
    grid interpolation settings and boundary conditions.
 
 #. Programs that read grids can now handle Arc/Info float binary files
@@ -370,51 +370,51 @@ Below is a list of improvements that affect several
    and b) `**ps2raster** <run:../man/ps2raster.html>`__ handles it
    exactly.
 
-#. The ``-B`` option can now handle irregular and custom annotations
+#. The **-B** option can now handle irregular and custom annotations
    (see Section [sec:custaxes]). It also has an automatic mode which
    will select optimal intervals. The 3-D base maps can now have
    horizontal gridlines on xz and yz back walls.
 
-#. The ``-R`` option may now accept a leading unit which implies the
+#. The **-R** option may now accept a leading unit which implies the
    given coordinates are projected map coordinates and should be
    replaced with the corresponding geographic coordinates given the
    specified map projection. For linear projections such units imply a
    simple unit conversion for the given coordinates (e.g., km to meter).
 
-#. Introduced ``-fp``\ [*unit*\ ] which allows data input to be in
-   projected values, e.g., UTM coordinates while ``-Ju`` is given.
+#. Introduced **-fp**\ [*unit*\ ] which allows data input to be in
+   projected values, e.g., UTM coordinates while **-Ju** is given.
 
-#. All plot programs can take a new ``-p`` option for perspective view
+#. All plot programs can take a new **-p** option for perspective view
    from infinity. In *GMT* 4, only some programs could do this (e.g.,
    `pscoast <pscoast.html>`_) and it took a
-   program-specific option, typically ``-E`` and sometimes an option
-   ``-Z`` would be needed as well. This information is now all passed
-   via ``-p`` and applies across all *GMT* plotting programs.
+   program-specific option, typically **-E** and sometimes an option
+   **-Z** would be needed as well. This information is now all passed
+   via **-p** and applies across all *GMT* plotting programs.
 
-#. All plot programs can take a new ``-t`` option to modify the PDF
+#. All plot programs can take a new **-t** option to modify the PDF
    transparency level. However, as *PostScript* has no provision for
    transparency you can only see the effect if you convert it to PDF.
 
 #. All text can now optionally be filled with patterns and/or drawn with
    outline pens. In the past, only
    `**pstext** <run:../man/pstext.html>`__ could plot outline fonts via
-   ``-S``\ *pen*. Now, any text can be an outline text by manipulating
+   **-S**\ *pen*. Now, any text can be an outline text by manipulating
    the corresponding FONT defaults (e.g., **FONT\_TITLE**).
 
 #. All color or fill specifications may append @\ *transparency* to
-   change the PDF transparency level for that item. See ``-t`` for
+   change the PDF transparency level for that item. See **-t** for
    limitations on how to visualize this transparency.
 
 Here is a list of recent enhancements to specific programs:
 
-#. `**blockmedian** <run:../man/blockmedian.html>`__ added ``-Er``\ [-]
+#. `**blockmedian** <run:../man/blockmedian.html>`__ added **-Er**\ [-]
    to return as last column the record number that gave the median
    value. For ties, we return the record number of the higher data value
-   unless ``-Er``- is given (return lower). Added ``-Es`` to read and
+   unless **-Er**- is given (return lower). Added **-Es** to read and
    output source id for median value.
 
-#. `**blockmode** <run:../man/blockmode.html>`__ added ``-Er``\ [-] but
-   for modal value. Added ``-Es`` to read and output source id for modal
+#. `**blockmode** <run:../man/blockmode.html>`__ added **-Er**\ [-] but
+   for modal value. Added **-Es** to read and output source id for modal
    value.
 
 #. `**gmtconvert** <run:../man/gmtconvert.html>`__ now has optional PCRE
@@ -432,51 +432,51 @@ Here is a list of recent enhancements to specific programs:
    grids. We have also begun implementing Open MP threads to speed up
    calculations on multi-core machines. We have added rectangular
    filtering and automatic resampling to input resolution for high-pass
-   filters. There is also ``-Ff``\ *weightgrd* which reads the gridfile
+   filters. There is also **-Ff**\ *weightgrd* which reads the gridfile
    *weightgrd* for a custom Cartesian grid convolution. The *weightgrd*
-   must have odd dimensions. Similarly added ``-Fo``\ *opgrd* for
+   must have odd dimensions. Similarly added **-Fo**\ *opgrd* for
    operators (via coefficients in the grdfile *opgrd*) whose weight sum
    is zero (hence we do not sum and divide the convolution by the weight
    sum).
 
 #. `**grdinfo** <run:../man/grdinfo.html>`__ now has modifier
-   ``-Ts``\ *dz* which returns a symmetrical range about zero.
+   **-Ts**\ *dz* which returns a symmetrical range about zero.
 
 #. `**grdmask** <run:../man/grdmask.html>`__ has new option
-   ``-Ni``\ :math:`|`\ I\ :math:`|`\ p\ :math:`|`\ P to set inside of
+   **-Ni**\ :math:`|`\ I\ :math:`|`\ p\ :math:`|`\ P to set inside of
    polygons to the polygon IDs. These may come from OGR aspatial values,
-   segment head ``-L``\ ID, or a running number, starting at a specified
+   segment head **-L**\ ID, or a running number, starting at a specified
    origin [0]. Now correctly handles polygons with perimeters and holes.
-   Added z as possible radius value in ``-S`` which means read radii
+   Added z as possible radius value in **-S** which means read radii
    from 3rd input column.
 
 #. `grdmath <grdmath.html>`_ added operator SUM which
    adds up all non-NaN entries and returns a grid with all nodes set to
    the sum constant.
 
-#. `**grdtrack** <run:../man/grdtrack.html>`__ has a new ``-C``, ``-D``
+#. `**grdtrack** <run:../man/grdtrack.html>`__ has a new **-C**, **-D**
    options to automatically create an equidistant set of cross-sectional
    profiles given input line segments; one or more grids can then be
-   sampled at these locations. Also added ``-S`` which stack
-   cross-profiles generated with ``-C``. Finally, ``-N`` will not skip
+   sampled at these locations. Also added **-S** which stack
+   cross-profiles generated with **-C**. Finally, **-N** will not skip
    points that are outside the grid domain but return NaN as sampled
    value.
 
-#. `**mapproject** <run:../man/mapproject.html>`__ has a new ``-N``
-   option to do geodetic/geocentric conversions; it combines with ``-I``
-   for inverse conversions. Also, we have extended ``-A`` to accept
-   ``-A``\ **o**\ :math:`|`\ **O** to compute line orientations
+#. `**mapproject** <run:../man/mapproject.html>`__ has a new **-N**
+   option to do geodetic/geocentric conversions; it combines with **-I**
+   for inverse conversions. Also, we have extended **-A** to accept
+   **-A**\ **o**\ :math:`|`\ **O** to compute line orientations
    (-90/90).
 
 #. `**makecpt** <run:../man/makecpt.html>`__ and
-   `**grd2cpt** <run:../man/grd2cpt.html>`__ has a new ``-F`` option to
+   `**grd2cpt** <run:../man/grd2cpt.html>`__ has a new **-F** option to
    specify output color representation, e.g., to output the CPT table in
    h-s-v format despite originally being given in r/g/b.
 
-#. `**minmax** <run:../man/minmax.html>`__ has new option ``-A`` to
+#. `**minmax** <run:../man/minmax.html>`__ has new option **-A** to
    select what group to report on (all input, per file, or per segment).
 
-#. `**gmtconvert** <run:../man/gmtconvert.html>`__ has new option ``-Q``
+#. `**gmtconvert** <run:../man/gmtconvert.html>`__ has new option **-Q**
    to select a particular segment number.
 
 #. `**gmtmath** <run:../man/gmtmath.html>`__ and
@@ -485,36 +485,36 @@ Here is a list of recent enhancements to specific programs:
    replacing the macro name with the equivalent arguments in the program
    argument lists.
 
-#. `**grdvolume** <run:../man/grdvolume.html>`__ has enhanced ``-T``,
-   now ``-T``\ [**c**\ :math:`|`\ **h**] for ORS estimates based on max
+#. `**grdvolume** <run:../man/grdvolume.html>`__ has enhanced **-T**,
+   now **-T**\ [**c**\ :math:`|`\ **h**] for ORS estimates based on max
    curvature or height.
 
-#. `**project** <run:../man/project.html>`__ has added ``-G``...[+] so
+#. `**project** <run:../man/project.html>`__ has added **-G**...[+] so
    if + is appended we get a segment header with information about the
    pole for the circle.
 
-#. `**ps2raster** <run:../man/ps2raster.html>`__ has added a ``-TF``
+#. `**ps2raster** <run:../man/ps2raster.html>`__ has added a **-TF**
    option to create multi-page PDF files.
 
 #. `**pscontour** <run:../man/pscontour.html>`__ now similar to
    `**grdcontour** <run:../man/grdcontour.html>`__ in the options it
-   takes, e.g., ``-C`` in particular. In *GMT* 4, the program could only
+   takes, e.g., **-C** in particular. In *GMT* 4, the program could only
    read a CPT file and not take a specific contour interval.
 
-#. `**psrose** <run:../man/psrose.html>`__ has added ``-Wv``\ *pen* to
-   specify pen for vector (in ``-C``). Added ``-Zu`` to set all radii to
+#. `**psrose** <run:../man/psrose.html>`__ has added **-Wv**\ *pen* to
+   specify pen for vector (in **-C**). Added **-Zu** to set all radii to
    unity (i.e., for analysis of angles only).
 
-#. `**psscale** <run:../man/psscale.html>`__ has a new option ``-T``
+#. `**psscale** <run:../man/psscale.html>`__ has a new option **-T**
    that paints a rectangle behind the color bar.
 
-#. `**pstext** <run:../man/pstext.html>`__ has enhanced ``-DJ`` option
+#. `**pstext** <run:../man/pstext.html>`__ has enhanced **-DJ** option
    to shorten diagonal offsets by :math:`\sqrt{2}` to maintain the same
    distance from point to annotation.
 
 #. `**psxy.c** <run:../man/psxy.c.html>`__ and
    `**psxyz.c** <run:../man/psxyz.c.html>`__ can take symbol modifier
-   **+s**\ *scale*\ [*unit*\ ][/\ *origin*][ **l**] in ``-S`` to adjust
+   **+s**\ *scale*\ [*unit*\ ][/\ *origin*][ **l**] in **-S** to adjust
    scales read from files. This is used when you have data in the third
    column that should be used for symbol size but they need to be offset
    (by *origin*) and scaled by (*scale*) first; **l** means take the
@@ -525,21 +525,21 @@ Here is a list of recent enhancements to specific programs:
    using not specifying the base value.
 
 #. `**pstext.c** <run:../man/pstext.c.html>`__ can take simplified input
-   via new option ``-F`` to set fixed font (including size), angle, and
+   via new option **-F** to set fixed font (including size), angle, and
    justification. If these parameters are fixed for all the text strings
    then the input can simply be *x y text*.
 
-#. `**triangulate** <run:../man/triangulate.html>`__ now offers ``-S``
-   to write triangle polygons and can handle 2-column input if ``-Z`` is
+#. `**triangulate** <run:../man/triangulate.html>`__ now offers **-S**
+   to write triangle polygons and can handle 2-column input if **-Z** is
    given.
 
-#. `**xyz2grd** <run:../man/xyz2grd.html>`__ now also offers ``-Am``
-   (mean, the default) and ``-Ar`` (rms).
+#. `**xyz2grd** <run:../man/xyz2grd.html>`__ now also offers **-Am**
+   (mean, the default) and **-Ar** (rms).
 
 Several supplements have new feature as well:
 
 #. `**mgd77/mgd77convert.c** <run:../man/mgd77/mgd77convert.c.html>`__
-   added ``-C`` option to assemble \*.mgd77 files from \*.h77/\*.a77
+   added **-C** option to assemble \*.mgd77 files from \*.h77/\*.a77
    pairs.
 
 #. The spotter programs can now read Gplates rotations directly as well
@@ -584,15 +584,15 @@ correctly with a warning under compatibility mode:
    be found in Tables [tbl:obsoletedefs1] and [tbl:obsoletedefs2]. In
    addition, a few defaults are no longer recognized, such as N\_COPIES,
    PS\_COPIES, DOTS\_PR\_INCH, GMT\_CPTDIR, PS\_DPI, and PS\_EPS,
-   TRANSPARENCY. This also means the old common option ``-c`` for
+   TRANSPARENCY. This also means the old common option **-c** for
    specifying *PostScript* copies is no longer available.
 
 #. **Units**: The unit abbreviation for arc seconds is finally **s**
    instead of **c**, with the same change for upper case in some clock
    format statements.
 
-#. **Contour labels**: The modifiers ``+k``\ *fontcolor* and
-   ``+s``\ *fontsize* are obsolete, now being part of ``+f``\ *font*.
+#. **Contour labels**: The modifiers **+k**\ *fontcolor* and
+   **+s**\ *fontsize* are obsolete, now being part of **+f**\ *font*.
 
 #. **Ellipsoids**: Assigning **PROJ\_ELLIPSOID** a file name is
    deprecated, use comma-separated parameters *a, f\ :math:`^{-1}`*
@@ -605,30 +605,30 @@ correctly with a warning under compatibility mode:
    and others. Here, the unit **m** is deprecated; use **M** for statute
    miles.
 
-#. **3-D perspective**: Some programs used a combination of ``-E``,
-   ``-Z`` to set up a 3-D perspective view, but these options were not
+#. **3-D perspective**: Some programs used a combination of **-E**,
+   **-Z** to set up a 3-D perspective view, but these options were not
    universal. The new 3-D perspective in
    `GMT <http://gmt.soest.hawaii.edu>`_ 5 means you instead use the
-   common option ``-p`` to configure the 3-D projection.
+   common option **-p** to configure the 3-D projection.
 
 #. **Pixel vs. gridline registration:** Some programs used to have a
-   local ``-F`` to turn on pixel registration; now this is a common
-   option ``-r``.
+   local **-F** to turn on pixel registration; now this is a common
+   option **-r**.
 
 #. **Table file headers**: For consistency with other common i/o options
-   we now use ``-h`` instead of ``-H``.
+   we now use **-h** instead of **-H**.
 
 #. **Segment headers**: These are now automatically detected and hence
-   there is no longer a ``-m`` (or the older ``-M`` option).
+   there is no longer a **-m** (or the older **-M** option).
 
 #. **Front symbol**: The syntax for the front symbol has changed from
-   ``-Sf``\ *spacing/size*\ [``+d``\ ][``+t``\ ][:\ *offset*] to
-   ``-Sf``\ *spacing*\ [/*size*][**+r+l**\ ][**+f+t+s+c+b**\ ][\ ``+o``\ *offset*].
+   **-Sf**\ *spacing/size*\ [**+d**\ ][**+t**\ ][:\ *offset*] to
+   **-Sf**\ *spacing*\ [/*size*][**+r+l**\ ][**+f+t+s+c+b**\ ][\ **+o**\ *offset*].
 
 #. **Vector symbol**: With the introduction of geo-vectors there are
    three kinds of vectors that can be drawn: Cartesian (straight)
-   vectors with ``-Sv`` or ``-SV``, geo-vectors (great circles) with
-   ``-S=``, and circular vectors with ``-Sm``. These are all composed of
+   vectors with **-Sv** or **-SV**, geo-vectors (great circles) with
+   **-S=**, and circular vectors with **-Sm**. These are all composed of
    a line (controlled by pen settings) and 0–2 arrow heads (control by
    fill and outline settings). Many modifiers common to all arrows have
    been introduced using the **+key**\ [*arg*\ ] format. The *size* of a
@@ -638,30 +638,30 @@ correctly with a warning under compatibility mode:
    deprecated. See the `**psxy** <run:../man/psxy.html>`__ man page for
    a clear description of all modifiers.
 
-#. `**blockmean** <run:../man/blockmean.html>`__: The ``-S`` and ``-Sz``
-   options are deprecated; use ``-Ss`` instead.
+#. `**blockmean** <run:../man/blockmean.html>`__: The **-S** and **-Sz**
+   options are deprecated; use **-Ss** instead.
 
-#. `filter1d <filter1d.html>`_: The ``-N``\ *ncol/tcol*
-   option is deprecated; use ``-N``\ *tcol* instead as we automatically
+#. `filter1d <filter1d.html>`_: The **-N**\ *ncol/tcol*
+   option is deprecated; use **-N**\ *tcol* instead as we automatically
    determine the number of columns in the file.
 
-#. `**gmtconvert** <run:../man/gmtconvert.html>`__: ``-F`` is
-   deprecated; use common option ``-o`` instead.
+#. `**gmtconvert** <run:../man/gmtconvert.html>`__: **-F** is
+   deprecated; use common option **-o** instead.
 
-#. `**gmtdefaults** <run:../man/gmtdefaults.html>`__: ``-L`` is
+#. `**gmtdefaults** <run:../man/gmtdefaults.html>`__: **-L** is
    deprecated; this is now the default behavior.
 
-#. `**gmtmath** <run:../man/gmtmath.html>`__: ``-F`` is deprecated; use
-   common option ``-o`` instead.
+#. `**gmtmath** <run:../man/gmtmath.html>`__: **-F** is deprecated; use
+   common option **-o** instead.
 
-#. `**gmtselect** <run:../man/gmtselect.html>`__: ``-Cf`` is deprecated;
-   use common specification format ``-C-`` instead. Also,
-   ``-N``...\ **o** is deprecated; use ``-E`` instead.
+#. `**gmtselect** <run:../man/gmtselect.html>`__: **-Cf** is deprecated;
+   use common specification format **-C-** instead. Also,
+   **-N**...\ **o** is deprecated; use **-E** instead.
 
-#. `**grd2xyz** <run:../man/grd2xyz.html>`__: ``-E`` is deprecated as
+#. `**grd2xyz** <run:../man/grd2xyz.html>`__: **-E** is deprecated as
    the ESRI ASCII exchange format is now detected automatically.
 
-#. `**grdcontour** <run:../man/grdcontour.html>`__: ``-m`` is deprecated
+#. `**grdcontour** <run:../man/grdcontour.html>`__: **-m** is deprecated
    as segment headers are handled automatically.
 
 #. `grdfft <grdfft.html>`_: ``-M`` is deprecated; use
@@ -4816,7 +4816,7 @@ accurate for map areas that extend less than 10 away from the central
 meridian. For larger regions we use the conformal latitude in the
 general spherical formulae instead.
 
-Oblique Mercator projection (``-Jo`` ``-JO``)
+Oblique Mercator projection (**-Jo** **-JO**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Oblique configurations of the cylinder give rise to the oblique Mercator
@@ -4826,39 +4826,39 @@ complex curves. The projection was developed in the early 1900s by
 several workers. Several parameters must be provided to define the
 projection. *GMT* offers three different definitions:
 
-#. Option ``-Joa`` or ``-JOa``:
+#. Option **-Joa** or **-JOa**:
 
    -  Longitude and latitude of projection center.
 
    -  Azimuth of the oblique equator.
 
-   -  Scale in inch/degree or 1:xxxxx along oblique equator (``-Joa``),
-      or map width (``-JOa``).
+   -  Scale in inch/degree or 1:xxxxx along oblique equator (**-Joa**),
+      or map width (**-JOa**).
 
-#. Option ``-Job`` or ``-JOb``:
+#. Option **-Job** or **-JOb**:
 
    -  Longitude and latitude of projection center.
 
    -  Longitude and latitude of second point on oblique equator.
 
-   -  Scale in inch/degree or 1:xxxxx along oblique equator (``-Job``),
-      or map width (``-JOb``).
+   -  Scale in inch/degree or 1:xxxxx along oblique equator (**-Job**),
+      or map width (**-JOb**).
 
-#. Option ``-Joc`` or ``-JOc``:
+#. Option **-Joc** or **-JOc**:
 
    -  Longitude and latitude of projection center.
 
    -  Longitude and latitude of projection pole.
 
-   -  Scale in inch/degree or 1:xxxxx along oblique equator (``-Joc``),
-      or map width (``-JOc``).
+   -  Scale in inch/degree or 1:xxxxx along oblique equator (**-Joc**),
+      or map width (**-JOc**).
 
 Our example was produced by the command
 
 It uses definition 3 for an oblique view of some Caribbean islands. Note
 that we define our region using the rectangular system described
-earlier. If we do not append an “r” to the ``-R`` string then the
-information provided with the ``-R`` option is assumed to be oblique
+earlier. If we do not append an “r” to the **-R** string then the
+information provided with the **-R** option is assumed to be oblique
 degrees about the projection center rather than the usual geographic
 coordinates. This interpretation is chosen since in general the
 parallels and meridians are not very suitable as map boundaries.
@@ -4932,7 +4932,7 @@ Table [tbl:JQ].
 
 [tbl:JQ]
 
-Cylindrical equal-area projections (``-Jy`` ``-JY``)
+Cylindrical equal-area projections (**-Jy** **-JY**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This cylindrical projection is actually several projections, depending
@@ -4944,7 +4944,7 @@ straight lines. The requirements to define this projection are:
 
 -  The standard parallel.
 
--  Scale in inch/degree or as 1:xxxxx (``-Jy``), or map width (``-JY``)
+-  Scale in inch/degree or as 1:xxxxx (**-Jy**), or map width (**-JY**)
 
 While you may choose any value for the standard parallel and obtain your
 own personal projection, there are seven choices of standard parallels
@@ -4979,7 +4979,7 @@ obtained by running the command:
 As one can see there is considerable distortion at high latitudes since
 the poles map into lines.
 
-Miller Cylindrical projection (``-Jj`` ``-JJ``)
+Miller Cylindrical projection (**-Jj** **-JJ**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This cylindrical projection, presented by Osborn Maitland Miller of the
@@ -4993,13 +4993,13 @@ this projection. Specify the projection by:
 
 -  Optionally, the central meridian (default is the middle of your map).
 
--  Scale in inch/degree or as 1:xxxxx (``-Jj``), or map width (``-JJ``).
+-  Scale in inch/degree or as 1:xxxxx (**-Jj**), or map width (**-JJ**).
 
 For instance, a world map centered on the 90E meridian at a map scale of
 1:400,000,000 (Figure [fig:GMT:sub:`m`\ iller]) can be obtained as
 follows:
 
-Cylindrical stereographic projections (``-Jcyl_stere`` ``-JCyl_stere``)
+Cylindrical stereographic projections (**-Jcyl_stere** **-JCyl_stere**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The cylindrical stereographic projections are certainly not as notable
@@ -5016,8 +5016,8 @@ parallels, equidistant from the equator. The projections are defined by:
 -  The standard parallel (default is the Equator). When used, central
    meridian needs to be given as well.
 
--  Scale in inch/degree or as 1:xxxxx (``-Jcyl_stere``), or map width
-   (``-JCyl_stere``)
+-  Scale in inch/degree or as 1:xxxxx (**-Jcyl_stere**), or map width
+   (**-JCyl_stere**)
 
 Some of the selections of the standard parallel are named for the
 cartographer or publication that popularized the projection
@@ -5058,7 +5058,7 @@ In all cases, the specification of the central meridian can be skipped.
 The default is the middle of the longitude range of the plot, specified
 by the (R) option.
 
-Hammer projection (``-Jh`` ``-JH``)
+Hammer projection (**-Jh** **-JH**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The equal-area Hammer projection, first presented by the German
@@ -5070,13 +5070,13 @@ defined by selecting:
 
 -  The central meridian [Middle of your map].
 
--  Scale along equator in inch/degree or 1:xxxxx (``-Jh``), or map width
-   (``-JH``).
+-  Scale along equator in inch/degree or 1:xxxxx (**-Jh**), or map width
+   (**-JH**).
 
 A view of the Pacific ocean using the Dateline as central meridian is
 accomplished thus
 
-Mollweide projection (``-Jw`` ``-JW``)
+Mollweide projection (**-Jw** **-JW**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This pseudo-cylindrical, equal-area projection was developed by the
@@ -5091,12 +5091,12 @@ longitudes and latitudes into rectangular *x*/*y* coordinates:
 
 -  The central meridian [Middle of your map].
 
--  Scale along equator in inch/degree or 1:xxxxx (``-Jw``), or map width
-   (``-JW``).
+-  Scale along equator in inch/degree or 1:xxxxx (**-Jw**), or map width
+   (**-JW**).
 
 An example centered on Greenwich can be generated thus:
 
-Winkel Tripel projection (``-Jr`` ``-JR``)
+Winkel Tripel projection (**-Jr** **-JR**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In 1921, the German mathematician Oswald Winkel a projection that was to
@@ -5117,13 +5117,13 @@ use it you must enter
 
 -  The central meridian [Middle of your map].
 
--  Scale along equator in inch/degree or 1:xxxxx (``-Jr``), or map width
-   (``-JR``).
+-  Scale along equator in inch/degree or 1:xxxxx (**-Jr**), or map width
+   (**-JR**).
 
 Centered on Greenwich, the example in Figure [fig:GMT\ :sub:`w`\ inkel]
 was created by this command:
 
-Robinson projection (``-Jn`` ``-JN``)
+Robinson projection (**-Jn** **-JN**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The Robinson projection, presented by the American geographer and
@@ -5138,13 +5138,13 @@ enter
 
 -  The central meridian [Middle of your map].
 
--  Scale along equator in inch/degree or 1:xxxxx (``-Jn``), or map width
-   (``-JN``).
+-  Scale along equator in inch/degree or 1:xxxxx (**-Jn**), or map width
+   (**-JN**).
 
 Again centered on Greenwich, the example below was created by this
 command:
 
-Eckert IV and VI projection (``-Jk`` ``-JK``)
+Eckert IV and VI projection (**-Jk** **-JK**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The Eckert IV and VI projections, presented by the German cartographer
@@ -5153,21 +5153,21 @@ projections. Central meridian and all parallels are straight lines;
 other meridians are equally spaced elliptical arcs (IV) or sinusoids
 (VI). The scale is true along latitudes 4030’ (IV) and 4916’ (VI). Their
 main use is in thematic world maps. To select Eckert IV you must use
-``-JKf`` (**f** for “four”) while Eckert VI is selected with ``-JKs``
+**-JKf** (**f** for “four”) while Eckert VI is selected with **-JKs**
 (**s** for “six”). If no modifier is given it defaults to Eckert VI. In
 addition, you must enter
 
 -  The central meridian [Middle of your map].
 
--  Scale along equator in inch/degree or 1:xxxxx (``-Jk``), or map width
-   (``-JK``).
+-  Scale along equator in inch/degree or 1:xxxxx (**-Jk**), or map width
+   (**-JK**).
 
 Centered on the Dateline, the Eckert IV example below was created by
 this command:
 
 The same script, with **s** instead of **f**, yields the Eckert VI map:
 
-Sinusoidal projection (``-Ji`` ``-JI``)
+Sinusoidal projection (**-Ji** **-JI**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The sinusoidal projection is one of the oldest known projections, is
@@ -5179,8 +5179,8 @@ parallels (and central meridian). To use it, you need to select:
 
 -  The central meridian [Middle of your map].
 
--  Scale along equator in inch/degree or 1:xxxxx (``-Ji``), or map width
-   (``-JI``).
+-  Scale along equator in inch/degree or 1:xxxxx (**-Ji**), or map width
+   (**-JI**).
 
 A simple world map using the sinusoidal projection is therefore obtained
 by
@@ -5199,7 +5199,7 @@ The usefulness of the interrupted sinusoidal projection is basically
 limited to display of global, discontinuous data distributions like
 hydrocarbon and mineral resources, etc.
 
-Van der Grinten projection (``-Jv`` ``-JV``)
+Van der Grinten projection (**-Jv** **-JV**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The Van der Grinten projection, presented by Alphons J. van der Grinten
@@ -5210,8 +5210,8 @@ world enclosed in a circle. To use it you must enter
 
 -  The central meridian [Middle of your map].
 
--  Scale along equator in inch/degree or 1:xxxxx (``-Jv``), or map width
-   (``-JV``).
+-  Scale along equator in inch/degree or 1:xxxxx (**-Jv**), or map width
+   (**-JV**).
 
 Centered on the Dateline, the example below was created by this command:
 
@@ -5235,7 +5235,7 @@ complex illustration. We will mostly follow the following format:
 #. We explain the rationale behind the commands.
 
 #. We present the illustration, 50% reduced in size, and without the
-   timestamp (``-U``).
+   timestamp (**-U**).
 
 A detailed discussion of each command is not given; we refer you to the
 manual pages for command line syntax, etc. We encourage you to run these
@@ -5276,9 +5276,9 @@ two sequences of `pscoast <pscoast.html>`_,
 `**grdcontour** <run:../man/grdcontour.html>`__,
 `**grdcontour** <run:../man/grdcontour.html>`__. They differ in that the
 first is centered on Greenwich; the second on the dateline. We use the
-limit option (``-L``) in `**grdcontour** <run:../man/grdcontour.html>`__
+limit option (**-L**) in `**grdcontour** <run:../man/grdcontour.html>`__
 to select negative contours only and plot those with a dashed pen, then
-positive contours only and draw with a solid pen [Default]. The ``-T``
+positive contours only and draw with a solid pen [Default]. The **-T**
 option causes tickmarks pointing in the downhill direction to be drawn
 on the innermost, closed contours. For the upper panel we also added -
 and + to the local lows and highs. You can find this illustration as
@@ -5310,7 +5310,7 @@ utility program (see Appendix [app:A]) that may be adapted to reflect
 the nature of your data base format. It automatically figures out the
 required extent of the region given the two corners points and the
 projection. The extreme meridians and parallels enclosing the oblique
-region is ``-R``\ 159:50/220:10/3:10/47:35. This is the area extracted
+region is **-R**\ 159:50/220:10/3:10/47:35. This is the area extracted
 by `**grdraster** <run:../man/grdraster.html>`__. For your convenience
 we have commented out those lines and provided the two extracted files
 so you do not need `**grdraster** <run:../man/grdraster.html>`__ to try
@@ -5327,7 +5327,7 @@ modulate the color image. Next we run
 `grdimage <grdimage.html>`_ to create a color-code image
 of the Geosat geoid heights, and draw a color legend to the right of the
 image with `**psscale** <run:../man/psscale.html>`__. Similarly, we run
-`grdimage <grdimage.html>`_ but specify ``-Y``\ 4.5i to
+`grdimage <grdimage.html>`_ but specify **-Y**\ 4.5i to
 plot above the previous image. Adding scale and label the two plots a)
 and b) completes the illustration (Figure [fig:example:sub:`0`\ 2]).
 
@@ -5365,7 +5365,7 @@ processing steps (), while the final plot shows the ship and sat power
 in one diagram and the coherency on another diagram, both on the same
 page. Note the extended use of `**pstext** <run:../man/pstext.html>`__
 and `**psxy** <run:../man/psxy.html>`__ to put labels and legends
-directly on the plots. For that purpose we often use ``-Jx``\ 1i and
+directly on the plots. For that purpose we often use **-Jx**\ 1i and
 specify positions in inches directly. Thus, the complete automated
 script reads:
 
@@ -5401,12 +5401,12 @@ choose to either plot a mesh surface (left) or a color-coded surface
 due north, which is simulated by computing the gradient of the surface
 grid in that direction though the
 `**grdgradient** <run:../man/grdgradient.html>`__ program. We choose to
-use the ``-Qc`` option in `**grdview** <run:../man/grdview.html>`__ to
+use the **-Qc** option in `**grdview** <run:../man/grdview.html>`__ to
 achieve a high degree of smoothness. Here, we select 100 dpi since that
 will be the resolution of our final raster (The EOS raster was 300 dpi).
 Note that the size of the resulting output file is directly dependent on
 the square of the dpi chosen for the scanline conversion and how well
-the resulting image compresses. A higher value for dpi in ``-Qc`` would
+the resulting image compresses. A higher value for dpi in **-Qc** would
 have resulted in a much larger output file. The CPT files were taken
 from Section [sec:example\ :sub:`0`\ 2].
 
@@ -5506,7 +5506,7 @@ we want the labels to have that same orientation (i.e., the angle with
 the baseline must be 50). We do this by extracting the last record from
 each track, paste this file with the file, and use ***AWK*** to create
 the format needed for `**pstext** <run:../man/pstext.html>`__. Note we
-offset the positions by -0.05 inch with ``-D`` in order to have a small
+offset the positions by -0.05 inch with **-D** in order to have a small
 gap between the profile and the label:
 
 The output shows the sea-surface slopes along 42 descending Geosat
@@ -5718,7 +5718,7 @@ India with `grdimage <grdimage.html>`_, use
 then overlay topography from the ETOPO5 data set with another call to
 `grdimage <grdimage.html>`_. We finally undo the
 clippath with a second call to `pscoast <pscoast.html>`_
-with the option ``-Q`` (Figure [fig:example:sub:`1`\ 7]):
+with the option **-Q** (Figure [fig:example:sub:`1`\ 7]):
 
 We also plot a color legend on top of the land. So here we basically
 have three layers of “paint” stacked on top of each other: the
@@ -5728,7 +5728,7 @@ distributed the colors over the range: they are not of equal length put
 are associated with equal amounts of area in the plot. Since the high
 amounts (in red) are not very prevalent, that color spans a long range.
 
-For this image it is appropriate to use the ``-I`` option in
+For this image it is appropriate to use the **-I** option in
 `**psscale** <run:../man/psscale.html>`__ so the legend gets shaded,
 similar to the geoid grid. See Appendix [app:M] to learn more about
 color palettes and ways to draw color legends.
@@ -5797,9 +5797,9 @@ The following recipe is used when designing a new symbol.
    rules. In our case we describe our volcano and bulls eye using these
    three freeform polygon generators:
 
-   :math:`x_0` :math:`y_0` :math:`r` **C** [ ``-G``\ *fill* ] [
-   ``-W``\ *pen* ] Draw :math:`x_0` :math:`y_0` **M** [ ``-G``\ *fill* ]
-   [ ``-W``\ *pen* ] Start new element at :math:`x_0`, :math:`y_0`
+   :math:`x_0` :math:`y_0` :math:`r` **C** [ **-G**\ *fill* ] [
+   **-W**\ *pen* ] Draw :math:`x_0` :math:`y_0` **M** [ **-G**\ *fill* ]
+   [ **-W**\ *pen* ] Start new element at :math:`x_0`, :math:`y_0`
 
    :math:`x_1` :math:`y_1` **D** Draw straight line from current point
    to :math:`x_1`, :math:`y_1` around (:math:`x_0`, :math:`y_0`)
@@ -5811,12 +5811,12 @@ The following recipe is used when designing a new symbol.
    We also add a few stand-alone circles (for other symbols, see
    `**psxy** <run:../man/psxy.html>`__ man page):
 
-   :math:`x_0` :math:`y_0` :math:`r` **C** [ ``-G``\ *fill* ] [
-   ``-W``\ *pen* ] Draw :math:`x_0` :math:`y_0` :math:`r` **c** [
-   ``-G``\ *fill* ] [ ``-W``\ *pen* ] Draw single circle of radius
+   :math:`x_0` :math:`y_0` :math:`r` **C** [ **-G**\ *fill* ] [
+   **-W**\ *pen* ] Draw :math:`x_0` :math:`y_0` :math:`r` **c** [
+   **-G**\ *fill* ] [ **-W**\ *pen* ] Draw single circle of radius
    :math:`r` around :math:`x_0`, :math:`y_0`
 
-   The optional ``-G`` and ``-W`` can be used to hardwire the color fill
+   The optional **-G** and **-W** can be used to hardwire the color fill
    and pen for segments (use **–** to disallow fill or line for any
    specific feature). By default the segments are painted based on the
    values of the command line settings.
@@ -5842,7 +5842,7 @@ We are now ready to give it a try. Based on the hotspot locations in the
 file (with a 3rd column giving the desired symbol sizes in inches) we
 lay down a world map and overlay red volcano symbols using our
 custom-built volcano symbol and `**psxy** <run:../man/psxy.html>`__. We
-do something similar with the bulls eye symbols. Without the ``-G``
+do something similar with the bulls eye symbols. Without the **-G**
 option, however, they get the colors defined in .
 
 Here is our final map script that produces
@@ -6013,7 +6013,7 @@ categorical data, like these, that should not be interpolated.
 General vertical perspective projection
 ---------------------------------------
 
-Next, we present a recent extension to the ``-JG`` projection option
+Next, we present a recent extension to the **-JG** projection option
 which allows the user to specify a particular altitude (this was always
 at infinity before), as well as several further parameters to limit the
 view from the chosen vantage point. In this example we show a view of
@@ -6043,7 +6043,7 @@ non-Mercator map then you must extract a geographic grid using
 desired map projection. However, if you want to make a Mercator map then
 you can save time and preserve data quality by avoiding to re-project
 the data set twice since it is already in a Mercator projection. This
-example shows how this is accomplished. We use the ``-M`` option in
+example shows how this is accomplished. We use the **-M** option in
 `**img2grd** <run:../man/img2grd.html>`__\  [29]_ to pull out the grid
 in Mercator units (i.e., do *not* invert the Mercator projection) and
 then simply plot the grid using a linear projection with a suitable
@@ -6365,7 +6365,7 @@ Orbiting a static map
 Our third animation keeps a fixed gridded data set but moves the camera
 angle around the full 360. We use
 `**grdview** <run:../man/grdview.html>`__ to generate a shaded-relief
-image sequence using the new enhanced ``-E`` option. No additional
+image sequence using the new enhanced **-E** option. No additional
 information is plotted on the image. As before we produce an animated
 GIF image and a simple HTML wrapper for it.
 
@@ -6658,9 +6658,9 @@ The first data record may be preceded by one or more header records. Any
 records that begins with ’#’ is considered a header or comment line and
 are always processed correctly. If your data file has leading header
 records that do *not* start with ’#’ then you must make sure to use the
-``-h`` option and set the parameter **IO\_N\_HEADER\_RECS** in the file
-(*GMT* default is one header record if ``-h`` is given; you may also use
-``-h``\ *nrecs* directly). Fields within a record must be separated by
+**-h** option and set the parameter **IO\_N\_HEADER\_RECS** in the file
+(*GMT* default is one header record if **-h** is given; you may also use
+**-h**\ *nrecs* directly). Fields within a record must be separated by
 spaces, tabs, or commas. Each field can be an integer or floating-point
 number or a geographic coordinate string using the
 [+:math:`|`-]dd[:mm[:ss]][W:math:`|`\ S\ :math:`|`\ N\ :math:`|`\ E\ :math:`|`\ w\ :math:`|`\ s\ :math:`|`\ n\ :math:`|`\ e]
@@ -6685,10 +6685,10 @@ records that signal the start of a new segment. The segment headers may
 be of any format, but all must have the same character in the first
 column. The unique character is by default ’\ :math:`>`\ ’, but you can
 override that by modifying the **IO\_SEGMENT\_MARKER** default setting.
-Programs can examine the segment headers to see if they contain ``-D``
-for a distance value, ``-W`` and ``-G`` options for specifying pen and
-fill attributes for individual segments, ``-Z`` to change color via a
-CPT file, ``-L`` for label specifications, or ``-T`` for general-purpose
+Programs can examine the segment headers to see if they contain **-D**
+for a distance value, **-W** and **-G** options for specifying pen and
+fill attributes for individual segments, **-Z** to change color via a
+CPT file, **-L** for label specifications, or **-T** for general-purpose
 text descriptions. These settings (and occasionally others) will
 override the corresponding command line options. *GMT* also provides for
 two special values for **IO\_SEGMENT\_MARKER** that can make
@@ -6719,10 +6719,10 @@ columns as are needed by the program, starting with the first
 1-dimensional it can find in the file. To specifically specify which
 variables are to be read, append the suffix
 **?**\ *var1*\ **/**\ *var2*\ **/**\ *...* to the netCDF file name or
-add the option ``-bic``\ *var1*\ **/**\ *var2*\ **/**\ *...*, where
+add the option **-bic**\ *var1*\ **/**\ *var2*\ **/**\ *...*, where
 *var1*, *var2*, etc.are the names of the variables to be processed. The
 latter option is particularly practical when more than one file is read:
-the ``-bic`` option will apply to all files. Currently, *GMT* only
+the **-bic** option will apply to all files. Currently, *GMT* only
 reads, but does not write, netCDF tabular data.
 
 Grid files
@@ -6810,7 +6810,7 @@ makes more sense. Utility programs like
 convert from one format to the other;
 `**grdedit** <run:../man/grdedit.html>`__ can make changes to the grid
 header and convert a pixel- to a gridline-registered grid, or *vice
-versa*. The grid registration is determined by the common *GMT* ``-r``
+versa*. The grid registration is determined by the common *GMT* **-r**
 option (see Section [sec:grid\ :sub:`r`\ egistration]).
 
 Boundary Conditions for operations on grids
@@ -6823,7 +6823,7 @@ that operate on grids (e.g.,
 `**grdtrack** <run:../man/grdtrack.html>`__,
 `**nearneighbor** <run:../man/nearneighbor.html>`__, and
 `**grdview** <run:../man/grdview.html>`__, to name a few. The desired
-condition can be set with the common *GMT* option ``-n``; see Section
+condition can be set with the common *GMT* option **-n**; see Section
 [sec:resample]. The boundary conditions come into play when
 interpolating or computing derivatives near the limits of the region
 covered by the grid. The *default* boundary conditions used are those
@@ -6952,7 +6952,7 @@ The Sun raster file format consists of a header followed by a series of
 unsigned 1-byte integers that represents the bit-pattern. Bits are
 scanline oriented, and each row must contain an even number of bytes.
 The predefined 1-bit patterns in *GMT* have dimensions of 64 by 64, but
-other sizes will be accepted when using the ``-Gp|P`` option. The Sun
+other sizes will be accepted when using the **-Gp|P** option. The Sun
 header structure is outline in Table [tbl:sunheader].
 
 [H]
@@ -7103,7 +7103,7 @@ accomplished.
    for the *PostScript* graphics that will actually be printed.
 
 -  The preferred option is to use the *GMT* utility
-   `**ps2raster** <run:../man/ps2raster.html>`__. Its ``-A`` option will
+   `**ps2raster** <run:../man/ps2raster.html>`__. Its **-A** option will
    figure out the tightest BoundingBox, again using ***ghostscript*** in
    the background. For example, running
 
@@ -7195,7 +7195,7 @@ Embedded image compression.
 
 Auto-rotation.
     The ***ghostscript*** engine has the annoying habit to automatically
-    rotate an image produced with portrait orientation (using the ``-P``
+    rotate an image produced with portrait orientation (using the **-P**
     option) so that the height is always larger than the width. So if
     you have an image that was printed in portrait mode but happens to
     have a width larger than height (for example a global map), it would
@@ -7245,7 +7245,7 @@ rendering engine. The program
 lossy compression techniques that are default to ***ghostscript*** and
 includes the fonts into the resulting PDF file to ensure portability. By
 default the fonts are rendered at 720 dots-per-inch in a PDF file and
-images are sampled to 300 dpi, but that can be changed with the ``-E``
+images are sampled to 300 dpi, but that can be changed with the **-E**
 option. Simply run
 
 ::
@@ -7253,14 +7253,14 @@ option. Simply run
     ps2raster -A -P -Tf *.ps
 
 to convert all *PostScript* files to PDF while cropping it to the
-smallest possible BoundingBox. Or use the ``-Tg`` option to convert your
+smallest possible BoundingBox. Or use the **-Tg** option to convert your
 files to PNG.
 
-The ``-P`` option of `**ps2raster** <run:../man/ps2raster.html>`__ may
-also come in handy. When you have *not* supplied the ``-P`` option in
+The **-P** option of `**ps2raster** <run:../man/ps2raster.html>`__ may
+also come in handy. When you have *not* supplied the **-P** option in
 your first *GMT* plot command, your plot will be in Landscape mode. That
 means that the plot will be rotated 90 degrees (anti-clockwise) to fit
-on a Portrait mode page when coming out of the printer. The ``-P``
+on a Portrait mode page when coming out of the printer. The **-P**
 option of `**ps2raster** <run:../man/ps2raster.html>`__ will undo that
 rotation, so that you do not have to do so within your document. This
 will only affect Landscape plots; Portrait plots will not be rotated.
@@ -7440,9 +7440,9 @@ Predefined bit and hachure patterns in `GMT <http://gmt.soest.hawaii.edu>`_
 [app:E]
 
 *GMT* provides 90 different bit and hachure patterns that can be
-selected with the ``-Gp`` or ``-GP`` option in most plotting programs.
-The left side of each image was created using ``-Gp``, the right side
-shows the inverted version using ``-GP``. These patterns are reproduced
+selected with the **-Gp** or **-GP** option in most plotting programs.
+The left side of each image was created using **-Gp**, the right side
+shows the inverted version using **-GP**. These patterns are reproduced
 below at 300 dpi using the default black and white shades.
 
 |image|
@@ -7573,7 +7573,7 @@ outlined fonts in PDF, create the PDF from the converted
 *PostScript*-file. Also, `**ps2raster** <run:../man/ps2raster.html>`__
 cannot correctly crop ***Ghostscript*** converted *PostScript*-files
 anymore. Use Heiko Oberdiek’s instead or crop with
-`**ps2raster** <run:../man/ps2raster.html>`__ ``-A`` ``-Te`` before (See
+`**ps2raster** <run:../man/ps2raster.html>`__ **-A** **-Te** before (See
 Example [sec:non-default-fonts-example]).
 
 Character encoding
@@ -7804,7 +7804,7 @@ Artificial illumination
 -----------------------
 
 *GMT* uses the HSV system to achieve artificial illumination of colored
-images (e.g., ``-I`` option in
+images (e.g., **-I** option in
 `grdimage <grdimage.html>`_) by changing the saturation
 *s* and value *v* coordinates of the color. When the intensity is zero
 (flat illumination), the data are colored according to the CPT file. If
@@ -7881,13 +7881,13 @@ tables of data indexed to one independent variable) and
 2-dimensional grids) allow filtering of data by a moving-window process.
 (To filter a grid by Fourier transform use
 `grdfft <grdfft.html>`_.) Both programs use an argument
-``-F``\ :math:`<`\ *type*\ :math:`><`\ *width*\ :math:`>` to specify the
+**-F**\ :math:`<`\ *type*\ :math:`><`\ *width*\ :math:`>` to specify the
 type of process and the window’s width (in 1-d) or diameter (in 2-d).
 (In `filter1d <filter1d.html>`_ the width is a length of
 the time or space ordinate axis, while in
 `grdfilter <grdfilter.html>`_ it is the diameter of a
 circular area whose distance unit is related to the grid mesh via the
-``-D`` option). If the process is a median, mode, or extreme value
+**-D** option). If the process is a median, mode, or extreme value
 estimator then the window output cannot be written as a convolution and
 the filtering operation is not a linear operator. If the process is a
 weighted average, as in the boxcar, cosine, and gaussian filter types,
@@ -8062,7 +8062,7 @@ becomes a complicated processing step.
    **i**\ ntermediate, **l**\ ow, and **c**\ rude; they are accessed in
    `pscoast <pscoast.html>`_,
    `**gmtselect** <run:../man/gmtselect.html>`__, and
-   `**grdlandmask** <run:../man/grdlandmask.html>`__ with the ``-D``
+   `**grdlandmask** <run:../man/grdlandmask.html>`__ with the **-D**
    option [45]_. For each of these 5 data sets (**f**, **h**, **i**,
    **l**, **c**) we specified an equidistant grid (1, 2, 5, 10, 20) and
    split all polygons into line-segments that each fit inside one of the
@@ -8102,7 +8102,7 @@ regional hemisphere map centered near Papua New Guinea and zoom in on a
 specified point. The map regions will be specified in projected km from
 the projection center, e.g., we may want the map to go from km to km in
 the longitudinal and the latitudinal direction. However, *GMT* programs
-expects degrees in the ``-R`` option that specifies the desired region.
+expects degrees in the **-R** option that specifies the desired region.
 Given the chosen map projection we can automate this process by using a
 simple shell function that we call ***getbox***.
 
@@ -8112,7 +8112,7 @@ coordinates of the four corners of the region rectangle. Again, we
 automate this task by adding the simple function ***getrect*** from
 ***doc/scripts/functions.sh***.
 
-The crude resolution (``-Dc``)
+The crude resolution (**-Dc**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We begin with an azimuthal equidistant map of the hemisphere centered on
@@ -8133,7 +8133,7 @@ annotations and set **MAP\_ANNOT\_MIN\_SPACING** to suppress some
 longitudinal annotations near the S pole that otherwise would overprint.
 The box indicates the outline of the next map.
 
-The low resolution (``-Dl``)
+The low resolution (**-Dl**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We have now reduced the map area by zooming in on the map center. Now,
@@ -8146,7 +8146,7 @@ simplified by the DP-routine: The total file size of the coastlines,
 rivers, and borders combined grows to 907 kbytes; it is the default
 resolution in *GMT*. The plot is generated by the script:
 
-The intermediate resolution (``-Di``)
+The intermediate resolution (**-Di**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We continue to zoom in on the map center. In this map, the edges of the
@@ -8160,7 +8160,7 @@ intermediate database is moderately decimated and simplified by the
 DP-routine: The combined file size of the coastlines, rivers, and
 borders now exceeds 3.35 Mbytes. The plot is generated by the script:
 
-The high resolution (``-Dh``)
+The high resolution (**-Dh**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The relentless zooming continues! Now, the edges of the map are all 100
@@ -8173,7 +8173,7 @@ the DP-routine: The combined file size of the coastlines, rivers, and
 borders now swells to 12.3 Mbytes. The map and the final outline box are
 generated by these commands:
 
-The full resolution (``-Df``)
+The full resolution (**-Df**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We now arrive at our final plot, which shows a detailed view of the
@@ -8306,7 +8306,7 @@ master CPT tables and translate/scale them to fit the user’s range of
 original color scale, which can be either discrete or continuous, though
 some (like **globe**) are a mix of the two. The bottom half the color
 bar are built by using `**makecpt** <run:../man/makecpt.html>`__
-``-T-1/1/0.25``, thus splitting the color scale into 8 discrete colors.
+**-T**-1/1/0.25, thus splitting the color scale into 8 discrete colors.
 
 [h] |image| [fig:GMT:sub:`A`\ pp\ :sub:`M1`]
 
@@ -8318,15 +8318,15 @@ Chapter [ch:7] (examples 2, 16, and 17). Things become a bit more
 complicated when you want to label the legend with names for certain
 intervals (like geological time periods in the example below). To
 accomplish that, one should add a semi-colon and the label name at the
-end of a line in the CPT table and add the ``-L`` option to the
+end of a line in the CPT table and add the **-L** option to the
 `**psscale** <run:../man/psscale.html>`__ command that draws the color
 legend. This option also makes all intervals in the legend of equal
 length, even it the numerical values are not equally spaced.
 
 Normally, the name labels are plotted at the lower end of the intervals.
-But by adding a *gap* amount (even when zero) to the ``-L`` option, they
+But by adding a *gap* amount (even when zero) to the **-L** option, they
 are centered. The example below also shows how to annotate ranges using
-``-Li`` (in which case no name labels should appear in the CPT file),
+**-Li** (in which case no name labels should appear in the CPT file),
 and how to switch the color bar around (by using a negative length).
 
 [h] |image| [fig:GMT:sub:`A`\ pp\ :sub:`M2`]
@@ -8343,7 +8343,7 @@ The *GMT* tools `**psxy.c** <run:../man/psxy.c.html>`__ and
 `**psxyz.c** <run:../man/psxyz.c.html>`__ are capable of using custom
 symbols as alternatives to the built-in, standard geometrical shapes
 like circles, triangles, and many others. One the command line, custom
-symbols are selected via the ``-Sk``\ *symbolname*\ [.*size*] symbol
+symbols are selected via the **-Sk**\ *symbolname*\ [.*size*] symbol
 selection, where *symbolname* refers to a special symbol definition file
 called that must be available via the standard *GMT* user paths. Several
 custom symbols comes pre-configured with *GMT*\ (see
@@ -8379,7 +8379,7 @@ Symbol variables
 
 Simple symbols, such as circles and triangles, only take a single
 parameter: the symbol size, which is either given on the command line
-(via ``-Sk``) or as part of the input data. However, more complicated
+(via **-Sk**) or as part of the input data. However, more complicated
 symbols, such as the ellipse or vector symbols, may require more
 parameters. If your custom symbol requires more than the single size
 parameter you must include the line
@@ -8473,9 +8473,9 @@ are listed in Table [tbl:custsymb].
 [tbl:custsymb]
 
 For **M**, **T**, and all the lower-case symbol codes you may optionally
-append specific pens (with ``-W``\ *pen*) and fills (with
-``-G``\ *pen*). These settings will override the pens and fills you may
-have specified on the command line. Passing ``-G``- or ``-W``- means no
+append specific pens (with **-W**\ *pen*) and fills (with
+**-G**\ *pen*). These settings will override the pens and fills you may
+have specified on the command line. Passing **-G**- or **-W**- means no
 fill or outline, respectively.
 
 Conditional statements
@@ -8604,12 +8604,12 @@ Label Placement
 
 While the previous *GMT* versions 1–3 allowed for a single algorithm
 that determined where labels would be placed, *GMT* 4 allows for five
-different algorithms. Furthermore, a new “symbol” option (``-Sq`` for
+different algorithms. Furthermore, a new “symbol” option (**-Sq** for
 “quoted line”) has been added to `**psxy** <run:../man/psxy.html>`__ and
 `**psxyz** <run:../man/psxyz.html>`__ and hence the new label placement
 mechanisms apply to those programs as well. The contouring programs
-expect the algorithm to be specified as arguments to ``-G`` while the
-line plotting programs expect the same arguments to follow ``-Sq``. The
+expect the algorithm to be specified as arguments to **-G** while the
+line plotting programs expect the same arguments to follow **-Sq**. The
 information appended to these options is the same in both cases and is
 of the form [**code**\ ]\ *info*. The five algorithms correspond to the
 five codes below (some codes will appear in both upper and lower case;
@@ -8718,9 +8718,9 @@ to specify exactly what are the attributes of the labels. It turns out
 that there are quite a few possible attributes that we may want to
 control, hence understanding how to specify these attributes becomes
 important. In the contouring programs, one or more attributes may be
-appended to the ``-A`` option using the format +\ *code*\ [*args*\ ] for
+appended to the **-A** option using the format +\ *code*\ [*args*\ ] for
 each attribute, whereas for the line plotting programs these attributes
-are appended to the ``-Sq`` option following a colon (:) that separates
+are appended to the **-Sq** option following a colon (:) that separates
 the label codes from the placement algorithm. Several of the attributes
 do not apply to contours so we start off with listing those that apply
 universally. These codes are:
@@ -8833,7 +8833,7 @@ apply:
         is assumed that the input line segments are given in the
         multi-segment file format; if not we pick the single label from
         the file’s header record). We first scan the header for an
-        embedded ``-L``\ *label* option; if none is found we instead use
+        embedded **-L**\ *label* option; if none is found we instead use
         the first word following the segment marker [:math:`>`\ ].
 
     +Ld:
@@ -8920,7 +8920,7 @@ Label placement at simple line intersections
 
 Often, it will suffice to place contours at the imaginary intersections
 between the contour lines and a well-placed straight line segment. The
-``-Gl`` or ``-GL`` algorithms work well in those cases:
+**-Gl** or **-GL** algorithms work well in those cases:
 
 The obvious choice in this example is to specify a great circle between
 the high and the low, thus placing all labels between these extrema.
@@ -9031,7 +9031,7 @@ are:
 .
     This file is created to communicate the command line history from
     one command to the next (Section [sec:gmtcommands]) so that
-    shorthands like ``-R`` or ``-J`` can be used once it has been set in
+    shorthands like **-R** or **-J** can be used once it has been set in
     a previous *GMT* command. The existence of this file makes if
     impossible to run two *GMT* scripts simultaneously in the same
     directory, since those files may clash (contain different histories)
@@ -9285,7 +9285,7 @@ Domain and map projections
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The new format will also support region and projection information. The
-region will be stored in *GMT* ``-R`` format (i.e., ``-R``\ *W/E/S/N*,
+region will be stored in *GMT* **-R** format (i.e., **-R**\ *W/E/S/N*,
 where the *W/E/S/N* values represent the extent of features); the **@R**
 code sequence marks the domain information. A sample region header is:
 
