@@ -859,7 +859,7 @@ void grd_CURV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 void grd_D2DX2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: D2DX2 1 1 d^2(A)/dx^2 2nd derivative.  */
 {
-	uint64_t node;
+	uint64_t node, ij;
 	unsigned int row, col;
 	float c, left, next_left;
 
@@ -874,13 +874,13 @@ void grd_D2DX2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 	GMT_row_loop (GMT, info->G, row) {	/* Process d2/dx2 row by row since dx may change with row */
 		c = 1.0f / (info->dx[row] * info->dx[row]);
 		/* Unless pad has real data we assign outside col values via natural BCs */
-		node = GMT_IJP (info->G->header, row, 0);	/* First col */
+		ij = GMT_IJP (info->G->header, row, 0);	/* First col */
 		if (stack[last]->G->header->BC[XLO] != GMT_BC_IS_DATA) 
-			stack[last]->G->data[node-1] = 2.0f * stack[last]->G->data[node] - stack[last]->G->data[node+1];	/* Set left node via BC curv = 0 */
+			stack[last]->G->data[ij-1] = 2.0f * stack[last]->G->data[ij] - stack[last]->G->data[ij+1];	/* Set left node via BC curv = 0 */
 		next_left = stack[last]->G->data[node-1];
-		node = GMT_IJP (info->G->header, row, info->G->header->nx-1);	/* Last col */
+		ij = GMT_IJP (info->G->header, row, info->G->header->nx-1);	/* Last col */
 		if (stack[last]->G->header->BC[XHI] != GMT_BC_IS_DATA) 
-			stack[last]->G->data[node+1] = 2.0f * stack[last]->G->data[node] - stack[last]->G->data[node-1];	/* Set right node via BC curv = 0 */
+			stack[last]->G->data[ij+1] = 2.0f * stack[last]->G->data[ij] - stack[last]->G->data[ij-1];	/* Set right node via BC curv = 0 */
 		GMT_col_loop (GMT, info->G, row, col, node) {	/* Loop over cols; always save the next left before we update the array at that col */
 			left = next_left;
 			next_left = stack[last]->G->data[node];
@@ -893,7 +893,7 @@ void grd_D2DX2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 void grd_D2DY2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: D2DY2 1 1 d^2(A)/dy^2 2nd derivative.  */
 {
-	uint64_t node;
+	uint64_t node, ij;
 	unsigned int row, col, mx;
 	float c, bottom, next_bottom;
 
@@ -912,14 +912,14 @@ void grd_D2DY2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 		if (stack[last]->G->header->BC[YHI] != GMT_BC_IS_DATA) 
 			stack[last]->G->data[node-mx] = 2.0f * stack[last]->G->data[node] - stack[last]->G->data[node+mx];	/* Set top node via BC curv = 0 */
 		next_bottom = stack[last]->G->data[node-mx];
-		node = GMT_IJP (info->G->header, info->G->header->ny-1, col);	/* Last row for this column */
+		ij = GMT_IJP (info->G->header, info->G->header->ny-1, col);	/* Last row for this column */
 		if (stack[last]->G->header->BC[YLO] != GMT_BC_IS_DATA) 
-			stack[last]->G->data[node+mx] = 2.0f * stack[last]->G->data[node] - stack[last]->G->data[node-mx];	/* Set bottom node via BC curv = 0 */
+			stack[last]->G->data[ij+mx] = 2.0f * stack[last]->G->data[ij] - stack[last]->G->data[ij-mx];	/* Set bottom node via BC curv = 0 */
 		GMT_row_loop (GMT, info->G, row) {
-			node = GMT_IJP (info->G->header, row, col);	/* current node in this column */
+			ij = GMT_IJP (info->G->header, row, col);	/* current node in this column */
 			bottom = next_bottom;
 			next_bottom = stack[last]->G->data[node];
-			stack[last]->G->data[node] = c * (stack[last]->G->data[node+mx] - 2.0f * stack[last]->G->data[node] + bottom);
+			stack[last]->G->data[ij] = c * (stack[last]->G->data[ij+mx] - 2.0f * stack[last]->G->data[ij] + bottom);
 		}
 	}
 	GMT_grd_pad_zero (GMT, stack[last]->G);	/* Reset the boundary pad */
@@ -979,7 +979,7 @@ void grd_D2R (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 void grd_DDX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: DDX 1 1 d(A)/dx Central 1st derivative.  */
 {
-	uint64_t node;
+	uint64_t node, ij;
 	unsigned int row, col;
 	float c, left, next_left;
 
@@ -991,16 +991,16 @@ void grd_DDX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 		return;
 	}
 
-	GMT_row_loop (GMT, info->G, row) {	/* Process d2/dx2 row by row since dx may change with row */
+	GMT_row_loop (GMT, info->G, row) {	/* Process d/dx row by row since dx may change with row */
 		c = 0.5f / info->dx[row];
 		/* Unless pad has real data we assign outside col values via natural BCs */
-		node = GMT_IJP (info->G->header, row, 0);	/* First col */
+		ij = GMT_IJP (info->G->header, row, 0);	/* First col */
 		if (stack[last]->G->header->BC[XLO] != GMT_BC_IS_DATA) 
-			stack[last]->G->data[node-1] = 2.0f * stack[last]->G->data[node] - stack[last]->G->data[node+1];	/* Set left node via BC curv = 0 */
+			stack[last]->G->data[ij-1] = 2.0f * stack[last]->G->data[ij] - stack[last]->G->data[ij+1];	/* Set left node via BC curv = 0 */
 		next_left = stack[last]->G->data[node-1];
-		node = GMT_IJP (info->G->header, row, info->G->header->nx-1);	/* Last col */
+		ij = GMT_IJP (info->G->header, row, info->G->header->nx-1);	/* Last col */
 		if (stack[last]->G->header->BC[XHI] != GMT_BC_IS_DATA) 
-			stack[last]->G->data[node+1] = 2.0f * stack[last]->G->data[node] - stack[last]->G->data[node-1];	/* Set right node via BC curv = 0 */
+			stack[last]->G->data[ij+1] = 2.0f * stack[last]->G->data[ij] - stack[last]->G->data[ij-1];	/* Set right node via BC curv = 0 */
 		GMT_col_loop (GMT, info->G, row, col, node) {	/* Loop over cols; always save the next left before we update the array at that col */
 			left = next_left;
 			next_left = stack[last]->G->data[node];
@@ -1012,7 +1012,7 @@ void grd_DDX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 void grd_DDY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: DDY 1 1 d(A)/dy Central 1st derivative.  */
 {
-	uint64_t node;
+	uint64_t node, ij;
 	unsigned int row, col, mx;
 	float c, bottom, next_bottom;
 
@@ -1026,19 +1026,19 @@ void grd_DDY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 
 	c = -0.5f / info->dy;	/* Because the loop over j below goes from ymax to ymin we compensate with a minus sign here */
 	mx = info->G->header->mx;
-	GMT_col_loop (GMT, info->G, 0, col, node) {	/* Process d2/dy2 column by column */
+	GMT_col_loop (GMT, info->G, 0, col, node) {	/* Process d/dy column by column */
 		/* Unless pad has real data we assign outside row values via natural BCs */
 		if (stack[last]->G->header->BC[YHI] != GMT_BC_IS_DATA) 	/* Set top node via BC curv = 0 */
 			stack[last]->G->data[node-mx] = 2.0f * stack[last]->G->data[node] - stack[last]->G->data[node+mx];
 		next_bottom = stack[last]->G->data[node-mx];
-		node = GMT_IJP (info->G->header, info->G->header->ny-1, col);	/* Last row for this column */
+		ij = GMT_IJP (info->G->header, info->G->header->ny-1, col);	/* Last row for this column */
 		if (stack[last]->G->header->BC[YLO] != GMT_BC_IS_DATA) 	/* Set bottom node via BC curv = 0 */
-			stack[last]->G->data[node+mx] = 2.0f * stack[last]->G->data[node] - stack[last]->G->data[node-mx];
+			stack[last]->G->data[ij+mx] = 2.0f * stack[last]->G->data[ij] - stack[last]->G->data[ij-mx];
 		GMT_row_loop (GMT, info->G, row) {
-			node = GMT_IJP (info->G->header, row, col);	/* current node in this column */
+			ij = GMT_IJP (info->G->header, row, col);	/* current node in this column */
 			bottom = next_bottom;
-			next_bottom = stack[last]->G->data[node];
-			stack[last]->G->data[node] = c * (stack[last]->G->data[node+mx] - bottom);
+			next_bottom = stack[last]->G->data[ij];
+			stack[last]->G->data[ij] = c * (stack[last]->G->data[ij+mx] - bottom);
 		}
 	}
 	GMT_grd_pad_zero (GMT, stack[last]->G);	/* Reset the boundary pad */
@@ -3273,6 +3273,7 @@ void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[], struct G
 		GMT_free (GMT, stack[k]);
 	}
 	for (k = 0; k < GRDMATH_STORE_SIZE; k++) {
+		if (recall[k] == NULL) continue;
 		if (recall[k] && !recall[k]->stored.constant) GMT_free_grid (GMT, &recall[k]->stored.G, true);
 		GMT_free (GMT, recall[k]);
 	}
