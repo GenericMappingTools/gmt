@@ -11,8 +11,8 @@ pshistogram - Calculate and plot histograms
 **-W**\ *bin\_width* [ **-A** ] [
 **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ *cptfile* ] [
 **-F** ] [ **-G**\ *fill* ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [
-**-I**\ [**o**\ \|\ **O**] ] [ **-K** ] [ **-L**\ *pen* ] [ **-O** ] [
-**-P** ] [ **-Q** ] [
+**-I**\ [**o**\ \|\ **O**] ] [ **-K** ] [ **-L**\ *pen* ] 
+[ **-N**\ [*mode*][**+p**\ *pen*] ] [ **-O** ] [**-P** ] [ **-Q** ] [
 **-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] ] [ **-S** ]
 [ **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [
 **-V**\ [*level*\ ] ] [
@@ -77,6 +77,14 @@ histogram. A cumulative histogram may also be specified.
 
 **-L**\ *pen*
     Draw bar outline using the specified pen thickness. [Default is no outline]. 
+
+**-N**\ [*mode*][**+p**\ *pen*]
+    Draw the equivalent normal distribution; append desired pen [0.5p,black].
+    The *mode* selects which central location and scale to use:
+    0 = mean and standard deviation [Default];
+    1 = median and L1 scale;
+    2 = LMS mode and scale.
+   The **-N** option may be repeated to draw several of these curves.
 
 .. include:: explain_-O.rst_
 

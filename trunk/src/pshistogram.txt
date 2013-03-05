@@ -7,7 +7,7 @@ pshistogram \- Calculate and plot histograms
 .SH SYNOPSIS
 BD(pshistogram) [ IT(table) ] GMT_Jx_OPT OPT(W)IT(bin_width) [ OPT(A) ] [ GMT_B_OPT ] 
 [ OPT(C)IT(cptfile) ] [ OPT(F) ] [ OPT(G)IT(fill) ] [ GMT_Jz_OPT ] 
-[ OPT(I)[BD(o)|BD(O)] ] [ GMT_K_OPT ] [ OPT(L)IT(pen) ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] 
+[ OPT(I)[BD(o)|BD(O)] ] [ GMT_K_OPT ] [ OPT(L)IT(pen) ] [ OPT(N)[IT(mode)][BD(+p)IT(pen)] ] [ GMT_O_OPT ] [ GMT_P_OPT ] [ OPT(Q) ] 
 [ GMT_Rx_OPT ] [ OPT(S) ] [ GMT_U_OPT ] [ GMT_V_OPT ]  
 [ GMT_X_OPT ] [ GMT_Y_OPT ] [ OPT(Z)IT(type) ] [ GMT_bi_OPT ] [ GMT_c_OPT ]
 [ GMT_f_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_p_OPT ] [ GMT_t_OPT ]
@@ -41,7 +41,8 @@ OPT(G)IT(fill)
 Select filling of bars [Default is no fill].
 .TP
 OPT(I)[BD(o)|BD(O)]
-Inquire about min/max x and y after binning.  The IT(xmin xmax ymin ymax) is output; no plotting is done.  Append BD(o)
+Inquire about min/max x and y after binning.  The IT(xmin xmax ymin ymax)
+is output; no plotting is done.  Append BD(o)
 to output an ASCII table of the resulting x,y data instead.  Upper case
 BD(O) will output all x,y bin data even when y == 0.
 #include "explain_-Jz.txt"
@@ -49,6 +50,14 @@ BD(O) will output all x,y bin data even when y == 0.
 .TP
 OPT(L)IT(pen)
 Draw bar outline using the specified pen thickness.  [Default is no outline].
+.TP
+OPT(N)[IT(mode)][BD(+p)IT(pen)]
+Draw the equivalent normal distribution; append desired pen [0.5p,black].
+The IT(mode) selects which central location and scale to use:
+0 = mean and standard deviation [Default];
+1 = median and L1 scale;
+2 = LMS mode and scale.
+The OPT(N) option may be repeated to draw several of these curves.
 #include "explain_-O.txt"
 #include "explain_-P.txt"
 .TP

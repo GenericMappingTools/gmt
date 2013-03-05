@@ -9,8 +9,8 @@ grdtrack - Sample grids at specified (x,y) locations
 
 **grdtrack** [ *xyfile* ] **-G**\ *grd1* **-G**\ *grd2* ... [
 **-A**\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**\ ] ] [
-**-C**\ *length*\ [**u**\ ]/\ *ds*\ [*spacing*\ ][**+a**\ ] ] [
-**-D**\ *dfile* ] [ **-E**\ *line*\ [,\ *line*,...][+iIT(inc)[**u**\ ]] ]
+**-C**\ *length*\ [**u**\ ]/\ *ds*\ [*spacing*\ ][**+a**\ ] ] [**-D**\ *dfile* ]
+[ **-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+i**\ *inc*[**u**]][**+l** \*length*[**u**]][**+n*\ *np*][**+r**\ *radius*[**u**]]
 [ **-N** ] [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
 **-S**\ *method*/*modifiers* ][ **-V**\ [*level*\ ] ] [ **-Z** ] [
 **-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
@@ -97,19 +97,26 @@ edge is zero) unless the grid is automatically recognized as periodic.)
     lines to the file *dfile* [Default only saves the cross-profiles].
     The columns will be *lon*, *lat*, *dist*, *azimuth*, *z1*, *z2*, ...
     (sampled value for each grid)
-**-E**\ *line*\ [,\ *line*,...][+i\ *<inc>*\ [**u**]]
+[ **-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+i**\ *inc*[**u**]][**+l** \*length*[**u**]][**+n*\ *np*][**+r**\ *radius*[**u**]]
     Instead of reading input track coordinates, specify profiles via
-    their end coordinates. The format of each *line* is
-    *start*/*stop*, where *start* or *stop* are *lon*/*lat* (*x*/*y* for
+    coordinates and modifiers. The format of each *line* is
+    *start*/*stop*, where *start* or *stop* are either *lon*/*lat* (*x*/*y* for
     Cartesian data) or a 2-character XY key that uses the "pstext"-style
     justification format format to specify a point on the map as
     [LCR][BMT]. In addition, you can use Z-, Z+ to mean the global
     minimum and maximum locations in the grid (only available if only
-    one grid is given). Note: No track file is read. Append
-    **+i**\ *inc*\ [**u**\ ] to set the sampling interval (append
-    appropriate unit). If no increment is given then we default to half
-    the minimum grid interval, and if geographic we select great circle
-    distances in km as the default unit and method.
+    one grid is given). Instead of two coordinates you can specify an
+    origin and one of **+a**, **+o**, or **+r**. You may append 
+    **+i**\ *inc*[**u**] to set the sampling interval (append appropriate
+    unit); if not given then we default to half the minimum grid interval,
+    and if geographic we select great circle distances in km as the default
+    unit and method. The **+a** sets the azimuth of a profile of given
+    length starting at the given origin, while **+o** centers the profile
+    on the origin; both require **+l**. For circular sampling specify
+    **+r** to define a circle of given radius centered on the origin;
+    this option requires either **+n** or **+i**.  The **+n**\ *np* sets
+    the desired number of points, while **+l**\ *length* gives the
+    total length of the profile.  Note: No track file will be read.
 **-N**
     Do *not* skip points that fall outside the domain of the grid(s)
     [Default only output points within grid domain]. 

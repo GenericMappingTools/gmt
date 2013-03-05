@@ -58,6 +58,11 @@ struct PSHISTOGRAM_CTRL {
 		bool active;
 		struct GMT_PEN pen;
 	} L;
+	struct N {	/* -N[<kind>]+<pen>, <kind = 0,1,2 */
+		bool active;
+		bool selected[3];
+		struct GMT_PEN pen[3];
+	} N;
 	struct Q {	/* -Q */
 		bool active;
 	} Q;
@@ -74,12 +79,18 @@ struct PSHISTOGRAM_CTRL {
 	} Z;
 };
 
-#define	PSHISTOGRAM_COUNTS		0
-#define PSHISTOGRAM_FREQ_PCT		1
-#define PSHISTOGRAM_LOG_COUNTS		2
-#define PSHISTOGRAM_LOG_FREQ_PCT	3
-#define PSHISTOGRAM_LOG10_COUNTS	4
-#define PSHISTOGRAM_LOG10_FREQ_PCT	5
+enum Pshistogram_mode {
+	PSHISTOGRAM_COUNTS = 0,
+	PSHISTOGRAM_FREQ_PCT,
+	PSHISTOGRAM_LOG_COUNTS,
+	PSHISTOGRAM_LOG_FREQ_PCT,
+	PSHISTOGRAM_LOG10_COUNTS,
+	PSHISTOGRAM_LOG10_FREQ_PCT};
+
+enum Pshistogram_loc {
+	PSHISTOGRAM_L2 = 0,
+	PSHISTOGRAM_L1,
+	PSHISTOGRAM_LMS};
 
 struct PSHISTOGRAM_INFO {	/* Control structure for pshistogram */
 	double yy0, yy1;
@@ -172,11 +183,11 @@ int fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *data, 
 	return (0);
 }
 
-int plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, struct PSHISTOGRAM_INFO *F, int stairs, int flip_to_y, int draw_outline, struct GMT_PEN *pen, struct GMT_FILL *fill, int cpt)
+double plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, struct PSHISTOGRAM_INFO *F, int stairs, int flip_to_y, int draw_outline, struct GMT_PEN *pen, struct GMT_FILL *fill, int cpt)
 {
 	int i, ibox, index;
 	bool first = true;
-	double rgb[4], x[4], y[4], xx, yy, xval, *px = NULL, *py = NULL;
+	double area = 0.0, rgb[4], x[4], y[4], xx, yy, xval, *px = NULL, *py = NULL;
 	struct GMT_FILL *f = NULL;
 
 	if (draw_outline) GMT_setpen (GMT, pen);
@@ -214,6 +225,10 @@ int plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *
 			else
 				y[2] = (double)F->boxh[ibox];
 			y[3] = y[2];
+			if (F->cumulative)
+				area = F->boxh[ibox];	/* Just pick up the final bin as it has the entire sum */
+			else
+				area += F->boxh[ibox];
 
 			for (i = 0; i < 4; i++) {
 				GMT_geo_to_xy (GMT, px[i], py[i], &xx, &yy);
@@ -244,8 +259,8 @@ int plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *
 	}
 
 	if (stairs) PSL_plotpoint (PSL, px[1], py[1], PSL_DRAW + PSL_STROKE);
-
-	return (0);
+	if (F->cumulative) return (area);
+	return (area * F->box_width);
 }
 
 int get_loc_scl (struct GMT_CTRL *GMT, double *data, uint64_t n, double *stats)
@@ -292,6 +307,7 @@ int get_loc_scl (struct GMT_CTRL *GMT, double *data, uint64_t n, double *stats)
 }
 	
 void *New_pshistogram_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
+	unsigned int k;
 	struct PSHISTOGRAM_CTRL *C = NULL;
 	
 	C = GMT_memory (GMT, NULL, 1, struct PSHISTOGRAM_CTRL);
@@ -299,6 +315,7 @@ void *New_pshistogram_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a
 	/* Initialize values whose defaults are not 0/false/NULL */
 	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* Do not fill is default */
 	C->L.pen = GMT->current.setting.map_default_pen;
+	for (k = 0; k < 3; k++) C->N.pen[k] = GMT->current.setting.map_default_pen;
 		
 	return (C);
 }
@@ -316,7 +333,7 @@ int GMT_pshistogram_usage (struct GMTAPI_CTRL *C, int level)
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: pshistogram [<table>] %s -W<width> [%s] [-C<cpt>] [-F] [-G<fill>] [-I[o|O]]\n", GMT_Jx_OPT, GMT_B_OPT);
-	GMT_message (GMT, "\t[%s] [-K] [-L<pen>] [-O] [-P] [-Q] [%s] [-S]\n", GMT_Jz_OPT, GMT_Rx_OPT);
+	GMT_message (GMT, "\t[%s] [-K] [-L<pen>] [-N[<mode>][+p<pen>]] [-O] [-P] [-Q] [%s] [-S]\n", GMT_Jz_OPT, GMT_Rx_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
 	GMT_message (GMT, "\t[-Z[0-5]] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\n", GMT_bi_OPT, GMT_c_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT);
 
@@ -337,6 +354,12 @@ int GMT_pshistogram_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Append O to output all resulting x, y data even with y=0.\n");
 	GMT_explain_options (GMT, "ZK");
 	GMT_pen_syntax (GMT, 'L', "Specify pen to draw histogram.");
+	GMT_message (GMT, "\t-N Draw the equivalent normal distribution; append desired pen [0.25p,black].\n");
+	GMT_message (GMT, "\t   <mode> selects which central location and scale to use:\n");
+	GMT_message (GMT, "\t   0 = mean and standard deviation [Default]\n");
+	GMT_message (GMT, "\t   1 = median and L1 scale\n");
+	GMT_message (GMT, "\t   2 = LMS mode and scale\n");
+	GMT_message (GMT, "\t   The -N option may be repeated to draw several of these curves.\n");
 	GMT_explain_options (GMT, "OP");
 	GMT_message (GMT, "\t-Q Plot a cumulative histogram.\n");
 	GMT_explain_options (GMT, "r");
@@ -364,8 +387,9 @@ int GMT_pshistogram_parse (struct GMTAPI_CTRL *C, struct PSHISTOGRAM_CTRL *Ctrl,
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0, mode;
 	int sval;
+	char *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 
@@ -408,6 +432,24 @@ int GMT_pshistogram_parse (struct GMTAPI_CTRL *C, struct PSHISTOGRAM_CTRL *Ctrl,
 				if (GMT_getpen (GMT, opt->arg, &Ctrl->L.pen)) {
 					GMT_pen_syntax (GMT, 'L', " ");
 					n_errors++;
+				}
+				break;
+			case 'N':		/* Draw normal distribution */
+				Ctrl->N.active = true;
+				switch (opt->arg[0]) {	/* See which distribution to draw */
+					case '0': case '+': case '\0': mode = PSHISTOGRAM_L2; break;
+					case '1': mode = PSHISTOGRAM_L1;	break;
+					case '2': mode = PSHISTOGRAM_LMS;	break;
+					default:
+					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -N: mode %c unrecognized.\n", opt->arg[0]);
+					n_errors++;
+				}
+				Ctrl->N.selected[mode] = true;
+				if ((c = strstr (opt->arg, "+p"))) {
+					if (GMT_getpen (GMT, &c[2], &Ctrl->N.pen[mode])) {
+						GMT_pen_syntax (GMT, 'L', " ");
+						n_errors++;
+					}
 				}
 				break;
 			case 'Q':
@@ -459,6 +501,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 {
 	bool automatic = false;
 	int error = 0;
+	unsigned int type;
 	
 	uint64_t n;
 	
@@ -466,7 +509,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 
 	char format[GMT_BUFSIZ];
 	
-	double *data = NULL, stats[6], tmp, x_min, x_max, *in = NULL;
+	double *data = NULL, stats[6], area, tmp, x_min, x_max, *in = NULL;
 	
 	struct PSHISTOGRAM_INFO F;
 	struct PSHISTOGRAM_CTRL *Ctrl = NULL;
@@ -726,10 +769,45 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 
 	GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
-	if (plot_boxes (GMT, PSL, P, &F, Ctrl->S.active, Ctrl->A.active, Ctrl->L.active, &Ctrl->L.pen, &Ctrl->G.fill, Ctrl->C.active) ) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Fatal error during box plotting.\n");
-		Return (EXIT_FAILURE);
+	area = plot_boxes (GMT, PSL, P, &F, Ctrl->S.active, Ctrl->A.active, Ctrl->L.active, &Ctrl->L.pen, &Ctrl->G.fill, Ctrl->C.active);
+	GMT_report (GMT, GMT_MSG_VERBOSE, "Area under histogram is %g\n", area);
+	
+	if (Ctrl->N.active) {	/* Want to draw one or more normal distributions */
+		unsigned int k, NP = 101U;
+		double f, z, xtmp, ytmp, inc;
+		double *xp = GMT_memory (GMT, NULL, NP, double);
+		double *yp = GMT_memory (GMT, NULL, NP, double);
+		inc = (F.wesn[XHI] - F.wesn[XLO]) / (NP - 1);
+		for (type = 0; type < 3; type++) {
+			if (!Ctrl->N.selected[type]) continue;
+			/* Draw this estimation of a normal distribution */
+			GMT_setpen (GMT, &Ctrl->N.pen[type]);
+			f = (Ctrl->Q.active) ? 0.5 : 1.0 / (stats[type+3] * sqrt (M_PI * 2.0));
+			f *= area;
+			for (k = 0; k < NP; k++) {
+				xp[k] = F.wesn[XLO] + inc * k;
+				z = (xp[k] - stats[type]) / stats[type+3];	/* z-score for chosen statistic */
+				if (Ctrl->Q.active)	/* Want cumulative curve */
+					yp[k] = f * (1.0 + erf (z / M_SQRT2));
+				else
+					yp[k] = f * exp (-0.5 * z * z);
+				switch (F.hist_type) {	/* Must adjust yp[k] accordingly */
+					case PSHISTOGRAM_LOG_COUNTS:		yp[k] = d_log1p (GMT, yp[k]);	break;
+					case PSHISTOGRAM_LOG10_COUNTS:		yp[k] = d_log101p (GMT, yp[k]);	break;
+					case PSHISTOGRAM_FREQ_PCT:		yp[k] = (100.0 * yp[k]) / F.n_counted;	break;
+					case PSHISTOGRAM_LOG_FREQ_PCT:		yp[k] = d_log1p (GMT, 100.0 * yp[k] / F.n_counted);	break;
+					case PSHISTOGRAM_LOG10_FREQ_PCT:	yp[k] = d_log101p (GMT, 100.0 * yp[k] / F.n_counted);	break;
+				}
+				
+				GMT_geo_to_xy (GMT, xp[k], yp[k], &xtmp, &ytmp);
+				xp[k] = xtmp;	yp[k] = ytmp;
+			}
+			PSL_plotline (PSL, xp, yp, NP, PSL_MOVE + PSL_STROKE);
+		}
+		GMT_free (GMT, xp);
+		GMT_free (GMT, yp);
 	}
+	
 	GMT_map_clip_off (GMT);
 
 	GMT_map_basemap (GMT);

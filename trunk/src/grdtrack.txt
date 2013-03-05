@@ -4,7 +4,8 @@
 grdtrack \- Sample grids at specified (x,y) locations
 .SH SYNOPSIS
 BD(grdtrack) [ IT(xyfile) ] OPT(G)IT(grd1) OPT(G)IT(grd2) ... [ OPT(A)BD(f)|BD(p)|BD(m)|BD(r)|BD(R)[BD(+l)] ] 
-[ OPT(C)IT(length)[BD(u)]/IT(ds)[IT(spacing)][BD(+a)] ] [ OPT(D)IT(dfile) ] [ OPT(E)IT(line)[,IT(line),...][+iIT(inc)[BD(u)]] ] 
+[ OPT(C)IT(length)[BD(u)]/IT(ds)[IT(spacing)][BD(+a)] ] [ OPT(D)IT(dfile) ] 
+OPT(E)IT(line)[,IT(line),...][BD(+a)IT(az)][BD(+i)IT(inc)[BD(u)]][BD(+l)IT(length)[BD(u)]][BD(+nI)T(np)][BD(+r)IT(radius)[BD(u)]]
 [ OPT(N) ] [ GMT_Rgeo_OPT ] [ OPT(S)IT(method)/IT(modifiers) ][ GMT_V_OPT ] [ OPT(Z) ] [ GMT_b_OPT ] [ GMT_f_OPT ] 
 [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_n_OPT ] [ GMT_o_OPT ] [ GMT_s_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
@@ -63,15 +64,19 @@ In concert with OPT(C) we can save the (possibly resampled) original lines to th
 file IT(dfile) [Default only saves the cross-profiles].
 The columns will be IT(lon), IT(lat), IT(dist), IT(azimuth), IT(z1), IT(z2), ... (sampled value for each grid)
 .TP
-OPT(E)IT(line)[,IT(line),...][+iIT(inc)[BD(u)]]
-Instead of reading input track coordinates, specify profiles via their end coordinates.
-The format of each IT)line) is IT(start)/IT(stop), where IT(start) or IT(stop)
-are IT(lon)/IT(lat) (IT(x)/IT(y) for Cartesian data) or a 2-character XY key that uses the "pstext"-style justification format
+OPT(E)IT(line)[,IT(line),...][BD(+a)IT(az)][BD(+i)IT(inc)[BD(u)]][BD(+l)IT(length)[BD(u)]][BD(+nI)T(np)][BD(+r)IT(radius)[BD(u)]]
+Instead of reading input track coordinates, specify one or more profiles via coordinates and modifiers.
+The format of each IT(line) is IT(start)/IT(stop), where IT(start) or IT(stop)
+are either IT(lon)/IT(lat) (IT(x)/IT(y) for Cartesian data) or a 2-character XY key that uses the "pstext"-style justification format
 format to specify a point on the map as [LCR][BMT].  In addition, you can use Z-, Z+ to mean
-the global minimum and maximum locations in the grid (only available if only one grid is given).  Note: No track file is read.
-Append BD(+i)BD(inc)[BD(u)] to set the sampling interval (append appropriate unit).  If no increment is given
-then we default to half the minimum grid interval, and if geographic we select great circle distances in km as the default unit
-and method.
+the global minimum and maximum locations in the grid (only available if only a single grid is given).  Instead of
+two coordinates you can specify an origin and one of BD(+a), BD(+o), or BD(+r). You may append BD(+i)BD(inc)[BD(u)] to set the sampling interval
+(append appropriate unit); if not given then we default to half the minimum grid interval, and if geographic we
+select great circle distances in km as the default unit and method. The BD(+a) sets the azimuth of a profile of given length starting
+at the given origin, while BD(+o) centers the profile on the origin; both require BD(+l). For circular sampling specify BD(+r) to define a circle
+of given radius centered on the origin; this option requires either BD(+n) or BD(+i).  The BD(+n)IT(np) sets the desired
+number of points, while BD(+l)IT(length) gives the total length of the profile.
+Note: No track file will be read.
 .TP
 OPT(N)
 Do IT(not) skip points that fall outside the domain of the grid(s) [Default only output points within grid domain].
@@ -142,7 +147,13 @@ grid) along 100-km-long cross-profiles that are orthogonal to the line segment g
 erecting cross-profiles every 25 km and sampling the grid every 3 km, try
 .br
 .sp
-grdtrack track.xy -Ggrav.18.1.img,0.1,1 -C100k/3/25 -Ar > xprofiles.d
+grdtrack track.xy -Ggrav.18.1.img,0.1,1 -C100k/3/25 -Ar > xprofiles.txt
+.br
+.sp
+To sample the grid grav.nc along a diagonal SW-NE line, try
+.br
+.sp
+grdtrack -Ggrav.nc -EBL/TR > diagonal.txt
 .SH "SEE ALSO"
 .IR gmt (1),
 .IR surface (1),
