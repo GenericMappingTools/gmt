@@ -14,7 +14,7 @@ Contents:
    mains
    supplements/supplements
    api
-.. cookbook
+   cookbook
 
 Indices and tables
 ==================
