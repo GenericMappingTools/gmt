@@ -138,7 +138,7 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 	unsigned int k;
 
 	if (!options) return;
-	
+	if (C->common.synopsis.extended) return;	/* Only want to list module-specific options */
 	u = C->session.unit_name[C->current.setting.proj_length_unit][0];
 	s = C->session.u2u[GMT_INCH][C->current.setting.proj_length_unit];	/* Convert from internal inch to users unit */
 
