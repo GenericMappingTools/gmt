@@ -81,6 +81,15 @@
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 
+enum GMT_profmode {
+	GMT_GOT_AZIM	= 1,
+	GMT_GOT_ORIENT	= 2,
+	GMT_GOT_LENGTH	= 4,
+	GMT_GOT_NP	= 8,
+	GMT_GOT_INC	= 16,
+	GMT_GOT_RADIUS	= 32,
+};
+
 struct CPT_Z_SCALE {	/* Intenral struct used in the processing of CPT z-scaling */
 	unsigned int z_adjust;	/* 1 if +u<unit> was parsed and scale set, 3 if z has been adjusted, 0 otherwise */
 	unsigned int z_mode;	/* 1 if +U<unit> was parsed, 0 otherwise */
@@ -2157,7 +2166,7 @@ void gmt_cpt_z_scale (struct GMT_CTRL *C, struct GMT_PALETTE *P, struct CPT_Z_SC
 	else if (direction == GMT_OUT) {	/* grid x/y are assumed to be in meters */
 		if (Z) {P->z_adjust[GMT_OUT] = Z->z_adjust; P->z_unit[GMT_OUT] = Z->z_unit; P->z_mode[GMT_OUT] = Z->z_mode; P->z_unit_to_meter[GMT_OUT] = Z->z_unit_to_meter; }
 		if (P->z_adjust[GMT_OUT] & 1) {	/* Was given a new unit for output */
-			scale = 1/0 / P->z_unit_to_meter[GMT_OUT];
+			scale = 1.0 / P->z_unit_to_meter[GMT_OUT];
 			P->z_adjust[GMT_OUT] = 2;	/* Now we are ready for writing */
 			if (P->z_mode[GMT_OUT])
 				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Output CPT file z unit was converted from %s to meters before writing.\n", C->current.proj.unit_name[P->z_unit[GMT_OUT]]);
@@ -3930,6 +3939,80 @@ int gmt_code_to_lonlat (struct GMT_CTRL *C, char *code, double *lon, double *lat
 	return (error);
 }
 
+double gmt_determine_endpoint (struct GMT_CTRL *C, double x0, double y0, double length, double az, double *x1, double *y1)
+{	/* compute point a distance length from origin along azimuth, return point separation */
+	double s_az, c_az;
+	sincosd (az, &s_az, &c_az);
+	if (GMT_is_geographic (C, GMT_IN)) {	/* Spherical solution */
+		double s0, c0, s_d, c_d;
+		double d = (length / C->current.map.dist[GMT_MAP_DIST].scale) / C->current.proj.DIST_M_PR_DEG;	/* Get spherical degrees */
+		sincosd (y0, &s0, &c0);
+		sincosd (d, &s_d, &c_d);
+		*x1 = x0 + atand (s_d * s_az / (c0 * c_d - s0 * s_d * c_az));
+		*y1 = d_asind (s0 * c_d + c0 * s_d * c_az);
+	}
+	else {	/* Cartesian solution */
+		*x1 = x0 + length * s_az;
+		*y1 = y0 + length * c_az;
+	}
+	return (GMT_distance (C, x0, y0, *x1, *y1));
+}
+
+double gmt_determine_endpoints (struct GMT_CTRL *C, double x[], double y[], double length, double az)
+{
+	double s_az, c_az;
+	sincosd (az, &s_az, &c_az);
+	length /= 2.0;	/* Going half-way in each direction */
+	if (GMT_is_geographic (C, GMT_IN)) {	/* Spherical solution */
+		double s0, c0, s_d, c_d;
+		double d = (length / C->current.map.dist[GMT_MAP_DIST].scale) / C->current.proj.DIST_M_PR_DEG;	/* Get spherical degrees */
+		sincosd (y[0], &s0, &c0);
+		sincosd (d, &s_d, &c_d);
+		x[1] = x[0] + atand (s_d * s_az / (c0 * c_d - s0 * s_d * c_az));
+		y[1] = d_asind (s0 * c_d + c0 * s_d * c_az);
+		/* Then redo start point by going in the opposite direction */
+		sincosd (az+180.0, &s_az, &c_az);
+		x[0] = x[0] + atand (s_d * s_az / (c0 * c_d - s0 * s_d * c_az));
+		y[0] = d_asind (s0 * c_d + c0 * s_d * c_az);
+	}
+	else {	/* Cartesian solution */
+		x[1] = x[0] + length * s_az;
+		y[1] = y[0] + length * c_az;
+		x[0] = x[0] - length * s_az;
+		y[0] = y[0] - length * c_az;
+	}
+	return (GMT_distance (C, x[0], y[0], x[1], y[1]));
+}
+
+uint64_t gmt_determine_circle (struct GMT_CTRL *C, double x0, double y0, double r, double x[], double y[], unsigned int n)
+{	/* Given an origin, radius, and n points, compute a circular path and return it */
+	unsigned int k;
+	uint64_t np = n;
+	double d_angle = 360.0 / n;
+	
+	if (GMT_is_geographic (C, GMT_IN)) {	/* Spherical solution */
+		double R[3][3], v[3], v_prime[3];
+		double lat = 90.0 - (r / C->current.map.dist[GMT_MAP_DIST].scale) / C->current.proj.DIST_M_PR_DEG;	/* Get small circle latitude about NP */
+		/* Set up small circle in local coordinates, convert to Cartesian, rotate, and covert to geo */
+		/* Rotation pole is 90 away from x0, at equator, and rotates by 90-y0 degrees */
+		GMT_make_rot_matrix (C, x0 + 90.0, 0.0, 90.0 - y0, R);
+		for (k = 0; k < n; k++) {
+			GMT_geo_to_cart (C, lat, d_angle * k, v, true);
+			GMT_matrix_vect_mult (C, 3U, R, v, v_prime);
+			GMT_cart_to_geo (C, &y[k], &x[k], v_prime, true);
+		}
+	}
+	else {	/* Cartesian solution */
+		double s_az, c_az;
+		for (k = 0; k < n; k++) {
+			sincosd (d_angle * k, &s_az, &c_az);
+			x[k] = x0 + r * s_az;
+			y[k] = y0 + r * c_az;
+		}
+	}
+	return (n);
+}
+
 struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *C, char option, char *args, bool resample, bool project, bool get_distances, double step, enum GMT_enum_track mode, double xyz[2][3])
 {	/* Given a list of comma-separated start/stop coordinates, build a data table
  	 * of the profiles. xyz holds the grid min/max coordinates (or NULL if used without a grid;
@@ -3937,10 +4020,13 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *C, char option, char *a
 	 * If resample is true then we sample the track between the end points.
 	 * If project is true then we convert to plot units.
 	 */
-	unsigned int n_cols, pos = 0, xtype = C->current.io.col_type[GMT_IN][GMT_X], ytype = C->current.io.col_type[GMT_IN][GMT_Y];
+	unsigned int n_cols, np, k, s, pos = 0, pos2 = 0, xtype = C->current.io.col_type[GMT_IN][GMT_X], ytype = C->current.io.col_type[GMT_IN][GMT_Y];
+	enum GMT_profmode p_mode;
 	int n, error = 0;
-	size_t n_alloc = GMT_SMALL_CHUNK;
+	double L, az, length, r;
+	size_t n_alloc = GMT_SMALL_CHUNK, len;
 	char p[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256];
+	char modifiers[GMT_BUFSIZ], p2[GMT_BUFSIZ];
 	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 
@@ -3954,16 +4040,54 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *C, char option, char *a
 		GMT_alloc_segment (C, S, n_cols, 2, true);
 		S->n_columns = n_cols;
 		S->n_rows = 2;
+		k = p_mode = s = 0;	len = strlen (p);
+		while (s == 0 && k < len) {	/* Find first occurrence of recognized modifier+<char>, if any */
+			if ((p[k] == '+') && (p[k+1] && strchr ("ailnor", p[k+1]))) s = k;
+			k++;
+		}
+		if (s) {
+			strcpy (modifiers, &p[s]);
+			while ((GMT_strtok (modifiers, "+", &pos2, p2))) {
+				switch (p2[0]) {
+					case 'a':	az = atof (&p2[1]);	p_mode |= GMT_GOT_AZIM;		break;
+					case 'i':	step = atof (&p2[1]);	p_mode |= GMT_GOT_INC;		break;
+					case 'l':	length = atof (&p2[1]);	p_mode |= GMT_GOT_LENGTH;	break;
+					case 'n':	np = atoi (&p2[1]);	p_mode |= GMT_GOT_NP;		break;
+					case 'o':	az = atof (&p2[1]);	p_mode |= GMT_GOT_ORIENT;	break;
+					case 'r':	r = atof (&p2[1]);	p_mode |= GMT_GOT_RADIUS;	break;
+					default:	error++;	break;
+				}
+			}
+			/* Some sanity checking */
+			if (((p_mode & GMT_GOT_AZIM) || (p_mode & GMT_GOT_ORIENT)) && (p_mode & GMT_GOT_LENGTH) == 0) {
+				GMT_report (C, GMT_MSG_NORMAL, "syntax error -%c:  Modifiers +a and +o requires +l<length>\n", option);
+				error++;
+			}
+			if ((p_mode & GMT_GOT_RADIUS) && !((p_mode & GMT_GOT_NP) || (p_mode & GMT_GOT_INC))) {
+				GMT_report (C, GMT_MSG_NORMAL, "syntax error -%c:  Modifies +r requires +i<inc> or +n<np>\n", option);
+				error++;
+			}
+			p[s] = '\0';	/* Chop off for now */
+		}
 		n = sscanf (p, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
-		if (n == 4) {	/* Easy, got lon0/lat0/lon1/lat1 */
+		if (n == 1) { /* Easy, got <code> for a central point */
+			error += gmt_code_to_lonlat (C, txt_a, &S->coord[GMT_X][0], &S->coord[GMT_Y][0]);
+		}
+		else if (n == 4) {	/* Easy, got lon0/lat0/lon1/lat1 */
 			error += GMT_verify_expectations (C, xtype, GMT_scanf_arg (C, txt_a, xtype, &S->coord[GMT_X][0]), txt_a);
 			error += GMT_verify_expectations (C, ytype, GMT_scanf_arg (C, txt_b, ytype, &S->coord[GMT_Y][0]), txt_b);
 			error += GMT_verify_expectations (C, xtype, GMT_scanf_arg (C, txt_c, xtype, &S->coord[GMT_X][1]), txt_c);
 			error += GMT_verify_expectations (C, ytype, GMT_scanf_arg (C, txt_d, ytype, &S->coord[GMT_Y][1]), txt_d);
 		}
-		else if (n == 2) { /* Easy, got <code>/<code> */
-			error += gmt_code_to_lonlat (C, txt_a, &S->coord[GMT_X][0], &S->coord[GMT_Y][0]);
-			error += gmt_code_to_lonlat (C, txt_b, &S->coord[GMT_X][1], &S->coord[GMT_Y][1]);
+		else if (n == 2) {	/* More complicated: either <code>/<code> or <clon>/<clat> with +a|o|r */
+			if (p_mode & GMT_GOT_AZIM || (p_mode & GMT_GOT_ORIENT) || (p_mode & GMT_GOT_RADIUS)) {	/* Got a center point via coordinates */
+				error += GMT_verify_expectations (C, xtype, GMT_scanf_arg (C, txt_a, xtype, &S->coord[GMT_X][0]), txt_a);
+				error += GMT_verify_expectations (C, ytype, GMT_scanf_arg (C, txt_b, ytype, &S->coord[GMT_Y][0]), txt_b);
+			}
+			else { /* Easy, got <code>/<code> */
+				error += gmt_code_to_lonlat (C, txt_a, &S->coord[GMT_X][0], &S->coord[GMT_Y][0]);
+				error += gmt_code_to_lonlat (C, txt_b, &S->coord[GMT_X][1], &S->coord[GMT_Y][1]);
+			}
 		}
 		else if (n == 3) {	/* More complicated: <code>/<lon>/<lat> or <lon>/<lat>/<code> */
 			if (gmt_code_to_lonlat (C, txt_a, &S->coord[GMT_X][0], &S->coord[GMT_Y][0])) {	/* Failed, so try the other way */
@@ -3998,7 +4122,28 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *C, char option, char *a
 				}
 			}
 		}
-		// if (resample) S->n_rows = GMT_fix_up_path (C, &S->coord[GMT_X], &S->coord[GMT_Y], S->n_rows, step, 0);
+		if (p_mode & GMT_GOT_AZIM) {		/* Got center and azimuth of line; determine a suitable end point */
+			L = gmt_determine_endpoint (C, S->coord[GMT_X][0], S->coord[GMT_Y][0], length, az, &S->coord[GMT_X][1], &S->coord[GMT_Y][1]);
+			if (p_mode & GMT_GOT_NP) step = L / (np - 1);
+		}
+		else if (p_mode & GMT_GOT_ORIENT) {	/* Got center and orientation of line; determine suitable end points */
+			L = gmt_determine_endpoints (C, S->coord[GMT_X], S->coord[GMT_Y], length, az);
+			if (p_mode & GMT_GOT_NP) step = L / (np - 1);
+		}
+		else if (p_mode & GMT_GOT_RADIUS) {	/* Got center and a radius; determine circular path */
+			double x0, y0;
+			/* Determine np from the +codes */
+			x0 = S->coord[GMT_X][0];	y0 = S->coord[GMT_Y][0];
+			if (p_mode & GMT_GOT_INC) {
+				step = (step / C->current.map.dist[GMT_MAP_DIST].scale) / C->current.proj.DIST_M_PR_DEG;	/* Get degrees */
+				L = (GMT_is_geographic (C, GMT_IN)) ? sind (y0) * 360.0 : 2.0 * M_PI * r;
+				np = lrint (L / step);
+			}
+			S->coord[GMT_X] = GMT_memory (C, S->coord[GMT_X], np, double);
+			S->coord[GMT_Y] = GMT_memory (C, S->coord[GMT_Y], np, double);
+			S->n_rows = gmt_determine_circle (C, x0, y0, r, S->coord[GMT_X], S->coord[GMT_Y], np);
+			resample = false;	/* Since we already got our profile */
+		}
 		if (resample) S->n_rows = GMT_resample_path (C, &S->coord[GMT_X], &S->coord[GMT_Y], S->n_rows, step, mode);
 		if (get_distances) S->coord[GMT_Z] = GMT_dist_array (C, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, true);	/* Compute cumulative distances along line */
 		

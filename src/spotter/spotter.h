@@ -85,11 +85,9 @@ EXTERN_MSC void spotter_stages_to_total (struct GMT_CTRL *GMT, struct EULER p[],
 EXTERN_MSC void spotter_add_rotations (struct GMT_CTRL *GMT, struct EULER a[], int n_a, struct EULER b[], int n_b, struct EULER *c[], unsigned int *n_c);
 EXTERN_MSC double spotter_t2w (struct GMT_CTRL *GMT, struct EULER a[], unsigned int n, double t);
 EXTERN_MSC bool spotter_conf_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double t, struct EULER *p, unsigned int np, char conf, bool forward, double out[]);
-EXTERN_MSC void spotter_matrix_vect_mult (struct GMT_CTRL *GMT, double a[3][3], double b[3], double c[3]);
 EXTERN_MSC void spotter_matrix_transpose (struct GMT_CTRL *GMT, double At[3][3], double A[3][3]);
 EXTERN_MSC void spotter_matrix_add (struct GMT_CTRL *GMT, double A[3][3], double B[3][3], double C[3][3]);
 EXTERN_MSC void spotter_matrix_mult (struct GMT_CTRL *GMT, double A[3][3], double B[3][3], double C[3][3]);
-EXTERN_MSC void spotter_make_rot_matrix (struct GMT_CTRL *GMT, double lonp, double latp, double w, double R[3][3]);
 EXTERN_MSC void spotter_make_rot_matrix2 (struct GMT_CTRL *C, double E[3], double w, double R[3][3]);
 EXTERN_MSC void spotter_covar_to_record (struct GMT_CTRL *GMT, struct EULER *e, double K[]);
 EXTERN_MSC void spotter_cov_of_inverse (struct GMT_CTRL *GMT, struct EULER *e, double Ct[3][3]);

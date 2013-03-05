@@ -849,6 +849,61 @@ void GMT_cross3v (struct GMT_CTRL *C, double *a, double *b, double *c)
 	c[GMT_Z] = a[GMT_X] * b[GMT_Y] - a[GMT_Y] * b[GMT_X];
 }
 
+void GMT_matrix_vect_mult (struct GMT_CTRL *C, unsigned int dim, double a[3][3], double b[3], double c[3])
+{	/* c = A * b for 2 or 3 D */
+	unsigned int i, j;
+
+	for (i = 0; i < dim; i++) for (j = 0, c[i] = 0.0; j < dim; j++) c[i] += a[i][j] * b[j];
+}
+
+void GMT_make_rot_matrix2 (struct GMT_CTRL *C, double E[3], double w, double R[3][3])
+{	/* Based on Cox and Hart, 1986 */
+/*	E	Euler pole in in cartesian coordinates
+ *	w	angular rotation in degrees
+ *
+ *	R	the 3x3 rotation matrix
+ */
+
+	double sin_w, cos_w, c, E_x, E_y, E_z, E_12c, E_13c, E_23c;
+
+	sincosd (w, &sin_w, &cos_w);
+	c = 1 - cos_w;
+
+	E_x = E[0] * sin_w;
+	E_y = E[1] * sin_w;
+	E_z = E[2] * sin_w;
+	E_12c = E[0] * E[1] * c;
+	E_13c = E[0] * E[2] * c;
+	E_23c = E[1] * E[2] * c;
+
+	R[0][0] = E[0] * E[0] * c + cos_w;
+	R[0][1] = E_12c - E_z;
+	R[0][2] = E_13c + E_y;
+
+	R[1][0] = E_12c + E_z;
+	R[1][1] = E[1] * E[1] * c + cos_w;
+	R[1][2] = E_23c - E_x;
+
+	R[2][0] = E_13c - E_y;
+	R[2][1] = E_23c + E_x;
+	R[2][2] = E[2] * E[2] * c + cos_w;
+}
+
+void GMT_make_rot_matrix (struct GMT_CTRL *C, double lonp, double latp, double w, double R[3][3])
+{
+/*	lonp, latp	Euler pole in degrees
+ *	w		angular rotation in degrees
+ *
+ *	R		the rotation matrix
+ */
+
+	double E[3];
+
+        GMT_geo_to_cart (C, latp, lonp, E, true);
+	GMT_make_rot_matrix2 (C, E, w, R);
+}
+
+
 void GMT_geo_to_cart (struct GMT_CTRL *C, double lat, double lon, double *a, bool degrees)
 {
 	/* Convert geographic latitude and longitude (lat, lon)
