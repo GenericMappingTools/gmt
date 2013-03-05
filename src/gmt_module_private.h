@@ -137,6 +137,7 @@ enum Gmt_module_id {
 	k_mod_sample1d,
 	k_mod_segy2grd,
 	k_mod_spectrum1d,
+	k_mod_sph2grd,
 	k_mod_sphdistance,
 	k_mod_sphinterpolate,
 	k_mod_sphtriangulate,

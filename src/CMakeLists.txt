@@ -149,7 +149,7 @@ set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c
 	grdtrend.c grdvolume.c greenspline.c kml2gmt.c
 	makecpt.c mapproject.c minmax.c nearneighbor.c
 	project.c ps2raster.c sample1d.c spectrum1d.c
-	splitxyz.c surface.c trend1d.c trend2d.c
+	sph2grd.c splitxyz.c surface.c trend1d.c trend2d.c
 	triangulate.c xyz2grd.c gmtdefaults.c gmtget.c
 	gmtset.c
 	grdcontour.c grdimage.c grdvector.c grdview.c

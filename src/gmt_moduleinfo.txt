@@ -102,6 +102,7 @@ rotconverter	spotter	Manipulate total reconstruction and stage rotations
 sample1d	core	Resample 1-D table data using splines
 segy2grd	segy	Converting SEGY data to a GMT grid
 spectrum1d	core	Compute auto- [and cross-] spectra from one [or two] timeseries
+sph2grd	core	Compute grid from spherical harmonic coefficients
 sphdistance	sph	Make grid of distances to nearest points on a sphere
 sphinterpolate	sph	Spherical gridding in tension of data on a sphere
 sphtriangulate	sph	Delaunay or Voronoi construction of spherical lon,lat data
