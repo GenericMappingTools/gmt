@@ -120,6 +120,7 @@ EXTERN_MSC int GMT_rotconverter (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_sample1d (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_segy2grd (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_spectrum1d (void *api_ctrl, int mode, void *args);
+EXTERN_MSC int GMT_sph2grd (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_sphdistance (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_sphinterpolate (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_sphtriangulate (void *api_ctrl, int mode, void *args);

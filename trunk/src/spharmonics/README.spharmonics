@@ -6,6 +6,6 @@ LICENSE.TXT in main GMT directory.
 #
 At the moment these programs do nothing - they are skeleton main programs
 that will eventually be used to perform forward and inverse spherical
-harmonic calculations.
+harmonic calculations.  Once working they will migrate into the core GMT.
 
-Paul Wessel, May 26, 2006
+Paul Wessel, Feb 26, 2013

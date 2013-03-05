@@ -69,6 +69,7 @@ l l .
 \fBpsxyz\fP	
 \fBsample1d\fP	
 \fBspectrum1d\fP	
+\fBsph2grd\fP	
 \fBsplitxyz\fP	
 \fBsurface\fP	
 \fBtestapi\fP	

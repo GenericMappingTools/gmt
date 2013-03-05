@@ -126,6 +126,7 @@ struct Gmt_moduleinfo g_module[] = {
 	{"sample1d", "core", "Resample 1-D table data using splines", &GMT_sample1d},
 	{"segy2grd", "segy", "Converting SEGY data to a GMT grid", &GMT_segy2grd},
 	{"spectrum1d", "core", "Compute auto- [and cross-] spectra from one [or two] timeseries", &GMT_spectrum1d},
+	{"sph2grd", "core", "Compute grid from spherical harmonic coefficients", &GMT_sph2grd},
 	{"sphdistance", "sph", "Make grid of distances to nearest points on a sphere", &GMT_sphdistance},
 	{"sphinterpolate", "sph", "Spherical gridding in tension of data on a sphere", &GMT_sphinterpolate},
 	{"sphtriangulate", "sph", "Delaunay or Voronoi construction of spherical lon,lat data", &GMT_sphtriangulate},
