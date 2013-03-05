@@ -73,7 +73,7 @@ struct GRDTRACK_CTRL {
 		bool active;
 		char *file;
 	} D;
-	struct E {	/* -E<line1>[,<line2>,...][+i<step>] */
+	struct E {	/* -E<line1>[,<line2>,...][+a<az>][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>] */
 		bool active;
 		unsigned int mode;
 		char *lines;
@@ -254,16 +254,6 @@ int GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, struc
 			case 'E':	/* Create input tracks instead of reading tracks */
 				Ctrl->E.active = true;
 				Ctrl->E.lines = strdup (opt->arg);
-				if ((c = strchr (Ctrl->E.lines, '+'))) {	/* Gave modifiers */
-					if (c[1] == 'i') {
-						*c = 0;	/* Truncate lines at start of modifiers */
-						Ctrl->E.mode = GMT_get_distance (GMT, &c[2], &(Ctrl->E.step), &(Ctrl->E.unit));
-					}
-					else {
-						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -E option: Bad modifier +%c\n", c[1]);
-						n_errors++;
-					}
-				}
 				break;
 			case 'G':	/* Input grid file */
 				if (ng == MAX_GRIDS) {
@@ -520,20 +510,22 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		struct GMT_DATATABLE *T = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
 		
-		if (!Ctrl->E.active && (Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_ANY, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
-			Return (API->error);
-		}
-
 		if (!GMT_is_geographic (GMT, GMT_IN) && Ctrl->A.loxo) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Loxodrome mode ignored for Cartesian data.\n");
 			Ctrl->A.loxo = false;
 		}
-		if (Ctrl->A.loxo) GMT->current.map.loxodrome = true, Ctrl->C.mode = 1 + GMT_LOXODROME;
-		if (Ctrl->C.mode == GMT_GEODESIC) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Cannot use geodesic distances as path interpolation is spherical; changed to spherical\n");
-			Ctrl->C.mode = GMT_GREATCIRCLE;
+		if (!Ctrl->E.active) {
+			if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_ANY, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+				Return (API->error);
+			}
+			if (Ctrl->C.mode == GMT_GEODESIC) {
+				GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Cannot use geodesic distances as path interpolation is spherical; changed to spherical\n");
+				Ctrl->C.mode = GMT_GREATCIRCLE;
+			}
+			if (Ctrl->A.loxo) GMT->current.map.loxodrome = true, Ctrl->C.mode = 1 + GMT_LOXODROME;
+			GMT_init_distaz (GMT, Ctrl->C.unit, Ctrl->C.mode, GMT_MAP_DIST);
 		}
-		GMT_init_distaz (GMT, Ctrl->C.unit, Ctrl->C.mode, GMT_MAP_DIST);
+
 		/* Expand with dist,az columns (mode = 2) (and posibly make space for more) and optionally resample */
 		if ((Dtmp = GMT_resample_data (GMT, Din, Ctrl->C.spacing, 2, (Ctrl->D.active) ? Ctrl->G.n_grids : 0, Ctrl->A.mode)) == NULL) Return (API->error);
 		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Din) != GMT_OK) {

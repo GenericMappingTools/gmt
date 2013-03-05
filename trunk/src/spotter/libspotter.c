@@ -109,53 +109,6 @@ void spotter_matrix_to_pole (struct GMT_CTRL *C, double T[3][3], double *plon, d
 	}
 }
 
-void spotter_make_rot_matrix2 (struct GMT_CTRL *C, double E[3], double w, double R[3][3])
-{	/* Based on Cox and Hart, 1986 */
-/*	E	Euler pole in in cartesian coordinates
- *	w	angular rotation in degrees
- *
- *	R	the 3x3 rotation matrix
- */
-
-	double sin_w, cos_w, c, E_x, E_y, E_z, E_12c, E_13c, E_23c;
-
-	sincosd (w, &sin_w, &cos_w);
-	c = 1 - cos_w;
-
-	E_x = E[0] * sin_w;
-	E_y = E[1] * sin_w;
-	E_z = E[2] * sin_w;
-	E_12c = E[0] * E[1] * c;
-	E_13c = E[0] * E[2] * c;
-	E_23c = E[1] * E[2] * c;
-
-	R[0][0] = E[0] * E[0] * c + cos_w;
-	R[0][1] = E_12c - E_z;
-	R[0][2] = E_13c + E_y;
-
-	R[1][0] = E_12c + E_z;
-	R[1][1] = E[1] * E[1] * c + cos_w;
-	R[1][2] = E_23c - E_x;
-
-	R[2][0] = E_13c - E_y;
-	R[2][1] = E_23c + E_x;
-	R[2][2] = E[2] * E[2] * c + cos_w;
-}
-
-void spotter_make_rot_matrix (struct GMT_CTRL *C, double lonp, double latp, double w, double R[3][3])
-{
-/*	lonp, latp	Euler pole in degrees
- *	w		angular rotation in degrees
- *
- *	R		the rotation matrix
- */
-
-	double E[3];
-
-        GMT_geo_to_cart (C, latp, lonp, E, true);
-	spotter_make_rot_matrix2 (C, E, w, R);
-}
-
 void make_rot0_matrix (struct GMT_CTRL *C, double lonp, double latp, double R[3][3], double E[])
 {	/* Based on Cox and Hart, 1986 */
 	/* This starts setting up the matrix without knowing the angle of rotation
@@ -314,7 +267,7 @@ void spotter_cov_of_inverse (struct GMT_CTRL *C, struct EULER *e, double Ct[3][3
 	
 	double A[3][3], At[3][3], tmp[3][3];
 	
-	spotter_make_rot_matrix (C, e->lon, e->lat, e->omega, A);
+	GMT_make_rot_matrix (C, e->lon, e->lat, e->omega, A);
 	spotter_matrix_transpose (C, At, A);	/* Get A' */
 	spotter_matrix_mult (C, e->C, At, tmp);	/* Calculate the cov(u)*A' product */
 	spotter_matrix_mult (C, A, tmp, Ct);	/* Calculate the cov(v) = A*cov(u)*A' product */
@@ -351,7 +304,7 @@ void spotter_total_to_fwstages (struct GMT_CTRL *C, struct EULER p[], unsigned i
 	t_old = 0.0;
 	for (i = 0; i < n; i++) {
 		if (finite_rates) p[i].omega *= p[i].duration;			/* Convert opening rate to opening angle */
-		spotter_make_rot_matrix (C, p[i].lon, p[i].lat, -p[i].omega, R_old);	/* Make rotation matrix from rotation parameters, take transpose by passing -omega */
+		GMT_make_rot_matrix (C, p[i].lon, p[i].lat, -p[i].omega, R_old);	/* Make rotation matrix from rotation parameters, take transpose by passing -omega */
 		spotter_matrix_mult (C, R_young, R_old, R_stage);			/* This is R_stage = R_young * R_old^t */
 		spotter_matrix_to_pole (C, R_stage, &elon[i], &elat[i], &ew[i]);	/* Get rotation parameters from matrix */
 		if (elon[i] > 180.0) elon[i] -= 360.0;				/* Adjust lon */
@@ -1015,7 +968,7 @@ void spotter_total_to_stages (struct GMT_CTRL *C, struct EULER p[], unsigned int
 	t_old = 0.0;
 	for (i = 0; i < n; i++) {
 		if (finite_rates) p[i].omega *= p[i].duration;				/* Convert opening rate to opening angle */
-		spotter_make_rot_matrix (C, p[i].lon, p[i].lat, p[i].omega, R_old);	/* Get rotation matrix from pole and angle */
+		GMT_make_rot_matrix (C, p[i].lon, p[i].lat, p[i].omega, R_old);	/* Get rotation matrix from pole and angle */
 		spotter_matrix_mult (C, R_young, R_old, R_stage);			/* This is R_stage = R_young^t * R_old */
 		spotter_matrix_to_pole (C, R_stage, &elon[i], &elat[i], &ew[i]);	/* Get rotation parameters from matrix */
 		if (elon[i] > 180.0) elon[i] -= 360.0;					/* Adjust lon */
@@ -1060,7 +1013,7 @@ void spotter_stages_to_total (struct GMT_CTRL *C, struct EULER p[], unsigned int
 
 	for (stage = 0; stage < n; stage++) {
 		if (stage_rates) p[stage].omega *= p[stage].duration;					/* Convert opening rate to opening angle */
-		spotter_make_rot_matrix (C, p[stage].lon, p[stage].lat, p[stage].omega, R_stage);	/* Make matrix from rotation parameters */
+		GMT_make_rot_matrix (C, p[stage].lon, p[stage].lat, p[stage].omega, R_stage);	/* Make matrix from rotation parameters */
 		spotter_matrix_mult (C, R_old, R_stage, R_young);					/* Set R_young = R_old * R_stage */
 		GMT_memcpy (R_old, R_young, 9, double);							/* Set R_old = R_young for next time around */
 		spotter_matrix_to_pole (C, R_young, &elon[stage], &elat[stage], &ew[stage]);		/* Get rotation parameters from matrix */
@@ -1174,8 +1127,8 @@ void spotter_add_rotations (struct GMT_CTRL *C, struct EULER a[], int n_a_in, st
 	spotter_stages_to_total (C, b2, n_k, false, true);
 
 	for (i = 0; i < n_k; i++) {	/* Add each pair of rotations */
-		spotter_make_rot_matrix (C, a2[i].lon, a2[i].lat, sign_a * a2[i].omega, Ra);
-		spotter_make_rot_matrix (C, b2[i].lon, b2[i].lat, sign_b * b2[i].omega, Rb);
+		GMT_make_rot_matrix (C, a2[i].lon, a2[i].lat, sign_a * a2[i].omega, Ra);
+		GMT_make_rot_matrix (C, b2[i].lon, b2[i].lat, sign_b * b2[i].omega, Rb);
 		spotter_matrix_mult (C, Rb, Ra, Rab);	/* Rot a + Rot b = RB * Ra ! */
 		spotter_matrix_to_pole (C, Rab, &lon, &lat, &w);
 		c2[i].lon = lon;
@@ -1277,13 +1230,6 @@ void spotter_matrix_mult (struct GMT_CTRL *C, double a[3][3], double b[3][3], do
 	}
 }
 
-void spotter_matrix_vect_mult (struct GMT_CTRL *C, double a[3][3], double b[3], double c[3])
-{	/* c = A * b */
-	unsigned int i, j;
-
-	for (i = 0; i < 3; i++) for (j = 0, c[i] = 0.0; j < 3; j++) c[i] += a[i][j] * b[j];
-}
-
 void spotter_matrix_transpose (struct GMT_CTRL *C, double At[3][3], double A[3][3])
 {
 	/* Computes the matrix transpose */
@@ -1334,9 +1280,9 @@ void spotter_get_rotation (struct GMT_CTRL *G, struct EULER *p, unsigned int np,
 	i--;
 	GMT_memcpy (e, &p[i], 2, struct EULER);	/* Duplicate the two finite rotations bracketing the desired time */
 	spotter_total_to_stages (G, e, 2, true, true);	/* Convert total reconstruction poles to forward stage poles */
-	spotter_make_rot_matrix (G, e[1].lon, e[1].lat, e[1].omega * e[1].duration, R);	/* Get matrix R for main rotation */
+	GMT_make_rot_matrix (G, e[1].lon, e[1].lat, e[1].omega * e[1].duration, R);	/* Get matrix R for main rotation */
 	omega = e[1].omega * (t - e[0].t_stop);						/* Compute rotation angle for the partial rotation */
-	spotter_make_rot_matrix (G, e[0].lon, e[0].lat, omega, dR);			/* Get matrix Dr for the partial rotation */
+	GMT_make_rot_matrix (G, e[0].lon, e[0].lat, omega, dR);			/* Get matrix Dr for the partial rotation */
 	spotter_matrix_mult (G, R, dR, X);						/* Calculate the combined rotation ,X */
 	spotter_matrix_to_pole (G, X, lon, lat, w);						/* Convert to rotation parameters lon, lat, w */
 }
@@ -1374,7 +1320,7 @@ bool spotter_conf_ellipse (struct GMT_CTRL *G, double lon, double lat, double t,
 
 	w = p[k].omega * p[k].duration;
 	if (forward) w = -w;	/* Want the inverse rotation */
-	spotter_make_rot_matrix (G, p[k].lon, p[k].lat, w, R);
+	GMT_make_rot_matrix (G, p[k].lon, p[k].lat, w, R);
 	spotter_matrix_transpose (G, Rt, R);			/* Get the transpose of R^t */
 	if (!forward) {		/* Rotate the point into the present */
 		GMT_memcpy (cov, p[k].C, 9, double);	/* The rotation's covarience matrix */
@@ -1491,8 +1437,8 @@ unsigned int spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, stru
 		axis_length[ii] = sqrt (EigenValue[ii]);
 		i_axis_length[ii] = 1.0 / axis_length[ii];
 	}
-	spotter_matrix_vect_mult (GMT, Vt, r_center, r_t);		/* r_center expressed in eigen coordinates */
-	spotter_matrix_vect_mult (GMT, Vt, r_center_unit, r_t_unit);	/* unit vector r_center expressed in eigen coordinates */
+	GMT_matrix_vect_mult (GMT, 3U, Vt, r_center, r_t);		/* r_center expressed in eigen coordinates */
+	GMT_matrix_vect_mult (GMT, 3U, Vt, r_center_unit, r_t_unit);	/* unit vector r_center expressed in eigen coordinates */
 
 	/* Determine which of u, v, and w unit vectors are most parallel with r_t, then use the two other axes for the
 	 * loop over angles. The two horizontal axes are indicated by the indices axis[]GMT_X] and axis[GMT_Y], with
@@ -1595,8 +1541,8 @@ unsigned int spotter_confregion_radial (struct GMT_CTRL *GMT, double alpha, stru
 			try++;
 			uvw[axis[GMT_Z]] = -uvw[axis[GMT_Z]];	/* Try the opposite sign of last time */
 			spotter_ellipsoid_normal (GMT, uvw, axis_length, c, N);	/* Get normal vector */
-			spotter_matrix_vect_mult (GMT, V, N, N_xyz);		/* Upper normal in (x,y,z) coordinates */
-			spotter_matrix_vect_mult (GMT, V, uvw, uvw_prime);	/* potential tangent point in (x,y,z) coordinates */
+			GMT_matrix_vect_mult (GMT, 3U, V, N, N_xyz);		/* Upper normal in (x,y,z) coordinates */
+			GMT_matrix_vect_mult (GMT, 3U, V, uvw, uvw_prime);	/* potential tangent point in (x,y,z) coordinates */
 			for (jj = 0; jj < 3; jj++) r_tangent_path[jj] = uvw_prime[jj] + r_center[jj];	/* r to (upper) tangent path in (x,y,z) coordinates */
 			d = fabs (GMT_dot3v (GMT, N_xyz, r_tangent_path));
 			got_it = (d < SPOTTER_D_CUT);	/* The surface normal at (u,v,+w) is normal to the position vector */

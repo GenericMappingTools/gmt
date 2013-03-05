@@ -322,6 +322,9 @@ EXTERN_MSC int GMT_chol_dcmp (struct GMT_CTRL *C, double *a, double *d, double *
 EXTERN_MSC void GMT_chol_recover (struct GMT_CTRL *C, double *a, double *d, int nr, int n, int nerr, bool donly);
 EXTERN_MSC void GMT_chol_solv (struct GMT_CTRL *C, double *a, double *x, double *y, int nr, int n);
 EXTERN_MSC void GMT_set_tbl_minmax (struct GMT_CTRL *C, struct GMT_DATATABLE *T);
+EXTERN_MSC void GMT_matrix_vect_mult (struct GMT_CTRL *C, unsigned int dim, double a[3][3], double b[3], double c[3]);
+EXTERN_MSC void GMT_make_rot_matrix (struct GMT_CTRL *C, double lonp, double latp, double w, double R[3][3]);
+EXTERN_MSC void GMT_make_rot_matrix2 (struct GMT_CTRL *C, double E[3], double w, double R[3][3]);
 
 /* gmt_support.c: */
 

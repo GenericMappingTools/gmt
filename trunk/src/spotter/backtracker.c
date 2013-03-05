@@ -421,7 +421,7 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 	/*---------------------------- This is the backtracker main code ----------------------------*/
 	
 	if (Ctrl->e.active) {	/* Get rotation matrix R */
-		spotter_make_rot_matrix (GMT, Ctrl->e.lon, Ctrl->e.lat, Ctrl->e.w, R);
+		GMT_make_rot_matrix (GMT, Ctrl->e.lon, Ctrl->e.lat, Ctrl->e.w, R);
 	}
 	else {	/* Load in the stage poles */
 		n_stages = spotter_init (GMT, Ctrl->E.file, &p, Ctrl->L.mode, Ctrl->W.active, Ctrl->E.mode, &Ctrl->N.t_upper);
@@ -499,7 +499,7 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 		if (Ctrl->e.active) {	/* Simple reconstruction, then exit */
 			in[GMT_Y] = GMT_lat_swap (GMT, in[GMT_Y], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 			GMT_geo_to_cart (GMT, in[GMT_Y], in[GMT_X], x, true);		/* Get x-vector */
-			spotter_matrix_vect_mult (GMT, R, x, y);			/* Rotate the x-vector */
+			GMT_matrix_vect_mult (GMT, 3U, R, x, y);			/* Rotate the x-vector */
 			GMT_cart_to_geo (GMT, &out[GMT_Y], &out[GMT_X], y, true);	/* Recover lon lat representation; true to get degrees */
 			out[GMT_Y] = GMT_lat_swap (GMT, out[GMT_Y], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 			GMT_memcpy (&out[GMT_Z], &in[GMT_Z], n_fields - 2, double);

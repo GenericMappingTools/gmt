@@ -290,49 +290,6 @@ unsigned int decode_vector (struct GMT_CTRL *C, char *arg, double coord[], int c
 	return (n_out);
 }
 
-void make_rot_matrix (struct GMT_CTRL *C, double lonp, double latp, double w, double R[3][3])
-{
-	/* lonp, latp	Euler pole in degrees
- 	 * w		angular rotation in degrees
- 	 * R		the rotation matrix
-	 * Based on Cox and Hart, 1986.  Plate Tectonics - How it Works.
-	 * All coordinates are assumed to be geocentric.
- 	 */
-
-	double E[3], sin_w, cos_w, c, E_x, E_y, E_z, E_12c, E_13c, E_23c;
-
-	GMT_geo_to_cart (C, latp, lonp, E, true);
-
-	sincosd (w, &sin_w, &cos_w);
-	c = 1.0 - cos_w;
-
-	E_x = E[0] * sin_w;
-	E_y = E[1] * sin_w;
-	E_z = E[2] * sin_w;
-	E_12c = E[0] * E[1] * c;
-	E_13c = E[0] * E[2] * c;
-	E_23c = E[1] * E[2] * c;
-
-	R[0][0] = E[0] * E[0] * c + cos_w;
-	R[0][1] = E_12c - E_z;
-	R[0][2] = E_13c + E_y;
-
-	R[1][0] = E_12c + E_z;
-	R[1][1] = E[1] * E[1] * c + cos_w;
-	R[1][2] = E_23c - E_x;
-
-	R[2][0] = E_13c - E_y;
-	R[2][1] = E_23c + E_x;
-	R[2][2] = E[2] * E[2] * c + cos_w;
-}
-
-void matrix_vect_mult (struct GMT_CTRL *C, unsigned int dim, double a[3][3], double b[3], double c[3])
-{	/* c = A * b */
-	unsigned int i, j;
-
-	for (i = 0; i < dim; i++) for (j = 0, c[i] = 0.0; j < dim; j++) c[i] += a[i][j] * b[j];
-}
-
 void get_bisector (struct GMT_CTRL *C, double A[3], double B[3], double P[3])
 {	/* Given points in A and B, return the bisector pole via P */
 	 
@@ -471,7 +428,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args)
 	/*---------------------------- This is the gmtvector main code ----------------------------*/
 	
 	if (Ctrl->T.mode == DO_ROT3D)	/* Spherical 3-D rotation */
-		make_rot_matrix (GMT, Ctrl->T.par[0], Ctrl->T.par[1], Ctrl->T.par[2], R);
+		GMT_make_rot_matrix (GMT, Ctrl->T.par[0], Ctrl->T.par[1], Ctrl->T.par[2], R);
 	else if (Ctrl->T.mode == DO_ROT2D) {	/* Cartesian 2-D rotation */
 		double s, c;
 		GMT_memset (R, 9, double);
@@ -593,10 +550,10 @@ int GMT_gmtvector (void *V_API, int mode, void *args)
 						for (k = 0; k < n_components; k++) vector_3[k] = vector_1[k] + vector_2[k];
 						break;
 					case DO_ROT2D:	/* Rotate a 2-D vector about the z_axis */
-						matrix_vect_mult (GMT, 2, R, vector_1, vector_3);
+						GMT_matrix_vect_mult (GMT, 2U, R, vector_1, vector_3);
 						break;
 					case DO_ROT3D:	/* Rotate a 3-D vector about an arbitrary pole encoded in 3x3 matrix R */
-						matrix_vect_mult (GMT, 3, R, vector_1, vector_3);
+						GMT_matrix_vect_mult (GMT, 3U, R, vector_1, vector_3);
 						break;
 					case DO_NOTHING:	/* Probably just want the effect of -C, -E, -N */
 						GMT_memcpy (vector_3, vector_1, n_components, double);

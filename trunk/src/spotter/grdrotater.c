@@ -394,7 +394,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 	}
 
 	if (Ctrl->e.active) {	/* Get rotation matrix R */
-		spotter_make_rot_matrix (GMT, Ctrl->e.lon, Ctrl->e.lat, Ctrl->e.w, R);	/* Make rotation matrix from rotation parameters */
+		GMT_make_rot_matrix (GMT, Ctrl->e.lon, Ctrl->e.lat, Ctrl->e.w, R);	/* Make rotation matrix from rotation parameters */
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Using rotation (%g, %g, %g)\n", Ctrl->e.lon, Ctrl->e.lat, Ctrl->e.w);
 	}
 	else {
@@ -409,7 +409,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 			Return (EXIT_FAILURE);
 		}
 		spotter_get_rotation (GMT, p, n_stages, Ctrl->T.value, &lon, &lat, &w);
-		spotter_make_rot_matrix (GMT, lon, lat, w, R);	/* Make rotation matrix from rotation parameters */
+		GMT_make_rot_matrix (GMT, lon, lat, w, R);	/* Make rotation matrix from rotation parameters */
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Using rotation (%g, %g, %g)\n", lon, lat, w);
 		GMT_free (GMT, p);
 	}
@@ -423,7 +423,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 		for (rec = 0; rec < pol->segment[seg]->n_rows; rec++) {
 			S->coord[GMT_Y][rec] = GMT_lat_swap (GMT, S->coord[GMT_Y][rec], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 			GMT_geo_to_cart (GMT, S->coord[GMT_Y][rec], S->coord[GMT_X][rec], P_original, true);	/* Convert to a Cartesian x,y,z vector; true since we have degrees */
-			spotter_matrix_vect_mult (GMT, R, P_original, P_rotated);				/* Rotate the vector */
+			GMT_matrix_vect_mult (GMT, 3U, R, P_original, P_rotated);				/* Rotate the vector */
 			GMT_cart_to_geo (GMT, &S->coord[GMT_Y][rec], &S->coord[GMT_X][rec], P_rotated, true);	/* Recover lon lat representation; true to get degrees */
 			S->coord[GMT_Y][rec] = GMT_lat_swap (GMT, S->coord[GMT_Y][rec], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 		}
@@ -475,7 +475,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 	
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Interpolate reconstructed grid\n");
 
-	spotter_make_rot_matrix (GMT, Ctrl->e.lon, Ctrl->e.lat, -Ctrl->e.w, R);	/* Make inverse rotation using negative angle */
+	GMT_make_rot_matrix (GMT, Ctrl->e.lon, Ctrl->e.lat, -Ctrl->e.w, R);	/* Make inverse rotation using negative angle */
 	
 	GMT_grd_loop (GMT, G_rot, row, col, ij_rot) {
 		G_rot->data[ij_rot] = GMT->session.f_NaN;
@@ -484,7 +484,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 		/* Here we are inside; get the coordinates and rotate back to original grid coordinates */
 		
 		GMT_geo_to_cart (GMT, grd_yc[row], grd_x[col], P_rotated, true);	/* Convert degree lon,lat to a Cartesian x,y,z vector */
-		spotter_matrix_vect_mult (GMT, R, P_rotated, P_original);	/* Rotate the vector */
+		GMT_matrix_vect_mult (GMT, 3U, R, P_rotated, P_original);	/* Rotate the vector */
 		GMT_cart_to_geo (GMT, &yy, &xx, P_original, true);		/* Recover degree lon lat representation */
 		yy = GMT_lat_swap (GMT, yy, GMT_LATSWAP_O2G);			/* Convert back to geodetic */
 		xx -= 360.0;
@@ -513,7 +513,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 					if (!GMT_is_fnan (G_rot->data[ij_rot])) continue;	/* Already done this */
 					if (not_global && skip_if_outside (GMT, pol, grd_x[col], grd_yc[row])) continue;	/* Outside polygon */
 					GMT_geo_to_cart (GMT, grd_yc[row], grd_x[col], P_rotated, true);	/* Convert degree lon,lat to a Cartesian x,y,z vector */
-					spotter_matrix_vect_mult (GMT, R, P_rotated, P_original);	/* Rotate the vector */
+					GMT_matrix_vect_mult (GMT, 3U, R, P_rotated, P_original);	/* Rotate the vector */
 					GMT_cart_to_geo (GMT, &xx, &yy, P_original, true);	/* Recover degree lon lat representation */
 					yy = GMT_lat_swap (GMT, yy, GMT_LATSWAP_O2G);		/* Convert back to geodetic */
 					scol = GMT_grd_x_to_col (GMT, xx, G->header);

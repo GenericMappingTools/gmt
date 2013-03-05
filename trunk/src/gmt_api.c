@@ -4221,8 +4221,8 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int mode, uin
 	 * Return: Pointer to resource, or NULL if an error (set via API->error).
 	 */
 	
-	int error = GMT_OK;
-	unsigned int n_layers;
+	int error = GMT_OK, object_ID;
+	unsigned int n_layers, item;
 	void *new = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 
@@ -4292,6 +4292,13 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int mode, uin
 			break;		
 	}
 	if (API->error) return_null (API, API->error);
+	
+#if 0
+	/* Now register this dataset */
+	if ((object_ID = GMT_Register_IO (API, family, GMT_IS_REFERENCE, 0, GMT_IN, range, new)) == GMTAPI_NOTSET) return_null (API, API->error);	/* Failure to register */
+	if ((item = GMTAPI_Validate_ID (API, family, object_ID, GMT_IN)) == GMTAPI_NOTSET) return_null (API, API->error);
+	API->object[item]->data = new;		/* Retain pointer to the allocated data so we use garbage collection later */
+#endif	
 	GMT_report (API->GMT, GMT_MSG_LONG_VERBOSE, "Successfully created a new %s\n", GMT_family[family]);
 
 	return (new);
