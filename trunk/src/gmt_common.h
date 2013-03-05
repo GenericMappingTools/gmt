@@ -48,6 +48,7 @@ struct GMT_COMMON {
 	/* Structure with all information given via the common GMT command-line options -R -J .. */
 	struct synopsis {	/* \0 (zero) or ^ */
 		bool active;
+		bool extended;	/* + to also show non-common options */
 	} synopsis;
 	struct B {	/* -B<params> */
 		bool active[2];	/* 0 = primary annotation, 1 = secondary annotations */
