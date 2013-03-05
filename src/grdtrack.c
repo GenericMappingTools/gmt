@@ -129,7 +129,7 @@ int GMT_grdtrack_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdtrack <table> -G<grid1> -G<grid2> ... [-A[f|m|p|r|R][+l]] [-C<length>[u]/<ds>[/<spacing>][+a]]\n"); 
-	GMT_message (GMT, "\t[-D<dfile>] [-E<line>[,<line>,...][+i<step>]] [-N] [%s] [-S[<method>][<modifiers>]] [%s] [-Z] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n",
+	GMT_message (GMT, "\t[-D<dfile>] [-E<line1>[,<line2>,...][+a<az>][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>]]\n[-N] [%s] [-S[<method>][<modifiers>]] [%s] [-Z] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -163,6 +163,10 @@ int GMT_grdtrack_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   the global minimum and maximum locations in the grid.  Note: No track file is read.\n");
 	GMT_message (GMT, "\t   Append +i<inc>[unit] to set the sampling increment [Default is 0.5 x min of (x_inc, y_inc)n");
 	GMT_message (GMT, "\t   and if geographic data we choose great circle distances in km].\n");
+	GMT_message (GMT, "\t   Instead of <start/stop>, give <origin> and append +a|o|l|n|r as required:\n");
+	GMT_message (GMT, "\t     +a<az> defines a profiles from <origin> in <az> direction. Add +l<length>.\n");
+	GMT_message (GMT, "\t     +o<az> is like +a but centers profile on <origin>. Add +l<length>.\n");
+	GMT_message (GMT, "\t     +r<radius> defines a circle about <origin>. Add +i<inc> or +n<np>.\n");
 	GMT_message (GMT, "\t-N Do NOT skip points outside the grid domain [Default only returns points inside domain].\n");
 	GMT_explain_options (GMT, "R");
 	GMT_explain_options (GMT, "V");

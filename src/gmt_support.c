@@ -4010,7 +4010,7 @@ uint64_t gmt_determine_circle (struct GMT_CTRL *C, double x0, double y0, double 
 			y[k] = y0 + r * c_az;
 		}
 	}
-	return (n);
+	return (np);
 }
 
 struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *C, char option, char *args, bool resample, bool project, bool get_distances, double step, enum GMT_enum_track mode, double xyz[2][3])

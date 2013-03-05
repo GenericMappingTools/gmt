@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-03-05	pwessel
+	* pshistogram:		Added -N to draw equivalent normal distributions.
+	* grdtrack.c:		Enhanced -E to also handle lines from origins and circles.
+
 2013-03-03	pwessel
 	* gmt_grdio.c:		Enabled scaling of grid header domain via +u|U<unit>
 	* gmt_support.c:	Enabled scaling of cpt domain via +u|U<unit>
