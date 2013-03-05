@@ -397,7 +397,7 @@ Below is a list of improvements that affect several
 
 #. All text can now optionally be filled with patterns and/or drawn with
    outline pens. In the past, only
-   `**pstext** <run:../man/pstext.html>`__ could plot outline fonts via
+   `pstext <pstext.html>`_ could plot outline fonts via
    **-S**\ *pen*. Now, any text can be an outline text by manipulating
    the corresponding FONT defaults (e.g., **FONT\_TITLE**).
 
@@ -468,8 +468,8 @@ Here is a list of recent enhancements to specific programs:
    **-A**\ **o**\ :math:`|`\ **O** to compute line orientations
    (-90/90).
 
-#. `**makecpt** <run:../man/makecpt.html>`__ and
-   `**grd2cpt** <run:../man/grd2cpt.html>`__ has a new **-F** option to
+#. `makecpt <makecpt.html>`_ and
+   `grd2cpt <grd2cpt.html>`_ has a new **-F** option to
    specify output color representation, e.g., to output the CPT table in
    h-s-v format despite originally being given in r/g/b.
 
@@ -485,7 +485,7 @@ Here is a list of recent enhancements to specific programs:
    replacing the macro name with the equivalent arguments in the program
    argument lists.
 
-#. `**grdvolume** <run:../man/grdvolume.html>`__ has enhanced **-T**,
+#. `grdvolume <grdvolume.html>`_ has enhanced **-T**,
    now **-T**\ [**c**\ :math:`|`\ **h**] for ORS estimates based on max
    curvature or height.
 
@@ -497,7 +497,7 @@ Here is a list of recent enhancements to specific programs:
    option to create multi-page PDF files.
 
 #. `**pscontour** <run:../man/pscontour.html>`__ now similar to
-   `**grdcontour** <run:../man/grdcontour.html>`__ in the options it
+   `grdcontour <grdcontour.html>`_ in the options it
    takes, e.g., **-C** in particular. In *GMT* 4, the program could only
    read a CPT file and not take a specific contour interval.
 
@@ -505,10 +505,10 @@ Here is a list of recent enhancements to specific programs:
    specify pen for vector (in **-C**). Added **-Zu** to set all radii to
    unity (i.e., for analysis of angles only).
 
-#. `**psscale** <run:../man/psscale.html>`__ has a new option **-T**
+#. `psscale <psscale.html>`_ has a new option **-T**
    that paints a rectangle behind the color bar.
 
-#. `**pstext** <run:../man/pstext.html>`__ has enhanced **-DJ** option
+#. `pstext <pstext.html>`_ has enhanced **-DJ** option
    to shorten diagonal offsets by :math:`\sqrt{2}` to maintain the same
    distance from point to annotation.
 
@@ -601,7 +601,7 @@ correctly with a warning under compatibility mode:
 #. **Custom symbol macros:** Circle macro symbol **C** is deprecated;
    use **c** instead.
 
-#. **Map scale**: Used by `**psbasemap** <run:../man/psbasemap.html>`__
+#. **Map scale**: Used by `psbasemap <psbasemap.html>`_
    and others. Here, the unit **m** is deprecated; use **M** for statute
    miles.
 
@@ -661,7 +661,7 @@ correctly with a warning under compatibility mode:
 #. `**grd2xyz** <run:../man/grd2xyz.html>`__: **-E** is deprecated as
    the ESRI ASCII exchange format is now detected automatically.
 
-#. `**grdcontour** <run:../man/grdcontour.html>`__: **-m** is deprecated
+#. `grdcontour <grdcontour.html>`_: **-m** is deprecated
    as segment headers are handled automatically.
 
 #. `grdfft <grdfft.html>`_: ``-M`` is deprecated; use
@@ -709,7 +709,7 @@ correctly with a warning under compatibility mode:
 #. `**project** <run:../man/project.html>`__: ``-D`` is deprecated; use
    --FORMAT\_GEO\_OUT instead.
 
-#. `**psbasemap** <run:../man/psbasemap.html>`__: ``-G`` is deprecated;
+#. `psbasemap <psbasemap.html>`_: ``-G`` is deprecated;
    specify canvas color via ``-B`` modifier ``+g``\ *color*.
 
 #. `pscoast <pscoast.html>`_: ``-m`` is deprecated and
@@ -731,7 +731,7 @@ correctly with a warning under compatibility mode:
 #. `**psrose** <run:../man/psrose.html>`__: Old vector specifications in
    Option ``-M`` are deprecated; see new explanations.
 
-#. `**pstext** <run:../man/pstext.html>`__: ``-m`` is deprecated; use
+#. `pstext <pstext.html>`_: ``-m`` is deprecated; use
    ``-M`` to indicate paragraph mode. Also, ``-S`` is deprecated as
    fonts attributes are now specified via the font itself.
 
@@ -742,7 +742,7 @@ correctly with a warning under compatibility mode:
 #. `**psxy** <run:../man/psxy.html>`__: Old vector specifications in
    Option ``-S`` are deprecated; see new explanations.
 
-#. `**psxyz** <run:../man/psxyz.html>`__: Old vector specifications in
+#. `psxyz <psxyz.html>`_: Old vector specifications in
    Option ``-S`` are deprecated; see new explanations.
 
 #. `**splitxyz** <run:../man/splitxyz.html>`__: ``-G`` is deprecated;
@@ -1194,93 +1194,162 @@ References
 [ch:3]
 
 `GMT <http://gmt.soest.hawaii.edu>`__ summary
--------------------------------------------------
+---------------------------------------------
 
 The following is a summary of all the programs supplied with *GMT* and
 a very short description of their purpose. For more details, see the
-individual *UNIX* manual pages or the online web documentation. For a
+individual *UNIX* manual pages or the online web documentation. For a
 listing sorted by program purpose, see Section [sec:purpose].
 
-+-------------------------------------+-------------------------------------------------------------+
-|                                     |                                                             |
-+=====================================+=============================================================+
-| **blockmean** `<blockmean.html>`_   | L\ :math:`_2` (*x*,\ *y*,\ *z*) table data filter/decimator |
-+-------------------------------------+-------------------------------------------------------------+
-| **blockmedian** `<blockmean.html>`_ | L\ :math:`_1` (*x*,\ *y*,\ *z*) table data filter/decimator |
-+-------------------------------------+-------------------------------------------------------------+
-| **blockmode** `<blockmode.html>`_   | Mode estimate (*x*,\ *y*,\ *z*) table data filter/decimator |
-+-------------------------------------+-------------------------------------------------------------+
-
-| `**filter1d** `<filter1d.html>`__ Filter 1-D table data sets (time series)
-| `**fitcircle** `<fitcircle.html>`__ Finds the best-fitting great or small circle for a set of points
-| `**gmt2kml** `<gmt2kml.html>`__ Like `**psxy** `<psxy.html>`__ but plots KML for use in Google Earth
-| `**gmtconvert** `<gmtconvert.html>`__ Convert data tables from one format to another
-| `**gmtdefaults** `<gmtdefaults.html>`__ List the current default settings
-| `**gmtdp** `<gmtdp.html>`__ Line reduction using the Douglas-Peucker algorithm
-| `**gmtget** `<gmtget.html>`__ Retrieve selected parameters in current file
-| `**gmtmath** `<gmtmath.html>`__ Mathematical operations on table data
-| `**gmtselect** `<gmtselect.html>`__ Select subsets of table data based on multiple spatial criteria
-| `**gmtset** `<gmtset.html>`__ Change selected parameters in current file
-| `**gmtspatial** `<gmtspatial.html>`__ Geospatial operations on lines and polygons
-| `**gmtstitch** `<gmtstitch.html>`__ Join segments into more complete lines or polygons
-| `**gmtvector** `<gmtvector.html>`__ Basic operations on vectors in 2-D and 3-D
-| `**gmtwhich** `<gmtwhich.html>`__ Find full path to specified data files
-| `**grd2cpt** `<grd2cpt.html>`__ Make color palette table from a grid files
-| `**grd2rgb** `<grd2rgb.html>`__ Convert Sun raster or grid file to red, green, blue component grids
-| `**grd2xyz** `<grd2xyz.html>`__ Conversion from 2-D grid file to table data
-| `**grdblend** `<grdblend.html>`__ Blend several partially over-lapping grid files onto one grid
-| `**grdclip** `<grdclip.html>`__ Limit the *z*-range in gridded data sets
-| `**grdcontour** `<grdcontour.html>`__ Contouring of 2-D gridded data sets
-| `**grdcut** `<grdcut.html>`__ Cut a sub-region from a grid file
-| `**grdedit** `<grdedit.html>`__ Modify header information in a 2-D grid file
-| `**grdfft** `<grdfft.html>`__ Perform operations on grid files in the frequency domain
-| `**grdfilter** `<grdfilter.html>`__ Filter 2-D gridded data sets in the space domain
-| `**grdgradient** `<grdgradient.html>`__ Compute directional gradient from grid files
-| `**grdhisteq** `<grdhisteq.html>`__ Histogram equalization for grid files
-| `**grdimage** `<grdimage.html>`__ Produce images from 2-D gridded data sets
-| `**grdinfo** `<grdinfo.html>`__ Get information about grid files
-| `**grdlandmask** `<grdlandmask.html>`__ Create masking grid files from shoreline data base
-| `**grdmask** `<grdmask.html>`__ Reset grid nodes in/outside a clip path to constants
-| `**grdmath** `<grdmath.html>`__ Mathematical operations on grid files
-| `**grdpaste** `<grdpaste.html>`__ Paste together grid files along a common edge
-| `**grdproject** `<grdproject.html>`__ Project gridded data sets onto a new coordinate system
-| `**grdreformat** `<grdreformat.html>`__ Converts grid files into other grid formats
-| `**grdsample** `<grdsample.html>`__ Resample a 2-D gridded data set onto a new grid
-| `**grdtrack** `<grdtrack.html>`__ Sampling of 2-D gridded data set(s) along 1-D track
-| `**grdtrend** `<grdtrend.html>`__ Fits polynomial trends to grid files
-| `**grdvector** `<grdvector.html>`__ Plotting of 2-D gridded vector fields
-| `**grdview** `<grdview.html>`__ 3-D perspective imaging of 2-D gridded data sets
-| `**grdvolume** `<grdvolume.html>`__ Calculate volumes under a surface within specified contour
-| `**greenspline** `<greenspline.html>`__ Interpolation using Green’s functions for splines in 1–3 dimensions
-| `**kml2gmt** `<kml2gmt.html>`__ Extracts coordinates from Google Earth KML files
-| `**makecpt** `<makecpt.html>`__ Make color palette tables
-| `**mapproject** `<mapproject.html>`__ Transformation of coordinate systems for table data
-| `**minmax** `<minmax.html>`__ Report extreme values in table data files
-| `**nearneighbor** `<nearneighbor.html>`__ Nearest-neighbor gridding scheme
-| `**project** `<project.html>`__ Project table data onto lines or great circles
-| `**ps2raster** `<ps2raster.html>`__ Crop and convert *PostScript* files to raster images, EPS, and PDF
-| `**psbasemap** `<psbasemap.html>`__ Create a basemap plot
-| `**psclip** `<psclip.html>`__ Use polygon files to define clipping paths
-| `**pscoast** `<pscoast.html>`__ Plot (and fill) coastlines, borders, and rivers on maps
-| `**pscontour** `<pscontour.html>`__ Contour or image raw table data by triangulation
-| `**pshistogram** `<pshistogram.html>`__ Plot a histogram
-| `**psimage** `<psimage.html>`__ Plot Sun raster files on a map
-| `**pslegend** `<pslegend.html>`__ Plot a legend on a map
-| `**psmask** `<psmask.html>`__ Create overlay to mask out regions on maps
-| `**psrose** `<psrose.html>`__ Plot sector or rose diagrams
-| `**psscale** `<psscale.html>`__ Plot gray scale or color scale on maps
-| `**pstext** `<pstext.html>`__ Plot text strings on maps
-| `**pswiggle** `<pswiggle.html>`__ Draw table data time-series along track on maps
-| `**psxy** `<psxy.html>`__ Plot symbols, polygons, and lines on maps
-| `**psxyz** `<psxyz.html>`__ Plot symbols, polygons, and lines in 3-D
-| `**sample1d** `<sample1d.html>`__ Resampling of 1-D table data sets
-| `**spectrum1d** `<spectrum1d.html>`__ Compute various spectral estimates from time-series
-| `**splitxyz** `<splitxyz.html>`__ Split *xyz* files into several segments
-| `**surface** `<surface.html>`__ A continuous curvature gridding algorithm
-| `**trend1d** `<trend1d.html>`__ Fits polynomial or Fourier trends to :math:`y = f(x)` series
-| `**trend2d** `<trend2d.html>`__ Fits polynomial trends to :math:`z = f(x,y)` series
-| `**triangulate** `<triangulate.html>`__ Perform optimal Delauney triangulation and gridding
-| `**xyz2grd** `<xyz2grd.html>`__ Convert an equidistant table *xyz* file to a 2-D grid file
++------------------------------------------------+---------------------------------------------------------------------+
+|                                                |                                                                     |
++================================================+=====================================================================+
+| **blockmean** `(...) <blockmean.html>`_        | L\ :math:`_2` (*x*,\ *y*,\ *z*) table data filter/decimator         |
++------------------------------------------------+---------------------------------------------------------------------+
+| **blockmedian** `(...) <blockmean.html>`_      | L\ :math:`_1` (*x*,\ *y*,\ *z*) table data filter/decimator         |
++------------------------------------------------+---------------------------------------------------------------------+
+| **blockmode** `(...) <blockmode.html>`_        | Mode estimate (*x*,\ *y*,\ *z*) table data filter/decimator         |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **filter1d** `(...) <filter1d.html>`_         | Filter 1-D table data sets (time series)                            |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **fitcircle** `(...) <fitcircle.html>`_       | Finds the best-fitting great or small circle for a set of points    |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **gmt2kml** `(...) <gmt2kml.html>`_           | Like  **psxy** but plots KML for use in Google Earth                |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **gmtconvert** `(...) <gmtconvert.html>`_     | Convert data tables from one format to another                      |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **gmtdefaults** `(...) <gmtdefaults.html>`_   | List the current default settings                                   |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **gmtdp** `(...) <gmtdp.html>`_               | Line reduction using the Douglas-Peucker algorithm                  |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **gmtget** `(...) <gmtget.html>`_             | Retrieve selected parameters in current file                        |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **gmtmath** `(...) <gmtmath.html>`_           | Mathematical operations on table data                               |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **gmtselect** `(...) <gmtselect.html>`_       | Select subsets of table data based on multiple spatial criteria     |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **gmtset** `(...) <gmtset.html>`_             | Change selected parameters in current file                          |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **gmtspatial** `(...) <gmtspatial.html>`_     | Geospatial operations on lines and polygons                         |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **gmtstitch** `(...) <gmtstitch.html>`_       | Join segments into more complete lines or polygons                  |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **gmtvector** `(...) <gmtvector.html>`_       | Basic operations on vectors in 2-D and 3-D                          |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **gmtwhich** `(...) <gmtwhich.html>`_         | Find full path to specified data files                              |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grd2cpt** `(...) <grd2cpt.html>`_           | Make color palette table from a grid files                          |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grd2rgb** `(...) <grd2rgb.html>`_           | Convert Sun raster or grid file to red, green, blue component grids |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grd2xyz** `(...) <grd2xyz.html>`_           | Conversion from 2-D grid file to table data                         |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdblend** `(...) <grdblend.html>`_         | Blend several partially over-lapping grid files onto one grid       |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdclip** `(...) <grdclip.html>`_           | Limit the *z*-range in gridded data sets                            |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdcontour** `(...) <grdcontour.html>`_     | Contouring of 2-D gridded data sets                                 |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdcut** `(...) <grdcut.html>`_             | Cut a sub-region from a grid file                                   |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdedit** `(...) <grdedit.html>`_           | Modify header information in a 2-D grid file                        |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdfft** `(...) <grdfft.html>`_             | Perform operations on grid files in the frequency domain            |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdfilter** `(...) <grdfilter.html>`_       | Filter 2-D gridded data sets in the space domain                    |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdgradient** `(...) <grdgradient.html>`_   | Compute directional gradient from grid files                        |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdhisteq** `(...) <grdhisteq.html>`_       | Histogram equalization for grid files                               |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdimage** `(...) <grdimage.html>`_         | Produce images from 2-D gridded data sets                           |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdinfo** `(...) <grdinfo.html>`_           | Get information about grid files                                    |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdlandmask** `(...) <grdlandmask.html>`_   | Create masking grid files from shoreline data base                  |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdmask** `(...) <grdmask.html>`_           | Reset grid nodes in/outside a clip path to constants                |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdmath** `(...) <grdmath.html>`_           | Mathematical operations on grid files                               |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdpaste** `(...) <grdpaste.html>`_         | Paste together grid files along a common edge                       |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdproject** `(...) <grdproject.html>`_     | Project gridded data sets onto a new coordinate system              |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdreformat** `(...) <grdreformat.html>`_   | Converts grid files into other grid formats                         |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdsample** `(...) <grdsample.html>`_       | Resample a 2-D gridded data set onto a new grid                     |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdtrack** `(...) <grdtrack.html>`_         | Sampling of 2-D gridded data set(s) along 1-D track                 |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdtrend** `(...) <grdtrend.html>`_         | Fits polynomial trends to grid files                                |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdvector** `(...) <grdvector.html>`_       | Plotting of 2-D gridded vector fields                               |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdview** `(...) <grdview.html>`_           | 3-D perspective imaging of 2-D gridded data sets                    |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdvolume** `(...) <grdvolume.html>`_       | Calculate volumes under a surface within specified contour          |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **greenspline** `(...) <greenspline.html>`_   | Interpolation using Green's functions for splines in 1-3 dimensions |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **kml2gmt** `(...) <kml2gmt.html>`_           | Extracts coordinates from Google Earth KML files                    |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **makecpt** `(...) <makecpt.html>`_           | Make color palette tables                                           |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **mapproject** `(...) <mapproject.html>`_     | Transformation of coordinate systems for table data                 |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **minmax** `(...) <minmax.html>`_             | Report extreme values in table data files                           |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **nearneighbor** `(...) <nearneighbor.html>`_ | Nearest-neighbor gridding scheme                                    |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **project** `(...) <project.html>`_           | Project table data onto lines or great circles                      |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **ps2raster** `(...) <ps2raster.html>`_       | Crop and convert *PostScript* files to raster images, EPS, and PDF  |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **psbasemap** `(...) <psbasemap.html>`_       | Create a basemap plot                                               |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **psclip** `(...) <psclip.html>`_             | Use polygon files to define clipping paths                          |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **pscoast** `(...) <pscoast.html>`_           | Plot (and fill) coastlines, borders, and rivers on maps             |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **pscontour** `(...) <pscontour.html>`_       | Contour or image raw table data by triangulation                    |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **pshistogram** `(...) <pshistogram.html>`_   | Plot a histogram                                                    |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **psimage** `(...) <psimage.html>`_           | Plot Sun raster files on a map                                      |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **pslegend** `(...) <pslegend.html>`_         | Plot a legend on a map                                              |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **psmask** `(...) <psmask.html>`_             | Create overlay to mask out regions on maps                          |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **psrose** `(...) <psrose.html>`_             | Plot sector or rose diagrams                                        |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **psscale** `(...) <psscale.html>`_           | Plot gray scale or color scale on maps                              |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **pstext** `(...) <pstext.html>`_             | Plot text strings on maps                                           |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **pswiggle** `(...) <pswiggle.html>`_         | Draw table data time-series along track on maps                     |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **psxy** `(...) <psxy.html>`_                 | Plot symbols, polygons, and lines on maps                           |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **psxyz** `(...) <psxyz.html>`_ Plot          | symbols, polygons, and lines in 3-D                                 |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **sample1d** `(...) <sample1d.html>`_         | Resampling of 1-D table data sets                                   |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **spectrum1d** `(...) <spectrum1d.html>`_     | Compute various spectral estimates from time-series                 |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **splitxyz** `(...) <splitxyz.html>`_         | Split *xyz* files into several segments                             |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **surface** `(...) <surface.html>`_           | A continuous curvature gridding algorithm                           |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **trend1d** `(...) <trend1d.html>`_           | Fits polynomial or Fourier trends to :math:`y = f(x)` series        |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **trend2d** `(...) <trend2d.html>`_           | Fits polynomial trends to :math:`z = f(x,y)` series                 |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **triangulate** `(...) <triangulate.html>`_   | Perform optimal Delauney triangulation and gridding                 |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **xyz2grd** `(...) <xyz2grd.html>`_           | Convert an equidistant table *xyz* file to a 2-D grid file          |
++------------------------------------------------+---------------------------------------------------------------------+
 
 `GMT <http://gmt.soest.hawaii.edu>`__ quick reference
 -----------------------------------------------------
@@ -1288,7 +1357,7 @@ listing sorted by program purpose, see Section [sec:purpose].
 [sec:purpose] Instead of an alphabetical listing, this section
 contains a summary sorted by program purpose. Also included is a quick
 summary of the standard command line options and a breakdown of the
-``-J`` option for each of the over 30 projections available in *GMT*.
+**-J** option for each of the over 30 projections available in *GMT*.
 
 | **FILTERING OF 1-D AND 2-D DATA**
 | `**blockmean** <blockmean.html>`__ & L\ :math:`_2` estimate (:math:`x, y, z`) data filters/decimators
@@ -2050,7 +2119,7 @@ projections: use the same abbreviation as in the mapping package
 
 The projections available in *GMT* are presented in Figure . For details
 on all *GMT* projections and the required parameters, see the
-`**psbasemap** <run:../man/psbasemap.html>`__ man page. We will also
+`psbasemap <psbasemap.html>`_ man page. We will also
 show examples of every projection in the next Chapters, and a quick
 summary of projection syntax was given in Chapter [ch:3].
 
@@ -3174,7 +3243,7 @@ Specifying Fonts
 
 The fonts used by *GMT* are typically set indirectly via the
 *GMT* defaults parameters. However, some programs, like
-`**pstext** <run:../man/pstext.html>`__ may wish to have this
+`pstext <pstext.html>`_ may wish to have this
 information passed directly. A font is specified by a comma-delimited
 attribute list of *size*, *fonttype* and *fill*, each of which is
 optional. The *size* is the font size (usually in points) but **c**,
@@ -3226,11 +3295,11 @@ create colored images or shaded reliefs, need to be told what colors to
 use and over what *z*-range each color applies. This is the purpose of
 the color palette table (CPT file). These files may also be used by
 `**psxy** <run:../man/psxy.html>`__ and
-`**psxyz** <run:../man/psxyz.html>`__ to plot color-filled symbols. For
+`psxyz <psxyz.html>`_ to plot color-filled symbols. For
 most applications, you will simply create a CPT file using the tool
-`**makecpt** <run:../man/makecpt.html>`__ which will take an existing
+`makecpt <makecpt.html>`_ which will take an existing
 color table and resample it to fit your chosen data range, or use
-`**grd2cpt** <run:../man/grd2cpt.html>`__ to build a CPT file based on
+`grd2cpt <grd2cpt.html>`_ to build a CPT file based on
 the data distribution in one or more given grid files. However, in some
 situations you will need to make a CPT file by hand or using text tools
 like ***awk*** or ***perl***.
@@ -3297,15 +3366,15 @@ constant (by letting Color\ :math:`_{max}` = Color\ :math:`_{min}` or -)
 or a continuous, linear function of *z*. If patterns are used then the
 second (max) pattern must be set to -. The optional flag **A** is used
 to indicate annotation of the color scale when plotted using
-`**psscale** <run:../man/psscale.html>`__. The optional flag **A** may
+`psscale <psscale.html>`_. The optional flag **A** may
 be **L**, **U**, or **B** to select annotation of the lower, upper, or
 both limits of the particular :math:`z`-slice, respectively. However,
 the standard **-B** option can be used by
-`**psscale** <run:../man/psscale.html>`__ to affect annotation and
+`psscale <psscale.html>`_ to affect annotation and
 ticking of color scales. Just as other *GMT* programs, the *stride* can
 be omitted to determine the annotation and tick interval automatically
 (e.g., **-Baf**). The optional semicolon followed by a text label will
-make `**psscale** <run:../man/psscale.html>`__, when used with the
+make `psscale <psscale.html>`_, when used with the
 **-L** option, place the supplied label instead of formatted *z*-values.
 
 As for categorical tables, the background color (for *z*-values
@@ -3331,9 +3400,9 @@ gray-shade in the 0–255 range. For CMYK, give *c/m/y/k* values in the
 
 A few programs (i.e., those that plot polygons such as
 `**grdview** <run:../man/grdview.html>`__,
-`**psscale** <run:../man/psscale.html>`__,
+`psscale <psscale.html>`_,
 `**psxy** <run:../man/psxy.html>`__ and
-`**psxyz** <run:../man/psxyz.html>`__) can accept pattern fills instead
+`psxyz <psxyz.html>`_) can accept pattern fills instead
 of gray-shades. You must specify the pattern as in Section [sec:fill]
 (no leading **-G** of course), and only the first pattern (for low
 :math:`z`) is used (we cannot interpolate between patterns). Finally,
@@ -3379,7 +3448,7 @@ The Drawing of Vectors
 
 *GMT* supports plotting vectors in various forms. A vector is one of
 many symbols that may be plotted by `**psxy** <run:../man/psxy.html>`__
-and `**psxyz** <run:../man/psxyz.html>`__, is the main feature in
+and `psxyz <psxyz.html>`_, is the main feature in
 `**grdvector** <run:../man/grdvector.html>`__, and is indirectly used by
 other programs. All vectors plotted by *GMT* consist of two separate
 parts: The vector line (controlled by the chosen pen attributes) and the
@@ -3413,7 +3482,7 @@ Character escape sequences
 [sec:escape]
 
 For annotation labels or text strings plotted with
-`**pstext** <run:../man/pstext.html>`__, *GMT* provides several escape
+`pstext <pstext.html>`_, *GMT* provides several escape
 sequences that allow the user to temporarily switch to the symbol font,
 turn on sub- or superscript, etc., within words. These conditions are
 toggled on/off by the escape sequence @\ **x**, where **x** can be one
@@ -4091,7 +4160,7 @@ entirety. Meanwhile, the present chapter will summarize the properties
 of the Cartesian and Polar coordinate transformations available in
 *GMT*, list which parameters define them, and demonstrate how they are
 used to create simple plot axes. We will mostly be using
-`**psbasemap** <run:../man/psbasemap.html>`__ (and occasionally
+`psbasemap <psbasemap.html>`_ (and occasionally
 `**psxy** <run:../man/psxy.html>`__) to demonstrate the various
 transformations. Our illustrations may differ from those you reproduce
 with the same commands because of different settings in our file.)
@@ -4291,7 +4360,7 @@ polar coordinates :math:`z(\theta, r) = r^2 \cdot \cos{4\theta}` using
 `grdmath <grdmath.html>`_, a RPN calculator that
 operates on or creates grid files.
 
-We used `**grdcontour** <run:../man/grdcontour.html>`__ to make a
+We used `grdcontour <grdcontour.html>`_ to make a
 contour map of this data. Because the data file only contains values
 with :math:`2 \leq r \leq 4`, a donut shaped plot appears in
 Figure [fig:GMT\ :sub:`p`\ olar].
@@ -5273,10 +5342,10 @@ rectangular frame surrounding the two maps. This is how it is done:
 
 The first command draws a box surrounding the maps. This is followed by
 two sequences of `pscoast <pscoast.html>`_,
-`**grdcontour** <run:../man/grdcontour.html>`__,
-`**grdcontour** <run:../man/grdcontour.html>`__. They differ in that the
+`grdcontour <grdcontour.html>`_,
+`grdcontour <grdcontour.html>`_. They differ in that the
 first is centered on Greenwich; the second on the dateline. We use the
-limit option (**-L**) in `**grdcontour** <run:../man/grdcontour.html>`__
+limit option (**-L**) in `grdcontour <grdcontour.html>`_
 to select negative contours only and plot those with a dashed pen, then
 positive contours only and draw with a solid pen [Default]. The **-T**
 option causes tickmarks pointing in the downhill direction to be drawn
@@ -5317,16 +5386,16 @@ so you do not need `**grdraster** <run:../man/grdraster.html>`__ to try
 this example. By using the embedded grid file format mechanism we saved
 the topography using kilometers as the data unit. We now have two grid
 files with bathymetry and geoid heights, respectively. We use
-`**makecpt** <run:../man/makecpt.html>`__ to generate a linear color
+`makecpt <makecpt.html>`_ to generate a linear color
 palette file for the geoid and use
-`**grd2cpt** <run:../man/grd2cpt.html>`__ to get a histogram-equalized
+`grd2cpt <grd2cpt.html>`_ to get a histogram-equalized
 cpt file for the topography data. To emphasize the structures in the
 data we calculate the slopes in the north-south direction using
 `**grdgradient** <run:../man/grdgradient.html>`__; these will be used to
 modulate the color image. Next we run
 `grdimage <grdimage.html>`_ to create a color-code image
 of the Geosat geoid heights, and draw a color legend to the right of the
-image with `**psscale** <run:../man/psscale.html>`__. Similarly, we run
+image with `psscale <psscale.html>`_. Similarly, we run
 `grdimage <grdimage.html>`_ but specify **-Y**\ 4.5i to
 plot above the previous image. Adding scale and label the two plots a)
 and b) completes the illustration (Figure [fig:example:sub:`0`\ 2]).
@@ -5340,7 +5409,7 @@ In this example we will show how to use the *GMT* programs
 `**sample1d** <run:../man/sample1d.html>`__,
 `**spectrum1d** <run:../man/spectrum1d.html>`__,
 `**psxy** <run:../man/psxy.html>`__, and
-`**pstext** <run:../man/pstext.html>`__. Suppose you have (lon, lat,
+`pstext <pstext.html>`_. Suppose you have (lon, lat,
 gravity) along a satellite track in a file called , and (lon, lat,
 gravity) along a ship track in a file called . You want to make a
 cross-spectral analysis of these data. First, you will have to get the
@@ -5363,7 +5432,7 @@ and the satellite is the output data. There are several intermediate
 steps that produce helpful plots showing the effect of the various
 processing steps (), while the final plot shows the ship and sat power
 in one diagram and the coherency on another diagram, both on the same
-page. Note the extended use of `**pstext** <run:../man/pstext.html>`__
+page. Note the extended use of `pstext <pstext.html>`_
 and `**psxy** <run:../man/psxy.html>`__ to put labels and legends
 directly on the plots. For that purpose we often use **-Jx**\ 1i and
 specify positions in inches directly. Thus, the complete automated
@@ -5475,7 +5544,7 @@ and white.
 A 3-D histogram
 ---------------
 
-The program `**psxyz** <run:../man/psxyz.html>`__ allows us to plot
+The program `psxyz <psxyz.html>`_ allows us to plot
 three-dimensional symbols, including columnar plots. As a simple
 demonstration, we will convert a gridded netCDF of bathymetry into an
 ASCII :math:`xyz` table and use the height information to draw a 2-D
@@ -5500,12 +5569,12 @@ Geosat tracks are stored in the files , the ridge in , and all the
 fracture zones are stored in the multiple segment file . We extract the
 profile id (which is the first part of the file name for each profile)
 and the last point in each of the track files to construct an input file
-for `**pstext** <run:../man/pstext.html>`__ that will label each profile
+for `pstext <pstext.html>`_ that will label each profile
 with the track number. We know the profiles trend approximately N40E so
 we want the labels to have that same orientation (i.e., the angle with
 the baseline must be 50). We do this by extracting the last record from
 each track, paste this file with the file, and use ***AWK*** to create
-the format needed for `**pstext** <run:../man/pstext.html>`__. Note we
+the format needed for `pstext <pstext.html>`_. Note we
 offset the positions by -0.05 inch with **-D** in order to have a small
 gap between the profile and the label:
 
@@ -5574,7 +5643,7 @@ contour map and image directly from the raw data. Thus, in this example
 we do not actually make grid files but still are able to contour and
 image the data. We use a color palette table (created via
 `**minmax** <run:../man/minmax.html>`__ and
-`**makecpt** <run:../man/makecpt.html>`__). The script becomes:
+`makecpt <makecpt.html>`_). The script becomes:
 
 Plotting of vector fields
 -------------------------
@@ -5590,7 +5659,7 @@ separate grid files. In this example we use
 :math:`\nabla z` by returning the *x*- and *y*-derivatives separately.
 We superpose the gradient vector field and the surface *z* and also plot
 the components of the gradient in separate windows. A
-`**pstext** <run:../man/pstext.html>`__ call to place a header finishes
+`pstext <pstext.html>`_ call to place a header finishes
 the plot (Figure [fig:example:sub:`1`\ 3]:
 
 Gridding of data and trend surfaces
@@ -5664,7 +5733,7 @@ physically reasonable, but it can be filtered later (last panel below).
 `**surface** <run:../man/surface.html>`__ can be used to generate a
 higher-order (smooth and differentiable) interpolation of
 :math:`z(x, y)` onto a grid, after which the grid may be illustrated
-(`**grdcontour** <run:../man/grdcontour.html>`__,
+(`grdcontour <grdcontour.html>`_,
 `grdimage <grdimage.html>`_,
 `**grdview** <run:../man/grdview.html>`__).
 `**surface** <run:../man/surface.html>`__ will interpolate to all (*x,
@@ -5723,13 +5792,13 @@ with the option **-Q** (Figure [fig:example:sub:`1`\ 7]):
 We also plot a color legend on top of the land. So here we basically
 have three layers of “paint” stacked on top of each other: the
 underlaying geoid map, the land mask, and finally the color legend. This
-legend makes clear how `**grd2cpt** <run:../man/grd2cpt.html>`__
+legend makes clear how `grd2cpt <grd2cpt.html>`_
 distributed the colors over the range: they are not of equal length put
 are associated with equal amounts of area in the plot. Since the high
 amounts (in red) are not very prevalent, that color spans a long range.
 
 For this image it is appropriate to use the **-I** option in
-`**psscale** <run:../man/psscale.html>`__ so the legend gets shaded,
+`psscale <psscale.html>`_ so the legend gets shaded,
 similar to the geoid grid. See Appendix [app:M] to learn more about
 color palettes and ways to draw color legends.
 
@@ -5737,7 +5806,7 @@ Volumes and Spatial Selections
 ------------------------------
 
 To demonstrate potential usage of the new programs
-`**grdvolume** <run:../man/grdvolume.html>`__ and
+`grdvolume <grdvolume.html>`_ and
 `**gmtselect** <run:../man/gmtselect.html>`__ we extract a subset of the
 Sandwell & Smith altimetric gravity field [26]_ for the northern Pacific
 and decide to isolate all seamounts that (1) exceed 50 mGal in amplitude
@@ -5747,7 +5816,7 @@ returns the mean location of the points making up each closed polygon,
 and then pass these locations to
 `**gmtselect** <run:../man/gmtselect.html>`__ which retains only the
 points within 200 km of Pratt. We then mask out all the data outside
-this radius and use `**grdvolume** <run:../man/grdvolume.html>`__ to
+this radius and use `grdvolume <grdvolume.html>`_ to
 determine the combined area and volumes of the chosen seamounts. Our
 illustration is presented in Figure [fig:example\ :sub:`1`\ 8].
 
@@ -5758,7 +5827,7 @@ Color patterns on maps
 of how to use this new feature. We make a phony poster that advertises
 an international conference on *GMT*\ in Honolulu. We use
 `grdmath <grdmath.html>`_,
-`**makecpt** <run:../man/makecpt.html>`__, and
+`makecpt <makecpt.html>`_, and
 `grdimage <grdimage.html>`_ to draw pleasing color
 backgrounds on maps, and overlay
 `pscoast <pscoast.html>`_ clip paths to have the
@@ -5779,11 +5848,11 @@ One is often required to make special maps that shows the distribution
 of certain features but one would prefer to use a custom symbol instead
 of the built-in circles, squares, triangles, etc. in the *GMT* plotting
 programs `**psxy** <run:../man/psxy.html>`__ and
-`**psxyz** <run:../man/psxyz.html>`__. Here we demonstrate one approach
+`psxyz <psxyz.html>`_. Here we demonstrate one approach
 that allows for a fair bit of flexibility in designing ones own symbols.
 The following recipe is used when designing a new symbol.
 
-#. Use `**psbasemap** <run:../man/psbasemap.html>`__ (or engineering
+#. Use `psbasemap <psbasemap.html>`_ (or engineering
    paper!) to set up an empty grid that goes from -0.5 to +0.5 in both
    *x* and *y*. Use ruler and compass to draw your new symbol using
    straight lines, arcs of circles, and stand-alone geometrical objects
@@ -5836,7 +5905,7 @@ The following recipe is used when designing a new symbol.
 
 #. Given proper definition files we may now use them with
    `**psxy** <run:../man/psxy.html>`__ or
-   `**psxyz** <run:../man/psxyz.html>`__.
+   `psxyz <psxyz.html>`_.
 
 We are now ready to give it a try. Based on the hotspot locations in the
 file (with a 3rd column giving the desired symbol sizes in inches) we
@@ -5923,7 +5992,7 @@ one great-circle path connects the points of departure and
 arrival [28]_. This provides the inspiration for our next example which
 uses `grdmath <grdmath.html>`_ to calculate distances
 from Rome to anywhere on Earth and
-`**grdcontour** <run:../man/grdcontour.html>`__ to contour these
+`grdcontour <grdcontour.html>`_ to contour these
 distances. We pick five cities that we connect to Rome with great circle
 arcs, and label these cities with their names and distances (in km) from
 Rome, all laid down on top of a beautiful world map. Note that we
@@ -6053,7 +6122,7 @@ remember two key issues:
 
 #. This is a *spherical* Mercator grid so we must use
    --**PROJ\_ELLIPSOID**\ =Sphere with all commands that involve
-   projections (or use `**gmtset** <run:../man/gmtset.html>`__ to change
+   projections (or use `gmtset <gmtset.html>`_ to change
    the setting).
 
 #. Select Mercator projection and use the same scale that was used with
@@ -6111,7 +6180,7 @@ reference surface from the gridded radii. We run the gridding twice:
 First with no tension using *Parker*\ ’s [1990] method and then with
 tension using the *Wessel and Becker* [2008] method. The grids are then
 imaged with `grdimage <grdimage.html>`_ and
-`**grdcontour** <run:../man/grdcontour.html>`__ and a color scale is
+`grdcontour <grdcontour.html>`_ and a color scale is
 placed between them.
 
 Trigonometric functions plotted in graph mode
@@ -8299,13 +8368,13 @@ Built-in color palette tables
 
 Figure [fig:GMT\ :sub:`A`\ pp\ :sub:`M1`] shows each of the 22 built-in
 color palettes, stored in so-called CPT tables [50]_. The programs
-`**makecpt** <run:../man/makecpt.html>`__ and
-`**grd2cpt** <run:../man/grd2cpt.html>`__ are used to access these
+`makecpt <makecpt.html>`_ and
+`grd2cpt <grd2cpt.html>`_ are used to access these
 master CPT tables and translate/scale them to fit the user’s range of
 :math:`z`-values. The top half of the color bars in the Figure shows the
 original color scale, which can be either discrete or continuous, though
 some (like **globe**) are a mix of the two. The bottom half the color
-bar are built by using `**makecpt** <run:../man/makecpt.html>`__
+bar are built by using `makecpt <makecpt.html>`_
 **-T**-1/1/0.25, thus splitting the color scale into 8 discrete colors.
 
 [h] |image| [fig:GMT:sub:`A`\ pp\ :sub:`M1`]
@@ -8319,7 +8388,7 @@ complicated when you want to label the legend with names for certain
 intervals (like geological time periods in the example below). To
 accomplish that, one should add a semi-colon and the label name at the
 end of a line in the CPT table and add the **-L** option to the
-`**psscale** <run:../man/psscale.html>`__ command that draws the color
+`psscale <psscale.html>`_ command that draws the color
 legend. This option also makes all intervals in the legend of equal
 length, even it the numerical values are not equally spaced.
 
@@ -8586,11 +8655,11 @@ Annotation of Contours and “Quoted Lines”
 
 [app:O]
 
-The *GMT* programs `**grdcontour** <run:../man/grdcontour.html>`__ (for
+The *GMT* programs `grdcontour <grdcontour.html>`_ (for
 data given as 2-dimensional grids) and
 `**pscontour** <run:../man/pscontour.html>`__ (for *x,y,z* tables) allow
 for contouring of data sets, while `**psxy** <run:../man/psxy.html>`__
-and `**psxyz** <run:../man/psxyz.html>`__ can plot lines based on *x,y*-
+and `psxyz <psxyz.html>`_ can plot lines based on *x,y*-
 and *x,y,z*-tables, respectively. In both cases it may be necessary to
 attach labels to these lines. Clever or optimal placements of labels is
 a very difficult topic, and *GMT* provides several algorithms for this
@@ -8606,7 +8675,7 @@ While the previous *GMT* versions 1–3 allowed for a single algorithm
 that determined where labels would be placed, *GMT* 4 allows for five
 different algorithms. Furthermore, a new “symbol” option (**-Sq** for
 “quoted line”) has been added to `**psxy** <run:../man/psxy.html>`__ and
-`**psxyz** <run:../man/psxyz.html>`__ and hence the new label placement
+`psxyz <psxyz.html>`_ and hence the new label placement
 mechanisms apply to those programs as well. The contouring programs
 expect the algorithm to be specified as arguments to **-G** while the
 line plotting programs expect the same arguments to follow **-Sq**. The
@@ -8662,12 +8731,12 @@ l:
     regular coordinate pairs (i.e., longitude/latitude separated by a
     slash), or they can be two-character codes that refer to
     predetermined points relative to the map region. These codes are
-    taken from the `**pstext** <run:../man/pstext.html>`__ justification
+    taken from the `pstext <pstext.html>`_ justification
     keys
     [**L\ :math:`|`\ C\ :math:`|`\ R**\ ][**B\ :math:`|`\ M\ :math:`|`\ T**\ ]
     so that the first character determines the :math:`x`-coordinate and
     the second determines the :math:`y`-coordinate. In
-    `**grdcontour** <run:../man/grdcontour.html>`__, you can also use
+    `grdcontour <grdcontour.html>`_, you can also use
     the two codes **Z+** and **Z-** as shorthands for the location of
     the grid’s global maximum and minimum, respectively. For example,
     the *line* **LT**/**RB** is a diagonal from the upper left to the
@@ -8730,7 +8799,7 @@ universally. These codes are:
     Append **n** for normal to the line, give a fixed *angle* measured
     counter-clockwise relative to the horizontal. or append **p** for
     parallel to the line [Default]. If using
-    `**grdcontour** <run:../man/grdcontour.html>`__ the latter option
+    `grdcontour <grdcontour.html>`_ the latter option
     you may further append **u** or **d** to get annotations whose upper
     edge always face the next higher or lower contour line.
 
@@ -8757,7 +8826,7 @@ universally. These codes are:
 
 +f:
     Specifies the desired label font, including size or color. See
-    `**pstext** <run:../man/pstext.html>`__ for font names or numbers.
+    `pstext <pstext.html>`_ for font names or numbers.
     The default font is given by **FONT\_ANNOT\_PRIMARY**.
 
 +g:
@@ -8768,7 +8837,7 @@ universally. These codes are:
 +j:
     Selects the justification of the label relative to the placement
     points determined above. Normally this is center/mid justified
-    (**CM** in `**pstext** <run:../man/pstext.html>`__ justification
+    (**CM** in `pstext <pstext.html>`_ justification
     parlance) and this is indeed the default setting. Override by using
     this option and append another justification key code from
     [**L\ :math:`|`\ C\ :math:`|`\ R**\ ][**B\ :math:`|`\ M\ :math:`|`\ T**\ ].
@@ -8796,7 +8865,7 @@ universally. These codes are:
     Append the chosen *unit* to the label. Normally a space will
     separate the label and the unit. If you want to close this gap,
     append a *unit* that begins with a hyphen (–). If you are contouring
-    with `**grdcontour** <run:../man/grdcontour.html>`__ and you specify
+    with `grdcontour <grdcontour.html>`_ and you specify
     this option without appending a unit, the unit will be taken from
     the :math:`z`-unit attribute of the grid header.
 
@@ -9021,7 +9090,7 @@ are:
     layout of your plot, from font sizes to tick lengths and date
     formats (See Section [sec:gmt.conf]). Those settings can be altered
     by editing the file, or by running the
-    `**gmtset** <run:../man/gmtset.html>`__ command. A problem may arise
+    `gmtset <gmtset.html>`_ command. A problem may arise
     when those settings are changed half-way through the script: the
     next time you run the script it will start with the modified
     settings and hence might alter your scripts results. It is therefore
