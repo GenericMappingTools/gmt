@@ -68,7 +68,9 @@ about the file formats, see TECHNICAL INFORMATION below.
     **-Qi** to exclude everything else instead [Default outputs all
     polygons].
 
+.. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-bo.rst_
+
 .. include:: ../../explain_-ocols.rst_
 
 `Examples <#toc6>`_
@@ -153,7 +155,7 @@ Gorny, A. J., 1977, *World Data Bank II General User GuideRep. PB
 271869*, 10pp, Central Intelligence Agency, Washington, DC.
 
 Soluri, E. A., and V. A. Woodson, 1990, World Vector Shoreline, *Int.
-Hydrograph. Rev., LXVII(1), 27-35.
+Hydrograph. Rev., LXVII(1), 27-35.*
 
 Wessel, P., and W. H. F. Smith, 1996, A global, self-consistent,
 hierarchical, high-resolution shoreline database, *J. Geophys. Res.,

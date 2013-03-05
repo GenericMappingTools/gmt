@@ -81,10 +81,10 @@ histogram. A cumulative histogram may also be specified.
 **-N**\ [*mode*][**+p**\ *pen*]
     Draw the equivalent normal distribution; append desired pen [0.5p,black].
     The *mode* selects which central location and scale to use:
-    0 = mean and standard deviation [Default];
-    1 = median and L1 scale;
-    2 = LMS mode and scale.
-   The **-N** option may be repeated to draw several of these curves.
+|   0 = mean and standard deviation [Default];
+|   1 = median and L1 scale;
+|   2 = LMS mode and scale.
+    The **-N** option may be repeated to draw several of these curves.
 
 .. include:: explain_-O.rst_
 

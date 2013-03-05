@@ -61,9 +61,9 @@ projection. The *PostScript* code is written to standard output.
 
 **-C**\ **f**\ \|\ **g**\ \|\ **e**
     Select procedure for along-track distance calculation:
-     `` `` `` `` **f** Flat Earth distances.
-     `` `` `` `` **g** Great circle distances [Default].
-     `` `` `` `` **e** Geodesic distances on current GMT ellipsoid.
+        **f** Flat Earth distances.
+        **g** Great circle distances [Default].
+        **e** Geodesic distances on current GMT ellipsoid.
 **-Da**\ *startdate*
     Do not plot data collected before *startdate*
     (yyyy-mm-ddBD(T)[hh:mm:ss]) [Default is first day].
