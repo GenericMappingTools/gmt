@@ -2,8 +2,7 @@
 grd2cpt
 *******
 
-grd2cpt - Make linear or histogram-equalized color palette table from
-grid
+grd2cpt - Make linear or histogram-equalized color palette table from grid
 
 `Synopsis <#toc1>`_
 -------------------

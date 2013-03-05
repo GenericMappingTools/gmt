@@ -71,7 +71,7 @@ The GMT Documentation Project
 =============================
 
 Starting with *GMT* version 3.2, all *GMT* documentation was converted
-from Microsoft ***Word*** to LaTeX files. This step was taken for a
+from Microsoft **Word** to LaTeX files. This step was taken for a
 number of reasons:
 
 #. Having all the documentation source available in ASCII format makes
@@ -101,7 +101,7 @@ A Reminder
 
 If you feel it is appropriate, you may consider paying us back by citing
 our *EOS* articles on *GMT* (and perhaps also our Geophysics article on
-the *GMT* program `**surface** <run:../man/surface.html>`__) when you
+the *GMT* program `surface <surface.html>`_) when you
 publish papers containing results or illustrations obtained using *GMT*.
 The EOS articles on *GMT* are
 
@@ -127,25 +127,24 @@ published, such as
 -  Kim, S.-S., and P. Wessel, Directional Median Filtering for
    Regional-Residual Separation of Bathymetry, *Geochem. Geophys.
    Geosyst., 9(Q03005)*, doi:10.1029/2007GC001850.
-   [`**dimfilter.c** <run:../man/dimfilter.c.html>`__ in
-   `**misc** <run:../man/misc.html>`__ supplement].
+   [`**dimfilter.c** <run:../man/dimfilter.c.html>`__ in **misc** supplement].
 
 -  Smith, W. H. F., and P. Wessel, Gridding with Continuous Curvature
    Splines in Tension, *Geophysics*, vol. 55 (3), pp. 293–305, 1990
-   [`**surface.c** <run:../man/surface.c.html>`__\ ].
+   [`surface.c <surface.c.html>`_].
 
 -  Wessel, P., A General-purpose Green’s Function-based Interpolator,
    *Computers & Geosciences*, vol. 35, pp. 1247–1254, 2009
-   [`**greenspline.c** <run:../man/greenspline.c.html>`__\ ].
+   [`greenspline.c <greenspline.c.html>`_].
 
 -  Wessel, P., Tools for Analyzing Intersecting Tracks: the x2sys
    package, *Computers & Geosciences*, vol. 36, 348–354, 2010
-   [`**x2sys** <run:../man/x2sys.html>`__ supplement].
+   [**x2sys** supplement].
 
 -  Wessel, P. and J. M. Becker, Interpolation using a Generalized
    Green’s Function for a Spherical Surface Spline in Tension, *Geophys.
    J. Int.*, vol. 174, pp. 21–28, 2008
-   [`**greenspline.c** <run:../man/greenspline.c.html>`__\ ].
+   [`greenspline.c <greenspline.c.html>`_].
 
 Finally, *GMT* includes some code supplied by others, in particular the
 Triangle code used for Delaunay triangulation. Its author, Jonathan
@@ -210,8 +209,8 @@ typographic conventions used in this document.
 #. The names of *GMT* programs are indicated by the **bold, sans serif**
    type style, e.g., we plot text with **pstext**.
 
-#. The names of other programs are indicated by the ***bold, slanted***
-   type style, e.g., ***grep***.
+#. The names of other programs are indicated by the **bold, slanted**
+   type style, e.g., **grep**.
 
 #. File names are indicated by the type style, e.g., .
 
@@ -281,27 +280,27 @@ This version shares the same bug fixes applied to *GMT* 4.5.9, released
 Jan 1, 2013. Several new programs have been added; some have been
 promoted from earlier supplements:
 
-`**gmt2kml** <run:../man/gmt2kml.html>`__
-    : A `**psxy** <run:../man/psxy.html>`__-like tool to produce KML
+`gmt2kml <gmt2kml.html>`_
+    : A `psxy <psxy.html>`_ -like tool to produce KML
     overlays for Google Earth.
 
-`**gmtdp** <run:../man/gmtdp.html>`__
+`gmtdp <gmtdp.html>`_
     : A line-reduction tool for coastlines and similar lines.
 
-`**gmtstitch** <run:../man/gmtstitch.html>`__
+`gmtstitch <gmtstitch.html>`_
     : Join individual lines whose end points match within given
     tolerance.
 
-`**gmtwhich** <run:../man/gmtwhich.html>`__
+`gmtwhich <gmtwhich.html>`_
     : Return the full path to specified data files.
 
-`**kml2gmt** <run:../man/kml2gmt.html>`__
+`kml2gmt <kml2gmt.html>`_
     : Extract GMT data tables from Google Earth KML files.
 
-`**gmtspatial** <run:../man/gmtspatial.html>`__
+`gmtspatial <gmtspatial.html>`_
     : Perform geospatial operations on lines and polygons.
 
-`**gmtvector** <run:../man/gmtvector.html>`__
+`gmtvector <gmtvector.html>`_
     : Perform basic vector manipulation in 2-D and 3-D.
 
 Below is a list of improvements that affect several
@@ -323,7 +322,7 @@ Below is a list of improvements that affect several
 
 #. Programs that read data tables can now process the aspatial metadata
    in OGR/GMT files with the new **-a** option. These are produced by
-   ***ogr2ogr*** (a GDAL tool) when selecting the -f “GMT” output
+   **ogr2ogr** (a GDAL tool) when selecting the -f “GMT” output
    format. See Appendix Q for an explanation of the OGR/GMT file format.
    Because all GIS information is encoded via *GMT* comment lines these
    files can also be used in *GMT* 4 (the GIS metadata is simply
@@ -367,7 +366,7 @@ Below is a list of improvements that affect several
 #. *GMT* 5 only produces *PostScript* and no longer has a setting for
    EPS. We made this decision since a) our EPS effort was always very
    approximate (no consideration of font metrics. etc.) and often wrong,
-   and b) `**ps2raster** <run:../man/ps2raster.html>`__ handles it
+   and b) `ps2raster <ps2raster.html>`_ handles it
    exactly.
 
 #. The **-B** option can now handle irregular and custom annotations
@@ -407,17 +406,17 @@ Below is a list of improvements that affect several
 
 Here is a list of recent enhancements to specific programs:
 
-#. `**blockmedian** <run:../man/blockmedian.html>`__ added **-Er**\ [-]
+#. `blockmedian <blockmedian.html>`_ added **-Er**\ [-]
    to return as last column the record number that gave the median
    value. For ties, we return the record number of the higher data value
    unless **-Er**- is given (return lower). Added **-Es** to read and
    output source id for median value.
 
-#. `**blockmode** <run:../man/blockmode.html>`__ added **-Er**\ [-] but
+#. `blockmode <blockmode.html>`_ added **-Er**\ [-] but
    for modal value. Added **-Es** to read and output source id for modal
    value.
 
-#. `**gmtconvert** <run:../man/gmtconvert.html>`__ now has optional PCRE
+#. `gmtconvert <gmtconvert.html>`_ now has optional PCRE
    (regular expression) support.
 
 #. `**gmtmath** <run:../man/gmtmath.html>`__ with OptN\ *ncol* and input
@@ -439,7 +438,7 @@ Here is a list of recent enhancements to specific programs:
    is zero (hence we do not sum and divide the convolution by the weight
    sum).
 
-#. `**grdinfo** <run:../man/grdinfo.html>`__ now has modifier
+#. `grdinfo <grdinfo.html>`_ now has modifier
    **-Ts**\ *dz* which returns a symmetrical range about zero.
 
 #. `**grdmask** <run:../man/grdmask.html>`__ has new option
@@ -454,7 +453,7 @@ Here is a list of recent enhancements to specific programs:
    adds up all non-NaN entries and returns a grid with all nodes set to
    the sum constant.
 
-#. `**grdtrack** <run:../man/grdtrack.html>`__ has a new **-C**, **-D**
+#. `grdtrack <grdtrack.html>`_ has a new **-C**, **-D**
    options to automatically create an equidistant set of cross-sectional
    profiles given input line segments; one or more grids can then be
    sampled at these locations. Also added **-S** which stack
@@ -473,10 +472,10 @@ Here is a list of recent enhancements to specific programs:
    specify output color representation, e.g., to output the CPT table in
    h-s-v format despite originally being given in r/g/b.
 
-#. `**minmax** <run:../man/minmax.html>`__ has new option **-A** to
+#. `minmax <minmax.html>`_ has new option **-A** to
    select what group to report on (all input, per file, or per segment).
 
-#. `**gmtconvert** <run:../man/gmtconvert.html>`__ has new option **-Q**
+#. `gmtconvert <gmtconvert.html>`_ has new option **-Q**
    to select a particular segment number.
 
 #. `**gmtmath** <run:../man/gmtmath.html>`__ and
@@ -493,7 +492,7 @@ Here is a list of recent enhancements to specific programs:
    if + is appended we get a segment header with information about the
    pole for the circle.
 
-#. `**ps2raster** <run:../man/ps2raster.html>`__ has added a **-TF**
+#. `ps2raster <ps2raster.html>`_ has added a **-TF**
    option to create multi-page PDF files.
 
 #. `**pscontour** <run:../man/pscontour.html>`__ now similar to
@@ -529,7 +528,7 @@ Here is a list of recent enhancements to specific programs:
    justification. If these parameters are fixed for all the text strings
    then the input can simply be *x y text*.
 
-#. `**triangulate** <run:../man/triangulate.html>`__ now offers **-S**
+#. `triangulate <triangulate.html>`_ now offers **-S**
    to write triangle polygons and can handle 2-column input if **-Z** is
    given.
 
@@ -638,14 +637,14 @@ correctly with a warning under compatibility mode:
    deprecated. See the `**psxy** <run:../man/psxy.html>`__ man page for
    a clear description of all modifiers.
 
-#. `**blockmean** <run:../man/blockmean.html>`__: The **-S** and **-Sz**
+#. `blockmean <blockmean.html>`_: The **-S** and **-Sz**
    options are deprecated; use **-Ss** instead.
 
 #. `filter1d <filter1d.html>`_: The **-N**\ *ncol/tcol*
    option is deprecated; use **-N**\ *tcol* instead as we automatically
    determine the number of columns in the file.
 
-#. `**gmtconvert** <run:../man/gmtconvert.html>`__: **-F** is
+#. `gmtconvert <gmtconvert.html>`_: **-F** is
    deprecated; use common option **-o** instead.
 
 #. `**gmtdefaults** <run:../man/gmtdefaults.html>`__: **-L** is
@@ -664,149 +663,149 @@ correctly with a warning under compatibility mode:
 #. `grdcontour <grdcontour.html>`_: **-m** is deprecated
    as segment headers are handled automatically.
 
-#. `grdfft <grdfft.html>`_: ``-M`` is deprecated; use
-   common option ``-fg`` instead.
+#. `grdfft <grdfft.html>`_: **-M** is deprecated; use
+   common option **-fg** instead.
 
-#. `**grdgradient** <run:../man/grdgradient.html>`__: ``-L`` is
-   deprecated; use common option ``-n`` instead. Also, ``-M`` is
-   deprecated; use common option ``-fg`` instead.
+#. `grdgradient <grdgradient.html>`_: **-L** is
+   deprecated; use common option **-n** instead. Also, **-M** is
+   deprecated; use common option **-fg** instead.
 
-#. `**grdlandmask** <run:../man/grdlandmask.html>`__: ``-N``...\ **o**
-   is deprecated; use ``-E`` instead.
+#. `**grdlandmask** <run:../man/grdlandmask.html>`__: **-N**...\ **o**
+   is deprecated; use **-E** instead.
 
-#. `grdimage <grdimage.html>`_: ``-S`` is deprecated;
-   use ``-n``\ *mode*\ [``+a``\ ][\ ``+t``\ *threshold*] instead.
+#. `grdimage <grdimage.html>`_: **-S** is deprecated;
+   use **-n**\ *mode*\ [**+a**\ ][\ **+t**\ *threshold*] instead.
 
 #. `grdmath <grdmath.html>`_: LDIST and PDIST now return
    distances in spherical degrees; while in
    `GMT <http://gmt.soest.hawaii.edu>`__ 4 it returned km; use
    DEG2KM for conversion, if needed.
 
-#. `**grdproject** <run:../man/grdproject.html>`__: ``-S`` is
-   deprecated; use ``-n``\ *mode*\ [``+a``\ ][\ ``+t``\ *threshold*]
-   instead. Also, ``-N`` is deprecated; use ``-D`` instead.
+#. `grdproject <grdproject.html>`_: **-S** is
+   deprecated; use **-n**\ *mode*\ [**+a**\ ][\ **+t**\ *threshold*]
+   instead. Also, **-N** is deprecated; use **-D** instead.
 
-#. `**grdsample** <run:../man/grdsample.html>`__: ``-Q`` is deprecated;
-   use ``-n``\ *mode*\ [``+a``\ ][\ ``+t``\ *threshold*] instead. Also,
-   ``-L`` is deprecated; use common option ``-n`` instead, and
-   ``-N``\ *nx>/<ny* is deprecated; use ``-I``\ *nx+>/<ny+* instead.
+#. `grdsample <grdsample.html>`_: **-Q** is deprecated;
+   use **-n**\ *mode*\ [**+a**\ ][\ **+t**\ *threshold*] instead. Also,
+   **-L** is deprecated; use common option **-n** instead, and
+   **-N**\ *nx>/<ny* is deprecated; use **-I**\ *nx+>/<ny+* instead.
 
-#. `**grdtrack** <run:../man/grdtrack.html>`__: ``-Q`` is deprecated;
-   use ``-n``\ *mode*\ [``+a``\ ][\ ``+t``\ *threshold*] instead. Also,
-   ``-L`` is deprecated; use common option ``-n`` instead, and ``-S`` is
-   deprecated; use common option ``-sa`` instead.
+#. `grdtrack <grdtrack.html>`_: **-Q** is deprecated;
+   use **-n**\ *mode*\ [**+a**\ ][\ **+t**\ *threshold*] instead. Also,
+   **-L** is deprecated; use common option **-n** instead, and **-S** is
+   deprecated; use common option **-sa** instead.
 
-#. `**grdvector** <run:../man/grdvector.html>`__: ``-E`` is deprecated;
-   use the vector modifier ``+jc`` as well as the general vector
+#. `grdvector <grdvector.html>`_: **-E** is deprecated;
+   use the vector modifier **+jc** as well as the general vector
    specifications discussed earlier.
 
-#. `**grdview** <run:../man/grdview.html>`__: ``-L`` is deprecated; use
-   common option ``-n`` instead.
+#. `grdview <grdview.html>`_: **-L** is deprecated; use
+   common option **-n** instead.
 
-#. `**nearneighbor** <run:../man/nearneighbor.html>`__: ``-L`` is
-   deprecated; use common option ``-n`` instead.
+#. `nearneighbor <nearneighbor.html>`_: **-L** is
+   deprecated; use common option **-n** instead.
 
-#. `**project** <run:../man/project.html>`__: ``-D`` is deprecated; use
+#. `**project** <run:../man/project.html>`__: **-D** is deprecated; use
    --FORMAT\_GEO\_OUT instead.
 
-#. `psbasemap <psbasemap.html>`_: ``-G`` is deprecated;
-   specify canvas color via ``-B`` modifier ``+g``\ *color*.
+#. `psbasemap <psbasemap.html>`_: **-G** is deprecated;
+   specify canvas color via **-B** modifier **+g**\ *color*.
 
-#. `pscoast <pscoast.html>`_: ``-m`` is deprecated and
-   have reverted to ``-M`` for selecting data output instead of
+#. `pscoast <pscoast.html>`_: **-m** is deprecated and
+   have reverted to **-M** for selecting data output instead of
    plotting.
 
-#. `**pscontour** <run:../man/pscontour.html>`__: ``-T``\ *indexfile* is
-   deprecated; use ``-Q``\ *indexfile*.
+#. `**pscontour** <run:../man/pscontour.html>`__: **-T**\ *indexfile* is
+   deprecated; use **-Q**\ *indexfile*.
 
-#. `**pshistogram** <run:../man/pshistogram.html>`__: ``-T``\ *col* is
-   deprecated; use common option ``-i`` instead.
+#. `**pshistogram** <run:../man/pshistogram.html>`__: **-T**\ *col* is
+   deprecated; use common option **-i** instead.
 
 #. `**pslegend** <run:../man/pslegend.html>`__: Paragraph text header
    flag > is deprecated; use P instead.
 
-#. `**psmask** <run:../man/psmask.html>`__: ``-D``...\ ``+n``\ *min* is
-   deprecated; use ``-Q`` instead.
+#. `psmask <psmask.html>`_: **-D**...\ **+n**\ *min* is
+   deprecated; use **-Q** instead.
 
 #. `**psrose** <run:../man/psrose.html>`__: Old vector specifications in
-   Option ``-M`` are deprecated; see new explanations.
+   Option **-M** are deprecated; see new explanations.
 
-#. `pstext <pstext.html>`_: ``-m`` is deprecated; use
-   ``-M`` to indicate paragraph mode. Also, ``-S`` is deprecated as
+#. `pstext <pstext.html>`_: **-m** is deprecated; use
+   **-M** to indicate paragraph mode. Also, **-S** is deprecated as
    fonts attributes are now specified via the font itself.
 
-#. `**pswiggle** <run:../man/pswiggle.html>`__: ``-D`` is deprecated;
-   use common option ``-g`` to indicate data gaps. Also, ``-N`` is
-   deprecated as all fills are set via the ``-G`` option.
+#. `**pswiggle** <run:../man/pswiggle.html>`__: **-D** is deprecated;
+   use common option **-g** to indicate data gaps. Also, **-N** is
+   deprecated as all fills are set via the **-G** option.
 
 #. `**psxy** <run:../man/psxy.html>`__: Old vector specifications in
-   Option ``-S`` are deprecated; see new explanations.
+   Option **-S** are deprecated; see new explanations.
 
 #. `psxyz <psxyz.html>`_: Old vector specifications in
-   Option ``-S`` are deprecated; see new explanations.
+   Option **-S** are deprecated; see new explanations.
 
-#. `**splitxyz** <run:../man/splitxyz.html>`__: ``-G`` is deprecated;
-   use common option ``-g`` to indicate data gaps. Also, ``-M`` is
-   deprecated; use common option ``-fg`` instead.
+#. `**splitxyz** <run:../man/splitxyz.html>`__: **-G** is deprecated;
+   use common option **-g** to indicate data gaps. Also, **-M** is
+   deprecated; use common option **-fg** instead.
 
-#. `**triangulate** <run:../man/triangulate.html>`__: ``-m`` is
-   deprecated; use ``-M`` to output triangle vertices.
+#. `triangulate <triangulate.html>`_: **-m** is
+   deprecated; use **-M** to output triangle vertices.
 
-#. `**xyz2grd** <run:../man/xyz2grd.html>`__: ``-E`` is deprecated as
+#. `**xyz2grd** <run:../man/xyz2grd.html>`__: **-E** is deprecated as
    the ESRI ASCII exchange format is one of our recognized formats.
-   Also, ``-A`` (no arguments) is deprecated; use ``-Az`` instead.
+   Also, **-A** (no arguments) is deprecated; use **-Az** instead.
 
 #. `**dbase/grdraster** <run:../man/dbase/grdraster.html>`__: The
    H\ *skip* field in is no longer expected as we automatically
    determine if a raster has a
    `GMT <http://gmt.soest.hawaii.edu>`__ header. Also, to output
-   *x,y,z* triplets instead of writing a grid now requires ``-T``.
+   *x,y,z* triplets instead of writing a grid now requires **-T**.
 
-#. `**img/img2grd** <run:../man/img/img2grd.html>`__: ``-m``\ *inc* is
-   deprecated; use ``-I``\ *inc* instead.
+#. `**img/img2grd** <run:../man/img/img2grd.html>`__: **-m**\ *inc* is
+   deprecated; use **-I**\ *inc* instead.
 
 #. `**meca/psvelo** <run:../man/meca/psvelo.html>`__: Old vector
    specifications are deprecated; see new explanations.
 
 #. `**mgd77/mgd77convert** <run:../man/mgd77/mgd77convert.html>`__:
-   ``-4`` is deprecated; use ``-D`` instead.
+   **-4** is deprecated; use **-D** instead.
 
 #. `**mgd77/mgd77list** <run:../man/mgd77/mgd77list.html>`__: The unit
    **m** is deprecated; use **M** for statute miles.
 
 #. `**mgd77/mgd77manage** <run:../man/mgd77/mgd77manage.html>`__: The
-   unit **m** is deprecated; use **M** for statute miles. The ``-Q`` is
-   deprecated; use ``-n``\ *mode*\ [``+a``\ ][\ ``+t``\ *threshold*]
+   unit **m** is deprecated; use **M** for statute miles. The **-Q** is
+   deprecated; use **-n**\ *mode*\ [**+a**\ ][\ **+t**\ *threshold*]
    instead
 
-#. `**mgd77/mgd77path** <run:../man/mgd77/mgd77path.html>`__: ``-P`` is
+#. `**mgd77/mgd77path** <run:../man/mgd77/mgd77path.html>`__: **-P** is
    deprecated (clashes with
-   `GMT <http://gmt.soest.hawaii.edu>`__ common options); use ``-A``
+   `GMT <http://gmt.soest.hawaii.edu>`__ common options); use **-A**
    instead.
 
 #. `**spotter/backtracker** <run:../man/spotter/backtracker.html>`__:
-   ``-C`` is deprecated as stage vs. finite rotations are detected
+   **-C** is deprecated as stage vs. finite rotations are detected
    automatically.
 
 #. `**spotter/grdrotater** <run:../man/spotter/grdrotater.html>`__:
-   ``-C`` is deprecated as stage vs. finite rotations are detected
-   automatically. Also, ``-T``\ *lon/lat/angle* is now set via
-   ``-e``\ *lon/lat/angle*.
+   **-C** is deprecated as stage vs. finite rotations are detected
+   automatically. Also, **-T**\ *lon/lat/angle* is now set via
+   **-e**\ *lon/lat/angle*.
 
 #. `**spotter/grdspotter** <run:../man/spotter/grdspotter.html>`__:
-   ``-C`` is deprecated as stage vs. finite rotations are detected
+   **-C** is deprecated as stage vs. finite rotations are detected
    automatically.
 
-#. `**spotter/hotpotter** <run:../man/spotter/hotpotter.html>`__: ``-C``
+#. `**spotter/hotpotter** <run:../man/spotter/hotpotter.html>`__: **-C**
    is deprecated as stage vs. finite rotations are detected
    automatically.
 
 #. `**spotter/originator** <run:../man/spotter/originator.html>`__:
-   ``-C`` is deprecated as stage vs. finite rotations are detected
+   **-C** is deprecated as stage vs. finite rotations are detected
    automatically.
 
 #. `**spotter/rotconverter** <run:../man/spotter/rotconverter.html>`__:
-   ``-Ff`` selection is deprecated, use ``-Ft`` instead.
+   **-Ff** selection is deprecated, use **-Ft** instead.
 
 #. `**x2sys/x2sys\_datalist** <run:../man/x2sys/x2sys\_datalist.html>`__:
    The unit **m** is deprecated; use **M** for statute miles.
@@ -1068,7 +1067,7 @@ become familiar with the operation and philosophy of the system. The
 cookbook contains the shell scripts that were used for each example;
 *PostScript*\ files of each illustration are also provided. All programs
 have individual manual pages which can be installed as part of the
-on-line documentation under the *UNIX* ***man*** utility or as web
+on-line documentation under the *UNIX* **man** utility or as web
 pages. In addition, the programs offer friendly help messages which make
 them essentially self-teaching – if a user enters invalid or ambiguous
 command arguments, the program will print a warning to the screen with a
@@ -1089,8 +1088,8 @@ or (*x,y,z*) data are read from multi-column ASCII tables, i.e., each
 file consists of several records, in which each coordinate is confined
 to a separate column [5]_. This format is straightforward and allows the
 user to perform almost any simple (or complicated) reformatting or
-processing task using standard *UNIX* utilities such as ***cut***,
-***paste***, ***grep***, ***sed*** and ***awk***. Two-dimensional data
+processing task using standard *UNIX* utilities such as **cut**,
+**paste**, **grep**, **sed** and **awk**. Two-dimensional data
 that have been sampled on an equidistant grid are read and written by
 *GMT* in a binary grid file using the functions provided with the netCDF
 library (a free, public-domain software library available separately
@@ -1099,7 +1098,7 @@ and Gough*, 1987]). This XDR (External Data Representation) based format
 is architecture independent, which allows the user to transfer the
 binary data files from one computer system to another [6]_.
 *GMT* contains programs that will read ASCII (*x,y,z*) files and produce
-grid files. One such program, `**surface** <run:../man/surface.html>`__,
+grid files. One such program, `surface <surface.html>`_,
 includes new modifications to the gridding algorithm developed by *Smith
 and Wessel* [1990] using continuous splines in tension.
 
@@ -1359,90 +1358,194 @@ contains a summary sorted by program purpose. Also included is a quick
 summary of the standard command line options and a breakdown of the
 **-J** option for each of the over 30 projections available in *GMT*.
 
-| **FILTERING OF 1-D AND 2-D DATA**
-| `**blockmean** <blockmean.html>`__ & L\ :math:`_2` estimate (:math:`x, y, z`) data filters/decimators
-| `**blockmedian** <blockmedian.html>`__ & L\ :math:`_1` estimate (:math:`x, y, z`) data filters/decimators
-| `**blockmode** <blockmode.html>`__ & Mode estimate (:math:`x, y, z`) data filters/decimators
-| `**filter1d** <filter1d.html>`__ & Filter 1-D data (time series)
-| `**grdfilter** <grdfilter.html>`__ & Filter 2-D data in space domain
-| **PLOTTING OF 1-D and 2-D DATA**
-| `**grdcontour** <grdcontour.html>`__ & Contouring of 2-D gridded data
-| `**grdimage** <grdimage.html>`__ & Produce images from 2-D gridded data
-| `**grdvector** <grdvector.html>`__ & Plot vector fields from 2-D gridded data
-| `**grdview** <grdview.html>`__ & 3-D perspective imaging of 2-D gridded data
-| `**psbasemap** <psbasemap.html>`__ & Create a basemap frame
-| `**psclip** <psclip.html>`__ & Use polygon files as clipping paths
-| `**pscoast** <pscoast.html>`__ & Plot coastlines, filled continents, rivers, and political borders
-| `**pscontour** <pscontour.html>`__ & Direct contouring or imaging of *xyz* data by triangulation
-| `**pshistogram** <pshistogram.html>`__ & Plot a histogram
-| `**psimage** <psimage.html>`__ & Plot Sun raster files on a map
-| `**pslegend** <pslegend.html>`__ & Plot a legend on a map
-| `**psmask** <psmask.html>`__ & Create overlay to mask specified regions of a map
-| `**psrose** <psrose.html>`__ & Plot sector or rose diagrams
-| `**psscale** <psscale.html>`__ & Plot gray scale or color scale
-| `**pstext** <pstext.html>`__ & Plot text strings
-| `**pswiggle** <pswiggle.html>`__ & Draw anomalies along track
-| `**psxy** <psxy.html>`__ & Plot symbols, polygons, and lines in 2-D
-| `**psxyz** <psxyz.html>`__ & Plot symbols, polygons, and lines in 3-D
-| **GRIDDING OF (X,Y,Z) TABLE DATA**
-| `**greenspline** <greenspline.html>`__ & Interpolation using Green’s functions for splines in 1–3 dimensions
-| `**nearneighbor** <nearneighbor.html>`__ & Nearest-neighbor gridding scheme
-| `**surface** <surface.html>`__ & Continuous curvature gridding algorithm
-| `**triangulate** <triangulate.html>`__ & Perform optimal Delauney triangulation on *xyz* data
-| **SAMPLING OF 1-D AND 2-D DATA**
-| `**grdsample** <grdsample.html>`__ & Resample a 2-D gridded data onto new grid
-| `**grdtrack** <grdtrack.html>`__ & Sampling of 2-D gridded data set(s) along 1-D track
-| `**sample1d** <sample1d.html>`__ & Resampling of 1-D data
-| **PROJECTION AND MAP-TRANSFORMATION**
-| `**grdproject** <grdproject.html>`__ & Transform gridded data to a new coordinate system
-| `**mapproject** <mapproject.html>`__ & Transform table data to a new coordinate system
-| `**project** <project.html>`__ & Project data onto lines or great circles
++------------------------------------------------+---------------------------------------------------------------------+
+|                                                | **FILTERING OF 1-D AND 2-D DATA**                                   |
++================================================+=====================================================================+
+| **blockmean** `(...) <blockmean.html>`_        | L\ :math:`_2` (*x*,\ *y*,\ *z*) table data filter/decimator         |
++------------------------------------------------+---------------------------------------------------------------------+
+| **blockmedian** `(...) <blockmean.html>`_      | L\ :math:`_1` (*x*,\ *y*,\ *z*) table data filter/decimator         |
++------------------------------------------------+---------------------------------------------------------------------+
+| **blockmode** `(...) <blockmode.html>`_        | Mode estimate (*x*,\ *y*,\ *z*) table data filter/decimator         |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **filter1d** `(...) <filter1d.html>`_         | Filter 1-D table data sets (time series)                            |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdfilter** `(...) <grdfilter.html>`_       | Filter 2-D gridded data sets in the space domain                    |
++------------------------------------------------+---------------------------------------------------------------------+
 
-| **INFORMATION**
-| `**gmtdefaults** <gmtdefaults.html>`__ & List the current default settings
-| `**gmtget** <gmtget.html>`__ & Retrieve selected parameters in current file
-| `**gmtset** <gmtset.html>`__ & Command-line editing of parameters in the file
-| `**grdinfo** <grdinfo.html>`__ & Get information about the content of grid files
-| `**minmax** <minmax.html>`__ & Report extreme values in table data files
-| **MISCELLANEOUS**
-| `**gmtmath** <gmtmath.html>`__ & Reverse Polish Notation (RPN) calculator for table data
-| `**makecpt** <makecpt.html>`__ & Create GMT color palette tables
-| `**spectrum1d** <spectrum1d.html>`__ & Compute spectral estimates from time-series
-| `**triangulate** <triangulate.html>`__ & Perform optimal Delauney triangulation on xyz data
-| **CONVERT OR EXTRACT SUBSETS OF DATA**
-| `**gmt2kml** <gmt2kml.html>`__ & Like `**psxy** <run:../man/psxy.html>`__ but plots KML for use in Google Earth
-| `**gmtconvert** <gmtconvert.html>`__ & Convert table data from one format to another
-| `**gmtselect** <gmtselect.html>`__ & Select table data subsets based on multiple spatial criteria
-| `**gmtspatial** <gmtspatial.html>`__ & Geospatial operations on lines and polygons
-| `**gmtstitch** <gmtstitch.html>`__ & Join segments into more complete lines or polygons
-| `**gmtvector** <gmtvector.html>`__ & Basic operations on vectors in 2-D and 3-D
-| `**grd2rgb** <grd2rgb.html>`__ & Convert Sun raster or grid file to red, green, blue component grids
-| `**grd2xyz** <grd2xyz.html>`__ & Convert 2-D gridded data to table data
-| `**grdcut** <grdcut.html>`__ & Cut a sub-region from a grid file
-| `**grdblend** <grdblend.html>`__ & Blend several partially over-lapping grid files onto one grid
-| `**grdpaste** <grdpaste.html>`__ & Paste together grid files along common edge
-| `**grdreformat** <grdreformat.html>`__ & Convert from one grid format to another
-| `**kml2gmt** <kml2gmt.html>`__ & Extracts coordinates from Google Earth KML files
-| `**splitxyz** <splitxyz.html>`__ & Split (:math:`x, y, z`) table data into several segments
-| `**xyz2grd** <xyz2grd.html>`__ & Convert table data to 2-D grid file
-| **DETERMINE TRENDS IN 1-D AND 2-D DATA**
-| `**fitcircle** <fitcircle.html>`__ & Finds best-fitting great or small circles
-| `**grdtrend** <grdtrend.html>`__ & Fits polynomial trends to grid files (:math:`z = f(x, y)`)
-| `**trend1d** <trend1d.html>`__ & Fits polynomial or Fourier trends to :math:`y = f(x)` series
-| `**trend2d** <trend2d.html>`__ & Fits polynomial trends to :math:`z = f(x, y)` series
-| **OTHER OPERATIONS ON 2-D GRIDS**
-| `**grd2cpt** <grd2cpt.html>`__ & Make color palette table from grid file
-| `**grdclip** <grdclip.html>`__ & Limit the :math:`z`–range in gridded data sets
-| `**grdedit** <grdedit.html>`__ & Modify grid header information
-| `**grdfft** <grdfft.html>`__ & Operate on grid files in frequency domain
-| `**grdgradient** <grdgradient.html>`__ & Compute directional gradients from grid files
-| `**grdhisteq** <grdhisteq.html>`__ & Histogram equalization for grid files
-| `**grdlandmask** <grdlandmask.html>`__ & Creates mask grid file from coastline database
-| `**grdmask** <grdmask.html>`__ & Set grid nodes in/outside a clip path to constants
-| `**grdmath** <grdmath.html>`__ & Reverse Polish Notation (RPN) calculator for grid files
-| `**grdvolume** <grdvolume.html>`__ & Calculate volume under a surface within a contour
-| **MANIPULATING *GMT* POSTSCRIPT FILES**
-| `**ps2raster** <ps2raster.html>`__ & Crop and convert *PostScript* files to raster images, EPS and PDF
++------------------------------------------------+---------------------------------------------------------------------+
+|                                                | **PLOTTING OF 1-D AND 2-D DATA**                                    |
++================================================+=====================================================================+
+|  **grdcontour** `(...) <grdcontour.html>`_     | Contouring of 2-D gridded data sets                                 |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdimage** `(...) <grdimage.html>`_         | Produce images from 2-D gridded data sets                           |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdvector** `(...) <grdvector.html>`_       | Plotting of 2-D gridded vector fields                               |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdview** `(...) <grdview.html>`_           | 3-D perspective imaging of 2-D gridded data sets                    |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **psbasemap** `(...) <psbasemap.html>`_       | Create a basemap plot                                               |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **psclip** `(...) <psclip.html>`_             | Use polygon files to define clipping paths                          |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **pscoast** `(...) <pscoast.html>`_           | Plot (and fill) coastlines, borders, and rivers on maps             |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **pscontour** `(...) <pscontour.html>`_       | Contour or image raw table data by triangulation                    |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **pshistogram** `(...) <pshistogram.html>`_   | Plot a histogram                                                    |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **psimage** `(...) <psimage.html>`_           | Plot Sun raster files on a map                                      |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **pslegend** `(...) <pslegend.html>`_         | Plot a legend on a map                                              |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **psmask** `(...) <psmask.html>`_             | Create overlay to mask out regions on maps                          |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **psrose** `(...) <psrose.html>`_             | Plot sector or rose diagrams                                        |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **psscale** `(...) <psscale.html>`_           | Plot gray scale or color scale on maps                              |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **pstext** `(...) <pstext.html>`_             | Plot text strings on maps                                           |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **pswiggle** `(...) <pswiggle.html>`_         | Draw table data time-series along track on maps                     |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **psxy** `(...) <psxy.html>`_                 | Plot symbols, polygons, and lines on maps                           |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **psxyz** `(...) <psxyz.html>`_ Plot          | symbols, polygons, and lines in 3-D                                 |
++------------------------------------------------+---------------------------------------------------------------------+
+
++------------------------------------------------+---------------------------------------------------------------------+
+|                                                | **GRIDDING OF (X,Y,Z) TABLE DATA**                                  |
++================================================+=====================================================================+
+|  **greenspline** `(...) <greenspline.html>`_   | Interpolation using Green's functions for splines in 1-3 dimensions |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **nearneighbor** `(...) <nearneighbor.html>`_ | Nearest-neighbor gridding scheme                                    |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **surface** `(...) <surface.html>`_           | A continuous curvature gridding algorithm                           |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **triangulate** `(...) <triangulate.html>`_   | Perform optimal Delauney triangulation and gridding                 |
++------------------------------------------------+---------------------------------------------------------------------+
+
++------------------------------------------------+---------------------------------------------------------------------+
+|                                                | **SAMPLING OF 1-D AND 2-D DATA**                                    |
++================================================+=====================================================================+
+|  **grdsample** `(...) <grdsample.html>`_       | Resample a 2-D gridded data set onto a new grid                     |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdtrack** `(...) <grdtrack.html>`_         | Sampling of 2-D gridded data set(s) along 1-D track                 |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **sample1d** `(...) <sample1d.html>`_         | Resampling of 1-D table data sets                                   |
++------------------------------------------------+---------------------------------------------------------------------+
+
++------------------------------------------------+---------------------------------------------------------------------+
+|                                                | **PROJECTION AND MAP-TRANSFORMATION**                               |
++================================================+=====================================================================+
+|  **grdproject** `(...) <grdproject.html>`_     | Project gridded data sets onto a new coordinate system              |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **mapproject** `(...) <mapproject.html>`_     | Transformation of coordinate systems for table data                 |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **project** `(...) <project.html>`_           | Project table data onto lines or great circles                      |
++------------------------------------------------+---------------------------------------------------------------------+
+
++------------------------------------------------+---------------------------------------------------------------------+
+|                                                | **INFORMATION**                                                     |
++================================================+=====================================================================+
+|  **gmtdefaults** `(...) <gmtdefaults.html>`_   | List the current default settings                                   |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **gmtget** `(...) <gmtget.html>`_             | Retrieve selected parameters in current file                        |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **gmtset** `(...) <gmtset.html>`_             | Change selected parameters in current file                          |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdinfo** `(...) <grdinfo.html>`_           | Get information about grid files                                    |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdinfo** `(...) <grdinfo.html>`_           | Get information about grid files                                    |
++------------------------------------------------+---------------------------------------------------------------------+
+
++------------------------------------------------+---------------------------------------------------------------------+
+|                                                | **MISCELLANEOUS**                                                   |
++================================================+=====================================================================+
+|  **gmtmath** `(...) <gmtmath.html>`_           | Mathematical operations on table data                               |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **makecpt** `(...) <makecpt.html>`_           | Make color palette tables                                           |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **spectrum1d** `(...) <spectrum1d.html>`_     | Compute various spectral estimates from time-series                 |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **triangulate** `(...) <triangulate.html>`_   | Perform optimal Delauney triangulation and gridding                 |
++------------------------------------------------+---------------------------------------------------------------------+
+
++------------------------------------------------+---------------------------------------------------------------------+
+|                                                | **CONVERT OR EXTRACT SUBSETS OF DATA**                              |
++================================================+=====================================================================+
+|  **gmt2kml** `(...) <gmt2kml.html>`_           | Like  **psxy** but plots KML for use in Google Earth                |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **gmtconvert** `(...) <gmtconvert.html>`_     | Convert data tables from one format to another                      |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **gmtselect** `(...) <gmtselect.html>`_       | Select subsets of table data based on multiple spatial criteria     |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **gmtspatial** `(...) <gmtspatial.html>`_     | Geospatial operations on lines and polygons                         |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **gmtstitch** `(...) <gmtstitch.html>`_       | Join segments into more complete lines or polygons                  |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **gmtvector** `(...) <gmtvector.html>`_       | Basic operations on vectors in 2-D and 3-D                          |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grd2rgb** `(...) <grd2rgb.html>`_           | Convert Sun raster or grid file to red, green, blue component grids |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grd2xyz** `(...) <grd2xyz.html>`_           | Conversion from 2-D grid file to table data                         |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdblend** `(...) <grdblend.html>`_         | Blend several partially over-lapping grid files onto one grid       |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdcut** `(...) <grdcut.html>`_             | Cut a sub-region from a grid file                                   |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdpaste** `(...) <grdpaste.html>`_         | Paste together grid files along a common edge                       |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdreformat** `(...) <grdreformat.html>`_   | Converts grid files into other grid formats                         |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **kml2gmt** `(...) <kml2gmt.html>`_           | Extracts coordinates from Google Earth KML files                    |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **splitxyz** `(...) <splitxyz.html>`_         | Split *xyz* files into several segments                             |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **xyz2grd** `(...) <xyz2grd.html>`_           | Convert an equidistant table *xyz* file to a 2-D grid file          |
++------------------------------------------------+---------------------------------------------------------------------+
+
++------------------------------------------------+---------------------------------------------------------------------+
+|                                                | **DETERMINE TRENDS IN 1-D AND 2-D DATA**                            |
++================================================+=====================================================================+
+|  **fitcircle** `(...) <fitcircle.html>`_       | Finds the best-fitting great or small circle for a set of points    |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdtrack** `(...) <grdtrack.html>`_         | Sampling of 2-D gridded data set(s) along 1-D track                 |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **trend1d** `(...) <trend1d.html>`_           | Fits polynomial or Fourier trends to :math:`y = f(x)` series        |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **trend2d** `(...) <trend2d.html>`_           | Fits polynomial trends to :math:`z = f(x,y)` series                 |
++------------------------------------------------+---------------------------------------------------------------------+
+
++------------------------------------------------+---------------------------------------------------------------------+
+|                                                | **OTHER OPERATIONS ON 2-D GRIDS**                                   |
++================================================+=====================================================================+
+|  **grd2cpt** `(...) <grd2cpt.html>`_           | Make color palette table from a grid files                          |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdclip** `(...) <grdclip.html>`_           | Limit the *z*-range in gridded data sets                            |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdedit** `(...) <grdedit.html>`_           | Modify header information in a 2-D grid file                        |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdfft** `(...) <grdfft.html>`_             | Perform operations on grid files in the frequency domain            |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdgradient** `(...) <grdgradient.html>`_   | Compute directional gradient from grid files                        |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdhisteq** `(...) <grdhisteq.html>`_       | Histogram equalization for grid files                               |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdlandmask** `(...) <grdlandmask.html>`_   | Create masking grid files from shoreline data base                  |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdmask** `(...) <grdmask.html>`_           | Reset grid nodes in/outside a clip path to constants                |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdmath** `(...) <grdmath.html>`_           | Mathematical operations on grid files                               |
++------------------------------------------------+---------------------------------------------------------------------+
+|  **grdvolume** `(...) <grdvolume.html>`_       | Calculate volumes under a surface within specified contour          |
++------------------------------------------------+---------------------------------------------------------------------+
+
++------------------------------------------------+---------------------------------------------------------------------+
+|                                                | **MANIPULATING POSTSCRIPT FILES**                                   |
++================================================+=====================================================================+
+|  **ps2raster** `(...) <ps2raster.html>`_       | Crop and convert *PostScript* files to raster images, EPS, and PDF  |
++------------------------------------------------+---------------------------------------------------------------------+
+
 
 *GMT* offers 31 map projections. These are specified using the **-J**
 common option. There are two conventions you may use: (a) *GMT*-style
@@ -1520,7 +1623,7 @@ syntax and (b) **Proj4**\ -style syntax. The projection codes for the
 | **-JY**\ :math:`lon_0/lat_0/`\ *width*                   | Cylindrical equal area                                 |
 +----------------------------------------------------------+--------------------------------------------------------+
 
-The projection codes for the ***Proj4***-style are tabulated below;
+The projection codes for the **Proj4**-style are tabulated below;
 these all accept a map *scale*.
 
 +------------------------------------------------------------+-------------------------------------------------------+
@@ -1728,7 +1831,7 @@ of computation by using the **-** prefix to the specified distance (or
 to the unit itself in cases where no distance is required and only a
 unit is expected). For instance, a search radius of 50 statute miles
 using this mode of computation might be specified via
-``-S-``\ 50\ **M**.
+**-S-**\ 50\ **M**.
 
 Great circle distances
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -1746,7 +1849,7 @@ via the Haversine equation
 This approach is suitable for most situations unless exact calculations
 for an ellipsoid is required (typically for a limited surface area). For
 instance, a search radius of 5000 feet using this mode of computation
-would be specified as ``-S``\ 5000\ **f**.
+would be specified as **-S**\ 5000\ **f**.
 
 Note: There are two additional
 `GMT <http://gmt.soest.hawaii.edu>`__ defaults that control how
@@ -1768,7 +1871,7 @@ formulation. Currently, we are using Vincenty’s [1975] formula [7]_. You
 select this mode of computation by using the **+** prefix to the
 specified distance (or to the unit itself in cases where no distance is
 required). For instance, a search radius of 20 km using this mode of
-computation would be set by ``-S+``\ 20\ **k**.
+computation would be set by **-S+**\ 20\ **k**.
 
 Length units
 ~~~~~~~~~~~~
@@ -1779,7 +1882,7 @@ two ways to ensure that *GMT* understands which unit you intend to use:
 
 #. Append the desired unit to the dimension you supply. This way is
    explicit and clearly communicates what you intend, e.g.,
-   ``-X``\ 4\ **c** means the length being passed to the ``-X`` switch
+   **-X**\ 4\ **c** means the length being passed to the **-X** switch
    is 4 cm.
 
 #. Set the parameter **PROJ\_LENGTH\_UNIT** to the desired unit. Then,
@@ -1824,7 +1927,7 @@ different journals or simply reflecting font changes necessary to make
 readable overheads and slides. Note that any arguments given on the
 command line (see below) will take precedent over the default values.
 E.g., if your file has *x* offset = 1\ **i** as default, the
-``-X``\ 1.5\ **i** option will override the default and set the offset
+**-X**\ 1.5\ **i** option will override the default and set the offset
 to 1.5 inches.
 
 There are at least two good reasons why the *GMT* default options are
@@ -2103,7 +2206,7 @@ general format is
 
 Since *GMT* version 4.3.0, there is an alternative way to specify the
 projections: use the same abbreviation as in the mapping package
-***Proj4***. The options thus either look like:
+**Proj4**. The options thus either look like:
 
 -  **-J**\ *abbrev*/[*parameters*/]*scale*. Here, **abbrev** is a
    *lower-case* abbreviation that selects a particular map projection,
@@ -2471,7 +2574,7 @@ OGR/GMT GIS i/o: The **-a** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 *GMT* relies on external tools to translate geospatial files such as
-shapefiles into a format we can read. The tool ***ogr2ogr*** in the GDAL
+shapefiles into a format we can read. The tool **ogr2ogr** in the GDAL
 package can do such translations and preserve the aspatial metadata via
 a new OGR/GMT format specification (See Appendix Q). For this to be
 useful we need a mechanism to associate certain metadata values with
@@ -2662,7 +2765,7 @@ input file data columns to use and in what order. By default, *GMT* will
 read all the data columns in the file, starting with the first column
 (0). Using **-i** modifies that process. For instance, to use the 4th,
 7th, and 3rd data column as the required *x,y,z* to
-`**blockmean** <run:../man/blockmean.html>`__ you would specify
+`blockmean <blockmean.html>`_ you would specify
 **-i**\ 3,6,2 (since 0 is the first column). The chosen data columns
 will be used as is. Optionally, you can specify that input columns
 should be transformed according to a linear or logarithmic conversion.
@@ -2727,8 +2830,8 @@ Grid registration: The **-r** option
 
 [sec:grid:sub:`r`\ egistration] All 2-D grids in *GMT* have their nodes
 organized in one of two ways, known as *gridline*- and *pixel*
-registration. The *GMT* default is gridline registration; programs that
-allow for the creation of grids can use the ``-r** option to select
+registration. The *GMT* default is gridline registration; programs that
+allow for the creation of grids can use the **-r** option to select
 pixel registration instead.
 
 Gridline registration
@@ -2932,7 +3035,7 @@ Program output
 
 Most programs write their results, including *PostScript*\ plots, to
 standard output. The exceptions are those which may create binary netCDF
-grid files such as `**surface** <run:../man/surface.html>`__ (due to the
+grid files such as `surface <surface.html>`_ (due to the
 design of netCDF a filename must be provided; however, alternative
 binary output formats allowing piping are available; see
 Section [sec:grdformats]). Most operating systems let you can redirect
@@ -2952,7 +3055,7 @@ Most of the time, *GMT* will know what kind of :math:`x` and :math:`y`
 coordinates it is reading because you have selected a particular
 coordinate transformation or map projection. However, there may be times
 when you must explicitly specify what you are providing as input using
-the **-f** switch. When binary input data are expected (``-bi**) you
+the **-f** switch. When binary input data are expected (**-bi**) you
 must specify exactly the format of the records. However, for ASCII input
 there are numerous ways to encode data coordinates (which may be
 separated by white-space or commas). Valid input data are generally of
@@ -2960,7 +3063,7 @@ the same form as the arguments to the **-R** option (see
 Section [sec:R]), with additional flexibility for calendar data.
 Geographical coordinates, for example, can be given in decimal degrees
 (e.g., -123.45417) or in the
-[]*ddd*\ [:*mm*\ [:*ss*\ [*.xxx*\ ]]][\ **W**\ :math:`|`\ **E**\ :math:`|`\ **S**\ :math:`|`\ **N**]
+[]*ddd*\ [:*mm*\ [:*ss*\ [*.xxx*\ ]]][\ **W**\ \| \ **E**\ \| \ **S**\ \| \ **N**]
 format (e.g., 123:27:15W). With **-fp** you may even supply projected
 data like UTM coordinates.
 
@@ -3030,8 +3133,8 @@ always be cases not covered by these programs. Some knowledge of
 plot file. By default, *GMT* will produce freeform *PostScript* output
 with embedded printer directives. To produce Encapsulated
 *PostScript* (EPS) that can be imported into graphics programs such as
-***CorelDraw***, ***Illustrator*** or ***InkScape*** for further
-embellishment, simply run `**ps2raster** <run:../man/ps2raster.html>`__
+**CorelDraw**, **Illustrator** or **InkScape** for further
+embellishment, simply run `ps2raster <ps2raster.html>`_
 **-Te**. See Appendix [app:C] for an extensive discussion of converting
 *PostScript* to other formats.
 
@@ -3042,7 +3145,7 @@ Specifying pen attributes
 *style*. Most programs will accept pen attributes in the form of an
 option argument, with commas separating the given attributes, e.g.,
 
-``-W``\ [*width*\ [**c\ :math:`|`\ i\ :math:`|`\ p**\ ]],[*color*\ ],[\ *style*\ [**c\ :math:`|`\ i\ :math:`|`\ p\ :math:`|`**\ ]]
+**-W**\ [*width*\ [**c\ :math:`|`\ i\ :math:`|`\ p**\ ]],[*color*\ ],[\ *style*\ [**c\ :math:`|`\ i\ :math:`|`\ p\ :math:`|`**\ ]]
 
 :math:`\rightarrow`
     *Width* is by default measured in points (1/72 of an inch). Append
@@ -3088,8 +3191,8 @@ option argument, with commas separating the given attributes, e.g.,
     #. CMYK. Specify *cyan*/*magenta*/*yellow*/*black*, each ranging
        from 0–100%.
 
-    #. Name. Specify one of 663 valid color names. Use ***man
-       gmtcolors*** to list all valid names. A very small yet versatile
+    #. Name. Specify one of 663 valid color names. Use **man
+       gmtcolors** to list all valid names. A very small yet versatile
        subset consists of the 29 choices *white*, *black*, and
        [light:math:`|`\ dark]{*red, orange, yellow, green, cyan, blue,
        magenta, gray\ :math:`|`\ grey, brown*\ }. The color names are
@@ -3165,7 +3268,7 @@ symbols. The fill specification may take two forms:
 
 **-G**\ *fill*
 
-``-Gp``\ *dpi/pattern*\ [:**B**\ *color*\ [**F**\ *color*]]
+**-Gp**\ *dpi/pattern*\ [:**B**\ *color*\ [**F**\ *color*]]
 
 fill:
     In the first case we may specify a *gray* shade (0–255), RGB color
@@ -3215,7 +3318,7 @@ Table [tbl:fillex] contains a few examples of fill specifications.
 
 +---------------------------+-----------------------------------------------------+
 +===========================+=====================================================+
-| ``-G**\ 128               | Solid gray                                          |
+| **-G**\ 128               | Solid gray                                          |
 +---------------------------+-----------------------------------------------------+
 | **-G**\ 127/255/0         | Chartreuse, R/G/B-style                             |
 +---------------------------+-----------------------------------------------------+
@@ -3280,10 +3383,10 @@ information, see for instance (search online for) the Adobe pdfmark
 Reference Manual. Most printers and many *PostScript* viewers can
 neither print nor show transparency. They will simply ignore your
 attempt to create transparency and will plot any material as opaque.
-***GhostScript*** and its derivatives such as *GMT*\ ’s
-`**ps2raster** <run:../man/ps2raster.html>`__ support transparency (if
-compiled with the correct build option). Note: If you use ***Acrobat
-Distiller*** to create a PDF file you must first change some settings to
+**GhostScript** and its derivatives such as *GMT*\ ’s
+`ps2raster <ps2raster.html>`_ support transparency (if
+compiled with the correct build option). Note: If you use **Acrobat
+Distiller** to create a PDF file you must first change some settings to
 make transparency effective: change the parameter /AllowTransparency to
 true in your \*.joboptions file.
 
@@ -3302,7 +3405,7 @@ color table and resample it to fit your chosen data range, or use
 `grd2cpt <grd2cpt.html>`_ to build a CPT file based on
 the data distribution in one or more given grid files. However, in some
 situations you will need to make a CPT file by hand or using text tools
-like ***awk*** or ***perl***.
+like **awk** or **perl**.
 
 Color palette tables (CPT) comes in two flavors: (1) Those designed to
 work with categorical data (e.g., data where interpolation of values is
@@ -3399,7 +3502,7 @@ gray-shade in the 0–255 range. For CMYK, give *c/m/y/k* values in the
 0–100 range.
 
 A few programs (i.e., those that plot polygons such as
-`**grdview** <run:../man/grdview.html>`__,
+`grdview <grdview.html>`_,
 `psscale <psscale.html>`_,
 `**psxy** <run:../man/psxy.html>`__ and
 `psxyz <psxyz.html>`_) can accept pattern fills instead
@@ -3421,7 +3524,7 @@ painted in a range of dark red to yellow, whereas the slice
 depending on the actual value of :math:`z`.
 
 Some programs like `grdimage <grdimage.html>`_ and
-`**grdview** <run:../man/grdview.html>`__ apply artificial illumination
+`grdview <grdview.html>`_ apply artificial illumination
 to achieve shaded relief maps. This is typically done by finding the
 directional gradient in the direction of the artificial light source and
 scaling the gradients to have approximately a normal distribution on the
@@ -3433,7 +3536,7 @@ hue of the color (see Appendix [app:I] for more details). The
 illumination is decoupled from the data grid file in that a separate
 grid file holding intensities in the [-1,+1] range must be provided.
 Such intensity files can be derived from the data grid using
-`**grdgradient** <run:../man/grdgradient.html>`__ and modified with
+`grdgradient <grdgradient.html>`_ and modified with
 `**grdhisteq** <run:../man/grdhisteq.html>`__, but could equally well be
 a separate data set. E.g., some side-scan sonar systems collect both
 bathymetry and backscatter intensities, and one may want to use the
@@ -3449,7 +3552,7 @@ The Drawing of Vectors
 *GMT* supports plotting vectors in various forms. A vector is one of
 many symbols that may be plotted by `**psxy** <run:../man/psxy.html>`__
 and `psxyz <psxyz.html>`_, is the main feature in
-`**grdvector** <run:../man/grdvector.html>`__, and is indirectly used by
+`grdvector <grdvector.html>`_, and is indirectly used by
 other programs. All vectors plotted by *GMT* consist of two separate
 parts: The vector line (controlled by the chosen pen attributes) and the
 optional vector head(s) (controlled by the chosen fill). We distinguish
@@ -3589,7 +3692,7 @@ conventions for netCDF grids. Thus, products created under those
 conventions (provided the grid is 2-, 3-, 4-, or 5-dimensional) can be
 read directly by *GMT* and the netCDF grids written by *GMT* can be read
 by other programs that conform to those conventions. Three such programs
-are , and ; others can be found on the .
+are, and ; others can be found on the .
 
 In addition, users with some C-programming experience may add their own
 read/write functions and link them with the *GMT* library to extend the
@@ -3760,10 +3863,10 @@ Fourier transform of a grid and evaluate wavenumbers in the proper units
 the coordinates of the grid passed to such programs:
 
 -  You have a geographic grid (i.e., in longitude and latitude). Simply
-   supply the ``-fg`` option and your grid coordinates will
+   supply the **-fg** option and your grid coordinates will
    automatically be converted to meters via a “Flat Earth” approximation
    on the currently selected ellipsoid (Note: this is only possible in
-   those few programs that require this capability. In general, ``-fg``
+   those few programs that require this capability. In general, **-fg**
    is used to specify table coordinates).
 
 -  You have a Cartesian grid but the units are not meters (e.g., they
@@ -3874,7 +3977,7 @@ The COARDS conventions set restrictions on the names that can be used
 for the units of the variables and coordinates. For example, the units
 of longitude and latitude are “degrees\_east” and “degrees\_north”,
 respectively. Here is an example of the header of a COARDS compliant
-netCDF file (to be obtained using ***ncdump***):
+netCDF file (to be obtained using **ncdump**):
 
 ::
 
@@ -4002,7 +4105,7 @@ must extract the necessary metadata from the file:
 
 Now, to access this file with *GMT* we need to use the =gd mechanism and
 append the name of the sub-dataset that we want to extract. Here, a
-simple example using `**grdinfo** <run:../man/grdinfo.html>`__ would be
+simple example using `grdinfo <grdinfo.html>`_ would be
 
 ::
 
@@ -4199,7 +4302,7 @@ created with `**gmtmath** <run:../man/gmtmath.html>`__, a “Reverse
 Polish Notation” (RPN) calculator that operates on or creates table
 data:
 
-Cartesian linear transformation (``-Jx`` ``-JX``)
+Cartesian linear transformation (**-Jx** **-JX**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 There are in fact three different uses of the Cartesian linear
@@ -4221,11 +4324,11 @@ point coordinates will result in a simple linear scaling
 :math:`u' = au + b` of the input coordinates. The projection is defined
 by stating
 
--  scale in inches/unit (``-Jx``) or axis length in inches (``-JX``)
+-  scale in inches/unit (**-Jx**) or axis length in inches (**-JX**)
 
 If the *y*-scale or *y*-axis length is different from that of the
 *x*-axis (which is most often the case), separate the two scales (or
-lengths) by a slash, e.g., ``-Jx``\ 0.1i/0.5i or ``-JX``\ 8i/5i. Thus,
+lengths) by a slash, e.g., **-Jx**\ 0.1i/0.5i or **-JX**\ 8i/5i. Thus,
 our :math:`y = \sqrt{x}` data sets will plot as shown in
 Figure [fig:GMT\ :sub:`l`\ inear].
 
@@ -4253,8 +4356,8 @@ geographical data in a linear projection. This poses a problem since
 longitudes have a 360 periodicity. *GMT* therefore needs to be informed
 that it has been given geographical coordinates even though a linear
 transformation has been chosen. We do so by adding a **g** (for
-geographical) or **d** (for degrees) directly after ``-R`` or by
-appending a **g** or **d** to the end of the ``-Jx`` (or ``-JX``)
+geographical) or **d** (for degrees) directly after **-R** or by
+appending a **g** or **d** to the end of the **-Jx** (or **-JX**)
 option. As an example, we want to plot a crude world map centered on
 125E. Our command will be
 
@@ -4271,8 +4374,8 @@ calendar date/time as the input coordinates. As far as setting up the
 coordinate transformation we must indicate whether our input data have
 absolute time coordinates or relative time coordinates. For the former
 we append **T** after the axis scale (or width), while for the latter we
-append **t** at the end of the ``-Jx`` (or ``-JX``) option. However,
-other command line arguments (like the ``-R`` option) may already
+append **t** at the end of the **-Jx** (or **-JX**) option. However,
+other command line arguments (like the **-R** option) may already
 specify whether the time coordinate is absolute or relative. An absolute
 time entry must be given as [*date*\ ]\ **T**\ [*clock*\ ] (with *date*
 given as *yyyy*\ [-*mm*\ [-*dd*]], *yyyy*\ [-*jjj*], or
@@ -4284,10 +4387,10 @@ information on specifying the time unit and the epoch). As a simple
 example, we will make a plot of a school week calendar
 (Figure [fig:GMT:sub:`l`\ inear\ :sub:`c`\ al]).
 
-When the coordinate ranges provided by the ``-R`` option and the
-projection type given by ``-JX`` (including the optional **d**, **g**,
+When the coordinate ranges provided by the **-R** option and the
+projection type given by **-JX** (including the optional **d**, **g**,
 **t** or **T**) conflict, *GMT* will warn the users about it. In
-general, the options provided with ``-JX`` will prevail.
+general, the options provided with **-JX** will prevail.
 
 Cartesian logarithmic projection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4315,7 +4418,7 @@ case P) followed by the desired exponent, in our case 0.5. Since
 :math:`q = 1` we do not need to specify **p**\ 1 since it is identical
 to the linear transformation. Thus our command becomes
 
-Linear projection with polar (:math:`\theta, r`) coordinates (``-Jp `` ``-JP``)
+Linear projection with polar (:math:`\theta, r`) coordinates (**-Jp** **-JP**)
 -------------------------------------------------------------------------------
 
 This transformation converts polar coordinates (angle :math:`\theta` and
@@ -4341,10 +4444,9 @@ transformation comes in two flavors:
 
 Consequently, the polar transformation is defined by providing
 
--  scale in inches/unit (``-Jp``) or full width of plot in inches
-   (``-JP``)
+-  scale in inches/unit (**-Jp**) or full width of plot in inches (**-JP**)
 
--  Optionally, insert **a** after **p\ :math:`|`\ P** to indicate CW
+-  Optionally, insert **a** after **p\ \| \ P** to indicate CW
    azimuths rather than CCW directions
 
 -  Optionally, append /:math:`origin` in degrees to indicate an angular
@@ -4405,17 +4507,17 @@ the map width is selected by default.
 In *GMT* version 4.3.0 we noticed we ran out of the alphabet for
 1-letter (and sometimes 2-letter) projection codes. To allow more
 flexibility, and to make it easier to remember the codes, we implemented
-the option to use the abbreviations used by the ***Proj4*** mapping
-package. Since some of the *GMT* projections are not in ***Proj4***, we
+the option to use the abbreviations used by the **Proj4** mapping
+package. Since some of the *GMT* projections are not in **Proj4**, we
 invented some of our own as well. For a full list of both the old 1- and
-2-letter codes, as well as the ***Proj4***-equivalents see the quick
-reference cards in Section [sec:purpose]. For example, ``-JM15c`` and
-``-JMerc/15c`` have the same meaning.
+2-letter codes, as well as the **Proj4**-equivalents see the quick
+reference cards in Section [sec:purpose]. For example, **-JM**15c and
+**-JMerc**/15c have the same meaning.
 
 Conic projections
 -----------------
 
-Albers conic equal-area projection (``-Jb`` ``-JB``)
+Albers conic equal-area projection (**-Jb** **-JB**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This projection, developed by Albers in 1805, is predominantly used to
@@ -4433,8 +4535,8 @@ the projection in *GMT* you need to provide the following information:
 
 -  Two standard parallels.
 
--  Map scale in inch/degree or 1:xxxxx notation (``-Jb``), or map width
-   (``-JB``).
+-  Map scale in inch/degree or 1:xxxxx notation (**-Jb**), or map width
+   (**-JB**).
 
 Note that you must include the “1:” if you choose to specify the scale
 that way. E.g., you can say 0.5 which means 0.5 inch/degree or 1:200000
@@ -4446,7 +4548,7 @@ Taiwan. We choose the center of the projection to be at 125 E/20 N and
 inches wide. The complete command needed to generate the map below is
 therefore given by:
 
-Equidistant conic projection (``-Jd`` ``-JD``)
+Equidistant conic projection (**-Jd** **-JD**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The equidistant conic projection was described by the Greek philosopher
@@ -4460,13 +4562,13 @@ projection, i.e.,
 
 -  Two standard parallels.
 
--  Map scale in inch/degree or 1:xxxxx notation (``-Jd``), or map width
-   (``-JD``).
+-  Map scale in inch/degree or 1:xxxxx notation (**-Jd**), or map width
+   (**-JD**).
 
 The equidistant conic projection is often used for atlases with maps of
 small countries. As an example, we generate a map of Cuba:
 
-Lambert conic conformal projection (``-Jl`` ``-JL``)
+Lambert conic conformal projection (**-Jl** **-JL**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This conic projection was designed by the Alsatian mathematician Johann
@@ -4483,8 +4585,8 @@ same information as for the Albers projection, i.e.,
 
 -  Two standard parallels.
 
--  Map scale in inch/degree or 1:xxxxx notation (``-Jl``), or map width
-   (``-JL``).
+-  Map scale in inch/degree or 1:xxxxx notation (**-Jl**), or map width
+   (**-JL**).
 
 The Lambert conformal projection has been used for basemaps for all the
 48 contiguous States with the two fixed standard parallels 33N and 45N.
@@ -4500,7 +4602,7 @@ standard parallels were originally selected by Adams to provide a
 maximum scale error between latitudes 30.5N and 47.5N of 0.5–1%. Some
 areas, like Florida, experience scale errors of up to 2.5%.
 
-(American) polyconic projection (``-Jpoly`` ``-JPoly``
+(American) polyconic projection (**-Jpoly** **-JPoly**
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The polyconic projection, in Europe usually referred to as the American
@@ -4527,7 +4629,7 @@ every 10 and annotations only every 30 in longitude:
 Azimuthal projections
 ---------------------
 
-Lambert Azimuthal Equal-Area (``-Ja`` ``-JA``)
+Lambert Azimuthal Equal-Area (**-Ja** **-JA**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This projection was developed by Lambert in 1772 and is typically used
@@ -4544,7 +4646,7 @@ following information:
 
 -  Scale as 1:xxxxx or as radius/latitude where radius is the projected
    distance on the map from projection center to an oblique latitude
-   (``-Ja``), or map width (``-JA``).
+   (**-Ja**), or map width (**-JA**).
 
 Two different types of maps can be made with this projection depending
 on how the region is specified. We will give examples of both types.
@@ -4561,7 +4663,7 @@ for map boundaries. Instead we require that the map boundaries be
 rectangular by defining the corners of a rectangular map boundary. Using
 0E/40S (lower left) and 60E/10S (upper right) as our corners we try
 
-Note that an “r” is appended to the ``-R`` option to inform *GMT* that
+Note that an “r” is appended to the **-R** option to inform *GMT* that
 the region has been selected using the rectangle technique, otherwise it
 would try to decode the values as *west, east, south, north* and report
 an error since *’east’* :math:`<` *’west’*.
@@ -4569,8 +4671,8 @@ an error since *’east’* :math:`<` *’west’*.
 Hemisphere map
 ^^^^^^^^^^^^^^
 
-[sec:lamb] Here, you must specify the world as your region (``-Rg`` or
-``-Rd``). E.g., to obtain a hemisphere view that shows the Americas, try
+[sec:lamb] Here, you must specify the world as your region (**-Rg** or
+**-Rd**). E.g., to obtain a hemisphere view that shows the Americas, try
 
 To geologists, the Lambert azimuthal equal-area projection (with origin
 at 0/0) is known as the *equal-area* (Schmidt) stereonet and used for
@@ -4579,7 +4681,7 @@ stereonet can be obtained by using the stereographic projection
 (discussed later). The stereonets produced by these two projections
 appear below.
 
-Stereographic Equal-Angle projection (``-Js`` ``-JS``)
+Stereographic Equal-Angle projection (**-Js** **-JS**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This is a conformal, azimuthal projection that dates back to the Greeks.
@@ -4596,7 +4698,7 @@ center of projection. The requirements are
 -  Scale as 1:xxxxx (true scale at pole), slat/1:xxxxx (true scale at
    standard parallel slat), or radius/latitude where radius is distance
    on map in inches from projection center to a particular [possibly
-   oblique] latitude (``-Js``), or simply map width (``-JS``).
+   oblique] latitude (**-Js**), or simply map width (**-JS**).
 
 A default map scale factor of 0.9996 will be applied by default
 (although you may change this with **PROJ\_SCALE\_FACTOR**). However,
@@ -4619,7 +4721,7 @@ As with Lambert’s azimuthal equal-area projection we have the option to
 use rectangular boundaries rather than the wedge-shape typically
 associated with polar projections. This choice is defined by selecting
 two points as corners in the rectangle and appending an “r” to the
-``-R`` option. This command produces a map as presented in
+**-R** option. This command produces a map as presented in
 Figure [fig:GMT\ :sub:`s`\ tereographic\ :sub:`r`\ ect]:
 
 General stereographic map
@@ -4634,7 +4736,7 @@ By choosing 0/0as the pole, we obtain the conformal stereonet presented
 next to its equal-area cousin in the Section [sec:lamb] on the Lambert
 azimuthal equal-area projection (Figure [fig:GMT:sub:`s`\ tereonets]).
 
-Perspective projection (``-Jg`` ``-JG``)
+Perspective projection (**-Jg** **-JG**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The perspective projection imitates in 2 dimensions the 3-dimensional
@@ -4668,13 +4770,13 @@ Figure [fig:GMT\ :sub:`p`\ erspective] between brackets.
 
 -  Scale as 1:xxxxx or as radius/latitude where radius is distance on
    map in inches from projection center to a particular [possibly
-   oblique] latitude (``-Jg``), or map width (``-JG``) (5 inches).
+   oblique] latitude (**-Jg**), or map width (**-JG**) (5 inches).
 
 The imagined view of northwest Europe from a Space Shuttle at 230 km
 looking due east is thus accomplished by the following
 `pscoast <pscoast.html>`_ command:
 
-Orthographic projection (``-Jg`` ``-JG``)
+Orthographic projection (**-Jg** **-JG**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The orthographic azimuthal projection is a perspective projection from
@@ -4687,8 +4789,8 @@ center of projection are true. The projection was known to the Egyptians
 and Greeks more than 2,000 years ago. Because it is mainly used for
 pictorial views at a small scale, only the spherical form is necessary.
 
-To specify the orthographic projection the same options ``-Jg`` or
-``-JG`` as the perspective projection are used, but with fewer variables
+To specify the orthographic projection the same options **-Jg** or
+**-JG** as the perspective projection are used, but with fewer variables
 to supply:
 
 -  Longitude and latitude of the projection center.
@@ -4698,13 +4800,13 @@ to supply:
 
 -  Scale as 1:xxxxx or as radius/latitude where radius is distance on
    map in inches from projection center to a particular [possibly
-   oblique] latitude (``-Jg``), or map width (``-JG``).
+   oblique] latitude (**-Jg**), or map width (**-JG**).
 
 Our example of a perspective view centered on 75W/40N can therefore be
 generated by the following `pscoast <pscoast.html>`_
 command:
 
-Azimuthal Equidistant projection (``-Je`` ``-JE``)
+Azimuthal Equidistant projection (**-Je** **-JE**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The most noticeable feature of this azimuthal projection is the fact
@@ -4724,14 +4826,14 @@ To specify the azimuthal equidistant projection you must supply:
 
 -  Scale as 1:xxxxx or as radius/latitude where radius is distance on
    map in inches from projection center to a particular [possibly
-   oblique] latitude (``-Je``), or map width (``-JE``).
+   oblique] latitude (**-Je**), or map width (**-JE**).
 
 Our example of a global view centered on 100W/40N can therefore be
 generated by the following `pscoast <pscoast.html>`_
 command. Note that the antipodal point is 180 away from the center, but
 in this projection this point plots as the entire map perimeter:
 
-Gnomonic projection (``-Jf`` ``-JF``)
+Gnomonic projection (**-Jf** **-JF**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The Gnomonic azimuthal projection is a perspective projection from the
@@ -4753,7 +4855,7 @@ To specify the Gnomonic projection you must supply:
 
 -  Scale as 1:xxxxx or as radius/latitude where radius is distance on
    map in inches from projection center to a particular [possibly
-   oblique] latitude (``-Jf``), or map width (``-JF``).
+   oblique] latitude (**-Jf**), or map width (**-JF**).
 
 Using a horizon of 60, our example of this projection centered on
 120W/35N can therefore be generated by the following
@@ -4771,7 +4873,7 @@ cylindrical equal-area, Miller, and cylindrical stereographic
 projections) stops. Each have a different way of spacing the meridians
 and parallels to obtain certain desirable cartographic properties.
 
-Mercator projection (``-Jm`` ``-JM``)
+Mercator projection (**-Jm** **-JM**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Probably the most famous of the various map projections, the Mercator
@@ -4805,17 +4907,17 @@ are optional and have defaults):
 -  Standard parallel for true scale [Equator]. When supplied, central
    meridian must be supplied as well.
 
--  Scale along the equator in inch/degree or 1:xxxxx (``-Jm``), or map
-   width (``-JM``).
+-  Scale along the equator in inch/degree or 1:xxxxx (**-Jm**), or map
+   width (**-JM**).
 
 Our example presents a world map at a scale of 0.012 inch pr degree
 which will give a map 4.32 inch wide. It was created with the command:
 
 While this example is centered on the Dateline, one can easily choose
-another configuration with the ``-R`` option. A map centered on
+another configuration with the **-R** option. A map centered on
 Greenwich would specify the region with **-R**-180/180/-70/70.
 
-Transverse Mercator projection (``-Jt`` ``-JT``)
+Transverse Mercator projection (**-Jt** **-JT**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The transverse Mercator was invented by Lambert in 1772. In this
@@ -4830,8 +4932,8 @@ specifying:
 
 -  Optionally, the latitude of origin (default is the equator).
 
--  Scale along the equator in inch/degree or 1:xxxxx (``-Jt``), or map
-   width (``-JT``).
+-  Scale along the equator in inch/degree or 1:xxxxx (**-Jt**), or map
+   width (**-JT**).
 
 The optional latitude of origin defaults to Equator if not specified.
 Although defaulting to 1, you can change the map scale factor via the
@@ -4843,7 +4945,7 @@ The transverse Mercator can also be used to generate a global map—the
 equivalent of the 360 Mercator map. Using the command
 
 we made the map illustrated in Figure [fig:GMT\ :sub:`T`\ M]. Note that
-when a world map is given (indicated by ``-R``\ *0/360/s/n*), the
+when a world map is given (indicated by **-R**\ *0/360/s/n*), the
 arguments are interpreted to mean oblique degrees, i.e., the 360 range
 is understood to mean the extent of the plot along the central meridian,
 while the “south” and “north” values represent how far from the central
@@ -4851,7 +4953,7 @@ longitude we want the plot to extend. These values correspond to
 latitudes in the regular Mercator projection and must therefore be less
 than 90.
 
-Universal Transverse Mercator (UTM) projection (``-Ju`` ``-JU``)
+Universal Transverse Mercator (UTM) projection (**-Ju** **-JU**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 A particular subset of the transverse Mercator is the Universal
@@ -4872,8 +4974,8 @@ When selecting UTM you must specify:
    in the southern hemisphere or append the latitude modifiers C–H, J–N,
    P–X) to specify an exact UTM grid zone.
 
--  Scale along the equator in inch/degree or 1:xxxxx (``-Ju``), or map
-   width (``-JU``).
+-  Scale along the equator in inch/degree or 1:xxxxx (**-Ju**), or map
+   width (**-JU**).
 
 In order to minimize the distortion in any given zone, a scale factor of
 0.9996 has been factored into the formulae. (although a standard, you
@@ -5309,8 +5411,8 @@ complex illustration. We will mostly follow the following format:
 A detailed discussion of each command is not given; we refer you to the
 manual pages for command line syntax, etc. We encourage you to run these
 scripts for yourself. See Appendix [app:D] if you would like an
-electronic version of all the shell-scripts (both ***sh*** and ***csh***
-scripts are available, as or DOS batch files; only the ***sh***-scripts
+electronic version of all the shell-scripts (both **sh** and **csh**
+scripts are available, as or DOS batch files; only the **sh**-scripts
 are discussed here) and support data used below. Note that all examples
 explicitly specifies the measurement units, so although we use inches
 you should be able to run these scripts and get the same plots even if
@@ -5319,9 +5421,9 @@ be “quiet”, that is no information is echoed to the screen. Thus, these
 scripts are well suited for background execution.
 
 Note that we also end each script by cleaning up after ourselves.
-Because there are several ***AWK*** implementations such as ***gawk***
-and ***nawk***, which are not available everywhere, we refer to
-***$AWK*** in the scripts below. This variable must be set prior to
+Because there are several **AWK** implementations such as **gawk**
+and **nawk**, which are not available everywhere, we refer to
+**$AWK** in the scripts below. This variable must be set prior to
 running the example scripts.
 
 Finally, be aware that for practical purposes the output
@@ -5391,7 +5493,7 @@ palette file for the geoid and use
 `grd2cpt <grd2cpt.html>`_ to get a histogram-equalized
 cpt file for the topography data. To emphasize the structures in the
 data we calculate the slopes in the north-south direction using
-`**grdgradient** <run:../man/grdgradient.html>`__; these will be used to
+`grdgradient <grdgradient.html>`_; these will be used to
 modulate the color image. Next we run
 `grdimage <grdimage.html>`_ to create a color-code image
 of the Geosat geoid heights, and draw a color legend to the right of the
@@ -5420,12 +5522,12 @@ fits the sat track. We must use
 and choose the L\ :math:`_2` estimates of best pole. We project the data
 using `**project** <run:../man/project.html>`__ to find out what their
 ranges are in the projected coordinate. The
-`**minmax** <run:../man/minmax.html>`__ utility will report the minimum
+`minmax <minmax.html>`_ utility will report the minimum
 and maximum values for multi-column ASCII tables. Use this information
 to select the range of the projected distance coordinate they have in
 common. The script prompts you for that information after reporting the
 values. We decide to make a file of equidistant sampling points spaced 1
-km apart from -1167 to +1169, and use the *UNIX* utility ***AWK*** to
+km apart from -1167 to +1169, and use the *UNIX* utility **AWK** to
 accomplish this step. We can then resample the projected data, and carry
 out the cross-spectral calculations, assuming that the ship is the input
 and the satellite is the output data. There are several intermediate
@@ -5464,13 +5566,13 @@ Figure [fig:example\ :sub:`0`\ 4] shows the complete illustration.
 
 The second part of the script shows how to make the color version of
 this figure that was printed in our first article in *EOS Trans. AGU* (8
-October 1991). Using `**grdview** <run:../man/grdview.html>`__ one can
+October 1991). Using `grdview <grdview.html>`_ one can
 choose to either plot a mesh surface (left) or a color-coded surface
 (right). We have also added artificial illumination from a light-source
 due north, which is simulated by computing the gradient of the surface
 grid in that direction though the
-`**grdgradient** <run:../man/grdgradient.html>`__ program. We choose to
-use the **-Qc** option in `**grdview** <run:../man/grdview.html>`__ to
+`grdgradient <grdgradient.html>`_ program. We choose to
+use the **-Qc** option in `grdview <grdview.html>`_ to
 achieve a high degree of smoothness. Here, we select 100 dpi since that
 will be the resolution of our final raster (The EOS raster was 300 dpi).
 Note that the size of the resulting output file is directly dependent on
@@ -5488,10 +5590,10 @@ artificial illumination. For this example we will use
 contains the surface given by the function
 :math:`z(x, y) = \cos (2\pi r/8)\cdot e^{-r/10}`, where
 :math:`r^2 = (x^2 + y^2)`. The illumination is obtained by passing two
-grid files to `**grdview** <run:../man/grdview.html>`__: One with the
+grid files to `grdview <grdview.html>`_: One with the
 *z*-values (the surface) and another with intensity values (which should
 be in the 1 range). We use
-`**grdgradient** <run:../man/grdgradient.html>`__ to compute the
+`grdgradient <grdgradient.html>`_ to compute the
 horizontal gradients in the direction of the artificial light source.
 The file only has one line that states that all *z* values should have
 the gray level 128. Thus, variations in shade are entirely due to
@@ -5500,9 +5602,9 @@ the SW and view the surface from SE:
 
 The variations in intensity could be made more dramatic by using
 `grdmath <grdmath.html>`_ to scale the intensity file
-before running `**grdview** <run:../man/grdview.html>`__. For very rough
+before running `grdview <grdview.html>`_. For very rough
 data sets one may improve the smoothness of the intensities by passing
-the output of `**grdgradient** <run:../man/grdgradient.html>`__ to
+the output of `grdgradient <grdgradient.html>`_ to
 `**grdhisteq** <run:../man/grdhisteq.html>`__. The shell-script above
 will result in a plot like the one in Figure [fig:example\ :sub:`0`\ 5].
 
@@ -5573,7 +5675,7 @@ for `pstext <pstext.html>`_ that will label each profile
 with the track number. We know the profiles trend approximately N40E so
 we want the labels to have that same orientation (i.e., the angle with
 the baseline must be 50). We do this by extracting the last record from
-each track, paste this file with the file, and use ***AWK*** to create
+each track, paste this file with the file, and use **AWK** to create
 the format needed for `pstext <pstext.html>`_. Note we
 offset the positions by -0.05 inch with **-D** in order to have a small
 gap between the profile and the label:
@@ -5635,14 +5737,14 @@ Optimal triangulation of data
 Our next example (Figure [fig:example:sub:`1`\ 2]) operates on a data
 set of topographic readings non-uniformly distributed in the plane
 (Table 5.11 in Davis: *Statistics and Data Analysis in Geology*, J.
-Wiley). We use `**triangulate** <run:../man/triangulate.html>`__ to
+Wiley). We use `triangulate <triangulate.html>`_ to
 perform the optimal Delaunay triangulation, then use the output to draw
 the resulting network. We label the node numbers as well as the node
 values, and call `**pscontour** <run:../man/pscontour.html>`__ to make a
 contour map and image directly from the raw data. Thus, in this example
 we do not actually make grid files but still are able to contour and
 image the data. We use a color palette table (created via
-`**minmax** <run:../man/minmax.html>`__ and
+`minmax <minmax.html>`_ and
 `makecpt <makecpt.html>`_). The script becomes:
 
 Plotting of vector fields
@@ -5651,7 +5753,7 @@ Plotting of vector fields
 In many areas, such as fluid dynamics and elasticity, it is desirable to
 plot vector fields of various kinds. *GMT* provides a way to illustrate
 2-component vector fields using the
-`**grdvector** <run:../man/grdvector.html>`__ utility. The two
+`grdvector <grdvector.html>`_ utility. The two
 components of the field (Cartesian or polar components) are stored in
 separate grid files. In this example we use
 `grdmath <grdmath.html>`_ to generate a surface
@@ -5667,24 +5769,23 @@ Gridding of data and trend surfaces
 
 This example shows how one goes from randomly spaced data points to an
 evenly sampled surface. First we plot the distribution and values of our
-raw data set (same as in Section [sec:example\ :sub:`1`\ 2]). We choose
-an equidistant grid and run
-`**blockmean** <run:../man/blockmean.html>`__ which preprocesses the
+raw data set (same as in Section [sec:example\ :sub:`1`\ 2]). We choose an equidistant grid and run
+`blockmean <blockmean.html>`_ which preprocesses the
 data to avoid aliasing. The dashed lines indicate the logical blocks
-used by `**blockmean** <run:../man/blockmean.html>`__; all points inside
+used by `blockmean <blockmean.html>`_; all points inside
 a given bin will be averaged. The logical blocks are drawn from a
 temporary file we make on the fly within the shell script. The processed
-data is then gridded with the `**surface** <run:../man/surface.html>`__
+data is then gridded with the `surface <surface.html>`_
 program and contoured every 25 units. A most important point here is
-that `**blockmean** <run:../man/blockmean.html>`__,
-`**blockmedian** <run:../man/blockmedian.html>`__, or
-`**blockmode** <run:../man/blockmode.html>`__ should always be run prior
-to running `**surface** <run:../man/surface.html>`__, and both of these
+that `blockmean <blockmean.html>`_,
+`blockmedian <blockmedian.html>`_, or
+`blockmode <blockmode.html>`_ should always be run prior
+to running `surface <surface.html>`_, and both of these
 steps must use the same grid interval. We use
-`**grdtrend** <run:../man/grdtrend.html>`__ to fit a bicubic trend
+`grdtrend <grdtrend.html>`_ to fit a bicubic trend
 surface to the gridded data, contour it as well, and sample both grid
 files along a diagonal transect using
-`**grdtrack** <run:../man/grdtrack.html>`__. The bottom panel compares
+`grdtrack <grdtrack.html>`_. The bottom panel compares
 the gridded (solid line) and bicubic trend (dashed line) along the
 transect using `**psxy** <run:../man/psxy.html>`__
 (Figure [fig:example:sub:`1`\ 4]):
@@ -5697,30 +5798,30 @@ Gridding, contouring, and masking of unconstrained areas
 This example (Figure [fig:example:sub:`1`\ 5]) demonstrates some off the
 different ways one can use to grid data in *GMT*, and how to deal with
 unconstrained areas. We first convert a large ASCII file to binary with
-`**gmtconvert** <run:../man/gmtconvert.html>`__ since the binary file
+`gmtconvert <gmtconvert.html>`_ since the binary file
 will read and process much faster. Our lower left plot illustrates the
 results of gridding using a nearest neighbor technique
-(`**nearneighbor** <run:../man/nearneighbor.html>`__) which is a local
+(`nearneighbor <nearneighbor.html>`_) which is a local
 method: No output is given where there are no data. Next (lower right),
 we use a minimum curvature technique
-(`**surface** <run:../man/surface.html>`__) which is a global method.
+(`surface <surface.html>`_) which is a global method.
 Hence, the contours cover the entire map although the data are only
 available for portions of the area (indicated by the gray areas plotted
-using `**psmask** <run:../man/psmask.html>`__). The top left scenario
+using `psmask <psmask.html>`_). The top left scenario
 illustrates how we can create a clip path (using
-`**psmask** <run:../man/psmask.html>`__) based on the data coverage to
+`psmask <psmask.html>`_) based on the data coverage to
 eliminate contours outside the constrained area. Finally (top right) we
 simply employ `pscoast <pscoast.html>`_ to overlay gray
 land masses to cover up the unwanted contours, and end by plotting a
 star at the deepest point on the map with
 `**psxy** <run:../man/psxy.html>`__. This point was extracted from the
-grid files using `**grdinfo** <run:../man/grdinfo.html>`__.
+grid files using `grdinfo <grdinfo.html>`_.
 
 Gridding of data, continued
 ---------------------------
 
 `**pscontour** <run:../man/pscontour.html>`__ (for contouring) and
-`**triangulate** <run:../man/triangulate.html>`__ (for gridding) use the
+`triangulate <triangulate.html>`_ (for gridding) use the
 simplest method of interpolating data: a Delaunay triangulation (see
 Section [sec:example\ :sub:`1`\ 2]) which forms :math:`z(x, y)` as a
 union of planar triangular facets. One advantage of this method is that
@@ -5730,23 +5831,23 @@ above or below the local bounds on any triangle. A disadvantage is that
 the :math:`z(x, y)` surface is not differentiable, but has sharp kinks
 at triangle edges and thus also along contours. This may not look
 physically reasonable, but it can be filtered later (last panel below).
-`**surface** <run:../man/surface.html>`__ can be used to generate a
+`surface <surface.html>`_ can be used to generate a
 higher-order (smooth and differentiable) interpolation of
 :math:`z(x, y)` onto a grid, after which the grid may be illustrated
 (`grdcontour <grdcontour.html>`_,
 `grdimage <grdimage.html>`_,
-`**grdview** <run:../man/grdview.html>`__).
-`**surface** <run:../man/surface.html>`__ will interpolate to all (*x,
+`grdview <grdview.html>`_).
+`surface <surface.html>`_ will interpolate to all (*x,
 y*) points in a rectangular region, and thus will extrapolate beyond the
 convex hull of the data. However, this can be masked out in various ways
 (see Section [sec:example\ :sub:`1`\ 5]).
 
 A more serious objection is that
-`**surface** <run:../man/surface.html>`__ may estimate *z* values
+`surface <surface.html>`_ may estimate *z* values
 outside the local range of the data (note area near *x* = 0.8, *y* =
 5.3). This commonly happens when the default tension value of zero is
 used to create a “minimum curvature” (most smooth) interpolant.
-`**surface** <run:../man/surface.html>`__ can be used with non-zero
+`surface <surface.html>`_ can be used with non-zero
 tension to partially overcome this problem. The limiting value
 :math:`tension = 1` should approximate the triangulation, while a value
 between 0 and 1 may yield a good compromise between the above two cases.
@@ -5754,15 +5855,15 @@ A value of 0.5 is shown here (Figure [fig:example:sub:`1`\ 6]). A side
 effect of the tension is that it tends to make the contours turn near
 the edges of the domain so that they approach the edge from a
 perpendicular direction. A solution is to use
-`**surface** <run:../man/surface.html>`__ in a larger area and then use
-`**grdcut** <run:../man/grdcut.html>`__ to cut out the desired smaller
+`surface <surface.html>`_ in a larger area and then use
+`grdcut <grdcut.html>`_ to cut out the desired smaller
 area. Another way to achieve a compromise is to interpolate the data to
 a grid and then filter the grid using
 `grdfft <grdfft.html>`_ or
 `grdfilter <grdfilter.html>`_. The latter can handle
 grids containing “NaN” values and it can do median and mode filters as
 well as convolutions. Shown here is
-`**triangulate** <run:../man/triangulate.html>`__ followed by
+`triangulate <triangulate.html>`_ followed by
 `grdfilter <grdfilter.html>`_. Note that the filter has
 done some extrapolation beyond the convex hull of the original *x, y*
 values. The “best” smooth approximation of :math:`z(x, y)` depends on
@@ -5811,7 +5912,7 @@ To demonstrate potential usage of the new programs
 Sandwell & Smith altimetric gravity field [26]_ for the northern Pacific
 and decide to isolate all seamounts that (1) exceed 50 mGal in amplitude
 and (2) are within 200 km of the Pratt seamount. We do this by dumping
-the 50 mGal contours to disk, then making a simple ***AWK*** script that
+the 50 mGal contours to disk, then making a simple **AWK** script that
 returns the mean location of the points making up each closed polygon,
 and then pass these locations to
 `**gmtselect** <run:../man/gmtselect.html>`__ which retains only the
@@ -5904,8 +6005,7 @@ The following recipe is used when designing a new symbol.
    Figure above.
 
 #. Given proper definition files we may now use them with
-   `**psxy** <run:../man/psxy.html>`__ or
-   `psxyz <psxyz.html>`_.
+   `**psxy** <run:../man/psxy.html>`__ or `psxyz <psxyz.html>`_.
 
 We are now ready to give it a try. Based on the hotspot locations in the
 file (with a 3rd column giving the desired symbol sizes in inches) we
@@ -5963,10 +6063,10 @@ Internet bubble...
 World-wide seismicity the last 7 days
 -------------------------------------
 
-The next example uses the command-line tool ***wget*** to obtain a data
+The next example uses the command-line tool **wget** to obtain a data
 file from a specified URL [27]_. In the example script this line is
-commented out so the example will run even if you do not have ***wget***
-(we use the supplied which normally would be created by ***wget***);
+commented out so the example will run even if you do not have **wget**
+(we use the supplied which normally would be created by **wget**);
 remove the comment to get the actual current seismicity plot using the
 live data. The main purpose of this script is not to show how to plot a
 map background and a few circles, but rather demonstrate how a map
@@ -6203,7 +6303,7 @@ Using non-default fonts in *PostScript*
 This example illustrates several possibilities to create *GMT*\ plots
 with non-default fonts. As these fonts are not part of the standard
 *PostScript* font collection they have to be embedded in the PS- or
-PDF-file with ***Ghostscript***. See also
+PDF-file with **Ghostscript**. See also
 Appendix [sec:non-default-fonts] for further information. The script
 includes the following steps:
 
@@ -6244,7 +6344,7 @@ already done. First we get the EU flag directly from the web and convert
 it to a grid with values ranging from 0 to 255, where the higher values
 will become yellow and the lower values blue. This use of
 `**grdreformat** <run:../man/grdreformat.html>`__ requires GDAL support.
-`**grdedit** <run:../man/grdedit.html>`__ then adds the right grid
+`grdedit <grdedit.html>`_ then adds the right grid
 dimension.
 
 The second step is to reformat the GTOPO30 DEM file to a netCDF grid as
@@ -6253,11 +6353,11 @@ illuminate the topography grid so we can use it later to emphasize the
 topography. The colors that we will use are those of the proper flag.
 Lower values will become blue and the upper values yellow.
 
-The call the `**grdview** <run:../man/grdview.html>`__ plots a
+The call the `grdview <grdview.html>`_ plots a
 topography map of northwest continental Europe, with the flagged draped
 over it and with shading to show the little topography there is.
 `pscoast <pscoast.html>`_ is used in conjunction with
-`**grdtrack** <run:../man/grdtrack.html>`__ and *GMT*\ psxyz to plot
+`grdtrack <grdtrack.html>`_ and *GMT*\ psxyz to plot
 borders “at altitude”. Something similar is done at the end to plot some
 symbols and names for cities.
 
@@ -6266,7 +6366,7 @@ that the PNG image of the flag can be downloaded directly in the call
 the `**grdreformat** <run:../man/grdreformat.html>`__, but we have
 commented that out in the example because it requires compilation with
 GDAL support. You will also see the
-`**grdcut** <run:../man/grdcut.html>`__ command commented out because we
+`grdcut <grdcut.html>`_ command commented out because we
 did not want to store the 58 MB DEM file, whose location is mentioned in
 the script.
 
@@ -6274,7 +6374,7 @@ Stacking automatically generated cross-profiles
 -----------------------------------------------
 
 The script produces the plot in Figure [fig:example\ :sub:`3`\ 3]. Here
-we demonstrate how `**grdtrack** <run:../man/grdtrack.html>`__ can be
+we demonstrate how `grdtrack <grdtrack.html>`_ can be
 used to automatically create a suite of crossing profiles of uniform
 spacing and length and then sample one or more grids along these
 profiles; we also use the median stacking option to create a stacked
@@ -6356,17 +6456,17 @@ example.
    your frame counter equals the desired number of frames. You must use
    your frame counter to create a unique file name for each frame image
    so that the series of images can be lexically arranged. We recommend
-   using the *GMT* shell function ***gmt\_set\_framename*** to format
+   using the *GMT* shell function **gmt\_set\_framename** to format
    the frame counter with an adequate number of leading zeros; see our
    examples for details. The bulk of your main loop involves create the
    single *PostScript* plot for this particular frame (time). This can
    be trivial or a serious scripting exercise depending on what you want
    to show. We will give a few examples with increasing complexity. Once
    the *PostScript* plot is created you need to rasterize it; we
-   recommend you use `**ps2raster** <run:../man/ps2raster.html>`__ to
+   recommend you use `ps2raster <ps2raster.html>`_ to
    generate a TIFF image at the agreed-upon resolution. We also
    recommend that you place all frame images in a sub-directory. You may
-   increment your frame counter using ***gmt\_set\_framenext***.
+   increment your frame counter using **gmt\_set\_framenext**.
 
 #. Once you have all your frames you are ready to combine them into an
    animation. There are two general approaches. (a) If your image
@@ -6433,7 +6533,7 @@ Orbiting a static map
 
 Our third animation keeps a fixed gridded data set but moves the camera
 angle around the full 360. We use
-`**grdview** <run:../man/grdview.html>`__ to generate a shaded-relief
+`grdview <grdview.html>`_ to generate a shaded-relief
 image sequence using the new enhanced **-E** option. No additional
 information is plotted on the image. As before we produce an animated
 GIF image and a simple HTML wrapper for it.
@@ -6451,7 +6551,7 @@ will make the DVD-quality frames from different view points, draw the
 path on the ground, and add frame numbers to each frame. As this
 animation generates 355 frames we can use 3rd party tools to turn the
 image sequence into a MPEG-4 movie [31]_. Note: At the moment,
-`**grdview** <run:../man/grdview.html>`__ cannot use general perspective
+`grdview <grdview.html>`_ cannot use general perspective
 view projection to allow “fly-through” animations like Fledermaus; we
 expect to add this functionality in a future version.
 
@@ -6579,7 +6679,7 @@ mex: Matlab/Octave–\ `GMT <http://gmt.soest.hawaii.edu>`_ interface
 ------------------------------------------------------------------------
 
 Here you will find the mex files
-`**grdinfo** <run:../man/grdinfo.html>`__,
+`grdinfo <grdinfo.html>`_,
 `**grdread** <run:../man/grdread.html>`__, and
 `**grdwrite** <run:../man/grdwrite.html>`__, which can be used in Matlab
 or Octave to read and write grid files. The package originated with
@@ -6653,7 +6753,7 @@ data, and `**sphinterpolate** <run:../man/sphinterpolate.html>`__ which
 performs gridding under tension on a sphere. These programs passes the
 heavy work onto the two Fortran-77 packages SSRFPACK and STRIPACK by
 Robert Renka; here they have been translated to C with assistance from
-***f2c***. The package is maintained by Paul Wessel.
+**f2c**. The package is maintained by Paul Wessel.
 
 spotter: backtracking and hotspotting
 -------------------------------------
@@ -6874,12 +6974,12 @@ represents. The default node registration in *GMT* is gridline node
 registration. Most programs can handle both types, and for some programs
 like `grdimage <grdimage.html>`_ a pixel registered file
 makes more sense. Utility programs like
-`**grdsample** <run:../man/grdsample.html>`__ and
-`**grdproject** <run:../man/grdproject.html>`__ will allow you to
+`grdsample <grdsample.html>`_ and
+`grdproject <grdproject.html>`_ will allow you to
 convert from one format to the other;
-`**grdedit** <run:../man/grdedit.html>`__ can make changes to the grid
+`grdedit <grdedit.html>`_ can make changes to the grid
 header and convert a pixel- to a gridline-registered grid, or *vice
-versa*. The grid registration is determined by the common *GMT* **-r**
+versa*. The grid registration is determined by the common *GMT* **-r**
 option (see Section [sec:grid\ :sub:`r`\ egistration]).
 
 Boundary Conditions for operations on grids
@@ -6887,11 +6987,11 @@ Boundary Conditions for operations on grids
 
 *GMT* has the option to specify boundary conditions in some programs
 that operate on grids (e.g.,
-`**grdsample** <run:../man/grdsample.html>`__,
-`**grdgradient** <run:../man/grdgradient.html>`__,
-`**grdtrack** <run:../man/grdtrack.html>`__,
-`**nearneighbor** <run:../man/nearneighbor.html>`__, and
-`**grdview** <run:../man/grdview.html>`__, to name a few. The desired
+`grdsample <grdsample.html>`_,
+`grdgradient <grdgradient.html>`_,
+`grdtrack <grdtrack.html>`_,
+`nearneighbor <nearneighbor.html>`_, and
+`grdview <grdview.html>`_, to name a few. The desired
 condition can be set with the common *GMT* option **-n**; see Section
 [sec:resample]. The boundary conditions come into play when
 interpolating or computing derivatives near the limits of the region
@@ -6957,7 +7057,7 @@ The old style native grid file format that was common in earlier version
 of *GMT* is still supported, although the use of netCDF files is
 strongly recommended. The file starts with a header of 892 bytes
 containing a number of attributes defining the content. The
-`**grdedit** <run:../man/grdedit.html>`__ utility program will allow you
+`grdedit <grdedit.html>`_ utility program will allow you
 to edit parts of the header of an existing grid file. The attributes
 listed in Table [tbl:grdheader] are contained within the header record
 in the order given (except the :math:`z`-array which is not part of the
@@ -7073,11 +7173,11 @@ Table [tbl:sundef].
 
 [tbl:sundef]
 
-Numerous public-domain programs exist, such as ***xv*** and
-***convert*** (in the ImageMagick package), that will translate between
+Numerous public-domain programs exist, such as **xv** and
+**convert** (in the ImageMagick package), that will translate between
 various raster file formats such as tiff, gif, jpeg, and Sun raster.
 Raster patterns may be created with *GMT* plotting tools by generating
-*PostScript* plots that can be rasterized by ***ghostscript*** and
+*PostScript* plots that can be rasterized by **ghostscript** and
 translated into the right raster format.
 
 Including `GMT <http://gmt.soest.hawaii.edu>`_ graphics into your documents
@@ -7106,7 +7206,7 @@ document.
 -  When the aim is to display the graphics on a computer screen or
    present it using a projector, it is wise to convert the
    *PostScript* into a raster format. Although applications like
-   ***PowerPoint*** can do this for you, you can best take the
+   **PowerPoint** can do this for you, you can best take the
    conversion into your own hands for the best results.
 
 A large number of questions to the GMT-Help mailing list are related to
@@ -7124,11 +7224,11 @@ Making `GMT <http://gmt.soest.hawaii.edu>`_ Encapsulated *PostScript* Files
 *GMT* produces freeform *PostScript* files. Note that a freeform
 *PostScript* file may contain special operators (such as
 ``Setpagedevice``) that is specific to printers (e.g., selection of
-paper tray). Some previewers (among them, Sun’s ***pageview***) may not
+paper tray). Some previewers (among them, Sun’s **pageview**) may not
 understand these valid instructions and may fail to image the file.
 Also, embedding freeform *PostScript* with such instructions in it into
 a larger document can cause printing to fail. While you could choose
-another viewer (we recommend ***ghostview***) to view single plots
+another viewer (we recommend **ghostview**) to view single plots
 prepared by *GMT*, it is generally wiser to convert *PostScript* to EPS
 output when you are creating a plot intended for inclusion into a larger
 document. Some programs (and some publishers as well) do not allow the
@@ -7144,21 +7244,21 @@ with a “tight” BoundingBox you need to post-process your
 *PostScript* file. There are several ways in which this can be
 accomplished.
 
--  Programs such as Adobe ***Illustrator***, Aldus ***Freehand***, and
-   Corel ***Draw*** will allow you to edit the BoundingBox graphically.
+-  Programs such as Adobe **Illustrator**, Aldus **Freehand**, and
+   Corel **Draw** will allow you to edit the BoundingBox graphically.
 
 -  A command-line alternative is to use freely-available program
-   ***epstool*** from the makers of Aladdin ***ghostscript***. Running
+   **epstool** from the makers of Aladdin **ghostscript**. Running
 
    ::
 
        epstool -c -b myplot.ps
 
-   should give a tight BoundingBox; ***epstool*** assumes the plot is
+   should give a tight BoundingBox; **epstool** assumes the plot is
    page size and not a huge poster.
 
--  Another option is to use ***ps2epsi*** which also comes with the
-   ***ghostscript*** package. Running
+-  Another option is to use **ps2epsi** which also comes with the
+   **ghostscript** package. Running
 
    ::
 
@@ -7172,8 +7272,8 @@ accomplished.
    for the *PostScript* graphics that will actually be printed.
 
 -  The preferred option is to use the *GMT* utility
-   `**ps2raster** <run:../man/ps2raster.html>`__. Its **-A** option will
-   figure out the tightest BoundingBox, again using ***ghostscript*** in
+   `ps2raster <ps2raster.html>`_. Its **-A** option will
+   figure out the tightest BoundingBox, again using **ghostscript** in
    the background. For example, running
 
    ::
@@ -7185,11 +7285,11 @@ accomplished.
    BoundingBox.
 
 If you do not want to modify your illustration but just include it in a
-text document: many word processors (such as Microsoft ***Word***, Corel
-***WordPerfect***, and Apple ***Pages***) will let you include a
+text document: many word processors (such as Microsoft **Word**, Corel
+**WordPerfect**, and Apple **Pages**) will let you include a
 *PostScript* file that you may place but not edit. Newer versions of
 those programs also allow you to include PDF versions of your graphics.
-Except for ***Pages***, you will not be able to view the figure
+Except for **Pages**, you will not be able to view the figure
 on-screen, but it will print correctly.
 
 Converting `GMT <http://gmt.soest.hawaii.edu>`_ *PostScript* to PDF or raster images
@@ -7202,7 +7302,7 @@ formats (i.e., they basically describe all objects, text and graphics as
 lines and curves), such conversion sounds awfully straightforward and
 not worth a full section in this document. But experience has shown
 differently, since most converters cut corners by using the same tool
-(Aladdin’s ***ghostscript***) with basic default options that are not
+(Aladdin’s **ghostscript**) with basic default options that are not
 devised to produce the best quality PDF files.
 
 For some applications it is practical or even essential that you convert
@@ -7213,22 +7313,22 @@ page is better served with a raster image that will immediately show on
 a web browser, than with a *PostScript* file that needs to be downloaded
 to view, despite the better printing quality of the *PostScript* image.
 A less obvious reason to convert your image to a raster format is to
-by-pass ***PowerPoint***\ ’s rendering engine in case you want to embed
+by-pass **PowerPoint**\ ’s rendering engine in case you want to embed
 the image into a presentation.
 
 The are a number of programs that will convert *PostScript* files to PDF
-or raster formats, like Aladdin’s ***pstopdf***, pbmplus’ ***pstoimg***,
-or ImageMagick’s ***convert***, most of which run ***ghostscript***
-behind the scenes. The same is true for viewers like ***ghostview*** and
-Apple’s ***Preview***. So a lot of the times when people report that
+or raster formats, like Aladdin’s **pstopdf**, pbmplus’ **pstoimg**,
+or ImageMagick’s **convert**, most of which run **ghostscript**
+behind the scenes. The same is true for viewers like **ghostview** and
+Apple’s **Preview**. So a lot of the times when people report that
 their *PostScript* plot does not look right but prints fine, it is the
-way ***ghostscript*** is used with its most basic settings that is to
+way **ghostscript** is used with its most basic settings that is to
 blame.
 
 When converting or viewing *PostScript* goes awry
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Here are some notorious pitfalls with ***ghostscript*** (and other
+Here are some notorious pitfalls with **ghostscript** (and other
 rendering programs for that matter).
 
 Rendering.
@@ -7254,23 +7354,23 @@ Embedded image compression.
     `grdimage <grdimage.html>`_,
     `**psimage** <run:../man/psimage.html>`__ or
     `**pslegend** <run:../man/pslegend.html>`__, they are seen as
-    “images”. The default options of ***ghostscript*** will use a
+    “images”. The default options of **ghostscript** will use a
     *lossy* compression (similar to JPEG) on those images when
     converting them to PDF objects. This can be avoided, however, by
     inhibiting the compression altogether, or using the non-lossy
     *flate* compression, similar to the one used in the old
-    ***compress*** program. This compression is fully reversible, so
+    **compress** program. This compression is fully reversible, so
     that your image does not suffer any loss.
 
 Auto-rotation.
-    The ***ghostscript*** engine has the annoying habit to automatically
+    The **ghostscript** engine has the annoying habit to automatically
     rotate an image produced with portrait orientation (using the **-P**
     option) so that the height is always larger than the width. So if
     you have an image that was printed in portrait mode but happens to
     have a width larger than height (for example a global map), it would
     suddenly get rotated. Again, this function needs to be switched off.
-    Apple’s ***Preview*** uses the ***ghostscript*** engine and suffers
-    from the same annoying habit. Oddly enough, ***ghostscript*** does
+    Apple’s **Preview** uses the **ghostscript** engine and suffers
+    from the same annoying habit. Oddly enough, **ghostscript** does
     not force landscape plots to be “horizontal”.
 
 Anti-aliasing.
@@ -7286,7 +7386,7 @@ Anti-aliasing.
     and lines get blurry and second, the assumption of a white
     background causes the gray shades to stand out when transferring the
     image to background with a different color (like the popular
-    sleep-inducing blue in ***PowerPoint*** presentations). A more
+    sleep-inducing blue in **PowerPoint** presentations). A more
     surprising effect of anti-aliasing is that the seams between tiles
     that make up the land mask when using
     `pscoast <pscoast.html>`_ will become visible. The
@@ -7299,19 +7399,19 @@ Anti-aliasing.
 Including fonts.
     When you are producing print-ready copy to publishers, they will
     often (and justifiably) ask that you include all fonts in your PDF
-    document. Again, ***ghostscript*** (and all converters relying on
+    document. Again, **ghostscript** (and all converters relying on
     that engine) will not do so by default.
 
-Using `**ps2raster** <run:../man/ps2raster.html>`__
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Using `ps2raster <ps2raster.html>`_
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The remedy to all the problems mentioned in the previous section is
 readily available to you in the form of the *GMT* utility
-`**ps2raster** <run:../man/ps2raster.html>`__. It is designed to provide
-the best quality PDF and raster files using ***ghostscript*** as a
+`ps2raster <ps2raster.html>`_. It is designed to provide
+the best quality PDF and raster files using **ghostscript** as a
 rendering engine. The program
-`**ps2raster** <run:../man/ps2raster.html>`__ avoids anti-aliasing and
-lossy compression techniques that are default to ***ghostscript*** and
+`ps2raster <ps2raster.html>`_ avoids anti-aliasing and
+lossy compression techniques that are default to **ghostscript** and
 includes the fonts into the resulting PDF file to ensure portability. By
 default the fonts are rendered at 720 dots-per-inch in a PDF file and
 images are sampled to 300 dpi, but that can be changed with the **-E**
@@ -7325,12 +7425,12 @@ to convert all *PostScript* files to PDF while cropping it to the
 smallest possible BoundingBox. Or use the **-Tg** option to convert your
 files to PNG.
 
-The **-P** option of `**ps2raster** <run:../man/ps2raster.html>`__ may
+The **-P** option of `ps2raster <ps2raster.html>`_ may
 also come in handy. When you have *not* supplied the **-P** option in
 your first *GMT* plot command, your plot will be in Landscape mode. That
 means that the plot will be rotated 90 degrees (anti-clockwise) to fit
 on a Portrait mode page when coming out of the printer. The **-P**
-option of `**ps2raster** <run:../man/ps2raster.html>`__ will undo that
+option of `ps2raster <ps2raster.html>`_ will undo that
 rotation, so that you do not have to do so within your document. This
 will only affect Landscape plots; Portrait plots will not be rotated.
 
@@ -7340,15 +7440,15 @@ Examples
 `GMT <http://gmt.soest.hawaii.edu>`_ graphics in LaTeX
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Nearly all illustrations in this *GMT* documentation were *GMT*-produced
-*PostScript* files. They were converted to PDF files using
-`**ps2raster** <run:../man/ps2raster.html>`__ and then included into a
+Nearly all illustrations in this *GMT* documentation were *GMT*-produced
+*PostScript* files. They were converted to PDF files using
+`ps2raster <ps2raster.html>`_ and then included into a
 LaTeX document that was processed with **pdflatex** to create the PDF
 document you are reading.
 
 To add the graphics into the LaTeX document we use the
 ``\includegraphics`` command supplied by the package. In the preamble of
-your LaTeX document you will need to include the line
+your LaTeX document you will need to include the line
 
 ::
 
@@ -7366,13 +7466,13 @@ environment; something like this
     \end{figure}
 
 Note that the ``\includegraphics`` command does not require you to add
-the suffix ``.pdf`` to the file name. If you run ***pdflatex***, it will
-look automatically for . If you run ***latex***, it will use instead.
+the suffix ``.pdf`` to the file name. If you run **pdflatex**, it will
+look automatically for . If you run **latex**, it will use instead.
 
 You can scale your plot using the options ``width=``, ``height=``, or
 ``scale=``. In addition, if your original graphics was produced in
-Landscape mode (i.e., you did *not* use *GMT*\ ’s ``-P`` option: not
-while plotting, nor in `**ps2raster** <run:../man/ps2raster.html>`__),
+Landscape mode (i.e., you did *not* use *GMT*\ ’s **-P** option: not
+while plotting, nor in `ps2raster <ps2raster.html>`_),
 you will need to rotate the plot as well. For example,
 
 ::
@@ -7390,12 +7490,12 @@ will rotate the image 90 clockwise and scale it such that its width
 [b] |image| [fig:formatpicture]
 
 In Figure [fig:rendering] we have attempted to include
-Figure [fig:example\ :sub:`2`\ 0] into a ***PowerPoint*** presentation.
+Figure [fig:example\ :sub:`2`\ 0] into a **PowerPoint** presentation.
 First the *PostScript* file was converted to PDF (using
-`**ps2raster** <run:../man/ps2raster.html>`__), then loaded into
-***PowerPoint*** and the white background color was made transparent
+`ps2raster <ps2raster.html>`_), then loaded into
+**PowerPoint** and the white background color was made transparent
 using the formatting toolbar (shown on the left side of
-Figure [fig:rendering]). Clearly, when we let ***PowerPoint*** do the
+Figure [fig:rendering]). Clearly, when we let **PowerPoint** do the
 rendering, we do not get the best result:
 
 #. The anti-aliasing causes the tiles that make up the land to stand
@@ -7409,9 +7509,9 @@ rendering, we do not get the best result:
 On the central column of Figure [fig:rendering] we have included PNG
 versions of a portion of the same example. This shows the workings of
 anti-aliasing and different resolutions. All samples were obtained with
-***convert***. The one on the top uses all default settings, resulting
+**convert**. The one on the top uses all default settings, resulting
 in an anti-aliased image at 72 dpi resolution (very much like the PDF
-included directly into ***PowerPoint***).
+included directly into **PowerPoint**).
 
 Just switching anti-aliasing off (middle) is clearly not an option
 either. It is true that we got rid of the gray blurring and the seams
@@ -7421,7 +7521,7 @@ blocky. The solution is to render the image at a higher resolution
 appropriate size (bottom of the central column in
 Figure [fig:rendering]). The scaling, rotation as well as the selection
 of the transparent color can be accomplished through the “Formatting”
-tool bar and the “Format Picture” dialogue box of ***PowerPoint***
+tool bar and the “Format Picture” dialogue box of **PowerPoint**
 (Figure [fig:formatpicture]), which can be found by double clicking the
 included image (or selecting and right-clicking or control-clicking on a
 one-button mouse).
@@ -7449,7 +7549,7 @@ on the World Wide Web (http://gmt.soest.hawaii.edu); see this page for
 installation directions which allow for a simplified, automatic install
 procedure (for the purchase of CD-R and DVD-R media, see .)
 
-The *GMT* compressed tar archives requires ***bzip2*** to expand. If
+The *GMT* compressed tar archives requires **bzip2** to expand. If
 this utility is not installed on your system, you must obtained it by
 your system’s package manager or install it separately [40]_. The GMT
 archives are as follows:
@@ -7609,26 +7709,26 @@ embed them directly by copying them at the very top of your
 Font Binary), TrueType or OpenType fonts cannot be embedded in
 *PostScript*\ directly and therefore have to be converted to PFA first.
 
-However, you most likely will have to tell ***Ghostscript*** where to
+However, you most likely will have to tell **Ghostscript** where to
 find your custom fonts in order to convert your *GMT*-*PostScript*-plot
-to PDF or an image with `**ps2raster** <run:../man/ps2raster.html>`__.
+to PDF or an image with `ps2raster <ps2raster.html>`_.
 When you have used the correct *PostScript*-names of the fonts in you
 only need to point the ``GS_FONTPATH`` environment variable to the
 directory where the font files can be found and invoke
-`**ps2raster** <run:../man/ps2raster.html>`__ in the usual way. Likewise
-you can specify ***Ghostscript***\ ’s ``-sFONTPATH`` option on the
-command line with ``–C-sFONTPATH=/path/to/fontdir``. ***Ghostscript***,
-which is invoked by `**ps2raster** <run:../man/ps2raster.html>`__, does
+`ps2raster <ps2raster.html>`_ in the usual way. Likewise
+you can specify **Ghostscript**\ ’s ``-sFONTPATH`` option on the
+command line with ``–C-sFONTPATH=/path/to/fontdir``. **Ghostscript**,
+which is invoked by `ps2raster <ps2raster.html>`_, does
 not depend on file names. It will automatically find the relevant font
 files by their *PostScript*-names and embed and subset them in
 PDF-files. This is quite convenient as the document can be displayed and
 printed even on other computers when the font is not available locally.
-There is no need to convert your fonts as ***Ghostscript*** can handle
+There is no need to convert your fonts as **Ghostscript** can handle
 all Type 1, TrueType and OpenType fonts. Note also, that you do not need
-to edit ***Ghostscript***\ ’s Fontmap.GS.
+to edit **Ghostscript**\ ’s Fontmap.GS.
 
 If you do not want or cannot embed the fonts you can convert them to
-outlines (shapes with fills) with ***Ghostscript*** in the following
+outlines (shapes with fills) with **Ghostscript** in the following
 way:
 
 ::
@@ -7639,17 +7739,17 @@ way:
 
 Note, that this only works with the *pswrite* device. If you need
 outlined fonts in PDF, create the PDF from the converted
-*PostScript*-file. Also, `**ps2raster** <run:../man/ps2raster.html>`__
-cannot correctly crop ***Ghostscript*** converted *PostScript*-files
+*PostScript*-file. Also, `ps2raster <ps2raster.html>`_
+cannot correctly crop **Ghostscript** converted *PostScript*-files
 anymore. Use Heiko Oberdiek’s instead or crop with
-`**ps2raster** <run:../man/ps2raster.html>`__ **-A** **-Te** before (See
+`ps2raster <ps2raster.html>`_ **-A** **-Te** before (See
 Example [sec:non-default-fonts-example]).
 
 Character encoding
 ~~~~~~~~~~~~~~~~~~
 
 Since *PostScript* itself does not support Unicode fonts,
-***Ghostscript*** will re-encode the fonts on the fly. You have to make
+**Ghostscript** will re-encode the fonts on the fly. You have to make
 sure to set the correct ``PS_CHAR_ENCODING`` with gmtset and save your
 script file with the same character encoding. Alternatively, you can
 substitute all non ASCII characters with their corresponding octal
@@ -7683,7 +7783,7 @@ A mix of levels of red, green, and blue creates basically any color
 imaginable. In *GMT* each color can be represented by the triplet
 :math:`r`/:math:`g`/:math:`b`. For example, 127/255/0 (half red, full
 green, and no blue) creates a color called chartreuse. The color sliders
-in the graphics program ***GIMP*** are an excellent way to experiment
+in the graphics program **GIMP** are an excellent way to experiment
 with colors, since they show you in advance how moving one of the color
 sliders will change the color. As Figure [fig:gimp]\ *a* shows: increase
 the red and you will get a more yellow color, while lowering the blue
@@ -7692,8 +7792,8 @@ level will turn it into brown.
 [b] |image| *ab* |image| [fig:gimp]
 
 Is chocolate your favorite color, but you do not know the RGB equivalent
-values? Then look them up in Figure [fig:RGBchart] or type ***man
-gmtcolors*** for a full list. It’s 210/105/30. But *GMT* makes it easy
+values? Then look them up in Figure [fig:RGBchart] or type **man
+gmtcolors** for a full list. It’s 210/105/30. But *GMT* makes it easy
 on you: you can specify pen, fill, and palette colors by any of the more
 than 500 unique colors found in that file.
 
@@ -8173,13 +8273,13 @@ the projection center, e.g., we may want the map to go from km to km in
 the longitudinal and the latitudinal direction. However, *GMT* programs
 expects degrees in the **-R** option that specifies the desired region.
 Given the chosen map projection we can automate this process by using a
-simple shell function that we call ***getbox***.
+simple shell function that we call **getbox**.
 
 Also, as we zoom in on the projection center we want to draw the outline
 of the next map region on the plot. To do that we need the geographical
 coordinates of the four corners of the region rectangle. Again, we
-automate this task by adding the simple function ***getrect*** from
-***doc/scripts/functions.sh***.
+automate this task by adding the simple function **getrect** from
+**doc/scripts/functions.sh**.
 
 The crude resolution (**-Dc**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -8292,21 +8392,21 @@ Cygwin and `GMT <http://gmt.soest.hawaii.edu>`__
 Because *GMT* works best in conjugation with *UNIX* tools we suggest you
 install *GMT* using the Cygwin product from Cygnus (now assimilated by
 Redhat, Inc.). This free version works on any Windows version and it
-comes with both the Bourne Again shell ***bash*** and the ***tcsh***.
+comes with both the Bourne Again shell **bash** and the **tcsh**.
 You also have access to most standard GNU development tools such as
-compilers and text processing tools (***awk***, ***grep***, ***sed***,
+compilers and text processing tools (**awk**, **grep**, **sed**,
 etc.). Note that executables prepared for Windows will also run under
 Cygwin.
 
 Follow the instructions on the Cygwin page [48]_ on how to install the
 package; note you must explicitly add all the development tool packages
-(e.g., ***gcc*** etc) as the basic installation does not include them by
+(e.g., **gcc** etc) as the basic installation does not include them by
 default. Once you are up and running under Cygwin, you may install
 *GMT*  the same way you do under any other *UNIX* platform by either
-running the automated install via ***install\_gmt*** or manually running
+running the automated install via **install\_gmt** or manually running
 configure first, then type make all. If you install via the web form,
 make sure you save the parameter file without DOS CR/LF endings. Use
-***dos2unix*** to get rid of those if need be.
+**dos2unix** to get rid of those if need be.
 
 Finally, from Cygwin’s User Guide: By default, no Cygwin program can
 allocate more than 384 MB of memory (program and data). You should not
@@ -8316,11 +8416,11 @@ in either the **HKEY\_LOCAL\_MACHINE** (to change the limit for all
 users) or **HKEY\_CURRENT\_USER** (for just the current user) section of
 the registry. Add the DWORD value **heap\_chunk\_in\_mb** and set it to
 the desired memory limit in decimal Mb. It is preferred to do this in
-Cygwin using the ***regtool*** program included in the Cygwin package.
-(For more information about ***regtool*** or the other Cygwin utilities,
+Cygwin using the **regtool** program included in the Cygwin package.
+(For more information about **regtool** or the other Cygwin utilities,
 see the Section called Cygwin Utilities in Chapter 3 of the Cygwin’s
 User Guide or use the help option of each utility.) You should always be
-careful when using ***regtool*** since damaging your system registry can
+careful when using **regtool** since damaging your system registry can
 result in an unusable system. This example sets the local machine memory
 limit to 1024 Mb:
 
@@ -8335,7 +8435,7 @@ SFU and `GMT <http://gmt.soest.hawaii.edu>`__
 -------------------------------------------------
 
 SFU [49]_ is also similar to Cygwin in that it provides precompiled
-*UNIX* tools for DOS/WIN32, including the ***sh*** and ***csh*** shells.
+*UNIX* tools for DOS/WIN32, including the **sh** and **csh** shells.
 However, our experience has been negative in that extra tools need to be
 installed and it is a painful and error-prone process; we cannot
 recommend it.
@@ -8345,7 +8445,7 @@ WIN32/64 and `GMT <http://gmt.soest.hawaii.edu>`__
 
 *GMT* will compile and install using the Microsoft Visual C/C++
 compiler. We expect other WIN32/64 C compilers to give similar results
-(e.g., the Intel compiler). Since ***configure*** cannot be run you must
+(e.g., the Intel compiler). Since **configure** cannot be run you must
 manually rename to . The netCDF home page gives full information on how
 to compile and install netCDF; precompiled libraries are also available.
 At present we simply have a lame file that compiles the entire
@@ -9054,7 +9154,7 @@ as our label, with placement determined by the distance along track. We
 choose to place labels every 1500 km. To do this we need to pull out
 those records whose distances are multiples of 1500 km and create a
 “fixed points” file that can be used to place labels and specify the
-labels. This is done with ***awk***.
+labels. This is done with **awk**.
 
 The output is presented as Figure [fig:GMT\ :sub:`A`\ pp\ :sub:`O8`].
 
@@ -9134,39 +9234,39 @@ We encourage all *GMT* users to start using version 5 immediately; it
 has been tested extensively by the *GMT* team and has benefitted from
 bug reports for the 4.5.x versions. Users who still worry about the new
 version breaking things may install *GMT* 4.5.x versions and 5.x and use
-our utility ***gmtswitch*** to select their current version should the
-need to switch arises. You will find ***gmtswitch*** among the other
+our utility **gmtswitch** to select their current version should the
+need to switch arises. You will find **gmtswitch** among the other
 executables; initialize it as explained below.
 
 Because *GMT* 5.x is backwards compatible with the 4.5.x series
 (provided you configured it that way) yet maintains its parameters and
 history in separate files (e.g., versus ) it is possible to install and
 use both versions on the same workstation. To simplify such setups we
-supply the utility ***gmtswitch*** which simplifies switching back and
+supply the utility **gmtswitch** which simplifies switching back and
 forth between any number of installed *GMT* 4-versions and *GMT* 5.x.
-Run ***gmtswitch*** after you have finished installing all
-*GMT* versions of interest. The first time you run ***gmtswitch*** it
+Run **gmtswitch** after you have finished installing all
+*GMT* versions of interest. The first time you run **gmtswitch** it
 will try to find all the available versions installed on your file
 system. The versions found will be listed in the file in your home
 directory; each line is the full path to a *GMT* root directory (e.g.,
 /usr/local/GMT4.5.9). You may manually add or remove entries there at
 any time. You are then instructed to make two changes to your
 environment (the details are shell-dependent but explained by
-***gmtswitch***):
+**gmtswitch**):
 
-#. ***gmtswitch*** creates and maintains a symbolic link in your home
+#. **gmtswitch** creates and maintains a symbolic link in your home
    directory that will point to a directory with one of the installed
    GMT versions.
 
 #. Make sure **$HOME**/this\_gmt/bin is in your executable **PATH**.
 
 Make those edits, logout, and log and back in again. The next time you
-run ***gmtswitch*** you will be able to switch between versions. Typing
-***gmtswitch*** with no argument will list the available versions in a
-numerical menu and prompt you to choose one, whereas ***gmtswitch***
+run **gmtswitch** you will be able to switch between versions. Typing
+**gmtswitch** with no argument will list the available versions in a
+numerical menu and prompt you to choose one, whereas **gmtswitch**
 *version* will immediately switch to that version (*version* must be a
 piece of unique text making up the full path to a version, e.g., 4.5.9).
-If you use ***tcsh*** or ***csh*** you may have to type “rehash” to
+If you use **tcsh** or **csh** you may have to type “rehash” to
 initiate the path changes. On Windows, the process is similar [Joaquim,
 please elaborate].
 
@@ -9185,7 +9285,7 @@ reformatting vector (spatial) data stored in a variety of formats and is
 part of the . The intention was to enable the easy rendering (using
 *GMT*) of spatial data held in non-\ *GMT* formats, and the export of
 vector data (e.g., contours) created by *GMT* for use with other GIS and
-mapping packages. While ***ogr2ogr*** has had the capability to write
+mapping packages. While **ogr2ogr** has had the capability to write
 this new format since 2009, *GMT* 4 did not have the capability to use
 the extra information.
 
@@ -9592,7 +9692,7 @@ Finally we show an example of a polygon file:
    Appendix [app:L]).
 
 .. [4]
-   One public-domain RIP is ***ghostscript***, available from
+   One public-domain RIP is **ghostscript**, available from
    www.gnu.org.
 
 .. [5]
@@ -9662,7 +9762,7 @@ Finally we show an example of a polygon file:
 
 .. [18]
    Convert other graphics formats to Sun ras format using ImageMagick’s
-   ***convert*** program.
+   **convert** program.
 
 .. [19]
    Requires building *GMT* with GDAL.
@@ -9696,7 +9796,7 @@ Finally we show an example of a polygon file:
    See http://topex.ucsd.edu/marine\_grav/mar\_grav.html.
 
 .. [27]
-   You can also use the utility ***curl***
+   You can also use the utility **curl**
 
 .. [28]
    Pedants who wish to argue about the “other” arc going the long way
@@ -9790,7 +9890,7 @@ Finally we show an example of a polygon file:
 
 .. [52]
    Travel times were calculated using Geoware’s travel time calculator,
-   ***ttt***; see
+   **ttt**; see
 
 .. |image| image:: GMT_coverlogo
 .. |image| image:: GMT5_Summit_2011.png

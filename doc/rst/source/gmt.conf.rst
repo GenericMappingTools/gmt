@@ -488,8 +488,8 @@ fonts can be found in the **gmt** man page.
     chosen auxiliary latitude before doing the distance calculation. See
     also PROJ\_MEAN\_RADIUS.
 **PROJ\_ELLIPSOID**
-    The (case sensitive) name of the ellipsoid used for the map
-    projections [WGS-84]. Choose among:
+    The (case sensitive) name of the ellipsoid used for the map projections [WGS-84]. Choose among:
+
 |
 |     *Airy*: Applies to Great Britain (1830)
 |     *Airy-Ireland*: Applies to Ireland in 1965 (1830)
