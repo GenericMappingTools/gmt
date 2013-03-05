@@ -31,7 +31,7 @@ EXTERN_MSC double GMT_kei (struct GMT_CTRL *C, double x);
 EXTERN_MSC double GMT_ker (struct GMT_CTRL *C, double x);
 EXTERN_MSC double GMT_plm (struct GMT_CTRL *C, int l, int m, double x);
 EXTERN_MSC double GMT_plm_bar (struct GMT_CTRL *C, int l, int m, double x, bool ortho);
-EXTERN_MSC double GMT_plm_bar_all (struct GMT_CTRL *C, int lmax, double x, bool ortho, double *plm);
+EXTERN_MSC void GMT_plm_bar_all (struct GMT_CTRL *C, int lmax, double x, bool ortho, double *plm);
 EXTERN_MSC double GMT_factorial (struct GMT_CTRL *C, int n);
 EXTERN_MSC double GMT_i0 (struct GMT_CTRL *C, double x);
 EXTERN_MSC double GMT_i1 (struct GMT_CTRL *C, double x);

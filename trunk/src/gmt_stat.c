@@ -849,7 +849,7 @@ double GMT_plm_bar (struct GMT_CTRL *C, int l, int m, double x, bool ortho)
 	return (pmm1);
 }
 
-double GMT_plm_bar_all (struct GMT_CTRL *C, int lmax, double x, bool ortho, double *plm)
+void GMT_plm_bar_all (struct GMT_CTRL *C, int lmax, double x, bool ortho, double *plm)
 {
 	/* This function computes the normalized associated Legendre function of x for all degrees
 	 * l <= lmax and all orders m <= l. x must be in the range [-1;1] and 0 <= |m| <= l.
@@ -921,7 +921,7 @@ double GMT_plm_bar_all (struct GMT_CTRL *C, int lmax, double x, bool ortho, doub
 		/* Compute up P_mm using recurrence relation.
 		The result is a normalisation factor: sqrt((2l+1)(l-m)!/(l+m)!) */
 
-		if (m != 0) pmm = d_sqrt (1.0 + 0.5/m) * u * pmm;
+		if (m != 0) pmm *= d_sqrt (1.0 + 0.5/m) * u;
 
 		/* If orthonormalization is requested: multiply by sqrt(1/4pi)
 		In case of geophysical conversion : multiply by sqrt(2-delta_0m) */
