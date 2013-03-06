@@ -2,6 +2,11 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-03-06	pwessel
+	* sph2grd.c:		New program for evaluating spherical harmonic coefficients
+				into grids.  Just spherical right now, no ellipsoidal adjustments
+				or taking derivatives of geopotentials.
+				
 2013-03-05	pwessel
 	* pshistogram:		Added -N to draw equivalent normal distributions.
 	* grdtrack.c:		Enhanced -E to also handle lines from origins and circles.
