@@ -184,7 +184,7 @@ int GMT_sph2grd_parse (struct GMTAPI_CTRL *C, struct SPH2GRD_CTRL *Ctrl, struct 
 
 int GMT_sph2grd (void *V_API, int mode, void *args)
 {
-	bool ortho;
+	bool ortho, first = true;
 	int error, L_sign, L, L_max = 0, M, M_max = 0;
 	unsigned int tbl, row, col, n_PLM, n_CS, n_CSM;
 	size_t n_alloc = 0;
@@ -192,7 +192,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 	char text[GMT_TEXT_LEN32];
 	double **C = NULL, **S = NULL, **Cosm = NULL, **Sinm = NULL;
 	double *Cosmx = NULL, *Sinmx = NULL, *P_lm = NULL;
-	double x, lon, lat, sum;
+	double x, lon, lat, sum, A, B;
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *T = NULL;
@@ -243,9 +243,9 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Found L_max = %d and M_max = %d\n", L_max, M_max);
 	/* Allocate C[L][M] and S[L][M] arrays to simplify accessing the coefficients */
 	GMT_malloc2 (GMT, C, S, L_max + 1, &n_alloc, double *);
-	for (M = 0; M <= M_max; M++) {
+	for (L = 0; L <= L_max; L++) {
 		n_alloc = 0;
-		GMT_malloc2 (GMT, C[M], S[M], M_max + 1, &n_alloc, double);
+		GMT_malloc2 (GMT, C[L], S[L], L_max + 1, &n_alloc, double);
 	}
 
 	/* Place the coefficients into the C and S arrays */
@@ -274,12 +274,12 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_ALL, NULL, GMT->common.R.wesn, Ctrl->I.inc, \
 		GMT->common.r.registration, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 
-	n_PLM = LM_index (L_max + 1,M_max + 1);	/* Number of P_lm terms needed */
+	n_PLM = LM_index (L_max + 1,L_max + 1);	/* Number of P_lm terms needed */
 	n_CS = L_max + 1;			/* Number of Cos,Sin terms needed per longitude */
 	n_CSM = n_CS * Grid->header->nx;	/* Number of Cos,Sin terms needed for all longitudes */
 	P_lm  = GMT_memory (GMT, NULL, n_PLM, double);
 	n_alloc = 0;	GMT_malloc2 (GMT, Cosmx, Sinmx, n_CSM, &n_alloc, double);
-	n_alloc = 0;	GMT_malloc2 (GMT, Cosm,  Sinm,  n_CS,  &n_alloc, double *);
+	n_alloc = 0;	GMT_malloc2 (GMT, Cosm,  Sinm,  Grid->header->nx,  &n_alloc, double *);
 	
 	/* Evaluate longitude terms once and for all to avoid doing it repeatedly in the big loop.
 	 * We compute a matrix with rows representing order M and columns representing longitude.
@@ -291,9 +291,10 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 		lon = GMT_grd_col_to_x (GMT, col, Grid->header);	/* Current longitude */
 		for (M = 0; M <= M_max; M++, k++) sincosd (lon * M, &Sinmx[k], &Cosmx[k]);
 	}
-	for (M = k = 0; M <= M_max; M++, k += Grid->header->nx) {	/* Set Cosm[m], Sinm[m] pointers to each row */
-		Cosm[M] = &Cosmx[k];	/* Cosm[M][k] has cos(mx) terms for all x[k], fixed M */
-		Sinm[M] = &Sinmx[k];	/* Sinm[M][k] has sin(mx) terms for all x[k], fixed M */
+	GMT_col_loop2 (GMT, Grid, col) {	/* Evaluate all sin, cos terms */
+		k = col * Grid->header->nx;
+		Cosm[col] = &Cosmx[k];	/* Cosm[k][M] has cos(mx) terms for all x[k], fixed M <= L_max*/
+		Sinm[col] = &Sinmx[k];	/* Sinm[k][M] has sin(mx) terms for all x[k], fixed M <= L_max*/
 	}
 	
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Start evaluate the spherical harmonic sums\n");
@@ -306,13 +307,21 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 		GMT_plm_bar_all (GMT, L_sign * L_max, x, ortho, P_lm);
 		GMT_col_loop (GMT, Grid, row, col, node) {	/* For each longitude along this parallel */
 			sum = 0.0;	/* Initialize sum to zero for new output node */
-			for (L = 0; L <= L_max; L++) {	/* For all degrees */
-				k = LM_index (L, 0);	/* Starting place for all P_L's, i.e. P_l0 */
+			first = (row == 30 && col == 30);
+			for (L = k = 0; L <= L_max; L++) {	/* For all degrees */
 				for (M = 0; M <= L; M++, k++) {	/* For all orders <= L */
-					sum += P_lm[k] * (C[L][M]*Cosm[M][col] + S[L][M]*Sinm[M][col]);
+					if (first) fprintf (stderr, "row = %d col = %d L = %d	M = %d	P_LM = %g C[L][M] = %g S[L][M] = %g Cosm[col][M] = %g Sinm[col][M] = %g\n", \
+						row, col, L, M, P_lm[k], C[L][M], S[L][M], Cosm[col][M], Sinm[col][M]);
+					
+					// sum += P_lm[k] * (C[L][M]*Cosm[M][col] + S[L][M]*Sinm[M][col]);
+					/* Split up for clarity during debug */
+					A = C[L][M]*Cosm[col][M];
+					B = S[L][M]*Sinm[col][M];
+					sum += P_lm[k] * (A + B);
 				}
 			}
 			Grid->data[node] = (float)sum;	/* Assign total to the grid, cast to float */
+			first = false;
 		}
 	}
 	
