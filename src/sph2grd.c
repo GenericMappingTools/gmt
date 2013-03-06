@@ -192,7 +192,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 	char text[GMT_TEXT_LEN32];
 	double **C = NULL, **S = NULL, **Cosm = NULL, **Sinm = NULL;
 	double *Cosmx = NULL, *Sinmx = NULL, *P_lm = NULL;
-	double x, lon, lat, sum, A, B;
+	double lon, lat, sum;
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *T = NULL;
@@ -274,7 +274,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_ALL, NULL, GMT->common.R.wesn, Ctrl->I.inc, \
 		GMT->common.r.registration, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 
-	n_PLM = LM_index (L_max + 1,L_max + 1);	/* Number of P_lm terms needed */
+	n_PLM = LM_index (L_max + 1, L_max + 1);/* Number of P_lm terms needed */
 	n_CS = L_max + 1;			/* Number of Cos,Sin terms needed per longitude */
 	n_CSM = n_CS * Grid->header->nx;	/* Number of Cos,Sin terms needed for all longitudes */
 	P_lm  = GMT_memory (GMT, NULL, n_PLM, double);
@@ -289,10 +289,10 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 	k = 0;
 	GMT_col_loop2 (GMT, Grid, col) {	/* Evaluate all sin, cos terms */
 		lon = GMT_grd_col_to_x (GMT, col, Grid->header);	/* Current longitude */
-		for (M = 0; M <= M_max; M++, k++) sincosd (lon * M, &Sinmx[k], &Cosmx[k]);
+		for (M = 0; M <= L_max; M++, k++) sincosd (lon * M, &Sinmx[k], &Cosmx[k]);
 	}
 	GMT_col_loop2 (GMT, Grid, col) {	/* Evaluate all sin, cos terms */
-		k = col * Grid->header->nx;
+		k = col * (L_max + 1);
 		Cosm[col] = &Cosmx[k];	/* Cosm[k][M] has cos(mx) terms for all x[k], fixed M <= L_max*/
 		Sinm[col] = &Sinmx[k];	/* Sinm[k][M] has sin(mx) terms for all x[k], fixed M <= L_max*/
 	}
@@ -302,26 +302,16 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 		lat = GMT_grd_row_to_y (GMT, row, Grid->header);	/* Current latitude */
 		GMT_ascii_format_col (GMT, text, lat, GMT_Y);
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Working on latitude: %s\n", text);
-		/* Compute all P_lm needed with GMT_set_Plm for this latitude */
-		x = sind (lat);		/* I.e., cosine of colatitude */
-		GMT_plm_bar_all (GMT, L_sign * L_max, x, ortho, P_lm);
+		/* Compute all P_lm needed with GMT_plm_bar_all for this latitude */
+		GMT_plm_bar_all (GMT, L_sign * L_max, sind (lat), ortho, P_lm);	/* I.e., cosine of colatitude */
 		GMT_col_loop (GMT, Grid, row, col, node) {	/* For each longitude along this parallel */
 			sum = 0.0;	/* Initialize sum to zero for new output node */
-			first = (row == 30 && col == 30);
 			for (L = k = 0; L <= L_max; L++) {	/* For all degrees */
 				for (M = 0; M <= L; M++, k++) {	/* For all orders <= L */
-					if (first) fprintf (stderr, "row = %d col = %d L = %d	M = %d	P_LM = %g C[L][M] = %g S[L][M] = %g Cosm[col][M] = %g Sinm[col][M] = %g\n", \
-						row, col, L, M, P_lm[k], C[L][M], S[L][M], Cosm[col][M], Sinm[col][M]);
-					
-					// sum += P_lm[k] * (C[L][M]*Cosm[M][col] + S[L][M]*Sinm[M][col]);
-					/* Split up for clarity during debug */
-					A = C[L][M]*Cosm[col][M];
-					B = S[L][M]*Sinm[col][M];
-					sum += P_lm[k] * (A + B);
+					sum += P_lm[k] * (C[L][M]*Cosm[col][M] + S[L][M]*Sinm[col][M]);
 				}
 			}
 			Grid->data[node] = (float)sum;	/* Assign total to the grid, cast to float */
-			first = false;
 		}
 	}
 	
@@ -335,9 +325,9 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 	GMT_free (GMT, Sinm);
 	GMT_free (GMT, Cosmx);
 	GMT_free (GMT, Sinmx);
-	for (M = 0; M <= M_max; M++) {
-		GMT_free (GMT, C[M]);
-		GMT_free (GMT, S[M]);
+	for (L = 0; L <= L_max; L++) {
+		GMT_free (GMT, C[L]);
+		GMT_free (GMT, S[L]);
 		
 	}
 	GMT_free (GMT, C);
