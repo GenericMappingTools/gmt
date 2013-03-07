@@ -1029,8 +1029,7 @@ uint64_t GMT_clip_to_map (struct GMT_CTRL *C, double *lon, double *lat, uint64_t
 		out += (abs (C->current.map.this_x_status) == 2 || abs (C->current.map.this_y_status) == 2);
 	}
 	if (out == 0) {		/* All points are inside map boundary; no clipping required */
-		size_t n_alloc = 0;
-		GMT_malloc2 (C, xx, yy, np, &n_alloc, double);
+		GMT_malloc2 (C, xx, yy, np, NULL, double);
 		for (i = 0; i < np; i++) GMT_geo_to_xy (C, lon[i], lat[i], &xx[i], &yy[i]);
 		*x = xx;	*y = yy;	n = np;
 	}
@@ -1326,7 +1325,7 @@ uint64_t gmt_rect_clip (struct GMT_CTRL *C, double *lon, double *lat, uint64_t n
 
 	if (m) {	/* Reallocate and return the array with the final clipped polygon */
 		n_alloc = m;
-		GMT_malloc2 (C, xtmp[0], ytmp[0], 0, &n_alloc, double);
+		GMT_malloc2 (C, xtmp[0], ytmp[0], 0U, &n_alloc, double);
 		*x = xtmp[0];
 		*y = ytmp[0];
 #ifdef DEBUG
@@ -1695,7 +1694,7 @@ uint64_t GMT_wesn_clip (struct GMT_CTRL *C, double *lon, double *lat, uint64_t n
 
 	if (m) {	/* Reallocate and return the array with the final clipped polygon */
 		n_alloc = m;
-		GMT_malloc2 (C, xtmp[0], ytmp[0], 0, &n_alloc, double);
+		GMT_malloc2 (C, xtmp[0], ytmp[0], 0U, &n_alloc, double);
 		/* Convert to map coordinates */
 		for (i = 0; i < m; i++) GMT_geo_to_xy (C, xtmp[0][i], ytmp[0][i], &xtmp[0][i], &ytmp[0][i]);
 
@@ -1718,7 +1717,6 @@ uint64_t GMT_wesn_clip (struct GMT_CTRL *C, double *lon, double *lat, uint64_t n
 }
 
 uint64_t gmt_radial_boundary_arc (struct GMT_CTRL *C, int this, double end_x[], double end_y[], double **xarc, double **yarc) {
-	size_t n_alloc = 0;
 	uint64_t n_arc, k, pt;
 	double az1, az2, d_az, da, xr, yr, da_try, *xx = NULL, *yy = NULL;
 
@@ -1735,7 +1733,7 @@ uint64_t gmt_radial_boundary_arc (struct GMT_CTRL *C, int this, double end_x[], 
 	da = d_az / (n_arc - 1);	/* Reset da to get exact steps */
 	if (n_arc <= 2) return (0);	/* Arc is too short to have intermediate points */
 	n_arc -= 2;	/* We do not include the end points since these are the crossing points handled in the calling function */
-	GMT_malloc2 (C, xx, yy, n_arc, &n_alloc, double);
+	GMT_malloc2 (C, xx, yy, n_arc, NULL, double);
 	for (k = 1; k <= n_arc; k++) {	/* Create points along arc from first to second crossing point (k-loop excludes the end points) */
 		sincosd (az1 + k * da, &yr, &xr);
 		pt = (this) ? n_arc - k : k - 1;	/* The order we add the arc depends if we exited or entered the inside area */
@@ -1839,7 +1837,7 @@ uint64_t gmt_radial_clip (struct GMT_CTRL *C, double *lon, double *lat, uint64_t
 		xx[n] = xx[0];	yy[n] = yy[0];	n++;	/* Close the polygon */
 	}
 	n_alloc = n;
-	GMT_malloc2 (C, xx, yy, 0, &n_alloc, double);
+	GMT_malloc2 (C, xx, yy, 0U, &n_alloc, double);
 	*x = xx;
 	*y = yy;
 #ifdef DEBUG
@@ -5972,10 +5970,10 @@ uint64_t GMT_graticule_path (struct GMT_CTRL *C, double **x, double **y, int dir
 	/* Close graticule from point 0 through point 4 */
 
 	if (GMT_IS_RECT_GRATICULE(C)) {	/* Simple rectangle in this projection */
-		GMT_malloc2 (C, xx, yy, 5, &n_alloc, double);
+		GMT_malloc2 (C, xx, yy, 5U, NULL, double);
 		xx[0] = xx[4] = px0;	xx[1] = px1;	xx[2] = px2;	xx[3] = px3;
 		yy[0] = yy[1] = yy[4] = s;	yy[2] = yy[3] = n;
-		np = n_alloc;
+		np = 5U;
 	}
 	else {	/* Must assemble path from meridians and parallel pieces */
 		double *xtmp = NULL, *ytmp = NULL;
@@ -5985,7 +5983,7 @@ uint64_t GMT_graticule_path (struct GMT_CTRL *C, double **x, double **y, int dir
 		/* SOUTH BORDER */
 
 		if (GMT_is_geographic (C, GMT_IN) && s == -90.0) {	/* No path, just a point */
-			GMT_malloc2 (C, xx, yy, 1, &n_alloc, double);
+			GMT_malloc2 (C, xx, yy, 1U, &n_alloc, double);
 			xx[0] = px1;	yy[0] = -90.0;
 		}
 		else
@@ -6006,7 +6004,7 @@ uint64_t GMT_graticule_path (struct GMT_CTRL *C, double **x, double **y, int dir
 
 		if (GMT_is_geographic (C, GMT_IN) && n == 90.0) {	/* No path, just a point */
 			add = 0;
-			GMT_malloc2 (C, xtmp, ytmp, 1, &add, double);
+			GMT_malloc2 (C, xtmp, ytmp, 1U, &add, double);
 			xtmp[0] = px3;	ytmp[0] = +90.0;
 		}
 		else
@@ -6064,12 +6062,12 @@ uint64_t GMT_lonpath (struct GMT_CTRL *C, double lon, double lat1, double lat2, 
 	double dlat, dlat0, *tlon = NULL, *tlat = NULL, x0, x1, y0, y1, d, min_gap;
 
 	if (C->current.map.meridian_straight == 2) {	/* Special non-sampling for gmtselect/grdlandmask */
-		GMT_malloc2 (C, tlon, tlat, 2, &n_alloc, double);
+		GMT_malloc2 (C, tlon, tlat, 2U, NULL, double);
 		tlon[0] = tlon[1] = lon;
 		tlat[0] = lat1;	tlat[1] = lat2;
 		*x = tlon;
 		*y = tlat;
-		return (n = n_alloc);
+		return (2ULL);
 	}
 
 	if (C->current.map.meridian_straight) {	/* Easy, just a straight line connect via quarter-points */
@@ -6150,20 +6148,20 @@ uint64_t GMT_latpath (struct GMT_CTRL *C, double lat, double lon1, double lon2, 
 	double dlon, dlon0, *tlon = NULL, *tlat = NULL, x0, x1, y0, y1, d, min_gap;
 
 	if (C->current.map.parallel_straight == 2) {	/* Special non-sampling for gmtselect/grdlandmask */
-		GMT_malloc2 (C, tlon, tlat, 2, &n_alloc, double);
+		GMT_malloc2 (C, tlon, tlat, 2U, NULL, double);
 		tlat[0] = tlat[1] = lat;
 		tlon[0] = lon1;	tlon[1] = lon2;
 		*x = tlon;	*y = tlat;
-		return (n = n_alloc);
+		return (2ULL);
 	}
 	if (C->current.map.parallel_straight) {	/* Easy, just a straight line connection via quarter points */
-		GMT_malloc2 (C, tlon, tlat, 5, &n_alloc, double);
+		GMT_malloc2 (C, tlon, tlat, 5U, NULL, double);
 		tlat[0] = tlat[1] = tlat[2] = tlat[3] = tlat[4] = lat;
 		dlon = lon2 - lon1;
 		tlon[0] = lon1;	tlon[1] = lon1 + 0.25 * dlon;	tlon[2] = lon1 + 0.5 * dlon;
 		tlon[3] = lon1 + 0.75 * dlon;	tlon[4] = lon2;
 		*x = tlon;	*y = tlat;
-		return (n = n_alloc);
+		return (5ULL);
 	}
 	/* Here we try to walk along lat for small increment in longitude to make sure our steps are smaller than the line_step */
 	min_gap = 0.1 * C->current.setting.map_line_step;

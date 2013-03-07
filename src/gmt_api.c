@@ -547,28 +547,26 @@ void gmt_close_grd (struct GMT_CTRL *C, struct GMT_GRID *G)
 	GMT_free (C, G->extra);
 }
 
+void update_txt_item (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, size_t length, char string[])
+{	/* Place desired text in string (fixed size array) which can hold up to length bytes */
+	static char buffer[GMT_BUFSIZ];
+	char *txt = (mode & GMT_COMMENT_IS_OPTION) ? GMT_Create_Cmd (API, arg) : (char *)arg;
+	GMT_memset (buffer, GMT_BUFSIZ, char);	/* Start with a clean slate */
+	if ((mode & GMT_COMMENT_IS_RESET) == 0 && string[0]) strcat (buffer, string);	/* Use old text is we are not resetting */
+	strcat (buffer, txt);			/* Append new text */
+	GMT_memset (string, length, char);	/* Wipe string completely */
+	strncpy (string, buffer, length);	/* Only copy over max length bytes */
+	if ((mode & GMT_COMMENT_IS_OPTION)) GMT_free (API->GMT, txt);
+}
+
 void GMTAPI_GI_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_GRID_HEADER *H)
 {	/* Replace or Append either command or remark field with text or commmand-line options */
-	char *txt = (mode | GMT_COMMENT_IS_OPTION) ? GMT_Create_Cmd (API, arg) : (char *)arg;
-	if (mode & GMT_COMMENT_IS_REMARK) {
-		strncpy (H->remark, txt, GMT_GRID_REMARK_LEN160);
-	}
-	else if (mode & GMT_COMMENT_IS_COMMAND) {
-		strncpy (H->command, txt, GMT_GRID_COMMAND_LEN320);
-	}
-	if (mode & GMT_COMMENT_IS_TITLE) {
-		strncpy (H->title, txt, GMT_GRID_TITLE_LEN80);
-	}
-	if (mode & GMT_COMMENT_IS_NAME_X) {
-		strncpy (H->x_units, txt, GMT_GRID_NAME_LEN256);
-	}
-	if (mode & GMT_COMMENT_IS_NAME_Y) {
-		strncpy (H->y_units, txt, GMT_GRID_NAME_LEN256);
-	}
-	if (mode & GMT_COMMENT_IS_NAME_Z) {
-		strncpy (H->z_units, txt, GMT_GRID_NAME_LEN256);
-	}
-	GMT_free (API->GMT, txt);
+	if (mode & GMT_COMMENT_IS_REMARK) 	update_txt_item (API, mode, arg, GMT_GRID_REMARK_LEN160,  H->remark);
+	else if (mode & GMT_COMMENT_IS_COMMAND) update_txt_item (API, mode, arg, GMT_GRID_COMMAND_LEN320, H->command);
+	else if (mode & GMT_COMMENT_IS_TITLE)   update_txt_item (API, mode, arg, GMT_GRID_TITLE_LEN80,    H->title);
+	else if (mode & GMT_COMMENT_IS_NAME_X)  update_txt_item (API, mode, arg, GMT_GRID_NAME_LEN256,    H->x_units);
+	else if (mode & GMT_COMMENT_IS_NAME_Y)  update_txt_item (API, mode, arg, GMT_GRID_NAME_LEN256,    H->y_units);
+	else if (mode & GMT_COMMENT_IS_NAME_Z)  update_txt_item (API, mode, arg, GMT_GRID_NAME_LEN256,    H->z_units);
 }
 
 void GMTAPI_grid_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_GRID *G)
@@ -581,28 +579,16 @@ void GMTAPI_image_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg
 	GMTAPI_GI_comment (API, mode, arg, I->header);
 }
 
-void update_txt_item (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, char **header)
-{
-	char buffer[GMT_BUFSIZ];
-	char *txt = (mode & GMT_COMMENT_IS_OPTION) ? GMT_Create_Cmd (API, arg) : (char *)arg;
-	GMT_memset (buffer, GMT_BUFSIZ, char);
-	if ((mode & GMT_COMMENT_IS_RESET) == 0 && *header) strcat (buffer, *header);
-	strcat (buffer, txt);
-	if (*header) free ((void *)*header);
-	*header = strdup (buffer);
-	if ((mode & GMT_COMMENT_IS_OPTION)) GMT_free (API->GMT, txt);
-}
-
 void GMTAPI_vector_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_VECTOR *V)
 {	/* Update either command or remark field with text or commmand-line options */
-	if (mode & GMT_COMMENT_IS_REMARK)  update_txt_item (API, mode, arg, &V->remark);
-	if (mode & GMT_COMMENT_IS_COMMAND) update_txt_item (API, mode, arg, &V->command);
+	if (mode & GMT_COMMENT_IS_REMARK)  update_txt_item (API, mode, arg, GMT_GRID_REMARK_LEN160,  V->remark);
+	if (mode & GMT_COMMENT_IS_COMMAND) update_txt_item (API, mode, arg, GMT_GRID_COMMAND_LEN320, V->command);
 }
 
 void GMTAPI_matrix_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_MATRIX *M)
 {	/* Update either command or remark field with text or commmand-line options */
-	if (mode & GMT_COMMENT_IS_REMARK)  update_txt_item (API, mode, arg, &M->remark);
-	if (mode & GMT_COMMENT_IS_COMMAND) update_txt_item (API, mode, arg, &M->command);
+	if (mode & GMT_COMMENT_IS_REMARK)  update_txt_item (API, mode, arg, GMT_GRID_REMARK_LEN160,  M->remark);
+	if (mode & GMT_COMMENT_IS_COMMAND) update_txt_item (API, mode, arg, GMT_GRID_COMMAND_LEN320, M->command);
 }
 
 char * GMT_create_header_item (struct GMTAPI_CTRL *API, unsigned int mode, void *arg)

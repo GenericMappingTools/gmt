@@ -983,7 +983,7 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, ui
 	lon = *a_lon;	lat = *a_lat;
 
 	GMT_geo_to_cart (C, lat[0], lon[0], a, true);
-	GMT_malloc2 (C, lon_tmp, lat_tmp, 1, &n_alloc, double);
+	GMT_malloc2 (C, lon_tmp, lat_tmp, 1U, &n_alloc, double);
 	lon_tmp[0] = lon[0];	lat_tmp[0] = lat[0];
 	n_tmp = 1;
 	if (step <= 0.0) step = C->current.map.path_step;	/* Based on C->current.setting.map_line_step converted to degrees */
@@ -1068,7 +1068,7 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, ui
 		GMT_cpy3v (a, b);
 	}
 	n_alloc = n_tmp;
-	GMT_malloc2 (C, lon_tmp, lat_tmp, 0, &n_alloc, double);
+	GMT_malloc2 (C, lon_tmp, lat_tmp, 0U, &n_alloc, double);
 
 	/* Destroy old allocated memory and put the new one in place */
 	GMT_free (C, lon);
@@ -1096,7 +1096,7 @@ uint64_t GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a
 
 	x = *a_x;	y = *a_y;
 
-	GMT_malloc2 (C, x_tmp, y_tmp, 1, &n_alloc, double);
+	GMT_malloc2 (C, x_tmp, y_tmp, 1U, &n_alloc, double);
 	x_tmp[0] = x[0];	y_tmp[0] = y[0];	n_tmp = 1;
 	if (step <= 0.0) step = 1.0;	/* Sanity valve; if step not given we set it to 1 */
 
@@ -1153,7 +1153,7 @@ uint64_t GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a
 		x_tmp[n_tmp] = x[i];	y_tmp[n_tmp] = y[i];	n_tmp++;
 	}
 	n_alloc = n_tmp;
-	GMT_malloc2 (C, x_tmp, y_tmp, 0, &n_alloc, double);
+	GMT_malloc2 (C, x_tmp, y_tmp, 0U, &n_alloc, double);
 
 	/* Destroy old allocated memory and put the new one in place */
 	GMT_free (C, x);	GMT_free (C, y);

@@ -3343,8 +3343,7 @@ void gmt_contlabel_plotlabels (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GM
 
 		if (mode == 0) {	/* Opaque so PSL_plottextclip is called for 1st time here */
 			/* Allocate temp space for everything that must be passed to PSL_plottextclip */
-			size_t n_alloc = 0;
-			GMT_malloc3 (C, angle, xt, yt, m, &n_alloc, double);
+			GMT_malloc3 (C, angle, xt, yt, m, NULL, double);
 			txt = GMT_memory (C, NULL, m, char *);
 			for (seg = m = 0; seg < G->n_segments; seg++) {
 				L = G->segment[seg];	/* Pointer to current segment */
@@ -3399,13 +3398,12 @@ void gmt_contlabel_clippath (struct GMT_CTRL *C, struct PSL_CTRL *P, struct GMT_
 		if (nseg == 1) G->box |= 8;	/* Special message to just repeate the labelline call */
 	}
 	else {				/* Save PS memory by doing it this way instead via PSL_plottextclip */
-		size_t n_alloc = 0;
 		if (G->number_placement && G->n_cont == 1)		/* Special 1-label justification check */
 			just = G->end_just[(G->number_placement+1)/2];	/* Gives index 0 or 1 */
 		else
 			just = G->just;
 		/* Allocate temp space for everything that must be passed to PSL_plottextclip */
-		GMT_malloc3 (C, angle, xt, yt, m, &n_alloc, double);
+		GMT_malloc3 (C, angle, xt, yt, m, NULL, double);
 		txt = GMT_memory (C, NULL, m, char *);
 		for (seg = m = 0; seg < G->n_segments; seg++) {
 			L = G->segment[seg];	/* Pointer to current segment */
@@ -4027,7 +4025,6 @@ void GMT_geo_ellipse (struct GMT_CTRL *C, double lon, double lat, double major, 
 uint64_t gmt_get_gcarc (struct GMT_CTRL *C, double *A, double *B, double step, bool longway, double **xp, double **yp)
 { /* Given vectors A and B, return great circle path sampled every step.  Shorest path is selected unless longway is true */
 	/* Determine unit vector pole of great circle */
-	size_t n_alloc = 0;
 	uint64_t k, n;
 	double P[3], X[3], R[3][3], R0[3][3], c, w, *xx = NULL, *yy = NULL;
 	
@@ -4041,7 +4038,7 @@ uint64_t gmt_get_gcarc (struct GMT_CTRL *C, double *A, double *B, double step, b
 	if (GMT_IS_ZERO (step)) step = C->current.map.path_step;	/* Use default map-step if given as 0 */
 	n = lrint (ceil (c / step)) + 1;	/* Number of segments needed for smooth curve from A to B inclusive */
 	step = D2R * c / (n - 1);	/* Adjust step for exact fit, convert to radians */
-	GMT_malloc2 (C, xx, yy, n, &n_alloc, double);	/* Allocate space for arrays */
+	GMT_malloc2 (C, xx, yy, n, NULL, double);	/* Allocate space for arrays */
 	gmt_init_rot_matrix (R0, P);			/* Get partial rotation matrix since no actual angle is applied yet */
 	for (k = 0; k < n; k++) {	/* March along the arc */
 		w = k * step;					/* Opening angle from A to this point X */
@@ -4213,7 +4210,7 @@ void GMT_geo_vector (struct GMT_CTRL *C, double lon0, double lat0, double length
 		n2 = gmt_get_gcarc (C, A, P, 0.0, false, &xp2, &yp2);	/* Compute great circle arc from A to P */
 		add = (side == 0) ? 1 : 0;	/* Need to add mid point explicitly */
 		n_alloc = n = n1 + n2 + add;
-		GMT_malloc2 (C, xp, yp, 0, &n_alloc, double);	/* Allocate space for total path */
+		GMT_malloc2 (C, xp, yp, 0U, &n_alloc, double);	/* Allocate space for total path */
 		GMT_memcpy (&xp[n1], xp2, n2, double);
 		GMT_memcpy (&yp[n1], yp2, n2, double);
 		if (add) {	/* Mid point of arrow */
@@ -4256,7 +4253,7 @@ void GMT_geo_vector (struct GMT_CTRL *C, double lon0, double lat0, double length
 		n2 = gmt_get_gcarc (C, B, P, 0.0, false, &xp2, &yp2);	/* Compute great circle arc from B to P */
 		add = (side == 0) ? 1 : 0;	/* Need to add mid point explicitly */
 		n_alloc = n = n1 + n2 + add;
-		GMT_malloc2 (C, xp, yp, 0, &n_alloc, double);	/* Allocate space for total path */
+		GMT_malloc2 (C, xp, yp, 0U, &n_alloc, double);	/* Allocate space for total path */
 		GMT_memcpy (&xp[n1], xp2, n2, double);
 		GMT_memcpy (&yp[n1], yp2, n2, double);
 		if (add) {	/* Mid point of arrow */
