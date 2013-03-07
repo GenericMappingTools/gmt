@@ -323,7 +323,10 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 			scale = (n%2) ? 1.4826 * G2->data[n/2] : 0.7413 * (G2->data[n/2-1] + G2->data[n/2]);
 			if (new_grid) {	/* Now preserve info and free the temporary grid */
 				/* copy over stat info to G */
-				GMT_free_grid (GMT, &G2, true);
+				//GMT_free_grid (GMT, &G2, true);
+				if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G2) != GMT_OK) {
+					GMT_report (GMT, GMT_MSG_NORMAL, "Failed to free G2\n");
+				}
 			}
 		}
 		if (Ctrl->L.norm & 2) {	/* Calculate the mean, standard deviation, and rms */

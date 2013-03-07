@@ -573,6 +573,9 @@ int GMT_hotspotter (void *V_API, int mode, void *args)
 	GMT_free (GMT, ypos);
 	GMT_free (GMT, p);
 	GMT_free_grid (GMT, &G_rad, false);
+	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G_rad) != GMT_OK) {
+		GMT_report (GMT, GMT_MSG_NORMAL, "Failed to free G_rad\n");
+	}
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Done\n");
 

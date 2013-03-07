@@ -1369,8 +1369,11 @@ int gmt_rectR_to_geoR (struct GMT_CTRL *C, char unit, double rect[], double out_
 	
 	GMT_report (C, GMT_MSG_VERBOSE, "Region selection -R%s is replaced by the equivalent geographic region -R%.12g/%.12g/%.12g/%.12gr\n", C->common.R.string, out_wesn[XLO], out_wesn[YLO], out_wesn[XHI], out_wesn[YHI]);
 
-	GMT_free_dataset (C, &In);
+	//GMT_free_dataset (C, &In);
 	GMT_free_dataset (C, &Out);
+	if (GMT_Destroy_Data (C->parent, GMT_ALLOCATED, &In) != GMT_OK) {
+		return (C->parent->error);
+	}
 	
 	return (GMT_NOERROR);
 }

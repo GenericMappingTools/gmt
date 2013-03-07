@@ -6509,7 +6509,7 @@ int GMT_BC_init (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h)
 		if (h->nyp != 0) h->nyp = (h->registration == GMT_PIXEL_REG) ? h->ny : h->ny - 1;
 	}
 	
-	for (i = 1, same = true; same && i < 4; i++) if (h->BC[i] == h->BC[i-1]) same = false;
+	for (i = 1, same = true; same && i < 4; i++) if (h->BC[i] != h->BC[i-1]) same = false;
 	
 	if (same)
 		GMT_report (C, GMT_MSG_LONG_VERBOSE, "Chosen boundary condition for all edges: %s\n", kind[h->BC[XLO]]);

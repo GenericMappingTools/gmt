@@ -95,7 +95,10 @@ int main (int argc, char *argv[]) {
 	printf ("nx,ny = %d %d\n", G->header->nx, G->header->ny);
 	GMT_grd_loop (API->GMT, G, xrow, col, ij) if (!GMT_is_fnan (G->data[ij])) printf ("%g\n", G->data[ij]);
 	
-	GMT_free_grid (API->GMT, &G, true);
+	//GMT_free_grid (API->GMT, &G, true);
+	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G) != GMT_OK) {
+		GMT_report (API->GMT, GMT_MSG_NORMAL, "Failed to free G\n");
+	}
 
 	/* 6. Create command options for GMT_gmtselect */
 

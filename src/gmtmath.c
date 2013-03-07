@@ -3125,7 +3125,8 @@ void table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 
 #define Free_Stack { for (i = 0; i < GMTMATH_STACK_SIZE; i++) { if (stack[i]->alloc_mode == 2) GMT_Destroy_Data (API, GMT_ALLOCATED, &stack[i]->D); else if (stack[i]->alloc_mode == 1) GMT_free_dataset (GMT, &stack[i]->D); GMT_free (GMT, stack[i]); } }
 #define Free_Store { for (i = 0; i < GMTMATH_STORE_SIZE; i++) { if (recall[i] && !recall[i]->stored.constant) { GMT_free_dataset (GMT, &recall[i]->stored.D); GMT_free (GMT, recall[i]); } } }
-#define Free_Misc {if (T_in) GMT_Destroy_Data (API, GMT_ALLOCATED, &T_in); GMT_free_dataset (GMT, &Template); GMT_free_dataset (GMT, &Time); if (read_stdin) GMT_Destroy_Data (API, GMT_ALLOCATED, &D_stdin); }
+#define Free_Misc {if (T_in) GMT_Destroy_Data (API, GMT_ALLOCATED, &T_in); GMT_Destroy_Data (API, GMT_ALLOCATED, &Template); GMT_Destroy_Data (API, GMT_ALLOCATED, &Time); if (read_stdin) GMT_Destroy_Data (API, GMT_ALLOCATED, &D_stdin); }
+//#define Free_Misc {if (T_in) GMT_Destroy_Data (API, GMT_ALLOCATED, &T_in); GMT_free_dataset (GMT, &Template); GMT_free_dataset (GMT, &Time); if (read_stdin) GMT_Destroy_Data (API, GMT_ALLOCATED, &D_stdin); }
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return1(code) {GMT_Destroy_Options (API, &list); Free_gmtmath_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code); }
 #define Return(code) {GMT_Destroy_Options (API, &list); Free_gmtmath_Ctrl (GMT, Ctrl); Free_Stack; Free_Store; Free_Misc;  GMT_end_module (GMT, GMT_cpy); bailout (code); }
@@ -3209,7 +3210,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 	int i, k, op = 0;
 	unsigned int consumed_operands[GMTMATH_N_OPERATORS], produced_operands[GMTMATH_N_OPERATORS], new_stack = INT_MAX;
 	unsigned int j, n_columns = 0, use_t_col = 0, nstack = 0, n_stored = 0, kk;
-	bool error = false, set_equidistant_t = false, got_t_from_file = false;
+	bool error = false, set_equidistant_t = false, got_t_from_file = false, free_time = false;
 	bool read_stdin = false, t_check_required = true, touched_t_col = false, done;
 	uint64_t row, n_records, n_rows = 0, seg;
 	unsigned int n_macros;
@@ -3427,7 +3428,9 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 		Return (EXIT_FAILURE);
 	}
 	if (D_in)	/* Obtained file structure from an input file, use this to create new stack entry */
-		Template = GMT_alloc_dataset (GMT, D_in, n_columns, 0, GMT_ALLOC_NORMAL);
+		//Template = GMT_alloc_dataset (GMT, D_in, n_columns, 0, GMT_ALLOC_NORMAL);
+		Template = GMT_Duplicate_Data (API, GMT_IS_DATASET, GMT_DUPLICATE_DATA, D_in);
+		
 	else {		/* Must use -N -T etc to create single segment */
 		dim[2] = n_columns;	dim[3] = n_rows;
 		if ((Template = GMT_Create_Data (API, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (GMT_MEMORY_ERROR);
@@ -3439,6 +3442,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 	/* Create the Time data structure with 2 cols: 0 is t, 1 is normalized tn */
 	if (D_in) {	/* Either D_in or D_stdin */
 		Time = GMT_alloc_dataset (GMT, D_in, 2, 0, GMT_ALLOC_NORMAL);
+		free_time = true;
 		info.T = Time->table[0];	D = D_in->table[0];
 		for (seg = 0, done = false; seg < D->n_segments; seg++) {
 			GMT_memcpy (info.T->segment[seg]->coord[0], D->segment[seg]->coord[use_t_col], D->segment[seg]->n_rows, double);
@@ -3549,7 +3553,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 					k = n_stored;
 					recall[k] = GMT_memory (GMT, NULL, 1, struct GMTMATH_STORED);
 					recall[k]->label = strdup (label);
-					if (!stack[last]->constant) recall[k]->stored.D = GMT_duplicate_dataset (GMT, stack[last]->D, stack[last]->D->n_columns, GMT_ALLOC_NORMAL);
+					if (!stack[last]->constant) recall[k]->stored.D = GMT_duplicate_dataset (GMT, stack[last]->D, GMT_ALLOC_NORMAL);
 					new = true;
 					GMT_report (GMT, GMT_MSG_DEBUG, "Stored memory cell %d named %s is created with new information\n", k, label);
 				}
@@ -3789,6 +3793,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 		if (template_used) Template = NULL;	/* This prevents it from being freed twice (once from API registration via GMT_Write_Data and then again in Free_Misc) */
 	}
 
+	if (free_time) GMT_free_dataset (GMT, &Time);
 	/* Clean-up time */
 
 	if (nstack > 1) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: %d more operands left on the stack!\n", nstack-1);

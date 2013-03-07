@@ -188,7 +188,10 @@ int GMT_grdreformat (void *V_API, int mode, void *args)
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Translating file %s (format %s)\nto file %s (format %s)\n", fname[0], GMT->session.grdformat[type[0]], fname[1], GMT->session.grdformat[type[1]]);
 		if (hmode && GMT->session.grdformat[type[1]][0] != 'c' && GMT->session.grdformat[type[1]][0] != 'n') GMT_report (GMT, GMT_MSG_NORMAL, "No grd header will be written\n");
 	}
-	GMT_free_grid (GMT, &Grid, true);
+	//GMT_free_grid (GMT, &Grid, true);
+	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid) != GMT_OK) {
+		GMT_report (GMT, GMT_MSG_NORMAL, "Failed to free Grid\n");
+	}
 
 	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->IO.file[0], NULL)) == NULL) {	/* Get header only */
 		Return (API->error);

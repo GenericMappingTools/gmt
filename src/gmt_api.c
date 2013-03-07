@@ -860,7 +860,8 @@ int GMTAPI_Add_Data_Object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *
 int GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, int family, int object_ID, int direction)
 {	/* Checks to see if the given object_ID is listed and of the right direction.  If so
  	 * we return the item number; otherwise return GMTAPI_NOTSET and set API->error to the error code.
-	 * Note: int arguments MAY be GMTAPI_NOTSET, hence signed ints */
+	 * Note: int arguments MAY be GMTAPI_NOTSET, hence signed ints.  If object_ID == GMTAPI_NOTSET
+	 * then we only look for TEXTSETS or DATASETS .*/
 	unsigned int i;
 	int item, s_value;
 
@@ -871,6 +872,7 @@ int GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, int family, int object_ID, int 
 		if (direction != GMTAPI_NOTSET && API->object[i]->status != GMT_IS_UNUSED) continue;	/* Already used this object */
 		if (!(family == GMTAPI_NOTSET || (s_value = API->object[i]->family) == family)) continue;	/* Not the required data type */
 		if (object_ID == GMTAPI_NOTSET && (s_value = API->object[i]->direction) == direction) item = i;	/* Pick the first object with the specified direction */
+		if (object_ID == GMTAPI_NOTSET && !(API->object[i]->family == GMT_IS_DATASET || API->object[i]->family == GMT_IS_TEXTSET)) continue;	/* Must be data/text-set */
 		else if (direction == GMTAPI_NOTSET && (s_value = API->object[i]->ID) == object_ID) item = i;	/* Pick the requested object regardless of direction */
 		else if ((s_value = API->object[i]->ID) == object_ID) item = i;					/* Pick the requested object */
 	}
@@ -1194,7 +1196,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_
 				GMT_report (API->GMT, GMT_MSG_LONG_VERBOSE, "Duplicating data table from GMT_DATASET memory location\n");
 				GMT_free (API->GMT, D_obj->table);	/* Free up what we allocated earlier since GMT_alloc_dataset does it all */
 				GMT_free (API->GMT, D_obj);
-				D_obj = GMT_duplicate_dataset (API->GMT, Din_obj, Din_obj->n_columns, GMT_ALLOC_NORMAL);
+				D_obj = GMT_duplicate_dataset (API->GMT, Din_obj, GMT_ALLOC_NORMAL);
 				break;
 				
 			case GMT_IS_REFERENCE:	/* Just pass memory location, so free up what we allocated first */
@@ -1374,7 +1376,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 		case GMT_IS_DUPLICATE:		/* Duplicate the input dataset */
 			if (S_obj->resource) return (GMT_Report_Error (API, GMT_PTR_NOT_NULL));	/* The output resource must be NULL */
 			GMT_report (API->GMT, GMT_MSG_LONG_VERBOSE, "Duplicating data table to GMT_DATASET memory location\n");
-			D_copy = GMT_duplicate_dataset (API->GMT, D_obj, D_obj->n_columns, GMT_ALLOC_NORMAL);
+			D_copy = GMT_duplicate_dataset (API->GMT, D_obj, GMT_ALLOC_NORMAL);
 			S_obj->resource = D_copy;	/* Set resource pointer from object to this dataset */
 			break;
 			
@@ -3318,7 +3320,7 @@ void * GMT_Get_Data (void *V_API, int object_ID, unsigned int mode, void *data)
 	 * ID is the registered resource from which to import.
 	 * Return: Pointer to data container, or NULL if there were errors (passed back via API->error).
 	 */
-	int item;
+	int item, family;
 	bool was_enabled;
 	void *new = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
@@ -3326,7 +3328,13 @@ void * GMT_Get_Data (void *V_API, int object_ID, unsigned int mode, void *data)
 	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);
 	
 	/* Determine the item in the object list that matches this ID and direction */
-	if ((item = GMTAPI_Validate_ID (API, GMTAPI_NOTSET, object_ID, GMT_IN)) == GMTAPI_NOTSET) {
+	if (object_ID == GMTAPI_NOTSET) {	/* Must pick up the family from the shelf */
+		family = API->shelf;
+		API->shelf = GMTAPI_NOTSET;
+	}
+	else
+		family = GMTAPI_NOTSET;
+	if ((item = GMTAPI_Validate_ID (API, family, object_ID, GMT_IN)) == GMTAPI_NOTSET) {
 		return_null (API, API->error);
 	}
 	
@@ -3378,6 +3386,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 	}
 	else {	/* Case 3: input == NULL && geometry == 0, so use all previously registered sources (unless already used). */
 		if (!(family == GMT_IS_DATASET || family == GMT_IS_TEXTSET)) return_null (API, GMT_ONLY_ONE_ALLOWED);	/* Virtual source only applies to data and text tables */
+		API->shelf = family;	/* Save which one it is so we know in GMT_Get_Data */
 	}
 	/* OK, try to do the importing */
 	if ((new = GMT_Get_Data (API, in_ID, mode, data)) == NULL) return_null (API, API->error);
@@ -3404,6 +3413,8 @@ void * GMT_Duplicate_Data (void *V_API, unsigned int family, unsigned int mode, 
 	 * Return: Pointer to new resource, or NULL if an error (set via API->error).
 	 */
 	
+	int object_ID;
+	unsigned int item;
 	void *new = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 
@@ -3419,7 +3430,7 @@ void * GMT_Duplicate_Data (void *V_API, unsigned int family, unsigned int mode, 
 			break;
 #endif
 		case GMT_IS_DATASET:	/* GMT dataset, allocate the requested tables, segments, rows, and columns */
-			new = GMT_duplicate_dataset (API->GMT, data, 0, mode);
+			new = GMT_duplicate_dataset (API->GMT, data, mode);
 			break;
 		case GMT_IS_TEXTSET:	/* GMT text dataset, allocate the requested tables, segments, and rows */
 			new = GMT_duplicate_textset (API->GMT, data, mode);
@@ -3432,6 +3443,12 @@ void * GMT_Duplicate_Data (void *V_API, unsigned int family, unsigned int mode, 
 			break;		
 	}
 	if (API->error) return_null (API, API->error);
+
+	/* Now register this dataset so it can be deleted by GMT_Destroy_Data */
+	if ((object_ID = GMT_Register_IO (API, family, GMT_IS_REFERENCE, 0, GMT_IN, NULL, new)) == GMTAPI_NOTSET) return_null (API, API->error);	/* Failure to register */
+	if ((item = GMTAPI_Validate_ID (API, family, object_ID, GMT_IN)) == GMTAPI_NOTSET) return_null (API, API->error);
+	API->object[item]->data = new;		/* Retain pointer to the allocated data so we use garbage collection later */
+
 	GMT_report (API->GMT, GMT_MSG_LONG_VERBOSE, "Successfully duplicated a %s\n", GMT_family[family]);
 
 	return (new);
@@ -4279,12 +4296,11 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int mode, uin
 	}
 	if (API->error) return_null (API, API->error);
 	
-#if 0
-	/* Now register this dataset */
+	/* Now register this dataset so it can be deleted by GMT_Destroy_Data */
 	if ((object_ID = GMT_Register_IO (API, family, GMT_IS_REFERENCE, 0, GMT_IN, range, new)) == GMTAPI_NOTSET) return_null (API, API->error);	/* Failure to register */
 	if ((item = GMTAPI_Validate_ID (API, family, object_ID, GMT_IN)) == GMTAPI_NOTSET) return_null (API, API->error);
 	API->object[item]->data = new;		/* Retain pointer to the allocated data so we use garbage collection later */
-#endif	
+
 	GMT_report (API->GMT, GMT_MSG_LONG_VERBOSE, "Successfully created a new %s\n", GMT_family[family]);
 
 	return (new);

@@ -1051,7 +1051,10 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 
 	GMT_free (GMT, col_origin);
 	if (!fast_way) GMT_free (GMT, x_shift);
-	GMT_free_grid (GMT, &A, true);	/* Explicitly free the area-weight array since only used internally */
+	//GMT_free_grid (GMT, &A, true);	/* Explicitly free the area-weight array since only used internally */
+	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &A) != GMT_OK) {
+		GMT_report (GMT, GMT_MSG_NORMAL, "Failed to free A\n");
+	}
 
 	if (n_nan) GMT_report (GMT, GMT_MSG_VERBOSE, "Unable to estimate value at %" PRIu64 " nodes, set to NaN\n", n_nan);
 	if (GMT_n_multiples > 0) GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: %d multiple modes found by the mode filter\n", GMT_n_multiples);
@@ -1105,7 +1108,10 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gin) != GMT_OK) {
 			Return (API->error);
 		}
-		GMT_free_grid (GMT, &Gout, true);	/* Was never used due to testing */
+		//GMT_free_grid (GMT, &Gout, true);	/* Was never used due to testing */
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Gout) != GMT_OK) {
+			GMT_report (GMT, GMT_MSG_NORMAL, "Failed to free Gout\n");
+		}
 	}
 	else
 #endif

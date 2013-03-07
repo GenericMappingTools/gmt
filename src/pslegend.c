@@ -1098,9 +1098,10 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	GMT->current.setting.io_seg_marker[GMT_IN] = save_EOF;
 #endif
 
-	Front->alloc_mode = GMT_ALLOCATED;	/* So we can free it */
-	if (!F) GMT_free_dataset (GMT, &Front);	/* Was unused so free explicitly */
-	else if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Front) != GMT_OK) {
+//	Front->alloc_mode = GMT_ALLOCATED;	/* So we can free it */
+//	if (!F) GMT_free_dataset (GMT, &Front);	/* Was unused so free explicitly */
+//	else if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Front) != GMT_OK) {
+	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Front) != GMT_OK) {
 		Return (API->error);
 	}
 	
@@ -1145,8 +1146,12 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		if (GMT_pstext (API, 0, buffer) != GMT_OK) Return (API->error);	/* Plot the symbols */
 	}
 
-	for (id = 0; id < 3; id++) GMT_free_textset (GMT, &D[id]);	/* Free directly since never used in Get|Put statements */
-
+	//for (id = 0; id < 3; id++) GMT_free_textset (GMT, &D[id]);	/* Free directly since never used in Get|Put statements */
+	for (id = 0; id < 3; id++) {
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D[id]) != GMT_OK) {
+			Return (API->error);
+		}
+	}
 	PSL_setorigin (PSL, -x_orig, -y_orig, 0.0, PSL_INV);	/* Reset */
 
 	GMT_map_basemap (GMT);

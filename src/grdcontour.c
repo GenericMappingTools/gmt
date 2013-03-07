@@ -1208,7 +1208,10 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 	
 	if (make_plot || Ctrl->contour.save_labels) GMT_contlabel_free (GMT, &Ctrl->contour);
 
-	GMT_free_grid (GMT, &G_orig, true);
+	//GMT_free_grid (GMT, &G_orig, true);
+	if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &G_orig) != GMT_OK) {
+		GMT_report (GMT, GMT_MSG_NORMAL, "Failed to free G_orig\n");
+	}
 	GMT_free (GMT, edge);
 	GMT_free (GMT, contour);
 	GMT_free (GMT, cont_type);

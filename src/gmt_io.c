@@ -6179,6 +6179,8 @@ struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *C, struct GMT_DATASET *
 		D->n_segments = D->table[0]->n_segments = D->table[0]->n_alloc = n_seg;
 		D->table[0]->n_columns = D->n_columns;
 		D->table[0]->segment = GMT_memory (C, NULL, n_seg, struct GMT_DATASEGMENT *);
+		D->table[0]->min = GMT_memory (C, NULL, D->n_columns, double);
+		D->table[0]->max = GMT_memory (C, NULL, D->n_columns, double);
 		for (seg = tbl = seg_in_tbl = 0; seg < D->n_segments; seg++) {
 			if (seg == Din->table[tbl]->n_segments) { tbl++; seg_in_tbl = 0; }	/* Go to next table */
 			D->table[0]->segment[seg] = GMT_memory (C, NULL, 1, struct GMT_DATASEGMENT);
@@ -6203,12 +6205,12 @@ struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *C, struct GMT_DATASET *
 	return (D);
 }
 
-struct GMT_DATASET * GMT_duplicate_dataset (struct GMT_CTRL *C, struct GMT_DATASET *Din, unsigned int n_columns, unsigned int mode)
+struct GMT_DATASET * GMT_duplicate_dataset (struct GMT_CTRL *C, struct GMT_DATASET *Din, unsigned int mode)
 {	/* Make an exact replica */
 	unsigned int tbl;
 	uint64_t seg;
 	struct GMT_DATASET *D = NULL;
-	D = GMT_alloc_dataset (C, Din, n_columns, 0, mode);
+	D = GMT_alloc_dataset (C, Din, Din->n_columns, 0, mode);
 	GMT_memcpy (D->min, Din->min, Din->n_columns, double);
 	GMT_memcpy (D->max, Din->max, Din->n_columns, double);
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
@@ -6344,9 +6346,13 @@ struct GMT_IMAGE *GMT_create_image (struct GMT_CTRL *C)
 struct GMT_IMAGE *GMT_duplicate_image (struct GMT_CTRL *C, struct GMT_IMAGE *I, unsigned int mode)
 {	/* Duplicates an entire image, including data if requested. */
 	struct GMT_IMAGE *Inew = NULL;
+	struct GMT_GRID_HEADER *save = NULL;
 
 	Inew = GMT_create_image (C);
-	GMT_memcpy (Inew, I, 1, struct GMT_IMAGE);
+	save = Inew->header;
+	GMT_memcpy (Inew, I, 1, struct GMT_IMAGE);	/* Copy everything, but this also messes with header/data pointers */
+	Inew->header = save;	/* Reset to correct header pointer */
+	Inew->data = NULL;	/* Reset to NULL data pointer */
 	GMT_memcpy (Inew->header, I->header, 1, struct GMT_GRID_HEADER);
 	
 	if ((mode & GMT_DUPLICATE_DATA) || (mode & GMT_DUPLICATE_ALLOC)) {	/* Also allocate and possiblhy duplicate data array */
