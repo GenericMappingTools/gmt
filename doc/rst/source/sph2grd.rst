@@ -28,8 +28,7 @@ sph2grd - Compute grid from spherical harmonic coefficients
 -----------------------------
 
 **-G**\ *grdfile*
-    *grdfile* is the name of the binary output grid file. (See GRID FILE
-    FORMAT below.) 
+    *grdfile* is the name of the binary output grid file. (See GRID FILE FORMAT below.) 
 
 .. include:: explain_-I.rst_
 
@@ -40,11 +39,11 @@ sph2grd - Compute grid from spherical harmonic coefficients
 -----------------------------
 
 *table*
-    One or more ASCII [or binary, see **-bi**\ [*ncols*\ ][*type*\ ]]
+    One or more ASCII [or binary, see **-bi**\ [*ncols*][*type*]]
     files holding the spherical harmonic coefficients. We expect the
     first four columns to hold the degree L, the order M, followed by
     the cosine and sine coefficients.
-**-D**\ [**g**\ \|\ **n**\ ]
+**-D**\ [**g**\ \|\ **n**]
     Will evaluate a derived field from a geopotential model.  Choose
     between **Dg** which will compute the gravitational field or **Dn**
     to compute the geoid [Add **E** for anomalies on the ellipsoid].
@@ -59,9 +58,9 @@ sph2grd - Compute grid from spherical harmonic coefficients
     Replace wavelength by - to skip, e.g., **-F**-/-/50/75 is a
     low-pass filter.  b) Gaussian band-pass: Append two wavelengths
     *lo/hi* where filter amplitudes = 0.5.  Replace wavelength by -
-    to skip, e.g., **-F**70/- is a high-pass Gaussian filter.
-**-N**\ [*norm*\ ]
-    Normalization used for coefficients.  Choose among **m*: Mathematical
+    to skip, e.g., **-F**\ 70/- is a high-pass Gaussian filter.
+**-N**\ [*norm*]
+    Normalization used for coefficients.  Choose among **m**: Mathematical
     normalization - inner products summed over surface equal 1 [Default].
     **g** Geodesy normalization - inner products summed over surface
     equal 4pi. **s**: Schmidt normalization - as used in geomagnetism.
@@ -99,4 +98,4 @@ sph2grd EGM96_to_360.txt -GEGM96_to_360.nc -Rg -I1 -V
 See Also
 --------
 
-`gmt <gmt.html>`_ , `grdfft <grdfft.html>`_
+`gmt <gmt.html>`_, `grdfft <grdfft.html>`_

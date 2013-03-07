@@ -241,8 +241,8 @@ community. In fact, most of the capabilities and options in
 you should you have any suggestions for future enhancements and
 modification. Please send your comments to the .
 
-What is new in `GMT <http://gmt.soest.hawaii.edu>`__ 5.x?
----------------------------------------------------------
+What is new in GMT 5.x?
+-----------------------
 
 *GMT* 5 represents a new branch of *GMT* development that preserves the
 capabilities of the previous versions while adding new tricks to many of
