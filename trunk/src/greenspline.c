@@ -1694,8 +1694,10 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 				Return (API->error);
 			}
 		}
-		else
-			GMT_free_grid (GMT, &Grid, false);
+		else if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid) != GMT_OK) {
+			GMT_report (GMT, GMT_MSG_NORMAL, "Failed to free Orig\n");
+		}
+			//GMT_free_grid (GMT, &Grid, false);
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 			Return (API->error);
 		}

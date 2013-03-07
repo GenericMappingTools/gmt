@@ -490,7 +490,8 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		uint64_t dim[4] = {1, 0, 3, 0};
 		double xyz[2][3];
 		
-		if ((Din = GMT_Create_Data (API, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty dataset with 1 table */
+		if ((Din = GMT_create_dataset (GMT, 1, 0, 3, 0, true)) == NULL) Return (API->error);
+		//if ((Din = GMT_Create_Data (API, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty dataset with 1 table */
 		if (Ctrl->E.unit == 0) {	/* Was not set via -E; default to Cartesian or km (great circle dist) */
 			Ctrl->E.unit = (GMT_is_geographic (GMT, GMT_IN)) ? 'k' : 'X';
 			Ctrl->E.mode = (GMT_is_geographic (GMT, GMT_IN)) ? 2 : 0;
@@ -703,9 +704,10 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, Dout->io_mode, NULL, Ctrl->Out.file, Dout) != GMT_OK) {
 			Return (API->error);
 		}
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Dout) != GMT_OK) {
-			Return (API->error);
-		}
+//		GMT_free_dataset (GMT, &Dout);
+//		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Dout) != GMT_OK) {
+//			Return (API->error);
+//		}
 	}
 	else {	/* Standard resampling point case */
 		bool pure_ascii = false;

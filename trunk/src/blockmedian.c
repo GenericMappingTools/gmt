@@ -231,7 +231,8 @@ void median_output (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, uint64_t fi
 
 /* Must free allocated memory before returning */
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {GMT_free_grid (GMT, &Grid, false); Free_blockmedian_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid); Free_blockmedian_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+//#define Return(code) {GMT_free_grid (GMT, &Grid, false); Free_blockmedian_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_blockmedian (void *V_API, int mode, void *args)
 {

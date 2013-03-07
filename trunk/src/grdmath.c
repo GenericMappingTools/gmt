@@ -3269,15 +3269,27 @@ void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[], struct G
 	unsigned int k;
 	
 	for (k = 0; k < GRDMATH_STACK_SIZE; k++) {
-		if (stack[k]->alloc_mode == 1) GMT_free_grid (GMT, &stack[k]->G, true);
+		//if (stack[k]->alloc_mode == 1) GMT_free_grid (GMT, &stack[k]->G, true);
+		if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &stack[k]->G) != GMT_OK) {
+			GMT_report (GMT, GMT_MSG_NORMAL, "Failed to free stack item %d\n", k);
+		}
+		
 		GMT_free (GMT, stack[k]);
 	}
 	for (k = 0; k < GRDMATH_STORE_SIZE; k++) {
 		if (recall[k] == NULL) continue;
-		if (recall[k] && !recall[k]->stored.constant) GMT_free_grid (GMT, &recall[k]->stored.G, true);
+		//if (recall[k] && !recall[k]->stored.constant) GMT_free_grid (GMT, &recall[k]->stored.G, true);
+		if (recall[k] && !recall[k]->stored.constant) {
+			if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &recall[k]->stored.G) != GMT_OK) {
+				GMT_report (GMT, GMT_MSG_NORMAL, "Failed to free recall item %d\n", k);
+			}
+		}
 		GMT_free (GMT, recall[k]);
 	}
-	GMT_free_grid (GMT, &info->G, true);
+	// GMT_free_grid (GMT, &info->G, true);
+	if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &info->G) != GMT_OK) {
+		GMT_report (GMT, GMT_MSG_NORMAL, "Failed to free info.G\n");
+	}
 	GMT_free (GMT, info->grd_x);
 	GMT_free (GMT, info->grd_y);
 	GMT_free (GMT, info->grd_xn);
@@ -3589,7 +3601,11 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 					GMT_report (GMT, GMT_MSG_NORMAL, "No stored memory item with label %s exists!\n", label);
 					Return (EXIT_FAILURE);
 				}
-				if (recall[k]->stored.G) GMT_free_grid (GMT, &recall[k]->stored.G, true);
+				//if (recall[k]->stored.G) GMT_free_grid (GMT, &recall[k]->stored.G, true);
+				if (recall[k]->stored.G && GMT_Destroy_Data (API, GMT_ALLOCATED, &recall[k]->stored.G) != GMT_OK) {
+					GMT_report (GMT, GMT_MSG_NORMAL, "Failed to free recall item %d\n", k);
+				}
+				
 				GMT_free (GMT, recall[k]);
 				while (k && k == (int)(n_stored-1) && !recall[k]) k--, n_stored--;	/* Chop off trailing NULL cases */
 				continue;
