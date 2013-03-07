@@ -403,6 +403,14 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 	percent_inc = 100.0 / Grid->header->ny;	/* Percentage of whole grid represented by one row */
 	
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Start evaluating the spherical harmonic series\n");
+	
+	/* Below section will become parallellized via OpenMP soon.
+	 * Shared:  Grid, L_sign, L_max, L_min, ortho, Cosm, Sinm, Cosmx, Sinmx.
+	 * Private: P_lm, row, lat, col, node, sum, k, L, M.
+	 * Probably redo the verbosity to deal with multiple threads: Split 100% over
+	 * the n_threads, split 10/n_treads into nearest integer.
+	 */
+	
 	GMT_row_loop (GMT, Grid, row) {					/* For each output latitude */
 		lat = GMT_grd_row_to_y (GMT, row, Grid->header);	/* Current latitude */
 		/* Compute all P_lm needed for this latitude at once via GMT_plm_bar_all */
