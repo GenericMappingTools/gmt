@@ -987,8 +987,8 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 	z_range = G->header->z_max - G->header->z_min;
 	small = MIN (Ctrl->C.interval, z_range) * 1.0e-6;	/* Our float noise threshold */
 	n_alloc = n_tmp = n_contours;
-	GMT_malloc2 (GMT, contour, cont_angle, 0, &n_tmp, double);
-	GMT_malloc2 (GMT, cont_type, cont_do_tick, 0, &n_alloc, char);
+	GMT_malloc2 (GMT, contour, cont_angle, 0U, &n_tmp, double);
+	GMT_malloc2 (GMT, cont_type, cont_do_tick, 0U, &n_alloc, char);
 
 	GMT_grd_minmax (GMT, G, xyz);
 	if (GMT_contlabel_prep (GMT, &Ctrl->contour, xyz)) Return (EXIT_FAILURE);	/* Prep for crossing lines, if any */

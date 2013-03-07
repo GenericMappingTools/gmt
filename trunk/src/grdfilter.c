@@ -1111,7 +1111,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 #endif
 	if (Ctrl->F.highpass && L) {	/* Save the highpassed-filtered grid instead */
 
-		if (GMT_Set_Comment (GMT->parent, GMT_IS_FILE, GMT_COMMENT_IS_REMARK, "High-pass filtered data", L)) return (GMT->parent->error);
+		if (GMT_Set_Comment (GMT->parent, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "High-pass filtered data", L)) return (GMT->parent->error);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, L) != GMT_OK) {
 			Return (API->error);
 		}

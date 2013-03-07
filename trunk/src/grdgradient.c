@@ -624,13 +624,13 @@ int GMT_grdgradient (void *V_API, int mode, void *args)
 			strcpy (buffer, "Directions of maximum slopes");
 	}
 
-	if (GMT_Set_Comment (API, GMT_IS_FILE, GMT_COMMENT_IS_REMARK, buffer, Out)) Return (API->error);
+	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, buffer, Out)) Return (API->error);
 	if (Ctrl->G.active && GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Out) != GMT_OK) {
 		Return (API->error);
 	}
 
 	if (Ctrl->S.active) {
-		if (GMT_Set_Comment (API, GMT_IS_FILE, GMT_COMMENT_IS_REMARK, "Magnitude of maximum slopes", Slope)) Return (API->error);
+		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "Magnitude of maximum slopes", Slope)) Return (API->error);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->S.file, Slope) != GMT_OK) {
 			Return (API->error);
 		}

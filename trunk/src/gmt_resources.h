@@ -576,8 +576,8 @@ struct GMT_VECTOR {	/* Single container for user vector(s) of data */
 	enum GMT_enum_type *type;	/* Array of data types (type of each uni-vector, e.g. GMT_FLOAT */
 	union GMT_UNIVECTOR *data;	/* Array of uni-vectors */
 	double range[2];		/* Contains tmin/tmax (or 0/0 if not equidistant) */
-	char *command; 			/* name of generating command */
-	char *remark;   		/* comments re this data set */
+	char command[GMT_GRID_COMMAND_LEN320]; /* name of generating command */
+	char remark[GMT_GRID_REMARK_LEN160];   /* comments re this data set */
 /* ---- Variables "hidden" from the API ---- */
 	unsigned int id;			/* The internal number of the data set */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0 = allocated, 1 = allocate as needed] */
@@ -601,8 +601,8 @@ struct GMT_MATRIX {	/* Single container for a user matrix of data */
 	enum GMT_enum_type type;	/* Data type, e.g. GMT_FLOAT */
 	double range[6];		/* Contains xmin/xmax/ymin/ymax[/zmin/zmax] */
 	union GMT_UNIVECTOR data;	/* Union with pointer to actual matrix of the chosen type */
-	char *command; 			/* name of generating command */
-	char *remark;   		/* comments re this data set */
+	char command[GMT_GRID_COMMAND_LEN320]; /* name of generating command */
+	char remark[GMT_GRID_REMARK_LEN160];   /* comments re this data set */
 /* ---- Variables "hidden" from the API ---- */
 	unsigned int id;		/* The internal number of the data set */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0] */

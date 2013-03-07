@@ -38,10 +38,10 @@ struct MATH_MACRO {
 #else
 #define GMT_malloc(C,a,n,n_alloc,type) GMT_malloc_func(C,a,n,n_alloc,sizeof(type),__func__)
 #endif
-/* The k = *n_alloc below is needed to ensure only the final GMT_malloc call changes n_alloc */
-#define GMT_malloc2(C,a,b,n,n_alloc,type) { size_t __k = *n_alloc; a = GMT_malloc(C,a,n,&__k,type); b = GMT_malloc(C,b,n,n_alloc,type); }
-#define GMT_malloc3(C,a,b,c,n,n_alloc,type) { size_t __k = *n_alloc; a = GMT_malloc(C,a,n,&__k,type); __k = *n_alloc; b = GMT_malloc(C,b,n,&__k,type); c = GMT_malloc(C,c,n,n_alloc,type); }
-#define GMT_malloc4(C,a,b,c,d,n,n_alloc,type) { size_t __k = *n_alloc; a = GMT_malloc(C,a,n,&__k,type); __k = *n_alloc; b = GMT_malloc(C,b,n,&__k,type); __k = *n_alloc; c = GMT_malloc(C,c,n,&__k,type); d = GMT_malloc(C,d,n,n_alloc,type); }
+/* The __kp = n_alloc below is needed since NULL may be passed. __k is used to ensure only the final GMT_malloc call changes n_alloc (unless it is NULL) */
+#define GMT_malloc2(C,a,b,n,n_alloc,type) { size_t __k, *__kp = n_alloc; __k = (__kp) ? *__kp : 0U; a = GMT_malloc(C,a,n,&__k,type); b = GMT_malloc(C,b,n,n_alloc,type); }
+#define GMT_malloc3(C,a,b,c,n,n_alloc,type) { size_t __k, *__kp = n_alloc; __k = (__kp) ? *__kp : 0U; a = GMT_malloc(C,a,n,&__k,type); __k = (__kp) ? *__kp : 0U; b = GMT_malloc(C,b,n,&__k,type); c = GMT_malloc(C,c,n,n_alloc,type); }
+#define GMT_malloc4(C,a,b,c,d,n,n_alloc,type) { size_t __k, *__kp = n_alloc; __k = (__kp) ? *__kp : 0U; a = GMT_malloc(C,a,n,&__k,type); __k = (__kp) ? *__kp : 0U; b = GMT_malloc(C,b,n,&__k,type); __k = (__kp) ? *__kp : 0U; c = GMT_malloc(C,c,n,&__k,type); d = GMT_malloc(C,d,n,n_alloc,type); }
 
 /* Convenience macro for GMT_memory_func */
 #ifdef DEBUG

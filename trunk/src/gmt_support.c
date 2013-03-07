@@ -3536,8 +3536,9 @@ void * GMT_malloc_func (struct GMT_CTRL *C, void *ptr, size_t n, size_t *n_alloc
 	/* GMT_malloc is used to initialize, grow, and finalize an array allocation in cases
 	 * were more memory is needed as new data are read.  There are three different situations:
 	 * A) Initial allocation of memory:
-	 *	Signaled by passing n_alloc == 0.  This will initialize the pointer to NULL first.
+	 *	Signaled by passing *n_alloc == 0 or n_alloc = NULL.  This will initialize the pointer to NULL first.
 	 *	Allocation size is controlled by C->session.min_meminc, unless n > 0 which then is used.
+	 *	If n_alloc == NULL then we also do not need to rreturn back the n_alloc value set herein.
 	 * B) Incremental increase in memory:
 	 *	Signaled by passing n >= n_alloc.  The incremental memory is set to 50% of the
 	 *	previous size, but no more than C->session.max_meminc. Note, *ptr[n] is the location
@@ -3552,26 +3553,27 @@ void * GMT_malloc_func (struct GMT_CTRL *C, void *ptr, size_t n, size_t *n_alloc
 	 * module is the name of the module requesting the memory (main program or library function).
 	 * Note: This memory, used for all kinds of things, is not requested to be aligned (align = false),
 	 */
-
-	if (*n_alloc == 0) {	/* A) First time allocation, use default minimum size, unless n > 0 is given */
-		*n_alloc = (n == 0) ? C->session.min_meminc : n;
+	size_t in_n_alloc = (n_alloc) ? *n_alloc : 0U;	/* If NULL it means init, i.e. 0, and we dont pass n_alloc back out */
+	if (in_n_alloc == 0) {	/* A) First time allocation, use default minimum size, unless n > 0 is given */
+		in_n_alloc = (n == 0) ? C->session.min_meminc : n;
 		ptr = NULL;	/* Initialize a new pointer to NULL before calling GMT_memory with it */
 	}
-	else if (n == 0 && *n_alloc > 0)	/* C) Final allocation, set to actual final size */
-		n = *n_alloc;		/* Keep the given n_alloc */
-	else if (n < *n_alloc)	/* Nothing to do, already has enough memory.  This is a safety valve. */
+	else if (n == 0 && in_n_alloc > 0)	/* C) Final allocation, set to actual final size */
+		n = in_n_alloc;		/* Keep the given n_alloc */
+	else if (n < in_n_alloc)	/* Nothing to do, already has enough memory.  This is a safety valve. */
 		return (ptr);
 	else {		/* B) n >= n_alloc: Compute an increment, but make sure not to exceed int limit under 32-bit systems */
 		size_t add;	/* The increment of memory (in items) */
 		add = MAX (C->session.min_meminc, MIN (*n_alloc/2, C->session.max_meminc));	/* Suggested increment from 50% rule, but no less than C->session.min_meminc */
-		*n_alloc = MIN (add + *n_alloc, LONG_MAX);	/* Limit n_alloc to LONG_MAX */
-		if (n >= *n_alloc) *n_alloc = n + 1;		/* If still not big enough, set n_alloc to n + 1 */
+		in_n_alloc = MIN (add + in_n_alloc, LONG_MAX);	/* Limit n_alloc to LONG_MAX */
+		if (n >= in_n_alloc) in_n_alloc = n + 1;	/* If still not big enough, set n_alloc to n + 1 */
 	}
 
 	/* Here n_alloc is set one way or another.  Do the actual [re]allocation for non-aligned memory */
 
-	ptr = GMT_memory_func (C, ptr, *n_alloc, element_size, false, where);
-
+	ptr = GMT_memory_func (C, ptr, in_n_alloc, element_size, false, where);
+	if (n_alloc) *n_alloc = in_n_alloc;	/* Pass allocated count back out unless given NULL */
+	
 	return (ptr);
 }
 

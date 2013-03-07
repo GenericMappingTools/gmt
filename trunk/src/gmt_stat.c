@@ -896,7 +896,7 @@ void GMT_plm_bar_all (struct GMT_CTRL *C, int lmax, double x, bool ortho, double
 
 	if (fabs (x) > 1.0) {
 		GMT_report (C, GMT_MSG_NORMAL, "Error: |x| > 1.0 in GMT_plm_bar_all\n");
-		return (C->session.d_NaN);
+		return;
 	}
 
 	/* If lmax is negative, include Condon-Shortley phase */
