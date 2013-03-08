@@ -1381,12 +1381,14 @@ int gmt_rectR_to_geoR (struct GMT_CTRL *C, char unit, double rect[], double out_
 int gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 	unsigned int i, icol, pos, error = 0;
 	int got, col_type[2], expect_to_read;
+	size_t length;
 	bool inv_project = false, scale_coord = false;
 	char text[GMT_BUFSIZ], string[GMT_BUFSIZ], r_unit;
 	double p[6];
 
 	/* Parse the -R option.  Full syntax: -R<grdfile> or -Rg or -Rd or -R[g|d]w/e/s/n[/z0/z1][r] */
-
+	length = strlen (item) - 1;
+	
 	strncpy (C->common.R.string, item, GMT_TEXT_LEN256);	/* Verbatim copy */
 	if ((item[0] == 'g' || item[0] == 'd') && item[1] == '\0') {	/* Check -Rd|g separately in case user has files called d or g */
 		if (item[0] == 'g') {	/* -Rg is shorthand for -R0/360/-90/90 */
@@ -1410,7 +1412,7 @@ int gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 		if (GMT_Destroy_Data (C->parent, GMT_ALLOCATED, &G) != GMT_OK) {
 			return (C->parent->error);
 		}
-		if ((C->current.proj.projection == GMT_UTM || C->current.proj.projection == GMT_TM)) {	/* Perhaps we got an [U]TM grid? */
+		if ((C->current.proj.projection == GMT_UTM || C->current.proj.projection == GMT_TM || C->current.proj.projection == GMT_STEREO)) {	/* Perhaps we got an [U]TM or stereographic grid? */
 			if (fabs (C->current.io.grd_info.grd.wesn[XLO]) > 360.0 || fabs (C->current.io.grd_info.grd.wesn[XHI]) > 360.0 \
 			  || fabs (C->current.io.grd_info.grd.wesn[YLO]) > 90.0 || fabs (C->current.io.grd_info.grd.wesn[YHI]) > 90.0) {	/* Yes we did */
 				inv_project = true;
@@ -1438,7 +1440,7 @@ int gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 		else 
 			inv_project = true;
 	}
-	else if (C->current.proj.projection == GMT_UTM || C->current.proj.projection == GMT_TM) {	/* Just _might_ be getting -R in meters, better check */
+	else if (item[length] != 'r' && (C->current.proj.projection == GMT_UTM || C->current.proj.projection == GMT_TM || C->current.proj.projection == GMT_STEREO)) {	/* Just _might_ be getting -R in meters, better check */
 		double rect[4];
 		strncpy (string, item, GMT_BUFSIZ);
 		sscanf (string, "%lg/%lg/%lg/%lg", &rect[XLO], &rect[XHI], &rect[YLO], &rect[YHI]);
@@ -1452,8 +1454,9 @@ int gmt_parse_R_option (struct GMT_CTRL *C, char *item) {
 
 	/* Now decode the string */
 
+	length = strlen (string) - 1;
 	col_type[0] = col_type[1] = 0;
-	if (string[strlen(string)-1] == 'r') {
+	if (string[length] == 'r') {
 		C->common.R.oblique = true;
 		string[strlen(string)-1] = '\0';	/* Remove the trailing r so GMT_scanf will work */
 	}

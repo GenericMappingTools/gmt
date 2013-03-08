@@ -511,6 +511,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 	}
+	GMT_free (GMT, d_col);
 	
 	Return (GMT_OK);
 }

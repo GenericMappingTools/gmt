@@ -449,9 +449,6 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *
 		if (GridY) {	/* Long header record - number in [] is GMT column; useful for -i option */
 			sprintf (header, "#%s[0]\txpow[1]\tstd_xpow[2]\typow[3]\tstd_ypow[4]\tcpow[5]\tstd_cpow[6]\tnpow[7]\tstd_npow[8]\t" \
 			"phase[9]\tstd_phase[10]\tadm[11]\tstd_ad[12]\tgain[13]\tstd_gain[14]\tcoh[15]\tstd_coh[16]", name[give_wavelength]);
-			GMT_free (GMT, Y_pow);
-			GMT_free (GMT, co_spec);
-			GMT_free (GMT, quad_spec);
 		}
 		else
 			sprintf (header, "#%s[0]\tpow[1]\tstd_pow[2]", name[give_wavelength]);
@@ -466,6 +463,12 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *
 	}
 	GMT_free (GMT, X_pow);
 	GMT_free (GMT, nused);
+	if (GridY) {
+		GMT_free (GMT, Y_pow);
+		GMT_free (GMT, co_spec);
+		GMT_free (GMT, quad_spec);
+	}
+	
 	return (1);	/* Number of parameters used */
 }
 

@@ -3157,8 +3157,8 @@ void GMT_draw_custom_symbol (struct GMT_CTRL *C, double x0, double y0, double si
 	PSL_comment (P, "End of symbol %s\n", symbol->name);
 	GMT_reset_meminc (C);
 
-	GMT_free (C, xx);
-	GMT_free (C, yy);
+	if (xx) GMT_free (C, xx);
+	if (yy) GMT_free (C, yy);
 }
 
 /* Plotting functions related to contours */

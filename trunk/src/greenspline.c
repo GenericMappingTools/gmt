@@ -1070,7 +1070,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 	unsigned int dimension = 0, normalize = 1, unit = 0;
 	size_t old_n_alloc, n_alloc;
 	int error, out_ID, way;
-	bool new_grid = false;
+	bool new_grid = false, delete_grid = false;
 	
 	char *method[N_METHODS] = {"minimum curvature Cartesian spline [1-D]",
 		"minimum curvature Cartesian spline [2-D]",
@@ -1353,6 +1353,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 	}
 	else {	/* Fill in an equidistant output table or grid */
 		if ((Grid = GMT_create_grid (GMT)) == NULL) Return (API->error);
+		delete_grid = true;
 		Grid->header->wesn[XLO] = Ctrl->R3.range[0];	Grid->header->wesn[XHI] = Ctrl->R3.range[1];
 		Grid->header->registration = GMT->common.r.registration;
 		Grid->header->inc[GMT_X] = Ctrl->I.inc[GMT_X];
@@ -1694,10 +1695,11 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 				Return (API->error);
 			}
 		}
+		else if (delete_grid)
+			GMT_free_grid (GMT, &Grid, false);
 		else if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid) != GMT_OK) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Failed to free Orig\n");
 		}
-			//GMT_free_grid (GMT, &Grid, false);
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 			Return (API->error);
 		}

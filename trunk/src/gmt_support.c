@@ -2045,7 +2045,7 @@ void GMT_free_cpt_ptr (struct GMT_CTRL *C, struct GMT_PALETTE *P)
 		if (P->range[i].fill)  GMT_free (C, P->range[i].fill);
 	}
 	for (i = 0; i < 3; i++) if (P->patch[i].fill) GMT_free (C, P->patch[i].fill);
-	GMT_free (C, P->range);
+	if (P->range) GMT_free (C, P->range);
 	/* Use free() to free the headers since they were allocated with strdup */
 	for (i = 0; i < P->n_headers; i++) if (P->header[i]) free (P->header[i]);
 	P->n_headers = P->n_colors = 0;

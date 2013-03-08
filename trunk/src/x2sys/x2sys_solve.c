@@ -781,7 +781,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 	/* Free up memory */
 	
 	for (i = 0; i < N_COE_PARS; i++) if (active_col[i]) GMT_free (GMT, data[i]);
-	GMT_free (GMT, data[COL_WW]);
+	if (data[COL_WW]) GMT_free (GMT, data[COL_WW]);
 	for (i = 0; i < 2; i++) GMT_free (GMT, ID[i]);
 	GMT_free (GMT, b);
 	x2sys_free_list (GMT, trk_list, n_tracks);

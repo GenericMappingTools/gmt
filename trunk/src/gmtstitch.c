@@ -351,7 +351,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 	n_seg_alloc[0] = dim_tscr[1] = 0;	/* Allocate no segments for now - we will do this as needed */
 	if ((D[GMT_OUT] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, 0, dim_tscr, NULL, NULL, 0, 0, NULL)) == NULL) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for output segments\n");
-		return (GMT->parent->error);
+		Return (GMT->parent->error);
 	}
 	n_seg_alloc[0] = D[GMT_IN]->n_segments;	/* Cannot end up with more segments than given on input  */
 	T[OPEN] = GMT_memory (GMT, NULL, n_seg_alloc[0], struct GMT_DATASEGMENT *);
@@ -360,7 +360,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 	if (Ctrl->C.active) {	/* Wish to return already-closed polygons via a separate file */
 		if ((C = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, 0, dim_tscr, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for closed segments\n");
-			return (GMT->parent->error);
+			Return (GMT->parent->error);
 		}
 		if (Ctrl->C.file == NULL)
 			Ctrl->C.file = strdup ("gmtstitch_closed.txt");
@@ -568,7 +568,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 		dim_tscr[0] = 1;	dim_tscr[1] = 1;	dim_tscr[2] = ns;
 		if ((LNK = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, 0, dim_tscr, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a text set for link lists\n");
-			return (GMT->parent->error);
+			Return (GMT->parent->error);
 		}
 		sprintf (fmt, "%%s%s%%s%s%%c%s%s%s%s%s%%s%s%%c%s%s%s%%d", s, s, s, GMT->current.setting.format_float_out, s, GMT->current.setting.format_float_out, s, s, s, GMT->current.setting.format_float_out, s);
 

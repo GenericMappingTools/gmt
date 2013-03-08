@@ -2041,8 +2041,8 @@ int GMT_read_image_info (struct GMT_CTRL *C, char *file, struct GMT_IMAGE *I) {
 	GMT_free (C, to_gdalread);
 	for ( i = 0; i < from_gdalread->RasterCount; ++i )
 		free (from_gdalread->band_field_names[i].DataType);	/* Those were allocated with strdup */
-	GMT_free (C, from_gdalread->band_field_names);
-	GMT_free (C, from_gdalread->ColorMap);	/* Maybe we will have a use for this in future, but not yet */
+	if (from_gdalread->band_field_names) GMT_free (C, from_gdalread->band_field_names);
+	if (from_gdalread->ColorMap) GMT_free (C, from_gdalread->ColorMap);	/* Maybe we will have a use for this in future, but not yet */
 	GMT_free (C, from_gdalread);
 
 	return (GMT_NOERROR);
