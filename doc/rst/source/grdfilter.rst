@@ -7,6 +7,8 @@ grdfilter - Filter a grid in the space (or time) domain
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **grdfilter** *ingrid* **-D**\ *distance\_flag*
 **-Fx**\ *width*\ [/*width2*][*mode*\ ][\ **+q**\ *quantile*]
 **-G**\ *outgrid* [

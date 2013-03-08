@@ -7,6 +7,8 @@ gmtset - Change individual **GMT** default parameters
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **gmtset** [ **-C** \| **-D**\ [**s**\ \|\ **u**] \|
 **-G**\ *defaultsfile* ] [ **-**\ [**BJRXxYycp**\ ]\ *value* ]
 PARAMETER1 [=] *value1* PARAMETER2 [=] *value2* PARAMETER3 [=] *value3*

@@ -8,6 +8,8 @@ SUN rasterfile
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **grd2rgb** *infile* **-G**\ *template* [ **-C**\ *cptfile* ] [
 **-I**\ *xinc*\ [**m**\ \|\ **s**][/\ *yinc*\ [**m**\ \|\ **s**]] ] [
 **-L**\ *layer* ] [

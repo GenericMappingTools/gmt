@@ -7,6 +7,8 @@ gmtlogo - Adding a GMT graphics logo overlay to an illustration
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **gmtlogo** *dx* *dy* [ **-G**\ *fill* ] [ **-W**\ [*pen*\ ] ] >> *plot.ps*
 
 `Description <#toc2>`_

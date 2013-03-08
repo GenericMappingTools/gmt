@@ -7,6 +7,8 @@ grdhisteq - Perform histogram equalization for a grid
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **grdhisteq** *in\_grdfile* [ **-G**\ *out\_grdfile* ] [
 **-C**\ *n\_cells* ] [ **-D**\ [*file*\ ] ] [ **-N**\ [*norm*\ ] ] [
 **-Q** ] [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [

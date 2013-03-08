@@ -8,6 +8,8 @@ grid
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **grdraster** [ *filenumber* \| *"text pattern"* ]
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [ **-G**\ *grdfile* ] [
 **-I**\ *xinc*\ [**m**\ \|\ **s**][/\ *yinc*\ [**m**\ \|\ **s**]] ] [

@@ -7,6 +7,8 @@ pshistogram - Calculate and plot histograms
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **pshistogram** [ *table* ] **-Jx**\ \|\ **X**\ *parameters*
 **-W**\ *bin\_width* [ **-A** ] [
 **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ *cptfile* ] [

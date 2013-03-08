@@ -7,6 +7,8 @@ grdtrack - Sample grids at specified (x,y) locations
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **grdtrack** [ *xyfile* ] **-G**\ *grd1* **-G**\ *grd2* ... [
 **-A**\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**\ ] ] [
 **-C**\ *length*\ [**u**\ ]/\ *ds*\ [*spacing*\ ][**+a**\ ] ] [**-D**\ *dfile* ]

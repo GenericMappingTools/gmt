@@ -7,6 +7,8 @@ mgd77sniffer - Along-track quality control of MGD77 cruises
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **mgd77sniffer** *NGDC-ids* [ **-A**\ *fieldabbrev*,\ *scale*,\ *offset*
 ] [ **-C**\ *maxspd* ] [
 **-D**\ **d**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **l**\ \|\ **m**\ \|\ **s**\ \|\ **v**\ [*r*\ ]

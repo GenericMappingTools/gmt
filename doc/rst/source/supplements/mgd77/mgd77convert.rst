@@ -7,6 +7,8 @@ mgd77convert - Convert MGD77 data to other file formats
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **mgd77convert** *NGDC-ids* **-Fa**\ \|\ **c**\ \|\ **t**
 **-T**\ [**+**\ ]\ **a**\ \|\ **b**\ \|\ **t** [ **-C** ] [ **-D** ] [
 **-L**\ [**w**\ ][**e**\ ][**+**\ ] ] [ **-V**\ [*level*\ ] ]

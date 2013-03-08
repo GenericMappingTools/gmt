@@ -7,6 +7,8 @@ gshhg\_dp - Line reduction using the Douglas-Peucker algorithm
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **gshhg\_dp** *input.b tolerance output.b* [ **-v** ]
 
 `Description <#toc2>`_

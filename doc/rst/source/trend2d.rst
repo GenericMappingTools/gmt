@@ -8,6 +8,8 @@ xyz[w] data
 Synopsis
 --------
 
+.. include:: common_SYN_OPTs.rst_
+
 **trend2d** [ *table* ] **-F**\ **xyzmrw** **-N**\ *n\_model*\ [**r**\ ]
 [ *xyz[w]file* ] [ **-C**\ *condition\_number* ] [
 **-I**\ [*confidence\_level*\ ] ] [ **-V**\ [*level*\ ] ] [ **-W** ] [

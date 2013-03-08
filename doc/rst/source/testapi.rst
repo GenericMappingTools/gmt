@@ -7,6 +7,8 @@ testapi - Test API i/o methods for any data type
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **testapi**
 **-I**\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **r**\ \|\ **s**\ [/**m**\ \|\ **v**]
 **-T**\ **c**\ \|\ **d**\ \|\ **g**\ \|GD(i)\|GD(t)

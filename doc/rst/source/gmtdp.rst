@@ -7,6 +7,8 @@ gmtdp - Line reduction using the Douglas-Peucker algorithm
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **gmtdp** [ *table* ] **-T**\ *tolerance*\ [*unit*\ ] [
 **-V**\ [*level*\ ] ] [
 **-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [

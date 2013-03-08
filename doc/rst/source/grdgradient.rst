@@ -7,6 +7,8 @@ grdgradient - Compute directional derivative or gradient from a grid
 Synopsis
 --------
 
+.. include:: common_SYN_OPTs.rst_
+
 **grdgradient** *in\_grdfile* **-G**\ *out\_grdfile* [
 **-A**\ *azim*\ [/*azim2*] ] [ **-D**\ [**c**\ ][**o**\ ][**n**\ ] ] [
 **-E**\ [**s\|p**\ ]\ *azim/elev*\ [/*ambient*/*diffuse*/*specular*/*shine*]

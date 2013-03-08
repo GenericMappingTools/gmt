@@ -7,6 +7,8 @@ pssegy - Plot a SEGY file on a map
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **pssegy** *SEGYfile* **-J**\ *parameters*
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] **-D**\ *deviation*
 **-F**\ [*rgb*\ \|\ *gray*] **-W** [ **-B**\ *bias* ] [ **-C**\ *clip* ]

@@ -7,6 +7,8 @@ grdrotater - Finite rotation reconstruction of geographic grid
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **grdrotate** *ingrdfile* **-E**\ *rotfile* \|
 **-e**\ *lon*/*lat*/*angle* **-G**\ *outgrdfile* [ **-F**\ *polygonfile*
 ] [ **-N** ] [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [

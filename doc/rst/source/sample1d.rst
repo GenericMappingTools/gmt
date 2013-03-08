@@ -7,6 +7,8 @@ sample1d - Resample 1-D table data using splines
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **sample1d** [ *table* ] [
 **-A**\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**\ ] ] [
 **-Fl**\ \|\ **a**\ \|\ **c**\ \|\ **n** ] [ **-I**\ *inc*\ [*unit*\ ] ]

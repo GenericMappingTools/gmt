@@ -7,6 +7,8 @@ grdinfo - Extract information from grids
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **grdinfo** *grdfiles* [ **-C** ] [ **-F** ] [
 **-I**\ [*dx*\ [/*dy*]\|\ **-**\ \|\ **b**] ] [
 **-L**\ [**0**\ \|\ **1**\ \|\ **2**] ] [ **-M** ] [

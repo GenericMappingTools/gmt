@@ -1948,8 +1948,8 @@ placed in a separate parameter file:
    scenarios into separate ``gmt.conf`` files will minimize headaches associated with
    micro-editing of illustrations.
 
-Changing `GMT <http://gmt.soest.hawaii.edu>`_ defaults
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Changing GMT defaults
+~~~~~~~~~~~~~~~~~~~~~
 
 As mentioned, *GMT* programs will attempt to open a file named  ``gmt.conf``. At
 times it may be desirable to override that default. There are several
@@ -4232,15 +4232,15 @@ $GMT\_USERDIR
 
 $GMT\_TMPDIR
     is where *GMT* will write its state parameters via the two files ``.gmtcommands`` and
-     ``gmt.conf``. If **$GMT\_TMPDIR** is not set, these files are written to the
-    current directory. See Appendix [app:P] for more on the use of
+    ``gmt.conf``. If **$GMT\_TMPDIR** is not set, these files are written to the
+    current directory. See Appendix [app:P] for more on the use of
     **$GMT\_TMPDIR**.
 
 Note that files whose full path is given will never be searched for in
 any of these directories.
 
-`GMT <http://gmt.soest.hawaii.edu>`_ Coordinate Transformations
-====================================================================
+GMT Coordinate Transformations
+==============================
 
 [ch:5]
 
@@ -5646,7 +5646,7 @@ three-dimensional symbols, including columnar plots. As a simple
 demonstration, we will convert a gridded netCDF of bathymetry into an
 ASCII :math:`xyz` table and use the height information to draw a 2-D
 histogram in a 3-D perspective view. Our gridded bathymetry file is
-called and covers the region from 0 to 5 E and 0 to 5 N. Depth ranges
+called ``guinea_bay.nc`` and covers the region from 0 to 5 E and 0 to 5 N. Depth ranges
 from -5000 meter to sea-level. We produce the
 Figure [fig:example\ :sub:`0`\ 8] by running this script:
 
@@ -5662,15 +5662,15 @@ profiles from the south Pacific can be plotted as “wiggles” using the
 `pswiggle <pswiggle.html>`_ program. We will embellish
 the plot with track numbers, the location of the Pacific-Antarctic
 Ridge, recognized fracture zones in the area, and a “wiggle” scale. The
-Geosat tracks are stored in the files , the ridge in , and all the
-fracture zones are stored in the multiple segment file . We extract the
+Geosat tracks are stored in the files ``*.xys``, the ridge in ``ridge.xy``, and all the
+fracture zones are stored in the multiple segment file ``fz.xy``. We extract the
 profile id (which is the first part of the file name for each profile)
 and the last point in each of the track files to construct an input file
 for `pstext <pstext.html>`_ that will label each profile
 with the track number. We know the profiles trend approximately N40E so
 we want the labels to have that same orientation (i.e., the angle with
 the baseline must be 50). We do this by extracting the last record from
-each track, paste this file with the file, and use **AWK** to create
+each track, paste this file with the ``tracks.lis`` file, and use **AWK** to create
 the format needed for `pstext <pstext.html>`_. Note we
 offset the positions by -0.05 inch with **-D** in order to have a small
 gap between the profile and the label:
@@ -5738,7 +5738,7 @@ the resulting network. We label the node numbers as well as the node
 values, and call `pscontour <pscontour.html>`_ to make a
 contour map and image directly from the raw data. Thus, in this example
 we do not actually make grid files but still are able to contour and
-image the data. We use a color palette table (created via
+image the data. We use a color palette table ``topo.cpt`` (created via
 `minmax <minmax.html>`_ and
 `makecpt <makecpt.html>`_). The script becomes:
 
@@ -5907,7 +5907,7 @@ To demonstrate potential usage of the new programs
 Sandwell & Smith altimetric gravity field [26]_ for the northern Pacific
 and decide to isolate all seamounts that (1) exceed 50 mGal in amplitude
 and (2) are within 200 km of the Pratt seamount. We do this by dumping
-the 50 mGal contours to disk, then making a simple **AWK** script that
+the 50 mGal contours to disk, then making a simple **AWK** script ``center.awk`` that
 returns the mean location of the points making up each closed polygon,
 and then pass these locations to
 `gmtselect <gmtselect.html>`_ which retains only the
@@ -5987,9 +5987,9 @@ The following recipe is used when designing a new symbol.
    values of the command line settings.
 
    Manually applying these rules to our volcano symbol results in a
-   definition file :
+   definition file ``volcano.def``:
 
-   Without much further discussion we also make a definition file for a
+   Without much further discussion we also make a definition file ``bullseye.def`` for a
    multi-colored bulls eye symbol. Note that the symbol can be created
    beyond the -0.5 to +0.5 range, as shown by the red lines. There is no
    limit in *GMT* to the size of the symbols. The center, however, will
@@ -6003,11 +6003,11 @@ The following recipe is used when designing a new symbol.
    `psxy <psxy.html>`_ or `psxyz <psxyz.html>`_.
 
 We are now ready to give it a try. Based on the hotspot locations in the
-file (with a 3rd column giving the desired symbol sizes in inches) we
+file ``hotspots.d`` (with a 3rd column giving the desired symbol sizes in inches) we
 lay down a world map and overlay red volcano symbols using our
 custom-built volcano symbol and `psxy <psxy.html>`_. We
 do something similar with the bulls eye symbols. Without the **-G**
-option, however, they get the colors defined in .
+option, however, they get the colors defined in ``bullseye.def``.
 
 Here is our final map script that produces
 Figure [fig:example\ :sub:`2`\ 0]:
@@ -6017,7 +6017,7 @@ with more than one color can be obtained by making several symbol
 components. E.g., to have yellow smoke coming out of red volcanoes we
 would make two symbols: one with just the cone and caldera and the other
 with the bubbles. These would be plotted consecutively using the desired
-colors. Alternatively, like in , we may specify colors directly for the
+colors. Alternatively, like in ``bullseye.def``, we may specify colors directly for the
 various segments. Note that the custom symbols (Appendix [app:N]),
 unlike the built-in symbols in *GMT*, can be used with the built-in
 patterns (Appendix [app:E]). Other approaches are also possible, of
@@ -6061,7 +6061,7 @@ World-wide seismicity the last 7 days
 The next example uses the command-line tool **wget** to obtain a data
 file from a specified URL [27]_. In the example script this line is
 commented out so the example will run even if you do not have **wget**
-(we use the supplied which normally would be created by **wget**);
+(we use the supplied ``neic_quakes.d`` which normally would be created by **wget**);
 remove the comment to get the actual current seismicity plot using the
 live data. The main purpose of this script is not to show how to plot a
 map background and a few circles, but rather demonstrate how a map
@@ -6108,7 +6108,7 @@ Although we are not seismologists, we have yet another example involving
 seismicity. We use seismicity data for the Australia/New Zealand region
 to demonstrate how we can extract subsets of data using geospatial
 criteria. In particular, we wish to plot the epicenters given in the
-file as red or green circles. Green circles should only be used for
+file ``oz_quakes.d`` as red or green circles. Green circles should only be used for
 epicenters that satisfy the following three criteria:
 
 #. They are located in the ocean and not on land
@@ -6301,18 +6301,15 @@ PDF-file with **Ghostscript**. See also
 Appendix [sec:non-default-fonts] for further information. The script
 includes the following steps:
 
--  create a file;
+-  create a ``CUSTOM_font_info.d`` file;
 
--  set the *GMT* parameters ``MAP_DEGREE_SYMBOL``, ``PS_CHAR_ENCODING``,
-   and ``FONT``;
+-  set the *GMT* parameters ``MAP_DEGREE_SYMBOL``, ``PS_CHAR_ENCODING``, and ``FONT``;
 
--  replace the default Helvetica font in the *GMT*-*PostScript*-File
-   with sed;
+-  replace the default Helvetica font in the *GMT*-*PostScript*-File with sed;
 
 -  create a *PostScript*-File with outlined fonts (optional);
 
--  convert *GMT*\ ’s *PostScript* output to PDF or any image format
-   (optional).
+-  convert *GMT*\ ’s *PostScript* output to PDF or any image format (optional).
 
 The script produces the plot in Figure [fig:example\ :sub:`3`\ 1]. All
 standard fonts have been substituted by the free OpenType fonts Linux
@@ -6497,7 +6494,7 @@ the leading edge of the curve, and as we move forward in time (here,
 angles) we dim the older circles to a dark red color. We add a label
 that indicates the current angle value. Once the 18 frames are completed
 we convert them to a single animated GIF file and write a plain HTML
-wrapper with a simple legend. Opening the HTML page in the browser will
+wrapper with a simple legend. Opening the HTML page in ``anim01.html`` the browser will
 display the animation.
 
 Make sure you understand the purpose of all the steps in our script. In
@@ -6614,7 +6611,7 @@ needed for particular rather than general applications. The software is
 provided in a separate, supplemental archive (GMT\_suppl.tar.gz (or
 .bz2); see Appendix `D. Availability of GMT and related code`_).
 Questions or bug reports for this software
-should be addressed to the person(s) listed in the file associated with
+should be addressed to the person(s) listed in the ``README`` file associated with
 the particular program. It is not guaranteed that these programs are
 fully ANSI-C, Y2K, or POSIX compliant, or that they necessarily will
 install smoothly on all platforms, but most do. Note that the data sets
@@ -6818,12 +6815,12 @@ The first data record may be preceded by one or more header records. Any
 records that begins with ’#’ is considered a header or comment line and
 are always processed correctly. If your data file has leading header
 records that do *not* start with ’#’ then you must make sure to use the
-**-h** option and set the parameter **IO\_N\_HEADER\_RECS** in the file
+**-h** option and set the parameter **IO\_N\_HEADER\_RECS** in the ``gmt.conf`` file
 (*GMT* default is one header record if **-h** is given; you may also use
 **-h**\ *nrecs* directly). Fields within a record must be separated by
 spaces, tabs, or commas. Each field can be an integer or floating-point
 number or a geographic coordinate string using the
-[+:math:`|`-]dd[:mm[:ss]][W:math:`|`\ S\ :math:`|`\ N\ :math:`|`\ E\ :math:`|`\ w\ :math:`|`\ s\ :math:`|`\ n\ :math:`|`\ e]
+[+\ \|\ -]dd[:mm[:ss]][W:\ \|\ S\ \|\ N\ \|\ E\ \|\ w\ \|\ s\ \|\ n\ \|\ e]
 format. Thus, 12:30:44.5W, 17.5S, 1:00:05, and 200:45E are all valid
 input strings. On output, fields will be separated by the character
 given by the parameter **IO\_COL\_SEPARATOR**, which by default is a
@@ -6942,7 +6939,7 @@ how to load multi-dimensional grids, read Section [sec:netcdf].
 netCDF format it can use binary floating points, short integers, bytes,
 and bits, as well as 8-bit Sun raster files (colormap ignored).
 Additional formats may be used by supplying read/write functions and
-linking these with the *GMT* libraries. The source file has the
+linking these with the *GMT* libraries. The source file ``gmt_customio.c`` has the
 information that programmers will need to augment *GMT* to read custom
 grid files. We anticipate that the number of pre-programmed formats will
 increase as enterprising users implement what they need. See
@@ -7270,8 +7267,8 @@ accomplished.
 
        ps2raster -A -Te myplot.ps
 
-   will convert the *PostScript* file into an encapsulated
-   *PostScript* file which is exactly cropped to the tightest possible
+   will convert the *PostScript* file ``myplot.ps`` into an encapsulated
+   *PostScript* file ``myplot.eps`` which is exactly cropped to the tightest possible
    BoundingBox.
 
 If you do not want to modify your illustration but just include it in a
@@ -7457,7 +7454,7 @@ environment; something like this
 
 Note that the ``\includegraphics`` command does not require you to add
 the suffix ``.pdf`` to the file name. If you run **pdflatex**, it will
-look automatically for . If you run **latex**, it will use instead.
+look automatically for ``myplot.pdf``. If you run **latex**, it will use ``myplot.eps`` instead.
 
 You can scale your plot using the options ``width=``, ``height=``, or
 ``scale=``. In addition, if your original graphics was produced in
@@ -7556,8 +7553,8 @@ gshhg-gmt-nc4-2.2.0.tar.bz2
     of the GSHHG coastline database. Required to run *GMT*.
 
 The netCDF library that makes up the backbone of the grid file i/o
-operations can be obtained from Unidata by downloading the file from the
-anonymous FTP directory of http:\\unidata.ucar.edu
+operations can be obtained from Unidata by downloading the file ``netcdf.tar.gz ``from the
+anonymous FTP directory of http://unidata.ucar.edu
 
 Install via subversion
 ----------------------
@@ -7613,7 +7610,7 @@ encoded fonts are shown in
 Figure [fig:GMT\ :sub:`A`\ pp\ :sub:`Ft`\ ext]. Light red areas signify
 codes reserved for control characters. In order to use all the extended
 characters (shown in the light green boxes) you need to set
-**PS\_CHAR\_ENCODING** to Standard+ or ISOLatin1+ in your file [41]_.
+**PS\_CHAR\_ENCODING** to Standard+ or ISOLatin1+ in your ``gmt.conf`` file [41]_.
 
 [h] |image|\ |image| [fig:GMT:sub:`A`\ pp\ :sub:`Ft`\ ext]
 
@@ -7652,11 +7649,11 @@ Using non-default fonts with GMT
 
 To add additional fonts that you may have purchased or that are
 available freely in the internet or at your institution, see the
-instructions in the under the directory and continue reading. *GMT* does
+instructions in the ``CUSTOM_font_info.d`` under the ``share/pslib`` directory and continue reading. *GMT* does
 not read or process any font files and thus does not know anything about
 installed fonts and their metrics. In order to use extra fonts in
 *GMT* you need to specify the *PostScript* name of the relevant fonts in
-the file . You can either edit the existing file distributed with
+the file C``USTOM_font_info.d``. You can either edit the existing file distributed with
 *GMT* to make the changes global or you can create a new file in the
 current working directory, e.g.,
 
@@ -7698,7 +7695,7 @@ Font Binary), TrueType or OpenType fonts cannot be embedded in
 However, you most likely will have to tell **Ghostscript** where to
 find your custom fonts in order to convert your *GMT*-*PostScript*-plot
 to PDF or an image with `ps2raster <ps2raster.html>`_.
-When you have used the correct *PostScript*-names of the fonts in you
+When you have used the correct *PostScript*-names of the fonts in ``CUSTOM_font_info.d`` you
 only need to point the ``GS_FONTPATH`` environment variable to the
 directory where the font files can be found and invoke
 `ps2raster <ps2raster.html>`_ in the usual way. Likewise
@@ -7969,7 +7966,7 @@ necessary) and then darkened by moving (:math:`s`,\ :math:`v`) toward
 negative, or lightened by sliding (:math:`s`,\ :math:`v`) toward
 (**COLOR\_HSV\_MAX\_S**, **COLOR\_HSV\_MAX\_V**) if the illumination is
 positive. The extremes of the :math:`s` and :math:`v` are defined in the
-file and are usually chosen so the corresponding points are nearly black
+``gmt.conf`` file and are usually chosen so the corresponding points are nearly black
 (:math:`s` = 1, :math:`v` = 0) and white (:math:`s` = 0, :math:`v` = 1).
 The reason this works is that the HSV system allows movements in color
 space which correspond more closely to what we mean by “tint” and
@@ -8022,7 +8019,7 @@ thesis, for example, it might be worth trying to save and print all your
 color plots using the CMYK system. Letting *GMT* do the conversion to
 CMYK may avoid some nasty surprises when it comes down to printing. To
 specify the color space of your *PostScript* file, set
-**PS\_COLOR\_MODEL** in the file to RGB, HSV, or CMYK.
+**PS\_COLOR\_MODEL** in the ``gmt.conf`` file to RGB, HSV, or CMYK.
 
 I. Filtering of data in GMT
 ===========================
@@ -8417,13 +8414,8 @@ WIN32/64 and GMT
 
 *GMT* will compile and install using the Microsoft Visual C/C++
 compiler. We expect other WIN32/64 C compilers to give similar results
-(e.g., the Intel compiler). Since **configure** cannot be run you must
-manually rename to . The netCDF home page gives full information on how
-to compile and install netCDF; precompiled libraries are also available.
-At present we simply have a lame file that compiles the entire
-*GMT* package, and which compiles most of the supplemental programs. If
-you just need to run *GMT* and do not want to mess with compilations,
-get the precompiled binaries from the *GMT* ftp sites.
+(e.g., the Intel compiler). If you just need to run *GMT* and do not want to
+mess with compilations, get the precompiled binaries from the *GMT* ftp sites.
 
 MINGW|MSYS and GMT
 ------------------
@@ -8492,7 +8484,7 @@ symbols as alternatives to the built-in, standard geometrical shapes
 like circles, triangles, and many others. One the command line, custom
 symbols are selected via the **-Sk**\ *symbolname*\ [.*size*] symbol
 selection, where *symbolname* refers to a special symbol definition file
-called that must be available via the standard *GMT* user paths. Several
+called ``symbolname.def`` that must be available via the standard *GMT* user paths. Several
 custom symbols comes pre-configured with *GMT*\ (see
 Figure [fig:GMT\ :sub:`A`\ pp\ :sub:`N1`])
 
@@ -8897,8 +8889,7 @@ universally. These codes are:
     placement algorithms above.
 
 +d:
-    Delayed mode, to delay the plotting of the text as text clipping is
-    set instead.
+    Delayed mode, to delay the plotting of the text as text clipping is set instead.
 
 +f:
     Specifies the desired label font, including size or color. See
@@ -8960,8 +8951,7 @@ universally. These codes are:
     *prefix* which you must append.
 
 For contours, the label will be the value of the contour (possibly
-modified by **+u** or **+=**). However, for quoted lines other options
-apply:
+modified by **+u** or **+=**). However, for quoted lines other options apply:
 
 +l:
     Append a fixed *label* that will be placed at all label locations.
@@ -8982,7 +8972,7 @@ apply:
 
     +Ld:
         Take the Cartesian plot distances along the line as the label;
-        append **c\ :math:`|`\ i\ :math:`|`\ p** as the unit [Default is
+        append **c\ \|\ i\ \|\ p** as the unit [Default is
         **PROJ\_LENGTH\_UNIT**]. The label will be formatted according
         to the **FORMAT\_FLOAT\_OUT** string, *unless* label placement
         was determined from map distances along the segment lines, in
@@ -8992,7 +8982,7 @@ apply:
     +LD:
         Calculate actual Earth surface distances and use the distance at
         the label placement point as the label; append
-        **d\ :math:`|`\ e\ :math:`|`\ f\ :math:`|`\ k\ :math:`|`\ m\ :math:`|`\ M\ :math:`|`\ n\ :math:`|`\ s**
+        **d\ \|\ e\ \|\ f\ \|\ k\ \|\ m\ \|\ M\ \|\ n\ \|\ s**
         to specify the unit [If not given we default to **d**\ egrees,
         *unless* label placement was determined from map distances along
         the segment lines, in which case we use the same unit specified
@@ -9013,7 +9003,7 @@ apply:
     +Lx:
         As **h** but use the multi-segment headers in the *cross.d* file
         instead. This choice obviously requires the crossing segments
-        location algorithm (code **x\ :math:`|`\ X**) to be in effect.
+        location algorithm (code **x\ \|\ X**) to be in effect.
 
 Examples of Contour Label Placement
 -----------------------------------
@@ -9160,30 +9150,30 @@ that make up the script that finally creates a plot. Among those files
 are:
 
 .
-    This file covers about 100 different settings that influence the
-    layout of your plot, from font sizes to tick lengths and date
-    formats (See Section [sec:gmt.conf]). Those settings can be altered
-    by editing the file, or by running the
-    `gmtset <gmtset.html>`_ command. A problem may arise
-    when those settings are changed half-way through the script: the
-    next time you run the script it will start with the modified
-    settings and hence might alter your scripts results. It is therefore
-    often necessary to revert to the original file. *Isolation mode*
-    avoids that issue.
+    **gmt.conf** This file covers about 100 different settings that influence the
+       layout of your plot, from font sizes to tick lengths and date
+       formats (See Section [sec:gmt.conf]). Those settings can be altered
+       by editing the file, or by running the
+       `gmtset <gmtset.html>`_ command. A problem may arise
+       when those settings are changed half-way through the script: the
+       next time you run the script it will start with the modified
+       settings and hence might alter your scripts results. It is therefore
+       often necessary to revert to the original ``gmt.conf`` file. *Isolation mode*
+       avoids that issue.
 
 .
-    This file is created to communicate the command line history from
-    one command to the next (Section [sec:gmtcommands]) so that
-    shorthands like **-R** or **-J** can be used once it has been set in
-    a previous *GMT* command. The existence of this file makes if
-    impossible to run two *GMT* scripts simultaneously in the same
-    directory, since those files may clash (contain different histories)
-    and adversely affect the results of both scripts.
+    **.gmtcommands** This file is created to communicate the command line history from
+       one command to the next (Section [sec:gmtcommands]) so that
+       shorthands like **-R** or **-J** can be used once it has been set in
+       a previous *GMT* command. The existence of this file makes if
+       impossible to run two *GMT* scripts simultaneously in the same
+       directory, since those ``.gmtcommands`` files may clash (contain different histories)
+       and adversely affect the results of both scripts.
 
 A cure to all these woes is the *isolation mode* introduced in
 *GMT* version 4.2.2. This mode allows you to run a *GMT* script without
 leaving any traces other than the resulting *PostScript*  or data files,
-and not altering the or files. Those files will be placed in a temporary
+and not altering the ``gmt.conf`` or ``.gmtcommands`` files. Those files will be placed in a temporary
 directory instead. And if properly set up, this temporary directory will
 only be used by a single script, even if another *GMT* script is running
 simultaneously. This also provides the opportunity to create any other
@@ -9193,16 +9183,17 @@ The example below shows how *isolation mode* works.
 
 [h] |image| [fig:GMT:sub:`A`\ pp\ :sub:`P2`]
 
-The files and are automatically created in the temporary directory . The
-script is also adjusted such that the temporary grid file and colormap
-are created in that directory as well. To make things even more easy,
+The files ``gmt.conf`` and ``.gmtcommands`` are automatically created in the temporary directory
+``$GMT_TMPDIR``. The
+script is also adjusted such that the temporary grid file ``lat.nc`` and colormap
+``lat.cpt`` are created in that directory as well. To make things even more easy,
 *GMT* now provides a set of handy shell functions in
 `gmt_shell_functions.sh <gmt_shell_functions.html>`_:
 simply include that file in the script and the creation and the removal
 of the temporary directory is reduced to a single command.
 
-Using both `GMT <http://gmt.soest.hawaii.edu>`_ 4 and 5
-------------------------------------------------------------
+Using both GMT 4 and 5
+----------------------
 
 We encourage all *GMT* users to start using version 5 immediately; it
 has been tested extensively by the *GMT* team and has benefitted from
@@ -9214,21 +9205,21 @@ executables; initialize it as explained below.
 
 Because *GMT* 5.x is backwards compatible with the 4.5.x series
 (provided you configured it that way) yet maintains its parameters and
-history in separate files (e.g., versus ) it is possible to install and
+history in separate files (e.g. ``.gmtdefaults4``, versus ``gmt.conf``) it is possible to install and
 use both versions on the same workstation. To simplify such setups we
 supply the utility **gmtswitch** which simplifies switching back and
 forth between any number of installed *GMT* 4-versions and *GMT* 5.x.
 Run **gmtswitch** after you have finished installing all
 *GMT* versions of interest. The first time you run **gmtswitch** it
 will try to find all the available versions installed on your file
-system. The versions found will be listed in the file in your home
+system. The versions found will be listed in the file ``.gmtversions`` in your home
 directory; each line is the full path to a *GMT* root directory (e.g.,
 /usr/local/GMT4.5.9). You may manually add or remove entries there at
 any time. You are then instructed to make two changes to your
 environment (the details are shell-dependent but explained by
 **gmtswitch**):
 
-#. **gmtswitch** creates and maintains a symbolic link in your home
+#. **gmtswitch** creates and maintains a symbolic link ``this_gmt`` in your home
    directory that will point to a directory with one of the installed
    GMT versions.
 

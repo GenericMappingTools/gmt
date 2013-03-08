@@ -8,6 +8,8 @@ grid
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **grdblend** [ *blendfile* \| *grid1* *grid2* ... ] **-G**\ *outgrid*
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [

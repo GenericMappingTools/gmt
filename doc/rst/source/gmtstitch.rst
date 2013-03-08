@@ -8,6 +8,8 @@ tolerance
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **gmtstitch** [ *table* ] [ **-C**\ [*closed*\ ] ] [
 **-D**\ [*template*\ ] ] [ **-L**\ [*linkfile*\ ] ] [
 **-Q**\ [*template*\ ] ] [ **-T**\ *cutoff*\ [*unit*\ ][/\ *nn\_dist*] ]

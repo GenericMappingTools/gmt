@@ -7,6 +7,8 @@ makecpt - Make GMT color palette tables
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **makecpt** [ **-A**\ [**+**\ ]\ *transparency* ] [ **-C**\ *table* ] [
 **-D**\ [**i**\ \|\ **o**] ] [
 **-F**\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c** ] [ **-I** ] [ **-M** ]

@@ -7,6 +7,8 @@ kml2gmt - Extract GMT table data from Google Earth KML files
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **kml2gmt** [ *kmlfiles* ] [ **-V**\ [*level*\ ] ] [ **-Z** ] [
 **-bo**\ [*ncols*\ ][*type*\ ] ] [ **-:**\ [**i**\ \|\ **o**] ]
 

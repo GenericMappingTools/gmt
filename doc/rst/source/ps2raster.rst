@@ -7,6 +7,8 @@ ps2raster - Convert [E]PS file(s) to other formats using GhostScript
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **ps2raster** *psfile(s)* [ **-A**\ [**u**\ [*margins*\ ]\|-] ] [
 **-C**\ *gs\_option* ] [ **-D**\ *outdir* ] [ **-E**\ *resolution* ] [
 **-G**\ *ghost\_path* ] [ **-L**\ *listfile* ] [ **-P** ] [

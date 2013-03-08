@@ -7,6 +7,8 @@ grd2cpt - Make linear or histogram-equalized color palette table from grid
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **grd2cpt** *grid* [ **-A**\ [**+**\ ]\ *transparency* ] [
 **-C**\ *cptmaster* ] [ **-D**\ [**i**\ \|\ **o**] ] [ **-E**\ *nlevels*
 ] [ **-F**\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c** ] [ **-I** ] [

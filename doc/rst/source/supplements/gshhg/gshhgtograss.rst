@@ -8,6 +8,8 @@ format
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **gshhg2grass** **-i** gshhs\_[f\|h\|i\|l\|c].b [ **-x**\ *minx* ]
 [**-X**\ *maxx* ] [ **-y**\ *miny* ] [ **-Y**\ *maxy* ]
 

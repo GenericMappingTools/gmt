@@ -7,6 +7,8 @@ grdraster - Extract subregion from a binary raster and save as a GMT grid
 Synopsis
 --------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **grdraster** [ *filenumber* \| *"text pattern"* ]
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [ **-G**\ *grdfile* ] [
 **-I**\ *xinc*\ [**m**\ \|\ **s**][/\ *yinc*\ [**m**\ \|\ **s**]] ] [

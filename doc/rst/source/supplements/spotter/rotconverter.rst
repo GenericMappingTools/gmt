@@ -7,6 +7,8 @@ rotconverter - Manipulate total reconstruction and stage rotations
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **rotconverter** [ **+**\ \|\ **-** ] *rotA* [ **+**\ \|\ **-** *rotB* ]
 [ **+**\ \|\ **-** *rotC* ] ... [ **-A** ] [ **-D** ] [
 **-E**\ [*fact*\ ] ] [ **-F**\ *out* ] [ **-G** ] [ **-N** ] [ **-S** ]

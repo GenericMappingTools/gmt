@@ -7,6 +7,8 @@ gmtvector - Basic manipulation of Cartesian vectors
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **gmtvector** [ *table* ] [ **-A**\ **m**\ [*conf*\ ]\|\ *vector* ] [
 **-C**\ [**i**\ \|\ **o**] ] [ **-E** ] [ **-N** ] [ **-S**\ *vector* ]
 [

@@ -7,6 +7,8 @@ psscale - Plot a gray or color scale-bar on maps
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **psscale** **-D**\ *xpos*/*ypos*/*length*/*width*\ [**h**\ ] [
 **-A**\ [**a**\ \|\ **l**\ \|\ **c**] ] [
 **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ *cpt\_file* ] [

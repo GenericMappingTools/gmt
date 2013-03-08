@@ -7,6 +7,8 @@ pspolar
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 pspolar [ *table* ] **-J**\ *parameters*
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] **-D**\ *lon*/*lat*
 **-M**\ *size* **-S**\ *<symbol><size>* [

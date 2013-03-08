@@ -8,6 +8,8 @@ tracks, or translate coordinates
 Synopsis
 --------
 
+.. include:: common_SYN_OPTs.rst_
+
 **project** [ *table* ] **-C**\ *cx*/*cy* [ **-A**\ *azimuth* ] [
 **-E**\ *bx*/*by* ] [ **-F**\ *flags* ] [
 **-G**\ *dist*\ [/*colat*][**+**\ ] ] [

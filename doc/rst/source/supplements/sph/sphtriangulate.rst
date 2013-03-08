@@ -8,6 +8,8 @@ data
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **sphtriangulate** [ *table* ] [ **-A** ] [ **-C** ] [ **-D** ] [
 **-L**\ *unit* ] [ **-N**\ *nfile* ] [ **-Q**\ **d**\ \|\ **v** ] [
 **-T** ] [ **-V**\ [*level*\ ] ] [

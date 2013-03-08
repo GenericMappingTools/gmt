@@ -7,6 +7,8 @@ img2grd - Extract subset of img file in Mercator or Geographic format
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **img2grd** *imgfile* **-G**\ *grdfile*
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] **-T**\ *type* [ **-C**
 ] [ **-D**\ [*minlat/maxlat*\ ] ] [ **-E** ] [ **-I**\ *minutes* ] [

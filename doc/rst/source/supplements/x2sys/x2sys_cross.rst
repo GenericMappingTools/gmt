@@ -7,6 +7,8 @@ x2sys_cross
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **x2sys\_cross** *track(s)* **-T**\ *TAG* [ **-A**\ *combi.lis* ] [
 **-C**\ [*runtimes*\ ] ] [ **-Il**\ \|\ **a**\ \|\ **c** ] [
 **-J**\ *parameters* ] [ **-Qe**\ \|\ **i** ] [

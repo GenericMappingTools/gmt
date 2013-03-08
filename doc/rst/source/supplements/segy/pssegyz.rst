@@ -7,6 +7,8 @@ pssegyz - Create imagemasked postscript from SEGY file
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **pssegyz** *SEGYfile* **-J**\ *parameters*
 **-Jz**\ \|\ **Z**\ *parameters*
 **-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ]

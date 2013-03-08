@@ -7,6 +7,8 @@ mgd77path - Return paths to MGD77 cruises and directories
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **mgd77path** *NGDC-ids* [ **-A**\ [**-**\ ] ] [ **-D** ] [
 **-I**\ *ignore* ] [ **-V**\ [*level*\ ] ]
 

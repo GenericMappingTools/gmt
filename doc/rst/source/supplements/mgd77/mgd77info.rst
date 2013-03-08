@@ -7,6 +7,8 @@ mgd77info - Extract information about MGD77 files
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **mgd77info** *NGDC-ids* [ **-C**\ [**m**\ \|\ **e**] ] [
 **-E**\ [**m**\ \|\ **e**] ] [ **-I**\ *ignore* ] [
 **-Mf**\ [*item*\ ]\|\ **r**\ \|\ **e**\ \|\ **h** ] [ **-L**\ [**v**\ ]

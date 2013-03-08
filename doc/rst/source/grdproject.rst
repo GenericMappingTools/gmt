@@ -7,6 +7,8 @@ grdproject - Forward and inverse map transformation of grids
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **grdproject** *in\_grdfile* **-G**\ *out\_grdfile* **-J**\ *parameters*
 [ **-A**\ [**c\|i\|p\|e\|f\|k\|M\|n\|u**\ ] ] [ **-C**\ [*dx/dy*\ ] ] [
 **-D**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]

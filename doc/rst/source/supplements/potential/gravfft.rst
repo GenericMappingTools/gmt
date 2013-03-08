@@ -8,6 +8,8 @@ wavenumber (or frequency) domain
 Synopsis
 --------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **gravfft** *ingrid* [*ingrid2*\ ] **-G**\ *outfile*
 [**-C**\ <n/wavelength/mean\_depth/tbw>] [**-A**\ *z\_offset*] [**-D**\ <density>]
 [**-E**\ <n\_terms>] [**-F**\ [f\|g\|v\|n\|e]] [**-I**\ <wbctk>] [**-L**\ [m\|h\|n]]

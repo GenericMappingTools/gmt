@@ -7,6 +7,8 @@ pswiggle - Plot z = f(x,y) anomalies along tracks
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **pswiggle** [ *table* ] **-J**\ *parameters*
 **-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ]
 **-Z**\ *scale* [ **-A**\ *azimuth* ] [

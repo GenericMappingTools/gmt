@@ -7,6 +7,8 @@ filter1d - Do time domain filtering of 1-D data tables
 Synopsis
 --------
 
+.. include:: common_SYN_OPTs.rst_
+
 **filter1d** [ *table* ] **-F**\ *type<width>*\ [*mode*\ ] [
 **-D**\ *increment* ] [ **-E** ] [ **-I**\ *ignore\_val* ] [
 **-L**\ *lack\_width* ] [ **-N**\ *t\_col* ] [ **-Q**\ *q\_factor* ] [

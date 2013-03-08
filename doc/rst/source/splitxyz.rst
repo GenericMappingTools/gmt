@@ -7,6 +7,8 @@ splitxyz - Split xyz[dh] data tables into individual segments
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **splitxyz** [ *table* ] **-C**\ *course\_change* [
 **-A**\ *azimuth*/*tolerance* ] [ **-D**\ *minimum\_distance* ] [
 **-F**\ *xy\_filter*/*z\_filter* ] [ **-N**\ *template* ] [

@@ -8,6 +8,8 @@ splines
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **surface** [ *table* ] **-G**\ *outputfile.nc*
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [

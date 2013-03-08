@@ -8,6 +8,8 @@ coordinates
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **gmtdigitize** **-J**\ *parameters*
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [ **-A** ] [
 **-C**\ *device* ] [ **-D**\ *limit* ] [ **-F** ] [ **-L**\ *lpi* ] [

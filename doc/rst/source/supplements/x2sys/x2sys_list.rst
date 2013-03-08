@@ -7,6 +7,8 @@ x2sys\_list - Extract subset from crossover data base
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **x2sys\_list** **-C**\ *column* **-T**\ *TAG* [ *coedbase.txt* ] [
 **-A**\ *asymm\_max* ] [ **-E** ] [ **-F**\ *acdhiInNtTvwxyz* ] [
 **-I**\ [*list*\ ] ] [ **-L**\ [*corrtable*\ ] ] [ **-N**\ *nx\_min* ] [

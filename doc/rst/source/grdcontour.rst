@@ -7,6 +7,8 @@ grdcontour - Make contour map using a grid
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **grdcontour** *grid* **-C**\ *cont\_int*\ \|\ *cpt*
 **-J**\ *parameters* [ **-A**\ [**-**\ \|\ *annot\_int*][*labelinfo*]
 ] [ **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-D**\ *template* ] [

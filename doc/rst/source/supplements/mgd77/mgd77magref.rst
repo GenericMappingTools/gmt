@@ -7,6 +7,8 @@ mgd77magref - Evaluate the IGRF or CM4 magnetic field models
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **mgd77magref** [ *inputfile* ] [
 **-A**\ [**+a**\ *alt*\ **+t**\ *date*\ **+y**] ] [ **-C**\ *cm4file* ]
 [ **-D**\ *Dstfile* ] [ **-E**\ *f107file* ] [ **-F**\ *flags* ] [

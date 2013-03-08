@@ -7,6 +7,8 @@ minmax - Find extreme values in data tables
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **minmax** [ *table*] [ **-A**\ **a**\ \|\ **f**\ \|\ **s** ] [ **-C** ]
 [ **-EL**\ \|\ **l**\ \|\ **H**\ \|\ **h**\ *col* ] [
 **-I**\ [**p**\ ]\ *dx*\ [/*dy*\ [/*dz*...] ] [

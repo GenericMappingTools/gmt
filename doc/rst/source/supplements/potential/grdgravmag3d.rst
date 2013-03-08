@@ -8,6 +8,8 @@ Okabe
 Synopsis
 --------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **grdgravmag3d** [ **-C**\ *density* ] [ **-D** ] [ **-F**\ *xy\_file* ]
 [ **-G**\ *outputgrid.nc* ] [ **-L**\ *z\_observation* ] [ **-M** ]
 **-R**\ *west*/*east*/*south*/*north*\ [**r**] [ **-S**\ *radius* ] [

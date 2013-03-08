@@ -7,6 +7,8 @@ mgd77track - Plot track-line map of MGD77 cruises
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **mgd77track** *NGDC-ids*
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] **-J**\ *parameters* [
 **-A**\ [**c**\ ][*size*\ ][,\ *spacing*] ] [

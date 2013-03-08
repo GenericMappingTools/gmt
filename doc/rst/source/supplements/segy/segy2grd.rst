@@ -7,6 +7,8 @@ segy2grd - Converting SEGY data to a GMT grid
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **segy2grd** *segyfile* **-G**\ *grdfile*
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [

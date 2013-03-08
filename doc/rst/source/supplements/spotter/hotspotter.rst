@@ -7,6 +7,8 @@ hotspotter - Create CVA image from seamount locations
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **hotspotter** [*table*\ ] **-E**\ *rotfile* **-G**\ *CVAgrid*
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [ **-D**\ *factor* ] [

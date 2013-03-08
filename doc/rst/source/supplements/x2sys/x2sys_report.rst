@@ -7,6 +7,8 @@ x2sys\_report - Report statistics from crossover data base
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **x2sys\_report** **-C**\ *column* **-T**\ *TAG* [ *coedbase.txt* ] [
 **-A** ] [ **-I**\ [*list*\ ] ] [ **-L**\ [*corrtable*\ ] ] [
 **-N**\ *nx\_min* ] [ **-Qe**\ \|\ **i** ] [

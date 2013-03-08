@@ -7,6 +7,8 @@ x2sys\_get - Get track listing from the x2sys track index databases
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **x2sys\_get** **-T**\ *TAG* [ **-C** ] [ **-F**\ *flags* ] [ **-G** ] [
 **-L**\ [**+**\ ][*list*\ ] ] [ **-N**\ *flags* ] [
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-V**\ [*level*\ ]

@@ -7,6 +7,8 @@ grdvector - Plot vector field from two component grids
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **grdvector** *compx.nc* *compy.nc* **-J**\ *parameters* [ **-A** ] [
 **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ *cptfile* ] [
 **-G**\ *fill* ] [

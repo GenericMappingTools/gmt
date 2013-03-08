@@ -7,6 +7,8 @@ pscoast - Plot continents, shorelines, rivers, and borders on maps
 Synopsis
 --------
 
+.. include:: common_SYN_OPTs.rst_
+
 **pscoast** **-J**\ *parameters*
 **-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ] [
 **-A**\ *min\_area*\ [/*min\_level*/*max\_level*][\ **+r**\ \|\ **l**][\ **p**\ *percent*]

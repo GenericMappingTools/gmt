@@ -7,6 +7,8 @@ grdedit - Modify header or content of a grid
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **grdedit** *grid* [ **-A** ] [
 **-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*title*/*remark* ] [
 **-E** ] [ **-N**\ *table* ] [

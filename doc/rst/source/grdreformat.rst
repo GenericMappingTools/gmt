@@ -7,6 +7,8 @@ grdreformat - Convert between different grid formats
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **grdreformat** *ingrdfile*\ [*=id*\ [*/scale/offset*\ [*/NaNvalue*\ ]]]
 *outgrdfile*\ [*=id*\ [*/scale/offset*\ [*/NaNvalue*\ ]][\ *:driver*\ [*/datatype*\ ]]]
 [ **-N** ] [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [

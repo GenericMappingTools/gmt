@@ -7,6 +7,8 @@ psmask - Use data tables to clip or mask map areas with no coverage
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **psmask** [ *table* ]
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
 **-J**\ *parameters*

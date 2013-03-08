@@ -7,6 +7,8 @@ psxy - Plot lines, polygons, and symbols on maps
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **psxy** [ *table* ] **-J**\ *parameters*
 **-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ] [
 **-A**\ [**m**\ \|\ **p**] ] [ **-B**\ [**p**\ \|\ **s**]\ *parameters*

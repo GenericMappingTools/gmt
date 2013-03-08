@@ -8,6 +8,8 @@ trend1d - Fit a [weighted] [robust] polynomial [or Fourier] model for y
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **trend1d** [ *table* ] **-F**\ **xymrw\|p**
 **-N**\ [**f**\ ]\ *n\_model*\ [**r**\ ] [ *xy[w]file* ] [
 **-C**\ *condition\_number* ] [ **-I**\ [*confidence\_level*\ ] ] [

@@ -7,6 +7,8 @@ grdimage - Project grids or images and plot them on maps
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **grdimage** *grd\_z* \| *grd\_r grd\_g grd\_b* [
 **-A**\ *out\_img*\ **=**\ *driver* ] **-C**\ *cptfile* [
 **-D**\ [**r**\ ] ] **-J**\ *parameters* [

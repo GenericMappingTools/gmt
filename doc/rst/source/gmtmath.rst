@@ -7,6 +7,8 @@ gmtmath - Reverse Polish Notation (RPN) calculator for data tables
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **gmtmath** [ **-A**\ *t\_f(t).d* ] [ **-C**\ *cols* ] [ **-I** ] [
 **-N**\ *n\_col*\ [/*t\_col*] ] [ **-Q** ] [ **-S**\ [**f**\ \|\ **l**]
 ] [ **-T**\ *t\_min*/*t\_max*/*t\_inc*\ [**+**\ ]\|\ *tfile* ] [

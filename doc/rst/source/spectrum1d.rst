@@ -8,6 +8,8 @@ time-series
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **spectrum1d** [ *table* ] **-S**\ *segment\_size*] [
 **-C**\ [**xycnpago**\ ] ] [ **-D**\ *dt* ] [ **-L**\ [**h**\ \|\ **m**]
 ] [ **-N**\ [**+**\ ]\ *name\_stem* ] [ **-V**\ [*level*\ ] ] [ **-W** ]

@@ -7,6 +7,8 @@ grdseamount - Compute synthetic seamount (Gaussian or cone, circular or elliptic
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **grdseamount** [ *intable* ] **-R**\ *west*/*east*/*south*/*north*
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
 [ **-A**\ [*out/in*\ ] ] [ **-C** ] [ **-G**\ *grdfile* ] [ **-L**\ [*cut*] ]

@@ -7,6 +7,8 @@ x2sys\_init - Initialize a new x2sys track database
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **x2sys\_init** *TAG* **-D**\ *deffile* [
 **-Cc**\ \|\ **f**\ \|\ **g**\ \|\ **e** ] [ **-E**\ *suffix* ] [ **-F**
 ] [ **-Gd**\ \|\ **g** ] [ **-I**\ *dx*\ [/*dy*] ] [

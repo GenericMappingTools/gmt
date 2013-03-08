@@ -7,6 +7,8 @@ gmtspatial - Do geospatial operations on lines and polygons
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **gmtspatial** [ *table* ] [ **-C** ] [
 **-D**\ [**+f**\ *file*][\ **+a**\ *amax*][\ **+d**\ *dmax*][\ **+c\|C**\ *cmax*][\ **+s**\ *fact*]
 ] [ **-E**\ **+**\ \|\ **-** ] [ **-I**\ [**e**\ \|\ **i**] ] [

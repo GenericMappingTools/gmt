@@ -7,6 +7,8 @@ psimage - Place images or EPS files on maps
 Synopsis
 --------
 
+.. include:: common_SYN_OPTs.rst_
+
 **psimage** *imagefile* [ **-W**\ [**-**\ ]\ *width*\ [/*height*] \|
 **-E**\ *dpi* ] [ **-C**\ *xpos*/*ypos*\ [/*justify*] ] [ **-F**\ *pen*
 ] [ **-G**\ [**b**\ \|\ **f**\ \|\ **t**]\ *color* ] [ **-I** ] [

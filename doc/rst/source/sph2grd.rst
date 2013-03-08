@@ -7,6 +7,8 @@ sph2grd - Compute grid from spherical harmonic coefficients
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **sph2grd** [ *table* ] **-G**\ *grdfile*
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [ **-D**\ [**g**\ \|\ **n**\ ] ]
