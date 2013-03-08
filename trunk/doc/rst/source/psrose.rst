@@ -7,6 +7,8 @@ psrose - Plot a polar histogram (rose, sector, windrose diagrams)
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **psrose** [ *table* ] [ **-A**\ [**r**]*sector\_width* ] [
 **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ [*mode\_file*\ ] ]
 [ **-D** ] [ **-I** ] [ **-G**\ *fill* ] [ **-I** ] [ **-K** ] [

@@ -7,6 +7,8 @@ grd2xyz - Convert grid file to data table
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **grd2xyz** *grid* [ **-C**\ [**f**\ \|\ **i**] ] [ **-N**\ *nodata* ] [
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-V**\ [*level*\ ]
 ] [ **-W**\ [*weight*\ ] ] [ **-Z**\ [*flags*\ ] ] [

@@ -7,6 +7,8 @@ gmtwhich - Find full path to specified files
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **gmtwhich** *files* [ **-C** ] [ **-D** ] [ **-V**\ [*level*\ ] ]
 
 `Description <#toc2>`_

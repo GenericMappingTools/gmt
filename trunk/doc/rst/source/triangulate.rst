@@ -8,6 +8,8 @@ Cartesian table data [method]
 Synopsis
 --------
 
+.. include:: common_SYN_OPTs.rst_
+
 **triangulate** [ *table* ] [ **-Dx**\ \|\ **y** ] [ **-E**\ *empty* ] [
 **-G**\ *grdfile* ] [
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]

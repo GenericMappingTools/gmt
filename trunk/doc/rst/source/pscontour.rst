@@ -7,6 +7,8 @@ pscontour - Contour table data by direct triangulation [method]
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **pscontour** [ *table* ] **-C**\ *cptfile* **-J**\ *parameters*
 **-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**] [
 **-A**\ [**-**\ ][*labelinfo*\ ] ] [

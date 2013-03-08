@@ -7,6 +7,8 @@ mgd77list - Extract data from MGD77 files
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **mgd77list** *NGDC-ids* **-F**\ *columns*\ [,*logic*][:\ *bittests*] [
 **-A**\ [**+**\ ]\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **m**\ \|\ **t**\ *code*
 ] [ **-C**\ **f**\ \|\ **g**\ \|\ **e** ] [

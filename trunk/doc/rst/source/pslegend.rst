@@ -7,6 +7,8 @@ pslegend - Plot legends on maps
 Synopsis
 --------
 
+.. include:: common_SYN_OPTs.rst_
+
 **pslegend** [ *textfile* ]
 **-D**\ [**x**\ ]\ *lon*/*lat*/*width*\ [/*height*]/\ *just*\ [/*dx*/*dy*]
 [ **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ *dx*/*dy* ] [

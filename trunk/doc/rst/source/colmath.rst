@@ -7,6 +7,8 @@ colmath - Do mathematics on columns from data tables
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **colmath** [ *table* ] [ **-A** ] [ **-N** ] [ **-Q**\ *seg* ] [
 **-S**\ [**~**\ ]\ *"search string"* ] [ **-T** ] [ **-V**\ [*level*\ ]
 ] [ **-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [

@@ -7,6 +7,8 @@ sphinterpolate - Spherical gridding in tension of data on a sphere
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **sphinterpolate** [ *table* ] **-G**\ *grdfile* [
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
 ] [ **-Q**\ *mode*\ [/*options*] ] [

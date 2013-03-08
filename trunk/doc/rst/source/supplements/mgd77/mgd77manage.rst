@@ -7,6 +7,8 @@ mgd77manage - Manage the content of MGD77+ files
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **mgd77manage** *NGDC-ids* [
 **-A**\ [**+**\ ]\ **a**\ \|\ **c**\ \|\ **d**\ \|\ **D**\ \|\ **e**\ \|\ **E**\ \|\ **g**\ \|\ **i**\ \|\ **n**\ \|\ **t**\ \|\ **T**\ *fileinfo*
 ] [ **-C**\ **f**\ \|\ **g**\ \|\ **e** ] [

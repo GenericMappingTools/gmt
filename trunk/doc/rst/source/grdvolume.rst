@@ -7,6 +7,8 @@ grdvolume - Calculate grid volume and area constrained by a contour
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **grdvolume** *grdfile* [ **-C**\ *cval* or **-C**\ *low/high/delta* ] [
 **-L**\ *base* ] [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
 **-S**\ [*unit*\ ] ] [ **-T**\ [**c**\ \|\ **h**] ] [

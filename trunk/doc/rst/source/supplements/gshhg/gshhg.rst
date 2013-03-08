@@ -7,6 +7,8 @@ gshhg - Extract data tables from binary GSHHG or WDBII data files
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **gshhg** *binaryfile.b* [ **-A**\ *min* ] [ **-G** ] [ **-I**\ *id* ] [
 **-L** ] [ **-N**\ *level* ] [ **-Qe**\ \|\ **i** ] [
 **-bo**\ [*ncols*\ ][*type*\ ] ] [ **-o**\ *cols*\ [,*...*] ] >

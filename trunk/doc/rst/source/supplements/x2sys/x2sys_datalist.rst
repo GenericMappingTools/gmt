@@ -7,6 +7,8 @@ x2sys\_datalist - Extract content of track data files
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **x2sys\_datalist** *track(s)* **-T**\ *TAG* [ **-A** ] [ **-E** ] [
 **-F**\ *name1*,\ *name2*,...) ] [ **-I**\ [*list*\ ] ] [
 **-L**\ [*corrtable*\ ] ] [

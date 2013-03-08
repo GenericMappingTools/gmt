@@ -8,6 +8,8 @@ dimensions
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **greenspline** [ *table* ] [
 **-A**\ [**1**\ \|\ **2**\ \|\ **3**\ \|\ **4**\ \|\ **5**,]\ *gradfile*
 ] [ **-C**\ *cut*\ [/*file*] ] [ **-D**\ *mode* ] [ **-G**\ *grdfile* ]

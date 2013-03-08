@@ -7,6 +7,8 @@ x2sys\_solve - Determine least-squares systematic correction from crossovers
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **x2sys\_solve** **-C**\ *column* **-T**\ *TAG* **-E**\ *mode* [
 *COE\_list.d* ] [ **-V**\ [*level*\ ] ] [ **-W[u]** ] [
 **-bi**\ [*ncols*\ ][*type*\ ] ]

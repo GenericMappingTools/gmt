@@ -7,6 +7,8 @@ nearneighbor - Grid table data using a "Nearest neighbor" algorithm
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **nearneighbor** [ *table* ] **-G**\ *out\_grdfile*
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
 **-N**\ *sectors*\ [/*min\_sectors*]

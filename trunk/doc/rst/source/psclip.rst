@@ -7,6 +7,8 @@ psclip - Initialize or terminate polygonal clip paths
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **psclip** [ *table* ] **-J**\ *parameters*
 **-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ] [
 **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [

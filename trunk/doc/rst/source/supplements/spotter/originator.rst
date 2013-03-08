@@ -7,6 +7,8 @@ originator - Associate seamounts with nearest hotspot point sources
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **originator** [ *table* ] **-E**\ [**+**\ ]\ *rotfile*
 **-F**\ [**+**\ ]\ *hs\_file* [ **-D**\ *d\_km* ] [ **-L**\ [*flag*\ ] ]
 [ **-N**\ *upper\_age* ] [ **-Q**\ *r/t* ] [ **-S**\ [*n\_hs*\ ] ] [

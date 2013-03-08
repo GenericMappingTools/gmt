@@ -7,6 +7,8 @@ grdclip - Clip the range of grids
 Synopsis
 --------
 
+.. include:: common_SYN_OPTs.rst_
+
 **grdclip** *ingrid* **-G**\ *outgrid* [
 **-R**\ *west*/*east*/*south*/*north*\ [**r**] ] [ **-Sa**\ *high/above* ]
 [ **-Sb**\ *low/below* ] [ **-Si**\ *low/high/between* ] [ **-Sr**\ *old/new* ]

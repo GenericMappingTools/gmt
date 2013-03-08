@@ -7,6 +7,8 @@ gmtdefaults - List current **GMT** default parameters
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **gmtdefaults** [ **-D**\ [**u**\ \|\ **s**] ]
 
 `Description <#toc2>`_

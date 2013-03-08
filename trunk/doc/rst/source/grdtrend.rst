@@ -7,6 +7,8 @@ grdtrend - Fit trend surface to grids and compute residuals
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **grdtrend** *grdfile* **-N**\ *n\_model*\ [**r**\ ] [ **-D**\ *diff.nc*
 ] [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
 **-T**\ *trend.nc* ] [ **-V**\ [*level*\ ] ] [ **-W**\ *weight.nc* ]

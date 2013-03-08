@@ -7,6 +7,8 @@ psmeca - Plot focal mechanisms on maps
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 psmeca [ *table* ] **-J**\ *parameters*
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [
 **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [

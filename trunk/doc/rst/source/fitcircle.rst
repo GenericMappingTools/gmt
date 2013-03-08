@@ -8,6 +8,8 @@ circle to points on a sphere.
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **fitcircle** [ *table* ] **-L**\ *norm* [ **-S**\ [*lat*\ ] ] [
 **-V**\ [*level*\ ] ] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [

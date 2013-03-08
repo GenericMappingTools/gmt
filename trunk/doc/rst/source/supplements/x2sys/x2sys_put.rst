@@ -7,6 +7,8 @@ x2sys\_put - Update track index database from track bin file
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **x2sys\_put** [ *info.tbf* ] **-T**\ *TAG* [ **-D** ] [ **-F** ] [
 **-V**\ [*level*\ ] ]
 

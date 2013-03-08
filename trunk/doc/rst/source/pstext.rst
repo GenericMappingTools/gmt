@@ -7,6 +7,8 @@ pstext - Plot or typeset text on maps
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **pstext** [ *textfiles* ] **-J**\ *parameters*
 **-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ] [
 **-A** ] [ **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ *dx/dy*

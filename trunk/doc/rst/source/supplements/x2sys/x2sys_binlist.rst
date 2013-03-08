@@ -7,6 +7,8 @@ x2sys\_binlist - Create bin index listing from track data files
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **x2sys\_binlist** *track(s)* **-T**\ *TAG* [ **-D** ] [ **-E** ] [
 **-V**\ [*level*\ ] ]
 

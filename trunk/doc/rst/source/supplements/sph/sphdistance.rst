@@ -7,6 +7,8 @@ sphdistance - Make grid of distances to nearest points on a sphere
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **sphdistance** [ *table* ] **-G**\ *grdfile* [ **-C** ] [ **-E** ] [
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
 ] [ **-L**\ *unit* ] [ **-Q**\ *voronoi.d* ] [

@@ -8,6 +8,8 @@ conversions and geodesy
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **mapproject** [ *table* ] **-J**\ *parameters*
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [
 **-Ab**\ \|\ **B**\ \|\ **f**\ \|\ **F**\ \|\ **o**\ \|\ **O**\ [*lon0*/*lat0*]

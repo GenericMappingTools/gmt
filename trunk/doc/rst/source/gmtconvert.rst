@@ -7,6 +7,8 @@ gmtconvert - Convert, Paste, and/or Extract columns from data tables
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **gmtconvert** [ *table* ] [ **-A** ] [ **-D**\ [*template*\ ] ] [
 **-E**\ [**f**\ \|\ **l**\ \|\ **m**\ *stride*] ] [ **-L** ] [
 **-I**\ [**tsr**\ ] ] [ **-N** ] [ **-Q**\ *seg* ] [

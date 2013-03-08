@@ -7,6 +7,8 @@ psbasemap - Plot *PostScript* base maps
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **psbasemap** **-J**\ *parameters*
 **-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ] [
 **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [

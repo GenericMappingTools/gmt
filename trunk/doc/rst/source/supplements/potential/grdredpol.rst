@@ -7,6 +7,8 @@ grdredpol - Compute the Continuous Reduction To the Pole, AKA differential RTP.
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **grdredpol** *anom\_grd* **-G**\ *rtp\_grd* [**-C**\ *<dec/dip>*]
 [**-E**\ *<dec\_grd/dip\_grd>*] [**-F**\ *<m/n>*] [**-M**\ *<m\|r>*]
 [**-N**\ ] [**-W**\ *<win\_width>*] [

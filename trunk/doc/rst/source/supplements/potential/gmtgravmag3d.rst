@@ -8,6 +8,8 @@ method of Okabe
 Synopsis
 --------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **gmtgravmag3d** [ **-C**\ *density* ] [ **-D** ] [ **-E**\ *thickness*
 ] [ **-F**\ *xy\_file* ] [ **-G**\ *outputgrid.nc* ] [
 **-H**\ *f\_dec*/*f\_dip*/*m\_int*/*m\_dec*/*m\_dip* ] [

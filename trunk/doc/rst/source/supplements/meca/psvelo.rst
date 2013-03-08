@@ -7,6 +7,8 @@ psvelo - Plot velocity vectors, crosses, and wedges on maps
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **psvelo** [ *table* ] **-J**\ *parameters*
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [ **-A**\ *parameters*
 ] [ **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-D**\ *sigma\_scale*

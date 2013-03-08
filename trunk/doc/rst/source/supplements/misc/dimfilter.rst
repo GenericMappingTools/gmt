@@ -7,6 +7,8 @@ dimfilter - Directional filtering of 2-D gridded files in the space (or time) do
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **dimfilter** *input\_file.nc* **-D**\ *distance\_flag*
 **-F**\ *<filtertype><width>*\ [*mode*\ ] **-G**\ *output\_file.nc*
 **-N**\ *<filtertype><n\_sectors>* [ **-Q**\ *cols* ] [

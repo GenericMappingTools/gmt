@@ -7,6 +7,8 @@ backtracker - Generate forward and backward flowlines and hotspot tracks
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **backtracker** [ *table* ] **-E**\ *rot\_file* \|
 **-e**\ *lon*/*lat*/*angle* [ **-A**\ [*young*/*old*] ] [
 **-Df**\ \|\ **b** ] [ **-F**\ *drift.txt* ] [

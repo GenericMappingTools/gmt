@@ -7,6 +7,8 @@ grdpmodeler - Evaluate a plate model on a geographic grid
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **grdpmodeler** *agegrdfile* **-E**\ *rot\_file* **-G**\ *outgrdfile*
 **-S**\ **a**\ \|\ **d**\ \|\ **r**\ \|\ **w**\ \|\ **x**\ \|\ **y**\ \|\ **X**\ \|\ **Y**
 [ **-F**\ *polygonfile* ] [ **-T**\ *age* ] [ **-V**\ [*level*\ ] ] [

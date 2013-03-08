@@ -7,6 +7,8 @@ gmt2kml - Convert GMT data tables to KML files for Google Earth
 Synopsis
 --------
 
+.. include:: common_SYN_OPTs.rst_
+
 **gmt2kml** [ *table* ] [
 **-A**\ **a**\ \|\ **g**\ \|\ **s**\ [*alt*\ \|\ **x**\ *scale*] ] [
 **-C**\ *cpt* ] [ **-D**\ *descriptfile* ] [ **-E**\ [*altitude*\ ] ] [

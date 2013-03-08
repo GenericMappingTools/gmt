@@ -7,6 +7,8 @@ psxyz - Plot lines, polygons, and symbols in 3-D
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **psxyz** [ *table* ] **-J**\ *parameters*
 **-Jz**\ \|\ **Z**\ *parameters*
 **-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ] [

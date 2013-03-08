@@ -7,6 +7,8 @@ grdview - Create 3-D perspective image or surface mesh from a grid
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **grdview** *relief\_file* **-J**\ *parameters* [
 **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ *cptfile*] [
 **-G**\ *drapefile* \| **-G**\ *grd\_r*,\ *grd\_g*,\ *grd\_b* ] [

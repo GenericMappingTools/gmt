@@ -7,6 +7,8 @@ pscoupe - Plot cross-sections of focal mechanisms
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **pscoupe** [ *files* ] **-J**\ *parameters*
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] **-A**\ *parameters* [
 **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-E**\ *fill* ] [

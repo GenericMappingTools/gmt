@@ -7,6 +7,8 @@ grdcut - Extract subregion from a grid
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **grdcut** *ingrid* **-G**\ *outgrid*
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [
 **-S**\ [**n**\ ]\ *lon/lat/radius*\ [*unit*\ ] ] [ **-V**\ [*level*\ ]

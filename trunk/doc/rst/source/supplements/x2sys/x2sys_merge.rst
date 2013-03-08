@@ -8,6 +8,8 @@ x2sys\_merge - Merge an updated COEs table (smaller) into the main table
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: ../../common_SYN_OPTs.rst_
+
 **x2sys\_merge** **-A**\ *main\_COElist.d* **-M**\ *new\_COElist.d*
 
 `Description <#toc2>`_

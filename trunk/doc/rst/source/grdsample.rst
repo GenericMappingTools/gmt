@@ -7,6 +7,8 @@ grdsample - Resample a grid onto a new lattice
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **grdsample** *in\_grdfile* **-G**\ *out\_grdfile* [
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
 ] [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-T** ] [

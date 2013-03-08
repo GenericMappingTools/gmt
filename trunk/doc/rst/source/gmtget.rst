@@ -7,6 +7,8 @@ gmtget - Get individual **GMT** default parameters
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **gmtget** [ **-G**\ *defaultsfile* ] [ **-L** ] *PARAMETER1* [
 *PARAMETER2* *PARAMETER3* ... ]
 

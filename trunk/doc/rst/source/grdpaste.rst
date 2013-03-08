@@ -7,6 +7,8 @@ grdpaste - Join two grids along their common edge
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **grdpaste** *file\_a.nc file\_b.nc* **-G**\ *outfile.nc* [
 **-V**\ [*level*\ ] ] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ]
 

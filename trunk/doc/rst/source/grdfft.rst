@@ -8,6 +8,8 @@ frequency) domain
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **grdfft** *ingrid* [ *ingrid2* ] **-G**\ *outfile* [ **-A**\ *azimuth*
 ] [ **-C**\ *zlevel* ] [ **-D**\ [*scale*\ \|\ **g**] ] [
 **-E**\ [**r**\ \|\ **x**\ \|\ **y**][\ **w**\ [**k**\ ]] ] [

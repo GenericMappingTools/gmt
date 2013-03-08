@@ -7,6 +7,8 @@ gmtselect - Select data table subsets based on multiple spatial criteria
 `Synopsis <#toc1>`_
 -------------------
 
+.. include:: common_SYN_OPTs.rst_
+
 **gmtselect** [ *table* ] [
 **-A**\ *min\_area*\ [/*min\_level*/*max\_level*][\ **+r**\ \|\ **l**][\ **p**\ *percent*]
 ] [ **-C**\ *dist*\ [*unit*\ ]/\ *ptfile* ] [
