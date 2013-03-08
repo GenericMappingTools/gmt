@@ -14,11 +14,11 @@ SIZE=$1
 COL=16
 ROW=35
 
-if [ $SIZE = letter ] ; then
+if [ "X"$SIZE"" = "Xletter" ] ; then
 	WIDTH=10.5
 	HEIGHT=8.0
 	ORIENT=landscape
-elif [ $SIZE = a4 ] ; then
+elif [ "X"$SIZE"" = "Xa4" ] ; then
 	WIDTH=11.2
 	HEIGHT=7.8
 else

@@ -4028,7 +4028,7 @@ void MGD77_end (struct GMT_CTRL *C, struct MGD77_CONTROL *F)
 	for (i = 0; i < F->n_MGD77_paths; i++) GMT_free (C, F->MGD77_datadir[i]);
 	if (F->MGD77_datadir) GMT_free (C, F->MGD77_datadir);
 	for (i = 0; i < F->n_out_columns; i++) if (F->desired_column[i]) free ((void *)F->desired_column[i]);
-	GMT_free (C, F->desired_column);
+	if (F->desired_column) GMT_free (C, F->desired_column);
 }
 
 void MGD77_Cruise_Explain (struct GMT_CTRL *C)
@@ -4401,8 +4401,8 @@ void MGD77_Free_Dataset (struct GMT_CTRL *C, struct MGD77_DATASET **D)
 	for (i = 0; i < MGD77_N_SETS; i++) if (S->flags[i]) GMT_free (C, S->flags[i]);
 	for (i = 0; i < 2; i++) if (S->H.mgd77[i]) GMT_free (C, S->H.mgd77[i]);
 	MGD77_free_plain_mgd77 (C, &S->H);
-	GMT_free (C, S->H.author);
-	GMT_free (C, S->H.history);
+	if (S->H.author) GMT_free (C, S->H.author);
+	if (S->H.history) GMT_free (C, S->H.history);
 	GMT_free (C, S);
 	D = NULL;
 }

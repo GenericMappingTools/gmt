@@ -487,7 +487,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	}
 	
 	if (Ctrl->E.active) {	/* Create profiles rather than read them */
-		uint64_t dim[4] = {1, 0, 3, 0};
+		// uint64_t dim[4] = {1, 0, 3, 0};
 		double xyz[2][3];
 		
 		if ((Din = GMT_create_dataset (GMT, 1, 0, 3, 0, true)) == NULL) Return (API->error);
@@ -704,6 +704,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, Dout->io_mode, NULL, Ctrl->Out.file, Dout) != GMT_OK) {
 			Return (API->error);
 		}
+		GMT_free_dataset (GMT, &Din);
 //		GMT_free_dataset (GMT, &Dout);
 //		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Dout) != GMT_OK) {
 //			Return (API->error);

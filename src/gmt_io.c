@@ -6241,8 +6241,8 @@ void GMT_free_segment (struct GMT_CTRL *C, struct GMT_DATASEGMENT *segment)
 
 	unsigned int col, k;
 	if (!segment) return;	/* Do not try to free NULL pointer */
-	for (col = 0; col < segment->n_columns; col++) GMT_free (C, segment->coord[col]);
-	GMT_free (C, segment->coord);
+	for (col = 0; col < segment->n_columns; col++) if (segment->coord[col]) GMT_free (C, segment->coord[col]);
+	if (segment->coord) GMT_free (C, segment->coord);
 	if (segment->min) GMT_free (C, segment->min);
 	if (segment->max) GMT_free (C, segment->max);
 	if (segment->label) free ( segment->label);
@@ -6629,8 +6629,8 @@ void GMT_free_ogr (struct GMT_CTRL *C, struct GMT_OGR **G, unsigned int mode)
 		if (mode == 1 && (*G)->name && (*G)->name[k]) free ((*G)->name[k]);
 		if ((*G)->value && (*G)->value[k]) free ((*G)->value[k]);
 	}
-	GMT_free (C, (*G)->value);
-	GMT_free (C, (*G)->dvalue);
+	if ((*G)->value) GMT_free (C, (*G)->value);
+	if ((*G)->dvalue) GMT_free (C, (*G)->dvalue);
 	if (mode == 0) return;	/* That's all we do for now */
 	/* Here we free up everything */
 	GMT_free (C, (*G)->name);

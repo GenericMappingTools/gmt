@@ -175,7 +175,7 @@ int GMT_grdcut_parse (struct GMTAPI_CTRL *C, struct GRDCUT_CTRL *Ctrl, struct GM
 int GMT_grdcut (void *V_API, int mode, void *args)
 {
 	int error = 0;
-	unsigned int nx_old, ny_old;
+	unsigned int nx_old, ny_old, add_mode = 0U;
 	uint64_t node;
 
 	double wesn_new[4], wesn_old[4];
@@ -269,6 +269,7 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 			wesn_new[YHI] = G->header->wesn[YHI] - col0 * G->header->inc[GMT_Y];
 		}
 		GMT_free_aligned (GMT, G->data);	/* Free the grid array only as we need the header below */
+		add_mode = GMT_IO_RESET;	/* Pass this to allow reading the data again. */
 	}
 	else if (Ctrl->S.active) {	/* Must determine new region via -S, so only need header */
 		int row, col;
@@ -419,7 +420,7 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 	GMT_memcpy (wesn_old, G->header->wesn, 4, double);
 	nx_old = G->header->nx;		ny_old = G->header->ny;
 	
-	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn_new, Ctrl->In.file, G) == NULL) {	/* Get subset */
+	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY | add_mode, wesn_new, Ctrl->In.file, G) == NULL) {	/* Get subset */
 		Return (API->error);
 	}
 
