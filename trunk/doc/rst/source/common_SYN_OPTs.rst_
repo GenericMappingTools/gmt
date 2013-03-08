@@ -1,0 +1,3 @@
+.. |SYN_OPT-R| replace:: **-R**\ [*unit*]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**]
+
+.. |SYN_OPT-V| replace:: **-V**\ [*level*]

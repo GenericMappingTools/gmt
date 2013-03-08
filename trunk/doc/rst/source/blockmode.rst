@@ -2,18 +2,19 @@
 blockmode
 *********
 
-blockmode - Block average (*x*,\ *y*,\ *z*) data tables by mode
-estimation
+blockmode - Block average (*x*,\ *y*,\ *z*) data tables by mode estimation
 
 Synopsis
 --------
 
+.. include:: common_SYN_OPTs.rst_
+
 **blockmode** [ *table* ]
-**-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*][\ **=**\ \|\ **+**]]
-**-R**\ [*unit*]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] [ **-C** ] [
-**-D**\ [*width*]\ [**+c**][**+l**\ |\ **+h**\ ] [
-**-E** ] [ **-E**\ **r**\ \|\ **s**\ [**-**] ] [ **-Q** ] [
-**-V**\ [*level*\ ] ] [ **-W**\ [**i**\ \|\ **o**] ] [
+**-I**\ *xinc*\ [*unit*][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*][\ **=**\ \|\ **+**]]
+|SYN_OPT-R| [ **-C** ]
+[ **-D**\ [*width*]\ [**+c**][**+l**\ \|\ **+h** ]
+[ **-E** ] [ **-E**\ **r**\ \|\ **s**\ [**-**] ] [ **-Q** ]
+[ |SYN_OPT-V| ] [ **-W**\ [**i**\ \|\ **o**] ] [
 **-b**\ [*ncol*][**t**][\ **+L**\ \|\ **+B**] ] [
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
 **-h**\ [**i**\ \|\ **o**][*n*] ] [
@@ -53,10 +54,12 @@ Optional Arguments
     **-bi**\ [*ncols*][*type*]] holding (*x*,\ *y*,\ *z*\ [,\ *w*])
     data values. [\ *w*] is an optional weight for the data. If no file
     is specified, **blockmode** will read from standard input.
+
 **-C**
     Use the center of the block as the output location [Default uses the
     modal xy location (but see **-Q**)]. **-C** overrides **-Q**.
-**-D**\ [*width*]\ [**+c**][**+l**\ |\ **+h**]
+
+**-D**\ [*width*]\ [**+c**][**+l**\ \|\ **+h**]
     Perform unweighted mode calculation via histogram binning, using the
     specified histogram *width*. Append **+c** to center bins so that
     their mid point is a multiple of *width* [uncentered].
@@ -65,8 +68,8 @@ Optional Arguments
     If *width* is not given it will default to 1 provided your data set only
     contains integers. Also, for integer data and integer bin *width* we
     enforce bin centering (**+c**) and select the lowest mode (**+l**) if
-    there are multiples. [Default mode is normally the Least Median of
-    Squares (LMS) statistic].
+    there are multiples. [Default mode is normally the Least Median of Squares (LMS) statistic].
+
 **-E**
     Provide Extended report which includes **s** (the L1 scale of the
     mode), **l**, the lowest value, and **h**, the high value for each
