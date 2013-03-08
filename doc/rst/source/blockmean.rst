@@ -7,11 +7,13 @@ blockmean - Block average (*x*,\ *y*,\ *z*) data tables by L2 norm
 Synopsis
 --------
 
+.. include:: common_SYN_OPTs.rst_
+
 **blockmean** [ *table* ]
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
-**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] [ **-C** ] [
-**-E** ] [ **-S**\ [**m**\ \|\ **n**\ \|\ **s**\ \|\ **w**] ] [
-**-V**\ [*level*\ ] ] [ **-W**\ [**i**\ \|\ **o**] ] [
+|SYN_OPT-R| [ **-C** ] [
+**-E** ] [ **-S**\ [**m**\ \|\ **n**\ \|\ **s**\ \|\ **w**] ]
+[ |SYN_OPT-V| ] [ **-W**\ [**i**\ \|\ **o**] ] [
 **-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [ **-h**\ [**i**\ \|\ **o**][*n*] ] [
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]

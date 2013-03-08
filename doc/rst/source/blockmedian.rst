@@ -4,14 +4,16 @@ blockmedian
 
 blockmedian - Block average (*x*,\ *y*,\ *z*) data tables by L1 norm
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
+
+.. include:: common_SYN_OPTs.rst_
 
 **blockmedian** [ *table* ]
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
-**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] [ **-C** ] [
+|SYN_OPT-R| [ **-C** ] [
 **-E**\ [**b**\ ] ] [ **-E**\ **r**\ \|\ **s**\ [**-**\ ] ] [ **-Q** ] [
-**-T**\ *quantile* ] [ **-V**\ [*level*\ ] ] [
+**-T**\ *quantile* ] [ |SYN_OPT-V| ] [
 **-W**\ [**i**\ \|\ **o**] ] [
 **-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [

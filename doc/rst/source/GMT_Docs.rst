@@ -179,7 +179,7 @@ General Public License as published by the Free Software Foundation.
 
 The *GMT* package is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the file in the
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the file ``LICENSE.TXT`` in the
 *GMT* directory or the for more details.
 
 Permission is granted to make and distribute verbatim copies of this
@@ -228,7 +228,7 @@ particularly in the Earth and Ocean Sciences but the global collective
 of *GMT* users is incredibly diverse. Development has at times been
 rapid, and numerous releases have seen the light of day since the early
 versions. For a detailed history of the changes from release to release,
-see file ChangeLog in the main *GMT* directory. For a nightly snapshot of ongoing
+see file ``ChangeLog`` in the main *GMT* directory. For a nightly snapshot of ongoing
 activity, see the online page. For a historical perspective of the
 origins and development of *GMT* see the video podcast “20 Years with
 GMT – The Generic Mapping Tools” produced following a seminar given by
@@ -480,12 +480,12 @@ Here is a list of recent enhancements to specific programs:
 
 #. `gmtmath <gmtmath.html>`_ and
    `grdmath <grdmath.html>`_ now support simple
-   replacement macros via user files and . This mechanism works by
+   replacement macros via user files ``.grdmath`` and ``.gmtmath``. This mechanism works by
    replacing the macro name with the equivalent arguments in the program
    argument lists.
 
 #. `grdvolume <grdvolume.html>`_ has enhanced **-T**,
-   now **-T**\ [**c**\ :math:`|`\ **h**] for ORS estimates based on max
+   now **-T**\ [**c**\ \|\ **h**] for ORS estimates based on max
    curvature or height.
 
 #. `project <project.html>`_ has added **-G**...[+] so
@@ -559,7 +559,7 @@ established scripts and the habits of many
 situation we have introduced a configuration that allows
 `GMT <http://gmt.soest.hawaii.edu>`_ to tolerate and process
 obsolete program syntax (to the extent possible). To activate you must
-make sure **GMT\_COMPAT** is not set to “no” in your file. When not
+make sure **GMT\_COMPAT** is not set to “no”in your ``ConfigUser.cmake`` file. When not
 running in compatibility mode any obsolete syntax will be considered as
 errors. We recommend that users with prior
 `GMT <http://gmt.soest.hawaii.edu>`_ 4 experience run
@@ -582,7 +582,7 @@ correctly with a warning under compatibility mode:
    addition, a few defaults are no longer recognized, such as N\_COPIES,
    PS\_COPIES, DOTS\_PR\_INCH, GMT\_CPTDIR, PS\_DPI, and PS\_EPS,
    TRANSPARENCY. This also means the old common option **-c** for
-   specifying *PostScript* copies is no longer available.
+   specifying *PostScript* copies is no longer available.
 
 #. **Units**: The unit abbreviation for arc seconds is finally **s**
    instead of **c**, with the same change for upper case in some clock
@@ -754,7 +754,7 @@ correctly with a warning under compatibility mode:
    Also, **-A** (no arguments) is deprecated; use **-Az** instead.
 
 #. `**dbase/grdraster** <run:../man/dbase/grdraster.html>`__: The
-   H\ *skip* field in is no longer expected as we automatically
+   H\ *skip* field in ``grdraster.info`` is no longer expected as we automatically
    determine if a raster has a
    `GMT <http://gmt.soest.hawaii.edu>`__ header. Also, to output
    *x,y,z* triplets instead of writing a grid now requires **-T**.
@@ -1219,13 +1219,13 @@ listing sorted by program purpose, see Section [sec:purpose].
 +------------------------------------------------+---------------------------------------------------------------------+
 |  **gmtdp** `(...) <gmtdp.html>`_               | Line reduction using the Douglas-Peucker algorithm                  |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **gmtget** `(...) <gmtget.html>`_             | Retrieve selected parameters in current file                        |
+|  **gmtget** `(...) <gmtget.html>`_             | Retrieve selected parameters in current ``gmt.conf`` file           |
 +------------------------------------------------+---------------------------------------------------------------------+
 |  **gmtmath** `(...) <gmtmath.html>`_           | Mathematical operations on table data                               |
 +------------------------------------------------+---------------------------------------------------------------------+
 |  **gmtselect** `(...) <gmtselect.html>`_       | Select subsets of table data based on multiple spatial criteria     |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **gmtset** `(...) <gmtset.html>`_             | Change selected parameters in current file                          |
+|  **gmtset** `(...) <gmtset.html>`_             | Change selected parameters in current ``gmt.conf`` file             |
 +------------------------------------------------+---------------------------------------------------------------------+
 |  **gmtspatial** `(...) <gmtspatial.html>`_     | Geospatial operations on lines and polygons                         |
 +------------------------------------------------+---------------------------------------------------------------------+
@@ -1859,7 +1859,7 @@ converts geodetic latitudes into one of several possible auxiliary
 latitudes that are better suited for the spherical approximation. While
 both settings have default values to best approximate geodesic distances
 (*authalic* mean radius and latitudes), expert users can choose from a
-range of options as detailed in the man page.
+range of options as detailed in the ``gmt.conf`` man page.
 
 Geodesic distances
 ^^^^^^^^^^^^^^^^^^
@@ -1895,15 +1895,15 @@ recommend you always supply the desired unit explicitly.
 
 [sec:gmt.conf]
 
-Overview and the  file
-~~~~~~~~~~~~~~~~~~~~~~
+Overview and the gmt.conf file
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 There are about 100 parameters which can be adjusted individually to
 modify the appearance of plots or affect the manipulation of data. When
 a program is run, it initializes all parameters to the
-*GMT*\ defaults [9]_, then tries to open the file in the current
+*GMT*\ defaults [9]_, then tries to open the file ``gmt.conf`` in the current
 directory [10]_. If not found, it will look for that file in a
-sub-directory of your home directory, and finally in your home directory
+sub-directory ``/.gmt`` of your home directory, and finally in your home directory
 itself. If successful, the program will read the contents and set the
 default values to those provided in the file. By editing this file you
 can affect features such as pen thicknesses used for maps, fonts and
@@ -1915,7 +1915,7 @@ parameters and their default values can be found in the
 [fig:GMT:sub:`D`\ efaults\ :sub:`1`\ a],
 [fig:GMT:sub:`D`\ efaults\ :sub:`1`\ b], and
 [fig:GMT:sub:`D`\ efaults\ :sub:`1`\ c] show the parameters that affect
-plots). You may create your own files by running
+plots). You may create your own ``gmt.conf`` files by running
 `gmtdefaults <gmtdefaults.html>`_ and then modify those
 parameters you want to change. If you want to use the parameter settings
 in another file you can do so by specifying ``+<defaultfile>`` on the
@@ -1924,7 +1924,7 @@ settings, corresponding perhaps to the unique styles required by
 different journals or simply reflecting font changes necessary to make
 readable overheads and slides. Note that any arguments given on the
 command line (see below) will take precedent over the default values.
-E.g., if your file has *x* offset = 1\ **i** as default, the
+E.g., if your ``gmt.conf`` file has *x* offset = 1\ **i** as default, the
 **-X**\ 1.5\ **i** option will override the default and set the offset
 to 1.5 inches.
 
@@ -1935,28 +1935,28 @@ placed in a separate parameter file:
    so many options, many of which are rarely or never changed (such as
    the ellipsoid used for map projections).
 
-#. It is convenient to keep separate files for specific projects, so
+#. It is convenient to keep separate ``gmt.conf`` files for specific projects, so
    that one may achieve a special effect simply by running
-   *GMT* commands in the directory whose file has the desired settings.
+   *GMT* commands in the directory whose ``gmt.conf`` file has the desired settings.
    For example, when making final illustrations for a journal article
    one must often standardize on font sizes and font types, etc. Keeping
-   all those settings in a separate file simplifies this process and
+   all those settings in a separate ``gmt.conf`` file simplifies this process and
    will allow you to generate those illustrations with the same settings
    later on. Likewise, *GMT* scripts that make figures for PowerPoint
    presentations often use a different color scheme and font size than
    output intended for laser printers. Organizing these various
-   scenarios into separate files will minimize headaches associated with
+   scenarios into separate ``gmt.conf`` files will minimize headaches associated with
    micro-editing of illustrations.
 
 Changing `GMT <http://gmt.soest.hawaii.edu>`_ defaults
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-As mentioned, *GMT* programs will attempt to open a file named . At
+As mentioned, *GMT* programs will attempt to open a file named  ``gmt.conf``. At
 times it may be desirable to override that default. There are several
 ways in which this can be accomplished.
 
-#. One method is to start each script by saving a copy of the current ,
-   then copying the desired file to the current directory, and finally
+#. One method is to start each script by saving a copy of the current  ``gmt.conf``,
+   then copying the desired ``gmt.conf`` file to the current directory, and finally
    reverting the changes at the end of the script. Possible side effects
    include premature ending of the script due to user error or bugs
    which means the final resetting does not take place (unless you write
@@ -2741,7 +2741,7 @@ that start with the character # are automatically considered header
 records and skipped. Thus, *n\_recs* refers to general text lines that
 do *not* start with # and thus must specifically be skipped in order for
 the programs to function properly. The default number of such header
-records if **-h** is used is one of the many parameters in the file
+records if **-h** is used is one of the many parameters in the ``gmt.conf`` file
 (**IO\_N\_HEADER\_RECS**, by default 0), but can be overridden by
 **-h**\ *n\_header\_recs*. Normally, programs that both read and write
 tables will output the header records that are found on input. Use
@@ -2922,15 +2922,15 @@ basemap was created with an oblique Mercator projection, specified as
 then a subsequent `psxy <psxy.html>`_ command to plot
 symbols only needs to state **-J**\ o in order to activate the same
 projection. In contrast, note that **-J** by itself will pick the most
-recently used projection. Previous commands are maintained in the file ,
+recently used projection. Previous commands are maintained in the file ``.gmtcommands``,
 of which there will be one in each directory you run the programs from.
 This is handy if you create separate directories for separate projects
 since chances are that data manipulations and plotting for each project
 will share many of the same options. Note that an option spelled out on
-the command line will always override the last entry in the file and, if
+the command line will always override the last entry in the ``.gmtcommands`` file and, if
 execution is successful, will replace this entry as the previous option
-argument in the file. If you call several *GMT* modules piped together
-then *GMT* cannot guarantee that the file is processed in the intended
+argument in the ``.gmtcommands`` file. If you call several *GMT* modules piped together
+then *GMT* cannot guarantee that the ``.gmtcommands`` file is processed in the intended
 order from left to right. The only guarantee is that the file will not
 be clobbered since *GMT* uses advisory file locking. The uncertainty in
 processing order makes the use of shorthands in pipes unreliable. We
@@ -3067,7 +3067,7 @@ data like UTM coordinates.
 
 Because of the widespread use of incompatible and ambiguous formats, the
 processing of input date components is guided by the template
-**FORMAT\_DATE\_IN** in your file; it is by default set to *yyyy-mm-dd*.
+**FORMAT\_DATE\_IN** in your ``gmt.conf`` file; it is by default set to *yyyy-mm-dd*.
 Y2K-challenged input data such as 29/05/89 can be processed by setting
 **FORMAT\_DATE\_IN** to dd/mm/yy. A complete description of possible
 formats is given in the `gmt.conf <gmt.conf.html>`_ man
@@ -3287,7 +3287,7 @@ pattern:
     The *dpi* parameter sets the resolution of this image on the page;
     the area fill is thus made up of a series of these “tiles”.
     Specifying *dpi* as 0 will result in highest resolution obtainable
-    given the present dpi setting in . By specifying upper case **-GP**
+    given the present dpi setting in  ``.gmtcommands``. By specifying upper case **-GP**
     instead of **-Gp** the image will be bit-reversed, i.e., white and
     black areas will be interchanged (only applies to 1-bit images or
     predefined bit-image patterns). For these patterns and other 1-bit
@@ -3437,7 +3437,7 @@ The *Fill* information follows the format given in Section [sec:fill].
 While not always applicable to categorical data, the background color
 (for *key*-values :math:`<` *key\ :math:`_1`*), foreground color (for
 *key*-values :math:`>` *key\ :math:`_{n}`*), and not-a-number (NaN)
-color (for *key*-values = NaN) are all defined in the file, but can be
+color (for *key*-values = NaN) are all defined in the ``gmt.conf`` file, but can be
 overridden by the statements
 
 +-----+-------------------------+
@@ -3481,7 +3481,7 @@ make `psscale <psscale.html>`_, when used with the
 As for categorical tables, the background color (for *z*-values
 :math:`<` *z\ :math:`_0`*), foreground color (for *z*-values :math:`>`
 *z\ :math:`_{n-1}`*), and not-a-number (NaN) color (for *z*-values =
-NaN) are all defined in the file, but can be overridden by the
+NaN) are all defined in the ``gmt.conf`` file, but can be overridden by the
 statements
 
 +-----+-------------------------+
@@ -3493,7 +3493,7 @@ statements
 +-----+-------------------------+
 
 which can be inserted into the beginning or end of the CPT file. If you
-prefer the HSV system, set the parameter accordingly and replace red,
+prefer the HSV system, set the ``gmt.conf`` parameter accordingly and replace red,
 green, blue with hue, saturation, value. Color palette tables that
 contain gray-shades only may replace the *r/g/b* triplets with a single
 gray-shade in the 0–255 range. For CMYK, give *c/m/y/k* values in the
@@ -3695,7 +3695,7 @@ are, and ; others can be found on the .
 In addition, users with some C-programming experience may add their own
 read/write functions and link them with the *GMT* library to extend the
 number of predefined formats. Technical information on this topic can be
-found in the source file . Users who are considering this approach
+found in the source file ``gmtcustom_io.c``. Users who are considering this approach
 should contact the *GMT* team.
 
 [H]
@@ -3796,24 +3796,24 @@ allow piping (due to the design of netCDF).
 
 Everything looks clearer after a few examples:
 
-#. To write a native binary float grid file, specify the name as .
+#. To write a native binary float grid file, specify the name as ``my_file.f4=bf`` .
 
 #. To read a native short integer grid file, multiply the data by 10 and
    then add 32000, but first let values that equal 32767 be set to NaN,
-   use the filename .
+   use the filename ``my_file.i2=bs/10/32000/32767``.
 
 #. To read a Golden Software “surfer” format 6 grid file, just pass the
-   file name, e.g., .
+   file name, e.g., ``my_surferfile.grd``.
 
 #. To read a 8-bit standard Sun raster file (with values in the 0–255
-   range) and convert it to a 1 range, give the name as (i.e., 1/127.5).
+   range) and convert it to a 1 range, give the name as ``rasterfile=rb/7.84313725e-3/-1`` (i.e., 1/127.5).
 
 #. To write a native binary short integer grid file to standard output
    after subtracting 32000 and dividing its values by 10, give filename
-   as .
+   as ``=bs/0.1/-3200``.
 
 #. To write an 8-bit integer netCDF grid file with an auto-adjusted
-   offset, give filename as .
+   offset, give filename as ``=nb//a``.
 
 Programs that both read and/or write more than one grid file may specify
 different formats and/or scaling for the files involved. The only
@@ -3824,9 +3824,9 @@ grid files may actually use the “=” character as part of their name
 One can also define special file suffixes to imply a specific file
 format; this approach represents a more intuitive and user-friendly way
 to specify the various file formats. The user may create a file called
-in the current directory or home directory, or a file in the directory
-and define any number of custom formats. The following is an example of
-a file:
+``.gmt_io`` in the current directory or home directory, or a file ``gmt_io`` in the directory
+``~/.gmt`` and define any number of custom formats. The following is an example of
+a ``.gmt_io`` file:
 
 | MMM# suffix format\_id scale ōffset NaNxxxComments # GMT i/o shorthand file
 | # It can have any number of comment lines like this one anywhere
@@ -3843,8 +3843,8 @@ a file:
 
 These suffices can be anything that makes sense to the user. To activate
 this mechanism, set parameter **IO\_GRIDFILE\_SHORTHAND** to TRUE in
-your file. Then, using the filename is equivalent to saying , and the
-filename means wet.mask=bm/1/0/0. For a file intended for masking, i.e.,
+your ``gmt.conf`` file. Then, using the filename ``stuff.i2`` is equivalent to saying ``stuff.i2=bs///32767``, and the
+filename ``wet.mask`` means wet.mask=bm/1/0/0. For a file intended for masking, i.e.,
 the nodes are either 1 or NaN, the bit or mask format file may be as
 small as 1/32 the size of the corresponding grid float format file.
 
@@ -3907,7 +3907,7 @@ In case the named grid is 3-dimensional, *GMT* will load the first
 or “(*level*)”, where *index* is the index of the third (depth) variable
 (starting at 0 for the first layer) and *level* is the numerical value
 of the third (depth) variable associated with the requested layer. To
-indicate the second layer of the 3-D variable “slp” use as file name: .
+indicate the second layer of the 3-D variable “slp” use as file name: ``file.nc?slp[1]``.
 
 When you supply the numerical value for the third variable using
 “(*level*)”, *GMT* will pick the layer closest to that value. No
@@ -3956,8 +3956,8 @@ needed than name the variables on the command line. For example:
 If one or more of the selected variables are two-dimensional, and have
 the same leading dimension as the other selected variables they will be
 plotted in their entirety. For example, if a netCDF files contains 6
-time steps recording temperature at 4 points, and the variable is a 6 by
-4 array, then the command can result in:
+time steps recording temperature at 4 points, and the variable ``tmp`` is a 6 by
+4 array, then the command ``gmtconvert "file.nc?time/temp"`` can result in:
 
 ::
 
@@ -3969,7 +3969,7 @@ time steps recording temperature at 4 points, and the variable is a 6 by
     	2012-06-27T12:00:00 27.2 27.2 27.5 27.5
 
 If, for example, only the second temperature column is needed, use
-(indices start counting at 0).
+``gmtconvert "file.nc?time/temp"`` (indices start counting at 0).
 
 The COARDS conventions set restrictions on the names that can be used
 for the units of the variables and coordinates. For example, the units
@@ -4005,7 +4005,7 @@ netCDF file (to be obtained using **ncdump**):
                     pha:_FillValue = -32768s ;
 
 This file contains two grids, which can be plotted separately using the
-names and . The attributes ``long_name`` and ``unit`` for each variable
+names ``M2_fes2004.nc?amp`` and ``M2_fes2004.nc?pha``. The attributes ``long_name`` and ``unit`` for each variable
 are combined in *GMT* to a single unit string. For example, after
 reading the grid ``y_unit`` equals ``latitude [degrees_north]``. The
 same method can be used in reverse to set the proper variable names and
@@ -4053,7 +4053,7 @@ reversed.
 
 Instead of treating them as images, all other *GMT* programs that
 process grids can read individual bands from an image but will consider
-the values to be regular data. For example, let be the name of a
+the values to be regular data. For example, let ``multiband`` be the name of a
 multi-band file with a near infrared component in band 4 and red in band
 3. We will compute the NDVI (Normalized Difference Vegetation Index),
 which is defined as NDVI = (NIR - R) / (NIR + R), as
@@ -4063,14 +4063,14 @@ which is defined as NDVI = (NIR - R) / (NIR + R), as
     grdmath multiband=gd+b3 multiband=gd+b2 SUB multiband=gd+b3 \
     	multiband=gd+b2 ADD DIV = ndvi.nc
 
-The resulting grid can then be plotted as usual.
+The resulting grid ``ndvi.nc`` can then be plotted as usual.
 
 Reading more complex multi-band IMAGES or GRIDS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 It is also possible to access to sub-datasets in a multi-band grid. The
-next example shows how we can extract the SST from the MODIS file that
-is stored in the HDF “format”. We need to run the GDAL program
+next example shows how we can extract the SST from the MODIS file ``A20030012003365.L3m_YR_NSST_9``
+that is stored in the HDF “format”. We need to run the GDAL program
 **gdalinfo** on the file because we first
 must extract the necessary metadata from the file:
 
@@ -4131,7 +4131,7 @@ via `grdmath <grdmath.html>`_ first, i.e.,
     grdmath A20030012003365.L3m_YR_NSST_9=gd?HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9:0" \
     	0.000717185 MUL -2 ADD = sst.nc
 
-then plot the directly.
+then plot the ``sst.nc`` directly.
 
 Writing grids and images
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4174,7 +4174,7 @@ test if a floating point is a NaN. *GMT* uses these tests extensively to
 determine if a value is suitable for plotting or processing (if a NaN is
 used in a calculation the result would become NaN as well). Data points
 whose values equal NaN are not normally plotted (or plotted with the
-special NaN color given in ). Several tools such as
+special NaN color given in ``gmt.conf``). Several tools such as
 `xyz2grd <xyz2grd.html>`_, `gmtmath <gmtmath.html>`_, and
 `grdmath <grdmath.html>`_ can convert user data to NaN
 and vice versa, thus facilitating arbitrary masking and clipping of data
@@ -4222,17 +4222,17 @@ $GMT\_DATADIR
 
 $GMT\_USERDIR
     points to a directory where the user may place custom configuration
-    files (e.g., an alternate file, preferred default settings in ,
+    files (e.g., an alternate ``coastline.conf`` file, preferred default settings in  ``gmt.conf``,
     custom symbols and color palettes, math macros for
     `gmtmath <gmtmath.html>`_ and
     `grdmath <grdmath.html>`_, and shorthands for
-    gridfile extensions via ). Users may also place their own data files
+    gridfile extensions via ``.gmt.io``). Users may also place their own data files
     in this directory as *GMT* programs will search for files given on
     the command line in both **$GMT\_DATADIR** and **$GMT\_USERDIR**.
 
 $GMT\_TMPDIR
-    is where *GMT* will write its state parameters via the two files and
-    . If **$GMT\_TMPDIR** is not set, these files are written to the
+    is where *GMT* will write its state parameters via the two files ``.gmtcommands`` and
+     ``gmt.conf``. If **$GMT\_TMPDIR** is not set, these files are written to the
     current directory. See Appendix [app:P] for more on the use of
     **$GMT\_TMPDIR**.
 
@@ -4263,7 +4263,7 @@ used to create simple plot axes. We will mostly be using
 `psbasemap <psbasemap.html>`_ (and occasionally
 `psxy <psxy.html>`_) to demonstrate the various
 transformations. Our illustrations may differ from those you reproduce
-with the same commands because of different settings in our file.)
+with the same commands because of different settings in our ``gmt.conf`` file.)
 Finally, note that while we will specify dimensions in inches (by
 appending **i**), you may want to use cm (**c**), or points (**p**) as
 unit instead (see the `gmt.conf <gmt.conf.html>`_ man page).
@@ -5429,7 +5429,7 @@ The making of contour maps
 --------------------------
 
 We want to create two contour maps of the low order geoid using the
-Hammer equal area projection. Our gridded data file is called and
+Hammer equal area projection. Our gridded data file is called ``osu91a1f_16.nc`` and
 contains a global 1  by 1 gridded geoid (we will see how to make gridded
 files later). We would like to show one map centered on Greenwich and
 one centered on the dateline. Positive contours should be drawn with a
@@ -5485,9 +5485,9 @@ this example. By using the embedded grid file format mechanism we saved
 the topography using kilometers as the data unit. We now have two grid
 files with bathymetry and geoid heights, respectively. We use
 `makecpt <makecpt.html>`_ to generate a linear color
-palette file for the geoid and use
+palette file ``geoid.cpt`` for the geoid and use
 `grd2cpt <grd2cpt.html>`_ to get a histogram-equalized
-cpt file for the topography data. To emphasize the structures in the
+cpt file ``topo.cpt`` for the topography data. To emphasize the structures in the
 data we calculate the slopes in the north-south direction using
 `grdgradient <grdgradient.html>`_; these will be used to
 modulate the color image. Next we run
@@ -5508,8 +5508,8 @@ In this example we will show how to use the *GMT* programs
 `spectrum1d <spectrum1d.html>`_,
 `psxy <psxy.html>`_, and
 `pstext <pstext.html>`_. Suppose you have (lon, lat,
-gravity) along a satellite track in a file called , and (lon, lat,
-gravity) along a ship track in a file called . You want to make a
+gravity) along a satellite track in a file called ``sat.xyg``, and (lon, lat,
+gravity) along a ship track in a file called ``ship.xyg``. You want to make a
 cross-spectral analysis of these data. First, you will have to get the
 two data sets into equidistantly sampled time-series form. To do this,
 it will be convenient to project these along the great circle that best
@@ -5528,7 +5528,7 @@ accomplish this step. We can then resample the projected data, and carry
 out the cross-spectral calculations, assuming that the ship is the input
 and the satellite is the output data. There are several intermediate
 steps that produce helpful plots showing the effect of the various
-processing steps (), while the final plot shows the ship and sat power
+processing steps (``example_03[a�f].ps``), while the final plot ``example_03.ps`` shows the ship and sat power
 in one diagram and the coherency on another diagram, both on the same
 page. Note the extended use of `pstext <pstext.html>`_
 and `psxy <psxy.html>`_ to put labels and legends
@@ -5554,7 +5554,7 @@ second layer showing the 3-D mesh plot of the topography. We also add an
 arrow pointing north and some text. The first part of this script shows
 how to do it:
 
-The purpose of the color palette file is to have the positive topography
+The purpose of the color palette file ``zero.cpt`` is to have the positive topography
 mesh painted light gray (the remainder is white). The left side of
 Figure [fig:example\ :sub:`0`\ 4] shows the complete illustration.
 
@@ -5591,7 +5591,7 @@ grid files to `grdview <grdview.html>`_: One with the
 be in the 1 range). We use
 `grdgradient <grdgradient.html>`_ to compute the
 horizontal gradients in the direction of the artificial light source.
-The file only has one line that states that all *z* values should have
+The ``gray.cpt`` file only has one line that states that all *z* values should have
 the gray level 128. Thus, variations in shade are entirely due to
 variations in gradients, or illuminations. We choose to illuminate from
 the SW and view the surface from SE:
@@ -5611,9 +5611,9 @@ Plotting of histograms
 `pshistogram <pshistogram.html>`_ and `psrose <psrose.html>`_. The former takes care of
 regular histograms whereas the latter deals with polar histograms (rose
 diagrams, sector diagrams, and wind rose diagrams). We will show an
-example that involves both programs. The file contains a compilation of
+example that involves both programs. The file ``fractures.yx`` contains a compilation of
 fracture lengths and directions as digitized from geological maps. The
-file contains all the bathymetry measurements from *Vema* cruise 3206.
+file ``v3206.t`` contains all the bathymetry measurements from *Vema* cruise 3206.
 Our complete figure (Figure [fig:example:sub:`0`\ 6]) was made running
 this script:
 
@@ -5625,10 +5625,10 @@ of interest. This map will typically also contain certain features and
 labels. This example will present a location map for the equatorial
 Atlantic ocean, where fracture zones and mid-ocean ridge segments have
 been plotted. We also would like to plot earthquake locations and
-available isochrons. We have obtained one file, , which contains the
+available isochrons. We have obtained one file, ``quakes.xym``, which contains the
 position and magnitude of available earthquakes in the region. We choose
 to use magnitude/100 for the symbol-size in inches. The digital fracture
-zone traces () and isochrons (0 isochron as , the rest as ) were
+zone traces (``fz.xy``) and isochrons (0 isochron as ``ridge.xy``, the rest as ``isochrons.xy``) were
 digitized from available maps [25]_. We create the final location map
 (Figure [fig:example:sub:`0`\ 7]) with the following script:
 
@@ -6217,8 +6217,7 @@ remember two key issues:
 
 #. This is a *spherical* Mercator grid so we must use
    --**PROJ\_ELLIPSOID**\ =Sphere with all commands that involve
-   projections (or use `gmtset <gmtset.html>`_ to change
-   the setting).
+   projections (or use `gmtset <gmtset.html>`_ to change the setting).
 
 #. Select Mercator projection and use the same scale that was used with
    the linear projection.
@@ -7558,7 +7557,7 @@ gshhg-gmt-nc4-2.2.0.tar.bz2
 
 The netCDF library that makes up the backbone of the grid file i/o
 operations can be obtained from Unidata by downloading the file from the
-anonymous FTP directory of .
+anonymous FTP directory of http:\\unidata.ucar.edu
 
 Install via subversion
 ----------------------
