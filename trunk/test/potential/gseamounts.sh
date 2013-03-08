@@ -16,7 +16,7 @@ cat << EOF > cart_circ.txt
 -50	50	50	1000	0
 50	-50	50	1000	0.3
 EOF
-grdseamount cart_circ.txt -R-100/100/-100/100 -I1 -T -Z-3000 -r -Gcart_circ.nc -V
+grdseamount cart_circ.txt -R-100/100/-100/100 -I1 -T -Z-3000 -r -Gcart_circ.nc
 grdimage cart_circ.nc -JX3i -P -BafWSne -Ct.cpt -K -X1.1i -Y1.25i > $ps
 grdtrack -Gcart_circ.nc -ELT/RB > cart_circ.trk
 psxy -R -J -O -K -W1p cart_circ.trk >> $ps
@@ -26,7 +26,7 @@ cat << EOF > geo_circ.txt
 -0.5	0.5	50	1000	0
 0.5	-0.5	50	1000	0.3
 EOF
-grdseamount geo_circ.txt -R-1/1/-1/1 -I0.01 -T -Z-3000 -r -Ggeo_circ.nc -fg -V
+grdseamount geo_circ.txt -R-1/1/-1/1 -I0.01 -T -Z-3000 -r -Ggeo_circ.nc -fg
 grdimage geo_circ.nc -JX3id -P -Ba1f0.5wESn -Ct.cpt -O -K -X3.5i >> $ps
 grdtrack -Ggeo_circ.nc -ELT/RB > geo_circ.trk
 psxy -R -J -O -K -W1p cart_circ.trk >> $ps
@@ -35,7 +35,7 @@ cat << EOF > cart_ellipse.txt
 -50	50	45	50	30	1000	0
 50	-50	-45	50	30	1000	0.3
 EOF
-grdseamount cart_ellipse.txt -R-100/100/-100/100 -I1 -E -T -Z-3000 -r -Gcart_ellipse.nc -V
+grdseamount cart_ellipse.txt -R-100/100/-100/100 -I1 -E -T -Z-3000 -r -Gcart_ellipse.nc
 grdimage cart_ellipse.nc -JX3i -P -BafWsne -Ct.cpt -O -K  -X-3.5i -Y3.2i >> $ps
 grdtrack -Gcart_ellipse.nc -ELT/RB > cart_ellipse.trk
 psxy -R -J -O -K -W1p,- cart_ellipse.trk >> $ps
@@ -44,7 +44,7 @@ cat << EOF > geo_ellipse.txt
 -0.5	0.5	45	50	30	1000	0
 0.5	-0.5	-45	50	30	1000	0.3
 EOF
-grdseamount geo_ellipse.txt -R-1/1/-1/1 -I0.01 -E -T -Z-3000 -r -Ggeo_ellipse.nc -fg -V
+grdseamount geo_ellipse.txt -R-1/1/-1/1 -I0.01 -E -T -Z-3000 -r -Ggeo_ellipse.nc -fg
 grdimage geo_ellipse.nc -JX3id -P -Ba1f0.5wEsn -Ct.cpt -O -K -X3.5i >> $ps
 grdtrack -Ggeo_ellipse.nc -ELT/RB > geo_ellipse.trk
 psxy -R -J -O -K -W1p,- geo_ellipse.trk >> $ps

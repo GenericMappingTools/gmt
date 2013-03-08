@@ -81,7 +81,7 @@ void Free_grdclip_Ctrl (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *C) {	/* Deall
 	if (!C) return;
 	if (C->In.file) free (C->In.file);	
 	if (C->G.file) free (C->G.file);	
-	if (C->S.class) free (C->S.class);	
+	if (C->S.class) GMT_free (GMT, C->S.class);	
 	GMT_free (GMT, C);	
 }
 
