@@ -673,13 +673,13 @@ int gmt_get_grdtype (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h)
 	}
 	else if (h->wesn[YLO] >= -90.0 && h->wesn[YHI] <= 90.0) {	/* Here we simply advice the user if grid looks like geographic but is not set as such */
 		if (fabs (h->wesn[XHI] - h->wesn[XLO] - 360.0) < GMT_SMALL) {
-			GMT_report (C, GMT_MSG_NORMAL, "Cartesian grid, yet x spans exactly 360 and -90 <= y <= 90.\n");
-			GMT_report (C, GMT_MSG_NORMAL, "     To make sure the grid is recognized as geographical and global, use the -fg option\n");
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Cartesian grid, yet x spans exactly 360 and -90 <= y <= 90.\n");
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "     To make sure the grid is recognized as geographical and global, use the -fg option\n");
 			return (GMT_GRID_CARTESIAN);
 		}
 		else if (fabs (h->nx * h->inc[GMT_X] - 360.0) < GMT_SMALL) {
-			GMT_report (C, GMT_MSG_NORMAL, "Cartesian grid, yet x cells span exactly 360 and -90 <= y <= 90.\n");
-			GMT_report (C, GMT_MSG_NORMAL, "     To make sure the grid is recognized as geographical and global, use the -fg option\n");
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Cartesian grid, yet x cells span exactly 360 and -90 <= y <= 90.\n");
+			GMT_report (C, GMT_MSG_LONG_VERBOSE, "     To make sure the grid is recognized as geographical and global, use the -fg option\n");
 			return (GMT_GRID_CARTESIAN);
 		}
 	}

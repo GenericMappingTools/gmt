@@ -14,7 +14,7 @@ D=1000			# 1000 km filter width
 DATA=../genper/etopo10.nc	# Test on ETOP10 data
 
 # Run grdfilter as specified
-grdfilter -D4 -F${FILT}$D -I$INC $DATA -Gt.nc -fg -V
+grdfilter -D4 -F${FILT}$D -I$INC $DATA -Gt.nc -fg
 makecpt -Cglobe -Z > t.cpt
 grdimage t.nc -JQ0/7i -Ba:."$D km Gaussian filter":WSne -Ct.cpt -P -K -Xc -Y1.5i > $ps
 psscale -Ct.cpt -D3.5i/-0.5i/6i/0.1ih -O -K -Ba/:m: >> $ps

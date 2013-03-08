@@ -4645,7 +4645,6 @@ uint64_t gmt_trace_contour (struct GMT_CTRL *C, struct GMT_GRID *G, bool test, u
 			dist2 = xk[old_side+1] + xk[opposite_side+1];
 			if (dist1 == dist2) {	/* Perfect saddle, must use fixed saddle decision to avoid a later crossing */
 				/* Connect S with W and E with N in this case */
-				fprintf (stderr, "Perfect saddle\n");
 				if (old_side == 0)
 					side = 3;
 				else if (old_side == 1)

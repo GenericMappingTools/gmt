@@ -293,7 +293,6 @@ int GMT_grdlandmask (void *V_API, int mode, void *args)
 		}
 	}
 
-	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) Return (API->error);
 	/* All data nodes are thus initialized to 0 */
 	x = GMT_memory (GMT, NULL, Grid->header->nx, double);
 	y = GMT_memory (GMT, NULL, Grid->header->ny, double);

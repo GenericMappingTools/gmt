@@ -18,13 +18,13 @@ EOF
 psxy track.txt -R-10/50/67/77 -JX6i -P -Sc0.2c -Ggreen -W0.25p -BafWSne -K > $ps
 psxy track.txt -R -J -O -K -W0.25p >> $ps
 # equidistant sampling as is
-sample1d track.txt -I2X -Ar | psxy -R -J -O -K -Sc0.1c -Gcyan >> $ps
+sample1d track.txt -I2c -Ar | psxy -R -J -O -K -Sc0.1c -Gcyan >> $ps
 # equidistant sampling adjusted
-sample1d track.txt -I2X -AR | psxy -R -J -O -K -Sc0.1c -Gblack >> $ps
+sample1d track.txt -I2c -AR | psxy -R -J -O -K -Sc0.1c -Gblack >> $ps
 # -Am sampling
-sample1d track.txt -I0.1X -Am | psxy -R -J -O -K -W0.25p,blue,- >> $ps
+sample1d track.txt -I0.1c -Am | psxy -R -J -O -K -W0.25p,blue,- >> $ps
 # -Ap sampling
-sample1d track.txt -I0.1X -Ap | psxy -R -J -O -K -W0.25p,orange,- >> $ps
+sample1d track.txt -I0.1c -Ap | psxy -R -J -O -K -W0.25p,orange,- >> $ps
 
 #Geographic resampling with small spacing
 psxy track.txt -R -JM6i -O -K -Sc0.2c -Ggreen -W0.25p -BafWSne -Y6.5i >> $ps
