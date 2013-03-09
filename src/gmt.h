@@ -111,10 +111,11 @@ EXTERN_MSC int GMT_Delete_Option			(void *C, struct GMT_OPTION *current);
 EXTERN_MSC int GMT_Parse_Common				(void *C, char *sorted, char *unsorted, struct GMT_OPTION *options);
 
 #ifdef GMT_FFT_EXTENSION
-/* Also make available the following GMT_FFT_* functions */
+/* Also make available the following 9 GMT_FFT_* functions */
 EXTERN_MSC unsigned int GMT_FFT_option	(void *C, char option, unsigned int dim, char *string);
-EXTERN_MSC unsigned int GMT_FFT_parse	(void *C, char option, unsigned int dim, char *args, void *K);
-EXTERN_MSC void * GMT_FFT_init_2d	(void *C, struct GMT_GRID *G, unsigned int mode, void *K);
+EXTERN_MSC unsigned int GMT_FFT_parse	(void *C, char option, unsigned int dim, char *args, void *F);
+EXTERN_MSC void * GMT_FFT_init_1d 	(void *C, struct GMT_DATASET *D, unsigned int win_size, unsigned int mode, void *F);
+EXTERN_MSC void * GMT_FFT_init_2d	(void *C, struct GMT_GRID *G, unsigned int mode, void *F);
 EXTERN_MSC double GMT_FFT_wavenumber_1d (void *C, uint64_t k, unsigned int mode, void *v_K);
 EXTERN_MSC double GMT_FFT_wavenumber_2d (void *C, uint64_t k, unsigned int mode, void *v_K);
 EXTERN_MSC int GMT_FFT_1d		(void *C, struct GMT_DATASET *D, int direction, unsigned int mode, void *v_K);

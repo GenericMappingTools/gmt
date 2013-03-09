@@ -9781,6 +9781,95 @@ void gmt_matrix_vect_mult (double a[3][3], double b[3], double c[3])
 	for (i = 0; i < 3; i++) for (j = 0, c[i] = 0.0; j < 3; j++) c[i] += a[i][j] * b[j];
 }
 
+#if 0
+void GMT_dataset_detrend (struct GMT_CTRL *GMT, struct GMT_DATASET *D, unsigned int mode, double *coeff)
+{	/* Will detrend the x [and y if not NULL] columns separately. */
+	unsigned id = 0, tbl, col, n_cols;
+	uint64_t row, seg;
+	double sumt, sumt2, sumx, sumtx, xmin, xmax, t, t_factor;
+	struct GMT_DATASEGMENT *S = NULL;
+	
+	/* mode = 0 (GMT_FFT_LEAVE_TREND):  Do nothing.
+	   mode = 1 (GMT_FFT_REMOVE_MEAN):  Remove the mean value (returned via coeff[0], coeff[2])
+	   mode = 2 (GMT_FFT_REMOVE_MID):   Remove the mid value value (returned via coeff[0], coeff[2])
+	   mode = 3 (GMT_FFT_REMOVE_TREND): Remove the best-fitting line by least squares (returned via coeff[0-4])
+	*/
+	if (mode == GMT_FFT_LEAVE_TREND) {	/* Do nothing */
+		GMT_report (GMT, GMT_MSG_VERBOSE, "No detrending selected\n");
+		return;
+	}
+	t_factor =  2.0 / (n - 1);
+	for (tbl = seg_no = 0; tbl < D->n_tables; tbl++) {
+		for (seg = 0; seg < D->n_segments; seg++) {	/* For each segment to modify */
+			S = D->table[tbl]->segment[seg];
+			for (col = 1; col < n_cols; col++) {
+				sumt = sumt2 = sumx = sumtx = 0.0;
+				xmin = DBL_MAX, xmax = -DBL_MAX;
+				for (row = 0; row < S->n_rows; row++) {
+					t = row * t_factor - 1.0;
+					sumt += t;
+					sumt2 += (t * t);
+					sumx += S->coord[col][row];
+					sumtx += (t * S->coord[col][row]);
+					if (S->coord[col][row] < xmin) xmin = S->coord[col][row];
+					if (S->coord[col][row] > xmax) xmax = S->coord[col][row];
+				}
+				id = 2 * (col - 1);
+				coeff[id] = (mode == GMT_FFT_REMOVE_MID) ? 0.5 * (xmin + xmax) : sumx / S->n_rows;
+				coeff[id+1] = (mode == GMT_FFT_REMOVE_TREND) ? sumtx / sumt2 : 0.0;
+				/* Remove the desired trend */
+				for (row = 0; row < S->n_rows; row++) {
+					t = row * t_factor - 1.0;
+					S->coord[col][row] -= (coeff[id] + t * coeff[id+1]);
+				}
+			}
+		}
+	}
+}
+
+void GMT_cols_detrend (struct GMT_CTRL *GMT, double *t, double *x, double *y, uint64_t n, unsigned int mode, double *coeff)
+{	/* Will detrend the x [and y if not NULL] columns separately. */
+	unsigned id = 0, tbl, col, n_cols;
+	uint64_t row, seg;
+	double sumt, sumt2, sumx, sumtx, xmin, xmax, t, t_factor, *C[2] = {NULL, NULL};
+	struct GMT_DATASEGMENT *S = NULL;
+	
+	/* mode = 0 (GMT_FFT_LEAVE_TREND):  Do nothing.
+	   mode = 1 (GMT_FFT_REMOVE_MEAN):  Remove the mean value (returned via coeff[0], coeff[2])
+	   mode = 2 (GMT_FFT_REMOVE_MID):   Remove the mid value value (returned via coeff[0], coeff[2])
+	   mode = 3 (GMT_FFT_REMOVE_TREND): Remove the best-fitting line by least squares (returned via coeff[0-4])
+	*/
+	if (mode == GMT_FFT_LEAVE_TREND) {	/* Do nothing */
+		GMT_report (GMT, GMT_MSG_VERBOSE, "No detrending selected\n");
+		return;
+	}
+	t_factor =  2.0 / (n - 1);
+	n_cols = (y == NULL) ? 1 : 2;
+	C[0] = x;	C[1] = y;	/* So we can loop over these columns */
+	for (col = 0; col < n_cols; col++) {
+		sumt = sumt2 = sumx = sumtx = 0.0;
+		xmin = DBL_MAX, xmax = -DBL_MAX;
+		for (row = 0; row < S->n_rows; row++) {
+			t = row * t_factor - 1.0;
+			sumt += t;
+			sumt2 += (t * t);
+			sumx += C[col][row];
+			sumtx += (t * C[col][row]);
+			if (C[col][row] < xmin) xmin = C[col][row];
+			if (C[col][row] > xmax) xmax = C[col][row];
+		}
+		id = 2 * (col - 1);
+		coeff[id] = (mode == GMT_FFT_REMOVE_MID) ? 0.5 * (xmin + xmax) : sumx / S->n_rows;
+		coeff[id+1] = (mode == GMT_FFT_REMOVE_TREND) ? sumtx / sumt2 : 0.0;
+		/* Remove the desired trend */
+		for (row = 0; row < S->n_rows; row++) {
+			t = row * t_factor - 1.0;
+			C[col][row] -= (coeff[id] + t * coeff[id+1]);
+		}
+	}
+}
+#endif
+
 #define SEG_DIST 2
 #define SEG_AZIM 3
 

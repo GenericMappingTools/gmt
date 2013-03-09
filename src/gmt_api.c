@@ -4575,6 +4575,36 @@ unsigned int GMT_FFT_parse_ (char *option, unsigned int *dim, char *args, void *
 }
 #endif
 
+void * GMT_FFT_init_1d (void *V_API, struct GMT_DATASET *D, unsigned int win_size, unsigned int mode, void *v_info)
+{	unsigned n_cols = 1;
+	struct GMT_FFT_WAVENUMBER *K = NULL;
+	struct GMT_FFT_INFO *F = gmt_get_fftinfo_ptr (v_info);
+	
+#if 0
+	/* Determine number of columns in [t] x [y] input */
+	if (mode & GMT_FFT_CROSS_SPEC) n_cols++;
+	if (Din->n_columns < n_cols) {
+		GMT_report (C, GMT_MSG_NORMAL, "Error: 2 columns needed but only 1 provided\n");
+		return NULL;
+	}
+	cross = (n_cols == 2);
+	if (mode & GMT_FFT_DELTA) n_cols++;
+	delta_t = (mode & GMT_FFT_DELTA) ? F->delta_t : D->table[0]->segment[0]->coord[0][1] - D->table[0]->segment[0]->coord[0][0];
+	K->delta_kx = 2.0 * M_PI / (F->nx * delta_t);
+	
+	GMT_table_detrend (C, D, F->trend_mode, K->coeff);	/* Detrend data, if requested */
+	gmt_table_taper (C, G, F);				/* Taper data, if requested */
+#endif	
+	return (K);
+}
+
+#ifdef FORTRAN_API
+void * GMT_FFT_init_1d_ (struct GMT_DATASET *D, unsigned int *win_size, unsigned int *mode, void *v_info)
+{	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_FFT_init_1d (GMT_FORTRAN, D, *win_size, *mode, v_info));
+}
+#endif
+
 void * GMT_FFT_init_2d (void *V_API, struct GMT_GRID *G, unsigned int mode, void *v_info)
 {
 	/* Initialize grid dimensions for FFT machinery and set up wavenumbers */
