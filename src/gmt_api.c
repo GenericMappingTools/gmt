@@ -861,9 +861,6 @@ int GMTAPI_Add_Data_Object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *
 	object_ID = object->ID = API->unique_ID++;	/* Assign a unique object ID */
 	API->object[API->n_objects-1] = object;		/* Hook the current object onto the end of the list */
 
-	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Add_Data_Object: Added new object %d: method = %s geometry = %s direction = %s\n",
-		object->ID, GMT_method[object->method], GMT_geometry[object->geometry], GMT_direction[object->direction]);
-	
 	return (object_ID);		
 }
 
@@ -2964,6 +2961,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 	 * is appended to the data list maintained by the GMTAPI_CTRL API structure.
 	 */
 	int item, via = 0, m, object_ID;
+	char message[GMT_BUFSIZ];
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMT_VECTOR *V_obj = NULL;
@@ -3016,7 +3014,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 				return_value (API, GMT_MEMORY_ERROR, GMTAPI_NOTSET);	/* No more memory */
 			}
 			if (strlen (resource)) S_obj->filename = strdup (resource);
-			GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT_Register_IO: Registered %s %s %s as an %s resource\n", GMT_family[family], GMT_method[m], S_obj->filename, GMT_direction[direction]);
+			sprintf (message, "Object ID %%d : Registered %s %s %s as an %s resource with geometry %s\n", GMT_family[family], GMT_method[m], S_obj->filename, GMT_direction[direction], GMT_geometry[geometry]);
 			break;
 
 		case GMT_IS_STREAM:	/* Methods that indirectly involve a file */
@@ -3028,7 +3026,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 				return_value (API, GMT_MEMORY_ERROR, GMTAPI_NOTSET);	/* No more memory */
 			}
 			S_obj->fp = resource;	/* Pass the stream of fdesc onward */
-			GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT_Register_IO: Registered %s %s %" PRIxS " as an %s resource\n", GMT_family[family], GMT_method[m], (size_t)resource, GMT_direction[direction]);
+			sprintf (message, "Object ID %%d : Registered %s %s %" PRIxS " as an %s resource with geometry %s\n", GMT_family[family], GMT_method[m], (size_t)resource, GMT_direction[direction], GMT_geometry[geometry]);
 			break;
 
 		case GMT_IS_DUPLICATE:
@@ -3043,7 +3041,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 			if ((S_obj = GMTAPI_Make_DataObject (API, family, method, geometry, resource, direction)) == NULL) {
 				return_value (API, GMT_MEMORY_ERROR, GMTAPI_NOTSET);	/* No more memory */
 			}
-			GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT_Register_IO: Registered %s %s %" PRIxS " as an %s resource\n", GMT_family[family], GMT_method[m], (size_t)resource, GMT_direction[direction]);
+			sprintf (message, "Object ID %%d : Registered %s %s %" PRIxS " as an %s resource with geometry %s\n", GMT_family[family], GMT_method[m], (size_t)resource, GMT_direction[direction], GMT_geometry[geometry]);
 			break;
 
 		 case GMT_IS_DUPLICATE + GMT_VIA_MATRIX:	/* Here, a data grid is passed via a GMT_MATRIX structure */
@@ -3062,7 +3060,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 				return_value (API, GMT_MEMORY_ERROR, GMTAPI_NOTSET);	/* No more memory */
 			}
 			API->GMT->common.b.active[direction] = true;
-			GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT_Register_IO: Registered %s %s %" PRIxS " via %s as an %s resource\n", GMT_family[family], GMT_method[m], (size_t)resource, GMT_via[via], GMT_direction[direction]);
+			sprintf (message, "Object ID %%d : Registered %s %s %" PRIxS " via %s as an %s resource with geometry %s\n", GMT_family[family], GMT_method[m], (size_t)resource, GMT_via[via], GMT_direction[direction], GMT_geometry[geometry]);
 			break;
 		 case GMT_IS_DUPLICATE + GMT_VIA_VECTOR:	/* Here, some data vectors are passed via a GMT_VECTOR structure */
 		 case GMT_IS_REFERENCE + GMT_VIA_VECTOR:
@@ -3080,7 +3078,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 				return_value (API, GMT_MEMORY_ERROR, GMTAPI_NOTSET);	/* No more memory */
 			}
 			API->GMT->common.b.active[direction] = true;
-			GMT_report (API->GMT, GMT_MSG_DEBUG, "GMT_Register_IO: Registered %s %s %" PRIxS " via %s as an %s resource\n", GMT_family[family], GMT_method[m], (size_t)resource, GMT_via[via], GMT_direction[direction]);
+			sprintf (message, "Object ID %%d : Registered %s %s %" PRIxS " via %s as an %s resource with geometry %s\n", GMT_family[family], GMT_method[m], (size_t)resource, GMT_via[via], GMT_direction[direction], GMT_geometry[geometry]);
 			break;
 
 		default:
@@ -3100,6 +3098,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 	
 	API->registered[direction] = true;	/* We have at least registered one item */
 	object_ID = GMTAPI_Add_Data_Object (API, S_obj);
+	GMT_report (API->GMT, GMT_MSG_DEBUG, message, object_ID);
 	return_value (API, API->error, object_ID);
 }
 
@@ -4325,10 +4324,10 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int mode, uin
 		if ((object_ID = GMT_Register_IO (API, family, GMT_IS_REFERENCE, 0, GMT_IN, range, new)) == GMTAPI_NOTSET) return_null (API, API->error);	/* Failure to register */
 		if ((item = GMTAPI_Validate_ID (API, family, object_ID, GMT_IN)) == GMTAPI_NOTSET) return_null (API, API->error);
 		API->object[item]->data = new;		/* Retain pointer to the allocated data so we use garbage collection later */
-		GMT_report (API->GMT, GMT_MSG_LONG_VERBOSE, "Successfully created a new %s\n", GMT_family[family]);
+		GMT_report (API->GMT, GMT_MSG_DEBUG, "Successfully created a new %s\n", GMT_family[family]);
 	}
 	else
-		GMT_report (API->GMT, GMT_MSG_LONG_VERBOSE, "Successfully added data array to previously registered %s\n", GMT_family[family]);
+		GMT_report (API->GMT, GMT_MSG_DEBUG, "Successfully added data array to previously registered %s\n", GMT_family[family]);
 
 	return (new);
 }

@@ -588,6 +588,7 @@ int GMT_pscontour_parse (struct GMTAPI_CTRL *C, struct PSCONTOUR_CTRL *Ctrl, str
 	/* Check that the options selected are mutually consistent */
 
 	n_errors += GMT_check_condition (GMT, !GMT->common.J.active && !Ctrl->D.active, "Syntax error: Must specify a map projection with the -J option\n");
+	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify a region with the -R option\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->C.file && Ctrl->C.interval <= 0.0, "Syntax error -C option: Must specify contour interval, file name with levels, or cpt-file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->Q.active && !(Ctrl->W.active || Ctrl->I.active), "Syntax error: Must specify one of -W or -I\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.active && (Ctrl->I.active || Ctrl->L.active || Ctrl->N.active || Ctrl->G.active || Ctrl->W.active), "Syntax error: Cannot use -G, -I, -L, -N, -W with -D\n");
