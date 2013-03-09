@@ -4039,9 +4039,7 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *C, char option, char *a
 	n_cols = (get_distances) ? 3 :2;
 	while (!error && (GMT_strtok (args, ",", &pos, p))) {
 		S = GMT_memory (C, NULL, 1, struct GMT_DATASEGMENT);
-		GMT_alloc_segment (C, S, n_cols, 2, true);
-		S->n_columns = n_cols;
-		S->n_rows = 2;
+		GMT_alloc_segment (C, S, 2, n_cols, true);
 		k = p_mode = s = 0;	len = strlen (p);
 		while (s == 0 && k < len) {	/* Find first occurrence of recognized modifier+<char>, if any */
 			if ((p[k] == '+') && (p[k+1] && strchr ("ailnor", p[k+1]))) s = k;
