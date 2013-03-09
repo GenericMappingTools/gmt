@@ -45,19 +45,14 @@ EXTERN_MSC int GMT_gdalwrite (struct GMT_CTRL *C, char *filename, struct GDALWRI
 
 /* gmt_fft.c: */
 
-EXTERN_MSC int GMT_fft_1d (struct GMT_CTRL *C, float *data, unsigned int n, int direction, unsigned int mode);
-EXTERN_MSC int GMT_fft_2d (struct GMT_CTRL *C, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode);
+EXTERN_MSC int GMT_fft_1d (struct GMT_CTRL *C, float *data, unsigned int n, int direction, unsigned int mode, struct GMT_FFT_WAVENUMBER *info);
+EXTERN_MSC int GMT_fft_2d (struct GMT_CTRL *C, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode, struct GMT_FFT_WAVENUMBER *info);
 EXTERN_MSC void GMT_fft_initialization (struct GMT_CTRL *C);
 EXTERN_MSC void GMT_fft_cleanup (void);
-EXTERN_MSC struct GMT_FFT_WAVENUMBER *GMT_grd_fft_init (struct GMT_CTRL *C, struct GMT_GRID *G, struct GMT_FFT_INFO *F);
 EXTERN_MSC void GMT_fft_set_k (struct GMT_CTRL *C, unsigned int mode, struct GMT_FFT_WAVENUMBER *K);
-EXTERN_MSC void GMT_fft_save (struct GMT_CTRL *C, struct GMT_GRID *G, unsigned int direction, struct GMT_FFT_INFO *F);
-EXTERN_MSC void GMT_fft_taper (struct GMT_CTRL *C, struct GMT_GRID *G, struct GMT_FFT_INFO *K);
 EXTERN_MSC void GMT_fft_set_wave (struct GMT_CTRL *C, unsigned int mode, struct GMT_FFT_WAVENUMBER *K);
 EXTERN_MSC double GMT_fft_get_wave (uint64_t k, struct GMT_FFT_WAVENUMBER *K);
 EXTERN_MSC double GMT_fft_any_wave (uint64_t k, unsigned int mode, struct GMT_FFT_WAVENUMBER *K);
-EXTERN_MSC void GMT_fft_Singleton_list (void);
-EXTERN_MSC unsigned int GMT_fft_parse (struct GMT_CTRL *C, char option, char *args, struct GMT_FFT_INFO *info);
 
 /* gmt_grdio.c: */
 

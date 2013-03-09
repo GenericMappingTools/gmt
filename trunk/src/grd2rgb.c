@@ -165,7 +165,7 @@ int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_per_pixel, 
 		k += 2;
 	}
 
-	if (GMT_fft_1d (GMT, datac, n_pix, k_fft_fwd, k_fft_complex))
+	if (GMT_fft_1d (GMT, datac, n_pix, k_fft_fwd, k_fft_complex, NULL))
 		return (EXIT_FAILURE);
 
 	/* Now compute the image's power spectrum */

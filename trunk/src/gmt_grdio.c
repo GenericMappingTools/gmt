@@ -1594,22 +1594,53 @@ int GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid, doub
 	return (GMT_NOERROR);
 }
 
+void gmt_grd_wipe_pad (struct GMT_CTRL *C, struct GMT_GRID *G)
+{	/* Reset padded areas to 0. Can handle complex grids */
+	unsigned int row;
+	size_t ij0, n_pr_item, n_items;
+	
+	n_pr_item = (G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) ? 2 : 1;	/* For complex there are two floats per node */
+	n_items = n_pr_item * G->header->mx;
+	if (G->header->pad[YHI]) GMT_memset (G->data, n_items * G->header->pad[YHI], float);	/* Wipe top pad */
+	if (G->header->pad[YLO]) {	/* Wipe bottom pad */
+		ij0 = n_pr_item * GMT_IJ (G->header, G->header->my - G->header->pad[YLO], 0);	/* Index of start of bottom pad */
+		GMT_memset (&(G->data[ij0]), n_items * G->header->pad[YLO], float);
+	}
+	if (G->header->pad[XLO] == 0 && G->header->pad[XHI] == 0) return;	/* Nothing to do */
+	for (row = G->header->pad[YHI]; row < G->header->my - G->header->pad[YLO]; row++) {	/* Wipe left and right pad which is trickier */
+		ij0 = n_pr_item * GMT_IJ (G->header, row, 0);	/* Index of this row's left column (1st entry in west pad) */
+		if (G->header->pad[XLO]) GMT_memset (&(G->data[ij0]), n_pr_item * G->header->pad[XLO], float);
+		ij0 += n_pr_item * (G->header->mx - G->header->pad[XHI]);	/* Start of this rows east pad's 1st column */
+		if (G->header->pad[XHI]) GMT_memset (&(G->data[ij0]), n_pr_item * G->header->pad[XHI], float);
+	}
+}
+
 void GMT_grd_pad_off (struct GMT_CTRL *C, struct GMT_GRID *G)
-{ /* Shifts the grid contents so there is no pad.  The remainder of
-	 * the array is not reset and should not be addressed.
+{	/* Shifts the grid contents so there is no pad.  The remainder of
+	 * the array is not reset and should not be addressed, but
+	 * we set it to zero just in case.
 	 * If pad is zero then we do nothing.
 	 */
 	uint64_t ijp, ij0;
 	unsigned int row;
+	size_t n_pr_item, n_items;
+	n_pr_item = (G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) ? 2 : 1;	/* For complex there are two floats per node */
+	n_items = n_pr_item * G->header->nx;
 
 	if (!GMT_grd_pad_status (C, G->header, NULL)) return;	/* No pad so nothing to do */
 	/* Here, G has a pad which we need to eliminate */
 	for (row = 0; row < G->header->ny; row++) {
-		ijp = GMT_IJP (G->header, row, 0);	/* Index of start of this row's first column in padded grid  */
-		ij0 = GMT_IJ0 (G->header, row, 0);	/* Index of start of this row's first column in unpadded grid */
-		GMT_memcpy (&(G->data[ij0]), &(G->data[ijp]), G->header->nx, float);	/* Only copy the nx data values */
+		ijp = n_pr_item * GMT_IJP (G->header, row, 0);	/* Index of start of this row's first column in padded grid  */
+		ij0 = n_pr_item * GMT_IJ0 (G->header, row, 0);	/* Index of start of this row's first column in unpadded grid */
+		GMT_memcpy (&(G->data[ij0]), &(G->data[ijp]), n_items, float);	/* Only copy the nx data values */
+	}
+	if (G->header->size > G->header->nm) {	/* Just wipe the remaineder of array to be sure */
+		size_t n_to_cleen = G->header->size - n_pr_item * G->header->nm;
+		ij0 += n_items;	/* 1st position after last row */
+		GMT_memset (&(G->data[ij0]), n_to_cleen, float);
 	}
 	GMT_memset (G->header->pad, 4, int);	/* Pad is no longer active */
+	GMT_set_grddim (C, G->header);		/* Update all dimensions to reflect the padding */
 }
 
 void GMT_grd_pad_on (struct GMT_CTRL *C, struct GMT_GRID *G, unsigned int *pad)
@@ -1617,17 +1648,22 @@ void GMT_grd_pad_on (struct GMT_CTRL *C, struct GMT_GRID *G, unsigned int *pad)
 	 * We check that the grid size can handle this and allocate more space if needed.
 	 * If pad matches the grid's pad then we do nothing.
 	 */
-	uint64_t ijp, ij0;
+	uint64_t ij_new, ij_old;
 	unsigned int row;
-	size_t size;
+	size_t size, n_items, n_pr_item;
 	struct GMT_GRID_HEADER *h = NULL;
 
 	if (GMT_grd_pad_status (C, G->header, pad)) return;	/* Already padded as requested so nothing to do */
+	if (pad[XLO] == 0 && pad[XHI] == 0 && pad[YLO] == 0 && pad[YHI] == 0) {	/* Just remove the existing pad entirely */
+		GMT_grd_pad_off (C, G);
+		return;
+	}
 	/* Here the pads differ (or G has no pad at all) */
-	size = gmt_grd_get_nxpad (G->header, pad) * gmt_grd_get_nypad (G->header, pad);
+	n_pr_item = (G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) ? 2 : 1;	/* For complex there are two floats per node */
+	size = n_pr_item * gmt_grd_get_nxpad (G->header, pad) * gmt_grd_get_nypad (G->header, pad);
 	if (size > G->header->size) {	/* Must allocate more space, but since no realloc for aligned memory we must do it the hard way */
 		float *f = NULL;
-		GMT_report (C, GMT_MSG_NORMAL, "GRID REALLOCATION - MUST DUPLICATE ONTO LARGER GRID - NOTIFY GMT-DEVELOPERS\n");
+		GMT_report (C, GMT_MSG_VERBOSE, "Extend grid via duplication onto larger grid\n");
 		f = GMT_memory_aligned (C, NULL, size, float);		/* New, larger grid size */
 		GMT_memcpy (f, G->data, G->header->size, float);	/* Copy over previous grid values */
 		GMT_free_aligned (C, G->data);				/* Free previous aligned grid memory */
@@ -1639,11 +1675,14 @@ void GMT_grd_pad_on (struct GMT_CTRL *C, struct GMT_GRID *G, unsigned int *pad)
 
 	GMT_grd_setpad (C, G->header, pad);		/* Pad is now active and set to specified dimensions */
 	GMT_set_grddim (C, G->header);			/* Update all dimensions to reflect the padding */
+	n_items = n_pr_item * G->header->nx;		/* Number of 4-byte floats along each row */
 	for (row = G->header->ny; row > 0; row--) {
-		ijp = GMT_IJP (G->header, row-1, 0);	/* Index of start of this row's first column in padded grid  */
-		ij0 = GMT_IJ0 (h, row-1, 0);		/* Index of start of this row's first column in unpadded grid */
-		GMT_memcpy (&(G->data[ijp]), &(G->data[ij0]), G->header->nx, float);
+		ij_new = n_pr_item * GMT_IJP (G->header, row-1, 0);	/* Index of start of this row's first column in new padded grid  */
+		ij_old = n_pr_item * GMT_IJP (h, row-1, 0);		/* Index of start of this row's first column in old padded grid */
+		GMT_memcpy (&(G->data[ij_new]), &(G->data[ij_old]), n_items, float);
+		//fprintf (stderr, "Row: %d  Copy %d bytes from %d to %d\n", (int)row, (int)n_items, (int)ij_old, (int)ij_new);
 	}
+	gmt_grd_wipe_pad (C, G);	/* Set pad areas to 0 */
 	GMT_free (C, h);	/* Done with this header */
 }
 
@@ -1654,6 +1693,7 @@ void GMT_grd_pad_zero (struct GMT_CTRL *C, struct GMT_GRID *G)
 	unsigned int row, col, nx1;
 	uint64_t ij_f, ij_l;
 
+	if (G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) return;	/* Cannot work on complex grids */
 	if (!GMT_grd_pad_status (C, G->header, NULL)) return;	/* No pad so nothing to do */
 	if (G->header->BC[XLO] == GMT_BC_IS_NOTSET && G->header->BC[XHI] == GMT_BC_IS_NOTSET && G->header->BC[YLO] == GMT_BC_IS_NOTSET && G->header->BC[YHI] == GMT_BC_IS_NOTSET) return;	/* No BCs set so nothing to do */			/* No pad so nothing to do */
 	/* Here, G has a pad with BCs which we need to reset */
@@ -1845,10 +1885,10 @@ void GMT_grd_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double xyz[2][
 
 void GMT_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode, double *a)
 {
-	/* mode = 0: Remove the best-fitting plane by least squares (returned via a[0-2])
-	   mode = 1: Remove the mean value (returned via a[0])
-	   mode = 2: Remove the middle value (returned via a[0])
-	   
+	/* mode = 0 (GMT_FFT_LEAVE_TREND):  Do nothing.
+	   mode = 1 (GMT_FFT_REMOVE_MEAN):  Remove the mean value (returned via a[0])
+	   mode = 2 (GMT_FFT_REMOVE_MID):   Remove the mid value value (returned via a[0])
+	   mode = 3 (GMT_FFT_REMOVE_TREND): Remove the best-fitting plane by least squares (returned via a[0-2])
 	*/
 
 	unsigned int col, row, one_or_zero;
@@ -1857,7 +1897,11 @@ void GMT_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode
 	double sumx2, sumy2, data_var_orig = 0.0, data_var = 0.0, var_redux, x, y, z;
 
 	GMT_memset (a, 3, double);
-	if (mode == 1) {	/* Remove mean */
+	if (mode == GMT_FFT_LEAVE_TREND) {	/* Do nothing */
+		GMT_report (GMT, GMT_MSG_VERBOSE, "No detrending selected\n");
+		return;
+	}
+	if (mode == GMT_FFT_REMOVE_MEAN) {	/* Remove mean */
 		for (row = 0; row < Grid->header->ny; row++) for (col = 0; col < Grid->header->nx; col++) {
 			z = Grid->data[GMT_IJPR(Grid->header,row,col)];	/* Index to real part of complex array elements */
 			a[0] += z;
@@ -1874,7 +1918,7 @@ void GMT_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Mean value removed: %.8g Variance reduction: %.2f\n", a[0], var_redux);
 		return;
 	}
-	if (mode == 2) {	/* Remove mid value */
+	if (mode == GMT_FFT_REMOVE_MID) {	/* Remove mid value */
 		double zmin = DBL_MAX, zmax = -DBL_MAX;
 		for (row = 0; row < Grid->header->ny; row++) for (col = 0; col < Grid->header->nx; col++) {
 			ij = GMT_IJPR(Grid->header,row,col);	/* Index to real part of complex array elements */

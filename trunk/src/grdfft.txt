@@ -5,7 +5,7 @@ grdfft \- Do mathematical operations on grids in the wavenumber (or frequency) d
 .SH SYNOPSIS
 BD(grdfft) IT(ingrid) [ IT(ingrid2) ] OPT(G)IT(outfile) [ OPT(A)IT(azimuth) ] 
 [ OPT(C)IT(zlevel) ] [ OPT(D)[IT(scale)|BD(g)] ] [ OPT(E)[BD(r)|BD(x)|BD(y)][BD(w)[BD(k)]] ] 
-[ OPT(F)[BD(r)|BD(x)|BD(y)]IT(params) ] [ OPT(I)[IT(scale)|BD(g)] ] [ OPT(L)[BD(h)|BD(m)] ] 
+[ OPT(F)[BD(r)|BD(x)|BD(y)]IT(params) ] [ OPT(I)[IT(scale)|BD(g)] ] 
 [ OPT(N)[GMT_FFT_OPT] ] [ OPT(S)IT(scale) ] [ GMT_V_OPT ] [ OPT(fg) ]
 .SH DESCRIPTION
 BD(grdfft) will take the 2-D forward Fast Fourier Transform and perform one or more mathematical
@@ -72,10 +72,6 @@ Integrate the field, i.e., compute integral_over_z (field * dz).  This is equiva
 in the frequency domain (kr is radial wave number).  Append a scale to divide by (kr * IT(scale)) instead.
 Alternatively, append BD(g) to indicate that your data set is gravity anomalies in mGal and output should be geoid
 heights in meters.  [Default is no scale].
-.TP
-OPT(L)
-Leave trend alone.  By default, a linear trend will be removed prior to the transform.
-Alternatively, append BD(m) to just remove the mean value or BD(h) to remove the mid-value.
 #define FFT_OPT OPT(N)
 #include "explain_fft.txt" 
 .TP

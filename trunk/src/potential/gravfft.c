@@ -80,10 +80,6 @@ struct GRAVFFT_CTRL {
 		bool active;
 		double value;
 	} I;
-	struct GRVF_L {	/* -L[m|h] */
-		bool active;
-		unsigned int mode;
-	} L;
 	struct GRVF_N {	/* -N[f|q|s<nx>/<ny>][+e|m|n][+t<width>][+w[<suffix>]][+z[p]]  */
 		bool active;
 		struct GMT_FFT_INFO info;
@@ -165,10 +161,15 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 
 	unsigned int n_errors = 0;
 
-	int n;
+	int n, override_mode = -1;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 	char   ptr[GMT_BUFSIZ], t_or_b[4];
+#ifdef GMT_COMPAT
+	struct GMT_OPTION *popt = NULL;
+	char *mod = NULL, argument[GMT_BUFSIZ];
+	if ((popt = GMT_Find_Option (C, 'L', options))) mod = popt->arg; /* Gave old -L option */
+#endif
 
 	for (opt = options; opt; opt = opt->next) {		/* Process all the options given */
 		switch (opt->option) {
@@ -214,7 +215,7 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 				}
 				Ctrl->D.active = true;
 				Ctrl->misc.rho = atof (opt->arg);
-				Ctrl->L.mode = 1;	/* Leave trend alone and remove mean */
+				override_mode = GMT_FFT_REMOVE_MEAN;	/* Leave trend alone and remove mean */
 				break;
 			case 'E':
 				Ctrl->E.n_terms = atoi (opt->arg);
@@ -239,7 +240,7 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 				break;
 			case 'H':
 				Ctrl->T.moho = true;
-				Ctrl->L.active = true;
+				override_mode = 0;	/* Leave trend alone */
 				break;
 			case 'I':
 				Ctrl->I.active = true;
@@ -267,15 +268,25 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 					}
 				}
 				break;
+#ifdef GMT_COMPAT
 			case 'L':	/* Leave trend alone */
-				if (opt->arg[0] == 'm') Ctrl->L.mode = 1;	/* Remove mean */
-				else if (opt->arg[0] == 'h') Ctrl->L.mode = 2;	/* Remove mid-value */
-				else if (opt->arg[0] == 'n') Ctrl->L.mode = 3;	/* Dont touch */
-				else Ctrl->L.active = true;		/* Remove plan */
+				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; use -N modifiers in the future.\n");
 				break;
+#endif
 			case 'N':
 				Ctrl->N.active = true;
-				n_errors += GMT_fft_parse (GMT, 'N', opt->arg, &Ctrl->N.info);
+#ifdef GMT_COMPAT
+				strcpy (argument, opt->arg);
+				if (popt) {	/* Gave old -L */
+					if (mod == NULL) strcat (argument, "+l");		/* Leave trend alone -L */
+					else if (mod[0] == 'm') strcat (argument, "+a");	/* Remove mean -Lm */
+					else if (mod[0] == 'h') strcat (argument, "+h");	/* Remove mid-value -Lh */
+				}
+				else strcat (argument, "+d");					/* Remove plane was old default */
+				n_errors += GMT_FFT_parse (C, 'N', 2, argument, &Ctrl->N.info);
+#else
+				n_errors += GMT_FFT_parse (C, 'N', 2, opt->arg, &Ctrl->N.info);
+#endif
 				break;
 #ifdef GMT_COMPAT
 			case 'M':	/* Geographic data */
@@ -285,7 +296,7 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 #endif
 			case 'Q':
 				Ctrl->Q.active = true;
-				Ctrl->L.mode = 1;	/* Leave trend alone and remove mean */
+				override_mode = GMT_FFT_REMOVE_MEAN;	/* Leave trend alone and remove mean */
 				break;
 			case 'S':
 				Ctrl->S.active = true;
@@ -302,7 +313,7 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 				}
 				if (opt->arg[strlen(opt->arg)-2] == '+') {	/* Fragile. Needs further testing */
 					Ctrl->T.moho = true;
-					Ctrl->L.mode = 1;	/* Leave trend alone and remove mean */
+					override_mode = GMT_FFT_REMOVE_MEAN;	/* Leave trend alone and remove mean */
 				}
 				break;
 			case 'Z':
@@ -314,8 +325,8 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 		}
 	}
 
-	if (Ctrl->N.active && Ctrl->N.info.info_mode == GMT_FFT_LIST) {	/* List and exit */
-		GMT_fft_Singleton_list();
+	if (override_mode >= 0) Ctrl->N.info.trend_mode = override_mode;
+	if (Ctrl->N.active && Ctrl->N.info.info_mode == GMT_FFT_LIST) {
 		return (GMT_PARSE_ERROR);	/* So that we exit the program */
 	}
 	
@@ -363,7 +374,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: gravfft <topo_grd> [<ingrid2>] -G<outgrid>[-A<z_offset>] [-C<n/wavelength/mean_depth/tbw>]\n");
-	GMT_message (GMT,"\t[-D<density>] [-E<n_terms>] [-F[f|g|v|n|e]] [-I<wbctk>] [-L[m|h|n]]\n");
+	GMT_message (GMT,"\t[-D<density>] [-E<n_terms>] [-F[f|g|v|n|e]] [-I<wbctk>]\n");
 	GMT_message (GMT,"\t[-N%s] [-Q] [-T<te/rl/rm/rw>[+m]]\n", GMT_FFT_OPT);
 	GMT_message (GMT,"\t[%s] [-Z<zm>[/<zl>]] [-fg]\n\n", GMT_V_OPT);
 
@@ -401,11 +412,8 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT,"\t   v = Vertical Gravity Gradient (VGG; 1 Eovtos = 0.1 mGal/km).\n");
 	GMT_message (GMT,"\t   e = East deflections of the vertical (micro-radian).\n");
 	GMT_message (GMT,"\t   n = North deflections of the vertical (micro-radian).\n");
-	GMT_message (GMT,"\t-L Leave trend alone. Do not remove least squares plane from data.\n");
-	GMT_message (GMT,"\t   It applies both to bathymetry as well as <ingrid2> [Default removes plane].\n");
-	GMT_message (GMT,"\t   Append m to just remove mean, h to remove mid-value instead or n to not touch.\n");
-	GMT_message (GMT,"\t   Warning: both -D -T...+m and -Q will implicitly set -Lm.\n");
-	GMT_fft_syntax (GMT, 'N', "Choose or inquire about suitable grid dimensions for FFT, and set modifiers:");
+	GMT_FFT_option (C, 'N', 2, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers:");
+	GMT_message (GMT,"\t   Warning: both -D -T...+m and -Q will implicitly set -N's +a.\n");
 	GMT_message (GMT,"\t-Q writes out a grid with the flexural topography (with z positive up)\n");
 	GMT_message (GMT,"\t   whose average depth is set to the value given by -Z<zm>.\n");
 	GMT_message (GMT,"\t-S Computes predicted geopotential (see -F) grid due to a subplate load\n");
@@ -432,11 +440,10 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 	unsigned int i, j, k, n;
 	int error = 0;
-	bool stop;
 	uint64_t m;
 	char	format[64], buffer[256];
 	float	*topo = NULL, *raised = NULL;
-	double	delta_pt, freq, coeff[2][3];
+	double	delta_pt, freq;
 
 	struct GMT_GRID *Grid[2] = {NULL, NULL}, *Orig[2] = {NULL, NULL};
 	struct GMT_FFT_WAVENUMBER *FFT_info[2] = {NULL, NULL}, *K = NULL;
@@ -529,15 +536,15 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	
 	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Read, and check that no NaNs are present in either grid */
 		GMT_grd_init (GMT, Orig[k]->header, options, true);	/* Update the header */
-		FFT_info[k] = GMT_grd_fft_init (GMT, Orig[k], &Ctrl->N.info);
-		
-		if ((Orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY | GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->In.file[k], Orig[k])) == NULL)	/* Get data only */
+		if ((Orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY | GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->In.file[k], Orig[k])) == NULL)        /* Get data only */
 			Return (API->error);
-		for (m = 0, stop = false; !stop && m < Orig[k]->header->size; m++) stop = GMT_is_fnan (Orig[k]->data[m]);
-		if (stop) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Input grid %s contain NaNs, aborting!\n", Ctrl->In.file[k]);
-			Return (EXIT_FAILURE);
+		if (Ctrl->A.active) {	/* Apply specified offset */
+			for (j = 0; j < Grid[0]->header->ny; j++)
+				for (i = 0; i < Grid[0]->header->nx; i++)
+					Grid[0]->data[GMT_IJPR(Grid[0]->header,j,i)] += (float)Ctrl->A.z_offset;
 		}
+
+		FFT_info[k] = GMT_FFT_init_2d (API, Orig[k], GMT_GRID_IS_COMPLEX_REAL, &Ctrl->N.info);
 	}
 	
 	K = FFT_info[0];	/* We only need one of these anyway; K is a shorthand */
@@ -549,32 +556,16 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	/* From here we address the first grid via Grid[0] and the 2nd grid (if given) as Grid[1];
 	 * we are done with using the addresses Orig[k] directly. */
 
-	/* Apply specified offset */
-	if (Ctrl->A.active) {
-		for (j = 0; j < Grid[0]->header->ny; j++)
-			for (i = 0; i < Grid[0]->header->nx; i++)
-				Grid[0]->data[GMT_IJPR(Grid[0]->header,j,i)] += (float)Ctrl->A.z_offset;
-	}
+	Ctrl->misc.z_level = fabs (FFT_info[0]->coeff[0]);	/* Need absolute value or level removed for uppward continuation */
 
-	/* Detrend (if requested), extend (if requested) and taper (if requested) the grids */
-	for (k = 0; k < Ctrl->In.n_grids; k++) {
-		if (!(Ctrl->L.active) && Ctrl->L.mode != 3) {
-			GMT_grd_detrend (GMT, Grid[k], Ctrl->L.mode, coeff[k]);
-			Ctrl->misc.z_level = fabs (coeff[0][0]);	/* Need absolute value or level removed for uppward continuation */
-		}
-		GMT_fft_taper (GMT, Grid[k], &Ctrl->N.info);
-		GMT_fft_save (GMT, Grid[k], GMT_IN, &Ctrl->N.info);	/* If -N..w, write tapered grid to file */
-	}
-				
 	if (Ctrl->I.active) {		/* Compute admittance or coherence from data and exit */
 
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Processing gravity file %s\n", Ctrl->In.file[1]);
 
 		for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Call the forward FFT, once per grid */
 			GMT_report (GMT, GMT_MSG_VERBOSE, "forward FFT...\n");
-			if (GMT_fft_2d (GMT, Grid[k]->data, K->nx2, K->ny2, k_fft_fwd, k_fft_complex))
+			if (GMT_FFT_2d (API, Grid[k], k_fft_fwd, k_fft_complex, FFT_info[k]))
 				Return (EXIT_FAILURE);
-			GMT_fft_save (GMT, Grid[k], GMT_OUT, &Ctrl->N.info);	/* If -N..z, write FFT complex grid to files */
 		}
 
 		do_admittance (GMT, Grid[0], Grid[1], Ctrl, K);
@@ -589,21 +580,20 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	if (Ctrl->Q.active || Ctrl->T.moho) {
 		double coeff[3];
 		GMT_report (GMT, GMT_MSG_VERBOSE, "forward FFT...\n");
-		if (GMT_fft_2d (GMT, Grid[0]->data, K->nx2, K->ny2, k_fft_fwd, k_fft_complex)) {
+		if (GMT_FFT_2d (API, Grid[0], k_fft_fwd, k_fft_complex, FFT_info[0])) {
 			Return (EXIT_FAILURE);
-			GMT_fft_save (GMT, Grid[0], GMT_OUT, &Ctrl->N.info);	/* If -N..z, write FFT complex grid to files */
 		}
 
 		do_isostasy__ (GMT, Grid[0], Ctrl, K);
 		
-		if (GMT_fft_2d (GMT, Grid[0]->data, K->nx2, K->ny2, k_fft_inv, k_fft_complex))
+		if (GMT_FFT_2d (API, Grid[0], k_fft_inv, k_fft_complex, K))
 			Return (EXIT_FAILURE);
 
-		scale_out *= (2.0 / Grid[0]->header->size);
-		GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, scale_out, 0);
+		if (!doubleAlmostEqual (scale_out, 1.0))
+			GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, scale_out, 0);
 
 		if (!Ctrl->T.moho) {
-			if (Ctrl->L.mode != 3) GMT_grd_detrend (GMT, Grid[0], Ctrl->L.mode, coeff);
+			GMT_grd_detrend (GMT, Grid[0], Ctrl->N.info.trend_mode, coeff);
 			Ctrl->misc.z_level = fabs (coeff[0]);	/* Need absolute value or level removed for uppward continuation */
     			GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, 1.0, -Ctrl->Z.zm);
 
@@ -626,7 +616,6 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	GMT_memcpy (topo,   Grid[0]->data, Grid[0]->header->size, float);
 	GMT_memcpy (raised, Grid[0]->data, Grid[0]->header->size, float);
 	GMT_memset (Grid[0]->data, Grid[0]->header->size, float);
-
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Evaluating for term = 1");
 
 	for (n = 1; n <= Ctrl->E.n_terms; n++) {
@@ -637,7 +626,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 			for (m = 0; m < Grid[0]->header->size; m++)
 				raised[m] = (float)pow(topo[m], (double)n);
 
-		if (GMT_fft_2d (GMT, raised, K->nx2, K->ny2, k_fft_fwd, k_fft_complex))
+		if (GMT_fft_2d (GMT, raised, K->nx2, K->ny2, k_fft_fwd, k_fft_complex, K))
 			Return (EXIT_FAILURE);
 
 		if (Ctrl->D.active || Ctrl->T.moho)	/* "classical" anomaly */
@@ -652,11 +641,11 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, " Inverse FFT...");
 
-	if (GMT_fft_2d (GMT, Grid[0]->data, K->nx2, K->ny2, k_fft_inv, k_fft_complex))
+	if (GMT_FFT_2d (API, Grid[0], k_fft_inv, k_fft_complex, K))
 		Return (EXIT_FAILURE);
 
-	scale_out *= (2.0 / Grid[0]->header->size);
-	GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, scale_out, 0);
+	if (!doubleAlmostEqual (scale_out, 1.0))
+		GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, scale_out, 0);
 
 	switch (Ctrl->F.mode) {
 		case GRAVFFT_FAA:
@@ -685,7 +674,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, "write_output...");
 
-	GMT_free (GMT, K);
+	for (k = 0; k < Ctrl->In.n_grids; k++) GMT_free (GMT, FFT_info[k]);
 	GMT_free (GMT, raised);
 
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY | GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->G.file, Grid[0]) != GMT_OK) {
@@ -965,7 +954,7 @@ void load_from_below_admitt(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, str
 	}
 }
 
-void load_from_top_admitt(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, double *z_from_top) {
+void load_from_top_admitt (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, double *z_from_top) {
 
 	/* Compute theoretical admittance for the "loading from top" model
 	   M. McNutt & Shure (1986) in same |k| of computed data admittance

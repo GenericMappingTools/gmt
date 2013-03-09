@@ -76,10 +76,6 @@ struct GRDFFT_CTRL {
 		bool active;
 		double value;
 	} I;
-	struct L {	/* -L[m|h] */
-		bool active;
-		unsigned int mode;
-	} L;
 	struct N {	/* -N[f|q|s<nx>/<ny>][+e|m|n][+t<width>][+w[<suffix>]][+z[p]] */
 		bool active;
 		struct GMT_FFT_INFO info;
@@ -578,7 +574,7 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *C, int level)
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdfft <ingrid> [<ingrid2>] [-G<outgrid>|<table>] [-A<azimuth>] [-C<zlevel>]\n");
-	GMT_message (GMT, "\t[-D[<scale>|g]] [-E[r|x|y][w[k]] [-F[r|x|y]<parameters>] [-I[<scale>|g]] [-L[m|h]]\n");
+	GMT_message (GMT, "\t[-D[<scale>|g]] [-E[r|x|y][w[k]] [-F[r|x|y]<parameters>] [-I[<scale>|g]]\n");
 	GMT_message (GMT, "\t[-N%s] [-S<scale>]\n", GMT_FFT_OPT);
 	GMT_message (GMT, "\t[%s] [-fg] [-ho]\n\n", GMT_V_OPT);
 
@@ -608,9 +604,7 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-G filename for output netCDF grid file OR 1-D data table (see -E).\n");
 	GMT_message (GMT, "\t   Optional for -E (spectrum written to stdout); required otherwise.\n");
 	GMT_message (GMT, "\t-I Integrate, i.e., divide by kr [ * scale].  Use -Ig to get m from mGal].\n");
-	GMT_message (GMT, "\t-L Leave trend alone:  Do not remove least squares plane from data [Default removes plane].\n");
-	GMT_message (GMT, "\t   Append m to just remove mean or h to remove mid-value instead.\n");
-	GMT_fft_syntax (GMT, 'N', "Choose or inquire about suitable grid dimensions for FFT, and set modifiers:");
+	GMT_FFT_option (C, 'N', 2, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers:");
 	GMT_message (GMT, "\t-S multiply field by scale after inverse FFT [1.0].\n");
 	GMT_message (GMT, "\t   Give -Sd to convert deflection of vertical to micro-radians.\n");
 #if 0
@@ -653,12 +647,20 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 	double par[5];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
+#ifdef GMT_COMPAT
+	struct GMT_OPTION *ptr = NULL;
+	char *mod = NULL, argument[GMT_BUFSIZ];
+#endif
 
 	GMT_memset (f_info, 1, struct F_INFO);
 	for (j = 0; j < 3; j++) {
 		f_info->lc[j] = f_info->lp[j] = -1.0;		/* Set negative, below valid frequency range  */
 		f_info->hp[j] = f_info->hc[j] = DBL_MAX;	/* Set huge positive, above valid frequency range  */
 	}
+
+#ifdef GMT_COMPAT
+	if ((ptr = GMT_Find_Option (C, 'L', options))) mod = ptr->arg; /* Gave old -L option */
+#endif
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 		GMT_memset (par, 5, double);
@@ -730,10 +732,10 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 				n_errors += GMT_check_condition (GMT, par[0] == 0.0, "Syntax error -I option: scale must be nonzero\n");
 				add_operation (GMT, Ctrl, GRDFFT_INTEGRATE, 1, par);
 				break;
+#ifdef GMT_COMPAT
 			case 'L':	/* Leave trend alone */
-				if (opt->arg[0] == 'm') Ctrl->L.mode = 1;
-				else if (opt->arg[0] == 'h') Ctrl->L.mode = 2;
-				else Ctrl->L.active = true;
+				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; use -N modifiers in the future.\n");
+#endif
 				break;
 #ifdef GMT_COMPAT
 			case 'M':	/* Geographic data */
@@ -743,7 +745,18 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 #endif
 			case 'N':	/* Grid dimension setting or inquiery */
 				Ctrl->N.active = true;
-				n_errors += GMT_fft_parse (GMT, 'N', opt->arg, &Ctrl->N.info);
+#ifdef GMT_COMPAT
+				strcpy (argument, opt->arg);
+				if (ptr) {	/* Gave old -L */
+					if (mod == NULL) strcat (argument, "+l");		/* Leave trend alone -L */
+					else if (mod[0] == 'm') strcat (argument, "+a");		/* Remove mean -Lm */
+					else if (mod[0] == 'h') strcat (argument, "+h");	/* Remove mid-value -Lh */
+				}
+				else strcat (argument, "+d");					/* Remove plane was old default */
+				n_errors += GMT_FFT_parse (C, 'N', 2, argument, &Ctrl->N.info);
+#else
+				n_errors += GMT_FFT_parse (C, 'N', 2, opt->arg, &Ctrl->N.info);
+#endif
 				break;
 			case 'S':	/* Scale */
 				Ctrl->S.active = true;
@@ -752,7 +765,7 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 #ifdef GMT_COMPAT
 			case 'T':	/* Flexural isostasy */
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -T is deprecated; see gravfft for isostasy and gravity calculations.\n");
-				Ctrl->T.active = Ctrl->L.active = true;
+				Ctrl->T.active = true;
 				n_scan = sscanf (opt->arg, "%lf/%lf/%lf/%lf/%lf", &par[0], &par[1], &par[2], &par[3], &par[4]);
 				for (j = 1, k = 0; j < 5; j++) if (par[j] < 0.0) k++;
 				n_errors += GMT_check_condition (GMT, n_scan != 5 || k > 0, 
@@ -772,11 +785,14 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 		}
 	}
 
-	if (Ctrl->N.active && Ctrl->N.info.info_mode == GMT_FFT_LIST) {	/* List and exit */
-		GMT_fft_Singleton_list();
+	if (Ctrl->N.active && Ctrl->N.info.info_mode == GMT_FFT_LIST) {
 		return (GMT_PARSE_ERROR);	/* So that we exit the program */
 	}
-	
+
+#ifdef GMT_COMPAT
+	if (Ctrl->T.active) Ctrl->N.info.trend_mode = GMT_FFT_LEAVE_TREND;
+#endif
+
 	n_errors += GMT_check_condition (GMT, !(Ctrl->n_op_count), "Syntax error: Must specify at least one operation\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.info.info_mode == GMT_FFT_SET && (Ctrl->N.info.nx <= 0 || Ctrl->N.info.ny <= 0), 
 			"Syntax error -N option: nx2 and/or ny2 <= 0\n");
@@ -793,11 +809,8 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 
 int GMT_grdfft (void *V_API, int mode, void *args)
 {
-	bool stop;
 	int error = 0, status;
 	unsigned int op_count = 0, par_count = 0, k;
-	uint64_t ij;
-	double coeff[2][3];	/* Detrend parameters returned */
 	char *spec_msg[2] = {"spectrum", "cross-spectrum"};
 	struct GMT_GRID *Grid[2] = {NULL,  NULL}, *Orig[2] = {NULL, NULL};
 	struct F_INFO f_info;
@@ -852,18 +865,8 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 	/* Grids are compatible. Initialize FFT structs, grid headers, read data, and check for NaNs */
 	
 	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Read, and check that no NaNs are present in either grid */
-		GMT_grd_init (GMT, Orig[k]->header, options, true);	/* Update the header */
-		FFT_info[k] = GMT_grd_fft_init (GMT, Orig[k], &Ctrl->N.info);
-		
-		if ((Orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY | GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->In.file[k], Orig[k])) == NULL)	/* Get data only */
-			Return (API->error);
-		for (ij = 0, stop = false; !stop && ij < Orig[k]->header->size; ij++) stop = GMT_is_fnan (Orig[k]->data[ij]);
-		if (stop) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Input grid %s contain NaNs, aborting!\n", Ctrl->In.file[k]);
-			Return (EXIT_FAILURE);
-		}
+		FFT_info[k] = GMT_FFT_init_2d (API, Orig[k], GMT_GRID_IS_COMPLEX_REAL, &Ctrl->N.info);
 	}
-	
 	K = FFT_info[0];	/* We only need one of these anyway; K is a shorthand */
 	
 	/* Note: If input grid(s) are read-only then we must duplicate them; otherwise Grid[k] points to Orig[k] */
@@ -873,13 +876,6 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 	/* From here we address the first grid via Grid[0] and the 2nd grid (if given) as Grid[1];
 	 * we are done with using the addresses Orig[k] directly. */
 	
-	/* Detrend (if requested), extend (if requested) and taper (if requested) the grids */
-	for (k = 0; k < Ctrl->In.n_grids; k++) {
-		if (!(Ctrl->L.active)) GMT_grd_detrend (GMT, Grid[k], Ctrl->L.mode, coeff[k]);
-		GMT_fft_taper (GMT, Grid[k], &Ctrl->N.info);
-		GMT_fft_save (GMT, Grid[k], GMT_IN, &Ctrl->N.info);
-	}
-
 #ifdef FTEST
 	/* PW: Used with -DFTEST to check that the radial filters compute correctly */
 	{
@@ -894,9 +890,8 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 
 	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Call the forward FFT, once per grid, optionally save raw FFT output */
 		GMT_report (GMT, GMT_MSG_VERBOSE, "forward FFT...\n");
-		if (GMT_fft_2d (GMT, Grid[k]->data, K->nx2, K->ny2, k_fft_fwd, k_fft_complex))
+		if (GMT_FFT_2d (API, Grid[k], k_fft_fwd, k_fft_complex, FFT_info[k]))
 			Return (EXIT_FAILURE);
-		GMT_fft_save (GMT, Grid[k], GMT_OUT, &Ctrl->N.info);
 	}
 
 	for (op_count = par_count = 0; op_count < Ctrl->n_op_count; op_count++) {
@@ -947,15 +942,10 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 	if (!Ctrl->E.active) {	/* Since -E output is handled separately by do_spectrum itself */
 		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "inverse FFT...\n");
 
-		if (GMT_fft_2d (GMT, Grid[0]->data, K->nx2, K->ny2, k_fft_inv, k_fft_complex))
+		if (GMT_FFT_2d (API, Grid[0], k_fft_inv, k_fft_complex, NULL))
 			Return (EXIT_FAILURE);
 
-		/* FFT computes an unnormalized transform, in that there is no
-		 * coefficient in front of the summation in the FT. In other words,
-		 * applying the forward and then the backward transform will multiply the
-		 * input by the number of elements (header->size). Here we correct this: */
-		Ctrl->S.scale *= (2.0 / Grid[0]->header->size);
-		GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, Ctrl->S.scale, 0);
+		if (!doubleAlmostEqual (Ctrl->S.scale, 1.0)) GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, Ctrl->S.scale, 0);
 
 		/* The data are in the middle of the padded array; only the interior (original dimensions) will be written to file */
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY | GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->G.file, Grid[0]) != GMT_OK) {

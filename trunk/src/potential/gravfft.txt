@@ -4,7 +4,7 @@
 gravfft \- Compute gravitational attraction of 3-D surfaces in the wavenumber (or frequency) domain
 .SH SYNOPSIS
 BD(gravfft) IT(ingrid) [ IT(ingrid2) ] OPT(G)IT(outfile) [ -C<n/wavelength/mean_depth/tbw> ]
-[ OPT(A)IT(z_offset) ] [ OPT(D)<density> ] [ OPT(E)<n_terms> ] [ OPT(F)[f|g|v|n|e] ] [ OPT(I)<wbctk> ] [ OPT(L)[m|h|n] ]
+[ OPT(A)IT(z_offset) ] [ OPT(D)<density> ] [ OPT(E)<n_terms> ] [ OPT(F)[f|g|v|n|e] ] [ OPT(I)<wbctk> ] 
 [ OPT(N)[GMT_FFT_OPT] ] [ OPT(Q) ] [ OPT(T)<te/rl/rm/rw>[+m] ] [ GMT_V_OPT ] [ OPT(Z)<zm>[/<zl>] ] [ OPT(fg) ]
 .SH DESCRIPTION
 BD(gravfft) can be used into two main modes. First one computes the gravity/geoid response of a bathymetry file. It will
@@ -67,11 +67,6 @@ BD(k) Use km or wavelength unit [m]
 BD(c) computes coherence instead of admittance
 BD(b) writes a forth column with "loading from below" theoretical admittance
 BD(t) writes a forth column with "elastic plate" theoretical admittance
-.TP
-OPT(L)[BD(m)|BD(h)|BD(n)]
-Leave trend alone.  By default, a linear trend will be removed prior to the transform.
-Alternatively, append BD(m) to just remove the mean value, BD(h) to remove the mid-value,
-or BD(n) to not remove constant/plane from input data.
 #define FFT_OPT OPT(N)
 #include "explain_fft.txt" 
 .TP
@@ -164,7 +159,7 @@ following and the previous commands only give the same result if OPT(E)1 (the de
 powers of bathymetry in Parker expansion, only the above example seams to give the correct result.
 .br
 .sp
-gravfft bat.grd -Gmodel.grd -T7000/2700/3300/1035 -Z9000 -L
+gravfft bat.grd -Gmodel.grd -T7000/2700/3300/1035 -Z9000 -N+l
 .br
 .sp
 And what would be the geoid anomaly produced by a load at 50 km depth, below the a region whose bathymetry
