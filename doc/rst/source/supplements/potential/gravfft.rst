@@ -12,8 +12,8 @@ Synopsis
 
 **gravfft** *ingrid* [*ingrid2*\ ] **-G**\ *outfile*
 [**-C**\ <n/wavelength/mean\_depth/tbw>] [**-A**\ *z\_offset*] [**-D**\ <density>]
-[**-E**\ <n\_terms>] [**-F**\ [f\|g\|v\|n\|e]] [**-I**\ <wbctk>] [**-L**\ [m\|h\|n]]
-[**-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][\ **+e**\ \|\ **n**\ \|\ **m**][\ **+t**\ *width*][\ **+w**\ [*suffix*]][\ **+z**\ [**p**]]]
+[**-E**\ <n\_terms>] [**-F**\ [f\|g\|v\|n\|e]] [**-I**\ <wbctk>]
+[**-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][\ **+a**\ \|\ **d**\ \|\ **h** \|\ **l**][\ **+e**\ \|\ **n**\ \|\ **m**][\ **+t**\ *width*][\ **+w**\ [*suffix*]][\ **+z**\ [**p**]]]
 [**-Q**\ ] [**-T**\ <te/rl/rm/rw>[+m]] [**-V**\ [*level*\ ]] [**-Z**\ <zm>[/<zl>]]
 [**-fg**\ ]
 
@@ -66,7 +66,7 @@ Optional Arguments
     Sets density contrast across surface. Used, for example, to compute
     the gravity attraction of the water layer that can later be combined
     with the free-air anomaly to get the Bouguer anomaly. In this case
-    do not use **-T**. It also implicitly sets **-L**\ m
+    do not use **-T**. It also implicitly sets **-N+a**
 **-E**\ *n\_terms*
     Number of terms used in Parker expansion (limit is 10, otherwise
     terms depending on n will blow out the program) [Default = 1]
@@ -96,11 +96,6 @@ Optional Arguments
     admittance **b** writes a forth column with "loading from below"
     theoretical admittance **t** writes a forth column with "elastic
     plate" theoretical admittance
-**-L**\ [**m**\ \|\ **h**\ \|\ **n**]
-    Leave trend alone. By default, a linear trend will be removed prior
-    to the transform. Alternatively, append **m** to just remove the
-    mean value, **h** to remove the mid-value, or **n** to not remove
-    constant/plane from input data.
 **-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][\ **+e**\ \|\ **n**\ \|\ **m**][\ **+t**\ *width*][\ **+w**\ [*suffix*\ ]][\ **+z**\ [**p**\ ]]
     Choose or inquire about suitable grid dimensions for FFT and set
     optional parameters. **-Nf** will force the FFT to use the actual
@@ -132,7 +127,7 @@ Optional Arguments
     Writes out a grid with the flexural topography (with z positive up)
     whose average was set by **-Z**\ *zm* and model parameters by **-T**
     (and output by **-G**). That is the “gravimetric Moho”. **-Q**
-    implicitly sets **-L**\ m
+    implicitly sets **-N+l**\ m
 **-S**
     Computes predicted gravity or geoid grid due to a subplate load
     produced by the current bathymetry and the theoretical model. The
@@ -146,7 +141,7 @@ Optional Arguments
     is > 1e10 it will be interpreted as the flexural rigidity (by default it is
     computed from *te* and Young modulus). Optionaly, append *+m* to write a grid
     with the Moho's geopotential effect (see **-F**) from model selected by **-T**. 
-    If *te* = 0 then the Airy response is returned. **-T** implicitly sets **-L**\ m
+    If *te* = 0 then the Airy response is returned. **-T** implicitly sets **-N+a**
 **-Z**\ *<zm>[/<zl>]*
     Moho [and swell] average compensation depths. For the “load from
     top” model you only have to provide *zm*, but for the “loading from
@@ -237,7 +232,7 @@ the previous commands only give the same result if **-E**\ 1 (the
 default) is used. For higher powers of bathymetry in Parker expansion,
 only the above example seams to give the correct result.
 
-gravfft bat.grd -Gmodel.grd -T7000/2700/3300/1035 -Z9000 -L
+gravfft bat.grd -Gmodel.grd -T7000/2700/3300/1035 -Z9000 -N+l
 
 And what would be the geoid anomaly produced by a load at 50 km depth,
 below the a region whose bathymetry is given by bat.grd, a Moho at 9 km

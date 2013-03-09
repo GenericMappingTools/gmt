@@ -72,6 +72,7 @@ extern "C" {
 #include <time.h>
 
 #include "common_math.h"     /* Shared math functions */
+#define GMT_FFT_EXTENSION    /* We want to enable the GMT FFT API extension */
 #include "gmt.h"             /* All GMT low-level API */
 #include "gmt_private.h"     /* API declaration needed by libraries */
 

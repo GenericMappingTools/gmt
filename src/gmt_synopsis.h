@@ -89,6 +89,6 @@
 #define GMT_GRDEDIT	"-D<xname>/<yname>/<zname>/<scale>/<offset>/<invalid>/<title>/<remark>"
 
 /* Used in tools that need to specify FFT information (prepend option flag, e.g., -N and put GMT_FFT_OPT inside [] ) */
-#define GMT_FFT_OPT "[f|q|s|<nx>/<ny>][+e|m|n][+t<width>][+w<suffix>][+z[p]]"
+#define GMT_FFT_OPT "[f|q|s|<nx>/<ny>][+a|d|l][+e|m|n][+t<width>][+w<suffix>][+z[p]]"
 
 #endif /* GMT_SYNOPSIS_H */

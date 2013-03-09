@@ -33,6 +33,12 @@ enum GMT_FFT_EXTEND {
 	GMT_FFT_EXTEND_NONE,
 	GMT_FFT_EXTEND_NOT_SET};
 	
+enum GMT_FFT_TREND {
+	GMT_FFT_LEAVE_TREND = 0,
+	GMT_FFT_REMOVE_MEAN,
+	GMT_FFT_REMOVE_MID,
+	GMT_FFT_REMOVE_TREND};
+	
 enum GMT_FFT_KCHOICE {
 	GMT_FFT_K_IS_KR = 0,
 	GMT_FFT_K_IS_KX,
@@ -49,6 +55,8 @@ struct GMT_FFT_WAVENUMBER {	/* Holds parameters needed to calculate kx, ky, kr *
 	int nx2, ny2;
 	double delta_kx, delta_ky;
 	double (*k_ptr) (uint64_t k, struct GMT_FFT_WAVENUMBER *K);	/* pointer to function returning either kx, ky, or kr */
+	double coeff[3];		/* Detrending coefficients returned, if used */
+	struct GMT_FFT_INFO *info;	/* Pointer back to GMT_FFT_INFO */
 };
 
 struct GMT_FFT_INFO {
@@ -61,8 +69,19 @@ struct GMT_FFT_INFO {
 	unsigned int ny;		/* Desired hard FFT ny dimensionl or 0 if free to adjust */
 	unsigned int taper_mode;	/* One of the GMT_FFT_EXTEND for extension/mirroring */
 	unsigned int info_mode;		/* One of the GMT_FFT_INFO for setting nx/ny or inquire */
+	unsigned int trend_mode;	/* One of the GMT_FFT_TREND for handling detrending */
 	double taper_width;		/* Amount of tapering in percent */
 	struct GMT_FFT_WAVENUMBER *K;	/* Pointer to wavenumber structure */
 };
+
+struct GMT_FFT_SUGGESTION {
+	unsigned int nx;
+	unsigned int ny;
+	size_t worksize;	/* # single-complex elements needed in work array  */
+	size_t totalbytes;	/* (8*(nx*ny + worksize))  */
+	double run_time;
+	double rms_rel_err;
+}; /* [0] holds fastest, [1] most accurate, [2] least storage  */
+
 
 #endif

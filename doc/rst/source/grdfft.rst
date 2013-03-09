@@ -14,8 +14,8 @@ frequency) domain
 ] [ **-C**\ *zlevel* ] [ **-D**\ [*scale*\ \|\ **g**] ] [
 **-E**\ [**r**\ \|\ **x**\ \|\ **y**][\ **w**\ [**k**\ ]] ] [
 **-F**\ [**r**\ \|\ **x**\ \|\ **y**]\ *params* ] [
-**-I**\ [*scale*\ \|\ **g**] ] [ **-L**\ [**h**\ \|\ **m**] ] [
-**-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][\ **+e**\ \|\ **n**\ \|\ **m**][\ **+t**\ *width*][\ **+w**\ [*suffix*\ ]][\ **+z**\ [**p**\ ]]
+**-I**\ [*scale*\ \|\ **g**] ] [
+**-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][\ **+a**\ \|\ **d**\ \|\ **h** \|\ **l**][\ **+e**\ \|\ **n**\ \|\ **m**][\ **+t**\ *width*][\ **+w**\ [*suffix*\ ]][\ **+z**\ [**p**\ ]]
 ] [ **-S**\ *scale* ] [ **-V**\ [*level*\ ] ] [
 **-fg**\ ]
 
@@ -110,10 +110,6 @@ to meters using **grdedit** or scale the output with **grdmath**.
     instead. Alternatively, append **g** to indicate that your data set
     is gravity anomalies in mGal and output should be geoid heights in
     meters. [Default is no scale].
-**-L**
-    Leave trend alone. By default, a linear trend will be removed prior
-    to the transform. Alternatively, append **m** to just remove the
-    mean value or **h** to remove the mid-value. 
 
 .. include:: explain_fft.rst_
 
