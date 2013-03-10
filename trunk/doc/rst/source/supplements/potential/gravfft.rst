@@ -126,8 +126,8 @@ Optional Arguments
 **-Q**
     Writes out a grid with the flexural topography (with z positive up)
     whose average was set by **-Z**\ *zm* and model parameters by **-T**
-    (and output by **-G**). That is the “gravimetric Moho”. **-Q**
-    implicitly sets **-N+l**\ m
+    (and output by **-G**). That is the "gravimetric Moho". **-Q**
+    implicitly sets **-N+a**
 **-S**
     Computes predicted gravity or geoid grid due to a subplate load
     produced by the current bathymetry and the theoretical model. The
@@ -226,20 +226,19 @@ gravfft bat.grd -Gelastic.grd -T7000/2700/3300/1035+m -Z9000
 grdmath water\_g.grd elastic.grd ADD = model.grd
 
 The same result can be obtained directly by the next command. However,
-PAY ATTENTION to the following. I don’t yet know if it’s because of a
+PAY ATTENTION to the following. I don't yet know if it's because of a
 bug or due to some limitation, but the fact is that the following and
 the previous commands only give the same result if **-E**\ 1 (the
 default) is used. For higher powers of bathymetry in Parker expansion,
 only the above example seams to give the correct result.
 
-gravfft bat.grd -Gmodel.grd -T7000/2700/3300/1035 -Z9000 -N+l
+gravfft bat.grd -Gmodel.grd -T7000/2700/3300/1035 -Z9000
 
 And what would be the geoid anomaly produced by a load at 50 km depth,
 below the a region whose bathymetry is given by bat.grd, a Moho at 9 km
 depth and the same densities as before?
 
-gravfft topo.grd -Gswell\_geoid.grd -T7000/2700/3300/1035 -F
--Z9000/50000 -S
+gravfft topo.grd -Gswell\_geoid.grd -T7000/2700/3300/1035 -Fg -Z9000/50000 -S
 
 To compute the admittance between the topo.grd bathymetry and faa.grd
 free-air anomaly grid using the elastic plate model of a crust of 6 km
@@ -249,7 +248,7 @@ mean water depth:
 gravfft topo.grd faa.grd -It -T10000/2700/3300/1035 -Z9000
 
 To compute the admittance between the topo.grd bathymetry and geoid.grd
-geoid grid with the “loading from below” (LFB) model with the same as
+geoid grid with the "loading from below" (LFB) model with the same as
 above and sub-surface load at 40 km, but assuming now the grids are in
 geographic and we want wavelengths instead of frequency:
 
