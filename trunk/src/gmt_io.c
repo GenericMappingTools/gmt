@@ -6167,7 +6167,7 @@ struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *C, struct GMT_DATASET *
 		for (hdr = 0; hdr < D->table[0]->n_headers; hdr++) {	/* Concatenate headers */
 			for (tbl = len = 0; tbl < Din->n_tables; tbl++) len += (strlen (Din->table[tbl]->header[hdr]) + 2);
 			D->table[0]->header[hdr] = calloc (len, sizeof (char));
-			strncpy (D->table[0]->header[hdr], Din->table[0]->header[hdr], GMT_BUFSIZ);
+			strncpy (D->table[0]->header[hdr], Din->table[0]->header[hdr], len);
 			if (Din->n_tables > 1) GMT_chop (D->table[0]->header[hdr]);	/* Remove newline */
 			for (tbl = 1; tbl < Din->n_tables; tbl++) {	/* Now go across tables to paste */
 				if (tbl < (Din->n_tables - 1)) GMT_chop (Din->table[tbl]->header[hdr]);
