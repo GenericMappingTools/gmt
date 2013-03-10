@@ -10,28 +10,28 @@ psxy - Plot lines, polygons, and symbols on maps
 .. include:: common_SYN_OPTs.rst_
 
 **psxy** [ *table* ] **-J**\ *parameters*
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ] [
-**-A**\ [**m**\ \|\ **p**] ] [ **-B**\ [**p**\ \|\ **s**]\ *parameters*
-] [ **-C**\ *cptfile* ] [ **-D**\ *dx*/*dy* ] [
-**-E**\ [**x**\ \|\ **y**\ \|\ **X**\ \|\ **Y**][**n**\ ][*cap*\ ][/[\ **-**\ \|\ **+**]\ *pen*]
-] [ **-G**\ *fill* ] [ **-I**\ *intens* ] [
-**-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [ **-L** ] [ **-N** ] [
-**-O** ] [ **-P** ] [
-**-S**\ [*symbol*\ ][\ *size*\ \|\ **+s**\ *scaling*] ] [
-**-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*\ ]
-] [ **-W**\ [**-**\ \|\ **+**][*pen*\ ] ] [
-**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-] [
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-] [ **-a**\ *col*\ =\ *name*\ [*...*\ ]] [
-**-bi**\ [*ncols*\ ][*type*\ ] ] [ **-c**\ *copies* ] [
-**-f**\ *colinfo* ] [
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
-] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [
-**-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
-] [ **-t**\ [*transp*\ ] ] [ **-:**\ [**i**\ \|\ **o**] ]
+|SYN_OPT-Rz|
+[ **-A**\ [**m**\ \|\ **p**] ] 
+[ |SYN_OPT-B| ]
+[ **-C**\ *cptfile* ] [ **-D**\ *dx*/*dy* ]
+[ **-E**\ [**x**\ \|\ **y**\ \|\ **X**\ \|\ **Y**][**n**][*cap*][/[\ **-**\ \|\ **+**]\ *pen*] ] 
+[ **-G**\ *fill* ] [ **-I**\ *intens* ] 
+[ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [ **-L** ] [ **-N** ] 
+[ **-O** ] [ **-P** ] 
+[ **-S**\ [*symbol*\ ][\ *size*\ \|\ **+s**\ *scaling*] ] 
+[ |SYN_OPT-U| ]
+[ |SYN_OPT-V| ]
+[ **-W**\ [**-**\ \|\ **+**][*pen*\ ] ]
+[ |SYN_OPT-X| ]
+[ |SYN_OPT-Y| ]
+[ |SYN_OPT-a| ] 
+[ **-bi**\ [*ncols*][*type*] ] [ **-c**\ *copies* ] 
+[ **-f**\ *colinfo* ]
+[ |SYN_OPT-g| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-p| ]
+[ **-t**\ [*transp*] ] [ **-:**\ [**i**\ \|\ **o**] ]
 
 `Description <#toc2>`_
 ----------------------
@@ -70,62 +70,62 @@ respectively. The *PostScript* code is written to standard output.
 
 **-A**\ [**m**\ \|\ **p**]
 
-By default line segments are drawn as great circle arcs. To draw them as
-straight lines, use the **-A** flag. Alternatively, add **m** to draw
-the line by first following a meridian, then a parallel. Or append **p**
-to start following a parallel, then a meridian. (This can be practical
-to draw a lines along parallels, for example). 
+    By default line segments are drawn as great circle arcs. To draw them as
+    straight lines, use the **-A** flag. Alternatively, add **m** to draw
+    the line by first following a meridian, then a parallel. Or append **p**
+    to start following a parallel, then a meridian. (This can be practical
+    to draw a lines along parallels, for example). 
 
 .. include:: explain_-B.rst_
 
 **-C**\ *cptfile*
 
-Give a color palette file. If **-S** is set, let symbol fill color be
-determined by the z-value in the third column. Additional fields are
-shifted over by one column (optional size would be 4th rather than 3rd
-field, etc.). If **-S** is not set, then **psxy** expects the user to
-supply a multisegment file where each segment header contains a
-**-Z**\ *val* string. The *val* will control the color of the line or
-polygon (if **-L** is set) via the cpt file.
+    Give a color palette file. If **-S** is set, let symbol fill color be
+    determined by the z-value in the third column. Additional fields are
+    shifted over by one column (optional size would be 4th rather than 3rd
+    field, etc.). If **-S** is not set, then **psxy** expects the user to
+    supply a multisegment file where each segment header contains a
+    **-Z**\ *val* string. The *val* will control the color of the line or
+    polygon (if **-L** is set) via the cpt file.
 
 **-D**\ *dx*/*dy*
 
-Offset the plot symbol or line locations by the given amounts *dx/dy*
-[Default is no offset]. If *dy* is not given it is set equal to *dx*.
+    Offset the plot symbol or line locations by the given amounts *dx/dy*
+    [Default is no offset]. If *dy* is not given it is set equal to *dx*.
 
 **-E**\ [**x**\ \|\ **y**\ \|\ **X**\ \|\ **Y**][**n**\ ][*cap*\ ][/[\ **-**\ \|\ **+**]\ *pen*]
 
-Draw error bars. Append **x** and/or **y** to indicate which bars you
-want to draw (Default is both x and y). The x and/or y errors must be
-stored in the columns after the (x,y) pair [or (x,y,size) triplet]. The
-*cap* parameter indicates the length of the end-cap on the error bars
-[7**p**]. Pen attributes for error bars may also be set [Defaults: width
-= default, color = black, style = solid]. A leading **+** will use the
-lookup color (via **-C**) for both symbol fill and error pen color,
-while a leading **-** will set error pen color and turn off symbol fill.
-If upper case **X** and/or **Y** is used we will instead draw
-"box-and-whisker" (or "stem-and-leaf") symbols. The x (or y) coordinate
-is then taken as the median value, and 4 more columns are expected to
-contain the minimum (0% quantile), the 25% quantile, the 75% quantile,
-and the maximum (100% quantile) values. The 25-75% box may be filled by
-using **-G**. If **n** is appended to **X** (or **Y**) we draw a notched
-"box-and-whisker" symbol where the notch width reflects the uncertainty
-in the median. Then a 5th extra data column is expected to contain the
-number of points in the distribution.
+    Draw error bars. Append **x** and/or **y** to indicate which bars you
+    want to draw (Default is both x and y). The x and/or y errors must be
+    stored in the columns after the (x,y) pair [or (x,y,size) triplet]. The
+    *cap* parameter indicates the length of the end-cap on the error bars
+    [7**p**]. Pen attributes for error bars may also be set [Defaults: width
+    = default, color = black, style = solid]. A leading **+** will use the
+    lookup color (via **-C**) for both symbol fill and error pen color,
+    while a leading **-** will set error pen color and turn off symbol fill.
+    If upper case **X** and/or **Y** is used we will instead draw
+    "box-and-whisker" (or "stem-and-leaf") symbols. The x (or y) coordinate
+    is then taken as the median value, and 4 more columns are expected to
+    contain the minimum (0% quantile), the 25% quantile, the 75% quantile,
+    and the maximum (100% quantile) values. The 25-75% box may be filled by
+    using **-G**. If **n** is appended to **X** (or **Y**) we draw a notched
+    "box-and-whisker" symbol where the notch width reflects the uncertainty
+    in the median. Then a 5th extra data column is expected to contain the
+    number of points in the distribution.
 
 **-G**\ *fill*
 
-Select color or pattern for filling of symbols or polygons [Default is
-no fill].
+    Select color or pattern for filling of symbols or polygons [Default is
+    no fill].
 
-Note that **psxy** will search for **-G** and **-W** strings in all the
-segment headers and let any values thus found over-ride the command line
-settings.
+    Note that **psxy** will search for **-G** and **-W** strings in all the
+    segment headers and let any values thus found over-ride the command line
+    settings.
 
 **-I**\ *intens*
 
-Use the supplied *intens* value (nominally in the -1 to + 1 range) to
-modulate the fill color by simulating illumination [none]. 
+    Use the supplied *intens* value (nominally in the -1 to + 1 range) to
+    modulate the fill color by simulating illumination [none]. 
 
 .. include:: explain_-Jz.rst_ 
 
@@ -133,16 +133,16 @@ modulate the fill color by simulating illumination [none].
 
 **-L**
 
-Force closed polygons: connect the endpoints of the line-segment(s) and
-draw polygons. Also, in concert with **-C** and any **-Z** settings in
-the headers will use the implied color for polygon fill [Default is
-polygon pen color].
+    Force closed polygons: connect the endpoints of the line-segment(s) and
+    draw polygons. Also, in concert with **-C** and any **-Z** settings in
+    the headers will use the implied color for polygon fill [Default is
+    polygon pen color].
 
 **-N**
 
-Do NOT skip symbols that fall outside map border [Default plots points
-inside border only]. The option does not apply to lines and polygons
-which are always clipped to the map region. 
+    Do NOT skip symbols that fall outside map border [Default plots points
+    inside border only]. The option does not apply to lines and polygons
+    which are always clipped to the map region. 
 
 .. include:: explain_-O.rst_
 
@@ -209,26 +209,25 @@ in the file DSDP.xy on a Mercator map at 5 cm/degree of the area 150E to
 154E, 18N to 23N, with tickmarks every 1 degree and gridlines every 15
 minutes, use
 
-psxy DSDP.xy R150/154/18/23 -Jm5c -Sc0.25c -Gred -B1g15m > map.ps
+    psxy DSDP.xy R150/154/18/23 -Jm5c -Sc0.25c -Gred -B1g15m > map.ps
 
 To plot the xyz values in the file quakes.xyzm as circles with size
 given by the magnitude in the 4th column and color based on the depth in
 the third using the color palette cpt on a linear map, use
 
-psxy quakes.xyzm -R0/1000/0/1000 -JX6i -Sc -Ccpt -B200 > map.ps
+    psxy quakes.xyzm -R0/1000/0/1000 -JX6i -Sc -Ccpt -B200 > map.ps
 
 To plot the file trench.xy on a Mercator map, with white triangles with
 sides 0.25 inch on the left side of the line, spaced every 0.8 inch, use
 
-psxy trench.xy -R150/200/20/50 -Jm0.15i -Sf0.8i/0.1i+l+t -Gwhite -W -B10 >
-map.ps
+    psxy trench.xy -R150/200/20/50 -Jm0.15i -Sf0.8i/0.1i+l+t -Gwhite -W -B10 > map.ps
 
 To plot the data in the file misc.d as symbols determined by the code in
 the last column, and with size given by the magnitude in the 4th column,
 and color based on the third column via the color palette cpt on a
 linear map, use
 
-psxy misc.d -R0/100/-50/100 -JX6i -S -Ccpt -B20 > map.ps
+    psxy misc.d -R0/100/-50/100 -JX6i -S -Ccpt -B20 > map.ps
 
 `Segment Header Parsing <#toc8>`_
 ---------------------------------
@@ -263,9 +262,9 @@ a file whose extension must be .def; you may then address the symbol
 without giving the extension (e.g., the symbol file tsunami.def is used
 by specifying **-Sk**\ *tsunami/size*. The definition file can contain
 any number of plot code records, as well as blank lines and comment
-lines (starting with #). **psxy** will look for the definition files `in
-(1) <in.html>`_ the current directory, (2) the ~/.gmt directory, `and
-(3) <and.html>`_ the **$GMT\_SHAREDIR**/custom directory, in that order.
+lines (starting with #). **psxy** will look for the definition files in
+(1) the current directory, (2) the ~/.gmt directory, and
+(3) the **$GMT\_SHAREDIR**/custom directory, in that order.
 Freeform polygons (made up of straight line segments and arcs of
 circles) can be designed - these polygons can be painted and filled with
 a pattern. Other standard geometric symbols can also be used. See
@@ -274,6 +273,6 @@ Appendix N for macro definitions.
 `See Also <#toc10>`_
 --------------------
 
-`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
-`gmtcolors <gmtcolors.html>`_ ,
-`psbasemap <psbasemap.html>`_ , `psxyz <psxyz.html>`_
+`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
+`gmtcolors <gmtcolors.html>`_,
+`psbasemap <psbasemap.html>`_, `psxyz <psxyz.html>`_
