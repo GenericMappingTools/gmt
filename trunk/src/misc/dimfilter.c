@@ -431,9 +431,9 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 		slow2 = (Ctrl->N.filter == 3 || Ctrl->N.filter == 4);	/* SCAN: Will also require sorting etc */
 
 		if (Ctrl->T.active)	/* Make output grid of the opposite registration */
-			one_or_zero = (Gin->header->registration == GMT_PIXEL_REG) ? 1 : 0;
+			one_or_zero = (Gin->header->registration == GMT_GRID_PIXEL_REG) ? 1 : 0;
 		else
-			one_or_zero = (Gin->header->registration == GMT_PIXEL_REG) ? 0 : 1;
+			one_or_zero = (Gin->header->registration == GMT_GRID_PIXEL_REG) ? 0 : 1;
 
 		/* Use the -R region for output if set; otherwise match grid domain */
 		GMT_memcpy (wesn, (GMT->common.R.active ? GMT->common.R.wesn : Gin->header->wesn), 4, double);
@@ -459,7 +459,7 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 		last_median = 0.5 * (Gin->header->z_min + Gin->header->z_max);
 		z_min = Gin->header->z_min;	z_max = Gin->header->z_max;
 
-		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_ALL, NULL, wesn, inc, \
+		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn, inc, \
 			!one_or_zero, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 
 		/* We can save time by computing a weight matrix once [or once pr scanline] only

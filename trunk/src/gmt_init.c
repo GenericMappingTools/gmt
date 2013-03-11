@@ -1269,7 +1269,7 @@ int gmt_rectR_to_geoR (struct GMT_CTRL *C, char unit, double rect[], double out_
 		return (GMT_MAP_NO_PROJECTION);
 	}
 	/* Create dataset to hold the rect coordinates */
-	if ((In = GMT_Create_Data (C->parent, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (GMT_MEMORY_ERROR);
+	if ((In = GMT_Create_Data (C->parent, GMT_IS_DATASET, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (GMT_MEMORY_ERROR);
 	
 	In->table[0]->segment[0]->coord[GMT_X][0] = rect[XLO];
 	In->table[0]->segment[0]->coord[GMT_Y][0] = rect[YLO];
@@ -7874,7 +7874,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 			strncpy (text_cp, text, GMT_TEXT_LEN256);
 #ifdef GMT_COMPAT
 			len = (int)strlen (text_cp) - 1;
-			if (strchr (text_cp, ':') || (!strchr (text_cp, '+') && strchr ("bcflrst", text_cp[len]))) {	/* Old style */
+			if (strchr (text_cp, ':') || (!strchr (text_cp, '+') && len > 0 && strchr ("bcflrst", text_cp[len]))) {	/* Old style */
 				GMT_report (C, GMT_MSG_COMPAT, "Warning in Option -Sf: Sf<spacing>/<size>[dir][type][:<offset>] is deprecated syntax\n");
 				if ((c = strchr (text_cp, ':'))) {	/* Gave :<offset>, set it and strip it off */
 					c++;	/* Skip over the colon */
@@ -8400,6 +8400,7 @@ int GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, char 
 	/* GMT_parse_common_options interprets the command line for the common, unique options
 	 * -B, -J, -K, -O, -P, -R, -U, -V, -X, -Y, -b, -c, -f, -g, -h, -i, -n, -o, -p, -r, -s, -t, -:, -- and -^.
 	 * The list passes all of these that we should consider.
+	 * The API will also consider -I for grid increments.
 	 */
 
 	int error = 0;
@@ -8429,6 +8430,15 @@ int GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, char 
 					break;
 			}
 			if (!error) error = gmt_parse_B_option (C, item);
+			break;
+
+		case 'I':
+			if (C->hidden.func_level > 0) return (0);	/* Just skip if we are inside a GMT module. -I is an API common option only */
+			if (GMT_getinc (C, item, C->common.API_I.inc)) {
+				GMT_inc_syntax (C, 'I', 1);
+				error++;
+			}
+			C->common.API_I.active = true;
 			break;
 
 		case 'J':
@@ -8591,7 +8601,7 @@ int GMT_parse_common_options (struct GMT_CTRL *C, char *list, char option, char 
 		case 'r':
 			error += GMT_more_than_once (C, C->common.r.active);
 			C->common.r.active = true;
-			C->common.r.registration = GMT_PIXEL_REG;
+			C->common.r.registration = GMT_GRID_PIXEL_REG;
 			break;
 
 		case 's':

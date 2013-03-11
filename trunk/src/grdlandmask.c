@@ -248,8 +248,8 @@ int GMT_grdlandmask (void *V_API, int mode, void *args)
 	GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
 
 	/* Create the empty grid and allocate space */
-	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_ALL, NULL, GMT->common.R.wesn, Ctrl->I.inc, \
-		GMT->common.r.registration, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
+	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc, \
+		GMT_GRID_DEFAULT_REG, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 	
 	if (Grid->header->wesn[XLO] < 0.0 && Grid->header->wesn[XHI] < 0.0) {	/* Shift longitudes */
 		temp_shift = true;
@@ -433,7 +433,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args)
 		Grid->data[ij] = (float)Ctrl->N.mask[k];
 	}
 
-	if (wrap && Grid->header->registration == GMT_GRIDLINE_REG) { /* Copy over values to the repeating right column */
+	if (wrap && Grid->header->registration == GMT_GRID_NODE_REG) { /* Copy over values to the repeating right column */
 		unsigned int row_l;
 		for (row_l = 0, ij = GMT_IJP (Grid->header, row_l, 0); row_l < Grid->header->ny; row_l++, ij += Grid->header->mx) Grid->data[ij+nx1] = Grid->data[ij];
 	}

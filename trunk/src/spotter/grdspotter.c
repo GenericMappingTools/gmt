@@ -561,8 +561,8 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 
 	/* Initialize the CVA grid and structure */
 
-	if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_ALL, NULL, GMT->common.R.wesn, Ctrl->I.inc, \
-		GMT->common.r.registration, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
+	if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc, \
+		GMT_GRID_DEFAULT_REG, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 	
 	/* ------------------- END OF PROCESSING COMMAND LINE ARGUMENTS  --------------------------------------*/
 
@@ -600,7 +600,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 
 	/* Start to read input data */
 	
-	if (GMT_Init_IO (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
 	}
 
@@ -616,8 +616,8 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 
 	for (row = 0; row < Z->header->ny; row++) lat_area[row] = area * cos (y_smt[row]);
 	
-	x_cva = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, G);
-	y_cva = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, G);
+	x_cva = GMT_grd_coord (GMT, G->header, GMT_X);
+	y_cva = GMT_grd_coord (GMT, G->header, GMT_Y);
 
 	if (Ctrl->A.file) {
 		if ((A = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->A.file, NULL)) == NULL) {	/* Get header only */
@@ -951,7 +951,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
 			Return (error);
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */

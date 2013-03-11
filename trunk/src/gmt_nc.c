@@ -422,15 +422,15 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, char jo
 		if (!(j = nc_get_var_double (ncid, ids[header->xy_dim[0]], xy))) gmt_nc_check_step (C, header->nx, xy, header->x_units, header->name);
 		if (!nc_get_att_double (ncid, ids[header->xy_dim[0]], "actual_range", dummy)) {
 			header->wesn[XLO] = dummy[0], header->wesn[XHI] = dummy[1];
-			header->registration = (!j && 1.0 - (xy[header->nx-1] - xy[0]) / (dummy[1] - dummy[0]) > 0.5 / header->nx) ?  GMT_PIXEL_REG : GMT_GRIDLINE_REG;
+			header->registration = (!j && 1.0 - (xy[header->nx-1] - xy[0]) / (dummy[1] - dummy[0]) > 0.5 / header->nx) ?  GMT_GRID_PIXEL_REG : GMT_GRID_NODE_REG;
 		}
 		else if (!j) {
 			header->wesn[XLO] = xy[0], header->wesn[XHI] = xy[header->nx-1];
-			header->registration = GMT_GRIDLINE_REG;
+			header->registration = GMT_GRID_NODE_REG;
 		}
 		else {
 			header->wesn[XLO] = 0.0, header->wesn[XHI] = (double) header->nx-1;
-			header->registration = GMT_GRIDLINE_REG;
+			header->registration = GMT_GRID_NODE_REG;
 		}
 		header->inc[GMT_X] = GMT_get_inc (C, header->wesn[XLO], header->wesn[XHI], header->nx, header->registration);
 		if (GMT_is_dnan(header->inc[GMT_X])) header->inc[GMT_X] = 1.0;
@@ -530,7 +530,7 @@ int gmt_nc_grd_info (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, char jo
 		if (header->command[0]) GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "history", strlen(header->command), header->command));
 		if (header->remark[0]) GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "description", strlen(header->remark), header->remark));
 		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "GMT_version", strlen(GMT_VERSION), (const char *) GMT_VERSION));
-		if (header->registration == GMT_PIXEL_REG) {
+		if (header->registration == GMT_GRID_PIXEL_REG) {
 			int reg = header->registration;
 			GMT_err_trap (nc_put_att_int (ncid, NC_GLOBAL, "node_offset", NC_LONG, 1U, &reg));
 		}
@@ -1085,7 +1085,7 @@ int nc_grd_prep_io (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, double w
 
 	is_global = GMT_grd_is_global (C, header);
 	is_global_repeat = header->grdtype == GMT_GRID_GEOGRAPHIC_EXACT360_REPEAT;
-	is_gridline_reg = header->registration != GMT_PIXEL_REG;
+	is_gridline_reg = header->registration != GMT_GRID_PIXEL_REG;
 
 #ifdef NC4_DEBUG
 	GMT_report (C, GMT_MSG_NORMAL, "  x-region: %g %g, grid: %g %g\n", wesn[XLO], wesn[XHI], header->wesn[XLO], header->wesn[XHI]);

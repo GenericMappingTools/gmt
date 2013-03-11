@@ -243,7 +243,7 @@ int GMT_grdmath_parse (struct GMTAPI_CTRL *C, struct GRDMATH_CTRL *Ctrl, struct 
 
 struct GMT_GRID * alloc_stack_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Template)
 {	/* Allocate a new GMT_GRID structure based on dimensions etc of the Template */
-	struct GMT_GRID *New = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_GRID_ALL, NULL, Template->header->wesn, Template->header->inc, \
+	struct GMT_GRID *New = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Template->header->wesn, Template->header->inc, \
 		Template->header->registration, GMTAPI_NOTSET, NULL);
 	return (New);
 }
@@ -3424,8 +3424,8 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 	}
 	else if (GMT->common.R.active && Ctrl->I.active) {	/* Must create from -R -I [-r] */
 		/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
-		if ((info.G = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_HEADER_ONLY, NULL, GMT->common.R.wesn, Ctrl->I.inc, \
-			GMT->common.r.registration, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
+		if ((info.G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc, \
+			GMT_GRID_DEFAULT_REG, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 	}
 	else {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Expression must contain at least one grid file or -R, -I\n");

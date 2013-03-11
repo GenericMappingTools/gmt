@@ -160,13 +160,13 @@ EXTERN_MSC bool GMT_not_numeric (struct GMT_CTRL *C, char *text);				/* Rules ou
 EXTERN_MSC bool GMT_parse_segment_item (struct GMT_CTRL *C, char *in_string, char *pattern, char *out_string);
 EXTERN_MSC int GMT_set_cols (struct GMT_CTRL *C, unsigned int direction, unsigned int expected);
 EXTERN_MSC int GMT_get_cols (struct GMT_CTRL *C, unsigned int direction);
-EXTERN_MSC struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *C, unsigned int n_tables, uint64_t n_segments, unsigned int n_columns, uint64_t n_rows, bool alloc_only);
+EXTERN_MSC struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *C, unsigned int n_tables, uint64_t n_segments, unsigned int n_columns, uint64_t n_rows, unsigned int geometry, bool alloc_only);
 EXTERN_MSC struct GMT_DATATABLE * GMT_create_table (struct GMT_CTRL *C, uint64_t n_segments, unsigned int n_columns, uint64_t n_rows, bool alloc_only);
 EXTERN_MSC void GMT_free_textset (struct GMT_CTRL *C, struct GMT_TEXTSET **data);
 EXTERN_MSC struct GMT_TEXTSET * GMT_duplicate_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *Din, unsigned int mode);
 EXTERN_MSC void GMT_adjust_dataset (struct GMT_CTRL *C, struct GMT_DATASET *D, unsigned int n_columns);
 EXTERN_MSC struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *C, struct GMT_DATASET *Din, unsigned int n_columns, uint64_t n_rows, unsigned int mode);
-EXTERN_MSC struct GMT_DATASET * GMT_duplicate_dataset (struct GMT_CTRL *C, struct GMT_DATASET *Din, unsigned int mode);
+EXTERN_MSC struct GMT_DATASET * GMT_duplicate_dataset (struct GMT_CTRL *C, struct GMT_DATASET *Din, unsigned int mode, unsigned int *geometry);
 EXTERN_MSC struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *C, void *source, unsigned int source_type, bool greenwich, bool poly, bool use_GMT_io);
 EXTERN_MSC int GMT_write_dataset (struct GMT_CTRL *C, void *dest, unsigned int dest_type, struct GMT_DATASET *D, bool use_GMT_io, int table);
 EXTERN_MSC int GMT_write_table (struct GMT_CTRL *C, void *dest, unsigned int dest_type, struct GMT_DATATABLE *T, bool use_GMT_io, unsigned int io_mode);

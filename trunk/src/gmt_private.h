@@ -66,6 +66,7 @@ struct GMTAPI_DATA_OBJECT {
 	unsigned int n_columns;		/* Number of columns to process in this dataset [GMT_DATASET only] */
 	unsigned int n_expected_fields;	/* Number of expected columns for this dataset [GMT_DATASET only] */
 	unsigned int level;			/* Nested module level when object was allocated */
+	bool selected;				/* true if requested by current module, false otherwise */
 	bool close_file;			/* true if we opened source as a file and thus need to close it when done */
 	bool region;				/* true if wesn was passed, false otherwise */
 	size_t n_alloc;				/* Number of items allocated so far if writing to memory */
@@ -73,8 +74,8 @@ struct GMTAPI_DATA_OBJECT {
 	unsigned int direction;			/* GMT_IN or GMT_OUT */
 	unsigned int family;			/* One of GMT_IS_{DATASET|TEXTSET|CPT|IMAGE|GMTGRID} */
 	unsigned int method;			/* One of GMT_IS_{FILE,STREAM,FDESC,ARRAY,GRID,COPY,REF|READONLY} */
-	unsigned int status;			/* 0 when first registered, 1 after reading/writing has started, 2 when finished */
 	unsigned int geometry;			/* One of GMT_POINT, GMT_LINE, GMT_POLY, GMT_SURF */
+	unsigned int status;			/* 0 when first registered, 1 after reading/writing has started, 2 when finished */
 	double wesn[GMTAPI_N_GRID_ARGS];	/* Grid domain limits */
 	void *resource;				/* Points to registered data container (if appropriate) */
 	void *data;				/* Points to container associated with this object [for garbage collection purposes] */

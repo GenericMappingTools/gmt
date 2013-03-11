@@ -438,7 +438,7 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 	if (Ctrl->S.set_nan) {	/* Set all nodes outside the circle to NaN */
 		unsigned int row, col;
 		uint64_t n_nodes = 0;
-		double *grd_lon = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, G);
+		double *grd_lon = GMT_grd_coord (GMT, G->header, GMT_X);
 		
 		for (row = 0; row < G->header->ny; row++) {
 			lat = GMT_grd_row_to_y (GMT, row, G->header);

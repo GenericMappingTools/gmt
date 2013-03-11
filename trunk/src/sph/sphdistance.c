@@ -327,7 +327,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 		if ((error = GMT_set_cols (GMT, GMT_IN, 2)) != GMT_OK) {
 			Return (error);
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {
@@ -409,12 +409,12 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 	
 	/* OK, time to create and work on the distance grid */
 
-	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_ALL, NULL, GMT->common.R.wesn, Ctrl->I.inc, \
-		GMT->common.r.registration, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
+	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc, \
+		GMT_GRID_DEFAULT_REG, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Start processing distance grid\n");
 
-	grid_lon = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, Grid);
-	grid_lat = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, Grid);
+	grid_lon = GMT_grd_coord (GMT, Grid->header, GMT_X);
+	grid_lat = GMT_grd_coord (GMT, Grid->header, GMT_Y);
 
 	nx1 = (Grid->header->registration) ? Grid->header->nx : Grid->header->nx - 1;
 

@@ -78,7 +78,7 @@ struct GRDFFT_CTRL {
 	} I;
 	struct N {	/* -N[f|q|s<nx>/<ny>][+e|m|n][+t<width>][+w[<suffix>]][+z[p]] */
 		bool active;
-		struct GMT_FFT_INFO info;
+		struct GMT_FFT_INFO *info;
 	} N;
 	struct S {	/* -S<scale> */
 		bool active;
@@ -141,7 +141,7 @@ void Free_grdfft_Ctrl (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *C) {	/* Dealloc
 	if (C->In.file[0]) free (C->In.file[0]);	
 	if (C->In.file[1]) free (C->In.file[1]);	
 	if (C->G.file) free (C->G.file);	
-	if (C->N.info.suffix) free (C->N.info.suffix);	
+	if (C->N.info) GMT_free (GMT, C->N.info);
 	GMT_free (GMT, C);	
 }
 
@@ -380,7 +380,7 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *
 	delta_k /= (2.0 * M_PI);	/* Write out frequency, not wavenumber  */
 	powfactor = 4.0 / pow ((double)GridX->header->size, 2.0);	/* Squared normalization of FFT */
 	dim[3] = nk;
-	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for spectral estimates\n");
 		return (GMT->parent->error);
 	}
@@ -451,7 +451,7 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *
 		if (GMT_Set_Comment (GMT->parent, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, D)) return (GMT->parent->error);
 	}
 		
-	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_SET, NULL, file, D) != GMT_OK) {
+	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, file, D) != GMT_OK) {
 		return (GMT->parent->error);
 	}
 	if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &D) != GMT_OK) {
@@ -650,6 +650,13 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 #ifdef GMT_COMPAT
 	struct GMT_OPTION *ptr = NULL;
 	char *mod = NULL, argument[GMT_BUFSIZ];
+	if ((ptr = GMT_Find_Option (C, 'L', options))) {	/* Gave old -L */
+		mod = ptr->arg; /* Gave old -L option */
+		GMT_memset (argument, GMT_BUFSIZ, char);
+		if (mod[0] == '\0') strcat (argument, "+l");		/* Leave trend alone -L */
+		else if (mod[0] == 'm') strcat (argument, "+a");	/* Remove mean -Lm */
+		else if (mod[0] == 'h') strcat (argument, "+h");	/* Remove mid-value -Lh */
+	}
 #endif
 
 	GMT_memset (f_info, 1, struct F_INFO);
@@ -657,10 +664,6 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 		f_info->lc[j] = f_info->lp[j] = -1.0;		/* Set negative, below valid frequency range  */
 		f_info->hp[j] = f_info->hc[j] = DBL_MAX;	/* Set huge positive, above valid frequency range  */
 	}
-
-#ifdef GMT_COMPAT
-	if ((ptr = GMT_Find_Option (C, 'L', options))) mod = ptr->arg; /* Gave old -L option */
-#endif
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 		GMT_memset (par, 5, double);
@@ -746,17 +749,11 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 			case 'N':	/* Grid dimension setting or inquiery */
 				Ctrl->N.active = true;
 #ifdef GMT_COMPAT
-				strcpy (argument, opt->arg);
-				if (ptr) {	/* Gave old -L */
-					if (mod == NULL) strcat (argument, "+l");		/* Leave trend alone -L */
-					else if (mod[0] == 'm') strcat (argument, "+a");		/* Remove mean -Lm */
-					else if (mod[0] == 'h') strcat (argument, "+h");	/* Remove mid-value -Lh */
-				}
-				else strcat (argument, "+d");					/* Remove plane was old default */
-				n_errors += GMT_FFT_parse (C, 'N', 2, argument, &Ctrl->N.info);
+				Ctrl->N.info = GMT_FFT_parse (C, 'N', 2, argument);
 #else
-				n_errors += GMT_FFT_parse (C, 'N', 2, opt->arg, &Ctrl->N.info);
+				Ctrl->N.info = GMT_FFT_parse (C, 'N', 2, opt->arg);
 #endif
+				if (Ctrl->N.info == NULL) n_errors++;
 				break;
 			case 'S':	/* Scale */
 				Ctrl->S.active = true;
@@ -784,20 +781,21 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 				break;
 		}
 	}
-
-	if (Ctrl->N.active && Ctrl->N.info.info_mode == GMT_FFT_LIST) {
+#ifdef GMT_COMPAT
+	if (!Ctrl->N.active && ptr) {	/* User set -L but no -N so nothing got appended above... Sigh...*/
+		Ctrl->N.info = GMT_FFT_parse (C, 'N', 2, argument);
+	}
+#endif
+	if (Ctrl->N.active && Ctrl->N.info->info_mode == GMT_FFT_LIST) {
 		return (GMT_PARSE_ERROR);	/* So that we exit the program */
 	}
 
 #ifdef GMT_COMPAT
-	if (Ctrl->T.active) Ctrl->N.info.trend_mode = GMT_FFT_LEAVE_TREND;
+	if (Ctrl->T.active) Ctrl->N.info->trend_mode = GMT_FFT_LEAVE_TREND;
 #endif
 
 	n_errors += GMT_check_condition (GMT, !(Ctrl->n_op_count), "Syntax error: Must specify at least one operation\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.info.info_mode == GMT_FFT_SET && (Ctrl->N.info.nx <= 0 || Ctrl->N.info.ny <= 0), 
-			"Syntax error -N option: nx2 and/or ny2 <= 0\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.scale == 0.0, "Syntax error -S option: scale must be nonzero\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->N.info.taper_mode == GMT_FFT_EXTEND_NONE && Ctrl->N.info.taper_width == 100.0, "Syntax error -N option: +n requires +t with width << 100!\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->E.active && !Ctrl->G.file, "Syntax error -G option: Must specify output grid file\n");
 
@@ -865,7 +863,7 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 	/* Grids are compatible. Initialize FFT structs, grid headers, read data, and check for NaNs */
 	
 	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Read, and check that no NaNs are present in either grid */
-		FFT_info[k] = GMT_FFT_init_2d (API, Orig[k], GMT_GRID_IS_COMPLEX_REAL, &Ctrl->N.info);
+		FFT_info[k] = GMT_FFT_init_2d (API, Orig[k], GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);
 	}
 	K = FFT_info[0];	/* We only need one of these anyway; K is a shorthand */
 	
@@ -890,7 +888,7 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 
 	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Call the forward FFT, once per grid, optionally save raw FFT output */
 		GMT_report (GMT, GMT_MSG_VERBOSE, "forward FFT...\n");
-		if (GMT_FFT_2d (API, Grid[k], k_fft_fwd, k_fft_complex, FFT_info[k]))
+		if (GMT_FFT_2d (API, Grid[k], GMT_FFT_FWD, GMT_FFT_COMPLEX, FFT_info[k]))
 			Return (EXIT_FAILURE);
 	}
 
@@ -942,7 +940,7 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 	if (!Ctrl->E.active) {	/* Since -E output is handled separately by do_spectrum itself */
 		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "inverse FFT...\n");
 
-		if (GMT_FFT_2d (API, Grid[0], k_fft_inv, k_fft_complex, NULL))
+		if (GMT_FFT_2d (API, Grid[0], GMT_FFT_INV, GMT_FFT_COMPLEX, NULL))
 			Return (EXIT_FAILURE);
 
 		if (!doubleAlmostEqual (Ctrl->S.scale, 1.0)) GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, Ctrl->S.scale, 0);

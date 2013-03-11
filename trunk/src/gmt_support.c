@@ -2589,7 +2589,7 @@ struct GMT_PALETTE * GMT_Get_CPT (struct GMT_CTRL *C, char *file, enum GMT_enum_
 	struct GMT_PALETTE *P = NULL;
 		
 	if (mode == GMT_CPT_REQUIRED) {	/* The calling function requires the CPT file to be present; GMT_Read_Data will work or fail accordingly */
-		P = GMT_Read_Data (C->parent, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, file, NULL);
+		P = GMT_Read_Data (C->parent, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, file, NULL);
 		return (P);
 	}
 	
@@ -2602,7 +2602,7 @@ struct GMT_PALETTE * GMT_Get_CPT (struct GMT_CTRL *C, char *file, enum GMT_enum_
 	*/
 	
 	if (GMT_File_Is_Memory (file) || (file && file[0] && !access (file, R_OK))) {	/* A cptfile was given and exists or is memory location */
-		P = GMT_Read_Data (C->parent, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, file, NULL);
+		P = GMT_Read_Data (C->parent, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, file, NULL);
 	}
 	else {	/* Create a rought equidistant, continuous 16-level CPT on the fly */
 		char out_string[GMTAPI_STRLEN], buffer[GMT_BUFSIZ], *master = NULL;
@@ -2617,7 +2617,7 @@ struct GMT_PALETTE * GMT_Get_CPT (struct GMT_CTRL *C, char *file, enum GMT_enum_
 			return (NULL);
 		}
 		/* Here it should be safe to let makecpt create a CPT for us */
-		if ((object_ID = GMT_Register_IO (C->parent, GMT_IS_CPT, GMT_IS_DUPLICATE, GMT_IS_POINT, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) {	/* Register output */
+		if ((object_ID = GMT_Register_IO (C->parent, GMT_IS_CPT, GMT_IS_DUPLICATE, GMT_IS_NONE, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) {	/* Register output */
 			return (NULL);
 		}
 		if (GMT_Encode_ID (C->parent, out_string, object_ID)) {	/* Make filename with embedded object ID */
@@ -6502,8 +6502,8 @@ int GMT_BC_init (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h)
 		}
 	}
 	else {	/* Either periodic or natural */
-		if (h->nxp != 0) h->nxp = (h->registration == GMT_PIXEL_REG) ? h->nx : h->nx - 1;
-		if (h->nyp != 0) h->nyp = (h->registration == GMT_PIXEL_REG) ? h->ny : h->ny - 1;
+		if (h->nxp != 0) h->nxp = (h->registration == GMT_GRID_PIXEL_REG) ? h->nx : h->nx - 1;
+		if (h->nyp != 0) h->nyp = (h->registration == GMT_GRID_PIXEL_REG) ? h->ny : h->ny - 1;
 	}
 	
 	for (i = 1, same = true; same && i < 4; i++) if (h->BC[i] != h->BC[i-1]) same = false;
@@ -6639,7 +6639,7 @@ int GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 		the pole data is wrong.  But there could be an option to
 		to change the condition to Natural in that case, with warning.  */
 
-	if (G->header->registration == GMT_GRIDLINE_REG) {	/* A pole can only be a grid node with gridline registration */
+	if (G->header->registration == GMT_GRID_NODE_REG) {	/* A pole can only be a grid node with gridline registration */
 		if (G->header->gn) {	/* North pole case */
 			bok = 0;
 			if (GMT_is_fnan (G->data[jn + iw])) {	/* First is NaN so all should be NaN */
@@ -6670,7 +6670,7 @@ int GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 		if (G->header->nyp > 0) {	/* y is periodic  */
 
 			for (i = iw, bok = 0; i <= ie; ++i) {
-				if (G->header->registration == GMT_GRIDLINE_REG && !doubleAlmostEqualZero (G->data[jn+i], G->data[js+i]))
+				if (G->header->registration == GMT_GRID_NODE_REG && !doubleAlmostEqualZero (G->data[jn+i], G->data[js+i]))
 					++bok;
 				if (set[YHI]) {
 					G->data[jno1 + i] = G->data[jno1k + i];
@@ -6805,7 +6805,7 @@ int GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 		if (set[XLO]) G->header->BC[XLO] = GMT_BC_IS_PERIODIC;
 		if (set[XHI]) G->header->BC[XHI] = GMT_BC_IS_PERIODIC;
 		for (jmx = jn, bok = 0; jmx <= js; jmx += mx) {
-			if (G->header->registration == GMT_GRIDLINE_REG && !doubleAlmostEqualZero (G->data[jmx+iw], G->data[jmx+ie]))
+			if (G->header->registration == GMT_GRID_NODE_REG && !doubleAlmostEqualZero (G->data[jmx+iw], G->data[jmx+ie]))
 				++bok;
 			if (set[XLO]) {
 				G->data[iwo1 + jmx] = G->data[iwo1k + jmx];
@@ -6820,7 +6820,7 @@ int GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 
 		if (G->header->nyp > 0) {	/* Y is periodic.  copy all, including boundary cols:  */
 			for (i = iwo2, bok = 0; i <= ieo2; ++i) {
-				if (G->header->registration == GMT_GRIDLINE_REG && !doubleAlmostEqualZero (G->data[jn+i], G->data[js+i]))
+				if (G->header->registration == GMT_GRID_NODE_REG && !doubleAlmostEqualZero (G->data[jn+i], G->data[js+i]))
 					++bok;
 				if (set[YHI]) {
 					G->data[jno1 + i] = G->data[jno1k + i];
@@ -6852,7 +6852,7 @@ int GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 		/* Do north (top) boundary:  */
 
 		if (G->header->gn) {	/* Y is at north pole.  Phase-shift all, incl. bndry cols. */
-			if (G->header->registration == GMT_PIXEL_REG) {
+			if (G->header->registration == GMT_GRID_PIXEL_REG) {
 				j1p = jn;	/* constraint for jno1  */
 				j2p = jni1;	/* constraint for jno2  */
 			}
@@ -6902,7 +6902,7 @@ int GMT_grd_BC_set (struct GMT_CTRL *C, struct GMT_GRID *G)
 		/* Done with north (top) BC in X is periodic case.  Do south (bottom)  */
 
 		if (G->header->gs) {	/* Y is at south pole.  Phase-shift all, incl. bndry cols. */
-			if (G->header->registration == GMT_PIXEL_REG) {
+			if (G->header->registration == GMT_GRID_PIXEL_REG) {
 				j1p = js;	/* constraint for jso1  */
 				j2p = jsi1;	/* constraint for jso2  */
 			}
@@ -7058,7 +7058,7 @@ int GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 		the pole data is wrong.  But there could be an option to
 		to change the condition to Natural in that case, with warning.  */
 
-	if (G->header->registration == GMT_GRIDLINE_REG) {	/* A pole can only be a grid node with gridline registration */
+	if (G->header->registration == GMT_GRID_NODE_REG) {	/* A pole can only be a grid node with gridline registration */
 		if (G->header->gn) {	/* North pole case */
 			bok = 0;
 			for (i = iw+1; i <= ie; i++) for (b = 0; b < nb; b++) if (G->data[nb*(jn + i)+b] != G->data[nb*(jn + iw)+b]) bok++;
@@ -7277,7 +7277,7 @@ int GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 		/* Do north (top) boundary:  */
 
 		if (G->header->gn) {	/* Y is at north pole.  Phase-shift all, incl. bndry cols. */
-			if (G->header->registration == GMT_PIXEL_REG) {
+			if (G->header->registration == GMT_GRID_PIXEL_REG) {
 				j1p = jn;	/* constraint for jno1  */
 				j2p = jni1;	/* constraint for jno2  */
 			}
@@ -7336,7 +7336,7 @@ int GMT_image_BC_set (struct GMT_CTRL *C, struct GMT_IMAGE *G)
 		/* Done with north (top) BC in X is periodic case.  Do south (bottom)  */
 
 		if (G->header->gs) {	/* Y is at south pole.  Phase-shift all, incl. bndry cols. */
-			if (G->header->registration == GMT_PIXEL_REG) {
+			if (G->header->registration == GMT_GRID_PIXEL_REG) {
 				j1p = js;	/* constraint for jso1  */
 				j2p = jsi1;	/* constraint for jso2  */
 			}
@@ -10056,7 +10056,7 @@ struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT
 	np_cross = 2 * n_half_cross + 1;			/* Total cross-profile length */
 	n_tot_cols = 4 + n_cols;	/* Total number of columns in the resulting data set */
 	dim[0] = Din->n_tables;	dim[2] = n_tot_cols;	dim[3] = np_cross;
-	if ((Xout = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (NULL);	/* An empty dataset of n_tot_cols columns and np_cross rows */
+	if ((Xout = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (NULL);	/* An empty dataset of n_tot_cols columns and np_cross rows */
 	sdig = lrint (floor (log10 ((double)Din->n_segments))) + 1;	/* Determine how many decimals are needed for largest segment id */
 	skip_seg_no = (Din->n_tables == 1 && Din->table[0]->n_segments == 1);
 	for (tbl = seg_no = 0; tbl < Din->n_tables; tbl++) {	/* Process all tables */
@@ -10193,7 +10193,7 @@ struct GMT_DATASET * gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT
 	across_ds = cross_length / n_half_cross;		/* Exact increment (recalculated in case of roundoff) */
 	n_tot_cols = 4 + n_cols;				/* Total number of columns in the resulting data set */
 	dim[0] = Din->n_tables;	dim[2] = n_tot_cols;	dim[3] = np_cross;
-	if ((Xout = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (NULL);	/* An empty dataset of n_tot_cols columns and np_cross rows */
+	if ((Xout = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (NULL);	/* An empty dataset of n_tot_cols columns and np_cross rows */
 	sdig = lrint (floor (log10 ((double)Din->n_segments))) + 1;	/* Determine how many decimals are needed for largest segment id */
 
 	for (tbl = seg_no = 0; tbl < Din->n_tables; tbl++) {	/* Process all tables */

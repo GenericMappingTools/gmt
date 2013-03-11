@@ -57,7 +57,7 @@ enum GMT_enum_via {
 	GMT_VIA_VECTOR = 100,	/* Data passed via user matrix */
 	GMT_VIA_MATRIX = 200};	/* Data passed via user vectors */
 
-/* These are the 5 families of data types + 2 help containers for vector and matrix */
+/* These are the 5 families of data types, + a coordinate array + 2 help containers for vector and matrix */
 enum GMT_enum_families {
 	GMT_IS_DATASET = 0,	/* Entity is data table */
 	GMT_IS_TEXTSET,		/* Entity is a Text table */
@@ -66,6 +66,7 @@ enum GMT_enum_families {
 	GMT_IS_IMAGE,		/* Entity is a 1- or 3-layer unsigned char image */
 	GMT_IS_VECTOR,		/* to hande interfacing with user data types: */
 	GMT_IS_MATRIX,		/* Entity is user vectors */
+	GMT_IS_COORD,		/* Entity is a double coordinate array */
 	GMT_N_FAMILIES};	/* Entity is user matrix */
 
 /* These are modes for handling comments */
@@ -102,7 +103,7 @@ enum GMT_enum_freg {
 	GMT_ADD_FILES_ALWAYS = 2,		/* Tell GMT_Init_IO to always register all input files in the option list */
 	GMT_ADD_STDIO_IF_NONE = 4,		/* Tell GMT_Init_IO we conditionally want to register std(in|out) if nothing else has been registered */
 	GMT_ADD_STDIO_ALWAYS = 8,			/* Tell GMT_Init_IO to always register std(in|out) */
-	GMT_REG_DEFAULT = 5};			/* Tell GMT_Init_IO to register files, and if none are found then std(in|out), but only if nothing was registered before this call */
+	GMT_ADD_DEFAULT = 6};			/* Tell GMT_Init_IO to register files, and if none are found then std(in|out), but only if nothing was registered before this call */
 
 enum GMT_enum_read {
 	GMT_READ_DOUBLE = 0,	/* Read ASCII data record and return double array */
@@ -156,8 +157,9 @@ enum GMT_enum_out {
 /*============================================================ */
 
 enum GMT_enum_reg {	/* Public constants for grid registration */
-	GMT_GRIDLINE_REG = 0U,
-	GMT_PIXEL_REG};
+	GMT_GRID_NODE_REG	= 0U,
+	GMT_GRID_PIXEL_REG	= 1U,
+	GMT_GRID_DEFAULT_REG	= 1024U};	/* Means select whatever is set via -r or not */
 
 enum GMT_enum_gridindex {
         GMT_XLO = 0U, /* Index for west or xmin value */
@@ -199,7 +201,7 @@ struct GMT_GRID_HEADER {
 /* ===== Do not change the first three items. They are copied verbatim to the native grid header */
 	unsigned int nx;                /* Number of columns */
 	unsigned int ny;                /* Number of rows */
-	unsigned int registration;      /* GMT_GRIDLINE_REG (0) for node grids, GMT_PIXEL_REG (1) for pixel grids */
+	unsigned int registration;      /* GMT_GRID_NODE_REG (0) for node grids, GMT_GRID_PIXEL_REG (1) for pixel grids */
 	
 	/* ---- Variables "hidden" from the API ---- */
 /* This section is flexible. It is not copied to any grid header or stored in the file. It is considered private */
@@ -224,7 +226,7 @@ struct GMT_GRID_HEADER {
 	size_t data_offset;              /* NetCDF: distance from the beginning of the in-memory grid */
 	size_t stride;                   /* NetCDF: distance between two rows in the in-memory grid */
 	double nan_value;                /* Missing value as stored in grid file */
-	double xy_off;                   /* 0.0 (registration == GMT_GRIDLINE_REG) or 0.5 ( == GMT_PIXEL_REG) */
+	double xy_off;                   /* 0.0 (registration == GMT_GRID_NODE_REG) or 0.5 ( == GMT_GRID_PIXEL_REG) */
 	double r_inc[2];                 /* Reciprocal incs, i.e. 1/inc */
 	char flags[4];                   /* Flags used for ESRI grids */
 	char *pocket;                    /* GDAL: A working variable handy to transmit info between funcs e.g. +b<band_info> to gdalread */
@@ -296,15 +298,15 @@ struct GMT_GRID {	/* To hold a GMT float grid and its header in one container */
 /*============== GMT_DATASET Public Declaration ============== */
 /*============================================================ */
 
-/* GIS geometries, with GMT_IS_TEXT as 0 for no such thing */
+/* GIS geometries, with GMT_IS_NONE as 0 for no such thing */
 enum GMT_enum_geometries {
-	GMT_IS_TEXT = 0,
-	GMT_IS_ANY = 0,
-	GMT_IS_POINT = 1,
-	GMT_IS_LINE,
-	GMT_IS_POLY,
-	GMT_IS_SURFACE,
-	GMT_N_GEOMETRIES};
+	GMT_IS_POINT	= 1,
+	GMT_IS_LINE	= 2,
+	GMT_IS_POLY	= 4,
+	GMT_IS_PLP	= 7,	/* Could be any one of POINT, LINE, POLY */
+	GMT_IS_SURFACE	= 8,
+	GMT_IS_NONE	= 16,	/* Non-geographical items like CPT and text */
+	GMT_N_GEOMETRIES = 6};
 
 /* These are two polygon modes */
 enum GMT_enum_pol {
@@ -403,6 +405,7 @@ struct GMT_DATASET {	/* Single container for an array of GMT tables (files) */
 	struct GMT_DATATABLE **table;	/* Pointer to array of tables */
 /* ---- Variables "hidden" from the API ---- */
 	unsigned int id;		/* The internal number of the data set */
+	unsigned int geometry;		/* The geometry of this dataset */
 	size_t n_alloc;			/* The current allocation length of tables */
 	enum GMT_enum_dest io_mode;	/* -1 means write OGR format (requires proper -a),
 					 * 0 means write everything to one destination [Default],
@@ -453,6 +456,7 @@ struct GMT_TEXTSET {	/* Single container for an array of GMT text tables (files)
 	struct GMT_TEXTTABLE **table;	/* Pointer to array of tables */
 /* ---- Variables "hidden" from the API ---- */
 	unsigned int id;			/* The internal number of the data set */
+	unsigned int geometry;		/* The geometry of this dataset */
 	size_t n_alloc;			/* The current allocation length of tables */
 	enum GMT_enum_dest io_mode;	/* -1 means write OGR format (requires proper -a),
 					 * 0 means write everything to one destination [Default],
@@ -620,5 +624,17 @@ struct GMT_OPTION {	/* Structure for a single GMT command option */
 	struct GMT_OPTION *next;	/* Pointer to next option in a linked list */
 	struct GMT_OPTION *previous;	/* Pointer to previous option in a linked list */
 };
+
+#ifdef GMT_FFT_EXTENSION
+
+/* Various directions and modes to call the FFT */
+enum FFT_modes {
+	GMT_FFT_FWD     = 0U, /* forward Fourier transform */
+	GMT_FFT_INV     = 1U, /* inverse Fourier transform */
+	GMT_FFT_REAL    = 0U, /* real-input FT (currently unsupported) */
+	GMT_FFT_COMPLEX = 1U  /* complex-input Fourier transform */
+};
+
+#endif
 
 #endif /* _GMT_RESOURCES_H */

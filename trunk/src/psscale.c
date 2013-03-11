@@ -1098,7 +1098,7 @@ int GMT_psscale (void *V_API, int mode, void *args)
 	/*---------------------------- This is the psscale main code ----------------------------*/
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input CPT table\n");
-	if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
+	if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
 
@@ -1126,7 +1126,7 @@ int GMT_psscale (void *V_API, int mode, void *args)
 	max_intens[1] = Ctrl->I.max;
 
 	if (Ctrl->Z.active) {
-		if (GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->Z.file, &D)) {
+		if (GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->Z.file, &D)) {
 			Return (API->error);
 		}
 		z_width = D->table[0]->segment[0]->coord[GMT_X];

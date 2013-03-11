@@ -240,7 +240,7 @@ int GMT_sample1d_parse (struct GMTAPI_CTRL *C, struct SAMPLE1D_CTRL *Ctrl, struc
 
 int GMT_sample1d (void *V_API, int mode, void *args)
 {
-	unsigned int tbl, col;
+	unsigned int tbl, col, geometry;
 	bool resample_path = false;
 	int error = 0, result;
 	
@@ -282,20 +282,6 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 	GMT->current.io.skip_if_NaN[GMT_X] = GMT->current.io.skip_if_NaN[GMT_Y] = false;	/* Turn off default GMT NaN-handling for (x,y) which is not the case here */
 	GMT->current.io.skip_if_NaN[Ctrl->T.col] = true;				/* ... But disallow NaN in "time" column */
 	
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
-		Return (API->error);
-	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
-		Return (API->error);
-	}
-
-	/* First read input data to be sampled */
-	
-	if ((error = GMT_set_cols (GMT, GMT_IN, 0))) Return (error);
-	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_ANY, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
-		Return (API->error);
-	}
-	
 	if (Ctrl->I.mode) {
 		if (Ctrl->I.smode == GMT_GEODESIC) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Cannot use geodesic distances as path interpolation is spherical; changed to spherical\n");
@@ -311,10 +297,25 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 		resample_path = true;	/* Resample (x,y) track according to -I and -A */
 	}
 
+	geometry = (resample_path) ? GMT_IS_LINE : GMT_IS_NONE;
+	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+		Return (API->error);
+	}
+	if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+		Return (API->error);
+	}
+
+	/* First read input data to be sampled */
+	
+	if ((error = GMT_set_cols (GMT, GMT_IN, 0))) Return (error);
+	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+		Return (API->error);
+	}
+	
 	if (Ctrl->N.active) {	/* read file with abscissae */
 		struct GMT_DATASET *Cin = NULL;
 		GMT_init_io_columns (GMT, GMT_IN);	/* Reset any effects of -i */
-		if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
+		if ((Cin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		T = Cin->table[0];	/* Since we only have one table here */
@@ -442,7 +443,7 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 			}
 		}
 	}
-	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, Dout->io_mode, NULL, Ctrl->Out.file, Dout) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, geometry, Dout->io_mode, NULL, Ctrl->Out.file, Dout) != GMT_OK) {
 		Return (API->error);
 	}
 

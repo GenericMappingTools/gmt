@@ -243,7 +243,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_ALL, NULL, wesn, inc, \
+	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn, inc, \
 		registration, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 
 	sprintf (format, "Input  grid (%s/%s/%s/%s) nx = %%d ny = %%d dx = %s dy = %s registration = %%d\n", 

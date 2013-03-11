@@ -287,7 +287,7 @@ struct GMT_GRID * init_area_weights (struct GMT_CTRL *GMT, struct GMT_GRID *G, i
 	struct GMT_GRID *A = NULL;
 	
 	/* Base the area weight grid on the input grid domain and increments. */
-	if ((A = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_GRID_ALL, NULL, G->header->wesn, G->header->inc, \
+	if ((A = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, G->header->wesn, G->header->inc, \
 		G->header->registration, GMTAPI_NOTSET, NULL)) == NULL) return (NULL);
 	
 	if (mode > GRDFILTER_XY_CARTESIAN) {	/* Geographic data */
@@ -315,12 +315,12 @@ struct GMT_GRID * init_area_weights (struct GMT_CTRL *GMT, struct GMT_GRID *G, i
 			}
 		}
 		else {	/* If Cartesian then row_weight is a constant 1 except for gridline-registered grids at top or bottom row */
-			row_weight = (A->header->registration == GMT_GRIDLINE_REG && (row == 0 || row == (A->header->ny-1))) ? 0.5 : 1.0;	/* Share weight with repeat point */
+			row_weight = (A->header->registration == GMT_GRID_NODE_REG && (row == 0 || row == (A->header->ny-1))) ? 0.5 : 1.0;	/* Share weight with repeat point */
 			row_weight *= A->header->inc[GMT_Y];
 		}
 
 		GMT_col_loop (GMT, A, row, col, ij) {	/* Now loop over the columns */
-			col_weight = dx * ((A->header->registration == GMT_GRIDLINE_REG && (col == 0 || col == (A->header->nx-1))) ? 0.5 : 1.0);
+			col_weight = dx * ((A->header->registration == GMT_GRID_NODE_REG && (col == 0 || col == (A->header->nx-1))) ? 0.5 : 1.0);
 			A->data[ij] = (float)(row_weight * col_weight);
 		}
 	}
@@ -605,9 +605,9 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	}
 
 	if (Ctrl->T.active)	/* Make output grid of the opposite registration */
-		one_or_zero = (Gin->header->registration == GMT_PIXEL_REG) ? 1 : 0;
+		one_or_zero = (Gin->header->registration == GMT_GRID_PIXEL_REG) ? 1 : 0;
 	else
-		one_or_zero = (Gin->header->registration == GMT_PIXEL_REG) ? 0 : 1;
+		one_or_zero = (Gin->header->registration == GMT_GRID_PIXEL_REG) ? 0 : 1;
 
 	full_360 = (Ctrl->D.mode > GRDFILTER_XY_CARTESIAN && GMT_grd_is_global (GMT, Gin->header));	/* Periodic geographic grid */
 
@@ -647,7 +647,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	}
 
 	/* Allocate space and determine the header for the new grid; croak if there are issues. */
-	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_ALL, NULL, wesn, inc, \
+	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn, inc, \
 		!one_or_zero, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 
 	/* We can save time by computing a weight matrix once [or once pr scanline] only
@@ -681,7 +681,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	if (Ctrl->D.mode > GRDFILTER_XY_CARTESIAN) {	/* Data on a sphere so must check for both periodic and polar wrap-arounds */
 		spherical = true;
 		/* Compute the wrap-around delta_nx to use [may differ from nx unless a 360 grid] */
-		nx_wrap = GMT_get_n (GMT, 0.0, 360.0, Gin->header->inc[GMT_X], GMT_PIXEL_REG);	/* So we basically bypass the duplicate point at east */
+		nx_wrap = GMT_get_n (GMT, 0.0, 360.0, Gin->header->inc[GMT_X], GMT_GRID_PIXEL_REG);	/* So we basically bypass the duplicate point at east */
 	}	
 #ifdef DEBUG
 	if ((A = init_area_weights (GMT, Gin, Ctrl->D.mode, Ctrl->W.file)) == NULL) Return (API->error);	/* Precalculate area weights, save debug grid */

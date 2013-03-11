@@ -134,7 +134,7 @@ int read_esri_info_hdr (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header) {
 
 	if ((fp = GMT_fopen (C, header->title, "r")) == NULL) return (GMT_GRDIO_OPEN_FAILED);
 
-	header->registration = GMT_GRIDLINE_REG;
+	header->registration = GMT_GRID_NODE_REG;
 	header->z_scale_factor = 1.0;
 	header->z_add_offset   = 0.0;
 
@@ -215,7 +215,7 @@ int read_esri_info (struct GMT_CTRL *C, FILE *fp, struct GMT_GRID_HEADER *header
 	char record[GMT_BUFSIZ];
 	FILE *fp2 = NULL, *fpBAK = NULL;
 
-	header->registration = GMT_GRIDLINE_REG;
+	header->registration = GMT_GRID_NODE_REG;
 	header->z_scale_factor = 1.0;
 	header->z_add_offset   = 0.0;
 
@@ -249,7 +249,7 @@ int read_esri_info (struct GMT_CTRL *C, FILE *fp, struct GMT_GRID_HEADER *header
 			header->nx = 7200;
 			header->ny = 3600;
 		}
-		header->registration = GMT_PIXEL_REG;
+		header->registration = GMT_GRID_PIXEL_REG;
 		
 		/* Different sign of NaN value between GTOPO30 and SRTM30 grids */
 		if (strstr (header->name, ".DEM") || strstr (header->name, ".dem"))
@@ -307,14 +307,14 @@ int read_esri_info (struct GMT_CTRL *C, FILE *fp, struct GMT_GRID_HEADER *header
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	GMT_str_tolower (record);
-	if (!strncmp (record, "xllcorner", 9U)) header->registration = GMT_PIXEL_REG;	/* Pixel grid */
+	if (!strncmp (record, "xllcorner", 9U)) header->registration = GMT_GRID_PIXEL_REG;	/* Pixel grid */
 	GMT_fgets (C, record, GMT_BUFSIZ, fp);
 	if (sscanf (record, "%*s %lf", &header->wesn[YLO]) != 1) {
 		GMT_report (C, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding yll record\n");
 		return (GMT_GRDIO_READ_FAILED);
 	}
 	GMT_str_tolower (record);
-	if (!strncmp (record, "yllcorner", 9U)) header->registration = GMT_PIXEL_REG;	/* Pixel grid */
+	if (!strncmp (record, "yllcorner", 9U)) header->registration = GMT_GRID_PIXEL_REG;	/* Pixel grid */
 	GMT_fgets (C, record, GMT_BUFSIZ, fp);
 	if (sscanf (record, "%*s %lf", &header->inc[GMT_X]) != 1) {
 		GMT_report (C, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding cellsize record\n");
@@ -378,7 +378,7 @@ int write_esri_info (struct GMT_CTRL *C, FILE *fp, struct GMT_GRID_HEADER *heade
 
 	sprintf (record, "ncols %d\nnrows %d\n", header->nx, header->ny);
 	GMT_fputs (record, fp);		/* Write a text record */
-	if (header->registration == GMT_PIXEL_REG) {	/* Pixel format */
+	if (header->registration == GMT_GRID_PIXEL_REG) {	/* Pixel format */
 		sprintf (record, "xllcorner ");
 		sprintf (item, C->current.setting.format_float_out, header->wesn[XLO]);
 		strcat  (record, item);	strcat  (record, "\n");

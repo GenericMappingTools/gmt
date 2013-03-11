@@ -300,7 +300,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 		if (Ctrl->Q.active) {	/* We also want to build list(s) those files */
 			if (!Ctrl->Q.file) Ctrl->Q.file = strdup ("gmtstitch_list.txt");
 			dim_tscr[0] = n_qfiles = (strstr (Ctrl->Q.file, "%c")) ? 2 : 1;	/* Build one or two tables (closed and open) */
-			if ((Q = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, 0, dim_tscr, NULL, NULL, 0, 0, NULL)) == NULL) {
+			if ((Q = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, GMT_IS_NONE, 0, dim_tscr, NULL, NULL, 0, 0, NULL)) == NULL) {
 				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a text set for segment lists\n");
 				return (GMT->parent->error);
 			}
@@ -326,10 +326,10 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 
 	GMT_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.mode, GMT_MAP_DIST);
 
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE|GMT_IS_POLY, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
 	}
-	if ((D[GMT_IN] = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_ANY, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+	if ((D[GMT_IN] = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
 
@@ -349,7 +349,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 	n_columns = dim_tscr[2] = D[GMT_IN]->n_columns;	/* Set the required columns for output */
 
 	n_seg_alloc[0] = dim_tscr[1] = 0;	/* Allocate no segments for now - we will do this as needed */
-	if ((D[GMT_OUT] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, 0, dim_tscr, NULL, NULL, 0, 0, NULL)) == NULL) {
+	if ((D[GMT_OUT] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, D[GMT_IN]->geometry, 0, dim_tscr, NULL, NULL, 0, 0, NULL)) == NULL) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for output segments\n");
 		Return (GMT->parent->error);
 	}
@@ -358,7 +358,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 	n_seg_alloc[1] = 0;	/* Allocate no segments for now - we will do this as needed */
 
 	if (Ctrl->C.active) {	/* Wish to return already-closed polygons via a separate file */
-		if ((C = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, 0, dim_tscr, NULL, NULL, 0, 0, NULL)) == NULL) {
+		if ((C = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POLY, 0, dim_tscr, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for closed segments\n");
 			Return (GMT->parent->error);
 		}
@@ -452,17 +452,17 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 		if (Ctrl->C.active) { /* Write n_open segments to D[OUT] and n_closed to C */
 			D[GMT_OUT]->table[0]->segment = GMT_memory (GMT, T[OPEN], n_open, struct GMT_DATASEGMENT *);
 			D[GMT_OUT]->n_segments = D[GMT_OUT]->table[0]->n_segments = n_open;
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_SET, NULL, Ctrl->C.file, C) != GMT_OK) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->C.file, C) != GMT_OK) {
 				Return (API->error);
 			}
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_SET, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_OK) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_WRITE_SET, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_OK) {
 				Return (API->error);
 			}
 		}
 		if (Ctrl->Q.active) {
 			Q->table[CLOSED]->segment[0]->record = GMT_memory (GMT, QT[CLOSED]->record, QT[CLOSED]->n_rows, char *);
 			if (n_qfiles == 2) Q->table[OPEN]->segment[0]->record = GMT_memory (GMT, QT[OPEN]->record, QT[OPEN]->n_rows, char *);
-			if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_POINT, q_mode, NULL, Ctrl->Q.file, Q) != GMT_OK) {
+			if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, q_mode, NULL, Ctrl->Q.file, Q) != GMT_OK) {
 				Return (API->error);
 			}
 		}
@@ -566,7 +566,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 		char name[GMT_BUFSIZ], name0[GMT_BUFSIZ], name1[GMT_BUFSIZ], fmt[GMT_BUFSIZ], *pp = NULL, *s = GMT->current.setting.io_col_separator;
 		if (!Ctrl->L.file) Ctrl->L.file = strdup ("gmtstitch_link.txt");	/* Use default output filename */
 		dim_tscr[0] = 1;	dim_tscr[1] = 1;	dim_tscr[2] = ns;
-		if ((LNK = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, 0, dim_tscr, NULL, NULL, 0, 0, NULL)) == NULL) {
+		if ((LNK = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, GMT_IS_NONE, 0, dim_tscr, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a text set for link lists\n");
 			Return (GMT->parent->error);
 		}
@@ -598,7 +598,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 			LNK->table[0]->segment[0]->record[iseg] = strdup (buffer);
 		}
 		LNK->table[0]->n_records = LNK->table[0]->segment[0]->n_rows = ns;
-		if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_SET, NULL, Ctrl->L.file, LNK) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->L.file, LNK) != GMT_OK) {
 			Return (API->error);
 		}
 		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &LNK) != GMT_OK) {
@@ -750,7 +750,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 	if (Ctrl->Q.active) {	/* Write out the list(s) with individual file names */
 		Q->table[CLOSED]->segment[0]->record = GMT_memory (GMT, QT[CLOSED]->record, QT[CLOSED]->n_rows, char *);
 		if (n_qfiles == 2) Q->table[OPEN]->segment[0]->record = GMT_memory (GMT, QT[OPEN]->record, QT[OPEN]->n_rows, char *);
-		if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_POINT, q_mode, NULL, Ctrl->Q.file, Q) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, q_mode, NULL, Ctrl->Q.file, Q) != GMT_OK) {
 			Return (API->error);
 		}
 	}
@@ -760,7 +760,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 	D[GMT_OUT]->table[0]->segment = GMT_memory (GMT, T[OPEN], out_seg, struct GMT_DATASEGMENT *);
 	D[GMT_OUT]->n_segments = D[GMT_OUT]->table[0]->n_segments = out_seg;
 	ofile = (Ctrl->D.active) ? Ctrl->D.format : Ctrl->Out.file;
-	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, io_mode, NULL, ofile, D[GMT_OUT]) != GMT_OK) {
+	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, io_mode, NULL, ofile, D[GMT_OUT]) != GMT_OK) {
 		Return (API->error);
 	}
 

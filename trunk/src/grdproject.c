@@ -386,7 +386,7 @@ int GMT_grdproject (void *V_API, int mode, void *args)
 		}
 		GMT_err_fail (GMT, GMT_project_init (GMT, Geo->header, Ctrl->D.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
 		GMT_set_grddim (GMT, Geo->header);
-		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Geo) == NULL) Return (API->error);
+		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Geo) == NULL) Return (API->error);
 		GMT_grd_init (GMT, Geo->header, options, true);
 
 		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
@@ -471,7 +471,7 @@ int GMT_grdproject (void *V_API, int mode, void *args)
 
 		GMT_err_fail (GMT, GMT_project_init (GMT, Rect->header, Ctrl->D.inc, use_nx, use_ny, Ctrl->E.dpi, offset), Ctrl->G.file);
 		GMT_set_grddim (GMT, Rect->header);
-		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Rect) == NULL) Return (API->error);
+		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Rect) == NULL) Return (API->error);
 		GMT_grd_project (GMT, Geo, Rect, false);
 		GMT_grd_init (GMT, Rect->header, options, true);
 

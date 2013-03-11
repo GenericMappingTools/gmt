@@ -172,7 +172,7 @@ int GMT_testapi_parse (struct GMTAPI_CTRL *C, struct TESTAPI_CTRL *Ctrl, struct 
 int GMT_testapi (void *V_API, int mode, void *args)
 {
 	int error = 0, in_ID, out_ID, via[2] = {0, 0};
-	int geometry[7] = {GMT_IS_POINT, GMT_IS_TEXT, GMT_IS_SURFACE, GMT_IS_TEXT, GMT_IS_SURFACE, GMT_IS_POINT, GMT_IS_SURFACE};
+	int geometry[7] = {GMT_IS_POINT, GMT_IS_NONE, GMT_IS_SURFACE, GMT_IS_NONE, GMT_IS_SURFACE, GMT_IS_POINT, GMT_IS_SURFACE};
 	uint64_t k;
 	
 	float *fdata = NULL;
@@ -217,7 +217,7 @@ int GMT_testapi (void *V_API, int mode, void *args)
 	if (Ctrl->I.via == GMT_VIA_MATRIX) {	/* We will use a matrix in memory as data source */
 		if (Ctrl->T.mode == GMT_IS_DATASET) {	/* Mimic the dtest.txt table */
 			uint64_t dim[3] = {1, 9, 2};
-			if ((M = GMT_Create_Data (API, GMT_IS_MATRIX, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
+			if ((M = GMT_Create_Data (API, GMT_IS_MATRIX, GMT_IS_SURFACE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 			M->dim = 9;	M->type = GMT_FLOAT;	M->size = M->n_rows * M->n_columns * M->n_layers;
 			fdata = GMT_memory (GMT, NULL, M->size, float);
 			for (k = 0; k < (uint64_t)M->n_rows; k++) {
@@ -227,7 +227,7 @@ int GMT_testapi (void *V_API, int mode, void *args)
 		}
 		else {	/* Mimic the gtest.nc grid as table */
 			uint64_t dim[3] = {1, 6, 6};
-			if ((M = GMT_Create_Data (API, GMT_IS_MATRIX, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
+			if ((M = GMT_Create_Data (API, GMT_IS_MATRIX, GMT_IS_SURFACE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 			M->dim = 6;	M->type = GMT_FLOAT;	M->size = M->n_rows * M->n_columns * M->n_layers;
 			M->range[XLO] = 0.0;	M->range[XHI] = 5.0;	M->range[YLO] = 0.0;	M->range[YHI] = 5.0;	M->range[4] = 0.0;	M->range[5] = 25.0;
 			fdata = GMT_memory (GMT, NULL, M->size, float);
@@ -237,7 +237,7 @@ int GMT_testapi (void *V_API, int mode, void *args)
 	}
 	else if (Ctrl->I.via == GMT_VIA_VECTOR) {	/* We will use vectors in memory as data source */
 		uint64_t dim[2] = {2, 9};
-		if ((V = GMT_Create_Data (API, GMT_IS_VECTOR, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
+		if ((V = GMT_Create_Data (API, GMT_IS_VECTOR, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 		fdata = GMT_memory (GMT, NULL, V->n_rows, float);
 		ddata = GMT_memory (GMT, NULL, V->n_rows, double);
 		for (k = 0; k < V->n_rows; k++) {

@@ -3180,7 +3180,7 @@ int GMT_z_output (struct GMT_CTRL *C, FILE *fp, unsigned int n, double *data)
 int GMT_set_z_io (struct GMT_CTRL *C, struct GMT_Z_IO *r, struct GMT_GRID *G)
 {
 	/* THIS SHOULD NOT BE FATAL!
-	if ((r->x_missing || r->y_missing) && G->header->registration == GMT_PIXEL_REG) return (GMT_GRDIO_RI_NOREPEAT);
+	if ((r->x_missing || r->y_missing) && G->header->registration == GMT_GRID_PIXEL_REG) return (GMT_GRDIO_RI_NOREPEAT);
 	*/
 	r->start_col = ((r->x_step == 1) ? 0 : G->header->nx - 1 - r->x_missing);
 	r->start_row = ((r->y_step == 1) ? r->y_missing : G->header->ny - 1);
@@ -5746,6 +5746,8 @@ struct GMT_TEXTSET * GMT_alloc_textset (struct GMT_CTRL *C, struct GMT_TEXTSET *
 		D->table = GMT_memory (C, NULL, D->n_tables, struct GMT_TEXTTABLE *);
 		for (tbl = 0; tbl < D->n_tables; tbl++) D->table[tbl] = gmt_alloc_texttable (C, Din->table[tbl]);
 	}
+	D->geometry = Din->geometry;
+	
 	return (D);
 }
 
@@ -5839,7 +5841,7 @@ struct GMT_DATATABLE * GMT_create_table (struct GMT_CTRL *C, uint64_t n_segments
 	return (T);
 }
 
-struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *C, unsigned int n_tables, uint64_t n_segments, unsigned int n_columns, uint64_t n_rows, bool alloc_only)
+struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *C, unsigned int n_tables, uint64_t n_segments, unsigned int n_columns, uint64_t n_rows, unsigned int geometry, bool alloc_only)
 {	/* Create an empty data set structure with the required number of empty tables, all set to hold n_segments with n_columns */
 	unsigned int tbl;
 	struct GMT_DATASET *D = NULL;
@@ -5850,6 +5852,7 @@ struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *C, unsigned int n_tabl
 		D->max = GMT_memory (C, NULL, n_columns, double);
 	}
 	D->n_columns = n_columns;
+	D->geometry = geometry;
 	D->table = GMT_memory (C, NULL, n_tables, struct GMT_DATATABLE *);
 	D->n_alloc = D->n_tables = n_tables;
 	if (!alloc_only) D->n_segments = D->n_tables * n_segments;
@@ -6150,6 +6153,7 @@ struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *C, struct GMT_DATASET *
 	struct GMT_DATASET *D = GMT_memory (C, NULL, 1, struct GMT_DATASET);
 	
 	D->n_columns = (n_columns) ? n_columns : Din->n_columns;
+	D->geometry = Din->geometry;
 	D->min = GMT_memory (C, NULL, D->n_columns, double);
 	D->max = GMT_memory (C, NULL, D->n_columns, double);
 	if (mode) {	/* Pack everything into a single table */
@@ -6205,8 +6209,8 @@ struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *C, struct GMT_DATASET *
 	return (D);
 }
 
-struct GMT_DATASET * GMT_duplicate_dataset (struct GMT_CTRL *C, struct GMT_DATASET *Din, unsigned int mode)
-{	/* Make an exact replica */
+struct GMT_DATASET * GMT_duplicate_dataset (struct GMT_CTRL *C, struct GMT_DATASET *Din, unsigned int mode, unsigned int *geometry)
+{	/* Make an exact replica, return geometry if not NULL */
 	unsigned int tbl;
 	uint64_t seg;
 	struct GMT_DATASET *D = NULL;
@@ -6220,6 +6224,7 @@ struct GMT_DATASET * GMT_duplicate_dataset (struct GMT_CTRL *C, struct GMT_DATAS
 		GMT_memcpy (D->table[tbl]->min, Din->table[tbl]->min, Din->table[tbl]->n_columns, double);
 		GMT_memcpy (D->table[tbl]->max, Din->table[tbl]->max, Din->table[tbl]->n_columns, double);
 	}
+	if (geometry) *geometry = D->geometry;
 	return (D);
 }
 

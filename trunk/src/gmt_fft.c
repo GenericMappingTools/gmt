@@ -498,12 +498,16 @@ void gmt_fft_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_FFT_
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Grid extended via %s symmetry at all edges, then tapered to zero over %d %% of extended area\n", method[F->taper_mode], width_percent);
 }
 
-char *file_name_with_suffix (char *name, char *suffix)
+char *file_name_with_suffix (struct GMT_CTRL *GMT, char *name, char *suffix)
 {
 	static char file[GMT_BUFSIZ];
 	unsigned int len, i, j;
 	
-	if ((len = (unsigned int)strlen (name)) == 0) return NULL;
+	if ((len = (unsigned int)strlen (name)) == 0) {	/* Grids that are being created have no filename yet */
+		sprintf (file, "tmpgrid_%s.grd", suffix);
+		GMT_report (GMT, GMT_MSG_VERBOSE, "Created grid has no name to derive new names from; choose %s\n", file);
+		return (file);
+	}
 	for (i = len; i > 0 && name[i] != '/'; i--);	/* i points to 1st char in name after slash, or 0 if no leading dirs */
 	if (i) i++;	/* Move to 1st char after / */
 	for (j = len; j > 0 && name[j] != '.'; j--);	/* j points to period before extension, or it is 0 if no extension */
@@ -523,20 +527,21 @@ void gmt_grd_save_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *suff
 	 * This grid may have been a mean, mid-value, or plane removed, may
 	 * have data filled into an extended margin, and may have been taperer.
 	 */
-	int del;
 	unsigned int pad[4];
 	struct GMT_GRID_HEADER save;
 	char *file = NULL;
 	
 	GMT_memcpy (&save, Grid->header, 1, struct GMT_GRID_HEADER);	/* Save what we have before messing around */
 	GMT_memcpy (pad, Grid->header->pad, 4, unsigned int);	/* Save current pad, then set pad to zero */
-	if ((del = Grid->header->pad[XLO]) > 0) Grid->header->wesn[XLO] -= del * Grid->header->inc[GMT_X], Grid->header->pad[XLO] = 0;
-	if ((del = Grid->header->pad[XHI]) > 0) Grid->header->wesn[XHI] += del * Grid->header->inc[GMT_X], Grid->header->pad[XHI] = 0;
-	if ((del = Grid->header->pad[YLO]) > 0) Grid->header->wesn[YLO] -= del * Grid->header->inc[GMT_Y], Grid->header->pad[YLO] = 0;
-	if ((del = Grid->header->pad[YHI]) > 0) Grid->header->wesn[YHI] += del * Grid->header->inc[GMT_Y], Grid->header->pad[YHI] = 0;
-	GMT_memcpy (GMT->current.io.pad, Grid->header->pad, 4, unsigned int);	/* set tmp pad */
+	/* Extend w/e/s/n to what it would be if the pad was not present */
+	Grid->header->wesn[XLO] -= Grid->header->pad[XLO] * Grid->header->inc[GMT_X];
+	Grid->header->wesn[XHI] += Grid->header->pad[XHI] * Grid->header->inc[GMT_X];
+	Grid->header->wesn[YLO] -= Grid->header->pad[YLO] * Grid->header->inc[GMT_Y];
+	Grid->header->wesn[YHI] += Grid->header->pad[YHI] * Grid->header->inc[GMT_Y];
+	GMT_memset (Grid->header->pad,   4, unsigned int);	/* Set hader pad to {0,0,0,0} */
+	GMT_memset (GMT->current.io.pad, 4, unsigned int);	/* set GMT default pad to {0,0,0,0} */
 	GMT_set_grddim (GMT, Grid->header);	/* Recompute all dimensions */
-	if ((file = file_name_with_suffix (Grid->header->name, suffix)) == NULL) {
+	if ((file = file_name_with_suffix (GMT, Grid->header->name, suffix)) == NULL) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Unable to get file name for file %s\n", Grid->header->name);
 		return;
 	}
@@ -546,8 +551,8 @@ void gmt_grd_save_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *suff
 	else
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Intermediate detrended, extended, and tapered grid written to %s\n", file);
 	
-	GMT_memcpy (Grid->header, &save, 1, struct GMT_GRID_HEADER);	/* Restore original */
-	GMT_memcpy (GMT->current.io.pad, pad, 4, unsigned int);	/* Restore GMT pad */
+	GMT_memcpy (Grid->header, &save, 1, struct GMT_GRID_HEADER);	/* Restore original, including the original pad */
+	GMT_memcpy (GMT->current.io.pad, pad, 4, unsigned int);		/* Restore GMT default pad */
 }
 
 void gmt_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_FFT_INFO *F)
@@ -578,7 +583,7 @@ void gmt_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_FFT_
 	for (k = 0; k < 4; k++) GMT->current.io.pad[k] = 0;		/* No pad is what we need for this application */
 
 	/* Set up and allocate the temporary grid. */
-	if ((Grid = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_GRID_ALL, NULL, wesn, inc, \
+	if ((Grid = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn, inc, \
 		G->header->registration | GMT_GRID_IS_COMPLEX_REAL, 0, NULL)) == NULL) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create complex output grid for %s\n", Grid->header->name);
 		return;
@@ -619,7 +624,7 @@ void gmt_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_FFT_
 		}
 	}
 	for (k = 0; k < 2; k++) {	/* Write the two grids */
-		if ((file = file_name_with_suffix (Grid->header->name, suffix[mode][k])) == NULL) {
+		if ((file = file_name_with_suffix (GMT, Grid->header->name, suffix[mode][k])) == NULL) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to get file name for file %s\n", Grid->header->name);
 			return;
 		}
@@ -772,7 +777,7 @@ fftwf_plan gmt_fftwf_plan_dft(struct GMT_CTRL *C, unsigned ny, unsigned nx, fftw
 	fftwf_complex *cin, *cout;
 	fftwf_plan plan = NULL;
 
-	sign = direction == k_fft_fwd ? FFTW_FORWARD : FFTW_BACKWARD;
+	sign = direction == GMT_FFT_FWD ? FFTW_FORWARD : FFTW_BACKWARD;
 	cin  = data;
 	cout = cin; /* in-place transform */
 
@@ -848,7 +853,7 @@ int GMT_fft_2d_fftwf (struct GMT_CTRL *C, float *data, unsigned int nx, unsigned
 
 int GMT_fft_1d_vDSP (struct GMT_CTRL *C, float *data, unsigned int n, int direction, unsigned int mode)
 {
-	FFTDirection fft_direction = direction == k_fft_fwd ?
+	FFTDirection fft_direction = direction == GMT_FFT_FWD ?
 			kFFTDirection_Forward : kFFTDirection_Inverse;
 	DSPComplex *dsp_complex = (DSPComplex *)data;
 	DSPSplitComplex dsp_split_complex;
@@ -885,7 +890,7 @@ int GMT_fft_1d_vDSP (struct GMT_CTRL *C, float *data, unsigned int n, int direct
 
 int GMT_fft_2d_vDSP (struct GMT_CTRL *C, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode)
 {
-	FFTDirection fft_direction = direction == k_fft_fwd ?
+	FFTDirection fft_direction = direction == GMT_FFT_FWD ?
 			kFFTDirection_Forward : kFFTDirection_Inverse;
 	DSPComplex *dsp_complex = (DSPComplex *)data;
 	DSPSplitComplex dsp_split_complex;
@@ -937,7 +942,7 @@ int GMT_fft_1d_kiss (struct GMT_CTRL *C, float *data, unsigned int n, int direct
 	kiss_fft_cfg config;
 
 	/* Initialize a FFT (or IFFT) config/state data structure */
-	config = kiss_fft_alloc(n, direction == k_fft_inv, NULL, NULL);
+	config = kiss_fft_alloc(n, direction == GMT_FFT_INV, NULL, NULL);
   fin = fout = (kiss_fft_cpx *)data;
 	kiss_fft (config, fin, fout); /* do transform */
 	free (config); /* Free config data structure */
@@ -953,7 +958,7 @@ int GMT_fft_2d_kiss (struct GMT_CTRL *C, float *data, unsigned int nx, unsigned 
 	kiss_fftnd_cfg config;
 
 	/* Initialize a FFT (or IFFT) config/state data structure */
-	config = kiss_fftnd_alloc (dim, dimcount, direction == k_fft_inv, NULL, NULL);
+	config = kiss_fftnd_alloc (dim, dimcount, direction == GMT_FFT_INV, NULL, NULL);
 
 	fin = fout = (kiss_fft_cpx *)data;
 	kiss_fftnd (config, fin, fout); /* do transform */
@@ -1883,7 +1888,7 @@ int GMT_fft_1d_brenner (struct GMT_CTRL *C, float *data, unsigned int n, int dir
         size_t work_size = 0;
         float *work = NULL;
 	
-        ksign = (direction == k_fft_inv) ? +1 : -1;
+        ksign = (direction == GMT_FFT_INV) ? +1 : -1;
         if ((work_size = brenner_worksize (C, n, 1))) work = GMT_memory (C, NULL, work_size, float);
         (void) BRENNER_fourt_ (data, &n_signed, &ndim, &ksign, &kmode, work);
         if (work_size) GMT_free (C, work);	
@@ -1903,7 +1908,7 @@ int GMT_fft_2d_brenner (struct GMT_CTRL *C, float *data, unsigned int nx, unsign
         size_t work_size = 0;
         float *work = NULL;
 
-        ksign = (direction == k_fft_inv) ? +1 : -1;
+        ksign = (direction == GMT_FFT_INV) ? +1 : -1;
         if ((work_size = brenner_worksize (C, nx, ny))) work = GMT_memory (C, NULL, work_size, float);
         GMT_report (C, GMT_MSG_LONG_VERBOSE, "Brenner_fourt_ work size = %zu\n", work_size);
         (void) BRENNER_fourt_ (data, nn, &ndim, &ksign, &kmode, work);
@@ -1946,16 +1951,16 @@ int GMT_fft_2d_selection (struct GMT_CTRL *C, unsigned int nx, unsigned int ny) 
 int GMT_fft_1d (struct GMT_CTRL *C, float *data, unsigned int n, int direction, unsigned int mode, struct GMT_FFT_WAVENUMBER *info) {
 	/* data is an array of length n (or 2*n for complex) data points
 	 * n is the number of data points
-	 * direction is either k_fft_fwd (forward) or k_fft_inv (inverse)
-	 * mode is either k_fft_real or k_fft_complex
+	 * direction is either GMT_FFT_FWD (forward) or GMT_FFT_INV (inverse)
+	 * mode is either GMT_FFT_REAL or GMT_FFT_COMPLEX
 	 * info is a pointer to struct GMT_FFT_INFO, or NULL if not used
 	 */
 	int status, use;
-	assert (mode == k_fft_complex); /* k_fft_real not implemented yet */
+	assert (mode == GMT_FFT_COMPLEX); /* GMT_FFT_REAL not implemented yet */
 	use = GMT_fft_1d_selection (C, n);
 	GMT_report (C, GMT_MSG_LONG_VERBOSE, "1-D FFT using %s\n", GMT_fft_algo[use]);
 	status = C->session.fft1d[use] (C, data, n, direction, mode);
-	if (direction == k_fft_inv) {	/* Undo the 2/nm factor */
+	if (direction == GMT_FFT_INV) {	/* Undo the 2/nm factor */
 		uint64_t nm = 2ULL * n;
 		GMT_scale_and_offset_f (C, data, nm, 2.0 / nm, 0);
 	}
@@ -1965,17 +1970,17 @@ int GMT_fft_1d (struct GMT_CTRL *C, float *data, unsigned int n, int direction, 
 int GMT_fft_2d (struct GMT_CTRL *C, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode, struct GMT_FFT_WAVENUMBER *K) {
 	/* data is an array of length nx*ny (or 2*nx*ny for complex) data points
 	 * nx, ny is the number of data nodes
-	 * direction is either k_fft_fwd (forward) or k_fft_inv (inverse)
-	 * mode is either k_fft_real or k_fft_complex
+	 * direction is either GMT_FFT_FWD (forward) or GMT_FFT_INV (inverse)
+	 * mode is either GMT_FFT_REAL or GMT_FFT_COMPLEX
 	 * info is a pointer to struct GMT_FFT_INFO, or NULL if not used
 	 */
 	int status, use;
-	assert (mode == k_fft_complex); /* k_fft_real not implemented yet */
+	assert (mode == GMT_FFT_COMPLEX); /* GMT_FFT_REAL not implemented yet */
 	use = GMT_fft_2d_selection (C, nx, ny);
 	
 	GMT_report (C, GMT_MSG_LONG_VERBOSE, "2-D FFT using %s\n", GMT_fft_algo[use]);
 	status = C->session.fft2d[use] (C, data, nx, ny, direction, mode);
-	if (direction == k_fft_inv) {	/* Undo the 2/nm factor */
+	if (direction == GMT_FFT_INV) {	/* Undo the 2/nm factor */
 		uint64_t nm = 2ULL * nx * ny;
 		GMT_scale_and_offset_f (C, data, nm, 2.0 / nm, 0);
 	}

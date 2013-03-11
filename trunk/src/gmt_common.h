@@ -54,6 +54,10 @@ struct GMT_COMMON {
 		bool active[2];	/* 0 = primary annotation, 1 = secondary annotations */
 		char string[2][GMT_TEXT_LEN256];
 	} B;	
+	struct API_I {	/* -I<xinc>[/<yinc>] grids only, and for API use only */
+		bool active;
+		double inc[2];
+	} API_I;	
 	struct J {	/* -J<params> */
 		bool active, zactive;
 		unsigned int id;

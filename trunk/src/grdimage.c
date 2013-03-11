@@ -319,7 +319,7 @@ void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *r, struc
 
 	r->wesn[XLO] = r->wesn[YLO] = +DBL_MAX;
 	r->wesn[XHI] = r->wesn[YHI] = -DBL_MAX;
-	k = (g->registration == GMT_GRIDLINE_REG) ? 1 : 0;
+	k = (g->registration == GMT_GRID_NODE_REG) ? 1 : 0;
 	
 	for (i = 0; i < g->nx - k; i++) {	/* South and north sides */
 		GMT_geo_to_xy (GMT, g->wesn[XLO] + i * g->inc[GMT_X], g->wesn[YLO], &x, &y);
@@ -353,7 +353,7 @@ void GMT_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *r, struc
 int GMT_grdimage (void *V_API, int mode, void *args)
 {
 	bool done, need_to_project, normal_x, normal_y, resampled = false, gray_only = false, nothing_inside = false;
-	unsigned int k, nx = 0, ny = 0, grid_registration = GMT_GRIDLINE_REG, n_grids, row, actual_row, col;
+	unsigned int k, nx = 0, ny = 0, grid_registration = GMT_GRID_NODE_REG, n_grids, row, actual_row, col;
 	unsigned int colormask_offset = 0, try;
 	uint64_t node_RGBA = 0;		/* uint64_t for the RGB(A) image array. */
 	uint64_t node, kk, nm, byte;
@@ -482,7 +482,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 		else if (Ctrl->D.active) {
 			uint64_t dim[1] = {256};
 			/* We won't use much of the next 'P' but we still need to use some of its fields */
-			if ((P = GMT_Create_Data (API, GMT_IS_CPT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
+			if ((P = GMT_Create_Data (API, GMT_IS_CPT, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 			P->model = GMT_RGB;
 			if (I->ColorMap == NULL && !strncmp (I->ColorInterp, "Gray", 4)) {
 				r_table = GMT_memory (GMT, NULL, 256, double);
@@ -640,13 +640,13 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 		if (Ctrl->D.active) { 
 			//if ((Img_proj = GMT_create_image (GMT)) == NULL) Return (API->error);
 			if ((Img_proj = GMT_Duplicate_Data (API, GMT_IS_IMAGE, GMT_DUPLICATE_NONE, I)) == NULL) Return (API->error);	/* Just to get a header we can change */
-			grid_registration = GMT_PIXEL_REG;	/* Force pixel */
+			grid_registration = GMT_GRID_PIXEL_REG;	/* Force pixel */
 			GMT_set_proj_limits (GMT, Img_proj->header, I->header, need_to_project);
 			GMT_err_fail (GMT, GMT_project_init (GMT, Img_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->In.file[0]);
 			if (Ctrl->A.active)
 				for (k = 0; k < 3; k++) GMT->current.setting.color_patch[GMT_NAN][k] = 1.0;	/* For img GDAL write use white as bg color */
 			GMT_set_grddim (GMT, Img_proj->header);
-			if (GMT_Create_Data (API, GMT_IS_IMAGE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Img_proj) == NULL) Return (API->error);
+			if (GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Img_proj) == NULL) Return (API->error);
 			//Img_proj->data = GMT_memory_aligned (GMT, NULL, Img_proj->header->size * Img_proj->header->n_bands, unsigned char);
 			GMT_img_project (GMT, I, Img_proj, false);
 			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &I) != GMT_OK) {
@@ -659,11 +659,11 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 			if (!Grid_proj[k] && (Grid_proj[k] = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Grid_orig[k])) == NULL) Return (API->error);	/* Just to get a header we can change */
 					
 			GMT_set_proj_limits (GMT, Grid_proj[k]->header, Grid_orig[k]->header, need_to_project);
-			if (grid_registration == GMT_GRIDLINE_REG)		/* Force pixel if dpi is set */
-				grid_registration = (Ctrl->E.dpi > 0) ? GMT_PIXEL_REG : Grid_orig[k]->header->registration;
+			if (grid_registration == GMT_GRID_NODE_REG)		/* Force pixel if dpi is set */
+				grid_registration = (Ctrl->E.dpi > 0) ? GMT_GRID_PIXEL_REG : Grid_orig[k]->header->registration;
 			GMT_err_fail (GMT, GMT_project_init (GMT, Grid_proj[k]->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->In.file[k]);
 			GMT_set_grddim (GMT, Grid_proj[k]->header);
-			if (GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid_proj[k]) == NULL) Return (API->error);
+			if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid_proj[k]) == NULL) Return (API->error);
 			GMT_grd_project (GMT, Grid_orig[k], Grid_proj[k], false);
 			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid_orig[k]) != GMT_OK) {
 				Return (API->error);
@@ -684,7 +684,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 			}
 			GMT_err_fail (GMT, GMT_project_init (GMT, Intens_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->I.file);
 			GMT_set_grddim (GMT, Intens_proj->header);
-			if (GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Intens_proj) == NULL) Return (API->error);
+			if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Intens_proj) == NULL) Return (API->error);
 			GMT_grd_project (GMT, Intens_orig, Intens_proj, false);
 			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Intens_orig) != GMT_OK) {
 				Return (API->error);
@@ -898,7 +898,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 	/* Set lower left position of image on map */
 
 	x0 = header_work->wesn[XLO];	y0 = header_work->wesn[YLO];
-	if (grid_registration == GMT_GRIDLINE_REG) {	/* Grid registration, move 1/2 pixel down/left */
+	if (grid_registration == GMT_GRID_NODE_REG) {	/* Grid registration, move 1/2 pixel down/left */
 		x0 -= 0.5 * dx;
 		y0 -= 0.5 * dy;
 	}

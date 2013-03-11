@@ -523,12 +523,12 @@ int GMT_grdgradient (void *V_API, int mode, void *args)
 	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Data is geographic */
 		double sum;
 		/* If the N or S poles are included then we only want a single estimate at these repeating points */
-		if (Out->header->wesn[YLO] == -90.0 && Out->header->registration == GMT_GRIDLINE_REG) {	/* Average all the multiple N pole estimates */
+		if (Out->header->wesn[YLO] == -90.0 && Out->header->registration == GMT_GRID_NODE_REG) {	/* Average all the multiple N pole estimates */
 			for (col = 0, ij = GMT_IJP (Out->header, 0, 0), sum = 0.0; col < Out->header->nx; col++, ij++) sum += Out->data[ij];
 			sum /= Out->header->nx;	/* Average gradient */
 			for (col = 0, ij = GMT_IJP (Out->header, 0, 0); col < Out->header->nx; col++, ij++) Out->data[ij] = (float)sum;
 		}
-		if (Out->header->wesn[YLO] == -90.0 && Out->header->registration == GMT_GRIDLINE_REG) {	/* Average all the multiple S pole estimates */
+		if (Out->header->wesn[YLO] == -90.0 && Out->header->registration == GMT_GRID_NODE_REG) {	/* Average all the multiple S pole estimates */
 			for (col = 0, ij = GMT_IJP (Out->header, Out->header->ny - 1, 0), sum = 0.0; col < Out->header->nx; col++, ij++) sum += Out->data[ij];
 			sum /= Out->header->nx;	/* Average gradient */
 			for (col = 0, ij = GMT_IJP (Out->header, Out->header->ny - 1, 0); col < Out->header->nx; col++, ij++) Out->data[ij] = (float)sum;

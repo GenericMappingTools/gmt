@@ -548,7 +548,7 @@ int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_
 	if ((error = GMT_set_cols (GMT, GMT_IN, 3)) != GMT_OK) {
 		return (error);
 	}
-	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		return (GMT->parent->error);
 	}
 
@@ -1813,8 +1813,8 @@ int GMT_surface (void *V_API, int mode, void *args)
 		/* nx,ny remains the same for now but nodes are in "pixel" position.  Must reduce nx,ny by 1 when we write result */
 	}
 	
-	if ((C.Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_HEADER_ONLY, NULL, wesn, Ctrl->I.inc, \
-		GMT_GRIDLINE_REG, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
+	if ((C.Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, wesn, Ctrl->I.inc, \
+		GMT_GRID_NODE_REG, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 	
 	if (C.Grid->header->nx < 4 || C.Grid->header->ny < 4) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Error: Grid must have at least 4 nodes in each direction (you have %d by %d) - abort.\n", C.Grid->header->nx, C.Grid->header->ny);
@@ -1867,7 +1867,7 @@ int GMT_surface (void *V_API, int mode, void *args)
 	
 	if (key == 1) {	/* Data lies exactly on a plane; just return the plane grid */
 		GMT_free (GMT, C.data);
-		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, C.Grid) == NULL) Return (API->error);
+		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, C.Grid) == NULL) Return (API->error);
 		C.ij_sw_corner = 2 * C.my + 2;			/*  Corners of array of actual data  */
 		replace_planar_trend (&C);
 		if ((error = write_output_surface (GMT, &C, Ctrl->G.file))) Return (error);
@@ -1893,7 +1893,7 @@ int GMT_surface (void *V_API, int mode, void *args)
 
 	C.briggs = GMT_memory (GMT, NULL, C.npoints, struct SURFACE_BRIGGS);
 	C.iu = GMT_memory (GMT, NULL, C.mxmy, char);
-	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, C.Grid) == NULL) Return (API->error);
+	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, C.Grid) == NULL) Return (API->error);
 
 	if (C.radius > 0) initialize_grid (GMT, &C); /* Fill in nodes with a weighted avg in a search radius  */
 

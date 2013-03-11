@@ -206,7 +206,7 @@ void compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x
 
 		detrend_and_hanning (C, leave_trend, mode);
 
-		if (GMT_fft_1d (GMT, C->datac, C->window, k_fft_fwd, k_fft_complex, NULL))
+		if (GMT_fft_1d (GMT, C->datac, C->window, GMT_FFT_FWD, GMT_FFT_COMPLEX, NULL))
 			exit (EXIT_FAILURE);
 
 		/* Get one-sided estimates */
@@ -690,10 +690,10 @@ int GMT_spectrum1d (void *V_API, int mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_IN, 1 + C.y_given)) != GMT_OK) {
 		Return (error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
 	}
-	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_ANY, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
 
@@ -705,7 +705,7 @@ int GMT_spectrum1d (void *V_API, int mode, void *args)
 		dim[1] = 0;				/* Don't know about segments yet */
 		dim[2] = 1 + 2 * n_outputs;		/* Number of columns needed output file */
 		dim[3] = C.n_spec;			/* Number of rows */
-		if ((Dout = GMT_Create_Data (API, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty table for stacked results */
+		if ((Dout = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty table for stacked results */
 	}
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
 		if (one_table) {
@@ -730,7 +730,7 @@ int GMT_spectrum1d (void *V_API, int mode, void *args)
 	
 	free_space_spectrum1d (GMT, &C);
 	
-	if (one_table && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, Dout->io_mode, NULL, Ctrl->N.name, Dout) != GMT_OK) {
+	if (one_table && GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, Dout->io_mode, NULL, Ctrl->N.name, Dout) != GMT_OK) {
 		Return (API->error);
 	}
 

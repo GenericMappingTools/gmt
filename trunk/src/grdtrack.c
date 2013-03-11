@@ -447,9 +447,6 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the grdtrack main code ----------------------------*/
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input grid(s)\n");
-	if (GMT_Init_IO (API, GMT_IS_DATASET, Ctrl->C.active ? GMT_IS_LINE : GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
-		Return (API->error);
-	}
 
 	GMT_memset (wesn, 4, double);
 	if (GMT->common.R.active) GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Specified a subset */
@@ -490,8 +487,8 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		// uint64_t dim[4] = {1, 0, 3, 0};
 		double xyz[2][3];
 		
-		if ((Din = GMT_create_dataset (GMT, 1, 0, 3, 0, true)) == NULL) Return (API->error);
-		//if ((Din = GMT_Create_Data (API, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty dataset with 1 table */
+		if ((Din = GMT_create_dataset (GMT, 1, 0, 3, 0, GMT_IS_LINE, true)) == NULL) Return (API->error);
+		//if ((Din = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty dataset with 1 table */
 		if (Ctrl->E.unit == 0) {	/* Was not set via -E; default to Cartesian or km (great circle dist) */
 			Ctrl->E.unit = (GMT_is_geographic (GMT, GMT_IN)) ? 'k' : 'X';
 			Ctrl->E.mode = (GMT_is_geographic (GMT, GMT_IN)) ? 2 : 0;
@@ -520,7 +517,10 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			Ctrl->A.loxo = false;
 		}
 		if (!Ctrl->E.active) {
-			if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_ANY, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+				Return (API->error);
+			}
+			if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 				Return (API->error);
 			}
 			if (Ctrl->C.mode == GMT_GEODESIC) {
@@ -601,7 +601,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			dim[1] = Dout->n_tables;		/* Number of stacks */
 			dim[2] = 1 + n_step * Ctrl->G.n_grids;	/* Number of columns needed in stack file */
 			dim[3] = n_rows = Dout->table[0]->segment[0]->n_rows;	/* Number of rows */
-			if ((Stack = GMT_Create_Data (API, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty table for stacked results */
+			if ((Stack = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty table for stacked results */
 			
 			stack = GMT_memory (GMT, NULL, Ctrl->G.n_grids, double *);
 			stacked_val = GMT_memory (GMT, NULL, Ctrl->G.n_grids, double);
@@ -719,10 +719,13 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		
 		pure_ascii = GMT_is_ascii_record (GMT);
 
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 			Return (API->error);
 		}
-		if (GMT_Begin_IO (API, GMT_IS_DATASET,  GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+			Return (API->error);
+		}
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */

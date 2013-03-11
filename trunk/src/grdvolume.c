@@ -575,7 +575,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args)
 				if (GMT_is_fnan (Work->data[ij])) continue;
 
 				/* Half the leftmost and rightmost cell */
-				if (Work->header->registration == GMT_GRIDLINE_REG && (col == 0 || col == Work->header->nx-1)) {
+				if (Work->header->registration == GMT_GRID_NODE_REG && (col == 0 || col == Work->header->nx-1)) {
 					dv += 0.5 * Work->data[ij];
 					da += 0.5;
 				}
@@ -589,7 +589,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args)
 			/* Allow for shrinking of longitudes with latitude */
 			if (Ctrl->S.active) fact *= cosd (Work->header->wesn[YHI] - row * Work->header->inc[GMT_Y]);
 			/* Half the top and bottom row */
-			if (Work->header->registration == GMT_GRIDLINE_REG && (row == 0 || row == Work->header->ny-1)) fact *= 0.5;
+			if (Work->header->registration == GMT_GRID_NODE_REG && (row == 0 || row == Work->header->ny-1)) fact *= 0.5;
 
 			vol[0]  += dv * fact;
 			area[0] += da * fact;
@@ -610,7 +610,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_OUT, 4)) != GMT_OK) {
 		Return (error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */

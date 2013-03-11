@@ -5,7 +5,7 @@
 ps=gfilter.ps
 
 # Do a 100 km Gaussian filter on some topography
-grdfft topo.nc -fg -F-/100000 -Glow.nc -L
+grdfft topo.nc -fg -F-/100000 -Glow.nc -N+l
 makecpt -Crainbow -T0/1700/100 -Z > t.cpt
 grdgradient topo.nc -Nt1 -fg -A45 -Gitopo.nc
 grdgradient low.nc -Nt1 -fg -A45 -Gilow.nc

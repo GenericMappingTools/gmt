@@ -646,14 +646,15 @@ not depend on external resources (files, memory locations, etc.), then you
 can obtain a ``blank slate'' by calling
 
 \begin{verbatim}
-void * GMT_Create_Data (void *API, unsigned int family, unsigned int mode, \
-    uint64_t par[], double *wesn, double *inc, unsigned int registration, \
-    int pad, void *data
+void * GMT_Create_Data (void *API, unsigned int family, unsigned int geometry, \
+    unsigned int mode, uint64_t par[], double *wesn, double *inc, \
+    unsigned int registration, int pad, void *data
 \end{verbatim}
 \index{GMT\_Create\_Data}
 which returns a pointer to the allocated resource.
 Pass \texttt{family} as one of GMT\_IS\_GRID, GMT\_IS\_IMAGE, GMT\_IS\_DATASET, GMT\_IS\_TEXTSET, or GMT\_IS\_CPT,
-or via the modifiers GMT\_IS\_VECTOR or GMT\_IS\_MATRIX when handling user data.
+or via the modifiers GMT\_IS\_VECTOR or GMT\_IS\_MATRIX when handling user data.  Also pass
+a compatible \texttt{geometry}.
 Depending on the family and your particular way of representing dimensions you may pass
 the additional parameters in one of two ways:
 \begin{enumerate}

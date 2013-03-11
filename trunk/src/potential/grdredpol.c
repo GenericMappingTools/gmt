@@ -1194,7 +1194,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	else
 		GMT_memcpy (wesn_new, GMT->common.R.wesn, 4, double);
 
-	one_or_zero = (Gin->header->registration == GMT_PIXEL_REG) ? 0 : 1;
+	one_or_zero = (Gin->header->registration == GMT_GRID_PIXEL_REG) ? 0 : 1;
 	nx_new = lrint ((wesn_new[XHI] - wesn_new[XLO]) / Gin->header->inc[GMT_X]) + one_or_zero;
 	ny_new = lrint ((wesn_new[YHI] - wesn_new[YLO]) / Gin->header->inc[GMT_Y]) + one_or_zero;
 
@@ -1290,7 +1290,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	fi  = TWO_PI / Ctrl->F.ncoef_row;
 	psi = TWO_PI / Ctrl->F.ncoef_col;
 
-	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_ALL, NULL, wesn_new, Gin->header->inc, \
+	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn_new, Gin->header->inc, \
 		Gin->header->registration, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 					
 	if (Ctrl->Z.active) {		/* Create one grid to hold the filter coefficients */
@@ -1299,8 +1299,8 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 		wesn[YLO] = 1;	wesn[YHI] = (double)Ctrl->F.ncoef_row;
 		inc[GMT_X] = inc[GMT_Y] = 1;
 		
-		if ((Gfilt = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_ALL, NULL, wesn, inc, \
-			GMT_PIXEL_REG, 0, NULL)) == NULL) Return (API->error);
+		if ((Gfilt = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn, inc, \
+			GMT_GRID_PIXEL_REG, 0, NULL)) == NULL) Return (API->error);
 		strcpy (Gfilt->header->title, "Reduction To the Pole filter");
 		strcpy (Gfilt->header->x_units, "radians");
 		strcpy (Gfilt->header->y_units, "radians");

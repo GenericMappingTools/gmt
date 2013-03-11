@@ -306,7 +306,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 		Return (EXIT_FAILURE);
 	}
 	
-	if ((G_mod = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_ALL, NULL, GMT->common.R.wesn, inc, \
+	if ((G_mod = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, inc, \
 		registration, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 
 	grd_x = GMT_memory (GMT, NULL, G_mod->header->nx, double);
