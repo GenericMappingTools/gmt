@@ -283,12 +283,11 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 			case 'N':
 				Ctrl->N.active = true;
 #ifdef GMT_COMPAT
-				Ctrl->N.info = GMT_FFT_parse (C, 'N', 2, argument);
-#else
-				Ctrl->N.info = GMT_FFT_parse (C, 'N', 2, opt->arg);
+				if (popt) Ctrl->N.info = GMT_FFT_parse (C, 'N', 2, argument); else
 #endif
-				break;
+				Ctrl->N.info = GMT_FFT_parse (C, 'N', 2, opt->arg);
 				if (Ctrl->N.info == NULL) n_errors++;
+				break;
 #ifdef GMT_COMPAT
 			case 'M':	/* Geographic data */
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
