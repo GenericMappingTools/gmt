@@ -405,11 +405,13 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 	if (Ctrl->I.active) {	/* Illumination wanted */
 
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Allocates memory and read intensity file\n");
+		GMT_list_API (API, "Start of grdimage");
 
 		if ((Intens_orig = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->I.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
 		}
 	}
+GMT_list_API (API, "After reading Intens_orig header");
 
 #ifdef HAVE_GDAL
 	if (Ctrl->D.active) {
@@ -433,6 +435,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file[0], NULL)) == NULL) {
 			Return (API->error);
 		}
+GMT_list_API (API, "After reading entire I");
 
 		if (!Ctrl->D.mode && !Ctrl->I.active && !GMT->common.R.active)	/* No -R or -I. Use image dimensions as -R */
 			GMT_memcpy (GMT->common.R.wesn, I->header->wesn, 4, double);
@@ -586,6 +589,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->I.file, Intens_orig) == NULL) {
 			Return (API->error);	/* Get grid data */
 		}
+		GMT_list_API (API, "After reading data for Intens_orig");
 		if (n_grids && (Intens_orig->header->nx != Grid_orig[0]->header->nx || Intens_orig->header->ny != Grid_orig[0]->header->ny)) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Intensity file has improper dimensions!\n");
 			Return (EXIT_FAILURE);
@@ -597,9 +601,10 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 
 			int object_ID;
 			char in_string[GMTAPI_STRLEN], out_string[GMTAPI_STRLEN], cmd[GMT_BUFSIZ];
-			/* Create option list, register G as input source via reference */
-			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_IN, NULL, Intens_orig)) == GMTAPI_NOTSET) 
+			/* Create option list, register Intens_orig as input source via reference */
+			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE|GMT_IO_RESET, GMT_IS_SURFACE, GMT_IN, NULL, Intens_orig)) == GMTAPI_NOTSET) 
 				Return (API->error);
+	GMT_list_API (API, "After registering Intens_orig as input for grdsample");
 			if (GMT_Encode_ID (API, in_string, object_ID) != GMT_OK) {
 				Return (API->error);	/* Make filename with embedded object ID for grid G */
 			}
@@ -607,12 +612,14 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) {
 				Return (API->error);
 			}
+	GMT_list_API (API, "After registering NULL as output for grdsample");
 			if (GMT_Encode_ID (GMT->parent, out_string, object_ID) != GMT_OK) {
 				Return (API->error);	/* Make filename with embedded object ID for result grid G2 */
 			}
 
 			sprintf (cmd, "%s -G%s -I%d+/%d+", in_string, out_string, nx, ny);
 			if (GMT_grdsample (GMT->parent, 0, cmd) != GMT_OK) return (API->error);	/* Do the resampling */
+	GMT_list_API (API, "After grdsample returns");
 			if ((G2 = GMT_Retrieve_Data (API, object_ID)) == NULL) {
 				Return (API->error);
 			}
@@ -620,6 +627,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Intens_orig) != GMT_OK) {
 				Return (API->error);
 			}
+			GMT_list_API (API, "After destroying Intens_orig");
 			Intens_orig = G2;
 			Intens_orig->alloc_mode = GMT_ALLOCATED;	/* So we may destroy at the end */
 		}
@@ -640,6 +648,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 		if (Ctrl->D.active) { 
 			//if ((Img_proj = GMT_create_image (GMT)) == NULL) Return (API->error);
 			if ((Img_proj = GMT_Duplicate_Data (API, GMT_IS_IMAGE, GMT_DUPLICATE_NONE, I)) == NULL) Return (API->error);	/* Just to get a header we can change */
+	GMT_list_API (API, "After duplicating I to Img_proj");
 			grid_registration = GMT_GRID_PIXEL_REG;	/* Force pixel */
 			GMT_set_proj_limits (GMT, Img_proj->header, I->header, need_to_project);
 			GMT_err_fail (GMT, GMT_project_init (GMT, Img_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->In.file[0]);
@@ -647,11 +656,13 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 				for (k = 0; k < 3; k++) GMT->current.setting.color_patch[GMT_NAN][k] = 1.0;	/* For img GDAL write use white as bg color */
 			GMT_set_grddim (GMT, Img_proj->header);
 			if (GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Img_proj) == NULL) Return (API->error);
+	GMT_list_API (API, "After adding array to Img_proj");
 			//Img_proj->data = GMT_memory_aligned (GMT, NULL, Img_proj->header->size * Img_proj->header->n_bands, unsigned char);
 			GMT_img_project (GMT, I, Img_proj, false);
 			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &I) != GMT_OK) {
 				Return (API->error);
 			}
+	GMT_list_API (API, "After destroying I");
 		}
 #endif
 		for (k = 0; k < n_grids; k++) {
@@ -672,6 +683,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 		if (Ctrl->I.active) {
 			//if ((Intens_proj = GMT_create_grid (GMT)) == NULL) Return (API->error);
 			if ((Intens_proj = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Intens_orig)) == NULL) Return (API->error);	/* Just to get a header we can change */
+	GMT_list_API (API, "After duplicating Intens_orig to Intens_proj");
 			if (n_grids)
 				GMT_memcpy (Intens_proj->header->wesn, Grid_proj[0]->header->wesn, 4, double);
 #ifdef HAVE_GDAL
@@ -685,10 +697,12 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 			GMT_err_fail (GMT, GMT_project_init (GMT, Intens_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->I.file);
 			GMT_set_grddim (GMT, Intens_proj->header);
 			if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Intens_proj) == NULL) Return (API->error);
+	GMT_list_API (API, "After adding data to Intens_proj");
 			GMT_grd_project (GMT, Intens_orig, Intens_proj, false);
 			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Intens_orig) != GMT_OK) {
 				Return (API->error);
 			}
+	GMT_list_API (API, "After destroying Intens_orig");
 		}
 		resampled = true;
 	}

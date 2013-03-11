@@ -104,7 +104,10 @@ struct GMTAPI_CTRL {
 	struct GMT_CTRL *GMT;			/* Key structure with low-level GMT internal parameters */
 	struct GMTAPI_DATA_OBJECT **object;	/* List of registered data objects */
 	char *session_tag;			/* Name tag for this session (or NULL) */
+	bool deep_debug;			/* temprorary for debug */
 };
+
+EXTERN_MSC void GMT_list_API (struct GMTAPI_CTRL *ptr, char *txt);
 
 /* Macro to test if filename is a special name indicating memory location */
 
