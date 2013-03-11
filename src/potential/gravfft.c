@@ -336,8 +336,10 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 
 	if (override_mode >= 0) {
 		if (Ctrl->N.info == NULL)	/* User neither gave -L nor -N... Sigh...*/
-			Ctrl->N.info = GMT_FFT_parse (C, 'N', 2, "");
-		Ctrl->N.info->trend_mode = override_mode;
+			if ((Ctrl->N.info = GMT_FFT_parse (C, 'N', 2, "")) == NULL)	/* Error messages are issued inside parse function */
+				n_errors++;
+			else
+				Ctrl->N.info->trend_mode = override_mode;
 	}
 	if (Ctrl->N.active && Ctrl->N.info->info_mode == GMT_FFT_LIST) {
 		return (GMT_PARSE_ERROR);	/* So that we exit the program */
