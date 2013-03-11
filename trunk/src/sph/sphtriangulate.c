@@ -66,7 +66,8 @@ struct SPHTRIANGULATE_CTRL {
 	} T;
 };
 
-void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, struct STRIPACK_DELAUNAY *D, uint64_t get_arcs, unsigned int get_area, uint64_t nodes, struct GMT_DATASET *Dout[])
+void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, struct STRIPACK_DELAUNAY *D, uint64_t get_arcs, \
+	unsigned int get_area, uint64_t nodes, struct GMT_DATASET *Dout[], char *file0, char *file1)
 {	/* Prints out the Delaunay triangles either as polygons (for filling) or arcs (lines). */
 	uint64_t i, ij;
 	bool do_authalic;
@@ -85,7 +86,7 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 		dim[1] = D->n;	/* Number of segments */
 		dim[2] = 2;	/* Just 2 columns */
 		dim[3] = 3;	/* All segments has 3 rows */
-		if ((Dout[0] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+		if ((Dout[0] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, file0)) == NULL) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate\n");
 			GMT_exit (EXIT_FAILURE);
 		}
@@ -93,7 +94,7 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 			dim[1] = 1;	/* Just one segment */
 			dim[2] = 3 + get_area;	/* Here we use 3-4 columns */
 			dim[3] = D->n;	/* One row per node */
-			if ((Dout[1] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+			if ((Dout[1] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, file1)) == NULL) {
 				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate nodes\n");
 				GMT_exit (EXIT_FAILURE);
 			}
@@ -155,7 +156,7 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 		dim[1] = n_arcs;	/* Number of output arcs = segments */
 		dim[2] = 2;		/* Only use 2 columns */
 		dim[3] = 2;		/* Each arc has 2 rows */
-		if ((Dout[0] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+		if ((Dout[0] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, file0)) == NULL) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate arcs\n");
 			GMT_exit (EXIT_FAILURE);
 		}
@@ -175,7 +176,8 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 	}
 }
 
-void stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double *lon, double *lat, struct STRIPACK_VORONOI *V, bool get_arcs, unsigned int get_area, uint64_t nodes, struct GMT_DATASET *Dout[])
+void stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double *lon, double *lat, struct STRIPACK_VORONOI *V, bool get_arcs, \
+	unsigned int get_area, uint64_t nodes, struct GMT_DATASET *Dout[], char *file0, char *file1)
 {	/* Prints out the Voronoi polygons either as polygons (for filling) or arcs (lines) */
 	bool do_authalic;
 	unsigned int geometry;
@@ -207,7 +209,7 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double *lon, dou
 	dim[2] = 2;	/* Each segment only has 2 columns */
 	dim[3] = (get_arcs) ? 2 : 0;	/* Rows (unknown length if polygons; fixed 2 if arcs) */
 	geometry = (get_arcs) ? GMT_IS_LINE : GMT_IS_POLY;
-	if ((Dout[0] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, geometry, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+	if ((Dout[0] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, geometry, 0, dim, NULL, NULL, 0, 0, file0)) == NULL) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate\n");
 		GMT_exit (EXIT_FAILURE);
 	}
@@ -215,7 +217,7 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double *lon, dou
 		dim[1] = 1;	/* Only need one segment */
 		dim[2] = 2 + get_area;	/* Need 2 or 3 columns */
 		dim[3] = n;	/* One row per node */
-		if ((Dout[1] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+		if ((Dout[1] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, file1)) == NULL) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate nodes\n");
 			GMT_exit (EXIT_FAILURE);
 		}
@@ -310,7 +312,7 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double *lon, dou
 		dim[1] = n_arcs;	/* Number of arc segments */
 		dim[2] = 2;		/* Only 2 columns */
 		dim[3] = 2;		/* Each arc needs 2 rows */
-		if ((Dout[0] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+		if ((Dout[0] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, file0)) == NULL) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate Voronoi nodes\n");
 			GMT_exit (EXIT_FAILURE);
 		}
@@ -610,13 +612,13 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args)
 	
 	GMT->current.setting.io_header[GMT_OUT] = true;	/* Turn on table headers on output */
 	if (Ctrl->Q.mode == VORONOI) {	/* Selected Voronoi polygons */
-		stripack_voronoi_output (GMT, n, lon, lat, &T.V, Ctrl->T.active, Ctrl->A.active + steradians, Ctrl->N.active, Dout);
+		stripack_voronoi_output (GMT, n, lon, lat, &T.V, Ctrl->T.active, Ctrl->A.active + steradians, Ctrl->N.active, Dout, NULL, Ctrl->N.file);
 		GMT_free (GMT, T.V.lon);	GMT_free (GMT, T.V.lat);
 		GMT_free (GMT, T.V.lend);	GMT_free (GMT, T.V.listc);
 		GMT_free (GMT, T.V.lptr);
 	}
 	else {	/* Selected Delaunay triangles */
-		stripack_delaunay_output (GMT, lon, lat, &T.D, Ctrl->T.active, Ctrl->A.active + steradians, Ctrl->N.active, Dout);
+		stripack_delaunay_output (GMT, lon, lat, &T.D, Ctrl->T.active, Ctrl->A.active + steradians, Ctrl->N.active, Dout, NULL, Ctrl->N.file);
 	}
 
 	Dout[0]->table[0]->header = GMT_memory (GMT, NULL, 1, char *);	/* One header record only */

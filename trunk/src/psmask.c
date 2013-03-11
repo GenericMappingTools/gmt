@@ -560,7 +560,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 			}
 			if (fmt[1]) io_mode = GMT_WRITE_SEGMENT;	/* d: Want individual files with running numbers */
 		}
-		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty table */
+		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, Ctrl->D.file)) == NULL) Return (API->error);	/* An empty table */
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 2))) Return (error);
 	}
 	

@@ -266,7 +266,7 @@ int GMT_triangulate (void *V_API, int mode, void *args)
 	
 	if (Ctrl->G.active) {
 		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc, \
-			GMT_GRID_DEFAULT_REG, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
+			GMT_GRID_DEFAULT_REG, GMTAPI_NOTSET, Ctrl->G.file)) == NULL) Return (API->error);
 	}
 	if (Ctrl->Q.active && Ctrl->Z.active) GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Warning: We will read (x,y,z), but only (x,y) will be output when -Q is used\n");
 	n_output = ((Ctrl->M.active || Ctrl->S.active) && (Ctrl->Q.active || !Ctrl->Z.active)) ? 2 : 3;

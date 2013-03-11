@@ -277,6 +277,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 		GMT_memcpy (inc, G_age->header->inc, 2, double);	/* Use same increment for output grid */
 		registration = G_age->header->registration;
 		GMT_memcpy (GMT->common.R.wesn, G_age->header->wesn, 4, double);
+		GMT->common.R.active = true;
 	}
 	else {
 		GMT_memcpy (inc, Ctrl->I.inc, 2, double);
@@ -307,7 +308,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 	}
 	
 	if ((G_mod = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, inc, \
-		registration, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
+		registration, GMTAPI_NOTSET, Ctrl->G.file)) == NULL) Return (API->error);
 
 	grd_x = GMT_memory (GMT, NULL, G_mod->header->nx, double);
 	grd_y = GMT_memory (GMT, NULL, G_mod->header->ny, double);
