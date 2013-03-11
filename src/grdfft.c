@@ -649,10 +649,10 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 	struct GMT_CTRL *GMT = C->GMT;
 #ifdef GMT_COMPAT
 	struct GMT_OPTION *ptr = NULL;
-	char *mod = NULL, argument[GMT_BUFSIZ];
+	char *mod = NULL, argument[GMT_TEXT_LEN16], combined[GMT_BUFSIZ];
 	if ((ptr = GMT_Find_Option (C, 'L', options))) {	/* Gave old -L */
 		mod = ptr->arg; /* Gave old -L option */
-		GMT_memset (argument, GMT_BUFSIZ, char);
+		GMT_memset (argument, GMT_TEXT_LEN16, char);
 		if (mod[0] == '\0') strcat (argument, "+l");		/* Leave trend alone -L */
 		else if (mod[0] == 'm') strcat (argument, "+a");	/* Remove mean -Lm */
 		else if (mod[0] == 'h') strcat (argument, "+h");	/* Remove mid-value -Lh */
@@ -749,7 +749,10 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 			case 'N':	/* Grid dimension setting or inquiery */
 				Ctrl->N.active = true;
 #ifdef GMT_COMPAT
-				if (ptr) Ctrl->N.info = GMT_FFT_parse (C, 'N', 2, argument); else
+				if (ptr) {	/* Got both old -L and -N; append */
+					sprintf (combined, "%s%s", opt->arg, argument);
+					Ctrl->N.info = GMT_FFT_parse (C, 'N', 2, combined);
+				} else
 #endif
 				Ctrl->N.info = GMT_FFT_parse (C, 'N', 2, opt->arg);
 				if (Ctrl->N.info == NULL) n_errors++;
