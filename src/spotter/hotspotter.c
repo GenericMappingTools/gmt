@@ -355,8 +355,8 @@ int GMT_hotspotter (void *V_API, int mode, void *args)
 
 	/* Initialize the CVA grid and structure */
 
-	if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_ALL, NULL, GMT->common.R.wesn, Ctrl->I.inc, \
-		GMT->common.r.registration, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
+	if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc, \
+		GMT_GRID_DEFAULT_REG, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 
 	/* Assign grid-region variables in radians to avoid conversions inside convolution loop */
 
@@ -379,8 +379,8 @@ int GMT_hotspotter (void *V_API, int mode, void *args)
 
 	/* Precalculate coordinates xpos[], ypos[] and scale factors(lat) on the grid */
 
-	xpos = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, G_rad);
-	ypos = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, G_rad);
+	xpos = GMT_grd_coord (GMT, G_rad->header, GMT_X);
+	ypos = GMT_grd_coord (GMT, G_rad->header, GMT_Y);
 
 	latfactor  = GMT_memory (GMT, NULL, G->header->ny, double);
 	ilatfactor = GMT_memory (GMT, NULL, G->header->ny, double);
@@ -410,7 +410,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_IN, n_expected_fields)) != GMT_OK) {
 		Return (error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */

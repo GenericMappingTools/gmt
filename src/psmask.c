@@ -560,7 +560,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 			}
 			if (fmt[1]) io_mode = GMT_WRITE_SEGMENT;	/* d: Want individual files with running numbers */
 		}
-		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty table */
+		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty table */
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 2))) Return (error);
 	}
 	
@@ -581,15 +581,15 @@ int GMT_psmask (void *V_API, int mode, void *args)
 		GMT_memset (&info, 1, struct PSMASK_INFO);
 		info.first_dump = true;
 
-		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_HEADER_ONLY, NULL, GMT->common.R.wesn, Ctrl->I.inc, \
-			GMT->common.r.registration, 1, NULL)) == NULL) Return (API->error);
+		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc, \
+			GMT_GRID_DEFAULT_REG, 1, NULL)) == NULL) Return (API->error);
 		
 		if (Ctrl->S.active) {	/* Need distance calculations in correct units, and the d_row/d_col machinery */
 			GMT_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
 			d_col = GMT_prep_nodesearch (GMT, Grid, Ctrl->S.radius, Ctrl->S.mode, &d_row, &max_d_col);
 		}
-		grd_x0 = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, Grid);
-		grd_y0 = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, Grid);
+		grd_x0 = GMT_grd_coord (GMT, Grid->header, GMT_X);
+		grd_y0 = GMT_grd_coord (GMT, Grid->header, GMT_Y);
 
 		inc2[GMT_X] = 0.5 * Grid->header->inc[GMT_X];
 		inc2[GMT_Y] = 0.5 * Grid->header->inc[GMT_Y];
@@ -619,7 +619,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 		if ((error = GMT_set_cols (GMT, GMT_IN, 2)) != GMT_OK) {
 			Return (error);
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */

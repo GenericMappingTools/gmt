@@ -282,12 +282,12 @@ void drawbase (struct GMT_CTRL *C, struct PSL_CTRL *P, double x0, double x1, dou
 }
 #endif
 
-struct GMT_TEXTSET *alloc_if_not_done_already (struct GMTAPI_CTRL *API, struct GMT_TEXTSET *Din)
+struct GMT_TEXTSET *alloc_if_not_done_already (struct GMTAPI_CTRL *API, struct GMT_TEXTSET *Din, unsigned int geometry)
 {
 	uint64_t dim[4] = {1, 1, GMT_SMALL_CHUNK, 2};
 	struct GMT_TEXTSET *D = NULL;
 	if (Din) return Din;	/* Already done this */
-	if ((D = GMT_Create_Data (API, GMT_IS_TEXTSET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+	if ((D = GMT_Create_Data (API, GMT_IS_TEXTSET, geometry, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 		GMT_report (API->GMT, GMT_MSG_NORMAL, "Unable to create a text set for pslegend\n");
 		return (NULL);
 	}
@@ -373,10 +373,10 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	GMT->current.setting.io_seg_marker[GMT_IN] = '#';
 #endif
 
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_TEXT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
+	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 		Return (API->error);
 	}
-	if ((In = GMT_Read_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_ANY, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+	if ((In = GMT_Read_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
 
@@ -675,7 +675,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						break;
 
 					case 'H':	/* Header record */
-						if ((D[TXT] = alloc_if_not_done_already (API, D[TXT])) == NULL) return (API->error);
+						if ((D[TXT] = alloc_if_not_done_already (API, D[TXT], GMT_IS_NONE)) == NULL) return (API->error);
 						sscanf (&line[2], "%s %s %[^\n]", size, font, text);
 						if (size[0] == '-') size[0] = 0;
 						if (font[0] == '-') font[0] = 0;
@@ -687,6 +687,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						sprintf (buffer, "%g %g %s BC %s", Ctrl->D.lon + 0.5 * Ctrl->D.width, y0 + d_off, GMT_putfont (GMT, ifont), text);
 						S[TXT] = D[TXT]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 						S[TXT]->record[S[TXT]->n_rows++] = strdup (buffer);
+						fprintf (stderr, "%s\n", buffer);
 						if (S[TXT]->n_rows == S[TXT]->n_alloc) S[TXT]->record = GMT_memory (GMT, S[TXT]->record, S[TXT]->n_alloc += GMT_SMALL_CHUNK, char *);
 						column_number = 0;
 #ifdef DEBUG
@@ -711,7 +712,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						break;
 
 					case 'L':	/* Label record */
-						if ((D[TXT] = alloc_if_not_done_already (API, D[TXT])) == NULL) return (API->error);
+						if ((D[TXT] = alloc_if_not_done_already (API, D[TXT], GMT_IS_NONE)) == NULL) return (API->error);
 						sscanf (&line[2], "%s %s %s %[^\n]", size, font, key, text);
 						if (size[0] == '-') size[0] = 0;
 						if (font[0] == '-') font[0] = 0;
@@ -726,6 +727,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						sprintf (buffer, "%g %g %s B%s %s", x_off, y0 + d_off, GMT_putfont (GMT, ifont), key, text);
 						S[TXT] = D[TXT]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 						S[TXT]->record[S[TXT]->n_rows++] = strdup (buffer);
+						fprintf (stderr, "%s\n", buffer);
 						if (S[TXT]->n_rows == S[TXT]->n_alloc) S[TXT]->record = GMT_memory (GMT, S[TXT]->record, S[TXT]->n_alloc += GMT_SMALL_CHUNK, char *);
 						column_number++;
 #ifdef DEBUG
@@ -827,7 +829,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						if (n == 0 || lspace[0] == '-') sprintf (lspace, "%gi", one_line_spacing);
 						if (n == 0 || tw[0] == '-') sprintf (tw, "%gi", Ctrl->D.width - 2.0 * Ctrl->C.dx);
 						if (n == 0 || jj[0] == '-') sprintf (jj, "j");
-						if ((D[PAR] = alloc_if_not_done_already (API, D[PAR])) == NULL) return (API->error);
+						if ((D[PAR] = alloc_if_not_done_already (API, D[PAR], GMT_IS_NONE)) == NULL) return (API->error);
 						sprintf (buffer, "> %s %s %s %s %s %s %s %s", xx, yy, tmp, angle, key, lspace, tw, jj);
 						S[PAR] = D[PAR]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 						S[PAR]->record[S[PAR]->n_rows++] = strdup (buffer);
@@ -844,14 +846,14 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						if (column_number%n_columns == 0) y0 -= one_line_spacing;
 						y0 += half_line_spacing;	/* Move to center of box */
 						x_off = x0 + (Ctrl->D.width / n_columns) * (column_number%n_columns);
-						if ((D[SYM] = alloc_if_not_done_already (API, D[SYM])) == NULL) return (API->error);
+						if ((D[SYM] = alloc_if_not_done_already (API, D[SYM], GMT_IS_POINT)) == NULL) return (API->error);
 						S[SYM] = D[SYM]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 						if (symbol[0] == 'f') {	/* Front is different, must plot as a line segment */
 							uint64_t dim[4] = {1, 1, 2, 2};	/* We will a 2-row data set for fronts; allocate just the first time */
 							double length, tlen, gap;
 							char *c = NULL;
 							int n = sscanf (size, "%[^/]/%[^/]/%s", A, B, C);
-							if (Front == NULL && (Front = GMT_Create_Data (API, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+							if (Front == NULL && (Front = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 								GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a Front data set for pslegend\n");
 								return (API->error);
 							}
@@ -888,7 +890,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -Sf%s/%gi%s %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], B, tlen, sub, string);
 							if (txt_c[0] != '-') {strcat (buffer, " -G"); strcat (buffer, txt_c);}
 							if (txt_d[0] != '-') {strcat (buffer, " -W"); strcat (buffer, txt_d);}
-							// fprintf (stderr, "%s\n", buffer);
+							fprintf (stderr, "%s\n", buffer);
 							
 							status = GMT_psxy (API, 0, buffer);	/* Plot the front */
 							if (status) {
@@ -1027,10 +1029,10 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							strcat (buffer, " -G"); strcat (buffer, txt_c);
 							strcat (buffer, " -W"); strcat (buffer, txt_d);
 							S[SYM]->record[S[SYM]->n_rows++] = strdup (buffer);
-							//fprintf (stderr, "%s\n", buffer);
+							fprintf (stderr, "%s\n", buffer);
 							if (S[SYM]->n_rows == S[SYM]->n_alloc) S[SYM]->record = GMT_memory (GMT, S[SYM]->record, S[SYM]->n_alloc += GMT_SMALL_CHUNK, char *);
 							sprintf (buffer, "%s %s", sarg, sub);
-							//fprintf (stderr, "%s\n", buffer);
+							fprintf (stderr, "%s\n", buffer);
 							
 							S[SYM]->record[S[SYM]->n_rows++] = strdup (buffer);
 							if (S[SYM]->n_rows == S[SYM]->n_alloc) S[SYM]->record = GMT_memory (GMT, S[SYM]->record, S[SYM]->n_alloc += GMT_SMALL_CHUNK, char *);
@@ -1038,9 +1040,10 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						/* Finally, print text; skip when empty */
 						y0 -= half_line_spacing;	/* Go back to bottom of box */
 						if (n_scan == 7) {	/* Place symbol text */
-							if ((D[TXT] = alloc_if_not_done_already (API, D[TXT])) == NULL) return (API->error);
+							if ((D[TXT] = alloc_if_not_done_already (API, D[TXT], GMT_IS_NONE)) == NULL) return (API->error);
 							S[TXT] = D[TXT]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 							sprintf (buffer, "%g %g %g,%d,%s BL %s", x_off + off_tt, y0 + d_off, GMT->current.setting.font_annot[0].size, GMT->current.setting.font_annot[0].id, txtcolor, text);
+							fprintf (stderr, "%s\n", buffer);
 							S[TXT]->record[S[TXT]->n_rows++] = strdup (buffer);
 							if (S[TXT]->n_rows == S[TXT]->n_alloc) S[TXT]->record = GMT_memory (GMT, S[TXT]->record, S[TXT]->n_alloc += GMT_SMALL_CHUNK, char *);
 						}
@@ -1051,7 +1054,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						break;
 
 					case 'T':	/* paragraph text record */
-						if ((D[PAR] = alloc_if_not_done_already (API, D[PAR])) == NULL) return (API->error);
+						if ((D[PAR] = alloc_if_not_done_already (API, D[PAR], GMT_IS_NONE)) == NULL) return (API->error);
 						/* If no previous > record, then use defaults */
 						S[PAR] = D[PAR]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 						if (!flush_paragraph) {
@@ -1125,14 +1128,14 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 			Return (API->error);	/* Make filename with embedded object ID */
 		}
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -S %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
-		//fprintf (stderr, "%s", buffer);
+		fprintf (stderr, "%s", buffer);
 		if (GMT_psxy (API, 0, buffer) != GMT_OK) {
 			Return (API->error);	/* Plot the symbols */
 		}
 	}
 	if (S[TXT] && S[TXT]->n_rows) {
 		/* Create option list, register D[TXT] as input source */
-		if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REFERENCE, GMT_IS_POINT, GMT_IN, NULL, D[TXT])) == GMTAPI_NOTSET) {
+		if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REFERENCE, GMT_IS_NONE, GMT_IN, NULL, D[TXT])) == GMTAPI_NOTSET) {
 			Return (API->error);
 		}
 		if (GMT_Encode_ID (API, string, object_ID) != GMT_OK) {
@@ -1145,7 +1148,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	}
 	if (S[PAR] && S[PAR]->n_rows) {
 		/* Create option list, register D[PAR] as input source */
-		if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REFERENCE, GMT_IS_POINT, GMT_IN, NULL, D[PAR])) == GMTAPI_NOTSET) {
+		if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REFERENCE, GMT_IS_NONE, GMT_IN, NULL, D[PAR])) == GMTAPI_NOTSET) {
 			Return (API->error);
 		}
 		if (GMT_Encode_ID (API, string, object_ID) != GMT_OK) {

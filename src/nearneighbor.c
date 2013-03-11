@@ -297,15 +297,15 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 
 	GMT_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
 
-	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_HEADER_ONLY, NULL, GMT->common.R.wesn, Ctrl->I.inc, \
-		GMT->common.r.registration, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
+	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc, \
+		GMT_GRID_DEFAULT_REG, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 	GMT_BC_init (GMT, Grid->header);
 
 	/* Initialize the input since we are doing record-by-record reading/writing */
 	if ((error = GMT_set_cols (GMT, GMT_IN, 3 + Ctrl->W.active)) != GMT_OK) {
 		Return (error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
 	}
 
@@ -314,8 +314,8 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 	grid_node = GMT_memory (GMT, NULL, Grid->header->nm, struct NEARNEIGHBOR_NODE *);
 	point = GMT_memory (GMT, NULL, n_alloc, struct NEARNEIGHBOR_POINT);
 
-	x0 = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, Grid);
-	y0 = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, Grid);
+	x0 = GMT_grd_coord (GMT, Grid->header, GMT_X);
+	y0 = GMT_grd_coord (GMT, Grid->header, GMT_Y);
 
 	d_col = GMT_prep_nodesearch (GMT, Grid, Ctrl->S.radius, Ctrl->S.mode, &d_row, &max_d_col);	/* Init d_row/d_col etc */
 
@@ -336,8 +336,8 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 	x_width = Grid->header->wesn[XHI] - Grid->header->wesn[XLO];		y_width = Grid->header->wesn[YHI] - Grid->header->wesn[YLO];
 	half_x_width = 0.5 * x_width;			half_y_width = 0.5 * y_width;
 	n = n_read = 0;
-	replicate_x = (Grid->header->nxp && Grid->header->registration == GMT_GRIDLINE_REG);	/* Gridline registration has duplicate column */
-	replicate_y = (Grid->header->nyp && Grid->header->registration == GMT_GRIDLINE_REG);	/* Gridline registration has duplicate row */
+	replicate_x = (Grid->header->nxp && Grid->header->registration == GMT_GRID_NODE_REG);	/* Gridline registration has duplicate column */
+	replicate_y = (Grid->header->nyp && Grid->header->registration == GMT_GRID_NODE_REG);	/* Gridline registration has duplicate row */
 	x_wrap = Grid->header->nx - 1;				/* Add to node index to go to right column */
 	y_wrap = (Grid->header->ny - 1) * Grid->header->nx;	/* Add to node index to go to bottom row */
 #ifdef MEMDEBUG
@@ -465,7 +465,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 #endif
 	/* Compute weighted averages based on the nearest neighbors */
 
-	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) Return (API->error);
+	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) Return (API->error);
 
 	n_set = n_almost = n_none = 0;
 

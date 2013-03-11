@@ -69,11 +69,11 @@ double *GMTMEX_info2grdheader (struct GMTAPI_CTRL *API, const mxArray *prhs[], i
 			G->header->registration = lrint (r[0]);
 		}
 		else
-			G->header->registration = GMT_GRIDLINE_REG;
-		G->header->wesn[XLO] = (G->header->registration == GMT_PIXEL_REG) ? x[0] - 0.5 * G->header->inc[GMT_X] : x[0];
-		G->header->wesn[XHI] = (G->header->registration == GMT_PIXEL_REG) ? x[G->header->nx-1] + 0.5 * G->header->inc[GMT_X] : x[G->header->nx-1];
-		G->header->wesn[YLO] = (G->header->registration == GMT_PIXEL_REG) ? y[0] - 0.5 * G->header->inc[GMT_Y] : y[0];
-		G->header->wesn[YHI] = (G->header->registration == GMT_PIXEL_REG) ? y[G->header->ny-1] + 0.5 * G->header->inc[GMT_Y] : y[G->header->ny-1];
+			G->header->registration = GMT_GRID_NODE_REG;
+		G->header->wesn[XLO] = (G->header->registration == GMT_GRID_PIXEL_REG) ? x[0] - 0.5 * G->header->inc[GMT_X] : x[0];
+		G->header->wesn[XHI] = (G->header->registration == GMT_GRID_PIXEL_REG) ? x[G->header->nx-1] + 0.5 * G->header->inc[GMT_X] : x[G->header->nx-1];
+		G->header->wesn[YLO] = (G->header->registration == GMT_GRID_PIXEL_REG) ? y[0] - 0.5 * G->header->inc[GMT_Y] : y[0];
+		G->header->wesn[YHI] = (G->header->registration == GMT_GRID_PIXEL_REG) ? y[G->header->ny-1] + 0.5 * G->header->inc[GMT_Y] : y[G->header->ny-1];
 	}
 	GMT_grd_setpad (API->GMT, G->header, API->GMT->current.io.pad);	/* Assign default pad */
 	GMT_set_grddim (API->GMT, G->header);
@@ -102,7 +102,7 @@ char *GMTMEX_src_vector_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], in
 		uint64_t dim[1] = {n_cols};
 		//char buffer[GMT_BUFSIZ];
 		i_string = mxMalloc (GMT_BUFSIZ);
-		if ((*V = GMT_Create_Data (API, GMT_IS_VECTOR, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) mexErrMsgTxt ("Failure to alloc GMT source vectors\n");
+		if ((*V = GMT_Create_Data (API, GMT_IS_VECTOR, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) mexErrMsgTxt ("Failure to alloc GMT source vectors\n");
 		for (col = n_start; col < n_cols+n_start; col++) {	/* Hook up one vector per column and determine data type */
 			if (mxIsDouble(prhs[col])) {
 				(*V)->type[col] = GMT_DOUBLE;
@@ -130,7 +130,7 @@ char *GMTMEX_src_vector_init (struct GMTAPI_CTRL *API, const mxArray *prhs[], in
 
 		(*V)->n_rows = MAX (mxGetM (prhs[0]), mxGetN (prhs[0]));	/* So it works for both column or row vectors */
 		(*V)->n_columns = n_cols;
-		if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_READONLY + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_IN, NULL, V)) == GMTAPI_NOTSET) {
+		if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_READONLY + GMT_VIA_VECTOR, GMT_IS_NONE, GMT_IN, NULL, V)) == GMTAPI_NOTSET) {
 			mexErrMsgTxt ("Failure to register GMT source vectors\n");
 		}
 		if (GMT_Encode_ID (API, i_string, in_ID) != GMT_OK) {		/* Make filename with embedded object ID */
@@ -209,10 +209,10 @@ char *GMTMEX_dest_vector_init (struct GMTAPI_CTRL *API, int n_cols, struct GMT_V
 			mexErrMsgTxt ("Error: neither output file name with the '>' "
 					"redirection operator nor left hand side output args.");
 	}
-	if ((*V = GMT_Create_Data (API, GMT_IS_VECTOR, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) mexErrMsgTxt ("Failure to alloc GMT source vectors\n");
+	if ((*V = GMT_Create_Data (API, GMT_IS_VECTOR, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) mexErrMsgTxt ("Failure to alloc GMT source vectors\n");
 	for (col = 0; col < n_cols; col++) (*V)->type[col] = GMT_DOUBLE;
 	(*V)->alloc_mode = GMT_REFERENCE;
-	if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REFERENCE + GMT_VIA_VECTOR, GMT_IS_POINT, GMT_OUT, NULL, V)) == GMTAPI_NOTSET) {
+	if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REFERENCE + GMT_VIA_VECTOR, GMT_IS_NONE, GMT_OUT, NULL, V)) == GMTAPI_NOTSET) {
 		mexErrMsgTxt ("Failure to register GMT destination vectors\n");
 	}
 		
@@ -433,11 +433,11 @@ int gmtmex_get_arg_dir (char option, char *key[], int n_keys, int *data_type, in
 			break;
 		case 'C':
 			*data_type = GMT_IS_CPT;
-			*geometry = GMT_IS_TEXT;
+			*geometry = GMT_IS_NONE;
 			break;
 		case 'T':
 			*data_type = GMT_IS_TEXTSET;
-			*geometry = GMT_IS_TEXT;
+			*geometry = GMT_IS_NONE;
 			break;
 		case 'I':
 			*data_type = GMT_IS_IMAGE;
@@ -465,7 +465,7 @@ int GMTMEX_parser (struct GMTAPI_CTRL *API, mxArray *plhs[], int nlhs, const mxA
 	int lr_pos[2] = {0, 0};	/* These position keeps track where we are in the L and R pointer arrays */
 	int direction;		/* Either GMT_IN or GMT_OUT */
 	int data_type;		/* Either GMT_IS_DATASET, GMT_IS_TEXTSET, GMT_IS_GRID, GMT_IS_CPT, GMT_IS_IMAGE */
-	int geometry;		/* Either GMT_IS_TEXT, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, or GMT_IS_SURFACE */
+	int geometry;		/* Either GMT_IS_NONE, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, or GMT_IS_SURFACE */
 	int def[2];		/* Either GMT_MEX_EXPLICIT or the item number in the keys array */
 	char name[GMTAPI_STRLEN];	/* Used to hold the GMT API embedded file name, e.g., @GMTAPI@-###### */
 	char buffer[GMT_BUFSIZ];	/* Temp buffer */

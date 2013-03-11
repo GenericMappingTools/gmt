@@ -143,14 +143,6 @@ enum FFT_implementations {
 	k_n_fft_algorithms /* Number of FFT implementations available in GMT */
 };
 
-/* Various directions and modes to call the FFT */
-enum FFT_modes {
-	k_fft_fwd     = 0, /* forward Fourier transform */
-	k_fft_inv     = 1, /* inverse Fourier transform */
-	k_fft_real    = 0, /* real-input FT (currently unsupported) */
-	k_fft_complex = 1  /* complex-input Fourier transform */
-};
-
 /* Various algorithms for triangulations */
 enum GMT_enum_tri {
 	GMT_TRIANGLE_WATSON = 0, /* Select Watson's algorithm */

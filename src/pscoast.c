@@ -55,6 +55,12 @@
 
 #include "gmt_dev.h"
 
+#define DCW
+
+#ifdef DCW
+#include "gmt_dcw.h"
+#endif
+
 #define LAKE	0
 #define RIVER	1
 
@@ -74,6 +80,15 @@ struct PSCOAST_CTRL {
 		bool force;	/* if true, select next highest level if current set is not avaialble */
 		char set;	/* One of f, h, i, l, c */
 	} D;
+#ifdef DCW
+	struct F {	/* -F<DWC-options> */
+		bool active;
+		char *codes;
+		unsigned int mode;
+		struct GMT_PEN pen;
+		struct GMT_FILL fill;
+	} F;
+#endif
 	struct G {	/* -G<fill> */
 		bool active;
 		bool clip;
@@ -122,6 +137,10 @@ struct PSCOAST_CTRL {
 	} debug;
 #endif
 };
+
+#ifdef DCW
+#include "gmt_dcw.c"
+#endif
 
 void *New_pscoast_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	unsigned int k;
@@ -185,6 +204,9 @@ int GMT_pscoast_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   l - low resolution [Default].\n");
 	GMT_message (GMT, "\t   c - crude resolution, for busy plots that need crude continent outlines only.\n");
 	GMT_message (GMT, "\t   Append + to use a lower resolution should the chosen one not be available [abort].\n");
+#ifdef DCW
+	GMT_list_DCW_usage (GMT, 'F');
+#endif
 	GMT_fill_syntax (GMT, 'G', "Paint or clip \"dry\" areas.");
 	GMT_message (GMT, "\t   6) c to issue clip paths for land areas.\n");
 	GMT_pen_syntax (GMT, 'I', "Draw rivers.  Specify feature and optionally append pen [Default for all levels: %s].");
@@ -288,6 +310,12 @@ int GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, struct 
 				Ctrl->D.set = (opt->arg[0]) ? opt->arg[0] : 'l';
 				Ctrl->D.force = (opt->arg[1] == '+');
 				break;
+#ifdef DCW
+			case 'F':
+				Ctrl->F.active = true;
+				n_errors += GMT_DCW_parse (GMT, opt->option, opt->arg, &Ctrl->F);
+				break;
+#endif
 			case 'G':		/* Set Gray shade, pattern, or clipping */
 				Ctrl->G.active = true;
 				if (opt->arg[0] == 'c' && !opt->arg[1])
@@ -434,6 +462,10 @@ int GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, struct 
 		}
 	}
 
+#ifdef DCW
+	if (GMT_list_DCW_polygon (GMT, Ctrl->F.mode)) return 1;
+#endif
+
 	if (Ctrl->C.active && !(Ctrl->G.active || Ctrl->S.active || Ctrl->W.active)) {	/* Just lakes, fix -A */
 		if (Ctrl->A.info.low < 2) Ctrl->A.info.low = 2;
 	}
@@ -451,13 +483,18 @@ int GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, struct 
 	for (k = 0; k < GSHHS_MAX_LEVEL; k++) {
 		n_errors += GMT_check_condition (GMT, Ctrl->W.pen[k].width < 0.0, "Syntax error -W option: Pen thickness for feature %d cannot be negative\n", k);
 	}
-	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->S.active || Ctrl->C.active || Ctrl->W.active || Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active), "Syntax error: Must specify at least one of -C, -G, -S, -I, -N, -Q and -W\n");
 	n_errors += GMT_check_condition (GMT, (Ctrl->G.active + Ctrl->S.active + Ctrl->C.active) > 1 && clipping, "Syntax error: Cannot combine -C, -G, -S while clipping\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.clip && Ctrl->S.clip, "Syntax error: Must choose between clipping land OR water\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->M.active && (Ctrl->G.active || Ctrl->S.active || Ctrl->C.active), "Syntax error: Must choose between dumping and clipping/plotting\n");
 	n_errors += GMT_check_condition (GMT, clipping && GMT->current.proj.projection == GMT_AZ_EQDIST && fabs (GMT->common.R.wesn[XLO] - GMT->common.R.wesn[XHI]) == 360.0 && (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) == 180.0, "-JE not implemented for global clipping - I quit\n");
 	n_errors += GMT_check_condition (GMT, clipping && (Ctrl->N.active || Ctrl->I.active || Ctrl->W.active), "Cannot do clipping AND draw coastlines, rivers, or borders\n");
+#ifdef DCW
+	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->S.active || Ctrl->C.active || Ctrl->F.active || Ctrl->W.active || Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active), "Syntax error: Must specify at least one of -C, -G, -S, -I, -N, -Q and -W\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->M.active && (Ctrl->F.active + Ctrl->N.active + Ctrl->I.active + Ctrl->W.active) != 1, "Syntax error -M: Must specify one of -F, -I, -N, and -W\n");
+#else
+	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->S.active || Ctrl->C.active || Ctrl->W.active || Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active), "Syntax error: Must specify at least one of -C, -G, -S, -I, -N, -Q and -W\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->M.active && (Ctrl->N.active + Ctrl->I.active + Ctrl->W.active) != 1, "Syntax error -M: Must specify one of -I, -N, and -W\n");
+#endif
 
 	if (Ctrl->I.active) {
 		for (k = Ctrl->I.n_rlevels = 0; k < GSHHS_N_RLEVELS; k++) {
@@ -620,7 +657,11 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 		Ctrl->I.active = false;
 	}
 
+#ifdef DCW
+	if (!(need_coast_base || Ctrl->F.active || Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active)) {
+#else
 	if (!(need_coast_base || Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active)) {
+#endif
 		GMT_report (GMT, GMT_MSG_NORMAL, "No databases available - aborts\n");
 		Return (EXIT_FAILURE);
 	}
@@ -633,7 +674,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 2)) != GMT_OK) {
 			Return (error);
 		}
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
@@ -888,7 +929,9 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Working on bin # %5ld\n", bin);
 		GMT_shore_cleanup (GMT, &c);
 	}
-
+#ifdef DCW
+	GMT_get_DCW_polygon (GMT, &Ctrl->F, Ctrl->M.active);
+#endif
 	if (clipping) PSL_beginclipping (PSL, xtmp, ytmp, 0, GMT->session.no_rgb, 2);	/* End clippath */
 
 	if (Ctrl->I.active) {	/* Read rivers file and plot as lines */

@@ -742,14 +742,15 @@ etc.), then you can obtain a “blank slate” by calling
 
 ::
 
-    void * GMT_Create_Data (void *API, unsigned int family, unsigned int mode, \
-        uint64_t par[], double *wesn, double *inc, unsigned int registration, \
-        int pad, void *data
+    void * GMT_Create_Data (void *API, unsigned int family, unsigned int geometry, \
+        unsigned int mode, uint64_t par[], double *wesn, double *inc, \
+	unsigned int registration, int pad, void *data
 
 which returns a pointer to the allocated resource. Pass ``family`` as
 one of GMT\_IS\_GRID, GMT\_IS\_IMAGE, GMT\_IS\_DATASET,
 GMT\_IS\_TEXTSET, or GMT\_IS\_CPT, or via the modifiers GMT\_IS\_VECTOR
-or GMT\_IS\_MATRIX when handling user data. Depending on the family and
+or GMT\_IS\_MATRIX when handling user data. Also pass
+a compatible *geometry*.  Depending on the family and
 your particular way of representing dimensions you may pass the
 additional parameters in one of two ways:
 
@@ -1873,10 +1874,10 @@ The list of the basic 22 FORTRAN prototype functions thus becomes
     function GMT_Register_IO (family, method, geometry, direction, \
         wesn, resource)
     function GMT_Encode_ID (filename, ID)
-    function GMT_Init_IO (family, geometry, direction, n_args, args)
+    function GMT_Init_IO (family, geometry, direction, mode, n_args, args)
     function GMT_Begin_IO (family, geometry, direction)
     function GMT_Status_IO (mode)
-    function GMT_Create_Data (family, geometry, ipar)
+    function GMT_Create_Data (family, geometry, mode, ipar, wesn, inc, registration, pad, data)
     function GMT_Duplicate_Data (family, mode, data)
     function GMT_Read_Data (family, method, geometry, mode, wesn, \
         input, data)

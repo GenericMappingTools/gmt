@@ -655,7 +655,7 @@ int gmt_get_grdtype (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h)
 		if (fabs (h->wesn[XHI] - h->wesn[XLO] - 360.0) < GMT_SMALL) {
 			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Geographic grid, longitudes span exactly 360\n");
 			/* If w/e is 360 and gridline reg then we have a repeat entry for 360.  For pixel there are never repeat pixels */
-			return ((h->registration == GMT_GRIDLINE_REG) ? GMT_GRID_GEOGRAPHIC_EXACT360_REPEAT : GMT_GRID_GEOGRAPHIC_EXACT360_NOREPEAT);
+			return ((h->registration == GMT_GRID_NODE_REG) ? GMT_GRID_GEOGRAPHIC_EXACT360_REPEAT : GMT_GRID_GEOGRAPHIC_EXACT360_NOREPEAT);
 		}
 		else if (fabs (h->nx * h->inc[GMT_X] - 360.0) < GMT_SMALL) {
 			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Geographic grid, longitude cells span exactly 360\n");
@@ -941,7 +941,7 @@ int GMT_grd_prep_io (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, double 
 	double small = 0.1, half_or_zero, x;
 	GMT_report (C, GMT_MSG_DEBUG, "region: %g %g, grid: %g %g\n", wesn[XLO], wesn[XHI], header->wesn[XLO], header->wesn[XHI]);
 
-	half_or_zero = (header->registration == GMT_PIXEL_REG) ? 0.5 : 0.0;
+	half_or_zero = (header->registration == GMT_GRID_PIXEL_REG) ? 0.5 : 0.0;
 
 	if (!GMT_is_subset (C, header, wesn)) {	/* Get entire file */
 		*width  = header->nx;
@@ -959,7 +959,7 @@ int GMT_grd_prep_io (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, double 
 
 		if (wesn[YLO] < header->wesn[YLO] || wesn[YHI] > header->wesn[YHI]) return (GMT_GRDIO_DOMAIN_VIOLATION);	/* Calling program goofed... */
 
-		one_or_zero = (header->registration == GMT_PIXEL_REG) ? 0 : 1;
+		one_or_zero = (header->registration == GMT_GRID_PIXEL_REG) ? 0 : 1;
 
 		/* Make sure w,e,s,n are proper multiples of x_inc,y_inc away from x_min,y_min */
 
@@ -1247,7 +1247,7 @@ int GMT_grd_setregion (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h, double *we
 			off = -0.5;
 			break;
 	}
-	if (h->registration == GMT_PIXEL_REG) off += 0.5;
+	if (h->registration == GMT_GRID_PIXEL_REG) off += 0.5;
 
 	/* Initial assignment of wesn */
 	wesn[YLO] = C->common.R.wesn[YLO] - off * h->inc[GMT_Y], wesn[YHI] = C->common.R.wesn[YHI] + off * h->inc[GMT_Y];
@@ -1533,7 +1533,7 @@ int GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid, doub
 	Grid->header->wesn[YHI] = MIN (C->current.proj.rect[YHI], ceil (Grid->header->wesn[YHI] / Grid->header->inc[GMT_Y]) * Grid->header->inc[GMT_Y]);
 	/* Allocate grid memory */
 
-	Grid->header->registration = GMT_PIXEL_REG;	/* These are always pixel grids */
+	Grid->header->registration = GMT_GRID_PIXEL_REG;	/* These are always pixel grids */
 	if ((status = GMT_grd_RI_verify (C, Grid->header, 1))) return (status);	/* Final verification of -R -I; return error if we must */
 	GMT_grd_setpad (C, Grid->header, C->current.io.pad);			/* Assign default pad */
 	GMT_set_grddim (C, Grid->header);					/* Set all dimensions before returning */
@@ -1634,7 +1634,7 @@ void GMT_grd_pad_off (struct GMT_CTRL *C, struct GMT_GRID *G)
 		ij0 = n_pr_item * GMT_IJ0 (G->header, row, 0);	/* Index of start of this row's first column in unpadded grid */
 		GMT_memcpy (&(G->data[ij0]), &(G->data[ijp]), n_items, float);	/* Only copy the nx data values */
 	}
-	if (G->header->size > G->header->nm) {	/* Just wipe the remaineder of array to be sure */
+	if (G->header->size > (n_pr_item * G->header->nm)) {	/* Just wipe the remaineder of array to be sure */
 		size_t n_to_cleen = G->header->size - n_pr_item * G->header->nm;
 		ij0 += n_items;	/* 1st position after last row */
 		GMT_memset (&(G->data[ij0]), n_to_cleen, float);
@@ -1663,7 +1663,7 @@ void GMT_grd_pad_on (struct GMT_CTRL *C, struct GMT_GRID *G, unsigned int *pad)
 	size = n_pr_item * gmt_grd_get_nxpad (G->header, pad) * gmt_grd_get_nypad (G->header, pad);
 	if (size > G->header->size) {	/* Must allocate more space, but since no realloc for aligned memory we must do it the hard way */
 		float *f = NULL;
-		GMT_report (C, GMT_MSG_VERBOSE, "Extend grid via duplication onto larger grid\n");
+		GMT_report (C, GMT_MSG_VERBOSE, "Extend grid via copy onto larger grid\n");
 		f = GMT_memory_aligned (C, NULL, size, float);		/* New, larger grid size */
 		GMT_memcpy (f, G->data, G->header->size, float);	/* Copy over previous grid values */
 		GMT_free_aligned (C, G->data);				/* Free previous aligned grid memory */
@@ -1778,19 +1778,39 @@ int GMT_set_outgrid (struct GMT_CTRL *C, struct GMT_GRID *G, struct GMT_GRID **O
 	return (false);
 }
 
-void gmt_init_grdheader (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, struct GMT_OPTION *options, double wesn[], double inc[], unsigned int registration)
+void gmt_init_grdheader (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, struct GMT_OPTION *options, double wesn[], double inc[], unsigned int registration, unsigned int mode)
 {	/* Convenient way of setting a header struct wesn, inc, and registartion, then compute dimensions, etc. */
 	double wesn_dup[4], inc_dup[2];
-	/* In case user is passing header->wesn etc we must save them first as GMT_grd_init will clobber them */
-	GMT_memcpy (wesn_dup, wesn, 4, double);
-	GMT_memcpy (inc_dup,  inc,  2, double);
+	if (wesn == NULL) {	/* Must select -R setting */
+		if (!C->common.R.active) {
+			GMT_report (C, GMT_MSG_NORMAL, "No wesn given and no -R in effect.  Cannot initialize new grid\n");
+			GMT_exit (EXIT_FAILURE);
+		}
+	}
+	else	/* In case user is passing header->wesn etc we must save them first as GMT_grd_init will clobber them */
+		GMT_memcpy (wesn_dup, wesn, 4, double);
+	if (inc == NULL) {	/* Must select -I setting */
+		if (!C->common.API_I.active) {
+			GMT_report (C, GMT_MSG_NORMAL, "No inc given and no -I in effect.  Cannot initialize new grid\n");
+			GMT_exit (EXIT_FAILURE);
+		}
+	}
+	else	/* In case user is passing header->inc etc we must save them first as GMT_grd_init will clobber them */
+		GMT_memcpy (inc_dup,  inc,  2, double);
 	/* Clobber header and reset */
 	GMT_grd_init (C, header, options, false);	/* This is for new grids only so update is always false */
-	GMT_memcpy (header->wesn, wesn_dup, 4, double);
-	GMT_memcpy (header->inc,   inc_dup, 2, double);
+	if (wesn == NULL)
+		GMT_memcpy (header->wesn, C->common.R.wesn, 4, double);
+	else
+		GMT_memcpy (header->wesn, wesn_dup, 4, double);
+	if (inc == NULL)
+		GMT_memcpy (header->inc, C->common.API_I.inc, 2, double);
+	else
+		GMT_memcpy (header->inc, inc_dup, 2, double);
 	/* registration may contain complex mode information */
+	if (registration & GMT_GRID_DEFAULT_REG) registration |= C->common.r.registration;	/* Set the default registration */
 	header->registration = (registration & 1);
-	header->complex_mode = (registration & GMT_GRID_IS_COMPLEX_MASK);
+	header->complex_mode = (mode & GMT_GRID_IS_COMPLEX_MASK);
 	header->grdtype = gmt_get_grdtype (C, header);
 	GMT_RI_prepare (C, header);	/* Ensure -R -I consistency and set nx, ny in case of meter units etc. */
 	GMT_err_pass (C, GMT_grd_RI_verify (C, header, 1), "");
@@ -1829,7 +1849,7 @@ int GMT_change_grdreg (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, unsig
 	old_registration = header->registration;
 	if (old_registration == registration) return (old_registration);	/* Noting to do */
 
-	F = (header->registration == GMT_PIXEL_REG) ? 0.5 : -0.5;	/* Pixel will shrink w/e/s/n, gridline will extend */
+	F = (header->registration == GMT_GRID_PIXEL_REG) ? 0.5 : -0.5;	/* Pixel will shrink w/e/s/n, gridline will extend */
 	header->wesn[XLO] += F * header->inc[GMT_X];
 	header->wesn[XHI] -= F * header->inc[GMT_X];
 	header->wesn[YLO] += F * header->inc[GMT_Y];
@@ -1949,7 +1969,7 @@ void GMT_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode
 	   range of x,y into [-1,1], to avoid roundoff error.
 	 */
 	
-	one_or_zero = (Grid->header->registration == GMT_PIXEL_REG) ? 0 : 1;
+	one_or_zero = (Grid->header->registration == GMT_GRID_PIXEL_REG) ? 0 : 1;
 	x_half_length = 0.5 * (Grid->header->nx - one_or_zero);
 	one_on_xhl = 1.0 / x_half_length;
 	y_half_length = 0.5 * (Grid->header->ny - one_or_zero);

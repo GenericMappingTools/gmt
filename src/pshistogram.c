@@ -549,14 +549,14 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_IN, 1)) != GMT_OK) {
 		Return (error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
 		Return (API->error);
 	}
 
-	if (Ctrl->C.active && (P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
+	if (Ctrl->C.active && (P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (GMT_DATA_READ_ERROR);
 	}
 
@@ -657,8 +657,8 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 				n_boxes = F.n_boxes;
 			
 			dim[3] = n_boxes;
-			if ((D = GMT_Create_Data (API, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for spectrum\n");
+			if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for histogram\n");
 				Return (API->error);
 			}
 			if ((error = GMT_set_cols (GMT, GMT_OUT, 2)) != GMT_OK) {
@@ -701,7 +701,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 			if ((error = GMT_set_cols (GMT, GMT_OUT, 4)) != GMT_OK) {
 				Return (error);
 			}
-			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 				Return (API->error);
 			}
 			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {

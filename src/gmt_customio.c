@@ -273,7 +273,7 @@ int GMT_ras_read_grd_info (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header)
 	header->wesn[XHI] = header->nx = h.width;
 	header->wesn[YHI] = header->ny = h.height;
 	header->inc[GMT_X] = header->inc[GMT_Y] = 1.0;
-	header->registration = GMT_PIXEL_REG;	/* Always pixel format */
+	header->registration = GMT_GRID_PIXEL_REG;	/* Always pixel format */
 	header->z_scale_factor = 1.0;	header->z_add_offset = 0.0;
 
 	return (GMT_NOERROR);
@@ -545,7 +545,7 @@ int GMT_is_native_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header) {
 	strncpy (t_head.name, header->name, GMT_TEXT_LEN256);
 	if ((status = GMT_native_read_grd_info (C, &t_head)))
 		return (GMT_GRDIO_READ_FAILED);	/* Failed to read header */
-	if (t_head.nx <= 0 || t_head.ny <= 0 || !(t_head.registration == GMT_GRIDLINE_REG || t_head.registration == GMT_PIXEL_REG))
+	if (t_head.nx <= 0 || t_head.ny <= 0 || !(t_head.registration == GMT_GRID_NODE_REG || t_head.registration == GMT_GRID_PIXEL_REG))
 		return (GMT_GRDIO_BAD_VAL);		/* Garbage for nx or ny */
 	if (t_head.wesn[XLO] >= t_head.wesn[XHI] || t_head.wesn[YLO] >= t_head.wesn[YHI])
 		return (GMT_GRDIO_BAD_VAL);		/* Garbage for wesn */
@@ -1260,7 +1260,7 @@ int GMT_srf_read_grd_info (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header)
 
 	GMT_fclose (C, fp);
 
-	header->registration = GMT_GRIDLINE_REG;	/* Grid node registration */
+	header->registration = GMT_GRID_NODE_REG;	/* Grid node registration */
 	if (header->type == GMT_GRID_IS_SF) {
 		strcpy (header->title, "Grid originally in Surfer 6 format");
 		header->nx = h6.nx;		header->ny = h6.ny;
@@ -1301,7 +1301,7 @@ int GMT_srf_write_grd_info (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header)
 
 	strncpy (h.id, "DSBB", 4U);
 	h.nx = (short int)header->nx;	 h.ny = (short int)header->ny;
-	if (header->registration == GMT_PIXEL_REG) {
+	if (header->registration == GMT_GRID_PIXEL_REG) {
 		h.wesn[XLO] = header->wesn[XLO] + header->inc[GMT_X]/2.0;	 h.wesn[XHI] = header->wesn[XHI] - header->inc[GMT_X]/2.0;
 		h.wesn[YLO] = header->wesn[YLO] + header->inc[GMT_Y]/2.0;	 h.wesn[YHI] = header->wesn[YHI] - header->inc[GMT_Y]/2.0;
 	}
@@ -1491,7 +1491,7 @@ int GMT_srf_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 
 	strncpy (h.id, "DSBB", 4U);
 	h.nx = (short int)header->nx;	 h.ny = (short int)header->ny;
-	if (header->registration == GMT_PIXEL_REG) {
+	if (header->registration == GMT_GRID_PIXEL_REG) {
 		h.wesn[XLO] = header->wesn[XLO] + header->inc[GMT_X]/2;	 h.wesn[XHI] = header->wesn[XHI] - header->inc[GMT_X]/2;
 		h.wesn[YLO] = header->wesn[YLO] + header->inc[GMT_Y]/2;	 h.wesn[YHI] = header->wesn[YHI] - header->inc[GMT_Y]/2;
 	}

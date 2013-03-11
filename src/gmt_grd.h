@@ -186,6 +186,6 @@ enum GMT_enum_wesnIDs {
 #define GMT_grd_is_global(C,h) (h->grdtype == GMT_GRID_GEOGRAPHIC_EXACT360_NOREPEAT || h->grdtype == GMT_GRID_GEOGRAPHIC_EXACT360_REPEAT)
 
 /* GMT_grd_duplicate_column is true for geographical global grid where first and last data columns are identical */
-#define GMT_grd_duplicate_column(C,h,way) (C->current.io.col_type[way][GMT_X] == GMT_IS_LON && GMT_360_RANGE (h->wesn[XHI], h->wesn[XLO]) && h->registration == GMT_GRIDLINE_REG)
+#define GMT_grd_duplicate_column(C,h,way) (C->current.io.col_type[way][GMT_X] == GMT_IS_LON && GMT_360_RANGE (h->wesn[XHI], h->wesn[XLO]) && h->registration == GMT_GRID_NODE_REG)
 
 #endif /* _GMT_GRID_H */

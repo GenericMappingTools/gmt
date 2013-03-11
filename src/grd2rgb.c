@@ -165,7 +165,7 @@ int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_per_pixel, 
 		k += 2;
 	}
 
-	if (GMT_fft_1d (GMT, datac, n_pix, k_fft_fwd, k_fft_complex, NULL))
+	if (GMT_fft_1d (GMT, datac, n_pix, GMT_FFT_FWD, GMT_FFT_COMPLEX, NULL))
 		return (EXIT_FAILURE);
 
 	/* Now compute the image's power spectrum */
@@ -405,7 +405,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args)
 	if (Ctrl->C.active) {	/* Apply CPT to get three r,g,b channel files */
 		bool new_grid = false;
 		/* Since these GMT grids COULD be passed in via memory locations, they COULD have pads so we must use general IJ access */
-		if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
+		if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		
@@ -495,8 +495,8 @@ int GMT_grd2rgb (void *V_API, int mode, void *args)
 			Return (EXIT_FAILURE);
 		}
 
-		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_ALL, NULL, GMT->common.R.wesn, Ctrl->I.inc, \
-			GMT->common.r.registration, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
+		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc, \
+			GMT_GRID_DEFAULT_REG, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 		
 		GMT_report (GMT, GMT_MSG_VERBOSE, "nx = %d  ny = %d\n", Grid->header->nx, Grid->header->ny);
 

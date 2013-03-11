@@ -353,15 +353,15 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 		if (Ctrl->S.active) io.swab = true;	/* Need to pass swabbing down to the gut level */
 
 		/* Register the data source */
-		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set via file */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set via file */
 			Return (API->error);
 		}
 		if (Ctrl->S.file) {	/* Specified an output file */
-			if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, NULL, Ctrl->S.file)) == GMTAPI_NOTSET) {
+			if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_OUT, NULL, Ctrl->S.file)) == GMTAPI_NOTSET) {
 				Return (API->error);
 			}
 		}
-		else if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_REG_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output to stdout */
+		else if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output to stdout */
 			Return (API->error);
 		}
 		if ((error = GMT_set_cols (GMT, GMT_IN, 1)) != GMT_OK) {	/* We dont really care or know about columns so must use 1 */
@@ -422,7 +422,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 		
 		if ((Grid = GMT_create_grid (GMT)) == NULL) Return (API->error);
 		GMT_grd_init (GMT, Grid->header, options, false);
-		Grid->header->registration = GMT_GRIDLINE_REG;
+		Grid->header->registration = GMT_GRID_NODE_REG;
 		GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %d", &Grid->header->nx) != 1) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Error decoding ncols record\n");
@@ -438,13 +438,13 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 			GMT_report (GMT, GMT_MSG_NORMAL, "Error decoding xll record\n");
 			Return (EXIT_FAILURE);
 		}
-		if (!strncmp (line, "xllcorner", 9U)) Grid->header->registration = GMT_PIXEL_REG;	/* Pixel grid */
+		if (!strncmp (line, "xllcorner", 9U)) Grid->header->registration = GMT_GRID_PIXEL_REG;	/* Pixel grid */
 		GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %lf", &Grid->header->wesn[YLO]) != 1) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Error decoding yll record\n");
 			Return (EXIT_FAILURE);
 		}
-		if (!strncmp (line, "yllcorner", 9U)) Grid->header->registration = GMT_PIXEL_REG;	/* Pixel grid */
+		if (!strncmp (line, "yllcorner", 9U)) Grid->header->registration = GMT_GRID_PIXEL_REG;	/* Pixel grid */
 		GMT_fgets (GMT, line, GMT_BUFSIZ, fp);
 		if (sscanf (line, "%*s %lf", &Grid->header->inc[GMT_X]) != 1) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Error decoding cellsize record\n");
@@ -502,8 +502,8 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 	no_data_f = (float)Ctrl->N.value;
 	
 	/* Set up and allocate output grid [note: zero padding specificied] */
-	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_ALL, NULL, GMT->common.R.wesn, Ctrl->I.inc, \
-		GMT->common.r.registration, 0, NULL)) == NULL) Return (API->error);
+	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc, \
+		GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL) Return (API->error);
 	
 	Amode = Ctrl->A.active ? Ctrl->A.mode : 'm';
 
@@ -541,7 +541,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 		Return (error);
 	}
 	/* Initialize the i/o since we are doing record-by-record reading/writing */
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_REG_DEFAULT, 0, options) != GMT_OK) {
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {
 		Return (API->error);	/* Establishes data input */
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {

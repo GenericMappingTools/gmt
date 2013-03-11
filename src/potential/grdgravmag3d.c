@@ -371,7 +371,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 			Return (EXIT_FAILURE);
 		}
 
-		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_GRID_ALL, NULL, wesn, inc, \
+		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn, inc, \
 			GridA->header->registration, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Grid dimensions are nx = %d, ny = %d\n",

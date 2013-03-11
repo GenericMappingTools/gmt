@@ -82,7 +82,7 @@ struct GRAVFFT_CTRL {
 	} I;
 	struct GRVF_N {	/* -N[f|q|s<nx>/<ny>][+e|m|n][+t<width>][+w[<suffix>]][+z[p]]  */
 		bool active;
-		struct GMT_FFT_INFO info;
+		struct GMT_FFT_INFO *info;
 	} N;
 	struct GRVF_Q {
 		bool active;
@@ -141,6 +141,7 @@ void Free_gravfft_Ctrl (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *C) {	/* Deall
 	if (C->In.file[0]) free (C->In.file[0]);	
 	if (C->In.file[1]) free (C->In.file[1]);	
 	if (C->G.file) free (C->G.file);	
+	if (C->N.info) GMT_free (GMT, C->N.info);
 	GMT_free (GMT, C);	
 }
 
@@ -168,7 +169,13 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 #ifdef GMT_COMPAT
 	struct GMT_OPTION *popt = NULL;
 	char *mod = NULL, argument[GMT_BUFSIZ];
-	if ((popt = GMT_Find_Option (C, 'L', options))) mod = popt->arg; /* Gave old -L option */
+	if ((popt = GMT_Find_Option (C, 'L', options))) {	/* Gave old -L */
+		mod = popt->arg; /* Gave old -L option */
+		GMT_memset (argument, GMT_BUFSIZ, char);
+		if (mod[0] == '\0') strcat (argument, "+l");		/* Leave trend alone -L */
+		else if (mod[0] == 'm') strcat (argument, "+a");	/* Remove mean -Lm */
+		else if (mod[0] == 'h') strcat (argument, "+h");	/* Remove mid-value -Lh */
+	}
 #endif
 
 	for (opt = options; opt; opt = opt->next) {		/* Process all the options given */
@@ -276,18 +283,12 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 			case 'N':
 				Ctrl->N.active = true;
 #ifdef GMT_COMPAT
-				strcpy (argument, opt->arg);
-				if (popt) {	/* Gave old -L */
-					if (mod == NULL) strcat (argument, "+l");		/* Leave trend alone -L */
-					else if (mod[0] == 'm') strcat (argument, "+a");	/* Remove mean -Lm */
-					else if (mod[0] == 'h') strcat (argument, "+h");	/* Remove mid-value -Lh */
-				}
-				else strcat (argument, "+d");					/* Remove plane was old default */
-				n_errors += GMT_FFT_parse (C, 'N', 2, argument, &Ctrl->N.info);
+				Ctrl->N.info = GMT_FFT_parse (C, 'N', 2, argument);
 #else
-				n_errors += GMT_FFT_parse (C, 'N', 2, opt->arg, &Ctrl->N.info);
+				Ctrl->N.info = GMT_FFT_parse (C, 'N', 2, opt->arg);
 #endif
 				break;
+				if (Ctrl->N.info == NULL) n_errors++;
 #ifdef GMT_COMPAT
 			case 'M':	/* Geographic data */
 				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
@@ -324,9 +325,18 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 				break;
 		}
 	}
+#ifdef GMT_COMPAT
+	if (!Ctrl->N.active && popt) {	/* User set -L but no -N so nothing got appended above... Sigh...*/
+		Ctrl->N.info = GMT_FFT_parse (C, 'N', 2, argument);
+	}
+#endif
 
-	if (override_mode >= 0) Ctrl->N.info.trend_mode = override_mode;
-	if (Ctrl->N.active && Ctrl->N.info.info_mode == GMT_FFT_LIST) {
+	if (override_mode >= 0) {
+		if (Ctrl->N.info == NULL)	/* User neither gave -L nor -N... Sigh...*/
+			Ctrl->N.info = GMT_FFT_parse (C, 'N', 2, "");
+		Ctrl->N.info->trend_mode = override_mode;
+	}
+	if (Ctrl->N.active && Ctrl->N.info->info_mode == GMT_FFT_LIST) {
 		return (GMT_PARSE_ERROR);	/* So that we exit the program */
 	}
 	
@@ -544,7 +554,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 					Grid[0]->data[GMT_IJPR(Grid[0]->header,j,i)] += (float)Ctrl->A.z_offset;
 		}
 
-		FFT_info[k] = GMT_FFT_init_2d (API, Orig[k], GMT_GRID_IS_COMPLEX_REAL, &Ctrl->N.info);
+		FFT_info[k] = GMT_FFT_init_2d (API, Orig[k], GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);
 	}
 	
 	K = FFT_info[0];	/* We only need one of these anyway; K is a shorthand */
@@ -564,7 +574,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 		for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Call the forward FFT, once per grid */
 			GMT_report (GMT, GMT_MSG_VERBOSE, "forward FFT...\n");
-			if (GMT_FFT_2d (API, Grid[k], k_fft_fwd, k_fft_complex, FFT_info[k]))
+			if (GMT_FFT_2d (API, Grid[k], GMT_FFT_FWD, GMT_FFT_COMPLEX, FFT_info[k]))
 				Return (EXIT_FAILURE);
 		}
 
@@ -580,20 +590,20 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	if (Ctrl->Q.active || Ctrl->T.moho) {
 		double coeff[3];
 		GMT_report (GMT, GMT_MSG_VERBOSE, "forward FFT...\n");
-		if (GMT_FFT_2d (API, Grid[0], k_fft_fwd, k_fft_complex, FFT_info[0])) {
+		if (GMT_FFT_2d (API, Grid[0], GMT_FFT_FWD, GMT_FFT_COMPLEX, FFT_info[0])) {
 			Return (EXIT_FAILURE);
 		}
 
 		do_isostasy__ (GMT, Grid[0], Ctrl, K);
 		
-		if (GMT_FFT_2d (API, Grid[0], k_fft_inv, k_fft_complex, K))
+		if (GMT_FFT_2d (API, Grid[0], GMT_FFT_INV, GMT_FFT_COMPLEX, K))
 			Return (EXIT_FAILURE);
 
 		if (!doubleAlmostEqual (scale_out, 1.0))
 			GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, scale_out, 0);
 
 		if (!Ctrl->T.moho) {
-			GMT_grd_detrend (GMT, Grid[0], Ctrl->N.info.trend_mode, coeff);
+			GMT_grd_detrend (GMT, Grid[0], Ctrl->N.info->trend_mode, coeff);
 			Ctrl->misc.z_level = fabs (coeff[0]);	/* Need absolute value or level removed for uppward continuation */
     			GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, 1.0, -Ctrl->Z.zm);
 
@@ -626,7 +636,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 			for (m = 0; m < Grid[0]->header->size; m++)
 				raised[m] = (float)pow(topo[m], (double)n);
 
-		if (GMT_fft_2d (GMT, raised, K->nx2, K->ny2, k_fft_fwd, k_fft_complex, K))
+		if (GMT_fft_2d (GMT, raised, K->nx2, K->ny2, GMT_FFT_FWD, GMT_FFT_COMPLEX, K))
 			Return (EXIT_FAILURE);
 
 		if (Ctrl->D.active || Ctrl->T.moho)	/* "classical" anomaly */
@@ -641,7 +651,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, " Inverse FFT...");
 
-	if (GMT_FFT_2d (API, Grid[0], k_fft_inv, k_fft_complex, K))
+	if (GMT_FFT_2d (API, Grid[0], GMT_FFT_INV, GMT_FFT_COMPLEX, K))
 		Return (EXIT_FAILURE);
 
 	if (!doubleAlmostEqual (scale_out, 1.0))

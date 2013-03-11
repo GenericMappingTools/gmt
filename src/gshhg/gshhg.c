@@ -273,14 +273,14 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 	if (Ctrl->L.active) {	/* Want a text set of headers back */
 		dim[1] = 1;
 		dim[2] = n_alloc = (Ctrl->I.active) ? ((Ctrl->I.mode) ? 6 : 1) : GSHHG_MAXPOL;
-		if ((X = GMT_Create_Data (API, GMT_IS_TEXTSET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+		if ((X = GMT_Create_Data (API, GMT_IS_TEXTSET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a text set for GSHHG header features.\n");
 			return (API->error);
 		}
 	}
 	else {
 		dim[1] = n_alloc = 0;
-		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for GSHHG features.\n");
 			return (API->error);
 		}
@@ -326,6 +326,7 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 		source = (src == 1) ? 'W' : 'C';		/* Either WVS or CIA (WDBII) pedigree */
 		if (is_river) source = (char)tolower ((int)source);	/* Lower case c means river-lake */
 		is_line = (h.area) ? 0 : 1;			/* Either Polygon (0) or Line (1) (if no area) */
+		if (is_line && D->geometry == GMT_IS_POLY) D->geometry = GMT_IS_LINE;	/* Change from polygon to line geometry */
 		if (version >= 9) {				/* Magnitude for area scale */
 			m = h.flag >> 26;
 			scale = pow (10.0, (double)m);		/* Area scale */
@@ -413,7 +414,7 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 			TX->record = GMT_memory (GMT, TX->record, seg_no, char *);
 		}
 		X->n_records = X->table[0]->n_records = TX->n_rows;
-		if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_TEXT, GMT_WRITE_SET, NULL, Ctrl->Out.file, X) != GMT_OK) {
+		if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->Out.file, X) != GMT_OK) {
 			Return (API->error);
 		}
 	}

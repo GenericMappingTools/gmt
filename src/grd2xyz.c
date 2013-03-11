@@ -321,7 +321,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args)
 			
 			sprintf (record, "ncols %d\nnrows %d", G->header->nx, G->header->ny);
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);	/* Write a text record */
-			if (G->header->registration == GMT_PIXEL_REG) {	/* Pixel format */
+			if (G->header->registration == GMT_GRID_PIXEL_REG) {	/* Pixel format */
 				sprintf (record, "xllcorner ");
 				sprintf (item, GMT->current.setting.format_float_out, G->header->wesn[XLO]);
 				strcat  (record, item);
@@ -377,8 +377,8 @@ int GMT_grd2xyz (void *V_API, int mode, void *args)
 
 			/* Compute grid node positions once only */
 
-			x = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, G);
-			y = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, G);
+			x = GMT_grd_coord (GMT, G->header, GMT_X);
+			y = GMT_grd_coord (GMT, G->header, GMT_Y);
 			if (Ctrl->C.active) {	/* Replace x,y with col,row */
 				if (Ctrl->C.mode < 2) {
 					GMT_row_loop  (GMT, G, row) y[row] = row + Ctrl->C.mode;
