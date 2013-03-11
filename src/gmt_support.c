@@ -7471,7 +7471,7 @@ bool GMT_x_out_of_bounds (struct GMT_CTRL *C, int *i, struct GMT_GRID_HEADER *h,
 }
 
 bool GMT_row_col_out_of_bounds (struct GMT_CTRL *C, double *in, struct GMT_GRID_HEADER *h, unsigned int *row, unsigned int *col)
-{	/* Retirn false and pass back unsigned row,col ifinside region, or return true (outside) */
+{	/* Return false and pass back unsigned row,col if inside region, or return true (outside) */
 	int signed_row, signed_col;
 	signed_row = GMT_grd_y_to_row (GMT, in[GMT_Y], h);
 	if (signed_row < 0) return (true);

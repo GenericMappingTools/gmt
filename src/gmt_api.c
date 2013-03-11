@@ -236,6 +236,25 @@ unsigned int GMTAPI_n_items (struct GMTAPI_CTRL *API, unsigned int family, unsig
 	return (n);
 }
 
+unsigned int GMTAPI_Add_Existing (struct GMTAPI_CTRL *API, unsigned int family, unsigned int geometry, unsigned int direction, int *first_ID)
+{	/* In this mode, we find all registrered resources of matching family,geometry,direction that are unused and turn select to true. */
+	unsigned int i, n;
+
+	*first_ID = GMTAPI_NOTSET;	/* Not found yet */
+	for (i = n = 0; i < API->n_objects; i++) {
+		if (!API->object[i]) continue;				/* A freed object, skip */
+		if (API->object[i]->direction != direction) continue;	/* Wrong direction */
+		if (API->object[i]->geometry != geometry) continue;	/* Wrong geometry */
+		if (API->object[i]->status != GMT_IS_UNUSED) continue;	/* Already used */
+		if (family != API->object[i]->family) continue;		/* Wrong data type */
+		n++;
+		if (*first_ID == GMTAPI_NOTSET) *first_ID = API->object[i]->ID;
+		API->object[i]->selected = true;
+	}
+	return (n);
+}
+
+
 /* Mapping of internal [row][col] indices to a single 1-D index.
  * Internally, row and col starts at 0.  These will be accessed
  * via pointers to these functions, hence they are not macros.
@@ -1202,7 +1221,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_
 		}
 		if (this_item == GMTAPI_NOTSET) this_item = item;	/* First item that worked */
 		geometry = (API->GMT->common.a.output) ? API->GMT->common.a.geometry : S_obj->geometry;	/* When reading GMT and writing OGR/GMT we must make sure we set this first */
-		poly = (geometry == GMT_IS_POLY || geometry == GMT_IS_MULTIPOLYGON );	/* To enable polar cap assessment in i/o */
+		poly = ((geometry & GMT_IS_POLY) || geometry == GMT_IS_MULTIPOLYGON );	/* To enable polar cap assessment in i/o */
 		switch (S_obj->method) {	/* File, array, stream etc ? */
 	 		case GMT_IS_FILE:	/* Import all the segments, then count total number of records */
 #ifdef SET_IO_MODE
@@ -2382,6 +2401,21 @@ int GMTAPI_Export_Data (struct GMTAPI_CTRL *API, unsigned int family, int object
 	return (GMT_Report_Error (API, error));	/* Return status */
 }
 
+bool GMTAPI_Not_Used (struct GMTAPI_CTRL *API, char *name)
+{
+	/* See if this file has already been registered and used.  If so, do not add it again */
+	unsigned int item = 0;	/* Advance to next item, if possible */
+	bool not_used = true;
+	while (item < API->n_objects && not_used) {
+		if (API->object[item] && API->object[item]->status != GMT_IS_UNUSED && API->object[item]->filename && !strcmp (API->object[item]->filename, name))
+			/* Used resource with same name */
+			not_used = false;	/* Got item with same name, but used */
+		else
+			item++;	/* No, keep looking */
+	}
+	return (not_used);
+}
+
 int GMTAPI_Init_Import (struct GMTAPI_CTRL *API, unsigned int family, unsigned int geometry, unsigned int mode, struct GMT_OPTION *head)
 {	/* Handle registration of data files given with option arguments and/or stdin as input sources.
 	 * These are the possible actions taken:
@@ -2400,10 +2434,14 @@ int GMTAPI_Init_Import (struct GMTAPI_CTRL *API, unsigned int family, unsigned i
 	
 	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Init_Import: Passed family = %s and geometry = %s\n", GMT_family[family], GMT_geometry[gmtry(geometry)]);
 
+	if (mode & GMT_ADD_EXISTING) {
+		n_reg = GMTAPI_Add_Existing (API, family, geometry, GMT_IN, &first_ID);
+	}
+
 	if ((mode & GMT_ADD_FILES_ALWAYS) || ((mode & GMT_ADD_FILES_IF_NONE))) {	/* Wish to register all input file args as sources */
 		current = head;
 		while (current) {		/* Loop over the list and look for input files */
-			if (current->option == GMTAPI_OPT_INFILE) {	/* File given, register it */
+			if (current->option == GMTAPI_OPT_INFILE && GMTAPI_Not_Used (API, current->arg)) {	/* File given, register it if not already used */
 				if (geometry == GMT_IS_SURFACE) {	/* Grids may require a subset */
 					if (API->GMT->common.R.active) {	/* Global subset may have been specified (it might also match the grids domain) */
 						wesn = GMT_memory (API->GMT, NULL, 4, double);
@@ -2453,6 +2491,11 @@ int GMTAPI_Init_Export (struct GMTAPI_CTRL *API, unsigned int family, unsigned i
 	struct GMT_OPTION *current = NULL;
 	
 	GMT_report (API->GMT, GMT_MSG_DEBUG, "GMTAPI_Init_Export: Passed family = %s and geometry = %s\n", GMT_family[family], GMT_geometry[gmtry(geometry)]);
+
+	if (mode & GMT_ADD_EXISTING) {
+		n_reg = GMTAPI_Add_Existing (API, family, geometry, GMT_OUT, &object_ID);
+	}
+	if (n_reg > 1) return_value (API, GMT_ONLY_ONE_ALLOWED, GMTAPI_NOTSET);	/* Only one output allowed */
 
 	if ((mode & GMT_ADD_FILES_ALWAYS) || (mode & GMT_ADD_FILES_IF_NONE)) {	/* Wish to register a single output file arg as destination */
 		current = head;
@@ -3172,7 +3215,7 @@ int GMT_Init_IO (void *V_API, unsigned int family, unsigned int geometry, unsign
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 	if (GMTAPI_Validate_Geometry (API, family, geometry)) return_error (API, GMT_BAD_GEOMETRY);
 	if (!(direction == GMT_IN || direction == GMT_OUT)) return_error (API, GMT_NOT_A_VALID_DIRECTION);
-	if (!((mode & GMT_ADD_FILES_IF_NONE) || (mode & GMT_ADD_FILES_ALWAYS) || (mode & GMT_ADD_STDIO_IF_NONE) || (mode & GMT_ADD_STDIO_ALWAYS))) return_error (API, GMT_NOT_A_VALID_MODE);
+	if (!((mode & GMT_ADD_FILES_IF_NONE) || (mode & GMT_ADD_FILES_ALWAYS) || (mode & GMT_ADD_STDIO_IF_NONE) || (mode & GMT_ADD_STDIO_ALWAYS) || (mode & GMT_ADD_EXISTING))) return_error (API, GMT_NOT_A_VALID_MODE);
 
 	if (n_args == 0) /* Passed the head of linked option structures */
 		head = args;

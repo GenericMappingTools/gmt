@@ -216,11 +216,6 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdedit main code ----------------------------*/
 
-	if (!strcmp (Ctrl->In.file,  "=")) {		/* DOES THIS TEST STILL MAKE SENSE? */
-		GMT_report (GMT, GMT_MSG_NORMAL, "Piping of grid file not supported!\n");
-		Return (EXIT_FAILURE);
-	}
-
 	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
@@ -275,21 +270,20 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 		}
 	}
 	else if (Ctrl->N.active) {
-		int in_ID = 0;
+		int in_ID;
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Replacing nodes using xyz values from file %s\n", Ctrl->N.file);
 
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->In.file, G) == NULL) {	/* Get data */
 			Return (API->error);
 		}
-		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
-			Return (API->error);
-		}
-
 		if ((in_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IN, NULL, Ctrl->N.file)) == GMTAPI_NOTSET) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to register file %s\n", Ctrl->N.file);
 			Return (EXIT_FAILURE);
 		}
-
+		/* Initialize the i/o since we are doing record-by-record reading/writing */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_EXISTING, 0, options) != GMT_OK) {
+			Return (API->error);	/* Establishes data input */
+		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
 			Return (API->error);
 		}

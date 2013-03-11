@@ -100,10 +100,11 @@ enum GMT_enum_dimensions {
 
 enum GMT_enum_freg {
 	GMT_ADD_FILES_IF_NONE = 1,	/* Tell GMT_Init_IO we conditionally want to register all input files in the option list if nothing else is registered */
-	GMT_ADD_FILES_ALWAYS = 2,		/* Tell GMT_Init_IO to always register all input files in the option list */
-	GMT_ADD_STDIO_IF_NONE = 4,		/* Tell GMT_Init_IO we conditionally want to register std(in|out) if nothing else has been registered */
-	GMT_ADD_STDIO_ALWAYS = 8,			/* Tell GMT_Init_IO to always register std(in|out) */
-	GMT_ADD_DEFAULT = 6};			/* Tell GMT_Init_IO to register files, and if none are found then std(in|out), but only if nothing was registered before this call */
+	GMT_ADD_FILES_ALWAYS = 2,	/* Tell GMT_Init_IO to always register all input files in the option list */
+	GMT_ADD_STDIO_IF_NONE = 4,	/* Tell GMT_Init_IO we conditionally want to register std(in|out) if nothing else has been registered */
+	GMT_ADD_STDIO_ALWAYS = 8,	/* Tell GMT_Init_IO to always register std(in|out) */
+	GMT_ADD_EXISTING = 16,		/* Tell GMT_Init_IO to only use alerady registered resources */
+	GMT_ADD_DEFAULT = 6};		/* Tell GMT_Init_IO to register files, and if none are found then std(in|out), but only if nothing was registered before this call */
 
 enum GMT_enum_read {
 	GMT_READ_DOUBLE = 0,	/* Read ASCII data record and return double array */

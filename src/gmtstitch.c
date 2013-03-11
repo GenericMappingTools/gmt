@@ -449,16 +449,18 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 	}
 	if (n_open > 1 || n_closed > 1) GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 	if (wrap_up) {	/* Write out results and return */
+	//	if (Ctrl->C.active) { /* Write n_open segments to D[OUT] and n_closed to C */
+		D[GMT_OUT]->table[0]->segment = GMT_memory (GMT, T[OPEN], n_open, struct GMT_DATASEGMENT *);
+		D[GMT_OUT]->n_segments = D[GMT_OUT]->table[0]->n_segments = n_open;
 		if (Ctrl->C.active) { /* Write n_open segments to D[OUT] and n_closed to C */
-			D[GMT_OUT]->table[0]->segment = GMT_memory (GMT, T[OPEN], n_open, struct GMT_DATASEGMENT *);
-			D[GMT_OUT]->n_segments = D[GMT_OUT]->table[0]->n_segments = n_open;
 			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->C.file, C) != GMT_OK) {
 				Return (API->error);
 			}
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_WRITE_SET, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_OK) {
-				Return (API->error);
-			}
 		}
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_WRITE_SET, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_OK) {
+			Return (API->error);
+		}
+		//}
 		if (Ctrl->Q.active) {
 			Q->table[CLOSED]->segment[0]->record = GMT_memory (GMT, QT[CLOSED]->record, QT[CLOSED]->n_rows, char *);
 			if (n_qfiles == 2) Q->table[OPEN]->segment[0]->record = GMT_memory (GMT, QT[OPEN]->record, QT[OPEN]->n_rows, char *);
