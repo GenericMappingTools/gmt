@@ -4659,6 +4659,7 @@ void * GMT_FFT_parse (void *V_API, char option, unsigned int dim, char *args)
 
 	switch (args[0]) {
 		case 'f': info->info_mode = GMT_FFT_FORCE; break;
+		case '\0': info->info_mode = GMT_FFT_FORCE; break;
 		case 'q': info->info_mode = GMT_FFT_QUERY; break;
 		case 's': info->info_mode = GMT_FFT_LIST;  break;
 		default:
@@ -4680,7 +4681,10 @@ void * GMT_FFT_parse (void *V_API, char option, unsigned int dim, char *args)
 		gmt_fft_Singleton_list ();
 		n_errors++;	/* So parsing fails and stops the program after this listing */
 	}
-	if (n_errors) GMT_free (API->GMT, info);
+	if (n_errors) {
+		GMT_free (API->GMT, info);
+		info = NULL;
+	}
 	return (info);
 }
 
