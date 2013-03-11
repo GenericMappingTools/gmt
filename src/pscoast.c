@@ -55,10 +55,13 @@
 
 #include "gmt_dev.h"
 
-#define DCW
+//#define DCW
 
 #ifdef DCW
 #include "gmt_dcw.h"
+#define DCW_OPT "[-F<code1,code2,...>[+l|L][f<fill>][+f<pen>]] "
+#else
+#define DCW_OPT ""
 #endif
 
 #define LAKE	0
@@ -177,7 +180,7 @@ int GMT_pscoast_usage (struct GMTAPI_CTRL *C, int level)
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: pscoast %s %s [%s] [%s]\n", GMT_B_OPT, GMT_J_OPT, GMT_A_OPT, GMT_Rgeoz_OPT);
-	GMT_message (GMT, "\t[-C[<feature>/]<fill>] [-D<resolution>][+] [-G[<fill>]] [-I<feature>[/<pen>]]\n");
+	GMT_message (GMT, "\t[-C[<feature>/]<fill>] [-D<resolution>][+] %s[-G[<fill>]] [-I<feature>[/<pen>]]\n", DCW_OPT);
 	GMT_message (GMT, "\t[%s] [-K] [%s]\n", GMT_Jz_OPT, GMT_SCALE);
 	GMT_message (GMT, "\t[-M] [-N<feature>[/<pen>]] [-O] [-P] [-Q] [-S<fill>]\n");
 	GMT_message (GMT, "\t[%s] [%s]\n", GMT_TROSE, GMT_U_OPT);

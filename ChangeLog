@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-03-11	pwessel
+	* pscoast.c:		Added DCW option for filled countries and (some) states via
+				separate DCW file to be explained.
 2013-03-06	pwessel
 	* sph2grd.c:		New program for evaluating spherical harmonic coefficients
 				into grids.  Just spherical right now, no ellipsoidal adjustments
