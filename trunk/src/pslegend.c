@@ -687,7 +687,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						sprintf (buffer, "%g %g %s BC %s", Ctrl->D.lon + 0.5 * Ctrl->D.width, y0 + d_off, GMT_putfont (GMT, ifont), text);
 						S[TXT] = D[TXT]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 						S[TXT]->record[S[TXT]->n_rows++] = strdup (buffer);
-						fprintf (stderr, "%s\n", buffer);
+						// fprintf (stderr, "%s\n", buffer);
 						if (S[TXT]->n_rows == S[TXT]->n_alloc) S[TXT]->record = GMT_memory (GMT, S[TXT]->record, S[TXT]->n_alloc += GMT_SMALL_CHUNK, char *);
 						column_number = 0;
 #ifdef DEBUG
@@ -727,7 +727,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						sprintf (buffer, "%g %g %s B%s %s", x_off, y0 + d_off, GMT_putfont (GMT, ifont), key, text);
 						S[TXT] = D[TXT]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 						S[TXT]->record[S[TXT]->n_rows++] = strdup (buffer);
-						fprintf (stderr, "%s\n", buffer);
+						// fprintf (stderr, "%s\n", buffer);
 						if (S[TXT]->n_rows == S[TXT]->n_alloc) S[TXT]->record = GMT_memory (GMT, S[TXT]->record, S[TXT]->n_alloc += GMT_SMALL_CHUNK, char *);
 						column_number++;
 #ifdef DEBUG
@@ -890,7 +890,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -Sf%s/%gi%s %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], B, tlen, sub, string);
 							if (txt_c[0] != '-') {strcat (buffer, " -G"); strcat (buffer, txt_c);}
 							if (txt_d[0] != '-') {strcat (buffer, " -W"); strcat (buffer, txt_d);}
-							fprintf (stderr, "%s\n", buffer);
+							// fprintf (stderr, "%s\n", buffer);
 							
 							status = GMT_psxy (API, 0, buffer);	/* Plot the front */
 							if (status) {
@@ -1029,10 +1029,10 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							strcat (buffer, " -G"); strcat (buffer, txt_c);
 							strcat (buffer, " -W"); strcat (buffer, txt_d);
 							S[SYM]->record[S[SYM]->n_rows++] = strdup (buffer);
-							fprintf (stderr, "%s\n", buffer);
+							// fprintf (stderr, "%s\n", buffer);
 							if (S[SYM]->n_rows == S[SYM]->n_alloc) S[SYM]->record = GMT_memory (GMT, S[SYM]->record, S[SYM]->n_alloc += GMT_SMALL_CHUNK, char *);
 							sprintf (buffer, "%s %s", sarg, sub);
-							fprintf (stderr, "%s\n", buffer);
+							// fprintf (stderr, "%s\n", buffer);
 							
 							S[SYM]->record[S[SYM]->n_rows++] = strdup (buffer);
 							if (S[SYM]->n_rows == S[SYM]->n_alloc) S[SYM]->record = GMT_memory (GMT, S[SYM]->record, S[SYM]->n_alloc += GMT_SMALL_CHUNK, char *);
@@ -1043,7 +1043,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							if ((D[TXT] = alloc_if_not_done_already (API, D[TXT], GMT_IS_NONE)) == NULL) return (API->error);
 							S[TXT] = D[TXT]->table[0]->segment[0];	/* Since there will only be one table with one segment for each set, except for fronts */
 							sprintf (buffer, "%g %g %g,%d,%s BL %s", x_off + off_tt, y0 + d_off, GMT->current.setting.font_annot[0].size, GMT->current.setting.font_annot[0].id, txtcolor, text);
-							fprintf (stderr, "%s\n", buffer);
+							// fprintf (stderr, "%s\n", buffer);
 							S[TXT]->record[S[TXT]->n_rows++] = strdup (buffer);
 							if (S[TXT]->n_rows == S[TXT]->n_alloc) S[TXT]->record = GMT_memory (GMT, S[TXT]->record, S[TXT]->n_alloc += GMT_SMALL_CHUNK, char *);
 						}
@@ -1128,7 +1128,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 			Return (API->error);	/* Make filename with embedded object ID */
 		}
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -S %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
-		fprintf (stderr, "%s", buffer);
+		// fprintf (stderr, "%s", buffer);
 		if (GMT_psxy (API, 0, buffer) != GMT_OK) {
 			Return (API->error);	/* Plot the symbols */
 		}

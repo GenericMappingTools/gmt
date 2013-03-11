@@ -1639,7 +1639,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 	}
 	else {
 		uint64_t nz_off, nxy;
-		unsigned int col, row, layer;
+		unsigned int col, row, layer, wmode = GMT_ADD_DEFAULT;
 		double *xp = NULL, *yp = NULL, wp, V[4];
 		GMT_report (GMT, GMT_MSG_VERBOSE, "Evaluate spline at %" PRIu64 " equidistant output locations\n", n_ok);
 		/* Precalculate coordinates */
@@ -1648,10 +1648,12 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 		nxy = Grid->header->size;
 		GMT->common.b.ncol[GMT_OUT] = dimension + 1;
 		if (dimension != 2) {	/* Write ascii table to named file or stdout */
-			if (Ctrl->G.active && (out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, NULL, Ctrl->G.file)) == GMTAPI_NOTSET) {
-				Return (error);
+			if (Ctrl->G.active) {
+				if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, NULL, Ctrl->G.file)) == GMTAPI_NOTSET)
+					Return (error);
+				wmode = GMT_ADD_EXISTING;
 			}
-			else if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes std output */
+			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, wmode, 0, options) != GMT_OK) {	/* Establishes output */
 				Return (API->error);
 			}
 			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
