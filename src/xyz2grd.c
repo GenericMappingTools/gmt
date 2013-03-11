@@ -338,6 +338,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 
 	if (Ctrl->S.active) {	/* Just swap data and bail */
 		int out_ID;
+		unsigned w_mode = GMT_ADD_DEFAULT;
 		
 		save_i = GMT->current.io.input;			/* Save previous i/0 parameters */
 		save_o = GMT->current.io.output;
@@ -360,8 +361,9 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 			if ((out_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_OUT, NULL, Ctrl->S.file)) == GMTAPI_NOTSET) {
 				Return (API->error);
 			}
+			w_mode = GMT_ADD_EXISTING;
 		}
-		else if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output to stdout */
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, w_mode, 0, options) != GMT_OK) {	/* Establishes data output to stdout */
 			Return (API->error);
 		}
 		if ((error = GMT_set_cols (GMT, GMT_IN, 1)) != GMT_OK) {	/* We dont really care or know about columns so must use 1 */
