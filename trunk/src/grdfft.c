@@ -749,10 +749,9 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 			case 'N':	/* Grid dimension setting or inquiery */
 				Ctrl->N.active = true;
 #ifdef GMT_COMPAT
-				Ctrl->N.info = GMT_FFT_parse (C, 'N', 2, argument);
-#else
-				Ctrl->N.info = GMT_FFT_parse (C, 'N', 2, opt->arg);
+				if (ptr) Ctrl->N.info = GMT_FFT_parse (C, 'N', 2, argument); else
 #endif
+				Ctrl->N.info = GMT_FFT_parse (C, 'N', 2, opt->arg);
 				if (Ctrl->N.info == NULL) n_errors++;
 				break;
 			case 'S':	/* Scale */
