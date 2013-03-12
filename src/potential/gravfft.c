@@ -245,10 +245,6 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
-			case 'H':
-				Ctrl->T.moho = true;
-				override_mode = 0;	/* Leave trend alone */
-				break;
 			case 'I':
 				Ctrl->I.active = true;
 				for (n = 0; opt->arg[n]; n++) {
@@ -292,12 +288,6 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 				if (Ctrl->N.info == NULL) n_errors++;
 				Ctrl->N.active = true;
 				break;
-#ifdef GMT_COMPAT
-			case 'M':	/* Geographic data */
-				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
-				if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
-				break;
-#endif
 			case 'Q':
 				Ctrl->Q.active = true;
 				override_mode = GMT_FFT_REMOVE_MEAN;	/* Leave trend alone and remove mean */
