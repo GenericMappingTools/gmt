@@ -748,8 +748,8 @@ fonts can be found in the **gmt** man page.
     Specifies the value of the calendar and clock at the origin (zero
     point) of relative time units (see **TIME\_UNIT**). It is a string
     of the form yyyy-mm-ddT[hh:mm:ss] (Gregorian) or
-    yyyy-Www-ddT[hh:mm:ss] (ISO) Default is 2000-01-01T12:00:00, the
-    epoch of the J2000 system.
+    yyyy-Www-ddT[hh:mm:ss] (ISO) Default is 1970-01-01T00:00:00, the
+    origin of the UNIX time epoch.
 **TIME\_INTERVAL\_FRACTION**
     Determines if partial intervals at the start and end of an axis
     should be annotated. If the range of the partial interval exceeds
