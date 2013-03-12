@@ -354,7 +354,6 @@ int GMT_grdtrack_parse (struct GMTAPI_CTRL *C, struct GRDTRACK_CTRL *Ctrl, struc
 	n_errors += GMT_check_condition (GMT, Ctrl->S.active && Ctrl->S.factor <= 0.0, "Syntax error -S: +c<factor> must be positive.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.active && !Ctrl->D.file, "Syntax error -D: Must specify file name.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.n_grids == 0, "Syntax error: Must specify -G at least once\n");
-	//n_errors += GMT_check_condition (GMT, Ctrl->C.active && (Ctrl->C.spacing < 0.0 || Ctrl->C.ds < 0.0 || Ctrl->C.length < 0.0), "Syntax error -C: Arguments must be positive\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->C.active && (Ctrl->C.spacing < 0.0 || Ctrl->C.length < 0.0), "Syntax error -C: Arguments must be positive\n");
 	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one output destination can be specified\n");
 	n_errors += GMT_check_binary_io (GMT, 2);
@@ -705,10 +704,6 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		GMT_free_dataset (GMT, &Din);
-//		GMT_free_dataset (GMT, &Dout);
-//		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Dout) != GMT_OK) {
-//			Return (API->error);
-//		}
 	}
 	else {	/* Standard resampling point case */
 		bool pure_ascii = false;

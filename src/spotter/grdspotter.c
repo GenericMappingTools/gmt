@@ -1021,7 +1021,6 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 	GMT_free (GMT, lat_area);
 	if (keep_flowlines) GMT_free (GMT, flowline);
 	if (Ctrl->Q.mode) GMT_free (GMT, ID_info);
-	//GMT_free_grid (GMT, &G_rad, false);
 	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G_rad) != GMT_OK) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Failed to free G_rad\n");
 	}

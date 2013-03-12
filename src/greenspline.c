@@ -1341,7 +1341,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->T.file, Grid) == NULL) {	/* Get data */
 			Return (API->error);
 		}
-		new_grid = GMT_set_outgrid (GMT, Grid, &Out);	/* true if input is a read-only array; otherwise Out is just a pointer to Grid */
+		new_grid = GMT_set_outgrid (GMT, Ctrl->T.file, Grid, &Out);	/* true if input is a read-only array; otherwise Out is just a pointer to Grid */
 		nxy = n_ok = Grid->header->size;
 		for (ij = 0; ij < nxy; ij++) if (GMT_is_fnan (Grid->data[ij])) n_ok--;
 	}

@@ -634,7 +634,6 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	else if (GMT_Destroy_Data (API, GMT_ALLOCATED, &T) != GMT_OK) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Failed to free T\n");
 	}
-		//GMT_free_grid (GMT, &T, true);	/* Not written out */
 	if (Ctrl->D.file) {
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "trend residuals", R)) Return (API->error);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->D.file, R) != GMT_OK) {
@@ -646,7 +645,6 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Failed to free R\n");
 		}
 	}
-	//	GMT_free_grid (GMT, &R, true);
 	if (Ctrl->W.file && Ctrl->N.robust) {
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "trend weights", W)) Return (API->error);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->W.file, W) != GMT_OK) {
@@ -656,7 +654,6 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	else if (set_ones && GMT_Destroy_Data (API, GMT_ALLOCATED, &W) != GMT_OK) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Failed to free W\n");
 	}
-		//GMT_free_grid (GMT, &W, true);
 
 	/* That's all, folks!  */
 

@@ -356,7 +356,6 @@ int GMT_psrose (void *V_API, int mode, void *args)
 	double asize, lsize, this_az, half_bin_width, diameter, wesn[4];
 	double *xx = NULL, *yy = NULL, *in = NULL, *sum = NULL, *azimuth = NULL;
 	double *length = NULL, *mode_direction = NULL, *mode_length = NULL, dim[7];
-	//double min_az[3] = {0.0, -90.0, 0.0}, max_az[3] = {360.0, 90.0, 180};
 
 	struct PSROSE_CTRL *Ctrl = NULL;
 	struct GMT_DATASET *Cin = NULL;

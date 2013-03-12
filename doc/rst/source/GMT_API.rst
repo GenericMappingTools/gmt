@@ -682,6 +682,10 @@ what we do if no resources have been registered. The choices are
     (or GMT\_ADD\_STDIO\_ALWAYS) means “always add std\* even if
     resources have been registered”.
 
+16
+    (or GMT\_ADD\_EXISTING) means “just add currently
+    registered resources only”.
+
 The standard behavior is 5 (or GMT\_REG\_DEFAULT). Next, ``n_args`` is 0
 if ``args`` is the head of a linked list of options (further discussed
 in Section [sec:func]); otherwise ``args`` is an array of ``n_args``

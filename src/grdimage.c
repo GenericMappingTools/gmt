@@ -411,7 +411,6 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 	}
-GMT_list_API (API, "After reading Intens_orig header");
 
 #ifdef HAVE_GDAL
 	if (Ctrl->D.active) {
@@ -435,7 +434,6 @@ GMT_list_API (API, "After reading Intens_orig header");
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file[0], NULL)) == NULL) {
 			Return (API->error);
 		}
-GMT_list_API (API, "After reading entire I");
 
 		if (!Ctrl->D.mode && !Ctrl->I.active && !GMT->common.R.active)	/* No -R or -I. Use image dimensions as -R */
 			GMT_memcpy (GMT->common.R.wesn, I->header->wesn, 4, double);
@@ -619,7 +617,6 @@ GMT_list_API (API, "After reading entire I");
 
 			sprintf (cmd, "%s -G%s -I%d+/%d+", in_string, out_string, nx, ny);
 			if (GMT_grdsample (GMT->parent, 0, cmd) != GMT_OK) return (API->error);	/* Do the resampling */
-	GMT_list_API (API, "After grdsample returns");
 			if ((G2 = GMT_Retrieve_Data (API, object_ID)) == NULL) {
 				Return (API->error);
 			}
@@ -646,9 +643,7 @@ GMT_list_API (API, "After reading entire I");
 		}
 #ifdef HAVE_GDAL
 		if (Ctrl->D.active) { 
-			//if ((Img_proj = GMT_create_image (GMT)) == NULL) Return (API->error);
 			if ((Img_proj = GMT_Duplicate_Data (API, GMT_IS_IMAGE, GMT_DUPLICATE_NONE, I)) == NULL) Return (API->error);	/* Just to get a header we can change */
-	GMT_list_API (API, "After duplicating I to Img_proj");
 			grid_registration = GMT_GRID_PIXEL_REG;	/* Force pixel */
 			GMT_set_proj_limits (GMT, Img_proj->header, I->header, need_to_project);
 			GMT_err_fail (GMT, GMT_project_init (GMT, Img_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->In.file[0]);
@@ -656,17 +651,13 @@ GMT_list_API (API, "After reading entire I");
 				for (k = 0; k < 3; k++) GMT->current.setting.color_patch[GMT_NAN][k] = 1.0;	/* For img GDAL write use white as bg color */
 			GMT_set_grddim (GMT, Img_proj->header);
 			if (GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Img_proj) == NULL) Return (API->error);
-	GMT_list_API (API, "After adding array to Img_proj");
-			//Img_proj->data = GMT_memory_aligned (GMT, NULL, Img_proj->header->size * Img_proj->header->n_bands, unsigned char);
 			GMT_img_project (GMT, I, Img_proj, false);
 			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &I) != GMT_OK) {
 				Return (API->error);
 			}
-	GMT_list_API (API, "After destroying I");
 		}
 #endif
 		for (k = 0; k < n_grids; k++) {
-			//if (!Grid_proj[k] && (Grid_proj[k] = GMT_create_grid (GMT)) == NULL) Return (API->error);	
 			if (!Grid_proj[k] && (Grid_proj[k] = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Grid_orig[k])) == NULL) Return (API->error);	/* Just to get a header we can change */
 					
 			GMT_set_proj_limits (GMT, Grid_proj[k]->header, Grid_orig[k]->header, need_to_project);
@@ -681,7 +672,6 @@ GMT_list_API (API, "After reading entire I");
 			}
 		}
 		if (Ctrl->I.active) {
-			//if ((Intens_proj = GMT_create_grid (GMT)) == NULL) Return (API->error);
 			if ((Intens_proj = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Intens_orig)) == NULL) Return (API->error);	/* Just to get a header we can change */
 	GMT_list_API (API, "After duplicating Intens_orig to Intens_proj");
 			if (n_grids)
@@ -848,13 +838,11 @@ GMT_list_API (API, "After reading entire I");
 	if (Ctrl->Q.active) GMT_free (GMT, rgb_used);
 	
 	for (k = 1; k < n_grids; k++) {	/* Not done with Grid_proj[0] yet, hence we start loop at k = 1 */
-		//if (need_to_project) GMT_free_grid (GMT, &Grid_proj[k], true);	/* Must remove locally created grids */
 		if (need_to_project && GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid_proj[k]) != GMT_OK) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Failed to free Grid_proj[k]\n");
 		}
 	}
 	if (Ctrl->I.active) {
-		//if (need_to_project || !n_grids) GMT_free_grid (GMT, &Intens_proj, true);	/* Must remove locally created grids */
 		if (need_to_project || !n_grids) {
 			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Intens_proj) != GMT_OK) {
 				GMT_report (GMT, GMT_MSG_NORMAL, "Failed to free Intens_proj\n");
@@ -1001,7 +989,6 @@ GMT_list_API (API, "After reading entire I");
 	if (bitimage_8) GMT_free (GMT, bitimage_8);
 	if (bitimage_24) GMT_free (GMT, bitimage_24);
 
-	//if (need_to_project && n_grids) GMT_free_grid (GMT, &Grid_proj[0], true);
 	if (need_to_project && n_grids && GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid_proj[0]) != GMT_OK) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Failed to free Grid_proj[0]\n");
 	}
@@ -1013,17 +1000,12 @@ GMT_list_API (API, "After reading entire I");
 			GMT_free (GMT, g_table);
 			GMT_free (GMT, b_table);
 		}
-//		if (need_to_project)
-//			GMT_free_image (GMT, &Img_proj, true);
-//		else {
-			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Img_proj) != GMT_OK) {
-				Return (API->error);
-			}
-//		}
+		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Img_proj) != GMT_OK) {
+			Return (API->error);
+		}
 		if (!Ctrl->C.active && GMT_Destroy_Data (API, GMT_ALLOCATED, &P) != GMT_OK) {
 			Return (API->error);
 		}
-	//	if (!Ctrl->C.active) GMT_free_palette (GMT, &P);
 	}
 	if (Ctrl->A.active) {
 		if (to_GDALW->P.ProjectionRefPROJ4) free (to_GDALW->P.ProjectionRefPROJ4);

@@ -104,8 +104,6 @@
  *			SYSTEM HEADER FILES
  *--------------------------------------------------------------------*/
 
-//#include "gmt_config.h" /* must be first */
-
 #include <float.h>
 #include <limits.h>
 #include <math.h>
@@ -1352,7 +1350,7 @@ int PSL_setdefaults (struct PSL_CTRL *PSL, double xyscales[], double page_rgb[],
 	if (page_rgb) PSL_rgb_copy (PSL->init.page_rgb, page_rgb);	/* Change media color */
 	if (PSL->init.encoding && encoding && strcmp (PSL->init.encoding, encoding)) {
 		PSL_free (PSL->init.encoding);
-		PSL->init.encoding = strdup (encoding); //free (PSL->init.encoding);
+		PSL->init.encoding = strdup (encoding);
 	}
 	else if (!PSL->init.encoding)
 		PSL->init.encoding = (encoding) ? strdup (encoding) : strdup ("Standard");

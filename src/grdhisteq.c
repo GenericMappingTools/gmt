@@ -250,7 +250,6 @@ int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *out
 	
 	if (outfile) {	/* Must re-read the grid and evaluate since it got sorted and trodden on... */
 		for (i = 0; i < Grid->header->nm; i++) Grid->data[i] = (GMT_is_fnan (Orig->data[i])) ? GMT->session.f_NaN : get_cell (Orig->data[i], cell, n_cells_m1, last_cell);
-		//GMT_free_grid (GMT, &Orig, true);
 		if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &Orig) != GMT_OK) {
 			GMT_report (GMT, GMT_MSG_NORMAL, "Failed to free Orig\n");
 		}
@@ -363,7 +362,7 @@ int GMT_grdhisteq (void *V_API, int mode, void *args)
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->In.file, Grid) == NULL) {	/* Get subset */
 		Return (API->error);
 	}
-	(void)GMT_set_outgrid (GMT, Grid, &Out);	/* true if input is a read-only array */
+	(void)GMT_set_outgrid (GMT, Ctrl->In.file, Grid, &Out);	/* true if input is a read-only array */
 	GMT_grd_init (GMT, Out->header, options, true);
 
 	if (Ctrl->N.active)

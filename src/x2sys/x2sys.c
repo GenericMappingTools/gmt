@@ -850,7 +850,6 @@ int x2sys_read_mgd77ncfile (struct GMT_CTRL *C, char *fname, double ***data, str
 	MGD77_Select_Format (C, M.format);	/* Only allow the specified MGD77 input format */
 
 	for (i = 0; i < s->n_out_columns; i++)
-		//strcpy (M.desired_column[i], s->info[s->out_order[i]].name);	/* This crashes because desired_column[i] is not allocated */
 		M.desired_column[i] = strdup(s->info[s->out_order[i]].name);	/* Set all the required fields */
 	M.n_out_columns = s->n_out_columns;
 

@@ -1644,7 +1644,6 @@ int GMT_grdview (void *V_API, int mode, void *args)
 	if (Ctrl->G.active) for (k = 0; k < n_drape; k++) {
 		GMT_change_grdreg (GMT, Drape[k]->header, d_reg[k]);	/* Reset registration, if required */
 	}
-	//if (get_contours) GMT_free_grid (GMT, &Z, true);	/* Allocated a 2nd time via Z_orig */
 	if (get_contours && GMT_Destroy_Data (API, GMT_ALLOCATED, &Z) != GMT_OK) {
 		GMT_report (GMT, GMT_MSG_NORMAL, "Failed to free Z\n");
 	}

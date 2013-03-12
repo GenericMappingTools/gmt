@@ -417,7 +417,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args)
 			}
 			GMT_grd_init (GMT, Grid->header, options, false);
 
-			new_grid = GMT_set_outgrid (GMT, Grid, &Out);	/* true if input is a read-only array; else Out == Grid */
+			new_grid = GMT_set_outgrid (GMT, Ctrl->In.file, Grid, &Out);	/* true if input is a read-only array; else Out == Grid */
 				
 			sprintf (buffer, Ctrl->G.name, rgb[channel]);
 			grdfile = strdup (buffer);

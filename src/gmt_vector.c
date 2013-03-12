@@ -1242,8 +1242,6 @@ uint64_t gmt_resample_path_spherical (struct GMT_CTRL *C, double **lon, double *
 				angle_rad = total_angle_rad * frac_to_b;		/* Angle we need to rotate from a to c */
 				gmt_load_rot_matrix (angle_rad, Rot, P);		/* Build the actual rotation matrix for this angle */
 				gmt_matrix_vect_mult (Rot, a, c);			/* Rotate from a to get c */
-				//for (k = 0; k < 3; k++) c[k] = a[k] * frac_to_a + b[k] * frac_to_b;	/* Linear interpolation to find output point c */
-				//GMT_normalize3v (C, c);
 				GMT_cart_to_geo (C, &lat_out[row_out], &lon_out[row_out], c, true);
 				lat_out[row_out] = GMT_lat_swap (C, lat_out[row_out], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 			}
