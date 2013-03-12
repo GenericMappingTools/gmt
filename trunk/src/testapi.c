@@ -257,7 +257,7 @@ int GMT_testapi (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 
-	if (Ctrl->T.mode == GMT_IS_IMAGE) GMT_set_pad (GMT, 0);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
+	if (Ctrl->T.mode == GMT_IS_IMAGE) GMT_set_pad (GMT, 0U);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
 	switch (Ctrl->I.mode) {
 		case GMT_IS_FILE:	/* Pass filename */
 			if ((in_ID = GMT_Register_IO (API, Ctrl->T.mode, Ctrl->I.mode, geometry[Ctrl->T.mode], GMT_IN, NULL, ifile[Ctrl->T.mode])) == GMTAPI_NOTSET) {
@@ -332,7 +332,7 @@ int GMT_testapi (void *V_API, int mode, void *args)
 	if ((In = GMT_Get_Data (API, in_ID, 0, NULL)) == NULL) {
 		Return (API->error);
 	}
-	if (Ctrl->T.mode == GMT_IS_IMAGE) GMT_set_pad (GMT, 2);	/* Reset to GMT default */
+	if (Ctrl->T.mode == GMT_IS_IMAGE) GMT_set_pad (GMT, API->pad);	/* Reset to GMT default */
 	
 	if (Ctrl->T.mode == GMT_IS_IMAGE) {	/* Since writing is not supported we just make a plot via GMT_psimage */
 		char buffer[GMT_BUFSIZ];

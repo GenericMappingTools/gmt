@@ -664,8 +664,6 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 	GMT_free (GMT, data);
 	if (do_extra) GMT_free (GMT, z_tmp);
 
-	GMT_set_pad (GMT, 2);			/* Restore to GMT padding defaults */
-
 	if (emode) {
 		free (GMT->current.io.o_format[i_col]);		/* Free the temporary integer format */
 		GMT->current.io.o_format[i_col] = old_format;	/* Restore previous format */

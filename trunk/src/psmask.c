@@ -801,7 +801,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 		if (!Ctrl->T.active) GMT_report (GMT, GMT_MSG_VERBOSE, "clipping on!\n");
 	}
 
-	GMT_set_pad (GMT, 2U);		/* Reset default pad */
+	GMT_set_pad (GMT, API->pad);		/* Reset default pad */
 	if (make_plot) GMT_plotend (GMT);
 
 	Return (GMT_OK);

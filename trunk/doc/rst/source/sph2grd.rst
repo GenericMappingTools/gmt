@@ -97,6 +97,14 @@ coefficients in EGM96_to_360.txt, use
 
 sph2grd EGM96_to_360.txt -GEGM96_to_360.nc -Rg -I1 -V
 
+Reference
+---------
+
+Holmes, S. A., and Featherstone, W. E., 2002, A unified approach to
+the Clenshaw summation and the recursive computation of very high
+degree and order normalized associated Legendre functions:
+*J. Geodesy, v. 76, p. 279–299*.
+
 See Also
 --------
 

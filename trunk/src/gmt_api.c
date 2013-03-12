@@ -2821,7 +2821,7 @@ int GMTAPI_Already_Registered (struct GMTAPI_CTRL *API, unsigned int family, uns
 
 /*===>  Create a new GMT Session */
 
-void * GMT_Create_Session (char *session, unsigned int mode)
+void * GMT_Create_Session (char *session, unsigned int pad, unsigned int mode)
 {
 	/* Initializes the GMT API for a new session. This is typically called once in a program,
 	 * but programs that manage many threads might call it several times to create as many
@@ -2829,6 +2829,8 @@ void * GMT_Create_Session (char *session, unsigned int mode)
 	 * but you could still manage many sessions at once].
 	 * The session argument is a textstring used when reporting errors or messages from activity
 	 *   originating within this session.
+	 * Pad sets the default number or rows/cols used for grid padding.  GMT uses 2; users of
+	 *   the API may wish to use 0 if they have no need for BCs, etc.
 	 * The mode argument is currently not used and reserved for future expansion.
 	 * We return the pointer to the allocated API structure.
 	 * If any error occurs we report the error, set the error code via API->error, and return NULL.
@@ -2840,11 +2842,12 @@ void * GMT_Create_Session (char *session, unsigned int mode)
 	if ((G = calloc (1, sizeof (struct GMTAPI_CTRL))) == NULL) return_null (NULL, GMT_MEMORY_ERROR);	/* Failed to allocate the structure */
 	
 	/* GMT_begin initializes, among onther things, the settings in the user's (or the system's) gmt.conf file */
-	if ((G->GMT = GMT_begin (session)) == NULL) {		/* Initializing GMT and PSL machinery failed */
+	if ((G->GMT = GMT_begin (session, pad)) == NULL) {		/* Initializing GMT and PSL machinery failed */
 		free (G);	/* Free G */
 		return_null (G, GMT_MEMORY_ERROR);
 	}
 	G->GMT->parent = G;	/* So we know who's your daddy */
+	G->pad = pad;		/* Preserve the default pad value for this session */
 		
 	/* Allocate memory to keep track of registered data resources */
 	
@@ -2861,9 +2864,9 @@ void * GMT_Create_Session (char *session, unsigned int mode)
 
 #ifdef FORTRAN_API
 /* Fortran binding [THESE MAY CHANGE ONCE WE ACTUALLY TRY TO USE THESE] */
-struct GMTAPI_CTRL * GMT_Create_Session_ (char *tag, unsigned int *mode, int len)
+struct GMTAPI_CTRL * GMT_Create_Session_ (char *tag, unsigned int *pad, unsigned int *mode, int len)
 {	/* Fortran version: We pass the hidden global GMT_FORTRAN structure */
-	return (GMT_Create_Session (tag, *mode));
+	return (GMT_Create_Session (tag, *pad, *mode));
 }
 #endif
 
@@ -4396,7 +4399,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 	 			if ((new = GMT_create_grid (API->GMT)) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 				if (pad >= 0) GMT_set_pad (API->GMT, pad);	/* Change the default pad; give -1 to leave as is */
 				error = GMTAPI_init_grid (API, NULL, range, inc, registration, mode, new);
-				if (pad >= 0) GMT_set_pad (API->GMT, 2);	/* Change the default pad; give -1 to leave as is */
+				if (pad >= 0) GMT_set_pad (API->GMT, API->pad);	/* Reset to the default pad */
 			}
 			else {	/* Already registered so has_ID must be false */
 				if (has_ID || (new = p_data) == NULL) return_null (API, GMT_PTR_IS_NULL);	/* Error if data is NULL */
@@ -4413,7 +4416,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 	 			if ((new = GMT_create_image (API->GMT)) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 				if (pad >= 0) GMT_set_pad (API->GMT, pad);	/* Change the default pad; give -1 to leave as is */
 				error = GMTAPI_init_image (API, NULL, range, inc, registration, mode, new);
-				if (pad >= 0) GMT_set_pad (API->GMT, 2);	/* Change the default pad; give -1 to leave as is */
+				if (pad >= 0) GMT_set_pad (API->GMT, API->pad);	/* Reset to the default pad */
 			}
 			else {
 				if ((new = p_data) == NULL) return_null (API, GMT_PTR_IS_NULL);	/* Error if data is NULL */

@@ -483,14 +483,14 @@ To initiate the new session we use
 
 ::
 
-    void * GMT_Create_Session (char *tag, unsigned int mode);
+    void * GMT_Create_Session (char *tag, unsigned int pad, unsigned int mode);
 
 and you will typically call it thus:
 
 ::
 
     void *API = NULL;
-    API = GMT_Create_Session ("Session name", 0);
+    API = GMT_Create_Session ("Session name", 2, 0);
 
 where ``API`` is an opaque pointer to the hidden *GMT* API control
 structure. You will need to pass this pointer to *all* subsequent
@@ -498,7 +498,10 @@ structure. You will need to pass this pointer to *all* subsequent
 passed from module to module. The key task of this initialization is to
 set up the *GMT* machinery and its internal variables used for map
 projections, plotting, i/o, etc. The initialization also allocates space
-for internal structures used to register resources. The ``mode``
+for internal structures used to register resources. The ``pad`` argument
+sets the default padding used internally for grids.  GMT uses 2 so that
+various operations involving boundary conditions can be applied.  However,
+if your project has no need for this you may set ``pad`` to 0. The ``mode``
 argument is currently unused and reserved for future expansion. Should
 something go wrong then ``API`` will be returned as ``NULL``.
 
@@ -1873,7 +1876,7 @@ The list of the basic 22 FORTRAN prototype functions thus becomes
 
 ::
 
-    function GMT_Create_Session (tag, mode)
+    function GMT_Create_Session (tag, pad, mode)
     function GMT_Destroy_Session ()
     function GMT_Register_IO (family, method, geometry, direction, \
         wesn, resource)

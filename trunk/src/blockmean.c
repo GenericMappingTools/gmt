@@ -383,7 +383,5 @@ int GMT_blockmean (void *V_API, int mode, void *args)
 
 	if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) GMT_free (GMT, np);
 	
-	GMT_set_pad (GMT, 2);			/* Restore to GMT padding defaults */
-
 	Return (GMT_OK);
 }

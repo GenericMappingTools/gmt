@@ -46,7 +46,7 @@ void mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
 	filein = mxArrayToString (prhs[0]);	/* Load the file name into a char string */
 	
 	/* 1. Initializing new GMT session */
-	if ((API = GMT_Create_Session ("GMT/MEX-API", 0U)) == NULL) mexErrMsgTxt ("Failure to create GMT Session\n");
+	if ((API = GMT_Create_Session ("GMT/MEX-API", 2U, 0U)) == NULL) mexErrMsgTxt ("Failure to create GMT Session\n");
 
 	/* 2. READING IN A GRID */
 	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, filein, NULL)) == NULL) mexErrMsgTxt ("GMT: (grdinfo) Read failure\n");

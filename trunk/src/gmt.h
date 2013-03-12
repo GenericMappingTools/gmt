@@ -67,7 +67,7 @@ extern "C" {
  */
 
 /* 22 Primary API functions */
-EXTERN_MSC void * GMT_Create_Session	(char *tag, unsigned int mode);
+EXTERN_MSC void * GMT_Create_Session	(char *tag, unsigned int pad, unsigned int mode);
 EXTERN_MSC void * GMT_Create_Data	(void *C, unsigned int family, unsigned int geometry, unsigned int mode, uint64_t dim[], double *wesn, double *inc, unsigned int registration, int pad, void *data);
 EXTERN_MSC void * GMT_Get_Data		(void *C, int object_ID, unsigned int mode, void *data);
 EXTERN_MSC void * GMT_Read_Data		(void *C, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], char *input, void *data);
