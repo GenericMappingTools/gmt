@@ -1680,7 +1680,6 @@ void GMT_grd_pad_on (struct GMT_CTRL *C, struct GMT_GRID *G, unsigned int *pad)
 		ij_new = n_pr_item * GMT_IJP (G->header, row-1, 0);	/* Index of start of this row's first column in new padded grid  */
 		ij_old = n_pr_item * GMT_IJP (h, row-1, 0);		/* Index of start of this row's first column in old padded grid */
 		GMT_memcpy (&(G->data[ij_new]), &(G->data[ij_old]), n_items, float);
-		//fprintf (stderr, "Row: %d  Copy %d bytes from %d to %d\n", (int)row, (int)n_items, (int)ij_old, (int)ij_new);
 	}
 	gmt_grd_wipe_pad (C, G);	/* Set pad areas to 0 */
 	GMT_free (C, h);	/* Done with this header */
@@ -1760,7 +1759,7 @@ void GMT_free_grid (struct GMT_CTRL *C, struct GMT_GRID **G, bool free_grid)
 	if (*G) GMT_free (C, *G);
 }
 
-int GMT_set_outgrid (struct GMT_CTRL *C, struct GMT_GRID *G, struct GMT_GRID **Out)
+int GMT_set_outgrid (struct GMT_CTRL *C, char *file, struct GMT_GRID *G, struct GMT_GRID **Out)
 {	/* When the input grid is a read-only memory location then we cannot use
 	 * the same grid to hold the output results but must allocate a separate
 	 * grid.  To avoid wasting memory we try to reuse the input array when
@@ -1768,7 +1767,7 @@ int GMT_set_outgrid (struct GMT_CTRL *C, struct GMT_GRID *G, struct GMT_GRID **O
 	 * Note we duplicate the grid if we must so that Out always has the input
 	 * data in it (directly or via the pointer).  */
 
-	if (G->alloc_mode == GMT_READONLY) {	/* Cannot store results in the read-only input array */
+	if (GMT_File_Is_Memory (file) || G->alloc_mode == GMT_READONLY) {	/* Cannot store results in the read-only input array */
 		*Out = GMT_duplicate_grid (C, G, GMT_DUPLICATE_DATA);
 		(*Out)->alloc_mode = GMT_ALLOCATED;
 		return (true);
@@ -1814,7 +1813,6 @@ void gmt_init_grdheader (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, str
 	header->grdtype = gmt_get_grdtype (C, header);
 	GMT_RI_prepare (C, header);	/* Ensure -R -I consistency and set nx, ny in case of meter units etc. */
 	GMT_err_pass (C, GMT_grd_RI_verify (C, header, 1), "");
-	//if ((status = GMT_grd_RI_verify (C, header, 1))) return (status);	/* Final verification of -R -I; return error if we must */
 	GMT_grd_setpad (C, header, C->current.io.pad);	/* Assign default GMT pad */
 	GMT_set_grddim (C, header);	/* Set all dimensions before returning */
 }

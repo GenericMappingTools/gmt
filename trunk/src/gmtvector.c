@@ -594,7 +594,6 @@ int GMT_gmtvector (void *V_API, int mode, void *args)
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_SET, NULL, Ctrl->Out.file, Dout) != GMT_OK) {
 		Return (API->error);
 	}
-	//if (single) GMT_free_dataset (GMT, &Din);
 	if (single && GMT_Destroy_Data (API, GMT_ALLOCATED, &Din) != GMT_OK) {
 		Return (API->error);
 	}

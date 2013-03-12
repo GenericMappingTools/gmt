@@ -314,7 +314,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 
 			/* Note that this option rearranges the input grid, so if a memory location is passed then
 			 * the grid in the calling program is no longer the original values */
-			new_grid = GMT_set_outgrid (GMT, G, &G2);	/* true if input is a read-only array */
+			new_grid = GMT_set_outgrid (GMT, opt->arg, G, &G2);	/* true if input is a read-only array */
 			GMT_grd_pad_off (GMT, G2);	/* Undo pad if one existed */
 			GMT_sort_array (GMT, G2->data, G2->header->nm, GMT_FLOAT);
 			median = (n%2) ? G2->data[n/2] : 0.5*(G2->data[n/2-1] + G2->data[n/2]);
@@ -323,7 +323,6 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 			scale = (n%2) ? 1.4826 * G2->data[n/2] : 0.7413 * (G2->data[n/2-1] + G2->data[n/2]);
 			if (new_grid) {	/* Now preserve info and free the temporary grid */
 				/* copy over stat info to G */
-				//GMT_free_grid (GMT, &G2, true);
 				if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G2) != GMT_OK) {
 					GMT_report (GMT, GMT_MSG_NORMAL, "Failed to free G2\n");
 				}

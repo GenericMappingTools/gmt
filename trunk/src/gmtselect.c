@@ -503,8 +503,6 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 
 	just_copy_record = (GMT_is_ascii_record (GMT) && !shuffle);
 
-	/// just_copy_record = !(GMT->common.b.active[GMT_IN] || GMT->common.b.active[GMT_OUT] || GMT->current.io.ndim > 0 || GMT->common.o.active || shuffle);
-
 	/* Initiate pointer to distance calculation function */
 	if (GMT_is_geographic (GMT, GMT_IN) && !do_project) {	/* Geographic data and no -R -J conversion */
 		if (Ctrl->C.active)

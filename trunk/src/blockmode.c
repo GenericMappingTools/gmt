@@ -339,7 +339,6 @@ double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint6
 /* Must free allocated memory before returning */
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid); Free_blockmode_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
-//#define Return(code) {GMT_free_grid (GMT, &Grid, false); Free_blockmode_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_blockmode (void *V_API, int mode, void *args)
 {

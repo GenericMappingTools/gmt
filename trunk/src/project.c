@@ -798,8 +798,6 @@ int GMT_project (void *V_API, int mode, void *args)
 		}
 		if (Ctrl->L.constrain) {
 			Ctrl->L.min = 0.0;
-			//if (!Ctrl->G.mode) Ctrl->L.max = d_acosd (GMT_dot3v (GMT, a, b));
-			// Ctrl->L.max = d_acosd (GMT_dot3v (GMT, a, b));
 			if (Ctrl->Q.active) Ctrl->L.max *= (GMT->current.proj.DIST_KM_PR_DEG * sin_lat_to_pole);
 		}
 	}

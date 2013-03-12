@@ -171,7 +171,7 @@ void GMT_list_API (struct GMTAPI_CTRL *API, char *txt)
 {
 	unsigned int item;
 	struct GMTAPI_DATA_OBJECT *S;
-	if (API->deep_debug) return;
+	if (API->deep_debug == false) return;
 	fprintf (stderr, "%s\n", txt);
 	fprintf (stderr, "N = %3.3d -----------------------------------------------------------------\n", API->n_objects);
 	for (item = 0; item < API->n_objects; item++) {
@@ -3524,7 +3524,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 		if ((item = GMTAPI_Validate_ID (API, GMTAPI_NOTSET, in_ID, GMTAPI_NOTSET)) == GMTAPI_NOTSET) {
 			return_null (API, API->error);
 		}
-		return (API->object[item]->data);	/* Return pointer to the data */
+		return ((API->object[item]->data) ? API->object[item]->data : API->object[item]->resource);	/* Return pointer to the data */
 	}
 	
 	/* OK, try to do the importing */
@@ -4393,7 +4393,6 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 	switch (family) {	/* dataset, cpt, text, grid , image, vector, matrix */
 		case GMT_IS_GRID:	/* GMT grid, allocate header but not data array */
 			if ((mode & GMT_GRID_DATA_ONLY) == 0) {	/* Create new grid unless we only ask for data only */
-				//if (!has_ID && p_data) return_null (API, GMT_PTR_NOT_NULL);	/* Error if data is not NULL */
 	 			if ((new = GMT_create_grid (API->GMT)) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 				if (pad >= 0) GMT_set_pad (API->GMT, pad);	/* Change the default pad; give -1 to leave as is */
 				error = GMTAPI_init_grid (API, NULL, range, inc, registration, mode, new);

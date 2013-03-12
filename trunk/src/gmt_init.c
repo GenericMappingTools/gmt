@@ -1345,7 +1345,6 @@ int gmt_rectR_to_geoR (struct GMT_CTRL *C, char unit, double rect[], double out_
 	
 	GMT_report (C, GMT_MSG_VERBOSE, "Region selection -R%s is replaced by the equivalent geographic region -R%.12g/%.12g/%.12g/%.12gr\n", C->common.R.string, out_wesn[XLO], out_wesn[YLO], out_wesn[XHI], out_wesn[YHI]);
 
-	//GMT_free_dataset (C, &In);
 	GMT_free_dataset (C, &Out);
 	if (GMT_Destroy_Data (C->parent, GMT_ALLOCATED, &In) != GMT_OK) {
 		return (C->parent->error);
@@ -7462,7 +7461,6 @@ int GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 	S->v.pen = C->current.setting.map_default_pen;
 	GMT_init_fill (C, &S->v.fill, -1.0, -1.0, -1.0);	/* Default is no fill */
 	S->v.status = 0;	/* Start with no flags turned on */
-	//S->v_heads = S->v_just = S->v_side = S->v_outline = 0;	/* No vector heads or asymmetry */
 	S->v.v_angle = 30.0;	S->v.v_norm = -1.0;
 	for (k = 0; text[k] && text[k] != '+'; k++);	/* Either find the first plus or run out or chars */
 	strncpy (p, text, k); p[k] = 0;

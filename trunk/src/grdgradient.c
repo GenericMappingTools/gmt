@@ -397,7 +397,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args)
 	if (Ctrl->S.active) {	/* Want slope grid */
 		if ((Slope = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, Surf)) == NULL) Return (API->error);
 	}
-	new_grid = GMT_set_outgrid (GMT, Surf, &Out);	/* true if input is a read-only array */
+	new_grid = GMT_set_outgrid (GMT, Ctrl->In.file, Surf, &Out);	/* true if input is a read-only array */
 	
 	if (GMT_is_geographic (GMT, GMT_IN) && !Ctrl->E.active) {
 		dx_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_X] * cosd ((Surf->header->wesn[YHI] + Surf->header->wesn[YLO]) / 2.0);

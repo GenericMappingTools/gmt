@@ -300,7 +300,7 @@ int GMT_grdclip (void *V_API, int mode, void *args) {
 		Return (API->error);	/* Get subset */
 	}
 
-	new_grid = GMT_set_outgrid (GMT, G, &Out);	/* true if input is a read-only array */
+	new_grid = GMT_set_outgrid (GMT, Ctrl->In.file, G, &Out);	/* true if input is a read-only array */
 
 	GMT_grd_loop (GMT, G, row, col, ij) {
 		/* Checking if extremes are exceeded (need not check NaN) */

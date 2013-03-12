@@ -871,7 +871,7 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 	
 	/* Note: If input grid(s) are read-only then we must duplicate them; otherwise Grid[k] points to Orig[k] */
 	for (k = 0; k < Ctrl->In.n_grids; k++)
-		(void) GMT_set_outgrid (GMT, Orig[k], &Grid[k]);
+		(void) GMT_set_outgrid (GMT, Ctrl->In.file[k], Orig[k], &Grid[k]);
 	
 	/* From here we address the first grid via Grid[0] and the 2nd grid (if given) as Grid[1];
 	 * we are done with using the addresses Orig[k] directly. */

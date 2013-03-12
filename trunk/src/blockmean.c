@@ -159,7 +159,6 @@ int GMT_blockmean_parse (struct GMTAPI_CTRL *C, struct BLOCKMEAN_CTRL *Ctrl, str
 
 /* Must free allocated memory before returning */
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-//#define Return(code) {GMT_free_grid (GMT, &Grid, false); GMT_free (GMT, zw); if (xy) GMT_free (GMT, xy); if (np) GMT_free (GMT, np); if (slh) GMT_free (GMT, slh); Free_blockmean_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout(code);}
 #define Return(code) {GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid); GMT_free (GMT, zw); if (xy) GMT_free (GMT, xy); if (np) GMT_free (GMT, np); if (slh) GMT_free (GMT, slh); Free_blockmean_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout(code);}
 
 int GMT_blockmean (void *V_API, int mode, void *args)

@@ -1136,16 +1136,6 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &C) != GMT_OK) {
 				Return (API->error);
 			}
-//			if (Ctrl->T.file) {
-//				if (GMT_Destroy_Data (API, GMT_ALLOCATED, &C) != GMT_OK) {
-//					Return (API->error);
-//				}
-//			}
-//			else
-//			if (!read_stdin && GMT_Destroy_Data (API, GMT_ALLOCATED, &D_in) != GMT_OK) {
-//				Return (API->error);
-//			}
-//			GMT_free_dataset (GMT, &C);
 		}
 		Return (EXIT_SUCCESS);
 	}

@@ -80,8 +80,7 @@ EXTERN_MSC int GMT_grd_RI_verify (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h,
 EXTERN_MSC int GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *G, double *wesn, double scale, unsigned int mode, double lat, bool init);
 EXTERN_MSC int GMT_conv_intext2dbl (struct GMT_CTRL *C, char *record, unsigned int ncols);
 EXTERN_MSC bool GMT_grd_pad_status (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, unsigned int *pad);
-EXTERN_MSC int GMT_set_outgrid (struct GMT_CTRL *C, struct GMT_GRID *G, struct GMT_GRID **Out);
-// EXTERN_MSC int GMT_init_newgrid (struct GMT_CTRL *C, struct GMT_GRID *G, double wesn[], double inc[], unsigned int node_offset);
+EXTERN_MSC int GMT_set_outgrid (struct GMT_CTRL *C, char *file, struct GMT_GRID *G, struct GMT_GRID **Out);
 EXTERN_MSC int GMT_change_grdreg (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h, unsigned int registration);
 EXTERN_MSC void GMT_grd_shift (struct GMT_CTRL *C, struct GMT_GRID *Grid, double shift);
 EXTERN_MSC void GMT_grd_set_ij_inc (struct GMT_CTRL *C, unsigned int nx, int *ij_inc);
