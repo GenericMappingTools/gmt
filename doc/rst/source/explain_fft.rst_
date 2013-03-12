@@ -1,21 +1,27 @@
-**-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][\ **+a**\ \|\ [\ **+d**\ \|\ **h**\ \|\ **l**][\ **+e**\ \|\ **n**\ \|\ **m**][\ **+t**\ *width*][\ **+w**\ [*suffix*\ ]][\ **+z**\ [**p**\ ]]
+**-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][\ **+a**\ \|\ [\ **+d**\ \|\ **h**\ \|\ **l**][\ **+e**\ \|\ **n**\ \|\ **m**][\ **+t**\ *width*][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
     Choose or inquire about suitable grid dimensions for FFT and set
-    optional parameters.
-    Control the FFT dimension:
-    **-Nf** will force the FFT to use the actual
-    dimensions of the data. **-Nq** will inQuire about more suitable
-    dimensions, report those, then continue. **-Ns** will present a list
-    of optional dimensions, then exit. **-N**\ *nx/ny* will do FFT on
-    array size *nx/ny* (must be >= grid file size). Default chooses
-    dimensions >= data which optimize speed and accuracy of FFT. If FFT
-    dimensions > grid file dimensions, data are extended and tapered to
-    zero.
-    Control detrending of data:
-    Append modifiers for removing a linear trend:
-    **+d**: Detrend data, i.e. remove best-fitting linear trend [Default].
-    **+a**: Only remove mean value, i.e. 0.5 * (max + min).
-    **+h**: Only remove mid value, i.e. 0.5 * (max + min).
-    **+l**: Leave data alone.
+    optional parameters. Control the FFT dimension:
+    
+        **-Nf** will force the FFT to use the actual dimensions of the data. 
+
+        **-Nq** will inQuire about more suitable dimensions, report those, then continue. 
+
+        **-Ns** will present a list of optional dimensions, then exit. 
+
+        **-N**\ *nx/ny* will do FFT on array size *nx/ny* (must be >= grid file size). Default chooses
+        dimensions >= data which optimize speed and accuracy of FFT. If FFT
+        dimensions > grid file dimensions, data are extended and tapered to zero.
+
+    Control detrending of data: Append modifiers for removing a linear trend:
+
+        **+d**: Detrend data, i.e. remove best-fitting linear trend [Default].
+
+        **+a**: Only remove mean value, i.e. 0.5 * (max + min).
+
+        **+h**: Only remove mid value, i.e. 0.5 * (max + min).
+
+        **+l**: Leave data alone.
+
     Control extension and tapering of data:
     Use modifiers to control how the extension and tapering are to
     be performed: **+e** extends the grid by imposing edge-point
