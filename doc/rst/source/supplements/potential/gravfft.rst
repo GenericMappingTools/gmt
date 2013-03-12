@@ -10,12 +10,12 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gravfft** *ingrid* [*ingrid2*\ ] **-G**\ *outfile*
-[**-C**\ <n/wavelength/mean\_depth/tbw>] [**-A**\ *z\_offset*] [**-D**\ <density>]
-[**-E**\ <n\_terms>] [**-F**\ [f\|g\|v\|n\|e]] [**-I**\ <wbctk>]
-[**-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][\ **+a**\ \|\ **d**\ \|\ **h** \|\ **l**][\ **+e**\ \|\ **n**\ \|\ **m**][\ **+t**\ *width*][\ **+w**\ [*suffix*]][\ **+z**\ [**p**]]]
-[**-Q**\ ] [**-T**\ <te/rl/rm/rw>[+m]] [**-V**\ [*level*\ ]] [**-Z**\ <zm>[/<zl>]]
-[**-fg**\ ]
+**gravfft** *ingrid* [ *ingrid2* ] **-G**\ *outfile*
+[ **-C**\ <n/wavelength/mean\_depth/tbw> ] [ **-A**\ *z\_offset* ] [ **-D**\ <density> ]
+[ **-E**\ <n\_terms> ] [ **-F**\ [f\|g\|v\|n\|e] ] [ **-I**\ <wbctk> ]
+**-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][**+a**\ \|\ **d**\ \|\ **h** \|\ **l**][**+e**\ \|\ **n**\ \|\ **m**][**+t**\ *width*][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
+[ **-Q** ] [ **-T**\ <te/rl/rm/rw>[+m] ] [ **-V**\ [*level*] ] [ **-Z**\ <zm>[/<zl>] ]
+[ **-fg** ]
 
 Description
 -----------
@@ -45,9 +45,8 @@ Required Arguments
 ------------------
 
 *ingrid*
-    2-D binary grid file to be operated on. (See GRID FILE FORMATS
-    below). For cross-spectral operations, also give the second grid
-    file *ingrd2*.
+    2-D binary grid file to be operated on. (See GRID FILE FORMATS below).
+    For cross-spectral operations, also give the second grid file *ingrd2*.
 **-G**\ *outfile*
     Specify the name of the output grid file or the 1-D spectrum table
     (see **-E**). (See GRID FILE FORMATS below).
@@ -60,7 +59,7 @@ Optional Arguments
     and exit. *n* and *wavelength* are used to compute (n \* wavelength)
     the total profile length in meters. *mean\_depth* is the mean water
     depth. Append dataflags (one or two) of *tbw* in any order. *t* =
-    use “from top” model, *b* = use “from below” model. Optionally
+    use “from top” model, *b* = use "from below" model. Optionally
     specify *w* to write wavelength instead of frequency.
 **-D**\ *density*
     Sets density contrast across surface. Used, for example, to compute
@@ -71,18 +70,13 @@ Optional Arguments
     Number of terms used in Parker expansion (limit is 10, otherwise
     terms depending on n will blow out the program) [Default = 1]
 **-F**\ [**f**\ \|\ **g**\ \|\ **v**\ \|\ **n**\ \|\ **e**]
-    Specify desired geopotential field: compute geoid rather than
-    gravity
-
-    **f** = Free-air anomalies (mGal) [Default].
-
-    **g** = Geoid anomalies (m).
-
-    **v** = Vertical Gravity Gradient (VGG; 1 Eovtos = 0.1 mGal/km).
-
-    **e** = East deflections of the vertical (micro-radian).
-
-    **n** = North deflections of the vertical (micro-radian).
+    Specify desired geopotential field: compute geoid rather than gravity
+|
+|       **f** = Free-air anomalies (mGal) [Default].
+|       **g** = Geoid anomalies (m).
+|       **v** = Vertical Gravity Gradient (VGG; 1 Eovtos = 0.1 mGal/km).
+|       **e** = East deflections of the vertical (micro-radian).
+|       **n** = North deflections of the vertical (micro-radian).
 
 **-I**\ *<wbctk>*
     Use <ingrid2> and <topo\_grd> to estimate admittance\|coherence and
@@ -96,33 +90,9 @@ Optional Arguments
     admittance **b** writes a forth column with "loading from below"
     theoretical admittance **t** writes a forth column with "elastic
     plate" theoretical admittance
-**-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][\ **+e**\ \|\ **n**\ \|\ **m**][\ **+t**\ *width*][\ **+w**\ [*suffix*\ ]][\ **+z**\ [**p**\ ]]
-    Choose or inquire about suitable grid dimensions for FFT and set
-    optional parameters. **-Nf** will force the FFT to use the actual
-    dimensions of the data. **-Nq** will inQuire about more suitable
-    dimensions, report those, then continue. **-Ns** will present a list
-    of optional dimensions, then exit. **-N**\ *nx/ny* will do FFT on
-    array size *nx/ny* (must be >= grid file size). Default chooses
-    dimensions >= data which optimize speed and accuracy of FFT. If FFT
-    dimensions > grid file dimensions, data are extended and tapered to
-    zero. Use modifiers to control how the extension and tapering are to
-    be performed: **+e** extends the grid by imposing edge-point
-    symmetry [Default], **+m** extends the grid by imposing edge mirror
-    symmetry, while **+n** turns off data extension. Tapering is
-    performed from the data edge to the FFT grid edge [100%]. Change
-    this percentage via **+t**\ *width*. When **+n** is in effect, the
-    tapering is applied instead to the data margins as no extension is
-    available [0%]. For detailed investigation you can write the
-    intermediate grid being passed to the forward FFT; this is likely to
-    have been detrended, extended by point-symmetry along all edges, and
-    tapered. Append **+w**\ [*suffix*\ ] from which output file name(s)
-    will be created (i.e., *ingrid_prefix.ext*)
-    [tapered], where *ext* is your file extension. Finally, you may save
-    the complex grid produced by the forward FFT by appending **+z**. By
-    default we write the real and imaginary components to
-    *ingrid*\ \_real.\ *ext* and *ingrid*\ \_imag.\ *ext*. Append
-    **p** to save instead the polar form of magnitude and phase to files
-    *ingrid*\ \_mag.\ *ext* and *ingrid*\ \_phase.\ *ext*.
+
+.. include:: ../../explain_fft.rst_
+
 **-Q**
     Writes out a grid with the flexural topography (with z positive up)
     whose average was set by **-Z**\ *zm* and model parameters by **-T**
@@ -181,7 +151,7 @@ using 2700 and 1035 for the densities of crust and water and writing the
 result on water\_g.grd (computing up to the fourth power of bathymetry
 in Parker expansion):
 
-gravfft bat.grd -D1665 -Gwater\_g.grd -E4
+    gravfft bat.grd -D1665 -Gwater\_g.grd -E4
 
 Now subtract it to your free-air anomaly faa.grd and you’ll get the
 Bouguer anomaly. You may wonder why we are subtracting and not adding.
@@ -191,7 +161,7 @@ dense than the rocks below. The answer relyies on the way gravity
 effects are computed by the Parker's method and practical aspects of
 using the FFT.
 
-grdmath faa.grd water\_g.grd SUB = bouguer.grd
+    grdmath faa.grd water\_g.grd SUB = bouguer.grd
 
 Want an MBA anomaly? Well compute the crust mantle contribution and add
 it to the sea-bottom anomaly. Assuming a 6 km thick crust of density
@@ -203,27 +173,27 @@ didn't need to do that before because mean water depth was computed
 directly from data. (notice also the negative sign of the argument to
 **-A**, remember z positive up):
 
-gravfft bat.grd -D600 -Gmoho\_g.grd -A-6000
+    gravfft bat.grd -D600 -Gmoho\_g.grd -A-6000
 
 Now, add it to the sea-bottom anomaly to obtain the MBA anomaly. That is:
 
-grdmath water\_g.grd moho\_g.grd ADD = mba.grd
+    grdmath water\_g.grd moho\_g.grd ADD = mba.grd
 
 To compute the Moho gravity effect of an elastic plate bat.grd with Te =
 7 km, density of 2700, over a mantle of density 3300, at an averge depth
 of 9 km
 
-gravfft bat.grd -Gelastic.grd -T7000/2700/3300/1035+m -Z9000
+    gravfft bat.grd -Gelastic.grd -T7000/2700/3300/1035+m -Z9000
 
 If you add now the sea-bottom and Moho’s effects, you’ll get the full
 gravity response of your isostatic model. We will use here only the
 first term in Parker expansion (default).
 
-gravfft bat.grd -D1665 -Gwater\_g.grd
+    gravfft bat.grd -D1665 -Gwater\_g.grd
 
-gravfft bat.grd -Gelastic.grd -T7000/2700/3300/1035+m -Z9000
+    gravfft bat.grd -Gelastic.grd -T7000/2700/3300/1035+m -Z9000
 
-grdmath water\_g.grd elastic.grd ADD = model.grd
+    grdmath water\_g.grd elastic.grd ADD = model.grd
 
 The same result can be obtained directly by the next command. However,
 PAY ATTENTION to the following. I don't yet know if it's because of a
@@ -232,32 +202,32 @@ the previous commands only give the same result if **-E**\ 1 (the
 default) is used. For higher powers of bathymetry in Parker expansion,
 only the above example seams to give the correct result.
 
-gravfft bat.grd -Gmodel.grd -T7000/2700/3300/1035 -Z9000
+    gravfft bat.grd -Gmodel.grd -T7000/2700/3300/1035 -Z9000
 
 And what would be the geoid anomaly produced by a load at 50 km depth,
 below the a region whose bathymetry is given by bat.grd, a Moho at 9 km
 depth and the same densities as before?
 
-gravfft topo.grd -Gswell\_geoid.grd -T7000/2700/3300/1035 -Fg -Z9000/50000 -S
+    gravfft topo.grd -Gswell\_geoid.grd -T7000/2700/3300/1035 -Fg -Z9000/50000 -S
 
 To compute the admittance between the topo.grd bathymetry and faa.grd
 free-air anomaly grid using the elastic plate model of a crust of 6 km
 mean thickness with 10 km efective elastic thickness in a region of 3 km
 mean water depth:
 
-gravfft topo.grd faa.grd -It -T10000/2700/3300/1035 -Z9000
+    gravfft topo.grd faa.grd -It -T10000/2700/3300/1035 -Z9000
 
 To compute the admittance between the topo.grd bathymetry and geoid.grd
 geoid grid with the "loading from below" (LFB) model with the same as
 above and sub-surface load at 40 km, but assuming now the grids are in
 geographic and we want wavelengths instead of frequency:
 
-gravfft topo.grd geoid.grd -Ibw -T10000/2700/3300/1035 -Z9000/40000 -fg
+    gravfft topo.grd geoid.grd -Ibw -T10000/2700/3300/1035 -Z9000/40000 -fg
 
 To compute the gravity theoretical admittance of a LFB along a 1000 km
 long profile using the same parameters as above
 
-gravfft -C400/5000/3000/b -T10000/2700/3300/1035 -Z9000/40000
+    gravfft -C400/5000/3000/b -T10000/2700/3300/1035 -Z9000/40000
 
 References
 ----------
