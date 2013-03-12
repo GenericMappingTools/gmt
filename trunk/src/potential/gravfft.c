@@ -162,7 +162,7 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 
 	unsigned int n_errors = 0;
 
-	int n, override_mode = -1;
+	int n, override_mode = GMT_FFT_REMOVE_MEAN;
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 	char   ptr[GMT_BUFSIZ], t_or_b[4];
@@ -324,12 +324,15 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 	}
 #endif
 
-	if (override_mode >= 0) {
-		if (Ctrl->N.info == NULL)	/* User neither gave -L nor -N... Sigh...*/
+	if (override_mode >= 0) {		/* FAKE TEST AS IT WAS SET ABOVE override_mode = GMT_FFT_REMOVE_MEAN */
+		if (Ctrl->N.info == NULL) {	/* User neither gave -L nor -N... Sigh...*/
 			if ((Ctrl->N.info = GMT_FFT_parse (C, 'N', 2, "")) == NULL)	/* Error messages are issued inside parse function */
 				n_errors++;
 			else
 				Ctrl->N.info->trend_mode = override_mode;
+		}
+		if (!n_errors && Ctrl->N.info->trend_mode == 0)		/* No explict detrending mode, so apply default */
+			Ctrl->N.info->trend_mode = override_mode;
 	}
 	if (Ctrl->N.active && Ctrl->N.info->info_mode == GMT_FFT_LIST) {
 		return (GMT_PARSE_ERROR);	/* So that we exit the program */
@@ -418,7 +421,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT,"\t   e = East deflections of the vertical (micro-radian).\n");
 	GMT_message (GMT,"\t   n = North deflections of the vertical (micro-radian).\n");
 	GMT_FFT_option (C, 'N', 2, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers:");
-	GMT_message (GMT,"\t   Warning: both -D -T...+m and -Q will implicitly set -N's +a.\n");
+	GMT_message (GMT,"\t   Warning: both -D -T...+m and -Q will implicitly set -N's +h.\n");
 	GMT_message (GMT,"\t-Q writes out a grid with the flexural topography (with z positive up)\n");
 	GMT_message (GMT,"\t   whose average depth is set to the value given by -Z<zm>.\n");
 	GMT_message (GMT,"\t-S Computes predicted geopotential (see -F) grid due to a subplate load\n");
