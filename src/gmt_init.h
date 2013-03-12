@@ -38,7 +38,7 @@
 
 /* Extern functions */
 
-EXTERN_MSC struct GMT_CTRL * GMT_begin (char *session);
+EXTERN_MSC struct GMT_CTRL * GMT_begin (char *session, unsigned int pad);
 EXTERN_MSC void GMT_end (struct GMT_CTRL *C);
 EXTERN_MSC struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, char *mod_name, struct GMT_CTRL **Ccopy);
 EXTERN_MSC void GMT_end_module (struct GMT_CTRL *C, struct GMT_CTRL *Ccopy);

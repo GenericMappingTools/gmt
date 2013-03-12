@@ -346,11 +346,11 @@ int GMT_psimage (void *V_API, int mode, void *args)
 	}
 #ifdef HAVE_GDAL
 	else  {	/* Read a raster image */
-		GMT_set_pad (GMT, 0);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
+		GMT_set_pad (GMT, 0U);	/* Temporary turn off padding (and thus BC setting) since we will use image exactly as is */
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);
 		}
-		GMT_set_pad (GMT, 2);	/* Reset to GMT default */
+		GMT_set_pad (GMT, API->pad);	/* Reset to GMT default */
 
 		if (I->ColorMap != NULL) {
 			unsigned char *r_table = NULL, *g_table = NULL, *b_table = NULL;

@@ -94,6 +94,7 @@ struct GMTAPI_CTRL {
 	unsigned int unique_ID;		/* Used to create unique IDs for duration of session */
 	unsigned int session_ID;		/* ID of this session */
 	unsigned int current_item[2];		/* Array number of current dataset being processed (in and out)*/
+	unsigned int pad;			/* Session default for number of rows/cols padding for grids [2] */
 	bool registered[2];			/* true if at least one source/destination has been registered (in and out) */
 	bool io_enabled[2];			/* true if access has been allowed (in and out) */
 	size_t n_objects_alloc;			/* Allocation counter for data objects */

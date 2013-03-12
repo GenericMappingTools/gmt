@@ -341,7 +341,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args)
 				Return (API->error);
 			}
 			if (is_nc_grid(B)) {
-				GMT_set_pad (GMT, 0); /* Reset padding */
+				GMT_set_pad (GMT, 0U); /* Reset padding */
 			}
 			else {
 				GMT->current.io.pad[YHI] = 0;
@@ -373,7 +373,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args)
 				Return (API->error);
 			}
 			if (is_nc_grid(B)) {
-				GMT_set_pad (GMT, 0); /* Reset padding */
+				GMT_set_pad (GMT, 0U); /* Reset padding */
 				B->header->data_offset = A->header->nx * (A->header->ny - one_or_zero);
 				if (way == 22)
 					B->header->data_offset -= A->header->nx;
@@ -418,7 +418,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args)
 				Return (API->error);
 			}
 			if (is_nc_grid(B)) {
-				GMT_set_pad (GMT, 0); /* Reset padding */
+				GMT_set_pad (GMT, 0U); /* Reset padding */
 				B->header->stride = C->header->nx;
 			}
 			else {
@@ -453,7 +453,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args)
 				Return (API->error);
 			}
 			if (is_nc_grid(B)) {
-				GMT_set_pad (GMT, 0); /* Reset padding */
+				GMT_set_pad (GMT, 0U); /* Reset padding */
 				B->header->stride = C->header->nx;
 				B->header->data_offset = A->header->nx - one_or_zero;
 				if (way == 44)
@@ -477,12 +477,12 @@ int GMT_grdpaste (void *V_API, int mode, void *args)
 			break;
 	}
 
-	GMT_set_pad (GMT, 0); /* Reset padding */
+	GMT_set_pad (GMT, 0U); /* Reset padding */
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, C) != GMT_OK) {
 		Return (API->error);
 	}
 	A->data = B->data = NULL; /* Since these were never actually allocated */
 
-	GMT_set_pad (GMT, 2); /* Restore to GMT Defaults */
+	GMT_set_pad (GMT, API->pad); /* Restore to GMT Defaults */
 	Return (GMT_OK);
 }

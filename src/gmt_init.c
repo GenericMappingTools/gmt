@@ -8811,7 +8811,7 @@ int GMT_init_fonts (struct GMT_CTRL *C)
 	return (GMT_NOERROR);
 }
 
-struct GMT_CTRL *New_GMT_Ctrl (char *session) {	/* Allocate and initialize a new common control structure */
+struct GMT_CTRL *New_GMT_Ctrl (char *session, unsigned int pad) {	/* Allocate and initialize a new common control structure */
 	int i;
 	char path[PATH_MAX+1];
 	char *unit_name[4] = {"cm", "inch", "m", "point"};
@@ -8929,7 +8929,7 @@ struct GMT_CTRL *New_GMT_Ctrl (char *session) {	/* Allocate and initialize a new
 	C->current.proj.z_project.level = 0.0;
 	for (i = 0; i < 4; i++) C->current.proj.edge[i] = true;
 	GMT_grdio_init (C);
-	GMT_set_pad (C, 2); /* Default is to load in grids with 2 rows/cols for boundary padding */
+	GMT_set_pad (C, pad); /* Sets default number of rows/cols for boundary padding in this session */
 	C->current.proj.f_horizon = 90.0;
 	C->current.proj.proj4 = GMT_memory (C, NULL, GMT_N_PROJ4, struct GMT_PROJ4);
 	for (i = 0; i < GMT_N_PROJ4; i++) {	/* Load up proj4 structure once and for all */
@@ -8951,7 +8951,7 @@ struct GMT_CTRL *New_GMT_Ctrl (char *session) {	/* Allocate and initialize a new
 	return (C);
 }
 
-struct GMT_CTRL *GMT_begin (char *session)
+struct GMT_CTRL *GMT_begin (char *session, unsigned int pad)
 {
 	/* GMT_begin is called once by GMT_Create_Session and does basic
 	 * one-time initialization of GMT before the GMT modules take over.
@@ -8999,7 +8999,7 @@ struct GMT_CTRL *GMT_begin (char *session)
   }
 #endif
 
-	C = New_GMT_Ctrl (session);		/* Allocate and initialize a new common control structure */
+	C = New_GMT_Ctrl (session, pad);	/* Allocate and initialize a new common control structure */
 
 	C->PSL = New_PSL_Ctrl ("GMT5");		/* Allocate a PSL control structure */
 	if (!C->PSL) {
