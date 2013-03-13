@@ -2807,7 +2807,7 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level)
 
 int GMTAPI_Already_Registered (struct GMTAPI_CTRL *API, unsigned int family, unsigned int direction, void *resource) {
 	/* Determine if resource is a filename and that it has already been registered */
-	int object_ID, item;
+	int object_ID = 0, item;
 	
 	if (family != GMT_IS_COORD && (object_ID = GMTAPI_Decode_ID (resource)) == GMTAPI_NOTSET) return (GMTAPI_NOTSET);	/* Not a registered resource */
 	if ((item = GMTAPI_Validate_ID (API, family, object_ID, direction)) == GMTAPI_NOTSET) return (GMTAPI_NOTSET);	/* Not the right attributes */
