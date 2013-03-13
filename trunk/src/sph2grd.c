@@ -223,13 +223,13 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 	unsigned int tbl, row, col, n_PLM, n_CS, n_CS_nx, next_10_percent = 10;
 	uint64_t seg, drow, node, k;
 	char text[GMT_TEXT_LEN32];
-	double lon, lat, sum, lo, hi, filter, percent_inc, percent;
+	double lon, lat, sum, lo, hi, filter, percent_inc, percent = 0;
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *T = NULL;
 	double **C = NULL, **S = NULL, **Cosm = NULL, **Sinm = NULL;
 	double *Cosmx = NULL, *Sinmx = NULL, *P_lm = NULL;
-	struct SPH2GRD_CTRL *Ctrl;
+	struct SPH2GRD_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
