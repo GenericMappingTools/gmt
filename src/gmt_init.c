@@ -3832,14 +3832,17 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 				 * FFTW_PATIENT:    like FFTW_MEASURE, but considers a wider range of algorithms
 				 * FFTW_EXHAUSTIVE: like FFTW_PATIENT, but considers an even wider range of algorithms */
 				C->current.setting.fftw_plan = FFTW_ESTIMATE; /* default planner flag */
-				if ((c = strchr (lower_value, ',')) != NULL) { /* Parse FFTW planner flags */
-					c += strspn(c, ", \t"); /* advance past ',' and whitespace */
-					if (!strncmp (c, "m", 1)) /* complete: measure */
-						C->current.setting.fftw_plan = FFTW_MEASURE;
-					else if (!strncmp (c, "p", 1)) /* complete: patient */
-						C->current.setting.fftw_plan = FFTW_PATIENT;
-					else if (!strncmp (c, "ex", 2)) /* complete: exhaustive */
-						C->current.setting.fftw_plan = FFTW_EXHAUSTIVE;
+				{
+					char c;
+					if ((c = strchr (lower_value, ',')) != NULL) { /* Parse FFTW planner flags */
+						c += strspn(c, ", \t"); /* advance past ',' and whitespace */
+						if (!strncmp (c, "m", 1)) /* complete: measure */
+							C->current.setting.fftw_plan = FFTW_MEASURE;
+						else if (!strncmp (c, "p", 1)) /* complete: patient */
+							C->current.setting.fftw_plan = FFTW_PATIENT;
+						else if (!strncmp (c, "ex", 2)) /* complete: exhaustive */
+							C->current.setting.fftw_plan = FFTW_EXHAUSTIVE;
+					}
 				}
 #endif /* HAVE_FFTW3F */
 			}
