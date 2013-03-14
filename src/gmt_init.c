@@ -3833,7 +3833,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 				 * FFTW_EXHAUSTIVE: like FFTW_PATIENT, but considers an even wider range of algorithms */
 				C->current.setting.fftw_plan = FFTW_ESTIMATE; /* default planner flag */
 				{
-					char c;
+					char *c;
 					if ((c = strchr (lower_value, ',')) != NULL) { /* Parse FFTW planner flags */
 						c += strspn(c, ", \t"); /* advance past ',' and whitespace */
 						if (!strncmp (c, "m", 1)) /* complete: measure */
