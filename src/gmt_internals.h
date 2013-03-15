@@ -118,6 +118,7 @@ EXTERN_MSC bool GMT_is_gleap (int gyear);
 EXTERN_MSC void GMT_str_tolower (char *string);
 EXTERN_MSC void GMT_str_toupper (char *string);
 EXTERN_MSC char *GMT_file_unitscale (char *name);
+EXTERN_MSC void gmt_set_oblique_pole_and_origin (struct GMT_CTRL *C, double plon, double plat, double olon, double olat);
 
 /* Functions declared in gmt_proj.c */
 

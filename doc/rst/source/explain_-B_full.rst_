@@ -3,7 +3,7 @@
 **-B**\ [**p**\ \|\ **s**]\ *parameters*
     Set map boundary annotation and tickmark intervals. The format of
     *tickinfo* is
-    [**p**\ \|\ **s**]\ *xinfo*\ [/*yinfo*\ [/*zinfo*]][\ **:.**"Title"**:**][\ **W**\ \|\ **w**][\ **E**\ \|\ **e**][\ **S**\ \|\ **s**][\ **N**\ \|\ **n**][\ **Z**\ \|\ **z**\ [**+**\ ]][\ **+g**\ *fill*].
+    [**p**\ \|\ **s**]\ *xinfo*\ [/*yinfo*\ [/*zinfo*]][\ **:.**"Title"**:**][\ **W**\ \|\ **w**][\ **E**\ \|\ **e**][\ **S**\ \|\ **s**][\ **N**\ \|\ **n**][\ **Z**\ \|\ **z**\ [**+**\ ]][\ **+g**\ *fill*][\ **+o**\ *plon*/*plat*].
     The leading **p** [Default] or **s** selects the primary or
     secondary annotation information. Each of the *?info* segments are
     textstrings of the form *info*\ [**:**"Axis
@@ -72,6 +72,9 @@
     also needed to display gridlines in the x-z, y-z planes. Note that
     for 3-D views the title, if given, will be suppressed. Finally, to
     paint the inside of the map region, append **+g**\ *fill* [no fill].
+    Finally, append **+o**\ *plon/plat* to draw oblique gridlines about
+    specified pole [regular gridlines].  Ignored if gridlines are not
+    requested and disallowed for the oblique Mercator projection.
     For non-geographical projections: Give negative scale (in **-Jx**)
     or axis length (in **-JX**) to change the direction of increasing
     coordinates (i.e., to make the y-axis positive down). For log10

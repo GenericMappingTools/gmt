@@ -140,6 +140,24 @@ double gmt_get_angle (struct GMT_CTRL *C, double lon1, double lat1, double lon2,
 
 /* Private functions internal to gmt_map.c */
 
+void gmt_set_oblique_pole_and_origin (struct GMT_CTRL *C, double plon, double plat, double olon, double olat)
+{	/* The set quantities are used in GMT_obl and GMT_iobl */
+	/* Get forward pole and origin vectors FP, FC */
+	double P[3];
+	GMT_geo_to_cart (C, plat, plon, C->current.proj.o_FP, true);	/* Set forward Cartesian pole o_FP */
+	GMT_geo_to_cart (C, olat, olon, P, true);			/* P points to the origin  */
+	GMT_cross3v (C, C->current.proj.o_FP, P, C->current.proj.o_FC);	/* Set forward Cartesian center o_FC */
+	GMT_normalize3v (C, C->current.proj.o_FC);
+
+	/* Get inverse pole and origin vectors FP, FC */
+	GMT_obl (C, 0.0, M_PI_2, &plon, &plat);
+	GMT_geo_to_cart (C, plat, plon, C->current.proj.o_IP, false);	/* Set inverse Cartesian pole o_IP */
+	GMT_obl (C, 0.0, 0.0, &olon, &olat);
+	GMT_geo_to_cart (C, olat, olon, P, false);			/* P points to origin  */
+	GMT_cross3v (C, C->current.proj.o_IP, P, C->current.proj.o_IC);	/* Set inverse Cartesian center o_FC */
+	GMT_normalize3v (C, C->current.proj.o_IC);
+}
+
 bool gmt_quickconic (struct GMT_CTRL *C)
 {	/* Returns true if area/scale are large/small enough
 	 * so that we can use spherical equations with authalic
@@ -3294,7 +3312,7 @@ void gmt_get_rotate_pole (struct GMT_CTRL *C, double lon1, double lat1, double l
 
 bool gmt_map_init_oblique (struct GMT_CTRL *C) {
 	double xmin, xmax, ymin, ymax;
-	double o_x, o_y, p_x, p_y, c_x, c_y, c, az, b_x, b_y, w, e, s, n, P[3];
+	double o_x, o_y, p_x, p_y, c, az, b_x, b_y, w, e, s, n;
 
 	GMT_set_spherical (C, true);	/* PW: Force spherical for now */
 
@@ -3327,20 +3345,7 @@ bool gmt_map_init_oblique (struct GMT_CTRL *C) {
 
 	/* Here we have pole and origin */
 
-	/* Get forward pole and origin vectors FP, FC */
-	GMT_geo_to_cart (C, C->current.proj.o_pole_lat, C->current.proj.o_pole_lon, C->current.proj.o_FP, true);
-	GMT_geo_to_cart (C, o_y, o_x, P, true);	/* P points to origin  */
-	GMT_cross3v (C, C->current.proj.o_FP, P, C->current.proj.o_FC);
-	GMT_normalize3v (C, C->current.proj.o_FC);
-
-	/* Get inverse pole and origin vectors FP, FC */
-	GMT_obl (C, 0.0, M_PI_2, &p_x, &p_y);
-	GMT_geo_to_cart (C, p_y, p_x, C->current.proj.o_IP, false);
-	GMT_obl (C, 0.0, 0.0, &c_x, &c_y);
-	GMT_geo_to_cart (C, c_y, c_x, P, false);	/* P points to origin  */
-	GMT_cross3v (C, C->current.proj.o_IP, P, C->current.proj.o_IC);
-	GMT_normalize3v (C, C->current.proj.o_IC);
-
+	gmt_set_oblique_pole_and_origin (C, C->current.proj.o_pole_lon, C->current.proj.o_pole_lat, o_x, o_y);
 	GMT_vmerc (C, 0.0, 0.0);
 
 	if (C->common.R.oblique) {	/* wesn is lower left and upper right corners in normal lon/lats */

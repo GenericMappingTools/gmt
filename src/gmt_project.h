@@ -466,6 +466,7 @@ struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundar
 	bool check_side;		/* true if lon and lat annotations should be on x and y axis only */
 	bool primary;		/* true if current axis is primary, false if secondary */
 	bool slash;			/* true if slashes were used in the -B argument */
+	bool obl_grid;			/* true if +o was given to draw oblique gridlines */
 	unsigned int horizontal;	/* 1 is S/N annotations should be parallel to axes, 2 if forced */
 	unsigned int side[5];		/* Which sides (0-3 in plane; 4 = z) to plot. 2 is annot/draw, 1 is draw, 0 is not */
 };

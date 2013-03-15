@@ -196,6 +196,7 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 			GMT_message (C, "\t     Use lower case w, e, s, n, z to draw & tick but not to annotate those axes.\n");
 			GMT_message (C, "\t     Z+ will also draw a 3-D box.\n");
 			GMT_message (C, "\t   Append +g<fill> to pain the inside of the map region before plotting [no fill].\n");
+			GMT_message (C, "\t   Append +o<plon>/<plat> to draw oblique gridlines about this pole [regular gridlines].\n");
 			GMT_message (C, "\t   Log10 axis: Append l to annotate log10 (x) or p for 10^(log10(x)) [Default annotates x].\n");
 			GMT_message (C, "\t   Power axis: append p to annotate x at equidistant pow increments [Default is nonlinear].\n");
 			GMT_message (C, "\t   See psbasemap man pages for more details and examples of all settings.\n");
@@ -6414,7 +6415,7 @@ int gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 
 	char out1[GMT_BUFSIZ] = "", out2[GMT_BUFSIZ] = "", out3[GMT_BUFSIZ] = "", info[3][GMT_BUFSIZ] = {""};
 	struct GMT_PLOT_AXIS *A = NULL;
-	int i, j, k, ignore, g = 0, error = 0;
+	int i, j, k, ignore, g = 0, o = 0, error = 0;
 
 	if (!in || !in[0]) return (GMT_PARSE_ERROR);	/* -B requires an argument */
 
@@ -6453,6 +6454,24 @@ int gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 	for (i = (int)strlen(in) - 1, ignore = false; !C->current.map.frame.paint && !error && i >= 0; i--) {	/** Look for +g<fill */
 		if (in[i] == ':') ignore = !ignore;
 		if (ignore) continue;	/* Not look inside text items */
+		if (in[i] == '+' && in[i+1] == 'o') {	/* Found +o<plon>/<plat> */
+			double lon, lat;
+			char A[GMT_TEXT_LEN64], B[GMT_TEXT_LEN64];
+			if (C->current.proj.projection == GMT_OBLIQUE_MERC) {
+				GMT_report (C, GMT_MSG_NORMAL, "Syntax error -B option: Cannot specify oblique gridlines for the oblique Mercator projeciton\n");
+				error++;
+			}
+			C->current.map.frame.obl_grid = true;
+			if ((k = sscanf (&in[i+2], "%[^/]/%[^+]", A, B)) != 2) {
+				GMT_report (C, GMT_MSG_NORMAL, "Syntax error -B option: Did not find the expected format +o<plon>/<plat>\n");
+				error++;
+			}
+			error += GMT_verify_expectations (C, GMT_IS_LON, GMT_scanf (C, A, GMT_IS_LON, &lon), A);
+			error += GMT_verify_expectations (C, GMT_IS_LAT, GMT_scanf (C, B, GMT_IS_LAT, &lat), B);
+			if (C->current.proj.projection != GMT_OBLIQUE_MERC) gmt_set_oblique_pole_and_origin (C, lon, lat, 0.0, 0.0);
+			o = i;
+			in[o] = '\0';	/* Chop off +o for now */
+		}
 		if (in[i] == '+' && in[i+1] == 'g') {	/* Found +g<fill> */
 			strcpy (out1, &in[i+2]);	/* Make a copy of the fill argument */
 #ifdef _WIN32

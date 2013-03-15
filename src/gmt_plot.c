@@ -637,6 +637,83 @@ void GMT_linearx_grid (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double 
 
 }
 
+void GMT_linearx_oblgrid (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n, double dval)
+{	/* x gridlines in oblique coordinates for all but the Oblique Mercator projection [which already is oblique] */
+	double *x = NULL, *lon = NULL, *lat = NULL, *lon_obl = NULL, *lat_obl = NULL, p_cap, s_cap;
+	unsigned int idup = 0, i, j, k, nx, np, nc1 = 0, nc2, npc, np1;
+	bool cap = false;
+
+	/* Ideally we should determine the w/e/s/n of the oblique coordinates but here we will simply
+	 * create oblique coordinates for the full 0/360/-90/90, convert to regular coordinates and
+	 * then truncate points outside the actual w/e/s/n */
+	
+	/* Do we have duplicate e and w boundaries ? */
+	p_cap = fabs (C->current.setting.map_polar_cap[0]);
+	s_cap = -p_cap;
+	idup = (GMT_IS_AZIMUTHAL(C)) ? 1 : 0;
+	cap = !doubleAlmostEqual (p_cap, 90.0);	/* true if we have a polar cap specified */
+
+	nx = GMT_linear_array (C, 0.0, TWO_PI, D2R * dval, D2R * C->current.map.frame.axis[GMT_X].phase, &x);
+	np = GMT_lonpath (C, 0.0, -90.0, 90.0, &lon_obl, &lat_obl);
+	np1 = nc2 = np - 1;	/* Nominal number of points in path */
+	lon = GMT_memory (C, NULL, np+2, double);	/* Allow 2 more slots for possibly inserted cap-latitudes */
+	lat = GMT_memory (C, NULL, np+2, double);
+	for (i = 0; i < nx - idup; i++) {	/* For each oblique meridian to draw */
+		/* Create lon,lat arrays of oblique coordinates for this meridian */
+		for (k = j = 0; k < np; k++, j++) {
+			GMT_iobl (C, &lon[j], &lat[j], x[i], D2R * lat_obl[k]);	/* Get regular coordinates of this point */
+			lon[j] *= R2D;	lat[j] *= R2D;	/* Convert back to degrees */
+			if (lat_obl[k] < s_cap && k < np1 && lat_obl[k+1] > s_cap)	{	/* Must insert S pole cap latitude point */
+				j++;	GMT_iobl (C, &lon[j], &lat[j], x[i], D2R * s_cap);
+				lon[j] *= R2D;	lat[j] *= R2D;	/* Back to degrees */
+				nc1 = j;
+			}
+			else if (lat_obl[k] < p_cap && k < np1 && lat_obl[k+1] > p_cap) {	/* Must insert N pole cap latitude point */
+				j++; GMT_iobl (C, &lon[j], &lat[j], x[i], D2R * p_cap);
+				lon[j] *= R2D;	lat[j] *= R2D;	/* Back to degrees */
+				nc2 = j;
+			}
+		}
+		if (cap) {	/* Only plot the line between the two polar caps */
+			npc = nc2 - nc1 + 1;	/* Number of points along meridian bounded by caps */
+			if ((C->current.plot.n = GMT_geo_to_xy_line (C, &lon[nc1], &lat[nc1], npc)) == 0) continue;
+		}
+		else {		/* No polar cap in effect, plot entire meridian */
+			if ((C->current.plot.n = GMT_geo_to_xy_line (C, lon, lat, j)) == 0) continue;
+		}
+		GMT_plot_line (C, C->current.plot.x, C->current.plot.y, C->current.plot.pen, C->current.plot.n);
+	}
+	if (nx) GMT_free (C, x);
+	if (cap) {	/* Draw the polar cap(s) meridians with a separate lon spacing */
+		nx = GMT_linear_array (C, 0.0, TWO_PI, D2R * C->current.setting.map_polar_cap[1], D2R * C->current.map.frame.axis[GMT_X].phase, &x);
+		for (i = 0; i < nx - idup; i++) { 
+			for (k = j = 0; k < np; k++, j++) {
+				GMT_iobl (C, &lon[j], &lat[j], x[i], D2R * lat_obl[k]);	/* Get regular coordinates of this point */
+				lon[j] *= R2D;	lat[j] *= R2D;	/* Back to degrees */
+				if (lat_obl[k] < s_cap && k < np1 && lat_obl[k+1] > s_cap)	{	/* Must insert S pole cap latitude point */
+					j++;	GMT_iobl (C, &lon[j], &lat[j], x[i], D2R * s_cap);
+					lon[j] *= R2D;	lat[j] *= R2D;	/* Back to degrees */
+					nc1 = j;
+				}
+				else if (lat_obl[k] < p_cap && k < np1 && lat_obl[k+1] > p_cap) {	/* Must insert N pole cap latitude point */
+					j++; GMT_iobl (C, &lon[j], &lat[j], x[i], D2R * p_cap);
+					lon[j] *= R2D;	lat[j] *= R2D;	/* Back to degrees */
+					nc2 = j;
+				}
+			}
+			if ((C->current.plot.n = GMT_geo_to_xy_line (C, lon, lat, nc1+1)) > 0)
+				GMT_plot_line (C, C->current.plot.x, C->current.plot.y, C->current.plot.pen, C->current.plot.n);
+			if ((C->current.plot.n = GMT_geo_to_xy_line (C, &lon[nc2], &lat[nc2], j-nc2)) > 0)
+				GMT_plot_line (C, C->current.plot.x, C->current.plot.y, C->current.plot.pen, C->current.plot.n);
+		}
+		if (nx) GMT_free (C, x);
+	}
+	GMT_free (C, lon_obl);
+	GMT_free (C, lat_obl);
+	GMT_free (C, lon);
+	GMT_free (C, lat);
+}
+
 void gmt_lineary_grid (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n, double dval)
 {
 	double *y = NULL;
@@ -665,6 +742,52 @@ void gmt_x_grid (struct GMT_CTRL *C, struct PSL_CTRL *P, double s, double n, dou
 		GMT_geo_to_xy (C, x[i], n, &x2, &y2);
 		PSL_plotsegment (P, x1, y1, x2, y2);
 	}
+}
+
+void GMT_lineary_oblgrid (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n, double dval)
+{	/* y gridlines in oblique coordinates for all but the Oblique Mercator projection [which already is oblique] */
+
+	double *y = NULL, *lon = NULL, *lat = NULL, *lon_obl = NULL, *lat_obl = NULL, p_cap;
+	bool cap;
+	unsigned int i, k, ny, np;
+
+	/* Ideally we should determine the w/e/s/n of the oblique coordinates but here we will simply
+	 * create oblique coordinates for the full 0/360/-90/90, convert to regular coordinates and
+	 * then truncate points outside the actual w/e/s/n */
+	
+	ny = GMT_linear_array (C, -M_PI_2, M_PI_2, D2R * dval, D2R * C->current.map.frame.axis[GMT_Y].phase, &y);
+	np = GMT_latpath (C, 0.0, 0.0, 360.0, &lon_obl, &lat_obl);
+	lon = GMT_memory (C, NULL, np+2, double);	/* Allow 2 more slots for possibly inserted cap-latitudes */
+	lat = GMT_memory (C, NULL, np+2, double);
+	for (i = 0; i < ny; i++) {
+		for (k = 0; k < np; k++) {
+			GMT_iobl (C, &lon[k], &lat[k], D2R * lon_obl[k], y[i]);	/* Get regular coordinates of this point */
+			lon[k] *= R2D;	lat[k] *= R2D;	/* Convert to degrees */
+		}
+		if ((C->current.plot.n = GMT_geo_to_xy_line (C, lon, lat, np)) == 0) continue;
+		GMT_plot_line (C, C->current.plot.x, C->current.plot.y, C->current.plot.pen, C->current.plot.n);
+	}
+	if (ny) GMT_free (C, y);
+	cap = !doubleAlmostEqual (p_cap, 90.0);	/* true if we have a polar cap specified */
+	if (cap) {	/* Draw the polar cap(s) with a separate spacing */
+		p_cap = D2R * C->current.setting.map_polar_cap[0];
+		for (k = 0; k < np; k++) {	/* S polar cap */
+			GMT_iobl (C, &lon[k], &lat[k], D2R * lon_obl[k], -p_cap);	/* Get regular coordinates of this point */
+			lon[k] *= R2D;	lat[k] *= R2D;	/* Convert to degrees */
+		}
+		if ((C->current.plot.n = GMT_geo_to_xy_line (C, lon, lat, np)) > 0)
+			GMT_plot_line (C, C->current.plot.x, C->current.plot.y, C->current.plot.pen, C->current.plot.n);
+		for (k = 0; k < np; k++) {	/* N polar cap */
+			GMT_iobl (C, &lon[k], &lat[k], D2R * lon_obl[k], p_cap);	/* Get regular coordinates of this point */
+			lon[k] *= R2D;	lat[k] *= R2D;	/* Convert to degrees */
+		}
+		if ((C->current.plot.n = GMT_geo_to_xy_line (C, lon, lat, np)) > 0)
+			GMT_plot_line (C, C->current.plot.x, C->current.plot.y, C->current.plot.pen, C->current.plot.n);
+	}
+	GMT_free (C, lon_obl);
+	GMT_free (C, lat_obl);
+	GMT_free (C, lon);
+	GMT_free (C, lat);
 }
 
 void gmt_y_grid (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double *y, unsigned int ny)
@@ -1554,6 +1677,8 @@ void gmt_map_gridlines (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double
 			gmt_logx_grid (C, P, w, e, s, n, dx);
 		else if (C->current.proj.xyz_projection[GMT_X] == GMT_POW)
 			gmt_powx_grid (C, P, w, e, s, n, dx);
+		else if (C->current.map.frame.obl_grid)	/* Draw oblique grid lines that go S to N */
+			GMT_linearx_oblgrid (C, P, w, e, s, n, dx);
 		else	/* Draw grid lines that go S to N */
 			GMT_linearx_grid (C, P, w, e, s, n, dx);
 
@@ -1568,6 +1693,8 @@ void gmt_map_gridlines (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double
 			gmt_logy_grid (C, P, w, e, s, n, dy);
 		else if (C->current.proj.xyz_projection[GMT_Y] == GMT_POW)
 			gmt_powy_grid (C, P, w, e, s, n, dy);
+		else if (C->current.map.frame.obl_grid)	/* Draw oblique grid lines that go S to N */
+			GMT_lineary_oblgrid (C, P, w, e, s, n, dx);
 		else	/* Draw grid lines that go E to W */
 			gmt_lineary_grid (C, P, w, e, s, n, dy);
 
