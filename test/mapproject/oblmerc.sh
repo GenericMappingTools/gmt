@@ -35,7 +35,8 @@ gmtmath -I -o1,0 -T$ystart/$ystop/101+ $LL_x = >> box.xy
 mapproject -C -R$LL_lon/$LL_lat/$UR_lon/${UR_lat}r -Joa${lon}/${lat}/${az}/$scale -I box.xy > box.d
 # Use -Joa to set origin and azimuth.
 psbasemap -Rg -JG0/80/6i -Bafg30 -P -K -Xc -Y4.5i > $ps
-psxy -R -J box.d -Glightpink -W0.5p -O -K >> $ps
+psbasemap -R -J -Bafg30+o${plon}/${plat} -O -K --MAP_GRID_PEN_PRIMARY=0.25p,. >> $ps
+psxy -R -J box.d -Glightgreen -W0.5p -O -K >> $ps
 echo $lon $lat 0 200 200 | psxy -R -J -O -K -SE -Gblack >> $ps
 project -C$lon/$lat -G25 -A-75 -L-20000/20000 -Q | psxy -R -J -O -K -W0.25p,blue >> $ps
 project -C$lon/$lat -G25 -A15 -L-20000/20000 -Q | psxy -R -J -O -K -W0.25p,blue >> $ps
@@ -52,11 +53,14 @@ EOF
 echo $LL_lon $LL_lat 0 150 150 | psxy -R -J -O -K -SE -Gblue >> $ps
 echo $UR_lon $UR_lat 0 150 150 | psxy -R -J -O -K -SE -Gblue >> $ps
 #
-psbasemap  -R$LL_lon/$LL_lat/$UR_lon/${UR_lat}r -Joa${lon}/${lat}/${az}/$scale -O -K -Bafg+glightpink -Y-3.5i >> $ps
+psbasemap  -R$LL_lon/$LL_lat/$UR_lon/${UR_lat}r -Joa${lon}/${lat}/${az}/$scale -O -K -Bafg+glightgreen -Y-3.5i >> $ps
 project -C$lon/$lat -G25 -A-75 -L-20000/20000 -Q | psxy -R -J -O -K -W0.25p,blue >> $ps
+project -C$lon/$lat -G25 -A15 -L-2000/2000 -Q | psxy -R -J -O -K -W0.25p,blue >> $ps
 echo $lon $lat 0 100 100 | psxy -R -J -O -K -SE -Gblack >> $ps
-echo $lon $lat -75 1000 | psxy -R -J -O -K -S=0.1i+e -Gred -W0.5p,red --MAP_VECTOR_SHAPE=0.5 >> $ps
-echo $lon $lat -165 1000 | psxy -R -J -O -K -S=0.1i+e -Gred -W0.5p,red --MAP_VECTOR_SHAPE=0.5 >> $ps
+echo $lon $lat -75 1000 | psxy -R -J -O -K -S=0.15i+e -Gred -W1p,red --MAP_VECTOR_SHAPE=0.5 >> $ps
+echo $lon $lat -165 1000 | psxy -R -J -O -K -S=0.15i+e -Gred -W1p,red --MAP_VECTOR_SHAPE=0.5 >> $ps
+echo $LL_lon $LL_lat 0 150 150 | psxy -R -J -O -K -SE -Gblue >> $ps
+echo $UR_lon $UR_lat 0 150 150 | psxy -R -J -O -K -SE -Gblue >> $ps
 pstext -R -J -O -K -F+f12p+j -Dj0.1i -N << EOF >> $ps
 -42 62 CM x
 -31 52 CM y
