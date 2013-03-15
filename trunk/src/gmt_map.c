@@ -3289,6 +3289,7 @@ void gmt_get_rotate_pole (struct GMT_CTRL *C, double lon1, double lat1, double l
 	sincosd (plat, &C->current.proj.o_sin_pole_lat, &C->current.proj.o_cos_pole_lat);
 	gmt_pole_rotate_forward (C, lon1, lat1, &beta, &dummy);
 	C->current.proj.o_beta = -beta;
+	GMT_report (C, GMT_MSG_LONG_VERBOSE, "Oblique Mercator pole is %.12g %.12g, with beta = %.12g\n", plon, plat, -beta);
 }
 
 bool gmt_map_init_oblique (struct GMT_CTRL *C) {

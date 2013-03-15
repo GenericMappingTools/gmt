@@ -177,9 +177,8 @@ int GMT_gmtaverage (void *V_API, int mode, void *args)
 {
 	int error = 0;
 
-	struct GMT_OPTION *options = NULL;
+	struct GMT_OPTION *options = NULL, *t_ptr = NULL;
 	struct GMTAVERAGE_CTRL *Ctrl = NULL;
-	struct GMT_OPTION *t_ptr = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	int (*func) (void *, int, void *) = NULL;
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */

@@ -907,6 +907,10 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 			GMT_report (GMT, GMT_MSG_NORMAL, "Error registering contour info file %s\n", Ctrl->C.file);
 			Return (EXIT_FAILURE);
 		}
+		/* Initialize the i/o since we are doing record-by-record reading/writing */
+		if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_IN, GMT_ADD_EXISTING, 0, options) != GMT_OK) {
+			Return (API->error);	/* Establishes data input */
+		}
 		if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
 			GMT_report (GMT, GMT_MSG_NORMAL, "Error enabling contour info file %s\n", Ctrl->C.file);
 			Return (API->error);
