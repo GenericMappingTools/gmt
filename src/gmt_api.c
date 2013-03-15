@@ -101,7 +101,7 @@ static const char *GMT_via[2] = {"User Vector", "User Matrix"};
 static const char *GMT_direction[2] = {"Input", "Output"};
 static const char *GMT_stream[2] = {"Standard", "User-supplied"};
 static const char *GMT_status[3] = {"Unused", "In-use", "Used"};
-static const char *GMT_geometry[GMT_N_GEOMETRIES+1] = {"Not Set", "Point", "Line", "Polygon", "Point|Line|Poly", "Surface", "Non-Geographical"};
+static const char *GMT_geometry[GMT_N_GEOMETRIES+2] = {"Not Set", "Point", "Line", "Polygon", "Point|Line|Poly", "Line|Poly", "Surface", "Non-Geographical"};
 
 /* Two different i/o mode: GMT_Put|Get_Data vs GMT_Put|Get_Record */
 enum GMT_enum_iomode {
@@ -119,9 +119,10 @@ unsigned int gmtry (unsigned int geometry)
 	if (geometry == GMT_IS_POINT)   return 1;
 	if (geometry == GMT_IS_LINE)    return 2;
 	if (geometry == GMT_IS_POLY)    return 3;
-	if (geometry & GMT_IS_PLP)      return 4;
-	if (geometry == GMT_IS_SURFACE) return 5;
-	if (geometry == GMT_IS_NONE)    return 6;
+	if (geometry == GMT_IS_PLP)     return 4;
+	if ((geometry & GMT_IS_LINE) && (geometry & GMT_IS_POLY)) return 5;
+	if (geometry == GMT_IS_SURFACE) return 6;
+	if (geometry == GMT_IS_NONE)    return 7;
 	return 0;
 }
 /* We also need to return the pointer to an object given a void * address of that pointer.
