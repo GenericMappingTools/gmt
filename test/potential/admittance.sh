@@ -29,7 +29,8 @@ gravfft z.nc+uk -Ff -E$order -D1800 -Gfaa_z.nc
 grdimage faa_z.nc -Cg.cpt -J -O -K -BaWsne -X-3.5i -Y3.25i >> $ps
 
 # 5. MR Map: Total gravity model + 0.5 mGal noise
-grdmath faa_flex.nc faa_z.nc ADD 0 0.5 NRAND ADD = faa_total.nc
+#grdmath -Rfaa_flex.nc 0 0.5 NRAND = faa_noise.nc
+grdmath faa_flex.nc faa_z.nc ADD faa_noise.nc ADD = faa_total.nc
 grdimage faa_total.nc -Cg.cpt -J -O -K -BaWsne -X3.5i >> $ps
 
 # Compute admittance, both data and theoretical, and coherence between topo and gravity
