@@ -4,7 +4,6 @@
 # Compute admittance for synthetic model and data.
 ps=admittance.ps
 order=4
-# NOT FINISHED
 # 1. Create a bathymetry data set with 3 circular Gaussian seamounts
 grdseamount -R0/512/0/512 -I4 -r -Gz.nc -Z-5000 << EOF
 310 290 40 3000
@@ -18,7 +17,7 @@ grdimage z.nc -Cz.cpt -JX3i -P -BaWSne -K -Y0.75i > $ps
 makecpt -Crainbow -T-50/250/10 -Z > g.cpt
 
 # Compute flexure and overlay on bathymetry
-gravfft z.nc+uk -T12000/2800/3300/1000 -Q -Z12000 -N1024/1024+w -L -Gmoho_flex.nc
+gravfft z.nc+uk -T12000/2800/3300/1000 -Q -Z12000 -N1024/1024+w -Gmoho_flex.nc
 grdcontour moho_flex.nc -J -O -K -C100 -A500 >> $ps
 
 # 3. LR Map: Gravity from flexure of Moho only
@@ -34,8 +33,8 @@ grdmath faa_flex.nc faa_z.nc ADD 0 0.5 NRAND ADD = faa_total.nc
 grdimage faa_total.nc -Cg.cpt -J -O -K -BaWsne -X3.5i >> $ps
 
 # Compute admittance, both data and theoretical, and coherence between topo and gravity
-gravfft z.nc+uk faa_total.nc+uk -Iwkt -Ff -Z12000 -T12000/2800/3300/1000 > adm_t.txt
-grdfft z.nc+uk faa_total.nc+uk -Erwk -h+c > adm.txt
+gravfft z.nc+uk faa_total.nc+uk -N+d -Iwkt -Ff -Z12000 -T12000/2800/3300/1000 > adm_t.txt
+grdfft z.nc+uk faa_total.nc+uk  -N+d -Erwk -h+c > adm.txt
 
 # coherence in red, admittance in blue, theoretical admittance in thick lightgray
 psxy adm.txt -i0,15,16 -R8/512/0/1 -JX-6il/2.75i -O -K -Ba2g3:,km:/af:"Coherence":WSn -Sc0.05i \
