@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-03-15	pwessel
+	* -B:			Added modifier +o<plon>/<plat> to draw selected gridlines using
+				oblique coordinates about the specified pole instead of the
+				regular gridlines. Not allowed for oblique Mercator.
 2013-03-11	pwessel
 	* pscoast.c:		Added DCW option for filled countries and (some) states via
 				separate DCW file to be explained.
