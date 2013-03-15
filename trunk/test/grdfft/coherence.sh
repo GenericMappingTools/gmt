@@ -21,7 +21,7 @@ psbasemap -R-84/75/-78/81 -Jx${sclkm}i -O -K -Ba:."Multibeam bathymetry":WSne >>
 grdimage $G.nc -I${G}_int.nc -Jx${scl}i -Cg.cpt -O -K -X3.25i >> $ps
 psbasemap -R-84/75/-78/81 -Jx${sclkm}i -O -K -Ba:."Satellite gravity":WSne >> $ps
 
-grdfft $T.nc $G.nc -Ewk -N192/192+wtmp > cross.txt
+grdfft $T.nc $G.nc -Ewk -N192/192+d+wtmp > cross.txt
 grdgradient ${G}_tmp.nc -A0 -Nt1 -G${G}_tmp_int.nc
 grdgradient ${T}_tmp.nc -A0 -Nt1 -G${T}_tmp_int.nc
 
@@ -36,9 +36,6 @@ grdimage ${G}_tmp.nc -I${G}_tmp_int.nc -Jx${scl}i -Cg.cpt -O -K -X3.25i >> $ps
 psxy -R${G}_tmp.nc -J bbox -O -K -L -W0.5p,- >> $ps
 psbasemap -R-100/91/-94/97 -Jx${sclkm}i -O -K -Ba:."Detrended and extended":WSne >> $ps
 
-#gravfft -N192/192 $T -I$G/wck > coh.out
-
 psxy -R2/160/0/1 -JX-6il/2.5i -Ba2f3g3:,km:/afg0.5:"Coherency@+2@+":WsNe -O -K -X-3.25i -Y3.5i cross.txt -i0,15 -W0.5p >> $ps
 psxy -R -J cross.txt -O -K -i0,15,16 -Sc0.075i -Gred -W0.25p -Ey >> $ps
-#psxy -R -J -O -K -W0.25p,blue coh.out >> $ps
 psxy -R -J -O -T >> $ps
