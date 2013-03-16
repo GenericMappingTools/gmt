@@ -4,7 +4,7 @@
 gmtvector \- Basic manipulation of Cartesian vectors
 .SH SYNOPSIS
 BD(gmtvector) [ IT(table) ] [ OPT(A)BD(m)[IT(conf)]|IT(vector) ] [ OPT(C)[BD(i)|BD(o)] ] [ OPT(E) ] [ OPT(N) ] 
-[ OPT(S)IT(vector) ] [ OPT(T)BD(a)|BD(d)|BD(D)|BD(r)[IT(arg)|BD(s)|BD(x)] ] [ GMT_V_OPT ] 
+[ OPT(S)IT(vector) ] [ OPT(T)BD(a)|BD(d)|BD(D)|BD(p)IT(az)|BD(r)[IT(arg)|BD(s)|BD(x)] ] [ GMT_V_OPT ] 
 [ GMT_bi_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_colon_OPT ] 
 .SH DESCRIPTION
 BD(gmtvector) reads either (x, y), (x, y, z), (r, theta) or (lon, lat) [or (lat,lon); see OPT(:)] coordinates
@@ -48,9 +48,10 @@ OPT(S)[IT(vector)]
 Specify a single, secondary vector in the same format as the first vector.  Required by operations in OPT(T) that
 need two vectors (average, bisector, dot product, cross product, and sum).
 .TP
-OPT(T)BD(a)|BD(d)|BD(D)|BD(s)|BD(r)[IT(arg)|BD(x)]
+OPT(T)BD(a)|BD(d)|BD(D)|BD(p)IT(az)|BD(s)|BD(r)[IT(arg)|BD(x)]
 Specify the vector transformation of interest.  Append BD(a) for average, BD(b) for the pole of the two points bisector,
-BD(d) for dot product (use BD(D) to get angle in degrees between the two vectors),
+BD(d) for dot product (use BD(D) to get angle in degrees between the two vectors), BD(p)IT(az) for the
+pole to the great circle specified by input vector and IT(az) (no second vector used),
 BD(r)IT(par) for vector rotation (here, IT(par) is a single angle for 2-D Cartesian data
 and IT(lon/lat/angle) for a 3-D rotation pole and angle), BD(s) for vector sum, and BD(x) for cross-product.
 If OPT(T) is not given then no transformation takes place; the output is determined by other options such as OPT(A),
@@ -102,6 +103,12 @@ To find the mean location of the geographical points listed in points.txt, with 
 .br
 .sp
 gmtvector points.txt -Am99 -fg > centroid.txt
+.br 
+.sp
+To find the pole corresponding to the great circle that goes through the point -30/60 at an azimuth of 105 degrees, use
+.br
+.sp
+gmtvector -A-30/60 -Tp105 -fg > pole.txt
 .br 
 .sp
 .SH ROTATIONS
