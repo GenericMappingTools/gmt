@@ -769,6 +769,7 @@ void GMT_lineary_oblgrid (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, doub
 		GMT_plot_line (C, C->current.plot.x, C->current.plot.y, C->current.plot.pen, C->current.plot.n);
 	}
 	if (ny) GMT_free (C, y);
+	p_cap = fabs (C->current.setting.map_polar_cap[0]);
 	cap = !doubleAlmostEqual (p_cap, 90.0);	/* true if we have a polar cap specified */
 	if (cap) {	/* Draw the polar cap(s) with a separate spacing */
 		p_cap = D2R * C->current.setting.map_polar_cap[0];
