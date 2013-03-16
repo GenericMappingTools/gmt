@@ -9830,7 +9830,6 @@ Finally we show an example of a polygon file:
    Travel times were calculated using Geoware's travel time calculator,
    **ttt**; see
 
-.. |image| image:: GMT_coverlogo
 .. |image| image:: GMT_utm_zones
 .. |image| image:: example_04
 .. |image| image:: example_04c
