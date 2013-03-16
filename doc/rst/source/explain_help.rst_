@@ -3,7 +3,7 @@
 **-?** (\*)
     Print a full usage (help) message, including the explanation of
     options, then exits.
-**--version** (\*)
+**-**\ **-version** (\*)
     Print GMT version and exit.
-**--show-sharedir** (\*)
+**-**\ **-show-sharedir** (\*)
     Print full path to GMT share directory and exit.
