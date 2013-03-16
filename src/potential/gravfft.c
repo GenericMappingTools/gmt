@@ -36,6 +36,7 @@
 #include "gmt_dev.h"
 
 #define GMT_PROG_OPTIONS "-Vf"
+#define GMT_FFT_DIM	2	/* Dimension of FFT needed */
 
 enum Gravfft_fields {
 	GRAVFFT_FAA	= 0,
@@ -283,10 +284,10 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 #ifdef GMT_COMPAT
 				if (popt) {	/* Got both old -L and -N; append */
 					sprintf (combined, "%s%s", opt->arg, argument);
-					Ctrl->N.info = GMT_FFT_parse (C, 'N', 2, combined);
+					Ctrl->N.info = GMT_FFT_Parse (C, 'N', GMT_FFT_DIM, combined);
 				} else
 #endif
-				Ctrl->N.info = GMT_FFT_parse (C, 'N', 2, opt->arg);
+				Ctrl->N.info = GMT_FFT_Parse (C, 'N', GMT_FFT_DIM, opt->arg);
 				if (Ctrl->N.info == NULL) n_errors++;
 				Ctrl->N.active = true;
 				break;
@@ -322,13 +323,13 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 	}
 #ifdef GMT_COMPAT
 	if (!Ctrl->N.active && popt) {	/* User set -L but no -N so nothing got appended above... Sigh...*/
-		Ctrl->N.info = GMT_FFT_parse (C, 'N', 2, argument);
+		Ctrl->N.info = GMT_FFT_Parse (C, 'N', GMT_FFT_DIM, argument);
 	}
 #endif
 
 	if (override_mode >= 0) {		/* FAKE TEST AS IT WAS SET ABOVE override_mode = GMT_FFT_REMOVE_MEAN */
 		if (Ctrl->N.info == NULL) {	/* User neither gave -L nor -N... Sigh...*/
-			if ((Ctrl->N.info = GMT_FFT_parse (C, 'N', 2, "")) == NULL)	/* Error messages are issued inside parse function */
+			if ((Ctrl->N.info = GMT_FFT_Parse (C, 'N', GMT_FFT_DIM, "")) == NULL)	/* Error messages are issued inside parse function */
 				n_errors++;
 			else
 				Ctrl->N.info->trend_mode = override_mode;
@@ -422,7 +423,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT,"\t   v = Vertical Gravity Gradient (VGG; 1 Eovtos = 0.1 mGal/km).\n");
 	GMT_message (GMT,"\t   e = East deflections of the vertical (micro-radian).\n");
 	GMT_message (GMT,"\t   n = North deflections of the vertical (micro-radian).\n");
-	GMT_FFT_option (C, 'N', 2, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers:");
+	GMT_FFT_Option (C, 'N', GMT_FFT_DIM, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers:");
 	GMT_message (GMT,"\t   Warning: both -D -T...+m and -Q will implicitly set -N's +h.\n");
 	GMT_message (GMT,"\t-Q writes out a grid with the flexural topography (with z positive up)\n");
 	GMT_message (GMT,"\t   whose average depth is set to the value given by -Z<zm>.\n");
@@ -554,7 +555,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 					Grid[0]->data[GMT_IJPR(Grid[0]->header,j,i)] += (float)Ctrl->A.z_offset;
 		}
 
-		FFT_info[k] = GMT_FFT_init_2d (API, Orig[k], GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);
+		FFT_info[k] = GMT_FFT_Create (API, Orig[k], GMT_FFT_DIM, 0U, GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);
 	}
 	
 	K = FFT_info[0];	/* We only need one of these anyway; K is a shorthand */
@@ -574,7 +575,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 		for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Call the forward FFT, once per grid */
 			GMT_report (GMT, GMT_MSG_VERBOSE, "forward FFT...\n");
-			if (GMT_FFT_2d (API, Grid[k], GMT_FFT_FWD, GMT_FFT_COMPLEX, FFT_info[k]))
+			if (GMT_FFT (API, Grid[k], GMT_FFT_FWD, GMT_FFT_COMPLEX, FFT_info[k]))
 				Return (EXIT_FAILURE);
 		}
 
@@ -590,13 +591,13 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	if (Ctrl->Q.active || Ctrl->T.moho) {
 		double coeff[3];
 		GMT_report (GMT, GMT_MSG_VERBOSE, "forward FFT...\n");
-		if (GMT_FFT_2d (API, Grid[0], GMT_FFT_FWD, GMT_FFT_COMPLEX, FFT_info[0])) {
+		if (GMT_FFT (API, Grid[0], GMT_FFT_FWD, GMT_FFT_COMPLEX, FFT_info[0])) {
 			Return (EXIT_FAILURE);
 		}
 
 		do_isostasy__ (GMT, Grid[0], Ctrl, K);
 		
-		if (GMT_FFT_2d (API, Grid[0], GMT_FFT_INV, GMT_FFT_COMPLEX, K))
+		if (GMT_FFT (API, Grid[0], GMT_FFT_INV, GMT_FFT_COMPLEX, K))
 			Return (EXIT_FAILURE);
 
 		if (!doubleAlmostEqual (scale_out, 1.0))
@@ -651,7 +652,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, " Inverse FFT...");
 
-	if (GMT_FFT_2d (API, Grid[0], GMT_FFT_INV, GMT_FFT_COMPLEX, K))
+	if (GMT_FFT (API, Grid[0], GMT_FFT_INV, GMT_FFT_COMPLEX, K))
 		Return (EXIT_FAILURE);
 
 	if (!doubleAlmostEqual (scale_out, 1.0))

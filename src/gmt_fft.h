@@ -53,6 +53,7 @@ enum GMT_FFT_DIMSET {
 
 struct GMT_FFT_WAVENUMBER {	/* Holds parameters needed to calculate kx, ky, kr */
 	int nx2, ny2;
+	unsigned int dim;	/* FFT dimension as setup by Init */
 	double delta_kx, delta_ky;
 	double (*k_ptr) (uint64_t k, struct GMT_FFT_WAVENUMBER *K);	/* pointer to function returning either kx, ky, or kr */
 	double coeff[3];		/* Detrending coefficients returned, if used */

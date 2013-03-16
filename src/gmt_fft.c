@@ -41,15 +41,12 @@
  * The following functions are available via the API if #define GMT_FFT_EXTENSION is set.
  * The prototypes are declared in gmt.h and coded in gmt_api.c
  *
- * GMT_FFT_option	 : Lets user code display FFT options
- * GMT_FFT_parse	 : Allows parsing of user option for the FFT settings
- * GMT_FFT_init_1d	 : Initializes the FFT machinery, preps the table.
- * GMT_FFT_init_2d	 : Initializes the FFT machinery, preps the grid.
- * GMT_FFT_1d		 : 1-D FFT
- * GMT_FFT_2d		 : 2-D FFT
- * GMT_FFT_wavenumber_1d : Return any wavenumber given table index
- * GMT_FFT_wavenumber_2d : Return any wavenumber given grid index
- * GMT_FFT_end		 : Frees the FFT machinery.
+ * GMT_FFT_Option     : Lets user code display FFT options
+ * GMT_FFT_Parse      : Allows parsing of user option for the FFT settings
+ * GMT_FFT_Create     : Initializes the 1-D or 2-D FFT machinery, preps the table/grid.
+ * GMT_FFT	      : 1-D or 2-D FFT
+ * GMT_FFT_Wavenumber : Return any wavenumber given index
+ * GMT_FFT_Destroy    : Frees the FFT machinery.
  *
  */
 

@@ -32,6 +32,7 @@
 #include "gmt_dev.h"
 
 #define GMT_PROG_OPTIONS "-Vfh" GMT_OPT("T")
+#define GMT_FFT_DIM	2	/* Dimension of FFT needed */
 
 #ifdef DEBUG
 /* For debuging -E; running this in debug and setting it to true will also output the number of estimates per radial k */
@@ -606,7 +607,7 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-G filename for output netCDF grid file OR 1-D data table (see -E).\n");
 	GMT_message (GMT, "\t   Optional for -E (spectrum written to stdout); required otherwise.\n");
 	GMT_message (GMT, "\t-I Integrate, i.e., divide by kr [ * scale].  Use -Ig to get m from mGal].\n");
-	GMT_FFT_option (C, 'N', 2, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers:");
+	GMT_FFT_Option (C, 'N', GMT_FFT_DIM, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers:");
 	GMT_message (GMT, "\t-S multiply field by scale after inverse FFT [1.0].\n");
 	GMT_message (GMT, "\t   Give -Sd to convert deflection of vertical to micro-radians.\n");
 #if 0
@@ -753,10 +754,10 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 #ifdef GMT_COMPAT
 				if (ptr) {	/* Got both old -L and -N; append */
 					sprintf (combined, "%s%s", opt->arg, argument);
-					Ctrl->N.info = GMT_FFT_parse (C, 'N', 2, combined);
+					Ctrl->N.info = GMT_FFT_Parse (C, 'N', GMT_FFT_DIM, combined);
 				} else
 #endif
-				Ctrl->N.info = GMT_FFT_parse (C, 'N', 2, opt->arg);
+				Ctrl->N.info = GMT_FFT_Parse (C, 'N', GMT_FFT_DIM, opt->arg);
 				if (Ctrl->N.info == NULL) n_errors++;
 				break;
 			case 'S':	/* Scale */
@@ -787,7 +788,7 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 	}
 #ifdef GMT_COMPAT
 	if (!Ctrl->N.active && ptr) {	/* User set -L but no -N so nothing got appended above... Sigh...*/
-		Ctrl->N.info = GMT_FFT_parse (C, 'N', 2, argument);
+		Ctrl->N.info = GMT_FFT_Parse (C, 'N', GMT_FFT_DIM, argument);
 	}
 #endif
 	if (Ctrl->N.active && Ctrl->N.info->info_mode == GMT_FFT_LIST) {
@@ -867,7 +868,7 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 	/* Grids are compatible. Initialize FFT structs, grid headers, read data, and check for NaNs */
 	
 	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Read, and check that no NaNs are present in either grid */
-		FFT_info[k] = GMT_FFT_init_2d (API, Orig[k], GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);
+		FFT_info[k] = GMT_FFT_Create (API, Orig[k], GMT_FFT_DIM, 0U, GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);
 	}
 	K = FFT_info[0];	/* We only need one of these anyway; K is a shorthand */
 	
@@ -892,7 +893,7 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 
 	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Call the forward FFT, once per grid, optionally save raw FFT output */
 		GMT_report (GMT, GMT_MSG_VERBOSE, "forward FFT...\n");
-		if (GMT_FFT_2d (API, Grid[k], GMT_FFT_FWD, GMT_FFT_COMPLEX, FFT_info[k]))
+		if (GMT_FFT (API, Grid[k], GMT_FFT_FWD, GMT_FFT_COMPLEX, FFT_info[k]))
 			Return (EXIT_FAILURE);
 	}
 
@@ -944,7 +945,7 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 	if (!Ctrl->E.active) {	/* Since -E output is handled separately by do_spectrum itself */
 		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "inverse FFT...\n");
 
-		if (GMT_FFT_2d (API, Grid[0], GMT_FFT_INV, GMT_FFT_COMPLEX, NULL))
+		if (GMT_FFT (API, Grid[0], GMT_FFT_INV, GMT_FFT_COMPLEX, K))
 			Return (EXIT_FAILURE);
 
 		if (!doubleAlmostEqual (Ctrl->S.scale, 1.0)) GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, Ctrl->S.scale, 0);
