@@ -37,6 +37,8 @@
 #include "gmt_dev.h"
 #include "mgd77.h"
 
+#define GMT_PROG_OPTIONS "-:RVbh"
+
 #define MGD77_FMT  "drt,id,tz,year,month,day,hour,dmin,lat,lon,ptc,twt,depth,bcc,btc,mtf1,mtf2,mag,msens,diur,msd,gobs,eot,faa,nqc,sln,sspn"
 #define MGD77_ALL  "drt,id,time,lat,lon,ptc,twt,depth,bcc,btc,mtf1,mtf2,mag,msens,diur,msd,gobs,eot,faa,nqc,sln,sspn"
 #define MGD77T_FMT "id,tz,date,hhmm,lat,lon,ptc,nqc,twt,depth,bcc,btc,bqc,mtf1,mtf2,mag,msens,diur,msd,mqc,gobs,eot,faa,gqc,sln,sspn"
@@ -160,8 +162,8 @@ int GMT_mgd77list_usage (struct GMTAPI_CTRL *C, int level)
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: mgd77list <cruise(s)> -F<dataflags>[,<tests>] [-A[+]c|d|f|m|t[<code>]] [-Cf|g|e] [-Da<startdate>] [-Db<stopdate>] [-E]\n");
-	GMT_message (GMT, "\t[-Ga<startrec>] [-Gb<stoprec>] [-H] [-I<code>] [-L[<corrtable.txt>]] [-N[s|p][<unit>]]] [-Qa|v<min>/<max>] [%s]\n", GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-Sa<startdist>[<unit>]] [-Sb<stopdist>[<unit>]] [-T[m|e]] [-V] [-W<Weight>] [-Z[+|-] [%s] -h\n\n", GMT_bo_OPT);
+	GMT_message (GMT, "\t[-Ga<startrec>] [-Gb<stoprec>] [-I<code>] [-L[<corrtable.txt>]] [-N[s|p][<unit>]]] [-Qa|v<min>/<max>] [%s]\n", GMT_Rgeo_OPT);
+	GMT_message (GMT, "\t[-Sa<startdist>[<unit>]] [-Sb<stopdist>[<unit>]] [-T[m|e]] [%s] [-W<Weight>] [-Z[+|-] [%s] [-h] [%s]\n\n", GMT_V_OPT, GMT_bo_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -287,7 +289,6 @@ int GMT_mgd77list_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-E Output records that exactly matches the requested geophysical information in -F\n");
 	GMT_message (GMT, "\t   [Default will output all record that matches at least one column].\n");
 	GMT_message (GMT, "\t-G List from given a<record> [Start of cruise] up to given b<record> [End of cruise].\n");
-	GMT_message (GMT, "\t-H Write one header record with column names.\n");
 	GMT_message (GMT, "\t-I Ignore certain data file formats from consideration. Append combination of act to ignore\n");
 	GMT_message (GMT, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, (m) MGD77T ASCII, or (t) plain table files. [Default ignores none].\n");
 	GMT_message (GMT, "\t-L Subtract systematic corrections from the data. If no correction file is given,\n");
@@ -315,9 +316,9 @@ int GMT_mgd77list_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-W Set weight for these data [1].\n");
 	GMT_message (GMT, "\t-Z Append - to report bathymetry & msd as negative depths [Default is positive -Z+].\n");
-	GMT_explain_options (GMT, "D");
+	GMT_explain_options (GMT, "D0");
 	GMT_message (GMT, "\t-h Write header record with column information [Default is no header].\n");
-	GMT_explain_options (GMT, "0.");
+	GMT_explain_options (GMT, ":.");
 	
 	return (EXIT_FAILURE);
 }
@@ -785,7 +786,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VRb", "h", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_mgd77list_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_mgd77list_parse (API, Ctrl, options))) Return (error);
 	

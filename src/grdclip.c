@@ -32,6 +32,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-RV"
+
 enum Grdclip_cases {
 	GRDCLIP_BELOW	= 1,
 	GRDCLIP_BETWEEN	= 2,
@@ -283,7 +285,7 @@ int GMT_grdclip (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VR", "", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdclip_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdclip_parse (API, Ctrl, options))) Return (error);
 

@@ -26,6 +26,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "->RVbhirs"
+
 #ifndef M_LN2
 #define M_LN2 0.69314718055994530942  /* log_e 2 */
 #endif
@@ -93,7 +95,8 @@ int GMT_sph2grd_usage (struct GMTAPI_CTRL *C, int level)
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: sph2grd [coeff_file] -G<grdfile> %s %s [-Dg|n]\n", GMT_I_OPT, GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-E] [-F[k]<filter>] [-N<norm>] [-Q] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_h_OPT);
+	GMT_message (GMT, "\t[-E] [-F[k]<filter>] [-N<norm>] [-Q] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+		GMT_V_OPT, GMT_bi_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -119,7 +122,7 @@ int GMT_sph2grd_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   g: Geodesy normalization - inner products summed over surface equal 4pi\n");
 	GMT_message (GMT, "\t   s: Schmidt normalization - as used in geomagnetism\n");
 	GMT_message (GMT, "\t-Q Coefficients have phase convention from physics, i.e., the (-1)^m factor\n");
-	GMT_explain_options (GMT, "VC4hiF.");
+	GMT_explain_options (GMT, "VC4hiFs.");
 	
 	return (EXIT_FAILURE);
 }
@@ -245,7 +248,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VRfb", "hirs>" GMT_OPT("HMm"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_sph2grd_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_sph2grd_parse (API, Ctrl, options))) Return (error);
 	

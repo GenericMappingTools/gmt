@@ -28,6 +28,8 @@
 
 #include "spotter.h"
 
+#define GMT_PROG_OPTIONS "-:RVbhi"
+
 #define N_PM_ITEMS	8
 #define PM_RATE		0
 #define PM_AZIM		1
@@ -96,7 +98,8 @@ int GMT_grdpmodeler_usage (struct GMTAPI_CTRL *C, int level)
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdpmodeler <agegrdfile> -E<rottable> -G<outgrid> [-F<polygontable>]\n");
-	GMT_message (GMT, "\t[%s] [%s] [-Sa|d|r|w|x|y|X|Y] [-T<time>] [%s] [%s] [%s]\n\n", GMT_Id_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_r_OPT);
+	GMT_message (GMT, "\t[%s] [%s] [-Sa|d|r|w|x|y|X|Y] [-T<time>] [%s] [%s] [%s]\n\t[%s] [%s]\n\n",
+		GMT_Id_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -117,7 +120,7 @@ int GMT_grdpmodeler_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   X : Congitude at origin of crust.\n");
 	GMT_message (GMT, "\t   Y : Latitude at origin of crust.\n");
 	GMT_message (GMT, "\t-T Set fixed time of reconstruction to override age grid.\n");
-	GMT_explain_options (GMT, "V.");
+	GMT_explain_options (GMT, "VC2hiF.");
 	
 	return (EXIT_FAILURE);
 
@@ -258,7 +261,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
-	if (GMT_Parse_Common (API, "-VfR:", "", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdpmodeler_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdpmodeler_parse (API, Ctrl, options))) Return (error);
 	

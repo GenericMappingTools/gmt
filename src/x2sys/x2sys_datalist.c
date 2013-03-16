@@ -30,6 +30,8 @@
 
 #include "x2sys.h"
 
+#define GMT_PROG_OPTIONS "->RVb"
+
 struct X2SYS_DATALIST_CTRL {
 	struct A {	/* -A */
 		bool active;
@@ -103,7 +105,7 @@ int GMT_x2sys_datalist_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t-S Suppress output records where all data columns are NaN [Output all records].\n");
 	GMT_message (GMT, "\t   (Note: data columns exclude navigation (lon|x|lat|y|time) columns.)\n");
-	GMT_explain_options (GMT, "VD");
+	GMT_explain_options (GMT, "VD.");
 	
 	return (EXIT_FAILURE);
 }
@@ -247,7 +249,7 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VfRb", ">", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_x2sys_datalist_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_x2sys_datalist_parse (API, Ctrl, options))) Return (error);
 

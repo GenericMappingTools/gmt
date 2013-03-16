@@ -40,6 +40,8 @@
 #include "gmt_dev.h"
 #include "sph.h"
 
+#define GMT_PROG_OPTIONS "-:RVbhirs" GMT_OPT("F")
+
 struct SPHDISTANCE_CTRL {
 	struct C {	/* -C */
 		bool active;
@@ -123,7 +125,7 @@ int GMT_sphdistance_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
 	GMT_message (GMT, "usage: sphdistance [<table>] -G<outgrid> %s\n", GMT_I_OPT);
 	GMT_message (GMT, "\t[-C] [-E] [-L<unit>] [-N<nodetable>] [-Q<voronoitable>]\n");
-	GMT_message (GMT, "\t[-V] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_colon_OPT, GMT_b_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT);
+	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_b_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
         
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -143,7 +145,7 @@ int GMT_sphdistance_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   [Default performs Voronoi construction on input data first].\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t   If no region is specified we default to the entire world [-Rg].\n");
-	GMT_explain_options (GMT, "VC2hiF:.");
+	GMT_explain_options (GMT, "VC2hiFs:.");
 	
 	return (EXIT_FAILURE);
 }
@@ -266,7 +268,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg since this is spherical triangulation */
-	if (GMT_Parse_Common (API, "-VRb:", "himrs" GMT_OPT("F"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_sphdistance_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_sphdistance_parse (API, Ctrl, options))) Return (error);
 

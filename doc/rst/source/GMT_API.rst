@@ -1521,8 +1521,9 @@ parser is
 
 ::
 
-    int GMT_Parse_Common (void *API, struct GMT_OPTION *list);
+    int GMT_Parse_Common (void *API, char *options, struct GMT_OPTION *list);
 
+where *options* is a string with all GMT options used by the program.
 An error will be reported via ``API->error`` if any of the common
 *GMT* options fail to parse, and if so we return TRUE; if not errors we
 return FALSE. All other options, including file names, will be silently

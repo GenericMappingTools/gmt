@@ -33,6 +33,8 @@
  
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-:>JRVbfho" GMT_OPT("HMm")
+
 #ifndef WIN32
 #include <termios.h>
 #endif
@@ -176,7 +178,7 @@ int GMT_gmtdigitize_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "gmtdigitize %s - Digitizing and inverse map transformation of map x/y coordinates\n\n", GMT_VERSION);
 	GMT_message (GMT, "usage: gmtdigitize %s %s\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[-A] [-C<device>] [-D<limit>] [-F] [-H] [-L<lpi>] [-N<namestem>] [-S]\n");
-	GMT_message (GMT, "\t[-V] [-Zk|v] [%s] [%s]\n\n", GMT_bo_OPT, GMT_f_OPT);
+	GMT_message (GMT, "\t[%s] [-Zk|v] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_bo_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_colon_OPT);
 	
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 	
@@ -199,7 +201,7 @@ int GMT_gmtdigitize_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   It will also duplicate data output to GMT->session.std[GMT_ERR] for monitoring\n");
 	GMT_message (GMT, "\t-Zv will prompt for z-value for each segment and output xyz triplets\n");
 	GMT_message (GMT, "\t-Zk means append button key id as a final column\n");
-	GMT_explain_options (GMT, "Dfho.");
+	GMT_explain_options (GMT, "Dfho:.");
 	
 	return (EXIT_FAILURE);
 }
@@ -308,7 +310,7 @@ int GMT_gmtdigitize (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	if (GMT_Parse_Common (API, "-VJfRb:", "h>" GMT_OPT("HMm"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	GMT = GMT_begin_module (API, "gmtdigitize", &GMT_cpy);				/* Save current state */
 	Ctrl = New_gmtdigitize_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtdigitize_parse (API, Ctrl, options))) Return (error);

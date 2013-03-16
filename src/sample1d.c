@@ -32,6 +32,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "->Vbfghios" GMT_OPT("HMm")
+
 #define INT_1D_CART	0	/* Regular 1-D interpolation */
 #define INT_2D_CART	1	/* Cartesian 2-D path interpolation */
 #define INT_2D_GEO	2	/* Spherical 2-D path interpolation */
@@ -96,8 +98,8 @@ int GMT_sample1d_usage (struct GMTAPI_CTRL *C, int level)
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: sample1d [<table>] [-A[f|m|p|r|R]+l] [-Fl|a|c|n] [-I<inc>[<unit>]] [-N<knottable>]\n");
-	GMT_message (GMT, "\t[-S<start>[/<stop]] [-T<time_col>] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
-		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT);
+	GMT_message (GMT, "\t[-S<start>[/<stop]] [-T<time_col>] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
+		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -128,7 +130,7 @@ int GMT_sample1d_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-S Set the first output point to be <start> [first multiple of inc in range].\n");
 	GMT_message (GMT, "\t   Optionally, append /<stop> for last output point [last multiple of inc in range].\n");
 	GMT_message (GMT, "\t-T Give column number of the independent variable (time) [Default is 0 (first)].\n");
-	GMT_explain_options (GMT, "VC2D0fghio.");
+	GMT_explain_options (GMT, "VC2D0fghios.");
 	
 	return (EXIT_FAILURE);
 }
@@ -271,7 +273,7 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-Vbf", "ghios>" GMT_OPT("HMm"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_sample1d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_sample1d_parse (API, Ctrl, options))) Return (error);
 	

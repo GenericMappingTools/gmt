@@ -43,6 +43,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-:RVabfhirs" GMT_OPT("FH")
+
 /* MEX: <DI DDi GGO LGi */
 
 struct SURFACE_CTRL {
@@ -1566,8 +1568,8 @@ int GMT_surface_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "usage: surface [<table>] -G<outgrid> %s\n", GMT_I_OPT);
 	GMT_message (GMT, "\t%s [-A<aspect_ratio>] [-C<convergence_limit>] [-D<breakline>]\n", GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[-Ll<limit>] [-Lu<limit>] [-N<n_iterations>] ] [-S<search_radius>[m|s]] [-T[i|b]<tension>]\n");
-	GMT_message (GMT, "\t[-Q] [%s] [-Z<over_relaxation_parameter>] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
-		GMT_V_OPT, GMT_bi_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "\t[-Q] [%s] [-Z<over_relaxation_parameter>] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
+		GMT_V_OPT, GMT_bi_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -1608,7 +1610,7 @@ int GMT_surface_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-Z Set <over_relaxation parameter>.  Default = 1.4\n");
 	GMT_message (GMT, "\t   Use a value between 1 and 2.  Larger number accelerates convergence but can be unstable.\n");
 	GMT_message (GMT, "\t   Use 1 if you want to be sure to have (slow) stable convergence.\n\n");
-	GMT_explain_options (GMT, "aC3fhiF:.");
+	GMT_explain_options (GMT, "aC3fhiFs:.");
 	GMT_message (GMT, "\t(For additional details, see Smith & Wessel, Geophysics, 55, 293-305, 1990.)\n");
 	
 	return (EXIT_FAILURE);
@@ -1787,7 +1789,7 @@ int GMT_surface (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VfRb:", "ahirs" GMT_OPT("FH"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_surface_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_surface_parse (API, Ctrl, options))) Return (error);
 	

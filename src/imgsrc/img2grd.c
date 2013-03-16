@@ -58,6 +58,8 @@
 #include "gmt_dev.h"
 #include "common_byteswap.h"
 
+#define GMT_PROG_OPTIONS "-VRn" GMT_OPT("m")
+
 struct IMG2GRD_CTRL {
 	struct In {	/* Input file name */
 		bool active;
@@ -130,7 +132,7 @@ int GMT_img2grd_usage (struct GMTAPI_CTRL *C, int level) {
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: img2grd <world_image_filename> %s -G<outgrid> -T<type> [-C]\n", GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-D[<minlat>/<maxlat>]] [-E] [-I<min>] [-M] [-N<navg>] [-S[<scale>]] [-V] [-W<maxlon>] [%s]\n\n", GMT_n_OPT);
+	GMT_message (GMT, "\t[-D[<minlat>/<maxlat>]] [-E] [-I<min>] [-M] [-N<navg>] [-S[<scale>]] [%s] [-W<maxlon>] [%s]\n\n", GMT_V_OPT, GMT_n_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 	
@@ -318,8 +320,7 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VfR", GMT_OPT("m"), options))
-		Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_img2grd_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_img2grd_parse (API, Ctrl, options)))
 		Return (error);

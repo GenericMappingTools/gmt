@@ -85,6 +85,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-RV"
+
 struct GRDTREND_CTRL {	/* All control options for this program (except common args) */
 	struct In {
 		bool active;
@@ -504,7 +506,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_grdtrend_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VR", "", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdtrend_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdtrend_parse (API, Ctrl, options))) Return (error);
 

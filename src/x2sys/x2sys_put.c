@@ -33,6 +33,8 @@
 
 #include "x2sys.h"
 
+#define GMT_PROG_OPTIONS "->V"
+
 struct X2SYS_PUT_CTRL {
 	struct In {	/* -In */
 		bool active;
@@ -83,7 +85,7 @@ int GMT_x2sys_put_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT,"\t-D Remove the listed tracks  [Default will add to database].\n");
 	GMT_message (GMT,"\t-F Force updates to earlier entries for a track with new information.\n");
 	GMT_message (GMT,"\t   [Default refuses to process tracks already in the database].\n");
-	GMT_explain_options (GMT, "V");
+	GMT_explain_options (GMT, "V.");
 	
 	return (EXIT_FAILURE);
 }
@@ -221,7 +223,7 @@ int GMT_x2sys_put (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VR", ">", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_x2sys_put_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_x2sys_put_parse (API, Ctrl, options))) Return (error);
 

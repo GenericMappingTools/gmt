@@ -40,6 +40,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-Vbfghis"
+
 #define SPECTRUM1D_N_OUTPUT_CHOICES 8
 
 struct SPECTRUM1D_CTRL {
@@ -527,7 +529,7 @@ int GMT_spectrum1d_usage (struct GMTAPI_CTRL *C, int level)
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: spectrum1d [<table>] -S<segment_size> [-C[<xycnpago>]] [-D<dt>] [-L[m|h]] [-N[+]<name_stem>]\n");
-	GMT_message (GMT, "\t[%s] [-W] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT);
+	GMT_message (GMT, "\t[%s] [-W] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -548,7 +550,7 @@ int GMT_spectrum1d_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   To save all selected spectra in a single table, use -N+<file>.\n");
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-W Write Wavelength of spectral estimate in col 1 [Default = frequency].\n");
-	GMT_explain_options (GMT, "C2D0fghi.");
+	GMT_explain_options (GMT, "C2D0fghis.");
 	
 	return (EXIT_FAILURE);
 }
@@ -666,7 +668,7 @@ int GMT_spectrum1d (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-Vbf", "ghis", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_spectrum1d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_spectrum1d_parse (API, Ctrl, options))) Return (error);
 

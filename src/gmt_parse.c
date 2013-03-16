@@ -412,14 +412,13 @@ int GMT_Delete_Option (void *V_API, struct GMT_OPTION *current)
 	return (GMT_OK);	/* No error encountered */
 }
 
-#if 0
 int GMT_Parse_Common (void *V_API, char *given_options, struct GMT_OPTION *options)
 {
-	/* GMT_Parse_Common parses the option list for two types of common options:
-	 * sorted   = list of options to be processed in the order they appear in sorted_list
-	 * unsorted = list of options to be processed in the order they appear in options
+	/* GMT_Parse_Common parses the option list for a program and detects the GMT common options.
+	 * These are processed in the order required by GMT regardless of order given.
 	 * The settings will override values set previously by other commands.
 	 * It ignores filenames and only return errors if GMT common options are misused.
+	 * Note: GMT_CRITICAL_OPT_ORDER is defined in gmt_common.h
 	 */
 
 	struct GMT_OPTION *opt = NULL;
@@ -435,19 +434,24 @@ int GMT_Parse_Common (void *V_API, char *given_options, struct GMT_OPTION *optio
 	if (GMT_Complete_Options (API->GMT, options)) return_error (API, GMT_OPTION_HISTORY_ERROR);	/* Replace shorthand failed */
 
 	/* First parse the common options in the order they appear in GMT_CRITICAL_OPT_ORDER */
-	critical_opt_order = strdup (GMT_CRITICAL_OPT_ORDER)
-	for (i = 0; i < strlen (critical_opt_order), i++) {	/* These are the GMT options that must be parsed in this particular order, if present */
+	critical_opt_order = strdup (GMT_CRITICAL_OPT_ORDER);
+	for (i = 0; i < strlen (critical_opt_order); i++) {	/* These are the GMT options that must be parsed in this particular order, if present */
 		if (strchr (given_options, critical_opt_order[i]) == NULL) continue;	/* Not a selected option */
 		list[0] = critical_opt_order[i];	/* Just look for this particular option in the linked opt list */
-		for (opt = options; opt; opt = opt->next)
+		for (opt = options; opt; opt = opt->next) {
+			if (opt->option != list[0]) continue;
 			n_errors += GMT_parse_common_options (API->GMT, list, opt->option, opt->arg);
+		}
 	}
-	/* Now any critical option given has been parsed.  Next we parse anything NOT a critical option */
+
+	/* Now any critical option given has been parsed.  Next we parse anything NOT a critical GMT option */
 	for (i = 0; given_options[i]; i++) {	/* Loop over all options given */
 		if (strchr (critical_opt_order, given_options[i])) continue;	/* Skip critical option */
 		list[0] = given_options[i];	/* Just look for this particular option */
-		for (opt = options; opt; opt = opt->next)
+		for (opt = options; opt; opt = opt->next) {
 			n_errors += GMT_parse_common_options (API->GMT, list, opt->option, opt->arg);
+			if (opt->option != list[0]) continue;
+		}
 	}
 
 	free ((void *)critical_opt_order);
@@ -457,8 +461,7 @@ int GMT_Parse_Common (void *V_API, char *given_options, struct GMT_OPTION *optio
 	if (n_errors) return_error (API, GMT_PARSE_ERROR);	/* One or more options failed to parse */
 	return (GMT_OK);
 }
-#endif
-
+#if 0
 int GMT_Parse_Common (void *V_API, char *sorted, char *unsorted, struct GMT_OPTION *options)
 {
 	/* GMT_Parse_Common parses the option list for two types of common options:
@@ -498,3 +501,4 @@ int GMT_Parse_Common (void *V_API, char *sorted, char *unsorted, struct GMT_OPTI
 	if (n_errors) return_error (API, GMT_PARSE_ERROR);	/* One or more options failed to parse */
 	return (GMT_OK);
 }
+#endif

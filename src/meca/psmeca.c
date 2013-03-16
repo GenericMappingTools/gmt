@@ -23,6 +23,8 @@ PostScript code is written to stdout.
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-:>BHJKOPRUVXYchixy"
+
 #include "meca.h"
 #include "utilmeca.h"
 
@@ -511,7 +513,7 @@ int GMT_psmeca (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VJR:", "BHKOPUVXhixYyc>", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_psmeca_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psmeca_parse (API, Ctrl, options))) Return (error);
 

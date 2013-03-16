@@ -35,6 +35,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-RV"
+
 struct REDPOL_CTRL {
 	struct In {
 		bool active;
@@ -1007,7 +1009,7 @@ int GMT_grdredpol_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t-T<year> Year used by the IGRF routine to compute the various DECs & DIPs [default: 2000]\n");
 	GMT_message (GMT, "\t-W<wid> window width in degrees [5]\n");
 	GMT_message (GMT, "\t-Z<filter> Write filter file on disk\n");
-	GMT_explain_options (GMT, "V");
+	GMT_explain_options (GMT, "V.");
 	
 	return (EXIT_FAILURE);
 }
@@ -1168,7 +1170,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VR", "", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdredpol_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdredpol_parse (API, Ctrl, options))) Return (error);
 	

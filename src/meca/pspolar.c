@@ -23,6 +23,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-:>BHJKOPRUVXYchixy"
+
 #define DEFAULT_FONTSIZE	9.0	/* In points */
 
 /* Control structure for pspolar */
@@ -390,7 +392,7 @@ int GMT_pspolar (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VJR:", "BHKOPUVXhixYyc>", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_pspolar_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_pspolar_parse (API, Ctrl, options))) Return (error);
   

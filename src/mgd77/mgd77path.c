@@ -20,6 +20,8 @@
 #include "gmt_dev.h"
 #include "mgd77.h"
 
+#define GMT_PROG_OPTIONS "-V"
+
 struct MGD77PATH_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	struct A {	/* -A */
@@ -157,7 +159,7 @@ int GMT_mgd77path (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-V", "", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_mgd77path_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_mgd77path_parse (API, Ctrl, options))) Return (error);
 	

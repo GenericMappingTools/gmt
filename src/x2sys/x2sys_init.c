@@ -30,6 +30,9 @@
 #define THIS_MODULE k_mod_x2sys_init /* I am x2sys_init */
 
 #include "x2sys.h"
+
+#define GMT_PROG_OPTIONS "->RV"
+
 extern void x2sys_set_home (struct GMT_CTRL *GMT);
 
 struct X2SYS_INIT_CTRL {
@@ -139,7 +142,7 @@ int GMT_x2sys_init_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t-W Set maximum gaps allowed at crossover.  Option may be repeated.\n");
 	GMT_message (GMT, "\t   -Wt sets maximum time gap (in user units) [Default is infinite].\n");
 	GMT_message (GMT, "\t   -Wd sets maximum distance gap (in user units) [Default is infinite].\n");
-	GMT_explain_options (GMT, "m");
+	GMT_explain_options (GMT, "m.");
 	
 	return (EXIT_FAILURE);
 }
@@ -281,7 +284,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VR", ">", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_x2sys_init_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_x2sys_init_parse (API, Ctrl, options))) Return (error);
 

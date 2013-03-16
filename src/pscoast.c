@@ -55,6 +55,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "->BJKOPRUVXYbcptxy" GMT_OPT("EZ")
+
 //#define DCW
 
 #ifdef DCW
@@ -185,7 +187,7 @@ int GMT_pscoast_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t[-M] [-N<feature>[/<pen>]] [-O] [-P] [-Q] [-S<fill>]\n");
 	GMT_message (GMT, "\t[%s] [%s]\n", GMT_TROSE, GMT_U_OPT);
 	GMT_message (GMT, "\t[%s] [-W[<feature>/][<pen>]] [%s] [%s]\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n", GMT_bo_OPT, GMT_c_OPT, GMT_p_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s]\n", GMT_bo_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT);
 #ifdef DEBUG
 	GMT_message (GMT, "\t[-+<bin>]\n");
 #endif
@@ -606,7 +608,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VJRb", "BKOPUXxYycpt>" GMT_OPT("EZ"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_pscoast_Ctrl (GMT);		/* Allocate and initialize defaults in a new control structure */
 	if ((error = GMT_pscoast_parse (API, Ctrl, options))) Return (error);
 

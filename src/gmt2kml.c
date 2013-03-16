@@ -30,6 +30,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-:>KOVabfghi" GMT_OPT("HMm")
+
 int gmt_parse_R_option (struct GMT_CTRL *C, char *item);
 void GMT_get_rgb_lookup (struct GMT_CTRL *C, struct GMT_PALETTE *P, int index, double value, double *rgb);
 
@@ -178,7 +180,7 @@ int GMT_gmt2kml_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t[-Fe|s|t|l|p] [-Gf|n[-|<fill>] [-I<icon>] [-K] [-L<name1>,<name2>,...]\n");
 	GMT_message (GMT, "\t[-N-|+|<template>|<name>] [-O] [-Q[e|s|t|l|p|n]<transp>] [-Ra|<w>/<e>/<s>/n>] [-Sc|n<scale>]\n");
 	GMT_message (GMT, "\t[-T<title>[/<foldername>] [%s] [-W-|<pen>] [-Z<opts>]\n", GMT_V_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_a_OPT, GMT_bi_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -236,7 +238,7 @@ int GMT_gmt2kml_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t     to transparent [no fading].\n");
 	GMT_message (GMT, "\t   +v turns off visibility [feature is visible].\n");
 	GMT_message (GMT, "\t   +o open document or folder when loaded [closed].\n");
-	GMT_explain_options (GMT, "C2fghi:.");
+	GMT_explain_options (GMT, "aC2fghi:.");
 	
 	return (EXIT_FAILURE);
 }
@@ -675,7 +677,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-Vbf:", "ghiOK>" GMT_OPT("HMm"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmt2kml_Ctrl (GMT);		/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmt2kml_parse (API, Ctrl, options))) Return (error);
 

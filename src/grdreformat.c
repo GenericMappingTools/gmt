@@ -27,6 +27,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-RVf"
+
 struct GRDREFORMAT_CTRL {
 	struct IO {
 		bool active;
@@ -70,7 +72,7 @@ int GMT_grdreformat_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-N Do NOT write the header (for native grids only - ignored otherwise).\n");
 	GMT_message (GMT, "\t   Useful when creating files to be used by grdraster.\n");
-	GMT_explain_options (GMT, "rfV.");
+	GMT_explain_options (GMT, "rVf.");
 
 	GMT_message (GMT, "\nThe following grid file formats are supported:\n");
 	for (i = 1; i < GMT_N_GRD_FORMATS; ++i) {
@@ -160,7 +162,7 @@ int GMT_grdreformat (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VfR", "", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdreformat_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdreformat_parse (API, Ctrl, options))) Return (error);
 

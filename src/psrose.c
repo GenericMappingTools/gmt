@@ -34,6 +34,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-:>BKOPRUVXYbchipstxy" GMT_OPT("E")
+
 struct PSROSE_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	struct In {
@@ -131,7 +133,8 @@ int GMT_psrose_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "usage: psrose [<table>] [-A[r]<sector_angle>] [%s] [-C[<modes>]] [-D] [-G<fill>] [-I]\n", GMT_B_OPT);
 	GMT_message (GMT, "\t[-K] [-L[<wlab>/<elab>/<slab>/<nlab>]] [-M[<size>][<modifiers>]] [-N] [-O] [-P]\n");
 	GMT_message (GMT, "\t[-R<r0>/<r1>/<theta0>/<theta1>] [-S[n]<scale>] [-T] [%s]\n", GMT_U_OPT);
-	GMT_message (GMT, "\t[%s] [-W[v]<pen>] [%s] [%s] [-Zu|<scale>]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_c_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "\t[%s] [-W[v]<pen>] [%s] [%s] [-Zu|<scale>]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
+		GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_c_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -169,7 +172,7 @@ int GMT_psrose_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-Z Multiply the radii by <scale> before plotting or use -Zu to give each item unit weight.\n");
 	GMT_explain_options (GMT, "c");
 	GMT_message (GMT, "\t-: Expect (azimuth,radius) input rather than (radius,azimuth) [%s].\n", choice[GMT->current.setting.io_lonlat_toggle[GMT_IN]]);
-	GMT_explain_options (GMT, "C2hipt.");
+	GMT_explain_options (GMT, "C2hipst.");
 	
 	return (EXIT_FAILURE);
 }
@@ -376,7 +379,7 @@ int GMT_psrose (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VRb:", "BKOPUXxYychipst>" GMT_OPT("E"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_psrose_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psrose_parse (API, Ctrl, options))) Return (error);
 

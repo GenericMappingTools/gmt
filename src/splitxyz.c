@@ -28,6 +28,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-:>Vbfghis" GMT_OPT("H")
+
 #define SPLITXYZ_F_RES			1000	/* Number of points in filter halfwidth  */
 #define SPLITXYZ_N_OUTPUT_CHOICES	5
 
@@ -152,8 +154,8 @@ int GMT_splitxyz_usage (struct GMTAPI_CTRL *C, int level)
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: splitxyz [<table>] -C<course_change> [-A<azimuth>/<tolerance>]\n");
 	GMT_message (GMT, "\t[-D<minimum_distance>] [-F<xy_filter>/<z_filter>] [-N<template>]\n");
-	GMT_message (GMT, "\t[-Q<flags>] [-S] [%s] [-Z] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s]\n\n",
-		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "\t[-Q<flags>] [-S] [%s] [-Z] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n",
+		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -184,7 +186,7 @@ int GMT_splitxyz_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-Z No z-values.  Input is 2 col x,y only.\n");
 	GMT_explain_options (GMT, "VC0");
 	GMT_message (GMT, "\t     Default input columns is set given -S and -Z options.\n");
-	GMT_explain_options (GMT, "D0fghi:.");
+	GMT_explain_options (GMT, "D0fghis:.");
 	
 	return (EXIT_FAILURE);
 }
@@ -338,7 +340,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-Vbf:", "ghis>" GMT_OPT("H"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_splitxyz_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_splitxyz_parse (API, Ctrl, options))) Return (error);
 

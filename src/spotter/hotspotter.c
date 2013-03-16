@@ -127,6 +127,8 @@
 
 #include "spotter.h"
 
+#define GMT_PROG_OPTIONS "-:>RVbghirs" GMT_OPT("FHMm")
+
 struct HOTSPOTTER_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	struct D {	/* -D<factor> */
@@ -187,8 +189,8 @@ int GMT_hotspotter_usage (struct GMTAPI_CTRL *C, int level)
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: hotspotter [<table>] -E[+]<rottable> -G<CVAgrid> %s\n", GMT_Id_OPT);
 	GMT_message (GMT, "\t%s [-D<factor>] [-N<upper_age>]\n", GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-S] [-T] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
-		GMT_V_OPT, GMT_bi_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "\t[-S] [-T] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+		GMT_V_OPT, GMT_bi_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -204,7 +206,7 @@ int GMT_hotspotter_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-N Set upper age in m.y. for seamounts whose plate age is NaN [180].\n");
 	GMT_message (GMT, "\t-S Normalize CVA grid to percentages of the CVA maximum.\n");
 	GMT_message (GMT, "\t-T Truncate all ages to max age in stage pole model [Default extrapolates].\n");
-	GMT_explain_options (GMT, "VC5hioF:.");
+	GMT_explain_options (GMT, "VC5hiF:.");
 	
 	return (EXIT_FAILURE);
 }
@@ -343,7 +345,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args)
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
-	if (GMT_Parse_Common (API, "-VfRb:", "ghiors>" GMT_OPT("FHMm"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_hotspotter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_hotspotter_parse (API, Ctrl, options))) Return (error);
 

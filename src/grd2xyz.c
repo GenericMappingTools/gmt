@@ -28,6 +28,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-:>RVbfhos" GMT_OPT("H")
+
 struct GRD2XYZ_CTRL {
 	struct C {	/* -C[f|i] */
 		bool active;
@@ -228,7 +230,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VfRb:", "hos>" GMT_OPT("H"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grd2xyz_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grd2xyz_parse (API, Ctrl, &io, options))) Return (error);
 	

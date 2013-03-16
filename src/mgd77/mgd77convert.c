@@ -26,6 +26,8 @@
 #include "gmt_dev.h"
 #include "mgd77.h"
 
+#define GMT_PROG_OPTIONS "-V"
+
 void MGD77_select_high_resolution (struct GMT_CTRL *C);
 
 struct MGD77CONVERT_CTRL {	/* All control options for this program (except common args) */
@@ -74,7 +76,7 @@ int GMT_mgd77convert_usage (struct GMTAPI_CTRL *C, int level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: mgd77convert <cruise(s)> -Fa|c|m|t -T[+]a|c|m|t [-C] [-D] [-L[e][w][+]] [-V]\n\n");
+	GMT_message (GMT, "usage: mgd77convert <cruise(s)> -Fa|c|m|t -T[+]a|c|m|t [-C] [-D] [-L[e][w][+]] [%s]\n\n", GMT_V_OPT);
         
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
              
@@ -91,7 +93,7 @@ int GMT_mgd77convert_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   of 10 fTesla, 1 nGal, 0.01 mm [Default is 2-byte with 0.1 nTesla, 0.1 mGal, m precision].\n");
 	GMT_message (GMT, "\t-L Set log level and destination setting for verification reporting.  Append a combination\n");
 	GMT_message (GMT, "\t   of w for warnings, e for errors, and + to send log to stdout [Default is stderr].\n");
-	GMT_explain_options (GMT, "V");
+	GMT_explain_options (GMT, "V.");
 
 	return (EXIT_FAILURE);
 }
@@ -226,7 +228,7 @@ int GMT_mgd77convert (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-V", "", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_mgd77convert_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_mgd77convert_parse (API, Ctrl, options))) Return (error);
 	

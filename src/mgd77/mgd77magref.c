@@ -19,6 +19,8 @@
 #include "gmt_dev.h"
 #include "mgd77.h"
 
+#define GMT_PROG_OPTIONS "-Vbh" GMT_OPT("Hm")
+
 struct MGD77MAGREF_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	struct MGD77_CM4 *CM4;
@@ -142,7 +144,7 @@ int GMT_mgd77magref_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_explain_options (GMT, "VC0");
 	GMT_message (GMT, "\t   Default is 4 input columns (unless -A is used).  Note for binary input, absolute time must\n");
 	GMT_message (GMT, "\t   be in the unix time-system (unless -A+y is used).\n");
-	GMT_explain_options (GMT, "D0fh:.");
+	GMT_explain_options (GMT, "D0h:.");
 
 	return (EXIT_FAILURE);
 }
@@ -425,7 +427,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-Vfb", "Hm", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_mgd77magref_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	MGD77_Init (GMT, &M);			/* Initialize MGD77 Machinery */
 	MGD77_CM4_init (GMT, &M, Ctrl->CM4);	/* Presets path using strdup */

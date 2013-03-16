@@ -38,6 +38,8 @@
 #include "gmt_dev.h"
 #include "sph.h"
 
+#define GMT_PROG_OPTIONS "-:RVbhirs" GMT_OPT("F")
+
 struct SPHINTERPOLATE_CTRL {
 	struct G {	/* -G<grdfile> */
 		bool active;
@@ -95,7 +97,8 @@ int GMT_sphinterpolate_usage (struct GMTAPI_CTRL *C, int level)
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
 	GMT_message (GMT, "usage: sphinterpolate [<table>] -G<outgrid> %s\n", GMT_I_OPT);
-	GMT_message (GMT, "\t[-Q<mode>][/<args>] [-T] [-V] [-Z] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "\t[-Q<mode>][/<args>] [-T] [%s] [-Z] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
+		GMT_V_OPT, GMT_b_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
                
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -121,7 +124,7 @@ int GMT_sphinterpolate_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-T Use variable tension (ignored for -Q0) [constant].\n");
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-Z Scale data by 1/(max-min) prior to gridding [no scaling].\n");
-	GMT_explain_options (GMT, "C3hiF:.");
+	GMT_explain_options (GMT, "C3hiFs:.");
 	
 	return (EXIT_FAILURE);
 }
@@ -238,8 +241,8 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args)
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg since this is spherical triangulation */
-	if (GMT_Parse_Common (API, "-VRbr:", "hm" GMT_OPT("F"), options)) Return (API->error);
 	Ctrl = New_sphinterpolate_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	if ((error = GMT_sphinterpolate_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the sphinterpolate main code ----------------------------*/

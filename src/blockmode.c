@@ -34,6 +34,8 @@
 #include "gmt_dev.h"
 #include "block_subs.h"
 
+#define GMT_PROG_OPTIONS "-:>RVabfghior" GMT_OPT("FH")
+
 enum Blockmode_mode {
 	BLOCKMODE_LOW  = -1,
 	BLOCKMODE_AVE  = 0,
@@ -57,8 +59,8 @@ int GMT_blockmode_usage (struct GMTAPI_CTRL *C, int level)
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: blockmode [<table>] %s %s\n", GMT_I_OPT, GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-C] [-D<width>[+c][+l|h]] [-E] [-Er|s[-]] [-Q] [%s] [-W[i][o]] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "\t[-C] [-D<width>[+c][+l|h]] [-E] [-Er|s[-]] [-Q] [%s] [-W[i][o]] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+		GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -83,7 +85,7 @@ int GMT_blockmode_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   -Wi reads Weighted Input (4 cols: x,y,z,w) but writes only (x,y,z[,s,l,h]) Output.\n");
 	GMT_message (GMT, "\t   -Wo reads unWeighted Input (3 cols: x,y,z) but reports sum (x,y,z[,s,l,h],w) Output.\n");
 	GMT_message (GMT, "\t   -W with no modifier has both weighted Input and Output; Default is no weights used.\n");
-	GMT_explain_options (GMT, "C0");
+	GMT_explain_options (GMT, "aC0");
 	GMT_message (GMT, "\t    Default is 3 columns (or 4 if -W is set).\n");
 	GMT_explain_options (GMT, "D0fhioF:.");
 	
@@ -375,7 +377,7 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VfRb:", "ghior>" GMT_OPT("FH"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_blockmode_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_blockmode_parse (API, Ctrl, options))) Return (error);
 

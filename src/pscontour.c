@@ -29,6 +29,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-:>BJKOPRUVXYbchipstxy" GMT_OPT("EMm")
+
 struct PSCONTOUR_CTRL {
 	struct GMT_CONTOUR contour;
 	struct A {	/* -A[-][labelinfo] */
@@ -368,7 +370,8 @@ int GMT_pscontour_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t[%s] [-I] [%s] [-K] [-L<pen>] [-N] [-O]\n", GMT_CONTG, GMT_Jz_OPT);
 	GMT_message (GMT, "\t[-P] [-Q<indextable>] [-S] [%s]\n", GMT_CONTT);
 	GMT_message (GMT, "\t[%s] [-W[+]<pen>] [%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_c_OPT, GMT_h_OPT, GMT_h_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_c_OPT, GMT_h_OPT,
+		GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -417,7 +420,7 @@ int GMT_pscontour_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Annotate pen: %s.\n", GMT_putpen (GMT, P));
 	GMT_message (GMT, "\t   Prepend + to draw colored contours based on the cpt file.\n");
 	GMT_message (GMT, "\t   Prepend - to color contours and annotations based on the cpt file.\n");
-	GMT_explain_options (GMT, "XC3D0chipt:.");
+	GMT_explain_options (GMT, "XC3D0chipst:.");
 	
 	return (EXIT_FAILURE);
 }
@@ -648,7 +651,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VJRb:", "BKOPUXxYychipst>" GMT_OPT("EMm"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_pscontour_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_pscontour_parse (API, Ctrl, options))) Return (error);
 

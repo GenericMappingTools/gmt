@@ -27,6 +27,9 @@
 #include "gmt_dev.h"
 #include "mgd77sniffer.h"
 #include "gmt_internals.h"
+
+#define GMT_PROG_OPTIONS "-VRbn" GMT_OPT("Q")
+
 /*
 #define HISTOGRAM_MODE 0
 #define FIX 0
@@ -55,7 +58,7 @@ int GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "usage: mgd77sniffer <cruises> [-A<fieldabbrev>,<scale>,<offset>] [-Cmaxspd] [-Dd|e|E|f|l|m|s|v][r]\n");
 	GMT_message (GMT, "\t[-g<fieldabbrev>,<imggrid>,<scale>,<mode>[,<latmax>]] [-G<fieldabbrev>,<grid>] [-H] [-I<fieldabbrev>,<rec1>,<recN>] [-K]\n");
 	GMT_message (GMT, "\t[-L<custom_limits_file> ] [-N] [%s] [-Sd|s|t] [-T<gap>]\n",GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-Wc|g|o|s|t|v|x] [-Wc|g|o|s|t|v|x] [-V] [%s] [%s]\n\n", GMT_bo_OPT, GMT_n_OPT);
+	GMT_message (GMT, "\t[-Wc|g|o|s|t|v|x] [-Wc|g|o|s|t|v|x] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_bo_OPT, GMT_n_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -140,7 +143,7 @@ int GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   By default ALL warning messages are printed. Not allowed with -D option.\n");
 	GMT_message (GMT, "\t-V Run in verbose mode.\n\n");
 	GMT_message (GMT, "\t-b Output binary data for -D option.  Append d for double and s for single precision [double].\n\n");
-	GMT_explain_options (GMT, "n");
+	GMT_explain_options (GMT, "n.");
 	GMT_message (GMT, "\tMGD77 FIELD INFO:\n");
 	GMT_message (GMT, "\tField\t\t\tAbbreviation\t\tUnits\n");
 	GMT_message (GMT, "\tTwo-way Travel Time\ttwt\t\t\tsec\n");
@@ -296,7 +299,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VRb", "n" GMT_OPT("Q"), options)) bailout (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) bailout (API->error);
 
 #ifdef MEMDEBUG
 	mem_track_enabled = g_mem_keeper.active;	/* Needed so we dont activate things that were never requested as we turn things on/off for convenience */

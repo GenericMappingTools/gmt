@@ -35,6 +35,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-:RVbfhinrs" GMT_OPT("FH")
+
 #define NN_DEF_SECTORS	4
 #define NN_MIN_SECTORS	2
 
@@ -130,7 +132,7 @@ int GMT_nearneighbor_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "usage: nearneighbor [<table>] -G<outgrid> %s\n", GMT_I_OPT);
 	GMT_message (GMT, "\t-N<sectors>[/<min_sectors>] %s -S%s\n", GMT_Rgeo_OPT, GMT_RADIUS_OPT);
 	GMT_message (GMT, "\t[-E<empty>] [%s] [-W] [%s] [%s]\n", GMT_V_OPT, GMT_bi_OPT, GMT_f_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_r_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -153,7 +155,7 @@ int GMT_nearneighbor_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   x for periodic boundary conditions on x,\n");
 	GMT_message (GMT, "\t   y for periodic boundary conditions on y.\n");
 	GMT_message (GMT, "\t   [Default: Natural conditions, unless grid is geographic].\n");
-	GMT_explain_options (GMT, "F:.");
+	GMT_explain_options (GMT, "Fs:.");
 
 	return (EXIT_FAILURE);
 }
@@ -289,7 +291,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VfRb:", "hinrs" GMT_OPT("FH"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_nearneighbor_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_nearneighbor_parse (API, Ctrl, options))) Return (error);
 

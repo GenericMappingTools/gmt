@@ -35,6 +35,8 @@
 #include "gmt_dev.h"
 #include "sph.h"
 
+#define GMT_PROG_OPTIONS "-:RVbhis"
+
 struct SPHTRIANGULATE_CTRL {
 	struct A {	/* -A */
 		bool active;
@@ -390,8 +392,8 @@ int GMT_sphtriangulate_usage (struct GMTAPI_CTRL *C, int level)
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
 	GMT_message (GMT, "usage: sphtriangulate [<table>] [-A] [-C] [-D] [-L<unit>] [-N<nodetable>]\n");
-	GMT_message (GMT, "\t[-Qd|v] [-T] [-V] [%s] [%s] [%s]\n", GMT_b_OPT, GMT_h_OPT, GMT_i_OPT);
-	GMT_message (GMT, "\t[%s]\n\n", GMT_colon_OPT);
+	GMT_message (GMT, "\t[-Qd|v] [-T] [%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_b_OPT, GMT_h_OPT, GMT_i_OPT);
+	GMT_message (GMT, "\t[%s] [%s]\n\n", GMT_s_OPT, GMT_colon_OPT);
                
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
                
@@ -413,7 +415,7 @@ int GMT_sphtriangulate_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   If -bo is used then -N may be used to specify a separate file where the\n");
 	GMT_message (GMT, "\t   polygon information normally is written.\n");
 	GMT_message (GMT, "\t-T Write arcs [Default writes polygons].\n");
-	GMT_explain_options (GMT, "VC2D0hi:.");
+	GMT_explain_options (GMT, "VC2D0his:.");
 
 	return (EXIT_FAILURE);
 }
@@ -516,7 +518,7 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args)
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg since this is spherical triangulation */
-	if (GMT_Parse_Common (API, "-VRb:", "hims", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_sphtriangulate_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_sphtriangulate_parse (API, Ctrl, options))) Return (error);
 

@@ -42,6 +42,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "->Vabfghio" GMT_OPT("HMm")
+
 /* Control structure for filter1d */
 
 struct FILTER1D_CTRL {
@@ -174,8 +176,8 @@ int GMT_filter1d_usage (struct GMTAPI_CTRL *C, int level)
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: filter1d [<table>] -F<type><width>[<mode>] [-D<increment>] [-E] [-I<ignore_val>]\n");
 	GMT_message (GMT, "\t[-L<lack_width>] [-N<t_col>] [-Q<q_factor>] [-S<symmetry>] [-T<t_min>/<t_max>/<t_inc>[+]]\n");
-	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
-		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT);
+	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
+		GMT_V_OPT, GMT_b_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -831,7 +833,7 @@ int GMT_filter1d (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-Vbf:", "ghi>" GMT_OPT("HMm"), options)) Return (API->error, "Error parsing filter1d options\n");
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error, "Error parsing filter1d options\n");
 	Ctrl = New_filter1d_Ctrl (GMT);		/* Allocate and initialize a new control structure */
 	if ((error = GMT_filter1d_parse (API, Ctrl, options))) Return (error, "Error parsing filter1d options\n");
 

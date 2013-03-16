@@ -31,6 +31,8 @@
 
 #include "x2sys.h"
 
+#define GMT_PROG_OPTIONS "->RV"
+
 struct X2SYS_GET_CTRL {
 	struct S2S_GET_C {	/* -C */
 		bool active;
@@ -102,7 +104,7 @@ int GMT_x2sys_get_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t-N Comma-separated list of column names that ALL must be missing.\n");
 	GMT_explain_options (GMT, "R");
 	GMT_message (GMT, "\t   [Default region is the entire data domain].\n");
-	GMT_explain_options (GMT, "V");
+	GMT_explain_options (GMT, "V.");
 
 	return (EXIT_FAILURE);
 }
@@ -222,7 +224,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VR", ">", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_x2sys_get_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_x2sys_get_parse (API, Ctrl, options))) Return (error);
 

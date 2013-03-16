@@ -35,6 +35,8 @@
 #include "gmt_dev.h"
 #include "common_byteswap.h"
 
+#define GMT_PROG_OPTIONS "-JRVbh"
+
 void GMT_str_toupper (char *string);
 
 struct GRDRASTER_CTRL {
@@ -774,7 +776,7 @@ int GMT_grdraster (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VJRbh", "", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdraster_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdraster_parse (API, Ctrl, options))) Return (error);
 
