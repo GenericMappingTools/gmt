@@ -877,7 +877,7 @@ void grd_D2DX2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 		ij = GMT_IJP (info->G->header, row, 0);	/* First col */
 		if (stack[last]->G->header->BC[XLO] != GMT_BC_IS_DATA) 
 			stack[last]->G->data[ij-1] = 2.0f * stack[last]->G->data[ij] - stack[last]->G->data[ij+1];	/* Set left node via BC curv = 0 */
-		next_left = stack[last]->G->data[node-1];
+		next_left = stack[last]->G->data[ij-1];
 		ij = GMT_IJP (info->G->header, row, info->G->header->nx-1);	/* Last col */
 		if (stack[last]->G->header->BC[XHI] != GMT_BC_IS_DATA) 
 			stack[last]->G->data[ij+1] = 2.0f * stack[last]->G->data[ij] - stack[last]->G->data[ij-1];	/* Set right node via BC curv = 0 */
