@@ -24,6 +24,7 @@
  */
 
 #define GMT_FFT_EXTENSION	/* All programs needing the GMT FFT machinery must set this first */
+#define GMT_FFT_DIM	2	/* Dimension of FFT needed */
 #include "gmt.h"		/* All programs using the GMT API needs this */
 #include <math.h>
 #include <strings.h>
@@ -72,7 +73,7 @@ void Free_my_fft_program_Ctrl (void *API, struct MY_FFT_PROGRAM_CTRL *C) {	/* Fr
 	if (!C) return;
 	if (C->In.file) free (C->In.file);	
 	if (C->G.file) free (C->G.file);	
-	if (C->N.info) GMT_FFT_end (API, C->N.info);
+	if (C->N.info) GMT_FFT_Destroy (API, C->N.info);
 	free (C);	
 }
 
@@ -93,7 +94,7 @@ int GMT_my_fft_program_usage (void *C, int level)
 	fprintf (stderr, "\t-I To create a new grid, specify increments <xinc>[/<yinc>].\n");
 	/* All programs needing the GMT FFT machinery must display the FFT option. Call it N unless taken.
 	 * Pass the dimension of the FFT work (1 for tables, 2 for grids) */
-	GMT_FFT_option (C, 'N', 2, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers:");
+	GMT_FFT_Option (C, 'N', GMT_FFT_DIM, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers:");
 	fprintf (stderr, "\t-R To create a new grid, specify region <xmin/xmax/ymin/ymax>.\n");
 	fprintf (stderr, "\t-r Select pixel registration for new grid.\n");
 
@@ -136,7 +137,7 @@ int GMT_my_fft_program_parse (void *API, struct MY_FFT_PROGRAM_CTRL *Ctrl, struc
 				break;
 			case 'N':	/* Grid dimension setting or inquiery */
 				Ctrl->N.active = 1;
-				if ((Ctrl->N.info = GMT_FFT_parse (API, 'N', 2, opt->arg)) == NULL) n_errors ++;
+				if ((Ctrl->N.info = GMT_FFT_Parse (API, 'N', GMT_FFT_DIM, opt->arg)) == NULL) n_errors ++;
 				break;
 			default:	/* Report bad options */
 				fprintf (stderr, "Syntax error: Unrecognized option %c%s\n", opt->option, opt->arg);
@@ -220,7 +221,7 @@ int main (int argc, char *argv[])
 	
 	/* Initialize FFT structs, check for NaNs, detrend, save intermediate files, etc. per -N settings */
 	
-	FFT_info = GMT_FFT_init_2d (API, Grid, GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);
+	FFT_info = GMT_FFT_Create (API, Grid, GMT_FFT_DIM, 0U, GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);
 	
 	switch (Ctrl->D.dir) {	/* Select which type of wavenumber to use */
 		case 'x': mode = 1; break;
@@ -229,7 +230,7 @@ int main (int argc, char *argv[])
 	}
 
 	/* Take the forward FFT */
-	if (GMT_FFT_2d (API, Grid, GMT_FFT_FWD, GMT_FFT_COMPLEX, FFT_info)) Return (EXIT_FAILURE);
+	if (GMT_FFT (API, Grid, GMT_FFT_FWD, GMT_FFT_COMPLEX, FFT_info)) Return (EXIT_FAILURE);
 
 	/* Now do operations in frequency domain.  Here we are just filtering our spike  */
 	
@@ -241,14 +242,14 @@ int main (int argc, char *argv[])
 	 * loop variable.  This indirectly loops over all the frequencies in the grid. */
 	
 	for (re = 0, im = 1; re < Grid->header->size; re += 2, im += 2) {	/* Loop over the entire complex grid */
-		k = GMT_FFT_wavenumber_2d (API, re, mode, FFT_info);	/* Get chosen wavenumber */
+		k = GMT_FFT_Wavenumber (API, re, mode, FFT_info);	/* Get chosen wavenumber */
 		filter = exp (-0.5 * pow (k/k_ref, 2.0));	/* Compute filter for this wavenumber */
 		Grid->data[re] *= filter;			/* Filter real component */
 		Grid->data[im] *= filter;			/* Filter imag component */
 	}
 
 	/* Take the inverse FFT; the 2/nm scaling is taken care of automatically */
-	if (GMT_FFT_2d (API, Grid, GMT_FFT_INV, GMT_FFT_COMPLEX, FFT_info)) Return (EXIT_FAILURE);
+	if (GMT_FFT (API, Grid, GMT_FFT_INV, GMT_FFT_COMPLEX, FFT_info)) Return (EXIT_FAILURE);
 
 	/* Time to write our data out */
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, rw_mode, NULL, Ctrl->G.file, Grid)) {
