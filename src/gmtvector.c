@@ -38,6 +38,7 @@ enum gmtvector_method {	/* The available methods */
 	DO_ROT2D,
 	DO_ROT3D,
 	DO_DOT,
+	DO_POLE,
 	DO_BISECTOR};
 
 struct GMTVECTOR_CTRL {
@@ -99,7 +100,7 @@ int GMT_gmtvector_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: gmtvector [<table>] [-Am[<conf>]|<vector>] [-C[i|o]] [-E] [-N] [-S<vector>] [-Ta|b|d|D|s|r<rot>|x]\n");
+	GMT_message (GMT, "usage: gmtvector [<table>] [-Am[<conf>]|<vector>] [-C[i|o]] [-E] [-N] [-S<vector>] [-Ta|b|d|D|p<az>|s|r<rot>|x]\n");
 	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);
 
@@ -124,12 +125,13 @@ int GMT_gmtvector_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   -Tb gives the bisector great circle pole(s) for input and secondary vector (see -S).\n");
 	GMT_message (GMT, "\t   -Td gives dot-product(s) with secondary vector (see -S).\n");
 	GMT_message (GMT, "\t   -TD same as -Td, but gives the angle in degrees between the vectors.\n");
+	GMT_message (GMT, "\t   -Tp gives pole to great circle with <az> azimuth trend at input vector location.\n");
 	GMT_message (GMT, "\t   -Ts gives the sum of the secondary vector (see -S) and the input vector(s).\n");
 	GMT_message (GMT, "\t   -Tr will rotate the input vectors. Depending on your input (2-D or 3-D), append\n");
 	GMT_message (GMT, "\t      <angle> or <plon/plat/angle>, respectively, to define the rotation.\n");
 	GMT_message (GMT, "\t   -Tx will compute cross-product(s) with secondary vector (see -S).\n");
 	GMT_explain_options (GMT, "VfgC0");
-	GMT_message (GMT, "\t   Default is 2 [or 3; see -C, -D] input columns.\n");
+	GMT_message (GMT, "\t   Default is 2 [or 3; see -C, -fg] input columns.\n");
 	GMT_explain_options (GMT, "D0hio:.");
 	
 	return (EXIT_FAILURE);
@@ -205,6 +207,10 @@ int GMT_gmtvector_parse (struct GMTAPI_CTRL *C, struct GMTVECTOR_CTRL *Ctrl, str
 						break;
 					case 'x':	/* Cross-product between vectors */
 						Ctrl->T.mode = DO_CROSS;
+						break;
+					case 'p':	/* Pole of great circle */
+						Ctrl->T.mode = DO_POLE;
+						Ctrl->T.par[0] = atof (&opt->arg[1]);
 						break;
 					case 's':	/* Sum of vectors */
 						Ctrl->T.mode = DO_SUM;
@@ -310,6 +316,15 @@ void get_bisector (struct GMT_CTRL *C, double A[3], double B[3], double P[3])
 	
 	GMT_cross3v (C, M, Pa, P);
 	GMT_normalize3v (C, P);
+}
+
+void get_azpole (struct GMT_CTRL *C, double A[3], double P[3], double az)
+{	/* Given point in A and azimuth az, return the pole P to the oblique equator with given az at A */
+	double R[3][3], tmp[3], B[3] = {0.0, 0.0, 1.0};	/* set B to north pole  */
+	GMT_cross3v (C, A, B, tmp);	/* Point C is 90 degrees away from plan through A and B */
+	GMT_normalize3v (C, tmp);	/* Get unit vector */
+	GMT_make_rot_matrix2 (C, A, -az, R);	/* Make rotation about A of -azim degrees */
+	GMT_matrix_vect_mult (C, 3U, R, tmp, P);
 }
 
 void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool cartesian, double conf, double *M, double *E)
@@ -436,7 +451,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args)
 		R[0][0] = c;	R[0][1] = -s;
 		R[1][0] = s;	R[1][1] = c;
 	}
-	else if (!Ctrl->T.mode == DO_NOTHING) {	/* Will need secondary vector, get that first before input file */
+	else if (!(Ctrl->T.mode == DO_NOTHING || Ctrl->T.mode == DO_POLE)) {	/* Will need secondary vector, get that first before input file */
 		n = decode_vector (GMT, Ctrl->S.arg, vector_2, Ctrl->C.active[GMT_IN], Ctrl->E.active);
 		if (n == 0) Return (EXIT_FAILURE);
 		if (Ctrl->T.mode == DO_DOT) {	/* Must normalize to turn dot-product into angle */
@@ -554,6 +569,9 @@ int GMT_gmtvector (void *V_API, int mode, void *args)
 						break;
 					case DO_ROT3D:	/* Rotate a 3-D vector about an arbitrary pole encoded in 3x3 matrix R */
 						GMT_matrix_vect_mult (GMT, 3U, R, vector_1, vector_3);
+						break;
+					case DO_POLE:	/* Return pole of great circle defined by center point an azimuth */
+						get_azpole (GMT, vector_1, vector_3, Ctrl->T.par[0]);
 						break;
 					case DO_NOTHING:	/* Probably just want the effect of -C, -E, -N */
 						GMT_memcpy (vector_3, vector_1, n_components, double);

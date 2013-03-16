@@ -12,7 +12,7 @@ gmtvector - Basic manipulation of Cartesian vectors
 **gmtvector** [ *table* ] [ **-A**\ **m**\ [*conf*\ ]\|\ *vector* ] [
 **-C**\ [**i**\ \|\ **o**] ] [ **-E** ] [ **-N** ] [ **-S**\ *vector* ]
 [
-**-T**\ **a**\ \|\ **d**\ \|\ **D**\ \|\ **r**\ [*arg*\ \|\ **s**\ \|\ **x**]
+**-T**\ **a**\ \|\ **d**\ \|\ **D**\ \|\ **p**\ *az*\ |\ **r**\ [*arg*\ \|\ **s**\ \|\ **x**]
 ] [ **-V**\ [*level*\ ] ] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
 **-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
@@ -79,11 +79,13 @@ None.
     Specify a single, secondary vector in the same format as the first
     vector. Required by operations in **-T** that need two vectors
     (average, bisector, dot product, cross product, and sum).
-**-T**\ **a**\ \|\ **d**\ \|\ **D**\ \|\ **s**\ \|\ **r**\ [*arg*\ \|\ **x**]
+**-T**\ **a**\ \|\ **d**\ \|\ **D**\ \|\ **p**\ *az*\ |\  **s**\ \|\ **r**\ [*arg*\ \|\ **x**]
     Specify the vector transformation of interest. Append **a** for
     average, **b** for the pole of the two points bisector, **d** for
     dot product (use **D** to get angle in degrees between the two
-    vectors), **r**\ *par* for vector rotation (here, *par* is a single
+    vectors), **p**\ *az* for the pole to the great circle specified by
+    input vector and the circle's *az* (no second vector used),
+    **r**\ *par* for vector rotation (here, *par* is a single
     angle for 2-D Cartesian data and *lon/lat/angle* for a 3-D rotation
     pole and angle), **s** for vector sum, and **x** for cross-product.
     If **-T** is not given then no transformation takes place; the
@@ -148,6 +150,11 @@ To find the mean location of the geographical points listed in
 points.txt, with its 99% confidence ellipse, use
 
 gmtvector points.txt -Am99 -fg > centroid.txt
+
+To find the pole corresponding to the great circle that goes through
+the point -30/60 at an azimuth of 105 degrees, use
+
+gmtvector -A-30/60 -Tp105 -fg > pole.txt
 
 `Rotations <#toc8>`_
 --------------------
