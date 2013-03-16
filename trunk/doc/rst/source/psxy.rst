@@ -18,7 +18,7 @@ psxy - Plot lines, polygons, and symbols on maps
 [ **-G**\ *fill* ] [ **-I**\ *intens* ] 
 [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [ **-L** ] [ **-N** ] 
 [ **-O** ] [ **-P** ] 
-[ **-S**\ [*symbol*\ ][\ *size*\ \|\ **+s**\ *scaling*] ] 
+[ **-S**\ [*symbol*][\ *size*\ \|\ **+s**\ *scaling*] ] 
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ **-W**\ [**-**\ \|\ **+**][*pen*\ ] ]
@@ -69,7 +69,6 @@ respectively. The *PostScript* code is written to standard output.
 .. include:: explain_intables.rst_
 
 **-A**\ [**m**\ \|\ **p**]
-
     By default line segments are drawn as great circle arcs. To draw them as
     straight lines, use the **-A** flag. Alternatively, add **m** to draw
     the line by first following a meridian, then a parallel. Or append **p**
@@ -79,7 +78,6 @@ respectively. The *PostScript* code is written to standard output.
 .. include:: explain_-B.rst_
 
 **-C**\ *cptfile*
-
     Give a color palette file. If **-S** is set, let symbol fill color be
     determined by the z-value in the third column. Additional fields are
     shifted over by one column (optional size would be 4th rather than 3rd
@@ -89,12 +87,10 @@ respectively. The *PostScript* code is written to standard output.
     polygon (if **-L** is set) via the cpt file.
 
 **-D**\ *dx*/*dy*
-
     Offset the plot symbol or line locations by the given amounts *dx/dy*
     [Default is no offset]. If *dy* is not given it is set equal to *dx*.
 
 **-E**\ [**x**\ \|\ **y**\ \|\ **X**\ \|\ **Y**][**n**\ ][*cap*\ ][/[\ **-**\ \|\ **+**]\ *pen*]
-
     Draw error bars. Append **x** and/or **y** to indicate which bars you
     want to draw (Default is both x and y). The x and/or y errors must be
     stored in the columns after the (x,y) pair [or (x,y,size) triplet]. The
@@ -114,16 +110,11 @@ respectively. The *PostScript* code is written to standard output.
     number of points in the distribution.
 
 **-G**\ *fill*
-
-    Select color or pattern for filling of symbols or polygons [Default is
-    no fill].
-
+    Select color or pattern for filling of symbols or polygons [Default is no fill].
     Note that **psxy** will search for **-G** and **-W** strings in all the
-    segment headers and let any values thus found over-ride the command line
-    settings.
+    segment headers and let any values thus found over-ride the command line settings.
 
 **-I**\ *intens*
-
     Use the supplied *intens* value (nominally in the -1 to + 1 range) to
     modulate the fill color by simulating illumination [none]. 
 
@@ -132,14 +123,12 @@ respectively. The *PostScript* code is written to standard output.
 .. include:: explain_-K.rst_
 
 **-L**
-
     Force closed polygons: connect the endpoints of the line-segment(s) and
     draw polygons. Also, in concert with **-C** and any **-Z** settings in
     the headers will use the implied color for polygon fill [Default is
     polygon pen color].
 
 **-N**
-
     Do NOT skip symbols that fall outside map border [Default plots points
     inside border only]. The option does not apply to lines and polygons
     which are always clipped to the map region. 
@@ -249,7 +238,7 @@ Segment header records may contain one of more of the following options:
     Turn outline off
 **-Z**\ *zval*
     Obtain fill via cpt lookup using z-value *zval*
-**-ZNaN**
+**-Z**\ *NaN* 
     Get the NaN color from the cpt file
 
 `Custom Symbols <#toc9>`_

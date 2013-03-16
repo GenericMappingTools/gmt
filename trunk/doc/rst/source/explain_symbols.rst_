@@ -1,7 +1,6 @@
 **-S**\ [*symbol*][\ *size*\ \|\ **+s**\ *scaling*]
-
     Plot symbols. If present, *size* is symbol size in the unit set in
-    `gmt <gmt.html>`_ (unless **c**, **i**, or **p** is appended). If the symbol
+    `gmt.conf <gmt.conf.html>`_ (unless **c**, **i**, or **p** is appended). If the symbol
     code (see below) is not given it will be read from the last column in
     the input data; this cannot be used in conjunction with
     **-bi**\ [*ncols*][*type*]. Optionally, append **c**, **i**, or

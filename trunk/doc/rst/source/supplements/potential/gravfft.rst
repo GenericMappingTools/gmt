@@ -71,6 +71,7 @@ Optional Arguments
     terms depending on n will blow out the program) [Default = 1]
 **-F**\ [**f**\ \|\ **g**\ \|\ **v**\ \|\ **n**\ \|\ **e**]
     Specify desired geopotential field: compute geoid rather than gravity
+
 |
 |       **f** = Free-air anomalies (mGal) [Default].
 |       **g** = Geoid anomalies (m).
