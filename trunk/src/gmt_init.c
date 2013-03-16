@@ -6462,7 +6462,7 @@ int gmt_parse_B_option (struct GMT_CTRL *C, char *in) {
 				error++;
 			}
 			C->current.map.frame.obl_grid = true;
-			if ((k = sscanf (&in[i+2], "%[^/]/%[^+]", A, B)) != 2) {
+			if (sscanf (&in[i+2], "%[^/]/%[^+]", A, B) != 2) {
 				GMT_report (C, GMT_MSG_NORMAL, "Syntax error -B option: Did not find the expected format +o<plon>/<plat>\n");
 				error++;
 			}
