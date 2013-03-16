@@ -4,21 +4,22 @@ gmtvector
 
 gmtvector - Basic manipulation of Cartesian vectors
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtvector** [ *table* ] [ **-A**\ **m**\ [*conf*\ ]\|\ *vector* ] [
-**-C**\ [**i**\ \|\ **o**] ] [ **-E** ] [ **-N** ] [ **-S**\ *vector* ]
-[
-**-T**\ **a**\ \|\ **d**\ \|\ **D**\ \|\ **p**\ *az*\ |\ **r**\ [*arg*\ \|\ **s**\ \|\ **x**]
-] [ **-V**\ [*level*\ ] ] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [
-**-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
-] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-o**\ *cols*\ [,*...*] ] [ **-:**\ [**i**\ \|\ **o**] ]
+**gmtvector** [ *table* ] [ **-A**\ **m**\ [*conf*]\|\ *vector* ] 
+[ **-C**\ [**i**\ \|\ **o**] ] 
+[ **-E** ] [ **-N** ] [ **-S**\ *vector* ]
+[ **-T**\ **a**\ \|\ **d**\ \|\ **D**\ \|\ **p**\ *az*\ \|\ **r**\ [*arg*\ \|\ **s**\ \|\ **x**] ] 
+[ |SYN_OPT-V| ]
+[ **-bi**\ [*ncols*][*type*] ] 
+[ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] 
+[ |SYN_OPT-g| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ **-o**\ *cols*\ [,*...*] ] [ **-:**\ [**i**\ \|\ **o**] ]
 
 `Description <#toc2>`_
 ----------------------
@@ -54,6 +55,7 @@ None.
     columns (if **-fg** is given) or (r, theta), or perhaps (x, y[, z])
     if **-Ci** is given). If no file is specified, **gmtvector**, will
     read from standard input.
+
 **-A**\ **m**\ [*conf*\ ]\|\ *vector*
     Specify a single, primary vector instead of reading *infiles*; see
     *infiles* for possible vector formats. Alternatively, append **m**
@@ -63,23 +65,28 @@ None.
     for geographic data the axes will be reported in km). You may
     optionally append the confidence level in percent [95]. These three
     parameters are reported in the final three output columns.
+
 **-C**\ [**i**\ \|\ **o**]
     Select Cartesian coordinates on input and output. Append **i** for
     input only or **o** for output only; otherwise both input and output
     will be assumed to be Cartesian [Default is polar r/theta for 2-D
     data and geographic lon/lat for 3-D].
+
 **-E**
     Convert input geographic coordinates from geodetic to geocentric and
     output geographic coordinates from geocentric to geodetic. Ignored
     unless **-fg** is in effect, and is bypassed if **-C** is selected.
+
 **-N**
     Normalize the resultant vectors prior to reporting the output [No
     normalization]. This only has an effect if **-Co** is selected.
+
 **-S**\ [*vector*\ ]
     Specify a single, secondary vector in the same format as the first
     vector. Required by operations in **-T** that need two vectors
     (average, bisector, dot product, cross product, and sum).
-**-T**\ **a**\ \|\ **d**\ \|\ **D**\ \|\ **p**\ *az*\ |\  **s**\ \|\ **r**\ [*arg*\ \|\ **x**]
+
+**-T**\ **a**\ \|\ **d**\ \|\ **D**\ \|\ **p**\ *az*\ \|\ **s**\ \|\ **r**\ [*arg*\ \|\ **x**]
     Specify the vector transformation of interest. Append **a** for
     average, **b** for the pole of the two points bisector, **d** for
     dot product (use **D** to get angle in degrees between the two
@@ -124,45 +131,44 @@ Suppose you have a file with lon, lat called points.txt. You want to
 compute the spherical angle between each of these points and the
 location 133/34. Try
 
-gmtvector points.txt -S133/34 -TD -fg > angles.txt
+    gmtvector points.txt -S133/34 -TD -fg > angles.txt
 
 To rotate the same points 35 degrees around a pole at 133/34, and output
 Cartesian 3-D vectors, use
 
-gmtvector points.txt -Tr133/34 -Co -fg > reconstructed.txt
+    gmtvector points.txt -Tr133/34 -Co -fg > reconstructed.txt
 
 To compute the cross-product between the two Cartesian vectors 0.5/1/2
 and 1/0/0.4, and normalizing the result, try
 
-gmtvector -A0.5/1/2 -Tx -S1/0/0.4 -N -C > cross.txt
+    gmtvector -A0.5/1/2 -Tx -S1/0/0.4 -N -C > cross.txt
 
 To rotate the 2-D vector, given in polar form as r = 2 and theta = 35,
 by an angle of 120, try
 
-gmtvector -A2/35 -Tr120 > rotated.txt
+    gmtvector -A2/35 -Tr120 > rotated.txt
 
-To find the mid-point along the great circle connecting the points
-123/35 and -155/-30, use
+To find the mid-point along the great circle connecting the points 123/35 and -155/-30, use
 
-gmtvector -A123/35 -S-155/-30 -Ta -fg > midpoint.txt
+    gmtvector -A123/35 -S-155/-30 -Ta -fg > midpoint.txt
 
 To find the mean location of the geographical points listed in
 points.txt, with its 99% confidence ellipse, use
 
-gmtvector points.txt -Am99 -fg > centroid.txt
+    gmtvector points.txt -Am99 -fg > centroid.txt
 
 To find the pole corresponding to the great circle that goes through
 the point -30/60 at an azimuth of 105 degrees, use
 
-gmtvector -A-30/60 -Tp105 -fg > pole.txt
+    gmtvector -A-30/60 -Tp105 -fg > pole.txt
 
-`Rotations <#toc8>`_
---------------------
+Rotations
+---------
 
 For more advanced 3-D rotations as used in plate tectonic
 reconstructions, see the GMT "spotter" supplement.
 
-`See Also <#toc9>`_
--------------------
+See Also
+--------
 
-`gmt <gmt.html>`_ , `project <project.html>`_ , `mapproject <mapproject.html>`_
+`gmt <gmt.html>`_, `project <project.html>`_, `mapproject <mapproject.html>`_

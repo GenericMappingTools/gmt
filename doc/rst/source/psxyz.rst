@@ -11,25 +11,24 @@ psxyz - Plot lines, polygons, and symbols in 3-D
 
 **psxyz** [ *table* ] **-J**\ *parameters*
 **-Jz**\ \|\ **Z**\ *parameters*
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ] [
-**-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ *cptfile* ] [
-**-D**\ *dx*/*dy*\ [/*dz*\ ] ] [ **-G**\ *fill* ] [ **-I**\ *intens* ] [
-**-K** ] [ **-L** ] [ **-N** ] [ **-O** ] [ **-P** ] [ **-Q** ] [
-**-S**\ [*symbol*\ ][\ *size*\ \|\ **+s**\ *scaling*] ] [
-**-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*\ ]
-] [ **-W**\ [**-**\ \|\ **+**][*pen*\ ] ] [
-**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-] [
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-] [ **-a**\ *col*\ =\ *name*\ [*...*\ ] ] [
-**-bi**\ [*ncols*\ ][*type*\ ] ] [ **-c**\ *copies* ] [
-**-f**\ *colinfo* ] [
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
-] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [
-**-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
-] [ **-t**\ [*transp*\ ] ] [ **-:**\ [**i**\ \|\ **o**] ]
+|SYN_OPT-Rz|
+[ |SYN_OPT-B| ]
+[ **-D**\ *dx*/*dy*\ [/*dz*] ] [ **-G**\ *fill* ] [ **-I**\ *intens* ] 
+[ **-K** ] [ **-L** ] [ **-N** ] [ **-O** ] [ **-P** ] [ **-Q** ] 
+[ **-S**\ [*symbol*][\ *size*\ \|\ **+s**\ *scaling*] ] 
+[ |SYN_OPT-U| ]
+[ |SYN_OPT-V| ]
+[ **-W**\ [**-**\ \|\ **+**][*pen*\ ] ] 
+[ |SYN_OPT-X| ]
+[ |SYN_OPT-Y| ]
+[ |SYN_OPT-a| ] 
+[ **-bi**\ [*ncols*\ ][*type*\ ] ] [ **-c**\ *copies* ] 
+[ **-f**\ *colinfo* ] 
+[ |SYN_OPT-g| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-p| ]
+[ **-t**\ [*transp*] ] [ **-:**\ [**i**\ \|\ **o**] ]
 
 `Description <#toc2>`_
 ----------------------
@@ -71,53 +70,44 @@ respectively. The *PostScript* code is written to standard output.
 .. include:: explain_-B.rst_
 
 **-C**\ *cptfile*
-
-Give a color palette file. If **-S** is set, let symbol fill color be
-determined by the t-value in the fourth column. Additional fields are
-shifted over by one column (optional size would be in 5th rather than
-4th field, etc.). If **-S** is not set, then **psxyz** expects the user
-to supply a multisegment file (where each segment header contains a
-**-Z**\ *val* string. The *val* will control the color of the line or
-polygon (if **-L** is set) via the cpt file.
+    Give a color palette file. If **-S** is set, let symbol fill color be
+    determined by the t-value in the fourth column. Additional fields are
+    shifted over by one column (optional size would be in 5th rather than
+    4th field, etc.). If **-S** is not set, then **psxyz** expects the user
+    to supply a multisegment file (where each segment header contains a
+    **-Z**\ *val* string. The *val* will control the color of the line or
+    polygon (if **-L** is set) via the cpt file.
 
 **-D**\ *dx*/*dy*\ [/*dz*\ ]
-
-Offset the plot symbol or line locations by the given amounts
-*dx/dy*\ [*dz*\ ] [Default is no offset].
+    Offset the plot symbol or line locations by the given amounts
+    *dx/dy*\ [*dz*\ ] [Default is no offset].
 
 **-G**\ *fill*
-
-Select color or pattern for filling of symbols or polygons [Default is
-no fill].
-
-Note that **psxyz** will search for **-G** and **-W** strings in all the
-segment headers and let any values thus found over-ride the command line
-settings.
+    Select color or pattern for filling of symbols or polygons [Default is no fill].
+    Note that **psxyz** will search for **-G** and **-W** strings in all the
+    segment headers and let any values thus found over-ride the command line settings.
 
 **-I**\ *intens*
-
-Use the supplied *intens* value (nominally in the -1 to + 1 range) to
-modulate the fill color by simulating illumination [none]. 
+    Use the supplied *intens* value (nominally in the -1 to + 1 range) to
+    modulate the fill color by simulating illumination [none]. 
 
 .. include:: explain_-K.rst_
 
 **-L**
-
-Force closed polygons: connect the endpoints of the line-segment(s) and
-draw polygons. Also, in concert with **-C** and any **-Z** settings in
-the headers will use the implied color for polygon fill [Default is
-polygon pen color]. **-N** Do NOT skip symbols that fall outside map
-border [Default plots points inside border only]. 
+    Force closed polygons: connect the endpoints of the line-segment(s) and
+    draw polygons. Also, in concert with **-C** and any **-Z** settings in
+    the headers will use the implied color for polygon fill [Default is
+    polygon pen color]. **-N** Do NOT skip symbols that fall outside map
+    border [Default plots points inside border only]. 
 
 .. include:: explain_-O.rst_
 
 .. include:: explain_-P.rst_
 
 **-Q**
-
-Turn off the automatic sorting of items based on their distance from the
-viewer. The default is to sort the items so that items in the foreground
-are plotted after items in the background. 
+    Turn off the automatic sorting of items based on their distance from the
+    viewer. The default is to sort the items so that items in the foreground
+    are plotted after items in the background. 
 
 .. include:: explain_symbols2.rst_
 
@@ -172,34 +162,34 @@ file heights.xyz on a 3-D projection of the space (0-10), (0-10),
 (0-100), with tickmarks every 2, 2, and 10, viewing it from the
 southeast at 30 degree elevation, use:
 
-psxyz heights.xyz -R0/10/0/10/0/100 -Jx1.25c -Jz0.125c -So1.25c -Gblue
--B2:XLABEL:/2:YLABEL:/10:ZLABEL::."3-D PLOT":15 -p135/30 -Uc -W -P >
-heights.ps
+    psxyz heights.xyz -R0/10/0/10/0/100 -Jx1.25c -Jz0.125c -So1.25c -Gblue
+    -B2:XLABEL:/2:YLABEL:/10:ZLABEL::."3-D PLOT":15 -p135/30 -Uc -W -P >
+    heights.ps
 
-`Segment Header Parsing <#toc8>`_
----------------------------------
+Segment Header Parsing
+----------------------
 
 Segment header records may contain one of more of the following options:
 
-**-G**\ *fill* Use the new *fill* and turn filling on
+**-G**\ *fill* 
+    Use the new *fill* and turn filling on
+**-G-** 
+    Turn filling off
+**-G** 
+    Revert to default fill (none if not set on command line)
+**-W**\ *pen* 
+    Use the new *pen* and turn outline on
+**-W** 
+    Revert to default pen **MAP\_DEFAULT\_PENBD** (if not set on command line)
+**-W-** 
+    Turn outline off
+**-Z**\ *zval* 
+    Obtain fill via cpt lookup using z-value *zval*
+**-Z**\ *NaN* 
+    Get the NaN color from the cpt file
 
-**-G-** Turn filling off
-
-**-G** Revert to default fill (none if not set on command line)
-
-**-W**\ *pen* Use the new *pen* and turn outline on
-
-**-W** Revert to default pen ()MAP\_DEFAULT\_PENBD( if not set on
-command line)
-
-**-W-** Turn outline off
-
-**-Z**\ *zval* Obtain fill via cpt lookup using z-value *zval*
-
-**-ZNaN** Get the NaN color from the cpt file
-
-`Custom Symbols <#toc9>`_
--------------------------
+Custom Symbols
+--------------
 
 **psxyz** allows users to define and plot their own custom symbols. This
 is done by encoding the symbol using our custom symbol macro code
@@ -209,15 +199,15 @@ without giving the extension (e.g., the symbol file tsunami.def is used
 by specifying **-Sk**\ *tsunami/size*. The definition file can contain
 any number of plot code records, as well as blank lines and comment
 lines (starting with #). **psxyz** will look for the definition files
-`in (1) <in.html>`_ the current directory, (2) the ~/.gmt directory,
-`and (3) <and.html>`_ the **$GMT\_SHAREDIR**/custom directory, in that
+in (1) the current directory, (2) the ~/.gmt directory,
+and (3) the **$GMT\_SHAREDIR**/custom directory, in that
 order. Freeform polygons (made up of straight line segments and arcs of
 circles) can be designed - these polygons can be painted and filled with
 a pattern. Other standard geometric symbols can also be used. See
 Appendix N for macro definitions.
 
-`Bugs <#toc10>`_
-----------------
+Bugs
+----
 
 No hidden line removal is employed for polygons and lines. Symbols,
 however, are first sorted according to their distance from the viewpoint
@@ -231,12 +221,12 @@ combine to give the desired effect when filled; to draw outline use the
 original polygon.
 
 The **-N** option does not adjust the BoundingBox information so you may
-have to post-process the *PostScript* output with **ps2raster** **-A**
+have to post-process the *PostScript* output with `ps2raster <ps2raster.html>`_ **-A**
 to obtain the correct BoundingBox.
 
-`See Also <#toc11>`_
---------------------
+See Also
+--------
 
-`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
-`gmtcolors <gmtcolors.html>`_ ,
-`psbasemap <psbasemap.html>`_ , `psxy <psxy.html>`_
+`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
+`gmtcolors <gmtcolors.html>`_,
+`psbasemap <psbasemap.html>`_, `psxy <psxy.html>`_
