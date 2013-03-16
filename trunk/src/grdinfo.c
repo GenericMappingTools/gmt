@@ -29,6 +29,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "->RVfh"
+
 /* Control structure for grdinfo */
 
 enum Opt_I_modes {
@@ -229,7 +231,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VfhR", ">", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdinfo_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdinfo_parse (API, Ctrl, options))) Return (error);
 

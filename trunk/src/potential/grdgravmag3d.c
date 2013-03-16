@@ -33,6 +33,8 @@
 #include "gmt_dev.h"
 #include "okbfuns.h"
 
+#define GMT_PROG_OPTIONS "-:RVf"
+
 struct GRDOKB_CTRL {
 
 	struct GRDOKB_In {
@@ -326,7 +328,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VfR:", "", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdgravmag3d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdgravmag3d_parse (API, Ctrl, options))) Return (error);
 

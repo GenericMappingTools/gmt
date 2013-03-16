@@ -29,6 +29,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-V"
+
 /* Control structure for gmtget */
 
 struct GMTGET_CTRL {
@@ -137,7 +139,7 @@ int GMT_gmtget (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-V", "", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmtget_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtget_parse (API, Ctrl, options))) Return (error);
 

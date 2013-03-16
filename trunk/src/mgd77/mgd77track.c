@@ -26,6 +26,8 @@
 #include "gmt_dev.h"
 #include "mgd77.h"
 
+#define GMT_PROG_OPTIONS "->BJKOPRUVXYcptxy"
+
 #define MGD77TRACK_ANSIZE 0.125
 #define MGD77TRACK_MARK_NEWDAY	0
 #define MGD77TRACK_MARK_SAMEDAY	1
@@ -148,7 +150,7 @@ int GMT_mgd77track_usage (struct GMTAPI_CTRL *C, int level, struct MGD77TRACK_CT
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: mgd77track cruise(s) %s %s [-A[c][<size>]][,<inc><unit>] [%s]\n", GMT_Rgeo_OPT, GMT_J_OPT, GMT_B_OPT);
 	GMT_message (GMT, "\t[-Cf|g|e] [-Da<startdate>] [-Db<stopdate>] [-F] [-Gt|d<gap>] [-I<code>] [-K] [-L<trackticks>] [-N] [-O] [-P] [-Sa<startdist>[<unit>]]\n");
-	GMT_message (GMT, "\t[-Sb<stopdist>[<unit>]] [-TT|t|d<ms,mc,mfs,mf,mfc>] [%s] [-V] [-W<pen>] [%s]\n", GMT_U_OPT, GMT_X_OPT);
+	GMT_message (GMT, "\t[-Sb<stopdist>[<unit>]] [-TT|t|d<ms,mc,mfs,mf,mfc>] [%s] [%s] [-W<pen>] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\n", GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
      
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -577,7 +579,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	if (GMT_Parse_Common (API, "-VJfRb", "BKOPUXYcp>", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	if ((error = GMT_mgd77track_parse (API, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the mgd77track main code ----------------------------*/

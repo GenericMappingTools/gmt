@@ -47,6 +47,8 @@
 #include "gmt_dev.h"
 #include "gshhg.h"
 
+#define GMT_PROG_OPTIONS "-:Vbo"
+
 struct GSHHG_CTRL {
 	struct In {	/* <file> */
 		bool active;
@@ -247,7 +249,7 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 	if (mem_track_enabled) GMT_memtrack_off (GMT, &g_mem_keeper);
 #endif
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-Vbfo:", "m", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg unless already set */
 	Ctrl = New_gshhg_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gshhg_parse (API, Ctrl, options))) Return (error);

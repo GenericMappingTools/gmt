@@ -13,6 +13,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-:RVbfhir" GMT_OPT("FH")
+
 struct GRDSEAMOUNT_CTRL {
 	struct In {
 		bool active;
@@ -86,7 +88,8 @@ int GMT_grdseamount_usage (struct GMTAPI_CTRL *C, int level)
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdseamount [infile(s)] -G<outgrid> %s %s [-A[<out>/<in>]] [-C]\n", GMT_I_OPT, GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-L[<hcut>]] [-N<norm>] [-S<r_scale>] [-T[<flat>]] [-Z<base>] [%s] [%s] [%s]\n", GMT_bi_OPT, GMT_f_OPT, GMT_r_OPT);
+	GMT_message (GMT, "\t[-L[<hcut>]] [-N<norm>] [-S<r_scale>] [-T[<flat>]] [-Z<base>]\n[%s] [%s] [%s] [%s] [%s]\n",
+		GMT_bi_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -290,7 +293,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VRfb:", "hir" GMT_OPT("FH"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdseamount_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdseamount_parse (API, Ctrl, options))) Return (error);
 

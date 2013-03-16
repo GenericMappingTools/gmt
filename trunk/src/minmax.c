@@ -28,6 +28,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-:>Vbfghiors" GMT_OPT("HMm")
+
 int gmt_geo_C_format (struct GMT_CTRL *C);
 unsigned int GMT_log_array (struct GMT_CTRL *C, double min, double max, double delta, double **array);
 
@@ -96,8 +98,8 @@ int GMT_minmax_usage (struct GMTAPI_CTRL *C, int level)
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: minmax [<table>] [-Aa|f|s] [-C] [-E<L|l|H|h><col>] [-I[p]<dx>[/<dy>[/<dz>..]]\n");
-	GMT_message (GMT, "\t[-S[x][y]] [-T<dz>[/<col>]] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n",
-		GMT_V_OPT, GMT_bi_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "\t[-S[x][y]] [-T<dz>[/<col>]] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n",
+		GMT_V_OPT, GMT_bi_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -121,7 +123,7 @@ int GMT_minmax_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   -S or -Sxy leaves space for both error bars using values in third&fourth (2&3) columns.\n");
 	GMT_message (GMT, "\t-T Return textstring -Tzmin/zmax/dz to nearest multiple of the given dz.\n");
 	GMT_message (GMT, "\t   Calculations are based on the first (0) column only.  Append /<col> to use another column.\n");
-	GMT_explain_options (GMT, "VC2fghioF:.");
+	GMT_explain_options (GMT, "VC2fghioFs:.");
 	
 	return (EXIT_FAILURE);
 }
@@ -270,7 +272,7 @@ int GMT_minmax (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-Vbf:", "ghiors>" GMT_OPT("HMm"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_minmax_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_minmax_parse (API, Ctrl, options))) Return (error);
 

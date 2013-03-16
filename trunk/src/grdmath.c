@@ -30,6 +30,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-:RVbfghinrs" GMT_OPT("F")
+
 int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO **M);
 int gmt_find_macro (char *arg, unsigned int n_macros, struct MATH_MACRO *M);
 void gmt_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, struct MATH_MACRO **M);	
@@ -132,8 +134,8 @@ int GMT_grdmath_usage (struct GMTAPI_CTRL *C, int level)
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdmath [%s] [%s]\n\t[-M] [-N] [%s] [%s] [%s]\n\t[%s] [%s]\n"
-		"\t[%s]\n\t[%s] [%s]\n",	GMT_Rgeo_OPT, GMT_I_OPT, GMT_V_OPT, GMT_bi_OPT,
-		GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_r_OPT);
+		"\t[%s]\n\t[%s] [%s] [%s]\n",	GMT_Rgeo_OPT, GMT_I_OPT, GMT_V_OPT, GMT_bi_OPT,
+		GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_r_OPT, GMT_s_OPT);
 	GMT_message (GMT, "\tA B op C op D op ... = outfile\n\n");
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -170,7 +172,7 @@ int GMT_grdmath_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_explain_options (GMT, "RV");
 	GMT_explain_options (GMT, "fghi");
 	GMT_message (GMT, "\t   (Only applies to the input files for operators LDIST, PDIST, and INSIDE).\n");
-	GMT_explain_options (GMT, "nF.");
+	GMT_explain_options (GMT, "nFs.");
 
 	return (EXIT_FAILURE);
 }
@@ -3337,7 +3339,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	Ctrl = New_grdmath_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if (GMT_Parse_Common (API, "-VfRb:", "ghinrs" GMT_OPT("F"), options)) Return1 (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	if ((error = GMT_grdmath_parse (API, Ctrl, options))) Return1 (error);
 
 	/*---------------------------- This is the grdmath main code ----------------------------*/

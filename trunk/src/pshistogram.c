@@ -27,6 +27,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "->BJKOPRUVXYbcfhipsxy" GMT_OPT("E")
+
 #ifdef GMT_COMPAT
 int gmt_parse_i_option (struct GMT_CTRL *C, char *arg);
 #endif
@@ -335,7 +337,8 @@ int GMT_pshistogram_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "usage: pshistogram [<table>] %s -W<width> [%s] [-C<cpt>] [-F] [-G<fill>] [-I[o|O]]\n", GMT_Jx_OPT, GMT_B_OPT);
 	GMT_message (GMT, "\t[%s] [-K] [-L<pen>] [-N[<mode>][+p<pen>]] [-O] [-P] [-Q] [%s] [-S]\n", GMT_Jz_OPT, GMT_Rx_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
-	GMT_message (GMT, "\t[-Z[0-5]] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\n", GMT_bi_OPT, GMT_c_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT);
+	GMT_message (GMT, "\t[-Z[0-5]] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_bi_OPT, GMT_c_OPT, GMT_f_OPT, GMT_h_OPT,
+		GMT_i_OPT, GMT_p_OPT, GMT_s_OPT, GMT_t_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -373,7 +376,7 @@ int GMT_pshistogram_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   3 - Log (1+frequency percent).\n");
 	GMT_message (GMT, "\t   4 - Log10 (1+counts).\n");
 	GMT_message (GMT, "\t   5 - Log10 (1+frequency percent).\n");
-	GMT_explain_options (GMT, "C2cfhipt.");
+	GMT_explain_options (GMT, "C2cfhipst.");
 
 	return (EXIT_FAILURE);
 }
@@ -530,7 +533,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VJfRb", "BKOPUXxYychips>" GMT_OPT("E"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_pshistogram_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_pshistogram_parse (API, Ctrl, options))) Return (error);
 

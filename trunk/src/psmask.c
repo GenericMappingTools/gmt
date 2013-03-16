@@ -40,6 +40,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-:>BJKOPRUVXYbchipstxy" GMT_OPT("E")
+
 struct PSMASK_CTRL {
 	struct C {	/* -C */
 		bool active;
@@ -348,7 +350,7 @@ int GMT_psmask_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t[%s] [-C] [-D<template>] [-G<fill>] [%s] [-K] [-N] [-O] [-P] [-Q<min>]\n", GMT_B_OPT, GMT_Jz_OPT);
 	GMT_message (GMT, "\t[-S%s] [-T] [%s] [%s] [%s]\n", GMT_RADIUS_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s]\n", GMT_Y_OPT, GMT_b_OPT, GMT_c_OPT, GMT_h_OPT, GMT_i_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\n", GMT_p_OPT, GMT_r_OPT, GMT_t_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_p_OPT, GMT_r_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -376,7 +378,7 @@ int GMT_psmask_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Default is -S0, i.e., only the nearest node is considered reliable.\n");
 	GMT_message (GMT, "\t-T Paint tiles [Default will trace data outline].\n");
 	GMT_message (GMT, "\t   If set you must also specify a color/fill with -G.\n");
-	GMT_explain_options (GMT, "UVXC2D0chipFt:.");
+	GMT_explain_options (GMT, "UVXC2D0chipFst:.");
 	
 	return (EXIT_FAILURE);
 }
@@ -530,7 +532,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VJRb:", "BKOPUXxYychipst>" GMT_OPT("E"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_psmask_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psmask_parse (API, Ctrl, options))) Return (error);
 

@@ -30,6 +30,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-:>BJKOPRUVXYbcfghipstxy" GMT_OPT("EZMm")
+
 #define CLIP_STEXT	-1	/* Undo one level of textclipping and plot current straight text */
 #define CLIP_CTEXT	-2	/* Undo one level of textclipping and plot current curved text */
 
@@ -212,7 +214,7 @@ int GMT_psclip (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VJfRb:", "BKOPUXxYycghipst>" GMT_OPT("EZMm"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_psclip_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psclip_parse (API, Ctrl, options))) Return (error);
 

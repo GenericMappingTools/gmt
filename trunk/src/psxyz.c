@@ -28,6 +28,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-:>BJKOPRUVXYabcfghipstxy" GMT_OPT("EZHMm")
+
 /* Control structure for psxyz */
 
 struct PSXYZ_CTRL {
@@ -113,7 +115,7 @@ int GMT_psxyz_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t[%s] [%s] [-C<cpt>] [-D<dx>/<dy>[/<dz>]] [-G<fill>] [-I<intens>]\n", GMT_B_OPT, GMT_Jz_OPT);
 	GMT_message (GMT, "\t[-K] [-L] [-N] [-O] [-P] [-Q] [-S[<symbol>][<size>[<unit>]|+s<scaling>][/size_y]]\n\t[%s] [%s] [-W[+|-][<pen>]] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n", GMT_Y_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_c_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT);
-	GMT_message (GMT, "\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_i_OPT, GMT_p_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -207,7 +209,7 @@ int GMT_psxyz_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   A leading - applies cpt color (-C) to the pen only.\n");
 	GMT_explain_options (GMT, "XaC0c");
 	GMT_message (GMT, "\t   Default is the required number of columns.\n");
-	GMT_explain_options (GMT, "fghipt:.");
+	GMT_explain_options (GMT, "fghipst:.");
 
 	return (EXIT_FAILURE);
 }
@@ -415,7 +417,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VJfRb:", "BKOPUXxYyacghipst>" GMT_OPT("EZHMm"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	/* Initialize GMT_SYMBOL structure */
 
 	GMT_memset (&S, 1, struct GMT_SYMBOL);

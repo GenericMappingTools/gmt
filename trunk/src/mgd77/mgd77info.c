@@ -27,6 +27,8 @@
 #include "mgd77.h"
 #include "mgd77_codes.h"
 
+#define GMT_PROG_OPTIONS "-V"
+
 #define FORMATTED_HEADER	1
 #define RAW_HEADER		2
 #define E77_HEADER		3
@@ -80,7 +82,7 @@ int GMT_mgd77info_usage (struct GMTAPI_CTRL *C, int level, struct MGD77INFO_CTRL
 	struct MGD77_CONTROL M;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: mgd77info <cruise(s)> [-C[m|e]] [-E[m|e]] [-I<code>] [-Mf[<item>]|r|e|h] [-L[v]] [-V]\n\n");
+	GMT_message (GMT, "usage: mgd77info <cruise(s)> [-C[m|e]] [-E[m|e]] [-I<code>] [-Mf[<item>]|r|e|h] [-L[v]] [%s]\n\n", GMT_V_OPT);
         
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
              
@@ -104,7 +106,7 @@ int GMT_mgd77info_usage (struct GMTAPI_CTRL *C, int level, struct MGD77INFO_CTRL
 	GMT_message (GMT, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, (m) MGD77T ASCII, or (t) plain table files [Default ignores none].\n");
 	GMT_message (GMT, "\t-L List all the institutions and their 2-character GEODAS codes only.  Append v to also\n");
 	GMT_message (GMT, "\t   display the vessels and their 4-character codes for each institution.\n");
-	GMT_explain_options (GMT, "V");
+	GMT_explain_options (GMT, "V.");
 	
 	MGD77_end (GMT, &M);	/* Close machinery */
 
@@ -275,7 +277,7 @@ int GMT_mgd77info (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-V", "", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_mgd77info_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	MGD77_Init (GMT, &M);		/* Initialize MGD77 Machinery */
 	if ((error = GMT_mgd77info_parse (API, Ctrl, options, &M))) Return (error);

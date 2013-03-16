@@ -29,6 +29,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-:>RVabfghinos" GMT_OPT("HMmQ")
+
 #define MAX_GRIDS GMT_BUFSIZ	/* Change and recompile if we need to sample more than GMT_BUFSIZ grids */
 
 enum grdtrack_enum_stack {STACK_MEAN = 0,	/* Compute stack as mean value for same distance across all profiles */
@@ -181,7 +183,7 @@ int GMT_grdtrack_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t     +c<fact> : Compute envelope as +/- <fact>*deviation [2].\n");
 	GMT_message (GMT, "\t   Note: Deviations depend on mode and are L1 scale (e), st.dev (a), LMS scale (p), or half-range (u-l)/2.\n");
 	GMT_message (GMT, "\t-Z Only output z-values [Default gives all columns].\n");
-	GMT_explain_options (GMT, "C2D0fghinos:.");
+	GMT_explain_options (GMT, "aC2D0fghinos:.");
 	
 	return (EXIT_FAILURE);
 }
@@ -439,7 +441,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VfRb:", "ghinos>" GMT_OPT("HMmQ"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdtrack_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdtrack_parse (API, Ctrl, options))) Return (error);
 

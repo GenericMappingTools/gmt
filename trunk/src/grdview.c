@@ -41,6 +41,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "->BJKOPRUVXYcfnptxy" GMT_OPT("E")
+
 /* grdview needs to work on "tiles" which is defined as the "square" regions made
  * up by 4 nodes.  Since painting takes place within the tiles, any pixel-registered
  * grids will loose 1/2 a grid-spacing in extend in all directions.  We simplify this
@@ -323,8 +325,8 @@ int GMT_grdview_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "usage: grdview <topogrid> %s [-B<tickinfo>] [-C<cpt>] [-G<drapegrid> | -G<grd_r>,<grd_g>,<grd_b>]\n", GMT_J_OPT);
 	GMT_message (GMT, "\t[-I<intensgrid>] [%s] [-K] [-N<level>[/<color>]] [-O] [-P] [-Q<type>[g]]\n", GMT_Jz_OPT);
 	GMT_message (GMT, "\t[%s] [-S<smooth>] [-T[s][o[<pen>]]]\n", GMT_Rgeoz_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [-W<type><pen>] [%s]\n\t[%s] [%s] [%s]\n", GMT_c_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_n_OPT);
-	GMT_message (GMT, "\t[%s] [%s]\n\n", GMT_p_OPT, GMT_t_OPT);
+	GMT_message (GMT, "\t[%s] [%s] [-W<type><pen>] [%s]\n\t[%s] [%s] [%s]\n", GMT_c_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_f_OPT);
+	GMT_message (GMT, "\t[%s] [%s] [%s]\n\n", GMT_n_OPT, GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -364,7 +366,7 @@ int GMT_grdview_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t     Optionally append pen attributes [%s].\n", GMT_putpen (GMT, P));
 	GMT_message (GMT, "\t   f sets attributes for facade outline [%s].\n", GMT_putpen (GMT, P));
 	GMT_message (GMT, "\t     Requires -N to take effect.\n");
-	GMT_explain_options (GMT, "Xcnpt.");
+	GMT_explain_options (GMT, "Xcfnpt.");
 	
 	return (EXIT_FAILURE);
 }
@@ -587,7 +589,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VJR", "BKOPUXxYycnpt>" GMT_OPT("E"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdview_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdview_parse (API, Ctrl, options))) Return (error);
 

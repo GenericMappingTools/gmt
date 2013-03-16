@@ -42,6 +42,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-:RVfr"
+
 #define BLEND_UPPER	0
 #define BLEND_LOWER	1
 #define BLEND_FIRST	2
@@ -596,7 +598,7 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VfR:", "r", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdblend_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdblend_parse (API, Ctrl, options))) Return (error);
 	

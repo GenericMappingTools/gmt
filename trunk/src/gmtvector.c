@@ -28,6 +28,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-:>Vbfghios" GMT_OPT("HMm")
+
 enum gmtvector_method {	/* The available methods */
 	DO_NOTHING=0,
 	DO_AVERAGE,
@@ -101,8 +103,8 @@ int GMT_gmtvector_usage (struct GMTAPI_CTRL *C, int level) {
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: gmtvector [<table>] [-Am[<conf>]|<vector>] [-C[i|o]] [-E] [-N] [-S<vector>] [-Ta|b|d|D|p<az>|s|r<rot>|x]\n");
-	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
-		GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
+		GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -132,7 +134,7 @@ int GMT_gmtvector_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   -Tx will compute cross-product(s) with secondary vector (see -S).\n");
 	GMT_explain_options (GMT, "VfgC0");
 	GMT_message (GMT, "\t   Default is 2 [or 3; see -C, -fg] input columns.\n");
-	GMT_explain_options (GMT, "D0hio:.");
+	GMT_explain_options (GMT, "D0hios:.");
 	
 	return (EXIT_FAILURE);
 }
@@ -436,7 +438,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-Vbf:", "ghios>" GMT_OPT("HMm"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmtvector_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtvector_parse (API, Ctrl, options))) Return (error);
 	

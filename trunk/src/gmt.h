@@ -108,7 +108,7 @@ EXTERN_MSC int GMT_Destroy_Options			(void *C, struct GMT_OPTION **head);
 EXTERN_MSC int GMT_Destroy_Args				(void *C, int argc, char *argv[]);
 EXTERN_MSC int GMT_Update_Option			(void *C, char option, char *arg, struct GMT_OPTION *head);
 EXTERN_MSC int GMT_Delete_Option			(void *C, struct GMT_OPTION *current);
-EXTERN_MSC int GMT_Parse_Common				(void *C, char *sorted, char *unsorted, struct GMT_OPTION *options);
+EXTERN_MSC int GMT_Parse_Common				(void *C, char *given_options, struct GMT_OPTION *options);
 
 #ifdef GMT_FFT_EXTENSION
 /* Also make available the following 9 GMT_FFT_* functions */

@@ -29,6 +29,8 @@
 
 #include "x2sys.h"
 
+#define GMT_PROG_OPTIONS "->RV"
+
 #define GMT_T	3	/* Just used to indicate abs time formatting */
 #define LETTERS "acdhiInNtTvwxyz"
 
@@ -152,7 +154,7 @@ int GMT_x2sys_list_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-W If argument can be opened as a file then we expect a List of tracks and their\n");
 	GMT_message (GMT, "\t   relative weights; otherwise the argument is the constant weight for all tracks [1].\n");
-	GMT_explain_options (GMT, "D");
+	GMT_explain_options (GMT, "D.");
 	
 	return (EXIT_FAILURE);
 }
@@ -306,7 +308,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VRb", ">", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_x2sys_list_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_x2sys_list_parse (API, Ctrl, options))) Return (error);
 	

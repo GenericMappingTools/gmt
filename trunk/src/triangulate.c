@@ -36,6 +36,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-:>JRVbfhirs" GMT_OPT("FHm")
+
 struct TRIANGULATE_CTRL {
 	struct D {	/* -Dx|y */
 		bool active;
@@ -105,8 +107,8 @@ int GMT_triangulate_usage (struct GMTAPI_CTRL *C, int level)
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: triangulate [<table>] [-Dx|y] [-E<empty>] [-G<outgrid>]\n");
 	GMT_message (GMT, "\t[%s] [%s] [-M[z]] [-Q]", GMT_I_OPT, GMT_J_OPT);
-	GMT_message (GMT, "\n\t[%s] [-S] [%s] [-Z] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
-		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "\n\t[%s] [-S] [%s] [-Z] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
+		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -126,7 +128,7 @@ int GMT_triangulate_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-Z Expect (x,y,z) data on input (and output); automatically set if -G is used [Expect (x,y) data].\n");
 	GMT_explain_options (GMT, "RVC2");
 	GMT_message (GMT, "\t-bo Write binary (double) index table [Default is ASCII i/o].\n");
-	GMT_explain_options (GMT, "fhiF:.");
+	GMT_explain_options (GMT, "fhiFs:.");
 	
 	return (EXIT_FAILURE);
 }
@@ -255,7 +257,7 @@ int GMT_triangulate (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VJfRb:", "hirs>" GMT_OPT("FHm"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_triangulate_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_triangulate_parse (API, Ctrl, options))) Return (error);
 

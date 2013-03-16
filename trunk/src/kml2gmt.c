@@ -28,6 +28,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-:Vbh" GMT_OPT("HMm")
+
 #define POINT			0
 #define LINE			1
 #define POLYGON			2
@@ -62,7 +64,7 @@ int GMT_kml2gmt_usage (struct GMTAPI_CTRL *C, int level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: kml2gmt [<kmlfiles>] [-V] [-Z] [%s] [%s] [%s] > GMTdata.txt\n", GMT_bo_OPT, GMT_ho_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "usage: kml2gmt [<kmlfiles>] [%s] [-Z] [%s] [%s] [%s] > GMTdata.txt\n", GMT_V_OPT, GMT_bo_OPT, GMT_ho_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -149,7 +151,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-Vbh:", "" GMT_OPT("HMm"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_kml2gmt_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_kml2gmt_parse (API, Ctrl, options))) Return (error);
 

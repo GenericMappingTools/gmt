@@ -30,6 +30,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "->BJKOPRUVXYcfptxy" GMT_OPT("EZ")
+
 /* Control structure for psbasemap */
 
 struct PSBASEMAP_CTRL {
@@ -69,7 +71,8 @@ int GMT_psbasemap_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "usage: psbasemap %s %s %s [-K] [%s]\n", GMT_B_OPT, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_Jz_OPT);
 	GMT_message (GMT, "\t[%s]\n", GMT_SCALE);
 	GMT_message (GMT, "\t[-O] [-P] [%s]\n", GMT_TROSE);
-	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_f_OPT, GMT_p_OPT, GMT_t_OPT);
+	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s]\n\n", GMT_U_OPT, GMT_V_OPT,
+		GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_f_OPT, GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -159,7 +162,7 @@ int GMT_psbasemap (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VJfR", "BKOPUXxYycpt>" GMT_OPT("EZ"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_psbasemap_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psbasemap_parse (API, Ctrl, options))) Return (error);
 

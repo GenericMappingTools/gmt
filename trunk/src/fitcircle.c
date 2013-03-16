@@ -76,6 +76,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-:>Vabfghio" GMT_OPT("H")
+
 struct FITCIRCLE_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	struct L {	/* -L[<n>] */
@@ -112,7 +114,7 @@ int GMT_fitcircle_usage (struct GMTAPI_CTRL *C, int level)
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: fitcircle [<table>] -L[<norm>] [-S[<lat>]] [%s] [%s]\n", GMT_V_OPT, GMT_bi_OPT);
+	GMT_message (GMT, "usage: fitcircle [<table>] -L[<norm>] [-S[<lat>]] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT);
 	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);
 
@@ -123,7 +125,7 @@ int GMT_fitcircle_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_explain_options (GMT, "<");
 	GMT_message (GMT, "\t-S Attempt to fit a small circle rather than a great circle.\n");
 	GMT_message (GMT, "\t   Optionally append the latitude <lat> of the small circle you want to fit.\n");
-	GMT_explain_options (GMT, "VC0fghio:.");
+	GMT_explain_options (GMT, "VaC0fghio:.");
 	
 	return (EXIT_FAILURE);
 }
@@ -348,7 +350,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-Vbf:", "ghio>" GMT_OPT("H"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_fitcircle_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_fitcircle_parse (API, Ctrl, options))) Return (error);
 

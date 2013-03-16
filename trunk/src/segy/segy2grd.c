@@ -30,6 +30,8 @@
 #include "gmt_dev.h"
 #include "segy_io.h"
 
+#define GMT_PROG_OPTIONS "-VRr" GMT_OPT("F")
+
 #define COUNT	1
 #define AVERAGE	2
 
@@ -117,8 +119,8 @@ int GMT_segy2grd_usage (struct GMTAPI_CTRL *C, int level)
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: segy2grd <segyfile> -G<grdfile> %s %s\n", GMT_Id_OPT, GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-A[n|z]] [%s] [-F] [-L<nsamp>] [-M<ntraces>] [-N<nodata>]\n", GMT_GRDEDIT);
-	GMT_message (GMT, "\t[-Q<mode><value>] [-S<header>] [%s]\n\n", GMT_V_OPT);
+	GMT_message (GMT, "\t[-A[n|z]] [%s] [-L<nsamp>] [-M<ntraces>] [-N<nodata>]\n", GMT_GRDEDIT);
+	GMT_message (GMT, "\t[-Q<mode><value>] [-S<header>] [%s] [%s]\n\n", GMT_V_OPT, GMT_r_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -131,7 +133,6 @@ int GMT_segy2grd_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Append n (-An): Count number of multiple entries per node instead.\n");
 	GMT_message (GMT, "\t   [Default (no -A option) will compute mean values]\n");
 	GMT_message (GMT, "\t-D to enter header information.  Specify '=' to get default value\n");
-	GMT_message (GMT, "\t-F will force pixel registration [Default is grid registration]\n");
 	GMT_message (GMT, "\t-L<nsamp> to override number of samples\n");
 	GMT_message (GMT, "\t-M<ntraces> to fix number of traces. Default reads all traces.\n\t\t-M0 will read number in binary header, -Mn will attempt to read only n traces.\n");
 	GMT_message (GMT, "\t-N set value for nodes without corresponding input sample [Default is NaN]\n");
@@ -141,7 +142,7 @@ int GMT_segy2grd_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-S<header> to set variable spacing\n");
 	GMT_message (GMT, "\t   <header> is c for cdp, o for offset, b<number> for 4-byte float starting at byte number\n");
 	GMT_message (GMT, "\t\tIf -S not set, assumes even spacing of samples at dx, dy supplied with -I\n");
-	GMT_explain_options (GMT, "V.");
+	GMT_explain_options (GMT, "VF.");
 	
 	return (EXIT_FAILURE);
 }
@@ -304,7 +305,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VRr", GMT_OPT("F"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_segy2grd_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_segy2grd_parse (API, Ctrl, options))) Return (error);
 

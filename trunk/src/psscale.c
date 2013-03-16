@@ -29,6 +29,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "->BJKOPRUVXYcptxy"
+
 void GMT_linearx_grid (struct GMT_CTRL *C, struct PSL_CTRL *P, double w, double e, double s, double n, double dval);
 double GMT_get_map_interval (struct GMT_CTRL *C, struct GMT_PLOT_AXIS_ITEM *T);
 
@@ -1091,7 +1093,7 @@ int GMT_psscale (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	/* Overrule GMT settings of MAP_FRAME_AXES. Use WESN */
 	GMT->current.map.frame.side[S_SIDE] = GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[N_SIDE] = GMT->current.map.frame.side[W_SIDE] = 3;
-	if (GMT_Parse_Common (API, "-VJR", "BKOPUXxYycpt>", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_psscale_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psscale_parse (API, Ctrl, options))) Return (error);
 

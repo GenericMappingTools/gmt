@@ -28,6 +28,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "->Vh"
+
 /* Control structure for testapi */
 
 struct TESTAPI_CTRL {
@@ -94,7 +96,7 @@ int GMT_testapi_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   Optionally, append /v or /m to c|r to put data via vector or matrix.\n");
 	GMT_message (GMT, "\t   This is only valid for -Td|g.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "V.");
+	GMT_explain_options (GMT, "Vh.");
 	
 	return (EXIT_FAILURE);
 }
@@ -207,7 +209,7 @@ int GMT_testapi (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-Vh", ">", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_testapi_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_testapi_parse (API, Ctrl, options))) Return (error);
 

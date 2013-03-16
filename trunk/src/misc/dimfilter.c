@@ -22,6 +22,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-:RVfh"
+
 struct DIMFILTER_INFO {
 	int nx;		/* The max number of filter weights in x-direction */
 	int ny;		/* The max number of filter weights in y-direction */
@@ -411,7 +413,7 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "dimfilter", &GMT_cpy);	/* Save current state */
-	if (GMT_Parse_Common (API, "-VfhR:", "", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_dimfilter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_dimfilter_parse (API, Ctrl, options))) Return (error);
 

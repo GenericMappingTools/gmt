@@ -29,6 +29,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "->V"
+
 struct X2SYS_MERGE_CTRL {
 	struct A {	/* -A */
 		bool active;
@@ -68,7 +70,7 @@ int GMT_x2sys_merge_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t-M Give file with the new crossover error data base.\n");
 	GMT_message (GMT, "\t   The new COEs will replace the old ones present in <main_COEdbase>.\n");
 	GMT_message (GMT, "\t   Result is printed to stdout.\n");
-	GMT_explain_options (GMT, "V");
+	GMT_explain_options (GMT, "V.");
 	
 	return (EXIT_FAILURE);
 }
@@ -144,7 +146,7 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-V", ">", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_x2sys_merge_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_x2sys_merge_parse (API, Ctrl, options))) Return (error);
 

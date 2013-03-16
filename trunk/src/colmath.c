@@ -31,6 +31,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-:>Vbfghios" GMT_OPT("HMm")
+
 #ifdef GMT_COMPAT
 int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg);
 #endif
@@ -194,7 +196,7 @@ int GMT_colmath (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-Vbf:", "ghios>" GMT_OPT("HMm"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_colmath_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_colmath_parse (API, Ctrl, options))) Return (error);
 

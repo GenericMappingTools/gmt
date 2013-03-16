@@ -28,6 +28,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-:RVabfghios" GMT_OPT("HMm")
+
 void GMT_duplicate_segment (struct GMT_CTRL *C, struct GMT_DATASEGMENT *Sin, struct GMT_DATASEGMENT *Sout);
 
 #define POL_IS_CW	1
@@ -537,8 +539,8 @@ int GMT_gmtspatial_usage (struct GMTAPI_CTRL *C, int level) {
 #else
 	GMT_message (GMT, "usage: gmtspatial [<table>] [-C] [-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+s<sfact>][+p]]\n\t[-E+|-] [-I[i|e]] [%s] [-N<pfile>[+a][+p<ID>][+z]] [-Q[<unit>][+]]\n", GMT_DIST_OPT);
 #endif
-	GMT_message (GMT, "\t[%s] [-Su|i] [-T[<cpol>]] [-V[l]] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-		GMT_Rgeo_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "\t[%s] [-Su|i] [-T[<cpol>]] [-V[l]] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
+		GMT_Rgeo_OPT, GMT_b_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -584,7 +586,7 @@ int GMT_gmtspatial_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   j for joining polygons that were split by the Dateline.\n");
 	GMT_message (GMT, "\t-T Truncate polygons against the clip polygon <cpol>; if <cpol> is not given we require -R\n");
 	GMT_message (GMT, "\t   and clip against a polygon derived from the region border.\n");
-	GMT_explain_options (GMT, "VfghC2D0io:.");
+	GMT_explain_options (GMT, "VfghC2D0ios:.");
 	
 	return (EXIT_FAILURE);
 }
@@ -776,7 +778,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VfRb:", "ghios" GMT_OPT("HMm"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmtspatial_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtspatial_parse (API, Ctrl, options))) Return (error);
 	

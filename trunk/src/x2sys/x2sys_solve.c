@@ -36,6 +36,8 @@
 
 #include "x2sys.h"
 
+#define GMT_PROG_OPTIONS "->Vb"
+
 #define N_COE_PARS	12	/* Total number of items that might be known at each crossover */
 #define COL_COE		0	/* The crossover value in whatever field we are studying */
 #define COL_XX		1	/* lon or x at crossover */
@@ -197,7 +199,7 @@ int GMT_x2sys_solve_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_explain_options (GMT, "V");
 	GMT_message (GMT, "\t-W Weights are present in last column for weighted fit [no weights].\n");
 	GMT_message (GMT, "\t   Append 'u' to report unweighted mean/std [Default, report weighted stats].\n");
-	GMT_explain_options (GMT, "C");
+	GMT_explain_options (GMT, "C.");
 	
 	return (EXIT_FAILURE);
 }
@@ -369,7 +371,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-Vb", ">", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_x2sys_solve_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_x2sys_solve_parse (API, Ctrl, options))) Return (error);
 

@@ -32,6 +32,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-:>RVabfghior" GMT_OPT("H")
+
 struct GMTAVERAGE_CTRL {	/* All control options for this program (except common args) */
 	struct E {	/* -E[b] */
 		bool active;
@@ -63,8 +65,8 @@ int GMT_gmtaverage_usage (struct GMTAPI_CTRL *C, int level)
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: gmtaverage [<table>] %s -Te|m|n|o|s|w|<q>\n", GMT_I_OPT);
-	GMT_message (GMT, "\t%s [-C] [-E[b]] [-Q] [%s] [-W[i][o]]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
-		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "\t%s [-C] [-E[b]] [-Q] [%s] [-W[i][o]]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
+		GMT_Rgeo_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -92,7 +94,7 @@ int GMT_gmtaverage_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   -Wi reads Weighted Input (4 cols: x,y,z,w) but skips w on output.\n");
 	GMT_message (GMT, "\t   -Wo reads unWeighted Input (3 cols: x,y,z) but writes weight sum on output.\n");
 	GMT_message (GMT, "\t   -W with no modifier has both weighted Input and Output; Default is no weights used.\n");
-	GMT_explain_options (GMT, "C0");
+	GMT_explain_options (GMT, "aC0");
 	GMT_message (GMT, "\t   Default is 3 columns (or 4 if -W is set).\n");
 	GMT_explain_options (GMT, "D0fhioF:.");
 	
@@ -194,7 +196,7 @@ int GMT_gmtaverage (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VfRb:", "aghior>" GMT_OPT("H"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmtaverage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtaverage_parse (API, Ctrl, options))) Return (error);
 

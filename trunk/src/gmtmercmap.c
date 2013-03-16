@@ -27,6 +27,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "->BKOPRUVXYcnptxy"
+
 #define MAP_BAR_GAP	"-30p"	/* Offset color bar 30 points below map */
 #define MAP_BAR_HEIGHT	"8p"	/* Height of color bar, if used */
 #define MAP_OFFSET	"125p"	/* Start map 125p from paper edge when colorbar is requested */
@@ -222,7 +224,7 @@ int main (int argc, char **argv)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_module (API, "gmtmercmap", &GMT_cpy);		/* Save current state */
-	if (GMT_Parse_Common (API, "-VR", "BKOPUXxYycnpt>", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmtmercmap_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtmercmap_parse (API, Ctrl, options))) Return (error);
 

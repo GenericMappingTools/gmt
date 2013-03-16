@@ -36,6 +36,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-:>Vbfhis" GMT_OPT("H")
+
 #define TREND2D_N_OUTPUT_CHOICES 6
 
 struct TREND2D_CTRL {
@@ -414,7 +416,7 @@ int GMT_trend2d_usage (struct GMTAPI_CTRL *C, int level)
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: trend2d [<table>] -F<xyzmrw> -N<n_model>[r] [-C<condition_#>] [-I[<confidence>]]\n");
-	GMT_message (GMT, "\t[%s] [-W] [%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "\t[%s] [-W] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -434,7 +436,7 @@ int GMT_trend2d_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-W Weighted input given, weights in 4th column [Default is unweighted].\n");
 	GMT_explain_options (GMT, "C0");
 	GMT_message (GMT, "\t   Default is 3 (or 4 if -W is set) columns.\n");
-	GMT_explain_options (GMT, "D0fhi:.");
+	GMT_explain_options (GMT, "D0fhis:.");
 	
 	return (EXIT_FAILURE);
 }
@@ -549,7 +551,7 @@ int GMT_trend2d (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-Vbf:", "his>" GMT_OPT("H"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_trend2d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_trend2d_parse (API, Ctrl, options))) Return (error);
 

@@ -32,6 +32,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "->Vh"
+
 unsigned int GMT_log_array (struct GMT_CTRL *C, double min, double max, double delta, double **array);
 
 /* Control structure for makecpt */
@@ -107,7 +109,7 @@ int GMT_makecpt_usage (struct GMTAPI_CTRL *C, int level)
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: makecpt [-A[+]<transparency>] [-C<cpt>] [-D[i|o]] [-F[R|r|h|c] [-I] [-M] [-N] [-Q[i|o]]\n");
-	GMT_message (GMT, "	[-T<z_min>/<z_max>[/<z_inc>[+]] | -T<table>] [%s] [-Z]\n", GMT_V_OPT);
+	GMT_message (GMT, "	[-T<z_min>/<z_max>[/<z_inc>[+]] | -T<table>] [%s] [-Z] [%s]\n", GMT_V_OPT, GMT_ho_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -137,7 +139,7 @@ int GMT_makecpt_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-W Do not interpolate color palette.\n");
 	GMT_message (GMT, "\t-Z Create a continuous color palette [Default is discontinuous,\n");
 	GMT_message (GMT, "\t   i.e., constant color intervals].\n");
-	GMT_explain_options (GMT, ".");
+	GMT_explain_options (GMT, "h.");
 
 	return (EXIT_FAILURE);
 }
@@ -272,7 +274,7 @@ int GMT_makecpt (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-V", "h>", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_makecpt_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_makecpt_parse (API, Ctrl, options))) Return (error);
 

@@ -30,6 +30,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-:>Vbfghis" GMT_OPT("HMm")
+
 #define PROJECT_N_FARGS	7
 
 struct PROJECT_CTRL {	/* All control options for this program (except common args) */
@@ -653,7 +655,7 @@ int GMT_project (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-Vbf:", "ghis>" GMT_OPT("HMm"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_project_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_project_parse (API, Ctrl, options))) Return (error);
 

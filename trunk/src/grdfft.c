@@ -31,6 +31,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-Vfh" GMT_OPT("T")
+
 #ifdef DEBUG
 /* For debuging -E; running this in debug and setting it to true will also output the number of estimates per radial k */
 bool show_n = false;
@@ -576,7 +578,7 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "usage: grdfft <ingrid> [<ingrid2>] [-G<outgrid>|<table>] [-A<azimuth>] [-C<zlevel>]\n");
 	GMT_message (GMT, "\t[-D[<scale>|g]] [-E[r|x|y][w[k]] [-F[r|x|y]<parameters>] [-I[<scale>|g]]\n");
 	GMT_message (GMT, "\t[-N%s] [-S<scale>]\n", GMT_FFT_OPT);
-	GMT_message (GMT, "\t[%s] [-fg] [-ho]\n\n", GMT_V_OPT);
+	GMT_message (GMT, "\t[%s] [-fg] [%s]\n\n", GMT_V_OPT, GMT_ho_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -831,7 +833,7 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-Vfh", GMT_OPT("T"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdfft_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdfft_parse (API, Ctrl, &f_info, options))) Return (error);
 

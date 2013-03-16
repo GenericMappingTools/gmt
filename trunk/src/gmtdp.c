@@ -42,6 +42,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-:>Vbfghio" GMT_OPT("HMm")
+
 /* Control structure for gmtdp */
 
 struct GMTDP_CTRL {
@@ -299,7 +301,7 @@ int GMT_gmtdp (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-Vbf:", "ghio>" GMT_OPT("HMm"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmtdp_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtdp_parse (API, Ctrl, options))) Return (error);
 	

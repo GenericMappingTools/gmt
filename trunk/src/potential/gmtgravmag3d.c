@@ -31,6 +31,8 @@
 #include "gmt_dev.h"
 #include "okbfuns.h"
 
+#define GMT_PROG_OPTIONS "-:RVf"
+
 struct XYZOKB_CTRL {
 	struct XYZOKB_C {	/* -C */
 		bool active;
@@ -153,7 +155,7 @@ int GMT_gmtgravmag3d_usage (struct GMTAPI_CTRL *C, int level) {
 	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: gmtgravmag3d [-C<density>] [-G<outgrid>] [-R<w>/<e>/<s></n>]\n");
+	GMT_message (GMT, "usage: gmtgravmag3d [-C<density>] [-G<outgrid>] [%s] [%s]\n", GMT_I_OPT, GMT_Rgeo_OPT);
 	GMT_message (GMT, "\t[-E<thick>] [-F<xy_file>] [-L<z_observation>]\n");
 	GMT_message (GMT, "\t[-H<f_dec>/<f_dip>/<m_int></m_dec>/<m_dip>] [-S<radius>]\n");
 	GMT_message (GMT, "\t[-T<[d]xyz_file>/<vert_file>[/m]|<[r|s]raw_file> [-Z<level>]\n\t[%s] [-fg] [%s]\n", 
@@ -167,7 +169,7 @@ int GMT_gmtgravmag3d_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t-C sets body density in SI\n");
 	GMT_message (GMT, "\t-F pass locations where anomaly is going to be computed\n");
 	GMT_message (GMT, "\t-G name of the output grdfile.\n");
-	GMT_message (GMT, "\t-I sets the grid spacing for the grid.  Append m for minutes, c for seconds\n");
+	GMT_inc_syntax (GMT, 'I', 0);
 	GMT_message (GMT, "\t-L sets level of observation [Default = 0]\n");
 	GMT_message (GMT, "\t-E give layer thickness in m [Default = 0 m]\n");
 	GMT_explain_options (GMT, "R");
@@ -378,7 +380,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VfR:", "", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmtgravmag3d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_gmtgravmag3d_parse (API, Ctrl, options))) Return (error);
 	

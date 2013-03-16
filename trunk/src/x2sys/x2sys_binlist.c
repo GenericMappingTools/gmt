@@ -30,6 +30,8 @@
 
 #include "x2sys.h"
 
+#define GMT_PROG_OPTIONS "->V"
+
 #define EA_LAT "37:04:17.1660757541775"
 
 /* Control structure for x2sys_binlist */
@@ -79,7 +81,7 @@ int GMT_x2sys_binlist_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-D Calculate track-lengths per bin (see x2sys_init -C for method and -N for units).\n");
 	GMT_message (GMT, "\t-E Bin tracks using equal-area bins (with -D only).\n");
-	GMT_explain_options (GMT, "V");
+	GMT_explain_options (GMT, "V.");
 	
 	return (EXIT_FAILURE);
 }
@@ -203,7 +205,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-Vf", ">", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_x2sys_binlist_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_x2sys_binlist_parse (API, Ctrl, options))) Return (error);
 

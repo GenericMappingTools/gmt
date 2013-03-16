@@ -106,6 +106,8 @@
 
 #include "spotter.h"
 
+#define GMT_PROG_OPTIONS "-:>RVhr" GMT_OPT("F")
+
 #define B_TO_MB	(1.0 / 1048576.0)
 
 #define TRUNC	0	/* Indices for -T */
@@ -553,7 +555,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
-	if (GMT_Parse_Common (API, "-VfR:", "ghrs>" GMT_OPT("F"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdspotter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdspotter_parse (API, Ctrl, options))) Return (error);
 

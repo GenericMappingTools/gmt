@@ -35,6 +35,8 @@
 #include "gmt_dev.h"
 #include "segy_io.h"
 
+#define GMT_PROG_OPTIONS "->BJKOPRUVXYcpt"
+
 #define B_ID	0	/* Indices into Q values */
 #define U_ID	1
 #define X_ID	2
@@ -478,7 +480,7 @@ int GMT_pssegy (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VJR", "BKOPUXYcpt>", options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_pssegy_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_pssegy_parse (API, Ctrl, options))) Return (error);
 

@@ -30,6 +30,8 @@
 
 #include "gmt_dev.h"
 
+#define GMT_PROG_OPTIONS "-:RVabfghirs" GMT_OPT("FHMm")
+
 #define GRDMASK_N_CLASSES	3	/* outside, on edge, and inside */
 
 struct GRDMASK_CTRL {
@@ -83,8 +85,8 @@ int GMT_grdmask_usage (struct GMTAPI_CTRL *C, int level)
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_message (GMT, "usage: grdmask [<table>] -G<outgrid> %s\n", GMT_I_OPT);
 	GMT_message (GMT, "\t%s [-A[m|p]] [-N[z|Z|p|P][<values>]]\n", GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-S%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n",
-		GMT_RADIUS_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_colon_OPT);
+	GMT_message (GMT, "\t[-S%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+		GMT_RADIUS_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -110,7 +112,7 @@ int GMT_grdmask_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   inside the circle of specified radius [0] from the nearest data point.\n");
 	GMT_message (GMT, "\t   Give radius as 'z' if individual radii are provided via the 3rd data column.\n");
 	GMT_message (GMT, "\t   [Default is to treat xyfiles as polygons and use inside/outside searching].\n");
-	GMT_explain_options (GMT, "VC2fghiF:.");
+	GMT_explain_options (GMT, "VaC2fghiFs:.");
 	
 	return (EXIT_FAILURE);
 }
@@ -262,7 +264,7 @@ int GMT_grdmask (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, "-VfRb:", "aghirs" GMT_OPT("FHMm"), options)) Return (API->error);
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdmask_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdmask_parse (API, Ctrl, options))) Return (error);
 
