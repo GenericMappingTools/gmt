@@ -28,9 +28,10 @@ Description
 optionally weighted quadruples (*x*,\ *y*,\ *z*,\ *w*)] from standard
 input [or *table*] and writes to standard output mode estimates of
 position and value for every non-empty block in a grid region defined by
-the **-R** and **-I** arguments. Either **blockmean**, **blockmedian**,
+the **-R** and **-I** arguments. Either `blockmean <blockmean.html>`_, 
+`blockmedian <blockmedian.html>`_,
 or **blockmode** should be used as a pre-processor before running
-**surface** to avoid aliasing short wavelengths. These routines are also
+`surface <surface.html>`_ to avoid aliasing short wavelengths. These routines are also
 generally useful for decimating or averaging (*x*,\ *y*,\ *z*) data. You
 can modify the precision of the output format by editing the
 **FORMAT\_FLOAT\_OUT** parameter in your `gmt.conf <gmt.conf.html>`_ file, or you may
@@ -133,19 +134,19 @@ Examples
 To find 5 by 5 minute block mode estimates from the double precision
 binary data in hawaii\_b.xyg and output an ASCII table, run:
 
-blockmode hawaii\_b.xyg -R198/208/18/25 -I5m -bi3d > hawaii\_5x5.xyg
+    blockmode hawaii\_b.xyg -R198/208/18/25 -I5m -bi3d > hawaii\_5x5.xyg
 
 To determine the most frequently occurring values per 5x5 block using histogram binning, with
 data representing integer counts, try
 
-blockmode data.txt -R0/100/0/100 -I5 -r -C -D
+    blockmode data.txt -R0/100/0/100 -I5 -r -C -D
 
 See Also
 --------
 
-`blockmean <blockmean.html>`_ ,
-`blockmedian <blockmedian.html>`_ , `gmt <gmt.html>`_ ,
-`gmt.conf <gmt.conf.html>`_ ,
-`nearneighbor <nearneighbor.html>`_ ,
-`surface <surface.html>`_ ,
+`blockmean <blockmean.html>`_,
+`blockmedian <blockmedian.html>`_, `gmt <gmt.html>`_,
+`gmt.conf <gmt.conf.html>`_,
+`nearneighbor <nearneighbor.html>`_,
+`surface <surface.html>`_,
 `triangulate <triangulate.html>`_

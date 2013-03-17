@@ -80,12 +80,12 @@ insight on how the algorithm works
 
 To reduce the geographic line segment.d using a tolerance of 2 km, run
 
-gmtdp segment.d -T2k > new\_segment.d
+    gmtdp segment.d -T2k > new\_segment.d
 
 To reduce the Cartesian lines xylines.d using a tolerance of 0.45 and
 write the reduced lines to file new\_xylines.d, run
 
-gmtdp xylines.d -T0.45 > new\_xylines.d
+    gmtdp xylines.d -T0.45 > new\_xylines.d
 
 `Bugs <#toc9>`_
 ---------------

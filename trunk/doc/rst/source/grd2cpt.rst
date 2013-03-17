@@ -147,17 +147,16 @@ helpful to know that 90% of your data lie between z1 and z2, something
 you cannot learn from `grdinfo <grdinfo.thml>`_. So you can do this to see some points
 on the CDF(Z) curve (use **-V** option to see more):
 
-grd2cpt mydata.nc -V > /dev/null
+    grd2cpt mydata.nc -V > /dev/null
 
 To make a cpt file with entries from 0 to 200 in steps of 20, and ignore
 data below zero in computing CDF(Z), and use the built-in master cpt
 file relief, run
 
-grd2cpt mydata.nc -Crelief -L0/10000 -S0/200/20 > mydata.cpt
+    grd2cpt mydata.nc -Crelief -L0/10000 -S0/200/20 > mydata.cpt
 
 `See Also <#toc8>`_
 -------------------
 
-`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
-`grdhisteq <grdhisteq.html>`_ , `grdinfo <grdinfo.html>`_
-, `makecpt <makecpt.html>`_
+`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
+`grdhisteq <grdhisteq.html>`_, `grdinfo <grdinfo.html>`_ , `makecpt <makecpt.html>`_

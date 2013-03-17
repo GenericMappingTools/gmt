@@ -510,48 +510,47 @@ half-space seafloor depths*
 --------------------
 
 To take the square root of the content of the second data column being
-piped through **gmtmath** by process1 and pipe it through a 3rd process,
-use
+piped through **gmtmath** by process1 and pipe it through a 3rd process, use
 
-process1 \| gmtmath STDIN SQRT = \| process3
+    process1 \| gmtmath STDIN SQRT = \| process3
 
 To take log10 of the average of 2 data files, use
 
-gmtmath file1.d file2.d ADD 0.5 MUL LOG10 = file3.d
+    gmtmath file1.d file2.d ADD 0.5 MUL LOG10 = file3.d
 
 Given the file samples.d, which holds seafloor ages in m.y. and seafloor
 depth in m, use the relation depth(in m) = 2500 + 350 \* sqrt (age) to
 print the depth anomalies:
 
-gmtmath samples.d T SQRT 350 MUL 2500 ADD SUB = \| lpr
+    gmtmath samples.d T SQRT 350 MUL 2500 ADD SUB = \| lpr
 
 To take the average of columns 1 and 4-6 in the three data sets sizes.1,
 sizes.2, and sizes.3, use
 
-gmtmath -C1,4-6 sizes.1 sizes.2 ADD sizes.3 ADD 3 DIV = ave.d
+    gmtmath -C1,4-6 sizes.1 sizes.2 ADD sizes.3 ADD 3 DIV = ave.d
 
 To take the 1-column data set ages.d and calculate the modal value and
 assign it to a variable, try
 
-set mode\_age = ‘gmtmath -S -T ages.d MODE =‘
+    set mode\_age = ‘gmtmath -S -T ages.d MODE =‘
 
 To evaluate the dilog(x) function for coordinates given in the file t.d:
 
-gmtmath -Tt.d T DILOG = dilog.d
+    gmtmath -Tt.d T DILOG = dilog.d
 
 To demonstrate the use of stored variables, consider this sum of the
 first 3 cosine harmonics where we store and repeatedly recall the
 trigonometric argument (2\*pi\*T/360):
 
-gmtmath -T0/360/1 2 PI MUL 360 DIV T MUL STO@kT COS @kT 2 MUL COS ADD
-@kT 3 MUL COS ADD = harmonics.d
+    gmtmath -T0/360/1 2 PI MUL 360 DIV T MUL STO@kT COS @kT 2 MUL COS ADD
+    @kT 3 MUL COS ADD = harmonics.d
 
 To use gmtmath as a RPN Hewlett-Packard calculator on scalars (i.e., no
 input files) and calculate arbitrary expressions, use the **-Q** option.
 As an example, we will calculate the value of Kei (((1 + 1.75)/2.2) +
 cos (60)) and store the result in the shell variable z:
 
-set z = ‘gmtmath -Q 1 1.75 ADD 2.2 DIV 60 COSD ADD KEI =‘
+    set z = ‘gmtmath -Q 1 1.75 ADD 2.2 DIV 60 COSD ADD KEI =‘
 
 To use **gmtmath** as a general least squares equation solver, imagine
 that the current table is the augmented matrix [ A \| b ] and you want
@@ -564,8 +563,7 @@ function for a given t0 = 1.55. Then, you need a 4-column augmented
 table loaded with t in column 0 and your observed y(t) in column 3. The
 calculation becomes
 
-gmtmath -N4/1 -Aty.d -C0 1 ADD -C2 1.55 STEPT ADD -Ca LSQFIT =
-solution.d
+    gmtmath -N4/1 -Aty.d -C0 1 ADD -C2 1.55 STEPT ADD -Ca LSQFIT = solution.d
 
 Note we use the **-C** option to select which columns we are working on,
 then make active all the columns we need (here all of them, with
@@ -575,7 +573,7 @@ columns are zero. If you already have a pre-calculated table with the
 augmented matrix [ A \| b ] in a file (say lsqsys.d), the least squares
 solution is simply
 
-gmtmath -T lsqsys.d LSQFIT = solution.d
+    gmtmath -T lsqsys.d LSQFIT = solution.d
 
 `References <#toc13>`_
 ----------------------
@@ -597,4 +595,4 @@ Publishing Corp.
 `See Also <#toc14>`_
 --------------------
 
-`gmt <gmt.html>`_ , `grdmath <grdmath.html>`_
+`gmt <gmt.html>`_, `grdmath <grdmath.html>`_

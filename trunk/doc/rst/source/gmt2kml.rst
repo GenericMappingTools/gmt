@@ -199,14 +199,13 @@ Examples
 To convert a file with point locations (lon, lat) into a KML file with
 red circle symbols, try
 
-gmt2kml mypoints.txt -Gfred -Fs > mypoints.kml
+    gmt2kml mypoints.txt -Gfred -Fs > mypoints.kml
 
 To convert a multisegment file with lines (lon, lat) separated by
 segment headers that contain a **-L**\ labelstring with the feature
 name, selecting a thick white pen, and title the document, try
 
-gmt2kml mylines.txt -Wthick,white -Fl -T"Lines from here to there" >
-mylines.kml
+    gmt2kml mylines.txt -Wthick,white -Fl -T"Lines from here to there" > mylines.kml
 
 To convert a multisegment file with polygons (lon, lat) separated by
 segment headers that contain a **-L**\ labelstring with the feature
@@ -214,30 +213,28 @@ name, selecting a thick black pen and semi-transparent yellow fill,
 giving a title to the document, and prescribing a particular region
 limit, try
 
-gmt2kml mypolygons.txt -Gfyellow+t0.5 -Fp -T"My polygons" -R30/90/-20/40
-> mypolygons.kml
+    gmt2kml mypolygons.txt -Gfyellow+t0.5 -Fp -T"My polygons" -R30/90/-20/40 > mypolygons.kml
 
 To convert a file with point locations (lon, lat, time) into a KML file
 with green circle symbols that will go active at the specified time and
 stay active going forward, try
 
-awk ’{print $1, $2, $3, "NaN"}’ mypoints.txt \| gmt2kml -Gfgreen -Ft >
-mytimepoints.kml
+    awk '{print $1, $2, $3, "NaN"}' mypoints.txt \| gmt2kml -Gfgreen -Ft > mytimepoints.kml
 
 To extract contours and labels every 10 units from the grid temp.nc and
 plot them in KML, using red lines at 75% transparency and red labels (no
 transparency), try
 
-grdcontour temp.nc -Jx1id -A10+tlabel.txt -C10 -Dcontours.txt
+    grdcontour temp.nc -Jx1id -A10+tlabel.txt -C10 -Dcontours.txt
 
-gmt2kml contours.txt -Fl -W1p,red@75 -K > contours.kml
+    gmt2kml contours.txt -Fl -W1p,red@75 -K > contours.kml
 
-gmt2kml -O -N+ -Fs -Sn2 -Gnred@0 label.txt -I- >> contours.kml
+    gmt2kml -O -N+ -Fs -Sn2 -Gnred@0 label.txt -I- >> contours.kml
 
 To instead plot the contours as lines with colors taken from the cpt
 file contours.cpt, try
 
-gmt2kml contours.txt -Fl -Ccontours.cpt > contours.kml
+    gmt2kml contours.txt -Fl -Ccontours.cpt > contours.kml
 
 Limitations
 -----------

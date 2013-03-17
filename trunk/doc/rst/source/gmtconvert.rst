@@ -143,46 +143,45 @@ None
 `Examples <#toc7>`_
 -------------------
 
-To convert the binary file test.b (single precision) with 4 columns to
-ASCII:
+To convert the binary file test.b (single precision) with 4 columns to ASCII:
 
-gmtconvert test.b -bi4f > test.dat
+    gmtconvert test.b -bi4f > test.dat
 
 To convert the multiple segment ASCII table test.d to a double precision
 binary file:
 
-gmtconvert test.d -bo > test.b
+    gmtconvert test.d -bo > test.b
 
 You have an ASCII table with 6 columns and you want to plot column 5
 versus column 0. Try
 
-gmtconvert table.d -o5,0 \| psxy ...
+    gmtconvert table.d -o5,0 \| psxy ...
 
 If the file instead is the binary file results.b which has 9
 single-precision values per record, we extract the last column and
 columns 4-6 and write ASCII with the command
 
-gmtconvert results.b -o8,4-6 -bi9s \| psxy ...
+    gmtconvert results.b -o8,4-6 -bi9s \| psxy ...
 
 You want to plot the 2nd column of a 2-column file left.d versus the
 first column of a file right.d:
 
-gmtconvert left.d right.d -A -o1,2 \| psxy ...
+    gmtconvert left.d right.d -A -o1,2 \| psxy ...
 
 To extract all segments in the file big\_file.d whose headers contain
 the string "RIDGE AXIS", try
 
-gmtconvert big\_file.d -S"RIDGE AXIS" > subset.d
+    gmtconvert big\_file.d -S"RIDGE AXIS" > subset.d
 
 To invert the selection of segments whose headers begin with "profile "
 followed by an integer number and any letter between "g" and "l", try
 
-gmtconvert -S~"/^profile [0-9]+[g-l]$/"
+    gmtconvert -S~"/^profile [0-9]+[g-l]$/"
 
 To reverse the order of segments in a file without reversing the order
 of records within each segment, try
 
-gmtconvert lots of segments.txt -Is > last\_segment\_first.txt
+    gmtconvert lots of segments.txt -Is > last\_segment\_first.txt
 
 `See Also <#toc8>`_
 -------------------

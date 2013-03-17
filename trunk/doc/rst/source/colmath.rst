@@ -100,34 +100,34 @@ well.
 
 To convert the binary file test.b (single precision) with 4 columns to ASCII:
 
-colmath test.b -bi4f > test.dat
+    colmath test.b -bi4f > test.dat
 
 To convert the multiple segment ASCII table test.d to a double precision binary file:
 
-colmath test.d -bo > test.b
+    colmath test.d -bo > test.b
 
 You have an ASCII table with 6 columns and you want to plot column 5
 versus column 0. Try
 
-colmath table.d -o5,0 \| psxy ...
+    colmath table.d -o5,0 \| psxy ...
 
 If the file instead is the binary file results.b which has 9
 single-precision values per record, we extract the last column and
 columns 4-6 and write ASCII with the command
 
-colmath results.b -o8,4-6 -bi9s \| psxy ...
+    colmath results.b -o8,4-6 -bi9s \| psxy ...
 
 You want to plot the 2nd column of a 2-column file left.d versus the
 first column of a file right.d:
 
-colmath left.d right.d -A -o1,2 \| psxy ...
+    colmath left.d right.d -A -o1,2 \| psxy ...
 
 To extract all segments in the file big\_file.d whose headers contain
 the string "RIDGE AXIS", try
 
-colmath big\_file.d -S"RIDGE AXIS" > subset.d
+    colmath big\_file.d -S"RIDGE AXIS" > subset.d
 
 `See Also <#toc8>`_
 -------------------
 
-`gmt <gmt.html>`_ , `minmax <minmax.html>`_
+`gmt <gmt.html>`_, `minmax <minmax.html>`_

@@ -107,9 +107,9 @@ ship.xyg. You want to project this data onto a great circle and resample
 it in distance, in order to filter it or check its spectrum. Do the
 following:
 
-fitcircle ship.xyg -L2
+    fitcircle ship.xyg -L2
 
-project ship.xyg -Cox/oy -Tpx/py -S -Fpz \| sample1d -S-100 -I1 > output.pg
+    project ship.xyg -Cox/oy -Tpx/py -S -Fpz \| sample1d -S-100 -I1 > output.pg
 
 Here, *ox*/*oy* is the lon/lat of the mean from **fitcircle**, and
 *px*/*py* is the lon/lat of the pole. The file output.pg has distance,

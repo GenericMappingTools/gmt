@@ -128,7 +128,7 @@ To combine the digitized segment lines segment\_\*.txt (whose
 coordinates are in cm) into as few complete lines as possible, assuming
 the end points slop could be up to 0.1 mm, run
 
-gmtstitch segment\_\*.txt -Tf0.1 > new\_segments.txt
+    gmtstitch segment\_\*.txt -Tf0.1 > new\_segments.txt
 
 To combine the digitized segments in the multisegment file my\_lines.txt
 (whose coordinates are in lon,lat) into as few complete lines as
@@ -136,7 +136,7 @@ possible, assuming the end points slop could be up to 150 m, and write
 the complete segments to separate files called Map\_segment\_0001.dat,
 Map\_segment\_0002.dat, etc., run
 
-gmtstitch my\_lines.txt -T150e -DMap\_segment\_%04d.dat
+    gmtstitch my\_lines.txt -T150e -DMap\_segment\_%04d.dat
 
 `Bugs <#toc9>`_
 ---------------

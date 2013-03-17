@@ -60,11 +60,11 @@ PARAMETER *value*
 To change annotation font to 12-point Helvetica, select grid-crosses of
 size 0.1 inch, and set annotation offset to 0.2 cm:
 
-gmtset FONT\_ANNOT\_PRIMARY 12p,Helvetica
-MAP\_GRID\_CROSS\_SIZE\_PRIMARY 0.1i MAP\_ANNOT\_OFFSET\_PRIMARY 0.2c
+    gmtset FONT\_ANNOT\_PRIMARY 12p,Helvetica
+    MAP\_GRID\_CROSS\_SIZE\_PRIMARY 0.1i MAP\_ANNOT\_OFFSET\_PRIMARY 0.2c
 
 `See Also <#toc6>`_
 -------------------
 
-`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
-`gmtdefaults <gmtdefaults.html>`_ , `gmtget <gmtget.html>`_
+`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
+`gmtdefaults <gmtdefaults.html>`_, `gmtget <gmtget.html>`_
