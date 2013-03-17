@@ -4959,7 +4959,6 @@ int GMTAPI_FFT_ (void *X, int *direction, unsigned int *mode, void *v_K)
 }
 #endif
 
-
 int GMT_FFT_Destroy (void *V_API, void *v_info)
 {	/* Perform any final duties, perhaps report.  For now just free */
 	struct GMT_FFT_INFO *info = gmt_get_fftinfo_ptr (v_info);
@@ -4974,5 +4973,151 @@ int GMT_FFT_Destroy (void *V_API, void *v_info)
 int GMT_FFT_Destroy_ (void *v_K)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_FFT_Destroy (GMT_FORTRAN, v_K));
+}
+#endif
+
+/* API to examine GMT Common Option current settings and GMT Default settings */
+
+int GMT_Get_Common (void *V_API, unsigned int option, double *par)
+{
+	int ret = GMTAPI_NOTSET;
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+	struct GMT_CTRL *GMT = API->GMT;
+	switch (option) {
+		case 'B':	if (GMT->common.B.active[0] || GMT->common.B.active[1]) ret = 0; break;
+		case 'I':
+			if (GMT->common.API_I.active) {
+				ret = 2;
+				GMT_memcpy (par, GMT->common.API_I.inc, 2, double);
+			}
+			break;
+		case 'J':
+			if (GMT->common.J.active) {
+				ret = 1;
+				par[0] = GMT->common.J.id;
+			}
+			break;
+		case 'K':	if (GMT->common.K.active) ret = 0; break;
+		case 'O':	if (GMT->common.O.active) ret = 0; break;
+		case 'P':	if (GMT->common.P.active) ret = 0; break;
+		case 'R':
+			if (GMT->common.R.active) {
+				ret = 4;
+				GMT_memcpy (par, GMT->common.R.wesn, 4, double);
+			}
+			break;
+		case 'U':	if (GMT->common.U.active) ret = 0; break;
+		case 'V':	if (GMT->common.V.active) ret = GMT->current.setting.verbose; break;
+		case 'X':
+			if (GMT->common.X.active) {
+				ret = 1;
+				par[0] = GMT->common.X.off;
+			}
+			break;
+		case 'Y':
+			if (GMT->common.Y.active) {
+				ret = 1;
+				par[0] = GMT->common.Y.off;
+			}
+			break;
+		case 'a':	if (GMT->common.a.active) ret = GMT->common.a.geometry; break;
+		case 'b':	if (GMT->common.b.active[GMT_IN]) ret = GMT_IN; else if (GMT->common.b.active[GMT_OUT]) ret = GMT_OUT; break;
+		case 'c':	if (GMT->common.c.active) ret = GMT->common.c.copies; break;
+		case 'f':	if (GMT->common.f.active[GMT_IN]) ret = GMT_IN; else if (GMT->common.f.active[GMT_OUT]) ret = GMT_OUT; break;
+		case 'g':	if (GMT->common.g.active) ret = 0; break;
+		case 'h':	if (GMT->common.h.active) ret = GMT->common.h.mode; break;
+		case 'i':	if (GMT->common.i.active) ret = GMT->common.i.n_cols; break;
+		case 'n':	if (GMT->common.n.active) ret = 0; break;
+		case 'o':	if (GMT->common.o.active) ret = GMT->common.o.n_cols; break;
+		case 'p':	if (GMT->common.p.active) ret = 0; break;
+		case 'r':	if (GMT->common.r.active) ret = GMT->common.r.registration; break;
+		case 's':	if (GMT->common.s.active) ret = 0; break;
+		case 't':
+			if (GMT->common.t.active) {
+				ret = 1;
+				par[0] = GMT->common.t.value;
+			}
+			break;
+		case ':':	if (GMT->common.colon.toggle[GMT_IN]) ret = GMT_IN; else if (GMT->common.colon.toggle[GMT_OUT]) ret = GMT_OUT; break;
+		default:
+			GMT_Report_Error (API, GMT_OPTION_NOT_FOUND);
+			break;
+	}
+	
+	return (ret);
+}
+
+#ifdef FORTRAN_API
+int GMT_Get_Common_ (unsigned int *option, double par[])
+{	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Get_Common (GMT_FORTRAN, *option, par));
+}
+#endif
+
+int GMT_Get_Default (void *V_API, char *keyword, char *value)
+{
+	int error;
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+
+	strcpy (value, GMT_putparameter (API->GMT, keyword));
+	error = (value[0] == '\0') ? GMT_OPTION_NOT_FOUND : GMT_NOERROR;
+	return (error);
+}
+
+#ifdef FORTRAN_API
+int GMT_Get_Default_ (char *keyword, char *value, int len1, int len2)
+{	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Get_Default (GMT_FORTRAN, keyword, value));
+}
+#endif
+
+int GMT_Report_Message (void *V_API, unsigned int level, char *message)
+{
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+
+	GMT_report (API->GMT, level, message);
+	return (GMT_NOERROR);
+}
+
+#ifdef FORTRAN_API
+int GMT_Report_Message_ (void *V_API, unsigned int *level, char *message, int len)
+{	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Report_Message (GMT_FORTRAN, *level, message));
+}
+#endif
+
+int GMT_Get_Value (void *V_API, char *arg, double par[])
+{	/* Parse any number of comma or slash-separated values. par must have enough space.
+	 * We can handle dimension units (c|i|p), distance units (d|m|s|e|f|k|M|n|u),
+	 * geographic coordinates, absolute dateTtime strings, and regular floats. */
+	unsigned int pos = 0, n_arg = 0, mode, len;
+	char p[GMT_BUFSIZ], unit;
+	double value;
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+	struct GMT_CTRL *GMT = API->GMT;
+	
+	if (arg == NULL || arg[0] == '\0') return GMTAPI_NOTSET;
+
+	while (GMT_strtok (arg, "/,", &pos, p)) {
+		if ((len = strlen (p)) == 0) continue;
+		len--;	/* Position of last char, possibly a unit */
+		if (strchr (GMT_DIM_UNITS, p[len]))	/* Dimension unit, return distance in GMT default lenght unit */
+			value = GMT_convert_units (GMT, p, GMT->current.setting.proj_length_unit, GMT->current.setting.proj_length_unit);
+		else if (strchr (GMT_LEN_UNITS, p[len])) {	/* Distance units, return as meters [or degrees if arc] */
+			mode = GMT_get_distance (GMT, p, &value, &unit);
+			GMT_init_distaz (GMT, unit, mode, GMT_MAP_DIST);
+			value /= GMT->current.map.dist[GMT_MAP_DIST].scale;
+		}
+		else	/* Perhaps coordinates or floats */
+			(void) GMT_scanf_arg (GMT, p, GMT_IS_UNKNOWN, &value);
+		par[n_arg++] = value;
+	}
+	return (n_arg);
+}
+
+#ifdef FORTRAN_API
+int GMT_Get_Value_ (char *arg, double par[], int len)
+{	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Get_Value (GMT_FORTRAN, arg, par));
 }
 #endif

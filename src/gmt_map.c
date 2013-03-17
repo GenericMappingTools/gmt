@@ -8060,6 +8060,10 @@ unsigned int GMT_init_distaz (struct GMT_CTRL *C, char unit, unsigned int mode, 
 			gmt_set_distaz (C, GMT_DIST_M + mode, type);
 			C->current.map.dist[type].scale = 1.0 / METERS_IN_A_NAUTICAL_MILE;
 			break;
+		case 'u':	/* Survey feet on spherical body using desired metric mode */
+			gmt_set_distaz (C, GMT_DIST_M + mode, type);
+			C->current.map.dist[type].scale = 1.0 / METERS_IN_A_SURVEY_FOOT;
+			break;
 			
 			/* Cartesian distances.  Note: The X|C|R|Z|S|P 'units' are only passed internally and are not available as user selections directly */
 			
