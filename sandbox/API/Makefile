@@ -6,7 +6,7 @@ include config.mk
 
 INCLUDES	= $(GMT_INC) $(NETCDF_INC) $(GDAL_INC)
 
-PROGS_C		= grd_fft_template.c
+PROGS_C		= grd_fft_template.c gmt_parsing.c
 PROGS_O		= $(PROGS_C:.c=.o)
 PROGS           = $(PROGS_O:.o=)
 
@@ -32,6 +32,7 @@ clean:
 #-------------------------------------------------------------------------------
 
 grd_fft_template:	grd_fft_template.o
+gmt_parsing:		gmt_parsing.o
 
 $(PROGS):	
 		$(CC) $(LDFLAGS) $@.o $(GMT_LIB) $(NETCDF_LIB) $(GDAL_LIB) $(LIBS) -o $@

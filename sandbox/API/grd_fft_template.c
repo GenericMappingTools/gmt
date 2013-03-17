@@ -172,7 +172,7 @@ int main (int argc, char *argv[])
 	void *API = NULL;				/* The API pointer assigned below */
 
 	/* 2. Initializing new GMT session */
-	if ((API = GMT_Create_Session (argv[0], 0U)) == NULL) return EXIT_FAILURE;
+	if ((API = GMT_Create_Session (argv[0], 2U, 0U)) == NULL) return EXIT_FAILURE;
 
 	/* 3. Program initialization and parsing */
 
@@ -182,7 +182,7 @@ int main (int argc, char *argv[])
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_my_fft_program_usage (API, GMTAPI_SYNOPSIS));		/* Return the synopsis */
 
 	/* Parse the commont GMT command-line options */
-	if (GMT_Parse_Common (API, GMT_OPTIONS, "", options)) Return (EXIT_FAILURE);
+	if (GMT_Parse_Common (API, GMT_OPTIONS, options)) Return (EXIT_FAILURE);
 
 	/* Allocate Ctrl and parse program-specific options */
 	Ctrl = New_my_fft_program_Ctrl (API);	/* Allocate and initialize a new control structure */
@@ -198,7 +198,7 @@ int main (int argc, char *argv[])
 	}
 	else {	/* Create an empty grid from current -R -I [-r] instead */
 		fprintf (stderr, "No grid provided, create new grid from current -R -I [-r] settings\n");
-		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, rw_mode, NULL, NULL, NULL, \
+		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, rw_mode, NULL, NULL, NULL, \
 			GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL) Return (EXIT_FAILURE);
 	}
 
