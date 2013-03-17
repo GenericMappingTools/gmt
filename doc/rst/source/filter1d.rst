@@ -149,15 +149,14 @@ gravity, magnetics, topography, and distance (in m) with a 10 km
 Gaussian filter, removing outliers, and output a filtered value every 2
 km between 0 and 100 km:
 
-filter1d cruise.gmtd -T0/1.0e5/2000 -FG10000 -N3 -V >
-filtered\_cruise.gmtd
+    filter1d cruise.gmtd -T0/1.0e5/2000 -FG10000 -N3 -V > filtered\_cruise.gmtd
 
 Data along track often have uneven sampling and gaps which we do not
 want to interpolate using `sample1d <sample1d.html>`_. To find the median depth in a 50
 km window every 25 km along the track of cruise v3312, stored in
 v3312.dt, checking for gaps of 10km and asymmetry of 0.3:
 
-filter1d v3312.dt -FM50 -T0/100000/25 -L10 -S0.3 > v3312\_filt.dt
+    filter1d v3312.dt -FM50 -T0/100000/25 -L10 -S0.3 > v3312\_filt.dt
 
 See Also
 --------

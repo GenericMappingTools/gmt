@@ -129,28 +129,28 @@ single or double precision storage.
 To find 5 by 5 minute block mode values from the double precision binary
 data in hawaii\_b.xyg and output an ASCII table, run
 
-gmtaverage hawaii\_b.xyg -R198/208/18/25 -I5m -To -bi3 > hawaii\_5x5.xyg
+    gmtaverage hawaii\_b.xyg -R198/208/18/25 -I5m -To -bi3 > hawaii\_5x5.xyg
 
 To find 5 by 5 minute block mean values from the same file, run
 
-gmtaverage hawaii.xyg -R198/208/18/25 -I5m -Tm > hawaii\_5x5.xyg
+    gmtaverage hawaii.xyg -R198/208/18/25 -I5m -Tm > hawaii\_5x5.xyg
 
 To find the number of data points in each 5 by 5 minute block from the
 same file, run
 
-gmtaverage hawaii.xyg -R198/208/18/25 -I5m -Tn > hawaii\_5x5.xyn
+    gmtaverage hawaii.xyg -R198/208/18/25 -I5m -Tn > hawaii\_5x5.xyn
 
 To compute the shape of a data distribution per bin via a
 box-and-whisker diagram we need the 0%, 25%, 50%, 75%, and 100%
 quantiles. To do so on a global 5 by 5 degree basis from the ASCII table
 depths.xyz and send output to an ASCII table, run
 
-gmtaverage depths.xyz -Rg -I5 -Te -Eb -r > depths\_5x5.txt
+    gmtaverage depths.xyz -Rg -I5 -Te -Eb -r > depths\_5x5.txt
 
 `See Also <#toc8>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*gmt.conf*\ (5) <gmt.conf.html>`_ ,
-`*nearneighbor*\ (1) <nearneighbor.html>`_ ,
-`*surface*\ (1) <surface.html>`_ ,
-`*triangulate*\ (1) <triangulate.html>`_
+`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
+`nearneighbor <nearneighbor.html>`_ ,
+`surface <surface.html>`_ ,
+`triangulate <triangulate.html>`_

@@ -18,8 +18,8 @@ Synopsis
 **-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
 **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-o**\ *cols*\ [,*...*] ] [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
+[ **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] ]
+[ **-o**\ *cols*\ [,...] ] [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
 
 `Description <#toc2>`_
 ----------------------
@@ -28,9 +28,9 @@ Synopsis
 optionally weighted quadruples (*x*,\ *y*,\ *z*,\ *w*)] from standard
 input [or *table*] and writes to standard output a median position and
 value for every non-empty block in a grid region defined by the **-R**
-and **-I** arguments. Either **blockmean**, **blockmedian**, or
-**blockmode** should be used as a pre-processor before running
-**surface** to avoid aliasing short wavelengths. These routines are also
+and **-I** arguments. Either `blockmean <blockmean.html>`_, **blockmedian**, or
+`blockmode <blockmode.html>`_ should be used as a pre-processor before running
+`surface <surface.html>`_ to avoid aliasing short wavelengths. These routines are also
 generally useful for decimating or averaging (*x*,\ *y*,\ *z*) data. You
 can modify the precision of the output format by editing the
 **FORMAT\_FLOAT\_OUT** parameter in your `gmt.conf <gmt.conf.html>`_ file, or you may
@@ -123,27 +123,27 @@ choose binary input and/or output to avoid loss of precision.
 .. include:: explain_help.rst_
 .. include:: explain_precision.rst_
 
-`Examples <#toc7>`_
--------------------
+Examples
+--------
 
 To find 5 by 5 minute block medians from the double precision binary
 data in hawaii\_b.xyg and output an ASCII table, run
 
-blockmedian hawaii\_b.xyg -R198/208/18/25 -I5m -bi3d > hawaii\_5x5.xyg
+    blockmedian hawaii\_b.xyg -R198/208/18/25 -I5m -bi3d > hawaii\_5x5.xyg
 
 To compute the shape of a data distribution per bin via a
 box-and-whisker diagram we need the 0%, 25%, 50%, 75%, and 100%
 quantiles. To do so on a global 5 by 5 degree basis from the ASCII table
 depths.xyz and send output to an ASCII table, run
 
-blockmedian depths.xyz -Rg -I5 -Eb -r > depths\_5x5.txt
+    blockmedian depths.xyz -Rg -I5 -Eb -r > depths\_5x5.txt
 
-`See Also <#toc8>`_
--------------------
+See Also
+--------
 
-`blockmean <blockmean.html>`_ ,
-`blockmode <blockmode.html>`_ , `gmt <gmt.html>`_ ,
-`gmt.conf <gmt.conf.html>`_ ,
-`nearneighbor <nearneighbor.html>`_ ,
-`surface <surface.html>`_ ,
+`blockmean <blockmean.html>`_,
+`blockmode <blockmode.html>`_, `gmt <gmt.html>`_,
+`gmt.conf <gmt.conf.html>`_,
+`nearneighbor <nearneighbor.html>`_,
+`surface <surface.html>`_,
 `triangulate <triangulate.html>`_

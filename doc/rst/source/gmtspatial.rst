@@ -160,16 +160,16 @@ None.
 To compute the area of all geographic polygons in the multisegment file
 polygons.d, run
 
-gmtspatial polygons.d -Q > areas.d
+    gmtspatial polygons.d -Q > areas.d
 
 Same data, but now orient all polygons to go counter-clockwise and write
 their areas to the segment headers, run
 
-gmtspatial polygons.d -Q+ -E+ > areas.d
+    gmtspatial polygons.d -Q+ -E+ > areas.d
 
 To determine the intersections between the polygons A.d and B.d, run
 
-gmtspatial A.d B.d -Ce > crossovers.d
+    gmtspatial A.d B.d -Ce > crossovers.d
 
 `See Also <#toc9>`_
 -------------------

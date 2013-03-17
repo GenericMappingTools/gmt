@@ -215,7 +215,7 @@ by point, not by segment.
 To extract the subset of data set that is within 300 km of any of the
 points in pts.d but more than 100 km away from the lines in lines.d, run
 
-gmtselect lonlatfile -fg -C300k/pts.d -L100/lines.d -Il > subset
+    gmtselect lonlatfile -fg -C300k/pts.d -L100/lines.d -Il > subset
 
 Here, you must specify **-fg** so the program knows you are processing
 geographical data.
@@ -223,18 +223,17 @@ geographical data.
 To keep all points in data.d within the specified region, except the
 points on land (as determined by the high-resolution coastlines), use
 
-gmtselect data.d -R120/121/22/24 -Dh -Nk/s > subset
+    gmtselect data.d -R120/121/22/24 -Dh -Nk/s > subset
 
 To return all points in quakes.d that are inside or on the spherical
 polygon lonlatpath.d, try
 
-gmtselect quakes.d -Flonlatpath.d -fg > subset1
+    gmtselect quakes.d -Flonlatpath.d -fg > subset1
 
 To return all points in stations.d that are within 5 cm of the point in
 origin.d for a certain projection, try
 
-gmtselect stations.d -C5/origin.d -R20/50/-10/20 -JM20c
---PROJ\_LENGTH\_UNIT=cm > subset2
+    gmtselect stations.d -C5/origin.d -R20/50/-10/20 -JM20c --PROJ\_LENGTH\_UNIT=cm > subset2
 
 .. include:: explain_gshhs.rst_
 
@@ -242,5 +241,5 @@ gmtselect stations.d -C5/origin.d -R20/50/-10/20 -JM20c
 `See Also <#toc13>`_
 --------------------
 
-`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_, `grdlandmask <grdlandmask.html>`_ ,
+`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_, `grdlandmask <grdlandmask.html>`_,
 `pscoast <pscoast.html>`_

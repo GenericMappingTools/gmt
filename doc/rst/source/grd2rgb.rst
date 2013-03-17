@@ -80,15 +80,15 @@ via the **-W** option.
 To use the color palette topo.cpt to create r, g, b component grids from
 hawaii\_grv.nc file, use
 
-grd2rgb hawaii\_grv.nc -Ctopo.cpt -Ghawaii\_grv\_%c.nc
+    grd2rgb hawaii\_grv.nc -Ctopo.cpt -Ghawaii\_grv\_%c.nc
 
 To output the red component from the Sun raster radiation.ras file, use
 
-grd2rgb radiation.ras -Lr -Gcomp\_%c.nc
+    grd2rgb radiation.ras -Lr -Gcomp\_%c.nc
 
 `See Also <#toc7>`_
 -------------------
 
-`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
-`grdedit <grdedit.html>`_ , `grdimage <grdimage.html>`_ ,
+`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
+`grdedit <grdedit.html>`_, `grdimage <grdimage.html>`_,
 `grdmath <grdmath.html>`_ , `grdview <grdview.html>`_
