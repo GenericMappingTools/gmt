@@ -4945,7 +4945,6 @@ int GMTAPI_FFT_2d (struct GMTAPI_CTRL *API, struct GMT_GRID *G, int direction, u
 
 int GMT_FFT (void *V_API, void *X, int direction, unsigned int mode, void *v_K)
 {	/* The 1-D or 2-D FFT operating on GMT_DATASET or GMT_GRID arrays */
-	int status;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 	struct GMT_FFT_WAVENUMBER *K = gmt_get_fftwave_ptr (v_K);
 	if (K->dim == 2) return (GMTAPI_FFT_2d (API, X, direction, mode, K));
@@ -4953,9 +4952,9 @@ int GMT_FFT (void *V_API, void *X, int direction, unsigned int mode, void *v_K)
 }
 
 #ifdef FORTRAN_API
-int GMTAPI_FFT_ (void *X, int *direction, unsigned int *mode, void *v_K)
+int GMT_FFT_ (void *X, int *direction, unsigned int *mode, void *v_K)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMTAPI_FFT (GMT_FORTRAN, X, *direction, *mode, v_K));
+	return (GMT_FFT (GMT_FORTRAN, X, *direction, *mode, v_K));
 }
 #endif
 
