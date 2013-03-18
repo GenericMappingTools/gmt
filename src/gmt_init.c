@@ -433,7 +433,25 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 			GMT_message (C, "\t-P Set Portrait page orientation [%s].\n", GMT_choice[C->current.setting.ps_orientation]);
 			break;
 
-		case 'R':	/* Region option */
+		case 'A':	/* cArtesian Region option */
+
+			GMT_message (C, "\t-R Specify the xmin/xmax/ymin/ymax coordinates of data region in user units.\n");
+			GMT_message (C, "\t   Use [yyy[-mm[-dd]]]T[hh[:mm[:ss[.xxx]]]] format for time coordinates.\n");
+			GMT_message (C, "\t   Or, give a gridfile to use its limits (and increments if applicable).\n");
+			break;
+
+		case 'G':	/* Geographic Region option */
+
+			GMT_message (C, "\t-R Specify the west/east/south/north coordinates of map region.\n");
+			GMT_message (C, "\t   Use decimal degrees or ddd[:mm[:ss]] degrees [ and minutes [and seconds]].\n");
+			GMT_message (C, "\t   Use -R<unit>... for regions given in projected coordinates.\n");
+			GMT_message (C, "\t   Append r if -R specifies the coordinates of the lower left and\n");
+			GMT_message (C, "\t   upper right corners of a rectangular map area.\n");
+			GMT_message (C, "\t   -Rg and -Rd are shorthands for -R0/360/-90/90 and -R-180/180/-90/90.\n");
+			GMT_message (C, "\t   Or, give a gridfile to use its limits (and increments if applicable).\n");
+			break;
+
+		case 'R':	/* Generic [Default] Region option */
 
 			GMT_message (C, "\t-R Specify the min/max coordinates of data region in user units.\n");
 			GMT_message (C, "\t   Use dd:mm[:ss] for regions given in degrees, minutes [and seconds].\n");
@@ -443,6 +461,11 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 			GMT_message (C, "\t   upper right corners of a rectangular area.\n");
 			GMT_message (C, "\t   -Rg and -Rd are shorthands for -R0/360/-90/90 and -R-180/180/-90/90.\n");
 			GMT_message (C, "\t   Or, give a gridfile to use its limits (and increments if applicable).\n");
+			break;
+
+		case 'z':	/* Region addition for 3-D */
+
+			GMT_message (C, "\t   Append /zmin/zmax coordinates for the vertical domain limits.\n");
 			break;
 
 		case 'r':	/* Region option for 3-D */
@@ -486,7 +509,8 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 
 		case 'Z':	/* Vertical scaling for 3-D plots */
 
-			GMT_message (C, "\t   -Jz For z component of 3-D projections.  Same syntax as -Jx.\n");
+			GMT_message (C, "\t   -JZ|z For z component of 3-D projections.  Same syntax as -JX|x, i.e.,\n");
+			GMT_message (C, "\t   -Jz|Z<z-scl>|<height>[d|l|p<power>|t|T] (Linear, log, and power projections)\n");
 			break;
 
 		case 'a':	/* -a option for aspatial field substitution into data columns */
