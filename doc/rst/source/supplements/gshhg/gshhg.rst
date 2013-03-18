@@ -81,17 +81,17 @@ about the file formats, see TECHNICAL INFORMATION below.
 To convert the entire intermediate GSHHG binary data to ASCII files for
 Octave/Mathlab, run
 
-gshhg gshhs\_i.b --IO\_SEGMENT\_MARKER=N > gshhs\_i.txt
+    gshhg gshhs\_i.b --IO\_SEGMENT\_MARKER=N > gshhs\_i.txt
 
 To only get a listing of the headers for the river data set at full
 resolution, try
 
-gshhg wdb\_rivers\_f.b -L > riverlisting.txt
+    gshhg wdb\_rivers\_f.b -L > riverlisting.txt
 
 To only extract lakes, excluding river-lakes, from the high resolution
 file, try
 
-gshhg gshhs\_h.b -Ee -N2 > all\_lakes.txt
+    gshhg gshhs\_h.b -Ee -N2 > all\_lakes.txt
 
 `Technical Information <#toc7>`_
 --------------------------------
@@ -166,5 +166,5 @@ hierarchical, high-resolution shoreline database, *J. Geophys. Res.,
 `See Also <#toc9>`_
 -------------------
 
-`GMT <GMT.html>`_ , `gshhg_dp <gshhg_dp.html>`_
+`GMT <GMT.html>`_, `gshhg_dp <gshhg_dp.html>`_,
 `gshhgtograss <gshhgtograss.html>`_

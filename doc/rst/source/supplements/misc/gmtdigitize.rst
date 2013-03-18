@@ -94,14 +94,14 @@ To digitize lines from a mercator map made for a given region, and save
 each line segment in individual files called segment\_000.xy,
 segment\_001.xy etc, try
 
-gmtdigitize -R20/50/12/25 -Jm1:1 -Nsegment\_%03d.xy
+    gmtdigitize -R20/50/12/25 -Jm1:1 -Nsegment\_%03d.xy
 
 To digitize seismically defined interfaces from a multichannel seismic
 section, with horizontal distances from 130 to 970, and vertical times
 from 0 to 10 seconds, write out the button code, and save all line
 segment to a single multisegment file, and beep at each click, try
 
-gmtdigitize -R130/970/0/10 -Jx1/-1 -A -Z > interfaces.d
+    gmtdigitize -R130/970/0/10 -Jx1/-1 -A -Z > interfaces.d
 
 `System Setup <#toc7>`_
 -----------------------
@@ -112,14 +112,15 @@ so that it is world read/write-able. Then, stty -F /dev/ttyS0 evenp will
 set the terminal settings, which can be checked with stty -F /dev/ttyS0
 -a. Setup of digitizer: We use the CalComp 2000 ASCII (Save 3) setup,
 which has:
-| Mode: Point
-| Baud Rate: 9600
-| Data Bits: 7
-| Parity: Even
-| Data Rate: 125 pps
-| Resolution: 200 lpi
-| Output Format: Format 0
-| Emulation: CalComp 2000 ASCII
+
+* Mode: Point
+* Baud Rate: 9600
+* Data Bits: 7
+* Parity: Even
+* Data Rate: 125 pps
+* Resolution: 200 lpi
+* Output Format: Format 0
+* Emulation: CalComp 2000 ASCII
 
 (A)We need to make a slight modification to the Preset No 3 settings:
 (1) 2450 LPI instead of 200, `and (2) <and.2.html>`_ None instead of yes
@@ -132,6 +133,6 @@ not matter; it is computed from the region and plot size.
 `See Also <#toc8>`_
 -------------------
 
-`gmtdefaults <gmtdefaults.l.html>`_ , `GMT <GMT.l.html>`_
-, `gmtstitch <gmtstitch.l.html>`_ ,
-`mapproject <mapproject.l.html>`_ , `project <project.l.html>`_
+`gmtdefaults <gmtdefaults.l.html>`_, `GMT <GMT.l.html>`_,
+`gmtstitch <gmtstitch.l.html>`_,
+`mapproject <mapproject.l.html>`_, `project <project.l.html>`_

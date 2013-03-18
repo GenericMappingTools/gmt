@@ -128,8 +128,7 @@ in geographic coordinates. To extract data in the region
 **-R**-40/40/-70/-30 from *world\_grav.img.7.2* and reproject to yield
 geographic coordinates, you can try
 
-**img2grd** world\_grav.img.16.1 **-G**\ merc\_grav.nc
-**-R**-40/40/-70/-30 **-V**
+    img2grd world\_grav.img.16.1 -Gmerc\_grav.nc -R-40/40/-70/-30 -V
 
 Because the latitude spacing in the img file is equidistant in Mercator
 units, the resulting grid will not match the specified **-R** exactly,
@@ -137,8 +136,7 @@ and the latitude spacing will not equal the longitude spacing. If you
 need an exact match with your **-R** and the same spacing in longitude
 and latitude, use the **-E** option:
 
-**img2grd** world\_grav.img.16.1 **-G**\ merc\_grav.nc
-**-R**-40/40/-70/-30 **-E** **-V**
+    img2grd world\_grav.img.16.1 -Gmerc\_grav.nc -R-40/40/-70/-30 -E -V
 
 `Mercator Examples <#toc7>`_
 ----------------------------
@@ -152,7 +150,7 @@ linear projection with the same scale as the desired Mercator projection
 To extract data in the region **-R**-40/40/-70/-30 from
 *world\_grav.img.7.2*, run
 
-Bimg2grd -M world\_grav.img.7.2 -Gmerc\_grav.nc -R-40/40/-70/-30 -V
+    img2grd -M world\_grav.img.7.2 -Gmerc\_grav.nc -R-40/40/-70/-30 -V
 
 Note that the **-V** option tells us that the range was adjusted to
 **-R**-40/40/-70.0004681551/-29.9945810754. We can also use **grdinfo**
@@ -162,10 +160,11 @@ Spherical Mercator projection using
 **-R**-40/40/-70.0004681551/-29.9945810754 and **-Jm**\ 1. Thus, to take
 ship.lonlatgrav and use it to sample the merc\_grav.nc, we can do this:
 
-gmtset PROJ\_ ELLIPSOID Sphere
-mapproject -R-40/40/-70.0004681551/-29.9945810754 -Jm1i ship.lonlatgrav
-\| grdtrack -Gmerc\_grav.nc \| mapproject
--R-40/40/-70.0004681551/-29.9945810754 -Jm1i -I > ship.lonlatgravsat
+    gmtset PROJ\_ ELLIPSOID Sphere
+
+    mapproject -R-40/40/-70.0004681551/-29.9945810754 -Jm1i ship.lonlatgrav
+    \| grdtrack -Gmerc\_grav.nc \| mapproject
+    -R-40/40/-70.0004681551/-29.9945810754 -Jm1i -I > ship.lonlatgravsat
 
 It is recommended to use the above method of projecting and unprojecting
 the data in such an application, because then there is only one
@@ -175,16 +174,15 @@ steps (in conversion and in sampling).
 
 To make a lon,lat grid from the above grid we can use
 
-grdproject merc\_grav.nc -R-40/40/-70.0004681551/-29.9945810754 -Jm1i -I
--D2m -Ggrav.nc
+    grdproject merc\_grav.nc -R-40/40/-70.0004681551/-29.9945810754 -Jm1i -I -D2m -Ggrav.nc
 
 In some cases this will not be easy as the **-R** in the two coordinate
 systems may not align well. When this happens, we can also use (in fact,
 it may be always better to use)
 
-grd2xyz merc\_grav.nc \| mapproject
--R-40/40/-70.0004681551/-29.994581075 -Jm1i -I \| surface
--R-40/40/-70/70 -I2m -Ggrav.nc
+    grd2xyz merc\_grav.nc \| mapproject
+    -R-40/40/-70.0004681551/-29.994581075 -Jm1i -I \| surface
+    -R-40/40/-70/70 -I2m -Ggrav.nc
 
 To make a Mercator map of the above region, suppose our gmt.conf value
 for **PROJ\_LENGTH\_UNIT** is inch. Then since the above merc\_grav.nc
@@ -205,26 +203,26 @@ satisfied with 100 pixels per inch, so we want to average the data into
 average the data much more (e.g., 6 by 6) to get smooth contours.) Since
 2039 isn't divisible by 3 we will get a different adjusted **-R** this time:
 
-img2grd -M world\_grav.img.7.2 -Gmerc\_grav\_2.nc -R-40/40/-70/-30 -N3 -V
+    img2grd -M world\_grav.img.7.2 -Gmerc\_grav\_2.nc -R-40/40/-70/-30 -N3 -V
 
 This time we find the adjusted region is
 **-R**-40/40/-70.023256525/-29.9368261101 and the output is 800 by 601
 pixels, a better size for us. Now we can create an artificial
 illumination file for this using `grdgradient <grdgradient.html>`_:
 
-grdgradient merc\_grav\_2.nc -Gillum.nc -A0/270 -Ne0.6
+    grdgradient merc\_grav\_2.nc -Gillum.nc -A0/270 -Ne0.6
 
 and if we also have a cpt file called "grav.cpt" we can create a color
 shaded relief map like this:
 
-grdimage merc\_grav\_2.nc -Iillum.nc -Cgrav.cpt -Jx0.1i -K > map.ps
+    grdimage merc\_grav\_2.nc -Iillum.nc -Cgrav.cpt -Jx0.1i -K > map.ps
 
-psbasemap -R-40/40/-70.023256525/-29.9368261101 -Jm0.1i -Ba10 -O >> map.ps
+    psbasemap -R-40/40/-70.023256525/-29.9368261101 -Jm0.1i -Ba10 -O >> map.ps
 
 Suppose you want to obtain only the constrained data values from an img
 file, in lat/lon coordinates. Then run **img2grd** with the **-T**\ 2
-option, use **grd2xyz** to dump the values, pipe through grep -v NaN to
-eliminate NaNs, and pipe through `mapproject <mapproject.html>`_ with the inverse projection as above.
+option, use `grd2xyz <../../grd2xyz.html>`_ to dump the values, pipe through grep -v NaN to
+eliminate NaNs, and pipe through `mapproject <../../mapproject.html>`_ with the inverse projection as above.
 
 `See Also <#toc8>`_
 -------------------

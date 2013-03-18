@@ -145,20 +145,20 @@ To find the likely (hotspot) origins of the seamounts represented by the
 poles and the pac\_hs.d list of possible hotspots, and report the 2 most
 likely hotspot candidates for each seamount, run
 
-originator seamounts.d -S2 -EDC85.d -Fpac\_hs.d > origins.d
+    originator seamounts.d -S2 -EDC85.d -Fpac\_hs.d > origins.d
 
 To determine the predicted age of a seamount, distances to the closest
 hotspot, and echo the observed age given its location, observed age, and
 a rotation model, try
 
-echo "1.55 -8.43 52.3" \| originator -FONeill\_2005\_hotspots.txt
--EOMS2005\_APM\_fixed.txt -Q1/120 -Lt
+    echo "1.55 -8.43 52.3" \| originator -FONeill\_2005\_hotspots.txt
+    -EOMS2005\_APM\_fixed.txt -Q1/120 -Lt
 
 where 52.3 Ma is observed age. The output is 70 -95.486 52.3. To repeat
 the same exercise with a moving hotspot model, try
 
-echo "1.55 -8.43 52.3" \| originator -F+ONeill\_2005\_hotspots.txt
--EOMS2005\_APM\_smooth.txt -Q1/120 -Lt
+    echo "1.55 -8.43 52.3" \| originator -F+ONeill\_2005\_hotspots.txt
+    -EOMS2005\_APM\_smooth.txt -Q1/120 -Lt
 
 Now the output is 80 -213.135 52.3. Negative distances means the closest
 approach was east of the hotspot.
@@ -166,11 +166,11 @@ approach was east of the hotspot.
 `See Also <#toc7>`_
 -------------------
 
-`GMT <GMT.html>`_ , `grdrotater <grdrotater.html>`_ ,
-`grdspotter <grdspotter.html>`_ ,
-`project <project.html>`_ ,
-`mapproject <mapproject.html>`_ ,
-`backtracker <backtracker.html>`_ ,
+`GMT <GMT.html>`_, `grdrotater <grdrotater.html>`_,
+`grdspotter <grdspotter.html>`_,
+`project <project.html>`_,
+`mapproject <mapproject.html>`_,
+`backtracker <backtracker.html>`_,
 `hotspotter <hotspotter.html>`_
 
 `References <#toc8>`_

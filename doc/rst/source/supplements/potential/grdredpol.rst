@@ -85,12 +85,12 @@ magnetization declination and inclination respectively for an area that
 encloses that of the *anom.grd*, compute the *RTP* using bins of 2
 degrees and a filter of 45 coefficients.
 
-grdredpol anom.grd -Grtp.grd -W2 -F45/45 -T2010 -Edec.grd/dip.grd -V
+    grdredpol anom.grd -Grtp.grd -W2 -F45/45 -T2010 -Edec.grd/dip.grd -V
 
 To compute the same *RTP* but now with the field and magnetization
 vectors collinear and computed from IGRF :
 
-grdredpol anom.grd -Grtp.grd -W2 -F45/45 -T2010 -V
+    grdredpol anom.grd -Grtp.grd -W2 -F45/45 -T2010 -V
 
 `Reference <#toc7>`_
 --------------------

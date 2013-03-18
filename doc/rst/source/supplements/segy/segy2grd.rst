@@ -108,5 +108,5 @@ try
 `See Also <#toc7>`_
 -------------------
 
-`GMT <GMT.html>`_ , `grd2xyz <grd2xyz.html>`_ ,
-`grdedit <grdedit.html>`_ , `pssegy <pssegy.html>`_
+`GMT <../../GMT.html>`_, `grd2xyz <../../grd2xyz.html>`_,
+`grdedit <../../grdedit.html>`_, `pssegy <pssegy.html>`_

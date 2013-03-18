@@ -125,12 +125,12 @@ normalizing the data prior to processing.
 To interpolate the points in the file testdata.txt on a global 1x1
 degree grid with no tension, use
 
-sphinterpolate testdata.txt -Rg -I1 -Gsolution.nc
+    sphinterpolate testdata.txt -Rg -I1 -Gsolution.nc
 
 `See Also <#toc9>`_
 -------------------
 
-`GMT <GMT.html>`_ , `greenspline <greenspline.html>`_
+`GMT <GMT.html>`_, `greenspline <greenspline.html>`_
 `sphdistance <sphdistance.html>`_
 `sphtriangulate <sphtriangulate.html>`_
 `triangulate <triangulate.html>`_

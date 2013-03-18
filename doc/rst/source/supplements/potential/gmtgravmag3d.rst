@@ -114,7 +114,7 @@ Suppose you ...
 See Also
 --------
 
-`GMT <../../GMT.html>`_ , `grdgravmag3d <grdgravmag3d.html>`_
+`GMT <../../GMT.html>`_, `grdgravmag3d <grdgravmag3d.html>`_
 
 Reference
 ---------

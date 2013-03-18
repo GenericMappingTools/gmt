@@ -51,16 +51,16 @@ reshuffling of disks/subdirectories.
 
 To obtain pathnames for cruises 01010008 and 01010007, run
 
-mgd77path 01010008 01010007
+    mgd77path 01010008 01010007
 
 To obtain pathnames for cruises 01010008 and 01010007, but only if there
 are MGD77+ version in netCDF, run
 
-mgd77path 01010008 01010007 -Ia -It
+    mgd77path 01010008 01010007 -Ia -It
 
 To see the list of active directories where MGD77 files might be stored, run
 
-mgd77path -D
+    mgd77path -D
 
 `See Also <#toc7>`_
 -------------------

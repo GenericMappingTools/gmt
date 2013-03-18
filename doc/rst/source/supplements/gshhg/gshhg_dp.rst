@@ -43,7 +43,7 @@ byte-swabbing between different architectures.
 
 To simplify the full GSHHG data set with a custom tolerance of 2 km, try
 
-gshhg\_dp gshhs\_f.b 2 gshhs\_2km.b
+    gshhg\_dp gshhs\_f.b 2 gshhs\_2km.b
 
 `References <#toc6>`_
 ---------------------
@@ -63,4 +63,4 @@ the basis for this program.
 `See Also <#toc8>`_
 -------------------
 
-`GMT <GMT.html>`_ , `gshhg <gshhg.html>`_ , `gshhgtograss <gshhgtograss.html>`_
+`GMT <GMT.html>`_, `gshhg <gshhg.html>`_, `gshhgtograss <gshhgtograss.html>`_

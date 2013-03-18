@@ -143,12 +143,12 @@ to give you enough significant digits to achieve the desired precision.
 To compute all internal crossovers in the gmt-formatted file c2104.gmt,
 and using the tag GMT, try
 
-x2sys\_cross c2104.gmt -TGMT > c2104.d
+    x2sys\_cross c2104.gmt -TGMT > c2104.d
 
 To find the crossover locations with bathymetry between the two MGD77
 files A13232.mgd77 and A99938.mgd77, using the MGD77 tag, try
 
-x2sys\_cross A13232.mgd77 A99938.mgd77 -Qe -TMGD77 > crossovers.d
+    x2sys\_cross A13232.mgd77 A99938.mgd77 -Qe -TMGD77 > crossovers.d
 
 `References <#toc10>`_
 ----------------------
@@ -162,12 +162,12 @@ Wessel, P. (1989), XOVER: A cross-over error detector for track data,
 `See Also <#toc11>`_
 --------------------
 
-`*GMT*\ (1) <GMT.html>`_ , `*x2sys\_binlist*\ (1) <x2sys_binlist.html>`_
-, `*x2sys\_init*\ (1) <x2sys_init.html>`_ ,
-`*x2sys\_datalist*\ (1) <x2sys_datalist.html>`_ ,
-`*x2sys\_get*\ (1) <x2sys_get.html>`_ ,
-`*x2sys\_list*\ (1) <x2sys_list.html>`_ ,
-`*x2sys\_put*\ (1) <x2sys_put.html>`_ ,
-`*x2sys\_report*\ (1) <x2sys_report.html>`_ ,
-`*x2sys\_solve*\ (1) <x2sys_solve.html>`_ ,
-`*x\_over*\ (1) <x_over.html>`_
+`GMT <GMT.html>`_, `x2sys\_binlist <x2sys_binlist.html>`_,
+`x2sys\_init <x2sys_init.html>`_,
+`x2sys\_datalist <x2sys_datalist.html>`_,
+`x2sys\_get <x2sys_get.html>`_,
+`x2sys\_list <x2sys_list.html>`_,
+`x2sys\_put <x2sys_put.html>`_,
+`x2sys\_report <x2sys_report.html>`_,
+`x2sys\_solve <x2sys_solve.html>`_,
+`x\_over <x_over.html>`_

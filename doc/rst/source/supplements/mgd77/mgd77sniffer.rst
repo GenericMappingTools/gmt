@@ -462,22 +462,22 @@ can be used in the **-G** option to compare cruise depth with grid values.
 
 To scan for excessive values or gradients, try
 
-mgd77sniffer 08010001
+    mgd77sniffer 08010001
 
 To dump cruise gradients, try
 
-mgd77sniffer 08010001 -Ds
+    mgd77sniffer 08010001 -Ds
 
 To compare cruise depth with ETOPO5 bathymetry and gravity with
 Sandwell/Smith 2 min gravity version 11, try
 
-mgd77sniffer 08010001 -Gdepth,/data/GRIDS/etopo5\_hdr.i2
--gfaa,/data/GRIDS/grav.11.2.img,0.1,1
+    mgd77sniffer 08010001 -Gdepth,/data/GRIDS/etopo5\_hdr.i2
+    -gfaa,/data/GRIDS/grav.11.2.img,0.1,1
 
 `See Also <#toc11>`_
 --------------------
 
-`mgd77list <mgd77list.html>`_ ,
+`mgd77list <mgd77list.html>`_,
 `mgd77track <mgd77track.html>`_
 `x2sys\_init <x2sys_init.html>`_
 

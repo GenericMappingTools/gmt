@@ -94,39 +94,39 @@ more information).
 To get one-line summary information about the cruises 01010047.mgd77 and
 01010008.mgd77, try
 
-mgd77info 01010047 01010008 -E > listing.lis
+    mgd77info 01010047 01010008 -E > listing.lis
 
 To see the original raw MGD77 header meta-data for cruise
 01010047.mgd77, run
 
-mgd77info 01010047 -Mr
+    mgd77info 01010047 -Mr
 
 To determine all the parameters related to Gravity during cruise
 01010047.mgd77, run
 
-mgd77info 01010047 -Mf \| grep Gravity
+    mgd77info 01010047 -Mf \| grep Gravity
 
 To determine the Magnetic sampling rate used during cruise
 01010047.mgd77, run
 
-mgd77info 01010047 -MfMagnetics\_Sampling\_Rate
+    mgd77info 01010047 -MfMagnetics\_Sampling\_Rate
 
 To see all the columns that the MGD77+ cruise 01010047.nc contains, run
 
-mgd77info 01010047 -C
+    mgd77info 01010047 -C
 
 To see the E77 status of all MGD77+ cruises collected by the University
 of Hawaii (institution 08), run
 
-mgd77info 08 -Ia -Me
+    mgd77info 08 -Ia -Me
 
 `See Also <#toc7>`_
 -------------------
 
-`mgd77list <mgd77list.html>`_ ,
-`mgd77manage <mgd77manage.html>`_ ,
-`mgd77path <mgd77path.html>`_ ,
-`mgd77track <mgd77track.html>`_
+`mgd77list <mgd77list.html>`_,
+`mgd77manage <mgd77manage.html>`_,
+`mgd77path <mgd77path.html>`_,
+`mgd77track <mgd77track.html>`_,
 `x2sys\_init <x2sys_init.html>`_
 
 `References <#toc8>`_

@@ -125,24 +125,22 @@ To find all the magnetic crossovers associated with the tag MGD77 from
 the file COE\_data.txt, restricted to occupy a certain region in the
 south Pacific, and return location, time, and crossover value, try
 
-x2sys\_list COE\_data.txt -V -TMGD77 -R180/240/-60/-30 -Cmag -Fxytz >
-mag\_coe.txt
+    x2sys\_list COE\_data.txt -V -TMGD77 -R180/240/-60/-30 -Cmag -Fxytz > mag\_coe.txt
 
 To find all the faa crossovers globally that involves track 12345678 and
 output time since start of the year, using a binary double precision
 format, try
 
-x2sys\_list COE\_data.txt -V -TMGD77 -Cfaa -S12345678 -FTz -bod >
-faa\_coe.b
+    x2sys\_list COE\_data.txt -V -TMGD77 -Cfaa -S12345678 -FTz -bod > faa\_coe.b
 
 `See Also <#toc7>`_
 -------------------
 
-`x2sys\_binlist <x2sys_binlist.html>`_ ,
-`x2sys\_cross <x2sys_cross.html>`_ ,
-`x2sys\_datalist <x2sys_datalist.html>`_ ,
-`x2sys\_get <x2sys_get.html>`_ ,
-`x2sys\_init <x2sys_init.html>`_ ,
-`x2sys\_put <x2sys_put.html>`_ ,
-`x2sys\_report <x2sys_report.html>`_ ,
+`x2sys\_binlist <x2sys_binlist.html>`_,
+`x2sys\_cross <x2sys_cross.html>`_,
+`x2sys\_datalist <x2sys_datalist.html>`_,
+`x2sys\_get <x2sys_get.html>`_,
+`x2sys\_init <x2sys_init.html>`_,
+`x2sys\_put <x2sys_put.html>`_,
+`x2sys\_report <x2sys_report.html>`_,
 `x2sys\_solve <x2sys_solve.html>`_

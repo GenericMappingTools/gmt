@@ -82,20 +82,20 @@ whose parameters are separated by slashes.
 To convert the total reconstruction rotations in the file
 model\_total\_reconstruction.APM to stage poles, run
 
-rotconverter model\_total\_reconstruction.APM -Fs > model\_stages.APM
+    rotconverter model\_total\_reconstruction.APM -Fs > model\_stages.APM
 
 To obtain Nazca motion relative to Pacific hotspots by adding the motion
 of Nazca relative to a fixed Pacific to the Pacific-Hotspot reference
 model DC85\_stages.d, and report the result as total reconstruction
 reconstruction poles in the northern hemisphere, try
 
-rotconverter DC85\_stages.APM + Pac\_Naz\_stages.RPM -N -Ft >
-Naz\_HS\_total reconstruction.APM
+    rotconverter DC85\_stages.APM + Pac\_Naz\_stages.RPM -N -Ft >
+    Naz\_HS\_total reconstruction.APM
 
 To add the final rotations ROT(150.1, 70.5, -20.3) and ROT (145.0, 40.0,
 11.4), try
 
-rotconverter 150.1/70.5/-20.3 + 145/40/11.4
+    rotconverter 150.1/70.5/-20.3 + 145/40/11.4
 
 which prints out 157.32, -80.44, 11.97.
 
@@ -103,20 +103,21 @@ To make stage rotations suitable for generating flowlines (fracture
 zones) from a model of relative plate motions PL1-PL2.RPM, assuming
 symmetric spreading,, try
 
-rotconverter PL1-PL2.RPM -E -Fs > PL1-PL2\_half.RPM
-rotconverter - PL1-PL2.RPM -E -Fs > PL2-PL1\_half.RPM
+    rotconverter PL1-PL2.RPM -E -Fs > PL1-PL2\_half.RPM
+
+    rotconverter - PL1-PL2.RPM -E -Fs > PL2-PL1\_half.RPM
 
 To compute rotations for India relative to a fixed Africa using the
 plate circuit India-Central Indian Basin-Antarctica-Africa, based on the
 GPlates rotations database, try
 
-rotconverter IND-CIB CIB-ANT ANT-AFR > India\_AFrica.RPM
+    rotconverter IND-CIB CIB-ANT ANT-AFR > India\_AFrica.RPM
 
 `See Also <#toc7>`_
 -------------------
 
-`backtracker <backtracker.html>`_ ,
-`grdrotater <grdrotater.html>`_ ,
-`grdspotter <grdspotter.html>`_ ,
-`hotspotter <hotspotter.html>`_ ,
+`backtracker <backtracker.html>`_,
+`grdrotater <grdrotater.html>`_,
+`grdspotter <grdspotter.html>`_,
+`hotspotter <hotspotter.html>`_,
 `originator <originator.html>`_

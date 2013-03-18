@@ -74,12 +74,12 @@ Examples
 Suppose you want to compute the gravity effect of the phantom "Sandy
 Island" together with its not phantom seamount
 
-grdgravmag3d sandy\_bat.grd -C1700 -Z-4300 -M -I1m -Gsandy\_okb.grd -V
+    grdgravmag3d sandy\_bat.grd -C1700 -Z-4300 -M -I1m -Gsandy\_okb.grd -V
 
 See Also
 --------
 
-`GMT <../../GMT.html>`_ , `gmtgravmag3d <gmtgravmag3d.html>`_
+`GMT <../../GMT.html>`_, `gmtgravmag3d <gmtgravmag3d.html>`_
 
 Reference
 ---------

@@ -139,18 +139,18 @@ To create a CVA image from the Pacific topography grid
 Pac\_res\_topo.nc, using the DC85.d Euler poles, and only output a grid
 for the specified domain, run
 
-grdspotter Pac\_res\_topo.nc -EDC85.d -GCVA.nc -R190/220/15/25 -I2m -N145 -Tt -V
+    grdspotter Pac\_res\_topo.nc -EDC85.d -GCVA.nc -R190/220/15/25 -I2m -N145 -Tt -V
 
-This file can then be plotted with **grdimage**.
+This file can then be plotted with `grdimage <../../grdimage.html>`_.
 
 `See Also <#toc7>`_
 -------------------
 
-`GMT <GMT.html>`_ , `grdimage <grdimage.html>`_ ,
-`project <project.html>`_ ,
-`mapproject <mapproject.html>`_ ,
-`backtracker <backtracker.html>`_ ,
-`hotspotter <hotspotter.html>`_ ,
+`GMT <GMT.html>`_, `grdimage <grdimage.html>`_,
+`project <project.html>`_,
+`mapproject <mapproject.html>`_,
+`backtracker <backtracker.html>`_,
+`hotspotter <hotspotter.html>`_,
 `originator <originator.html>`_
 
 `References <#toc8>`_

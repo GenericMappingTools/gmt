@@ -102,32 +102,32 @@ model (Pac\_APM.d), and a polygon that contains the outline of the
 present Pacific plate (pac\_clip\_path.d). To evaluate the plate motion
 azimuths at the present time for the Pacific, try
 
-grdpmodeler pac\_age.nc -EPac\_APM.d -V -Fpac\_clip\_path.d
--Gpac\_dir\_0.nc -Sa -T0
+    grdpmodeler pac\_age.nc -EPac\_APM.d -V -Fpac\_clip\_path.d
+    -Gpac\_dir\_0.nc -Sa -T0
 
 To determine the changes in latitude since crust formation for the
 entire Pacific, try
 
-grdpmodeler pac\_age.nc -EPac\_APM.d -V -Fpac\_clip\_path.d
--Gpac\_dlat.nc -Sy
+    grdpmodeler pac\_age.nc -EPac\_APM.d -V -Fpac\_clip\_path.d
+    -Gpac\_dlat.nc -Sy
 
 To determine the plate motion rates in effect when the Pacific crust was
 formed, try
 
-grdpmodeler pac\_age.nc -EPac\_APM.d -V -Fpac\_clip\_path.d
--Gpac\_vel.nc -Sr
+    grdpmodeler pac\_age.nc -EPac\_APM.d -V -Fpac\_clip\_path.d
+    -Gpac\_vel.nc -Sr
 
 To determine how far the crust has moved since formation, try
 
-grdpmodeler pac\_age.nc -EPac\_APM.d -V -Fpac\_clip\_path.d
--Gpac\_dist.nc -Sd
+    grdpmodeler pac\_age.nc -EPac\_APM.d -V -Fpac\_clip\_path.d
+    -Gpac\_dist.nc -Sd
 
 `See Also <#toc7>`_
 -------------------
 
-`backtracker <backtracker.html>`_ ,
-`grdrotater <grdrotater.html>`_ ,
-`grdspotter <grdspotter.html>`_ ,
-`hotspotter <hotspotter.html>`_ ,
-`originator <originator.html>`_
+`backtracker <backtracker.html>`_,
+`grdrotater <grdrotater.html>`_,
+`grdspotter <grdspotter.html>`_,
+`hotspotter <hotspotter.html>`_,
+`originator <originator.html>`_,
 `rotconverter <rotconverter.html>`_

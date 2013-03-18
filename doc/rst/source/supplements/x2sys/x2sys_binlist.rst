@@ -66,21 +66,21 @@ indexing.
 To create a bin index file from the MGD77 file 01030061.mgd77 using the
 settings associated with the tag MGD77, do
 
-x2sys\_binlist 01030061.mgd77 -TMGD77 > 01030061.tbf
+    x2sys\_binlist 01030061.mgd77 -TMGD77 > 01030061.tbf
 
 To create a track bin index file of all MGD77+ files residing in the
 current directory using the settings associated with the tag MGD77+ and
 calculate track distances, run
 
-x2sys\_binlist \*.nc -TMGD77+ -D > all.tbf
+    x2sys\_binlist \*.nc -TMGD77+ -D > all.tbf
 
 `See Also <#toc7>`_
 -------------------
 
-`x2sys\_cross <x2sys_cross.html>`_ ,
-`x2sys\_datalist <x2sys_datalist.html>`_ ,
-`x2sys\_get <x2sys_get.html>`_ ,
-`x2sys\_init <x2sys_init.html>`_ ,
-`x2sys\_put <x2sys_put.html>`_ ,
-`x2sys\_report <x2sys_report.html>`_ ,
+`x2sys\_cross <x2sys_cross.html>`_,
+`x2sys\_datalist <x2sys_datalist.html>`_,
+`x2sys\_get <x2sys_get.html>`_,
+`x2sys\_init <x2sys_init.html>`_,
+`x2sys\_put <x2sys_put.html>`_,
+`x2sys\_report <x2sys_report.html>`_,
 `x2sys\_solve <x2sys_solve.html>`_

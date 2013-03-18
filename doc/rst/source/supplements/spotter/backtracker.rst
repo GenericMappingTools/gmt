@@ -150,28 +150,28 @@ additional data fields after the first 3 columns which must have
 To backtrack the (x,y,t) points in the file seamounts.d to their origin
 (presumably the hotspot), using the DC85.d Euler poles, run
 
-backtracker seamounts.d -Db -EDC85.d > newpos.d
+    backtracker seamounts.d -Db -EDC85.d > newpos.d
 
 To project flowlines forward from the (x,y,t) points stored in several
 3-column, binary, double precision files, run
 
-backtracker points.\* -Df -EDC85.d -Lf25 -bo -bi3 > lines.b
+    backtracker points.\* -Df -EDC85.d -Lf25 -bo -bi3 > lines.b
 
 This file can then be plotted with **psxy**.
 To compute the predicted Hawaiian hotspot track from 0 to 80 Ma every 1
 Ma, given a history of hotspot motion file (HIdrift.txt) and a set of
 total reconstruction rotations for the plate (PAC\_APM.d), try
 
-echo 204 19 80 \| backtracker -Df -EPAC\_APM.d -Lb1 > path.d
+    echo 204 19 80 \| backtracker -Df -EPAC\_APM.d -Lb1 > path.d
 
 `See Also <#toc7>`_
 -------------------
 
 `GMT <GMT.html>`_ , `project <project.html>`_ ,
-`grdrotater <grdrotater.html>`_ ,
-`grdspotter <grdspotter.html>`_ ,
-`mapproject <mapproject.html>`_ ,
-`hotspotter <hotspotter.html>`_ ,
+`grdrotater <grdrotater.html>`_,
+`grdspotter <grdspotter.html>`_,
+`mapproject <mapproject.html>`_,
+`hotspotter <hotspotter.html>`_,
 `originator <originator.html>`_
 
 `References <#toc8>`_

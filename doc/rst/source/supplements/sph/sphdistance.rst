@@ -128,14 +128,14 @@ To construct Voronoi polygons from the points in the file testdata.txt
 and then calculate distances from the data to a global 1x1 degree grid,
 use
 
-sphdistance testdata.txt -Rg -I1 -Gglobedist.nc
+    sphdistance testdata.txt -Rg -I1 -Gglobedist.nc
 
 To generate the same grid in two steps using **sphtriangulate**
 separately, try
 
-sphtriangulate testdata.txt -Qv > voronoi.d
+    sphtriangulate testdata.txt -Qv > voronoi.d
 
-sphdistance -Qvoronoi.d -Rg -I1 -Gglobedist.nc
+    sphdistance -Qvoronoi.d -Rg -I1 -Gglobedist.nc
 
 `See Also <#toc9>`_
 -------------------

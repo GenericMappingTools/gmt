@@ -86,12 +86,12 @@ To report statistics of all the external magnetic crossovers associated
 with the tag MGD77 from the file COE\_data.txt, restricted to occupy a
 certain region in the south Pacific, try
 
-x2sys\_report COE\_data.txt -V -TMGD77 -R180/240/-60/-30 -Cmag >
-mag\_report.txt
+    x2sys\_report COE\_data.txt -V -TMGD77 -R180/240/-60/-30 -Cmag >
+    mag\_report.txt
 
 To report on the faa crossovers globally that involves track 12345678, try
 
-x2sys\_report COE\_data.txt -V -TMGD77 -Cfaa -S2345678 > faa\_report.txt
+    x2sys\_report COE\_data.txt -V -TMGD77 -Cfaa -S2345678 > faa\_report.txt
 
 `References <#toc7>`_
 ---------------------
