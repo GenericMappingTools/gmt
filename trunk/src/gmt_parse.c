@@ -47,10 +47,10 @@
  
 #include "gmt_dev.h"
 
-#define ptr_return(API,err,ptr) { GMT_Report_Error(API,err); return (ptr);}
-#define return_null(API,err) { GMT_Report_Error(API,err); return (NULL);}
-#define return_error(API,err) { GMT_Report_Error(API,err); return (true);}
-#define return_value(API,err,val) { GMT_Report_Error(API,err); return (val);}
+#define ptr_return(API,err,ptr) { GMTAPI_report_error(API,err); return (ptr);}
+#define return_null(API,err) { GMTAPI_report_error(API,err); return (NULL);}
+#define return_error(API,err) { GMTAPI_report_error(API,err); return (true);}
+#define return_value(API,err,val) { GMTAPI_report_error(API,err); return (val);}
 
 static inline struct GMTAPI_CTRL * gmt_get_api_ptr (struct GMTAPI_CTRL *ptr) {return (ptr);}
 

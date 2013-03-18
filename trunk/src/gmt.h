@@ -80,7 +80,6 @@ EXTERN_MSC int GMT_Init_IO		(void *C, unsigned int family, unsigned int geometry
 EXTERN_MSC int GMT_Begin_IO		(void *C, unsigned int family, unsigned int direction, unsigned int header);
 EXTERN_MSC int GMT_Status_IO		(void *C, unsigned int mode);
 EXTERN_MSC int GMT_End_IO		(void *C, unsigned int direction, unsigned int mode);
-EXTERN_MSC int GMT_Report_Error		(void *C, int error);
 EXTERN_MSC int GMT_Put_Data		(void *C, int object_ID, unsigned int mode, void *data);
 EXTERN_MSC int GMT_Write_Data		(void *C, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], char *output, void *data);
 EXTERN_MSC int GMT_Destroy_Data		(void *C, unsigned int mode, void *object);
@@ -118,7 +117,6 @@ EXTERN_MSC int GMT_Update_Option			(void *C, char option, char *arg, struct GMT_
 EXTERN_MSC int GMT_Delete_Option			(void *C, struct GMT_OPTION *current);
 EXTERN_MSC int GMT_Parse_Common				(void *C, char *given_options, struct GMT_OPTION *options);
 
-#ifdef GMT_FFT_EXTENSION
 /* Also make available the following 6 GMT_FFT_* functions */
 EXTERN_MSC unsigned int GMT_FFT_Option	(void *C, char option, unsigned int dim, char *string);
 EXTERN_MSC void * GMT_FFT_Parse		(void *C, char option, unsigned int dim, char *args);
@@ -126,7 +124,6 @@ EXTERN_MSC void * GMT_FFT_Create	(void *C, void *X, unsigned int dim, unsigned i
 EXTERN_MSC double GMT_FFT_Wavenumber	(void *C, uint64_t k, unsigned int mode, void *v_K);
 EXTERN_MSC int GMT_FFT			(void *C, void *X, int direction, unsigned int mode, void *v_K);
 EXTERN_MSC int GMT_FFT_Destroy		(void *C, void *v_K);
-#endif
 
 #ifdef __cplusplus
 }

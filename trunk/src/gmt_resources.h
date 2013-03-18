@@ -153,6 +153,14 @@ enum GMT_enum_out {
 	GMT_WRITE_HEADER,		/* Only write header and not the contents of this entity (table or segment) */
 	GMT_WRITE_SKIP};		/* Entirely skip this entity on output (table or segment) */
 
+/* Various directions and modes to call the FFT */
+enum GMT_FFT_modes {
+	GMT_FFT_FWD     = 0U, /* forward Fourier transform */
+	GMT_FFT_INV     = 1U, /* inverse Fourier transform */
+	GMT_FFT_REAL    = 0U, /* real-input FT (currently unsupported) */
+	GMT_FFT_COMPLEX = 1U  /* complex-input Fourier transform */
+};
+
 /*============================================================ */
 /*===============+ GMT_GRID Public Declaration =============== */
 /*============================================================ */
@@ -625,17 +633,5 @@ struct GMT_OPTION {	/* Structure for a single GMT command option */
 	struct GMT_OPTION *next;	/* Pointer to next option in a linked list */
 	struct GMT_OPTION *previous;	/* Pointer to previous option in a linked list */
 };
-
-#ifdef GMT_FFT_EXTENSION
-
-/* Various directions and modes to call the FFT */
-enum FFT_modes {
-	GMT_FFT_FWD     = 0U, /* forward Fourier transform */
-	GMT_FFT_INV     = 1U, /* inverse Fourier transform */
-	GMT_FFT_REAL    = 0U, /* real-input FT (currently unsupported) */
-	GMT_FFT_COMPLEX = 1U  /* complex-input Fourier transform */
-};
-
-#endif
 
 #endif /* _GMT_RESOURCES_H */

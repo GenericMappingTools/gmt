@@ -109,6 +109,7 @@ struct GMTAPI_CTRL {
 };
 
 EXTERN_MSC void GMT_list_API (struct GMTAPI_CTRL *ptr, char *txt);
+EXTERN_MSC int GMTAPI_report_error	(void *C, int error);
 
 /* Macro to test if filename is a special name indicating memory location */
 

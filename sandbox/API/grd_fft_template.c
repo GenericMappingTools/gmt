@@ -23,7 +23,6 @@
  *
  */
 
-#define GMT_FFT_EXTENSION	/* All programs needing the GMT FFT machinery must set this first */
 #define GMT_FFT_DIM	2	/* Dimension of FFT needed */
 #include "gmt.h"		/* All programs using the GMT API needs this */
 /* Add any other include files needed by your program */

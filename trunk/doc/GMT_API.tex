@@ -1675,22 +1675,6 @@ Finally, the API structure itself is freed so your main program does not need to
 The function returns TRUE (1) if there is an error when trying to free the memory
 (the error code is passed back with \texttt{API->error}), otherwise it returns FALSE (0).
 
-\section{Report errors}
-\index{Report errors}
-\index{Errors!Report}
-
-Since all API functions returns a status code via \texttt{API->error}, you should always check this code before
-moving to the next step.  All API functions will issue an error message before returning control
-to the calling program.  This function is
-
-\begin{verbatim}
-int GMT_Report_Error (void *API, int error);
-\end{verbatim}
-\index{GMT\_Report\_Error}
-where \texttt{error} is the status code return by any API function.  Note: The error message is
-only issued if the verbosity level of the \GMT\ session is not set to 0 [Default is 1], and
-messages are normally written to \texttt{stderr} unless this stream has been redirected.
-Note that this function also updates \texttt{API->error} to the given value.
 \section{FORTRAN 77 interface} 
 \index{FORTRAN 77 interface}
 \index{Interface!FORTRAN 77}
@@ -1730,7 +1714,6 @@ function GMT_Put_Record (mode, rec)
 function GMT_Put_Row (row_no, grid, row)
 function GMT_End_IO (direction, mode)
 function GMT_Destroy_Data (mode, ptr)
-function GMT_Report_Error (error)
 \end{verbatim}
 where \texttt{family}, \texttt{method}, \texttt{geometry}, \texttt{mode} and \texttt{direction}
 are unsigned ints, \texttt{ID} and \texttt{error} are (signed) integers,
