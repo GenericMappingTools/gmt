@@ -178,14 +178,14 @@ int GMT_grdcontour_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   If -T is used, only contours with upper case C or A is ticked\n");
 	GMT_message (GMT, "\t     [cpt-file contours are set to C unless the CPT flags are set;\n");
 	GMT_message (GMT, "\t     Use -A to force all to become A].\n");
-	GMT_explain_options (GMT, "j");
+	GMT_Option (C, "J-Z");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-A Annotation label information. [Default is no annoted contours].\n");
 	GMT_message (GMT, "\t   Give annotation interval OR - to disable all contour annotations\n");
 	GMT_message (GMT, "\t   implied by the informatino provided in -C.\n");
 	GMT_message (GMT, "\t   <labelinfo> controls the specifics of the labels.  Choose from:\n");
 	GMT_label_syntax (GMT, 5, 0);
-	GMT_explain_options (GMT, "b");
+	GMT_Option (C, "B-");
 	GMT_message (GMT, "\t-D Dump contours as data line segments; no plotting takes place.\n");
 	GMT_message (GMT, "\t   Append filename template which may contain C-format specifiers.\n");
 	GMT_message (GMT, "\t   If no filename template is given we write all lines to stdout.\n");
@@ -202,11 +202,11 @@ int GMT_grdcontour_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   the contour lines [Default is not oriented].\n");
 	GMT_message (GMT, "\t-G Control placement of labels along contours.  Choose from:\n");
 	GMT_cont_syntax (GMT, 3, 0);
-	GMT_explain_options (GMT, "ZK");
+	GMT_Option (C, "K");
 	GMT_message (GMT, "\t-L Only contour inside this range.\n");
-	GMT_explain_options (GMT, "OP");
+	GMT_Option (C, "O,P");
 	GMT_message (GMT, "\t-Q Do not draw closed contours with less than <cut> points [Draw all contours].\n");
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\t   [Default is extent of grid].\n");
 	GMT_message (GMT, "\t-S Will Smooth contours by splining and resampling at\n");
 	GMT_message (GMT, "\t   approximately gridsize/<smooth> intervals.\n");
@@ -218,7 +218,7 @@ int GMT_grdcontour_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   If no labels are given we default to - and +.\n");
 	GMT_message (GMT, "\t   If two characters are passed (e.g., :LH) we use the as L and H.\n");
 	GMT_message (GMT, "\t   For string labels, simply give two strings separated by a comma (e.g., lo,hi).\n");
-	GMT_explain_options (GMT, "UV");
+	GMT_Option (C, "U,V");
 	GMT_pen_syntax (GMT, 'W', "Set pen attributes. Append a<pen> for annotated or (default) c<pen> for regular contours");
 	GMT_message (GMT, "\t   The default pen settings are\n");
 	P = GMT->current.setting.map_default_pen;
@@ -227,10 +227,10 @@ int GMT_grdcontour_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Annotate pen: %s.\n", GMT_putpen (GMT, P));
 	GMT_message (GMT, "\t   Prepend + to draw colored contours based on the cpt file.\n");
 	GMT_message (GMT, "\t   Prepend - to color contours and annotations based on the cpt file.\n");
-	GMT_explain_options (GMT, "X");
+	GMT_Option (C, "X");
 	GMT_message (GMT, "\t-Z Subtract <shift> and multiply data by <fact> before contouring [1/0].\n");
 	GMT_message (GMT, "\t   Append p for z-data that are periodic in 360 (i.e., phase data).\n");
-	GMT_explain_options (GMT, "hD3cfpt.");
+	GMT_Option (C, "bo3,c,f,h,p,t,.");
 	
 	return (EXIT_FAILURE);
 }

@@ -140,22 +140,22 @@ int GMT_nearneighbor_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_inc_syntax (GMT, 'I', 0);
 	GMT_message (GMT, "\t-N Set number of sectors and minimum number to be filled.\n");
 	GMT_message (GMT, "\t   Default is quadrant search [%d], requiring at least %d to be filled.\n", NN_DEF_SECTORS, NN_MIN_SECTORS);
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_dist_syntax (GMT, 'S', "Only consider points inside this search radius.");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<");
+	GMT_Option (C, "<");
 	GMT_message (GMT, "\t-E Value to use for empty nodes [Default is NaN].\n");
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_message (GMT, "\t-W Input file has observation weights in 4th column.\n");
-	GMT_explain_options (GMT, "C0");
+	GMT_Option (C, "bi");
 	GMT_message (GMT, "\t   Default is 3 (or 4 if -W is set) columns.\n");
-	GMT_explain_options (GMT, "fhi");
+	GMT_Option (C, "f,h,i");
 	GMT_message (GMT, "\t-n+b<BC> Set boundary conditions.  <BC> can be either:\n");
 	GMT_message (GMT, "\t   g for geographic boundary conditions, or one or both of\n");
 	GMT_message (GMT, "\t   x for periodic boundary conditions on x,\n");
 	GMT_message (GMT, "\t   y for periodic boundary conditions on y.\n");
 	GMT_message (GMT, "\t   [Default: Natural conditions, unless grid is geographic].\n");
-	GMT_explain_options (GMT, "Fs:.");
+	GMT_Option (C, "r,s,:,.");
 
 	return (EXIT_FAILURE);
 }

@@ -70,7 +70,7 @@ int GMT_x2sys_merge_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t-M Give file with the new crossover error data base.\n");
 	GMT_message (GMT, "\t   The new COEs will replace the old ones present in <main_COEdbase>.\n");
 	GMT_message (GMT, "\t   Result is printed to stdout.\n");
-	GMT_explain_options (GMT, "V.");
+	GMT_Option (C, "V,.");
 	
 	return (EXIT_FAILURE);
 }

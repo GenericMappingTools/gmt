@@ -194,10 +194,10 @@ int GMT_pscoast_usage (struct GMTAPI_CTRL *C, int level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_explain_options (GMT, "jZR");
+	GMT_Option (C, "J-Z,G");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_GSHHS_syntax (GMT, 'A', "Place limits on coastline features from the GSHHS data base.");
-	GMT_explain_options (GMT, "b");
+	GMT_Option (C, "B-");
 	GMT_fill_syntax (GMT, 'C', "Set separate color for lakes and riverlakes [Default is same as ocean].");
 	GMT_message (GMT, "\t   Alternatively, set custom fills below.  Repeat the -C option as needed.\n");
 	GMT_message (GMT, "\t      l = Lakes.\n");
@@ -234,7 +234,7 @@ int GMT_pscoast_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t      R = All permanent rivers except river-lakes (1-4).\n");
 	GMT_message (GMT, "\t      i = All intermittent rivers (5-7).\n");
 	GMT_message (GMT, "\t      c = All canals (8-10).\n");
-	GMT_explain_options (GMT, "K");
+	GMT_Option (C, "K");
 	GMT_mapscale_syntax (GMT, 'L', "Draws a simple map scale centered on <lon0>/<lat0>");
 	GMT_message (GMT, "\t-M Dump a multisegment ascii (or binary, see -bo) file to standard output.  No plotting occurs.\n");
 	GMT_message (GMT, "\t   Specify any combination of -W, -I, -N.\n");
@@ -244,12 +244,12 @@ int GMT_pscoast_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t     2 = State boundaries within the Americas.\n");
 	GMT_message (GMT, "\t     3 = Marine boundaries.\n");
 	GMT_message (GMT, "\t     a = All boundaries (1-3).\n");
-	GMT_explain_options (GMT, "OP");
+	GMT_Option (C, "O,P");
 	GMT_message (GMT, "\t-Q Terminate previously set clip-paths.\n");
 	GMT_fill_syntax (GMT, 'S', "Paint of clip \"wet\" areas.");
 	GMT_message (GMT, "\t   6) c to issue clip paths for water areas.\n");
 	GMT_maprose_syntax (GMT, 'T', "Draw a north-pointing map rose centered on <lon0>/<lat0>.");
-	GMT_explain_options (GMT, "UV");
+	GMT_Option (C, "U,V");
 	GMT_pen_syntax (GMT, 'W', "Draw shorelines.  Append pen [Default for all levels: %s].");
 	GMT_message (GMT, "\t   Alternatively, set custom pens below.  Repeat the -W option as many times as needed.\n");
 	GMT_message (GMT, "\t      1 = Coastline.\n");
@@ -257,11 +257,11 @@ int GMT_pscoast_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t      3 = Island in lakes shores.\n");
 	GMT_message (GMT, "\t      4 = Lake in island in lake shores.\n");
 	GMT_message (GMT, "\t   When feature-specific pens are used, those not set are deactivated.\n");
-	GMT_explain_options (GMT, "XC0cpt");
+	GMT_Option (C, "X,bo,c,p,t");
 #ifdef DEBUG
 	GMT_message (GMT, "\t-+ Print only a single bin (debug option).\n");
 #endif
-	GMT_explain_options (GMT, ".");
+	GMT_Option (C, ".");
 
 	return (EXIT_FAILURE);
 }

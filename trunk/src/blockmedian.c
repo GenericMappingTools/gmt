@@ -48,9 +48,9 @@ int GMT_blockmedian_usage (struct GMTAPI_CTRL *C, int level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_inc_syntax (GMT, 'I', 0);
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<");
+	GMT_Option (C, "<");
 	GMT_message (GMT, "\t-C Output center of block as location [Default is (median x, median y), but see -Q].\n");
 	GMT_message (GMT, "\t-E Extend output with L1 scale (s), low (l), and high (h) value per block, i.e.,\n");
 	GMT_message (GMT, "\t   output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w])]; see -W regarding w.\n");
@@ -60,14 +60,14 @@ int GMT_blockmedian_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   For ties, report record number (or sid) of largest value; append - for smallest.\n");
 	GMT_message (GMT, "\t-Q Quicker; get median z and x,y at that z [Default gets median x, median y, median z].\n");
 	GMT_message (GMT, "\t-T Set quantile (0 < q < 1) to report [Default is 0.5 which is the median of z].\n");
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_message (GMT, "\t-W Set Weight options.\n");
 	GMT_message (GMT, "\t   -Wi reads Weighted Input (4 cols: x,y,z,w) but skips w on output.\n");
 	GMT_message (GMT, "\t   -Wo reads unWeighted Input (3 cols: x,y,z) but weight sum on output.\n");
 	GMT_message (GMT, "\t   -W with no modifier has both weighted Input and Output; Default is no weights used.\n");
-	GMT_explain_options (GMT, "aC0");
+	GMT_Option (C, "a,bi");
 	GMT_message (GMT, "\t    Default is 3 columns (or 4 if -W is set).\n");
-	GMT_explain_options (GMT, "D0fhioF:.");
+	GMT_Option (C, "bo,f,h,i,o,r,:,.");
 	
 	return (EXIT_FAILURE);
 }

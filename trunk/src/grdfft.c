@@ -615,10 +615,10 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   and densities of load, mantle, water, and infill, all in SI units.\n");
 	GMT_message (GMT, "\t   It also implicitly sets -L.\n");
 #endif
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_message (GMT, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
 	GMT_message (GMT, "\t-ho Write header record for spectral estimates (requires -E) [no header].\n");
-	GMT_explain_options (GMT, ".");
+	GMT_Option (C, ".");
 	GMT_message (GMT, "\tList operations in the order desired for execution.\n");
 
 	return (EXIT_FAILURE);

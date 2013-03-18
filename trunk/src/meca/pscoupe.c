@@ -448,16 +448,16 @@ int GMT_pscoupe_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   -Ac<x1/y1/x2/y2/dip/p_width/dmin/dmax>[f]\n");
 	GMT_message (GMT, "\t   -Ad<x1/y1/strike/p_length/dip/p_width/dmin/max>[f]\n");
 	GMT_message (GMT, "\t   Add f to get the frame from the cross-section parameters.\n");
-	GMT_explain_options (GMT, "jR");
+	GMT_Option (C, "J-,R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<b");
+	GMT_Option (C, "<,B-");
 	GMT_fill_syntax (GMT, 'E', "Set color used for extensive parts. [default is white]\n");
 	GMT_fill_syntax (GMT, 'G', "Set color used for compressive parts. [default is black]\n");
-	GMT_explain_options (GMT, "K");
+	GMT_Option (C, "K");
 	GMT_message (GMT, "\t-L Draw line or symbol outline using the current pen (see -W) or sets pen attribute for outline.\n");
 	GMT_message (GMT, "\t-M Set same size for any magnitude. Size is given with -S.\n");
 	GMT_message (GMT, "\t-N Do Not skip/clip symbols that fall outside map border [Default will ignore those outside].\n");
-	GMT_explain_options (GMT, "OP");
+	GMT_Option (C, "O,P");
 	GMT_message (GMT, "\t-Q Do not print cross-section information to files\n");
 	GMT_message (GMT, "\t-S Select format type and symbol size (in measure_unit).\n");
 	GMT_message (GMT, "\t   Choose format between\n");
@@ -497,7 +497,7 @@ int GMT_pscoupe_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   n = 2 the only second nodal plane is plotted.\n");
 	GMT_message (GMT, "\t   n = 0 both nodal planes are plotted.\n");
 	GMT_message (GMT, "\t   If moment tensor is required, nodal planes overlay moment tensor.\n");
-	GMT_explain_options (GMT, "UV");
+	GMT_Option (C, "U,V");
 	GMT_message (GMT, "\t-W Set pen attributes [%s]\n", GMT_putpen (GMT, GMT->current.setting.map_default_pen));
 	GMT_message (GMT, "\t-Z Use cpt-file to assign colors based on depth-value in 3rd column.\n");
 	GMT_message (GMT, "\t-a Plot axis. Default symbols are circles.\n");
@@ -507,7 +507,7 @@ int GMT_pscoupe_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-t Draw T_symbol outline using the current pen (see -W) or sets pen attribute for outline.\n");
 	GMT_message (GMT, "\t-r Draw box behind labels.\n");
 
-	GMT_explain_options (GMT, "Xchi:.");
+	GMT_Option (C, "X,c,h,i,:,.");
 
 	return (EXIT_FAILURE);
 }

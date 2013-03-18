@@ -289,12 +289,12 @@ int GMT_pstext_usage (struct GMTAPI_CTRL *C, int level, int show_fonts)
 	if (show_fonts) return (EXIT_SUCCESS);
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_explain_options (GMT, "jZR");
+	GMT_Option (C, "J-Z,R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t<table> is one or more ASCII files with text to be plotted.\n");
 	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
 	GMT_message (GMT, "\t-A Angles given as azimuths; convert to directions using current projection.\n");
-	GMT_explain_options (GMT, "b");
+	GMT_Option (C, "B-");
 	GMT_message (GMT, "\t-C Set the clearance between characters and surrounding box.  Only used\n");
 	GMT_message (GMT, "\t   if -W has been set.  Append units {%s} or %% of fontsize [15%%].\n", GMT_DIM_UNITS_DISPLAY);
 	GMT_message (GMT, "\t-D Add <add_x>,<add_y> to the text origin AFTER projecting with -J [0/0].\n");
@@ -311,24 +311,24 @@ int GMT_pstext_usage (struct GMTAPI_CTRL *C, int level, int show_fonts)
 	GMT_message (GMT, "\t-G Paint the box underneath the text with specified color [Default is no paint].\n");
 	GMT_message (GMT, "\t   Alternatively, append c to set these boxes as clip paths based on text (and -C).  No text is plotted.\n");
 	GMT_message (GMT, "\t   See psclip -Cs to plot the hidden text.  Cannot be used with paragraph mode (-M).\n");
-	GMT_explain_options (GMT, "K");
+	GMT_Option (C, "K");
 	GMT_message (GMT, "\t-L List the font-numbers and font-names available, then exits.\n");
 	GMT_message (GMT, "\t-M Set paragraph text mode [Default is single item mode].\n");
 	GMT_message (GMT, "\t   Expects (x y size angle fontno justify linespace parwidth parjust) in segment header\n");
 	GMT_message (GMT, "\t   followed by lines with one or more paragraphs of text.\n");
 	GMT_message (GMT, "\t   parjust is one of (l)eft, (c)enter, (r)ight, or (j)ustified.\n");
 	GMT_message (GMT, "\t-N Do Not clip text that exceeds the map boundaries [Default will clip].\n");
-	GMT_explain_options (GMT, "OP");
+	GMT_Option (C, "O,P");
 	GMT_message (GMT, "\t-Q For all text to be (l)lower or (u)pper-case [Default leaves text as is].\n");
 	GMT_message (GMT, "\t-T Set shape of textbox when using -G and/or -W.\n");
 	GMT_message (GMT, "\t   Add o for rectangle [Default], O for rectangle with rounded corners,\n");
 	GMT_message (GMT, "\t   c for concave rectangle, C for convex rectangle.\n");
-	GMT_explain_options (GMT, "UV");
+	GMT_Option (C, "U,V");
 	GMT_pen_syntax (GMT, 'W', "Draw a box around the text with the specified pen [Default pen is %s].");
-	GMT_explain_options (GMT, "X");
+	GMT_Option (C, "X");
 	GMT_message (GMT, "\t-Z For 3-D plots: expect records to have a z value in the 3rd column (i.e., x y z size ...).\n");
 	GMT_message (GMT, "\t   Note that -Z+ also sets -N.\n");
-	GMT_explain_options (GMT, "acfhpt:.");
+	GMT_Option (C, "a,c,f,h,p,t,:,.");
 	
 	return (EXIT_FAILURE);
 }

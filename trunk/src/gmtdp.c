@@ -86,9 +86,9 @@ int GMT_gmtdp_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_dist_syntax (GMT, 'T', "Set tolerance as the maximum distance mismatch.");
 	GMT_message (GMT, "\t   No units means we will do a Cartesian calculation instead.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<");
+	GMT_Option (C, "<");
 	GMT_message (GMT, "\t-G Specify an output file [Default writes to stdout].\n");
-	GMT_explain_options (GMT, "VC2D0fghio:.");
+	GMT_Option (C, "V,bi2,bo,f,g,h,i,o,:,.");
 	
 	return (EXIT_FAILURE);
 }

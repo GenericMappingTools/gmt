@@ -99,14 +99,14 @@ int GMT_grdclip_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\n\t<ingrid> is a single grid file.\n");
 	GMT_message (GMT, "\t-G Set name of output grid.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\t-Sa will set all data > high to the <above> value.\n");
 	GMT_message (GMT, "\t-Sb will set all data < low to the <below> value.\n");
 	GMT_message (GMT, "\t-Si will set all data >= low and <= high to the <between> value.\n");
 	GMT_message (GMT, "\t-Sr will set all data == old to the <new> value.\n");
 	GMT_message (GMT, "\t    <above>, <below>, <between>, and <new> can be any number, including NaN.\n");
 	GMT_message (GMT, "\t    Choose at least one -S option; -Si -Sr may be repeated.\n");
-	GMT_explain_options (GMT, "V.");
+	GMT_Option (C, "V,.");
 	
 	return (EXIT_FAILURE);
 }

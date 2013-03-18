@@ -102,9 +102,9 @@ int GMT_x2sys_get_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   Then, only pairs with at least one cruise from the list is output.\n");
 	GMT_message (GMT, "\t   Use -L+ to include internal pairs in the list [external only].\n");
 	GMT_message (GMT, "\t-N Comma-separated list of column names that ALL must be missing.\n");
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\t   [Default region is the entire data domain].\n");
-	GMT_explain_options (GMT, "V.");
+	GMT_Option (C, "V,.");
 
 	return (EXIT_FAILURE);
 }

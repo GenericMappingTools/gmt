@@ -93,11 +93,11 @@ int GMT_gmtmercmap_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-D Dry-run: Print equivalent GMT commands instead; no map is made.\n");
 	GMT_message (GMT, "\t   Append b, c, or d for Bourne shell, C-shell, or DOS syntax [Default is Bourne].\n");
 	GMT_message (GMT, "\t-E Force the ETOPO resolution chosen [auto].\n");
-	GMT_explain_options (GMT, "KOP");
+	GMT_Option (C, "K,O,P");
 	GMT_message (GMT, "\t-R sets the map region [Default is -180/180/-75/75].\n");
 	GMT_message (GMT, "\t-S plot a color scale beneath the map [none].\n");
 	GMT_message (GMT, "\t-W Specify the width of your map [%s].\n", width);
-	GMT_explain_options (GMT, "UVXcnpt.");
+	GMT_Option (C, "U,V,X,c,n,p,t,.");
 
 	return (EXIT_FAILURE);
 }

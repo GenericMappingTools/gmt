@@ -85,7 +85,7 @@ int GMT_x2sys_put_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT,"\t-D Remove the listed tracks  [Default will add to database].\n");
 	GMT_message (GMT,"\t-F Force updates to earlier entries for a track with new information.\n");
 	GMT_message (GMT,"\t   [Default refuses to process tracks already in the database].\n");
-	GMT_explain_options (GMT, "V.");
+	GMT_Option (C, "V,.");
 	
 	return (EXIT_FAILURE);
 }

@@ -139,7 +139,7 @@ int GMT_rotconverter_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-N Ensure all poles are in northern hemisphere [ Default ensures positive opening angles/rates].\n");
 	GMT_message (GMT, "\t-S Ensure all poles are in southern hemisphere [ Default ensures positive opening angles/rates].\n");
 	GMT_message (GMT, "\t-T Transpose the result (i.e., change sign of final rotation angle).\n");
-	GMT_explain_options (GMT, "Vh.");
+	GMT_Option (C, "V,h,.");
 	
 	return (EXIT_FAILURE);
 }

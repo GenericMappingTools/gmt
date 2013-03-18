@@ -461,7 +461,7 @@ int GMT_grdblend_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Only netCDF and native binary grid formats are directly supported;\n");
 	GMT_message (GMT, "\t   other formats will be converted via grdreformat when blending is complete.\n");
 	GMT_inc_syntax (GMT, 'I', 0);
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-C Clobber modes; no blending takes places as output node is determinde by the mode:\n");
 	GMT_message (GMT, "\t   f The first input grid determines the final value.\n");
@@ -471,10 +471,10 @@ int GMT_grdblend_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-N Set value for nodes without constraints [Default is NaN].\n");
 	GMT_message (GMT, "\t-Q Grdraster-compatible output without leading grd header [Default writes GMT grid file].\n");
 	GMT_message (GMT, "\t   Output grid must be in one of the native binary formats.\n");
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_message (GMT, "\t-W Write out weights only (only applies to a single input file) [make blend grid].\n");
 	GMT_message (GMT, "\t-Z Multiply z-values by this scale before writing to file [1].\n");
-	GMT_explain_options (GMT, "fF.");
+	GMT_Option (C, "f,r,.");
 	
 	return (EXIT_FAILURE);
 }

@@ -146,13 +146,13 @@ int GMT_grdtrend_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   z = m1 + m2*x + m3*y + m4*x*y + m5*x^2 + m6*y^2 + m7*x^3 + m8*x^2*y + m9*x*y^2 + m10*y^3.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-D Supply filename to write grid file of differences (input - trend).\n");
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\t-T Supply filename to write grid file of trend.\n");
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_message (GMT, "\t-W Supply filename if you want to [read and] write grid file of weights.\n");
 	GMT_message (GMT, "\t   If <weightgrid> can be read at run, and if robust = false, weighted problem will be solved.\n");
 	GMT_message (GMT, "\t   If robust = true, weights used for robust fit will be written to <weightgrid>.\n");
-	GMT_explain_options (GMT, ".");
+	GMT_Option (C, ".");
 	
 	return (EXIT_FAILURE);
 }

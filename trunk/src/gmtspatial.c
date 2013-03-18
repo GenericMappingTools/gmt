@@ -545,7 +545,7 @@ int GMT_gmtspatial_usage (struct GMTAPI_CTRL *C, int level) {
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<");
+	GMT_Option (C, "<");
 	GMT_message (GMT, "\t-C Clip polygons to the given region box (requires -R), possibly yielding new closed polygons.\n");
 	GMT_message (GMT, "\t   For truncation instead (possibly yielding open polygons, i.e., lines), see -T.\n");
 	GMT_message (GMT, "\t-D Look for (near-)duplicates in <table>, or append +f to compare <table> against <file>.\n");
@@ -578,7 +578,7 @@ int GMT_gmtspatial_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   We also compute polygon centroid or line mid-point.\n");
 	GMT_message (GMT, "\t   Append '+' to place the (area, handedness) or length result in the segment header on output\n");
 	GMT_message (GMT, "\t   [Default only reports results to stdout].\n");
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\t-S Spatial manipulation of polygons; choose among:\n");
 	GMT_message (GMT, "\t   i for intersection.\n");
 	GMT_message (GMT, "\t   u for union.\n");
@@ -586,7 +586,7 @@ int GMT_gmtspatial_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   j for joining polygons that were split by the Dateline.\n");
 	GMT_message (GMT, "\t-T Truncate polygons against the clip polygon <cpol>; if <cpol> is not given we require -R\n");
 	GMT_message (GMT, "\t   and clip against a polygon derived from the region border.\n");
-	GMT_explain_options (GMT, "VfghC2D0ios:.");
+	GMT_Option (C, "V,bi2,bo,f,g,h,i,o,s,:,.");
 	
 	return (EXIT_FAILURE);
 }

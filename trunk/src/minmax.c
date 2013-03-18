@@ -104,7 +104,7 @@ int GMT_minmax_usage (struct GMTAPI_CTRL *C, int level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<");
+	GMT_Option (C, "<");
 	GMT_message (GMT, "\t-A Select reports for (a)ll [Default], per (f)ile, or per (s)egment.\n");
 	GMT_message (GMT, "\t-C Format the min and max into separate columns; -o may be used to limit output.\n");
 	GMT_message (GMT, "\t-E Return the record with extreme value in specified column <col> [last column].\n");
@@ -123,7 +123,7 @@ int GMT_minmax_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   -S or -Sxy leaves space for both error bars using values in third&fourth (2&3) columns.\n");
 	GMT_message (GMT, "\t-T Return textstring -Tzmin/zmax/dz to nearest multiple of the given dz.\n");
 	GMT_message (GMT, "\t   Calculations are based on the first (0) column only.  Append /<col> to use another column.\n");
-	GMT_explain_options (GMT, "VC2fghioFs:.");
+	GMT_Option (C, "V,bi2,f,g,h,i,o,r,s,:,.");
 	
 	return (EXIT_FAILURE);
 }

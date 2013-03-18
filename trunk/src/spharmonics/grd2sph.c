@@ -86,10 +86,10 @@ int GMT_sph2grd_usage (struct GMTAPI_CTRL *C, int level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_explain_options ("R");
+	GMT_explain_options ("Rg");
 	GMT_inc_syntax ('I', 0);
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<");
+	GMT_Option (C, "<");
 	GMT_message (GMT, "	The input is expected to contain records of degree, order, cos, sin.\n");
 	GMT_message (GMT, "\t-D Will evaluate a derived field from a geopotential model.  Choose between\n");
 	GMT_message (GMT, "\t   -Dg will compute the gravitational field [Add -E for anomalies on ellipsoid]\n");
@@ -109,7 +109,7 @@ int GMT_sph2grd_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   g: Geodesy normalization - inner products summed over surface equal 4pi\n");
 	GMT_message (GMT, "\t   s: Schmidt normalization - as used in geomagnetism\n");
 	GMT_message (GMT, "\t-Q Coefficients have phase convention from physics, i.e., the (-1)^m factor\n");
-	GMT_explain_options ("VC4hi.");
+	GMT_explain_options ("V,bi4,h,i,.");
 	
 	return (EXIT_FAILURE);
 }

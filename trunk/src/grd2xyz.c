@@ -88,7 +88,7 @@ int GMT_grd2xyz_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-C Write row, col instead of x,y.  Append f to start at 1, else 0 [Default].\n");
 	GMT_message (GMT, "\t-N Replace z-values that equal NaN with this value [Default writes NaN].\n");
-	GMT_explain_options (GMT, "RV");
+	GMT_Option (C, "R,V");
 	GMT_message (GMT, "\t-W Write xyzw using supplied weight (or 1 if not given) [Default is xyz].\n");
 	GMT_message (GMT, "\t-Z Set exact specification of resulting 1-column output z-table.\n");
 	GMT_message (GMT, "\t   If data is in row format, state if first row is at T(op) or B(ottom).\n");
@@ -110,7 +110,7 @@ int GMT_grd2xyz_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t     f  4-byte floating point single precision.\n");
 	GMT_message (GMT, "\t     d  8-byte floating point double precision.\n");
 	GMT_message (GMT, "\t   [Default format is scanline orientation in ascii representation: -ZTLa].\n");
-	GMT_explain_options (GMT, "D0fhos:.");
+	GMT_Option (C, "bo,f,h,o,s,:,.");
 	
 	return (EXIT_FAILURE);
 }

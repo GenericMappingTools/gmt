@@ -104,7 +104,7 @@ int GMT_sample1d_usage (struct GMTAPI_CTRL *C, int level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<");
+	GMT_Option (C, "<");
 	GMT_message (GMT, "\t   The independent variable (see -T) must be monotonically in/de-creasing.\n");
 	GMT_message (GMT, "\t-A Controls how the input track in <table> is resampled when -I..<unit> is selected:\n");
 	GMT_message (GMT, "\t   f: Keep original points, but add intermediate points if needed [Default].\n");
@@ -130,7 +130,7 @@ int GMT_sample1d_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-S Set the first output point to be <start> [first multiple of inc in range].\n");
 	GMT_message (GMT, "\t   Optionally, append /<stop> for last output point [last multiple of inc in range].\n");
 	GMT_message (GMT, "\t-T Give column number of the independent variable (time) [Default is 0 (first)].\n");
-	GMT_explain_options (GMT, "VC2D0fghios.");
+	GMT_Option (C, "V,bi2,bo,f,g,h,i,o,s,.");
 	
 	return (EXIT_FAILURE);
 }

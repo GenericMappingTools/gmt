@@ -104,10 +104,10 @@ int GMT_grdinfo_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   -L1 reports median and L1-scale of data set.\n");
 	GMT_message (GMT, "\t   -L[2] reports mean, standard deviation, and rms of data set.\n");
 	GMT_message (GMT, "\t-M Search for the global min and max locations (x0,y0) and (x1,y1).\n");
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\t-T Given increment dz, return global -Tzmin/zmax/dz in multiples of dz.\n");
 	GMT_message (GMT, "\t   To get a symmetrical range about zero, use -Ts<dz> instead.\n");
-	GMT_explain_options (GMT, "Vfh.");
+	GMT_Option (C, "V,f,h,.");
 	
 	return (EXIT_FAILURE);
 }

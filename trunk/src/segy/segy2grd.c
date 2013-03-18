@@ -127,7 +127,7 @@ int GMT_segy2grd_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\tsegyfile(s) is an IEEE floating point SEGY file. Traces are all assumed to start at 0 time/depth\n");
 	GMT_message (GMT, "\t-G to name the output grid file.\n");
 	GMT_message (GMT, "\t-I specifies grid size(s).\n");
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-A (or -Az): Add multiple entries at the same node.\n");
 	GMT_message (GMT, "\t   Append n (-An): Count number of multiple entries per node instead.\n");
@@ -142,7 +142,7 @@ int GMT_segy2grd_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-S<header> to set variable spacing\n");
 	GMT_message (GMT, "\t   <header> is c for cdp, o for offset, b<number> for 4-byte float starting at byte number\n");
 	GMT_message (GMT, "\t\tIf -S not set, assumes even spacing of samples at dx, dy supplied with -I\n");
-	GMT_explain_options (GMT, "VF.");
+	GMT_Option (C, "V,r,.");
 	
 	return (EXIT_FAILURE);
 }

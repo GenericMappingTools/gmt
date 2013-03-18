@@ -157,9 +157,9 @@ int GMT_grdgravmag3d_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t-R For new Range of output grid; enter <WESN> (xmin, xmax, ymin, ymax) separated by slashes.\n");
 	GMT_message (GMT, "\t   [Default uses the same region as the input grid].\n");
 	GMT_message (GMT, "\t-Z z level of reference plane [Default = 0]\n");
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_message (GMT, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
-	GMT_explain_options (GMT, ":.");
+	GMT_Option (C, ":,.");
 
 	return (EXIT_FAILURE);
 }

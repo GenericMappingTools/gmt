@@ -65,9 +65,9 @@ int GMT_blockmode_usage (struct GMTAPI_CTRL *C, int level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_inc_syntax (GMT, 'I', 0);
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<");
+	GMT_Option (C, "<");
 	GMT_message (GMT, "\t-C Output center of block and mode z-value [Default is mode location (but see -Q)].\n");
 	GMT_message (GMT, "\t-D Compute modes via binning using <width>; append +c to center bins. If there are multiple\n");
 	GMT_message (GMT, "\t   modes we return the average mode; append +l or +h to pick the low or high mode instead.\n");
@@ -80,14 +80,14 @@ int GMT_blockmode_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   or -Es to report an unsigned integer source id (sid) taken from the x,y,z[,w],sid input.\n");
 	GMT_message (GMT, "\t   For ties, report record number (or sid) of largest value; append - for smallest.\n");
 	GMT_message (GMT, "\t-Q Quicker; get mode z and mean x,y [Default gets mode x, mode y, mode z].\n");
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_message (GMT, "\t-W Set Weight options.\n");
 	GMT_message (GMT, "\t   -Wi reads Weighted Input (4 cols: x,y,z,w) but writes only (x,y,z[,s,l,h]) Output.\n");
 	GMT_message (GMT, "\t   -Wo reads unWeighted Input (3 cols: x,y,z) but reports sum (x,y,z[,s,l,h],w) Output.\n");
 	GMT_message (GMT, "\t   -W with no modifier has both weighted Input and Output; Default is no weights used.\n");
-	GMT_explain_options (GMT, "aC0");
+	GMT_Option (C, "a,bi");
 	GMT_message (GMT, "\t    Default is 3 columns (or 4 if -W is set).\n");
-	GMT_explain_options (GMT, "D0fhioF:.");
+	GMT_Option (C, "bo,f,h,i,o,r,:,.");
 	
 	return (EXIT_FAILURE);
 }

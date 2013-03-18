@@ -113,22 +113,22 @@ int GMT_triangulate_usage (struct GMTAPI_CTRL *C, int level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<");   
+	GMT_Option (C, "<");   
 	GMT_message (GMT, "\t-D Take derivative in the x- or y-direction (only with -G) [Default is z value].\n");
 	GMT_message (GMT, "\t-E Value to use for empty nodes [Default is NaN].\n");
 	GMT_message (GMT, "\t-G Grid data. Give name of output grid file and specify -R -I.\n");
 	GMT_message (GMT, "\t   Cannot be used with -Q.\n");
 	GMT_inc_syntax (GMT, 'I', 0);
-	GMT_explain_options (GMT, "J");   
+	GMT_Option (C, "J-");   
 	GMT_message (GMT, "\t-M Output triangle edges as multiple segments separated by segment headers.\n");
 	GMT_message (GMT, "\t   [Default is to output the indices of vertices for each Delaunay triangle].\n");
 	GMT_message (GMT, "\t-Q Compute Voronoi polygon edges instead (requires -R and Shewchuk algorithm) [Delaunay triangulation].\n");
 	GMT_message (GMT, "\t-S Output triangle polygons as multiple segments separated by segment headers.\n");
 	GMT_message (GMT, "\t   Cannot be used with -Q.\n");
 	GMT_message (GMT, "\t-Z Expect (x,y,z) data on input (and output); automatically set if -G is used [Expect (x,y) data].\n");
-	GMT_explain_options (GMT, "RVC2");
+	GMT_Option (C, "R,V,bi2");
 	GMT_message (GMT, "\t-bo Write binary (double) index table [Default is ASCII i/o].\n");
-	GMT_explain_options (GMT, "fhiFs:.");
+	GMT_Option (C, "f,h,i,r,s,:,.");
 	
 	return (EXIT_FAILURE);
 }

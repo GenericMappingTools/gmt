@@ -106,7 +106,7 @@ int GMT_mgd77info_usage (struct GMTAPI_CTRL *C, int level, struct MGD77INFO_CTRL
 	GMT_message (GMT, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, (m) MGD77T ASCII, or (t) plain table files [Default ignores none].\n");
 	GMT_message (GMT, "\t-L List all the institutions and their 2-character GEODAS codes only.  Append v to also\n");
 	GMT_message (GMT, "\t   display the vessels and their 4-character codes for each institution.\n");
-	GMT_explain_options (GMT, "V.");
+	GMT_Option (C, "V,.");
 	
 	MGD77_end (GMT, &M);	/* Close machinery */
 

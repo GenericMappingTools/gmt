@@ -186,7 +186,7 @@ int GMT_greenspline_usage (struct GMTAPI_CTRL *C, int level)
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 
-	GMT_explain_options (GMT, "<");
+	GMT_Option (C, "<");
 	GMT_message (GMT, "\t-A ASCII file with surface gradients V to use in the modeling.  Specify format:\n");
 	GMT_message (GMT, "\t   (0) For 1-D: x, slope, (1) X, Vmagnitude, Vazimuth(s), (2) X, Vazimuth(s), Vmagnitude,\n");
 	GMT_message (GMT, "\t   (3) X, Vmagnitude, Vangle(s), (4) X, Vcomponents, or (5) X, Vunit-vector, Vmagnitude.\n");
@@ -215,7 +215,7 @@ int GMT_greenspline_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   The resulting ASCII coordinates and interpolation are written to file given in -G\n");
 	GMT_message (GMT, "\t   or stdout if no file specified (see -bo for binary output).\n");
 	GMT_message (GMT, "\t-Q Calculate the directional derivative in the <az> direction and return it instead of surface elevation.\n");
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\t-R Specify a regular set of output locations.  Give min and max coordinates for each dimension.\n");
 	GMT_message (GMT, "\t   Requires -I for specifying equidistant increments.  For 2D-gridding a gridfile may be given;\n");
 	GMT_message (GMT, "\t   this then also sets -I (and perhaps -r); use those options to override the grid settings.\n");
@@ -230,9 +230,9 @@ int GMT_greenspline_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t      Use -SQ to speed up calculations by using precalculated lookup tables.\n");
 	GMT_message (GMT, "\t      Append /n to set the (odd) number of points in the spline [%d].\n", N_X);
 	GMT_message (GMT, "\t-T Mask grid file whose values are NaN or 0; its header implicitly sets -R, -I (and -r).\n");
-	GMT_explain_options (GMT, "VD0");
+	GMT_Option (C, "V,bi");
 	GMT_message (GMT, "\t   Default is 2-4 input columns depending on dimensionality (see -D).\n");
-	GMT_explain_options (GMT, "ghioFs:.");
+	GMT_Option (C, "g,h,i,o,r,s,:,.");
 	
 	return (EXIT_FAILURE);
 }

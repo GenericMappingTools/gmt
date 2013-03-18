@@ -109,7 +109,7 @@ int GMT_grdpmodeler_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-F Specify a multi-segment closed polygon file that describes the area\n");
 	GMT_message (GMT, "\t   of the grid to work on [Default works on the entire grid].\n");
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "Rg");
 	GMT_message (GMT, "\t-S Select a model prediction as a function of crustal age.  Choose among:\n");
 	GMT_message (GMT, "\t   a : Plate spreading azimuth.\n");
 	GMT_message (GMT, "\t   d : Distance to origin of crust in km.\n");
@@ -120,7 +120,7 @@ int GMT_grdpmodeler_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   X : Congitude at origin of crust.\n");
 	GMT_message (GMT, "\t   Y : Latitude at origin of crust.\n");
 	GMT_message (GMT, "\t-T Set fixed time of reconstruction to override age grid.\n");
-	GMT_explain_options (GMT, "VC2hiF.");
+	GMT_Option (C, "V,bi2,h,i,r,.");
 	
 	return (EXIT_FAILURE);
 

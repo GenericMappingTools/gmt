@@ -136,14 +136,14 @@ int GMT_pspolar_usage (struct GMTAPI_CTRL *C, int level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_explain_options (GMT, "jR");
+	GMT_Option (C, "J-,R");
 	GMT_message (GMT, "\t-D Set longitude/latitude.\n");
 	GMT_message (GMT, "\t-M Set size of beach ball in %s.\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	GMT_message (GMT, "\t-S Select symbol type and symbol size (in %s).  Choose between:\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	GMT_message (GMT, "\t   st(a)r, (c)ircle, (d)iamond, (h)exagon, (i)nvtriangle\n");
 	GMT_message (GMT, "\t   (p)oint, (s)quare, (t)riangle, and (x)cross.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<b");
+	GMT_Option (C, "<,B-");
 	GMT_message (GMT, "\t-C Set new_longitude/new_latitude[W<pen>][Ppointsize].\n");
 	GMT_message (GMT, "\t   A line will be plotted between both positions.\n");
 	GMT_message (GMT, "\t   Default is width = 3, color = current pen and pointsize = 0.015i.\n");
@@ -164,10 +164,10 @@ int GMT_pspolar_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-g Outline of station symbol in compressive part.\n");
 	GMT_message (GMT, "\t   Add <pen attributes> if not current pen.\n");
 	GMT_message (GMT, "\t-h Use special format derived from HYPO71 output.\n");
-	GMT_explain_options (GMT, "K");
+	GMT_Option (C, "K");
 	GMT_message (GMT, "\t-N Do Not skip/clip symbols that fall outside map border\n");
 	GMT_message (GMT, "\t   [Default will ignore those outside].\n");
-	GMT_explain_options (GMT, "OP");
+	GMT_Option (C, "O,P");
 	GMT_message (GMT, "\t-s Plot S polarity azimuth.\n");
 	GMT_message (GMT, "\t   Azimuth of S polarity is in last column.\n");
 	GMT_message (GMT, "\t   It may be a vector (V option) or a segment. Give half-size in cm.\n");
@@ -179,9 +179,9 @@ int GMT_pspolar_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   <angle/form/justify/fontsize in points>\n");
 	GMT_message (GMT, "\t   [Default is 0.0/0/5/12].\n");
 	GMT_message (GMT, "\t-t Set pen attributes to write station codes [default is current pen].\n");
-	GMT_explain_options (GMT, "UV");
+	GMT_Option (C, "U,V");
 	GMT_message (GMT,  "\t-W Set pen attributes [%s].\n", GMT_putpen (GMT, GMT->current.setting.map_default_pen));
-	GMT_explain_options (GMT, "Xchi.");
+	GMT_Option (C, "X,c,h,i,.");
 
 	return (EXIT_FAILURE);
 }

@@ -101,7 +101,7 @@ int GMT_colmath_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   If your pattern begins with ~, escape it with \\~.\n");
 	GMT_message (GMT, "\t   Note: -S requires -m and ASCII input data [Output all segments].\n");
 	GMT_message (GMT, "\t-T Prevent the writing of segment headers.\n");
-	GMT_explain_options (GMT, "VC0Dfghios:.");
+	GMT_Option (C, "V,bi,bo,f,g,h,i,o,s,:,.");
 	
 	return (EXIT_FAILURE);
 }

@@ -355,9 +355,9 @@ int GMT_psmask_usage (struct GMTAPI_CTRL *C, int level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_inc_syntax (GMT, 'I', 0);
-	GMT_explain_options (GMT, "jR");
+	GMT_Option (C, "J-Z,R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<b");
+	GMT_Option (C, "<,B-");
 	GMT_message (GMT, "\t-C Terminate existing clip-path.  No other options required.\n");
 	GMT_message (GMT, "\t-D Dump clip polygons as data polygons; no plotting takes place.\n");
 	GMT_message (GMT, "\t   Append filename template which may contain a C-format specifier.\n");
@@ -367,9 +367,9 @@ int GMT_psmask_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   and write all polygons to individual files; see manual page for more examples.\n");
 	GMT_message (GMT, "\t   Cannot be used with -T; see -Q to eliminate small polygons.\n");
 	GMT_fill_syntax (GMT, 'G', "Select fill color/pattern [Default is no fill].");
-	GMT_explain_options (GMT, "ZK");
+	GMT_Option (C, "K");
 	GMT_message (GMT, "\t-N Invert the sense of the clipping [or tiling].\n");
-	GMT_explain_options (GMT, "OP");
+	GMT_Option (C, "O,P");
 	GMT_message (GMT, "\t-Q Do not dump contours with less than <cut> points [Dump all contours].\n");
 	GMT_message (GMT, "\t   Ignored unless -D is set.\n");
 	GMT_dist_syntax (GMT, 'S', "Set search radius to identify inside points.");
@@ -378,7 +378,7 @@ int GMT_psmask_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Default is -S0, i.e., only the nearest node is considered reliable.\n");
 	GMT_message (GMT, "\t-T Paint tiles [Default will trace data outline].\n");
 	GMT_message (GMT, "\t   If set you must also specify a color/fill with -G.\n");
-	GMT_explain_options (GMT, "UVXC2D0chipFst:.");
+	GMT_Option (C, "U,V,X,bi2,bo,c,h,i,p,r,s,t,:,.");
 	
 	return (EXIT_FAILURE);
 }

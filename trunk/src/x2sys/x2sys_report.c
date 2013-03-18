@@ -127,10 +127,10 @@ int GMT_x2sys_report_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   the default file <TAG>_corrections.txt in $X2SYS_HOME/<TAG> is assumed.\n");
 	GMT_message (GMT, "\t-N Output results for tracks with more than <nx_min> crossovers only [0, i.e., report all tracks].\n");
 	GMT_message (GMT, "\t-Q Append e or i for external or internal crossovers [Default is external].\n");
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\t   [Default region is the entire data domain].\n");
 	GMT_message (GMT, "\t-S Return only crossovers involving this track [Use all tracks].\n");
-	GMT_explain_options (GMT, "V.");
+	GMT_Option (C, "V,.");
 	
 	return (EXIT_FAILURE);
 }

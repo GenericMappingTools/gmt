@@ -102,10 +102,10 @@ int GMT_x2sys_datalist_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t-I List of tracks to ignore [Use all tracks].\n");
 	GMT_message (GMT, "\t-L Subtract systematic corrections from the data. If no correction file is given,\n");
 	GMT_message (GMT, "\t   the default file <TAG>_corrections.txt in $X2SYS_HOME/<TAG> is assumed.\n");
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\t-S Suppress output records where all data columns are NaN [Output all records].\n");
 	GMT_message (GMT, "\t   (Note: data columns exclude navigation (lon|x|lat|y|time) columns.)\n");
-	GMT_explain_options (GMT, "VD.");
+	GMT_Option (C, "V,bo,.");
 	
 	return (EXIT_FAILURE);
 }

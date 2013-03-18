@@ -147,14 +147,14 @@ int GMT_x2sys_list_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   the default file <TAG>_corrections.txt in $X2SYS_HOME/<TAG> is assumed.\n");
 	GMT_message (GMT, "\t-N Output results for tracks with more than <nx_min> crossovers only [Use all tracks].\n");
 	GMT_message (GMT, "\t-Q Append e or i for external or internal crossovers [Default is both].\n");
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\t   [Default region is the entire data domain].\n");
 	GMT_message (GMT, "\t-S Return only crossovers involving this track [Use all tracks].\n");
 	GMT_message (GMT, "\t   Prepend a '+' to make it print info relative to both tracks [Default is selected track].\n");
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_message (GMT, "\t-W If argument can be opened as a file then we expect a List of tracks and their\n");
 	GMT_message (GMT, "\t   relative weights; otherwise the argument is the constant weight for all tracks [1].\n");
-	GMT_explain_options (GMT, "D.");
+	GMT_Option (C, "bo,.");
 	
 	return (EXIT_FAILURE);
 }

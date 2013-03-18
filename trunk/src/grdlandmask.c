@@ -98,7 +98,7 @@ int GMT_grdlandmask_usage (struct GMTAPI_CTRL *C, int level)
 
 	GMT_message (GMT, "\t-G Specify file name for output mask grid file.\n");
 	GMT_inc_syntax (GMT, 'I', 0);
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_GSHHS_syntax (GMT, 'A', "Place limits on coastline features from the GSHHS data base.");
 	GMT_message (GMT, "\t-D Choose one of the following resolutions:\n");
@@ -114,7 +114,7 @@ int GMT_grdlandmask_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   -N<wet>/<dry>.\n");
 	GMT_message (GMT, "\t   -N<ocean>/<land>/<lake>/<island>/<pond>.\n");
 	GMT_message (GMT, "\t   NaN is a valid entry.  Default values are 0/1/0/1/0 (i.e., 0/1).\n");
-	GMT_explain_options (GMT, "VF.");
+	GMT_Option (C, "V,r,.");
 	
 	return (EXIT_FAILURE);
 }

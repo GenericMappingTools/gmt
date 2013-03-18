@@ -119,28 +119,18 @@ int GMT_x2sys_cross_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   l Linear interpolation [Default].\n");
 	GMT_message (GMT, "\t   a Akima spline interpolation.\n");
 	GMT_message (GMT, "\t   c Acubic spline interpolation.\n");
-	GMT_explain_options (GMT, "J");
+	GMT_Option (C, "J-");
 	GMT_message (GMT, "\t-Q Append e for external crossovers.\n");
 	GMT_message (GMT, "\t   Append i for internal crossovers [Default is all crossovers].\n");
-	GMT_explain_options (GMT, "R");
-	GMT_message (GMT, "\t-S Set limits on lower and upper speeds (units determined by -Ns):\n");
-	GMT_message (GMT, "\t   -Sl sets lower speed [Default is 0].\n");
-	GMT_message (GMT, "\t   -Sh no headings should be computed if velocity drops below this value [0].\n");
-	GMT_message (GMT, "\t   l Linear interpolation [Default].\n");
-	GMT_message (GMT, "\t   a Akima spline interpolation.\n");
-	GMT_message (GMT, "\t   c Acubic spline interpolation.\n");
-	GMT_explain_options (GMT, "J");
-	GMT_message (GMT, "\t-Q Append e for external crossovers.\n");
-	GMT_message (GMT, "\t   Append i for internal crossovers [Default is all crossovers].\n");
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\t-S Set limits on lower and upper speeds (units determined by -Ns):\n");
 	GMT_message (GMT, "\t   -Sl sets lower speed [Default is 0].\n");
 	GMT_message (GMT, "\t   -Sh no headings should be computed if velocity drops below this value [0].\n");
 	GMT_message (GMT, "\t   -Su sets upper speed [Default is Infinity].\n");
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_message (GMT, "\t-W Set maximum points on either side of xover to use in interpolation [Default is 3].\n");
 	GMT_message (GMT, "\t-Z Return z-values for each track [Default is crossover and mean value].\n");
-	GMT_explain_options (GMT, "D.");
+	GMT_Option (C, "bo,.");
 	
 	return (EXIT_FAILURE);
 }

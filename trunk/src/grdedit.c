@@ -100,13 +100,13 @@ int GMT_grdedit_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t-D Enter grid information.  Specify '=' to get default value.\n");
 	GMT_message (GMT, "\t-E Tranpose the entire grid (this will exchange x and y).\n");
 	GMT_message (GMT, "\t-N <table> has new xyz values to replace existing grid nodes.\n");
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\t-S For global grids of 360 degree longitude range.\n");
 	GMT_message (GMT, "\t   Will rotate entire grid to coincide with new borders in -R.\n");
 	GMT_message (GMT, "\t-T Toggle header from grid-line to pixel-registered grid or vice versa.\n");
 	GMT_message (GMT, "\t   This shrinks -R by 0.5*{dx,dy} going from pixel to grid-line registration\n");
 	GMT_message (GMT, "\t   and expands -R by 0.5*{dx,dy} going from grid-line to pixel registration.\n");
-	GMT_explain_options (GMT, "VC3fhi:.");
+	GMT_Option (C, "V,bi3,f,h,i,:,.");
 	
 	return (EXIT_FAILURE);
 }

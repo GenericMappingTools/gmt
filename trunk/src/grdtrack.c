@@ -171,8 +171,8 @@ int GMT_grdtrack_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t     +r<radius> defines a circle about <origin>. Add +i<inc> or +n<np>.\n");
 	GMT_message (GMT, "\t     +n<np> sets the number of output points and computes <inc> from <length>.\n");
 	GMT_message (GMT, "\t-N Do NOT skip points outside the grid domain [Default only returns points inside domain].\n");
-	GMT_explain_options (GMT, "R");
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "R");
+	GMT_Option (C, "V");
 	GMT_message (GMT, "\t-S In conjunction with -C, compute a single stacked profile from all profiles across each segment.\n");
 	GMT_message (GMT, "\t   Append which method should be used when performing the stacking:\n");
 	GMT_message (GMT, "\t   a = mean, m = median, p = mode, l = lower, L = lower of +ve values, u = upper, U = upper of -ve values [a].\n");
@@ -184,7 +184,7 @@ int GMT_grdtrack_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t     +c<fact> : Compute envelope as +/- <fact>*deviation [2].\n");
 	GMT_message (GMT, "\t   Note: Deviations depend on mode and are L1 scale (e), st.dev (a), LMS scale (p), or half-range (u-l)/2.\n");
 	GMT_message (GMT, "\t-Z Only output z-values [Default gives all columns].\n");
-	GMT_explain_options (GMT, "aC2D0fghinos:.");
+	GMT_Option (C, "a,bi2,bo,f,g,h,i,n,o,s,:,.");
 	
 	return (EXIT_FAILURE);
 }

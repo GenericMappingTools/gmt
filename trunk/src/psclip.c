@@ -82,13 +82,13 @@ int GMT_psclip_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Append c to plot text previously used to build a curved clip path set (restores 1 level).\n");
 	GMT_message (GMT, "\t   Append s to plot text previously used to build a straight-text clip path set (restores 1 level).\n");
 	GMT_message (GMT, "\t<xy-files> is one or more polygon files.  If none, standard input is read.\n");
-	GMT_explain_options (GMT, "jR");
+	GMT_Option (C, "J-Z,R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<bZK");
+	GMT_Option (C, "<,B-,K");
 	GMT_message (GMT, "\t-N Use the outside of the polygons and the map boundary as clip paths.\n");
-	GMT_explain_options (GMT, "OP");
+	GMT_Option (C, "O,P");
 	GMT_message (GMT, "\t-T Set clip path for the entire map frame.  No input file is required.\n");
-	GMT_explain_options (GMT, "UVXC2cfghipt:.");
+	GMT_Option (C, "U,V,X,bi2,c,f,g,h,i,p,t,:,.");
 	
 	return (EXIT_FAILURE);
 }

@@ -117,7 +117,7 @@ int GMT_gmtconvert_usage (struct GMTAPI_CTRL *C, int level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<");
+	GMT_Option (C, "<");
 	GMT_message (GMT, "\t-A Paste files horizontally, not concatenate vertically [Default].\n");
 	GMT_message (GMT, "\t   All files must have the same number of segments and rows,\n");
 	GMT_message (GMT, "\t   but they may differ in their number of columns.\n");
@@ -145,7 +145,7 @@ int GMT_gmtconvert_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   To match OGR aspatial values, use name=value.\n");
 	GMT_message (GMT, "\t   To match against extended regular expressions use -S[~]/regexp/[i].\n");
 	GMT_message (GMT, "\t-T Prevent the writing of segment headers.\n");
-	GMT_explain_options (GMT, "VaC0Dfghios:.");
+	GMT_Option (C, "V,a,bi,bo,f,g,h,i,o,s,:,.");
 	
 	return (EXIT_FAILURE);
 }

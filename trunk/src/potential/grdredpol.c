@@ -1005,11 +1005,11 @@ int GMT_grdredpol_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t-F<m>/<n> filter with [25x25].\n");
 	GMT_message (GMT, "\t-M<m|r> Set boundary conditions. m|r stands for mirror or replicate edges (Default is zero padding).\n");
 	GMT_message (GMT, "\t-N Do NOT use Taylor expansion.\n");
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\t-T<year> Year used by the IGRF routine to compute the various DECs & DIPs [default: 2000]\n");
 	GMT_message (GMT, "\t-W<wid> window width in degrees [5]\n");
 	GMT_message (GMT, "\t-Z<filter> Write filter file on disk\n");
-	GMT_explain_options (GMT, "V.");
+	GMT_Option (C, "V,.");
 	
 	return (EXIT_FAILURE);
 }

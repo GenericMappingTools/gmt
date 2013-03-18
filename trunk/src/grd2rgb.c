@@ -254,13 +254,13 @@ int GMT_grd2rgb_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   [Default is grd2rgb_%%c.nc].\n");
 	GMT_message (GMT, "\t-I Specify grid size(s).  Append m (or c) to <dx> and/or <dy> for minutes (or seconds).\n");
 	GMT_message (GMT, "\t-L Only output the given layer (r, g, or b) [Default output all three].\n");
-	GMT_explain_options (GMT, "RV");
+	GMT_Option (C, "R,V");
 	GMT_message (GMT, "\t-W Set the size of the raw raster file. By default an RGB file (which has 3 bytes/pixel)\n");
 	GMT_message (GMT, "\t   is assumed. For RGBA files use n_bytes = 4.\n");
 	GMT_message (GMT, "\t   Use -W for guessing the image size of a RGB raw file, and -W=/=/4.\n");
 	GMT_message (GMT, "\t   if the raw image is of the RGBA type. Notice that this might be a\n");
 	GMT_message (GMT, "\t   bit slow because the guessing algorithm makes uses of FFTs.\n");
-	GMT_explain_options (GMT, "F");
+	GMT_Option (C, "r");
 	
 	return (EXIT_FAILURE);
 }

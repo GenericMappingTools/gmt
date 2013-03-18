@@ -331,9 +331,9 @@ int GMT_grdview_usage (struct GMTAPI_CTRL *C, int level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\t<topogrid> is data set to be plotted.\n");
-	GMT_explain_options (GMT, "jZ");
+	GMT_Option (C, "J-Z");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "b");
+	GMT_Option (C, "B-");
 	GMT_message (GMT, "\t-C Color palette file.\n");
 	GMT_message (GMT, "\t-G Use <drapegrid> rather than <topogrid> for color-coding.\n");
 	GMT_message (GMT, "\t   Use <topogrid> as the relief and drape the image on top.\n");
@@ -341,21 +341,21 @@ int GMT_grdview_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Alternatively, give three grid files with the red, green, and blue components in 0-255 range.\n");
 	GMT_message (GMT, "\t   If so, you must also choose -Qi.\n");
 	GMT_message (GMT, "\t-I Give name of intensity file and selects illumination.\n");
-	GMT_explain_options (GMT, "ZK");
+	GMT_Option (C, "K");
 	GMT_message (GMT, "\t-N Draw a horizontal plane at z = level.  Append color [/<color>] to paint\n");
 	GMT_message (GMT, "\t   the facade between the plane and the data perimeter.\n");
-	GMT_explain_options (GMT, "OP");
+	GMT_Option (C, "O,P");
 	GMT_message (GMT, "\t-Q Set plot request. Choose one of the following:\n");
 	GMT_message (GMT, "\t   -Qm for Mesh plot [Default].  Append /<color> for mesh paint [%s].\n", GMT_putcolor (GMT, GMT->PSL->init.page_rgb));
 	GMT_message (GMT, "\t   -Qs[m] for colored or shaded Surface.  Append m to draw meshlines on the surface.\n");
 	GMT_message (GMT, "\t   -Qi for scanline converting polygons to rasterimage.  Append effective dpi [100].\n");
 	GMT_message (GMT, "\t   -Qc. As -Qi but use PS Level 3 colormasking for nodes with z = NaN.  Append effective dpi [100].\n");
 	GMT_message (GMT, "\t   To force a monochrome image using the GMT_YIQ transformation, append g.\n");
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\t-S Smooth contours first (see grdview for <smooth> value info) [no smoothing].\n");
 	GMT_pen_syntax (GMT, 'T', "Image the data without interpolation by painting polygonal tiles.\n\t   Append s to skip tiles for nodes with z = NaN [Default paints all tiles].\n\t   Append o[<pen>] to draw tile outline [Default uses no outline].");
 	GMT_message (GMT, "\t   Cannot be used with -Jz|Z as it produces a flat image.\n");
-	GMT_explain_options (GMT, "UV");
+	GMT_Option (C, "U,V");
 	GMT_pen_syntax (GMT, 'W', "Set pen attributes for various features in form <type><pen>.");
 	GMT_message (GMT, "\t   <type> can be c for contours, m for mesh, and f for facade.\n");
 	P = GMT->current.setting.map_default_pen;
@@ -366,7 +366,7 @@ int GMT_grdview_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t     Optionally append pen attributes [%s].\n", GMT_putpen (GMT, P));
 	GMT_message (GMT, "\t   f sets attributes for facade outline [%s].\n", GMT_putpen (GMT, P));
 	GMT_message (GMT, "\t     Requires -N to take effect.\n");
-	GMT_explain_options (GMT, "Xcfnpt.");
+	GMT_Option (C, "X,c,f,n,p,t,.");
 	
 	return (EXIT_FAILURE);
 }

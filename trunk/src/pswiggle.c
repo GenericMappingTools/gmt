@@ -214,28 +214,28 @@ int GMT_pswiggle_usage (struct GMTAPI_CTRL *C, int level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_explain_options (GMT, "jR");
+	GMT_Option (C, "J-Z,R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<");
+	GMT_Option (C, "<");
 	GMT_message (GMT, "\t-A Set azimuth for preferred positive wiggle orientation [0.0 (north)].\n");
-	GMT_explain_options (GMT, "b");
+	GMT_Option (C, "B-");
 	GMT_message (GMT, "\t-C Set center value to be removed from z before plotting [0].\n");
 	GMT_fill_syntax (GMT, 'G', "Specify color/pattern for positive and/or negative areas.");
 	GMT_message (GMT, "\t   Prepend + to fill positive areas (default).\n");
 	GMT_message (GMT, "\t   Prepend - to fill negative areas.\n");
 	GMT_message (GMT, "\t   Prepend = to fill positive and negative areas.\n");
 	GMT_message (GMT, "\t-I Set fixed projection azimuths for wiggles.\n");
-	GMT_explain_options (GMT, "ZK");
+	GMT_Option (C, "K");
 	GMT_message (GMT, "\t-N Fill negative wiggles instead [Default is positive].\n");
-	GMT_explain_options (GMT, "OP");
+	GMT_Option (C, "O,P");
 	GMT_message (GMT, "\t-S Draw a simple vertical scale centered on <lon0>/<lat0>.  Use -Sx to specify cartesian coordinates instead.\n");
 	GMT_message (GMT, "\t   <length> is in z-units, append unit name for labeling.\n");
 	GMT_message (GMT, "\t-T Specify track pen attributes. [Default is no track].\n");
-	GMT_explain_options (GMT, "UV");
+	GMT_Option (C, "U,V");
 	GMT_pen_syntax (GMT, 'W', "Specify outline pen attributes [Default is no outline].");
-	GMT_explain_options (GMT, "X");
+	GMT_Option (C, "X");
 	GMT_message (GMT, "\t-Z Give the wiggle scale in data-units per %s.\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-	GMT_explain_options (GMT, "C3cfghipst:.");
+	GMT_Option (C, "bi3,c,f,g,h,i,p,s,t,:,.");
 	
 	return (EXIT_FAILURE);
 }

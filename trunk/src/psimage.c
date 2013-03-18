@@ -120,12 +120,12 @@ int GMT_psimage_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-Gt (not for 1-bit images) indicate which color to be made transparent\n");
 	GMT_message (GMT, "\t   [Default no transparency].\n");
 	GMT_message (GMT, "\t-I Invert 1-bit images (does not affect 8 or 24-bit images).\n");
-	GMT_explain_options (GMT, "jZK");
+	GMT_Option (C, "J-Z,K");
 	GMT_message (GMT, "\t-M Force color -> monochrome image using GMT_YIQ-transformation.\n");
 	GMT_message (GMT, "\t-N Replicate image <nx> by <ny> times [Default is no replication].\n");
-	GMT_explain_options (GMT, "OPRUVXcp");
+	GMT_Option (C, "O,P,R,U,V,X,c,p");
 	GMT_message (GMT, "\t   (Requires -R and -J for proper functioning).\n");
-	GMT_explain_options (GMT, "t.");
+	GMT_Option (C, "t,.");
 	
 	return (EXIT_FAILURE);
 }

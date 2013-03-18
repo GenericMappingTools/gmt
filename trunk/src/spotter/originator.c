@@ -232,11 +232,11 @@ int GMT_originator_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-Q Input files has (x,y,z) only. Append constant r/t to use.\n");
 	GMT_message (GMT, "\t-S Report the <n_hs> closest hotSpots [1].\n");
 	GMT_message (GMT, "\t-T Truncate seamount ages exceeding the upper age set with -N [no truncation].\n");
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_message (GMT, "\t-W Report seamounts whose closest encounter to a hotspot is less than <maxdist> km\n");
 	GMT_message (GMT, "\t   [Default reports for all seamounts].\n");
 	GMT_message (GMT, "\t-Z Write hotspot ID number rather than hotspot TAG.\n");
-	GMT_explain_options (GMT, "C5his:");
+	GMT_Option (C, "bi5,h,i,s,:,.");
 	
 	return (EXIT_FAILURE);
 }

@@ -121,14 +121,14 @@ int GMT_grdimage_usage (struct GMTAPI_CTRL *C, int level)
 #ifdef HAVE_GDAL
 	GMT_message (GMT, "\t  If -D is used then <grd_z> is instead expected to be an image.\n");
 #endif
-	GMT_explain_options (GMT, "j");
+	GMT_Option (C, "J-");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 #ifdef HAVE_GDAL
 	GMT_message (GMT, "\t-A Save image in a raster format instead of PostScript. Append =<driver> to select.\n");
 	GMT_message (GMT, "\t   the image format. The 'driver' is the driver code name used by GDAL. For example\n");
 	GMT_message (GMT, "\t   -Aimg.tif=GTiff will write a GeoTiff image. Note: any vector elements are lost. \n");
 #endif
-	GMT_explain_options (GMT, "b");
+	GMT_Option (C, "B-");
 	GMT_message (GMT, "\t-C Color palette file to convert z to rgb.  Optionally, instead give name of a master cpt\n");
 	GMT_message (GMT, "\t   to automatically assign 16 colors over the data range [rainbow].\n");
 #ifdef HAVE_GDAL
@@ -139,13 +139,13 @@ int GMT_grdimage_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Give i to do the interpolation in PostScript at device resolution.\n");
 	GMT_rgb_syntax (GMT, 'G', "Set transparency color for images that otherwise would result in 1-bit images.\n\t  ");
 	GMT_message (GMT, "\t-I Use illumination. Append name of intensity grid file.\n");
-	GMT_explain_options (GMT, "K");
+	GMT_Option (C, "K");
 	GMT_message (GMT, "\t-M Force monochrome image.\n");
 	GMT_message (GMT, "\t-N Do not clip image at the map boundary.\n");
-	GMT_explain_options (GMT, "OP");
+	GMT_Option (C, "O,P");
 	GMT_message (GMT, "\t-Q Use PS Level 3 colormasking to make nodes with z = NaN transparent.\n");
-	GMT_explain_options (GMT, "R");
-	GMT_explain_options (GMT, "UVXcfnpt.");
+	GMT_Option (C, "R");
+	GMT_Option (C, "U,V,X,c,f,n,p,t,.");
 
 	return (EXIT_FAILURE);
 }

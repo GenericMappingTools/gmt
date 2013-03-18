@@ -160,7 +160,7 @@ int GMT_gmtselect_usage (struct GMTAPI_CTRL *C, int level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<");
+	GMT_Option (C, "<");
 	GMT_GSHHS_syntax (GMT, 'A', "Place limits on coastline features from the GSHHS data base (ignored  unless -N is set).");
 	GMT_dist_syntax (GMT, 'C', "Pass locations that are within <dist> of any point in the ASCII <ptfile>.");
 	GMT_message (GMT, "\t   Give distance as 0 if 3rd column of <ptfile> has individual distances.\n");
@@ -187,7 +187,7 @@ int GMT_gmtselect_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   r will pass locations outside the region given in -R [and -J].\n");
 	GMT_message (GMT, "\t   s will pass locations that otherwise would be skipped in -N.\n");
 	GMT_message (GMT, "\t   z will pass locations outside the range given in -Z.\n");
-	GMT_explain_options (GMT, "J");
+	GMT_Option (C, "J");
 	GMT_dist_syntax (GMT, 'L', "Pass locations that are within <dist> of any line in ASCII <linefile>.");
 	GMT_message (GMT, "\t-N Set if a point outside or inside a geographic feature should be s(kipped) or k(ept).\n");
 	GMT_message (GMT, "\t   Append o to let feature boundary be considered outside [Default is inside].\n");
@@ -195,12 +195,12 @@ int GMT_gmtselect_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   -N<wet>/<dry>.\n");
 	GMT_message (GMT, "\t   -N<ocean>/<land>/<lake>/<island>/<pond>.\n");
 	GMT_message (GMT, "\t   k means keep and s means skip [Default is s/k/s/k/s (i.e., s/k)].\n");
-	GMT_explain_options (GMT, "RV");
+	GMT_Option (C, "R,V");
 	GMT_message (GMT, "\t-Z Assume the 3rd data column contains z-values and we want to keep records with\n");
 	GMT_message (GMT, "\t   <min> <= z <= <max>.  Use - for <min> or <max> if there is no lower/upper limit.\n");
-	GMT_explain_options (GMT, "aC0");
+	GMT_Option (C, "a,bi0");
 	GMT_message (GMT, "\t   Default is 2 input columns (3 if -Z is used).\n");
-	GMT_explain_options (GMT, "D0fghios:.");
+	GMT_Option (C, "bo,f,g,h,i,o,s,:,.");
 	
 	return (EXIT_FAILURE);
 }

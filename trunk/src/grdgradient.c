@@ -147,11 +147,11 @@ int GMT_grdgradient_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t  -Ne will make exp  transform, then scale to <amp> [1.0].\n");
 	GMT_message (GMT, "\t  -Nt<amp>/<sigma>[/<offset>] or -Ne<amp>/<sigma>[/<offset>] sets sigma\n");
 	GMT_message (GMT, "\t     (and offset) for transform. [sigma, offset estimated from data].\n");
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\t-S Output file for |grad z|; requires -D.\n");
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_message (GMT, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
-	GMT_explain_options (GMT, "n.");
+	GMT_Option (C, "n,.");
 	
 	return (EXIT_FAILURE);
 }

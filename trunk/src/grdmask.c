@@ -90,10 +90,10 @@ int GMT_grdmask_usage (struct GMTAPI_CTRL *C, int level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_explain_options (GMT, "<");
+	GMT_Option (C, "<");
 	GMT_message (GMT, "\t-G Specify file name for output mask grid file.\n");
 	GMT_inc_syntax (GMT, 'I', 0);
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-A Suppress connecting points using great circle arcs, i.e., connect by straight lines,\n");
 	GMT_message (GMT, "\t   unless m or p is appended to first follow meridian then parallel, or vice versa.\n");
@@ -112,7 +112,7 @@ int GMT_grdmask_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   inside the circle of specified radius [0] from the nearest data point.\n");
 	GMT_message (GMT, "\t   Give radius as 'z' if individual radii are provided via the 3rd data column.\n");
 	GMT_message (GMT, "\t   [Default is to treat xyfiles as polygons and use inside/outside searching].\n");
-	GMT_explain_options (GMT, "VaC2fghiFs:.");
+	GMT_Option (C, "V,a,bi2,f,g,h,i,r,s,:,.");
 	
 	return (EXIT_FAILURE);
 }

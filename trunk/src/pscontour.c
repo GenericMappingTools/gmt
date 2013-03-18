@@ -376,14 +376,14 @@ int GMT_pscontour_usage (struct GMTAPI_CTRL *C, int level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\t-C Specify color palette table.\n");
-	GMT_explain_options (GMT, "jZR");
+	GMT_Option (C, "J-Z,R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<");
+	GMT_Option (C, "<");
 	GMT_message (GMT, "\t-A Annotation label information.\n");
 	GMT_message (GMT, "\t   Give A- to disable all contour annotations implied in -C.\n");
 	GMT_message (GMT, "\t   <labelinfo> controls the specifics of the labels.  Append what you need:\n");
 	GMT_label_syntax (GMT, 5, 0);
-	GMT_explain_options (GMT, "b");
+	GMT_Option (C, "B-");
 	GMT_message (GMT, "\t-D Dump contours as data line segments; no plotting takes place.\n");
 	GMT_message (GMT, "\t   Append filename template which may contain C-format specifiers.\n");
 	GMT_message (GMT, "\t   If no filename template is given we write all lines to stdout.\n");
@@ -398,10 +398,10 @@ int GMT_pscontour_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-G Control placement of labels along contours.  Choose among five algorithms:\n");
 	GMT_cont_syntax (GMT, 3, 0);
 	GMT_message (GMT, "\t-I Color triangles using the cpt file.\n");
-	GMT_explain_options (GMT, "K");
+	GMT_Option (C, "K");
 	GMT_pen_syntax (GMT, 'L', "Draws the triangular mesh with the specified pen.");
 	GMT_message (GMT, "\t-N Do NOT clip contours/image at the border [Default clips].\n");
-	GMT_explain_options (GMT, "OP");
+	GMT_Option (C, "O,P");
 	GMT_message (GMT, "\t-Q File with triplets of point indices for each triangle\n");
 	GMT_message (GMT, "\t   [Default performs the Delaunay triangulation on xyz-data].\n");
 	GMT_message (GMT, "\t-S Skip xyz points outside region [Default keeps all].\n");
@@ -411,7 +411,7 @@ int GMT_pscontour_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Append spacing/ticklength (with units) to change defaults [%gp/%gp].\n", TICKED_SPACING, TICKED_LENGTH);
 	GMT_message (GMT, "\t   Append :LH to plot L and H in the center of closed contours\n");
 	GMT_message (GMT, "\t   for local Lows and Highs (e.g, give :-+ to plot - and + signs).\n");
-	GMT_explain_options (GMT, "UV");
+	GMT_Option (C, "U,V");
 	GMT_pen_syntax (GMT, 'W', "Set pen attributes. Append a<pen> for annotated or c<pen> for regular contours [Default].");
 	GMT_message (GMT, "\t   The default settings are\n");
 	P = GMT->current.setting.map_default_pen;
@@ -420,7 +420,7 @@ int GMT_pscontour_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Annotate pen: %s.\n", GMT_putpen (GMT, P));
 	GMT_message (GMT, "\t   Prepend + to draw colored contours based on the cpt file.\n");
 	GMT_message (GMT, "\t   Prepend - to color contours and annotations based on the cpt file.\n");
-	GMT_explain_options (GMT, "XC3D0chipst:.");
+	GMT_Option (C, "X,bi3,bo,c,h,i,p,s,t,:,.");
 	
 	return (EXIT_FAILURE);
 }

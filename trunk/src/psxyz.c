@@ -119,9 +119,9 @@ int GMT_psxyz_usage (struct GMTAPI_CTRL *C, int level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_explain_options (GMT, "jZr");
+	GMT_Option (C, "J-Z,R3");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<b");
+	GMT_Option (C, "<,B-");
 	GMT_message (GMT, "\t-C Use cpt-file to assign symbol colors based on t-value in 4th column\n");
 	GMT_message (GMT, "\t   Note: requires -S.  Without -S, psxyz excepts lines/polygons\n");
 	GMT_message (GMT, "\t   and looks for -Z<val> options in each multiheader.  Then, color is\n");
@@ -130,11 +130,11 @@ int GMT_psxyz_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_fill_syntax (GMT, 'G', "Specify color or pattern [Default is no fill].");
 	GMT_message (GMT, "\t   If -G is specified but not -S, then psxyz draws a filled polygon.\n");
 	GMT_message (GMT, "\t-I Use the intensity to modulate the fill color (requires -C or -G).\n");
-	GMT_explain_options (GMT, "ZK");
+	GMT_Option (C, "K");
 	GMT_message (GMT, "\t-L Force closed polygons.\n");
 	GMT_message (GMT, "\t-N Do not skip or clip symbols that fall outside the map border\n");
 	GMT_message (GMT, "\t   [Default will clip or skip symbols that fall outside].\n");
-	GMT_explain_options (GMT, "OP");
+	GMT_Option (C, "O,P");
 	GMT_message (GMT, "\t-Q Do NOT sort symbols based on distance to viewer before plotting.\n");
 	GMT_message (GMT, "\t-S Select symbol type and symbol size (in %s).  Choose between\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	GMT_message (GMT, "\t   -(xdash), +(plus), st(a)r, (b|B)ar, (c)ircle, (d)iamond, (e)llipse,\n");
@@ -197,19 +197,19 @@ int GMT_psxyz_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t     If -SV rather than -Sv is use, psxy will expect azimuth and\n");
 	GMT_message (GMT, "\t     length and convert azimuths based on the chosen map projection.\n");
 	GMT_vector_syntax (GMT, 3);
-	GMT_explain_options (GMT, "U");
+	GMT_Option (C, "U");
 	GMT_message (GMT, "\t   Wedges: Start and stop directions of wedge must be in columns 3-4.\n");
 	GMT_message (GMT, "\t     If -SW rather than -Sw is selected, specify two azimuths instead.\n");
 	GMT_message (GMT, "\t   Geovectors: Azimuth and length (in km) must be in columns 3-4.\n");
 	GMT_vector_syntax (GMT, 3);
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_pen_syntax (GMT, 'W', "Set pen attributes [Default pen is %s]:");
 	GMT_message (GMT, "\t   Implicitly draws symbol outline with this pen.\n");
 	GMT_message (GMT, "\t   A leading + applies cpt color (-C) to both symbol fill and pen.\n");
 	GMT_message (GMT, "\t   A leading - applies cpt color (-C) to the pen only.\n");
-	GMT_explain_options (GMT, "XaC0c");
+	GMT_Option (C, "X,a,bi");
 	GMT_message (GMT, "\t   Default is the required number of columns.\n");
-	GMT_explain_options (GMT, "fghipst:.");
+	GMT_Option (C, "c,f,g,h,i,p,s,t,:,.");
 
 	return (EXIT_FAILURE);
 }

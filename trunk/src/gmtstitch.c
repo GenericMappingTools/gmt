@@ -122,7 +122,7 @@ static int GMT_gmtstitch_usage (struct GMTAPI_CTRL *C, int level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<");
+	GMT_Option (C, "<");
 	GMT_message (GMT, "\t-C Write already-closed polygons to a separate <closedfile> [gmtstitch_closed.txt]\n");
 	GMT_message (GMT, "\t   than all other segments [All segments are written to one file; see -D].\n");
 	GMT_message (GMT, "\t-D Write individual segments to separate files [Default writes one multisegment file to stdout].\n");
@@ -131,14 +131,14 @@ static int GMT_gmtstitch_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   [Default uses gmtstitch_segment_%%d.txt].\n");
 	GMT_message (GMT, "\t-L Write link information (seg id, begin/end nearest seg id, end, and distance) to file [gmtstitch_link.txt].\n");
 	GMT_message (GMT, "\t   Link output excludes duplicates and segments already forming a closed polygon.\n");
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_dist_syntax (GMT, 'T', "Set cutoff distance to determine if a segment is closed.");
 	GMT_message (GMT, "\t   If two lines has endpoints closer than this cutoff they will be joined.\n");
 	GMT_message (GMT, "\t   Optionally, append <nn_dist> which adds the requirement that the second closest\n");
 	GMT_message (GMT, "\t   match must exceed <nn_dist> (must be in the same units as <cutoff>).\n");
 	GMT_message (GMT, "\t-Q Used with -D to write names of files to a list.  Optionally give list name [gmtstitch_list.txt].\n");
 	GMT_message (GMT, "\t   Embed %%c in the list name to write two separate lists: one for C(losed) and one for O(pen).\n");
-	GMT_explain_options (GMT, "aC2D0fghios:.");
+	GMT_Option (C, "a,bi2,bo,f,g,h,i,o,s,:,.");
 
 	return (EXIT_FAILURE);
 }

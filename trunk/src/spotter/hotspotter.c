@@ -198,7 +198,7 @@ int GMT_hotspotter_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Prepend + if you want to invert the rotations prior to use.\n");
 	GMT_message (GMT, "\t-G Specify file name for output CVA grid.\n");
 	GMT_message (GMT, "\t-I Specify grid interval(s); Append m [or c] to <dx> and/or <dy> for minutes [or seconds].\n");
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "Rg");
 	GMT_message (GMT, "\t<table> (in ASCII, binary, or netCDF) has 5 or more columns.  If no file(s) is given,\n");
 	GMT_message (GMT, "\t   standard input is read.  Expects (x,y,z,r,t) records, with t in Ma.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
@@ -206,7 +206,7 @@ int GMT_hotspotter_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-N Set upper age in m.y. for seamounts whose plate age is NaN [180].\n");
 	GMT_message (GMT, "\t-S Normalize CVA grid to percentages of the CVA maximum.\n");
 	GMT_message (GMT, "\t-T Truncate all ages to max age in stage pole model [Default extrapolates].\n");
-	GMT_explain_options (GMT, "VC5hiF:.");
+	GMT_Option (C, "V,bi5,h,i,r,:,.");
 	
 	return (EXIT_FAILURE);
 }

@@ -511,6 +511,12 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 			GMT_message (C, "\t   For overlays (-O), the default setting is [r0], otherwise [f%g%c].\n", C->current.setting.map_origin[GMT_Y] * s, u);
 			break;
 
+		case 'x':	/* Just linear -Jx|X allowed for this program */
+		
+			GMT_message (C, "\t-Jx|X for linear projection.  Scale in %s/units (or width in %s).\n", C->session.unit_name[C->current.setting.proj_length_unit], C->session.unit_name[C->current.setting.proj_length_unit]);
+			GMT_message (C, "\t    Use / to specify separate x/y scaling.\n");
+			GMT_message (C, "\t    If -JX is used then give axes lengths in %s rather than scales.\n", C->session.unit_name[C->current.setting.proj_length_unit]);
+			
 		case 'Z':	/* Vertical scaling for 3-D plots */
 
 			GMT_message (C, "\t   -JZ|z For z component of 3-D projections.  Same syntax as -JX|x, i.e.,\n");

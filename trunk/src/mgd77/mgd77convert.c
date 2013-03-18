@@ -93,7 +93,7 @@ int GMT_mgd77convert_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   of 10 fTesla, 1 nGal, 0.01 mm [Default is 2-byte with 0.1 nTesla, 0.1 mGal, m precision].\n");
 	GMT_message (GMT, "\t-L Set log level and destination setting for verification reporting.  Append a combination\n");
 	GMT_message (GMT, "\t   of w for warnings, e for errors, and + to send log to stdout [Default is stderr].\n");
-	GMT_explain_options (GMT, "V.");
+	GMT_Option (C, "V,.");
 
 	return (EXIT_FAILURE);
 }

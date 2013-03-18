@@ -224,7 +224,7 @@ int GMT_grdspotter_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Prepend + if you want to invert the finite rotations prior to use.\n");
 	GMT_message (GMT, "\t-G Specify file name for output CVA convolution grid.\n");
 	GMT_inc_syntax (GMT, 'I', 0);
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "Rg");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-A Co-registered grid with upper ages to use [Default is flowlines for all ages].\n");
 	GMT_message (GMT, "\t-D Set optional output grids:\n");
@@ -240,11 +240,11 @@ int GMT_grdspotter_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-T Set upper ages.  Repeatable, choose from:\n");
 	GMT_message (GMT, "\t  -Tt truncate all ages to max age in stage pole model [Default extrapolates].\n");
 	GMT_message (GMT, "\t  -Tu<age> After a node passes the -Z test, use this fixed age instead in CVA calculations.\n");
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_message (GMT, "\t-W Get <n_try> bootstrap estimates of maximum CVA location [Default is no bootstrapping].\n");
 	GMT_message (GMT, "\t-Z Ignore nodes with z-value lower than z_min [0] and optionally larger than z_max [Inf].\n");
 	GMT_message (GMT, "\t   Give z_min/z_max/z_inc to make CVA grids for each z-slice {Default makes 1 CVA grid].\n");
-	GMT_explain_options (GMT, "hF.");
+	GMT_Option (C, "h,r,.");
 
 	return (EXIT_FAILURE);
 }

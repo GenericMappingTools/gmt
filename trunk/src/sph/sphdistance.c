@@ -133,7 +133,7 @@ int GMT_sphdistance_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_inc_syntax (GMT, 'I', 0);
         
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<");
+	GMT_Option (C, "<");
 	GMT_message (GMT, "\t<table> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
 	GMT_message (GMT, "\t   If no files are given, standard input is read (but see -Q).\n");
 	GMT_message (GMT, "\t-C Conserve memory (Converts lon/lat <--> x/y/z when needed) [store both in memory]. Not used with -Q.\n");
@@ -143,9 +143,9 @@ int GMT_sphdistance_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-N Specify node filename for the Voronoi polygons (sphtriangulate -N output).\n");
 	GMT_message (GMT, "\t-Q Specify table with Voronoi polygons in sphtriangulate -Qv format\n");
 	GMT_message (GMT, "\t   [Default performs Voronoi construction on input data first].\n");
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "Rg");
 	GMT_message (GMT, "\t   If no region is specified we default to the entire world [-Rg].\n");
-	GMT_explain_options (GMT, "VC2hiFs:.");
+	GMT_Option (C, "V,bi2,h,i,r,s,:,.");
 	
 	return (EXIT_FAILURE);
 }

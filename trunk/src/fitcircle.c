@@ -122,10 +122,10 @@ int GMT_fitcircle_usage (struct GMTAPI_CTRL *C, int level)
 
 	GMT_message (GMT, "\t-L Specify <norm> as -L1 or -L2; or use -L or -L3 to give both.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<");
+	GMT_Option (C, "<");
 	GMT_message (GMT, "\t-S Attempt to fit a small circle rather than a great circle.\n");
 	GMT_message (GMT, "\t   Optionally append the latitude <lat> of the small circle you want to fit.\n");
-	GMT_explain_options (GMT, "VaC0fghio:.");
+	GMT_Option (C, "V,a,bi,f,g,h,i,o,:,.");
 	
 	return (EXIT_FAILURE);
 }

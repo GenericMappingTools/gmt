@@ -172,17 +172,17 @@ int GMT_gmtgravmag3d_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_inc_syntax (GMT, 'I', 0);
 	GMT_message (GMT, "\t-L sets level of observation [Default = 0]\n");
 	GMT_message (GMT, "\t-E give layer thickness in m [Default = 0 m]\n");
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\t-S search radius in km\n");
 	GMT_message (GMT, "\t-T Give either names of xyz[m] and vertex files or of a file defining a close surface.\n");
 	GMT_message (GMT, "\t   In the first case append an 'd' imediatly after -T and optionaly a /m after the vertex file name.\n");
 	GMT_message (GMT, "\t   In the second case append an 'r' or a 's' imediatly after -T and before the file name.\n");
 	GMT_message (GMT, "\t   'r' and 's' stand for files in raw (x1 y1 z1 x2 ... z3) or STL format.\n");
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_message (GMT, "\t-Z z level of reference plane [Default = 0]\n");
-	GMT_explain_options (GMT, "C0");
+	GMT_Option (C, "bi");
 	GMT_message (GMT, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
-	GMT_explain_options (GMT, "F:.");
+	GMT_Option (C, "r,:,.");
 
 	return (EXIT_FAILURE);
 }

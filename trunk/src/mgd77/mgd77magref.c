@@ -141,10 +141,10 @@ int GMT_mgd77magref_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t	 4 means Poloidal field.\n");
 	GMT_message (GMT, "\t-S Limit the CM4 contributions from core and lithosphere to certain harmonic degree bands.\n");
 	GMT_message (GMT, "\t   Append c(ore) or l(ithosphere) and the low and high degrees to use [-Sc1/13 -Sl14/65].\n");
-	GMT_explain_options (GMT, "VC0");
+	GMT_Option (C, "V,bi0");
 	GMT_message (GMT, "\t   Default is 4 input columns (unless -A is used).  Note for binary input, absolute time must\n");
 	GMT_message (GMT, "\t   be in the unix time-system (unless -A+y is used).\n");
-	GMT_explain_options (GMT, "D0h:.");
+	GMT_Option (C, "bo,h,:,.");
 
 	return (EXIT_FAILURE);
 }

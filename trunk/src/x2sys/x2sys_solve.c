@@ -196,10 +196,10 @@ int GMT_x2sys_solve_usage (struct GMTAPI_CTRL *C, int level) {
 #ifdef SAVEFORLATER
 	GMT_message (GMT, "\t-I List of tracks and their start date (required for -Et).\n");
 #endif
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_message (GMT, "\t-W Weights are present in last column for weighted fit [no weights].\n");
 	GMT_message (GMT, "\t   Append 'u' to report unweighted mean/std [Default, report weighted stats].\n");
-	GMT_explain_options (GMT, "C.");
+	GMT_Option (C, "bi,.");
 	
 	return (EXIT_FAILURE);
 }
