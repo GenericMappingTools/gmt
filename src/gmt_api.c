@@ -2806,11 +2806,12 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level)
 	}
 }
 
-int GMTAPI_Already_Registered (struct GMTAPI_CTRL *API, unsigned int family, unsigned int direction, void *resource) {
+int GMTAPI_Memory_Registered (struct GMTAPI_CTRL *API, unsigned int family, unsigned int direction, void *resource) {
 	/* Determine if resource is a filename and that it has already been registered */
 	int object_ID = 0, item;
 	
-	if (family != GMT_IS_COORD && (object_ID = GMTAPI_Decode_ID (resource)) == GMTAPI_NOTSET) return (GMTAPI_NOTSET);	/* Not a registered resource */
+	if (family == GMT_IS_COORD) return (GMTAPI_NOTSET);	/* Coordinate arrays are never a registered memory resource */
+	if ((object_ID = GMTAPI_Decode_ID (resource)) == GMTAPI_NOTSET) return (GMTAPI_NOTSET);	/* Not a registered resource */
 	if ((item = GMTAPI_Validate_ID (API, family, object_ID, direction)) == GMTAPI_NOTSET) return (GMTAPI_NOTSET);	/* Not the right attributes */
 	return (object_ID);	/* resource is a registered and valid item */
 }
@@ -3071,7 +3072,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 	if (GMTAPI_Validate_Geometry (API, family, geometry)) return_value (API, GMT_BAD_GEOMETRY, GMTAPI_NOTSET);
 
 	/* Check if this filename is an embedded API Object ID passed via the filename and of the right kind.  */
-	if ((object_ID = GMTAPI_Already_Registered (API, family, direction, resource)) != GMTAPI_NOTSET) return (object_ID);	/* OK, return the object ID */
+	if ((object_ID = GMTAPI_Memory_Registered (API, family, direction, resource)) != GMTAPI_NOTSET) return (object_ID);	/* OK, return the object ID */
 
 	if ((object_ID = GMTAPI_is_registered (API, family, geometry, direction, mode, resource)) != GMTAPI_NOTSET) {	/* Registered before */
 		if ((item = GMTAPI_Validate_ID (API, GMTAPI_NOTSET, object_ID, direction)) == GMTAPI_NOTSET) return_value (API, API->error, GMTAPI_NOTSET);
@@ -5089,7 +5090,7 @@ int GMT_Get_Value (void *V_API, char *arg, double par[])
 {	/* Parse any number of comma or slash-separated values. par must have enough space.
 	 * We can handle dimension units (c|i|p), distance units (d|m|s|e|f|k|M|n|u),
 	 * geographic coordinates, absolute dateTtime strings, and regular floats. */
-	unsigned int pos = 0, n_arg = 0, mode, len;
+	unsigned int pos = 0, n_arg = 0, mode, len, col_type_save[2][2];
 	char p[GMT_BUFSIZ], unit;
 	double value;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
@@ -5097,6 +5098,11 @@ int GMT_Get_Value (void *V_API, char *arg, double par[])
 	
 	if (arg == NULL || arg[0] == '\0') return GMTAPI_NOTSET;
 
+	/* Because GMT_init_distaz and possibly GMT_scanf_arg may decide to change the GMT col_type
+	 * we make a copy here and reset when done */
+	
+	GMT_memcpy (col_type_save[GMT_IN], GMT->current.io.col_type[GMT_IN],   2, unsigned int);
+	GMT_memcpy (col_type_save[GMT_OUT], GMT->current.io.col_type[GMT_OUT], 2, unsigned int);
 	while (GMT_strtok (arg, "/,", &pos, p)) {
 		if ((len = strlen (p)) == 0) continue;
 		len--;	/* Position of last char, possibly a unit */
@@ -5111,6 +5117,10 @@ int GMT_Get_Value (void *V_API, char *arg, double par[])
 			(void) GMT_scanf_arg (GMT, p, GMT_IS_UNKNOWN, &value);
 		par[n_arg++] = value;
 	}
+	/* Reset col_types to what they were before the parsing */
+	GMT_memcpy (GMT->current.io.col_type[GMT_IN],  col_type_save[GMT_IN],  2, unsigned int);
+	GMT_memcpy (GMT->current.io.col_type[GMT_OUT], col_type_save[GMT_OUT], 2, unsigned int);
+	
 	return (n_arg);
 }
 
