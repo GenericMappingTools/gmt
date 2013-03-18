@@ -2987,10 +2987,10 @@ unsigned int gmt_setparameter (struct GMT_CTRL *C, char *keyword, char *value)
 			strncpy (C->current.setting.format_float_map, value, GMT_TEXT_LEN64);
 			break;
 #ifdef GMT_COMPAT
-		case GMTCASE_UNIX_TIME_FORMAT: GMT_COMPAT_CHANGE ("FORMAT_TIME_LOGO");
+		case GMTCASE_UNIX_TIME_FORMAT: GMT_COMPAT_CHANGE ("FORMAT_TIME_STAMP");
 #endif
-		case GMTCASE_FORMAT_TIME_LOGO:
-			strncpy (C->current.setting.format_time_logo, value, GMT_TEXT_LEN256);
+		case GMTCASE_FORMAT_TIME_STAMP:
+			strncpy (C->current.setting.format_time_stamp, value, GMT_TEXT_LEN256);
 			break;
 
 		/* FONT GROUP */
@@ -4177,8 +4177,8 @@ char *GMT_putparameter (struct GMT_CTRL *C, char *keyword)
 #ifdef GMT_COMPAT
 		case GMTCASE_UNIX_TIME_FORMAT: GMT_COMPAT_WARN;
 #endif
-		case GMTCASE_FORMAT_TIME_LOGO:
-			strncpy (value, C->current.setting.format_time_logo, GMT_TEXT_LEN256);
+		case GMTCASE_FORMAT_TIME_STAMP:
+			strncpy (value, C->current.setting.format_time_stamp, GMT_TEXT_LEN256);
 			break;
 
 		/* FONT GROUP */

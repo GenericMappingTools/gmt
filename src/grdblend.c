@@ -661,7 +661,7 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 		write_all_at_once = true;
 	}
 	else {
-		unsigned int mode;
+		unsigned int w_mode;
 		if (reformat) {	/* Must use a temporary netCDF file then reformat it at the end */
 			sprintf (outtemp, "/tmp/grdblend_temp_%" PRIu64 ".nc", (uint64_t)getpid());	/* Get temporary file name */
 			outfile = outtemp;
@@ -669,9 +669,9 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 		else
 			outfile = Ctrl->G.file;
 		/* Write the grid header unless -Q */
-		mode = GMT_GRID_HEADER_ONLY | GMT_GRID_ROW_BY_ROW;
-		if (Ctrl->Q.active) mode |= GMT_GRID_NO_HEADER;
-		if ((error = GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, mode, NULL, Ctrl->G.file, Grid))) {
+		w_mode = GMT_GRID_HEADER_ONLY | GMT_GRID_ROW_BY_ROW;
+		if (Ctrl->Q.active) w_mode |= GMT_GRID_NO_HEADER;
+		if ((error = GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, w_mode, NULL, Ctrl->G.file, Grid))) {
 			Return (error);
 		}
 	}

@@ -77,7 +77,7 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	char format_float_out[GMT_TEXT_LEN64];	/* Default double output format [%g] */
 	char format_float_map[GMT_TEXT_LEN64];	/* Default double plot format [%g] */
 	char format_time[2][GMT_TEXT_LEN64];	/* Controls annotation format for Months/Weeks/Weekdays for primary and secondary axes */
-	char format_time_logo[GMT_TEXT_LEN256];	/* Specify the format for writing time stamps (see strftime) */
+	char format_time_stamp[GMT_TEXT_LEN256];	/* Specify the format for writing time stamps (see strftime) */
 	/* GMT group */
 	unsigned int interpolant; /* Choose between 0 (Linear), 1 (Akima), or 2 (Cubic spline) */
 	unsigned int triangulate; /* 0 for Watson [Default], 1 for Shewchuk (if configured) */

@@ -50,7 +50,7 @@ FORMAT_FLOAT_MAP		# How to plot floating points on maps
 FORMAT_TIME_MAP			# How to plot both month-, week-, and weekday-names on maps [does not go in gmt.conf]
 FORMAT_TIME_PRIMARY_MAP		# How to plot primary month-, week-, and weekday-names on maps
 FORMAT_TIME_SECONDARY_MAP	# How to plot secondary month-, week-, and weekday-names on maps
-FORMAT_TIME_LOGO		# How to plot time for the GMT time-stamp
+FORMAT_TIME_STAMP		# How to format time for GMT time-stamps
 #-------------------------------------------------------
 # GMT Group:	Misc. GMT settings
 #-------------------------------------------------------
