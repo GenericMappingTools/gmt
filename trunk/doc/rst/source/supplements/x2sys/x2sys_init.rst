@@ -216,7 +216,7 @@ we want to keep track of the data distribution at a 1 x 1 degree
 resolution, with distances in km calculated along geodesics and with
 speeds given in knots, we may run
 
-x2sys\_init LINE -V -G -Dline -Rg -Ce -Ndk -NsN -I1/1 -Etrk
+    x2sys\_init LINE -V -G -Dline -Rg -Ce -Ndk -NsN -I1/1 -Etrk
 
 where we have selected LINE to be our x2sys tag. When x2sys tools try to
 read your line data files they will first look in the current directory
@@ -335,10 +335,10 @@ to find it.
 `See Also <#toc8>`_
 -------------------
 
-`x2sys\_binlist <x2sys_binlist.html>`_ ,
-`x2sys\_datalist <x2sys_datalist.html>`_ ,
-`x2sys\_get <x2sys_get.html>`_ ,
-`x2sys\_list <x2sys_list.html>`_ ,
-`x2sys\_put <x2sys_put.html>`_ ,
-`x2sys\_report <x2sys_report.html>`_ ,
+`x2sys\_binlist <x2sys_binlist.html>`_,
+`x2sys\_datalist <x2sys_datalist.html>`_,
+`x2sys\_get <x2sys_get.html>`_,
+`x2sys\_list <x2sys_list.html>`_,
+`x2sys\_put <x2sys_put.html>`_,
+`x2sys\_report <x2sys_report.html>`_,
 `x2sys\_solve <x2sys_solve.html>`_

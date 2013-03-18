@@ -114,20 +114,17 @@ clip\_path.d, using a total reconstruction rotation with pole at (135.5,
 -33.0) and a rotation angle of 37.3 degrees and bicubic interpolation,
 try
 
-grdrotater topo.nc -e135.5/-33/37.3 -V -Fclip\_path.d -Grot\_topo.nc >
-rot\_clip\_path.d
+    grdrotater topo.nc -e135.5/-33/37.3 -V -Fclip\_path.d -Grot\_topo.nc > rot\_clip\_path.d
 
 To rotate the entire grid faa.nc back to 32 Ma using the rotation file
 *rotations.txt* and a bilinear interpolation, try
 
-grdrotater faa.nc -Erotations.txt -T32 -V -Grot\_faa.nc -nl >
-rot\_faa\_path.d
+    grdrotater faa.nc -Erotations.txt -T32 -V -Grot\_faa.nc -nl > rot\_faa\_path.d
 
 To just see how the outline of the grid large.nc will plot after the
 same rotation, try
 
-grdrotater large.nc -Erotations.txt -T32 -V -S \| psxy -Rg -JH180/6i
--B30 -W0.5p \| gv -
+    grdrotater large.nc -Erotations.txt -T32 -V -S \| psxy -Rg -JH180/6i -B30 -W0.5p \| gv -
 
 Let say you have rotated gridA.nc and gridB.nc, restricting each
 rotation to nodes inside polygons polyA.d and polyB.d, respectively,
@@ -135,8 +132,7 @@ using rotation A = (123W,22S,16,4) and rotation B = (108W, 16S, -14.5),
 yielding rotated grids rot\_gridA.nc and rot\_gridB.nc. To determine the
 region of overlap between the rotated grids, we use grdmath:
 
-grdmath 1 rot\_gridA.nc ISNAN SUB 1 rot\_gridB.nc ISNAN SUB 2 EQ =
-overlap.nc
+    grdmath 1 rot\_gridA.nc ISNAN SUB 1 rot\_gridB.nc ISNAN SUB 2 EQ = overlap.nc
 
 The grid overlap.nc now has 1s in the regions of overlap and 0
 elsewhere. You can use it as a mask or use grdcontour **-D** to extract
@@ -145,8 +141,8 @@ a polygon (contour).
 `See Also <#toc7>`_
 -------------------
 
-`backtracker <backtracker.html>`_ ,
-`grdspotter <grdspotter.html>`_ ,
-`hotspotter <hotspotter.html>`_ ,
-`originator <originator.html>`_
+`backtracker <backtracker.html>`_,
+`grdspotter <grdspotter.html>`_,
+`hotspotter <hotspotter.html>`_,
+`originator <originator.html>`_,
 `rotconverter <rotconverter.html>`_

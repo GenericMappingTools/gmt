@@ -16,15 +16,15 @@ pspolar [ *table* ] **-J**\ *parameters*
 **-C**\ *lon*/*lat*\ [/*dash\_width*/*pointsize*] ] [ **-F**\ *color* ]
 [ **-G**\ *fill* ] [ **-g**\ *fill* ] [ **-K** ] [ **-L** ] [ **-N** ] [
 **-O** ] [ **-P** ] [
-**-s**\ *Half-size*\ [**v**\ [[*v\_width*/*h\_length*/*h\_width*/*shape*]][\ **g**\ [*color*\ ]][**l**\ ]
+**-s**\ *Half-size*\ [**v**\ [[*v\_width*/*h\_length*/*h\_width*/*shape*]][\ **g**\ [*color*]][**l**]
 [ **-T**\ *angle*/*form*/*justify*/*fontsize* ] [ **-t**\ *pen* ] [
-**-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*\ ]
+**-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*]
 ] [ **-W**\ *pen* ] [
-**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
+**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**]]
 ] [
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
+**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**]]
 ] [ **-c**\ *copies* ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] ]
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,...] ]
 
 `Description <#toc2>`_
 ----------------------
@@ -140,44 +140,43 @@ Parameters are expected to be in the following columns:
 `Examples <#toc6>`_
 -------------------
 
-pspolar -R239/240/34/35.2 -JM8c -N -Sc0.4 -h1 -D39.5/34.5 -M5 << END > test.ps
+    pspolar -R239/240/34/35.2 -JM8c -N -Sc0.4 -h1 -D39.5/34.5 -M5 << END > test.ps
 
-stat azim ih pol
+    #stat azim ih pol
 
-0481 11 147 c
+    0481 11 147 c
 
-6185 247 120 d
+    6185 247 120 d
 
-0485 288 114 +
+    0485 288 114 +
 
-0490 223 112 -
+    0490 223 112 -
 
-0487 212 109 .
+    0487 212 109 .
 
-END
+    END
 
 or
 
-pspolar -R239/240/34/35.2 -JM8c -N -Sc0.4 -h1 -D239.5/34.5 -M5 <<END > test.ps
+    pspolar -R239/240/34/35.2 -JM8c -N -Sc0.4 -h1 -D239.5/34.5 -M5 <<END > test.ps
 
-Date Or. time stat azim ih
+    #Date Or. time stat azim ih
 
-910223 1 22 0481 11 147 ipu0
+    910223 1 22 0481 11 147 ipu0
 
-910223 1 22 6185 247 120 ipd0
+    910223 1 22 6185 247 120 ipd0
 
-910223 1 22 0485 288 114 epu0
+    910223 1 22 0485 288 114 epu0
 
-910223 1 22 0490 223 112 epd0
+    910223 1 22 0490 223 112 epd0
 
-910223 1 22 0487 212 109 epu0
+    910223 1 22 0487 212 109 epu0
 
-END
+    END
 
 `See Also <#toc7>`_
 -------------------
-`GMT <GMT.html>`_ , `psbasemap <psbasemap.html>`_ ,
-`psxy <psxy.html>`_
+`GMT <GMT.html>`_, `psbasemap <psbasemap.html>`_, `psxy <psxy.html>`_
 
 `References <#toc8>`_
 ---------------------

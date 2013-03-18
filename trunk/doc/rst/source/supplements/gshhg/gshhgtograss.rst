@@ -46,7 +46,7 @@ handles byte-swabbing between different architectures.
 
 To convert the full GSHHG data set, try
 
-gshhg2grass gshhs\_f.b
+    gshhg2grass gshhs\_f.b
 
 `Bugs <#toc6>`_
 ---------------
@@ -62,4 +62,4 @@ maintenance by Paul Wessel (pwessel@hawaii.edu).
 `See Also <#toc8>`_
 -------------------
 
-`GMT <GMT.html>`_ , `gshhs <gshhs.html>`_ `gshhs\_dp <gshhs_dp.html>`_
+`GMT <GMT.html>`_, `gshhs <gshhs.html>`_, `gshhs\_dp <gshhs_dp.html>`_

@@ -145,15 +145,15 @@ every 10 degrees, draw gridlines every 5 degrees, and mark the track
 every day and 1000 km, with ticks every 6 hours and 250 km, and send the
 plot to the default printer, enter the following command:
 
-mgd77track 01010007 -R70W/20E/40S/20N **-Jm**\ 0.1 -B10g5 -A10
--La1da1000kf6hf250k \| lpr
+    mgd77track 01010007 -R70W/20E/40S/20N **-Jm**\ 0.1 -B10g5 -A10
+    -La1da1000kf6hf250k \| lpr
 
 `See Also <#toc7>`_
 -------------------
 
-`*mgd77info*\ (1) <mgd77info.html>`_ ,
-`*psbasemap*\ (1) <psbasemap.html>`_
-`*mgd77list*\ (1) <mgd77list.html>`_
+`mgd77info <mgd77info.html>`_,
+`psbasemap <psbasemap.html>`_,
+`mgd77list <mgd77list.html>`_
 
 `References <#toc8>`_
 ---------------------

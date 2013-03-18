@@ -149,8 +149,8 @@ biased by the sloping plane, you want to divide the filter circle into 6
 sectors and to choose the lowest value among 6 medians. Using spherical
 distance calculations, you need:
 
-dimfilter north\_pacific\_dbdb5.nc -Gfiltered\_pacific.nc -Fm600 -D4
--Nl6 -R150/250/10/40 -I0.5 -V
+    dimfilter north\_pacific\_dbdb5.nc -Gfiltered\_pacific.nc -Fm600 -D4
+    -Nl6 -R150/250/10/40 -I0.5 -V
 
 Suppose that cape\_verde.nc is a file of 0.5 minute bathymetry from 32W
 to 15W and 8N to 25N, and you want to remove small-length-scale features
@@ -158,8 +158,9 @@ in order to define a swell in an area extending from 27.5W to 20.5W and
 12.5N to 19.5N, and you want the output value every 2 minute. Using
 cartesian distance calculations, you need:
 
-dimfilter cape\_verde.nc -Gt.nc -Fm220 -Nl8 -D2 -R-27.5/-20.5/12.5/19.5 -I2m -V
-grdfilter t.nc -Gcape\_swell.nc -Fg50 -D2 -V
+    dimfilter cape\_verde.nc -Gt.nc -Fm220 -Nl8 -D2 -R-27.5/-20.5/12.5/19.5 -I2m -V
+
+    grdfilter t.nc -Gcape\_swell.nc -Fg50 -D2 -V
 
 Suppose that you found a range of filter widths for a given area, and
 you filtered the given bathymetric data using the range of filter widths
@@ -168,17 +169,17 @@ regional trend using the range of filter widths, and you want to obtain
 median absolute deviation (MAD) estimates at each data point. Then, you
 will need to do:
 
-grd2xyz f100.nc -Z > f100.d
+    grd2xyz f100.nc -Z > f100.d
 
-grd2xyz f110.nc -Z > f110.d
+    grd2xyz f110.nc -Z > f110.d
 
-grd2xyz f120.nc -Z > f120.d
+    grd2xyz f120.nc -Z > f120.d
 
-grd2xyz f130.nc -Z > f130.d
+    grd2xyz f130.nc -Z > f130.d
 
-paste f100.d f110.d f120.d f130.d > depths.d
+    paste f100.d f110.d f120.d f130.d > depths.d
 
-dimfilter depths.d -Q4 > output.z
+    dimfilter depths.d -Q4 > output.z
 
 `Limitations <#toc9>`_
 ----------------------
@@ -210,4 +211,4 @@ Geosyst.*, **9**, Q03005, doi:10.1029/2007GC001850.
 `See Also <#toc12>`_
 --------------------
 
-`GMT <GMT.html>`_ , `grdfilter <grdfilter.html>`_
+`GMT <GMT.html>`_, `grdfilter <grdfilter.html>`_

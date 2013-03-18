@@ -50,11 +50,11 @@ the smaller COE\_fresh.txt, try
 `See Also <#toc7>`_
 -------------------
 
-`x2sys\_binlist <x2sys_binlist.html>`_ ,
-`x2sys\_cross <x2sys_cross.html>`_ ,
-`x2sys\_datalist <x2sys_datalist.html>`_ ,
-`x2sys\_get <x2sys_get.html>`_ ,
-`x2sys\_init <x2sys_init.html>`_ ,
-`x2sys\_list <x2sys_list.html>`_ ,
-`x2sys\_put <x2sys_put.html>`_ ,
+`x2sys\_binlist <x2sys_binlist.html>`_,
+`x2sys\_cross <x2sys_cross.html>`_,
+`x2sys\_datalist <x2sys_datalist.html>`_,
+`x2sys\_get <x2sys_get.html>`_,
+`x2sys\_init <x2sys_init.html>`_,
+`x2sys\_list <x2sys_list.html>`_,
+`x2sys\_put <x2sys_put.html>`_,
 `x2sys\_report <x2sys_report.html>`_

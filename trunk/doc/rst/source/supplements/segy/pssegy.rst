@@ -138,16 +138,14 @@ To plot the SEGY file wa1.segy with normalized traces plotted at true
 offset locations, clipped at +-3 and with wiggle trace and positive
 variable area shading in black, use
 
-pssegy wa1.segy -JX5i/-5i -R0/100/0/10 -D1 -C3 -N -So -W -Fblack >
-segy.ps
+    pssegy wa1.segy -JX5i/-5i -R0/100/0/10 -D1 -C3 -N -So -W -Fblack > segy.ps
 
 To plot the SEGY file wa1.segy with traces plotted at true cdp\*0.1,
 clipped at +-3, with bias -1 and negative variable area shaded red, use
 
-pssegy wa1.segy -JX5i/-5i -R0/100/0/10 -D1 -C3 -Sc -X0.1 -Fred -B-1 -I >
-segy.ps
+    pssegy wa1.segy -JX5i/-5i -R0/100/0/10 -D1 -C3 -Sc -X0.1 -Fred -B-1 -I > segy.ps
 
 `See Also <#toc7>`_
 -------------------
 
-`GMT <GMT.html>`_ , `pssegyz <pssegyz.html>`_
+`GMT <GMT.html>`_, `pssegyz <pssegyz.html>`_

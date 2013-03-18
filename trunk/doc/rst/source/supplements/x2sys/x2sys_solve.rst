@@ -91,37 +91,37 @@ the time.
 
 To fit a simple bias offset to faa for all tracks under the MGD77 tag, try
 
-x2sys\_list COE\_data.txt -V -TMGD77 -Cfaa -Fnc > faa\_coe.txt
+    x2sys\_list COE\_data.txt -V -TMGD77 -Cfaa -Fnc > faa\_coe.txt
 
-x2sys\_solve faa\_coe.txt -V -TMGD77 -Cfaa -Ec > coe\_table.txt
+    x2sys\_solve faa\_coe.txt -V -TMGD77 -Cfaa -Ec > coe\_table.txt
 
 To fit a faa linear drift with time instead, try
 
-x2sys\_list COE\_data.txt -V -TMGD77 -Cfaa -FnTc > faa\_coe.txt
+    x2sys\_list COE\_data.txt -V -TMGD77 -Cfaa -FnTc > faa\_coe.txt
 
-x2sys\_solve faa\_coe.txt -V -TMGD77 -Cfaa -Et > coe\_table.txt
+    x2sys\_solve faa\_coe.txt -V -TMGD77 -Cfaa -Et > coe\_table.txt
 
 To estimate heading corrections based on magnetic crossovers associated
 with the tag MGD77 from the file COE\_data.txt, try
 
-x2sys\_list COE\_data.txt -V -TMGD77 -Cmag -Fnhc > mag\_coe.txt
+    x2sys\_list COE\_data.txt -V -TMGD77 -Cmag -Fnhc > mag\_coe.txt
 
-x2sys\_solve mag\_coe.txt -V -TMGD77 -Cmag -Eh > coe\_table.txt
+    x2sys\_solve mag\_coe.txt -V -TMGD77 -Cmag -Eh > coe\_table.txt
 
 To estimate unit scale corrections based on bathymetry crossovers, try
 
-x2sys\_list COE\_data.txt -V -TMGD77 -Cdepth -Fnz > depth\_coe.txt
+    x2sys\_list COE\_data.txt -V -TMGD77 -Cdepth -Fnz > depth\_coe.txt
 
-x2sys\_solve depth\_coe.txt -V -TMGD77 -Cdepth -Es > coe\_table.txt
+    x2sys\_solve depth\_coe.txt -V -TMGD77 -Cdepth -Es > coe\_table.txt
 
 `See Also <#toc7>`_
 -------------------
 
-`x2sys\_binlist <x2sys_binlist.html>`_ ,
-`x2sys\_cross <x2sys_cross.html>`_ ,
-`x2sys\_datalist <x2sys_datalist.html>`_ ,
-`x2sys\_get <x2sys_get.html>`_ ,
-`x2sys\_init <x2sys_init.html>`_ ,
-`x2sys\_list <x2sys_list.html>`_ ,
-`x2sys\_put <x2sys_put.html>`_ ,
+`x2sys\_binlist <x2sys_binlist.html>`_,
+`x2sys\_cross <x2sys_cross.html>`_,
+`x2sys\_datalist <x2sys_datalist.html>`_,
+`x2sys\_get <x2sys_get.html>`_,
+`x2sys\_init <x2sys_init.html>`_,
+`x2sys\_list <x2sys_list.html>`_,
+`x2sys\_put <x2sys_put.html>`_,
 `x2sys\_report <x2sys_report.html>`_

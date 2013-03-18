@@ -86,15 +86,14 @@ be output [Default selects all columns].
 To extract all data from the old-style MGG supplement file c2104.gmt,
 recognized by the tag GMT:
 
-x2sys\_datalist c2104.gmt -TGMT > myfile
+    x2sys\_datalist c2104.gmt -TGMT > myfile
 
 To make lon,lat, and depth input for **blockmean** and **surface** using
 all the files listed in the file tracks.lis and define by the tag TRK,
 but only the data that are inside the specified area, and make output
 binary, run
 
-x2sys\_datalist =tracks.lis -TTRK -Fon,lat,depth -R40/-30/25/35 -bo >
-alltopo\_bin.xyz
+    x2sys\_datalist =tracks.lis -TTRK -Fon,lat,depth -R40/-30/25/35 -bo > alltopo\_bin.xyz
 
 `Corrections <#toc7>`_
 ----------------------
@@ -148,12 +147,12 @@ ABC fuel 0.02\*((dist))
 `See Also <#toc8>`_
 -------------------
 
-`blockmean <blockmean.html>`_ , `GMT <GMT.html>`_ ,
-`surface <surface.html>`_ ,
-`x2sys\_init <x2sys_init.html>`_ ,
-`x2sys\_datalist <x2sys_datalist.html>`_ ,
-`x2sys\_get <x2sys_get.html>`_ ,
-`x2sys\_list <x2sys_list.html>`_ ,
-`x2sys\_put <x2sys_put.html>`_ ,
-`x2sys\_report <x2sys_report.html>`_ ,
+`blockmean <blockmean.html>`_, `GMT <GMT.html>`_,
+`surface <surface.html>`_,
+`x2sys\_init <x2sys_init.html>`_,
+`x2sys\_datalist <x2sys_datalist.html>`_,
+`x2sys\_get <x2sys_get.html>`_,
+`x2sys\_list <x2sys_list.html>`_,
+`x2sys\_put <x2sys_put.html>`_,
+`x2sys\_report <x2sys_report.html>`_,
 `x2sys\_solve <x2sys_solve.html>`_

@@ -436,41 +436,39 @@ To get a (distance, heading, gravity, bathymetry) listing from
 01010047.mgd77, starting at June 3 1971 20:45 and ending at distance =
 5000 km, use the following command:
 
-mgd77list 01010047 -Da1971-06-03T20:45 -Sb5000 -Fdist,azim,faa,depth >
-myfile.d
+    mgd77list 01010047 -Da1971-06-03T20:45 -Sb5000 -Fdist,azim,faa,depth > myfile.d
 
 To make input for **blockmean** and **surface** using free-air anomalies
 from all the cruises listed in the file cruises.lis, but only the data
 that are inside the specified area, and make the output binary:
 
-mgd77list ‘cat cruises.lis‘ -Flon,lat,faa -R-40/-30/25/35 -bo >
-allgrav.b
+    mgd77list `cat cruises.lis` -Flon,lat,faa -R-40/-30/25/35 -bo > allgrav.b
 
 To extract the locations of depths exceeding 9000 meter that were not
 interpolated (**btc** != 1) from all the cruises listed in the file
 cruises.lis:
 
-mgd77list ‘cat cruises.lis‘ -F"depth,DEPTH>9000,BTC!=1" > really\_deep.d
+    mgd77list ‘cat cruises.lis‘ -F"depth,DEPTH>9000,BTC!=1" > really\_deep.d
 
 To extract dist, faa, and grav12\_2 from records whose depths are
 shallower than 3 km and where none of the requested fields are NaN, from
 all the MGD77+ netCDF files whose cruise ids are listed in the file
 cruises.lis, we try
 
-mgd77list ‘cat cruises.lis‘ -E -Ia -F"dist,faa,grav12\_2,depth<3000" >
-shallow\_grav.d
+    mgd77list ‘cat cruises.lis‘ -E -Ia -F"dist,faa,grav12\_2,depth<3000" >
+    shallow\_grav.d
 
 To extract dist, faa, and grav12\_2 from all the MGD77+ netCDF files
 whose cruise ids are listed in the file cruises.lis, but only retrieve
 records whose bitflag for faa indicates BAD values, we try
 
-mgd77list ‘cat cruises.lis‘ -E -Ia -F"dist,faa,grav12\_2:+faa" > bad\_grav.d
+    mgd77list ‘cat cruises.lis‘ -E -Ia -F"dist,faa,grav12\_2:+faa" > bad\_grav.d
 
 To output lon, lat, mag, and faa from all the cruises listed in the file
 cruises.lis, but recalculate the two residuals based on the latest
 reference fields, try:
 
-mgd77list ‘cat cruises.lis‘ -Flon,lat,mag,faa -Af2,4 -Am2 > data.d
+    mgd77list ‘cat cruises.lis‘ -Flon,lat,mag,faa -Af2,4 -Am2 > data.d
 
 `Recalculated Anomalies <#toc7>`_
 ---------------------------------
@@ -553,9 +551,9 @@ corrected by a strange dependency on ship heading and latitude, and
 `See Also <#toc11>`_
 --------------------
 
-`mgd77convert <mgd77convert.html>`_ ,
-`mgd77info <mgd77info.html>`_ ,
-`mgd77manage <mgd77manage.html>`_ ,
+`mgd77convert <mgd77convert.html>`_,
+`mgd77info <mgd77info.html>`_,
+`mgd77manage <mgd77manage.html>`_,
 `mgd77track <mgd77track.html>`_
 
 `References <#toc12>`_

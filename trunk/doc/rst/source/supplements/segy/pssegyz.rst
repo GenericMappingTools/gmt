@@ -136,8 +136,7 @@ To plot the SEGY file wa1.segy with normalized traces plotted at true
 offset locations, clipped at +-3 and with wiggle trace and positive
 variable area shading in black, use
 
-pssegyz wa1.segy -JX5i/-5i -D1 -Jz0.05i -E180/5 -R0/100/0/10/0/10 -C3 -N
--So -W -Fblack > segy.ps
+    pssegyz wa1.segy -JX5i/-5i -D1 -Jz0.05i -E180/5 -R0/100/0/10/0/10 -C3 -N -So -W -Fblack > segy.ps
 
 `Bugs <#toc7>`_
 ---------------
@@ -151,4 +150,4 @@ viewing elevation increases. Wiggle-trace plotting is not affected.
 `See Also <#toc8>`_
 -------------------
 
-`GMT <GMT.html>`_ , `pssegy <pssegy.html>`_
+`GMT <GMT.html>`_, `pssegy <pssegy.html>`_

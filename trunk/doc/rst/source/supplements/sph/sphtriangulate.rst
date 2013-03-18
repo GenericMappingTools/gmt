@@ -129,19 +129,18 @@ normalizing the data prior to processing.
 To triangulate the points in the file testdata.txt, and make a Voronoi
 diagram via **psxy**, use
 
-sphtriangulate testdata.txt -Qv \| psxy -Rg -JG30/30/6i -L -P -W1p
--B0g30 \| gv -
+    sphtriangulate testdata.txt -Qv \| psxy -Rg -JG30/30/6i -L -P -W1p -B0g30 \| gv -
 
 To compute the optimal Delaunay triangulation network based on the
 multiple segment file globalnodes.d and save the area of each triangle
 in the header record, try
 
-sphtriangulate globalnodes.d -Qd -A > global\_tri.d
+    sphtriangulate globalnodes.d -Qd -A > global\_tri.d
 
 `See Also <#toc9>`_
 -------------------
 
-`GMT <GMT.html>`_ , `triangulate <triangulate.html>`_
+`GMT <GMT.html>`_, `triangulate <triangulate.html>`_
 `sphinterpolate <sphinterpolate.html>`_
 `sphdistance <sphdistance.html>`_
 

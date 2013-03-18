@@ -29,10 +29,10 @@ psvelo - Plot velocity vectors, crosses, and wedges on maps
 
 **psvelo** reads data values from *files* [or standard input] and
 generates *PostScript* code that will plot velocity arrows on a map.
-Most options are the same as for **psxy**, except **-S**. The
+Most options are the same as for `psxy <../../psxy.html>`_, except **-S**. The
 *PostScript* code is written to standard output. The previous version
 (**psvelomeca**) is now obsolete. It has been replaced by **psvelo** and
-**psmeca**.
+`psmeca <psmeca.html>`_.
 
 .. include:: ../../explain_commonitems.rst_
 
@@ -266,7 +266,7 @@ END
 `See Also <#toc8>`_
 -------------------
 
-`GMT <GMT.html>`_ , `psbasemap <psbasemap.html>`_ , `psxy <psxy.html>`_
+`GMT <GMT.html>`_, `psbasemap <psbasemap.html>`_, `psxy <psxy.html>`_
 
 `References <#toc9>`_
 ---------------------

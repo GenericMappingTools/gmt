@@ -109,20 +109,19 @@ read (latitude,longitude,...) files.
 To create a CVA image from the Pacific (x,y,z,r,t) data in the file
 seamounts.d, using the DC85.d Euler poles, run
 
-hotspotter seamounts.d -EDC85.d -GCVA.nc -R130/260/-66/60 -I10m -N145 -T
--V
+    hotspotter seamounts.d -EDC85.d -GCVA.nc -R130/260/-66/60 -I10m -N145 -T -V
 
-This file can then be plotted with **grdimage**.
+This file can then be plotted with `grdimage <../../grdimage.html>`_.
 
 `See Also <#toc7>`_
 -------------------
 
-`GMT <GMT.html>`_ , `grdimage <grdimage.html>`_ ,
-`grdrotater <grdrotater.html>`_ ,
-`grdspotter <grdspotter.html>`_ ,
-`project <project.html>`_ ,
-`mapproject <mapproject.html>`_ ,
-`backtracker <backtracker.html>`_ ,
+`GMT <GMT.html>`_, `grdimage <grdimage.html>`_,
+`grdrotater <grdrotater.html>`_,
+`grdspotter <grdspotter.html>`_,
+`project <project.html>`_,
+`mapproject <mapproject.html>`_,
+`backtracker <backtracker.html>`_,
 `originator <originator.html>`_
 
 `References <#toc8>`_

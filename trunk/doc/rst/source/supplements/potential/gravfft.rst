@@ -241,5 +241,5 @@ Vulc. Res. Volume 156, Issues 1-2, Pages 10-22,
 See Also
 --------
 
-`gmt <../../gmt.html>`_ , `grdfft <../../grdfft.html>`_ ,
-`grdmath <../../grdmath.html>`_ , `grdproject <../../grdproject.html>`_
+`gmt <../../gmt.html>`_, `grdfft <../../grdfft.html>`_,
+`grdmath <../../grdmath.html>`_, `grdproject <../../grdproject.html>`_

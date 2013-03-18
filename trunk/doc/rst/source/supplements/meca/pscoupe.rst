@@ -354,8 +354,8 @@ be in the following columns:
 `See Also <#toc6>`_
 -------------------
 
-`GMT <GMT.html>`_ , `psbasemap <psbasemap.html>`_ ,
-`psmeca <psmeca.html>`_ , `psxy <psxy.html>`_
+`GMT <GMT.html>`_, `psbasemap <psbasemap.html>`_,
+`psmeca <psmeca.html>`_, `psxy <psxy.html>`_
 
 `References <#toc7>`_
 ---------------------

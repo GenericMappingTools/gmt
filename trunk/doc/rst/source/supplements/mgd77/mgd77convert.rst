@@ -71,31 +71,31 @@ Both pre- and post-Y2K MGD77 formats can be processed.
 
 To convert a large set of a77,h77 pairs to proper mgd77 files, try
 
-mgd77convert -C \*.h77
+    mgd77convert -C \*.h77
 
 To convert 01010047.mgd77 and 01010008.mgd77 to new netCDF .nc files,
 and capture all verification messages, try
 
-mgd77convert 01010047 01010008 -Fa -Tc -V -Lew+ > log.lis
+    mgd77convert 01010047 01010008 -Fa -Tc -V -Lew+ > log.lis
 
 To convert 01010047.nc back to MGD77 ASCII and make sure it is identical
 to the original file, try (Bourne shell syntax)
 
-orig=‘mgd77path 01010047 -Ic‘
+    orig=‘mgd77path 01010047 -Ic‘
 
-mgd77convert 01010047 -Fc -Ta -V
+    mgd77convert 01010047 -Fc -Ta -V
 
-diff $orig 01010047.mgd77
+    diff $orig 01010047.mgd77
 
 To convert 01010047.nc to a plain ASCII table for manual editing,
 overwriting any existing table, try
 
-mgd77convert 01010047 -Fc -T+t -V
+    mgd77convert 01010047 -Fc -T+t -V
 
 To recover the original NGDC MGD77 version of 01020051.nc and ignore any
 E77 corrections, use
 
-mgd77convert 01020051 -FC -Ta -V
+    mgd77convert 01020051 -FC -Ta -V
 
 `File Formats <#toc6>`_
 -----------------------
@@ -124,9 +124,9 @@ examined with general-purpose tools such as ncBrowse and ncView.
 `See Also <#toc8>`_
 -------------------
 
-`mgd77manage <mgd77manage.html>`_ ,
-`mgd77list <mgd77list.html>`_ ,
-`mgd77sample <mgd77sample.html>`_ ,
+`mgd77manage <mgd77manage.html>`_,
+`mgd77list <mgd77list.html>`_,
+`mgd77sample <mgd77sample.html>`_,
 `mgd77track <mgd77track.html>`_
 `x2sys_init <x2sys_init.html>`_
 

@@ -208,26 +208,26 @@ To append Geosat/ERS-1 gravity version 11.2 as an extra data column in
 the cruises 01010047.nc and 01010008.nc, storing the values as mGal\*10
 in a 2-byte short integer, try
 
-mgd77manage 01010047 01010008 -Ai10/1/grav.11.2.img
--Isatgrav/"Geosat/ERS-1 gravity"/"mGal"/s/10/0/"Sandwell/Smith version 11.2" -V
+    mgd77manage 01010047 01010008 -Ai10/1/grav.11.2.img
+    -Isatgrav/"Geosat/ERS-1 gravity"/"mGal"/s/10/0/"Sandwell/Smith version 11.2" -V
 
 To append a filtered version of magnetics as an extra data column of
 type float for the cruise 01010047.nc, and interpolate the filtered data
 at the times given in the MGD77+ file, try
 
-mgd77manage 01010047 -ATmymag.tm -Ifiltmag/"Intermediate-wavelength
-magnetic residuals"/"nTesla"/f/1/0/"Useful for looking for isochrons" -V
+    mgd77manage 01010047 -ATmymag.tm -Ifiltmag/"Intermediate-wavelength
+    magnetic residuals"/"nTesla"/f/1/0/"Useful for looking for isochrons" -V
 
 To delete the existing extra columns satfaa, coastdist, and satvgg from
 all MGD77+ files, try
 
-mgd77manage =allmgd77.lis -Dsatfaa,coastdist,satvgg -V
+    mgd77manage =allmgd77.lis -Dsatfaa,coastdist,satvgg -V
 
 To create a 4-byte float column with the correct IGRF reference field in
 all MGD77+ files, try
 
-mgd77manage =allmgd77.lis -Acm -Iigrf/"IGRF reference
-field"/"nTesla"/f/1/0/"IGRF version 10 for 1990-2010" -V
+    mgd77manage =allmgd77.lis -Acm -Iigrf/"IGRF reference
+    field"/"nTesla"/f/1/0/"IGRF version 10 for 1990-2010" -V
 
 `Discussion <#toc8>`_
 ---------------------
@@ -355,9 +355,9 @@ Luis, and adapted to GMT style by Paul Wessel.
 `See Also <#toc10>`_
 --------------------
 
-`gd77convert <mgd77convert.html>`_ ,
-`mgd77list <mgd77list.html>`_ ,
-`mgd77info <mgd77info.html>`_ ,
+`gd77convert <mgd77convert.html>`_,
+`mgd77list <mgd77list.html>`_,
+`mgd77info <mgd77info.html>`_,
 `mgd77sniffer <mgd77sniffer.html>`_
 `mgd77track <mgd77track.html>`_
 `x2sys_init <x2sys_init.html>`_
