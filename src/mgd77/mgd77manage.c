@@ -200,7 +200,7 @@ int GMT_mgd77manage_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-N Append your choice for distance unit (if -Ad|D are set). Choose among:\n");
 	GMT_message (GMT, "\t   m(e)ter, (f)oot, (k)m, (M)ile, (n)autical mile, or s(u)rvey foot [Default is -Nk].\n");
 	GMT_message (GMT, "\t    See -C for selecting distance calculation procedure.\n");
-	GMT_explain_options (GMT, "RVC0n.");
+	GMT_Option (C, "Rg,V,bi,n,.");
 	
 	return (EXIT_FAILURE);
 }

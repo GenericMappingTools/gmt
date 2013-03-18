@@ -65,7 +65,7 @@ int GMT_gmtwhich_usage (struct GMTAPI_CTRL *C, int level)
 
 	GMT_message (GMT, "\t-C Print Y if found and N if not found.  No path is returned.\n");
 	GMT_message (GMT, "\t-D Print the directory where a file is found [full path to file].\n");
-	GMT_explain_options (GMT, "V.");
+	GMT_Option (C, "V,.");
 	
 	return (EXIT_FAILURE);
 }

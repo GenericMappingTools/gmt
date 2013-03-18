@@ -415,7 +415,7 @@ int GMT_sphtriangulate_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   If -bo is used then -N may be used to specify a separate file where the\n");
 	GMT_message (GMT, "\t   polygon information normally is written.\n");
 	GMT_message (GMT, "\t-T Write arcs [Default writes polygons].\n");
-	GMT_explain_options (GMT, "VC2D0his:.");
+	GMT_Option (C, "V,bi2,bo,h,i,s,:,.");
 
 	return (EXIT_FAILURE);
 }

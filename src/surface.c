@@ -1575,9 +1575,9 @@ int GMT_surface_usage (struct GMTAPI_CTRL *C, int level)
 
 	GMT_message (GMT, "\t-G sets output grid file name.\n");
 	GMT_inc_syntax (GMT, 'I', 0);
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<");
+	GMT_Option (C, "<");
 	GMT_message (GMT, "\t-A Set aspect-ratio> [Default = 1 gives an isotropic solution],\n");
 	GMT_message (GMT, "\t   i.e., xinc and yinc assumed to give derivatives of equal weight; if not, specify\n");
 	GMT_message (GMT, "\t   <aspect_ratio> such that yinc = xinc / <aspect_ratio>.\n");
@@ -1606,11 +1606,11 @@ int GMT_surface_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Prepend i to set tension in interior equations only;\n");
 	GMT_message (GMT, "\t   No appended letter sets tension for both to same value.\n");
 	GMT_message (GMT, "\t-Q Query for grid sizes that might run faster than your -R -I give.\n");
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_message (GMT, "\t-Z Set <over_relaxation parameter>.  Default = 1.4\n");
 	GMT_message (GMT, "\t   Use a value between 1 and 2.  Larger number accelerates convergence but can be unstable.\n");
 	GMT_message (GMT, "\t   Use 1 if you want to be sure to have (slow) stable convergence.\n\n");
-	GMT_explain_options (GMT, "aC3fhiFs:.");
+	GMT_Option (C, "a,bi3,f,h,i,r,s,:,.");
 	GMT_message (GMT, "\t(For additional details, see Smith & Wessel, Geophysics, 55, 293-305, 1990.)\n");
 	
 	return (EXIT_FAILURE);

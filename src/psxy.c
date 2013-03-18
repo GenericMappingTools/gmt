@@ -250,13 +250,13 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *C, int level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_explain_options (GMT, "jR");
+	GMT_Option (C, "J-Z,R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<");
+	GMT_Option (C, "<");
 	GMT_message (GMT, "\t-A Suppress drawing line segments as great circle arcs, i.e., draw\n");
 	GMT_message (GMT, "\t   straight lines unless m or p is appended to first follow meridian\n");
 	GMT_message (GMT, "\t   then parallel, or vice versa.\n");
-	GMT_explain_options (GMT, "b");
+	GMT_Option (C, "B-");
 	GMT_message (GMT, "\t-C Use cpt-file to assign symbol colors based on z-value in 3rd column.\n");
 	GMT_message (GMT, "\t   Note: requires -S.  Without -S, psxy excepts lines/polygons\n");
 	GMT_message (GMT, "\t   and looks for -Z<val> options in each multiheader.  Then, color is\n");
@@ -274,11 +274,11 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_fill_syntax (GMT, 'G', "Specify color or pattern [no fill].");
 	GMT_message (GMT, "\t   -G option can be present in all subheaders (not with -S).\n");
 	GMT_message (GMT, "\t-I Use the intensity to modulate the fill color (requires -C or -G).\n");
-	GMT_explain_options (GMT, "ZK");
+	GMT_Option (C, "K");
 	GMT_message (GMT, "\t-L Force closed polygons.\n");
 	GMT_message (GMT, "\t-N Do not skip or clip symbols that fall outside the map border\n");
 	GMT_message (GMT, "\t   [Default will clip or skip symbols that fall outside].\n");
-	GMT_explain_options (GMT, "OP");
+	GMT_Option (C, "O,P");
 	GMT_message (GMT, "\t-S Select symbol type and symbol size (in %s).  Choose between\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	GMT_message (GMT, "\t   -(xdash), +(plus), st(a)r, (b|B)ar, (c)ircle, (d)iamond, (e)llipse,\n");
 	GMT_message (GMT, "\t   (f)ront, octa(g)on, (h)exagon, (i)nvtriangle, (j)rotated rectangle,\n");
@@ -341,13 +341,13 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Geovectors: Azimuth and length (in km) must be in columns 3-4.\n");
 	GMT_vector_syntax (GMT, 3);
 	GMT_message (GMT, "\t-T Ignore all input files.\n");
-	GMT_explain_options (GMT, "UV");
+	GMT_Option (C, "U,V");
 	GMT_pen_syntax (GMT, 'W', "Set pen attributes [Default pen is %s]:");
 	GMT_message (GMT, "\t   A leading + applies cpt color (-C) to both symbol fill and pen.\n");
 	GMT_message (GMT, "\t   A leading - applies cpt color (-C) to the pen only.\n");
-	GMT_explain_options (GMT, "XaC0");
+	GMT_Option (C, "X,a,bi");
 	GMT_message (GMT, "\t   Default is the required number of columns.\n");
-	GMT_explain_options (GMT, "cfghipst:.");
+	GMT_Option (C, "c,f,g,h,i,p,s,t,:,.");
 
 	return (EXIT_FAILURE);
 }

@@ -70,7 +70,7 @@ int GMT_gmtaverage_usage (struct GMTAPI_CTRL *C, int level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Option (C, 0, "I");
+	GMT_Option (C, "I");
 	GMT_message (GMT, "\t-T Select what value you wish to report per block:\n");
 	GMT_message (GMT, "\t   e reports median values.\n");
 	GMT_message (GMT, "\t   m reports mean values.\n");
@@ -79,9 +79,9 @@ int GMT_gmtaverage_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   s reports data sums.\n");
 	GMT_message (GMT, "\t   w reports weight sums.\n");
 	GMT_message (GMT, "\t   <q> reports the chosen quantile (0 < q < 1).\n");
-	GMT_Option (C, 0, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_Option (C, 0, "<");
+	GMT_Option (C, "<");
 	GMT_message (GMT, "\t-C Output center of block as location [Default is mean|median|mode of x and y, but see -Q].\n");
 	GMT_message (GMT, "\t-E Extend output with scale (s), low (l), and high (h) value per block, i.e.,\n");
 	GMT_message (GMT, "\t   output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w])]; see -W regarding w.\n");
@@ -89,14 +89,14 @@ int GMT_gmtaverage_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   For -Te|<q>: Use -Eb for box-and-whisker output (x,y,z,l,25%%q,75%%q,h[,w])\n");
 	GMT_message (GMT, "\t-Q Quicker; get median|mode z and x, y at that z [Default gets median|mode of x, y, and z.].\n");
 	GMT_message (GMT, "\t   This option is ignored for -Tm|n|s|w.\n");
-	GMT_Option (C, 0, "V");
+	GMT_Option (C, "V");
 	GMT_message (GMT, "\t-W Set Weight options.\n");
 	GMT_message (GMT, "\t   -Wi reads Weighted Input (4 cols: x,y,z,w) but skips w on output.\n");
 	GMT_message (GMT, "\t   -Wo reads unWeighted Input (3 cols: x,y,z) but writes weight sum on output.\n");
 	GMT_message (GMT, "\t   -W with no modifier has both weighted Input and Output; Default is no weights used.\n");
-	GMT_Option (C, 0, "a,bi");
+	GMT_Option (C, "a,bi");
 	GMT_message (GMT, "\t   Default is 3 columns (or 4 if -W is set).\n");
-	GMT_Option (C, 0, "bo,f,h,i,o,r,:,.");
+	GMT_Option (C, "bo,f,h,i,o,r,:,.");
 	
 	return (EXIT_FAILURE);
 }

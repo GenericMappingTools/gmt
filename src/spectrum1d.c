@@ -537,7 +537,7 @@ int GMT_spectrum1d_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   <segment_size> must be radix 2;\n");
 	GMT_message (GMT, "\t   std. err. = 1/sqrt(n_data/segment_size).\n");
 	GMT_message (GMT, "\tOptions:\n");
-	GMT_explain_options (GMT, "<");
+	GMT_Option (C, "<");
 	GMT_message (GMT, "\t-C[<xycnpago>] 2 column X(t),Y(t) input; estimate Cross-spectra\n\t   [Default 1 col, X power only].\n");
 	GMT_message (GMT, "\t   Optionally specify cross-spectra output(s)  [Default is all].\n");
 	GMT_message (GMT, "\t   x = xpower, y = ypower, c = coherent power, n = noise power,\n");
@@ -548,9 +548,9 @@ int GMT_spectrum1d_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-N Supply name stem for files [Default = 'spectrum'].\n");
 	GMT_message (GMT, "\t   Output files will be named <name_stem>.xpower, etc.\n");
 	GMT_message (GMT, "\t   To save all selected spectra in a single table, use -N+<file>.\n");
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_message (GMT, "\t-W Write Wavelength of spectral estimate in col 1 [Default = frequency].\n");
-	GMT_explain_options (GMT, "C2D0fghis.");
+	GMT_Option (C, "bi2,bo,f,g,h,i,s,.");
 	
 	return (EXIT_FAILURE);
 }

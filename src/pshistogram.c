@@ -342,12 +342,10 @@ int GMT_pshistogram_usage (struct GMTAPI_CTRL *C, int level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t-Jx|X for linear projection.  Scale in %s/units (or width in %s).\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit], GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-	GMT_message (GMT, "\t    Use / to specify separate x/y scaling.\n");
-	GMT_message (GMT, "\t    If -JX is used then give axes lengths in %s rather than scales.\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+	GMT_Option (C, "JXZ");
 	GMT_message (GMT, "\t-W Set the bin width.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<b");
+	GMT_Option (C, "<,B-");
 	GMT_message (GMT, "\t-A Plot horizontal bars [Default is vertical].\n");
 	GMT_message (GMT, "\t-C Use cpt-file to assign fill to bars based on the mid x-value.\n");
 	GMT_message (GMT, "\t-F Center the bins.\n");
@@ -355,7 +353,7 @@ int GMT_pshistogram_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-I Inquire about min/max x and y.  No plotting is done.\n");
 	GMT_message (GMT, "\t   Append o to output the resulting x, y data.\n");
 	GMT_message (GMT, "\t   Append O to output all resulting x, y data even with y=0.\n");
-	GMT_explain_options (GMT, "ZK");
+	GMT_Option (C, "K");
 	GMT_pen_syntax (GMT, 'L', "Specify pen to draw histogram.");
 	GMT_message (GMT, "\t-N Draw the equivalent normal distribution; append desired pen [0.25p,black].\n");
 	GMT_message (GMT, "\t   <mode> selects which central location and scale to use:\n");
@@ -363,12 +361,12 @@ int GMT_pshistogram_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   1 = median and L1 scale\n");
 	GMT_message (GMT, "\t   2 = LMS mode and scale\n");
 	GMT_message (GMT, "\t   The -N option may be repeated to draw several of these curves.\n");
-	GMT_explain_options (GMT, "OP");
+	GMT_Option (C, "O,P");
 	GMT_message (GMT, "\t-Q Plot a cumulative histogram.\n");
-	GMT_explain_options (GMT, "r");
+	GMT_Option (C, "A");
 	GMT_message (GMT, "\t   If neither -R nor -I are set, w/e/s/n will be based on input data.\n");
 	GMT_message (GMT, "\t-S Draw a stairs-step diagram [Default is bar histogram].\n");
-	GMT_explain_options (GMT, "UVX");
+	GMT_Option (C, "U,V,X");
 	GMT_message (GMT, "\t-Z To choose type of vertical axis.  Select from\n");
 	GMT_message (GMT, "\t   0 - Counts [Default].\n");
 	GMT_message (GMT, "\t   1 - Frequency percent.\n");
@@ -376,7 +374,7 @@ int GMT_pshistogram_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   3 - Log (1+frequency percent).\n");
 	GMT_message (GMT, "\t   4 - Log10 (1+counts).\n");
 	GMT_message (GMT, "\t   5 - Log10 (1+frequency percent).\n");
-	GMT_explain_options (GMT, "C2cfhipst.");
+	GMT_Option (C, "bi2,c,f,h,i,p,s,t,.");
 
 	return (EXIT_FAILURE);
 }

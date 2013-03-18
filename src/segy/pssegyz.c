@@ -144,21 +144,20 @@ int GMT_pssegyz_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t<segyfile> is an IEEE SEGY file [or standard input] \n\n");
 	GMT_message (GMT, "\t-D<dev> to give deviation in X units of plot for 1.0 on scaled trace.\n");
 	GMT_message (GMT, "\t<dev> is single number (applied equally in X and Y directions) or <devX>/<devY>.\n");
-	GMT_message (GMT, "\n\t-Jx for projection.  Scale in INCH/units.  Specify one:\n\t -Jx<x-scale>              Linear projection\n\t-Jx<x-scale>l             Log10 projection\n\t  -Jx<x-scale>p<power>      x^power projection\n\tUse / to specify separate x/y scaling.\n\t If -JX is used then give axes lengths rather than scales\n\t regular map projections may not work!\n");
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "JX,R");
 	GMT_message (GMT, "\tNB units for y are s or km\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-A flips the default byte-swap state (default assumes data have a bigendian byte-order)\n");
 	GMT_message (GMT, "\t-C<clip> to clip scaled trace excursions at <clip>, applied after bias\n");
 	GMT_message (GMT, "\t-E<error> slop to allow for -T. recommended in case of arithmetic errors!\n");
 	GMT_message (GMT, "\t-I to fill negative rather than positive excursions\n");
-	GMT_explain_options (GMT, "K");
+	GMT_Option (C, "K");
 	GMT_message (GMT, "\t-L<nsamp> to override number of samples\n");
 	GMT_message (GMT, "\t-M<ntraces> to fix number of traces. Default reads all traces.\n");
 	GMT_message (GMT, "\t  -M0 will read number in binary header, -Mn will attempt to read only n traces.\n");
 	GMT_message (GMT, "\t-N to trace normalize the plot\n");
 	GMT_message (GMT, "\t	order of operations: [normalize][bias][clip](deviation)\n");
-	GMT_explain_options (GMT, "OP");
+	GMT_Option (C, "O,P");
 	GMT_message (GMT, "\t-Q<mode><value> can be used to change 4 different settings:\n");
 	GMT_message (GMT, "\t  -Qb<bias> to bias scaled traces (-B-0.1 subtracts 0.1 from values)\n");
 	GMT_message (GMT, "\t  -Qu<redvel> to apply reduction velocity (-ve removes reduction already present)\n");
@@ -166,11 +165,11 @@ int GMT_pssegyz_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t  -Qy<dy> to override sample interval\n");
 	GMT_message (GMT,"\t-S<x/y> to set variable spacing\n");
 	GMT_message (GMT,"\t	x,y are (number) for fixed location, c for cdp, o for offset, b<n> for long int at byte n\n");
-	GMT_explain_options (GMT, "UV");
+	GMT_Option (C, "U,V");
 	GMT_message (GMT, "\t-W to plot wiggle trace (must specify either -W or -F)\n");
-	GMT_explain_options (GMT, "X");
+	GMT_Option (C, "X");
 	GMT_message (GMT, "\t-Z to suppress plotting traces whose rms amplitude is 0.\n");
-	GMT_explain_options (GMT, "cpt.");
+	GMT_Option (C, "c,p,t,.");
 
 	return (EXIT_FAILURE);
 }

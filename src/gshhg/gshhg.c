@@ -116,7 +116,7 @@ int GMT_gshhg_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "-N Output features whose level matches <level> [Default outputs all levels].\n");
 	GMT_message (GMT, "-Q Control river-lakes: Use -Qe to exclude river-lakes, and -Qi to ONLY get river-lakes\n");
 	GMT_message (GMT, "   [Default outputs all polygons].\n");
-	GMT_explain_options (GMT, "VD2o:.");
+	GMT_Option (C, "V,bo2,o,:,.");
 	
 	return (EXIT_FAILURE);
 }

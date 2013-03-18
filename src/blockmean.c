@@ -51,9 +51,9 @@ int GMT_blockmean_usage (struct GMTAPI_CTRL *C, int level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_inc_syntax (GMT, 'I', 0);
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<");
+	GMT_Option (C, "<");
 	GMT_message (GMT, "\t-C Output center of block and mean z-value [Default outputs the\n");
 	GMT_message (GMT, "\t   (mean x, mean y) location].\n");
 	GMT_message (GMT, "\t-E Extend output with st.dev (s), low (l), and high (h) value per block,\n");
@@ -64,15 +64,15 @@ int GMT_blockmean_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   -Sn report number of data points.\n");
 	GMT_message (GMT, "\t   -Ss report data sums.\n");
 	GMT_message (GMT, "\t   -Sw reports weight sums.\n");
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_message (GMT, "\t-W Set Weight options, select one:\n");
 	GMT_message (GMT, "\t   -Wi reads 4 cols (x,y,z,w) but writes only (x,y,z[,s,l,h]) output.\n");
 	GMT_message (GMT, "\t   -Wo reads 3 cols (x,y,z) but writes sum (x,y,z[,s,l,h],w) output.\n");
 	GMT_message (GMT, "\t   -W with no modifier has both weighted Input and Output.\n");
 	GMT_message (GMT, "\t   [Default is no weights used].\n");
-	GMT_explain_options (GMT, "aC0");
+	GMT_Option (C, "a,bi");
 	GMT_message (GMT, "\t    Default is 3 columns (or 4 if -W is set).\n");
-	GMT_explain_options (GMT, "D0fhioF:.");
+	GMT_Option (C, "bo,f,h,i,o,r,:,.");
 
 	return (EXIT_FAILURE);
 }

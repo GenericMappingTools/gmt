@@ -97,7 +97,7 @@ int GMT_grdproject_usage (struct GMTAPI_CTRL *C, int level)
 
 	GMT_message (GMT, "\t<ingrid> is data set to be projected.\n");
 	GMT_message (GMT, "\t-G Set name of output grid\n");
-	GMT_explain_options (GMT, "J");
+	GMT_Option (C, "J");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-A Force projected values to be in actual distance units [Default uses the given map scale].\n");
 	GMT_message (GMT, "\t   Specify unit by appending e (meter), f (foot) k (km), M (mile), n (nautical mile), u (survey foot),\n");
@@ -109,8 +109,8 @@ int GMT_grdproject_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-I Inverse transformation from rectangular to geographical.\n");
 	GMT_message (GMT, "\t-M Temporarily reset PROJ_LENGTH_UNIT to be c (cm), i (inch), or p (point).\n");
 	GMT_message (GMT, "\t   Cannot be used if -A is set.\n");
-	GMT_explain_options (GMT, "R");
-	GMT_explain_options (GMT, "VnF.");
+	GMT_Option (C, "R");
+	GMT_Option (C, "V,n,r,.");
 
 	return (EXIT_FAILURE);
 }

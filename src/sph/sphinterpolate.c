@@ -119,12 +119,12 @@ int GMT_sphinterpolate_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t      <E> = Expected squared error in a typical (scaled) data value [0.01],\n");
 	GMT_message (GMT, "\t      <U> = Upper bound on  weighted sum of squares of deviations from data [npoints],\n");
 	GMT_message (GMT, "\t      <N> = Number of iterations to converge solutions for gradients and variable tensions (-T only) [3].\n");
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "Rg");
 	GMT_message (GMT, "\t   If no region is specified we default to the entire world [-Rg].\n");
 	GMT_message (GMT, "\t-T Use variable tension (ignored for -Q0) [constant].\n");
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_message (GMT, "\t-Z Scale data by 1/(max-min) prior to gridding [no scaling].\n");
-	GMT_explain_options (GMT, "C3hiFs:.");
+	GMT_Option (C, "bi3,h,i,r,s,:,.");
 	
 	return (EXIT_FAILURE);
 }

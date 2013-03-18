@@ -110,29 +110,29 @@ int GMT_grdvector_usage (struct GMTAPI_CTRL *C, int level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\t<gridx> <gridy> are grid files with the two vector components.\n");
-	GMT_explain_options (GMT, "j");
+	GMT_Option (C, "J-");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-A Grids have polar (r, theta) components [Default is Cartesian (x, y) components].\n");
-	GMT_explain_options (GMT, "b");
+	GMT_Option (C, "B-");
 	GMT_message (GMT, "\t-C Use cpt-file to assign colors based on vector length.\n");
 	GMT_fill_syntax (GMT, 'G', "Select vector fill [Default is outlines only].");
 	GMT_message (GMT, "\t-I Plot only those nodes that are <dx>/<dy> apart [Default is all nodes].\n");
-	GMT_explain_options (GMT, "K");
+	GMT_Option (C, "K");
 	GMT_message (GMT, "\t-N Do Not clip vectors that exceed the map boundaries [Default will clip].\n");
-	GMT_explain_options (GMT, "OP");
+	GMT_Option (C, "O,P");
 	GMT_message (GMT, "\t-Q Modify vector attributes [Default gives stick-plot].\n");
 	GMT_vector_syntax (GMT, 15);
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\t-S Set scale for vector length in data units per %s [1].\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	GMT_message (GMT, "\t   Append c, i, or p to indicate cm, inch, or points as the distance unit.\n");
 	GMT_message (GMT, "\t   Alternatively, prepend l to indicate a fixed length for all vectors.\n");
 	GMT_message (GMT, "\t-T Means azimuth should be converted to angles based on map projection.\n");
-	GMT_explain_options (GMT, "UV");
+	GMT_Option (C, "U,V");
 	GMT_pen_syntax (GMT, 'W', "Set pen attributes.");
 	GMT_message (GMT, "\t   Default pen attributes [%s].\n", GMT_putpen(GMT, GMT->current.setting.map_default_pen));
-	GMT_explain_options (GMT, "X");
+	GMT_Option (C, "X");
 	GMT_message (GMT, "\t-Z The angles provided are azimuths rather than direction.\n");
-	GMT_explain_options (GMT, "cfpt.");
+	GMT_Option (C, "c,f,p,t,.");
 	
 	return (EXIT_FAILURE);
 }

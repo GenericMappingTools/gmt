@@ -115,10 +115,10 @@ int GMT_grdrotater_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-F Specify a multi-segment closed polygon table that describes the area of the grid\n");
 	GMT_message (GMT, "\t   that should be projected [Default projects entire grid].\n");
 	GMT_message (GMT, "\t-N Do NOT output the rotated polygon or grid outline.\n");
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "Rg");
 	GMT_message (GMT, "\t-S Do NOT rotate the grid - just produce the rotated outline (requires -D).\n");
 	GMT_message (GMT, "\t-T Set the time of reconstruction, if -E is used.\n");
-	GMT_explain_options (GMT, "VC2D0ghin:.");
+	GMT_Option (C, "V,bi2,bo,g,h,i,n,:,.");
 	
 	return (EXIT_FAILURE);
 

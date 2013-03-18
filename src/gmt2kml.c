@@ -185,7 +185,7 @@ int GMT_gmt2kml_usage (struct GMTAPI_CTRL *C, int level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<");
+	GMT_Option (C, "<");
 	GMT_message (GMT, "\t-A Altitude mode, choose among three modes:\n");
 	GMT_message (GMT,"\t      a Absolute altitude.\n");
 	GMT_message (GMT,"\t      g Altitude relative to sea surface or ground.\n");
@@ -224,7 +224,7 @@ int GMT_gmt2kml_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-T Append KML document title name [GMT Data Document].\n");
 	GMT_message (GMT, "\t   Optionally append /<foldername> to name folder when used with\n");
 	GMT_message (GMT, "\t   -O and -K to organize features into groups.\n");
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_pen_syntax (GMT, 'W', "Specify pen attributes for lines and polygon outlines [Default is %s].");
 	GMT_message (GMT, "\t   Give width in pixels and append p.\n");
 	GMT_message (GMT, "\t   A leading + applies cpt color (-C) to both polygon fill and outline.\n");
@@ -238,7 +238,7 @@ int GMT_gmt2kml_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t     to transparent [no fading].\n");
 	GMT_message (GMT, "\t   +v turns off visibility [feature is visible].\n");
 	GMT_message (GMT, "\t   +o open document or folder when loaded [closed].\n");
-	GMT_explain_options (GMT, "aC2fghi:.");
+	GMT_Option (C, "a,bi2,f,g,h,i,:,.");
 	
 	return (EXIT_FAILURE);
 }

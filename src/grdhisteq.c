@@ -101,7 +101,7 @@ int GMT_grdhisteq_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-N Use with -G to make an output grid file with standard normal scores.\n");
 	GMT_message (GMT, "\t   Append <norm> to normalize the scores to <-1,+1>.\n");
 	GMT_message (GMT, "\t-Q Use quadratic intensity scaling [Default is linear].\n");
-	GMT_explain_options (GMT, "RVh.");
+	GMT_Option (C, "R,V,h,.");
 	
 	return (EXIT_FAILURE);
 }

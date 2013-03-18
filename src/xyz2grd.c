@@ -109,9 +109,9 @@ int GMT_xyz2grd_usage (struct GMTAPI_CTRL *C, int level)
 
 	GMT_message (GMT, "\t-G Sets name of the output grid file.\n");
 	GMT_inc_syntax (GMT, 'I', 0);
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<");
+	GMT_Option (C, "<");
 	GMT_message (GMT, "\t-A Determine what to do if multiple entries are found for a node:\n");
 	GMT_message (GMT, "\t   -Af: Keep first value if multiple entries per node.\n");
 	GMT_message (GMT, "\t   -Al: Keep lower (minimum) value if multiple entries per node.\n");
@@ -129,7 +129,7 @@ int GMT_xyz2grd_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   (or stdout if no file given).  Requires -Z, and no grid file created!\n");
 	GMT_message (GMT, "\t   For this option, only one input file (or stdin) is allowed.\n");
 	GMT_message (GMT, "\t   Note: Cannot handle swapping of 64-bit integers.\n");
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_message (GMT, "\t-Z Set exact specification of incoming 1-column z-table.\n");
 	GMT_message (GMT, "\t   Unless -S is used, append two chars that indicate file organization:\n");
 	GMT_message (GMT, "\t   If data is in row format, state if first row is at T(op) or B(ottom).\n");
@@ -155,7 +155,7 @@ int GMT_xyz2grd_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t     d  8-byte floating point double precision.\n");
 	GMT_message (GMT, "\t   [Default format is scanline orientation in ASCII representation: -ZTLa].\n");
 	GMT_message (GMT, "\t   This option assumes all nodes have data values.\n");
-	GMT_explain_options (GMT, "C3fhiFs:.");
+	GMT_Option (C, "bi3,f,h,i,r,s,:,.");
 	
 	return (EXIT_FAILURE);
 }

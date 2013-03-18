@@ -146,7 +146,7 @@ int GMT_dimfilter_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   yields the standard deviation while for the median/mode filters we use MAD\n");
 #endif
 	GMT_message (GMT, "\t-T Toggles between grid and pixel registration for output grid [Default is same as input registration]\n");
-	GMT_explain_options (GMT, "Vfh.");
+	GMT_Option (C, "V,f,h,.");
 
 	return (EXIT_FAILURE);
 }

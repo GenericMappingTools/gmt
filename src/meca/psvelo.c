@@ -132,9 +132,9 @@ int GMT_psvelo_usage (struct GMTAPI_CTRL *C, int level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_explain_options (GMT, "jR");
+	GMT_Option (C, "J-,R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<b");
+	GMT_Option (C, "<,B-");
 	GMT_message (GMT, "\t-A Specify arrow head attributes:");
 	GMT_vector_syntax (GMT, 15);
 	GMT_message (GMT, "\t   Default is %gp+gblack+p1p\n", VECTOR_HEAD_LENGTH);
@@ -143,19 +143,19 @@ int GMT_psvelo_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-G Specify color (for symbols/polygons) or pattern (for polygons). fill can be either\n");
 	GMT_message (GMT, "\t   1) <r/g/b> (each 0-255) for color or <gray> (0-255) for gray-shade [0].\n");
 	GMT_message (GMT, "\t   2) p[or P]<iconsize>/<pattern> for predefined patterns (0-90).\n");
-	GMT_explain_options (GMT, "K");
+	GMT_Option (C, "K");
 	GMT_message (GMT, "\t-L Draw line or symbol outline using the current pen (see -W).\n");
 	GMT_message (GMT, "\t-N Do Not skip/clip symbols that fall outside map border [Default will ignore those outside].\n");
-	GMT_explain_options (GMT, "OP");
+	GMT_Option (C, "O,P");
 	GMT_message (GMT, "\t-S Select symbol type and scale. Choose between:\n");
 	GMT_message (GMT, "\t    (e) Velocity ellipses: in X,Y,Vx,Vy,SigX,SigY,CorXY,name format.\n");
 	GMT_message (GMT, "\t    (r) Velocity ellipses: in X,Y,Vx,Vy,a,b,theta,name format.\n");
 	GMT_message (GMT, "\t    (n) Anisotropy : in X,Y,Vx,Vy.\n");
 	GMT_message (GMT, "\t    (w) Rotational wedges: in X,Y,Spin,Spinsig.\n");
 	GMT_message (GMT, "\t    (x) Strain crosses : in X,Y,Eps1,Eps2,Theta.\n");
-	GMT_explain_options (GMT, "UV");
+	GMT_Option (C, "U,V");
 	GMT_message (GMT,  "\t-W Set pen attributes [%s].\n", GMT_putpen (GMT, GMT->current.setting.map_default_pen));
-	GMT_explain_options (GMT, "Xchi:.");
+	GMT_Option (C, "X,c,h,i,:,.");
 	
 	return (EXIT_FAILURE);
 }

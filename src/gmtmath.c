@@ -388,7 +388,7 @@ int GMT_gmtmath_usage (struct GMTAPI_CTRL *C, int level)
 		"\t   If a filename is given instead we read t coordinates from first column.\n"
 		"\t   If no domain is given we assume no time, i.e., only data columns are present.\n"
 		"\t   This choice also implies -Ca.\n");
-	GMT_explain_options (GMT, "VC0D0fghios.");
+	GMT_Option (C, "V,bi,bo,f,g,h,i,o,s,.");
 
 	return (EXIT_FAILURE);
 }

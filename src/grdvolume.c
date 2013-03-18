@@ -314,9 +314,9 @@ int GMT_grdvolume_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-S Convert degrees to distances, append a unit from %s [Default is Cartesian].\n", GMT_LEN_UNITS2_DISPLAY);
 	GMT_message (GMT, "\t-T (or -Th): Find the contour value that yields max average height (volume/area).\n");
 	GMT_message (GMT, "\t   Use -Tc to find contour that yields the max curvature of height vs contour.\n");
-	GMT_explain_options (GMT, "RV");
+	GMT_Option (C, "R,V");
 	GMT_message (GMT, "\t-Z Subtract <shift> and then multiply data by <fact> before processing [1/0].\n");
-	GMT_explain_options (GMT, "fho.");
+	GMT_Option (C, "f,h,o,.");
 	
 	return (EXIT_FAILURE);
 }

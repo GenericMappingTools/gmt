@@ -89,18 +89,18 @@ int GMT_grdcut_usage (struct GMTAPI_CTRL *C, int level)
 
 	GMT_message (GMT, "\t<ingrid> is file to extract a subset from.\n");
 	GMT_message (GMT, "\t-G Specify output grid file.\n");
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\t   The WESN you specify must be within the WESN of the input grid.\n");
 	GMT_message (GMT, "\t   If in doubt, run grdinfo first and check range of old file.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_dist_syntax (GMT, 'S', "Specify an origin and radius to find the corresponding rectangular area.");
 	GMT_message (GMT, "\t   All nodes on or inside the radius are contained in the subset grid.\n");
 	GMT_message (GMT, "\t   Use -Sn to set all nodes in the subset outside the circle to NaN.\n");
 	GMT_message (GMT, "\t-Z Specify a range and determine the corresponding rectangular region so that\n");
 	GMT_message (GMT, "\t   all values outside this region are outside the range [-inf/+inf].\n");
 	GMT_message (GMT, "\t   Use -Zn to consider NaNs outside as well [Default just ignores NaNs].\n");
-	GMT_explain_options (GMT, "f.");
+	GMT_Option (C, "f,.");
 	
 	return (EXIT_FAILURE);
 }

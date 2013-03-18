@@ -136,13 +136,13 @@ int GMT_x2sys_init_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   n Nautical units (nautical miles, knots).\n");
 	GMT_message (GMT, "\t   u Old US units (survey feet, survey feet/s).\n");
 	GMT_message (GMT, "\t   [Default is -Ndk -Nse].\n");
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\t   [Default region is 0/360/-90/90].\n");
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_message (GMT, "\t-W Set maximum gaps allowed at crossover.  Option may be repeated.\n");
 	GMT_message (GMT, "\t   -Wt sets maximum time gap (in user units) [Default is infinite].\n");
 	GMT_message (GMT, "\t   -Wd sets maximum distance gap (in user units) [Default is infinite].\n");
-	GMT_explain_options (GMT, "m.");
+	GMT_Option (C, "m,.");
 	
 	return (EXIT_FAILURE);
 }

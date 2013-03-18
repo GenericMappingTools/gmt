@@ -180,14 +180,14 @@ int GMT_backtracker_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-Q Assigned a fixed age to all input points.\n");
 	GMT_message (GMT, "\t-S Add -L<smt_no> to segment header and 4th output column (requires -L).\n");
 	GMT_message (GMT, "\t-T Set the current age in Ma [0].\n");
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_message (GMT, "\t-W Return projected point and confidence ellipse for the finite rotation.\n");
 	GMT_message (GMT, "\t   The input time must exactly match the age of a finite rotation or else we skip the point.\n");
 	GMT_message (GMT, "\t   Output record will be lon,lat,az,major,minor.\n");
 	GMT_message (GMT, "\t   -Wt will output lon,lat,time,az,major,minor.\n");
 	GMT_message (GMT, "\t   -Wa will output lon,lat,angle,az,major,minor.\n");
 	GMT_message (GMT, "\t   Use -D to specify which direction to rotate [forward in time].\n");
-	GMT_explain_options (GMT, "C3D0hios:.");
+	GMT_Option (C, "bi3,bo,h,i,o,s,:,.");
 	
 	return (EXIT_FAILURE);
 }

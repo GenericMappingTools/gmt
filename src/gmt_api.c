@@ -5079,28 +5079,33 @@ int GMT_Get_Default_ (char *keyword, char *value, int len1, int len2)
 }
 #endif
 
-void GMT_Option (void *V_API, unsigned int mode, char *options)
-{	/* Take comma-separated GMT options and print the usage message(s).
- 	 * mode is currently unused. */
-	unsigned int pos = 0, k = 0;
+void GMT_Option (void *V_API, char *options)
+{	/* Take comma-separated GMT options and print the usage message(s). */
+	unsigned int pos = 0, k = 0, n = 0;
 	char p[GMT_TEXT_LEN64], arg[GMT_TEXT_LEN64];
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 
 	GMT_memset (arg, GMT_TEXT_LEN64, char);
 	while (GMT_strtok (options, ",", &pos, p) && k < GMT_TEXT_LEN64) {
 		switch (p[0]) {
+			case 'B':	/* Let B be B and B- be b */
+				arg[k++] = (p[1] == '-') ? 'b' : 'B';
+				break;
+			case 'J':	/* Let J be -J and J- be j, JX is -Jx|X only, and -J[-]3 be adding -Z for 3-D scaling */
+				n = 1;
+				if (p[1] == '-') { arg[k++] = 'j'; n++; }
+				else if (p[1] == 'X') { arg[k++] = 'x'; n++; }
+				else arg[k++] = 'J';
+				if (p[n] == 'Z' || p[n] == 'z') arg[k++] = 'Z';
+				break;
 			case 'R':	/* Want -R region usage */
 				if (p[1]) {	/* Gave modifiers */
 					if (p[1] == 'x') arg[k++] = 'A';	/* Cartesian region */
-					else if (p[1] == 'g') arg[k++] = 'R';	/* Geographic region */
-					else arg[k++] = 'R';			/* Geographic region [Default] */
+					else if (p[1] == 'g') arg[k++] = 'G';	/* Geographic region */
+					else arg[k++] = 'R';			/* Generic region [Default] */
 					if (p[1] == '3' || p[2] == '3') arg[k++] = 'z';	/* 3-D region */
 				}
-				else arg[k++] = 'R';			/* Geographic region [Default] */
-				break;
-			case 'J':	/* Let -J be -J and -J3 be adding -Z for 3-D scaling */
-				arg[k++] = p[0];	/* Pass along the J or j */
-				if (p[1] == 'Z' || p[1] == 'z') arg[k++] = 'Z';
+				else arg[k++] = 'R';			/* Generic region [Default] */
 				break;
 			case 'b':	/* Binary i/o -bi -bo */
 				arg[k++] = (p[1] == 'i') ? 'C' : 'D';
@@ -5118,9 +5123,9 @@ void GMT_Option (void *V_API, unsigned int mode, char *options)
 }
 
 #ifdef FORTRAN_API
-void GMT_Option_ (void *V_API, unsigned int *mode, char *options, int len)
+void GMT_Option_ (void *V_API, char *options, int len)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	GMT_Option (GMT_FORTRAN, *mode, options);
+	GMT_Option (GMT_FORTRAN, options);
 }
 #endif
 

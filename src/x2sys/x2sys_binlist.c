@@ -81,7 +81,7 @@ int GMT_x2sys_binlist_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-D Calculate track-lengths per bin (see x2sys_init -C for method and -N for units).\n");
 	GMT_message (GMT, "\t-E Bin tracks using equal-area bins (with -D only).\n");
-	GMT_explain_options (GMT, "V.");
+	GMT_Option (C, "V,.");
 	
 	return (EXIT_FAILURE);
 }

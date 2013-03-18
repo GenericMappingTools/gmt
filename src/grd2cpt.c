@@ -150,7 +150,7 @@ int GMT_grd2cpt_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-Q Assign a logarithmic colortable [Default is linear].\n");
 	GMT_message (GMT, "\t   -Qi: z-values are actually log10(z). Assign colors and write z [Default].\n");
 	GMT_message (GMT, "\t   -Qo: z-values are z, but take log10(z), assign colors and write z.\n");
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\t-S Sample points should Step from z_start to z_stop by z_inc.\n");
 	GMT_message (GMT, "\t   Use -S<n> to select <n> points from a cumulative normal distribution [%d].\n", GRD2CPT_N_LEVELS);
 	GMT_message (GMT, "\t-T Force color tables to be symmetric about 0. Append one modifier:\n");
@@ -158,10 +158,10 @@ int GMT_grd2cpt_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   + for values symmetric about zero from -|zmax| to +|zmax|.\n");
 	GMT_message (GMT, "\t   _ for values symmetric about zero -+min(|zmin|,|zmax|).\n");
 	GMT_message (GMT, "\t   = for values symmetric about zero -+max(|zmin|,|zmax|).\n");
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_message (GMT, "\t-W Do not interpolate color palette.\n");
 	GMT_message (GMT, "\t-Z Create a continuous color palette [Default is discontinuous, i.e., constant color intervals].\n");
-	GMT_explain_options (GMT, "h.");
+	GMT_Option (C, "h,.");
 
 	return (EXIT_FAILURE);
 }

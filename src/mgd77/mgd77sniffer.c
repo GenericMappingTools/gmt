@@ -143,7 +143,7 @@ int GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   By default ALL warning messages are printed. Not allowed with -D option.\n");
 	GMT_message (GMT, "\t-V Run in verbose mode.\n\n");
 	GMT_message (GMT, "\t-b Output binary data for -D option.  Append d for double and s for single precision [double].\n\n");
-	GMT_explain_options (GMT, "n.");
+	GMT_Option (C, "n,.");
 	GMT_message (GMT, "\tMGD77 FIELD INFO:\n");
 	GMT_message (GMT, "\tField\t\t\tAbbreviation\t\tUnits\n");
 	GMT_message (GMT, "\tTwo-way Travel Time\ttwt\t\t\tsec\n");

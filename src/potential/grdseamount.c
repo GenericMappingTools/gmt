@@ -106,14 +106,14 @@ int GMT_grdseamount_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-L List area, volume, and mean-height for each seamount; NO grid is created.\n");
 	GMT_message (GMT, "\t   Optionally, append the noise-floor cutoff level [0]\n");
 	GMT_message (GMT, "\t-N Normalize grid so maximum gridheight equals <norm>.\n");
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\t-S Sets scale factor for radii [1].\n");
 	GMT_message (GMT, "\t-T Seamounts are truncated.  Append flattening or expect it in last input column [no truncation]\n");
 	GMT_message (GMT, "\t-Z Add in background depth [0].\n");
-	GMT_explain_options (GMT, "VC");
+	GMT_Option (C, "V,bi");
 	GMT_message (GMT, "\t-fg Map units (lon, lat in degree, radius, major, minor in km).\n");
 	GMT_message (GMT, "\t   [Default is Cartesian - no units are implied].\n");
-	GMT_explain_options (GMT, "hiF:.");
+	GMT_Option (C, "h,i,r,:,.");
 	
 	return (EXIT_FAILURE);
 }

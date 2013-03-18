@@ -135,11 +135,11 @@ int GMT_makecpt_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   then the range in the master cptfile will be used.  If no increment\n");
 	GMT_message (GMT, "\t   is given we match the number of entries in the master CPT file.\n");
 	GMT_message (GMT, "\t   Append + to <z_inc> to indicate number of z-values to produce instead.\n");
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_message (GMT, "\t-W Do not interpolate color palette.\n");
 	GMT_message (GMT, "\t-Z Create a continuous color palette [Default is discontinuous,\n");
 	GMT_message (GMT, "\t   i.e., constant color intervals].\n");
-	GMT_explain_options (GMT, "h.");
+	GMT_Option (C, "h,.");
 
 	return (EXIT_FAILURE);
 }

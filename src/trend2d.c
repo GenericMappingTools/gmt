@@ -432,11 +432,11 @@ int GMT_trend2d_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-I Iteratively Increase # model parameters, to a max of <n_model> so long as the\n");
 	GMT_message (GMT, "\t   reduction in variance is significant at the <confidence> level.\n");
 	GMT_message (GMT, "\t   Give -I without a number to default to 0.51 confidence level.\n");
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_message (GMT, "\t-W Weighted input given, weights in 4th column [Default is unweighted].\n");
-	GMT_explain_options (GMT, "C0");
+	GMT_Option (C, "bi");
 	GMT_message (GMT, "\t   Default is 3 (or 4 if -W is set) columns.\n");
-	GMT_explain_options (GMT, "D0fhis:.");
+	GMT_Option (C, "bo,f,h,i,s,:,.");
 	
 	return (EXIT_FAILURE);
 }

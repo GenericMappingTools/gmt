@@ -74,7 +74,7 @@ int GMT_grdpaste_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\tUse grdpaste and/or grdsample to adjust files as necessary.\n");
 	GMT_message (GMT, "\t-G Specify file name for output grid file.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "Vf.");
+	GMT_Option (C, "V,f,.");
 
 	return (EXIT_FAILURE);
 }

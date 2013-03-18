@@ -62,7 +62,8 @@ int GMT_grdreformat_usage (struct GMTAPI_CTRL *C, int level)
 	char **grdformats = GMT_grdformats_sorted (GMT);
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grdreformat <ingrid>[=<id>[/<scale>/<offset>[/<nan>]]] <outgrid>[=<id>[/<scale>/<offset>[/<nan>]][:<driver>[/<dataType>]]]\n\t [-N] [%s] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
+	GMT_message (GMT, "usage: grdreformat <ingrid>[=<id>[/<scale>/<offset>[/<nan>]]] <outgrid>[=<id>[/<scale>/<offset>[/<nan>]][:<driver>[/<dataType>]]]\n\t [-N] [%s] [%s] [%s]\n",
+		GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -72,7 +73,7 @@ int GMT_grdreformat_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-N Do NOT write the header (for native grids only - ignored otherwise).\n");
 	GMT_message (GMT, "\t   Useful when creating files to be used by grdraster.\n");
-	GMT_explain_options (GMT, "rVf.");
+	GMT_Option (C, "R,V,f,.");
 
 	GMT_message (GMT, "\nThe following grid file formats are supported:\n");
 	for (i = 1; i < GMT_N_GRD_FORMATS; ++i) {

@@ -76,13 +76,13 @@ int GMT_psbasemap_usage (struct GMTAPI_CTRL *C, int level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_explain_options (GMT, "BJZR");
+	GMT_Option (C, "B,JZ,R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "K");
+	GMT_Option (C, "K");
 	GMT_mapscale_syntax (GMT, 'L', "Draw a simple map scale centered on <lon0>/<lat0>.");
-	GMT_explain_options (GMT, "OP");
+	GMT_Option (C, "O,P");
 	GMT_maprose_syntax (GMT, 'T', "Draw a north-pointing map rose centered on <lon0>/<lat0>.");
-	GMT_explain_options (GMT, "UVXcfpt.");
+	GMT_Option (C, "U,V,X,c,f,p,t,.");
 
 	return (EXIT_FAILURE);
 }

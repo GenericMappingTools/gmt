@@ -152,7 +152,7 @@ int GMT_psscale_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Append +n to draw rectangle with NaN color and label with <txt> [NaN].\n");
 	GMT_message (GMT, "\t-I Add illumination for +-<max_intens> or <low_i> to <high_i> [-1.0/1.0].\n");
 	GMT_message (GMT, "\t   Alternatively, specify <lower>/<upper> intensity values.\n");
-	GMT_explain_options (GMT, "jZK");
+	GMT_Option (C, "J-Z,K");
 	GMT_message (GMT, "\t-L For equal-sized color rectangles. -B interval cannot be used.\n");
 	GMT_message (GMT, "\t   Append i to annotate the interval range instead of lower/upper.\n");
 	GMT_message (GMT, "\t   If <gap> is appended, we separate each rectangle by <gap> units and center each\n");
@@ -160,21 +160,21 @@ int GMT_psscale_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   If -I is used then each rectangle will have the illuminated constant color.\n");
 	GMT_message (GMT, "\t-M Force monochrome colorbar using GMT_YIQ transformation.\n");
 	GMT_message (GMT, "\t-N Set effective dots-per-inch for color scale [600].\n");
-	GMT_explain_options (GMT, "OP");
+	GMT_Option (C, "O,P");
 	GMT_message (GMT, "\t-Q Plot colorbar using logarithmic scale and annotate powers of 10 [Default is linear].\n");
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\t-S Skip drawing color boundary lines on color scale [Default draws lines].\n");
 	GMT_message (GMT, "\t-T Place a rectangle behind the scale [No background rectangle].\n");
 	GMT_message (GMT, "\t   Make at least one seletion of rectangle fill or outline pen.\n");
 	GMT_message (GMT, "\t   You can nudge the extent of the rectangle in all four directions\n");
 	GMT_message (GMT, "\t   by appending any of +l<off>, +r<off>, +b<off>, +t<off>.\n");
-	GMT_explain_options (GMT, "UVX");
+	GMT_Option (C, "U,V,X");
 	GMT_message (GMT, "\t-Z Give file with colorbar-width (in %s) per color entry.\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	GMT_message (GMT, "\t   By default, width of entry is scaled to color range,\n");
 	GMT_message (GMT, "\t   i.e., z = 0-100 gives twice the width as z = 100-150.\n");
-	GMT_explain_options (GMT, "cp");
+	GMT_Option (C, "c,p");
 	GMT_message (GMT, "\t   (Requires -R and -J for proper functioning).\n");
-	GMT_explain_options (GMT, "t.");
+	GMT_Option (C, "t,.");
 	
 	return (EXIT_FAILURE);
 }

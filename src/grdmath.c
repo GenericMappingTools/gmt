@@ -169,10 +169,10 @@ int GMT_grdmath_usage (struct GMTAPI_CTRL *C, int level)
 		"\t   Default computes derivatives in units of data/grid_distance.\n"
 		"\t-N Do not perform strict domain check if several grids are involved.\n"
 		"\t   [Default checks that domain is within %g * [xinc or yinc] of each other].\n", GMT_SMALL);
-	GMT_explain_options (GMT, "RV");
-	GMT_explain_options (GMT, "fghi");
+	GMT_Option (C, "R,V");
+	GMT_Option (C, "f,g,h,i");
 	GMT_message (GMT, "\t   (Only applies to the input files for operators LDIST, PDIST, and INSIDE).\n");
-	GMT_explain_options (GMT, "nFs.");
+	GMT_Option (C, "n,r,s,.");
 
 	return (EXIT_FAILURE);
 }

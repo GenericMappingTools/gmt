@@ -202,7 +202,7 @@ int GMT_filter1d_usage (struct GMTAPI_CTRL *C, int level)
 
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 
-	GMT_explain_options (GMT, "<");
+	GMT_Option (C, "<");
 	GMT_message (GMT, "\t-D Set fixed increment when series is NOT equidistantly sampled.\n");
 	GMT_message (GMT, "\t   Then <increment> will be the abscissae resolution, i.e., all abscissae\n");
 	GMT_message (GMT, "\t   will be rounded off to a multiple of <increment>.\n");
@@ -220,7 +220,7 @@ int GMT_filter1d_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   then no output will be given at this point [Default does not check Symmetry].\n");
 	GMT_message (GMT, "\t-T Make evenly spaced output timesteps from <t_min> to <t_max> by <t_inc> [Default uses input times].\n");
 	GMT_message (GMT, "\t   Append + to <t_inc> to indicate number of t-values to produce instead.\n");
-	GMT_explain_options (GMT, "VC0D0fghio.");
+	GMT_Option (C, "V,bi,bo,f,g,h,i,o,.");
 	
 	return (EXIT_FAILURE);
 }

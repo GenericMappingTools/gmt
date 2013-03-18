@@ -74,7 +74,7 @@ int GMT_kml2gmt_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t<kmlfiles> is one or more KML files from Google Earth or similar.\n");
 	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
 	GMT_message (GMT, "\t-Z Output the z-column from the KML file [Only lon,lat is output].\n");
-	GMT_explain_options (GMT, "VD0h:.");
+	GMT_Option (C, "V,bo,h,:,.");
 
 	return (EXIT_FAILURE);
 }

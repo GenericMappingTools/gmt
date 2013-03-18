@@ -313,12 +313,12 @@ int GMT_mgd77list_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-T Turn OFF the otherwise automatic adjustment of values based on correction terms\n");
 	GMT_message (GMT, "\t   stored in the mgd77+ file (option has no effect on plain MGD77 ASCII files).\n");
 	GMT_message (GMT, "\t   Append m or e to indicate the MGD77 data set or the extended columns set [Default is both].\n");
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_message (GMT, "\t-W Set weight for these data [1].\n");
 	GMT_message (GMT, "\t-Z Append - to report bathymetry & msd as negative depths [Default is positive -Z+].\n");
-	GMT_explain_options (GMT, "D0");
+	GMT_Option (C, "bo");
 	GMT_message (GMT, "\t-h Write header record with column information [Default is no header].\n");
-	GMT_explain_options (GMT, ":.");
+	GMT_Option (C, ":,.");
 	
 	return (EXIT_FAILURE);
 }

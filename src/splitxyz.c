@@ -184,9 +184,9 @@ int GMT_splitxyz_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-S d,h is supplied.  Input is 5 col x,y,z,d,h with d non-decreasing.\n");
 	GMT_message (GMT, "\t   [Default input is 3 col x,y,z only and computes d,h from the data].\n");
 	GMT_message (GMT, "\t-Z No z-values.  Input is 2 col x,y only.\n");
-	GMT_explain_options (GMT, "VC0");
+	GMT_Option (C, "V,bi");
 	GMT_message (GMT, "\t     Default input columns is set given -S and -Z options.\n");
-	GMT_explain_options (GMT, "D0fghis:.");
+	GMT_Option (C, "bo,f,g,h,i,s,:,.");
 	
 	return (EXIT_FAILURE);
 }

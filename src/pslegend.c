@@ -114,7 +114,7 @@ int GMT_pslegend_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t<infofile> is one or more ASCII information files with legend commands.\n");
 	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
-	GMT_explain_options (GMT, "b");
+	GMT_Option (C, "B-");
 	GMT_message (GMT, "\t-C Set the clearance between legend frame and internal items [%gp/%gp].\n", FRAME_CLEARANCE, FRAME_CLEARANCE);
 	GMT_message (GMT, "\t-F Draw rectangular border around the legend (using MAP_FRAME_PEN) [Default is no border].\n");
 	GMT_message (GMT, "\t   Append +i[[<gap>/]<pen>] to add a secondary inner frame boundary [Default gap is %gp].\n", FRAME_GAP);
@@ -122,10 +122,10 @@ int GMT_pslegend_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   Append +r[<radius>] to plot rounded rectangles instead [Default radius is %gp].\n", FRAME_RADIUS);
 	GMT_message (GMT, "\t   Append +s[<dx>/<dy>/]<fill> to plot a shadow behind the legend box [Default offset is %gp/%g].\n", FRAME_CLEARANCE, -FRAME_CLEARANCE);
 	GMT_fill_syntax (GMT, 'G', "Set the fill for the legend box [Default is no fill].");
-	GMT_explain_options (GMT, "jK");
+	GMT_Option (C, "J-,K");
 	GMT_message (GMT, "\t-L Set the linespacing factor in units of the current annotation font size [1.1].\n");
-	GMT_explain_options (GMT, "OPR");
-	GMT_explain_options (GMT, "UVXpt.");
+	GMT_Option (C, "O,P,R");
+	GMT_Option (C, "U,V,X,p,t,.");
 
 	return (EXIT_FAILURE);
 }

@@ -132,9 +132,9 @@ int GMT_gmtvector_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   -Tr will rotate the input vectors. Depending on your input (2-D or 3-D), append\n");
 	GMT_message (GMT, "\t      <angle> or <plon/plat/angle>, respectively, to define the rotation.\n");
 	GMT_message (GMT, "\t   -Tx will compute cross-product(s) with secondary vector (see -S).\n");
-	GMT_explain_options (GMT, "VfgC0");
+	GMT_Option (C, "V,bi0");
 	GMT_message (GMT, "\t   Default is 2 [or 3; see -C, -fg] input columns.\n");
-	GMT_explain_options (GMT, "D0hios:.");
+	GMT_Option (C, "bo,f,g,h,i,o,s,:,.");
 	
 	return (EXIT_FAILURE);
 }

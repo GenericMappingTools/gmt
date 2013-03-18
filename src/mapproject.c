@@ -142,10 +142,10 @@ int GMT_mapproject_usage (struct GMTAPI_CTRL *C, int level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_explain_options (GMT, "JR");
+	GMT_Option (C, "J,R");
 	GMT_message (GMT, "\t   If UTM and -C are used then -R is optional (automatically set to match UTM zone)\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<");
+	GMT_Option (C, "<");
 	GMT_message (GMT, "\t-A Calculate azimuths from previous point in the input data with -Af. If <lon0>/<lat0>\n");
 	GMT_message (GMT, "\t   is provided, then all azimuths are computed with respect to that point.\n");
 	GMT_message (GMT, "\t   Use -Ab to calculate backazimuths from data to previous or the specified point.\n");
@@ -189,7 +189,7 @@ int GMT_mapproject_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   where <ellipsoid> may be ellipsoid ID (see -Qe or man page) or <semimajor>[,<inv_flattening>].\n");
 	GMT_message (GMT, "\t   <from> = - means WGS-84.  If /<to> is not given we assume WGS-84.\n");
 	GMT_message (GMT, "\t   -T can be used as pre- or post- (-I) processing for -J -R.\n");
-	GMT_explain_options (GMT, "VC2D0fghios:.");
+	GMT_Option (C, "V,bi2,bo,f,g,h,i,o,s,:,.");
 	
 	return (EXIT_FAILURE);
 }

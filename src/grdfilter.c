@@ -397,7 +397,7 @@ int GMT_grdfilter_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-T Toggle between grid and pixel registration for output grid [Default is same as input registration].\n");
 	GMT_message (GMT, "\t-R For new Range of output grid; enter <WESN> (xmin, xmax, ymin, ymax) separated by slashes.\n");
 	GMT_message (GMT, "\t   [Default uses the same region as the input grid].\n");
-	GMT_explain_options (GMT, "Vf.");
+	GMT_Option (C, "V,f,.");
 	
 	return (EXIT_FAILURE);
 }

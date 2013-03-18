@@ -96,7 +96,7 @@ int GMT_testapi_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   Optionally, append /v or /m to c|r to put data via vector or matrix.\n");
 	GMT_message (GMT, "\t   This is only valid for -Td|g.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "Vh.");
+	GMT_Option (C, "V,h,.");
 	
 	return (EXIT_FAILURE);
 }

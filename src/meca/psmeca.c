@@ -180,9 +180,9 @@ int GMT_psmeca_usage (struct GMTAPI_CTRL *C, int level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_explain_options (GMT, "jR");
+	GMT_Option (C, "J-,R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<b");
+	GMT_Option (C, "<,B-");
 	GMT_message (GMT, "\t-C Offset focal mechanisms to the latitude and longitude specified in the last two columns of the input file before label.\n");
 	GMT_message (GMT, "\t   Default pen attributes are set by -W.\n");
 	GMT_message (GMT, "\t   A line is plotted between both positions.\n");
@@ -191,11 +191,11 @@ int GMT_psmeca_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-E Set color used for extensive parts [default is white].\n");
 	GMT_message (GMT, "\t-G Set color used for compressive parts [default is black].\n");
 	GMT_message (GMT, "\t   <r/g/b> (each 0-255) for color or <gray> (0-255) for gray-shade [0].\n");
-	GMT_explain_options (GMT, "K");
+	GMT_Option (C, "K");
 	GMT_message (GMT, "\t-L Sets pen attribute for outline other than the default set by -W.\n");
 	GMT_message (GMT, "\t-M Same size for any magnitude. Size is given with -S.\n");
 	GMT_message (GMT, "\t-N Do Not skip/clip symbols that fall outside map border [Default will ignore those outside].\n");
-	GMT_explain_options (GMT, "OP");
+	GMT_Option (C, "O,P");
 	GMT_message (GMT, "\t-r Draw a box around text.\n");
 	GMT_message (GMT, "\t-S Select format type and symbol size (in %s).\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 	GMT_message (GMT, "\t   Choose format between:\n");
@@ -235,7 +235,7 @@ int GMT_psmeca_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   n = 0 both nodal planes are plotted.\n");
 	GMT_message (GMT, "\t   If moment tensor is required, nodal planes overlay moment tensor.\n");
 	GMT_message (GMT, "\t-z Overlay zero trace moment tensor using default pen (see -W) or sets outline pen.\n");
-	GMT_explain_options (GMT, "UV");
+	GMT_Option (C, "U,V");
 	GMT_message (GMT, "\t-W Set pen attributes [%s].\n", GMT_putpen (GMT, GMT->current.setting.map_default_pen));
 	GMT_message (GMT, "\t-Z Use cpt-file to assign colors based on depth-value in 3rd column.\n");
 	GMT_message (GMT, "\t-a Plot axis. Default symbols are circles.\n");
@@ -245,7 +245,7 @@ int GMT_psmeca_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t-t Draw T_symbol outline using the default pen (see -W) or sets pen attribute for outline.\n");
 	GMT_message (GMT, "\t-o Use psvelomeca format (Without depth in third column).\n");
 	GMT_message (GMT, "\t-r Draw box behind labels.\n");
-	GMT_explain_options (GMT, "Xchi:.");
+	GMT_Option (C, "X,c,h,i,:,.");
 
 	return (EXIT_FAILURE);
 }

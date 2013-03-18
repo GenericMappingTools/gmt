@@ -352,7 +352,7 @@ int GMT_project_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   (1) and (2) orient the p axis, while (3) orients the q axis.\n\n");
 	GMT_message (GMT, "\t-C Set the location of the center to be <ox>/<oy>.\n");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_explain_options (GMT, "<");
+	GMT_Option (C, "<");
 	GMT_message (GMT, "\t-A Set the option (1) Azimuth, (<azimuth> in degrees CW from North).\n");
 	GMT_message (GMT, "\t-D Force the location of the Discontinuity in the r coordinate;\n");
 	GMT_message (GMT, "\t   -Dd (dateline) means [-180 < r < 180], -Dg (greenwich) means [0 < r < 360].\n");
@@ -380,11 +380,11 @@ int GMT_project_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   If not set, then p,q,dist,l_min,l_max,w_min,w_max are assumed to be in same units as x,y,r,s.\n");
 	GMT_message (GMT, "\t-S Output should be Sorted into increasing p value.\n");
 	GMT_message (GMT, "\t-T Set the option (3) location of the roTation pole to the projection to be <px>/<py>.\n");
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_message (GMT, "\t-W Check the width across the projected track and use only certain points.\n");
 	GMT_message (GMT, "\t   This will use only those points whose q is [w_min <= q <= w_max].\n");
 	GMT_message (GMT, "\t   Note that q is positive to your LEFT as you walk from C toward E in azim direction.\n");
-	GMT_explain_options (GMT, "C2D0fghis:.");
+	GMT_Option (C, "bi2,bo,f,g,h,i,s,:,.");
 
 	return (EXIT_FAILURE);
 }

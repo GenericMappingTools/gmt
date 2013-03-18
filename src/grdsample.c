@@ -86,7 +86,7 @@ int GMT_grdsample_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   When omitted: grid spacing is copied from input grid.\n");
 	GMT_message (GMT, "\t-R Specify a subregion [Default is old region].\n");
 	GMT_message (GMT, "\t-T Toggle between grid registration and pixel registration.\n");
-	GMT_explain_options (GMT, "VfnF.");
+	GMT_Option (C, "V,f,n,r,.");
 
 	return (EXIT_FAILURE);
 }

@@ -158,9 +158,9 @@ int GMT_img2grd_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   -T1 for new img file w/ constraints coded, gets data at all points [Default].\n");
 	GMT_message (GMT, "\t   -T2 for new img file w/ constraints coded, gets data only at constrained points, NaN elsewhere.\n");
 	GMT_message (GMT, "\t   -T3 for new img file w/ constraints coded, gets 1 at constraints, 0 elsewhere.\n");
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_message (GMT, "\t-W Input img file runs from 0 to <maxlon> longitude [360.0].\n");
-	GMT_explain_options (GMT, "n.");
+	GMT_Option (C, "n,.");
 	
 	return (EXIT_FAILURE);
 }

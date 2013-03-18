@@ -96,7 +96,7 @@ EXTERN_MSC int64_t GMT_Get_Index	(struct GMT_GRID_HEADER *header, int row, int c
 
 /* 6 functions to show and inquire about GMT common options, GMT default settings, convert a string value to double, and a message printer */
 
-EXTERN_MSC void GMT_Option		(void *C, unsigned int mode, char *options);
+EXTERN_MSC void GMT_Option		(void *C, char *options);
 EXTERN_MSC int GMT_Get_Common		(void *C, unsigned int option, double *par);
 EXTERN_MSC int GMT_Get_Default		(void *C, char *keyword, char *value);
 EXTERN_MSC int GMT_Get_Value		(void *C, char *arg, double *par);

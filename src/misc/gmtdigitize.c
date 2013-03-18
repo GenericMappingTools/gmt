@@ -182,9 +182,9 @@ int GMT_gmtdigitize_usage (struct GMTAPI_CTRL *C, int level)
 	
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 	
-	GMT_explain_options (GMT, "j");
+	GMT_Option (C, "J-");
 	GMT_message (GMT, "\tScale or width is arbitrary as gmtdigitize solves for it based on calibration points\n");
-	GMT_explain_options (GMT, "R");
+	GMT_Option (C, "R");
 	GMT_message (GMT, "\n\tOPTIONS:\n");
 	GMT_message (GMT, "\t-A gives an audible alert each time a point is clicked [Default is silent]\n");
 	GMT_message (GMT, "\t-C Device (port) to use [Default is %s]\n", DIG_PORT);
@@ -197,11 +197,11 @@ int GMT_gmtdigitize_usage (struct GMTAPI_CTRL *C, int level)
 	GMT_message (GMT, "\t   for integer (e.g., line_%%d.d) then each segment will be written\n");
 	GMT_message (GMT, "\t   to separate files [Default is stdout]\n");
 	GMT_message (GMT, "\t-S means Suppress points outside region\n");
-	GMT_explain_options (GMT, "V");
+	GMT_Option (C, "V");
 	GMT_message (GMT, "\t   It will also duplicate data output to GMT->session.std[GMT_ERR] for monitoring\n");
 	GMT_message (GMT, "\t-Zv will prompt for z-value for each segment and output xyz triplets\n");
 	GMT_message (GMT, "\t-Zk means append button key id as a final column\n");
-	GMT_explain_options (GMT, "Dfho:.");
+	GMT_Option (C, "bo,f,h,o,:,.");
 	
 	return (EXIT_FAILURE);
 }
