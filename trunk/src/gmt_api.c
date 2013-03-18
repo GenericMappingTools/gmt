@@ -5124,7 +5124,64 @@ void GMT_Option_ (void *V_API, unsigned int *mode, char *options, int len)
 }
 #endif
 
-int GMT_Report_Message (void *V_API, unsigned int level, char *message)
+int GMT_Message (void *V_API, unsigned int mode, char *format, ...)
+{	/* Message independent of verbosity, optionally with timestamp.
+	 * mode = 0:	No time stamp
+	 * mode = 1:	Abs time stamp formatted via GMT_TIME_STAMP
+	 * mode = 2:	Report elapsed time since last reset.
+	 * mode = 4:	Reset elapsed time to 0, no time stamp.
+	 * mode = 6:	Reset elapsed time and report it as well.
+	 */
+	time_t toc, S;
+	unsigned int H, M;
+	char stamp[GMT_TEXT_LEN256];
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+
+#ifdef GMT_MATLAB
+	char line[GMT_BUFSIZ];
+#endif
+	va_list args;
+	
+	if (mode) toc = time ((time_t *)0);
+	if (mode & 4) API->GMT->current.time.tic = toc;
+
+	switch (mode) {
+		case 1:
+			strftime (stamp, sizeof(stamp), API->GMT->current.setting.format_time_stamp, localtime (&toc));
+			break;
+		case 2:
+		case 6:
+			S = toc - API->GMT->current.time.tic;
+			H = floor (S * GMT_SEC2HR);
+			S -= H * GMT_HR2SEC_I;
+			M = floor (S * GMT_SEC2MIN);
+			S -= M * GMT_MIN2SEC_I;
+			sprintf (stamp, "Elapsed time %2.2d:%2.2d:%2.2d", H, M, (int)S);
+			break;
+		default: break;
+	}
+	va_start (args, format);
+#ifdef GMT_MATLAB
+	/* Version used by Matlab MEXs that are not able to print to stdout/stderr */
+	if (mode % 4) mexPrintf ("%s | ", stamp);	/* Issue time stamp */
+	vsnprintf (line, GMT_BUFSIZ, format, args);
+	mexPrintf ("%s", line);
+#else
+	if (mode % 4) fprintf (API->GMT->session.std[GMT_ERR], "%s | ", stamp);	/* Issue time stamp */
+	vfprintf (API->GMT->session.std[GMT_ERR], format, args);
+#endif
+	va_end (args);
+	return (GMT_NOERROR);
+}
+
+#ifdef FORTRAN_API
+int GMT_Message_ (void *V_API, unsigned int *mode, char *message, int len)
+{	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Message (GMT_FORTRAN, *mode, message));
+}
+#endif
+
+int GMT_Report (void *V_API, unsigned int level, char *message)
 {	/* Message whose output depends on verbosity setting */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 
@@ -5133,9 +5190,9 @@ int GMT_Report_Message (void *V_API, unsigned int level, char *message)
 }
 
 #ifdef FORTRAN_API
-int GMT_Report_Message_ (void *V_API, unsigned int *level, char *message, int len)
+int GMT_Report_ (void *V_API, unsigned int *level, char *message, int len)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Report_Message (GMT_FORTRAN, *level, message));
+	return (GMT_Report (GMT_FORTRAN, *level, message));
 }
 #endif
 

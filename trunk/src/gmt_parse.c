@@ -423,7 +423,7 @@ int GMT_Parse_Common (void *V_API, char *given_options, struct GMT_OPTION *optio
 
 	struct GMT_OPTION *opt = NULL;
 	char list[2] = {0, 0}, *critical_opt_order = NULL;
-	int i, n_errors = 0;
+	unsigned int i, n_errors = 0;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */

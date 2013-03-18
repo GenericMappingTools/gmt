@@ -72,7 +72,7 @@ extern "C" {
 #include <time.h>
 
 #include "common_math.h"     /* Shared math functions */
-#include "gmt.h"             /* All GMT low-level API */
+#include "gmt.h"             /* All GMT high-level API */
 #include "gmt_private.h"     /* API declaration needed by libraries */
 
 struct GMT_CTRL; /* forward declaration of GMT_CTRL */

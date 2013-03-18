@@ -320,7 +320,7 @@ bool skip_if_outside (struct GMT_CTRL *GMT, struct GMT_DATATABLE *P, double lon,
 int GMT_grdrotater (void *V_API, int mode, void *args)
 {
 	int scol, srow, error = 0;	/* Signed row, col */
-	bool not_global, registered_d = false, global = false;
+	bool not_global, global = false;
 	unsigned int col, row, col_o, row_o, start_row, stop_row, start_col, stop_col;
 	
 	uint64_t ij, ij_rot, seg, rec;
@@ -388,7 +388,6 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 		pol = D->table[0];	/* Since it is a single file */
-		registered_d = true;
 	}
 	else if (not_global) {	/* Make a single grid-outline polygon */
 		if ((D = get_grid_path (GMT, G->header)) == NULL) Return (API->error);
@@ -436,7 +435,6 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->D.file, D) != GMT_OK) {
 			Return (API->error);
 		}
-		registered_d = true;
 	}
 	if (Ctrl->S.active) {
 		if (Ctrl->F.active && GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
@@ -545,11 +543,8 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 	GMT_free (GMT, grd_y);
 	GMT_free (GMT, grd_yc);
 	
-	if (registered_d && GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
+	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK)
 		Return (API->error);
-	}
-	else if (not_global)
-		GMT_free_dataset (GMT, &D);
 
 	GMT_report (GMT, GMT_MSG_VERBOSE, "Done!\n");
 

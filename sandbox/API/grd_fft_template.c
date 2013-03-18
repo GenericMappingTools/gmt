@@ -80,24 +80,24 @@ void Free_my_fft_program_Ctrl (void *API, struct MY_FFT_PROGRAM_CTRL *C) {	/* Fr
 
 int GMT_my_fft_program_usage (void *C, int level)
 {	/* Specifies the full usage message from the program when no argument are given */
-	fprintf (stderr, "my_fft_program - Create a grid, add a spike, filter it in frequency domain, and write output\n\n");
-	fprintf (stderr, "usage: my_fft_program -G<outgrid> [<ingrid> ][-I<xinc>[/<yinc>]] \n");
-	fprintf (stderr, "	[-R<xmin/xmax/ymin/ymax>] [-A<row/col>] [-D<dir>] [-F<width>]\n\n");
+	GMT_Message (C, GMT_TIME_NONE, "my_fft_program - Create a grid, add a spike, filter it in frequency domain, and write output\n\n");
+	GMT_Message (C, GMT_TIME_NONE, "usage: my_fft_program -G<outgrid> [<ingrid> ][-I<xinc>[/<yinc>]] \n");
+	GMT_Message (C, GMT_TIME_NONE, "	[-R<xmin/xmax/ymin/ymax>] [-A<row/col>] [-D<dir>] [-F<width>]\n\n");
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);	/* Stop here when only a hyphen is given as argument */
 
-	fprintf (stderr, "\t-G filename for output netCDF grid file.\n");
-	fprintf (stderr, "\tOPTIONS:\n");
-	fprintf (stderr, "\t<ingrid> is an optional grid file to start with instead of -R -I [-r].\n");
-	fprintf (stderr, "\t-A Specify a row,col pair indicating where to place a unit impulse [in the middle].\n");
-	fprintf (stderr, "\t-D Direction for filter: x, y, or r [r]\n");
-	fprintf (stderr, "\t-F Specify width for Gaussian filter exp {-(x/width)^2} [100k]\n");
-	fprintf (stderr, "\t-I To create a new grid, specify increments <xinc>[/<yinc>].\n");
+	GMT_Message (C, GMT_TIME_NONE, "\t-G filename for output netCDF grid file.\n");
+	GMT_Message (C, GMT_TIME_NONE, "\tOPTIONS:\n");
+	GMT_Message (C, GMT_TIME_NONE, "\t<ingrid> is an optional grid file to start with instead of -R -I [-r].\n");
+	GMT_Message (C, GMT_TIME_NONE, "\t-A Specify a row,col pair indicating where to place a unit impulse [in the middle].\n");
+	GMT_Message (C, GMT_TIME_NONE, "\t-D Direction for filter: x, y, or r [r]\n");
+	GMT_Message (C, GMT_TIME_NONE, "\t-F Specify width for Gaussian filter exp {-(x/width)^2} [100k]\n");
+	GMT_Message (C, GMT_TIME_NONE, "\t-I To create a new grid, specify increments <xinc>[/<yinc>].\n");
 	/* All programs needing the GMT FFT machinery must display the FFT option. Call it N unless taken.
 	 * Pass the dimension of the FFT work (1 for tables, 2 for grids) */
 	GMT_FFT_Option (C, 'N', GMT_FFT_DIM, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers:");
-	fprintf (stderr, "\t-R To create a new grid, specify region <xmin/xmax/ymin/ymax>.\n");
-	fprintf (stderr, "\t-r Select pixel registration for new grid.\n");
+	GMT_Message (C, GMT_TIME_NONE, "\t-R To create a new grid, specify region <xmin/xmax/ymin/ymax>.\n");
+	GMT_Message (C, GMT_TIME_NONE, "\t-r Select pixel registration for new grid.\n");
 
 	return (EXIT_FAILURE);
 }
@@ -118,7 +118,7 @@ int GMT_my_fft_program_parse (void *API, struct MY_FFT_PROGRAM_CTRL *Ctrl, struc
 		switch (opt->option) {
 			case '<':	/* Input file */
 				if (Ctrl->In.active) {
-					fprintf (stderr, "Syntax error: Only one input file allowed\n");
+					GMT_Message (API, GMT_TIME_NONE, "Syntax error: Only one input file allowed\n");
 				}
 				else {
 					Ctrl->In.active = 1;
@@ -132,7 +132,7 @@ int GMT_my_fft_program_parse (void *API, struct MY_FFT_PROGRAM_CTRL *Ctrl, struc
 					Ctrl->A.row = (unsigned int)value[1];
 				}
 				else {
-					fprintf (stderr, "Syntax error: Must give row/col pair\n");
+					GMT_Message (API, GMT_TIME_NONE, "Syntax error: Must give row/col pair\n");
 					n_errors ++;
 				}
 				break;
@@ -153,14 +153,14 @@ int GMT_my_fft_program_parse (void *API, struct MY_FFT_PROGRAM_CTRL *Ctrl, struc
 				if ((Ctrl->N.info = GMT_FFT_Parse (API, 'N', GMT_FFT_DIM, opt->arg)) == NULL) n_errors ++;
 				break;
 			default:	/* Report bad options */
-				fprintf (stderr, "Syntax error: Unrecognized option %c%s\n", opt->option, opt->arg);
+				GMT_Message (API, GMT_TIME_NONE, "Syntax error: Unrecognized option %c%s\n", opt->option, opt->arg);
 				n_errors ++;
 				break;
 		}
 	}
 
-	if (!Ctrl->G.active) fprintf (stderr, "Syntax error: Must specify output file\n"), n_errors++;
-	if (Ctrl->F.active && Ctrl->F.width <= 0.0) fprintf (stderr, "Syntax error -F: Must specify a positive width\n"), n_errors++;
+	if (!Ctrl->G.active) GMT_Message (API, GMT_TIME_NONE, "Syntax error: Must specify output file\n"), n_errors++;
+	if (Ctrl->F.active && Ctrl->F.width <= 0.0) GMT_Message (API, GMT_TIME_NONE, "Syntax error -F: Must specify a positive width\n"), n_errors++;
 
 	return (n_errors);
 }
@@ -205,12 +205,12 @@ int main (int argc, char *argv[])
 
 	rw_mode = GMT_GRID_ALL | GMT_GRID_IS_COMPLEX_REAL;	/* We want to place our grid in a complex form */
 	if (Ctrl->In.active) {	/* User specified an input grid file */
-		fprintf (stderr, "Read input grid from %s\n", Ctrl->In.file);
+		GMT_Message (API, GMT_TIME_CLOCK, "Read input grid from %s\n", Ctrl->In.file);
 		if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, rw_mode, NULL, Ctrl->In.file, NULL)) == NULL)
 			Return (EXIT_FAILURE);
 	}
 	else {	/* Create an empty grid from current -R -I [-r] instead */
-		fprintf (stderr, "No grid provided, create new grid from current -R -I [-r] settings\n");
+		GMT_Message (API, GMT_TIME_CLOCK, "No grid provided, create new grid from current -R -I [-r] settings\n");
 		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, rw_mode, NULL, NULL, NULL, \
 			GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL) Return (EXIT_FAILURE);
 	}
@@ -223,14 +223,14 @@ int main (int argc, char *argv[])
 		Ctrl->A.col = Grid->header->nx / 2;
 	}
 	if (Ctrl->A.row >= Grid->header->ny || Ctrl->A.col >= Grid->header->nx) {
-		fprintf (stderr, "Spike is placed outside the grid! We give up.\n");
+		GMT_Message (API, GMT_TIME_CLOCK, "Spike is placed outside the grid! We give up.\n");
 		Return (EXIT_FAILURE);
 	}
 	
 	/* Place our spike at the desired location; 2 * since grid is complex */
 	node = 2 * GMT_Get_Index (Grid->header, Ctrl->A.row, Ctrl->A.col);
 	Grid->data[node] = 1.0;	/* The deadly spike */
-	fprintf (stderr, "Placed spike at %g, %g [col = %u, row = %u]\n", x[Ctrl->A.col], y[Ctrl->A.row], Ctrl->A.col, Ctrl->A.row);
+	GMT_Message (API, GMT_TIME_CLOCK, "Placed spike at %g, %g [col = %u, row = %u]\n", x[Ctrl->A.col], y[Ctrl->A.row], Ctrl->A.col, Ctrl->A.row);
 	
 	/* Initialize FFT structs, check for NaNs, detrend, save intermediate files, etc. per -N settings */
 	
@@ -241,7 +241,7 @@ int main (int argc, char *argv[])
 		case 'y': mode = 2; break;
 		case 'r': mode = 0; break;
 	}
-	fprintf (stderr, "Using wavenumbers in the %c direction [mode = %u]\n", Ctrl->D.dir, mode);
+	GMT_Message (API, GMT_TIME_CLOCK, "Using wavenumbers in the %c direction [mode = %u]\n", Ctrl->D.dir, mode);
 
 	/* Take the forward FFT */
 	if (GMT_FFT (API, Grid, GMT_FFT_FWD, GMT_FFT_COMPLEX, FFT_info)) Return (EXIT_FAILURE);

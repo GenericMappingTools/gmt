@@ -43,7 +43,7 @@ FORMAT_FLOAT_OUT		= %.12g
 FORMAT_FLOAT_MAP		= %.12g
 FORMAT_TIME_PRIMARY_MAP		= full
 FORMAT_TIME_SECONDARY_MAP	= full
-FORMAT_TIME_LOGO		= %Y %b %d %H:%M:%S
+FORMAT_TIME_STAMP		= %Y %b %d %H:%M:%S
 #
 # GMT Miscellaneous Parameters
 #

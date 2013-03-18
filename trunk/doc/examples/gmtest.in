@@ -137,7 +137,7 @@ ln -fs "$src"/* .
 unset GLOBIGNORE
 
 # Start with proper GMT defaults
-gmtset -Du FORMAT_TIME_LOGO "Version 5"
+gmtset -Du FORMAT_TIME_STAMP "Version 5"
 
 # Now run the original script
 . "${script}"

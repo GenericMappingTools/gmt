@@ -37,7 +37,7 @@ psxy -R -J -O -K -W5p,white faa.trk >> $ps
 psxy -R -J -O -K -W1p,red faa.trk >> $ps
 echo "-100 100 FAA" | pstext -R -J -O -K -F+jTL+f14p -Dj0.1i/0.1i -Gwhite -TO >> $ps
 # 4. Compute the geoid anomaly
-gravfft smt.nc+uk -D1670 -Nf -V -Fg -E$order -Ggeoid.nc
+gravfft smt.nc+uk -D1670 -Nf -Fg -E$order -Ggeoid.nc
 # MR plot the VGG anomaly
 makecpt -Crainbow -T0/5/0.25 -Z > t.cpt
 grdimage geoid.nc -R-100/100/-100/100 -JX3i -O -Bagwsne -Ct.cpt -K -X3.5i >> $ps

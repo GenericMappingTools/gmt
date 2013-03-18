@@ -37,21 +37,21 @@ int main (int argc, char *argv[])
 
 	/* ---------------------------- This is the gmt_io main code ----------------------------*/
 
-	fprintf (stderr, "Enter various lengths, distances, coordinates, either one-by-one or comma/slash separated.  End with -:\n");
+	GMT_Message (API, GMT_TIME_CLOCK, "Enter various lengths, distances, coordinates, either one-by-one or comma/slash separated.  End with -:\n");
 	while (scanf ("%s", input) == 1 && input[0]) {
 		if (!strcmp (input, "-")) break;
 		ret = GMT_Get_Value (API, input, value);
 		report (input, ret, value);
 	}
 	
-	fprintf (stderr, "Enter name of GMT default parameter.  End with -:\n");
+	GMT_Message (API, GMT_TIME_CLOCK, "Enter name of GMT default parameter.  End with -:\n");
 	while (scanf ("%s", input) == 1 && input[0]) {
 		if (!strcmp (input, "-")) break;
 		ret = GMT_Get_Default (API, input, parameter);
 		if (ret == 0) fprintf (stderr, "%20s = %s\n", input, parameter);
 	}
 	
-	fprintf (stderr, "These are the GMT common options and values you specified:\n");
+	GMT_Message (API, GMT_TIME_CLOCK, "These are the GMT common options and values you specified:\n");
 	for (k = 0; k < strlen (commons); k++) {
 		if ((ret = GMT_Get_Common (API, commons[k], value)) == -1) continue;
 		string[0] = commons[k];

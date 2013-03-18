@@ -161,6 +161,14 @@ enum GMT_FFT_modes {
 	GMT_FFT_COMPLEX = 1U  /* complex-input Fourier transform */
 };
 
+/* Various modes to select time in GMT_Message */
+enum GMT_time_modes {
+	GMT_TIME_NONE    = 0U, /* Do not report time */
+	GMT_TIME_CLOCK   = 1U, /* Report absolute time formatted via FORMAT_TIME_STAMP */
+	GMT_TIME_ELAPSED = 2U, /* Report elapsed time since last time mark reset */
+	GMT_TIME_RESET   = 4U  /* Reset time mark */
+};
+
 /*============================================================ */
 /*===============+ GMT_GRID Public Declaration =============== */
 /*============================================================ */

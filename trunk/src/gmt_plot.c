@@ -2422,10 +2422,10 @@ void gmt_timestamp (struct GMT_CTRL *C, struct PSL_CTRL *P, double x, double y, 
 	double dim[3] = {0.365, 0.15, 0.032};	/* Predefined dimensions in inches */
 	double unset_rgb[4] = {-1.0, -1.0, -1.0, 0.0};
 
-	/* Plot time string in format defined by format_time_logo */
+	/* Plot time string in format defined by format_time_stamp */
 
 	right_now = time ((time_t *)0);
-	strftime (text, sizeof(text), C->current.setting.format_time_logo, localtime (&right_now));
+	strftime (text, sizeof(text), C->current.setting.format_time_stamp, localtime (&right_now));
 	sprintf (label, "  %s  ", text);
 
 	PSL_command (P, "%% Begin GMT time-stamp\nV\n");

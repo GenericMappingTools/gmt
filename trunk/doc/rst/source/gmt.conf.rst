@@ -200,11 +200,6 @@ fonts can be found in the **gmt** man page.
     (e.g., 5 for 6th since 0 is the first) or a range of columns (e.g.,
     3-7). The last specification without column information will
     override the format for all other columns.
-**FORMAT\_TIME\_LOGO**
-    Defines the format of the time information in the UNIX time stamp.
-    This format is parsed by the C function **strftime**, so that
-    virtually any text can be used (even not containing any time
-    information) [%Y %b %d %H:%M:%S].
 **FORMAT\_TIME\_PRIMARY\_MAP**
     Controls how primary month-, week-, and weekday-names are formatted.
     Choose among **full**, **abbreviated**, and **character**. If the
@@ -216,6 +211,11 @@ fonts can be found in the **gmt** man page.
     **character**. If the leading **f**, **a**, or **c** are replaced
     with **F**, **A**, and **C** the entire annotation will be in upper
     case [full].
+**FORMAT\_TIME\_STAMP**
+    Defines the format of the time information in the UNIX time stamp.
+    This format is parsed by the C function **strftime**, so that
+    virtually any text can be used (even not containing any time
+    information) [%Y %b %d %H:%M:%S].
 **GMT\_FFT**
     Determines which Fast Fourier Transform (FFT) should be used among
     those that have been configured during installation. Choose from
