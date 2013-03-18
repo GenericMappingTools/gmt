@@ -316,7 +316,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
-	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
+	if (API == NULL) return (GMT_NOT_A_SESSION);
 	options = GMT_Prep_Options (API, mode, args);
 	if (API->error) return (API->error);	/* Set or get option list */
 

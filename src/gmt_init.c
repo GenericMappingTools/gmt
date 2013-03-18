@@ -418,6 +418,10 @@ void GMT_explain_options (struct GMT_CTRL *C, char *options)
 			GMT_message (C, "\t   (See psbasemap for more details on projection syntax)\n");
 			break;
 
+		case 'I':	/* Near-common option for grid increments */
+			GMT_inc_syntax (C, 'I', false);
+			break;
+
 		case 'K':	/* Append-more-PostScript-later */
 
 			GMT_message (C, "\t-K Allow for more plot code to be appended later.\n");

@@ -290,7 +290,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
-	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
+	if (API == NULL) return (GMT_NOT_A_SESSION);
 	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_mgd77sniffer_usage (API, GMTAPI_USAGE));	/* Return the usage message */

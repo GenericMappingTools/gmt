@@ -38,8 +38,7 @@
  *  Configure the implementation with gmtset GMT_FFT.
  *
  *--------------------------------------------------------------------------
- * The following functions are available via the API if #define GMT_FFT_EXTENSION is set.
- * The prototypes are declared in gmt.h and coded in gmt_api.c
+ * These prototypes are declared in gmt.h and coded in gmt_api.c
  *
  * GMT_FFT_Option     : Lets user code display FFT options
  * GMT_FFT_Parse      : Allows parsing of user option for the FFT settings

@@ -5031,7 +5031,7 @@ int gmt_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 
 	n_reg = GMTAPI_n_items (C->parent, GMT_IS_DATASET, GMT_OUT, &object_ID);	/* Are there outputs registered already? */
 	if (n_reg == 1) {	/* Yes, must save and unregister, then reregister later */
-		if ((item = GMTAPI_Validate_ID (C->parent, GMT_IS_DATASET, object_ID, GMT_OUT)) == GMTAPI_NOTSET) return (GMT_Report_Error (C->parent, error));
+		if ((item = GMTAPI_Validate_ID (C->parent, GMT_IS_DATASET, object_ID, GMT_OUT)) == GMTAPI_NOTSET) return (GMTAPI_report_error (C->parent, error));
 		GMT_memcpy (&O, C->parent->object[item], 1, struct GMTAPI_DATA_OBJECT);
 		GMTAPI_Unregister_IO (C->parent, object_ID, GMT_OUT);
 	}
@@ -5065,7 +5065,7 @@ int gmt_prep_ogr_output (struct GMT_CTRL *C, struct GMT_DATASET *D) {
 		return (C->parent->error);
 	}
 	if ((item = GMTAPI_Validate_ID (C->parent, GMT_IS_DATASET, object_ID, GMT_OUT)) == GMTAPI_NOTSET) {
-		return (GMT_Report_Error (C->parent, error));
+		return (GMTAPI_report_error (C->parent, error));
 	}
 	GMT_memcpy (C->parent->object[item], &O, 1, struct GMTAPI_DATA_OBJECT);	/* Restore what we had before */
 	

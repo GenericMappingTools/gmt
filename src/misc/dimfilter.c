@@ -404,7 +404,7 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
-	if (API == NULL) return (GMT_Report_Error (API, GMT_NOT_A_SESSION));
+	if (API == NULL) return (GMT_NOT_A_SESSION);
         options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);   /* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) return (GMT_dimfilter_usage (API, GMTAPI_USAGE));/* Return the usage message */
