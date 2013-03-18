@@ -26,15 +26,16 @@
 #define GMT_FFT_EXTENSION	/* All programs needing the GMT FFT machinery must set this first */
 #define GMT_FFT_DIM	2	/* Dimension of FFT needed */
 #include "gmt.h"		/* All programs using the GMT API needs this */
+/* Add any other include files needed by your program */
 #include <math.h>
-#include <strings.h>
+#include <string.h>
 
 #define GMT_OPTIONS	"-VRIfr"	/* List the GMT options your program may need */
 
 struct MY_FFT_PROGRAM_CTRL {	/* Here is where you collect your programs specific options */
-	struct In {	/* Input file */
+	struct In {	/* Input grid file */
 		unsigned int active;	/* True if this option was specified */
-		char *file;	/* Name of input file */
+		char *file;	/* Name of input grid file */
 	} In;
 	struct A {	/* -A<row/col> specifies location where a spike will be added */
 		unsigned int active;	/* True if this option was specified */
@@ -44,9 +45,9 @@ struct MY_FFT_PROGRAM_CTRL {	/* Here is where you collect your programs specific
 		unsigned int active;	/* True if this option was specified */
 		char dir;	/* 0, 1, or 2 */
 	} D;
-	struct F {	/* -F<wavelength> sets Gaussian filter fullwidth in km */
+	struct F {	/* -F<width> sets Gaussian filter width */
 		unsigned int active;	/* True if this option was specified */
-		double wavelength;	/* Expected to be in km and equal 6 sigma */
+		double width;	/* Width Gaussian filter */
 	} F;
 	struct G {	/* -G<outfile> sets the output file name */
 		unsigned int active;	/* True if this option was specified */
@@ -65,15 +66,16 @@ struct MY_FFT_PROGRAM_CTRL * New_my_fft_program_Ctrl (void *API) {	/* Allocate a
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
-	C->F.wavelength = 100.0;	/* Default for -F is 100 km */
+	C->D.dir = 'r';		/* Default is radial wavenumbers */
+	C->F.width = 100000.0;	/* Default for -F is 100 km */
 	return (C);
 }
 
 void Free_my_fft_program_Ctrl (void *API, struct MY_FFT_PROGRAM_CTRL *C) {	/* Free memory used by Ctrl and deallocate it */
 	if (!C) return;
 	if (C->In.file) free (C->In.file);	
-	if (C->G.file) free (C->G.file);	
-	if (C->N.info) GMT_FFT_Destroy (API, C->N.info);
+	if (C->G.file)  free (C->G.file);	
+	if (C->N.info)  GMT_FFT_Destroy (API, C->N.info);
 	free (C);	
 }
 
@@ -81,7 +83,7 @@ int GMT_my_fft_program_usage (void *C, int level)
 {	/* Specifies the full usage message from the program when no argument are given */
 	fprintf (stderr, "my_fft_program - Create a grid, add a spike, filter it in frequency domain, and write output\n\n");
 	fprintf (stderr, "usage: my_fft_program -G<outgrid> [<ingrid> ][-I<xinc>[/<yinc>]] \n");
-	fprintf (stderr, "	[-R<xmin/xmax/ymin/ymax>] [-A<row/col>] [-D<dir>] [-F<wavelength>]\n\n");
+	fprintf (stderr, "	[-R<xmin/xmax/ymin/ymax>] [-A<row/col>] [-D<dir>] [-F<width>]\n\n");
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);	/* Stop here when only a hyphen is given as argument */
 
@@ -90,7 +92,7 @@ int GMT_my_fft_program_usage (void *C, int level)
 	fprintf (stderr, "\t<ingrid> is an optional grid file to start with instead of -R -I [-r].\n");
 	fprintf (stderr, "\t-A Specify a row,col pair indicating where to place a unit impulse [in the middle].\n");
 	fprintf (stderr, "\t-D Direction for filter: x, y, or r [r]\n");
-	fprintf (stderr, "\t-F Specify full width (6 sigma) in km for Gaussian filter [100 km]\n");
+	fprintf (stderr, "\t-F Specify width for Gaussian filter exp {-(x/width)^2} [100k]\n");
 	fprintf (stderr, "\t-I To create a new grid, specify increments <xinc>[/<yinc>].\n");
 	/* All programs needing the GMT FFT machinery must display the FFT option. Call it N unless taken.
 	 * Pass the dimension of the FFT work (1 for tables, 2 for grids) */
@@ -107,8 +109,9 @@ int GMT_my_fft_program_parse (void *API, struct MY_FFT_PROGRAM_CTRL *Ctrl, struc
 	 * Note: Ctrl has already been initialized and non-zero default values set.
 	 * Any GMT common options will override values set previously by other commands.
 	 */
-
+	int ret;
 	unsigned int n_errors = 0;	/* Keep track of parsing errors */
+	double value[2];
 	struct GMT_OPTION *opt = NULL;	/* Loop variable pointing to the current option */
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -125,11 +128,22 @@ int GMT_my_fft_program_parse (void *API, struct MY_FFT_PROGRAM_CTRL *Ctrl, struc
 				break;
 			case 'A':	/* Location of spike */
 				Ctrl->A.active = 1;
-				sscanf (opt->arg, "%d/%d", &Ctrl->A.row, &Ctrl->A.row);
+				if ((ret = GMT_Get_Value (API, opt->arg, value)) == 2) {
+					Ctrl->A.row = (unsigned int)value[0];
+					Ctrl->A.row = (unsigned int)value[1];
+				}
+				else {
+					fprintf (stderr, "Syntax error: Must give row/col pair\n");
+					n_errors ++;
+				}
 				break;
-			case 'F':	/* Gaussian filter fullwidth */
+			case 'D':	/* Select wavenumber direction */
+				Ctrl->D.active = 1;
+				Ctrl->D.dir = opt->arg[0];
+				break;
+			case 'F':	/* Gaussian filter width */
 				Ctrl->F.active = 1;
-				Ctrl->F.wavelength = atof (opt->arg);
+				if ((ret = GMT_Get_Value (API, opt->arg, value)) == 1) Ctrl->F.width = value[0];
 				break;
 			case 'G':	/* Output file */
 				Ctrl->G.active = 1;
@@ -147,13 +161,13 @@ int GMT_my_fft_program_parse (void *API, struct MY_FFT_PROGRAM_CTRL *Ctrl, struc
 	}
 
 	if (!Ctrl->G.active) fprintf (stderr, "Syntax error: Must specify output file\n"), n_errors++;
-	if (Ctrl->F.active && Ctrl->F.wavelength <= 0.0) fprintf (stderr, "Syntax error -F: Must specify a positive width\n"), n_errors++;
+	if (Ctrl->F.active && Ctrl->F.width <= 0.0) fprintf (stderr, "Syntax error -F: Must specify a positive width\n"), n_errors++;
 
 	return (n_errors);
 }
 
 /* Convenience macros to free memory before exiting due to error or completion */
-#define bailout(code) {GMT_Destroy_Options (API, &options); return (code);}
+#define bailout(code) {GMT_Destroy_Options (API, &options); GMT_Destroy_Session (API); return (code);}
 #define Return(code) {Free_my_fft_program_Ctrl (API, Ctrl); bailout (code);}
 
 int main (int argc, char *argv[])
@@ -163,7 +177,7 @@ int main (int argc, char *argv[])
 	unsigned int mode = 0;				/* To select radial [0], x (1), or y (2) wavenumber */
 	unsigned int rw_mode;				/* Mode to pass when reading or craeting grid */
 	uint64_t re, im, node;				/* Indeces into grids should be of this type */
-	double k, filter, k_ref, sigma;			/* Normally all math is done in double */
+	double k, filter, k_ref;			/* Normally all math is done in double */
 	double *x = NULL, *y = NULL;			/* Coordinate arrays for the grid */
 	struct GMT_GRID *Grid = NULL;			/* This will be pointer to our grid */
 	void *FFT_info = NULL;				/* Holds information about all things FFT related */
@@ -214,9 +228,9 @@ int main (int argc, char *argv[])
 		Return (EXIT_FAILURE);
 	}
 	
-	/* Place our spike at the desired location */
-	node = GMT_Get_Index (Grid->header, Ctrl->A.row, Ctrl->A.col);
-	Grid->data[node] = 1000.0;	/* The deadly spike */
+	/* Place our spike at the desired location; 2 * since grid is complex */
+	node = 2 * GMT_Get_Index (Grid->header, Ctrl->A.row, Ctrl->A.col);
+	Grid->data[node] = 1.0;	/* The deadly spike */
 	fprintf (stderr, "Placed spike at %g, %g [col = %u, row = %u]\n", x[Ctrl->A.col], y[Ctrl->A.row], Ctrl->A.col, Ctrl->A.row);
 	
 	/* Initialize FFT structs, check for NaNs, detrend, save intermediate files, etc. per -N settings */
@@ -228,14 +242,14 @@ int main (int argc, char *argv[])
 		case 'y': mode = 2; break;
 		case 'r': mode = 0; break;
 	}
+	fprintf (stderr, "Using wavenumbers in the %c direction [mode = %u]\n", Ctrl->D.dir, mode);
 
 	/* Take the forward FFT */
 	if (GMT_FFT (API, Grid, GMT_FFT_FWD, GMT_FFT_COMPLEX, FFT_info)) Return (EXIT_FAILURE);
 
 	/* Now do operations in frequency domain.  Here we are just filtering our spike  */
 	
-	sigma = 1000.0 * Ctrl->F.wavelength / 6.0;	/* We gave filter fullwidth as 6 sigma in km; convert to meters */
-	k_ref = 2 * M_PI / sigma;			/* Filter is exp (-0.5*(k/k_ref)^2) */
+	k_ref = 2.0 * M_PI / Ctrl->F.width;	/* Filter is exp (-0.5*(k/k_ref)^2) */
 	
 	/* Grid->data contains Grid->header->size values with {real, imag} in adjacent positions.  Typically,
 	 * you will loop over all of these as below, and obtain the wavenumber using either the real or imaginary
@@ -243,7 +257,7 @@ int main (int argc, char *argv[])
 	
 	for (re = 0, im = 1; re < Grid->header->size; re += 2, im += 2) {	/* Loop over the entire complex grid */
 		k = GMT_FFT_Wavenumber (API, re, mode, FFT_info);	/* Get chosen wavenumber */
-		filter = exp (-0.5 * pow (k/k_ref, 2.0));	/* Compute filter for this wavenumber */
+		filter = exp (-pow (k/k_ref, 2.0));	/* Compute filter for this wavenumber */
 		Grid->data[re] *= filter;			/* Filter real component */
 		Grid->data[im] *= filter;			/* Filter imag component */
 	}
@@ -258,9 +272,9 @@ int main (int argc, char *argv[])
 
 	/* Free memory resources obtained via the API */
 
-	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &x) != GMT_NOERROR) return EXIT_FAILURE;
-	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &y) != GMT_NOERROR) return EXIT_FAILURE;
+	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &x) != GMT_NOERROR) Return (EXIT_FAILURE);
+	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &y) != GMT_NOERROR) Return (EXIT_FAILURE);
 	
 	/* Destroy GMT session and let GMT garbage collection free used memory */
-	if (GMT_Destroy_Session (API) != GMT_NOERROR) return EXIT_FAILURE;
+	Return (EXIT_SUCCESS);
 }

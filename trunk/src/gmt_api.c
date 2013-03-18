@@ -5071,6 +5071,51 @@ int GMT_Get_Default_ (char *keyword, char *value, int len1, int len2)
 }
 #endif
 
+void GMT_Option (void *V_API, unsigned int mode, char *options)
+{	/* Take comma-separated GMT options and print the usage message(s)
+ 	 * mode is currently unused. */
+	unsigned int pos = 0, k = 0;
+	char p[GMT_TEXT_LEN64], arg[GMT_TEXT_LEN64];
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+
+	GMT_memset (arg, GMT_TEXT_LEN64, char);
+	while (GMT_strtok (options, ",", &pos, p) && k < GMT_TEXT_LEN64) {
+		switch (p[0]) {
+			case 'R':	/* Want -R region usage */
+				if (p[1]) {	/* Gave modifiers */
+					if (p[1] == 'x') arg[k++] = 'A';	/* Cartesian region */
+					else if (p[1] == 'g') arg[k++] = 'R';	/* Geographic region */
+					else arg[k++] = 'R';			/* Geographic region [Default] */
+					if (p[1] == '3' || p[2] == '3') arg[k++] = 'z';	/* 3-D region */
+				}
+				else arg[k++] = 'R';			/* Geographic region [Default] */
+				break;
+			case 'J':	/* Let -J be -J and -J3 be adding -Z for 3-D scaling */
+				arg[k++] = p[0];	/* Pass along the J or j */
+				if (p[1] == 'Z' || p[1] == 'z') arg[k++] = 'Z';
+				break;
+			case 'b':	/* Binary i/o -bi -bo */
+				arg[k++] = (p[1] == 'i') ? 'C' : 'D';
+				arg[k++] = (p[2]) ? p[2] : '0';
+				break;
+			case 'r':	/* Pixel registration */
+				arg[k++] = 'F';
+				break;
+			default:	/* All others are pass-through */
+				arg[k++] = p[0];
+				break;
+		}
+	}
+	GMT_explain_options (API->GMT, arg);
+}
+
+#ifdef FORTRAN_API
+void GMT_Option_ (void *V_API, unsigned int *mode, char *options, int len)
+{	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	GMT_Option (GMT_FORTRAN, *mode, options);
+}
+#endif
+
 int GMT_Report_Message (void *V_API, unsigned int level, char *message)
 {
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
