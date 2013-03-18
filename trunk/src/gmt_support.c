@@ -4039,7 +4039,7 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *C, char option, char *a
 	n_cols = (get_distances) ? 3 :2;
 	while (!error && (GMT_strtok (args, ",", &pos, p))) {
 		S = GMT_memory (C, NULL, 1, struct GMT_DATASEGMENT);
-		GMT_alloc_segment (C, S, 2, n_cols, true);
+		GMT_alloc_segment (C, S, 2, n_cols, true);	/* n_cols with 2 rows each */
 		k = p_mode = s = 0;	len = strlen (p);
 		while (s == 0 && k < len) {	/* Find first occurrence of recognized modifier+<char>, if any */
 			if ((p[k] == '+') && (p[k+1] && strchr ("ailnor", p[k+1]))) s = k;
@@ -4145,8 +4145,13 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *C, char option, char *a
 			resample = false;	/* Since we already got our profile */
 		}
 		if (resample) S->n_rows = GMT_resample_path (C, &S->coord[GMT_X], &S->coord[GMT_Y], S->n_rows, step, mode);
-		if (get_distances) S->coord[GMT_Z] = GMT_dist_array (C, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, true);	/* Compute cumulative distances along line */
-		
+		if (get_distances) {	/* Compute cumulative distances along line */
+			S->coord[GMT_Z] = GMT_dist_array (C, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, true);
+			if (p_mode & GMT_GOT_ORIENT) {	/* Adjust distances to have 0 at specified origin */
+				L = 0.5 * S->coord[GMT_Z][S->n_rows-1];	/* Half-way distance to remove */
+				for (k = 0; k < S->n_rows; k++) S->coord[GMT_Z][k] -= L;
+			}
+		}
 		if (project) {	/* Project coordinates */
 			uint64_t k;
 			double x, y;

@@ -163,12 +163,13 @@ int GMT_grdtrack_usage (struct GMTAPI_CTRL *C, int level) {
 	GMT_message (GMT, "\t   are <lon/lat> or a 2-character XY key that uses the \"pstext\"-style justification format\n");
 	GMT_message (GMT, "\t   format to specify a point on the map as [LCR][BMT].  In addition, you can use Z-, Z+ to mean\n");
 	GMT_message (GMT, "\t   the global minimum and maximum locations in the grid.  Note: No track file is read.\n");
-	GMT_message (GMT, "\t   Append +i<inc>[unit] to set the sampling increment [Default is 0.5 x min of (x_inc, y_inc)n");
+	GMT_message (GMT, "\t   Append +i<inc>[unit] to set the sampling increment [Default is 0.5 x min of (x_inc, y_inc)\n");
 	GMT_message (GMT, "\t   and if geographic data we choose great circle distances in km].\n");
 	GMT_message (GMT, "\t   Instead of <start/stop>, give <origin> and append +a|o|l|n|r as required:\n");
 	GMT_message (GMT, "\t     +a<az> defines a profiles from <origin> in <az> direction. Add +l<length>.\n");
 	GMT_message (GMT, "\t     +o<az> is like +a but centers profile on <origin>. Add +l<length>.\n");
 	GMT_message (GMT, "\t     +r<radius> defines a circle about <origin>. Add +i<inc> or +n<np>.\n");
+	GMT_message (GMT, "\t     +n<np> sets the number of output points and computes <inc> from <length>.\n");
 	GMT_message (GMT, "\t-N Do NOT skip points outside the grid domain [Default only returns points inside domain].\n");
 	GMT_explain_options (GMT, "R");
 	GMT_explain_options (GMT, "V");
@@ -489,6 +490,8 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		double xyz[2][3];
 		
 		if ((Din = GMT_create_dataset (GMT, 1, 0, 3, 0, GMT_IS_LINE, true)) == NULL) Return (API->error);
+		GMT_free_table (GMT, Din->table[0]);	/* Since we will add our own below */
+		
 		//if ((Din = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty dataset with 1 table */
 		if (Ctrl->E.unit == 0) {	/* Was not set via -E; default to Cartesian or km (great circle dist) */
 			Ctrl->E.unit = (GMT_is_geographic (GMT, GMT_IN)) ? 'k' : 'X';
