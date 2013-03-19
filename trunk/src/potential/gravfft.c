@@ -420,7 +420,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE,"\t   v = Vertical Gravity Gradient (VGG; 1 Eovtos = 0.1 mGal/km).\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   e = East deflections of the vertical (micro-radian).\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   n = North deflections of the vertical (micro-radian).\n");
-	GMT_FFT_Option (API, 'N', GMT_FFT_DIM, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers:");
+	GMT_FFT_Option (API, 'N', GMT_FFT_DIM, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers.");
 	GMT_Message (API, GMT_TIME_NONE,"\t   Warning: both -D -T...+m and -Q will implicitly set -N's +h.\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t-Q writes out a grid with the flexural topography (with z positive up)\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t   whose average depth is set to the value given by -Z<zm>.\n");

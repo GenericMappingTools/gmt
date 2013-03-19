@@ -4599,10 +4599,15 @@ unsigned int GMT_FFT_Option (void *V_API, char option, unsigned int dim, char *s
 {	/* For programs that will do 1-D or 2-D FFT work */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 	char *data[2] = {"table", "grid"}, *dname[2] = {"<nx>", "<nx>/<ny>"}, *trend[2] = {"line", "plane"};
+	char *msg[2] = {"Choose or inquire about suitable table dimensions for 1-D FFT, and set modifiers.",
+		"Choose or inquire about suitable grid dimensions for 2-D FFT, and set modifiers."};
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 	if (dim > 2) return_error (API, GMT_DIM_TOO_LARGE);
 	if (string[0] == ' ') GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
-	GMT_Message (API, GMT_TIME_NONE, "\t-%c %s\n", option, string);
+	if (string)
+		GMT_Message (API, GMT_TIME_NONE, "\t-%c %s\n", option, string);
+	else
+		GMT_Message (API, GMT_TIME_NONE, "\t-%c %s\n", option, msg[dim]);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Setting the FFT dimensions:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -Nf will force the FFT to use the dimensions of the %s.\n", data[dim]);
 	GMT_Message (API, GMT_TIME_NONE, "\t     -Nq will inQuire about more suitable dimensions, report, then continue.\n");
@@ -5191,7 +5196,7 @@ int GMT_Report (void *V_API, unsigned int level, char *format, ...)
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 	va_list args;
 
-	if (API == NULL) return;
+	if (API == NULL) return GMT_NOERROR;
 	if (level > API->GMT->current.setting.verbose)
 		return 0;
 #ifdef DEBUG
