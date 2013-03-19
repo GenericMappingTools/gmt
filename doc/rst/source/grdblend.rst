@@ -117,27 +117,26 @@ netCDF and native binary grid formats for both input and output.
 `Examples <#toc8>`_
 -------------------
 
-To create a grid file from the four grid files piece\_?.nc, make the
-blendfile like this
+To create a grid file from the four grid files piece\_?.nc, make the blendfile like this
 
-piece\_1.nc -R<subregion\_1> 1
+    piece\_1.nc -R<subregion\_1> 1
 
-piece\_2.nc -R<subregion\_2> 1
+    piece\_2.nc -R<subregion\_2> 1
 
-piece\_3.nc -R<subregion\_3> 1
+    piece\_3.nc -R<subregion\_3> 1
 
-piece\_4.nc -R<subregion\_4> 1
+    piece\_4.nc -R<subregion\_4> 1
 
 Then run
 
-grdblend blend.job -Gblend.nc -R<full\_region> -I<dx/dy> -V
+    grdblend blend.job -Gblend.nc -R<full\_region> -I<dx/dy> -V
 
 To blend all the grids called MB\_\*.nc given them all equal weight, try
 
-grdblend MB\_\*.nc -Gblend.nc -R<full\_region> -I<dx/dy> -V
+    grdblend MB\_\*.nc -Gblend.nc -R<full\_region> -I<dx/dy> -V
 
 `See Also <#toc9>`_
 -------------------
 
-`gmt <gmt.html>`_ , `grd2xyz <grd2xyz.html>`_ ,
+`gmt <gmt.html>`_, `grd2xyz <grd2xyz.html>`_,
 `grdedit <grdedit.html>`_ `grdraster <grdraster.html>`_

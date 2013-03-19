@@ -104,11 +104,11 @@ than that implied by the extent of the grid file.
 To transform the geographical grid dbdb5.nc onto a pixel Mercator grid
 at 300 dpi, run
 
-grdproject dbdb5.nc -R20/50/12/25 -Jm0.25i -E300 -r -Gdbdb5\_merc.nc
+    grdproject dbdb5.nc -R20/50/12/25 -Jm0.25i -E300 -r -Gdbdb5\_merc.nc
 
 To inversely transform the file topo\_tm.nc back onto a geographical grid, use
 
-grdproject topo\_tm.nc -R-80/-70/20/40 -Jt-75/1:500000 -I -D5m -V -Gtopo.nc
+    grdproject topo\_tm.nc -R-80/-70/20/40 -Jt-75/1:500000 -I -D5m -V -Gtopo.nc
 
 This assumes, of course, that the coordinates in topo\_tm.nc were
 created with the same projection parameters.
@@ -117,7 +117,7 @@ To inversely transform the file topo\_utm.nc (which is in UTM meters)
 back to a geographical grid we specify a one-to-one mapping with meter
 as the measure unit:
 
-grdproject topo\_utm.nc -R203/205/60/65 -Ju5/1:1 -I -Mm -Gtopo.nc -V
+    grdproject topo\_utm.nc -R203/205/60/65 -Ju5/1:1 -I -Mm -Gtopo.nc -V
 
 `Restrictions <#toc8>`_
 -----------------------
@@ -131,4 +131,4 @@ than you are interested in.
 `See Also <#toc9>`_
 -------------------
 
-`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ , `mapproject <mapproject.html>`_
+`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_, `mapproject <mapproject.html>`_

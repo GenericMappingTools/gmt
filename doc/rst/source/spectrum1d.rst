@@ -139,19 +139,19 @@ ASCII unless **-bo**\ [*ncols*\ ][*type*\ ] is set) are as follows:
 Suppose data.g is gravity data in mGal, sampled every 1.5 km. To write
 its power spectrum, in mGal\*\*2-km, to the file data.xpower, use
 
-spectrum1d data.g -S256 -D1.5 -Ndata
+    spectrum1d data.g -S256 -D1.5 -Ndata
 
 Suppose in addition to data.g you have data.t, which is topography in
 meters sampled at the same points as data.g. To estimate various
 features of the transfer function, considering data.t as input and
 data.g as output, use
 
-paste data.t data.g \| spectrum1d -S256 -D1.5 -Ndata -C
+    paste data.t data.g \| spectrum1d -S256 -D1.5 -Ndata -C
 
 `See Also <#toc8>`_
 -------------------
 
-`gmt <gmt.html>`_ , `grdfft <grdfft.html>`_
+`gmt <gmt.html>`_, `grdfft <grdfft.html>`_
 
 `References <#toc9>`_
 ---------------------

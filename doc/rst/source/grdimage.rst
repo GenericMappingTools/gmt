@@ -194,41 +194,39 @@ linear projection, or (b) use **grdview** **-Ts** instead.
 For a quick-and-dirty color map of the data in the file stuff.nc, with
 the maximum map dimension limited to be 6 inches, try
 
-grdimage stuff.nc -JX6i+ > quick.ps
+    grdimage stuff.nc -JX6i+ > quick.ps
 
 To gray-shade the file hawaii\_grav.nc with shades given in shades.cpt
 on a Lambert map at 1.5 cm/degree along the standard parallels 18 and
 24, and using 1 degree tickmarks:
 
-grdimage hawaii\_grav.nc **-Jl**\ 18/24/1.5\ **c** -Cshades.cpt -B1 >
-hawaii\_grav\_image.ps
+    grdimage hawaii\_grav.nc **-Jl**\ 18/24/1.5\ **c** -Cshades.cpt -B1 > hawaii\_grav\_image.ps
 
 To create an illuminated color *PostScript* plot of the gridded data set
 image.nc, using the intensities provided by the file intens.nc, and
 color levels in the file colors.cpt, with linear scaling at 10
 inch/x-unit, tickmarks every 5 units:
 
-grdimage image.nc **-Jx**\ 10\ **i** -Ccolors.cpt -Iintens.nc -B5 >
-image.ps
+    grdimage image.nc **-Jx**\ 10\ **i** -Ccolors.cpt -Iintens.nc -B5 > image.ps
 
 To create an false color *PostScript* plot from the three grid files
 red.nc, green.nc, and blue.nc, with linear scaling at 10 inch/x-unit,
 tickmarks every 5 units:
 
-grdimage red.nc green.nc blue.nc **-Jx**\ 10\ **i** -B5 > rgbimage.ps
+    grdimage red.nc green.nc blue.nc **-Jx**\ 10\ **i** -B5 > rgbimage.ps
 
 When GDAL support is built in: To create a sinusoidal projection of a
 remotely located Jessica Rabbit
 
-grdimage -JI15c -Rd -Dr
-`http://larryfire.files.wordpress.com/2009/07/untooned\_jessicarabbit.jpg <http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg>`_
--P > jess.ps
+    grdimage -JI15c -Rd -Dr
+    `http://larryfire.files.wordpress.com/2009/07/untooned\_jessicarabbit.jpg <http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg>`_
+    -P > jess.ps
 
 `See Also <#toc9>`_
 -------------------
 
-`gmt <gmt.html>`_ , `grd2rgb <grd2rgb.html>`_ ,
-`grdcontour <grdcontour.html>`_ ,
-`grdview <grdview.html>`_ ,
-`grdgradient <grdgradient.html>`_ ,
+`gmt <gmt.html>`_, `grd2rgb <grd2rgb.html>`_,
+`grdcontour <grdcontour.html>`_,
+`grdview <grdview.html>`_,
+`grdgradient <grdgradient.html>`_,
 `grdhisteq <grdhisteq.html>`_

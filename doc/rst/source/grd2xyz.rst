@@ -138,12 +138,12 @@ for x, y, or z coordinate, respectively.
 To edit individual values in the 5’ by 5’ hawaii\_grv.nc file, dump the
 .nc to ASCII:
 
-grd2xyz hawaii\_grv.nc > hawaii\_grv.xyz
+    grd2xyz hawaii\_grv.nc > hawaii\_grv.xyz
 
 To write a single precision binary file without the x,y positions from
 the file raw\_data.nc file, using scanline orientation, run
 
-grd2xyz raw\_data.nc -ZTLf > hawaii\_grv.b
+    grd2xyz raw\_data.nc -ZTLf > hawaii\_grv.b
 
 `See Also <#toc10>`_
 --------------------

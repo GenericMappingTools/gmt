@@ -172,31 +172,29 @@ Examples
 
 To create a grid file from the ASCII data in hawaii\_grv.xyz, use
 
-xyz2grd hawaii\_grv.xyz -Ddegree/degree/mGal/1/0/"Hawaiian
-Gravity"/"GRS-80 Ellipsoid used" -Ghawaii\_grv\_new.nc -R198/208/18/25
--I5m -V
+    xyz2grd hawaii\_grv.xyz -Ddegree/degree/mGal/1/0/"Hawaiian
+    Gravity"/"GRS-80 Ellipsoid used" -Ghawaii\_grv\_new.nc -R198/208/18/25 -I5m -V
 
 To create a grid file from the raw binary (3-column, single-precision
 scanline-oriented data raw.b, use
 
-xyz2grd raw.b -Dm/m/m/1/0/=/= -Graw.nc -R0/100/0/100 -I1 -V -Z -bi3f
+    xyz2grd raw.b -Dm/m/m/1/0/=/= -Graw.nc -R0/100/0/100 -I1 -V -Z -bi3f
 
 To make a grid file from the raw binary USGS DEM (short integer
 scanline-oriented data topo30. on the NGDC global relief Data CD-ROM,
 with values of -9999 indicate missing data, one must on some machine
 reverse the byte-order. On such machines (like Sun, use
 
-xyz2grd topo30. -Dm/m/m/1/0/=/= -Gustopo.nc -R234/294/24/50 -I30s
--N-9999 -B -ZTLhw
+    xyz2grd topo30. -Dm/m/m/1/0/=/= -Gustopo.nc -R234/294/24/50 -I30s -N-9999 -B -ZTLhw
 
 Say you have received a binary file with 4-byte floating points that
 were written on a machine of different byte-order than yours. You can
 swap the byte-order with
 
-xyz2grd floats.bin -Snew\_floats.bin -V -Zf
+    xyz2grd floats.bin -Snew\_floats.bin -V -Zf
 
 See Also
 --------
 
-`gmt <gmt.html>`_ , `grd2xyz <grd2xyz.html>`_ , `grdedit <grdedit.html>`_
+`gmt <gmt.html>`_, `grd2xyz <grd2xyz.html>`_, `grdedit <grdedit.html>`_,
 `grdreformat <grdreformat.html>`_

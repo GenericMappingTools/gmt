@@ -156,14 +156,14 @@ hawaii\_5x5.xyg, using a *tension\_factor* = 0.25, a
 *convergence\_limit* = 0.1 milligal, writing the result to a file called
 hawaii\_grd.nc, and monitoring each iteration, try:
 
-surface hawaii\_5x5.xyg -R198/208/18/25 -I5m -Ghawaii\_grd.nc -T0.25 -C0.1 -Vl
+    surface hawaii\_5x5.xyg -R198/208/18/25 -I5m -Ghawaii\_grd.nc -T0.25 -C0.1 -Vl
 
 `Bugs <#toc8>`_
 ---------------
 
 **surface** will complain when more than one data point is found for any
 node and suggest that you run **blockmean**, **blockmedian**, or
-**blockmode** first. If you did run **blockm\*** and still get this
+`blockmode <blockmode.html>`_ first. If you did run **blockm\*** and still get this
 message it usually means that your grid spacing is so small that you
 need more decimals in the output format used by **blockm\***. You may
 specify more decimal places by editing the parameter
@@ -173,15 +173,15 @@ double precision storage.
 
 Note that only gridline registration is possible with **surface**. If
 you need a pixel-registered grid you can resample a gridline registered
-grid using **grdsample** **-T**.
+grid using `grdsample <grdsample.html>`_ **-T**.
 
 `See Also <#toc9>`_
 -------------------
 
-`blockmean <blockmean.html>`_ ,
-`blockmedian <blockmedian.html>`_ ,
-`blockmode <blockmode.html>`_ , `gmt <gmt.html>`_ ,
-`nearneighbor <nearneighbor.html>`_ ,
+`blockmean <blockmean.html>`_,
+`blockmedian <blockmedian.html>`_,
+`blockmode <blockmode.html>`_, `gmt <gmt.html>`_,
+`nearneighbor <nearneighbor.html>`_,
 `triangulate <triangulate.html>`_
 
 `References <#toc10>`_

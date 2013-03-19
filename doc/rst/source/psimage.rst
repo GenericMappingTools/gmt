@@ -143,28 +143,28 @@ To plot the image contained in the 8-bit raster file scanned\_face.ras,
 scaling it to 8 by 10 cm (thereby possibly changing the aspect ratio),
 and making the white color transparent, use
 
-psimage scanned\_face.ras -W8c/10c -Gtwhite > image.ps
+    psimage scanned\_face.ras -W8c/10c -Gtwhite > image.ps
 
 To plot the image logo.jpg, scaling it be 1 inch wide (height is scaled
 accordingly), and outline with a thin, blue pen, use
 
-psimage logo.jpg -W1i -Fthin,blue > image.ps
+    psimage logo.jpg -W1i -Fthin,blue > image.ps
 
 To include an Encapsulated *PostScript* file tiger.eps with its upper
 right corner 2 inch to the right and 1 inch up from the current
 location, and have its width scaled to 3 inches, while keeping the
 aspect ratio, use
 
-psimage tiger.eps -C2i/1i/TR -W3i > image.ps
+    psimage tiger.eps -C2i/1i/TR -W3i > image.ps
 
 To replicate the 1-bit raster image template 1\_bit.ras, colorize it
 (brown background and red foreground), and setting each of 5 by 5 tiles
 to be 1 cm wide, use
 
-psimage 1\_bit.ras -Gbbrown -Gfred -N5 -W1c > image.ps
+    psimage 1\_bit.ras -Gbbrown -Gfred -N5 -W1c > image.ps
 
 See Also
 --------
 
-`gmt <gmt.html>`_ , `gmtcolors <gmtcolors.html>`_ ,
+`gmt <gmt.html>`_, `gmtcolors <gmtcolors.html>`_,
 `psxy <psxy.html>`_ `convert <convert.html>`_

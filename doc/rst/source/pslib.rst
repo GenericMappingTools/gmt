@@ -874,12 +874,10 @@ arguments. However, from FORTRAN only a single text argument may be
 passed.
 
 **long PSL\_setcommand** (**struct PSL\_CTRL** *\*P*, **char** *\*text*)
-
     Writes a raw *PostScript* command to the *PostScript* output file,
     e.g., "1 setlinejoin0.
 
 **long PSL\_comment** (**struct PSL\_CTRL** *\*P*, **char** *\*text*)
-
     Writes a comment (*text*) to the *PostScript* output file, e.g.,
     "Start of graph 20. The comment are prefixed with with %% .
 
@@ -901,8 +899,8 @@ suicide attempts, or ulcers caused by correct **or** incorrect use of
 electronic mail. Be sure to provide enough detail so that we can
 recreate the problem.
 
-`References <#toc15>`_
-----------------------
+References
+----------
 
 Adobe Systems Inc., 1990, *PostScript* language reference manual, 2nd
 edition, Addison-Wesley, (ISBN 0-201-18127-4).

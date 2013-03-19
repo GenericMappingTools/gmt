@@ -131,28 +131,28 @@ To resample the file profiles.tdgmb, which contains
 (time,distance,gravity,magnetics,bathymetry) records, at 1km equidistant
 intervals using Akima’s spline, use
 
-sample1d profiles.tdgmb -I1 -Fa -T1 > profiles\_equi\_d.tdgmb
+    sample1d profiles.tdgmb -I1 -Fa -T1 > profiles\_equi\_d.tdgmb
 
 To resample the file depths.dt at positions listed in the file
 grav\_pos.dg, using a cubic spline for the interpolation, use
 
-sample1d depths.dt -Ngrav\_pos.dg -Fc > new\_depths.dt
+    sample1d depths.dt -Ngrav\_pos.dg -Fc > new\_depths.dt
 
 To resample the file track.txt which contains lon, lat, depth every 2
 nautical miles, use
 
-sample1d track.txt -I2n -AR > new\_track.dt
+    sample1d track.txt -I2n -AR > new\_track.dt
 
 To do approximately the same, but make sure the original points are
 included, use
 
-sample1d track.txt -I2n -Af > new\_track.dt
+    sample1d track.txt -I2n -Af > new\_track.dt
 
 To obtain a rhumb line (loxodrome) sampled every 5 km instead, use
 
-sample1d track.txt -I5k -AR+l > new\_track.dt
+    sample1d track.txt -I5k -AR+l > new\_track.dt
 
 `See Also <#toc10>`_
 --------------------
 
-`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ , `filter1d <filter1d.html>`_
+`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_, `filter1d <filter1d.html>`_

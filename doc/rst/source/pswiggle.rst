@@ -142,8 +142,8 @@ To plot the magnetic anomaly stored in the file track.xym along track @
 mode, with positive anomalies in red on a blue track of width 0.25
 points, use
 
-pswiggle track.xym -R-20/10/-80/-60 **-JS**\ 0/90/15\ **c** -Z1000 -B5
--C32000 -P -Gred -T0.25p,blue -S1000 -V > track\_xym.ps
+    pswiggle track.xym -R-20/10/-80/-60 **-JS**\ 0/90/15\ **c** -Z1000 -B5
+    -C32000 -P -Gred -T0.25p,blue -S1000 -V > track\_xym.ps
 
 `Bugs <#toc7>`_
 ---------------
@@ -152,21 +152,20 @@ Sometimes the (x,y) coordinates are not printed with enough significant
 digits, so the local perpendicular to the track swings around a lot. To
 see if this is the problem, you should do this:
 
-awk '{ if (NR > 1) print atan2(y-$1, x-$2); y=$1; x=$2; }' yourdata.xyz
-\| more
+    awk '{ if (NR > 1) print atan2(y-$1, x-$2); y=$1; x=$2; }' yourdata.xyz \| more
 
 (note that output is in radians; on some machines you need "nawk" to do
 this). Then if these numbers jump around a lot, you may do this:
 
-awk '{ print NR, $0 }’ yourdata.xyz \| filter1d -Fb5 -N4/0
---FORMAT\_FLOAT\_OUT=%.12g > smoothed.xyz
+    awk '{ print NR, $0 }’ yourdata.xyz \| filter1d -Fb5 -N4/0
+    --FORMAT\_FLOAT\_OUT=%.12g > smoothed.xyz
 
 and plot this data set instead.
 
 `See Also <#toc8>`_
 -------------------
 
-`gmt <gmt.html>`_ , `gmtcolors <gmtcolors.html>`_ ,
-`filter1d <filter1d.html>`_ ,
-`psbasemap <psbasemap.html>`_ ,
+`gmt <gmt.html>`_, `gmtcolors <gmtcolors.html>`_,
+`filter1d <filter1d.html>`_,
+`psbasemap <psbasemap.html>`_,
 `splitxyz <splitxyz.html>`_

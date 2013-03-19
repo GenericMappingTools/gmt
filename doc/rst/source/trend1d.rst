@@ -142,22 +142,22 @@ kept low.
 
 To remove a linear trend from data.xy by ordinary least squares, use:
 
-trend1d data.xy -Fxr -N2 > detrended\_data.xy
+    trend1d data.xy -Fxr -N2 > detrended\_data.xy
 
 To make the above linear trend robust with respect to outliers, use:
 
-trend1d data.xy -Fxr -N2r > detrended\_data.xy
+    trend1d data.xy -Fxr -N2r > detrended\_data.xy
 
 To find out how many terms (up to 20, say in a robust Fourier
 interpolant are significant in fitting data.xy, use:
 
-trend1d data.xy -Nf20r -I -V
+    trend1d data.xy -Nf20r -I -V
 
 `See Also <#toc9>`_
 -------------------
 
-`gmt <gmt.html>`_ , `gmtmath <gmtmath.html>`_ ,
-`grdtrend <grdtrend.html>`_ , `trend2d <trend2d.html>`_
+`gmt <gmt.html>`_, `gmtmath <gmtmath.html>`_,
+`grdtrend <grdtrend.html>`_, `trend2d <trend2d.html>`_
 
 `References <#toc10>`_
 ----------------------

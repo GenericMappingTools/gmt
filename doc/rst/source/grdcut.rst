@@ -77,21 +77,20 @@ between 148E - 162E and 8N - 32N, and you do not trust the gridding near
 the edges, so you want to keep only the area between 150E - 160E and 10N
 - 30N, then:
 
-grdcut grav\_148\_162\_8\_32.nc -Ggrav\_150\_160\_10\_30.nc
--R150/160/10/30 -V
+    grdcut grav\_148\_162\_8\_32.nc -Ggrav\_150\_160\_10\_30.nc -R150/160/10/30 -V
 
 To return the subregion of a grid such that any boundary strips where
 all values are entirely above 0, try
 
-grdcut bathy.nc -Gtrimmed\_bathy.nc -Z-/0 -V
+    grdcut bathy.nc -Gtrimmed\_bathy.nc -Z-/0 -V
 
 To return the subregion of a grid that contains all nodes within a
 distance of 500 km from the point 45,30 try
 
-grdcut bathy.nc -Gsubset\_bathy.nc -S45/30/500k -V
+    grdcut bathy.nc -Gsubset\_bathy.nc -S45/30/500k -V
 
 `See Also <#toc10>`_
 --------------------
 
-`gmt <gmt.html>`_ , `grdpaste <grdpaste.html>`_ ,
+`gmt <gmt.html>`_, `grdpaste <grdpaste.html>`_,
 `grdinfo <grdinfo.html>`_

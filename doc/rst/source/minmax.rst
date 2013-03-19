@@ -118,23 +118,23 @@ None.
 
 To find the extreme values in the file ship\_gravity.xygd:
 
-minmax ship\_gravity.xygd
+    minmax ship\_gravity.xygd
 
 Output should look like
 
-ship\_gravity.xygd: N = 6992 <326.125/334.684> <-28.0711/-8.6837>
-<-47.7/177.6> <0.6/3544.9>
+    ship\_gravity.xygd: N = 6992 <326.125/334.684> <-28.0711/-8.6837>
+    <-47.7/177.6> <0.6/3544.9>
 
 To find the extreme values in the file track.xy to the nearest 5 units
 and use this region to draw a line using psxy, run
 
-psxy ‘minmax -I5 track.xy‘ track.xy -Jx1 -B5 -P > track.ps
+    psxy `minmax -I5 track.xy` track.xy -Jx1 -B5 -P > track.ps
 
 To find the min and max values for each of the first 4 columns, but
 rounded to integers, and return the result individually for each data
 file, use
 
-minmax profile\_\*.txt -C -I1/1/1/1
+    minmax profile\_\*.txt -C -I1/1/1/1
 
 `Bugs <#toc8>`_
 ---------------

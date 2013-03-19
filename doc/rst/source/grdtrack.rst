@@ -212,23 +212,23 @@ To sample the file hawaii\_topo.nc along the SEASAT track track\_4.xyg
 (An ASCII table containing longitude, latitude, and SEASAT-derived
 gravity, preceded by one header record):
 
-grdtrack track\_4.xyg -Ghawaii\_topo.nc -h > track\_4.xygt
+    grdtrack track\_4.xyg -Ghawaii\_topo.nc -h > track\_4.xygt
 
 To sample the Sandwell/Smith IMG format file topo.8.2.img (2 minute
 predicted bathymetry on a Mercator grid) and the Muller et al age grid
 age.3.2.nc along the lon,lat coordinates given in the file
 cruise\_track.xy, try
 
-grdtrack cruise\_track.xy -Gtopo.8.2.img,1,1 -Gage.3.2.nc > depths-age.d
+    grdtrack cruise\_track.xy -Gtopo.8.2.img,1,1 -Gage.3.2.nc > depths-age.d
 
 To sample the Sandwell/Smith IMG format file grav.18.1.img (1 minute
 free-air anomalies on a Mercator grid) along 100-km-long cross-profiles
 that are orthogonal to the line segment given in the file track.xy,
 erecting cross-profiles every 25 km and sampling the grid every 3 km, try
 
-grdtrack track.xy -Ggrav.18.1.img,0.1,1 -C100k/3/25 -Ar > xprofiles.d
+    grdtrack track.xy -Ggrav.18.1.img,0.1,1 -C100k/3/25 -Ar > xprofiles.d
 
 `See Also <#toc11>`_
 --------------------
 
-`gmt <gmt.html>`_ , `surface <surface.html>`_ , `sample1d <sample1d.html>`_
+`gmt <gmt.html>`_, `surface <surface.html>`_, `sample1d <sample1d.html>`_

@@ -64,19 +64,19 @@ possibilities, for each data type.
 To check if reading and writing the test dataset file yields an
 identical copy, try
 
-testapi -Td -If -Wf -V
+    testapi -Td -If -Wf -V
 
 To check if reading the test grid from memory and writing it to file
 yields an identical copy, try
 
-testapi -Tg -Ic -Wf -V
+    testapi -Tg -Ic -Wf -V
 
 To read the test grid via user matrix memory and writing it via another
 user matrix before saving to a grid file, try
 
-testapi -Tg -Ic/m -Wf/m -V
+    testapi -Tg -Ic/m -Wf/m -V
 
 `See Also <#toc7>`_
 -------------------
 
-`gmt <gmt.html>`_ ,
+`gmt <gmt.html>`_

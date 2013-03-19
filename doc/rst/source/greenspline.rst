@@ -210,18 +210,17 @@ To resample the *x*,\ *y* Gaussian random data created by **gmtmath**
 and stored in 1D.txt, requesting output every 0.1 step from 0 to 10, and
 using a minimum cubic spline, try
 
-gmtmath -T0/10/1 0 1 NRAND = 1D.txt
+    gmtmath -T0/10/1 0 1 NRAND = 1D.txt
 
-psxy -R0/10/-5/5 -JX6i/3i -B2f1/1 -Sc0.1 -Gblack 1D.txt -K > 1D.ps
+    psxy -R0/10/-5/5 -JX6i/3i -B2f1/1 -Sc0.1 -Gblack 1D.txt -K > 1D.ps
 
-greenspline 1D.txt -R0/10 -I0.1 -Sc -V \| psxy -R -J -O -Wthin >> 1D.ps
+    greenspline 1D.txt -R0/10 -I0.1 -Sc -V \| psxy -R -J -O -Wthin >> 1D.ps
 
 To apply a spline in tension instead, using a tension of 0.7, try
 
-psxy -R0/10/-5/5 -JX6i/3i -B2f1/1 -Sc0.1 -Gblack 1D.txt -K > 1Dt.ps
+    psxy -R0/10/-5/5 -JX6i/3i -B2f1/1 -Sc0.1 -Gblack 1D.txt -K > 1Dt.ps
 
-greenspline 1D.txt -R0/10 -I0.1 -St0.7 -V \| psxy -R -J -O -Wthin >>
-1Dt.ps
+    greenspline 1D.txt -R0/10 -I0.1 -St0.7 -V \| psxy -R -J -O -Wthin >> 1Dt.ps
 
 `2-d Examples <#toc7>`_
 -----------------------
@@ -230,29 +229,28 @@ To make a uniform grid using the minimum curvature spline for the same
 Cartesian data set from Davis (1986) that is used in the GMT Technical
 Reference and Cookbook example 16, try
 
-greenspline table\_5.11 -R0/6.5/-0.2/6.5 -I0.1 -Sc -V -D1 -GS1987.nc
+    greenspline table\_5.11 -R0/6.5/-0.2/6.5 -I0.1 -Sc -V -D1 -GS1987.nc
 
-psxy -R0/6.5/-0.2/6.5 -JX6i -B2f1 -Sc0.1 -Gblack table\_5.11 -K > 2D.ps
+    psxy -R0/6.5/-0.2/6.5 -JX6i -B2f1 -Sc0.1 -Gblack table\_5.11 -K > 2D.ps
 
-grdcontour -JX6i -B2f1 -O -C25 -A50 S1987.nc >> 2D.ps
+    grdcontour -JX6i -B2f1 -O -C25 -A50 S1987.nc >> 2D.ps
 
 To use Cartesian splines in tension but only evaluate the solution where
 the input mask grid is not NaN, try
 
-greenspline table\_5.11 -Tmask.nc -St0.5 -V -D1 -GWB1998.nc
+    greenspline table\_5.11 -Tmask.nc -St0.5 -V -D1 -GWB1998.nc
 
 To use Cartesian generalized splines in tension and return the magnitude
 of the surface slope in the NW direction, try
 
-greenspline table\_5.11 -R0/6.5/-0.2/6.5 -I0.1 -Sr0.95 -V -D1 -Q-45
--Gslopes.nc
+    greenspline table\_5.11 -R0/6.5/-0.2/6.5 -I0.1 -Sr0.95 -V -D1 -Q-45 -Gslopes.nc
 
 Finally, to use Cartesian minimum curvature splines in recovering a
 surface where the input data is a single surface value (pt.d) and the
 remaining constraints specify only the surface slope and direction
 (slopes.d), use
 
-greenspline pt.d -R-3.2/3.2/-3.2/3.2 -I0.1 -Sc -V -D1 -A1,slopes.d -Gslopes.nc
+    greenspline pt.d -R-3.2/3.2/-3.2/3.2 -I0.1 -Sc -V -D1 -A1,slopes.d -Gslopes.nc
 
 `3-d Examples <#toc8>`_
 -----------------------
@@ -261,7 +259,7 @@ To create a uniform 3-D Cartesian grid table based on the data in
 table\_5.23 in Davis (1986) that contains *x*,\ *y*,\ *z* locations and
 a measure of uranium oxide concentrations (in percent), try
 
-greenspline table\_5.23 -R5/40/-5/10/5/16 -I0.25 -Sr0.85 -V -D5 -G3D\_UO2.txt
+    greenspline table\_5.23 -R5/40/-5/10/5/16 -I0.25 -Sr0.85 -V -D5 -G3D\_UO2.txt
 
 `2-d Spherical Surface Examples <#toc9>`_
 -----------------------------------------
@@ -269,12 +267,12 @@ greenspline table\_5.23 -R5/40/-5/10/5/16 -I0.25 -Sr0.85 -V -D5 -G3D\_UO2.txt
 To recreate Parker’s [1994] example on a global 1x1 degree grid,
 assuming the data are in file mag\_obs\_1990.d, try
 
-greenspline -V -Rg -fg -Sp -D3 -I1 -GP1994.nc mag\_obs\_1990.d
+    greenspline -V -Rg -fg -Sp -D3 -I1 -GP1994.nc mag\_obs\_1990.d
 
 To do the same problem but applying tension and use pre-calculated Green
 functions, use
 
-greenspline -V -Rg -fg -SQ0.85 -D3 -I1 -GWB2008.nc mag\_obs\_1990.d
+    greenspline -V -Rg -fg -SQ0.85 -D3 -I1 -GWB2008.nc mag\_obs\_1990.d
 
 `Considerations <#toc10>`_
 --------------------------
@@ -347,8 +345,7 @@ Wessel, P., 2009, A general-purpose Green's function interpolator,
 `See Also <#toc13>`_
 --------------------
 
-`gmt <gmt.html>`_ , `gmtmath <gmtmath.html>`_ ,
-`nearneighbor <nearneighbor.html>`_ , `psxy <psxy.html>`_
-, `surface <surface.html>`_ ,
-`triangulate <triangulate.html>`_ ,
-`xyz2grd <xyz2grd.html>`_
+`gmt <gmt.html>`_, `gmtmath <gmtmath.html>`_,
+`nearneighbor <nearneighbor.html>`_, `psxy <psxy.html>`_,
+`surface <surface.html>`_,
+`triangulate <triangulate.html>`_, `xyz2grd <xyz2grd.html>`_

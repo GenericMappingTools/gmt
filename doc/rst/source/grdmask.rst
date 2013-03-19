@@ -117,26 +117,24 @@ are considered "inside".
 To set all nodes inside and on the polygons coastline\_\*.xy to 0, and
 outside points to 1, do
 
-grdmask coastline\_\*.xy -R-60/-40/-40/-30 -I5m -N1/0/0
--Gland\_mask.nc=nb -V
+    grdmask coastline\_\*.xy -R-60/-40/-40/-30 -I5m -N1/0/0 -Gland\_mask.nc=nb -V
 
 To set nodes within 50 km of data points to 1 and other nodes to NaN, do
 
-grdmask data.xyz -R-60/-40/-40/-30 -I5m -NNaN/1/1 -S50k
--Gdata\_mask.nc=nb -V
+    grdmask data.xyz -R-60/-40/-40/-30 -I5m -NNaN/1/1 -S50k -Gdata\_mask.nc=nb -V
 
 To assign polygon IDs to the gridnodes using the insides of the polygons
 in plates.gmt, based on the attribute POL\_ID, do
 
-grdmask plates.gmt -R-40/40/-40/40 -I2m -Nz -Gplate\_IDs.nc -aZ=POL\_ID -V
+    grdmask plates.gmt -R-40/40/-40/40 -I2m -Nz -Gplate\_IDs.nc -aZ=POL\_ID -V
 
 Same exercise, but instead compute running polygon IDs starting at 100, do
 
-grdmask plates.gmt -R-40/40/-40/40 -I2m -Np100 -Gplate\_IDs.nc -V
+    grdmask plates.gmt -R-40/40/-40/40 -I2m -Np100 -Gplate\_IDs.nc -V
 
 `See Also <#toc10>`_
 --------------------
 
-`gmt <gmt.html>`_ , `grdlandmask <grdlandmask.html>`_ ,
-`grdmath <grdmath.html>`_ , `grdclip <grdclip.html>`_ ,
-`psmask <psmask.html>`_ , `psclip <psclip.html>`_
+`gmt <gmt.html>`_, `grdlandmask <grdlandmask.html>`_,
+`grdmath <grdmath.html>`_, `grdclip <grdclip.html>`_,
+`psmask <psmask.html>`_, `psclip <psclip.html>`_

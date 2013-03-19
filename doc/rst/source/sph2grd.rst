@@ -95,7 +95,7 @@ Examples
 To create a 1 x 1 degree global grid file from the ASCII
 coefficients in EGM96_to_360.txt, use
 
-sph2grd EGM96_to_360.txt -GEGM96_to_360.nc -Rg -I1 -V
+    sph2grd EGM96_to_360.txt -GEGM96_to_360.nc -Rg -I1 -V
 
 Reference
 ---------
