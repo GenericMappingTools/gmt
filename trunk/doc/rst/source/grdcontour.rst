@@ -191,7 +191,7 @@ To contour the file hawaii\_grav.nc every 25 mGal on a Mercator map at
 0.5 inch/degree, annotate every 50 mGal (using fontsize = 10p), using 1
 degree tickmarks, and draw 30 minute gridlines:
 
-grdcontour hawaii\_grav.nc -Jm0.5i -C25 -A50+f10p -B1g30m > hawaii\_grav.ps
+    grdcontour hawaii\_grav.nc -Jm0.5i -C25 -A50+f10p -B1g30m > hawaii\_grav.ps
 
 To contour the file image.nc using the levels in the file cont.d on a
 linear projection at 0.1 cm/x-unit and 50 cm/y-unit, using 20 (x) and
@@ -199,8 +199,8 @@ linear projection at 0.1 cm/x-unit and 50 cm/y-unit, using 20 (x) and
 plot-title, use a thick red pen for annotated contours, and a thin,
 dashed, blue pen for the rest, and send the output to the default printer:
 
-grdcontour image.nc -Jx0.1c/50.0c -Ccont.d -S4 -B20/0.1:."RMS
-Misfit":-Wathick,red -Wcthinnest,blue,- \| lp
+    grdcontour image.nc -Jx0.1c/50.0c -Ccont.d -S4 -B20/0.1:."RMS
+    Misfit":-Wathick,red -Wcthinnest,blue,- \| lp
 
 The labeling of local highs and lows may plot outside the innermost
 contour since only the mean value of the contour coordinates is used to
@@ -210,13 +210,13 @@ To save the smoothed 100-m contour lines in topo.nc and separate them
 into two multisegment files: contours\_C.txt for closed and
 contours\_O.txt for open contours, try
 
-grdcontour topo.nc -C100 -S4 -Dcontours\_%c.txt
+    grdcontour topo.nc -C100 -S4 -Dcontours\_%c.txt
 
 `See Also <#toc9>`_
 -------------------
 
-`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
-`gmtcolors <gmtcolors.html>`_ ,
-`psbasemap <psbasemap.html>`_ ,
-`grdimage <grdimage.html>`_ , `grdview <grdview.html>`_ ,
+`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
+`gmtcolors <gmtcolors.html>`_,
+`psbasemap <psbasemap.html>`_,
+`grdimage <grdimage.html>`_, `grdview <grdview.html>`_,
 `pscontour <pscontour.html>`_

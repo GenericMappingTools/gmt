@@ -12,10 +12,10 @@ grdfilter - Filter a grid in the space (or time) domain
 **grdfilter** *ingrid* **-D**\ *distance\_flag*
 **-Fx**\ *width*\ [/*width2*][*mode*\ ][\ **+q**\ *quantile*]
 **-G**\ *outgrid* [
-**-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
-] [ **-N**\ **i**\ \|\ **p**\ \|\ **r** ] [
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-T** ] [
-**-V**\ [*level*\ ] ] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ]
+**-I**\ *xinc*\ [*unit*][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*][\ **=**\ \|\ **+**]]
+] [ **-N**\ **i**\ \|\ **p**\ \|\ **r** ]
+[ |SYN_OPT-R| ] [ **-T** ]
+[ |SYN_OPT-V| ] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ]
 
 `Description <#toc2>`_
 ----------------------
@@ -94,8 +94,7 @@ then the output may be less frequently sampled than the input.
     Non-convolution filters (and their codes) are:
 
     (**m**) Median: Returns median value. To select another quantile
-    append **+q**\ *quantile* in the 0-1 range [Default is 0.5, i.e.,
-    median].
+    append **+q**\ *quantile* in the 0-1 range [Default is 0.5, i.e., median].
 
     (**p**) Maximum likelihood probability (a mode estimator): Return
     modal value. If more than one mode is found we return their average
@@ -114,8 +113,7 @@ then the output may be less frequently sampled than the input.
     the initial sign test; in that case the filter will return NaN.
 
 **-G**\ *outgrid*
-    *outgrid* is the output grid file of the filter. (See GRID FILE
-    FORMATS below).
+    *outgrid* is the output grid file of the filter. (See GRID FILE FORMATS below).
 
 `Optional Arguments <#toc5>`_
 -----------------------------
@@ -164,16 +162,14 @@ which you choose to be from 150E to 250E and 10N to 40N, and you want
 the output values every 0.5 degree. Using spherical distance
 calculations, you need:
 
-grdfilter north\_pacific\_etopo5.nc -Gfiltered\_pacific.nc -Fm600 -D4
--R150/250/10/40 -I0.5 -V
+    grdfilter north\_pacific\_etopo5.nc -Gfiltered\_pacific.nc -Fm600 -D4 -R150/250/10/40 -I0.5 -V
 
 If we instead wanted a high-pass result then one can perform the
 corresponding low-pass filter using a coarse grid interval as grdfilter
 will resample the result to the same resolution as the input grid so we
 can compute the residuals, e.g.,
 
-grdfilter north\_pacific\_etopo5.nc -Gresidual\_pacific.nc -Fm-600 -D4
--R150/250/10/40 -I0.5 -V
+    grdfilter north\_pacific\_etopo5.nc -Gresidual\_pacific.nc -Fm-600 -D4 -R150/250/10/40 -I0.5 -V
 
 Here, the residual\_pacific.nc grid will have the same 5 minute
 resolution as the original.
@@ -183,9 +179,11 @@ filter exp (-0.5\*r^2) whose distances r from the center is given by
 (2x^2 + y^2 -2xy)/6, with major axis at an angle of 63 degrees with the
 horizontal, try
 
-grdmath -R-10/10/-10/10 -I1 X 2 POW 2 MUL Y 2 POW ADD X Y MUL 2 MUL SUB
-6 DIV NEG 2 DIV EXP DUP SUM DIV = gfilter.nc
-grdfilter ripples.nc -Ffgfilter.nc -D0 -Gsmooth.nc -V
+    grdmath -R-10/10/-10/10 -I1 X 2 POW 2 MUL Y 2 POW ADD X Y MUL 2 MUL SUB
+
+    6 DIV NEG 2 DIV EXP DUP SUM DIV = gfilter.nc
+
+    grdfilter ripples.nc -Ffgfilter.nc -D0 -Gsmooth.nc -V
 
 `Limitations <#toc9>`_
 ----------------------
@@ -197,5 +195,4 @@ Equator (i.e., x = y = 0 correspond to lon = lat = 0).
 `See Also <#toc10>`_
 --------------------
 
-`gmt <gmt.html>`_ , `grdfft <grdfft.html>`_
-`img2mercgrd <img2mercgrd.html>`_
+`gmt <gmt.html>`_, `grdfft <grdfft.html>`_ `img2mercgrd <img2mercgrd.html>`_

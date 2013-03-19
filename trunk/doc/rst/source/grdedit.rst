@@ -105,25 +105,25 @@ Let us assume the file data.nc covers the area 300/310/10/30. We want to
 change the boundaries from geodetic longitudes to geographic and put a
 new title in the header. We accomplish this by
 
-grdedit data.nc -R-60/-50/10/30 -D=/=/=/=/=/"Gravity Anomalies"/=
+    grdedit data.nc -R-60/-50/10/30 -D=/=/=/=/=/"Gravity Anomalies"/=
 
 The grid world.nc has the limits 0/360/-72/72. To shift the data so that
 the limits would be -180/180/-72/72, use
 
-grdedit world.nc -R-180/180/-72/72 -S
+    grdedit world.nc -R-180/180/-72/72 -S
 
 The file junk.nc was created prior to **GMT** 3.1 with incompatible
 **-R** and **-I** arguments. To reset the x- and y-increments we run
 
-grdedit junk.nc -A
+    grdedit junk.nc -A
 
 The file junk.nc was created prior to **GMT** 4.1.3 and does not contain
 the required information to indicate that the grid is geographic. To add
 this information, run
 
-grdedit junk.nc -fg
+    grdedit junk.nc -fg
 
 `See Also <#toc9>`_
 -------------------
 
-`gmt <gmt.html>`_ , `grd2xyz <grd2xyz.html>`_ , `xyz2grd <xyz2grd.html>`_
+`gmt <gmt.html>`_, `grd2xyz <grd2xyz.html>`_, `xyz2grd <xyz2grd.html>`_

@@ -158,9 +158,9 @@ interval, radial direction annotated every 50 km, using a light blue
 shading outlined by a solid red pen (width = 0.75 points), draw the mean
 azimuth, and shown in Portrait orientation, use:
 
-psrose fault\_segments.az\_r -R0/150/-90/90 -B50g25:"Fault
-length":/g30:."Rose diagram":-S3i -Ar10 -Glightblue
--W0.75p,red -Z0.001 -C -P -T -: \| lpr
+    psrose fault\_segments.az\_r -R0/150/-90/90 -B50g25:"Fault
+    length":/g30:."Rose diagram":-S3i -Ar10 -Glightblue
+    -W0.75p,red -Z0.001 -C -P -T -: \| lpr
 
 To plot a full circle wind rose diagram of the data in the file
 lines.r\_az, on a circle of radius = 5 cm, grid going out to radius =
@@ -168,8 +168,8 @@ lines.r\_az, on a circle of radius = 5 cm, grid going out to radius =
 solid pen (width = 0.5 point, and shown in landscape [Default]
 orientation with UNIX timestamp and command line plotted, use:
 
-psrose lines.az\_r -R0/500/0/360 -S5c -Bg100/g45:."Windrose
-diagram": -W0.5p -Uc \| lpr
+    psrose lines.az\_r -R0/500/0/360 -S5c -Bg100/g45:."Windrose
+    diagram": -W0.5p -Uc \| lpr
 
 `Bugs <#toc8>`_
 ---------------
@@ -180,5 +180,5 @@ must run **psrose** **-I** to find max length in binned data set.
 `See Also <#toc9>`_
 -------------------
 
-`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
-`gmtcolors <gmtcolors.html>`_ , `pshistogram <pshistogram.html>`_
+`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
+`gmtcolors <gmtcolors.html>`_, `pshistogram <pshistogram.html>`_

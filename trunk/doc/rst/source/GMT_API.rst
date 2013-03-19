@@ -101,7 +101,7 @@ programs due to changes we may make in the library in support of the
 *GMT* API. However, developers who wish to make supplemental packages to
 be distributed as part of *GMT* will (other than talk to us) probably
 want to access the entire low-level *GMT* library as well. It is
-unlikely that library will every be fully documented.
+unlikely that the low-level library will ever be fully documented.
 
 Definitions
 -----------
@@ -160,7 +160,9 @@ containers in some detail; we will later present how they are used when
 importing or exporting them to or from files, memory locations, or
 streams. The first five are the standard *GMT* objects, while the latter
 two are the special user data containers to facilitate converting user
-data into *GMT* resources.
+data into *GMT* resources. These resources are defined in the include
+file ; please consult this file to ensure correctness as it is difficult
+to keep the documentation up-to-date.
 
 Data tables
 ~~~~~~~~~~~
@@ -463,6 +465,104 @@ Throughout, we will introduce upper-case *GMT* C enum constants *in
 lieu* of simple integer constants. These are considered part of the API
 and are available for developers via the include file.
 
+The C/C++ API is deliberately kept small to make it easy to use.
+Table [tbl:API] gives a list of all the functions and their purpose.
+
+[h]
+
++-------------------------+---------------------------------------------------+
++=========================+===================================================+
+| GMT\_Append\_Option     | Append new option structure to linked list        |
++-------------------------+---------------------------------------------------+
+| GMT\_Begin\_IO          | Enable record-by-record i/o                       |
++-------------------------+---------------------------------------------------+
+| GMT\_Create\_Args       | Convert linked list of options to text array      |
++-------------------------+---------------------------------------------------+
+| GMT\_Create\_Cmd        | Convert linked list of options to command line    |
++-------------------------+---------------------------------------------------+
+| GMT\_Create\_Data       | Create an empty data resource                     |
++-------------------------+---------------------------------------------------+
+| GMT\_Create\_Session    | Initialize a new GMT session                      |
++-------------------------+---------------------------------------------------+
+| GMT\_Delete\_Option     | Delete an option structure from the linked list   |
++-------------------------+---------------------------------------------------+
+| GMT\_Destroy\_Args      | Delete text array of arguments                    |
++-------------------------+---------------------------------------------------+
+| GMT\_Destroy\_Data      | Delete a data resource                            |
++-------------------------+---------------------------------------------------+
+| GMT\_Destroy\_Options   | Delete the linked list of option structures       |
++-------------------------+---------------------------------------------------+
+| GMT\_Destroy\_Session   | Terminate a GMT session                           |
++-------------------------+---------------------------------------------------+
+| GMT\_Duplicate\_Data    | Make an identical copy of a data resources        |
++-------------------------+---------------------------------------------------+
+| GMT\_Encode\_ID         | Encode a resources ID as a special filename       |
++-------------------------+---------------------------------------------------+
+| GMT\_End\_IO            | Disable further record-by-record i/o              |
++-------------------------+---------------------------------------------------+
+| GMT\_FFT                | Take the Fast Fourier Transform of data           |
++-------------------------+---------------------------------------------------+
+| GMT\_FFT\_Create        | Initialize the FFT machinery                      |
++-------------------------+---------------------------------------------------+
+| GMT\_FFT\_Destroy       | Terminate the FFT machinery                       |
++-------------------------+---------------------------------------------------+
+| GMT\_FFT\_Option        | Explain the FFT options and modifiers             |
++-------------------------+---------------------------------------------------+
+| GMT\_FFT\_Parse         | Parse argument with FFT options and modifiers     |
++-------------------------+---------------------------------------------------+
+| GMT\_FFT\_Wavenumber    | Return wavenumber given data index                |
++-------------------------+---------------------------------------------------+
+| GMT\_Find\_Option       | Find an option in the linked list                 |
++-------------------------+---------------------------------------------------+
+| GMT\_Get\_Common        | Determine if a GMT common option was set          |
++-------------------------+---------------------------------------------------+
+| GMT\_Get\_Coord         | Create a coordinate array                         |
++-------------------------+---------------------------------------------------+
+| GMT\_Get\_Data          | Import a registered data resources                |
++-------------------------+---------------------------------------------------+
+| GMT\_Get\_Index         | Convert row, col into a grid or image index       |
++-------------------------+---------------------------------------------------+
+| GMT\_Get\_Record        | Import a single data record                       |
++-------------------------+---------------------------------------------------+
+| GMT\_Get\_Row           | Import a single grid row                          |
++-------------------------+---------------------------------------------------+
+| GMT\_Init\_IO           | Initialize i/o given registered resources         |
++-------------------------+---------------------------------------------------+
+| GMT\_Make\_Option       | Create an option structure                        |
++-------------------------+---------------------------------------------------+
+| GMT\_Message            | Issue a message, optionally with time stamp       |
++-------------------------+---------------------------------------------------+
+| GMT\_Option             | Explain one or more GMT common options            |
++-------------------------+---------------------------------------------------+
+| GMT\_Parse\_Common      | Parse the GMT common options                      |
++-------------------------+---------------------------------------------------+
+| GMT\_Prep\_Options      | Convert command line options to linked list       |
++-------------------------+---------------------------------------------------+
+| GMT\_Put\_Data          | Export to a registered data resource              |
++-------------------------+---------------------------------------------------+
+| GMT\_Put\_Record        | Export a data record                              |
++-------------------------+---------------------------------------------------+
+| GMT\_Put\_Row           | Export a grid row                                 |
++-------------------------+---------------------------------------------------+
+| GMT\_Read\_Data         | Import a data resource or file                    |
++-------------------------+---------------------------------------------------+
+| GMT\_Register\_IO       | Register a resources for i/o                      |
++-------------------------+---------------------------------------------------+
+| GMT\_Report             | Issue a message contingent upon verbosity level   |
++-------------------------+---------------------------------------------------+
+| GMT\_Retrieve\_Data     | Obtained link to data in memory                   |
++-------------------------+---------------------------------------------------+
+| GMT\_Set\_Comment       | Assign a comment to a data resource               |
++-------------------------+---------------------------------------------------+
+| GMT\_Status\_IO         | Check status of record-by-record i/o              |
++-------------------------+---------------------------------------------------+
+| GMT\_Update\_Option     | Modify an option structure                        |
++-------------------------+---------------------------------------------------+
+| GMT\_Write\_Data        | Export a data resource                            |
++-------------------------+---------------------------------------------------+
+
+[tbl:API]
+
 The GMT C Application Program Interface
 =======================================
 
@@ -499,11 +599,11 @@ passed from module to module. The key task of this initialization is to
 set up the *GMT* machinery and its internal variables used for map
 projections, plotting, i/o, etc. The initialization also allocates space
 for internal structures used to register resources. The ``pad`` argument
-sets the default padding used internally for grids.  GMT uses 2 so that
-various operations involving boundary conditions can be applied.  However,
-if your project has no need for this you may set ``pad`` to 0. The ``mode``
-argument is currently unused and reserved for future expansion. Should
-something go wrong then ``API`` will be returned as ``NULL``.
+sets how many rows and columns should be used for padding for grids and
+images so that boundary conditions can be applied. *GMT* uses 2 so we
+recommend that value. The ``mode`` argument is currently unused and
+reserved for future expansion. Should something go wrong then ``API``
+will be returned as ``NULL``.
 
 Register input or output resources
 ----------------------------------
@@ -685,10 +785,6 @@ what we do if no resources have been registered. The choices are
     (or GMT\_ADD\_STDIO\_ALWAYS) means “always add std\* even if
     resources have been registered”.
 
-16
-    (or GMT\_ADD\_EXISTING) means “just add currently
-    registered resources only”.
-
 The standard behavior is 5 (or GMT\_REG\_DEFAULT). Next, ``n_args`` is 0
 if ``args`` is the head of a linked list of options (further discussed
 in Section [sec:func]); otherwise ``args`` is an array of ``n_args``
@@ -751,15 +847,15 @@ etc.), then you can obtain a “blank slate” by calling
 
     void * GMT_Create_Data (void *API, unsigned int family, unsigned int geometry, \
         unsigned int mode, uint64_t par[], double *wesn, double *inc, \
-	unsigned int registration, int pad, void *data
+        unsigned int registration, int pad, void *data
 
 which returns a pointer to the allocated resource. Pass ``family`` as
 one of GMT\_IS\_GRID, GMT\_IS\_IMAGE, GMT\_IS\_DATASET,
 GMT\_IS\_TEXTSET, or GMT\_IS\_CPT, or via the modifiers GMT\_IS\_VECTOR
-or GMT\_IS\_MATRIX when handling user data. Also pass
-a compatible *geometry*.  Depending on the family and
-your particular way of representing dimensions you may pass the
-additional parameters in one of two ways:
+or GMT\_IS\_MATRIX when handling user data. Also pass a compatible
+``geometry``. Depending on the family and your particular way of
+representing dimensions you may pass the additional parameters in one of
+two ways:
 
 #. Actual integer dimensions of items needed.
 
@@ -876,7 +972,8 @@ upcoming import. The prototype is
 
 ::
 
-    int GMT_Begin_IO (void *API, unsigned int family, unsigned int direction, unsigned int mode);
+    int GMT_Begin_IO (void *API, unsigned int family, unsigned int direction, \
+        unsigned int mode, unsigned int header);
 
 where ``family`` specifies the resource type to be read or written (see
 Table [tbl:family]; only GMT\_IS\_DATASET and GMT\_IS\_TEXTSET are
@@ -893,9 +990,11 @@ and disabling further data access, perhaps to do more registration. We
 will discuss ``GMT_End_IO`` once we are done with the data import. The
 ``mode`` option is used to allow output to write table header
 information (``GMT_HEADER_ON``) or not (``GMT_HEADER_OFF``). This is
-usually on unless you are writing messages and other non-data. The
-function returns TRUE (1) if there is an error; otherwise it returns
-FALSE (0).
+usually on unless you are writing messages and other non-data. The final
+``header`` argument determines if the common header-block should be
+written during initialization; choose between ``GMT_HEADER_ON`` (1) and
+``GMT_HEADER_OFF`` (0). The function returns TRUE (1) if there is an
+error; otherwise it returns FALSE (0).
 
 Import a data set
 ~~~~~~~~~~~~~~~~~
@@ -1188,9 +1287,9 @@ column does not enter you can instead do a single loop:
     for (node = 0; node < G->header->size) G->data[node] = -9999.0;
 
 Note we must use ``G->header->size`` (size of allocated array) and not
-``G->header->size`` (number of nodes in grid) since the latter is
-smaller due to the padding and a single loop like the above treats the
-pad as part of the “inside” grid.
+``G->header->nm`` (number of nodes in grid) since the latter is smaller
+due to the padding and a single loop like the above treats the pad as
+part of the “inside” grid.
 
 Manipulate data tables
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -1245,10 +1344,203 @@ following code snippet will visit all text records and print them out:
       }
     }
 
-Prepare program options
------------------------
+Message and Verbose Reporting
+-----------------------------
 
-[sec:func] The module prototype interface is
+[sec:messages]
+
+The API provides two functions for your program to present information
+to the user during the run of the program. One is used for messages that
+are always written while the other is used for reports that must exceed
+the verbosity settings specified via ``-V``.
+
+::
+
+    int GMT_Report (void *API, unsigned int level, char *message, ...);
+
+This function takes a verbosity level and a multi-part message (e.g., a
+format statement and zero or more variables). The verbosity ``level`` is
+an integer in the 0–5 range; these are listed in Table [tbl:verbosity].
+You assign an appropriate verbosity level to your message, and depending
+on the chosen run-time verbosity level set via ``-V`` your message may
+or may not be reported. Only messages whose stated verbosity level is
+lower or equal to the ``-V``\ *level* will be printed.
+
+[h]
+
++---------------------------+-----+--------------------------------------------------+
++===========================+=====+==================================================+
+| GMT\_MSG\_QUIET           | 0   | No messages whatsoever                           |
++---------------------------+-----+--------------------------------------------------+
+| GMT\_MSG\_NORMAL          | 1   | Default output, e.g., warnings and errors only   |
++---------------------------+-----+--------------------------------------------------+
+| GMT\_MSG\_COMPAT          | 2   | Compatibility warnings                           |
++---------------------------+-----+--------------------------------------------------+
+| GMT\_MSG\_VERBOSE         | 3   | Verbose level                                    |
++---------------------------+-----+--------------------------------------------------+
+| GMT\_MSG\_LONG\_VERBOSE   | 4   | Longer verbose                                   |
++---------------------------+-----+--------------------------------------------------+
+| GMT\_MSG\_DEBUG           | 5   | Debug messages for developers mostly             |
++---------------------------+-----+--------------------------------------------------+
+
+[tbl:verbosity]
+
+::
+
+    int GMT_Message (void *API, unsigned int mode, char *format, ...);
+
+This function always prints its message to the standard output. Use the
+``mode`` value to control if a time stamp should preface the message.
+and if selected how the time information should be formatted. See
+Table [tbl:timemodes] for the various modes.
+
+[h]
+
++----------------------+-----+-----------------------------------------+
++======================+=====+=========================================+
+| GMT\_TIME\_NONE      | 0   | Display no time information             |
++----------------------+-----+-----------------------------------------+
+| GMT\_TIME\_CLOCK     | 1   | Display current local time              |
++----------------------+-----+-----------------------------------------+
+| GMT\_TIME\_ELAPSED   | 2   | Display elapsed time since last reset   |
++----------------------+-----+-----------------------------------------+
+| GMT\_TIME\_RESET     | 3   | Reset the elapsed time to 0             |
++----------------------+-----+-----------------------------------------+
+
+[tbl:timemodes]
+
+Presenting and accessing GMT options
+------------------------------------
+
+[sec:parsopt] As you develop a program you may need to rely on some of
+the *GMT* common options. For instance, you may wish to have your
+program present the ``-R`` option to the user, let *GMT*\ handle the
+parsing, and examine the values. You may also wish to encode your own
+custom options that may require you to parse user text into the
+corresponding floating point dimensions, length, coordinates, time, etc.
+The API provides several functions to simplify these tedious parsing
+tasks. This section is intended to show how the programmer will obtain
+information from the user that is necessary to do the task at hand
+(e.g., special options to provide values and settings for the program).
+In the following section we will concern ourselves with preparing
+arguments for calling any of the *GMT* modules.
+
+Display usage syntax for GMT common options
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can have your program menu display the standard usage message for a
+*GMT* common option by calling the function
+
+::
+
+    void GMT_Option (void *API, char *options);
+
+where ``options`` is a comma-separated list of *GMT* common options
+(e.g., “R,J,O,X”). You can repeat this function with different sets of
+options in order to intersperse your own custom options with in an
+overall alphabetical order; see any *GMT* module for examples of typical
+layouts.
+
+Parsing the GMT common options
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The parsing of all *GMT* common option is done by
+
+::
+
+    int GMT_Parse_Common (void *API, char *args, struct GMT_OPTION *list);
+
+where ``args`` is a string of the common *GMT* options your program may
+use. An error will be reported if any of the common *GMT* options fail
+to parse, and if so we return TRUE; if not errors we return FALSE. All
+other options, including file names, will be silently ignored. The
+parsing will update the internal *GMT*\ information structure that
+affects program operations.
+
+Inquiring about the GMT common options
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The API provide only a limited window into the full *GMT* machinery
+accessible to the modules. You can determine if a particular common
+option has been parsed and in some cases determine the values that was
+set with
+
+::
+
+    int GMT_Get_Common (void *API, unsigned int option, double *par);
+
+where ``option`` is a single option character (e.g., ‘R’) and ``par`` is
+a double array with at least a length of 6. If the particular option has
+been parsed then the function returns the number of parameters passed
+back via ``par``; otherwise we return -1. For instance, to determine if
+the ``-R`` was set and what the resulting region was set to you may call
+
+::
+
+    if (GMT_Get_Common (API, 'R', wesn)) != -1) {
+        /* wesn now contains the boundary information */
+    }
+
+The ``wesn`` array could now be passed to the various read and create
+functions for *GMT* resources.
+
+Parsing text values
+~~~~~~~~~~~~~~~~~~~
+
+Your program may need to request values from the user, such as
+distances, plot dimensions, coordinates, and other data. The conversion
+from such text to actual distances, taking units into account, is
+tedious to program. You can simplify this by using
+
+::
+
+    int GMT_Get_Value (void *API, char *arg, double par[]);
+
+where ``arg`` is the text item with one or more values that are
+separated by commas, space, or slashes, and ``par`` is an array long
+enough to hold all the items you are parsing. The function returns the
+number of items parsed, or -1 if there is an error. For instance, assume
+the character string ``origin`` was given by the user as two geographic
+coordinates separated by a slash (e.g., ``"35:45W/19:30:55.3S"``). We
+obtain the two coordinates as decimal degrees by calling
+
+::
+
+    n = GMT_Get_Value (API, origin, pair);
+
+Your program can now check that ``n`` equals 2 and then use the values
+in ``pairs``. Note: Dimensions given with units of inches, cm, or points
+are converted to the *GMT* default length unit (**GMT\_PROJ\_LENGTH**)
+[cm], while distances given in km, nautical miles, miles, feet, or
+survey feet are returned in meters. Arc lengths in minutes and seconds
+are returned in decimal degrees, and date/time values are returned in
+seconds since the epoch (1970).
+
+Inquiring about a GMT default parameter
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If your program needs to determine one or more of the current
+*GMT* default settings you can do so via
+
+::
+
+    int GMT_Get_Default (void *API, char *keyword, char *value);
+
+where ``keyword`` is one such keyword (e.g., **GMT\_PROJ\_LENGTH**) and
+``value`` must be a character array long enough to hold the answer.
+Depending on what parameter you selected you could further convert it to
+a numerical value with ``GMT_Get_Value`` or just use it in a text
+comparison.
+
+Prepare module options
+----------------------
+
+[sec:func] One of the advantages of programming with the API is that you
+have access to the high-level *GMT* modules. For example, if your
+program must compute the distance from a point to all other points on
+the node you can simply set up options and call ``GMT_grdmath`` to do it
+for you and accept the result back as an input grid. All the module
+interfaces are identical are looks like
 
 ::
 
@@ -1261,20 +1553,21 @@ passed to the module:
 :math:`mode > 0`
     : Expects ``args`` to be an array of text options and ``mode`` to be
     a count of how many options are passed (i.e., the ``argc, argv[]``
-    model).
+    model used by the *GMT* programs themselves).
 
 :math:`mode < 0`
     : Expects ``args`` to be a pointer to a doubly-linked list of
-    objects with individual options for the current program.
+    objects with individual options for the current program. We will see
+    how API functions can help prepare such lists.
 
 :math:`mode == 0`
     : Expects ``args`` to be a single text string with all required
     options.
 
 Here, ``GMT_module`` stands for any of the *GMT* modules, such as
-``GMT_psxy``. All modules returns FALSE (0) if they returned
-successfully; otherwise they return an error code back to the calling
-environment.
+``GMT_psxy`` or ``GMT_grdvolume``. All modules returns FALSE (0) if they
+completed successfully; otherwise they produce error messages and return
+an error code back to the calling environment.
 
 Set program options via text array arguments
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1511,25 +1804,6 @@ These options also work on the command line but usually one would have
 to escape the special characters :math:`<` and :math:`>` as they are
 used for file redirection.
 
-Parsing GMT common options
-~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-While all the main *GMT* modules have their own specific option parser,
-we also provide a general parser that only examines the common
-*GMT* options such as ``-R``, ``-J``, ``-V``, etc. The prototype of this
-parser is
-
-::
-
-    int GMT_Parse_Common (void *API, char *options, struct GMT_OPTION *list);
-
-where *options* is a string with all GMT options used by the program.
-An error will be reported via ``API->error`` if any of the common
-*GMT* options fail to parse, and if so we return TRUE; if not errors we
-return FALSE. All other options, including file names, will be silently
-ignored. The parsing will update the internal *GMT*\ information
-structure that affects program operations.
-
 Calling a GMT module
 --------------------
 
@@ -1548,40 +1822,55 @@ information to the existing headers. This is achieved with
 
 ::
 
-    int GMT_Add_Comment (void *API, unsigned int family, unsigned int mode \
+    int GMT_Set_Comment (void *API, unsigned int family, unsigned int mode \
         void *arg, void *data)
 
 Again, ``family`` selects which kind of resource is passed via ``data``.
 The ``mode`` determines what kind of comment is being considered, how it
 should be included, and in what form the comment passed via ``arg`` is.
-Table  lists the available options, which may be combined by adding
-(bitwise “or”). Note: Users can always determine if they wish to turn
-off header output via the common *GMT* option (h).
+Table [tbl:comments] lists the available options, which may be combined
+by adding (bitwise “or”). The ``GMT_Set_Comment`` does not actually
+output anything but sets the relevant comment and header records in the
+relevant structure. When a file is written out the information will be
+output as well (Note: Users can always decide if they wish to turn
+header output on or off via the common *GMT* option ``-h``. For
+record-by-record writing you must enable the header block output when
+you call ``GMT_Begin_IO``.
 
 [h]
 
-+-----------------------------+-----+---------------------------------------------------------------+
-+=============================+=====+===============================================================+
-| GMT\_COMMENT\_IS\_TEXT      | 0   | Comment is a text string                                      |
-+-----------------------------+-----+---------------------------------------------------------------+
-| GMT\_COMMENT\_IS\_OPTION    | 1   | Comment is a linked list of GMT\ :sub:`O`\ PTION structures   |
-+-----------------------------+-----+---------------------------------------------------------------+
-| GMT\_COMMENT\_IS\_COMMAND   | 2   | Comment is the command                                        |
-+-----------------------------+-----+---------------------------------------------------------------+
-| GMT\_COMMENT\_IS\_REMARK    | 4   | Comment is the remark                                         |
-+-----------------------------+-----+---------------------------------------------------------------+
-| GMT\_COMMENT\_IS\_RESET     | 8   | Comment replaces existing information                         |
-+-----------------------------+-----+---------------------------------------------------------------+
++------------------------------+-----+------------------------------------------------------+
++==============================+=====+======================================================+
+| GMT\_COMMENT\_IS\_TEXT       | 0   | Comment is a text string                             |
++------------------------------+-----+------------------------------------------------------+
+| GMT\_COMMENT\_IS\_OPTION     | 1   | Comment is a linked list of GMT\_OPTION structures   |
++------------------------------+-----+------------------------------------------------------+
+| GMT\_COMMENT\_IS\_COMMAND    | 2   | Comment is the command                               |
++------------------------------+-----+------------------------------------------------------+
+| GMT\_COMMENT\_IS\_REMARK     | 4   | Comment is the remark                                |
++------------------------------+-----+------------------------------------------------------+
+| GMT\_COMMENT\_IS\_TITLE      | 4   | Comment is the title                                 |
++------------------------------+-----+------------------------------------------------------+
+| GMT\_COMMENT\_IS\_NAME\_X    | 4   | Comment is the x variable name (grids only)          |
++------------------------------+-----+------------------------------------------------------+
+| GMT\_COMMENT\_IS\_NAME\_Y    | 4   | Comment is the y variable name (grids only)          |
++------------------------------+-----+------------------------------------------------------+
+| GMT\_COMMENT\_IS\_NAME\_Z    | 4   | Comment is the z variable name (grids only)          |
++------------------------------+-----+------------------------------------------------------+
+| GMT\_COMMENT\_IS\_COLNAMES   | 4   | Comment is the column names header                   |
++------------------------------+-----+------------------------------------------------------+
+| GMT\_COMMENT\_IS\_RESET      | 8   | Comment replaces existing information                |
++------------------------------+-----+------------------------------------------------------+
 
 [tbl:comments]
 
-The *command *\ and *remark* modifiers to the comment are used to
-distinguish regular comments from specific fields in the header
-structure of many data resources, such as ``GMT_GRID``. For the various
-table resources (e.g., ``GMT_DATASET``) these modifiers result in a
-specially formatted comments beginning with “Command: ” or “Remark: ”,
-reflecting how this type of information is presented via
-`**grdinfo** <run:../man/grdinfo.html>`__ for *GMT* grids.
+The named modes (*command*, *remark*, *title*, *name\_x,y,z* and
+*colnames* are used to distinguish regular text comments from specific
+fields in the header structures of the data resources, such as
+``GMT_GRID``. For the various table resources (e.g., ``GMT_DATASET``)
+these modifiers result in a specially formatted comments beginning with
+“Command: ” or “Remark: ”, reflecting how this type of information is
+encoded in the headers.
 
 Exporting Data
 --------------
@@ -1792,7 +2081,7 @@ Once the record-by-record output has completed we disable further output
 to prevent accidental writing from occurring (due to poor program
 structure, bugs, etc.). We do so by calling ``GMT_End_IO``. This
 function disables further record-by-record data export; here, we
-obviously pass ``direction`` = GMT\_OUT.
+obviously pass ``direction`` as GMT\_OUT.
 
 Destroy allocated resources
 ---------------------------
@@ -1839,26 +2128,160 @@ program does not need to do so. The function returns TRUE (1) if there
 is an error when trying to free the memory (the error code is passed
 back with ``API->error``), otherwise it returns FALSE (0).
 
-Report errors
--------------
+The GMT FFT Interface
+=====================
 
-Since all API functions returns a status code via ``API->error``, you
-should always check this code before moving to the next step. All API
-functions will issue an error message before returning control to the
-calling program. This function is
+While the i/o options presented so far lets you easily read in a data
+table or grid and manipulated them, if you need to do so in the
+wavenumber domain then this chapter is for you. Here we outline how to
+take the Fourier transform of such data, perform calculations in the
+wavenumber domain, and take the inverse transform before writing the
+results. To assist programmers we also distribute fully functioning
+demonstration programs that takes you through the steps we are about to
+discuss; these demo programs may be used as your starting point for
+further development.
+
+Presenting and Parsing the FFT options
+--------------------------------------
+
+Several *GMT* programs using FFTs present the same unified option and
+modifier sets to the user. The API makes these available as well. If
+your program needs to present the option usage you can call
 
 ::
 
-    int GMT_Report_Error (void *API, int error);
+    unsigned int GMT_FFT_Option (void *API, char option, unsigned int dim, \
+        char *string);
 
-where ``error`` is the status code return by any API function. Note: The
-error message is only issued if the verbosity level of the *GMT* session
-is not set to 0 [Default is 1], and messages are normally written to
-``stderr`` unless this stream has been redirected. Note that this
-function also updates ``API->error`` to the given value.
+Here, ``option`` is the unique character used for this particular
+program option (most *GMT* programs have standardized on using ‘N’ but
+you are free to choose whatever you want except existing *GMT* common
+options). The ``dim`` sets the dimension of the transform, currently you
+must choose 1 or 2, while the ``string`` is a one-line message that
+states what the option does; you should tailor this to your program. If
+NULL then a generic message is placed instead.
+
+To parse the user’s selection you call
+
+::
+
+    void * GMT_FFT_Parse (void *API, char option, unsigned int dim, char *args);
+
+which accepts the user’s string option via ``args``; the other arguments
+are the same as those above. The function returns an opaque pointer to a
+structure with the chosen parameters.
+
+Initializing the FFT machinery
+------------------------------
+
+Before your can take any transforms you must initialize the FFT
+machinery. This process involves a series of preparatory steps that are
+conveniently performed for you by
+
+::
+
+    void * GMT_FFT_Create (void *API, void *X, unsigned int dim, \
+        unsigned int subdivide, unsigned int mode, void *F);
+
+Here, ``X`` is either your dataset or grid pointer, ``dim`` is the
+dimension of the transform (1 or 2 only), ``subdivide`` is not yet used
+by the API, ``mode`` passes various flags to the setup, such as whether
+the data is real, imaginary, or complex, and ``F`` is the opaque pointer
+returned by ``GMT_FFT_Parse``. Depending on the options you chose to
+pass to ``GMT_FFT_Parse``, the data may have a constant or a trend
+removed, reflected and extended by various symmetries, padded and
+tapered to desired transform dimensions, and possibly there are
+temporary files written out before the transform takes place. See the
+man page for a full explanation of the options presented by
+``GMT_FFT_Option``.
+
+Taking the FFT
+--------------
+
+Now that everything has been set up you can perform the transform with
+
+::
+
+    void * GMT_FFT (void *API, void *X, int direction, unsigned int mode, \
+        void *K);
+
+which takes as ``direction`` either GMT\_FFT\_FWD or GMT\_FFT\_INV. The
+mode is used to specify if we pass a real (GMT\_FFT\_REAL) or complex
+(GMT\_FFT\_COMPLEX) data set, and ``K`` is the opaque pointer returned
+by ``GMT_FFT_Create``. The transform is performed in place and returned
+via ``X``. When done with your manipulations (below) you can call it
+again with the inverse flag to recover the corresponding space-domain
+version of your data. The FFT is fully normalized so that calling
+forward followed by inverse yields the original data set.
+
+Wavenumber calculations
+-----------------------
+
+As your data have been transformed to the wavenumber domain you may wish
+to operate on the various values as a function of wavenumber. We will
+show how this is done for datasets and grids separately. First, we
+present the function that returns an individual wavenumber:
+
+::
+
+    double GMT_FFT_Wavenumber (void *API, uint64_t k, unsigned int mode, \
+        void *K);
+
+where ``k`` is the index into the array or grid, ``mode`` specifies
+which wavenumber we want (it is not used for 1-D transform but for the
+2-D transform we can select either the x-wavenumber (0), the
+y-wavenumber (1), or the radial wavenumber (2)), and finally the opaque
+vector used earlier.
+
+1-D FFT manipulation
+~~~~~~~~~~~~~~~~~~~~
+
+To be added later.
+
+2-D FFT manipulation
+~~~~~~~~~~~~~~~~~~~~
+
+The number of complex pairs in the grid is given by the header’s ``nm``
+variable, while ``size`` will be twice that value as it holds the number
+of components. To visit all the complex values and obtain the
+corresponding wavenumber we simply need to loop over ``size`` and call
+``GMT_FFT_Wavenumber``. This code snippet multiples the complex grid by
+the radial wavenumber:
+
+::
+
+    uint64_t k;
+    for (k = 0; k < Grid->header->size; k++) {
+        wave = GMT_FFT_Wavenumber (API, k, 2, K);
+        Grid->data[k] *= wave;
+    }
+
+Alternatively, you may choose to be more specific about which components
+are real and imaginary (especially if they are to be treated
+differently), and set up the loop this way:
+
+::
+
+    uint64_t re, im;
+    for (re = 0, im = 1; re < Grid->header->size; re += 2, im += 2) {
+        wave = GMT_FFT_Wavenumber (API, re, 2, K);
+        Grid->data[re] *= wave;
+        Grid->data[im] *= 2.0 * wave;
+    }
+
+Destroying the FFT machinery
+----------------------------
+
+When done you terminate the FFT machinery with
+
+::
+
+    double GMT_FFT_Destroy (void *API, void *K);
+
+which simply frees up the memory allocated by the FFT machinery.
 
 FORTRAN 77 interface
---------------------
+====================
 
 FORTRAN 77 developers who wish to use the *GMT* API may use the same 22
 API functions as discussed in Chapter 2. However, as pointers to
@@ -1885,7 +2308,7 @@ The list of the basic 22 FORTRAN prototype functions thus becomes
     function GMT_Init_IO (family, geometry, direction, mode, n_args, args)
     function GMT_Begin_IO (family, geometry, direction)
     function GMT_Status_IO (mode)
-    function GMT_Create_Data (family, geometry, mode, ipar, wesn, inc, registration, pad, data)
+    function GMT_Create_Data (family, geometry, ipar)
     function GMT_Duplicate_Data (family, mode, data)
     function GMT_Read_Data (family, method, geometry, mode, wesn, \
         input, data)
@@ -1900,7 +2323,6 @@ The list of the basic 22 FORTRAN prototype functions thus becomes
     function GMT_Put_Row (row_no, grid, row)
     function GMT_End_IO (direction, mode)
     function GMT_Destroy_Data (mode, ptr)
-    function GMT_Report_Error (error)
 
 where ``family``, ``method``, ``geometry``, ``mode`` and ``direction``
 are unsigned ints, ``ID`` and ``error`` are (signed) integers, ``ipar``

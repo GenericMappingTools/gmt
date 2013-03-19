@@ -122,16 +122,16 @@ None.
 To make a cpt file with z-values from -200 to 200, with discrete color
 changes every 25, and using a polar blue-white-red colortable:
 
-makecpt -Cpolar -T-200/200/25 > colors.cpt
+    makecpt -Cpolar -T-200/200/25 > colors.cpt
 
 To make an equidistant cpt file from z = -2 to 6, in steps of 1, using
 continuous default rainbow colors:
 
-makecpt -T-2/6/1 -Z > rainbow.cpt
+    makecpt -T-2/6/1 -Z > rainbow.cpt
 
 To make a GEBCO look-alike cpt file for bathymetry, run
 
-makecpt -Cgebco > my\_gebco.cpt
+    makecpt -Cgebco > my\_gebco.cpt
 
 `Bugs <#toc7>`_
 ---------------
@@ -143,4 +143,4 @@ as an output filename; hence the my\_gebco.cpt in the example.
 `See Also <#toc8>`_
 -------------------
 
-`gmt <gmt.html>`_ , `grd2cpt <grd2cpt.html>`_
+`gmt <gmt.html>`_, `grd2cpt <grd2cpt.html>`_

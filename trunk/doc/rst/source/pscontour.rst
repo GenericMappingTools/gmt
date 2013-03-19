@@ -168,15 +168,14 @@ To make a raw contour plot from the file topo.xyz and drawing the
 contours (pen = 2) given in the color palette file topo.cpt on a Lambert
 map at 0.5 inch/degree along the standard parallels 18 and 24, use
 
-pscontour topo.xyz -R320/330/20/30 **-Jl**\ 18/24/0.5\ **i** -Ctopo.cpt
--W0.5p > topo.ps
+    pscontour topo.xyz -R320/330/20/30 **-Jl**\ 18/24/0.5\ **i** -Ctopo.cpt -W0.5p > topo.ps
 
 To create a color *PostScript* plot of the numerical temperature
 solution obtained on a triangular mesh whose node coordinates and
 temperatures are stored in temp.xyz and mesh arrangement is given by the
 file mesh.ijk, using the colors in temp.cpt, run
 
-pscontour temp.xyz -R0/150/0/100 -Jx0.1i -Ctemp.cpt -G -W0.25p > temp.ps
+    pscontour temp.xyz -R0/150/0/100 -Jx0.1i -Ctemp.cpt -G -W0.25p > temp.ps
 
 Bugs
 ----
@@ -193,13 +192,13 @@ pscontour topo.txt -C100 -Dcontours\_%.0f.txt
 See Also
 --------
 
-`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
-`gmtcolors <gmtcolors.html>`_ ,
-`grdcontour <grdcontour.html>`_ ,
-`grdimage <grdimage.html>`_ ,
-`nearneighbor <nearneighbor.html>`_ ,
-`psbasemap <psbasemap.html>`_ , `psscale <psscale.html>`_
-, `surface <surface.html>`_ ,
+`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
+`gmtcolors <gmtcolors.html>`_,
+`grdcontour <grdcontour.html>`_,
+`grdimage <grdimage.html>`_,
+`nearneighbor <nearneighbor.html>`_,
+`psbasemap <psbasemap.html>`_, `psscale <psscale.html>`_,
+`surface <surface.html>`_,
 `triangulate <triangulate.html>`_
 
 References

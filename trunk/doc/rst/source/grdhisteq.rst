@@ -93,12 +93,12 @@ location of the most negative input value, and so on.
 To find the height intervals that divide the file heights.nc into 16
 divisions of equal area:
 
-grdhisteq heights.nc -C16 -D > levels.d
+    grdhisteq heights.nc -C16 -D > levels.d
 
 To make the poorly distributed intensities in the file raw\_intens.nc
 suitable for use with **grdimage** or **grdview**, run
 
-grdhisteq raw\_intens.nc -Gsmooth\_intens.nc -N -V
+    grdhisteq raw\_intens.nc -Gsmooth\_intens.nc -N -V
 
 `Restrictions <#toc8>`_
 -----------------------
@@ -123,8 +123,8 @@ range [-1, 1]. Alternatively, supply a normalization factor with **-N**.
 `See Also <#toc9>`_
 -------------------
 
-`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
-`grd2cpt <grd2cpt.html>`_ ,
-`grdgradient <grdgradient.html>`_ ,
-`grdimage <grdimage.html>`_ , `grdmath <grdmath.html>`_ ,
-`grdview <grdview.html>`_ , `makecpt <makecpt.html>`_
+`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
+`grd2cpt <grd2cpt.html>`_,
+`grdgradient <grdgradient.html>`_,
+`grdimage <grdimage.html>`_, `grdmath <grdmath.html>`_,
+`grdview <grdview.html>`_, `makecpt <makecpt.html>`_

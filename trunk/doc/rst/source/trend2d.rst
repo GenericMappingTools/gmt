@@ -154,22 +154,22 @@ Examples
 
 To remove a planar trend from data.xyz by ordinary least squares, use:
 
-trend2d data.xyz -Fxyr -N2 > detrended\_data.xyz
+    trend2d data.xyz -Fxyr -N2 > detrended\_data.xyz
 
 To make the above planar trend robust with respect to outliers, use:
 
-trend2d data.xzy -Fxyr -N2r > detrended\_data.xyz
+    trend2d data.xzy -Fxyr -N2r > detrended\_data.xyz
 
 To find out how many terms (up to 10 in a robust interpolant are
 significant in fitting data.xyz, use:
 
-trend2d data.xyz -N10r -I -V
+    trend2d data.xyz -N10r -I -V
 
 See Also
 --------
 
-`gmt <gmt.html>`_ , `grdmath <grdmath.html>`_ ,
-`grdtrend <grdtrend.html>`_ , `trend1d <trend1d.html>`_
+`gmt <gmt.html>`_, `grdmath <grdmath.html>`_,
+`grdtrend <grdtrend.html>`_, `trend1d <trend1d.html>`_
 
 References
 ----------

@@ -115,21 +115,21 @@ To create a gridded data set from the file seaMARCII\_bathy.lon\_lat\_z
 using a 0.5 min grid, a 5 km search radius, using an octant search, and
 set empty nodes to -9999:
 
-nearneighbor seaMARCII\_bathy.lon\_lat\_z -R242/244/-22/-20 -I0.5m
--E-9999 -Gbathymetry.nc -S5k -N8
+    nearneighbor seaMARCII\_bathy.lon\_lat\_z -R242/244/-22/-20 -I0.5m
+    -E-9999 -Gbathymetry.nc -S5k -N8
 
 To make a global grid file from the data in geoid.xyz using a 1 degree
 grid, a 200 km search radius, spherical distances, using an quadrant
 search, and set nodes to NaN only when fewer than two quadrants contain
 at least one value:
 
-nearneighbor geoid.xyz -R0/360/-90/90 -I1 -Lg -Ggeoid.nc -S200k -N4/2
+    nearneighbor geoid.xyz -R0/360/-90/90 -I1 -Lg -Ggeoid.nc -S200k -N4/2
 
 `See Also <#toc9>`_
 -------------------
 
-`blockmean <blockmean.html>`_ ,
-`blockmedian <blockmedian.html>`_ ,
-`blockmode <blockmode.html>`_ , `gmt <gmt.html>`_ ,
-`surface <surface.html>`_ ,
+`blockmean <blockmean.html>`_,
+`blockmedian <blockmedian.html>`_,
+`blockmode <blockmode.html>`_, `gmt <gmt.html>`_,
+`surface <surface.html>`_,
 `triangulate <triangulate.html>`_

@@ -128,23 +128,23 @@ To triangulate the points in the file samples.xyz, store the triangle
 information in a binary file, and make a grid for the given area and
 spacing, use
 
-triangulate samples.xyz -bo -R0/30/0/30 -I2 -Gsurf.nc > samples.ijk
+    triangulate samples.xyz -bo -R0/30/0/30 -I2 -Gsurf.nc > samples.ijk
 
 To draw the optimal Delaunay triangulation network based on the same
 file using a 15-cm-wide Mercator map, use
 
-triangulate samples.xyz -M -R-100/-90/30/34 **-JM**\ 15\ **c** \| psxy
--R-100/-90/30/34 **-JM**\ 15\ **c** -W0.5p -B1 > network.ps
+    triangulate samples.xyz -M -R-100/-90/30/34 **-JM**\ 15\ **c** \| psxy
+    -R-100/-90/30/34 **-JM**\ 15\ **c** -W0.5p -B1 > network.ps
 
 To instead plot the Voronoi cell outlines, try
 
-triangulate samples.xyz -M -Q -R-100/-90/30/34 **-JM**\ 15\ **c** \|
-psxy -R-100/-90/30/34 **-JM**\ 15\ **c** -W0.5p -B1 > cells.ps
+    triangulate samples.xyz -M -Q -R-100/-90/30/34 **-JM**\ 15\ **c** \|
+    psxy -R-100/-90/30/34 **-JM**\ 15\ **c** -W0.5p -B1 > cells.ps
 
 See Also
 --------
 
-`gmt <gmt.html>`_ , `pscontour <pscontour.html>`_
+`gmt <gmt.html>`_, `pscontour <pscontour.html>`_
 
 References
 ----------

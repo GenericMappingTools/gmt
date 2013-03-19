@@ -84,22 +84,21 @@ in designing an Optimal Robust Separator [*Wessel*, 1998].
 To determine the volume in km^3 under the surface hawaii\_topo.nc
 (height in km), use
 
-grdvolume hawaii\_topo.nc -Sk
+    grdvolume hawaii\_topo.nc -Sk
 
-To find the volume between the surface peaks.nc and the contour z = 250,
-use
+To find the volume between the surface peaks.nc and the contour z = 250, use
 
-grdvolume peaks.nc -Sk -C250
+    grdvolume peaks.nc -Sk -C250
 
 To search for the contour, between 100 and 300 in steps of 10, that
 maximizes the ratio of volume to surface area for the file peaks.nc, use
 
-grdvolume peaks.nc -Sk -C100/300/10 -Th > results.d
+    grdvolume peaks.nc -Sk -C100/300/10 -Th > results.d
 
 To see the areas and volumes for all the contours in the previous
 example, use
 
-grdvolume peaks.nc -Sk -C100/300/10 > results.d
+    grdvolume peaks.nc -Sk -C100/300/10 > results.d
 
 `Notes <#toc8>`_
 ----------------
@@ -116,7 +115,7 @@ rim in pixel oriented grids is ignored when using the **-C** flag.
 `See Also <#toc9>`_
 -------------------
 
-`*gmt*\ (1) <gmt.html>`_ , `*grdfilter*\ (1) <grdfilter.html>`_
+`gmt <gmt.html>`_, `grdfilter <grdfilter.html>`_
 
 `References <#toc10>`_
 ----------------------

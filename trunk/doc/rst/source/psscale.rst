@@ -173,8 +173,7 @@ To append a vertical color scale (7.5 cm long; 1.25 cm wide) to the
 right of a plot that is 6 inch wide and 4 inch high, using illumination,
 and show back- and foreground colors, and annotating every 5 units, use
 
-psscale -D6.5i/2i/7.5c/1.25c -O -Ccolors.cpt
--I -E -B5:BATHYMETRY:/:m: >> map.ps
+    psscale -D6.5i/2i/7.5c/1.25c -O -Ccolors.cpt -I -E -B5:BATHYMETRY:/:m: >> map.ps
 
 `Notes <#toc7>`_
 ----------------
@@ -187,4 +186,4 @@ colors for the two methods given identical RGB values.
 `See Also <#toc8>`_
 -------------------
 
-`gmt <gmt.html>`_ , `makecpt <makecpt.html>`_ , `grd2cpt <grd2cpt.html>`_
+`gmt <gmt.html>`_, `makecpt <makecpt.html>`_, `grd2cpt <grd2cpt.html>`_

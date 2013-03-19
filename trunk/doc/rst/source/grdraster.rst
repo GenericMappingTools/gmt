@@ -120,7 +120,7 @@ Examples
 To extract data from raster 1, taking one point every 30 minutes, in an
 area extended beyond 360 degrees to allow later filtering, run
 
-**grdraster** 1 **-R**-4/364/-62/62 **-I**\ 30\ **m** **-G**\ data.nc
+    grdraster 1 **-R**-4/364/-62/62 **-I**\ 30\ **m** **-G**\ data.nc
 
 To obtain data for an oblique Mercator projection we need to extract
 more data that is actually used. This is necessary because the output of
@@ -129,20 +129,18 @@ oblique map in general does not. Hence, to get all the data from the
 ETOPO2 data needed to make a contour map for the region defined by its
 lower left and upper right corners and the desired projection, use
 
-**grdraster** ETOPO2 **-R**\ 160/20/220/30\ **r**
-**-Joc**\ 190/25.5/292/69/1 **-G**\ data.nc
+    grdraster ETOPO2 **-R**\ 160/20/220/30\ **r** **-Joc**\ 190/25.5/292/69/1 **-G**\ data.nc
 
 To extract data from the 2 min Geoware relief blend and write it as
 binary double precision xyz-triplets to standard output:
 
-**grdraster** "2 min Geoware" **-R**\ 20/25/-10/5 **-bo** >! triplets.b
+    grdraster "2 min Geoware" **-R**\ 20/25/-10/5 **-bo** >! triplets.b
 
 See Also
 --------
 
-`*gmtdefaults*\ (1) <gmtdefaults.html>`_ , `*GMT*\ (1) <GMT.html>`_ ,
-`*grdsample*\ (1) <grdsample.html>`_ ,
-`*grdfilter*\ (1) <grdfilter.html>`_
+`gmtdefaults <gmtdefaults.html>`_, `GMT <GMT.html>`_,
+`grdsample <grdsample.html>`_, `grdfilter <grdfilter.html>`_
 
 References
 ----------

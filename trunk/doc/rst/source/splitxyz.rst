@@ -150,12 +150,12 @@ region **-R**\ 300/315/12/20. You want to use a 100km low-pass filter to
 smooth the tracks and a 500km high-pass filter to detrend the magnetic
 anomalies. Try this:
 
-gmtlist cag71 -R300/315/12/20 -Fxyzdh \| splitxyz -A90/15 -F100/-500
--D100 -S -V -fg \| pswiggle -R300/315/12/20 -Jm0.6 -Ba5f1:.cag71: -T1
--W0.75p -Ggray -Z200 > cag71\_wiggles.ps
+    gmtlist cag71 -R300/315/12/20 -Fxyzdh \| splitxyz -A90/15 -F100/-500
+    -D100 -S -V -fg \| pswiggle -R300/315/12/20 -Jm0.6 -Ba5f1:.cag71: -T1
+    -W0.75p -Ggray -Z200 > cag71\_wiggles.ps
 
 MGD-77 users: For this application we recommend that you extract d, h
-from **mgd77list** rather than have **splitxyz** compute them
+from `mgd77list <./supplements/mgd77/mgd77list.html>`_ rather than have **splitxyz** compute them
 separately.
 
 Suppose you have been given a binary, double-precision file containing
@@ -163,9 +163,9 @@ lat, lon, gravity values from a survey, and you want to split it into
 profiles named *survey*\ \_\ *###.txt* (when gap exceeds 100 km). Try
 this:
 
-splitxyz survey.bin -Nsurvey\_%03d.txt -V -gd100k -D100 -: -fg -bi3d
+    splitxyz survey.bin -Nsurvey\_%03d.txt -V -gd100k -D100 -: -fg -bi3d
 
 `See Also <#toc9>`_
 -------------------
 
-`gmt <gmt.html>`_ , `mgd77list <mgd77list.html>`_ , `pswiggle <pswiggle.html>`_
+`gmt <gmt.html>`_, `mgd77list <mgd77list.html>`_, `pswiggle <pswiggle.html>`_

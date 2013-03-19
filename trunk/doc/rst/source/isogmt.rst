@@ -25,9 +25,9 @@ variable **GMT\_TMPDIR**.
 
 Run the shell script *script.gmt* in isolation mode
 
-isogmt sh script.gmt
+    isogmt sh script.gmt
 
 `See Also <#toc4>`_
 -------------------
 
-`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_
+`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_

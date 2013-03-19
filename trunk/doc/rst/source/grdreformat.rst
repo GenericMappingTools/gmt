@@ -220,32 +220,32 @@ ints or unsigned bytes). For header and grid details, see Appendix B.
 To extract the second layer from a 3-dimensional grid named temp from a
 COARDS-compliant netCDF file climate.nc:
 
-grdreformat climate.nc?temp[1] temp.nc -V
+    grdreformat climate.nc?temp[1] temp.nc -V
 
 To create a 4-byte native floating point grid from the COARDS-compliant
 netCDF file data.nc:
 
-grdreformat data.nc ras\_data.b4=bf -V
+    grdreformat data.nc ras\_data.b4=bf -V
 
 To make a 2-byte short integer file, scale it by 10, subtract 32000,
 setting NaNs to -9999, do
 
-grdreformat values.nc shorts.i2=bs/10/-32000/-9999 -V
+    grdreformat values.nc shorts.i2=bs/10/-32000/-9999 -V
 
 To create a Sun standard 8-bit rasterfile for a subset of the data file
 image.nc, assuming the range in image.nc is 0-1 and we need 0-255, run
 
-grdreformat image.nc -R-60/-40/-40/-30 image.ras8=rb/255/0 -V
+    grdreformat image.nc -R-60/-40/-40/-30 image.ras8=rb/255/0 -V
 
 To convert etopo2.nc to etopo2.i2 that can be used by **grdraster**, try
 
-grdreformat etopo2.nc etopo2.i2=bs -N -V
+    grdreformat etopo2.nc etopo2.i2=bs -N -V
 
 To creat a dumb file saved as a 32 bits float GeoTiff using GDAL, run
 
-grdmath -Rd -I10 X Y MUL = lixo.tiff=gd:GTiff
+    grdmath -Rd -I10 X Y MUL = lixo.tiff=gd:GTiff
 
 `See Also <#toc11>`_
 --------------------
 
-`gmt.conf <gmt.conf.html>`_ , `gmt <gmt.html>`_ , `grdmath <grdmath.html>`_
+`gmt.conf <gmt.conf.html>`_, `gmt <gmt.html>`_, `grdmath <grdmath.html>`_

@@ -230,43 +230,43 @@ inserted into other documents (articles, presentations, posters, etc.).
 To convert the file psfile.ps to PNG using a tight BoundingBox and
 rotating it back to normal orientation in case it was in Landscape mode:
 
-ps2raster psfile.ps -A -P -Tg
+    ps2raster psfile.ps -A -P -Tg
 
 To create a 3 pages PDF file from 3 individual PS files
 
-ps2raster -TF -Fabc a.ps b.ps c.ps
+    ps2raster -TF -Fabc a.ps b.ps c.ps
 
 To create a simple linear map with pscoast and convert it to tif with a
 .tfw the tight BoundingBox computation.
 
-pscoast -JX12cd -R-10/-4/37/43 -W1 -Di -Bg30m -P -G200
---MAP\_FRAME\_TYPE=inside > cara.ps
+    pscoast -JX12cd -R-10/-4/37/43 -W1 -Di -Bg30m -P -G200
+    --MAP\_FRAME\_TYPE=inside > cara.ps
 
-ps2raster cara -Tt -W
+    ps2raster cara -Tt -W
 
 To create a Mercator version of the above example and use GDAL to
 produce a true geotiff file.
 
-pscoast -JM0/12c -R-10/-4/37/43 -W1 -Di -Bg30m -P -G200
---MAP\_FRAME\_TYPE=inside > cara.ps
+    pscoast -JM0/12c -R-10/-4/37/43 -W1 -Di -Bg30m -P -G200
+    --MAP\_FRAME\_TYPE=inside > cara.ps
 
-gdalwarp -s\_srs +proj=merc cara.tif carageo.tiff
+    gdalwarp -s\_srs +proj=merc cara.tif carageo.tiff
 
 To create a Polar Stereographic geotiff file of Patagonia
 
-pscoast -JS-55/-60/15c -R-77/-55/-57.5/-48r -Di -Gred -P -Bg2
---MAP\_FRAME\_TYPE=inside > patagonia.ps
+    pscoast -JS-55/-60/15c -R-77/-55/-57.5/-48r -Di -Gred -P -Bg2
+    --MAP\_FRAME\_TYPE=inside > patagonia.ps
 
-ps2raster patagonia.ps -Tt -W+g -V
+    ps2raster patagonia.ps -Tt -W+g -V
 
 To create a simple KMZ file for use in Google Earth, try
 
-grdimage lonlatgrid.nc -Jx1 -Ccolors.cpt -P -B0g2
---MAP\_FRAME\_TYPE=inside > tile.ps
+    grdimage lonlatgrid.nc -Jx1 -Ccolors.cpt -P -B0g2
+    --MAP\_FRAME\_TYPE=inside > tile.ps
 
-ps2raster tile.ps -Tg -W+k+t"my title"+l256/-1 -V
+    ps2raster tile.ps -Tg -W+k+t"my title"+l256/-1 -V
 
-(These commands assume that GhostScript can be found in your system’s path.)
+(These commands assume that GhostScript can be found in your system's path.)
 
 `Binary Data <#toc8>`_
 ----------------------

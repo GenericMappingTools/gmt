@@ -203,23 +203,23 @@ permanent major rivers in thick blue pen, additional major rivers in
 thin blue pen, and national borders as dashed lines on a Mercator map at
 scale 0.1 inch/degree, use
 
-pscoast -R-30/30/-40/40 **-Jm**\ 0.1\ **i** -B5 -I1/1p,blue
--I2/0.25p,blue -N1/0.25p,- -W0.25p,white -Ggreen -Sblue -P > africa.ps
+    pscoast -R-30/30/-40/40 **-Jm**\ 0.1\ **i** -B5 -I1/1p,blue
+    -I2/0.25p,blue -N1/0.25p,- -W0.25p,white -Ggreen -Sblue -P > africa.ps
 
 To plot Iceland using the lava pattern (# 28) at 100 dots per inch, on a
 Mercator map at scale 1 cm/degree, run
 
-pscoast -R-30/-10/60/65 **-Jm**\ 1\ **c** -B5 -Gp100/28 > iceland.ps
+    pscoast -R-30/-10/60/65 **-Jm**\ 1\ **c** -B5 -Gp100/28 > iceland.ps
 
 To initiate a clip path for Africa so that the subsequent colorimage of
 gridded topography is only seen over land, using a Mercator map at scale
 0.1 inch/degree, use
 
-pscoast -R-30/30/-40/40 **-Jm**\ 0.1\ **i** -B5 -Gc -P -K > africa.ps
+    pscoast -R-30/30/-40/40 **-Jm**\ 0.1\ **i** -B5 -Gc -P -K > africa.ps
 
-grdimage **-Jm**\ 0.1\ **i** etopo5.nc -Ccolors.cpt -O -K >> africa.ps
+    grdimage **-Jm**\ 0.1\ **i** etopo5.nc -Ccolors.cpt -O -K >> africa.ps
 
-pscoast -Q -O >> africa.ps
+    pscoast -Q -O >> africa.ps
 
 **pscoast** will first look for coastline files in directory
 **$GMT\_SHAREDIR**/coast If the desired file is not found, it will look
@@ -272,7 +272,7 @@ Institute, Lensfield Road, Cambridge CB2 1ER, United Kingdom.
 See Also
 --------
 
-`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
-`gmtcolors <gmtcolors.html>`_ ,
-`grdlandmask <grdlandmask.html>`_ ,
+`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
+`gmtcolors <gmtcolors.html>`_,
+`grdlandmask <grdlandmask.html>`_,
 `psbasemap <psbasemap.html>`_

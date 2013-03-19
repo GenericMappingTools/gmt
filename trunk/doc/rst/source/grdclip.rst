@@ -9,8 +9,8 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdclip** *ingrid* **-G**\ *outgrid* [
-**-R**\ *west*/*east*/*south*/*north*\ [**r**] ] [ **-Sa**\ *high/above* ]
+**grdclip** *ingrid* **-G**\ *outgrid*
+[ **-R**\ *west*/*east*/*south*/*north*\ [**r**] ] [ **-Sa**\ *high/above* ]
 [ **-Sb**\ *low/below* ] [ **-Si**\ *low/high/between* ] [ **-Sr**\ *old/new* ]
 [ **-V**\ [*level*] ]
 
@@ -69,16 +69,16 @@ Examples
 
 To set all values > 70 to NaN and all values < 0 to 0 in file data.nc:
 
-grdclip data.nc -Gnew\_data.nc -Sa70/NaN -Sb0/0 -V
+    grdclip data.nc -Gnew\_data.nc -Sa70/NaN -Sb0/0 -V
 
 To reclassify all values in the 25-30 range to 99, those in 35-39 to 55,
 exchange 17 for 11 and all values < 10 to 0 in file classes.nc, try
 
-grdclip classes.nc -Gnew_classes.nc -Si25/30/99 -Si35/39/55 -Sr17/11 -Sb10/0 -V
+    grdclip classes.nc -Gnew_classes.nc -Si25/30/99 -Si35/39/55 -Sr17/11 -Sb10/0 -V
 
 See Also
 --------
 
-`gmt <gmt.html>`_ , `grdlandmask <grdlandmask.html>`_ ,
-`grdmask <grdmask.html>`_ , `grdmath <grdmath.html>`_ ,
-`grd2xyz <grd2xyz.html>`_ , `xyz2grd <xyz2grd.html>`_
+`gmt <gmt.html>`_, `grdlandmask <grdlandmask.html>`_,
+`grdmask <grdmask.html>`_, `grdmath <grdmath.html>`_,
+`grd2xyz <grd2xyz.html>`_, `xyz2grd <xyz2grd.html>`_

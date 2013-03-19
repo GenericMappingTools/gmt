@@ -132,11 +132,10 @@ linear plot with scale 5 cm per data unit, using vector rather than
 stick plot, scale vector magnitudes so that 10 units equal 1 inch, and
 center vectors on the node locations, run
 
-grdvector r.nc theta.nc **-Jx**\ 5\ **c** -A -Q0.1i+e+jc
-**-S**\ 10\ **i** > gradient.ps
+    grdvector r.nc theta.nc **-Jx**\ 5\ **c** -A -Q0.1i+e+jc **-S**\ 10\ **i** > gradient.ps
 
 `See Also <#toc9>`_
 -------------------
 
-`gmt <gmt.html>`_ , `gmtcolors <gmtcolors.html>`_ ,
-`grdcontour <grdcontour.html>`_ , `psxy <psxy.html>`_
+`gmt <gmt.html>`_, `gmtcolors <gmtcolors.html>`_,
+`grdcontour <grdcontour.html>`_, `psxy <psxy.html>`_

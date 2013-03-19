@@ -209,26 +209,21 @@ characters, except in paragraph mode (**-M**)).
 To plot just the red outlines of the (lon at text strings) stored in the
 file text.d on a Mercator plot with the given specifications, use
 
-pstext text.d -R-30/30/-10/20 -Jm0.1i -P -F+f18p,Helvetica,-=0.5p,red
--B5 > plot.ps
+    pstext text.d -R-30/30/-10/20 -Jm0.1i -P -F+f18p,Helvetica,-=0.5p,red -B5 > plot.ps
 
 To add a typeset figure caption for a 3-inch wide illustration, use
 
-pstext -R0/3/0/5 -JX3i -O -H -M -N << EOF >> figure.ps
+    pstext -R0/3/0/5 -JX3i -O -H -M -N << EOF >> figure.ps
 
 This is an optional header record
 
-> 0 -0.5 12 0 4 LT 13p 3i j
+    > 0 -0.5 12 0 4 LT 13p 3i j
 
-@%5%Figure 1.@%% This illustration shows nothing useful, but it still needs
+    @%5%Figure 1.@%% This illustration shows nothing useful, but it still needs
+    a figure caption. Highlighted in @;255/0/0;red@;; you can see the locations
+    of cities where it is @\_impossible@\_ to get any good Thai food; these are to be avoided.
 
-a figure caption. Highlighted in @;255/0/0;red@;; you can see the
-locations
-
-of cities where it is @\_impossible@\_ to get any good Thai food; these
-are to be avoided.
-
-EOF
+    EOF
 
 `Windows Remarks <#toc7>`_
 --------------------------
@@ -255,8 +250,8 @@ correct BoundingBox.
 `See Also <#toc9>`_
 -------------------
 
-`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
-`gmtcolors <gmtcolors.html>`_ ,
-`ps2raster <ps2raster.html>`_ ,
-`psbasemap <psbasemap.html>`_ ,
-`pslegend <pslegend.html>`_ , `psxy <psxy.html>`_
+`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
+`gmtcolors <gmtcolors.html>`_,
+`ps2raster <ps2raster.html>`_,
+`psbasemap <psbasemap.html>`_,
+`pslegend <pslegend.html>`_, `psxy <psxy.html>`_

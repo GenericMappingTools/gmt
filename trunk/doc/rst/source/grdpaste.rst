@@ -54,11 +54,11 @@ Suppose file\_a.nc is 150E - 180E and 0 - 30N, and file\_b.nc is 150E -
 180E, -30S - 0, then you can make outfile.nc which will be 150 - 180 and
 -30S - 30N by:
 
-grdpaste file\_a.nc file\_b.nc -Goutfile.nc -V -fg
+    grdpaste file\_a.nc file\_b.nc -Goutfile.nc -V -fg
 
 `See Also <#toc8>`_
 -------------------
 
-`gmt <gmt.html>`_ , `grdblend <grdblend.html>`_ ,
-`grdcut <grdcut.html>`_ , `grdinfo <grdinfo.html>`_ ,
+`gmt <gmt.html>`_, `grdblend <grdblend.html>`_,
+`grdcut <grdcut.html>`_, `grdinfo <grdinfo.html>`_,
 `grdsample <grdsample.html>`_

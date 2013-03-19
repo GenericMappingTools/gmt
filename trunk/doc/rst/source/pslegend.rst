@@ -235,75 +235,73 @@ Wedge: Angles are -30 and 30 degrees.
 To add an example of a legend to a Mercator plot (map.ps) with the given
 specifications, use
 
-pslegend -R-10/10/-10/10 -JM6i -Gazure1 -Dx0.5i/0.5i/5i/3.3i/BL
--C0.1i/0.1i -L1.2 -Fr -B5f1 << EOF >> map.ps
+    pslegend -R-10/10/-10/10 -JM6i -Gazure1 -Dx0.5i/0.5i/5i/3.3i/BL
+    -C0.1i/0.1i -L1.2 -Fr -B5f1 << EOF >> map.ps
 
-# Legend test for pslegend
+    # Legend test for pslegend
 
-# G is vertical gap, V is vertical line, N sets # of columns, D draws
-horizontal line.
+    # G is vertical gap, V is vertical line, N sets # of columns, D draws horizontal line.
 
-# H is header, L is label, S is symbol, T is paragraph text, M is map
-scale.
+    # H is header, L is label, S is symbol, T is paragraph text, M is map scale.
 
-#
+    #
 
-G -0.1i
+    G -0.1i
 
-H 24 Times-Roman My Map Legend
+    H 24 Times-Roman My Map Legend
 
-D 0.2i 1p
+    D 0.2i 1p
 
-N 2
+    N 2
 
-V 0 1p
+    V 0 1p
 
-S 0.1i c 0.15i p300/12 0.25p 0.3i This circle is hachured
+    S 0.1i c 0.15i p300/12 0.25p 0.3i This circle is hachured
 
-S 0.1i e 0.15i 255/255/0 0.25p 0.3i This ellipse is yellow
+    S 0.1i e 0.15i 255/255/0 0.25p 0.3i This ellipse is yellow
 
-S 0.1i w 0.15i 0/255/0 0.25p 0.3i This wedge is green
+    S 0.1i w 0.15i 0/255/0 0.25p 0.3i This wedge is green
 
-S 0.1i f 0.25i/-1/0.075ilb 0/0/255 0.25p 0.3i This is a fault
+    S 0.1i f 0.25i/-1/0.075ilb 0/0/255 0.25p 0.3i This is a fault
 
-S 0.1i - 0.15i - 0.25tap 0.3i A contour
+    S 0.1i - 0.15i - 0.25tap 0.3i A contour
 
-S 0.1i v 0.25i/0.02i/0.06i/0.05i 255/0/255 0.25p 0.3i This is a vector
+    S 0.1i v 0.25i/0.02i/0.06i/0.05i 255/0/255 0.25p 0.3i This is a vector
 
-S 0.1i i 0.15i 0/255/255 0.25p 0.3i This triangle is boring
+    S 0.1i i 0.15i 0/255/255 0.25p 0.3i This triangle is boring
 
-V 0 1p
+    V 0 1p
 
-D 0.2i 1p
+    D 0.2i 1p
 
-N 1
+    N 1
 
-M 5 5 600+u f
+    M 5 5 600+u f
 
-G 0.05i
+    G 0.05i
 
-I SOEST\_logo.ras 3i CT
+    I SOEST\_logo.ras 3i CT
 
-G 0.05i
+    G 0.05i
 
-B colors.cpt 0.2i 0.2i
+    B colors.cpt 0.2i 0.2i
 
-G 0.05i L 9 4 R Smith et al., @%5%J. Geophys. Res., 99@%%, 2000
+    G 0.05i L 9 4 R Smith et al., @%5%J. Geophys. Res., 99@%%, 2000
 
-G 0.1i
+    G 0.1i
 
-P
+    P
 
-T Let us just try some simple text that can go on a few lines.
+    T Let us just try some simple text that can go on a few lines.
 
-T There is no easy way to predetermine how many lines will be required,
+    T There is no easy way to predetermine how many lines will be required,
 
-T so we may have to adjust the box height to get the right size box.
+    T so we may have to adjust the box height to get the right size box.
 
-EOF
+    EOF
 
-`Note On Legend Height <#toc9>`_
---------------------------------
+Note On Legend Height
+---------------------
 
 As **-D** suggests, leaving the *height* off forces a calculation of the
 expected height. This is an exact calculation except in the case of
@@ -313,8 +311,8 @@ metrics this estimate will occasionally be off by 1 line. If so, note
 the reported height (with **-V**) and specify a slightly larger or
 smaller height in **-D**.
 
-`Windows Remarks <#toc10>`_
-_--------------------------
+Windows Remarks
+---------------
 
 Note that under Windows, the percent sign (%) is a variable indicator
 (like $ under Unix). To indicate a plain percentage sign in a batch
@@ -324,10 +322,10 @@ This only applies to text inside a script or that otherwise is processed
 by DOS. Data files that are opened and read by **pslegend** do not need
 such duplication.
 
-`See Also <#toc11>`_
---------------------
+See Also
+--------
 
-`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
-`gmtcolors <gmtcolors.html>`_ ,
-`psbasemap <psbasemap.html>`_ , `pstext <pstext.html>`_ ,
+`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
+`gmtcolors <gmtcolors.html>`_,
+`psbasemap <psbasemap.html>`_, `pstext <pstext.html>`_,
 `psxy <psxy.html>`_

@@ -157,11 +157,11 @@ To make a file for illuminating the data in geoid.nc using exp-
 normalized gradients in the range [-0.6,0.6] imitating light sources in
 the north and west directions:
 
-grdgradient geoid.nc -A0/270 -Ggradients.nc=nb/a -Ne0.6 -V
+    grdgradient geoid.nc -A0/270 -Ggradients.nc=nb/a -Ne0.6 -V
 
 To find the azimuth orientations of seafloor fabric in the file topo.nc:
 
-grdgradient topo.nc -Dno -Gazimuths.nc -V
+    grdgradient topo.nc -Dno -Gazimuths.nc -V
 
 References
 ----------
@@ -173,7 +173,7 @@ IEEE, Vol. 69, No. 1, January 1981, pp. 14-47.
 See Also
 --------
 
-`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
-`grdhisteq <grdhisteq.html>`_ ,
-`grdimage <grdimage.html>`_ , `grdview <grdview.html>`_ ,
+`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_ 
+`grdhisteq <grdhisteq.html>`_,
+`grdimage <grdimage.html>`_, `grdview <grdview.html>`_,
 `grdvector <grdvector.html>`_

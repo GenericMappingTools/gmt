@@ -167,21 +167,19 @@ contours given in the color palette file hawaii.cpt on a Lambert map at
 scale 20 mgal/cm, and looking at the surface from SW at 30 degree
 elevation, run
 
-grdview hawaii\_grav.nc **-Jl**\ 18/24/1.5\ **c** -Chawaii.cpt
-**-Jz**\ 0.05\ **c** -Qm -N-100 -p225/30 -Wc > hawaii\_grav\_image.ps
+    grdview hawaii\_grav.nc **-Jl**\ 18/24/1.5\ **c** -Chawaii.cpt
+    **-Jz**\ 0.05\ **c** -Qm -N-100 -p225/30 -Wc > hawaii\_grav\_image.ps
 
 To create a illuminated color perspective plot of the gridded data set
 image.nc, using the color palette file color.rgb, with linear scaling at
 10 cm/x-unit and tickmarks every 5 units, with intensities provided by
 the file intens.nc, and looking from the SE, use
 
-grdview image.nc **-Jx**\ 10.0\ **c** -Ccolor.rgb -Qs -p135/30
--Iintens.nc > image3D.ps
+    grdview image.nc **-Jx**\ 10.0\ **c** -Ccolor.rgb -Qs -p135/30 -Iintens.nc > image3D.ps
 
 To make the same plot using the rastering option with dpi = 50, use
 
-grdview image.nc **-Jx**\ 10.0\ **c** -Ccolor.rgb -Qi50 -p135/30
--Iintens.nc > image3D.ps
+    grdview image.nc **-Jx**\ 10.0\ **c** -Ccolor.rgb -Qi50 -p135/30 -Iintens.nc > image3D.ps
 
 To create a color *PostScript* perspective plot of the gridded data set
 magnetics.nc, using the color palette file mag\_intens.cpt, draped over
@@ -189,17 +187,17 @@ the relief given by the file topography.nc, with Mercator map width of 6
 inch and tickmarks every 1 degree, with intensities provided by the file
 topo\_intens.nc, and looking from the SE, run
 
-grdview topography.nc **-JM**\ 6\ **i** -Gmagnetics.nc -Cmag\_intens.cpt
--Qs -p140/30 -Itopo\_intens.nc > draped3D.ps
+    grdview topography.nc **-JM**\ 6\ **i** -Gmagnetics.nc -Cmag\_intens.cpt
+    -Qs -p140/30 -Itopo\_intens.nc > draped3D.ps
 
 Given topo.nc and the Landsat image veggies.ras, first run **grd2rgb**
 to get the red, green, and blue grids, and then drape this image over
 the topography and shade the result for good measure. The commands are
 
-grd2rgb veggies.ras -Glayer\_%c.nc
+    grd2rgb veggies.ras -Glayer\_%c.nc
 
-grdview topo.nc **-JM**\ 6\ **i** -Qi -p140/30 -Itopo\_intens.nc
--Glayer\_r.nc,layer\_g.nc,layer\_b.nc > image.ps
+    grdview topo.nc **-JM**\ 6\ **i** -Qi -p140/30 -Itopo\_intens.nc
+    -Glayer\_r.nc,layer\_g.nc,layer\_b.nc > image.ps
 
 `Remarks <#toc8>`_
 ------------------
@@ -217,11 +215,11 @@ polygons.
 `See Also <#toc9>`_
 -------------------
 
-`gmt <gmt.html>`_ , `grd2rgb <grd2rgb.html>`_ ,
-`gmtcolors <gmtcolors.html>`_ ,
-`grdcontour <grdcontour.html>`_ ,
-`grdimage <grdimage.html>`_ ,
-`nearneighbor <nearneighbor.html>`_ ,
-`psbasemap <psbasemap.html>`_ ,
-`pscontour <pscontour.html>`_ , `pstext <pstext.html>`_ ,
+`gmt <gmt.html>`_, `grd2rgb <grd2rgb.html>`_,
+`gmtcolors <gmtcolors.html>`_,
+`grdcontour <grdcontour.html>`_,
+`grdimage <grdimage.html>`_,
+`nearneighbor <nearneighbor.html>`_,
+`psbasemap <psbasemap.html>`_,
+`pscontour <pscontour.html>`_, `pstext <pstext.html>`_,
 `surface <surface.html>`_

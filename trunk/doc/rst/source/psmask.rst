@@ -148,21 +148,20 @@ second call to **psmask** using the **-C** option.
 To make an overlay *PostScript* file that will mask out the regions of a
 contour map where there is no control data using clip polygons, use:
 
-psmask africa\_grav.xyg -R20/40/20/40 -I5m -JM10i -O -K > mask.ps
+    psmask africa\_grav.xyg -R20/40/20/40 -I5m -JM10i -O -K > mask.ps
 
 We do it again, but this time we wish to save the clipping polygons to
 file all\_pols.txt:
 
-psmask africa\_grav.xyg -R20/40/20/40 -I5m -Dall\_pols.txt
+    psmask africa\_grav.xyg -R20/40/20/40 -I5m -Dall\_pols.txt
 
 A repeat of the first example but this time we use white tiling:
 
-psmask africa\_grav.xyg -R20/40/20/40 -I5m -JM10i -T -O -K -Gwhite >
-mask.ps
+    psmask africa\_grav.xyg -R20/40/20/40 -I5m -JM10i -T -O -K -Gwhite > mask.ps
 
 `See Also <#toc8>`_
 -------------------
 
-`gmt <gmt.html>`_ , `gmtcolors <gmtcolors.html>`_ ,
-`grdmask <grdmask.html>`_ , `surface <surface.html>`_ ,
-`psbasemap <psbasemap.html>`_ , `psclip <psclip.html>`_
+`gmt <gmt.html>`_, `gmtcolors <gmtcolors.html>`_,
+`grdmask <grdmask.html>`_, `surface <surface.html>`_,
+`psbasemap <psbasemap.html>`_, `psclip <psclip.html>`_

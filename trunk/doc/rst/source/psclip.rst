@@ -140,11 +140,11 @@ against these paths, the clipping may be deactivated by running
 To make an overlay *PostScript* file that will set up a complex clip
 area to which subsequent plotting will be confined, run:
 
-psclip my\_region.xy -R0/40/0/40 -Jm0.3i -O -K > clip\_mask\_on.ps
+    psclip my\_region.xy -R0/40/0/40 -Jm0.3i -O -K > clip\_mask\_on.ps
 
 To deactivate the clipping in an existing plotfile, run:
 
-psclip -C -O >> complex\_plot.ps
+    psclip -C -O >> complex\_plot.ps
 
 `Bugs <#toc7>`_
 ---------------
@@ -157,5 +157,5 @@ to give the desired effect.
 `See Also <#toc8>`_
 -------------------
 
-`gmt <gmt.html>`_ , `grdmask <grdmask.html>`_ ,
-`psbasemap <psbasemap.html>`_ , `psmask <psmask.html>`_
+`gmt <gmt.html>`_, `grdmask <grdmask.html>`_,
+`psbasemap <psbasemap.html>`_, `psmask <psmask.html>`_

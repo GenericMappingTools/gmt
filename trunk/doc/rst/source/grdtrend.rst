@@ -90,18 +90,17 @@ using the reported coefficients.
 `Examples <#toc8>`_
 -------------------
 
-To remove a planar trend from hawaii\_topo.nc and write result in
-hawaii\_residual.nc:
+To remove a planar trend from hawaii\_topo.nc and write result in hawaii\_residual.nc:
 
-grdtrend hawaii\_topo.nc -N3 -Dhawaii\_residual.nc
+    grdtrend hawaii\_topo.nc -N3 -Dhawaii\_residual.nc
 
 To do a robust fit of a bicubic surface to hawaii\_topo.nc, writing the
 result in hawaii\_trend.nc and the weights used in hawaii\_weight.nc,
 and reporting the progress:
 
-grdtrend hawaii\_topo.nc -N10r -Thawaii\_trend.nc -Whawaii\_weight.nc -V
+    grdtrend hawaii\_topo.nc -N10r -Thawaii\_trend.nc -Whawaii\_weight.nc -V
 
 `See Also <#toc9>`_
 -------------------
 
-`gmt <gmt.html>`_ , `grdfft <grdfft.html>`_ , `grdfilter <grdfilter.html>`_
+`gmt <gmt.html>`_, `grdfft <grdfft.html>`_, `grdfilter <grdfilter.html>`_

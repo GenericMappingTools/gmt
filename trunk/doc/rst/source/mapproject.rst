@@ -183,27 +183,26 @@ read (latitude,longitude) files.
 To transform a file with (longitude,latitude) into (x,y) positions in cm
 on a Mercator grid for a given scale of 0.5 cm per degree, run
 
-mapproject lonlatfile -R20/50/12/25 **-Jm**\ 0.5\ **c** > xyfile
+    mapproject lonlatfile -R20/50/12/25 **-Jm**\ 0.5\ **c** > xyfile
 
 To transform several 2-column, binary, double precision files with
 (latitude,longitude) into (x,y) positions in inch on a Transverse
 Mercator grid (central longitude 75W) for scale = 1:500000 and suppress
 those points that would fall outside the map area, run
 
-mapproject tracks.\* -R-80/-70/20/40 -Jt-75/1:500000 -: -S -Di -bo -bi2
-> tmfile.b
+    mapproject tracks.\* -R-80/-70/20/40 -Jt-75/1:500000 -: -S -Di -bo -bi2 > tmfile.b
 
 To convert the geodetic coordinates (lon, lat, height) in the file
 old.dat from the NAD27 CONUS datum (Datum ID 131 which uses the
 Clarke-1866 ellipsoid) to WGS 84, run
 
-mapproject old.dat -Th131 > new.dat
+    mapproject old.dat -Th131 > new.dat
 
 To compute the closest distance (in km) between each point in the input
 file quakes.dat and the line segments given in the multisegment ASCII
 file coastline.xy, run
 
-mapproject quakes.dat -Lcoastline.xy/k > quake\_dist.dat
+    mapproject quakes.dat -Lcoastline.xy/k > quake\_dist.dat
 
 `Restrictions <#toc9>`_
 -----------------------
@@ -265,7 +264,7 @@ results produced with other settings.
 `See Also <#toc11>`_
 --------------------
 
-`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ , `project <project.html>`_
+`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_, `project <project.html>`_
 
 `References <#toc12>`_
 ----------------------

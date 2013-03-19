@@ -81,18 +81,17 @@ important. Use bilinear to minimize the propagation of NaNs.
 `Examples <#toc9>`_
 -------------------
 
-To resample the 5 x 5 minute grid in hawaii\_5by5\_topo.nc onto a 1
-minute grid:
+To resample the 5 x 5 minute grid in hawaii\_5by5\_topo.nc onto a 1 minute grid:
 
-grdsample hawaii\_5by5\_topo.nc -I1m -Ghawaii\_1by1\_topo.nc
+    grdsample hawaii\_5by5\_topo.nc -I1m -Ghawaii\_1by1\_topo.nc
 
 To translate the gridline-registered file surface.nc to pixel
 registration while keeping the same region and grid interval:
 
-grdsample surface.nc -T -Gpixel.nc
+    grdsample surface.nc -T -Gpixel.nc
 
 `See Also <#toc10>`_
 --------------------
 
-`gmt <gmt.html>`_ , `grdedit <grdedit.html>`_ ,
-`grdfft <grdfft.html>`_ , `grdfilter <grdfilter.html>`_
+`gmt <gmt.html>`_, `grdedit <grdedit.html>`_,
+`grdfft <grdfft.html>`_, `grdfilter <grdfilter.html>`_
