@@ -489,7 +489,7 @@ bool parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 
 	strncpy (line, c,  GMT_TEXT_LEN256);
 	i =  0;
-	f_info->k_type = GMT_FFT_K_IS_KR;	/* j is Filter type: r=0, x=1, y=2  [r] */
+	f_info->k_type = GMT_FFT_K_IS_KR;	/* j is Filter type: r=2, x=0, y=1  [r] */
 
 	if (line[i] == 'r') {
 		i++;	f_info->k_type = GMT_FFT_K_IS_KR;
@@ -605,7 +605,7 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-G filename for output netCDF grid file OR 1-D data table (see -E).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optional for -E (spectrum written to stdout); required otherwise.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Integrate, i.e., divide by kr [ * scale].  Use -Ig to get m from mGal].\n");
-	GMT_FFT_Option (API, 'N', GMT_FFT_DIM, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers:");
+	GMT_FFT_Option (API, 'N', GMT_FFT_DIM, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers.");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S multiply field by scale after inverse FFT [1.0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give -Sd to convert deflection of vertical to micro-radians.\n");
 #if 0

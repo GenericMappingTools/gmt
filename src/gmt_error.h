@@ -27,14 +27,6 @@
 #ifndef GMT_ERROR_H
 #define GMT_ERROR_H
 
-/* Verbosity levels */
-enum GMT_enum_verbose {GMT_MSG_QUIET = 0,	/* No messages whatsoever */
-	GMT_MSG_NORMAL,		/* Default output, e.g., warnings and errors only */
-	GMT_MSG_COMPAT,		/* Compatibility warnings */
-	GMT_MSG_VERBOSE,	/* Verbose level */
-	GMT_MSG_LONG_VERBOSE,	/* Longer verbose */
-	GMT_MSG_DEBUG};		/* Debug messages for developers mostly */
-
 /* Grid i/o error codes */
 
 /* external array with error descriptions */
