@@ -57,14 +57,6 @@
 
 #define GMT_PROG_OPTIONS "->BJKOPRUVXYbcptxy" GMT_OPT("EZ")
 
-//#define DCW
-
-#ifdef DCW
-#include "gmt_dcw.h"
-#define DCW_OPT "[-F<code1,code2,...>[+l|L][f<fill>][+f<pen>]] "
-#else
-#define DCW_OPT ""
-#endif
 
 #define LAKE	0
 #define RIVER	1
@@ -85,15 +77,10 @@ struct PSCOAST_CTRL {
 		bool force;	/* if true, select next highest level if current set is not avaialble */
 		char set;	/* One of f, h, i, l, c */
 	} D;
-#ifdef DCW
 	struct F {	/* -F<DWC-options> */
 		bool active;
-		char *codes;
-		unsigned int mode;
-		struct GMT_PEN pen;
-		struct GMT_FILL fill;
+		struct GMT_DCW_SELECT info;
 	} F;
-#endif
 	struct G {	/* -G<fill> */
 		bool active;
 		bool clip;
@@ -143,10 +130,6 @@ struct PSCOAST_CTRL {
 #endif
 };
 
-#ifdef DCW
-#include "gmt_dcw.c"
-#endif
-
 void *New_pscoast_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	unsigned int k;
 	struct PSCOAST_CTRL *C = GMT_memory (GMT, NULL, 1, struct PSCOAST_CTRL);
@@ -180,7 +163,7 @@ int GMT_pscoast_usage (struct GMTAPI_CTRL *API, int level)
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pscoast %s %s [%s] [%s]\n", GMT_B_OPT, GMT_J_OPT, GMT_A_OPT, GMT_Rgeoz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C[<feature>/]<fill>] [-D<resolution>][+] %s[-G[<fill>]] [-I<feature>[/<pen>]]\n", DCW_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C[<feature>/]<fill>] [-D<resolution>][+] [%s] -G[<fill>]] [-I<feature>[/<pen>]]\n", DCW_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-K] [%s]\n", GMT_Jz_OPT, GMT_SCALE);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-M] [-N<feature>[/<pen>]] [-O] [-P] [-Q] [-S<fill>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n", GMT_TROSE, GMT_U_OPT);
@@ -206,9 +189,7 @@ int GMT_pscoast_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   l - low resolution [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   c - crude resolution, for busy plots that need crude continent outlines only.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append + to use a lower resolution should the chosen one not be available [abort].\n");
-#ifdef DCW
-	GMT_list_DCW_usage (API->GMT, 'F');
-#endif
+	GMT_DCW_option (API, 'F', 1U);
 	GMT_fill_syntax (API->GMT, 'G', "Paint or clip \"dry\" areas.");
 	GMT_Message (API, GMT_TIME_NONE, "\t   6) c to issue clip paths for land areas.\n");
 	GMT_pen_syntax (API->GMT, 'I', "Draw rivers.  Specify feature and optionally append pen [Default for all levels: %s].");
@@ -312,12 +293,10 @@ int GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, struct 
 				Ctrl->D.set = (opt->arg[0]) ? opt->arg[0] : 'l';
 				Ctrl->D.force = (opt->arg[1] == '+');
 				break;
-#ifdef DCW
 			case 'F':
 				Ctrl->F.active = true;
-				n_errors += GMT_DCW_parse (GMT, opt->option, opt->arg, &Ctrl->F);
+				n_errors += GMT_DCW_parse (GMT, opt->option, opt->arg, &Ctrl->F.info);
 				break;
-#endif
 			case 'G':		/* Set Gray shade, pattern, or clipping */
 				Ctrl->G.active = true;
 				if (opt->arg[0] == 'c' && !opt->arg[1])
@@ -464,14 +443,16 @@ int GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, struct 
 		}
 	}
 
-#ifdef DCW
-	if (GMT_list_DCW_polygon (GMT, Ctrl->F.mode)) return 1;
-#endif
+	if (GMT_DCW_list (GMT, Ctrl->F.info.mode)) return 1;
 
 	if (Ctrl->C.active && !(Ctrl->G.active || Ctrl->S.active || Ctrl->W.active)) {	/* Just lakes, fix -A */
 		if (Ctrl->A.info.low < 2) Ctrl->A.info.low = 2;
 	}
 
+	if (!GMT->common.R.active && Ctrl->F.info.region) {	/* Must pick up region from chosen polygons */
+		(void) GMT_DCW_operation (GMT, &Ctrl->F.info, GMT->common.R.wesn, GMT_DCW_REGION);
+		GMT->common.R.active = true;
+	}
 	/* Check that the options selected are mutually consistent */
 
 	clipping = (Ctrl->G.clip || Ctrl->S.clip);
@@ -490,13 +471,8 @@ int GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, struct 
 	n_errors += GMT_check_condition (GMT, Ctrl->M.active && (Ctrl->G.active || Ctrl->S.active || Ctrl->C.active), "Syntax error: Must choose between dumping and clipping/plotting\n");
 	n_errors += GMT_check_condition (GMT, clipping && GMT->current.proj.projection == GMT_AZ_EQDIST && fabs (GMT->common.R.wesn[XLO] - GMT->common.R.wesn[XHI]) == 360.0 && (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) == 180.0, "-JE not implemented for global clipping - I quit\n");
 	n_errors += GMT_check_condition (GMT, clipping && (Ctrl->N.active || Ctrl->I.active || Ctrl->W.active), "Cannot do clipping AND draw coastlines, rivers, or borders\n");
-#ifdef DCW
 	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->S.active || Ctrl->C.active || Ctrl->F.active || Ctrl->W.active || Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active), "Syntax error: Must specify at least one of -C, -G, -S, -I, -N, -Q and -W\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->M.active && (Ctrl->F.active + Ctrl->N.active + Ctrl->I.active + Ctrl->W.active) != 1, "Syntax error -M: Must specify one of -F, -I, -N, and -W\n");
-#else
-	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->S.active || Ctrl->C.active || Ctrl->W.active || Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active), "Syntax error: Must specify at least one of -C, -G, -S, -I, -N, -Q and -W\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->M.active && (Ctrl->N.active + Ctrl->I.active + Ctrl->W.active) != 1, "Syntax error -M: Must specify one of -I, -N, and -W\n");
-#endif
 
 	if (Ctrl->I.active) {
 		for (k = Ctrl->I.n_rlevels = 0; k < GSHHS_N_RLEVELS; k++) {
@@ -659,11 +635,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 		Ctrl->I.active = false;
 	}
 
-#ifdef DCW
 	if (!(need_coast_base || Ctrl->F.active || Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active)) {
-#else
-	if (!(need_coast_base || Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active)) {
-#endif
 		GMT_Report (API, GMT_MSG_NORMAL, "No databases available - aborts\n");
 		Return (EXIT_FAILURE);
 	}
@@ -671,7 +643,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 	if (Ctrl->M.active) {	/* Dump linesegments to stdout; no plotting takes place */
 		int id = 0;
 		char header[GMT_BUFSIZ], *kind[3] = {"Coastlines", "Political boundaries", "Rivers"}, *version = NULL, *title = NULL, *source = NULL;
-		if (Ctrl->N.active) id = 1;	if (Ctrl->I.active) id = 2; 
+		if (Ctrl->N.active) id = 1;	if (Ctrl->I.active) id = 2;
 		GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 2)) != GMT_OK) {
 			Return (error);
@@ -691,10 +663,16 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 		else {
 			version = r.version;	title = r.title;	source = r.source;
 		}
-		sprintf (header, "# %s extracted from the %s resolution GSHHG version %s database\n", kind[id], shore_resolution[base], version);
-		GMT_Put_Record (API, GMT_WRITE_TEXT, header);
-		sprintf (header, "# %s\n# %s\n", title, source);
-		GMT_Put_Record (API, GMT_WRITE_TEXT, header);
+		if (Ctrl->F.active) {
+			sprintf (header, "# Country polygons extracted from the DCW database\n");
+			GMT_Put_Record (API, GMT_WRITE_TEXT, header);
+		}
+		else {
+			sprintf (header, "# %s extracted from the %s resolution GSHHG version %s database\n", kind[id], shore_resolution[base], version);
+			GMT_Put_Record (API, GMT_WRITE_TEXT, header);
+			sprintf (header, "# %s\n# %s\n", title, source);
+			GMT_Put_Record (API, GMT_WRITE_TEXT, header);
+		}
 	}
 	else {
 		if (Ctrl->Q.active)
@@ -931,9 +909,9 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 		GMT_Report (API, GMT_MSG_VERBOSE, "Working on bin # %5ld\n", bin);
 		GMT_shore_cleanup (GMT, &c);
 	}
-#ifdef DCW
-	GMT_get_DCW_polygon (GMT, &Ctrl->F, Ctrl->M.active);
-#endif
+
+	(void)GMT_DCW_operation (GMT, &Ctrl->F.info, NULL, Ctrl->M.active ? GMT_DCW_DUMP : GMT_DCW_PLOT);
+
 	if (clipping) PSL_beginclipping (PSL, xtmp, ytmp, 0, GMT->session.no_rgb, 2);	/* End clippath */
 
 	if (Ctrl->I.active) {	/* Read rivers file and plot as lines */

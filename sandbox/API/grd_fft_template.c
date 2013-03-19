@@ -237,9 +237,9 @@ int main (int argc, char *argv[])
 	FFT_info = GMT_FFT_Create (API, Grid, GMT_FFT_DIM, 0U, GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);
 	
 	switch (Ctrl->D.dir) {	/* Select which type of wavenumber to use */
-		case 'x': mode = 1; break;
-		case 'y': mode = 2; break;
-		case 'r': mode = 0; break;
+		case 'x': mode = 0; break;
+		case 'y': mode = 1; break;
+		case 'r': mode = 2; break;
 	}
 	GMT_Message (API, GMT_TIME_CLOCK, "Using wavenumbers in the %c direction [mode = %u]\n", Ctrl->D.dir, mode);
 
