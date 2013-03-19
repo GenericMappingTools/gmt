@@ -40,7 +40,7 @@ Preamble
    Figure 1: GMT 4 programs contain all the high-level functionality. 
 
 Prior to version 5, the bulk of *GMT* functionality was coded directly
-in the standard *GMT* C program modules (e.g., , , , etc.). The
+in the standard *GMT* C program modules (e.g., ``surface.c``, ``psxy.c``, ``grdimage.c``, etc.). The
 *GMT* library only offered access to low-level functions from which
 those high-level *GMT* programs were built. The standard *GMT* programs
 have been very successful, with tens of thousands of users world-wide.
@@ -70,14 +70,14 @@ function “module”. The drivers simply call the corresponding
 functions have been placed in a new *GMT* high-level API library and can
 be called from a variety of environments (C/C++, Fortran, Python,
 Matlab, Visual Basic, Julia, R, etc.) [2]_. For example, the main
-program has been reconfigured as a high-level function
+program ``blockmean.c`` has been reconfigured as a high-level function
 ``GMT_blockmean()``, which does the actual spatial averaging and can
 pass the result back to the calling program (or write it to file). The
-previous behavior of is replicated by a short driver program that simply
+previous behavior of ``blockmean.c`` is replicated by a short driver program that simply
 collects user arguments and then calls ``GMT_blockmean()``. Indeed, the
 driver programs for all the standard *GMT* programs are identical so
 that the makefile generates them on-the-fly when it compiles and links
-them with the *GMT* library into executables. Thus, and others do in
+them with the *GMT* library into executables. Thus, ``blockmean.c`` and others do in
 fact no longer exist.
 
 The i/o abstraction layer
@@ -168,7 +168,7 @@ importing or exporting them to or from files, memory locations, or
 streams. The first five are the standard *GMT* objects, while the latter
 two are the special user data containers to facilitate converting user
 data into *GMT* resources. These resources are defined in the include
-file ; please consult this file to ensure correctness as it is difficult
+file ``gmt_resources.h``; please consult this file to ensure correctness as it is difficult
 to keep the documentation up-to-date.
 
 Data tables
@@ -400,8 +400,7 @@ simply command-line files then things simplify considerably.
 
 #. For each intended call to a *GMT* module, several steps are involved:
 
-   a. Register input sources and output destination with
-      ``GMT_Register_IO``.
+   a. Register input sources and output destination with ``GMT_Register_IO``.
 
    b. Each resource registration generates a unique ID number. For
       memory resources, we embed these numbers in unique filenames of
@@ -417,8 +416,7 @@ simply command-line files then things simplify considerably.
    d. Read data into memory. You may choose to read everything at once
       or read record-by-record (tables only).
 
-   e. Prepare required arguments and call the *GMT* module you wish to
-      use.
+   e. Prepare required arguments and call the *GMT* module you wish to use.
 
    f. Process any results returned to memory via pointers rather than
       written to files.
@@ -439,7 +437,7 @@ run several sessions, perhaps concurrently as different threads on
 multi-core machines. We will now discuss these steps in more detail.
 Throughout, we will introduce upper-case *GMT* C enum constants *in
 lieu* of simple integer constants. These are considered part of the API
-and are available for developers via the include file.
+and are available for developers via the ``gmt_resources.h`` include file.
 
 The C/C++ API is deliberately kept small to make it easy to use.
 Table [tbl:API] gives a list of all the functions and their purpose.
@@ -842,29 +840,32 @@ two ways:
 
 For method (1), pass the ``par`` array, as indicated below:
 
-**GMT_IS_GRID** \: An empty GMT_GRID structure with a header is allocated; the data
+**GMT_IS_GRID**
+    An empty GMT_GRID structure with a header is allocated; the data
     array is NULL. The ``par`` argument is not used.
 
-**GMT_IS_IMAGE** \: An empty GMT_GRID structure with a header is allocated; the image
+**GMT_IS_IMAGE**
+    An empty GMT_GRID structure with a header is allocated; the image
     array is NULL. The ``par`` argument is not used.
 
-**GMT_IS_DATASET** \: An empty GMT_DATASET structure consisting of ``par[0]`` tables,
+**GMT_IS_DATASET**
+    An empty GMT_DATASET structure consisting of ``par[0]`` tables,
     each with ``par[1]`` segments, each with ``par[2]`` columns, all
     with ``par[3]`` rows, is allocated.
 
-**GMT_IS_TEXTSET** \: An empty GMT_TEXTSET structure consisting of ``par[0]`` tables,
-    each with ``par[1]`` segments, all with ``par[2]`` text record, is
-    allocated.
+**GMT_IS_TEXTSET**
+    An empty GMT_TEXTSET structure consisting of ``par[0]`` tables,
+    each with ``par[1]`` segments, all with ``par[2]`` text record, is allocated.
 
-**GMT_IS_CPT** \: An empty GMT_PALETTE structure with ``par[0]`` palette entries is
-    allocated.
+**GMT_IS_CPT**
+    An empty GMT_PALETTE structure with ``par[0]`` palette entries is allocated.
 
-**GMT_IS_VECTOR** \: An empty GMT_VECTOR structure with ``par[0]`` column entries is
-    allocated.
+**GMT_IS_VECTOR**
+    An empty GMT_VECTOR structure with ``par[0]`` column entries is allocated.
 
-**GMT_IS_MATRIX** \: An empty GMT_MATRIX structure is allocated. ``par[0]`` indicates
-    the number of layers for a 3-D matrix, or pass 0, 1, or NULL for a
-    2-D matrix.
+**GMT_IS_MATRIX**
+    An empty GMT_MATRIX structure is allocated. ``par[0]`` indicates
+    the number of layers for a 3-D matrix, or pass 0, 1, or NULL for a 2-D matrix.
 
 In this case, pass ``wesn``, ``inc`` as NULL. For method (2), you
 instead pass ``wesn``, ``inc``, and ``registration`` and leave as NULL.
@@ -1139,36 +1140,35 @@ function
 which returns 0 (false) or 1 (true) if the current status is reflected
 by the specified ``mode``. There are 11 different modes available to
 programmers; for a list see Table [tbl:iostatus]. For an example of how
-these may be used, see the test program . Developers who plan to import
+these may be used, see the test program ``testgmtio.c``. Developers who plan to import
 data on a record-by-record basis may also consult the source code of,
-say, or , to see examples of working code.
+say, ``blockmean.c`` or ``pstext.c``, to see examples of working code.
 
-[h]
 
 +-----------------------------+----------------------------------------------------------+
 | mode                        | description                                              |
 +=============================+==========================================================+
-| ``GMT_IO_DATA_RECORD``      | 1 if we read a data record                               |
+|   GMT_IO_DATA_RECORD        | 1 if we read a data record                               |
 +-----------------------------+----------------------------------------------------------+
-| ``GMT_IO_TABLE_HEADER``     | 1 if we read a table header                              |
+|   GMT_IO_TABLE_HEADER       | 1 if we read a table header                              |
 +-----------------------------+----------------------------------------------------------+
-| ``GMT_IO_SEGMENT_HEADER``   | 1 if we read a segment header                            |
+|   GMT_IO_SEGMENT_HEADER     | 1 if we read a segment header                            |
 +-----------------------------+----------------------------------------------------------+
-| ``GMT_IO_ANY_HEADER``       | 1 if we read either header record                        |
+|   GMT_IO_ANY_HEADER         | 1 if we read either header record                        |
 +-----------------------------+----------------------------------------------------------+
-| ``GMT_IO_MISMATCH``         | 1 if we read incorrect number of columns                 |
+|   GMT_IO_MISMATCH           | 1 if we read incorrect number of columns                 |
 +-----------------------------+----------------------------------------------------------+
-| ``GMT_IO_EOF``              | 1 if we reached the end of the file (EOF)                |
+|   GMT_IO_EOF                | 1 if we reached the end of the file (EOF)                |
 +-----------------------------+----------------------------------------------------------+
-| ``GMT_IO_NAN``              | 1 if we only read NaNs                                   |
+|   GMT_IO_NAN                | 1 if we only read NaNs                                   |
 +-----------------------------+----------------------------------------------------------+
-| ``GMT_IO_GAP``              | 1 if this record implies a data gap                      |
+|   GMT_IO_GAP                | 1 if this record implies a data gap                      |
 +-----------------------------+----------------------------------------------------------+
-| ``GMT_IO_NEW_SEGMENT``      | 1 if we enter a new segment                              |
+|   GMT_IO_NEW_SEGMENT        | 1 if we enter a new segment                              |
 +-----------------------------+----------------------------------------------------------+
-| ``GMT_IO_LINE_BREAK``       | 1 if we encountered a segment header, EOF, NaNs or gap   |
+|   GMT_IO_LINE_BREAK         | 1 if we encountered a segment header, EOF, NaNs or gap   |
 +-----------------------------+----------------------------------------------------------+
-| ``GMT_IO_NEXT_FILE``        | 1 if we finished one file but not the last               |
+|   GMT_IO_NEXT_FILE          | 1 if we finished one file but not the last               |
 +-----------------------------+----------------------------------------------------------+
 
 [tbl:iostatus]
@@ -1335,22 +1335,22 @@ on the chosen run-time verbosity level set via ``-V`` your message may
 or may not be reported. Only messages whose stated verbosity level is
 lower or equal to the ``-V``\ *level* will be printed.
 
-[h]
 
-+---------------------------+-----+--------------------------------------------------+
-+===========================+=====+==================================================+
-| GMT\_MSG\_QUIET           | 0   | No messages whatsoever                           |
-+---------------------------+-----+--------------------------------------------------+
-| GMT\_MSG\_NORMAL          | 1   | Default output, e.g., warnings and errors only   |
-+---------------------------+-----+--------------------------------------------------+
-| GMT\_MSG\_COMPAT          | 2   | Compatibility warnings                           |
-+---------------------------+-----+--------------------------------------------------+
-| GMT\_MSG\_VERBOSE         | 3   | Verbose level                                    |
-+---------------------------+-----+--------------------------------------------------+
-| GMT\_MSG\_LONG\_VERBOSE   | 4   | Longer verbose                                   |
-+---------------------------+-----+--------------------------------------------------+
-| GMT\_MSG\_DEBUG           | 5   | Debug messages for developers mostly             |
-+---------------------------+-----+--------------------------------------------------+
++---------------------------+-------+--------------------------------------------------+
+| constant                  | value | description                                      |
++===========================+=======+==================================================+
+| GMT\_MSG\_QUIET           | 0     | No messages whatsoever                           |
++---------------------------+-------+--------------------------------------------------+
+| GMT\_MSG\_NORMAL          | 1     | Default output, e.g., warnings and errors only   |
++---------------------------+-------+--------------------------------------------------+
+| GMT\_MSG\_COMPAT          | 2     | Compatibility warnings                           |
++---------------------------+-------+--------------------------------------------------+
+| GMT\_MSG\_VERBOSE         | 3     | Verbose level                                    |
++---------------------------+-------+--------------------------------------------------+
+| GMT\_MSG\_LONG\_VERBOSE   | 4     | Longer verbose                                   |
++---------------------------+-------+--------------------------------------------------+
+| GMT\_MSG\_DEBUG           | 5     | Debug messages for developers mostly             |
++---------------------------+-------+--------------------------------------------------+
 
 [tbl:verbosity]
 
@@ -1363,18 +1363,18 @@ This function always prints its message to the standard output. Use the
 and if selected how the time information should be formatted. See
 Table [tbl:timemodes] for the various modes.
 
-[h]
 
-+----------------------+-----+-----------------------------------------+
-+======================+=====+=========================================+
-| GMT\_TIME\_NONE      | 0   | Display no time information             |
-+----------------------+-----+-----------------------------------------+
-| GMT\_TIME\_CLOCK     | 1   | Display current local time              |
-+----------------------+-----+-----------------------------------------+
-| GMT\_TIME\_ELAPSED   | 2   | Display elapsed time since last reset   |
-+----------------------+-----+-----------------------------------------+
-| GMT\_TIME\_RESET     | 3   | Reset the elapsed time to 0             |
-+----------------------+-----+-----------------------------------------+
++----------------------+-------+-----------------------------------------+
+| constant             | value | description                             |
++======================+=======+=========================================+
+| GMT\_TIME\_NONE      | 0     | Display no time information             |
++----------------------+-------+-----------------------------------------+
+| GMT\_TIME\_CLOCK     | 1     | Display current local time              |
++----------------------+-------+-----------------------------------------+
+| GMT\_TIME\_ELAPSED   | 2     | Display elapsed time since last reset   |
++----------------------+-------+-----------------------------------------+
+| GMT\_TIME\_RESET     | 3     | Reset the elapsed time to 0             |
++----------------------+-------+-----------------------------------------+
 
 [tbl:timemodes]
 
@@ -1519,19 +1519,15 @@ All GMT modules may be called with one of three sets of ``args``
 depending on ``mode``. The three modes differ in how the options are
 passed to the module:
 
-:math:`mode > 0`
-    : Expects ``args`` to be an array of text options and ``mode`` to be
-    a count of how many options are passed (i.e., the ``argc, argv[]``
-    model used by the *GMT* programs themselves).
+    *mode > 0* \: Expects ``args`` to be an array of text options and ``mode`` to be a count of how many
+        options are passed (i.e., the ``argc, argv[]``
+        model used by the *GMT* programs themselves).
 
-:math:`mode < 0`
-    : Expects ``args`` to be a pointer to a doubly-linked list of
-    objects with individual options for the current program. We will see
-    how API functions can help prepare such lists.
+    *mode < 0* \: Expects ``args`` to be a pointer to a doubly-linked list of objects with individual
+        options for the current program. We will see
+        how API functions can help prepare such lists.
 
-:math:`mode == 0`
-    : Expects ``args`` to be a single text string with all required
-    options.
+    *mode == 0* \: Expects ``args`` to be a single text string with all required options.
 
 Here, ``GMT_module`` stands for any of the *GMT* modules, such as
 ``GMT_psxy`` or ``GMT_grdvolume``. All modules returns FALSE (0) if they
@@ -1541,7 +1537,7 @@ an error code back to the calling environment.
 Set program options via text array arguments
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-When ``mode`` :math:`> 0` we expect an array ``args`` of character
+When ``mode > 0`` we expect an array ``args`` of character
 strings that each holds a single command line options (e.g.,
 “-R120:30/134:45/8S/3N”) and interpret ``mode`` to be the count of how
 many options are passed. This, of course, is almost exactly how the
@@ -1751,11 +1747,11 @@ non-zero status.
 Specify a file via an linked option
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To specify an input file name via an option, simply use :math:`<` as the
+To specify an input file name via an option, simply use < as the
 option (this is what ``GMT_Create_Options`` does when it finds filenames
-on the command line). Likewise, :math:`>` can be used to explicitly
+on the command line). Likewise, > can be used to explicitly
 indicate an output file. In order to append to an existing file, use
-:math:`>>`. For example the following command would read from file.A and
+>>. For example the following command would read from file.A and
 append to file.B:
 
 ::
@@ -1763,7 +1759,7 @@ append to file.B:
     gmtconvert -<file.A ->>file.B
 
 These options also work on the command line but usually one would have
-to escape the special characters :math:`<` and :math:`>` as they are
+to escape the special characters < and > as they are
 used for file redirection.
 
 Calling a GMT module
@@ -1785,7 +1781,7 @@ information to the existing headers. This is achieved with
 ::
 
     int GMT_Set_Comment (void *API, unsigned int family, unsigned int mode \
-        void *arg, void *data)
+                         void *arg, void *data)
 
 Again, ``family`` selects which kind of resource is passed via ``data``.
 The ``mode`` determines what kind of comment is being considered, how it
@@ -1799,30 +1795,30 @@ header output on or off via the common *GMT* option ``-h``. For
 record-by-record writing you must enable the header block output when
 you call ``GMT_Begin_IO``.
 
-[h]
 
-+------------------------------+-----+------------------------------------------------------+
-+==============================+=====+======================================================+
-| GMT\_COMMENT\_IS\_TEXT       | 0   | Comment is a text string                             |
-+------------------------------+-----+------------------------------------------------------+
-| GMT\_COMMENT\_IS\_OPTION     | 1   | Comment is a linked list of GMT\_OPTION structures   |
-+------------------------------+-----+------------------------------------------------------+
-| GMT\_COMMENT\_IS\_COMMAND    | 2   | Comment is the command                               |
-+------------------------------+-----+------------------------------------------------------+
-| GMT\_COMMENT\_IS\_REMARK     | 4   | Comment is the remark                                |
-+------------------------------+-----+------------------------------------------------------+
-| GMT\_COMMENT\_IS\_TITLE      | 4   | Comment is the title                                 |
-+------------------------------+-----+------------------------------------------------------+
-| GMT\_COMMENT\_IS\_NAME\_X    | 4   | Comment is the x variable name (grids only)          |
-+------------------------------+-----+------------------------------------------------------+
-| GMT\_COMMENT\_IS\_NAME\_Y    | 4   | Comment is the y variable name (grids only)          |
-+------------------------------+-----+------------------------------------------------------+
-| GMT\_COMMENT\_IS\_NAME\_Z    | 4   | Comment is the z variable name (grids only)          |
-+------------------------------+-----+------------------------------------------------------+
-| GMT\_COMMENT\_IS\_COLNAMES   | 4   | Comment is the column names header                   |
-+------------------------------+-----+------------------------------------------------------+
-| GMT\_COMMENT\_IS\_RESET      | 8   | Comment replaces existing information                |
-+------------------------------+-----+------------------------------------------------------+
++---------------------------+-------+------------------------------------------------------+
+| constant                  | value | description                                          |
++===========================+=======+======================================================+
+| GMT_COMMENT_IS_TEXT       | 0     | Comment is a text string                             |
++---------------------------+-------+------------------------------------------------------+
+| GMT_COMMENT_IS_OPTION     | 1     | Comment is a linked list of GMT\_OPTION structures   |
++---------------------------+-------+------------------------------------------------------+
+| GMT_COMMENT_IS_COMMAND    | 2     | Comment is the command                               |
++---------------------------+-------+------------------------------------------------------+
+| GMT_COMMENT_IS_REMARK     | 4     | Comment is the remark                                |
++---------------------------+-------+------------------------------------------------------+
+| GMT_COMMENT_IS_TITLE      | 4     | Comment is the title                                 |
++---------------------------+-------+------------------------------------------------------+
+| GMT_COMMENT_IS_NAME\_X    | 4     | Comment is the x variable name (grids only)          |
++---------------------------+-------+------------------------------------------------------+
+| GMT_COMMENT_IS_NAME\_Y    | 4     | Comment is the y variable name (grids only)          |
++---------------------------+-------+------------------------------------------------------+
+| GMT_COMMENT_IS_NAME\_Z    | 4     | Comment is the z variable name (grids only)          |
++---------------------------+-------+------------------------------------------------------+
+| GMT_COMMENT_IS_COLNAMES   | 4     | Comment is the column names header                   |
++---------------------------+-------+------------------------------------------------------+
+| GMT_COMMENT_IS_RESET      | 8     | Comment replaces existing information                |
++---------------------------+-------+------------------------------------------------------+
 
 [tbl:comments]
 
@@ -1884,26 +1880,26 @@ is
 
 ::
 
-    int GMT_Write_Data (void *API, unsigned int family, \
-        unsigned int method, unsigned int geometry, unsigned int mode, \
-        double wesn[], void *output, void *data);
+    int GMT_Write_Data (void *API, unsigned int family, unsigned int method, \
+                        unsigned int geometry, unsigned int mode, \
+                        double wesn[], void *output, void *data);
 
 where ``data`` is a pointer to any of the four structures discussed
 previously. Again, the ``mode`` parameter is specific to each data type:
 
-CPT table
-    : ``mode`` controls if the CPT table's back-, fore-, and NaN-colors
+**CPT table**
+    ``mode`` controls if the CPT table's back-, fore-, and NaN-colors
     should be written (1) or not (0).
 
-Data table
-    : If ``method`` is GMT\_IS\_FILE, then the value of ``mode`` affects
+**Data table**
+    If ``method`` is GMT_IS_FILE, then the value of ``mode`` affects
     how the data set is written:
 
-    GMT\_WRITE\_SET
-        : The entire data set will be written to the single file [0].
+    **GMT_WRITE_SET**
+        The entire data set will be written to the single file [0].
 
-    GMT\_WRITE\_TABLE
-        : Each table in the data set is written to individual files [1].
+    **GMT_WRITE_TABLE**
+        Each table in the data set is written to individual files [1].
         You can either specify an output file name that *must* contain
         one C-style format specifier for a int variable (e.g.,
         “New\_Table\_%06d.txt”), which will be replaced with the table
@@ -1912,13 +1908,13 @@ Data table
         ``D->table[i]->file[GMT_OUT]`` variables prior to calling the
         function.
 
-    GMT\_WRITE\_SEGMENT
-        : Each segment in the data set is written to an individual file
-        [2]. Same setup as for GMT\_WRITE\_TABLE except we use
+    **GMT_WRITE_SEGMENT**
+        Each segment in the data set is written to an individual file
+        [2]. Same setup as for GMT_WRITE_TABLE except we use
         sequential segment numbers to build the file names.
 
-    GMT\_WRITE\_TABLE\_SEGMENT
-        : Each segment in the data set is written to an individual file
+    **GMT_WRITE_TABLE_SEGMENT**
+        Each segment in the data set is written to an individual file
         [3]. You can either specify an output file name that *must*
         contain two C-style format specifiers for two int variables
         (e.g., “New\_Table\_%06d\_Segment\_%03d.txt”), which will be
@@ -1927,30 +1923,30 @@ Data table
         file name via the ``D->table[i]->segment[j]->file[GMT_OUT]``
         variables prior to calling the function.
 
-    GMT\_WRITE\_OGR
-        : Writes the dataset in OGR/GMT format in conjunction with the
+    **GMT_WRITE_OGR**
+        Writes the dataset in OGR/GMT format in conjunction with the
         ``-a`` setting [4].
 
-Text table
-    : The ``mode`` is used the same way as for data tables.
+**Text table**
+    The ``mode`` is used the same way as for data tables.
 
-GMT grid
-    : Here, ``mode`` may be GMT\_GRID\_HEADER\_ONLY to only update a
-    file’s header structure, but normally it is simply GMT\_GRID\_ALL
+**GMT grid**
+    Here, ``mode`` may be GMT_GRID_HEADER_ONLY to only update a
+    file’s header structure, but normally it is simply GMT_GRID_ALL
     (0) so the entire grid and its header will be exported (a subset is
     not allowed during export). However, in the event your data array
     holds both the real and imaginary parts of a complex data set you
-    must add either GMT\_GRID\_IS\_COMPLEX\_REAL (4) or
-    GMT\_GRID\_IS\_COMPLEX\_IMAG (16) to ``mode`` so as to export the
+    must add either GMT_GRID_IS_COMPLEX_REAL (4) or
+    GMT_GRID_IS_COMPLEX_IMAG (16) to ``mode`` so as to export the
     corresponding grid values correctly. Finally, for native binary
     grids you may skip writing the grid header by adding
-    GMT\_GRID\_NO\_HEADER (16); this setting is ignored for other grid
+    GMT_GRID_NO_HEADER (16); this setting is ignored for other grid
     formats. If your output grid is huge and you are building it
-    row-by-row, set ``mode`` to GMT\_GRID\_HEADER\_ONLY \|
-    GMT\_GRID\_ROW\_BY\_ROW. You can then write the grid row-by-row
+    row-by-row, set ``mode`` to GMT_GRID_HEADER_ONLY \|
+    GMT_GRID_ROW_BY_ROW. You can then write the grid row-by-row
     using ``GMT_Put_Row``. By default the rows will be automatically
     processed in order. To completely specify which row to be written,
-    use GMT\_GRID\_ROW\_BY\_ROW\_MANUAL instead.
+    use GMT_GRID_ROW_BY_ROW_MANUAL instead.
 
 If successful the function returns FALSE (0); otherwise we return TRUE
 (1) and set ``API->error`` to reflect to cause.
@@ -1990,28 +1986,26 @@ number of columns in the output destination. Alternatively (b), ``rec``
 points to a text string. The ``mode`` parameter must be set to reflect
 what is passed. Using ``GMT_Put_Record`` requires you to first
 initialize the destination with ``GMT_Init_IO``. Note that for families
-GMT\_IS\_DATASET and GMT\_IS\_TEXTSET the methods GMT\_IS\_DUPLICATE and
-GMT\_IS\_REFERENCE are not supported since you can simply populate the
-GMT\_DATASET structure directly. As mentioned, ``mode`` affects what is
+GMT_IS_DATASET and GMT_IS_TEXTSET the methods GMT_IS_DUPLICATE and
+GMT_IS_REFERENCE are not supported since you can simply populate the
+GMT_DATASET structure directly. As mentioned, ``mode`` affects what is
 actually written:
 
-GMT\_WRITE\_DOUBLE
-    : Normal operation that builds the current output record from the
-    values in ``rec`` [0].
+**GMT_WRITE_DOUBLE**
+    Normal operation that builds the current output record from the values in ``rec`` [0].
 
-GMT\_WRITE\_TEXT
-    : For ASCII output mode we write the text string ``rec``. If ``rec``
+**GMT_WRITE_TEXT**
+    For ASCII output mode we write the text string ``rec``. If ``rec``
     is NULL then we use the current (last imported) text record. If
     binary output mode we quietly skip writing this record [1].
 
-GMT\_WRITE\_TABLE\_HEADER
-    : For ASCII output mode we write the text string ``rec``. If ``rec``
+**GMT_WRITE_TABLE_HEADER**
+    For ASCII output mode we write the text string ``rec``. If ``rec``
     is NULL then we write the last read header record (and ensures it
-    starts with #). If binary output mode we quietly skip writing this
-    record [2].
+    starts with #). If binary output mode we quietly skip writing this record [2].
 
-GMT\_WRITE\_SEGMENT\_HEADER
-    : For ASCII output mode we use the text string ``rec`` as the
+**GMT_WRITE_SEGMENT_HEADER**
+    For ASCII output mode we use the text string ``rec`` as the
     segment header. If ``rec`` is NULL then we use the current (last
     read) segment header record. If binary output mode instead we write
     a record composed of NaNs [1].
