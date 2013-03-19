@@ -1114,6 +1114,154 @@ for (tbl = 0; tbl < D->n_tables; tbl++) {	/* For each table */
 }
 \end{verbatim}
 
+\section{Message and Verbose Reporting}
+\index{Messages}
+\index{Verbose Reporting}
+\label{sec:messages}
+
+The API provides two functions for your program to present information to the user
+during the run of the program.  One is used for messages that are always written
+while the other is used for reports that must exceed the verbosity settings
+specified via \Opt{V}.
+
+\begin{verbatim}
+int GMT_Report (void *API, unsigned int level, char *message, ...);
+\end{verbatim}
+
+This function takes a verbosity level and a multi-part message (e.g., a format statement
+and zero or more variables).  The verbosity \texttt{level} is an integer in the 0--5
+range.
+
+\begin{verbatim}
+int GMT_Message (void *API, unsigned int mode, char *format, ...);
+\end{verbatim}
+
+This function always prints its message to the standard output.  Use the \texttt{mode} value
+to control if a time stamp should preface the message and if selected how it should be formatted.
+See Table~\ref{tbl:timemodes} for the various modes.
+
+\begin{table}[h]
+\small
+\centering
+\begin{tabular}{|l|l|l|} \hline
+\multicolumn{1}{|c|}{\emph{constant}} & \multicolumn{1}{c|}{\emph{value}}  & \multicolumn{1}{c|}{\emph{Description}} \\ \hline
+GMT\_TIME\_NONE		&      0	& Display no time information \\ \hline
+GMT\_TIME\_CLOCK	&      1	& Display current local time \\ \hline
+GMT\_TIME\_ELAPSED	&      2	& Display elapsed time since last reset \\ \hline
+GMT\_TIME\_RESET	&      3	& Reset the elapsed time to 0 \\ \hline
+\end{tabular}
+\caption{Enumeration constants defined for time message formatting.  The last two may be
+combined to reset the elapsed time and display it.  The GMT\_TIME\_CLOCK formatting is
+controlled by the \GMT\ defaults {\bf FORMAT\_TIME\_STAMP}.}
+\label{tbl:timemodes}
+\index{Time formatting}
+\end{table}
+
+
+\section{Presenting and Accessing GMT options}
+\index{GMT options!Presenting and Accessing}
+\label{sec:parsopt}
+As you develop new code you may need to rely on some of the \GMT\ common options in your program.
+For instance, you may wish to have your program present the \Opt{R} option to the user, let \GMT\
+handle the parsing, and examine the values.  You may also wish to encode your own custom options
+that may require you to parse user text into dimensions, length, coordinates, time, etc. The API
+provides several functions to simplify these tasks
+
+\subsection{Display syntax for a GMT common option}
+
+You can have your program menu display the standard usage message for a \GMT\ common option
+by calling
+
+\begin{verbatim}
+void GMT_Option (void *API, char *options);
+\end{verbatim}
+
+where \texttt{options} is a comma-separated list of \GMT\ common options (e/g/. ``R,J,O,X'').
+You can repeat this function with different sets of options in order to intersperse your
+own custom options in an overall alphabetical order.
+
+\subsection{Parsing the GMT common options}
+
+The parsing of all \GMT\ common option is done by 
+
+\index{GMT\_Parse\_Common}
+
+\begin{verbatim}
+int GMT_Parse_Common (void *API, char *args, struct GMT_OPTION *list);
+\end{verbatim}
+
+where \texttt{args} is a string of the common \GMT\ options your program may use.
+An error will be reported if any of the common \GMT\ options fail to parse,
+and if so we return TRUE; if not errors we return FALSE.  All other options,
+including file names, will be silently ignored.  The parsing will update the internal \GMT\
+information structure that affects program operations.
+
+\subsection{Inquiring about the GMT common options}
+
+The API provide a limited window into the full \GMT\ machinery accessible to the modules.
+You can determine if a particular option has been parsed and in some case determine the
+values with
+
+\begin{verbatim}
+int GMT_Get_Common (void *API, unsigned int option, double *par);
+\end{verbatim}
+
+where \texttt{option} is a single option character (e.g., `R') and
+\texttt{par} is a double array with at least a length of 6.  If the
+particular option has been parsed then the function returns the number
+of parameters passed back via \texttt{par}; otherwise we return -1.
+For instance, to determine what the \Opt{R} resulted in you may call
+
+\begin{verbatim}
+if (GMT_Get_Common (API, 'R', wesn)) != -1) {
+	/* wesn now contains the boundary information */
+}
+\end{verbatim}
+
+\subsection{Parsing text values}
+
+Your program may need to request values from the user, such as distances,
+plot dimensions, coordinates, and other data.  The conversion from such text
+to actual distances, taking units into account, is tedious to program.  You
+can simplify this by using
+
+\begin{verbatim}
+int GMT_Get_Value (void *API, char *arg, double par[]);
+\end{verbatim}
+
+where \texttt{arg} is the text item with one or more values that are
+separated by commas, space, or slashes, and \texttt{par} is an array
+long enough to hold all the items you are parsing.  The function returns
+the number of items parsed, or -1 if there is an error.  For instance,
+assume the character string \texttt{origin} was given by the user as
+two geographic coordinates separated by a slash (e.g., \texttt{"35:45W/19:30:55.3S"}).
+We obtain the two coordinates as decimal degrees by calling
+
+\begin{verbatim}
+n = GMT_Get_Value (API, origin, pair);
+\end{verbatim}
+
+Note: Dimensions given with units of inches, cm, or points are converted to the
+\GMT\ default length unit ({\bf GMT\_PROJ\_LENGTH}) [cm], while distances
+given in km, nautical miles, miles, feet, or survey feet are returned in meters.
+Arc lengths in minutes and seconds are returned in decimal degrees, and
+date/time values are returned in seconds since the epoch (1970).
+
+\subsection{Inquiring about a GMT default value}
+
+If your program needs to determine one or more of the current \GMT\ default settings
+you can do so via
+
+\begin{verbatim}
+int GMT_Get_Default (void *API, char *keyword, char *value);
+\end{verbatim}
+
+where \texttt{keyword} is one such keyword (e.g., {\bf GMT\_PROJ\_LENGTH}) and
+\texttt{value} must be a character array long enough to hold the answer.
+Depending on what parameter you selected you could obtain a numerical value
+via \texttt{GMT\_Get\_Value} or just do a text comparison.
+
+
 \section{Prepare program options}
 \index{Program options!Prepare}
 \label{sec:func}
@@ -1360,25 +1508,6 @@ gmtconvert -<file.A ->>file.B
 
 These options also work on the command line but usually one would have to escape the
 special characters $<$ and $>$ as they are used for file redirection.
-
-\subsection{Parsing GMT common options}
-\index{Parsing GMT common options}
-
-While all the main \GMT\ modules have their own specific option parser, we also provide a general
-parser that only examines the common \GMT\ options such as \Opt{R}, \Opt{J}, \Opt{V}, etc.  The prototype
-of this parser is
-
-\index{GMT\_Parse\_Common}
-
-\begin{verbatim}
-int GMT_Parse_Common (void *API, char *args, struct GMT_OPTION *list);
-\end{verbatim}
-
-where \texttt{args} is a string of the common \GMT\ options your program may use.
-An error will be reported via \texttt{API->error} if any of the common \GMT\ options fail to parse,
-and if so we return TRUE; if not errors we return FALSE.  All other options,
-including file names, will be silently ignored.  The parsing will update the internal \GMT\
-information structure that affects program operations.
 
 \section{Calling a GMT module}
 \index{Calling a GMT module}
@@ -1675,7 +1804,121 @@ Finally, the API structure itself is freed so your main program does not need to
 The function returns TRUE (1) if there is an error when trying to free the memory
 (the error code is passed back with \texttt{API->error}), otherwise it returns FALSE (0).
 
-\section{FORTRAN 77 interface} 
+\chapter{The GMT FFT Interface} 
+\index{FFT interface}
+
+While the i/o options presented so far lets you easily read in a data table or grid and manipulated them,
+if you need to do so in the wavenumber domain then this chapter is for you.  Here we outline how to
+take the Fourier transform of such data, perform calculations in the wavenumber domain, and take the
+inverse transform before writing the results.  To assist programmers we also distribute fully functioning demonstration
+programs that takes you through the steps we are about to discuss; these demo programs may be used
+as your starting point for further development.
+
+\section{Presenting and Parsing the FFT options}
+\index{FFT options}
+
+Several \GMT\ programs using FFTs present the same unified option and modifier sets to the user.
+The API makes these available as well.  If your program needs to present the option usage you can call
+\begin{verbatim}
+unsigned int GMT_FFT_Option (void *API, char option, unsigned int dim, char *string);
+\end{verbatim}
+\index{GMT\_FFT\_Option}
+
+Here, \texttt{option} is the unique character used for this particular program option (most \GMT\ programs
+have standardized on using `N').  The \texttt{dim} sets the dimension of the transform, currently 1 or 2,
+while the \texttt{string} is the 1-line message that goes with the option; you should tailor this to
+your program.  If NULL then a generic message is placed instead.
+
+To parse the user's selection you call
+
+\begin{verbatim}
+void * GMT_FFT_Parse (void *API, char option, unsigned int dim, char *args);
+\end{verbatim}
+\index{GMT\_FFT\_Option}
+
+which accepts the user's string option via \texttt{args}; the other arguments repeats those from above.
+The function returns an opaque pointer to a structure with the chosen parameters.
+
+\section{Initializing the FFT machinery}
+\index{FFT initialization}
+
+Before your can take any transforms you must initialize the process. This involves a series of steps
+that are conveniently performed by
+
+\begin{verbatim}
+void * GMT_FFT_Create (void *API, void *X, unsigned int dim, unsigned int subdivide, \
+    unsigned int mode, void *F);
+\end{verbatim}
+\index{GMT\_FFT\_Create}
+
+Here, \texttt{X} is either your dataset or grid pointer, \texttt{dim} is the dimension of the transform
+(1 or 2), \texttt{subdivide} is not used by the API, \texttt{mode} passes various flags to the setup,
+and \texttt{F} is the opaque pointer returned by \texttt{GMT\_FFT\_Parse}.  Depending on the options
+you chose to pass to \texttt{GMT\_FFT\_Parse}, the data will be detrended, reflected by various symmetries,
+padded to desired transform dimensions, and possibly
+with temporary files written out before the transform takes place.
+
+\section{Taking the FFT}
+\index{FFT}
+
+Now that everything has been set up you can call
+
+\begin{verbatim}
+void * GMT_FFT (void *API, void *X, int direction, unsigned int mode, void *K);
+\end{verbatim}
+\index{GMT\_FFT}
+
+which takes as \texttt{direction} either GMT\_FFT\_FWD or GMT\_FFT\_INV.  The mode is used to
+specify if we pass a real or complex data set, and \texttt{K} is the opaque pointer returned
+by \texttt{GMT\_FFT\_Create}.  The transform is performed in place.  When done with your
+manipulations you can call it again with the inverse flag.
+
+\section{Wavenumber calculations}
+\index{Wavenumber calculations}
+
+As your data has been transformed to the wavenumber domain you will wish to visit the various
+values as a function of wavenumber.  We will show how this is done for datasets and grids, separately.
+First, we present the function that returns an individual wavenumber:
+
+\begin{verbatim}
+double GMT_FFT_Wavenumber (void *API, uint64_t k, unsigned int mode, void *K);
+\end{verbatim}
+\index{GMT\_FFT}
+
+where \texttt{k} is the index into the array or grid, \texttt{mode} specifies which wavenumber
+we want (it is not used for 1-D transform but for the 2-D transform we can select either the
+x-wavenumber (0), the y-wavenumber (1), or the radial wavenumber (2)), and finally the opaque
+vector used earlier.
+
+\subsection{1-D FFT manipulation}
+
+\subsection{2-D FFT manipulation}
+
+The number of complex pairs in the grid is given by the header's \texttt{nm} variable, while \texttt{size}
+will be twice that value as it holds the number of components.  To visit all the complex values and obtain
+the corresponding wavenumber we simply need to loop over \texttt{size} and call \texttt{GMT\_FFT\_Wavenumber}.
+This code snippet multiples the complex grid by the radial wavenumber:
+
+\begin{verbatim}
+for (k = 0; k < Grid->header->size; k++) {
+    wave = GMT_FFT_Wavenumber (API, k, 2, K);
+    Grid->data[k] *= wave;
+}
+\end{verbatim}
+
+\section{Destroying the FFT machinery}
+\index{Destroy FFT machinery}
+
+When done you terminate the FFT machinery with
+
+\begin{verbatim}
+double GMT_FFT_Destroy (void *API, void *K);
+\end{verbatim}
+\index{GMT\_FFT\_Destroy}
+
+which simply frees up the memory allocated by the FFT machinery.
+
+\chapter{FORTRAN 77 interface} 
 \index{FORTRAN 77 interface}
 \index{Interface!FORTRAN 77}
 
