@@ -113,10 +113,10 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	
 	if (!F->codes || F->codes[0] == '\0') return NULL;
 	
-	GMT_getsharepath (GMT, "coast/DCW", "", "", path);
+	GMT_getsharepath (GMT, "coast", "CDW", "", path);
 	if (GMT_access (GMT, path, F_OK)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The DCW country polygons are not available.  Download the file\n");
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "http://www.soest.hawaii.edu/gmt/GMT_DCW.zip and unzip in your\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "http://www.soest.hawaii.edu/gmt/gmt-dcw.zip and unzip in your\n");
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT5 installation's share/coast directory.\n");
 		return NULL;
 	}
@@ -192,7 +192,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		/* Open and read the netCDF file */
 		
 		if ((retval = nc_inq_dimid (ncid, "time", &id))) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error processessing %s!\n", path);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error processing %s!\n", path);
 			continue;
 		}
 		retval = nc_inq_dimlen (ncid, id, &np);
