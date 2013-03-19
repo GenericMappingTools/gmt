@@ -74,43 +74,41 @@ void Free_grd2xyz_Ctrl (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);	
 }
 
-int GMT_grd2xyz_usage (struct GMTAPI_CTRL *C, int level) {
-	struct GMT_CTRL *GMT = C->GMT;
-
+int GMT_grd2xyz_usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grd2xyz <grid> [-C[f]] [-N<nodata>] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
-	GMT_message (GMT, "\t[-W[<weight>]] [-Z[<flags>]] [%s] [%s] [%s]\n\t[%s] [%s] [%s] > xyzfile\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: grd2xyz <grid> [-C[f]] [-N<nodata>] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-W[<weight>]] [-Z[<flags>]] [%s] [%s] [%s]\n\t[%s] [%s] [%s] > xyzfile\n",
 		GMT_bo_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\n\t<grid> is one or more grid files.\n");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-C Write row, col instead of x,y.  Append f to start at 1, else 0 [Default].\n");
-	GMT_message (GMT, "\t-N Replace z-values that equal NaN with this value [Default writes NaN].\n");
-	GMT_Option (C, "R,V");
-	GMT_message (GMT, "\t-W Write xyzw using supplied weight (or 1 if not given) [Default is xyz].\n");
-	GMT_message (GMT, "\t-Z Set exact specification of resulting 1-column output z-table.\n");
-	GMT_message (GMT, "\t   If data is in row format, state if first row is at T(op) or B(ottom).\n");
-	GMT_message (GMT, "\t     Then, append L or R to indicate starting point in row.\n");
-	GMT_message (GMT, "\t   If data is in column format, state if first columns is L(left) or R(ight).\n");
-	GMT_message (GMT, "\t     Then, append T or B to indicate starting point in column.\n");
-	GMT_message (GMT, "\t   Append x if gridline-registered, periodic data in x without repeating column at xmax.\n");
-	GMT_message (GMT, "\t   Append y if gridline-registered, periodic data in y without repeating row at ymax.\n");
-	GMT_message (GMT, "\t   Specify one of the following data types (all binary except a):\n");
-	GMT_message (GMT, "\t     a  Ascii.\n");
-	GMT_message (GMT, "\t     c  int8_t, signed 1-byte character.\n");
-	GMT_message (GMT, "\t     u  uint8_t, unsigned 1-byte character.\n");
-	GMT_message (GMT, "\t     h  int16_t, signed short 2-byte integer.\n");
-	GMT_message (GMT, "\t     H  uint16_t, unsigned short 2-byte integer.\n");
-	GMT_message (GMT, "\t     i  int32_t, signed 4-byte integer.\n");
-	GMT_message (GMT, "\t     I  uint32_t, unsigned 4-byte integer.\n");
-	GMT_message (GMT, "\t     l  int64_t, signed long (8-byte) integer.\n");
-	GMT_message (GMT, "\t     L  uint64_t, unsigned long (8-byte) integer.\n");
-	GMT_message (GMT, "\t     f  4-byte floating point single precision.\n");
-	GMT_message (GMT, "\t     d  8-byte floating point double precision.\n");
-	GMT_message (GMT, "\t   [Default format is scanline orientation in ascii representation: -ZTLa].\n");
-	GMT_Option (C, "bo,f,h,o,s,:,.");
+	GMT_Message (API, GMT_TIME_NONE, "\n\t<grid> is one or more grid files.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Write row, col instead of x,y.  Append f to start at 1, else 0 [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Replace z-values that equal NaN with this value [Default writes NaN].\n");
+	GMT_Option (API, "R,V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Write xyzw using supplied weight (or 1 if not given) [Default is xyz].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set exact specification of resulting 1-column output z-table.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If data is in row format, state if first row is at T(op) or B(ottom).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Then, append L or R to indicate starting point in row.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If data is in column format, state if first columns is L(left) or R(ight).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Then, append T or B to indicate starting point in column.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append x if gridline-registered, periodic data in x without repeating column at xmax.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append y if gridline-registered, periodic data in y without repeating row at ymax.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Specify one of the following data types (all binary except a):\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     a  Ascii.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     c  int8_t, signed 1-byte character.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     u  uint8_t, unsigned 1-byte character.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     h  int16_t, signed short 2-byte integer.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     H  uint16_t, unsigned short 2-byte integer.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     i  int32_t, signed 4-byte integer.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     I  uint32_t, unsigned 4-byte integer.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     l  int64_t, signed long (8-byte) integer.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     L  uint64_t, unsigned long (8-byte) integer.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     f  4-byte floating point single precision.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     d  8-byte floating point double precision.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default format is scanline orientation in ascii representation: -ZTLa].\n");
+	GMT_Option (API, "bo,f,h,o,s,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -147,12 +145,12 @@ int GMT_grd2xyz_parse (struct GMTAPI_CTRL *C, struct GRD2XYZ_CTRL *Ctrl, struct 
 #ifdef GMT_COMPAT
 			case 'E':	/* Old ESRI option */
 				Ctrl->E.active = true;
-				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -E is deprecated; use grdreformat instead.\n");
+				GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -E is deprecated; use grdreformat instead.\n");
 				if (opt->arg[0] == 'f') Ctrl->E.floating = true;
 				if (opt->arg[Ctrl->E.floating]) Ctrl->E.nodata = atof (&opt->arg[Ctrl->E.floating]);
 				break;
 			case 'S':	/* Suppress/no-suppress NaNs on output */
-				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -S is deprecated; use -s instead.\n");
+				GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -S is deprecated; use -s instead.\n");
 				GMT_memset (GMT->current.io.io_nan_col, GMT_MAX_COLUMNS, int);
 				GMT->current.io.io_nan_col[0] = GMT_Z;	/* The default is to examine the z-column */
 				GMT->current.io.io_nan_ncols = GMT_IO_NAN_SKIP;		/* Default is that single z column */
@@ -166,7 +164,7 @@ int GMT_grd2xyz_parse (struct GMTAPI_CTRL *C, struct GRD2XYZ_CTRL *Ctrl, struct 
 				if (opt->arg[0])
 					Ctrl->N.value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.d_NaN : atof (opt->arg);
 				else {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -N option: Must specify value or NaN\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -N option: Must specify value or NaN\n");
 					n_errors++;
 				}
 				break;
@@ -236,18 +234,18 @@ int GMT_grd2xyz (void *V_API, int mode, void *args)
 	
 	/*---------------------------- This is the grd2xyz main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input grid(s)\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid(s)\n");
 	
 	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 
 	if (GMT->common.b.active[GMT_OUT]) {
 		if (Ctrl->Z.active && !io.binary) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: -Z overrides -bo\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Warning: -Z overrides -bo\n");
 			GMT->common.b.active[GMT_OUT] = false;
 		}
 #ifdef GMT_COMPAT
 		if (Ctrl->E.active) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: -E overrides -bo\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Warning: -E overrides -bo\n");
 			GMT->common.b.active[GMT_OUT] = false;
 		}
 #endif
@@ -274,7 +272,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Working on file %s\n", G->header->name);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Working on file %s\n", G->header->name);
 
 		if (GMT_is_subset (GMT, G->header, wesn))	/* Subset requested; make sure wesn matches header spacing */
 			GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, G->header), "");
@@ -315,7 +313,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args)
 			size_t n_alloc, len, rec_len;
 			slop = 1.0 - (G->header->inc[GMT_X] / G->header->inc[GMT_Y]);
 			if (!GMT_IS_ZERO (slop)) {
-				GMT_report (GMT, GMT_MSG_NORMAL, "Error: x_inc must equal y_inc when writing to ESRI format\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Error: x_inc must equal y_inc when writing to ESRI format\n");
 				Return (EXIT_FAILURE);
 			}
 			n_alloc = G->header->nx * 8;	/* Assume we only need 8 bytes per item (but we will allocate more if needed) */
@@ -433,12 +431,12 @@ int GMT_grd2xyz (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " values extracted\n", n_total - n_suppressed);
+	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " values extracted\n", n_total - n_suppressed);
 	if (n_suppressed) {
 		if (GMT->current.setting.io_nan_mode == GMT_IO_NAN_KEEP)
-			GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " finite values suppressed\n", n_suppressed);
+			GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " finite values suppressed\n", n_suppressed);
 		else
-			GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64" NaN values suppressed\n", n_suppressed);
+			GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64" NaN values suppressed\n", n_suppressed);
 	}
 
 	Return (GMT_OK);

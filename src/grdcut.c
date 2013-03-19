@@ -78,29 +78,27 @@ void Free_grdcut_Ctrl (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *C) {	/* Dealloc
 	GMT_free (GMT, C);	
 }
 
-int GMT_grdcut_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_grdcut_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grdcut <ingrid> -G<outgrid> %s [%s]\n\t[-S[n]<lon>/<lat>/<radius>] [-Z[n][<min>/<max>]] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdcut <ingrid> -G<outgrid> %s [%s]\n\t[-S[n]<lon>/<lat>/<radius>] [-Z[n][<min>/<max>]] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<ingrid> is file to extract a subset from.\n");
-	GMT_message (GMT, "\t-G Specify output grid file.\n");
-	GMT_Option (C, "R");
-	GMT_message (GMT, "\t   The WESN you specify must be within the WESN of the input grid.\n");
-	GMT_message (GMT, "\t   If in doubt, run grdinfo first and check range of old file.\n");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_Option (C, "V");
-	GMT_dist_syntax (GMT, 'S', "Specify an origin and radius to find the corresponding rectangular area.");
-	GMT_message (GMT, "\t   All nodes on or inside the radius are contained in the subset grid.\n");
-	GMT_message (GMT, "\t   Use -Sn to set all nodes in the subset outside the circle to NaN.\n");
-	GMT_message (GMT, "\t-Z Specify a range and determine the corresponding rectangular region so that\n");
-	GMT_message (GMT, "\t   all values outside this region are outside the range [-inf/+inf].\n");
-	GMT_message (GMT, "\t   Use -Zn to consider NaNs outside as well [Default just ignores NaNs].\n");
-	GMT_Option (C, "f,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is file to extract a subset from.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify output grid file.\n");
+	GMT_Option (API, "R");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The WESN you specify must be within the WESN of the input grid.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If in doubt, run grdinfo first and check range of old file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Option (API, "V");
+	GMT_dist_syntax (API->GMT, 'S', "Specify an origin and radius to find the corresponding rectangular area.");
+	GMT_Message (API, GMT_TIME_NONE, "\t   All nodes on or inside the radius are contained in the subset grid.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Sn to set all nodes in the subset outside the circle to NaN.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Specify a range and determine the corresponding rectangular region so that\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   all values outside this region are outside the range [-inf/+inf].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Zn to consider NaNs outside as well [Default just ignores NaNs].\n");
+	GMT_Option (API, "f,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -207,7 +205,7 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the grdcut main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input grid\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid\n");
 	if (Ctrl->Z.active) {	/* Must determine new region via -Z, so get entire grid first */
 		unsigned int row0 = 0, row1 = 0, col0 = 0, col1 = 0, row, col;
 		bool go;
@@ -227,7 +225,7 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 			}
 		}
 		if (go) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "The sub-region implied by -Z is empty!\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "The sub-region implied by -Z is empty!\n");
 			Return (EXIT_FAILURE);
 		}
 		for (row = G->header->nx-1, go = true; go && row > row0; row--) {	/* Scan from xmax towards xmin */
@@ -261,7 +259,7 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 			}
 		}
 		if (row0 == 0 && col0 == 0 && row1 == (G->header->nx-1) && col1 == (G->header->ny-1)) {
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Your -Z limits produced no subset - output grid is identical to input grid\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "Your -Z limits produced no subset - output grid is identical to input grid\n");
 			GMT_memcpy (wesn_new, G->header->wesn, 4, double);
 		}
 		else {	/* Adjust boundaries inwards */
@@ -281,7 +279,7 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 			Return (API->error);	/* Get header only */
 		}
 		if (!GMT_is_geographic (GMT, GMT_IN)) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "The -S option requires a geographic grid\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "The -S option requires a geographic grid\n");
 			Return (EXIT_FAILURE);
 		}
 		GMT_init_distaz (GMT, Ctrl->S.unit, Ctrl->S.mode, GMT_MAP_DIST);
@@ -386,7 +384,7 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 		error++;
 
 	if (error) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Subset exceeds data domain!\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Subset exceeds data domain!\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 
@@ -401,19 +399,19 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 	/* OK, so far so good. Check if new wesn differs from old wesn by integer dx/dy */
 
 	if (GMT_minmaxinc_verify (GMT, G->header->wesn[XLO], wesn_new[XLO], G->header->inc[GMT_X], GMT_SMALL) == 1) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Old and new x_min do not differ by N * dx\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Old and new x_min do not differ by N * dx\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	if (GMT_minmaxinc_verify (GMT, wesn_new[XHI], G->header->wesn[XHI], G->header->inc[GMT_X], GMT_SMALL) == 1) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Old and new x_max do not differ by N * dx\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Old and new x_max do not differ by N * dx\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	if (GMT_minmaxinc_verify (GMT, G->header->wesn[YLO], wesn_new[YLO], G->header->inc[GMT_Y], GMT_SMALL) == 1) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Old and new y_min do not differ by N * dy\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Old and new y_min do not differ by N * dy\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	if (GMT_minmaxinc_verify (GMT, wesn_new[YHI], G->header->wesn[YHI], G->header->inc[GMT_Y], GMT_SMALL) == 1) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Old and new y_max do not differ by N * dy\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Old and new y_max do not differ by N * dy\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 
@@ -430,11 +428,11 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 		char format[GMT_BUFSIZ];
 		sprintf (format, "\t%s\t%s\t%s\t%s\t%s\t%s\t%%d\t%%d\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out,
 			GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_report (GMT, GMT_MSG_VERBOSE, "File spec:\tW E S N dx dy nx ny:\n");
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Old:");
-		GMT_report (GMT, GMT_MSG_VERBOSE, format, wesn_old[XLO], wesn_old[XHI], wesn_old[YLO], wesn_old[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y], nx_old, ny_old);
-		GMT_report (GMT, GMT_MSG_VERBOSE, "New:");
-		GMT_report (GMT, GMT_MSG_VERBOSE, format, wesn_new[XLO], wesn_new[XHI], wesn_new[YLO], wesn_new[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y], G->header->nx, G->header->ny);
+		GMT_Report (API, GMT_MSG_VERBOSE, "File spec:\tW E S N dx dy nx ny:\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Old:");
+		GMT_Report (API, GMT_MSG_VERBOSE, format, wesn_old[XLO], wesn_old[XHI], wesn_old[YLO], wesn_old[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y], nx_old, ny_old);
+		GMT_Report (API, GMT_MSG_VERBOSE, "New:");
+		GMT_Report (API, GMT_MSG_VERBOSE, format, wesn_new[XLO], wesn_new[XHI], wesn_new[YLO], wesn_new[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y], G->header->nx, G->header->ny);
 	}
 
 	if (Ctrl->S.set_nan) {	/* Set all nodes outside the circle to NaN */
@@ -454,7 +452,7 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 			}
 		}
 		GMT_free (GMT, grd_lon);	
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Set %" PRIu64 " nodes outside circle to NaN\n", n_nodes);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Set %" PRIu64 " nodes outside circle to NaN\n", n_nodes);
 	}
 	
 	/* Send the subset of the grid to the destination. */

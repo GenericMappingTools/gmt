@@ -145,48 +145,46 @@ void Free_splitxyz_Ctrl (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *C) {	/* Dea
 	GMT_free (GMT, C);	
 }
 
-int GMT_splitxyz_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_splitxyz_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	/* This displays the splitxyz synopsis and optionally full usage information */
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: splitxyz [<table>] -C<course_change> [-A<azimuth>/<tolerance>]\n");
-	GMT_message (GMT, "\t[-D<minimum_distance>] [-F<xy_filter>/<z_filter>] [-N<template>]\n");
-	GMT_message (GMT, "\t[-Q<flags>] [-S] [%s] [-Z] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: splitxyz [<table>] -C<course_change> [-A<azimuth>/<tolerance>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D<minimum_distance>] [-F<xy_filter>/<z_filter>] [-N<template>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Q<flags>] [-S] [%s] [-Z] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\tGive xyz[dh]file name or read stdin.\n");
-	GMT_message (GMT, "\t-C Profile ends when change of heading exceeds <course_change>.\n");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t<table> is one or more data files (in ASCII, binary, netCDF) with 2, 3 or 5 columns.\n");
-	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
-	GMT_message (GMT, "\t-A Only write profile if mean direction is w/in +/- <tolerance>\n");
-	GMT_message (GMT, "\t   of <azimuth> [Default = All].\n");
-	GMT_message (GMT, "\t-D Only write profile if length is at least <minimum_distance> [0].\n");
-	GMT_message (GMT, "\t-F Filter the data.  Give full widths of cosine arch filters for xy and z.\n");
-	GMT_message (GMT, "\t   Defaults are both widths = 0, giving no filtering.\n");
-	GMT_message (GMT, "\t   Use negative width to highpass.\n");
-	GMT_message (GMT, "\t-N Write individual segments to separate files [Default writes one\n");
-	GMT_message (GMT, "\t   multisegment file to stdout].  Append file name template which MUST\n");
-	GMT_message (GMT, "\t   contain a C-style format for a long integer (e.g., %%ld) that represents\n");
-	GMT_message (GMT, "\t   a sequential segment number across all tables (if more than one table).\n");
-	GMT_message (GMT, "\t   [Default uses splitxyz_segment_%%ld.txt (or .bin for binary)].\n");
-	GMT_message (GMT, "\t   Alternatively, supply a template with two long formats and we will\n");
-	GMT_message (GMT, "\t   replace them with the table number and table segment numbers.\n");
-	GMT_message (GMT, "\t-Q Indicate what output you want as one or more of xyzdh in any order;\n");
-	GMT_message (GMT, "\t   where x,y,z refer to input data locations and optional z-value(s),\n");
-	GMT_message (GMT, "\t   and d,h are the distance and heading along track.\n");
-	GMT_message (GMT, "\t   [Default is all fields, i.e., -Qxyzdh (or -Qxydh if -Z is set)].\n");
-	GMT_message (GMT, "\t-S d,h is supplied.  Input is 5 col x,y,z,d,h with d non-decreasing.\n");
-	GMT_message (GMT, "\t   [Default input is 3 col x,y,z only and computes d,h from the data].\n");
-	GMT_message (GMT, "\t-Z No z-values.  Input is 2 col x,y only.\n");
-	GMT_Option (C, "V,bi");
-	GMT_message (GMT, "\t     Default input columns is set given -S and -Z options.\n");
-	GMT_Option (C, "bo,f,g,h,i,s,:,.");
+	GMT_Message (API, GMT_TIME_NONE, "\tGive xyz[dh]file name or read stdin.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Profile ends when change of heading exceeds <course_change>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more data files (in ASCII, binary, netCDF) with 2, 3 or 5 columns.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Only write profile if mean direction is w/in +/- <tolerance>\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   of <azimuth> [Default = All].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Only write profile if length is at least <minimum_distance> [0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Filter the data.  Give full widths of cosine arch filters for xy and z.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Defaults are both widths = 0, giving no filtering.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use negative width to highpass.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Write individual segments to separate files [Default writes one\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   multisegment file to stdout].  Append file name template which MUST\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   contain a C-style format for a long integer (e.g., %%ld) that represents\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   a sequential segment number across all tables (if more than one table).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses splitxyz_segment_%%ld.txt (or .bin for binary)].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, supply a template with two long formats and we will\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   replace them with the table number and table segment numbers.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Indicate what output you want as one or more of xyzdh in any order;\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   where x,y,z refer to input data locations and optional z-value(s),\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   and d,h are the distance and heading along track.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is all fields, i.e., -Qxyzdh (or -Qxydh if -Z is set)].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S d,h is supplied.  Input is 5 col x,y,z,d,h with d non-decreasing.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default input is 3 col x,y,z only and computes d,h from the data].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z No z-values.  Input is 2 col x,y only.\n");
+	GMT_Option (API, "V,bi");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Default input columns is set given -S and -Z options.\n");
+	GMT_Option (API, "bo,f,g,h,i,s,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -238,7 +236,7 @@ int GMT_splitxyz_parse (struct GMTAPI_CTRL *C, struct SPLITXYZ_CTRL *Ctrl, struc
 				break;
 #ifdef GMT_COMPAT
 			case 'G':
-				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -G option is deprecated; use -g instead.\n");
+				GMT_Report (C, GMT_MSG_COMPAT, "Warning: -G option is deprecated; use -g instead.\n");
 				GMT->common.g.active = true;
 				if (GMT_is_geographic (GMT, GMT_IN))	
 					sprintf (txt_a, "D%sk", opt->arg);	/* Hardwired to be km */
@@ -249,7 +247,7 @@ int GMT_splitxyz_parse (struct GMTAPI_CTRL *C, struct SPLITXYZ_CTRL *Ctrl, struc
 #endif
 #ifdef GMT_COMPAT
 			case 'M':
-				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
+				GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
 				if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
 				break;
 #endif
@@ -263,14 +261,14 @@ int GMT_splitxyz_parse (struct GMTAPI_CTRL *C, struct SPLITXYZ_CTRL *Ctrl, struc
 					if (j < SPLITXYZ_N_OUTPUT_CHOICES) {
 						Ctrl->Q.col[j] = opt->arg[j];
 						if (!strchr ("xyzdh", Ctrl->Q.col[j])) {
-							GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -Q option: Unrecognized output choice %c\n", Ctrl->Q.col[j]);
+							GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -Q option: Unrecognized output choice %c\n", Ctrl->Q.col[j]);
 							n_errors++;
 						}
 						if (opt->arg[j] == 'z') z_selected = true;
 						n_outputs++;
 					}
 					else {
-						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -Q option: Too many output columns selected: Choose from -Qxyzdg\n");
+						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -Q option: Too many output columns selected: Choose from -Qxyzdg\n");
 						n_errors++;
 					}
 				}
@@ -346,7 +344,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the splitxyz main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	GMT_memset (output_choice, SPLITXYZ_N_OUTPUT_CHOICES, int);
 
 	for (k = n_outputs = 0; k < SPLITXYZ_N_OUTPUT_CHOICES && Ctrl->Q.col[k]; k++) {
@@ -359,7 +357,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args)
 				break;
 			case 'z':
 				if (Ctrl->Z.active) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Cannot specify z when -Z is in effect!\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Cannot specify z when -Z is in effect!\n");
 					Return (-1);
 				}
 				output_choice[k] = 2;
@@ -436,7 +434,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args)
 			T->min = GMT_memory (GMT, T->min, n_columns, double);
 			T->max = GMT_memory (GMT, T->max, n_columns, double);
 		}
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Working on file %s\n", T->file[GMT_IN]);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Working on file %s\n", T->file[GMT_IN]);
 
 		for (seg = 0; seg < D[GMT_IN]->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 			S = T->segment[seg];
@@ -566,7 +564,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args)
 		S->id = seg;
 	}
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, " Split %" PRIu64 " data into %" PRIu64 " segments.\n", D[GMT_IN]->n_records, nprofiles);
+	GMT_Report (API, GMT_MSG_VERBOSE, " Split %" PRIu64 " data into %" PRIu64 " segments.\n", D[GMT_IN]->n_records, nprofiles);
 	if (Ctrl->N.active) {
 		int n_formats = 0;
 		if (!Ctrl->N.name) Ctrl->N.name = (GMT->common.b.active[GMT_OUT]) ? strdup ("splitxyz_segment_%ld.bin") : strdup ("splitxyz_segment_%ld.txt");

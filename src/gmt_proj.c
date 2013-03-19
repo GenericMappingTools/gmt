@@ -84,13 +84,13 @@ void gmt_check_R_J (struct GMT_CTRL *C, double *clon)	/* Make sure -R and -J agr
 	if (C->current.map.is_world && lon0 != *clon) {
 		C->common.R.wesn[XLO] = *clon - 180.0;
 		C->common.R.wesn[XHI] = *clon + 180.0;
-		GMT_report (C, GMT_MSG_VERBOSE, "Warning: Central meridian set with -J (%g) implies -R%g/%g/%g/%g\n",
+		GMT_Report (C->parent, GMT_MSG_VERBOSE, "Warning: Central meridian set with -J (%g) implies -R%g/%g/%g/%g\n",
 			*clon, C->common.R.wesn[XLO], C->common.R.wesn[XHI], C->common.R.wesn[YLO], C->common.R.wesn[YHI]);
 	}
 	else if (!C->current.map.is_world) {
 		lon0 = *clon - 360.0;
 		while (lon0 < C->common.R.wesn[XLO]) lon0 += 360.0;
-		if (lon0 > C->common.R.wesn[XHI]) GMT_report (C, GMT_MSG_VERBOSE, "Warning: Central meridian outside region\n");
+		if (lon0 > C->common.R.wesn[XHI]) GMT_Report (C->parent, GMT_MSG_VERBOSE, "Warning: Central meridian outside region\n");
 	}
 }
 
@@ -992,16 +992,16 @@ void gmt_genper_toxy (struct GMT_CTRL *P, double lat, double lon, double h, doub
 	*y = yp;
 
 	if (P->current.proj.g_debug > 1) {
-		GMT_message (P, "\n");
-		GMT_message (P, "lat  %12.3f\n", lat);
-		GMT_message (P, "lon  %12.3f\n", lon);
-		GMT_message (P, "h    %12.3f\n", h);
-		GMT_message (P, "N    %12.1f\n", N);
-		GMT_message (P, "C    %12.7f\n", C);
-		GMT_message (P, "S    %12.7f\n", S);
-		GMT_message (P, "K    %12.1f\n", K);
-		GMT_message (P, "x    %12.1f\n", *x);
-		GMT_message (P, "y    %12.1f\n", *y);
+		GMT_Report (P->parent, GMT_MSG_DEBUG, "\n");
+		GMT_Report (P->parent, GMT_MSG_DEBUG, "lat  %12.3f\n", lat);
+		GMT_Report (P->parent, GMT_MSG_DEBUG, "lon  %12.3f\n", lon);
+		GMT_Report (P->parent, GMT_MSG_DEBUG, "h    %12.3f\n", h);
+		GMT_Report (P->parent, GMT_MSG_DEBUG, "N    %12.1f\n", N);
+		GMT_Report (P->parent, GMT_MSG_DEBUG, "C    %12.7f\n", C);
+		GMT_Report (P->parent, GMT_MSG_DEBUG, "S    %12.7f\n", S);
+		GMT_Report (P->parent, GMT_MSG_DEBUG, "K    %12.1f\n", K);
+		GMT_Report (P->parent, GMT_MSG_DEBUG, "x    %12.1f\n", *x);
+		GMT_Report (P->parent, GMT_MSG_DEBUG, "y    %12.1f\n", *y);
 	}
 }
 
@@ -2376,7 +2376,7 @@ void GMT_vrobinson (struct GMT_CTRL *C, double lon0)
 		err_flag += GMT_akima (C, C->current.proj.n_phi, C->current.proj.n_Y, GMT_N_ROBINSON, C->current.proj.n_y_coeff);
 		err_flag += GMT_akima (C, C->current.proj.n_Y, C->current.proj.n_phi, GMT_N_ROBINSON, C->current.proj.n_iy_coeff);
 	}
-	if (err_flag) GMT_report (C, GMT_MSG_NORMAL, "Error:  Interpolation failed in GMT_vrobinson?\n");
+	if (err_flag) GMT_Report (C->parent, GMT_MSG_NORMAL, "Error:  Interpolation failed in GMT_vrobinson?\n");
 }
 
 double gmt_robinson_spline (struct GMT_CTRL *C, double xp, double *x, double *y, double *c)

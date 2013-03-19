@@ -59,44 +59,42 @@ void Free_gmtaverage_Ctrl (struct GMT_CTRL *G, struct  GMTAVERAGE_CTRL *C) {	/* 
 	GMT_free (G, C);	
 }
 
-int GMT_gmtaverage_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_gmtaverage_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: gmtaverage [<table>] %s -Te|m|n|o|s|w|<q>\n", GMT_I_OPT);
-	GMT_message (GMT, "\t%s [-C] [-E[b]] [-Q] [%s] [-W[i][o]]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtaverage [<table>] %s -Te|m|n|o|s|w|<q>\n", GMT_I_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s [-C] [-E[b]] [-Q] [%s] [-W[i][o]]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Option (C, "I");
-	GMT_message (GMT, "\t-T Select what value you wish to report per block:\n");
-	GMT_message (GMT, "\t   e reports median values.\n");
-	GMT_message (GMT, "\t   m reports mean values.\n");
-	GMT_message (GMT, "\t   n reports number of data points.\n");
-	GMT_message (GMT, "\t   o reports modal values.\n");
-	GMT_message (GMT, "\t   s reports data sums.\n");
-	GMT_message (GMT, "\t   w reports weight sums.\n");
-	GMT_message (GMT, "\t   <q> reports the chosen quantile (0 < q < 1).\n");
-	GMT_Option (C, "R");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_Option (C, "<");
-	GMT_message (GMT, "\t-C Output center of block as location [Default is mean|median|mode of x and y, but see -Q].\n");
-	GMT_message (GMT, "\t-E Extend output with scale (s), low (l), and high (h) value per block, i.e.,\n");
-	GMT_message (GMT, "\t   output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w])]; see -W regarding w.\n");
-	GMT_message (GMT, "\t   Here, scale is standard deviation, L1 scale, or LMS scale depending on -T.\n");
-	GMT_message (GMT, "\t   For -Te|<q>: Use -Eb for box-and-whisker output (x,y,z,l,25%%q,75%%q,h[,w])\n");
-	GMT_message (GMT, "\t-Q Quicker; get median|mode z and x, y at that z [Default gets median|mode of x, y, and z.].\n");
-	GMT_message (GMT, "\t   This option is ignored for -Tm|n|s|w.\n");
-	GMT_Option (C, "V");
-	GMT_message (GMT, "\t-W Set Weight options.\n");
-	GMT_message (GMT, "\t   -Wi reads Weighted Input (4 cols: x,y,z,w) but skips w on output.\n");
-	GMT_message (GMT, "\t   -Wo reads unWeighted Input (3 cols: x,y,z) but writes weight sum on output.\n");
-	GMT_message (GMT, "\t   -W with no modifier has both weighted Input and Output; Default is no weights used.\n");
-	GMT_Option (C, "a,bi");
-	GMT_message (GMT, "\t   Default is 3 columns (or 4 if -W is set).\n");
-	GMT_Option (C, "bo,f,h,i,o,r,:,.");
+	GMT_Option (API, "I");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Select what value you wish to report per block:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   e reports median values.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   m reports mean values.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   n reports number of data points.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   o reports modal values.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   s reports data sums.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   w reports weight sums.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <q> reports the chosen quantile (0 < q < 1).\n");
+	GMT_Option (API, "R");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Option (API, "<");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Output center of block as location [Default is mean|median|mode of x and y, but see -Q].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Extend output with scale (s), low (l), and high (h) value per block, i.e.,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w])]; see -W regarding w.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Here, scale is standard deviation, L1 scale, or LMS scale depending on -T.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For -Te|<q>: Use -Eb for box-and-whisker output (x,y,z,l,25%%q,75%%q,h[,w])\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Quicker; get median|mode z and x, y at that z [Default gets median|mode of x, y, and z.].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   This option is ignored for -Tm|n|s|w.\n");
+	GMT_Option (API, "V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Set Weight options.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Wi reads Weighted Input (4 cols: x,y,z,w) but skips w on output.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Wo reads unWeighted Input (3 cols: x,y,z) but writes weight sum on output.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -W with no modifier has both weighted Input and Output; Default is no weights used.\n");
+	GMT_Option (API, "a,bi");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default is 3 columns (or 4 if -W is set).\n");
+	GMT_Option (API, "bo,f,h,i,o,r,:,.");
 	
 	return (EXIT_FAILURE);
 }

@@ -105,47 +105,45 @@ void Free_gmtconvert_Ctrl (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *C) {	/*
 	GMT_free (GMT, C);	
 }
 
-int GMT_gmtconvert_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_gmtconvert_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: gmtconvert [<table>] [-A] [-D[<template>]] [-E[f|l|m<stride>]] [-I[tsr]] [-L] [-N] [-Q<seg>]\n");
-	GMT_message (GMT, "\t[-S[~]\"search string\"] [-T] [%s] [%s]\n\t[%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtconvert [<table>] [-A] [-D[<template>]] [-E[f|l|m<stride>]] [-I[tsr]] [-L] [-N] [-Q<seg>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-S[~]\"search string\"] [-T] [%s] [%s]\n\t[%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_Option (C, "<");
-	GMT_message (GMT, "\t-A Paste files horizontally, not concatenate vertically [Default].\n");
-	GMT_message (GMT, "\t   All files must have the same number of segments and rows,\n");
-	GMT_message (GMT, "\t   but they may differ in their number of columns.\n");
-	GMT_message (GMT, "\t-D Write individual segments to separate files [Default writes one\n");
-	GMT_message (GMT, "\t   multisegment file to stdout].  Append file name template which MUST\n");
-	GMT_message (GMT, "\t   contain a C-style format for a long integer (e.g., %%ld) that represents\n");
-	GMT_message (GMT, "\t   a sequential segment number across all tables (if more than one table).\n");
-	GMT_message (GMT, "\t   [Default uses gmtconvert_segment_%%ld.txt (or .bin for binary)].\n");
-	GMT_message (GMT, "\t   Alternatively, supply a template with two long formats and we will\n");
-	GMT_message (GMT, "\t   replace them with the table number and table segment numbers.\n");
-	GMT_message (GMT, "\t-E Extract first and last point per segment only [Output all points].\n");
-	GMT_message (GMT, "\t   Append f for first only or l for last only.\n");
-	GMT_message (GMT, "\t   Append m<stride> to pass only 1 out of <stride> records.\n");
-	GMT_message (GMT, "\t-I Invert output order of (t)ables, (s)egments, or (r)ecords.  Append any combination of:\n");
-	GMT_message (GMT, "\t     t: reverse the order of input tables on output.\n");
-	GMT_message (GMT, "\t     s: reverse the order of segments within each table on output.\n");
-	GMT_message (GMT, "\t     r: reverse the order of records within each segment on output [Default].\n");
-	GMT_message (GMT, "\t-L Output only segment headers and skip all data records.\n");
-	GMT_message (GMT, "\t   Requires -m and ASCII input data [Output headers and data].\n");
-	GMT_message (GMT, "\t-N Skip records where all fields == NaN [Write all records].\n");
-	GMT_message (GMT, "\t-Q Only output segment number <seg> [All].\n");
-	GMT_message (GMT, "\t-S Only output segments whose headers contain the pattern \"string\".\n");
-	GMT_message (GMT, "\t   Use -S~\"string\" to output segment that DO NOT contain this pattern.\n");
-	GMT_message (GMT, "\t   If your pattern begins with ~, escape it with \\~.\n");
-	GMT_message (GMT, "\t   To match OGR aspatial values, use name=value.\n");
-	GMT_message (GMT, "\t   To match against extended regular expressions use -S[~]/regexp/[i].\n");
-	GMT_message (GMT, "\t-T Prevent the writing of segment headers.\n");
-	GMT_Option (C, "V,a,bi,bo,f,g,h,i,o,s,:,.");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Option (API, "<");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Paste files horizontally, not concatenate vertically [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   All files must have the same number of segments and rows,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   but they may differ in their number of columns.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Write individual segments to separate files [Default writes one\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   multisegment file to stdout].  Append file name template which MUST\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   contain a C-style format for a long integer (e.g., %%ld) that represents\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   a sequential segment number across all tables (if more than one table).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses gmtconvert_segment_%%ld.txt (or .bin for binary)].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, supply a template with two long formats and we will\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   replace them with the table number and table segment numbers.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Extract first and last point per segment only [Output all points].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append f for first only or l for last only.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append m<stride> to pass only 1 out of <stride> records.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Invert output order of (t)ables, (s)egments, or (r)ecords.  Append any combination of:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     t: reverse the order of input tables on output.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     s: reverse the order of segments within each table on output.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     r: reverse the order of records within each segment on output [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Output only segment headers and skip all data records.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Requires -m and ASCII input data [Output headers and data].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Skip records where all fields == NaN [Write all records].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Only output segment number <seg> [All].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Only output segments whose headers contain the pattern \"string\".\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -S~\"string\" to output segment that DO NOT contain this pattern.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If your pattern begins with ~, escape it with \\~.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To match OGR aspatial values, use name=value.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To match against extended regular expressions use -S[~]/regexp/[i].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Prevent the writing of segment headers.\n");
+	GMT_Option (API, "V,a,bi,bo,f,g,h,i,o,s,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -197,7 +195,7 @@ int GMT_gmtconvert_parse (struct GMTAPI_CTRL *C, struct GMTCONVERT_CTRL *Ctrl, s
 				break;
 #ifdef GMT_COMPAT
 			case 'F':	/* Now obsolete, using -o instead */
-				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -F is deprecated; use -o instead\n");
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -F is deprecated; use -o instead\n");
 				gmt_parse_o_option (GMT, opt->arg);
 				break;
 #endif
@@ -209,7 +207,7 @@ int GMT_gmtconvert_parse (struct GMTAPI_CTRL *C, struct GMTCONVERT_CTRL *Ctrl, s
 						case 's': Ctrl->I.mode |= INV_SEGS; break;	/* Reverse segment order */
 						case 'r': Ctrl->I.mode |= INV_ROWS; break;	/* Reverse record order */
 						default:
-							GMT_report (GMT, GMT_MSG_NORMAL, "Error: The -I option does not recognize modifier %c\n", (int)opt->arg[k]);
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: The -I option does not recognize modifier %c\n", (int)opt->arg[k]);
 							n_errors++;
 							break;
 					}
@@ -301,7 +299,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the gmtconvert main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {
 		Return (API->error);	/* Establishes data files or stdin */
@@ -316,11 +314,11 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 	if (Ctrl->T.active) GMT_set_segmentheader (GMT, GMT_OUT, false);	/* Turn off segment headers on output */
 
 	if (GMT->common.a.active && D[GMT_IN]->n_tables > 1) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "The -a option requires a single table only.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "The -a option requires a single table only.\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	if (GMT->common.a.active && D[GMT_IN]->table[0]->ogr) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "The -a option requires a single table without OGR metadata.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "The -a option requires a single table without OGR metadata.\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	
@@ -338,11 +336,11 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 	n_cols_out = (Ctrl->A.active) ? n_cols_in : n_cols_out;	/* Default or Reset since we did not have -A */
 	
 	if (error) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Parsing requires files with same number of records.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Parsing requires files with same number of records.\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	if (n_cols_out == 0) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Selection lead to no output columns.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Selection lead to no output columns.\n");
 		Return (GMT_RUNTIME_ERROR);
 		
 	}
@@ -427,7 +425,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 		uint64_t row1, row2, seg1, seg2;
 		void *p = NULL;
 		if (Ctrl->I.mode & INV_ROWS) {	/* Must actually swap rows */
-			GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Reversing order of records within each segment.\n");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reversing order of records within each segment.\n");
 			for (tbl = 0; tbl < D[GMT_OUT]->n_tables; tbl++) {	/* Number of output tables */
 				for (seg = 0; seg < D[GMT_OUT]->table[tbl]->n_segments; seg++) {	/* For each segment in the tables */
 					for (row1 = 0, row2 = D[GMT_OUT]->table[tbl]->segment[seg]->n_rows - 1; row1 < D[GMT_OUT]->table[tbl]->segment[seg]->n_rows/2; row1++, row2--) {
@@ -438,7 +436,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 			}
 		}
 		if (Ctrl->I.mode & INV_SEGS) {	/* Must reorder pointers to segments within each table */
-			GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Reversing order of segments within each table.\n");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reversing order of segments within each table.\n");
 			for (tbl = 0; tbl < D[GMT_OUT]->n_tables; tbl++) {	/* Number of output tables */
 				for (seg1 = 0, seg2 = D[GMT_OUT]->table[tbl]->n_segments-1; seg1 < D[GMT_OUT]->table[tbl]->n_segments/2; seg1++, seg2--) {	/* For each segment in the table */
 					p = D[GMT_OUT]->table[tbl]->segment[seg1];
@@ -448,7 +446,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 			}
 		}
 		if (Ctrl->I.mode & INV_TBLS) {	/* Must reorder pointers to tables within dataset  */
-			GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Reversing order of tables within the data set.\n");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reversing order of tables within the data set.\n");
 			for (tbl1 = 0, tbl2 = D[GMT_OUT]->n_tables-1; tbl1 < D[GMT_OUT]->n_tables/2; tbl1++, tbl2--) {	/* For each table */
 				p = D[GMT_OUT]->table[tbl1];
 				D[GMT_OUT]->table[tbl1] = D[GMT_OUT]->table[tbl2];
@@ -478,7 +476,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 				p += strspn (p, "0123456789"); /* span past digits */
 				if ( strspn (p, "diu") == 0 ) {
 					/* no valid conversion specifier */
-					GMT_report (GMT, GMT_MSG_NORMAL,
+					GMT_Report (API, GMT_MSG_NORMAL,
 							"Syntax error: Use of unsupported conversion specifier at %" PRIuS " in format string '%s'.\n",
 							p - Ctrl->D.name + 1, Ctrl->D.name);
 					exit (EXIT_FAILURE);
@@ -487,7 +485,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 			}
 			if ( n_formats == 0 || n_formats > 2 ) {
 				/* Incorrect number of format specifiers */
-					GMT_report (GMT, GMT_MSG_NORMAL,
+					GMT_Report (API, GMT_MSG_NORMAL,
 							"Syntax error: Incorrect number of format specifiers in format string '%s'.\n",
 							Ctrl->D.name);
 					exit (EXIT_FAILURE);
@@ -509,8 +507,8 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "%d tables %s, %ld records passed (input cols = %d; output cols = %d)\n", D[GMT_IN]->n_tables, method[Ctrl->A.active], D[GMT_OUT]->n_records, n_cols_in, n_cols_out);
-	if (Ctrl->S.active) GMT_report (GMT, GMT_MSG_VERBOSE, "Extracted %ld from a total of %ld segments\n", n_out_seg, D[GMT_OUT]->n_segments);
+	GMT_Report (API, GMT_MSG_VERBOSE, "%d tables %s, %ld records passed (input cols = %d; output cols = %d)\n", D[GMT_IN]->n_tables, method[Ctrl->A.active], D[GMT_OUT]->n_records, n_cols_in, n_cols_out);
+	if (Ctrl->S.active) GMT_Report (API, GMT_MSG_VERBOSE, "Extracted %ld from a total of %ld segments\n", n_out_seg, D[GMT_OUT]->n_segments);
 
 	Return (GMT_OK);
 }

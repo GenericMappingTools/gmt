@@ -169,58 +169,56 @@ void Free_filter1d_Ctrl (struct GMT_CTRL *GMT,struct FILTER1D_CTRL *C) {	/* Deal
 	GMT_free (GMT, C);
 }
 
-int GMT_filter1d_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_filter1d_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: filter1d [<table>] -F<type><width>[<mode>] [-D<increment>] [-E] [-I<ignore_val>]\n");
-	GMT_message (GMT, "\t[-L<lack_width>] [-N<t_col>] [-Q<q_factor>] [-S<symmetry>] [-T<t_min>/<t_max>/<t_inc>[+]]\n");
-	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: filter1d [<table>] -F<type><width>[<mode>] [-D<increment>] [-E] [-I<ignore_val>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L<lack_width>] [-N<t_col>] [-Q<q_factor>] [-S<symmetry>] [-T<t_min>/<t_max>/<t_inc>[+]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t-F Set filtertype.  Choose from convolution and non-convolution filters\n");
-	GMT_message (GMT, "\t   and append filter <width> in same units as time column.\n");
-	GMT_message (GMT, "\t   Convolution filters:\n");
-	GMT_message (GMT, "\t     b: Boxcar : Weights are equal.\n");
-	GMT_message (GMT, "\t     c: Cosine arch : Weights given by cosine arch.\n");
-	GMT_message (GMT, "\t     g: Gaussian : Weights given by Gaussian function.\n");
-	GMT_message (GMT, "\t     f<name>: Custom : Weights given in one-column file <name>.\n");
-	GMT_message (GMT, "\t   Non-convolution filters:\n");
-	GMT_message (GMT, "\t     m: Median : Return the median value.\n");
-	GMT_message (GMT, "\t     p: Maximum likelihood probability (mode) estimator : Return the mode.\n");
-	GMT_message (GMT, "\t        By default, we return the average mode if more than one is found.\n");
-	GMT_message (GMT, "\t        Append - or + to the width to return the smallest or largest mode instead.\n");
-	GMT_message (GMT, "\t     l: Lower : Return minimum of all points.\n");
-	GMT_message (GMT, "\t     L: Lower+ : Return minimum of all positive points.\n");
-	GMT_message (GMT, "\t     u: Upper : Return maximum of all points.\n");
-	GMT_message (GMT, "\t     U: Upper- : Return maximum of all negative points.\n");
-	GMT_message (GMT, "\t   Upper case type B, C, G, M, P, F will use robust filter versions,\n");
-	GMT_message (GMT, "\t   i.e., replace outliers (2.5 L1 scale off median) with median during filtering.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Set filtertype.  Choose from convolution and non-convolution filters\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   and append filter <width> in same units as time column.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Convolution filters:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     b: Boxcar : Weights are equal.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     c: Cosine arch : Weights given by cosine arch.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     g: Gaussian : Weights given by Gaussian function.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     f<name>: Custom : Weights given in one-column file <name>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Non-convolution filters:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     m: Median : Return the median value.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     p: Maximum likelihood probability (mode) estimator : Return the mode.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        By default, we return the average mode if more than one is found.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        Append - or + to the width to return the smallest or largest mode instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     l: Lower : Return minimum of all points.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     L: Lower+ : Return minimum of all positive points.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     u: Upper : Return maximum of all points.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     U: Upper- : Return maximum of all negative points.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Upper case type B, C, G, M, P, F will use robust filter versions,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   i.e., replace outliers (2.5 L1 scale off median) with median during filtering.\n");
 
-	GMT_message (GMT, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 
-	GMT_Option (C, "<");
-	GMT_message (GMT, "\t-D Set fixed increment when series is NOT equidistantly sampled.\n");
-	GMT_message (GMT, "\t   Then <increment> will be the abscissae resolution, i.e., all abscissae\n");
-	GMT_message (GMT, "\t   will be rounded off to a multiple of <increment>.\n");
-	GMT_message (GMT, "\t-E Include ends of time series in output [Default loses half_width at each end].\n");
-	GMT_message (GMT, "\t-I Ignore values; If an input value == <ignore_val> it will be set to NaN.\n");
-	GMT_message (GMT, "\t-L Check for lack of data condition.  If input data has a gap exceeding\n");
-	GMT_message (GMT, "\t   <width> then no output will be given at that point [Default does not check Lack].\n");
-	GMT_message (GMT, "\t-N Set the column that contains the independent variable (time) [0].\n");
-	GMT_message (GMT, "\t   The left-most column is # 0, the right-most is # (<n_cols> - 1).\n");
-	GMT_message (GMT, "\t-Q Sssess quality of output value by checking mean weight in convolution.\n");
-	GMT_message (GMT, "\t   Enter <q_factor> between 0 and 1.  If mean weight < q_factor, output is\n");
-	GMT_message (GMT, "\t   suppressed at this point [Default does not check quality].\n");
-	GMT_message (GMT, "\t-S Check symmetry of data about window center.  Enter a factor\n");
-	GMT_message (GMT, "\t   between 0 and 1.  If ( (abs(n_left - n_right)) / (n_left + n_right) ) > factor,\n");
-	GMT_message (GMT, "\t   then no output will be given at this point [Default does not check Symmetry].\n");
-	GMT_message (GMT, "\t-T Make evenly spaced output timesteps from <t_min> to <t_max> by <t_inc> [Default uses input times].\n");
-	GMT_message (GMT, "\t   Append + to <t_inc> to indicate number of t-values to produce instead.\n");
-	GMT_Option (C, "V,bi,bo,f,g,h,i,o,.");
+	GMT_Option (API, "<");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Set fixed increment when series is NOT equidistantly sampled.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Then <increment> will be the abscissae resolution, i.e., all abscissae\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   will be rounded off to a multiple of <increment>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Include ends of time series in output [Default loses half_width at each end].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Ignore values; If an input value == <ignore_val> it will be set to NaN.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Check for lack of data condition.  If input data has a gap exceeding\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <width> then no output will be given at that point [Default does not check Lack].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Set the column that contains the independent variable (time) [0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The left-most column is # 0, the right-most is # (<n_cols> - 1).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Sssess quality of output value by checking mean weight in convolution.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Enter <q_factor> between 0 and 1.  If mean weight < q_factor, output is\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   suppressed at this point [Default does not check quality].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Check symmetry of data about window center.  Enter a factor\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   between 0 and 1.  If ( (abs(n_left - n_right)) / (n_left + n_right) ) > factor,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   then no output will be given at this point [Default does not check Symmetry].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Make evenly spaced output timesteps from <t_min> to <t_max> by <t_inc> [Default uses input times].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append + to <t_inc> to indicate number of t-values to produce instead.\n");
+	GMT_Option (API, "V,bi,bo,f,g,h,i,o,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -273,14 +271,14 @@ int GMT_filter1d_parse (struct GMTAPI_CTRL *C, struct FILTER1D_CTRL *Ctrl, struc
 							if (opt->arg[1] && !GMT_access (GMT, &opt->arg[1], R_OK))
 								Ctrl->F.file = strdup (&opt->arg[1]);
 							else {
-								GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -F[Ff] option: Could not find file %s.\n", &opt->arg[1]);
+								GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -F[Ff] option: Could not find file %s.\n", &opt->arg[1]);
 								++n_errors;
 							}
 							break;
 					}
 				}
 				else {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -F option: Correct syntax: -FX<width>, X one of BbCcGgMmPpFflLuU\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -F option: Correct syntax: -FX<width>, X one of BbCcGgMmPpFflLuU\n");
 					++n_errors;
 				}
 				break;
@@ -296,9 +294,9 @@ int GMT_filter1d_parse (struct GMTAPI_CTRL *C, struct FILTER1D_CTRL *Ctrl, struc
 				Ctrl->N.active = true;
 #ifdef GMT_COMPAT
 				if (strchr (opt->arg, '/')) { /* Gave obsolete format */
-					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -N<ncol>/<tcol> option is deprecated; use -N<tcol> instead.\n");
+					GMT_Report (C, GMT_MSG_COMPAT, "Warning: -N<ncol>/<tcol> option is deprecated; use -N<tcol> instead.\n");
 					if (sscanf (opt->arg, "%*s/%d", &sval) != 1) {
-						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -N option: Syntax is -N<tcol>\n");
+						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -N option: Syntax is -N<tcol>\n");
 						++n_errors;
 					}
 				}
@@ -321,7 +319,7 @@ int GMT_filter1d_parse (struct GMTAPI_CTRL *C, struct FILTER1D_CTRL *Ctrl, struc
 			case 'T':	/* Set output knots */
 				Ctrl->T.active = true;
 				if (sscanf (opt->arg, "%[^/]/%[^/]/%lf", txt_a, txt_b, &Ctrl->T.inc) != 3) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Suntax error -T option: Syntax is -T<tmin>/<tmax>/<tinc>[+]\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Suntax error -T option: Syntax is -T<tmin>/<tmax>/<tinc>[+]\n");
 					++n_errors;
 				}
 				else {
@@ -474,7 +472,7 @@ int set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 		}
 	}
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "F width: %g Resolution: %g Start: %g Stop: %g\n", F->filter_width, F->dt, F->t_start, F->t_stop);
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "F width: %g Resolution: %g Start: %g Stop: %g\n", F->filter_width, F->dt, F->t_start, F->t_stop);
 
 	return (0);
 }
@@ -803,7 +801,7 @@ void load_parameters_filter1d (struct FILTER1D_INFO *F, struct FILTER1D_CTRL *Ct
 
 /* Must free allocated memory before returning */
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code,...) {Free_filter1d_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); GMT_report (GMT, GMT_MSG_NORMAL, __VA_ARGS__); bailout (code);}
+#define Return(code,...) {Free_filter1d_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); GMT_Report (API, GMT_MSG_NORMAL, __VA_ARGS__); bailout (code);}
 #define Return2(code) {Free_filter1d_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_filter1d (void *V_API, int mode, void *args)
@@ -843,7 +841,7 @@ int GMT_filter1d (void *V_API, int mode, void *args)
 	F.n_work_alloc = GMT_CHUNK;
 	F.equidist = true;
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 
 	/* Read the input data into memory */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
@@ -905,7 +903,7 @@ int GMT_filter1d (void *V_API, int mode, void *args)
 			if ((F.Fin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 				Return (API->error, "Error Reading input\n");
 			}
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Read %ld filter weights from file %s.\n", F.Fin->n_records, Ctrl->F.file);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Read %ld filter weights from file %s.\n", F.Fin->n_records, Ctrl->F.file);
 			break;
 	}
 	if (F.filter_type > FILTER1D_CONVOLVE) F.robust = false;
@@ -922,7 +920,7 @@ int GMT_filter1d (void *V_API, int mode, void *args)
 
 	allocate_space (GMT, &F);	/* Gets column-specific flags and uint64_t space */
 	
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Filter the data columns\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Filter the data columns\n");
 	
 	for (tbl = 0; tbl < D->n_tables; ++tbl) {	/* For each input table */
 		for (seg = 0; seg < D->table[tbl]->n_segments; ++seg) {	/* For each segment */
@@ -958,7 +956,7 @@ int GMT_filter1d (void *V_API, int mode, void *args)
 					}
 				}
 			}
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Read %ld records from table %d, segment %ld\n", F.n_rows, tbl, seg);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Read %ld records from table %d, segment %ld\n", F.n_rows, tbl, seg);
 			
 			/* FILTER: Initialize scale parameters and last_loc based on min and max of data  */
 
@@ -983,7 +981,7 @@ int GMT_filter1d (void *V_API, int mode, void *args)
 		Return (API->error, "Error in End_IO\n");
 	}
 
-	if (F.n_multiples > 0) GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: %d multiple modes found\n", F.n_multiples);
+	if (F.n_multiples > 0) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: %d multiple modes found\n", F.n_multiples);
 
 	free_space_filter1d (GMT, &F);
 

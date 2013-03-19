@@ -207,44 +207,41 @@ void Free_grdspotter_Ctrl (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *C) {	/*
 	GMT_free (GMT, C);	
 }
 
-int GMT_grdspotter_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_grdspotter_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grdspotter <ingrid> -E[+]<rottable> -G<CVAgrid> %s\n", GMT_I_OPT);
-	GMT_message (GMT, "\t%s [-A<agegrid>] [-D[i|p]<grdfile>] [-L<IDgrid>]\n", GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-M] [-N<upper_age>] [-Q<IDinfo>] [-S] [-Tt|-u<age>] [%s] [-W<n_try]\n", GMT_V_OPT);
-	GMT_message (GMT, "\t[-Z<z_min>[/<z_max>[/<z_inc>]]] [%s] [%s]\n\n", GMT_ho_OPT, GMT_r_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdspotter <ingrid> -E[+]<rottable> -G<CVAgrid> %s\n", GMT_I_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A<agegrid>] [-D[i|p]<grdfile>] [-L<IDgrid>]\n", GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-M] [-N<upper_age>] [-Q<IDinfo>] [-S] [-Tt|-u<age>] [%s] [-W<n_try]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Z<z_min>[/<z_max>[/<z_inc>]]] [%s] [%s]\n\n", GMT_ho_OPT, GMT_r_OPT);
 	
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 	
-	GMT_message (GMT, "\t<ingrid> is the grid with topo or gravity\n");
-	GMT_message (GMT, "\t-E Specify the rotations table to be used (see man page for format).\n");
-	GMT_message (GMT, "\t   Prepend + if you want to invert the finite rotations prior to use.\n");
-	GMT_message (GMT, "\t-G Specify file name for output CVA convolution grid.\n");
-	GMT_inc_syntax (GMT, 'I', 0);
-	GMT_Option (C, "Rg");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-A Co-registered grid with upper ages to use [Default is flowlines for all ages].\n");
-	GMT_message (GMT, "\t-D Set optional output grids:\n");
-	GMT_message (GMT, "\t   -Di<file> Use flowlines to estimate data importance DI grid.\n");
-	GMT_message (GMT, "\t   -Dp<file> Use flowlines to estimate predicted ages at node locations.\n");
-	GMT_message (GMT, "\t-L Co-registered grid with chain ID for each node [Default ignores IDs].\n");
-	GMT_message (GMT, "\t-M Do flowline calculations as needed rather than storing in memory.\n");
-	GMT_message (GMT, "\t   You may have to use this option if -R is too large. Cannot be used with -B or -Z-slicing.\n");
-	GMT_message (GMT, "\t-N Set upper age in m.y. for nodes whose plate age is NaN [180].\n");
-	GMT_message (GMT, "\t-Q Either single ID to use or file with list of IDs [Default uses all IDs].\n");
-	GMT_message (GMT, "\t   Each line would be TAG ID [w e s n] with optional zoom box.\n");
-	GMT_message (GMT, "\t-S Normalize CVA grid to percentages of the CVA maximum.\n");
-	GMT_message (GMT, "\t-T Set upper ages.  Repeatable, choose from:\n");
-	GMT_message (GMT, "\t  -Tt truncate all ages to max age in stage pole model [Default extrapolates].\n");
-	GMT_message (GMT, "\t  -Tu<age> After a node passes the -Z test, use this fixed age instead in CVA calculations.\n");
-	GMT_Option (C, "V");
-	GMT_message (GMT, "\t-W Get <n_try> bootstrap estimates of maximum CVA location [Default is no bootstrapping].\n");
-	GMT_message (GMT, "\t-Z Ignore nodes with z-value lower than z_min [0] and optionally larger than z_max [Inf].\n");
-	GMT_message (GMT, "\t   Give z_min/z_max/z_inc to make CVA grids for each z-slice {Default makes 1 CVA grid].\n");
-	GMT_Option (C, "h,r,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is the grid with topo or gravity\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Specify the rotations table to be used (see man page for format).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend + if you want to invert the finite rotations prior to use.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output CVA convolution grid.\n");
+	GMT_Option (API, "I,Rg");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Co-registered grid with upper ages to use [Default is flowlines for all ages].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Set optional output grids:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Di<file> Use flowlines to estimate data importance DI grid.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Dp<file> Use flowlines to estimate predicted ages at node locations.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Co-registered grid with chain ID for each node [Default ignores IDs].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Do flowline calculations as needed rather than storing in memory.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   You may have to use this option if -R is too large. Cannot be used with -B or -Z-slicing.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Set upper age in m.y. for nodes whose plate age is NaN [180].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Either single ID to use or file with list of IDs [Default uses all IDs].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Each line would be TAG ID [w e s n] with optional zoom box.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Normalize CVA grid to percentages of the CVA maximum.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Set upper ages.  Repeatable, choose from:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  -Tt truncate all ages to max age in stage pole model [Default extrapolates].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  -Tu<age> After a node passes the -Z test, use this fixed age instead in CVA calculations.\n");
+	GMT_Option (API, "V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Get <n_try> bootstrap estimates of maximum CVA location [Default is no bootstrapping].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Ignore nodes with z-value lower than z_min [0] and optionally larger than z_max [Inf].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Give z_min/z_max/z_inc to make CVA grids for each z-slice {Default makes 1 CVA grid].\n");
+	GMT_Option (API, "h,r,.");
 
 	return (EXIT_FAILURE);
 }
@@ -278,7 +275,7 @@ int GMT_grdspotter_parse (struct GMTAPI_CTRL *C, struct GRDSPOTTER_CTRL *Ctrl, s
 				break;
 #ifdef GMT_COMPAT
 			case 'C':	/* Now done automatically in spotter_init */
-				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
+				GMT_Report (C, GMT_MSG_COMPAT, "Warning: -C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
 				break;
 #endif
 			case 'E':
@@ -338,7 +335,7 @@ int GMT_grdspotter_parse (struct GMTAPI_CTRL *C, struct GRDSPOTTER_CTRL *Ctrl, s
 					Ctrl->Q.id = sval;
 				}
 				else {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Error -Q: Must give valid file or ID value\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Error -Q: Must give valid file or ID value\n");
 					n_errors++;
 				}
 				break;
@@ -353,7 +350,7 @@ int GMT_grdspotter_parse (struct GMTAPI_CTRL *C, struct GRDSPOTTER_CTRL *Ctrl, s
 					Ctrl->T.active[UPPER] = true;
 				}
 				else {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Error -T: Either use -Tt or -Tu<age>\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Error -T: Either use -Tt or -Tu<age>\n");
 					n_errors++;
 				}
 				break;
@@ -392,7 +389,7 @@ unsigned int get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt
 
 	/* Get the flowline from this point back to time tt, restricted to the given wesn box */
 	if (spotter_forthtrack (GMT, &xx, &yy, &tt, 1, p, n_stages, d_km, 0.0, flag, wesn, &c) <= 0) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Nothing returned from spotter_forthtrack - skipping\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Nothing returned from spotter_forthtrack - skipping\n");
 		return 0;
 	}
 
@@ -453,7 +450,7 @@ bool set_age (struct GMT_CTRL *GMT, double *t_smt, struct GMT_GRID *A, uint64_t 
 			if (truncate)		/* Allowed to truncate to max age */
 				*t_smt = upper_age;
 			else {			/* Consider this an error or just skip */
-				GMT_report (GMT, GMT_MSG_VERBOSE, "Node %" PRIu64 " has age (%g) > oldest stage (%g) (skipped)\n", node, *t_smt, upper_age);
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Node %" PRIu64 " has age (%g) > oldest stage (%g) (skipped)\n", node, *t_smt, upper_age);
 				return (false);
 			}
 		}
@@ -475,12 +472,12 @@ void normalize_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, float *data)
 		if (data[node] < G->header->z_min) G->header->z_min = data[node];
 		if (data[node] > G->header->z_max) G->header->z_max = data[node];
 	}
-	GMT_report (GMT, GMT_MSG_VERBOSE, "CVA min/max: %g %g -> ", G->header->z_min, G->header->z_max);
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "CVA min/max: %g %g -> ", G->header->z_min, G->header->z_max);
 	CVA_scale = 100.0 / G->header->z_max;
 	for (node = 0; node < G->header->size; node++) data[node] *= (float)CVA_scale;
 	G->header->z_min *= CVA_scale;
 	G->header->z_max *= CVA_scale;
-	GMT_report (GMT, GMT_MSG_VERBOSE, "%g %g\n", G->header->z_min, G->header->z_max);
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%g %g\n", G->header->z_min, G->header->z_max);
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
@@ -596,9 +593,9 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 	/* sampling_int_in_km = 0.5 * G_rad->header->inc[GMT_X] * EQ_RAD * ((fabs (G_rad->header->wesn[YHI]) > fabs (G_rad->header->wesn[YLO])) ? cos (G_rad->header->wesn[YHI]) : cos (G_rad->header->wesn[YLO])); */
 	sampling_int_in_km = G_rad->header->inc[GMT_X] * EQ_RAD * ((fabs (G_rad->header->wesn[YHI]) > fabs (G_rad->header->wesn[YLO])) ? cos (G_rad->header->wesn[YHI]) : cos (G_rad->header->wesn[YLO]));
 	if (Ctrl->S2.dist != 0.0) sampling_int_in_km = Ctrl->S2.dist;
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Flowline sampling interval = %.3f km\n", sampling_int_in_km);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Flowline sampling interval = %.3f km\n", sampling_int_in_km);
 
-	if (Ctrl->T.active[TRUNC]) GMT_report (GMT, GMT_MSG_VERBOSE, "Ages truncated to %g\n", Ctrl->N.t_upper);
+	if (Ctrl->T.active[TRUNC]) GMT_Report (API, GMT_MSG_VERBOSE, "Ages truncated to %g\n", Ctrl->N.t_upper);
 
 	/* Start to read input data */
 	
@@ -626,7 +623,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 		if (!(A->header->nx == Z->header->nx && A->header->ny == Z->header->ny && A->header->wesn[XLO] == Z->header->wesn[XLO] && A->header->wesn[YLO] == Z->header->wesn[YLO])) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Topo grid and age grid must coregister\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Topo grid and age grid must coregister\n");
 			Return (EXIT_FAILURE);
 		}
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->A.file, A) == NULL) {	/* Get age data */
@@ -638,7 +635,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 		if (!(L->header->nx == Z->header->nx && L->header->ny == Z->header->ny && L->header->wesn[XLO] == Z->header->wesn[XLO] && L->header->wesn[YLO] == Z->header->wesn[YLO])) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Topo grid and ID grid must coregister\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Topo grid and ID grid must coregister\n");
 			Return (EXIT_FAILURE);
 		}
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->L.file, L) == NULL) {	/* Get ID data */
@@ -661,7 +658,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 			char line[GMT_BUFSIZ];
 			
 			if ((fp = fopen (Ctrl->Q.file, "r")) == NULL) {	/* Oh, oh... */
-				GMT_report (GMT, GMT_MSG_NORMAL, "Error: -Q info file unreadable/nonexistent\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Error: -Q info file unreadable/nonexistent\n");
 				exit (EXIT_FAILURE);
 			}
 			while (fgets (line, GMT_BUFSIZ, fp)) {
@@ -697,8 +694,8 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 		n_alloc = inc_alloc;
 		flowline = GMT_memory (GMT, NULL, n_alloc, struct FLOWLINE);
 		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
-			GMT_message (GMT, "Will attempt to keep all flowlines in memory.  However, should this not be possible\n");
-			GMT_message (GMT, "the program might crash.  If so consider using the -M option\n");
+			GMT_Message (API, GMT_TIME_NONE, "Will attempt to keep all flowlines in memory.  However, should this not be possible\n");
+			GMT_Message (API, GMT_TIME_NONE, "the program might crash.  If so consider using the -M option\n");
 		}
 	}
 	
@@ -784,21 +781,21 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 			GMT_memset (&(flowline[old_n_alloc]), n_alloc - old_n_alloc, struct FLOWLINE);	/* Set to NULL/0 */
 		}
 		
-		if (!(n_nodes%100)) GMT_report (GMT, GMT_MSG_VERBOSE, "Row %5ld Processed %5" PRIu64" nodes [%5ld/%.1f]\r", row, n_nodes, n_flow, mem * B_TO_MB);
+		if (!(n_nodes%100)) GMT_Report (API, GMT_MSG_VERBOSE, "Row %5ld Processed %5" PRIu64" nodes [%5ld/%.1f]\r", row, n_nodes, n_flow, mem * B_TO_MB);
 	}
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Row %5ld Processed %5" PRIu64 " nodes [%5ld/%.1f]\n", row, n_nodes, n_flow, mem * B_TO_MB);
-	GMT_report (GMT, GMT_MSG_VERBOSE, "On average, each node was visited %g times\n", n_more_than_once / n_unique_nodes);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Row %5ld Processed %5" PRIu64 " nodes [%5ld/%.1f]\n", row, n_nodes, n_flow, mem * B_TO_MB);
+	GMT_Report (API, GMT_MSG_VERBOSE, "On average, each node was visited %g times\n", n_more_than_once / n_unique_nodes);
 
 	if (keep_flowlines && n_nodes != n_alloc) flowline = GMT_memory (GMT, flowline, n_nodes, struct FLOWLINE);
 	
 	/* OK, Done processing, time to write out */
 
 	if (Ctrl->S.active) {	/* Convert CVA values to percent of CVA maximum */		
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Normalize CVS grid to percentages of max CVA\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Normalize CVS grid to percentages of max CVA\n");
 		normalize_grid (GMT, G, G->data);
 	}
 		
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Write CVA grid %s\n", Ctrl->G.file);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Write CVA grid %s\n", Ctrl->G.file);
 
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, G) != GMT_OK) {
 		Return (API->error);
@@ -811,7 +808,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 		double z0, z1;
 		float *CVA_inc = NULL, *old = G->data;
 		
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Start z-slice CVA calculations\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Start z-slice CVA calculations\n");
 		for (len = strlen (Ctrl->G.file); len > 0 && Ctrl->G.file[len] != '.'; len--);
 		if (Ctrl->G.file[len] == '.') {	/* Make a filename template from the CVA filename using the period as delimeter */
 			strncpy (format, Ctrl->G.file, len);	/* Should keep the prefix from a file called prefix.ext */
@@ -823,7 +820,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 		for (layer = 0; layer < nz; layer++) {
 			z0 = Ctrl->Z.min + layer * Ctrl->Z.inc;
 			z1 = z0 + Ctrl->Z.inc;
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Start z-slice %g - %g\n", z0, z1);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Start z-slice %g - %g\n", z0, z1);
 			GMT_memset (CVA_inc, G->header->size, float);	/* Fresh start for this z-slice */
 			for (m = 0; m < n_nodes; m++) {				/* Loop over all active flowlines */
 				ij = flowline[m].ij;
@@ -838,19 +835,19 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 						processed_node[node] = true;		/* Now we have visited this node */
 					}
 				}
-				if (!(m%10000)) GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Processed %5ld flowlines\r", m);
+				if (!(m%10000)) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processed %5ld flowlines\r", m);
 			}
-			GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Processed %5" PRIu64 " flowlines\n", n_nodes);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processed %5" PRIu64 " flowlines\n", n_nodes);
 			
 			/* Time to write out this z-slice grid */
 			if (Ctrl->S.active) {	/* Convert CVA values to percent of CVA maximum */		
-				GMT_report (GMT, GMT_MSG_VERBOSE, "Normalize CVS grid to percentages of max CVA\n");
+				GMT_Report (API, GMT_MSG_VERBOSE, "Normalize CVS grid to percentages of max CVA\n");
 				normalize_grid (GMT, G, CVA_inc);
 			}
 			sprintf (G->header->remark, "CVA for z-range %g - %g only", z0, z1);
 			sprintf (file, format, layer);
 			G->data = CVA_inc;	/* Temporarily change the array pointer */
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Save z-slice CVA to file %s\n", file);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Save z-slice CVA to file %s\n", file);
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, G) != GMT_OK) {
 				Return (API->error);
 			}
@@ -866,7 +863,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 		if (Ctrl->PA.active) {
 			if ((PA = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, Z)) == NULL) Return (API->error);
 		}
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Compute DI and/or PA grids\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Compute DI and/or PA grids\n");
 
 		if (keep_flowlines) {
 			for (m = 0; m < n_nodes; m++) {	/* Loop over all active flowlines */
@@ -880,9 +877,9 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 				}
 				if (Ctrl->D.active) DI->data[flowline[m].ij] = (float)CVA_max;	/* Store the maximum CVA associated with this node's flowline */
 				if (Ctrl->PA.active) PA->data[flowline[m].ij] = (float) (pa * PA_2_T);
-				if (!(m%10000)) GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Processed %5ld flowlines\r", m);
+				if (!(m%10000)) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processed %5ld flowlines\r", m);
 			}
-			GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Processed %5" PRIu64 " flowlines\n", n_nodes);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processed %5" PRIu64 " flowlines\n", n_nodes);
 		}
 		else {	/* Must recreate flowlines */
 			k_step = 3;	/* FLowlines have (x,y,t) here */
@@ -919,21 +916,21 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 				if (Ctrl->D.active) DI->data[ij] = (float)CVA_max;	/* Store the maximum CVA associated with this node's flowline */
 				if (Ctrl->PA.active) PA->data[ij] = (float) this_pa;
 				GMT_free (GMT, c);
-				GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Row %5ld: Processed %5" PRIu64 " flowlines\r", row, n_nodes);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Row %5ld: Processed %5" PRIu64 " flowlines\r", row, n_nodes);
 			}
-			GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Row %5ld: Processed %5" PRIu64 " flowlines\n", row, n_nodes);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Row %5ld: Processed %5" PRIu64 " flowlines\n", row, n_nodes);
 		}
 		
 
 		if (Ctrl->D.active) {
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Write DI grid %s\n", Ctrl->D.file);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Write DI grid %s\n", Ctrl->D.file);
 			sprintf (DI->header->remark, "CVA maxima along flowlines from each node");
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->D.file, DI) != GMT_OK) {
 				Return (API->error);
 			}
 		}
 		if (Ctrl->PA.active) {
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Write PA grid %s\n", Ctrl->PA.file);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Write PA grid %s\n", Ctrl->PA.file);
 			sprintf (PA->header->remark, "Predicted age for each node");
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->PA.file, PA) != GMT_OK) {
 				Return (API->error);
@@ -944,10 +941,10 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 	if (Ctrl->W.active) {	/* Use bootstrapping to estimate confidence region for CVA maxima */
 
 		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
-			GMT_message (GMT, "Preprocessed %5" PRIu64 " flowlines\n", n_nodes);
-			GMT_message (GMT, "%" PRIu64 " of %" PRIu64 " total flowlines entered CVA region\n", n_nodes, n_flow);
-			GMT_message (GMT, "Flowlines consumed %d Mb of memory\n", lrint (mem * B_TO_MB));
-			GMT_message (GMT, "Estimate %d CVA max locations using bootstrapping\n", Ctrl->W.n_try);
+			GMT_Message (API, GMT_TIME_NONE, "Preprocessed %5" PRIu64 " flowlines\n", n_nodes);
+			GMT_Message (API, GMT_TIME_NONE, "%" PRIu64 " of %" PRIu64 " total flowlines entered CVA region\n", n_nodes, n_flow);
+			GMT_Message (API, GMT_TIME_NONE, "Flowlines consumed %d Mb of memory\n", lrint (mem * B_TO_MB));
+			GMT_Message (API, GMT_TIME_NONE, "Estimate %d CVA max locations using bootstrapping\n", Ctrl->W.n_try);
 		}
 
 		if ((error = GMT_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
@@ -967,7 +964,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 		x_scale = (double)G->header->nx / (double)RAND_MAX;
 		y_scale = (double)G->header->ny / (double)RAND_MAX;
 		for (try = 1; try <= Ctrl->W.n_try; try++) {
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Bootstrap try %d\r", try);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Bootstrap try %d\r", try);
 		
 			GMT_memset (G->data, G->header->size, float);	/* Start with fresh grid */
 			for (m = 0; m < n_nodes; m++) {	/* Loop over all indices */
@@ -983,9 +980,9 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 						processed_node[node] = true;		/* Now we have visited this node; flag it */
 					}
 				}
-				if (!(m%10000)) GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Processed %5ld flowlines\r", m);
+				if (!(m%10000)) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processed %5ld flowlines\r", m);
 			}
-			GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Processed %5" PRIu64 " flowlines\n", n_nodes);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Processed %5" PRIu64 " flowlines\n", n_nodes);
 		
 			/* Find max CVA location */
 		
@@ -1004,7 +1001,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 			
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 		}
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Bootstrap try %d\n", Ctrl->W.n_try);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Bootstrap try %d\n", Ctrl->W.n_try);
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 			Return (API->error);
 		}
@@ -1024,10 +1021,10 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 	if (keep_flowlines) GMT_free (GMT, flowline);
 	if (Ctrl->Q.mode) GMT_free (GMT, ID_info);
 	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G_rad) != GMT_OK) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Failed to free G_rad\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free G_rad\n");
 	}
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Done\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Done\n");
 
 	Return (GMT_OK);
 }

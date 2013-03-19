@@ -81,27 +81,25 @@ void Free_colmath_Ctrl (struct GMT_CTRL *GMT, struct COLMATH_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);	
 }
 
-int GMT_colmath_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_colmath_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: colmath [<table>] [-A] [-N] [-Q<seg>] [-S[~]\"search string\"] [-T] [%s]\n\t[%s] [%s]", GMT_V_OPT, GMT_b_OPT, GMT_f_OPT);
-	GMT_message (GMT, " [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] OPERATORS\n\n", GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: colmath [<table>] [-A] [-N] [-Q<seg>] [-S[~]\"search string\"] [-T] [%s]\n\t[%s] [%s]", GMT_V_OPT, GMT_b_OPT, GMT_f_OPT);
+	GMT_Message (API, GMT_TIME_NONE, " [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] OPERATORS\n\n", GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-A Paste files horizontally, not concatenate vertically [Default].\n");
-	GMT_message (GMT, "\t   All files must have the same number of segments and rows,\n");
-	GMT_message (GMT, "\t   but they may differ in their number of columns.\n");
-	GMT_message (GMT, "\t-Q Only output segment number <seg> [All].\n");
-	GMT_message (GMT, "\t-S Only output segments whose headers contain the pattern \"string\".\n");
-	GMT_message (GMT, "\t   Use -S~\"string\" to output segment that DO NOT contain this pattern.\n");
-	GMT_message (GMT, "\t   If your pattern begins with ~, escape it with \\~.\n");
-	GMT_message (GMT, "\t   Note: -S requires -m and ASCII input data [Output all segments].\n");
-	GMT_message (GMT, "\t-T Prevent the writing of segment headers.\n");
-	GMT_Option (C, "V,bi,bo,f,g,h,i,o,s,:,.");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Paste files horizontally, not concatenate vertically [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   All files must have the same number of segments and rows,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   but they may differ in their number of columns.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Only output segment number <seg> [All].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Only output segments whose headers contain the pattern \"string\".\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -S~\"string\" to output segment that DO NOT contain this pattern.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If your pattern begins with ~, escape it with \\~.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Note: -S requires -m and ASCII input data [Output all segments].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Prevent the writing of segment headers.\n");
+	GMT_Option (API, "V,bi,bo,f,g,h,i,o,s,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -202,7 +200,7 @@ int GMT_colmath (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the colmath main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 
 	if (Ctrl->T.active) GMT_set_segmentheader (GMT, GMT_OUT, false);	/* Turn off segment headers on output */
 
@@ -227,15 +225,15 @@ int GMT_colmath (void *V_API, int mode, void *args)
 	n_cols_out = (Ctrl->A.active) ? n_cols_in : n_cols_out;	/* Default or Reset since we did not have -A */
 	
 	if (error) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Parsing requires files with same number of records.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Parsing requires files with same number of records.\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
 	if (n_cols_out == 0) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Selection lead to no output columns.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Selection lead to no output columns.\n");
 		Return (GMT_RUNTIME_ERROR);
 		
 	}
-	if (warn) GMT_report (GMT, GMT_MSG_VERBOSE, "Some requested columns are outside the range of some tables and will be skipped.\n");
+	if (warn) GMT_Report (API, GMT_MSG_VERBOSE, "Some requested columns are outside the range of some tables and will be skipped.\n");
 	
 	/* We now know the exact number of segments and columns and an upper limit on total records.
 	 * Allocate data set with a single table with those proportions. This copies headers as well */
@@ -289,8 +287,8 @@ int GMT_colmath (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 	
-	GMT_report (GMT, GMT_MSG_VERBOSE, "%d tables %s, %ld records passed (input cols = %d; output cols = %d)\n", D[GMT_IN]->n_tables, method[Ctrl->A.active], D[GMT_OUT]->n_records, n_cols_in, n_cols_out);
-	if (Ctrl->S.active) GMT_report (GMT, GMT_MSG_VERBOSE, "Extracted %ld from a total of %ld segments\n", n_out_seg, D[GMT_OUT]->table[tbl_ver]->n_segments);
+	GMT_Report (API, GMT_MSG_VERBOSE, "%d tables %s, %ld records passed (input cols = %d; output cols = %d)\n", D[GMT_IN]->n_tables, method[Ctrl->A.active], D[GMT_OUT]->n_records, n_cols_in, n_cols_out);
+	if (Ctrl->S.active) GMT_Report (API, GMT_MSG_VERBOSE, "Extracted %ld from a total of %ld segments\n", n_out_seg, D[GMT_OUT]->table[tbl_ver]->n_segments);
 
 	Return (GMT_OK);
 }

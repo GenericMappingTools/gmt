@@ -108,53 +108,51 @@ void Free_x2sys_list_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *C) {	/*
 	GMT_free (GMT, C);
 }
 
-int GMT_x2sys_list_usage (struct GMTAPI_CTRL *C, int level) {
-	struct GMT_CTRL *GMT = C->GMT;
-
+int GMT_x2sys_list_usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: x2sys_list -C<column> -T<TAG> [<COEdbase>] [-A<asymm_max] [-E] [-F<flags>] [-I<ignorelist>] [-L[<corrtable.txt>]]\n");
-	GMT_message (GMT, "\t [-N<nx_min>] [-Qe|i] [-S[+]<track>] [%s] [%s] [-W<weight>] [-m]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_list -C<column> -T<TAG> [<COEdbase>] [-A<asymm_max] [-E] [-F<flags>] [-I<ignorelist>] [-L[<corrtable.txt>]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t [-N<nx_min>] [-Qe|i] [-S[+]<track>] [%s] [%s] [-W<weight>] [-m]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t-C <column> is the name of the data column whose crossovers we want.\n");
-	GMT_message (GMT, "\t-T <TAG> is the system tag for the data set.\n");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t<COEdbase> File with crossover error data base [stdin].\n");
-	GMT_message (GMT, "\t-A Return only crossovers whose distribution in time [or dist if no time]\n");
-	GMT_message (GMT, "\t   are fairly symmetric about the mid-point. Specify max abs value for\n");
-	GMT_message (GMT, "\t   asymmetry = (n_right - n_left)/(nright + n_left) [1, i.e., use all tracks].\n");
-	GMT_message (GMT, "\t-E Enhanced ASCII output: Add segment header with track names and number of crossovers [no segment headers].\n");
-	GMT_message (GMT, "\t-F Specify any combination of %s in the order of desired output:\n", LETTERS);
-	GMT_message (GMT, "\t   a Angle (<= 90) between the two tracks at the crossover.\n");
-	GMT_message (GMT, "\t   c Crossover error in chosen observable (see -C).\n");
-	GMT_message (GMT, "\t   d Distance along tracks at the crossover.\n");
-	GMT_message (GMT, "\t   h Heading along tracks at the crossover.\n");
-	GMT_message (GMT, "\t   i Signed time interval between the two tracks at the crossover.\n");
-	GMT_message (GMT, "\t   I Unsigned time interval between the two tracks at the crossover.\n");
-	GMT_message (GMT, "\t   n Names of the two tracks.\n");
-	GMT_message (GMT, "\t   N Id numbers of the two tracks.\n");
-	GMT_message (GMT, "\t   t Absolute time along tracks at the crossover.\n");
-	GMT_message (GMT, "\t   T Time since start of track along tracks at the crossover.\n");
-	GMT_message (GMT, "\t   v Speed along tracks at the crossover.\n");
-	GMT_message (GMT, "\t   w weight assigned to the crossover.\n");
-	GMT_message (GMT, "\t   x x-coordinate of the crossover.\n");
-	GMT_message (GMT, "\t   y y-coordinate of the crossover.\n");
-	GMT_message (GMT, "\t   z Observed values (see -C) along tracks at the crossover.\n");
-	GMT_message (GMT, "\t   Unless -S is specified, d,h,n,t,T,v,z will yield two columns.\n");
-	GMT_message (GMT, "\t-I List of tracks to ignore [Use all tracks].\n");
-	GMT_message (GMT, "\t-L Subtract systematic corrections from the data. If no correction file is given,\n");
-	GMT_message (GMT, "\t   the default file <TAG>_corrections.txt in $X2SYS_HOME/<TAG> is assumed.\n");
-	GMT_message (GMT, "\t-N Output results for tracks with more than <nx_min> crossovers only [Use all tracks].\n");
-	GMT_message (GMT, "\t-Q Append e or i for external or internal crossovers [Default is both].\n");
-	GMT_Option (C, "R");
-	GMT_message (GMT, "\t   [Default region is the entire data domain].\n");
-	GMT_message (GMT, "\t-S Return only crossovers involving this track [Use all tracks].\n");
-	GMT_message (GMT, "\t   Prepend a '+' to make it print info relative to both tracks [Default is selected track].\n");
-	GMT_Option (C, "V");
-	GMT_message (GMT, "\t-W If argument can be opened as a file then we expect a List of tracks and their\n");
-	GMT_message (GMT, "\t   relative weights; otherwise the argument is the constant weight for all tracks [1].\n");
-	GMT_Option (C, "bo,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C <column> is the name of the data column whose crossovers we want.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T <TAG> is the system tag for the data set.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<COEdbase> File with crossover error data base [stdin].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Return only crossovers whose distribution in time [or dist if no time]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   are fairly symmetric about the mid-point. Specify max abs value for\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   asymmetry = (n_right - n_left)/(nright + n_left) [1, i.e., use all tracks].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Enhanced ASCII output: Add segment header with track names and number of crossovers [no segment headers].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify any combination of %s in the order of desired output:\n", LETTERS);
+	GMT_Message (API, GMT_TIME_NONE, "\t   a Angle (<= 90) between the two tracks at the crossover.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   c Crossover error in chosen observable (see -C).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   d Distance along tracks at the crossover.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   h Heading along tracks at the crossover.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   i Signed time interval between the two tracks at the crossover.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   I Unsigned time interval between the two tracks at the crossover.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   n Names of the two tracks.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   N Id numbers of the two tracks.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   t Absolute time along tracks at the crossover.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   T Time since start of track along tracks at the crossover.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   v Speed along tracks at the crossover.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   w weight assigned to the crossover.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   x x-coordinate of the crossover.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   y y-coordinate of the crossover.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   z Observed values (see -C) along tracks at the crossover.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Unless -S is specified, d,h,n,t,T,v,z will yield two columns.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I List of tracks to ignore [Use all tracks].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Subtract systematic corrections from the data. If no correction file is given,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   the default file <TAG>_corrections.txt in $X2SYS_HOME/<TAG> is assumed.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Output results for tracks with more than <nx_min> crossovers only [Use all tracks].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Append e or i for external or internal crossovers [Default is both].\n");
+	GMT_Option (API, "R");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default region is the entire data domain].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Return only crossovers involving this track [Use all tracks].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend a '+' to make it print info relative to both tracks [Default is selected track].\n");
+	GMT_Option (API, "V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W If argument can be opened as a file then we expect a List of tracks and their\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   relative weights; otherwise the argument is the constant weight for all tracks [1].\n");
+	GMT_Option (API, "bo,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -225,7 +223,7 @@ int GMT_x2sys_list_parse (struct GMTAPI_CTRL *C, struct X2SYS_LIST_CTRL *Ctrl, s
 				else if (opt->arg[0])
 					Ctrl->S.file = strdup (opt->arg);
 				else {
-					GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -S: Must supply a track name.\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "ERROR -S: Must supply a track name.\n");
 					n_errors++;
 				}
 				break;
@@ -251,7 +249,7 @@ int GMT_x2sys_list_parse (struct GMTAPI_CTRL *C, struct X2SYS_LIST_CTRL *Ctrl, s
 	n_errors += GMT_check_condition (GMT, !Ctrl->F.flags, "Syntax error: Must use -F to specify output items.\n");
 	for (i = 0; Ctrl->F.flags && i < strlen (Ctrl->F.flags); i++) {
 		if (!strchr (LETTERS, (int)Ctrl->F.flags[i])) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -F: Unknown item %c.\n", Ctrl->F.flags[i]);
+			GMT_Report (C, GMT_MSG_NORMAL, "ERROR -F: Unknown item %c.\n", Ctrl->F.flags[i]);
 			n_errors++;			
 		}
 		if (Ctrl->F.flags[i] == 'n') mixed = true;		/* Both numbers and text - cannot use binary output */
@@ -333,7 +331,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 	
 	if (Ctrl->C.col) x2sys_err_fail (GMT, x2sys_pick_fields (GMT, Ctrl->C.col, s), "-C");
 	if (s->n_out_columns != 1) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Error: -C must specify a single column name\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: -C must specify a single column name\n");
 		Return (EXIT_FAILURE);
 	}
 	
@@ -348,9 +346,9 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 	
 	from = (Ctrl->In.file) ? Ctrl->In.file : tofrom[GMT_IN];
 	if (GMT->common.R.active) wesn = GMT->common.R.wesn;	/* Passed a sub region request */
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Read crossover database from %s...\n", from);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Read crossover database from %s...\n", from);
 	np = x2sys_read_coe_dbase (GMT, s, Ctrl->In.file, Ctrl->I.file, wesn, Ctrl->C.col, coe_kind, Ctrl->S.file, &P, &nx, &n_tracks);
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Found %" PRIu64 " pairs and a total of %" PRIu64 " crossover records.\n", np, nx);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " pairs and a total of %" PRIu64 " crossover records.\n", np, nx);
 
 	if (np == 0 && nx == 0) {	/* End here since nothing was allocated */
 		x2sys_end (GMT, s);
@@ -438,7 +436,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 	}
 
 	if (Ctrl->L.active && !check_for_NaN) {	/* Correction table would not be needed for output */
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: Correction table not needed for chosen output (corrections ignored).\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Correction table not needed for chosen output (corrections ignored).\n");
 		Ctrl->L.active = false;
 	}
 
@@ -543,7 +541,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 		if (Ctrl->E.active)	/* Write segment header with information */
 			fprintf (GMT->session.std[GMT_OUT], "%c %s - %s nx = %d\n",
 					GMT->current.setting.io_seg_marker[GMT_OUT], P[p].trk[0], P[p].trk[1], P[p].nx);
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Crossovers from %s minus %s [%d].\n", P[p].trk[0], P[p].trk[1], P[p].nx);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Crossovers from %s minus %s [%d].\n", P[p].trk[0], P[p].trk[1], P[p].nx);
 		if (Ctrl->S.active) {	/* May have to flip which is track one and two */
 			two = !strcmp (Ctrl->S.file, P[p].trk[0]);
 			one = 1 - two;
@@ -623,7 +621,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 						if (weights) {	/* Weightfile was given; compute composite weight for this COE */
 							for (m = 0, w_k = 0.0; m < 2; m++) {
 								if ((id = x2sys_find_track (GMT, P[p].trk[m], weight_name, n_weights)) == -1) {
-									GMT_report (GMT, GMT_MSG_VERBOSE, "No weights found for track %s - using weight = 1.\n", P[p].trk[m]);
+									GMT_Report (API, GMT_MSG_VERBOSE, "No weights found for track %s - using weight = 1.\n", P[p].trk[m]);
 									w = 1.0;
 								}
 								else
@@ -662,7 +660,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 				GMT->current.io.output (GMT, GMT->session.std[GMT_OUT], j, out);
 		}
 	}
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Output %" PRIu64 " pairs and a total of %" PRIu64 " crossover records.\n", np_use, nx_use);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Output %" PRIu64 " pairs and a total of %" PRIu64 " crossover records.\n", np_use, nx_use);
 	
 	/* Done, free up data base array */
 	

@@ -122,44 +122,41 @@ void Free_grdgravmag3d_Ctrl (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *C) {	/* D
 	GMT_free (GMT, C);
 }
 
-int GMT_grdgravmag3d_usage (struct GMTAPI_CTRL *C, int level) {
-
-	struct GMT_CTRL *GMT = C->GMT;
-
+int GMT_grdgravmag3d_usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grdgravmag3d grdfile_up [grdfile_low] [-C<density>] [-D] [-F<xy_file>]\n");
-	GMT_message (GMT, "\t[-G<outfile>] [%s] [-L<z_obs>]\n", GMT_I_OPT);
-	GMT_message (GMT, "\t[-Q[n<n_pad>]|[pad_dist]|[<w/e/s/n>]]\n");
-	GMT_message (GMT, "\t[%s] [%s] [-Z<level>] [-fg]\n", GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdgravmag3d grdfile_up [grdfile_low] [-C<density>] [-D] [-F<xy_file>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-G<outfile>] [%s] [-L<z_obs>]\n", GMT_I_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Q[n<n_pad>]|[pad_dist]|[<w/e/s/n>]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<level>] [-fg]\n", GMT_Rgeo_OPT, GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\tgrdfile_up is the grdfile whose gravity efect is to be computed.\n");
-	GMT_message (GMT, "\t   If two grids are provided then the gravity/magnetic efect of the\n");
-	GMT_message (GMT, "\t   volume between them is computed\n\n");
-	GMT_message (GMT, "\t-C sets body density in SI\n");
-	GMT_message (GMT, "\t-F pass file with locations where anomaly is going to be computed\n");
-	GMT_message (GMT, "\t-G name of the output grdfile.\n");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-D if z is positive down [Default positive up]\n");
-	/*GMT_message (GMT, "\t-H sets parameters for computation of magnetic anomaly\n");
-	GMT_message (GMT, "\t   f_dec/f_dip -> geomagnetic declination/inclination\n");
-	GMT_message (GMT, "\t   m_int/m_dec/m_dip -> body magnetic intensity/declination/inclination\n");*/
-	GMT_inc_syntax (GMT, 'I', 0);
-	GMT_message (GMT, "\t   The new xinc and yinc should be divisible by the old ones (new lattice is subset of old).\n");
-	GMT_message (GMT, "\t-L sets level of observation [Default = 0]\n");
-	GMT_message (GMT, "\t-fg Map units true; x,y in degrees, dist units in m [Default dist unit = x,y unit].\n");
-	GMT_message (GMT, "\t-Q Extend the domain of computation with respect to output -R region.\n");
-	GMT_message (GMT, "\t   -Qn<N> artifficially extends the width of the outer rim of cells to have a fake\n");
-	GMT_message (GMT, "\t   width of N * dx[/dy].\n");
-	GMT_message (GMT, "\t   -Q<pad_dist> extend the region by west-pad, east+pad, etc\n");
-	GMT_message (GMT, "\t   -Q<region> Same sintax as -R.\n");
-	GMT_message (GMT, "\t-R For new Range of output grid; enter <WESN> (xmin, xmax, ymin, ymax) separated by slashes.\n");
-	GMT_message (GMT, "\t   [Default uses the same region as the input grid].\n");
-	GMT_message (GMT, "\t-Z z level of reference plane [Default = 0]\n");
-	GMT_Option (C, "V");
-	GMT_message (GMT, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
-	GMT_Option (C, ":,.");
+	GMT_Message (API, GMT_TIME_NONE, "\tgrdfile_up is the grdfile whose gravity efect is to be computed.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If two grids are provided then the gravity/magnetic efect of the\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   volume between them is computed\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C sets body density in SI\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F pass file with locations where anomaly is going to be computed\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G name of the output grdfile.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D if z is positive down [Default positive up]\n");
+	/*GMT_Message (API, GMT_TIME_NONE, "\t-H sets parameters for computation of magnetic anomaly\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   f_dec/f_dip -> geomagnetic declination/inclination\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   m_int/m_dec/m_dip -> body magnetic intensity/declination/inclination\n");*/
+	GMT_Option (API, "I");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The new xinc and yinc should be divisible by the old ones (new lattice is subset of old).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L sets level of observation [Default = 0]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-fg Map units true; x,y in degrees, dist units in m [Default dist unit = x,y unit].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Extend the domain of computation with respect to output -R region.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Qn<N> artifficially extends the width of the outer rim of cells to have a fake\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   width of N * dx[/dy].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Q<pad_dist> extend the region by west-pad, east+pad, etc\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Q<region> Same sintax as -R.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-R For new Range of output grid; enter <WESN> (xmin, xmax, ymin, ymax) separated by slashes.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses the same region as the input grid].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z z level of reference plane [Default = 0]\n");
+	GMT_Option (API, "V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
+	GMT_Option (API, ":,.");
 
 	return (EXIT_FAILURE);
 }
@@ -188,7 +185,7 @@ int GMT_grdgravmag3d_parse (struct GMTAPI_CTRL *C, struct GRDOKB_CTRL *Ctrl, str
 					Ctrl->In.file[n_files++] = strdup (opt->arg);
 				else {
 					n_errors++;
-					GMT_report (GMT, GMT_MSG_NORMAL, "Error: A maximum of two input grids may be processed\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Error: A maximum of two input grids may be processed\n");
 				}
 				break;
 
@@ -213,7 +210,7 @@ int GMT_grdgravmag3d_parse (struct GMTAPI_CTRL *C, struct GRDOKB_CTRL *Ctrl, str
 			case 'H':
 				if ((sscanf(opt->arg, "%lf/%lf/%lf/%lf/%lf",
 					    &Ctrl->H.t_dec, &Ctrl->H.t_dip, &Ctrl->H.m_int, &Ctrl->H.m_dec, &Ctrl->H.m_dip)) != 5) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -H option: Can't dechiper values\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -H option: Can't dechiper values\n");
 					n_errors++;
 				}
 				Ctrl->H.active = true;
@@ -252,7 +249,7 @@ int GMT_grdgravmag3d_parse (struct GMTAPI_CTRL *C, struct GRDOKB_CTRL *Ctrl, str
 					else if (n == 3)
 						strncpy(Ctrl->Q.region, opt->arg, GMT_BUFSIZ);	/* Pad given as a -R region */
 					else {
-						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -Q option. Either -Q<pad> or -Q<region>\n");
+						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -Q option. Either -Q<pad> or -Q<region>\n");
 						n_errors++;
 					}
 				}
@@ -344,7 +341,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
 	if (Ctrl->F.active) { 		/* Read xy file where anomaly is to be computed */
 		if ( (retval = read_poly__ (GMT, Ctrl->F.file, switch_xy)) < 0 ) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->F.file);
+			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->F.file);
 			return (EXIT_FAILURE);
 		}
 		ndata = retval;
@@ -369,18 +366,18 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 		if (wesn[YHI] > GridA->header->wesn[YHI]) error = true;
 
 		if (error) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "New WESN incompatible with old.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "New WESN incompatible with old.\n");
 			Return (EXIT_FAILURE);
 		}
 
 		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn, inc, \
 			GridA->header->registration, GMTAPI_NOTSET, Ctrl->G.file)) == NULL) Return (API->error);
 
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Grid dimensions are nx = %d, ny = %d\n",
+		GMT_Report (API, GMT_MSG_VERBOSE, "Grid dimensions are nx = %d, ny = %d\n",
 					Gout->header->nx, Gout->header->ny);
 	}
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Allocates memory and read data file\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Allocates memory and read data file\n");
 
 	if (!GMT->common.R.active)
 		GMT_memcpy (wesn_new, GridA->header->wesn, 4, double);
@@ -401,19 +398,19 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 		GMT->common.R.active = true;
 
 		if (wesn_padded[XLO] < GridA->header->wesn[XLO]) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Request padding at the West border exceed grid limit, trimming it\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Request padding at the West border exceed grid limit, trimming it\n");
 			wesn_padded[XLO] = GridA->header->wesn[XLO];
 		}
 		if (wesn_padded[XHI] > GridA->header->wesn[XHI]) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Request padding at the East border exceed grid limit, trimming it\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Request padding at the East border exceed grid limit, trimming it\n");
 			wesn_padded[XHI] = GridA->header->wesn[XHI];
 		}
 		if (wesn_padded[YLO] < GridA->header->wesn[YLO]) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Request padding at the South border exceed grid limit, trimming it\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Request padding at the South border exceed grid limit, trimming it\n");
 			wesn_padded[YLO] = GridA->header->wesn[YLO];
 		}
 		if (wesn_padded[YHI] > GridA->header->wesn[YHI]) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Request padding at the North border exceed grid limit, trimming it\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Request padding at the North border exceed grid limit, trimming it\n");
 			wesn_padded[YHI] = GridA->header->wesn[YHI];
 		}
 	}
@@ -428,12 +425,12 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	if (GMT->common.R.active && Ctrl->G.active) {
 		if (Gout->header->wesn[XLO] < GridA->header->wesn[XLO] ||
 				Gout->header->wesn[XHI] > GridA->header->wesn[XHI]) {
-			GMT_report (GMT, GMT_MSG_NORMAL, " Selected region exceeds the X-boundaries of the grid file!\n");
+			GMT_Report (API, GMT_MSG_NORMAL, " Selected region exceeds the X-boundaries of the grid file!\n");
 			return (EXIT_FAILURE);
 		}
 		else if (Gout->header->wesn[YLO] < GridA->header->wesn[YLO] ||
 				Gout->header->wesn[YHI] > GridA->header->wesn[YHI]) {
-			GMT_report (GMT, GMT_MSG_NORMAL, " Selected region exceeds the Y-boundaries of the grid file!\n");
+			GMT_Report (API, GMT_MSG_NORMAL, " Selected region exceeds the Y-boundaries of the grid file!\n");
 			return (EXIT_FAILURE);
 		}
 		GMT_RI_prepare (GMT, Gout->header);	/* Ensure -R -I consistency and set nx, ny */
@@ -462,18 +459,18 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 		}
 
 		if(GridA->header->registration != GridB->header->registration) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Up and bottom grids have different registrations!\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Up and bottom grids have different registrations!\n");
 			Return (EXIT_FAILURE);
 		}
 		if ((GridA->header->z_scale_factor != GridB->header->z_scale_factor) ||
 				(GridA->header->z_add_offset != GridB->header->z_add_offset)) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Scale/offset not compatible!\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Scale/offset not compatible!\n");
 			Return (EXIT_FAILURE);
 		}
 
 		if (fabs (GridA->header->inc[GMT_X] - GridB->header->inc[GMT_X]) > 1.0e-6 ||
 				fabs (GridA->header->inc[GMT_Y] - GridB->header->inc[GMT_Y]) > 1.0e-6) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Up and bottom grid increments do not match!\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Up and bottom grid increments do not match!\n");
 			Return (EXIT_FAILURE);
 		}
 		/* ALMOST FOR SURE THERE ARE MEMORY CLEAN UPS TO DO HERE BEFORE RETURNING */
@@ -722,7 +719,7 @@ int read_poly__ (struct GMT_CTRL *GMT, char *fname, bool switch_xy) {
 
 	while (fgets (line, GMT_TEXT_LEN256, fp)) {
 		if (sscanf (line, "%lg %lg", &in[0], &in[1]) !=2)
-			GMT_report (GMT, GMT_MSG_NORMAL, "ERROR deciphering line %d of polygon file\n", ndata+1);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR deciphering line %d of polygon file\n", ndata+1);
 		if (ndata == n_alloc) {
 			n_alloc <<= 1;
 			data = GMT_memory (GMT, data, n_alloc, struct DATA);
@@ -903,7 +900,7 @@ void grdgravmag3d_calc_top_surf (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl,
 	for (row = 0; row < Grid->header->ny - 1; row++) {		/* Loop over input grid rows */
 
 		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE))
-			GMT_message (GMT, "Line = %d\t of = %.3d\r", row, Grid->header->ny);
+			GMT_Message (GMT->parent, GMT_TIME_NONE, "Line = %d\t of = %.3d\r", row, Grid->header->ny);
 
 		for (col = 0; col < Grid->header->nx - 1; col++) {	/* Loop over input grid cols */
 			km = (Ctrl->H.active) ? row * (Grid->header->nx - 1) + col : 0;

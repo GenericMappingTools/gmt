@@ -294,29 +294,27 @@ void Free_grdvolume_Ctrl (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *C) {	/* D
 	GMT_free (GMT, C);	
 }
 
-int GMT_grdvolume_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_grdvolume_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grdvolume <ingrid> [-C<cval> or -C<low>/<high>/<delta>] [-L<base>] [-S<unit>]\n");
-	GMT_message (GMT, "\t[-T[c|h]]\n\t[%s] [%s] [-Z<fact>[/<shift>]] [%s] [%s] [%s]\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdvolume <ingrid> [-C<cval> or -C<low>/<high>/<delta>] [-L<base>] [-S<unit>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-T[c|h]]\n\t[%s] [%s] [-Z<fact>[/<shift>]] [%s] [%s] [%s]\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<ingrid> is the name of the grid file.\n");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-C Find area, volume, and mean height inside the given <cval> contour,\n");
-	GMT_message (GMT, "\t   OR search using all contours from <low> to <high> in steps of <delta>.\n");
-	GMT_message (GMT, "\t   [Default returns area, volume and mean height of entire grid].\n");
-	GMT_message (GMT, "\t-L Add volume from <base> up to contour [Default is from contour and up only].\n");
-	GMT_message (GMT, "\t-S Convert degrees to distances, append a unit from %s [Default is Cartesian].\n", GMT_LEN_UNITS2_DISPLAY);
-	GMT_message (GMT, "\t-T (or -Th): Find the contour value that yields max average height (volume/area).\n");
-	GMT_message (GMT, "\t   Use -Tc to find contour that yields the max curvature of height vs contour.\n");
-	GMT_Option (C, "R,V");
-	GMT_message (GMT, "\t-Z Subtract <shift> and then multiply data by <fact> before processing [1/0].\n");
-	GMT_Option (C, "f,h,o,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is the name of the grid file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Find area, volume, and mean height inside the given <cval> contour,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   OR search using all contours from <low> to <high> in steps of <delta>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default returns area, volume and mean height of entire grid].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Add volume from <base> up to contour [Default is from contour and up only].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Convert degrees to distances, append a unit from %s [Default is Cartesian].\n", GMT_LEN_UNITS2_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t-T (or -Th): Find the contour value that yields max average height (volume/area).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Tc to find contour that yields the max curvature of height vs contour.\n");
+	GMT_Option (API, "R,V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Subtract <shift> and then multiply data by <fact> before processing [1/0].\n");
+	GMT_Option (API, "f,h,o,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -374,7 +372,7 @@ int GMT_grdvolume_parse (struct GMTAPI_CTRL *C, struct GRDVOLUME_CTRL *Ctrl, str
 						break;
 					default:
 						n_errors++;
-						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -T option: Append c or h [Default].\n");
+						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -T option: Append c or h [Default].\n");
 				}
 				break;
 			case 'Z':
@@ -435,12 +433,12 @@ int GMT_grdvolume (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the grdvolume main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input grid\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid\n");
 	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
 	if (Ctrl->L.active && Ctrl->L.value >= Grid->header->z_min) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Selected base value exceeds the minimum grid z value - aborting\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Selected base value exceeds the minimum grid z value - aborting\n");
 		Return (EXIT_FAILURE);
 	}
 	
@@ -472,7 +470,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args)
 	area   = GMT_memory (GMT, NULL, n_contours, double);
 
 	if (!(Ctrl->Z.scale == 1.0 && Ctrl->Z.offset == 0.0)) {
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Subtracting %g and multiplying by %g\n", Ctrl->Z.offset, Ctrl->Z.scale);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Subtracting %g and multiplying by %g\n", Ctrl->Z.offset, Ctrl->Z.scale);
 		GMT_scale_and_offset_f (GMT, Work->data, Work->header->size, Ctrl->Z.scale, Ctrl->Z.offset);
 		Work->header->z_min = (Work->header->z_min - Ctrl->Z.offset) * Ctrl->Z.scale;
 		Work->header->z_max = (Work->header->z_max - Ctrl->Z.offset) * Ctrl->Z.scale;
@@ -487,7 +485,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args)
 		cval = Ctrl->C.low + c * Ctrl->C.inc;
 		take_out = (c == 0) ? cval : Ctrl->C.inc;	/* Take out start contour the first time and just the increment subsequent times */
 
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Compute volume, area, and average height for contour = %g\n", cval);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Compute volume, area, and average height for contour = %g\n", cval);
 		
 		for (ij = 0; ij < Work->header->size; ij++) {
 			Work->data[ij] -= (float)take_out;		/* Take out the zero value */
@@ -496,7 +494,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args)
 		if (Ctrl->L.active) this_base -= take_out;
 
 		if (Ctrl->L.active && this_base >= 0.0) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Base exceeds the current contour value - contour is ignored.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Base exceeds the current contour value - contour is ignored.\n");
 			continue;
 		}
 

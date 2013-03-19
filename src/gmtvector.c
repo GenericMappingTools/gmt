@@ -98,48 +98,46 @@ void Free_gmtvector_Ctrl (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *C) {	/* D
 	GMT_free (GMT, C);	
 }
 
-int GMT_gmtvector_usage (struct GMTAPI_CTRL *C, int level) {
-	struct GMT_CTRL *GMT = C->GMT;
-
+int GMT_gmtvector_usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: gmtvector [<table>] [-Am[<conf>]|<vector>] [-C[i|o]] [-E] [-N] [-S<vector>] [-Ta|b|d|D|p<az>|s|r<rot>|x]\n");
-	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtvector [<table>] [-Am[<conf>]|<vector>] [-C[i|o]] [-E] [-N] [-S<vector>] [-Ta|b|d|D|p<az>|s|r<rot>|x]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t<table> (in ASCII or binary) have 2 or more columns with (x,y[,z]), (r,theta) or (lon,lat) in first 2-3 columns.\n");
-	GMT_message (GMT, "\t   If one item is given and it cannot be opened we will interpret it as x/y[/z], r/theta, or lon/lat.\n");
-	GMT_message (GMT, "\t   If no file(s) is given, standard input is read.\n");
-	GMT_message (GMT, "\t-A Single primary vector, given as lon/lat, r/theta, or x/y[/z].  No infiles will be read.\n");
-	GMT_message (GMT, "\t   Alternatively, give -Am to compute a single primary vector as the mean of the input vectors.\n");
-	GMT_message (GMT, "\t   The confidence ellipse for the mean vector is determined (95%% level);\n");
-	GMT_message (GMT, "\t   optionally append a different confidence level in percent.\n");
-	GMT_message (GMT, "\t-C Indicate Cartesian coordinates on input/output instead of lon,lat or r/theta.\n");
-	GMT_message (GMT, "\t   Append i or o to only affect input or output coordinates.\n");
-	GMT_message (GMT, "\t-E Automatically convert between geodetic and geocentric coordinates [no conversion].\n");
-	GMT_message (GMT, "\t   Ignored unless -fg is given.\n");
-	GMT_message (GMT, "\t-N Normalize the transformed vectors (only affects -Co output).\n");
-	GMT_message (GMT, "\t-S The secondary vector (if needed by -T), given as lon/lat, r/theta, or x/y[/z].\n");
-	GMT_message (GMT, "\t-T Specify the desired transformation of the input data.  Choose one of\n");
-	GMT_message (GMT, "\t   -Ta gives the average of the input and secondary vector (see -S).\n");
-	GMT_message (GMT, "\t   -Tb gives the bisector great circle pole(s) for input and secondary vector (see -S).\n");
-	GMT_message (GMT, "\t   -Td gives dot-product(s) with secondary vector (see -S).\n");
-	GMT_message (GMT, "\t   -TD same as -Td, but gives the angle in degrees between the vectors.\n");
-	GMT_message (GMT, "\t   -Tp gives pole to great circle with <az> azimuth trend at input vector location.\n");
-	GMT_message (GMT, "\t   -Ts gives the sum of the secondary vector (see -S) and the input vector(s).\n");
-	GMT_message (GMT, "\t   -Tr will rotate the input vectors. Depending on your input (2-D or 3-D), append\n");
-	GMT_message (GMT, "\t      <angle> or <plon/plat/angle>, respectively, to define the rotation.\n");
-	GMT_message (GMT, "\t   -Tx will compute cross-product(s) with secondary vector (see -S).\n");
-	GMT_Option (C, "V,bi0");
-	GMT_message (GMT, "\t   Default is 2 [or 3; see -C, -fg] input columns.\n");
-	GMT_Option (C, "bo,f,g,h,i,o,s,:,.");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<table> (in ASCII or binary) have 2 or more columns with (x,y[,z]), (r,theta) or (lon,lat) in first 2-3 columns.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If one item is given and it cannot be opened we will interpret it as x/y[/z], r/theta, or lon/lat.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no file(s) is given, standard input is read.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Single primary vector, given as lon/lat, r/theta, or x/y[/z].  No infiles will be read.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give -Am to compute a single primary vector as the mean of the input vectors.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The confidence ellipse for the mean vector is determined (95%% level);\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   optionally append a different confidence level in percent.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Indicate Cartesian coordinates on input/output instead of lon,lat or r/theta.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append i or o to only affect input or output coordinates.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Automatically convert between geodetic and geocentric coordinates [no conversion].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Ignored unless -fg is given.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Normalize the transformed vectors (only affects -Co output).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S The secondary vector (if needed by -T), given as lon/lat, r/theta, or x/y[/z].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify the desired transformation of the input data.  Choose one of\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Ta gives the average of the input and secondary vector (see -S).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Tb gives the bisector great circle pole(s) for input and secondary vector (see -S).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Td gives dot-product(s) with secondary vector (see -S).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -TD same as -Td, but gives the angle in degrees between the vectors.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Tp gives pole to great circle with <az> azimuth trend at input vector location.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Ts gives the sum of the secondary vector (see -S) and the input vector(s).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Tr will rotate the input vectors. Depending on your input (2-D or 3-D), append\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      <angle> or <plon/plat/angle>, respectively, to define the rotation.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Tx will compute cross-product(s) with secondary vector (see -S).\n");
+	GMT_Option (API, "V,bi0");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default is 2 [or 3; see -C, -fg] input columns.\n");
+	GMT_Option (API, "bo,f,g,h,i,o,s,:,.");
 	
 	return (EXIT_FAILURE);
 }
 
-int GMT_gmtvector_parse (struct GMTAPI_CTRL *C, struct GMTVECTOR_CTRL *Ctrl, struct GMT_OPTION *options) {
+int GMT_gmtvector_parse (struct GMTAPI_CTRL *API, struct GMTVECTOR_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdsample and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -151,7 +149,7 @@ int GMT_gmtvector_parse (struct GMTAPI_CTRL *C, struct GMTVECTOR_CTRL *Ctrl, str
 	int n;
 	char txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64], txt_c[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMT_CTRL *GMT = API->GMT;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -183,7 +181,7 @@ int GMT_gmtvector_parse (struct GMTAPI_CTRL *C, struct GMTVECTOR_CTRL *Ctrl, str
 				else if (opt->arg[0] == '\0')
 					Ctrl->C.active[GMT_IN] = Ctrl->C.active[GMT_OUT] = true;
 				else {
-					GMT_message (GMT, "Bad modifier given to -C (%s)\n", opt->arg);
+					GMT_Message (API, GMT_TIME_NONE, "Bad modifier given to -C (%s)\n", opt->arg);
 					n_errors++;
 				}
 				break;
@@ -230,7 +228,7 @@ int GMT_gmtvector_parse (struct GMTAPI_CTRL *C, struct GMTVECTOR_CTRL *Ctrl, str
 							Ctrl->T.par[2] = atof (txt_c);
 						}
 						else {
-							GMT_report (GMT, GMT_MSG_NORMAL, "Bad arguments given to -Tr (%s)\n", opt->arg);
+							GMT_Report (API, GMT_MSG_NORMAL, "Bad arguments given to -Tr (%s)\n", opt->arg);
 							n_errors++;
 						}
 						break;
@@ -288,11 +286,11 @@ unsigned int decode_vector (struct GMT_CTRL *C, char *arg, double coord[], int c
 		coord[GMT_Z] = atof (txt_c);
 	}
 	else {
-		GMT_report (C, GMT_MSG_NORMAL, "Bad vector argument (%s)\n", arg);
+		GMT_Report (C->parent, GMT_MSG_NORMAL, "Bad vector argument (%s)\n", arg);
 		return (0);
 	}
 	if (n_errors) {
-		GMT_report (C, GMT_MSG_NORMAL, "Failed to decode the geographic coordinates (%s)\n", arg);
+		GMT_Report (C->parent, GMT_MSG_NORMAL, "Failed to decode the geographic coordinates (%s)\n", arg);
 		return (0);	
 	}
 	return (n_out);
@@ -372,7 +370,7 @@ void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool cartesian, d
 	for (k = 0; k < n_components; k++) GMT_free (GMT, P[k]);
 
 	if (GMT_jacobi (GMT, C, n_components, n_components, lambda, V, work1, work2, &nrots)) {	/* Solve eigen-system */
-		GMT_message (GMT, "Warning: Eigenvalue routine failed to converge in 50 sweeps.\n");
+		GMT_Message (GMT->parent, GMT_TIME_NONE, "Warning: Eigenvalue routine failed to converge in 50 sweeps.\n");
 	}
 	if (n_components == 3) {	/* Recover lon,lat */
 		GMT_cart_to_geo (GMT, &lat, &lon, X, true);
@@ -405,7 +403,7 @@ void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool cartesian, d
 	E[1] = 2.0 * sqrt (lambda[0]) * scl;	/* 2* since we need the major axis not semi-major */
 	E[2] = 2.0 * sqrt (lambda[1]) * scl;
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "%g%% confidence ellipse on mean position: Major axis = %g Minor axis = %g Major axis azimuth = %g\n", 100.0 * conf, E[1], E[2], E[0]);
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%g%% confidence ellipse on mean position: Major axis = %g Minor axis = %g Major axis azimuth = %g\n", 100.0 * conf, E[1], E[2], E[0]);
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
@@ -471,7 +469,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args)
 	GMT_memset (vector_3, 3, double);
 	if (Ctrl->A.active) {	/* Want a single primary vector */
 		uint64_t dim[4] = {1, 1, 3, 1};
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Processing single input vector; no files are read\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Processing single input vector; no files are read\n");
 		if (Ctrl->A.mode) {	/* Compute the mean of all input vectors */
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 				Return (API->error);
@@ -503,7 +501,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args)
 		single = true;
 	}
 	else {	/* Read input files or stdin */
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 			Return (API->error);
 		}

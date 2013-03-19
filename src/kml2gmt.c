@@ -59,22 +59,20 @@ void Free_kml2gmt_Ctrl (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
-int GMT_kml2gmt_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_kml2gmt_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: kml2gmt [<kmlfiles>] [%s] [-Z] [%s] [%s] [%s] > GMTdata.txt\n", GMT_V_OPT, GMT_bo_OPT, GMT_ho_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: kml2gmt [<kmlfiles>] [%s] [-Z] [%s] [%s] [%s] > GMTdata.txt\n", GMT_V_OPT, GMT_bo_OPT, GMT_ho_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\tinfile is the Google Earth KML file.\n");
-	GMT_message (GMT, "\t  If no file(s) is given, standard input is read.\n");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t<kmlfiles> is one or more KML files from Google Earth or similar.\n");
-	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
-	GMT_message (GMT, "\t-Z Output the z-column from the KML file [Only lon,lat is output].\n");
-	GMT_Option (C, "V,bo,h,:,.");
+	GMT_Message (API, GMT_TIME_NONE, "\tinfile is the Google Earth KML file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  If no file(s) is given, standard input is read.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<kmlfiles> is one or more KML files from Google Earth or similar.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Output the z-column from the KML file [Only lon,lat is output].\n");
+	GMT_Option (API, "V,bo,h,:,.");
 
 	return (EXIT_FAILURE);
 }
@@ -157,7 +155,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the kml2gmt main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input KML data\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input KML data\n");
 	GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
 	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
 	GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
@@ -177,15 +175,15 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 
 	if (Ctrl->In.active) {
 		if ((fp = fopen (Ctrl->In.file, "r")) == NULL) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->In.file);
+			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->In.file);
 			Return (EXIT_FAILURE);
 		}
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Processing %s\n", Ctrl->In.file);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Processing %s\n", Ctrl->In.file);
 		sprintf (buffer, "# kml2gmt: KML read from %s\n", Ctrl->In.file);
 	}
 	else {     /* Just read standard input */
 		fp = stdin;
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Reading from standard input\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Reading from standard input\n");
 		sprintf (buffer, "# kml2gmt: KML read from standard input\n");
 	}
 	/* Now we are ready to take on some input values */

@@ -110,48 +110,46 @@ double specular (double nx, double ny, double nz, double *s) {
 	return (MAX(0, 2 * (s[0]*nx + s[1]*ny + s[2]*nz) * nz - s[2]));
 }
 
-int GMT_grdgradient_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_grdgradient_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grdgradient <ingrid> -G<outgrid> [-A<azim>[/<azim2>]] [-D[a][o][n]]\n");
-	GMT_message (GMT, "\t[-E[s|p|m]<azim>/<elev>[/<ambient>/<diffuse>/<specular>/<shine>]]\n");
-	GMT_message (GMT, "\t[-N[t|e][<amp>[/<sigma>[/<offset>]]]] [%s]\n\t[-S<slopegrid>] [%s] [-fg] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdgradient <ingrid> -G<outgrid> [-A<azim>[/<azim2>]] [-D[a][o][n]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-E[s|p|m]<azim>/<elev>[/<ambient>/<diffuse>/<specular>/<shine>]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-N[t|e][<amp>[/<sigma>[/<offset>]]]] [%s]\n\t[-S<slopegrid>] [%s] [-fg] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<ingrid> is name of input grid file.\n");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-A Set azimuth (0-360 CW from North (+y)) for directional derivatives.\n");
-	GMT_message (GMT, "\t  -A<azim>/<azim2> will compute two directions and save the one larger in magnitude.\n");
-	GMT_message (GMT, "\t-D Find the direction of grad z.\n");
-	GMT_message (GMT, "\t   Append c to get cartesian angle (0-360 CCW from East (+x)) [Default: azimuth].\n");
-	GMT_message (GMT, "\t   Append o to get bidirectional orientations [0-180] rather than directions [0-360].\n");
-	GMT_message (GMT, "\t   Append n to add 90 degrees to the values from c or o.\n");
-	GMT_message (GMT, "\t-E Compute Lambertian radiance appropriate to use with grdimage/grdview.\n");
-	GMT_message (GMT, "\t   -E<azim/elev> sets azimuth and elevation of light vector.\n");
-	GMT_message (GMT, "\t   -E<azim>/<elev>/<ambient>/<diffuse>/<specular>/<shine> sets azim, elev and\n");
-	GMT_message (GMT, "\t    other parameters that control the reflectance properties of the surface\n");
-	GMT_message (GMT, "\t    [Default values are: 0.55/0.6/0.4/10].\n");
-	GMT_message (GMT, "\t    Specify '=' to get the default value (e.g., -E60/30/=/0.5).\n");
-	GMT_message (GMT, "\t   Append s to use a simpler Lambertian algorithm (note that with this form\n");
-	GMT_message (GMT, "\t   you only have to provide the azimuth and elevation parameters).\n");
-	GMT_message (GMT, "\t   Append p to use the Peucker piecewise linear approximation (simpler but faster algorithm).\n");
-	GMT_message (GMT, "\t   Append m to use another algorithm that gives results close to ESRI's 'hillshade' but faster\n");
-	GMT_message (GMT, "\t   Note that in this case the azimuth and elevation are hardwired to 315 and 45 degrees.\n");
-	GMT_message (GMT, "\t   This means that even if you provide other values they will be ignored.\n");
-	GMT_message (GMT, "\t-G Output file for results from -A or -D.\n");
-	GMT_message (GMT, "\t-N Normalize gradients so that max |grad| = <amp> [1.0].\n");
-	GMT_message (GMT, "\t  -Nt will make atan transform, then scale to <amp> [1.0].\n");
-	GMT_message (GMT, "\t  -Ne will make exp  transform, then scale to <amp> [1.0].\n");
-	GMT_message (GMT, "\t  -Nt<amp>/<sigma>[/<offset>] or -Ne<amp>/<sigma>[/<offset>] sets sigma\n");
-	GMT_message (GMT, "\t     (and offset) for transform. [sigma, offset estimated from data].\n");
-	GMT_Option (C, "R");
-	GMT_message (GMT, "\t-S Output file for |grad z|; requires -D.\n");
-	GMT_Option (C, "V");
-	GMT_message (GMT, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
-	GMT_Option (C, "n,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is name of input grid file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Set azimuth (0-360 CW from North (+y)) for directional derivatives.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  -A<azim>/<azim2> will compute two directions and save the one larger in magnitude.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Find the direction of grad z.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append c to get cartesian angle (0-360 CCW from East (+x)) [Default: azimuth].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append o to get bidirectional orientations [0-180] rather than directions [0-360].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append n to add 90 degrees to the values from c or o.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Compute Lambertian radiance appropriate to use with grdimage/grdview.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -E<azim/elev> sets azimuth and elevation of light vector.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -E<azim>/<elev>/<ambient>/<diffuse>/<specular>/<shine> sets azim, elev and\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t    other parameters that control the reflectance properties of the surface\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t    [Default values are: 0.55/0.6/0.4/10].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t    Specify '=' to get the default value (e.g., -E60/30/=/0.5).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to use a simpler Lambertian algorithm (note that with this form\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   you only have to provide the azimuth and elevation parameters).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append p to use the Peucker piecewise linear approximation (simpler but faster algorithm).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append m to use another algorithm that gives results close to ESRI's 'hillshade' but faster\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Note that in this case the azimuth and elevation are hardwired to 315 and 45 degrees.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   This means that even if you provide other values they will be ignored.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Output file for results from -A or -D.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Normalize gradients so that max |grad| = <amp> [1.0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  -Nt will make atan transform, then scale to <amp> [1.0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  -Ne will make exp  transform, then scale to <amp> [1.0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  -Nt<amp>/<sigma>[/<offset>] or -Ne<amp>/<sigma>[/<offset>] sets sigma\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     (and offset) for transform. [sigma, offset estimated from data].\n");
+	GMT_Option (API, "R");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Output file for |grad z|; requires -D.\n");
+	GMT_Option (API, "V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
+	GMT_Option (API, "n,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -195,7 +193,7 @@ int GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *Ctrl,
 						case 'O': case 'o': Ctrl->D.mode |= 2; break;
 						case 'N': case 'n': Ctrl->D.mode |= 4; break;
 						default:
-							GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -D option: Unrecognized modifier\n");
+							GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -D option: Unrecognized modifier\n");
 							n_errors++;
 							break;
 					}
@@ -252,7 +250,7 @@ int GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *Ctrl,
 				break;
 #ifdef GMT_COMPAT
 			case 'L':	/* BCs */
-				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
+				GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
 				strncpy (GMT->common.n.BC, opt->arg, 4U);
 				/* We turn on geographic coordinates if -Lg is given by faking -fg */
 				/* But since GMT_parse_f_option is private to gmt_init and all it does */
@@ -266,7 +264,7 @@ int GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *Ctrl,
 
 #ifdef GMT_COMPAT
 			case 'M':	/* Geographic data */
-				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
+				GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
 				if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
 #endif
 				break;
@@ -304,7 +302,7 @@ int GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *Ctrl,
 	n_errors += GMT_check_condition (GMT, Ctrl->N.active && (n_opt_args > 1 && Ctrl->N.sigma <= 0.0) , "Syntax error -N option: Sigma must be > 0\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->E.mode > 1 && (Ctrl->E.elevation < 0.0 || Ctrl->E.elevation > 90.0), "Syntax error -E option: Use 0-90 degree range for elevation\n");
 	if (Ctrl->E.active && (Ctrl->A.active || Ctrl->D.active || Ctrl->S.active)) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: -E option overrides -A, -D or -S\n");
+		GMT_Report (C, GMT_MSG_NORMAL, "Warning: -E option overrides -A, -D or -S\n");
 		Ctrl->A.active = Ctrl->D.active = Ctrl->S.active = false;
 	}
 
@@ -352,7 +350,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the grdgradient main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input grid\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid\n");
 	GMT_memset (s, 3, double);
 
 	if (Ctrl->N.active && Ctrl->N.sigma  != 0.0) sigma_set  = true;
@@ -614,8 +612,8 @@ int GMT_grdgradient (void *V_API, int mode, void *args)
 		else
 			strcpy (buffer, "Directional derivative(s)");
 		sprintf (format, "\t%s\t%s\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_report (GMT, GMT_MSG_VERBOSE, " Min Mean Max sigma intensities:");
-		GMT_report (GMT, GMT_MSG_VERBOSE, format, min_gradient, ave_gradient, max_gradient, Ctrl->N.sigma);
+		GMT_Report (API, GMT_MSG_VERBOSE, " Min Mean Max sigma intensities:");
+		GMT_Report (API, GMT_MSG_VERBOSE, format, min_gradient, ave_gradient, max_gradient, Ctrl->N.sigma);
 	}
 	else {
 		if (Ctrl->E.mode > 1)

@@ -61,28 +61,26 @@ void Free_psbasemap_Ctrl (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *C) {	/* D
 	GMT_free (GMT, C);
 }
 
-int GMT_psbasemap_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_psbasemap_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	/* This displays the psbasemap synopsis and optionally full usage information */
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: psbasemap %s %s %s [-K] [%s]\n", GMT_B_OPT, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_Jz_OPT);
-	GMT_message (GMT, "\t[%s]\n", GMT_SCALE);
-	GMT_message (GMT, "\t[-O] [-P] [%s]\n", GMT_TROSE);
-	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s]\n\n", GMT_U_OPT, GMT_V_OPT,
+	GMT_Message (API, GMT_TIME_NONE, "usage: psbasemap %s %s %s [-K] [%s]\n", GMT_B_OPT, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s]\n", GMT_SCALE);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-O] [-P] [%s]\n", GMT_TROSE);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s]\n\n", GMT_U_OPT, GMT_V_OPT,
 		GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_f_OPT, GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Option (C, "B,JZ,R");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_Option (C, "K");
-	GMT_mapscale_syntax (GMT, 'L', "Draw a simple map scale centered on <lon0>/<lat0>.");
-	GMT_Option (C, "O,P");
-	GMT_maprose_syntax (GMT, 'T', "Draw a north-pointing map rose centered on <lon0>/<lat0>.");
-	GMT_Option (C, "U,V,X,c,f,p,t,.");
+	GMT_Option (API, "B,JZ,R");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Option (API, "K");
+	GMT_mapscale_syntax (API->GMT, 'L', "Draw a simple map scale centered on <lon0>/<lat0>.");
+	GMT_Option (API, "O,P");
+	GMT_maprose_syntax (API->GMT, 'T', "Draw a north-pointing map rose centered on <lon0>/<lat0>.");
+	GMT_Option (API, "U,V,X,c,f,p,t,.");
 
 	return (EXIT_FAILURE);
 }
@@ -108,7 +106,7 @@ int GMT_psbasemap_parse (struct GMTAPI_CTRL *C, struct PSBASEMAP_CTRL *Ctrl, str
 
 #ifdef GMT_COMPAT
 			case 'G':	/* Set canvas color */
-				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -G is deprecated; -B...+g%s was set instead, use this in the future.\n", opt->arg);
+				GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -G is deprecated; -B...+g%s was set instead, use this in the future.\n", opt->arg);
 				GMT->current.map.frame.paint = true;
 				if (GMT_getfill (GMT, opt->arg, &GMT->current.map.frame.fill)) {
 					GMT_fill_syntax (GMT, 'G', " ");
@@ -170,7 +168,7 @@ int GMT_psbasemap (void *V_API, int mode, void *args)
 
 	/* Ready to make the plot */
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Constructing the basemap\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Constructing the basemap\n");
 
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 

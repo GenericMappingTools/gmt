@@ -130,29 +130,26 @@ void Free_grdtrend_Ctrl (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *C) {	/* Dea
 	GMT_free (GMT, C);	
 }
 
-int GMT_grdtrend_usage (struct GMTAPI_CTRL *C, int level) {
-
-	struct GMT_CTRL *GMT = C->GMT;
-
+int GMT_grdtrend_usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grdtrend <ingrid> -N<n_model>[r] [-D<diffgrid>]\n");
-	GMT_message (GMT, "\t[%s] [-T<trendgrid>] [%s] [-W<weightgrid>]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdtrend <ingrid> -N<n_model>[r] [-D<diffgrid>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T<trendgrid>] [%s] [-W<weightgrid>]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<ingrid> is name of grid file to fit trend to.\n");
-	GMT_message (GMT, "\t-N Fit a [robust] model with <n_model> terms.  <n_model> in [1,10].  E.g., robust planar = -N3r.\n");
-	GMT_message (GMT, "\t   Model parameters order is given as follows:\n");
-	GMT_message (GMT, "\t   z = m1 + m2*x + m3*y + m4*x*y + m5*x^2 + m6*y^2 + m7*x^3 + m8*x^2*y + m9*x*y^2 + m10*y^3.\n");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-D Supply filename to write grid file of differences (input - trend).\n");
-	GMT_Option (C, "R");
-	GMT_message (GMT, "\t-T Supply filename to write grid file of trend.\n");
-	GMT_Option (C, "V");
-	GMT_message (GMT, "\t-W Supply filename if you want to [read and] write grid file of weights.\n");
-	GMT_message (GMT, "\t   If <weightgrid> can be read at run, and if robust = false, weighted problem will be solved.\n");
-	GMT_message (GMT, "\t   If robust = true, weights used for robust fit will be written to <weightgrid>.\n");
-	GMT_Option (C, ".");
+	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is name of grid file to fit trend to.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Fit a [robust] model with <n_model> terms.  <n_model> in [1,10].  E.g., robust planar = -N3r.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Model parameters order is given as follows:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   z = m1 + m2*x + m3*y + m4*x*y + m5*x^2 + m6*y^2 + m7*x^3 + m8*x^2*y + m9*x*y^2 + m10*y^3.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Supply filename to write grid file of differences (input - trend).\n");
+	GMT_Option (API, "R");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Supply filename to write grid file of trend.\n");
+	GMT_Option (API, "V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Supply filename if you want to [read and] write grid file of weights.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If <weightgrid> can be read at run, and if robust = false, weighted problem will be solved.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If robust = true, weights used for robust fit will be written to <weightgrid>.\n");
+	GMT_Option (API, ".");
 	
 	return (EXIT_FAILURE);
 }
@@ -186,7 +183,7 @@ int GMT_grdtrend_parse (struct GMTAPI_CTRL *C, struct GRDTREND_CTRL *Ctrl, struc
 				if (opt->arg[0])
 					Ctrl->D.file = strdup (opt->arg);
 				else {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -D option: Must specify file name\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -D option: Must specify file name\n");
 					n_errors++;
 				}
 				break;
@@ -202,7 +199,7 @@ int GMT_grdtrend_parse (struct GMTAPI_CTRL *C, struct GRDTREND_CTRL *Ctrl, struc
 				if (opt->arg[0])
 					Ctrl->T.file = strdup (opt->arg);
 				else {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -T option: Must specify file name\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -T option: Must specify file name\n");
 					n_errors++;
 				}
 				break;
@@ -211,7 +208,7 @@ int GMT_grdtrend_parse (struct GMTAPI_CTRL *C, struct GRDTREND_CTRL *Ctrl, struc
 				if (opt->arg[0])
 					Ctrl->W.file = strdup (opt->arg);
 				else {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -W option: Must specify file name\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -W option: Must specify file name\n");
 					n_errors++;
 				}
 				/* OK if this file doesn't exist */
@@ -401,7 +398,7 @@ void write_model_parameters (struct GMT_CTRL *GMT, double *gtd, unsigned int n_m
 	sprintf (pbasis[9], "P3(y)");
 
 	sprintf(format, "Coefficient fit to %%s: %s\n", GMT->current.setting.format_float_out);
-	for (i = 0; i < n_model; i++) GMT_message (GMT, format, pbasis[i], gtd[i]);
+	for (i = 0; i < n_model; i++) GMT_Message (GMT->parent, GMT_TIME_NONE, format, pbasis[i], gtd[i]);
 
 	return;
 }
@@ -512,7 +509,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdtrend main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input grid\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid\n");
 	weighted = (Ctrl->N.robust || Ctrl->W.active);
 	trivial = (Ctrl->N.value < 5 && !weighted);
 
@@ -551,7 +548,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			if (W->header->nx != G->header->nx || W->header->ny != G->header->ny)
-				GMT_report (GMT, GMT_MSG_NORMAL, "Error: Input weight file does not match input data file.  Ignoring.\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Error: Input weight file does not match input data file.  Ignoring.\n");
 			else {
 				if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, Ctrl->W.file, W) == NULL) {	/* Get data */
 					Return (API->error);
@@ -587,7 +584,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 		load_gtg_and_gtd (GMT, G, xval, yval, pstuff, gtg, gtd, Ctrl->N.value, W, weighted);
 		ierror = GMT_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, true);
 		if (ierror) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Gauss returns error code %d\n", ierror);
+			GMT_Report (API, GMT_MSG_NORMAL, "Gauss returns error code %d\n", ierror);
 			return (EXIT_FAILURE);
 		}
 		compute_trend (GMT, T, xval, yval, gtd, Ctrl->N.value, pstuff);
@@ -604,13 +601,13 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 				load_gtg_and_gtd (GMT, G, xval, yval, pstuff, gtg, gtd, Ctrl->N.value, W, weighted);
 				ierror = GMT_gauss (GMT, gtg, gtd, Ctrl->N.value, Ctrl->N.value, true);
 				if (ierror) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Gauss returns error code %d\n", ierror);
+					GMT_Report (API, GMT_MSG_NORMAL, "Gauss returns error code %d\n", ierror);
 					return (EXIT_FAILURE);
 				}
 				compute_trend (GMT, T, xval, yval, gtd, Ctrl->N.value, pstuff);
 				compute_resid (GMT, G, T, R);
 				chisq = compute_chisq (GMT, R, W, scale);
-				GMT_report (GMT, GMT_MSG_VERBOSE, format, gmt_module_name(GMT), iterations, old_chisq, chisq);
+				GMT_Report (API, GMT_MSG_VERBOSE, format, gmt_module_name(GMT), iterations, old_chisq, chisq);
 				iterations++;
 			} while (old_chisq / chisq > 1.0001);
 
@@ -634,7 +631,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 		}
 	}
 	else if (GMT_Destroy_Data (API, GMT_ALLOCATED, &T) != GMT_OK) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Failed to free T\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free T\n");
 	}
 	if (Ctrl->D.file) {
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "trend residuals", R)) Return (API->error);
@@ -644,7 +641,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	}
 	else if (Ctrl->D.active || Ctrl->N.robust) {
 		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &R) != GMT_OK) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Failed to free R\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Failed to free R\n");
 		}
 	}
 	if (Ctrl->W.file && Ctrl->N.robust) {
@@ -654,7 +651,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 		}
 	}
 	else if (set_ones && GMT_Destroy_Data (API, GMT_ALLOCATED, &W) != GMT_OK) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Failed to free W\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free W\n");
 	}
 
 	/* That's all, folks!  */
@@ -667,7 +664,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	GMT_free (GMT, yval);
 	GMT_free (GMT, xval);
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Done!\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 
 	Return (EXIT_SUCCESS);
 }

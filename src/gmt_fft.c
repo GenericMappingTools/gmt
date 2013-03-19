@@ -200,7 +200,7 @@ void gmt_suggest_fft_dim (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny
 	given_space += nx * ny;
 	given_space *= 8;
 	if (do_print)
-		GMT_report (GMT, GMT_MSG_NORMAL, " Data dimension\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n", nx, ny, given_time, given_err, given_space);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Data dimension\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n", nx, ny, given_time, given_err, given_space);
 
 	best_err = s_err = t_err = given_err;
 	best_time = s_time = e_time = given_time;
@@ -257,11 +257,11 @@ void gmt_suggest_fft_dim (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny
 	}
 
 	if (do_print) {
-		GMT_report (GMT, GMT_MSG_NORMAL, " Highest speed\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n",
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Highest speed\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n",
 			nx_best_t, ny_best_t, best_time, t_err, t_space);
-		GMT_report (GMT, GMT_MSG_NORMAL, " Most accurate\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n",
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Most accurate\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n",
 			nx_best_e, ny_best_e, e_time, best_err, e_space);
-		GMT_report (GMT, GMT_MSG_NORMAL, " Least storage\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n",
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Least storage\t%d %d\ttime factor %.8g\trms error %.8e\tbytes %" PRIuS "\n",
 			nx_best_s, ny_best_s, s_time, s_err, best_space);
 	}
 	/* Fastest solution */
@@ -352,7 +352,7 @@ void GMT_fft_set_wave (struct GMT_CTRL *C, unsigned int mode, struct GMT_FFT_WAV
 		case GMT_FFT_K_IS_KY: K->k_ptr = GMT_fft_ky; break;
 		case GMT_FFT_K_IS_KR: K->k_ptr = GMT_fft_kr; break;
 		default:
-			GMT_report (C, GMT_MSG_NORMAL, "Bad mode selected (%u) - exit\n", mode);
+			GMT_Report (C->parent, GMT_MSG_NORMAL, "Bad mode selected (%u) - exit\n", mode);
 			GMT_exit (GMT_RUNTIME_ERROR);
 			break;
 	}
@@ -373,14 +373,14 @@ void gmt_fft_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_FFT_
 	width_percent = lrint (F->taper_width);
 
 	if ((Grid->header->nx == F->nx && Grid->header->ny == F->ny) || F->taper_mode == GMT_FFT_EXTEND_NONE) {
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Data and FFT dimensions are equal - no data extension will take place\n");
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Data and FFT dimensions are equal - no data extension will take place\n");
 		/* But there may still be interior tapering */
 		if (F->taper_mode != GMT_FFT_EXTEND_NONE) {	/* Nothing to do since no outside pad */
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Data and FFT dimensions are equal - no tapering will be performed\n");
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Data and FFT dimensions are equal - no tapering will be performed\n");
 			return;
 		}
 		if (F->taper_mode == GMT_FFT_EXTEND_NONE && width_percent == 100) {	/* No interior taper specified */
-			GMT_report (GMT, GMT_MSG_VERBOSE, "No interior tapering will be performed\n");
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No interior tapering will be performed\n");
 			return;
 		}
 	}
@@ -397,7 +397,7 @@ void gmt_fft_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_FFT_
 	one = (F->taper_mode == GMT_FFT_EXTEND_NONE) ? 0 : 1;	/* 0 is the boundry point which we want to taper to 0 for the interior taper */
 	
 	if (width_percent == 0) {
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Tapering has been disabled via +t0\n");
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Tapering has been disabled via +t0\n");
 	}
 	if (width_percent == 100 && F->taper_mode == GMT_FFT_EXTEND_NONE) {	/* Means user set +n but did not specify +t<taper> as 100% is unreasonable for interior */
 		width_percent = 0;
@@ -489,9 +489,9 @@ void gmt_fft_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_FFT_
 	}
 
 	if (F->taper_mode == GMT_FFT_EXTEND_NONE)
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Grid margin tapered to zero over %d %% of data width and height\n", width_percent);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Grid margin tapered to zero over %d %% of data width and height\n", width_percent);
 	else
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Grid extended via %s symmetry at all edges, then tapered to zero over %d %% of extended area\n", method[F->taper_mode], width_percent);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Grid extended via %s symmetry at all edges, then tapered to zero over %d %% of extended area\n", method[F->taper_mode], width_percent);
 }
 
 char *file_name_with_suffix (struct GMT_CTRL *GMT, char *name, char *suffix)
@@ -501,7 +501,7 @@ char *file_name_with_suffix (struct GMT_CTRL *GMT, char *name, char *suffix)
 	
 	if ((len = (unsigned int)strlen (name)) == 0) {	/* Grids that are being created have no filename yet */
 		sprintf (file, "tmpgrid_%s.grd", suffix);
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Created grid has no name to derive new names from; choose %s\n", file);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Created grid has no name to derive new names from; choose %s\n", file);
 		return (file);
 	}
 	for (i = len; i > 0 && name[i] != '/'; i--);	/* i points to 1st char in name after slash, or 0 if no leading dirs */
@@ -538,14 +538,14 @@ void gmt_grd_save_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *suff
 	GMT_memset (GMT->current.io.pad, 4, unsigned int);	/* set GMT default pad to {0,0,0,0} */
 	GMT_set_grddim (GMT, Grid->header);	/* Recompute all dimensions */
 	if ((file = file_name_with_suffix (GMT, Grid->header->name, suffix)) == NULL) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Unable to get file name for file %s\n", Grid->header->name);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to get file name for file %s\n", Grid->header->name);
 		return;
 	}
 	
 	if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY | GMT_GRID_IS_COMPLEX_REAL, NULL, file, Grid) != GMT_OK)
-		GMT_report (GMT, GMT_MSG_NORMAL, "Intermediate detrended, extended, and tapered grid could not be written to %s\n", file);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Intermediate detrended, extended, and tapered grid could not be written to %s\n", file);
 	else
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Intermediate detrended, extended, and tapered grid written to %s\n", file);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Intermediate detrended, extended, and tapered grid written to %s\n", file);
 	
 	GMT_memcpy (Grid->header, &save, 1, struct GMT_GRID_HEADER);	/* Restore original, including the original pad */
 	GMT_memcpy (GMT->current.io.pad, pad, 4, unsigned int);		/* Restore GMT default pad */
@@ -568,7 +568,7 @@ void gmt_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_FFT_
 	
 	mode = (F->polar) ? 1 : 0;
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Write components of complex raw spectrum with file suffiz %s and %s\n", suffix[mode][0], suffix[mode][1]);
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Write components of complex raw spectrum with file suffiz %s and %s\n", suffix[mode][0], suffix[mode][1]);
 
 	/* Prepare wavenumber domain limits and increments */
 	nx_2 = K->nx2 / 2;	ny_2 = K->ny2 / 2;
@@ -581,7 +581,7 @@ void gmt_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_FFT_
 	/* Set up and allocate the temporary grid. */
 	if ((Grid = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn, inc, \
 		G->header->registration | GMT_GRID_IS_COMPLEX_REAL, 0, NULL)) == NULL) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create complex output grid for %s\n", Grid->header->name);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create complex output grid for %s\n", Grid->header->name);
 		return;
 	}
 			
@@ -621,18 +621,18 @@ void gmt_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_FFT_
 	}
 	for (k = 0; k < 2; k++) {	/* Write the two grids */
 		if ((file = file_name_with_suffix (GMT, Grid->header->name, suffix[mode][k])) == NULL) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to get file name for file %s\n", Grid->header->name);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to get file name for file %s\n", Grid->header->name);
 			return;
 		}
 		sprintf (Grid->header->title, "The %s part of FFT transformed input grid %s", suffix[mode][k], Grid->header->name);
 		if (k == 1 && mode) strcpy (Grid->header->z_units, "radians");
 		if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY | wmode[k], NULL, file, Grid) != GMT_OK) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "%s could not be written\n", file);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%s could not be written\n", file);
 			return;
 		}
 	}
 	if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &Grid) != GMT_OK) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Error freeing temporary grid\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error freeing temporary grid\n");
 	}
 		
 	GMT_memcpy (GMT->current.io.pad, pad, 4, unsigned int);	/* Restore GMT pad */
@@ -710,9 +710,9 @@ void gmt_fftwf_import_wisdom_from_filename (struct GMT_CTRL *C) {
 		if (!access (*filename, R_OK)) {
 			status = fftwf_import_wisdom_from_filename (*filename);
 			if (status)
-				GMT_report (C, GMT_MSG_LONG_VERBOSE, "Imported FFTW Wisdom from file: %s\n", *filename);
+				GMT_Report (C->parent, GMT_MSG_LONG_VERBOSE, "Imported FFTW Wisdom from file: %s\n", *filename);
 			else
-				GMT_report (C, GMT_MSG_NORMAL, "Importing FFTW Wisdom from file failed: %s\n", *filename);
+				GMT_Report (C->parent, GMT_MSG_NORMAL, "Importing FFTW Wisdom from file failed: %s\n", *filename);
 		}
 		++filename; /* advance to next file in array */
 	}
@@ -731,9 +731,9 @@ void gmt_fftwf_export_wisdom_to_filename (struct GMT_CTRL *C) {
 
 	status = fftwf_export_wisdom_to_filename (filename);
 	if (status)
-		GMT_report (C, GMT_MSG_LONG_VERBOSE, "Exported FFTW Wisdom to file: %s\n", filename);
+		GMT_Report (C->parent, GMT_MSG_LONG_VERBOSE, "Exported FFTW Wisdom to file: %s\n", filename);
 	else
-		GMT_report (C, GMT_MSG_NORMAL, "Exporting FFTW Wisdom to file failed: %s\n", filename);
+		GMT_Report (C->parent, GMT_MSG_NORMAL, "Exporting FFTW Wisdom to file failed: %s\n", filename);
 }
 
 fftwf_plan gmt_fftwf_plan_dft(struct GMT_CTRL *C, unsigned ny, unsigned nx, fftwf_complex *data, int direction) {
@@ -787,7 +787,7 @@ fftwf_plan gmt_fftwf_plan_dft(struct GMT_CTRL *C, unsigned ny, unsigned nx, fftw
 			/* No Wisdom available
 			 * Need extra memory to prevent overwriting data while planning */
 			fftwf_complex *in_place_tmp = fftwf_malloc (2 * (ny == 0 ? 1 : ny) * nx * sizeof(float));
-			GMT_report (C, GMT_MSG_NORMAL, "Generating new FFTW Wisdom, be patient...\n");
+			GMT_Report (C->parent, GMT_MSG_NORMAL, "Generating new FFTW Wisdom, be patient...\n");
 			if (ny == 0) /* 1d DFT */
 				plan = fftwf_plan_dft_1d(nx, in_place_tmp, in_place_tmp, sign, C->current.setting.fftw_plan);
 			else /* 2d DFT */
@@ -799,10 +799,10 @@ fftwf_plan gmt_fftwf_plan_dft(struct GMT_CTRL *C, unsigned ny, unsigned nx, fftw
 			gmt_fftwf_export_wisdom_to_filename (C);
 		}
 		else
-			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Using preexisting FFTW Wisdom.\n");
+			GMT_Report (C->parent, GMT_MSG_LONG_VERBOSE, "Using preexisting FFTW Wisdom.\n");
 	} /* C->current.setting.fftw_plan != FFTW_ESTIMATE */
 	else
-		GMT_report (C, GMT_MSG_LONG_VERBOSE, "Picking a (probably sub-optimal) FFTW plan quickly.\n");
+		GMT_Report (C->parent, GMT_MSG_LONG_VERBOSE, "Picking a (probably sub-optimal) FFTW plan quickly.\n");
 
 	if (plan == NULL) { /* If either FFTW_ESTIMATE or new Wisdom generated */
 		if (ny == 0) /* 1d DFT */
@@ -812,7 +812,7 @@ fftwf_plan gmt_fftwf_plan_dft(struct GMT_CTRL *C, unsigned ny, unsigned nx, fftw
 	}
 
 	if (plan == NULL) { /* There was a problem creating a plan */
-		GMT_report (C, GMT_MSG_NORMAL, "Error: Could not create FFTW plan.\n");
+		GMT_Report (C->parent, GMT_MSG_NORMAL, "Error: Could not create FFTW plan.\n");
 		GMT_exit (EXIT_FAILURE);
 	}
 
@@ -860,7 +860,7 @@ int GMT_fft_1d_vDSP (struct GMT_CTRL *C, float *data, unsigned int n, int direct
 	FFTSetup setup;
 
 	if (log2n == 0) {
-		GMT_report (C, GMT_MSG_NORMAL, "Need Radix-2 input try: %u [n]\n", 1U<<propose_radix2 (n));
+		GMT_Report (C->parent, GMT_MSG_NORMAL, "Need Radix-2 input try: %u [n]\n", 1U<<propose_radix2 (n));
 		return -1;
 	}
 
@@ -899,7 +899,7 @@ int GMT_fft_2d_vDSP (struct GMT_CTRL *C, float *data, unsigned int nx, unsigned 
 	FFTSetup setup;
 
 	if (log2nx == 0 || log2ny == 0) {
-		GMT_report (C, GMT_MSG_NORMAL, "Need Radix-2 input try: %u/%u [nx/ny]\n",
+		GMT_Report (C->parent, GMT_MSG_NORMAL, "Need Radix-2 input try: %u/%u [nx/ny]\n",
 				1U<<propose_radix2 (nx), 1U<<propose_radix2 (ny));
 		return -1;
 	}
@@ -1906,7 +1906,7 @@ int GMT_fft_2d_brenner (struct GMT_CTRL *C, float *data, unsigned int nx, unsign
 
         ksign = (direction == GMT_FFT_INV) ? +1 : -1;
         if ((work_size = brenner_worksize (C, nx, ny))) work = GMT_memory (C, NULL, work_size, float);
-        GMT_report (C, GMT_MSG_LONG_VERBOSE, "Brenner_fourt_ work size = %zu\n", work_size);
+        GMT_Report (C->parent, GMT_MSG_LONG_VERBOSE, "Brenner_fourt_ work size = %zu\n", work_size);
         (void) BRENNER_fourt_ (data, nn, &ndim, &ksign, &kmode, work);
         if (work_size) GMT_free (C, work);
         return (GMT_OK);
@@ -1918,7 +1918,7 @@ int GMT_fft_1d_selection (struct GMT_CTRL *C, unsigned int n) {
 		/* Specific selection requested */
 		if (C->session.fft1d[C->current.setting.fft])
 			return C->current.setting.fft; /* User defined FFT */
-		GMT_report (C, GMT_MSG_NORMAL, "Desired FFT Algorithm (%s) not configured - choosing suitable alternative.\n", GMT_fft_algo[C->current.setting.fft]);
+		GMT_Report (C->parent, GMT_MSG_NORMAL, "Desired FFT Algorithm (%s) not configured - choosing suitable alternative.\n", GMT_fft_algo[C->current.setting.fft]);
 	}
 	/* Here we want automatic selection from available candidates */
 	if (C->session.fft1d[k_fft_accelerate] && radix2 (n))
@@ -1934,7 +1934,7 @@ int GMT_fft_2d_selection (struct GMT_CTRL *C, unsigned int nx, unsigned int ny) 
 		/* Specific selection requested */
 		if (C->session.fft2d[C->current.setting.fft])
 			return C->current.setting.fft; /* User defined FFT */
-		GMT_report (C, GMT_MSG_NORMAL, "Desired FFT Algorithm (%s) not configured - choosing suitable alternative.\n", GMT_fft_algo[C->current.setting.fft]);
+		GMT_Report (C->parent, GMT_MSG_NORMAL, "Desired FFT Algorithm (%s) not configured - choosing suitable alternative.\n", GMT_fft_algo[C->current.setting.fft]);
 	}
 	/* Here we want automatic selection from available candidates */
 	if (C->session.fft2d[k_fft_accelerate] && radix2 (nx) && radix2 (ny))
@@ -1954,7 +1954,7 @@ int GMT_fft_1d (struct GMT_CTRL *C, float *data, unsigned int n, int direction, 
 	int status, use;
 	assert (mode == GMT_FFT_COMPLEX); /* GMT_FFT_REAL not implemented yet */
 	use = GMT_fft_1d_selection (C, n);
-	GMT_report (C, GMT_MSG_LONG_VERBOSE, "1-D FFT using %s\n", GMT_fft_algo[use]);
+	GMT_Report (C->parent, GMT_MSG_LONG_VERBOSE, "1-D FFT using %s\n", GMT_fft_algo[use]);
 	status = C->session.fft1d[use] (C, data, n, direction, mode);
 	if (direction == GMT_FFT_INV) {	/* Undo the 2/nm factor */
 		uint64_t nm = 2ULL * n;
@@ -1974,7 +1974,7 @@ int GMT_fft_2d (struct GMT_CTRL *C, float *data, unsigned int nx, unsigned int n
 	assert (mode == GMT_FFT_COMPLEX); /* GMT_FFT_REAL not implemented yet */
 	use = GMT_fft_2d_selection (C, nx, ny);
 	
-	GMT_report (C, GMT_MSG_LONG_VERBOSE, "2-D FFT using %s\n", GMT_fft_algo[use]);
+	GMT_Report (C->parent, GMT_MSG_LONG_VERBOSE, "2-D FFT using %s\n", GMT_fft_algo[use]);
 	status = C->session.fft2d[use] (C, data, nx, ny, direction, mode);
 	if (direction == GMT_FFT_INV) {	/* Undo the 2/nm factor */
 		uint64_t nm = 2ULL * nx * ny;
@@ -2002,7 +2002,7 @@ void GMT_fft_initialization (struct GMT_CTRL *C) {
 		/* one-time initialization required to use FFTW3 threads */
 		if ( fftwf_init_threads() ) {
 			fftwf_plan_with_nthreads(n_cpu);
-			GMT_report (C, GMT_MSG_LONG_VERBOSE, "Initialize FFTW with %d threads.\n", n_cpu);
+			GMT_Report (C->parent, GMT_MSG_LONG_VERBOSE, "Initialize FFTW with %d threads.\n", n_cpu);
 		}
 	}
 

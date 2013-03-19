@@ -92,7 +92,7 @@ int loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *header, int byt
 	FILE *fp = NULL;
 
 	if ((fp = GMT_fopen (GMT, file, "rb")) == NULL) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Cannot open rasterfile %s!\n", file);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open rasterfile %s!\n", file);
 		return (EXIT_FAILURE);
 	}
 
@@ -107,9 +107,9 @@ int loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *header, int byt
 	buffer = GMT_memory (GMT, NULL, nm, unsigned char);
 	if (GMT_fread (buffer, 1U, nm, fp) != nm) {
 		if (byte_per_pixel == 3)
-			GMT_report (GMT, GMT_MSG_NORMAL, "Trouble reading raw 24-bit rasterfile!\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Trouble reading raw 24-bit rasterfile!\n");
 		if (byte_per_pixel == 4)
-			GMT_report (GMT, GMT_MSG_NORMAL, "Trouble reading raw 32-bit rasterfile!\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Trouble reading raw 32-bit rasterfile!\n");
 		return (EXIT_FAILURE);
 	}
 
@@ -134,7 +134,7 @@ int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_per_pixel, 
 	FILE *fp = NULL;
 
 	if ((fp = GMT_fopen (GMT, file, "rb")) == NULL) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Cannot open rasterfile %s!\n", file);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open rasterfile %s!\n", file);
 		return (EXIT_FAILURE);
 	}
 
@@ -152,9 +152,9 @@ int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_per_pixel, 
 
 	if (GMT_fread (buffer, 1U, img_size, fp) != img_size) {
 		if (byte_per_pixel == 3)
-			GMT_report (GMT, GMT_MSG_NORMAL, "Trouble_ reading raw 24-bit rasterfile!\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Trouble_ reading raw 24-bit rasterfile!\n");
 		if (byte_per_pixel == 4)
-			GMT_report (GMT, GMT_MSG_NORMAL, "Trouble_ reading raw 32-bit rasterfile!\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Trouble_ reading raw 32-bit rasterfile!\n");
 		return (EXIT_FAILURE);
 	}
 	GMT_fclose (GMT, fp);
@@ -195,7 +195,7 @@ int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_per_pixel, 
 	   	failed by a little, so we'll look arround the approximate solution by adding 1 to nx and
 	   	subtracting 1 to ny. Then we revert (subtract 1 to nx and add 1 to ny). Next apply the
 	   	same test with an offset of 2, and so on until the offset is 10. */
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: first test based on FFT failed to guess image dimensions.\n\tI'll do now a second try\t");
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: first test based on FFT failed to guess image dimensions.\n\tI'll do now a second try\t");
 		k = 1;		pm = 1;		l = 1;
 		while (k < 41) {
 			i = *raw_ny + lrint (copysign((double)l, (double)pm));
@@ -203,7 +203,7 @@ int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_per_pixel, 
 			j = (*raw_nx) + lrint (copysign((double)l, (double)pm));
 			if (i*j == n_pix) {	/* Got a good candidate */
 				*raw_ny = i;	*raw_nx = j;
-				GMT_report (GMT, GMT_MSG_VERBOSE, "... SUCCESS (W = %d, H = %d)\n", *raw_nx, *raw_ny);
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "... SUCCESS (W = %d, H = %d)\n", *raw_nx, *raw_ny);
 				break;
 			}
 			even = (k%2 == 0) ? 1 : 0;
@@ -212,11 +212,11 @@ int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_per_pixel, 
 		}
 	}
 	else
-		GMT_report (GMT, GMT_MSG_VERBOSE, "File %s has %d Lines and %d Cols\n", file, *raw_ny, *raw_nx);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "File %s has %d Lines and %d Cols\n", file, *raw_ny, *raw_nx);
 
 	/* If both attempts failed */
 	if ((*raw_nx) * (*raw_ny) != n_pix) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "FAILURE while guessing image dimensions (W = %d, H = %d)\n", *raw_nx, *raw_ny);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "FAILURE while guessing image dimensions (W = %d, H = %d)\n", *raw_nx, *raw_ny);
 		return (EXIT_FAILURE);
 	}
 
@@ -228,39 +228,37 @@ int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_per_pixel, 
 	return (EXIT_SUCCESS);
 }
 
-int GMT_grd2rgb_usage (struct GMTAPI_CTRL *C, int level) {
-	struct GMT_CTRL *GMT = C->GMT;
-
+int GMT_grd2rgb_usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grd2rgb <infile> [-C<cpt>] [-G<template>] [%s]\n", GMT_Id_OPT);
-	GMT_message (GMT, "\t[-L<layer>] [%s] [%s] [-W<width>/<height>[/<n_bytes>]]\n\t[%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_r_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grd2rgb <infile> [-C<cpt>] [-G<template>] [%s]\n", GMT_Id_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L<layer>] [%s] [%s] [-W<width>/<height>[/<n_bytes>]]\n\t[%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_r_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<infile> can be one of three different intput files:\n");
-	GMT_message (GMT, "\t  (1) An 8, 24, or 32-bit Sun rasterfile.  Use -I, -R, and -F to change the\n");
-	GMT_message (GMT, "\t      the default values of dx = dy = 1 and region 1/ncols/1/nrows.\n");
-	GMT_message (GMT, "\t  (2) A regular z grid file.  Use -C to provide a cpt file with which\n");
-	GMT_message (GMT, "\t      to convert z to r/g/b triplets. -R, -I, and -F are ignored.\n");
-	GMT_message (GMT, "\t  (3) A RGB or RGBA raw rasterfile. Since raw rasterfiles have no header, you have to\n");
-	GMT_message (GMT, "\t      give the image dimensions via -W.\n");
-	GMT_message (GMT, "\t      However, you may take the chance of letting the program try to\n");
-	GMT_message (GMT, "\t      guess the image dimensions (slow, via FFT spectrum).\n");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-C Color palette file to convert z to rgb.  If given, we assume a z grid file is provided,\n");
-	GMT_message (GMT, "\t   else we will try to read a Sun rasterfile.\n");
-	GMT_message (GMT, "\t-G Give outputfile name template for the three red, green, blue grid files.\n");
-	GMT_message (GMT, "\t   The template MUST contain the format code %%c which will be replaced with r, g, and b\n");
-	GMT_message (GMT, "\t   [Default is grd2rgb_%%c.nc].\n");
-	GMT_message (GMT, "\t-I Specify grid size(s).  Append m (or c) to <dx> and/or <dy> for minutes (or seconds).\n");
-	GMT_message (GMT, "\t-L Only output the given layer (r, g, or b) [Default output all three].\n");
-	GMT_Option (C, "R,V");
-	GMT_message (GMT, "\t-W Set the size of the raw raster file. By default an RGB file (which has 3 bytes/pixel)\n");
-	GMT_message (GMT, "\t   is assumed. For RGBA files use n_bytes = 4.\n");
-	GMT_message (GMT, "\t   Use -W for guessing the image size of a RGB raw file, and -W=/=/4.\n");
-	GMT_message (GMT, "\t   if the raw image is of the RGBA type. Notice that this might be a\n");
-	GMT_message (GMT, "\t   bit slow because the guessing algorithm makes uses of FFTs.\n");
-	GMT_Option (C, "r");
+	GMT_Message (API, GMT_TIME_NONE, "\t<infile> can be one of three different intput files:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  (1) An 8, 24, or 32-bit Sun rasterfile.  Use -I, -R, and -F to change the\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      the default values of dx = dy = 1 and region 1/ncols/1/nrows.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  (2) A regular z grid file.  Use -C to provide a cpt file with which\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      to convert z to r/g/b triplets. -R, -I, and -F are ignored.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  (3) A RGB or RGBA raw rasterfile. Since raw rasterfiles have no header, you have to\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      give the image dimensions via -W.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      However, you may take the chance of letting the program try to\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      guess the image dimensions (slow, via FFT spectrum).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file to convert z to rgb.  If given, we assume a z grid file is provided,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   else we will try to read a Sun rasterfile.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Give outputfile name template for the three red, green, blue grid files.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The template MUST contain the format code %%c which will be replaced with r, g, and b\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is grd2rgb_%%c.nc].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Specify grid size(s).  Append m (or c) to <dx> and/or <dy> for minutes (or seconds).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Only output the given layer (r, g, or b) [Default output all three].\n");
+	GMT_Option (API, "R,V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Set the size of the raw raster file. By default an RGB file (which has 3 bytes/pixel)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   is assumed. For RGBA files use n_bytes = 4.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -W for guessing the image size of a RGB raw file, and -W=/=/4.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   if the raw image is of the RGBA type. Notice that this might be a\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   bit slow because the guessing algorithm makes uses of FFTs.\n");
+	GMT_Option (API, "r");
 	
 	return (EXIT_FAILURE);
 }
@@ -402,7 +400,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args)
 
 	/* No command line files or std** to add via GMT_Init_IO */
 	
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input grid|raster\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid|raster\n");
 
 	if (Ctrl->C.active) {	/* Apply CPT to get three r,g,b channel files */
 		bool new_grid = false;
@@ -413,7 +411,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args)
 		
 		for (channel = 0; channel < 3; channel++) {	/* Do the r, g, and b channels */
 			if (Ctrl->L.active && Ctrl->L.layer != rgb[channel]) continue;	/* Only do one of the layers */
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Processing the %s components\n", comp[channel]);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Processing the %s components\n", comp[channel]);
 			if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->In.file, NULL)) == NULL) {
 				Return (API->error);
 			}
@@ -446,30 +444,30 @@ int GMT_grd2rgb (void *V_API, int mode, void *args)
 	else {
 		int nx, ny;
 		if (GMT_access (GMT, Ctrl->In.file, R_OK)) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Cannot find/open/read file %s\n", Ctrl->In.file);
+			GMT_Report (API, GMT_MSG_NORMAL, "Cannot find/open/read file %s\n", Ctrl->In.file);
 			Return (EXIT_FAILURE);
 		}
 
 		if (!Ctrl->W.active) {
 			if (PSL_loadimage (PSL, Ctrl->In.file, &header, &picture)) {
-				GMT_report (GMT, GMT_MSG_NORMAL, "Trouble loading/converting Sun rasterfile!\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Trouble loading/converting Sun rasterfile!\n");
 				Return (EXIT_FAILURE);
 			}
 		}
 		else {
 			if (loadraw (GMT, Ctrl->In.file, &header, Ctrl->W.size, Ctrl->W.nx, Ctrl->W.ny, &picture)) {
-				GMT_report (GMT, GMT_MSG_NORMAL, "Trouble loading/converting RGB image!\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Trouble loading/converting RGB image!\n");
 				Return (EXIT_FAILURE);
 			}
 		}
 
 		if (header.depth < 8) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Sun rasterfile must be at least 8 bits deep\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Sun rasterfile must be at least 8 bits deep\n");
 			Return (EXIT_FAILURE);
 		}
 
 		if (!Ctrl->I.active) {
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Assign default dx = dy = 1\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "Assign default dx = dy = 1\n");
 			Ctrl->I.inc[GMT_X] = Ctrl->I.inc[GMT_Y] = 1.0;	Ctrl->I.active = true;
 		}
 		if (!GMT->common.R.active) {	/* R not given, provide default */
@@ -477,7 +475,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args)
 			GMT->common.R.wesn[XHI] = header.width  - 1 + GMT->common.r.registration;
 			GMT->common.R.wesn[YHI] = header.height - 1 + GMT->common.r.registration;
 			GMT->common.R.active = true;
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Assign default -R0/%g/0/%g\n", GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI]);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Assign default -R0/%g/0/%g\n", GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI]);
 		}
 
 		nx = GMT_get_n (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], Ctrl->I.inc[GMT_X], GMT->common.r.registration);
@@ -489,24 +487,24 @@ int GMT_grd2rgb (void *V_API, int mode, void *args)
 			Ctrl->I.inc[GMT_Y] = GMT_get_inc (GMT, GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], ny, GMT->common.r.registration);
 		}
 		if (header.width != nx) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Sun rasterfile width and -R -I do not match (%d versus %d)  Need -r?\n", header.width, nx);
+			GMT_Report (API, GMT_MSG_NORMAL, "Sun rasterfile width and -R -I do not match (%d versus %d)  Need -r?\n", header.width, nx);
 			Return (EXIT_FAILURE);
 		}
 		if (header.height != ny) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Sun rasterfile height and -R -I do not match (%d versus %d)  Need -r?\n", header.height, ny);
+			GMT_Report (API, GMT_MSG_NORMAL, "Sun rasterfile height and -R -I do not match (%d versus %d)  Need -r?\n", header.height, ny);
 			Return (EXIT_FAILURE);
 		}
 
 		if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc, \
 			GMT_GRID_DEFAULT_REG, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
 		
-		GMT_report (GMT, GMT_MSG_VERBOSE, "nx = %d  ny = %d\n", Grid->header->nx, Grid->header->ny);
+		GMT_Report (API, GMT_MSG_VERBOSE, "nx = %d  ny = %d\n", Grid->header->nx, Grid->header->ny);
 
 		/* Note: While the picture array has no pads, we must assume the output grid may have one */
 		
 		for (channel = 0; channel < 3; channel++) {	/* Do the r, g, and b channels */
 			if (Ctrl->L.active && Ctrl->L.layer != rgb[channel]) continue;
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Processing the %s components\n", comp[channel]);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Processing the %s components\n", comp[channel]);
 			sprintf (buffer, Ctrl->G.name, rgb[channel]);
 			grdfile = strdup (buffer);
 			sprintf (Grid->header->remark, "Grid of %s components in the 0-255 range", comp[channel]);

@@ -63,40 +63,38 @@ void Free_testapi_Ctrl (struct GMT_CTRL *GMT, struct TESTAPI_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
-int GMT_testapi_usage (struct GMTAPI_CTRL *C, int level) {
-	struct GMT_CTRL *GMT = C->GMT;
-
+int GMT_testapi_usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: testapi -If|s|d|c|r[/v|m] -Td|t|g|c|i|v|m -Wf|s|d|c|r[/v|m] [%s] [%s]\n", GMT_V_OPT, GMT_h_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: testapi -If|s|d|c|r[/v|m] -Td|t|g|c|i|v|m -Wf|s|d|c|r[/v|m] [%s] [%s]\n", GMT_V_OPT, GMT_h_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t-I Specify input resource.  Choose among:\n");
-	GMT_message (GMT, "\t   f : File\n");
-	GMT_message (GMT, "\t   s : Stream\n");
-	GMT_message (GMT, "\t   d : File descriptor\n");
-	GMT_message (GMT, "\t   c : Memory Copy\n");
-	GMT_message (GMT, "\t   r : Memory Reference\n");
-	GMT_message (GMT, "\t   Optionally, append /v or /m to c|r to get data via vector or matrix.\n");
-	GMT_message (GMT, "\t   This is only valid for -Td|g.\n");
-	GMT_message (GMT, "\t-T Specify data type.  Choose among:\n");
-	GMT_message (GMT, "\t   d : Dataset\n");
-	GMT_message (GMT, "\t   t : Textset\n");
-	GMT_message (GMT, "\t   g : Grid\n");
-	GMT_message (GMT, "\t   C : CPT\n");
-	GMT_message (GMT, "\t   i : Image\n");
-	GMT_message (GMT, "\t   v : Vector\n");
-	GMT_message (GMT, "\t   m : Matrix\n");
-	GMT_message (GMT, "\t-W Specify write destination.  Choose among:\n");
-	GMT_message (GMT, "\t   f : File\n");
-	GMT_message (GMT, "\t   s : Stream\n");
-	GMT_message (GMT, "\t   d : File descriptor\n");
-	GMT_message (GMT, "\t   c : Memory Copy\n");
-	GMT_message (GMT, "\t   r : Memory Reference\n");
-	GMT_message (GMT, "\t   Optionally, append /v or /m to c|r to put data via vector or matrix.\n");
-	GMT_message (GMT, "\t   This is only valid for -Td|g.\n");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_Option (C, "V,h,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Specify input resource.  Choose among:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   f : File\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   s : Stream\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   d : File descriptor\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   c : Memory Copy\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   r : Memory Reference\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append /v or /m to c|r to get data via vector or matrix.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   This is only valid for -Td|g.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify data type.  Choose among:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   d : Dataset\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   t : Textset\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   g : Grid\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   C : CPT\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   i : Image\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   v : Vector\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   m : Matrix\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Specify write destination.  Choose among:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   f : File\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   s : Stream\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   d : File descriptor\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   c : Memory Copy\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   r : Memory Reference\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append /v or /m to c|r to put data via vector or matrix.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   This is only valid for -Td|g.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Option (API, "V,h,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -253,7 +251,7 @@ int GMT_testapi (void *V_API, int mode, void *args)
 	
 	/* Get input and register it */
 	
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Read %s %s with method %s%s and write to %s with method %s%s\n", ikind[Ctrl->T.mode], ifile[Ctrl->T.mode], method[Ctrl->I.mode], append[via[GMT_IN]], ofile[Ctrl->T.mode], method[Ctrl->W.mode], append[via[GMT_OUT]]);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Read %s %s with method %s%s and write to %s with method %s%s\n", ikind[Ctrl->T.mode], ifile[Ctrl->T.mode], method[Ctrl->I.mode], append[via[GMT_IN]], ofile[Ctrl->T.mode], method[Ctrl->W.mode], append[via[GMT_OUT]]);
 	
 	if (GMT_Init_IO (API, Ctrl->T.mode, geometry[Ctrl->T.mode], GMT_IN, GMT_ADD_FILES_IF_NONE, 0, options) != GMT_OK) {	/* Registers default input destination, unless already set */
 		Return (API->error);
@@ -275,7 +273,7 @@ int GMT_testapi (void *V_API, int mode, void *args)
 					}
 					break;
 				default:
-					GMT_report (GMT, GMT_MSG_NORMAL, "GMT_IS_STREAM only allows d, t, c!\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "GMT_IS_STREAM only allows d, t, c!\n");
 					Return (GMT_WRONG_KIND);
 					break;
 			}
@@ -290,7 +288,7 @@ int GMT_testapi (void *V_API, int mode, void *args)
 					}
 					break;
 				default:
-					GMT_report (GMT, GMT_MSG_NORMAL, "GMT_IS_FDESC only allows d, t, c!\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "GMT_IS_FDESC only allows d, t, c!\n");
 					Return (GMT_WRONG_KIND);
 					break;
 			}
@@ -324,7 +322,7 @@ int GMT_testapi (void *V_API, int mode, void *args)
 			}
 			break;
 		default:
-			GMT_report (GMT, GMT_MSG_NORMAL, "Bad Input mode\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Bad Input mode\n");
 			Return (GMT_WRONG_KIND);
 			break;
 	}
@@ -351,7 +349,7 @@ int GMT_testapi (void *V_API, int mode, void *args)
 		if (GMT_Destroy_Data (API, GMT_CLOBBER, &Intmp) != GMT_OK) {
 			Return (API->error);
 		}
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Done!\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 		Return (GMT_OK);
 	}
 	
@@ -372,7 +370,7 @@ int GMT_testapi (void *V_API, int mode, void *args)
 					}
 					break;
 				default:
-					GMT_report (GMT, GMT_MSG_NORMAL, "GMT_IS_STREAM only allows d, t, c!\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "GMT_IS_STREAM only allows d, t, c!\n");
 					Return (GMT_WRONG_KIND);
 					break;
 			}
@@ -392,7 +390,7 @@ int GMT_testapi (void *V_API, int mode, void *args)
 					}
 					break;
 				default:
-					GMT_report (GMT, GMT_MSG_NORMAL, "GMT_IS_FDESC only allows d, t, c!\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "GMT_IS_FDESC only allows d, t, c!\n");
 					Return (GMT_WRONG_KIND);
 					break;
 			}
@@ -417,7 +415,7 @@ int GMT_testapi (void *V_API, int mode, void *args)
 			}
 			break;
 		default:
-			GMT_report (GMT, GMT_MSG_NORMAL, "Bad Input mode\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Bad Input mode\n");
 			Return (GMT_WRONG_KIND);
 			break;
 	}
@@ -462,6 +460,6 @@ int GMT_testapi (void *V_API, int mode, void *args)
 	if (!(Ctrl->I.mode == GMT_IS_REFERENCE && Ctrl->W.mode == GMT_IS_REFERENCE) && GMT_Destroy_Data (API, GMT_CLOBBER, &Out) != GMT_OK) {
 		Return (API->error);
 	}
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Done!\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 	Return (GMT_OK);
 }

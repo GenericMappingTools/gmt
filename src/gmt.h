@@ -100,7 +100,7 @@ EXTERN_MSC void GMT_Option		(void *C, char *options);
 EXTERN_MSC int GMT_Get_Common		(void *C, unsigned int option, double *par);
 EXTERN_MSC int GMT_Get_Default		(void *C, char *keyword, char *value);
 EXTERN_MSC int GMT_Get_Value		(void *C, char *arg, double *par);
-EXTERN_MSC int GMT_Report		(void *C, unsigned int level, char *message);
+EXTERN_MSC int GMT_Report		(void *C, unsigned int level, char *message, ...);
 EXTERN_MSC int GMT_Message		(void *C, unsigned int mode, char *format, ...);
 
 /* 12 secondary functions for argument and option parsing */

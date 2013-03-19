@@ -56,21 +56,19 @@ void Free_gmtget_Ctrl (struct GMT_CTRL *GMT, struct GMTGET_CTRL *C) {	/* Dealloc
 	GMT_free (GMT, C);	
 }
 
-int GMT_gmtget_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_gmtget_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: gmtget [-L] [-G<defaultsfile>] PARAMETER1 PARAMETER2 PARAMETER3 ...\n");
-	GMT_message (GMT, "\n\tFor available PARAMETERS, see gmt.conf man page\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtget [-L] [-G<defaultsfile>] PARAMETER1 PARAMETER2 PARAMETER3 ...\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tFor available PARAMETERS, see gmt.conf man page\n");
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-G Set name of specific gmt.conf file to process.\n");
-	GMT_message (GMT, "\t   [Default looks for file in current directory.  If not found,\n");
-	GMT_message (GMT, "\t   it looks in the home directory, if not found it uses GMT defaults].\n");
-	GMT_message (GMT, "\t-L Write one parameter value per line [Default writes all on one line].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Set name of specific gmt.conf file to process.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default looks for file in current directory.  If not found,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   it looks in the home directory, if not found it uses GMT defaults].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Write one parameter value per line [Default writes all on one line].\n");
 	
 	return (EXIT_FAILURE);
 }

@@ -401,10 +401,10 @@ double computed_strike1 (struct nodal_plane NP1)
 	sincosd (NP1.str, &ss, &cs);
 	if (cd1 < EPSIL && fabs (cr) < EPSIL) {
 #if 0
-		GMT_report (GMT, GMT_MSG_DEBUG, "\nThe second plane is horizontal;");
-		GMT_report (GMT, GMT_MSG_DEBUG, "\nStrike is undetermined.");
-		GMT_report (GMT, GMT_MSG_DEBUG, "\nstr2 = NP1.str + 180. is taken to define");
-		GMT_report (GMT, GMT_MSG_DEBUG, "\nrake in the second plane.\n");
+		GMT_Report (API, GMT_MSG_DEBUG, "\nThe second plane is horizontal;");
+		GMT_Report (API, GMT_MSG_DEBUG, "\nStrike is undetermined.");
+		GMT_Report (API, GMT_MSG_DEBUG, "\nstr2 = NP1.str + 180. is taken to define");
+		GMT_Report (API, GMT_MSG_DEBUG, "\nrake in the second plane.\n");
 #endif
 		str2 = NP1.str + 180.0;
 	}

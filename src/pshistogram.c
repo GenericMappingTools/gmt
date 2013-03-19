@@ -284,7 +284,7 @@ int get_loc_scl (struct GMT_CTRL *GMT, double *data, uint64_t n, double *stats)
 	/* Get mode */
 
 	GMT_mode (GMT, data, n, j, 0, 0, &n_multiples, &stats[2]);
-	if (n_multiples > 0) GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: %d multiple modes found\n", n_multiples);
+	if (n_multiples > 0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: %d multiple modes found\n", n_multiples);
 
 	/* Get MAD for L1 */
 
@@ -329,52 +329,50 @@ void Free_pshistogram_Ctrl (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *C) {	
 	GMT_free (GMT, C);	
 }
 
-int GMT_pshistogram_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_pshistogram_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: pshistogram [<table>] %s -W<width> [%s] [-C<cpt>] [-F] [-G<fill>] [-I[o|O]]\n", GMT_Jx_OPT, GMT_B_OPT);
-	GMT_message (GMT, "\t[%s] [-K] [-L<pen>] [-N[<mode>][+p<pen>]] [-O] [-P] [-Q] [%s] [-S]\n", GMT_Jz_OPT, GMT_Rx_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
-	GMT_message (GMT, "\t[-Z[0-5]] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_bi_OPT, GMT_c_OPT, GMT_f_OPT, GMT_h_OPT,
+	GMT_Message (API, GMT_TIME_NONE, "usage: pshistogram [<table>] %s -W<width> [%s] [-C<cpt>] [-F] [-G<fill>] [-I[o|O]]\n", GMT_Jx_OPT, GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-K] [-L<pen>] [-N[<mode>][+p<pen>]] [-O] [-P] [-Q] [%s] [-S]\n", GMT_Jz_OPT, GMT_Rx_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Z[0-5]] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_bi_OPT, GMT_c_OPT, GMT_f_OPT, GMT_h_OPT,
 		GMT_i_OPT, GMT_p_OPT, GMT_s_OPT, GMT_t_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Option (C, "JXZ");
-	GMT_message (GMT, "\t-W Set the bin width.\n");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_Option (C, "<,B-");
-	GMT_message (GMT, "\t-A Plot horizontal bars [Default is vertical].\n");
-	GMT_message (GMT, "\t-C Use cpt-file to assign fill to bars based on the mid x-value.\n");
-	GMT_message (GMT, "\t-F Center the bins.\n");
-	GMT_fill_syntax (GMT, 'G', "Select color/pattern for columns.");
-	GMT_message (GMT, "\t-I Inquire about min/max x and y.  No plotting is done.\n");
-	GMT_message (GMT, "\t   Append o to output the resulting x, y data.\n");
-	GMT_message (GMT, "\t   Append O to output all resulting x, y data even with y=0.\n");
-	GMT_Option (C, "K");
-	GMT_pen_syntax (GMT, 'L', "Specify pen to draw histogram.");
-	GMT_message (GMT, "\t-N Draw the equivalent normal distribution; append desired pen [0.25p,black].\n");
-	GMT_message (GMT, "\t   <mode> selects which central location and scale to use:\n");
-	GMT_message (GMT, "\t   0 = mean and standard deviation [Default]\n");
-	GMT_message (GMT, "\t   1 = median and L1 scale\n");
-	GMT_message (GMT, "\t   2 = LMS mode and scale\n");
-	GMT_message (GMT, "\t   The -N option may be repeated to draw several of these curves.\n");
-	GMT_Option (C, "O,P");
-	GMT_message (GMT, "\t-Q Plot a cumulative histogram.\n");
-	GMT_Option (C, "A");
-	GMT_message (GMT, "\t   If neither -R nor -I are set, w/e/s/n will be based on input data.\n");
-	GMT_message (GMT, "\t-S Draw a stairs-step diagram [Default is bar histogram].\n");
-	GMT_Option (C, "U,V,X");
-	GMT_message (GMT, "\t-Z To choose type of vertical axis.  Select from\n");
-	GMT_message (GMT, "\t   0 - Counts [Default].\n");
-	GMT_message (GMT, "\t   1 - Frequency percent.\n");
-	GMT_message (GMT, "\t   2 - Log (1+counts).\n");
-	GMT_message (GMT, "\t   3 - Log (1+frequency percent).\n");
-	GMT_message (GMT, "\t   4 - Log10 (1+counts).\n");
-	GMT_message (GMT, "\t   5 - Log10 (1+frequency percent).\n");
-	GMT_Option (C, "bi2,c,f,h,i,p,s,t,.");
+	GMT_Option (API, "JXZ");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Set the bin width.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Option (API, "<,B-");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Plot horizontal bars [Default is vertical].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Use cpt-file to assign fill to bars based on the mid x-value.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Center the bins.\n");
+	GMT_fill_syntax (API->GMT, 'G', "Select color/pattern for columns.");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Inquire about min/max x and y.  No plotting is done.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append o to output the resulting x, y data.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append O to output all resulting x, y data even with y=0.\n");
+	GMT_Option (API, "K");
+	GMT_pen_syntax (API->GMT, 'L', "Specify pen to draw histogram.");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Draw the equivalent normal distribution; append desired pen [0.25p,black].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <mode> selects which central location and scale to use:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   0 = mean and standard deviation [Default]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   1 = median and L1 scale\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   2 = LMS mode and scale\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The -N option may be repeated to draw several of these curves.\n");
+	GMT_Option (API, "O,P");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Plot a cumulative histogram.\n");
+	GMT_Option (API, "A");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If neither -R nor -I are set, w/e/s/n will be based on input data.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Draw a stairs-step diagram [Default is bar histogram].\n");
+	GMT_Option (API, "U,V,X");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z To choose type of vertical axis.  Select from\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   0 - Counts [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   1 - Frequency percent.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   2 - Log (1+counts).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   3 - Log (1+frequency percent).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   4 - Log10 (1+counts).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   5 - Log10 (1+frequency percent).\n");
+	GMT_Option (API, "bi2,c,f,h,i,p,s,t,.");
 
 	return (EXIT_FAILURE);
 }
@@ -442,7 +440,7 @@ int GMT_pshistogram_parse (struct GMTAPI_CTRL *C, struct PSHISTOGRAM_CTRL *Ctrl,
 					case '1': mode = PSHISTOGRAM_L1;	break;
 					case '2': mode = PSHISTOGRAM_LMS;	break;
 					default:
-					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -N: mode %c unrecognized.\n", opt->arg[0]);
+					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -N: mode %c unrecognized.\n", opt->arg[0]);
 					n_errors++;
 				}
 				Ctrl->N.selected[mode] = true;
@@ -461,7 +459,7 @@ int GMT_pshistogram_parse (struct GMTAPI_CTRL *C, struct PSHISTOGRAM_CTRL *Ctrl,
 				break;
 #ifdef GMT_COMPAT
 			case 'T':
-				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: The -T option is deprecated; use -i instead.\n");
+				GMT_Report (C, GMT_MSG_COMPAT, "Warning: The -T option is deprecated; use -i instead.\n");
 				n_errors += gmt_parse_i_option (GMT, opt->arg);
 				break;
 #endif
@@ -537,7 +535,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the pshistogram main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	GMT_memset (&F, 1, struct PSHISTOGRAM_INFO);
 	F.hist_type = PSHISTOGRAM_COUNTS;
 	F.hist_type = Ctrl->Z.mode;
@@ -596,11 +594,11 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 	}
 
 	if (n == 0) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Fatal error, read only 0 points.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Fatal error, read only 0 points.\n");
 		Return (EXIT_FAILURE);
 	}
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " points read\n", n);
+	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points read\n", n);
 
 	data = GMT_memory (GMT, data, n, double);
 
@@ -608,9 +606,9 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		sprintf (format, "Extreme values of the data :\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_report (GMT, GMT_MSG_VERBOSE, format, data[0], data[n-1]);
+		GMT_Report (API, GMT_MSG_VERBOSE, format, data[0], data[n-1]);
 		sprintf (format, "Locations: L2, L1, LMS; Scales: L2, L1, LMS\t%s\t%s\t%s\t%s\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_report (GMT, GMT_MSG_VERBOSE, format, stats[0], stats[1], stats[2], stats[3], stats[4], stats[5]);
+		GMT_Report (API, GMT_MSG_VERBOSE, format, stats[0], stats[1], stats[2], stats[3], stats[4], stats[5]);
 	}
 
 	if (F.wesn[XHI] == F.wesn[XLO]) {	/* Set automatic x range [ and tickmarks] */
@@ -631,13 +629,13 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 	}
 
 	if (fill_boxes (GMT, &F, data, n)) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Fatal error during box fill.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Fatal error during box fill.\n");
 		Return (EXIT_FAILURE);
 	}
 
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		sprintf (format, "min/max values are :\t%s\t%s\t%s\t%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_report (GMT, GMT_MSG_VERBOSE, format, x_min, x_max, F.yy0, F.yy1);
+		GMT_Report (API, GMT_MSG_VERBOSE, format, x_min, x_max, F.yy0, F.yy1);
 	}
 
 	if (Ctrl->I.active) {	/* Only info requested, quit before plotting */
@@ -659,7 +657,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 			
 			dim[3] = n_boxes;
 			if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, Ctrl->Out.file)) == NULL) {
-				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for histogram\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for histogram\n");
 				Return (API->error);
 			}
 			if ((error = GMT_set_cols (GMT, GMT_OUT, 2)) != GMT_OK) {
@@ -740,14 +738,14 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 			GMT->current.map.frame.draw = true;
 		}
 		if (GMT->current.proj.pars[0] == 0.0 && GMT->current.proj.pars[1] == 0.0) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Need to provide both x- and y-scale.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Need to provide both x- and y-scale.\n");
 			Return (EXIT_FAILURE);
 		}
 	}
 
 	if (automatic && GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		sprintf (format, "Use w/e/s/n = %s/%s/%s/%s and x-tick/y-tick = %s/%s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_report (GMT, GMT_MSG_VERBOSE, format, F.wesn[XLO], F.wesn[XHI], F.wesn[YLO], F.wesn[YHI], GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval, GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval);
+		GMT_Report (API, GMT_MSG_VERBOSE, format, F.wesn[XLO], F.wesn[XHI], F.wesn[YLO], F.wesn[YHI], GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval, GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval);
 	}
 
 	if (Ctrl->A.active) {
@@ -771,7 +769,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 
 	GMT_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	area = plot_boxes (GMT, PSL, P, &F, Ctrl->S.active, Ctrl->A.active, Ctrl->L.active, &Ctrl->L.pen, &Ctrl->G.fill, Ctrl->C.active);
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Area under histogram is %g\n", area);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Area under histogram is %g\n", area);
 	
 	if (Ctrl->N.active) {	/* Want to draw one or more normal distributions */
 		unsigned int k, NP = 101U;

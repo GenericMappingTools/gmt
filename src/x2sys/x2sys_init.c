@@ -103,46 +103,44 @@ void Free_x2sys_init_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *C) {	/*
 	GMT_free (GMT, C);
 }
 
-int GMT_x2sys_init_usage (struct GMTAPI_CTRL *C, int level) {
-	struct GMT_CTRL *GMT = C->GMT;
-
+int GMT_x2sys_init_usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: x2sys_init <TAG> [-Cc|f|g|e] [-D<deffile>] [-E<suffix>] [-F] [-G[d/g]] [-I[<binsize>]]\n");
-	GMT_message (GMT, "\t[-N[d|s][c|e|f|k|M|n]]] [%s] [%s] [-Wt|d|n<gap>] [-m]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
-	GMT_message (GMT, "\t<TAG> is the unique system identifier.  Files created will be placed in\n");
-	GMT_message (GMT, "\t   the directory X2SYS_HOME/<TAG>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_init <TAG> [-Cc|f|g|e] [-D<deffile>] [-E<suffix>] [-F] [-G[d/g]] [-I[<binsize>]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-N[d|s][c|e|f|k|M|n]]] [%s] [%s] [-Wt|d|n<gap>] [-m]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t<TAG> is the unique system identifier.  Files created will be placed in\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   the directory X2SYS_HOME/<TAG>.\n");
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-C Select procedure for along-track distance and azimuth calculations:\n");
-	GMT_message (GMT, "\t   c Plain Cartesian.\n");
-	GMT_message (GMT, "\t   f Flat Earth.\n");
-	GMT_message (GMT, "\t   g Great circle [Default].\n");
-	GMT_message (GMT, "\t   e Ellipsoidal (geodesic) using current ellipsoid.\n");
-	GMT_message (GMT, "\t-D Definition file for the track data set [<TAG>.def].\n");
-	GMT_message (GMT, "\t-E Extension (suffix) for these data files\n");
-	GMT_message (GMT, "\t   [Default equals the prefix for the definition file].\n");
-	GMT_message (GMT, "\t-F Force creating new files if old ones are present [Default will abort if old files are found].\n");
-	GMT_message (GMT, "\t-G Geographical coordinates; append g for discontinuity at Greenwich (output 0/360 [Default])\n");
-	GMT_message (GMT, "\t   and append d for discontinuity at Dateline (output -180/+180).\n");
-	GMT_message (GMT, "\t-I Set bin size for track bin index output [1/1].\n");
-	GMT_message (GMT, "\t-N Append (d)istances or (s)peed, and your choice for unit. Choose among:\n");
-	GMT_message (GMT, "\t   c Cartesian distance (user-dist-units, user user-dist-units/user-time-units).\n");
-	GMT_message (GMT, "\t   e Metric units I (meters, m/s).\n");
-	GMT_message (GMT, "\t   f British/US I (feet, feet/s).\n");
-	GMT_message (GMT, "\t   k Metric units II (km, km/hr).\n");
-	GMT_message (GMT, "\t   M British/US units II (miles, miles/hr).\n");
-	GMT_message (GMT, "\t   n Nautical units (nautical miles, knots).\n");
-	GMT_message (GMT, "\t   u Old US units (survey feet, survey feet/s).\n");
-	GMT_message (GMT, "\t   [Default is -Ndk -Nse].\n");
-	GMT_Option (C, "R");
-	GMT_message (GMT, "\t   [Default region is 0/360/-90/90].\n");
-	GMT_Option (C, "V");
-	GMT_message (GMT, "\t-W Set maximum gaps allowed at crossover.  Option may be repeated.\n");
-	GMT_message (GMT, "\t   -Wt sets maximum time gap (in user units) [Default is infinite].\n");
-	GMT_message (GMT, "\t   -Wd sets maximum distance gap (in user units) [Default is infinite].\n");
-	GMT_Option (C, "m,.");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Select procedure for along-track distance and azimuth calculations:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   c Plain Cartesian.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   f Flat Earth.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   g Great circle [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   e Ellipsoidal (geodesic) using current ellipsoid.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Definition file for the track data set [<TAG>.def].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Extension (suffix) for these data files\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default equals the prefix for the definition file].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Force creating new files if old ones are present [Default will abort if old files are found].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Geographical coordinates; append g for discontinuity at Greenwich (output 0/360 [Default])\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   and append d for discontinuity at Dateline (output -180/+180).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Set bin size for track bin index output [1/1].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Append (d)istances or (s)peed, and your choice for unit. Choose among:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   c Cartesian distance (user-dist-units, user user-dist-units/user-time-units).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   e Metric units I (meters, m/s).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   f British/US I (feet, feet/s).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   k Metric units II (km, km/hr).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   M British/US units II (miles, miles/hr).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   n Nautical units (nautical miles, knots).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   u Old US units (survey feet, survey feet/s).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is -Ndk -Nse].\n");
+	GMT_Option (API, "R");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default region is 0/360/-90/90].\n");
+	GMT_Option (API, "V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Set maximum gaps allowed at crossover.  Option may be repeated.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Wt sets maximum time gap (in user units) [Default is infinite].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Wd sets maximum distance gap (in user units) [Default is infinite].\n");
+	GMT_Option (API, "m,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -175,7 +173,7 @@ int GMT_x2sys_init_parse (struct GMTAPI_CTRL *C, struct X2SYS_INIT_CTRL *Ctrl, s
 			case 'C':	/* Distance calculation flag */
 				Ctrl->C.active = true;
 				if (!strchr ("cefg", (int)opt->arg[0])) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -C: Flag must be c, f, g, or e\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "ERROR -C: Flag must be c, f, g, or e\n");
 					n_errors++;
 				}
 				if (!n_errors) Ctrl->C.string = strdup (opt->arg);
@@ -210,12 +208,12 @@ int GMT_x2sys_init_parse (struct GMTAPI_CTRL *C, struct X2SYS_INIT_CTRL *Ctrl, s
 						k = 1;
 					case 's':	/* Speed unit selection */
 						if (!strchr ("c" GMT_LEN_UNITS2, (int)opt->arg[1])) {
-							GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -N%c: Unit must among c|%s\n", opt->arg[0], GMT_LEN_UNITS2_DISPLAY);
+							GMT_Report (C, GMT_MSG_NORMAL, "ERROR -N%c: Unit must among c|%s\n", opt->arg[0], GMT_LEN_UNITS2_DISPLAY);
 							n_errors++;
 						}
 						break;
 					default:
-						GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -N: Choose from -Nd and -Ns\n");
+						GMT_Report (C, GMT_MSG_NORMAL, "ERROR -N: Choose from -Nd and -Ns\n");
 						n_errors++;
 						break;
 				}
@@ -231,7 +229,7 @@ int GMT_x2sys_init_parse (struct GMTAPI_CTRL *C, struct X2SYS_INIT_CTRL *Ctrl, s
 					case 't':	/* Get new timegap */
 						break;
 					default:
-						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: -Wt|d<width>\n");
+						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: -Wt|d<width>\n");
 						n_errors++;
 						break;
 				}
@@ -293,11 +291,11 @@ int GMT_x2sys_init (void *V_API, int mode, void *args)
 	if (!Ctrl->D.active) Ctrl->D.file = strdup (Ctrl->In.TAG);	/* Default */
 	sprintf (def_file, "%s.def", Ctrl->D.file);
 	if (access (def_file, R_OK)) {	/* No such local *.def file */
-		GMT_report (GMT, GMT_MSG_NORMAL, "Unable to find local definition file : %s\n", def_file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Unable to find local definition file : %s\n", def_file);
 		Return (EXIT_FAILURE);
 	}
 	else if ((fp_def = fopen (def_file, "r")) == NULL) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Unable to open local definition file : %s\n", def_file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Unable to open local definition file : %s\n", def_file);
 		Return (EXIT_FAILURE);
 	}
 	for (d_start = strlen (Ctrl->D.file)-1; d_start >= 0 && Ctrl->D.file[d_start] != '/'; d_start--);	/* Find pos of last slash */
@@ -313,12 +311,12 @@ int GMT_x2sys_init (void *V_API, int mode, void *args)
 #else
 		if (mkdir (path)) {
 #endif
-			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create TAG directory : %s\n", path);
+			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create TAG directory : %s\n", path);
 			Return (EXIT_FAILURE);
 		}
 	}
 	else if (!Ctrl->F.active) {	/* Directory exists but -F not on */
-		GMT_report (GMT, GMT_MSG_NORMAL, "TAG directory already exists: %s\n", path);
+		GMT_Report (API, GMT_MSG_NORMAL, "TAG directory already exists: %s\n", path);
 		Return (EXIT_FAILURE);
 	}
 	
@@ -331,74 +329,74 @@ int GMT_x2sys_init (void *V_API, int mode, void *args)
 	sprintf (bin_file, "%s/%s_index.b", Ctrl->In.TAG, Ctrl->In.TAG);
 
 	if (!x2sys_access (GMT, tag_file, R_OK)) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "File exists: %s\n", tag_file);
+		GMT_Report (API, GMT_MSG_NORMAL, "File exists: %s\n", tag_file);
 		x2sys_path (GMT, tag_file, path);
 		if (Ctrl->F.active) {
 			if (remove (path))
-				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to remove %s\n", path);
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove %s\n", path);
 			else
-				GMT_report (GMT, GMT_MSG_NORMAL, "Removed file %s\n", path);
+				GMT_Report (API, GMT_MSG_NORMAL, "Removed file %s\n", path);
 		}
 		else 
 			n_found++;
 	}
 	if (!x2sys_access (GMT, def_file, R_OK)) {
-		GMT_message (GMT, "File exists: %s\n", def_file);
+		GMT_Message (API, GMT_TIME_NONE, "File exists: %s\n", def_file);
 		x2sys_path (GMT, def_file, path);
 		if (Ctrl->F.active) {
 			if (remove (path))
-				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to remove %s\n", path);
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove %s\n", path);
 			else
-				GMT_report (GMT, GMT_MSG_NORMAL, "Removed file %s\n", path);
+				GMT_Report (API, GMT_MSG_NORMAL, "Removed file %s\n", path);
 		}
 		else 
 			n_found++;
 	}
 	if (!x2sys_access (GMT, track_file, R_OK)) {
-		GMT_message (GMT, "File exists: %s\n", track_file);
+		GMT_Message (API, GMT_TIME_NONE, "File exists: %s\n", track_file);
 		x2sys_path (GMT, track_file, path);
 		if (Ctrl->F.active) {
 			if (remove (path))
-				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to remove %s\n", path);
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove %s\n", path);
 			else
-				GMT_report (GMT, GMT_MSG_NORMAL, "Removed file %s\n", path);
+				GMT_Report (API, GMT_MSG_NORMAL, "Removed file %s\n", path);
 		}
 		else 
 			n_found++;
 	}
 	if (!x2sys_access (GMT, path_file, R_OK)) {
-		GMT_message (GMT, "File exists: %s\n", path_file);
+		GMT_Message (API, GMT_TIME_NONE, "File exists: %s\n", path_file);
 		x2sys_path (GMT, path_file, path);
 		if (Ctrl->F.active) {
 			if (remove (path))
-				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to remove %s\n", path);
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove %s\n", path);
 			else
-				GMT_report (GMT, GMT_MSG_NORMAL, "Removed file %s\n", path);
+				GMT_Report (API, GMT_MSG_NORMAL, "Removed file %s\n", path);
 		}
 		else 
 			n_found++;
 	}
 	if (!x2sys_access (GMT, bin_file, R_OK)) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "File exists: %s\n", bin_file);
+		GMT_Report (API, GMT_MSG_NORMAL, "File exists: %s\n", bin_file);
 		x2sys_path (GMT, bin_file, path);
 		if (Ctrl->F.active) {
 			if (remove (path))
-				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to remove %s\n", path);
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to remove %s\n", path);
 			else
-				GMT_report (GMT, GMT_MSG_NORMAL, "Removed file %s\n", path);
+				GMT_Report (API, GMT_MSG_NORMAL, "Removed file %s\n", path);
 		}
 		else 
 			n_found++;
 	}
 	if (n_found) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Remove/rename old files or use -F to overwrite\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Remove/rename old files or use -F to overwrite\n");
 		Return (EXIT_FAILURE);
 	}
 
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Initialize %s\n", tag_file);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Initialize %s\n", tag_file);
 	if ((fp = x2sys_fopen (GMT, tag_file, "w")) == NULL) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Could not create file %s\n", tag_file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Could not create file %s\n", tag_file);
 		Return (EXIT_FAILURE);
 	}
 
@@ -422,9 +420,9 @@ int GMT_x2sys_init (void *V_API, int mode, void *args)
 
 	/* Initialize the system's definition file  */
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Initialize %s\n", def_file);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Initialize %s\n", def_file);
 	if ((fp = x2sys_fopen (GMT, def_file, "w")) == NULL) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Could not create %s\n", def_file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Could not create %s\n", def_file);
 		Return (EXIT_FAILURE);
 	}
 	while (fgets (line, GMT_BUFSIZ, fp_def)) fprintf (fp, "%s", line);
@@ -433,9 +431,9 @@ int GMT_x2sys_init (void *V_API, int mode, void *args)
 
 	/* Initialize the system's tracks data base  */
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Initialize %s\n", track_file);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Initialize %s\n", track_file);
 	if ((fp = x2sys_fopen (GMT, track_file, "w")) == NULL) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Could not create %s\n", track_file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Could not create %s\n", track_file);
 		Return (EXIT_FAILURE);
 	}
 	fprintf (fp,"# %s\n", Ctrl->In.TAG);	/* Write header record to empty track file */
@@ -444,18 +442,18 @@ int GMT_x2sys_init (void *V_API, int mode, void *args)
 
 	/* Initialize the system's index data base  */
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Initialize %s\n", bin_file);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Initialize %s\n", bin_file);
 	if ((fp = x2sys_fopen (GMT, bin_file, "wb")) == NULL) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Could not create %s\n", bin_file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Could not create %s\n", bin_file);
 		Return (EXIT_FAILURE);
 	}
 	x2sys_err_fail (GMT, x2sys_fclose (GMT, bin_file, fp), bin_file);
 
 	/* Initialize the system's track path file  */
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Initialize %s\n", path_file);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Initialize %s\n", path_file);
 	if ((fp = x2sys_fopen (GMT, path_file, "wb")) == NULL) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Could not create %s\n", path_file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Could not create %s\n", path_file);
 		Return (EXIT_FAILURE);
 	}
 	fprintf (fp, "# Directories with data files for TAG %s\n", Ctrl->In.TAG);
@@ -463,7 +461,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args)
 	fprintf (fp, "# Add full paths to search additional directories\n");
 	x2sys_err_fail (GMT, x2sys_fclose (GMT, path_file, fp), path_file);
 	
-	GMT_report (GMT, GMT_MSG_VERBOSE, "completed successfully\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "completed successfully\n");
 
 	GMT_free (GMT, X2SYS_HOME);
 

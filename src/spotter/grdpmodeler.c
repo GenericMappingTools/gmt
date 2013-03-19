@@ -91,36 +91,33 @@ void Free_grdpmodeler_Ctrl (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *C) {	/
 	GMT_free (GMT, C);	
 }
 
-
-int GMT_grdpmodeler_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_grdpmodeler_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grdpmodeler <agegrdfile> -E<rottable> -G<outgrid> [-F<polygontable>]\n");
-	GMT_message (GMT, "\t[%s] [%s] [-Sa|d|r|w|x|y|X|Y] [-T<time>] [%s] [%s] [%s]\n\t[%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdpmodeler <agegrdfile> -E<rottable> -G<outgrid> [-F<polygontable>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Sa|d|r|w|x|y|X|Y] [-T<time>] [%s] [%s] [%s]\n\t[%s] [%s]\n\n",
 		GMT_Id_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<agegrdfile> is a gridded data file in geographic coordinates with crustal ages.\n");
-	GMT_message (GMT, "\t-E Specify the rotation file to be used (see man page for format).\n");
-	GMT_message (GMT, "\t-G Set output filename with the model predictions.\n");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-F Specify a multi-segment closed polygon file that describes the area\n");
-	GMT_message (GMT, "\t   of the grid to work on [Default works on the entire grid].\n");
-	GMT_Option (C, "Rg");
-	GMT_message (GMT, "\t-S Select a model prediction as a function of crustal age.  Choose among:\n");
-	GMT_message (GMT, "\t   a : Plate spreading azimuth.\n");
-	GMT_message (GMT, "\t   d : Distance to origin of crust in km.\n");
-	GMT_message (GMT, "\t   r : Plate motion rate in mm/yr or km/Myr.\n");
-	GMT_message (GMT, "\t   w : Rotation rate in degrees/Myr.\n");
-	GMT_message (GMT, "\t   x : Change in longitude since formation.\n");
-	GMT_message (GMT, "\t   y : Change in latitude since formation.\n");
-	GMT_message (GMT, "\t   X : Congitude at origin of crust.\n");
-	GMT_message (GMT, "\t   Y : Latitude at origin of crust.\n");
-	GMT_message (GMT, "\t-T Set fixed time of reconstruction to override age grid.\n");
-	GMT_Option (C, "V,bi2,h,i,r,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t<agegrdfile> is a gridded data file in geographic coordinates with crustal ages.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Specify the rotation file to be used (see man page for format).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Set output filename with the model predictions.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify a multi-segment closed polygon file that describes the area\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   of the grid to work on [Default works on the entire grid].\n");
+	GMT_Option (API, "Rg");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Select a model prediction as a function of crustal age.  Choose among:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   a : Plate spreading azimuth.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   d : Distance to origin of crust in km.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   r : Plate motion rate in mm/yr or km/Myr.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   w : Rotation rate in degrees/Myr.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   x : Change in longitude since formation.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   y : Change in latitude since formation.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   X : Congitude at origin of crust.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Y : Latitude at origin of crust.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Set fixed time of reconstruction to override age grid.\n");
+	GMT_Option (API, "V,bi2,h,i,r,.");
 	
 	return (EXIT_FAILURE);
 
@@ -292,7 +289,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 		pol = D->table[0];	/* Since it is a single file */
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Restrict evalution to within polygons in file %s\n", Ctrl->F.file);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Restrict evalution to within polygons in file %s\n", Ctrl->F.file);
 	}
 
 	n_stages = spotter_init (GMT, Ctrl->E.file, &p, false, false, 0, &t_max);
@@ -305,7 +302,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 		}
 	}
 	if (Ctrl->T.active && Ctrl->T.value > t_max) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Requested a fixed reconstruction time outside range of rotation table\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Requested a fixed reconstruction time outside range of rotation table\n");
 		GMT_free (GMT, p);
 		Return (EXIT_FAILURE);
 	}
@@ -325,7 +322,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 
 	/* Loop over all nodes in the new rotated grid and find those inside the reconstructed polygon */
 	
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Evalute model prediction grid\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Evalute model prediction grid\n");
 
 	GMT_init_distaz (GMT, (Ctrl->S.mode == PM_DIST) ? 'k' : 'd', GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Great circle distances in degrees, or km if -Sd */
 	if (Ctrl->S.mode == PM_DLON) GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;	/* Need +- around 0 here */
@@ -388,7 +385,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 	
 	/* Now write model prediction grid */
 	
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Write predicted grid\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Write predicted grid\n");
 
 	strcpy (G_mod->header->x_units, "degrees_east");
 	strcpy (G_mod->header->y_units, "degrees_north");
@@ -424,7 +421,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 	GMT_free (GMT, grd_yc);
 	GMT_free (GMT, p);
 	
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Done!\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 
 	Return (GMT_OK);
 }

@@ -109,23 +109,21 @@ void Free_fitcircle_Ctrl (struct GMT_CTRL *GMT, struct FITCIRCLE_CTRL *C) {	/* D
 	GMT_free (GMT, C);	
 }
 
-int GMT_fitcircle_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_fitcircle_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: fitcircle [<table>] -L[<norm>] [-S[<lat>]] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: fitcircle [<table>] -L[<norm>] [-S[<lat>]] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t-L Specify <norm> as -L1 or -L2; or use -L or -L3 to give both.\n");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_Option (C, "<");
-	GMT_message (GMT, "\t-S Attempt to fit a small circle rather than a great circle.\n");
-	GMT_message (GMT, "\t   Optionally append the latitude <lat> of the small circle you want to fit.\n");
-	GMT_Option (C, "V,a,bi,f,g,h,i,o,:,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Specify <norm> as -L1 or -L2; or use -L or -L3 to give both.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Option (API, "<");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Attempt to fit a small circle rather than a great circle.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append the latitude <lat> of the small circle you want to fit.\n");
+	GMT_Option (API, "V,a,bi,f,g,h,i,o,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -268,7 +266,7 @@ double get_small_circle (struct GMT_CTRL *GMT, struct FITCIRCLE_DATA *data, uint
 	} while (j < 90 && fit > bfit && fit > afit);
 
 	if (j == 90) {	/* Bad news.  There isn't a better fitting pole anywhere.  */
-		GMT_report (GMT, GMT_MSG_NORMAL, "Sorry.  Cannot find small circle fitting better than great circle.\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Sorry.  Cannot find small circle fitting better than great circle.\n");
 		GMT_cpy3v (scpole, gcpole);
 		return (-1.0);
 	}
@@ -356,7 +354,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the fitcircle main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 
 	/* Initialize the i/o since we are doing record-by-record reading/writing */
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
@@ -398,7 +396,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args)
 	}
 
  	if (n_data == 0) {	/* Blank/empty input files */
-		GMT_report (GMT, GMT_MSG_VERBOSE, "No data records found; no output produced");
+		GMT_Report (API, GMT_MSG_VERBOSE, "No data records found; no output produced");
 		GMT_free (GMT, data);
 		Return (EXIT_SUCCESS);
 	}
@@ -411,7 +409,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args)
 		Return (API->error);	/* Enables data output and sets access mode */
 	}
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Fitting %s circle using %s norm.\n", type[Ctrl->S.active], way[Ctrl->L.norm]);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Fitting %s circle using %s norm.\n", type[Ctrl->S.active], way[Ctrl->L.norm]);
 
 	lonsum /= n_data;	latsum /= n_data;
 	sprintf (record, "%" PRIu64 " points read, Average Position (Flat Earth): ", n_data);
@@ -482,10 +480,10 @@ int GMT_fitcircle (void *V_API, int mode, void *args)
 			a[j + k*np] += (data[i].x[j]*data[i].x[k]);
 
 		if (GMT_jacobi (GMT, a, n, np, lambda, v, b, z, &nrots)) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Eigenvalue routine failed to converge in 50 sweeps.\n");
-			GMT_report (GMT, GMT_MSG_NORMAL, "The reported L2 positions might be garbage.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Eigenvalue routine failed to converge in 50 sweeps.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "The reported L2 positions might be garbage.\n");
 		}
-		GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Eigenvalue routine converged in %d rotations.\n", nrots);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Eigenvalue routine converged in %d rotations.\n", nrots);
 		imax = 0;	imin = 2;
 		if (d_acos (GMT_dot3v (GMT, v, meanv)) > M_PI_2)
 			for (i = 0; i < 3; i++) meanv[i] = -v[imax*np+i];

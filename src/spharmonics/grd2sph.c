@@ -74,41 +74,39 @@ void Free_sph2grd_Ctrl (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);	
 }
 
-int GMT_sph2grd_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_sph2grd_usage (struct GMTAPI_CTRL *API, int level)
 {
 	char type[3] = {'l', 'a', 'c'};
-	struct GMT_CTRL *GMT = C->GMT;
 
-	GMT_message (GMT, "sph2grd - Evaluate spherical harmonic models on a grid\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "sph2grd - Evaluate spherical harmonic models on a grid\n\n");
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: sph2grd [coeff_file] %s %s [-Dg|n]\n", GMT_I_OPT, GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-E] [-F] [-G<grdfile>] [-L[d]<filter>] [-N<norm>] [-Q] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_h_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: sph2grd [coeff_file] %s %s [-Dg|n]\n", GMT_I_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-E] [-F] [-G<grdfile>] [-L[d]<filter>] [-N<norm>] [-Q] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_h_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_explain_options ("Rg");
-	GMT_inc_syntax ('I', 0);
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_Option (C, "<");
-	GMT_message (GMT, "	The input is expected to contain records of degree, order, cos, sin.\n");
-	GMT_message (GMT, "\t-D Will evaluate a derived field from a geopotential model.  Choose between\n");
-	GMT_message (GMT, "\t   -Dg will compute the gravitational field [Add -E for anomalies on ellipsoid]\n");
-	GMT_message (GMT, "\t   -Dn will compute the geoid [Add -E for anomalies on ellipsoid]\n");
-	GMT_message (GMT, "\t-E to evaluate expansion on the current ellipsoid [Default is sphere]\n");
-	GMT_message (GMT, "\t-F Force pixel registration [Default is gridline registration].\n");
-	GMT_message (GMT, "\t-G filename for output grid file\n");
-	GMT_message (GMT, "\t-L Filter coefficients according to one of two kinds of filter specifications:.\n");
-	GMT_message (GMT, "\t   Use -Ld if values are given in terms of coefficient degrees [Default is km]\n");
-	GMT_message (GMT, "\t   a) Cosine band-pass: Append four wavelengths <lc>/<lp>/<hp>/<hc>.\n");
-	GMT_message (GMT, "\t      coefficients outside <lc>/<hc> are cut; inside <lp>/<hp> are passed, rest are tapered.\n");
-	GMT_message (GMT, "\t      Replace wavelength by - to skip, e.g., -L-/-/500/100 is a low-pass filter.\n");
-	GMT_message (GMT, "\t   b) Gaussian band-pass: Append two wavelengths <lo>/<hi> where filter amplitudes = 0.5.\n");
-	GMT_message (GMT, "\t      Replace wavelength by - to skip, e.g., -L300/- is a high-pass Gaussian filter.\n");
-	GMT_message (GMT, "\t-N Normalization used for coefficients.  Choose among\n");
-	GMT_message (GMT, "\t   m: Mathematical normalization - inner products summed over surface equal 1 [Default]\n");
-	GMT_message (GMT, "\t   g: Geodesy normalization - inner products summed over surface equal 4pi\n");
-	GMT_message (GMT, "\t   s: Schmidt normalization - as used in geomagnetism\n");
-	GMT_message (GMT, "\t-Q Coefficients have phase convention from physics, i.e., the (-1)^m factor\n");
+	GMT_explain_options ("I,Rg");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Option (API, "<");
+	GMT_Message (API, GMT_TIME_NONE, "	The input is expected to contain records of degree, order, cos, sin.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Will evaluate a derived field from a geopotential model.  Choose between\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Dg will compute the gravitational field [Add -E for anomalies on ellipsoid]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Dn will compute the geoid [Add -E for anomalies on ellipsoid]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E to evaluate expansion on the current ellipsoid [Default is sphere]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Force pixel registration [Default is gridline registration].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G filename for output grid file\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Filter coefficients according to one of two kinds of filter specifications:.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ld if values are given in terms of coefficient degrees [Default is km]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   a) Cosine band-pass: Append four wavelengths <lc>/<lp>/<hp>/<hc>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      coefficients outside <lc>/<hc> are cut; inside <lp>/<hp> are passed, rest are tapered.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      Replace wavelength by - to skip, e.g., -L-/-/500/100 is a low-pass filter.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   b) Gaussian band-pass: Append two wavelengths <lo>/<hi> where filter amplitudes = 0.5.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      Replace wavelength by - to skip, e.g., -L300/- is a high-pass Gaussian filter.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Normalization used for coefficients.  Choose among\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   m: Mathematical normalization - inner products summed over surface equal 1 [Default]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   g: Geodesy normalization - inner products summed over surface equal 4pi\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   s: Schmidt normalization - as used in geomagnetism\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Coefficients have phase convention from physics, i.e., the (-1)^m factor\n");
 	GMT_explain_options ("V,bi4,h,i,.");
 	
 	return (EXIT_FAILURE);
@@ -280,7 +278,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 	GMT_row_loop (GMT, Grid, row) {	/* For each output latitude */
 		lat = GMT_grd_row_to_y (GMT, row, Grid->header);	/* Current latitude */
 		GMT_ascii_format_col (GMT, text, lat, GMT_Y);
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Working on latitude: %s", text);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Working on latitude: %s", text);
 		/* Compute all P_lm needed with GMT_set_Plm */
 		GMT_col_loop (GMT, Grid, row, col, node) {	/* For each longitude along this parallel */
 			for (L = LL_start; L <= L_stop; L++) {

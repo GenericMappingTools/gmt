@@ -119,69 +119,69 @@ void Free_pspolar_Ctrl (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
-int GMT_pspolar_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_pspolar_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	/* This displays the pspolar synopsis and optionally full usage information */
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: pspolar [<table>] %s %s\n", GMT_J_OPT, GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t-D<longitude>/<latitude> -M<size>[i/c] -S<symbol><size>[i/c]\n");
-	GMT_message (GMT, "\t[-A] [%s] [-C<longitude>/<latitude>[W<pen>][P<pointsize>]] [-E<fill>]\n", GMT_B_OPT);
-	GMT_message (GMT, "\t[-e[<pen>]] [-F<fill>] [-f[<pen>]] [-G<fill>] [-g[<pen>]] [-K] [-N] [-O] [-P]\n");
-	GMT_message (GMT, "\t[-s<half-size>/[V[<v_width>/<h_length>/<h_width>/<shape>]][G<fill>][L]\n");
-	GMT_message (GMT, "\t[-T[<labelinfo>]] [-t<pen>] [%s] [-V] [-W<pen>]\n", GMT_U_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_h_OPT, GMT_i_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: pspolar [<table>] %s %s\n", GMT_J_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t-D<longitude>/<latitude> -M<size>[i/c] -S<symbol><size>[i/c]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-A] [%s] [-C<longitude>/<latitude>[W<pen>][P<pointsize>]] [-E<fill>]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-e[<pen>]] [-F<fill>] [-f[<pen>]] [-G<fill>] [-g[<pen>]] [-K] [-N] [-O] [-P]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-s<half-size>/[V[<v_width>/<h_length>/<h_width>/<shape>]][G<fill>][L]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-T[<labelinfo>]] [-t<pen>] [%s] [-V] [-W<pen>]\n", GMT_U_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_h_OPT, GMT_i_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Option (C, "J-,R");
-	GMT_message (GMT, "\t-D Set longitude/latitude.\n");
-	GMT_message (GMT, "\t-M Set size of beach ball in %s.\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-	GMT_message (GMT, "\t-S Select symbol type and symbol size (in %s).  Choose between:\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-	GMT_message (GMT, "\t   st(a)r, (c)ircle, (d)iamond, (h)exagon, (i)nvtriangle\n");
-	GMT_message (GMT, "\t   (p)oint, (s)quare, (t)riangle, and (x)cross.\n");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_Option (C, "<,B-");
-	GMT_message (GMT, "\t-C Set new_longitude/new_latitude[W<pen>][Ppointsize].\n");
-	GMT_message (GMT, "\t   A line will be plotted between both positions.\n");
-	GMT_message (GMT, "\t   Default is width = 3, color = current pen and pointsize = 0.015i.\n");
-	GMT_message (GMT, "\t-E Specify color symbol for station in extensive part.\n");
-	GMT_message (GMT, "\t   Fill can be either <r/g/b> (each 0-255) for color \n");
-	GMT_message (GMT, "\t   or <gray> (0-255) for gray-shade [0].\n");
-	GMT_message (GMT, "\t   Default is light gray.\n");
-	GMT_message (GMT, "\t-e Outline of station symbol in extensive part.\n");
-	GMT_message (GMT, "\t   Default is current pen.\n");
-	GMT_message (GMT, "\t-F Specify background color of beach ball. It can be\n");
-	GMT_message (GMT, "\t   <r/g/b> (each 0-255) for color or <gray> (0-255) for gray-shade [0].\n");
-	GMT_message (GMT, "\t   [Default is no fill].\n");
-	GMT_message (GMT, "\t-f Outline beach ball.  Add <pen attributes> if not current pen.\n");
-	GMT_message (GMT, "\t-G Specify color symbol for station in compressive part. Fill can be either\n");
-	GMT_message (GMT, "\t   Fill can be either <r/g/b> (each 0-255) for color\n");
-	GMT_message (GMT, "\t   or <gray> (0-255) for gray-shade [0].\n");
-	GMT_message (GMT, "\t   Add L[<pen>] to outline [Default is black].\n");
-	GMT_message (GMT, "\t-g Outline of station symbol in compressive part.\n");
-	GMT_message (GMT, "\t   Add <pen attributes> if not current pen.\n");
-	GMT_message (GMT, "\t-h Use special format derived from HYPO71 output.\n");
-	GMT_Option (C, "K");
-	GMT_message (GMT, "\t-N Do Not skip/clip symbols that fall outside map border\n");
-	GMT_message (GMT, "\t   [Default will ignore those outside].\n");
-	GMT_Option (C, "O,P");
-	GMT_message (GMT, "\t-s Plot S polarity azimuth.\n");
-	GMT_message (GMT, "\t   Azimuth of S polarity is in last column.\n");
-	GMT_message (GMT, "\t   It may be a vector (V option) or a segment. Give half-size in cm.\n");
-	GMT_message (GMT, "\t   L option is for outline\n");
-	GMT_message (GMT, "\t   -s<half-size>/[V[<v_width>/<h_length></h_width>/<shape>]][G<fill>][L]\n");
-	GMT_message (GMT, "\t   Default definition of v is 0.075/0.3/0.25/1\n");
-	GMT_message (GMT, "\t   Outline is current pen\n");
-	GMT_message (GMT, "\t-T[<info about labal printing>] to write station code.\n");
-	GMT_message (GMT, "\t   <angle/form/justify/fontsize in points>\n");
-	GMT_message (GMT, "\t   [Default is 0.0/0/5/12].\n");
-	GMT_message (GMT, "\t-t Set pen attributes to write station codes [default is current pen].\n");
-	GMT_Option (C, "U,V");
-	GMT_message (GMT,  "\t-W Set pen attributes [%s].\n", GMT_putpen (GMT, GMT->current.setting.map_default_pen));
-	GMT_Option (C, "X,c,h,i,.");
+	GMT_Option (API, "J-,R");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Set longitude/latitude.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Set size of beach ball in %s.\n",
+		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Select symbol type and symbol size (in %s).  Choose between:\n",
+		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+	GMT_Message (API, GMT_TIME_NONE, "\t   st(a)r, (c)ircle, (d)iamond, (h)exagon, (i)nvtriangle\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   (p)oint, (s)quare, (t)riangle, and (x)cross.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Option (API, "<,B-");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Set new_longitude/new_latitude[W<pen>][Ppointsize].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   A line will be plotted between both positions.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default is width = 3, color = current pen and pointsize = 0.015i.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Specify color symbol for station in extensive part.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Fill can be either <r/g/b> (each 0-255) for color \n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   or <gray> (0-255) for gray-shade [0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default is light gray.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-e Outline of station symbol in extensive part.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default is current pen.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify background color of beach ball. It can be\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <r/g/b> (each 0-255) for color or <gray> (0-255) for gray-shade [0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is no fill].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-f Outline beach ball.  Add <pen attributes> if not current pen.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify color symbol for station in compressive part. Fill can be either\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Fill can be either <r/g/b> (each 0-255) for color\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   or <gray> (0-255) for gray-shade [0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Add L[<pen>] to outline [Default is black].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-g Outline of station symbol in compressive part.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Add <pen attributes> if not current pen.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-h Use special format derived from HYPO71 output.\n");
+	GMT_Option (API, "K");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Do Not skip/clip symbols that fall outside map border\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default will ignore those outside].\n");
+	GMT_Option (API, "O,P");
+	GMT_Message (API, GMT_TIME_NONE, "\t-s Plot S polarity azimuth.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Azimuth of S polarity is in last column.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   It may be a vector (V option) or a segment. Give half-size in cm.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   L option is for outline\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -s<half-size>/[V[<v_width>/<h_length></h_width>/<shape>]][G<fill>][L]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default definition of v is 0.075/0.3/0.25/1\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Outline is current pen\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T[<info about labal printing>] to write station code.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <angle/form/justify/fontsize in points>\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is 0.0/0/5/12].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-t Set pen attributes to write station codes [default is current pen].\n");
+	GMT_Option (API, "U,V");
+	GMT_Message (API, GMT_TIME_NONE,  "\t-W Set pen attributes [%s].\n", GMT_putpen (API->GMT, API->GMT->current.setting.map_default_pen));
+	GMT_Option (API, "X,c,h,i,.");
 
 	return (EXIT_FAILURE);
 }
@@ -296,7 +296,7 @@ int GMT_pspolar_parse (struct GMTAPI_CTRL *C, struct PSPOLAR_CTRL *Ctrl, struct 
 						break;
 					default:
 						n_errors++;
-						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -S option: Unrecognized symbol type %c\n", Ctrl->S.type);
+						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -S option: Unrecognized symbol type %c\n", Ctrl->S.type);
 						break;
 				}
 				break;
@@ -423,7 +423,7 @@ int GMT_pspolar (void *V_API, int mode, void *args)
 	if (Ctrl->N.active) {
 		GMT_map_outside (GMT, Ctrl->D.lon, Ctrl->D.lat);
 		if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) {
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Point give by -D is outside map; no plotting occours.");
+			GMT_Report (API, GMT_MSG_VERBOSE, "Point give by -D is outside map; no plotting occours.");
 			Return (GMT_OK);
 		};
 	}

@@ -147,60 +147,60 @@ int compare_x (const void *point_1, const void *point_2)
 	return (0);
 }
 
-int GMT_gmtselect_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_gmtselect_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: gmtselect [<table>] [%s]\n", GMT_A_OPT);
-	GMT_message (GMT, "\t[-C%s/<ptfile>] [-D<resolution>][+] [-E[f][n]] [-F<polygon>] [%s]\n", GMT_DIST_OPT, GMT_J_OPT);
-	GMT_message (GMT, "\t[-I[cflrsz] [-L[p]%s/<lfile>] [-N<info>] [%s]\n\t[%s] [%s] [-Z<min>/<max>] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtselect [<table>] [%s]\n", GMT_A_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C%s/<ptfile>] [-D<resolution>][+] [-E[f][n]] [-F<polygon>] [%s]\n", GMT_DIST_OPT, GMT_J_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I[cflrsz] [-L[p]%s/<lfile>] [-N<info>] [%s]\n\t[%s] [%s] [-Z<min>/<max>] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_DIST_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_Option (C, "<");
-	GMT_GSHHS_syntax (GMT, 'A', "Place limits on coastline features from the GSHHS data base (ignored  unless -N is set).");
-	GMT_dist_syntax (GMT, 'C', "Pass locations that are within <dist> of any point in the ASCII <ptfile>.");
-	GMT_message (GMT, "\t   Give distance as 0 if 3rd column of <ptfile> has individual distances.\n");
-	GMT_message (GMT, "\t   Use -R -J to compute mapped Cartesian distances in cm, inch, m, or points [%s].\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-	GMT_message (GMT, "\t-D Choose one of the following resolutions: (Ignored unless -N is set).\n");
-	GMT_message (GMT, "\t   f - full resolution (may be very slow for large regions).\n");
-	GMT_message (GMT, "\t   h - high resolution (may be slow for large regions).\n");
-	GMT_message (GMT, "\t   i - intermediate resolution.\n");
-	GMT_message (GMT, "\t   l - low resolution [Default].\n");
-	GMT_message (GMT, "\t   c - crude resolution, for tasks that need crude continent outlines only.\n");
-	GMT_message (GMT, "\t   Append + to use a lower resolution should the chosen one not be available [abort].\n");
-	GMT_message (GMT, "\t-E Indicate if points exactly on a polygon boundary are inside or outside.\n");
-	GMT_message (GMT, "\t   Append f and/or n to modify the -F option or -N option, respectively,\n");
-	GMT_message (GMT, "\t   to consider such points to be outside the feature [inside].\n");
-	GMT_message (GMT, "\t   Give distance as 0 if 2nd column of segment headers have individual distances.\n");
-	GMT_message (GMT, "\t   Use -R -J to compute mapped Cartesian distances in cm, inch, m, or points [%s].\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-	GMT_message (GMT, "\t   Optionally, use -Lp to exclude points projecting beyond a line's endpoints.\n");
-	GMT_message (GMT, "\t-F Pass locations that are inside the polygons in the ASCII <polygon> file.\n");
-	GMT_message (GMT, "\t-I Reverse the tests, i.e., pass locations outside the region.\n");
-	GMT_message (GMT, "\t   Supply a combination of cflrz where each flag means:\n");
-	GMT_message (GMT, "\t   c will pass locations beyond the minimum distance to the points in -C.\n");
-	GMT_message (GMT, "\t   f will pass locations outside the polygons in -F.\n");
-	GMT_message (GMT, "\t   l will pass locations beyond the minimum distance to the lines in -L.\n");
-	GMT_message (GMT, "\t   r will pass locations outside the region given in -R [and -J].\n");
-	GMT_message (GMT, "\t   s will pass locations that otherwise would be skipped in -N.\n");
-	GMT_message (GMT, "\t   z will pass locations outside the range given in -Z.\n");
-	GMT_Option (C, "J");
-	GMT_dist_syntax (GMT, 'L', "Pass locations that are within <dist> of any line in ASCII <linefile>.");
-	GMT_message (GMT, "\t-N Set if a point outside or inside a geographic feature should be s(kipped) or k(ept).\n");
-	GMT_message (GMT, "\t   Append o to let feature boundary be considered outside [Default is inside].\n");
-	GMT_message (GMT, "\t   Specify this information with s or k using 1 of 2 formats:\n");
-	GMT_message (GMT, "\t   -N<wet>/<dry>.\n");
-	GMT_message (GMT, "\t   -N<ocean>/<land>/<lake>/<island>/<pond>.\n");
-	GMT_message (GMT, "\t   k means keep and s means skip [Default is s/k/s/k/s (i.e., s/k)].\n");
-	GMT_Option (C, "R,V");
-	GMT_message (GMT, "\t-Z Assume the 3rd data column contains z-values and we want to keep records with\n");
-	GMT_message (GMT, "\t   <min> <= z <= <max>.  Use - for <min> or <max> if there is no lower/upper limit.\n");
-	GMT_Option (C, "a,bi0");
-	GMT_message (GMT, "\t   Default is 2 input columns (3 if -Z is used).\n");
-	GMT_Option (C, "bo,f,g,h,i,o,s,:,.");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Option (API, "<,A");
+	GMT_Message (API, GMT_TIME_NONE, "\t   (ignored  unless -N is set).");
+	GMT_dist_syntax (API->GMT, 'C', "Pass locations that are within <dist> of any point in the ASCII <ptfile>.");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Give distance as 0 if 3rd column of <ptfile> has individual distances.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -R -J to compute mapped Cartesian distances in cm, inch, m, or points [%s].\n",
+		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Choose one of the following resolutions: (Ignored unless -N is set).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   f - full resolution (may be very slow for large regions).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   h - high resolution (may be slow for large regions).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   i - intermediate resolution.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   l - low resolution [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   c - crude resolution, for tasks that need crude continent outlines only.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append + to use a lower resolution should the chosen one not be available [abort].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Indicate if points exactly on a polygon boundary are inside or outside.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append f and/or n to modify the -F option or -N option, respectively,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   to consider such points to be outside the feature [inside].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Give distance as 0 if 2nd column of segment headers have individual distances.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -R -J to compute mapped Cartesian distances in cm, inch, m, or points [%s].\n",
+		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, use -Lp to exclude points projecting beyond a line's endpoints.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Pass locations that are inside the polygons in the ASCII <polygon> file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Reverse the tests, i.e., pass locations outside the region.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Supply a combination of cflrz where each flag means:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   c will pass locations beyond the minimum distance to the points in -C.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   f will pass locations outside the polygons in -F.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   l will pass locations beyond the minimum distance to the lines in -L.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   r will pass locations outside the region given in -R [and -J].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   s will pass locations that otherwise would be skipped in -N.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   z will pass locations outside the range given in -Z.\n");
+	GMT_Option (API, "J");
+	GMT_dist_syntax (API->GMT, 'L', "Pass locations that are within <dist> of any line in ASCII <linefile>.");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Set if a point outside or inside a geographic feature should be s(kipped) or k(ept).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append o to let feature boundary be considered outside [Default is inside].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Specify this information with s or k using 1 of 2 formats:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -N<wet>/<dry>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -N<ocean>/<land>/<lake>/<island>/<pond>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   k means keep and s means skip [Default is s/k/s/k/s (i.e., s/k)].\n");
+	GMT_Option (API, "R,V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Assume the 3rd data column contains z-values and we want to keep records with\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <min> <= z <= <max>.  Use - for <min> or <max> if there is no lower/upper limit.\n");
+	GMT_Option (API, "a,bi0");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default is 2 input columns (3 if -Z is used).\n");
+	GMT_Option (API, "bo,f,g,h,i,o,s,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -237,7 +237,7 @@ int GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl, str
 				Ctrl->C.active = true;
 #ifdef GMT_COMPAT
 				if (opt->arg[0] == 'f') {
-					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -Cf is deprecated; use -C- instead\n");
+					GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -Cf is deprecated; use -C- instead\n");
 					opt->arg[0] = '-';
 					fix = true;
 				}
@@ -250,7 +250,7 @@ int GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl, str
 					opt->arg[j] = '/';	/* Restore the /filename part */
 				}
 				else {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -C option: Expects -C%s/<file>\n", GMT_DIST_OPT);
+					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -C option: Expects -C%s/<file>\n", GMT_DIST_OPT);
 					n_errors++;
 				}
 #ifdef GMT_COMPAT
@@ -273,7 +273,7 @@ int GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl, str
 							Ctrl->E.inside[N_ITEM] = GMT_INSIDE;
 							break;
 						default:
-							GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -E option: Expects -Ef, -En, or -Efn\n");
+							GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -E option: Expects -Ef, -En, or -Efn\n");
 							n_errors++;
 							break;
 					}
@@ -306,7 +306,7 @@ int GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl, str
 							Ctrl->I.pass[5] = false;
 							break;
 						default:
-							GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -I option: Expects -Icflrsz\n");
+							GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -I option: Expects -Icflrsz\n");
 							n_errors++;
 							break;
 					}
@@ -322,7 +322,7 @@ int GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl, str
 					}
 					for (j = k; opt->arg[j] && opt->arg[j] != '/'; j++);
 					if (!opt->arg[j]) {
-						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -L option: Expects -L[p]%s/<file>\n", GMT_DIST_OPT);
+						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -L option: Expects -L[p]%s/<file>\n", GMT_DIST_OPT);
 						n_errors++;
 					}
 					else {
@@ -338,7 +338,7 @@ int GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl, str
 				strncpy (buffer, opt->arg, GMT_BUFSIZ);
 #ifdef GMT_COMPAT
 				if (buffer[strlen(buffer)-1] == 'o') { /* Edge is considered outside */
-					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -N...o is deprecated; use -E instead\n");
+					GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -N...o is deprecated; use -E instead\n");
 					Ctrl->E.active = true;
 					Ctrl->E.inside[N_ITEM] = GMT_INSIDE;
 					buffer[strlen(buffer)-1] = 0;
@@ -354,13 +354,13 @@ int GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl, str
 							Ctrl->N.mask[j] = true;
 							break;
 						default:
-							GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -N option: Bad modifier (use s or k)\n");
+							GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -N option: Bad modifier (use s or k)\n");
 							n_errors++;
 					}
 					j++;
 				}
 				if (!(j == 2 || j == GMTSELECT_N_CLASSES)) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -N option: Specify 2 or 5 arguments\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -N option: Specify 2 or 5 arguments\n");
 					n_errors++;
 				}
 				Ctrl->N.mode = (j == 2);
@@ -369,7 +369,7 @@ int GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl, str
 				Ctrl->Z.active = true;
 				j = sscanf (opt->arg, "%[^/]/%s", za, zb);
 				if (j != 2) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -Z option: Specify z_min and z_max\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -Z option: Specify z_min and z_max\n");
 					n_errors++;
 				}
 				if (!(za[0] == '-' && za[1] == '\0')) n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], GMT_scanf_arg (GMT, za, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.min), za);
@@ -450,7 +450,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the gmtselect main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 
 	if (Ctrl->C.active && !GMT_is_geographic (GMT, GMT_IN)) pt_cartesian = true;
 
@@ -483,7 +483,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 		if (no_resample) GMT->current.map.parallel_straight = GMT->current.map.meridian_straight = 2;	/* No resampling along bin boundaries */
 	}
 
-	if (do_project) GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: -J means all data will be projected before tests are applied\n");
+	if (do_project) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -J means all data will be projected before tests are applied\n");
 	 
 	if (Ctrl->N.active) {	/* Set up GSHHS */
 		if (Ctrl->D.force) Ctrl->D.set = GMT_shore_adjust_res (GMT, Ctrl->D.set);
@@ -493,10 +493,10 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 			Ctrl->N.mask[2] = Ctrl->N.mask[4] = Ctrl->N.mask[0];
 		}
 		if (GMT_init_shore (GMT, Ctrl->D.set, &c, GMT->common.R.wesn, &Ctrl->A.info)) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "%s resolution shoreline data base not installed\n", shore_resolution[base]);
+			GMT_Report (API, GMT_MSG_NORMAL, "%s resolution shoreline data base not installed\n", shore_resolution[base]);
 			Return (EXIT_FAILURE);
 		}
-		GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);
 		west_border = floor (GMT->common.R.wesn[XLO] / c.bsize) * c.bsize;
 		east_border = ceil (GMT->common.R.wesn[XHI] / c.bsize) * c.bsize;
 		wd[0] = 1;	wd[1] = -1;
@@ -522,11 +522,11 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 		if (Cin->n_columns < 2) {	/* Trouble */
-			GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -C option: %s does not have at least 2 columns with coordinates\n", Ctrl->C.file);
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: %s does not have at least 2 columns with coordinates\n", Ctrl->C.file);
 			Return (EXIT_FAILURE);
 		}
 		if (Ctrl->C.dist == 0.0 && Cin->n_columns <= 2) {	/* Trouble */
-			GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -C option: %s does not have a 3rd column with distances, yet -C0/<file> was given\n", Ctrl->C.file);
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: %s does not have a 3rd column with distances, yet -C0/<file> was given\n", Ctrl->C.file);
 			Return (EXIT_FAILURE);
 		}
 		point = Cin->table[0];	/* Can only be one table since we read a single file */
@@ -575,7 +575,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 		if (Lin->n_columns < 2) {	/* Trouble */
-			GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -L option: %s does not have at least 2 columns with coordinates\n", Ctrl->L.file);
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -L option: %s does not have at least 2 columns with coordinates\n", Ctrl->L.file);
 			Return (EXIT_FAILURE);
 		}
 		line = Lin->table[0];	/* Can only be one table since we read a single file */
@@ -597,7 +597,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 		}
 		GMT_skip_xy_duplicates (GMT, false);	/* Reset */
 		if (Fin->n_columns < 2) {	/* Trouble */
-			GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -F option: %s does not have at least 2 columns with coordinates\n", Ctrl->F.file);
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F option: %s does not have at least 2 columns with coordinates\n", Ctrl->F.file);
 			Return (EXIT_FAILURE);
 		}
 		pol = Fin->table[0];	/* Can only be one table since we read a single file */
@@ -653,13 +653,13 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 		/* Data record to process */
 
 		n_read++;
-		if (n_read%1000 == 0) GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Read %ld records, passed %ld records\r", n_read, n_pass);
+		if (n_read%1000 == 0) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %ld records, passed %ld records\r", n_read, n_pass);
 
 		if (n_fields < n_minimum) {	/* Bad number of columns */
 			if (Ctrl->Z.active)
-				GMT_report (GMT, GMT_MSG_NORMAL, "-Z requires a data file with at least 3 columns; this file only has %ld near line %ld. Exiting.\n", n_fields, n_read);
+				GMT_Report (API, GMT_MSG_NORMAL, "-Z requires a data file with at least 3 columns; this file only has %ld near line %ld. Exiting.\n", n_fields, n_read);
 			else
-				GMT_report (GMT, GMT_MSG_NORMAL, "Data file must have at least 2 columns; this file only has %ld near line %ld. Exiting.\n", n_fields, n_read);
+				GMT_Report (API, GMT_MSG_NORMAL, "Data file must have at least 2 columns; this file only has %ld near line %ld. Exiting.\n", n_fields, n_read);
 			Return (EXIT_FAILURE);
 		}
 
@@ -722,7 +722,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 				last_bin = bin;
 				GMT_free_shore (GMT, &c);	/* Free previously allocated arrays */
 				if ((err = GMT_get_shore_bin (GMT, ind, &c))) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
+					GMT_Report (API, GMT_MSG_NORMAL, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
 					Return (EXIT_FAILURE);
 				}
 
@@ -797,7 +797,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Read %" PRIu64 " records, passed %" PRIu64" records\n", n_read, n_pass);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Read %" PRIu64 " records, passed %" PRIu64" records\n", n_read, n_pass);
 
 	if (Ctrl->N.active) {
 		GMT_free_shore (GMT, &c);

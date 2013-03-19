@@ -384,7 +384,7 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *
 	powfactor = 4.0 / pow ((double)GridX->header->size, 2.0);	/* Squared normalization of FFT */
 	dim[3] = nk;
 	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, file)) == NULL) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for spectral estimates\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create a data set for spectral estimates\n");
 		return (GMT->parent->error);
 	}
 	S = D->table[0]->segment[0];	/* Only one table with one segment here, with 17 cols and nk rows */
@@ -505,14 +505,14 @@ bool parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 	n_tokens = pos = 0;
 	while ((GMT_strtok (&line[i], "/", &pos, p))) {
 		if (n_tokens > 3) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Too many slashes in -F.\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Too many slashes in -F.\n");
 			return (true);
 		}
 		if(p[0] == '-')
 			fourvals[n_tokens] = -1.0;
 		else {
 			if ((sscanf(p, "%lf", &fourvals[n_tokens])) != 1) {
-				GMT_report (GMT, GMT_MSG_NORMAL, " Cannot read token %d.\n", n_tokens);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, " Cannot read token %d.\n", n_tokens);
 				return (true);
 			}
 		}
@@ -520,7 +520,7 @@ bool parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 	}
 
 	if (!(n_tokens == 2 || n_tokens == 3 || n_tokens == 4)) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "-F Cannot find 2-4 tokens separated by slashes.\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-F Cannot find 2-4 tokens separated by slashes.\n");
 		return (true);
 	}
 	descending = true;
@@ -531,13 +531,13 @@ bool parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 		if (fourvals[i] > fourvals[i-1]) descending = false;
 	}
 	if (!(descending)) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "-F Wavelengths are not in descending order.\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-F Wavelengths are not in descending order.\n");
 		return (true);
 	}
 	j = f_info->k_type;
 	if (f_info->kind == GRDFFT_FILTER_COS) {	/* Cosine band-pass specification */
 		if ((fourvals[0] * fourvals[1]) < 0.0 || (fourvals[2] * fourvals[3]) < 0.0) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "-F Pass/Cut specification error.\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-F Pass/Cut specification error.\n");
 			return (true);
 		}
 
@@ -571,55 +571,53 @@ bool parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 	return (false);
 }
 
-int GMT_grdfft_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_grdfft_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grdfft <ingrid> [<ingrid2>] [-G<outgrid>|<table>] [-A<azimuth>] [-C<zlevel>]\n");
-	GMT_message (GMT, "\t[-D[<scale>|g]] [-E[r|x|y][w[k]] [-F[r|x|y]<parameters>] [-I[<scale>|g]]\n");
-	GMT_message (GMT, "\t[-N%s] [-S<scale>]\n", GMT_FFT_OPT);
-	GMT_message (GMT, "\t[%s] [-fg] [%s]\n\n", GMT_V_OPT, GMT_ho_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdfft <ingrid> [<ingrid2>] [-G<outgrid>|<table>] [-A<azimuth>] [-C<zlevel>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D[<scale>|g]] [-E[r|x|y][w[k]] [-F[r|x|y]<parameters>] [-I[<scale>|g]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-N%s] [-S<scale>]\n", GMT_FFT_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-fg] [%s]\n\n", GMT_V_OPT, GMT_ho_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<ingrid> is the input grid file.  For cross-spectrum also supply <ingrid2>.\n");
-	GMT_message (GMT, "\tOPTIONS:\n");
-	GMT_message (GMT, "\t-A Take azimuthal derivative along line <azimuth> degrees CW from North.\n");
-	GMT_message (GMT, "\t-C Continue field upward (+) or downward (-) to <zlevel> (meters).\n");
-	GMT_message (GMT, "\t-D Differentiate, i.e., multiply by kr [ * scale].  Use -Dg to get mGal from m].\n");
-	GMT_message (GMT, "\t-E Estimate spEctrum in the radial r [Default], x, or y-direction.\n");
-	GMT_message (GMT, "\t   Given one grid X, write f, Xpower[f] to output file (see -G) or stdout.\n");
-	GMT_message (GMT, "\t   Given two grids X and Y, write f, Xpower[f], Ypower[f], coherent power[f],\n");
-	GMT_message (GMT, "\t   noise power[f], phase[f], admittance[f], gain[f], coherency[f].\n");
-	GMT_message (GMT, "\t   Each quantity is followed by a column of 1 std dev. error estimates.\n");
-	GMT_message (GMT, "\t   Append w to write wavelength instead of frequency; append k to report\n");
-	GMT_message (GMT, "\t   wavelength in km (geographic grids only) [m].\n");
-	GMT_message (GMT, "\t-F Filter r [x] [y] freq according to one of three kinds of filter specifications:\n");
-	GMT_message (GMT, "\t   a) Cosine band-pass: Append four wavelengths <lc>/<lp>/<hp>/<hc>.\n");
-	GMT_message (GMT, "\t      freq outside <lc>/<hc> are cut; inside <lp>/<hp> are passed, rest are tapered.\n");
-	GMT_message (GMT, "\t      Replace wavelength by - to skip, e.g., -F-/-/500/100 is a low-pass filter.\n");
-	GMT_message (GMT, "\t   b) Gaussian band-pass: Append two wavelengths <lo>/<hi> where filter amplitudes = 0.5.\n");
-	GMT_message (GMT, "\t      Replace wavelength by - to skip, e.g., -F300/- is a high-pass Gaussian filter.\n");
-	GMT_message (GMT, "\t   c) Butterworth band-pass: Append two wavelengths and order <lo>/<hi>/<order>\n");
-	GMT_message (GMT, "\t      where filter amplitudes = 0.5.  Replace wavelength by - to skip, e.g.,\n");
-	GMT_message (GMT, "\t      try -F300/-/2 for a high-pass 2nd-order Butterworth filter.\n");
-	GMT_message (GMT, "\t-G filename for output netCDF grid file OR 1-D data table (see -E).\n");
-	GMT_message (GMT, "\t   Optional for -E (spectrum written to stdout); required otherwise.\n");
-	GMT_message (GMT, "\t-I Integrate, i.e., divide by kr [ * scale].  Use -Ig to get m from mGal].\n");
-	GMT_FFT_Option (C, 'N', GMT_FFT_DIM, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers:");
-	GMT_message (GMT, "\t-S multiply field by scale after inverse FFT [1.0].\n");
-	GMT_message (GMT, "\t   Give -Sd to convert deflection of vertical to micro-radians.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is the input grid file.  For cross-spectrum also supply <ingrid2>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Take azimuthal derivative along line <azimuth> degrees CW from North.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Continue field upward (+) or downward (-) to <zlevel> (meters).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Differentiate, i.e., multiply by kr [ * scale].  Use -Dg to get mGal from m].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Estimate spEctrum in the radial r [Default], x, or y-direction.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Given one grid X, write f, Xpower[f] to output file (see -G) or stdout.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Given two grids X and Y, write f, Xpower[f], Ypower[f], coherent power[f],\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   noise power[f], phase[f], admittance[f], gain[f], coherency[f].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Each quantity is followed by a column of 1 std dev. error estimates.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append w to write wavelength instead of frequency; append k to report\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   wavelength in km (geographic grids only) [m].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Filter r [x] [y] freq according to one of three kinds of filter specifications:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   a) Cosine band-pass: Append four wavelengths <lc>/<lp>/<hp>/<hc>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      freq outside <lc>/<hc> are cut; inside <lp>/<hp> are passed, rest are tapered.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      Replace wavelength by - to skip, e.g., -F-/-/500/100 is a low-pass filter.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   b) Gaussian band-pass: Append two wavelengths <lo>/<hi> where filter amplitudes = 0.5.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      Replace wavelength by - to skip, e.g., -F300/- is a high-pass Gaussian filter.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   c) Butterworth band-pass: Append two wavelengths and order <lo>/<hi>/<order>\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      where filter amplitudes = 0.5.  Replace wavelength by - to skip, e.g.,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      try -F300/-/2 for a high-pass 2nd-order Butterworth filter.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G filename for output netCDF grid file OR 1-D data table (see -E).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optional for -E (spectrum written to stdout); required otherwise.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Integrate, i.e., divide by kr [ * scale].  Use -Ig to get m from mGal].\n");
+	GMT_FFT_Option (API, 'N', GMT_FFT_DIM, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers:");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S multiply field by scale after inverse FFT [1.0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Give -Sd to convert deflection of vertical to micro-radians.\n");
 #if 0
-	GMT_message (GMT, "\t-T Compute isostatic response.  Input file is topo load. Append elastic thickness,\n");
-	GMT_message (GMT, "\t   and densities of load, mantle, water, and infill, all in SI units.\n");
-	GMT_message (GMT, "\t   It also implicitly sets -L.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Compute isostatic response.  Input file is topo load. Append elastic thickness,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   and densities of load, mantle, water, and infill, all in SI units.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   It also implicitly sets -L.\n");
 #endif
-	GMT_Option (C, "V");
-	GMT_message (GMT, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
-	GMT_message (GMT, "\t-ho Write header record for spectral estimates (requires -E) [no header].\n");
-	GMT_Option (C, ".");
-	GMT_message (GMT, "\tList operations in the order desired for execution.\n");
+	GMT_Option (API, "V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-ho Write header record for spectral estimates (requires -E) [no header].\n");
+	GMT_Option (API, ".");
+	GMT_Message (API, GMT_TIME_NONE, "\tList operations in the order desired for execution.\n");
 
 	return (EXIT_FAILURE);
 }
@@ -678,7 +676,7 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 					Ctrl->In.file[Ctrl->In.n_grids++] = strdup (opt->arg);
 				else {
 					n_errors++;
-					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: A maximum of two input grids may be processed\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: A maximum of two input grids may be processed\n");
 				}
 				break;
 
@@ -740,12 +738,12 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 				break;
 #ifdef GMT_COMPAT
 			case 'L':	/* Leave trend alone */
-				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; use -N modifiers in the future.\n");
+				GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; use -N modifiers in the future.\n");
 #endif
 				break;
 #ifdef GMT_COMPAT
 			case 'M':	/* Geographic data */
-				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
+				GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
 				if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
 				break;
 #endif
@@ -766,7 +764,7 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 				break;
 #ifdef GMT_COMPAT
 			case 'T':	/* Flexural isostasy */
-				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -T is deprecated; see gravfft for isostasy and gravity calculations.\n");
+				GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -T is deprecated; see gravfft for isostasy and gravity calculations.\n");
 				Ctrl->T.active = true;
 				n_scan = sscanf (opt->arg, "%lf/%lf/%lf/%lf/%lf", &par[0], &par[1], &par[2], &par[3], &par[4]);
 				for (j = 1, k = 0; j < 5; j++) if (par[j] < 0.0) k++;
@@ -840,7 +838,7 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the grdfft main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input grid(s)\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid(s)\n");
 	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* First read the grid header(s) */
 		if ((Orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file[k], NULL)) == NULL)
 			Return (API->error);
@@ -848,19 +846,19 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 
 	if (Ctrl->In.n_grids == 2) {	/* If given 2 grids, make sure they are co-registered and has same size, registration, etc. */
 		if(Orig[0]->header->registration != Orig[1]->header->registration) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "The two grids have different registrations!\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "The two grids have different registrations!\n");
 			Return (EXIT_FAILURE);
 		}
 		if (!GMT_grd_same_shape (GMT, Orig[0], Orig[1])) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "The two grids have different dimensions\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "The two grids have different dimensions\n");
 			Return (EXIT_FAILURE);
 		}
 		if (!GMT_grd_same_region (GMT, Orig[0], Orig[1])) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "The two grids have different regions\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "The two grids have different regions\n");
 			Return (EXIT_FAILURE);
 		}
 		if (!GMT_grd_same_inc (GMT, Orig[0], Orig[1])) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "The two grids have different intervals\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "The two grids have different intervals\n");
 			Return (EXIT_FAILURE);
 		}
 	}
@@ -892,7 +890,7 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 #endif
 
 	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Call the forward FFT, once per grid, optionally save raw FFT output */
-		GMT_report (GMT, GMT_MSG_VERBOSE, "forward FFT...\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "forward FFT...\n");
 		if (GMT_FFT (API, Grid[k], GMT_FFT_FWD, GMT_FFT_COMPLEX, FFT_info[k]))
 			Return (EXIT_FAILURE);
 	}
@@ -900,41 +898,41 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 	for (op_count = par_count = 0; op_count < Ctrl->n_op_count; op_count++) {
 		switch (Ctrl->operation[op_count]) {
 			case GRDFFT_UP_DOWN_CONTINUE:
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) ((Ctrl->par[par_count] < 0.0) ? GMT_message (GMT, "downward continuation...\n") : GMT_message (GMT,  "upward continuation...\n"));
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) ((Ctrl->par[par_count] < 0.0) ? GMT_Message (API, GMT_TIME_NONE, "downward continuation...\n") : GMT_Message (API, GMT_TIME_NONE,  "upward continuation...\n"));
 				par_count += do_continuation (Grid[0], &Ctrl->par[par_count], K);
 				break;
 			case GRDFFT_AZIMUTHAL_DERIVATIVE:
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "azimuthal derivative...\n");
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "azimuthal derivative...\n");
 				par_count += do_azimuthal_derivative (Grid[0], &Ctrl->par[par_count], K);
 				break;
 			case GRDFFT_DIFFERENTIATE:
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "differentiate...\n");
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "differentiate...\n");
 				par_count += do_differentiate (Grid[0], &Ctrl->par[par_count], K);
 				break;
 			case GRDFFT_INTEGRATE:
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "integrate...\n");
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "integrate...\n");
 				par_count += do_integrate (Grid[0], &Ctrl->par[par_count], K);
 				break;
 #ifdef GMT_COMPAT
 			case GRDFFT_ISOSTASY:
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "isostasy...\n");
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "isostasy...\n");
 				par_count += do_isostasy (Grid[0], Ctrl, &Ctrl->par[par_count], K);
 				break;
 #endif
 			case GRDFFT_FILTER_COS:
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "cosine filter...\n");
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "cosine filter...\n");
 				do_filter (Grid[0], &f_info, K);
 				break;
 			case GRDFFT_FILTER_EXP:
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "Gaussian filter...\n");
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "Gaussian filter...\n");
 				do_filter (Grid[0], &f_info, K);
 				break;
 			case GRDFFT_FILTER_BW:
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "Butterworth filter...\n");
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "Butterworth filter...\n");
 				do_filter (Grid[0], &f_info, K);
 				break;
 			case GRDFFT_SPECTRUM:	/* This operator writes a table to file (or stdout if -G is not used) */
-				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "%s...\n", spec_msg[Ctrl->In.n_grids-1]);
+				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "%s...\n", spec_msg[Ctrl->In.n_grids-1]);
 				status = do_spectrum (GMT, Grid[0], Grid[1], &Ctrl->par[par_count], Ctrl->E.give_wavelength, Ctrl->E.km, Ctrl->G.file, K);
 				if (status < 0) Return (status);
 				par_count += status;
@@ -943,7 +941,7 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 	}
 
 	if (!Ctrl->E.active) {	/* Since -E output is handled separately by do_spectrum itself */
-		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "inverse FFT...\n");
+		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "inverse FFT...\n");
 
 		if (GMT_FFT (API, Grid[0], GMT_FFT_INV, GMT_FFT_COMPLEX, K))
 			Return (EXIT_FAILURE);

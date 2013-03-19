@@ -124,7 +124,7 @@ int get_digitize_raw (struct GMT_CTRL *GMT, int digunit, double *xdig, double *y
 	n--;
 	buffer[n] = 0;
 #ifdef DEBUG
-	GMT_report (GMT, GMT_MSG_DEBUG, "Got %d bytes [%s]\n", n, buffer);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Got %d bytes [%s]\n", n, buffer);
 #endif
 	for (i = 0; i < n; i++) if (buffer[i] == ',') buffer[i] = ' ';
 	sscanf (buffer, "%d %d %c", &ix, &iy, &button);
@@ -159,7 +159,7 @@ FILE *next_file (struct GMT_CTRL *GMT, char *name, int n_segments, char *this_fi
 		else
 			strncpy (this_file, name, GMT_BUFSIZ);
 		if ((fp = GMT_fopen (GMT, this_file, "w")) == NULL) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Could not create file %s\n", this_file);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Could not create file %s\n", this_file);
 			return (NULL);
 		}
 	}
@@ -171,37 +171,37 @@ FILE *next_file (struct GMT_CTRL *GMT, char *name, int n_segments, char *this_fi
 	return (fp);
 }
 
-int GMT_gmtdigitize_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_gmtdigitize_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
-	GMT_message (GMT, "gmtdigitize %s - Digitizing and inverse map transformation of map x/y coordinates\n\n", GMT_VERSION);
-	GMT_message (GMT, "usage: gmtdigitize %s %s\n", GMT_J_OPT, GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-A] [-C<device>] [-D<limit>] [-F] [-H] [-L<lpi>] [-N<namestem>] [-S]\n");
-	GMT_message (GMT, "\t[%s] [-Zk|v] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_bo_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "gmtdigitize %s - Digitizing and inverse map transformation of map x/y coordinates\n\n", GMT_VERSION);
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtdigitize %s %s\n", GMT_J_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-A] [-C<device>] [-D<limit>] [-F] [-H] [-L<lpi>] [-N<namestem>] [-S]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Zk|v] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_bo_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_colon_OPT);
 	
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 	
-	GMT_Option (C, "J-");
-	GMT_message (GMT, "\tScale or width is arbitrary as gmtdigitize solves for it based on calibration points\n");
-	GMT_Option (C, "R");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-A gives an audible alert each time a point is clicked [Default is silent]\n");
-	GMT_message (GMT, "\t-C Device (port) to use [Default is %s]\n", DIG_PORT);
-	GMT_message (GMT, "\t-D Only pass point when it is more than <limit> %s from previous point [0]\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-	GMT_message (GMT, "\t   Append c, i, m, or p for cm, inch, meter, or points [Default is %s]\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-	GMT_message (GMT, "\t-F Force program to accept 4 arbitrary calibration points [Default will use\n");
-	GMT_message (GMT, "\t   the corners of the map if they are known to the program]\n");
-	GMT_message (GMT, "\t-L sets the lines-pr-inch resolution of the digitizer [%d]\n", DIG_LPI);
-	GMT_message (GMT, "\t-N sets name for output file(s).  If name contains a C-format\n");
-	GMT_message (GMT, "\t   for integer (e.g., line_%%d.d) then each segment will be written\n");
-	GMT_message (GMT, "\t   to separate files [Default is stdout]\n");
-	GMT_message (GMT, "\t-S means Suppress points outside region\n");
-	GMT_Option (C, "V");
-	GMT_message (GMT, "\t   It will also duplicate data output to GMT->session.std[GMT_ERR] for monitoring\n");
-	GMT_message (GMT, "\t-Zv will prompt for z-value for each segment and output xyz triplets\n");
-	GMT_message (GMT, "\t-Zk means append button key id as a final column\n");
-	GMT_Option (C, "bo,f,h,o,:,.");
+	GMT_Option (API, "J-");
+	GMT_Message (API, GMT_TIME_NONE, "\tScale or width is arbitrary as gmtdigitize solves for it based on calibration points\n");
+	GMT_Option (API, "R");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A gives an audible alert each time a point is clicked [Default is silent]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Device (port) to use [Default is %s]\n", DIG_PORT);
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Only pass point when it is more than <limit> %s from previous point [0]\n",
+		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append c, i, or p for cm, inch, or points [Default is %s]\n",
+		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Force program to accept 4 arbitrary calibration points [Default will use\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   the corners of the map if they are known to the program]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L sets the lines-pr-inch resolution of the digitizer [%d]\n", DIG_LPI);
+	GMT_Message (API, GMT_TIME_NONE, "\t-N sets name for output file(s).  If name contains a C-format\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   for integer (e.g., line_%%d.d) then each segment will be written\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   to separate files [Default is stdout]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S means Suppress points outside region\n");
+	GMT_Option (API, "V");
+	GMT_Message (API, GMT_TIME_NONE, "\t   It will also duplicate data output to GMT->session.std[GMT_ERR] for monitoring\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Zv will prompt for z-value for each segment and output xyz triplets\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Zk means append button key id as a final column\n");
+	GMT_Option (API, "bo,f,h,o,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -326,7 +326,7 @@ int GMT_gmtdigitize (struct GMTAPI_CTRL *API, int mode, void *args)
 	digunit = 0;
 #else
 	if ((digunit = open (Ctrl->C.device, O_RDONLY | O_NOCTTY)) < 0) {
-		GMT_message (GMT, "failed to open port %s\n", Ctrl->C.device);
+		GMT_Message (API, GMT_TIME_NONE, "failed to open port %s\n", Ctrl->C.device);
 		Return (EXIT_FAILURE);
 	}
 #endif
@@ -340,12 +340,12 @@ int GMT_gmtdigitize (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	GMT_err_fail (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "");
 
-	GMT_message (GMT, "\n==>   gmtdigitize version %s  Paul Wessel, SOEST, July 9, 2007   <==\n\n", GMT_VERSION);
-	GMT_message (GMT, "================  HOW TO DIGITIZE ================\n\n");
-	GMT_message (GMT, "To exit, click the %c button.\n", END_BUTTON_CHAR);
-	GMT_message (GMT, "To initiate a new segment, click the %c button.\n", MULTISEG_BUTTON1_CHAR);
-	GMT_message (GMT, "To initiate a new segment and typing in a comment, click the %c button.\n", MULTISEG_BUTTON2_CHAR);
-	GMT_message (GMT, "To digitize a point, click on any other button.\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n==>   gmtdigitize version %s  Paul Wessel, SOEST, July 9, 2007   <==\n\n", GMT_VERSION);
+	GMT_Message (API, GMT_TIME_NONE, "================  HOW TO DIGITIZE ================\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "To exit, click the %c button.\n", END_BUTTON_CHAR);
+	GMT_Message (API, GMT_TIME_NONE, "To initiate a new segment, click the %c button.\n", MULTISEG_BUTTON1_CHAR);
+	GMT_Message (API, GMT_TIME_NONE, "To initiate a new segment and typing in a comment, click the %c button.\n", MULTISEG_BUTTON2_CHAR);
+	GMT_Message (API, GMT_TIME_NONE, "To digitize a point, click on any other button.\n\n");
 
 	/* Get 3 control points */
 	
@@ -356,53 +356,53 @@ int GMT_gmtdigitize (struct GMTAPI_CTRL *API, int mode, void *args)
 	while (!ok) {
 		double sum_dig_distance, sum_map_distance, new_x, new_y, dist;
 		
-		GMT_message (GMT, "-------------------------------------------------------------------|\n");
-		GMT_message (GMT, "| Calibration of map scale, paper rotation, and mapping offsets.   |\n");
-		GMT_message (GMT, "| We need 4 known points on the map to solve for these parameters. |\n");
-		GMT_message (GMT, "-------------------------------------------------------------------|\n\n");
+		GMT_Message (API, GMT_TIME_NONE, "-------------------------------------------------------------------|\n");
+		GMT_Message (API, GMT_TIME_NONE, "| Calibration of map scale, paper rotation, and mapping offsets.   |\n");
+		GMT_Message (API, GMT_TIME_NONE, "| We need 4 known points on the map to solve for these parameters. |\n");
+		GMT_Message (API, GMT_TIME_NONE, "-------------------------------------------------------------------|\n\n");
 		ok = true;
 		tcflush (digunit, TCIFLUSH);	/* Clean the muzzle */
 		
 		if (!GMT->common.R.oblique && !Ctrl->F.active) {	/* -R is w/e/s/n and we dont want to override */
-			GMT_message (GMT, "gmtdigitize will use the map corners as calibration points\n\n");
+			GMT_Message (API, GMT_TIME_NONE, "gmtdigitize will use the map corners as calibration points\n\n");
 			LON[0] = LON[3] = GMT->common.R.wesn[XLO];
 			LON[1] = LON[2] = GMT->common.R.wesn[XHI];
 			LAT[0] = LAT[1] = GMT->common.R.wesn[YLO];
 			LAT[2] = LAT[3] = GMT->common.R.wesn[YHI];
 			for (i = 0; i < 4; i++) {
-				GMT_message (GMT, "==> Please digitize the %s corner (%g/%g): ", corner[i], LON[i], LAT[i]);
+				GMT_Message (API, GMT_TIME_NONE, "==> Please digitize the %s corner (%g/%g): ", corner[i], LON[i], LAT[i]);
 				button = get_digitize_raw (GMT, digunit, &X_DIG[i], &Y_DIG[i], &C);
-				GMT_message (GMT, "[x:%g y:%g]\n", X_DIG[i], Y_DIG[i]);
+				GMT_Message (API, GMT_TIME_NONE, "[x:%g y:%g]\n", X_DIG[i], Y_DIG[i]);
 				GMT_geo_to_xy (GMT, LON[i], LAT[i], &X_MAP[i], &Y_MAP[i]);
 			}
 		}
 		else {
-			GMT_message (GMT, "gmtdigitize will request 4 arbitrary calibration points\n\n");
+			GMT_Message (API, GMT_TIME_NONE, "gmtdigitize will request 4 arbitrary calibration points\n\n");
 			for (i = 0; i < 4; i++) {
-				GMT_message (GMT, "==> Please digitize the %s point: ", control[i]);
+				GMT_Message (API, GMT_TIME_NONE, "==> Please digitize the %s point: ", control[i]);
 				button = get_digitize_raw (GMT, digunit, &X_DIG[i], &Y_DIG[i], &C);
-				GMT_message (GMT, "[x:%g y:%g]\n", X_DIG[i], Y_DIG[i]);
+				GMT_Message (API, GMT_TIME_NONE, "[x:%g y:%g]\n", X_DIG[i], Y_DIG[i]);
 			}
-			GMT_message (GMT, "\n");
+			GMT_Message (API, GMT_TIME_NONE, "\n");
 			for (i = 0; i < 4; i++) {
-				GMT_message (GMT, "Please Enter %s of %s point: ", xname[type], control[i]);
+				GMT_Message (API, GMT_TIME_NONE, "Please Enter %s of %s point: ", xname[type], control[i]);
 				if (!GMT_fgets (GMT, line, GMT_BUFSIZ, GMT->session.std[GMT_IN])) {
-					GMT_message (GMT, "Read error - NULL returned");
+					GMT_Message (API, GMT_TIME_NONE, "Read error - NULL returned");
 					exit (EXIT_FAILURE);
 				}
 				GMT_chop (line);
 				if (!(GMT_scanf (GMT, line, GMT->current.io.col_type[GMT_IN][GMT_X], &LON[i]))) {
-					GMT_message (GMT, "Conversion error for %sx [%s]\n", xname[type], line);
+					GMT_Message (API, GMT_TIME_NONE, "Conversion error for %sx [%s]\n", xname[type], line);
 					exit (EXIT_FAILURE);
 				}
-				GMT_message (GMT, "Please Enter %s of %s point: ", yname[type], control[i]);
+				GMT_Message (API, GMT_TIME_NONE, "Please Enter %s of %s point: ", yname[type], control[i]);
 				if (!GMT_fgets (GMT, line, GMT_BUFSIZ, GMT->session.std[GMT_IN])) {
-					GMT_message (GMT, "Read error - NULL returned");
+					GMT_Message (API, GMT_TIME_NONE, "Read error - NULL returned");
 					exit (EXIT_FAILURE);
 				}
 				GMT_chop (line);
 				if (!(GMT_scanf (GMT, line, GMT->current.io.col_type[GMT_IN][GMT_Y], &LAT[i]))) {
-					GMT_message (GMT, "Conversion error for %s [%s]\n", yname[type], line);
+					GMT_Message (API, GMT_TIME_NONE, "Conversion error for %s [%s]\n", yname[type], line);
 					exit (EXIT_FAILURE);
 				}
 				GMT_geo_to_xy (GMT, LON[i], LAT[i], &X_MAP[i], &Y_MAP[i]);
@@ -463,12 +463,12 @@ int GMT_gmtdigitize (struct GMTAPI_CTRL *API, int mode, void *args)
 		
 		if (rms > TOLERANCE) {
 			rms *= inch_to_unit;
-			GMT_message (GMT, "\aError: Your four points project to give a r.m.s of %g %s\n", rms, unit_name);
-			GMT_message (GMT, "Tolerance is set to %g %s.  Please redo the calibration\n", inch_to_unit * TOLERANCE, unit_name);
+			GMT_Message (API, GMT_TIME_NONE, "\aError: Your four points project to give a r.m.s of %g %s\n", rms, unit_name);
+			GMT_Message (API, GMT_TIME_NONE, "Tolerance is set to %g %s.  Please redo the calibration\n", inch_to_unit * TOLERANCE, unit_name);
 			ok = false;
 		}
 	}
-	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "\nFound: rotation = %.3f, map_scale = %g/%g, rms = %g\n\n", rotation * R2D, C.map_scale[GMT_X], C.map_scale[GMT_Y], rms);
+	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "\nFound: rotation = %.3f, map_scale = %g/%g, rms = %g\n\n", rotation * R2D, C.map_scale[GMT_X], C.map_scale[GMT_Y], rms);
 	
 	C.map_x0 = (mean_map_x - mean_dig_x * C.cos_theta + mean_dig_y * C.sin_theta) * C.map_scale[GMT_X];
 	C.map_y0 = (mean_map_y - mean_dig_x * C.sin_theta - mean_dig_y * C.cos_theta) * C.map_scale[GMT_Y];
@@ -483,11 +483,11 @@ int GMT_gmtdigitize (struct GMTAPI_CTRL *API, int mode, void *args)
 	
 		/* Convert inches to chosen MEASURE */
 		for (i = 0; i < 4; i++) rect[i] *= inch_to_unit;
-		GMT_message (GMT, " Transform ");
-		GMT_message (GMT, format, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
-		GMT_message (GMT, " <- ");
-		GMT_message (GMT, format, rect[XLO], rect[XHI], rect[YLO], rect[YHI]);
-		GMT_message (GMT, " [%s]\n", unit_name);
+		GMT_Message (API, GMT_TIME_NONE, " Transform ");
+		GMT_Message (API, GMT_TIME_NONE, format, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
+		GMT_Message (API, GMT_TIME_NONE, " <- ");
+		GMT_Message (API, GMT_TIME_NONE, format, rect[XLO], rect[XHI], rect[YLO], rect[YHI]);
+		GMT_Message (API, GMT_TIME_NONE, " [%s]\n", unit_name);
 	}
 		
 	/* Now we are ready to take on some input values */
@@ -507,13 +507,13 @@ int GMT_gmtdigitize (struct GMTAPI_CTRL *API, int mode, void *args)
 
 	if (!multi_files) {
 		if ((fp = next_file (GMT, Ctrl->N.name, n_segments, this_file))) Return (EXIT_FAILURE);
-		GMT_message (GMT, "If you want, you can enter some header records (comments) here.\n");
-		GMT_message (GMT, "These records will be written out starting with a leading #.\n");
-		GMT_message (GMT, "(Do not start with # - it will be prepended automatically.\n\n");
+		GMT_Message (API, GMT_TIME_NONE, "If you want, you can enter some header records (comments) here.\n");
+		GMT_Message (API, GMT_TIME_NONE, "These records will be written out starting with a leading #.\n");
+		GMT_Message (API, GMT_TIME_NONE, "(Do not start with # - it will be prepended automatically.\n\n");
 		do {
-			GMT_message (GMT, "==> Please enter comment records, end with blank line: ");
+			GMT_Message (API, GMT_TIME_NONE, "==> Please enter comment records, end with blank line: ");
 			if (!GMT_fgets (GMT, line, GMT_BUFSIZ, stdin)) {
-				GMT_message (GMT, "Read error - NULL returned");
+				GMT_Message (API, GMT_TIME_NONE, "Read error - NULL returned");
 				exit (EXIT_FAILURE);
 			}
 			GMT_chop (line);
@@ -529,9 +529,9 @@ int GMT_gmtdigitize (struct GMTAPI_CTRL *API, int mode, void *args)
 #endif
 	}
 	
-	GMT_message (GMT, "\n\nStart digitizing, end by clicking %c button\n\n", END_BUTTON_CHAR);
+	GMT_Message (API, GMT_TIME_NONE, "\n\nStart digitizing, end by clicking %c button\n\n", END_BUTTON_CHAR);
 	if (GMT->current.io.multi_segments[GMT_OUT]) {
-		GMT_message (GMT, "[Remember to initialize the first segment by clicking the %c or %c buttons!]\n",
+		GMT_Message (API, GMT_TIME_NONE, "[Remember to initialize the first segment by clicking the %c or %c buttons!]\n",
 		MULTISEG_BUTTON1_CHAR, MULTISEG_BUTTON2_CHAR);
 	}
 	
@@ -547,7 +547,7 @@ int GMT_gmtdigitize (struct GMTAPI_CTRL *API, int mode, void *args)
 						GMT_fclose (GMT, fp);
 						sys_retval = chown (this_file, uid, gid);
 						if (sys_retval) {
-							GMT_message (GMT, "chown error - returned %d", sys_retval);
+							GMT_Message (API, GMT_TIME_NONE, "chown error - returned %d", sys_retval);
 							exit (EXIT_FAILURE);
 						}
 					}
@@ -555,9 +555,9 @@ int GMT_gmtdigitize (struct GMTAPI_CTRL *API, int mode, void *args)
 				}
 
 				if (Ctrl->Z.active[V_ID]) {
-					GMT_message (GMT, "Enter z-value for next segment: ");
+					GMT_Message (API, GMT_TIME_NONE, "Enter z-value for next segment: ");
 					if (!GMT_fgets (GMT, line, GMT_BUFSIZ, GMT->session.std[GMT_IN])) {
-						GMT_message (GMT, "Read error - NULL returned");
+						GMT_Message (API, GMT_TIME_NONE, "Read error - NULL returned");
 						exit (EXIT_FAILURE);
 					}
 					GMT_chop (line);
@@ -567,22 +567,22 @@ int GMT_gmtdigitize (struct GMTAPI_CTRL *API, int mode, void *args)
 					sprintf (GMT->current.io.segment_header, "%d", n_segments);
 				}
 				else {	/* Ask for what to write out */
-					GMT_message (GMT, "Enter segment header: ");
+					GMT_Message (API, GMT_TIME_NONE, "Enter segment header: ");
 					if (!GMT_fgets (GMT, line, GMT_BUFSIZ, GMT->session.std[GMT_IN])) {
-						GMT_message (GMT, "Read error - NULL returned");
+						GMT_Message (API, GMT_TIME_NONE, "Read error - NULL returned");
 						exit (EXIT_FAILURE);
 					}
 					GMT_chop (line);
 					sprintf (GMT->current.io.segment_header, "%d %s", n_segments, line);
 				}
 				GMT_write_segmentheader (GMT, fp, n_expected_fields);
-				GMT_report (GMT, GMT_MSG_VERBOSE, "%c %s\n", GMT->current.setting.io_seg_marker[GMT_OUT], GMT->current.io.segment_header);
+				GMT_Report (API, GMT_MSG_VERBOSE, "%c %s\n", GMT->current.setting.io_seg_marker[GMT_OUT], GMT->current.io.segment_header);
 				last_xmap = -DBL_MAX;
 				last_ymap = -DBL_MAX;
 				n_segments++;
 			}
 			else if (m_button == 1)
-				GMT_report (GMT, GMT_MSG_VERBOSE, "Segment header buttons only active if -M is set (ignored)\n");
+				GMT_Report (API, GMT_MSG_VERBOSE, "Segment header buttons only active if -M is set (ignored)\n");
 			else
 				tcflush (digunit, TCIFLUSH);	/* Clean the muzzle */
 				
@@ -612,7 +612,7 @@ int GMT_gmtdigitize (struct GMTAPI_CTRL *API, int mode, void *args)
 			if (Ctrl->Z.active[K_ID]) out[key_pos] = (double)button;
 			GMT->current.io.output (GMT, fp, n_expected_fields, out);
 			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
-				(Ctrl->Z.active[V_ID]) ? GMT_message (GMT, format, out[GMT_X], out[GMT_Y], z_val, button) : GMT_message (GMT, format, out[GMT_X], out[GMT_Y], button);
+				(Ctrl->Z.active[V_ID]) ? GMT_Message (API, GMT_TIME_NONE, format, out[GMT_X], out[GMT_Y], z_val, button) : GMT_Message (API, GMT_TIME_NONE, format, out[GMT_X], out[GMT_Y], button);
 			}
 			n++;
 		}
@@ -621,18 +621,18 @@ int GMT_gmtdigitize (struct GMTAPI_CTRL *API, int mode, void *args)
 		GMT_fclose (GMT, fp);
 		sys_retval = chown (this_file, uid, gid);
 		if (sys_retval) {
-			GMT_message (GMT, "chown error - returned %d", sys_retval);
+			GMT_Message (API, GMT_TIME_NONE, "chown error - returned %d", sys_retval);
 			exit (EXIT_FAILURE);
 		}
 	}
 	
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE) && n_read > 0) {
 		sprintf (format, "Input extreme values: Xmin: %s Xmax: %s Ymin: %s Ymax %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_message (GMT, format, x_in_min, x_in_max, y_in_min, y_in_max);
+		GMT_Message (API, GMT_TIME_NONE, format, x_in_min, x_in_max, y_in_min, y_in_max);
 		sprintf (format, "Output extreme values: Xmin: %s Xmax: %s Ymin: %s Ymax %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_message (GMT, format, x_out_min, x_out_max, y_out_min, y_out_max);
-		GMT_message (GMT, "Digitized %d points\n", n);
-		if (Ctrl->S.active && n != n_read) GMT_message (GMT, "%d fell outside region\n", n_read - n);
+		GMT_Message (API, GMT_TIME_NONE, format, x_out_min, x_out_max, y_out_min, y_out_max);
+		GMT_Message (API, GMT_TIME_NONE, "Digitized %d points\n", n);
+		if (Ctrl->S.active && n != n_read) GMT_Message (API, GMT_TIME_NONE, "%d fell outside region\n", n_read - n);
 	}
 
 	Return (GMT_OK);

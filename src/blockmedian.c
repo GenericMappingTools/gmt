@@ -36,38 +36,35 @@
 
 #define GMT_PROG_OPTIONS "-:>RVabfghior" GMT_OPT("FH")
 
-int GMT_blockmedian_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_blockmedian_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: blockmedian [<table>] %s %s\n", GMT_I_OPT, GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-C] [-E[b]] [-Er|s[-]] [-Q] [-T<q>] [%s] [-W[i][o]] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: blockmedian [<table>] %s %s\n", GMT_I_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C] [-E[b]] [-Er|s[-]] [-Q] [-T<q>] [%s] [-W[i][o]] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_inc_syntax (GMT, 'I', 0);
-	GMT_Option (C, "R");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_Option (C, "<");
-	GMT_message (GMT, "\t-C Output center of block as location [Default is (median x, median y), but see -Q].\n");
-	GMT_message (GMT, "\t-E Extend output with L1 scale (s), low (l), and high (h) value per block, i.e.,\n");
-	GMT_message (GMT, "\t   output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w])]; see -W regarding w.\n");
-	GMT_message (GMT, "\t   Use -Eb for box-and-whisker output (x,y,z,l,25%%q,75%%q,h[,w]).\n");
-	GMT_message (GMT, "\t   Use -Er to report record number of the median value per block,\n");
-	GMT_message (GMT, "\t   or -Es to report an unsigned integer source id (sid) taken from the x,y,z[,w],sid input.\n");
-	GMT_message (GMT, "\t   For ties, report record number (or sid) of largest value; append - for smallest.\n");
-	GMT_message (GMT, "\t-Q Quicker; get median z and x,y at that z [Default gets median x, median y, median z].\n");
-	GMT_message (GMT, "\t-T Set quantile (0 < q < 1) to report [Default is 0.5 which is the median of z].\n");
-	GMT_Option (C, "V");
-	GMT_message (GMT, "\t-W Set Weight options.\n");
-	GMT_message (GMT, "\t   -Wi reads Weighted Input (4 cols: x,y,z,w) but skips w on output.\n");
-	GMT_message (GMT, "\t   -Wo reads unWeighted Input (3 cols: x,y,z) but weight sum on output.\n");
-	GMT_message (GMT, "\t   -W with no modifier has both weighted Input and Output; Default is no weights used.\n");
-	GMT_Option (C, "a,bi");
-	GMT_message (GMT, "\t    Default is 3 columns (or 4 if -W is set).\n");
-	GMT_Option (C, "bo,f,h,i,o,r,:,.");
+	GMT_Option (API, "I,R");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Option (API, "<");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Output center of block as location [Default is (median x, median y), but see -Q].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Extend output with L1 scale (s), low (l), and high (h) value per block, i.e.,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w])]; see -W regarding w.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Eb for box-and-whisker output (x,y,z,l,25%%q,75%%q,h[,w]).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Er to report record number of the median value per block,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   or -Es to report an unsigned integer source id (sid) taken from the x,y,z[,w],sid input.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For ties, report record number (or sid) of largest value; append - for smallest.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Quicker; get median z and x,y at that z [Default gets median x, median y, median z].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Set quantile (0 < q < 1) to report [Default is 0.5 which is the median of z].\n");
+	GMT_Option (API, "V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Set Weight options.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Wi reads Weighted Input (4 cols: x,y,z,w) but skips w on output.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Wo reads unWeighted Input (3 cols: x,y,z) but weight sum on output.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -W with no modifier has both weighted Input and Output; Default is no weights used.\n");
+	GMT_Option (API, "a,bi");
+	GMT_Message (API, GMT_TIME_NONE, "\t    Default is 3 columns (or 4 if -W is set).\n");
+	GMT_Option (API, "bo,f,h,i,o,r,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -275,14 +272,14 @@ int GMT_blockmedian (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the blockmedian main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc, \
 		GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL) Return (API->error);
 
 	go_quickly = (Ctrl->Q.active) ? 1 : 0;
 	if (Ctrl->C.active && go_quickly == 1) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: -C overrides -Q\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Warning: -C overrides -Q\n");
 		go_quickly = 0;
 	}
 	if (Ctrl->C.active) go_quickly = 2;			/* Flag used in output calculation */
@@ -307,7 +304,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args)
 
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		sprintf (format, "W: %s E: %s S: %s N: %s nx: %%d ny: %%d\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_report (GMT, GMT_MSG_VERBOSE, format, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->nx, Grid->header->ny);
+		GMT_Report (API, GMT_MSG_VERBOSE, format, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->nx, Grid->header->ny);
 	}
 
 	GMT_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
@@ -384,11 +381,11 @@ int GMT_blockmedian (void *V_API, int mode, void *args)
 	}
 	
 	if (n_read == 0) {	/* Blank/empty input files */
-		GMT_report (GMT, GMT_MSG_VERBOSE, "No data records found; no output produced");
+		GMT_Report (API, GMT_MSG_VERBOSE, "No data records found; no output produced");
 		Return (EXIT_SUCCESS);
 	}
 	if (n_pitched == 0) {	/* No points inside region */
-		GMT_report (GMT, GMT_MSG_VERBOSE, "No data points found inside the region; no output produced");
+		GMT_Report (API, GMT_MSG_VERBOSE, "No data points found inside the region; no output produced");
 		Return (EXIT_SUCCESS);
 	}
 
@@ -471,7 +468,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args)
 	}
 
 	n_lost = n_read - n_pitched;	/* Number of points that did not get used */
-	GMT_report (GMT, GMT_MSG_VERBOSE, "N read: %ld N used: %ld N outside_area: %ld N cells filled: %ld\n", n_read, n_pitched, n_lost, n_cells_filled);
+	GMT_Report (API, GMT_MSG_VERBOSE, "N read: %ld N used: %ld N outside_area: %ld N cells filled: %ld\n", n_read, n_pitched, n_lost, n_cells_filled);
 
 	GMT_free (GMT, data);
 	if (do_extra) GMT_free (GMT, z_tmp);

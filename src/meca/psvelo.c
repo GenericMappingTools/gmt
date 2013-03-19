@@ -118,44 +118,42 @@ void Free_psvelo_Ctrl (struct GMT_CTRL *GMT, struct PSVELO_CTRL *C) {	/* Dealloc
 	GMT_free (GMT, C);
 }
 
-int GMT_psvelo_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_psvelo_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	/* This displays the psvelo synopsis and optionally full usage information */
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: psvelo [<table>] %s %s [-A<vecpar>] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
-	GMT_message (GMT, "\t[-G<fill>] [-K] [-L] [-N] [-O]\n");
-	GMT_message (GMT, "\t[-P] [-S<symbol><scale><fontsize>] [%s] [-V] [-W<pen>] [%s]\n", GMT_U_OPT, GMT_X_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_Y_OPT, GMT_c_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: psvelo [<table>] %s %s [-A<vecpar>] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-G<fill>] [-K] [-L] [-N] [-O]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [-S<symbol><scale><fontsize>] [%s] [-V] [-W<pen>] [%s]\n", GMT_U_OPT, GMT_X_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_Y_OPT, GMT_c_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Option (C, "J-,R");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_Option (C, "<,B-");
-	GMT_message (GMT, "\t-A Specify arrow head attributes:");
-	GMT_vector_syntax (GMT, 15);
-	GMT_message (GMT, "\t   Default is %gp+gblack+p1p\n", VECTOR_HEAD_LENGTH);
-	GMT_message (GMT, "\t-D Multiply uncertainties by sigscale. (Se and Sw only)i\n");
-	GMT_message (GMT, "\t-E Set color used for uncertainty wedges in -Sw option.\n");
-	GMT_message (GMT, "\t-G Specify color (for symbols/polygons) or pattern (for polygons). fill can be either\n");
-	GMT_message (GMT, "\t   1) <r/g/b> (each 0-255) for color or <gray> (0-255) for gray-shade [0].\n");
-	GMT_message (GMT, "\t   2) p[or P]<iconsize>/<pattern> for predefined patterns (0-90).\n");
-	GMT_Option (C, "K");
-	GMT_message (GMT, "\t-L Draw line or symbol outline using the current pen (see -W).\n");
-	GMT_message (GMT, "\t-N Do Not skip/clip symbols that fall outside map border [Default will ignore those outside].\n");
-	GMT_Option (C, "O,P");
-	GMT_message (GMT, "\t-S Select symbol type and scale. Choose between:\n");
-	GMT_message (GMT, "\t    (e) Velocity ellipses: in X,Y,Vx,Vy,SigX,SigY,CorXY,name format.\n");
-	GMT_message (GMT, "\t    (r) Velocity ellipses: in X,Y,Vx,Vy,a,b,theta,name format.\n");
-	GMT_message (GMT, "\t    (n) Anisotropy : in X,Y,Vx,Vy.\n");
-	GMT_message (GMT, "\t    (w) Rotational wedges: in X,Y,Spin,Spinsig.\n");
-	GMT_message (GMT, "\t    (x) Strain crosses : in X,Y,Eps1,Eps2,Theta.\n");
-	GMT_Option (C, "U,V");
-	GMT_message (GMT,  "\t-W Set pen attributes [%s].\n", GMT_putpen (GMT, GMT->current.setting.map_default_pen));
-	GMT_Option (C, "X,c,h,i,:,.");
+	GMT_Option (API, "J-,R");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Option (API, "<,B-");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify arrow head attributes:");
+	GMT_vector_syntax (API->GMT, 15);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default is %gp+gblack+p1p\n", VECTOR_HEAD_LENGTH);
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Multiply uncertainties by sigscale. (Se and Sw only)i\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Set color used for uncertainty wedges in -Sw option.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify color (for symbols/polygons) or pattern (for polygons). fill can be either\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   1) <r/g/b> (each 0-255) for color or <gray> (0-255) for gray-shade [0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   2) p[or P]<iconsize>/<pattern> for predefined patterns (0-90).\n");
+	GMT_Option (API, "K");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Draw line or symbol outline using the current pen (see -W).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Do Not skip/clip symbols that fall outside map border [Default will ignore those outside].\n");
+	GMT_Option (API, "O,P");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Select symbol type and scale. Choose between:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t    (e) Velocity ellipses: in X,Y,Vx,Vy,SigX,SigY,CorXY,name format.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t    (r) Velocity ellipses: in X,Y,Vx,Vy,a,b,theta,name format.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t    (n) Anisotropy : in X,Y,Vx,Vy.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t    (w) Rotational wedges: in X,Y,Spin,Spinsig.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t    (x) Strain crosses : in X,Y,Eps1,Eps2,Theta.\n");
+	GMT_Option (API, "U,V");
+	GMT_Message (API, GMT_TIME_NONE,  "\t-W Set pen attributes [%s].\n", GMT_putpen (API->GMT, API->GMT->current.setting.map_default_pen));
+	GMT_Option (API, "X,c,h,i,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -370,7 +368,7 @@ int GMT_psvelo (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 
-	if (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE) GMT_report (GMT, GMT_MSG_VERBOSE, "psvelo: 2-D confidence interval and scaling factor %f %f\n", Ctrl->S.confidence, Ctrl->S.conrad);
+	if (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE) GMT_Report (API, GMT_MSG_VERBOSE, "psvelo: 2-D confidence interval and scaling factor %f %f\n", Ctrl->S.confidence, Ctrl->S.conrad);
 
 	Ctrl->A.S.v.v_width = (float)(Ctrl->A.S.v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 
@@ -397,7 +395,7 @@ int GMT_psvelo (void *V_API, int mode, void *args)
 		}
 
 		if ((GMT_scanf (GMT, col[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &xy[ix]) == GMT_IS_NAN) || (GMT_scanf (GMT, col[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[iy]) == GMT_IS_NAN)) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Record %d had bad x and/or y coordinates, must exit)\n", n_rec);
+			GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad x and/or y coordinates, must exit)\n", n_rec);
 			GMT_exit (EXIT_FAILURE);
 		}
 
@@ -526,9 +524,9 @@ int GMT_psvelo (void *V_API, int mode, void *args)
 
 	GMT_free (GMT, station_name);
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Number of records read: %li\n", n_rec);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Number of records read: %li\n", n_rec);
 
-	if (Ctrl->D.active)  GMT_report (GMT, GMT_MSG_VERBOSE, "Rescaling uncertainties by a factor of %f\n", Ctrl->D.scale);
+	if (Ctrl->D.active)  GMT_Report (API, GMT_MSG_VERBOSE, "Rescaling uncertainties by a factor of %f\n", Ctrl->D.scale);
 
 	if (!Ctrl->N.active) GMT_map_clip_off (GMT);
 

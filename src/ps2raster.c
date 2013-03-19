@@ -173,7 +173,7 @@ int parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *C
 						C->W.mode = KML_SEAFLOOR_ABS;
 						break;
 					default:
-						GMT_report (GMT, GMT_MSG_NORMAL, "GMT ERROR -W+a<mode>[par]: Unrecognized altitude mode %c\n", p[1]);
+						GMT_Report (C, GMT_MSG_NORMAL, "GMT ERROR -W+a<mode>[par]: Unrecognized altitude mode %c\n", p[1]);
 						error++;
 						break;
 				}
@@ -207,7 +207,7 @@ int parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *C
 				C->W.URL = strdup (&p[1]);
 				break;
 			default:
-				GMT_report (GMT, GMT_MSG_NORMAL, "GMT ERROR -W+<opt>: Unrecognized option selection %c\n", p[1]);
+				GMT_Report (C, GMT_MSG_NORMAL, "GMT ERROR -W+<opt>: Unrecognized option selection %c\n", p[1]);
 				error++;
 				break;
 		}
@@ -250,119 +250,117 @@ void Free_ps2raster_Ctrl (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {	/* D
 	GMT_free (GMT, C);
 }
 
-int GMT_ps2raster_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_ps2raster_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: ps2raster <psfile1> <psfile2> <...> [-A[u][-][<margin(s)>]] [-C<gs_command>]\n");
-	GMT_message (GMT, "\t[-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-L<listfile>]\n");
-	GMT_message (GMT, "\t[-N] [-P] [-Q[g|t]1|2|4] [-S] [-Tb|e|f|F|g|G|j|m|p|t] [%s]\n", GMT_V_OPT);
-	GMT_message (GMT, "\t[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: ps2raster <psfile1> <psfile2> <...> [-A[u][-][<margin(s)>]] [-C<gs_command>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-L<listfile>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-N] [-P] [-Q[g|t]1|2|4] [-S] [-Tb|e|f|F|g|G|j|m|p|t] [%s]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]\n\n");
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "Works by modifying the page size in order that the resulting\n");
-	GMT_message (GMT, "image will have the size specified by the BoundingBox.\n");
-	GMT_message (GMT, "As an option, a tight BoundingBox may be computed.\n\n");
-	GMT_message (GMT, "<psfile(s)> postscript file(s) to be converted.\n");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-A Adjust the BoundingBox to the minimum required by the image contents.\n");
-	GMT_message (GMT, "\t   Append u to strip out time-stamps (produced by GMT -U options).\n");
-	GMT_message (GMT, "\t   Append - to make sure -A is NOT activated by -W.\n");
-	GMT_message (GMT, "\t   Optionally, append margin(s) to adjusted BoundingBox.\n");
-	GMT_message (GMT, "\t     -A<off>[u] sets uniform margin for all 4 sides.\n");
-	GMT_message (GMT, "\t     -A<xoff>[u]/<yoff>[u] set separate x- and y-margins.\n");
-	GMT_message (GMT, "\t     -A<woff>[u]/<eoff>[u]/<soff>[u]/<noff>[u] set separate w-,e-,s-,n-margins.\n");
-	GMT_message (GMT, "\t   Append unit u (%s) [%c].\n", GMT_DIM_UNITS_DISPLAY, GMT->session.unit_name[GMT->current.setting.proj_length_unit][0]);
-	GMT_message (GMT, "\t-C Specify a single, custom option that will be passed on to GhostScript\n");
-	GMT_message (GMT, "\t   as is. Repeat to add several options [none].\n");
-	GMT_message (GMT, "\t-D Set an alternative output directory (which must exist)\n");
-	GMT_message (GMT, "\t   [Default is same directory as PS files].\n");
-	GMT_message (GMT, "\t   Use -D. to place the output in the current directory.\n");
-	GMT_message (GMT, "\t-E Set raster resolution in dpi [default = 720 for PDF, 300 for others].\n");
-	GMT_message (GMT, "\t-F Force the output file name. By default output names are constructed\n");
-	GMT_message (GMT, "\t   using the input names as base, which are appended with an appropriate\n");
-	GMT_message (GMT, "\t   extension. Use this option to provide a different name, but WITHOUT\n");
-	GMT_message (GMT, "\t   extension. Extension is still determined automatically.\n");
-	GMT_message (GMT, "\t-G Full path to your ghostscript executable.\n");
-	GMT_message (GMT, "\t   NOTE: Under Unix systems this is generally not necessary.\n");
-	GMT_message (GMT, "\t   Under Windows, ghostscript path is fished from the registry.\n");
-	GMT_message (GMT, "\t   If this fails you can still add the GS path to system's path\n");
-	GMT_message (GMT, "\t   or give the full path here.\n");
-	GMT_message (GMT, "\t   (e.g., -Gc:\\programs\\gs\\gs9.02\\bin\\gswin64c).\n");
-	GMT_message (GMT, "\t-I Ghostscript versions >= 9.00 change gray-shades by using ICC profiles.\n");
-	GMT_message (GMT, "\t   GS 9.05 and above provide the '-dUseFastColor=true' option to prevent that\n");
-	GMT_message (GMT, "\t   and that is what ps2raster do by default, unless option -I is set.\n");
-	GMT_message (GMT, "\t   Note that for GS >= 9.00 and < 9.05 the gray-shade shifting is applied\n");
-	GMT_message (GMT, "\t   to all but PDF format. We have no solution to offer other than ... upgrade GS\n");
-	GMT_message (GMT, "\t-L The <listfile> is an ASCII file with names of files to be converted.\n");
-	GMT_message (GMT, "\t-P Force Portrait mode. All Landscape mode plots will be rotated back\n");
-	GMT_message (GMT, "\t   so that they show unrotated in Portrait mode.\n");
-	GMT_message (GMT, "\t   This is practical when converting to image formats or preparing\n");
-	GMT_message (GMT, "\t   EPS or PDF plots for inclusion in documents.\n");
-	GMT_message (GMT, "\t-Q Anti-aliasing setting for (g)raphics or (t)ext; append size (1,2,4)\n");
-	GMT_message (GMT, "\t   of sub-sampling box.\n");
-	GMT_message (GMT, "\t   Default is no anti-aliasing, which is the same as specifying size 1.\n");
-	GMT_message (GMT, "\t-S Apart from executing it, also writes the ghostscript command to\n");
-	GMT_message (GMT, "\t   standard output.\n");
-	GMT_message (GMT, "\t-T Set output format [default is jpeg]:\n");
-	GMT_message (GMT, "\t   b means BMP.\n");
-	GMT_message (GMT, "\t   e means EPS.\n");
-	GMT_message (GMT, "\t   E means EPS with /PageSize command.\n");
-	GMT_message (GMT, "\t   f means PDF.\n");
-	GMT_message (GMT, "\t   F means multi-page PDF (requires -F).\n");
-	GMT_message (GMT, "\t   g means PNG.\n");
-	GMT_message (GMT, "\t   G means PNG (with transparency).\n");
-	GMT_message (GMT, "\t   j means JPEG.\n");
-	GMT_message (GMT, "\t   m means PPM.\n");
-	GMT_message (GMT, "\t   t means TIF.\n");
-	GMT_message (GMT, "\t   For b, g, j, t, append - to get a grayscale image [24-bit color].\n");
-	GMT_message (GMT, "\t   The EPS format can be combined with any of the other formats.\n");
-	GMT_message (GMT, "\t   For example, -Tef creates both an EPS and PDF file.\n");
-	GMT_message (GMT, "\t-V Provide progress report [default is silent] and shows the\n");
-	GMT_message (GMT, "\t   gdal_translate command, in case you want to use this program\n");
-	GMT_message (GMT, "\t   to create a geoTIFF file.\n");
-	GMT_message (GMT, "\t-W Write a ESRI type world file suitable to make (e.g.,) .tif files be\n");
-	GMT_message (GMT, "\t   recognized as geotiff by softwares that know how to do it. Be aware,\n");
-	GMT_message (GMT, "\t   however, that different results are obtained depending on the image\n");
-	GMT_message (GMT, "\t   contents and if the -B option has been used or not. The trouble with\n");
-	GMT_message (GMT, "\t   -B is that it creates a frame and very likely its annotations and\n");
-	GMT_message (GMT, "\t   that introduces pixels outside the map data extent. As a consequence,\n");
-	GMT_message (GMT, "\t   the map extents estimation will be wrong. To avoid this problem, use\n");
-	GMT_message (GMT, "\t   the --MAP_FRAME_TYPE=inside option which plots all annotations related\n");
-	GMT_message (GMT, "\t   stuff inside the image and does not compromise the coordinate.\n");
-	GMT_message (GMT, "\t   computations. The world file naming follows the convention of jamming\n");
-	GMT_message (GMT, "\t   a 'w' in the file extension. So, if the output is tif (-Tt) the world\n");
-	GMT_message (GMT, "\t   file is a .tfw, for jpeg a .jgw, and so on.\n");
-	GMT_message (GMT, "\t   Use -W+g to do a system call to gdal_translate and produce a true\n");
-	GMT_message (GMT, "\t   geoTIFF image right away. The output file will have the extension\n");
-	GMT_message (GMT, "\t   .tiff. See the man page for other 'gotchas'. Automatically sets -A -P.\n");
-	GMT_message (GMT, "\t   Use -W+k to create a minimalist KML file that allows loading the\n");
-	GMT_message (GMT, "\t   image in Google Earth. Note that for this option the image must be\n");
-	GMT_message (GMT, "\t   in geographical coordinates. If not, a warning is issued but the\n");
-	GMT_message (GMT, "\t   KML file is created anyway.\n");
-	GMT_message (GMT, "\t   Several modifiers allow you to specify the content in the KML file:\n");
-	GMT_message (GMT, "\t   +a<altmode>[<altitude>] sets the altitude mode of this layer, where\n");
-	GMT_message (GMT, "\t      <altmode> is one of 5 recognized by Google Earth:\n");
-	GMT_message (GMT, "\t      G clamped to the ground [Default].\n");
-	GMT_message (GMT, "\t      g Append altitude (in m) relative to ground.\n");
-	GMT_message (GMT, "\t      A Append absolute altitude (in m).\n");
-	GMT_message (GMT, "\t      s Append altitude (in m) relative to seafloor.\n");
-	GMT_message (GMT, "\t      S clamped to the seafloor.\n");
-	GMT_message (GMT, "\t   +f<minfade>/<maxfade>] sets distances over which we fade from opaque\n");
-	GMT_message (GMT, "\t     to transparent [no fading].\n");
-	GMT_message (GMT, "\t   +l<minLOD>/<maxLOD>] sets Level Of Detail when layer should be\n");
-	GMT_message (GMT, "\t     active [always active]. Image goes inactive when there are fewer\n");
-	GMT_message (GMT, "\t     than minLOD pixels or more than maxLOD pixels visible.\n");
-	GMT_message (GMT, "\t     -1 means never invisible.\n");
-	GMT_message (GMT, "\t   +n<layername> sets the name of this particular layer\n");
-	GMT_message (GMT, "\t     [\"GMT Image Overlay\"].\n");
-	GMT_message (GMT, "\t   +o<foldername> sets the name of this particular folder\n");
-	GMT_message (GMT, "\t     [\"GMT Image Folder\"].  This yields a KML snipped without header/trailer.\n");
-	GMT_message (GMT, "\t   +t<doctitle> sets the document name [\"GMT KML Document\"].\n");
-	GMT_message (GMT, "\t   +u<URL> prepands this URL to the name of the image referenced in the\n");
-	GMT_message (GMT, "\t     KML [local file].\n");
+	GMT_Message (API, GMT_TIME_NONE, "Works by modifying the page size in order that the resulting\n");
+	GMT_Message (API, GMT_TIME_NONE, "image will have the size specified by the BoundingBox.\n");
+	GMT_Message (API, GMT_TIME_NONE, "As an option, a tight BoundingBox may be computed.\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "<psfile(s)> postscript file(s) to be converted.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Adjust the BoundingBox to the minimum required by the image contents.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append u to strip out time-stamps (produced by GMT -U options).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append - to make sure -A is NOT activated by -W.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append margin(s) to adjusted BoundingBox.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -A<off>[u] sets uniform margin for all 4 sides.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -A<xoff>[u]/<yoff>[u] set separate x- and y-margins.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -A<woff>[u]/<eoff>[u]/<soff>[u]/<noff>[u] set separate w-,e-,s-,n-margins.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append unit u (%s) [%c].\n", GMT_DIM_UNITS_DISPLAY, API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit][0]);
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Specify a single, custom option that will be passed on to GhostScript\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   as is. Repeat to add several options [none].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Set an alternative output directory (which must exist)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is same directory as PS files].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -D. to place the output in the current directory.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Set raster resolution in dpi [default = 720 for PDF, 300 for others].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Force the output file name. By default output names are constructed\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   using the input names as base, which are appended with an appropriate\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   extension. Use this option to provide a different name, but WITHOUT\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   extension. Extension is still determined automatically.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Full path to your ghostscript executable.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   NOTE: Under Unix systems this is generally not necessary.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Under Windows, ghostscript path is fished from the registry.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If this fails you can still add the GS path to system's path\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   or give the full path here.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   (e.g., -Gc:\\programs\\gs\\gs9.02\\bin\\gswin64c).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Ghostscript versions >= 9.00 change gray-shades by using ICC profiles.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   GS 9.05 and above provide the '-dUseFastColor=true' option to prevent that\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   and that is what ps2raster do by default, unless option -I is set.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Note that for GS >= 9.00 and < 9.05 the gray-shade shifting is applied\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   to all but PDF format. We have no solution to offer other than ... upgrade GS\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L The <listfile> is an ASCII file with names of files to be converted.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-P Force Portrait mode. All Landscape mode plots will be rotated back\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   so that they show unrotated in Portrait mode.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   This is practical when converting to image formats or preparing\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   EPS or PDF plots for inclusion in documents.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Anti-aliasing setting for (g)raphics or (t)ext; append size (1,2,4)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   of sub-sampling box.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default is no anti-aliasing, which is the same as specifying size 1.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Apart from executing it, also writes the ghostscript command to\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   standard output.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Set output format [default is jpeg]:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   b means BMP.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   e means EPS.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   E means EPS with /PageSize command.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   f means PDF.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   F means multi-page PDF (requires -F).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   g means PNG.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   G means PNG (with transparency).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   j means JPEG.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   m means PPM.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   t means TIF.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For b, g, j, t, append - to get a grayscale image [24-bit color].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The EPS format can be combined with any of the other formats.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For example, -Tef creates both an EPS and PDF file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-V Provide progress report [default is silent] and shows the\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   gdal_translate command, in case you want to use this program\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   to create a geoTIFF file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Write a ESRI type world file suitable to make (e.g.,) .tif files be\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   recognized as geotiff by softwares that know how to do it. Be aware,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   however, that different results are obtained depending on the image\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   contents and if the -B option has been used or not. The trouble with\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -B is that it creates a frame and very likely its annotations and\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   that introduces pixels outside the map data extent. As a consequence,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   the map extents estimation will be wrong. To avoid this problem, use\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   the --MAP_FRAME_TYPE=inside option which plots all annotations related\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   stuff inside the image and does not compromise the coordinate.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   computations. The world file naming follows the convention of jamming\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   a 'w' in the file extension. So, if the output is tif (-Tt) the world\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   file is a .tfw, for jpeg a .jgw, and so on.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -W+g to do a system call to gdal_translate and produce a true\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   geoTIFF image right away. The output file will have the extension\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   .tiff. See the man page for other 'gotchas'. Automatically sets -A -P.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -W+k to create a minimalist KML file that allows loading the\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   image in Google Earth. Note that for this option the image must be\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   in geographical coordinates. If not, a warning is issued but the\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   KML file is created anyway.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Several modifiers allow you to specify the content in the KML file:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   +a<altmode>[<altitude>] sets the altitude mode of this layer, where\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      <altmode> is one of 5 recognized by Google Earth:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      G clamped to the ground [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      g Append altitude (in m) relative to ground.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      A Append absolute altitude (in m).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      s Append altitude (in m) relative to seafloor.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      S clamped to the seafloor.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   +f<minfade>/<maxfade>] sets distances over which we fade from opaque\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     to transparent [no fading].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   +l<minLOD>/<maxLOD>] sets Level Of Detail when layer should be\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     active [always active]. Image goes inactive when there are fewer\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     than minLOD pixels or more than maxLOD pixels visible.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -1 means never invisible.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   +n<layername> sets the name of this particular layer\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     [\"GMT Image Overlay\"].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   +o<foldername> sets the name of this particular folder\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     [\"GMT Image Folder\"].  This yields a KML snipped without header/trailer.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   +t<doctitle> sets the document name [\"GMT KML Document\"].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   +u<URL> prepands this URL to the name of the image referenced in the\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     KML [local file].\n");
 
 	return (EXIT_FAILURE);
 }
@@ -416,7 +414,7 @@ int GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl, str
 							break;
 						default:
 							n_errors++;
-							GMT_report (GMT, GMT_MSG_NORMAL, "-A: Give 1, 2, or 4 margins\n");
+							GMT_Report (C, GMT_MSG_NORMAL, "-A: Give 1, 2, or 4 margins\n");
 							break;
 					}
 				}
@@ -614,12 +612,12 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 	/*---------------------------- This is the ps2raster main code ----------------------------*/
 
 	if (Ctrl->F.active && (Ctrl->L.active || Ctrl->D.active)) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Option -F and options -L OR -D are mutually exclusive. Ignoring option -F.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Option -F and options -L OR -D are mutually exclusive. Ignoring option -F.\n");
 		Ctrl->F.active = false;
 	}
 
 	if (Ctrl->F.active && Ctrl->In.n_files > 1 && Ctrl->T.device != -GS_DEV_PDF) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Option -F is incompatible with multiple inputs. Ignoring option -F.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Option -F is incompatible with multiple inputs. Ignoring option -F.\n");
 		Ctrl->F.active = false;
 	}
 
@@ -632,7 +630,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 	    Ctrl->T.device == GS_DEV_JPGG || Ctrl->T.device == GS_DEV_TIF ||
 	    Ctrl->T.device == GS_DEV_TIFG || Ctrl->T.device == GS_DEV_PNG ||
 	    Ctrl->T.device == GS_DEV_TPNG || Ctrl->T.device == GS_DEV_PNGG) ) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Error: As far as we know selected raster type is unsuported by GE.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: As far as we know selected raster type is unsuported by GE.\n");
 	}
 
 	if (Ctrl->W.active) {	/* Implies -P and -A (unless -A- is set ) */
@@ -646,7 +644,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 	/* Multiple files in a file with their names */
 	if (Ctrl->L.active) {
 		if ((fpl = fopen (Ctrl->L.file, "r")) == NULL) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Error: Cannot open list file %s\n", Ctrl->L.file);
+			GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot open list file %s\n", Ctrl->L.file);
 			Return (EXIT_FAILURE);
 		}
 		ps_names = GMT_memory (GMT, NULL, n_alloc, char *);
@@ -684,12 +682,12 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 		if ((fpp = popen(str, "r")) != NULL) {
 			n = fscanf(fpp, "%d.%d", &gsVersion.major, &gsVersion.minor);
 			if (pclose(fpp) == -1)
-				GMT_report (GMT, GMT_MSG_NORMAL, "Error closing GS version query.\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Error closing GS version query.\n");
 			if (n != 2)
-				GMT_report (GMT, GMT_MSG_NORMAL, "Failed to parse response to GS version query.\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Failed to parse response to GS version query.\n");
 		}
 		else {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Error GS version query.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Error GS version query.\n");
 		}
 
 		if ((gsVersion.major == 9 && gsVersion.minor >= 5) || gsVersion.major > 9)
@@ -732,18 +730,18 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 		*out_file = '\0'; /* truncate string */
 		strncpy (ps_file, ps_names[k], GMT_BUFSIZ);
 		if ((fp = fopen (ps_file, "r")) == NULL) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Cannot open file %s\n", ps_file);
+			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", ps_file);
 			continue;
 		}
 
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Processing %s...", ps_file);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Processing %s...", ps_file);
 
 		if (Ctrl->A.strip) {	/* Must strip off the GMT timestamp stuff, but pass any font encodings */
 			int dump = true;
-			GMT_report (GMT, GMT_MSG_LONG_VERBOSE, " Strip GMT time-stamp...");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, " Strip GMT time-stamp...");
 			sprintf (no_U_file, "%s/ps2raster_%db.eps", Ctrl->D.dir, (int)getpid());
 			if ((fp2 = fopen (no_U_file, "w+")) == NULL) {
-				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a temporary file\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a temporary file\n");
 				Return (EXIT_FAILURE);
 			}
 			while (GMT_fgets_chop (GMT, line, GMT_BUFSIZ, fp) != NULL) {
@@ -778,17 +776,17 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 
 		if (Ctrl->A.active) {
 			char *psfile_to_use;
-			GMT_report (GMT, GMT_MSG_LONG_VERBOSE, " Find HiResBoundingBox ");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, " Find HiResBoundingBox ");
 			sprintf (BB_file, "%s/ps2raster_%" PRIu64 "c.bb", Ctrl->D.dir, (uint64_t)getpid());
 			psfile_to_use = Ctrl->A.strip ? no_U_file : ((strlen (clean_PS_file) > 0) ? clean_PS_file : ps_file);
 			sprintf (cmd, "%s%s %s %s %s 2> %s", at_sign, Ctrl->G.file, gs_BB, Ctrl->C.arg, psfile_to_use, BB_file);
 			sys_retval = system (cmd);		/* Execute the command that computes the tight BB */
 			if (sys_retval) {
-				GMT_report (GMT, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
+				GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 				Return (EXIT_FAILURE);
 			}
 			if ((fpb = fopen (BB_file, "r")) == NULL) {
-				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to open file %s\n", BB_file);
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to open file %s\n", BB_file);
 				Return (EXIT_FAILURE);
 			}
 			while (GMT_fgets (GMT, line, GMT_BUFSIZ, fpb) != NULL && !got_BB) {
@@ -800,7 +798,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 					x0 -= Ctrl->A.margin[XLO];	x1 += Ctrl->A.margin[XHI];	/* If not given, margin = 0/0/0/0 */
 					y0 -= Ctrl->A.margin[YLO];	y1 += Ctrl->A.margin[YHI];
 					if (x1 <= x0 || y1 <= y0) {
-						GMT_report (GMT, GMT_MSG_NORMAL, "Unable to decode BoundingBox file %s\n", BB_file);
+						GMT_Report (API, GMT_MSG_NORMAL, "Unable to decode BoundingBox file %s\n", BB_file);
 						fclose (fpb);
 						remove (BB_file);	/* Remove the file */
 						sprintf (tmp_file, "%s/", Ctrl->D.dir);
@@ -812,7 +810,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 						sys_retval = system (cmd);		/* Execute the GhostScript command */
 						if (Ctrl->S.active) fprintf (stdout, "%s\n", cmd);
 						if (sys_retval) {
-							GMT_report (GMT, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
+							GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 							Return (EXIT_FAILURE);
 						}
 
@@ -823,13 +821,13 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 			}
 			fclose (fpb);
 			remove (BB_file);	/* Remove the file with BB info */
-			if (got_BB) GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "[%g %g %g %g]...", x0, y0, x1, y1);
+			if (got_BB) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "[%g %g %g %g]...", x0, y0, x1, y1);
 		}
 
 		/* Open temporary file to be processed by ghostscript. When -Te is used, tmp_file is for keeps */
 
 		if (Ctrl->T.eps)
-			GMT_report (GMT, GMT_MSG_LONG_VERBOSE, " Format EPS file...");
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, " Format EPS file...");
 		if (Ctrl->T.eps) {
 			if (Ctrl->D.active) sprintf (tmp_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
 			if (!Ctrl->F.active)
@@ -838,14 +836,14 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 				strcat (tmp_file, Ctrl->F.file);
 			strcat (tmp_file, ext[GS_DEV_EPS]);
 			if ((fpo = fopen (tmp_file, "w")) == NULL) {
-				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to open file %s for writing\n", tmp_file);
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to open file %s for writing\n", tmp_file);
 				continue;
 			}
 		}
 		else {
 			sprintf (tmp_file, "%s/ps2raster_%" PRIu64 "d.eps", Ctrl->D.dir, (uint64_t)getpid());
 			if ((fpo = fopen (tmp_file, "w+")) == NULL) {
-				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a temporary file\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a temporary file\n");
 				continue;
 			}
 		}
@@ -900,7 +898,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 		/* Cannot proceed without knowing the BoundingBox */
 
 		if (!got_BB) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Error: The file %s has no BoundingBox in the first 20 lines or last 256 bytes. Use -A option.\n", ps_file);
+			GMT_Report (API, GMT_MSG_NORMAL, "Error: The file %s has no BoundingBox in the first 20 lines or last 256 bytes. Use -A option.\n", ps_file);
 			continue;
 		}
 
@@ -947,17 +945,17 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 								(west >= -180) && ((east <= 360) && ((east - west) <= 360)) &&
 								(south >= -90) && (north <= 90) ) {
 							proj4_cmd = strdup ("latlon");
-							GMT_report (GMT, GMT_MSG_NORMAL, "Warning: An unknown ps2raster setting was found but since "
+							GMT_Report (API, GMT_MSG_NORMAL, "Warning: An unknown ps2raster setting was found but since "
 									"image coordinates seem to be geographical, a linear transformation "
 									"will be used.\n");
 						}
 						else if (!strcmp (proj4_name,"xy") && Ctrl->W.warp) {	/* Do not operate on a twice unknown setting */
-							GMT_report (GMT, GMT_MSG_NORMAL, "Error: requested an automatic geotiff generation, but "
+							GMT_Report (API, GMT_MSG_NORMAL, "Error: requested an automatic geotiff generation, but "
 									"no recognized ps2raster option was used for the PS creation.\n"); 
 						}
 					}
 					else if (Ctrl->W.kml) {
-						GMT_report (GMT, GMT_MSG_NORMAL, "Error: To GE images must be in geographical coords. Very likely "
+						GMT_Report (API, GMT_MSG_NORMAL, "Error: To GE images must be in geographical coords. Very likely "
 									"this won't work as you wish inside GE.\n"); 
 					}
 				}
@@ -1093,7 +1091,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 			char tag[16];
 			strncpy (tag, &ext[Ctrl->T.device][1], 16U);
 			GMT_str_toupper (tag);
-			GMT_report (GMT, GMT_MSG_LONG_VERBOSE, " Convert to %s...", tag);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, " Convert to %s...", tag);
 
 			if (!Ctrl->F.active) {
 				if (Ctrl->D.active) sprintf (out_file, "%s/", Ctrl->D.dir);		/* Use specified output directory */
@@ -1115,7 +1113,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 			/* Execute the GhostScript command */
 			sys_retval = system (cmd);
 			if (sys_retval) {
-				GMT_report (GMT, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
+				GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 				Return (EXIT_FAILURE);
 			}
 
@@ -1124,21 +1122,21 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 				/* output file not created */
 				if (isGMT_PS && excessK)
 					/* non-closed GMT input PS file */
-					GMT_report (GMT, GMT_MSG_NORMAL, "%s: GMT PS format detected but file is not finalized. Maybe a -K in excess? No output created.\n", ps_file);
+					GMT_Report (API, GMT_MSG_NORMAL, "%s: GMT PS format detected but file is not finalized. Maybe a -K in excess? No output created.\n", ps_file);
 				else
 					/* Either a bad closed GMT PS file or one of unknown origin */
-					GMT_report (GMT, GMT_MSG_NORMAL, "Could not create %s. Maybe input file does not fulfill PS specifications.\n", out_file);
+					GMT_Report (API, GMT_MSG_NORMAL, "Could not create %s. Maybe input file does not fulfill PS specifications.\n", out_file);
 			}
 			else {
 				/* output file exists */
 				if (isGMT_PS && excessK)
 					/* non-closed GMT input PS file */
-					GMT_report (GMT, GMT_MSG_NORMAL, "%s: GMT PS format detected but file is not finalized. Maybe a -K in excess? %s could be messed up.\n", ps_file, out_file);
+					GMT_Report (API, GMT_MSG_NORMAL, "%s: GMT PS format detected but file is not finalized. Maybe a -K in excess? %s could be messed up.\n", ps_file, out_file);
 				/* else: Either a good closed GMT PS file or one of unknown origin */
 			}
 
 		}
-		GMT_report (GMT, GMT_MSG_VERBOSE, " Done.\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, " Done.\n");
 
 		if (!Ctrl->T.eps)
 			remove (tmp_file);
@@ -1153,7 +1151,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 
 			x_inc = (east  - west)  / pix_w;
 			y_inc = (north - south) / pix_h;
-			GMT_report (GMT, GMT_MSG_VERBOSE, "width = %d\theight = %d\tX res = %f\tY res = %f\n", pix_w, pix_h, x_inc, y_inc);
+			GMT_Report (API, GMT_MSG_VERBOSE, "width = %d\theight = %d\tX res = %f\tY res = %f\n", pix_w, pix_h, x_inc, y_inc);
 
 			/* West and North of the world file contain the coordinates of the
 			 * center of the pixel
@@ -1181,14 +1179,14 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 			strcat (world_file, wext);
 
 			if ((fpw = fopen (world_file, "w")) == NULL) {
-				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to open file %s for writing\n", world_file);
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to open file %s for writing\n", world_file);
 			}
 			else {
 				fprintf (fpw, "%.12f\n0.0\n0.0\n%.12f\n%.12f\n%.12f", x_inc, -y_inc, west, north);
 				fclose (fpw);
-				GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Wrote world file %s\n", world_file);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Wrote world file %s\n", world_file);
 				if (proj4_cmd)
-					GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Proj4 definition: %s\n", proj4_cmd);
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Proj4 definition: %s\n", proj4_cmd);
 			}
 
 			free (wext);
@@ -1219,14 +1217,14 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 #endif
 				free(proj4_cmd);
 				sys_retval = system (cmd);		/* Execute the gdal_translate command */
-				GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "\nThe gdal_translate command: \n%s\n", cmd);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "\nThe gdal_translate command: \n%s\n", cmd);
 				if (sys_retval) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
+					GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 					Return (EXIT_FAILURE);
 				}
 			}
 			else if (Ctrl->W.warp && !proj4_cmd)
-				GMT_report (GMT, GMT_MSG_NORMAL, "Could not find the Proj4 command in the PS file. No conversion performed.\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Could not find the Proj4 command in the PS file. No conversion performed.\n");
 		}
 
 		else if ( Ctrl->W.kml ) {	/* Write a basic kml file */
@@ -1250,7 +1248,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 			strcat (kml_file, ".kml");
 
 			if ((fpw = fopen (kml_file, "w")) == NULL) {
-				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to open file %s for writing\n", kml_file);
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to open file %s for writing\n", kml_file);
 			}
 			else {
 				if (Ctrl->W.folder) {	/* Control KML overlay vs full file */
@@ -1298,15 +1296,15 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 				else
 					fprintf (fpw, "</Document>\n</kml>\n");
 				fclose (fpw);
-				GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Wrote KML file %s\n", kml_file);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Wrote KML file %s\n", kml_file);
 			}
 		}
 
 		else if (Ctrl->W.active && !found_proj) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Could not find the 'PROJ' tag in the PS file. No world file created.\n");
-			GMT_report (GMT, GMT_MSG_NORMAL, "This situation occurs when one of the two next cases is true:\n");
-			GMT_report (GMT, GMT_MSG_NORMAL, "1) the PS file was created with a pre-GMT v4.5.0 version\n");
-			GMT_report (GMT, GMT_MSG_NORMAL, "2) the PS file was not created by GMT\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Could not find the 'PROJ' tag in the PS file. No world file created.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "This situation occurs when one of the two next cases is true:\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "1) the PS file was created with a pre-GMT v4.5.0 version\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "2) the PS file was not created by GMT\n");
 		}
 	}
 
@@ -1353,7 +1351,7 @@ int ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 #endif
 
 	if (RegO != ERROR_SUCCESS) {
-		GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Error opening HKLM key\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Error opening HKLM key\n");
 		return (EXIT_FAILURE);
 	}
 
@@ -1367,7 +1365,7 @@ int ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 	RegCloseKey(hkey);
 
 	if (maxVersion == 0) {
-		GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Unknown version reported in registry\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Unknown version reported in registry\n");
 		return (EXIT_FAILURE);
 	}
 
@@ -1388,7 +1386,7 @@ int ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 		RegO = RegOpenKeyEx(HKEY_LOCAL_MACHINE, key, 0, KEY_QUERY_VALUE, &hkey);
 #endif
 	if (RegO != ERROR_SUCCESS) {
-		GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Error opening HKLM key\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Error opening HKLM key\n");
 		return (EXIT_FAILURE);
 	}
 
@@ -1398,12 +1396,12 @@ int ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 	RegCloseKey(hkey);
 
 	if (RegO != ERROR_SUCCESS) {
-		GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Error reading the GS_DLL value contents\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Error reading the GS_DLL value contents\n");
 		return (EXIT_FAILURE);
 	}
 
 	if ( (ptr = strstr(data,"\\gsdll")) == NULL ) {
-		GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "GS_DLL value is screwed.\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "GS_DLL value is screwed.\n");
 		return (EXIT_FAILURE);
 	}
 
@@ -1413,7 +1411,7 @@ int ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
 
 	/* Now finally check that the gswinXXc.exe exists */
 	if (access (data, R_OK)) {
-		GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "gswinXXc.exe does not exist.\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "gswinXXc.exe does not exist.\n");
 		return (EXIT_FAILURE);
 	}
 

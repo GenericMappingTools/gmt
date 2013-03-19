@@ -103,43 +103,41 @@ void Free_makecpt_Ctrl (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
-int GMT_makecpt_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_makecpt_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: makecpt [-A[+]<transparency>] [-C<cpt>] [-D[i|o]] [-F[R|r|h|c] [-I] [-M] [-N] [-Q[i|o]]\n");
-	GMT_message (GMT, "	[-T<z_min>/<z_max>[/<z_inc>[+]] | -T<table>] [%s] [-Z] [%s]\n", GMT_V_OPT, GMT_ho_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: makecpt [-A[+]<transparency>] [-C<cpt>] [-D[i|o]] [-F[R|r|h|c] [-I] [-M] [-N] [-Q[i|o]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "	[-T<z_min>/<z_max>[/<z_inc>[+]] | -T<table>] [%s] [-Z] [%s]\n", GMT_V_OPT, GMT_ho_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-A Set constant transparency for all colors; prepend + to also include back-, for-, and nan-colors [0]\n");
-	if (GMT_list_cpt (GMT, 'C')) return (EXIT_FAILURE);	/* Display list of available color tables */
-	GMT_message (GMT, "\t-D Set back- and foreground color to match the bottom/top limits\n");
-	GMT_message (GMT, "\t   in the output cpt file [Default uses color table]. Append i to match the\n");
-	GMT_message (GMT, "\t   bottom/top values in the input cpt file.\n");
-	GMT_message (GMT, "\t-F Select the color model for output (R for r/g/b or grayscale or colorname,\n");
-	GMT_message (GMT, "\t   r for r/g/b only, h for h-s-v, c for c/m/y/k).\n");
-	GMT_message (GMT, "\t-I Reverse sense of color table as well as back- and foreground color.\n");
-	GMT_message (GMT, "\t-M Use GMT defaults to set back-, foreground, and NaN colors\n");
-	GMT_message (GMT, "\t   [Default uses the settings in the color table].\n");
-	GMT_message (GMT, "\t-N Do not write back-, foreground, and NaN colors [Default will].\n");
-	GMT_message (GMT, "\t-Q Assign a logarithmic colortable [Default is linear].\n");
-	GMT_message (GMT, "\t   -Qi: z-values are log10(z). Assign colors and write z [Default].\n");
-	GMT_message (GMT, "\t   -Qo: z-values are z; take log10(z), assign colors and write z.\n");
-	GMT_message (GMT, "\t        If -T<z_min/z_max/z_inc> is given, then z_inc must be 1, 2, or 3\n");
-	GMT_message (GMT, "\t        (as in logarithmic annotations; see -B in psbasemap).\n");
-	GMT_message (GMT, "\t-T Give <z_min>, <z_max>, and <z_inc> for colorscale in z-units,\n");
-	GMT_message (GMT, "\t   or filename with custom z-values.  If no -T option is given,\n");
-	GMT_message (GMT, "\t   then the range in the master cptfile will be used.  If no increment\n");
-	GMT_message (GMT, "\t   is given we match the number of entries in the master CPT file.\n");
-	GMT_message (GMT, "\t   Append + to <z_inc> to indicate number of z-values to produce instead.\n");
-	GMT_Option (C, "V");
-	GMT_message (GMT, "\t-W Do not interpolate color palette.\n");
-	GMT_message (GMT, "\t-Z Create a continuous color palette [Default is discontinuous,\n");
-	GMT_message (GMT, "\t   i.e., constant color intervals].\n");
-	GMT_Option (C, "h,.");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Set constant transparency for all colors; prepend + to also include back-, for-, and nan-colors [0]\n");
+	if (GMT_list_cpt (API->GMT, 'C')) return (EXIT_FAILURE);	/* Display list of available color tables */
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Set back- and foreground color to match the bottom/top limits\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   in the output cpt file [Default uses color table]. Append i to match the\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   bottom/top values in the input cpt file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Select the color model for output (R for r/g/b or grayscale or colorname,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   r for r/g/b only, h for h-s-v, c for c/m/y/k).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Reverse sense of color table as well as back- and foreground color.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Use GMT defaults to set back-, foreground, and NaN colors\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses the settings in the color table].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Do not write back-, foreground, and NaN colors [Default will].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Assign a logarithmic colortable [Default is linear].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Qi: z-values are log10(z). Assign colors and write z [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Qo: z-values are z; take log10(z), assign colors and write z.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        If -T<z_min/z_max/z_inc> is given, then z_inc must be 1, 2, or 3\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        (as in logarithmic annotations; see -B in psbasemap).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Give <z_min>, <z_max>, and <z_inc> for colorscale in z-units,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   or filename with custom z-values.  If no -T option is given,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   then the range in the master cptfile will be used.  If no increment\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   is given we match the number of entries in the master CPT file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append + to <z_inc> to indicate number of z-values to produce instead.\n");
+	GMT_Option (API, "V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Do not interpolate color palette.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Create a continuous color palette [Default is discontinuous,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   i.e., constant color intervals].\n");
+	GMT_Option (API, "h,.");
 
 	return (EXIT_FAILURE);
 }
@@ -288,7 +286,7 @@ int GMT_makecpt (void *V_API, int mode, void *args)
 		Ctrl->C.file = strdup ("rainbow");
 	}
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Prepare CPT file via the master file %s\n", Ctrl->C.file);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Prepare CPT file via the master file %s\n", Ctrl->C.file);
 	error += GMT_check_condition (GMT, !GMT_getsharepath (GMT, "cpt", Ctrl->C.file, ".cpt", CPT_file), "Error: Cannot find colortable %s\n", Ctrl->C.file);
 	if (error) Return (GMT_RUNTIME_ERROR);	/* Bail on run-time errors */
 
@@ -311,11 +309,11 @@ int GMT_makecpt (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 		if (T->n_tables != 1 || T->table[0]->n_segments != 1) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Error: More than one table or segment in file %s\n", Ctrl->T.file);
+			GMT_Report (API, GMT_MSG_NORMAL, "Error: More than one table or segment in file %s\n", Ctrl->T.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (T->table[0]->segment[0]->n_rows == 0) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Error: No intervals in file %s\n", Ctrl->T.file);
+			GMT_Report (API, GMT_MSG_NORMAL, "Error: No intervals in file %s\n", Ctrl->T.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		z = T->table[0]->segment[0]->coord[GMT_X];
@@ -323,11 +321,11 @@ int GMT_makecpt (void *V_API, int mode, void *args)
 	}
 	else if (Ctrl->T.active && Ctrl->Q.mode == 2) {	/* Establish a log10 grid */
 		if (!(Ctrl->T.inc == 1.0 || Ctrl->T.inc == 2.0 || Ctrl->T.inc == 3.0)) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Error: For -Qo logarithmic spacing, z_inc must be 1, 2, or 3\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Error: For -Qo logarithmic spacing, z_inc must be 1, 2, or 3\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (Ctrl->T.low <= 0.0) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Error: For -Qo logarithmic spacing, z_start must be > 0\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Error: For -Qo logarithmic spacing, z_start must be > 0\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		nz = GMT_log_array (GMT, Ctrl->T.low, Ctrl->T.high, Ctrl->T.inc, &z);
@@ -338,7 +336,7 @@ int GMT_makecpt (void *V_API, int mode, void *args)
 			Ctrl->T.inc = (Ctrl->T.high - Ctrl->T.low) / Pin->n_colors;
 		}
 		else if (Ctrl->T.inc <= 0) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Error: Interval must be > 0\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Error: Interval must be > 0\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 		else

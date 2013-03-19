@@ -59,22 +59,20 @@ void Free_grdpaste_Ctrl (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *C) {	/* Dea
 	GMT_free (GMT, C);	
 }
 
-int GMT_grdpaste_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_grdpaste_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grdpaste <grid1> <grid2> -G<outgrid> [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdpaste <grid1> <grid2> -G<outgrid> [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\twhere grids <grid1> and <grid2> are to be combined into <outgrid>.\n");
-	GMT_message (GMT, "\t<grid1> and <grid2> must have same dx,dy and one edge in common.\n");
-	GMT_message (GMT, "\tIf in doubt, run grdinfo first and check your files.\n");
-	GMT_message (GMT, "\tUse grdpaste and/or grdsample to adjust files as necessary.\n");
-	GMT_message (GMT, "\t-G Specify file name for output grid file.\n");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_Option (C, "V,f,.");
+	GMT_Message (API, GMT_TIME_NONE, "\twhere grids <grid1> and <grid2> are to be combined into <outgrid>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<grid1> and <grid2> must have same dx,dy and one edge in common.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tIf in doubt, run grdinfo first and check your files.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tUse grdpaste and/or grdsample to adjust files as necessary.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output grid file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Option (API, "V,f,.");
 
 	return (EXIT_FAILURE);
 }
@@ -101,7 +99,7 @@ int GMT_grdpaste_parse (struct GMTAPI_CTRL *C, struct GRDPASTE_CTRL *Ctrl, struc
 					Ctrl->In.file[n_in++] = strdup (opt->arg);
 				else {
 					n_errors++;
-					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Only two files may be pasted\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: Only two files may be pasted\n");
 				}
 				break;
 
@@ -169,7 +167,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the grdpaste main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input grids\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grids\n");
 	GMT_set_pad (GMT, 0); /* No padding */
 
 	/* Try to find a common side to join on  */
@@ -184,12 +182,12 @@ int GMT_grdpaste (void *V_API, int mode, void *args)
 	if (A->header->registration != B->header->registration)
 		error++;
 	if ((A->header->z_scale_factor != B->header->z_scale_factor) || (A->header->z_add_offset != B->header->z_add_offset)) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Scale/offset not compatible!\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Scale/offset not compatible!\n");
 		Return (EXIT_FAILURE);
 	}
 
 	if (! (fabs (A->header->inc[GMT_X] - B->header->inc[GMT_X]) < 1.0e-6 && fabs (A->header->inc[GMT_Y] - B->header->inc[GMT_Y]) < 1.0e-6)) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Grid intervals do not match!\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Grid intervals do not match!\n");
 		Return (EXIT_FAILURE);
 	}
 
@@ -253,7 +251,7 @@ int GMT_grdpaste (void *V_API, int mode, void *args)
 			C->header->wesn[YLO] = B->header->wesn[YLO];			/* ...but not for south */
 		}
 		else {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Grids do not share a common edge!\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Grids do not share a common edge!\n");
 			Return (EXIT_FAILURE);
 		}
 	}
@@ -290,12 +288,12 @@ int GMT_grdpaste (void *V_API, int mode, void *args)
 			C->header->wesn[XHI] = B->header->wesn[XHI];			/* ...but not for east */
 		}
 		else {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Grids do not share a common edge!\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Grids do not share a common edge!\n");
 			Return (EXIT_FAILURE);
 		}
 	}
 	else {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Grids do not share a common edge!\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Grids do not share a common edge!\n");
 		Return (EXIT_FAILURE);
 	}
 	if (GMT_is_geographic (GMT, GMT_IN) && C->header->wesn[XHI] > 360.0) {	/* Must be careful in determining a match */
@@ -307,10 +305,10 @@ int GMT_grdpaste (void *V_API, int mode, void *args)
 
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		sprintf (format, "\t%s\t%s\t%s\t%s\t%s\t%s\t%%d\t%%d\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_report (GMT, GMT_MSG_VERBOSE, "File spec:\tW E S N dx dy nx ny:\n");
-		GMT_report (GMT, GMT_MSG_VERBOSE, format, Ctrl->In.file[0], A->header->wesn[XLO], A->header->wesn[XHI], A->header->wesn[YLO], A->header->wesn[YHI], A->header->inc[GMT_X], A->header->inc[GMT_Y], A->header->nx, A->header->ny);
-		GMT_report (GMT, GMT_MSG_VERBOSE, format, Ctrl->In.file[1], B->header->wesn[XLO], B->header->wesn[XHI], B->header->wesn[YLO], B->header->wesn[YHI], B->header->inc[GMT_X], B->header->inc[GMT_Y], B->header->nx, B->header->ny);
-		GMT_report (GMT, GMT_MSG_VERBOSE, format, Ctrl->G.file, C->header->wesn[XLO], C->header->wesn[XHI], C->header->wesn[YLO], C->header->wesn[YHI], C->header->inc[GMT_X], C->header->inc[GMT_Y], C->header->nx, C->header->ny);
+		GMT_Report (API, GMT_MSG_VERBOSE, "File spec:\tW E S N dx dy nx ny:\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, format, Ctrl->In.file[0], A->header->wesn[XLO], A->header->wesn[XHI], A->header->wesn[YLO], A->header->wesn[YHI], A->header->inc[GMT_X], A->header->inc[GMT_Y], A->header->nx, A->header->ny);
+		GMT_Report (API, GMT_MSG_VERBOSE, format, Ctrl->In.file[1], B->header->wesn[XLO], B->header->wesn[XHI], B->header->wesn[YLO], B->header->wesn[YHI], B->header->inc[GMT_X], B->header->inc[GMT_Y], B->header->nx, B->header->ny);
+		GMT_Report (API, GMT_MSG_VERBOSE, format, Ctrl->G.file, C->header->wesn[XLO], C->header->wesn[XHI], C->header->wesn[YLO], C->header->wesn[YHI], C->header->inc[GMT_X], C->header->inc[GMT_Y], C->header->nx, C->header->ny);
 	}
 
 	GMT_set_grddim (GMT, C->header);

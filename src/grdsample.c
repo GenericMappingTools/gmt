@@ -69,24 +69,21 @@ void Free_grdsample_Ctrl (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *C) {	/* D
 	GMT_free (GMT, C);	
 }
 
-int GMT_grdsample_usage (struct GMTAPI_CTRL *C, int level) {
-
-	struct GMT_CTRL *GMT = C->GMT;
-
+int GMT_grdsample_usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grdsample <ingrid> -G<outgrid> [%s]\n", GMT_I_OPT);
-	GMT_message (GMT, "\t[%s] [-T] [%s] [%s]\n\t[%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT, GMT_r_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdsample <ingrid> -G<outgrid> [%s]\n", GMT_I_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T] [%s] [%s]\n\t[%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT, GMT_r_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<ingrid> is data set to be resampled.\n");
-	GMT_message (GMT, "\t-G Set the name of the interpolated output grid file.\n");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_inc_syntax (GMT, 'I', 0);
-	GMT_message (GMT, "\t   When omitted: grid spacing is copied from input grid.\n");
-	GMT_message (GMT, "\t-R Specify a subregion [Default is old region].\n");
-	GMT_message (GMT, "\t-T Toggle between grid registration and pixel registration.\n");
-	GMT_Option (C, "V,f,n,r,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is data set to be resampled.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Set the name of the interpolated output grid file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Option (API, "I");
+	GMT_Message (API, GMT_TIME_NONE, "\t   When omitted: grid spacing is copied from input grid.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-R Specify a subregion [Default is old region].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Toggle between grid registration and pixel registration.\n");
+	GMT_Option (API, "V,f,n,r,.");
 
 	return (EXIT_FAILURE);
 }
@@ -130,7 +127,7 @@ int GMT_grdsample_parse (struct GMTAPI_CTRL *C, struct GRDSAMPLE_CTRL *Ctrl, str
 				break;
 #ifdef GMT_COMPAT
 			case 'L':	/* BCs */
-				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
+				GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
 				strncpy (GMT->common.n.BC, opt->arg, 4U);
 				/* We turn on geographic coordinates if -Lg is given by faking -fg */
 				/* But since GMT_parse_f_option is private to gmt_init and all it does */
@@ -141,7 +138,7 @@ int GMT_grdsample_parse (struct GMTAPI_CTRL *C, struct GRDSAMPLE_CTRL *Ctrl, str
 				}
 				break;
 			case 'N':	/* Backwards compatible.  nx/ny can now be set with -I */
-				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -N<nx>/<ny> is deprecated; use -I<nx>+/<ny>+ instead.\n");
+				GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -N<nx>/<ny> is deprecated; use -I<nx>+/<ny>+ instead.\n");
 				Ctrl->I.active = true;
 				sscanf (opt->arg, "%d/%d", &ii, &jj);
 				if (jj == 0) jj = ii;
@@ -210,7 +207,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdsample main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input grid\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid\n");
 	if ((Gin = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
@@ -227,7 +224,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 
 	if (GMT->common.R.active) {	/* Make sure input grid and output -R has an overlap */
 		if (wesn[YLO] < Gin->header->wesn[YLO] - GMT_SMALL || wesn[YHI] > Gin->header->wesn[YHI] + GMT_SMALL) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Error: Selected region exceeds the Y-boundaries of the grid file!\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Error: Selected region exceeds the Y-boundaries of the grid file!\n");
 			Return (EXIT_FAILURE);
 		}
 		if (GMT_is_geographic (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap */
@@ -236,11 +233,11 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 			if (Gin->header->wesn[XLO] > wesn[XHI]) shift -= 360;
 			if (shift) {	/* Must modify header */
 				Gin->header->wesn[XLO] += shift, Gin->header->wesn[XHI] += shift;
-				GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "File %s region needed longitude adjustment to fit final grid region\n", Ctrl->In.file);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "File %s region needed longitude adjustment to fit final grid region\n", Ctrl->In.file);
 			}
 		}
 		else if (wesn[XLO] < Gin->header->wesn[XLO] - GMT_SMALL || wesn[XHI] > Gin->header->wesn[XHI] + GMT_SMALL) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Error: Selected region exceeds the X-boundaries of the grid file!\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Error: Selected region exceeds the X-boundaries of the grid file!\n");
 			return (EXIT_FAILURE);
 		}
 	}
@@ -252,13 +249,13 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 		GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, 
 		GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, format, Gin->header->wesn[XLO], Gin->header->wesn[XHI], 
+	GMT_Report (API, GMT_MSG_VERBOSE, format, Gin->header->wesn[XLO], Gin->header->wesn[XHI], 
 		Gin->header->wesn[YLO], Gin->header->wesn[YHI], Gin->header->nx, Gin->header->ny,
 		Gin->header->inc[GMT_X], Gin->header->inc[GMT_Y], Gin->header->registration);
 
 	memcpy (&format, "Output", 6);
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, format, Gout->header->wesn[XLO], Gout->header->wesn[XHI], 
+	GMT_Report (API, GMT_MSG_VERBOSE, format, Gout->header->wesn[XLO], Gout->header->wesn[XHI], 
 		Gout->header->wesn[YLO], Gout->header->wesn[YHI], Gout->header->nx, Gout->header->ny,
 		Gout->header->inc[GMT_X], Gout->header->inc[GMT_Y], Gout->header->registration);
 
@@ -266,8 +263,8 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
-	if (Gout->header->inc[GMT_X] > Gin->header->inc[GMT_X]) GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: Output sampling interval in x exceeds input interval and may lead to aliasing.\n");
-	if (Gout->header->inc[GMT_Y] > Gin->header->inc[GMT_Y]) GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: Output sampling interval in y exceeds input interval and may lead to aliasing.\n");
+	if (Gout->header->inc[GMT_X] > Gin->header->inc[GMT_X]) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Output sampling interval in x exceeds input interval and may lead to aliasing.\n");
+	if (Gout->header->inc[GMT_Y] > Gin->header->inc[GMT_Y]) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Output sampling interval in y exceeds input interval and may lead to aliasing.\n");
 
 	/* Precalculate longitudes */
 

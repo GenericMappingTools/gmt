@@ -91,46 +91,45 @@ void Free_sample1d_Ctrl (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *C) {	/* Dea
 	GMT_free (GMT, C);	
 }
 
-int GMT_sample1d_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_sample1d_usage (struct GMTAPI_CTRL *API, int level)
 {
 	char type[3] = {'l', 'a', 'c'};
-	struct GMT_CTRL *GMT = C->GMT;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: sample1d [<table>] [-A[f|m|p|r|R]+l] [-Fl|a|c|n] [-I<inc>[<unit>]] [-N<knottable>]\n");
-	GMT_message (GMT, "\t[-S<start>[/<stop]] [-T<time_col>] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: sample1d [<table>] [-A[f|m|p|r|R]+l] [-Fl|a|c|n] [-I<inc>[<unit>]] [-N<knottable>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-S<start>[/<stop]] [-T<time_col>] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_Option (C, "<");
-	GMT_message (GMT, "\t   The independent variable (see -T) must be monotonically in/de-creasing.\n");
-	GMT_message (GMT, "\t-A Controls how the input track in <table> is resampled when -I..<unit> is selected:\n");
-	GMT_message (GMT, "\t   f: Keep original points, but add intermediate points if needed [Default].\n");
-	GMT_message (GMT, "\t   m: Same, but first follow meridian (along y) then parallel (along x).\n");
-	GMT_message (GMT, "\t   p: Same, but first follow parallel (along x) then meridian (along y).\n");
-	GMT_message (GMT, "\t   r: Resample at equidistant locations; input points not necessarily included.\n");
-	GMT_message (GMT, "\t   R: Same, but adjust given spacing to fit the track length exactly.\n");
-	GMT_message (GMT, "\t   Append +l to compute distances along rhumblines (loxodromes) [no].\n");
-	GMT_message (GMT, "\t-F Set the interpolation mode.  Choose from:\n");
-	GMT_message (GMT, "\t   l Linear interpolation.\n");
-	GMT_message (GMT, "\t   a Akima spline interpolation.\n");
-	GMT_message (GMT, "\t   c Cubic spline interpolation.\n");
-	GMT_message (GMT, "\t   n No interpolation (nearest point).\n");
-	GMT_message (GMT, "\t   [Default is -F%c].\n", type[GMT->current.setting.interpolant]);
-	GMT_message (GMT, "\t-I Set equidistant grid interval <inc> [t1 - t0].\n");
-	GMT_message (GMT, "\t   Append %s to indicate that the first two columns contain\n", GMT_LEN_UNITS_DISPLAY);
-	GMT_message (GMT, "\t   longitude, latitude and you wish to resample this path with a nominal spacing of <inc>\n");
-	GMT_message (GMT, "\t   in the chosen units.  For Cartesian paths specify unit as c.\n");
-	GMT_message (GMT, "\t   See -A to control how the resampling is done.\n");
-	GMT_message (GMT, "\t-N The <knottable> is an ASCII table with the desired time positions in column 0.\n");
-	GMT_message (GMT, "\t   Overrides the -I and -S settings.  If none of -I, -S, and -N is set\n");
-	GMT_message (GMT, "\t   then <tstart> = first input point, <t_inc> = (t[1] - t[0]).\n");
-	GMT_message (GMT, "\t-S Set the first output point to be <start> [first multiple of inc in range].\n");
-	GMT_message (GMT, "\t   Optionally, append /<stop> for last output point [last multiple of inc in range].\n");
-	GMT_message (GMT, "\t-T Give column number of the independent variable (time) [Default is 0 (first)].\n");
-	GMT_Option (C, "V,bi2,bo,f,g,h,i,o,s,.");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Option (API, "<");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The independent variable (see -T) must be monotonically in/de-creasing.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Controls how the input track in <table> is resampled when -I..<unit> is selected:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   f: Keep original points, but add intermediate points if needed [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   m: Same, but first follow meridian (along y) then parallel (along x).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   p: Same, but first follow parallel (along x) then meridian (along y).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   r: Resample at equidistant locations; input points not necessarily included.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   R: Same, but adjust given spacing to fit the track length exactly.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l to compute distances along rhumblines (loxodromes) [no].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Set the interpolation mode.  Choose from:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   l Linear interpolation.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   a Akima spline interpolation.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   c Cubic spline interpolation.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   n No interpolation (nearest point).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is -F%c].\n", type[API->GMT->current.setting.interpolant]);
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Set equidistant grid interval <inc> [t1 - t0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append %s to indicate that the first two columns contain\n", GMT_LEN_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t   longitude, latitude and you wish to resample this path with a nominal spacing of <inc>\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   in the chosen units.  For Cartesian paths specify unit as c.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   See -A to control how the resampling is done.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N The <knottable> is an ASCII table with the desired time positions in column 0.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Overrides the -I and -S settings.  If none of -I, -S, and -N is set\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   then <tstart> = first input point, <t_inc> = (t[1] - t[0]).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Set the first output point to be <start> [first multiple of inc in range].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append /<stop> for last output point [last multiple of inc in range].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Give column number of the independent variable (time) [Default is 0 (first)].\n");
+	GMT_Option (API, "V,bi2,bo,f,g,h,i,o,s,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -168,7 +167,7 @@ int GMT_sample1d_parse (struct GMTAPI_CTRL *C, struct SAMPLE1D_CTRL *Ctrl, struc
 					case 'p': Ctrl->A.mode = GMT_TRACK_FILL_P; break;
 					case 'r': Ctrl->A.mode = GMT_TRACK_SAMPLE_FIX; break;
 					case 'R': Ctrl->A.mode = GMT_TRACK_SAMPLE_ADJ; break;
-					default: GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -G option: Bad modifier %c\n", opt->arg[0]); n_errors++; break;
+					default: GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -G option: Bad modifier %c\n", opt->arg[0]); n_errors++; break;
 				}
 				if (strstr (opt->arg, "+l")) Ctrl->A.loxo = true;
 				break;
@@ -279,19 +278,19 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 	
 	/*---------------------------- This is the sample1d main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	GMT->current.setting.interpolant = Ctrl->F.mode;
 	GMT->current.io.skip_if_NaN[GMT_X] = GMT->current.io.skip_if_NaN[GMT_Y] = false;	/* Turn off default GMT NaN-handling for (x,y) which is not the case here */
 	GMT->current.io.skip_if_NaN[Ctrl->T.col] = true;				/* ... But disallow NaN in "time" column */
 	
 	if (Ctrl->I.mode) {
 		if (Ctrl->I.smode == GMT_GEODESIC) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Cannot use geodesic distances as path interpolation is spherical; changed to spherical\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Cannot use geodesic distances as path interpolation is spherical; changed to spherical\n");
 			Ctrl->I.smode = GMT_GREATCIRCLE;
 		}
 		if (Ctrl->I.mode == INT_2D_GEO && !GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
 		if (!GMT_is_geographic (GMT, GMT_IN) && Ctrl->A.loxo) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Loxodrome mode ignored for Cartesian data.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Loxodrome mode ignored for Cartesian data.\n");
 			Ctrl->A.loxo = false;
 		}
 		if (Ctrl->A.loxo) GMT->current.map.loxodrome = true;
@@ -328,7 +327,7 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 		}
 		m_supplied = m;
 		t_out = GMT_memory (GMT, NULL, m_supplied, double);
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Read %" PRIu64 " knots from file\n", m_supplied);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Read %" PRIu64 " knots from file\n", m_supplied);
 		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Cin) != GMT_OK) {
 			Return (API->error);
 		}
@@ -363,7 +362,7 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 					t_out[m++] = t_supplied_out[row];
 				}
 				if (m == 0) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Warning: No output points for range %g to %g\n", S->coord[Ctrl->T.col][0], S->coord[Ctrl->T.col][S->n_rows-1]);
+					GMT_Report (API, GMT_MSG_NORMAL, "Warning: No output points for range %g to %g\n", S->coord[Ctrl->T.col][0], S->coord[Ctrl->T.col][S->n_rows-1]);
 					continue;
 				}
 			}
@@ -435,7 +434,7 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 				}
 
 				if (result != GMT_OK) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Error from GMT_intpol near row %d!\n", result+1);
+					GMT_Report (API, GMT_MSG_NORMAL, "Error from GMT_intpol near row %d!\n", result+1);
 					return (result);
 				}
 			}

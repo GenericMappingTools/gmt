@@ -326,65 +326,63 @@ void Free_project_Ctrl (struct GMT_CTRL *GMT, struct PROJECT_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
-int GMT_project_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_project_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: project [<table>] -C<ox>/<oy> [-A<azimuth>] [-E<bx>/<by>]\n");
-	GMT_message (GMT, "\t[-F<flags>] [-G<dist>[/<colat>][+]] [-L[w][<l_min>/<l_max>]]\n");
-	GMT_message (GMT, "\t[-N] [-Q] [-S] [-T<px>/<py>] [%s] [-W<w_min>/<w_max>]\n", GMT_V_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: project [<table>] -C<ox>/<oy> [-A<azimuth>] [-E<bx>/<by>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-F<flags>] [-G<dist>[/<colat>][+]] [-L[w][<l_min>/<l_max>]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-N] [-Q] [-S] [-T<px>/<py>] [%s] [-W<w_min>/<w_max>]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\tproject will read stdin or file, and does not want input if -G option.\n");
-	GMT_message (GMT, "\tThe projection may be defined in (only) one of three ways:\n");
-	GMT_message (GMT, "\t   (1) by a center -C and an azimuth -A,\n");
-	GMT_message (GMT, "\t   (2) by a center -C and end point of the path -E,\n");
-	GMT_message (GMT, "\t   (3) by a center -C and a roTation pole position -T.\n");
-	GMT_message (GMT, "\t   In a spherical projection [default], all cases place the central meridian\n");
-	GMT_message (GMT, "\t   of the transformed coordinates (p,q) through -C (p = 0 at -C).  The equator\n");
-	GMT_message (GMT, "\t   of the (p,q) system (line q = 0) passes through -C and makes an angle\n");
-	GMT_message (GMT, "\t   <azimuth> with North (case 1), or passes through -E (case 2), or is\n");
-	GMT_message (GMT, "\t   determined by the pole -T (case 3).  In (3), point -C need not be on equator.\n");
-	GMT_message (GMT, "\t   In a cartesian [-N option] projection, p = q = 0 at -O in all cases;\n");
-	GMT_message (GMT, "\t   (1) and (2) orient the p axis, while (3) orients the q axis.\n\n");
-	GMT_message (GMT, "\t-C Set the location of the center to be <ox>/<oy>.\n");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_Option (C, "<");
-	GMT_message (GMT, "\t-A Set the option (1) Azimuth, (<azimuth> in degrees CW from North).\n");
-	GMT_message (GMT, "\t-D Force the location of the Discontinuity in the r coordinate;\n");
-	GMT_message (GMT, "\t   -Dd (dateline) means [-180 < r < 180], -Dg (greenwich) means [0 < r < 360].\n");
-	GMT_message (GMT, "\t   The default does not check; in spherical case this usually results in [-180,180].\n");
-	GMT_message (GMT, "\t-E Set the option (2) location of end point E to be <bx>/<by>.\n");
-	GMT_message (GMT, "\t-F Indicate what output you want as one or more of xyzpqrs in any order;\n");
-	GMT_message (GMT, "\t   where x,y,[z] refer to input data locations and optional values,\n");
-	GMT_message (GMT, "\t   p,q are the coordinates of x,y in the projection's coordinate system,\n");
-	GMT_message (GMT, "\t   r,s is the projected position of x,y (taking q = 0) in the (x,y) coordinate system.\n");
-	GMT_message (GMT, "\t   p,q may be scaled from degrees into kilometers by the -Q option.  See -L, -Q, -W.\n");
-	GMT_message (GMT, "\t   Note z refers to all input data columns beyond the required x,y\n");
-	GMT_message (GMT, "\t   [Default is all fields, i.e., -Fxyzpqrs].\n");
-	GMT_message (GMT, "\t   If -G is set, -F is not available and output defaults to rsp.\n");
-	GMT_message (GMT, "\t-G Generate (r,s,p) points along profile every <dist> units. (No input data used.)\n");
-	GMT_message (GMT, "\t   If E given, will generate from C to E; else must give -L<l_min>/<l_max> for length.\n");
-	GMT_message (GMT, "\t   Optionally, append /<colat> for a small circle path through C and E (requires -C -E) [90].\n");
-	GMT_message (GMT, "\t   Finally, append + if you want information about the pole in a segment header [no header].\n");
-	GMT_message (GMT, "\t-L Check the Length along the projected track and use only certain points.\n");
-	GMT_message (GMT, "\t   -Lw will use only those points Within the span from C to E (Must have set -E).\n");
-	GMT_message (GMT, "\t   -L<l_min>/<l_max> will only use points whose p is [l_min <= p <= l_max].\n");
-	GMT_message (GMT, "\t   Default uses all points.  Note p = 0 at C and increases toward E in azim direction.\n");
-	GMT_message (GMT, "\t-N Flat Earth mode; a cartesian projection is made.  Default is spherical.\n");
-	GMT_message (GMT, "\t-Q Convert to Map units, so x,y,r,s are degrees,\n");
-	GMT_message (GMT, "\t   while p,q,dist,l_min,l_max,w_min,w_max are km.\n");
-	GMT_message (GMT, "\t   If not set, then p,q,dist,l_min,l_max,w_min,w_max are assumed to be in same units as x,y,r,s.\n");
-	GMT_message (GMT, "\t-S Output should be Sorted into increasing p value.\n");
-	GMT_message (GMT, "\t-T Set the option (3) location of the roTation pole to the projection to be <px>/<py>.\n");
-	GMT_Option (C, "V");
-	GMT_message (GMT, "\t-W Check the width across the projected track and use only certain points.\n");
-	GMT_message (GMT, "\t   This will use only those points whose q is [w_min <= q <= w_max].\n");
-	GMT_message (GMT, "\t   Note that q is positive to your LEFT as you walk from C toward E in azim direction.\n");
-	GMT_Option (C, "bi2,bo,f,g,h,i,s,:,.");
+	GMT_Message (API, GMT_TIME_NONE, "\tproject will read stdin or file, and does not want input if -G option.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tThe projection may be defined in (only) one of three ways:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   (1) by a center -C and an azimuth -A,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   (2) by a center -C and end point of the path -E,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   (3) by a center -C and a roTation pole position -T.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   In a spherical projection [default], all cases place the central meridian\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   of the transformed coordinates (p,q) through -C (p = 0 at -C).  The equator\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   of the (p,q) system (line q = 0) passes through -C and makes an angle\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <azimuth> with North (case 1), or passes through -E (case 2), or is\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   determined by the pole -T (case 3).  In (3), point -C need not be on equator.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   In a cartesian [-N option] projection, p = q = 0 at -O in all cases;\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   (1) and (2) orient the p axis, while (3) orients the q axis.\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Set the location of the center to be <ox>/<oy>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Option (API, "<");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Set the option (1) Azimuth, (<azimuth> in degrees CW from North).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Force the location of the Discontinuity in the r coordinate;\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Dd (dateline) means [-180 < r < 180], -Dg (greenwich) means [0 < r < 360].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The default does not check; in spherical case this usually results in [-180,180].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Set the option (2) location of end point E to be <bx>/<by>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Indicate what output you want as one or more of xyzpqrs in any order;\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   where x,y,[z] refer to input data locations and optional values,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   p,q are the coordinates of x,y in the projection's coordinate system,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   r,s is the projected position of x,y (taking q = 0) in the (x,y) coordinate system.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   p,q may be scaled from degrees into kilometers by the -Q option.  See -L, -Q, -W.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Note z refers to all input data columns beyond the required x,y\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is all fields, i.e., -Fxyzpqrs].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If -G is set, -F is not available and output defaults to rsp.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Generate (r,s,p) points along profile every <dist> units. (No input data used.)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If E given, will generate from C to E; else must give -L<l_min>/<l_max> for length.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append /<colat> for a small circle path through C and E (requires -C -E) [90].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Finally, append + if you want information about the pole in a segment header [no header].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Check the Length along the projected track and use only certain points.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Lw will use only those points Within the span from C to E (Must have set -E).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -L<l_min>/<l_max> will only use points whose p is [l_min <= p <= l_max].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default uses all points.  Note p = 0 at C and increases toward E in azim direction.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Flat Earth mode; a cartesian projection is made.  Default is spherical.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Convert to Map units, so x,y,r,s are degrees,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   while p,q,dist,l_min,l_max,w_min,w_max are km.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If not set, then p,q,dist,l_min,l_max,w_min,w_max are assumed to be in same units as x,y,r,s.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Output should be Sorted into increasing p value.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Set the option (3) location of the roTation pole to the projection to be <px>/<py>.\n");
+	GMT_Option (API, "V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Check the width across the projected track and use only certain points.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   This will use only those points whose q is [w_min <= q <= w_max].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Note that q is positive to your LEFT as you walk from C toward E in azim direction.\n");
+	GMT_Option (API, "bi2,bo,f,g,h,i,s,:,.");
 
 	return (EXIT_FAILURE);
 }
@@ -420,18 +418,18 @@ int GMT_project_parse (struct GMTAPI_CTRL *C, struct PROJECT_CTRL *Ctrl, struct 
 			case 'C':
 				Ctrl->C.active = true;
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) != 2) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Expected -C<lon0>/<lat0>\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: Expected -C<lon0>/<lat0>\n");
 					n_errors++;
 				}
 				else {
 					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->C.x), txt_a);
 					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->C.y), txt_b);
-					if (n_errors) GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -C option: Undecipherable argument %s\n", opt->arg);
+					if (n_errors) GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -C option: Undecipherable argument %s\n", opt->arg);
 				}
 				break;
 #ifdef GMT_COMPAT
 			case 'D':
-				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -D is deprecated; use --FORMAT_GEO_OUT instead\n");
+				GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -D is deprecated; use --FORMAT_GEO_OUT instead\n");
 				if (opt->arg[0] == 'g') GMT->current.io.geo.range = GMT_IS_0_TO_P360_RANGE;
 				if (opt->arg[0] == 'd') GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
 				break;
@@ -439,13 +437,13 @@ int GMT_project_parse (struct GMTAPI_CTRL *C, struct PROJECT_CTRL *Ctrl, struct 
 			case 'E':
 				Ctrl->E.active = true;
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) != 2) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Expected -E<lon1>/<lat1>\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: Expected -E<lon1>/<lat1>\n");
 					n_errors++;
 				}
 				else {
 					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->E.x), txt_a);
 					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->E.y), txt_b);
-					if (n_errors) GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -E option: Undecipherable argument %s\n", opt->arg);
+					if (n_errors) GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -E option: Undecipherable argument %s\n", opt->arg);
 				}
 				break;
 			case 'F':
@@ -454,13 +452,13 @@ int GMT_project_parse (struct GMTAPI_CTRL *C, struct PROJECT_CTRL *Ctrl, struct 
 					if (k < PROJECT_N_FARGS) {
 						Ctrl->F.col[k] = opt->arg[j];
 						if (!strchr ("xyzpqrs", opt->arg[j])) {
-							GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -F option: Choose from -Fxyzpqrs\n");
+							GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -F option: Choose from -Fxyzpqrs\n");
 							n_errors++;
 						}
 					}
 					else {
 						n_errors++;
-						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -F option: Too many output columns selected\n");
+						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -F option: Too many output columns selected\n");
 					}
 				}
 				break;
@@ -500,13 +498,13 @@ int GMT_project_parse (struct GMTAPI_CTRL *C, struct PROJECT_CTRL *Ctrl, struct 
 			case 'T':
 				Ctrl->T.active = true;
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) != 2) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Expected -T<lonp>/<latp>\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: Expected -T<lonp>/<latp>\n");
 					n_errors++;
 				}
 				else {
 					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->T.x), txt_a);
 					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->T.y), txt_b);
-					if (n_errors) GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -T option: Undecipherable argument %s\n", opt->arg);
+					if (n_errors) GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -T option: Undecipherable argument %s\n", opt->arg);
 				}
 				break;
 			case 'W':
@@ -756,7 +754,7 @@ int GMT_project (void *V_API, int mode, void *args)
 			GMT_cart_to_geo (GMT, &P.plat, &P.plon, x, true);	/* Save lon, lat of the pole */
 			radius = 0.5 * d_acosd (GMT_dot3v (GMT, a, b)); 
 			if (radius > fabs (Ctrl->G.colat)) {
-				GMT_report (GMT, GMT_MSG_NORMAL, "Center [-C] and end point [-E] are too far apart (%g) to define a small-circle with colatitude %g. Revert to great-circle.\n", radius, Ctrl->G.colat);
+				GMT_Report (API, GMT_MSG_NORMAL, "Center [-C] and end point [-E] are too far apart (%g) to define a small-circle with colatitude %g. Revert to great-circle.\n", radius, Ctrl->G.colat);
 				Ctrl->G.mode = 0;
 			}
 			else if (doubleAlmostEqual (Ctrl->G.colat, 90.0)) {	/* Great circle pole needed */
@@ -784,7 +782,7 @@ int GMT_project (void *V_API, int mode, void *args)
 					if (n_iter > 500) done = true;	/* Safety valve */
 				} while (!done);
 				GMT_cart_to_geo (GMT, &P.plat, &P.plon, x, true);	/* Save lon, lat of the new pole */
-				GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Pole for small circle located at %g %g\n", radius, P.plon, P.plat);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Pole for small circle located at %g %g\n", radius, P.plon, P.plat);
 				GMT_memcpy (P.pole, x, 3, double);	/* Replace great circle pole with small circle pole */
 				sin_lat_to_pole = s;
 				GMT_cross3v (GMT, P.pole, a, x);
@@ -834,7 +832,7 @@ int GMT_project (void *V_API, int mode, void *args)
 		P.output_choice[1] = 5;
 		P.output_choice[2] = 2;
 
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Generate table data\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Generate table data\n");
 		d_along = Ctrl->L.min;
 		while ((Ctrl->L.max - d_along) > (GMT_CONV_LIMIT*Ctrl->G.inc)) {
 			p_data[P.n_used].a[2] = d_along;
@@ -904,7 +902,7 @@ int GMT_project (void *V_API, int mode, void *args)
 	}
 	else {	/* Must read input file */
 
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 		/* Specify input and output expected columns */
 		if ((error = GMT_set_cols (GMT, GMT_IN, 0)) != GMT_OK) {
 			Return (error);
@@ -945,7 +943,7 @@ int GMT_project (void *V_API, int mode, void *args)
 			if (z_first) {
 				unsigned int n_cols = GMT_get_cols (GMT, GMT_IN);
 				if (n_cols == 2 && P.want_z_output) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "No data columns, cannot use z flag in -F\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "No data columns, cannot use z flag in -F\n");
 					Return (EXIT_FAILURE);
 				}
 				else
@@ -1016,7 +1014,7 @@ int GMT_project (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " read, %" PRIu64 " used\n", n_total_read, n_total_used);
+	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " read, %" PRIu64 " used\n", n_total_read, n_total_used);
 
 #ifdef MEMDEBUG
 	if (mem_track_enabled && P.n_z) GMT_memtrack_off (GMT, &g_mem_keeper);	/* Free pointers that were allocated when tracking was off */
