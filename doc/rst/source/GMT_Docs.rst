@@ -6355,6 +6355,17 @@ profiles; we also use the median stacking option to create a stacked
 profile, showed above the map, with the gray area representing the
 variations about the stacked median profile.
 
+Using country polygons for plotting and shading
+-----------------------------------------------
+
+The script produces the plot in Figure [fig:example\ :sub:`3`\ 4]. Here
+we demonstrate how `pscoast <pscoast.html>`_ can be used to extract
+and plot country polygons.  We show two panels; one in which we do
+a basic basemap and another where we lay down a color topography
+image and then place a transparent layer identifying the future
+Franco-Italian Union whose untimely breakup in 2045 the historians
+will continue to debate for some time.
+
 Creating GMT Animations
 =======================
 

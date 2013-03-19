@@ -139,7 +139,7 @@ functions using opaque pointers (\texttt{void *}).  Below we discuss these conta
 will later present how they are used when importing or exporting them to or from files,
 memory locations, or streams.  The first five are the standard \GMT\ objects, while the latter two are the
 special user data containers to facilitate converting user data into \GMT\ resources. These resources
-are defined in the include file \filename{gmt_resources.h}; please consult this file to ensure correctness
+are defined in the include file \filename{gmt\_resources.h}; please consult this file to ensure correctness
 as it is difficult to keep the documentation up-to-date.
 
 \subsection{Data tables}
@@ -708,9 +708,9 @@ not depend on external resources (files, memory locations, etc.), then you
 can obtain a ``blank slate'' by calling
 
 \begin{verbatim}
-void * GMT_Create_Data (void *API, unsigned int family, unsigned int geometry, \
-    unsigned int mode, uint64_t par[], double *wesn, double *inc, \
-    unsigned int registration, int pad, void *data
+void * GMT_Create_Data (void *API, unsigned int family, \
+    unsigned int geometry, unsigned int mode, uint64_t par[], \
+    double *wesn, double *inc, unsigned int registration, int pad, void *data
 \end{verbatim}
 \index{GMT\_Create\_Data}
 which returns a pointer to the allocated resource.
@@ -2023,44 +2023,9 @@ which simply frees up the memory allocated by the FFT machinery.
 
 FORTRAN 77 developers who wish to use the \GMT\ API may use the same 22 API functions as discussed in Chapter 2.
 However, as pointers to structures and such are not available, the FORTRAN bindings provided simplifies the
-interface in two ways:
-\begin{itemize}
-\item The first argument to the functions (the GMTAPI Control structure pointer) is not provided.  Instead,
-the bindings use a hidden, global external structure for this purpose and pass the pointer to it down to
-the C version of the functions.
-\item The resource arguments in \texttt{GMT\_Register\_IO} are not pointers to
-items but the items themselves.
-\end{itemize}
-The list of the basic 22 FORTRAN prototype functions thus becomes
-\begin{verbatim}
-function GMT_Create_Session (tag, pad, mode)
-function GMT_Destroy_Session ()
-function GMT_Register_IO (family, method, geometry, direction, \
-    wesn, resource)
-function GMT_Encode_ID (filename, ID)
-function GMT_Init_IO (family, geometry, direction, mode, n_args, args)
-function GMT_Begin_IO (family, geometry, direction)
-function GMT_Status_IO (mode)
-function GMT_Create_Data (family, geometry, ipar)
-function GMT_Duplicate_Data (family, mode, data)
-function GMT_Read_Data (family, method, geometry, mode, wesn, \
-    input, data)
-function GMT_Get_Data (ID, mode, data)
-function GMT_Retrieve_Data (ID)
-function GMT_Get_Record (rec, mode, nfields)
-function GMT_Get_Row (row_no, grid, row)
-function GMT_Write_Data (family, method, geometry, mode, wesn, \
-    output, data)
-function GMT_Put_Data (ID, mode, data)
-function GMT_Put_Record (mode, rec)
-function GMT_Put_Row (row_no, grid, row)
-function GMT_End_IO (direction, mode)
-function GMT_Destroy_Data (mode, ptr)
-\end{verbatim}
-where \texttt{family}, \texttt{method}, \texttt{geometry}, \texttt{mode} and \texttt{direction}
-are unsigned ints, \texttt{ID} and \texttt{error} are (signed) integers,
-\texttt{ipar} is an integer parameter array, \texttt{wesn} is a real (double precision) array,
-and \texttt{resource} are source or destination addresses.
+interface in that the first argument to the functions (the GMTAPI Control structure pointer) is not provided.
+Instead, the bindings use a hidden, global external structure for this purpose and pass the pointer to it down to
+the C version of the functions.  See Table~\ref{tbl:API} for the list of functions available.
 
 \clearpage
 %\addcontentsline{toc}{chapter}{INDEX}
