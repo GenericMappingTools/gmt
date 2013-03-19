@@ -122,9 +122,9 @@ EXTERN_MSC int GMT_Parse_Common				(void *C, char *given_options, struct GMT_OPT
 EXTERN_MSC unsigned int GMT_FFT_Option	(void *C, char option, unsigned int dim, char *string);
 EXTERN_MSC void * GMT_FFT_Parse		(void *C, char option, unsigned int dim, char *args);
 EXTERN_MSC void * GMT_FFT_Create	(void *C, void *X, unsigned int dim, unsigned int subdivide, unsigned int mode, void *F);
-EXTERN_MSC double GMT_FFT_Wavenumber	(void *C, uint64_t k, unsigned int mode, void *v_K);
-EXTERN_MSC int GMT_FFT			(void *C, void *X, int direction, unsigned int mode, void *v_K);
-EXTERN_MSC int GMT_FFT_Destroy		(void *C, void *v_K);
+EXTERN_MSC double GMT_FFT_Wavenumber	(void *C, uint64_t k, unsigned int mode, void *K);
+EXTERN_MSC int GMT_FFT			(void *C, void *X, int direction, unsigned int mode, void *K);
+EXTERN_MSC int GMT_FFT_Destroy		(void *C, void *K);
 
 #ifdef __cplusplus
 }
