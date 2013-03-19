@@ -82,38 +82,36 @@ void Free_grdseamount_Ctrl (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *C) {	
 	GMT_free (GMT, C);	
 }
 
-int GMT_grdseamount_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_grdseamount_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grdseamount [infile(s)] -G<outgrid> %s %s [-A[<out>/<in>]] [-C]\n", GMT_I_OPT, GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-L[<hcut>]] [-N<norm>] [-S<r_scale>] [-T[<flat>]] [-Z<base>]\n[%s] [%s] [%s] [%s] [%s]\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdseamount [infile(s)] -G<outgrid> %s %s [-A[<out>/<in>]] [-C]\n", GMT_I_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L[<hcut>]] [-N<norm>] [-S<r_scale>] [-T[<flat>]] [-Z<base>]\n[%s] [%s] [%s] [%s] [%s]\n",
 		GMT_bi_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\tInput contains lon, lat, radius, height for each seamount.\n");
-	GMT_message (GMT, "\t   With -E we expect lon, lat, azimuth, semi-major, semi-minor, radius, height instead\n");
-	GMT_message (GMT, "\t   If -T (no argument) is given a final column with flattening is expected.\n");
-	GMT_message (GMT, "\t-A Build a mAsk grid, append outside/inside values [1/NaN].\n");
-	GMT_message (GMT, "\t   Here, height is ignored and -L, -N and -Z are disallowed.\n");
-	GMT_message (GMT, "\t-C Cone model [Default is Gaussian]\n");
-	GMT_message (GMT, "\t-E Elliptical data format [Default is Circular].\n");
-	GMT_message (GMT, "\t   Read lon, lat, azimuth, major, minor, height (m) for each seamount\n");
-	GMT_message (GMT, "\t-G Sets name of output grdfile\n");
-	GMT_inc_syntax (GMT, 'I', 0);
-	GMT_message (GMT, "\t-L List area, volume, and mean-height for each seamount; NO grid is created.\n");
-	GMT_message (GMT, "\t   Optionally, append the noise-floor cutoff level [0]\n");
-	GMT_message (GMT, "\t-N Normalize grid so maximum gridheight equals <norm>.\n");
-	GMT_Option (C, "R");
-	GMT_message (GMT, "\t-S Sets scale factor for radii [1].\n");
-	GMT_message (GMT, "\t-T Seamounts are truncated.  Append flattening or expect it in last input column [no truncation]\n");
-	GMT_message (GMT, "\t-Z Add in background depth [0].\n");
-	GMT_Option (C, "V,bi");
-	GMT_message (GMT, "\t-fg Map units (lon, lat in degree, radius, major, minor in km).\n");
-	GMT_message (GMT, "\t   [Default is Cartesian - no units are implied].\n");
-	GMT_Option (C, "h,i,r,:,.");
+	GMT_Message (API, GMT_TIME_NONE, "\tInput contains lon, lat, radius, height for each seamount.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   With -E we expect lon, lat, azimuth, semi-major, semi-minor, radius, height instead\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If -T (no argument) is given a final column with flattening is expected.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Build a mAsk grid, append outside/inside values [1/NaN].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Here, height is ignored and -L, -N and -Z are disallowed.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Cone model [Default is Gaussian]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Elliptical data format [Default is Circular].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Read lon, lat, azimuth, major, minor, height (m) for each seamount\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Sets name of output grdfile\n");
+	GMT_Option (API, "I");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L List area, volume, and mean-height for each seamount; NO grid is created.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append the noise-floor cutoff level [0]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Normalize grid so maximum gridheight equals <norm>.\n");
+	GMT_Option (API, "R");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Sets scale factor for radii [1].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Seamounts are truncated.  Append flattening or expect it in last input column [no truncation]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Add in background depth [0].\n");
+	GMT_Option (API, "V,bi");
+	GMT_Message (API, GMT_TIME_NONE, "\t-fg Map units (lon, lat in degree, radius, major, minor in km).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is Cartesian - no units are implied].\n");
+	GMT_Option (API, "h,i,r,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -486,10 +484,10 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 				}
 			}
 		}
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Evaluated seamount # %6d\r", n_smts);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Evaluated seamount # %6d\r", n_smts);
 	} while (true);
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Evaluated seamount # %6d\n", n_smts);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Evaluated seamount # %6d\n", n_smts);
 	
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);
@@ -501,12 +499,12 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 	}
 	else {
 		if (Ctrl->N.active) {	/* Normalize so max height == N.value */
-			GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Normalize seamount amplitude so max height is %g\r", Ctrl->N.value);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Normalize seamount amplitude so max height is %g\r", Ctrl->N.value);
 			Ctrl->N.value /= max;
 			for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] *= Ctrl->N.value;
 		}
 		if (Ctrl->Z.active) {	/* Add in the background depth */
-			GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Add in a background level of %g\r", Ctrl->Z.value);
+			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Add in a background level of %g\r", Ctrl->Z.value);
 			for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] += Ctrl->Z.value;
 		}
 	

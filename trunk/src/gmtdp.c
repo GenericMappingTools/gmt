@@ -73,27 +73,26 @@ void Free_gmtdp_Ctrl (struct GMT_CTRL *GMT, struct GMTDP_CTRL *C) {	/* Deallocat
 	GMT_free (GMT, C);	
 }
 
-int GMT_gmtdp_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_gmtdp_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: gmtdp [<table>] -T<tolerance>[<unit>] [-G<outtable>] [%s]\n", GMT_V_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtdp [<table>] -T<tolerance>[<unit>] [-G<outtable>] [%s]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_dist_syntax (GMT, 'T', "Set tolerance as the maximum distance mismatch.");
-	GMT_message (GMT, "\t   No units means we will do a Cartesian calculation instead.\n");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_Option (C, "<");
-	GMT_message (GMT, "\t-G Specify an output file [Default writes to stdout].\n");
-	GMT_Option (C, "V,bi2,bo,f,g,h,i,o,:,.");
+	GMT_dist_syntax (API->GMT, 'T', "Set tolerance as the maximum distance mismatch.");
+	GMT_Message (API, GMT_TIME_NONE, "\t   No units means we will do a Cartesian calculation instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Option (API, "<");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify an output file [Default writes to stdout].\n");
+	GMT_Option (API, "V,bi2,bo,f,g,h,i,o,:,.");
 	
 	return (EXIT_FAILURE);
 }
 
-int GMT_gmtdp_parse (struct GMTAPI_CTRL *C, struct GMTDP_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_gmtdp_parse (struct GMTAPI_CTRL *API, struct GMTDP_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to gmtdp and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -103,7 +102,7 @@ int GMT_gmtdp_parse (struct GMTAPI_CTRL *C, struct GMTDP_CTRL *Ctrl, struct GMT_
 
 	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMT_CTRL *GMT = API->GMT;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -307,9 +306,9 @@ int GMT_gmtdp (void *V_API, int mode, void *args)
 	
 	/*---------------------------- This is the gmtdp main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	if (Ctrl->T.mode > 1) {
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: gmtdp only implemented using Flat-Earth calculations.\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: gmtdp only implemented using Flat-Earth calculations.\n");
 		Ctrl->T.mode = 1;	/* Limited to Flat Earth calculations for now */
 	}
 	
@@ -365,7 +364,7 @@ int GMT_gmtdp (void *V_API, int mode, void *args)
 				S[GMT_OUT]->coord[col][row] = S[GMT_IN]->coord[col][index[row]];
 			}
 			GMT_free (GMT, index);
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Points in: %ld Points out: %ld\n", S[GMT_IN]->n_rows, np_out);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Points in: %ld Points out: %ld\n", S[GMT_IN]->n_rows, np_out);
 		}
 	}
 

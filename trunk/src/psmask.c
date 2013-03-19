@@ -341,44 +341,41 @@ void Free_psmask_Ctrl (struct GMT_CTRL *GMT, struct PSMASK_CTRL *C) {	/* Dealloc
 	GMT_free (GMT, C);	
 }
 
-int GMT_psmask_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_psmask_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: psmask <table> %s %s %s\n", GMT_I_OPT, GMT_J_OPT, GMT_Rgeoz_OPT);
-	GMT_message (GMT, "\t[%s] [-C] [-D<template>] [-G<fill>] [%s] [-K] [-N] [-O] [-P] [-Q<min>]\n", GMT_B_OPT, GMT_Jz_OPT);
-	GMT_message (GMT, "\t[-S%s] [-T] [%s] [%s] [%s]\n", GMT_RADIUS_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s]\n", GMT_Y_OPT, GMT_b_OPT, GMT_c_OPT, GMT_h_OPT, GMT_i_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_p_OPT, GMT_r_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: psmask <table> %s %s %s\n", GMT_I_OPT, GMT_J_OPT, GMT_Rgeoz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C] [-D<template>] [-G<fill>] [%s] [-K] [-N] [-O] [-P] [-Q<min>]\n", GMT_B_OPT, GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-S%s] [-T] [%s] [%s] [%s]\n", GMT_RADIUS_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n", GMT_Y_OPT, GMT_b_OPT, GMT_c_OPT, GMT_h_OPT, GMT_i_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_p_OPT, GMT_r_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_inc_syntax (GMT, 'I', 0);
-	GMT_Option (C, "J-Z,R");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_Option (C, "<,B-");
-	GMT_message (GMT, "\t-C Terminate existing clip-path.  No other options required.\n");
-	GMT_message (GMT, "\t-D Dump clip polygons as data polygons; no plotting takes place.\n");
-	GMT_message (GMT, "\t   Append filename template which may contain a C-format specifier.\n");
-	GMT_message (GMT, "\t   If no filename template is given we write all polygons to stdout.\n");
-	GMT_message (GMT, "\t   If filename has no specifiers then we write all polygons to a single file.\n");
-	GMT_message (GMT, "\t   If an integer format (e.g., %%06d) is found we substitute a running segment count\n");
-	GMT_message (GMT, "\t   and write all polygons to individual files; see manual page for more examples.\n");
-	GMT_message (GMT, "\t   Cannot be used with -T; see -Q to eliminate small polygons.\n");
-	GMT_fill_syntax (GMT, 'G', "Select fill color/pattern [Default is no fill].");
-	GMT_Option (C, "K");
-	GMT_message (GMT, "\t-N Invert the sense of the clipping [or tiling].\n");
-	GMT_Option (C, "O,P");
-	GMT_message (GMT, "\t-Q Do not dump contours with less than <cut> points [Dump all contours].\n");
-	GMT_message (GMT, "\t   Ignored unless -D is set.\n");
-	GMT_dist_syntax (GMT, 'S', "Set search radius to identify inside points.");
-	GMT_message (GMT, "\t   This means nodes inside circles of <radius> centered on the input\n");
-	GMT_message (GMT, "\t   data points are considered to be reliable estimates of the surface.\n");
-	GMT_message (GMT, "\t   Default is -S0, i.e., only the nearest node is considered reliable.\n");
-	GMT_message (GMT, "\t-T Paint tiles [Default will trace data outline].\n");
-	GMT_message (GMT, "\t   If set you must also specify a color/fill with -G.\n");
-	GMT_Option (C, "U,V,X,bi2,bo,c,h,i,p,r,s,t,:,.");
+	GMT_Option (API, "I,J-Z,R");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Option (API, "<,B-");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Terminate existing clip-path.  No other options required.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Dump clip polygons as data polygons; no plotting takes place.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append filename template which may contain a C-format specifier.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no filename template is given we write all polygons to stdout.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If filename has no specifiers then we write all polygons to a single file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If an integer format (e.g., %%06d) is found we substitute a running segment count\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   and write all polygons to individual files; see manual page for more examples.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used with -T; see -Q to eliminate small polygons.\n");
+	GMT_fill_syntax (API->GMT, 'G', "Select fill color/pattern [Default is no fill].");
+	GMT_Option (API, "K");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Invert the sense of the clipping [or tiling].\n");
+	GMT_Option (API, "O,P");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Do not dump contours with less than <cut> points [Dump all contours].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Ignored unless -D is set.\n");
+	GMT_dist_syntax (API->GMT, 'S', "Set search radius to identify inside points.");
+	GMT_Message (API, GMT_TIME_NONE, "\t   This means nodes inside circles of <radius> centered on the input\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   data points are considered to be reliable estimates of the surface.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default is -S0, i.e., only the nearest node is considered reliable.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Paint tiles [Default will trace data outline].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If set you must also specify a color/fill with -G.\n");
+	GMT_Option (API, "U,V,X,bi2,bo,c,h,i,p,r,s,t,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -417,7 +414,7 @@ int GMT_psmask_parse (struct GMTAPI_CTRL *C, struct PSMASK_CTRL *Ctrl, struct GM
 #ifdef GMT_COMPAT
 				for (n_plus = -1, k = 0; opt->arg[k]; k++) {
 					if (opt->arg[k] == '+' && opt->arg[k+1] == 'n') {
-						GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -D..+n<min> is deprecated; use -Q instead.\n");
+						GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -D..+n<min> is deprecated; use -Q instead.\n");
 						Ctrl->Q.min = atoi (&opt->arg[k + 2]);
 						Ctrl->Q.active = true;
 						n_plus = k;
@@ -576,7 +573,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 	if (Ctrl->C.active) {	/* Just undo previous polygon clip-path */
 		PSL_endclipping (PSL, 1);
 		GMT_map_basemap (GMT);
-		GMT_report (GMT, GMT_MSG_VERBOSE, "clipping off!\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "clipping off!\n");
 	}
 	else {	/* Start new clip_path */
 		GMT_memset (inc2, 2, double);
@@ -601,7 +598,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 			GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 		}
 
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Allocate memory, read and process data file\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Allocate memory, read and process data file\n");
 
 		/* Enlarge region by 1 row/column */
 
@@ -615,7 +612,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 		
 		node_only = (max_d_col == 0 && d_row == 0);
 		if (node_only && Ctrl->S.radius > 0.0) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Your search radius is too small to have any effect and is ignored.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Your search radius is too small to have any effect and is ignored.\n");
 		}
 		
 		if ((error = GMT_set_cols (GMT, GMT_IN, 2)) != GMT_OK) {
@@ -628,7 +625,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 		n_read = 0;
 		do {	/* Keep returning records until we reach EOF */
 			n_read++;
@@ -680,7 +677,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Read %" PRIu64 " data points\n", n_read);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Read %" PRIu64 " data points\n", n_read);
 
 		if (Ctrl->N.active) for (ij = 0; ij < Grid->header->nm; ij++) grd[ij] = 1 - grd[ij];	/* Reverse sense of test */
 
@@ -707,7 +704,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 
 			if (make_plot) GMT_map_basemap (GMT);
 
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Tracing the clip path\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "Tracing the clip path\n");
 
 			section = 0;
 			first = 1;
@@ -751,7 +748,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 		else {	/* Just paint tiles */
 			uint64_t start, n_use, np, plot_n;
 			double y_bot, y_top, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL;
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Tiling...\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "Tiling...\n");
 
 			for (row = 0; row < Grid->header->ny; row++) {
 				y_bot = grd_y0[row] - inc2[GMT_Y];
@@ -795,12 +792,12 @@ int GMT_psmask (void *V_API, int mode, void *args)
 
 		GMT_free (GMT, grd);
 		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid) != GMT_OK) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Failed to free Grid\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Failed to free Grid\n");
 		}
 		if (Ctrl->S.active) GMT_free (GMT, d_col);
 		GMT_free (GMT, grd_x0);
 		GMT_free (GMT, grd_y0);
-		if (!Ctrl->T.active) GMT_report (GMT, GMT_MSG_VERBOSE, "clipping on!\n");
+		if (!Ctrl->T.active) GMT_Report (API, GMT_MSG_VERBOSE, "clipping on!\n");
 	}
 
 	GMT_set_pad (GMT, API->pad);		/* Reset default pad */

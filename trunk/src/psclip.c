@@ -61,34 +61,32 @@ void Free_psclip_Ctrl (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *C) {	/* Dealloc
 	GMT_free (GMT, C);
 }
 
-int GMT_psclip_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_psclip_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	/* This displays the psclip synopsis and optionally full usage information */
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: psclip -C[s|c|a|<n>] [-K] [-O]  OR\n");
-	GMT_message (GMT, "\tpsclip <table> %s %s [%s]\n", GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
-	GMT_message (GMT, "\t[%s] [-K] [-N] [-O] [-P] [-T] [%s] [%s]\n", GMT_Jz_OPT, GMT_U_OPT, GMT_V_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_c_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\n", GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: psclip -C[s|c|a|<n>] [-K] [-O]  OR\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tpsclip <table> %s %s [%s]\n", GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-K] [-N] [-O] [-P] [-T] [%s] [%s]\n", GMT_Jz_OPT, GMT_U_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_c_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\n", GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t-C Undo existing clip-path; no file is needed.  -R, -J are not required (unless -B is used).\n");
-	GMT_message (GMT, "\t   Append p to terminate polygon clipping; append how many clip levels to restore or a for all [1].\n");
-	GMT_message (GMT, "\t   Append t to terminate text clipping; append how many clip levels to restore or a for all [1].\n");
-	GMT_message (GMT, "\t   Append c to plot text previously used to build a curved clip path set (restores 1 level).\n");
-	GMT_message (GMT, "\t   Append s to plot text previously used to build a straight-text clip path set (restores 1 level).\n");
-	GMT_message (GMT, "\t<xy-files> is one or more polygon files.  If none, standard input is read.\n");
-	GMT_Option (C, "J-Z,R");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_Option (C, "<,B-,K");
-	GMT_message (GMT, "\t-N Use the outside of the polygons and the map boundary as clip paths.\n");
-	GMT_Option (C, "O,P");
-	GMT_message (GMT, "\t-T Set clip path for the entire map frame.  No input file is required.\n");
-	GMT_Option (C, "U,V,X,bi2,c,f,g,h,i,p,t,:,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Undo existing clip-path; no file is needed.  -R, -J are not required (unless -B is used).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append p to terminate polygon clipping; append how many clip levels to restore or a for all [1].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append t to terminate text clipping; append how many clip levels to restore or a for all [1].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append c to plot text previously used to build a curved clip path set (restores 1 level).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to plot text previously used to build a straight-text clip path set (restores 1 level).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<xy-files> is one or more polygon files.  If none, standard input is read.\n");
+	GMT_Option (API, "J-Z,R");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Option (API, "<,B-,K");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Use the outside of the polygons and the map boundary as clip paths.\n");
+	GMT_Option (API, "O,P");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Set clip path for the entire map frame.  No input file is required.\n");
+	GMT_Option (API, "U,V,X,bi2,c,f,g,h,i,p,t,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -128,7 +126,7 @@ int GMT_psclip_parse (struct GMTAPI_CTRL *C, struct PSCLIP_CTRL *Ctrl, struct GM
 						if (isdigit ((int)opt->arg[0]))
 							Ctrl->C.n = atoi (&opt->arg[0]);
 						else {
-							GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -C option: Correct syntax is -C[s|c|a|<n>]\n");
+							GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -C option: Correct syntax is -C[s|c|a|<n>]\n");
 							n_errors++;
 						}
 						break;
@@ -152,10 +150,10 @@ int GMT_psclip_parse (struct GMTAPI_CTRL *C, struct PSCLIP_CTRL *Ctrl, struct GM
 		n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	}
 	if (Ctrl->T.active) Ctrl->N.active = true;	/* -T implies -N */
-	if (Ctrl->T.active && n_files) GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Option -T ignores all input files\n");
+	if (Ctrl->T.active && n_files) GMT_Report (C, GMT_MSG_NORMAL, "Warning: Option -T ignores all input files\n");
 
 	if (Ctrl->N.active && GMT->current.map.frame.init) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Option -B cannot be used in combination with Options -N or -T. -B is ignored.\n");
+		GMT_Report (C, GMT_MSG_NORMAL, "Warning: Option -B cannot be used in combination with Options -N or -T. -B is ignored.\n");
 		GMT->current.map.frame.draw = false;
 	}
 
@@ -170,20 +168,20 @@ void gmt_terminate_clipping (struct GMT_CTRL *C, struct PSL_CTRL *PSL, int n)
 		case CLIP_STEXT:
 			PSL_endclipping (PSL, 1);	/* Undo last text clipping levels */
 			PSL_plottextclip (PSL, NULL, NULL, 0, 0.0, NULL, NULL, 0, NULL, 9);	/* This lays down the straight text */
-			GMT_report (C, GMT_MSG_VERBOSE, "Restore 1 text clip level and place delayed straight text\n");
+			GMT_Report (C->parent, GMT_MSG_VERBOSE, "Restore 1 text clip level and place delayed straight text\n");
 			break;
 		case CLIP_CTEXT:
 			PSL_endclipping (PSL, 1);	/* Undo last text clipping levels */
 			PSL_plottextpath (PSL, NULL, NULL, 0, NULL, 0.0, NULL, 0, NULL, 0, NULL, 8);	/* Lay down the curved text */
-			GMT_report (C, GMT_MSG_VERBOSE, "Restore 1 text clip level and place delayed curved text\n");
+			GMT_Report (C->parent, GMT_MSG_VERBOSE, "Restore 1 text clip level and place delayed curved text\n");
 			break;
 		case PSL_ALL_CLIP:
 			PSL_endclipping (PSL, n);	/* Reduce clipping to none */
-			GMT_report (C, GMT_MSG_VERBOSE, "Restore ALL polygon clip levels\n");
+			GMT_Report (C->parent, GMT_MSG_VERBOSE, "Restore ALL polygon clip levels\n");
 			break;
 		default:
 			PSL_endclipping (PSL, n);	/* Reduce clipping by n levels [1] */
-			GMT_report (C, GMT_MSG_VERBOSE, "Restore %d polygon clip levels\n", n);
+			GMT_Report (C->parent, GMT_MSG_VERBOSE, "Restore %d polygon clip levels\n", n);
 			break;
 	}
 }
@@ -229,7 +227,7 @@ int GMT_psclip (void *V_API, int mode, void *args)
 		PSL = GMT_plotinit (GMT, options);
 		gmt_terminate_clipping (GMT, PSL, Ctrl->C.n);	/* Undo previous clip-path(s) */
 		GMT_plotend (GMT);
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Done!\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 		Return (EXIT_SUCCESS);
 	}
 
@@ -251,7 +249,7 @@ int GMT_psclip (void *V_API, int mode, void *args)
 		struct GMT_DATASET *D = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
 
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 		if (Ctrl->N.active) GMT_map_clip_on (GMT, GMT->session.no_rgb, 1);	/* Must clip map */
 
 		if (!Ctrl->T.active) {
@@ -296,7 +294,7 @@ int GMT_psclip (void *V_API, int mode, void *args)
 	GMT_plane_perspective (GMT, -1, 0.0);
 	GMT_plotend (GMT);
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Done!\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 
 	Return (GMT_OK);
 }

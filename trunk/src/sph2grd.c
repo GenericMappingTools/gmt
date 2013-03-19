@@ -89,40 +89,37 @@ void Free_sph2grd_Ctrl (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);	
 }
 
-int GMT_sph2grd_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_sph2grd_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: sph2grd [coeff_file] -G<grdfile> %s %s [-Dg|n]\n", GMT_I_OPT, GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-E] [-F[k]<filter>] [-N<norm>] [-Q] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: sph2grd [coeff_file] -G<grdfile> %s %s [-Dg|n]\n", GMT_I_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-E] [-F[k]<filter>] [-N<norm>] [-Q] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t-G filename for output grid file\n");
-	GMT_Option (C, "Rg");
-	GMT_inc_syntax (GMT, 'I', 0);
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_Option (C, "<");
-	GMT_message (GMT, "	The input is expected to contain records of degree, order, cos, sin.\n");
-	GMT_message (GMT, "\t-D Will evaluate a derived field from a geopotential model.  Choose between\n");
-	GMT_message (GMT, "\t   -Dg will compute the gravitational field [Add -E for anomalies on ellipsoid]\n");
-	GMT_message (GMT, "\t   -Dn will compute the geoid [Add -E for anomalies on ellipsoid]\n");
-	GMT_message (GMT, "\t-E to evaluate expansion on the current ellipsoid [Default is sphere]\n");
-	GMT_message (GMT, "\t-F Filter coefficients according to one of two kinds of filter specifications:.\n");
-	GMT_message (GMT, "\t   Use -Fk if values are given in km [Default is coefficient degree L]\n");
-	GMT_message (GMT, "\t   a) Cosine band-pass: Append four wavelengths <lc>/<lp>/<hp>/<hc>.\n");
-	GMT_message (GMT, "\t      coefficients outside <lc>/<hc> are cut; inside <lp>/<hp> are passed, rest are tapered.\n");
-	GMT_message (GMT, "\t      Replace wavelength by - to skip, e.g., -F-/-/50/75 is a low-pass filter.\n");
-	GMT_message (GMT, "\t   b) Gaussian band-pass: Append two wavelengths <lo>/<hi> where filter amplitudes = 0.5.\n");
-	GMT_message (GMT, "\t      Replace wavelength by - to skip, e.g., -F70/- is a high-pass Gaussian filter.\n");
-	GMT_message (GMT, "\t-N Normalization used for coefficients.  Choose among\n");
-	GMT_message (GMT, "\t   m: Mathematical normalization - inner products summed over surface equal 1 [Default]\n");
-	GMT_message (GMT, "\t   g: Geodesy normalization - inner products summed over surface equal 4pi\n");
-	GMT_message (GMT, "\t   s: Schmidt normalization - as used in geomagnetism\n");
-	GMT_message (GMT, "\t-Q Coefficients have phase convention from physics, i.e., the (-1)^m factor\n");
-	GMT_Option (C, "V,bi4,h,i,r,s,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G filename for output grid file\n");
+	GMT_Option (API, "I,Rg");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Option (API, "<");
+	GMT_Message (API, GMT_TIME_NONE, "	The input is expected to contain records of degree, order, cos, sin.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Will evaluate a derived field from a geopotential model.  Choose between\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Dg will compute the gravitational field [Add -E for anomalies on ellipsoid]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Dn will compute the geoid [Add -E for anomalies on ellipsoid]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E to evaluate expansion on the current ellipsoid [Default is sphere]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Filter coefficients according to one of two kinds of filter specifications:.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Fk if values are given in km [Default is coefficient degree L]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   a) Cosine band-pass: Append four wavelengths <lc>/<lp>/<hp>/<hc>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      coefficients outside <lc>/<hc> are cut; inside <lp>/<hp> are passed, rest are tapered.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      Replace wavelength by - to skip, e.g., -F-/-/50/75 is a low-pass filter.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   b) Gaussian band-pass: Append two wavelengths <lo>/<hi> where filter amplitudes = 0.5.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      Replace wavelength by - to skip, e.g., -F70/- is a high-pass Gaussian filter.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Normalization used for coefficients.  Choose among\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   m: Mathematical normalization - inner products summed over surface equal 1 [Default]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   g: Geodesy normalization - inner products summed over surface equal 4pi\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   s: Schmidt normalization - as used in geomagnetism\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Coefficients have phase convention from physics, i.e., the (-1)^m factor\n");
+	GMT_Option (API, "V,bi4,h,i,r,s,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -151,11 +148,11 @@ int GMT_sph2grd_parse (struct GMTAPI_CTRL *C, struct SPH2GRD_CTRL *Ctrl, struct 
 			case 'D':	/* Evaluate derivative solutions */
 				Ctrl->D.active = true;
 				Ctrl->D.mode = opt->arg[0];
-				GMT_report (GMT, GMT_MSG_NORMAL, "Comment -D: Not implemented yet.\n");
+				GMT_Report (C, GMT_MSG_NORMAL, "Comment -D: Not implemented yet.\n");
 				break;
 			case 'E':	/* Evaluate on ellipsoid */
 				Ctrl->E.active = true;
-				GMT_report (GMT, GMT_MSG_NORMAL, "Comment -E: Not implemented yet.\n");
+				GMT_Report (C, GMT_MSG_NORMAL, "Comment -E: Not implemented yet.\n");
 				break;
 			case 'F':	/* Bandpass or Gaussian filter -F[k]<lc>/<lp>/<hp>/<hc> or -F[k]<lo>/<hi>*/
 				Ctrl->F.active = true;
@@ -175,7 +172,7 @@ int GMT_sph2grd_parse (struct GMTAPI_CTRL *C, struct SPH2GRD_CTRL *Ctrl, struct 
 					Ctrl->F.mode = SPH2GRD_GAUSSIAN;
 				}
 				else {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -F: Cannot find 2 or 4 tokens separated by slashes.\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -F: Cannot find 2 or 4 tokens separated by slashes.\n");
 					n_errors++;
 				}
 				break;
@@ -254,7 +251,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 	
 	/*---------------------------- This is the sph2grd main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Process input coefficients\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Process input coefficients\n");
 	for (col = 0; col < 4; col++) GMT->current.io.col_type[GMT_IN][col] = GMT_IS_FLOAT;	/* Not reading lon,lat in this program */
 	
 	if ((error = GMT_set_cols (GMT, GMT_IN, 4)) != GMT_OK) {
@@ -290,21 +287,21 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 	}
 
 	if (M_max > L_max) {
-		GMT_report (GMT, GMT_MSG_VERBOSE, "M_max = %d exceeds L_max = %d, wrong column order?\n", M_max, L_max);
+		GMT_Report (API, GMT_MSG_VERBOSE, "M_max = %d exceeds L_max = %d, wrong column order?\n", M_max, L_max);
 		Return (EXIT_FAILURE);
 	}
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Coefficient file has L_max = %d and M_max = %d\n", L_max, M_max);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Coefficient file has L_max = %d and M_max = %d\n", L_max, M_max);
 	
 	if (Ctrl->F.active && Ctrl->F.mode == SPH2GRD_BANDPASS) {	/* See if we can save work by ignoring low or high terms */
 		L = (Ctrl->F.hc < DBL_MAX) ? lrint (Ctrl->F.hc) : INT_MAX;	/* Get the highest L needed given the high-cut filter */
 		if (L_max > L) {
 			L_max = L;
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Chosen high-cut bandpass filter sets effective L_max = %d and M_max = %d\n", L_max, MIN(L_max,M_max));
+			GMT_Report (API, GMT_MSG_VERBOSE, "Chosen high-cut bandpass filter sets effective L_max = %d and M_max = %d\n", L_max, MIN(L_max,M_max));
 		}
 		L = lrint (Ctrl->F.lc);	/* Get the lowest L needed given the low-cut filter */
 		if (L > L_min) {
 			L_min = L;
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Chosen low-cut bandpass filter sets effective L_min = %d\n", L_min);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Chosen low-cut bandpass filter sets effective L_min = %d\n", L_min);
 		}
 	}
 	
@@ -348,15 +345,15 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 	}
 	
 	if (Ctrl->Q.active) {	/* Set Condon-Shortley phase flag */
-		GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Legendre polynomials will include the Condon-Shortley phase\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Legendre polynomials will include the Condon-Shortley phase\n");
 		L_sign = -1;
 	}
 	if (Ctrl->N.mode == 'm') {		/* Set ortho flag */
 		ortho = true;
-		GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Mathematical normalization - inner products summed over surface equal 1\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Mathematical normalization - inner products summed over surface equal 1\n");
 	}
-	if (Ctrl->N.mode == 'g') GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Geodesy normalization - inner products summed over surface equal 4pi\n");
-	if (Ctrl->N.mode == 's') GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Schmidt normalization - as used in geomagnetism\n");
+	if (Ctrl->N.mode == 'g') GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Geodesy normalization - inner products summed over surface equal 4pi\n");
+	if (Ctrl->N.mode == 's') GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Schmidt normalization - as used in geomagnetism\n");
 	
 	/* Allocate output grid */
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc, \
@@ -375,13 +372,13 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 	 * We compute a matrix with rows representing order M and columns representing longitude.
 	 * Then, we allocate a set of pointers assigned to each row to enable 2-D indexing.*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Evaluate exp (i*m*lon) for all M [%d] and all lon [%u]\n", M_max+1, Grid->header->nx);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate exp (i*m*lon) for all M [%d] and all lon [%u]\n", M_max+1, Grid->header->nx);
 	k = 0;
 	GMT_col_loop2 (GMT, Grid, col) {	/* Evaluate all sin, cos terms */
 		lon = GMT_grd_col_to_x (GMT, col, Grid->header);	/* Current longitude */
 		for (M = 0; M <= L_max; M++, k++) sincosd (lon * M, &Sinmx[k], &Cosmx[k]);
 	}
-	GMT_report (GMT, GMT_MSG_DEBUG, "Array sizes: n_PLM = %u, n_CS = %u n_CS_nx = %u\n", n_PLM, n_CS, n_CS_nx);
+	GMT_Report (API, GMT_MSG_DEBUG, "Array sizes: n_PLM = %u, n_CS = %u n_CS_nx = %u\n", n_PLM, n_CS, n_CS_nx);
 	GMT_col_loop2 (GMT, Grid, col) {	/* Assign pointers for 2-D indexing */
 		k = col * (L_max + 1);	/* Start 1-D array index in Cosmx/Sinmx for this longitude */
 		Cosm[col] = &Cosmx[k];	/* Cosm[col][M] has cos(M*lon) terms for all lon[col], fixed M <= L_max */
@@ -401,11 +398,11 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 		
 		mem = n_bytes / 1024.0;	/* Report kbytes unless it is too much */
 		while (mem > 1024.0 && kind < 2) { mem /= 1024.0;	kind++; }	/* Goto next higher unit */
-		GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Using a total of %.3g %cb for grid and all arrays.\n", mem, unit[kind]);
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Using a total of %.3g %cb for grid and all arrays.\n", mem, unit[kind]);
 	}
 	percent_inc = 100.0 / Grid->header->ny;	/* Percentage of whole grid represented by one row */
 	
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Start evaluating the spherical harmonic series\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Start evaluating the spherical harmonic series\n");
 	
 	/* Below section will become parallellized via OpenMP soon.
 	 * Shared:  Grid, L_sign, L_max, L_min, ortho, Cosm, Sinm, Cosmx, Sinmx.
@@ -421,11 +418,11 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 		if (GMT_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {	/* Give user feedback on progress every 10 percent */
 			percent += percent_inc;
 			if (percent > (double)next_10_percent) {
-				GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Finished %3.3d %% of evaluation\n", next_10_percent);
+				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Finished %3.3d %% of evaluation\n", next_10_percent);
 				next_10_percent = lrint (ceil (percent / 10.0)) * 10;
 			}
 			GMT_ascii_format_col (GMT, text, lat, GMT_Y);
-			GMT_report (GMT, GMT_MSG_DEBUG, "Working on latitude: %s\n", text);
+			GMT_Report (API, GMT_MSG_DEBUG, "Working on latitude: %s\n", text);
 		}
 		GMT_col_loop (GMT, Grid, row, col, node) {	/* For each longitude along this parallel */
 			sum = 0.0;	/* Initialize sum to zero for new output node */
@@ -438,9 +435,9 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 			Grid->data[node] = (float)sum;	/* Assign total to the grid, cast as float */
 		}
 	}
-	GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Finished 100 %% of evaluation\n");
+	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Finished 100 %% of evaluation\n");
 	
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Write grid to file\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Write grid to file\n");
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
 		Return (API->error);
 	}
@@ -460,6 +457,6 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 	GMT_free (GMT, C);
 	GMT_free (GMT, S);
 	
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Completed\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Completed\n");
 	Return (EXIT_SUCCESS);
 }

@@ -60,28 +60,26 @@ void Free_gmtset_Ctrl (struct GMT_CTRL *GMT, struct GMTSET_CTRL *C) {	/* Dealloc
 	GMT_free (GMT, C);	
 }
 
-int GMT_gmtset_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_gmtset_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: gmtset [-C | -D[s|u] | -G<defaultsfile>] [-[" GMT_SHORTHAND_OPTIONS "]<value>] PARAMETER1 [=] value1 PARAMETER2 [=] value2 PARAMETER3 [=] value3 ...\n");
-	GMT_message (GMT, "\n\tFor available PARAMETERS, see gmt.conf man page.\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtset [-C | -D[s|u] | -G<defaultsfile>] [-[" GMT_SHORTHAND_OPTIONS "]<value>] PARAMETER1 [=] value1 PARAMETER2 [=] value2 PARAMETER3 [=] value3 ...\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tFor available PARAMETERS, see gmt.conf man page.\n");
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-C Convert GMT4 .gmtdefaults4 to GMT5 gmt.conf file.\n");
-	GMT_message (GMT, "\t   The original file is retained.\n");
-	GMT_message (GMT, "\t-D Modify the default settings based on the GMT system defaults.\n");
-	GMT_message (GMT, "\t   Append s to see the SI version of defaults.\n");
-	GMT_message (GMT, "\t   Append u to see the US version of defaults.\n");
-	GMT_message (GMT, "\t-G Set name of specific gmt.conf file to modify.\n");
-	GMT_message (GMT, "\t   [Default looks for file in current directory.  If not found,\n");
-	GMT_message (GMT, "\t   it looks in the home directory, if not found it uses GMT defaults.]\n");
-	GMT_message (GMT, "\n\tThe modified defaults are written to the current directory as gmt.conf.\n");
-	GMT_message (GMT, "\n\t-[" GMT_SHORTHAND_OPTIONS "]<value> (any of these options).\n");
-	GMT_message (GMT, "\t   Set the expansion of any of these shorthand options.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Convert GMT4 .gmtdefaults4 to GMT5 gmt.conf file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The original file is retained.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Modify the default settings based on the GMT system defaults.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to see the SI version of defaults.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append u to see the US version of defaults.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Set name of specific gmt.conf file to modify.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default looks for file in current directory.  If not found,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   it looks in the home directory, if not found it uses GMT defaults.]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tThe modified defaults are written to the current directory as gmt.conf.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\t-[" GMT_SHORTHAND_OPTIONS "]<value> (any of these options).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Set the expansion of any of these shorthand options.\n");
 	
 	return (EXIT_FAILURE);
 }
@@ -178,7 +176,7 @@ int GMT_gmtset (void *V_API, int mode, void *args)
 		}
 
 		if (! GMT_getsharepath (GMT, "conf", "", gmtconf_file, path))
-			GMT_report (GMT, GMT_MSG_NORMAL, "Cannot find GMT configuration file: %s (%s)\n", gmtconf_file, path);
+			GMT_Report (API, GMT_MSG_NORMAL, "Cannot find GMT configuration file: %s (%s)\n", gmtconf_file, path);
 		GMT_getdefaults (GMT, path);
 	}
 	else if (Ctrl->C.active)

@@ -146,48 +146,46 @@ void Free_backtracker_Ctrl (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *C) {	
 	GMT_free (GMT, C);	
 }
 
-int GMT_backtracker_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_backtracker_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: backtracker [<table>] -E[+]<rottable> OR -e<plon>/<plat>/<prot> [-A[<young></old>]] [-Df|b] [-F<driftfile] [-Lf|b<d_km>]\n");
-	GMT_message (GMT, "\t[-N<upper_age>] [-Q<t_fix>] [-S<stem>] [-T<t_zero>] [%s] [-W] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: backtracker [<table>] -E[+]<rottable> OR -e<plon>/<plat>/<prot> [-A[<young></old>]] [-Df|b] [-F<driftfile] [-Lf|b<d_km>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-N<upper_age>] [-Q<t_fix>] [-S<stem>] [-T<t_zero>] [%s] [-W] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<table> (in ASCII, binary, or netCDF) has 3 or more columns.  If no file(s) is given, standard input is read.\n");
-	GMT_message (GMT, "\t   First 3 columns must have lon, lat (or lat, lon, see -:) and age (Ma).\n");
-	GMT_message (GMT, "\t-E Specify file with the rotations to be used (see man page for format).\n");
-	GMT_message (GMT, "\t   Prepend + if you want to invert the finite rotations prior to use.\n");
-	GMT_message (GMT, "\t-e Alternatively, specify a single finite rotation (in degrees) to be applied to all input points.\n");
-	GMT_message (GMT, "\tOPTIONS:\n\n");
-	GMT_message (GMT, "\t-A Output tracks for ages (or stages, see -L) between young and old [Default is entire track].\n");
-	GMT_message (GMT, "\t   If no limit is given, then each seamount should have their limits in columns 4 and 5 instead.\n");
-	GMT_message (GMT, "\t   Only applicable in conjunction with the -L option.\n");
-	GMT_message (GMT, "\t-Db Backtrack mode: move forward in time (from older to younger positions) [Default].\n");
-	GMT_message (GMT, "\t-Df Flowline mode: move backward in time (from younger to older positions).\n");
-	GMT_message (GMT, "\t-F Give file with lon, lat, time records describing motion of hotspot responsible for\n");
-	GMT_message (GMT, "\t   the seamount/path we are concerned with [fixed hotspots].  If given, then the\n");
-	GMT_message (GMT, "\t   input lon, lat is replaced by the position of the drifting hotspot at the given age.\n");
-	GMT_message (GMT, "\t   Note: If -F is used the <d_km> in -L is assumed to be point spacing in Ma.\n");
-	GMT_message (GMT, "\t-Lb Compute hotspot tracks sampled every <d_km> interval [Default projects single points].\n");
-	GMT_message (GMT, "\t-Lf Compute flowline for seamounts of unknown but maximum age [Default projects single points].\n");
-	GMT_message (GMT, "\t    If no <d_km> is given, the start/stop points for each stage are returned.\n");
-	GMT_message (GMT, "\t    If B and F is used instead, stage id is returned as z-value [Default is predicted ages].\n");
-	GMT_message (GMT, "\t-N Extend earliest stage pole back to <upper_age> [no extension].\n");
-	GMT_message (GMT, "\t-Q Assigned a fixed age to all input points.\n");
-	GMT_message (GMT, "\t-S Add -L<smt_no> to segment header and 4th output column (requires -L).\n");
-	GMT_message (GMT, "\t-T Set the current age in Ma [0].\n");
-	GMT_Option (C, "V");
-	GMT_message (GMT, "\t-W Return projected point and confidence ellipse for the finite rotation.\n");
-	GMT_message (GMT, "\t   The input time must exactly match the age of a finite rotation or else we skip the point.\n");
-	GMT_message (GMT, "\t   Output record will be lon,lat,az,major,minor.\n");
-	GMT_message (GMT, "\t   -Wt will output lon,lat,time,az,major,minor.\n");
-	GMT_message (GMT, "\t   -Wa will output lon,lat,angle,az,major,minor.\n");
-	GMT_message (GMT, "\t   Use -D to specify which direction to rotate [forward in time].\n");
-	GMT_Option (C, "bi3,bo,h,i,o,s,:,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t<table> (in ASCII, binary, or netCDF) has 3 or more columns.  If no file(s) is given, standard input is read.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   First 3 columns must have lon, lat (or lat, lon, see -:) and age (Ma).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Specify file with the rotations to be used (see man page for format).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend + if you want to invert the finite rotations prior to use.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-e Alternatively, specify a single finite rotation (in degrees) to be applied to all input points.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Output tracks for ages (or stages, see -L) between young and old [Default is entire track].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no limit is given, then each seamount should have their limits in columns 4 and 5 instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Only applicable in conjunction with the -L option.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Db Backtrack mode: move forward in time (from older to younger positions) [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Df Flowline mode: move backward in time (from younger to older positions).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Give file with lon, lat, time records describing motion of hotspot responsible for\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   the seamount/path we are concerned with [fixed hotspots].  If given, then the\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   input lon, lat is replaced by the position of the drifting hotspot at the given age.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Note: If -F is used the <d_km> in -L is assumed to be point spacing in Ma.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Lb Compute hotspot tracks sampled every <d_km> interval [Default projects single points].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Lf Compute flowline for seamounts of unknown but maximum age [Default projects single points].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t    If no <d_km> is given, the start/stop points for each stage are returned.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t    If B and F is used instead, stage id is returned as z-value [Default is predicted ages].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Extend earliest stage pole back to <upper_age> [no extension].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Assigned a fixed age to all input points.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Add -L<smt_no> to segment header and 4th output column (requires -L).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Set the current age in Ma [0].\n");
+	GMT_Option (API, "V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Return projected point and confidence ellipse for the finite rotation.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The input time must exactly match the age of a finite rotation or else we skip the point.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Output record will be lon,lat,az,major,minor.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Wt will output lon,lat,time,az,major,minor.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Wa will output lon,lat,angle,az,major,minor.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -D to specify which direction to rotate [forward in time].\n");
+	GMT_Option (API, "bi3,bo,h,i,o,s,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -224,7 +222,7 @@ int GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *Ctrl,
 						Ctrl->A.mode = 1;
 					}
 					else {
-						GMT_report (GMT, GMT_MSG_NORMAL, "ERROR Option -A: Append <young>/<old> age or stage limits.\n");
+						GMT_Report (C, GMT_MSG_NORMAL, "ERROR Option -A: Append <young>/<old> age or stage limits.\n");
 						n_errors++;
 					}
 				}
@@ -235,7 +233,7 @@ int GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *Ctrl,
 
 #ifdef GMT_COMPAT
 			case 'C':	/* Now done automatically in spotter_init */
-				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
+				GMT_Report (C, GMT_MSG_COMPAT, "Warning: -C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
 				break;
 #endif
 			case 'D':	/* Specify in which direction we should project */
@@ -251,7 +249,7 @@ int GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *Ctrl,
 						break;
 					default:
 						n_errors++;
-						GMT_report (GMT, GMT_MSG_NORMAL, "ERROR Option -D: Append b or f\n");
+						GMT_Report (C, GMT_MSG_NORMAL, "ERROR Option -D: Append b or f\n");
 						break;
 				}
 				break;
@@ -289,7 +287,7 @@ int GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *Ctrl,
 						break;
 					default:
 						n_errors++;
-						GMT_report (GMT, GMT_MSG_NORMAL, "ERROR Option -L: Append f or b\n");
+						GMT_Report (C, GMT_MSG_NORMAL, "ERROR Option -L: Append f or b\n");
 						break;
 				}
 				Ctrl->L.d_km = (opt->arg[1]) ? atof (&opt->arg[1]) : -1.0;
@@ -307,7 +305,7 @@ int GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *Ctrl,
 					Ctrl->S.active = true;
 				}
 				else {
-					GMT_report (GMT, GMT_MSG_NORMAL, "ERROR Option -S: Append a file stem\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "ERROR Option -S: Append a file stem\n");
 					n_errors++;
 				}
 				break;
@@ -357,7 +355,7 @@ int spotter_track (struct GMT_CTRL *GMT, int way, double xp[], double yp[], doub
 			n = spotter_forthtrack (GMT, xp, yp, tp, np, p, ns, d_km, t_zero, time_flag, wesn, c);
 			break;
 		default:
-			GMT_report (GMT, GMT_MSG_NORMAL, "Bad use of spotter_track\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad use of spotter_track\n");
 			break;
 	}
 		
@@ -530,7 +528,7 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 			age = in[GMT_Z];
 
 		if (age > Ctrl->N.t_upper) {	/* Points older than oldest stage cannot be used */
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Point %" PRIu64 " has age (%g) > oldest stage (%g) (skipped)\n", n_read, in[GMT_Z], Ctrl->N.t_upper);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Point %" PRIu64 " has age (%g) > oldest stage (%g) (skipped)\n", n_read, in[GMT_Z], Ctrl->N.t_upper);
 			n_skipped++;
 			continue;
 		}
@@ -563,7 +561,7 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 					GMT_intpol (GMT, H->coord[GMT_Z], H->coord[GMT_Y], H->n_rows, 1, &t, &lat, GMT->current.setting.interpolant);
 					lon *= D2R;	lat *= D2R;
 					if (spotter_track (GMT, spotter_way, &lon, &lat, &t, 1L, p, n_stages, 0.0, Ctrl->T.t_zero, 1 + Ctrl->L.stage_id, NULL, &c) <= 0) {
-						GMT_report (GMT, GMT_MSG_NORMAL, "Nothing returned from spotter_track - aborting\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Nothing returned from spotter_track - aborting\n");
 						Return (GMT_RUNTIME_ERROR);
 					}
 					out[GMT_X] = lon * R2D;
@@ -578,7 +576,7 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 					GMT_intpol (GMT, H->coord[GMT_Z], H->coord[GMT_Y], H->n_rows, 1, &t_end, &lat, GMT->current.setting.interpolant);
 					lon *= D2R;	lat *= D2R;
 					if (spotter_track (GMT, spotter_way, &lon, &lat, &t_end, 1L, p, n_stages, 0.0, Ctrl->T.t_zero, 1 + Ctrl->L.stage_id, NULL, &c) <= 0) {
-						GMT_report (GMT, GMT_MSG_NORMAL, "Nothing returned from spotter_track - aborting\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Nothing returned from spotter_track - aborting\n");
 						Return (GMT_RUNTIME_ERROR);
 					}
 					out[GMT_X] = lon * R2D;
@@ -590,7 +588,7 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 			else {
 				if (!Ctrl->W.active) {
 					if (spotter_track (GMT, spotter_way, &lon, &lat, &age, 1L, p, n_stages, Ctrl->L.d_km, Ctrl->T.t_zero, 1 + Ctrl->L.stage_id, NULL, &c) <= 0) {
-						GMT_report (GMT, GMT_MSG_NORMAL, "Nothing returned from spotter_track - aborting\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Nothing returned from spotter_track - aborting\n");
 						Return (GMT_RUNTIME_ERROR);
 					}
 				}
@@ -609,13 +607,13 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 		else {	/* Just return the projected locations */
 			if (Ctrl->W.active) {	/* Asked for confidence ellipses on reconstructed points */
 				if (spotter_conf_ellipse (GMT, in[GMT_X], in[GMT_Y], age, p, n_stages, Ctrl->W.mode, Ctrl->D.mode, out)) {
-					GMT_report (GMT, GMT_MSG_VERBOSE, "Confidence ellipses only for the age of rotations.  Point with age %g skipped\n", age);
+					GMT_Report (API, GMT_MSG_VERBOSE, "Confidence ellipses only for the age of rotations.  Point with age %g skipped\n", age);
 					continue;
 				}
 			}
 			else {
 				if (spotter_track (GMT, spotter_way, &lon, &lat, &age, 1L, p, n_stages, Ctrl->L.d_km, Ctrl->T.t_zero, 1 + Ctrl->L.stage_id, NULL, &c) <= 0) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Nothing returned from spotter_track - aborting\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Nothing returned from spotter_track - aborting\n");
 					Return (GMT_RUNTIME_ERROR);
 				}
 				out[GMT_X] = lon * R2D;
@@ -637,11 +635,11 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 	}
 
 	if (make_path)
-		GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " segments written\n", n_points);
+		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " segments written\n", n_points);
 	else
-		GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " points projected\n", n_points);
+		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points projected\n", n_points);
 
-	if (n_skipped) GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " points skipped because age < 0\n", n_skipped);
+	if (n_skipped) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " points skipped because age < 0\n", n_skipped);
 
 	/* Clean up and exit */
 

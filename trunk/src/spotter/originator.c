@@ -203,40 +203,38 @@ int comp_hs (const void *p1, const void *p2)
 	return (0);
 }
 
-int GMT_originator_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_originator_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: originator [<table>] -E[+]<rottable> -F[+]<hotspottable> [-D<d_km>]\n");
-	GMT_message (GMT, "\t[-H] [-L[<flag>]] [-N<upper_age>] [-Qr/t] [-S<n_hs>] [-T] [%s] [-W<maxdist>] [-Z]\n", GMT_V_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: originator [<table>] -E[+]<rottable> -F[+]<hotspottable> [-D<d_km>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-H] [-L[<flag>]] [-N<upper_age>] [-Qr/t] [-S<n_hs>] [-T] [%s] [-W<maxdist>] [-Z]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t-E Specify the rotation file to be used (see man page for format).\n");
-	GMT_message (GMT, "\t   Prepend + if you want to invert the rotations prior to use.\n");
-	GMT_message (GMT, "\t-F Specify file name for hotspot locations.\n");
-	GMT_message (GMT, "\t   Prepend + if we should look for hotspot drift tables.\n");
-	GMT_message (GMT, "\t   If found then we interpolate to get hotspot location as a function of time [fixed].\n");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t<table> (in ASCII, binary, or netCDF) has 5 or more columns.  If no file(s) is given,\n");
-	GMT_message (GMT, "\t   standard input is read.  Expects (x,y,z,r,t) records, with t in Ma.\n");
-	GMT_message (GMT, "\t-D Set sampling interval in km along tracks [5].\n");
-	GMT_message (GMT, "\t-L Output information for closest approach for nearest hotspot only (ignores -S).\n");
-	GMT_message (GMT, "\t   -Lt gives (time, dist, z) [Default].\n");
-	GMT_message (GMT, "\t   -Lw gives (omega, dist, z).\n");
-	GMT_message (GMT, "\t   -Ll gives (lon, lat, time, dist, z).\n");
-	GMT_message (GMT, "\t   dist is in km; use upper case T,W,L to get dist in spherical degrees.\n");
-	GMT_message (GMT, "\t-N Set age (in m.y.) for seafloor where age == NaN [180].\n");
-	GMT_message (GMT, "\t-Q Input files has (x,y,z) only. Append constant r/t to use.\n");
-	GMT_message (GMT, "\t-S Report the <n_hs> closest hotSpots [1].\n");
-	GMT_message (GMT, "\t-T Truncate seamount ages exceeding the upper age set with -N [no truncation].\n");
-	GMT_Option (C, "V");
-	GMT_message (GMT, "\t-W Report seamounts whose closest encounter to a hotspot is less than <maxdist> km\n");
-	GMT_message (GMT, "\t   [Default reports for all seamounts].\n");
-	GMT_message (GMT, "\t-Z Write hotspot ID number rather than hotspot TAG.\n");
-	GMT_Option (C, "bi5,h,i,s,:,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Specify the rotation file to be used (see man page for format).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend + if you want to invert the rotations prior to use.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify file name for hotspot locations.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend + if we should look for hotspot drift tables.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If found then we interpolate to get hotspot location as a function of time [fixed].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<table> (in ASCII, binary, or netCDF) has 5 or more columns.  If no file(s) is given,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   standard input is read.  Expects (x,y,z,r,t) records, with t in Ma.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Set sampling interval in km along tracks [5].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Output information for closest approach for nearest hotspot only (ignores -S).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Lt gives (time, dist, z) [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Lw gives (omega, dist, z).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Ll gives (lon, lat, time, dist, z).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   dist is in km; use upper case T,W,L to get dist in spherical degrees.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Set age (in m.y.) for seafloor where age == NaN [180].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Input files has (x,y,z) only. Append constant r/t to use.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Report the <n_hs> closest hotSpots [1].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Truncate seamount ages exceeding the upper age set with -N [no truncation].\n");
+	GMT_Option (API, "V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Report seamounts whose closest encounter to a hotspot is less than <maxdist> km\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default reports for all seamounts].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Write hotspot ID number rather than hotspot TAG.\n");
+	GMT_Option (API, "bi5,h,i,s,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -263,7 +261,7 @@ int GMT_originator_parse (struct GMTAPI_CTRL *C, struct ORIGINATOR_CTRL *Ctrl, s
 			/* Supplemental parameters */
 #ifdef GMT_COMPAT
 			case 'C':	/* Now done automatically in spotter_init */
-				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
+				GMT_Report (C, GMT_MSG_COMPAT, "Warning: -C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
 				break;
 #endif
 			case 'D':
@@ -391,7 +389,7 @@ int GMT_originator (void *V_API, int mode, void *args)
 
 	n_hotspots = spotter_hotspot_init (GMT, Ctrl->F.file, true, &orig_hotspot);	/* Get geocentric hotspot locations */
 	if (Ctrl->S.n > n_hotspots) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -S option: Give value between 1 and %d\n", n_hotspots);
+		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -S option: Give value between 1 and %d\n", n_hotspots);
 		Return (EXIT_FAILURE);
 	}
 	n_max_spots = MIN (Ctrl->S.n, n_hotspots);
@@ -493,7 +491,7 @@ int GMT_originator (void *V_API, int mode, void *args)
 				if (Ctrl->T.active)
 					t_smt = Ctrl->N.t_upper;
 				else {
-					GMT_report (GMT, GMT_MSG_VERBOSE, "Seamounts near line %d has age (%g) > oldest stage (%g) (skipped)\n", n_read, t_smt, Ctrl->N.t_upper);
+					GMT_Report (API, GMT_MSG_VERBOSE, "Seamounts near line %d has age (%g) > oldest stage (%g) (skipped)\n", n_read, t_smt, Ctrl->N.t_upper);
 					continue;
 				}
 			}
@@ -507,10 +505,10 @@ int GMT_originator (void *V_API, int mode, void *args)
 		z_smt = in[GMT_Z];
 		r_smt = in[3];
 
-		if (!(smt % 10)) GMT_report (GMT, GMT_MSG_VERBOSE, "Working on seamount # %5d\r", smt);
+		if (!(smt % 10)) GMT_Report (API, GMT_MSG_VERBOSE, "Working on seamount # %5d\r", smt);
 
 		if (spotter_forthtrack (GMT, &x_smt, &y_smt, &t_smt, 1, p, n_stages, Ctrl->D.value, 0.0, 1, NULL, &c) <= 0) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Nothing returned from spotter_forthtrack - aborting\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Nothing returned from spotter_forthtrack - aborting\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
 
@@ -662,7 +660,7 @@ int GMT_originator (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Working on seamount # %5d\n", smt);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Working on seamount # %5d\n", smt);
 
 	GMT_free (GMT, hotspot);
 	GMT_free (GMT, orig_hotspot);

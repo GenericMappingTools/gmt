@@ -849,7 +849,7 @@ int igrf10syn (struct GMT_CTRL *C, int isv, double date, int itype, double alt, 
 	double H, F, X = 0, Y = 0, Z = 0, dec, dip;
 	
 	if (date < 1900.0 || date > 2015.0) {
-		GMT_report (C, GMT_MSG_NORMAL, "%s: Your date (%g) is outside valid extrapolated range for IGRF (1900-2015)\n", gmt_module_name(C), date);
+		GMT_Report (C->parent, GMT_MSG_NORMAL, "%s: Your date (%g) is outside valid extrapolated range for IGRF (1900-2015)\n", gmt_module_name(C), date);
 		return (true);
 	}
 	
@@ -987,29 +987,27 @@ int igrf10syn (struct GMT_CTRL *C, int isv, double date, int itype, double alt, 
 	return (GMT_OK);
 }
 
-int GMT_grdredpol_usage (struct GMTAPI_CTRL *C, int level) {
-	struct GMT_CTRL *GMT = C->GMT;
-
+int GMT_grdredpol_usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grdredpol <anomgrid> -G<rtp_grdfile> [-C<dec>/<dip>]\n");
-	GMT_message (GMT, "       [-E<dip_grd>/<dec_grd>] [-F<m>/<n>] [-M<m|r>] [-N] [-W<win_width>]\n");
-	GMT_message (GMT, "       [%s] [-T<year>] [-Z<filter>] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdredpol <anomgrid> -G<rtp_grdfile> [-C<dec>/<dip>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "       [-E<dip_grd>/<dec_grd>] [-F<m>/<n>] [-M<m|r>] [-N] [-W<win_width>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "       [%s] [-T<year>] [-Z<filter>] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
                 
-	GMT_message (GMT, "\t<anomgrid> is the input grdfile with the magnetic anomaly\n");
-	GMT_message (GMT, "\t-G Filename for output grid with the RTP solution\n");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-C<dec>/<dip> uses this constant values in the RTP procedure.\n");
-	GMT_message (GMT, "\t-E<dip_grd>/<dec_grd> Get magnetization DIP & DEC from these grids [default: use IGRF].\n");
-	GMT_message (GMT, "\t-F<m>/<n> filter with [25x25].\n");
-	GMT_message (GMT, "\t-M<m|r> Set boundary conditions. m|r stands for mirror or replicate edges (Default is zero padding).\n");
-	GMT_message (GMT, "\t-N Do NOT use Taylor expansion.\n");
-	GMT_Option (C, "R");
-	GMT_message (GMT, "\t-T<year> Year used by the IGRF routine to compute the various DECs & DIPs [default: 2000]\n");
-	GMT_message (GMT, "\t-W<wid> window width in degrees [5]\n");
-	GMT_message (GMT, "\t-Z<filter> Write filter file on disk\n");
-	GMT_Option (C, "V,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t<anomgrid> is the input grdfile with the magnetic anomaly\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Filename for output grid with the RTP solution\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C<dec>/<dip> uses this constant values in the RTP procedure.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E<dip_grd>/<dec_grd> Get magnetization DIP & DEC from these grids [default: use IGRF].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F<m>/<n> filter with [25x25].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M<m|r> Set boundary conditions. m|r stands for mirror or replicate edges (Default is zero padding).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Do NOT use Taylor expansion.\n");
+	GMT_Option (API, "R");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T<year> Year used by the IGRF routine to compute the various DECs & DIPs [default: 2000]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W<wid> window width in degrees [5]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z<filter> Write filter file on disk\n");
+	GMT_Option (API, "V,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -1061,7 +1059,7 @@ int GMT_grdredpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, struct
 							Ctrl->E.dip_dec_grd = true;
 							break;
 						default:
-							GMT_report (GMT, GMT_MSG_NORMAL, "ERROR using option -E\n");
+							GMT_Report (C, GMT_MSG_NORMAL, "ERROR using option -E\n");
 							n_errors++;
 							break;
 					}
@@ -1074,11 +1072,11 @@ int GMT_grdredpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, struct
 				j = sscanf (opt->arg, "%d/%d", &Ctrl->F.ncoef_row, &Ctrl->F.ncoef_col);
 				if (j == 1) Ctrl->F.compute_n = true;	/* Case of only one filter dimension was given */
 				if (Ctrl->F.ncoef_row %2 != 1 || Ctrl->F.ncoef_col %2 != 1) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Error: number of filter coefficients must be odd\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Error: number of filter coefficients must be odd\n");
 					n_errors++;
 				}
 				if (Ctrl->F.ncoef_row < 5 || Ctrl->F.ncoef_col < 5) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "That was a ridiculous number of filter coefficients\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "That was a ridiculous number of filter coefficients\n");
 					n_errors++;
 				}
 				break;
@@ -1094,7 +1092,7 @@ int GMT_grdredpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, struct
 					else if (opt->arg[j] == 'r')
 						Ctrl->M.mirror = false;
 					else {
-						GMT_report (GMT, GMT_MSG_NORMAL, "Warning: Error using option -M (option ignored)\n");
+						GMT_Report (C, GMT_MSG_NORMAL, "Warning: Error using option -M (option ignored)\n");
 						Ctrl->M.pad_zero = true;
 					}
 				}
@@ -1122,7 +1120,7 @@ int GMT_grdredpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, struct
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
 
 	if (Ctrl->C.const_f && Ctrl->C.use_igrf) {	
-		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: -E option overrides -C\n");
+		GMT_Report (C, GMT_MSG_NORMAL, "Warning: -E option overrides -C\n");
 		Ctrl->C.const_f = false;
 	}
 
@@ -1210,11 +1208,11 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 
 	if (GMT->common.R.active) {
 		if (wesn_new[XLO] < Gin->header->wesn[XLO] || wesn_new[XHI] > Gin->header->wesn[XHI]) {
-			GMT_report (GMT, GMT_MSG_NORMAL, " Selected region exceeds the X-boundaries of the grid file!\n");
+			GMT_Report (API, GMT_MSG_NORMAL, " Selected region exceeds the X-boundaries of the grid file!\n");
 			return (EXIT_FAILURE);
 		}
 		else if (wesn_new[YLO] < Gin->header->wesn[YLO] || wesn_new[YHI] > Gin->header->wesn[YHI]) {
-			GMT_report (GMT, GMT_MSG_NORMAL, " Selected region exceeds the Y-boundaries of the grid file!\n");
+			GMT_Report (API, GMT_MSG_NORMAL, " Selected region exceeds the Y-boundaries of the grid file!\n");
 			return (EXIT_FAILURE);
 		}
 	}
@@ -1350,7 +1348,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 				}
 			}
 			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE))
-				GMT_report (GMT, GMT_MSG_VERBOSE, "Dec %5.1f  Dip %5.1f  Bin_lon %6.1f  Bin_lat %5.1f\r", 
+				GMT_Report (API, GMT_MSG_VERBOSE, "Dec %5.1f  Dip %5.1f  Bin_lon %6.1f  Bin_lat %5.1f\r", 
 					    Ctrl->C.dec/D2R, Ctrl->C.dip/D2R, slonm, slatm);
 
 			/* Compute the filter coefficients in the frequency domain */
@@ -1461,7 +1459,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_report (GMT, GMT_MSG_VERBOSE, "\n"); 
+	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Report (API, GMT_MSG_VERBOSE, "\n"); 
 
 	GMT_free(GMT, cosphi);		GMT_free(GMT, sinphi);
 	GMT_free(GMT, cospsi);		GMT_free(GMT, sinpsi);

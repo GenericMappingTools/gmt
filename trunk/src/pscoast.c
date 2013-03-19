@@ -174,94 +174,91 @@ void Free_pscoast_Ctrl (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
-int GMT_pscoast_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_pscoast_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	/* This displays the pscoast synopsis and optionally full usage information */
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: pscoast %s %s [%s] [%s]\n", GMT_B_OPT, GMT_J_OPT, GMT_A_OPT, GMT_Rgeoz_OPT);
-	GMT_message (GMT, "\t[-C[<feature>/]<fill>] [-D<resolution>][+] %s[-G[<fill>]] [-I<feature>[/<pen>]]\n", DCW_OPT);
-	GMT_message (GMT, "\t[%s] [-K] [%s]\n", GMT_Jz_OPT, GMT_SCALE);
-	GMT_message (GMT, "\t[-M] [-N<feature>[/<pen>]] [-O] [-P] [-Q] [-S<fill>]\n");
-	GMT_message (GMT, "\t[%s] [%s]\n", GMT_TROSE, GMT_U_OPT);
-	GMT_message (GMT, "\t[%s] [-W[<feature>/][<pen>]] [%s] [%s]\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s] [%s] [%s]\n", GMT_bo_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: pscoast %s %s [%s] [%s]\n", GMT_B_OPT, GMT_J_OPT, GMT_A_OPT, GMT_Rgeoz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C[<feature>/]<fill>] [-D<resolution>][+] %s[-G[<fill>]] [-I<feature>[/<pen>]]\n", DCW_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-K] [%s]\n", GMT_Jz_OPT, GMT_SCALE);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-M] [-N<feature>[/<pen>]] [-O] [-P] [-Q] [-S<fill>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n", GMT_TROSE, GMT_U_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[<feature>/][<pen>]] [%s] [%s]\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n", GMT_bo_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT);
 #ifdef DEBUG
-	GMT_message (GMT, "\t[-+<bin>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-+<bin>]\n");
 #endif
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Option (C, "J-Z,G");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_GSHHS_syntax (GMT, 'A', "Place limits on coastline features from the GSHHS data base.");
-	GMT_Option (C, "B-");
-	GMT_fill_syntax (GMT, 'C', "Set separate color for lakes and riverlakes [Default is same as ocean].");
-	GMT_message (GMT, "\t   Alternatively, set custom fills below.  Repeat the -C option as needed.\n");
-	GMT_message (GMT, "\t      l = Lakes.\n");
-	GMT_message (GMT, "\t      r = River-lakes.\n");
-	GMT_message (GMT, "\t-D Choose one of the following resolutions:\n");
-	GMT_message (GMT, "\t   f - full resolution (may be very slow for large regions).\n");
-	GMT_message (GMT, "\t   h - high resolution (may be slow for large regions).\n");
-	GMT_message (GMT, "\t   i - intermediate resolution.\n");
-	GMT_message (GMT, "\t   l - low resolution [Default].\n");
-	GMT_message (GMT, "\t   c - crude resolution, for busy plots that need crude continent outlines only.\n");
-	GMT_message (GMT, "\t   Append + to use a lower resolution should the chosen one not be available [abort].\n");
+	GMT_Option (API, "J-Z,G");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Option (API, "A,B-");
+	GMT_fill_syntax (API->GMT, 'C', "Set separate color for lakes and riverlakes [Default is same as ocean].");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, set custom fills below.  Repeat the -C option as needed.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      l = Lakes.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      r = River-lakes.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Choose one of the following resolutions:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   f - full resolution (may be very slow for large regions).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   h - high resolution (may be slow for large regions).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   i - intermediate resolution.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   l - low resolution [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   c - crude resolution, for busy plots that need crude continent outlines only.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append + to use a lower resolution should the chosen one not be available [abort].\n");
 #ifdef DCW
-	GMT_list_DCW_usage (GMT, 'F');
+	GMT_list_DCW_usage (API->GMT, 'F');
 #endif
-	GMT_fill_syntax (GMT, 'G', "Paint or clip \"dry\" areas.");
-	GMT_message (GMT, "\t   6) c to issue clip paths for land areas.\n");
-	GMT_pen_syntax (GMT, 'I', "Draw rivers.  Specify feature and optionally append pen [Default for all levels: %s].");
-	GMT_message (GMT, "\t   Choose from the features below.  Repeat the -I option as many times as needed.\n");
-	GMT_message (GMT, "\t      0 = Double-lined rivers (river-lakes).\n");
-	GMT_message (GMT, "\t      1 = Permanent major rivers.\n");
-	GMT_message (GMT, "\t      2 = Additional major rivers.\n");
-	GMT_message (GMT, "\t      3 = Additional rivers.\n");
-	GMT_message (GMT, "\t      4 = Minor rivers.\n");
-	GMT_message (GMT, "\t      5 = Intermittent rivers - major.\n");
-	GMT_message (GMT, "\t      6 = Intermittent rivers - additional.\n");
-	GMT_message (GMT, "\t      7 = Intermittent rivers - minor.\n");
-	GMT_message (GMT, "\t      8 = Major canals.\n");
-	GMT_message (GMT, "\t      9 = Minor canals.\n");
-	GMT_message (GMT, "\t     10 = Irrigation canals.\n");
-	GMT_message (GMT, "\t     Alternatively, specify preselected river groups:\n");
-	GMT_message (GMT, "\t      a = All rivers and canals (0-10).\n");
-	GMT_message (GMT, "\t      A = All rivers and canals except river-lakes (1-10).\n");
-	GMT_message (GMT, "\t      r = All permanent rivers (0-4).\n");
-	GMT_message (GMT, "\t      R = All permanent rivers except river-lakes (1-4).\n");
-	GMT_message (GMT, "\t      i = All intermittent rivers (5-7).\n");
-	GMT_message (GMT, "\t      c = All canals (8-10).\n");
-	GMT_Option (C, "K");
-	GMT_mapscale_syntax (GMT, 'L', "Draws a simple map scale centered on <lon0>/<lat0>");
-	GMT_message (GMT, "\t-M Dump a multisegment ascii (or binary, see -bo) file to standard output.  No plotting occurs.\n");
-	GMT_message (GMT, "\t   Specify any combination of -W, -I, -N.\n");
-	GMT_pen_syntax (GMT, 'N', "Draw boundaries.  Specify feature and optionally append pen [Default for all levels: %s].");
-	GMT_message (GMT, "\t   Choose from the features below.  Repeat the -N option as many times as needed.\n");
-	GMT_message (GMT, "\t     1 = National boundaries.\n");
-	GMT_message (GMT, "\t     2 = State boundaries within the Americas.\n");
-	GMT_message (GMT, "\t     3 = Marine boundaries.\n");
-	GMT_message (GMT, "\t     a = All boundaries (1-3).\n");
-	GMT_Option (C, "O,P");
-	GMT_message (GMT, "\t-Q Terminate previously set clip-paths.\n");
-	GMT_fill_syntax (GMT, 'S', "Paint of clip \"wet\" areas.");
-	GMT_message (GMT, "\t   6) c to issue clip paths for water areas.\n");
-	GMT_maprose_syntax (GMT, 'T', "Draw a north-pointing map rose centered on <lon0>/<lat0>.");
-	GMT_Option (C, "U,V");
-	GMT_pen_syntax (GMT, 'W', "Draw shorelines.  Append pen [Default for all levels: %s].");
-	GMT_message (GMT, "\t   Alternatively, set custom pens below.  Repeat the -W option as many times as needed.\n");
-	GMT_message (GMT, "\t      1 = Coastline.\n");
-	GMT_message (GMT, "\t      2 = Lake shores.\n");
-	GMT_message (GMT, "\t      3 = Island in lakes shores.\n");
-	GMT_message (GMT, "\t      4 = Lake in island in lake shores.\n");
-	GMT_message (GMT, "\t   When feature-specific pens are used, those not set are deactivated.\n");
-	GMT_Option (C, "X,bo,c,p,t");
+	GMT_fill_syntax (API->GMT, 'G', "Paint or clip \"dry\" areas.");
+	GMT_Message (API, GMT_TIME_NONE, "\t   6) c to issue clip paths for land areas.\n");
+	GMT_pen_syntax (API->GMT, 'I', "Draw rivers.  Specify feature and optionally append pen [Default for all levels: %s].");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Choose from the features below.  Repeat the -I option as many times as needed.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      0 = Double-lined rivers (river-lakes).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      1 = Permanent major rivers.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      2 = Additional major rivers.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      3 = Additional rivers.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      4 = Minor rivers.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      5 = Intermittent rivers - major.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      6 = Intermittent rivers - additional.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      7 = Intermittent rivers - minor.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      8 = Major canals.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      9 = Minor canals.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     10 = Irrigation canals.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Alternatively, specify preselected river groups:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      a = All rivers and canals (0-10).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      A = All rivers and canals except river-lakes (1-10).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      r = All permanent rivers (0-4).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      R = All permanent rivers except river-lakes (1-4).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      i = All intermittent rivers (5-7).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      c = All canals (8-10).\n");
+	GMT_Option (API, "K");
+	GMT_mapscale_syntax (API->GMT, 'L', "Draws a simple map scale centered on <lon0>/<lat0>");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Dump a multisegment ascii (or binary, see -bo) file to standard output.  No plotting occurs.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Specify any combination of -W, -I, -N.\n");
+	GMT_pen_syntax (API->GMT, 'N', "Draw boundaries.  Specify feature and optionally append pen [Default for all levels: %s].");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Choose from the features below.  Repeat the -N option as many times as needed.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     1 = National boundaries.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     2 = State boundaries within the Americas.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     3 = Marine boundaries.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     a = All boundaries (1-3).\n");
+	GMT_Option (API, "O,P");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Terminate previously set clip-paths.\n");
+	GMT_fill_syntax (API->GMT, 'S', "Paint of clip \"wet\" areas.");
+	GMT_Message (API, GMT_TIME_NONE, "\t   6) c to issue clip paths for water areas.\n");
+	GMT_maprose_syntax (API->GMT, 'T', "Draw a north-pointing map rose centered on <lon0>/<lat0>.");
+	GMT_Option (API, "U,V");
+	GMT_pen_syntax (API->GMT, 'W', "Draw shorelines.  Append pen [Default for all levels: %s].");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, set custom pens below.  Repeat the -W option as many times as needed.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      1 = Coastline.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      2 = Lake shores.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      3 = Island in lakes shores.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      4 = Lake in island in lake shores.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   When feature-specific pens are used, those not set are deactivated.\n");
+	GMT_Option (API, "X,bo,c,p,t");
 #ifdef DEBUG
-	GMT_message (GMT, "\t-+ Print only a single bin (debug option).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-+ Print only a single bin (debug option).\n");
 #endif
-	GMT_Option (C, ".");
+	GMT_Option (API, ".");
 
 	return (EXIT_FAILURE);
 }
@@ -333,7 +330,7 @@ int GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, struct 
 			case 'I':
 				Ctrl->I.active = true;
 				if (!opt->arg[0]) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: -I option takes at least one argument\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: -I option takes at least one argument\n");
 					n_errors++;
 					continue;
 				}
@@ -366,7 +363,7 @@ int GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, struct 
 					default:
 						k = atoi (opt->arg);
 						if (k < 0 || k >= GSHHS_N_RLEVELS) {
-							GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -I option: Feature not in list!\n");
+							GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -I option: Feature not in list!\n");
 							n_errors++;
 						}
 						else
@@ -380,7 +377,7 @@ int GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, struct 
 				break;
 #ifdef GMT_COMPAT
 			case 'm':
-				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -m option is deprecated and reverted back to -M.\n");
+				GMT_Report (C, GMT_MSG_COMPAT, "Warning: -m option is deprecated and reverted back to -M.\n");
 #endif
 			case 'M':
 				Ctrl->M.active = true;
@@ -388,7 +385,7 @@ int GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, struct 
 			case 'N':
 				Ctrl->N.active = true;
 				if (!opt->arg[0]) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: -N option takes at least one argument\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: -N option takes at least one argument\n");
 					n_errors++;
 					continue;
 				}
@@ -406,7 +403,7 @@ int GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, struct 
 					default:
 						k = opt->arg[0] - '1';
 						if (k < 0 || k >= GSHHS_N_BLEVELS) {
-							GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -N option: Feature not in list!\n");
+							GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -N option: Feature not in list!\n");
 							n_errors++;
 						}
 						else
@@ -554,8 +551,8 @@ void recursive_path (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, int k0, int np,
 			PSL_comment (PSL, "Polygon %d\n", k);
 			PSL_plotline (PSL, p[k].lon, p[k].lat, p[k].n, PSL_MOVE);
 #ifdef DEBUGX
-			GMT_message (GMT, "#\n");
-			for (i = 0; i < p[k].n; i++) GMT_message (GMT, "%g\t%g\n", p[k].lon[i], p[k].lat[i]);
+			GMT_Message (API, GMT_TIME_NONE, "#\n");
+			for (i = 0; i < p[k].n; i++) GMT_Message (API, GMT_TIME_NONE, "%g\t%g\n", p[k].lon[i], p[k].lat[i]);
 #endif
 			recursive_path (GMT, PSL, k, np, p, level + 1, fill);
 			p[k].n = 0;	/* Mark as used */
@@ -647,18 +644,18 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 	world_map_save = GMT->current.map.is_world;
 
 	if (need_coast_base && GMT_init_shore (GMT, Ctrl->D.set, &c, GMT->common.R.wesn, &Ctrl->A.info))  {
-		GMT_report (GMT, GMT_MSG_NORMAL, "%s resolution shoreline data base not installed\n", shore_resolution[base]);
+		GMT_Report (API, GMT_MSG_NORMAL, "%s resolution shoreline data base not installed\n", shore_resolution[base]);
 		need_coast_base = false;
 	}
 
 	if (Ctrl->N.active && GMT_init_br (GMT, 'b', Ctrl->D.set, &b, GMT->common.R.wesn)) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "%s resolution political boundary data base not installed\n", shore_resolution[base]);
+		GMT_Report (API, GMT_MSG_NORMAL, "%s resolution political boundary data base not installed\n", shore_resolution[base]);
 		Ctrl->N.active = false;
 	}
-	if (need_coast_base) GMT_report (GMT, GMT_MSG_VERBOSE, "GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);
+	if (need_coast_base) GMT_Report (API, GMT_MSG_VERBOSE, "GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);
 
 	if (Ctrl->I.active && GMT_init_br (GMT, 'r', Ctrl->D.set, &r, GMT->common.R.wesn)) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "%s resolution river data base not installed\n", shore_resolution[base]);
+		GMT_Report (API, GMT_MSG_NORMAL, "%s resolution river data base not installed\n", shore_resolution[base]);
 		Ctrl->I.active = false;
 	}
 
@@ -667,7 +664,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 #else
 	if (!(need_coast_base || Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active)) {
 #endif
-		GMT_report (GMT, GMT_MSG_NORMAL, "No databases available - aborts\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "No databases available - aborts\n");
 		Return (EXIT_FAILURE);
 	}
 
@@ -717,7 +714,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 	
 			GMT_plotend (GMT);
 
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Done!\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 
 			Return (GMT_OK);
 		}
@@ -729,7 +726,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 	for (i = 0; i < 5; i++) if (fill[i].use_pattern) fill_in_use = true;
 
 	if (fill_in_use && !clobber_background) {	/* Force clobber when fill is used since our routine cannot deal with clipped fills */
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: Pattern fill requires oceans to be painted first\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Pattern fill requires oceans to be painted first\n");
 		clobber_background = true;
 		recursive = false;
 	}
@@ -744,11 +741,11 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 		anti_bin = lrint (floor ((90.0 - anti_lat) / c.bsize)) * c.bin_nx + lrint (floor (anti_lon / c.bsize));
 		GMT_geo_to_xy (GMT, anti_lon, anti_lat, &anti_x, &anti_y);
 		GMT_geo_to_xy (GMT, GMT->current.proj.central_meridian, GMT->current.proj.pole, &x_0, &y_0);
-		if (Ctrl->G.active) GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: Fill/clip continent option (-G) may not work for this projection.\nIf the antipole (%g/%g) is in the ocean then chances are good\nElse: avoid projection center coordinates that are exact multiples of %g degrees\n", anti_lon, anti_lat, c.bsize);
+		if (Ctrl->G.active) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Fill/clip continent option (-G) may not work for this projection.\nIf the antipole (%g/%g) is in the ocean then chances are good\nElse: avoid projection center coordinates that are exact multiples of %g degrees\n", anti_lon, anti_lat, c.bsize);
 	}
 
 	if (possibly_donut_hell && paint_polygons && !clobber_background) {	/* Force clobber when donuts may be called for now */
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: -JE requires oceans to be painted first\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -JE requires oceans to be painted first\n");
 		clobber_background = true;
 		recursive = false;
 	}
@@ -812,11 +809,11 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 		if (Ctrl->debug.active && bin != Ctrl->debug.bin) continue;
 #endif
 		if ((err = GMT_get_shore_bin (GMT, ind, &c))) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
+			GMT_Report (API, GMT_MSG_NORMAL, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
 			Return (EXIT_FAILURE);
 		}
 
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Working on bin # %5d\r", bin);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Working on bin # %5d\r", bin);
 		if (!Ctrl->M.active) PSL_comment (PSL, "Bin # %d\n", bin);
 
 		if (GMT->current.map.is_world && greenwich) {
@@ -931,7 +928,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 
 	}
 	if (need_coast_base) {
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Working on bin # %5ld\n", bin);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Working on bin # %5ld\n", bin);
 		GMT_shore_cleanup (GMT, &c);
 	}
 #ifdef DCW
@@ -941,7 +938,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 
 	if (Ctrl->I.active) {	/* Read rivers file and plot as lines */
 
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Adding Rivers...");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Adding Rivers...");
 		if (!Ctrl->M.active) PSL_comment (PSL, "Start of River segments\n");
 		last_k = -1;
 
@@ -997,7 +994,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 	if (Ctrl->N.active) {	/* Read borders file and plot as lines */
 		double step;
 		
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Adding Borders...");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Adding Borders...");
 		if (!Ctrl->M.active) PSL_comment (PSL, "Start of Border segments\n");
 
 		/* Must resample borders because some points may be too far apart and look like 'jumps' */
@@ -1072,7 +1069,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 		Return (API->error);	/* Disables further data output */
 	}
 	
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Done\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Done\n");
 
 	Return (GMT_OK);
 }

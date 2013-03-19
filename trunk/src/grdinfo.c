@@ -79,35 +79,33 @@ void Free_grdinfo_Ctrl (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);
 }
 
-int GMT_grdinfo_usage (struct GMTAPI_CTRL *C, int level) {
-	struct GMT_CTRL *GMT = C->GMT;
-
+int GMT_grdinfo_usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grdinfo <grid> [-C] [-F] [-I[<dx>[/<dy>]|-|b]] [-L[0|1|2]] [-M]\n");
-	GMT_message (GMT, "	[%s] [-T[s]<dz>] [%s] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdinfo <grid> [-C] [-F] [-I[<dx>[/<dy>]|-|b]] [-L[0|1|2]] [-M]\n");
+	GMT_Message (API, GMT_TIME_NONE, "	[%s] [-T[s]<dz>] [%s] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<grid> may be one or more grid files.\n");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-C Format report in fields on a single line using the format\n");
-	GMT_message (GMT, "\t   file w e s n z0 z1 dx dy nx ny [x0 y0 x1 y1] [med scale] [mean std rms] [n_nan].\n");
-	GMT_message (GMT, "\t   (-M gives [x0 y0 x1 y1] and [n_nan]; -L1 gives [med scale]; -L2 gives [mean std rms]).\n");
-	GMT_message (GMT, "\t-F Report domain in world mapping format [Default is generic].\n");
-	GMT_message (GMT, "\t-I Return textstring -Rw/e/s/n to nearest multiple of dx/dy.\n");
-	GMT_message (GMT, "\t   If -C is set then rounding off will occur but no -R string is issued.\n");
-	GMT_message (GMT, "\t   If no argument is given then the -I<xinc>/<yinc> string is issued.\n");
-	GMT_message (GMT, "\t   If -I- is given then the grid's -R string is issued.\n");
-	GMT_message (GMT, "\t   If -Ib is given then the grid's bounding box polygon is issued.\n");
-	GMT_message (GMT, "\t-L Set report mode:\n");
-	GMT_message (GMT, "\t   -L0 reports range of data by actually reading them (not from header).\n");
-	GMT_message (GMT, "\t   -L1 reports median and L1-scale of data set.\n");
-	GMT_message (GMT, "\t   -L[2] reports mean, standard deviation, and rms of data set.\n");
-	GMT_message (GMT, "\t-M Search for the global min and max locations (x0,y0) and (x1,y1).\n");
-	GMT_Option (C, "R");
-	GMT_message (GMT, "\t-T Given increment dz, return global -Tzmin/zmax/dz in multiples of dz.\n");
-	GMT_message (GMT, "\t   To get a symmetrical range about zero, use -Ts<dz> instead.\n");
-	GMT_Option (C, "V,f,h,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t<grid> may be one or more grid files.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Format report in fields on a single line using the format\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   file w e s n z0 z1 dx dy nx ny [x0 y0 x1 y1] [med scale] [mean std rms] [n_nan].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   (-M gives [x0 y0 x1 y1] and [n_nan]; -L1 gives [med scale]; -L2 gives [mean std rms]).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Report domain in world mapping format [Default is generic].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Return textstring -Rw/e/s/n to nearest multiple of dx/dy.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If -C is set then rounding off will occur but no -R string is issued.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no argument is given then the -I<xinc>/<yinc> string is issued.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If -I- is given then the grid's -R string is issued.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If -Ib is given then the grid's bounding box polygon is issued.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Set report mode:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -L0 reports range of data by actually reading them (not from header).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -L1 reports median and L1-scale of data set.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -L[2] reports mean, standard deviation, and rms of data set.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Search for the global min and max locations (x0,y0) and (x1,y1).\n");
+	GMT_Option (API, "R");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Given increment dz, return global -Tzmin/zmax/dz in multiples of dz.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To get a symmetrical range about zero, use -Ts<dz> instead.\n");
+	GMT_Option (API, "V,f,h,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -260,7 +258,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 		subset = GMT_is_subset (GMT, G->header, wesn);	/* Subset requested */
 		if (subset) GMT_err_fail (GMT, GMT_adjust_loose_wesn (GMT, wesn, G->header), "");	/* Make sure wesn matches header spacing */
 
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Processing grid %s\n", G->header->name);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Processing grid %s\n", G->header->name);
 		
 		for (n = 0; n < GMT_Z; n++) GMT->current.io.col_type[GMT_OUT][n] = GMT->current.io.col_type[GMT_IN][n];	/* Since grids may differ in types */
 		
@@ -326,7 +324,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 			if (new_grid) {	/* Now preserve info and free the temporary grid */
 				/* copy over stat info to G */
 				if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G2) != GMT_OK) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Failed to free G2\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Failed to free G2\n");
 				}
 			}
 		}
@@ -620,6 +618,6 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Done!\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 	Return (GMT_OK);
 }

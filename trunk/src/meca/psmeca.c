@@ -160,92 +160,91 @@ void Free_psmeca_Ctrl (struct GMT_CTRL *GMT, struct PSMECA_CTRL *C) {	/* Dealloc
 	GMT_free (GMT, C);
 }
 
-int GMT_psmeca_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_psmeca_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	/* This displays the psmeca synopsis and optionally full usage information */
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: psmeca [<table>] %s %s\n", GMT_J_OPT, GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t-S<format><scale>[/<fontsize>[/<justify>/<offset>/<angle>/<form>]]\n");
-	GMT_message (GMT, "\t[%s] [-C[<pen>][P<pointsize>]]\n", GMT_B_OPT);
-	GMT_message (GMT, "\t[-D<depmin>/<depmax>] [-E<fill>] [-G<fill>]\n");
-	GMT_message (GMT, "\t[-K] [-L<pen>] [-M] [-N] [-O] [-P]\n");
-	GMT_message (GMT, "\t[-T<nplane>[/<pen>]] [%s]\n", GMT_U_OPT);
-	GMT_message (GMT, "\t[-V] [-W<pen>] [%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT);
-	GMT_message (GMT, "\t[-Z<cpt>] [-z[<pen>]] [-a[<size>[/<Psymbol>[<Tsymbol>]]]\n");
-	GMT_message (GMT, "\t[-e<fill>] [-g<fill>] [-r<fill>] [-p[<pen>]] [-t[<pen>]]\n");
-	GMT_message (GMT, "\t[%s] [%s] [%s] [-o] [%s]\n", GMT_c_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: psmeca [<table>] %s %s\n", GMT_J_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t-S<format><scale>[/<fontsize>[/<justify>/<offset>/<angle>/<form>]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C[<pen>][P<pointsize>]]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D<depmin>/<depmax>] [-E<fill>] [-G<fill>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-K] [-L<pen>] [-M] [-N] [-O] [-P]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-T<nplane>[/<pen>]] [%s]\n", GMT_U_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-V] [-W<pen>] [%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Z<cpt>] [-z[<pen>]] [-a[<size>[/<Psymbol>[<Tsymbol>]]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-e<fill>] [-g<fill>] [-r<fill>] [-p[<pen>]] [-t[<pen>]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [-o] [%s]\n", GMT_c_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Option (C, "J-,R");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_Option (C, "<,B-");
-	GMT_message (GMT, "\t-C Offset focal mechanisms to the latitude and longitude specified in the last two columns of the input file before label.\n");
-	GMT_message (GMT, "\t   Default pen attributes are set by -W.\n");
-	GMT_message (GMT, "\t   A line is plotted between both positions.\n");
-	GMT_message (GMT, "\t   A small circle is plotted at the initial location. Add P<pointsize> to change the size of the circle.\n");
-	GMT_message (GMT, "\t-D Plot events between <depmin> and <depmax> deep.\n");
-	GMT_message (GMT, "\t-E Set color used for extensive parts [default is white].\n");
-	GMT_message (GMT, "\t-G Set color used for compressive parts [default is black].\n");
-	GMT_message (GMT, "\t   <r/g/b> (each 0-255) for color or <gray> (0-255) for gray-shade [0].\n");
-	GMT_Option (C, "K");
-	GMT_message (GMT, "\t-L Sets pen attribute for outline other than the default set by -W.\n");
-	GMT_message (GMT, "\t-M Same size for any magnitude. Size is given with -S.\n");
-	GMT_message (GMT, "\t-N Do Not skip/clip symbols that fall outside map border [Default will ignore those outside].\n");
-	GMT_Option (C, "O,P");
-	GMT_message (GMT, "\t-r Draw a box around text.\n");
-	GMT_message (GMT, "\t-S Select format type and symbol size (in %s).\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-	GMT_message (GMT, "\t   Choose format between:\n");
-	GMT_message (GMT, "\t (c) Focal mechanisms in Harvard CMT convention\n");
-	GMT_message (GMT, "\t     X, Y, depth, strike1, dip1, rake1, strike2, dip2, rake2, moment, newX, newY, event_title\n");
-	GMT_message (GMT, "\t     with moment in 2 columns : mantiss and exponent corresponding to seismic moment in dynes-cm\n");
-	GMT_message (GMT, "\t (a) Focal mechanism in Aki & Richard's convention:\n");
-	GMT_message (GMT, "\t     X, Y, depth, strike, dip, rake, mag, newX, newY, event_title\n");
-	GMT_message (GMT, "\t (p) Focal mechanism defined with:\n");
-	GMT_message (GMT, "\t     X, Y, depth, strike1, dip1, strike2, fault, mag, newX, newY, event_title\n");
-	GMT_message (GMT, "\t     fault = -1/+1 for a normal/inverse fault\n");
-	GMT_message (GMT, "\t (m) Sesmic moment tensor (Harvard CMT, with zero trace):\n");
-	GMT_message (GMT, "\t     X, Y, depth, mrr, mtt, mff, mrt, mrf, mtf, exp, newX, newY, event_title\n");
-	GMT_message (GMT, "\t (z) Anisotropic part of seismic moment tensor (Harvard CMT, with zero trace):\n");
-	GMT_message (GMT, "\t     X, Y, depth, mrr, mtt, mff, mrt, mrf, mtf, exp, event_title\n");
-	GMT_message (GMT, "\t (d) Best double couple defined from seismic moment tensor (Harvard CMT, with zero trace):\n");
-	GMT_message (GMT, "\t     X, Y, depth, mrr, mtt, mff, mrt, mrf, mtf, exp, newX, newY, event_title\n");
-	GMT_message (GMT, "\t (x) Principal axis:\n");
-	GMT_message (GMT, "\t     X, Y, depth, T_value, T_azim, T_plunge, N_value, N_azim, N_plunge\n");
-	GMT_message (GMT, "\t     P_value, P_azim, P_plunge, exp, newX, newY, event_title\n");
-	GMT_message (GMT, "\t (t) Zero trace moment tensor defined from principal axis:\n");
-	GMT_message (GMT, "\t     X, Y, depth, T_value, T_azim, T_plunge, N_value, N_azim, N_plunge\n");
-	GMT_message (GMT, "\t     P_value, P_azim, P_plunge, exp, newX, newY, event_title\n");
-	GMT_message (GMT, "\t (y) Best double couple defined from principal axis:\n");
-	GMT_message (GMT, "\t     X, Y, depth, T_value, T_azim, T_plunge, N_value, N_azim, N_plunge\n");
-	GMT_message (GMT, "\t     P_value, P_azim, P_plunge, exp, newX, newY, event_title\n");
-	GMT_message (GMT, "\t   Use -o option for old (psvelomeca) format (no depth in third column).\n");
-	GMT_message (GMT, "\t   Optionally add /fontsize[/offset][u]\n");
-	GMT_message (GMT, "\t   Default values are /%g/%fp\n", DEFAULT_FONTSIZE, DEFAULT_OFFSET);
-	GMT_message (GMT, "\t   fontsize < 0 : no label written;\n");
-	GMT_message (GMT, "\t   offset is from the limit of the beach ball.\n");
-	GMT_message (GMT, "\t   By default label is above the beach ball. Add u to plot it under.\n");
-	GMT_message (GMT, "\t-Tn[/<pen>] Draw nodal planes and circumference only to provide a transparent\n");
-	GMT_message (GMT, "\t   beach ball using the default pen (see -W) or sets pen attribute. \n");
-	GMT_message (GMT, "\t   n = 1 the only first nodal plane is plotted.\n");
-	GMT_message (GMT, "\t   n = 2 the only second nodal plane is plotted.\n");
-	GMT_message (GMT, "\t   n = 0 both nodal planes are plotted.\n");
-	GMT_message (GMT, "\t   If moment tensor is required, nodal planes overlay moment tensor.\n");
-	GMT_message (GMT, "\t-z Overlay zero trace moment tensor using default pen (see -W) or sets outline pen.\n");
-	GMT_Option (C, "U,V");
-	GMT_message (GMT, "\t-W Set pen attributes [%s].\n", GMT_putpen (GMT, GMT->current.setting.map_default_pen));
-	GMT_message (GMT, "\t-Z Use cpt-file to assign colors based on depth-value in 3rd column.\n");
-	GMT_message (GMT, "\t-a Plot axis. Default symbols are circles.\n");
-	GMT_message (GMT, "\t-g Set color used for P_symbol [default as set by -G].\n");
-	GMT_message (GMT, "\t-e Set color used for T_symbol [default as set by -E].\n");
-	GMT_message (GMT, "\t-p Draw P_symbol outline using the default pen (see -W) or sets pen attribute for outline.\n");
-	GMT_message (GMT, "\t-t Draw T_symbol outline using the default pen (see -W) or sets pen attribute for outline.\n");
-	GMT_message (GMT, "\t-o Use psvelomeca format (Without depth in third column).\n");
-	GMT_message (GMT, "\t-r Draw box behind labels.\n");
-	GMT_Option (C, "X,c,h,i,:,.");
+	GMT_Option (API, "J-,R");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Option (API, "<,B-");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Offset focal mechanisms to the latitude and longitude specified in the last two columns of the input file before label.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default pen attributes are set by -W.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   A line is plotted between both positions.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   A small circle is plotted at the initial location. Add P<pointsize> to change the size of the circle.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Plot events between <depmin> and <depmax> deep.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Set color used for extensive parts [default is white].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Set color used for compressive parts [default is black].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <r/g/b> (each 0-255) for color or <gray> (0-255) for gray-shade [0].\n");
+	GMT_Option (API, "K");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Sets pen attribute for outline other than the default set by -W.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Same size for any magnitude. Size is given with -S.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Do Not skip/clip symbols that fall outside map border [Default will ignore those outside].\n");
+	GMT_Option (API, "O,P");
+	GMT_Message (API, GMT_TIME_NONE, "\t-r Draw a box around text.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Select format type and symbol size (in %s).\n",
+		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Choose format between:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t (c) Focal mechanisms in Harvard CMT convention\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     X, Y, depth, strike1, dip1, rake1, strike2, dip2, rake2, moment, newX, newY, event_title\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     with moment in 2 columns : mantiss and exponent corresponding to seismic moment in dynes-cm\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t (a) Focal mechanism in Aki & Richard's convention:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     X, Y, depth, strike, dip, rake, mag, newX, newY, event_title\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t (p) Focal mechanism defined with:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     X, Y, depth, strike1, dip1, strike2, fault, mag, newX, newY, event_title\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     fault = -1/+1 for a normal/inverse fault\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t (m) Sesmic moment tensor (Harvard CMT, with zero trace):\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     X, Y, depth, mrr, mtt, mff, mrt, mrf, mtf, exp, newX, newY, event_title\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t (z) Anisotropic part of seismic moment tensor (Harvard CMT, with zero trace):\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     X, Y, depth, mrr, mtt, mff, mrt, mrf, mtf, exp, event_title\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t (d) Best double couple defined from seismic moment tensor (Harvard CMT, with zero trace):\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     X, Y, depth, mrr, mtt, mff, mrt, mrf, mtf, exp, newX, newY, event_title\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t (x) Principal axis:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     X, Y, depth, T_value, T_azim, T_plunge, N_value, N_azim, N_plunge\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     P_value, P_azim, P_plunge, exp, newX, newY, event_title\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t (t) Zero trace moment tensor defined from principal axis:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     X, Y, depth, T_value, T_azim, T_plunge, N_value, N_azim, N_plunge\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     P_value, P_azim, P_plunge, exp, newX, newY, event_title\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t (y) Best double couple defined from principal axis:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     X, Y, depth, T_value, T_azim, T_plunge, N_value, N_azim, N_plunge\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     P_value, P_azim, P_plunge, exp, newX, newY, event_title\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -o option for old (psvelomeca) format (no depth in third column).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally add /fontsize[/offset][u]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default values are /%g/%fp\n", DEFAULT_FONTSIZE, DEFAULT_OFFSET);
+	GMT_Message (API, GMT_TIME_NONE, "\t   fontsize < 0 : no label written;\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   offset is from the limit of the beach ball.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   By default label is above the beach ball. Add u to plot it under.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Tn[/<pen>] Draw nodal planes and circumference only to provide a transparent\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   beach ball using the default pen (see -W) or sets pen attribute. \n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   n = 1 the only first nodal plane is plotted.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   n = 2 the only second nodal plane is plotted.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   n = 0 both nodal planes are plotted.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If moment tensor is required, nodal planes overlay moment tensor.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-z Overlay zero trace moment tensor using default pen (see -W) or sets outline pen.\n");
+	GMT_Option (API, "U,V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Set pen attributes [%s].\n", GMT_putpen (API->GMT, API->GMT->current.setting.map_default_pen));
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Use cpt-file to assign colors based on depth-value in 3rd column.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-a Plot axis. Default symbols are circles.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-g Set color used for P_symbol [default as set by -G].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-e Set color used for T_symbol [default as set by -E].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-p Draw P_symbol outline using the default pen (see -W) or sets pen attribute for outline.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-t Draw T_symbol outline using the default pen (see -W) or sets pen attribute for outline.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-o Use psvelomeca format (Without depth in third column).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-r Draw box behind labels.\n");
+	GMT_Option (API, "X,c,h,i,:,.");
 
 	return (EXIT_FAILURE);
 }
@@ -594,7 +593,7 @@ int GMT_psmeca (void *V_API, int mode, void *args)
 		/* Immediately skip locations outside of the map area */
 
 		if ((GMT_scanf (GMT, col[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &xy[ix]) == GMT_IS_NAN) || (GMT_scanf (GMT, col[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[iy]) == GMT_IS_NAN)) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Record %d had bad x and/or y coordinates, must exit)\n", n_rec);
+			GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad x and/or y coordinates, must exit)\n", n_rec);
 			GMT_exit (EXIT_FAILURE);
 		}
 
@@ -652,7 +651,7 @@ int GMT_psmeca (void *V_API, int mode, void *args)
 				Ctrl->T.active = true;
 				Ctrl->T.n_plane = 1;
 				meca.NP1.rake = 1000.;
-				GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: second plane is not defined for event %s only first plane is plotted.\n", line);
+				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: second plane is not defined for event %s only first plane is plotted.\n", line);
 			}
 			else
 				meca.NP1.rake = computed_rake2(meca.NP2.str, meca.NP2.dip, meca.NP1.str, meca.NP1.dip, fault);
@@ -803,7 +802,7 @@ int GMT_psmeca (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Number of records read: %li\n", n_rec);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Number of records read: %li\n", n_rec);
 
 	if (!Ctrl->N.active) GMT_map_clip_off (GMT);
 

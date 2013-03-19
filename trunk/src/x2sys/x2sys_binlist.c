@@ -68,20 +68,18 @@ void Free_x2sys_binlist_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *C
 	GMT_free (GMT, C);
 }
 
-int GMT_x2sys_binlist_usage (struct GMTAPI_CTRL *C, int level) {
-	struct GMT_CTRL *GMT = C->GMT;
-	
+int GMT_x2sys_binlist_usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: x2sys_binlist <files> -T<TAG> [-D] [-E] [%s]\n\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_binlist <files> -T<TAG> [-D] [-E] [%s]\n\n", GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<files> is one or more datafiles, or give =<files.lis> for a file with a list of datafiles.\n");
-	GMT_message (GMT, "\t-T <TAG> is the system tag for this compilation.\n");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-D Calculate track-lengths per bin (see x2sys_init -C for method and -N for units).\n");
-	GMT_message (GMT, "\t-E Bin tracks using equal-area bins (with -D only).\n");
-	GMT_Option (C, "V,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t<files> is one or more datafiles, or give =<files.lis> for a file with a list of datafiles.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T <TAG> is the system tag for this compilation.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Calculate track-lengths per bin (see x2sys_init -C for method and -N for units).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Bin tracks using equal-area bins (with -D only).\n");
+	GMT_Option (API, "V,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -212,14 +210,14 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args)
 	/*---------------------------- This is the x2sys_binlist main code ----------------------------*/
 
 	if ((n_tracks = x2sys_get_tracknames (GMT, options, &trk_name, &cmdline_files)) == 0) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "No datafiles given!\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "No datafiles given!\n");
 		Return (EXIT_FAILURE);		
 	}
 
 	x2sys_err_fail (GMT, x2sys_set_system (GMT, Ctrl->T.TAG, &s, &B, &GMT->current.io), Ctrl->T.TAG);
 
 	if (Ctrl->E.active && !s->geographic) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "-E requires geographic data; your TAG implies Cartesian\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "-E requires geographic data; your TAG implies Cartesian\n");
 		Return (EXIT_FAILURE);		
 	}
 
@@ -240,12 +238,12 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args)
 		/* Do the equal area map projection so W = 360 and H = 180 */
 		if (!(doubleAlmostEqual (B.wesn[XHI] - B.wesn[XLO], 360.0)
 					&& doubleAlmostEqualZero (B.wesn[YHI] - B.wesn[YLO], 180.0))) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "-E requires a global region (-Rg or -Rd)");
+			GMT_Report (API, GMT_MSG_NORMAL, "-E requires a global region (-Rg or -Rd)");
 			Return (EXIT_FAILURE);
 		}
 		GMT->current.setting.proj_ellipsoid = GMT_get_ellipsoid (GMT, "Sphere");	/* Make sure we use a spherical projection */
 		mid = 0.5 * (B.wesn[XHI] + B.wesn[XLO]);	/* Central longitude to use */
-		GMT_report (GMT, GMT_MSG_VERBOSE, "To undo equal-area projection, use -R%g/%g/%g/%g -JY%g/%s/360i\n", B.wesn[XLO], B.wesn[XHI], B.wesn[YLO], B.wesn[YHI], mid, EA_LAT);
+		GMT_Report (API, GMT_MSG_VERBOSE, "To undo equal-area projection, use -R%g/%g/%g/%g -JY%g/%s/360i\n", B.wesn[XLO], B.wesn[XHI], B.wesn[YLO], B.wesn[YHI], mid, EA_LAT);
 		sprintf (proj, "Y%g/%s/360", mid, EA_LAT);
 		GMT_parse_common_options (GMT, "J", 'J', proj);
 		GMT_err_fail (GMT, GMT_map_setup (GMT, B.wesn), "");
@@ -270,10 +268,10 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args)
 
 	for (trk = 0; trk < n_tracks; trk++) {
 
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Reading file %s ", trk_name[trk]);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Reading file %s ", trk_name[trk]);
 
 		x2sys_err_fail (GMT, (s->read_file) (GMT, trk_name[trk], &data, s, &p, &GMT->current.io, &row), trk_name[trk]);
-		GMT_report (GMT, GMT_MSG_VERBOSE, "[%s]\n", s->path);
+		GMT_Report (API, GMT_MSG_VERBOSE, "[%s]\n", s->path);
 		
 		if (Ctrl->E.active) {	/* Project coordinates */
 			for (row = 0; row < p.n_rows; row++) GMT_geo_to_xy (GMT, data[s->x_col][row], data[s->y_col][row], &data[s->x_col][row], &data[s->y_col][row]);

@@ -52,18 +52,16 @@ void Free_gmtdefaults_Ctrl (struct GMT_CTRL *GMT, struct GMTDEFAULTS_CTRL *C) {	
 	GMT_free (GMT, C);	
 }
 
-int GMT_gmtdefaults_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_gmtdefaults_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: gmtdefaults [-D[s|u]]\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtdefaults [-D[s|u]]\n\n");
 	
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 	
-	GMT_message (GMT, "\t-D Print the default settings for the GMT system.\n");
-	GMT_message (GMT, "\t   Append s to see the SI version of defaults.\n");
-	GMT_message (GMT, "\t   Append u to see the US version of defaults.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Print the GMT default settings.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to see the SI version of defaults.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append u to see the US version of defaults.\n");
 	
 	return (EXIT_FAILURE);
 }
@@ -95,7 +93,7 @@ int GMT_gmtdefaults_parse (struct GMTAPI_CTRL *C, struct GMTDEFAULTS_CTRL *Ctrl,
 				break;
 #ifdef GMT_COMPAT
 			case 'L':	/* List the user's current GMT defaults settings */
-				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; it is the default behavior.\n");
+				GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; it is the default behavior.\n");
 				break;
 #endif
 

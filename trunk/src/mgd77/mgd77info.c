@@ -76,39 +76,38 @@ void Free_mgd77info_Ctrl (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *C) {	/* D
 	GMT_free (GMT, C);	
 }
 
-int GMT_mgd77info_usage (struct GMTAPI_CTRL *C, int level, struct MGD77INFO_CTRL *Ctrl)
+int GMT_mgd77info_usage (struct GMTAPI_CTRL *API, int level, struct MGD77INFO_CTRL *Ctrl)
 {
-	struct GMT_CTRL *GMT = C->GMT;
 	struct MGD77_CONTROL M;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: mgd77info <cruise(s)> [-C[m|e]] [-E[m|e]] [-I<code>] [-Mf[<item>]|r|e|h] [-L[v]] [%s]\n\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: mgd77info <cruise(s)> [-C[m|e]] [-E[m|e]] [-I<code>] [-Mf[<item>]|r|e|h] [-L[v]] [%s]\n\n", GMT_V_OPT);
         
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
              
-	MGD77_Init (GMT, &M);		/* Initialize MGD77 Machinery */
-	MGD77_Cruise_Explain (GMT);
-	GMT_message (GMT, "\tOPTIONS:\n\n");
-	GMT_message (GMT, "\t-C List abbreviations of all columns present for each cruise.\n");
-	GMT_message (GMT, "\t   Append m for listing just the MGD77 columns present.\n");
-	GMT_message (GMT, "\t   Append e for listing just any extra columns present.\n");
-	GMT_message (GMT, "\t-E Give the information summary of each cruise's geographical/temporal extent.\n");
-	GMT_message (GMT, "\t   Append m for counting just the number of non-NaN values for each MGD77 field.\n");
-	GMT_message (GMT, "\t   Append e for counting just the of non-NaN values for each extra field.\n");
-	GMT_message (GMT, "\t-M Print header items (and MGD77+ history).  Append type of presentation:\n");
-	GMT_message (GMT, "\t     f: Print header items individually, one per line.  Append name of a particular\n");
-	GMT_message (GMT, "\t        item (e.g., Port_of_Departure), all [Default], or - to see a list of items.\n");
-	GMT_message (GMT, "\t        You can also use the number of the item.\n");
-	GMT_message (GMT, "\t     r: Display raw original MGD77 header records.\n");
-	GMT_message (GMT, "\t     e: Display the MGD77+ file's E77 status.\n");
-	GMT_message (GMT, "\t     h: Display the MGD77+ file's history.\n");
-	GMT_message (GMT, "\t-I Ignore certain data file formats from consideration. Append combination of act to ignore\n");
-	GMT_message (GMT, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, (m) MGD77T ASCII, or (t) plain table files [Default ignores none].\n");
-	GMT_message (GMT, "\t-L List all the institutions and their 2-character GEODAS codes only.  Append v to also\n");
-	GMT_message (GMT, "\t   display the vessels and their 4-character codes for each institution.\n");
-	GMT_Option (C, "V,.");
+	MGD77_Init (API->GMT, &M);		/* Initialize MGD77 Machinery */
+	MGD77_Cruise_Explain (API->GMT);
+	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C List abbreviations of all columns present for each cruise.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append m for listing just the MGD77 columns present.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append e for listing just any extra columns present.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Give the information summary of each cruise's geographical/temporal extent.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append m for counting just the number of non-NaN values for each MGD77 field.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append e for counting just the of non-NaN values for each extra field.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Print header items (and MGD77+ history).  Append type of presentation:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     f: Print header items individually, one per line.  Append name of a particular\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        item (e.g., Port_of_Departure), all [Default], or - to see a list of items.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t        You can also use the number of the item.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     r: Display raw original MGD77 header records.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     e: Display the MGD77+ file's E77 status.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     h: Display the MGD77+ file's history.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Ignore certain data file formats from consideration. Append combination of act to ignore\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, (m) MGD77T ASCII, or (t) plain table files [Default ignores none].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L List all the institutions and their 2-character GEODAS codes only.  Append v to also\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   display the vessels and their 4-character codes for each institution.\n");
+	GMT_Option (API, "V,.");
 	
-	MGD77_end (GMT, &M);	/* Close machinery */
+	MGD77_end (API->GMT, &M);	/* Close machinery */
 
 	return (EXIT_FAILURE);
 }
@@ -170,7 +169,7 @@ int GMT_mgd77info_parse (struct GMTAPI_CTRL *C, struct MGD77INFO_CTRL *Ctrl, str
 					Ctrl->M.mode = HIST_HEADER;
 				}
 				else {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Option -M Bad modifier (%c). Use -Mf|r|e|h!\n", opt->arg[0]);
+					GMT_Report (C, GMT_MSG_NORMAL, "Option -M Bad modifier (%c). Use -Mf|r|e|h!\n", opt->arg[0]);
 					n_errors++;
 				}
 				break;
@@ -181,12 +180,12 @@ int GMT_mgd77info_parse (struct GMTAPI_CTRL *C, struct MGD77INFO_CTRL *Ctrl, str
 					if (strchr ("act", (int)opt->arg[0]))
 						Ctrl->I.code[Ctrl->I.n++] = opt->arg[0];
 					else {
-						GMT_report (GMT, GMT_MSG_NORMAL, "Option -I Bad modifier (%c). Use -Ia|c|t!\n", opt->arg[0]);
+						GMT_Report (C, GMT_MSG_NORMAL, "Option -I Bad modifier (%c). Use -Ia|c|t!\n", opt->arg[0]);
 						n_errors++;
 					}
 				}
 				else {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Option -I: Can only be applied 0-2 times\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Option -I: Can only be applied 0-2 times\n");
 					n_errors++;
 				}
 				break;
@@ -205,7 +204,7 @@ int GMT_mgd77info_parse (struct GMTAPI_CTRL *C, struct MGD77INFO_CTRL *Ctrl, str
 						Ctrl->E.mode = 3;
 						break;
 					default:
-						GMT_report (GMT, GMT_MSG_NORMAL, "Option -E Bad modifier (%c). Use -E[e|m]!\n", opt->arg[0]);
+						GMT_Report (C, GMT_MSG_NORMAL, "Option -E Bad modifier (%c). Use -E[e|m]!\n", opt->arg[0]);
 						n_errors++;
 				}
 				Ctrl->E.active = true;
@@ -223,7 +222,7 @@ int GMT_mgd77info_parse (struct GMTAPI_CTRL *C, struct MGD77INFO_CTRL *Ctrl, str
 					case '\0':
 						break;
 					default:
-						GMT_report (GMT, GMT_MSG_NORMAL, "Option -L Bad modifier (%c). Use -L[a|v]!\n", opt->arg[0]);
+						GMT_Report (C, GMT_MSG_NORMAL, "Option -L Bad modifier (%c). Use -L[a|v]!\n", opt->arg[0]);
 						n_errors++;
 				}
 				break;
@@ -313,7 +312,7 @@ int GMT_mgd77info (void *V_API, int mode, void *args)
 	n_paths = MGD77_Path_Expand (GMT, &M, options, &list);	/* Get list of requested IDs */
 	
 	if (n_paths == 0) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Error: No cruises given\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: No cruises given\n");
 		Return (EXIT_FAILURE);
 	}
 	
@@ -332,16 +331,16 @@ int GMT_mgd77info (void *V_API, int mode, void *args)
 	
 		if (MGD77_Open_File (GMT, list[argno], &M, MGD77_READ_MODE)) continue;
 
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Now processing cruise %s\n", list[argno]);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Now processing cruise %s\n", list[argno]);
 		
 		D = MGD77_Create_Dataset (GMT);
 		
 		if (read_file && MGD77_Read_File (GMT, list[argno], &M, D)) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Error reading header & data for cruise %s\n", list[argno]);
+			GMT_Report (API, GMT_MSG_NORMAL, "Error reading header & data for cruise %s\n", list[argno]);
 			Return (EXIT_FAILURE);
 		}
 		if (!read_file && MGD77_Read_Header_Record (GMT, list[argno], &M, &D->H)) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Error reading header sequence for cruise %s\n", list[argno]);
+			GMT_Report (API, GMT_MSG_NORMAL, "Error reading header sequence for cruise %s\n", list[argno]);
 			Return (EXIT_FAILURE);
 		}
 
@@ -511,7 +510,7 @@ int GMT_mgd77info (void *V_API, int mode, void *args)
 
 		if (GMT_is_dnan(tmin) || GMT_is_dnan(tmax)) {
 			int yy[2], mm[2], dd[2];
-			GMT_report (GMT, GMT_MSG_VERBOSE, "warning: cruise %s no time records.\n", M.NGDC_id);
+			GMT_Report (API, GMT_MSG_VERBOSE, "warning: cruise %s no time records.\n", M.NGDC_id);
 			yy[0] = (!D->H.mgd77[use]->Survey_Departure_Year[0] || !strncmp (D->H.mgd77[use]->Survey_Departure_Year, ALL_BLANKS, 4U)) ? 0 : atoi (D->H.mgd77[use]->Survey_Departure_Year);
 			yy[1] = (!D->H.mgd77[use]->Survey_Arrival_Year[0] || !strncmp (D->H.mgd77[use]->Survey_Arrival_Year, ALL_BLANKS, 4U)) ? 0 : atoi (D->H.mgd77[use]->Survey_Arrival_Year);
 			mm[0] = (!D->H.mgd77[use]->Survey_Departure_Month[0] || !strncmp (D->H.mgd77[use]->Survey_Departure_Month, ALL_BLANKS, 2U)) ? 1 : atoi (D->H.mgd77[use]->Survey_Departure_Month);

@@ -55,36 +55,35 @@ void Free_grdreformat_Ctrl (struct GMT_CTRL *GMT, struct GRDREFORMAT_CTRL *C) {	
 	GMT_free (GMT, C);	
 }
 
-int GMT_grdreformat_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_grdreformat_usage (struct GMTAPI_CTRL *API, int level)
 {
 	int i;
-	struct GMT_CTRL *GMT = C->GMT;
-	char **grdformats = GMT_grdformats_sorted (GMT);
+	char **grdformats = GMT_grdformats_sorted (API->GMT);
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grdreformat <ingrid>[=<id>[/<scale>/<offset>[/<nan>]]] <outgrid>[=<id>[/<scale>/<offset>[/<nan>]][:<driver>[/<dataType>]]]\n\t [-N] [%s] [%s] [%s]\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdreformat <ingrid>[=<id>[/<scale>/<offset>[/<nan>]]] <outgrid>[=<id>[/<scale>/<offset>[/<nan>]][:<driver>[/<dataType>]]]\n\t [-N] [%s] [%s] [%s]\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<ingrid> is the grid file to convert.\n");
-	GMT_message (GMT, "\t<outgrid> is the new converted grid file.\n");
-	GMT_message (GMT, "\tscale and offset, if given, will multiply data by scale and add offset.\n");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-N Do NOT write the header (for native grids only - ignored otherwise).\n");
-	GMT_message (GMT, "\t   Useful when creating files to be used by grdraster.\n");
-	GMT_Option (C, "R,V,f,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is the grid file to convert.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<outgrid> is the new converted grid file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tscale and offset, if given, will multiply data by scale and add offset.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Do NOT write the header (for native grids only - ignored otherwise).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Useful when creating files to be used by grdraster.\n");
+	GMT_Option (API, "R,V,f,.");
 
-	GMT_message (GMT, "\nThe following grid file formats are supported:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\nThe following grid file formats are supported:\n");
 	for (i = 1; i < GMT_N_GRD_FORMATS; ++i) {
 		if (!strstr (grdformats[i], "not supported"))
-			GMT_message (GMT, "\t%s\n", grdformats[i]);
+			GMT_Message (API, GMT_TIME_NONE, "\t%s\n", grdformats[i]);
 	}
 #ifdef HAVE_GDAL
-	GMT_message (GMT, "\n	When <id>=gd on output, the grid will be saved using the GDAL library.\n");
-	GMT_message (GMT, "	Specify <driver> and optionally <dataType>. Driver names are as in GDAL\n		(e.g., netCDF, GTiFF, etc.)\n");
-	GMT_message (GMT, "	<dataType> is u8|u16|i16|u32|i32|float32; i|u denote signed|unsigned\n		integer.  Default type is float32.\n");
-	GMT_message (GMT, "	Both driver names and data types are case insensitive.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n	When <id>=gd on output, the grid will be saved using the GDAL library.\n");
+	GMT_Message (API, GMT_TIME_NONE, "	Specify <driver> and optionally <dataType>. Driver names are as in GDAL\n		(e.g., netCDF, GTiFF, etc.)\n");
+	GMT_Message (API, GMT_TIME_NONE, "	<dataType> is u8|u16|i16|u32|i32|float32; i|u denote signed|unsigned\n		integer.  Default type is float32.\n");
+	GMT_Message (API, GMT_TIME_NONE, "	Both driver names and data types are case insensitive.\n");
 #endif
 	return (EXIT_FAILURE);
 }
@@ -111,7 +110,7 @@ int GMT_grdreformat_parse (struct GMTAPI_CTRL *C, struct GRDREFORMAT_CTRL *Ctrl,
 					Ctrl->IO.file[n_in++] = strdup (opt->arg);
 				else {
 					n_in++;
-					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Specify only one input and one output file\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: Specify only one input and one output file\n");
 				}
 				break;
 			case '>':	/* Output file */
@@ -181,15 +180,15 @@ int GMT_grdreformat (void *V_API, int mode, void *args)
 
 	if (type[1] == GMT_GRID_IS_SD) {
 		/* Golden Surfer format 7 is read-only */
-		GMT_report (GMT, GMT_MSG_NORMAL, "Writing unsupported: %s\n", GMT->session.grdformat[GMT_GRID_IS_SD]);
+		GMT_Report (API, GMT_MSG_NORMAL, "Writing unsupported: %s\n", GMT->session.grdformat[GMT_GRID_IS_SD]);
 		Return (EXIT_FAILURE);
 	}
 
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		if (Ctrl->IO.file[0][0] == '=') strcpy (fname[0], "<stdin>");
 		if (Ctrl->IO.file[1][0] == '=') strcpy (fname[1], "<stdout>");
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Translating file %s (format %s)\nto file %s (format %s)\n", fname[0], GMT->session.grdformat[type[0]], fname[1], GMT->session.grdformat[type[1]]);
-		if (hmode && GMT->session.grdformat[type[1]][0] != 'c' && GMT->session.grdformat[type[1]][0] != 'n') GMT_report (GMT, GMT_MSG_NORMAL, "No grd header will be written\n");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Translating file %s (format %s)\nto file %s (format %s)\n", fname[0], GMT->session.grdformat[type[0]], fname[1], GMT->session.grdformat[type[1]]);
+		if (hmode && GMT->session.grdformat[type[1]][0] != 'c' && GMT->session.grdformat[type[1]][0] != 'n') GMT_Report (API, GMT_MSG_NORMAL, "No grd header will be written\n");
 	}
 	GMT_free_grid (GMT, &Grid, true);
 
@@ -203,7 +202,7 @@ int GMT_grdreformat (void *V_API, int mode, void *args)
 		if (!global && (GMT->common.R.wesn[XLO] < Grid->header->wesn[XLO] || GMT->common.R.wesn[XHI] > Grid->header->wesn[XHI])) error++;
 		if (GMT->common.R.wesn[YLO] < Grid->header->wesn[YLO] || GMT->common.R.wesn[YHI] > Grid->header->wesn[YHI]) error++;
 		if (error) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Subset exceeds data domain!\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Subset exceeds data domain!\n");
 			Return (EXIT_FAILURE);
 		}
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, GMT->common.R.wesn, Ctrl->IO.file[0], Grid) == NULL) {

@@ -90,42 +90,41 @@ void Free_pslegend_Ctrl (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *C) {	/* Dea
 	GMT_free (GMT, C);
 }
 
-int GMT_pslegend_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_pslegend_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	/* This displays the pslegend synopsis and optionally full usage information */
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: pslegend [<infofile>] -D[x]<x0>/<y0>/<w>[/<h>]/<just>[/<dx>/<dy>] [%s]\n", GMT_B_OPT);
-	GMT_message (GMT, "\t[-C<dx>/<dy>] [-F[+i[[<gap>/]<pen>]][+p<pen>][+r[<radius>]][+s[<dx>/<dy>/][<fill>]]\n");
-	GMT_message (GMT, "\t[-G<fill>] [%s] [-K] [-L<spacing>] [-O] [-P] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
-	GMT_message (GMT, "\tReads legend layout information from <infofile> [or stdin].\n");
-	GMT_message (GMT, "\t(See manual page for more information and <infofile> format).\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: pslegend [<infofile>] -D[x]<x0>/<y0>/<w>[/<h>]/<just>[/<dx>/<dy>] [%s]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>/<dy>] [-F[+i[[<gap>/]<pen>]][+p<pen>][+r[<radius>]][+s[<dx>/<dy>/][<fill>]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-G<fill>] [%s] [-K] [-L<spacing>] [-O] [-P] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\tReads legend layout information from <infofile> [or stdin].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t(See manual page for more information and <infofile> format).\n");
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t-D Set position and size of legend box.  Prepend x if coordinates are projected;\n");
-	GMT_message (GMT, "\t   if so the -R -J options only required if -O is not given.  Append the justification\n");
-	GMT_message (GMT, "\t   of the whole legend box using pstext justification codes.  Optionally, append offsets\n");
-	GMT_message (GMT, "\t   to shift the box from the selected point in the direction implied by <just>.\n");
-	GMT_message (GMT, "\t   If legend box height <h> is 0 or not specified then we estimate it from <infofile>.\n");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t<infofile> is one or more ASCII information files with legend commands.\n");
-	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
-	GMT_Option (C, "B-");
-	GMT_message (GMT, "\t-C Set the clearance between legend frame and internal items [%gp/%gp].\n", FRAME_CLEARANCE, FRAME_CLEARANCE);
-	GMT_message (GMT, "\t-F Draw rectangular border around the legend (using MAP_FRAME_PEN) [Default is no border].\n");
-	GMT_message (GMT, "\t   Append +i[[<gap>/]<pen>] to add a secondary inner frame boundary [Default gap is %gp].\n", FRAME_GAP);
-	GMT_message (GMT, "\t   Append +p<pen> to change the border pen [%s].\n", GMT_putpen (GMT, GMT->current.setting.map_frame_pen));
-	GMT_message (GMT, "\t   Append +r[<radius>] to plot rounded rectangles instead [Default radius is %gp].\n", FRAME_RADIUS);
-	GMT_message (GMT, "\t   Append +s[<dx>/<dy>/]<fill> to plot a shadow behind the legend box [Default offset is %gp/%g].\n", FRAME_CLEARANCE, -FRAME_CLEARANCE);
-	GMT_fill_syntax (GMT, 'G', "Set the fill for the legend box [Default is no fill].");
-	GMT_Option (C, "J-,K");
-	GMT_message (GMT, "\t-L Set the linespacing factor in units of the current annotation font size [1.1].\n");
-	GMT_Option (C, "O,P,R");
-	GMT_Option (C, "U,V,X,p,t,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Set position and size of legend box.  Prepend x if coordinates are projected;\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   if so the -R -J options only required if -O is not given.  Append the justification\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   of the whole legend box using pstext justification codes.  Optionally, append offsets\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   to shift the box from the selected point in the direction implied by <just>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If legend box height <h> is 0 or not specified then we estimate it from <infofile>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<infofile> is one or more ASCII information files with legend commands.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
+	GMT_Option (API, "B-");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Set the clearance between legend frame and internal items [%gp/%gp].\n", FRAME_CLEARANCE, FRAME_CLEARANCE);
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Draw rectangular border around the legend (using MAP_FRAME_PEN) [Default is no border].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +i[[<gap>/]<pen>] to add a secondary inner frame boundary [Default gap is %gp].\n", FRAME_GAP);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p<pen> to change the border pen [%s].\n",
+		GMT_putpen (API->GMT, API->GMT->current.setting.map_frame_pen));
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r[<radius>] to plot rounded rectangles instead [Default radius is %gp].\n", FRAME_RADIUS);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s[<dx>/<dy>/]<fill> to plot a shadow behind the legend box [Default offset is %gp/%g].\n", FRAME_CLEARANCE, -FRAME_CLEARANCE);
+	GMT_fill_syntax (API->GMT, 'G', "Set the fill for the legend box [Default is no fill].");
+	GMT_Option (API, "J-,K");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Set the linespacing factor in units of the current annotation font size [1.1].\n");
+	GMT_Option (API, "O,P,R");
+	GMT_Option (API, "U,V,X,p,t,.");
 
 	return (EXIT_FAILURE);
 }
@@ -290,7 +289,7 @@ struct GMT_TEXTSET *alloc_if_not_done_already (struct GMTAPI_CTRL *API, struct G
 	struct GMT_TEXTSET *D = NULL;
 	if (Din) return Din;	/* Already done this */
 	if ((D = GMT_Create_Data (API, GMT_IS_TEXTSET, geometry, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-		GMT_report (API->GMT, GMT_MSG_NORMAL, "Unable to create a text set for pslegend\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a text set for pslegend\n");
 		return (NULL);
 	}
 	return (D);
@@ -367,7 +366,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the pslegend main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input text table data\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input text table data\n");
 #ifdef GMT_COMPAT
 	/* Since pslegend v4 used '>' to indicate a paragraph record we avoid confusion with multiple segmentheaders by *
 	 * temporarily setting # as segment header flag since all headers are skipped anyway */
@@ -492,7 +491,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 
 #ifdef GMT_COMPAT
 					case '>':	/* Paragraph text header */
-						GMT_report (GMT, GMT_MSG_COMPAT, "Warning: paragraph text header flag > is deprecated; use P instead\n");
+						GMT_Report (API, GMT_MSG_COMPAT, "Warning: paragraph text header flag > is deprecated; use P instead\n");
 #endif
 					case 'P':	/* Paragraph text header */
 						flush_paragraph = true;
@@ -515,7 +514,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						break;
 
 					default:
-						GMT_report (GMT, GMT_MSG_NORMAL, "Error: Unrecognized record (%s)\n", line);
+						GMT_Report (API, GMT_MSG_NORMAL, "Error: Unrecognized record (%s)\n", line);
 						Return (GMT_RUNTIME_ERROR);
 					break;
 				}
@@ -531,15 +530,15 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		x_lines = n_char * (average_char_width * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH) / ((Ctrl->D.width - 2 * Ctrl->C.dx));
 		n_lines = lrint (ceil (x_lines));
 		height += n_lines * Ctrl->L.spacing * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
-		GMT_report (GMT, GMT_MSG_DEBUG, "Estimating %d lines of typeset paragraph text [%.1f].\n", n_lines, x_lines);
+		GMT_Report (API, GMT_MSG_DEBUG, "Estimating %d lines of typeset paragraph text [%.1f].\n", n_lines, x_lines);
 	}
 
 	if (Ctrl->D.height == 0.0) {	/* Use the computed height */
 		Ctrl->D.height = height;
-		GMT_report (GMT, GMT_MSG_VERBOSE, "No legend height given, use an estimated height of %g inches.\n", height);
+		GMT_Report (API, GMT_MSG_VERBOSE, "No legend height given, use an estimated height of %g inches.\n", height);
 	}
 	else
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Legend height given as %g inches; estimated height is %g inches.\n", Ctrl->D.height, height);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Legend height given as %g inches; estimated height is %g inches.\n", Ctrl->D.height, height);
 	
 	if (!(GMT->common.R.active && GMT->common.J.active)) {	/* When no projection specified (i.e, -Dx is used), use fake linear projection -Jx1i */
 		double wesn[4];
@@ -641,7 +640,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						sprintf (buffer, "-C%s -O -K -D%gi/%gi/%gi/%sh %s", bar_cpt, Ctrl->D.lon + 0.5 * Ctrl->D.width, y0, Ctrl->D.width - 2 * x_off, bar_height, bar_opts);
 						status = GMT_psscale (API, 0, buffer);	/* Plot the colorbar */
 						if (status) {
-							GMT_report (GMT, GMT_MSG_NORMAL, "GMT_psscale returned error %d.\n", status);
+							GMT_Report (API, GMT_MSG_NORMAL, "GMT_psscale returned error %d.\n", status);
 							Return (EXIT_FAILURE);
 						}
 						y0 -= GMT_to_inch (GMT, bar_height) + GMT->current.setting.map_tick_length[0] + GMT->current.setting.map_annot_offset[0] + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
@@ -706,7 +705,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						sprintf (buffer, "-O -K %s -W%s -C%gi/%gi/%s", image, size, x_off, y0, key);
 						status = GMT_psimage (API, 0, buffer);	/* Plot the image */
 						if (status) {
-							GMT_report (GMT, GMT_MSG_NORMAL, "GMT_psimage returned error %d.\n", status);
+							GMT_Report (API, GMT_MSG_NORMAL, "GMT_psimage returned error %d.\n", status);
 							Return (EXIT_FAILURE);
 						}
 						y0 -= GMT_to_inch (GMT, size) * (double)header.height / (double)header.width;
@@ -772,14 +771,14 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							sprintf (buffer, "%s %s -O -K -L%s", txt_e, txt_f, &mapscale[k]);
 						else {	/* Use -R -J supplied to pslegend */
 							if (!r_ptr || !j_ptr) {
-								GMT_report (GMT, GMT_MSG_NORMAL, "Error: The M record must have map -R -J if -Dx and no -R -J is used\n");
+								GMT_Report (API, GMT_MSG_NORMAL, "Error: The M record must have map -R -J if -Dx and no -R -J is used\n");
 								Return (GMT_RUNTIME_ERROR);
 							}
 							sprintf (buffer, "-R%s -J%s -O -K -L%s", r_ptr->arg, j_ptr->arg, &mapscale[k]);
 						}
 						status = GMT_psbasemap (API, 0, buffer);	/* Plot the scale */
 						if (status) {
-							GMT_report (GMT, GMT_MSG_NORMAL, "GMT_psbasemap returned error %d.\n", status);
+							GMT_Report (API, GMT_MSG_NORMAL, "GMT_psbasemap returned error %d.\n", status);
 							Return (EXIT_FAILURE);
 						}
 						if (gave_label && just == 'b') y0 -= d_off;
@@ -798,11 +797,11 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 
 #ifdef GMT_COMPAT
 					case '>':	/* Paragraph text header */
-						GMT_report (GMT, GMT_MSG_COMPAT, "Warning: paragraph text header flag > is deprecated; use P instead\n");
+						GMT_Report (API, GMT_MSG_COMPAT, "Warning: paragraph text header flag > is deprecated; use P instead\n");
 						n = sscanf (&line[1], "%s %s %s %s %s %s %s %s %s", xx, yy, size, angle, font, key, lspace, tw, jj);
 						if (n < 0) n = 0;	/* Since -1 is returned if no arguments */
 						if (!(n == 0 || n == 9)) {
-							GMT_report (GMT, GMT_MSG_NORMAL, "Error: The > record must have 0 or 9 arguments (only %d found)\n", n);
+							GMT_Report (API, GMT_MSG_NORMAL, "Error: The > record must have 0 or 9 arguments (only %d found)\n", n);
 							Return (GMT_RUNTIME_ERROR);
 						}
 						if (n == 0 || size[0] == '-') sprintf (size, "%g", GMT->current.setting.font_annot[0].size);
@@ -815,7 +814,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							n = sscanf (&line[1], "%s %s %s %s %s %s %s %s", xx, yy, tmp, angle, key, lspace, tw, jj);
 							if (n < 0) n = 0;	/* Since -1 is returned if no arguments */
 							if (!(n == 0 || n == 8)) {
-								GMT_report (GMT, GMT_MSG_NORMAL, "Error: The P record must have 0 or 9 arguments (only %d found)\n", n);
+								GMT_Report (API, GMT_MSG_NORMAL, "Error: The P record must have 0 or 9 arguments (only %d found)\n", n);
 								Return (GMT_RUNTIME_ERROR);
 							}
 						}
@@ -856,7 +855,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							char *c = NULL;
 							int n = sscanf (size, "%[^/]/%[^/]/%s", A, B, C);
 							if (Front == NULL && (Front = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
-								GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a Front data set for pslegend\n");
+								GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a Front data set for pslegend\n");
 								return (API->error);
 							}
 							
@@ -896,7 +895,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							
 							status = GMT_psxy (API, 0, buffer);	/* Plot the front */
 							if (status) {
-								GMT_report (GMT, GMT_MSG_NORMAL, "GMT_psxy returned error %d.\n", status);
+								GMT_Report (API, GMT_MSG_NORMAL, "GMT_psxy returned error %d.\n", status);
 								Return (EXIT_FAILURE);
 							}
 							API->io_enabled[GMT_IN] = true;	/* UNDOING SETTING BY psxy */
@@ -1098,7 +1097,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						break;
 
 					default:
-						GMT_report (GMT, GMT_MSG_NORMAL, "Error: Unrecognized record (%s)\n", line);
+						GMT_Report (API, GMT_MSG_NORMAL, "Error: Unrecognized record (%s)\n", line);
 						Return (GMT_RUNTIME_ERROR);
 					break;
 				}
@@ -1170,7 +1169,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	GMT_map_basemap (GMT);
 	GMT_plotend (GMT);
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Done\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Done\n");
 
 	Return (GMT_OK);
 }

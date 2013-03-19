@@ -365,8 +365,8 @@ int GMT_agc_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 	/* Since AGC files are always gridline-registered we must change -R when a pixel grid is to be written */
 	if (header->registration == GMT_GRID_PIXEL_REG) {
 		GMT_change_grdreg (C, header, GMT_GRID_NODE_REG);
-		GMT_report (C, GMT_MSG_VERBOSE, "Warning: AGC grids are always gridline-registered.  Your pixel-registered grid will be converted.\n");
-		GMT_report (C, GMT_MSG_VERBOSE, "Warning: AGC grid region in file %s reset to %g/%g/%g/%g\n", header->name, header->wesn[XLO], header->wesn[XHI], header->wesn[YLO], header->wesn[YHI]);
+		GMT_Report (C->parent, GMT_MSG_VERBOSE, "Warning: AGC grids are always gridline-registered.  Your pixel-registered grid will be converted.\n");
+		GMT_Report (C->parent, GMT_MSG_VERBOSE, "Warning: AGC grid region in file %s reset to %g/%g/%g/%g\n", header->name, header->wesn[XLO], header->wesn[XHI], header->wesn[YLO], header->wesn[YHI]);
 	}
 	
 	packAGCheader (prez, postz, header);	/* Stuff header info into the AGC arrays */

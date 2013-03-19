@@ -121,58 +121,57 @@ void Free_psrose_Ctrl (struct GMT_CTRL *GMT, struct PSROSE_CTRL *C) {	/* Dealloc
 	GMT_free (GMT, C);	
 }
 
-int GMT_psrose_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_psrose_usage (struct GMTAPI_CTRL *API, int level)
 {
 	double r;
 	char *choice[2] = {"OFF", "ON"};
-	struct GMT_CTRL *GMT = C->GMT;
 
 	/* This displays the psrose synopsis and optionally full usage information */
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: psrose [<table>] [-A[r]<sector_angle>] [%s] [-C[<modes>]] [-D] [-G<fill>] [-I]\n", GMT_B_OPT);
-	GMT_message (GMT, "\t[-K] [-L[<wlab>/<elab>/<slab>/<nlab>]] [-M[<size>][<modifiers>]] [-N] [-O] [-P]\n");
-	GMT_message (GMT, "\t[-R<r0>/<r1>/<theta0>/<theta1>] [-S[n]<scale>] [-T] [%s]\n", GMT_U_OPT);
-	GMT_message (GMT, "\t[%s] [-W[v]<pen>] [%s] [%s] [-Zu|<scale>]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: psrose [<table>] [-A[r]<sector_angle>] [%s] [-C[<modes>]] [-D] [-G<fill>] [-I]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-K] [-L[<wlab>/<elab>/<slab>/<nlab>]] [-M[<size>][<modifiers>]] [-N] [-O] [-P]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-R<r0>/<r1>/<theta0>/<theta1>] [-S[n]<scale>] [-T] [%s]\n", GMT_U_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[v]<pen>] [%s] [%s] [-Zu|<scale>]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_c_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_Option (C, "<");
-	GMT_message (GMT, "\t-A Sector width in degrees for sector diagram [Default is windrose];\n");
-	GMT_message (GMT, "\t   Use -Ar to get rose diagram.\n");
-	GMT_Option (C, "B-");
-	GMT_message (GMT, "\t   (Remember: radial is x-direction, azimuthal is y-direction).\n");
-	GMT_message (GMT, "\t-C Plot vectors listed in the <modes> file.  If no file, use mean direction.\n");
-	GMT_message (GMT, "\t-D Will center the sectors.\n");
-	GMT_message (GMT, "\t-F Do not draw the scale length bar [Default plots scale in lower right corner].\n");
-	GMT_fill_syntax (GMT, 'G', "Specify color for diagram [Default is no fill].");
-	GMT_message (GMT, "\t-I Inquire mode; only compute statistics - no plot is created.\n");
-	GMT_Option (C, "K");
-	GMT_message (GMT, "\t-L Override default labels [Default is WEST/EAST/SOUTH/NORTH for full circle and 90W/90E/-/0 for half-circle].\n");
-	GMT_message (GMT, "\t   If no argument is given then labels will be disabled.  Give - to disable an individual label.\n");
-	GMT_message (GMT, "\t-M Specify arrow attributes (requires -C).\n");
-	GMT_vector_syntax (GMT, 15);
-	GMT_message (GMT, "\t   Default is %gp+gblack+p1p.\n", VECTOR_HEAD_LENGTH);
-	GMT_message (GMT, "\t-N Normalize rose plots for area, i.e., take sqrt(r) before plotting [false].\n");
-	GMT_message (GMT, "\t   Only applicable if normalization has been specified with -S<radius>n.\n");
-	GMT_Option (C, "O,P");
-	GMT_message (GMT, "\t-R Specifies the region (<r0> = 0, <r1> = max_radius).  For azimuth:\n");
-	GMT_message (GMT, "\t   Specify <theta0>/<theta1> = -90/90 or 0/180 (half-circles) or 0/360 only).\n");
-	GMT_message (GMT, "\t   If <r0> = <r1> = 0, psrose will compute a reasonable <r1> value.\n");
-	r = (GMT->current.setting.proj_length_unit == GMT_CM) ? 7.5 : 3.0;
-	GMT_message (GMT, "\t-S Specify the radius of the unit circle in %s [%g]. Normalize r if -Sn is used.\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit], r);
-	GMT_message (GMT, "\t-T Indicate that the vectors are oriented (two-headed), not directed [Default].\n");
-	GMT_message (GMT, "\t   Ignored if -R sets a half-circle domain.\n");
-	GMT_Option (C, "U,V");
-	GMT_pen_syntax (GMT, 'W', "Set pen attributes for outline of rose [Default is no outline].");
-	GMT_message (GMT, "\t   Use -Wv<pen> to set a different pen for the vector (requires -C) [Same as rose outline].\n");
-	GMT_Option (C, "X");
-	GMT_message (GMT, "\t-Z Multiply the radii by <scale> before plotting or use -Zu to give each item unit weight.\n");
-	GMT_Option (C, "c");
-	GMT_message (GMT, "\t-: Expect (azimuth,radius) input rather than (radius,azimuth) [%s].\n", choice[GMT->current.setting.io_lonlat_toggle[GMT_IN]]);
-	GMT_Option (C, "bi2,h,i,p,s,t,.");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Option (API, "<");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Sector width in degrees for sector diagram [Default is windrose];\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ar to get rose diagram.\n");
+	GMT_Option (API, "B-");
+	GMT_Message (API, GMT_TIME_NONE, "\t   (Remember: radial is x-direction, azimuthal is y-direction).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Plot vectors listed in the <modes> file.  If no file, use mean direction.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Will center the sectors.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Do not draw the scale length bar [Default plots scale in lower right corner].\n");
+	GMT_fill_syntax (API->GMT, 'G', "Specify color for diagram [Default is no fill].");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Inquire mode; only compute statistics - no plot is created.\n");
+	GMT_Option (API, "K");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Override default labels [Default is WEST/EAST/SOUTH/NORTH for full circle and 90W/90E/-/0 for half-circle].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no argument is given then labels will be disabled.  Give - to disable an individual label.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Specify arrow attributes (requires -C).\n");
+	GMT_vector_syntax (API->GMT, 15);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default is %gp+gblack+p1p.\n", VECTOR_HEAD_LENGTH);
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Normalize rose plots for area, i.e., take sqrt(r) before plotting [false].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Only applicable if normalization has been specified with -S<radius>n.\n");
+	GMT_Option (API, "O,P");
+	GMT_Message (API, GMT_TIME_NONE, "\t-R Specifies the region (<r0> = 0, <r1> = max_radius).  For azimuth:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Specify <theta0>/<theta1> = -90/90 or 0/180 (half-circles) or 0/360 only).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If <r0> = <r1> = 0, psrose will compute a reasonable <r1> value.\n");
+	r = (API->GMT->current.setting.proj_length_unit == GMT_CM) ? 7.5 : 3.0;
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Specify the radius of the unit circle in %s [%g]. Normalize r if -Sn is used.\n", API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit], r);
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Indicate that the vectors are oriented (two-headed), not directed [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Ignored if -R sets a half-circle domain.\n");
+	GMT_Option (API, "U,V");
+	GMT_pen_syntax (API->GMT, 'W', "Set pen attributes for outline of rose [Default is no outline].");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Wv<pen> to set a different pen for the vector (requires -C) [Same as rose outline].\n");
+	GMT_Option (API, "X");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Multiply the radii by <scale> before plotting or use -Zu to give each item unit weight.\n");
+	GMT_Option (API, "c");
+	GMT_Message (API, GMT_TIME_NONE, "\t-: Expect (azimuth,radius) input rather than (radius,azimuth) [%s].\n", choice[API->GMT->current.setting.io_lonlat_toggle[GMT_IN]]);
+	GMT_Option (API, "bi2,h,i,p,s,t,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -248,7 +247,7 @@ int GMT_psrose_parse (struct GMTAPI_CTRL *C, struct PSROSE_CTRL *Ctrl, struct GM
 				if (strchr (opt->arg, '/') && !strchr (opt->arg, '+')) {	/* Old-style args */
 					n = sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
 					if (n != 4 || GMT_getrgb (GMT, txt_d, Ctrl->M.S.v.fill.rgb)) {
-						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -M option: Expected\n\t-M<tailwidth/headlength/headwidth/<color>>\n");
+						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -M option: Expected\n\t-M<tailwidth/headlength/headwidth/<color>>\n");
 						n_errors++;
 					}
 					else {	/* Turn the old args into new +a<angle> and pen width */
@@ -318,7 +317,7 @@ int GMT_psrose_parse (struct GMTAPI_CTRL *C, struct PSROSE_CTRL *Ctrl, struct GM
 	GMT->common.R.wesn[XLO] = 0.0;
 	range = GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO];
 	if (doubleAlmostEqual (range, 180.0) && Ctrl->T.active) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: -T only needed for 0-360 range data (ignored)");
+		GMT_Report (C, GMT_MSG_NORMAL, "Warning: -T only needed for 0-360 range data (ignored)");
 		Ctrl->T.active = false;
 	}
 	n_errors += GMT_check_condition (GMT, Ctrl->C.active && Ctrl->C.file && GMT_access (GMT, Ctrl->C.file, R_OK), "Syntax error -C: Cannot read file %s!\n", Ctrl->C.file);
@@ -385,7 +384,7 @@ int GMT_psrose (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the psrose main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	asize = GMT->current.setting.font_annot[0].size * GMT->session.u2u[GMT_PT][GMT_INCH];
 	lsize = GMT->current.setting.font_annot[0].size * GMT->session.u2u[GMT_PT][GMT_INCH];
 
@@ -544,7 +543,7 @@ int GMT_psrose (void *V_API, int mode, void *args)
 	if (Ctrl->I.active || GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		if (Ctrl->In.file) strncpy (text, Ctrl->In.file, GMT_BUFSIZ); else strcpy (text, "<stdin>");
 		sprintf (format, "Info for %%s: n = %% " PRIu64 " rmax = %s mean r/az = (%s/%s) totlength = %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_report (GMT, GMT_MSG_NORMAL, format, text, n, max, mean_radius, mean_theta, total);
+		GMT_Report (API, GMT_MSG_NORMAL, format, text, n, max, mean_radius, mean_theta, total);
 		if (Ctrl->I.active) {
 			GMT_free (GMT, sum);
 			GMT_free (GMT, xx);

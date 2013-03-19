@@ -98,25 +98,23 @@ void Free_gshhg_Ctrl (struct GMT_CTRL *GMT, struct GSHHG_CTRL *C) {	/* Deallocat
 	GMT_free (GMT, C);	
 }
 
-int GMT_gshhg_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_gshhg_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: gshhg gshhs|wdb_rivers|wdb_borders_[f|h|i|l|c].b [-A<area>] [-G] [-I<id>] [-L] [-N<level>] [-Qe|i] [%s] [%s] [%s] > table\n", GMT_V_OPT, GMT_bo_OPT, GMT_o_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: gshhg gshhs|wdb_rivers|wdb_borders_[f|h|i|l|c].b [-A<area>] [-G] [-I<id>] [-L] [-N<level>] [-Qe|i] [%s] [%s] [%s] > table\n", GMT_V_OPT, GMT_bo_OPT, GMT_o_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-        GMT_message (GMT, "-A Extract polygons whose area is greater than or equal to <area> (in km^2) [all].\n");
-	GMT_message (GMT, "-G Write '%%' at start of each segment header [P or L] (overwrites -M)\n");
-	GMT_message (GMT, "   and write 'NaN NaN' after each segment to enable import by GNU Octave or Matlab.\n");
-	GMT_message (GMT, "-L List header records only (no data records will be written).\n");
-	GMT_message (GMT, "-I Output data for polygon number <id> only.  Use -Ic to get all continent polygons\n");
-	GMT_message (GMT, "   [Default is all polygons].\n");
-	GMT_message (GMT, "-N Output features whose level matches <level> [Default outputs all levels].\n");
-	GMT_message (GMT, "-Q Control river-lakes: Use -Qe to exclude river-lakes, and -Qi to ONLY get river-lakes\n");
-	GMT_message (GMT, "   [Default outputs all polygons].\n");
-	GMT_Option (C, "V,bo2,o,:,.");
+        GMT_Message (API, GMT_TIME_NONE, "-A Extract polygons whose area is greater than or equal to <area> (in km^2) [all].\n");
+	GMT_Message (API, GMT_TIME_NONE, "-G Write '%%' at start of each segment header [P or L] (overwrites -M)\n");
+	GMT_Message (API, GMT_TIME_NONE, "   and write 'NaN NaN' after each segment to enable import by GNU Octave or Matlab.\n");
+	GMT_Message (API, GMT_TIME_NONE, "-L List header records only (no data records will be written).\n");
+	GMT_Message (API, GMT_TIME_NONE, "-I Output data for polygon number <id> only.  Use -Ic to get all continent polygons\n");
+	GMT_Message (API, GMT_TIME_NONE, "   [Default is all polygons].\n");
+	GMT_Message (API, GMT_TIME_NONE, "-N Output features whose level matches <level> [Default outputs all levels].\n");
+	GMT_Message (API, GMT_TIME_NONE, "-Q Control river-lakes: Use -Qe to exclude river-lakes, and -Qi to ONLY get river-lakes\n");
+	GMT_Message (API, GMT_TIME_NONE, "   [Default outputs all polygons].\n");
+	GMT_Option (API, "V,bo2,o,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -257,11 +255,11 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 	/*---------------------------- This is the gshhg main code ----------------------------*/
 
 	if (GMT_access (GMT, Ctrl->In.file, F_OK)) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Cannot find file %s\n", Ctrl->In.file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Cannot find file %s\n", Ctrl->In.file);
 		Return (EXIT_FAILURE);
 	}
 	if ((fp = GMT_fopen (GMT, Ctrl->In.file, "rb")) == NULL ) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Cannot read file %s\n", Ctrl->In.file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Cannot read file %s\n", Ctrl->In.file);
 		Return (EXIT_FAILURE);
 	}
 
@@ -276,14 +274,14 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 		dim[1] = 1;
 		dim[2] = n_alloc = (Ctrl->I.active) ? ((Ctrl->I.mode) ? 6 : 1) : GSHHG_MAXPOL;
 		if ((X = GMT_Create_Data (API, GMT_IS_TEXTSET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, Ctrl->Out.file)) == NULL) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a text set for GSHHG header features.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a text set for GSHHG header features.\n");
 			return (API->error);
 		}
 	}
 	else {
 		dim[1] = n_alloc = 0;
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, Ctrl->Out.file)) == NULL) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for GSHHG features.\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for GSHHG features.\n");
 			return (API->error);
 		}
 	}
@@ -315,7 +313,7 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 
 		level = h.flag & 255;				/* Level is 1-4 */
 		version = (h.flag >> 8) & 255;			/* Version is 1-7 */
-		if (first) GMT_report (GMT, GMT_MSG_VERBOSE, "Found GSHHG/WDBII version %d in file %s\n", version, Ctrl->In.file);
+		if (first) GMT_Report (API, GMT_MSG_VERBOSE, "Found GSHHG/WDBII version %d in file %s\n", version, Ctrl->In.file);
 		first = false;
 		greenwich = (h.flag >> 16) & 3;			/* Greenwich is 0-3 */
 		src = (h.flag >> 24) & 1;			/* Source is 0 (WDBII) or 1 (WVS) */
@@ -393,7 +391,7 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 			GMT_alloc_segment (GMT, T[seg_no], dim[3], dim[2], true);
 			for (row = 0; row < h.n; row++) {
 				if (fread (&p, sizeof (struct POINT), 1U, fp) != 1) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Error reading file %s for %s %d, point %d.\n", Ctrl->In.file, name[is_line], h.id, row);
+					GMT_Report (API, GMT_MSG_NORMAL, "Error reading file %s for %s %d, point %d.\n", Ctrl->In.file, name[is_line], h.id, row);
 					Return (EXIT_FAILURE);
 				}
 				if (must_swab) /* Must deal with different endianness */
@@ -431,7 +429,7 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 		}
 	}
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "%s in: %d %s out: %d\n", name[is_line], n_seg, name[is_line], seg_no);
+	GMT_Report (API, GMT_MSG_VERBOSE, "%s in: %d %s out: %d\n", name[is_line], n_seg, name[is_line], seg_no);
 
 	if (Ctrl->G.active) GMT->current.setting.io_seg_marker[GMT_OUT] = marker;
 

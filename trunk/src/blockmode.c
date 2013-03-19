@@ -53,41 +53,38 @@ struct BIN_MODE_INFO {	/* Usd for histogram binning */
 	int mode_choice;	/* For multiple modes: BLOCKMODE_LOW picks lowest, BLOCKMODE_AVE picks average, BLOCKMODE_HIGH picks highest */
 };
 
-int GMT_blockmode_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_blockmode_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: blockmode [<table>] %s %s\n", GMT_I_OPT, GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-C] [-D<width>[+c][+l|h]] [-E] [-Er|s[-]] [-Q] [%s] [-W[i][o]] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: blockmode [<table>] %s %s\n", GMT_I_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C] [-D<width>[+c][+l|h]] [-E] [-Er|s[-]] [-Q] [%s] [-W[i][o]] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_inc_syntax (GMT, 'I', 0);
-	GMT_Option (C, "R");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_Option (C, "<");
-	GMT_message (GMT, "\t-C Output center of block and mode z-value [Default is mode location (but see -Q)].\n");
-	GMT_message (GMT, "\t-D Compute modes via binning using <width>; append +c to center bins. If there are multiple\n");
-	GMT_message (GMT, "\t   modes we return the average mode; append +l or +h to pick the low or high mode instead.\n");
-	GMT_message (GMT, "\t   Cannot be combined with -E, -W and implicitly sets -Q.\n");
-	GMT_message (GMT, "\t   If your data are integers and <width> is not given we default to -D1+c+l\n");
-	GMT_message (GMT, "\t   [Default computes the mode as the Least Median of Squares (LMS) estimate].\n");
-	GMT_message (GMT, "\t-E Extend output with LMS scale (s), low (l), and high (h) value per block, i.e.,\n");
-	GMT_message (GMT, "\t   output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w])]; see -W regarding w.\n");
-	GMT_message (GMT, "\t   Use -Er to report record number of the median value per block,\n");
-	GMT_message (GMT, "\t   or -Es to report an unsigned integer source id (sid) taken from the x,y,z[,w],sid input.\n");
-	GMT_message (GMT, "\t   For ties, report record number (or sid) of largest value; append - for smallest.\n");
-	GMT_message (GMT, "\t-Q Quicker; get mode z and mean x,y [Default gets mode x, mode y, mode z].\n");
-	GMT_Option (C, "V");
-	GMT_message (GMT, "\t-W Set Weight options.\n");
-	GMT_message (GMT, "\t   -Wi reads Weighted Input (4 cols: x,y,z,w) but writes only (x,y,z[,s,l,h]) Output.\n");
-	GMT_message (GMT, "\t   -Wo reads unWeighted Input (3 cols: x,y,z) but reports sum (x,y,z[,s,l,h],w) Output.\n");
-	GMT_message (GMT, "\t   -W with no modifier has both weighted Input and Output; Default is no weights used.\n");
-	GMT_Option (C, "a,bi");
-	GMT_message (GMT, "\t    Default is 3 columns (or 4 if -W is set).\n");
-	GMT_Option (C, "bo,f,h,i,o,r,:,.");
+	GMT_Option (API, "I,R");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Option (API, "<");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Output center of block and mode z-value [Default is mode location (but see -Q)].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Compute modes via binning using <width>; append +c to center bins. If there are multiple\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   modes we return the average mode; append +l or +h to pick the low or high mode instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be combined with -E, -W and implicitly sets -Q.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If your data are integers and <width> is not given we default to -D1+c+l\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default computes the mode as the Least Median of Squares (LMS) estimate].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Extend output with LMS scale (s), low (l), and high (h) value per block, i.e.,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w])]; see -W regarding w.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Er to report record number of the median value per block,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   or -Es to report an unsigned integer source id (sid) taken from the x,y,z[,w],sid input.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For ties, report record number (or sid) of largest value; append - for smallest.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Quicker; get mode z and mean x,y [Default gets mode x, mode y, mode z].\n");
+	GMT_Option (API, "V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Set Weight options.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Wi reads Weighted Input (4 cols: x,y,z,w) but writes only (x,y,z[,s,l,h]) Output.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Wo reads unWeighted Input (3 cols: x,y,z) but reports sum (x,y,z[,s,l,h],w) Output.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -W with no modifier has both weighted Input and Output; Default is no weights used.\n");
+	GMT_Option (API, "a,bi");
+	GMT_Message (API, GMT_TIME_NONE, "\t    Default is 3 columns (or 4 if -W is set).\n");
+	GMT_Option (API, "bo,f,h,i,o,r,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -126,7 +123,7 @@ int GMT_blockmode_parse (struct GMTAPI_CTRL *C, struct BLOCKMODE_CTRL *Ctrl, str
 							case 'l': Ctrl->D.mode = BLOCKMODE_LOW; break;	/* Pick low mode */
 							case 'h': Ctrl->D.mode = BLOCKMODE_HIGH; break;	/* Pick high mode */
 							default:	/* Bad modifier */
-								GMT_report (GMT, GMT_MSG_NORMAL, "Error: Unrecognized modifier +%c.\n", p[0]);
+								GMT_Report (C, GMT_MSG_NORMAL, "Error: Unrecognized modifier +%c.\n", p[0]);
 								n_errors++;
 								break;
 						}
@@ -199,16 +196,16 @@ struct BIN_MODE_INFO *bin_setup (struct GMT_CTRL *C, struct BLK_DATA *d, double 
 	if (is_integer) {	/* Special consideration for integers */
 		double d_intval;
 		if (width == 0.0) {
-			GMT_report (C, GMT_MSG_LONG_VERBOSE, "For integer data and no -D<width> specified we default to <width> = 1\n");
+			GMT_Report (C->parent, GMT_MSG_LONG_VERBOSE, "For integer data and no -D<width> specified we default to <width> = 1\n");
 			width = 1.0;
 		}
 		d_intval = (double)lrint (width);
 		if (doubleAlmostEqual (d_intval, width)) {
-			GMT_report (C, GMT_MSG_LONG_VERBOSE, "For integer data and integer width we automatically select centered bins and lowest mode\n");
+			GMT_Report (C->parent, GMT_MSG_LONG_VERBOSE, "For integer data and integer width we automatically select centered bins and lowest mode\n");
 			center = true;
 			mode_choice = BLOCKMODE_LOW;
 		}
-		GMT_report (C, GMT_MSG_LONG_VERBOSE, "Effective mode option is -D%g+c+l\n", width);
+		GMT_Report (C->parent, GMT_MSG_LONG_VERBOSE, "Effective mode option is -D%g+c+l\n", width);
 	}
 	B->i_offset = (center) ? 0.5 : 0.0;
 	B->o_offset = (center) ? 0.0 : 0.5;
@@ -383,10 +380,10 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the blockmode main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 
 	if (Ctrl->C.active && Ctrl->Q.active) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Warning: -C overrides -Q\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Warning: -C overrides -Q\n");
 		Ctrl->Q.active = false;
 	}
 
@@ -397,7 +394,7 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		sprintf (format, "W: %s E: %s S: %s N: %s nx: %%d ny: %%d\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_report (GMT, GMT_MSG_VERBOSE, format, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->nx, Grid->header->ny);
+		GMT_Report (API, GMT_MSG_VERBOSE, format, Grid->header->wesn[XLO], Grid->header->wesn[XHI], Grid->header->wesn[YLO], Grid->header->wesn[YHI], Grid->header->nx, Grid->header->ny);
 	}
 
 	GMT_set_xy_domain (GMT, wesn, Grid->header);	/* May include some padding if gridline-registered */
@@ -490,15 +487,15 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 	}
 
 	if (n_read == 0) {	/* Blank/empty input files */
-		GMT_report (GMT, GMT_MSG_VERBOSE, "No data records found; no output produced");
+		GMT_Report (API, GMT_MSG_VERBOSE, "No data records found; no output produced");
 		Return (EXIT_SUCCESS);
 	}
 	if (n_pitched == 0) {	/* No points inside region */
-		GMT_report (GMT, GMT_MSG_VERBOSE, "No data points found inside the region; no output produced");
+		GMT_Report (API, GMT_MSG_VERBOSE, "No data points found inside the region; no output produced");
 		Return (EXIT_SUCCESS);
 	}
 	if (Ctrl->D.active && Ctrl->D.width == 0.0 && !is_integer) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Error -D: No bin width specified and data are not integers\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Error -D: No bin width specified and data are not integers\n");
 		Return (EXIT_FAILURE);
 	}
 	if (n_pitched < n_alloc) {
@@ -661,7 +658,7 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 	}
 
 	n_lost = n_read - n_pitched;	/* Number of points that did not get used */
-	GMT_report (GMT, GMT_MSG_VERBOSE, "N read: %ld N used: %ld N outside_area: %ld N cells filled: %ld\n", n_read, n_pitched, n_lost, n_cells_filled);
+	GMT_Report (API, GMT_MSG_VERBOSE, "N read: %ld N used: %ld N outside_area: %ld N cells filled: %ld\n", n_read, n_pitched, n_lost, n_cells_filled);
 
 	GMT_free (GMT, data);
 	if (do_extra) GMT_free (GMT, z_tmp);

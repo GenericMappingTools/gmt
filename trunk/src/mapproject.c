@@ -129,67 +129,65 @@ void Free_mapproject_Ctrl (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *C) {	/*
 	GMT_free (GMT, C);	
 }
 
-int GMT_mapproject_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_mapproject_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: mapproject <table> %s %s [-C[<dx></dy>]]\n", GMT_J_OPT, GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-Ab|B|f|F|o|O[<lon0>/<lat0>]] [-D%s] [-E[<datum>]] [-F[<unit>]] [-G[-|+][<lon0>/<lat0>/][<unit>][+|-]\n", GMT_DIM_UNITS_DISPLAY);
-	GMT_message (GMT, "\t[-I] [-L<ltable>[/[+|-]<unit>]][+] [-N[a|c|g|m]] [-Q[e|d]] [-S] [-T[h]<from>[/<to>]\n");
-	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: mapproject <table> %s %s [-C[<dx></dy>]]\n", GMT_J_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Ab|B|f|F|o|O[<lon0>/<lat0>]] [-D%s] [-E[<datum>]] [-F[<unit>]] [-G[-|+][<lon0>/<lat0>/][<unit>][+|-]\n", GMT_DIM_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I] [-L<ltable>[/[+|-]<unit>]][+] [-N[a|c|g|m]] [-Q[e|d]] [-S] [-T[h]<from>[/<to>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Option (C, "J,R");
-	GMT_message (GMT, "\t   If UTM and -C are used then -R is optional (automatically set to match UTM zone)\n");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_Option (C, "<");
-	GMT_message (GMT, "\t-A Calculate azimuths from previous point in the input data with -Af. If <lon0>/<lat0>\n");
-	GMT_message (GMT, "\t   is provided, then all azimuths are computed with respect to that point.\n");
-	GMT_message (GMT, "\t   Use -Ab to calculate backazimuths from data to previous or the specified point.\n");
-	GMT_message (GMT, "\t   Upper case B or F gives azimuths of geodesics using current ellipsoid.\n");
-	GMT_message (GMT, "\t   Use o or O to get orientations (-90/90) instead of azimuths (0/360).\n");
-	GMT_message (GMT, "\t-C Return x/y relative to projection center [Default is relative to lower left corner].\n");
-	GMT_message (GMT, "\t   Optionally append <dx></dy> to add (or subtract if -I) (i.e., false easting & northing) [0/0].\n");
-	GMT_message (GMT, "\t   Units are plot units unless -F is set in which case the unit is meters.\n");
-	GMT_message (GMT, "\t-D Temporarily reset PROJ_LENGTH_UNIT to be c (cm), i (inch), or p (point).\n");
-	GMT_message (GMT, "\t   Cannot be used if -F is set.\n");
-	GMT_message (GMT, "\t-E Convert (lon, lat, h) to Earth Centered Earth Fixed (ECEF) coordinates [-I for inverse].\n");
-	GMT_message (GMT, "\t   Specify <datum> using datum ID (see -Qd or man page) or as <ellipsoid>:<dx,dy,dz>,\n");
-	GMT_message (GMT, "\t   where <ellipsoid> may be ellipsoid ID (see -Qe or man page) or <semimajor>[,<inv_flattening>].\n");
-	GMT_message (GMT, "\t   If <datum> = - or not given we assume WGS-84.\n");
-	GMT_message (GMT, "\t-F Force projected values to be in actual distances [Default uses the given plot scale].\n");
-	GMT_message (GMT, "\t   Specify unit by appending e (meter), f (foot) k (km), M (mile), n (nautical mile), u (survey foot), i (inch), c (cm), or p (points) [e].\n");
-	GMT_message (GMT, "\t-G Calculate distances to <lon0>/<lat0> OR cumulative distances along track (if point not given).\n");
-	GMT_message (GMT, "\t   Prepend - to the unit for (fast) flat Earth or + for (slow) geodesic calculations.\n");
-	GMT_message (GMT, "\t   [Default is spherical great-circle calculations].\n");
-	GMT_message (GMT, "\t   Use -G[<unit>]+ to obtain <lon0> <lat0> from two extra input columns.\n");
-	GMT_message (GMT, "\t   Use -G[<unit>]- to get distance increments rather than cumulate distances along track.\n");
-	GMT_message (GMT, "\t   Give unit as arc (d)egree, m(e)ter, (f)oot, (k)m, arc (m)inute, (M)ile, (n)autical mile, s(u)rvey foot, arc (s)econd, or (c)artesian [e].\n");
-	GMT_message (GMT, "\t   Unit C means Cartesian distances after first projecting the input coordinates (-R, -J).\n");
-	GMT_message (GMT, "\t-I Inverse mode, i.e., get lon/lat from x/y input. [Default is lon/lat -> x/y].\n");
-	GMT_message (GMT, "\t-L Calculate minimum distances to specified line(s) in the file <ltable>.\n");
-	GMT_message (GMT, "\t   Give unit as arc (d)egree, m(e)ter, (f)oot, (k)m, arc (m)inute, (M)ile, (n)autical mile, s(u)rvey foot, arc (s)econd, or (c)artesian [e].\n");
-	GMT_message (GMT, "\t   Unit C means Cartesian distances after first projecting the input coordinates (-R, -J).\n");
-	GMT_message (GMT, "\t   Prepend - to the unit for (fast) flat Earth or + for (slow) geodesic calculations.\n");
-	GMT_message (GMT, "\t   [Default is spherical great-circle calculations].\n");
-	GMT_message (GMT, "\t   Three columns are added on output: min dist and lon, lat of the closest point on the line.\n");
-	GMT_message (GMT, "\t   Append + to get line segment id and fractional point number instead of lon/lat.\n");
-	GMT_message (GMT, "\t-N Convert from geodetic to auxiliary latitudes; use -I for inverse conversion.\n");
-	GMT_message (GMT, "\t   Append a(uthalic), c(onformal), g(eocentric), or m(eridional) to select a conversion [geocentric].\n");
-	GMT_message (GMT, "\t-Q List projection parameters and stop.  For subsets [Default is all] use\n");
-	GMT_message (GMT, "\t   -Qe shows ellipsoid parameters.\n");
-	GMT_message (GMT, "\t   -Qd shows datum parameters.\n");
-	GMT_message (GMT, "\t-S Suppress points outside region.\n");
-	GMT_message (GMT, "\t-T Perform coordinate transformation from datum <from> to datum <to>.\n");
-	GMT_message (GMT, "\t   Prepend h if input data are lon, lat, height [Default sets height = 0].\n");
-	GMT_message (GMT, "\t   Specify datums using datum ID (see -Qd or man page) or as <ellipsoid>:<dx>,<dy>,<dz>.\n");
-	GMT_message (GMT, "\t   where <ellipsoid> may be ellipsoid ID (see -Qe or man page) or <semimajor>[,<inv_flattening>].\n");
-	GMT_message (GMT, "\t   <from> = - means WGS-84.  If /<to> is not given we assume WGS-84.\n");
-	GMT_message (GMT, "\t   -T can be used as pre- or post- (-I) processing for -J -R.\n");
-	GMT_Option (C, "V,bi2,bo,f,g,h,i,o,s,:,.");
+	GMT_Option (API, "J,R");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If UTM and -C are used then -R is optional (automatically set to match UTM zone)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Option (API, "<");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Calculate azimuths from previous point in the input data with -Af. If <lon0>/<lat0>\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   is provided, then all azimuths are computed with respect to that point.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ab to calculate backazimuths from data to previous or the specified point.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Upper case B or F gives azimuths of geodesics using current ellipsoid.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use o or O to get orientations (-90/90) instead of azimuths (0/360).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Return x/y relative to projection center [Default is relative to lower left corner].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append <dx></dy> to add (or subtract if -I) (i.e., false easting & northing) [0/0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Units are plot units unless -F is set in which case the unit is meters.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Temporarily reset PROJ_LENGTH_UNIT to be c (cm), i (inch), or p (point).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used if -F is set.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Convert (lon, lat, h) to Earth Centered Earth Fixed (ECEF) coordinates [-I for inverse].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Specify <datum> using datum ID (see -Qd or man page) or as <ellipsoid>:<dx,dy,dz>,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   where <ellipsoid> may be ellipsoid ID (see -Qe or man page) or <semimajor>[,<inv_flattening>].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If <datum> = - or not given we assume WGS-84.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Force projected values to be in actual distances [Default uses the given plot scale].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Specify unit by appending e (meter), f (foot) k (km), M (mile), n (nautical mile), u (survey foot), i (inch), c (cm), or p (points) [e].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Calculate distances to <lon0>/<lat0> OR cumulative distances along track (if point not given).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend - to the unit for (fast) flat Earth or + for (slow) geodesic calculations.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is spherical great-circle calculations].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -G[<unit>]+ to obtain <lon0> <lat0> from two extra input columns.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -G[<unit>]- to get distance increments rather than cumulate distances along track.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Give unit as arc (d)egree, m(e)ter, (f)oot, (k)m, arc (m)inute, (M)ile, (n)autical mile, s(u)rvey foot, arc (s)econd, or (c)artesian [e].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Unit C means Cartesian distances after first projecting the input coordinates (-R, -J).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Inverse mode, i.e., get lon/lat from x/y input. [Default is lon/lat -> x/y].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Calculate minimum distances to specified line(s) in the file <ltable>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Give unit as arc (d)egree, m(e)ter, (f)oot, (k)m, arc (m)inute, (M)ile, (n)autical mile, s(u)rvey foot, arc (s)econd, or (c)artesian [e].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Unit C means Cartesian distances after first projecting the input coordinates (-R, -J).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend - to the unit for (fast) flat Earth or + for (slow) geodesic calculations.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is spherical great-circle calculations].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Three columns are added on output: min dist and lon, lat of the closest point on the line.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append + to get line segment id and fractional point number instead of lon/lat.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Convert from geodetic to auxiliary latitudes; use -I for inverse conversion.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append a(uthalic), c(onformal), g(eocentric), or m(eridional) to select a conversion [geocentric].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q List projection parameters and stop.  For subsets [Default is all] use\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Qe shows ellipsoid parameters.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Qd shows datum parameters.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Suppress points outside region.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Perform coordinate transformation from datum <from> to datum <to>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend h if input data are lon, lat, height [Default sets height = 0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Specify datums using datum ID (see -Qd or man page) or as <ellipsoid>:<dx>,<dy>,<dz>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   where <ellipsoid> may be ellipsoid ID (see -Qe or man page) or <semimajor>[,<inv_flattening>].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <from> = - means WGS-84.  If /<to> is not given we assume WGS-84.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -T can be used as pre- or post- (-I) processing for -J -R.\n");
+	GMT_Option (API, "V,bi2,bo,f,g,h,i,o,s,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -222,7 +220,7 @@ int GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ctrl, s
 				Ctrl->A.active = true;
 				n = sscanf (opt->arg, "%c%[^/]/%s", &c, txt_a, txt_b);
 				if (n < 1) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Expected -Ab|B|f|F[<lon0>/<lat0>]\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: Expected -Ab|B|f|F[<lon0>/<lat0>]\n");
 					n_errors++;
 				}
 				else {
@@ -242,7 +240,7 @@ int GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ctrl, s
 							Ctrl->A.orient = true;
 							break;
 						default:
-							GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Expected -Ab|B|f|F|o|O[<lon0>/<lat0>]\n");
+							GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: Expected -Ab|B|f|F|o|O[<lon0>/<lat0>]\n");
 							n_errors++;
 							break;
 					}
@@ -341,7 +339,7 @@ int GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ctrl, s
 					case 'm': Ctrl->N.mode = GMT_LATSWAP_G2M; break;
 					case '\0': Ctrl->N.mode = GMT_LATSWAP_G2O; break;
 					default:
-						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Expected -N[a|c|g|m]\n");
+						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: Expected -N[a|c|g|m]\n");
 						n_errors++;
 				}
 				break;
@@ -389,11 +387,11 @@ int GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ctrl, s
 	if (!GMT->common.R.active && GMT->current.proj.projection == GMT_UTM && Ctrl->C.active) {	/* Set default UTM region from zone info */
 		n_errors += GMT_check_condition (GMT, !GMT->current.proj.utm_zoney && GMT->current.proj.utm_hemisphere == 0, "Syntax error: -Ju need zone specification with latitude or hemisphere selection\n");
 		if (GMT_UTMzone_to_wesn (GMT, GMT->current.proj.utm_zonex, GMT->current.proj.utm_zoney, GMT->current.proj.utm_hemisphere, GMT->common.R.wesn)) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Bad UTM zone\n");
+			GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: Bad UTM zone\n");
 			n_errors++;
 		}
 		else
-			GMT_report (GMT, GMT_MSG_VERBOSE, "UTM zone used to generate region %g/%g/%g/%g\n", 
+			GMT_Report (C, GMT_MSG_VERBOSE, "UTM zone used to generate region %g/%g/%g/%g\n", 
 				GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 		
 		GMT->common.R.active = true;
@@ -461,28 +459,28 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 	/*---------------------------- This is the mapproject main code ----------------------------*/
 
 	if (Ctrl->Q.mode & 1) {	/* List ellipsoid parameters */
-		GMT_message (GMT, "GMT supports %d ellipsoids, given below (-> indicates default setting)\n", GMT_N_ELLIPSOIDS);
-		GMT_message (GMT, "  ID                      Date        a           1/f\n");
-		GMT_message (GMT, "-----------------------------------------------------------\n");
+		GMT_Message (API, GMT_TIME_NONE, "GMT supports %d ellipsoids, given below (-> indicates default setting)\n", GMT_N_ELLIPSOIDS);
+		GMT_Message (API, GMT_TIME_NONE, "  ID                      Date        a           1/f\n");
+		GMT_Message (API, GMT_TIME_NONE, "-----------------------------------------------------------\n");
 		for (i = 0; i < GMT_N_ELLIPSOIDS; i++) {
-			(i == GMT->current.setting.proj_ellipsoid) ? GMT_message (GMT, "->") : GMT_message (GMT,  "  ");
-			GMT_message (GMT, "%-23s %4ld %13.3f %14.9f\n", GMT->current.setting.ref_ellipsoid[i].name, GMT->current.setting.ref_ellipsoid[i].date, GMT->current.setting.ref_ellipsoid[i].eq_radius, 1.0/GMT->current.setting.ref_ellipsoid[i].flattening);
+			(i == GMT->current.setting.proj_ellipsoid) ? GMT_Message (API, GMT_TIME_NONE, "->") : GMT_Message (API, GMT_TIME_NONE,  "  ");
+			GMT_Message (API, GMT_TIME_NONE, "%-23s %4ld %13.3f %14.9f\n", GMT->current.setting.ref_ellipsoid[i].name, GMT->current.setting.ref_ellipsoid[i].date, GMT->current.setting.ref_ellipsoid[i].eq_radius, 1.0/GMT->current.setting.ref_ellipsoid[i].flattening);
 		}
-		GMT_message (GMT, "-----------------------------------------------------------\n");
+		GMT_Message (API, GMT_TIME_NONE, "-----------------------------------------------------------\n");
 	}
 	if (Ctrl->Q.mode & 2) {	/* List datum parameters */
-		GMT_message (GMT, "GMT supports %d datums, given below (-> indicates default setting)\n", GMT_N_DATUMS);
-		GMT_message (GMT, "  ID  Name                               Ellipsoid                 x     y     z   Region\n");
-		GMT_message (GMT, "-----------------------------------------------------------------------------------------\n");
+		GMT_Message (API, GMT_TIME_NONE, "GMT supports %d datums, given below (-> indicates default setting)\n", GMT_N_DATUMS);
+		GMT_Message (API, GMT_TIME_NONE, "  ID  Name                               Ellipsoid                 x     y     z   Region\n");
+		GMT_Message (API, GMT_TIME_NONE, "-----------------------------------------------------------------------------------------\n");
 		for (i = 0; i < GMT_N_DATUMS; i++) {
-			(!strcmp (GMT->current.setting.proj_datum[i].name, "WGS 1984")) ? GMT_message (GMT, "->") : GMT_message (GMT,  "  ");
-			GMT_message (GMT, "%3ld %-34s %-23s %5.0f %5.0f %5.0f %s\n", i, GMT->current.setting.proj_datum[i].name, GMT->current.setting.proj_datum[i].ellipsoid, GMT->current.setting.proj_datum[i].xyz[0], GMT->current.setting.proj_datum[i].xyz[1], GMT->current.setting.proj_datum[i].xyz[2], GMT->current.setting.proj_datum[i].region);
+			(!strcmp (GMT->current.setting.proj_datum[i].name, "WGS 1984")) ? GMT_Message (API, GMT_TIME_NONE, "->") : GMT_Message (API, GMT_TIME_NONE,  "  ");
+			GMT_Message (API, GMT_TIME_NONE, "%3ld %-34s %-23s %5.0f %5.0f %5.0f %s\n", i, GMT->current.setting.proj_datum[i].name, GMT->current.setting.proj_datum[i].ellipsoid, GMT->current.setting.proj_datum[i].xyz[0], GMT->current.setting.proj_datum[i].xyz[1], GMT->current.setting.proj_datum[i].xyz[2], GMT->current.setting.proj_datum[i].region);
 		}
-		GMT_message (GMT, "-----------------------------------------------------------------------------------------\n");
+		GMT_Message (API, GMT_TIME_NONE, "-----------------------------------------------------------------------------------------\n");
 	}
 	if (Ctrl->Q.mode) Return (EXIT_SUCCESS);
 	
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	if (Ctrl->D.active) GMT_err_fail (GMT, GMT_set_measure_unit (GMT, Ctrl->D.unit), "-D");
 	if (Ctrl->T.active) GMT_datum_init (GMT, &Ctrl->T.from, &Ctrl->T.to, Ctrl->T.heights);
 	if (Ctrl->A.active) {
@@ -583,18 +581,18 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 			ymax += Ctrl->C.northing;
 		}
 
-		GMT_report (GMT, GMT_MSG_NORMAL, " Transform ");
+		GMT_Report (API, GMT_MSG_NORMAL, " Transform ");
 		if (Ctrl->N.active) {
 			char *auxlat[4] = {"authalic", "conformal", "meridional", "geocentric"};
-			GMT_message (GMT, "geodetic");
-			(Ctrl->I.active) ? GMT_message (GMT, " <- ") : GMT_message (GMT,  " -> ");
-			GMT_message (GMT, "%s coordinates [degrees]\n", auxlat[Ctrl->N.mode/2]);
+			GMT_Message (API, GMT_TIME_NONE, "geodetic");
+			(Ctrl->I.active) ? GMT_Message (API, GMT_TIME_NONE, " <- ") : GMT_Message (API, GMT_TIME_NONE,  " -> ");
+			GMT_Message (API, GMT_TIME_NONE, "%s coordinates [degrees]\n", auxlat[Ctrl->N.mode/2]);
 		}
 		else {
-			GMT_message (GMT, format, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
-			(Ctrl->I.active) ? GMT_message (GMT, " <- ") : GMT_message (GMT,  " -> ");
-			GMT_message (GMT, format, xmin, xmax, ymin, ymax);
-			GMT_message (GMT, " [%s]\n", unit_name);
+			GMT_Message (API, GMT_TIME_NONE, format, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
+			(Ctrl->I.active) ? GMT_Message (API, GMT_TIME_NONE, " <- ") : GMT_Message (API, GMT_TIME_NONE,  " -> ");
+			GMT_Message (API, GMT_TIME_NONE, format, xmin, xmax, ymin, ymax);
+			GMT_Message (API, GMT_TIME_NONE, " [%s]\n", unit_name);
 		}
 	}
 
@@ -798,7 +796,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 			}
 			n++;
-			if (n%1000 == 0) GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Projected %" PRIu64 " points\r", n);
+			if (n%1000 == 0) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Projected %" PRIu64 " points\r", n);
 		}
 		else {		/* Do forward transformation */
 
@@ -965,7 +963,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 				}
 			}
 			n++;
-			if (n%1000 == 0) GMT_report (GMT, GMT_MSG_VERBOSE, "Projected %" PRIu64 " points\r", n);
+			if (n%1000 == 0) GMT_Report (API, GMT_MSG_VERBOSE, "Projected %" PRIu64 " points\r", n);
 		}
 	} while (true);
 	
@@ -977,34 +975,34 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 	}
 
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE) && n_read > 0) {
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Projected %" PRIu64 " points\n", n);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Projected %" PRIu64 " points\n", n);
 		sprintf (format, "Input extreme values: Xmin: %s Xmax: %s Ymin: %s Ymax %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		GMT_report (GMT, GMT_MSG_VERBOSE, format, x_in_min, x_in_max, y_in_min, y_in_max);
+		GMT_Report (API, GMT_MSG_VERBOSE, format, x_in_min, x_in_max, y_in_min, y_in_max);
 		if (!geodetic_calc) {
 			sprintf (format, "Output extreme values: Xmin: %s Xmax: %s Ymin: %s Ymax %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-			GMT_report (GMT, GMT_MSG_VERBOSE, format, x_out_min, x_out_max, y_out_min, y_out_max);
+			GMT_Report (API, GMT_MSG_VERBOSE, format, x_out_min, x_out_max, y_out_min, y_out_max);
 			if (Ctrl->I.active) {
 				if (Ctrl->E.active)
-					GMT_report (GMT, GMT_MSG_VERBOSE, "Mapped %" PRIu64 " ECEF coordinates [m] to (lon,lat,h)\n", n);
+					GMT_Report (API, GMT_MSG_VERBOSE, "Mapped %" PRIu64 " ECEF coordinates [m] to (lon,lat,h)\n", n);
 				else if (Ctrl->N.active)
-					GMT_report (GMT, GMT_MSG_VERBOSE, "Converted %" PRIu64 " auxiliary (lon,lat) to geodetic coordinates [degrees]\n", n);
+					GMT_Report (API, GMT_MSG_VERBOSE, "Converted %" PRIu64 " auxiliary (lon,lat) to geodetic coordinates [degrees]\n", n);
 				else
-					GMT_report (GMT, GMT_MSG_VERBOSE, "Mapped %" PRIu64 " x-y pairs [%s] to lon-lat\n", n, unit_name);
+					GMT_Report (API, GMT_MSG_VERBOSE, "Mapped %" PRIu64 " x-y pairs [%s] to lon-lat\n", n, unit_name);
 			}
 			else if (Ctrl->T.active && GMT->current.proj.datum.h_given)
-				GMT_report (GMT, GMT_MSG_VERBOSE, "Datum-converted %" PRIu64 " (lon,lat,h) triplets\n", n);
+				GMT_Report (API, GMT_MSG_VERBOSE, "Datum-converted %" PRIu64 " (lon,lat,h) triplets\n", n);
 			else if (Ctrl->T.active)
-				GMT_report (GMT, GMT_MSG_VERBOSE, "Datum-converted %" PRIu64 " (lon,lat) pairs\n", n);
+				GMT_Report (API, GMT_MSG_VERBOSE, "Datum-converted %" PRIu64 " (lon,lat) pairs\n", n);
 			else if (Ctrl->E.active)
-				GMT_report (GMT, GMT_MSG_VERBOSE, "Mapped %" PRIu64 " (lon,lat,h) triplets to ECEF coordinates [m]\n", n);
+				GMT_Report (API, GMT_MSG_VERBOSE, "Mapped %" PRIu64 " (lon,lat,h) triplets to ECEF coordinates [m]\n", n);
 			else if (Ctrl->N.active)
-				GMT_report (GMT, GMT_MSG_VERBOSE, "Converted %" PRIu64 " (lon,lat) geodetic to auxiliary coordinates [degrees]\n", n);
+				GMT_Report (API, GMT_MSG_VERBOSE, "Converted %" PRIu64 " (lon,lat) geodetic to auxiliary coordinates [degrees]\n", n);
 			else if (GMT_is_geographic (GMT, GMT_IN))
-				GMT_report (GMT, GMT_MSG_VERBOSE, "Mapped %" PRIu64 " lon-lat pairs to x-y [%s]\n", n, unit_name);
+				GMT_Report (API, GMT_MSG_VERBOSE, "Mapped %" PRIu64 " lon-lat pairs to x-y [%s]\n", n, unit_name);
 			else
-				GMT_report (GMT, GMT_MSG_VERBOSE, "Mapped %" PRIu64 " data pairs to x-y [%s]\n", n, unit_name);
+				GMT_Report (API, GMT_MSG_VERBOSE, "Mapped %" PRIu64 " data pairs to x-y [%s]\n", n, unit_name);
 		}
-		if (Ctrl->S.active && n != n_read) GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " fell outside region\n", n_read - n);
+		if (Ctrl->S.active && n != n_read) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " fell outside region\n", n_read - n);
 	}
 
 	GMT_free (GMT, out);

@@ -89,7 +89,7 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 		dim[2] = 2;	/* Just 2 columns */
 		dim[3] = 3;	/* All segments has 3 rows */
 		if ((Dout[0] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, file0)) == NULL) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate\n");
 			GMT_exit (EXIT_FAILURE);
 		}
 		if (nodes) {	/* Want Voronoi node and area information via Dout[1] */
@@ -97,12 +97,12 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 			dim[2] = 3 + get_area;	/* Here we use 3-4 columns */
 			dim[3] = D->n;	/* One row per node */
 			if ((Dout[1] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, file1)) == NULL) {
-				GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate nodes\n");
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate nodes\n");
 				GMT_exit (EXIT_FAILURE);
 			}
 			S[1] = Dout[1]->table[0]->segment[0];
 		}
-		GMT_report (GMT, GMT_MSG_VERBOSE, "%s: Output %d unique triangle polygons\n", gmt_module_name(GMT), D->n);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%s: Output %d unique triangle polygons\n", gmt_module_name(GMT), D->n);
 		for (k = ij = 0; k < D->n; k++, ij += TRI_NROW) {	/* For each triangle */
 			S[0] = Dout[0]->table[0]->segment[k];	/* Short hand for current triangle segment */
 			/* Write segment header with triangle # and the three node numbers */
@@ -129,7 +129,7 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 				S[0]->coord[GMT_Y][i] = lat[D->tri[ij+i]];
 			}
 		}
-		if (get_area) GMT_report (GMT, GMT_MSG_VERBOSE, "Total surface area = %g\n", area_sphere * R2);
+		if (get_area) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Total surface area = %g\n", area_sphere * R2);
 	}
 	else {	/* Want just the arcs (to draw then, probably).  This avoids repeating shared arcs between triangles */
 		uint64_t j, ij1, ij2, ij3, n_arcs, kk;
@@ -153,13 +153,13 @@ void stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, s
 			arc[j] = arc[i];
 		}
 		n_arcs = j + 1;
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Output %" PRIu64 " unique triangle arcs\n", n_arcs);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Output %" PRIu64 " unique triangle arcs\n", n_arcs);
 
 		dim[1] = n_arcs;	/* Number of output arcs = segments */
 		dim[2] = 2;		/* Only use 2 columns */
 		dim[3] = 2;		/* Each arc has 2 rows */
 		if ((Dout[0] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, file0)) == NULL) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate arcs\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate arcs\n");
 			GMT_exit (EXIT_FAILURE);
 		}
 		for (i = 0; i < n_arcs; i++) {
@@ -212,7 +212,7 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double *lon, dou
 	dim[3] = (get_arcs) ? 2 : 0;	/* Rows (unknown length if polygons; fixed 2 if arcs) */
 	geometry = (get_arcs) ? GMT_IS_LINE : GMT_IS_POLY;
 	if ((Dout[0] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, geometry, 0, dim, NULL, NULL, 0, 0, file0)) == NULL) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate\n");
 		GMT_exit (EXIT_FAILURE);
 	}
 	if (nodes) {	/* Want Voronoi node and area information via Dout[1] */
@@ -220,7 +220,7 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double *lon, dou
 		dim[2] = 2 + get_area;	/* Need 2 or 3 columns */
 		dim[3] = n;	/* One row per node */
 		if ((Dout[1] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, 0, dim, NULL, NULL, 0, 0, file1)) == NULL) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate nodes\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate nodes\n");
 			GMT_exit (EXIT_FAILURE);
 		}
 		S[1] = Dout[1]->table[0]->segment[0];	/* Shorthand for this segment */
@@ -315,10 +315,10 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double *lon, dou
 		dim[2] = 2;		/* Only 2 columns */
 		dim[3] = 2;		/* Each arc needs 2 rows */
 		if ((Dout[0] = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, file0)) == NULL) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate Voronoi nodes\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create a data set for sphtriangulate Voronoi nodes\n");
 			GMT_exit (EXIT_FAILURE);
 		}
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Output %d unique Voronoi arcs\n", n_arcs);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Output %d unique Voronoi arcs\n", n_arcs);
 
 		for (i = 0; i < n_arcs; i++) {
 			S[0] = Dout[0]->table[0]->segment[i];	/* Shorthand for this output segment */
@@ -337,7 +337,7 @@ void stripack_voronoi_output (struct GMT_CTRL *GMT, uint64_t n, double *lon, dou
 	else {
 		GMT_free (GMT, plon);
 		GMT_free (GMT, plat);
-		if (get_area) GMT_report (GMT, GMT_MSG_VERBOSE, "Total surface area = %g\n", area_sphere * R2);
+		if (get_area) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Total surface area = %g\n", area_sphere * R2);
 	}
 }
 
@@ -386,36 +386,35 @@ void Free_sphtriangulate_Ctrl (struct GMT_CTRL *GMT, struct SPHTRIANGULATE_CTRL 
 	GMT_free (GMT, C);	
 }
 
-int GMT_sphtriangulate_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_sphtriangulate_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
-	GMT_message (GMT, "usage: sphtriangulate [<table>] [-A] [-C] [-D] [-L<unit>] [-N<nodetable>]\n");
-	GMT_message (GMT, "\t[-Qd|v] [-T] [%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_b_OPT, GMT_h_OPT, GMT_i_OPT);
-	GMT_message (GMT, "\t[%s] [%s]\n\n", GMT_s_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: sphtriangulate [<table>] [-A] [-C] [-D] [-L<unit>] [-N<nodetable>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Qd|v] [-T] [%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_b_OPT, GMT_h_OPT, GMT_i_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\n", GMT_s_OPT, GMT_colon_OPT);
                
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
                
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t<table> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
-	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
-	GMT_message (GMT, "\t-A Compute and print triangle or polygon areas in header records (see -L for units).\n");
-	GMT_message (GMT, "\t   If -T is selected we print arc lengths instead.\n");
-	GMT_message (GMT, "\t   Cannot be used with the binary output option.\n");
-	GMT_message (GMT, "\t-C Conserve memory (Converts lon/lat <--> x/y/z when needed) [store both in memory].\n");
-	GMT_message (GMT, "\t-D Skip repeated input vertex at the end of a closed segment.\n");
-	GMT_message (GMT, "\t-L Set distance unit arc (d)egree, m(e)ter, (f)oot, (k)m, (M)ile, (n)autical mile, or s(u)rvey foot [e].\n");
-	GMT_message (GMT, "\t   PROJ_ELLIPSOID determines if geodesic or great-circle distances are used.\n");
-	GMT_message (GMT, "\t-N Output filename for Delaunay or Voronoi polygon information [Store in output segment headers].\n");
-	GMT_message (GMT, "\t   Delaunay: output is the node triplets and area (i, j, k, area).\n");
-	GMT_message (GMT, "\t   Voronoi: output is the node coordinates and polygon area (lon, lat, area).\n");
-	GMT_message (GMT, "\t   Cannot be used with -T.\n");
-	GMT_message (GMT, "\t-Q Append d for Delaunay triangles or v for Voronoi polygons [Delaunay].\n");
-	GMT_message (GMT, "\t   If -bo is used then -N may be used to specify a separate file where the\n");
-	GMT_message (GMT, "\t   polygon information normally is written.\n");
-	GMT_message (GMT, "\t-T Write arcs [Default writes polygons].\n");
-	GMT_Option (C, "V,bi2,bo,h,i,s,:,.");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Compute and print triangle or polygon areas in header records (see -L for units).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If -T is selected we print arc lengths instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used with the binary output option.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Conserve memory (Converts lon/lat <--> x/y/z when needed) [store both in memory].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Skip repeated input vertex at the end of a closed segment.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Set distance unit arc (d)egree, m(e)ter, (f)oot, (k)m, (M)ile, (n)autical mile, or s(u)rvey foot [e].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   PROJ_ELLIPSOID determines if geodesic or great-circle distances are used.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Output filename for Delaunay or Voronoi polygon information [Store in output segment headers].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Delaunay: output is the node triplets and area (i, j, k, area).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Voronoi: output is the node coordinates and polygon area (lon, lat, area).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used with -T.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Append d for Delaunay triangles or v for Voronoi polygons [Delaunay].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If -bo is used then -N may be used to specify a separate file where the\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   polygon information normally is written.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Write arcs [Default writes polygons].\n");
+	GMT_Option (API, "V,bi2,bo,h,i,s,:,.");
 
 	return (EXIT_FAILURE);
 }
@@ -452,7 +451,7 @@ int GMT_sphtriangulate_parse (struct GMTAPI_CTRL *C, struct SPHTRIANGULATE_CTRL 
 			case 'L':
 				Ctrl->L.active = true;
 				if (!(opt->arg && strchr (GMT_LEN_UNITS, opt->arg[0]))) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error: Expected -L%s\n", GMT_LEN_UNITS_DISPLAY);
+					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: Expected -L%s\n", GMT_LEN_UNITS_DISPLAY);
 					n_errors++;
 				}
 				else
@@ -527,7 +526,7 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args)
 	GMT_init_distaz (GMT, Ctrl->L.unit, 1 + GMT_sph_mode (GMT), GMT_MAP_DIST);
 	do_authalic = (Ctrl->A.active && !Ctrl->T.active && !GMT_IS_ZERO (GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].flattening));
 	if (do_authalic) {
-		GMT_report (GMT, GMT_MSG_LONG_VERBOSE, "Will convert to authalic latitudes for area calculations\n");
+		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Will convert to authalic latitudes for area calculations\n");
 	}
 	steradians = (Ctrl->L.unit == 'd' && !Ctrl->T.active);	/* Flag so we can do steradians */
 
@@ -599,8 +598,8 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args)
 	if (!Ctrl->C.active) GMT_malloc2 (GMT, lon, lat, 0, &n_alloc, double);
 	GMT_malloc3 (GMT, xx, yy, zz, 0, &n_alloc, double);
 
-	if (Ctrl->D.active && n_dup) GMT_report (GMT, GMT_MSG_VERBOSE, "Skipped %d duplicate points in segments\n", n_dup);
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Do Voronoi construction using %d points\n", n);
+	if (Ctrl->D.active && n_dup) GMT_Report (API, GMT_MSG_VERBOSE, "Skipped %d duplicate points in segments\n", n_dup);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Do Voronoi construction using %d points\n", n);
 
 	GMT_memset (&T, 1, struct STRIPACK);
 	T.mode = Ctrl->Q.mode;
@@ -661,7 +660,7 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args)
 	GMT_free (GMT, xx);
 	GMT_free (GMT, yy);
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Triangularization completed\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Triangularization completed\n");
 
 	Return (GMT_OK);
 }

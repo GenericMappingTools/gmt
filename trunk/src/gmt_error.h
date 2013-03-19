@@ -92,7 +92,7 @@ enum Gmt_error_code {
 
 /* Definition for an error trap */
 #ifdef DEBUG
-#define GMT_err_trap(func_call) if ((err = (func_call)) != GMT_NOERROR) {GMT_report(C,GMT_MSG_NORMAL,"GMT_err_trap: %d\n", err);return(err);}
+#define GMT_err_trap(func_call) if ((err = (func_call)) != GMT_NOERROR) {GMT_Report(C->parent,GMT_MSG_NORMAL,"GMT_err_trap: %d\n", err);return(err);}
 #else
 #define GMT_err_trap(func_call) if ((err = (func_call)) != GMT_NOERROR) return(err)
 #endif
@@ -102,7 +102,7 @@ EXTERN_MSC const char * GMT_strerror (int err);
 #define GMT_is_verbose(C,level) (C->current.setting.verbose >= level)
 
 /* Check condition and report error if true */
-#define GMT_check_condition(C,condition,...) ((condition) ? GMT_report(C,GMT_MSG_NORMAL,__VA_ARGS__) : 0)
+#define GMT_check_condition(C,condition,...) ((condition) ? GMT_Report(C->parent,GMT_MSG_NORMAL,__VA_ARGS__) : 0)
 
 /* Set __func__ identifier */
 #ifndef HAVE___FUNC__
@@ -125,14 +125,6 @@ EXTERN_MSC const char * GMT_strerror (int err);
 #else
 #	define GMT_err_pass(C,err,file) GMT_err_func(C,err,false,file,__func__)
 #	define GMT_err_fail(C,err,file) GMT_err_func(C,err,true,file,__func__)
-#endif
-
-/* Convenience functions to GMT_report_func */
-#ifdef DEBUG
-/* !keep space before comma in ', ##__VA_ARGS__'! */
-#	define GMT_report(C, level, format, ...) GMT_report_func(C, level, __SOURCE_LINE, format , ##__VA_ARGS__)
-#else
-#	define GMT_report(C, level, format, ...) GMT_report_func(C, level, __func__, format , ##__VA_ARGS__)
 #endif
 
 #endif /* GMT_ERROR_H */

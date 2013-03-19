@@ -84,27 +84,25 @@ void Free_x2sys_get_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *C) {	/* D
 	GMT_free (GMT, C);
 }
 
-int GMT_x2sys_get_usage (struct GMTAPI_CTRL *C, int level) {
-	struct GMT_CTRL *GMT = C->GMT;
-
+int GMT_x2sys_get_usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: x2sys_get -T<TAG> [-C] [-D] [-F<fflags>] [-G] [-L[+][list]] [-N<nflags>] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_get -T<TAG> [-C] [-D] [-F<fflags>] [-G] [-L[+][list]] [-N<nflags>] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-C Report center of each tile with tracks instead [Default is track files].\n");
-	GMT_message (GMT, "\t-D only reports the track names and not the report on each field.\n");
-	GMT_message (GMT, "\t-F Comma-separated list of column names that must ALL be present [Default is any field].\n");
-	GMT_message (GMT, "\t-G Report global flags per track [Default reports for segments inside region].\n");
-	GMT_message (GMT, "\t-L Setup mode: Return all pairs of cruises that might intersect given\n");
-	GMT_message (GMT, "\t   the bin distribution.  Optionally, give file with a list of cruises.\n");
-	GMT_message (GMT, "\t   Then, only pairs with at least one cruise from the list is output.\n");
-	GMT_message (GMT, "\t   Use -L+ to include internal pairs in the list [external only].\n");
-	GMT_message (GMT, "\t-N Comma-separated list of column names that ALL must be missing.\n");
-	GMT_Option (C, "R");
-	GMT_message (GMT, "\t   [Default region is the entire data domain].\n");
-	GMT_Option (C, "V,.");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Report center of each tile with tracks instead [Default is track files].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D only reports the track names and not the report on each field.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Comma-separated list of column names that must ALL be present [Default is any field].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Report global flags per track [Default reports for segments inside region].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Setup mode: Return all pairs of cruises that might intersect given\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   the bin distribution.  Optionally, give file with a list of cruises.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Then, only pairs with at least one cruise from the list is output.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -L+ to include internal pairs in the list [external only].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Comma-separated list of column names that ALL must be missing.\n");
+	GMT_Option (API, "R");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default region is the entire data domain].\n");
+	GMT_Option (API, "V,.");
 
 	return (EXIT_FAILURE);
 }
@@ -266,7 +264,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 		include = GMT_memory (GMT, NULL, n_tracks, bool);
 		if (Ctrl->L.file) {
 			if ((fp = fopen (Ctrl->L.file, "r")) == NULL) {
-				GMT_report (GMT, GMT_MSG_NORMAL, "Error: -L unable to open file %s\n", Ctrl->L.file);
+				GMT_Report (API, GMT_MSG_NORMAL, "Error: -L unable to open file %s\n", Ctrl->L.file);
 				Return (EXIT_FAILURE);
 			}
 			while (fgets (line, GMT_BUFSIZ, fp)) {
@@ -275,7 +273,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 				if ((p = strchr (line, '.'))) line[(size_t)(p-line)] = '\0';	/* Remove extension */
 				k = find_leg (line, &B, n_tracks);	/* Return track id # for this leg */
 				if (k == -1) {
-					GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: Leg %s not in the data base\n", line);
+					GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Leg %s not in the data base\n", line);
 					continue;
 				}
 				include[k] = true;
@@ -367,7 +365,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 		GMT_free (GMT, matrix);
 		GMT_free (GMT, include);
 		GMT_free (GMT, ids_in_bin);
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Found %" PRIu64 " pairs for crossover consideration\n", n_pairs);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " pairs for crossover consideration\n", n_pairs);
 	}
 	else if (!Ctrl->C.active) {
 		for (ii = n_tracks_found = 0; ii < n_tracks; ++ii) {
@@ -375,7 +373,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 				++n_tracks_found;
 		}
 		if (n_tracks_found) {
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Found %d tracks\n", n_tracks_found);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Found %d tracks\n", n_tracks_found);
 
 			if (!Ctrl->D.active) {
 				printf ("# Search command: %s", gmt_module_name(GMT));
@@ -399,7 +397,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 			}
 		}
 		else
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Search found no tracks\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "Search found no tracks\n");
 	}
 	
 	GMT_free (GMT, y_match);
@@ -407,7 +405,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 	GMT_free (GMT, in_bin_flag);
 	x2sys_end (GMT, s);
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "completed successfully\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "completed successfully\n");
 
 	Return (GMT_OK);
 }

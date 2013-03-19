@@ -54,18 +54,16 @@ void Free_gmtwhich_Ctrl (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *C) {	/* Dea
 	GMT_free (GMT, C);	
 }
 
-int GMT_gmtwhich_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_gmtwhich_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: gmtwhich [files] [-C] [-D] [%s]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtwhich [files] [-C] [-D] [%s]\n", GMT_V_OPT);
      
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t-C Print Y if found and N if not found.  No path is returned.\n");
-	GMT_message (GMT, "\t-D Print the directory where a file is found [full path to file].\n");
-	GMT_Option (C, "V,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Print Y if found and N if not found.  No path is returned.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Print the directory where a file is found [full path to file].\n");
+	GMT_Option (API, "V,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -170,7 +168,7 @@ int GMT_gmtwhich (void *V_API, int mode, void *args)
 		}
 		else {
 			if (Ctrl->C.active) GMT_Put_Record (API, GMT_WRITE_TEXT, No);
-			GMT_report (GMT, GMT_MSG_VERBOSE, "File %s not found!\n", opt->arg);
+			GMT_Report (API, GMT_MSG_VERBOSE, "File %s not found!\n", opt->arg);
 		}
 	}
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */

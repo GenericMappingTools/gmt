@@ -58,19 +58,17 @@ void Free_x2sys_merge_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_MERGE_CTRL *C) {	
 	GMT_free (GMT, C);
 }
 
-int GMT_x2sys_merge_usage (struct GMTAPI_CTRL *C, int level) {
-	struct GMT_CTRL *GMT = C->GMT;
-
+int GMT_x2sys_merge_usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: x2sys_merge -A<main_COEdbase> -M<new_COEdbase> [%s]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_merge -A<main_COEdbase> -M<new_COEdbase> [%s]\n", GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t-A Give file with the main crossover error data base.\n");
-	GMT_message (GMT, "\t-M Give file with the new crossover error data base.\n");
-	GMT_message (GMT, "\t   The new COEs will replace the old ones present in <main_COEdbase>.\n");
-	GMT_message (GMT, "\t   Result is printed to stdout.\n");
-	GMT_Option (C, "V,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Give file with the main crossover error data base.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Give file with the new crossover error data base.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The new COEs will replace the old ones present in <main_COEdbase>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Result is printed to stdout.\n");
+	GMT_Option (API, "V,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -153,12 +151,12 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args)
 	/*---------------------------- This is the x2sys_merge main code ----------------------------*/
 
 	if ((fp_base = fopen (Ctrl->A.file, "r")) == NULL) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Error: Unable to open crossover file %s\n", Ctrl->A.file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to open crossover file %s\n", Ctrl->A.file);
 		Return (EXIT_FAILURE);
 	}
 
 	if ((fp_merge = fopen (Ctrl->M.file, "r")) == NULL) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Error: Unable to open crossover file %s\n", Ctrl->M.file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to open crossover file %s\n", Ctrl->M.file);
 		Return (EXIT_FAILURE);
 	}
 
@@ -238,14 +236,14 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args)
 			if (!strcmp(pairs_base[i], pairs_merge[j])) {		 /* Update these COEs */
 				for (k = map_merge_start[j]; k <= map_merge_end[j]; k++) {
 					if (!fgets (line, GMT_BUFSIZ, fp_merge)) {
-						GMT_report (GMT, GMT_MSG_NORMAL, "Read error in merge file line\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Read error in merge file line\n");
 						Return (EXIT_FAILURE);
 					}
 					fprintf (stdout, "%s", line);
 				}
 				for (k = map_base_start[i]; k <= map_base_end[i]; k++) {	/* Advance also in the base file */
 					if (!fgets (line, GMT_BUFSIZ, fp_base)) {
-						GMT_report (GMT, GMT_MSG_NORMAL, "Read error in base file\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Read error in base file\n");
 						Return (EXIT_FAILURE);
 					}
 				}
@@ -256,7 +254,7 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args)
 			else if (j == (n_merge - 1)) {	/* Not equal. So do not to update, just recopy */
 				for (k = map_base_start[i]; k <= map_base_end[i]; k++) {
 					if (!fgets (line, GMT_BUFSIZ, fp_base)) {
-						GMT_report (GMT, GMT_MSG_NORMAL, "Read error in base file\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Read error in base file\n");
 						Return (EXIT_FAILURE);
 					}
 					fprintf (stdout, "%s", line);

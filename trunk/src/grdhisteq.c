@@ -83,25 +83,23 @@ void Free_grdhisteq_Ctrl (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *C) {	/* D
 	GMT_free (GMT, C);	
 }
 
-int GMT_grdhisteq_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_grdhisteq_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grdhisteq <ingrid> [-G<outgrid>] [-C<n_cells>] [-D[<table>]] [-N[<norm>]]\n");
-	GMT_message (GMT, "[-Q]\n\t[%s] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_ho_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdhisteq <ingrid> [-G<outgrid>] [-C<n_cells>] [-D[<table>]] [-N[<norm>]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "[-Q]\n\t[%s] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_ho_OPT);
 	
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 	
-	GMT_message (GMT, "\t<ingrid> is name of input grid file.\n");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-C Set how many cells (divisions) of data range to make.\n");
-	GMT_message (GMT, "\t-D Dump level information to <table> or stdout if not given.\n");
-	GMT_message (GMT, "\t-G Create an equalized output grid file called <outgrid>.\n");
-	GMT_message (GMT, "\t-N Use with -G to make an output grid file with standard normal scores.\n");
-	GMT_message (GMT, "\t   Append <norm> to normalize the scores to <-1,+1>.\n");
-	GMT_message (GMT, "\t-Q Use quadratic intensity scaling [Default is linear].\n");
-	GMT_Option (C, "R,V,h,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is name of input grid file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Set how many cells (divisions) of data range to make.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Dump level information to <table> or stdout if not given.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Create an equalized output grid file called <outgrid>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Use with -G to make an output grid file with standard normal scores.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append <norm> to normalize the scores to <-1,+1>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Use quadratic intensity scaling [Default is linear].\n");
+	GMT_Option (API, "R,V,h,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -212,7 +210,7 @@ int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *out
 	GMT_memcpy (pad, Grid->header->pad, 4, int);	/* Save the original pad */
 	GMT_grd_pad_off (GMT, Grid);	/* Undo pad if one existed so we can sort the entire grid */
 	if (outfile) Orig = GMT_Duplicate_Data (GMT->parent, GMT_IS_GRID, GMT_DUPLICATE_DATA, Grid); /* Must keep original if readonly */
-	if (Orig == NULL) GMT_report (GMT, GMT_MSG_NORMAL, "Grid duplication failed - memory error?\n");
+	if (Orig == NULL) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Grid duplication failed - memory error?\n");
 	GMT_sort_array (GMT, Grid->data, Grid->header->nm, GMT_FLOAT);
 	
 	nxy = Grid->header->nm;
@@ -253,7 +251,7 @@ int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *out
 	if (outfile) {	/* Must re-read the grid and evaluate since it got sorted and trodden on... */
 		for (i = 0; i < Grid->header->nm; i++) Grid->data[i] = (GMT_is_fnan (Orig->data[i])) ? GMT->session.f_NaN : get_cell (Orig->data[i], cell, n_cells_m1, last_cell);
 		if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &Orig) != GMT_OK) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Failed to free Orig\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free Orig\n");
 		}
 	}
 
@@ -355,7 +353,7 @@ int GMT_grdhisteq (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the grdhisteq main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input grid\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid\n");
 	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 		Return (API->error);

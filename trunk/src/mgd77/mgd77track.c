@@ -143,54 +143,52 @@ void Free_mgd77track_Ctrl (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *C) {	/*
 	GMT_free (GMT, C);	
 }
 
-int GMT_mgd77track_usage (struct GMTAPI_CTRL *C, int level, struct MGD77TRACK_CTRL *Ctrl)
+int GMT_mgd77track_usage (struct GMTAPI_CTRL *API, int level, struct MGD77TRACK_CTRL *Ctrl)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: mgd77track cruise(s) %s %s [-A[c][<size>]][,<inc><unit>] [%s]\n", GMT_Rgeo_OPT, GMT_J_OPT, GMT_B_OPT);
-	GMT_message (GMT, "\t[-Cf|g|e] [-Da<startdate>] [-Db<stopdate>] [-F] [-Gt|d<gap>] [-I<code>] [-K] [-L<trackticks>] [-N] [-O] [-P] [-Sa<startdist>[<unit>]]\n");
-	GMT_message (GMT, "\t[-Sb<stopdist>[<unit>]] [-TT|t|d<ms,mc,mfs,mf,mfc>] [%s] [%s] [-W<pen>] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s] [%s]\n\n", GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: mgd77track cruise(s) %s %s [-A[c][<size>]][,<inc><unit>] [%s]\n", GMT_Rgeo_OPT, GMT_J_OPT, GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Cf|g|e] [-Da<startdate>] [-Db<stopdate>] [-F] [-Gt|d<gap>] [-I<code>] [-K] [-L<trackticks>] [-N] [-O] [-P] [-Sa<startdist>[<unit>]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Sb<stopdist>[<unit>]] [-TT|t|d<ms,mc,mfs,mf,mfc>] [%s] [%s] [-W<pen>] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\n", GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
      
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
              
-	MGD77_Cruise_Explain (GMT);
-	GMT_Option (C, "J-,R");
-	GMT_message (GMT, "\tOPTIONS:\n\n");
-	GMT_message (GMT, "\t-A Annotate legs when they enter the grid. Append c for cruise ID [Default is file prefix];\n");
-	GMT_message (GMT, "\t   <size> is optional text size in points [9].  The font used is controlled by FONT_LABEL.\n");
-	GMT_message (GMT, "\t   Optionally, append ,<inc>[unit] to place label every <inc> units apart; <unit> may be\n");
-	GMT_message (GMT, "\t   k (km) or n (nautical miles), or d (days), h (hours).\n");
-	GMT_Option (C, "B-");
-	GMT_message (GMT, "\t-C Select procedure for along-track distance calculations:\n");
-	GMT_message (GMT, "\t   f Flat Earth\n");
-	GMT_message (GMT, "\t   g Great circle [Default]\n");
-	GMT_message (GMT, "\t   e Ellipsoidal (geodesic) using current ellipsoid\n");
-	GMT_message (GMT, "\t-D Plot from a<startdate> (given as yyyy-mm-ddT[hh:mm:ss]) [Start of cruise]\n");
-	GMT_message (GMT, "\t   up to b<stopdate> (given as yyyy-mm-ddT[hh:mm:ss]) [End of cruise]\n");
-	GMT_message (GMT, "\t-F Do NOT apply bitflags to MGD77+ cruises [Default applies error flags stored in the file].\n");
-	GMT_message (GMT, "\t-G Consider point separations exceeding d<gap> (km) or t<gap> (minutes) to indicate a gap (do not draw) [0].\n");
-	GMT_message (GMT, "\t-I Ignore certain data file formats from consideration. Append combination of act to ignore\n");
-	GMT_message (GMT, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, (m) MGD77T ASCII, or (t) plain table files. [Default ignores none].\n");
-	GMT_Option (C, "K");
-	GMT_message (GMT, "\t-L Put time/distance log marks on the track. E.g. a500ka24ht6h means (a)nnotate\n");
-	GMT_message (GMT, "\t   every 500 km (k) and 24 h(ours), with (t)ickmarks every 500 km and 6 (h)ours.\n");
-	GMT_message (GMT, "\t   Units of n(autical miles) and d(ays) are also recognized.\n");
-	GMT_message (GMT, "\t-N Do Not clip leg name annotation that fall outside map border [Default will clip].\n");
-	GMT_Option (C, "O,P");
-	GMT_message (GMT, "\t-S Plot from a<startdist>[<unit>], with <unit> from %s [meter] [Start of cruise]\n", GMT_LEN_UNITS2_DISPLAY);
-	GMT_message (GMT, "\t   up to b<stopdist> [End of cruise].\n");
-	GMT_message (GMT, "\t-T Set attributes of marker items. Append T for new day marker, t for same\n");
-	GMT_message (GMT, "\t   day marker, and d for distance marker.  Then, append 5 comma-separated items:\n");
-	GMT_message (GMT, "\t   <markersize>[unit],<markercolor>,<markerfontsize,<markerfont>,<markerfontcolor>\n");
-	GMT_message (GMT, "\t   Default settings for the three marker types are:\n");
-	GMT_message (GMT, "\t     -TT%g,black,%g,%d,black\n", Ctrl->T.marker[MGD77TRACK_MARK_NEWDAY].marker_size, Ctrl->T.marker[MGD77TRACK_MARK_NEWDAY].font.size, Ctrl->T.marker[MGD77TRACK_MARK_NEWDAY].font.id);
-	GMT_message (GMT, "\t     -Tt%g,white,%g,%d,black\n", Ctrl->T.marker[MGD77TRACK_MARK_SAMEDAY].marker_size, Ctrl->T.marker[MGD77TRACK_MARK_SAMEDAY].font.size, Ctrl->T.marker[MGD77TRACK_MARK_SAMEDAY].font.id);
-	GMT_message (GMT, "\t     -Td%g,black,%g,%d,black\n", Ctrl->T.marker[MGD77TRACK_MARK_DIST].marker_size, Ctrl->T.marker[MGD77TRACK_MARK_DIST].font.size, Ctrl->T.marker[MGD77TRACK_MARK_DIST].font.id);
-	GMT_Option (C, "U,V");
-	GMT_message (GMT, "\t-W Set track pen attributes [%s].\n", GMT_putpen (GMT, Ctrl->W.pen));
-	GMT_Option (C, "X,c,p,t,.");
+	MGD77_Cruise_Explain (API->GMT);
+	GMT_Option (API, "J-,R");
+	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Annotate legs when they enter the grid. Append c for cruise ID [Default is file prefix];\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <size> is optional text size in points [9].  The font used is controlled by FONT_LABEL.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append ,<inc>[unit] to place label every <inc> units apart; <unit> may be\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   k (km) or n (nautical miles), or d (days), h (hours).\n");
+	GMT_Option (API, "B-");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Select procedure for along-track distance calculations:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   f Flat Earth\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   g Great circle [Default]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   e Ellipsoidal (geodesic) using current ellipsoid\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Plot from a<startdate> (given as yyyy-mm-ddT[hh:mm:ss]) [Start of cruise]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   up to b<stopdate> (given as yyyy-mm-ddT[hh:mm:ss]) [End of cruise]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Do NOT apply bitflags to MGD77+ cruises [Default applies error flags stored in the file].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Consider point separations exceeding d<gap> (km) or t<gap> (minutes) to indicate a gap (do not draw) [0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Ignore certain data file formats from consideration. Append combination of act to ignore\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, (m) MGD77T ASCII, or (t) plain table files. [Default ignores none].\n");
+	GMT_Option (API, "K");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Put time/distance log marks on the track. E.g. a500ka24ht6h means (a)nnotate\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   every 500 km (k) and 24 h(ours), with (t)ickmarks every 500 km and 6 (h)ours.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Units of n(autical miles) and d(ays) are also recognized.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Do Not clip leg name annotation that fall outside map border [Default will clip].\n");
+	GMT_Option (API, "O,P");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Plot from a<startdist>[<unit>], with <unit> from %s [meter] [Start of cruise]\n", GMT_LEN_UNITS2_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t   up to b<stopdist> [End of cruise].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Set attributes of marker items. Append T for new day marker, t for same\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   day marker, and d for distance marker.  Then, append 5 comma-separated items:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <markersize>[unit],<markercolor>,<markerfontsize,<markerfont>,<markerfontcolor>\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default settings for the three marker types are:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -TT%g,black,%g,%d,black\n", Ctrl->T.marker[MGD77TRACK_MARK_NEWDAY].marker_size, Ctrl->T.marker[MGD77TRACK_MARK_NEWDAY].font.size, Ctrl->T.marker[MGD77TRACK_MARK_NEWDAY].font.id);
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Tt%g,white,%g,%d,black\n", Ctrl->T.marker[MGD77TRACK_MARK_SAMEDAY].marker_size, Ctrl->T.marker[MGD77TRACK_MARK_SAMEDAY].font.size, Ctrl->T.marker[MGD77TRACK_MARK_SAMEDAY].font.id);
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Td%g,black,%g,%d,black\n", Ctrl->T.marker[MGD77TRACK_MARK_DIST].marker_size, Ctrl->T.marker[MGD77TRACK_MARK_DIST].font.size, Ctrl->T.marker[MGD77TRACK_MARK_DIST].font.id);
+	GMT_Option (API, "U,V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Set track pen attributes [%s].\n", GMT_putpen (API->GMT, Ctrl->W.pen));
+	GMT_Option (API, "X,c,p,t,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -311,7 +309,7 @@ int GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ctrl, s
 				if (opt->arg[0] == 'g') Ctrl->C.mode = 2;
 				if (opt->arg[0] == 'e') Ctrl->C.mode = 3;
 				if (Ctrl->C.mode < 1 || Ctrl->C.mode > 3) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Error -C: Flag must be f, g, or e\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Error -C: Flag must be f, g, or e\n");
 					n_errors++;
 				}
 				break;
@@ -323,7 +321,7 @@ int GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ctrl, s
 				 	case 'a':		/* Start date */
 						t = &opt->arg[1];
 						if (t && GMT_verify_expectations (GMT, GMT_IS_ABSTIME, GMT_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.start), t)) {
-							GMT_report (GMT, GMT_MSG_NORMAL, "Error -Da: Start time (%s) in wrong format\n", t);
+							GMT_Report (C, GMT_MSG_NORMAL, "Error -Da: Start time (%s) in wrong format\n", t);
 							n_errors++;
 						}
 						break;
@@ -332,7 +330,7 @@ int GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ctrl, s
 					case 'b':		/* Stop date */
 						t = &opt->arg[1];
 						if (t && GMT_verify_expectations (GMT, GMT_IS_ABSTIME, GMT_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.stop), t)) {
-							GMT_report (GMT, GMT_MSG_NORMAL, "Error -Db : Stop time (%s) in wrong format\n", t);
+							GMT_Report (C, GMT_MSG_NORMAL, "Error -Db : Stop time (%s) in wrong format\n", t);
 							n_errors++;
 						}
 						break;
@@ -355,7 +353,7 @@ int GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ctrl, s
 						Ctrl->F.mode = MGD77_CDF_SET;
 						break;
 					default:
-						GMT_report (GMT, GMT_MSG_NORMAL, "Error -T: append m, e, or neither\n");
+						GMT_Report (C, GMT_MSG_NORMAL, "Error -T: append m, e, or neither\n");
 						n_errors++;
 						break;
 				}
@@ -372,7 +370,7 @@ int GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ctrl, s
 						Ctrl->G.value[GAP_T] = lrint (atof (&opt->arg[1]) * 60.0);	/* Gap converted to seconds from minutes */
 						break;
 					default:
-						GMT_report (GMT, GMT_MSG_NORMAL, "Error -G: Requires t|d and a positive value in km (d) or minutes (t)\n");
+						GMT_Report (C, GMT_MSG_NORMAL, "Error -G: Requires t|d and a positive value in km (d) or minutes (t)\n");
 						n_errors++;
 						break;
 				}
@@ -384,12 +382,12 @@ int GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ctrl, s
 					if (strchr ("act", (int)opt->arg[0]))
 						Ctrl->I.code[Ctrl->I.n++] = opt->arg[0];
 					else {
-						GMT_report (GMT, GMT_MSG_NORMAL, "Option -I Bad modifier (%c). Use -Ia|c|t!\n", opt->arg[0]);
+						GMT_Report (C, GMT_MSG_NORMAL, "Option -I Bad modifier (%c). Use -Ia|c|t!\n", opt->arg[0]);
 						n_errors++;
 					}
 				}
 				else {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Option -I: Can only be applied 0-2 times\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Option -I: Can only be applied 0-2 times\n");
 					n_errors++;
 				}
 				break;
@@ -433,26 +431,26 @@ int GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ctrl, s
 						break;
 				}
 				if (error) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Error: Unrecognized modifier %c given to -T\n", opt->arg[0]);
+					GMT_Report (C, GMT_MSG_NORMAL, "Error: Unrecognized modifier %c given to -T\n", opt->arg[0]);
 					n_errors++;
 				}
 				strncpy (comment, &opt->arg[1], GMT_BUFSIZ);
 				for (j = 0; j < (int)strlen (comment); j++) if (comment[j] == ',') comment[j] = ' ';	/* Replace commas with spaces */
 				j = sscanf (comment, "%s %s %s %s %s", ms, mc, mfs, mf, mfc);
 				if (j != 5) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Error: -TT|t|d takes 5 arguments\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Error: -TT|t|d takes 5 arguments\n");
 					n_errors++;
 				}
 				Ctrl->T.marker[mrk].marker_size = GMT_to_inch (GMT, ms);
 				if (GMT_getfill (GMT, mc, &Ctrl->T.marker[mrk].s)) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Error: Bad fill specification for -T\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Error: Bad fill specification for -T\n");
 					GMT_fill_syntax (GMT, 'T', " ");
 					n_errors++;
 				}
 				sprintf (tmp, "%s,%s,", mfs, mf);	/* Put mfs and mf together in order to be used by GMT_getpen */
 				GMT_getfont (GMT, tmp, &Ctrl->T.marker[mrk].font);
 				if (GMT_getfill (GMT, mfc, &Ctrl->T.marker[mrk].f)) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Error: Bad fill specification for -T\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Error: Bad fill specification for -T\n");
 					GMT_fill_syntax (GMT, 'T', " ");
 					n_errors++;
 				}
@@ -604,7 +602,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 	n_paths = MGD77_Path_Expand (GMT, &M, options, &list);	/* Get list of requested IDs */
 
 	if (n_paths == 0) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Error: No cruises given\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: No cruises given\n");
 		Return (EXIT_FAILURE);
 	}
 
@@ -629,10 +627,10 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 		D = MGD77_Create_Dataset (GMT);	/* Get data structure w/header */
 		if (MGD77_Open_File (GMT, list[argno], &M, MGD77_READ_MODE)) continue;
 
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Now processing cruise %s\n", list[argno]);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Now processing cruise %s\n", list[argno]);
 		
 		if (MGD77_Read_Header_Record (GMT, list[argno], &M, &D->H)) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Error reading header sequence for cruise %s\n", list[argno]);
+			GMT_Report (API, GMT_MSG_NORMAL, "Error reading header sequence for cruise %s\n", list[argno]);
 			Return (EXIT_FAILURE);
 		}
 		rec = 0;
@@ -648,7 +646,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 		/* Start reading data from file */
 	
 		if (MGD77_Read_Data (GMT, list[argno], &M, D)) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Error reading data set for cruise %s\n", list[argno]);
+			GMT_Report (API, GMT_MSG_NORMAL, "Error reading data set for cruise %s\n", list[argno]);
 			Return (EXIT_FAILURE);
 		}
 		MGD77_Close_File (GMT, &M);
@@ -660,7 +658,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 		first_rec = rec;
 		for (rec = D->H.n_records - 1; rec && track_time[rec] > Ctrl->D.stop && bad_coordinates (lon[rec], lat[rec]) && track_dist[rec] > Ctrl->S.stop; rec--);	/* Find last record of interest */
 		last_rec = rec;
-		GMT_report (GMT, GMT_MSG_VERBOSE, "mgd77track: Plotting %s [%s]\n", list[argno], D->H.mgd77[use]->Survey_Identifier);
+		GMT_Report (API, GMT_MSG_VERBOSE, "mgd77track: Plotting %s [%s]\n", list[argno], D->H.mgd77[use]->Survey_Identifier);
 		PSL_comment (PSL, "Tracking %s", list[argno]);
 		
 		/* First draw the track line, clip segments outside the area */
@@ -828,7 +826,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 	GMT_plane_perspective (GMT, -1, 0.0);
 	GMT_plotend (GMT);
 	
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Plotted %d cruises\n", n_cruises);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Plotted %d cruises\n", n_cruises);
 
 	MGD77_Path_Free (GMT, n_paths, list);
 	MGD77_end (GMT, &M);

@@ -78,41 +78,38 @@ void Free_grdmask_Ctrl (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *C) {	/* Deall
 	GMT_free (GMT, C);	
 }
 
-int GMT_grdmask_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_grdmask_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grdmask [<table>] -G<outgrid> %s\n", GMT_I_OPT);
-	GMT_message (GMT, "\t%s [-A[m|p]] [-N[z|Z|p|P][<values>]]\n", GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-S%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdmask [<table>] -G<outgrid> %s\n", GMT_I_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A[m|p]] [-N[z|Z|p|P][<values>]]\n", GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-S%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_RADIUS_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Option (C, "<");
-	GMT_message (GMT, "\t-G Specify file name for output mask grid file.\n");
-	GMT_inc_syntax (GMT, 'I', 0);
-	GMT_Option (C, "R");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-A Suppress connecting points using great circle arcs, i.e., connect by straight lines,\n");
-	GMT_message (GMT, "\t   unless m or p is appended to first follow meridian then parallel, or vice versa.\n");
-	GMT_message (GMT, "\t   Ignored if -S is used since input data are then considered to be points.\n");
-	GMT_message (GMT, "\t-N Set <out>/<edge>/<in> to use if node is outside, on the path, or inside.\n");
-	GMT_message (GMT, "\t   NaN is a valid entry.  Default values are 0/0/1.\n");
-	GMT_message (GMT, "\t   Alternatively, use -Nz (inside) or -NZ (inside & edge) to set the inside\n");
-	GMT_message (GMT, "\t   nodes of a polygon to a z-value obtained as follows (in this order):\n");
-	GMT_message (GMT, "\t     a) If OGR/GMT files, get z-value via -aZ=<name> for attribute <name>.\n");
-	GMT_message (GMT, "\t     b) Interpret segment z-values (-Z<zval>) as the z-value.\n");
-	GMT_message (GMT, "\t     c) Interpret segment labels (-L<label>) as the z-value.\n");
-	GMT_message (GMT, "\t   Finally, use -Np|P and append origin for running polygon IDs [0].\n");
-	GMT_message (GMT, "\t   For -Nz|Z|p|P you may optionally append /<out [0].\n");
-	GMT_dist_syntax (GMT, 'S', "Set search radius to identify inside points.");
-	GMT_message (GMT, "\t   Mask nodes are set to <in> or <out> depending on whether they are\n");
-	GMT_message (GMT, "\t   inside the circle of specified radius [0] from the nearest data point.\n");
-	GMT_message (GMT, "\t   Give radius as 'z' if individual radii are provided via the 3rd data column.\n");
-	GMT_message (GMT, "\t   [Default is to treat xyfiles as polygons and use inside/outside searching].\n");
-	GMT_Option (C, "V,a,bi2,f,g,h,i,r,s,:,.");
+	GMT_Option (API, "<");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output mask grid file.\n");
+	GMT_Option (API, "I,R");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Suppress connecting points using great circle arcs, i.e., connect by straight lines,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   unless m or p is appended to first follow meridian then parallel, or vice versa.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Ignored if -S is used since input data are then considered to be points.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Set <out>/<edge>/<in> to use if node is outside, on the path, or inside.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   NaN is a valid entry.  Default values are 0/0/1.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, use -Nz (inside) or -NZ (inside & edge) to set the inside\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   nodes of a polygon to a z-value obtained as follows (in this order):\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     a) If OGR/GMT files, get z-value via -aZ=<name> for attribute <name>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     b) Interpret segment z-values (-Z<zval>) as the z-value.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     c) Interpret segment labels (-L<label>) as the z-value.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Finally, use -Np|P and append origin for running polygon IDs [0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For -Nz|Z|p|P you may optionally append /<out [0].\n");
+	GMT_dist_syntax (API->GMT, 'S', "Set search radius to identify inside points.");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Mask nodes are set to <in> or <out> depending on whether they are\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   inside the circle of specified radius [0] from the nearest data point.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Give radius as 'z' if individual radii are provided via the 3rd data column.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is to treat xyfiles as polygons and use inside/outside searching].\n");
+	GMT_Option (API, "V,a,bi2,f,g,h,i,r,s,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -270,7 +267,7 @@ int GMT_grdmask (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the grdmask main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	/* Create the empty grid and allocate space */
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, Ctrl->I.inc, \
 		GMT_GRID_DEFAULT_REG, GMTAPI_NOTSET, Ctrl->G.file)) == NULL) Return (API->error);
@@ -282,25 +279,25 @@ int GMT_grdmask (void *V_API, int mode, void *args)
 		char line[GMT_BUFSIZ], *msg[2] = {"polygons", "search radius"};
 		k = (Ctrl->S.active) ? 1 : 0; 
 		if (Ctrl->N.mode == 1) {
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely inside the polygons will be set to the chosen z-value\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes completely inside the polygons will be set to the chosen z-value\n");
 		}
 		else if (Ctrl->N.mode == 2) {
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely inside the polygons or on the edge will be set to the chosen z-value\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes completely inside the polygons or on the edge will be set to the chosen z-value\n");
 		}
 		else if (Ctrl->N.mode == 3) {
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely inside the polygons will be set to a polygon ID starting at %ld\n", lrint (z_value + 1.0));
+			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes completely inside the polygons will be set to a polygon ID starting at %ld\n", lrint (z_value + 1.0));
 		}
 		else if (Ctrl->N.mode == 4) {
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely inside the polygons or on the edge will be set to a polygon ID starting at %ld\n", lrint (z_value + 1.0));
+			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes completely inside the polygons or on the edge will be set to a polygon ID starting at %ld\n", lrint (z_value + 1.0));
 		}
 		else {
 			sprintf (line, "%s\n", GMT->current.setting.format_float_out);
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely outside the %s will be set to ", msg[k]);
-			(GMT_is_dnan (Ctrl->N.mask[GMT_OUTSIDE])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[GMT_OUTSIDE]);
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes completely inside the %s will be set to ", msg[k]);
-			(GMT_is_dnan (Ctrl->N.mask[GMT_INSIDE])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[GMT_INSIDE]);
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes on the %s boundary will be set to ", msg[k]);
-			(GMT_is_dnan (Ctrl->N.mask[GMT_ONEDGE])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[GMT_ONEDGE]);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes completely outside the %s will be set to ", msg[k]);
+			(GMT_is_dnan (Ctrl->N.mask[GMT_OUTSIDE])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[GMT_OUTSIDE]);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes completely inside the %s will be set to ", msg[k]);
+			(GMT_is_dnan (Ctrl->N.mask[GMT_INSIDE])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[GMT_INSIDE]);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes on the %s boundary will be set to ", msg[k]);
+			(GMT_is_dnan (Ctrl->N.mask[GMT_ONEDGE])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[GMT_ONEDGE]);
 		}
 	}
 
@@ -318,7 +315,7 @@ int GMT_grdmask (void *V_API, int mode, void *args)
 	else {
 		char *method[2] = {"Cartesian non-zero winding", "spherical ray-intersection"};
 		int use = GMT_is_geographic (GMT, GMT_IN);
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Node status w.r.t. the polygon(s) will be determined using a %s algorithm.\n", method[use]);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Node status w.r.t. the polygon(s) will be determined using a %s algorithm.\n", method[use]);
 	}
 	
 	
@@ -402,7 +399,7 @@ int GMT_grdmask (void *V_API, int mode, void *args)
 					else if (GMT_parse_segment_item (GMT, S->header, "-L", text_item))	/* Look for segment header ID */
 						z_value = atof (text_item);
 					else
-						GMT_report (GMT, GMT_MSG_NORMAL, "No z-value found; z-value set to NaN\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "No z-value found; z-value set to NaN\n");
 				}
 				else if (Ctrl->N.mode)	/* 3 or 4; Increment running polygon ID */
 					z_value += 1.0;
@@ -443,7 +440,7 @@ int GMT_grdmask (void *V_API, int mode, void *args)
 						if (Ctrl->N.mode%2 && side == GMT_ONEDGE) continue;	/* Not counting the edge as part of polygon for ID tagging for mode 1 | 3 */
 						Grid->data[ij] = (Ctrl->N.mode) ? (float)z_value : mask_val[side];
 					}
-					GMT_report (GMT, GMT_MSG_VERBOSE, "Polygon %d scanning row %05d\r", n_pol, row);
+					GMT_Report (API, GMT_MSG_VERBOSE, "Polygon %d scanning row %05d\r", n_pol, row);
 				}
 			}
 		}

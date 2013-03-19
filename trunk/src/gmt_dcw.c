@@ -78,13 +78,13 @@ int GMT_get_DCW_polygon (struct GMT_CTRL *GMT, struct F *E, bool dump)
 		}
 		ks = gmt_dcw_find_country (code, GMT_DCW_country, GMT_DCW_COUNTRIES);
 		if (ks == -1) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "No country code matching %s (skipped)\n", code);
+			GMT_Report (API, GMT_MSG_NORMAL, "No country code matching %s (skipped)\n", code);
 			continue;
 		}
 		k = ks;
 		if (want_state) {
 			if ((j = gmt_dcw_find_state (state, code, GMT_DCW_states, GMT_DCW_STATES)) == -1) {
-				GMT_report (GMT, GMT_MSG_NORMAL, "Country %s does not have states (skipped)\n", code);
+				GMT_Report (API, GMT_MSG_NORMAL, "Country %s does not have states (skipped)\n", code);
 				continue;
 			}
 			sprintf (file, "%s/%s/%s", GMT_DCW_country[k].continent, GMT_DCW_country[k].code, GMT_DCW_states[j].code);
@@ -95,7 +95,7 @@ int GMT_get_DCW_polygon (struct GMT_CTRL *GMT, struct F *E, bool dump)
 		GMT_getsharepath (GMT, "coast/DCW", file, ".nc", path);
 
 		if ((retval = nc_open (path, NC_NOWRITE, &ncid))) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Cannot open file %s!\n", path);
+			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s!\n", path);
 			continue;
 		}
 		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE) || dump) {
@@ -103,7 +103,7 @@ int GMT_get_DCW_polygon (struct GMT_CTRL *GMT, struct F *E, bool dump)
 				sprintf (msg, "Extract data for %s (%s)\n", GMT_DCW_states[j].name, GMT_DCW_country[k].name);
 			else
 				sprintf (msg, "Extract data for %s\n", GMT_DCW_country[k].name);
-			GMT_report (GMT, GMT_MSG_VERBOSE, msg);
+			GMT_Report (API, GMT_MSG_VERBOSE, msg);
 			k = strlen (msg) - 1;
 			msg[k] = '\0';
 		}
@@ -111,7 +111,7 @@ int GMT_get_DCW_polygon (struct GMT_CTRL *GMT, struct F *E, bool dump)
 		/* Open and read the netCDF file */
 		
 		if ((retval = nc_inq_dimid (ncid, "time", &id))) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Error processessing %s!\n", path);
+			GMT_Report (API, GMT_MSG_NORMAL, "Error processessing %s!\n", path);
 			continue;
 		}
 		retval = nc_inq_dimlen (ncid, id, &np);
@@ -179,12 +179,12 @@ unsigned int GMT_list_DCW_polygon (struct GMT_CTRL *GMT, unsigned list_mode)
 	if ((list_mode & 3) == 0) return 0;
 	for (i = k = 0; i < GMT_DCW_COUNTRIES; i++) {
 		if (i == 0 || strcmp (GMT_DCW_country[i].continent, GMT_DCW_country[i-1].continent) ) {
-			GMT_message (GMT, "%s [%s]:\n", GMT_DCW_continents[k++], GMT_DCW_country[i].continent);
+			GMT_Message, (GMT->parent, GMT_TIME_NONE, "%s [%s]:\n", GMT_DCW_continents[k++], GMT_DCW_country[i].continent);
 		}
 		printf ("  %s\t%s\n", GMT_DCW_country[i].code, GMT_DCW_country[i].name);
 		if ((list_mode & 2) && gmt_dcw_country_has_states (GMT_DCW_country[i].code, GMT_DCW_country_with_states, GMT_DCW_N_COUNTRIES_WITH_STATES)) {
 			for (j = 0; j < GMT_DCW_STATES; j++) {
-				if (!strcmp (GMT_DCW_country[i].code, GMT_DCW_states[j].country)) GMT_message (GMT, "\t\t%s.%s\t%s\n", GMT_DCW_country[i].code, GMT_DCW_states[j].code, GMT_DCW_states[j].name);
+				if (!strcmp (GMT_DCW_country[i].code, GMT_DCW_states[j].country)) GMT_Message, (GMT->parent, GMT_TIME_NONE, "\t\t%s.%s\t%s\n", GMT_DCW_country[i].code, GMT_DCW_states[j].code, GMT_DCW_states[j].name);
 			}
 		}
 	}
@@ -193,15 +193,15 @@ unsigned int GMT_list_DCW_polygon (struct GMT_CTRL *GMT, unsigned list_mode)
 
 void GMT_list_DCW_usage (struct GMT_CTRL *GMT, char option)
 {	/* Show the usage */
-	GMT_message (GMT, "\t-%c Apply different fill or outline to specified list of countries.\n", option);
-	GMT_message (GMT, "\t   Based on closed polygons from the Digital Chart of the World (DCW).\n");
-	GMT_message (GMT, "\t   Append comma-separated list of codes for countries to plot, i.e.,\n");
-	GMT_message (GMT, "\t   <code1>,<code2>,... etc., using the 2-character country codes.\n");
-	GMT_message (GMT, "\t   To select a state of a country (if available), append .state, e.g, US.TX for Texas.\n");
-	GMT_message (GMT, "\t   Append +l to just list the countries and their codes [no plotting takes place].\n");
-	GMT_message (GMT, "\t   Use +L to see states/terretories for Australia, Brazil, Canada, and the US.\n");
-	GMT_message (GMT, "\t   Append +p<pen> to draw outline [none] and +f<fill> to fill [none].\n");
-	GMT_message (GMT, "\t   One of +p|f must be specified unless -M is in effect.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-%c Apply different fill or outline to specified list of countries.\n", option);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Based on closed polygons from the Digital Chart of the World (DCW).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append comma-separated list of codes for countries to plot, i.e.,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <code1>,<code2>,... etc., using the 2-character country codes.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To select a state of a country (if available), append .state, e.g, US.TX for Texas.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l to just list the countries and their codes [no plotting takes place].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use +L to see states/terretories for Australia, Brazil, Canada, and the US.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p<pen> to draw outline [none] and +f<fill> to fill [none].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   One of +p|f must be specified unless -M is in effect.\n");
 }
 
 unsigned int GMT_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struct F *F)
@@ -234,7 +234,7 @@ unsigned int GMT_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 					F->mode |= 8;
 					break;
 				default: 
-					GMT_report (GMT, GMT_MSG_NORMAL, "Error -%c: Unrecognized modifier +%s.\n", option, p);
+					GMT_Report (API, GMT_MSG_NORMAL, "Error -%c: Unrecognized modifier +%s.\n", option, p);
 					n_errors++;
 					break;
 			}

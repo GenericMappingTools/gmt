@@ -83,34 +83,32 @@ void Free_grdproject_Ctrl (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *C) {	/*
 	GMT_free (GMT, C);	
 }
 
-int GMT_grdproject_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_grdproject_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grdproject <ingrid> -G<outgrid> %s\n", GMT_J_OPT);
-	GMT_message (GMT, "\t[-A[%s|%s]] [-C[<dx>/<dy>]] [-D%s] [-E<dpi>]\n", GMT_LEN_UNITS2_DISPLAY, GMT_DIM_UNITS_DISPLAY, GMT_inc_OPT);
-	GMT_message (GMT, "\t[-I] [-M%s] [%s]\n", GMT_DIM_UNITS_DISPLAY, GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_n_OPT, GMT_r_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdproject <ingrid> -G<outgrid> %s\n", GMT_J_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-A[%s|%s]] [-C[<dx>/<dy>]] [-D%s] [-E<dpi>]\n", GMT_LEN_UNITS2_DISPLAY, GMT_DIM_UNITS_DISPLAY, GMT_inc_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I] [-M%s] [%s]\n", GMT_DIM_UNITS_DISPLAY, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_n_OPT, GMT_r_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<ingrid> is data set to be projected.\n");
-	GMT_message (GMT, "\t-G Set name of output grid\n");
-	GMT_Option (C, "J");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t-A Force projected values to be in actual distance units [Default uses the given map scale].\n");
-	GMT_message (GMT, "\t   Specify unit by appending e (meter), f (foot) k (km), M (mile), n (nautical mile), u (survey foot),\n");
-	GMT_message (GMT, "\t   or i (inch), c (cm), or p (points) [e].\n");
-	GMT_message (GMT, "\t-C Coordinates are relative to projection center [Default is relative to lower left corner].\n");
-	GMT_message (GMT, "\t   Optionally append dx/dy to add (or subtract if -I) (i.e., false easting & northing) [0/0].\n");
-	GMT_inc_syntax (GMT, 'D', 0);
-	GMT_message (GMT, "\t-E Set dpi for output grid.\n");
-	GMT_message (GMT, "\t-I Inverse transformation from rectangular to geographical.\n");
-	GMT_message (GMT, "\t-M Temporarily reset PROJ_LENGTH_UNIT to be c (cm), i (inch), or p (point).\n");
-	GMT_message (GMT, "\t   Cannot be used if -A is set.\n");
-	GMT_Option (C, "R");
-	GMT_Option (C, "V,n,r,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is data set to be projected.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Set name of output grid\n");
+	GMT_Option (API, "J");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Force projected values to be in actual distance units [Default uses the given map scale].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Specify unit by appending e (meter), f (foot) k (km), M (mile), n (nautical mile), u (survey foot),\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   or i (inch), c (cm), or p (points) [e].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Coordinates are relative to projection center [Default is relative to lower left corner].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append dx/dy to add (or subtract if -I) (i.e., false easting & northing) [0/0].\n");
+	GMT_inc_syntax (API->GMT, 'D', 0);
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Set dpi for output grid.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Inverse transformation from rectangular to geographical.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Temporarily reset PROJ_LENGTH_UNIT to be c (cm), i (inch), or p (point).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used if -A is set.\n");
+	GMT_Option (API, "R");
+	GMT_Option (API, "V,n,r,.");
 
 	return (EXIT_FAILURE);
 }
@@ -177,7 +175,7 @@ int GMT_grdproject_parse (struct GMTAPI_CTRL *C, struct GRDPROJECT_CTRL *Ctrl, s
 				break;
 #ifdef GMT_COMPAT
 			case 'N':	/* Backwards compatible.  nx/ny can now be set with -D */
-				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -N option is deprecated; use -D instead.\n");
+				GMT_Report (C, GMT_MSG_COMPAT, "Warning: -N option is deprecated; use -D instead.\n");
 				Ctrl->D.active = true;
 				sscanf (opt->arg, "%d/%d", &ii, &jj);
 				if (jj == 0) jj = ii;
@@ -243,7 +241,7 @@ int GMT_grdproject (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the grdproject main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input grid\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid\n");
 	if ((Ctrl->D.active + Ctrl->E.active) == 0) set_n = true;
 	if (Ctrl->M.active) GMT_err_fail (GMT, GMT_set_measure_unit (GMT, Ctrl->M.unit), "-M");
 	shift_xy = !(Ctrl->C.easting == 0.0 && Ctrl->C.northing == 0.0);
@@ -302,7 +300,7 @@ int GMT_grdproject (void *V_API, int mode, void *args)
 			}
 			GMT_xy_to_geo (GMT, &lon_t, &lat_t, x_c, y_c);
 			sprintf (opt_R, "%.12f/%.12f/%.12f/%.12f", lon_t-1, lon_t+1, lat_t-1, lat_t+1);
-			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "First opt_R\t %s\t%g\t%g\n", opt_R, x_c, y_c);
+			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "First opt_R\t %s\t%g\t%g\n", opt_R, x_c, y_c);
 			GMT->common.R.active = false;	/* We need to reset this to not fall into non-wanted branch deeper down */
 			GMT_parse_common_options (GMT, "R", 'R', opt_R);
 			if (GMT_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_RUNTIME_ERROR);
@@ -325,7 +323,7 @@ int GMT_grdproject (void *V_API, int mode, void *args)
 			GMT_xy_to_geo (GMT, &ww, &ss, wesn[XLO], wesn[YLO]);		/* SW corner */
 			GMT_xy_to_geo (GMT, &ee, &nn, wesn[XHI], wesn[YHI]);		/* NE corner */
 			sprintf (opt_R, "%.12f/%.12f/%.12f/%.12fr", ww, ss, ee, nn);
-			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_message (GMT, "Second opt_R\t %s\n", opt_R);
+			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "Second opt_R\t %s\n", opt_R);
 			GMT->common.R.active = false;
 			GMT_parse_common_options (GMT, "R", 'R', opt_R);
 		}
@@ -392,11 +390,11 @@ int GMT_grdproject (void *V_API, int mode, void *args)
 		GMT_grd_init (GMT, Geo->header, options, true);
 
 		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Transform ");
-			GMT_message (GMT, format, Geo->header->wesn[XLO], Geo->header->wesn[XHI], Geo->header->wesn[YLO], Geo->header->wesn[YHI]);
-			GMT_message (GMT, " <-- ");
-			GMT_message (GMT, format, xmin, xmax, ymin, ymax);
-			GMT_message (GMT, " [%s]\n", unit_name);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Transform ");
+			GMT_Message (API, GMT_TIME_NONE, format, Geo->header->wesn[XLO], Geo->header->wesn[XHI], Geo->header->wesn[YLO], Geo->header->wesn[YHI]);
+			GMT_Message (API, GMT_TIME_NONE, " <-- ");
+			GMT_Message (API, GMT_TIME_NONE, format, xmin, xmax, ymin, ymax);
+			GMT_Message (API, GMT_TIME_NONE, " [%s]\n", unit_name);
 		}
 
 		/* Modify input rect header if -A, -C, -M have been set */
@@ -461,11 +459,11 @@ int GMT_grdproject (void *V_API, int mode, void *args)
 		}
 
 		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Transform ");
-			GMT_message (GMT, format, Geo->header->wesn[XLO], Geo->header->wesn[XHI], Geo->header->wesn[YLO], Geo->header->wesn[YHI]);
-			GMT_message (GMT, " --> ");
-			GMT_message (GMT, format, xmin, xmax, ymin, ymax);
-			GMT_message (GMT, " [%s]\n", unit_name);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Transform ");
+			GMT_Message (API, GMT_TIME_NONE, format, Geo->header->wesn[XLO], Geo->header->wesn[XHI], Geo->header->wesn[YLO], Geo->header->wesn[YHI]);
+			GMT_Message (API, GMT_TIME_NONE, " --> ");
+			GMT_Message (API, GMT_TIME_NONE, format, xmin, xmax, ymin, ymax);
+			GMT_Message (API, GMT_TIME_NONE, " [%s]\n", unit_name);
 		}
 
 		offset = Geo->header->registration;	/* Same as input */

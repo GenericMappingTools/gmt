@@ -243,92 +243,91 @@ bool check_for_old_format (struct GMT_CTRL *C, char *buffer, int mode)
 	}
 
 	/* Well, seems like the old format so far */
-	GMT_report (C, GMT_MSG_COMPAT, "Warning: use of old style pstext input is deprecated.\n");
+	GMT_Report (C->parent, GMT_MSG_COMPAT, "Warning: use of old style pstext input is deprecated.\n");
 	return (true);
 }
 #endif
 
-int GMT_pstext_usage (struct GMTAPI_CTRL *C, int level, int show_fonts)
+int GMT_pstext_usage (struct GMTAPI_CTRL *API, int level, int show_fonts)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	/* This displays the pstext synopsis and optionally full usage information */
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: pstext [<table>] %s %s\n", GMT_J_OPT, GMT_Rgeoz_OPT);
-	GMT_message (GMT, "\t[-A] [%s] [-C<dx>/<dy>] [-D[j|J]<dx>[/<dy>][v[<pen>]]\n", GMT_B_OPT);
-	GMT_message (GMT, "\t[-F[a+<angle>][+f<font>][+j<justify>]] [-G<color>] [%s] [-K] [-L]\n", GMT_Jz_OPT);
-	GMT_message (GMT, "\t[-M] [-N] [-O] [-P] [-Q<case>] [-To|O|c|C] [%s]\n", GMT_U_OPT);
-	GMT_message (GMT, "\t[%s] [-W[<pen>] [%s] [%s]\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
-	GMT_message (GMT, "\t[-Z[<zlevel>|+]] [%s] [%s] [%s] [%s]\n", GMT_a_OPT, GMT_c_OPT, GMT_f_OPT, GMT_h_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s]\n\n", GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT);
-	GMT_message (GMT, "\tReads (x,y[,fontinfo,angle,justify],text) from <table> [or stdin].\n");
-	GMT_message (GMT, "\tOR (with -M) one or more text paragraphs with formatting info in the segment header.\n");
-	GMT_message (GMT, "\tBuilt-in escape sequences:\n");
-	GMT_message (GMT, "\t   @~ toggles between current font and Symbol font.\n");
-	GMT_message (GMT, "\t   @%%<no>%% switches to font number <no>; @%%%% resets font.\n");
-	GMT_message (GMT, "\t   @:<size>: switches font size; @:: resets font size.\n");
-	GMT_message (GMT, "\t   @;<color>; switches font color; @;; resets font color.\n");
-	GMT_message (GMT, "\t   @+ toggles between normal and superscript mode.\n");
-	GMT_message (GMT, "\t   @- toggles between normal and subscript mode.\n");
-	GMT_message (GMT, "\t   @# toggles between normal and Small Caps mode.\n");
-	GMT_message (GMT, "\t   @_ toggles between normal and underlined text.\n");
-	GMT_message (GMT, "\t   @!<char1><char2> makes one composite character.\n");
-	GMT_message (GMT, "\t   @@ prints the @ sign itself.\n");
-	GMT_message (GMT, "\t   Use @a, @c, @e, @n, @o, @s, @u, @A, @C @E, @N, @O, @U for accented European characters.\n");
-	GMT_message (GMT, "\t(See manual page for more information).\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: pstext [<table>] %s %s\n", GMT_J_OPT, GMT_Rgeoz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-A] [%s] [-C<dx>/<dy>] [-D[j|J]<dx>[/<dy>][v[<pen>]]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-F[a+<angle>][+f<font>][+j<justify>]] [-G<color>] [%s] [-K] [-L]\n", GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-M] [-N] [-O] [-P] [-Q<case>] [-To|O|c|C] [%s]\n", GMT_U_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[<pen>] [%s] [%s]\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Z[<zlevel>|+]] [%s] [%s] [%s] [%s]\n", GMT_a_OPT, GMT_c_OPT, GMT_f_OPT, GMT_h_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\n", GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\tReads (x,y[,fontinfo,angle,justify],text) from <table> [or stdin].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tOR (with -M) one or more text paragraphs with formatting info in the segment header.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tBuilt-in escape sequences:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   @~ toggles between current font and Symbol font.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   @%%<no>%% switches to font number <no>; @%%%% resets font.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   @:<size>: switches font size; @:: resets font size.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   @;<color>; switches font color; @;; resets font color.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   @+ toggles between normal and superscript mode.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   @- toggles between normal and subscript mode.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   @# toggles between normal and Small Caps mode.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   @_ toggles between normal and underlined text.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   @!<char1><char2> makes one composite character.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   @@ prints the @ sign itself.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use @a, @c, @e, @n, @o, @s, @u, @A, @C @E, @N, @O, @U for accented European characters.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t(See manual page for more information).\n");
 
 	if (show_fonts) {	/* List fonts */
 		unsigned int i;
-		GMT_message (GMT, "\n\tFont #	Font Name\n");
-		GMT_message (GMT, "\t------------------------------------\n");
-		for (i = 0; i < GMT->session.n_fonts; i++)
-			GMT_message (GMT, "\t%3ld\t%s\n", i, GMT->session.font[i].name);
+		GMT_Message (API, GMT_TIME_NONE, "\n\tFont #	Font Name\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t------------------------------------\n");
+		for (i = 0; i < API->GMT->session.n_fonts; i++)
+			GMT_Message (API, GMT_TIME_NONE, "\t%3ld\t%s\n", i, API->GMT->session.font[i].name);
 	}
 
 	if (show_fonts) return (EXIT_SUCCESS);
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Option (C, "J-Z,R");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t<table> is one or more ASCII files with text to be plotted.\n");
-	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
-	GMT_message (GMT, "\t-A Angles given as azimuths; convert to directions using current projection.\n");
-	GMT_Option (C, "B-");
-	GMT_message (GMT, "\t-C Set the clearance between characters and surrounding box.  Only used\n");
-	GMT_message (GMT, "\t   if -W has been set.  Append units {%s} or %% of fontsize [15%%].\n", GMT_DIM_UNITS_DISPLAY);
-	GMT_message (GMT, "\t-D Add <add_x>,<add_y> to the text origin AFTER projecting with -J [0/0].\n");
-	GMT_message (GMT, "\t   Use -Dj to move text origin away from point (direction determined by text's justification).\n");
-	GMT_message (GMT, "\t   Upper case -DJ will shorten diagonal shifts at corners by sqrt(2).\n");
-	GMT_message (GMT, "\t   Append v[<pen>] to draw line from text to original point.  If <add_y> is not given it equal <add_x>.\n");
-	GMT_message (GMT, "\t-F Specify values for text attributes that apply to all text records:\n");
-	GMT_message (GMT, "\t   +a<angle> specifies the baseline angle for all text [0].\n");
-	GMT_message (GMT, "\t   +f<fontinfo> sets the size, font, and optionally the text color [%s].\n", GMT_putfont (GMT, GMT->current.setting.font_annot[0]));
-	GMT_message (GMT, "\t   +j<justify> sets text justification relative to given (x,y) coordinate.\n");
-	GMT_message (GMT, "\t     Give a 2-char combo from [T|M|B][L|C|R] (top/middle/bottom/left/center/right) [CM].\n");
-	GMT_message (GMT, "\t   If an attribute +f|+a|+j is not followed by a value we read the information from the\n");
-	GMT_message (GMT, "\t   data file in the order given on the -F option.\n");
-	GMT_message (GMT, "\t-G Paint the box underneath the text with specified color [Default is no paint].\n");
-	GMT_message (GMT, "\t   Alternatively, append c to set these boxes as clip paths based on text (and -C).  No text is plotted.\n");
-	GMT_message (GMT, "\t   See psclip -Cs to plot the hidden text.  Cannot be used with paragraph mode (-M).\n");
-	GMT_Option (C, "K");
-	GMT_message (GMT, "\t-L List the font-numbers and font-names available, then exits.\n");
-	GMT_message (GMT, "\t-M Set paragraph text mode [Default is single item mode].\n");
-	GMT_message (GMT, "\t   Expects (x y size angle fontno justify linespace parwidth parjust) in segment header\n");
-	GMT_message (GMT, "\t   followed by lines with one or more paragraphs of text.\n");
-	GMT_message (GMT, "\t   parjust is one of (l)eft, (c)enter, (r)ight, or (j)ustified.\n");
-	GMT_message (GMT, "\t-N Do Not clip text that exceeds the map boundaries [Default will clip].\n");
-	GMT_Option (C, "O,P");
-	GMT_message (GMT, "\t-Q For all text to be (l)lower or (u)pper-case [Default leaves text as is].\n");
-	GMT_message (GMT, "\t-T Set shape of textbox when using -G and/or -W.\n");
-	GMT_message (GMT, "\t   Add o for rectangle [Default], O for rectangle with rounded corners,\n");
-	GMT_message (GMT, "\t   c for concave rectangle, C for convex rectangle.\n");
-	GMT_Option (C, "U,V");
-	GMT_pen_syntax (GMT, 'W', "Draw a box around the text with the specified pen [Default pen is %s].");
-	GMT_Option (C, "X");
-	GMT_message (GMT, "\t-Z For 3-D plots: expect records to have a z value in the 3rd column (i.e., x y z size ...).\n");
-	GMT_message (GMT, "\t   Note that -Z+ also sets -N.\n");
-	GMT_Option (C, "a,c,f,h,p,t,:,.");
+	GMT_Option (API, "J-Z,R");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more ASCII files with text to be plotted.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Angles given as azimuths; convert to directions using current projection.\n");
+	GMT_Option (API, "B-");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Set the clearance between characters and surrounding box.  Only used\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   if -W has been set.  Append units {%s} or %% of fontsize [15%%].\n", GMT_DIM_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Add <add_x>,<add_y> to the text origin AFTER projecting with -J [0/0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dj to move text origin away from point (direction determined by text's justification).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Upper case -DJ will shorten diagonal shifts at corners by sqrt(2).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append v[<pen>] to draw line from text to original point.  If <add_y> is not given it equal <add_x>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify values for text attributes that apply to all text records:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   +a<angle> specifies the baseline angle for all text [0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   +f<fontinfo> sets the size, font, and optionally the text color [%s].\n",
+		GMT_putfont (API->GMT, API->GMT->current.setting.font_annot[0]));
+	GMT_Message (API, GMT_TIME_NONE, "\t   +j<justify> sets text justification relative to given (x,y) coordinate.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Give a 2-char combo from [T|M|B][L|C|R] (top/middle/bottom/left/center/right) [CM].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If an attribute +f|+a|+j is not followed by a value we read the information from the\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   data file in the order given on the -F option.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Paint the box underneath the text with specified color [Default is no paint].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append c to set these boxes as clip paths based on text (and -C).  No text is plotted.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   See psclip -Cs to plot the hidden text.  Cannot be used with paragraph mode (-M).\n");
+	GMT_Option (API, "K");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L List the font-numbers and font-names available, then exits.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Set paragraph text mode [Default is single item mode].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Expects (x y size angle fontno justify linespace parwidth parjust) in segment header\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   followed by lines with one or more paragraphs of text.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   parjust is one of (l)eft, (c)enter, (r)ight, or (j)ustified.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Do Not clip text that exceeds the map boundaries [Default will clip].\n");
+	GMT_Option (API, "O,P");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q For all text to be (l)lower or (u)pper-case [Default leaves text as is].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Set shape of textbox when using -G and/or -W.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Add o for rectangle [Default], O for rectangle with rounded corners,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   c for concave rectangle, C for convex rectangle.\n");
+	GMT_Option (API, "U,V");
+	GMT_pen_syntax (API->GMT, 'W', "Draw a box around the text with the specified pen [Default pen is %s].");
+	GMT_Option (API, "X");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z For 3-D plots: expect records to have a z value in the 3rd column (i.e., x y z size ...).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Note that -Z+ also sets -N.\n");
+	GMT_Option (API, "a,c,f,h,p,t,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -424,7 +423,7 @@ int GMT_pstext_parse (struct GMTAPI_CTRL *C, struct PSTEXT_CTRL *Ctrl, struct GM
 				break;
 #ifdef GMT_COMPAT
 			case 'm':
-				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -m option is deprecated and reverted back to -M to indicate paragraph mode.\n");
+				GMT_Report (C, GMT_MSG_COMPAT, "Warning: -m option is deprecated and reverted back to -M to indicate paragraph mode.\n");
 #endif
 			case 'M':	/* Paragraph mode */
 				Ctrl->M.active = true;
@@ -434,7 +433,7 @@ int GMT_pstext_parse (struct GMTAPI_CTRL *C, struct PSTEXT_CTRL *Ctrl, struct GM
 				break;
 #ifdef GMT_COMPAT
 			case 'S':
-				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -S option is deprecated; use font pen setting instead.\n");
+				GMT_Report (C, GMT_MSG_COMPAT, "Warning: -S option is deprecated; use font pen setting instead.\n");
 				Ctrl->S.active = true;
 				if (GMT_getpen (GMT, opt->arg, &Ctrl->S.pen)) {
 					GMT_pen_syntax (GMT, 'S', "draws outline of characters.  Append pen attributes [Default pen is %s]");
@@ -500,7 +499,7 @@ int validate_coord_and_text (struct GMT_CTRL *GMT, int has_z, int rec_no, char *
 	if (has_z) {	/* Expect z in 3rd column */
 		nscan = sscanf (record, "%s %s %s %[^\n]\n", txt_x, txt_y, txt_z, buffer);
 		if ((GMT_scanf (GMT, txt_z, GMT->current.io.col_type[GMT_IN][GMT_Z], &GMT->current.io.curr_rec[GMT_Z]) == GMT_IS_NAN)) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Record %d had bad z coordinate, skipped)\n", rec_no);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Record %d had bad z coordinate, skipped)\n", rec_no);
 			return (-1);
 		}
 	}
@@ -510,11 +509,11 @@ int validate_coord_and_text (struct GMT_CTRL *GMT, int has_z, int rec_no, char *
 	}
 	ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
 	if (GMT_scanf (GMT, txt_x, GMT->current.io.col_type[GMT_IN][GMT_X], &GMT->current.io.curr_rec[ix]) == GMT_IS_NAN) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Record %d had bad x coordinate, skipped)\n", rec_no);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Record %d had bad x coordinate, skipped)\n", rec_no);
 		return (-1);
 	}
 	if (GMT_scanf (GMT, txt_y, GMT->current.io.col_type[GMT_IN][GMT_Y], &GMT->current.io.curr_rec[iy]) == GMT_IS_NAN) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Record %d had bad y coordinate, skipped)\n", rec_no);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Record %d had bad y coordinate, skipped)\n", rec_no);
 		return (-1);
 	}
 	return (nscan);
@@ -568,7 +567,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the pstext main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input text table data\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input text table data\n");
 	load_parameters_pstext (&T, Ctrl);	/* Pass info from Ctrl to T */
 
 #if 0
@@ -650,7 +649,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 					T.text_justify = (pjust_key[0] == 'j') ? PSL_JUST : GMT_just_decode (GMT, pjust_key, 0);
 					sprintf (txt_f, "%s,%s,", this_size, this_font);	/* Merge size and font to be parsed by GMT_getfont */
 					T.font = Ctrl->F.font;
-					if (GMT_getfont (GMT, txt_f, &T.font)) GMT_report (GMT, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, GMT_putfont (GMT, T.font));
+					if (GMT_getfont (GMT, txt_f, &T.font)) GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, GMT_putfont (GMT, T.font));
 					in_txt = NULL;
 					n_expected_cols = 9 + Ctrl->Z.active;
 				}
@@ -664,7 +663,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 						switch (Ctrl->F.read[k]) {
 							case 'f':
 								T.font = Ctrl->F.font;
-								if (GMT_getfont (GMT, text, &T.font)) GMT_report (GMT, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, GMT_putfont (GMT, T.font));
+								if (GMT_getfont (GMT, text, &T.font)) GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, GMT_putfont (GMT, T.font));
 								break;
 							case 'a':
 								T.paragraph_angle = atof (text);
@@ -684,11 +683,11 @@ int GMT_pstext (void *V_API, int mode, void *args)
 					T.paragraph_width  = GMT_to_inch (GMT, txt_b);
 				}
 				if (T.block_justify == -99) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Record %d had bad justification info (set to LB)\n", n_read);
+					GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad justification info (set to LB)\n", n_read);
 					T.block_justify = 1;
 				}
 				if (nscan != (int)n_expected_cols) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Record %d had incomplete paragraph information, skipped)\n", n_read);
+					GMT_Report (API, GMT_MSG_NORMAL, "Record %d had incomplete paragraph information, skipped)\n", n_read);
 					continue;
 				}
 				GMT_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &plot_x, &plot_y);
@@ -709,7 +708,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 			else {	/* Text block record */
 				if (skip_text_records) continue;	/* Skip all records for this paragraph */
 				if (!master_record) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Text record line %d not preceded by paragraph information, skipped)\n", n_read);
+					GMT_Report (API, GMT_MSG_NORMAL, "Text record line %d not preceded by paragraph information, skipped)\n", n_read);
 					continue;
 				}
 				GMT_chop (line);	/* Chop of line feed */
@@ -755,7 +754,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 				T.block_justify = GMT_just_decode (GMT, just_key, 12);
 				sprintf (txt_f, "%s,%s,", this_size, this_font);	/* Merge size and font to be parsed by GMT_getfont */
 				T.font = Ctrl->F.font;
-				if (GMT_getfont (GMT, txt_f, &T.font)) GMT_report (GMT, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, GMT_putfont (GMT, T.font));
+				if (GMT_getfont (GMT, txt_f, &T.font)) GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, GMT_putfont (GMT, T.font));
 				in_txt = text;
 				n_expected_cols = 7 + Ctrl->Z.active;
 			}
@@ -770,7 +769,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 					switch (Ctrl->F.read[k]) {
 						case 'f':
 							T.font = Ctrl->F.font;
-							if (GMT_getfont (GMT, text, &T.font)) GMT_report (GMT, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, GMT_putfont (GMT, T.font));
+							if (GMT_getfont (GMT, text, &T.font)) GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, GMT_putfont (GMT, T.font));
 #ifdef GMT_COMPAT
 							if (Ctrl->S.active) {
 								T.font.form |= 2;
@@ -792,11 +791,11 @@ int GMT_pstext (void *V_API, int mode, void *args)
 			nscan += GMT_load_aspatial_string (GMT, GMT->current.io.OGR, text_col, in_txt);	/* Substitute OGR attribute if used */
 
 			if (nscan != (int)n_expected_cols) {
-				GMT_report (GMT, GMT_MSG_NORMAL, "Record %d is incomplete (skipped)\n", n_read);
+				GMT_Report (API, GMT_MSG_NORMAL, "Record %d is incomplete (skipped)\n", n_read);
 				continue;
 			}
 			if (T.block_justify == -99) {
-				GMT_report (GMT, GMT_MSG_NORMAL, "Record %d had bad justification info (set to LB)\n", n_read);
+				GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad justification info (set to LB)\n", n_read);
 				T.block_justify = 1;
 			}
 
@@ -908,7 +907,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 	GMT_plane_perspective (GMT, -1, 0.0);
 	GMT_plotend (GMT);
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, Ctrl->M.active ? "pstext: Plotted %d text blocks\n" : "pstext: Plotted %d text strings\n", n_paragraphs);
+	GMT_Report (API, GMT_MSG_VERBOSE, Ctrl->M.active ? "pstext: Plotted %d text blocks\n" : "pstext: Plotted %d text strings\n", n_paragraphs);
 
 	Return (GMT_OK);
 }

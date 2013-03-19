@@ -156,169 +156,167 @@ void Free_mgd77list_Ctrl (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *C) {	/* D
 	GMT_free (GMT, C);	
 }
 
-int GMT_mgd77list_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_mgd77list_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: mgd77list <cruise(s)> -F<dataflags>[,<tests>] [-A[+]c|d|f|m|t[<code>]] [-Cf|g|e] [-Da<startdate>] [-Db<stopdate>] [-E]\n");
-	GMT_message (GMT, "\t[-Ga<startrec>] [-Gb<stoprec>] [-I<code>] [-L[<corrtable.txt>]] [-N[s|p][<unit>]]] [-Qa|v<min>/<max>] [%s]\n", GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[-Sa<startdist>[<unit>]] [-Sb<stopdist>[<unit>]] [-T[m|e]] [%s] [-W<Weight>] [-Z[+|-] [%s] [-h] [%s]\n\n", GMT_V_OPT, GMT_bo_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: mgd77list <cruise(s)> -F<dataflags>[,<tests>] [-A[+]c|d|f|m|t[<code>]] [-Cf|g|e] [-Da<startdate>] [-Db<stopdate>] [-E]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Ga<startrec>] [-Gb<stoprec>] [-I<code>] [-L[<corrtable.txt>]] [-N[s|p][<unit>]]] [-Qa|v<min>/<max>] [%s]\n", GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Sa<startdist>[<unit>]] [-Sb<stopdist>[<unit>]] [-T[m|e]] [%s] [-W<Weight>] [-Z[+|-] [%s] [-h] [%s]\n\n", GMT_V_OPT, GMT_bo_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	MGD77_Cruise_Explain (GMT);
-	GMT_message (GMT, "\t-F <dataflags> is a comma-separated string made up of one or more of these abbreviations\n");
-	GMT_message (GMT, "\t   (for standard MGD77 files - use mgd77list to probe for other columns in MGD77+ files):\n");
-	GMT_message (GMT, "\t   >Track information:\n");
-	GMT_message (GMT, "\t     time:    Choose between Absolute time [default], Relative time, or fractional year:\n");
-	GMT_message (GMT, "\t       atime: Absolute time (formatted according to FORMAT_DATE_OUT, FORMAT_CLOCK_OUT).\n");
-	GMT_message (GMT, "\t       rtime: Relative time (formatted according to FORMAT_FLOAT_OUT and TIME_SYSTEM (or TIME_EPOCH, TIME_UNIT)).\n");
-	GMT_message (GMT, "\t       ytime: Absolute time as decimal year (formatted according to FORMAT_FLOAT_OUT).\n");
-	GMT_message (GMT, "\t       year:  Record year.\n");
-	GMT_message (GMT, "\t       month: Record month (1-12).\n");
-	GMT_message (GMT, "\t       day :  Record day of month (1-31).\n");
-	GMT_message (GMT, "\t       hour:  Record hour(0-23).\n");
-	GMT_message (GMT, "\t       min:   Record minute (0-59).\n");
-	GMT_message (GMT, "\t       sec:   Record second (0-60).\n");
-	GMT_message (GMT, "\t       dmin:  Decimal minute (0-59.xxxx).\n");
-	GMT_message (GMT, "\t       hhmm:  Clock hhmm.xxxx (0-2359.xxxx).\n");
-	GMT_message (GMT, "\t       date:  yyyymmdd string.\n");
-	GMT_message (GMT, "\t       tz :   Time zone adjustment in hours (-13 to +12).\n");
-	GMT_message (GMT, "\t     lon:     Longitude (formatted according to FORMAT_GEO_OUT).\n");
-	GMT_message (GMT, "\t     lat:     Latitude (formatted according to FORMAT_GEO_OUT).\n");
-	GMT_message (GMT, "\t     id:      Survey leg ID [TEXTSTRING].\n");
-	GMT_message (GMT, "\t     ngdcid:  NGDC ID [TEXTSTRING].\n");
-	GMT_message (GMT, "\t     recno:   Record number.\n");
-	GMT_message (GMT, "\t   >Derived navigational information:\n");
-	GMT_message (GMT, "\t     dist:    Along-track distances (see -C for method and -N for units).\n");
-	GMT_message (GMT, "\t     azim:    Track azimuth (Degrees east from north).\n");
-	GMT_message (GMT, "\t     cc:      Course change, i.e., change in azimuth (Degrees east from north).\n");
-	GMT_message (GMT, "\t     vel:     Ship velocity (m/s).\n");
-	GMT_message (GMT, "\t   >Geophysical Observations:\n");
-	GMT_message (GMT, "\t     twt:     Two-way traveltime (s).\n");
-	GMT_message (GMT, "\t     depth:   Corrected bathymetry (m) [Also see -Z].\n");
-	GMT_message (GMT, "\t     mtf1:    Magnetic Total Field Sensor 1 (gamma, nTesla).\n");
-	GMT_message (GMT, "\t     mtf2:    Magnetic Total Field Sensor 2 (gamma, nTesla).\n");
-	GMT_message (GMT, "\t     mag:     Magnetic residual anomaly (gamma, nTesla).\n");
-	GMT_message (GMT, "\t     gobs:    Observed gravity (mGal).\n");
-	GMT_message (GMT, "\t     faa:     Free-air gravity anomaly (mGal).\n");
-	GMT_message (GMT, "\t   >Codes, Corrections, and Information:\n");
-	GMT_message (GMT, "\t     drt:     Data record type [5].\n");
-	GMT_message (GMT, "\t     ptc:     Position type code.\n");
-	GMT_message (GMT, "\t     bcc:     Bathymetric correction code.\n");
-	GMT_message (GMT, "\t     btc:     Bathymetric type code.\n");
-	GMT_message (GMT, "\t     msens:   Magnetic sensor for residual field.\n");
-	GMT_message (GMT, "\t     msd:     Magnetic sensor depth/altitude (m).\n");
-	GMT_message (GMT, "\t     diur:    Magnetic diurnal correction (gamma, nTesla).\n");
-	GMT_message (GMT, "\t     eot:     Stored Eotvos correction (mGal).\n");
-	GMT_message (GMT, "\t     sln:     Seismic line number string [TEXTSTRING].\n");
-	GMT_message (GMT, "\t     sspn:    Seismic shot point number string [TEXTSTRING].\n");
-	GMT_message (GMT, "\t     nqc:     Navigation quality code.\n");
-	GMT_message (GMT, "\t   >Computed Information:\n");
-	GMT_message (GMT, "\t     carter:  Carter correction from twt (m).\n");
-	GMT_message (GMT, "\t     igrf:    International Geomagnetic Reference Field (gamma, nTesla).\n");
-	GMT_message (GMT, "\t     ceot:    Calculated Eotvos correction (mGal).\n");
-	GMT_message (GMT, "\t     ngrav:   IGF, or Theoretical (Normal) Gravity Field (mGal).\n");
-	GMT_message (GMT, "\t     weight:  Report weight as specified in -W [1].\n");
-	GMT_message (GMT, "\t  The data are written in the order specified in <dataflags>.\n");
-	GMT_message (GMT, "\t  Shortcut flags are:\n");
-	GMT_message (GMT, "\t     mgd77:   The full set of all 27 fields in the MGD77 specification.\n");
-	GMT_message (GMT, "\t     mgd77t:  The full set of all 26 columns in the MGD77T specification.\n");
-	GMT_message (GMT, "\t     geo:     time,lon,lat + the 7 geophysical observations.\n");
-	GMT_message (GMT, "\t     all:     As mgd77 but with time items written as a date-time string.\n");
-	GMT_message (GMT, "\t     allt:     As mgd77t but with time items written as a date-time string.\n");
-	GMT_message (GMT, "\t    Append + to include the 5 derived quantities dist, azim, cc, vel, and weight [see -W]\n");
-	GMT_message (GMT, "\t    [Default is all].\n");
-	GMT_message (GMT, "\t  Abbreviations in UPPER CASE will suppress records where any such column is NaN.\n");
-	GMT_message (GMT, "\t  (Note that -E is a shorthand to set all abbreviations to upper case).\n");
-	GMT_message (GMT, "\t  Optionally, append comma-separated logical tests that columns must pass to be output.\n");
-	GMT_message (GMT, "\t  Format is <flag><OP><value>, where flag is any of the dataflags above, and <OP> is\n");
-	GMT_message (GMT, "\t  one of the operators <, <=, =, >=, >, |, and !=.  <value> is the limit you are testing,\n");
-	GMT_message (GMT, "\t  including NaN (with = and != only).  If <flag> is UPPERCASE the test MUST be passed;\n");
-	GMT_message (GMT, "\t  else at least ONE of the tests must pass for output to take place.  When using operators\n");
-	GMT_message (GMT, "\t  involving characters <, >, and |, put entire argument to -F in single quotes.\n");
-	GMT_message (GMT, "\t  Finally, for MGD77+ files you may optionally append : followed by one or more comma-\n");
-	GMT_message (GMT, "\t  separated -+|-<col> terms.  This compares specific bitflags for each listed column\n");
-	GMT_message (GMT, "\t  + means bit must be 1, - means it must be 0.  All bit tests given must be passed.\n");
-	GMT_message (GMT, "\t  By default, MGD77+ files with error bit flags will use the flags to suppress bad data.\n");
-	GMT_message (GMT, "\t  Turn this behavior off by append : with no arguments.\n");
-	GMT_message (GMT, "\tOPTIONS:\n\n");
-	GMT_message (GMT, "\t-A Adjust some data values before output. Append c|d|f|m|t to select field:\n");
-	GMT_message (GMT, "\t   c<code>[,<v>] Adjust field carter. <v>, the sound velocity in water, is taken from\n");
-	GMT_message (GMT, "\t     the MGD77 header (or 1500 if invalid); optionally append your <v> (in m/s)\n");
-	GMT_message (GMT, "\t     Here, C(twt) is Carter correction, U(twt,v) is uncorrected depth (given <v>).\n");
-	GMT_message (GMT, "\t     TC(z) is twt from inverse Carter correction, TU(z,v) is twt from uncorrected depth.\n");
-	GMT_message (GMT, "\t       c1 return difference between U(twt,v) and depth [Default].\n");
-	GMT_message (GMT, "\t       c2 return difference between U(twt,v) and Carter(twt).\n");
-	GMT_message (GMT, "\t       c4 return difference between (uncorrected) depth and Carter (TU(depth,v)).\n");
-	GMT_message (GMT, "\t       c8 return difference between U(TC(depth),v) and depth.\n");
-	GMT_message (GMT, "\t   d<code>[,<v>] Adjust field depth. <v> is optional sound speed in water (m/s)\n");
-	GMT_message (GMT, "\t       d1 return depth as stored in file [Default].\n");
-	GMT_message (GMT, "\t       d2 return calculated uncorrected depth U(twt,v).\n");
-	GMT_message (GMT, "\t       d4 return calculated corrected depth Carter (twt,v).\n");
-	GMT_message (GMT, "\t   f<code>[,<field>] Adjust field faa. <field>, the IGF reference field, is taken\n");
-	GMT_message (GMT, "\t     from the MGD77 header (or 4 if invalid); optionally append your <field> from:\n");
-	GMT_message (GMT, "\t     1 = Heiskanen 1924 formula:\n\t       ");
-	MGD77_IGF_text (GMT, GMT->session.std[GMT_ERR], 1);
-	GMT_message (GMT, "\t     2 = International 1930 formula:\n\t       ");
-	MGD77_IGF_text (GMT, GMT->session.std[GMT_ERR], 2);
-	GMT_message (GMT, "\t     3 = International 1967 formula:\n\t       ");
-	MGD77_IGF_text (GMT, GMT->session.std[GMT_ERR], 3);
-	GMT_message (GMT, "\t     4 = International 1980 formula:\n\t       ");
-	MGD77_IGF_text (GMT, GMT->session.std[GMT_ERR], 4);
-	GMT_message (GMT, "\t       f1 return faa as stored in file [Default].\n");
-	GMT_message (GMT, "\t       f2 return difference gobs - ngrav.\n");
-	GMT_message (GMT, "\t       f4 return difference gobs + eot - ngrav.\n");
-	GMT_message (GMT, "\t       f8 return difference gobs + ceot - ngrav.\n");
-	GMT_message (GMT, "\t   m<code> Adjust field mag.\n");
-	GMT_message (GMT, "\t       m1 return mag as stored in file [Default].\n");
-	GMT_message (GMT, "\t       m2 return difference mtfx - igrf, where x = msens (or 1 if undefined).\n");
-	GMT_message (GMT, "\t       m4 return difference mtfx - igrf, where x != msens (or 2 if undefined).\n");
-	GMT_message (GMT, "\t       c<offset>[unit] Apply cable tow distance correction to mtf1.\n");
-	GMT_message (GMT, "\t   t will compute fake times for cruises with known duration but lacking record times.\n");
-	GMT_message (GMT, "\t   The optional -A+ means selected anomalies will be recalculated even when the original\n");
-	GMT_message (GMT, "\t   anomaly is NaN [Default honors NaNs in existing anomalies].\n");
-	GMT_message (GMT, "\t-C Select procedure for along-track distance and azimuth calculations:\n");
-	GMT_message (GMT, "\t   f Flat Earth.\n");
-	GMT_message (GMT, "\t   g Great circle [Default].\n");
-	GMT_message (GMT, "\t   e Ellipsoidal (geodesic) using current ellipsoid.\n");
-	GMT_message (GMT, "\t-D List from a<date> (given as yyyy-mm-ddT[hh:mm:ss]) [Start of cruise]\n");
-	GMT_message (GMT, "\t   up to b<date> (given as yyyy-mm-ddT[hh:mm:ss]) [End of cruise].\n");
-	GMT_message (GMT, "\t   If A|B is used instead or a|b then records with no time are excluded from output.\n");
-	GMT_message (GMT, "\t-E Output records that exactly matches the requested geophysical information in -F\n");
-	GMT_message (GMT, "\t   [Default will output all record that matches at least one column].\n");
-	GMT_message (GMT, "\t-G List from given a<record> [Start of cruise] up to given b<record> [End of cruise].\n");
-	GMT_message (GMT, "\t-I Ignore certain data file formats from consideration. Append combination of act to ignore\n");
-	GMT_message (GMT, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, (m) MGD77T ASCII, or (t) plain table files. [Default ignores none].\n");
-	GMT_message (GMT, "\t-L Subtract systematic corrections from the data. If no correction file is given,\n");
-	GMT_message (GMT, "\t   the default file mgd77_corrections.txt in $MGD77_HOME is assumed.\n");
-	GMT_message (GMT, "\t-N Append (d)istances or (s)peed, and your choice for <unit>. Choose among:\n");
-	GMT_message (GMT, "\t   e Metric units I (meters, m/s).\n");
-	GMT_message (GMT, "\t   f British/US units I (feet, feet/s).\n");
-	GMT_message (GMT, "\t   k Metric units II (km, km/hr).\n");
-	GMT_message (GMT, "\t   M British/US units II (miles, miles/hr).\n");
-	GMT_message (GMT, "\t   n Nautical units (nautical miles, knots).\n");
-	GMT_message (GMT, "\t   u Old US units (survey feet, sfeets).\n");
-	GMT_message (GMT, "\t   [Default is -Ndk -Nse].\n");
-	GMT_message (GMT, "\t-Q Return data whose azimuth (-Qa) or velocity (-Qv) fall inside specified range:\n");
-	GMT_message (GMT, "\t   -Qa<min_az>/<max_az>, where <min_az> < <max_az> [all azimuths, i.e., 0/360].\n");
-	GMT_message (GMT, "\t   -Qc<min_cc>/<max_cc>, where <min_cc> < <max_cc> [all course changes, i.e., -360/360].\n");
-	GMT_message (GMT, "\t      Use -QC to use abs value |cc| in the test [0/360].\n");
-	GMT_message (GMT, "\t   -Qv<min_vel>[/<max_vel>], where <max_vel> is optional [all velocities, i.e., 0/infinity].\n");
-	GMT_message (GMT, "\t      Velocities are given in m/s unless changed by -Ns.\n");
-	GMT_message (GMT, "\t-R Return data inside the specified region only [0/360/-90/90].\n");
-	GMT_message (GMT, "\t-S Begin list from a<startdist>[<unit>], with <unit> from %s [meter] [Start of cruise]\n", GMT_LEN_UNITS2_DISPLAY);
-	GMT_message (GMT, "\t   End list at b<stopdist>[<unit>] [End of cruise].\n");
-	GMT_message (GMT, "\t-T Turn OFF the otherwise automatic adjustment of values based on correction terms\n");
-	GMT_message (GMT, "\t   stored in the mgd77+ file (option has no effect on plain MGD77 ASCII files).\n");
-	GMT_message (GMT, "\t   Append m or e to indicate the MGD77 data set or the extended columns set [Default is both].\n");
-	GMT_Option (C, "V");
-	GMT_message (GMT, "\t-W Set weight for these data [1].\n");
-	GMT_message (GMT, "\t-Z Append - to report bathymetry & msd as negative depths [Default is positive -Z+].\n");
-	GMT_Option (C, "bo");
-	GMT_message (GMT, "\t-h Write header record with column information [Default is no header].\n");
-	GMT_Option (C, ":,.");
+	MGD77_Cruise_Explain (API->GMT);
+	GMT_Message (API, GMT_TIME_NONE, "\t-F <dataflags> is a comma-separated string made up of one or more of these abbreviations\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   (for standard MGD77 files - use mgd77list to probe for other columns in MGD77+ files):\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   >Track information:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     time:    Choose between Absolute time [default], Relative time, or fractional year:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       atime: Absolute time (formatted according to FORMAT_DATE_OUT, FORMAT_CLOCK_OUT).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       rtime: Relative time (formatted according to FORMAT_FLOAT_OUT and TIME_SYSTEM (or TIME_EPOCH, TIME_UNIT)).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       ytime: Absolute time as decimal year (formatted according to FORMAT_FLOAT_OUT).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       year:  Record year.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       month: Record month (1-12).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       day :  Record day of month (1-31).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       hour:  Record hour(0-23).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       min:   Record minute (0-59).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       sec:   Record second (0-60).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       dmin:  Decimal minute (0-59.xxxx).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       hhmm:  Clock hhmm.xxxx (0-2359.xxxx).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       date:  yyyymmdd string.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       tz :   Time zone adjustment in hours (-13 to +12).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     lon:     Longitude (formatted according to FORMAT_GEO_OUT).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     lat:     Latitude (formatted according to FORMAT_GEO_OUT).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     id:      Survey leg ID [TEXTSTRING].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     ngdcid:  NGDC ID [TEXTSTRING].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     recno:   Record number.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   >Derived navigational information:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     dist:    Along-track distances (see -C for method and -N for units).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     azim:    Track azimuth (Degrees east from north).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     cc:      Course change, i.e., change in azimuth (Degrees east from north).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     vel:     Ship velocity (m/s).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   >Geophysical Observations:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     twt:     Two-way traveltime (s).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     depth:   Corrected bathymetry (m) [Also see -Z].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     mtf1:    Magnetic Total Field Sensor 1 (gamma, nTesla).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     mtf2:    Magnetic Total Field Sensor 2 (gamma, nTesla).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     mag:     Magnetic residual anomaly (gamma, nTesla).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     gobs:    Observed gravity (mGal).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     faa:     Free-air gravity anomaly (mGal).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   >Codes, Corrections, and Information:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     drt:     Data record type [5].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     ptc:     Position type code.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     bcc:     Bathymetric correction code.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     btc:     Bathymetric type code.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     msens:   Magnetic sensor for residual field.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     msd:     Magnetic sensor depth/altitude (m).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     diur:    Magnetic diurnal correction (gamma, nTesla).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     eot:     Stored Eotvos correction (mGal).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     sln:     Seismic line number string [TEXTSTRING].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     sspn:    Seismic shot point number string [TEXTSTRING].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     nqc:     Navigation quality code.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   >Computed Information:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     carter:  Carter correction from twt (m).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     igrf:    International Geomagnetic Reference Field (gamma, nTesla).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     ceot:    Calculated Eotvos correction (mGal).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     ngrav:   IGF, or Theoretical (Normal) Gravity Field (mGal).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     weight:  Report weight as specified in -W [1].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  The data are written in the order specified in <dataflags>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  Shortcut flags are:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     mgd77:   The full set of all 27 fields in the MGD77 specification.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     mgd77t:  The full set of all 26 columns in the MGD77T specification.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     geo:     time,lon,lat + the 7 geophysical observations.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     all:     As mgd77 but with time items written as a date-time string.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     allt:     As mgd77t but with time items written as a date-time string.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t    Append + to include the 5 derived quantities dist, azim, cc, vel, and weight [see -W]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t    [Default is all].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  Abbreviations in UPPER CASE will suppress records where any such column is NaN.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  (Note that -E is a shorthand to set all abbreviations to upper case).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  Optionally, append comma-separated logical tests that columns must pass to be output.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  Format is <flag><OP><value>, where flag is any of the dataflags above, and <OP> is\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  one of the operators <, <=, =, >=, >, |, and !=.  <value> is the limit you are testing,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  including NaN (with = and != only).  If <flag> is UPPERCASE the test MUST be passed;\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  else at least ONE of the tests must pass for output to take place.  When using operators\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  involving characters <, >, and |, put entire argument to -F in single quotes.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  Finally, for MGD77+ files you may optionally append : followed by one or more comma-\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  separated -+|-<col> terms.  This compares specific bitflags for each listed column\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  + means bit must be 1, - means it must be 0.  All bit tests given must be passed.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  By default, MGD77+ files with error bit flags will use the flags to suppress bad data.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  Turn this behavior off by append : with no arguments.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Adjust some data values before output. Append c|d|f|m|t to select field:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   c<code>[,<v>] Adjust field carter. <v>, the sound velocity in water, is taken from\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     the MGD77 header (or 1500 if invalid); optionally append your <v> (in m/s)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Here, C(twt) is Carter correction, U(twt,v) is uncorrected depth (given <v>).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     TC(z) is twt from inverse Carter correction, TU(z,v) is twt from uncorrected depth.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       c1 return difference between U(twt,v) and depth [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       c2 return difference between U(twt,v) and Carter(twt).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       c4 return difference between (uncorrected) depth and Carter (TU(depth,v)).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       c8 return difference between U(TC(depth),v) and depth.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   d<code>[,<v>] Adjust field depth. <v> is optional sound speed in water (m/s)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       d1 return depth as stored in file [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       d2 return calculated uncorrected depth U(twt,v).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       d4 return calculated corrected depth Carter (twt,v).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   f<code>[,<field>] Adjust field faa. <field>, the IGF reference field, is taken\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     from the MGD77 header (or 4 if invalid); optionally append your <field> from:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     1 = Heiskanen 1924 formula:\n\t       ");
+	MGD77_IGF_text (API->GMT, API->GMT->session.std[GMT_ERR], 1);
+	GMT_Message (API, GMT_TIME_NONE, "\t     2 = International 1930 formula:\n\t       ");
+	MGD77_IGF_text (API->GMT, API->GMT->session.std[GMT_ERR], 2);
+	GMT_Message (API, GMT_TIME_NONE, "\t     3 = International 1967 formula:\n\t       ");
+	MGD77_IGF_text (API->GMT, API->GMT->session.std[GMT_ERR], 3);
+	GMT_Message (API, GMT_TIME_NONE, "\t     4 = International 1980 formula:\n\t       ");
+	MGD77_IGF_text (API->GMT, API->GMT->session.std[GMT_ERR], 4);
+	GMT_Message (API, GMT_TIME_NONE, "\t       f1 return faa as stored in file [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       f2 return difference gobs - ngrav.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       f4 return difference gobs + eot - ngrav.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       f8 return difference gobs + ceot - ngrav.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   m<code> Adjust field mag.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       m1 return mag as stored in file [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       m2 return difference mtfx - igrf, where x = msens (or 1 if undefined).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       m4 return difference mtfx - igrf, where x != msens (or 2 if undefined).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t       c<offset>[unit] Apply cable tow distance correction to mtf1.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   t will compute fake times for cruises with known duration but lacking record times.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The optional -A+ means selected anomalies will be recalculated even when the original\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   anomaly is NaN [Default honors NaNs in existing anomalies].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Select procedure for along-track distance and azimuth calculations:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   f Flat Earth.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   g Great circle [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   e Ellipsoidal (geodesic) using current ellipsoid.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D List from a<date> (given as yyyy-mm-ddT[hh:mm:ss]) [Start of cruise]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   up to b<date> (given as yyyy-mm-ddT[hh:mm:ss]) [End of cruise].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If A|B is used instead or a|b then records with no time are excluded from output.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Output records that exactly matches the requested geophysical information in -F\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default will output all record that matches at least one column].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G List from given a<record> [Start of cruise] up to given b<record> [End of cruise].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Ignore certain data file formats from consideration. Append combination of act to ignore\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, (m) MGD77T ASCII, or (t) plain table files. [Default ignores none].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-L Subtract systematic corrections from the data. If no correction file is given,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   the default file mgd77_corrections.txt in $MGD77_HOME is assumed.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Append (d)istances or (s)peed, and your choice for <unit>. Choose among:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   e Metric units I (meters, m/s).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   f British/US units I (feet, feet/s).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   k Metric units II (km, km/hr).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   M British/US units II (miles, miles/hr).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   n Nautical units (nautical miles, knots).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   u Old US units (survey feet, sfeets).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is -Ndk -Nse].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Return data whose azimuth (-Qa) or velocity (-Qv) fall inside specified range:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Qa<min_az>/<max_az>, where <min_az> < <max_az> [all azimuths, i.e., 0/360].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Qc<min_cc>/<max_cc>, where <min_cc> < <max_cc> [all course changes, i.e., -360/360].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      Use -QC to use abs value |cc| in the test [0/360].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Qv<min_vel>[/<max_vel>], where <max_vel> is optional [all velocities, i.e., 0/infinity].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      Velocities are given in m/s unless changed by -Ns.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-R Return data inside the specified region only [0/360/-90/90].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Begin list from a<startdist>[<unit>], with <unit> from %s [meter] [Start of cruise]\n", GMT_LEN_UNITS2_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\t   End list at b<stopdist>[<unit>] [End of cruise].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Turn OFF the otherwise automatic adjustment of values based on correction terms\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   stored in the mgd77+ file (option has no effect on plain MGD77 ASCII files).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append m or e to indicate the MGD77 data set or the extended columns set [Default is both].\n");
+	GMT_Option (API, "V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Set weight for these data [1].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Append - to report bathymetry & msd as negative depths [Default is positive -Z+].\n");
+	GMT_Option (API, "bo");
+	GMT_Message (API, GMT_TIME_NONE, "\t-h Write header record with column information [Default is no header].\n");
+	GMT_Option (API, ":,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -358,13 +356,13 @@ int GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl, str
 					case 'c':	/* Carter correction adjustment */
 						code = opt->arg[k+1] - '0';
 						if (code < 1 || code > 11) {
-							GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -Ac<code>.  <code> must be 1,2,4,8 or binary combination.\n");
+							GMT_Report (C, GMT_MSG_NORMAL, "ERROR -Ac<code>.  <code> must be 1,2,4,8 or binary combination.\n");
 							n_errors++;
 						}
 						if (opt->arg[k+2] == ',') {
 							Ctrl->A.sound_speed = atof (&opt->arg[k+3]);
 							if (Ctrl->A.sound_speed < 1400.0 || Ctrl->A.sound_speed > 1600.0) {
-								GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -Ac<code>,<speed>.  <speed> in m/s in the 1400-1600 range.\n");
+								GMT_Report (C, GMT_MSG_NORMAL, "ERROR -Ac<code>,<speed>.  <speed> in m/s in the 1400-1600 range.\n");
 								n_errors++;
 							}
 						}
@@ -373,13 +371,13 @@ int GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl, str
 					case 'd':	/* depth adjustment */
 						code = opt->arg[k+1] - '0';
 						if (code < 1 || code > 7) {
-							GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -Ad<code>.  <code> must be 1,2,4 or binary combination.\n");
+							GMT_Report (C, GMT_MSG_NORMAL, "ERROR -Ad<code>.  <code> must be 1,2,4 or binary combination.\n");
 							n_errors++;
 						}
 						if (opt->arg[k+2] == ',') {
 							Ctrl->A.sound_speed = atof (&opt->arg[k+3]);
 							if (Ctrl->A.sound_speed < 1400.0 || Ctrl->A.sound_speed > 1600.0) {
-								GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -Ad<code>,<speed>.  <speed> in m/s in the 1400-1600 range.\n");
+								GMT_Report (C, GMT_MSG_NORMAL, "ERROR -Ad<code>,<speed>.  <speed> in m/s in the 1400-1600 range.\n");
 								n_errors++;
 							}
 						}
@@ -388,13 +386,13 @@ int GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl, str
 					case 'f':	/* faa adjustment */
 						code = opt->arg[k+1] - '0';
 						if (code < 1 || code > 15) {
-							GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -Af<code>.  <code> must be 1,2,4,8 or binary combination.\n");
+							GMT_Report (C, GMT_MSG_NORMAL, "ERROR -Af<code>.  <code> must be 1,2,4,8 or binary combination.\n");
 							n_errors++;
 						}
 						if (opt->arg[k+2] == ',') {
 							Ctrl->A.GF_version = atoi (&opt->arg[k+3]);
 							if (Ctrl->A.GF_version < MGD77_IGF_HEISKANEN || Ctrl->A.GF_version > MGD77_IGF_1980) {
-								GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -Af<code>,<field>.  Select <field> is 1-4 range.\n");
+								GMT_Report (C, GMT_MSG_NORMAL, "ERROR -Af<code>,<field>.  Select <field> is 1-4 range.\n");
 								n_errors++;
 							}
 						}
@@ -406,14 +404,14 @@ int GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl, str
 							Ctrl->A.cable_adjust = true;
 							Ctrl->A.sensor_offset = atof (&opt->arg[k+2]) * dist_scale;
 							if (Ctrl->A.sensor_offset < 0.0) {
-								GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -Amc: Cable length offset must be positive or zero.\n");
+								GMT_Report (C, GMT_MSG_NORMAL, "ERROR -Amc: Cable length offset must be positive or zero.\n");
 								n_errors++;
 							}
 						}
 						else {
 							code = atoi (&opt->arg[k+1]);
 							if (code < 1 || code > 7) {
-								GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -Am<code>.  <code> must be 1,2,4 or binary combination.\n");
+								GMT_Report (C, GMT_MSG_NORMAL, "ERROR -Am<code>.  <code> must be 1,2,4 or binary combination.\n");
 								n_errors++;
 							}
 							Ctrl->A.code[ADJ_MG] |= code;
@@ -423,7 +421,7 @@ int GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl, str
 						Ctrl->A.fake_times = true;
 						break;
 					default:
-						GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -A<flag>.  <flag> must be c, d, g, m, or t.\n");
+						GMT_Report (C, GMT_MSG_NORMAL, "ERROR -A<flag>.  <flag> must be c, d, g, m, or t.\n");
 						n_errors++;
 						break;
 				}
@@ -435,7 +433,7 @@ int GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl, str
 				if (opt->arg[0] == 'g') Ctrl->C.mode = 2;
 				if (opt->arg[0] == 'e') Ctrl->C.mode = 3;
 				if (Ctrl->C.mode < 1 || Ctrl->C.mode > 3) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -C: Flag must be f, g, or e\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "ERROR -C: Flag must be f, g, or e\n");
 					n_errors++;
 				}
 				break;
@@ -448,7 +446,7 @@ int GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl, str
 				 	case 'a':		/* Start date */
 						t = &opt->arg[1];
 						if (t && GMT_verify_expectations (GMT, GMT_IS_ABSTIME, GMT_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.start), t)) {
-							GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -Da: Start time (%s) in wrong format\n", t);
+							GMT_Report (C, GMT_MSG_NORMAL, "ERROR -Da: Start time (%s) in wrong format\n", t);
 							n_errors++;
 						}
 						break;
@@ -457,7 +455,7 @@ int GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl, str
 					case 'b':		/* Stop date */
 						t = &opt->arg[1];
 						if (t && GMT_verify_expectations (GMT, GMT_IS_ABSTIME, GMT_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.stop), t)) {
-							GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -Db : Stop time (%s) in wrong format\n", t);
+							GMT_Report (C, GMT_MSG_NORMAL, "ERROR -Db : Stop time (%s) in wrong format\n", t);
 							n_errors++;
 						}
 						break;
@@ -528,12 +526,12 @@ int GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl, str
 					if (strchr ("act", (int)opt->arg[0]))
 						Ctrl->I.code[Ctrl->I.n++] = opt->arg[0];
 					else {
-						GMT_report (GMT, GMT_MSG_NORMAL, "Option -I Bad modifier (%c). Use -Ia|c|t!\n", opt->arg[0]);
+						GMT_Report (C, GMT_MSG_NORMAL, "Option -I Bad modifier (%c). Use -Ia|c|t!\n", opt->arg[0]);
 						n_errors++;
 					}
 				}
 				else {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Option -I: Can only be applied 0-2 times\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Option -I: Can only be applied 0-2 times\n");
 					n_errors++;
 				}
 				break;
@@ -546,7 +544,7 @@ int GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl, str
 			case 'N':	/* Nautical units (knots, nautical miles) */
 #ifdef GMT_COMPAT
 				if (opt->arg[1] == 'm') {
-					GMT_report (GMT, GMT_MSG_COMPAT, "Warning -N: Unit m for miles is deprecated; use unit M instead\n");
+					GMT_Report (C, GMT_MSG_COMPAT, "Warning -N: Unit m for miles is deprecated; use unit M instead\n");
 					opt->arg[1] = 'M';
 				}
 #endif
@@ -555,7 +553,7 @@ int GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl, str
 						Ctrl->N.active[N_D] = true;
 						Ctrl->N.unit[N_D][0] = opt->arg[1];
 						if (!strchr (GMT_LEN_UNITS2, (int)Ctrl->N.unit[N_D][0])) {
-							GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -Nd: Unit must be among %s\n", GMT_LEN_UNITS2_DISPLAY);
+							GMT_Report (C, GMT_MSG_NORMAL, "ERROR -Nd: Unit must be among %s\n", GMT_LEN_UNITS2_DISPLAY);
 							n_errors++;
 						}
 						break;
@@ -563,11 +561,11 @@ int GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl, str
 						Ctrl->N.active[N_S] = true;
 						Ctrl->N.unit[N_S][0] = opt->arg[1];
 						if (!strchr (GMT_LEN_UNITS2, (int)Ctrl->N.unit[N_S][0])) {
-							GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -Nd: Unit must be among %s\n", GMT_LEN_UNITS2_DISPLAY);
+							GMT_Report (C, GMT_MSG_NORMAL, "ERROR -Nd: Unit must be among %s\n", GMT_LEN_UNITS2_DISPLAY);
 							n_errors++;
 						}
 					default:
-						GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -N: Syntax is -Nd|s<unit>\n");
+						GMT_Report (C, GMT_MSG_NORMAL, "ERROR -N: Syntax is -Nd|s<unit>\n");
 						n_errors++;
 						break;
 				}
@@ -577,7 +575,7 @@ int GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl, str
 				switch (opt->arg[0]) {
 					case 'a':	/* Azimuth min/max */
 						if (sscanf (&opt->arg[1], "%lf/%lf", &Ctrl->Q.min[Q_A], &Ctrl->Q.max[Q_A]) != 2) {
-							GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -Qa: append min/max azimuth limits [0/360]\n");
+							GMT_Report (C, GMT_MSG_NORMAL, "ERROR -Qa: append min/max azimuth limits [0/360]\n");
 							n_errors++;
 						}
 						Ctrl->Q.active[Q_A] = true;
@@ -586,7 +584,7 @@ int GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl, str
 						Ctrl->Q.c_abs = true;
 					case 'c':	/* Course change min/max */
 						if (sscanf (&opt->arg[1], "%lf/%lf", &Ctrl->Q.min[Q_C], &Ctrl->Q.max[Q_C]) != 2) {
-							GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -Qc: append min/max course change limits [-360/+360]\n");
+							GMT_Report (C, GMT_MSG_NORMAL, "ERROR -Qc: append min/max course change limits [-360/+360]\n");
 							n_errors++;
 						}
 						Ctrl->Q.active[Q_C] = true;
@@ -596,13 +594,13 @@ int GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl, str
 						if (code == 1)
 							Ctrl->Q.max[Q_V] = DBL_MAX;
 						else if (code <= 0) {
-							GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -Qv: append min[/max] velocity limits [0]\n");
+							GMT_Report (C, GMT_MSG_NORMAL, "ERROR -Qv: append min[/max] velocity limits [0]\n");
 							n_errors++;
 						}
 						Ctrl->Q.active[Q_V] = true;
 						break;
 					default:
-						GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -Q: Syntax is -Qa|c|v<min>/<max>\n");
+						GMT_Report (C, GMT_MSG_NORMAL, "ERROR -Q: Syntax is -Qa|c|v<min>/<max>\n");
 						n_errors++;
 						break;
 				}
@@ -635,7 +633,7 @@ int GMT_mgd77list_parse (struct GMTAPI_CTRL *C, struct MGD77LIST_CTRL *Ctrl, str
 						Ctrl->T.mode = MGD77_CDF_SET;
 						break;
 					default:
-						GMT_report (GMT, GMT_MSG_NORMAL, "ERROR -T: append m, e, or neither\n");
+						GMT_Report (C, GMT_MSG_NORMAL, "ERROR -T: append m, e, or neither\n");
 						n_errors++;
 						break;
 				}
@@ -815,7 +813,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args)
 	n_paths = MGD77_Path_Expand (GMT, &M, options, &list);	/* Get list of requested IDs */
 
 	if (n_paths == 0) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "Error: No cruises given\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: No cruises given\n");
 		Return (EXIT_FAILURE);
 	}
 
@@ -826,7 +824,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args)
 		if (!Ctrl->L.file) {	/* Try default correction table */
 			sprintf (path, "%s/mgd77_corrections.txt", M.MGD77_HOME);
 			if (access (path, R_OK)) {
-				GMT_report (GMT, GMT_MSG_NORMAL, "No default MGD77 Correction table (%s) found!\n", path);
+				GMT_Report (API, GMT_MSG_NORMAL, "No default MGD77 Correction table (%s) found!\n", path);
 				Return (EXIT_FAILURE);
 			}
 			Ctrl->L.file = path;
@@ -962,7 +960,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args)
 		if (!Ctrl->L.file) {	/* Try default correction table */
 			sprintf (path, "%s/mgd77_corrections.txt", M.MGD77_HOME);
 			if (access (path, R_OK)) {
-				GMT_report (GMT, GMT_MSG_NORMAL, "No default MGD77 Correction table (%s) found!\n", path);
+				GMT_Report (API, GMT_MSG_NORMAL, "No default MGD77 Correction table (%s) found!\n", path);
 				Return (EXIT_FAILURE);
 			}
 			Ctrl->L.file = path;
@@ -974,16 +972,16 @@ int GMT_mgd77list (void *V_API, int mode, void *args)
 	
 		if (MGD77_Open_File (GMT, list[argno], &M, MGD77_READ_MODE)) continue;
 
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Now processing cruise %s\n", list[argno]);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Now processing cruise %s\n", list[argno]);
 		
 		D = MGD77_Create_Dataset (GMT);
 
 		error = MGD77_Read_Header_Record (GMT, list[argno], &M, &D->H);
 		if (error) {
 			if (error == MGD77_ERROR_NOSUCHCOLUMN)
-				GMT_report (GMT, GMT_MSG_NORMAL, "One or more requested columns not present in cruise %s - skipping\n", list[argno]);
+				GMT_Report (API, GMT_MSG_NORMAL, "One or more requested columns not present in cruise %s - skipping\n", list[argno]);
 			else
-				GMT_report (GMT, GMT_MSG_NORMAL, "Error reading header sequence for cruise %s - skipping\n", list[argno]);
+				GMT_Report (API, GMT_MSG_NORMAL, "Error reading header sequence for cruise %s - skipping\n", list[argno]);
 			MGD77_Free_Dataset (GMT, &D);
 			continue;
 		}
@@ -997,7 +995,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args)
 			}
 			if (auxlist[MGD77_AUX_ID].requested || auxlist[MGD77_AUX_DA].requested) string_output = true;
 			if (string_output && GMT->common.b.active[1]) {
-				GMT_report (GMT, GMT_MSG_NORMAL, "Error: Cannot specify binary output with text fields\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot specify binary output with text fields\n");
 				MGD77_Free_Dataset (GMT, &D);
 				Return (EXIT_FAILURE);
 			}
@@ -1006,7 +1004,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args)
 		}
 		
 		if (MGD77_Read_Data (GMT, list[argno], &M, D)) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "Error reading data set for cruise %s\n", list[argno]);
+			GMT_Report (API, GMT_MSG_NORMAL, "Error reading data set for cruise %s\n", list[argno]);
 			MGD77_Free_Dataset (GMT, &D);
 			Return (EXIT_FAILURE);
 		}
@@ -1018,7 +1016,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args)
 		lat_column  = ((i = MGD77_Get_Column (GMT, "lat",  &M)) != MGD77_NOT_SET && M.order[i].set == MGD77_M77_SET) ? M.order[i].item : 3 * MGD77_NOT_SET;
 		
 		if (time_column != MGD77_NOT_SET && GMT->common.b.active[GMT_OUT] && GMT_is_verbose (GMT, GMT_MSG_VERBOSE) && first_warning) {	/* Warn that binary time output is in Unix secs */
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: For binary output, time is stored as seconds since 1970 (Use TIME_SYSTEM=Unix to decode)\n");
+			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: For binary output, time is stored as seconds since 1970 (Use TIME_SYSTEM=Unix to decode)\n");
 			first_warning = false;
 		}
 		for (kk = kx = pos = 0; pos < n_out_columns; kk++, pos++) {	/* Prepare GMT output formatting machinery */
@@ -1082,7 +1080,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args)
 		if ((auxlist[MGD77_AUX_GR].requested || (Ctrl->A.code[ADJ_GR] > 1 )) && Ctrl->A.GF_version == MGD77_NOT_SET) {
 			Ctrl->A.GF_version = D->H.mgd77[use]->Gravity_Theoretical_Formula_Code - '0';
 			if (Ctrl->A.GF_version < MGD77_IGF_HEISKANEN || Ctrl->A.GF_version > MGD77_IGF_1980) {
-				GMT_report (GMT, GMT_MSG_NORMAL, "Invalid Gravity Theoretical Formula Code (%c) - default to %d\n", D->H.mgd77[use]->Gravity_Theoretical_Formula_Code, MGD77_IGF_1980);
+				GMT_Report (API, GMT_MSG_NORMAL, "Invalid Gravity Theoretical Formula Code (%c) - default to %d\n", D->H.mgd77[use]->Gravity_Theoretical_Formula_Code, MGD77_IGF_1980);
 				Ctrl->A.GF_version = MGD77_IGF_1980;
 			}
 		}
@@ -1096,11 +1094,11 @@ int GMT_mgd77list (void *V_API, int mode, void *args)
 			bool faked = false;
 			if (Ctrl->A.fake_times) {	/* Try to make fake times based on duration and distances */
 				faked = MGD77_fake_times (GMT, &M, &(D->H), dvalue[x_col], dvalue[y_col], dvalue[t_col], D->H.n_records);
-				if (faked) GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: Time column for cruise %s created from distances and duration\n", list[argno]);
+				if (faked) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Time column for cruise %s created from distances and duration\n", list[argno]);
 			}
 			if (!faked) {
-				GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: Time column not present in cruise %s - set to NaN\n", list[argno]);
-				if (this_limit_on_time) GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: -D limits cannot be used for cruise %s\n", list[argno]);
+				GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Time column not present in cruise %s - set to NaN\n", list[argno]);
+				if (this_limit_on_time) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: -D limits cannot be used for cruise %s\n", list[argno]);
 			}
 			if (!faked && !Ctrl->D.mode) this_limit_on_time = false;	/* To avoid pointless tests against NaN in loop */
 		}
@@ -1294,7 +1292,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args)
 							d_twt = twt - prev_twt;
 							if (fabs (d_twt) > TWT_PDR_WRAP_TRIGGER) {
 								twt_pdrwrap_corr += copysign (TWT_PDR_WRAP, -d_twt);
-								if (!PDR_wrap) GMT_report (GMT, GMT_MSG_VERBOSE, "PDR travel time wrap detected for cruise %s\n", list[argno]);
+								if (!PDR_wrap) GMT_Report (API, GMT_MSG_VERBOSE, "PDR travel time wrap detected for cruise %s\n", list[argno]);
 								PDR_wrap = true;
 							}
 						}
@@ -1516,7 +1514,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args)
 	GMT_free (GMT, aux_tvalue[MGD77_AUX_ID]);
 	GMT_free (GMT, aux_tvalue[MGD77_AUX_DA]);
 	
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Returned %d output records from %d cruises\n", n_out, n_cruises);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Returned %d output records from %d cruises\n", n_out, n_cruises);
 	
 	MGD77_Path_Free (GMT, n_paths, list);
 	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, n_paths);

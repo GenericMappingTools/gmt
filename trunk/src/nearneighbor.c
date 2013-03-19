@@ -124,38 +124,36 @@ void free_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE *node)
 	GMT_free (GMT, node);
 }
 
-int GMT_nearneighbor_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_nearneighbor_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: nearneighbor [<table>] -G<outgrid> %s\n", GMT_I_OPT);
-	GMT_message (GMT, "\t-N<sectors>[/<min_sectors>] %s -S%s\n", GMT_Rgeo_OPT, GMT_RADIUS_OPT);
-	GMT_message (GMT, "\t[-E<empty>] [%s] [-W] [%s] [%s]\n", GMT_V_OPT, GMT_bi_OPT, GMT_f_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: nearneighbor [<table>] -G<outgrid> %s\n", GMT_I_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t-N<sectors>[/<min_sectors>] %s -S%s\n", GMT_Rgeo_OPT, GMT_RADIUS_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-E<empty>] [%s] [-W] [%s] [%s]\n", GMT_V_OPT, GMT_bi_OPT, GMT_f_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t-G Name of output grid.\n");
-	GMT_inc_syntax (GMT, 'I', 0);
-	GMT_message (GMT, "\t-N Set number of sectors and minimum number to be filled.\n");
-	GMT_message (GMT, "\t   Default is quadrant search [%d], requiring at least %d to be filled.\n", NN_DEF_SECTORS, NN_MIN_SECTORS);
-	GMT_Option (C, "R");
-	GMT_dist_syntax (GMT, 'S', "Only consider points inside this search radius.");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_Option (C, "<");
-	GMT_message (GMT, "\t-E Value to use for empty nodes [Default is NaN].\n");
-	GMT_Option (C, "V");
-	GMT_message (GMT, "\t-W Input file has observation weights in 4th column.\n");
-	GMT_Option (C, "bi");
-	GMT_message (GMT, "\t   Default is 3 (or 4 if -W is set) columns.\n");
-	GMT_Option (C, "f,h,i");
-	GMT_message (GMT, "\t-n+b<BC> Set boundary conditions.  <BC> can be either:\n");
-	GMT_message (GMT, "\t   g for geographic boundary conditions, or one or both of\n");
-	GMT_message (GMT, "\t   x for periodic boundary conditions on x,\n");
-	GMT_message (GMT, "\t   y for periodic boundary conditions on y.\n");
-	GMT_message (GMT, "\t   [Default: Natural conditions, unless grid is geographic].\n");
-	GMT_Option (C, "r,s,:,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Name of output grid.\n");
+	GMT_Option (API, "I");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Set number of sectors and minimum number to be filled.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default is quadrant search [%d], requiring at least %d to be filled.\n", NN_DEF_SECTORS, NN_MIN_SECTORS);
+	GMT_Option (API, "R");
+	GMT_dist_syntax (API->GMT, 'S', "Only consider points inside this search radius.");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Option (API, "<");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Value to use for empty nodes [Default is NaN].\n");
+	GMT_Option (API, "V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Input file has observation weights in 4th column.\n");
+	GMT_Option (API, "bi");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default is 3 (or 4 if -W is set) columns.\n");
+	GMT_Option (API, "f,h,i");
+	GMT_Message (API, GMT_TIME_NONE, "\t-n+b<BC> Set boundary conditions.  <BC> can be either:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   g for geographic boundary conditions, or one or both of\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   x for periodic boundary conditions on x,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   y for periodic boundary conditions on y.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default: Natural conditions, unless grid is geographic].\n");
+	GMT_Option (API, "r,s,:,.");
 
 	return (EXIT_FAILURE);
 }
@@ -188,7 +186,7 @@ int GMT_nearneighbor_parse (struct GMTAPI_CTRL *C, struct NEARNEIGHBOR_CTRL *Ctr
 					Ctrl->E.value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.d_NaN : atof (opt->arg);
 				else {
 					n_errors++;
-					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -E option: Must specify value or NaN\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -E option: Must specify value or NaN\n");
 				}
 				break;
 			case 'G':	/* Output file */
@@ -204,7 +202,7 @@ int GMT_nearneighbor_parse (struct GMTAPI_CTRL *C, struct NEARNEIGHBOR_CTRL *Ctr
 				break;
 #ifdef GMT_COMPAT
 			case 'L':	/* BCs */
-				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
+				GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
 				strncpy (GMT->common.n.BC, opt->arg, 4U);
 				/* We turn on geographic coordinates if -Lg is given by faking -fg */
 				/* But since GMT_parse_f_option is private to gmt_init and all it does */
@@ -311,7 +309,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Grid dimensions are nx = %d, ny = %d\n", Grid->header->nx, Grid->header->ny);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Grid dimensions are nx = %d, ny = %d\n", Grid->header->nx, Grid->header->ny);
 
 	grid_node = GMT_memory (GMT, NULL, Grid->header->nm, struct NEARNEIGHBOR_NODE *);
 	point = GMT_memory (GMT, NULL, n_alloc, struct NEARNEIGHBOR_POINT);
@@ -347,7 +345,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 	if (mem_track_enabled) GMT_memtrack_off (GMT, &g_mem_keeper);
 #endif
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
 		Return (API->error);
 	}
@@ -438,7 +436,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 			}
 		}
 		n++;
-		if (!(n%1000)) GMT_report (GMT, GMT_MSG_VERBOSE, "Processed record %10ld\r", n);
+		if (!(n%1000)) GMT_Report (API, GMT_MSG_VERBOSE, "Processed record %10ld\r", n);
 		if (n == n_alloc) {
 			size_t old_n_alloc = n_alloc;
 #ifdef MEMDEBUG
@@ -456,7 +454,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		Return (API->error);
 	}
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processed record %10ld\n", n);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processed record %10ld\n", n);
 
 #ifdef MEMDEBUG
 	if (mem_track_enabled) GMT_memtrack_on (GMT, &g_mem_keeper);
@@ -510,9 +508,9 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 			free_node (GMT, grid_node[ij0]);
 			ij0++;
 		}
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Gridded row %10ld\r", row);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Gridded row %10ld\r", row);
 	}
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Gridded row %10ld\n", row);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Gridded row %10ld\n", row);
 #ifdef MEMDEBUG
 	if (mem_track_enabled) GMT_memtrack_on (GMT, &g_mem_keeper);
 #endif
@@ -523,9 +521,9 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		char line[GMT_BUFSIZ];
 		sprintf (line, "%s)\n", GMT->current.setting.format_float_out);
-		GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " nodes were assigned an average value\n", n_set);
-		GMT_report (GMT, GMT_MSG_VERBOSE, "%" PRIu64 " nodes failed sector criteria and %" PRIu64 " nodes had no neighbor points (all set to ", n_almost, n_none);
-		(GMT_is_dnan (Ctrl->E.value)) ? GMT_message (GMT, "NaN)\n") : GMT_message (GMT,  line, Ctrl->E.value);
+		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " nodes were assigned an average value\n", n_set);
+		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " nodes failed sector criteria and %" PRIu64 " nodes had no neighbor points (all set to ", n_almost, n_none);
+		(GMT_is_dnan (Ctrl->E.value)) ? GMT_Message (API, GMT_TIME_NONE, "NaN)\n") : GMT_Message (API, GMT_TIME_NONE,  line, Ctrl->E.value);
 	}
 
 	GMT_free (GMT, point);

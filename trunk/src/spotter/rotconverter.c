@@ -115,31 +115,29 @@ void Free_rotconverter_Ctrl (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *C) 
 	GMT_free (GMT, C);	
 }
 
-int GMT_rotconverter_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_rotconverter_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: rotconverter [+][-] <rotA> [[+][-] <rotB>] [[+][-] <rotC>] ... [-A] [-D] [-E[<factor>]] [-F<out>]\n");
-	GMT_message (GMT, "\t[-G] [-N] [-S] [-T] [%s] [%s] > outfile\n\n", GMT_V_OPT, GMT_h_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: rotconverter [+][-] <rotA> [[+][-] <rotB>] [[+][-] <rotC>] ... [-A] [-D] [-E[<factor>]] [-F<out>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-G] [-N] [-S] [-T] [%s] [%s] > outfile\n\n", GMT_V_OPT, GMT_h_OPT);
 	
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t<rotA>, <rotB>, etc. are total reconstruction or stage rotation pole files.\n");
-	GMT_message (GMT, "\t   Alternatively, they can be a single rotation in lon/lat[/tstart[/tstop]]/angle format.\n");
-	GMT_message (GMT, "\t   All rotation poles are assumed to be in geocentric coordinates.\n");
-	GMT_message (GMT, "\t   Rotations will be added/subtracted in the order given.\n");
-	GMT_message (GMT, "\tOPTIONS:\n\n");
-	GMT_message (GMT, "\t-A Report angles as time [Default uses time].\n");
-	GMT_message (GMT, "\t-D Report all longitudes in -180/+180 range [Default is 0-360].\n");
-	GMT_message (GMT, "\t-E Reduce opening angles for stage rotations by <factor> [0.5].\n");
-	GMT_message (GMT, "\t   Typically used to get half-rates needed for flowlines.\n");
-	GMT_message (GMT, "\t-F Set output file type: t for total reconstruction and s for stage rotations [Default is -Ft].\n");
-	GMT_message (GMT, "\t-G Write rotations using GPlates format [Default is spotter format].\n");
-	GMT_message (GMT, "\t-N Ensure all poles are in northern hemisphere [ Default ensures positive opening angles/rates].\n");
-	GMT_message (GMT, "\t-S Ensure all poles are in southern hemisphere [ Default ensures positive opening angles/rates].\n");
-	GMT_message (GMT, "\t-T Transpose the result (i.e., change sign of final rotation angle).\n");
-	GMT_Option (C, "V,h,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t<rotA>, <rotB>, etc. are total reconstruction or stage rotation pole files.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, they can be a single rotation in lon/lat[/tstart[/tstop]]/angle format.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   All rotation poles are assumed to be in geocentric coordinates.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Rotations will be added/subtracted in the order given.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Report angles as time [Default uses time].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Report all longitudes in -180/+180 range [Default is 0-360].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Reduce opening angles for stage rotations by <factor> [0.5].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Typically used to get half-rates needed for flowlines.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Set output file type: t for total reconstruction and s for stage rotations [Default is -Ft].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Write rotations using GPlates format [Default is spotter format].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Ensure all poles are in northern hemisphere [ Default ensures positive opening angles/rates].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Ensure all poles are in southern hemisphere [ Default ensures positive opening angles/rates].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Transpose the result (i.e., change sign of final rotation angle).\n");
+	GMT_Option (API, "V,h,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -179,14 +177,14 @@ int GMT_rotconverter_parse (struct GMTAPI_CTRL *C, struct ROTCONVERTER_CTRL *Ctr
 			case 'F':
 				Ctrl->F.active = true;
 				if (strlen (opt->arg) != 1) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Error: Must specify -F<out>\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Error: Must specify -F<out>\n");
 					n_errors++;
 					continue;
 				}
 				switch (opt->arg[0]) {	/* Output format */
 #ifdef GMT_COMPAT
 					case 'f':
-						GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -Ff is deprecated; use -Ft instead.\n");
+						GMT_Report (C, GMT_MSG_COMPAT, "Warning: -Ff is deprecated; use -Ft instead.\n");
 #endif
 					case 't':
 						Ctrl->F.mode = true;
@@ -195,7 +193,7 @@ int GMT_rotconverter_parse (struct GMTAPI_CTRL *C, struct ROTCONVERTER_CTRL *Ctr
 						Ctrl->F.mode = false;
 						break;
 					default:
-						GMT_report (GMT, GMT_MSG_NORMAL, "Error: Must specify t|s\n");
+						GMT_Report (C, GMT_MSG_NORMAL, "Error: Must specify t|s\n");
 						n_errors++;
 						break;
 				}
@@ -338,7 +336,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args)
 		else if (GMT_access (GMT, opt->arg, R_OK)) {	/* Not a readable file, is it a lon/lat/t0[/t1]/omega specification? */
 			for (k = n_slash = 0; opt->arg[k]; k++) if (opt->arg[k] == '/') n_slash++;
 			if (n_slash < 2 || n_slash > 4) {	/* No way it can be a online rotation, cry foul */
-				GMT_report (GMT, GMT_MSG_NORMAL, "Error: Cannot read file %s\n", opt->arg);
+				GMT_Report (API, GMT_MSG_NORMAL, "Error: Cannot read file %s\n", opt->arg);
 				Return (EXIT_FAILURE);
 			}
 			else {	/* Try to decode as a single rotation */
@@ -347,11 +345,11 @@ int GMT_rotconverter (void *V_API, int mode, void *args)
 				if (k == 4) angle = t1, t1 = 0.0;			/* Only 4 input values */
 				if (n_slash == 2) angle = t0, t0 = 1.0, t1 = 0.0, no_time = true;	/* Quick lon/lat/angle total reconstruction rotation, no time */
 				if (t0 < t1) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Error: Online rotation has t_start (%g) younger than t_stop (%g)\n", t0, t1);
+					GMT_Report (API, GMT_MSG_NORMAL, "Error: Online rotation has t_start (%g) younger than t_stop (%g)\n", t0, t1);
 					Return (EXIT_FAILURE);
 				}
 				if (angle == 0.0) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Error: Online rotation has zero opening angle\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Error: Online rotation has zero opening angle\n");
 					Return (EXIT_FAILURE);
 				}
 				online_rot = true;

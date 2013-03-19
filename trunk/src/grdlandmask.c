@@ -86,35 +86,32 @@ void Free_grdlandmask_Ctrl (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *C) {	
 	GMT_free (GMT, C);	
 }
 
-int GMT_grdlandmask_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_grdlandmask_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: grdlandmask -G<outgrid> %s %s\n", GMT_I_OPT, GMT_Rgeo_OPT);
-	GMT_message (GMT, "\t[%s] [-D<resolution>][+] [-E]\n\t[-N<maskvalues>] [%s] [%s]\n\n", GMT_A_OPT, GMT_V_OPT, GMT_r_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdlandmask -G<outgrid> %s %s\n", GMT_I_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-D<resolution>][+] [-E]\n\t[-N<maskvalues>] [%s] [%s]\n\n", GMT_A_OPT, GMT_V_OPT, GMT_r_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t-G Specify file name for output mask grid file.\n");
-	GMT_inc_syntax (GMT, 'I', 0);
-	GMT_Option (C, "R");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_GSHHS_syntax (GMT, 'A', "Place limits on coastline features from the GSHHS data base.");
-	GMT_message (GMT, "\t-D Choose one of the following resolutions:\n");
-	GMT_message (GMT, "\t   f - full resolution (may be very slow for large regions).\n");
-	GMT_message (GMT, "\t   h - high resolution (may be slow for large regions).\n");
-	GMT_message (GMT, "\t   i - intermediate resolution.\n");
-	GMT_message (GMT, "\t   l - low resolution [Default].\n");
-	GMT_message (GMT, "\t   c - crude resolution, for tasks that need crude continent outlines only.\n");
-	GMT_message (GMT, "\t   Append + to use a lower resolution should the chosen one not be available [abort].\n");
-	GMT_message (GMT, "\t-E Indicate that nodes exactly on a polygon boundary are outside [inside].\n");
-	GMT_message (GMT, "\t-N Give values to use if a node is outside or inside a feature.\n");
-	GMT_message (GMT, "\t   Specify this information using 1 of 2 formats:\n");
-	GMT_message (GMT, "\t   -N<wet>/<dry>.\n");
-	GMT_message (GMT, "\t   -N<ocean>/<land>/<lake>/<island>/<pond>.\n");
-	GMT_message (GMT, "\t   NaN is a valid entry.  Default values are 0/1/0/1/0 (i.e., 0/1).\n");
-	GMT_Option (C, "V,r,.");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output mask grid file.\n");
+	GMT_Option (API, "I,R");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Option (API, "A");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Choose one of the following resolutions:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   f - full resolution (may be very slow for large regions).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   h - high resolution (may be slow for large regions).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   i - intermediate resolution.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   l - low resolution [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   c - crude resolution, for tasks that need crude continent outlines only.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append + to use a lower resolution should the chosen one not be available [abort].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Indicate that nodes exactly on a polygon boundary are outside [inside].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Give values to use if a node is outside or inside a feature.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Specify this information using 1 of 2 formats:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -N<wet>/<dry>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -N<ocean>/<land>/<lake>/<island>/<pond>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   NaN is a valid entry.  Default values are 0/1/0/1/0 (i.e., 0/1).\n");
+	GMT_Option (API, "V,r,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -170,7 +167,7 @@ int GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *Ctrl,
 				strncpy (line, opt->arg,  GMT_TEXT_LEN256);
 #ifdef GMT_COMPAT
 				if (line[strlen(line)-1] == 'o') { /* Edge is considered outside */
-					GMT_report (GMT, GMT_MSG_COMPAT, "Warning: Option -N...o is deprecated; use -E instead\n");
+					GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -N...o is deprecated; use -E instead\n");
 					Ctrl->E.active = true;
 					Ctrl->E.inside = GMT_INSIDE;
 					line[strlen(line)-1] = 0;
@@ -182,7 +179,7 @@ int GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *Ctrl,
 					j++;
 				}
 				if (!(j == 2 || j == 5)) {
-					GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -N option: Specify 2 or 5 arguments\n");
+					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -N option: Specify 2 or 5 arguments\n");
 					n_errors++;
 				}
 				Ctrl->N.mode = (j == 2);
@@ -268,30 +265,30 @@ int GMT_grdlandmask (void *V_API, int mode, void *args)
 	}
 
 	if (GMT_init_shore (GMT, Ctrl->D.set, &c, Grid->header->wesn, &Ctrl->A.info)) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "%s resolution shoreline data base not installed\n", shore_resolution[base]);
+		GMT_Report (API, GMT_MSG_NORMAL, "%s resolution shoreline data base not installed\n", shore_resolution[base]);
 		Return (EXIT_FAILURE);
 	}
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
-		GMT_report (GMT, GMT_MSG_VERBOSE, "GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);
+		GMT_Report (API, GMT_MSG_VERBOSE, "GSHHG version %s\n%s\n%s\n", c.version, c.title, c.source);
 
 		sprintf (line, "%s\n", GMT->current.setting.format_float_out);
 		if (Ctrl->N.mode) {
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes in water will be set to ");
-			(GMT_is_dnan (Ctrl->N.mask[0])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[0]);
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes on land will be set to ");
-			(GMT_is_dnan (Ctrl->N.mask[1])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[1]);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes in water will be set to ");
+			(GMT_is_dnan (Ctrl->N.mask[0])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[0]);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes on land will be set to ");
+			(GMT_is_dnan (Ctrl->N.mask[1])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[1]);
 		}
 		else {
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes in the oceans will be set to ");
-			(GMT_is_dnan (Ctrl->N.mask[0])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[0]);
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes on land will be set to ");
-			(GMT_is_dnan (Ctrl->N.mask[1])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[1]);
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes in lakes will be set to ");
-			(GMT_is_dnan (Ctrl->N.mask[2])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[2]);
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes in islands will be set to ");
-			(GMT_is_dnan (Ctrl->N.mask[3])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[3]);
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Nodes in ponds will be set to ");
-			(GMT_is_dnan (Ctrl->N.mask[4])) ? GMT_message (GMT, "NaN\n") : GMT_message (GMT, line, Ctrl->N.mask[4]);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes in the oceans will be set to ");
+			(GMT_is_dnan (Ctrl->N.mask[0])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[0]);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes on land will be set to ");
+			(GMT_is_dnan (Ctrl->N.mask[1])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[1]);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes in lakes will be set to ");
+			(GMT_is_dnan (Ctrl->N.mask[2])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[2]);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes in islands will be set to ");
+			(GMT_is_dnan (Ctrl->N.mask[3])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[3]);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes in ponds will be set to ");
+			(GMT_is_dnan (Ctrl->N.mask[4])) ? GMT_Message (API, GMT_TIME_NONE, "NaN\n") : GMT_Message (API, GMT_TIME_NONE, line, Ctrl->N.mask[4]);
 		}
 	}
 
@@ -320,10 +317,10 @@ int GMT_grdlandmask (void *V_API, int mode, void *args)
 	for (ind = 0; ind < c.nb; ind++) {	/* Loop over necessary bins only */
 
 		bin = c.bins[ind];
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Working on block # %5ld\r", bin);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Working on block # %5ld\r", bin);
 
 		if ((err = GMT_get_shore_bin (GMT, ind, &c))) {
-			GMT_report (GMT, GMT_MSG_NORMAL, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
+			GMT_Report (API, GMT_MSG_NORMAL, "%s [%s resolution shoreline]\n", GMT_strerror(err), shore_resolution[base]);
 			Return (EXIT_FAILURE);
 		}
 
@@ -451,7 +448,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Done!\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 
 	Return (GMT_OK);
 }

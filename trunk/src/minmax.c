@@ -92,38 +92,36 @@ void Free_minmax_Ctrl (struct GMT_CTRL *GMT, struct MINMAX_CTRL *C) {	/* Dealloc
 	GMT_free (GMT, C);
 }
 
-int GMT_minmax_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_minmax_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: minmax [<table>] [-Aa|f|s] [-C] [-E<L|l|H|h><col>] [-I[p]<dx>[/<dy>[/<dz>..]]\n");
-	GMT_message (GMT, "\t[-S[x][y]] [-T<dz>[/<col>]] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: minmax [<table>] [-Aa|f|s] [-C] [-E<L|l|H|h><col>] [-I[p]<dx>[/<dy>[/<dz>..]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-S[x][y]] [-T<dz>[/<col>]] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_Option (C, "<");
-	GMT_message (GMT, "\t-A Select reports for (a)ll [Default], per (f)ile, or per (s)egment.\n");
-	GMT_message (GMT, "\t-C Format the min and max into separate columns; -o may be used to limit output.\n");
-	GMT_message (GMT, "\t-E Return the record with extreme value in specified column <col> [last column].\n");
-	GMT_message (GMT, "\t   Specify l or h for min or max value, respectively.  Upper case L or H\n");
-	GMT_message (GMT, "\t   means we operate instead on the absolute values of the data.\n");
-	GMT_message (GMT, "\t-I Return textstring -Rw/e/s/n to nearest multiple of dx/dy (assumes at least 2 columns).\n");
-	GMT_message (GMT, "\t   If -C is set then no -R string is issued.  Instead, the number of increments\n");
-	GMT_message (GMT, "\t   given determines how many columns are rounded off to the nearest multiple.\n");
-	GMT_message (GMT, "\t   If only one increment is given we also use it for the second column (for backwards compatibility).\n");
-	GMT_message (GMT, "\t   To override this behaviour, use -Ip<dx>.\n");
-	GMT_message (GMT, "\t   If input data are regularly distributed we use observed phase shifts in determining -R [no phase shift]\n");
-	GMT_message (GMT, "\t     and allow -r to change from gridline-registration to pixel-registration.\n");
-	GMT_message (GMT, "\t-S Add extra space for error bars. Useful together with -I.\n");
-	GMT_message (GMT, "\t   -Sx leaves space for horizontal error bar using value in third (2) column.\n");
-	GMT_message (GMT, "\t   -Sy leaves space for vertical error bar using value in third (2) column.\n");
-	GMT_message (GMT, "\t   -S or -Sxy leaves space for both error bars using values in third&fourth (2&3) columns.\n");
-	GMT_message (GMT, "\t-T Return textstring -Tzmin/zmax/dz to nearest multiple of the given dz.\n");
-	GMT_message (GMT, "\t   Calculations are based on the first (0) column only.  Append /<col> to use another column.\n");
-	GMT_Option (C, "V,bi2,f,g,h,i,o,r,s,:,.");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Option (API, "<");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Select reports for (a)ll [Default], per (f)ile, or per (s)egment.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Format the min and max into separate columns; -o may be used to limit output.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-E Return the record with extreme value in specified column <col> [last column].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Specify l or h for min or max value, respectively.  Upper case L or H\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   means we operate instead on the absolute values of the data.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Return textstring -Rw/e/s/n to nearest multiple of dx/dy (assumes at least 2 columns).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If -C is set then no -R string is issued.  Instead, the number of increments\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   given determines how many columns are rounded off to the nearest multiple.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If only one increment is given we also use it for the second column (for backwards compatibility).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To override this behaviour, use -Ip<dx>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If input data are regularly distributed we use observed phase shifts in determining -R [no phase shift]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     and allow -r to change from gridline-registration to pixel-registration.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Add extra space for error bars. Useful together with -I.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Sx leaves space for horizontal error bar using value in third (2) column.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Sy leaves space for vertical error bar using value in third (2) column.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -S or -Sxy leaves space for both error bars using values in third&fourth (2&3) columns.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Return textstring -Tzmin/zmax/dz to nearest multiple of the given dz.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Calculations are based on the first (0) column only.  Append /<col> to use another column.\n");
+	GMT_Option (API, "V,bi2,f,g,h,i,o,r,s,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -164,7 +162,7 @@ int GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, struct GM
 						break;
 					default:
 						n_errors++;
-						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -A. Flags are a|f|s.\n");
+						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -A. Flags are a|f|s.\n");
 						break;
 				}
 				break;
@@ -186,7 +184,7 @@ int GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, struct GM
 						break;
 					default:
 						n_errors++;
-						GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -E. Flags are L|l|H|h.\n");
+						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -E. Flags are L|l|H|h.\n");
 						break;
 				}
 				if (opt->arg[1]) Ctrl->E.col = atoi (&opt->arg[1]);
@@ -278,7 +276,7 @@ int GMT_minmax (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the minmax main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	give_r_string = (Ctrl->I.active && !Ctrl->C.active);
 	delimeter[0] = (Ctrl->C.active) ? '\t' : '/';
 	delimeter[1] = '\0';
@@ -291,12 +289,12 @@ int GMT_minmax (void *V_API, int mode, void *args)
 		if (!strcmp (GMT->current.setting.format_geo_out, "D")) {
 			strcpy (GMT->current.setting.format_geo_out, "+D");
 			GMT_err_fail (GMT, gmt_geo_C_format (GMT), "");
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: FORMAT_GEO_OUT reset from D to %s to ensure east > west\n", GMT->current.setting.format_geo_out);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: FORMAT_GEO_OUT reset from D to %s to ensure east > west\n", GMT->current.setting.format_geo_out);
 		}
 		else if (!strcmp (GMT->current.setting.format_geo_out, "ddd:mm:ss")) {
 			strcpy (GMT->current.setting.format_geo_out, "ddd:mm:ssF");
 			GMT_err_fail (GMT, gmt_geo_C_format (GMT), "");
-			GMT_report (GMT, GMT_MSG_VERBOSE, "Warning: FORMAT_GEO_OUT reset from ddd:mm:ss to %s to ensure east > west\n", GMT->current.setting.format_geo_out);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Warning: FORMAT_GEO_OUT reset from ddd:mm:ss to %s to ensure east > west\n", GMT->current.setting.format_geo_out);
 		}
 	}
 
@@ -349,12 +347,12 @@ int GMT_minmax (void *V_API, int mode, void *args)
 			}
 			if (give_r_string) {	/* Return -R string */
 				if (n > 1 && fixed_phase[GMT_X] && fixed_phase[GMT_Y]) {	/* Got xy[z] data that lined up on a grid, so use the common phase shift */
-					GMT_report (GMT, GMT_MSG_VERBOSE, "Input (x,y) data are regularly distributed; fixed phase shifts are %g/%g.\n", phase[GMT_X], phase[GMT_Y]);
+					GMT_Report (API, GMT_MSG_VERBOSE, "Input (x,y) data are regularly distributed; fixed phase shifts are %g/%g.\n", phase[GMT_X], phase[GMT_Y]);
 				}
 				else {	/* Data not on grid, just return bounding box rounded off to nearest inc */
 					buffer[0] = '.';	buffer[1] = 0;
 					if (GMT->common.r.active) strcpy (buffer, " (-r is ignored).");
-					GMT_report (GMT, GMT_MSG_VERBOSE, "Input (x,y) data are irregularly distributed; phase shifts set to 0/0%s\n", buffer);
+					GMT_Report (API, GMT_MSG_VERBOSE, "Input (x,y) data are irregularly distributed; phase shifts set to 0/0%s\n", buffer);
 					phase[GMT_X] = phase[GMT_Y] = off = 0.0;
 				}
 				west  = (floor ((xyzmin[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) - off) * Ctrl->I.inc[GMT_X] + phase[GMT_X];
@@ -445,15 +443,15 @@ int GMT_minmax (void *V_API, int mode, void *args)
 			if (Ctrl->E.active && Ctrl->E.col == UINT_MAX) Ctrl->E.col = ncol - 1;	/* Default is last column */
 			min_cols = 2;	if (Ctrl->S.xbar) min_cols++;	if (Ctrl->S.ybar) min_cols++;
 			if (Ctrl->S.active && min_cols > ncol) {
-				GMT_report (GMT, GMT_MSG_NORMAL, "Not enough columns to support the -S option\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Not enough columns to support the -S option\n");
 				Return (EXIT_FAILURE);
 			}
 			if (Ctrl->E.active && Ctrl->E.col >= ncol) {
-  				GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -E option: Chosen column exceeds column range (0-%d)\n", ncol-1);
+  				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -E option: Chosen column exceeds column range (0-%d)\n", ncol-1);
 				Return (EXIT_FAILURE);
 			}
 			if (Ctrl->T.active && Ctrl->T.col >= ncol) {
-				GMT_report (GMT, GMT_MSG_NORMAL, "Syntax error -T option: Chosen column exceeds column range (0-%d)\n", ncol-1);
+				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Chosen column exceeds column range (0-%d)\n", ncol-1);
 				Return (EXIT_FAILURE);
 			}
 			if (Ctrl->T.active) ncol = Ctrl->T.col + 1;
@@ -528,7 +526,7 @@ int GMT_minmax (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 	
-	if (!got_stuff) GMT_report (GMT, GMT_MSG_NORMAL, "No input data found!\n");
+	if (!got_stuff) GMT_Report (API, GMT_MSG_NORMAL, "No input data found!\n");
 
 	GMT->current.io.geo.range = save_range;	/* Restore what we changed */
 	if (Ctrl->C.active) {	/* Restore previous output col types */

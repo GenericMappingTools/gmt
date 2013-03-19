@@ -81,7 +81,7 @@ int get_args (struct GMT_CTRL *GMT, char *arg, double par[], char *msg)
 	char txt_a[32], txt_b[32], txt_c[32];
 	m = sscanf (arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
 	if (m < 1) {
-		GMT_report (GMT, GMT_MSG_NORMAL, "GMT Error: %s\n", msg);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT Error: %s\n", msg);
 		m = -1;
 	}
 	par[0] = atof (txt_a);
@@ -90,41 +90,39 @@ int get_args (struct GMT_CTRL *GMT, char *arg, double par[], char *msg)
 	return (m);
 }
 
-int GMT_sphinterpolate_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_sphinterpolate_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
-
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
-	GMT_message (GMT, "usage: sphinterpolate [<table>] -G<outgrid> %s\n", GMT_I_OPT);
-	GMT_message (GMT, "\t[-Q<mode>][/<args>] [-T] [%s] [-Z] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: sphinterpolate [<table>] -G<outgrid> %s\n", GMT_I_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Q<mode>][/<args>] [-T] [%s] [-Z] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
                
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_message (GMT, "\t-G Specify file name for the final gridded solution.\n");
-	GMT_inc_syntax (GMT, 'I', 0);
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for the final gridded solution.\n");
+	GMT_Option (API, "I");
 
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_message (GMT, "\t<table> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
-	GMT_message (GMT, "\t   If no files are given, standard input is read.\n");
-	GMT_message (GMT, "\t-Q Select tension factors to achive the following [Default is no tension]:\n");
-	GMT_message (GMT, "\t   0: Piecewise linear interpolation ; no tension [Default]\n");
-	GMT_message (GMT, "\t   1: Smooth interpolation with local gradient estimates.\n");
-	GMT_message (GMT, "\t   2: Smooth interpolation with global gradient estimates and tension.  Optionally append /N/M/U:\n");
-	GMT_message (GMT, "\t      N = Number of iterations to converge solutions for gradients and variable tensions (-T only) [3],\n");
-	GMT_message (GMT, "\t      M = Number of Gauss-Seidel iterations when determining gradients [10],\n");
-	GMT_message (GMT, "\t      U = Maximum change in a gradient at the last iteration [0.01].\n");
-	GMT_message (GMT, "\t   3: Smoothing.  Optionally append /<E>/<U>/<N>, where\n");
-	GMT_message (GMT, "\t      <E> = Expected squared error in a typical (scaled) data value [0.01],\n");
-	GMT_message (GMT, "\t      <U> = Upper bound on  weighted sum of squares of deviations from data [npoints],\n");
-	GMT_message (GMT, "\t      <N> = Number of iterations to converge solutions for gradients and variable tensions (-T only) [3].\n");
-	GMT_Option (C, "Rg");
-	GMT_message (GMT, "\t   If no region is specified we default to the entire world [-Rg].\n");
-	GMT_message (GMT, "\t-T Use variable tension (ignored for -Q0) [constant].\n");
-	GMT_Option (C, "V");
-	GMT_message (GMT, "\t-Z Scale data by 1/(max-min) prior to gridding [no scaling].\n");
-	GMT_Option (C, "bi3,h,i,r,s,:,.");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Select tension factors to achive the following [Default is no tension]:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   0: Piecewise linear interpolation ; no tension [Default]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   1: Smooth interpolation with local gradient estimates.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   2: Smooth interpolation with global gradient estimates and tension.  Optionally append /N/M/U:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      N = Number of iterations to converge solutions for gradients and variable tensions (-T only) [3],\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      M = Number of Gauss-Seidel iterations when determining gradients [10],\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      U = Maximum change in a gradient at the last iteration [0.01].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   3: Smoothing.  Optionally append /<E>/<U>/<N>, where\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      <E> = Expected squared error in a typical (scaled) data value [0.01],\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      <U> = Upper bound on  weighted sum of squares of deviations from data [npoints],\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      <N> = Number of iterations to converge solutions for gradients and variable tensions (-T only) [3].\n");
+	GMT_Option (API, "Rg");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If no region is specified we default to the entire world [-Rg].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Use variable tension (ignored for -Q0) [constant].\n");
+	GMT_Option (API, "V");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Scale data by 1/(max-min) prior to gridding [no scaling].\n");
+	GMT_Option (API, "bi3,h,i,r,s,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -182,7 +180,7 @@ int GMT_sphinterpolate_parse (struct GMTAPI_CTRL *C, struct SPHINTERPOLATE_CTRL 
 						break;
 					default:
 						n_errors++;
-						GMT_report (GMT, GMT_MSG_NORMAL, "Error: -%c Mode must be in 0-3 range\n", (int)opt->option);
+						GMT_Report (C, GMT_MSG_NORMAL, "Error: -%c Mode must be in 0-3 range\n", (int)opt->option);
 						break;
 				}
 				break;
@@ -295,7 +293,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args)
 	n_alloc = n;
 	GMT_malloc4 (GMT, xx, yy, zz, ww, 0, &n_alloc, double);
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Do spherical interpolation using %" PRIu64 " points\n", n);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Do spherical interpolation using %" PRIu64 " points\n", n);
 
 	if (Ctrl->Z.active && w_max > w_min) {	/* Scale the data */
 		sf = 1.0 / (w_max - w_min);
@@ -307,7 +305,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args)
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc, \
 		GMT_GRID_DEFAULT_REG, GMTAPI_NOTSET, Ctrl->G.file)) == NULL) Return (API->error);
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Evaluate output grid\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate output grid\n");
 	surfd = GMT_memory (GMT, NULL, Grid->header->nm, double);
 	
 	/* Do the interpolation */
@@ -334,7 +332,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Gridding completed\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Gridding completed\n");
 
 	Return (GMT_OK);
 }

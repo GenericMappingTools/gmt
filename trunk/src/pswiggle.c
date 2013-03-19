@@ -198,44 +198,44 @@ void Free_pswiggle_Ctrl (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *C) {	/* Dea
 	GMT_free (GMT, C);	
 }
 
-int GMT_pswiggle_usage (struct GMTAPI_CTRL *C, int level)
+int GMT_pswiggle_usage (struct GMTAPI_CTRL *API, int level)
 {
-	struct GMT_CTRL *GMT = C->GMT;
 
 	/* This displays the pswiggle synopsis and optionally full usage information */
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_message (GMT, "usage: pswiggle [<table>] %s %s -Z<scale>\n", GMT_J_OPT, GMT_Rgeoz_OPT);
-	GMT_message (GMT, "\t[-A<azimuth>] [%s] [-C<center>] [-G[-|+|=]<fill>]\n", GMT_B_OPT);
-	GMT_message (GMT, "\t[-I<az>] [%s] [-K] [-O] [-P] [-S[x]<lon0>/<lat0>/<length>/<units>] [-T<trackpen>]\n", GMT_Jz_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [-W<outlinepen>] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: pswiggle [<table>] %s %s -Z<scale>\n", GMT_J_OPT, GMT_Rgeoz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-A<azimuth>] [%s] [-C<center>] [-G[-|+|=]<fill>]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I<az>] [%s] [-K] [-O] [-P] [-S[x]<lon0>/<lat0>/<length>/<units>] [-T<trackpen>]\n", GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<outlinepen>] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n",
 		GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, GMT_c_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT);
-	GMT_message (GMT, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_i_OPT, GMT_p_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_i_OPT, GMT_p_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Option (C, "J-Z,R");
-	GMT_message (GMT, "\n\tOPTIONS:\n");
-	GMT_Option (C, "<");
-	GMT_message (GMT, "\t-A Set azimuth for preferred positive wiggle orientation [0.0 (north)].\n");
-	GMT_Option (C, "B-");
-	GMT_message (GMT, "\t-C Set center value to be removed from z before plotting [0].\n");
-	GMT_fill_syntax (GMT, 'G', "Specify color/pattern for positive and/or negative areas.");
-	GMT_message (GMT, "\t   Prepend + to fill positive areas (default).\n");
-	GMT_message (GMT, "\t   Prepend - to fill negative areas.\n");
-	GMT_message (GMT, "\t   Prepend = to fill positive and negative areas.\n");
-	GMT_message (GMT, "\t-I Set fixed projection azimuths for wiggles.\n");
-	GMT_Option (C, "K");
-	GMT_message (GMT, "\t-N Fill negative wiggles instead [Default is positive].\n");
-	GMT_Option (C, "O,P");
-	GMT_message (GMT, "\t-S Draw a simple vertical scale centered on <lon0>/<lat0>.  Use -Sx to specify cartesian coordinates instead.\n");
-	GMT_message (GMT, "\t   <length> is in z-units, append unit name for labeling.\n");
-	GMT_message (GMT, "\t-T Specify track pen attributes. [Default is no track].\n");
-	GMT_Option (C, "U,V");
-	GMT_pen_syntax (GMT, 'W', "Specify outline pen attributes [Default is no outline].");
-	GMT_Option (C, "X");
-	GMT_message (GMT, "\t-Z Give the wiggle scale in data-units per %s.\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-	GMT_Option (C, "bi3,c,f,g,h,i,p,s,t,:,.");
+	GMT_Option (API, "J-Z,R");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Option (API, "<");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Set azimuth for preferred positive wiggle orientation [0.0 (north)].\n");
+	GMT_Option (API, "B-");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Set center value to be removed from z before plotting [0].\n");
+	GMT_fill_syntax (API->GMT, 'G', "Specify color/pattern for positive and/or negative areas.");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend + to fill positive areas (default).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend - to fill negative areas.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend = to fill positive and negative areas.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Set fixed projection azimuths for wiggles.\n");
+	GMT_Option (API, "K");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Fill negative wiggles instead [Default is positive].\n");
+	GMT_Option (API, "O,P");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Draw a simple vertical scale centered on <lon0>/<lat0>.  Use -Sx to specify cartesian coordinates instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <length> is in z-units, append unit name for labeling.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify track pen attributes. [Default is no track].\n");
+	GMT_Option (API, "U,V");
+	GMT_pen_syntax (API->GMT, 'W', "Specify outline pen attributes [Default is no outline].");
+	GMT_Option (API, "X");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Give the wiggle scale in data-units per %s.\n",
+		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+	GMT_Option (API, "bi3,c,f,g,h,i,p,s,t,:,.");
 	
 	return (EXIT_FAILURE);
 }
@@ -276,7 +276,7 @@ int GMT_pswiggle_parse (struct GMTAPI_CTRL *C, struct PSWIGGLE_CTRL *Ctrl, struc
 				break;
 #ifdef GMT_COMPAT
 			case 'D':
-				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -D option is deprecated; use -g instead.\n");
+				GMT_Report (C, GMT_MSG_COMPAT, "Warning: -D option is deprecated; use -g instead.\n");
 				GMT->common.g.active = true;
 				if (opt->arg[0] == 'x')		/* Determine gaps using projected distances */
 					sprintf (txt_a, "d%s", &opt->arg[1]);
@@ -307,7 +307,7 @@ int GMT_pswiggle_parse (struct GMTAPI_CTRL *C, struct PSWIGGLE_CTRL *Ctrl, struc
 				break;
 #ifdef GMT_COMPAT
 			case 'N':
-				GMT_report (GMT, GMT_MSG_COMPAT, "Warning: -N option is deprecated; use -G-<fill> instead.\n");
+				GMT_Report (C, GMT_MSG_COMPAT, "Warning: -N option is deprecated; use -G-<fill> instead.\n");
 				N_active = true;
 				break;
 #endif
@@ -419,7 +419,7 @@ int GMT_pswiggle (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the pswiggle main code ----------------------------*/
 
-	GMT_report (GMT, GMT_MSG_VERBOSE, "Processing input table data\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
 	PSL = GMT_plotinit (GMT, options);
@@ -470,7 +470,7 @@ int GMT_pswiggle (void *V_API, int mode, void *args)
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
 		T = D->table[tbl];
 		
-		GMT_report (GMT, GMT_MSG_VERBOSE, "Working on file %s\n", T->file[GMT_IN]);
+		GMT_Report (API, GMT_MSG_VERBOSE, "Working on file %s\n", T->file[GMT_IN]);
 		PSL_comment (PSL, "File %s\n", T->file[GMT_IN]);
 
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
