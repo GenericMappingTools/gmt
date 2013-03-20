@@ -2005,6 +2005,8 @@ void GMT_set_seg_polar (struct GMT_CTRL *C, struct GMT_DATASEGMENT *S)
 		if (S->pole == -1) S->lat_limit = S->min[GMT_Y], S->min[GMT_Y] = -90.0;
 		if (S->pole == +1) S->lat_limit = S->max[GMT_Y], S->max[GMT_Y] = +90.0;
 	}
+	else
+		S->pole = 0;
 	GMT_Report (C->parent, GMT_MSG_DEBUG, "GMT_set_seg_polar: N = %" PRIu64 " Multiples of 360: %d  Residual: %g Polygon contains %s pole.\n", S->n_rows, n_360, lon_sum - n_360 * 360.0, pole[S->pole+1]);
 }
 

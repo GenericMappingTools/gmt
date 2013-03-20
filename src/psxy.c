@@ -718,7 +718,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 	if (Ctrl->D.active) PSL_setorigin (PSL, Ctrl->D.dx, Ctrl->D.dy, 0.0, PSL_FWD);	/* Shift plot a bit */
 
 	old_is_world = GMT->current.map.is_world;
-	geometry = not_line ? GMT_IS_POINT : (GMT_IS_LINE + polygon);
+	geometry = not_line ? GMT_IS_POINT : ((polygon) ? GMT_IS_POLY: GMT_IS_LINE);
 	in = GMT->current.io.curr_rec;
 	if (read_symbol) {	/* If symbol info is given we must process text records */
 		set_type = GMT_IS_TEXTSET;

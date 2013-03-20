@@ -534,7 +534,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 	GMT->current.io.skip_if_NaN[GMT_Z] = true;	/* Extend GMT NaN-handling to the z-coordinate */
 
 	old_is_world = GMT->current.map.is_world;
-	geometry = not_line ? GMT_IS_POINT : (GMT_IS_LINE + polygon);
+	geometry = not_line ? GMT_IS_POINT : ((polygon) ? GMT_IS_POLY: GMT_IS_LINE);
 	if ((error = GMT_set_cols (GMT, GMT_IN, n_needed)) != GMT_OK) {
 		Return (error);
 	}
