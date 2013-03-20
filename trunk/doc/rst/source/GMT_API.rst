@@ -1288,6 +1288,21 @@ where ``family`` must be GMT_IS_GRID or GMT_IS_DATASET, ``dim`` is either
 GMT_IS_X or GMT_IS_Y, and ``data`` is the grid or image pointer.  This
 function will be used below in our example on grid manipulation.
 
+Another aspect of dealing with grids and images is to convert a row and column
+2-D reference to our 1-D array index.  Because of grid and image boundary padding
+the relationship is not straightforward, hence we supply
+
+.. _GMT_Get_Index
+
+::
+
+    int64_t GMT_Get_Index (struct GMT_GRID_HEADER *header, int row, int col);
+
+where the ``header`` is the header of either a grid or image, and ``row`` and
+``col`` is the 2-D position in the grid or image.  We return the 1-D array
+position; again this function is used below in our example.
+
+
 Manipulate grids
 ~~~~~~~~~~~~~~~~
 
