@@ -611,23 +611,23 @@ Registration involves a direct or indirect call to
 
 ::
 
-    int GMT_Register_IO (void *API, unsigned int family, \
-        unsigned int method, unsigned int geometry, \
-        unsigned int direction, double wesn[], void *ptr);
+    int GMT_Register_IO (void *API, unsigned int family, unsigned int method,
+                         unsigned int geometry, unsigned int direction, 
+                         double wesn[], void *ptr);
 
-where ``family`` specifies what kind of resource is to be registered
-(see Table [tbl:family] for list of all families), ``method`` specifies
-how we to access this resource (see Table [tbl:methods] for recognized
+where :ref:`family <tbl-family>` specifies what kind of resource is to be registered,
+``method`` specifies
+how we to access this resource (see Table :ref:`methods <tbl-methods>` for recognized
 methods, as well as modifiers you can add; these are listed in Table
-[tbl:via]), ``geometry`` specifies the geometry of the data (see Table
-[tbl:geometry] for recognized geometries), ``ptr`` is the address of the
+:ref:`via <tbl-via>`), :ref:`geometry <tbl-geometry>` specifies the geometry of the data (see Table
+:ref:`geometry <tbl-geometry>` for recognized geometries), ``ptr`` is the address of the
 pointer to the named resource. If ``direction`` is GMT_OUT and the
 ``method`` is not related to a file (filename, stream, or handle), then
 ``ptr`` must be NULL. After the *GMT* module has written the data you
-can use ``GMT_Retrieve_Data`` to assign a pointer to the memory location
+can use GMT_Retrieve_Data_ to assign a pointer to the memory location
 (variable) where the output was allocated. For grid (and image)
-resources you may request to obtain a subset via the ``wesn`` array (see
-Table [tbl:wesn] for information); otherwise, pass NULL to obtain the
+resources you may request to obtain a subset via the :ref:`wesn <tbl-wesn>` array (see
+Table :ref:`wesn <tbl-wesn>` for information); otherwise, pass NULL to obtain the
 entire grid (or image). The ``direction`` indicates input or output and
 is either GMT_IN (0) or GMT_OUT (1). Finally, the function returns a
 unique resource ID, or GMTAPI_NOTSET (-1) if there was an error.
@@ -651,6 +651,7 @@ which accepts the unique ``ID`` and writes the corresponding
 16 bytes. The function returns TRUE (1) if there is an error; otherwise
 it returns FALSE (0).
 
+.. _tbl-family:
 
 +------------------+-------+--------------------------------+
 | family           | value | source popints to              |
@@ -668,6 +669,8 @@ it returns FALSE (0).
 
 [tbl:family]
 
+
+.. _tbl-methods:
 
 +--------------------+-------+---------------------------------------------------------------+
 | method             | value | how to read/write data                                        | 
@@ -688,6 +691,8 @@ it returns FALSE (0).
 [tbl:methods]
 
 
+.. _tbl-via:
+
 +------------------+-------+----------------------------------------------------------------+
 | aproach          | value | how mwthod is modified                                         |
 +==================+=======+================================================================+
@@ -698,6 +703,7 @@ it returns FALSE (0).
 
 [tbl:via]
 
+.. _tbl-geometry:
 
 +------------------+---------+-------------------------------------------+
 | *geometry*       | *value* | *description*                             |
@@ -715,6 +721,7 @@ it returns FALSE (0).
 
 [tbl:geometry]
 
+.. _tbl-wesn:
 
 +---------+---------+-------------------------------------------------+
 | *Index* |         |  *Content*                                      |
@@ -756,25 +763,25 @@ options). The prototype for this function is
 
 ::
 
-    int GMT_Init_IO (void *API, unsigned int family, unsigned int geometry, \
-        unsigned int direction, unsigned int mode, unsigned int n_args, \
-        void *args);
+    int GMT_Init_IO (void *API, unsigned int family, unsigned int geometry,
+                     unsigned int direction, unsigned int mode,
+                     unsigned int n_args, void *args);
 
 where ``family`` specifies what kind of resource is to be registered,
 ``geometry`` specifies the geometry of the data, ``direction`` is either
 ``GMT_IN`` or ``GMT_OUT``, and ``mode`` is a bit flag that determines
 what we do if no resources have been registered. The choices are
 
-    **1** (or GMT\_ADD\_FILES\_IF\_NONE) means “add command line (option)
+    **1** (or GMT_ADD_FILES_IF_NONE) means “add command line (option)
     files if none have been registered already”
 
-    **2** (or GMT\_ADD\_FILES\_ALWAYS) means “always add any command line
+    **2** (or GMT_ADD_FILES_ALWAYS) means “always add any command line
     files”
 
-    **4** (or GMT\_ADD\_STDIO\_IF\_NONE) means “add std\* if no other
+    **4** (or GMT_ADD_STDIO_IF_NONE) means “add std\* if no other
     input/output have been specified”
 
-    **8** (or GMT\_ADD\_STDIO\_ALWAYS) means “always add std\* even if
+    **8** (or GMT_ADD_STDIO_ALWAYS) means “always add std\* even if
     resources have been registered”.
 
 The standard behavior is 5 (or GMT\_REG\_DEFAULT). Next, ``n_args`` is 0
@@ -839,9 +846,9 @@ etc.), then youGMT_Create_Data can obtain a “blank slate” by calling
 
 ::
 
-    void *GMT_Create_Data (void *API, unsigned int family, unsigned int geometry, \
-        unsigned int mode, uint64_t par[], double *wesn, double *inc, \
-        unsigned int registration, int pad, void *data
+    void *GMT_Create_Data (void *API, unsigned int family, unsigned int geometry,
+                           unsigned int mode, uint64_t par[], double *wesn, 
+                           double *inc, unsigned int registration, int pad, void *data)
 
 which returns a pointer to the allocated resource. Pass ``family`` as
 one of GMT_IS_GRID, GMT_IS_IMAGE, GMT_IS_DATASET,
@@ -888,7 +895,7 @@ In this case, pass ``wesn``, ``inc`` as NULL. For method (2), you
 instead pass ``wesn``, ``inc``, and ``registration`` and leave as NULL.
 For grids and images you may pass ``pad`` to set the padding, or -1 to
 accept the *GMT* default. The ``mode`` determines what is actually
-allocated when you have chosen grids or images. As for ``GMT_Read_Data``
+allocated when you have chosen grids or images. As for GMT_Read_Data_
 you can pass ``GMT_GRID_ALL`` to initialize the header and allocate
 space for the array. Alternatively, you can pass
 ``GMT_GRID_HEADER_ONLY`` to just initialize the grid or image header,
@@ -915,8 +922,8 @@ are addressed by
 
 ::
 
-    void *GMT_Duplicate_Data (void *API, unsigned int family, \
-        unsigned int mode, void *data);
+    void *GMT_Duplicate_Data (void *API, unsigned int family,
+                              unsigned int mode, void *data);
 
 which returns a pointer to the allocated resource. Specify which
 ``family`` and select ``mode`` from ``GMT_DUPLICATE_DATA``,
@@ -930,14 +937,14 @@ Import Data
 
 If your main program needs to read any of the five recognized data types
 (CPT files, data tables, text tables, *GMT* grids, or images) you will
-use the ``GMT_Get_Data`` or ``GMT_Read_Data`` functions, which both
+use the GMT_Get_Data_ or GMT_Read_Data_ functions, which both
 return entire data sets. In the case of data and text tables you may
-also select record-by-record reading using the ``GMT_Get_Record``
+also select record-by-record reading using the GMT_Get_Record_
 function. As a general rule, your program development simplifies if you
-can read entire resources into memory with ``GMT_Get_Data`` or
-``GMT_Read_Data``. However, if this leads to unacceptable memory usage
+can read entire resources into memory with GMT_Get_Data_ or
+GMT_Read_Data_ However, if this leads to unacceptable memory usage
 or if the program logic is particularly simple, you may obtain one data
-record at the time via ``GMT_Get_Record``.
+record at the time via GMT_Get_Record_
 
 All input functions takes a parameter called ``mode``. The ``mode``
 parameter generally has different meanings for the different data types
@@ -946,7 +953,7 @@ types: By default, you are only allowed to read a data source once; the
 source is then flagged as having been read and subsequent attempts to
 read from the same source will result in a warning and no reading takes
 place. In the unlikely event you need to re-read a source you can
-override this default behavior by adding GMT\_IO\_RESET to your ``mode``
+override this default behavior by adding GMT_IO_RESET to your ``mode``
 parameter. Note that this override does not apply to sources that are
 streams or file handles, as it may not be possible to re-read their
 contents.
@@ -958,7 +965,7 @@ Once all input resources have been registered, we signal the API that we
 are done with the registration phase and are ready to start the actual
 data import. This step is only required when reading one record at the
 time. We initialize record-by-record reading by calling
-``GMT_Begin_IO``. This function enables dataset and textset
+GMT_Begin_IO_ This function enables dataset and textset
 record-by-record reading and prepares the registered sources for the
 upcoming import. The prototype is
 
@@ -966,22 +973,22 @@ upcoming import. The prototype is
 
 ::
 
-    int GMT_Begin_IO (void *API, unsigned int family, unsigned int direction, \
-        unsigned int mode, unsigned int header);
+    int GMT_Begin_IO (void *API, unsigned int family, unsigned int direction,
+                      unsigned int mode, unsigned int header);
 
 where ``family`` specifies the resource type to be read or written (see
-Table [tbl:family]; only GMT\_IS\_DATASET and GMT\_IS\_TEXTSET are
+Table [tbl:family]; only GMT_IS_DATASET and GMT_IS_TEXTSET are
 available for record-by-record handling). The ``direction`` is either
-GMT\_IN or GMT\_out, so for import we obviously use GMT\_IN. The
+GMT_IN or GMT_out, so for import we obviously use GMT_IN. The
 function determines the first input source and sets up procedures for
 skipping to the next input source in a virtual data set. The
-``GMT_Get_Record`` function will not be able to read any data before
-``GMT_Begin_IO`` has been called. As you might guess, there is a
-companion ``GMT_End_IO`` function that completes, then disables
+GMT_Get_Record_ function will not be able to read any data before
+GMT_Begin_IO_ has been called. As you might guess, there is a
+companion GMT_End_IO_ function that completes, then disables
 record-by-record data access. You can use these several times to switch
 modes between registering data resources, doing the importing/exporting,
 and disabling further data access, perhaps to do more registration. We
-will discuss ``GMT_End_IO`` once we are done with the data import. The
+will discuss GMT_End_IO_ once we are done with the data import. The
 ``mode`` option is used to allow output to write table header
 information (``GMT_HEADER_ON``) or not (``GMT_HEADER_OFF``). This is
 usually on unless you are writing messages and other non-data. The final
@@ -995,7 +1002,7 @@ Import a data set
 
 If your program needs to import any of the five recognized data types
 (CPT table, data table, text table, *GMT* grid, or image) you will use
-either the ``GMT_Read_Data`` or ``GMT_Get_Data`` functions. The former
+either the GMT_Read_Data_ or GMT_Get_Data_ functions. The former
 is typically used when reading from files, streams (e.g., ``stdin``), or
 an open file handle, while the latter is only used with a registered
 resource via its unique ID. Because of the similarities of these five
@@ -1010,9 +1017,14 @@ To read an entire resource from a file, stream, or file handle, use
 
 ::
 
-    void *GMT_Read_Data (void *API, unsigned int family, \
-        unsigned int method, unsigned int geometry, unsigned int mode, \
-        double wesn[], char *input, void *ptr);
+    void *GMT_Read_Data (void *API, unsigned int family, unsigned int method,
+                         unsigned int geometry, unsigned int mode, double wesn[],
+                         char *input, void *ptr);
+
+* API -- None of your business
+* :ref:`family <tbl-family>`
+* :ref:`method <tbl-methods>`
+* :ref:`geometry <tbl-geometry>`
 
 where ``ptr`` is NULL except when reading grids in two steps (i.e.,
 first get a grid structure with a header, then read the data). Most of
@@ -1020,17 +1032,16 @@ these arguments have been discussed earlier. This function can be called
 in three different situations:
 
 #. If you have a single source (filename, stream pointer, etc.) you can
-   call ``GMT_Read_Data`` directly; there is no need to first register
-   the source with ``GMT_Register_IO`` or gather the sources with
-   ``GMT_Init_IO``. However, if you did register a single source you can
-   still pass it via an encoded filename (see ``GMT_Encode_ID``) or you
-   can instead use ``GMT_Get_Data`` using the integer ID directly (see
+   call GMT_Read_Data_ directly; there is no need to first register
+   the source with GMT_Register_IO_ or gather the sources with
+   GMT_Init_IO_. However, if you did register a single source you can
+   still pass it via an encoded filename (see GMT_Encode_ID_) or you
+   can instead use GMT_Get_Data_ using the integer ID directly (see
    next section).
 
-#. If you want to specify ``stdin`` as source then use ``input`` as
-   NULL.
+#. If you want to specify ``stdin`` as source then use ``input`` as NULL.
 
-#. If you already registered all desired sources with ``GMT_Init_IO``
+#. If you already registered all desired sources with GMT_Init_IO_
    then you indicate this by passing ``geometry`` = 0.
 
 Space will be allocated to hold the results, if needed, and a pointer to
@@ -1038,22 +1049,26 @@ the object is returned. If there are errors we simply return NULL and
 report the error. The ``mode`` parameter has different meanings for
 different data types.
 
-**CPT table** \: ``mode`` contains bit-flags that control how the CPT file’s back-,
+**CPT table**
+    ``mode`` contains bit-flags that control how the CPT file’s back-,
     fore-, and NaN-colors should be initialized. Select 0 to use the CPT
     file’s back-, fore-, and NaN-colors, 2 to replace these with the
     *GMT* default values, or 4 to replace them with the color table’s
     entries for highest and lowest value.
 
-**Data table** \: ``mode`` is currently not used.
+**Data table**
+    ``mode`` is currently not used.
 
-**Text table** \: ``mode`` is currently not used.
+**Text table**
+    ``mode`` is currently not used.
 
-**GMT grid** \: Here, ``mode`` determines how we read the grid: To read the entire
+**GMT grid**
+    Here, ``mode`` determines how we read the grid: To read the entire
     grid and its header, pass GMT_GRID_ALL. However, if you need to
     extract a sub-region you must first read the header by passing
     GMT_GRID_HEADER_ONLY, then examine the header structure range
     attributes and to specify a subset via the array ``wesn``, and
-    finally call ``GMT_Read_Data`` a second time, now with ``mode`` =
+    finally call GMT_Read_Data_ a second time, now with ``mode`` =
     GMT_GRID_DATA_ONLY and passing your ``wesn`` array and the grid
     structure returned from the first call as ``ptr``. In the event your
     data array should be allocated to hold both the real and imaginary
@@ -1063,7 +1078,7 @@ different data types.
     the input values correctly. If your grid is huge and you must read
     it row-by-row, set ``mode`` to GMT_GRID_HEADER_ONLY \|
     GMT_GRID_ROW_BY_ROW. You can then access the grid row-by-row
-    using ``GMT_Get_Row``. By default the rows will be automatically
+    using GMT_Get_Row_ By default the rows will be automatically
     processed in order. To completely specify which row to be read, use
     GMT_GRID_ROW_BY_ROW_MANUAL instead.
 
@@ -1071,7 +1086,7 @@ Import from a memory location
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 If you are importing via variables or prefer to first register the
-source, then you should use ``GMT_Get_Data`` instead. This function
+source, then you should use GMT_Get_Data_ instead. This function
 requires fewer arguments since you simply pass the unique ID number of
 the resource. The function is described as follows:
 
@@ -1083,7 +1098,7 @@ the resource. The function is described as follows:
 
 The ``ID`` is the unique object ID you received when registering the
 resource, ``mode`` controls some aspects of the import (see
-``GMT_Read_Data`` above), while ``ptr`` is NULL except when reading
+GMT_Read_Data_ above), while ``ptr`` is NULL except when reading
 grids in two steps (i.e., first get a grid structure with a header, then
 read the data). Other arguments have been discussed earlier. Space will
 be allocated to hold the results, if needed, and a pointer to the object
@@ -1095,9 +1110,9 @@ Retrieve an allocated result
 
 Finally, if you need to access the result that a GMT module wrote to a
 memory location, then you must register an output destination with
-``GMT_Register_IO`` first (passing ``ptr`` == NULL). The GMT module will
+GMT_Register_IO_ first (passing ``ptr`` == NULL). The GMT module will
 then allocate space to hold the output and let the API know where this
-memory resides. You can then use ``GMT_Retrieve_Data`` to get a pointer
+memory resides. You can then use GMT_Retrieve_Data_ to get a pointer
 to the container where the data set was stored. This function requires
 fewer arguments since you simply pass the unique ID number of the
 resource. The function is described as follows:
@@ -1117,7 +1132,7 @@ Importing a data record
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 If your program will read data table records one-by-one you must first
-enable this input mechanism with ``GMT_Begin_IO`` and then read the
+enable this input mechanism with GMT_Begin_IO_ and then read the
 records in a loop using
 
 .. _GMT_Get_Record:
@@ -1311,7 +1326,7 @@ records and add 1 to all columns beyond the first two (x and y):
     struct GMT_DATASEGMENT *S = NULL;
 
     < ... create a dataset D or read one ... >
-    for (tbl = 0; tbl < D->n_tables; tbl++) {   /* For each table */
+    for (tbl = 0; tbl < D->n_tables; tbl++) {       /* For each table */
       T = D->table[tbl];       /* Convenient shorthand for current table */
       for (seg = 0; seg < T->n_segments; seg++) {   /* For all segments */
         S = T->segment[seg];   /* Convenient shorthand for current segment */
@@ -1568,15 +1583,17 @@ All GMT modules may be called with one of three sets of ``args``
 depending on ``mode``. The three modes differ in how the options are
 passed to the module:
 
-    *mode > 0* \: Expects ``args`` to be an array of text options and ``mode`` to be a count of how many
-        options are passed (i.e., the ``argc, argv[]``
-        model used by the *GMT* programs themselves).
+    *mode > 0*
+        Expects ``args`` to be an array of text options and ``mode`` to be a count of how many
+        options are passed (i.e., the ``argc, argv[]`` model used by the *GMT* programs themselves).
 
-    *mode < 0* \: Expects ``args`` to be a pointer to a doubly-linked list of objects with individual
+    *mode < 0*
+        Expects ``args`` to be a pointer to a doubly-linked list of objects with individual
         options for the current program. We will see
         how API functions can help prepare such lists.
 
-    *mode == 0* \: Expects ``args`` to be a single text string with all required options.
+    *mode == 0*
+        Expects ``args`` to be a single text string with all required options.
 
 Here, ``GMT_module`` stands for any of the *GMT* modules, such as
 ``GMT_psxy`` or ``GMT_grdvolume``. All modules returns FALSE (0) if they
@@ -1765,7 +1782,7 @@ an error we still set ``API->error`` accordingly. The prototype is
 
 ::
 
-    struct GMT_OPTION *GMT_Find_Option (void *API, char option, \
+    struct GMT_OPTION *GMT_Find_Option (void *API, char option,
                                         struct GMT_OPTION *list);
 
 If you need to look for multiple occurrences of a certain option you
@@ -1787,7 +1804,7 @@ and append it to the end of the linked ``list``. The prototype is
 
 ::
 
-    int GMT_Update_Option (void *API, char option, char *arg, \
+    int GMT_Update_Option (void *API, char option, char *arg,
                            struct GMT_OPTION *list);
 
 An error will be reported if (a) ``list`` is NULL or (b) the option is
@@ -1851,7 +1868,7 @@ information to the existing headers. This is achieved with
 
 ::
 
-    int GMT_Set_Comment (void *API, unsigned int family, unsigned int mode \
+    int GMT_Set_Comment (void *API, unsigned int family, unsigned int mode
                          void *arg, void *data)
 
 Again, ``family`` selects which kind of resource is passed via ``data``.
@@ -1952,8 +1969,8 @@ The prototype for writing to a file (via name, stream, or file handle) is
 
 ::
 
-    int GMT_Write_Data (void *API, unsigned int family, unsigned int method, \
-                        unsigned int geometry, unsigned int mode, \
+    int GMT_Write_Data (void *API, unsigned int family, unsigned int method,
+                        unsigned int geometry, unsigned int mode,
                         double wesn[], void *output, void *data);
 
 where ``data`` is a pointer to any of the four structures discussed
@@ -2190,7 +2207,7 @@ your program needs to present the option usage you can call
 
 ::
 
-    unsigned int GMT_FFT_Option (void *API, char option, unsigned int dim, \
+    unsigned int GMT_FFT_Option (void *API, char option, unsigned int dim,
                                  char *string);
 
 Here, ``option`` is the unique character used for this particular
@@ -2224,7 +2241,7 @@ conveniently performed for you by
 
 ::
 
-    void *GMT_FFT_Create (void *API, void *X, unsigned int dim, \
+    void *GMT_FFT_Create (void *API, void *X, unsigned int dim,
                           unsigned int subdivide, unsigned int mode, void *F);
 
 Here, ``X`` is either your dataset or grid pointer, ``dim`` is the
