@@ -1265,7 +1265,19 @@ Manipulate data
 Once you have created and allocated and empty resources, or read in
 resources from the outside, you will wish to manipulate their contents.
 This section discusses how to set up loops and access the important
-variables for the various data families.
+variables for the various data families. For grids and images it may
+be required to know what the coordinates are at each node point.  This
+can be obtained via arrays of coordinates for each dimension, obtained by
+
+.. _GMT_Get_Coord
+
+::
+
+    double *GMT_Get_Coord (void *API, unsigned int family, unsigned int dim, void *data);
+
+where ``family`` must be GMT\_IS\_GRID or GMT\_IS\_DATASET, ``dim`` is either
+GMT\_IS\_X or GMT\_IS\_Y, and ``data`` is the grid or image pointer.  This
+function will be used below in our example on grid manipulation.
 
 Manipulate grids
 ~~~~~~~~~~~~~~~~
