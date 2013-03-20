@@ -1292,7 +1292,7 @@ Another aspect of dealing with grids and images is to convert a row and column
 2-D reference to our 1-D array index.  Because of grid and image boundary padding
 the relationship is not straightforward, hence we supply
 
-.. _GMT_Get_Index
+.. _GMT_Get_Index:
 
 ::
 
