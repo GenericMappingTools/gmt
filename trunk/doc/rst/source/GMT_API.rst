@@ -243,8 +243,8 @@ itself may be of any data type and have more than one band (channel).
 Both image and header information are passed via a ``struct GMT_IMAGE``,
 which is a container that holds both items. Thus, the arguments to
 *GMT* API functions that handle *GMT* images expect this type of
-variable. Unlike the other objects, images can only be read and not
-written [4]_.
+variable. Unlike the other objects, writting images has only partial
+support via ``GMT_grdimage`` [4]_.
 
 User data columns (GMT vectors)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -256,13 +256,12 @@ source to the ``GMT_surface`` module, which normally expects double
 precision triplets via a ``struct GMT_DATASET`` read from a file or
 given by memory reference. Simply create a new ``struct GMT_VECTOR``
 (see section [sec:create]) and assign the union array pointers (see
-Table [tbl:univector]) to your data columns and provide the required
+:ref:`univector <tbl-univector>`) to your data columns and provide the required
 information on length, data types, and optionally range (see
-Table [tbl:vector]). By letting the *GMT* module know you are passing a
-data set *via* a ``struct GMT_VECTOR`` it will know how to read the data
-correctly.
+Table :ref:`vector <tbl-vector>`). By letting the *GMT* module know you are passing a
+data set *via* a ``struct GMT_VECTOR`` it will know how to read the data correctly.
 
-
+.. _tbl-univector:
 
 ::
 
@@ -290,6 +289,9 @@ correctly.
 
 [tbl:univector]
 
+
+.. _tbl-vector:
+
 ::
 
     struct GMT_VECTOR {
@@ -307,6 +309,8 @@ correctly.
 
 User data matrices (GMT matrices)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. _tbl-matrix:
 
 ::
 
@@ -341,7 +345,7 @@ The ``enum`` types referenced in Table [tbl:vector] and
 Table [tbl:matrix] and summarized in Table [tbl:enums] and
 Table [tbl:types].
 
-
+.. _tbl-enums:
 
 +-----------------+-------+----------------------------------------------------------------+
 | constant        | value | description                                                    |
@@ -357,6 +361,7 @@ Table [tbl:types].
 
 [tbl:enums]
 
+.. _tbl-types:
 
 +--------------+-------+-------------------------------------------+
 | constant     | value | description                               |
@@ -450,6 +455,8 @@ and are available for developers via the ``gmt_resources.h`` include file.
 The C/C++ API is deliberately kept small to make it easy to use.
 Table [tbl:API] gives a list of all the functions and their purpose.
 
+.. _tbl-API:
+
 +-------------------------+---------------------------------------------------+
 | constant                | description                                       |
 +=========================+===================================================+
@@ -497,7 +504,7 @@ Table [tbl:API] gives a list of all the functions and their purpose.
 +-------------------------+---------------------------------------------------+
 | GMT_Get_Common_         | Determine if a GMT common option was set          |
 +-------------------------+---------------------------------------------------+
-| GMT_Get_Coord           | Create a coordinate array                         |
+| GMT_Get_Coord_          | Create a coordinate array                         |
 +-------------------------+---------------------------------------------------+
 | GMT_Get_Data_           | Import a registered data resources                |
 +-------------------------+---------------------------------------------------+
@@ -1025,6 +1032,7 @@ To read an entire resource from a file, stream, or file handle, use
 * :ref:`family <tbl-family>`
 * :ref:`method <tbl-methods>`
 * :ref:`geometry <tbl-geometry>`
+* :ref:`wesn <tbl-wesn>`
 
 where ``ptr`` is NULL except when reading grids in two steps (i.e.,
 first get a grid structure with a header, then read the data). Most of
@@ -1189,6 +1197,7 @@ these may be used, see the test program ``testgmtio.c``. Developers who plan to 
 data on a record-by-record basis may also consult the source code of,
 say, ``blockmean.c`` or ``pstext.c``, to see examples of working code.
 
+.. _tbl-iostatus:
 
 +-----------------------------+----------------------------------------------------------+
 | mode                        | description                                              |
@@ -1251,7 +1260,7 @@ function disables further record-by-record data import; its prototype is
 
     int GMT_End_IO (void *API, unsigned int direction, unsigned int mode);
 
-and we specify ``direction`` = GMT\_IN. At the moment, ``mode`` is not
+and we specify ``direction`` = GMT_IN. At the moment, ``mode`` is not
 used. This call will also reallocate any arrays obtained into their
 proper lengths. The function returns TRUE (1) if there is an error
 (which is passed back with ``API->error``), otherwise it returns FALSE
@@ -1269,14 +1278,14 @@ variables for the various data families. For grids and images it may
 be required to know what the coordinates are at each node point.  This
 can be obtained via arrays of coordinates for each dimension, obtained by
 
-.. _GMT_Get_Coord
+.. _GMT_Get_Coord:
 
 ::
 
     double *GMT_Get_Coord (void *API, unsigned int family, unsigned int dim, void *data);
 
-where ``family`` must be GMT\_IS\_GRID or GMT\_IS\_DATASET, ``dim`` is either
-GMT\_IS\_X or GMT\_IS\_Y, and ``data`` is the grid or image pointer.  This
+where ``family`` must be GMT_IS_GRID or GMT_IS_DATASET, ``dim`` is either
+GMT_IS_X or GMT_IS_Y, and ``data`` is the grid or image pointer.  This
 function will be used below in our example on grid manipulation.
 
 Manipulate grids
@@ -1398,6 +1407,7 @@ on the chosen run-time verbosity level set via ``-V`` your message may
 or may not be reported. Only messages whose stated verbosity level is
 lower or equal to the ``-V``\ *level* will be printed.
 
+.. _tbl-verbosity:
 
 +---------------------------+-------+--------------------------------------------------+
 | constant                  | value | description                                      |
@@ -1428,6 +1438,7 @@ This function always prints its message to the standard output. Use the
 and if selected how the time information should be formatted. See
 Table [tbl:timemodes] for the various modes.
 
+.. _tbl-timemodes:
 
 +----------------------+-------+-----------------------------------------+
 | constant             | value | description                             |
@@ -1647,8 +1658,9 @@ linked list of program options; however, utility functions exist to
 simplify its use. This interface is intended for programs whose internal
 workings are better suited to generate such arguments – we call this the
 “options” mode. The order in the list is not important as *GMT* will
-sort it internally according to need. The option structure is defined in
-Table [tbl:options].
+sort it internally according to need. The option structure is defined below.
+
+.. _options:
 
 ::
 
@@ -1658,8 +1670,6 @@ Table [tbl:options].
         struct GMT_OPTION *next;      /* Pointer to next option (NULL for last option) */
         struct GMT_OPTION *prev;      /* Pointer to previous option (NULL for first option) */
     };
-
-[tbl:options]
 
 Convert between text and linked structures
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1893,8 +1903,9 @@ relevant structure. When a file is written out the information will be
 output as well (Note: Users can always decide if they wish to turn
 header output on or off via the common *GMT* option ``-h``. For
 record-by-record writing you must enable the header block output when
-you call ``GMT_Begin_IO``.
+you call GMT_Begin_IO_
 
+.. _tbl-comments:
 
 +---------------------------+-------+------------------------------------------------------+
 | constant                  | value | description                                          |
@@ -1909,11 +1920,11 @@ you call ``GMT_Begin_IO``.
 +---------------------------+-------+------------------------------------------------------+
 | GMT_COMMENT_IS_TITLE      | 4     | Comment is the title                                 |
 +---------------------------+-------+------------------------------------------------------+
-| GMT_COMMENT_IS_NAME\_X    | 4     | Comment is the x variable name (grids only)          |
+| GMT_COMMENT_IS_NAME_X     | 4     | Comment is the x variable name (grids only)          |
 +---------------------------+-------+------------------------------------------------------+
-| GMT_COMMENT_IS_NAME\_Y    | 4     | Comment is the y variable name (grids only)          |
+| GMT_COMMENT_IS_NAME_Y     | 4     | Comment is the y variable name (grids only)          |
 +---------------------------+-------+------------------------------------------------------+
-| GMT_COMMENT_IS_NAME\_Z    | 4     | Comment is the z variable name (grids only)          |
+| GMT_COMMENT_IS_NAME_Z     | 4     | Comment is the z variable name (grids only)          |
 +---------------------------+-------+------------------------------------------------------+
 | GMT_COMMENT_IS_COLNAMES   | 4     | Comment is the column names header                   |
 +---------------------------+-------+------------------------------------------------------+
