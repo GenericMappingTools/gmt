@@ -367,7 +367,7 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	options = GMT_Prep_Options (API, mode, args);	if (API->error) return (API->error);
+	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_blockmode_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_blockmode_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 

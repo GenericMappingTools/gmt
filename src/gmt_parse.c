@@ -296,10 +296,9 @@ char * GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head)
 	return (txt);		/* Pass back the results to the calling module */
 }
 
-struct GMT_OPTION * GMT_Prep_Options (void *V_API, int mode, void *args)
-{	/* Either we passed an option struct list or we passed argc, argv and must convert to get option list */
+struct GMT_OPTION * GMT_prep_module_options (struct GMTAPI_CTRL *API, int mode, void *args)
+{	/* Either we passed the module an option struct list or we passed argc, argv and must convert to get option list */
 	struct GMT_OPTION *options = NULL;
-	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 	if (mode < 0)	/* Gave a list of options already */	
 		options = args;
 	else		/* Build them from text arguments */
