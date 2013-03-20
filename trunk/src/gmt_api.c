@@ -3247,7 +3247,7 @@ int GMT_Init_IO (void *V_API, unsigned int family, unsigned int geometry, unsign
 	if (n_args == 0) /* Passed the head of linked option structures */
 		head = args;
 	else		/* Passed argc, argv, likely from Fortran */
-		head = GMT_Prep_Options (API, n_args, args);
+		head = GMT_prep_module_options (API, n_args, args);
 	GMT_io_banner (API->GMT, direction);	/* Message for binary i/o */
 	if (direction == GMT_IN)
 		object_ID = GMTAPI_Init_Import (API, family, geometry, mode, head);

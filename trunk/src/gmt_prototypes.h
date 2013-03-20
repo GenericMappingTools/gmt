@@ -404,5 +404,6 @@ EXTERN_MSC void GMT_cart_to_polar (struct GMT_CTRL *C, double *r, double *theta,
 
 /* From gmt_api.c */
 EXTERN_MSC struct GMTAPI_CTRL * GMT_get_API_ptr (struct GMTAPI_CTRL *ptr);
+EXTERN_MSC struct GMT_OPTION * GMT_prep_module_options (struct GMTAPI_CTRL *API, int mode, void *in);
 
 #endif /* _GMT_PROTOTYPES_H */
