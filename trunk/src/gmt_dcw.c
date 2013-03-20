@@ -113,7 +113,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	
 	if (!F->codes || F->codes[0] == '\0') return NULL;
 	
-	GMT_getsharepath (GMT, "coast", "CDW", "", path);
+	GMT_getsharepath (GMT, "coast/DCW/NA", "US", ".nc", path);	/* Look for the US polygon */
 	if (GMT_access (GMT, path, F_OK)) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The DCW country polygons are not available.  Download the file\n");
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "http://www.soest.hawaii.edu/gmt/gmt-dcw.zip and unzip in your\n");
