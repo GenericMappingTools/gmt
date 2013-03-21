@@ -29,7 +29,7 @@ int main (int argc, char *argv[])
 
 	/* 3. Program initialization and parsing */
 
-	options = GMT_Prep_Options (API, argc-1, (argv+1));	/* Set or get option list */
+	options = GMT_Create_Options (API, argc-1, (argv+1));	/* Set or get option list */
 
 	/* Parse the commont GMT command-line options */
 	if (GMT_Parse_Common (API, GMT_OPTIONS, options)) return EXIT_FAILURE;

@@ -125,6 +125,12 @@ EXTERN_MSC double GMT_FFT_Wavenumber	(void *C, uint64_t k, unsigned int mode, vo
 EXTERN_MSC int GMT_FFT			(void *C, void *X, int direction, unsigned int mode, void *K);
 EXTERN_MSC int GMT_FFT_Destroy		(void *C, void *K);
 
+/* 3 F77 basic grid i/ functions */
+
+EXTERN_MSC int GMT_F77_readgrdinfo_	(unsigned int dim[], double wesn[], double inc[], char *title, char *remark, char *file);
+EXTERN_MSC int GMT_F77_readgrd_		(float *array, unsigned int dim[], double wesn[], double inc[], char *title, char *remark, char *file);
+EXTERN_MSC int GMT_F77_writegrd_	(float *array, unsigned int dim[], double wesn[], double inc[], char *title, char *remark, char *file);
+
 #ifdef __cplusplus
 }
 #endif

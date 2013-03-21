@@ -189,7 +189,7 @@ int main (int argc, char *argv[])
 
 	/* 3. Program initialization and parsing */
 
-	options = GMT_Prep_Options (API, argc-1, (argv+1));	/* Set or get option list */
+	options = GMT_Create_Options (API, argc-1, (argv+1));	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_my_fft_program_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_my_fft_program_usage (API, GMTAPI_SYNOPSIS));		/* Return the synopsis */

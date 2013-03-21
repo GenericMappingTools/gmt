@@ -5281,3 +5281,112 @@ int GMT_Get_Value_ (char *arg, double par[], int len)
 	return (GMT_Get_Value (GMT_FORTRAN, arg, par));
 }
 #endif
+
+/* Here lies the very basic F77 support for grid read and write only. */
+
+int GMT_F77_readgrdinfo_ (unsigned int dim[], double wesn[], double inc[], char *title, char *remark, char *file)
+{	/* Note: When returning, dim[2] holds the registration (0 = gridline, 1 = pixel).
+	 * wesn[4-5] holds zmin/zmax.
+	 */
+ 	unsigned int no_pad[4] = {0, 0, 0, 0};
+	char *argv = "GMT_F77_readgrdinfo";
+	struct GMT_GRID_HEADER header;
+	struct GMTAPI_CTRL *API = NULL;	/* The API pointer assigned below */
+
+	if ((API = GMT_Create_Session (argv, 0U, 0U)) == NULL) return EXIT_FAILURE;
+
+	/* Read the grid header */
+
+	if (GMT_read_grd_info (API->GMT, file, &header)) {
+		fprintf (stderr, "%s: Error opening file %s\n", argv, file);
+		return EXIT_FAILURE;
+	}
+
+	/* Assign variables from header structure items */
+	dim[GMT_X] = header.nx;	dim[GMT_Y] = header.ny;
+	GMT_memcpy (wesn, header.wesn, 4U, double);
+	GMT_memcpy (inc, header.inc, 2U, double);
+	wesn[ZLO] = header.z_min;
+	wesn[ZHI] = header.z_max;
+	dim[GMT_Z] = header.registration;
+	strncpy (title, header.title, GMT_GRID_TITLE_LEN80); 
+	strncpy (remark, header.remark, GMT_GRID_REMARK_LEN160); 
+
+	if (GMT_Destroy_Session (API) != GMT_NOERROR) return EXIT_FAILURE;
+	return EXIT_SUCCESS;
+}
+
+int GMT_F77_readgrd_ (float *array, unsigned int dim[], double wesn[], double inc[], char *title, char *remark, char *file)
+{	/* Note: When called, dim[2] is 1 we allocate the array, otherwise we assume it has enough space
+	 * When returning, dim[2] holds the registration (0 = gridline, 1 = pixel).
+	 * wesn[4-5] holds zmin/zmax.
+	 */
+ 	unsigned int no_pad[4] = {0, 0, 0, 0};
+	double no_wesn[4] = {0.0, 0.0, 0.0, 0.0};
+	char *argv = "GMT_F77_readgrd";
+	struct GMT_GRID_HEADER header;
+	struct GMTAPI_CTRL *API = NULL;	/* The API pointer assigned below */
+
+	if ((API = GMT_Create_Session (argv, 0U, 0U)) == NULL) return EXIT_FAILURE;
+
+	/* Read the grid header */
+	GMT_grd_init (API->GMT, &header, NULL, false);
+	if (GMT_read_grd_info (API->GMT, file, &header)) {
+		fprintf (stderr, "%s: Error opening file %s\n", argv, file);
+		return EXIT_FAILURE;
+	}
+
+	/* Read the grid, possibly after first allocating array space */
+	if (dim[GMT_Z] == 1) array = GMT_memory (API->GMT, NULL, header.size, float);
+	if (GMT_read_grd (API->GMT, file, &header, array, no_wesn, no_pad, 0)) {
+		fprintf (stderr, "%s: Error reading file %s\n", argv, file);
+		return EXIT_FAILURE;
+	}
+
+	/* Assign variables from header structure items */
+	dim[GMT_X] = header.nx;	dim[GMT_Y] = header.ny;
+	GMT_memcpy (wesn, header.wesn, 4U, double);
+	GMT_memcpy (inc, header.inc, 2U, double);
+	wesn[ZLO] = header.z_min;
+	wesn[ZHI] = header.z_max;
+	dim[GMT_Z] = header.registration;
+	strncpy (title, header.title, GMT_GRID_TITLE_LEN80); 
+	strncpy (remark, header.remark, GMT_GRID_REMARK_LEN160); 
+
+	if (GMT_Destroy_Session (API) != GMT_NOERROR) return EXIT_FAILURE;
+	return EXIT_SUCCESS;
+}
+
+int GMT_F77_writegrd_(float *array, unsigned int dim[], double wesn[], double inc[], char *title, char *remark, char *file)
+{	/* Note: When called, dim[2] holds the registration (0 = gridline, 1 = pixel). */
+ 	unsigned int no_pad[4] = {0, 0, 0, 0};
+	char *argv = "GMT_F77_writegrd";
+	double no_wesn[4] = {0.0, 0.0, 0.0, 0.0};
+	struct GMT_GRID_HEADER header;
+	struct GMTAPI_CTRL *API = NULL;	/* The API pointer assigned below */
+	
+	/* Initialize with default values */
+	
+	if ((API = GMT_Create_Session (argv, 0U, 0U)) == NULL) return EXIT_FAILURE;
+
+	GMT_grd_init (API->GMT, &header, NULL, false);
+	
+	/* Set header parameters */
+	
+	GMT_memcpy (header.wesn, wesn, 4U, double);
+	GMT_memcpy (header.inc, inc, 2U, double);
+	header.nx = dim[GMT_X];	header.ny = dim[GMT_Y];
+	header.registration = dim[GMT_Z];
+	strncpy (header.title, title, GMT_GRID_TITLE_LEN80); 
+	strncpy (header.remark, remark, GMT_GRID_REMARK_LEN160); 
+	
+	/* Write the file */
+	
+	if (GMT_write_grd (API->GMT, file, &header, array, no_wesn, no_pad, 0)) {
+		fprintf (stderr, "%s: Error writing file %s\n", argv, file);
+		return EXIT_FAILURE;
+	}
+	
+	if (GMT_Destroy_Session (API) != GMT_NOERROR) return EXIT_FAILURE;
+	return EXIT_SUCCESS;
+}
