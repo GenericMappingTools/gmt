@@ -1,2 +1,2 @@
-**-o**\ *cols*\ [,*...*] :ref:`(more ...) <-ocols_full>`
+**-o**\ *cols*\ [,...] :ref:`(more ...) <-ocols_full>`
     Select output columns.
