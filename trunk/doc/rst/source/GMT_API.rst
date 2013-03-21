@@ -2383,51 +2383,65 @@ When done you terminate the FFT machinery with
 
 which simply frees up the memory allocated by the FFT machinery.
 
-FORTRAN 77 interface
-====================
+FORTRAN interfaces
+==================
 
-FORTRAN 77 developers who wish to use the *GMT* API may use the same 22
-API functions as discussed in Chapter 2. However, as pointers to
-structures and such are not available, the FORTRAN bindings provided
-simplifies the interface in two ways:
+FORTRAN 90 developers who wish to use the *GMT* API may use the same
+API functions as discussed in Chapter 2. As we do not have much (i.e., any) experience
+with modern Fortran we are not sure to what extent you are able to access
+the members of the various structures, such as the GMT\_GRID structure. Thus,
+this part will depend on feedback and for the time being is to be considered
+preliminary and subject to change.  We encourage you to take contact should you
+wish to use the API with your Fortran 90 programs.
 
--  The first argument to the functions (the GMTAPI Control structure
-   pointer) is not provided. Instead, the bindings use a hidden, global
-   external structure for this purpose and pass the pointer to it down
-   to the C version of the functions.
+FORTRAN 77 Grid i/o
+-------------------
 
--  The resource arguments in ``GMT_Register_IO`` are not pointers to
-   items but the items themselves.
+Because of a lack of structure pointers we can only provide a low level of
+support for Fortran 77. This API is limited to help you inquire, read and write
+GMT grids directly from Fortran.  To
+inquire about the range of information in a grid, use
 
-The list of the basic 22 FORTRAN prototype functions thus becomes
+.. _GMT_F77_readgrdinfo:
 
 ::
 
-    function GMT_Create_Session (tag, pad, mode)
-    function GMT_Destroy_Session ()
-    function GMT_Register_IO (family, method, geometry, direction, wesn, resource)
-    function GMT_Encode_ID (filename, ID)
-    function GMT_Init_IO (family, geometry, direction, mode, n_args, args)
-    function GMT_Begin_IO (family, geometry, direction)
-    function GMT_Status_IO (mode)
-    function GMT_Create_Data (family, geometry, ipar)
-    function GMT_Duplicate_Data (family, mode, data)
-    function GMT_Read_Data (family, method, geometry, mode, wesn, input, data)
-    function GMT_Get_Data (ID, mode, data)
-    function GMT_Retrieve_Data (ID)
-    function GMT_Get_Record (rec, mode, nfields)
-    function GMT_Get_Row (row_no, grid, row)
-    function GMT_Write_Data (family, method, geometry, mode, wesn, output, data)
-    function GMT_Put_Data (ID, mode, data)
-    function GMT_Put_Record (mode, rec)
-    function GMT_Put_Row (row_no, grid, row)
-    function GMT_End_IO (direction, mode)
-    function GMT_Destroy_Data (mode, ptr)
+    int GMT_F77_readgrdinfo (unsigned int dim[], double limits[], double inc[], char *title, char *remark, char *file)
 
-where ``family``, ``method``, ``geometry``, ``mode`` and ``direction``
-are unsigned ints, ``ID`` and ``error`` are (signed) integers, ``ipar``
-is an integer parameter array, ``wesn`` is a real (double precision)
-array, and ``resource`` are source or destination addresses.
+where ``dim`` returns the grid width, height, and registration, ``limits`` returns the min and max values for x, y, and z
+as three consecutive pairs, ``inc`` returns the x and y increment, the ``title`` and ``remark`` returns the values of these strings.  The ``file``
+argument is the name of the file we wish to inquire about.  The function returns 0 unless there is an error.
+
+To actually read the grid, we use
+
+.. _GMT_F77_readgrd:
+
+::
+
+    int GMT_F77_readgrd (float *array, unsigned int dim[], double wesn[], double inc[], char *title, char *remark, char *file)
+
+where ``array`` is the 1-D grid data array, ``dim`` returns the grid width, height, and registration,
+``limits`` returns the min and max values for x, y, and z, ``inc`` returns the x and y increments,
+the ``title`` and ``remark`` returns the values of these strings.  The ``file``
+argument is the name of the file we wish to read from.  The function returns 0 unless there is an error.
+Note on input, ``dim[2]`` can be set to 1 which means we will allocate the array for you; otherwise
+we assume space has already been secured.
+
+Finally, to write a grid to file you cam use
+
+.. _GMT_F77_writegrd:
+
+::
+
+    int GMT_F77_writegrd_(float *array, unsigned int dim[], double wesn[], double inc[], char *title, char *remark, char *file)
+
+where ``array`` is the 1-D grid data array, ``dim`` specifies the grid width, height, and registration,
+``limits`` may be used to specify a subset (normally, just pass zeros), ``inc`` specifies the x and y increments,
+the ``title`` and ``remark`` supplies the values of these strings.  The ``file``
+argument is the name of the file we wish to write to.  The function returns 0 unless there is an error.
+Note on input, ``dim[2]`` can be set to 1 which means we will allocate the array for you; otherwise
+we assume space has already been secured.
+
 
 .. [1]
    or via a very confusing and ever-changing myriad of low-level library
