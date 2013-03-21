@@ -45,7 +45,7 @@ void GMT_str_toupper (char *string);
 #	include <windows.h>
 #	include <process.h>
 #	define getpid _getpid
-	int ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C);
+	int ghostbuster(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *C);
 #endif
 
 #define N_GS_DEVICES		12	/* Number of supported GS output devices */
@@ -222,7 +222,7 @@ void *New_ps2raster_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 #ifdef WIN32
-	if ( ghostbuster(GMT, C) != GMT_OK ) { /* Try first to find the gspath from registry */
+	if ( ghostbuster(GMT->parent, C) != GMT_OK ) { /* Try first to find the gspath from registry */
 		C->G.file = strdup ("gswin64c");     /* Fall back to this default and expect a miracle */
 	}
 #else
@@ -1315,7 +1315,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 }
 
 #ifdef WIN32
-int ghostbuster(struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {
+int ghostbuster(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *C) {
 	/* Search the Windows registry for the directory containing the gswinXXc.exe
 	   We do this by finding the GS_DLL that is a value of the HKLM\SOFTWARE\GPL Ghostscript\X.XX\ key
 	   Things are further complicated because Win64 has TWO registries: one 32 and the other 64 bits.
