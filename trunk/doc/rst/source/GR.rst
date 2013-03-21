@@ -24,7 +24,6 @@ GR
    grdmath
    grdpaste
    grdproject
-   grdraster
    grdreformat
    grdsample
    grdtrack

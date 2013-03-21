@@ -631,7 +631,7 @@ correctly with a warning under compatibility mode:
 #. `gmtconvert <gmtconvert.html>`_: **-F** is
    deprecated; use common option **-o** instead.
 
-#. `gmtdefaults <mtdefaults.html>`_: **-L** is
+#. `gmtdefaults <mtdefaults.html>`__: **-L** is
    deprecated; this is now the default behavior.
 
 #. `gmtmath <gmtmath.html>`_: **-F** is deprecated; use
@@ -1186,151 +1186,151 @@ listing sorted by program purpose, see Section [sec:purpose].
 +------------------------------------------------+---------------------------------------------------------------------+
 |                                                |                                                                     |
 +================================================+=====================================================================+
-| **blockmean** `(...) <blockmean.html>`_        | L\ :math:`_2` (*x*,\ *y*,\ *z*) table data filter/decimator         |
+| **blockmean** `(...) <blockmean.html>`__       | L\ :math:`_2` (*x*,\ *y*,\ *z*) table data filter/decimator         |
 +------------------------------------------------+---------------------------------------------------------------------+
-| **blockmedian** `(...) <blockmean.html>`_      | L\ :math:`_1` (*x*,\ *y*,\ *z*) table data filter/decimator         |
+| **blockmedian** `(...) <blockmean.html>`__     | L\ :math:`_1` (*x*,\ *y*,\ *z*) table data filter/decimator         |
 +------------------------------------------------+---------------------------------------------------------------------+
-| **blockmode** `(...) <blockmode.html>`_        | Mode estimate (*x*,\ *y*,\ *z*) table data filter/decimator         |
+| **blockmode** `(...) <blockmode.html>`__       | Mode estimate (*x*,\ *y*,\ *z*) table data filter/decimator         |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **filter1d** `(...) <filter1d.html>`_         | Filter 1-D table data sets (time series)                            |
+|  **filter1d** `(...) <filter1d.html>`__        | Filter 1-D table data sets (time series)                            |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **fitcircle** `(...) <fitcircle.html>`_       | Finds the best-fitting great or small circle for a set of points    |
+|  **fitcircle** `(...) <fitcircle.html>`__      | Finds the best-fitting great or small circle for a set of points    |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **gmt2kml** `(...) <gmt2kml.html>`_           | Like  **psxy** but plots KML for use in Google Earth                |
+|  **gmt2kml** `(...) <gmt2kml.html>`__          | Like  **psxy** but plots KML for use in Google Earth                |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **gmtconvert** `(...) <gmtconvert.html>`_     | Convert data tables from one format to another                      |
+|  **gmtconvert** `(...) <gmtconvert.html>`__    | Convert data tables from one format to another                      |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **gmtdefaults** `(...) <gmtdefaults.html>`_   | List the current default settings                                   |
+|  **gmtdefaults** `(...) <gmtdefaults.html>`__  | List the current default settings                                   |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **gmtdp** `(...) <gmtdp.html>`_               | Line reduction using the Douglas-Peucker algorithm                  |
+|  **gmtdp** `(...) <gmtdp.html>`__              | Line reduction using the Douglas-Peucker algorithm                  |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **gmtget** `(...) <gmtget.html>`_             | Retrieve selected parameters in current ``gmt.conf`` file           |
+|  **gmtget** `(...) <gmtget.html>`__            | Retrieve selected parameters in current ``gmt.conf`` file           |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **gmtmath** `(...) <gmtmath.html>`_           | Mathematical operations on table data                               |
+|  **gmtmath** `(...) <gmtmath.html>`__          | Mathematical operations on table data                               |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **gmtselect** `(...) <gmtselect.html>`_       | Select subsets of table data based on multiple spatial criteria     |
+|  **gmtselect** `(...) <gmtselect.html>`__      | Select subsets of table data based on multiple spatial criteria     |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **gmtset** `(...) <gmtset.html>`_             | Change selected parameters in current ``gmt.conf`` file             |
+|  **gmtset** `(...) <gmtset.html>`__            | Change selected parameters in current ``gmt.conf`` file             |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **gmtspatial** `(...) <gmtspatial.html>`_     | Geospatial operations on lines and polygons                         |
+|  **gmtspatial** `(...) <gmtspatial.html>`__    | Geospatial operations on lines and polygons                         |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **gmtstitch** `(...) <gmtstitch.html>`_       | Join segments into more complete lines or polygons                  |
+|  **gmtstitch** `(...) <gmtstitch.html>`__      | Join segments into more complete lines or polygons                  |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **gmtvector** `(...) <gmtvector.html>`_       | Basic operations on vectors in 2-D and 3-D                          |
+|  **gmtvector** `(...) <gmtvector.html>`__      | Basic operations on vectors in 2-D and 3-D                          |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **gmtwhich** `(...) <gmtwhich.html>`_         | Find full path to specified data files                              |
+|  **gmtwhich** `(...) <gmtwhich.html>`__        | Find full path to specified data files                              |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grd2cpt** `(...) <grd2cpt.html>`_           | Make color palette table from a grid files                          |
+|  **grd2cpt** `(...) <grd2cpt.html>`__          | Make color palette table from a grid files                          |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grd2rgb** `(...) <grd2rgb.html>`_           | Convert Sun raster or grid file to red, green, blue component grids |
+|  **grd2rgb** `(...) <grd2rgb.html>`__          | Convert Sun raster or grid file to red, green, blue component grids |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grd2xyz** `(...) <grd2xyz.html>`_           | Conversion from 2-D grid file to table data                         |
+|  **grd2xyz** `(...) <grd2xyz.html>`__          | Conversion from 2-D grid file to table data                         |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdblend** `(...) <grdblend.html>`_         | Blend several partially over-lapping grid files onto one grid       |
+|  **grdblend** `(...) <grdblend.html>`__        | Blend several partially over-lapping grid files onto one grid       |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdclip** `(...) <grdclip.html>`_           | Limit the *z*-range in gridded data sets                            |
+|  **grdclip** `(...) <grdclip.html>`__          | Limit the *z*-range in gridded data sets                            |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdcontour** `(...) <grdcontour.html>`_     | Contouring of 2-D gridded data sets                                 |
+|  **grdcontour** `(...) <grdcontour.html>`__    | Contouring of 2-D gridded data sets                                 |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdcut** `(...) <grdcut.html>`_             | Cut a sub-region from a grid file                                   |
+|  **grdcut** `(...) <grdcut.html>`__            | Cut a sub-region from a grid file                                   |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdedit** `(...) <grdedit.html>`_           | Modify header information in a 2-D grid file                        |
+|  **grdedit** `(...) <grdedit.html>`__          | Modify header information in a 2-D grid file                        |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdfft** `(...) <grdfft.html>`_             | Perform operations on grid files in the frequency domain            |
+|  **grdfft** `(...) <grdfft.html>`__            | Perform operations on grid files in the frequency domain            |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdfilter** `(...) <grdfilter.html>`_       | Filter 2-D gridded data sets in the space domain                    |
+|  **grdfilter** `(...) <grdfilter.html>`__      | Filter 2-D gridded data sets in the space domain                    |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdgradient** `(...) <grdgradient.html>`_   | Compute directional gradient from grid files                        |
+|  **grdgradient** `(...) <grdgradient.html>`__  | Compute directional gradient from grid files                        |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdhisteq** `(...) <grdhisteq.html>`_       | Histogram equalization for grid files                               |
+|  **grdhisteq** `(...) <grdhisteq.html>`__      | Histogram equalization for grid files                               |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdimage** `(...) <grdimage.html>`_         | Produce images from 2-D gridded data sets                           |
+|  **grdimage** `(...) <grdimage.html>`__        | Produce images from 2-D gridded data sets                           |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdinfo** `(...) <grdinfo.html>`_           | Get information about grid files                                    |
+|  **grdinfo** `(...) <grdinfo.html>`__          | Get information about grid files                                    |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdlandmask** `(...) <grdlandmask.html>`_   | Create masking grid files from shoreline data base                  |
+|  **grdlandmask** `(...) <grdlandmask.html>`__  | Create masking grid files from shoreline data base                  |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdmask** `(...) <grdmask.html>`_           | Reset grid nodes in/outside a clip path to constants                |
+|  **grdmask** `(...) <grdmask.html>`__          | Reset grid nodes in/outside a clip path to constants                |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdmath** `(...) <grdmath.html>`_           | Mathematical operations on grid files                               |
+|  **grdmath** `(...) <grdmath.html>`__          | Mathematical operations on grid files                               |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdpaste** `(...) <grdpaste.html>`_         | Paste together grid files along a common edge                       |
+|  **grdpaste** `(...) <grdpaste.html>`__        | Paste together grid files along a common edge                       |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdproject** `(...) <grdproject.html>`_     | Project gridded data sets onto a new coordinate system              |
+|  **grdproject** `(...) <grdproject.html>`__    | Project gridded data sets onto a new coordinate system              |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdreformat** `(...) <grdreformat.html>`_   | Converts grid files into other grid formats                         |
+|  **grdreformat** `(...) <grdreformat.html>`__  | Converts grid files into other grid formats                         |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdsample** `(...) <grdsample.html>`_       | Resample a 2-D gridded data set onto a new grid                     |
+|  **grdsample** `(...) <grdsample.html>`__      | Resample a 2-D gridded data set onto a new grid                     |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdtrack** `(...) <grdtrack.html>`_         | Sampling of 2-D gridded data set(s) along 1-D track                 |
+|  **grdtrack** `(...) <grdtrack.html>`__        | Sampling of 2-D gridded data set(s) along 1-D track                 |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdtrend** `(...) <grdtrend.html>`_         | Fits polynomial trends to grid files                                |
+|  **grdtrend** `(...) <grdtrend.html>`__        | Fits polynomial trends to grid files                                |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdvector** `(...) <grdvector.html>`_       | Plotting of 2-D gridded vector fields                               |
+|  **grdvector** `(...) <grdvector.html>`__      | Plotting of 2-D gridded vector fields                               |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdview** `(...) <grdview.html>`_           | 3-D perspective imaging of 2-D gridded data sets                    |
+|  **grdview** `(...) <grdview.html>`__          | 3-D perspective imaging of 2-D gridded data sets                    |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdvolume** `(...) <grdvolume.html>`_       | Calculate volumes under a surface within specified contour          |
+|  **grdvolume** `(...) <grdvolume.html>`__      | Calculate volumes under a surface within specified contour          |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **greenspline** `(...) <greenspline.html>`_   | Interpolation using Green's functions for splines in 1-3 dimensions |
+|  **greenspline** `(...) <greenspline.html>`__  | Interpolation using Green's functions for splines in 1-3 dimensions |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **kml2gmt** `(...) <kml2gmt.html>`_           | Extracts coordinates from Google Earth KML files                    |
+|  **kml2gmt** `(...) <kml2gmt.html>`__          | Extracts coordinates from Google Earth KML files                    |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **makecpt** `(...) <makecpt.html>`_           | Make color palette tables                                           |
+|  **makecpt** `(...) <makecpt.html>`__          | Make color palette tables                                           |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **mapproject** `(...) <mapproject.html>`_     | Transformation of coordinate systems for table data                 |
+|  **mapproject** `(...) <mapproject.html>`__    | Transformation of coordinate systems for table data                 |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **minmax** `(...) <minmax.html>`_             | Report extreme values in table data files                           |
+|  **minmax** `(...) <minmax.html>`__            | Report extreme values in table data files                           |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **nearneighbor** `(...) <nearneighbor.html>`_ | Nearest-neighbor gridding scheme                                    |
+|  **nearneighbor** `(...) <nearneighbor.html>`__| Nearest-neighbor gridding scheme                                    |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **project** `(...) <project.html>`_           | Project table data onto lines or great circles                      |
+|  **project** `(...) <project.html>`__          | Project table data onto lines or great circles                      |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **ps2raster** `(...) <ps2raster.html>`_       | Crop and convert *PostScript* files to raster images, EPS, and PDF  |
+|  **ps2raster** `(...) <ps2raster.html>`__      | Crop and convert *PostScript* files to raster images, EPS, and PDF  |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **psbasemap** `(...) <psbasemap.html>`_       | Create a basemap plot                                               |
+|  **psbasemap** `(...) <psbasemap.html>`__      | Create a basemap plot                                               |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **psclip** `(...) <psclip.html>`_             | Use polygon files to define clipping paths                          |
+|  **psclip** `(...) <psclip.html>`__            | Use polygon files to define clipping paths                          |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **pscoast** `(...) <pscoast.html>`_           | Plot (and fill) coastlines, borders, and rivers on maps             |
+|  **pscoast** `(...) <pscoast.html>`__          | Plot (and fill) coastlines, borders, and rivers on maps             |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **pscontour** `(...) <pscontour.html>`_       | Contour or image raw table data by triangulation                    |
+|  **pscontour** `(...) <pscontour.html>`__      | Contour or image raw table data by triangulation                    |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **pshistogram** `(...) <pshistogram.html>`_   | Plot a histogram                                                    |
+|  **pshistogram** `(...) <pshistogram.html>`__  | Plot a histogram                                                    |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **psimage** `(...) <psimage.html>`_           | Plot Sun raster files on a map                                      |
+|  **psimage** `(...) <psimage.html>`__          | Plot Sun raster files on a map                                      |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **pslegend** `(...) <pslegend.html>`_         | Plot a legend on a map                                              |
+|  **pslegend** `(...) <pslegend.html>`__        | Plot a legend on a map                                              |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **psmask** `(...) <psmask.html>`_             | Create overlay to mask out regions on maps                          |
+|  **psmask** `(...) <psmask.html>`__            | Create overlay to mask out regions on maps                          |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **psrose** `(...) <psrose.html>`_             | Plot sector or rose diagrams                                        |
+|  **psrose** `(...) <psrose.html>`__            | Plot sector or rose diagrams                                        |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **psscale** `(...) <psscale.html>`_           | Plot gray scale or color scale on maps                              |
+|  **psscale** `(...) <psscale.html>`__          | Plot gray scale or color scale on maps                              |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **pstext** `(...) <pstext.html>`_             | Plot text strings on maps                                           |
+|  **pstext** `(...) <pstext.html>`__            | Plot text strings on maps                                           |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **pswiggle** `(...) <pswiggle.html>`_         | Draw table data time-series along track on maps                     |
+|  **pswiggle** `(...) <pswiggle.html>`__        | Draw table data time-series along track on maps                     |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **psxy** `(...) <psxy.html>`_                 | Plot symbols, polygons, and lines on maps                           |
+|  **psxy** `(...) <psxy.html>`__                | Plot symbols, polygons, and lines on maps                           |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **psxyz** `(...) <psxyz.html>`_ Plot          | symbols, polygons, and lines in 3-D                                 |
+|  **psxyz** `(...) <psxyz.html>`__              | Plot symbols, polygons, and lines in 3-D                            |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **sample1d** `(...) <sample1d.html>`_         | Resampling of 1-D table data sets                                   |
+|  **sample1d** `(...) <sample1d.html>`__        | Resampling of 1-D table data sets                                   |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **spectrum1d** `(...) <spectrum1d.html>`_     | Compute various spectral estimates from time-series                 |
+|  **spectrum1d** `(...) <spectrum1d.html>`__    | Compute various spectral estimates from time-series                 |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **splitxyz** `(...) <splitxyz.html>`_         | Split *xyz* files into several segments                             |
+|  **splitxyz** `(...) <splitxyz.html>`__        | Split *xyz* files into several segments                             |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **surface** `(...) <surface.html>`_           | A continuous curvature gridding algorithm                           |
+|  **surface** `(...) <surface.html>`__          | A continuous curvature gridding algorithm                           |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **trend1d** `(...) <trend1d.html>`_           | Fits polynomial or Fourier trends to :math:`y = f(x)` series        |
+|  **trend1d** `(...) <trend1d.html>`__          | Fits polynomial or Fourier trends to :math:`y = f(x)` series        |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **trend2d** `(...) <trend2d.html>`_           | Fits polynomial trends to :math:`z = f(x,y)` series                 |
+|  **trend2d** `(...) <trend2d.html>`__          | Fits polynomial trends to :math:`z = f(x,y)` series                 |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **triangulate** `(...) <triangulate.html>`_   | Perform optimal Delauney triangulation and gridding                 |
+|  **triangulate** `(...) <triangulate.html>`__  | Perform optimal Delauney triangulation and gridding                 |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **xyz2grd** `(...) <xyz2grd.html>`_           | Convert an equidistant table *xyz* file to a 2-D grid file          |
+|  **xyz2grd** `(...) <xyz2grd.html>`__          | Convert an equidistant table *xyz* file to a 2-D grid file          |
 +------------------------------------------------+---------------------------------------------------------------------+
 
 GMT quick reference
@@ -1344,189 +1344,189 @@ summary of the standard command line options and a breakdown of the
 +------------------------------------------------+---------------------------------------------------------------------+
 |                                                | **FILTERING OF 1-D AND 2-D DATA**                                   |
 +================================================+=====================================================================+
-| **blockmean** `(...) <blockmean.html>`_        | L\ :math:`_2` (*x*,\ *y*,\ *z*) table data filter/decimator         |
+| **blockmean** `(...) <blockmean.html>`__       | L\ :math:`_2` (*x*,\ *y*,\ *z*) table data filter/decimator         |
 +------------------------------------------------+---------------------------------------------------------------------+
-| **blockmedian** `(...) <blockmean.html>`_      | L\ :math:`_1` (*x*,\ *y*,\ *z*) table data filter/decimator         |
+| **blockmedian** `(...) <blockmean.html>`__     | L\ :math:`_1` (*x*,\ *y*,\ *z*) table data filter/decimator         |
 +------------------------------------------------+---------------------------------------------------------------------+
-| **blockmode** `(...) <blockmode.html>`_        | Mode estimate (*x*,\ *y*,\ *z*) table data filter/decimator         |
+| **blockmode** `(...) <blockmode.html>`__       | Mode estimate (*x*,\ *y*,\ *z*) table data filter/decimator         |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **filter1d** `(...) <filter1d.html>`_         | Filter 1-D table data sets (time series)                            |
+|  **filter1d** `(...) <filter1d.html>`__        | Filter 1-D table data sets (time series)                            |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdfilter** `(...) <grdfilter.html>`_       | Filter 2-D gridded data sets in the space domain                    |
+|  **grdfilter** `(...) <grdfilter.html>`__      | Filter 2-D gridded data sets in the space domain                    |
 +------------------------------------------------+---------------------------------------------------------------------+
 
 +------------------------------------------------+---------------------------------------------------------------------+
 |                                                | **PLOTTING OF 1-D AND 2-D DATA**                                    |
 +================================================+=====================================================================+
-|  **grdcontour** `(...) <grdcontour.html>`_     | Contouring of 2-D gridded data sets                                 |
+|  **grdcontour** `(...) <grdcontour.html>`__    | Contouring of 2-D gridded data sets                                 |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdimage** `(...) <grdimage.html>`_         | Produce images from 2-D gridded data sets                           |
+|  **grdimage** `(...) <grdimage.html>`__        | Produce images from 2-D gridded data sets                           |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdvector** `(...) <grdvector.html>`_       | Plotting of 2-D gridded vector fields                               |
+|  **grdvector** `(...) <grdvector.html>`__      | Plotting of 2-D gridded vector fields                               |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdview** `(...) <grdview.html>`_           | 3-D perspective imaging of 2-D gridded data sets                    |
+|  **grdview** `(...) <grdview.html>`__          | 3-D perspective imaging of 2-D gridded data sets                    |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **psbasemap** `(...) <psbasemap.html>`_       | Create a basemap plot                                               |
+|  **psbasemap** `(...) <psbasemap.html>`__      | Create a basemap plot                                               |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **psclip** `(...) <psclip.html>`_             | Use polygon files to define clipping paths                          |
+|  **psclip** `(...) <psclip.html>`__            | Use polygon files to define clipping paths                          |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **pscoast** `(...) <pscoast.html>`_           | Plot (and fill) coastlines, borders, and rivers on maps             |
+|  **pscoast** `(...) <pscoast.html>`__          | Plot (and fill) coastlines, borders, and rivers on maps             |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **pscontour** `(...) <pscontour.html>`_       | Contour or image raw table data by triangulation                    |
+|  **pscontour** `(...) <pscontour.html>`__      | Contour or image raw table data by triangulation                    |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **pshistogram** `(...) <pshistogram.html>`_   | Plot a histogram                                                    |
+|  **pshistogram** `(...) <pshistogram.html>`__  | Plot a histogram                                                    |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **psimage** `(...) <psimage.html>`_           | Plot Sun raster files on a map                                      |
+|  **psimage** `(...) <psimage.html>`__          | Plot Sun raster files on a map                                      |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **pslegend** `(...) <pslegend.html>`_         | Plot a legend on a map                                              |
+|  **pslegend** `(...) <pslegend.html>`__        | Plot a legend on a map                                              |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **psmask** `(...) <psmask.html>`_             | Create overlay to mask out regions on maps                          |
+|  **psmask** `(...) <psmask.html>`__            | Create overlay to mask out regions on maps                          |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **psrose** `(...) <psrose.html>`_             | Plot sector or rose diagrams                                        |
+|  **psrose** `(...) <psrose.html>`__            | Plot sector or rose diagrams                                        |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **psscale** `(...) <psscale.html>`_           | Plot gray scale or color scale on maps                              |
+|  **psscale** `(...) <psscale.html>`__          | Plot gray scale or color scale on maps                              |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **pstext** `(...) <pstext.html>`_             | Plot text strings on maps                                           |
+|  **pstext** `(...) <pstext.html>`__            | Plot text strings on maps                                           |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **pswiggle** `(...) <pswiggle.html>`_         | Draw table data time-series along track on maps                     |
+|  **pswiggle** `(...) <pswiggle.html>`__        | Draw table data time-series along track on maps                     |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **psxy** `(...) <psxy.html>`_                 | Plot symbols, polygons, and lines on maps                           |
+|  **psxy** `(...) <psxy.html>`__                | Plot symbols, polygons, and lines on maps                           |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **psxyz** `(...) <psxyz.html>`_ Plot          | symbols, polygons, and lines in 3-D                                 |
+|  **psxyz** `(...) <psxyz.html>`__              | Plot symbols, polygons, and lines in 3-D                            |
 +------------------------------------------------+---------------------------------------------------------------------+
 
 +------------------------------------------------+---------------------------------------------------------------------+
 |                                                | **GRIDDING OF (X,Y,Z) TABLE DATA**                                  |
 +================================================+=====================================================================+
-|  **greenspline** `(...) <greenspline.html>`_   | Interpolation using Green's functions for splines in 1-3 dimensions |
+|  **greenspline** `(...) <greenspline.html>`__  | Interpolation using Green's functions for splines in 1-3 dimensions |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **nearneighbor** `(...) <nearneighbor.html>`_ | Nearest-neighbor gridding scheme                                    |
+|  **nearneighbor** `(...) <nearneighbor.html>`__| Nearest-neighbor gridding scheme                                    |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **surface** `(...) <surface.html>`_           | A continuous curvature gridding algorithm                           |
+|  **surface** `(...) <surface.html>`__          | A continuous curvature gridding algorithm                           |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **triangulate** `(...) <triangulate.html>`_   | Perform optimal Delauney triangulation and gridding                 |
+|  **triangulate** `(...) <triangulate.html>`__  | Perform optimal Delauney triangulation and gridding                 |
 +------------------------------------------------+---------------------------------------------------------------------+
 
 +------------------------------------------------+---------------------------------------------------------------------+
 |                                                | **SAMPLING OF 1-D AND 2-D DATA**                                    |
 +================================================+=====================================================================+
-|  **grdsample** `(...) <grdsample.html>`_       | Resample a 2-D gridded data set onto a new grid                     |
+|  **grdsample** `(...) <grdsample.html>`__      | Resample a 2-D gridded data set onto a new grid                     |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdtrack** `(...) <grdtrack.html>`_         | Sampling of 2-D gridded data set(s) along 1-D track                 |
+|  **grdtrack** `(...) <grdtrack.html>`__        | Sampling of 2-D gridded data set(s) along 1-D track                 |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **sample1d** `(...) <sample1d.html>`_         | Resampling of 1-D table data sets                                   |
+|  **sample1d** `(...) <sample1d.html>`__        | Resampling of 1-D table data sets                                   |
 +------------------------------------------------+---------------------------------------------------------------------+
 
 +------------------------------------------------+---------------------------------------------------------------------+
 |                                                | **PROJECTION AND MAP-TRANSFORMATION**                               |
 +================================================+=====================================================================+
-|  **grdproject** `(...) <grdproject.html>`_     | Project gridded data sets onto a new coordinate system              |
+|  **grdproject** `(...) <grdproject.html>`__    | Project gridded data sets onto a new coordinate system              |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **mapproject** `(...) <mapproject.html>`_     | Transformation of coordinate systems for table data                 |
+|  **mapproject** `(...) <mapproject.html>`__    | Transformation of coordinate systems for table data                 |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **project** `(...) <project.html>`_           | Project table data onto lines or great circles                      |
+|  **project** `(...) <project.html>`__          | Project table data onto lines or great circles                      |
 +------------------------------------------------+---------------------------------------------------------------------+
 
 +------------------------------------------------+---------------------------------------------------------------------+
 |                                                | **INFORMATION**                                                     |
 +================================================+=====================================================================+
-|  **gmtdefaults** `(...) <gmtdefaults.html>`_   | List the current default settings                                   |
+|  **gmtdefaults** `(...) <gmtdefaults.html>`__  | List the current default settings                                   |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **gmtget** `(...) <gmtget.html>`_             | Retrieve selected parameters in current file                        |
+|  **gmtget** `(...) <gmtget.html>`__            | Retrieve selected parameters in current file                        |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **gmtset** `(...) <gmtset.html>`_             | Change selected parameters in current file                          |
+|  **gmtset** `(...) <gmtset.html>`__            | Change selected parameters in current file                          |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdinfo** `(...) <grdinfo.html>`_           | Get information about grid files                                    |
+|  **grdinfo** `(...) <grdinfo.html>`__          | Get information about grid files                                    |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdinfo** `(...) <grdinfo.html>`_           | Get information about grid files                                    |
+|  **grdinfo** `(...) <grdinfo.html>`__          | Get information about grid files                                    |
 +------------------------------------------------+---------------------------------------------------------------------+
 
 +------------------------------------------------+---------------------------------------------------------------------+
 |                                                | **MISCELLANEOUS**                                                   |
 +================================================+=====================================================================+
-|  **gmtmath** `(...) <gmtmath.html>`_           | Mathematical operations on table data                               |
+|  **gmtmath** `(...) <gmtmath.html>`__          | Mathematical operations on table data                               |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **makecpt** `(...) <makecpt.html>`_           | Make color palette tables                                           |
+|  **makecpt** `(...) <makecpt.html>`__          | Make color palette tables                                           |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **spectrum1d** `(...) <spectrum1d.html>`_     | Compute various spectral estimates from time-series                 |
+|  **spectrum1d** `(...) <spectrum1d.html>`__    | Compute various spectral estimates from time-series                 |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **triangulate** `(...) <triangulate.html>`_   | Perform optimal Delauney triangulation and gridding                 |
+|  **triangulate** `(...) <triangulate.html>`__  | Perform optimal Delauney triangulation and gridding                 |
 +------------------------------------------------+---------------------------------------------------------------------+
 
 +------------------------------------------------+---------------------------------------------------------------------+
 |                                                | **CONVERT OR EXTRACT SUBSETS OF DATA**                              |
 +================================================+=====================================================================+
-|  **gmt2kml** `(...) <gmt2kml.html>`_           | Like  **psxy** but plots KML for use in Google Earth                |
+|  **gmt2kml** `(...) <gmt2kml.html>`__          | Like  **psxy** but plots KML for use in Google Earth                |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **gmtconvert** `(...) <gmtconvert.html>`_     | Convert data tables from one format to another                      |
+|  **gmtconvert** `(...) <gmtconvert.html>`__    | Convert data tables from one format to another                      |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **gmtselect** `(...) <gmtselect.html>`_       | Select subsets of table data based on multiple spatial criteria     |
+|  **gmtselect** `(...) <gmtselect.html>`__      | Select subsets of table data based on multiple spatial criteria     |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **gmtspatial** `(...) <gmtspatial.html>`_     | Geospatial operations on lines and polygons                         |
+|  **gmtspatial** `(...) <gmtspatial.html>`__    | Geospatial operations on lines and polygons                         |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **gmtstitch** `(...) <gmtstitch.html>`_       | Join segments into more complete lines or polygons                  |
+|  **gmtstitch** `(...) <gmtstitch.html>`__      | Join segments into more complete lines or polygons                  |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **gmtvector** `(...) <gmtvector.html>`_       | Basic operations on vectors in 2-D and 3-D                          |
+|  **gmtvector** `(...) <gmtvector.html>`__      | Basic operations on vectors in 2-D and 3-D                          |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grd2rgb** `(...) <grd2rgb.html>`_           | Convert Sun raster or grid file to red, green, blue component grids |
+|  **grd2rgb** `(...) <grd2rgb.html>`__          | Convert Sun raster or grid file to red, green, blue component grids |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grd2xyz** `(...) <grd2xyz.html>`_           | Conversion from 2-D grid file to table data                         |
+|  **grd2xyz** `(...) <grd2xyz.html>`__          | Conversion from 2-D grid file to table data                         |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdblend** `(...) <grdblend.html>`_         | Blend several partially over-lapping grid files onto one grid       |
+|  **grdblend** `(...) <grdblend.html>`__        | Blend several partially over-lapping grid files onto one grid       |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdcut** `(...) <grdcut.html>`_             | Cut a sub-region from a grid file                                   |
+|  **grdcut** `(...) <grdcut.html>`__            | Cut a sub-region from a grid file                                   |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdpaste** `(...) <grdpaste.html>`_         | Paste together grid files along a common edge                       |
+|  **grdpaste** `(...) <grdpaste.html>`__        | Paste together grid files along a common edge                       |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdreformat** `(...) <grdreformat.html>`_   | Converts grid files into other grid formats                         |
+|  **grdreformat** `(...) <grdreformat.html>`__  | Converts grid files into other grid formats                         |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **kml2gmt** `(...) <kml2gmt.html>`_           | Extracts coordinates from Google Earth KML files                    |
+|  **kml2gmt** `(...) <kml2gmt.html>`__          | Extracts coordinates from Google Earth KML files                    |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **splitxyz** `(...) <splitxyz.html>`_         | Split *xyz* files into several segments                             |
+|  **splitxyz** `(...) <splitxyz.html>`__        | Split *xyz* files into several segments                             |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **xyz2grd** `(...) <xyz2grd.html>`_           | Convert an equidistant table *xyz* file to a 2-D grid file          |
+|  **xyz2grd** `(...) <xyz2grd.html>`__          | Convert an equidistant table *xyz* file to a 2-D grid file          |
 +------------------------------------------------+---------------------------------------------------------------------+
 
 +------------------------------------------------+---------------------------------------------------------------------+
 |                                                | **DETERMINE TRENDS IN 1-D AND 2-D DATA**                            |
 +================================================+=====================================================================+
-|  **fitcircle** `(...) <fitcircle.html>`_       | Finds the best-fitting great or small circle for a set of points    |
+|  **fitcircle** `(...) <fitcircle.html>`__      | Finds the best-fitting great or small circle for a set of points    |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdtrack** `(...) <grdtrack.html>`_         | Sampling of 2-D gridded data set(s) along 1-D track                 |
+|  **grdtrack** `(...) <grdtrack.html>`__        | Sampling of 2-D gridded data set(s) along 1-D track                 |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **trend1d** `(...) <trend1d.html>`_           | Fits polynomial or Fourier trends to :math:`y = f(x)` series        |
+|  **trend1d** `(...) <trend1d.html>`__          | Fits polynomial or Fourier trends to :math:`y = f(x)` series        |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **trend2d** `(...) <trend2d.html>`_           | Fits polynomial trends to :math:`z = f(x,y)` series                 |
+|  **trend2d** `(...) <trend2d.html>`__          | Fits polynomial trends to :math:`z = f(x,y)` series                 |
 +------------------------------------------------+---------------------------------------------------------------------+
 
 +------------------------------------------------+---------------------------------------------------------------------+
 |                                                | **OTHER OPERATIONS ON 2-D GRIDS**                                   |
 +================================================+=====================================================================+
-|  **grd2cpt** `(...) <grd2cpt.html>`_           | Make color palette table from a grid files                          |
+|  **grd2cpt** `(...) <grd2cpt.html>`__          | Make color palette table from a grid files                          |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdclip** `(...) <grdclip.html>`_           | Limit the *z*-range in gridded data sets                            |
+|  **grdclip** `(...) <grdclip.html>`__          | Limit the *z*-range in gridded data sets                            |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdedit** `(...) <grdedit.html>`_           | Modify header information in a 2-D grid file                        |
+|  **grdedit** `(...) <grdedit.html>`__          | Modify header information in a 2-D grid file                        |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdfft** `(...) <grdfft.html>`_             | Perform operations on grid files in the frequency domain            |
+|  **grdfft** `(...) <grdfft.html>`__            | Perform operations on grid files in the frequency domain            |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdgradient** `(...) <grdgradient.html>`_   | Compute directional gradient from grid files                        |
+|  **grdgradient** `(...) <grdgradient.html>`__  | Compute directional gradient from grid files                        |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdhisteq** `(...) <grdhisteq.html>`_       | Histogram equalization for grid files                               |
+|  **grdhisteq** `(...) <grdhisteq.html>`__      | Histogram equalization for grid files                               |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdlandmask** `(...) <grdlandmask.html>`_   | Create masking grid files from shoreline data base                  |
+|  **grdlandmask** `(...) <grdlandmask.html>`__  | Create masking grid files from shoreline data base                  |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdmask** `(...) <grdmask.html>`_           | Reset grid nodes in/outside a clip path to constants                |
+|  **grdmask** `(...) <grdmask.html>`__          | Reset grid nodes in/outside a clip path to constants                |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdmath** `(...) <grdmath.html>`_           | Mathematical operations on grid files                               |
+|  **grdmath** `(...) <grdmath.html>`__          | Mathematical operations on grid files                               |
 +------------------------------------------------+---------------------------------------------------------------------+
-|  **grdvolume** `(...) <grdvolume.html>`_       | Calculate volumes under a surface within specified contour          |
+|  **grdvolume** `(...) <grdvolume.html>`__      | Calculate volumes under a surface within specified contour          |
 +------------------------------------------------+---------------------------------------------------------------------+
 
 +------------------------------------------------+---------------------------------------------------------------------+
 |                                                | **MANIPULATING POSTSCRIPT FILES**                                   |
 +================================================+=====================================================================+
-|  **ps2raster** `(...) <ps2raster.html>`_       | Crop and convert *PostScript* files to raster images, EPS, and PDF  |
+|  **ps2raster** `(...) <ps2raster.html>`__      | Crop and convert *PostScript* files to raster images, EPS, and PDF  |
 +------------------------------------------------+---------------------------------------------------------------------+
 
 
@@ -1901,7 +1901,7 @@ parameters and their default values can be found in the
 [fig:GMT:sub:`D`\ efaults\ :sub:`1`\ b], and
 [fig:GMT:sub:`D`\ efaults\ :sub:`1`\ c] show the parameters that affect
 plots). You may create your own ``gmt.conf`` files by running
-`gmtdefaults <gmtdefaults.html>`_ and then modify those
+`gmtdefaults <gmtdefaults.html>`__ and then modify those
 parameters you want to change. If you want to use the parameter settings
 in another file you can do so by specifying ``+<defaultfile>`` on the
 command line. This makes it easy to maintain several distinct parameter
@@ -2964,16 +2964,16 @@ documentation.
 If filenames are given for reading, *GMT* programs will first look for
 them in the current directory. If the file is not found, the programs
 will look in two other directories pointed to by environmental
-parameters (if set). These are **GMT\_USERDIR** and **GMT\_DATADIR**,
+parameters (if set). These are **GMT_USERDIR** and **GMT_DATADIR**,
 and they may be set by the user to point to directories that contain
-data sets of general use. Normally, the **GMT\_DATADIR** directory (or
+data sets of general use. Normally, the **GMT_DATADIR** directory (or
 directories: add multiple paths by separating them with colons
 (semi-colons under Windows)) will hold data sets of a general nature
 (tables, grids), although a particular use is to make available large
 grids accessible via the supplemental programs
-`grdraster <supplements/dbase/grdraster.html>`_ or
-`img2grd <supplements/imgsrc/img2grd.html>`_; see Appendix [app:A] for
-information about these supplemental programs. The **GMT\_USERDIR**
+`grdraster <supplements/dbase/grdraster.html>`__ or
+`img2grd <supplements/imgsrc/img2grd.html>`__; see Appendix [app:A] for
+information about these supplemental programs. The **GMT_USERDIR**
 directory may hold miscellaneous data sets more specific to the user;
 this directory also stores *GMT* defaults and other configuration files.
 Any directory that ends in a trailing slash (/) will be searched
@@ -5442,7 +5442,7 @@ Image presentations
 As our second example we will demonstrate how to make color images from
 gridded data sets (again, we will defer the actual making of grid files
 to later examples). We will use the supplemental program
-`grdraster <supplements/dbase/grdraster.html>`_ to extract 2-D grid files
+`grdraster <supplements/dbase/grdraster.html>`__ to extract 2-D grid files
 of bathymetry and Geosat geoid heights and put the two images on the
 same page. The region of interest is the Hawaiian islands, and due to
 the oblique trend of the island chain we prefer to rotate our
@@ -5455,15 +5455,15 @@ the lower left and upper right corner of region. In our case we choose
 `grdimage <grdimage.html>`_ to make the illustration:
 
 The first step extracts the 2-D data sets from the local data base using
-`**grdraster** <supplemments/dbase/grdraster.html>`_, which is a supplemental
+`grdraster <supplemments/dbase/grdraster.html>`__, which is a supplemental
 utility program (see Appendix [app:A]) that may be adapted to reflect
 the nature of your data base format. It automatically figures out the
 required extent of the region given the two corners points and the
 projection. The extreme meridians and parallels enclosing the oblique
 region is **-R**\ 159:50/220:10/3:10/47:35. This is the area extracted
-by `grdraster <supplemments/dbase/grdraster.html>`_. For your convenience
+by `grdraster <supplemments/dbase/grdraster.html>`__. For your convenience
 we have commented out those lines and provided the two extracted files
-so you do not need `**grdraster** <supplemments/dbase/grdraster.html>`_ to try
+so you do not need `grdraster <supplemments/dbase/grdraster.html>`__ to try
 this example. By using the embedded grid file format mechanism we saved
 the topography using kilometers as the data unit. We now have two grid
 files with bathymetry and geoid heights, respectively. We use
@@ -5530,7 +5530,7 @@ A 3-D perspective mesh plot
 This example will illustrate how to make a fairly complicated composite
 figure. We need a subset of the ETOPO5 bathymetry [24]_ and Geosat geoid
 data sets which we will extract from the local data bases using
-`**grdraster** <supplemments/dbase/grdraster.html>`_. We would like to show a
+`grdraster <supplemments/dbase/grdraster.html>`__. We would like to show a
 2-layer perspective plot where layer one shows a contour map of the
 marine geoid with the location of the Hawaiian islands superposed, and a
 second layer showing the 3-D mesh plot of the topography. We also add an
@@ -6600,7 +6600,7 @@ A. GMT supplemental packages
 ============================
 
 These packages are for the most part written and supported by us, but
-there are some exceptions. They provide extensions of *GMT*\ that are
+there are some exceptions. They provide extensions of *GMT* that are
 needed for particular rather than general applications. The software is
 provided in a separate, supplemental archive (GMT\_suppl.tar.gz (or
 .bz2); see Appendix `D. Availability of GMT and related code`_).
@@ -6617,7 +6617,7 @@ directories:
 dbase: gridded data extractor
 -----------------------------
 
-This package contains `grdraster <supplemments/dbase/grdraster.html>`_
+This package contains `grdraster <supplemments/dbase/grdraster.html>`__
 which you can use to extract data from global gridded data sets such as
 those available from NGDC. We have used it to prepare some of the grids
 in the examples (Chapter [ch:6]). You can also customize it to read your

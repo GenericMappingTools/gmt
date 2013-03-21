@@ -10,24 +10,24 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **grdraster** [ *filenumber* \| *"text pattern"* ]
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [ **-G**\ *grdfile* ] [
-**-I**\ *xinc*\ [**m**\ \|\ **s**][/\ *yinc*\ [**m**\ \|\ **s**]] ] [
-**-J**\ *parameters* ] [ **-V**\ [*level*\ ] ] [
-**-bo**\ [*ncols*][*type*] ] [ **-o**\ *cols*\ [,...] ]
+|SYN_OPT-R| [ **-G**\ *grdfile* ]
+[ **-I**\ *xinc*\ [**m**\ \|\ **s**][/\ *yinc*\ [**m**\ \|\ **s**]] ]
+[ **-J**\ *parameters* ] [ |SYN_OPT-V| ]
+[ **-bo**\ [*ncols*][*type*] ] [ **-o**\ *cols*\ [,...] ]
 
 Description
 -----------
 
 **grdraster** reads a file called *grdraster.info* from the current
 working directory, the directories pointed to by the environment
-variables **$GMT\_USERDIR** and **$GMT\_DATADIR**, or in
-**$GMT\_SHAREDIR**/dbase (in that order). The file *grdraster.info*
+variables **$GMT_USERDIR** and **$GMT_DATADIR**, or in
+**$GMT_SHAREDIR**/dbase (in that order). The file *grdraster.info*
 defines binary arrays of data stored in scan-line format in data files.
 Each file is given a *filenumber* in the info file. **grdraster**
 figures out how to load the raster data into a grid file spanning a
 region defined by **-R**. By default the grid spacing equals the raster
 spacing. The **-I** option may be used to sub-sample the raster data. No
-filtering or interpolating is done, however; the *x\_inc* and *y\_inc*
+filtering or interpolating is done, however; the *x_inc* and *y_inc*
 of the grid must be multiples of the increments of the raster file and
 **grdraster** simply takes every n’th point. The output of **grdraster**
 is either grid or pixel registered depending on the registration of the
@@ -60,7 +60,7 @@ Optional Arguments
 
 **-G**\ *grdfile*
     Name of output grid file. If not set, the grid will be written as
-    ASCII (or binary; see **-bo**\ [*ncols*\ ][*type*\ ]) xyz-triplets
+    ASCII (or binary; see **-bo**\ [*ncols*][*type*]) xyz-triplets
     to stdout instead. 
 
 .. include:: ../../explain_-I.rst_
@@ -104,5 +104,5 @@ binary double precision xyz-triplets to standard output:
 See Also
 --------
 
-`gmtdefaults <gmtdefaults.html>`_, `GMT <GMT.html>`_,
-`grdsample <grdsample.html>`_, `grdfilter <grdfilter.html>`_
+`gmtdefaults <../../gmtdefaults.html>`__, `GMT <../../GMT.html>`__,
+`grdsample <../../grdsample.html>`__, `grdfilter <../../grdfilter.html>`__
