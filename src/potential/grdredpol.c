@@ -1012,7 +1012,7 @@ int GMT_grdredpol_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_grdredpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_grdredpol_parse (struct GMT_CTRL *GMT, struct REDPOL_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to grdredpol and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -1026,7 +1026,7 @@ int GMT_grdredpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, struct
 	int j;
 	char	p[GMT_TEXT_LEN256];
 	struct	GMT_OPTION *opt = NULL;
-	struct	GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -1059,7 +1059,7 @@ int GMT_grdredpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, struct
 							Ctrl->E.dip_dec_grd = true;
 							break;
 						default:
-							GMT_Report (C, GMT_MSG_NORMAL, "ERROR using option -E\n");
+							GMT_Report (API, GMT_MSG_NORMAL, "ERROR using option -E\n");
 							n_errors++;
 							break;
 					}
@@ -1072,11 +1072,11 @@ int GMT_grdredpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, struct
 				j = sscanf (opt->arg, "%d/%d", &Ctrl->F.ncoef_row, &Ctrl->F.ncoef_col);
 				if (j == 1) Ctrl->F.compute_n = true;	/* Case of only one filter dimension was given */
 				if (Ctrl->F.ncoef_row %2 != 1 || Ctrl->F.ncoef_col %2 != 1) {
-					GMT_Report (C, GMT_MSG_NORMAL, "Error: number of filter coefficients must be odd\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Error: number of filter coefficients must be odd\n");
 					n_errors++;
 				}
 				if (Ctrl->F.ncoef_row < 5 || Ctrl->F.ncoef_col < 5) {
-					GMT_Report (C, GMT_MSG_NORMAL, "That was a ridiculous number of filter coefficients\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "That was a ridiculous number of filter coefficients\n");
 					n_errors++;
 				}
 				break;
@@ -1092,7 +1092,7 @@ int GMT_grdredpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, struct
 					else if (opt->arg[j] == 'r')
 						Ctrl->M.mirror = false;
 					else {
-						GMT_Report (C, GMT_MSG_NORMAL, "Warning: Error using option -M (option ignored)\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Warning: Error using option -M (option ignored)\n");
 						Ctrl->M.pad_zero = true;
 					}
 				}
@@ -1120,7 +1120,7 @@ int GMT_grdredpol_parse (struct GMTAPI_CTRL *C, struct REDPOL_CTRL *Ctrl, struct
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G option: Must specify output file\n");
 
 	if (Ctrl->C.const_f && Ctrl->C.use_igrf) {	
-		GMT_Report (C, GMT_MSG_NORMAL, "Warning: -E option overrides -C\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Warning: -E option overrides -C\n");
 		Ctrl->C.const_f = false;
 	}
 
@@ -1170,7 +1170,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdredpol_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdredpol_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_grdredpol_parse (GMT, Ctrl, options))) Return (error);
 	
 	/*--------------------------- This is the grdredpol main code --------------------------*/
 

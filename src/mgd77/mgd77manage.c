@@ -317,7 +317,7 @@ int got_default_answer (char *line, char *answer)
 	return (answer[0] != '\0');
 }
 
-int GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_mgd77manage_parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to mgd77manage and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -330,7 +330,7 @@ int GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *Ctrl,
 	nc_type c_nc_type;
 	char file[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	GMT_memset (file, GMT_BUFSIZ, char);
 	
@@ -388,7 +388,7 @@ int GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *Ctrl,
 									Ctrl->A.e77_skip_mode[E77_SLOPES_MODE] = true;
 									break;
 								default:
-									GMT_Report (C, GMT_MSG_NORMAL, "Error: -Ae modifiers must be combination of hfnvs\n");
+									GMT_Report (API, GMT_MSG_NORMAL, "Error: -Ae modifiers must be combination of hfnvs\n");
 									n_errors++;
 									break;
 							}
@@ -414,7 +414,7 @@ int GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *Ctrl,
 						n_errors += decode_A_options (0, &opt->arg[k+1], file, Ctrl->A.parameters);
 						break;
 					default:
-						GMT_Report (C, GMT_MSG_NORMAL, "Error: -A modifier must be a|c|d|D|e|g|i|n|t|T\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Error: -A modifier must be a|c|d|D|e|g|i|n|t|T\n");
 						n_errors++;
 						break;
 				}
@@ -427,7 +427,7 @@ int GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *Ctrl,
 				if (opt->arg[0] == 'g') Ctrl->C.mode = 2;
 				if (opt->arg[0] == 'e') Ctrl->C.mode = 3;
 				if (Ctrl->C.mode < 1 || Ctrl->C.mode > 3) {
-					GMT_Report (C, GMT_MSG_NORMAL, "Error -C: Flag must be f, g, or e\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Error -C: Flag must be f, g, or e\n");
 					n_errors++;
 				}
 				break;
@@ -454,12 +454,12 @@ int GMT_mgd77manage_parse (struct GMTAPI_CTRL *C, struct MGD77MANAGE_CTRL *Ctrl,
 				Ctrl->N.code[0] = opt->arg[0];
 #ifdef GMT_COMPAT
 				if (Ctrl->N.code[0] == 'm') {
-					GMT_Report (C, GMT_MSG_COMPAT, "Warning -N: Unit m for miles is deprecated; use unit M instead\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning -N: Unit m for miles is deprecated; use unit M instead\n");
 					Ctrl->N.code[0] = 'M';
 				}
 #endif
 				if (!strchr (GMT_LEN_UNITS2, (int)Ctrl->N.code[0])) {
-					GMT_Report (C, GMT_MSG_NORMAL, "Error -N: Unit must be from %s\n", GMT_LEN_UNITS2_DISPLAY);
+					GMT_Report (API, GMT_MSG_NORMAL, "Error -N: Unit must be from %s\n", GMT_LEN_UNITS2_DISPLAY);
 					n_errors++;
 				}
 				break;
@@ -544,7 +544,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_mgd77manage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_mgd77manage_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_mgd77manage_parse (GMT, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the mgd77manage main code ----------------------------*/
 

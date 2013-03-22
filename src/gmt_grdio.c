@@ -316,6 +316,93 @@ int parse_grd_format_scale (struct GMT_CTRL *Ctrl, struct GMT_GRID_HEADER *heade
 	return GMT_NOERROR;
 }
 
+#define GMT_MULTIPLEX	0
+#define GMT_DEMULTIPLEX	1
+
+void GMT_grd_mux_demux (struct GMT_CTRL *C, struct GMT_GRID *G, unsigned int mode)
+{	/* Multiplex and demultiplex complex grids.
+ 	 * Complex grids are read/written by dealing with just one component: real or imag.
+	 * Thus, at read|write the developer must specify which component (GMT_CMPLX_REAL|IMAG).
+	 * For fast disk i/o we read complex data in serial.  I.e., if we ask for GMT_CMPLX_REAL
+	 * then the array will contain RRRRR....________, where ______ is unused space for the
+	 * imaginary components.  Likewise, if we requested GMT_CMPLX_IMAG then the array will
+	 * be returned as _______...IIIIIII....
+	 * Operations like FFTs typically required the data to be interleaved, i.e., in the
+	 * form RIRIRIRI.... Then, when the FFT work is done and we wish to write out the
+	 * result we will need to demultiplex the array back to its serial RRRRR....IIIII
+	 * format before writing takes place.
+	 * GMT_grd_mux_demux performs either multiplex or demultiplex, depending on mode.
+	 * If grid is not complex then we just return doing nothing.
+	 */
+	uint64_t row, col_1, col_2, left_node_1, left_node_2, offset;
+	
+	if (G->header->complex_mode == 0) return;	/* Nuthin' to do */
+	
+	if (mode == GMT_MULTIPLEX) {	/* Transform from RRRRR...IIIII to RIRIRIRIRI... */
+		/* IN most cases we will actually have RRRRR...______ or _____...IIIII..
+		 * which means half the array is empty and it is easy to shuffle. However,
+		 * in the case with actual RRRR...IIII there is no simple way to do this inplace */
+		if ((G->header->complex_mode && GMT_GRID_IS_COMPLEX_MASK) == GMT_GRID_IS_COMPLEX_MASK) {
+			/* Implement later */
+		}
+		else if (G->header->complex_mode && GMT_GRID_IS_COMPLEX_REAL) {
+			/* Here we have RRRRRR..._________ and want R_R_R_R_... */
+			/* If memory not allcoated, do a new align, duplicate, free first */
+			for (row = G->header->ny; row > 0; row--) {	/* Doing from last to first row */
+				left_node_1 = GMT_IJP (G->header, row-1, 0);	/* Start of row in RRRRR layout */
+				left_node_2 = 2 * left_node_1;	/* Start of same row in R_R_R_ layout */
+				for (col_1 = col_2 = 0; col_1 < G->header->nx; col_1++, col_2 += 2) {
+					G->data[left_node_2+col_2] = G->data[left_node_1+col_1];
+					G->data[left_node_1+col_1] = 0.0;	/* Set the Imag component to zero */
+				}
+			}
+		}
+		else {	/* Here we have _____...IIIII and want _I_I_I_I */
+			/* If memory not allcoated, do a new align, duplicate, free first, and then offset is 0 */
+			offset = GMT_IJP (G->header, G->header->ny, 0);	/* Position of 1st I in ____...IIII... */
+			for (row = 0; row < G->header->ny; row++) {	/* Doing from first to last row */
+				left_node_1 = GMT_IJP (G->header, row, 0);	/* Start of row in _____IIII layout not counting ____*/
+				left_node_2 = 2 * left_node_1;			/* Start of same row in _I_I_I... layout */
+				left_node_1 += offset;				/* Move past length of all ____... */
+				for (col_1 = 0, col_2 = 1; col_1 < G->header->nx; col_1++, col_2 += 2) {
+					G->data[left_node_2+col_2] = G->data[left_node_1+col_1];
+					G->data[left_node_1+col_1] = 0.0;	/* Set the Real component to zero */
+				}
+			}
+		}
+	}
+	else if (mode == GMT_DEMULTIPLEX) {	/* Transform from RIRIRIRIRI... to RRRRR...IIIII  */
+		if ((G->header->complex_mode && GMT_GRID_IS_COMPLEX_MASK) == GMT_GRID_IS_COMPLEX_MASK) {
+			/* Implement later */
+		}
+		else if (G->header->complex_mode && GMT_GRID_IS_COMPLEX_REAL) {
+			/* Here we have R_R_R_R_... and want RRRRRR..._______  */
+			for (row = 0; row < G->header->ny; row++) {	/* Doing from first to last row */
+				left_node_1 = GMT_IJP (G->header, row, 0);	/* Start of row in RRRRR... */
+				left_node_2 = 2 * left_node_1;			/* Start of same row in R_R_R_R... layout */
+				for (col_1 = col_2 = 0; col_1 < G->header->nx; col_1++, col_2 += 2) {
+					G->data[left_node_1+col_1] = G->data[left_node_2+col_2];
+					G->data[left_node_1+col_1] = 0.0;	/* Set the Real component to zero */
+				}
+			}
+			offset = GMT_IJP (G->header, G->header->ny, 0);	/* Position of 1st _ in RRRR...____ */
+			GMT_memset (&G->data[offset], G->header->size / 2, float);	/* Wipe _____ portion clean */
+		}
+		else {	/* Here we have _I_I_I_I and want _____...IIIII */
+			offset = GMT_IJP (G->header, G->header->ny, 0);	/* Position of 1st I in ____...IIII... */
+			for (row = 0; row < G->header->ny; row++) {	/* Doing from first to last row */
+				left_node_1 = GMT_IJP (G->header, row, 0);	/* Start of row in _____IIII layout not counting ____*/
+				left_node_2 = 2 * left_node_1;			/* Start of same row in _I_I_I... layout */
+				left_node_1 += offset;				/* Move past length of all ____... */
+				for (col_1 = 0, col_2 = 1; col_1 < G->header->nx; col_1++, col_2 += 2) {
+					G->data[left_node_1+col_1] = G->data[left_node_2+col_2];
+				}
+			}
+			GMT_memset (G->data, G->header->size / 2, float);	/* Wipe _____ portion clean */
+		}
+	}
+}
+
 int GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GMT_GRID_HEADER *header, bool magic)
 {
 	/* This functions does a couple of things:

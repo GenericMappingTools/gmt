@@ -206,7 +206,7 @@ int GMT_gmtdigitize_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 	
-int GMT_gmtdigitize_parse (struct GMTAPI_CTRL *C, struct GMTDIGITIZE_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_gmtdigitize_parse (struct GMT_CTRL *GMT, struct GMTDIGITIZE_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to gmtdigitize and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -216,7 +216,6 @@ int GMT_gmtdigitize_parse (struct GMTAPI_CTRL *C, struct GMTDIGITIZE_CTRL *Ctrl,
 
 	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
 
 
 	for (opt = options; opt; opt = opt->next) {
@@ -313,7 +312,7 @@ int GMT_gmtdigitize (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	GMT = GMT_begin_module (API, "gmtdigitize", &GMT_cpy);				/* Save current state */
 	Ctrl = New_gmtdigitize_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtdigitize_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_gmtdigitize_parse (GMT, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the gmtdigitize main code ----------------------------*/
 

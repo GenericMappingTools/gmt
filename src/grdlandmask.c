@@ -116,7 +116,7 @@ int GMT_grdlandmask_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_grdlandmask_parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to grdlandmask and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -127,7 +127,7 @@ int GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *Ctrl,
 	unsigned int n_errors = 0, j, pos, n_files = 0;
 	char line[GMT_TEXT_LEN256], ptr[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -167,7 +167,7 @@ int GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *Ctrl,
 				strncpy (line, opt->arg,  GMT_TEXT_LEN256);
 #ifdef GMT_COMPAT
 				if (line[strlen(line)-1] == 'o') { /* Edge is considered outside */
-					GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -N...o is deprecated; use -E instead\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -N...o is deprecated; use -E instead\n");
 					Ctrl->E.active = true;
 					Ctrl->E.inside = GMT_INSIDE;
 					line[strlen(line)-1] = 0;
@@ -179,7 +179,7 @@ int GMT_grdlandmask_parse (struct GMTAPI_CTRL *C, struct GRDLANDMASK_CTRL *Ctrl,
 					j++;
 				}
 				if (!(j == 2 || j == 5)) {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -N option: Specify 2 or 5 arguments\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N option: Specify 2 or 5 arguments\n");
 					n_errors++;
 				}
 				Ctrl->N.mode = (j == 2);
@@ -239,7 +239,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdlandmask_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdlandmask_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_grdlandmask_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdlandmask main code ----------------------------*/
 

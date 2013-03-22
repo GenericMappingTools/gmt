@@ -124,7 +124,7 @@ int GMT_sph2grd_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_sph2grd_parse (struct GMTAPI_CTRL *C, struct SPH2GRD_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_sph2grd_parse (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to sph2grd and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -135,7 +135,7 @@ int GMT_sph2grd_parse (struct GMTAPI_CTRL *C, struct SPH2GRD_CTRL *Ctrl, struct 
 	unsigned int n_errors = 0, k, n;
 	char A[GMT_TEXT_LEN32], B[GMT_TEXT_LEN32], D[GMT_TEXT_LEN32], E[GMT_TEXT_LEN32];
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -148,11 +148,11 @@ int GMT_sph2grd_parse (struct GMTAPI_CTRL *C, struct SPH2GRD_CTRL *Ctrl, struct 
 			case 'D':	/* Evaluate derivative solutions */
 				Ctrl->D.active = true;
 				Ctrl->D.mode = opt->arg[0];
-				GMT_Report (C, GMT_MSG_NORMAL, "Comment -D: Not implemented yet.\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Comment -D: Not implemented yet.\n");
 				break;
 			case 'E':	/* Evaluate on ellipsoid */
 				Ctrl->E.active = true;
-				GMT_Report (C, GMT_MSG_NORMAL, "Comment -E: Not implemented yet.\n");
+				GMT_Report (API, GMT_MSG_NORMAL, "Comment -E: Not implemented yet.\n");
 				break;
 			case 'F':	/* Bandpass or Gaussian filter -F[k]<lc>/<lp>/<hp>/<hc> or -F[k]<lo>/<hi>*/
 				Ctrl->F.active = true;
@@ -172,7 +172,7 @@ int GMT_sph2grd_parse (struct GMTAPI_CTRL *C, struct SPH2GRD_CTRL *Ctrl, struct 
 					Ctrl->F.mode = SPH2GRD_GAUSSIAN;
 				}
 				else {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -F: Cannot find 2 or 4 tokens separated by slashes.\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F: Cannot find 2 or 4 tokens separated by slashes.\n");
 					n_errors++;
 				}
 				break;
@@ -247,7 +247,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_sph2grd_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_sph2grd_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_sph2grd_parse (GMT, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the sph2grd main code ----------------------------*/
 

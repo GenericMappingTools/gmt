@@ -130,7 +130,7 @@ int GMT_triangulate_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_triangulate_parse (struct GMTAPI_CTRL *C, struct TRIANGULATE_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_triangulate_parse (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to triangulate and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -140,7 +140,7 @@ int GMT_triangulate_parse (struct GMTAPI_CTRL *C, struct TRIANGULATE_CTRL *Ctrl,
 
 	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -158,7 +158,7 @@ int GMT_triangulate_parse (struct GMTAPI_CTRL *C, struct TRIANGULATE_CTRL *Ctrl,
 					case 'y': case 'Y':
 						Ctrl->D.dir = GMT_Y; break;
 					default:
-						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: Give -Dx or -Dy\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Give -Dx or -Dy\n");
 						n_errors++; break;
 				}
 				break;
@@ -179,7 +179,7 @@ int GMT_triangulate_parse (struct GMTAPI_CTRL *C, struct TRIANGULATE_CTRL *Ctrl,
 				break;
 #ifdef GMT_COMPAT
 			case 'm':
-				GMT_Report (C, GMT_MSG_COMPAT, "Warning: -m option is deprecated and reverted back to -M.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -m option is deprecated and reverted back to -M.\n");
 #endif
 			case 'M':
 				Ctrl->M.active = true;
@@ -256,7 +256,7 @@ int GMT_triangulate (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_triangulate_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_triangulate_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_triangulate_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the triangulate main code ----------------------------*/
 

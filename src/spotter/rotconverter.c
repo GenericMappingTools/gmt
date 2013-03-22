@@ -142,7 +142,7 @@ int GMT_rotconverter_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_rotconverter_parse (struct GMTAPI_CTRL *C, struct ROTCONVERTER_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_rotconverter_parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to rotconverter and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -152,7 +152,7 @@ int GMT_rotconverter_parse (struct GMTAPI_CTRL *C, struct ROTCONVERTER_CTRL *Ctr
 
 	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -177,14 +177,14 @@ int GMT_rotconverter_parse (struct GMTAPI_CTRL *C, struct ROTCONVERTER_CTRL *Ctr
 			case 'F':
 				Ctrl->F.active = true;
 				if (strlen (opt->arg) != 1) {
-					GMT_Report (C, GMT_MSG_NORMAL, "Error: Must specify -F<out>\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Error: Must specify -F<out>\n");
 					n_errors++;
 					continue;
 				}
 				switch (opt->arg[0]) {	/* Output format */
 #ifdef GMT_COMPAT
 					case 'f':
-						GMT_Report (C, GMT_MSG_COMPAT, "Warning: -Ff is deprecated; use -Ft instead.\n");
+						GMT_Report (API, GMT_MSG_COMPAT, "Warning: -Ff is deprecated; use -Ft instead.\n");
 #endif
 					case 't':
 						Ctrl->F.mode = true;
@@ -193,7 +193,7 @@ int GMT_rotconverter_parse (struct GMTAPI_CTRL *C, struct ROTCONVERTER_CTRL *Ctr
 						Ctrl->F.mode = false;
 						break;
 					default:
-						GMT_Report (C, GMT_MSG_NORMAL, "Error: Must specify t|s\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Error: Must specify t|s\n");
 						n_errors++;
 						break;
 				}
@@ -304,7 +304,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args)
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
 	Ctrl = New_rotconverter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_rotconverter_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_rotconverter_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the rotconverter main code ----------------------------*/
 

@@ -244,7 +244,7 @@ int GMT_pscoast_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to pscoast and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -257,7 +257,7 @@ int GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, struct 
 	int k;
 	bool clipping;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 	struct GMT_PEN pen;
 	char *string = NULL;
 
@@ -309,7 +309,7 @@ int GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, struct 
 			case 'I':
 				Ctrl->I.active = true;
 				if (!opt->arg[0]) {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: -I option takes at least one argument\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -I option takes at least one argument\n");
 					n_errors++;
 					continue;
 				}
@@ -342,7 +342,7 @@ int GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, struct 
 					default:
 						k = atoi (opt->arg);
 						if (k < 0 || k >= GSHHS_N_RLEVELS) {
-							GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -I option: Feature not in list!\n");
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I option: Feature not in list!\n");
 							n_errors++;
 						}
 						else
@@ -356,7 +356,7 @@ int GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, struct 
 				break;
 #ifdef GMT_COMPAT
 			case 'm':
-				GMT_Report (C, GMT_MSG_COMPAT, "Warning: -m option is deprecated and reverted back to -M.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -m option is deprecated and reverted back to -M.\n");
 #endif
 			case 'M':
 				Ctrl->M.active = true;
@@ -364,7 +364,7 @@ int GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, struct 
 			case 'N':
 				Ctrl->N.active = true;
 				if (!opt->arg[0]) {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: -N option takes at least one argument\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -N option takes at least one argument\n");
 					n_errors++;
 					continue;
 				}
@@ -382,7 +382,7 @@ int GMT_pscoast_parse (struct GMTAPI_CTRL *C, struct PSCOAST_CTRL *Ctrl, struct 
 					default:
 						k = opt->arg[0] - '1';
 						if (k < 0 || k >= GSHHS_N_BLEVELS) {
-							GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -N option: Feature not in list!\n");
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N option: Feature not in list!\n");
 							n_errors++;
 						}
 						else
@@ -583,7 +583,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_pscoast_Ctrl (GMT);		/* Allocate and initialize defaults in a new control structure */
-	if ((error = GMT_pscoast_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_pscoast_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the pscoast main code ----------------------------*/
 

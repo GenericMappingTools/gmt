@@ -365,7 +365,7 @@ int GMT_ps2raster_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_ps2raster_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to ps2raster and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -378,7 +378,7 @@ int GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl, str
 	bool grayscale;
 	char text[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64], txt_c[GMT_TEXT_LEN64], txt_d[GMT_TEXT_LEN64], *anti = NULL;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -414,7 +414,7 @@ int GMT_ps2raster_parse (struct GMTAPI_CTRL *C, struct PS2RASTER_CTRL *Ctrl, str
 							break;
 						default:
 							n_errors++;
-							GMT_Report (C, GMT_MSG_NORMAL, "-A: Give 1, 2, or 4 margins\n");
+							GMT_Report (API, GMT_MSG_NORMAL, "-A: Give 1, 2, or 4 margins\n");
 							break;
 					}
 				}
@@ -607,7 +607,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_ps2raster_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_ps2raster_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_ps2raster_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the ps2raster main code ----------------------------*/
 

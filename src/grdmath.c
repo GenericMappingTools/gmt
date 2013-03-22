@@ -175,7 +175,7 @@ int GMT_grdmath_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_grdmath_parse (struct GMTAPI_CTRL *C, struct GRDMATH_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_grdmath_parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to grdmath and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -186,7 +186,7 @@ int GMT_grdmath_parse (struct GMTAPI_CTRL *C, struct GRDMATH_CTRL *Ctrl, struct 
 	unsigned int n_errors = 0;
 	bool missing_equal = true;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -226,15 +226,15 @@ int GMT_grdmath_parse (struct GMTAPI_CTRL *C, struct GRDMATH_CTRL *Ctrl, struct 
 	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);
 
 	if (missing_equal) {
-		GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: Usage is <operations> = [outfile]\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Usage is <operations> = [outfile]\n");
 		n_errors++;
 	}
 	if (Ctrl->I.active && !GMT->common.R.active) {
-		GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: -I requires the -R option\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -I requires the -R option\n");
 		n_errors++;
 	}
 	if (Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0)) {
-		GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -I option: Must specify positive increment(s)\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I option: Must specify positive increment(s)\n");
 		n_errors++;
 	}
 
@@ -3338,7 +3338,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	Ctrl = New_grdmath_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	if ((error = GMT_grdmath_parse (API, Ctrl, options))) Return1 (error);
+	if ((error = GMT_grdmath_parse (GMT, Ctrl, options))) Return1 (error);
 
 	/*---------------------------- This is the grdmath main code ----------------------------*/
 

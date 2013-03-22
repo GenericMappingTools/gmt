@@ -263,7 +263,7 @@ int GMT_grd2rgb_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_grd2rgb_parse (struct GMTAPI_CTRL *C, struct GRD2RGB_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_grd2rgb_parse (struct GMT_CTRL *GMT, struct GRD2RGB_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -275,7 +275,6 @@ int GMT_grd2rgb_parse (struct GMTAPI_CTRL *C, struct GRD2RGB_CTRL *Ctrl, struct 
 	bool guess = false;
 	char ptr[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
 	
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -393,7 +392,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grd2rgb_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grd2rgb_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_grd2rgb_parse (GMT, Ctrl, options))) Return (error);
 	PSL = GMT->PSL;	/* This module also needs PSL */
 
 	/*---------------------------- This is the gmt2kml main code ----------------------------*/

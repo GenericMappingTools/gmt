@@ -85,7 +85,7 @@ int GMT_psbasemap_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_psbasemap_parse (struct GMTAPI_CTRL *C, struct PSBASEMAP_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_psbasemap_parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to psbasemap and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -96,7 +96,7 @@ int GMT_psbasemap_parse (struct GMTAPI_CTRL *C, struct PSBASEMAP_CTRL *Ctrl, str
 
 	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -106,7 +106,7 @@ int GMT_psbasemap_parse (struct GMTAPI_CTRL *C, struct PSBASEMAP_CTRL *Ctrl, str
 
 #ifdef GMT_COMPAT
 			case 'G':	/* Set canvas color */
-				GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -G is deprecated; -B...+g%s was set instead, use this in the future.\n", opt->arg);
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -G is deprecated; -B...+g%s was set instead, use this in the future.\n", opt->arg);
 				GMT->current.map.frame.paint = true;
 				if (GMT_getfill (GMT, opt->arg, &GMT->current.map.frame.fill)) {
 					GMT_fill_syntax (GMT, 'G', " ");
@@ -162,7 +162,7 @@ int GMT_psbasemap (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_psbasemap_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_psbasemap_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_psbasemap_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the psbasemap main code ----------------------------*/
 

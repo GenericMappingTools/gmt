@@ -157,7 +157,7 @@ int GMT_x2sys_list_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_x2sys_list_parse (struct GMTAPI_CTRL *C, struct X2SYS_LIST_CTRL *Ctrl, struct GMT_OPTION *options) {
+int GMT_x2sys_list_parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -168,7 +168,7 @@ int GMT_x2sys_list_parse (struct GMTAPI_CTRL *C, struct X2SYS_LIST_CTRL *Ctrl, s
 	unsigned int n_errors = 0, i, n_files = 0;
 	bool mixed = false;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -223,7 +223,7 @@ int GMT_x2sys_list_parse (struct GMTAPI_CTRL *C, struct X2SYS_LIST_CTRL *Ctrl, s
 				else if (opt->arg[0])
 					Ctrl->S.file = strdup (opt->arg);
 				else {
-					GMT_Report (C, GMT_MSG_NORMAL, "ERROR -S: Must supply a track name.\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "ERROR -S: Must supply a track name.\n");
 					n_errors++;
 				}
 				break;
@@ -249,7 +249,7 @@ int GMT_x2sys_list_parse (struct GMTAPI_CTRL *C, struct X2SYS_LIST_CTRL *Ctrl, s
 	n_errors += GMT_check_condition (GMT, !Ctrl->F.flags, "Syntax error: Must use -F to specify output items.\n");
 	for (i = 0; Ctrl->F.flags && i < strlen (Ctrl->F.flags); i++) {
 		if (!strchr (LETTERS, (int)Ctrl->F.flags[i])) {
-			GMT_Report (C, GMT_MSG_NORMAL, "ERROR -F: Unknown item %c.\n", Ctrl->F.flags[i]);
+			GMT_Report (API, GMT_MSG_NORMAL, "ERROR -F: Unknown item %c.\n", Ctrl->F.flags[i]);
 			n_errors++;			
 		}
 		if (Ctrl->F.flags[i] == 'n') mixed = true;		/* Both numbers and text - cannot use binary output */
@@ -308,7 +308,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_x2sys_list_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_x2sys_list_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_x2sys_list_parse (GMT, Ctrl, options))) Return (error);
 	
  	/*---------------------------- This is the x2sys_list main code ----------------------------*/
 

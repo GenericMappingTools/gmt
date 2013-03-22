@@ -119,7 +119,7 @@ int GMT_gshhg_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 	
-int GMT_gshhg_parse (struct GMTAPI_CTRL *C, struct GSHHG_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_gshhg_parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to gshhg and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -130,7 +130,6 @@ int GMT_gshhg_parse (struct GMTAPI_CTRL *C, struct GSHHG_CTRL *Ctrl, struct GMT_
 	unsigned int n_errors = 0, n_files = 0;
 	int sval;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -250,7 +249,7 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg unless already set */
 	Ctrl = New_gshhg_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gshhg_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_gshhg_parse (GMT, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the gshhg main code ----------------------------*/
 

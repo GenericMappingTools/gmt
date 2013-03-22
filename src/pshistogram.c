@@ -377,7 +377,7 @@ int GMT_pshistogram_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_pshistogram_parse (struct GMTAPI_CTRL *C, struct PSHISTOGRAM_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_pshistogram_parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to pshistogram and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -390,7 +390,7 @@ int GMT_pshistogram_parse (struct GMTAPI_CTRL *C, struct PSHISTOGRAM_CTRL *Ctrl,
 	int sval;
 	char *c = NULL;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -440,7 +440,7 @@ int GMT_pshistogram_parse (struct GMTAPI_CTRL *C, struct PSHISTOGRAM_CTRL *Ctrl,
 					case '1': mode = PSHISTOGRAM_L1;	break;
 					case '2': mode = PSHISTOGRAM_LMS;	break;
 					default:
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -N: mode %c unrecognized.\n", opt->arg[0]);
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N: mode %c unrecognized.\n", opt->arg[0]);
 					n_errors++;
 				}
 				Ctrl->N.selected[mode] = true;
@@ -459,7 +459,7 @@ int GMT_pshistogram_parse (struct GMTAPI_CTRL *C, struct PSHISTOGRAM_CTRL *Ctrl,
 				break;
 #ifdef GMT_COMPAT
 			case 'T':
-				GMT_Report (C, GMT_MSG_COMPAT, "Warning: The -T option is deprecated; use -i instead.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: The -T option is deprecated; use -i instead.\n");
 				n_errors += gmt_parse_i_option (GMT, opt->arg);
 				break;
 #endif
@@ -531,7 +531,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_pshistogram_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_pshistogram_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_pshistogram_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the pshistogram main code ----------------------------*/
 

@@ -158,7 +158,7 @@ int GMT_psvelo_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_psvelo_parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to psvelo and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -175,7 +175,6 @@ int GMT_psvelo_parse (struct GMTAPI_CTRL *C, struct PSVELO_CTRL *Ctrl, struct GM
 	char txt_c[GMT_TEXT_LEN256];
 #endif
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -341,7 +340,7 @@ int GMT_psvelo (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_psvelo_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_psvelo_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_psvelo_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the psvelo main code ----------------------------*/
 

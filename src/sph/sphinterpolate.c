@@ -127,7 +127,7 @@ int GMT_sphinterpolate_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_sphinterpolate_parse (struct GMTAPI_CTRL *C, struct SPHINTERPOLATE_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_sphinterpolate_parse (struct GMT_CTRL *GMT, struct SPHINTERPOLATE_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to sphinterpolate and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -138,7 +138,7 @@ int GMT_sphinterpolate_parse (struct GMTAPI_CTRL *C, struct SPHINTERPOLATE_CTRL 
 	unsigned int n_errors = 0;
 	int m;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -180,7 +180,7 @@ int GMT_sphinterpolate_parse (struct GMTAPI_CTRL *C, struct SPHINTERPOLATE_CTRL 
 						break;
 					default:
 						n_errors++;
-						GMT_Report (C, GMT_MSG_NORMAL, "Error: -%c Mode must be in 0-3 range\n", (int)opt->option);
+						GMT_Report (API, GMT_MSG_NORMAL, "Error: -%c Mode must be in 0-3 range\n", (int)opt->option);
 						break;
 				}
 				break;
@@ -241,7 +241,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args)
 	GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg since this is spherical triangulation */
 	Ctrl = New_sphinterpolate_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	if ((error = GMT_sphinterpolate_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_sphinterpolate_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the sphinterpolate main code ----------------------------*/
 

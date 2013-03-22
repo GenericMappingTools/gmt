@@ -145,7 +145,7 @@ int GMT_segy2grd_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_segy2grd_parse (struct GMTAPI_CTRL *C, struct SEGY2GRD_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_segy2grd_parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to segy2grd and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -156,7 +156,7 @@ int GMT_segy2grd_parse (struct GMTAPI_CTRL *C, struct SEGY2GRD_CTRL *Ctrl, struc
 
 	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -175,7 +175,7 @@ int GMT_segy2grd_parse (struct GMTAPI_CTRL *C, struct SEGY2GRD_CTRL *Ctrl, struc
 				else if (opt->arg[0] == '\0' || opt->arg[0] == 'z')
 					Ctrl->A.mode = AVERAGE;
 				else {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -A option: Select -An or -A[z]\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A option: Select -An or -A[z]\n");
 					n_errors++;
 				}
 				break;
@@ -196,7 +196,7 @@ int GMT_segy2grd_parse (struct GMTAPI_CTRL *C, struct SEGY2GRD_CTRL *Ctrl, struc
 				break;
 			case 'N':
 				if (!opt->arg[0]) {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -N option: Must specify value or NaN\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N option: Must specify value or NaN\n");
 					n_errors++;
 				}
 				else {
@@ -228,7 +228,7 @@ int GMT_segy2grd_parse (struct GMTAPI_CTRL *C, struct SEGY2GRD_CTRL *Ctrl, struc
 			/* variable spacing */
 			case 'S':
 				if (Ctrl->S.active) {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -S option: Can only be set once\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -S option: Can only be set once\n");
 					n_errors++;
 				}
 				Ctrl->S.active = true;
@@ -305,7 +305,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_segy2grd_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_segy2grd_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_segy2grd_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the segy2grd main code ----------------------------*/
 

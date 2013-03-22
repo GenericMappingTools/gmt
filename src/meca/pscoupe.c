@@ -511,7 +511,7 @@ int GMT_pscoupe_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_pscoupe_parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to pscoupe and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -523,7 +523,6 @@ int GMT_pscoupe_parse (struct GMTAPI_CTRL *C, struct PSCOUPE_CTRL *Ctrl, struct 
 	unsigned int n_errors = 0;
 	char txt[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], *p = NULL;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
 	double lon1, lat1, lon2, lat2;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -805,7 +804,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_pscoupe_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_pscoupe_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_pscoupe_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the pscoupe main code ----------------------------*/
 

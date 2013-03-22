@@ -1613,7 +1613,7 @@ int GMT_surface_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_surface_parse (struct GMTAPI_CTRL *C, struct SURFACE_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_surface_parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to surface and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -1624,7 +1624,7 @@ int GMT_surface_parse (struct GMTAPI_CTRL *C, struct SURFACE_CTRL *Ctrl, struct 
 	unsigned int n_errors = 0, k;
 	char modifier;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -1702,12 +1702,12 @@ int GMT_surface_parse (struct GMTAPI_CTRL *C, struct SURFACE_CTRL *Ctrl, struct 
 				Ctrl->S.unit = opt->arg[strlen(opt->arg)-1];
 #ifdef GMT_COMPAT
 				if (Ctrl->S.unit == 'c') {
-					GMT_Report (C, GMT_MSG_COMPAT, "Warning: Unit c is deprecated; use s instead.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Unit c is deprecated; use s instead.\n");
 					Ctrl->S.unit = 's';
 				}
 #endif
 				if (!strchr ("sm ", Ctrl->S.unit)) {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -S option: Unrecognized unit %c\n", Ctrl->S.unit);
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -S option: Unrecognized unit %c\n", Ctrl->S.unit);
 					n_errors++;
 				}
 				break;
@@ -1731,7 +1731,7 @@ int GMT_surface_parse (struct GMTAPI_CTRL *C, struct SURFACE_CTRL *Ctrl, struct 
 					Ctrl->T.i_tension = Ctrl->T.b_tension = atof (opt->arg);
 				}
 				else {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -T option: Unrecognized modifier %c\n", modifier);
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Unrecognized modifier %c\n", modifier);
 					n_errors++;
 				}
 				break;
@@ -1788,7 +1788,7 @@ int GMT_surface (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_surface_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_surface_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_surface_parse (GMT, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the surface main code ----------------------------*/
 

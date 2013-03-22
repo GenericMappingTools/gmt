@@ -5284,11 +5284,10 @@ int GMT_Get_Value_ (char *arg, double par[], int len)
 
 /* Here lies the very basic F77 support for grid read and write only. */
 
-int GMT_F77_readgrdinfo_ (unsigned int dim[], double wesn[], double inc[], char *title, char *remark, char *file)
+int GMT_F77_readgrdinfo_ (unsigned int dim[], double limit[], double inc[], char *title, char *remark, char *file)
 {	/* Note: When returning, dim[2] holds the registration (0 = gridline, 1 = pixel).
-	 * wesn[4-5] holds zmin/zmax.
+	 * limit[4-5] holds zmin/zmax.
 	 */
- 	unsigned int no_pad[4] = {0, 0, 0, 0};
 	char *argv = "GMT_F77_readgrdinfo";
 	struct GMT_GRID_HEADER header;
 	struct GMTAPI_CTRL *API = NULL;	/* The API pointer assigned below */
@@ -5304,10 +5303,10 @@ int GMT_F77_readgrdinfo_ (unsigned int dim[], double wesn[], double inc[], char 
 
 	/* Assign variables from header structure items */
 	dim[GMT_X] = header.nx;	dim[GMT_Y] = header.ny;
-	GMT_memcpy (wesn, header.wesn, 4U, double);
+	GMT_memcpy (limit, header.wesn, 4U, double);
 	GMT_memcpy (inc, header.inc, 2U, double);
-	wesn[ZLO] = header.z_min;
-	wesn[ZHI] = header.z_max;
+	limit[ZLO] = header.z_min;
+	limit[ZHI] = header.z_max;
 	dim[GMT_Z] = header.registration;
 	strncpy (title, header.title, GMT_GRID_TITLE_LEN80); 
 	strncpy (remark, header.remark, GMT_GRID_REMARK_LEN160); 
@@ -5316,10 +5315,10 @@ int GMT_F77_readgrdinfo_ (unsigned int dim[], double wesn[], double inc[], char 
 	return EXIT_SUCCESS;
 }
 
-int GMT_F77_readgrd_ (float *array, unsigned int dim[], double wesn[], double inc[], char *title, char *remark, char *file)
+int GMT_F77_readgrd_ (float *array, unsigned int dim[], double limit[], double inc[], char *title, char *remark, char *file)
 {	/* Note: When called, dim[2] is 1 we allocate the array, otherwise we assume it has enough space
 	 * When returning, dim[2] holds the registration (0 = gridline, 1 = pixel).
-	 * wesn[4-5] holds zmin/zmax.
+	 * limit[4-5] holds zmin/zmax.
 	 */
  	unsigned int no_pad[4] = {0, 0, 0, 0};
 	double no_wesn[4] = {0.0, 0.0, 0.0, 0.0};
@@ -5345,10 +5344,10 @@ int GMT_F77_readgrd_ (float *array, unsigned int dim[], double wesn[], double in
 
 	/* Assign variables from header structure items */
 	dim[GMT_X] = header.nx;	dim[GMT_Y] = header.ny;
-	GMT_memcpy (wesn, header.wesn, 4U, double);
+	GMT_memcpy (limit, header.wesn, 4U, double);
 	GMT_memcpy (inc, header.inc, 2U, double);
-	wesn[ZLO] = header.z_min;
-	wesn[ZHI] = header.z_max;
+	limit[ZLO] = header.z_min;
+	limit[ZHI] = header.z_max;
 	dim[GMT_Z] = header.registration;
 	strncpy (title, header.title, GMT_GRID_TITLE_LEN80); 
 	strncpy (remark, header.remark, GMT_GRID_REMARK_LEN160); 
@@ -5357,7 +5356,7 @@ int GMT_F77_readgrd_ (float *array, unsigned int dim[], double wesn[], double in
 	return EXIT_SUCCESS;
 }
 
-int GMT_F77_writegrd_(float *array, unsigned int dim[], double wesn[], double inc[], char *title, char *remark, char *file)
+int GMT_F77_writegrd_ (float *array, unsigned int dim[], double limit[], double inc[], char *title, char *remark, char *file)
 {	/* Note: When called, dim[2] holds the registration (0 = gridline, 1 = pixel). */
  	unsigned int no_pad[4] = {0, 0, 0, 0};
 	char *argv = "GMT_F77_writegrd";
@@ -5373,7 +5372,7 @@ int GMT_F77_writegrd_(float *array, unsigned int dim[], double wesn[], double in
 	
 	/* Set header parameters */
 	
-	GMT_memcpy (header.wesn, wesn, 4U, double);
+	GMT_memcpy (header.wesn, limit, 4U, double);
 	GMT_memcpy (header.inc, inc, 2U, double);
 	header.nx = dim[GMT_X];	header.ny = dim[GMT_Y];
 	header.registration = dim[GMT_Z];

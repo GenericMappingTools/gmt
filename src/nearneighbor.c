@@ -158,7 +158,7 @@ int GMT_nearneighbor_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_nearneighbor_parse (struct GMTAPI_CTRL *C, struct NEARNEIGHBOR_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_nearneighbor_parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to nearneighbor and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -169,7 +169,7 @@ int GMT_nearneighbor_parse (struct GMTAPI_CTRL *C, struct NEARNEIGHBOR_CTRL *Ctr
 	unsigned int n_errors = 0, n_files = 0;
 	int n;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -186,7 +186,7 @@ int GMT_nearneighbor_parse (struct GMTAPI_CTRL *C, struct NEARNEIGHBOR_CTRL *Ctr
 					Ctrl->E.value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.d_NaN : atof (opt->arg);
 				else {
 					n_errors++;
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -E option: Must specify value or NaN\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -E option: Must specify value or NaN\n");
 				}
 				break;
 			case 'G':	/* Output file */
@@ -202,7 +202,7 @@ int GMT_nearneighbor_parse (struct GMTAPI_CTRL *C, struct NEARNEIGHBOR_CTRL *Ctr
 				break;
 #ifdef GMT_COMPAT
 			case 'L':	/* BCs */
-				GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
 				strncpy (GMT->common.n.BC, opt->arg, 4U);
 				/* We turn on geographic coordinates if -Lg is given by faking -fg */
 				/* But since GMT_parse_f_option is private to gmt_init and all it does */
@@ -291,7 +291,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_nearneighbor_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_nearneighbor_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_nearneighbor_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the nearneighbor main code ----------------------------*/
 

@@ -119,7 +119,7 @@ int compare_classes (const void *point_1v, const void *point_2v)
 	return (0);
 }
 
-int GMT_grdclip_parse (struct GMTAPI_CTRL *C, struct GRDCLIP_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_grdclip_parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -132,7 +132,7 @@ int GMT_grdclip_parse (struct GMTAPI_CTRL *C, struct GRDCLIP_CTRL *Ctrl, struct 
 	size_t n_alloc = GMT_TINY_CHUNK;
 	char txt[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -157,7 +157,7 @@ int GMT_grdclip_parse (struct GMTAPI_CTRL *C, struct GRDCLIP_CTRL *Ctrl, struct 
 					Ctrl->S.mode |= GRDCLIP_ABOVE;
 					n = sscanf (&opt->arg[1], "%f/%s", &Ctrl->S.high, txt);
 					if (n != n_to_expect) {
-						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -Sa option: Expected -Sa<high>/<above>, <above> may be set to NaN\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Sa option: Expected -Sa<high>/<above>, <above> may be set to NaN\n");
 						n_errors++;
 					}
 					else 
@@ -167,7 +167,7 @@ int GMT_grdclip_parse (struct GMTAPI_CTRL *C, struct GRDCLIP_CTRL *Ctrl, struct 
 					Ctrl->S.mode |= GRDCLIP_BELOW;
 					n = sscanf (&opt->arg[1], "%f/%s", &Ctrl->S.low, txt);
 					if (n != n_to_expect) {
-						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -Sb option: Expected -Sb<low>/<below>, <below> may be set to NaN\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Sb option: Expected -Sb<low>/<below>, <below> may be set to NaN\n");
 						n_errors++;
 					}
 					else
@@ -184,7 +184,7 @@ int GMT_grdclip_parse (struct GMTAPI_CTRL *C, struct GRDCLIP_CTRL *Ctrl, struct 
 					if (n_to_expect == 3) {
 						n = sscanf (&opt->arg[1], "%f/%f/%s", &Ctrl->S.class[n_class].low, &Ctrl->S.class[n_class].high, txt);
 						if (n != n_to_expect) {
-							GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -Si option: Expected -Si<low>/<high>/<between>, <between> may be set to NaN\n");
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Si option: Expected -Si<low>/<high>/<between>, <between> may be set to NaN\n");
 							n_errors++;
 						}
 						else
@@ -193,7 +193,7 @@ int GMT_grdclip_parse (struct GMTAPI_CTRL *C, struct GRDCLIP_CTRL *Ctrl, struct 
 					else {
 						n = sscanf (&opt->arg[1], "%f/%s", &Ctrl->S.class[n_class].low, txt);
 						if (n != n_to_expect) {
-							GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -Sr option: Expected -Sr<old>/<new>, <new> may be set to NaN\n");
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Sr option: Expected -Sr<old>/<new>, <new> may be set to NaN\n");
 							n_errors++;
 						}
 						else
@@ -202,13 +202,13 @@ int GMT_grdclip_parse (struct GMTAPI_CTRL *C, struct GRDCLIP_CTRL *Ctrl, struct 
 						Ctrl->S.class[n_class].replace = true;
 					}
 					if (Ctrl->S.class[n_class].low > Ctrl->S.class[n_class].high) {
-						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -Si option: <low> cannot exceed <high>!\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Si option: <low> cannot exceed <high>!\n");
 						n_errors++;
 					}
 					n_class++;
 					break;
 				default:
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -S option: Expected -Sa<high>/<above>, -Sb<low>/<below>, -Si<low>/<high>/<between> or -Si<old>/<new>\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -S option: Expected -Sa<high>/<above>, -Sb<low>/<below>, -Si<low>/<high>/<between> or -Si<old>/<new>\n");
 					n_errors++;
 				}
 				break;
@@ -225,25 +225,25 @@ int GMT_grdclip_parse (struct GMTAPI_CTRL *C, struct GRDCLIP_CTRL *Ctrl, struct 
 		qsort (Ctrl->S.class, Ctrl->S.n_class, sizeof (struct GRDCLIP_RECLASSIFY), compare_classes);
 		for (k = 1; k < Ctrl->S.n_class; k++) {
 			if (Ctrl->S.class[k].low < Ctrl->S.class[k-1].high) {
-				GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -Si option: Reclassification case %d overlaps with case %d\n", k, k-1);
+				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Si option: Reclassification case %d overlaps with case %d\n", k, k-1);
 				n_errors++;
 			}
 			if (!Ctrl->S.class[k].replace && (GMT_is_fnan (Ctrl->S.class[k].low) || GMT_is_fnan (Ctrl->S.class[k-1].high))) {
-				GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -Si option: Reclassification case %d contains NaN as high or low value\n", k);
+				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Si option: Reclassification case %d contains NaN as high or low value\n", k);
 				n_errors++;
 			}
 		}
 		if (Ctrl->S.mode & GRDCLIP_ABOVE && Ctrl->S.high < Ctrl->S.class[Ctrl->S.n_class-1].high) {
-			GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -Si option: Your highest reclassification case overlaps with your -Sa selection\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Si option: Your highest reclassification case overlaps with your -Sa selection\n");
 			n_errors++;
 		}
 		if (Ctrl->S.mode & GRDCLIP_BELOW && Ctrl->S.low > Ctrl->S.class[0].low) {
-			GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -Si option: Your lowest reclassification case overlaps with your -Sb selection\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Si option: Your lowest reclassification case overlaps with your -Sb selection\n");
 			n_errors++;
 		}
 	}
 	if ((Ctrl->S.mode & GRDCLIP_ABOVE) && (Ctrl->S.mode & GRDCLIP_BELOW) && (Ctrl->S.high < Ctrl->S.low)) {
-		GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -S option: Your -Sa selection overlaps with your -Sb selection\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -S option: Your -Sa selection overlaps with your -Sb selection\n");
 		n_errors++;
 	}
 	
@@ -285,7 +285,7 @@ int GMT_grdclip (void *V_API, int mode, void *args) {
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdclip_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdclip_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_grdclip_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdclip main code ----------------------------*/
 

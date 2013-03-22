@@ -113,7 +113,7 @@ int GMT_grd2xyz_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_grd2xyz_parse (struct GMTAPI_CTRL *C, struct GRD2XYZ_CTRL *Ctrl, struct GMT_Z_IO *io, struct GMT_OPTION *options) {
+int GMT_grd2xyz_parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT_Z_IO *io, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -123,7 +123,7 @@ int GMT_grd2xyz_parse (struct GMTAPI_CTRL *C, struct GRD2XYZ_CTRL *Ctrl, struct 
 
 	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	GMT_memset (io, 1, struct GMT_Z_IO);
 	
@@ -145,12 +145,12 @@ int GMT_grd2xyz_parse (struct GMTAPI_CTRL *C, struct GRD2XYZ_CTRL *Ctrl, struct 
 #ifdef GMT_COMPAT
 			case 'E':	/* Old ESRI option */
 				Ctrl->E.active = true;
-				GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -E is deprecated; use grdreformat instead.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -E is deprecated; use grdreformat instead.\n");
 				if (opt->arg[0] == 'f') Ctrl->E.floating = true;
 				if (opt->arg[Ctrl->E.floating]) Ctrl->E.nodata = atof (&opt->arg[Ctrl->E.floating]);
 				break;
 			case 'S':	/* Suppress/no-suppress NaNs on output */
-				GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -S is deprecated; use -s instead.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -S is deprecated; use -s instead.\n");
 				GMT_memset (GMT->current.io.io_nan_col, GMT_MAX_COLUMNS, int);
 				GMT->current.io.io_nan_col[0] = GMT_Z;	/* The default is to examine the z-column */
 				GMT->current.io.io_nan_ncols = GMT_IO_NAN_SKIP;		/* Default is that single z column */
@@ -164,7 +164,7 @@ int GMT_grd2xyz_parse (struct GMTAPI_CTRL *C, struct GRD2XYZ_CTRL *Ctrl, struct 
 				if (opt->arg[0])
 					Ctrl->N.value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.d_NaN : atof (opt->arg);
 				else {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -N option: Must specify value or NaN\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N option: Must specify value or NaN\n");
 					n_errors++;
 				}
 				break;
@@ -230,7 +230,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grd2xyz_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grd2xyz_parse (API, Ctrl, &io, options))) Return (error);
+	if ((error = GMT_grd2xyz_parse (GMT, Ctrl, &io, options))) Return (error);
 	
 	/*---------------------------- This is the grd2xyz main code ----------------------------*/
 

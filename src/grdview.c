@@ -371,7 +371,7 @@ int GMT_grdview_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_grdview_parse (struct GMTAPI_CTRL *C, struct GRDVIEW_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to grdview and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -383,7 +383,7 @@ int GMT_grdview_parse (struct GMTAPI_CTRL *C, struct GRDVIEW_CTRL *Ctrl, struct 
 	unsigned int n_errors = 0, n_files = 0, q_set = 0, n_commas, j, k, n, id, n_drape;
 	int sval;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -415,7 +415,7 @@ int GMT_grdview_parse (struct GMTAPI_CTRL *C, struct GRDVIEW_CTRL *Ctrl, struct 
 					Ctrl->G.file[0] = strdup (opt->arg);
 				}
 				else {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error option -G: Usage is -G<z.grd> | -G<r.grd>,<g.grd>,<b.grd>\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error option -G: Usage is -G<z.grd> | -G<r.grd>,<g.grd>,<b.grd>\n");
 					n_errors++;
 				}
 				break;
@@ -425,7 +425,7 @@ int GMT_grdview_parse (struct GMTAPI_CTRL *C, struct GRDVIEW_CTRL *Ctrl, struct 
 				break;
 #ifdef GMT_COMPAT
 			case 'L':	/* BCs */
-				GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
 				strncpy (GMT->common.n.BC, opt->arg, 4U);
 				break;
 #endif
@@ -440,7 +440,7 @@ int GMT_grdview_parse (struct GMTAPI_CTRL *C, struct GRDVIEW_CTRL *Ctrl, struct 
 					}
 				}
 				else {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error option -N: Usage is -N<level>[/<color>]\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error option -N: Usage is -N<level>[/<color>]\n");
 					n_errors++;
 				}
 				break;
@@ -468,7 +468,7 @@ int GMT_grdview_parse (struct GMTAPI_CTRL *C, struct GRDVIEW_CTRL *Ctrl, struct 
 						Ctrl->Q.mask = true;
 						break;
 					default:
-						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error option -Q: Unrecognized qualifier (%c)\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error option -Q: Unrecognized qualifier (%c)\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}
@@ -591,7 +591,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdview_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdview_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_grdview_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdview main code ----------------------------*/
 

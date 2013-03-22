@@ -154,7 +154,7 @@ int GMT_grdgradient_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_grdgradient_parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to grdgradient and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -167,7 +167,7 @@ int GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *Ctrl,
 	int n_opt_args = 0;
 	char ptr[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -193,7 +193,7 @@ int GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *Ctrl,
 						case 'O': case 'o': Ctrl->D.mode |= 2; break;
 						case 'N': case 'n': Ctrl->D.mode |= 4; break;
 						default:
-							GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -D option: Unrecognized modifier\n");
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -D option: Unrecognized modifier\n");
 							n_errors++;
 							break;
 					}
@@ -250,7 +250,7 @@ int GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *Ctrl,
 				break;
 #ifdef GMT_COMPAT
 			case 'L':	/* BCs */
-				GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
 				strncpy (GMT->common.n.BC, opt->arg, 4U);
 				/* We turn on geographic coordinates if -Lg is given by faking -fg */
 				/* But since GMT_parse_f_option is private to gmt_init and all it does */
@@ -264,7 +264,7 @@ int GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *Ctrl,
 
 #ifdef GMT_COMPAT
 			case 'M':	/* Geographic data */
-				GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
 				if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
 #endif
 				break;
@@ -302,7 +302,7 @@ int GMT_grdgradient_parse (struct GMTAPI_CTRL *C, struct GRDGRADIENT_CTRL *Ctrl,
 	n_errors += GMT_check_condition (GMT, Ctrl->N.active && (n_opt_args > 1 && Ctrl->N.sigma <= 0.0) , "Syntax error -N option: Sigma must be > 0\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->E.active && Ctrl->E.mode > 1 && (Ctrl->E.elevation < 0.0 || Ctrl->E.elevation > 90.0), "Syntax error -E option: Use 0-90 degree range for elevation\n");
 	if (Ctrl->E.active && (Ctrl->A.active || Ctrl->D.active || Ctrl->S.active)) {
-		GMT_Report (C, GMT_MSG_NORMAL, "Warning: -E option overrides -A, -D or -S\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Warning: -E option overrides -A, -D or -S\n");
 		Ctrl->A.active = Ctrl->D.active = Ctrl->S.active = false;
 	}
 
@@ -346,7 +346,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdgradient_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdgradient_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_grdgradient_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdgradient main code ----------------------------*/
 

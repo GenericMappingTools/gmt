@@ -161,7 +161,7 @@ int GMT_grdgravmag3d_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_grdgravmag3d_parse (struct GMTAPI_CTRL *C, struct GRDOKB_CTRL *Ctrl, struct GMT_OPTION *options) {
+int GMT_grdgravmag3d_parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdgravmag3d and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -172,7 +172,7 @@ int GMT_grdgravmag3d_parse (struct GMTAPI_CTRL *C, struct GRDOKB_CTRL *Ctrl, str
 
 	unsigned int n_errors = 0, n_files = 0;
 	struct	GMT_OPTION *opt = NULL;
-	struct	GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -185,7 +185,7 @@ int GMT_grdgravmag3d_parse (struct GMTAPI_CTRL *C, struct GRDOKB_CTRL *Ctrl, str
 					Ctrl->In.file[n_files++] = strdup (opt->arg);
 				else {
 					n_errors++;
-					GMT_Report (C, GMT_MSG_NORMAL, "Error: A maximum of two input grids may be processed\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Error: A maximum of two input grids may be processed\n");
 				}
 				break;
 
@@ -210,7 +210,7 @@ int GMT_grdgravmag3d_parse (struct GMTAPI_CTRL *C, struct GRDOKB_CTRL *Ctrl, str
 			case 'H':
 				if ((sscanf(opt->arg, "%lf/%lf/%lf/%lf/%lf",
 					    &Ctrl->H.t_dec, &Ctrl->H.t_dip, &Ctrl->H.m_int, &Ctrl->H.m_dec, &Ctrl->H.m_dip)) != 5) {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -H option: Can't dechiper values\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -H option: Can't dechiper values\n");
 					n_errors++;
 				}
 				Ctrl->H.active = true;
@@ -249,7 +249,7 @@ int GMT_grdgravmag3d_parse (struct GMTAPI_CTRL *C, struct GRDOKB_CTRL *Ctrl, str
 					else if (n == 3)
 						strncpy(Ctrl->Q.region, opt->arg, GMT_BUFSIZ);	/* Pad given as a -R region */
 					else {
-						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -Q option. Either -Q<pad> or -Q<region>\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Q option. Either -Q<pad> or -Q<region>\n");
 						n_errors++;
 					}
 				}
@@ -327,7 +327,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdgravmag3d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdgravmag3d_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_grdgravmag3d_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdgravmag3d main code ---------------------*/
 

@@ -380,7 +380,7 @@ int GMT_psmask_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_psmask_parse (struct GMTAPI_CTRL *C, struct PSMASK_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_psmask_parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to psmask and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -394,7 +394,7 @@ int GMT_psmask_parse (struct GMTAPI_CTRL *C, struct PSMASK_CTRL *Ctrl, struct GM
 #endif
 	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -414,7 +414,7 @@ int GMT_psmask_parse (struct GMTAPI_CTRL *C, struct PSMASK_CTRL *Ctrl, struct GM
 #ifdef GMT_COMPAT
 				for (n_plus = -1, k = 0; opt->arg[k]; k++) {
 					if (opt->arg[k] == '+' && opt->arg[k+1] == 'n') {
-						GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -D..+n<min> is deprecated; use -Q instead.\n");
+						GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -D..+n<min> is deprecated; use -Q instead.\n");
 						Ctrl->Q.min = atoi (&opt->arg[k + 2]);
 						Ctrl->Q.active = true;
 						n_plus = k;
@@ -531,7 +531,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_psmask_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_psmask_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_psmask_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the psmask main code ----------------------------*/
 

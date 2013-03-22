@@ -164,7 +164,7 @@ int GMT_grd2cpt_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_grd2cpt_parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -175,7 +175,7 @@ int GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, struct 
 	unsigned int n_errors = 0, n_files[2] = {0, 0};
 	char kind;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -207,7 +207,7 @@ int GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, struct 
 			case 'E':	/* Use n levels */
 				Ctrl->E.active = true;
 				if (sscanf (opt->arg, "%d", &Ctrl->E.levels) != 1) {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -E option: Cannot decode value\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -E option: Cannot decode value\n");
 					n_errors++;
 				}
 				break;
@@ -226,7 +226,7 @@ int GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, struct 
 			case 'L':	/* Limit data range */
 				Ctrl->L.active = true;
 				if (sscanf (opt->arg, "%lf/%lf", &Ctrl->L.min, &Ctrl->L.max) != 2) {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -L option: Cannot decode limits\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -L option: Cannot decode limits\n");
 					n_errors++;
 				}
 				break;
@@ -247,7 +247,7 @@ int GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, struct 
 				Ctrl->S.active = true;
 				if (strchr (opt->arg, '/')) {	/* Gave low/high/inc */
 					if (sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->S.low, &Ctrl->S.high, &Ctrl->S.inc) != 3) {
-						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -S option: Cannot decode values\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -S option: Cannot decode values\n");
 						n_errors++;
 					}
 					Ctrl->S.mode = 0;
@@ -261,7 +261,7 @@ int GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, struct 
 				Ctrl->T.active = true;
 				kind = '\0';
 				if (sscanf (opt->arg, "%c", &kind) != 1) {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -T option: Cannot decode option\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Cannot decode option\n");
 					n_errors++;
 				}
 				switch (kind) {
@@ -270,7 +270,7 @@ int GMT_grd2cpt_parse (struct GMTAPI_CTRL *C, struct GRD2CPT_CTRL *Ctrl, struct 
 					case '_': Ctrl->T.kind = -2; break; /* Symmetric with min(|zmin|,|zmax|) range */
 					case '=': Ctrl->T.kind = +2; break; /* Symmetric with max(|zmin|,|zmax|) range */
 					default:
-						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -T option: Must append modifier -, +, _, or =\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Must append modifier -, +, _, or =\n");
 						n_errors++;
 						break;
 				}
@@ -340,7 +340,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grd2cpt_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grd2cpt_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_grd2cpt_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grd2cpt main code ----------------------------*/
 

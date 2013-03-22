@@ -133,7 +133,7 @@ int GMT_x2sys_report_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_x2sys_report_parse (struct GMTAPI_CTRL *C, struct X2SYS_REPORT_CTRL *Ctrl, struct GMT_OPTION *options) {
+int GMT_x2sys_report_parse (struct GMT_CTRL *GMT, struct X2SYS_REPORT_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -143,7 +143,6 @@ int GMT_x2sys_report_parse (struct GMTAPI_CTRL *C, struct X2SYS_REPORT_CTRL *Ctr
 
 	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -251,7 +250,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_x2sys_report_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_x2sys_report_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_x2sys_report_parse (GMT, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the x2sys_report main code ----------------------------*/
 

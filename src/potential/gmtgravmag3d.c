@@ -184,7 +184,7 @@ int GMT_gmtgravmag3d_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_gmtgravmag3d_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, struct GMT_OPTION *options) {
+int GMT_gmtgravmag3d_parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to redpol and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -196,7 +196,7 @@ int GMT_gmtgravmag3d_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, str
 	unsigned int j, pos = 0, n_errors = 0, n_files = 0;
 	char	ptr[GMT_TEXT_LEN256];
 	struct	GMT_OPTION *opt = NULL;
-	struct	GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -211,7 +211,7 @@ int GMT_gmtgravmag3d_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, str
 			case 'H':
 				if ((sscanf(opt->arg, "%lf/%lf/%lf/%lf/%lf",
 					    &Ctrl->H.t_dec, &Ctrl->H.t_dip, &Ctrl->H.m_int, &Ctrl->H.m_dec, &Ctrl->H.m_dip)) != 5) {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -H option: Can't dechiper values\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -H option: Can't dechiper values\n");
 					n_errors++;
 				}
 				Ctrl->H.active = true;
@@ -247,7 +247,7 @@ int GMT_gmtgravmag3d_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, str
 				break;
 #ifdef GMT_COMPAT
 			case 'M':
-				GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
 				if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
 				break;
 #endif
@@ -288,7 +288,7 @@ int GMT_gmtgravmag3d_parse (struct GMTAPI_CTRL *C, struct XYZOKB_CTRL *Ctrl, str
 							j++;
 						}
 						if (j != 2 && j != 3) {
-							GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -T option: Must give names for data points and vertex files\n");
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Must give names for data points and vertex files\n");
 							n_errors++;
 						}
 						Ctrl->T.triangulate = true;
@@ -379,7 +379,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmtgravmag3d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtgravmag3d_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_gmtgravmag3d_parse (GMT, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the gmtgravmag3d main code ----------------------------*/
 	
