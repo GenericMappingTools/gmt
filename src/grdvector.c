@@ -465,6 +465,10 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 			}
 
 			x = GMT_grd_col_to_x (GMT, col, Grid[0]->header);
+			if (!Ctrl->N.active) {
+				GMT_map_outside (GMT, x, y);
+				if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;
+			}
 			GMT_geo_to_xy (GMT, x, y, &plot_x, &plot_y);
 
 			if (Ctrl->T.active) {	/* Transform azimuths to plot angle */
