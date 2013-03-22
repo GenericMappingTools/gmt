@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-03-22	pwessel
+	* greenspline.c:	When -T was used the number of z-layers (1) was not initialized.
+
 2013-03-15	pwessel
 	* -B:			Added modifier +o<plon>/<plat> to draw selected gridlines using
 				oblique coordinates about the specified pole instead of the
