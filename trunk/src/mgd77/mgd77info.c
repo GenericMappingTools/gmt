@@ -112,7 +112,7 @@ int GMT_mgd77info_usage (struct GMTAPI_CTRL *API, int level, struct MGD77INFO_CT
 	return (EXIT_FAILURE);
 }
 
-int GMT_mgd77info_parse (struct GMTAPI_CTRL *C, struct MGD77INFO_CTRL *Ctrl, struct GMT_OPTION *options, struct MGD77_CONTROL *M)
+int GMT_mgd77info_parse (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *Ctrl, struct GMT_OPTION *options, struct MGD77_CONTROL *M)
 {
 	/* This parses the options provided to mgd77info and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -123,7 +123,7 @@ int GMT_mgd77info_parse (struct GMTAPI_CTRL *C, struct MGD77INFO_CTRL *Ctrl, str
 	unsigned int n_errors = 0;
 	int sval;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -169,7 +169,7 @@ int GMT_mgd77info_parse (struct GMTAPI_CTRL *C, struct MGD77INFO_CTRL *Ctrl, str
 					Ctrl->M.mode = HIST_HEADER;
 				}
 				else {
-					GMT_Report (C, GMT_MSG_NORMAL, "Option -M Bad modifier (%c). Use -Mf|r|e|h!\n", opt->arg[0]);
+					GMT_Report (API, GMT_MSG_NORMAL, "Option -M Bad modifier (%c). Use -Mf|r|e|h!\n", opt->arg[0]);
 					n_errors++;
 				}
 				break;
@@ -180,12 +180,12 @@ int GMT_mgd77info_parse (struct GMTAPI_CTRL *C, struct MGD77INFO_CTRL *Ctrl, str
 					if (strchr ("act", (int)opt->arg[0]))
 						Ctrl->I.code[Ctrl->I.n++] = opt->arg[0];
 					else {
-						GMT_Report (C, GMT_MSG_NORMAL, "Option -I Bad modifier (%c). Use -Ia|c|t!\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_NORMAL, "Option -I Bad modifier (%c). Use -Ia|c|t!\n", opt->arg[0]);
 						n_errors++;
 					}
 				}
 				else {
-					GMT_Report (C, GMT_MSG_NORMAL, "Option -I: Can only be applied 0-2 times\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Option -I: Can only be applied 0-2 times\n");
 					n_errors++;
 				}
 				break;
@@ -204,7 +204,7 @@ int GMT_mgd77info_parse (struct GMTAPI_CTRL *C, struct MGD77INFO_CTRL *Ctrl, str
 						Ctrl->E.mode = 3;
 						break;
 					default:
-						GMT_Report (C, GMT_MSG_NORMAL, "Option -E Bad modifier (%c). Use -E[e|m]!\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_NORMAL, "Option -E Bad modifier (%c). Use -E[e|m]!\n", opt->arg[0]);
 						n_errors++;
 				}
 				Ctrl->E.active = true;
@@ -222,7 +222,7 @@ int GMT_mgd77info_parse (struct GMTAPI_CTRL *C, struct MGD77INFO_CTRL *Ctrl, str
 					case '\0':
 						break;
 					default:
-						GMT_Report (C, GMT_MSG_NORMAL, "Option -L Bad modifier (%c). Use -L[a|v]!\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_NORMAL, "Option -L Bad modifier (%c). Use -L[a|v]!\n", opt->arg[0]);
 						n_errors++;
 				}
 				break;
@@ -279,7 +279,7 @@ int GMT_mgd77info (void *V_API, int mode, void *args)
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_mgd77info_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	MGD77_Init (GMT, &M);		/* Initialize MGD77 Machinery */
-	if ((error = GMT_mgd77info_parse (API, Ctrl, options, &M))) Return (error);
+	if ((error = GMT_mgd77info_parse (GMT, Ctrl, options, &M))) Return (error);
 
 	/*---------------------------- This is the mgd77info main code ----------------------------*/
 

@@ -135,7 +135,7 @@ int GMT_grdvector_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_grdvector_parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to grdvector and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -152,7 +152,7 @@ int GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl, str
 	char txt_c[GMT_TEXT_LEN256];
 #endif
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -173,7 +173,7 @@ int GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl, str
 				break;
 #ifdef GMT_COMPAT
 			case 'E':	/* Center vectors [OBSOLETE; use modifier +jc in -Q ] */
-				GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -E is deprecated; use modifier +jc in -Q instead.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -E is deprecated; use modifier +jc in -Q instead.\n");
 				Ctrl->Q.S.v.status |= GMT_VEC_JUST_C;
 				break;
 #endif
@@ -198,7 +198,7 @@ int GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl, str
 				Ctrl->Q.active = true;
 #ifdef GMT_COMPAT
 				if (strchr (opt->arg, '/') && !strchr (opt->arg, '+')) {	/* Old-style args */
-					GMT_Report (C, GMT_MSG_COMPAT, "Warning: Vector arrowwidth/headlength/headwidth is deprecated; see -Q documentation.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Vector arrowwidth/headlength/headwidth is deprecated; see -Q documentation.\n");
 					for (j = 0; opt->arg[j] && opt->arg[j] != 'n'; j++);
 					if (opt->arg[j]) {	/* Normalize option used */
 						Ctrl->Q.S.v.v_norm = (float)GMT_to_inch (GMT, &opt->arg[j+1]);
@@ -207,7 +207,7 @@ int GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl, str
 					}
 					if (opt->arg[0] && opt->arg[1] != 'n') {	/* We specified the three parameters */
 						if (sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c) != 3) {
-							GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -Q option: Could not decode arrowwidth/headlength/headwidth\n");
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Q option: Could not decode arrowwidth/headlength/headwidth\n");
 							n_errors++;
 						}
 						else {	/* Turn the old args into new +a<angle> and pen width */
@@ -242,7 +242,7 @@ int GMT_grdvector_parse (struct GMTAPI_CTRL *C, struct GRDVECTOR_CTRL *Ctrl, str
 				if (strchr (GMT_DIM_UNITS, (int)opt->arg[len]))	/* Recognized unit character */
 					Ctrl->S.unit = opt->arg[len];
 				else if (! (opt->arg[len] == '.' || isdigit ((int)opt->arg[len]))) {	/* Not decimal point or digit means trouble */
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -S option: Unrecognized unit %c\n", opt->arg[len]);
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -S option: Unrecognized unit %c\n", opt->arg[len]);
 					n_errors++;
 				}
 				if (opt->arg[0] == 'l' || opt->arg[0] == 'L') {
@@ -322,7 +322,7 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdvector_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdvector_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_grdvector_parse (GMT, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the grdvector main code ----------------------------*/
 

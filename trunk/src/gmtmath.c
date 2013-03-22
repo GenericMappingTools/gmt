@@ -391,7 +391,7 @@ int GMT_gmtmath_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_gmtmath_parse (struct GMTAPI_CTRL *C, struct GMTMATH_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_gmtmath_parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to gmtmath and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -402,7 +402,7 @@ int GMT_gmtmath_parse (struct GMTAPI_CTRL *C, struct GMTMATH_CTRL *Ctrl, struct 
 	unsigned int n_errors = 0, n_files = 0, n_req;
 	bool missing_equal = true;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 #ifdef GMT_COMPAT
 	int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg);
 #endif
@@ -434,7 +434,7 @@ int GMT_gmtmath_parse (struct GMTAPI_CTRL *C, struct GMTMATH_CTRL *Ctrl, struct 
 				break;
 #ifdef GMT_COMPAT
 			case 'F':	/* Now obsolete due to -o */
-				GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -F is deprecated; use -o instead\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -F is deprecated; use -o instead\n");
 				gmt_parse_o_option (GMT, opt->arg);
 				break;
 #endif
@@ -459,7 +459,7 @@ int GMT_gmtmath_parse (struct GMTAPI_CTRL *C, struct GMTMATH_CTRL *Ctrl, struct 
 					case 'l': case 'L':
 						Ctrl->S.mode = +1; break;
 					default:
-						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: Syntax is -S[f|l]\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Syntax is -S[f|l]\n");
 						n_errors++;
 					break;
 				}
@@ -472,7 +472,7 @@ int GMT_gmtmath_parse (struct GMTAPI_CTRL *C, struct GMTMATH_CTRL *Ctrl, struct 
 					Ctrl->T.file = strdup (opt->arg);
 				else {	/* Presumably gave tmin/tmax/tinc */
 					if (sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->T.min, &Ctrl->T.max, &Ctrl->T.inc) != 3) {
-						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: Unable to decode arguments for -T\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Unable to decode arguments for -T\n");
 						n_errors++;
 					}
 					if (opt->arg[strlen(opt->arg)-1] == '+') {	/* Gave number of points instead; calculate inc */
@@ -3250,7 +3250,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmtmath_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtmath_parse (API, Ctrl, options))) Return1 (error);
+	if ((error = GMT_gmtmath_parse (GMT, Ctrl, options))) Return1 (error);
 
 	/*---------------------------- This is the gmtmath main code ----------------------------*/
 

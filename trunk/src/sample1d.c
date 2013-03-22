@@ -134,7 +134,7 @@ int GMT_sample1d_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_sample1d_parse (struct GMTAPI_CTRL *C, struct SAMPLE1D_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_sample1d_parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to sample1d and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -146,7 +146,7 @@ int GMT_sample1d_parse (struct GMTAPI_CTRL *C, struct SAMPLE1D_CTRL *Ctrl, struc
 	int col;
 	char A[GMT_TEXT_LEN64], B[GMT_TEXT_LEN64], *c = NULL;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -167,7 +167,7 @@ int GMT_sample1d_parse (struct GMTAPI_CTRL *C, struct SAMPLE1D_CTRL *Ctrl, struc
 					case 'p': Ctrl->A.mode = GMT_TRACK_FILL_P; break;
 					case 'r': Ctrl->A.mode = GMT_TRACK_SAMPLE_FIX; break;
 					case 'R': Ctrl->A.mode = GMT_TRACK_SAMPLE_ADJ; break;
-					default: GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -G option: Bad modifier %c\n", opt->arg[0]); n_errors++; break;
+					default: GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G option: Bad modifier %c\n", opt->arg[0]); n_errors++; break;
 				}
 				if (strstr (opt->arg, "+l")) Ctrl->A.loxo = true;
 				break;
@@ -274,7 +274,7 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_sample1d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_sample1d_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_sample1d_parse (GMT, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the sample1d main code ----------------------------*/
 

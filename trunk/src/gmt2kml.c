@@ -241,7 +241,7 @@ int GMT_gmt2kml_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_gmt2kml_parse (struct GMTAPI_CTRL *API, struct GMT2KML_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_gmt2kml_parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to gmt2kml and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -254,7 +254,7 @@ int GMT_gmt2kml_parse (struct GMTAPI_CTRL *API, struct GMT2KML_CTRL *Ctrl, struc
 	size_t n_alloc = 0;
 	char buffer[GMT_BUFSIZ], p[GMT_BUFSIZ], T[4][GMT_TEXT_LEN64], *c = NULL;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = API->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -677,7 +677,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmt2kml_Ctrl (GMT);		/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmt2kml_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_gmt2kml_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the gmt2kml main code ----------------------------*/
 

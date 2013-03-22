@@ -319,7 +319,7 @@ int GMT_grdvolume_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_grdvolume_parse (struct GMTAPI_CTRL *C, struct GRDVOLUME_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_grdvolume_parse (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to grdvolume and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -331,7 +331,7 @@ int GMT_grdvolume_parse (struct GMTAPI_CTRL *C, struct GRDVOLUME_CTRL *Ctrl, str
 	unsigned int n_errors = 0, n_files = 0;
 	int n = 0;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -372,7 +372,7 @@ int GMT_grdvolume_parse (struct GMTAPI_CTRL *C, struct GRDVOLUME_CTRL *Ctrl, str
 						break;
 					default:
 						n_errors++;
-						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -T option: Append c or h [Default].\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Append c or h [Default].\n");
 				}
 				break;
 			case 'Z':
@@ -429,7 +429,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdvolume_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdvolume_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_grdvolume_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdvolume main code ----------------------------*/
 

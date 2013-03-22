@@ -163,7 +163,7 @@ int GMT_img2grd_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_img2grd_parse (struct GMTAPI_CTRL *C, struct IMG2GRD_CTRL *Ctrl, struct GMT_OPTION *options) {
+int GMT_img2grd_parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdcut and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -173,7 +173,7 @@ int GMT_img2grd_parse (struct GMTAPI_CTRL *C, struct IMG2GRD_CTRL *Ctrl, struct 
 
 	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -194,7 +194,7 @@ int GMT_img2grd_parse (struct GMTAPI_CTRL *C, struct IMG2GRD_CTRL *Ctrl, struct 
 				Ctrl->D.active = true;
 				if (opt->arg[0] && (sscanf (opt->arg, "%lf/%lf", &Ctrl->D.min, &Ctrl->D.max)) != 2) {
 					n_errors++;
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -D: Failed to decode <minlat>/<maxlat>.\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -D: Failed to decode <minlat>/<maxlat>.\n");
 				}
 				else {
 					Ctrl->D.min = GMT_IMG_MINLAT_80;
@@ -210,13 +210,13 @@ int GMT_img2grd_parse (struct GMTAPI_CTRL *C, struct IMG2GRD_CTRL *Ctrl, struct 
 				break;
 #ifdef GMT_COMPAT
 			case 'm':
-				GMT_Report (C, GMT_MSG_COMPAT, "Warning: -m<inc> is deprecated; use -I<inc> instead.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -m<inc> is deprecated; use -I<inc> instead.\n");
 #endif
 			case 'I':
 				Ctrl->I.active = true;
 				if ((sscanf (opt->arg, "%lf", &Ctrl->I.value)) != 1) {
 					n_errors++;
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: -I requires a positive value.\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -I requires a positive value.\n");
 				}
 				break;
 			case 'M':
@@ -226,7 +226,7 @@ int GMT_img2grd_parse (struct GMTAPI_CTRL *C, struct IMG2GRD_CTRL *Ctrl, struct 
 				Ctrl->N.active = true;
 				if ((sscanf (opt->arg, "%d", &Ctrl->N.value)) != 1 || Ctrl->N.value < 1) {
 					n_errors++;
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: -N requires an integer > 1.\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -N requires an integer > 1.\n");
 				}
 				break;
 			case 'S':
@@ -237,14 +237,14 @@ int GMT_img2grd_parse (struct GMTAPI_CTRL *C, struct IMG2GRD_CTRL *Ctrl, struct 
 				Ctrl->T.active = true;
 				if ((sscanf (opt->arg, "%d", &Ctrl->T.value)) != 1) {
 					n_errors++;
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: -T requires an output type 0-3.\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -T requires an output type 0-3.\n");
 				}
 				break;
 			case 'W':
 				Ctrl->W.active = true;
 				if ((sscanf (opt->arg, "%lf", &Ctrl->W.value)) != 1) {
 					n_errors++;
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: -W requires a longitude >= 360.0.\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -W requires a longitude >= 360.0.\n");
 				}
 				break;
 			default:	/* Report bad options */
@@ -319,7 +319,7 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_img2grd_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_img2grd_parse (API, Ctrl, options)))
+	if ((error = GMT_img2grd_parse (GMT, Ctrl, options)))
 		Return (error);
 
 	/*---------------------------- This is the img2grd main code ----------------------------*/

@@ -176,7 +176,7 @@ int GMT_psrose_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_psrose_parse (struct GMTAPI_CTRL *C, struct PSROSE_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_psrose_parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to psrose and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -190,7 +190,7 @@ int GMT_psrose_parse (struct GMTAPI_CTRL *C, struct PSROSE_CTRL *Ctrl, struct GM
 	double range;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -247,7 +247,7 @@ int GMT_psrose_parse (struct GMTAPI_CTRL *C, struct PSROSE_CTRL *Ctrl, struct GM
 				if (strchr (opt->arg, '/') && !strchr (opt->arg, '+')) {	/* Old-style args */
 					n = sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
 					if (n != 4 || GMT_getrgb (GMT, txt_d, Ctrl->M.S.v.fill.rgb)) {
-						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -M option: Expected\n\t-M<tailwidth/headlength/headwidth/<color>>\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -M option: Expected\n\t-M<tailwidth/headlength/headwidth/<color>>\n");
 						n_errors++;
 					}
 					else {	/* Turn the old args into new +a<angle> and pen width */
@@ -317,7 +317,7 @@ int GMT_psrose_parse (struct GMTAPI_CTRL *C, struct PSROSE_CTRL *Ctrl, struct GM
 	GMT->common.R.wesn[XLO] = 0.0;
 	range = GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO];
 	if (doubleAlmostEqual (range, 180.0) && Ctrl->T.active) {
-		GMT_Report (C, GMT_MSG_NORMAL, "Warning: -T only needed for 0-360 range data (ignored)");
+		GMT_Report (API, GMT_MSG_NORMAL, "Warning: -T only needed for 0-360 range data (ignored)");
 		Ctrl->T.active = false;
 	}
 	n_errors += GMT_check_condition (GMT, Ctrl->C.active && Ctrl->C.file && GMT_access (GMT, Ctrl->C.file, R_OK), "Syntax error -C: Cannot read file %s!\n", Ctrl->C.file);
@@ -380,7 +380,7 @@ int GMT_psrose (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_psrose_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_psrose_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_psrose_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the psrose main code ----------------------------*/
 

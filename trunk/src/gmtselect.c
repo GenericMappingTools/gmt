@@ -205,7 +205,7 @@ int GMT_gmtselect_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to gmtselect and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -216,7 +216,7 @@ int GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl, str
 	unsigned int n_errors = 0, pos, j, k;
 	char ptr[GMT_BUFSIZ], buffer[GMT_BUFSIZ], za[GMT_TEXT_LEN64], zb[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 #ifdef GMT_COMPAT
 	bool fix = false;
 #endif
@@ -237,7 +237,7 @@ int GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl, str
 				Ctrl->C.active = true;
 #ifdef GMT_COMPAT
 				if (opt->arg[0] == 'f') {
-					GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -Cf is deprecated; use -C- instead\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -Cf is deprecated; use -C- instead\n");
 					opt->arg[0] = '-';
 					fix = true;
 				}
@@ -250,7 +250,7 @@ int GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl, str
 					opt->arg[j] = '/';	/* Restore the /filename part */
 				}
 				else {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -C option: Expects -C%s/<file>\n", GMT_DIST_OPT);
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Expects -C%s/<file>\n", GMT_DIST_OPT);
 					n_errors++;
 				}
 #ifdef GMT_COMPAT
@@ -273,7 +273,7 @@ int GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl, str
 							Ctrl->E.inside[N_ITEM] = GMT_INSIDE;
 							break;
 						default:
-							GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -E option: Expects -Ef, -En, or -Efn\n");
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -E option: Expects -Ef, -En, or -Efn\n");
 							n_errors++;
 							break;
 					}
@@ -306,7 +306,7 @@ int GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl, str
 							Ctrl->I.pass[5] = false;
 							break;
 						default:
-							GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -I option: Expects -Icflrsz\n");
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I option: Expects -Icflrsz\n");
 							n_errors++;
 							break;
 					}
@@ -322,7 +322,7 @@ int GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl, str
 					}
 					for (j = k; opt->arg[j] && opt->arg[j] != '/'; j++);
 					if (!opt->arg[j]) {
-						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -L option: Expects -L[p]%s/<file>\n", GMT_DIST_OPT);
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -L option: Expects -L[p]%s/<file>\n", GMT_DIST_OPT);
 						n_errors++;
 					}
 					else {
@@ -338,7 +338,7 @@ int GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl, str
 				strncpy (buffer, opt->arg, GMT_BUFSIZ);
 #ifdef GMT_COMPAT
 				if (buffer[strlen(buffer)-1] == 'o') { /* Edge is considered outside */
-					GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -N...o is deprecated; use -E instead\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -N...o is deprecated; use -E instead\n");
 					Ctrl->E.active = true;
 					Ctrl->E.inside[N_ITEM] = GMT_INSIDE;
 					buffer[strlen(buffer)-1] = 0;
@@ -354,13 +354,13 @@ int GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl, str
 							Ctrl->N.mask[j] = true;
 							break;
 						default:
-							GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -N option: Bad modifier (use s or k)\n");
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N option: Bad modifier (use s or k)\n");
 							n_errors++;
 					}
 					j++;
 				}
 				if (!(j == 2 || j == GMTSELECT_N_CLASSES)) {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -N option: Specify 2 or 5 arguments\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N option: Specify 2 or 5 arguments\n");
 					n_errors++;
 				}
 				Ctrl->N.mode = (j == 2);
@@ -369,7 +369,7 @@ int GMT_gmtselect_parse (struct GMTAPI_CTRL *C, struct GMTSELECT_CTRL *Ctrl, str
 				Ctrl->Z.active = true;
 				j = sscanf (opt->arg, "%[^/]/%s", za, zb);
 				if (j != 2) {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -Z option: Specify z_min and z_max\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Z option: Specify z_min and z_max\n");
 					n_errors++;
 				}
 				if (!(za[0] == '-' && za[1] == '\0')) n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], GMT_scanf_arg (GMT, za, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.min), za);
@@ -446,7 +446,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmtselect_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtselect_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_gmtselect_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the gmtselect main code ----------------------------*/
 

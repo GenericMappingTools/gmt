@@ -150,7 +150,7 @@ int GMT_mgd77magref_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_mgd77magref_parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to mgd77magref and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -162,7 +162,7 @@ int GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *Ctrl,
 	int j;
 	char p[GMT_BUFSIZ], tfixed[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -366,14 +366,14 @@ int GMT_mgd77magref_parse (struct GMTAPI_CTRL *C, struct MGD77MAGREF_CTRL *Ctrl,
 				if (opt->arg[0] == 'c') {
 					j = sscanf (&opt->arg[1], "%d/%d", &Ctrl->CM4->CM4_S.nlmf[0], &Ctrl->CM4->CM4_S.nhmf[0]);
 					if (j != 2) {
-						GMT_Report (C, GMT_MSG_NORMAL, "Error: -Sc option usage is -Sc<low/high>\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Error: -Sc option usage is -Sc<low/high>\n");
 						n_errors++;
 					}
 				}
 				if (opt->arg[0] == 'l') {
 					j = sscanf (&opt->arg[1], "%d/%d", &Ctrl->CM4->CM4_S.nlmf[1], &Ctrl->CM4->CM4_S.nhmf[1]);
 					if (j != 2) {
-						GMT_Report (C, GMT_MSG_NORMAL, "Error: -Sl option usage is -Sl<low/high>\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Error: -Sl option usage is -Sl<low/high>\n");
 						n_errors++;
 					}
 				}
@@ -432,7 +432,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args)
 	Ctrl = New_mgd77magref_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	MGD77_Init (GMT, &M);			/* Initialize MGD77 Machinery */
 	MGD77_CM4_init (GMT, &M, Ctrl->CM4);	/* Presets path using strdup */
-	if ((error = GMT_mgd77magref_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_mgd77magref_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the mgd77magref main code ----------------------------*/
 

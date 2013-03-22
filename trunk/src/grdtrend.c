@@ -154,7 +154,7 @@ int GMT_grdtrend_usage (struct GMTAPI_CTRL *API, int level) {
 	return (EXIT_FAILURE);
 }
 
-int GMT_grdtrend_parse (struct GMTAPI_CTRL *C, struct GRDTREND_CTRL *Ctrl, struct GMT_OPTION *options) {
+int GMT_grdtrend_parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	/* This parses the options provided to grdtrend and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -165,7 +165,7 @@ int GMT_grdtrend_parse (struct GMTAPI_CTRL *C, struct GRDTREND_CTRL *Ctrl, struc
 
 	unsigned int n_errors = 0, n_files = 0, j;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 		switch (opt->option) {
@@ -183,7 +183,7 @@ int GMT_grdtrend_parse (struct GMTAPI_CTRL *C, struct GRDTREND_CTRL *Ctrl, struc
 				if (opt->arg[0])
 					Ctrl->D.file = strdup (opt->arg);
 				else {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -D option: Must specify file name\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -D option: Must specify file name\n");
 					n_errors++;
 				}
 				break;
@@ -199,7 +199,7 @@ int GMT_grdtrend_parse (struct GMTAPI_CTRL *C, struct GRDTREND_CTRL *Ctrl, struc
 				if (opt->arg[0])
 					Ctrl->T.file = strdup (opt->arg);
 				else {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -T option: Must specify file name\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Must specify file name\n");
 					n_errors++;
 				}
 				break;
@@ -208,7 +208,7 @@ int GMT_grdtrend_parse (struct GMTAPI_CTRL *C, struct GRDTREND_CTRL *Ctrl, struc
 				if (opt->arg[0])
 					Ctrl->W.file = strdup (opt->arg);
 				else {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -W option: Must specify file name\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -W option: Must specify file name\n");
 					n_errors++;
 				}
 				/* OK if this file doesn't exist */
@@ -505,7 +505,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdtrend_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdtrend_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_grdtrend_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdtrend main code ----------------------------*/
 

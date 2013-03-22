@@ -178,7 +178,7 @@ int GMT_psscale_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_psscale_parse (struct GMTAPI_CTRL *C, struct PSSCALE_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to psscale and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -192,7 +192,7 @@ int GMT_psscale_parse (struct GMTAPI_CTRL *C, struct PSSCALE_CTRL *Ctrl, struct 
 	char flag, txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], *c = NULL;
 	char txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256], p[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -344,7 +344,7 @@ int GMT_psscale_parse (struct GMTAPI_CTRL *C, struct PSSCALE_CTRL *Ctrl, struct 
 	/* Check that the options selected are mutually consistent */
 
 	if (!Ctrl->D.active) {
-		GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: -D is required and must be specified\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -D is required and must be specified\n");
 		n_errors++;
 	}
 	else {
@@ -1094,7 +1094,7 @@ int GMT_psscale (void *V_API, int mode, void *args)
 	GMT->current.map.frame.side[S_SIDE] = GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[N_SIDE] = GMT->current.map.frame.side[W_SIDE] = 3;
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_psscale_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_psscale_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_psscale_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the psscale main code ----------------------------*/
 

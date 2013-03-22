@@ -148,7 +148,7 @@ int GMT_gmtconvert_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_gmtconvert_parse (struct GMTAPI_CTRL *C, struct GMTCONVERT_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_gmtconvert_parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to gmtconvert and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -159,7 +159,7 @@ int GMT_gmtconvert_parse (struct GMTAPI_CTRL *C, struct GMTCONVERT_CTRL *Ctrl, s
 	size_t arg_length;
 	unsigned int n_errors = 0, k, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -195,7 +195,7 @@ int GMT_gmtconvert_parse (struct GMTAPI_CTRL *C, struct GMTCONVERT_CTRL *Ctrl, s
 				break;
 #ifdef GMT_COMPAT
 			case 'F':	/* Now obsolete, using -o instead */
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -F is deprecated; use -o instead\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -F is deprecated; use -o instead\n");
 				gmt_parse_o_option (GMT, opt->arg);
 				break;
 #endif
@@ -207,7 +207,7 @@ int GMT_gmtconvert_parse (struct GMTAPI_CTRL *C, struct GMTCONVERT_CTRL *Ctrl, s
 						case 's': Ctrl->I.mode |= INV_SEGS; break;	/* Reverse segment order */
 						case 'r': Ctrl->I.mode |= INV_ROWS; break;	/* Reverse record order */
 						default:
-							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: The -I option does not recognize modifier %c\n", (int)opt->arg[k]);
+							GMT_Report (API, GMT_MSG_NORMAL, "Error: The -I option does not recognize modifier %c\n", (int)opt->arg[k]);
 							n_errors++;
 							break;
 					}
@@ -295,7 +295,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmtconvert_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtconvert_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_gmtconvert_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the gmtconvert main code ----------------------------*/
 

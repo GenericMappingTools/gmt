@@ -240,7 +240,7 @@ int GMT_pswiggle_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_pswiggle_parse (struct GMTAPI_CTRL *C, struct PSWIGGLE_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_pswiggle_parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to pswiggle and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -255,7 +255,7 @@ int GMT_pswiggle_parse (struct GMTAPI_CTRL *C, struct PSWIGGLE_CTRL *Ctrl, struc
 #endif
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], *units = NULL;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -276,7 +276,7 @@ int GMT_pswiggle_parse (struct GMTAPI_CTRL *C, struct PSWIGGLE_CTRL *Ctrl, struc
 				break;
 #ifdef GMT_COMPAT
 			case 'D':
-				GMT_Report (C, GMT_MSG_COMPAT, "Warning: -D option is deprecated; use -g instead.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -D option is deprecated; use -g instead.\n");
 				GMT->common.g.active = true;
 				if (opt->arg[0] == 'x')		/* Determine gaps using projected distances */
 					sprintf (txt_a, "d%s", &opt->arg[1]);
@@ -307,7 +307,7 @@ int GMT_pswiggle_parse (struct GMTAPI_CTRL *C, struct PSWIGGLE_CTRL *Ctrl, struc
 				break;
 #ifdef GMT_COMPAT
 			case 'N':
-				GMT_Report (C, GMT_MSG_COMPAT, "Warning: -N option is deprecated; use -G-<fill> instead.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -N option is deprecated; use -G-<fill> instead.\n");
 				N_active = true;
 				break;
 #endif
@@ -415,7 +415,7 @@ int GMT_pswiggle (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_pswiggle_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_pswiggle_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_pswiggle_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the pswiggle main code ----------------------------*/
 

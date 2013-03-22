@@ -213,7 +213,7 @@ int GMT_psxyz_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_psxyz_parse (struct GMTAPI_CTRL *C, struct PSXYZ_CTRL *Ctrl, struct GMT_OPTION *options, struct GMT_SYMBOL *S)
+int GMT_psxyz_parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_OPTION *options, struct GMT_SYMBOL *S)
 {
 	/* This parses the options provided to psxyz and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -226,7 +226,7 @@ int GMT_psxyz_parse (struct GMTAPI_CTRL *C, struct PSXYZ_CTRL *Ctrl, struct GMT_
 	int n;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -243,7 +243,7 @@ int GMT_psxyz_parse (struct GMTAPI_CTRL *C, struct PSXYZ_CTRL *Ctrl, struct GMT_
 				break;
 			case 'D':
 				if ((n = sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c)) < 2) {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -D option: Give x and y [and z] offsets\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -D option: Give x and y [and z] offsets\n");
 					n_errors++;
 				}
 				else {
@@ -284,8 +284,8 @@ int GMT_psxyz_parse (struct GMTAPI_CTRL *C, struct PSXYZ_CTRL *Ctrl, struct GMT_
 				if (opt->arg[j] == '+') {Ctrl->W.mode = 2; j++;}
 				if (opt->arg[j] && GMT_getpen (GMT, &opt->arg[j], &Ctrl->W.pen)) {
 					GMT_pen_syntax (GMT, 'W', "sets pen attributes [Default pen is %s]:");
-					GMT_Report (C, GMT_MSG_NORMAL, "\t   A leading + applies cpt color (-C) to both symbol fill and pen.\n");
-					GMT_Report (C, GMT_MSG_NORMAL, "\t   A leading - applies cpt color (-C) to the pen only.\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "\t   A leading + applies cpt color (-C) to both symbol fill and pen.\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "\t   A leading - applies cpt color (-C) to the pen only.\n");
 					n_errors++;
 				}
 				break;
@@ -427,7 +427,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 	S.u = GMT->current.setting.proj_length_unit;
 
 	Ctrl = New_psxyz_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_psxyz_parse (API, Ctrl, options, &S))) Return (error);
+	if ((error = GMT_psxyz_parse (GMT, Ctrl, options, &S))) Return (error);
 
 	/*---------------------------- This is the psxyz main code ----------------------------*/
 

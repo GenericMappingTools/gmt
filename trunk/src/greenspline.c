@@ -235,7 +235,7 @@ int GMT_greenspline_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to greenspline and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -247,7 +247,7 @@ int GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *Ctrl,
 	unsigned int n_errors = 0, dimension, k;
 	char txt[6][GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -271,8 +271,8 @@ int GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *Ctrl,
 				}
 				if (!GMT_access (GMT, opt->arg, R_OK)) {	/* Gave a readable file, presumably a grid */
 					struct GMT_GRID *G = NULL;	
-					if ((G = GMT_Read_Data (C, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, opt->arg, NULL)) == NULL) {	/* Get header only */
-						return (C->error);
+					if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, opt->arg, NULL)) == NULL) {	/* Get header only */
+						return (API->error);
 					}
 					Ctrl->R3.range[0] = G->header->wesn[XLO]; Ctrl->R3.range[1] = G->header->wesn[XHI];
 					Ctrl->R3.range[2] = G->header->wesn[YLO]; Ctrl->R3.range[3] = G->header->wesn[YHI];
@@ -280,15 +280,15 @@ int GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *Ctrl,
 					Ctrl->R3.offset = G->header->registration;
 					Ctrl->R3.dimension = 2;
 					Ctrl->R3.mode = true;
-					if (GMT_Destroy_Data (C, GMT_ALLOCATED, &G) != GMT_OK) {
-						return (C->error);
+					if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G) != GMT_OK) {
+						return (API->error);
 					}
 					break;
 				}
 
 				n_items = sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%s", txt[0], txt[1], txt[2], txt[3], txt[4], txt[5]);
 				if (!(n_items == 2 || n_items == 4 || n_items == 6)) {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -R option: Give 2, 4, or 6 coordinates\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -R option: Give 2, 4, or 6 coordinates\n");
 					n_errors++;
 				}
 				n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt[0], GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->R3.range[0]), txt[0]);
@@ -356,7 +356,7 @@ int GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *Ctrl,
 				if (strchr (opt->arg, '/')) {	/* Got 3-D vector components */
 					n_items = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->Q.dir[0], &Ctrl->Q.dir[1], &Ctrl->Q.dir[2]);
 					if (n_items != 3) {
-						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -Q option: Append azimuth (2-D) or x/y/z components (3-D)\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Q option: Append azimuth (2-D) or x/y/z components (3-D)\n");
 						n_errors++;
 					}
 					GMT_normalize3v (GMT, Ctrl->Q.dir);	/* Normalize to unit vector */
@@ -364,7 +364,7 @@ int GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *Ctrl,
 				else if (opt->arg[0])	/* 2-D azimuth */
 					Ctrl->Q.az = atof(opt->arg);
 				else {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -Q option: Append azimuth (2-D) or x/y/z components (3-D)\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Q option: Append azimuth (2-D) or x/y/z components (3-D)\n");
 					n_errors++;
 				}
 				break;
@@ -414,7 +414,7 @@ int GMT_greenspline_parse (struct GMTAPI_CTRL *C, struct GREENSPLINE_CTRL *Ctrl,
 						}
 						break;
 					default:
-						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -S option: Append c|t|g|p|q|Q\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -S option: Append c|t|g|p|q|Q\n");
 						n_errors++;
 					break;
 				}
@@ -1120,7 +1120,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_greenspline_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_greenspline_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_greenspline_parse (GMT, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the greenspline main code ----------------------------*/
 

@@ -192,7 +192,7 @@ int GMT_mapproject_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_mapproject_parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to mapproject and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -206,7 +206,7 @@ int GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ctrl, s
 	bool geodetic_calc = false;
 	char c, d, txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], from[GMT_TEXT_LEN256], to[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -220,7 +220,7 @@ int GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ctrl, s
 				Ctrl->A.active = true;
 				n = sscanf (opt->arg, "%c%[^/]/%s", &c, txt_a, txt_b);
 				if (n < 1) {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: Expected -Ab|B|f|F[<lon0>/<lat0>]\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Expected -Ab|B|f|F[<lon0>/<lat0>]\n");
 					n_errors++;
 				}
 				else {
@@ -240,7 +240,7 @@ int GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ctrl, s
 							Ctrl->A.orient = true;
 							break;
 						default:
-							GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: Expected -Ab|B|f|F|o|O[<lon0>/<lat0>]\n");
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Expected -Ab|B|f|F|o|O[<lon0>/<lat0>]\n");
 							n_errors++;
 							break;
 					}
@@ -339,7 +339,7 @@ int GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ctrl, s
 					case 'm': Ctrl->N.mode = GMT_LATSWAP_G2M; break;
 					case '\0': Ctrl->N.mode = GMT_LATSWAP_G2O; break;
 					default:
-						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: Expected -N[a|c|g|m]\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Expected -N[a|c|g|m]\n");
 						n_errors++;
 				}
 				break;
@@ -387,11 +387,11 @@ int GMT_mapproject_parse (struct GMTAPI_CTRL *C, struct MAPPROJECT_CTRL *Ctrl, s
 	if (!GMT->common.R.active && GMT->current.proj.projection == GMT_UTM && Ctrl->C.active) {	/* Set default UTM region from zone info */
 		n_errors += GMT_check_condition (GMT, !GMT->current.proj.utm_zoney && GMT->current.proj.utm_hemisphere == 0, "Syntax error: -Ju need zone specification with latitude or hemisphere selection\n");
 		if (GMT_UTMzone_to_wesn (GMT, GMT->current.proj.utm_zonex, GMT->current.proj.utm_zoney, GMT->current.proj.utm_hemisphere, GMT->common.R.wesn)) {
-			GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: Bad UTM zone\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Bad UTM zone\n");
 			n_errors++;
 		}
 		else
-			GMT_Report (C, GMT_MSG_VERBOSE, "UTM zone used to generate region %g/%g/%g/%g\n", 
+			GMT_Report (API, GMT_MSG_VERBOSE, "UTM zone used to generate region %g/%g/%g/%g\n", 
 				GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 		
 		GMT->common.R.active = true;
@@ -454,7 +454,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	if ((ptr = GMT_Find_Option (API, 'I', options)) == NULL && !GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Unless -I, implicitly set -fg unless already set */
 	Ctrl = New_mapproject_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_mapproject_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_mapproject_parse (GMT, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the mapproject main code ----------------------------*/
 

@@ -265,7 +265,7 @@ int get_annotinfo (char *args, struct MGD77TRACK_ANNOT *info)
 	return (error);
 }
 
-int GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_mgd77track_parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to mgd77track and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -280,7 +280,7 @@ int GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ctrl, s
 	char comment[GMT_BUFSIZ], mfc[GMT_TEXT_LEN64], *t = NULL;
 	double dist_scale;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -309,7 +309,7 @@ int GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ctrl, s
 				if (opt->arg[0] == 'g') Ctrl->C.mode = 2;
 				if (opt->arg[0] == 'e') Ctrl->C.mode = 3;
 				if (Ctrl->C.mode < 1 || Ctrl->C.mode > 3) {
-					GMT_Report (C, GMT_MSG_NORMAL, "Error -C: Flag must be f, g, or e\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Error -C: Flag must be f, g, or e\n");
 					n_errors++;
 				}
 				break;
@@ -321,7 +321,7 @@ int GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ctrl, s
 				 	case 'a':		/* Start date */
 						t = &opt->arg[1];
 						if (t && GMT_verify_expectations (GMT, GMT_IS_ABSTIME, GMT_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.start), t)) {
-							GMT_Report (C, GMT_MSG_NORMAL, "Error -Da: Start time (%s) in wrong format\n", t);
+							GMT_Report (API, GMT_MSG_NORMAL, "Error -Da: Start time (%s) in wrong format\n", t);
 							n_errors++;
 						}
 						break;
@@ -330,7 +330,7 @@ int GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ctrl, s
 					case 'b':		/* Stop date */
 						t = &opt->arg[1];
 						if (t && GMT_verify_expectations (GMT, GMT_IS_ABSTIME, GMT_scanf (GMT, t, GMT_IS_ABSTIME, &Ctrl->D.stop), t)) {
-							GMT_Report (C, GMT_MSG_NORMAL, "Error -Db : Stop time (%s) in wrong format\n", t);
+							GMT_Report (API, GMT_MSG_NORMAL, "Error -Db : Stop time (%s) in wrong format\n", t);
 							n_errors++;
 						}
 						break;
@@ -353,7 +353,7 @@ int GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ctrl, s
 						Ctrl->F.mode = MGD77_CDF_SET;
 						break;
 					default:
-						GMT_Report (C, GMT_MSG_NORMAL, "Error -T: append m, e, or neither\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Error -T: append m, e, or neither\n");
 						n_errors++;
 						break;
 				}
@@ -370,7 +370,7 @@ int GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ctrl, s
 						Ctrl->G.value[GAP_T] = lrint (atof (&opt->arg[1]) * 60.0);	/* Gap converted to seconds from minutes */
 						break;
 					default:
-						GMT_Report (C, GMT_MSG_NORMAL, "Error -G: Requires t|d and a positive value in km (d) or minutes (t)\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Error -G: Requires t|d and a positive value in km (d) or minutes (t)\n");
 						n_errors++;
 						break;
 				}
@@ -382,12 +382,12 @@ int GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ctrl, s
 					if (strchr ("act", (int)opt->arg[0]))
 						Ctrl->I.code[Ctrl->I.n++] = opt->arg[0];
 					else {
-						GMT_Report (C, GMT_MSG_NORMAL, "Option -I Bad modifier (%c). Use -Ia|c|t!\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_NORMAL, "Option -I Bad modifier (%c). Use -Ia|c|t!\n", opt->arg[0]);
 						n_errors++;
 					}
 				}
 				else {
-					GMT_Report (C, GMT_MSG_NORMAL, "Option -I: Can only be applied 0-2 times\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Option -I: Can only be applied 0-2 times\n");
 					n_errors++;
 				}
 				break;
@@ -431,26 +431,26 @@ int GMT_mgd77track_parse (struct GMTAPI_CTRL *C, struct MGD77TRACK_CTRL *Ctrl, s
 						break;
 				}
 				if (error) {
-					GMT_Report (C, GMT_MSG_NORMAL, "Error: Unrecognized modifier %c given to -T\n", opt->arg[0]);
+					GMT_Report (API, GMT_MSG_NORMAL, "Error: Unrecognized modifier %c given to -T\n", opt->arg[0]);
 					n_errors++;
 				}
 				strncpy (comment, &opt->arg[1], GMT_BUFSIZ);
 				for (j = 0; j < (int)strlen (comment); j++) if (comment[j] == ',') comment[j] = ' ';	/* Replace commas with spaces */
 				j = sscanf (comment, "%s %s %s %s %s", ms, mc, mfs, mf, mfc);
 				if (j != 5) {
-					GMT_Report (C, GMT_MSG_NORMAL, "Error: -TT|t|d takes 5 arguments\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Error: -TT|t|d takes 5 arguments\n");
 					n_errors++;
 				}
 				Ctrl->T.marker[mrk].marker_size = GMT_to_inch (GMT, ms);
 				if (GMT_getfill (GMT, mc, &Ctrl->T.marker[mrk].s)) {
-					GMT_Report (C, GMT_MSG_NORMAL, "Error: Bad fill specification for -T\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Error: Bad fill specification for -T\n");
 					GMT_fill_syntax (GMT, 'T', " ");
 					n_errors++;
 				}
 				sprintf (tmp, "%s,%s,", mfs, mf);	/* Put mfs and mf together in order to be used by GMT_getpen */
 				GMT_getfont (GMT, tmp, &Ctrl->T.marker[mrk].font);
 				if (GMT_getfill (GMT, mfc, &Ctrl->T.marker[mrk].f)) {
-					GMT_Report (C, GMT_MSG_NORMAL, "Error: Bad fill specification for -T\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Error: Bad fill specification for -T\n");
 					GMT_fill_syntax (GMT, 'T', " ");
 					n_errors++;
 				}
@@ -578,7 +578,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	if ((error = GMT_mgd77track_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_mgd77track_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the mgd77track main code ----------------------------*/
 	

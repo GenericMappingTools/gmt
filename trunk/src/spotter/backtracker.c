@@ -190,7 +190,7 @@ int GMT_backtracker_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_backtracker_parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to backtracker and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -202,7 +202,7 @@ int GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *Ctrl,
 	int k;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -222,7 +222,7 @@ int GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *Ctrl,
 						Ctrl->A.mode = 1;
 					}
 					else {
-						GMT_Report (C, GMT_MSG_NORMAL, "ERROR Option -A: Append <young>/<old> age or stage limits.\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "ERROR Option -A: Append <young>/<old> age or stage limits.\n");
 						n_errors++;
 					}
 				}
@@ -233,7 +233,7 @@ int GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *Ctrl,
 
 #ifdef GMT_COMPAT
 			case 'C':	/* Now done automatically in spotter_init */
-				GMT_Report (C, GMT_MSG_COMPAT, "Warning: -C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
 				break;
 #endif
 			case 'D':	/* Specify in which direction we should project */
@@ -249,7 +249,7 @@ int GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *Ctrl,
 						break;
 					default:
 						n_errors++;
-						GMT_Report (C, GMT_MSG_NORMAL, "ERROR Option -D: Append b or f\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "ERROR Option -D: Append b or f\n");
 						break;
 				}
 				break;
@@ -287,7 +287,7 @@ int GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *Ctrl,
 						break;
 					default:
 						n_errors++;
-						GMT_Report (C, GMT_MSG_NORMAL, "ERROR Option -L: Append f or b\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "ERROR Option -L: Append f or b\n");
 						break;
 				}
 				Ctrl->L.d_km = (opt->arg[1]) ? atof (&opt->arg[1]) : -1.0;
@@ -305,7 +305,7 @@ int GMT_backtracker_parse (struct GMTAPI_CTRL *C, struct BACKTRACKER_CTRL *Ctrl,
 					Ctrl->S.active = true;
 				}
 				else {
-					GMT_Report (C, GMT_MSG_NORMAL, "ERROR Option -S: Append a file stem\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "ERROR Option -S: Append a file stem\n");
 					n_errors++;
 				}
 				break;
@@ -416,7 +416,7 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
 	Ctrl = New_backtracker_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_backtracker_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_backtracker_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the backtracker main code ----------------------------*/
 	

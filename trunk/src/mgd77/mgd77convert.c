@@ -96,7 +96,7 @@ int GMT_mgd77convert_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_mgd77convert_parse (struct GMTAPI_CTRL *C, struct MGD77CONVERT_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_mgd77convert_parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to mgd77convert and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -106,7 +106,7 @@ int GMT_mgd77convert_parse (struct GMTAPI_CTRL *C, struct MGD77CONVERT_CTRL *Ctr
 
 	unsigned int n_errors = 0, code_pos, i;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -143,7 +143,7 @@ int GMT_mgd77convert_parse (struct GMTAPI_CTRL *C, struct MGD77CONVERT_CTRL *Ctr
 						Ctrl->F.format = MGD77_FORMAT_TBL;
 						break;
 					default:
-						GMT_Report (C, GMT_MSG_NORMAL, "Option -F Bad format (%c)!\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_NORMAL, "Option -F Bad format (%c)!\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}
@@ -166,14 +166,14 @@ int GMT_mgd77convert_parse (struct GMTAPI_CTRL *C, struct MGD77CONVERT_CTRL *Ctr
 						Ctrl->T.format = MGD77_FORMAT_TBL;
 						break;
 					default:
-						GMT_Report (C, GMT_MSG_NORMAL, "Option -T Bad format (%c)!\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_NORMAL, "Option -T Bad format (%c)!\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}
 				break;
 #ifdef GMT_COMPAT
 			case '4':	/* Selected high-resolution 4-byte integer MGD77+ format for mag, diur, faa, eot [2-byte integer] */
-				GMT_Report (C, GMT_MSG_COMPAT, "Warning: -4 is deprecated; use -D instead.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -4 is deprecated; use -D instead.\n");
 #endif
 			case 'C':
 				Ctrl->C.active = true;
@@ -228,7 +228,7 @@ int GMT_mgd77convert (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_mgd77convert_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_mgd77convert_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_mgd77convert_parse (GMT, Ctrl, options))) Return (error);
 	
 	/*---------------------------- This is the mgd77convert main code ----------------------------*/
 

@@ -91,7 +91,7 @@ int GMT_psclip_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_psclip_parse (struct GMTAPI_CTRL *C, struct PSCLIP_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_psclip_parse (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to psclip and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -102,7 +102,7 @@ int GMT_psclip_parse (struct GMTAPI_CTRL *C, struct PSCLIP_CTRL *Ctrl, struct GM
 
 	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -126,7 +126,7 @@ int GMT_psclip_parse (struct GMTAPI_CTRL *C, struct PSCLIP_CTRL *Ctrl, struct GM
 						if (isdigit ((int)opt->arg[0]))
 							Ctrl->C.n = atoi (&opt->arg[0]);
 						else {
-							GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -C option: Correct syntax is -C[s|c|a|<n>]\n");
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Correct syntax is -C[s|c|a|<n>]\n");
 							n_errors++;
 						}
 						break;
@@ -150,10 +150,10 @@ int GMT_psclip_parse (struct GMTAPI_CTRL *C, struct PSCLIP_CTRL *Ctrl, struct GM
 		n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	}
 	if (Ctrl->T.active) Ctrl->N.active = true;	/* -T implies -N */
-	if (Ctrl->T.active && n_files) GMT_Report (C, GMT_MSG_NORMAL, "Warning: Option -T ignores all input files\n");
+	if (Ctrl->T.active && n_files) GMT_Report (API, GMT_MSG_NORMAL, "Warning: Option -T ignores all input files\n");
 
 	if (Ctrl->N.active && GMT->current.map.frame.init) {
-		GMT_Report (C, GMT_MSG_NORMAL, "Warning: Option -B cannot be used in combination with Options -N or -T. -B is ignored.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Option -B cannot be used in combination with Options -N or -T. -B is ignored.\n");
 		GMT->current.map.frame.draw = false;
 	}
 
@@ -214,7 +214,7 @@ int GMT_psclip (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_psclip_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_psclip_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_psclip_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the psclip main code ----------------------------*/
 

@@ -116,7 +116,7 @@ int GMT_grdseamount_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_grdseamount_parse (struct GMTAPI_CTRL *C, struct GRDSEAMOUNT_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_grdseamount_parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to grdseamount and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -127,7 +127,6 @@ int GMT_grdseamount_parse (struct GMTAPI_CTRL *C, struct GRDSEAMOUNT_CTRL *Ctrl,
 	unsigned int n_errors = 0, n_files = 0, n_expected_fields;
 	char T1[GMT_TEXT_LEN32], T2[GMT_TEXT_LEN32];
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -293,7 +292,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdseamount_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdseamount_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_grdseamount_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdseamount main code ----------------------------*/
 	

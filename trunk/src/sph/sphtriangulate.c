@@ -419,7 +419,7 @@ int GMT_sphtriangulate_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_sphtriangulate_parse (struct GMTAPI_CTRL *C, struct SPHTRIANGULATE_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_sphtriangulate_parse (struct GMT_CTRL *GMT, struct SPHTRIANGULATE_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to sphtriangulate and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -429,7 +429,7 @@ int GMT_sphtriangulate_parse (struct GMTAPI_CTRL *C, struct SPHTRIANGULATE_CTRL 
 
 	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -451,7 +451,7 @@ int GMT_sphtriangulate_parse (struct GMTAPI_CTRL *C, struct SPHTRIANGULATE_CTRL 
 			case 'L':
 				Ctrl->L.active = true;
 				if (!(opt->arg && strchr (GMT_LEN_UNITS, opt->arg[0]))) {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: Expected -L%s\n", GMT_LEN_UNITS_DISPLAY);
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Expected -L%s\n", GMT_LEN_UNITS_DISPLAY);
 					n_errors++;
 				}
 				else
@@ -519,7 +519,7 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args)
 	GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg since this is spherical triangulation */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_sphtriangulate_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_sphtriangulate_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_sphtriangulate_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the sphtriangulate main code ----------------------------*/
 

@@ -246,7 +246,7 @@ int GMT_grdspotter_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_grdspotter_parse (struct GMTAPI_CTRL *C, struct GRDSPOTTER_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_grdspotter_parse (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to grdspotter and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -257,7 +257,7 @@ int GMT_grdspotter_parse (struct GMTAPI_CTRL *C, struct GRDSPOTTER_CTRL *Ctrl, s
 	unsigned int n_errors = 0, k, n_files = 0;
 	int m, sval;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -275,7 +275,7 @@ int GMT_grdspotter_parse (struct GMTAPI_CTRL *C, struct GRDSPOTTER_CTRL *Ctrl, s
 				break;
 #ifdef GMT_COMPAT
 			case 'C':	/* Now done automatically in spotter_init */
-				GMT_Report (C, GMT_MSG_COMPAT, "Warning: -C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
 				break;
 #endif
 			case 'E':
@@ -335,7 +335,7 @@ int GMT_grdspotter_parse (struct GMTAPI_CTRL *C, struct GRDSPOTTER_CTRL *Ctrl, s
 					Ctrl->Q.id = sval;
 				}
 				else {
-					GMT_Report (C, GMT_MSG_NORMAL, "Error -Q: Must give valid file or ID value\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Error -Q: Must give valid file or ID value\n");
 					n_errors++;
 				}
 				break;
@@ -350,7 +350,7 @@ int GMT_grdspotter_parse (struct GMTAPI_CTRL *C, struct GRDSPOTTER_CTRL *Ctrl, s
 					Ctrl->T.active[UPPER] = true;
 				}
 				else {
-					GMT_Report (C, GMT_MSG_NORMAL, "Error -T: Either use -Tt or -Tu<age>\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Error -T: Either use -Tt or -Tu<age>\n");
 					n_errors++;
 				}
 				break;
@@ -554,7 +554,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdspotter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdspotter_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_grdspotter_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdspotter main code ----------------------------*/
 

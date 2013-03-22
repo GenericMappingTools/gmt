@@ -126,7 +126,7 @@ int GMT_minmax_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_minmax_parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to minmax and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -138,7 +138,7 @@ int GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, struct GM
 	unsigned int n_errors = 0, k;
 	bool special = false;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -162,7 +162,7 @@ int GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, struct GM
 						break;
 					default:
 						n_errors++;
-						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -A. Flags are a|f|s.\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A. Flags are a|f|s.\n");
 						break;
 				}
 				break;
@@ -184,7 +184,7 @@ int GMT_minmax_parse (struct GMTAPI_CTRL *C, struct MINMAX_CTRL *Ctrl, struct GM
 						break;
 					default:
 						n_errors++;
-						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -E. Flags are L|l|H|h.\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -E. Flags are L|l|H|h.\n");
 						break;
 				}
 				if (opt->arg[1]) Ctrl->E.col = atoi (&opt->arg[1]);
@@ -272,7 +272,7 @@ int GMT_minmax (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_minmax_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_minmax_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_minmax_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the minmax main code ----------------------------*/
 

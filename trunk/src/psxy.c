@@ -352,7 +352,7 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_psxy_parse (struct GMTAPI_CTRL *C, struct PSXY_CTRL *Ctrl, struct GMT_OPTION *options, struct GMT_SYMBOL *S)
+int GMT_psxy_parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTION *options, struct GMT_SYMBOL *S)
 {
 	/* This parses the options provided to psxy and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -365,7 +365,7 @@ int GMT_psxy_parse (struct GMTAPI_CTRL *C, struct PSXY_CTRL *Ctrl, struct GMT_OP
 	int j;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -392,7 +392,7 @@ int GMT_psxy_parse (struct GMTAPI_CTRL *C, struct PSXY_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'D':
 				if ((j = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b)) < 1) {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -D option: Give x [and y] offsets\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -D option: Give x [and y] offsets\n");
 					n_errors++;
 				}
 				else {
@@ -470,8 +470,8 @@ int GMT_psxy_parse (struct GMTAPI_CTRL *C, struct PSXY_CTRL *Ctrl, struct GMT_OP
 				if (opt->arg[j] == '+') {Ctrl->W.mode = 2; j++;}
 				if (opt->arg[j] && GMT_getpen (GMT, &opt->arg[j], &Ctrl->W.pen)) {
 					GMT_pen_syntax (GMT, 'W', "sets pen attributes [Default pen is %s]:");
-					GMT_Report (C, GMT_MSG_NORMAL, "\t   A leading + applies cpt color (-C) to both symbol fill and pen.\n");
-					GMT_Report (C, GMT_MSG_NORMAL, "\t   A leading - applies cpt color (-C) to the pen only.\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "\t   A leading + applies cpt color (-C) to both symbol fill and pen.\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "\t   A leading - applies cpt color (-C) to the pen only.\n");
 					n_errors++;
 				}
 				break;
@@ -553,7 +553,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 	S.font = GMT->current.setting.font_annot[0];
 	S.u = GMT->current.setting.proj_length_unit;
 	Ctrl = New_psxy_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_psxy_parse (API, Ctrl, options, &S))) Return (error);
+	if ((error = GMT_psxy_parse (GMT, Ctrl, options, &S))) Return (error);
 
 	/*---------------------------- This is the psxy main code ----------------------------*/
 

@@ -89,7 +89,7 @@ int GMT_blockmode_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_blockmode_parse (struct GMTAPI_CTRL *C, struct BLOCKMODE_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_blockmode_parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to blockmode and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -99,7 +99,6 @@ int GMT_blockmode_parse (struct GMTAPI_CTRL *C, struct BLOCKMODE_CTRL *Ctrl, str
 
 	unsigned int n_errors = 0, pos = 0;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
 	char p[GMT_BUFSIZ], *c = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -123,7 +122,7 @@ int GMT_blockmode_parse (struct GMTAPI_CTRL *C, struct BLOCKMODE_CTRL *Ctrl, str
 							case 'l': Ctrl->D.mode = BLOCKMODE_LOW; break;	/* Pick low mode */
 							case 'h': Ctrl->D.mode = BLOCKMODE_HIGH; break;	/* Pick high mode */
 							default:	/* Bad modifier */
-								GMT_Report (C, GMT_MSG_NORMAL, "Error: Unrecognized modifier +%c.\n", p[0]);
+								GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unrecognized modifier +%c.\n", p[0]);
 								n_errors++;
 								break;
 						}
@@ -376,7 +375,7 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_blockmode_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_blockmode_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_blockmode_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the blockmode main code ----------------------------*/
 

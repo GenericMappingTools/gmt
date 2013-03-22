@@ -501,7 +501,7 @@ int GMT_trend1d_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_trend1d_parse (struct GMTAPI_CTRL *C, struct TREND1D_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_trend1d_parse (struct GMT_CTRL *GMT, struct TREND1D_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to trend1d and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -511,7 +511,7 @@ int GMT_trend1d_parse (struct GMTAPI_CTRL *C, struct TREND1D_CTRL *Ctrl, struct 
 
 	unsigned int n_errors = 0, j;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -531,7 +531,7 @@ int GMT_trend1d_parse (struct GMTAPI_CTRL *C, struct TREND1D_CTRL *Ctrl, struct 
 					if (j < TREND1D_N_OUTPUT_CHOICES)
 						Ctrl->F.col[j] = opt->arg[j];
 					else {
-						GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -F option: Too many output columns selected: Choose from -Fxymrw|p\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F option: Too many output columns selected: Choose from -Fxymrw|p\n");
 						n_errors++;
 					}
 				}
@@ -555,7 +555,7 @@ int GMT_trend1d_parse (struct GMTAPI_CTRL *C, struct TREND1D_CTRL *Ctrl, struct 
 				if (opt->arg[j])
 					Ctrl->N.value = atoi(&opt->arg[j]);
 				else {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -N option: No model specified\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N option: No model specified\n");
 					n_errors++;
 				}
 				break;
@@ -575,7 +575,7 @@ int GMT_trend1d_parse (struct GMTAPI_CTRL *C, struct TREND1D_CTRL *Ctrl, struct 
 	n_errors += GMT_check_binary_io (GMT, (Ctrl->W.active) ? 3 : 2);
 	for (j = Ctrl->n_outputs = 0; j < TREND1D_N_OUTPUT_CHOICES && Ctrl->F.col[j]; j++) {
 		if (!strchr ("xymrwp", Ctrl->F.col[j])) {
-			GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -F option: Unrecognized output choice %c\n", Ctrl->F.col[j]);
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -F option: Unrecognized output choice %c\n", Ctrl->F.col[j]);
 			n_errors++;
 		}
 		else if (Ctrl->F.col[j] == 'w')
@@ -627,7 +627,7 @@ int GMT_trend1d (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_trend1d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_trend1d_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_trend1d_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the trend1d main code ----------------------------*/
 

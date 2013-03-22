@@ -53,10 +53,6 @@ AC_SUBST(LD_OPT)
 AC_SUBST(LDFLAGS)
 AC_SUBST(GMT_LIB)
 AC_SUBST(GMT_INC)
-AC_SUBST(NETCDF_LIB)
-AC_SUBST(NETCDF_INC)
-AC_SUBST(GDAL_LIB)
-AC_SUBST(GDAL_INC)
 AC_SUBST(LIBS)
 AC_SUBST(LIBEXT)
 AC_SUBST(SL)
@@ -80,10 +76,6 @@ AC_ARG_WITH(gdal_config,[  --with-gdal-config=     Full path to gdal-config [[au
 AC_ARG_ENABLE(rpath,	[  --disable-rpath         Do not hardcode runtime library paths])
 AC_ARG_VAR(GMT_INC,Location of GMT5 headers (compile-time))
 AC_ARG_VAR(GMT_LIB,Location of GMT5 library (compile-time))
-AC_ARG_VAR(NETCDF_INC,Location of netCDF headers (compile-time))
-AC_ARG_VAR(NETCDF_LIB,Location of netCDF library (compile-time))
-AC_ARG_VAR(GDAL_INC,Location of GDAL headers (compile-time))
-AC_ARG_VAR(GDAL_LIB,Location of GDAL library (compile-time))
 dnl
 dnl -----------------------------------------------------------------
 dnl Check for ar, csh/bash, ld, awk, and ranlib
@@ -185,85 +177,6 @@ dnl 	Determine if GMT5 was installed 32- or 64-bit
 		LDFLAGS="$LDFLAGS -m32"
 		AC_MSG_RESULT(found 32-bit)
 	fi
-fi
-dnl
-dnl -----------------------------------------------------------------
-dnl Allow user to set --enable-netcdf to set netCDF dir
-dnl Use nc-config if possible
-dnl -----------------------------------------------------------------
-dnl
-if test "X$with_nc_config" != "Xno" ; then
-	AC_PATH_PROG([NC_CONF], [nc-config], [$with_nc_config])
-fi
-if test -x "$NC_CONF" && test "X$NETCDF_INC" = "X" && test "X$NETCDF_LIB" = "X" ; then
-	AC_MSG_CHECKING(for netCDF includes)
-	NETCDF_INC=`$NC_CONF --cflags`
-	AC_MSG_RESULT($NETCDF_INC)
-	AC_MSG_CHECKING(for netCDF libs)
-	NETCDF_LIB=`$NC_CONF --libs`
-	AC_MSG_RESULT($NETCDF_LIB)
-	NC_LIB_PATH=`echo $NETCDF_LIB | sed 's/^-L//;s/\ .*//'`
-	rpath="$NC_LIB_PATH"
-else
-	if test "X$enable_netcdf" = "X" || test "X$enable_netcdf" = "Xyes" ; then
-		AC_PATH_PROG([NETCDF], [ncdump], [/usr/local/netcdf/bin/ncdump])
-		NETCDF=`dirname $NETCDF`
-		NETCDF=`dirname $NETCDF`
-	else
-		NETCDF=$enable_netcdf
-	fi
-	AC_MSG_CHECKING(for netCDF include directory)
-	if test "X$NETCDF_INC" = "X"; then
-		NETCDF_INC=$NETCDF/include
-	fi
-	AC_MSG_RESULT($NETCDF_INC)
-	if test ! -f $NETCDF_INC/netcdf.h; then
-		AC_MSG_WARN([[netcdf.h can not be found in $NETCDF_INC]])
-	fi
-	AC_MSG_CHECKING(for netCDF library directory)
-	if test "X$NETCDF_LIB" = "X"; then
-		NETCDF_LIB=$NETCDF/lib
-	fi
-	AC_MSG_RESULT($NETCDF_LIB)
-	if test ! -d $NETCDF_LIB; then
-		AC_MSG_WARN([[No such directory: $NETCDF_LIB]])
-	fi
-	rpath="$NETCDF_LIB"
-	NETCDF_LIB="-L$NETCDF_LIB -lnetcdf"
-	NETCDF_INC="-I$NETCDF_INC"
-fi
-dnl
-dnl -----------------------------------------------------------------
-dnl Allow user to set --enable-gdal to experimental GDAL support
-dnl Set path to gdal-config explicitly with --with-gdal-config
-dnl -----------------------------------------------------------------
-dnl
-if test "X$enable_gdal" != "Xno" || test "X$with_gdal_config" != "Xno"; then
-	AC_MSG_RESULT([Compile experimental support for GDAL input])
-	AC_PATH_PROG([GDAL_CONF], [gdal-config], [$with_gdal_config])
-	if test -x "$GDAL_CONF" ; then
-		AC_MSG_CHECKING(for GDAL includes)
-		if test "X$GDAL_INC" = "X"; then
-			GDAL_INC=`$GDAL_CONF --cflags`
-		fi
-		AC_MSG_RESULT($GDAL_INC)
-		AC_MSG_CHECKING(for GDAL libs)
-		if test "X$GDAL_LIB" = "X"; then
-			GDAL_LIB=`$GDAL_CONF --libs`
-		fi
-		AC_MSG_RESULT($GDAL_LIB)
-		GDAL_LIB_PATH=`echo $GDAL_LIB | sed 's/^-L//;s/\ .*//'`
-		rpath="$rpath:$GDAL_LIB_PATH"
-		CPPFLAGS="$CPPFLAGS -DHAVE_GDAL"
-	else
-		AC_MSG_RESULT([The gdal-config script distributed with GDAL could not be found. If you have installed the GDAL libraries, then make sure that gdal-config is in your path. If not, use: --with-gdal-config.])
-	fi
-	if test "X$GDAL_INC" = "X" || test "X$GDAL_LIB" = "X"; then
-		exit 1
-	fi
-else
-	GDAL_LIB=
-	GDAL_INC=
 fi
 dnl
 dnl -----------------------------------------------------------------

@@ -161,18 +161,18 @@ void load_from_top_grid(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAV
 void load_from_below_grid(struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, float *raised, unsigned int n);
 void compute_only_admitts(struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_FFT_WAVENUMBER *K, double *z_top_or_bot, double delta_pt);
 
-int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct GMT_OPTION *options) {
+int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	unsigned int n_errors = 0;
 
 	int n, override_mode = GMT_FFT_REMOVE_MEAN;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 	char   ptr[GMT_BUFSIZ], t_or_b[4];
 #ifdef GMT_COMPAT
 	struct GMT_OPTION *popt = NULL;
 	char *mod = NULL, argument[GMT_TEXT_LEN16], combined[GMT_BUFSIZ];
-	if ((popt = GMT_Find_Option (C, 'L', options))) {	/* Gave old -L */
+	if ((popt = GMT_Find_Option (API, 'L', options))) {	/* Gave old -L */
 		mod = popt->arg; /* Gave old -L option */
 		GMT_memset (argument, GMT_TEXT_LEN16, char);
 		if (mod[0] == '\0') strcat (argument, "+l");		/* Leave trend alone -L */
@@ -190,7 +190,7 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 					Ctrl->In.file[Ctrl->In.n_grids++] = strdup (opt->arg);
 				else {
 					n_errors++;
-					GMT_Report (C, GMT_MSG_NORMAL, "Error: A maximum of two input grids may be processed\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Error: A maximum of two input grids may be processed\n");
 				}
 				break;
 			case 'A':	/* Add const to ingrid1 */
@@ -212,7 +212,7 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 							Ctrl->misc.from_top = true;
 							break;
 						default:
-							GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -C: [%s] is not valid, chose from [tbw]\n", &t_or_b[n]);
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C: [%s] is not valid, chose from [tbw]\n", &t_or_b[n]);
 							n_errors++;
 							break;
 					}
@@ -220,7 +220,7 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 				break;
 			case 'D':
 				if (!opt->arg) {
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -D option: must give density contrast\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -D option: must give density contrast\n");
 					n_errors++;
 				}
 				Ctrl->D.active = true;
@@ -230,7 +230,7 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 			case 'E':
 				Ctrl->E.n_terms = atoi (opt->arg);
 				if (Ctrl->E.n_terms > 10) {
-					GMT_Report (C, GMT_MSG_NORMAL, "ERROR -E option: n_terms must be <= 10\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "ERROR -E option: n_terms must be <= 10\n");
 					n_errors++;
 				}
 				break;
@@ -268,7 +268,7 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 							Ctrl->misc.from_top = true;
 							break;
 						default:
-							GMT_Report (C, GMT_MSG_NORMAL, "Syntax error -I : [%s] is not valid, chose from [wbct]\n", &ptr[n]);
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I : [%s] is not valid, chose from [wbct]\n", &ptr[n]);
 							n_errors++;
 							break;
 					}
@@ -276,7 +276,7 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 				break;
 #ifdef GMT_COMPAT
 			case 'L':	/* Leave trend alone */
-				GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; use -N modifiers in the future.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; use -N modifiers in the future.\n");
 				break;
 #endif
 			case 'N':
@@ -284,10 +284,10 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 #ifdef GMT_COMPAT
 				if (popt) {	/* Got both old -L and -N; append */
 					sprintf (combined, "%s%s", opt->arg, argument);
-					Ctrl->N.info = GMT_FFT_Parse (C, 'N', GMT_FFT_DIM, combined);
+					Ctrl->N.info = GMT_FFT_Parse (API, 'N', GMT_FFT_DIM, combined);
 				} else
 #endif
-				Ctrl->N.info = GMT_FFT_Parse (C, 'N', GMT_FFT_DIM, opt->arg);
+				Ctrl->N.info = GMT_FFT_Parse (API, 'N', GMT_FFT_DIM, opt->arg);
 				if (Ctrl->N.info == NULL) n_errors++;
 				Ctrl->N.active = true;
 				break;
@@ -323,13 +323,13 @@ int GMT_gravfft_parse (struct GMTAPI_CTRL *C, struct GRAVFFT_CTRL *Ctrl, struct 
 	}
 #ifdef GMT_COMPAT
 	if (!Ctrl->N.active && popt) {	/* User set -L but no -N so nothing got appended above... Sigh...*/
-		Ctrl->N.info = GMT_FFT_Parse (C, 'N', GMT_FFT_DIM, argument);
+		Ctrl->N.info = GMT_FFT_Parse (API, 'N', GMT_FFT_DIM, argument);
 	}
 #endif
 
 	if (override_mode >= 0) {		/* FAKE TEST AS IT WAS SET ABOVE override_mode = GMT_FFT_REMOVE_MEAN */
 		if (Ctrl->N.info == NULL) {	/* User neither gave -L nor -N... Sigh...*/
-			if ((Ctrl->N.info = GMT_FFT_Parse (C, 'N', GMT_FFT_DIM, "")) == NULL)	/* Error messages are issued inside parse function */
+			if ((Ctrl->N.info = GMT_FFT_Parse (API, 'N', GMT_FFT_DIM, "")) == NULL)	/* Error messages are issued inside parse function */
 				n_errors++;
 			else
 				Ctrl->N.info->trend_mode = override_mode;
@@ -476,7 +476,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gravfft_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gravfft_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_gravfft_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdfft main code ----------------------------*/
 

@@ -249,7 +249,7 @@ int GMT_psmeca_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_psmeca_parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to psmeca and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -262,7 +262,6 @@ int GMT_psmeca_parse (struct GMTAPI_CTRL *C, struct PSMECA_CTRL *Ctrl, struct GM
 	bool no_size_needed;
 	char txt[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], *p = NULL;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -514,7 +513,7 @@ int GMT_psmeca (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_psmeca_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_psmeca_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_psmeca_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the psmeca main code ----------------------------*/
 	

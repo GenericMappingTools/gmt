@@ -332,7 +332,7 @@ int GMT_pstext_usage (struct GMTAPI_CTRL *API, int level, int show_fonts)
 	return (EXIT_FAILURE);
 }
 
-int GMT_pstext_parse (struct GMTAPI_CTRL *C, struct PSTEXT_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to pstext and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -345,7 +345,7 @@ int GMT_pstext_parse (struct GMTAPI_CTRL *C, struct PSTEXT_CTRL *Ctrl, struct GM
 	unsigned int pos, n_errors = 0;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], p[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -423,7 +423,7 @@ int GMT_pstext_parse (struct GMTAPI_CTRL *C, struct PSTEXT_CTRL *Ctrl, struct GM
 				break;
 #ifdef GMT_COMPAT
 			case 'm':
-				GMT_Report (C, GMT_MSG_COMPAT, "Warning: -m option is deprecated and reverted back to -M to indicate paragraph mode.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -m option is deprecated and reverted back to -M to indicate paragraph mode.\n");
 #endif
 			case 'M':	/* Paragraph mode */
 				Ctrl->M.active = true;
@@ -433,7 +433,7 @@ int GMT_pstext_parse (struct GMTAPI_CTRL *C, struct PSTEXT_CTRL *Ctrl, struct GM
 				break;
 #ifdef GMT_COMPAT
 			case 'S':
-				GMT_Report (C, GMT_MSG_COMPAT, "Warning: -S option is deprecated; use font pen setting instead.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -S option is deprecated; use font pen setting instead.\n");
 				Ctrl->S.active = true;
 				if (GMT_getpen (GMT, opt->arg, &Ctrl->S.pen)) {
 					GMT_pen_syntax (GMT, 'S', "draws outline of characters.  Append pen attributes [Default pen is %s]");
@@ -562,7 +562,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_pstext_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_pstext_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_pstext_parse (GMT, Ctrl, options))) Return (error);
 	if (Ctrl->L.active) Return (GMT_pstext_usage (API, GMTAPI_SYNOPSIS, true));	/* Return the synopsis with font listing */
 
 	/*---------------------------- This is the pstext main code ----------------------------*/

@@ -66,7 +66,7 @@ int GMT_gmtdefaults_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_gmtdefaults_parse (struct GMTAPI_CTRL *C, struct GMTDEFAULTS_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_gmtdefaults_parse (struct GMT_CTRL *GMT, struct GMTDEFAULTS_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to gmtdefaults and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -76,7 +76,6 @@ int GMT_gmtdefaults_parse (struct GMTAPI_CTRL *C, struct GMTDEFAULTS_CTRL *Ctrl,
 
 	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -93,7 +92,7 @@ int GMT_gmtdefaults_parse (struct GMTAPI_CTRL *C, struct GMTDEFAULTS_CTRL *Ctrl,
 				break;
 #ifdef GMT_COMPAT
 			case 'L':	/* List the user's current GMT defaults settings */
-				GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; it is the default behavior.\n");
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; it is the default behavior.\n");
 				break;
 #endif
 
@@ -138,7 +137,7 @@ int GMT_gmtdefaults (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmtdefaults_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtdefaults_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_gmtdefaults_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the gmtdefaults main code ----------------------------*/
 

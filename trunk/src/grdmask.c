@@ -120,7 +120,7 @@ double grdmask_assign (struct GMT_CTRL *C, char *p) {
 	return (value);
 }
 
-int GMT_grdmask_parse (struct GMTAPI_CTRL *C, struct GRDMASK_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_grdmask_parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to grdmask and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -131,7 +131,6 @@ int GMT_grdmask_parse (struct GMTAPI_CTRL *C, struct GRDMASK_CTRL *Ctrl, struct 
 	unsigned int n_errors = 0, j, pos;
 	char ptr[GMT_BUFSIZ], *c = NULL;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -263,7 +262,7 @@ int GMT_grdmask (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdmask_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdmask_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_grdmask_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the grdmask main code ----------------------------*/
 

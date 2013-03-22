@@ -634,7 +634,7 @@ void add_operation (struct GMT_CTRL *C, struct GRDFFT_CTRL *Ctrl, int operation,
 	}
 }
 
-int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_INFO *f_info, struct GMT_OPTION *options)
+int GMT_grdfft_parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_INFO *f_info, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to grdfft and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -647,11 +647,11 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 	int n_scan;
 	double par[5];
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 #ifdef GMT_COMPAT
 	struct GMT_OPTION *ptr = NULL;
 	char *mod = NULL, argument[GMT_TEXT_LEN16], combined[GMT_BUFSIZ];
-	if ((ptr = GMT_Find_Option (C, 'L', options))) {	/* Gave old -L */
+	if ((ptr = GMT_Find_Option (API, 'L', options))) {	/* Gave old -L */
 		mod = ptr->arg; /* Gave old -L option */
 		GMT_memset (argument, GMT_TEXT_LEN16, char);
 		if (mod[0] == '\0') strcat (argument, "+l");		/* Leave trend alone -L */
@@ -676,7 +676,7 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 					Ctrl->In.file[Ctrl->In.n_grids++] = strdup (opt->arg);
 				else {
 					n_errors++;
-					GMT_Report (C, GMT_MSG_NORMAL, "Syntax error: A maximum of two input grids may be processed\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: A maximum of two input grids may be processed\n");
 				}
 				break;
 
@@ -738,12 +738,12 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 				break;
 #ifdef GMT_COMPAT
 			case 'L':	/* Leave trend alone */
-				GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; use -N modifiers in the future.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; use -N modifiers in the future.\n");
 #endif
 				break;
 #ifdef GMT_COMPAT
 			case 'M':	/* Geographic data */
-				GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
 				if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
 				break;
 #endif
@@ -752,10 +752,10 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 #ifdef GMT_COMPAT
 				if (ptr) {	/* Got both old -L and -N; append */
 					sprintf (combined, "%s%s", opt->arg, argument);
-					Ctrl->N.info = GMT_FFT_Parse (C, 'N', GMT_FFT_DIM, combined);
+					Ctrl->N.info = GMT_FFT_Parse (API, 'N', GMT_FFT_DIM, combined);
 				} else
 #endif
-				Ctrl->N.info = GMT_FFT_Parse (C, 'N', GMT_FFT_DIM, opt->arg);
+				Ctrl->N.info = GMT_FFT_Parse (API, 'N', GMT_FFT_DIM, opt->arg);
 				if (Ctrl->N.info == NULL) n_errors++;
 				break;
 			case 'S':	/* Scale */
@@ -764,7 +764,7 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 				break;
 #ifdef GMT_COMPAT
 			case 'T':	/* Flexural isostasy */
-				GMT_Report (C, GMT_MSG_COMPAT, "Warning: Option -T is deprecated; see gravfft for isostasy and gravity calculations.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -T is deprecated; see gravfft for isostasy and gravity calculations.\n");
 				Ctrl->T.active = true;
 				n_scan = sscanf (opt->arg, "%lf/%lf/%lf/%lf/%lf", &par[0], &par[1], &par[2], &par[3], &par[4]);
 				for (j = 1, k = 0; j < 5; j++) if (par[j] < 0.0) k++;
@@ -786,7 +786,7 @@ int GMT_grdfft_parse (struct GMTAPI_CTRL *C, struct GRDFFT_CTRL *Ctrl, struct F_
 	}
 #ifdef GMT_COMPAT
 	if (!Ctrl->N.active && ptr) {	/* User set -L but no -N so nothing got appended above... Sigh...*/
-		Ctrl->N.info = GMT_FFT_Parse (C, 'N', GMT_FFT_DIM, argument);
+		Ctrl->N.info = GMT_FFT_Parse (API, 'N', GMT_FFT_DIM, argument);
 	}
 #endif
 	if (Ctrl->N.active && Ctrl->N.info->info_mode == GMT_FFT_LIST) {
@@ -834,7 +834,7 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdfft_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_grdfft_parse (API, Ctrl, &f_info, options))) Return (error);
+	if ((error = GMT_grdfft_parse (GMT, Ctrl, &f_info, options))) Return (error);
 
 	/*---------------------------- This is the grdfft main code ----------------------------*/
 

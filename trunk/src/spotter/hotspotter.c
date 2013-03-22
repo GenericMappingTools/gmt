@@ -209,7 +209,7 @@ int GMT_hotspotter_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_hotspotter_parse (struct GMTAPI_CTRL *C, struct HOTSPOTTER_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_hotspotter_parse (struct GMT_CTRL *GMT, struct HOTSPOTTER_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to hotspotter and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -219,7 +219,7 @@ int GMT_hotspotter_parse (struct GMTAPI_CTRL *C, struct HOTSPOTTER_CTRL *Ctrl, s
 
 	unsigned int n_errors = 0, k;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -230,7 +230,7 @@ int GMT_hotspotter_parse (struct GMTAPI_CTRL *C, struct HOTSPOTTER_CTRL *Ctrl, s
 			/* Supplemental parameters */
 #ifdef GMT_COMPAT
 			case 'C':	/* Now done automatically in spotter_init */
-				GMT_Report (C, GMT_MSG_COMPAT, "Warning: -C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
 				break;
 #endif
 
@@ -345,7 +345,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args)
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_hotspotter_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_hotspotter_parse (API, Ctrl, options))) Return (error);
+	if ((error = GMT_hotspotter_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the hotspotter main code ----------------------------*/
 
