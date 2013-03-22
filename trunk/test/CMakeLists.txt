@@ -23,7 +23,7 @@ if (DO_TESTS)
 		gmtconvert gmtdp gmtmath gmtselect gmtspatial gmtstitch gmtvector grd2rgb
 		grd2xyz grdblend grdclip grdcontour grdcut grdedit grdfft grdfilter grdgradient
 		grdhisteq grdimage grdlandmask grdmask grdpaste grdproject grdreformat
-		grdsample grdtrend grdview grdvolume greenspline kml mapproject meca
+		grdsample grdtrend grdvector grdview grdvolume greenspline kml mapproject meca
 		mgd77 ogr potential project psbasemap pscoast pscontour pshistogram psimage pslegend
 		pslib psrose psscale pstext psxy psxyz sample1d spectrum1d sph sph2grd splitxyz
 		spotter time trend2d triangulate x2sys)
