@@ -28,7 +28,9 @@
 /* Add any other include files needed by your program */
 #include <math.h>
 #include <string.h>
-
+#ifndef M_PI
+#define M_PI          3.14159265358979323846
+#endif
 #define GMT_OPTIONS	"-VRIfr"	/* List the GMT options your program may need */
 
 struct MY_FFT_PROGRAM_CTRL {	/* Here is where you collect your programs specific options */
@@ -122,7 +124,8 @@ int GMT_my_fft_program_parse (void *API, struct MY_FFT_PROGRAM_CTRL *Ctrl, struc
 				}
 				else {
 					Ctrl->In.active = 1;
-					Ctrl->In.file = strdup (opt->arg);
+					Ctrl->In.file = malloc (strlen (opt->arg) + 1);
+					strcpy (Ctrl->In.file, opt->arg);
 				}
 				break;
 			case 'A':	/* Location of spike */
@@ -146,7 +149,8 @@ int GMT_my_fft_program_parse (void *API, struct MY_FFT_PROGRAM_CTRL *Ctrl, struc
 				break;
 			case 'G':	/* Output file */
 				Ctrl->G.active = 1;
-				Ctrl->G.file = strdup (opt->arg);
+				Ctrl->G.file = malloc (strlen (opt->arg) + 1);
+				strcpy (Ctrl->G.file, opt->arg);
 				break;
 			case 'N':	/* Grid dimension setting or inquiery */
 				Ctrl->N.active = 1;
