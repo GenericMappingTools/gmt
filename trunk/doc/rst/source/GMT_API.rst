@@ -246,6 +246,23 @@ which is a container that holds both items. Thus, the arguments to
 variable. Unlike the other objects, writting images has only partial
 support via ``GMT_grdimage`` [4]_.
 
+.. _tbl-image:
+
+::
+
+    struct GMT_IMAGE {
+        enum GMT_enum_type type;        /* Data type, e.g. GMT_FLOAT */
+        int		*ColorMap;      /* Array with color lookup values */
+        struct GMT_GRID_HEADER *header;	/* Pointer to full GMT header for the image */
+        unsigned char   *data;          /* Pointer to actual image */
+        /* ---- Variables "hidden" from the API ---- */
+        unsigned int id;                /* The internal number of the data set */
+        enum GMT_enum_alloc alloc_mode; /* Allocation info [0] */
+        const char      *ProjRefPROJ4;
+        const char      *ProjRefWKT;
+        const char      *ColorInterp;
+    };
+
 User data columns (GMT vectors)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -325,6 +342,7 @@ User data matrices (GMT matrices)
         enum GMT_enum_alloc alloc_mode;     /* Determines if we may free the vectors or not */
         double range[6];                    /* The min and max limits on x-, y-, and z-ranges */
         union GMT_UNIVECTOR data;           /* Union with pointers a data matrix of any type */
+        /* ---- Variables "hidden" from the API ---- */
         unsigned int id;                    /* An identification number */
         enum GMT_enum_type type;            /* The matrix data type */
     };
@@ -508,7 +526,7 @@ Table [tbl:API] gives a list of all the functions and their purpose.
 +-------------------------+---------------------------------------------------+
 | GMT_Get_Data_           | Import a registered data resources                |
 +-------------------------+---------------------------------------------------+
-| GMT_Get_Index           | Convert row, col into a grid or image index       |
+| GMT_Get_Index_          | Convert row, col into a grid or image index       |
 +-------------------------+---------------------------------------------------+
 | GMT_Get_Record_         | Import a single data record                       |
 +-------------------------+---------------------------------------------------+
