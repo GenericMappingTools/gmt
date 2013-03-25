@@ -123,7 +123,7 @@ void gmt_grd_layout (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *
 			GMT_grd_mux_demux (C, header, grid, GMT_GRID_IS_SERIAL);
 		}
 		if ((header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) == GMT_GRID_IS_COMPLEX_MASK) {	/* Already have both component; this will overwrite one of them */
-			unsigned int type = (complex_mode && GMT_GRID_IS_COMPLEX_REAL) ? 0 : 1;
+			unsigned int type = (complex_mode & GMT_GRID_IS_COMPLEX_REAL) ? 0 : 1;
 			char *kind[2] = {"read", "imaginary"};
 			GMT_Report (C->parent, GMT_MSG_NORMAL, "Overwriting previously stored %s component in complex grid.\n", kind[type]);
 		}
@@ -134,12 +134,12 @@ void gmt_grd_layout (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *
 			GMT_Report (C->parent, GMT_MSG_NORMAL, "Internal Error: Asking to write out complex components from a non-complex grid.\n");
 			GMT_exit (EXIT_FAILURE);
 		}
-		if ((header->complex_mode & GMT_GRID_IS_COMPLEX_REAL) && (complex_mode && GMT_GRID_IS_COMPLEX_REAL) == 0) {
+		if ((header->complex_mode & GMT_GRID_IS_COMPLEX_REAL) && (complex_mode & GMT_GRID_IS_COMPLEX_REAL) == 0) {
 			/* Programming error: Requesting to write real components when there are none */
 			GMT_Report (C->parent, GMT_MSG_NORMAL, "Internal Error: Complex grid has no real components that can be written to file.\n");
 			GMT_exit (EXIT_FAILURE);
 		}
-		else if ((header->complex_mode & GMT_GRID_IS_COMPLEX_IMAG) && (complex_mode && GMT_GRID_IS_COMPLEX_IMAG) == 0) {
+		else if ((header->complex_mode & GMT_GRID_IS_COMPLEX_IMAG) && (complex_mode & GMT_GRID_IS_COMPLEX_IMAG) == 0) {
 			/* Programming error: Requesting to write imag components when there are none */
 			GMT_Report (C->parent, GMT_MSG_NORMAL, "Internal Error: Complex grid has no imaginary components that can be written to file.\n");
 			GMT_exit (EXIT_FAILURE);
@@ -421,7 +421,6 @@ void GMT_grd_mux_demux (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, floa
 				for (col = header->nx, col_1 = col - 1, col_2 = 2*col - 1; col > 0; col--, col_1--) { /* Go from right to left */
 					data[left_node_2+col_2] = 0.0;	col_2--;	/* Set the Imag component to zero */
 					data[left_node_2+col_2] = data[left_node_1+col_1];	col_2--;
-					// data[left_node_1+col_1] = 0.0;
 				}
 			}
 		}
@@ -444,7 +443,7 @@ void GMT_grd_mux_demux (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, floa
 			/* Transform from RIRIRIRIRI... to RRRRR...IIIII  */
 			/* Implement later; see ref above */
 		}
-		else if (header->complex_mode && GMT_GRID_IS_COMPLEX_REAL) {
+		else if (header->complex_mode & GMT_GRID_IS_COMPLEX_REAL) {
 			/* Here we have R_R_R_R_... and want RRRRRR..._______  */
 			for (row = 0; row < header->ny; row++) {	/* Doing from first to last row */
 				left_node_1 = GMT_IJP (header, row, 0);	/* Start of row in RRRRR... */
