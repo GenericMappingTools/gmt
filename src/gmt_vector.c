@@ -28,6 +28,11 @@
 
 #define MAX_SWEEPS 50
 
+struct GMT_SINGULAR_VALUE {	/* Used for sorting of eigenvalues in the SVD functions */
+	double value;
+	unsigned int order;
+};
+
 int GMT_jacobi (struct GMT_CTRL *C, double *a, unsigned int n, unsigned int m, double *d, double *v, double *b, double *z, unsigned int *nrots) {
 /*
  *
@@ -744,30 +749,78 @@ void gmt_mat_mult (double a[], unsigned int mrow, unsigned int ncol, double b[],
 	
 */
 
-int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int n, double *v, double *w, double *b, unsigned int k, double *x, double cutoff)
+int compare_singular_values (const void *point_1v, const void *point_2v)
 {
-	double *ut = NULL, sing_max;
+	/*  Routine for qsort to sort struct GMT_SINGULAR_VALUE on decreasing eigenvalues
+	 * keeping track of the original order before sorting.
+	 */
+	const struct GMT_SINGULAR_VALUE *E_1 = point_1v, *E_2 = point_2v;
+
+	if (E_1->value < E_2->value) return (+1);
+	if (E_1->value > E_2->value) return (-1);
+	return (0);
+}
+
+int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int n, double *v, double *w, double *b, unsigned int k, double *x, double *cutoff, unsigned int mode)
+{
+	double *ut = NULL, sing_max, total_variance, variance, limit;
 	unsigned int i, j, n_use = 0;
 
 	/* allocate work space */
 	
 	ut = GMT_memory (GMT, NULL, n*m, double);	/* space for the transpose */
 	
-	/* find maximum singular value */
+	/* find maximum singular value and total variance */
 	
 	sing_max = w[0];
-	for (i = 1; i < n; i++) sing_max = MAX (sing_max, w[i]);
-		
-	/* loop through singular values removing small ones */
-		
-	for (i = 0; i < n; i++) {
-		if ((w[i]/sing_max) > cutoff) {
-			w[i] = 1.0 / w[i];
-			n_use++;
-		}
-		else
-			w[i] = 0.0;
+	total_variance = w[0];
+	for (i = 1; i < n; i++) {
+		sing_max = MAX (sing_max, w[i]);
+		total_variance += w[i];
 	}
+	
+	if (mode == 1) {
+		/* Find the m largest singular values needed to explain the specified variance level.
+		 * However, this requires sorted singular values so we need to do some work first.
+		 * It also assumes that the matrix passed is a squared normal equation kind of matrix
+		 * so that the singular values are the individual variace contributions. */
+		struct GMT_SINGULAR_VALUE {
+			double value;
+			unsigned int order;
+		} *eigen;
+		eigen = GMT_memory (GMT, NULL, n, struct GMT_SINGULAR_VALUE);
+		for (i = 0; i < n; i++) {	/* Load in original order from w */
+			eigen[i].value = w[i];
+			eigen[i].order = i;
+		}
+		qsort (eigen, n, sizeof (struct GMT_SINGULAR_VALUE), compare_singular_values);
+		limit = (*cutoff) * total_variance * 0.01;	/* Desired variance level in % */
+		variance = 0.0;	
+		for (i = 0; i < n; i++) {	/* Visit all singular values in decreasing magnitude */
+			if (variance <= limit) {	/* Still within specified limit so we add this singular value */
+				variance += eigen[i].value;
+				w[eigen[i].order] = 1.0 / w[eigen[i].order];
+				n_use++;
+				*cutoff = variance;
+			}
+			else	/* Sorry, we're letting you go */
+				w[eigen[i].order] = 0.0;
+		}
+		GMT_free (GMT, eigen);
+		*cutoff *= (100.0 / total_variance);	/* Actual explained variance level in % */
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "GMT_solve_svd: %d singular values needed to explain %g %% of total variance %g\n", *cutoff, total_variance);
+	}
+	else {	/* Loop through singular values removing small ones */
+		limit = *cutoff;
+		for (i = 0; i < n; i++) {
+			if ((w[i]/sing_max) > limit) {
+				w[i] = 1.0 / w[i];
+				n_use++;
+			}
+			else
+				w[i] = 0.0;
+		}
+	}		
 	
 	/* multiply V by 1/w */
 	
