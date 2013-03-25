@@ -5,6 +5,8 @@
 2013-03-25	pwessel
 	* greenspline.c:	Enhanced -Cv option to set desired level of variance explained.
 				Also added -Sl for linear (1-D) and bilinear (2-D) splines.
+				The normalization for 2-D with geographic data suffered from
+				not checking that longitudes may be off by +/- 360.
 
 2013-03-23	pwessel
 	* gmt_customio.c:	The magic recognition of native bit grids failed due to bad math.

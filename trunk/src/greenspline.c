@@ -1094,7 +1094,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 	unsigned int dimension = 0, normalize = 1, unit = 0;
 	size_t old_n_alloc, n_alloc;
 	int error, out_ID, way;
-	bool new_grid = false, delete_grid = false;
+	bool new_grid = false, delete_grid = false, check_longitude;
 	
 	char *method[N_METHODS] = {"minimum curvature Cartesian spline [1-D]",
 		"minimum curvature Cartesian spline [2-D]",
@@ -1212,6 +1212,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 	X = GMT_memory (GMT, NULL, n_alloc, double *);
 	for (k = 0; k < n_alloc; k++) X[k] = GMT_memory (GMT, NULL, dimension, double);
 	obs = GMT_memory (GMT, NULL, n_alloc, double);
+	check_longitude = (dimension == 2 && (Ctrl->D.mode == 1 || Ctrl->D.mode == 2));
 
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
 		Return (API->error);
@@ -1228,6 +1229,12 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 		}
 
 		/* Data record to process */
+
+		if (check_longitude) {
+			/* Ensure geographic longitudes fit the range since the normalization function expects it */
+			if (in[GMT_X] < Ctrl->R3.range[XLO] && (in[GMT_X] + 360.0) < Ctrl->R3.range[XHI]) in[GMT_X] += 360.0;
+			else if (in[GMT_X] > Ctrl->R3.range[XHI] && (in[GMT_X] - 360.0) > Ctrl->R3.range[XLO]) in[GMT_X] -= 360.0;
+		}
 
 		for (k = 0; k < dimension; k++) X[n][k] = in[k];
 		obs[n++] = in[dimension];
