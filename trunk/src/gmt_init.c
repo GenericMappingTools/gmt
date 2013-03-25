@@ -7514,6 +7514,7 @@ int GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 	bool p_opt = false, g_opt = false;
 	int j;
 	char p[GMT_BUFSIZ];
+	double pole[2];
 	
 	S->v.pen = C->current.setting.map_default_pen;
 	GMT_init_fill (C, &S->v.fill, -1.0, -1.0, -1.0);	/* Default is no fill */
@@ -7567,10 +7568,11 @@ int GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 				break;
 			case 'o':	/* Sets oblique pole for small or great circles */
 				S->v.status |= GMT_VEC_POLE;
-				if ((j = GMT_Get_Value (C->parent, &p[1], S->v.pole)) != 2) {
+				if ((j = GMT_Get_Value (C->parent, &p[1], pole)) != 2) {
 					GMT_Report (C->parent, GMT_MSG_NORMAL, "Bad +o<plon>/<plat> modifier %c\n", &p[1]);
 					error++;
 				}
+				S->v.pole[GMT_X] = pole[GMT_X];	S->v.pole[GMT_Y] = pole[GMT_Y];
 				GMT_Report (C->parent, GMT_MSG_NORMAL, "+o for small circles not quite implemented yet.\n");
 				break;
 			case 'p':	/* Vector pen and head outline +p[-][<pen>] */

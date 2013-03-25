@@ -117,8 +117,10 @@ struct GREENSPLINE_CTRL {
 #define MITASOVA_MITAS_1993_3D		7
 #define PARKER_1994			8
 #define WESSEL_BECKER_2008		9
+#define LINEAR_1D			10
+#define LINEAR_2D			11
 
-#define N_METHODS			10
+#define N_METHODS			12
 
 #ifndef M_LOG_2
 #define M_LOG_2 0.69314718055994530942
@@ -171,7 +173,7 @@ int GMT_greenspline_usage (struct GMTAPI_CTRL *API, int level)
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: greenspline [<table>] -G<outfile> [-A[<format>,]<gradientfile>] [-R<xmin>/<xmax[/<ymin>/<ymax>[/<zmin>/<zmax>]]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<dx>[/<dy>[/<dz>]] [-C[v]<cut>[/<file>]] [-D<mode>] [%s] [-L] [-N<nodes>]\n", GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Q<az>] [-Sc|t|r|p|q[<pars>]] [-T<maskgrid>] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Q<az>] [-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
 	
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -221,6 +223,7 @@ int GMT_greenspline_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   this then also sets -I (and perhaps -r); use those options to override the grid settings.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Specify which spline to use (if needed, normalized <tension> must be between 0 and 1):\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sc is minimum curvature spline (Sandwell, 1987) [Default].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Sl is a linear (1-d) or bilinear (2-D) spline.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -St<tension>[/<scale>] is spline in tension (Wessel & Bercovici, 1998).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Optionally, specify a length-scale [Default is grid spacing].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sr<tension> is a regularized spline in tension (Mitasova & Mitas, 1993).\n");
@@ -374,27 +377,30 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 			case 'S':	/* Spline selection */
 				Ctrl->S.arg = strdup (opt->arg);
 				switch (opt->arg[0]) {
-					case 'c':
+					case 'l':	/*  Cartesian linear spline in 1-D or 2-D (bilinear) */
+						Ctrl->S.mode = LINEAR_1D;
+						break;
+					case 'c':	/* Cartesian minimum curvature spline */
 						Ctrl->S.mode = SANDWELL_1987_1D;
 						break;
-					case 't':
+					case 't':	/* Cartesian minimum curvature spline in tension */
 						Ctrl->S.mode = WESSEL_BERCOVICI_1998_1D;
 						if (strchr (opt->arg, '/'))
 							sscanf (&opt->arg[1], "%lf/%lf", &Ctrl->S.value[0], &Ctrl->S.value[1]);
 						else
 							Ctrl->S.value[0] = atof (&opt->arg[1]);
 						break;
-					case 'r':
+					case 'r':	/* Regularized minimum curvature spline in tension in 2-D or 3-D */
 						Ctrl->S.mode = MITASOVA_MITAS_1993_2D;
 						if (strchr (opt->arg, '/'))
 							sscanf (&opt->arg[1], "%lf/%lf", &Ctrl->S.value[0], &Ctrl->S.value[1]);
 						else
 							Ctrl->S.value[0] = atof (&opt->arg[1]);
 						break;
-					case 'p':
+					case 'p':	/* Spherical minimum curvature spline */
 						Ctrl->S.mode = PARKER_1994;
 						break;
-					case 'Q':
+					case 'Q':	/* Spherical minimum curvature spline in tension */
 						Ctrl->S.mode = WESSEL_BECKER_2008;
 						Ctrl->S.fast = true; 
 						if (strchr (opt->arg, '/')) {
@@ -409,7 +415,7 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 							Ctrl->S.value[1] = (double)N_X;
 						}
 						break;
-					case 'q':
+					case 'q':	/* Spherical minimum curvature spline in tension */
 						Ctrl->S.mode = WESSEL_BECKER_2008;
 						Ctrl->S.value[0] = atof (&opt->arg[1]);
 						if (Ctrl->S.value[0] == 0.0) {
@@ -417,7 +423,7 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 						}
 						break;
 					default:
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -S option: Append c|t|g|p|q|Q\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -S option: Append c|l|t|g|p|q|Q\n");
 						n_errors++;
 					break;
 				}
@@ -464,6 +470,7 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 	n_errors += GMT_check_binary_io (GMT, dimension + 1);
 	n_errors += GMT_check_condition (GMT, Ctrl->S.value[0] < 0.0 || Ctrl->S.value[0] >= 1.0, "Syntax error -S option: Tension must be in range 0 <= t < 1\n");
 	n_errors += GMT_check_condition (GMT, !(Ctrl->S.mode == PARKER_1994 || Ctrl->S.mode == WESSEL_BECKER_2008) && Ctrl->D.mode == 3, "Syntax error -Sc|t|r option: Cannot select -D3\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->S.mode == LINEAR_1D && Ctrl->D.mode > 3, "Syntax error -Sl option: Cannot select -D4 or higher\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || (dimension > 1 && Ctrl->I.inc[GMT_Y] <= 0.0) || (dimension == 3 && Ctrl->I.inc[GMT_Z] <= 0.0)), "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += GMT_check_condition (GMT, dimension == 2 && !Ctrl->N.active && !(Ctrl->G.active  || Ctrl->G.file), "Syntax error -G option: Must specify output grid file name\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->C.active && Ctrl->C.value < 0.0 && !Ctrl->C.file, "Syntax error -C option: Must specify file name for eigenvalues if cut < 0\n");
@@ -513,6 +520,18 @@ void dump_green (struct GMT_CTRL *C, double (*G) (struct GMT_CTRL *, double, dou
 #endif
 
 /*----------------------  ONE DIMENSION ---------------------- */
+/* Basic linear spline (bilinear in 2-D) */
+
+double spline1d_linear (struct GMT_CTRL *GMT, double r, double par[], double *G)
+{	/* Dumb linear spline */
+	return (r);	/* Just regular spline; par not used */
+}
+
+double gradspline1d_linear (struct GMT_CTRL *GMT, double r, double par[], double *G)
+{
+	return (1.0);
+}
+
 /* spline1d_sandwell computes the Green function for a 1-d spline
  * as per Sandwell [1987], G(r) = r^3.  All r must be >= 0.
  */
@@ -1086,6 +1105,8 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 		"regularized Cartesian spline in tension [2-D]",
 		"regularized Cartesian spline in tension [3-D]",
 		"minimum curvature spherical spline",
+		"linear Cartesian spline [1-D]",
+		"bilinear Cartesian spline [2-D]",
 		"continuous curvature spherical spline in tension"};
 	char *mem_unit[3] = {"kb", "Mb", "Gb"};
 	
@@ -1137,6 +1158,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 	GMT_memset (&Z,    1, struct ZGRID);
 	
 	if (Ctrl->S.mode == SANDWELL_1987_1D || Ctrl->S.mode == WESSEL_BERCOVICI_1998_1D) Ctrl->S.mode += (dimension - 1);	
+	if (Ctrl->S.mode == LINEAR_1D) Ctrl->S.mode += (dimension - 1);	
 	if (Ctrl->S.mode == MITASOVA_MITAS_1993_2D ) Ctrl->S.mode += (dimension - 2);	
 
 	GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;
@@ -1384,6 +1406,11 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 	}
 
 	switch (Ctrl->S.mode) {	/* Assing pointers to Green's functions and the gradient and set up required parameters */
+		case LINEAR_1D:
+		case LINEAR_2D:
+			G = &spline1d_linear;
+			dGdr = &gradspline1d_linear;
+			break;
 		case SANDWELL_1987_1D:
 			G = &spline1d_sandwell;
 			dGdr = &gradspline1d_sandwell;

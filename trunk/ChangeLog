@@ -4,6 +4,7 @@
 
 2013-03-25	pwessel
 	* greenspline.c:	Enhanced -Cv option to set desired level of variance explained.
+				Also added -Sl for linear (1-D) and bilinear (2-D) splines.
 
 2013-03-23	pwessel
 	* gmt_customio.c:	The magic recognition of native bit grids failed due to bad math.

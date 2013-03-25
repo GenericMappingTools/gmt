@@ -16,7 +16,7 @@ dimensions
 [ **-I**\ *xinc*\ [/*yinc*\ [/*zinc*\ ]] ] [ **-L** ] [ **-N**\ *nodefile*
 ] [ **-Q**\ *az*\ \|\ *x/y/z* ] [
 **-R**\ *xmin*/*xmax*\ [/*ymin*/*ymax*\ [/*zmin*\ *zmax*]] ] [
-**-S**\ **c\|t\|g\|p\|q**\ [*pars*\ ] ] [ **-T**\ *maskgrid* ] [
+**-S**\ **c\|l\|t\|g\|p\|q**\ [*pars*\ ] ] [ **-T**\ *maskgrid* ] [
 **-V**\ [*level*\ ] ] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [
 **-bo**\ [*ncols*\ ][*type*\ ] ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
@@ -159,15 +159,17 @@ None.
     coordinates are geographical; note the shorthands **-Rg** and
     **-Rd** cannot be used if a 3-D domain is specified.
 
-**-S**\ **c\|t\|g\|p\|q**\ [*pars*\ ]
-    Select one of five different splines. The first two are used for
+**-S**\ **c\|l\|t\|g\|p\|q**\ [*pars*\ ]
+    Select one of six different splines. The first two are used for
     1-D, 2-D, or 3-D Cartesian splines (see **-D** for discussion). Note
     that all tension values are expected to be normalized tension in the
     range 0 < *t* < 1: (**c**) Minimum curvature spline [*Sandwell*,
     1987], (**t**) Continuous curvature spline in tension [*Wessel and
     Bercovici*, 1998]; append *tension*\ [/*scale*] with *tension* in
     the 0-1 range and optionally supply a length scale [Default is the
-    average grid spacing]. The next is a 2-D or 3-D spline: (**r**)
+    average grid spacing]. The next is a 1-D or 2-D spline: (**l**)
+    Linear (1-D) or Bilinear (2-D) spline; these produce output that do
+    not exceed the range of the given data.  The next is a 2-D or 3-D spline: (**r**)
     Regularized spline in tension [*Mitasova and Mitas*, 1993]; again,
     append *tension* and optional *scale*. The last two are spherical
     surface splines and both imply **-D**\ 4 **-fg**: (**p**) Minimum
