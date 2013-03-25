@@ -220,22 +220,20 @@ int GMT_agc_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float 
 	 * grid:	array with final grid
 	 * wesn:	Sub-region to extract  [Use entire file if 0,0,0,0]
 	 * padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively
-	 * complex_mode:	&1 | &2 if complex array is to hold real (1) and imaginary (2) parts (otherwise read as real only)
-	 *		Note: The file has only real values, we simply allow space in the complex array
-	 *		for real and imaginary parts when processed by grdfft etc.
-	 */
+	/* complex_mode:	&4 | &8 if complex array is to hold real (4) and imaginary (8) parts (otherwise read as real only) */
+	/*		Note: The file has only real values, we simply allow space in the complex array */
+	/*		for real and imaginary parts when processed by grdfft etc. */
 
 	int first_col, last_col, j, col;		/* First and last column to deal with */
 	int first_row, last_row, j_gmt, colend;		/* First and last row to deal with */
 	unsigned int width_in;			/* Number of items in one row of the subregion */
 	unsigned int width_out;			/* Width of row as return (may include padding) */
 	unsigned int height_in;			/* Number of columns in subregion */
-	unsigned int inc, off;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
-	unsigned int i, i_0_out;		/* Misc. counters */
+	unsigned int i;				/* Misc. counters */
 	unsigned int *k = NULL;			/* Array with indices */
 	unsigned int block, n_blocks, n_blocks_x, n_blocks_y;	/* Misc. counters */
 	unsigned int datablockcol, datablockrow, rowstart, rowend, colstart, row;
-	uint64_t ij;
+	uint64_t ij, imag_offset;
 	float z[ZBLOCKWIDTH][ZBLOCKHEIGHT];
 	FILE *fp = NULL;			/* File pointer to data or pipe */
 	
@@ -249,14 +247,11 @@ int GMT_agc_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float 
 		return (GMT_GRDIO_OPEN_FAILED);
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
-	(void)GMT_init_complex (complex_mode, &inc, &off);	/* Set stride and offset if complex */
+	(void)GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	width_out = width_in;		/* Width of output array */
 	if (pad[XLO] > 0) width_out += pad[XLO];
 	if (pad[XHI] > 0) width_out += pad[XHI];
-
-	width_out *= inc;			/* Possibly twice if complex is true */
-	i_0_out = inc * pad[XLO] + off;		/* Edge offset in output */
 
 	/* Because of the 40x40 blocks we read the entire file and only use what we need */
 
@@ -279,7 +274,7 @@ int GMT_agc_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float 
 			colend = MIN (colstart + ZBLOCKWIDTH, header->nx);
 			for (j = 0, col = colstart; col < colend; j++, col++) {
 				if (col < first_col || col > last_col) continue;
-				ij = (((j_gmt - first_row) + pad[YHI]) * width_out + inc * (col - first_col)) + i_0_out;
+				ij = imag_offset + (((j_gmt - first_row) + pad[YHI]) * width_out + col - first_col) + pad[XLO];
 				grid[ij] = (z[j][i] == 0.0) ? C->session.f_NaN : z[j][i];	/* AGC uses exact zero as NaN flag */
 				if (GMT_is_fnan (grid[ij])) continue;
 				header->z_min = MIN (header->z_min, (double)grid[ij]);
@@ -307,10 +302,9 @@ int GMT_agc_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 	 * grid:	array with final grid
 	 * wesn:	Sub-region to write out  [Use entire file if 0,0,0,0]
 	 * padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively
-	 * complex_mode:	&1 | &2 if complex array is to hold real (1) and imaginary (2) parts (otherwise read as real only)
-	 *		Note: The file has only real values, we simply allow space in the complex array
-	 *		for real and imaginary parts when processed by grdfft etc.
-	 */
+	/* complex_mode:	&4 | &8 if complex array is to hold real (4) and imaginary (8) parts (otherwise read as real only) */
+	/*		Note: The file has only real values, we simply allow space in the complex array */
+	/*		for real and imaginary parts when processed by grdfft etc. */
 
 
 	int first_col, last_col, col, colend = 0;		/* First and last column to deal with */
@@ -318,13 +312,11 @@ int GMT_agc_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 	unsigned int width_in;			/* Number of items in one row of the subregion */
 	unsigned int width_out;			/* Width of row as return (may include padding) */
 	unsigned int height_out;			/* Number of columns in subregion */
-	unsigned int inc;				/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
-	unsigned int off;				/* Complex array offset: 0 for real, 1 for imaginary */
 	unsigned int i2, j2;			/* Misc. counters */
 	unsigned int *k = NULL;			/* Array with indices */
 	unsigned int block, n_blocks, n_blocks_x, n_blocks_y;	/* Misc. counters */
 	unsigned int row, rowstart, rowend, colstart, datablockcol, datablockrow;
-	uint64_t ij;
+	uint64_t kk, ij, imag_offset;
 	float prez[PREHEADSIZE], postz[POSTHEADSIZE];
 	float outz[ZBLOCKWIDTH][ZBLOCKHEIGHT];
 	FILE *fp = NULL;			/* File pointer to data or pipe */
@@ -339,7 +331,7 @@ int GMT_agc_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 		return (GMT_GRDIO_CREATE_FAILED);
 	
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
-	(void)GMT_init_complex (complex_mode, &inc, &off);	/* Set stride and offset if complex */
+	(void)GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	width_in = width_out;		/* Physical width of input array */
 	if (pad[XLO] > 0) width_in += pad[XLO];
@@ -351,13 +343,14 @@ int GMT_agc_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 	for (j = first_row, j2 = pad[YHI]; j <= last_row; j++, j2++) {
+		ij = imag_offset + j2 * width_in;
 		for (i = first_col, i2 = pad[XLO]; i <= last_col; i++, i2++) {
-			ij = (j2 * width_in + i2) * inc + off;
-			if (GMT_is_fnan (grid[ij]))	/* in AGC, NaN <--> 0.0 */
+			kk = ij + i2;
+			if (GMT_is_fnan (grid[kk]))	/* in AGC, NaN <--> 0.0 */
 				grid[ij] = 0.0;
 			else {
-				header->z_min = MIN (header->z_min, (double)grid[ij]);
-				header->z_max = MAX (header->z_max, (double)grid[ij]);
+				header->z_min = MIN (header->z_min, (double)grid[kk]);
+				header->z_max = MAX (header->z_max, (double)grid[kk]);
 			}
 		}
 	}
@@ -385,8 +378,8 @@ int GMT_agc_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 			colend = MIN (colstart + ZBLOCKWIDTH, (unsigned int)header->nx);
 			for (j = 0, col = colstart; col < colend; j++, col++) {
 				if (col < first_col || col > last_col) continue;
-				ij = ((j_gmt - first_row) + pad[YHI]) * width_in + (col - first_col) + pad[XLO];
-				outz[j][i] = grid[inc*ij+off];
+				ij = imag_offset + ((j_gmt - first_row) + pad[YHI]) * width_in + (col - first_col) + pad[XLO];
+				outz[j][i] = grid[ij];
 			}
 		} 
 

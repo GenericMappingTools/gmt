@@ -144,6 +144,8 @@ static inline struct GMT_GRID_ROWBYROW * gmt_get_rbr_ptr (struct GMT_GRID_ROWBYR
 static inline struct GMT_FFT_INFO * gmt_get_fftinfo_ptr (struct GMT_FFT_INFO *ptr) {return (ptr);}
 static inline struct GMT_FFT_WAVENUMBER * gmt_get_fftwave_ptr (struct GMT_FFT_WAVENUMBER *ptr) {return (ptr);}
 
+static inline struct GMT_GRID    * gmt_get_grid_data (struct GMT_GRID *ptr) {return (ptr);}
+
 /* return_address is a convenience function that, given type, calls the correct converter */
 void *return_address (void *data, unsigned int type) {
 	void *p = NULL;
@@ -491,7 +493,7 @@ bool GMTAPI_need_grdpadding (struct GMT_GRID_HEADER *h, unsigned int *pad)
 	return (false);
 }
 
-size_t GMTAPI_set_grdarray_size (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h, double *wesn)
+size_t GMTAPI_set_grdarray_size (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h, unsigned int mode, double *wesn)
 {	/* Determines size of grid given grid spacing and grid domain in h.
  	 * However, if wesn is given and not empty we use that sub-region instead.
  	 * Finally, the current pad is used when calculating the grid size.
@@ -502,6 +504,7 @@ size_t GMTAPI_set_grdarray_size (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h, 
 	/* Must duplicate header and possibly reset wesn, then set pad and recalculate the dims */
 	h_tmp = GMT_memory (C, NULL, 1, struct GMT_GRID_HEADER);
 	GMT_memcpy (h_tmp, h, 1, struct GMT_GRID_HEADER);
+	h_tmp->complex_mode |= mode;	/* Set the mode-to-be so that if complex the size is doubled */
 	
 	if (wesn && !(wesn[XLO] == wesn[XHI] && wesn[YLO] == wesn[YHI])) GMT_memcpy (h_tmp->wesn, wesn, 4, double);	/* Use wesn instead of header info */
 	GMT_grd_setpad (C, h_tmp, C->current.io.pad);	/* Use the system pad setting by default */
@@ -998,7 +1001,7 @@ int GMTAPI_ptr2id (struct GMTAPI_CTRL *API, void *ptr)
 	return (object_ID);	/* Return ID or -1 if not found */	
 }
 
-int GMTAPI_is_registered (struct GMTAPI_CTRL *API, unsigned int family, unsigned int geometry, unsigned int direction, unsigned int mode, void *resource)
+int GMTAPI_is_registered (struct GMTAPI_CTRL *API, unsigned int family, unsigned int geometry, unsigned int direction, unsigned int mode, char *filename, void *resource)
 {	/* Checks to see if the given data pointer has already been registered.
  	 * This can happen for grids which first gets registered reading the header
  	 * and then is registered again when reading the whole grid.  In those cases
@@ -1014,6 +1017,17 @@ int GMTAPI_is_registered (struct GMTAPI_CTRL *API, unsigned int family, unsigned
 	for (i = 0, item = GMTAPI_NOTSET; item == GMTAPI_NOTSET && i < API->n_objects; i++) {
 		if (!API->object[i]) continue;					/* Empty object */
 		if (API->object[i]->status != GMT_IS_UNUSED) {	/* Has already been read - do we wish to reset this count ? */
+			if (family == GMT_IS_GRID && (mode & GMT_GRID_IS_COMPLEX_MASK) && (mode & GMT_GRID_DATA_ONLY)) {
+				/* Check if complex grid already has one layer and we are reading the next one */
+				struct GMT_GRID *G = gmt_get_grid_data (resource);	/* Get pointer to grid */
+				unsigned int cmplx = mode & GMT_GRID_IS_COMPLEX_MASK;
+				if (G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK && G->header->complex_mode != cmplx && filename) {
+					/* Apparently so, either had real and now getting image or vice versa. */
+					free ((void *)API->object[i]->filename);	/* Free previous grid name and replace with current name */
+					API->object[i]->filename = strdup (filename);
+					mode |= GMT_IO_RESET;	/* Reset so we may read in the 2nd component grid */
+				}
+			}
 			if (!(mode & GMT_IO_RESET)) continue;	/* No reset so we refuse */
 			API->object[i]->status = GMT_IS_UNUSED;	/* Reset so we may continue to read it */
 		}
@@ -1822,7 +1836,7 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, 
 				I_obj->data = GMT_memory (API->GMT, NULL, I_obj->header->size * I_obj->header->n_bands, unsigned char);
 			}
 			else {	/* Already have allocated space; check that it is enough */
-				size = GMTAPI_set_grdarray_size (API->GMT, I_obj->header, S_obj->wesn);	/* Get array dimension only, which includes padding. DANGER DANGER JL*/
+				size = GMTAPI_set_grdarray_size (API->GMT, I_obj->header, mode, S_obj->wesn);	/* Get array dimension only, which includes padding. DANGER DANGER JL*/
 				if (size > I_obj->header->size) return_null (API, GMT_IMAGE_READ_ERROR);
 			}
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading image from file %s\n", S_obj->filename);
@@ -1850,7 +1864,7 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, 
 			/* To get a subset we use wesn that is not NULL or contain 0/0/0/0.
 			 * Otherwise we use everything passed in */
 			if (!I_obj->data) {	/* Array is not allocated, do so now. We only expect header (and possibly subset w/e/s/n) to have been set correctly */
-				I_obj->header->size = GMTAPI_set_grdarray_size (API->GMT, I_obj->header, S_obj->wesn);	/* Get array dimension only, which may include padding */
+				I_obj->header->size = GMTAPI_set_grdarray_size (API->GMT, I_obj->header, mode, S_obj->wesn);	/* Get array dimension only, which may include padding */
 				I_obj->data = GMT_memory (API->GMT, NULL, I_obj->header->size * I_obj->header->n_bands, unsigned char);
 			}
 			I_obj->alloc_mode = GMT_ALLOCATED;
@@ -2018,7 +2032,7 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, un
 			}
 			else
 				G_obj = grid;	/* We are working on a grid already allocated */
-			G_obj->header->complex_mode = mode;		/* Set the complex mode */
+			//G_obj->header->complex_mode = mode;		/* Set the complex mode */
 			done = (mode & GMT_GRID_HEADER_ONLY) ? false : true;	/* Not done until we read grid */
 			if (! (mode & GMT_GRID_DATA_ONLY)) {		/* Must init header and read the header information from file */
 				if (row_by_row) {	/* Special row-by-row processing mode */
@@ -2035,7 +2049,7 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, un
 			/* Here we will read the grid data themselves. */
 			/* To get a subset we use wesn that is not NULL or contain 0/0/0/0.
 			 * Otherwise we extract the entire file domain */
-			size = GMTAPI_set_grdarray_size (API->GMT, G_obj->header, S_obj->wesn);	/* Get array dimension only, which includes padding */
+			size = GMTAPI_set_grdarray_size (API->GMT, G_obj->header, mode, S_obj->wesn);	/* Get array dimension only, which includes padding */
 			if (!G_obj->data) {	/* Array is not allocated yet, do so now. We only expect header (and possibly w/e/s/n subset) to have been set correctly */
 				G_obj->header->size = size;
 				G_obj->data = GMT_memory_aligned (API->GMT, NULL, G_obj->header->size, float);
@@ -2069,7 +2083,7 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, un
 			 * Otherwise we use everything passed in */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating grid data from GMT_GRID memory location\n");
 			if (!G_obj->data) {	/* Array is not allocated, do so now. We only expect header (and possibly subset w/e/s/n) to have been set correctly */
-				G_obj->header->size = GMTAPI_set_grdarray_size (API->GMT, G_obj->header, S_obj->wesn);	/* Get array dimension only, which may include padding */
+				G_obj->header->size = GMTAPI_set_grdarray_size (API->GMT, G_obj->header, mode, S_obj->wesn);	/* Get array dimension only, which may include padding */
 				G_obj->data = GMT_memory_aligned (API->GMT, NULL, G_obj->header->size, float);
 			}
 			G_obj->alloc_mode = GMT_ALLOCATED;
@@ -2271,7 +2285,7 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mod
 			i0 = GMT_grd_x_to_col (API->GMT, G_obj->header->wesn[XLO]+dx, G_obj->header);
 			i1 = GMT_grd_x_to_col (API->GMT, G_obj->header->wesn[XHI]-dx, G_obj->header);
 			GMT_memcpy (G_obj->header->pad, API->GMT->current.io.pad, 4, int);		/* Set desired padding */
-			G_copy->header->size = GMTAPI_set_grdarray_size (API->GMT, G_obj->header, S_obj->wesn);	/* Get array dimension only, which may include padding */
+			G_copy->header->size = GMTAPI_set_grdarray_size (API->GMT, G_obj->header, mode, S_obj->wesn);	/* Get array dimension only, which may include padding */
 			G_copy->data = GMT_memory_aligned (API->GMT, NULL, G_copy->header->size, float);
 			G_copy->header->z_min = DBL_MAX;	G_copy->header->z_max = -DBL_MAX;	/* Must set zmin/zmax since we are not writing */
 			for (row = j0; row <= j1; row++) {
@@ -3080,7 +3094,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 	/* Check if this filename is an embedded API Object ID passed via the filename and of the right kind.  */
 	if ((object_ID = GMTAPI_Memory_Registered (API, family, direction, resource)) != GMTAPI_NOTSET) return (object_ID);	/* OK, return the object ID */
 
-	if ((object_ID = GMTAPI_is_registered (API, family, geometry, direction, mode, resource)) != GMTAPI_NOTSET) {	/* Registered before */
+	if ((object_ID = GMTAPI_is_registered (API, family, geometry, direction, mode, NULL, resource)) != GMTAPI_NOTSET) {	/* Registered before */
 		if ((item = GMTAPI_Validate_ID (API, GMTAPI_NOTSET, object_ID, direction)) == GMTAPI_NOTSET) return_value (API, API->error, GMTAPI_NOTSET);
 		if ((family == GMT_IS_GRID || family == GMT_IS_IMAGE) && wesn) {	/* Update the subset region if given (for grids/images only) */
 			S_obj = API->object[item];	/* Use S as shorthand */
@@ -3514,7 +3528,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 	just_get_data = GMT_File_Is_Memory (input);
 	
 	if ((family == GMT_IS_GRID || family == GMT_IS_IMAGE) && (mode & GMT_GRID_DATA_ONLY)) {	/* Case 4: Already registered when we obtained header, find object ID */
-		if ((in_ID = GMTAPI_is_registered (API, family, geometry, GMT_IN, mode, data)) == GMTAPI_NOTSET) return_null (API, GMT_OBJECT_NOT_FOUND);	/* Could not find it */
+		if ((in_ID = GMTAPI_is_registered (API, family, geometry, GMT_IN, mode, input, data)) == GMTAPI_NOTSET) return_null (API, GMT_OBJECT_NOT_FOUND);	/* Could not find it */
 		if (wesn) {	/* Must update subset selection */
 			int item;
 			if ((item = GMTAPI_Validate_ID (API, family, in_ID, GMT_IN)) == GMTAPI_NOTSET) return_null (API, API->error);
@@ -4860,9 +4874,11 @@ struct GMT_FFT_WAVENUMBER * GMTAPI_FFT_init_2d (struct GMTAPI_CTRL *API, struct 
 		}
 	}
 	else {	/* Read the data into a grid of approved dimension */
+		G->header->mx = G->header->nx;	G->header->my = G->header->ny;	/* Undo misleading padding since we have not read the data yet and GMT pad has changed above */
 		if (GMT_Read_Data (C->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY | mode, NULL, G->header->name, G) == NULL)	/* Get data only */
 			return (NULL);
 	}
+	grd_dump (C, G->header, G->data, false, "Read in FFT_Create");
 	
 	/* Make sure there are no NaNs in the grid - that is a fatal flaw */
 	
@@ -4873,7 +4889,9 @@ struct GMT_FFT_WAVENUMBER * GMTAPI_FFT_init_2d (struct GMTAPI_CTRL *API, struct 
 	}
 	
 	GMT_grd_detrend (C, G, F->trend_mode, K->coeff);	/* Detrend data, if requested */
+	grd_dump (C, G->header, G->data, false, "After detrend");
 	gmt_fft_taper (C, G, F);				/* Taper data, if requested */
+	grd_dump (C, G->header, G->data, false, "After Taper");
 	K->dim = 2;	/* 2-D FFT */
 	return (K);
 }
@@ -4947,8 +4965,11 @@ int GMTAPI_FFT_1d (struct GMTAPI_CTRL *API, struct GMT_DATASET *D, int direction
 int GMTAPI_FFT_2d (struct GMTAPI_CTRL *API, struct GMT_GRID *G, int direction, unsigned int mode, struct GMT_FFT_WAVENUMBER *K)
 {	/* The 2-D FFT operating on GMT_GRID arrays */
 	int status;
-	if (K && direction == GMT_FFT_FWD) gmt_fft_save2d (API->GMT, G, GMT_IN, K);	/* Save intermediate grid, if requested */
+	if (K && direction == GMT_FFT_FWD) gmt_fft_save2d (API->GMT, G, GMT_IN, K);	/* Save intermediate grid, if requested, before interleaving */
+	GMT_grd_mux_demux (API->GMT, G->header, G->data, GMT_GRID_IS_INTERLEAVED);
+	grd_dump (API->GMT, G->header, G->data, true, "After demux");
 	status = GMT_fft_2d (API->GMT, G->data, G->header->mx, G->header->my, direction, mode, K);
+	grd_dump (API->GMT, G->header, G->data, true, "After FFT");
 	if (K && direction == GMT_FFT_FWD) gmt_fft_save2d (API->GMT, G, GMT_OUT, K);	/* Save complex grid, if requested */
 	return (status);
 }

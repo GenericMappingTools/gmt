@@ -866,17 +866,14 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 	/* Grids are compatible. Initialize FFT structs, grid headers, read data, and check for NaNs */
 	
 	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Read, and check that no NaNs are present in either grid */
-		FFT_info[k] = GMT_FFT_Create (API, Orig[k], GMT_FFT_DIM, 0U, GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);
+		/* Note: If input grid(s) are read-only then we must duplicate them; otherwise Grid[k] points to Orig[k]
+		 * From here we address the first grid via Grid[0] and the 2nd grid (if given) as Grid[1];
+	 	 * we are done with using the addresses Orig[k] directly. */
+		(void) GMT_set_outgrid (GMT, Ctrl->In.file[k], Orig[k], &Grid[k]);
+		FFT_info[k] = GMT_FFT_Create (API, Grid[k], GMT_FFT_DIM, 0U, GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);
 	}
 	K = FFT_info[0];	/* We only need one of these anyway; K is a shorthand */
-	
-	/* Note: If input grid(s) are read-only then we must duplicate them; otherwise Grid[k] points to Orig[k] */
-	for (k = 0; k < Ctrl->In.n_grids; k++)
-		(void) GMT_set_outgrid (GMT, Ctrl->In.file[k], Orig[k], &Grid[k]);
-	
-	/* From here we address the first grid via Grid[0] and the 2nd grid (if given) as Grid[1];
-	 * we are done with using the addresses Orig[k] directly. */
-	
+
 #ifdef FTEST
 	/* PW: Used with -DFTEST to check that the radial filters compute correctly */
 	{
@@ -945,6 +942,7 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 
 		if (GMT_FFT (API, Grid[0], GMT_FFT_INV, GMT_FFT_COMPLEX, K))
 			Return (EXIT_FAILURE);
+		grd_dump (GMT, Grid[0]->header, Grid[0]->data, false, "After Inv FFT");
 
 		if (!doubleAlmostEqual (Ctrl->S.scale, 1.0)) GMT_scale_and_offset_f (GMT, Grid[0]->data, Grid[0]->header->size, Ctrl->S.scale, 0);
 

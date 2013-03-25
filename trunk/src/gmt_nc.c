@@ -770,8 +770,7 @@ void pad_grid(void *gridp, const unsigned n_cols, const unsigned n_rows,
 	 * cell_size is the size in bytes of each element in grid
 	 * n_pad[4] contains the number of cols/rows to pad on each side {W,E,S,N}
 	 *
-	 * Note: when grid is complex, double cell_size and pass the number of complex
-	 * values per row as n_cols */
+	 * Note: when grid is complex, we pass 2x n_rows */
 	char *grid = (char*)gridp;
 	unsigned new_row;
 	unsigned old_row = n_rows-1;
@@ -821,8 +820,7 @@ void unpad_grid(void *gridp, const unsigned n_cols, const unsigned n_rows,
 	 * cell_size is the size in bytes of each element in grid
 	 * n_pad[4] contains the number of cols/rows to pad on each side {W,E,S,N}
 	 *
-	 * Note: when grid is complex, double cell_size and pass the number of complex
-	 * values per row as n_cols */
+	 * Note: when grid is complex, we pass 2x n_rows */
 	char *grid = (char*)gridp;
 	unsigned n_old_cols = n_cols + n_pad[XLO] + n_pad[XHI];
 	unsigned row;
@@ -853,8 +851,7 @@ void unpad_grid(void *gridp, const unsigned n_cols, const unsigned n_rows,
 
 /* Reverses the grid vertically, that is, from north up to south up or vice versa. */
 void grid_flip_vertical (void *gridp, const unsigned n_cols, const unsigned n_rows, const unsigned n_stride, size_t cell_size) {
-	/* Note: when grid is complex, double cell_size and pass the number of complex
-	 * values per row as n_cols */
+	/* Note: when grid is complex, pass 2x n_rows */
 	unsigned rows_over_2 = (unsigned) floor (n_rows / 2.0);
 	unsigned row;
 	unsigned stride = n_cols; /* stride is the distance between rows. defaults to n_cols */
@@ -880,8 +877,7 @@ void grid_flip_vertical (void *gridp, const unsigned n_cols, const unsigned n_ro
 /* Ensure that repeating columns in geographic gridline registered grids
  * do not contain conflicting information */
 void grid_fix_repeat_col (struct GMT_CTRL *C, void *gridp, const unsigned n_cols, const unsigned n_rows, size_t cell_size) {
-	/* Note: when grid is complex, double cell_size and pass the number of complex
-	 * values per row as n_cols */
+	/* Note: when grid is complex, pass 2x n_rows */
 	char *grid = (char*)gridp;
 	unsigned row, n_conflicts = 0;
 
@@ -975,7 +971,7 @@ static inline int io_nc_varm_float (int ncid, int varid, const size_t *startp,
 }
 
 /* Read and write classic or chunked netcdf files */
-int io_nc_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, unsigned dim[], unsigned origin[], unsigned offset, unsigned increment, unsigned stride, unsigned io_mode, float* grid) {
+int io_nc_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, unsigned dim[], unsigned origin[], unsigned stride, unsigned io_mode, float* grid) {
 	/* io_mode = k_get_netcdf: read a netcdf file to grid
 	 * io_mode = k_put_netcdf: write a grid to netcdf */
 	int status = NC_NOERR;
@@ -985,7 +981,6 @@ int io_nc_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, unsigned dim
 	size_t start[5] = {0,0,0,0,0}, count[5] = {1,1,1,1,1};
 	size_t n_contiguous_chunk_rows;  /* that are processed at once, 0 = all */
 	ptrdiff_t imap[5] = {1,1,1,1,1}; /* mapping between dims of netCDF and in-memory grid */
-	float *p_grid = grid + offset;   /* points to beginning of grid */
 
 	/* catch illegal io_mode in debug */
 	assert (io_mode == k_put_netcdf || io_mode == k_get_netcdf);
@@ -1004,8 +999,8 @@ int io_nc_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, unsigned dim
 	start[yx_dim[1]] = origin[1]; /* first col */
 
 	/* set mapping of complex grids or if reading a part of a grid */
-	imap[yx_dim[0]] = (stride == 0 ? width : stride) * increment; /* distance between each row */
-	imap[yx_dim[1]] = increment;                                  /* distance between values in a row */
+	imap[yx_dim[0]] = (stride == 0 ? width : stride); /* distance between each row */
+	imap[yx_dim[1]] = 1;                              /* distance between values in a row */
 
 	/* determine how many chunks to process at once */
 	n_chunked_rows_in_cache (C, header, width, height, &n_contiguous_chunk_rows, chunksize);
@@ -1015,8 +1010,8 @@ int io_nc_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, unsigned dim
 		unsigned remainder;
 #ifdef NC4_DEBUG
 		unsigned row_num = 0;
-			GMT_Report (C->parent, GMT_MSG_NORMAL, "stride: %u increment: %u width: %u\n",
-					stride, increment, width);
+			GMT_Report (C->parent, GMT_MSG_NORMAL, "stride: %u width: %u\n",
+					stride, width);
 #endif
 
 		/* adjust row count, so that it ends on the bottom of a chunk */
@@ -1031,13 +1026,13 @@ int io_nc_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, unsigned dim
 					++row_num, start[yx_dim[0]], count[yx_dim[0]]);
 #endif
 			/* get/put chunked rows */
-			if (stride || increment > 1)
-				status = io_nc_varm_float (header->ncid, header->z_id, start, count, NULL, imap, p_grid, io_mode);
+			if (stride)
+				status = io_nc_varm_float (header->ncid, header->z_id, start, count, NULL, imap, grid, io_mode);
 			else
-				status = io_nc_vara_float (header->ncid, header->z_id, start, count, p_grid, io_mode);
+				status = io_nc_vara_float (header->ncid, header->z_id, start, count, grid, io_mode);
 
 			/* advance grid location and set new origin */
-			p_grid += count[yx_dim[0]] * (stride == 0 ? width : stride) * increment;
+			grid += count[yx_dim[0]] * (stride == 0 ? width : stride);
 			start[yx_dim[0]] += count[yx_dim[0]];
 			if (remainder) {
 				/* reset count to full chunk height */
@@ -1052,20 +1047,20 @@ int io_nc_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, unsigned dim
 			GMT_Report (C->parent, GMT_MSG_NORMAL, "chunked row #%u start-y:%zu height:%zu\n",
 					++row_num, start[yx_dim[0]], count[yx_dim[0]]);
 #endif
-			if (stride || increment > 1)
-				status = io_nc_varm_float (header->ncid, header->z_id, start, count, NULL, imap, p_grid, io_mode);
+			if (stride)
+				status = io_nc_varm_float (header->ncid, header->z_id, start, count, NULL, imap, grid, io_mode);
 			else
-				status = io_nc_vara_float (header->ncid, header->z_id, start, count, p_grid, io_mode);
+				status = io_nc_vara_float (header->ncid, header->z_id, start, count, grid, io_mode);
 		}
 	}
 	else {
 		/* get/put whole grid contiguous */
 		count[yx_dim[0]] = height;
 		count[yx_dim[1]] = width;
-		if (stride || increment > 1)
-			status = io_nc_varm_float (header->ncid, header->z_id, start, count, NULL, imap, p_grid, io_mode);
+		if (stride)
+			status = io_nc_varm_float (header->ncid, header->z_id, start, count, NULL, imap, grid, io_mode);
 		else
-			status = io_nc_vara_float (header->ncid, header->z_id, start, count, p_grid, io_mode);
+			status = io_nc_vara_float (header->ncid, header->z_id, start, count, grid, io_mode);
 	}
 	return status;
 }
@@ -1184,9 +1179,9 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *
 	 * grid:         array with final grid
 	 * wesn:         Sub-region to extract  [Use entire file if 0,0,0,0]
 	 * padding:      # of empty rows/columns to add on w, e, s, n of grid, respectively
-	 * complex_mode: &1 | &2 if complex array is to hold real (1) and imaginary (2) parts (otherwise read as real only)
-	 * Note: The file has only real values, we simply allow space in the complex array
-	 * for real and imaginary parts when processed by grdfft etc.
+	/* complex_mode:	&4 | &8 if complex array is to hold real (4) and imaginary (8) parts (otherwise read as real only) */
+	/*		Note: The file has only real values, we simply allow space in the complex array */
+	/*		for real and imaginary parts when processed by grdfft etc.
 	 *
 	 * Reads a subset of a grdfile and optionally pads the array with extra rows and columns
 	 * header values for nx and ny are reset to reflect the dimensions of the logical array,
@@ -1197,7 +1192,9 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *
 	int err;            /* netcdf errors */
 	int n_shift;
 	unsigned dim[2], dim2[2], origin[2], origin2[2]; /* dimension and origin {y,x} of subset to read from netcdf */
-	unsigned width, height, inc, off, row;
+	unsigned width, height, row;
+	uint64_t imag_offset;
+	float *pgrid = NULL;
 
 	/* Check type: is file in old NetCDF format or not at all? */
 	if (C->session.grdformat[header->type][0] == 'c')
@@ -1208,8 +1205,9 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *
 	GMT_err_fail (C, nc_grd_prep_io (C, header, wesn, &width, &height, &n_shift, origin, dim, origin2, dim2), header->name);
 
 	/* Set stride and offset if complex */
-	(void)GMT_init_complex (complex_mode, &inc, &off);
-
+	(void)GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
+	pgrid = grid + imag_offset;	/* Start of this complex component (or start of non-complex grid) */
+	
 #ifdef NC4_DEBUG
 	GMT_Report (C->parent, GMT_MSG_NORMAL, "      wesn: %g %g %g %g\n", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 	GMT_Report (C->parent, GMT_MSG_NORMAL, "head->wesn: %g %g %g %g\n", header->wesn[XLO], header->wesn[XHI], header->wesn[YLO], header->wesn[YHI]);
@@ -1223,7 +1221,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *
 	GMT_Report (C->parent, GMT_MSG_NORMAL, "head->pad xlo:%u xhi:%u ylo:%u yhi:%u\n", header->pad[XLO], header->pad[XHI], header->pad[YLO], header->pad[YHI]);
 	GMT_Report (C->parent, GMT_MSG_NORMAL, "head->BC  xlo:%u xhi:%u ylo:%u yhi:%u\n", header->BC[XLO], header->BC[XHI], header->BC[YLO], header->BC[YHI]);
 	GMT_Report (C->parent, GMT_MSG_NORMAL, "head->grdtype:%u %u\n", header->grdtype, GMT_GRID_GEOGRAPHIC_EXACT360_REPEAT);
-	GMT_Report (C->parent, GMT_MSG_NORMAL, "increment: %u offset: %u\n", inc, off);
+	GMT_Report (C->parent, GMT_MSG_NORMAL, "imag_offset: %" PRIu64 "\n", imag_offset);
 #endif
 
 	/* Open the NetCDF file */
@@ -1234,12 +1232,12 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *
 
 	/* read grid */
 	if (dim2[1] == 0)
-		io_nc_grid (C, header, dim, origin, off, inc, header->stride, k_get_netcdf, grid + header->data_offset);
+		io_nc_grid (C, header, dim, origin, header->stride, k_get_netcdf, pgrid + header->data_offset);
 	else {
 		/* read grid in two parts */
 		unsigned stride_or_width = header->stride != 0 ? header->stride : width;
-		io_nc_grid (C, header, dim, origin, off, inc, stride_or_width, k_get_netcdf, grid + header->data_offset);
-		io_nc_grid (C, header, dim2, origin2, off, inc, stride_or_width, k_get_netcdf, grid + header->data_offset + dim[1]);
+		io_nc_grid (C, header, dim, origin, stride_or_width, k_get_netcdf, pgrid + header->data_offset);
+		io_nc_grid (C, header, dim2, origin2, stride_or_width, k_get_netcdf, pgrid + header->data_offset + dim[1]);
 	}
 
 	/* if we need to shift grid */
@@ -1247,14 +1245,14 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *
 #ifdef NC4_DEBUG
 		GMT_Report (C->parent, GMT_MSG_NORMAL, "right_shift_grid: %d\n", n_shift);
 #endif
-		right_shift_grid (grid, dim[1], dim[0], n_shift, sizeof(grid[0]) * inc);
+		right_shift_grid (pgrid, dim[1], dim[0], n_shift, sizeof(grid[0]));
 	}
 
 	/* if dim[1] + dim2[1] was < requested width: wrap-pad east border */
 	if (GMT_grd_is_global(C, header) && width > dim[1] + dim2[1]) {
 		unsigned fix_pad[4] = {0,0,0,0};
 		fix_pad[XHI] = width - dim[1] - dim2[1];
-		pad_grid (grid, width - fix_pad[XHI], height, fix_pad, sizeof(grid[0]) * inc, k_pad_fill_copy_wrap);
+		pad_grid (pgrid, width - fix_pad[XHI], height, fix_pad, sizeof(grid[0]), k_pad_fill_copy_wrap);
 	}
 	else
 		assert (width == dim[1] + dim2[1]);
@@ -1264,9 +1262,9 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *
 	header->z_max = -DBL_MAX;
 	adj_nan_value = !isnan (header->nan_value);
 	for (row = 0; row < height; ++row) {
-		float *p_data = grid + row * (header->stride ? header->stride : width) * inc + off;
+		float *p_data = pgrid + row * (header->stride ? header->stride : width);
 		unsigned col;
-		for (col = 0; col < width * inc; col += inc) {
+		for (col = 0; col < width; col ++) {
 			if (adj_nan_value && p_data[col] == (float)header->nan_value) { /* cast to avoid round-off errors */
 				p_data[col] = NAN;
 				continue;
@@ -1297,20 +1295,21 @@ int GMT_nc_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *
 
 	/* flip grid upside down */
 	if (header->row_order == k_nc_start_south)
-		grid_flip_vertical (grid + header->data_offset, width, height, header->stride, sizeof(grid[0]) * inc);
+		grid_flip_vertical (pgrid + header->data_offset, width, height, header->stride, sizeof(grid[0]));
 
 	/* Add padding with border replication */
 	// pad_grid (grid, width, height, pad, sizeof(grid[0]) * inc, k_pad_fill_copy);
-	pad_grid (grid, width, height, pad, sizeof(grid[0]) * inc, k_pad_fill_zero);
+		
+	pad_grid (pgrid, width, height, pad, sizeof(grid[0]), k_pad_fill_zero);
 
 #ifdef NC4_DEBUG
 	if (header->size < 160) {
 		unsigned n;
 		unsigned pad_x = pad[XLO] + pad[XHI];
 		unsigned stride = header->stride ? header->stride : width;
-		float *p_data = grid + header->data_offset;
-		for (n = 0; n < (stride + pad_x) * (height + pad[YLO] + pad[YHI]) * inc; n++) {
-			if (n % ((stride + pad_x) * inc) == 0)
+		float *p_data = pgrid + header->data_offset;
+		for (n = 0; n < (stride + pad_x) * (height + pad[YLO] + pad[YHI]); n++) {
+			if (n % (stride + pad_x) == 0)
 				fprintf (stderr, "\n");
 			fprintf (stderr, "%4.0f", p_data[n]);
 		}
@@ -1333,18 +1332,20 @@ int GMT_nc_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float 
 	 * grid:         array with final grid
 	 * wesn:         Sub-region to write out  [Use entire file if 0,0,0,0]
 	 * padding:      # of empty rows/columns to add on w, e, s, n of grid, respectively
-	 * complex_mode: &1 | &2 if complex array is to hold real (1) and imaginary (2) parts (otherwise read as real only)
-	 * Note: The file has only real values, we simply allow space in the complex array
-	 * for real and imaginary parts when processed by grdfft etc.
+	/* complex_mode:	&4 | &8 if complex array is to hold real (4) and imaginary (8) parts (otherwise read as real only) */
+	/*		Note: The file has only real values, we simply allow space in the complex array */
+	/*		for real and imaginary parts when processed by grdfft etc.
 	 */
 
 	int status = NC_NOERR;
 	bool adj_nan_value;   /* if we need to change the fill value */
 	bool do_round = true; /* if we need to round to integral */
-	unsigned n, width, height, inc, off, *actual_col = NULL;
+	unsigned n, width, height, *actual_col = NULL;
 	unsigned dim[2], origin[2]; /* dimension and origin {y,x} of subset to write to netcdf */
 	int first_col, last_col, first_row, last_row;
+	uint64_t imag_offset;
 	double limit[2];      /* minmax of z variable */
+	float *pgrid = NULL;
 
 	/* Determine the value to be assigned to missing data, if not already done so */
 	switch (header->type) {
@@ -1386,40 +1387,41 @@ int GMT_nc_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float 
 		goto nc_err;
 
 	/* Set stride and offset if complex */
-	(void)GMT_init_complex (complex_mode, &inc, &off);
+	(void)GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
+	pgrid = grid + imag_offset;	/* Beginning of this complex component (or the regular non-complex grid) */
 
 	/* Remove padding from grid */
-	unpad_grid (grid, width, height, pad, sizeof(grid[0]) * inc);
+	unpad_grid (pgrid, width, height, pad, sizeof(grid[0]));
 
 	/* Check that repeating columns do not contain conflicting information */
 	if (header->grdtype == GMT_GRID_GEOGRAPHIC_EXACT360_REPEAT)
-		grid_fix_repeat_col (C, grid, width, height, sizeof(grid[0]) * inc);
+		grid_fix_repeat_col (C, pgrid, width, height, sizeof(grid[0]));
 
 	/* flip grid upside down */
 	if (header->row_order == k_nc_start_south)
-		grid_flip_vertical (grid, width, height, 0, sizeof(grid[0]) * inc);
+		grid_flip_vertical (pgrid, width, height, 0, sizeof(grid[0]));
 
 	/* get stats */
 	header->z_min = DBL_MAX;
 	header->z_max = -DBL_MAX;
 	adj_nan_value = !isnan (header->nan_value);
-	n = off;
-	while (n < width * inc * height) {
-		if (adj_nan_value && isnan (grid[n]))
-			grid[n] = header->nan_value;
-		else if (!isnan (grid[n])) {
+	n = 0;
+	while (n < width * height) {
+		if (adj_nan_value && isnan (pgrid[n]))
+			pgrid[n] = header->nan_value;
+		else if (!isnan (pgrid[n])) {
 			if (do_round)
-				grid[n] = rint (grid[n]); /* round to int */
-			header->z_min = MIN (header->z_min, grid[n]);
-			header->z_max = MAX (header->z_max, grid[n]);
+				pgrid[n] = rint (pgrid[n]); /* round to int */
+			header->z_min = MIN (header->z_min, pgrid[n]);
+			header->z_max = MAX (header->z_max, pgrid[n]);
 		}
-		n += inc;
+		n++;
 	}
 
 	/* write grid */
 	dim[0]    = height,    dim[1]    = width;
 	origin[0] = first_row, origin[1] = first_col;
-	status = io_nc_grid (C, header, dim, origin, off, inc, 0, k_put_netcdf, grid);
+	status = io_nc_grid (C, header, dim, origin, 0, k_put_netcdf, pgrid);
 	if (status != NC_NOERR)
 		goto nc_err;
 

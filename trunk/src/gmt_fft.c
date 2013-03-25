@@ -364,8 +364,9 @@ void gmt_fft_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_FFT_
 	 * width is relative width in percent of the margin that will be tapered [100]. */
 	int il1, ir1, il2, ir2, jb1, jb2, jt1, jt2, im, jm, j, end_i, end_j, min_i, min_j, one;
 	int i, i_data_start, j_data_start, mx, i_width, j_width, width_percent;
-	unsigned int ju;
-	char *method[2] = {"edge-point", "mirror"};
+	unsigned int ju, n_components = 1, start_component = 0, stop_component = 0, component;
+	uint64_t off;
+	char *method[2] = {"edge-point", "mirror"}, *comp[2] = {"real", "imaginary"};
 	float *datac = Grid->data, scale, cos_wt;
 	double width;
 	struct GMT_GRID_HEADER *h = Grid->header;	/* For shorthand */
@@ -383,6 +384,11 @@ void gmt_fft_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_FFT_
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No interior tapering will be performed\n");
 			return;
 		}
+	}
+	
+	if (Grid->header->arrangement == GMT_GRID_IS_INTERLEAVED) {
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Demultiplexing complex grid before tapering can take place.\n");
+		GMT_grd_mux_demux (GMT, Grid->header, Grid->data, GMT_GRID_IS_SERIAL);
 	}
 	
 	/* Note that if nx2 = nx+1 and ny2 = ny + 1, then this routine
@@ -414,84 +420,94 @@ void gmt_fft_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_FFT_
 		i_width = lrint (i_data_start * width);	/* Extended columns over which tapering will take place */
 		j_width = lrint (j_data_start * width);	/* Extended rows over which tapering will take place */
 	}
+	if (i_width == 0 && j_width == 0) one = 1;	/* So we do nothing further down */
 
-	/* First reflect about xmin and xmax, either point symmetric about edge point OR mirror symmetric */
+	/* Determine how many complex components (1 or 2) to taper, and which one(s) */
+	n_components = ((Grid->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) == GMT_GRID_IS_COMPLEX_MASK) ? 2 : 1;
+	start_component = (Grid->header->complex_mode & GMT_GRID_IS_COMPLEX_REAL) ? 0 : 1;
+	stop_component  = (Grid->header->complex_mode & GMT_GRID_IS_COMPLEX_IMAG) ? 1 : 0;
 
-	if (F->taper_mode != GMT_FFT_EXTEND_NONE) {
-		for (im = 1; im <= i_width; im++) {
-			il1 = -im;	/* Outside xmin; left of edge 1  */
-			ir1 = im;	/* Inside xmin; right of edge 1  */
-			il2 = il1 + h->nx - 1;	/* Inside xmax; left of edge 2  */
-			ir2 = ir1 + h->nx - 1;	/* Outside xmax; right of edge 2  */
-			for (ju = 0; ju < h->ny; ju++) {
+	for (component = start_component; component <= stop_component; component++) {	/* Loop over 1 or 2 components */
+		off = component * Grid->header->size / 2;	/* offset to start of this component in grid */
+
+		/* First reflect about xmin and xmax, either point symmetric about edge point OR mirror symmetric */
+
+		if (F->taper_mode != GMT_FFT_EXTEND_NONE) {
+			for (im = 1; im <= i_width; im++) {
+				il1 = -im;	/* Outside xmin; left of edge 1  */
+				ir1 = im;	/* Inside xmin; right of edge 1  */
+				il2 = il1 + h->nx - 1;	/* Inside xmax; left of edge 2  */
+				ir2 = ir1 + h->nx - 1;	/* Outside xmax; right of edge 2  */
+				for (ju = 0; ju < h->ny; ju++) {
+					if (F->taper_mode == GMT_FFT_EXTEND_POINT_SYMMETRY) {
+						datac[GMT_IJP(h,ju,il1)+off] = 2.0f * datac[GMT_IJP(h,ju,0)+off]       - datac[GMT_IJP(h,ju,ir1)+off];
+						datac[GMT_IJP(h,ju,ir2)+off] = 2.0f * datac[GMT_IJP(h,ju,h->nx-1)+off] - datac[GMT_IJP(h,ju,il2)+off];
+					}
+					else {	/* Mirroring */
+						datac[GMT_IJP(h,ju,il1)+off] = datac[GMT_IJP(h,ju,ir1)+off];
+						datac[GMT_IJP(h,ju,ir2)+off] = datac[GMT_IJP(h,ju,il2)+off];
+					}
+				}
+			}
+		}
+
+		/* Next, reflect about ymin and ymax.
+		 * At the same time, since x has been reflected,
+		 * we can use these vals and taper on y edges */
+
+		scale = (float)(M_PI / (j_width + 1));	/* Full 2*pi over y taper range */
+		min_i = (F->taper_mode == GMT_FFT_EXTEND_NONE) ? 0 : -i_width;
+		end_i = (F->taper_mode == GMT_FFT_EXTEND_NONE) ? (int)Grid->header->nx : mx - i_width;
+		for (jm = one; jm <= j_width; jm++) {	/* Loop over width of strip to taper */
+			jb1 = -jm;	/* Outside ymin; bottom side of edge 1  */
+			jt1 = jm;	/* Inside ymin; top side of edge 1  */
+			jb2 = jb1 + h->ny - 1;	/* Inside ymax; bottom side of edge 2  */
+			jt2 = jt1 + h->ny - 1;	/* Outside ymax; bottom side of edge 2  */
+			cos_wt = 0.5f * (1.0f + cosf (jm * scale));
+			if (F->taper_mode == GMT_FFT_EXTEND_NONE) cos_wt = 1.0f - cos_wt;	/* Reverse weights for the interior */
+			for (i = min_i; i < end_i; i++) {
 				if (F->taper_mode == GMT_FFT_EXTEND_POINT_SYMMETRY) {
-					datac[GMT_IJPR(h,ju,il1)] = 2.0f * datac[GMT_IJPR(h,ju,0)]       - datac[GMT_IJPR(h,ju,ir1)];
-					datac[GMT_IJPR(h,ju,ir2)] = 2.0f * datac[GMT_IJPR(h,ju,h->nx-1)] - datac[GMT_IJPR(h,ju,il2)];
+					datac[GMT_IJP(h,jb1,i)+off] = cos_wt * (2.0f * datac[GMT_IJP(h,0,i)+off]       - datac[GMT_IJP(h,jt1,i)+off]);
+					datac[GMT_IJP(h,jt2,i)+off] = cos_wt * (2.0f * datac[GMT_IJP(h,h->ny-1,i)+off] - datac[GMT_IJP(h,jb2,i)+off]);
 				}
-				else {	/* Mirroring */
-					datac[GMT_IJPR(h,ju,il1)] = datac[GMT_IJPR(h,ju,ir1)];
-					datac[GMT_IJPR(h,ju,ir2)] = datac[GMT_IJPR(h,ju,il2)];
+				else if (F->taper_mode == GMT_FFT_EXTEND_MIRROR_SYMMETRY) {
+					datac[GMT_IJP(h,jb1,i)+off] = cos_wt * datac[GMT_IJP(h,jt1,i)+off];
+					datac[GMT_IJP(h,jt2,i)+off] = cos_wt * datac[GMT_IJP(h,jb2,i)+off];
+				}
+				else {	/* Interior tapering only */
+					datac[GMT_IJP(h,jt1,i)+off] *= cos_wt;
+					datac[GMT_IJP(h,jb2,i)+off] *= cos_wt;
 				}
 			}
 		}
-	}
-
-	/* Next, reflect about ymin and ymax.
-	 * At the same time, since x has been reflected,
-	 * we can use these vals and taper on y edges */
-
-	scale = (float)(M_PI / (j_width + 1));	/* Full 2*pi over y taper range */
-	min_i = (F->taper_mode == GMT_FFT_EXTEND_NONE) ? 0 : -i_width;
-	end_i = (F->taper_mode == GMT_FFT_EXTEND_NONE) ? (int)Grid->header->nx : mx - i_width;
-	for (jm = one; jm <= j_width; jm++) {	/* Loop over width of strip to taper */
-		jb1 = -jm;	/* Outside ymin; bottom side of edge 1  */
-		jt1 = jm;	/* Inside ymin; top side of edge 1  */
-		jb2 = jb1 + h->ny - 1;	/* Inside ymax; bottom side of edge 2  */
-		jt2 = jt1 + h->ny - 1;	/* Outside ymax; bottom side of edge 2  */
-		cos_wt = 0.5f * (1.0f + cosf (jm * scale));
-		if (F->taper_mode == GMT_FFT_EXTEND_NONE) cos_wt = 1.0f - cos_wt;	/* Reverse weights for the interior */
-		for (i = min_i; i < end_i; i++) {
-			if (F->taper_mode == GMT_FFT_EXTEND_POINT_SYMMETRY) {
-				datac[GMT_IJPR(h,jb1,i)] = cos_wt * (2.0f * datac[GMT_IJPR(h,0,i)]       - datac[GMT_IJPR(h,jt1,i)]);
-				datac[GMT_IJPR(h,jt2,i)] = cos_wt * (2.0f * datac[GMT_IJPR(h,h->ny-1,i)] - datac[GMT_IJPR(h,jb2,i)]);
-			}
-			else if (F->taper_mode == GMT_FFT_EXTEND_MIRROR_SYMMETRY) {
-				datac[GMT_IJPR(h,jb1,i)] = cos_wt * datac[GMT_IJPR(h,jt1,i)];
-				datac[GMT_IJPR(h,jt2,i)] = cos_wt * datac[GMT_IJPR(h,jb2,i)];
-			}
-			else {	/* Interior tapering only */
-				datac[GMT_IJPR(h,jt1,i)] *= cos_wt;
-				datac[GMT_IJPR(h,jb2,i)] *= cos_wt;
+		/* Now, cos taper the x edges */
+		scale = (float)(M_PI / (i_width + 1));	/* Full 2*pi over x taper range */
+		end_j = (F->taper_mode == GMT_FFT_EXTEND_NONE) ? h->ny : h->my - j_data_start;
+		min_j = (F->taper_mode == GMT_FFT_EXTEND_NONE) ? 0 : -j_width;
+		for (im = one; im <= i_width; im++) {
+			il1 = -im;
+			ir1 = im;
+			il2 = il1 + h->nx - 1;
+			ir2 = ir1 + h->nx - 1;
+			cos_wt = (float)(0.5f * (1.0f + cosf (im * scale)));
+			if (F->taper_mode == GMT_FFT_EXTEND_NONE) cos_wt = 1.0f - cos_wt;	/* Switch to weights for the interior */
+			for (j = min_j; j < end_j; j++) {
+				if (F->taper_mode == GMT_FFT_EXTEND_NONE) {
+					datac[GMT_IJP(h,j,ir1)+off] *= cos_wt;
+					datac[GMT_IJP(h,j,il2)+off] *= cos_wt;
+				}
+				else {
+					datac[GMT_IJP(h,j,il1)+off] *= cos_wt;
+					datac[GMT_IJP(h,j,ir2)+off] *= cos_wt;
+				}
 			}
 		}
-	}
-	/* Now, cos taper the x edges */
-	scale = (float)(M_PI / (i_width + 1));	/* Full 2*pi over x taper range */
-	end_j = (F->taper_mode == GMT_FFT_EXTEND_NONE) ? h->ny : h->my - j_data_start;
-	min_j = (F->taper_mode == GMT_FFT_EXTEND_NONE) ? 0 : -j_width;
-	for (im = one; im <= i_width; im++) {
-		il1 = -im;
-		ir1 = im;
-		il2 = il1 + h->nx - 1;
-		ir2 = ir1 + h->nx - 1;
-		cos_wt = (float)(0.5f * (1.0f + cosf (im * scale)));
-		if (F->taper_mode == GMT_FFT_EXTEND_NONE) cos_wt = 1.0f - cos_wt;	/* Switch to weights for the interior */
-		for (j = min_j; j < end_j; j++) {
-			if (F->taper_mode == GMT_FFT_EXTEND_NONE) {
-				datac[GMT_IJPR(h,j,ir1)] *= cos_wt;
-				datac[GMT_IJPR(h,j,il2)] *= cos_wt;
-			}
-			else {
-				datac[GMT_IJPR(h,j,il1)] *= cos_wt;
-				datac[GMT_IJPR(h,j,ir2)] *= cos_wt;
-			}
-		}
-	}
 
-	if (F->taper_mode == GMT_FFT_EXTEND_NONE)
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Grid margin tapered to zero over %d %% of data width and height\n", width_percent);
-	else
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Grid extended via %s symmetry at all edges, then tapered to zero over %d %% of extended area\n", method[F->taper_mode], width_percent);
+		if (F->taper_mode == GMT_FFT_EXTEND_NONE)
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Grid margin (%s component) tapered to zero over %d %% of data width and height\n", comp[component], width_percent);
+		else
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Grid (%s component) extended via %s symmetry at all edges, then tapered to zero over %d %% of extended area\n", comp[component], method[F->taper_mode], width_percent);
+	}
 }
 
 char *file_name_with_suffix (struct GMT_CTRL *GMT, char *name, char *suffix)
@@ -522,20 +538,27 @@ void gmt_grd_save_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *suff
 	/* Write the intermediate grid that will be passed to the FFT to file.
 	 * This grid may have been a mean, mid-value, or plane removed, may
 	 * have data filled into an extended margin, and may have been taperer.
+	 * Normally, the complex grid will be in serial layout, but just in case
+	 * we check and add a demux step if required.  The FFT will also check
+	 * and multiplex the grid (again) if needed.
 	 */
 	unsigned int pad[4];
 	struct GMT_GRID_HEADER save;
 	char *file = NULL;
 	
-	GMT_memcpy (&save, Grid->header, 1, struct GMT_GRID_HEADER);	/* Save what we have before messing around */
-	GMT_memcpy (pad, Grid->header->pad, 4, unsigned int);	/* Save current pad, then set pad to zero */
+	if (Grid->header->arrangement == GMT_GRID_IS_INTERLEAVED) {
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Demultiplexing complex grid before saving can take place.\n");
+		GMT_grd_mux_demux (GMT, Grid->header, Grid->data, GMT_GRID_IS_SERIAL);
+	}
+	GMT_memcpy (&save, Grid->header, 1U, struct GMT_GRID_HEADER);	/* Save what we have before messing around */
+	GMT_memcpy (pad, Grid->header->pad, 4U, unsigned int);		/* Save current pad, then set pad to zero */
 	/* Extend w/e/s/n to what it would be if the pad was not present */
 	Grid->header->wesn[XLO] -= Grid->header->pad[XLO] * Grid->header->inc[GMT_X];
 	Grid->header->wesn[XHI] += Grid->header->pad[XHI] * Grid->header->inc[GMT_X];
 	Grid->header->wesn[YLO] -= Grid->header->pad[YLO] * Grid->header->inc[GMT_Y];
 	Grid->header->wesn[YHI] += Grid->header->pad[YHI] * Grid->header->inc[GMT_Y];
-	GMT_memset (Grid->header->pad,   4, unsigned int);	/* Set hader pad to {0,0,0,0} */
-	GMT_memset (GMT->current.io.pad, 4, unsigned int);	/* set GMT default pad to {0,0,0,0} */
+	GMT_memset (Grid->header->pad,   4U, unsigned int);	/* Set header pad to {0,0,0,0} */
+	GMT_memset (GMT->current.io.pad, 4U, unsigned int);	/* set GMT default pad to {0,0,0,0} */
 	GMT_set_grddim (GMT, Grid->header);	/* Recompute all dimensions */
 	if ((file = file_name_with_suffix (GMT, Grid->header->name, suffix)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to get file name for file %s\n", Grid->header->name);
@@ -547,8 +570,8 @@ void gmt_grd_save_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *suff
 	else
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Intermediate detrended, extended, and tapered grid written to %s\n", file);
 	
-	GMT_memcpy (Grid->header, &save, 1, struct GMT_GRID_HEADER);	/* Restore original, including the original pad */
-	GMT_memcpy (GMT->current.io.pad, pad, 4, unsigned int);		/* Restore GMT default pad */
+	GMT_memcpy (Grid->header, &save, 1U, struct GMT_GRID_HEADER);	/* Restore original, including the original pad */
+	GMT_memcpy (GMT->current.io.pad, pad, 4U, unsigned int);	/* Restore GMT default pad */
 }
 
 void gmt_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_FFT_INFO *F)
@@ -570,12 +593,16 @@ void gmt_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_FFT_
 
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Write components of complex raw spectrum with file suffiz %s and %s\n", suffix[mode][0], suffix[mode][1]);
 
+	if (G->header->arrangement == GMT_GRID_IS_SERIAL) {
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Cannot save complex grid unless it is interleaved.\n");
+		return;
+	}
 	/* Prepare wavenumber domain limits and increments */
 	nx_2 = K->nx2 / 2;	ny_2 = K->ny2 / 2;
 	wesn[XLO] = -K->delta_kx * nx_2;	wesn[XHI] =  K->delta_kx * (nx_2 - 1);
 	wesn[YLO] = -K->delta_ky * (ny_2 - 1);	wesn[YHI] =  K->delta_ky * ny_2;
 	inc[GMT_X] = K->delta_kx;		inc[GMT_Y] = K->delta_ky;
-	GMT_memcpy (pad, GMT->current.io.pad, 4, unsigned int);		/* Save current GMT pad */
+	GMT_memcpy (pad, GMT->current.io.pad, 4U, unsigned int);	/* Save current GMT pad */
 	for (k = 0; k < 4; k++) GMT->current.io.pad[k] = 0;		/* No pad is what we need for this application */
 
 	/* Set up and allocate the temporary grid. */
@@ -635,12 +662,12 @@ void gmt_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_FFT_
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error freeing temporary grid\n");
 	}
 		
-	GMT_memcpy (GMT->current.io.pad, pad, 4, unsigned int);	/* Restore GMT pad */
+	GMT_memcpy (GMT->current.io.pad, pad, 4U, unsigned int);	/* Restore GMT pad */
 }
 
 void gmt_fft_save2d (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direction, struct GMT_FFT_WAVENUMBER *K)
 {
-	/* Handle the writing of the grid going into the FFT an comping out of the FFT, per F settings */
+	/* Handle the writing of the grid going into the FFT and comping out of the FFT, per F settings */
 	
 	if (G == NULL || (K == NULL ||  K->info == NULL)) return;
 	if (direction == GMT_IN  && K->info->save[GMT_IN])  gmt_grd_save_taper (GMT, G, K->info->suffix);

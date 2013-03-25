@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-03-23	pwessel
+	* gmt_customio.c:	The magic recognition of native bit grids failed due to bad math.
+				Wrote wrong number of bytes per record for odd-width Sun rasterfiles
+
 2013-03-22	pwessel
 	* greenspline.c:	When -T was used the number of z-layers (1) was not initialized.
 

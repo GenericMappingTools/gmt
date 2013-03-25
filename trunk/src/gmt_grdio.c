@@ -88,6 +88,69 @@ int GMT_is_gdal_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header);
 EXTERN_MSC void gmt_close_grd (struct GMT_CTRL *C, struct GMT_GRID *G);
 
 /* GENERIC I/O FUNCTIONS FOR GRIDDED DATA FILES */
+//#define GMT_DUMPING
+void grd_dump (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *grid, bool complex, char *txt)
+{
+#ifdef GMT_DUMPING
+	unsigned int row, col;
+	uint64_t k = 0U;
+	fprintf (stderr, "Dump [%s]:\n---------------------------------------------\n", txt);
+	for (row = 0; row < header->my; row++) {
+		if (complex)
+			for (col = 0; col < header->mx; col++, k+= 2) fprintf (stderr, "(%d,%d)\t", (int)grid[k], (int)grid[k+1]);
+		else
+			for (col = 0; col < header->mx; col++, k++) fprintf (stderr, "%d\t", (int)grid[k]);
+		fprintf (stderr, "\n");
+	}
+	fprintf (stderr, "---------------------------------------------\n");
+#endif
+}
+
+void gmt_grd_layout (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *grid, unsigned int complex_mode, unsigned int direction)
+{	/* Checks or sets the array arrangement for a complex array */
+	size_t needed_size;	/* Space required to hold both components of a complex grid */
+	
+	if ((complex_mode & GMT_GRID_IS_COMPLEX_MASK) == 0) return;	/* Regular, non-complex grid, nothing special to do */
+	
+	needed_size = 2ULL * header->mx * header->my;	/* For the complex array */
+	if (header->size < needed_size) {
+		GMT_Report (C->parent, GMT_MSG_NORMAL, "Internal Error: Complex grid not large enough to hold both components!.\n");
+		GMT_exit (EXIT_FAILURE);
+	}
+	if (direction == GMT_IN) {	/* About to read in a complex component; another one might have been read in earlier */
+		if (header->arrangement == GMT_GRID_IS_INTERLEAVED) {
+			GMT_Report (C->parent, GMT_MSG_VERBOSE, "Demultiplexing complex grid before reading can take place.\n");
+			GMT_grd_mux_demux (C, header, grid, GMT_GRID_IS_SERIAL);
+		}
+		if ((header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) == GMT_GRID_IS_COMPLEX_MASK) {	/* Already have both component; this will overwrite one of them */
+			unsigned int type = (complex_mode && GMT_GRID_IS_COMPLEX_REAL) ? 0 : 1;
+			char *kind[2] = {"read", "imaginary"};
+			GMT_Report (C->parent, GMT_MSG_NORMAL, "Overwriting previously stored %s component in complex grid.\n", kind[type]);
+		}
+		header->complex_mode |= complex_mode;	/* Update the grids complex mode */
+	}
+	else {	/* About to write out a complex component */
+		if ((header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) == 0) {	/* Not a complex grid */
+			GMT_Report (C->parent, GMT_MSG_NORMAL, "Internal Error: Asking to write out complex components from a non-complex grid.\n");
+			GMT_exit (EXIT_FAILURE);
+		}
+		if ((header->complex_mode & GMT_GRID_IS_COMPLEX_REAL) && (complex_mode && GMT_GRID_IS_COMPLEX_REAL) == 0) {
+			/* Programming error: Requesting to write real components when there are none */
+			GMT_Report (C->parent, GMT_MSG_NORMAL, "Internal Error: Complex grid has no real components that can be written to file.\n");
+			GMT_exit (EXIT_FAILURE);
+		}
+		else if ((header->complex_mode & GMT_GRID_IS_COMPLEX_IMAG) && (complex_mode && GMT_GRID_IS_COMPLEX_IMAG) == 0) {
+			/* Programming error: Requesting to write imag components when there are none */
+			GMT_Report (C->parent, GMT_MSG_NORMAL, "Internal Error: Complex grid has no imaginary components that can be written to file.\n");
+			GMT_exit (EXIT_FAILURE);
+		}
+		if (header->arrangement == GMT_GRID_IS_INTERLEAVED) {	/* Must first demultiplex the grid */
+			GMT_Report (C->parent, GMT_MSG_VERBOSE, "Demultiplexing complex grid before writing can take place.\n");
+			GMT_grd_mux_demux (C, header, grid, GMT_GRID_IS_SERIAL);
+		}
+	}
+	/* header->arrangment might now have been changed accordingly */
+}
 
 void gmt_grd_parse_xy_units (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h, char *file, unsigned int direction)
 {	/* Decode the optional +u|U<unit> and determine scales */
@@ -316,10 +379,7 @@ int parse_grd_format_scale (struct GMT_CTRL *Ctrl, struct GMT_GRID_HEADER *heade
 	return GMT_NOERROR;
 }
 
-#define GMT_MULTIPLEX	0
-#define GMT_DEMULTIPLEX	1
-
-void GMT_grd_mux_demux (struct GMT_CTRL *C, struct GMT_GRID *G, unsigned int mode)
+void GMT_grd_mux_demux (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *data, unsigned int desired_mode)
 {	/* Multiplex and demultiplex complex grids.
  	 * Complex grids are read/written by dealing with just one component: real or imag.
 	 * Thus, at read|write the developer must specify which component (GMT_CMPLX_REAL|IMAG).
@@ -331,76 +391,85 @@ void GMT_grd_mux_demux (struct GMT_CTRL *C, struct GMT_GRID *G, unsigned int mod
 	 * form RIRIRIRI.... Then, when the FFT work is done and we wish to write out the
 	 * result we will need to demultiplex the array back to its serial RRRRR....IIIII
 	 * format before writing takes place.
-	 * GMT_grd_mux_demux performs either multiplex or demultiplex, depending on mode.
+	 * GMT_grd_mux_demux performs either multiplex or demultiplex, depending on desired_mode.
 	 * If grid is not complex then we just return doing nothing.
 	 */
-	uint64_t row, col_1, col_2, left_node_1, left_node_2, offset;
+	uint64_t row, col, col_1, col_2, left_node_1, left_node_2, offset;
 	
-	if (G->header->complex_mode == 0) return;	/* Nuthin' to do */
+	if (! (desired_mode == GMT_GRID_IS_INTERLEAVED || desired_mode == GMT_GRID_IS_SERIAL)) {
+		GMT_Report (C->parent, GMT_MSG_NORMAL, "GMT_grd_mux_demux called with inappropriate mode - skipped.\n");
+		return;
+	}
+	if ((header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) == 0) return;	/* Nuthin' to do */
+	if (header->arrangement == desired_mode) return;				/* Already has the right layout */
 	
-	if (mode == GMT_MULTIPLEX) {	/* Transform from RRRRR...IIIII to RIRIRIRIRI... */
-		/* IN most cases we will actually have RRRRR...______ or _____...IIIII..
-		 * which means half the array is empty and it is easy to shuffle. However,
-		 * in the case with actual RRRR...IIII there is no simple way to do this inplace */
-		if ((G->header->complex_mode && GMT_GRID_IS_COMPLEX_MASK) == GMT_GRID_IS_COMPLEX_MASK) {
+	/* In most cases we will actually have RRRRR...______ or _____...IIIII..
+	 * which means half the array is empty and it is easy to shuffle. However,
+	 * in the case with actual RRRR...IIII there is no simple way to do this inplace;
+	 * see http://stackoverflow.com/questions/1777901/array-interleaving-problem */
+	
+	if (desired_mode == GMT_GRID_IS_INTERLEAVED) {	/* Must multiplex the grid */
+		if ((header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) == GMT_GRID_IS_COMPLEX_MASK) {
+			/* Transform from RRRRR...IIIII to RIRIRIRIRI... */
 			/* Implement later */
 		}
-		else if (G->header->complex_mode && GMT_GRID_IS_COMPLEX_REAL) {
+		else if (header->complex_mode & GMT_GRID_IS_COMPLEX_REAL) {
 			/* Here we have RRRRRR..._________ and want R_R_R_R_... */
-			/* If memory not allcoated, do a new align, duplicate, free first */
-			for (row = G->header->ny; row > 0; row--) {	/* Doing from last to first row */
-				left_node_1 = GMT_IJP (G->header, row-1, 0);	/* Start of row in RRRRR layout */
-				left_node_2 = 2 * left_node_1;	/* Start of same row in R_R_R_ layout */
-				for (col_1 = col_2 = 0; col_1 < G->header->nx; col_1++, col_2 += 2) {
-					G->data[left_node_2+col_2] = G->data[left_node_1+col_1];
-					G->data[left_node_1+col_1] = 0.0;	/* Set the Imag component to zero */
+			for (row = header->ny; row > 0; row--) {	/* Going from last to first row */
+				left_node_1 = GMT_IJP (header, row-1, 0);	/* Start of row in RRRRR layout */
+				left_node_2 = 2 * left_node_1;			/* Start of same row in R_R_R_ layout */
+				for (col = header->nx, col_1 = col - 1, col_2 = 2*col - 1; col > 0; col--, col_1--) { /* Go from right to left */
+					data[left_node_2+col_2] = 0.0;	col_2--;	/* Set the Imag component to zero */
+					data[left_node_2+col_2] = data[left_node_1+col_1];	col_2--;
+					// data[left_node_1+col_1] = 0.0;
 				}
 			}
 		}
-		else {	/* Here we have _____...IIIII and want _I_I_I_I */
-			/* If memory not allcoated, do a new align, duplicate, free first, and then offset is 0 */
-			offset = GMT_IJP (G->header, G->header->ny, 0);	/* Position of 1st I in ____...IIII... */
-			for (row = 0; row < G->header->ny; row++) {	/* Doing from first to last row */
-				left_node_1 = GMT_IJP (G->header, row, 0);	/* Start of row in _____IIII layout not counting ____*/
+		else {
+			/* Here we have _____...IIIII and want _I_I_I_I */
+			offset = header->size / 2;	/* Position of 1st row in imag portion of ____...IIII... */
+			for (row = 0; row < header->ny; row++) {	/* Going from first to last row */
+				left_node_1 = GMT_IJP (header, row, 0);		/* Start of row in _____IIII layout not counting ____*/
 				left_node_2 = 2 * left_node_1;			/* Start of same row in _I_I_I... layout */
 				left_node_1 += offset;				/* Move past length of all ____... */
-				for (col_1 = 0, col_2 = 1; col_1 < G->header->nx; col_1++, col_2 += 2) {
-					G->data[left_node_2+col_2] = G->data[left_node_1+col_1];
-					G->data[left_node_1+col_1] = 0.0;	/* Set the Real component to zero */
+				for (col_1 = 0, col_2 = 1; col_1 < header->nx; col_1++, col_2 += 2) {
+					data[left_node_2+col_2] = data[left_node_1+col_1];
+					data[left_node_1+col_1] = 0.0;	/* Set the Real component to zero */
 				}
 			}
 		}
 	}
-	else if (mode == GMT_DEMULTIPLEX) {	/* Transform from RIRIRIRIRI... to RRRRR...IIIII  */
-		if ((G->header->complex_mode && GMT_GRID_IS_COMPLEX_MASK) == GMT_GRID_IS_COMPLEX_MASK) {
-			/* Implement later */
+	else if (desired_mode == GMT_GRID_IS_SERIAL) {	/* Must demultiplex the grid */
+		if ((header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) == GMT_GRID_IS_COMPLEX_MASK) {
+			/* Transform from RIRIRIRIRI... to RRRRR...IIIII  */
+			/* Implement later; see ref above */
 		}
-		else if (G->header->complex_mode && GMT_GRID_IS_COMPLEX_REAL) {
+		else if (header->complex_mode && GMT_GRID_IS_COMPLEX_REAL) {
 			/* Here we have R_R_R_R_... and want RRRRRR..._______  */
-			for (row = 0; row < G->header->ny; row++) {	/* Doing from first to last row */
-				left_node_1 = GMT_IJP (G->header, row, 0);	/* Start of row in RRRRR... */
-				left_node_2 = 2 * left_node_1;			/* Start of same row in R_R_R_R... layout */
-				for (col_1 = col_2 = 0; col_1 < G->header->nx; col_1++, col_2 += 2) {
-					G->data[left_node_1+col_1] = G->data[left_node_2+col_2];
-					G->data[left_node_1+col_1] = 0.0;	/* Set the Real component to zero */
+			for (row = 0; row < header->ny; row++) {	/* Doing from first to last row */
+				left_node_1 = GMT_IJP (header, row, 0);	/* Start of row in RRRRR... */
+				left_node_2 = 2 * left_node_1;		/* Start of same row in R_R_R_R... layout */
+				for (col_1 = col_2 = 0; col_1 < header->nx; col_1++, col_2 += 2) {
+					data[left_node_1+col_1] = data[left_node_2+col_2];
 				}
 			}
-			offset = GMT_IJP (G->header, G->header->ny, 0);	/* Position of 1st _ in RRRR...____ */
-			GMT_memset (&G->data[offset], G->header->size / 2, float);	/* Wipe _____ portion clean */
+			offset = header->size / 2;			/* Position of 1st _ in RRRR...____ */
+			GMT_memset (&data[offset], offset, float);	/* Wipe _____ portion clean */
 		}
 		else {	/* Here we have _I_I_I_I and want _____...IIIII */
-			offset = GMT_IJP (G->header, G->header->ny, 0);	/* Position of 1st I in ____...IIII... */
-			for (row = 0; row < G->header->ny; row++) {	/* Doing from first to last row */
-				left_node_1 = GMT_IJP (G->header, row, 0);	/* Start of row in _____IIII layout not counting ____*/
-				left_node_2 = 2 * left_node_1;			/* Start of same row in _I_I_I... layout */
-				left_node_1 += offset;				/* Move past length of all ____... */
-				for (col_1 = 0, col_2 = 1; col_1 < G->header->nx; col_1++, col_2 += 2) {
-					G->data[left_node_1+col_1] = G->data[left_node_2+col_2];
+			offset = header->size / 2;	/* Position of 1st row in imag portion of ____...IIII... */
+			for (row = header->ny; row > 0; row--) {	/* Going from last to first row */
+				left_node_1 = GMT_IJP (header, row, 0);	/* Start of row in _____IIII layout not counting ____*/
+				left_node_2 = 2 * left_node_1;		/* Start of same row in _I_I_I... layout */
+				left_node_1 += offset;			/* Move past length of all ____... */
+				for (col = header->nx, col_1 = col - 1, col_2 = 2*col - 1; col > 0; col--, col_1--, col_2 -= 2) { /* Go from right to left */
+					data[left_node_1+col_1] = data[left_node_2+col_2];
 				}
 			}
-			GMT_memset (G->data, G->header->size / 2, float);	/* Wipe _____ portion clean */
+			GMT_memset (data, offset, float);	/* Wipe leading _____ portion clean */
 		}
 	}
+	header->arrangement = desired_mode;
 }
 
 int GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GMT_GRID_HEADER *header, bool magic)
@@ -862,8 +931,14 @@ int GMT_read_grd (struct GMT_CTRL *C, char *file, struct GMT_GRID_HEADER *header
 	int err;		/* Implied by GMT_err_trap */
 	struct GRD_PAD P;
 
+	complex_mode &= GMT_GRID_IS_COMPLEX_MASK;	/* Remove any non-complex flags */
+	/* If we are reading a 2nd grid (e.g., real, then imag) we must update info about the file since it will be a different file */
+	if (header->complex_mode && (header->complex_mode & complex_mode) == 0) GMT_err_trap (GMT_grd_get_format (C, file, header, true));
+	
 	expand = gmt_padspace (C, header, wesn, pad, &P);	/* true if we can extend the region by the pad-size to obtain real data for BC */
 
+	gmt_grd_layout (C, header, grid, complex_mode & GMT_GRID_IS_COMPLEX_MASK, GMT_IN);	/* Deal with complex layout */
+	
 	GMT_err_trap ((*C->session.readgrd[header->type]) (C, header, grid, P.wesn, P.pad, complex_mode));
 
 	if (expand) /* Must undo the region extension and reset nx, ny using original pad  */
@@ -896,6 +971,7 @@ int GMT_write_grd (struct GMT_CTRL *C, char *file, struct GMT_GRID_HEADER *heade
 	GMT_pack_grid (C, header, grid, k_grd_pack); /* scale and offset */
 	gmt_grd_xy_scale (C, header, GMT_OUT);	/* Possibly scale wesn,inc */
 
+	gmt_grd_layout (C, header, grid, complex_mode, GMT_OUT);	/* Deal with complex layout */
 	return ((*C->session.writegrd[header->type]) (C, header, grid, wesn, pad, complex_mode));
 }
 
@@ -1682,23 +1758,36 @@ int GMT_read_img (struct GMT_CTRL *C, char *imgfile, struct GMT_GRID *Grid, doub
 }
 
 void gmt_grd_wipe_pad (struct GMT_CTRL *C, struct GMT_GRID *G)
-{	/* Reset padded areas to 0. Can handle complex grids */
+{	/* Reset padded areas to 0. */
 	unsigned int row;
-	size_t ij0, n_pr_item, n_items;
+	size_t ij0;
 	
-	n_pr_item = (G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) ? 2 : 1;	/* For complex there are two floats per node */
-	n_items = n_pr_item * G->header->mx;
-	if (G->header->pad[YHI]) GMT_memset (G->data, n_items * G->header->pad[YHI], float);	/* Wipe top pad */
+	if (G->header->arrangement == GMT_GRID_IS_INTERLEAVED) {
+		GMT_Report (C->parent, GMT_MSG_NORMAL, "Calling gmt_grd_wipe_pad on interleaved complex grid! Programming error?\n");
+		return;
+	}
+	if (G->header->pad[YHI]) GMT_memset (G->data, G->header->mx * G->header->pad[YHI], float);	/* Wipe top pad */
 	if (G->header->pad[YLO]) {	/* Wipe bottom pad */
-		ij0 = n_pr_item * GMT_IJ (G->header, G->header->my - G->header->pad[YLO], 0);	/* Index of start of bottom pad */
-		GMT_memset (&(G->data[ij0]), n_items * G->header->pad[YLO], float);
+		ij0 = GMT_IJ (G->header, G->header->my - G->header->pad[YLO], 0);	/* Index of start of bottom pad */
+		GMT_memset (&(G->data[ij0]), G->header->mx * G->header->pad[YLO], float);
 	}
 	if (G->header->pad[XLO] == 0 && G->header->pad[XHI] == 0) return;	/* Nothing to do */
 	for (row = G->header->pad[YHI]; row < G->header->my - G->header->pad[YLO]; row++) {	/* Wipe left and right pad which is trickier */
-		ij0 = n_pr_item * GMT_IJ (G->header, row, 0);	/* Index of this row's left column (1st entry in west pad) */
-		if (G->header->pad[XLO]) GMT_memset (&(G->data[ij0]), n_pr_item * G->header->pad[XLO], float);
-		ij0 += n_pr_item * (G->header->mx - G->header->pad[XHI]);	/* Start of this rows east pad's 1st column */
-		if (G->header->pad[XHI]) GMT_memset (&(G->data[ij0]), n_pr_item * G->header->pad[XHI], float);
+		ij0 = GMT_IJ (G->header, row, 0);	/* Index of this row's left column (1st entry in west pad) */
+		if (G->header->pad[XLO]) GMT_memset (&(G->data[ij0]), G->header->pad[XLO], float);
+		ij0 += (G->header->mx - G->header->pad[XHI]);	/* Start of this rows east pad's 1st column */
+		if (G->header->pad[XHI]) GMT_memset (&(G->data[ij0]), G->header->pad[XHI], float);
+	}
+}
+
+void grd_pad_off_sub (struct GMT_GRID *G, float *data)
+{
+	uint64_t ijp, ij0;
+	unsigned int row;
+	for (row = 0; row < G->header->ny; row++) {
+		ijp = GMT_IJP (G->header, row, 0);	/* Index of start of this row's first column in padded grid  */
+		ij0 = GMT_IJ0 (G->header, row, 0);	/* Index of start of this row's first column in unpadded grid */
+		GMT_memcpy (&(data[ij0]), &(data[ijp]), G->header->nx, float);	/* Only copy the nx data values */
 	}
 }
 
@@ -1708,26 +1797,40 @@ void GMT_grd_pad_off (struct GMT_CTRL *C, struct GMT_GRID *G)
 	 * we set it to zero just in case.
 	 * If pad is zero then we do nothing.
 	 */
-	uint64_t ijp, ij0;
-	unsigned int row;
-	size_t n_pr_item, n_items;
-	n_pr_item = (G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) ? 2 : 1;	/* For complex there are two floats per node */
-	n_items = n_pr_item * G->header->nx;
-
-	if (!GMT_grd_pad_status (C, G->header, NULL)) return;	/* No pad so nothing to do */
-	/* Here, G has a pad which we need to eliminate */
-	for (row = 0; row < G->header->ny; row++) {
-		ijp = n_pr_item * GMT_IJP (G->header, row, 0);	/* Index of start of this row's first column in padded grid  */
-		ij0 = n_pr_item * GMT_IJ0 (G->header, row, 0);	/* Index of start of this row's first column in unpadded grid */
-		GMT_memcpy (&(G->data[ij0]), &(G->data[ijp]), n_items, float);	/* Only copy the nx data values */
+	bool complex;
+	uint64_t nm;
+	if (G->header->arrangement == GMT_GRID_IS_INTERLEAVED) {
+		GMT_Report (C->parent, GMT_MSG_NORMAL, "Calling GMT_grd_pad_off on interleaved complex grid! Programming error?\n");
+		return;
 	}
-	if (G->header->size > (n_pr_item * G->header->nm)) {	/* Just wipe the remaineder of array to be sure */
-		size_t n_to_cleen = G->header->size - n_pr_item * G->header->nm;
-		ij0 += n_items;	/* 1st position after last row */
-		GMT_memset (&(G->data[ij0]), n_to_cleen, float);
+	if (!GMT_grd_pad_status (C, G->header, NULL)) return;	/* No pad so nothing to do */
+
+	/* Here, G has a pad which we need to eliminate */
+	complex = (G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK);
+	if (!complex || (G->header->complex_mode & GMT_GRID_IS_COMPLEX_REAL))
+		grd_pad_off_sub (G, G->data);	/* Remove pad around real component only or entire normal grid */
+	if (complex && (G->header->complex_mode & GMT_GRID_IS_COMPLEX_IMAG))
+		grd_pad_off_sub (G, &G->data[G->header->size/2]);	/* Remove pad around imaginary component */
+	nm = G->header->nm;	/* Number of nodes in one component */
+	if (complex) nm *= 2;	/* But there might be two */
+	if (G->header->size > nm) {	/* Just wipe the remaineder of the array to be sure */
+		size_t n_to_cleen = G->header->size - nm;
+		GMT_memset (&(G->data[nm]), n_to_cleen, float);	/* nm is 1st position after last row */
 	}
 	GMT_memset (G->header->pad, 4, int);	/* Pad is no longer active */
 	GMT_set_grddim (C, G->header);		/* Update all dimensions to reflect the padding */
+}
+
+void grd_pad_on_sub (struct GMT_CTRL *C, struct GMT_GRID *G, struct GMT_GRID_HEADER *h_old, float *data)
+{
+	unsigned int row;
+	uint64_t ij_new, ij_old;
+	for (row = G->header->ny; row > 0; row--) {
+		ij_new = GMT_IJP (G->header, row-1, 0);	/* Index of start of this row's first column in new padded grid  */
+		ij_old = GMT_IJP (h_old, row-1, 0);	/* Index of start of this row's first column in old padded grid */
+		GMT_memcpy (&(G->data[ij_new]), &(G->data[ij_old]), G->header->nx, float);
+	}
+	gmt_grd_wipe_pad (C, G);	/* Set pad areas to 0 */
 }
 
 void GMT_grd_pad_on (struct GMT_CTRL *C, struct GMT_GRID *G, unsigned int *pad)
@@ -1735,19 +1838,23 @@ void GMT_grd_pad_on (struct GMT_CTRL *C, struct GMT_GRID *G, unsigned int *pad)
 	 * We check that the grid size can handle this and allocate more space if needed.
 	 * If pad matches the grid's pad then we do nothing.
 	 */
-	uint64_t ij_new, ij_old;
-	unsigned int row;
-	size_t size, n_items, n_pr_item;
+	bool complex;
+	size_t size;
 	struct GMT_GRID_HEADER *h = NULL;
 
+	if (G->header->arrangement == GMT_GRID_IS_INTERLEAVED) {
+		GMT_Report (C->parent, GMT_MSG_NORMAL, "Calling GMT_grd_pad_off on interleaved complex grid! Programming error?\n");
+		return;
+	}
 	if (GMT_grd_pad_status (C, G->header, pad)) return;	/* Already padded as requested so nothing to do */
 	if (pad[XLO] == 0 && pad[XHI] == 0 && pad[YLO] == 0 && pad[YHI] == 0) {	/* Just remove the existing pad entirely */
 		GMT_grd_pad_off (C, G);
 		return;
 	}
 	/* Here the pads differ (or G has no pad at all) */
-	n_pr_item = (G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) ? 2 : 1;	/* For complex there are two floats per node */
-	size = n_pr_item * gmt_grd_get_nxpad (G->header, pad) * gmt_grd_get_nypad (G->header, pad);
+	complex = (G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK);
+	size = gmt_grd_get_nxpad (G->header, pad) * gmt_grd_get_nypad (G->header, pad);	/* New array size after pad is added */
+	if (complex) size *= 2;	/* Twice the space for complex grids */
 	if (size > G->header->size) {	/* Must allocate more space, but since no realloc for aligned memory we must do it the hard way */
 		float *f = NULL;
 		GMT_Report (C->parent, GMT_MSG_VERBOSE, "Extend grid via copy onto larger grid\n");
@@ -1760,43 +1867,53 @@ void GMT_grd_pad_on (struct GMT_CTRL *C, struct GMT_GRID *G, unsigned int *pad)
 	/* Because G may have a pad that is nonzero (but different from pad) we need a different header structure in the macros below */
 	h = GMT_duplicate_gridheader (C, G->header);
 
-	GMT_grd_setpad (C, G->header, pad);		/* Pad is now active and set to specified dimensions */
-	GMT_set_grddim (C, G->header);			/* Update all dimensions to reflect the padding */
-	n_items = n_pr_item * G->header->nx;		/* Number of 4-byte floats along each row */
-	for (row = G->header->ny; row > 0; row--) {
-		ij_new = n_pr_item * GMT_IJP (G->header, row-1, 0);	/* Index of start of this row's first column in new padded grid  */
-		ij_old = n_pr_item * GMT_IJP (h, row-1, 0);		/* Index of start of this row's first column in old padded grid */
-		GMT_memcpy (&(G->data[ij_new]), &(G->data[ij_old]), n_items, float);
-	}
-	gmt_grd_wipe_pad (C, G);	/* Set pad areas to 0 */
+	GMT_grd_setpad (C, G->header, pad);	/* Pad is now active and set to specified dimensions */
+	GMT_set_grddim (C, G->header);		/* Update all dimensions to reflect the padding */
+	if (complex && (G->header->complex_mode & GMT_GRID_IS_COMPLEX_IMAG))
+		grd_pad_on_sub (C, G, h, &G->data[size/2]);	/* Add pad around imaginary component first */
+	if (!complex || (G->header->complex_mode & GMT_GRID_IS_COMPLEX_REAL))
+		grd_pad_on_sub (C, G, h, G->data);	/* Add pad around real component */
 	GMT_free (C, h);	/* Done with this header */
+}
+
+void grd_pad_zero_sub (struct GMT_GRID *G, float *data)
+{
+	unsigned int row, col, nx1;
+	uint64_t ij_f, ij_l;
+
+	if (G->header->pad[YHI]) GMT_memset (data, G->header->pad[YHI] * G->header->mx, float);		/* Zero the top pad */
+	nx1 = G->header->nx - 1;	/* Last column */
+	GMT_row_loop (C, G, row) {
+		ij_f = GMT_IJP (G->header, row,   0);				/* Index of first column this row  */
+		ij_l = GMT_IJP (G->header, row, nx1);				/* Index of last column this row */
+		for (col = 1; col <= G->header->pad[XLO]; col++) data[ij_f-col] = 0.0;	/* Zero the left pad at this row */
+		for (col = 1; col <= G->header->pad[XHI]; col++) data[ij_l+col] = 0.0;	/* Zero the left pad at this row */
+	}
+	if (G->header->pad[YLO]) {
+		int pad = G->header->pad[XLO];
+		ij_f = GMT_IJP (G->header, G->header->ny, -pad);				/* Index of first column of bottom pad  */
+		GMT_memset (&(data[ij_f]), G->header->pad[YLO] * G->header->mx, float);	/* Zero the bottom pad */
+	}
 }
 
 void GMT_grd_pad_zero (struct GMT_CTRL *C, struct GMT_GRID *G)
 {	/* Sets all boundary row/col nodes to zero and sets
 	 * the header->BC to GMT_IS_NOTSET.
 	 */
-	unsigned int row, col, nx1;
-	uint64_t ij_f, ij_l;
-
-	if (G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) return;	/* Cannot work on complex grids */
+	bool complex;
+	if (G->header->arrangement == GMT_GRID_IS_INTERLEAVED) {
+		GMT_Report (C->parent, GMT_MSG_NORMAL, "Calling GMT_grd_pad_off on interleaved complex grid! Programming error?\n");
+		return;
+	}
 	if (!GMT_grd_pad_status (C, G->header, NULL)) return;	/* No pad so nothing to do */
 	if (G->header->BC[XLO] == GMT_BC_IS_NOTSET && G->header->BC[XHI] == GMT_BC_IS_NOTSET && G->header->BC[YLO] == GMT_BC_IS_NOTSET && G->header->BC[YHI] == GMT_BC_IS_NOTSET) return;	/* No BCs set so nothing to do */			/* No pad so nothing to do */
 	/* Here, G has a pad with BCs which we need to reset */
-	if (G->header->pad[YHI]) GMT_memset (G->data, G->header->pad[YHI] * G->header->mx, float);		/* Zero the top pad */
-	nx1 = G->header->nx - 1;	/* Last column */
-	GMT_row_loop (C, G, row) {
-		ij_f = GMT_IJP (G->header, row,   0);				/* Index of first column this row  */
-		ij_l = GMT_IJP (G->header, row, nx1);				/* Index of last column this row */
-		for (col = 1; col <= G->header->pad[XLO]; col++) G->data[ij_f-col] = 0.0;	/* Zero the left pad at this row */
-		for (col = 1; col <= G->header->pad[XHI]; col++) G->data[ij_l+col] = 0.0;	/* Zero the left pad at this row */
-	}
-	if (G->header->pad[YLO]) {
-		int pad = G->header->pad[XLO];
-		ij_f = GMT_IJP (G->header, G->header->ny, -pad);				/* Index of first column of bottom pad  */
-		GMT_memset (&(G->data[ij_f]), G->header->pad[YLO] * G->header->mx, float);	/* Zero the bottom pad */
-	}
-	GMT_memset (G->header->BC, 4, int);				/* BCs no longer set for this grid */
+	complex = (G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK);
+	if (!complex || (G->header->complex_mode & GMT_GRID_IS_COMPLEX_REAL))
+		grd_pad_zero_sub (G, G->data);
+	if (complex && (G->header->complex_mode & GMT_GRID_IS_COMPLEX_IMAG))
+		grd_pad_zero_sub (G, &G->data[G->header->size/2]);
+	GMT_memset (G->header->BC, 4U, int);	/* BCs no longer set for this grid */
 }
 
 struct GMT_GRID * GMT_create_grid (struct GMT_CTRL *C)
@@ -1988,133 +2105,158 @@ void GMT_grd_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, double xyz[2][
 	}
 }
 
-void GMT_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode, double *a)
+void GMT_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode, double *coeff)
 {
 	/* mode = 0 (GMT_FFT_LEAVE_TREND):  Do nothing.
-	   mode = 1 (GMT_FFT_REMOVE_MEAN):  Remove the mean value (returned via a[0])
-	   mode = 2 (GMT_FFT_REMOVE_MID):   Remove the mid value value (returned via a[0])
-	   mode = 3 (GMT_FFT_REMOVE_TREND): Remove the best-fitting plane by least squares (returned via a[0-2])
-	*/
+	 * mode = 1 (GMT_FFT_REMOVE_MEAN):  Remove the mean value (returned via a[0])
+	 * mode = 2 (GMT_FFT_REMOVE_MID):   Remove the mid value value (returned via a[0])
+	 * mode = 3 (GMT_FFT_REMOVE_TREND): Remove the best-fitting plane by least squares (returned via a[0-2])
+	 *
+	 * Note: The grid may be complex and contain real, imag, or both components.  The data should
+	 * be in serial layout so we may loop over the compoents and do our thing.  Only the real
+	 * components coefficients are returned.
+	 */
 
-	unsigned int col, row, one_or_zero;
-	uint64_t ij;
+	unsigned int col, row, one_or_zero, n_components = 1, start_component = 0, stop_component = 0, component;
+	uint64_t ij, offset;
+	bool complex = false;
 	double x_half_length, one_on_xhl, y_half_length, one_on_yhl;
-	double sumx2, sumy2, data_var_orig = 0.0, data_var = 0.0, var_redux, x, y, z;
-
-	GMT_memset (a, 3, double);
+	double sumx2, sumy2, data_var_orig = 0.0, data_var = 0.0, var_redux, x, y, z, a[3];
+	char *comp[2] = {"real", "imaginary"};
+	
+	GMT_memset (coeff, 3, double);
+	
 	if (mode == GMT_FFT_LEAVE_TREND) {	/* Do nothing */
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "No detrending selected\n");
 		return;
 	}
-	if (mode == GMT_FFT_REMOVE_MEAN) {	/* Remove mean */
-		for (row = 0; row < Grid->header->ny; row++) for (col = 0; col < Grid->header->nx; col++) {
-			z = Grid->data[GMT_IJPR(Grid->header,row,col)];	/* Index to real part of complex array elements */
-			a[0] += z;
-			data_var_orig += z * z;
-		}
-		a[0] /= Grid->header->nm;
-		for (row = 0; row < Grid->header->ny; row++) for (col = 0; col < Grid->header->nx; col++) {
-			ij = GMT_IJPR(Grid->header,row,col);
-			Grid->data[ij] -= (float)a[0];
-			z = Grid->data[ij];
-			data_var += z * z;
-		}
-		var_redux = 100.0 * (data_var_orig - data_var) / data_var_orig;
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Mean value removed: %.8g Variance reduction: %.2f\n", a[0], var_redux);
-		return;
+	
+	if (Grid->header->arrangement == GMT_GRID_IS_INTERLEAVED) {
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Demultiplexing complex grid before detrending can take place.\n");
+		GMT_grd_mux_demux (GMT, Grid->header, Grid->data, GMT_GRID_IS_SERIAL);
 	}
-	if (mode == GMT_FFT_REMOVE_MID) {	/* Remove mid value */
-		double zmin = DBL_MAX, zmax = -DBL_MAX;
-		for (row = 0; row < Grid->header->ny; row++) for (col = 0; col < Grid->header->nx; col++) {
-			ij = GMT_IJPR(Grid->header,row,col);	/* Index to real part of complex array elements */
-			z = Grid->data[ij];
-			data_var_orig += z * z;
-			if (z < zmin) zmin = z;
-			if (z > zmax) zmax = z;
-		}
-		a[0] = 0.5 * (zmin + zmax);	/* Mid value */
-		for (row = 0; row < Grid->header->ny; row++) for (col = 0; col < Grid->header->nx; col++) {
-			ij = GMT_IJPR(Grid->header,row,col);	/* Index to real part of complex array elements */
-			Grid->data[ij] -= (float)a[0];
-			z = Grid->data[ij];
-			data_var += z * z;
-		}
-		var_redux = 100.0 * (data_var_orig - data_var) / data_var_orig;
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Mid value removed: %.8g Variance reduction: %.2f\n", a[0], var_redux);
-		return;
-	}
-	
-	/* Here we wish to remove a LS plane */
-	
-	/* Let plane be z = a0 + a1 * x + a2 * y.  Choose the
-	   center of x,y coordinate system at the center of 
-	   the array.  This will make the Normal equations 
-	   matrix G'G diagonal, so solution is trivial.  Also,
-	   spend some multiplications on normalizing the 
-	   range of x,y into [-1,1], to avoid roundoff error.
-	 */
-	
-	one_or_zero = (Grid->header->registration == GMT_GRID_PIXEL_REG) ? 0 : 1;
-	x_half_length = 0.5 * (Grid->header->nx - one_or_zero);
-	one_on_xhl = 1.0 / x_half_length;
-	y_half_length = 0.5 * (Grid->header->ny - one_or_zero);
-	one_on_yhl = 1.0 / y_half_length;
 
-	sumx2 = sumy2 = data_var = 0.0;
+	if (Grid->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) {	/* Complex grid */
+		complex = true;
+		n_components = ((Grid->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) == GMT_GRID_IS_COMPLEX_MASK) ? 2 : 1;
+		start_component = (Grid->header->complex_mode & GMT_GRID_IS_COMPLEX_REAL) ? 0 : 1;
+		stop_component  = (Grid->header->complex_mode & GMT_GRID_IS_COMPLEX_IMAG) ? 1 : 0;
+	}
+	
+	for (component = start_component; component <= stop_component; component++) {	/* Loop over 1 or 2 components */
+		offset = component * Grid->header->size / 2;	/* offset to start of this component in grid */
+		GMT_memset (a, 3, double);
+		if (mode == GMT_FFT_REMOVE_MEAN) {	/* Remove mean */
+			for (row = 0; row < Grid->header->ny; row++) for (col = 0; col < Grid->header->nx; col++) {
+				ij = GMT_IJP (Grid->header,row,col) + offset;
+				z = Grid->data[ij];
+				a[0] += z;
+				data_var_orig += z * z;
+			}
+			a[0] /= Grid->header->nm;
+			for (row = 0; row < Grid->header->ny; row++) for (col = 0; col < Grid->header->nx; col++) {
+				ij = GMT_IJP (Grid->header,row,col) + offset;
+				Grid->data[ij] -= (float)a[0];
+				z = Grid->data[ij];
+				data_var += z * z;
+			}
+			var_redux = 100.0 * (data_var_orig - data_var) / data_var_orig;
+			if (complex)
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Mean value removed from %s component: %.8g Variance reduction: %.2f\n", comp[component], a[0], var_redux);
+			else
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Mean value removed: %.8g Variance reduction: %.2f\n", a[0], var_redux);
+		}
+		else if (mode == GMT_FFT_REMOVE_MID) {	/* Remove mid value */
+			double zmin = DBL_MAX, zmax = -DBL_MAX;
+			for (row = 0; row < Grid->header->ny; row++) for (col = 0; col < Grid->header->nx; col++) {
+				ij = GMT_IJP (Grid->header,row,col) + offset;
+				z = Grid->data[ij];
+				data_var_orig += z * z;
+				if (z < zmin) zmin = z;
+				if (z > zmax) zmax = z;
+			}
+			a[0] = 0.5 * (zmin + zmax);	/* Mid value */
+			for (row = 0; row < Grid->header->ny; row++) for (col = 0; col < Grid->header->nx; col++) {
+				ij = GMT_IJP (Grid->header,row,col) + offset;
+				Grid->data[ij] -= (float)a[0];
+				z = Grid->data[ij];
+				data_var += z * z;
+			}
+			var_redux = 100.0 * (data_var_orig - data_var) / data_var_orig;
+			if (complex)
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Mid value removed from %s component: %.8g Variance reduction: %.2f\n", comp[component], a[0], var_redux);
+			else
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Mid value removed: %.8g Variance reduction: %.2f\n", a[0], var_redux);
+		}
+		else {	/* Here we wish to remove a LS plane */
+	
+			/* Let plane be z = a0 + a1 * x + a2 * y.  Choose the
+			   center of x,y coordinate system at the center of 
+			   the array.  This will make the Normal equations 
+			   matrix G'G diagonal, so solution is trivial.  Also,
+			   spend some multiplications on normalizing the 
+			   range of x,y into [-1,1], to avoid roundoff error.
+			 */
+	
+			one_or_zero = (Grid->header->registration == GMT_GRID_PIXEL_REG) ? 0 : 1;
+			x_half_length = 0.5 * (Grid->header->nx - one_or_zero);
+			one_on_xhl = 1.0 / x_half_length;
+			y_half_length = 0.5 * (Grid->header->ny - one_or_zero);
+			one_on_yhl = 1.0 / y_half_length;
 
-	for (row = 0; row < Grid->header->ny; row++) {
-		y = one_on_yhl * (row - y_half_length);
-		for (col = 0; col < Grid->header->nx; col++) {
-			x = one_on_xhl * (col - x_half_length);
-			z = Grid->data[GMT_IJPR(Grid->header,row,col)];
-			data_var_orig += z * z;
-			a[0] += z;
-			a[1] += z*x;
-			a[2] += z*y;
-			sumx2 += x*x;
-			sumy2 += y*y;
+			sumx2 = sumy2 = data_var = 0.0;
+
+			for (row = 0; row < Grid->header->ny; row++) {
+				y = one_on_yhl * (row - y_half_length);
+				for (col = 0; col < Grid->header->nx; col++) {
+					x = one_on_xhl * (col - x_half_length);
+					ij = GMT_IJP (Grid->header,row,col) + offset;
+					z = Grid->data[ij];
+					data_var_orig += z * z;
+					a[0] += z;
+					a[1] += z*x;
+					a[2] += z*y;
+					sumx2 += x*x;
+					sumy2 += y*y;
+				}
+			}
+			a[0] /= Grid->header->nm;
+			a[1] /= sumx2;
+			a[2] /= sumy2;
+			for (row = 0; row < Grid->header->ny; row++) {
+				y = one_on_yhl * (row - y_half_length);
+				for (col = 0; col < Grid->header->nx; col++) {
+					ij = GMT_IJP (Grid->header,row,col) + offset;
+					x = one_on_xhl * (col - x_half_length);
+					Grid->data[ij] -= (float)(a[0] + a[1]*x + a[2]*y);
+					data_var += (Grid->data[ij] * Grid->data[ij]);
+				}
+			}
+			var_redux = 100.0 * (data_var_orig - data_var) / data_var_orig;
+			data_var = sqrt (data_var / (Grid->header->nm - 1));
+			/* Rescale a1,a2 into user's units, in case useful later */
+			a[1] *= (2.0 / (Grid->header->wesn[XHI] - Grid->header->wesn[XLO]));
+			a[2] *= (2.0 / (Grid->header->wesn[YHI] - Grid->header->wesn[YLO]));
+			if (complex)
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Plane removed from %s component.  Mean, S.D., Dx, Dy: %.8g\t%.8g\t%.8g\t%.8g Variance reduction: %.2f\n", comp[component], a[0], data_var, a[1], a[2], var_redux);
+			else
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Plane removed.  Mean, S.D., Dx, Dy: %.8g\t%.8g\t%.8g\t%.8g Variance reduction: %.2f\n", a[0], data_var, a[1], a[2], var_redux);
 		}
+		if (component == 0) GMT_memcpy (coeff, a, 3, double);	/* Return the real component results */
 	}
-	a[0] /= Grid->header->nm;
-	a[1] /= sumx2;
-	a[2] /= sumy2;
-	for (row = 0; row < Grid->header->ny; row++) {
-		y = one_on_yhl * (row - y_half_length);
-		for (col = 0; col < Grid->header->nx; col++) {
-			ij = GMT_IJPR (Grid->header, row, col);
-			x = one_on_xhl * (col - x_half_length);
-			Grid->data[ij] -= (float)(a[0] + a[1]*x + a[2]*y);
-			data_var += (Grid->data[ij] * Grid->data[ij]);
-		}
-	}
-	var_redux = 100.0 * (data_var_orig - data_var) / data_var_orig;
-	data_var = sqrt(data_var / (Grid->header->nx*Grid->header->ny - 1));
-	/* Rescale a1,a2 into user's units, in case useful later */
-	a[1] *= (2.0/(Grid->header->wesn[XHI] - Grid->header->wesn[XLO]));
-	a[2] *= (2.0/(Grid->header->wesn[YHI] - Grid->header->wesn[YLO]));
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Plane removed.  Mean, S.D., Dx, Dy: %.8g\t%.8g\t%.8g\t%.8g Variance reduction: %.2f\n", a[0], data_var, a[1], a[2], var_redux);
 }
 
-bool GMT_init_complex (unsigned int complex_mode, unsigned int *inc, unsigned int *off)
+bool GMT_init_complex (struct GMT_GRID_HEADER *header, unsigned int complex_mode, uint64_t *imag_offset)
 {	/* Sets complex-related parameters based on the input complex_mode variable:
 	 * If complex_mode & GMT_GRID_NO_HEADER then we do NOT want to write a header [output only; only some formats]
-	 * complex_mode & GMT_GRID_IS_COMPLEX_REAL means get/put real component of complex array
-	 * complex_mode & GMT_GRID_IS_COMPLEX_IMAG means get/put imag component of complex array
-	 * otherwise we have real data (GMT_GRID_IS_REAL).
-	 * true is returned if we wish to write the grid header (this is normally true).
-	 * Here, *inc is initialized to 1|2 and *off initialized to 0|1.
+	 * If grid is the imaginary components of a complex grid then we compute the offset
+	 * from the start of the complex array where the first imaginary value goes, using the serial arrangement.
 	 */
 
-	bool do_header = !(complex_mode & GMT_GRID_NO_HEADER);	/* Want no header if that bit is set */
-	if (complex_mode & GMT_GRID_IS_COMPLEX_REAL) {		/* Get/put real component of complex array */
-		*inc = 2; *off = 0;
-	}
-	else if (complex_mode & GMT_GRID_IS_COMPLEX_IMAG) {	/* Get/put imag component of complex array */
-		*inc = 2; *off = 1;
-	}
-	else {							/* Normal grid */
-		*inc = 1; *off = 0;
-	}
+	bool do_header = !(complex_mode & GMT_GRID_NO_HEADER);	/* Want no header if this bit is set */
+	/* Imaginary components are stored after the real components if complex */
+	*imag_offset = (complex_mode & GMT_GRID_IS_COMPLEX_IMAG) ? header->size / 2ULL : 0ULL;
+	
 	return (do_header);
 }
 

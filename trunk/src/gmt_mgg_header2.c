@@ -261,9 +261,9 @@ int GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 	float *tFloat = NULL;
 	bool piping = false, swap_all = false, is_float = false;
 	int j, first_col, last_col, first_row, last_row;
-	unsigned int width_in, height_in, i_0_out, inc, off;
+	unsigned int width_in, height_in, i_0_out;
 	unsigned int i, width_out, *actual_col = NULL;
-	uint64_t kk, ij, j2;
+	uint64_t kk, ij, j2, imag_offset;
 	off_t long_offset;	/* For fseek only */
 	size_t n_expected;	/* Items in one row */
 	size_t size;		/* Item size */
@@ -285,13 +285,11 @@ int GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 	is_float = (mggHeader.numType < 0 && abs (mggHeader.numType) == (int)sizeof (float));	/* Float file */
 	
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
-	(void)GMT_init_complex (complex_mode, &inc, &off);	/* Set stride and offset if complex */
+	(void)GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 			
 	width_out = width_in;		/* Width of output array */
 	if (pad[XLO] > 0) width_out += pad[XLO];
 	if (pad[XHI] > 0) width_out += pad[XHI];
-	width_out *= inc;			/* Possibly doubled if complex_mode indicates complex data */
-	i_0_out = inc * pad[XLO] + off;		/* Edge offset in output */
 
 	n_expected = header->nx;
 	tLong  = GMT_memory (C, NULL, n_expected, int);
@@ -300,7 +298,7 @@ int GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 	
 	if (piping)	{ /* Skip data by reading it */
 		for (j = 0; j < first_row; j++) if (GMT_fread ( tLong, size, n_expected, fp) != n_expected) return (GMT_GRDIO_READ_FAILED);
-	} else { /* Simply seek by it */
+	} else if (first_row) { /* Simply seek by it */
 		long_offset = (off_t)first_row * (off_t)n_expected * size;
 		if (fseek (fp, long_offset, 1)) return (GMT_GRDIO_SEEK_FAILED);
 	}
@@ -308,9 +306,9 @@ int GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 	for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
 		if (GMT_fread ( tLong, size, n_expected, fp) != n_expected) return (GMT_GRDIO_READ_FAILED);
-		ij = (j2 + pad[YHI]) * width_out + i_0_out;
+		ij = imag_offset + (j2 + pad[YHI]) * width_out + pad[XLO];
 		for (i = 0; i < width_in; i++) {
-			kk = ij + i * inc;
+			kk = ij + i;
 			if (mggHeader.numType == sizeof (int)) {
 				if (swap_all) gmt_swap_long (&tLong[actual_col[i]]);
 				if (tLong[actual_col[i]] == mggHeader.nanValue) grid[kk] = C->session.f_NaN;
@@ -363,9 +361,9 @@ int GMT_mgg2_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, floa
 	MGG_GRID_HEADER_2 mggHeader;
 	bool is_float = false, check;
 	int i, j, err;
-	unsigned int i2, ju, iu, width_out, height_out, inc, off, width_in, *actual_col = NULL;
+	unsigned int i2, ju, iu, width_out, height_out, width_in, *actual_col = NULL;
 	int first_col, last_col, first_row, last_row;
-	uint64_t ij, kk, j2;
+	uint64_t ij, kk, j2, imag_offset;
 	size_t size;
 	
 	int *tLong = NULL;
@@ -382,7 +380,7 @@ int GMT_mgg2_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, floa
 	check = !GMT_is_dnan (header->nan_value);
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
-	(void)GMT_init_complex (complex_mode, &inc, &off);	/* Set stride and offset if complex */
+	(void)GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 	
 	width_in = width_out;		/* Physical width of input array */
 	if (pad[XLO] > 0) width_in += pad[XLO];
@@ -394,14 +392,15 @@ int GMT_mgg2_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, floa
 	
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 	for (j = first_row, j2 = pad[YHI]; j <= last_row; j++, j2++) {
+		ij = imag_offset + j2 * width_in;
 		for (i = first_col, i2 = pad[XLO]; i <= last_col; i++, i2++) {
-			ij = (j2 * width_in + i2) * inc + off;
-			if (GMT_is_fnan (grid[ij])) {
-				if (check) grid[ij] = (float)header->nan_value;
+			kk = ij + i2;
+			if (GMT_is_fnan (grid[kk])) {
+				if (check) grid[kk] = (float)header->nan_value;
 			}
 			else {
-				header->z_min = MIN (header->z_min, (double)grid[ij]);
-				header->z_max = MAX (header->z_max, (double)grid[ij]);
+				header->z_min = MIN (header->z_min, (double)grid[kk]);
+				header->z_max = MAX (header->z_max, (double)grid[kk]);
 			}
 		}
 	}
@@ -417,9 +416,9 @@ int GMT_mgg2_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, floa
 	i2 = first_col + pad[XLO];
 	size = abs (mggHeader.numType);
 	for (ju = 0, j2 = first_row + pad[YHI]; ju < height_out; ju++, j2++) {
-		ij = j2 * width_in + i2;
+		ij = imag_offset + j2 * width_in + i2;
 		for (iu = 0; iu < width_out; iu++) {
-			kk = inc * (ij+actual_col[iu]) + off;
+			kk = ij+actual_col[iu];
 			if (GMT_is_fnan (grid[kk])) {
 				if (mggHeader.numType == sizeof (int))       tLong[iu]  = mggHeader.nanValue;
 				else if (is_float) tFloat[iu]  = (float)mggHeader.nanValue;

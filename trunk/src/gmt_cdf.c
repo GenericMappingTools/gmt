@@ -219,9 +219,9 @@ int GMT_cdf_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float 
 	 * grid:	array with final grid
 	 * wesn:	Sub-region to extract  [Use entire file if 0,0,0,0]
 	 * padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively
-	 * complex_mode:	&1 | &2 if complex array is to hold real (1) and imaginary (2) parts (otherwise read as real only)
-	 *		Note: The file has only real values, we simply allow space in the complex array
-	 *		for real and imaginary parts when processed by grdfft etc.
+	/* complex_mode:	&4 | &8 if complex array is to hold real (4) and imaginary (8) parts (otherwise read as real only) */
+	/*		Note: The file has only real values, we simply allow space in the complex array */
+	/*		for real and imaginary parts when processed by grdfft etc.
 	 *
 	 * Reads a subset of a grid file and optionally pads the array with extra rows and columns
 	 * header values for nx and ny are reset to reflect the dimensions of the logical array,
@@ -233,20 +233,17 @@ int GMT_cdf_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float 
 	bool check;
 	int j, err;
 	int first_col, last_col, first_row, last_row;
-	unsigned int i, width_in, height_in, i_0_out, inc, off;
+	unsigned int i, width_in, height_in;
 	unsigned int width_out, *actual_col = NULL;
-	uint64_t ij, kk;
+	uint64_t ij, kk, imag_offset;
 	float *tmp = NULL;
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
-	(void)GMT_init_complex (complex_mode, &inc, &off);	/* Set stride and offset if complex */
+	(void)GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	width_out = width_in;		/* Width of output array */
 	if (pad[XLO] > 0) width_out += pad[XLO];
 	if (pad[XHI] > 0) width_out += pad[XHI];
-
-	width_out *= inc;			/* Possibly twice is complex is true */
-	i_0_out = inc * pad[XLO] + off;		/* Edge offset in output */
 
 	/* Open the NetCDF file */
 
@@ -260,7 +257,7 @@ int GMT_cdf_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float 
 	tmp = GMT_memory (C, NULL, header->nx, float);
 
 	edge[0] = header->nx;
-	ij = pad[YHI] * width_out + i_0_out;
+	ij = imag_offset + pad[YHI] * width_out + pad[XLO];
 	header->z_min =  DBL_MAX;
 	header->z_max = -DBL_MAX;
 
@@ -268,7 +265,7 @@ int GMT_cdf_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float 
 		start[0] = j * header->nx;
 		GMT_err_trap (nc_get_vara_float (ncid, header->z_id, start, edge, tmp));	/* Get one row */
 		for (i = 0; i < width_in; i++) {	/* Check for and handle NaN proxies */
-			kk = ij+i*inc;
+			kk = ij+i;
 			grid[kk] = tmp[actual_col[i]];
 			if (check && grid[kk] == (float)header->nan_value) /* cast to avoid round-off errors */
 				grid[kk] = C->session.f_NaN;
@@ -303,9 +300,9 @@ int GMT_cdf_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 	int ncid, old_fill_mode, *tmp_i = NULL;
 	int err;
 	unsigned int i, *actual_col = NULL;
-	unsigned int j, width_out, height_out, width_in, inc = 1, off = 0;
+	unsigned int j, width_out, height_out, width_in;
 	int first_col, last_col, first_row, last_row;
-	uint64_t ij, nr_oor = 0; 
+	uint64_t ij, nr_oor = 0, imag_offset; 
 	float *tmp_f = NULL;
 	double limit[2] = {-FLT_MAX, FLT_MAX}, value;
 	nc_type z_type;
@@ -334,7 +331,7 @@ int GMT_cdf_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 	}
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
-	(void)GMT_init_complex (complex_mode, &inc, &off);	/* Set stride and offset if complex */
+	(void)GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	width_in = width_out;		/* Physical width of input array */
 	if (pad[XLO] > 0) width_in += pad[XLO];
@@ -365,7 +362,7 @@ int GMT_cdf_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 		for (j = 0; j < height_out; j++, ij += width_in) {
 			start[0] = j * width_out;
 			for (i = 0; i < width_out; i++) {
-				value = grid[inc*(ij+actual_col[i])+off];
+				value = grid[ij+actual_col[i]+imag_offset];
 				if (GMT_is_dnan (value))
 					tmp_f[i] = (float)header->nan_value;
 				else if (fabs(value) > FLT_MAX) {
@@ -387,7 +384,7 @@ int GMT_cdf_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 		for (j = 0; j < height_out; j++, ij += width_in) {
 			start[0] = j * width_out;
 			for (i = 0; i < width_out; i++) {
-				value = grid[inc*(ij+actual_col[i])+off];
+				value = grid[ij+actual_col[i]+imag_offset];
 				if (GMT_is_dnan (value))
 					tmp_i[i] = lrint (header->nan_value);
 				else if (value <= limit[0] || value >= limit[1]) {
