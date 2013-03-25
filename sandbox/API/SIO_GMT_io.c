@@ -12,6 +12,24 @@
 *   Revised for GMT5.x March 20, 2013    - Paul Wessel                  *
 ************************************************************************/
 
+/* Sandwell/SIO-specific front end to generic F77 GMT grid i/o functions:
+
+1. GMT_F77_readgrdinfo_ (unsigned int dim[], double limit[], double inc[], \
+      char *title, char *remark, char *file)
+   When returning, dim[2] holds the registration (0 = gridline, 1 = pixel).
+   limit[4-5] holds zmin/zmax.
+
+2. GMT_F77_readgrd_ (float *array, unsigned int dim[], double limit[], \
+      double inc[], char *title, char *remark, char *file)
+   If dim[2] is 1 we allocate the array, otherwise we assume it has space
+   When returning, dim[2] holds the registration (0 = gridline, 1 = pixel).
+   limit[4-5] holds zmin/zmax.
+
+3. GMT_F77_writegrd_ (float *array, unsigned int dim[], double limit[], \
+      double inc[], char *title, char *remark, char *file)
+   When called, dim[2] holds the registration (0 = gridline, 1 = pixel).
+*/
+
 # include "gmt.h"
 # include <math.h>
 # include <string.h>
@@ -19,7 +37,8 @@
 char    *argsav[2000]; /* a hack to make gips stuff link */
 
 /************************************************************************/
-int readgrd_(float *rdat, int *nx, int *ny, double *rlt0, double *rln0, double *dlt, double *dln, double *rdum, char *title, char *filein)
+int readgrd_(float *rdat, int *nx, int *ny, double *rlt0, double *rln0, \
+    double *dlt, double *dln, double *rdum, char *title, char *filein)
 {
 	/* dat	  = real array for input
 	 * nx	  = number of x points
@@ -66,7 +85,9 @@ int readgrd_(float *rdat, int *nx, int *ny, double *rlt0, double *rln0, double *
 	return EXIT_SUCCESS;
 }
 /************************************************************************/
-int writegrd_(float *rdat, int *nx, int *ny, double *rlt0, double *rln0, double *dlt, double *dln, double *rland, double *rdum, char *title, char *fileout)
+int writegrd_(float *rdat, int *nx, int *ny, double *rlt0, double *rln0, \
+    double *dlt, double *dln, double *rland, double *rdum, char *title, \
+    char *fileout)
 {
 	/* dat	   = real array for output
 	 * nx	   = number of x points
@@ -109,10 +130,12 @@ int writegrd_(float *rdat, int *nx, int *ny, double *rlt0, double *rln0, double 
 	
 	nm = ((uint64_t)dim[GMT_X]) * ((uint64_t)dim[GMT_Y]);
 	for (node = 0; node < nm; node++) {
-		if ((rdat[node] == *rdum) || (rdat[node] == *rland)) rdat[node] = (float)NAN;
+		if ((rdat[node] == *rdum) || (rdat[node] == *rland))
+			rdat[node] = (float)NAN;
 	}
 	
-	if (GMT_F77_writegrd_ (rdat, dim, wesn, inc, title, "", fileout)) return EXIT_FAILURE;
+	if (GMT_F77_writegrd_ (rdat, dim, wesn, inc, title, "", fileout))
+		return EXIT_FAILURE;
 
 	return EXIT_SUCCESS;
 }
