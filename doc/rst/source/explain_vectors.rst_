@@ -21,9 +21,15 @@ justification of the vector:
     their attributes scaled by length/\ *norm* [arrow attributes remains
     invariant to length].
 
+    **+o**\ *plon*\ /\ *plat* specifies the oblique pole for the great or
+    small circles.  Only needed for great circles if **+q** is given.
+
     **+p**\ [-][*pen*\ ] sets the vector pen attributes. If *pen* has a
     leading - then the head outline is not drawn. [Default pen is used, and
     head outline is drawn]
+
+    **+q** means the input *angle*, *length* is instead the *start* and *stop*
+    opening angles of the arc segment relative to the point.
 
     **+r** draws half-arrows, using only the right side [both].
 
