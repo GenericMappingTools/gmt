@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-03-25	pwessel
+	* greenspline.c:	Enhanced -Cv option to set desired level of variance explained.
+
 2013-03-23	pwessel
 	* gmt_customio.c:	The magic recognition of native bit grids failed due to bad math.
 				Wrote wrong number of bytes per record for odd-width Sun rasterfiles

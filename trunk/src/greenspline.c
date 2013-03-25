@@ -56,8 +56,9 @@ struct GREENSPLINE_CTRL {
 		unsigned int mode;	/* 0 = azimuths, 1 = directions, 2 = dx,dy components, 3 = dx, dy, dz components */
 		char *file;
 	} A	;
-	struct C {	/* -C<cutoff> */
+	struct C {	/* -C[v]<cutoff>[/<file>] */
 		bool active;
+		unsigned int mode;
 		double value;
 		char *file;
 	} C;
@@ -169,7 +170,7 @@ int GMT_greenspline_usage (struct GMTAPI_CTRL *API, int level)
 {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: greenspline [<table>] -G<outfile> [-A[<format>,]<gradientfile>] [-R<xmin>/<xmax[/<ymin>/<ymax>[/<zmin>/<zmax>]]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I<dx>[/<dy>[/<dz>]] [-C<cut>[/<file>]] [-D<mode>] [%s] [-L] [-N<nodes>]\n", GMT_I_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I<dx>[/<dy>[/<dz>]] [-C[v]<cut>[/<file>]] [-D<mode>] [%s] [-L] [-N<nodes>]\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Q<az>] [-Sc|t|r|p|q[<pars>]] [-T<maskgrid>] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
 	
@@ -192,6 +193,7 @@ int GMT_greenspline_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Solve by SVD and eliminate eigenvalues whose ratio to largest eigenvalue is less than <cut>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append /<filename> to save the eigenvalues to this file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   A negative cutoff will stop execution after saving the eigenvalues.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Cv to select eigenvalues needed to explain <cut> %% of data variance.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses Gauss-Jordan elimination to solve the linear system]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Distance flag determines how we calculate distances between (x,y) points:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Options 0 apples to Cartesian 1-D spline interpolation.\n");
@@ -318,13 +320,14 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 				break;
 			case 'C':	/* Solve by SVD */
 				Ctrl->C.active = true;
+				if (opt->arg[0] == 'v') Ctrl->C.mode = 1;
 				if (strchr (opt->arg, '/')) {
 					char tmp[GMT_BUFSIZ];
-					sscanf (opt->arg, "%lf/%s", &Ctrl->C.value, tmp);
+					sscanf (&opt->arg[Ctrl->C.mode], "%lf/%s", &Ctrl->C.value, tmp);
 					Ctrl->C.file = strdup (tmp);
 				}
 				else
-					Ctrl->C.value = atof (opt->arg);
+					Ctrl->C.value = atof (&opt->arg[Ctrl->C.mode]);
 				break;
 			case 'D':	/* Distance mode */
 				Ctrl->D.active = true;
@@ -464,6 +467,7 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || (dimension > 1 && Ctrl->I.inc[GMT_Y] <= 0.0) || (dimension == 3 && Ctrl->I.inc[GMT_Z] <= 0.0)), "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += GMT_check_condition (GMT, dimension == 2 && !Ctrl->N.active && !(Ctrl->G.active  || Ctrl->G.file), "Syntax error -G option: Must specify output grid file name\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->C.active && Ctrl->C.value < 0.0 && !Ctrl->C.file, "Syntax error -C option: Must specify file name for eigenvalues if cut < 0\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->C.active && Ctrl->C.mode && Ctrl->C.value > 100.0, "Syntax error -Cv option: Variance explain cannot exceed 100%%\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file, "Syntax error -T option: Must specify mask grid file name\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && dimension != 2, "Syntax error -T option: Only applies to 2-D gridding\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.active && !Ctrl->N.file, "Syntax error -N option: Must specify node file name\n");
@@ -1554,36 +1558,58 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 
 	if (Ctrl->C.active) {		/* Solve using svd decomposition */
 		int n_use, error;
-		double *v = NULL, *s = NULL, *b = NULL, eig_max = 0.0;
+		double *v = NULL, *s = NULL, *b = NULL, eig_max = 0.0, limit;
 		
-		GMT_Report (API, GMT_MSG_VERBOSE, "Solve linear equations by SVD ");
+		GMT_Report (API, GMT_MSG_VERBOSE, "Solve linear equations by SVD\n");
 	
 		v = GMT_memory (GMT, NULL, nm * nm, double);
 		s = GMT_memory (GMT, NULL, nm, double);
-		if ((error = (unsigned int)GMT_svdcmp (GMT, A, nm, nm, s, v))) Return (error);
+		if ((error = GMT_svdcmp (GMT, A, nm, nm, s, v))) Return (error);
 		if (Ctrl->C.file) {	/* Save the eigen-values for study */
-			char format[GMT_TEXT_LEN256];
 			double *eig = GMT_memory (GMT, NULL, nm, double);
+			uint64_t e_dim[4] = {1, 1, 2, nm};
+			struct GMT_DATASET *E = NULL;
 			GMT_memcpy (eig, s, nm, double);
-			GMT_Report (API, GMT_MSG_VERBOSE, "Eigen-value rations s(i)/s(0) saved to %s\n", Ctrl->C.file);
-			if ((fp = GMT_fopen (GMT, Ctrl->C.file, "w")) == NULL) {
-				GMT_Report (API, GMT_MSG_NORMAL, "Error creating file %s\n", Ctrl->C.file);
-				Return (EXIT_FAILURE);
+			if ((E = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, e_dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for saving eigenvalues\n");
+				Return (API->error);
 			}
-			sprintf (format, "%%d%s%s\n", GMT->current.setting.io_col_separator, GMT->current.setting.format_float_out);
+			
 			/* Sort eigenvalues into ascending order */
 			GMT_sort_array (GMT, eig, nm, GMT_DOUBLE);
 			eig_max = eig[nm-1];
-			for (i = 0, j = nm-1; i < nm; i++, j--) fprintf (fp, format, i, eig[j] / eig_max);
-			GMT_fclose (GMT, fp);
+			for (i = 0, j = nm-1; i < nm; i++, j--) {
+				E->table[0]->segment[0]->coord[GMT_X][i] = i + 1.0;	/* Let 1 be x-value of the first eigenvalue */
+				E->table[0]->segment[0]->coord[GMT_Y][i] = (Ctrl->C.mode == 1) ? eig[j] : eig[j] / eig_max;
+			}
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->C.file, E) != GMT_OK) {
+				Return (API->error);
+			}
+			if (Ctrl->C.mode == 1)
+				GMT_Report (API, GMT_MSG_VERBOSE, "Eigen-values saved to %s\n", Ctrl->C.file);
+			else
+				GMT_Report (API, GMT_MSG_VERBOSE, "Eigen-value ratios s(i)/s(0) saved to %s\n", Ctrl->C.file);
 			GMT_free (GMT, eig);
-			if (Ctrl->C.value < 0.0) Return (EXIT_SUCCESS);
+			if (Ctrl->C.value < 0.0) {	/* We are done */
+				for (p = 0; p < nm; p++) GMT_free (GMT, X[p]);
+				GMT_free (GMT, X);
+				GMT_free (GMT, s);
+				GMT_free (GMT, v);
+				GMT_free (GMT, A);
+				GMT_free (GMT, obs);
+				if (dimension == 2) GMT_free_grid (GMT, &Grid, true);
+				Return (EXIT_SUCCESS);
+			}
 		}
 		b = GMT_memory (GMT, NULL, nm, double);
 		GMT_memcpy (b, obs, nm, double);
-		n_use = GMT_solve_svd (GMT, A, nm, nm, v, s, b, 1, obs, Ctrl->C.value);
+		limit = Ctrl->C.value;
+		n_use = GMT_solve_svd (GMT, A, nm, nm, v, s, b, 1U, obs, &limit, Ctrl->C.mode);
 		if (n_use == -1) Return (EXIT_FAILURE);
-		GMT_Report (API, GMT_MSG_VERBOSE, "[%d of %" PRIu64 " eigen-values used]\n", n_use, nm);
+		if (Ctrl->C.mode == 1)
+			GMT_Report (API, GMT_MSG_VERBOSE, "[%d of %" PRIu64 " eigen-values used to explain %.1f %% of data variance]\n", n_use, nm, limit);
+		else
+			GMT_Report (API, GMT_MSG_VERBOSE, "[%d of %" PRIu64 " eigen-values used]\n", n_use, nm);
 			
 		GMT_free (GMT, s);
 		GMT_free (GMT, v);

@@ -396,7 +396,7 @@ EXTERN_MSC int GMT_jacobi (struct GMT_CTRL *C, double *a, unsigned int n, unsign
 EXTERN_MSC int GMT_gauss (struct GMT_CTRL *C, double *a, double *vec, unsigned int n, unsigned int nstore, bool itriag);
 EXTERN_MSC int GMT_gaussjordan (struct GMT_CTRL *C, double *a, unsigned int n, unsigned int ndim, double *b, unsigned int m, unsigned int mdim);
 EXTERN_MSC int GMT_svdcmp (struct GMT_CTRL *C, double *a, unsigned int m, unsigned int n, double *w, double *v);
-EXTERN_MSC int GMT_solve_svd (struct GMT_CTRL *C, double *u, unsigned int m, unsigned int n, double *v, double *w, double *b, unsigned int k, double *x, double cutoff);
+EXTERN_MSC int GMT_solve_svd (struct GMT_CTRL *C, double *u, unsigned int m, unsigned int n, double *v, double *w, double *b, unsigned int k, double *x, double *cutoff, unsigned int mode);
 EXTERN_MSC void GMT_polar_to_cart (struct GMT_CTRL *C, double r, double theta, double *a, bool degrees);
 EXTERN_MSC void GMT_cart_to_polar (struct GMT_CTRL *C, double *r, double *theta, double *a, bool degrees);
 
