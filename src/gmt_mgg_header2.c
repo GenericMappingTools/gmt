@@ -261,7 +261,7 @@ int GMT_mgg2_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 	float *tFloat = NULL;
 	bool piping = false, swap_all = false, is_float = false;
 	int j, first_col, last_col, first_row, last_row;
-	unsigned int width_in, height_in, i_0_out;
+	unsigned int width_in, height_in;
 	unsigned int i, width_out, *actual_col = NULL;
 	uint64_t kk, ij, j2, imag_offset;
 	off_t long_offset;	/* For fseek only */
