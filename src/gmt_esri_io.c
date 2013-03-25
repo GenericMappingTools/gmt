@@ -432,11 +432,11 @@ int GMT_esri_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 {
 	int error;
 	bool check, is_binary = false, swap = false;
-	unsigned int inc, off, col, height_in, ii, in_nx;
+	unsigned int col, height_in, ii, in_nx;
 	int row, first_col, last_col, first_row, last_row;
 	unsigned int row2, width_in, *actual_col = NULL;
-	unsigned int nBits = 32, i_0_out;
-	uint64_t ij, kk, width_out, n_left = 0;
+	unsigned int nBits = 32U;
+	uint64_t ij, kk, width_out, imag_offset, n_left = 0;
 	size_t n_expected;
 	char *r_mode = NULL;
 	int16_t *tmp16 = NULL;
@@ -463,12 +463,11 @@ int GMT_esri_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 		return (GMT_GRDIO_OPEN_FAILED);
 	
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
-	(void)GMT_init_complex (complex_mode, &inc, &off);	/* Set stride and offset if complex */
+	(void)GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	width_out = width_in;		/* Width of output array */
 	if (pad[XLO] > 0) width_out += pad[XLO];
 	if (pad[XHI] > 0) width_out += pad[XHI];
-	width_out *= inc;		/* Possibly twice if complex is true */
 	n_expected = header->nx;
 
 	if (nBits == 32)		/* Either an ascii file or ESRI .HDR with NBITS = 32, in which case we assume it's a file of floats */
@@ -481,8 +480,7 @@ int GMT_esri_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 		if (last_row - first_row + 1 != ny)		/* We have a sub-region */
 			if (fseek (fp, (off_t) (first_row * n_expected * 4UL * nBits / 32UL), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
 
-		i_0_out = inc * pad[XLO] + off;		/* Edge offset in output */
-		ij = pad[YHI] * width_out + i_0_out;
+		ij = imag_offset + pad[YHI] * width_out + pad[XLO];
 
 		for (row = first_row; row <= last_row; row++, ij += width_out) {
 			if (nBits == 32) {		/* Get one row */
@@ -491,7 +489,7 @@ int GMT_esri_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 			else {
 				if (GMT_fread (tmp16, 2, n_expected, fp) < n_expected) return (GMT_GRDIO_READ_FAILED);
 			}
-			for (col = 0, kk = ij; col < width_in; col++, kk+=inc) {
+			for (col = 0, kk = ij; col < width_in; col++, kk++) {
 				if (nBits == 32) {
 					if (swap) {
 						/* need to memcpy because casting from float* to uint32_t*
@@ -537,9 +535,9 @@ int GMT_esri_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 			col++;
 			if (col == in_nx) {	/* End of input row */
 				if (row >= first_row && row <= last_row) {	/* We want a piece (or all) of this row */
-					ij = GMT_IJP (header, row2, 0);	/* First out index for this row */
+					ij = imag_offset + GMT_IJP (header, row2, 0);	/* First out index for this row */
 					for (ii = 0; ii < width_in; ii++) {
-						kk = inc * (ij + ii) + off;
+						kk = ij + ii;
 						grid[kk] = (check && tmp[actual_col[ii]] == header->nan_value) ? C->session.f_NaN : tmp[actual_col[ii]];
 						if (GMT_is_fnan (grid[kk])) continue;
 						/* Update z_min, z_max */
@@ -572,10 +570,10 @@ int GMT_esri_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 
 int GMT_esri_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode, int floating)
 {
-	unsigned int inc, off, i2, j, j2, width_out, height_out, last;
+	unsigned int i2, j, j2, width_out, height_out, last;
 	int first_col, last_col, first_row, last_row;
 	unsigned int i, *actual_col = NULL;
-	uint64_t ij, width_in, kk;
+	uint64_t ij, width_in, kk, imag_offset;
 	char item[GMT_TEXT_LEN64], c[2] = {0, 0};
 	FILE *fp = NULL;
 
@@ -589,7 +587,7 @@ int GMT_esri_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, floa
 		write_esri_info (C, fp, header);
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
-	(void)GMT_init_complex (complex_mode, &inc, &off);	/* Set stride and offset if complex */
+	(void)GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	width_in = width_out;		/* Physical width of input array */
 	if (pad[XLO] > 0) width_in += pad[XLO];
@@ -602,11 +600,11 @@ int GMT_esri_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, floa
 	i2 = first_col + pad[XLO];
 	last = width_out - 1;
 	for (j = 0, j2 = first_row + pad[YHI]; j < height_out; j++, j2++) {
-		ij = j2 * width_in + i2;
+		ij = imag_offset + j2 * width_in + i2;
 		c[0] = '\t';
 		for (i = 0; i < width_out; i++) {
 			if (i == last) c[0] = '\n';
-			kk = inc * (ij+actual_col[i]) + off;
+			kk = ij+actual_col[i];
 			if (GMT_is_fnan (grid[kk]))
 				sprintf (item, "%ld%c", lrint (header->nan_value), c[0]);
 			else if (floating) {

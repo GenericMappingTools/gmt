@@ -546,24 +546,25 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		GMT_grd_init (GMT, Orig[k]->header, options, true);	/* Update the header */
 		if ((Orig[k] = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY | GMT_GRID_IS_COMPLEX_REAL, NULL, Ctrl->In.file[k], Orig[k])) == NULL)        /* Get data only */
 			Return (API->error);
-		if (Ctrl->A.active) {	/* Apply specified offset */
-			for (j = 0; j < Grid[0]->header->ny; j++)
-				for (i = 0; i < Grid[0]->header->nx; i++)
-					Grid[0]->data[GMT_IJPR(Grid[0]->header,j,i)] += (float)Ctrl->A.z_offset;
-		}
-
-		FFT_info[k] = GMT_FFT_Create (API, Orig[k], GMT_FFT_DIM, 0U, GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);
-	}
-	
-	K = FFT_info[0];	/* We only need one of these anyway; K is a shorthand */
-	
-	/* Note: If input grid(s) are read-only then we must duplicate them; otherwise Grid[k] points to Orig[k] */
-	for (k = 0; k < Ctrl->In.n_grids; k++)
+		/* Note: If input grid(s) are read-only then we must duplicate them; otherwise Grid[k] points to Orig[k] */
 		(void) GMT_set_outgrid (GMT, Ctrl->In.file[k], Orig[k], &Grid[k]);
+	}
 
 	/* From here we address the first grid via Grid[0] and the 2nd grid (if given) as Grid[1];
 	 * we are done with using the addresses Orig[k] directly. */
 
+	for (k = 0; k < Ctrl->In.n_grids; k++) {	/* Read, and check that no NaNs are present in either grid */
+		if (Ctrl->A.active) {	/* Apply specified offset */
+			for (j = 0; j < Grid[0]->header->ny; j++)
+				for (i = 0; i < Grid[0]->header->nx; i++)
+					Grid[0]->data[GMT_IJP(Grid[0]->header,j,i)] += (float)Ctrl->A.z_offset;
+		}
+
+		FFT_info[k] = GMT_FFT_Create (API, Grid[k], GMT_FFT_DIM, 0U, GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);
+	}
+	
+	K = FFT_info[0];	/* We only need one of these anyway; K is a shorthand */
+	
 	Ctrl->misc.z_level = fabs (FFT_info[0]->coeff[0]);	/* Need absolute value or level removed for uppward continuation */
 
 	if (Ctrl->I.active) {		/* Compute admittance or coherence from data and exit */
@@ -622,7 +623,9 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	}
 
 	GMT_memcpy (topo,   Grid[0]->data, Grid[0]->header->size, float);
-	GMT_memcpy (raised, Grid[0]->data, Grid[0]->header->size, float);
+	/* Manually interleave this copy of topo [and hence raised] since we will call FFT repeatedly */
+	GMT_grd_mux_demux (API->GMT, Grid[0]->header, topo, GMT_GRID_IS_INTERLEAVED);
+	GMT_memcpy (raised, topo, Grid[0]->header->size, float);
 	GMT_memset (Grid[0]->data, Grid[0]->header->size, float);
 	GMT_Report (API, GMT_MSG_VERBOSE, "Evaluating for term = 1");
 
@@ -630,7 +633,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 
 		if (n > 1) GMT_Report (API, GMT_MSG_VERBOSE, "-%d", n);
 
-		if (n > 1)
+		if (n > 1)	/* n == 1 was initialized via the GMT_memcpy */
 			for (m = 0; m < Grid[0]->header->size; m++)
 				raised[m] = (float)pow(topo[m], (double)n);
 

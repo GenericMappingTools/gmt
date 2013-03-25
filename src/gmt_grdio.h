@@ -151,5 +151,7 @@ EXTERN_MSC int GMT_grd_get_format (struct GMT_CTRL *C, char *file, struct GMT_GR
 EXTERN_MSC int GMT_grd_prep_io (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, double wesn[], unsigned int *width, unsigned int *height, int *first_col, int *last_col, int *first_row, int *last_row, unsigned int **index);
 EXTERN_MSC int GMT_update_grd_info (struct GMT_CTRL *C, char *file, struct GMT_GRID_HEADER *header);
 EXTERN_MSC void GMT_scale_and_offset_f (struct GMT_CTRL *C, float *data, size_t length, double scale, double offset);
+EXTERN_MSC void gmt_grd_layout (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h, float *grid, unsigned int complex_mode, unsigned int direction);
+EXTERN_MSC void GMT_grd_mux_demux (struct GMT_CTRL *C, struct GMT_GRID_HEADER *h, float *data, unsigned int mode);
 
 #endif /* GMT_GRDIO_H */

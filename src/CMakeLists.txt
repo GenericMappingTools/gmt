@@ -122,7 +122,7 @@ endif (DO_EXAMPLES OR DO_TESTS AND NOT GSHHG_FOUND)
 
 # These three lines are temporarily here for the beta release
 set (GMT_PROGS2_SRCS gmtaverage.c testapi.c)
-set (GMT_DEMOS2_SRCS gmtmercmap.c testgmt5.c testgmtio.c testio.c)
+set (GMT_DEMOS2_SRCS gmtmercmap.c testgmt5.c testgmtio.c testgrdio.c testio.c)
 
 # source files
 set (GMT_DEMOS_SRCS gmt.c ${GMT_DEMOS2_SRCS})

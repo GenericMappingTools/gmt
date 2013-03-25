@@ -134,30 +134,14 @@ int GMT_read_rasheader (FILE *fp, struct rasterfile *h)
 		value = (byte[0] << 24) + (byte[1] << 16) + (byte[2] << 8) + byte[3];
 
 		switch (i) {
-			case 0:
-				h->magic = value;
-				break;
-			case 1:
-				h->width = value;
-				break;
-			case 2:
-				h->height = value;
-				break;
-			case 3:
-				h->depth = value;
-				break;
-			case 4:
-				h->length = value;
-				break;
-			case 5:
-				h->type = value;
-				break;
-			case 6:
-				h->maptype = value;
-				break;
-			case 7:
-				h->maplength = value;
-				break;
+			case 0: h->magic = value;	break;
+			case 1: h->width = value;	break;
+			case 2: h->height = value;	break;
+			case 3: h->depth = value;	break;
+			case 4: h->length = value;	break;
+			case 5: h->type = value;	break;
+			case 6: h->maptype = value;	break;
+			case 7: h->maplength = value;	break;
 		}
 	}
 
@@ -185,30 +169,14 @@ int GMT_write_rasheader (FILE *fp, struct rasterfile *h)
 	for (i = 0; i < 8; i++) {
 
 		switch (i) {
-			case 0:
-				value = h->magic;
-				break;
-			case 1:
-				value = h->width;
-				break;
-			case 2:
-				value = h->height;
-				break;
-			case 3:
-				value = h->depth;
-				break;
-			case 4:
-				value = h->length;
-				break;
-			case 5:
-				value = h->type;
-				break;
-			case 6:
-				value = h->maptype;
-				break;
-			default:
-				value = h->maplength;
-				break;
+			case 0: value = h->magic;	break;
+			case 1:	value = h->width;	break;
+			case 2: value = h->height;	break;
+			case 3: value = h->depth;	break;
+			case 4: value = h->length;	break;
+			case 5: value = h->type;	break;
+			case 6: value = h->maptype;	break;
+			default: value = h->maplength;	break;
 		}
 		byte[0] = (uint8_t)((value >> 24) & 0xFF);
 		byte[1] = (uint8_t)((value >> 16) & 0xFF);
@@ -313,15 +281,15 @@ int GMT_ras_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float 
 	/* grid:	array with final grid */
 	/* wesn:	Sub-region to extract  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
-	/* complex_mode:	&1 | &2 if complex array is to hold real (1) and imaginary (2) parts (otherwise read as real only) */
+	/* complex_mode:	&4 | &8 if complex array is to hold real (4) and imaginary (8) parts (otherwise read as real only) */
 	/*		Note: The file has only real values, we simply allow space in the complex array */
 	/*		for real and imaginary parts when processed by grdfft etc. */
 
 	bool piping = false, check;
 	int j, first_col, last_col, first_row, last_row;
-	unsigned int i, width_in, height_in, i_0_out, *actual_row = NULL, inc, off;
+	unsigned int i, width_in, height_in, *actual_row = NULL;
 	size_t n2;
-	uint64_t kk, ij, j2, width_out;
+	uint64_t kk, ij, j2, width_out, imag_offset;
 	FILE *fp = NULL;
 	unsigned char *tmp = NULL;
 	struct rasterfile h;
@@ -341,36 +309,35 @@ int GMT_ras_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float 
 	else
 		return (GMT_GRDIO_OPEN_FAILED);
 
+	(void)GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
+
 	n2 = lrint (ceil (header->nx / 2.0)) * 2;	/* Sun 8-bit rasters are stored using 16-bit words */
 	tmp = GMT_memory (C, NULL, n2, unsigned char);
 
 	check = !GMT_is_dnan (header->nan_value);
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &actual_row), header->name);
-	(void)GMT_init_complex (complex_mode, &inc, &off);	/* Set stride and offset if complex */
 
 	width_out = width_in;		/* Width of output array */
 	if (pad[XLO] > 0) width_out += pad[XLO];
 	if (pad[XHI] > 0) width_out += pad[XHI];
-	width_out *= inc;			/* Possibly twice is complex is true */
-	i_0_out = inc * pad[XLO] + off;		/* Edge offset in output */
 
 	if (piping) {	/* Skip data by reading it */
 		for (j = 0; j < first_row; j++) {
-			if (GMT_fread ( tmp, sizeof (unsigned char), n2, fp) < n2) return (GMT_GRDIO_READ_FAILED);
+			if (GMT_fread (tmp, sizeof (unsigned char), n2, fp) < n2) return (GMT_GRDIO_READ_FAILED);
 		}
 	}
 	else {/* Simply seek by it */
-		if (fseek (fp, (off_t) (first_row * n2 * sizeof (unsigned char)), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
+		if (first_row && fseek (fp, (off_t) (first_row * n2 * sizeof (unsigned char)), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
 	}
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 
 	for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
-		ij = (j2 + pad[3]) * width_out + i_0_out;	/* Already has factor of 2 in it if complex */
+		ij = imag_offset + (j2 + pad[3]) * width_out + pad[XLO];
 		if (GMT_fread ( tmp, sizeof (unsigned char), n2, fp) < n2) return (GMT_GRDIO_READ_FAILED);
 		for (i = 0; i < width_in; i++) {
-			kk = ij + inc * i;
+			kk = ij + i;
 			grid[kk] = (float) tmp[actual_row[i]];
 			if (check && grid[kk] == (float)header->nan_value) /* cast to avoid round-off errors */
 				grid[kk] = C->session.f_NaN;
@@ -405,10 +372,10 @@ int GMT_ras_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 	/*		for real and imaginary parts when processed by grdfft etc. */
 	/* 		If 64 is added we write no header */
 
-	bool check, do_header = true;
-	unsigned int inc = 1, off = 0, i, i2, j, width_out, height_out, n2, *actual_col = NULL;
+	bool check;
+	unsigned int i, i2, j, width_out, height_out, n2, *actual_col = NULL;
 	int first_col, last_col, first_row, last_row;
-	uint64_t kk, ij, j2, width_in;
+	uint64_t kk, ij, j2, width_in, imag_offset;
 
 	unsigned char *tmp = NULL;
 
@@ -439,7 +406,8 @@ int GMT_ras_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 	check = !GMT_is_dnan (header->nan_value);
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
-	do_header = GMT_init_complex (complex_mode, &inc, &off);	/* Set stride and offset if complex */
+
+	(void)GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	width_in = width_out;		/* Physical width of input array */
 	if (pad[XLO] > 0) width_in += pad[XLO];
@@ -453,17 +421,17 @@ int GMT_ras_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 
 	/* store header information and array */
 
-	if (do_header && GMT_write_rasheader (fp, &h)) return (GMT_GRDIO_WRITE_FAILED);
+	if (GMT_write_rasheader (fp, &h)) return (GMT_GRDIO_WRITE_FAILED);
 
 	i2 = first_col + pad[XLO];
 	for (j = 0, j2 = first_row + pad[3]; j < height_out; j++, j2++) {
-		ij = j2 * width_in + i2;
+		ij = imag_offset + j2 * width_in + i2;
 		for (i = 0; i < width_out; i++) {
-			kk = inc * (ij + actual_col[i]) + off;
+			kk = ij + actual_col[i];
 			if (check && GMT_is_fnan (grid[kk])) grid[kk] = (float)header->nan_value;
 			tmp[i] = (unsigned char) grid[kk];
 		}
-		if (GMT_fwrite (tmp, sizeof (unsigned char), width_out, fp) < width_out) return (GMT_GRDIO_WRITE_FAILED);
+		if (GMT_fwrite (tmp, sizeof (unsigned char), n2, fp) < n2) return (GMT_GRDIO_WRITE_FAILED);
 	}
 	GMT_fclose (C, fp);
 
@@ -559,8 +527,8 @@ int GMT_is_native_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header) {
 
 	switch (size) {
 		case 0:	/* Possibly bit map; check some more */
-			mx = lrint (ceil (t_head.nx / 32.0));
-			nm = mx * ((uint64_t)t_head.ny);
+			mx = lrint (ceil (t_head.nx / 32.0));	/* Number of 4-byte integers it would take per row to store the bits */
+			nm = 4 * mx * ((uint64_t)t_head.ny);	/* Number of bytes to store all the rows */
 			if ((buf.st_size - GMT_GRID_HEADER_SIZE) == nm)	/* Yes, it was a bit mask file */
 				header->type = GMT_GRID_IS_BM;
 			else	/* No, junk data */
@@ -622,9 +590,9 @@ int GMT_bit_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float 
 	int j, err, bit;
 	bool piping = false, check = false;
 	int first_col, last_col, first_row, last_row;
-	unsigned int inc, off, i, width_in, height_in, i_0_out, mx, word;
+	unsigned int i, width_in, height_in, mx, word;
 	unsigned int *actual_col = NULL;
-	uint64_t kk, ij, j2, width_out;
+	uint64_t kk, ij, j2, width_out, imag_offset;
 	FILE *fp = NULL;
 	unsigned int *tmp = NULL, ival;
 
@@ -645,14 +613,11 @@ int GMT_bit_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float 
 	mx = lrint (ceil (header->nx / 32.0));	/* Whole multiple of 32-bit integers */
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
-	(void)GMT_init_complex (complex_mode, &inc, &off);	/* Set stride and offset if complex */
+	(void)GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	width_out = width_in;		/* Width of output array */
 	if (pad[XLO] > 0) width_out += pad[XLO];
 	if (pad[XHI] > 0) width_out += pad[XHI];
-
-	width_out *= inc;			/* Possibly twice is complex is true */
-	i_0_out = inc * pad[XLO] + off;		/* Edge offset in output */
 
 	tmp = GMT_memory (C, NULL, mx, unsigned int);
 
@@ -666,9 +631,9 @@ int GMT_bit_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 	for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
 		if (GMT_fread ( tmp, sizeof (unsigned int), mx, fp) < mx) return (GMT_GRDIO_READ_FAILED);	/* Get one row */
-		ij = (j2 + pad[YHI]) * width_out + i_0_out;	/* Already has factor of 2 in it if complex */
+		ij = imag_offset + (j2 + pad[YHI]) * width_out + pad[XLO];
 		for (i = 0; i < width_in; i++) {
-			kk = ij + inc * i;
+			kk = ij + i;
 			word = actual_col[i] / 32;
 			bit = actual_col[i] % 32;
 			ival = (tmp[word] >> bit) & 1;
@@ -706,11 +671,11 @@ int GMT_bit_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 	/*		Note: The file has only real values, we simply allow space in the complex array */
 	/*		If 64 is added we write no header*/
 
-	unsigned int i2, iu, ju, width_out, height_out, mx, word, inc, off, *actual_col = NULL;
+	unsigned int i2, iu, ju, width_out, height_out, mx, word, *actual_col = NULL;
 	int first_col, last_col, first_row, last_row;
 	int i, j, bit, err;
-	bool check = false, do_header;
-	uint64_t kk, ij, j2, width_in;
+	bool check = false, do_header = true;
+	uint64_t kk, ij, j2, width_in, imag_offset;
 	unsigned int *tmp = NULL, ival;
 
 	FILE *fp = NULL;
@@ -727,7 +692,7 @@ int GMT_bit_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 	check = !GMT_is_dnan (header->nan_value);
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
-	do_header = GMT_init_complex (complex_mode, &inc, &off);	/* Set stride and offset if complex */
+	do_header = GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	width_in = width_out;		/* Physical width of input array */
 	if (pad[XLO] > 0) width_in += pad[XLO];
@@ -740,7 +705,7 @@ int GMT_bit_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 	for (j = first_row, j2 = pad[YHI]; j <= last_row; j++, j2++) {
 		for (i = first_col, i2 = pad[XLO]; i <= last_col; i++, i2++) {
-			ij = inc * (j2 * width_in + i2) + off;
+			ij = j2 * width_in + i2 + imag_offset;
 			if (GMT_is_fnan (grid[ij])) {
 				if (check) grid[ij] = (float)header->nan_value;
 			}
@@ -763,9 +728,9 @@ int GMT_bit_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 	i2 = first_col + pad[XLO];
 	for (ju = 0, j2 = first_row + pad[YHI]; ju < height_out; ju++, j2++) {
 		GMT_memset (tmp, mx, unsigned int);
-		ij = j2 * width_in + i2;
+		ij = j2 * width_in + i2 + imag_offset;
 		for (iu = 0; iu < width_out; iu++) {
-			kk = inc * (ij + actual_col[iu]) + off;
+			kk = ij + actual_col[iu];
 			word = iu / 32;
 			bit = iu % 32;
 			ival = (unsigned int) lrint ((double)grid[kk]);
@@ -845,21 +810,21 @@ int GMT_native_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, flo
 	/* grid:	array with final grid */
 	/* wesn:	Sub-region to extract  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
-	/* complex_mode:	&1 | &2 if complex array is to hold real (1) and imaginary (2) parts (otherwise read as real only) */
+	/* complex_mode:	&4 | &8 if complex array is to hold real (1) and imaginary (2) parts (otherwise read as real only) */
 	/*		Note: The file has only real values, we simply allow space in the complex array */
 	/*		for real and imaginary parts when processed by grdfft etc. */
 
 	int j, type;			/* Data type */
 	bool piping = false;		/* true if we read input pipe instead of from file */
 	bool check = false;		/* true if nan-proxies are used to signify NaN (for non-floating point types) */
-	unsigned int err, inc, off;		/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary), and offset */
+	unsigned int err;		/* Error code returned */
 	int first_col, last_col;	/* First and last column to deal with */
 	int first_row, last_row;	/* First and last row to deal with */
 	unsigned int height_in;		/* Number of columns in subregion */
-	unsigned int i, i_0_out;	/* Misc. counters */
+	unsigned int i;			/* Misc. counters */
 	unsigned int *k = NULL;		/* Array with indices */
 	unsigned int width_in;		/* Number of items in one row of the subregion */
-	uint64_t kk, ij, j2, width_out;	/* Width of row as return (may include padding) */
+	uint64_t kk, ij, j2, width_out, imag_offset;	/* Width of row as return (may include padding) */
 	size_t size;			/* Length of data type */ 
 	size_t n_expected;		/* Length of row to read */ 
 	FILE *fp = NULL;		/* File pointer to data or pipe */
@@ -882,15 +847,13 @@ int GMT_native_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, flo
 	size = GMT_grd_data_size (C, header->type, &header->nan_value);
 	check = !GMT_is_dnan (header->nan_value);
 
+	(void)GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
+
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
-	(void)GMT_init_complex (complex_mode, &inc, &off);	/* Set stride and offset if complex */
 
 	width_out = width_in;		/* Width of output array */
 	if (pad[XLO] > 0) width_out += pad[XLO];
 	if (pad[XHI] > 0) width_out += pad[XHI];
-
-	width_out *= inc;			/* Possibly twice is complex is true */
-	i_0_out = inc * pad[XLO] + off;		/* Edge offset in output */
 
 	/* Allocate memory for one row of data (for reading purposes) */
 
@@ -908,13 +871,10 @@ int GMT_native_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, flo
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 	for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
-		if (GMT_fread (tmp, size, n_expected, fp) < n_expected) {
-			i = 0;
+		if (GMT_fread (tmp, size, n_expected, fp) < n_expected)
 			return (GMT_GRDIO_READ_FAILED);	/* Get one row */
-		}
-		ij = (j2 + pad[YHI]) * width_out + i_0_out;	/* Already has factor of 2 in it if complex */
-		for (i = 0; i < width_in; i++) {
-			kk = ij + inc * i;
+		ij = imag_offset + (j2 + pad[YHI]) * width_out + pad[XLO];
+		for (i = 0, kk = ij; i < width_in; i++, kk++) {
 			grid[kk] = GMT_decode (C, tmp, k[i], type);	/* Convert whatever to float */
 			if (check && grid[kk] == (float)header->nan_value) /* cast to avoid round-off errors */
 				grid[kk] = C->session.f_NaN;
@@ -924,7 +884,7 @@ int GMT_native_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, flo
 			header->z_max = MAX (header->z_max, (double)grid[kk]);
 		}
 	}
-	if (piping) {	/* Skip remaining data by reading it */
+	if (piping) {	/* Skip remaining data by reading them */
 		int ny = header->ny;
 		for (j = last_row + 1; j < ny; j++) if (GMT_fread (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_READ_FAILED);
 	}
@@ -946,23 +906,22 @@ int GMT_native_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, fl
 	/* grid:	array with final grid */
 	/* wesn:	Sub-region to write out  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
-	/* complex_mode:	&1 | &2 if complex array is to hold real (1) and imaginary (2) parts (otherwise read as real only) */
-	/*		Note: The file has only real values, we simply allow space in the complex array */
+	/* complex_mode:	&4 | &8 if complex array holds real (4) and imaginary (8) parts (otherwise write real only) */
+	/*		Note: The file has only real values, we simply have allowed for space in the complex array */
 	/*		for real and imaginary parts when processed by grdfft etc. */
 	/*		If 64 is added we write no header */
 
-	int err;			/* Offset in complex array: 0 for real part, 1 for imaginary */
+	int err;			/* Error code*/
 	int i, j, type;			/* Data type */
 	bool check = false;		/* true if nan-proxies are used to signify NaN (for non-floating point types) */
-	bool do_header = true;	/* true if we should write the header first */
-	unsigned int inc, off;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
+	bool do_header = true;		/* true if we should write the header first */
 	int first_col, last_col;	/* First and last column to deal with */
 	int first_row, last_row;	/* First and last row to deal with */
 	unsigned int width_out;		/* Width of row as return (may include padding) */
-	unsigned int height_out;		/* Number of columns in subregion */
-	unsigned int i2, ju, iu;		/* Misc. counters */
+	unsigned int height_out;	/* Number of columns in subregion */
+	unsigned int i2, ju, iu;	/* Misc. counters */
 	unsigned int *k = NULL;		/* Array with indices */
-	uint64_t ij, width_in, j2;
+	uint64_t ij, width_in, imag_offset, j2;
 	size_t size;			/* Length of data type */
 	size_t n_expected;		/* Length of row to read */ 
 	FILE *fp = NULL;		/* File pointer to data or pipe */
@@ -982,7 +941,7 @@ int GMT_native_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, fl
 	check = !GMT_is_dnan (header->nan_value);
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
-	do_header = GMT_init_complex (complex_mode, &inc, &off);	/* Set stride and offset if complex */
+	do_header = GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	width_in = width_out;		/* Physical width of input array */
 	if (pad[XLO] > 0) width_in += pad[XLO];
@@ -995,7 +954,7 @@ int GMT_native_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, fl
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 	for (j = first_row, j2 = pad[YHI]; j <= last_row; j++, j2++) {
 		for (i = first_col, i2 = pad[XLO]; i <= last_col; i++, i2++) {
-			ij = (j2 * width_in + i2) * inc + off;
+			ij = imag_offset + (j2 * width_in + i2);
 			if (GMT_is_fnan (grid[ij])) {
 				if (check) grid[ij] = (float)header->nan_value;
 			}
@@ -1024,8 +983,8 @@ int GMT_native_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, fl
 
 	i2 = first_col + pad[XLO];
 	for (ju = 0, j2 = first_row + pad[YHI]; ju < height_out; ju++, j2++) {
-		ij = j2 * width_in + i2;
-		for (iu = 0; iu < width_out; iu++) GMT_encode (C, tmp, iu, grid[inc*(ij+k[iu])+off], type);
+		ij = imag_offset + j2 * width_in + i2;
+		for (iu = 0; iu < width_out; iu++) GMT_encode (C, tmp, iu, grid[ij+k[iu]], type);
 		if (GMT_fwrite (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_WRITE_FAILED);
 	}
 
@@ -1321,20 +1280,19 @@ int GMT_srf_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float 
 	/* grid:	array with final grid */
 	/* w,e,s,n:	Sub-region to extract  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
-	/* complex_mode:	&1 | &2 if complex array is to hold real (1) and imaginary (2) parts (otherwise read as real only) */
+	/* complex_mode:	&4 | &8 if complex array is to hold real (4) and imaginary (8) parts (otherwise read as real only) */
 	/*		Note: The file has only real values, we simply allow space in the complex array */
 	/*		for real and imaginary parts when processed by grdfft etc. */
 
 	int j, type, ny;			/* Data type */
 	bool piping = false;		/* true if we read input pipe instead of from file */
-	unsigned int inc, off;		/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary), and offset */
 	int first_col, last_col;	/* First and last column to deal with */
 	int first_row, last_row;	/* First and last row to deal with */
 	unsigned int width_in;		/* Number of items in one row of the subregion */
 	unsigned int height_in;		/* Number of columns in subregion */
-	unsigned int i, i_0_out; 	/* Misc. counters */
+	unsigned int i; 		/* Misc. counters */
 	unsigned int *k = NULL;		/* Array with indices */
-	uint64_t kk, ij, j2, width_out;
+	uint64_t kk, ij, j2, width_out, imag_offset;
 	size_t size;			/* Length of data type */
 	size_t n_expected;		/* Length of a row */
 	FILE *fp = NULL;		/* File pointer to data or pipe */
@@ -1363,14 +1321,11 @@ int GMT_srf_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float 
 	size = GMT_grd_data_size (C, header->type, &header->nan_value);
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
-	(void)GMT_init_complex (complex_mode, &inc, &off);	/* Set stride and offset if complex */
+	(void)GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	width_out = width_in;		/* Width of output array */
 	if (pad[XLO] > 0) width_out += pad[XLO];
 	if (pad[XHI] > 0) width_out += pad[XHI];
-
-	width_out *= inc;			/* Possibly twice is complex is true */
-	i_0_out = inc * pad[XLO] + off;		/* Edge offset in output */
 
 	ny = header->ny;
 	if ( (last_row - first_row + 1) != ny) {    /* We have a sub-region */
@@ -1392,14 +1347,14 @@ int GMT_srf_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float 
 			if (GMT_fread (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_READ_FAILED);
 	}
 	else {		/* Simply seek over it */
-		if (fseek (fp, (off_t) (first_row * n_expected * size), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
+		if (first_row && fseek (fp, (off_t) (first_row * n_expected * size), SEEK_CUR)) return (GMT_GRDIO_SEEK_FAILED);
 	}
 
 	for (j = first_row, j2 = height_in-1; j <= last_row; j++, j2--) {
 		if (GMT_fread (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_READ_FAILED);	/* Get one row */
-		ij = (j2 + pad[YHI]) * width_out + i_0_out;
+		ij = imag_offset + (j2 + pad[YHI]) * width_out + pad[XLO];
 		for (i = 0; i < width_in; i++) {
-			kk = ij + inc * i;
+			kk = ij + i;
 			grid[kk] = GMT_decode (C, tmp, k[i], type);	/* Convert whatever to float */
 			if (grid[kk] >= header->nan_value) grid[kk] = C->session.f_NaN;
 			/* Update z_min, z_max */
@@ -1429,20 +1384,18 @@ int GMT_srf_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 	/* grid:	array with final grid */
 	/* wesnn:	Sub-region to write out  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
-	/* complex_mode:	&1 | &2 if complex array is to hold real (1) and imaginary (2) parts (otherwise read as real only) */
+	/* complex_mode:	&4 | &8 if complex array is to hold real (4) and imaginary (8) parts (otherwise read as real only) */
 	/*		Note: The file has only real values, we simply allow space in the complex array */
 	/*		for real and imaginary parts when processed by grdfft etc. */
 
 	int i, j, type;			/* Data type */
-	unsigned int inc;			/* Step in array: 1 for ordinary data, 2 for complex (skipping imaginary) */
-	unsigned int off;			/* Offset in complex array: 0 for real part, 1 for imaginary */
 	int first_col, last_col;	/* First and last column to deal with */
 	int first_row, last_row;	/* First and last row to deal with */
 	unsigned int width_out;		/* Width of row as return (may include padding) */
 	unsigned int height_out;		/* Number of columns in subregion */
 	unsigned int i2, ju, iu;		/* Misc. counters */
 	unsigned int *k = NULL;		/* Array with indices */
-	uint64_t ij, j2, width_in;	/* Number of items in one row of the subregion */
+	uint64_t ij, kk, j2, width_in, imag_offset;	/* Number of items in one row of the subregion */
 	size_t size;			/* Length of data type */
 	size_t n_expected;		/* Length of a row */
 	FILE *fp = NULL;		/* File pointer to data or pipe */
@@ -1464,7 +1417,7 @@ int GMT_srf_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 	size = GMT_grd_data_size (C, header->type, &header->nan_value);
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
-	(void)GMT_init_complex (complex_mode, &inc, &off);	/* Set stride and offset if complex */
+	(void)GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	width_in = width_out;		/* Physical width of input array */
 	if (pad[XLO] > 0) width_in += pad[XLO];
@@ -1476,13 +1429,14 @@ int GMT_srf_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 	for (j = first_row, j2 = pad[YHI]; j <= last_row; j++, j2++) {
+		ij = imag_offset + j2 * width_in;
 		for (i = first_col, i2 = pad[XLO]; i <= last_col; i++, i2++) {
-			ij = inc * (j2 * width_in + i2) + off;
-			if (GMT_is_fnan (grid[ij]))
+			kk = ij + i2;
+			if (GMT_is_fnan (grid[kk]))
 				grid[ij] = (float)header->nan_value;
 			else {
-				header->z_min = MIN (header->z_min, (double)grid[ij]);
-				header->z_max = MAX (header->z_max, (double)grid[ij]);
+				header->z_min = MIN (header->z_min, (double)grid[kk]);
+				header->z_max = MAX (header->z_max, (double)grid[kk]);
 			}
 		}
 	}
@@ -1509,8 +1463,8 @@ int GMT_srf_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 
 	i2 = first_col + pad[XLO];
 	for (ju = 0, j2 = last_row + pad[YHI]; ju < height_out; ju++, j2--) {
-		ij = j2 * width_in + i2;
-		for (iu = 0; iu < width_out; iu++) GMT_encode (C, tmp, iu, grid[inc*(ij+k[iu])+off], type);
+		ij = imag_offset + j2 * width_in + i2;
+		for (iu = 0; iu < width_out; iu++) GMT_encode (C, tmp, iu, grid[ij+k[iu]], type);
 		if (GMT_fwrite (tmp, size, n_expected, fp) < n_expected) return (GMT_GRDIO_WRITE_FAILED);
 	}
 
@@ -1593,7 +1547,7 @@ int GMT_gdal_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 	/* grid:	array with final grid */
 	/* wesn:	Sub-region to extract  [Use entire file if 0,0,0,0] */
 	/* padding:	# of empty rows/columns to add on w, e, s, n of grid, respectively */
-	/* complex_mode:	&1 | &2 if complex array is to hold real (1) and imaginary (2) parts (otherwise read as real only) */
+	/* complex_mode:	&4 | &8 if complex array is to hold real (4) and imaginary (8) parts (otherwise read as real only) */
 	/*		Note: The file has only real values, we simply allow space in the complex array */
 	/*		for real and imaginary parts when processed by grdfft etc. */
 
@@ -1741,7 +1695,7 @@ int GMT_gdal_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 }
 
 int GMT_gdal_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode) {
-	uint64_t node = 0, ij;
+	uint64_t node = 0, ij, imag_offset;
 	int first_col, last_col;	/* First and last column to deal with */
 	int first_row, last_row;	/* First and last row to deal with */
 	unsigned int width_out;	/* Width of row as return (may include padding) */
@@ -1763,6 +1717,7 @@ int GMT_gdal_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, floa
 	}
 
 	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
+	(void)GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	sscanf (header->pocket, "%[^/]/%s", driver, type);
 	to_GDALW = GMT_memory (C, NULL, 1, struct GDALWRITE_CTRL);
@@ -1787,7 +1742,7 @@ int GMT_gdal_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, floa
 	if (!type[0] || GMT_strlcmp(type, "float32")) {
 		/* We have to shift the grid pointer in order to use the GDALRasterIO ability to extract a subregion. */
 		/* See: osgeo-org.1560.n6.nabble.com/gdal-dev-writing-a-subregion-with-GDALRasterIO-td4960500.html */
-		to_GDALW->data = &grid[2 * header->mx + (header->pad[XLO] + first_col)];
+		to_GDALW->data = &grid[2 * header->mx + (header->pad[XLO] + first_col)+imag_offset];
 		to_GDALW->type = strdup("float32");
 		GMT_gdalwrite(C, header->name, to_GDALW);
 		GMT_free (C, to_GDALW);
@@ -1797,7 +1752,7 @@ int GMT_gdal_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, floa
 	else if (GMT_strlcmp(type,"u8") || GMT_strlcmp(type,"u08")) {
 		zu8 = GMT_memory(C, NULL, width_out * height_out, unsigned char);
 		for (row = first_row; row < height_out; row++)
-			for (col = first_col, ij = GMT_IJP (header, row, 0); col < width_out; col++, ij++)
+			for (col = first_col, ij = GMT_IJP (header, row, 0)+imag_offset; col < width_out; col++, ij++)
 				zu8[node++] = (unsigned char)grid[ij];
 
 		to_GDALW->data = zu8;
@@ -1806,7 +1761,7 @@ int GMT_gdal_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, floa
 	else if (GMT_strlcmp(type,"i16")) {
 		zi16 = GMT_memory(C, NULL, width_out * height_out, short int);
 		for (row = first_row; row < height_out; row++)
-			for (col = first_col, ij = GMT_IJP (header, row, 0); col < width_out; col++, ij++)
+			for (col = first_col, ij = GMT_IJP (header, row, 0)+imag_offset; col < width_out; col++, ij++)
 				zi16[node++] = (short int)grid[ij];
 
 		to_GDALW->data = zi16;
@@ -1815,7 +1770,7 @@ int GMT_gdal_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, floa
 	else if (GMT_strlcmp(type,"u16")) {
 		zu16 = GMT_memory(C, NULL, width_out * height_out, unsigned short int);
 		for (row = first_row; row < height_out; row++)
-			for (col = first_col, ij = GMT_IJP (header, row, 0); col < width_out; col++, ij++)
+			for (col = first_col, ij = GMT_IJP (header, row, 0)+imag_offset; col < width_out; col++, ij++)
 				zu16[node++] = (unsigned short int)grid[ij];
 
 		to_GDALW->data = zu16;
@@ -1824,7 +1779,7 @@ int GMT_gdal_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, floa
 	else if (GMT_strlcmp(type,"i32")) {
 		zi32 = GMT_memory(C, NULL, width_out * height_out, int);
 		for (row = first_row; row < height_out; row++)
-			for (col = first_col, ij = GMT_IJP (header, row, 0); col < width_out; col++, ij++)
+			for (col = first_col, ij = GMT_IJP (header, row, 0)+imag_offset; col < width_out; col++, ij++)
 				zi32[node++] = (int)grid[ij];
 
 		to_GDALW->data = zi32;
@@ -1833,7 +1788,7 @@ int GMT_gdal_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, floa
 	else if (GMT_strlcmp(type,"u32")) {
 		zu32 = GMT_memory(C, NULL, width_out * height_out, unsigned int);
 		for (row = first_row; row < height_out; row++)
-			for (col = first_col, ij = GMT_IJP (header, row, 0); col < width_out; col++, ij++)
+			for (col = first_col, ij = GMT_IJP (header, row, 0)+imag_offset; col < width_out; col++, ij++)
 				zu32[node++] = (unsigned int)grid[ij];
 
 		to_GDALW->data = zu32;

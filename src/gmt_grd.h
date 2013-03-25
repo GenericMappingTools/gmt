@@ -42,6 +42,10 @@ enum GMT_enum_grdtype {
 	GMT_GRID_GEOGRAPHIC_MORE360		/* x is longitude, and range exceeds 360 degrees */
 };
 
+enum GMT_enum_grdlayout {	/* Grid layout for complex grids */
+	GMT_GRID_IS_SERIAL = 0,		/* Grid is RRRRRR...[IIIIII...] */
+	GMT_GRID_IS_INTERLEAVED = 1};	/* Grid is RIRIRIRI... - required layout for FFT */
+
 /*
  * GMT's internal representation of grids is north-up, i.e., the index of the
  * least dimension (aka y or lat) increases to the south. NetCDF files are
@@ -128,23 +132,19 @@ enum GMT_enum_wesnIDs {
 #define gmt_grd_get_size(h) ((((h->complex_mode & GMT_GRID_IS_COMPLEX_MASK) > 0) + 1ULL) * h->mx * h->my)
 
 /* Calculate 1-D index a[ij] corresponding to 2-D array a[row][col], with 64-bit precision.
- * Use GMT_IJP when array is padded by BC rows/cols, else use GMT_IJ0.  For complex grid
- * use GMT_IJPR and GMT_IJPC for real or imaginary component, respectively.  In all cases
+ * Use GMT_IJP when array is padded by BC rows/cols, else use GMT_IJ0.  In all cases
  * we pass the interior row,col as padding is added by the macro. Note that row,col may
  * be negative as we seek to address nodes within the padding itself.  Hence calculations
  * use int64_t for signed integers, but cast final index to uint64_t.  Finally, there is
  * GMT_IJPGI which is GMT_IJP for when there are more than 1 band (it uses h->n_bands). */
 
-/* New IJP macro using h and the pad info */
+/* IJP macro using h and the pad info */
 #define GMT_IJP(h,row,col) ((uint64_t)(((int64_t)(row)+(int64_t)h->pad[YHI])*((int64_t)h->mx)+(int64_t)(col)+(int64_t)h->pad[XLO]))
-/* New IJPR|C macros using h and the pad info to get the real or imag component of a complex array*/
-#define GMT_IJPR(h,row,col) ((uint64_t)(2LL*(((int64_t)(row)+(int64_t)h->pad[YHI])*((int64_t)h->mx)+(int64_t)(col)+(int64_t)h->pad[XLO])))
-#define GMT_IJPC(h,row,col) (GMT_IJPR(h,row,col)+1ULL)
-/* New IJ0 macro using h but ignores the pad info */
+/* IJ0 macro using h but ignores the pad info */
 #define GMT_IJ0(h,row,col) ((uint64_t)(((int64_t)(row))*((int64_t)h->nx)+(int64_t)(col)))
-/* New IJ macro using h but treats the entire grid with pad as no-pad grid, i.e. using mx as width */
+/* IJ macro using h but treats the entire grid with pad as no-pad grid, i.e. using mx as width */
 #define GMT_IJ(h,row,col) ((uint64_t)(((int64_t)(row))*((int64_t)h->mx)+(int64_t)(col)))
-/* New IJPGI macro using h and the pad info that works for either grids (n_bands = 1) or images (n_bands = 1,3,4) */
+/* IJPGI macro using h and the pad info that works for either grids (n_bands = 1) or images (n_bands = 1,3,4) */
 #define GMT_IJPGI(h,row,col) ((uint64_t)(((int64_t)(row)+(int64_t)h->pad[YHI])*((int64_t)h->mx*(int64_t)h->n_bands)+(int64_t)(col)+(int64_t)h->pad[XLO]*(int64_t)h->n_bands))
 
 /* Obtain row and col from index */
