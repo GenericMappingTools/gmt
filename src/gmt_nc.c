@@ -1332,9 +1332,9 @@ int GMT_nc_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float 
 	 * grid:         array with final grid
 	 * wesn:         Sub-region to write out  [Use entire file if 0,0,0,0]
 	 * padding:      # of empty rows/columns to add on w, e, s, n of grid, respectively
-	/* complex_mode:	&4 | &8 if complex array is to hold real (4) and imaginary (8) parts (otherwise read as real only) */
-	/*		Note: The file has only real values, we simply allow space in the complex array */
-	/*		for real and imaginary parts when processed by grdfft etc.
+	 * complex_mode:	&4 | &8 if complex array is to hold real (4) and imaginary (8) parts (otherwise read as real only)
+	 *		Note: The file has only real values, we simply allow space in the complex array
+	 *		for real and imaginary parts when processed by grdfft etc.
 	 */
 
 	int status = NC_NOERR;
