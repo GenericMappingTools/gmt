@@ -887,7 +887,9 @@ void GMT_vector_syntax (struct GMT_CTRL *C, unsigned int mode)
 	if (mode & 1) GMT_message (C, "\t     +j<just> to justify vector at (b)eginning [default], (e)nd, or (c)enter.\n");
 	GMT_message (C, "\t     +l to only draw left side of heads [both].\n");
 	GMT_message (C, "\t     +n<norm> to shrink attributes if vector length < <norm> [none].\n");
+	GMT_message (C, "\t     +o<plon/plat> sets pole for great or small circles.\n");
 	if (mode & 4) GMT_message (C, "\t     +p[-][<pen>] to set pen attributes, prepend - to turn off head outlines [default pen and outline].\n");
+	GMT_message (C, "\t     +q if start and stop opening angle is given instead of (angle,length) on input.\n");
 	GMT_message (C, "\t     +r to only draw right side of heads [both].\n");
 	if (mode & 2) GMT_message (C, "\t     +s if (x,y) coordinates of tip is given instead of (angle,length) on input.\n");
 }
@@ -7563,6 +7565,14 @@ int GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 					S->v.status |= GMT_VEC_FILL2;
 				}
 				break;
+			case 'o':	/* Sets oblique pole for small or great circles */
+				S->v.status |= GMT_VEC_POLE;
+				if ((j = GMT_Get_Value (C->parent, &p[1], S->v.pole)) != 2) {
+					GMT_Report (C->parent, GMT_MSG_NORMAL, "Bad +o<plon>/<plat> modifier %c\n", &p[1]);
+					error++;
+				}
+				GMT_Report (C->parent, GMT_MSG_NORMAL, "+o for small circles not quite implemented yet.\n");
+				break;
 			case 'p':	/* Vector pen and head outline +p[-][<pen>] */
 				p_opt = true;	/* Marks that +p was used */
 				if (p[1] == '-')	/* Do NOT turn on outlines */
@@ -7578,6 +7588,9 @@ int GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 					}
 					S->v.status |= GMT_VEC_OUTLINE2;	/* Flag that a pen specification was given */
 				}
+				break;
+			case 'q':	/* Expect start,stop angle rather than azimuth, length in input */
+				S->v.status |= GMT_VEC_ANGLES;
 				break;
 			default:
 				GMT_Report (C->parent, GMT_MSG_NORMAL, "Bad modifier +%c\n", p[0]);

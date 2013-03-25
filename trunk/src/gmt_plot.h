@@ -102,11 +102,13 @@ enum GMT_enum_vecattr {GMT_VEC_LEFT = 1,	/* Only draw left half of vector head *
 	GMT_VEC_JUST_C		= 16,		/* Align vector center at (x,y) */
 	GMT_VEC_JUST_E		= 32,		/* Align vector end at (x,y) */
 	GMT_VEC_JUST_S		= 64,		/* Align vector center at (x,y) */
-	GMT_VEC_OUTLINE		= 128,		/* Draw vector head outline using default pen */
-	GMT_VEC_OUTLINE2	= 256,		/* Draw vector head outline using supplied v_pen */
-	GMT_VEC_FILL		= 512,		/* Fill vector head using default fill */
-	GMT_VEC_FILL2		= 1024,		/* Fill vector head using supplied v_fill) */
-	GMT_VEC_MARC90		= 2048};	/* Matharc only: if angles subtend 90, draw straight angle symbol */
+	GMT_VEC_ANGLES		= 128,		/* Got start/stop angles instead of az, length */
+	GMT_VEC_POLE		= 256,		/* Got pole of small/great circle */
+	GMT_VEC_OUTLINE		= 512,		/* Draw vector head outline using default pen */
+	GMT_VEC_OUTLINE2	= 1024,		/* Draw vector head outline using supplied v_pen */
+	GMT_VEC_FILL		= 2048,		/* Fill vector head using default fill */
+	GMT_VEC_FILL2		= 4096,		/* Fill vector head using supplied v_fill) */
+	GMT_VEC_MARC90		= 8192};	/* Matharc only: if angles subtend 90, draw straight angle symbol */
 
 #define GMT_vec_justify(status) ((status>>4)&3)			/* Return justification as 0-3 */
 #define GMT_vec_head(status) ((status>>2)&3)			/* Return head selection as 0-3 */
@@ -123,6 +125,7 @@ struct GMT_VECT_ATTR {
 	float v_width;		/* Width of vector stem in inches */
 	float h_length;		/* Length of vector head in inches */
 	float h_width;		/* Width of vector head in inches */
+	float pole[2];		/* Longitude and latitude of geovector pole */
 	struct GMT_PEN pen;	/* Pen for outline of head [NOT USED YET] */
 	struct GMT_FILL fill;	/* Fill for head [USED IN PSROSE] */
 };
