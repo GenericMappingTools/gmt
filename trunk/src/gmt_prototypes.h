@@ -104,7 +104,7 @@ EXTERN_MSC void GMT_geo_line (struct GMT_CTRL *C, double *lon, double *lat, unsi
 EXTERN_MSC void GMT_geo_polygons (struct GMT_CTRL *C, struct GMT_DATASEGMENT *S);
 EXTERN_MSC void GMT_geo_ellipse (struct GMT_CTRL *C, double lon, double lat, double major, double minor, double azimuth);
 EXTERN_MSC void GMT_geo_rectangle (struct GMT_CTRL *C, double lon, double lat, double width, double height, double azimuth);
-EXTERN_MSC void GMT_geo_vector (struct GMT_CTRL *C, double lon0, double lat0, double length, double azimuth, struct GMT_SYMBOL *S);
+EXTERN_MSC void GMT_geo_vector (struct GMT_CTRL *C, double lon0, double lat0, double azimuth, double length, struct GMT_SYMBOL *S);
 EXTERN_MSC void GMT_draw_front (struct GMT_CTRL *C, double x[], double y[], unsigned int n, struct GMT_FRONTLINE *f);
 EXTERN_MSC void GMT_map_basemap (struct GMT_CTRL *C);
 EXTERN_MSC void GMT_map_clip_off (struct GMT_CTRL *C);
