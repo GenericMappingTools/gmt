@@ -262,9 +262,12 @@ unsigned char GMT_glyph[2520] = {
 struct GMT_CIRCLE {	/* Helper variables needed to draw great or small circle heads */
 	double lon[2], lat[2];	/* Coordinates of arc end points */
 	double A[3], B[3];	/* Cartesian vector of arc end points */
+	double P[3];		/* Cartesian vector of the pole */
 	bool longway;		/* True if the arc > 180 degres */
 	double r0;		/* Arc length in degrees */
 	double r;		/* Will be 180 less if longway is true, otherwise r == r0 */
+	double colat;		/* Colatitude of circle relative to pole */
+	double rot;		/* Full opening angle of vector arc */
 };
 
 /*	GMT_LINEAR PROJECTION MAP BOUNDARY	*/
@@ -4158,23 +4161,16 @@ void GMT_geo_ellipse (struct GMT_CTRL *C, double lon, double lat, double major, 
 	GMT_free_segment (C, S);
 }
 
-uint64_t gmt_get_gcarc (struct GMT_CTRL *C, double *A, double *B, double step, bool longway, struct GMT_SYMBOL *S, double **xp, double **yp)
+uint64_t gmt_great_circle_arc (struct GMT_CTRL *C, double *A, double *B, double step, bool longway, struct GMT_SYMBOL *S, double **xp, double **yp)
 { /* Given vectors A and B, return great circle path sampled every step.  Shorest path is selected unless longway is true */
-	/* Determine unit vector pole of great circle or use the one given by small circle pole */
+	/* Determine unit vector pole of great circle or use the one given by small circle pole and its opening rot */
 	uint64_t k, n;
-	double P[3], X[3], R[3][3], R0[3][3], colat, scale = 1.0, c, w, *xx = NULL, *yy = NULL;
+	double P[3], X[3], R[3][3], R0[3][3], c, w, *xx = NULL, *yy = NULL;
 	
-	if (S->v.status & GMT_VEC_POLE) {	/* Get Cartesian rotation pole */
-		GMT_geo_to_cart (C, S->v.pole[GMT_Y], S->v.pole[GMT_X], P, true);
-		colat = d_acosd (GMT_dot3v (C, A, P));	/* Colatitude in degrees */
-		scale = sind (colat);
-		c = S->v.rot;
-	}
-	else {
-		GMT_cross3v (C, A, B, P);	/* Parallel to rotation pole */
-		GMT_normalize3v (C, P);		/* Rotation pole unit vector */
-		c = d_acosd (GMT_dot3v (C, A, B));	/* opening angle in degrees */
-	}
+	GMT_cross3v (C, A, B, P);	/* Parallel to rotation pole */
+	GMT_normalize3v (C, P);		/* Rotation pole unit vector */
+	c = d_acosd (GMT_dot3v (C, A, B));	/* opening angle in degrees */
+
 	if (longway) {	/* Want to go the long way */
 		c = 360.0 - c;
 		P[0] = -P[0], P[1] = -P[1], P[2] = -P[2];
@@ -4182,6 +4178,29 @@ uint64_t gmt_get_gcarc (struct GMT_CTRL *C, double *A, double *B, double step, b
 	if (GMT_IS_ZERO (step)) step = C->current.map.path_step;	/* Use default map-step if given as 0 */
 	n = lrint (ceil (c / step)) + 1;	/* Number of segments needed for smooth curve from A to B inclusive */
 	step = D2R * c / (n - 1);	/* Adjust step for exact fit, convert to radians */
+	GMT_malloc2 (C, xx, yy, n, NULL, double);	/* Allocate space for arrays */
+	gmt_init_rot_matrix (R0, P);			/* Get partial rotation matrix since no actual angle is applied yet */
+	for (k = 0; k < n; k++) {	/* March along the arc */
+		w = k * step;					/* Opening angle from A to this point X */
+		GMT_memcpy (R, R0, 9, double);			/* Get a copy of the "0-angle" rotation matrix */
+		gmt_load_rot_matrix (w, R, P);			/* Build the actual rotation matrix for this angle */
+		gmt_matrix_vect_mult (R, A, X);			/* Rotate point A towards B and get X */
+		GMT_cart_to_geo (C, &yy[k], &xx[k], X, true);	/* Get lon/lat of this point along arc */
+	}
+	*xp = xx;	*yp = yy;
+	return (n);
+}
+
+uint64_t gmt_small_circle_arc (struct GMT_CTRL *C, double *A, double *B, double step, double P[], double rot, struct GMT_SYMBOL *S, double **xp, double **yp)
+{ /* Given vectors A and B, return small circle path sampled every step. */
+	/* Use small circle pole and its opening rot */
+	uint64_t k, n;
+	double X[3], R[3][3], R0[3][3], w, *xx = NULL, *yy = NULL;
+	
+	if (GMT_IS_ZERO (step)) step = C->current.map.path_step;	/* Use default map-step if given as 0 */
+	n = lrint (ceil (fabs (rot)
+	 / step)) + 1;	/* Number of segments needed for smooth curve from A to B inclusive */
+	step = D2R * rot / (n - 1);	/* Adjust step for exact fit, convert to radians */
 	GMT_malloc2 (C, xx, yy, n, NULL, double);	/* Allocate space for arrays */
 	gmt_init_rot_matrix (R0, P);			/* Get partial rotation matrix since no actual angle is applied yet */
 	for (k = 0; k < n; k++) {	/* March along the arc */
@@ -4257,19 +4276,18 @@ void gmt_gcircle_sub (struct GMT_CTRL *GMT, double lon0, double lat0, double azi
 void gmt_scircle_sub (struct GMT_CTRL *GMT, double lon0, double lat0, double angle_1, double angle_2, struct GMT_SYMBOL *S, struct GMT_CIRCLE *C)
 {	/* We must determine points A and B, whose small-circle connector about pole P is the arc we seek to draw */
 	
-	int justify = GMT_vec_justify (S->v.status);	/* Return justification as 0-3 */
-	double R[3][3], M[3], P[3], colat;
+	int side, justify = GMT_vec_justify (S->v.status);	/* Return justification as 0-3 */
+	double R[3][3], M[3];
 	GMT_memset (C, 1, struct GMT_CIRCLE);	/* Set all to zero */
 	/* Requires the rotation matrix for pole S->v.pole */
-	
-	/* Determine co-latitude for this point */
-	GMT_geo_to_cart (GMT, lat0, lon0, M, true);
-	GMT_geo_to_cart (GMT, S->v.pole[GMT_Y], S->v.pole[GMT_X], P, true);
-	colat = d_acosd (GMT_dot3v (GMT, M, P));	/* Colatitude in degrees */
 	
 	/* Here angle_1, angle_2 are not necessarily that, depending on S->v.status:
 	 * S->v.pole & GMT_VEC_ANGLES : angle_1 is opening angle1 and angle_2 is opening angle2 about the pole.
 	 * Otherwise:	angle_2 is the length of the arc in km */
+	GMT_geo_to_cart (GMT, lat0, lon0, M, true);	/* Given input point */
+	GMT_geo_to_cart (GMT, S->v.pole[GMT_Y], S->v.pole[GMT_X], C->P, true);
+	C->colat = d_acosd (GMT_dot3v (GMT, M, C->P));	/* Colatitude of input point relative to pole, in degrees */
+
 	if (S->v.status & GMT_VEC_ANGLES) {
 		/* Was given the two opening angles; compute A and B accordingly */
 		GMT_make_rot_matrix (GMT, S->v.pole[GMT_X], S->v.pole[GMT_Y], angle_1, R);
@@ -4278,79 +4296,77 @@ void gmt_scircle_sub (struct GMT_CTRL *GMT, double lon0, double lat0, double ang
 		GMT_make_rot_matrix (GMT, S->v.pole[GMT_X], S->v.pole[GMT_Y], angle_2, R);
 		GMT_matrix_vect_mult (GMT, 3U, R, M, C->B);	/* Get B */
 		GMT_cart_to_geo (GMT, &C->lat[1], &C->lon[1], C->B, true);
-		S->v.rot = C->r0 = angle_2 - angle_1;
-		return;
+		C->rot = C->r0 = C->r = angle_2 - angle_1;
 	}
-	/* Here A, B, or midpoint was given, + the arc length via angle_2 */
-	S->v.rot = C->r0 = C->r = (angle_1 / GMT->current.proj.DIST_KM_PR_DEG) / sind (colat);	/* Opening angle in spherical degrees */
-	switch (justify) {	/* A and B depends on chosen justification */
-		case 0: /* Was given coordinates of A; determine B */
-			GMT_memcpy (C->A, M, 3, double);
-			C->lon[0] = lon0;	C->lat[0] = lat0;
-			if (C->r > 180.0) {C->longway = true; C->r -= 180.0;}	/* Temporarily adjust if arcs > 180 degrees are chosen */
-			/* Rotate A by C->r0 degrees about P to get B */
-			GMT_make_rot_matrix (GMT, S->v.pole[GMT_X], S->v.pole[GMT_Y], C->r0, R);
-			GMT_matrix_vect_mult (GMT, 3U, R, C->A, C->B);	/* Get B */
-			GMT_cart_to_geo (GMT, &C->lat[1], &C->lon[1], C->B, true);
-			break;
-		case 1: /* Was given coordinates of halfway point; determine A and B */
-			if (C->r > 180.0) C->longway = true;	/* Temporarily adjust if arcs > 180 degrees are chosen */
-			/* Rotate M by -C->r0/2 degrees about P to get A */
-			GMT_make_rot_matrix (GMT, S->v.pole[GMT_X], S->v.pole[GMT_Y], -0.5 * C->r0, R);
-			GMT_matrix_vect_mult (GMT, 3U, R, M, C->A);	/* Get A */
-			GMT_cart_to_geo (GMT, &C->lat[0], &C->lon[0], C->A, true);
-			/* Rotate M by +C->r0/2 degrees about P to get B */
-			GMT_make_rot_matrix (GMT, S->v.pole[GMT_X], S->v.pole[GMT_Y], +0.5 * C->r0, R);
-			GMT_matrix_vect_mult (GMT, 3U, R, M, C->B);	/* Get B */
-			GMT_cart_to_geo (GMT, &C->lat[1], &C->lon[1], C->B, true);
-			break;
-		case 2: /* Was given coordinates of B point; determine A */
-			GMT_memcpy (C->B, M, 3, double);
-			C->lon[1] = lon0;	C->lat[1] = lat0;
-			if (C->r > 180.0) {C->longway = true; C->r -= 180.0;}	/* Temporarily adjust if arcs > 180 degrees are chosen */
-			/* Rotate B by -C->r0 degrees about P to get A */
-			GMT_make_rot_matrix (GMT, S->v.pole[GMT_X], S->v.pole[GMT_Y], -C->r0, R);
-			GMT_matrix_vect_mult (GMT, 3U, R, C->B, C->A);	/* Get A */
-			GMT_cart_to_geo (GMT, &C->lat[0], &C->lon[0], C->A, true);
-			break;
+	else {
+		/* Here A, B, or midpoint was given, + the arc length via angle_2 */
+		/* Determine co-latitude for this point */
+		C->rot = C->r0 = C->r = (angle_1 / GMT->current.proj.DIST_KM_PR_DEG) / sind (C->colat);	/* Opening angle in spherical degrees */
+		switch (justify) {	/* A and B depends on chosen justification */
+			case 0: /* Was given coordinates of A; determine B */
+				GMT_memcpy (C->A, M, 3, double);
+				C->lon[0] = lon0;	C->lat[0] = lat0;
+				if (C->r > 180.0) {C->longway = true; C->r -= 180.0;}	/* Temporarily adjust if arcs > 180 degrees are chosen */
+				/* Rotate A by C->r0 degrees about P to get B */
+				GMT_make_rot_matrix (GMT, S->v.pole[GMT_X], S->v.pole[GMT_Y], C->r0, R);
+				GMT_matrix_vect_mult (GMT, 3U, R, C->A, C->B);	/* Get B */
+				GMT_cart_to_geo (GMT, &C->lat[1], &C->lon[1], C->B, true);
+				break;
+			case 1: /* Was given coordinates of halfway point; determine A and B */
+				if (C->r > 180.0) C->longway = true;	/* Temporarily adjust if arcs > 180 degrees are chosen */
+				/* Rotate M by -C->r0/2 degrees about P to get A */
+				GMT_make_rot_matrix (GMT, S->v.pole[GMT_X], S->v.pole[GMT_Y], -0.5 * C->r0, R);
+				GMT_matrix_vect_mult (GMT, 3U, R, M, C->A);	/* Get A */
+				GMT_cart_to_geo (GMT, &C->lat[0], &C->lon[0], C->A, true);
+				/* Rotate M by +C->r0/2 degrees about P to get B */
+				GMT_make_rot_matrix (GMT, S->v.pole[GMT_X], S->v.pole[GMT_Y], +0.5 * C->r0, R);
+				GMT_matrix_vect_mult (GMT, 3U, R, M, C->B);	/* Get B */
+				GMT_cart_to_geo (GMT, &C->lat[1], &C->lon[1], C->B, true);
+				break;
+			case 2: /* Was given coordinates of B point; determine A */
+				GMT_memcpy (C->B, M, 3, double);
+				C->lon[1] = lon0;	C->lat[1] = lat0;
+				if (C->r > 180.0) {C->longway = true; C->r -= 180.0;}	/* Temporarily adjust if arcs > 180 degrees are chosen */
+				/* Rotate B by -C->r0 degrees about P to get A */
+				GMT_make_rot_matrix (GMT, S->v.pole[GMT_X], S->v.pole[GMT_Y], -C->r0, R);
+				GMT_matrix_vect_mult (GMT, 3U, R, C->B, C->A);	/* Get A */
+				GMT_cart_to_geo (GMT, &C->lat[0], &C->lon[0], C->A, true);
+				break;
+		}
 	}
 }
 
 double GMT_smallcircle_az (struct GMT_CTRL *GMT, double lon0, double lat0, double P[], struct GMT_SYMBOL *S)
 {	/* Compute the azimuth at lon,lat [P] along small circle given pole */
-	double R[3][3], X[3], xlon, xlat, az;
-	/* Make rotation matrix for a 0.1 degree rotation */
-	GMT_make_rot_matrix (GMT, S->v.pole[GMT_X], S->v.pole[GMT_Y], 0.1, R);
+	double R[3][3], X[3], xlon1, xlat1, xlon2, xlat2, az;
+	/* Make rotation matrix for a +0.005 degree rotation */
+	GMT_make_rot_matrix (GMT, S->v.pole[GMT_X], S->v.pole[GMT_Y], -0.005, R);
 	GMT_matrix_vect_mult (GMT, 3U, R, P, X);	/* Get point really close to P along small circle */
-	GMT_cart_to_geo (GMT, &xlat, &xlon, X, true);	/* Get coordinates of X */
-	az = GMT_az_backaz (GMT, lon0, lat0, xlon, xlat, false);	/* Compute the azimuth from P to X at A */
+	GMT_cart_to_geo (GMT, &xlat1, &xlon1, X, true);	/* Get coordinates of X */
+	GMT_make_rot_matrix (GMT, S->v.pole[GMT_X], S->v.pole[GMT_Y], +0.005, R);
+	GMT_matrix_vect_mult (GMT, 3U, R, P, X);	/* Get point really close to P along small circle */
+	GMT_cart_to_geo (GMT, &xlat2, &xlon2, X, true);	/* Get coordinates of X */
+	az = GMT_az_backaz (GMT, xlon1, xlat1, xlon2, xlat2, false);	/* Compute the azimuth from P to X at A */
 	return (az);
 }
 
-void GMT_geo_vector (struct GMT_CTRL *GMT, double lon0, double lat0, double azimuth, double length, struct GMT_SYMBOL *S)
+void gmt_geo_vector_smallcircle (struct GMT_CTRL *GMT, double lon0, double lat0, double azimuth, double length, struct GMT_SYMBOL *S)
 {
-	/* GMT_geo_vector takes the location, length (in km), and azimuth of a vector
-	   and draws the vector using the chosen map projection.  If arrow heads have been requested
-	   we compute an arc length in degrees that is equivalent to the chosen symbol size.  With
-	   arrow heads we also shorten the vector arc so that unfilled vector heads are possible. */
+	/* Draws a small-circle vector with our without heads etc. */
 
 	int n1, n2, n, add, heads, side, justify;
 	size_t n_alloc;
-	bool small_circle;
-	double tlon, tlat, mlon, mlat, M[3], P[3], Ax[3], Bx[3];
+	double tlon, tlat, M[3], P[3], Pa[3], Ax[3], Bx[3], Ax2[3], Bx2[3], R[3][3];
 	double dr[2] = {0.0, 0.0}, az[2] = {0.0, 0.0}, oaz[2] = {0.0, 0.0}, off[2] = {0.0, 0.0}, scl[2];
-	double da = 0.0, dshift, s, olon[2], olat[2], head_length, arc_width;
+	double da = 0.0, dshift, s, olon[2], olat[2], head_length, arc_width, n_az, arc;
+	double rot[2] = {0.0, 0.0}, rot_v[2] = {0.0, 0.0};
 	double *xp = NULL, *yp = NULL, *xp2 = NULL, *yp2 = NULL;
 	struct GMT_CIRCLE C;
 
 	/* We must determine points A and B, whose great-circle connector is the arc we seek to draw */
 	justify = GMT_vec_justify (S->v.status);	/* Return justification as 0-3 */
-	small_circle = (S->v.status & GMT_VEC_POLE);	/* False for great circle */
 	
-	if (small_circle)
-		gmt_scircle_sub (GMT, lon0, lat0, azimuth, length, S, &C);
-	else
-		gmt_gcircle_sub (GMT, lon0, lat0, azimuth, length, S, &C);
+	gmt_scircle_sub (GMT, lon0, lat0, azimuth, length, S, &C);
 	
 	/* Here we have the endpoints A and B of the great (or small) circle arc */
 	
@@ -4373,10 +4389,202 @@ void GMT_geo_vector (struct GMT_CTRL *GMT, double lon0, double lat0, double azim
 	side  = GMT_vec_side (S->v.status);	/* Return side selection as 0,-1,+1 */
 	dshift = (side) ? 0.5 * arc_width : 0.0;	/* Half-width of arc thickness if side != 0 */
 	if (heads & 1) {	/* Placing head at A means we must shorten the arc and use Ax instead of A */
-		if (small_circle)
-			az[0] = GMT_smallcircle_az (GMT, C.lon[0], C.lat[0], C.A, S);	/* Compute the azimuth from A to B at A along small circle */
-		else
-			az[0] = GMT_az_backaz (GMT, C.lon[0], C.lat[0], C.lon[1], C.lat[1], false);	/* Compute the azimuth from A to B at A along great circle */
+		az[0] = GMT_smallcircle_az (GMT, C.lon[0], C.lat[0], C.A, S);	/* Compute the azimuth from A to B at A along small circle */
+		scl[0] = gmt_get_local_scale (GMT, C.lon[0], C.lat[0], 0.01 * C.r, az[0]);	/* Get local deg/inch scale at A in az[0] direction */
+		dr[0] = scl[0] * (head_length - 1.1*dshift);	/* This is arrow head length in degrees, approximately, adjusted for ~pen thickness to ensure no gap between head and line (the 1.1 slop) */
+		dr[0] /= sind (C.colat);	/* Scale dr[0] to opening angle degrees given colatitude */
+		/* Determine mid-back point of arrow head by rotating A back by chosen fraction rot of dr[0] */
+		rot_v[0] = 0.5 * dr[0] * (2.0 - GMT->current.setting.map_vector_shape);
+		GMT_make_rot_matrix2 (GMT, C.P, rot_v[0], R);	/* Rotation of rot_v[0] degrees about pole P */
+		GMT_matrix_vect_mult (GMT, 3U, R, C.A, Ax);	/* Get Ax = R * A*/
+		C.rot -= rot_v[0];	/* Shorten full arc by the same amount */
+		dr[0] = scl[0] * head_length;	/* This is arrow head length in great-circle degrees, approximately, without any pen-width compensation */
+	}
+	else
+		GMT_memcpy (Ax, C.A, 3, double);	/* No need to shorten arc at beginning */
+
+	if (heads & 2) { /* Place arrow head at B */
+		az[1] = -GMT_smallcircle_az (GMT, C.lon[1], C.lat[1], C.B, S);	/* Compute the azimuth from B to A at B along small circle */
+		scl[1] = gmt_get_local_scale (GMT, C.lon[1], C.lat[1], 0.01 * C.r, az[1]);	/* Get local deg/inch scale */
+		dr[1] = scl[1] * (head_length - 1.1*dshift);	/* This is arrow head length in degrees, approximately, adjusted for ~pen thickness to ensure no gap between head and line */
+		dr[1] /= sind (C.colat);	/* Scale dr[1] to opening angle degrees given colatitude */
+		/* Determine mid-back point of arrow head by rotating B back by chosen fraction rot of dr[1] */
+		rot_v[1] = 0.5 * dr[1] * (2.0 - GMT->current.setting.map_vector_shape);
+		GMT_make_rot_matrix2 (GMT, C.P, -rot_v[1], R);	/* Rotation of -rot_v[1] degrees about pole P */
+		GMT_matrix_vect_mult (GMT, 3U, R, C.B, Bx);	/* Get Bx = R * B*/
+		C.rot -= rot_v[1];	/* Shorten full arc by the same amount */
+		dr[1] = scl[1] * head_length;	/* This is arrow head length in great-circle degrees, approximately, without any pen-width compensation */
+	}
+	else
+		GMT_memcpy (Bx, C.B, 3, double);	/* No need to shorten arc at end */
+
+	GMT_memcpy (oaz, az, 2, double);	/* Keep copy of original azimuths */
+
+	/* Get array of lon,lat points that defines the arc */
+	
+	if (side) {	/* Must adjust the distance from pole to A, B by 1/2 the pen width */
+		double Scl, Off, xlon, xlat, tlon, tlat;
+		GMT_cart_to_geo (GMT, &xlat, &xlon, Ax, true);
+		n_az = GMT_az_backaz (GMT, xlon, xlat, S->v.pole[GMT_X], S->v.pole[GMT_Y], false);	/* Compute the azimuth from Ax to P at Ax along great circle */
+		if (side == +1) n_az += 180.0;	/* Might be for side == +1, check */
+		Scl = gmt_get_local_scale (GMT, xlon, xlat, 0.01, n_az);	/* Get deg/inch scale at A perpendicular to arc */
+		Off = Scl * dshift;	/* Offset in degrees due to 1/2 pen thickness */
+		GMT_get_point_from_r_az (GMT, xlon, xlat, Off, n_az, &tlon, &tlat);	/* Adjusted Ax */
+		GMT_geo_to_cart (GMT, tlat, tlon, Ax2, true);
+		GMT_make_rot_matrix2 (GMT, C.P, C.rot, R);		/* Rotation of C->rot degrees about pole P */
+		GMT_matrix_vect_mult (GMT, 3U, R, Ax2, Bx2);		/* Get revised Ax = R * A*/
+	}
+	else {
+		GMT_memcpy (Ax2, Ax, 3, double);	/* No need to shorten arc at end */
+		GMT_memcpy (Bx2, Bx, 3, double);	/* No need to shorten arc at end */
+	}
+	n1 = gmt_small_circle_arc (GMT, Ax2, Bx2, 0.0, C.P, C.rot, S, &xp, &yp);	/* Draw the (possibly shortened) arc */
+
+	/* Plotting starts here, under gsave/grestore protection */
+	
+	PSL_command (GMT->PSL, "V\n");
+	PSL_setlinewidth (GMT->PSL, arc_width * PSL_POINTS_PER_INCH);
+	
+	GMT_geo_line (GMT, xp, yp, n1);	/* Draw the arc with current pen */
+	GMT_free (GMT, xp);	GMT_free (GMT, yp);	/* Done with arc */
+	
+	if (heads) { /* Get half-angle at head and possibly change pen */
+		da = 0.5 * S->v.v_angle;	/* Half-opening angle at arrow head */
+		if ((S->v.status & GMT_VEC_OUTLINE) == 0) PSL_command (GMT->PSL, "O0\n");	/* Turn off outline */
+		if ((S->v.status & GMT_VEC_FILL) == 0) PSL_command (GMT->PSL, "FQ\n");	/* Turn off vector head fill */
+	}
+
+	if (heads & 1) { /* Place arrow head at A */
+		if (C.longway) az[0] += 180.0;
+		rot[0] = dr[0] / sind (C.colat);	/* Small circle rotation angle to draw arrow outline */
+		if (side != +1) {	/* Want to draw left side of arrow */
+			GMT_make_rot_matrix2 (GMT, C.A, da, R);		/* Rotation of da degrees about A */
+			GMT_matrix_vect_mult (GMT, 3U, R, C.P, Pa);	/* Rotate pole C.P to inner arc pole location Pa */
+			GMT_make_rot_matrix2 (GMT, Pa, rot[0], R);	/* Rotation of rot[0] degrees about Pa */
+			GMT_matrix_vect_mult (GMT, 3U, R, C.A, P);	/* Rotate A to inner arc end point P */
+			arc = rot[0];
+		}
+		else {
+			GMT_memcpy (P, Ax, 3, double);		/* Start from (possibly adjusted) mid point instead... */
+			GMT_memcpy (Pa, C.P, 3, double);	/* ...and use circle pole */
+			arc = rot_v[0];
+		}
+		n1 = gmt_small_circle_arc (GMT, P, C.A, 0.0, Pa, -arc, S, &xp, &yp);	/* Compute small circle arc from P to A */
+		if (side != -1) {	/* Want to draw right side of arrow */
+			GMT_make_rot_matrix2 (GMT, C.A, -da, R);	/* Rotation of -da degrees about A */
+			GMT_matrix_vect_mult (GMT, 3U, R, C.P, Pa);	/* Rotate pole C.P to outer arc pole location Pa */
+			GMT_make_rot_matrix2 (GMT, Pa, rot[0], R);	/* Rotation of rot[0] degrees about Pa */
+			GMT_matrix_vect_mult (GMT, 3U, R, C.A, P);	/* Rotate A to outer arc end point P */
+			arc = rot[0];
+		}
+		else {
+			GMT_memcpy (P, Ax, 3, double);		/* Start from (adjusted) mid point instead... */
+			GMT_memcpy (Pa, C.P, 3, double);	/* ...and use circle pole */
+			arc = rot_v[0];
+		}
+		n2 = gmt_small_circle_arc (GMT, C.A, P, 0.0, Pa, arc, S, &xp2, &yp2);	/* Compute great circle arc from A to P */
+		add = (side == 0) ? 1 : 0;	/* Need to add mid point explicitly */
+		n_alloc = n = n1 + n2 + add;
+		GMT_malloc2 (GMT, xp, yp, 0U, &n_alloc, double);	/* Allocate space for total path */
+		GMT_memcpy (&xp[n1], xp2, n2, double);
+		GMT_memcpy (&yp[n1], yp2, n2, double);
+		if (add) {	/* Mid point of arrow */
+			GMT_cart_to_geo (GMT, &yp[n-1], &xp[n-1], Ax, true);	/* Add geo coordinates of this new back mid point for arc */
+		}
+		if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, xp, yp, n))) {
+			PSL_beginclipping (GMT->PSL, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, GMT->session.no_rgb, 3);
+			PSL_plotpolygon (GMT->PSL, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n);
+			PSL_endclipping (GMT->PSL, 1);
+		}
+		GMT_free (GMT, xp);	GMT_free (GMT, yp);
+		GMT_free (GMT, xp2);	GMT_free (GMT, yp2);
+	}
+	if (heads & 2) { /* Place arrow head at B */
+		if (C.longway) az[1] += 180.0;
+		rot[1] = dr[1] / sind (C.colat);	/* Small circle rotation angle to draw arrow outline */
+		if (side != +1) {	/* Want to draw left side of arrow */
+			GMT_make_rot_matrix2 (GMT, C.B, -da, R);	/* Rotation of -da degrees about B */
+			GMT_matrix_vect_mult (GMT, 3U, R, C.P, Pa);	/* Rotate pole C.P to inner arc pole location Pa */
+			GMT_make_rot_matrix2 (GMT, Pa, -rot[1], R);	/* Rotation of -rot[1] degrees about Pa */
+			GMT_matrix_vect_mult (GMT, 3U, R, C.B, P);	/* Rotate B to inner arc end point P */
+			arc = rot[1];
+		}
+		else {
+			GMT_memcpy (P, Bx, 3, double);		/* Start from (adjusted) mid point instead... */
+			GMT_memcpy (Pa, C.P, 3, double);	/* ...and use circle pole */
+			arc = rot_v[1];
+		}
+		n1 = gmt_small_circle_arc (GMT, P, C.B, 0.0, Pa, arc, S, &xp, &yp);	/* Compute small circle arc from P to B */
+		if (side != -1) {	/* Want to draw right side of arrow */
+			GMT_make_rot_matrix2 (GMT, C.B, da, R);		/* Rotation of da degrees about B */
+			GMT_matrix_vect_mult (GMT, 3U, R, C.P, Pa);	/* Rotate pole C.P to outer arc pole location Pa */
+			GMT_make_rot_matrix2 (GMT, Pa, -rot[1], R);	/* Rotation of -rot[1] degrees about Pa */
+			GMT_matrix_vect_mult (GMT, 3U, R, C.B, P);	/* Rotate B to outer arc end point P */
+			arc = rot[1];
+		}
+		else {
+			GMT_memcpy (P, Bx, 3, double);		/* Start from (adjusted) mid point instead */
+			GMT_memcpy (Pa, C.P, 3, double);	/* ...and use circle pole */
+			arc = rot_v[1];
+		}
+		n2 = gmt_small_circle_arc (GMT, C.B, P, 0.0, Pa, -arc, S, &xp2, &yp2);	/* Compute small circle arc from B to P */
+		add = (side == 0) ? 1 : 0;	/* Need to add mid point explicitly */
+		n_alloc = n = n1 + n2 + add;
+		GMT_malloc2 (GMT, xp, yp, 0U, &n_alloc, double);	/* Allocate space for total path */
+		GMT_memcpy (&xp[n1], xp2, n2, double);
+		GMT_memcpy (&yp[n1], yp2, n2, double);
+		if (add) {	/* Mid point of arrow */
+			GMT_cart_to_geo (GMT, &yp[n-1], &xp[n-1], Bx, true);	/* Add geo coordinates of this new back-mid point for arc */
+		}
+		if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, xp, yp, n))) {
+			PSL_beginclipping (GMT->PSL, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, GMT->session.no_rgb, 3);
+			PSL_plotpolygon (GMT->PSL, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n);
+			PSL_endclipping (GMT->PSL, 1);
+		}
+		GMT_free (GMT, xp);	GMT_free (GMT, yp);
+		GMT_free (GMT, xp2);	GMT_free (GMT, yp2);
+	}
+	PSL_command (GMT->PSL, "U\n");
+}
+
+void gmt_geo_vector_greatcircle (struct GMT_CTRL *GMT, double lon0, double lat0, double azimuth, double length, struct GMT_SYMBOL *S)
+{
+	/* Draws a great-circle vector with our without heads, etc. */
+
+	int n1, n2, n, add, heads, side, justify;
+	size_t n_alloc;
+	double tlon, tlat, mlon, mlat, M[3], P[3], Ax[3], Bx[3];
+	double dr[2] = {0.0, 0.0}, az[2] = {0.0, 0.0}, oaz[2] = {0.0, 0.0}, off[2] = {0.0, 0.0}, scl[2];
+	double da = 0.0, dshift, s, olon[2], olat[2], head_length, arc_width;
+	double *xp = NULL, *yp = NULL, *xp2 = NULL, *yp2 = NULL;
+	struct GMT_CIRCLE C;
+
+	/* We must determine points A and B, whose great-circle connector is the arc we seek to draw */
+	justify = GMT_vec_justify (S->v.status);	/* Return justification as 0-3 */
+	gmt_gcircle_sub (GMT, lon0, lat0, azimuth, length, S, &C);
+	
+	/* Here we have the endpoints A and B of the great (or small) circle arc */
+	
+	/* If shrink-option (+n) is active we may have to scale down head attributes and pen width */
+	
+	/* Might have to shrink things */
+	s = (C.r0 < S->v.v_norm) ? C.r0 / S->v.v_norm : 1.0;
+	head_length = s * S->size_x;
+	arc_width   = s * S->v.v_width;
+	GMT_memcpy (olon, C.lon, 2, double);	GMT_memcpy (olat, C.lat, 2, double);	/* Keep copy of original coordinates */
+	
+	/* When only one side of a vector head is requested (side = -1/+1) there are complications that leads to some
+	 * extra work: Since we are clipping the head polygon, the head outline pen is effectively half that of the
+	 * vector.  Thus, there will be an offset of 1/2 penwidth at the end of the vector line and the start of the
+	 * back-end of the half vector head.  We adjust this (similar to straight and curved vectors in pslib) by moving
+	 * the vector tip and the mid-vector back point the equivalent distance of 1/2 pen width away from the side with
+	 * the half arrowhead.  This makes the outline of the head align with the vector line. */
+	
+	heads = GMT_vec_head (S->v.status);	/* Return head selection as 0-3 */
+	side  = GMT_vec_side (S->v.status);	/* Return side selection as 0,-1,+1 */
+	dshift = (side) ? 0.5 * arc_width : 0.0;	/* Half-width of arc thickness if side != 0 */
+	if (heads & 1) {	/* Placing head at A means we must shorten the arc and use Ax instead of A */
+		az[0] = GMT_az_backaz (GMT, C.lon[0], C.lat[0], C.lon[1], C.lat[1], false);	/* Compute the azimuth from A to B at A along great circle */
 		scl[0] = gmt_get_local_scale (GMT, C.lon[0], C.lat[0], 0.01 * C.r, az[0]);	/* Get local deg/inch scale at A in az[0] direction */
 		dr[0] = scl[0] * (head_length - 1.1*dshift);	/* This is arrow head length in degrees, approximately, adjusted for ~pen thickness to ensure no gap between head and line */
 		GMT_get_point_from_r_az (GMT, C.lon[0], C.lat[0], 0.5*dr[0]*(2.0 - GMT->current.setting.map_vector_shape), az[0], &tlon, &tlat);	/* Back mid-point of arrow */
@@ -4387,10 +4595,7 @@ void GMT_geo_vector (struct GMT_CTRL *GMT, double lon0, double lat0, double azim
 		GMT_memcpy (Ax, C.A, 3, double);	/* No need to shorten arc at beginning */
 
 	if (heads & 2) { /* Place arrow head at B */
-		if (small_circle)
-			az[1] = GMT_smallcircle_az (GMT, C.lon[1], C.lat[1], C.B, S);	/* Compute the azimuth from B to A at B along small circle */
-		else
-			az[1] = GMT_az_backaz (GMT, C.lon[1], C.lat[1], C.lon[0], C.lat[0], false);	/* Compute the azimuth from B to A at B along great circle */
+		az[1] = GMT_az_backaz (GMT, C.lon[1], C.lat[1], C.lon[0], C.lat[0], false);	/* Compute the azimuth from B to A at B along great circle */
 		scl[1] = gmt_get_local_scale (GMT, C.lon[1], C.lat[1], 0.01 * C.r, az[1]);	/* Get local deg/inch scale */
 		dr[1] = scl[1] * (head_length - 1.1*dshift);	/* TThis is arrow head length in degrees, approximately, adjusted for ~pen thickness to ensure no gap between head and line */
 		GMT_get_point_from_r_az (GMT, C.lon[1], C.lat[1], 0.5*dr[1]*(2.0 - GMT->current.setting.map_vector_shape), az[1], &tlon, &tlat);	/* Back mid-point of arrow */
@@ -4404,7 +4609,7 @@ void GMT_geo_vector (struct GMT_CTRL *GMT, double lon0, double lat0, double azim
 
 	/* Get array of lon,lat points that defines the arc */
 	
-	n1 = gmt_get_gcarc (GMT, Ax, Bx, 0.0, C.longway, S, &xp, &yp);	/* Draw the (possibly shortened) arc */
+	n1 = gmt_great_circle_arc (GMT, Ax, Bx, 0.0, C.longway, S, &xp, &yp);	/* Draw the (possibly shortened) arc */
 
 	/* Plotting starts here, under gsave/grestore protection */
 	
@@ -4424,12 +4629,7 @@ void GMT_geo_vector (struct GMT_CTRL *GMT, double lon0, double lat0, double azim
 		if (C.longway) az[0] += 180.0;
 		GMT_get_point_from_r_az (GMT, C.lon[0], C.lat[0], 0.5*dr[0]*(2.0 - GMT->current.setting.map_vector_shape), az[0], &mlon, &mlat);	/* Back mid-point of arrow  */
 		if (side) {	/* Must adjust the back mid- and end point by 1/2 the pen width */
-			if (small_circle) {
-				GMT_geo_to_cart (GMT, mlat, mlon, M, true);	/* Get Cartesian coordinates of this new start point for arc */
-				az[0] = GMT_smallcircle_az (GMT, mlon, mlat, M, S);	/* Compute the azimuth from A to B at A along small circle */
-			}
-			else
-				az[0] = GMT_az_backaz (GMT, mlon, mlat, C.lon[1], C.lat[1], false);	/* Compute the azimuth from M to B at M */
+			az[0] = GMT_az_backaz (GMT, mlon, mlat, C.lon[1], C.lat[1], false);	/* Compute the azimuth from M to B at M */
 			scl[0] = gmt_get_local_scale (GMT, mlon, mlat, tand (da) * dr[0], az[0]+side*90.0);	/* Get deg/inch scale at M perpendicular to arc */
 			off[0] = scl[0] * dshift;	/* Offset in degrees due to 1/2 pen thickness */
 			GMT_get_point_from_r_az (GMT, mlon, mlat, off[0], az[0]+side*90.0, &tlon, &tlat);	/* Adjusted back mid-point of arrow head */
@@ -4444,14 +4644,14 @@ void GMT_geo_vector (struct GMT_CTRL *GMT, double lon0, double lat0, double azim
 		}
 		else
 			GMT_geo_to_cart (GMT, mlat, mlon, P, true);	/* Start from (adjusted) mid point instead */
-		n1 = gmt_get_gcarc (GMT, P, C.A, 0.0, false, S, &xp, &yp);	/* Compute great circle arc from P to A */
+		n1 = gmt_great_circle_arc (GMT, P, C.A, 0.0, false, S, &xp, &yp);	/* Compute great circle arc from P to A */
 		if (side != -1) {	/* Want to draw right side of arrow */
 			GMT_get_point_from_r_az (GMT, olon[0], olat[0], dr[0]+off[0], oaz[0]-da, &tlon, &tlat);	/* End point of arrow on right side */
 			GMT_geo_to_cart (GMT, tlat, tlon, P, true);
 		}
 		else
 			GMT_geo_to_cart (GMT, mlat, mlon, P, true);	/* End at (adjusted) mid point instead */
-		n2 = gmt_get_gcarc (GMT, C.A, P, 0.0, false, S, &xp2, &yp2);	/* Compute great circle arc from A to P */
+		n2 = gmt_great_circle_arc (GMT, C.A, P, 0.0, false, S, &xp2, &yp2);	/* Compute great circle arc from A to P */
 		add = (side == 0) ? 1 : 0;	/* Need to add mid point explicitly */
 		n_alloc = n = n1 + n2 + add;
 		GMT_malloc2 (GMT, xp, yp, 0U, &n_alloc, double);	/* Allocate space for total path */
@@ -4472,10 +4672,7 @@ void GMT_geo_vector (struct GMT_CTRL *GMT, double lon0, double lat0, double azim
 		if (C.longway) az[1] += 180.0;
 		GMT_get_point_from_r_az (GMT, C.lon[1], C.lat[1], 0.5*dr[1]*(2.0 - GMT->current.setting.map_vector_shape), az[1], &mlon, &mlat);	/* Mid point of arrow */
 		if (side) {	/* Must adjust the mid-point and end point by 1/2 the pen width */
-			if (small_circle)
-				az[1] = GMT_smallcircle_az (GMT, C.lon[1], C.lat[1], C.B, S);	/* Compute the azimuth from A to B at A along small circle */
-			else
-				az[1] = GMT_az_backaz (GMT, C.lon[1], C.lat[1], C.lon[0], C.lat[0], false);	/* Compute the azimuth from M to A at M */
+			az[1] = GMT_az_backaz (GMT, C.lon[1], C.lat[1], C.lon[0], C.lat[0], false);	/* Compute the azimuth from M to A at M */
 			scl[1] = gmt_get_local_scale (GMT, mlon, mlat, tand (da) * dr[1], az[1]+side*90.0);	/* Get deg/inch scale at M perpendicular to arc */
 			off[1] = scl[1] * dshift;	/* Offset in degrees due to 1/2 pen thickness */
 			GMT_get_point_from_r_az (GMT, mlon, mlat, off[1], az[1]+side*90.0, &tlon, &tlat);	/* Adjusted back mid-point of arrow head  */
@@ -4490,14 +4687,14 @@ void GMT_geo_vector (struct GMT_CTRL *GMT, double lon0, double lat0, double azim
 		}
 		else
 			GMT_geo_to_cart (GMT, mlat, mlon, P, true);	/* Start from (adjusted)mid point instead */
-		n1 = gmt_get_gcarc (GMT, P, C.B, 0.0, false, S, &xp, &yp);	/* Compute great circle arc from P to B */
+		n1 = gmt_great_circle_arc (GMT, P, C.B, 0.0, false, S, &xp, &yp);	/* Compute great circle arc from P to B */
 		if (side != -1) {	/* Want to draw right side of arrow */
 			GMT_get_point_from_r_az (GMT, olon[1], olat[1], dr[1]+off[1], oaz[1]-da, &tlon, &tlat);	/* Start point of arrow on other side */
 			GMT_geo_to_cart (GMT, tlat, tlon, P, true);
 		}
 		else
 			GMT_geo_to_cart (GMT, mlat, mlon, P, true);	/* End at (adjusted) mid point instead */
-		n2 = gmt_get_gcarc (GMT, C.B, P, 0.0, false, S, &xp2, &yp2);	/* Compute great circle arc from B to P */
+		n2 = gmt_great_circle_arc (GMT, C.B, P, 0.0, false, S, &xp2, &yp2);	/* Compute great circle arc from B to P */
 		add = (side == 0) ? 1 : 0;	/* Need to add mid point explicitly */
 		n_alloc = n = n1 + n2 + add;
 		GMT_malloc2 (GMT, xp, yp, 0U, &n_alloc, double);	/* Allocate space for total path */
@@ -4515,6 +4712,21 @@ void GMT_geo_vector (struct GMT_CTRL *GMT, double lon0, double lat0, double azim
 		GMT_free (GMT, xp2);	GMT_free (GMT, yp2);
 	}
 	PSL_command (GMT->PSL, "U\n");
+}
+
+void GMT_geo_vector (struct GMT_CTRL *GMT, double lon0, double lat0, double azimuth, double length, struct GMT_SYMBOL *S)
+{
+	/* GMT_geo_vector takes the location lon0, lat0, azimuth of the vector at that point, and the
+	   length (in km), and and draws the vector using the chosen map projection.  If arrow heads
+	   have been requested we compute an arc length in degrees that is equivalent to the chosen
+	   symbol size.  With arrow heads we also shorten the vector arc so that unfilled vector heads
+	   are possible. If a small-circle vector is chosen then azimuth, length may be opening angles
+	   1 and 2 if GMT_VEC_ANGLES is set as well. */
+
+	if (S->v.status & GMT_VEC_POLE)
+		gmt_geo_vector_smallcircle (GMT, lon0, lat0, azimuth, length, S);
+	else
+		gmt_geo_vector_greatcircle (GMT, lon0, lat0, azimuth, length, S);
 }
 
 void GMT_geo_rectangle (struct GMT_CTRL *C, double lon, double lat, double width, double height, double azimuth)

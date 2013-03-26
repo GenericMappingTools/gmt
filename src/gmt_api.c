@@ -175,9 +175,9 @@ struct GMTAPI_CTRL * GMT_get_API_ptr (struct GMTAPI_CTRL *ptr)
 /* p_func_size_t is used as a pointer to functions that returns a size_t dimension */
 typedef size_t (*p_func_size_t) (int row, int col, int dim);
 
-
+#ifdef DEBUG
 void GMT_list_API (struct GMTAPI_CTRL *API, char *txt)
-{
+{	/* Can be used to display API-object info wherever it is called as part of a debug operation */
 	unsigned int item;
 	struct GMTAPI_DATA_OBJECT *S;
 	if (API->deep_debug == false) return;
@@ -189,6 +189,7 @@ void GMT_list_API (struct GMTAPI_CTRL *API, char *txt)
 	}
 	fprintf (stderr, "-------------------------------------------------------------------------\n");
 }
+#endif
 
 /* Note: Many/all of these do not need to check if API == NULL since they are called from functions that do. */
 /* Private functions used by this library only.  These are not accessed outside this file. */

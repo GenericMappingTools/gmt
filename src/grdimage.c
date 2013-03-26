@@ -405,7 +405,6 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 	if (Ctrl->I.active) {	/* Illumination wanted */
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Allocates memory and read intensity file\n");
-		GMT_list_API (API, "Start of grdimage");
 
 		if ((Intens_orig = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->I.file, NULL)) == NULL) {	/* Get header only */
 			Return (API->error);
@@ -587,7 +586,6 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, Ctrl->I.file, Intens_orig) == NULL) {
 			Return (API->error);	/* Get grid data */
 		}
-		GMT_list_API (API, "After reading data for Intens_orig");
 		if (n_grids && (Intens_orig->header->nx != Grid_orig[0]->header->nx || Intens_orig->header->ny != Grid_orig[0]->header->ny)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Intensity file has improper dimensions!\n");
 			Return (EXIT_FAILURE);
@@ -602,7 +600,6 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 			/* Create option list, register Intens_orig as input source via reference */
 			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE|GMT_IO_RESET, GMT_IS_SURFACE, GMT_IN, NULL, Intens_orig)) == GMTAPI_NOTSET) 
 				Return (API->error);
-	GMT_list_API (API, "After registering Intens_orig as input for grdsample");
 			if (GMT_Encode_ID (API, in_string, object_ID) != GMT_OK) {
 				Return (API->error);	/* Make filename with embedded object ID for grid G */
 			}
@@ -610,7 +607,6 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 			if ((object_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) {
 				Return (API->error);
 			}
-	GMT_list_API (API, "After registering NULL as output for grdsample");
 			if (GMT_Encode_ID (GMT->parent, out_string, object_ID) != GMT_OK) {
 				Return (API->error);	/* Make filename with embedded object ID for result grid G2 */
 			}
@@ -624,7 +620,6 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Intens_orig) != GMT_OK) {
 				Return (API->error);
 			}
-			GMT_list_API (API, "After destroying Intens_orig");
 			Intens_orig = G2;
 			Intens_orig->alloc_mode = GMT_ALLOCATED;	/* So we may destroy at the end */
 		}
@@ -673,7 +668,6 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 		}
 		if (Ctrl->I.active) {
 			if ((Intens_proj = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Intens_orig)) == NULL) Return (API->error);	/* Just to get a header we can change */
-	GMT_list_API (API, "After duplicating Intens_orig to Intens_proj");
 			if (n_grids)
 				GMT_memcpy (Intens_proj->header->wesn, Grid_proj[0]->header->wesn, 4, double);
 #ifdef HAVE_GDAL
@@ -687,12 +681,10 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 			GMT_err_fail (GMT, GMT_project_init (GMT, Intens_proj->header, inc, nx_proj, ny_proj, Ctrl->E.dpi, grid_registration), Ctrl->I.file);
 			GMT_set_grddim (GMT, Intens_proj->header);
 			if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Intens_proj) == NULL) Return (API->error);
-	GMT_list_API (API, "After adding data to Intens_proj");
 			GMT_grd_project (GMT, Intens_orig, Intens_proj, false);
 			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Intens_orig) != GMT_OK) {
 				Return (API->error);
 			}
-	GMT_list_API (API, "After destroying Intens_orig");
 		}
 		resampled = true;
 	}
