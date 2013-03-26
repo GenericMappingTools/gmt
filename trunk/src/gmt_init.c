@@ -887,11 +887,11 @@ void GMT_vector_syntax (struct GMT_CTRL *C, unsigned int mode)
 	if (mode & 1) GMT_message (C, "\t     +j<just> to justify vector at (b)eginning [default], (e)nd, or (c)enter.\n");
 	GMT_message (C, "\t     +l to only draw left side of heads [both].\n");
 	GMT_message (C, "\t     +n<norm> to shrink attributes if vector length < <norm> [none].\n");
-	GMT_message (C, "\t     +o<plon/plat> sets pole for great or small circles.\n");
+	GMT_message (C, "\t     +o<plon/plat> sets pole for great or small circles; only give length via input.\n");
 	if (mode & 4) GMT_message (C, "\t     +p[-][<pen>] to set pen attributes, prepend - to turn off head outlines [default pen and outline].\n");
-	GMT_message (C, "\t     +q if start and stop opening angle is given instead of (angle,length) on input.\n");
+	GMT_message (C, "\t     +q if start and stop opening angle is given instead of (azimuth,length) on input.\n");
 	GMT_message (C, "\t     +r to only draw right side of heads [both].\n");
-	if (mode & 2) GMT_message (C, "\t     +s if (x,y) coordinates of tip is given instead of (angle,length) on input.\n");
+	if (mode & 2) GMT_message (C, "\t     +s if (x,y) coordinates of tip is given instead of (azimuth,length) on input.\n");
 }
 
 void GMT_img_syntax (struct GMT_CTRL *C)
@@ -7591,7 +7591,7 @@ int GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 					S->v.status |= GMT_VEC_OUTLINE2;	/* Flag that a pen specification was given */
 				}
 				break;
-			case 'q':	/* Expect start,stop angle rather than azimuth, length in input */
+			case 'q':	/* Expect start,stop angle rather than length in input */
 				S->v.status |= GMT_VEC_ANGLES;
 				break;
 			default:
@@ -8250,13 +8250,25 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 		case '=':
 			p->symbol = GMT_SYMBOL_GEOVECTOR;
 			p->convert_angles = 1;
-			p->nondim_col[p->n_nondim++] = 2 + col_off;	/* Angle [or longitude] */
-			p->nondim_col[p->n_nondim++] = 3 + col_off;	/* Arc length [or latitude] */
+			p->n_required = 2;
 			if (GMT_parse_vector (C, text, p)) {
 				GMT_Report (C->parent, GMT_MSG_NORMAL, "Syntax error -S= option\n");
 				decode_error++;
 			}
-			p->n_required = 2;
+			if (p->v.status & GMT_VEC_POLE) {	/* Small circle vector */
+				if (p->v.status & GMT_VEC_ANGLES) {
+					p->nondim_col[p->n_nondim++] = 2 + col_off;	/* Start angle */
+					p->nondim_col[p->n_nondim++] = 3 + col_off;	/* Stop angle */
+				}
+				else {
+					p->nondim_col[p->n_nondim++] = 2 + col_off;	/* Arc length */
+					p->n_required = 1;
+				}
+			}
+			else {	/* Great circle vector */
+				p->nondim_col[p->n_nondim++] = 2 + col_off;	/* Angle [or longitude] */
+				p->nondim_col[p->n_nondim++] = 3 + col_off;	/* Arc length [or latitude] */
+			}
 			break;
 		default:
 			decode_error = true;
