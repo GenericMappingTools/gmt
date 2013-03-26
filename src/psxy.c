@@ -985,7 +985,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 				case GMT_SYMBOL_GEOVECTOR:
 					GMT_init_vector_param (GMT, &S);	/* Update vector head parameters */
 					S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
-					GMT_geo_vector (GMT, in[GMT_X], in[GMT_Y], in[ex2+S.read_size], in[ex1+S.read_size], &S);
+					GMT_geo_vector (GMT, in[GMT_X], in[GMT_Y], in[ex1+S.read_size], in[ex2+S.read_size], &S);
 					break;
 				case GMT_SYMBOL_MARC:
 					GMT_init_vector_param (GMT, &S);	/* Update vector head parameters */
