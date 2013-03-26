@@ -1503,6 +1503,7 @@ int GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GMT_GRID_HE
 
 	bool global, error = false;
 	double val, dx, small;
+	char format[GMT_TEXT_LEN64];
 
 	switch (GMT_minmaxinc_verify (C, wesn[XLO], wesn[XHI], header->inc[GMT_X], GMT_SMALL)) {	/* Check if range is compatible with x_inc */
 		case 3:
@@ -1553,7 +1554,8 @@ int GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GMT_GRID_HE
 		if (dx > small) {
 			wesn[XLO] = val;
 			GMT_Report (C->parent, GMT_MSG_NORMAL, "Warning: (w - x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_SMALL);
-			GMT_Report (C->parent, GMT_MSG_NORMAL, "Warning: w reset to %g\n", wesn[XLO]);
+			sprintf(format,"Warning: w reset to %s\n",C->current.setting.format_float_out);
+			GMT_Report (C->parent, GMT_MSG_NORMAL, format, wesn[XLO]);
 		}
 
 		val = header->wesn[XLO] + lrint ((wesn[XHI] - header->wesn[XLO]) * header->r_inc[GMT_X]) * header->inc[GMT_X];
@@ -1562,7 +1564,8 @@ int GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GMT_GRID_HE
 		if (dx > GMT_SMALL) {
 			wesn[XHI] = val;
 			GMT_Report (C->parent, GMT_MSG_NORMAL, "Warning: (e - x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_SMALL);
-			GMT_Report (C->parent, GMT_MSG_NORMAL, "Warning: e reset to %g\n", wesn[XHI]);
+			sprintf(format,"Warning: e reset to %s\n",C->current.setting.format_float_out);
+			GMT_Report (C->parent, GMT_MSG_NORMAL, format, wesn[XHI]);
 		}
 	}
 
@@ -1573,14 +1576,16 @@ int GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GMT_GRID_HE
 	if (fabs (wesn[YLO] - val) > small) {
 		wesn[YLO] = val;
 		GMT_Report (C->parent, GMT_MSG_NORMAL, "Warning: (s - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_SMALL);
-		GMT_Report (C->parent, GMT_MSG_NORMAL, "Warning: s reset to %g\n", wesn[YLO]);
+		sprintf(format,"Warning: s reset to %s\n",C->current.setting.format_float_out);
+		GMT_Report (C->parent, GMT_MSG_NORMAL, format, wesn[YLO]);
 	}
 
 	val = header->wesn[YLO] + lrint ((wesn[YHI] - header->wesn[YLO]) * header->r_inc[GMT_Y]) * header->inc[GMT_Y];
 	if (fabs (wesn[YHI] - val) > small) {
 		wesn[YHI] = val;
 		GMT_Report (C->parent, GMT_MSG_NORMAL, "Warning: (n - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_SMALL);
-		GMT_Report (C->parent, GMT_MSG_NORMAL, "Warning: n reset to %g\n", wesn[YHI]);
+		sprintf(format,"Warning: n reset to %s\n",C->current.setting.format_float_out);
+		GMT_Report (C->parent, GMT_MSG_NORMAL, format, wesn[YHI]);
 	}
 	return (GMT_NOERROR);
 }
