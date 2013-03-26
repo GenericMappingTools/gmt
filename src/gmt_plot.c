@@ -4168,7 +4168,6 @@ uint64_t gmt_get_gcarc (struct GMT_CTRL *C, double *A, double *B, double step, b
 		GMT_geo_to_cart (C, S->v.pole[GMT_Y], S->v.pole[GMT_X], P, true);
 		colat = d_acosd (GMT_dot3v (C, A, P));	/* Colatitude in degrees */
 		scale = sind (colat);
-		fprintf (stderr, "Colatitude = %g\n", colat);
 		c = S->v.rot;
 	}
 	else {
@@ -4176,7 +4175,6 @@ uint64_t gmt_get_gcarc (struct GMT_CTRL *C, double *A, double *B, double step, b
 		GMT_normalize3v (C, P);		/* Rotation pole unit vector */
 		c = d_acosd (GMT_dot3v (C, A, B));	/* opening angle in degrees */
 	}
-	fprintf (stderr, "Opening angle = %g\n", c);
 	if (longway) {	/* Want to go the long way */
 		c = 360.0 - c;
 		P[0] = -P[0], P[1] = -P[1], P[2] = -P[2];
