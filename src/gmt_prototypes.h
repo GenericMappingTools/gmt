@@ -26,7 +26,9 @@
 #ifndef _GMT_PROTOTYPES_H
 #define _GMT_PROTOTYPES_H
 
-EXTERN_MSC void grd_dump (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *grid, bool complex, char *txt);
+#ifdef GMT_DUMPING
+EXTERN_MSC void grd_dump (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *grid, bool is_complex, char *txt);
+#endif
 
 /* Temporary redef of strdup to allow check of memory leaks due to usage of strdup */
 #ifdef FISH_STRDUP_LEAKS

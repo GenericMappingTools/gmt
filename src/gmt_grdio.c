@@ -89,14 +89,14 @@ EXTERN_MSC void gmt_close_grd (struct GMT_CTRL *C, struct GMT_GRID *G);
 
 /* GENERIC I/O FUNCTIONS FOR GRIDDED DATA FILES */
 //#define GMT_DUMPING
-void grd_dump (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *grid, bool complex, char *txt)
+void grd_dump (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *grid, bool is_complex, char *txt)
 {
 #ifdef GMT_DUMPING
 	unsigned int row, col;
 	uint64_t k = 0U;
 	fprintf (stderr, "Dump [%s]:\n---------------------------------------------\n", txt);
 	for (row = 0; row < header->my; row++) {
-		if (complex)
+		if (is_complex)
 			for (col = 0; col < header->mx; col++, k+= 2) fprintf (stderr, "(%d,%d)\t", (int)grid[k], (int)grid[k+1]);
 		else
 			for (col = 0; col < header->mx; col++, k++) fprintf (stderr, "%d\t", (int)grid[k]);
