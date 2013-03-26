@@ -1801,7 +1801,7 @@ void GMT_grd_pad_off (struct GMT_CTRL *C, struct GMT_GRID *G)
 	 * we set it to zero just in case.
 	 * If pad is zero then we do nothing.
 	 */
-	bool complex;
+	bool is_complex;
 	uint64_t nm;
 	if (G->header->arrangement == GMT_GRID_IS_INTERLEAVED) {
 		GMT_Report (C->parent, GMT_MSG_NORMAL, "Calling GMT_grd_pad_off on interleaved complex grid! Programming error?\n");
@@ -1810,13 +1810,13 @@ void GMT_grd_pad_off (struct GMT_CTRL *C, struct GMT_GRID *G)
 	if (!GMT_grd_pad_status (C, G->header, NULL)) return;	/* No pad so nothing to do */
 
 	/* Here, G has a pad which we need to eliminate */
-	complex = (G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK);
-	if (!complex || (G->header->complex_mode & GMT_GRID_IS_COMPLEX_REAL))
+	is_complex = (G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK);
+	if (!is_complex || (G->header->complex_mode & GMT_GRID_IS_COMPLEX_REAL))
 		grd_pad_off_sub (G, G->data);	/* Remove pad around real component only or entire normal grid */
-	if (complex && (G->header->complex_mode & GMT_GRID_IS_COMPLEX_IMAG))
+	if (is_complex && (G->header->complex_mode & GMT_GRID_IS_COMPLEX_IMAG))
 		grd_pad_off_sub (G, &G->data[G->header->size/2]);	/* Remove pad around imaginary component */
 	nm = G->header->nm;	/* Number of nodes in one component */
-	if (complex) nm *= 2;	/* But there might be two */
+	if (is_complex) nm *= 2;	/* But there might be two */
 	if (G->header->size > nm) {	/* Just wipe the remaineder of the array to be sure */
 		size_t n_to_cleen = G->header->size - nm;
 		GMT_memset (&(G->data[nm]), n_to_cleen, float);	/* nm is 1st position after last row */
@@ -1842,7 +1842,7 @@ void GMT_grd_pad_on (struct GMT_CTRL *C, struct GMT_GRID *G, unsigned int *pad)
 	 * We check that the grid size can handle this and allocate more space if needed.
 	 * If pad matches the grid's pad then we do nothing.
 	 */
-	bool complex;
+	bool is_complex;
 	size_t size;
 	struct GMT_GRID_HEADER *h = NULL;
 
@@ -1856,9 +1856,9 @@ void GMT_grd_pad_on (struct GMT_CTRL *C, struct GMT_GRID *G, unsigned int *pad)
 		return;
 	}
 	/* Here the pads differ (or G has no pad at all) */
-	complex = (G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK);
+	is_complex = (G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK);
 	size = gmt_grd_get_nxpad (G->header, pad) * gmt_grd_get_nypad (G->header, pad);	/* New array size after pad is added */
-	if (complex) size *= 2;	/* Twice the space for complex grids */
+	if (is_complex) size *= 2;	/* Twice the space for complex grids */
 	if (size > G->header->size) {	/* Must allocate more space, but since no realloc for aligned memory we must do it the hard way */
 		float *f = NULL;
 		GMT_Report (C->parent, GMT_MSG_VERBOSE, "Extend grid via copy onto larger grid\n");
@@ -1873,9 +1873,9 @@ void GMT_grd_pad_on (struct GMT_CTRL *C, struct GMT_GRID *G, unsigned int *pad)
 
 	GMT_grd_setpad (C, G->header, pad);	/* Pad is now active and set to specified dimensions */
 	GMT_set_grddim (C, G->header);		/* Update all dimensions to reflect the padding */
-	if (complex && (G->header->complex_mode & GMT_GRID_IS_COMPLEX_IMAG))
+	if (is_complex && (G->header->complex_mode & GMT_GRID_IS_COMPLEX_IMAG))
 		grd_pad_on_sub (C, G, h, &G->data[size/2]);	/* Add pad around imaginary component first */
-	if (!complex || (G->header->complex_mode & GMT_GRID_IS_COMPLEX_REAL))
+	if (!is_complex || (G->header->complex_mode & GMT_GRID_IS_COMPLEX_REAL))
 		grd_pad_on_sub (C, G, h, G->data);	/* Add pad around real component */
 	GMT_free (C, h);	/* Done with this header */
 }
@@ -1904,7 +1904,7 @@ void GMT_grd_pad_zero (struct GMT_CTRL *C, struct GMT_GRID *G)
 {	/* Sets all boundary row/col nodes to zero and sets
 	 * the header->BC to GMT_IS_NOTSET.
 	 */
-	bool complex;
+	bool is_complex;
 	if (G->header->arrangement == GMT_GRID_IS_INTERLEAVED) {
 		GMT_Report (C->parent, GMT_MSG_NORMAL, "Calling GMT_grd_pad_off on interleaved complex grid! Programming error?\n");
 		return;
@@ -1912,10 +1912,10 @@ void GMT_grd_pad_zero (struct GMT_CTRL *C, struct GMT_GRID *G)
 	if (!GMT_grd_pad_status (C, G->header, NULL)) return;	/* No pad so nothing to do */
 	if (G->header->BC[XLO] == GMT_BC_IS_NOTSET && G->header->BC[XHI] == GMT_BC_IS_NOTSET && G->header->BC[YLO] == GMT_BC_IS_NOTSET && G->header->BC[YHI] == GMT_BC_IS_NOTSET) return;	/* No BCs set so nothing to do */			/* No pad so nothing to do */
 	/* Here, G has a pad with BCs which we need to reset */
-	complex = (G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK);
-	if (!complex || (G->header->complex_mode & GMT_GRID_IS_COMPLEX_REAL))
+	is_complex = (G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK);
+	if (!is_complex || (G->header->complex_mode & GMT_GRID_IS_COMPLEX_REAL))
 		grd_pad_zero_sub (G, G->data);
-	if (complex && (G->header->complex_mode & GMT_GRID_IS_COMPLEX_IMAG))
+	if (is_complex && (G->header->complex_mode & GMT_GRID_IS_COMPLEX_IMAG))
 		grd_pad_zero_sub (G, &G->data[G->header->size/2]);
 	GMT_memset (G->header->BC, 4U, int);	/* BCs no longer set for this grid */
 }
@@ -2123,7 +2123,7 @@ void GMT_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode
 
 	unsigned int col, row, one_or_zero, n_components = 1, start_component = 0, stop_component = 0, component;
 	uint64_t ij, offset;
-	bool complex = false;
+	bool is_complex = false;
 	double x_half_length, one_on_xhl, y_half_length, one_on_yhl;
 	double sumx2, sumy2, data_var_orig = 0.0, data_var = 0.0, var_redux, x, y, z, a[3];
 	char *comp[2] = {"real", "imaginary"};
@@ -2141,7 +2141,7 @@ void GMT_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode
 	}
 
 	if (Grid->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) {	/* Complex grid */
-		complex = true;
+		is_complex = true;
 		n_components = ((Grid->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) == GMT_GRID_IS_COMPLEX_MASK) ? 2 : 1;
 		start_component = (Grid->header->complex_mode & GMT_GRID_IS_COMPLEX_REAL) ? 0 : 1;
 		stop_component  = (Grid->header->complex_mode & GMT_GRID_IS_COMPLEX_IMAG) ? 1 : 0;
@@ -2165,7 +2165,7 @@ void GMT_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode
 				data_var += z * z;
 			}
 			var_redux = 100.0 * (data_var_orig - data_var) / data_var_orig;
-			if (complex)
+			if (is_complex)
 				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Mean value removed from %s component: %.8g Variance reduction: %.2f\n", comp[component], a[0], var_redux);
 			else
 				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Mean value removed: %.8g Variance reduction: %.2f\n", a[0], var_redux);
@@ -2187,7 +2187,7 @@ void GMT_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode
 				data_var += z * z;
 			}
 			var_redux = 100.0 * (data_var_orig - data_var) / data_var_orig;
-			if (complex)
+			if (is_complex)
 				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Mid value removed from %s component: %.8g Variance reduction: %.2f\n", comp[component], a[0], var_redux);
 			else
 				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Mid value removed: %.8g Variance reduction: %.2f\n", a[0], var_redux);
@@ -2241,7 +2241,7 @@ void GMT_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode
 			/* Rescale a1,a2 into user's units, in case useful later */
 			a[1] *= (2.0 / (Grid->header->wesn[XHI] - Grid->header->wesn[XLO]));
 			a[2] *= (2.0 / (Grid->header->wesn[YHI] - Grid->header->wesn[YLO]));
-			if (complex)
+			if (is_complex)
 				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Plane removed from %s component.  Mean, S.D., Dx, Dy: %.8g\t%.8g\t%.8g\t%.8g Variance reduction: %.2f\n", comp[component], a[0], data_var, a[1], a[2], var_redux);
 			else
 				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Plane removed.  Mean, S.D., Dx, Dy: %.8g\t%.8g\t%.8g\t%.8g Variance reduction: %.2f\n", a[0], data_var, a[1], a[2], var_redux);

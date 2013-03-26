@@ -7525,12 +7525,13 @@ int GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 	
 	while ((GMT_strtok (&text[k], "+", &pos, p))) {	/* Parse any +<modifier> statements */
 		switch (p[0]) {
-			case 'a':	S->v.v_angle = (float)atof (&p[1]);	break;	/* Vector head opening angle [30] */
-			case 'b':	S->v.status |= GMT_VEC_BEGIN;	break;	/* Vector head at beginning point */
-			case 'e':	S->v.status |= GMT_VEC_END;		break;	/* Vector head at end point */
-			case 'l':	S->v.status |= GMT_VEC_LEFT;	break;	/* Vector head on left half only */
-			case 'r':	S->v.status |= GMT_VEC_RIGHT;	break;	/* Vector head on right half only */
-			case 's':	S->v.status |= GMT_VEC_JUST_S;	break;	/* Input (angle,length) are vector end point (x,y) instead */
+			case 'a': S->v.v_angle = (float)atof (&p[1]);	break;	/* Vector head opening angle [30] */
+			case 'b': S->v.status |= GMT_VEC_BEGIN;		break;	/* Vector head at beginning point */
+			case 'e': S->v.status |= GMT_VEC_END;		break;	/* Vector head at end point */
+			case 'l': S->v.status |= GMT_VEC_LEFT;		break;	/* Vector head on left half only */
+			case 'q': S->v.status |= GMT_VEC_ANGLES;	break;	/* Expect start,stop angle rather than length in input */
+			case 'r': S->v.status |= GMT_VEC_RIGHT;		break;	/* Vector head on right half only */
+			case 's': S->v.status |= GMT_VEC_JUST_S;	break;	/* Input (angle,length) are vector end point (x,y) instead */
 			case 'j':	/* Vector justification */
 				if (text[0] == 'm') {
 					GMT_Report (C->parent, GMT_MSG_NORMAL, "-Sm does not accept +j<just> modifiers.\n");
@@ -7538,10 +7539,10 @@ int GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 				}
 				else {
 					switch (p[1]) {
-						case 'b':	S->v.status |= GMT_VEC_JUST_B;	break;	/* Input (x,y) refers to vector beginning point */
-						case 'c':	S->v.status |= GMT_VEC_JUST_C;	break;	/* Input (x,y) refers to vector center point */
-						case 'e':	S->v.status |= GMT_VEC_JUST_E;	break;	/* Input (x,y) refers to vector end point */
-						default:	/* Bad justifier code */
+						case 'b': S->v.status |= GMT_VEC_JUST_B;	break;	/* Input (x,y) refers to vector beginning point */
+						case 'c': S->v.status |= GMT_VEC_JUST_C;	break;	/* Input (x,y) refers to vector center point */
+						case 'e': S->v.status |= GMT_VEC_JUST_E;	break;	/* Input (x,y) refers to vector end point */
+						default:  /* Bad justifier code */
 							GMT_Report (C->parent, GMT_MSG_NORMAL, "Bad +j<just> modifier %c\n", p[1]);
 							error++;
 							break;	
@@ -7573,7 +7574,6 @@ int GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 					error++;
 				}
 				S->v.pole[GMT_X] = pole[GMT_X];	S->v.pole[GMT_Y] = pole[GMT_Y];
-				GMT_Report (C->parent, GMT_MSG_NORMAL, "+o for small circles not quite implemented yet.\n");
 				break;
 			case 'p':	/* Vector pen and head outline +p[-][<pen>] */
 				p_opt = true;	/* Marks that +p was used */
@@ -7590,9 +7590,6 @@ int GMT_parse_vector (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *S)
 					}
 					S->v.status |= GMT_VEC_OUTLINE2;	/* Flag that a pen specification was given */
 				}
-				break;
-			case 'q':	/* Expect start,stop angle rather than length in input */
-				S->v.status |= GMT_VEC_ANGLES;
 				break;
 			default:
 				GMT_Report (C->parent, GMT_MSG_NORMAL, "Bad modifier +%c\n", p[0]);
