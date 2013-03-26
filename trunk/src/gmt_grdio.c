@@ -1561,7 +1561,7 @@ int GMT_adjust_loose_wesn (struct GMT_CTRL *C, double wesn[], struct GMT_GRID_HE
 		val = header->wesn[XLO] + lrint ((wesn[XHI] - header->wesn[XLO]) * header->r_inc[GMT_X]) * header->inc[GMT_X];
 		dx = fabs (wesn[XHI] - val);
 		if (GMT_x_is_lon (C, GMT_IN)) dx = fmod (dx, 360.0);
-		if (dx > GMT_SMALL) {
+		if (dx > small) {
 			wesn[XHI] = val;
 			GMT_Report (C->parent, GMT_MSG_NORMAL, "Warning: (e - x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_SMALL);
 			sprintf(format,"Warning: e reset to %s\n",C->current.setting.format_float_out);
