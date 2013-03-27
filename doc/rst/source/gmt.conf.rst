@@ -14,12 +14,12 @@ defaults are given in brackets [ for SI (and US) ]. Those marked **\***
 can be set on the command line as well (the corresponding option is
 given in parentheses). Note that default distances and lengths below are
 given in both cm or inch; the chosen default depends on your choice of
-default unit (see **PROJ\_LENGTH\_UNIT**). You can explicitly specify
+default unit (see **PROJ_LENGTH_UNIT**). You can explicitly specify
 the unit used for distances and lengths by appending **c** (cm), **i**
 (inch), or **p** (points). When no unit is indicated the value will be
-assumed to be in the unit set by **PROJ\_LENGTH\_UNIT**. Several
+assumed to be in the unit set by **PROJ_LENGTH_UNIT**. Several
 parameters take only **true** or **false**. Finally, most of these
-parameters can be changed on-the-fly via the **--PARAMETER**\ =\ *VALUE*
+parameters can be changed on-the-fly via the **-**\ **-PARAMETER**\ =\ *VALUE*
 option to any **GMT** program. However, a few are static and are only
 read via the **gmt.conf** file; these are labeled (static).
 
@@ -27,7 +27,7 @@ read via the **gmt.conf** file; these are labeled (static).
 --------------------------------
 
 The full explanation for how to specify pens, pattern fills, colors, and
-fonts can be found in the **gmt** man page.
+fonts can be found in the `gmt <gmt.html>`_ man page.
 
 
 +---------------------------------+----------------+
@@ -316,7 +316,7 @@ fonts can be found in the **gmt** man page.
     invalid value, written as *ff*/*scale*/*offset*/*invalid*. The
     2-letter format indicator can be one of
     [**abcegnrs**\ ][**bsifd**\ ]. See
-    `**grdreformat**\ (1) <grdreformat.html>`_ and Section 4.20 of the
+    `grdreformat <grdreformat.html>`_ and Section 4.20 of the
     GMT Technical Reference and Cookbook for more information. The
     *scale* and *offset* modifiers may be left empty to select default
     values (scale = 1, offset = 0), or you may specify *a* for
@@ -531,7 +531,7 @@ fonts can be found in the **gmt** man page.
     conformal, meridional, parametric, or none [authalic]. When not none
     we convert any latitude used in the great circle calculation to the
     chosen auxiliary latitude before doing the distance calculation. See
-    also PROJ\_MEAN\_RADIUS.
+    also **PROJ_MEAN_RADIUS**.
 
 .. _Projection Parameters:
 
@@ -798,71 +798,44 @@ fonts can be found in the **gmt** man page.
     Language to use when plotting calendar items such as months and
     days. Select from:
 
-    BR Brazilian Portuguese
-
-    CN1 Simplified Chinese
-
-    CN2 Traditional Chinese
-
-    DE German
-
-    DK Danish
-
-    EH Basque
-
-    ES Spanish
-
-    FI Finnish
-
-    FR French
-
-    GR Greek
-
-    HI Hawaiian
-
-    HU Hungarian
-
-    IE Irish
-
-    IL Hebrew
-
-    IS Icelandic
-
-    IT Italian
-
-    JP Japanese
-
-    NL Dutch
-
-    NO Norwegian
-
-    PL Polish
-
-    PT Portuguese
-
-    RU Russian
-
-    SE Swedish
-
-    SG Scottish Gaelic
-
-    TO Tongan
-
-    TR Turkish
-
-    UK British English
-
-    US US English
+    * BR Brazilian Portuguese
+    * CN1 Simplified Chinese
+    * CN2 Traditional Chinese
+    * DE German
+    * DK Danish
+    * EH Basque
+    * ES Spanish
+    * FI Finnish
+    * FR French
+    * GR Greek
+    * HI Hawaiian
+    * HU Hungarian
+    * IE Irish
+    * IL Hebrew
+    * IS Icelandic
+    * IT Italian
+    * JP Japanese
+    * NL Dutch
+    * NO Norwegian
+    * PL Polish
+    * PT Portuguese
+    * RU Russian
+    * SE Swedish
+    * SG Scottish Gaelic
+    * TO Tongan
+    * TR Turkish
+    * UK British English
+    * US US English
 
     If your language is not supported, please examine the
-    **$GMT\_SHAREDIR**/time/us.d file and make a similar file. Please
+    **$GMT_SHAREDIR**/time/us.d file and make a similar file. Please
     submit it to the **GMT** Developers for official inclusion. Custom
-    language files can be placed in directories **$GMT\_SHAREDIR**/time
+    language files can be placed in directories **$GMT_SHAREDIR**/time
     or ~/.gmt. Note: Some of these languages may require you to also
-    change the **PS\_CHAR\_ENCODING** setting.
+    change the **PS_CHAR_ENCODING** setting.
 
 **TIME\_SYSTEM**
-    Shorthand for a combination of **TIME\_EPOCH** and **TIME\_UNIT**,
+    Shorthand for a combination of **TIME_EPOCH** and **TIME_UNIT**,
     specifying which time epoch the relative time refers to and what the
     units are. Choose from one of the preset systems below (epoch and
     units are indicated):
@@ -882,10 +855,10 @@ fonts can be found in the **gmt** man page.
     RATA 0000-12-31T00:00:00 d
 
     This parameter is not stored in the **gmt.conf** file but is
-    translated to the respective values of **TIME\_EPOCH** and
-    **TIME\_UNIT**.
+    translated to the respective values of **TIME_EPOCH** and
+    **TIME_UNIT**.
 
-**TIME\_UNIT**
+**TIME_UNIT**
     Specifies the units of relative time data since epoch (see
     **TIME\_EPOCH**). Choose y (year - assumes all years are 365.2425
     days), o (month - assumes all months are of equal length y/12), d

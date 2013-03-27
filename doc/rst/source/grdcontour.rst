@@ -12,9 +12,9 @@ grdcontour - Make contour map using a grid
 **grdcontour** *grid* **-C**\ *cont\_int*\ \|\ *cpt*
 **-J**\ *parameters* [ **-A**\ [**-**\ \|\ *annot\_int*][*labelinfo*]
 ] [ **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-D**\ *template* ] [
-**-F**\ [**l**\ \|\ **r**] ] [
-**-G**\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params*
-] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [ **-L**\ *low/high* ]
+**-F**\ [**l**\ \|\ **r**] ]
+[ **-G**\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ] 
+[ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [ **-L**\ *low/high* ]
 [ **-O** ] [ **-P** ] [ **-Q**\ *cut* ] [
 **-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ] ] [
 **-S**\ *smoothfactor* ] [
@@ -94,7 +94,7 @@ may be saved to one or more output files (or stdout) and no plot is produced.
     left (**-Fl** [Default]) or right (**-Fr**) as we move along the contour
     [Default is arbitrary orientation]. Requires **-D**.
 
-**-G**
+**-G**\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* 
 
 .. include:: explain_contlabel.rst_
 
