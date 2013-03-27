@@ -114,9 +114,9 @@ int GMT_grdmask_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-double grdmask_assign (struct GMT_CTRL *C, char *p) {
+double grdmask_assign (struct GMT_CTRL *GMT, char *p) {
 	/* Handle the parsing of NaN|<value> */
-	double value = (p[0] == 'N' || p[0] == 'n') ? C->session.d_NaN : atof (p);
+	double value = (p[0] == 'N' || p[0] == 'n') ? GMT->session.d_NaN : atof (p);
 	return (value);
 }
 

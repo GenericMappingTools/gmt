@@ -223,51 +223,51 @@ EXTERN_MSC struct MGD77_CONTROL M;
 
 /* Function prototypes.  These can be accessed in user programs */
 
-EXTERN_MSC FILE *x2sys_fopen (struct GMT_CTRL *C, char *fname, char *mode);
-EXTERN_MSC int x2sys_access (struct GMT_CTRL *C, char *fname, int mode);
-EXTERN_MSC void x2sys_path (struct GMT_CTRL *C, char *fname, char *path);
+EXTERN_MSC FILE *x2sys_fopen (struct GMT_CTRL *GMT, char *fname, char *mode);
+EXTERN_MSC int x2sys_access (struct GMT_CTRL *GMT, char *fname, int mode);
+EXTERN_MSC void x2sys_path (struct GMT_CTRL *GMT, char *fname, char *path);
 
-EXTERN_MSC int x2sys_read_record (struct GMT_CTRL *C, FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_IO *G);
-EXTERN_MSC int x2sys_read_file        (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec);
-EXTERN_MSC int x2sys_read_gmtfile     (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec);
-EXTERN_MSC int x2sys_read_mgd77file   (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec);
-EXTERN_MSC int x2sys_read_mgd77ncfile (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec);
-EXTERN_MSC int x2sys_read_ncfile      (struct GMT_CTRL *C, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec);
-EXTERN_MSC unsigned int x2sys_n_data_cols (struct GMT_CTRL *C, struct X2SYS_INFO *s);
-EXTERN_MSC int x2sys_read_list (struct GMT_CTRL *C, char *file, char ***list, unsigned int *n);
-EXTERN_MSC int x2sys_read_weights (struct GMT_CTRL *C, char *file, char ***list, double **weights, unsigned int *nf);
-EXTERN_MSC void x2sys_free_list (struct GMT_CTRL *C, char **list, uint64_t n);
-EXTERN_MSC int x2sys_find_track (struct GMT_CTRL *C, char *name, char **list, unsigned int n);
-int x2sys_get_tracknames (struct GMT_CTRL *C, struct GMT_OPTION *options, char ***tracklist, bool *cmdline);
+EXTERN_MSC int x2sys_read_record (struct GMT_CTRL *GMT, FILE *fp, double *data, struct X2SYS_INFO *s, struct GMT_IO *G);
+EXTERN_MSC int x2sys_read_file        (struct GMT_CTRL *GMT, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec);
+EXTERN_MSC int x2sys_read_gmtfile     (struct GMT_CTRL *GMT, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec);
+EXTERN_MSC int x2sys_read_mgd77file   (struct GMT_CTRL *GMT, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec);
+EXTERN_MSC int x2sys_read_mgd77ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec);
+EXTERN_MSC int x2sys_read_ncfile      (struct GMT_CTRL *GMT, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec);
+EXTERN_MSC unsigned int x2sys_n_data_cols (struct GMT_CTRL *GMT, struct X2SYS_INFO *s);
+EXTERN_MSC int x2sys_read_list (struct GMT_CTRL *GMT, char *file, char ***list, unsigned int *n);
+EXTERN_MSC int x2sys_read_weights (struct GMT_CTRL *GMT, char *file, char ***list, double **weights, unsigned int *nf);
+EXTERN_MSC void x2sys_free_list (struct GMT_CTRL *GMT, char **list, uint64_t n);
+EXTERN_MSC int x2sys_find_track (struct GMT_CTRL *GMT, char *name, char **list, unsigned int n);
+int x2sys_get_tracknames (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char ***tracklist, bool *cmdline);
 
-EXTERN_MSC double *x2sys_dummytimes (struct GMT_CTRL *C, uint64_t n);
+EXTERN_MSC double *x2sys_dummytimes (struct GMT_CTRL *GMT, uint64_t n);
 
-EXTERN_MSC void x2sys_skip_header (struct GMT_CTRL *C, FILE *fp, struct X2SYS_INFO *s);
-EXTERN_MSC int x2sys_fclose (struct GMT_CTRL *C, char *fname, FILE *fp);
-EXTERN_MSC void x2sys_free_info (struct GMT_CTRL *C, struct X2SYS_INFO *s);
-EXTERN_MSC void x2sys_free_data (struct GMT_CTRL *C, double **data, unsigned int n, struct X2SYS_FILE_INFO *p);
-EXTERN_MSC int x2sys_pick_fields (struct GMT_CTRL *C, char *string, struct X2SYS_INFO *s);
+EXTERN_MSC void x2sys_skip_header (struct GMT_CTRL *GMT, FILE *fp, struct X2SYS_INFO *s);
+EXTERN_MSC int x2sys_fclose (struct GMT_CTRL *GMT, char *fname, FILE *fp);
+EXTERN_MSC void x2sys_free_info (struct GMT_CTRL *GMT, struct X2SYS_INFO *s);
+EXTERN_MSC void x2sys_free_data (struct GMT_CTRL *GMT, double **data, unsigned int n, struct X2SYS_FILE_INFO *p);
+EXTERN_MSC int x2sys_pick_fields (struct GMT_CTRL *GMT, char *string, struct X2SYS_INFO *s);
 
-EXTERN_MSC int x2sys_initialize (struct GMT_CTRL *C, char *TAG, char *fname, struct GMT_IO *G, struct X2SYS_INFO **I);
-EXTERN_MSC void x2sys_end (struct GMT_CTRL *C, struct X2SYS_INFO *X);
+EXTERN_MSC int x2sys_initialize (struct GMT_CTRL *GMT, char *TAG, char *fname, struct GMT_IO *G, struct X2SYS_INFO **I);
+EXTERN_MSC void x2sys_end (struct GMT_CTRL *GMT, struct X2SYS_INFO *X);
 
-EXTERN_MSC int x2sys_set_system (struct GMT_CTRL *C, char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, struct GMT_IO *G);
-EXTERN_MSC void x2sys_bix_init (struct GMT_CTRL *C, struct X2SYS_BIX *B, bool alloc);
-EXTERN_MSC struct X2SYS_BIX_TRACK_INFO *x2sys_bix_make_entry (struct GMT_CTRL *C, char *name, uint32_t id_no, uint32_t flag);
-EXTERN_MSC struct X2SYS_BIX_TRACK *x2sys_bix_make_track (struct GMT_CTRL *C, uint32_t id, uint32_t flag);
-EXTERN_MSC int x2sys_bix_read_tracks (struct GMT_CTRL *C, struct X2SYS_INFO *s, struct X2SYS_BIX *B, int mode, uint32_t *ID);
-EXTERN_MSC int x2sys_bix_read_index (struct GMT_CTRL *C, struct X2SYS_INFO *s, struct X2SYS_BIX *B, bool swap);
-EXTERN_MSC int x2sys_bix_get_index (struct GMT_CTRL *C, double x, double y, int *i, int *j, struct X2SYS_BIX *B, uint64_t *ID);
+EXTERN_MSC int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **s, struct X2SYS_BIX *B, struct GMT_IO *G);
+EXTERN_MSC void x2sys_bix_init (struct GMT_CTRL *GMT, struct X2SYS_BIX *B, bool alloc);
+EXTERN_MSC struct X2SYS_BIX_TRACK_INFO *x2sys_bix_make_entry (struct GMT_CTRL *GMT, char *name, uint32_t id_no, uint32_t flag);
+EXTERN_MSC struct X2SYS_BIX_TRACK *x2sys_bix_make_track (struct GMT_CTRL *GMT, uint32_t id, uint32_t flag);
+EXTERN_MSC int x2sys_bix_read_tracks (struct GMT_CTRL *GMT, struct X2SYS_INFO *s, struct X2SYS_BIX *B, int mode, uint32_t *ID);
+EXTERN_MSC int x2sys_bix_read_index (struct GMT_CTRL *GMT, struct X2SYS_INFO *s, struct X2SYS_BIX *B, bool swap);
+EXTERN_MSC int x2sys_bix_get_index (struct GMT_CTRL *GMT, double x, double y, int *i, int *j, struct X2SYS_BIX *B, uint64_t *ID);
 
-EXTERN_MSC void x2sys_path_init (struct GMT_CTRL *C, struct X2SYS_INFO *s);
-EXTERN_MSC int x2sys_get_data_path (struct GMT_CTRL *C, char *track_path, char *track, char *suffix);
-EXTERN_MSC int x2sys_err_pass (struct GMT_CTRL *C, int err, char *file);
-EXTERN_MSC void x2sys_err_fail (struct GMT_CTRL *C, int err, char *file);
-EXTERN_MSC const char * x2sys_strerror (struct GMT_CTRL *C, int err);
+EXTERN_MSC void x2sys_path_init (struct GMT_CTRL *GMT, struct X2SYS_INFO *s);
+EXTERN_MSC int x2sys_get_data_path (struct GMT_CTRL *GMT, char *track_path, char *track, char *suffix);
+EXTERN_MSC int x2sys_err_pass (struct GMT_CTRL *GMT, int err, char *file);
+EXTERN_MSC void x2sys_err_fail (struct GMT_CTRL *GMT, int err, char *file);
+EXTERN_MSC const char * x2sys_strerror (struct GMT_CTRL *GMT, int err);
 
-EXTERN_MSC uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *C, struct X2SYS_INFO *s, char *dbase, char *ignorefile, double *wesn, char *fflag, int coe_kind, char *one_trk, struct X2SYS_COE_PAIR **xpairs, uint64_t *nx, uint64_t *ntracks);
-EXTERN_MSC void x2sys_free_coe_dbase (struct GMT_CTRL *C, struct X2SYS_COE_PAIR *P, uint64_t np);
-EXTERN_MSC void x2sys_get_corrtable (struct GMT_CTRL *C, struct X2SYS_INFO *s, char *table, uint64_t ntracks, char **trk_name, char *column, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist, struct MGD77_CORRTABLE ***CORR);
+EXTERN_MSC uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *s, char *dbase, char *ignorefile, double *wesn, char *fflag, int coe_kind, char *one_trk, struct X2SYS_COE_PAIR **xpairs, uint64_t *nx, uint64_t *ntracks);
+EXTERN_MSC void x2sys_free_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_COE_PAIR *P, uint64_t np);
+EXTERN_MSC void x2sys_get_corrtable (struct GMT_CTRL *GMT, struct X2SYS_INFO *s, char *table, uint64_t ntracks, char **trk_name, char *column, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist, struct MGD77_CORRTABLE ***CORR);
 
 #define X2SYS_ASCII		0
 #define X2SYS_BINARY		1

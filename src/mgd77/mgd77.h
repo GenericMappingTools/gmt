@@ -479,94 +479,94 @@ struct MGD77_CORRTABLE {
 
 /* Primary user functions */
 
-EXTERN_MSC void MGD77_Init (struct GMT_CTRL *C, struct MGD77_CONTROL *F);						/* Initialize the MGD77 machinery */
-EXTERN_MSC void MGD77_Reset (struct GMT_CTRL *C, struct MGD77_CONTROL *F);									/* Reset after finishing a file */
-EXTERN_MSC void MGD77_end (struct GMT_CTRL *C, struct MGD77_CONTROL *F);				/* Free up MGD77-related variables */
-EXTERN_MSC int MGD77_Path_Expand (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct GMT_OPTION *options, char ***list);				/* Returns the full list of IDs */
-EXTERN_MSC void MGD77_Path_Free (struct GMT_CTRL *C, uint64_t n, char **list);	/* Free the list of IDs */
-EXTERN_MSC void MGD77_Cruise_Explain (struct GMT_CTRL *C);										/* Explains how to specify IDs */
-EXTERN_MSC int MGD77_Get_Path (struct GMT_CTRL *C, char *track_path, char *track, struct MGD77_CONTROL *F);					/* Returns full path to cruise */
-EXTERN_MSC int MGD77_Open_File (struct GMT_CTRL *C, char *leg, struct MGD77_CONTROL *F, int rw);						/* Opens a MGD77[+] file */
-EXTERN_MSC int MGD77_Close_File (struct GMT_CTRL *C, struct MGD77_CONTROL *F);									/* Closes a MGD77[+] file */
-EXTERN_MSC int MGD77_Read_File (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);				/* Allocate & Read entire file (selected columns only) */
-EXTERN_MSC int MGD77_Write_File (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);				/* Write entire file (all columns) */
-EXTERN_MSC int MGD77_Read_Header_Record (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);			/* Read the header record */
-EXTERN_MSC int MGD77_Write_Header_Record (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);			/* Write the header record */
-EXTERN_MSC int MGD77_Free_Header_Record (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);					/* Frees up header memory */
-EXTERN_MSC int MGD77_Read_Data (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);				/* Allocate & Read all data (selected columns only); Header already read */
-EXTERN_MSC int MGD77_Write_Data (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);				/* Write all data (all columns); Header already written */
-EXTERN_MSC int MGD77_Read_Data_Record (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double dvals[], char *tvals[]);	/* Read a single data record (selected columns only) */
-EXTERN_MSC int MGD77_Write_Data_Record (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double dvals[], char *tvals[]);	/* Write a single data record (selected columns only) */
-EXTERN_MSC void MGD77_Free_Dataset (struct GMT_CTRL *C, struct MGD77_DATASET **S);								/* Free memory allocated by MGD77_Read_File/MGD77_Read_Data */
-EXTERN_MSC void MGD77_Select_Columns (struct GMT_CTRL *C, char *string, struct MGD77_CONTROL *F, unsigned int option);				/* Decode the -F option specifying the desired columns */
-EXTERN_MSC int MGD77_Get_Column (struct GMT_CTRL *C, char *word, struct MGD77_CONTROL *F);							/* Get column number from column name (or -1 if not present) */
-EXTERN_MSC int MGD77_Info_from_Abbrev (struct GMT_CTRL *C, char *name, struct MGD77_HEADER *H, int *set, int *item);
-EXTERN_MSC void MGD77_List_Header_Items (struct GMT_CTRL *C, struct MGD77_CONTROL *F);
-EXTERN_MSC int MGD77_Select_Header_Item (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char *item);
-EXTERN_MSC int MGD77_Get_Set (struct GMT_CTRL *C, char *abbrev);										/* Returns 0 if abbrev is in the MGD77 set, else 1 */
-EXTERN_MSC void MGD77_Fatal_Error (struct GMT_CTRL *C, int error);										/* Print message for this error and exit */
-EXTERN_MSC bool MGD77_Pass_Record (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_DATASET *S, uint64_t rec);				/* Tests if a record passes all specified logical & exact tests */
-EXTERN_MSC void MGD77_Apply_Bitflags (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_DATASET *S, uint64_t rec, bool apply_bits[]);	/* Replaces values whose flags are ON with NaNs */
-EXTERN_MSC void MGD77_Set_Unit (struct GMT_CTRL *C, char *dist, double *scale, int way);							/* Convert appended distance unit to a numerical scale to give meters */
-EXTERN_MSC void MGD77_nc_status (struct GMT_CTRL *C, int status);										/* Checks for netCDF errors and aborts with error message */
-EXTERN_MSC void MGD77_Process_Ignore (struct GMT_CTRL *C, char code, char *format);								/* Process the ignre-format option */
-EXTERN_MSC void MGD77_Ignore_Format (struct GMT_CTRL *C, int format);										/* Dissallow some formats for consideration */
-EXTERN_MSC void MGD77_Select_Format (struct GMT_CTRL *C, int format);										/* Only select a specific format for consideration */
-EXTERN_MSC struct MGD77_DATASET *MGD77_Create_Dataset (struct GMT_CTRL *C);									/* Create an empty data set structure */
-EXTERN_MSC void MGD77_Prep_Header_cdf (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);					/* Prepare header before we write */
-EXTERN_MSC void MGD77_Dump_Header_Params (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P);				/* Dump of header items, one per line */
-EXTERN_MSC void MGD77_Verify_Header (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE *ufp);				/* Verify content of header per MGD77 docs */
-EXTERN_MSC void MGD77_Verify_Prep (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_DATASET *D);
-EXTERN_MSC void MGD77_Verify_Prep_m77 (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_META *M, struct MGD77_DATA_RECORD *D, uint64_t nrec);
-EXTERN_MSC int MGD77_Remove_E77 (struct GMT_CTRL *C, struct MGD77_CONTROL *F);
-EXTERN_MSC int MGD77_Read_Data_Record_asc (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record);			  /* Will read a single MGD77/MGD77T/DAT record */
-EXTERN_MSC int MGD77_Write_Data_Record_asc (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record)	;		  /* Will write a single MGD77/MGD77T/DAT record */
+EXTERN_MSC void MGD77_Init (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F);						/* Initialize the MGD77 machinery */
+EXTERN_MSC void MGD77_Reset (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F);									/* Reset after finishing a file */
+EXTERN_MSC void MGD77_end (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F);				/* Free up MGD77-related variables */
+EXTERN_MSC int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT_OPTION *options, char ***list);				/* Returns the full list of IDs */
+EXTERN_MSC void MGD77_Path_Free (struct GMT_CTRL *GMT, uint64_t n, char **list);	/* Free the list of IDs */
+EXTERN_MSC void MGD77_Cruise_Explain (struct GMT_CTRL *GMT);										/* Explains how to specify IDs */
+EXTERN_MSC int MGD77_Get_Path (struct GMT_CTRL *GMT, char *track_path, char *track, struct MGD77_CONTROL *F);					/* Returns full path to cruise */
+EXTERN_MSC int MGD77_Open_File (struct GMT_CTRL *GMT, char *leg, struct MGD77_CONTROL *F, int rw);						/* Opens a MGD77[+] file */
+EXTERN_MSC int MGD77_Close_File (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F);									/* Closes a MGD77[+] file */
+EXTERN_MSC int MGD77_Read_File (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);				/* Allocate & Read entire file (selected columns only) */
+EXTERN_MSC int MGD77_Write_File (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);				/* Write entire file (all columns) */
+EXTERN_MSC int MGD77_Read_Header_Record (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);			/* Read the header record */
+EXTERN_MSC int MGD77_Write_Header_Record (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);			/* Write the header record */
+EXTERN_MSC int MGD77_Free_Header_Record (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);					/* Frees up header memory */
+EXTERN_MSC int MGD77_Read_Data (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);				/* Allocate & Read all data (selected columns only); Header already read */
+EXTERN_MSC int MGD77_Write_Data (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);				/* Write all data (all columns); Header already written */
+EXTERN_MSC int MGD77_Read_Data_Record (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double dvals[], char *tvals[]);	/* Read a single data record (selected columns only) */
+EXTERN_MSC int MGD77_Write_Data_Record (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double dvals[], char *tvals[]);	/* Write a single data record (selected columns only) */
+EXTERN_MSC void MGD77_Free_Dataset (struct GMT_CTRL *GMT, struct MGD77_DATASET **S);								/* Free memory allocated by MGD77_Read_File/MGD77_Read_Data */
+EXTERN_MSC void MGD77_Select_Columns (struct GMT_CTRL *GMT, char *string, struct MGD77_CONTROL *F, unsigned int option);				/* Decode the -F option specifying the desired columns */
+EXTERN_MSC int MGD77_Get_Column (struct GMT_CTRL *GMT, char *word, struct MGD77_CONTROL *F);							/* Get column number from column name (or -1 if not present) */
+EXTERN_MSC int MGD77_Info_from_Abbrev (struct GMT_CTRL *GMT, char *name, struct MGD77_HEADER *H, int *set, int *item);
+EXTERN_MSC void MGD77_List_Header_Items (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F);
+EXTERN_MSC int MGD77_Select_Header_Item (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, char *item);
+EXTERN_MSC int MGD77_Get_Set (struct GMT_CTRL *GMT, char *abbrev);										/* Returns 0 if abbrev is in the MGD77 set, else 1 */
+EXTERN_MSC void MGD77_Fatal_Error (struct GMT_CTRL *GMT, int error);										/* Print message for this error and exit */
+EXTERN_MSC bool MGD77_Pass_Record (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_DATASET *S, uint64_t rec);				/* Tests if a record passes all specified logical & exact tests */
+EXTERN_MSC void MGD77_Apply_Bitflags (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_DATASET *S, uint64_t rec, bool apply_bits[]);	/* Replaces values whose flags are ON with NaNs */
+EXTERN_MSC void MGD77_Set_Unit (struct GMT_CTRL *GMT, char *dist, double *scale, int way);							/* Convert appended distance unit to a numerical scale to give meters */
+EXTERN_MSC void MGD77_nc_status (struct GMT_CTRL *GMT, int status);										/* Checks for netCDF errors and aborts with error message */
+EXTERN_MSC void MGD77_Process_Ignore (struct GMT_CTRL *GMT, char code, char *format);								/* Process the ignre-format option */
+EXTERN_MSC void MGD77_Ignore_Format (struct GMT_CTRL *GMT, int format);										/* Dissallow some formats for consideration */
+EXTERN_MSC void MGD77_Select_Format (struct GMT_CTRL *GMT, int format);										/* Only select a specific format for consideration */
+EXTERN_MSC struct MGD77_DATASET *MGD77_Create_Dataset (struct GMT_CTRL *GMT);									/* Create an empty data set structure */
+EXTERN_MSC void MGD77_Prep_Header_cdf (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_DATASET *S);					/* Prepare header before we write */
+EXTERN_MSC void MGD77_Dump_Header_Params (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_HEADER_PARAMS *P);				/* Dump of header items, one per line */
+EXTERN_MSC void MGD77_Verify_Header (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_HEADER *H, FILE *ufp);				/* Verify content of header per MGD77 docs */
+EXTERN_MSC void MGD77_Verify_Prep (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_DATASET *D);
+EXTERN_MSC void MGD77_Verify_Prep_m77 (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_META *M, struct MGD77_DATA_RECORD *D, uint64_t nrec);
+EXTERN_MSC int MGD77_Remove_E77 (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F);
+EXTERN_MSC int MGD77_Read_Data_Record_asc (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record);			  /* Will read a single MGD77/MGD77T/DAT record */
+EXTERN_MSC int MGD77_Write_Data_Record_asc (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record)	;		  /* Will write a single MGD77/MGD77T/DAT record */
 
 /* Secondary user functions */
 
-EXTERN_MSC int MGD77_Write_Header_Record_m77 (struct GMT_CTRL *C, char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);		/* Hardwired write of ascii/MGD77 header */
+EXTERN_MSC int MGD77_Write_Header_Record_m77 (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H);		/* Hardwired write of ascii/MGD77 header */
 
 /* These are only for developers */
 
-EXTERN_MSC bool MGD77_dbl_are_constant (struct GMT_CTRL *C, double x[], uint64_t n, double limits[]);
-EXTERN_MSC bool MGD77_txt_are_constant (struct GMT_CTRL *C, char *txt, uint64_t n, size_t width);
-EXTERN_MSC uint64_t MGD77_do_scale_offset_before_write (struct GMT_CTRL *C, double new[], const double x[], uint64_t n, double scale, double offset, int type);
-EXTERN_MSC int MGD77_Match_List (struct GMT_CTRL *C, char *word, unsigned int n_fields, char **list);
+EXTERN_MSC bool MGD77_dbl_are_constant (struct GMT_CTRL *GMT, double x[], uint64_t n, double limits[]);
+EXTERN_MSC bool MGD77_txt_are_constant (struct GMT_CTRL *GMT, char *txt, uint64_t n, size_t width);
+EXTERN_MSC uint64_t MGD77_do_scale_offset_before_write (struct GMT_CTRL *GMT, double new[], const double x[], uint64_t n, double scale, double offset, int type);
+EXTERN_MSC int MGD77_Match_List (struct GMT_CTRL *GMT, char *word, unsigned int n_fields, char **list);
 
 /* User functions for direct use of Carter corrections */
 
-EXTERN_MSC int MGD77_carter_depth_from_twt (struct GMT_CTRL *G, int zone, double twt_in_msec, struct MGD77_CARTER *C, double *depth_in_corr_m);
-EXTERN_MSC int MGD77_carter_twt_from_depth (struct GMT_CTRL *G, int zone, double depth_in_corr_m, struct MGD77_CARTER *C, double *twt_in_msec);
-EXTERN_MSC int MGD77_carter_depth_from_xytwt (struct GMT_CTRL *G, double lon, double lat, double twt_in_msec, struct MGD77_CARTER *C, double *depth_in_corr_m);
-EXTERN_MSC int MGD77_carter_twt_from_xydepth (struct GMT_CTRL *G, double lon, double lat, double depth_in_corr_m, struct MGD77_CARTER *C, double *twt_in_msec);
-EXTERN_MSC double MGD77_carter_correction (struct GMT_CTRL *G, double lon, double lat, double twt_in_msec, struct MGD77_CARTER *C);
+EXTERN_MSC int MGD77_carter_depth_from_twt (struct GMT_CTRL *GMT, int zone, double twt_in_msec, struct MGD77_CARTER *C, double *depth_in_corr_m);
+EXTERN_MSC int MGD77_carter_twt_from_depth (struct GMT_CTRL *GMT, int zone, double depth_in_corr_m, struct MGD77_CARTER *C, double *twt_in_msec);
+EXTERN_MSC int MGD77_carter_depth_from_xytwt (struct GMT_CTRL *GMT, double lon, double lat, double twt_in_msec, struct MGD77_CARTER *C, double *depth_in_corr_m);
+EXTERN_MSC int MGD77_carter_twt_from_xydepth (struct GMT_CTRL *GMT, double lon, double lat, double depth_in_corr_m, struct MGD77_CARTER *C, double *twt_in_msec);
+EXTERN_MSC double MGD77_carter_correction (struct GMT_CTRL *GMT, double lon, double lat, double twt_in_msec, struct MGD77_CARTER *C);
 
 /* User functions for direct use of IGRF corrections, theoretical gravity */
 
-EXTERN_MSC int MGD77_igrf10syn (struct GMT_CTRL *C, int isv, double date, int itype, double alt, double lon, double lat, double *out);
-EXTERN_MSC double MGD77_Theoretical_Gravity (struct GMT_CTRL *C, double lon, double lat, int version);
-EXTERN_MSC void MGD77_IGF_text (struct GMT_CTRL *C, FILE *fp, int version);
-EXTERN_MSC double MGD77_Recalc_Mag_Anomaly_IGRF (struct GMT_CTRL *C, struct MGD77_CONTROL *F, double time, double lon, double lat, double obs, bool calc_date);
-EXTERN_MSC double MGD77_time_to_fyear (struct GMT_CTRL *C, struct MGD77_CONTROL *F, double time);
-EXTERN_MSC double MGD77_cal_to_fyear (struct GMT_CTRL *C, struct GMT_gcal *cal);
-EXTERN_MSC bool MGD77_fake_times (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double *lon, double *lat, double *times, uint64_t nrec);
-EXTERN_MSC double MGD77_utime2time (struct GMT_CTRL *C, struct MGD77_CONTROL *F, double unix_time);
-EXTERN_MSC double MGD77_time2utime (struct GMT_CTRL *C, struct MGD77_CONTROL *F, double gmt_time);
-EXTERN_MSC double MGD77_rdc2dt (struct GMT_CTRL *C, struct MGD77_CONTROL *F, int64_t rd, double secs);
-EXTERN_MSC void MGD77_gcal_from_dt (struct GMT_CTRL *C, struct MGD77_CONTROL *F, double t, struct GMT_gcal *cal);
-EXTERN_MSC double MGD77_Eotvos (struct GMT_CTRL *C, double lat, double velocity, double heading);
+EXTERN_MSC int MGD77_igrf10syn (struct GMT_CTRL *GMT, int isv, double date, int itype, double alt, double lon, double lat, double *out);
+EXTERN_MSC double MGD77_Theoretical_Gravity (struct GMT_CTRL *GMT, double lon, double lat, int version);
+EXTERN_MSC void MGD77_IGF_text (struct GMT_CTRL *GMT, FILE *fp, int version);
+EXTERN_MSC double MGD77_Recalc_Mag_Anomaly_IGRF (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double time, double lon, double lat, double obs, bool calc_date);
+EXTERN_MSC double MGD77_time_to_fyear (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double time);
+EXTERN_MSC double MGD77_cal_to_fyear (struct GMT_CTRL *GMT, struct GMT_gcal *cal);
+EXTERN_MSC bool MGD77_fake_times (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_HEADER *H, double *lon, double *lat, double *times, uint64_t nrec);
+EXTERN_MSC double MGD77_utime2time (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double unix_time);
+EXTERN_MSC double MGD77_time2utime (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double gmt_time);
+EXTERN_MSC double MGD77_rdc2dt (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, int64_t rd, double secs);
+EXTERN_MSC void MGD77_gcal_from_dt (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double t, struct GMT_gcal *cal);
+EXTERN_MSC double MGD77_Eotvos (struct GMT_CTRL *GMT, double lat, double velocity, double heading);
 
 #ifdef USE_CM4 
-EXTERN_MSC double MGD77_Calc_CM4 (struct GMT_CTRL *C, struct MGD77_CONTROL *F, double time, double lon, double lat, bool calc_date, struct MGD77_CM4 *CM4);
-EXTERN_MSC double MGD77_Recalc_Mag_Anomaly_CM4 (struct GMT_CTRL *C, struct MGD77_CONTROL *F, double time, double lon, double lat, double obs, bool calc_date, struct MGD77_CM4 *CM4);
-EXTERN_MSC void MGD77_CM4_end (struct GMT_CTRL *C, struct MGD77_CM4 *CM4);
+EXTERN_MSC double MGD77_Calc_CM4 (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double time, double lon, double lat, bool calc_date, struct MGD77_CM4 *CM4);
+EXTERN_MSC double MGD77_Recalc_Mag_Anomaly_CM4 (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double time, double lon, double lat, double obs, bool calc_date, struct MGD77_CM4 *CM4);
+EXTERN_MSC void MGD77_CM4_end (struct GMT_CTRL *GMT, struct MGD77_CM4 *CM4);
 #endif
 
 /* These are called indirectly but remain accessible for specialist programs */
 
-EXTERN_MSC int MGD77_carter_init (struct GMT_CTRL *G, struct MGD77_CARTER *C);
-EXTERN_MSC int MGD77_carter_get_bin (struct GMT_CTRL *G, double lon, double lat, int *bin);
-EXTERN_MSC int MGD77_carter_get_zone (struct GMT_CTRL *G, int bin, struct MGD77_CARTER *C, int *zone);
+EXTERN_MSC int MGD77_carter_init (struct GMT_CTRL *GMT, struct MGD77_CARTER *C);
+EXTERN_MSC int MGD77_carter_get_bin (struct GMT_CTRL *GMT, double lon, double lat, int *bin);
+EXTERN_MSC int MGD77_carter_get_zone (struct GMT_CTRL *GMT, int bin, struct MGD77_CARTER *C, int *zone);
 
 /* Global variables used by MGD77 programs */
 
@@ -577,13 +577,13 @@ EXTERN_MSC bool MGD77_format_allowed[MGD77_N_FORMATS];	/* By default we allow op
 EXTERN_MSC double MGD77_Epoch_zero;
 EXTERN_MSC int MGD77_pos[MGD77_N_DATA_EXTENDED];
 
-EXTERN_MSC unsigned int MGD77_Scan_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises, unsigned int n_cruises, unsigned int n_fields, char **field_names, char ***item_names, unsigned int mode);
-EXTERN_MSC void MGD77_Parse_Corrtable (struct GMT_CTRL *C, char *tablefile, char **cruises, unsigned int n_cruises, unsigned int n_fields, char **field_names, unsigned int mode, struct MGD77_CORRTABLE ***CORR);
-EXTERN_MSC void MGD77_Init_Correction (struct GMT_CTRL *C, struct MGD77_CORRTABLE *CORR, double **value);
-EXTERN_MSC double MGD77_Correction (struct GMT_CTRL *C, struct MGD77_CORRECTION *X, double **value, double *aux, uint64_t rec);
-EXTERN_MSC double MGD77_Correction_Rec (struct GMT_CTRL *C, struct MGD77_CORRECTION *X, double *value, double *aux);
-EXTERN_MSC void MGD77_Free_Correction (struct GMT_CTRL *C, struct MGD77_CORRTABLE **CORR, unsigned int n);
-EXTERN_MSC void MGD77_Free_Table (struct GMT_CTRL *C, unsigned int n_items, char **item_names);
+EXTERN_MSC unsigned int MGD77_Scan_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char **cruises, unsigned int n_cruises, unsigned int n_fields, char **field_names, char ***item_names, unsigned int mode);
+EXTERN_MSC void MGD77_Parse_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char **cruises, unsigned int n_cruises, unsigned int n_fields, char **field_names, unsigned int mode, struct MGD77_CORRTABLE ***CORR);
+EXTERN_MSC void MGD77_Init_Correction (struct GMT_CTRL *GMT, struct MGD77_CORRTABLE *CORR, double **value);
+EXTERN_MSC double MGD77_Correction (struct GMT_CTRL *GMT, struct MGD77_CORRECTION *X, double **value, double *aux, uint64_t rec);
+EXTERN_MSC double MGD77_Correction_Rec (struct GMT_CTRL *GMT, struct MGD77_CORRECTION *X, double *value, double *aux);
+EXTERN_MSC void MGD77_Free_Correction (struct GMT_CTRL *GMT, struct MGD77_CORRTABLE **CORR, unsigned int n);
+EXTERN_MSC void MGD77_Free_Table (struct GMT_CTRL *GMT, unsigned int n_items, char **item_names);
 
 #include "mgd77_functions.h"	/* These were created by mgd77netcdfhelper.sh */
 #include "cm4_functions.h"

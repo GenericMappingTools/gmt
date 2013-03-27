@@ -33,7 +33,7 @@ struct GMT_SINGULAR_VALUE {	/* Used for sorting of eigenvalues in the SVD functi
 	unsigned int order;
 };
 
-int GMT_jacobi (struct GMT_CTRL *C, double *a, unsigned int n, unsigned int m, double *d, double *v, double *b, double *z, unsigned int *nrots) {
+int GMT_jacobi (struct GMT_CTRL *GMT, double *a, unsigned int n, unsigned int m, double *d, double *v, double *b, double *z, unsigned int *nrots) {
 /*
  *
  * Find eigenvalues & eigenvectors of a square symmetric matrix by Jacobi's
@@ -271,13 +271,13 @@ int GMT_jacobi (struct GMT_CTRL *C, double *a, unsigned int n, unsigned int m, d
 	/* Return 0 if converged; else print warning and return -1:  */
 
 	if (nsweeps == MAX_SWEEPS) {
-		GMT_Report (C->parent, GMT_MSG_NORMAL, "GMT_jacobi failed to converge in %d sweeps\n", nsweeps);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_jacobi failed to converge in %d sweeps\n", nsweeps);
 		return(-1);
 	}
 	return(0);
 }
 
-int GMT_gauss (struct GMT_CTRL *C, double *a, double *vec, unsigned int n, unsigned int nstore, bool itriag)
+int GMT_gauss (struct GMT_CTRL *GMT, double *a, double *vec, unsigned int n, unsigned int nstore, bool itriag)
 {
 
 /* subroutine gauss, by william menke */
@@ -301,7 +301,7 @@ int GMT_gauss (struct GMT_CTRL *C, double *a, double *vec, unsigned int n, unsig
 
 	iet = 0;  /* initial error flags, one for triagularization*/
 	ieb = 0;  /* one for backsolving */
-	GMT_malloc2 (C, line, isub, n, &n_alloc, unsigned int);
+	GMT_malloc2 (GMT, line, isub, n, &n_alloc, unsigned int);
 
 /* triangularize the matrix a */
 /* replacing the zero elements of the triangularized matrix */
@@ -396,8 +396,8 @@ int GMT_gauss (struct GMT_CTRL *C, double *a, double *vec, unsigned int n, unsig
 		line[j] = line[i];
 	}
  
-	GMT_free (C, isub);
-	GMT_free (C, line);
+	GMT_free (GMT, isub);
+	GMT_free (GMT, line);
 	return (iet + ieb);   /* Return final error flag*/
 }
 
@@ -845,37 +845,37 @@ int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 	return (n_use);
 }
 
-double GMT_dot3v (struct GMT_CTRL *C, double *a, double *b)
+double GMT_dot3v (struct GMT_CTRL *GMT, double *a, double *b)
 {
 	return (a[GMT_X]*b[GMT_X] + a[GMT_Y]*b[GMT_Y] + a[GMT_Z]*b[GMT_Z]);
 }
 
-double GMT_dot2v (struct GMT_CTRL *C, double *a, double *b)
+double GMT_dot2v (struct GMT_CTRL *GMT, double *a, double *b)
 {
 	return (a[GMT_X]*b[GMT_X] + a[GMT_Y]*b[GMT_Y]);
 }
 
-double GMT_mag3v (struct GMT_CTRL *C, double *a)
+double GMT_mag3v (struct GMT_CTRL *GMT, double *a)
 {
 	return (d_sqrt(a[GMT_X]*a[GMT_X] + a[GMT_Y]*a[GMT_Y] + a[GMT_Z]*a[GMT_Z]));
 }
 
-void GMT_add3v (struct GMT_CTRL *C, double *a, double *b, double *c)
+void GMT_add3v (struct GMT_CTRL *GMT, double *a, double *b, double *c)
 {	/* C = A + B */
 	int k;
 	for (k = 0; k < 3; k++) c[k] = a[k] + b[k];
 }
 
-void GMT_sub3v (struct GMT_CTRL *C, double *a, double *b, double *c)
+void GMT_sub3v (struct GMT_CTRL *GMT, double *a, double *b, double *c)
 {	/* C = A - B */
 	int k;
 	for (k = 0; k < 3; k++) c[k] = a[k] - b[k];
 }
 
-void GMT_normalize3v (struct GMT_CTRL *C, double *a)
+void GMT_normalize3v (struct GMT_CTRL *GMT, double *a)
 {
 	double r_length;
-	r_length = GMT_mag3v (C,a);
+	r_length = GMT_mag3v (GMT,a);
 	if (r_length != 0.0) {
 		r_length = 1.0 / r_length;
 		a[GMT_X] *= r_length;
@@ -884,7 +884,7 @@ void GMT_normalize3v (struct GMT_CTRL *C, double *a)
 	}
 }
 
-void GMT_normalize2v (struct GMT_CTRL *C, double *a)
+void GMT_normalize2v (struct GMT_CTRL *GMT, double *a)
 {
 	double r_length;
 	r_length = hypot (a[GMT_X], a[GMT_Y]);
@@ -895,21 +895,21 @@ void GMT_normalize2v (struct GMT_CTRL *C, double *a)
 	}
 }
 
-void GMT_cross3v (struct GMT_CTRL *C, double *a, double *b, double *c)
+void GMT_cross3v (struct GMT_CTRL *GMT, double *a, double *b, double *c)
 {
 	c[GMT_X] = a[GMT_Y] * b[GMT_Z] - a[GMT_Z] * b[GMT_Y];
 	c[GMT_Y] = a[GMT_Z] * b[GMT_X] - a[GMT_X] * b[GMT_Z];
 	c[GMT_Z] = a[GMT_X] * b[GMT_Y] - a[GMT_Y] * b[GMT_X];
 }
 
-void GMT_matrix_vect_mult (struct GMT_CTRL *C, unsigned int dim, double a[3][3], double b[3], double c[3])
+void GMT_matrix_vect_mult (struct GMT_CTRL *GMT, unsigned int dim, double a[3][3], double b[3], double c[3])
 {	/* c = A * b for 2 or 3 D */
 	unsigned int i, j;
 
 	for (i = 0; i < dim; i++) for (j = 0, c[i] = 0.0; j < dim; j++) c[i] += a[i][j] * b[j];
 }
 
-void GMT_make_rot_matrix2 (struct GMT_CTRL *C, double E[3], double w, double R[3][3])
+void GMT_make_rot_matrix2 (struct GMT_CTRL *GMT, double E[3], double w, double R[3][3])
 {	/* Based on Cox and Hart, 1986 */
 /*	E	Euler pole in in cartesian coordinates
  *	w	angular rotation in degrees
@@ -942,7 +942,7 @@ void GMT_make_rot_matrix2 (struct GMT_CTRL *C, double E[3], double w, double R[3
 	R[2][2] = E[2] * E[2] * c + cos_w;
 }
 
-void GMT_make_rot_matrix (struct GMT_CTRL *C, double lonp, double latp, double w, double R[3][3])
+void GMT_make_rot_matrix (struct GMT_CTRL *GMT, double lonp, double latp, double w, double R[3][3])
 {
 /*	lonp, latp	Euler pole in degrees
  *	w		angular rotation in degrees
@@ -952,12 +952,12 @@ void GMT_make_rot_matrix (struct GMT_CTRL *C, double lonp, double latp, double w
 
 	double E[3];
 
-        GMT_geo_to_cart (C, latp, lonp, E, true);
-	GMT_make_rot_matrix2 (C, E, w, R);
+        GMT_geo_to_cart (GMT, latp, lonp, E, true);
+	GMT_make_rot_matrix2 (GMT, E, w, R);
 }
 
 
-void GMT_geo_to_cart (struct GMT_CTRL *C, double lat, double lon, double *a, bool degrees)
+void GMT_geo_to_cart (struct GMT_CTRL *GMT, double lat, double lon, double *a, bool degrees)
 {
 	/* Convert geographic latitude and longitude (lat, lon)
 	   to a 3-vector of unit length (a). If degrees = true,
@@ -975,7 +975,7 @@ void GMT_geo_to_cart (struct GMT_CTRL *C, double lat, double lon, double *a, boo
 	a[GMT_Y] = clat * slon;
 }
 
-void GMT_cart_to_geo (struct GMT_CTRL *C, double *lat, double *lon, double *a, bool degrees)
+void GMT_cart_to_geo (struct GMT_CTRL *GMT, double *lat, double *lon, double *a, bool degrees)
 {
 	/* Convert a 3-vector (a) of unit length into geographic
 	   coordinates (lat, lon). If degrees = true, the output coordinates
@@ -991,7 +991,7 @@ void GMT_cart_to_geo (struct GMT_CTRL *C, double *lat, double *lon, double *a, b
 	}
 }
 
-void GMT_polar_to_cart (struct GMT_CTRL *C, double r, double theta, double *a, bool degrees)
+void GMT_polar_to_cart (struct GMT_CTRL *GMT, double r, double theta, double *a, bool degrees)
 {
 	/* Convert polar (cylindrical) coordinates r, theta
 	   to a 2-vector of unit length (a). If degrees = true,
@@ -1003,7 +1003,7 @@ void GMT_polar_to_cart (struct GMT_CTRL *C, double r, double theta, double *a, b
 	a[GMT_Y] *= r;
 }
 
-void GMT_cart_to_polar (struct GMT_CTRL *C, double *r, double *theta, double *a, bool degrees)
+void GMT_cart_to_polar (struct GMT_CTRL *GMT, double *r, double *theta, double *a, bool degrees)
 {
 	/* Convert a 2-vector (a) of unit length into polar (cylindrical)
 	   coordinates (r, theta). If degrees = true, the output coordinates
@@ -1014,7 +1014,7 @@ void GMT_cart_to_polar (struct GMT_CTRL *C, double *r, double *theta, double *a,
 	if (degrees) *theta *= R2D;
 }
 
-uint64_t GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, uint64_t n, double step, unsigned int mode)
+uint64_t GMT_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, uint64_t n, double step, unsigned int mode)
 {
 	/* Takes pointers to a list of <n> lon/lat pairs (in degrees) and adds
 	 * auxiliary points if the great circle distance between two given points exceeds
@@ -1035,23 +1035,23 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, ui
 
 	lon = *a_lon;	lat = *a_lat;
 
-	GMT_geo_to_cart (C, lat[0], lon[0], a, true);
-	GMT_malloc2 (C, lon_tmp, lat_tmp, 1U, &n_alloc, double);
+	GMT_geo_to_cart (GMT, lat[0], lon[0], a, true);
+	GMT_malloc2 (GMT, lon_tmp, lat_tmp, 1U, &n_alloc, double);
 	lon_tmp[0] = lon[0];	lat_tmp[0] = lat[0];
 	n_tmp = 1;
-	if (step <= 0.0) step = C->current.map.path_step;	/* Based on C->current.setting.map_line_step converted to degrees */
+	if (step <= 0.0) step = GMT->current.map.path_step;	/* Based on GMT->current.setting.map_line_step converted to degrees */
 	if (step <= 0.0) step = 0.1;				/* Safety valve when no -J and step not set. */
 
 	for (i = 1; i < n; i++) {
 
-		GMT_geo_to_cart (C, lat[i], lon[i], b, true);
+		GMT_geo_to_cart (GMT, lat[i], lon[i], b, true);
 
 		if (mode == 1) {	/* First follow meridian, then parallel */
 			theta = fabs (lon[i]-lon[i-1]) * cosd (lat[i-1]);
 			n_step = lrint (theta / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) GMT_malloc2 (C, lon_tmp, lat_tmp, n_tmp, &n_alloc, double);
+				if (n_tmp == n_alloc) GMT_malloc2 (GMT, lon_tmp, lat_tmp, n_tmp, &n_alloc, double);
 				lon_tmp[n_tmp] = lon[i-1] * (1 - c) + lon[i] * c;
 				lat_tmp[n_tmp] = lat[i-1];
 				n_tmp++;
@@ -1060,7 +1060,7 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, ui
 			n_step = lrint (theta / step);
 			for (j = k; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) GMT_malloc2 (C, lon_tmp, lat_tmp, n_tmp, &n_alloc, double);
+				if (n_tmp == n_alloc) GMT_malloc2 (GMT, lon_tmp, lat_tmp, n_tmp, &n_alloc, double);
 				lon_tmp[n_tmp] = lon[i];
 				lat_tmp[n_tmp] = lat[i-1] * (1 - c) + lat[i] * c;
 				n_tmp++;
@@ -1073,7 +1073,7 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, ui
 			n_step = lrint (theta / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) GMT_malloc2 (C, lon_tmp, lat_tmp, n_tmp, &n_alloc, double);
+				if (n_tmp == n_alloc) GMT_malloc2 (GMT, lon_tmp, lat_tmp, n_tmp, &n_alloc, double);
 				lon_tmp[n_tmp] = lon[i-1];
 				lat_tmp[n_tmp] = lat[i-1] * (1 - c) + lat[i] * c;
 				n_tmp++;
@@ -1082,7 +1082,7 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, ui
 			n_step = lrint (theta / step);
 			for (j = k; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) GMT_malloc2 (C, lon_tmp, lat_tmp, n_tmp, &n_alloc, double);
+				if (n_tmp == n_alloc) GMT_malloc2 (GMT, lon_tmp, lat_tmp, n_tmp, &n_alloc, double);
 				lon_tmp[n_tmp] = lon[i-1] * (1 - c) + lon[i] * c;
 				lat_tmp[n_tmp] = lat[i];
 				n_tmp++;
@@ -1091,8 +1091,8 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, ui
 		}
 
 		/* Follow great circle */
-		else if ((theta = d_acosd (GMT_dot3v (C, a, b))) == 180.0)	/* trouble, no unique great circle */
-			GMT_Report (C->parent, GMT_MSG_VERBOSE, "Warning: Two points in input list are antipodal - no resampling taken place!\n");
+		else if ((theta = d_acosd (GMT_dot3v (GMT, a, b))) == 180.0)	/* trouble, no unique great circle */
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Two points in input list are antipodal - no resampling taken place!\n");
 
 		else if ((n_step = lrint (theta / step)) > 1) {	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
 			fraction = 1.0 / (double)n_step;
@@ -1103,9 +1103,9 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, ui
 				c = j * fraction;
 				d = 1 - c;
 				for (k = 0; k < 3; k++) x[k] = a[k] * d + b[k] * c;
-				GMT_normalize3v (C, x);
-				if (n_tmp == n_alloc) GMT_malloc2 (C, lon_tmp, lat_tmp, n_tmp, &n_alloc, double);
-				GMT_cart_to_geo (C, &lat_tmp[n_tmp], &lon_tmp[n_tmp], x, true);
+				GMT_normalize3v (GMT, x);
+				if (n_tmp == n_alloc) GMT_malloc2 (GMT, lon_tmp, lat_tmp, n_tmp, &n_alloc, double);
+				GMT_cart_to_geo (GMT, &lat_tmp[n_tmp], &lon_tmp[n_tmp], x, true);
 				if (meridian)
 					lon_tmp[n_tmp] = minlon;
 				else if (lon_tmp[n_tmp] < minlon)
@@ -1115,23 +1115,23 @@ uint64_t GMT_fix_up_path (struct GMT_CTRL *C, double **a_lon, double **a_lat, ui
 				n_tmp++;
 			}
 		}
-		if (n_tmp == n_alloc) GMT_malloc2 (C, lon_tmp, lat_tmp, n_tmp, &n_alloc, double);
+		if (n_tmp == n_alloc) GMT_malloc2 (GMT, lon_tmp, lat_tmp, n_tmp, &n_alloc, double);
 		lon_tmp[n_tmp] = lon[i];	lat_tmp[n_tmp] = lat[i];
 		n_tmp++;
 		GMT_cpy3v (a, b);
 	}
 	n_alloc = n_tmp;
-	GMT_malloc2 (C, lon_tmp, lat_tmp, 0U, &n_alloc, double);
+	GMT_malloc2 (GMT, lon_tmp, lat_tmp, 0U, &n_alloc, double);
 
 	/* Destroy old allocated memory and put the new one in place */
-	GMT_free (C, lon);
-	GMT_free (C, lat);
+	GMT_free (GMT, lon);
+	GMT_free (GMT, lat);
 	*a_lon = lon_tmp;
 	*a_lat = lat_tmp;
 	return (n_tmp);
 }
 
-uint64_t GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a_y, uint64_t n, double step, unsigned int mode)
+uint64_t GMT_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **a_x, double **a_y, uint64_t n, double step, unsigned int mode)
 {
 	/* Takes pointers to a list of <n> x/y pairs (in user units) and adds
 	 * auxiliary points if the distance between two given points exceeds
@@ -1149,7 +1149,7 @@ uint64_t GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a
 
 	x = *a_x;	y = *a_y;
 
-	GMT_malloc2 (C, x_tmp, y_tmp, 1U, &n_alloc, double);
+	GMT_malloc2 (GMT, x_tmp, y_tmp, 1U, &n_alloc, double);
 	x_tmp[0] = x[0];	y_tmp[0] = y[0];	n_tmp = 1;
 	if (step <= 0.0) step = 1.0;	/* Sanity valve; if step not given we set it to 1 */
 
@@ -1158,7 +1158,7 @@ uint64_t GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a
 			n_step = lrint (fabs (x[i] - x[i-1]) / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) GMT_malloc2 (C, x_tmp, y_tmp, n_tmp, &n_alloc, double);
+				if (n_tmp == n_alloc) GMT_malloc2 (GMT, x_tmp, y_tmp, n_tmp, &n_alloc, double);
 				x_tmp[n_tmp] = x[i-1] * (1 - c) + x[i] * c;
 				y_tmp[n_tmp] = y[i-1];
 				n_tmp++;
@@ -1166,7 +1166,7 @@ uint64_t GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a
 			n_step = lrint (fabs (y[i]-y[i-1]) / step);
 			for (j = k; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) GMT_malloc2 (C, x_tmp, y_tmp, n_tmp, &n_alloc, double);
+				if (n_tmp == n_alloc) GMT_malloc2 (GMT, x_tmp, y_tmp, n_tmp, &n_alloc, double);
 				x_tmp[n_tmp] = x[i];
 				y_tmp[n_tmp] = y[i-1] * (1 - c) + y[i] * c;
 				n_tmp++;
@@ -1177,7 +1177,7 @@ uint64_t GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a
 			n_step = lrint (fabs (y[i]-y[i-1]) / step);
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) GMT_malloc2 (C, x_tmp, y_tmp, n_tmp, &n_alloc, double);
+				if (n_tmp == n_alloc) GMT_malloc2 (GMT, x_tmp, y_tmp, n_tmp, &n_alloc, double);
 				x_tmp[n_tmp] = x[i-1];
 				y_tmp[n_tmp] = y[i-1] * (1 - c) + y[i] * c;
 				n_tmp++;
@@ -1185,7 +1185,7 @@ uint64_t GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a
 			n_step = lrint (fabs (x[i]-x[i-1]) / step);
 			for (j = k; j < n_step; j++) {	/* Start at 0 to make sure corner point is saved */
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) GMT_malloc2 (C, x_tmp, y_tmp, n_tmp, &n_alloc, double);
+				if (n_tmp == n_alloc) GMT_malloc2 (GMT, x_tmp, y_tmp, n_tmp, &n_alloc, double);
 				x_tmp[n_tmp] = x[i-1] * (1 - c) + x[i] * c;
 				y_tmp[n_tmp] = y[i];
 				n_tmp++;
@@ -1196,26 +1196,26 @@ uint64_t GMT_fix_up_path_cartesian (struct GMT_CTRL *C, double **a_x, double **a
 		else if ((n_step = lrint (hypot (x[i]-x[i-1], y[i]-y[i-1]) / step)) > 1) {	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
 			for (j = 1; j < n_step; j++) {
 				c = j / (double)n_step;
-				if (n_tmp == n_alloc) GMT_malloc2 (C, x_tmp, y_tmp, n_tmp, &n_alloc, double);
+				if (n_tmp == n_alloc) GMT_malloc2 (GMT, x_tmp, y_tmp, n_tmp, &n_alloc, double);
 				x_tmp[n_tmp] = x[i-1] * (1 - c) + x[i] * c;
 				y_tmp[n_tmp] = y[i-1] * (1 - c) + y[i] * c;
 				n_tmp++;
 			}
 		}
-		if (n_tmp == n_alloc) GMT_malloc2 (C, x_tmp, y_tmp, n_tmp, &n_alloc, double);
+		if (n_tmp == n_alloc) GMT_malloc2 (GMT, x_tmp, y_tmp, n_tmp, &n_alloc, double);
 		x_tmp[n_tmp] = x[i];	y_tmp[n_tmp] = y[i];	n_tmp++;
 	}
 	n_alloc = n_tmp;
-	GMT_malloc2 (C, x_tmp, y_tmp, 0U, &n_alloc, double);
+	GMT_malloc2 (GMT, x_tmp, y_tmp, 0U, &n_alloc, double);
 
 	/* Destroy old allocated memory and put the new one in place */
-	GMT_free (C, x);	GMT_free (C, y);
+	GMT_free (GMT, x);	GMT_free (GMT, y);
 	*a_x = x_tmp;	*a_y = y_tmp;
 	
 	return (n_tmp);
 }
 
-uint64_t gmt_resample_path_spherical (struct GMT_CTRL *C, double **lon, double **lat, uint64_t n_in, double step_out, enum GMT_enum_track mode)
+uint64_t gmt_resample_path_spherical (struct GMT_CTRL *GMT, double **lon, double **lat, uint64_t n_in, double step_out, enum GMT_enum_track mode)
 {
 	/* See GMT_resample_path below for details. */
 
@@ -1227,20 +1227,20 @@ uint64_t gmt_resample_path_spherical (struct GMT_CTRL *C, double **lon, double *
 	double *dist_in = NULL, *lon_out = NULL, *lat_out = NULL, *lon_in = *lon, *lat_in = *lat;
 
 	if (step_out < 0.0) {	/* Safety valve */
-		GMT_Report (C->parent, GMT_MSG_NORMAL, "Internal error: gmt_resample_path_spherical given negative step-size\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal error: gmt_resample_path_spherical given negative step-size\n");
 		return (EXIT_FAILURE);
 	}
 	if (mode > GMT_TRACK_SAMPLE_ADJ) {	/* Bad mode*/
-		GMT_Report (C->parent, GMT_MSG_NORMAL, "Internal error: gmt_resample_path_spherical given bad mode %d\n", mode);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal error: gmt_resample_path_spherical given bad mode %d\n", mode);
 		return (EXIT_FAILURE);
 	}
 	
 	if (mode < GMT_TRACK_SAMPLE_FIX) {
-		step_out = (step_out / C->current.map.dist[GMT_MAP_DIST].scale) / C->current.proj.DIST_M_PR_DEG;	/* Get degrees */
-		return (GMT_fix_up_path (C, lon, lat, n_in, step_out, mode));	/* Insert extra points only */
+		step_out = (step_out / GMT->current.map.dist[GMT_MAP_DIST].scale) / GMT->current.proj.DIST_M_PR_DEG;	/* Get degrees */
+		return (GMT_fix_up_path (GMT, lon, lat, n_in, step_out, mode));	/* Insert extra points only */
 	}
 	
-	dist_in = GMT_dist_array (C, lon_in, lat_in, n_in, true);	/* Compute cumulative distances along line */
+	dist_in = GMT_dist_array (GMT, lon_in, lat_in, n_in, true);	/* Compute cumulative distances along line */
 	
 	if (step_out == 0.0) step_out = (dist_in[n_in-1] - dist_in[0])/100.0;	/* If nothing is selected we get 101 points */
 	/* Determine n_out, the number of output points */
@@ -1253,8 +1253,8 @@ uint64_t gmt_resample_path_spherical (struct GMT_CTRL *C, double **lon, double *
 	}
 	n_out++;	/* Since number of points = number of segments + 1 */
 	
-	lon_out = GMT_memory (C, NULL, n_out, double);
-	lat_out = GMT_memory (C, NULL, n_out, double);
+	lon_out = GMT_memory (GMT, NULL, n_out, double);
+	lat_out = GMT_memory (GMT, NULL, n_out, double);
 	
 	lon_out[0] = lon_in[0];	lat_out[0] = lat_in[0];	/* Start at same origin */
 	for (row_in = row_out = 1; row_out < n_out; row_out++) {	/* For remaining output points */
@@ -1268,35 +1268,35 @@ uint64_t gmt_resample_path_spherical (struct GMT_CTRL *C, double **lon, double *
 		else {	/* Must interpolate along great-circle arc from a (point row_in-1) to b (point row_in) */
 			if (new_pair) {	/* Must perform calculations on the two points */
 				L = dist_in[row_in] - dist_in[row_in-1];	/* Distance between points a and b */
-				ya = GMT_lat_swap (C, lat_in[row_in-1], GMT_LATSWAP_G2O);	/* Convert to geocentric */
-				yb = GMT_lat_swap (C, lat_in[row_in],   GMT_LATSWAP_G2O);	/* Convert to geocentric */
+				ya = GMT_lat_swap (GMT, lat_in[row_in-1], GMT_LATSWAP_G2O);	/* Convert to geocentric */
+				yb = GMT_lat_swap (GMT, lat_in[row_in],   GMT_LATSWAP_G2O);	/* Convert to geocentric */
 			}
 			frac_to_a = gap / L;
 			frac_to_b = 1.0 - frac_to_a;
-			if (C->current.map.loxodrome) {	/* Linear resampling along Mercator straight line */
+			if (GMT->current.map.loxodrome) {	/* Linear resampling along Mercator straight line */
 				if (new_pair) GMT_set_delta_lon (lon_in[row_in-1], lon_in[row_in], d_lon);
-				a[0] = D2R * lon_in[row_in-1];	a[1] = d_log (C, tand (45.0 + 0.5 * ya));
-				b[0] = D2R * (lon_in[row_in-1] + d_lon);	b[1] = d_log (C, tand (45.0 + 0.5 * yb));
+				a[0] = D2R * lon_in[row_in-1];	a[1] = d_log (GMT, tand (45.0 + 0.5 * ya));
+				b[0] = D2R * (lon_in[row_in-1] + d_lon);	b[1] = d_log (GMT, tand (45.0 + 0.5 * yb));
 				for (k = 0; k < 2; k++) c[k] = a[k] * frac_to_a + b[k] * frac_to_b;	/* Linear interpolation to find output point c */
 				lon_out[row_out] = c[0] * R2D;
 				lat_out[row_out] = atand (sinh (c[1]));
-				lat_out[row_out] = GMT_lat_swap (C, lat_out[row_out], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
+				lat_out[row_out] = GMT_lat_swap (GMT, lat_out[row_out], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 			}
 			else {	/* Spherical resampling along segment */
 				if (new_pair) {	/* Must perform calculations on the two points */
-					GMT_geo_to_cart (C, ya, lon_in[row_in-1], a, true);
-					GMT_geo_to_cart (C, yb, lon_in[row_in],   b, true);
-					total_angle_rad = d_acos (GMT_dot3v (C, a, b));	/* Get spherical angle from a to b in radians; this is same distance as L */
-					GMT_cross3v (C, a, b, P);	/* Get pole P of plane trough a and b (and center of Earth) */
-					GMT_normalize3v (C, P);		/* Make sure P has unit length */
+					GMT_geo_to_cart (GMT, ya, lon_in[row_in-1], a, true);
+					GMT_geo_to_cart (GMT, yb, lon_in[row_in],   b, true);
+					total_angle_rad = d_acos (GMT_dot3v (GMT, a, b));	/* Get spherical angle from a to b in radians; this is same distance as L */
+					GMT_cross3v (GMT, a, b, P);	/* Get pole P of plane trough a and b (and center of Earth) */
+					GMT_normalize3v (GMT, P);		/* Make sure P has unit length */
 					gmt_init_rot_matrix (Rot0, P);	/* Get partial rotation matrix since no actual angle is applied yet */
 				}
 				GMT_memcpy (Rot, Rot0, 9, double);			/* Get a copy of the "0-angle" rotation matrix */
 				angle_rad = total_angle_rad * frac_to_b;		/* Angle we need to rotate from a to c */
 				gmt_load_rot_matrix (angle_rad, Rot, P);		/* Build the actual rotation matrix for this angle */
 				gmt_matrix_vect_mult (Rot, a, c);			/* Rotate from a to get c */
-				GMT_cart_to_geo (C, &lat_out[row_out], &lon_out[row_out], c, true);
-				lat_out[row_out] = GMT_lat_swap (C, lat_out[row_out], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
+				GMT_cart_to_geo (GMT, &lat_out[row_out], &lon_out[row_out], c, true);
+				lat_out[row_out] = GMT_lat_swap (GMT, lat_out[row_out], GMT_LATSWAP_O2G);	/* Convert back to geodetic */
 			}
 			minlon = MIN (lon_in[row_in-1], lon_in[row_in]);
 			maxlon = MAX (lon_in[row_in-1], lon_in[row_in]);
@@ -1313,14 +1313,14 @@ uint64_t gmt_resample_path_spherical (struct GMT_CTRL *C, double **lon, double *
 	
 	/* Destroy old allocated memory and put the new one in place */
 	
-	GMT_free (C, lon_in);
-	GMT_free (C, lat_in);
+	GMT_free (GMT, lon_in);
+	GMT_free (GMT, lat_in);
 	*lon = lon_out;
 	*lat = lat_out;
 	return (n_out);
 }
 
-uint64_t gmt_resample_path_cartesian (struct GMT_CTRL *C, double **x, double **y, uint64_t n_in, double step_out, enum GMT_enum_track mode)
+uint64_t gmt_resample_path_cartesian (struct GMT_CTRL *GMT, double **x, double **y, uint64_t n_in, double step_out, enum GMT_enum_track mode)
 {
 	/* See GMT_resample_path below for details. */
 
@@ -1330,17 +1330,17 @@ uint64_t gmt_resample_path_cartesian (struct GMT_CTRL *C, double **x, double **y
 	double *dist_in = NULL, *x_out = NULL, *y_out = NULL, *x_in = *x, *y_in = *y;
 
 	if (step_out < 0.0) {	/* Safety valve */
-		GMT_Report (C->parent, GMT_MSG_NORMAL, "Internal error: gmt_resample_path_cartesian given negative step-size\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal error: gmt_resample_path_cartesian given negative step-size\n");
 		return (EXIT_FAILURE);
 	}
 	if (mode > GMT_TRACK_SAMPLE_ADJ) {	/* Bad mode*/
-		GMT_Report (C->parent, GMT_MSG_NORMAL, "Internal error: gmt_resample_path_cartesian given bad mode %d\n", mode);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal error: gmt_resample_path_cartesian given bad mode %d\n", mode);
 		return (EXIT_FAILURE);
 	}
 	
-	if (mode < GMT_TRACK_SAMPLE_FIX) return (GMT_fix_up_path_cartesian (C, x, y, n_in, step_out, mode));	/* Insert extra points only */
+	if (mode < GMT_TRACK_SAMPLE_FIX) return (GMT_fix_up_path_cartesian (GMT, x, y, n_in, step_out, mode));	/* Insert extra points only */
 	
-	dist_in = GMT_dist_array (C, x_in, y_in, n_in, true);	/* Compute cumulative distances along line */
+	dist_in = GMT_dist_array (GMT, x_in, y_in, n_in, true);	/* Compute cumulative distances along line */
 	if (step_out == 0.0) step_out = (dist_in[n_in-1] - dist_in[0])/100.0;	/* If nothing is selected we get 101 points */
 	
 	/* Determine n_out, the number of output points */
@@ -1353,8 +1353,8 @@ uint64_t gmt_resample_path_cartesian (struct GMT_CTRL *C, double **x, double **y
 	}
 	n_out++;	/* Since number of points = number of segments + 1 */
 	
-	x_out = GMT_memory (C, NULL, n_out, double);
-	y_out = GMT_memory (C, NULL, n_out, double);
+	x_out = GMT_memory (GMT, NULL, n_out, double);
+	y_out = GMT_memory (GMT, NULL, n_out, double);
 	
 	x_out[0] = x_in[0];	y_out[0] = y_in[0];	/* Start at same origin */
 	for (row_in = row_out = 1; row_out < n_out; row_out++) {	/* For remaining output points */
@@ -1377,8 +1377,8 @@ uint64_t gmt_resample_path_cartesian (struct GMT_CTRL *C, double **x, double **y
 	
 	/* Destroy old allocated memory and put the new one in place */
 	
-	GMT_free (C, x_in);
-	GMT_free (C, y_in);
+	GMT_free (GMT, x_in);
+	GMT_free (GMT, y_in);
 	*x = x_out;
 	*y = y_out;
 	return (n_out);
@@ -1406,7 +1406,7 @@ uint64_t GMT_resample_path (struct GMT_CTRL *GMT, double **x, double **y, uint64
 	return (n_out);
 }
 
-int GMT_chol_dcmp (struct GMT_CTRL *C, double *a, double *d, double *cond, int nr, int n) {
+int GMT_chol_dcmp (struct GMT_CTRL *GMT, double *a, double *d, double *cond, int nr, int n) {
 
 	/* Given a, a symmetric positive definite matrix
 	of size n, and row dimension nr, compute a lower
@@ -1462,7 +1462,7 @@ int GMT_chol_dcmp (struct GMT_CTRL *C, double *a, double *d, double *cond, int n
 	return (0);
 }
 
-void GMT_chol_recover (struct GMT_CTRL *C, double *a, double *d, int nr, int n, int nerr, bool donly) {
+void GMT_chol_recover (struct GMT_CTRL *GMT, double *a, double *d, int nr, int n, int nerr, bool donly) {
 
 	/* Given a, a symmetric positive definite matrix of row dimension nr,
 	and size n >= abs(nerr), one uses GMT_chol_dcmp() to attempt to find
@@ -1512,7 +1512,7 @@ void GMT_chol_recover (struct GMT_CTRL *C, double *a, double *d, int nr, int n, 
 	return;
 }
 
-void GMT_chol_solv (struct GMT_CTRL *C, double *a, double *x, double *y, int nr, int n) {
+void GMT_chol_solv (struct GMT_CTRL *GMT, double *a, double *x, double *y, int nr, int n) {
 	/* Given an n by n linear system ax = y, with a a symmetric, 
 	positive-definite matrix, y a known vector, and x an unknown
 	vector, this routine finds x, if a holds the lower-triangular

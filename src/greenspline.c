@@ -45,8 +45,8 @@
 void gmt_Cmul (double A[], double B[], double C[]);
 void gmt_Cdiv (double A[], double B[], double C[]);
 void gmt_Ccot (double Z[], double cotZ[]);
-double GMT_geodesic_dist_cos (struct GMT_CTRL *C, double lonS, double latS, double lonE, double latE);
-double GMT_great_circle_dist_cos (struct GMT_CTRL *C, double lon1, double lat1, double lon2, double lat2);
+double GMT_geodesic_dist_cos (struct GMT_CTRL *GMT, double lonS, double latS, double lonE, double latE);
+double GMT_great_circle_dist_cos (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
 
 /* Control structure for greenspline */
 
@@ -486,7 +486,7 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 
 #ifdef DEBUG
 /* Dump a table of x, G, dGdx for test purposes [requires option -+ and compilation with -DDEBUG]  */
-void dump_green (struct GMT_CTRL *C, double (*G) (struct GMT_CTRL *, double, double *, double *), double (*D) (struct GMT_CTRL *, double, double *, double *), double par[], double x0, double x1, int N, double *zz, double *gg)
+void dump_green (struct GMT_CTRL *GMT, double (*G) (struct GMT_CTRL *, double, double *, double *), double (*D) (struct GMT_CTRL *, double, double *, double *), double par[], double x0, double x1, int N, double *zz, double *gg)
 {
 	int i;
 	double x, dx, dy, y, t, ry, rdy;
@@ -499,8 +499,8 @@ void dump_green (struct GMT_CTRL *C, double (*G) (struct GMT_CTRL *, double, dou
 	for (i = 0; i < N; i++) {
 		x = x0 + i * dx;
 		t = (x0 < 0.0) ? acosd (x) : x;
-		y = G (C, x, par, zz);
-		dy = D (C, x, par, gg);
+		y = G (GMT, x, par, zz);
+		dy = D (GMT, x, par, gg);
 		if (y < min_y) min_y = y;
 		if (y > max_y) max_y = y;
 		if (dy < min_dy) min_dy = dy;
@@ -511,8 +511,8 @@ void dump_green (struct GMT_CTRL *C, double (*G) (struct GMT_CTRL *, double, dou
 	for (i = 0; i < N; i++) {
 		x = x0 + i * dx;
 		t = (x0 < 0.0) ? acosd (x) : x;
-		y = G (C, x, par, zz);
-		dy = D (C, x, par, gg);
+		y = G (GMT, x, par, zz);
+		dy = D (GMT, x, par, gg);
 		dy = (rdy > 0.0) ? (dy - min_dy)/rdy : 1.0;
 		printf ("%g\t%g\t%g\t%g\n", x, (y - min_y) / ry, dy, t);
 	}

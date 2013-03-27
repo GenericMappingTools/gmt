@@ -312,7 +312,7 @@ data set *via* a ``struct GMT_VECTOR`` it will know how to read the data correct
 ::
 
     struct GMT_VECTOR {
-        unsigned int         n_columns;     /* Number of vectors */
+        uint64_t             n_columns;     /* Number of vectors */
         uint64_t             n_rows;        /* Number of rows in each vector */
         enum GMT_enum_type  *type;          /* Array with data type for each vector */
         double               range[2];      /* The min and max limits on t-range (or 0,0) */
@@ -332,8 +332,8 @@ User data matrices (GMT matrices)
 ::
 
     struct GMT_MATRIX {
-        unsigned int n_rows;                /* Number of rows in the matrix */
-        unsigned int n_columns;             /* Number of columns in the matrix */
+        uint64_t n_rows;                    /* Number of rows in the matrix */
+        uint64_t n_columns;                 /* Number of columns in the matrix */
         unsigned int n_layers;              /* Number of layers in a 3-D matrix */
         unsigned int shape;                 /* 0 = C (rows) and 1 = Fortran (cols) */
         unsigned int registration;          /* 0 for gridline and 1 for pixel registration */

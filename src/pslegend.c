@@ -273,12 +273,12 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 #ifdef DEBUG
 /* Used to draw the current y-line for debug purposes only.  To use you would also
  * have to set the variable guide to 1 below. */
-void drawbase (struct GMT_CTRL *C, struct PSL_CTRL *P, double x0, double x1, double y0)
+void drawbase (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double x1, double y0)
 {
 	struct GMT_PEN faint_pen;
-	GMT_init_pen (C, &faint_pen, 0.0);
-	GMT_setpen (C, &faint_pen);
-	PSL_plotsegment (P, x0, y0, x1, y0);
+	GMT_init_pen (GMT, &faint_pen, 0.0);
+	GMT_setpen (GMT, &faint_pen);
+	PSL_plotsegment (PSL, x0, y0, x1, y0);
 }
 #endif
 

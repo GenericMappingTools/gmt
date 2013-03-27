@@ -28,7 +28,7 @@
 
 #define GMT_PROG_OPTIONS "-V"
 
-void MGD77_select_high_resolution (struct GMT_CTRL *C);
+void MGD77_select_high_resolution (struct GMT_CTRL *GMT);
 
 struct MGD77CONVERT_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */

@@ -622,13 +622,13 @@ int GMT_grdfft_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-void add_operation (struct GMT_CTRL *C, struct GRDFFT_CTRL *Ctrl, int operation, unsigned int n_par, double *par)
+void add_operation (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, int operation, unsigned int n_par, double *par)
 {
 	Ctrl->n_op_count++;
-	Ctrl->operation = GMT_memory (C, Ctrl->operation, Ctrl->n_op_count, int);
+	Ctrl->operation = GMT_memory (GMT, Ctrl->operation, Ctrl->n_op_count, int);
 	Ctrl->operation[Ctrl->n_op_count-1] = operation;
 	if (n_par) {
-		Ctrl->par = GMT_memory (C, Ctrl->par, Ctrl->n_par + n_par, double);
+		Ctrl->par = GMT_memory (GMT, Ctrl->par, Ctrl->n_par + n_par, double);
 		GMT_memcpy (&Ctrl->par[Ctrl->n_par], par, n_par, double);
 		Ctrl->n_par += n_par;
 	}

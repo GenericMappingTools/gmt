@@ -32,7 +32,7 @@
 
 #define GMT_PROG_OPTIONS "-:>BJKOPRUVXYacfhptxy" GMT_OPT("E")
 
-void GMT_enforce_rgb_triplets (struct GMT_CTRL *C, char *text, unsigned int size);
+void GMT_enforce_rgb_triplets (struct GMT_CTRL *GMT, char *text, unsigned int size);
 bool GMT_is_a_blank_line (char *line);
 
 #define PSTEXT_CLIP		1
@@ -210,7 +210,7 @@ void load_parameters_pstext (struct PSTEXT_INFO *T, struct PSTEXT_CTRL *C)
 }
 
 #ifdef GMT_COMPAT
-bool check_for_old_format (struct GMT_CTRL *C, char *buffer, int mode)
+bool check_for_old_format (struct GMT_CTRL *GMT, char *buffer, int mode)
 {
 	/* Try to determine if input is the old GMT4-style format.
 	 * mode = 0 means normal textrec, mode = 1 means paragraph mode. */
@@ -227,23 +227,23 @@ bool check_for_old_format (struct GMT_CTRL *C, char *buffer, int mode)
 		n = sscanf (buffer, "%s %s %s %s %[^\n]", size, angle, font, just, txt);
 		if (n < 5) return (false);	/* Clearly not the old format since missing items */
 	}
-	if (GMT_not_numeric (C, angle)) return (false);	/* Since angle is not a number */
+	if (GMT_not_numeric (GMT, angle)) return (false);	/* Since angle is not a number */
 	k = (int)strlen (size) - 1;
 	if (size[k] == 'c' || size[k] == 'i' || size[k] == 'm' || size[k] == 'p') size[k] = '\0';	/* Chop of unit */
-	if (GMT_not_numeric (C, size)) return (false);	/* Since size is not a number */
-	if (GMT_just_decode (C, just, 12) == -99) return (false);	/* Since justify not in correct format */
+	if (GMT_not_numeric (GMT, size)) return (false);	/* Since size is not a number */
+	if (GMT_just_decode (GMT, just, 12) == -99) return (false);	/* Since justify not in correct format */
 	if (mode) {	/* A few more checks for paragraph mode */
 		k = (int)strlen (spacing) - 1;
 		if (spacing[k] == 'c' || spacing[k] == 'i' || spacing[k] == 'm' || spacing[k] == 'p') spacing[k] = '\0';	/* Chop of unit */
-		if (GMT_not_numeric (C, spacing)) return (false);	/* Since spacing is not a number */
+		if (GMT_not_numeric (GMT, spacing)) return (false);	/* Since spacing is not a number */
 		k = (int)strlen (width) - 1;
 		if (width[k] == 'c' || width[k] == 'i' || width[k] == 'm' || width[k] == 'p') width[k] = '\0';	/* Chop of unit */
-		if (GMT_not_numeric (C, width)) return (false);		/* Since width is not a number */
-		if (!(pjust[0] == 'j' && pjust[1] == '\0') && GMT_just_decode (C, pjust, 0) == -99) return (false);
+		if (GMT_not_numeric (GMT, width)) return (false);		/* Since width is not a number */
+		if (!(pjust[0] == 'j' && pjust[1] == '\0') && GMT_just_decode (GMT, pjust, 0) == -99) return (false);
 	}
 
 	/* Well, seems like the old format so far */
-	GMT_Report (C->parent, GMT_MSG_COMPAT, "Warning: use of old style pstext input is deprecated.\n");
+	GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: use of old style pstext input is deprecated.\n");
 	return (true);
 }
 #endif

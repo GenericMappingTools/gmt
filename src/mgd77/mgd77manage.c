@@ -27,7 +27,7 @@
 #define GMT_PROG_OPTIONS "-RVbn"
 
 #ifdef GMT_COMPAT
-	int backwards_SQ_parsing (struct GMT_CTRL *C, char option, char *item);
+	int backwards_SQ_parsing (struct GMT_CTRL *GMT, char option, char *item);
 #endif
 
 #define N_PAR		7
@@ -222,7 +222,7 @@ int decode_A_options (int mode, char *line, char *file, double parameters[])
 	return (error);
 }
 
-int decode_I_options (struct GMT_CTRL *C, char *line, char *abbrev, char *name, char *units, char *size, char *comment, double parameters[])
+int decode_I_options (struct GMT_CTRL *GMT, char *line, char *abbrev, char *name, char *units, char *size, char *comment, double parameters[])
 {	/* -I<abbrev>/<name>/<units>/<size>/<scale>/<offset>/\"comment\" */
 	unsigned int i = 0, k, error, pos = 0;
 	char p[GMT_BUFSIZ];
@@ -240,7 +240,7 @@ int decode_I_options (struct GMT_CTRL *C, char *line, char *abbrev, char *name, 
 					error++;
 				}
 				if (error) {
-					fprintf (C->session.std[GMT_ERR], "%s: Abbreviation name should only contain lower case letters, digits, and underscores\n", gmt_module_name(C));
+					fprintf (GMT->session.std[GMT_ERR], "%s: Abbreviation name should only contain lower case letters, digits, and underscores\n", gmt_module_name(GMT));
 					return (true);
 				}
 				break;
@@ -286,20 +286,20 @@ int decode_I_options (struct GMT_CTRL *C, char *line, char *abbrev, char *name, 
 			parameters[COL_TYPE] = NC_CHAR;
 			break;
 		default:
-			fprintf (C->session.std[GMT_ERR], "%s: Unknown data type flag %c\n", gmt_module_name(C), *size);
+			fprintf (GMT->session.std[GMT_ERR], "%s: Unknown data type flag %c\n", gmt_module_name(GMT), *size);
 			parameters[COL_TYPE] = MGD77_NOT_SET;
 			break;
 	}
 	return ((lrint (parameters[COL_TYPE]) == MGD77_NOT_SET) || (i != 7));
 }
 
-int skip_if_missing (struct GMT_CTRL *C, char *name, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET **D)
+int skip_if_missing (struct GMT_CTRL *GMT, char *name, char *file, struct MGD77_CONTROL *F, struct MGD77_DATASET **D)
 {	/* Used when a needed column is not present and we must free memory and goto next file */
 	int id;
 
-	if ((id = MGD77_Get_Column (C, name, F)) == MGD77_NOT_SET) {
-		fprintf (C->session.std[GMT_ERR], "%s: Cruise %s is missing column %s which is required for selected operation - skipping\n", gmt_module_name(C), file, name);
-		MGD77_Free_Dataset (C, D);	/* Free memory already allocated by MGD77_Read_File for this aborted effort */
+	if ((id = MGD77_Get_Column (GMT, name, F)) == MGD77_NOT_SET) {
+		fprintf (GMT->session.std[GMT_ERR], "%s: Cruise %s is missing column %s which is required for selected operation - skipping\n", gmt_module_name(GMT), file, name);
+		MGD77_Free_Dataset (GMT, D);	/* Free memory already allocated by MGD77_Read_File for this aborted effort */
 	}
 	return (id);
 }

@@ -71,14 +71,14 @@ struct SPHDISTANCE_CTRL {
 	} Q;
 };
 
-void prepare_polygon (struct GMT_CTRL *C, struct GMT_DATASEGMENT *P)
+void prepare_polygon (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *P)
 {
 	/* Set the min/max extent of this polygon and determine if it
 	 * is a polar cap; if so set the required metadata flags */
 	uint64_t row;
 	double lon_sum = 0.0, lat_sum = 0.0, dlon;
 	
-	GMT_set_seg_minmax (C, P);	/* Set the domain of the segment */
+	GMT_set_seg_minmax (GMT, P);	/* Set the domain of the segment */
 	
 	/* Then loop over points to accumulate sums */
 	
