@@ -4276,7 +4276,7 @@ void gmt_gcircle_sub (struct GMT_CTRL *GMT, double lon0, double lat0, double azi
 void gmt_scircle_sub (struct GMT_CTRL *GMT, double lon0, double lat0, double angle_1, double angle_2, struct GMT_SYMBOL *S, struct GMT_CIRCLE *C)
 {	/* We must determine points A and B, whose small-circle connector about pole P is the arc we seek to draw */
 	
-	int side, justify = GMT_vec_justify (S->v.status);	/* Return justification as 0-3 */
+	int justify = GMT_vec_justify (S->v.status);	/* Return justification as 0-3 */
 	double R[3][3], M[3];
 	GMT_memset (C, 1, struct GMT_CIRCLE);	/* Set all to zero */
 	/* Requires the rotation matrix for pole S->v.pole */
@@ -4356,8 +4356,8 @@ void gmt_geo_vector_smallcircle (struct GMT_CTRL *GMT, double lon0, double lat0,
 
 	int n1, n2, n, add, heads, side, justify;
 	size_t n_alloc;
-	double tlon, tlat, M[3], P[3], Pa[3], Ax[3], Bx[3], Ax2[3], Bx2[3], R[3][3];
-	double dr[2] = {0.0, 0.0}, az[2] = {0.0, 0.0}, oaz[2] = {0.0, 0.0}, off[2] = {0.0, 0.0}, scl[2];
+	double P[3], Pa[3], Ax[3], Bx[3], Ax2[3], Bx2[3], R[3][3];
+	double dr[2] = {0.0, 0.0}, az[2] = {0.0, 0.0}, oaz[2] = {0.0, 0.0}, scl[2];
 	double da = 0.0, dshift, s, olon[2], olat[2], head_length, arc_width, n_az, arc;
 	double rot[2] = {0.0, 0.0}, rot_v[2] = {0.0, 0.0};
 	double *xp = NULL, *yp = NULL, *xp2 = NULL, *yp2 = NULL;
@@ -4553,7 +4553,7 @@ void gmt_geo_vector_greatcircle (struct GMT_CTRL *GMT, double lon0, double lat0,
 
 	int n1, n2, n, add, heads, side, justify;
 	size_t n_alloc;
-	double tlon, tlat, mlon, mlat, M[3], P[3], Ax[3], Bx[3];
+	double tlon, tlat, mlon, mlat, P[3], Ax[3], Bx[3];
 	double dr[2] = {0.0, 0.0}, az[2] = {0.0, 0.0}, oaz[2] = {0.0, 0.0}, off[2] = {0.0, 0.0}, scl[2];
 	double da = 0.0, dshift, s, olon[2], olat[2], head_length, arc_width;
 	double *xp = NULL, *yp = NULL, *xp2 = NULL, *yp2 = NULL;

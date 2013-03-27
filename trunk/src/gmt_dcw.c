@@ -103,7 +103,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	int ks, j, retval, ncid, xvarid, yvarid, id, first, last;
 	size_t np, max_np = 0U;
 	uint64_t seg, n_segments;
-	unsigned int k, n_items = 1, pos = 0, kk, tbl;
+	unsigned int k, n_items = 1, pos = 0, kk, tbl = 0;
 	unsigned short int *dx = NULL, *dy = NULL;
 	bool done, want_state, outline = (F->mode & 4), fill = (F->mode & 8);
 	char code[GMT_TEXT_LEN16], state[GMT_TEXT_LEN16], file[GMT_TEXT_LEN16], msg[GMT_BUFSIZ], path[GMT_BUFSIZ];
@@ -231,7 +231,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			lon[k] = (dx[k] == 65535U) ? 0.0 : dx[k] * xscl + west;
 			lat[k] = (dy[k] == 65535U) ? 0.0 : dy[k] * yscl + south;
 		}
-		if (mode & GMT_DCW_EXTRACT) {	/* ALlocate a table with the right number of segments */
+		if (mode & GMT_DCW_EXTRACT) {	/* Allocate a table with the right number of segments */
 			D->table[tbl] = GMT_create_table (GMT, n_segments, 2, 0, false);
 		}
 	        /* Extract the pieces into separate segments */

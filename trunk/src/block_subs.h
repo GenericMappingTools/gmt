@@ -104,6 +104,7 @@ enum GMT_grdval_blks {	/* mode for selected item for gridding */
 	BLK_ITEM_LMSSCL,
 	BLK_N_ITEMS};
 
+#if 0
 static char *blk_name[BLK_N_ITEMS] =
 {
 	"mean",
@@ -122,6 +123,7 @@ static char *blk_name[BLK_N_ITEMS] =
 	"L1scl",
 	"LMSscl"
 };
+#endif
 
 #if defined(BLOCKMEAN)	/* Only used by blockmean */
 enum GMT_enum_blks {BLK_Z	= 0,
