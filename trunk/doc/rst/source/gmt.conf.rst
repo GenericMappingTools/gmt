@@ -29,6 +29,33 @@ read via the **gmt.conf** file; these are labeled (static).
 The full explanation for how to specify pens, pattern fills, colors, and
 fonts can be found in the **gmt** man page.
 
+
++---------------------------------+----------------+
+| THEMATIC SUB-SECTIONS           | *prefix*       |
++=================================+================+
+| `COLOR Parameters`_             | **COLOR_**     |
++---------------------------------+----------------+
+| `DIR Parameters`_               | **DIR_**       |
++---------------------------------+----------------+
+| `FONT Parameters`_              | **FONT_**      |
++---------------------------------+----------------+
+| `FORMAT Parameters`_            | **FORMAT_**    |
++---------------------------------+----------------+
+| `GMT Miscellaneous Parameters`_ | **GMT_**       |
++---------------------------------+----------------+
+| `I/O Parameters`_               | **IO_**        |
++---------------------------------+----------------+
+| `MAP Parameters`_               | **MAP_**       |
++---------------------------------+----------------+
+| `Projection Parameters`_        | **PROJ_**      |
++---------------------------------+----------------+
+| `PostScript Parameters`_        | **PS_**        |
++---------------------------------+----------------+
+| `Calendar/Time Parameters`_     | **TIME_**      |
++---------------------------------+----------------+
+
+.. _COLOR Parameters:
+
 **COLOR\_BACKGROUND**
     Color used for the background of images (i.e., when z < lowest color
     table entry) [black].
@@ -59,6 +86,9 @@ fonts can be found in the **gmt** man page.
 **COLOR\_NAN**
     Color used for the non-defined areas of images (i.e., where z ==
     NaN) [127.5].
+
+.. _DIR Parameters:
+
 **DIR\_GSHHG**
     Path to GSHHG files. Defaults to **$GMT\_SHAREDIR**/coast if empty.
 **DIR\_TMP**
@@ -66,6 +96,9 @@ fonts can be found in the **gmt** man page.
 **DIR\_USER**
     Replaces the session user dir **$GMT\_USERDIR** from the
     environment.
+
+.. _FONT Parameters:
+
 **FONT**
     Sets the default for all fonts, except FONT\_LOGO. This setting is
     not included in the **gmt.conf** file.
@@ -83,6 +116,9 @@ fonts can be found in the **gmt** man page.
     [8p,Helvetica,black].
 **FONT\_TITLE**
     Font to use when plotting titles over graphs [24p,Helvetica,black].
+
+.. _FORMAT Parameters:
+
 **FORMAT\_CLOCK\_IN**
     Formatting template that indicates how an input clock string is
     formatted. This template is then used to guide the reading of clock
@@ -216,6 +252,9 @@ fonts can be found in the **gmt** man page.
     This format is parsed by the C function **strftime**, so that
     virtually any text can be used (even not containing any time
     information) [%Y %b %d %H:%M:%S].
+
+.. _GMT Miscellaneous Parameters:
+
 **GMT\_FFT**
     Determines which Fast Fourier Transform (FFT) should be used among
     those that have been configured during installation. Choose from
@@ -265,6 +304,9 @@ fonts can be found in the **gmt** man page.
     the lower levels: **q**\ uiet, **n**\ normal (errors and warnings),
     **c**\ ompatibility warnings, (v)erbose progress reports, (l)ong
     verbose progress reports, **d**\ ebugging messages [c].
+
+.. _I/O Parameters:
+
 **IO\_COL\_SEPARATOR**
     This setting determines what character will separate ASCII output
     data columns written by **GMT**. Choose from tab, space, comma, and
@@ -344,6 +386,9 @@ fonts can be found in the **gmt** man page.
     respectively, and no segment header information is written. To use B
     or N as regular segment markers you must escape them with a leading
     backslash.
+
+.. _MAP Parameters:
+
 **MAP\_ANNOT\_MIN\_ANGLE**
     If the angle between the map boundary and the annotation baseline is
     less than this minimum value (in degrees), the annotation is not
@@ -487,6 +532,9 @@ fonts can be found in the **gmt** man page.
     we convert any latitude used in the great circle calculation to the
     chosen auxiliary latitude before doing the distance calculation. See
     also PROJ\_MEAN\_RADIUS.
+
+.. _Projection Parameters:
+
 **PROJ\_ELLIPSOID**
     The (case sensitive) name of the ellipsoid used for the map projections [WGS-84]. Choose among:
 
@@ -604,6 +652,9 @@ fonts can be found in the **gmt** man page.
     Stereographic [0.9996], UTM [0.9996], and Transverse Mercator [1]
     projections in order to minimize areal distortion. Provide a new
     scale-factor or leave as default.
+
+.. _PostScript Parameters:
+
 **PS\_CHAR\_ENCODING**
     (static) Names the eight bit character set being used for text in
     files and in command line parameters. This allows **GMT** to ensure
@@ -653,67 +704,37 @@ fonts can be found in the **gmt** man page.
 
     Media width height
 
-    A0 2380 3368
-
-    A1 1684 2380
-
-    A2 1190 1684
-
-    A3 842 1190
-
-    A4 595 842
-
-    A5 421 595
-
-    A6 297 421
-
-    A7 210 297
-
-    A8 148 210
-
-    A9 105 148
-
-    A10 74 105
-
-    B0 2836 4008
-
-    B1 2004 2836
-
-    B2 1418 2004
-
-    B3 1002 1418
-
-    B4 709 1002
-
-    B5 501 709
-
-    archA 648 864
-
-    archB 864 1296
-
-    archC 1296 1728
-
-    archD 1728 2592
-
-    archE 2592 3456
-
-    flsa 612 936
-
-    halfletter 396 612
-
-    statement 396 612
-
-    note 540 720
-
-    letter 612 792
-
-    legal 612 1008
-
-    11x17 792 1224
-
-    tabloid 792 1224
-
-    ledger 1224 792
+    * A0 2380 3368
+    * A1 1684 2380
+    * A2 1190 1684
+    * A3 842 1190
+    * A4 595 842
+    * A5 421 595
+    * A6 297 421
+    * A7 210 297
+    * A8 148 210
+    * A9 105 148
+    * A10 74 105
+    * B0 2836 4008
+    * B1 2004 2836
+    * B2 1418 2004
+    * B3 1002 1418
+    * B4 709 1002
+    * B5 501 709
+    * archA 648 864
+    * archB 864 1296
+    * archC 1296 1728
+    * archD 1728 2592
+    * archE 2592 3456
+    * flsa 612 936
+    * halfletter 396 612
+    * statement 396 612
+    * note 540 720
+    * letter 612 792
+    * legal 612 1008
+    * 11x17 792 1224
+    * tabloid 792 1224
+    * ledger 1224 792
 
     For a completely custom format (e.g., for large format plotters) you
     may also specify WxH, where W and H are in points unless you append
@@ -744,6 +765,9 @@ fonts can be found in the **gmt** man page.
     PDF. Choose from Color, ColorBurn, ColorDodge, Darken, Difference,
     Exclusion, HardLight, Hue, Lighten, Luminosity, Multiply, Normal,
     Overlay, Saturation, SoftLight, and Screen [Normal].
+
+.. _Calendar/Time Parameters:
+
 **TIME\_EPOCH**
     Specifies the value of the calendar and clock at the origin (zero
     point) of relative time units (see **TIME\_UNIT**). It is a string
