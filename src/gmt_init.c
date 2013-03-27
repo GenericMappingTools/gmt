@@ -7751,7 +7751,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 			p->size_x = p->given_size_x = GMT_to_inch (C, txt_a);
 		}
 	}
-	else if (strchr (GMT_VECTOR_CODES, text[0])) {	/* Vectors gets separate treatment because of optional modifiers [+j<just>+b+e+s+l+r+a<angle>+n<norm>] */
+	else if (strchr (GMT_VECTOR_CODES, text[0])) {	/* Vectors gets separate treatment because of optional modifiers [+j<just>+b+e+s+l+p<plon/plat>+q+r+a<angle>+n<norm>] */
 		char arg[GMT_TEXT_LEN64];
 		n = sscanf (text, "%c%[^+]", &symbol_type, arg);	/* arg should be symbols size with no +<modifiers> at the end */
 		if (n == 1) strncpy (arg, &text[1], GMT_TEXT_LEN64);	/* No modifiers present, set arg to text following symbol code */
@@ -8252,12 +8252,12 @@ int GMT_parse_symbol_option (struct GMT_CTRL *C, char *text, struct GMT_SYMBOL *
 				GMT_Report (C->parent, GMT_MSG_NORMAL, "Syntax error -S= option\n");
 				decode_error++;
 			}
-			if (p->v.status & GMT_VEC_POLE) {	/* Small circle vector */
-				if (p->v.status & GMT_VEC_ANGLES) {
+			if (p->v.status & GMT_VEC_POLE) {	/* Small circle geo vector */
+				if (p->v.status & GMT_VEC_ANGLES) {	/* Giving two angles in degrees */
 					p->nondim_col[p->n_nondim++] = 2 + col_off;	/* Start angle */
 					p->nondim_col[p->n_nondim++] = 3 + col_off;	/* Stop angle */
 				}
-				else {
+				else {	/* Just length of arc in km */
 					p->nondim_col[p->n_nondim++] = 2 + col_off;	/* Arc length */
 					p->n_required = 1;
 				}

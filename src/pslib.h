@@ -71,6 +71,7 @@ extern "C" {
 
 /* PSL codes for vector attributes - mirroring similar codes and macros in GMT */
 
+/* Note: If changes are made to PSL_enum_vecattr you must also change gmt_plot.h: GMT_enum_vecattr */
 enum PSL_enum_vecattr {PSL_VEC_LEFT = 1,	/* Only draw left half of vector head */
 	PSL_VEC_RIGHT		= 2,		/* Only draw right half of vector head */
 	PSL_VEC_BEGIN		= 4,		/* Place vector head at beginning of vector */
@@ -79,9 +80,13 @@ enum PSL_enum_vecattr {PSL_VEC_LEFT = 1,	/* Only draw left half of vector head *
 	PSL_VEC_JUST_C		= 16,		/* Align vector center at (x,y) */
 	PSL_VEC_JUST_E		= 32,		/* Align vector end at (x,y) */
 	PSL_VEC_JUST_S		= 64,		/* Align vector center at (x,y) */
-	PSL_VEC_OUTLINE		= 128,		/* Draw vector head outline using default pen */
-	PSL_VEC_FILL		= 512,		/* Fill vector head using default fill */
-	PSL_VEC_MARC90		= 2048};	/* Matharc only: if angles subtend 90, draw straight angle symbol */
+	PSL_VEC_ANGLES		= 128,		/* Got start/stop angles instead of az, length */
+	PSL_VEC_POLE		= 256,		/* Got pole of small/great circle */
+	PSL_VEC_OUTLINE		= 512,		/* Draw vector head outline using default pen */
+	PSL_VEC_OUTLINE2	= 1024,		/* Draw vector head outline using supplied v_pen */
+	PSL_VEC_FILL		= 2048,		/* Fill vector head using default fill */
+	PSL_VEC_FILL2		= 4096,		/* Fill vector head using supplied v_fill) */
+	PSL_VEC_MARC90		= 8192};	/* Matharc only: if angles subtend 90, draw straight angle symbol */
 
 #define PSL_vec_justify(status) ((status>>4)&3)			/* Return justification as 0-3 */
 #define PSL_vec_head(status) ((status>>2)&3)			/* Return head selection as 0-3 */
