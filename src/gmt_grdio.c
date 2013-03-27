@@ -134,12 +134,12 @@ void gmt_grd_layout (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal Error: Asking to write out complex components from a non-complex grid.\n");
 			GMT_exit (EXIT_FAILURE);
 		}
-		if ((header->complex_mode & GMT_GRID_IS_COMPLEX_REAL) && (complex_mode & GMT_GRID_IS_COMPLEX_REAL) == 0) {
+		if ((complex_mode & GMT_GRID_IS_COMPLEX_REAL) && (header->complex_mode & GMT_GRID_IS_COMPLEX_REAL) == 0) {
 			/* Programming error: Requesting to write real components when there are none */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal Error: Complex grid has no real components that can be written to file.\n");
 			GMT_exit (EXIT_FAILURE);
 		}
-		else if ((header->complex_mode & GMT_GRID_IS_COMPLEX_IMAG) && (complex_mode & GMT_GRID_IS_COMPLEX_IMAG) == 0) {
+		else if ((complex_mode & GMT_GRID_IS_COMPLEX_IMAG) && (header->complex_mode & GMT_GRID_IS_COMPLEX_IMAG) == 0) {
 			/* Programming error: Requesting to write imag components when there are none */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal Error: Complex grid has no imaginary components that can be written to file.\n");
 			GMT_exit (EXIT_FAILURE);
