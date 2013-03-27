@@ -765,7 +765,7 @@ void GMT_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int ki
 		GMT_message (GMT, "%s   In addition, you can use Z-, Z+ to mean the global\n", pad);
 		GMT_message (GMT, "%s   minimum and maximum locations in the grid.\n", pad);
 	}
-	GMT_message (GMT, "%s   L: Let point pairs define great circles [Straight lines].\n", pad);
+	GMT_message (GMT, "%s   L Let point pairs define great circles [Straight lines].\n", pad);
 	GMT_message (GMT, "%sn|N<n_label> sets number of equidistant labels per %s.\n", pad, type[kind]);
 	GMT_message (GMT, "%s   N: Starts labeling exactly at the start of %s\n", pad, type[kind]);
 	GMT_message (GMT, "%s     [Default centers the labels on the %s].\n", pad, type[kind]);
@@ -7751,7 +7751,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->size_x = p->given_size_x = GMT_to_inch (GMT, txt_a);
 		}
 	}
-	else if (strchr (GMT_VECTOR_CODES, text[0])) {	/* Vectors gets separate treatment because of optional modifiers [+j<just>+b+e+s+l+p<plon/plat>+q+r+a<angle>+n<norm>] */
+	else if (strchr (GMT_VECTOR_CODES, text[0])) {	/* Vectors gets separate treatment because of optional modifiers [+j<just>+b+e+s+l+r+a<angle>+n<norm>] */
 		char arg[GMT_TEXT_LEN64];
 		n = sscanf (text, "%c%[^+]", &symbol_type, arg);	/* arg should be symbols size with no +<modifiers> at the end */
 		if (n == 1) strncpy (arg, &text[1], GMT_TEXT_LEN64);	/* No modifiers present, set arg to text following symbol code */
@@ -8252,12 +8252,12 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -S= option\n");
 				decode_error++;
 			}
-			if (p->v.status & GMT_VEC_POLE) {	/* Small circle geo vector */
-				if (p->v.status & GMT_VEC_ANGLES) {	/* Giving two angles in degrees */
+			if (p->v.status & GMT_VEC_POLE) {	/* Small circle vector */
+				if (p->v.status & GMT_VEC_ANGLES) {
 					p->nondim_col[p->n_nondim++] = 2 + col_off;	/* Start angle */
 					p->nondim_col[p->n_nondim++] = 3 + col_off;	/* Stop angle */
 				}
-				else {	/* Just length of arc in km */
+				else {
 					p->nondim_col[p->n_nondim++] = 2 + col_off;	/* Arc length */
 					p->n_required = 1;
 				}
