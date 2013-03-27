@@ -181,7 +181,7 @@ int GMT_blockmode_parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, stru
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-struct BIN_MODE_INFO *bin_setup (struct GMT_CTRL *C, struct BLK_DATA *d, double width, bool center, int mode_choice, bool is_integer, uint64_t n, uint64_t k)
+struct BIN_MODE_INFO *bin_setup (struct GMT_CTRL *GMT, struct BLK_DATA *d, double width, bool center, int mode_choice, bool is_integer, uint64_t n, uint64_t k)
 {
 	/* Estimate mode by finding a maximum in the histogram resulting
 	 * from binning the data with the specified width. Note that the
@@ -190,21 +190,21 @@ struct BIN_MODE_INFO *bin_setup (struct GMT_CTRL *C, struct BLK_DATA *d, double 
 	 * This function sets up quantities needed as we loop over the
 	 * spatial bins */
 
-	struct BIN_MODE_INFO *B = GMT_memory (C, NULL, 1, struct BIN_MODE_INFO);
+	struct BIN_MODE_INFO *B = GMT_memory (GMT, NULL, 1, struct BIN_MODE_INFO);
 
 	if (is_integer) {	/* Special consideration for integers */
 		double d_intval;
 		if (width == 0.0) {
-			GMT_Report (C->parent, GMT_MSG_LONG_VERBOSE, "For integer data and no -D<width> specified we default to <width> = 1\n");
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "For integer data and no -D<width> specified we default to <width> = 1\n");
 			width = 1.0;
 		}
 		d_intval = (double)lrint (width);
 		if (doubleAlmostEqual (d_intval, width)) {
-			GMT_Report (C->parent, GMT_MSG_LONG_VERBOSE, "For integer data and integer width we automatically select centered bins and lowest mode\n");
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "For integer data and integer width we automatically select centered bins and lowest mode\n");
 			center = true;
 			mode_choice = BLOCKMODE_LOW;
 		}
-		GMT_Report (C->parent, GMT_MSG_LONG_VERBOSE, "Effective mode option is -D%g+c+l\n", width);
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Effective mode option is -D%g+c+l\n", width);
 	}
 	B->i_offset = (center) ? 0.5 : 0.0;
 	B->o_offset = (center) ? 0.0 : 0.5;
@@ -213,13 +213,13 @@ struct BIN_MODE_INFO *bin_setup (struct GMT_CTRL *C, struct BLK_DATA *d, double 
 	B->min = lrint (floor ((d[0].a[k]   * B->i_width) + B->i_offset));
 	B->max = lrint (ceil  ((d[n-1].a[k] * B->i_width) + B->i_offset));
 	B->n_bins = B->max - B->min + 1;
-	B->count = GMT_memory (C, NULL, B->n_bins, unsigned int);
+	B->count = GMT_memory (GMT, NULL, B->n_bins, unsigned int);
 	B->mode_choice = mode_choice;
 	
 	return (B);
 }
 
-double bin_mode (struct GMT_CTRL *C, struct BLK_DATA *d, uint64_t n, uint64_t k, struct BIN_MODE_INFO *B)
+double bin_mode (struct GMT_CTRL *GMT, struct BLK_DATA *d, uint64_t n, uint64_t k, struct BIN_MODE_INFO *B)
 {
 	/* Estimate mode by finding a maximum in the histogram resulting
 	 * from binning the data with the specified width. Note that the

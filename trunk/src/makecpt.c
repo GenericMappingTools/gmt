@@ -34,7 +34,7 @@
 
 #define GMT_PROG_OPTIONS "->Vh"
 
-unsigned int GMT_log_array (struct GMT_CTRL *C, double min, double max, double delta, double **array);
+unsigned int GMT_log_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array);
 
 /* Control structure for makecpt */
 

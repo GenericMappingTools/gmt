@@ -38,7 +38,7 @@
 #define GMT_PROG_OPTIONS "-:>BJKOPRUVXYbcfghipstxy" GMT_OPT("EHMm")
 
 #ifdef GMT_COMPAT
-int gmt_parse_g_option (struct GMT_CTRL *C, char *txt);
+int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt);
 #endif
 
 struct PSWIGGLE_CTRL {

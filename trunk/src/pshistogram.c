@@ -30,7 +30,7 @@
 #define GMT_PROG_OPTIONS "->BJKOPRUVXYbcfhipsxy" GMT_OPT("E")
 
 #ifdef GMT_COMPAT
-int gmt_parse_i_option (struct GMT_CTRL *C, char *arg);
+int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg);
 #endif
 
 struct PSHISTOGRAM_CTRL {

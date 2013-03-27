@@ -32,8 +32,8 @@
 
 #define GMT_PROG_OPTIONS "-:>KOVabfghi" GMT_OPT("HMm")
 
-int gmt_parse_R_option (struct GMT_CTRL *C, char *item);
-void GMT_get_rgb_lookup (struct GMT_CTRL *C, struct GMT_PALETTE *P, int index, double value, double *rgb);
+int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item);
+void GMT_get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index, double value, double *rgb);
 
 #define POINT			0
 #define EVENT			1
@@ -577,7 +577,7 @@ void set_polystyle (double *rgb, int outline, int active, int N)
 	tabs (--N); printf ("</PolyStyle>\n");
 }
 
-void get_rgb_lookup (struct GMT_CTRL *C, struct GMT_PALETTE *P, int index, double *rgb)
+void get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index, double *rgb)
 {	/* Special version of GMT_get_rgb_lookup since no interpolation can take place */
 
 	if (index < 0) {	/* NaN, Foreground, Background */
@@ -585,7 +585,7 @@ void get_rgb_lookup (struct GMT_CTRL *C, struct GMT_PALETTE *P, int index, doubl
 		P->skip = P->patch[index+3].skip;
 	}
 	else if (P->range[index].skip) {		/* Set to page color for now */
-		GMT_rgb_copy (rgb, C->current.setting.ps_page_rgb);
+		GMT_rgb_copy (rgb, GMT->current.setting.ps_page_rgb);
 		P->skip = true;
 	}
 	else {	/* Return low color */
@@ -594,38 +594,38 @@ void get_rgb_lookup (struct GMT_CTRL *C, struct GMT_PALETTE *P, int index, doubl
 	}
 }
 
-int get_data_region (struct GMT_CTRL *C, struct GMT_TEXTSET *D, double wesn[])
+int get_data_region (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D, double wesn[])
 {
 	/* Because we read as textset we must determine the data extent the hard way */
 	unsigned int tbl, ix, iy, way;
 	uint64_t row, seg;
 	char T[2][GMT_TEXT_LEN64];
 	double x, y, y_min = 90.0, y_max = -90.0;
-	struct GMT_QUAD *Q = GMT_quad_init (C, 1);	/* Allocate and initialize one QUAD structure */
-	ix = C->current.setting.io_lonlat_toggle[GMT_IN];	iy = 1 - ix;
+	struct GMT_QUAD *Q = GMT_quad_init (GMT, 1);	/* Allocate and initialize one QUAD structure */
+	ix = GMT->current.setting.io_lonlat_toggle[GMT_IN];	iy = 1 - ix;
 
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 			for (row = 0; row < D->table[tbl]->segment[seg]->n_rows; row++) {
 				sscanf (D->table[tbl]->segment[seg]->record[row], "%s %s", T[ix], T[iy]);
-				if (GMT_verify_expectations (C, C->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (C, T[GMT_X], C->current.io.col_type[GMT_IN][GMT_X], &x), T[GMT_X])) {
-					GMT_Report (C->parent, GMT_MSG_NORMAL, "Error: Could not decode longitude from %s\n", T[GMT_X]);
+				if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, T[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &x), T[GMT_X])) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not decode longitude from %s\n", T[GMT_X]);
 					return (EXIT_FAILURE);
 				}
-				if (GMT_verify_expectations (C, C->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (C, T[GMT_Y], C->current.io.col_type[GMT_IN][GMT_Y], &y), T[GMT_Y])) {
-					GMT_Report (C->parent, GMT_MSG_NORMAL, "Error: Could not decode latitude from %s\n", T[GMT_Y]);
+				if (GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, T[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &y), T[GMT_Y])) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not decode latitude from %s\n", T[GMT_Y]);
 					return (EXIT_FAILURE);
 				}
-				GMT_quad_add (C, Q, x);
+				GMT_quad_add (GMT, Q, x);
 				if (y < y_min) y_min = y;
 				if (y > y_max) y_max = y;
 			}
 		}
 	}
-	way = GMT_quad_finalize (C, Q);
+	way = GMT_quad_finalize (GMT, Q);
 	wesn[XLO] = Q->min[way];	wesn[XHI] = Q->max[way];
 	wesn[YLO] = y_min;		wesn[YHI] = y_max;
-	GMT_free (C, Q);
+	GMT_free (GMT, Q);
 	return (GMT_NOERROR);
 }
 

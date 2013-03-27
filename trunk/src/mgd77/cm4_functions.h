@@ -69,7 +69,7 @@ struct MGD77_CM4 {
 	} CM4_S;
 };
 
-int MGD77_cm4field (struct GMT_CTRL *C, struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double *p_alt, double *p_date);
-EXTERN_MSC void MGD77_CM4_init (struct GMT_CTRL *C, struct MGD77_CONTROL *F, struct MGD77_CM4 *CM4);
+int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon, double *p_lat, double *p_alt, double *p_date);
+EXTERN_MSC void MGD77_CM4_init (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_CM4 *CM4);
 
 #endif /* _CM4_FUNCTIONS_H */

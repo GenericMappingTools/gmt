@@ -256,21 +256,21 @@ int GMT_gmtvector_parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, stru
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-unsigned int decode_vector (struct GMT_CTRL *C, char *arg, double coord[], int cartesian, int geocentric) {
+unsigned int decode_vector (struct GMT_CTRL *GMT, char *arg, double coord[], int cartesian, int geocentric) {
 	unsigned int n_out, n_errors = 0, ix, iy;
 	int n;
 	char txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64], txt_c[GMT_TEXT_LEN64];
 	
-	ix = (C->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
+	ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
 	n = sscanf (arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
 	assert (n >= 2);
 	n_out = n;
 	if (n == 2) {	/* Got lon/lat, r/theta, or x/y */
-		if (GMT_is_geographic (C, GMT_IN)) {
-			n_errors += GMT_verify_expectations (C, C->current.io.col_type[GMT_IN][ix], GMT_scanf_arg (C, txt_a, C->current.io.col_type[GMT_IN][ix], &coord[ix]), txt_a);
-			n_errors += GMT_verify_expectations (C, C->current.io.col_type[GMT_IN][iy], GMT_scanf_arg (C, txt_b, C->current.io.col_type[GMT_IN][iy], &coord[iy]), txt_b);
-			if (geocentric) coord[GMT_Y] = GMT_lat_swap (C, coord[GMT_Y], GMT_LATSWAP_G2O);
-			GMT_geo_to_cart (C, coord[GMT_Y], coord[GMT_X], coord, true);	/* get x/y/z */
+		if (GMT_is_geographic (GMT, GMT_IN)) {
+			n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][ix], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][ix], &coord[ix]), txt_a);
+			n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][iy], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][iy], &coord[iy]), txt_b);
+			if (geocentric) coord[GMT_Y] = GMT_lat_swap (GMT, coord[GMT_Y], GMT_LATSWAP_G2O);
+			GMT_geo_to_cart (GMT, coord[GMT_Y], coord[GMT_X], coord, true);	/* get x/y/z */
 			n_out = 3;
 		}
 		else if (cartesian) {	/* Cartesian x/y */
@@ -278,7 +278,7 @@ unsigned int decode_vector (struct GMT_CTRL *C, char *arg, double coord[], int c
 			coord[GMT_Y] = atof (txt_b);
 		}
 		else	/* Cylindrical r/theta */
-			GMT_polar_to_cart (C, atof (txt_a), atof (txt_b), coord, true);
+			GMT_polar_to_cart (GMT, atof (txt_a), atof (txt_b), coord, true);
 	}
 	else if (n == 3) {	/* Got x/y/z */
 		coord[GMT_X] = atof (txt_a);
@@ -286,17 +286,17 @@ unsigned int decode_vector (struct GMT_CTRL *C, char *arg, double coord[], int c
 		coord[GMT_Z] = atof (txt_c);
 	}
 	else {
-		GMT_Report (C->parent, GMT_MSG_NORMAL, "Bad vector argument (%s)\n", arg);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad vector argument (%s)\n", arg);
 		return (0);
 	}
 	if (n_errors) {
-		GMT_Report (C->parent, GMT_MSG_NORMAL, "Failed to decode the geographic coordinates (%s)\n", arg);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to decode the geographic coordinates (%s)\n", arg);
 		return (0);	
 	}
 	return (n_out);
 }
 
-void get_bisector (struct GMT_CTRL *C, double A[3], double B[3], double P[3])
+void get_bisector (struct GMT_CTRL *GMT, double A[3], double B[3], double P[3])
 {	/* Given points in A and B, return the bisector pole via P */
 	 
 	unsigned int i;
@@ -305,26 +305,26 @@ void get_bisector (struct GMT_CTRL *C, double A[3], double B[3], double P[3])
 	/* Get mid point between A and B */
 	
 	for (i = 0; i < 3; i++) M[i] = A[i] + B[i];
-	GMT_normalize3v (C, M);
+	GMT_normalize3v (GMT, M);
 
 	/* Get pole for great circle through A and B */
 	
-	GMT_cross3v (C, A, B, Pa);
-	GMT_normalize3v (C, Pa);
+	GMT_cross3v (GMT, A, B, Pa);
+	GMT_normalize3v (GMT, Pa);
 
 	/* Then get pole for bisector of A-B through Pa */
 	
-	GMT_cross3v (C, M, Pa, P);
-	GMT_normalize3v (C, P);
+	GMT_cross3v (GMT, M, Pa, P);
+	GMT_normalize3v (GMT, P);
 }
 
-void get_azpole (struct GMT_CTRL *C, double A[3], double P[3], double az)
+void get_azpole (struct GMT_CTRL *GMT, double A[3], double P[3], double az)
 {	/* Given point in A and azimuth az, return the pole P to the oblique equator with given az at A */
 	double R[3][3], tmp[3], B[3] = {0.0, 0.0, 1.0};	/* set B to north pole  */
-	GMT_cross3v (C, A, B, tmp);	/* Point C is 90 degrees away from plan through A and B */
-	GMT_normalize3v (C, tmp);	/* Get unit vector */
-	GMT_make_rot_matrix2 (C, A, -az, R);	/* Make rotation about A of -azim degrees */
-	GMT_matrix_vect_mult (C, 3U, R, tmp, P);
+	GMT_cross3v (GMT, A, B, tmp);	/* Point C is 90 degrees away from plan through A and B */
+	GMT_normalize3v (GMT, tmp);	/* Get unit vector */
+	GMT_make_rot_matrix2 (GMT, A, -az, R);	/* Make rotation about A of -azim degrees */
+	GMT_matrix_vect_mult (GMT, 3U, R, tmp, P);
 }
 
 void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool cartesian, double conf, double *M, double *E)

@@ -46,17 +46,17 @@ struct GMTAVERAGE_CTRL {	/* All control options for this program (except common 
 	} T;
 };
 
-void * New_gmtaverage_Ctrl (struct GMT_CTRL *G) {	/* Allocate and initialize a new control structure */
+void * New_gmtaverage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GMTAVERAGE_CTRL *C;
 	
-	C = GMT_memory (G, NULL, 1, struct  GMTAVERAGE_CTRL);
+	C = GMT_memory (GMT, NULL, 1, struct  GMTAVERAGE_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	return (C);
 }
 
-void Free_gmtaverage_Ctrl (struct GMT_CTRL *G, struct  GMTAVERAGE_CTRL *C) {	/* Deallocate control structure */
-	GMT_free (G, C);	
+void Free_gmtaverage_Ctrl (struct GMT_CTRL *GMT, struct  GMTAVERAGE_CTRL *C) {	/* Deallocate control structure */
+	GMT_free (GMT, C);	
 }
 
 int GMT_gmtaverage_usage (struct GMTAPI_CTRL *API, int level)

@@ -159,10 +159,10 @@ struct BLK_DATA {
 
 /* Declaring the standard functions to allocate and free the program Ctrl structure */
 
-void * NEW_BLK (struct GMT_CTRL *G) {	/* Allocate and initialize a new control structure */
+void * NEW_BLK (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct BLOCK_CTRL *C;
 	
-	C = GMT_memory (G, NULL, 1, struct  BLOCK_CTRL);
+	C = GMT_memory (GMT, NULL, 1, struct  BLOCK_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 #if defined(BLOCKMEDIAN)	/* Initialize default to 0.5, i.e., the median */
@@ -171,9 +171,9 @@ void * NEW_BLK (struct GMT_CTRL *G) {	/* Allocate and initialize a new control s
 	return (C);
 }
 
-void FREE_BLK (struct GMT_CTRL *G, struct  BLOCK_CTRL *C) {	/* Deallocate control structure */
+void FREE_BLK (struct GMT_CTRL *GMT, struct  BLOCK_CTRL *C) {	/* Deallocate control structure */
 	if (C->G.file) free (C->G.file);	
-	GMT_free (G, C);	
+	GMT_free (GMT, C);	
 }
 
 #if !defined(BLOCKMEAN)	/* Only used by blockmean */

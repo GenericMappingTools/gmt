@@ -101,7 +101,7 @@ int GMT_gmtmercmap_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_gmtmercmap_parse (struct GMTAPI_CTRL *C, struct GMTMERCMAP_CTRL *Ctrl, struct GMT_OPTION *options)
+int GMT_gmtmercmap_parse (struct GMTAPI_CTRL *API, struct GMTMERCMAP_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to gmtmercmap and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -112,7 +112,7 @@ int GMT_gmtmercmap_parse (struct GMTAPI_CTRL *C, struct GMTMERCMAP_CTRL *Ctrl, s
 
 	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
-	struct GMT_CTRL *GMT = C->GMT;
+	struct GMT_CTRL *GMT = API->GMT;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -173,11 +173,11 @@ void set_var (int mode, char *name, char *value)
 	}
 }
 
-void set_dim (struct GMT_CTRL *C, int mode, char *name,  double value)
+void set_dim (struct GMT_CTRL *GMT, int mode, char *name,  double value)
 {	/* Assigns the double value given the script mode and prevailing measure unit [value is passed in inches] */
 	static char unit[4] = "cimp", text[GMT_TEXT_LEN256];
-	double out = value * C->session.u2u[GMT_INCH][C->current.setting.proj_length_unit];
-	sprintf (text, "%g%c", out, unit[C->current.setting.proj_length_unit]);
+	double out = value * GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
+	sprintf (text, "%g%c", out, unit[GMT->current.setting.proj_length_unit]);
 	set_var (mode, name, text);
 }
 

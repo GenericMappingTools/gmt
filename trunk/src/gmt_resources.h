@@ -381,7 +381,7 @@ struct GMT_OGR_SEG {	/* Struct with GMT/OGR aspatial data for a segment*/
 struct GMT_DATASEGMENT {		/* For holding segment lines in memory */
 	/* Variables we document for the API: */
 	uint64_t n_rows;		/* Number of points in this segment */
-	unsigned int n_columns;		/* Number of fields in each record (>= 2) */
+	uint64_t n_columns;		/* Number of fields in each record (>= 2) */
 	double *min;			/* Minimum coordinate for each column */
 	double *max;			/* Maximum coordinate for each column */
 	double **coord;			/* Coordinates x,y, and possibly other columns */
@@ -404,7 +404,7 @@ struct GMT_DATASEGMENT {		/* For holding segment lines in memory */
 struct GMT_DATATABLE {	/* To hold an array of line segment structures and header information in one container */
 	/* Variables we document for the API: */
 	unsigned int n_headers;	/* Number of file header records (0 if no header) */
-	unsigned int n_columns;	/* Number of columns (fields) in each record */
+	uint64_t n_columns;	/* Number of columns (fields) in each record */
 	uint64_t n_segments;	/* Number of segments in the array */
 	uint64_t n_records;	/* Total number of data records across all segments */
 	double *min;			/* Minimum coordinate for each column */
@@ -423,8 +423,8 @@ struct GMT_DATATABLE {	/* To hold an array of line segment structures and header
 
 struct GMT_DATASET {	/* Single container for an array of GMT tables (files) */
 	/* Variables we document for the API: */
-	unsigned int n_tables;		/* The total number of tables (files) contained */
-	unsigned int n_columns;		/* The number of data columns */
+	uint64_t n_tables;		/* The total number of tables (files) contained */
+	uint64_t n_columns;		/* The number of data columns */
 	uint64_t n_segments;		/* The total number of segments across all tables */
 	uint64_t n_records;		/* The total number of data records across all tables */
 	double *min;			/* Minimum coordinate for each column */
@@ -477,7 +477,7 @@ struct GMT_TEXTTABLE {	/* To hold an array of text segment structures and header
 
 struct GMT_TEXTSET {	/* Single container for an array of GMT text tables (files) */
 	/* Variables we document for the API: */
-	unsigned int n_tables;		/* The total number of tables (files) contained */
+	uint64_t n_tables;		/* The total number of tables (files) contained */
 	uint64_t n_segments;		/* The total number of segments across all tables */
 	uint64_t n_records;		/* The total number of data records across all tables */
 	struct GMT_TEXTTABLE **table;	/* Pointer to array of tables */
@@ -601,9 +601,9 @@ union GMT_UNIVECTOR {
 
 struct GMT_VECTOR {	/* Single container for user vector(s) of data */
 	/* Variables we document for the API: */
-	unsigned int n_columns;		/* Number of vectors */
-	unsigned int registration;	/* 0 for gridline and 1 for pixel registration  */
+	uint64_t n_columns;		/* Number of vectors */
 	uint64_t n_rows;		/* Number of rows in each vector */
+	unsigned int registration;	/* 0 for gridline and 1 for pixel registration  */
 	enum GMT_enum_type *type;	/* Array of data types (type of each uni-vector, e.g. GMT_FLOAT */
 	union GMT_UNIVECTOR *data;	/* Array of uni-vectors */
 	double range[2];		/* Contains tmin/tmax (or 0/0 if not equidistant) */
@@ -622,8 +622,8 @@ struct GMT_VECTOR {	/* Single container for user vector(s) of data */
 
 struct GMT_MATRIX {	/* Single container for a user matrix of data */
 	/* Variables we document for the API: */
-	unsigned int n_rows;		/* Number of rows in this matrix */
-	unsigned int n_columns;		/* Number of columns in this matrix */
+	uint64_t n_rows;		/* Number of rows in this matrix */
+	uint64_t n_columns;		/* Number of columns in this matrix */
 	unsigned int n_layers;		/* Number of layers in a 3-D matrix [1] */
 	unsigned int shape;		/* 0 = C (rows) and 1 = Fortran (cols) */
 	unsigned int registration;	/* 0 for gridline and 1 for pixel registration  */

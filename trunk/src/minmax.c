@@ -30,8 +30,8 @@
 
 #define GMT_PROG_OPTIONS "-:>Vbfghiors" GMT_OPT("HMm")
 
-int gmt_geo_C_format (struct GMT_CTRL *C);
-unsigned int GMT_log_array (struct GMT_CTRL *C, double min, double max, double delta, double **array);
+int gmt_geo_C_format (struct GMT_CTRL *GMT);
+unsigned int GMT_log_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array);
 
 #define REPORT_PER_DATASET	0
 #define REPORT_PER_TABLE	1

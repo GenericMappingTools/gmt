@@ -136,7 +136,7 @@ struct GMT_COMMON {
 		enum GMT_enum_gaps method[GMT_N_GAP_METHODS];	/* How distances are computed for each criteria */
 		int col[GMT_N_GAP_METHODS];	/* Which column to use (-1 for x,y distance) */
 		double gap[GMT_N_GAP_METHODS];		/* The critical distances for each criteria */
-		double (*get_dist[GMT_N_GAP_METHODS]) (struct GMT_CTRL *C, int);	/* Pointers to functions that compute those distances */
+		double (*get_dist[GMT_N_GAP_METHODS]) (struct GMT_CTRL *GMT, int);	/* Pointers to functions that compute those distances */
 	} g;
 	struct h {	/* -h[i|o][<nrecs>][+d][+c][+r<remark>][+t<title>] */
 		bool active;

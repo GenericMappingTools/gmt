@@ -34,7 +34,7 @@
 #define SPLITXYZ_N_OUTPUT_CHOICES	5
 
 #ifdef GMT_COMPAT
-int gmt_parse_g_option (struct GMT_CTRL *C, char *txt);
+int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt);
 #endif
 
 struct SPLITXYZ_CTRL {
@@ -74,12 +74,12 @@ struct SPLITXYZ_CTRL {
 	} Z;
 };
 
-double *filterxy_setup (struct GMT_CTRL *C)
+double *filterxy_setup (struct GMT_CTRL *GMT)
 {
 	unsigned int i;
 	double tmp, sum = 0.0, *fwork = NULL;
 
-	fwork = GMT_memory (C, NULL, SPLITXYZ_F_RES, double);	/* Initialized to zeros */
+	fwork = GMT_memory (GMT, NULL, SPLITXYZ_F_RES, double);	/* Initialized to zeros */
 	tmp = M_PI / SPLITXYZ_F_RES;
 	for (i = 0; i < SPLITXYZ_F_RES; i++) {
 		fwork[i] = 1.0 + cos (i * tmp);
@@ -89,7 +89,7 @@ double *filterxy_setup (struct GMT_CTRL *C)
 	return (fwork);
 }
 
-void filter_cols (struct GMT_CTRL *C, double *data[], uint64_t begin, uint64_t end, unsigned int d_col, unsigned int n_cols, unsigned int cols[], double filter_width, double *fwork)
+void filter_cols (struct GMT_CTRL *GMT, double *data[], uint64_t begin, uint64_t end, unsigned int d_col, unsigned int n_cols, unsigned int cols[], double filter_width, double *fwork)
 {
 	uint64_t i, j, k, p, istart, istop, ndata;
 	int64_t kk;
@@ -101,8 +101,8 @@ void filter_cols (struct GMT_CTRL *C, double *data[], uint64_t begin, uint64_t e
 	half_width = 0.5 * fabs (filter_width);
 	dt = SPLITXYZ_F_RES / half_width;
 	ndata = end - begin;
-	w = GMT_memory (C, NULL, n_cols, double *);
-	for (k = 0; k < n_cols; k++) w[k] = GMT_memory (C, NULL, ndata, double);	/* Initialized to zeros */
+	w = GMT_memory (GMT, NULL, n_cols, double *);
+	for (k = 0; k < n_cols; k++) w[k] = GMT_memory (GMT, NULL, ndata, double);	/* Initialized to zeros */
 	j = istart = istop = begin;
 	while (j < end) {
 		while (istart < end && data[d_col][istart] - data[d_col][j] <= -half_width) istart++;
@@ -123,8 +123,8 @@ void filter_cols (struct GMT_CTRL *C, double *data[], uint64_t begin, uint64_t e
 	else {
 		for (i = begin; i < end; i++) for (p = 0; p < n_cols; p++) data[cols[p]][i] = w[p][i];
 	}
-	for (p = 0; p < n_cols; p++) GMT_free (C, w[p]);
-	GMT_free (C, w);
+	for (p = 0; p < n_cols; p++) GMT_free (GMT, w[p]);
+	GMT_free (GMT, w);
 }
 
 void *New_splitxyz_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */

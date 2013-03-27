@@ -30,7 +30,7 @@
 
 #define GMT_PROG_OPTIONS "-:RVabfghios" GMT_OPT("HMm")
 
-void GMT_duplicate_segment (struct GMT_CTRL *C, struct GMT_DATASEGMENT *Sin, struct GMT_DATASEGMENT *Sout);
+void GMT_duplicate_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *Sin, struct GMT_DATASEGMENT *Sout);
 
 #define POL_IS_CW	1
 #define POL_IS_CCW	0
