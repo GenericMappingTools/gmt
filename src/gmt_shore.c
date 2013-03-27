@@ -139,18 +139,18 @@ int gmt_shore_desc_sort (const void *a, const void *b)
 	return (0);
 }
 
-void gmt_shore_done_sides (struct GMT_CTRL *C, struct GMT_SHORE *c)
+void gmt_shore_done_sides (struct GMT_CTRL *GMT, struct GMT_SHORE *c)
 {
 	unsigned int i;
-	for (i = 0; i < 4; i++) GMT_free (C, c->side[i]);
+	for (i = 0; i < 4; i++) GMT_free (GMT, c->side[i]);
 }
 
-void GMT_free_shore_polygons (struct GMT_CTRL *C, struct GMT_GSHHS_POL *p, unsigned int n)
+void GMT_free_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL *p, unsigned int n)
 {
 	unsigned int k;
 	for (k = 0; k < n; k++) {
-		GMT_free (C, p[k].lon);
-		GMT_free (C, p[k].lat);
+		GMT_free (GMT, p[k].lon);
+		GMT_free (GMT, p[k].lat);
 	}
 }
 
@@ -173,7 +173,7 @@ void gmt_shore_path_shift2 (double *lon, unsigned int n, double west, double eas
 	}
 }
 
-void gmt_shore_prepare_sides (struct GMT_CTRL *C, struct GMT_SHORE *c, int dir)
+void gmt_shore_prepare_sides (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir)
 {
 	int s, i, n[4];
 
@@ -191,7 +191,7 @@ void gmt_shore_prepare_sides (struct GMT_CTRL *C, struct GMT_SHORE *c, int dir)
 	for (s = 0; s < c->ns; s++) if (c->seg[s].entry < 4) c->nside[c->seg[s].entry]++;
 
 	for (i = c->n_entries = 0; i < 4; i++) {	/* Allocate memory and add corners */
-		c->side[i] = GMT_memory (C, NULL, c->nside[i], struct GSHHS_SIDE);
+		c->side[i] = GMT_memory (GMT, NULL, c->nside[i], struct GSHHS_SIDE);
 		c->side[i][0].pos = (dir == 1) ? GSHHS_MAX_DELTA : 0;
 		c->side[i][0].id = (short int)(i - 4);
 		c->n_entries += c->nside[i] - 1;
@@ -213,7 +213,7 @@ void gmt_shore_prepare_sides (struct GMT_CTRL *C, struct GMT_SHORE *c, int dir)
 	}
 }
 
-char *gmt_shore_getpathname (struct GMT_CTRL *C, char *stem, char *path) {
+char *gmt_shore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path) {
 	/* Prepends the appropriate directory to the file name
 	 * and returns path if file is readable, NULL otherwise */
 
@@ -223,31 +223,31 @@ char *gmt_shore_getpathname (struct GMT_CTRL *C, char *stem, char *path) {
 	static int warn_once = true;
 
 	/* This is the order of checking:
-	 * 1. Check in C->session.GSHHGDIR
+	 * 1. Check in GMT->session.GSHHGDIR
 	 * 2. Is there a file coastline.conf in current directory,
-	 *    C->session.USERDIR or C->session.SHAREDIR[/coast]?
+	 *    GMT->session.USERDIR or GMT->session.SHAREDIR[/coast]?
 	 *    If so, use its information
-	 * 3. Look in current directory, C->session.USERDIR or
-	 *    C->session.SHAREDIR[/coast] for file "name".
+	 * 3. Look in current directory, GMT->session.USERDIR or
+	 *    GMT->session.SHAREDIR[/coast] for file "name".
 	 */
 
-	/* 1. Check in C->session.GSHHGDIR */
+	/* 1. Check in GMT->session.GSHHGDIR */
 
-	if (C->session.GSHHGDIR) {
-		sprintf (path, "%s/%s%s", C->session.GSHHGDIR, stem, GSHHG_EXT);
+	if (GMT->session.GSHHGDIR) {
+		sprintf (path, "%s/%s%s", GMT->session.GSHHGDIR, stem, GSHHG_EXT);
 		if ( access (path, R_OK) == 0 && gshhg_require_min_version (path, version) )
 			return (path);
 		else {
-			/* remove reference to invalid C->session.GSHHGDIR but don't free
+			/* remove reference to invalid GMT->session.GSHHGDIR but don't free
 			 * the pointer. this is no leak because the reference still exists
 			 * in the previous copy of the current GMT_CTRL struct. */
-			C->session.GSHHGDIR = NULL;
+			GMT->session.GSHHGDIR = NULL;
 		}
 	}
 
 	/* 2. First check for coastline.conf */
 
-	if (GMT_getsharepath (C, "conf", "coastline", ".conf", path) || GMT_getsharepath (C, "coast", "coastline", ".conf", path)) {
+	if (GMT_getsharepath (GMT, "conf", "coastline", ".conf", path) || GMT_getsharepath (GMT, "coast", "coastline", ".conf", path)) {
 
 		/* We get here if coastline.conf exists - search among its directories for the named file */
 
@@ -258,8 +258,8 @@ char *gmt_shore_getpathname (struct GMT_CTRL *C, char *stem, char *path) {
 			sprintf (path, "%s/%s%s", dir, stem, GSHHG_EXT);
 			if ( gshhg_require_min_version (path, version) ) {
 				fclose (fp);
-				/* update invalid C->session.GSHHGDIR */
-				C->session.GSHHGDIR = strdup (dir);
+				/* update invalid GMT->session.GSHHGDIR */
+				GMT->session.GSHHGDIR = strdup (dir);
 				return (path);
 			}
 		}
@@ -268,18 +268,18 @@ char *gmt_shore_getpathname (struct GMT_CTRL *C, char *stem, char *path) {
 
 	/* 3. Then check for the named file itself */
 
-	if (GMT_getsharepath (C, "coast", stem, GSHHG_EXT, path)) {
+	if (GMT_getsharepath (GMT, "coast", stem, GSHHG_EXT, path)) {
 		if ( gshhg_require_min_version (path, version) ) {
-			/* update invalid C->session.GSHHGDIR */
-			sprintf (dir, "%s/%s", C->session.SHAREDIR, "coast");
-			C->session.GSHHGDIR = strdup (dir);
+			/* update invalid GMT->session.GSHHGDIR */
+			sprintf (dir, "%s/%s", GMT->session.SHAREDIR, "coast");
+			GMT->session.GSHHGDIR = strdup (dir);
 			return (path);
 		}
 	}
 
 	if (warn_once) {
 		warn_once = false;
-		GMT_Report (C->parent, GMT_MSG_NORMAL, "GSHHG version %d.%d.%d or newer is "
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GSHHG version %d.%d.%d or newer is "
 								"needed to use coastlines with GMT.\n\tGet and install GSHHG from "
 								GSHHG_SITE ".\n", version.major, version.minor, version.patch);
 	}
@@ -287,7 +287,7 @@ char *gmt_shore_getpathname (struct GMT_CTRL *C, char *stem, char *path) {
 	return (NULL); /* never reached */
 }
 
-void gmt_shore_check (struct GMT_CTRL *C, bool ok[5])
+void gmt_shore_check (struct GMT_CTRL *GMT, bool ok[5])
 /* Sets ok to true for those resolutions available in share for
  * resolution (f, h, i, l, c) */
 {
@@ -300,7 +300,7 @@ void gmt_shore_check (struct GMT_CTRL *C, bool ok[5])
 		for (j = n_found = 0; j < 3; j++) {
 			/* For each data type... */
 			sprintf (stem, "binned_%s_%c", kind[j], res[i]);
-			if (!gmt_shore_getpathname (C, stem, path))
+			if (!gmt_shore_getpathname (GMT, stem, path))
 				/* Failed to find file */
 				continue;
 			n_found++; /* Increment how many found so far for this resolution */
@@ -320,7 +320,7 @@ int gmt_res_to_int (char res)
 
 /* Main Public GMT shore functions */
 
-void GMT_set_levels (struct GMT_CTRL *C, char *info, struct GMT_SHORE_SELECT *I)
+void GMT_set_levels (struct GMT_CTRL *GMT, char *info, struct GMT_SHORE_SELECT *I)
 {	/* Decode GMT's -A option for coastline levels */
 	int n;
 	char *p = NULL;
@@ -331,13 +331,13 @@ void GMT_set_levels (struct GMT_CTRL *C, char *info, struct GMT_SHORE_SELECT *I)
 	}
 	n = sscanf (info, "%lf/%d/%d", &I->area, &I->low, &I->high);
 	if (n == 0) {
-		GMT_Report (C->parent, GMT_MSG_NORMAL, "Syntax error -A option: No area given\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -A option: No area given\n");
 		GMT_exit (EXIT_FAILURE);
 	}
 	if (n == 1) I->low = 0, I->high = GSHHS_MAX_LEVEL;
 }
 
-int GMT_set_resolution (struct GMT_CTRL *C, char *res, char opt)
+int GMT_set_resolution (struct GMT_CTRL *GMT, char *res, char opt)
 {
 	/* Decodes the -D<res> option and returns the base integer value */
 
@@ -360,7 +360,7 @@ int GMT_set_resolution (struct GMT_CTRL *C, char *res, char opt)
 			base = 4;
 			break;
 		default:
-			GMT_Report (C->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Unknown modifier %c [Defaults to -%cl]\n", opt, *res, opt);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Unknown modifier %c [Defaults to -%cl]\n", opt, *res, opt);
 			base = 3;
 			*res = 'l';
 			break;
@@ -369,18 +369,18 @@ int GMT_set_resolution (struct GMT_CTRL *C, char *res, char opt)
 	return (base);
 }
 
-char GMT_shore_adjust_res (struct GMT_CTRL *C, char res) {	/* Returns the highest available resolution <= to specified resolution */
+char GMT_shore_adjust_res (struct GMT_CTRL *GMT, char res) {	/* Returns the highest available resolution <= to specified resolution */
 	int k, orig;
 	bool ok[5];
 	char *type = "clihf";
-	(void)gmt_shore_check (C, ok);		/* See which resolutions we have */
+	(void)gmt_shore_check (GMT, ok);		/* See which resolutions we have */
 	k = orig = gmt_res_to_int (res);	/* Get integer value of requested resolution */
 	while (k >= 0 && !ok[k]) --k;		/* Drop down one level to see if we have a lower resolution available */
-	if (k >= 0 && k != orig) GMT_Report (C->parent, GMT_MSG_NORMAL, "Warning: Resolution %c not available, substituting resolution %c\n", res, type[k]);
+	if (k >= 0 && k != orig) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Resolution %c not available, substituting resolution %c\n", res, type[k]);
 	return ((k == -1) ? res : type[k]);	/* Return the chosen resolution */
 }
 
-int GMT_init_shore (struct GMT_CTRL *C, char res, struct GMT_SHORE *c, double wesn[], struct GMT_SHORE_SELECT *info) {	/* res: Resolution (f, h, i, l, c */
+int GMT_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double wesn[], struct GMT_SHORE_SELECT *info) {	/* res: Resolution (f, h, i, l, c */
 	int i, nb, idiv, iw, ie, is, in, this_south, this_west, err;
 	bool int_areas = false;
 	short *stmp = NULL;
@@ -390,7 +390,7 @@ int GMT_init_shore (struct GMT_CTRL *C, char res, struct GMT_SHORE *c, double we
 
 	sprintf (stem, "binned_GSHHS_%c", res);
 
-	if (!gmt_shore_getpathname (C, stem, path))
+	if (!gmt_shore_getpathname (GMT, stem, path))
 		return (GMT_GRDIO_FILE_NOT_FOUND); /* Failed to find file */
 
 		/* zap structure (nc_get_att_text does not null-terminate strings!) */
@@ -426,11 +426,11 @@ int GMT_init_shore (struct GMT_CTRL *C, char res, struct GMT_SHORE *c, double we
 	GMT_err_trap (nc_inq_varid (c->cdfid, "Id_of_GSHHS_ID", &c->seg_GSHHS_ID_id));
 
 	if (nc_inq_varid (c->cdfid, "Ten_times_the_km_squared_area_of_polygons", &c->GSHHS_area_id) == NC_NOERR) {	/* Old file with 1/10 km^2 areas in int format*/
-		GMT_Report (C->parent, GMT_MSG_LONG_VERBOSE, "GSHHS: Areas not accurate for small lakes and islands.  Consider updating GSHHG.\n");
+		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "GSHHS: Areas not accurate for small lakes and islands.  Consider updating GSHHG.\n");
 		int_areas = true;
 	}
 	else if (nc_inq_varid (c->cdfid, "The_km_squared_area_of_polygons", &c->GSHHS_area_id) != NC_NOERR) {	/* New file with km^2 areas as doubles */
-		GMT_Report (C->parent, GMT_MSG_NORMAL, "GSHHS: Unable to determine how polygon areas were stored.\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GSHHS: Unable to determine how polygon areas were stored.\n");
 	}
 
 	/* Get attributes */
@@ -457,7 +457,7 @@ int GMT_init_shore (struct GMT_CTRL *C, char res, struct GMT_SHORE *c, double we
 	c->scale = (c->bin_size / 60.0) / 65535.0;
 	c->bsize = c->bin_size / 60.0;
 
-	c->bins = GMT_memory (C, NULL, c->n_bin, int);
+	c->bins = GMT_memory (GMT, NULL, c->n_bin, int);
 
 	/* Round off area to nearest multiple of block-dimension */
 
@@ -476,23 +476,23 @@ int GMT_init_shore (struct GMT_CTRL *C, char res, struct GMT_SHORE *c, double we
 		c->bins[nb] = i;
 		nb++;
 	}
-	c->bins = GMT_memory (C, c->bins, nb, int);
+	c->bins = GMT_memory (GMT, c->bins, nb, int);
 	c->nb = nb;
 
 	/* Get polygon variables if they are needed */
 
 	GMT_err_trap (nc_get_var1_int (c->cdfid, c->n_poly_id, start, &c->n_poly));
 	count[0] = c->n_poly;
-	c->GSHHS_parent = GMT_memory (C, NULL, c->n_poly, int);
+	c->GSHHS_parent = GMT_memory (GMT, NULL, c->n_poly, int);
 	GMT_err_trap (nc_get_vara_int (c->cdfid, c->GSHHS_parent_id, start, count, c->GSHHS_parent));
-	c->GSHHS_area = GMT_memory (C, NULL, c->n_poly, double);
+	c->GSHHS_area = GMT_memory (GMT, NULL, c->n_poly, double);
 	GMT_err_trap (nc_get_vara_double (c->cdfid, c->GSHHS_area_id, start, count, c->GSHHS_area));
 	if (int_areas) for (i = 0; i < c->n_poly; i++) c->GSHHS_area[i] *= 0.1;	/* Since they were stored as 10 * km^2 using integers */
-	c->GSHHS_area_fraction = GMT_memory (C, NULL, c->n_poly, int);
+	c->GSHHS_area_fraction = GMT_memory (GMT, NULL, c->n_poly, int);
 	GMT_err_trap (nc_get_vara_int (c->cdfid, c->GSHHS_areafrac_id, start, count, c->GSHHS_area_fraction));
 	if (c->min_area > 0.0) {	/* Want to exclude small polygons so we need info about the node polygons */
 	        GMT_err_trap (nc_get_var1_int (c->cdfid, c->n_node_id, start, &c->n_nodes));
-		c->GSHHS_node = GMT_memory (C, NULL, c->n_nodes, int);
+		c->GSHHS_node = GMT_memory (GMT, NULL, c->n_nodes, int);
 		count[0] = c->n_nodes;
 		GMT_err_trap (nc_get_vara_int (c->cdfid, c->GSHHS_node_id, start, count, c->GSHHS_node));
 	}
@@ -501,30 +501,30 @@ int GMT_init_shore (struct GMT_CTRL *C, char res, struct GMT_SHORE *c, double we
 
 	/* Allocate space for arrays of bin information */
 
-	c->bin_info      = GMT_memory (C, NULL, nb, short);
-	c->bin_nseg      = GMT_memory (C, NULL, nb, short);
-	c->bin_firstseg  = GMT_memory (C, NULL, nb, int);
+	c->bin_info      = GMT_memory (GMT, NULL, nb, short);
+	c->bin_nseg      = GMT_memory (GMT, NULL, nb, short);
+	c->bin_firstseg  = GMT_memory (GMT, NULL, nb, int);
 
 	count[0] = c->n_bin;
-	stmp = GMT_memory (C, NULL, c->n_bin, short);
+	stmp = GMT_memory (GMT, NULL, c->n_bin, short);
 
 	GMT_err_trap (nc_get_vara_short (c->cdfid, c->bin_info_id, start, count, stmp));
 	for (i = 0; i < c->nb; i++) c->bin_info[i] = stmp[c->bins[i]];
 
 	GMT_err_trap (nc_get_vara_short (c->cdfid, c->bin_nseg_id, start, count, stmp));
 	for (i = 0; i < c->nb; i++) c->bin_nseg[i] = stmp[c->bins[i]];
-	GMT_free (C, stmp);
+	GMT_free (GMT, stmp);
 
-	itmp = GMT_memory (C, NULL, c->n_bin, int);
+	itmp = GMT_memory (GMT, NULL, c->n_bin, int);
 	GMT_err_trap (nc_get_vara_int (c->cdfid, c->bin_firstseg_id, start, count, itmp));
 	for (i = 0; i < c->nb; i++) c->bin_firstseg[i] = itmp[c->bins[i]];
 
-	GMT_free (C, itmp);
+	GMT_free (GMT, itmp);
 
 	return (GMT_NOERROR);
 }
 
-int GMT_get_shore_bin (struct GMT_CTRL *C, unsigned int b, struct GMT_SHORE *c)
+int GMT_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c)
 /* b: index number into c->bins */
 /* min_area: Polygons with area less than this are ignored */
 /* min_level: Polygons with lower levels are ignored */
@@ -547,9 +547,9 @@ int GMT_get_shore_bin (struct GMT_CTRL *C, unsigned int b, struct GMT_SHORE *c)
 	/* Determine if this bin is one of the bins at the left side of the map */
 
 	w = c->lon_sw;
-	while (w > C->common.R.wesn[XLO] && C->current.map.is_world) w -= 360.0;
+	while (w > GMT->common.R.wesn[XLO] && GMT->current.map.is_world) w -= 360.0;
 	e = w + dx;
-	c->leftmost_bin = ((w <= C->common.R.wesn[XLO]) && (e > C->common.R.wesn[XLO]));
+	c->leftmost_bin = ((w <= GMT->common.R.wesn[XLO]) && (e > GMT->common.R.wesn[XLO]));
 
 	if (c->bin_nseg[b] == 0) return (GMT_NOERROR);
 
@@ -572,9 +572,9 @@ int GMT_get_shore_bin (struct GMT_CTRL *C, unsigned int b, struct GMT_SHORE *c)
 	start[0] = c->bin_firstseg[b];
 	count[0] = c->bin_nseg[b];
 
-	seg_info = GMT_memory (C, NULL, c->bin_nseg[b], int);
-	seg_start = GMT_memory (C, NULL, c->bin_nseg[b], int);
-	seg_ID = GMT_memory (C, NULL, c->bin_nseg[b], int);
+	seg_info = GMT_memory (GMT, NULL, c->bin_nseg[b], int);
+	seg_start = GMT_memory (GMT, NULL, c->bin_nseg[b], int);
+	seg_ID = GMT_memory (GMT, NULL, c->bin_nseg[b], int);
 
 	GMT_err_trap (nc_get_vara_int (c->cdfid, c->seg_info_id, start, count, seg_info));
 	GMT_err_trap (nc_get_vara_int (c->cdfid, c->seg_start_id, start, count, seg_start));
@@ -582,7 +582,7 @@ int GMT_get_shore_bin (struct GMT_CTRL *C, unsigned int b, struct GMT_SHORE *c)
 
 	/* First tally how many useful segments */
 
-	seg_skip = GMT_memory (C, NULL, c->bin_nseg[b], int);
+	seg_skip = GMT_memory (GMT, NULL, c->bin_nseg[b], int);
 	for (i = 0; i < c->bin_nseg[b]; i++) {
 		seg_skip[i] = true;	/* Reset later to false if we pass all the tests to follow next */
 		if (c->GSHHS_area_fraction[seg_ID[i]] < c->fraction) continue;	/* Area of this feature is too small relative to its original size */
@@ -634,14 +634,14 @@ int GMT_get_shore_bin (struct GMT_CTRL *C, unsigned int b, struct GMT_SHORE *c)
 	c->ns = s;
 
 	if (c->ns == 0) {	/* No useful segments in this bin */
-		GMT_free (C, seg_skip);
-		GMT_free (C, seg_info);
-		GMT_free (C, seg_start);
-		GMT_free (C, seg_ID);
+		GMT_free (GMT, seg_skip);
+		GMT_free (GMT, seg_info);
+		GMT_free (GMT, seg_start);
+		GMT_free (GMT, seg_ID);
 		return (GMT_NOERROR);
 	}
 
-	c->seg = GMT_memory (C, NULL, c->ns, struct GMT_SHORE_SEGMENT);
+	c->seg = GMT_memory (GMT, NULL, c->ns, struct GMT_SHORE_SEGMENT);
 
 	for (s = 0; s < c->ns; s++) {
 		c->seg[s].level = get_level (seg_info[s]);
@@ -649,23 +649,23 @@ int GMT_get_shore_bin (struct GMT_CTRL *C, unsigned int b, struct GMT_SHORE *c)
 		c->seg[s].entry = (seg_info[s] >> 3) & 7;
 		c->seg[s].exit = seg_info[s] & 7;
 		c->seg[s].fid = (c->GSHHS_area[seg_ID[s]] < 0) ? RIVERLAKE : c->seg[s].level;
-		c->seg[s].dx = GMT_memory (C, NULL, c->seg[s].n, short);
-		c->seg[s].dy = GMT_memory (C, NULL, c->seg[s].n, short);
+		c->seg[s].dx = GMT_memory (GMT, NULL, c->seg[s].n, short);
+		c->seg[s].dy = GMT_memory (GMT, NULL, c->seg[s].n, short);
 		start[0] = seg_start[s];
 		count[0] = c->seg[s].n;
 		GMT_err_trap (nc_get_vara_short (c->cdfid, c->pt_dx_id, start, count, c->seg[s].dx));
 		GMT_err_trap (nc_get_vara_short (c->cdfid, c->pt_dy_id, start, count, c->seg[s].dy));
 	}
 
-	GMT_free (C, seg_skip);
-	GMT_free (C, seg_info);
-	GMT_free (C, seg_start);
-	GMT_free (C, seg_ID);
+	GMT_free (GMT, seg_skip);
+	GMT_free (GMT, seg_info);
+	GMT_free (GMT, seg_start);
+	GMT_free (GMT, seg_ID);
 
 	return (GMT_NOERROR);
 }
 
-int GMT_init_br (struct GMT_CTRL *C, char which, char res, struct GMT_BR *c, double wesn[])
+int GMT_init_br (struct GMT_CTRL *GMT, char which, char res, struct GMT_BR *c, double wesn[])
 /* which: r(iver) or b(order) */
 /* res: Resolution (f, h, i, l, c */
 {
@@ -683,7 +683,7 @@ int GMT_init_br (struct GMT_CTRL *C, char which, char res, struct GMT_BR *c, dou
 	else
 		sprintf (stem, "binned_border_%c", res);
 
-	if (!gmt_shore_getpathname (C, stem, path))
+	if (!gmt_shore_getpathname (GMT, stem, path))
 		return (GMT_GRDIO_FILE_NOT_FOUND); /* Failed to find file */
 
 	GMT_err_trap (nc_open (path, NC_NOWRITE, &c->cdfid));
@@ -727,7 +727,7 @@ int GMT_init_br (struct GMT_CTRL *C, char which, char res, struct GMT_BR *c, dou
 	c->scale = (c->bin_size / 60.0) / 65535.0;
 	c->bsize = c->bin_size / 60.0;
 
-	c->bins = GMT_memory (C, NULL, c->n_bin, int);
+	c->bins = GMT_memory (GMT, NULL, c->n_bin, int);
 
 	/* Round off area to nearest multiple of block-dimension */
 
@@ -746,33 +746,33 @@ int GMT_init_br (struct GMT_CTRL *C, char which, char res, struct GMT_BR *c, dou
 		c->bins[nb] = i;
 		nb++;
 	}
-	c->bins = GMT_memory (C, c->bins, nb, int);
+	c->bins = GMT_memory (GMT, c->bins, nb, int);
 	c->nb = nb;
 
 	/* Get bin variables, then extract only those corresponding to the bins to use */
 
 	/* Allocate space for arrays of bin information */
 
-	c->bin_nseg     = GMT_memory (C, NULL, nb, short);
-	c->bin_firstseg     = GMT_memory (C, NULL, nb, int);
+	c->bin_nseg     = GMT_memory (GMT, NULL, nb, short);
+	c->bin_firstseg     = GMT_memory (GMT, NULL, nb, int);
 
 	count[0] = c->n_bin;
-	stmp = GMT_memory (C, NULL, c->n_bin, short);
+	stmp = GMT_memory (GMT, NULL, c->n_bin, short);
 
 	GMT_err_trap (nc_get_vara_short (c->cdfid, c->bin_nseg_id, start, count, stmp));
 	for (i = 0; i < c->nb; i++) c->bin_nseg[i] = stmp[c->bins[i]];
-	GMT_free (C, stmp);
+	GMT_free (GMT, stmp);
 
-	itmp = GMT_memory (C, NULL, c->n_bin, int);
+	itmp = GMT_memory (GMT, NULL, c->n_bin, int);
 	GMT_err_trap (nc_get_vara_int (c->cdfid, c->bin_firstseg_id, start, count, itmp));
 	for (i = 0; i < c->nb; i++) c->bin_firstseg[i] = itmp[c->bins[i]];
 
-	GMT_free (C, itmp);
+	GMT_free (GMT, itmp);
 
 	return (0);
 }
 
-int GMT_get_br_bin (struct GMT_CTRL *C, unsigned int b, struct GMT_BR *c, unsigned int *level, unsigned int n_levels)
+int GMT_get_br_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_BR *c, unsigned int *level, unsigned int n_levels)
 /* b: index number into c->bins */
 /* level: Levels of features to extract */
 /* n_levels: # of such levels. 0 means use all levels */
@@ -794,9 +794,9 @@ int GMT_get_br_bin (struct GMT_CTRL *C, unsigned int b, struct GMT_BR *c, unsign
 	start[0] = c->bin_firstseg[b];
 	count[0] = c->bin_nseg[b];
 
-	seg_n = GMT_memory (C, NULL, c->bin_nseg[b], short);
-	seg_level = GMT_memory (C, NULL, c->bin_nseg[b], short);
-	seg_start = GMT_memory (C, NULL, c->bin_nseg[b], int);
+	seg_n = GMT_memory (GMT, NULL, c->bin_nseg[b], short);
+	seg_level = GMT_memory (GMT, NULL, c->bin_nseg[b], short);
+	seg_start = GMT_memory (GMT, NULL, c->bin_nseg[b], int);
 
 	GMT_err_trap (nc_get_vara_short (c->cdfid, c->seg_n_id, start, count, seg_n));
 	GMT_err_trap (nc_get_vara_short (c->cdfid, c->seg_level_id, start, count, seg_level));
@@ -811,11 +811,11 @@ int GMT_get_br_bin (struct GMT_CTRL *C, unsigned int b, struct GMT_BR *c, unsign
 				if ((s_level = level[k]) == seg_level[i]) skip = false;
 		}
 		if (skip) continue;
-		if (!c->seg) c->seg = GMT_memory (C, NULL, c->ns, struct GMT_BR_SEGMENT);
+		if (!c->seg) c->seg = GMT_memory (GMT, NULL, c->ns, struct GMT_BR_SEGMENT);
 		c->seg[s].n = seg_n[i];
 		c->seg[s].level = seg_level[i];
-		c->seg[s].dx = GMT_memory (C, NULL, c->seg[s].n, short);
-		c->seg[s].dy = GMT_memory (C, NULL, c->seg[s].n, short);
+		c->seg[s].dx = GMT_memory (GMT, NULL, c->seg[s].n, short);
+		c->seg[s].dy = GMT_memory (GMT, NULL, c->seg[s].n, short);
 		start[0] = seg_start[i];
 		count[0] = c->seg[s].n;
 		GMT_err_trap (nc_get_vara_short (c->cdfid, c->pt_dx_id, start, count, c->seg[s].dx));
@@ -826,14 +826,14 @@ int GMT_get_br_bin (struct GMT_CTRL *C, unsigned int b, struct GMT_BR *c, unsign
 
 	c->ns = s;
 
-	GMT_free (C, seg_n);
-	GMT_free (C, seg_level);
-	GMT_free (C, seg_start);
+	GMT_free (GMT, seg_n);
+	GMT_free (GMT, seg_level);
+	GMT_free (GMT, seg_start);
 
 	return (GMT_NOERROR);
 }
 
-int GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, int dir, bool assemble, double west, double east, struct GMT_GSHHS_POL **pol)
+int GMT_assemble_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int dir, bool assemble, double west, double east, struct GMT_GSHHS_POL **pol)
 /* assemble: true if polygons is needed */
 /* edge: Edge test for shifting */
 {
@@ -847,11 +847,11 @@ int GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, int dir, bool a
 
 	if (!assemble) {	/* Easy, just need to scale all segments to degrees and return */
 
-		p = GMT_memory (C, NULL, c->ns, struct GMT_GSHHS_POL);
+		p = GMT_memory (GMT, NULL, c->ns, struct GMT_GSHHS_POL);
 
 		for (id = 0; id < c->ns; id++) {
-			p[id].lon = GMT_memory (C, NULL, c->seg[id].n, double);
-			p[id].lat = GMT_memory (C, NULL, c->seg[id].n, double);
+			p[id].lon = GMT_memory (GMT, NULL, c->seg[id].n, double);
+			p[id].lat = GMT_memory (GMT, NULL, c->seg[id].n, double);
 			p[id].n = gmt_copy_to_shore_path (p[id].lon, p[id].lat, c, id);
 			p[id].level = c->seg[id].level;
 			p[id].fid = c->seg[id].fid;
@@ -884,15 +884,15 @@ int GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, int dir, bool a
 
 	for (n = 0, completely_inside = true; completely_inside && n < c->ns; n++) if (c->seg[n].entry != 4) completely_inside = false;
 
-	gmt_shore_prepare_sides (C, c, dir);
+	gmt_shore_prepare_sides (GMT, c, dir);
 
 	p_alloc = (c->ns == 0) ? 1 : GMT_SMALL_CHUNK;
-	p = GMT_memory (C, NULL, p_alloc, struct GMT_GSHHS_POL);
+	p = GMT_memory (GMT, NULL, p_alloc, struct GMT_GSHHS_POL);
 
 	low_level = GSHHS_MAX_LEVEL;
 
 	if (completely_inside && use_this_level) {	/* Must include path of this bin outline as first polygon */
-		p[0].n = (int)GMT_graticule_path (C, &p[0].lon, &p[0].lat, dir, c->lon_corner[3], c->lon_corner[1], c->lat_corner[0], c->lat_corner[2]);
+		p[0].n = (int)GMT_graticule_path (GMT, &p[0].lon, &p[0].lat, dir, c->lon_corner[3], c->lon_corner[1], c->lat_corner[0], c->lat_corner[2]);
 		p[0].level = (c->node_level[0] == 2 && c->flag == GSHHS_NO_LAKES) ? 1 : c->node_level[0];	/* Any corner will do */
 		p[0].fid = p[0].level;	/* Assumes no riverlake is that big to contain an entire bin */
 		p[0].interior = false;
@@ -908,8 +908,8 @@ int GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, int dir, bool a
 
 		n_alloc = c->seg[id].n;
 		fid = c->seg[id].fid;
-		p[P].lon = GMT_memory (C, NULL, n_alloc, double);
-		p[P].lat = GMT_memory (C, NULL, n_alloc, double);
+		p[P].lon = GMT_memory (GMT, NULL, n_alloc, double);
+		p[P].lat = GMT_memory (GMT, NULL, n_alloc, double);
 		n = gmt_copy_to_shore_path (p[P].lon, p[P].lat, c, id);
 		if ((int)c->seg[id].level < low_level) low_level = c->seg[id].level;
 
@@ -922,10 +922,10 @@ int GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, int dir, bool a
 			if (id < 0) {	/* Corner */
 				cid = id + 4;
 				nid = (dir == 1) ? (cid + 1) % 4 : cid;
-				if ((add = (int)GMT_map_path (C, p[P].lon[n-1], p[P].lat[n-1], c->lon_corner[cid], c->lat_corner[cid], &xtmp, &ytmp))) {
+				if ((add = (int)GMT_map_path (GMT, p[P].lon[n-1], p[P].lat[n-1], c->lon_corner[cid], c->lat_corner[cid], &xtmp, &ytmp))) {
 					n_alloc += add;
-					p[P].lon = GMT_memory (C, p[P].lon, n_alloc, double);
-					p[P].lat = GMT_memory (C, p[P].lat, n_alloc, double);
+					p[P].lon = GMT_memory (GMT, p[P].lon, n_alloc, double);
+					p[P].lat = GMT_memory (GMT, p[P].lat, n_alloc, double);
 					GMT_memcpy (&p[P].lon[n], xtmp, add, double);
 					GMT_memcpy (&p[P].lat[n], ytmp, add, double);
 					n += add;
@@ -935,10 +935,10 @@ int GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, int dir, bool a
 			}
 			else {
 				gmt_shore_to_degree (c, c->seg[id].dx[0], c->seg[id].dy[0], &plon, &plat);
-				if ((add = (int)GMT_map_path (C, p[P].lon[n-1], p[P].lat[n-1], plon, plat, &xtmp, &ytmp))) {
+				if ((add = (int)GMT_map_path (GMT, p[P].lon[n-1], p[P].lat[n-1], plon, plat, &xtmp, &ytmp))) {
 					n_alloc += add;
-					p[P].lon = GMT_memory (C, p[P].lon, n_alloc, double);
-					p[P].lat = GMT_memory (C, p[P].lat, n_alloc, double);
+					p[P].lon = GMT_memory (GMT, p[P].lon, n_alloc, double);
+					p[P].lat = GMT_memory (GMT, p[P].lat, n_alloc, double);
 					GMT_memcpy (&p[P].lon[n], xtmp, add, double);
 					GMT_memcpy (&p[P].lat[n], ytmp, add, double);
 					n += add;
@@ -948,16 +948,16 @@ int GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, int dir, bool a
 					more = false;
 				else {
 					n_alloc += c->seg[id].n;
-					p[P].lon = GMT_memory (C, p[P].lon, n_alloc, double);
-					p[P].lat = GMT_memory (C, p[P].lat, n_alloc, double);
+					p[P].lon = GMT_memory (GMT, p[P].lon, n_alloc, double);
+					p[P].lat = GMT_memory (GMT, p[P].lat, n_alloc, double);
 					n += gmt_copy_to_shore_path (&p[P].lon[n], &p[P].lat[n], c, id);
 					next_side = c->seg[id].exit;
 					if ((int)c->seg[id].level < low_level) low_level = c->seg[id].level;
 				}
 			}
 			if (add) {
-				GMT_free (C, xtmp);
-				GMT_free (C, ytmp);
+				GMT_free (GMT, xtmp);
+				GMT_free (GMT, ytmp);
 			}
 		}
 		p[P].n = n;
@@ -968,7 +968,7 @@ int GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, int dir, bool a
 		if (P == p_alloc) {
 			size_t old_p_alloc = p_alloc;
 			p_alloc <<= 1;
-			p = GMT_memory (C, p, p_alloc, struct GMT_GSHHS_POL);
+			p = GMT_memory (GMT, p, p_alloc, struct GMT_GSHHS_POL);
 			GMT_memset (&(p[old_p_alloc]), p_alloc - old_p_alloc, struct GMT_GSHHS_POL);	/* Set to NULL/0 */
 		}
 
@@ -979,8 +979,8 @@ int GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, int dir, bool a
 	for (id = 0; id < c->ns; id++) {
 		if (c->seg[id].entry < 4) continue;
 		n_alloc = c->seg[id].n;
-		p[P].lon = GMT_memory (C, NULL, n_alloc, double);
-		p[P].lat = GMT_memory (C, NULL, n_alloc, double);
+		p[P].lon = GMT_memory (GMT, NULL, n_alloc, double);
+		p[P].lat = GMT_memory (GMT, NULL, n_alloc, double);
 		p[P].n = gmt_copy_to_shore_path (p[P].lon, p[P].lat, c, id);
 		p[P].interior = true;
 		p[P].level = c->seg[id].level;
@@ -989,14 +989,14 @@ int GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, int dir, bool a
 		if (P == p_alloc) {
 			size_t old_p_alloc = p_alloc;
 			p_alloc <<= 1;
-			p = GMT_memory (C, p, p_alloc, struct GMT_GSHHS_POL);
+			p = GMT_memory (GMT, p, p_alloc, struct GMT_GSHHS_POL);
 			GMT_memset (&(p[old_p_alloc]), p_alloc - old_p_alloc, struct GMT_GSHHS_POL);	/* Set to NULL/0 */
 		}
 	}
 
-	gmt_shore_done_sides (C, c);
+	gmt_shore_done_sides (GMT, c);
 
-	if (c->ns > 0) p = GMT_memory (C, p, P, struct GMT_GSHHS_POL);
+	if (c->ns > 0) p = GMT_memory (GMT, p, P, struct GMT_GSHHS_POL);
 
 	for (k = 0; k < P; k++) gmt_shore_path_shift2 (p[k].lon, p[k].n, west, east, c->leftmost_bin);
 
@@ -1004,18 +1004,18 @@ int GMT_assemble_shore (struct GMT_CTRL *C, struct GMT_SHORE *c, int dir, bool a
 	return (P);
 }
 
-int GMT_assemble_br (struct GMT_CTRL *C, struct GMT_BR *c, bool shift, double edge, struct GMT_GSHHS_POL **pol)
+int GMT_assemble_br (struct GMT_CTRL *GMT, struct GMT_BR *c, bool shift, double edge, struct GMT_GSHHS_POL **pol)
 /* shift: true if longitudes may have to be shifted */
 /* edge: Edge test for shifting */
 {
 	struct GMT_GSHHS_POL *p = NULL;
 	int id;
 
-	p = GMT_memory (C, NULL, c->ns, struct GMT_GSHHS_POL);
+	p = GMT_memory (GMT, NULL, c->ns, struct GMT_GSHHS_POL);
 
 	for (id = 0; id < c->ns; id++) {
-		p[id].lon = GMT_memory (C, NULL, c->seg[id].n, double);
-		p[id].lat = GMT_memory (C, NULL, c->seg[id].n, double);
+		p[id].lon = GMT_memory (GMT, NULL, c->seg[id].n, double);
+		p[id].lat = GMT_memory (GMT, NULL, c->seg[id].n, double);
 		p[id].n = gmt_copy_to_br_path (p[id].lon, p[id].lat, c, id);
 		p[id].level = c->seg[id].level;
 		if (shift) gmt_shore_path_shift (p[id].lon, p[id].n, edge);
@@ -1025,51 +1025,51 @@ int GMT_assemble_br (struct GMT_CTRL *C, struct GMT_BR *c, bool shift, double ed
 	return (c->ns);
 }
 
-void GMT_free_shore (struct GMT_CTRL *C, struct GMT_SHORE *c)
+void GMT_free_shore (struct GMT_CTRL *GMT, struct GMT_SHORE *c)
 {	/* Removes allocated variables for this block only */
 	int i;
 
 	for (i = 0; i < c->ns; i++) {
-		GMT_free (C, c->seg[i].dx);
-		GMT_free (C, c->seg[i].dy);
+		GMT_free (GMT, c->seg[i].dx);
+		GMT_free (GMT, c->seg[i].dy);
 	}
-	if (c->ns) GMT_free (C, c->seg);
+	if (c->ns) GMT_free (GMT, c->seg);
 }
 
-void GMT_free_br (struct GMT_CTRL *C, struct GMT_BR *c)
+void GMT_free_br (struct GMT_CTRL *GMT, struct GMT_BR *c)
 {	/* Removes allocated variables for this block only */
 	int i;
 
 	for (i = 0; i < c->ns; i++) {
-		GMT_free (C, c->seg[i].dx);
-		GMT_free (C, c->seg[i].dy);
+		GMT_free (GMT, c->seg[i].dx);
+		GMT_free (GMT, c->seg[i].dy);
 	}
-	if (c->ns) GMT_free (C, c->seg);
+	if (c->ns) GMT_free (GMT, c->seg);
 
 }
 
-void GMT_shore_cleanup (struct GMT_CTRL *C, struct GMT_SHORE *c)
+void GMT_shore_cleanup (struct GMT_CTRL *GMT, struct GMT_SHORE *c)
 {
-	GMT_free (C, c->bins);
-	GMT_free (C, c->bin_info);
-	GMT_free (C, c->bin_nseg);
-	GMT_free (C, c->bin_firstseg);
-	GMT_free (C, c->GSHHS_area);
-	GMT_free (C, c->GSHHS_area_fraction);
-	if (c->min_area > 0.0) GMT_free (C, c->GSHHS_node);
-	GMT_free (C, c->GSHHS_parent);
+	GMT_free (GMT, c->bins);
+	GMT_free (GMT, c->bin_info);
+	GMT_free (GMT, c->bin_nseg);
+	GMT_free (GMT, c->bin_firstseg);
+	GMT_free (GMT, c->GSHHS_area);
+	GMT_free (GMT, c->GSHHS_area_fraction);
+	if (c->min_area > 0.0) GMT_free (GMT, c->GSHHS_node);
+	GMT_free (GMT, c->GSHHS_parent);
 	nc_close (c->cdfid);
 }
 
-void GMT_br_cleanup (struct GMT_CTRL *C, struct GMT_BR *c)
+void GMT_br_cleanup (struct GMT_CTRL *GMT, struct GMT_BR *c)
 {
-	GMT_free (C, c->bins);
-	GMT_free (C, c->bin_nseg);
-	GMT_free (C, c->bin_firstseg);
+	GMT_free (GMT, c->bins);
+	GMT_free (GMT, c->bin_nseg);
+	GMT_free (GMT, c->bin_firstseg);
 	nc_close (c->cdfid);
 }
 
-int GMT_prep_shore_polygons (struct GMT_CTRL *C, struct GMT_GSHHS_POL **p_old, unsigned int np, bool sample, double step, int anti_bin)
+int GMT_prep_shore_polygons (struct GMT_CTRL *GMT, struct GMT_GSHHS_POL **p_old, unsigned int np, bool sample, double step, int anti_bin)
 {
 	/* This function will go through each of the polygons and determine
 	 * if the polygon is clipped by the map boundary, and if so if it
@@ -1098,29 +1098,29 @@ int GMT_prep_shore_polygons (struct GMT_CTRL *C, struct GMT_GSHHS_POL **p_old, u
 
 	for (k = 0; k < np; k++) {
 
-		if (sample) p[k].n = (int)GMT_fix_up_path (C, &p[k].lon, &p[k].lat, p[k].n, step, 0);
+		if (sample) p[k].n = (int)GMT_fix_up_path (GMT, &p[k].lon, &p[k].lat, p[k].n, step, 0);
 
 		/* Clip polygon against map boundary if necessary and return plot x,y in inches */
 
-		if ((n = (unsigned int)GMT_clip_to_map (C, p[k].lon, p[k].lat, p[k].n, &xtmp, &ytmp)) == 0) {	/* Completely outside */
+		if ((n = (unsigned int)GMT_clip_to_map (GMT, p[k].lon, p[k].lat, p[k].n, &xtmp, &ytmp)) == 0) {	/* Completely outside */
 			p[k].n = 0;	/* Note the memory in lon, lat not freed yet */
 			continue;
 		}
 
 		/* Must check if polygon must be split and partially plotted at both edges of map */
 
-		if ((*C->current.map.will_it_wrap) (C, xtmp, ytmp, n, &start)) {	/* Polygon does indeed wrap */
+		if ((*GMT->current.map.will_it_wrap) (GMT, xtmp, ytmp, n, &start)) {	/* Polygon does indeed wrap */
 
 			/* First truncate against left border */
 
-			C->current.plot.n = GMT_map_truncate (C, xtmp, ytmp, n, start, -1);
-			n_use = (unsigned int)GMT_compact_line (C, C->current.plot.x, C->current.plot.y, C->current.plot.n, false, 0);
-			close = GMT_polygon_is_open (C, C->current.plot.x, C->current.plot.y, n_use);
+			GMT->current.plot.n = GMT_map_truncate (GMT, xtmp, ytmp, n, start, -1);
+			n_use = (unsigned int)GMT_compact_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, false, 0);
+			close = GMT_polygon_is_open (GMT, GMT->current.plot.x, GMT->current.plot.y, n_use);
 			n_alloc = (close) ? n_use + 1 : n_use;
-			p[k].lon = GMT_memory (C, p[k].lon, n_alloc, double);
-			p[k].lat = GMT_memory (C, p[k].lat, n_alloc, double);
-			GMT_memcpy (p[k].lon, C->current.plot.x, n_use, double);
-			GMT_memcpy (p[k].lat, C->current.plot.y, n_use, double);
+			p[k].lon = GMT_memory (GMT, p[k].lon, n_alloc, double);
+			p[k].lat = GMT_memory (GMT, p[k].lat, n_alloc, double);
+			GMT_memcpy (p[k].lon, GMT->current.plot.x, n_use, double);
+			GMT_memcpy (p[k].lat, GMT->current.plot.y, n_use, double);
 			if (close) {	/* Must explicitly close the polygon */
 				p[k].lon[n_use] = p[k].lon[0];
 				p[k].lat[n_use] = p[k].lat[0];
@@ -1129,15 +1129,15 @@ int GMT_prep_shore_polygons (struct GMT_CTRL *C, struct GMT_GSHHS_POL **p_old, u
 
 			/* Then truncate against right border */
 
-			C->current.plot.n = GMT_map_truncate (C, xtmp, ytmp, n, start, +1);
-			n_use = (unsigned int)GMT_compact_line (C, C->current.plot.x, C->current.plot.y, C->current.plot.n, false, 0);
-			p = GMT_memory (C, p, np_new + 1, struct GMT_GSHHS_POL);
-			close = GMT_polygon_is_open (C, C->current.plot.x, C->current.plot.y, n_use);
+			GMT->current.plot.n = GMT_map_truncate (GMT, xtmp, ytmp, n, start, +1);
+			n_use = (unsigned int)GMT_compact_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, false, 0);
+			p = GMT_memory (GMT, p, np_new + 1, struct GMT_GSHHS_POL);
+			close = GMT_polygon_is_open (GMT, GMT->current.plot.x, GMT->current.plot.y, n_use);
 			n_alloc = (close) ? n_use + 1 : n_use;
-			p[np_new].lon = GMT_memory (C, NULL, n_alloc, double);
-			p[np_new].lat = GMT_memory (C, NULL, n_alloc, double);
-			GMT_memcpy (p[np_new].lon, C->current.plot.x, n_use, double);
-			GMT_memcpy (p[np_new].lat, C->current.plot.y, n_use, double);
+			p[np_new].lon = GMT_memory (GMT, NULL, n_alloc, double);
+			p[np_new].lat = GMT_memory (GMT, NULL, n_alloc, double);
+			GMT_memcpy (p[np_new].lon, GMT->current.plot.x, n_use, double);
+			GMT_memcpy (p[np_new].lat, GMT->current.plot.y, n_use, double);
 			if (close) {	/* Must explicitly close the polygon */
 				p[np_new].lon[n_use] = p[np_new].lon[0];
 				p[np_new].lat[n_use] = p[np_new].lat[0];
@@ -1149,18 +1149,18 @@ int GMT_prep_shore_polygons (struct GMT_CTRL *C, struct GMT_GSHHS_POL **p_old, u
 			np_new++;
 		}
 		else {
-			n_use = (unsigned int)GMT_compact_line (C, xtmp, ytmp, n, false, 0);
+			n_use = (unsigned int)GMT_compact_line (GMT, xtmp, ytmp, n, false, 0);
 			if (anti_bin > 0 && step == 0.0) {	/* Must warn for donut effect */
-				GMT_Report (C->parent, GMT_MSG_VERBOSE, "Warning: Antipodal bin # %d not filled!\n", anti_bin);
-				GMT_free (C, xtmp);
-				GMT_free (C, ytmp);
+				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Antipodal bin # %d not filled!\n", anti_bin);
+				GMT_free (GMT, xtmp);
+				GMT_free (GMT, ytmp);
 				continue;
 			}
 			else {
-				close = GMT_polygon_is_open (C, xtmp, ytmp, n_use);
+				close = GMT_polygon_is_open (GMT, xtmp, ytmp, n_use);
 				n_alloc = (close) ? n_use + 1 : n_use;
-				p[k].lon = GMT_memory (C, p[k].lon, n_alloc, double);
-				p[k].lat = GMT_memory (C, p[k].lat, n_alloc, double);
+				p[k].lon = GMT_memory (GMT, p[k].lon, n_alloc, double);
+				p[k].lat = GMT_memory (GMT, p[k].lat, n_alloc, double);
 				GMT_memcpy (p[k].lon, xtmp, n_use, double);
 				GMT_memcpy (p[k].lat, ytmp, n_use, double);
 				if (close) {	/* Must explicitly close the polygon */
@@ -1171,8 +1171,8 @@ int GMT_prep_shore_polygons (struct GMT_CTRL *C, struct GMT_GSHHS_POL **p_old, u
 			}
 		}
 
-		GMT_free (C, xtmp);
-		GMT_free (C, ytmp);
+		GMT_free (GMT, xtmp);
+		GMT_free (GMT, ytmp);
 	}
 
 	*p_old = p;
