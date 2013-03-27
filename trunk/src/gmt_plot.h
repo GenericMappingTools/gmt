@@ -94,6 +94,7 @@ struct GMT_FRONTLINE {		/* A sub-symbol for symbols along a front */
 	int f_symbol;	/* Which symbol to draw along the front line */
 };
 
+/* Note: If changes are made to GMT_enum_vecattr you must also change pslib.h: PSL_enum_vecattr */
 enum GMT_enum_vecattr {GMT_VEC_LEFT = 1,	/* Only draw left half of vector head */
 	GMT_VEC_RIGHT		= 2,		/* Only draw right half of vector head */
 	GMT_VEC_BEGIN		= 4,		/* Place vector head at beginning of vector */
