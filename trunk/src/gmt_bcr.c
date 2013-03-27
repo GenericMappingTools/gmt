@@ -209,7 +209,7 @@ uint64_t gmt_bcr_prep (struct GMT_GRID_HEADER *h, double xx, double yy, double w
 	return (ij);
 }
 
-double GMT_get_bcr_z (struct GMT_CTRL *C, struct GMT_GRID *G, double xx, double yy)
+double GMT_get_bcr_z (struct GMT_CTRL *GMT, struct GMT_GRID *G, double xx, double yy)
 {
 	/* Given xx, yy in user's grid file (in non-normalized units)
 	   this routine returns the desired interpolated value (nearest-neighbor, bilinear
@@ -221,7 +221,7 @@ double GMT_get_bcr_z (struct GMT_CTRL *C, struct GMT_GRID *G, double xx, double 
 
 	/* First check that xx,yy are not Nan or outside domain - if so return NaN */
 
-	if (gmt_bcr_reject (G->header, xx, yy)) return (C->session.d_NaN);	/* NaNs or outside */
+	if (gmt_bcr_reject (G->header, xx, yy)) return (GMT->session.d_NaN);	/* NaNs or outside */
 
 	/* Determine nearest node ij and set weights wx, wy */
 
@@ -241,10 +241,10 @@ double GMT_get_bcr_z (struct GMT_CTRL *C, struct GMT_GRID *G, double xx, double 
 		}
 		ij += G->header->mx;
 	}
-	return ( ((wsum + GMT_CONV_LIMIT - G->header->bcr_threshold) > 0.0) ? retval / wsum : C->session.d_NaN);
+	return ( ((wsum + GMT_CONV_LIMIT - G->header->bcr_threshold) > 0.0) ? retval / wsum : GMT->session.d_NaN);
 }
 
-int GMT_get_bcr_img (struct GMT_CTRL *C, struct GMT_IMAGE *G, double xx, double yy, unsigned char *z)
+int GMT_get_bcr_img (struct GMT_CTRL *GMT, struct GMT_IMAGE *G, double xx, double yy, unsigned char *z)
 {
 	/* Given xx, yy in user's image file (in non-normalized units)
 	   this routine returns the desired interpolated image value (nearest-neighbor, bilinear
@@ -279,6 +279,6 @@ int GMT_get_bcr_img (struct GMT_CTRL *C, struct GMT_IMAGE *G, double xx, double 
 		}
 	}
 	else
-		for (b = 0; b < nb; b++) z[b] = GMT_u255 (C->current.setting.color_patch[GMT_NAN][b]);
+		for (b = 0; b < nb; b++) z[b] = GMT_u255 (GMT->current.setting.color_patch[GMT_NAN][b]);
 	return (0);
 }

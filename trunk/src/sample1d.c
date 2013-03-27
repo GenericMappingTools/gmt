@@ -448,7 +448,7 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 
-	GMT_free (GMT, t_out);
+	if (Ctrl->N.active) GMT_free (GMT, t_out);
 	if (nan_flag) GMT_free (GMT, nan_flag);
 	if (Ctrl->N.active) GMT_free (GMT, t_supplied_out);
 	

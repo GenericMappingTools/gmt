@@ -702,13 +702,14 @@ int GMT_spectrum1d (void *V_API, int mode, void *args)
 	if (one_table) {
 		uint64_t dim[4];
 		dim[0] = Din->n_tables;		/* Same number of tables as input */
-		dim[1] = 0;				/* Don't know about segments yet */
-		dim[2] = 1 + 2 * n_outputs;		/* Number of columns needed output file */
-		dim[3] = C.n_spec;			/* Number of rows */
+		dim[1] = 0;			/* Don't know about segments yet */
+		dim[2] = 1 + 2 * n_outputs;	/* Number of columns needed output file */
+		dim[3] = C.n_spec;		/* Number of rows */
 		if ((Dout = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, Ctrl->N.name)) == NULL) Return (API->error);	/* An empty table for stacked results */
 	}
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
 		if (one_table) {
+			GMT_free_table (GMT, Dout->table[tbl]);	/* Free it, then allocate separately */
 			Dout->table[tbl] = Tout = GMT_create_table (GMT, Din->table[tbl]->n_segments, 3, C.n_spec, false);
 		}
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {

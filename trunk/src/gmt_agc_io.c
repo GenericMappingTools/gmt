@@ -37,11 +37,11 @@
 
 /* Public Functions:
 
-int GMT_is_agc_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header)
-int GMT_agc_read_grd_info (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header)
-int GMT_agc_write_grd_info (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header)
-int GMT_agc_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
-int GMT_agc_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
+int GMT_is_agc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
+int GMT_agc_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
+int GMT_agc_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
+int GMT_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
+int GMT_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
 
 Private Functions used by the public functions:
 
@@ -111,7 +111,7 @@ void SaveAGCHeader (char *remark, float *agchead)
 	}
 }
 
-int GMT_is_agc_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header) {
+int GMT_is_agc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* Determine if file is an AGC grid file. */
 	FILE *fp = NULL;
 	int nx, ny;
@@ -123,7 +123,7 @@ int GMT_is_agc_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header) {
 		return (GMT_GRDIO_PIPE_CODECHECK);		/* Cannot check on pipes */
 	if (stat (header->name, &buf))
 		return (GMT_GRDIO_STAT_FAILED);			/* Inquiry about file failed somehow */
-	if ((fp = GMT_fopen (C, header->name, "rb")) == NULL)
+	if ((fp = GMT_fopen (GMT, header->name, "rb")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);			/* Opening the file failed somehow */
 	if (GMT_fread (recdata, sizeof(float), RECORDLENGTH, fp) < RECORDLENGTH)
 		return (GMT_GRDIO_READ_FAILED);
@@ -137,10 +137,10 @@ int GMT_is_agc_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header) {
 	y_inc = recdata[4];	x_inc = recdata[5];
 	if (x_inc <= 0.0 || y_inc <= 0.0)
 		return (GMT_GRDIO_BAD_VAL);
-	nx = GMT_get_n (C, x_min, x_max, x_inc, 0);
+	nx = GMT_get_n (GMT, x_min, x_max, x_inc, 0);
 	if (nx <= 0)
 		return (GMT_GRDIO_BAD_VAL);
-	ny = GMT_get_n (C, y_min, y_max, y_inc, 0);
+	ny = GMT_get_n (GMT, y_min, y_max, y_inc, 0);
 	if (ny <= 0)
 		return (GMT_GRDIO_BAD_VAL);
 	/* OK so far; see if file size matches the predicted size given the header info */
@@ -154,7 +154,7 @@ int GMT_is_agc_grid (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header) {
 	return GMT_GRDIO_BAD_VAL;
 }
 
-int GMT_agc_read_grd_info (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header)
+int GMT_agc_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 {	/* Read header info. NOTE: All AGC files are assumed to be gridline-registered */
 	unsigned int i;
 	FILE *fp = NULL;
@@ -162,11 +162,11 @@ int GMT_agc_read_grd_info (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header)
 
 	if (!strcmp (header->name, "=")) {
 #ifdef SET_IO_MODE
-		GMT_setmode (C, GMT_IN);
+		GMT_setmode (GMT, GMT_IN);
 #endif
-		fp = C->session.std[GMT_IN];
+		fp = GMT->session.std[GMT_IN];
 	}
-	else if ((fp = GMT_fopen (C, header->name, "rb")) == NULL)
+	else if ((fp = GMT_fopen (GMT, header->name, "rb")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
 
 	if (GMT_fread (recdata, sizeof(float), RECORDLENGTH, fp) < RECORDLENGTH) return (GMT_GRDIO_READ_FAILED);
@@ -178,8 +178,8 @@ int GMT_agc_read_grd_info (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header)
 	header->wesn[YHI]  = recdata[1];
 	header->inc[GMT_Y] = recdata[4];
 	header->inc[GMT_X] = recdata[5];
-	header->nx = GMT_grd_get_nx (C, header);
-	header->ny = GMT_grd_get_ny (C, header);
+	header->nx = GMT_grd_get_nx (GMT, header);
+	header->ny = GMT_grd_get_ny (GMT, header);
 	header->z_scale_factor = 1.0;
 	header->z_add_offset = 0.0;
 	for (i = 6; i < PREHEADSIZE; i++) agchead[i-6] = recdata[i];
@@ -187,35 +187,35 @@ int GMT_agc_read_grd_info (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header)
 	agchead[BUFFHEADSIZE-1] = recdata[RECORDLENGTH-1];
 	SaveAGCHeader (header->remark, agchead);
 	
-	GMT_fclose (C, fp);
+	GMT_fclose (GMT, fp);
 
 	return (GMT_NOERROR);
 }
 
-int GMT_agc_write_grd_info (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header)
+int GMT_agc_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 {	/* Write grd header info to file */
 	FILE *fp = NULL;
 	float prez[PREHEADSIZE], postz[POSTHEADSIZE];
 
 	if (!strcmp (header->name, "=")) {
 #ifdef SET_IO_MODE
-		GMT_setmode (C, GMT_OUT);
+		GMT_setmode (GMT, GMT_OUT);
 #endif
-		fp = C->session.std[GMT_OUT];
+		fp = GMT->session.std[GMT_OUT];
 	}
-	else if ((fp = GMT_fopen (C, header->name, "rb+")) == NULL && (fp = GMT_fopen (C, header->name, "wb")) == NULL)
+	else if ((fp = GMT_fopen (GMT, header->name, "rb+")) == NULL && (fp = GMT_fopen (GMT, header->name, "wb")) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
 	
 	packAGCheader (prez, postz, header);	/* Stuff header info into the AGC arrays */
 
 	if (GMT_fwrite (prez, sizeof(float), PREHEADSIZE, fp) < PREHEADSIZE) return (GMT_GRDIO_WRITE_FAILED);
 
-	GMT_fclose (C, fp);
+	GMT_fclose (GMT, fp);
 
 	return (GMT_NOERROR);
 }
 
-int GMT_agc_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
+int GMT_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
 {	/* header:     	grid structure header
 	 * grid:	array with final grid
 	 * wesn:	Sub-region to extract  [Use entire file if 0,0,0,0]
@@ -240,14 +240,14 @@ int GMT_agc_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float 
 	
 	if (!strcmp (header->name, "=")) {	/* Read from pipe */
 #ifdef SET_IO_MODE
-		GMT_setmode (C, GMT_IN);
+		GMT_setmode (GMT, GMT_IN);
 #endif
-		fp = C->session.std[GMT_IN];
+		fp = GMT->session.std[GMT_IN];
 	}
-	else if ((fp = GMT_fopen (C, header->name, "rb")) == NULL)
+	else if ((fp = GMT_fopen (GMT, header->name, "rb")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
 
-	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
+	GMT_err_pass (GMT, GMT_grd_prep_io (GMT, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &k), header->name);
 	(void)GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	width_out = width_in;		/* Width of output array */
@@ -276,7 +276,7 @@ int GMT_agc_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float 
 			for (j = 0, col = colstart; col < colend; j++, col++) {
 				if (col < first_col || col > last_col) continue;
 				ij = imag_offset + (((j_gmt - first_row) + pad[YHI]) * width_out + col - first_col) + pad[XLO];
-				grid[ij] = (z[j][i] == 0.0) ? C->session.f_NaN : z[j][i];	/* AGC uses exact zero as NaN flag */
+				grid[ij] = (z[j][i] == 0.0) ? GMT->session.f_NaN : z[j][i];	/* AGC uses exact zero as NaN flag */
 				if (GMT_is_fnan (grid[ij])) continue;
 				header->z_min = MIN (header->z_min, (double)grid[ij]);
 				header->z_max = MAX (header->z_max, (double)grid[ij]);
@@ -288,17 +288,17 @@ int GMT_agc_read_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float 
 			datablockcol++;
 		}
 	}
-	GMT_free (C, k);
+	GMT_free (GMT, k);
 
 	header->nx = width_in;	header->ny = height_in;
 	GMT_memcpy (header->wesn, wesn, 4, double);
 
-	GMT_fclose (C, fp);
+	GMT_fclose (GMT, fp);
 	
 	return (GMT_NOERROR);
 }
 
-int GMT_agc_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
+int GMT_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, double wesn[], unsigned int *pad, unsigned int complex_mode)
 {	/* header:	grid structure header
 	 * grid:	array with final grid
 	 * wesn:	Sub-region to write out  [Use entire file if 0,0,0,0]
@@ -324,14 +324,14 @@ int GMT_agc_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 
 	if (!strcmp (header->name, "=")) {	/* Write to pipe */
 #ifdef SET_IO_MODE
-		GMT_setmode (C, GMT_OUT);
+		GMT_setmode (GMT, GMT_OUT);
 #endif
-		fp = C->session.std[GMT_OUT];
+		fp = GMT->session.std[GMT_OUT];
 	}
-	else if ((fp = GMT_fopen (C, header->name, "wb")) == NULL)
+	else if ((fp = GMT_fopen (GMT, header->name, "wb")) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
 	
-	GMT_err_pass (C, GMT_grd_prep_io (C, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
+	GMT_err_pass (GMT, GMT_grd_prep_io (GMT, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
 	(void)GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
 	width_in = width_out;		/* Physical width of input array */
@@ -358,9 +358,9 @@ int GMT_agc_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 	
 	/* Since AGC files are always gridline-registered we must change -R when a pixel grid is to be written */
 	if (header->registration == GMT_GRID_PIXEL_REG) {
-		GMT_change_grdreg (C, header, GMT_GRID_NODE_REG);
-		GMT_Report (C->parent, GMT_MSG_VERBOSE, "Warning: AGC grids are always gridline-registered.  Your pixel-registered grid will be converted.\n");
-		GMT_Report (C->parent, GMT_MSG_VERBOSE, "Warning: AGC grid region in file %s reset to %g/%g/%g/%g\n", header->name, header->wesn[XLO], header->wesn[XHI], header->wesn[YLO], header->wesn[YHI]);
+		GMT_change_grdreg (GMT, header, GMT_GRID_NODE_REG);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: AGC grids are always gridline-registered.  Your pixel-registered grid will be converted.\n");
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: AGC grid region in file %s reset to %g/%g/%g/%g\n", header->name, header->wesn[XLO], header->wesn[XHI], header->wesn[YLO], header->wesn[YHI]);
 	}
 	
 	packAGCheader (prez, postz, header);	/* Stuff header info into the AGC arrays */
@@ -391,9 +391,9 @@ int GMT_agc_write_grd (struct GMT_CTRL *C, struct GMT_GRID_HEADER *header, float
 			datablockcol++;
 		}
 	}
-	GMT_free (C, k);
+	GMT_free (GMT, k);
 
-	GMT_fclose (C, fp);
+	GMT_fclose (GMT, fp);
 
 	return (GMT_NOERROR);
 }

@@ -703,7 +703,6 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 				/* implicit else means return the sum of the values */
 				n_filled++;
 				n_stuffed++;
-				fprintf (stderr, "%d\t%g\n", (int)ij, Grid->data[ij]);
 			}
 		}
 		GMT_free (GMT, flag);

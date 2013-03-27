@@ -460,9 +460,6 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 	if (mem_track_enabled) GMT_memtrack_on (GMT, &g_mem_keeper);
 #endif
 	if (n < n_alloc) point = GMT_memory (GMT, point, n, struct NEARNEIGHBOR_POINT);
-#ifdef MEMDEBUG
-	if (mem_track_enabled) GMT_memtrack_off (GMT, &g_mem_keeper);
-#endif
 	/* Compute weighted averages based on the nearest neighbors */
 
 	if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) Return (API->error);
@@ -472,6 +469,9 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 	if (!Ctrl->E.active) Ctrl->E.value = GMT->session.d_NaN;
 	three_over_radius = 3.0 / Ctrl->S.radius;
 
+#ifdef MEMDEBUG
+	if (mem_track_enabled) GMT_memtrack_off (GMT, &g_mem_keeper);
+#endif
 	ij0 = 0;
 	GMT_row_loop (GMT, Grid, row) {
 		GMT_col_loop (GMT, Grid, row, col, ij) {

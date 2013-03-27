@@ -84,7 +84,7 @@ enum Gmt_error_code {
 
 /* Definition for an error trap */
 #ifdef DEBUG
-#define GMT_err_trap(func_call) if ((err = (func_call)) != GMT_NOERROR) {GMT_Report(C->parent,GMT_MSG_NORMAL,"GMT_err_trap: %d\n", err);return(err);}
+#define GMT_err_trap(func_call) if ((err = (func_call)) != GMT_NOERROR) {GMT_Report(GMT->parent,GMT_MSG_NORMAL,"GMT_err_trap: %d\n", err);return(err);}
 #else
 #define GMT_err_trap(func_call) if ((err = (func_call)) != GMT_NOERROR) return(err)
 #endif
