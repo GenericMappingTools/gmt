@@ -1,5 +1,5 @@
-The required argument controls the placement of labels along the quoted
-lines. Choose among five controlling algorithms:
+    The required argument controls the placement of labels along the quoted
+    lines. Choose among five controlling algorithms:
 
     **d**\ *dist*\ [**c**\ \|\ **i**\ \|\ **p**] or **D**\ *dist*\ [**d**\ \|\ **e**\ \|\ **f**\ \|\ **k**\ \|\ **m**\ \|\ **M**\ \|\ **n**\ \|\ **s**]
         For lower case **d**, give distances between labels on the plot
