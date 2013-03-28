@@ -40,61 +40,61 @@ bool GMT_is_a_blank_line (char *line);
 #define PSTEXT_TERMINATE	3
 
 struct PSTEXT_CTRL {
-	struct A {	/* -A */
+	struct PSTEXT_A {	/* -A */
 		bool active;
 	} A;
-	struct C {	/* -C<dx>/<dy> */
+	struct PSTEXT_C {	/* -C<dx>/<dy> */
 		bool active;
 		bool percent;
 		double dx, dy;
 	} C;
-	struct D {	/* -D[j]<dx>[/<dy>][v[<pen>]] */
+	struct PSTEXT_D {	/* -D[j]<dx>[/<dy>][v[<pen>]] */
 		bool active;
 		bool line;
 		int justify;
 		double dx, dy;
 		struct GMT_PEN pen;
 	} D;
-	struct F {	/* -F[+f<fontinfo>+a<angle>+j<justification>] */
+	struct PSTEXT_F {	/* -F[+f<fontinfo>+a<angle>+j<justification>] */
 		bool active;
 		struct GMT_FONT font;
 		double angle;
-		int justify, nread;
+		int justify, R_justify, nread;
 		char read[3];	/* Contains f, a, and/or j in order required to be read from input */
 	} F;
-	struct G {	/* -G<fill> */
+	struct PSTEXT_G {	/* -G<fill> */
 		bool active;
 		bool mode;
 		struct GMT_FILL fill;
 	} G;
-	struct L {	/* -L */
+	struct PSTEXT_L {	/* -L */
 		bool active;
 	} L;
-	struct M {	/* -M */
+	struct PSTEXT_M {	/* -M */
 		bool active;
 	} M;
-	struct N {	/* -N */
+	struct PSTEXT_N {	/* -N */
 		bool active;
 	} N;
-	struct Q {	/* -Q<case> */
+	struct PSTEXT_Q {	/* -Q<case> */
 		bool active;
 		int mode;	/* 0 = do nothing, -1 = force lower case, +1 = force upper case */
 	} Q;
 #ifdef GMT_COMPAT
-	struct S {	/* -S<pen> */
+	struct PSTEXT_S {	/* -S<pen> */
 		bool active;
 		struct GMT_PEN pen;
 	} S;
 #endif
-	struct T {	/* -To|O|c|C */
+	struct PSTEXT_T {	/* -To|O|c|C */
 		bool active;
 		char mode;
 	} T;
-	struct W {	/* -W[<pen>] */
+	struct PSTEXT_W {	/* -W[<pen>] */
 		bool active;
 		struct GMT_PEN pen;
 	} W;
-	struct Z {	/* -Z<z_level> */
+	struct PSTEXT_Z {	/* -Z<z_level> */
 		bool active;
 	} Z;
 };
@@ -255,7 +255,7 @@ int GMT_pstext_usage (struct GMTAPI_CTRL *API, int level, int show_fonts)
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pstext [<table>] %s %s\n", GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-A] [%s] [-C<dx>/<dy>] [-D[j|J]<dx>[/<dy>][v[<pen>]]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F[a+<angle>][+f<font>][+j<justify>]] [-G<color>] [%s] [-K] [-L]\n", GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-F[a+<angle>][+f<font>][+j<justify>][+c<justify>]] [-G<color>] [%s] [-K] [-L]\n", GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-M] [-N] [-O] [-P] [-Q<case>] [-To|O|c|C] [%s]\n", GMT_U_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[<pen>] [%s] [%s]\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Z[<zlevel>|+]] [%s] [%s] [%s] [%s]\n", GMT_a_OPT, GMT_c_OPT, GMT_f_OPT, GMT_h_OPT);
@@ -305,6 +305,7 @@ int GMT_pstext_usage (struct GMTAPI_CTRL *API, int level, int show_fonts)
 		GMT_putfont (API->GMT, API->GMT->current.setting.font_annot[0]));
 	GMT_Message (API, GMT_TIME_NONE, "\t   +j<justify> sets text justification relative to given (x,y) coordinate.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Give a 2-char combo from [T|M|B][L|C|R] (top/middle/bottom/left/center/right) [CM].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   +c<justify> get the corresponding coordinate from the -R string instead of a given (x,y).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If an attribute +f|+a|+j is not followed by a value we read the information from the\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   data file in the order given on the -F option.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Paint the box underneath the text with specified color [Default is no paint].\n");
@@ -343,6 +344,7 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 
 	int j, k;
 	unsigned int pos, n_errors = 0;
+	bool explicit_justify = false;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], p[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -389,7 +391,7 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 				Ctrl->F.active = true;
 				pos = 0;
 				
-				while (GMT_getmodopt (GMT, opt->arg, "afj", &pos, p) && Ctrl->F.nread < 3) {	/* Looking for +f, +a, +j */
+				while (GMT_getmodopt (GMT, opt->arg, "afjc", &pos, p) && Ctrl->F.nread < 4) {	/* Looking for +f, +a, +j, +c */
 					switch (p[0]) {
 						case 'f':	/* Font info */
 							if (p[1] == '+' || p[1] == '\0') { Ctrl->F.read[Ctrl->F.nread] = p[0]; Ctrl->F.nread++; }
@@ -401,7 +403,18 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 							break;
 						case 'j':	/* Justification */
 							if (p[1] == '+' || p[1] == '\0') { Ctrl->F.read[Ctrl->F.nread] = p[0]; Ctrl->F.nread++; }
-							else Ctrl->F.justify = GMT_just_decode (GMT, &p[1], 12);
+							else {
+								Ctrl->F.justify = GMT_just_decode (GMT, &p[1], 12);
+								explicit_justify = true;
+							}
+							break;
+						case 'c':	/* -R corner justification */
+							if (p[1] == '+' || p[1] == '\0') { Ctrl->F.read[Ctrl->F.nread] = p[0]; Ctrl->F.nread++; }
+							else {
+								Ctrl->F.R_justify = GMT_just_decode (GMT, &p[1], 12);
+								if (!explicit_justify)	/* If not set explicitly, default to same justification as corner */
+									Ctrl->F.justify = Ctrl->F.R_justify;
+							}
 							break;
 						default:
 							n_errors++;
@@ -491,17 +504,40 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-int validate_coord_and_text (struct GMT_CTRL *GMT, int has_z, int rec_no, char *record, char buffer[])
+int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, int rec_no, char *record, char buffer[])
 {	/* Parse x,y [and z], check for validity, and return the rest of the text in buffer */
-	unsigned int ix, iy, nscan;
+	int ix, iy, nscan;
 	char txt_x[GMT_TEXT_LEN256], txt_y[GMT_TEXT_LEN256], txt_z[GMT_TEXT_LEN256];
 
-	if (has_z) {	/* Expect z in 3rd column */
+	if (Ctrl->Z.active) {	/* Expect z in 3rd column */
 		nscan = sscanf (record, "%s %s %s %[^\n]\n", txt_x, txt_y, txt_z, buffer);
 		if ((GMT_scanf (GMT, txt_z, GMT->current.io.col_type[GMT_IN][GMT_Z], &GMT->current.io.curr_rec[GMT_Z]) == GMT_IS_NAN)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Record %d had bad z coordinate, skipped)\n", rec_no);
 			return (-1);
 		}
+	}
+	else if (Ctrl->F.R_justify) {
+		int i, j;
+
+		i = Ctrl->F.R_justify % 4;		/* See GMT_just_decode in gmt_support.c */
+		j = Ctrl->F.R_justify / 4;
+		if (i == 1)
+			sprintf(txt_x,"%12g", GMT->common.R.wesn[XLO]);
+		else if (i == 2)
+			sprintf(txt_x,"%12g", (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]) / 2);
+		else
+			sprintf(txt_x,"%12g", GMT->common.R.wesn[XHI]);
+
+		if (j == 0)
+			sprintf(txt_y,"%12g", GMT->common.R.wesn[YLO]);
+		else if (j == 1)
+			sprintf(txt_y,"%12g", (GMT->common.R.wesn[YLO] + GMT->common.R.wesn[YHI]) / 2);
+		else
+			sprintf(txt_y,"%12g", GMT->common.R.wesn[YHI]);
+
+		nscan = 2;
+		nscan += sscanf (record, "%[^\n]\n", buffer);
+		GMT->current.io.curr_rec[GMT_Z] = GMT->current.proj.z_level;
 	}
 	else {
 		nscan = sscanf (record, "%s %s %[^\n]\n", txt_x, txt_y, buffer);
@@ -634,7 +670,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 					n_paragraphs++;
 				}
 
-				if ((nscan = validate_coord_and_text (GMT, Ctrl->Z.active, n_read, line, buffer)) == -1) continue;	/* Failure */
+				if ((nscan = validate_coord_and_text (GMT, Ctrl, n_read, line, buffer)) == -1) continue;	/* Failure */
 				
 				pos = 0;
 
@@ -742,7 +778,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 			if (GMT_REC_IS_SEGMENT_HEADER (GMT)) continue;	/* Skip segment headers */
 			if (GMT_is_a_blank_line (line)) continue;	/* Skip blank lines or # comments */
 
-			if ((nscan = validate_coord_and_text (GMT, Ctrl->Z.active, n_read, line, buffer)) == -1) continue;	/* Failure */
+			if ((nscan = validate_coord_and_text (GMT, Ctrl, n_read, line, buffer)) == -1) continue;	/* Failure */
 			pos = 0;
 
 #ifdef GMT_COMPAT
