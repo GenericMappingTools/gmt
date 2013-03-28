@@ -198,8 +198,8 @@ struct PSL_WORD {
 	int font_no;
 	int flag;
 	int index;
-	double baseshift;
-	double fontsize;
+	int baseshift;
+	int fontsize;
 	double rgb[4];
 	char *txt;
 };
@@ -2220,22 +2220,22 @@ struct PSL_WORD *psl_add_word_part (struct PSL_CTRL *PSL, char *word, int length
 	strncpy (new->txt, &word[i], (size_t)length);
 	new->font_no = fontno;
 	if (small) {	/* Small caps is on */
-		new->fontsize = 0.85 * fs;
+		new->fontsize = (int)lrint (0.85 * fs);
 		for (i = 0; new->txt[i]; i++) {
 			c = (int)new->txt[i];
 			new->txt[i] = (char) toupper (c);
 		}
 	}
 	else if (super) {
-		new->fontsize = 0.7 * fs;
-		new->baseshift = 0.35 * fs;
+		new->fontsize = (int)lrint (0.7 * fs);
+		new->baseshift = (int)lrint (0.35 * fs);
 	}
 	else if (sub) {
-		new->fontsize = 0.7 * fs;
-		new->baseshift = -0.25 * fs;
+		new->fontsize = (int)lrint (0.7 * fs);
+		new->baseshift = (int)lrint (-0.25 * fs);
 	}
 	else
-		new->fontsize = fs;
+		new->fontsize = (int)lrint (fs);
 
 	new->flag = space;
 	if (tab) new->flag |= 4;	/* 3rd bit indicates tab, then add space after word */
@@ -2549,7 +2549,7 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 
 	PSL_comment (PSL, "Define array of word fontsizes:\n");
 	PSL_command (PSL, "/PSL_size");
-	for (i = 0 ; i < n_items; i++) PSL_command (PSL, "%c%.2g", (i%15) ? ' ' : '\n', word[i]->fontsize);
+	for (i = 0 ; i < n_items; i++) PSL_command (PSL, "%c%d", (i%15) ? ' ' : '\n', word[i]->fontsize);
 	PSL_command (PSL, "\n%d array astore def\n", n_items);
 
 	PSL_comment (PSL, "Define array of word spaces to follow:\n");
@@ -2559,7 +2559,7 @@ int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char 
 
 	PSL_comment (PSL, "Define array of word baseline shifts:\n");
 	PSL_command (PSL, "/PSL_bshift");
-	for (i = 0 ; i < n_items; i++) PSL_command (PSL, "%c%.2g", (i%25) ? ' ' : '\n', word[i]->baseshift);
+	for (i = 0 ; i < n_items; i++) PSL_command (PSL, "%c%d", (i%25) ? ' ' : '\n', word[i]->baseshift);
 	PSL_command (PSL, "\n%d array astore def\n", n_items);
 
 	PSL_comment (PSL, "Define array of word colors indices:\n");
