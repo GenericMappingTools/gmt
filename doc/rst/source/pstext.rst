@@ -12,9 +12,9 @@ pstext - Plot or typeset text on maps
 **pstext** [ *textfiles* ] **-J**\ *parameters*
 **-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ] [
 **-A** ] [ **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ *dx/dy*
-] [ **-D**\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **v**\ [*pen*\ ]] ] [
-**-F**\ [**+a**\ [*angle*\ ]][\ **+f**\ [*font*\ ]][\ **+j**\ [*justify*\ ]]
-] [ **-G**\ *color* ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [
+] [ **-D**\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **v**\ [*pen*\ ]] ]
+[ **-F**\ [**+a**\ [*angle*\ ]][\ **+f**\ [*font*\ ]][\ **+j**\ [*justify*\ ]][\ **+c**\ [*justify*]] ] 
+[ **-G**\ *color* ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [
 **-L** ] [ **-M** ] [ **-N** ] [ **-O** ] [ **-P** ] [
 **-Q**\ **l**\ \|\ **u** ] [
 **-T**\ **o**\ \|\ **O**\ \|\ **c**\ \|\ **C** ] [
@@ -97,18 +97,20 @@ characters, except in paragraph mode (**-M**)).
     Only used if **-W** or **-G** are specified. Append the unit you
     want (**c**\ m, **i**\ nch, or **p**\ oint; if not given we consult
     **PROJ\_LENGTH\_UNIT**) or % for a percentage of the font size.
+
 **-D**\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **v**\ [*pen*\ ]]
     Offsets the text from the projected (*x*,\ *y*) point by *dx*,\ *dy*
     [0/0]. If *dy* is not specified then it is set equal to *dx*. Use
     **-Dj** to offset the text away from the point instead (i.e., the
     text justification will determine the direction of the shift). Using
     **-DJ** will shorten diagonal offsets at corners by
-    `sqrt(2) <sqrt.2.html>`_ . Optionally, append **v** which will draw
+    sqrt(2). Optionally, append **v** which will draw
     a line from the original point to the shifted point; append a *pen*
     to change the attributes for this line.
-**-F**\ [**+a**\ [*angle*\ ]][\ **+f**\ [*font*\ ]][\ **+j**\ [*justify*\ ]]
+
+**-F**\ [**+a**\ [*angle*]][\ **+f**\ [*font*]][\ **+j**\ [*justify*]][\ **+c**\ [*justify*]] 
     By default, text will be placed horizontally, using the primary
-    annotation font attributes (**FONT\_ANNOT\_PRIMARY**), and centered
+    annotation font attributes (**FONT_ANNOT_PRIMARY**), and centered
     on the data point. Use this option to override these defaults by
     specifying up to three text attributes (font, angle, and
     justification) directly on the command line. Use **+f** to set the
@@ -122,6 +124,11 @@ characters, except in paragraph mode (**-M**)).
     **-F**\ **+f**\ 12p,Helvetica-Bold,red\ **+j+a** selects a 12p red
     Helvetica-Bold font and expects to read the justification and angle
     from the file, in that order, after *x*, *y* and before *text*.
+    The **+c** justification lets us use x,y coordinates extracted from the
+    **-R** string instead of providing them from file. For example **-F+c**\ TL
+    gets the *x_min*, *y_max* from the **-R** string and plots the text
+    at the Upper Left corner of the map.  
+
 **-G**\ *color*
     Sets the shade or color used for filling the text box [Default is no
     fill]. Alternatively, use **-Gc** to use text (and **-C**) to build
@@ -211,6 +218,10 @@ file text.d on a Mercator plot with the given specifications, use
 
     pstext text.d -R-30/30/-10/20 -Jm0.1i -P -F+f18p,Helvetica,-=0.5p,red -B5 > plot.ps
 
+To plot a text at the upper left corner of a 10 cm map
+
+    echo TopLeft | pstext -R1/10/1/10 -JX10 -F+cTL -P > plot.ps
+
 To add a typeset figure caption for a 3-inch wide illustration, use
 
     pstext -R0/3/0/5 -JX3i -O -H -M -N << EOF >> figure.ps
@@ -247,8 +258,8 @@ The **-N** option does not adjust the BoundingBox information so you may
 have to post-process the *PostScript* output with ps2raster to obtain a
 correct BoundingBox.
 
-`See Also <#toc9>`_
--------------------
+See Also
+--------
 
 `gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
 `gmtcolors <gmtcolors.html>`_,
