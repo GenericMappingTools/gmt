@@ -9,10 +9,10 @@ pscontour - Contour table data by direct triangulation [method]
 
 .. include:: common_SYN_OPTs.rst_
 
-**pscontour** [ *table* ] **-C**\ *cptfile* **-J**\ *parameters*
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**] [
-**-A**\ [**-**\ ][*labelinfo*\ ] ] [
-**-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-D**\ [*template*\ ] ] [
+**pscontour** [ *table* ] **-C**\ [+]\ *cptfile* **-J**\ *parameters*
+**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**]
+[ **-A**\ [**-**\ \|\ [+]\ *annot\_int*][*labelinfo*] ]
+[ **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-D**\ [*template*\ ] ] [
 **-G**\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params*
 ] [ **-I** ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [
 **-L**\ *pen* ] [ **-N** ] [ **-O** ] [ **-P** ] [ **-Q**\ *indexfile* ]
@@ -48,10 +48,35 @@ one or more output files (or stdout) and no plot is produced.
 Required Arguments
 ------------------
 
-**-C**\ *cptfile*
-    name of the color palette file. Must have discrete colors if you
-    want to paint the surface (**-I**). Only contours that have
-    annotation flags set will be annotated. 
+**-C**\ [+]\ *cont\_int*
+    The contours to be drawn may be specified in one of three possible ways:
+
+    (1) If *cont_int* has the suffix ".cpt" and can be opened as a
+        file, it is assumed to be a color palette table. The color
+        boundaries are then used as contour levels. If the cpt-file has
+        annotation flags in the last column then those contours will be
+        annotated. By default all contours are labeled; use **-A-** to
+        disable all annotations.
+
+    (2) If *cont_int* is a file but not a cpt-file, it is expected to
+        contain contour levels in column 1 and a
+        C(ontour) OR A(nnotate) in
+        col 2. The levels marked C (or c) are contoured, the levels marked A
+        (or a) are contoured and annotated. Optionally, a third column may
+        be present and contain the fixed annotation angle for this contour
+        level.
+
+    (3) If no file is found, then *cont_int* is interpreted as a
+        constant contour interval. However, if prepended with the + sign the
+        *cont_int* is taken as meaning draw that single contour. The **-A**
+        option offers the same possibility so they may be used together to
+        plot only one annotated and one non-annotated contour.
+        If **-A** is set and **-C** is not, then the contour interval is set
+        equal to the specified annotation interval.
+
+    If a file is given and **-T** is set, then only contours marked with
+    upper case C or A will have tickmarks. In all cases the contour
+    values have the same units as the file.
 
 .. include:: explain_-J.rst_
 
@@ -67,11 +92,13 @@ Optional Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
-**-A**\ [**-**\ ][*labelinfo*\ ]
-
-Give - to disable all annotations. The optional *labelinfo* controls the
-specifics of the label formatting and consists of a concatenated string
-made up of any of the following control arguments:
+**-A**\ [**-**\ \|\ [+]\ *annot\_int*][*labelinfo*]
+    *annot_int* is annotation interval in data units; it is ignored if
+    contour levels are given in a file. [Default is no annotations]. Append
+    **-** to disable all annotations implied by **-C**. Alternatively prepend
+    + to the annotation interval to plot that as a single contour. The optional
+    *labelinfo* controls the specifics of the label formatting and consists
+    of a concatenated string made up of any of the following control arguments:
 
 .. include:: explain_labelinfo.rst_
 
@@ -110,11 +137,11 @@ made up of any of the following control arguments:
 **-S**
     Skip all input *xyz* points that fall outside the region [Default
     uses all the data in the triangulation].
-**-T**\ [**+\|-**\ ][*gap/length*\ ][\ **:**\ [*labels*\ ]]
+**-T**\ [**+\|-**][*gap/length*][\ **:**\ [*labels*]]
     Will draw tickmarks pointing in the downward direction every *gap*
     along the innermost closed contours. Append *gap* and tickmark
     length (append units as **c**, **i**, or **p**) or use defaults
-    [15**p**/3**p**]. User may choose to tick only local highs or local
+    [15\ **p**/3\ **p**]. User may choose to tick only local highs or local
     lows by specifying **-T+** or **-T-**, respectively. Append
     **:**\ *labels* to annotate the centers of closed innermost contours
     (i.e, the local lows and highs). If no *labels* is appended we use -
@@ -211,4 +238,4 @@ Shewchuk, J. R., 1996, Triangle: Engineering a 2D Quality Mesh Generator
 and Delaunay Triangulator, First Workshop on Applied Computational
 Geometry (Philadelphia, PA), 124-133, ACM, May 1996.
 
-www.cs.cmu.edu/~quake/triangle.html
+http://www.cs.cmu.edu/~quake/triangle.html
