@@ -3792,6 +3792,19 @@ int GMT_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 				if (p[1]) strncpy (G->prefix, &p[1], GMT_TEXT_LEN64);
 				break;
 
+			case '.':	/* Assume it can be a decimal part without leading 0 */
+			case '0':	/* A single annotated contour */
+			case '1':
+			case '2':
+			case '3':
+			case '4':
+			case '5':
+			case '6':
+			case '7':
+			case '8':
+			case '9':
+				break;
+
 			default:
 				bad++;
 				break;

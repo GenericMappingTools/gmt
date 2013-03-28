@@ -37,12 +37,14 @@ struct PSCONTOUR_CTRL {
 		bool active;
 		unsigned int mode;	/* 1 turns off all labels */
 		double interval;
+		double single_cont;
 	} A;
 	struct C {	/* -C<cpt> */
 		bool active;
 		bool cpt;
 		char *file;
 		double interval;
+		double single_cont;
 	} C;
 	struct D {	/* -D<dumpfile> */
 		bool active;
@@ -132,6 +134,8 @@ void *New_pscontour_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	GMT_contlabel_init (GMT, &C->contour, 1);
+	C->A.single_cont = GMT->session.d_NaN;
+	C->C.single_cont = GMT->session.d_NaN;
 	C->D.file = strdup ("contour");
 	C->L.pen = GMT->current.setting.map_default_pen;
 	C->T.spacing = TICKED_SPACING * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 14p */
@@ -364,8 +368,8 @@ int GMT_pscontour_usage (struct GMTAPI_CTRL *API, int level)
 	struct GMT_PEN P;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_Message (API, GMT_TIME_NONE, "usage: pscontour <table> -C<cpt> %s %s\n", GMT_J_OPT, GMT_Rgeoz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-A[-|<annot_int>][<labelinfo>] [%s] [-D<template>]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: pscontour <table> -C[+]<cont_int>|<cpt> %s %s\n", GMT_J_OPT, GMT_Rgeoz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-A[-|[+]<annot_int>][<labelinfo>] [%s] [-D<template>]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-I] [%s] [-K] [-L<pen>] [-N] [-O]\n", GMT_CONTG, GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [-Q<indextable>] [-S] [%s]\n", GMT_CONTT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[+]<pen>] [%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
@@ -374,13 +378,22 @@ int GMT_pscontour_usage (struct GMTAPI_CTRL *API, int level)
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Specify color palette table.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Contours to be drawn can be specified in one of three ways:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   1. Fixed contour interval, or a single contour if prepended with a + sign.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   2. File with contour levels in col 1 and C(ont) or A(nnot) in col 2\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      [and optionally an individual annotation angle in col 3].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   3. Name of a cpt-file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If -T is used, only contours with upper case C or A is ticked\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     [cpt-file contours are set to C unless the CPT flags are set;\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Use -A to force all to become A].\n");
 	GMT_Option (API, "J-Z,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Annotation label information.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give A- to disable all contour annotations implied in -C.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <labelinfo> controls the specifics of the labels.  Append what you need:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Annotation label information. [Default is no annoted contours].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Give annotation interval OR - to disable all contour annotations\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   implied by the informatino provided in -C.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively prepend + to annotation interval to plot that as a single contour.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <labelinfo> controls the specifics of the labels.  Choose from:\n");
 	GMT_label_syntax (API->GMT, 5, 0);
 	GMT_Option (API, "B-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Dump contours as data line segments; no plotting takes place.\n");
@@ -456,6 +469,10 @@ int GMT_pscontour_parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, stru
 				}
 				else if (opt->arg[0] == '-')
 					Ctrl->A.mode = 1;	/* Turn off all labels */
+				else if (opt->arg[0] == '+') {
+					Ctrl->A.single_cont = atof (&opt->arg[1]);
+					Ctrl->contour.annot = true;
+				}
 				else {
 					Ctrl->A.interval = atof (opt->arg);
 					Ctrl->contour.annot = true;
@@ -468,6 +485,8 @@ int GMT_pscontour_parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, stru
 					Ctrl->C.cpt = (!strncmp (&opt->arg[strlen(opt->arg)-4], ".cpt", 4U)) ? true : false;
 					Ctrl->C.file = strdup (opt->arg);
 				}
+				else if (opt->arg[0] == '+')
+					Ctrl->C.single_cont = atof (&opt->arg[1]);
 				else
 					Ctrl->C.interval = atof (opt->arg);
 				break;
@@ -591,7 +610,9 @@ int GMT_pscontour_parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, stru
 
 	n_errors += GMT_check_condition (GMT, !GMT->common.J.active && !Ctrl->D.active, "Syntax error: Must specify a map projection with the -J option\n");
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify a region with the -R option\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->C.file && Ctrl->C.interval <= 0.0, "Syntax error -C option: Must specify contour interval, file name with levels, or cpt-file\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->C.file && Ctrl->C.interval <= 0.0 && 
+			GMT_is_dnan (Ctrl->C.single_cont) && GMT_is_dnan (Ctrl->A.single_cont), 
+			"Syntax error -C option: Must specify contour interval, file name with levels, or cpt-file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->Q.active && !(Ctrl->W.active || Ctrl->I.active), "Syntax error: Must specify one of -W or -I\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->D.active && (Ctrl->I.active || Ctrl->L.active || Ctrl->N.active || Ctrl->G.active || Ctrl->W.active), "Syntax error: Cannot use -G, -I, -L, -N, -W with -D\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->C.file, "Syntax error -I option: Must specify a color palette table via -C\n");
@@ -857,6 +878,21 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 		}
 		n_contours = c;
 	}
+	else if (!GMT_is_dnan (Ctrl->C.single_cont) || !GMT_is_dnan (Ctrl->A.single_cont)) {	/* Plot one or two contours only */
+		n_contours = 0;
+		cont = GMT_malloc (GMT, cont, 2, &c_alloc, struct PSCONTOUR);
+		if (!GMT_is_dnan (Ctrl->C.single_cont)) {
+			cont[n_contours].type = 'C';
+			cont[n_contours++].val = Ctrl->C.single_cont;
+		}
+		if (!GMT_is_dnan (Ctrl->A.single_cont)) {
+			cont[n_contours].type = 'A';
+			cont[n_contours].val = Ctrl->A.single_cont;
+			cont[n_contours].do_tick = Ctrl->T.active;
+			cont[n_contours].angle = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
+			n_contours++;
+		}
+	}
 	else {	/* Set up contour intervals automatically from Ctrl->C.interval and Ctrl->A.interval */
 		int ic;
 		double min, max, aval;
@@ -936,7 +972,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 
 		GMT_setpen (GMT, &Ctrl->L.pen);
 
-		for (i = k = 0; i < np; i++) {	/* For all triangles */
+		for (k = i = 0; i < np; i++) {	/* For all triangles */
 
 			xx[0] = x[ind[k]];	yy[0] = y[ind[k++]];
 			xx[1] = x[ind[k]];	yy[1] = y[ind[k++]];
@@ -958,7 +994,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 	z_range = xyz[1][GMT_Z] - xyz[0][GMT_Z];
 	small = MIN (Ctrl->C.interval, z_range) * 1.0e-6;	/* Our float noise threshold */
 
-	for (i = ij = 0; i < np; i++, ij += 3) {	/* For all triangles */
+	for (ij = i = 0; i < np; i++, ij += 3) {	/* For all triangles */
 
 		k = ij;
 		xx[0] = x[ind[k]];	yy[0] = y[ind[k]];	zz[0] = z[ind[k++]];
@@ -984,8 +1020,8 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 				/* Find vertices with the lowest and highest values */
 
 				for (k = 1, low = high = 0; k < 3; k++) {
-					if (zz[k] < zz[low])   low = k;
-					if (zz[k] > zz[high]) high = k;
+					if (zz[k] < zz[low])   low = (unsigned int)k;
+					if (zz[k] > zz[high]) high = (unsigned int)k;
 				}
 
 				/* Paint the piece delimited by the low node and the first contour */
