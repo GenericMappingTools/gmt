@@ -371,7 +371,7 @@ void gmt_fft_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_FFT_
 	double width;
 	struct GMT_GRID_HEADER *h = Grid->header;	/* For shorthand */
 
-	width_percent = lrint (F->taper_width);
+	width_percent = (int)lrint (F->taper_width);
 
 	if ((Grid->header->nx == F->nx && Grid->header->ny == F->ny) || F->taper_mode == GMT_FFT_EXTEND_NONE) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Data and FFT dimensions are equal - no data extension will take place\n");
@@ -413,12 +413,12 @@ void gmt_fft_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_FFT_
 		width = F->taper_width / 100.0;	/* Was percent, now fraction */
 	
 	if (F->taper_mode == GMT_FFT_EXTEND_NONE) {	/* No extension, just tapering inside the data grid */
-		i_width = lrint (Grid->header->nx * width);	/* Interior columns over which tapering will take place */
-		j_width = lrint (Grid->header->ny * width);	/* Extended rows over which tapering will take place */
+		i_width = (int)lrint (Grid->header->nx * width);	/* Interior columns over which tapering will take place */
+		j_width = (int)lrint (Grid->header->ny * width);	/* Extended rows over which tapering will take place */
 	}
 	else {	/* We wish to extend data into the margin pads between FFT grid and data grid */
-		i_width = lrint (i_data_start * width);	/* Extended columns over which tapering will take place */
-		j_width = lrint (j_data_start * width);	/* Extended rows over which tapering will take place */
+		i_width = (int)lrint (i_data_start * width);	/* Extended columns over which tapering will take place */
+		j_width = (int)lrint (j_data_start * width);	/* Extended rows over which tapering will take place */
 	}
 	if (i_width == 0 && j_width == 0) one = 1;	/* So we do nothing further down */
 

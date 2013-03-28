@@ -351,8 +351,8 @@ void grd_ASEC (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 	float a = 0.0f;
 
 	if (stack[last]->constant && fabsf (stack[last]->factor) > 1.0f) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, |operand| > 1 for ASEC!\n");
-	if (stack[last]->constant) a = d_acosf (1.0 / stack[last]->factor);
-	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : d_acosf (1.0f / stack[last]->G->data[node]);
+	if (stack[last]->constant) a = (float)d_acosf (1.0 / stack[last]->factor);
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : (float)d_acosf (1.0f / stack[last]->G->data[node]);
 }
 
 void grd_ASIN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -437,7 +437,7 @@ void grd_BITAND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 /*OPERATOR: BITAND 2 1 A & B (bitwise AND operator).  */
 {
 	uint64_t node;
-	float af = 0.0, bf = 0.0;
+	float af = 0.0f, bf = 0.0f;
 	unsigned int prev, a = 0, b = 0;
 
 	prev = last - 1;
@@ -462,7 +462,7 @@ void grd_BITLEFT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMAT
 	unsigned int prev, a = 0, b = 0;
 	int b_signed;
 	bool first = true;
-	float af = 0.0, bf = 0.0;
+	float af = 0.0f, bf = 0.0f;
 
 	prev = last - 1;
 	if (stack[prev]->constant) af = stack[prev]->factor;
@@ -492,7 +492,7 @@ void grd_BITNOT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 {
 	uint64_t node;
 	unsigned int a = 0;
-	float af = 0.0;
+	float af = 0.0f;
 
 	if (stack[last]->constant) af = stack[last]->factor;
 	for (node = 0; node < info->size; node++) {
@@ -512,7 +512,7 @@ void grd_BITOR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 {
 	uint64_t node;
 	unsigned int prev, a = 0, b = 0;
-	float af = 0.0, bf = 0.0;
+	float af = 0.0f, bf = 0.0f;
 
 	prev = last - 1;
 	if (stack[prev]->constant) af = stack[prev]->factor;
@@ -536,7 +536,7 @@ void grd_BITRIGHT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMA
 	unsigned int prev, a = 0, b = 0;
 	int b_signed;
 	bool first = true;
-	float af = 0.0, bf = 0.0;
+	float af = 0.0f, bf = 0.0f;
 
 	prev = last - 1;
 	if (stack[prev]->constant) af = stack[prev]->factor;
@@ -568,7 +568,7 @@ void grd_BITTEST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMAT
 	unsigned int prev, a = 0, b = 0;
 	int b_signed;
 	bool first = true;
-	float af = 0.0, bf = 0.0;
+	float af = 0.0f, bf = 0.0f;
 
 	prev = last - 1;
 	if (stack[prev]->constant) af = stack[prev]->factor;
@@ -599,7 +599,7 @@ void grd_BITXOR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 {
 	uint64_t node;
 	unsigned int prev, a = 0, b = 0;
-	float af = 0.0, bf = 0.0;
+	float af = 0.0f, bf = 0.0f;
 
 	prev = last - 1;
 	if (stack[prev]->constant) af = stack[prev]->factor;
@@ -626,7 +626,7 @@ void grd_CAZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 	GMT_grd_padloop (GMT, info->G, row, col, node) {
 		x = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 		y = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
-		az = 90.0f - atan2df (y - info->grd_y[row], x - info->grd_x[col]);
+		az = (float)(90.0 - atan2df (y - info->grd_y[row], x - info->grd_x[col]));
 		while (az < -180.0f) az += 360.0f;
 		while (az > +180.0f) az -= 360.0f;
 		stack[prev]->G->data[node] = az;
@@ -643,7 +643,7 @@ void grd_CBAZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 	GMT_grd_padloop (GMT, info->G, row, col, node) {
 		x = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 		y = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
-		az = 270.0f - atan2df (y - info->grd_y[row], x - info->grd_x[col]);
+		az = (float)(270.0f - atan2df (y - info->grd_y[row], x - info->grd_x[col]));
 		while (az < -180.0f) az += 360.0f;
 		while (az > +180.0f) az -= 360.0f;
 		stack[prev]->G->data[node] = az;
@@ -1058,7 +1058,7 @@ void grd_DILOG (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 /*OPERATOR: DILOG 1 1 dilog (A).  */
 {
 	uint64_t node;
-	float a = 0.0;
+	float a = 0.0f;
 
 	if (stack[last]->constant) a = (float)GMT_dilog (GMT, stack[last]->factor);
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : (float)GMT_dilog (GMT, stack[last]->G->data[node]);
@@ -1181,9 +1181,9 @@ void grd_FACT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 	float a = 0.0f;
 
 	if (stack[last]->constant)
-		a = (float)GMT_factorial (GMT, lrint(stack[last]->factor));
+		a = (float)GMT_factorial (GMT, (int)lrint(stack[last]->factor));
 	for (node = 0; node < info->size; node++)
-		stack[last]->G->data[node] = (stack[last]->constant) ? a : (float)GMT_factorial (GMT, lrint(stack[last]->G->data[node]));
+		stack[last]->G->data[node] = (stack[last]->constant) ? a : (float)GMT_factorial (GMT, (int)lrint(stack[last]->G->data[node]));
 }
 
 /* Subroutines for grd_EXTREMA */
@@ -1307,8 +1307,8 @@ void grd_FCRIT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 	if (stack[last]->constant  && stack[last]->factor  == 0.0f) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand three == 0 for FCRIT!\n");
 	for (node = 0; node < info->size; node++) {
 		alpha = (stack[prev2]->constant) ? stack[prev2]->factor : stack[prev2]->G->data[node];
-		nu1 = lrint ((double)((stack[prev1]->constant) ? stack[prev1]->factor : stack[prev1]->G->data[node]));
-		nu2 = lrint ((double)((stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node]));
+		nu1 = (int)lrint ((double)((stack[prev1]->constant) ? stack[prev1]->factor : stack[prev1]->G->data[node]));
+		nu2 = (int)lrint ((double)((stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node]));
 		stack[prev2]->G->data[node] = (float)GMT_Fcrit (GMT, alpha, (double)nu1, (double)nu2);
 	}
 }
@@ -1327,8 +1327,8 @@ void grd_FDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 	if (stack[last]->constant  && stack[last]->factor  == 0.0f) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand three == 0 for FDIST!\n");
 	for (node = 0; node < info->size; node++) {
 		F = (stack[prev2]->constant) ? stack[prev2]->factor : stack[prev2]->G->data[node];
-		nu1 = lrint ((double)((stack[prev1]->constant) ? stack[prev1]->factor : stack[prev1]->G->data[node]));
-		nu2 = lrint ((double)((stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node]));
+		nu1 = (int)lrint ((double)((stack[prev1]->constant) ? stack[prev1]->factor : stack[prev1]->G->data[node]));
+		nu2 = (int)lrint ((double)((stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node]));
 		/* Since GMT_f_q needs chisq1 and chisq2, we set chisq2 = 1 and solve for chisq1 */
 		chisq1 = F * nu1 / nu2;
 		(void) GMT_f_q (GMT, chisq1, nu1, chisq2, nu2, &prob);
@@ -1510,7 +1510,7 @@ void grd_IN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STA
 	if (stack[last]->constant) {
 		if (stack[last]->factor < 0.0f) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, order < 0 for IN!\n");
 		if (fabsf (rintf(stack[last]->factor) - stack[last]->factor) > GMT_SMALL) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, order not an integer for IN!\n");
-		order = lrintf (fabsf (stack[last]->factor));
+		order = (unsigned int)lrintf (fabsf (stack[last]->factor));
 		if (stack[prev]->constant) {
 			b = (float)GMT_in (GMT, order, (double)fabsf (stack[prev]->factor));
 			simple = true;
@@ -1520,7 +1520,7 @@ void grd_IN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STA
 		if (simple)
 			stack[prev]->G->data[node] = b;
 		else {
-			if (!stack[last]->constant) order = lrintf (fabsf (stack[last]->G->data[node]));
+			if (!stack[last]->constant) order = (unsigned int)lrintf (fabsf (stack[last]->G->data[node]));
 			stack[last]->G->data[node] = (float)GMT_in (GMT, order, (double)fabsf (stack[prev]->G->data[node]));
 		}
 	}
@@ -1645,7 +1645,7 @@ void grd_J1 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STA
 	uint64_t node;
 	float a = 0.0f;
 
-	if (stack[last]->constant) a = j1 ((double)fabsf (stack[last]->factor));
+	if (stack[last]->constant) a = (float)j1 ((double)fabsf (stack[last]->factor));
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : (float)j1 ((double)fabsf (stack[last]->G->data[node]));
 }
 
@@ -1661,7 +1661,7 @@ void grd_JN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STA
 	if (stack[last]->constant) {
 		if (stack[last]->factor < 0.0f) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, order < 0 for JN!\n");
 		if (fabsf (rintf(stack[last]->factor) - stack[last]->factor) > GMT_SMALL) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, order not an integer for JN!\n");
-		order = lrintf (fabsf (stack[last]->factor));
+		order = (unsigned int)lrintf (fabsf (stack[last]->factor));
 		if (stack[prev]->constant) {
 			b = (float)jn (order, (double)fabsf (stack[prev]->factor));
 			simple = true;
@@ -1671,7 +1671,7 @@ void grd_JN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STA
 		if (simple)
 			stack[prev]->G->data[node] = b;
 		else {
-			if (!stack[last]->constant) order = lrintf (fabsf (stack[last]->G->data[node]));
+			if (!stack[last]->constant) order = (unsigned int)lrintf (fabsf (stack[last]->G->data[node]));
 			stack[last]->G->data[node] = (float)jn (order, (double)fabsf (stack[prev]->G->data[node]));
 		}
 	}
@@ -1739,7 +1739,7 @@ void grd_KN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STA
 	if (stack[last]->constant) {
 		if (stack[last]->factor < 0.0f) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, order < 0 for KN!\n");
 		if (fabsf (rintf(stack[last]->factor) - stack[last]->factor) > GMT_SMALL) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, order not an integer for KN!\n");
-		order = lrintf (fabsf (stack[last]->factor));
+		order = (unsigned int)lrintf (fabsf (stack[last]->factor));
 		if (stack[prev]->constant) {
 			b = (float)GMT_kn (GMT, order, (double)fabsf (stack[prev]->factor));
 			simple = true;
@@ -1749,7 +1749,7 @@ void grd_KN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STA
 		if (simple)
 			stack[prev]->G->data[node] = b;
 		else {
-			if (!stack[last]->constant) order = lrintf (fabsf (stack[last]->G->data[node]));
+			if (!stack[last]->constant) order = (unsigned int)lrintf (fabsf (stack[last]->G->data[node]));
 			stack[last]->G->data[node] = (float)GMT_kn (GMT, order, (double)fabsf (stack[prev]->G->data[node]));
 		}
 	}
@@ -1929,8 +1929,8 @@ void grd_LOG2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 
 	if (stack[last]->constant && stack[last]->factor == 0.0f) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, argument to log2 = 0\n");
 
-	if (stack[last]->constant) a = d_logf (GMT, fabsf (stack[last]->factor)) * M_LN2_INV;
-	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : d_logf (GMT, fabsf (stack[last]->G->data[node])) * M_LN2_INV;
+	if (stack[last]->constant) a = (float)(d_logf (GMT, fabsf (stack[last]->factor)) * M_LN2_INV);
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : (float)(d_logf (GMT, fabsf (stack[last]->G->data[node])) * M_LN2_INV);
 }
 
 void grd_LMSSCL (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -2354,8 +2354,8 @@ void grd_PLM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 		return;
 	}
 
-	L = lrintf (stack[prev]->factor);
-	M = lrintf (stack[last]->factor);
+	L = (unsigned int)lrintf (stack[prev]->factor);
+	M = (unsigned int)lrintf (stack[last]->factor);
 
 	if (stack[first]->constant) a = (float)GMT_plm (GMT, L, M, (double)stack[first]->factor);
 	for (node = 0; node < info->size; node++) stack[first]->G->data[node] = (stack[first]->constant) ? a : (float)GMT_plm (GMT, L, M, (double)stack[first]->G->data[node]);
@@ -2376,8 +2376,8 @@ void grd_PLMg (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 		return;
 	}
 
-	L = lrintf (stack[prev]->factor);
-	M = lrintf (stack[last]->factor);
+	L = (unsigned int)lrintf (stack[prev]->factor);
+	M = (unsigned int)lrintf (stack[last]->factor);
 
 	if (stack[first]->constant) a = (float)GMT_plm_bar (GMT, L, M, (double)stack[first]->factor, false);
 	for (node = 0; node < info->size; node++) stack[first]->G->data[node] = (stack[first]->constant) ? a : (float)GMT_plm_bar (GMT, L, M, (double)stack[first]->G->data[node], false);
@@ -2526,8 +2526,8 @@ void grd_R2D (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 	uint64_t node;
 	float a = 0.0f;
 
-	if (stack[last]->constant) a = R2D * stack[last]->factor;
-	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : R2D * stack[last]->G->data[node];
+	if (stack[last]->constant) a = (float)(R2D * stack[last]->factor);
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : (float)(R2D * stack[last]->G->data[node]);
 }
 
 void grd_RAND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -2571,7 +2571,7 @@ void grd_ROTX (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "DX shift (B) must be a constant in ROTX (no calculations performed)\n");
 		return;
 	}
-	shift = lrint (stack[last]->factor * info->G->header->r_inc[GMT_X]);	/* Shift of nodes */
+	shift = (int)lrint (stack[last]->factor * info->G->header->r_inc[GMT_X]);	/* Shift of nodes */
 
 	if (stack[prev]->constant || !shift) return;	/* Trivial since A is a constant or shift is zero */
 	if (shift < 0) shift += info->G->header->nx;	/* Same thing */
@@ -2603,7 +2603,7 @@ void grd_ROTY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "DY shift (B) must be a constant in ROTY (no calculations performed)\n");
 		return;
 	}
-	shift = lrint (stack[last]->factor / info->G->header->inc[GMT_Y]);	/* Shift of nodes */
+	shift = (int)lrint (stack[last]->factor / info->G->header->inc[GMT_Y]);	/* Shift of nodes */
 
 	if (stack[prev]->constant || !shift) return;	/* Trivial since A is a constant or shift is zero */
 	if (shift < 0) shift += info->G->header->ny;	/* Same thing */
@@ -2684,8 +2684,8 @@ void grd_SECD (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 	uint64_t node;
 	float a = 0.0f;
 
-	if (stack[last]->constant) a = (1.0f / cosdf (stack[last]->factor));
-	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : (1.0 / cosdf (stack[last]->G->data[node]));
+	if (stack[last]->constant) a = (float)(1.0 / cosdf (stack[last]->factor));
+	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : (float)(1.0 / cosdf (stack[last]->G->data[node]));
 }
 
 void grd_SIGN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -2945,9 +2945,9 @@ void grd_TAPER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 
 	/* First compute and store x taper weights: Ramp 0 to 1 for left margin, constant 1, then ramp 1 to 0 for right margin */
 	strip = stack[prev]->factor;
-	scale = M_PI / strip;
-	start = strip + info->G->header->wesn[XLO];
-	stop  = strip - info->G->header->wesn[XHI];
+	scale = (float)(M_PI / strip);
+	start = strip + (float)info->G->header->wesn[XLO];
+	stop  = strip - (float)info->G->header->wesn[XHI];
 	w_x = GMT_memory (GMT, NULL, info->G->header->nx, float);
 	GMT_col_loop2 (GMT, info->G, col) {
 		from_start = start - info->grd_x[col];
@@ -2959,9 +2959,9 @@ void grd_TAPER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 	/* Now compute y taper weights: Ramp 0 to 1 for left margin, constant 1, then ramp 1 to 0 for right margin.
 	 * We apply these as we loop over rows and do the w_x * w_y taper */
 	strip = stack[last]->factor;
-	scale = M_PI / strip;
-	start = strip + info->G->header->wesn[YLO];
-	stop  = strip - info->G->header->wesn[YHI];
+	scale = (float)(M_PI / strip);
+	start = strip + (float)info->G->header->wesn[YLO];
+	stop  = strip - (float)info->G->header->wesn[YHI];
 	GMT_row_loop (GMT, info->G, row) {
 		from_start = start - info->grd_y[row];
 		if (from_start > 0.0f) w_y = 0.5f * (1.0f + cosf (from_start * scale));
@@ -2985,7 +2985,7 @@ void grd_TN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STA
 
 	for (node = 0; node < info->size; node++) {
 		a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
-		n = lrint ((double)((stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node]));
+		n = (int)lrint ((double)((stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node]));
 		GMT_chebyshev (GMT, a, n, &t);
 		stack[prev]->G->data[node] = (float)t;
 	}
@@ -3004,7 +3004,7 @@ void grd_TCRIT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for TCRIT!\n");
 	for (node = 0; node < info->size; node++) {
 		a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
-		b = lrintf ((stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node]);
+		b = (int)lrintf ((stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node]);
 		stack[prev]->G->data[node] = (float)GMT_tcrit (GMT, a, (double)b);
 	}
 }
@@ -3022,7 +3022,7 @@ void grd_TDIST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, operand two == 0 for TDIST!\n");
 	for (node = 0; node < info->size; node++) {
 		a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
-		b = lrintf ((stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node]);
+		b = (int)lrintf ((stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node]);
 		(void) GMT_student_t_a (GMT, a, b, &prob);
 		stack[prev]->G->data[node] = (float)prob;
 	}
@@ -3097,8 +3097,8 @@ void grd_YLM_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMAT
 		return;
 	}
 
-	L = lrintf (stack[prev]->factor);
-	M = lrintf (stack[last]->factor);
+	L = (int)lrintf (stack[prev]->factor);
+	M = (int)lrintf (stack[last]->factor);
 	z = abs (M) * D2R;	/* abs() just in case routine is called with -M to add (-1)^M */
 
 	GMT_row_padloop (GMT, info->G, row, node) {	/* For each latitude */
@@ -3146,7 +3146,7 @@ void grd_YN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STA
 	if (stack[last]->constant) {
 		if (stack[last]->factor < 0.0f) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, order < 0 for YN!\n");
 		if ((rintf(stack[last]->factor) != stack[last]->factor)) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning, order not an integer for YN!\n");
-		order = lrintf (fabsf (stack[last]->factor));
+		order = (unsigned int)lrintf (fabsf (stack[last]->factor));
 		if (stack[prev]->constant) {
 			b = (float)yn (order, (double)fabsf (stack[prev]->factor));
 			simple = true;
@@ -3156,7 +3156,7 @@ void grd_YN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STA
 		if (simple)
 			stack[prev]->G->data[node] = b;
 		else {
-			if (!stack[last]->constant) order = lrintf (fabsf (stack[last]->G->data[node]));
+			if (!stack[last]->constant) order = (unsigned int)lrintf (fabsf (stack[last]->G->data[node]));
 			stack[last]->G->data[node] = (float)yn (order, (double)fabsf (stack[prev]->G->data[node]));
 		}
 	}
@@ -3536,7 +3536,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 			}
 			else if (op <= GRDMATH_ARG_IS_PI && op >= GRDMATH_ARG_IS_NY) {
 				stack[nstack]->constant = true;
-				stack[nstack]->factor = special_symbol[GRDMATH_ARG_IS_PI-op];
+				stack[nstack]->factor = (float)special_symbol[GRDMATH_ARG_IS_PI-op];
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "%g ", stack[nstack]->factor);
 				nstack++;
 				continue;

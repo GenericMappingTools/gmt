@@ -294,12 +294,12 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 
 			n_nan = G->header->nm - n;
 			if (n) {	/* Meaning at least one non-NaN node was found */
-				col = GMT_col (G->header, ij_min);
-				row = GMT_row (G->header, ij_min);
+				col = (unsigned int)GMT_col (G->header, ij_min);
+				row = (unsigned int)GMT_row (G->header, ij_min);
 				x_min = GMT_grd_col_to_x (GMT, col, G->header);
 				y_min = GMT_grd_row_to_y (GMT, row, G->header);
-				col = GMT_col (G->header, ij_max);
-				row = GMT_row (G->header, ij_max);
+				col = (unsigned int)GMT_col (G->header, ij_max);
+				row = (unsigned int)GMT_row (G->header, ij_max);
 				x_max = GMT_grd_col_to_x (GMT, col, G->header);
 				y_max = GMT_grd_row_to_y (GMT, row, G->header);
 			}
@@ -519,7 +519,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 			}
 			GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 			if (n_nan) {
-				float percent = 100.0f * n_nan / G->header->nm;
+				double percent = 100.0 * n_nan / G->header->nm;
 				sprintf (record, "%s: %" PRIu64 " nodes (%.1f%%) set to NaN",
 							G->header->name, n_nan, percent);
 				GMT_Put_Record (API, GMT_WRITE_TEXT, record);

@@ -202,9 +202,10 @@ int GMT_gshhg_parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_O
 
 int GMT_gshhg (void *V_API, int mode, void *args)
 {
-	unsigned int row, seg_no = 0, is_line = 0, n_seg = 0, n_read, m, level, this_id;
+	unsigned int row, seg_no = 0, is_line = 0, n_seg = 0, m, level, this_id;
 	int error, gmode, version, greenwich, is_river, src;
 	int32_t max_east = 270000000;
+	size_t n_read;
 	bool must_swab, OK, first = true;
 #ifdef MEMDEBUG
 	bool mem_track_enabled;

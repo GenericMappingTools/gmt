@@ -496,8 +496,8 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 		for (rec = 0; rec < pol->segment[seg]->n_rows; rec++) {
 			lon = pol->segment[seg]->coord[GMT_X][rec];
 			while (lon < G_rot->header->wesn[XLO]) lon += 360.0;
-			scol = GMT_grd_x_to_col (GMT, lon, G_rot->header);
-			srow = GMT_grd_y_to_row (GMT, pol->segment[seg]->coord[GMT_Y][rec], G_rot->header);
+			scol = (int)GMT_grd_x_to_col (GMT, lon, G_rot->header);
+			srow = (int)GMT_grd_y_to_row (GMT, pol->segment[seg]->coord[GMT_Y][rec], G_rot->header);
 			/* Visit the PAD * PAD number of cells centered on col, row and make sure they have been set */
 			start_row = (srow > PAD) ? srow - PAD : 0;
 			stop_row  = srow + PAD;
@@ -514,10 +514,10 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 					GMT_matrix_vect_mult (GMT, 3U, R, P_rotated, P_original);	/* Rotate the vector */
 					GMT_cart_to_geo (GMT, &xx, &yy, P_original, true);	/* Recover degree lon lat representation */
 					yy = GMT_lat_swap (GMT, yy, GMT_LATSWAP_O2G);		/* Convert back to geodetic */
-					scol = GMT_grd_x_to_col (GMT, xx, G->header);
+					scol = (int)GMT_grd_x_to_col (GMT, xx, G->header);
 					if (scol < 0) continue;
 					col_o = scol;	if (col_o >= G->header->nx) continue;
-					srow = GMT_grd_y_to_row (GMT, yy, G->header);
+					srow = (int)GMT_grd_y_to_row (GMT, yy, G->header);
 					if (srow < 0) continue;
 					row_o = srow;	if (row_o >= G->header->ny) continue;
 					ij = GMT_IJP (G->header, row_o, col_o);

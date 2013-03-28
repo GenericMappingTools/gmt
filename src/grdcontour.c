@@ -512,8 +512,8 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 		if (abs (save[pol].kind) == 2) {	/* Closed contour split across a periodic boundary */
 			/* Determine row, col for a point ~mid-way along the vertical periodic boundary */
 			col = (save[pol].kind == cont_is_closed_straddles_west) ? 0 : G->header->nx - 1;
-			row = GMT_grd_y_to_row (GMT, save[pol].y[0], G->header);		/* Get start j-row */
-			row += GMT_grd_y_to_row (GMT, save[pol].y[np-1], G->header);	/* Get stop j-row */
+			row = (int)GMT_grd_y_to_row (GMT, save[pol].y[0], G->header);		/* Get start j-row */
+			row += (int)GMT_grd_y_to_row (GMT, save[pol].y[np-1], G->header);	/* Get stop j-row */
 			row /= 2;
 		}
 		else if (abs (save[pol].kind) >= 3) {	/* Polar cap, pick point at midpoint along top or bottom boundary */
@@ -534,10 +534,10 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 			/* Pick the mid-latitude and march along that line from east to west */
 
 			this_lat = 0.5 * (ymax + ymin);	/* Mid latitude, probably not exactly on a y-node */
-			row = MIN (G->header->ny - 1, GMT_grd_y_to_row (GMT, this_lat, G->header));	/* Get closest j-row */
+			row = (int)MIN (G->header->ny - 1, GMT_grd_y_to_row (GMT, this_lat, G->header));	/* Get closest j-row */
 			this_lat = GMT_grd_row_to_y (GMT, row, G->header);	/* Get its matching latitude */
-			col  = GMT_grd_x_to_col (GMT, xmin, G->header);		/* Westernmost point */
-			stop = GMT_grd_x_to_col (GMT, xmax, G->header);		/* Eastermost point */
+			col  = (int)GMT_grd_x_to_col (GMT, xmin, G->header);		/* Westernmost point */
+			stop = (int)GMT_grd_x_to_col (GMT, xmax, G->header);		/* Eastermost point */
 			done = false;
 			while (!done && col <= stop) {
 				this_lon = GMT_grd_col_to_x (GMT, col, G->header);	/* Current longitude */
@@ -559,7 +559,7 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 		
 		s = GMT_memory (GMT, NULL, np, double);	/* Compute distance along the contour */
 		for (j = 1, s[0] = 0.0; j < np; j++) s[j] = s[j-1] + hypot (xp[j]-xp[j-1], yp[j]-yp[j-1]);
-		n_ticks = lrint (floor (s[np-1] / tick_gap));
+		n_ticks = (int)lrint (floor (s[np-1] / tick_gap));
 		if (s[np-1] < GRDCONTOUR_MIN_LENGTH || n_ticks == 0) {	/* Contour is too short to be ticked or labeled */
 			save[pol].do_it = false;
 			GMT_free (GMT, s);	GMT_free (GMT, xp);	GMT_free (GMT, yp);
@@ -643,11 +643,11 @@ void adjust_hill_label (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, struct GMT_
 		C = G->segment[seg];	/* Pointer to current segment */
 		for (k = 0; k < C->n_labels; k++) {
 			GMT_xy_to_geo (GMT, &x_on, &y_on, C->L[k].x, C->L[k].y);	/* Retrieve original coordinates */
-			row = GMT_grd_y_to_row (GMT, y_on, Grid->header);
+			row = (int)GMT_grd_y_to_row (GMT, y_on, Grid->header);
 			if (row < 0 || row >= (int)Grid->header->ny) continue;		/* Somehow, outside y range */
 			while (GMT_x_is_lon (GMT, GMT_IN) && x_on < Grid->header->wesn[XLO]) x_on += 360.0;
 			while (GMT_x_is_lon (GMT, GMT_IN) && x_on > Grid->header->wesn[XHI]) x_on -= 360.0;
-			col = GMT_grd_x_to_col (GMT, x_on, Grid->header);
+			col = (int)GMT_grd_x_to_col (GMT, x_on, Grid->header);
 			if (col < 0 || col >= (int)Grid->header->nx) continue;		/* Somehow, outside x range */
 			angle = fmod (2.0 * C->L[k].angle, 360.0) * 0.5;	/* 0-180 range */
 			if (angle > 90.0) angle -= 180.0;
@@ -948,7 +948,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 		double min, max;
 		min = floor (G->header->z_min / Ctrl->C.interval) * Ctrl->C.interval; if (!GMT->current.map.z_periodic && min < G->header->z_min) min += Ctrl->C.interval;
 		max = ceil (G->header->z_max / Ctrl->C.interval) * Ctrl->C.interval; if (max > G->header->z_max) max -= Ctrl->C.interval;
-		for (c = lrint (min/Ctrl->C.interval), n_contours = 0; c <= lrint (max/Ctrl->C.interval); c++, n_contours++) {
+		for (c = (int)lrint (min/Ctrl->C.interval), n_contours = 0; c <= (int)lrint (max/Ctrl->C.interval); c++, n_contours++) {
 			if (n_contours == n_alloc) {
 				n_tmp = n_alloc;
 				GMT_malloc2 (GMT, contour, cont_angle, n_contours, &n_tmp, double);
@@ -1005,7 +1005,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 	 * original grid values and subtract the current contour value. */
 
  	if ((G_orig = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA, G)) == NULL) Return (EXIT_FAILURE); /* Original copy of grid used for contouring */
-	n_edges = G->header->ny * lrint (ceil (G->header->nx / 16.0));
+	n_edges = G->header->ny * ((unsigned int)lrint (ceil (G->header->nx / 16.0)));
 	edge = GMT_memory (GMT, NULL, n_edges, unsigned int);	/* Bit flags used to keep track of contours */
 
 	if (Ctrl->D.active) {

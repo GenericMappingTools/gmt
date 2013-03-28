@@ -259,7 +259,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 	x2sys_err_fail (GMT, x2sys_bix_read_index (GMT, s, &B, Ctrl->S.active), "");
 
 	if (Ctrl->L.active) {
-		n_flags = lrint (ceil (n_tracks / 32.0));
+		n_flags = (unsigned int)lrint (ceil (n_tracks / 32.0));
 		include = GMT_memory (GMT, NULL, n_tracks, bool);
 		if (Ctrl->L.file) {
 			if ((fp = fopen (Ctrl->L.file, "r")) == NULL) {
@@ -334,10 +334,10 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 						if (!(include[ids_in_bin[id1]] || include[ids_in_bin[id2]])) continue;	/* At last one leg must be from our list (if given) */
 						/* This all requires matrix to be an in (32-bit) */
 						item = (unsigned int)(ids_in_bin[id2] / 32);
-						bit = ids_in_bin[id2] % 32;
+						bit = (unsigned int)(ids_in_bin[id2] % 32);
 						matrix[ids_in_bin[id1]*n_flags+item] |= (1 << bit);
 						item = (unsigned int)(ids_in_bin[id1] / 32);
-						bit = ids_in_bin[id1] % 32;
+						bit = (unsigned int)(ids_in_bin[id1] % 32);
 						matrix[ids_in_bin[id2]*n_flags+item] |= (1 << bit);
 					}
 				}
@@ -347,7 +347,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 	}
 
 	if (Ctrl->L.active) {
-		for (id1 = n_pairs = 0; id1 < n_tracks; id1++) {
+		for (id1 = 0, n_pairs = 0; id1 < n_tracks; id1++) {
 			for (id2 = id1 + Ctrl->L.mode; id2 < n_tracks; id2++) {
 				item = id2 / 32;
 				bit = id2 % 32;

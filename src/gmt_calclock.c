@@ -205,13 +205,13 @@ int gmt_gyear_from_rd (int64_t date) {
 	int year, n400, n100, n4, n1;
 	
 	d0 = date - 1;
-	n400 = lrint (floor (d0 / 146097.0));
+	n400 = (int)lrint (floor (d0 / 146097.0));
 	d1 = gmt_cal_imod (d0, 146097);
-	n100 = lrint (floor (d1 / 36524.0));
+	n100 = (int)lrint (floor (d1 / 36524.0));
 	d2 = gmt_cal_imod (d1, 36524);
-	n4 = lrint (floor (d2 / 1461.0));
+	n4 = (int)lrint (floor (d2 / 1461.0));
 	d3 = gmt_cal_imod (d2, 1461);
-	n1 = lrint (floor (d3 / 365.0));
+	n1 = (int)lrint (floor (d3 / 365.0));
 	/* d4 = gmt_cal_imod (d3, 365) + 1; NOT USED (removed) */
 	year = 400*n400 + 100*n100 + 4*n4 + n1;
 	
@@ -258,7 +258,7 @@ void GMT_gcal_from_rd (struct GMT_CTRL *GMT, int64_t date, struct GMT_gcal *gcal
 	else
 		corexn = (GMT_is_gleap (gcal->year)) ? 1 : 2;
 	
-	gcal->month = lrint (floor ((12*(prior_days + corexn) + 373)/367.0));
+	gcal->month = (unsigned int)lrint (floor ((12*(prior_days + corexn) + 373)/367.0));
 	
 	tempdate = GMT_rd_from_gymd (GMT, gcal->year, gcal->month, 1);
 	
@@ -269,8 +269,8 @@ void GMT_gcal_from_rd (struct GMT_CTRL *GMT, int64_t date, struct GMT_gcal *gcal
 	tempyear = (prior_days >= 3) ? gcal->year : gcal->year - 1;
 	tempdate = GMT_rd_from_iywd (GMT, tempyear+1, 1, 1);
 	gcal->iso_y = (date >= tempdate) ? tempyear + 1 : tempyear;
-	gcal->iso_w = 1 + lrint (floor((date - GMT_rd_from_iywd (GMT, gcal->iso_y, 1, 1))/7.0));
-	gcal->iso_d = (gcal->day_w) ? gcal->day_w : 7;
+	gcal->iso_w = 1U + (unsigned int)lrint (floor((date - GMT_rd_from_iywd (GMT, gcal->iso_y, 1, 1))/7.0));
+	gcal->iso_d = (gcal->day_w) ? gcal->day_w : 7U;
 }
 
 int GMT_y2_to_y4_yearfix (struct GMT_CTRL *GMT, unsigned int y2) {
@@ -360,7 +360,7 @@ void GMT_gcal_from_dt (struct GMT_CTRL *GMT, double t, struct GMT_gcal *cal) {
 	/* split double seconds and integer time */
 	i = GMT_splitinteger (x, 60, &cal->sec);
 	cal->hour = (unsigned int)(i / GMT_MIN2SEC_I);
-	cal->min  = i % GMT_MIN2SEC_I;
+	cal->min  = (unsigned int)(i % GMT_MIN2SEC_I);
 }
 
 int GMT_verify_time_step (struct GMT_CTRL *GMT, int step, char unit) {
@@ -875,8 +875,8 @@ void GMT_format_calendar (struct GMT_CTRL *GMT, char *date, char *clock, struct 
 	if (!clock || W->skip) return;	/* Do not want a formatted clock string - return here */
 	
 	GMT_memset (clock, GMT_TEXT_LEN16, char);			/* To set all to zero */
-	i_sec = lrint (floor (calendar.sec));
-	m_sec = lrint (floor (W->f_sec_to_int * (calendar.sec - i_sec)));
+	i_sec = (int)lrint (floor (calendar.sec));
+	m_sec = (int)lrint (floor (W->f_sec_to_int * (calendar.sec - i_sec)));
 	
 	if (W->twelve_hr_clock) {		/* Must deal with am/pm formatting */
 		if (calendar.hour < 12)

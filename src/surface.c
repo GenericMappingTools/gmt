@@ -371,8 +371,8 @@ void set_index (struct SURFACE_INFO *C) {
 	struct GMT_GRID_HEADER *h = C->Grid->header;
 
 	for (k = 0; k < C->npoints; k++) {
-		i = lrint (floor(((C->data[k].x-h->wesn[XLO])*C->r_grid_xinc) + 0.5));
-		j = lrint (floor(((C->data[k].y-h->wesn[YLO])*C->r_grid_yinc) + 0.5));
+		i = (int)lrint (floor(((C->data[k].x-h->wesn[XLO])*C->r_grid_xinc) + 0.5));
+		j = (int)lrint (floor(((C->data[k].y-h->wesn[YLO])*C->r_grid_yinc) + 0.5));
 		if (i < 0 || i >= C->block_nx || j < 0 || j >= C->block_ny) {
 			C->data[k].index = SURFACE_OUTSIDE;
 			k_skipped++;
@@ -490,8 +490,8 @@ void initialize_grid (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 	float *u = C->Grid->data;
 	struct GMT_GRID_HEADER *h = C->Grid->header;
 
-	 irad = lrint (ceil(C->radius/C->grid_xinc));
-	 jrad = lrint (ceil(C->radius/C->grid_yinc));
+	 irad = (int)lrint (ceil(C->radius/C->grid_xinc));
+	 jrad = (int)lrint (ceil(C->radius/C->grid_yinc));
 	 rfact = -4.5/(C->radius*C->radius);
 	 for (i = 0; i < C->block_nx; i ++ ) {
 	 	x0 = h->wesn[XLO] + i*C->grid_xinc;
@@ -579,9 +579,9 @@ int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_
 		if (GMT_y_is_outside (GMT, in[GMT_Y], wesn_lim[YLO], wesn_lim[YHI])) continue;	/* Outside y-range */
 		if (GMT_x_is_outside (GMT, &in[GMT_X], wesn_lim[XLO], wesn_lim[XHI])) continue;	/* Outside x-range (or longitude) */
 
-		i = lrint (floor(((in[GMT_X]-h->wesn[XLO])*C->r_grid_xinc) + 0.5));
+		i = (int)lrint (floor(((in[GMT_X]-h->wesn[XLO])*C->r_grid_xinc) + 0.5));
 		if (i < 0 || i >= C->block_nx) continue;
-		j = lrint (floor(((in[GMT_Y]-h->wesn[YLO])*C->r_grid_yinc) + 0.5));
+		j = (int)lrint (floor(((in[GMT_Y]-h->wesn[YLO])*C->r_grid_yinc) + 0.5));
 		if (j < 0 || j >= C->block_ny) continue;
 
 		C->data[k].index = i * C->block_ny + j;
@@ -1507,9 +1507,9 @@ void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_
 
 		if (GMT_is_dnan (z[n])) continue;
 
-		scol = lrint (floor (((x[n] - C->Grid->header->wesn[XLO]) * C->r_grid_xinc) + 0.5));
+		scol = (int)lrint (floor (((x[n] - C->Grid->header->wesn[XLO]) * C->r_grid_xinc) + 0.5));
 		if (scol < 0 || scol >= C->block_nx) continue;
-		srow = lrint (floor (((y[n] - C->Grid->header->wesn[YLO]) * C->r_grid_yinc) + 0.5));
+		srow = (int)lrint (floor (((y[n] - C->Grid->header->wesn[YLO]) * C->r_grid_yinc) + 0.5));
 		if (srow < 0 || srow >= C->block_ny) continue;
 
 		C->data[k].index = scol * C->block_ny + srow;

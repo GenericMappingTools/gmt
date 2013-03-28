@@ -145,7 +145,7 @@ int GMT_read_rasheader (FILE *fp, struct rasterfile *h)
 		}
 	}
 
-	if (h->type == RT_OLD && h->length == 0) h->length = 2 * lrint (ceil (h->width * h->depth / 16.0)) * h->height;
+	if (h->type == RT_OLD && h->length == 0) h->length = 2 * ((int)lrint (ceil (h->width * h->depth / 16.0))) * h->height;
 
 	return (GMT_NOERROR);
 }
@@ -162,7 +162,7 @@ int GMT_write_rasheader (FILE *fp, struct rasterfile *h)
 	int32_t value;
 
 	if (h->type == RT_OLD && h->length == 0) {
-		h->length = 2 * lrint (ceil (h->width * h->depth / 16.0)) * h->height;
+		h->length = 2 * ((int)lrint (ceil (h->width * h->depth / 16.0))) * h->height;
 		h->type = RT_STANDARD;
 	}
 
@@ -265,7 +265,7 @@ int GMT_ras_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	h.width = header->nx;
 	h.height = header->ny;
 	h.depth = 8;
-	h.length = header->ny * lrint (ceil (header->nx/2.0)) * 2;
+	h.length = header->ny * ((int)lrint (ceil (header->nx/2.0))) * 2;
 	h.type = 1;
 	h.maptype = h.maplength = 0;
 
@@ -396,11 +396,11 @@ int GMT_ras_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	h.width = header->nx;
 	h.height = header->ny;
 	h.depth = 8;
-	h.length = header->ny * lrint (ceil (header->nx/2.0)) * 2;
+	h.length = header->ny * ((int)lrint (ceil (header->nx/2.0))) * 2;
 	h.type = 1;
 	h.maptype = h.maplength = 0;
 
-	n2 = lrint (ceil (header->nx / 2.0)) * 2;
+	n2 = (int)lrint (ceil (header->nx / 2.0)) * 2;
 	tmp = GMT_memory (GMT, NULL, n2, unsigned char);
 
 	check = !GMT_is_dnan (header->nan_value);
@@ -417,7 +417,7 @@ int GMT_ras_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 
 	h.width = header->nx;
 	h.height = header->ny;
-	h.length = header->ny * lrint (ceil (header->nx/2.0)) * 2;
+	h.length = header->ny * ((int)lrint (ceil (header->nx/2.0))) * 2;
 
 	/* store header information and array */
 
@@ -610,7 +610,7 @@ int GMT_bit_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 		return (GMT_GRDIO_OPEN_FAILED);
 
 	check = !GMT_is_dnan (header->nan_value);
-	mx = lrint (ceil (header->nx / 32.0));	/* Whole multiple of 32-bit integers */
+	mx = (unsigned int)lrint (ceil (header->nx / 32.0));	/* Whole multiple of 32-bit integers */
 
 	GMT_err_pass (GMT, GMT_grd_prep_io (GMT, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
 	(void)GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
@@ -722,7 +722,7 @@ int GMT_bit_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 
 	if (do_header) GMT_err_trap (GMT_native_write_grd_header (fp, header));
 
-	mx = lrint (ceil (width_out / 32.0));
+	mx = (unsigned int)lrint (ceil (width_out / 32.0));
 	tmp = GMT_memory (GMT, NULL, mx, unsigned int);
 
 	i2 = first_col + pad[XLO];

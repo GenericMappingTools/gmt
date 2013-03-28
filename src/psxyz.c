@@ -1019,7 +1019,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 					GMT_plane_perspective (GMT, -1, 0.0);
 					for (i = 0; i < n; i++) GMT_geoz_to_xy (GMT, L->coord[GMT_X][i], L->coord[GMT_Y][i], L->coord[GMT_Z][i], &xp[i], &yp[i]);
 					GMT_setfill (GMT, &current_fill, outline_active);
-					PSL_plotpolygon (PSL, xp, yp, n);
+					PSL_plotpolygon (PSL, xp, yp, (int)n);
 				}
 				else if (S.symbol == GMT_SYMBOL_QUOTED_LINE) {	/* Labeled lines are dealt with by the contour machinery */
 					/* Note that this always be plotted in the XY-plane */
@@ -1032,13 +1032,13 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 				else {	/* Plot line */
 					GMT_plane_perspective (GMT, -1, 0.0);
 					for (i = 0; i < n; i++) GMT_geoz_to_xy (GMT, L->coord[GMT_X][i], L->coord[GMT_Y][i], L->coord[GMT_Z][i], &xp[i], &yp[i]);
-					PSL_plotline (PSL, xp, yp, n, PSL_MOVE + PSL_STROKE);
+					PSL_plotline (PSL, xp, yp, (int)n, PSL_MOVE + PSL_STROKE);
 				}
 				if (S.symbol == GMT_SYMBOL_FRONT) { /* Must draw fault crossbars */
 					GMT_plane_perspective (GMT, GMT_Z + GMT_ZW, GMT->current.proj.z_level);
 					if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) == 0) continue;
 					GMT_setfill (GMT, &current_fill, outline_active);
-					GMT_draw_front (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, &S.f);
+					GMT_draw_front (GMT, GMT->current.plot.x, GMT->current.plot.y, (unsigned int)GMT->current.plot.n, &S.f);
 				}
 
 				GMT_free (GMT, xp);

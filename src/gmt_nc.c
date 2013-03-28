@@ -1107,7 +1107,7 @@ int nc_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double
 		/* Global grids: ensure that wesn >= header->wesn (w+e only) */
 		if ( is_global ) {
 			while (wesn[XLO] < header->wesn[XLO]) {
-				unsigned diff = header->wesn[XHI] - header->wesn[XLO];
+				unsigned int diff = (unsigned int)(header->wesn[XHI] - header->wesn[XLO]);
 				wesn[XLO] += diff;
 				wesn[XHI] += diff;
 			}
@@ -1116,14 +1116,14 @@ int nc_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double
 			assert (wesn[XLO] >= header->wesn[XLO] && wesn[XHI] <= header->wesn[XHI]);
 
 		/* Get dimension of subregion */
-		*width  = lrint ((wesn[XHI] - wesn[XLO]) * header->r_inc[GMT_X]) + is_gridline_reg;
-		*height = lrint ((wesn[YHI] - wesn[YLO]) * header->r_inc[GMT_Y]) + is_gridline_reg;
+		*width  = (unsigned int)lrint ((wesn[XHI] - wesn[XLO]) * header->r_inc[GMT_X]) + is_gridline_reg;
+		*height = (unsigned int)lrint ((wesn[YHI] - wesn[YLO]) * header->r_inc[GMT_Y]) + is_gridline_reg;
 
 		/* Get first and last row and column numbers */
-		first_col = lrint ((wesn[XLO] - header->wesn[XLO]) * header->r_inc[GMT_X]);
-		last_col  = lrint ((wesn[XHI] - header->wesn[XLO]) * header->r_inc[GMT_X]) - 1 + is_gridline_reg;
-		first_row = lrint ((header->wesn[YHI] - wesn[YHI]) * header->r_inc[GMT_Y]);
-		last_row  = lrint ((header->wesn[YHI] - wesn[YLO]) * header->r_inc[GMT_Y]) - 1 + is_gridline_reg;
+		first_col = (unsigned int)lrint ((wesn[XLO] - header->wesn[XLO]) * header->r_inc[GMT_X]);
+		last_col  = (unsigned int)lrint ((wesn[XHI] - header->wesn[XLO]) * header->r_inc[GMT_X]) - 1 + is_gridline_reg;
+		first_row = (unsigned int)lrint ((header->wesn[YHI] - wesn[YHI]) * header->r_inc[GMT_Y]);
+		last_row  = (unsigned int)lrint ((header->wesn[YHI] - wesn[YLO]) * header->r_inc[GMT_Y]) - 1 + is_gridline_reg;
 
 		/* Adjust first_row */
 		if (header->row_order == k_nc_start_south)
@@ -1408,10 +1408,10 @@ int GMT_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	n = 0;
 	while (n < width * height) {
 		if (adj_nan_value && isnan (pgrid[n]))
-			pgrid[n] = header->nan_value;
+			pgrid[n] = (float)header->nan_value;
 		else if (!isnan (pgrid[n])) {
 			if (do_round)
-				pgrid[n] = rint (pgrid[n]); /* round to int */
+				pgrid[n] = (float)rint (pgrid[n]); /* round to int */
 			header->z_min = MIN (header->z_min, pgrid[n]);
 			header->z_max = MAX (header->z_max, pgrid[n]);
 		}

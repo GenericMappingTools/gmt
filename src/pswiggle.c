@@ -134,19 +134,19 @@ void plot_wiggle (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *x, double 
 	if (paint_wiggle) { /* First shade wiggles */
 		PSL_comment (PSL, "%s wiggle\n", negative ? "Negative" : "Positive");
 		GMT_setfill (GMT, fill, false);
-		PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, n);
+		PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, (int)n);
 	}
 
 	if (outline) { /* Then draw wiggle outline */
 		PSL_comment (PSL, "Wiggle line\n");
 		GMT_setpen (GMT, pen_o);
-		PSL_plotline (PSL, &GMT->current.plot.x[1], &GMT->current.plot.y[1], np, PSL_MOVE + PSL_STROKE);
+		PSL_plotline (PSL, &GMT->current.plot.x[1], &GMT->current.plot.y[1], (int)np, PSL_MOVE + PSL_STROKE);
 	}
 
 	if (track) {	/* Finally draw track line */
 		PSL_comment (PSL, "Track line\n");
 		GMT_setpen (GMT, pen_t);
-		PSL_plotline (PSL, x, y, np, PSL_MOVE + PSL_STROKE);
+		PSL_plotline (PSL, x, y, (int)np, PSL_MOVE + PSL_STROKE);
 	}
 }
 
@@ -342,7 +342,7 @@ int GMT_pswiggle_parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct
 				break;
 			case 'Z':
 				Ctrl->Z.active = true;
-				j = strlen (opt->arg) - 1;
+				j = (unsigned int)strlen (opt->arg) - 1;
 				if (strchr (GMT_DIM_UNITS, (int)opt->arg[j])) Ctrl->Z.unit = opt->arg[j];
 				Ctrl->Z.scale = atof (opt->arg);
 				break;

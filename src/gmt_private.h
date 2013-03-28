@@ -62,8 +62,8 @@ struct GMTAPI_DATA_OBJECT {
 	/* Information for each input or output data entity, including information
 	 * needed while reading/writing from a table (file or array) */
 	uint64_t n_rows;			/* Number or rows in this array [GMT_DATASET and GMT_TEXTSET to/from MATRIX/VETOR only] */
+	uint64_t n_columns;			/* Number of columns to process in this dataset [GMT_DATASET only] */
 	unsigned int ID;			/* Unique identifier which is >= 0 */
-	unsigned int n_columns;		/* Number of columns to process in this dataset [GMT_DATASET only] */
 	unsigned int n_expected_fields;	/* Number of expected columns for this dataset [GMT_DATASET only] */
 	unsigned int level;			/* Nested module level when object was allocated */
 	bool selected;				/* true if requested by current module, false otherwise */
@@ -90,8 +90,8 @@ struct GMTAPI_CTRL {
 	 * Use GMTAPI_Create_Session to initialize a new session and GMTAPI_Destroy_Session to end it. */
 
 	uint64_t current_rec[2];		/* Current record number >= 0 in the combined virtual dataset (in and out) */
-	unsigned int n_objects;		/* Number of currently active input and output data objects */
-	unsigned int unique_ID;		/* Used to create unique IDs for duration of session */
+	unsigned int n_objects;			/* Number of currently active input and output data objects */
+	unsigned int unique_ID;			/* Used to create unique IDs for duration of session */
 	unsigned int session_ID;		/* ID of this session */
 	unsigned int current_item[2];		/* Array number of current dataset being processed (in and out)*/
 	unsigned int pad;			/* Session default for number of rows/cols padding for grids [2] */

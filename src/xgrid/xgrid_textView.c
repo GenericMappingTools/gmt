@@ -306,7 +306,7 @@ static void redrawValues (Widget	w,
     while (x < (int)(left + width) && col < data->grid->width) {
       sprintf(value, format, GetGrid(data->grid, col, row));
       XDrawImageString(XtDisplay(w), XtWindow(w), data->valueGC,
-      			x, y, value, strlen(value));
+      			x, y, value, (int)strlen(value));
       x += data->cellWidth;
       col ++;
     } /* End horizontal loop */
@@ -341,7 +341,7 @@ static void scrollHorizontal (Widget		w __attribute__((unused)),
   height = XtHeight(canvas);
 
   previous = data->xOffset;
-  distance = abs(x - previous);
+  distance = labs(x - previous);
   data->xOffset = x;
 
   /* Adjust the display */
@@ -389,7 +389,7 @@ static void scrollVertical (Widget	w __attribute__((unused)),
   height = XtHeight(canvas);
 
   previous = data->yOffset;
-  distance = abs(y - previous);
+  distance = labs(y - previous);
   data->yOffset = y;
 
   if (distance >= height) {

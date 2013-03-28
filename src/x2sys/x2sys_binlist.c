@@ -253,8 +253,8 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args)
 	
 	x2sys_bix_init (GMT, &B, true);
 	nav_flag = (1 << s->x_col) + (1 << s->y_col);	/* For bins just cut by track but no points inside the bin */
-	jump_180 = lrint (180.0 / B.inc[GMT_X]);
-	jump_360 = lrint (360.0 / B.inc[GMT_X]);
+	jump_180 = (int)lrint (180.0 / B.inc[GMT_X]);
+	jump_360 = (int)lrint (360.0 / B.inc[GMT_X]);
 
 	X = GMT_memory (GMT, NULL, nx_alloc, struct BINCROSS);
 	

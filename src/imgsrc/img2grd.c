@@ -448,15 +448,15 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 	
 	/* Re-adjust user's -R so that it falls on pixel coordinate boundaries */
 	
-	jinstart = navg * lrint (floor (GMT_img_lat_to_ypix (wesn[YHI], &imgcoord) / navg));
-	jinstop  = navg * lrint (ceil  (GMT_img_lat_to_ypix (wesn[YLO], &imgcoord) / navg));
+	jinstart = navg * ((unsigned int)lrint (floor (GMT_img_lat_to_ypix (wesn[YHI], &imgcoord) / navg)));
+	jinstop  = navg * ((unsigned int)lrint (ceil  (GMT_img_lat_to_ypix (wesn[YLO], &imgcoord) / navg)));
 	/* jinstart <= jinputrow < jinstop  */
 	ny = (int)((jinstop - jinstart) / navg);
 	north2 = wesn[YHI] = GMT_img_ypix_to_lat ((double)jinstart, &imgcoord);
 	south2 = wesn[YLO] = GMT_img_ypix_to_lat ((double)jinstop,  &imgcoord);
 
-	iinstart = navg * lrint (floor (wesn[XLO]/inc[GMT_X]));
-	iinstop  = navg * lrint (ceil  (wesn[XHI]/inc[GMT_X]));
+	iinstart = navg * ((unsigned int)lrint (floor (wesn[XLO]/inc[GMT_X])));
+	iinstop  = navg * ((unsigned int)lrint (ceil  (wesn[XHI]/inc[GMT_X])));
 	/* iinstart <= ipixelcol < iinstop, but modulo all with imgcoord.nx360  */
 	/* Reset left and right edges of user area */
 	wesn[XLO] = iinstart * dx;
@@ -476,7 +476,7 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 	/* Set up header with Mercatorized dimensions assuming -Jm1  */
 	if (Ctrl->C.active) {
 		int equator;
-		equator = lrint (GMT_img_lat_to_ypix (0.0, &imgcoord));
+		equator = (int)lrint (GMT_img_lat_to_ypix (0.0, &imgcoord));
 		wesn[XLO] = iinstart * inc[GMT_X];
 		wesn[XHI] = wesn[XLO] + nx * inc[GMT_X];
 		wesn[YHI] = (imgcoord.nyrow - jinstart - equator) * inc[GMT_Y];

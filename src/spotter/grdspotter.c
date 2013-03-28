@@ -382,7 +382,7 @@ int GMT_grdspotter_parse (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *Ctrl, st
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-unsigned int get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt, struct EULER *p, unsigned int n_stages, double d_km, unsigned int step, unsigned int flag, double wesn[], double **flow)
+int64_t get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt, struct EULER *p, unsigned int n_stages, double d_km, unsigned int step, unsigned int flag, double wesn[], double **flow)
 {
 	int64_t n_track, m, kx, ky, np, first, last;
 	double *c = NULL, *f = NULL;
@@ -390,7 +390,7 @@ unsigned int get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt
 	/* Get the flowline from this point back to time tt, restricted to the given wesn box */
 	if (spotter_forthtrack (GMT, &xx, &yy, &tt, 1, p, n_stages, d_km, 0.0, flag, wesn, &c) <= 0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Nothing returned from spotter_forthtrack - skipping\n");
-		return 0;
+		return 0LL;
 	}
 
 	n_track = lrint (c[0]);				/* Number of point pairs making up this flowline */
@@ -408,7 +408,7 @@ unsigned int get_flowline (struct GMT_CTRL *GMT, double xx, double yy, double tt
 
 	if (first == -1) { 	/* Was never inside the grid, skip the entire flowline and move on */
 		GMT_free (GMT, c);	/* Free the flowline vector */
-		return 0;
+		return 0LL;
 	}
 
 	/* Here we know searching from the end will land inside the grid eventually so last can never exit as -1 */
@@ -644,7 +644,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 		
 		/* Store IDs in a int array instead */
 		ID = GMT_memory (GMT, NULL, L->header->size, int);
-		for (ij = 0; ij < L->header->size; ij++) ID[ij] = lrint ((double)L->data[ij]);
+		for (ij = 0; ij < L->header->size; ij++) ID[ij] = (int)lrint ((double)L->data[ij]);
 		GMT_free_aligned (GMT, L->data);	/* Just free the array since we use ID; Grid stuct is destroyed at end */
 		
 		ID_info = GMT_memory (GMT, NULL, lrint (L->header->z_max) + 1, struct ID);
@@ -739,9 +739,9 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 		printf ("> %" PRIu64 " %" PRIu64 " %d %d %g\n", n_nodes, np, row, col, cva_contribution);
 #endif
 		for (m = 0, k = 1; m < np; m++) {	/* Store nearest node indices only */
-			i = GMT_grd_x_to_col (GMT, c[k++], G_rad->header);
+			i = (int)GMT_grd_x_to_col (GMT, c[k++], G_rad->header);
 			yg = GMT_lat_swap (GMT, R2D * c[k++], GMT_LATSWAP_O2G);		/* Convert back to geodetic */
-			j = GMT_grd_y_to_row (GMT, yg, G->header);
+			j = (int)GMT_grd_y_to_row (GMT, yg, G->header);
 			if (i < 0 || (col2 = i) >= G->header->nx || j < 0 || (row2 = j) >= G->header->ny)	/* Outside the CVA box, flag as outside */
 				node = UINTMAX_MAX;
 			else								/* Inside the CVA box, assign node ij */
@@ -816,7 +816,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 			strcat (format, &Ctrl->G.file[len]);	/* Should add the extension from said file */
 		}
 		CVA_inc = GMT_memory (GMT, NULL, G->header->size, float);
-		nz = lrint ((Ctrl->Z.max - Ctrl->Z.min) / Ctrl->Z.inc);
+		nz = (unsigned int)lrint ((Ctrl->Z.max - Ctrl->Z.min) / Ctrl->Z.inc);
 		for (layer = 0; layer < nz; layer++) {
 			z0 = Ctrl->Z.min + layer * Ctrl->Z.inc;
 			z1 = z0 + Ctrl->Z.inc;
@@ -825,7 +825,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 			for (m = 0; m < n_nodes; m++) {				/* Loop over all active flowlines */
 				ij = flowline[m].ij;
 				if (Z->data[ij] <= z0 || Z->data[ij] > z1) continue;	/* z outside current slice */
-				row = GMT_row (Z->header, ij);
+				row = (unsigned int)GMT_row (Z->header, ij);
 				cva_contribution = lat_area[row] * (Ctrl->T.active[UPPER] ? Ctrl->T.t_fix : Z->data[ij]);	/* This node's contribution to the convolution */
 				GMT_memset (processed_node, G->header->size, char);		/* Fresh start for this flowline convolution */
 				for (k = 0; k < flowline[m].n; k++) {			/* For each point along this flowline */
@@ -902,10 +902,10 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 				CVA_max = 0.0;
 				this_pa = GMT->session.d_NaN;
 				for (m = 0, k = 1; m < np; m++) {	/* Store nearest node indices only */
-					i = GMT_grd_x_to_col (GMT, c[k++], G_rad->header);
+					i = (int)GMT_grd_x_to_col (GMT, c[k++], G_rad->header);
 					if (i < 0 || (col = i) >= G->header->nx) { k += 2; continue;}	/* Outside the CVA box, flag as outside */
 					yg = GMT_lat_swap (GMT, R2D * c[k++], GMT_LATSWAP_O2G);		/* Convert back to geodetic */
-					j = GMT_grd_y_to_row (GMT, yg, G->header);
+					j = (int)GMT_grd_y_to_row (GMT, yg, G->header);
 					if (j < 0 || (row = j) >= G->header->ny) { k++; continue;}	/* Outside the CVA box, flag as outside */
 					if (Ctrl->PA.active) pa_val = c[k++];
 					node = GMT_IJP (G->header, row, col);
@@ -968,8 +968,8 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 		
 			GMT_memset (G->data, G->header->size, float);	/* Start with fresh grid */
 			for (m = 0; m < n_nodes; m++) {	/* Loop over all indices */
-				row = lrint (floor (rand() * y_scale));		/* Get a random integer in 0 to ny-1 range */
-				col = lrint (floor (rand() * x_scale));		/* Get a random integer in 0 to nx-1 range */
+				row = (unsigned int)lrint (floor (rand() * y_scale));		/* Get a random integer in 0 to ny-1 range */
+				col = (unsigned int)lrint (floor (rand() * x_scale));		/* Get a random integer in 0 to nx-1 range */
 				ij = GMT_IJP (G->header, row, col);		/* Get the node index */
 				GMT_memset (processed_node, G->header->size, char);		/* Fresh start for this flowline convolution */
 				zz = Z->data[flowline[ij].ij];
@@ -993,8 +993,8 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 					max_ij = ij;
 				}
 			}
-			col = GMT_col (G->header, max_ij);
-			row = GMT_row (G->header, max_ij);
+			col = (unsigned int)GMT_col (G->header, max_ij);
+			row = (unsigned int)GMT_row (G->header, max_ij);
 			out[0] = GMT_grd_col_to_x (GMT, col, G->header);
 			out[1] = GMT_grd_row_to_y (GMT, row, G->header);
 			out[2] = CVA_max;

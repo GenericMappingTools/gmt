@@ -1904,7 +1904,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 
 			/* Check for time out of range */
 			if (D[curr].time > maxTime || D[curr].time < \
-			MGD77_rdc2dt (GMT, &M, GMT_rd_from_gymd(GMT,lrint(mgd77snifferdefs[MGD77_YEAR].minValue), 1, 1),0.0)) {
+			MGD77_rdc2dt (GMT, &M, GMT_rd_from_gymd(GMT, (int)lrint(mgd77snifferdefs[MGD77_YEAR].minValue), 1, 1),0.0)) {
 				E[curr].flags[E77_NAV] |= NAV_TIME_OOR;
 				if (warn[TIME_WARN]) {
 					sprintf (buffer, "%s - Time out of range\n",placeStr);
@@ -1980,7 +1980,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 							}
 							break;
 						case (MGD77_BCC):
-							bccCode = lrint (D[curr].number[i]);
+							bccCode = (int)lrint (D[curr].number[i]);
 							if (M.bit_pattern[0] & MGD77_TWT_BIT || M.bit_pattern[0] & MGD77_DEPTH_BIT) {
 								if (bccCode < 1 || bccCode > 55) {
 									switch ((int) bccCode) {
@@ -2008,9 +2008,9 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 						case (MGD77_DAY):	/* Separate case since # of days in a month varies */
 							if (!GMT_is_dnan (D[curr].number[i])) {
 								if ((E[curr].flags[E77_VALUE] & (1 << MGD77_YEAR)) || (E[curr].flags[E77_VALUE] & (1 << MGD77_MONTH)))
-									last_day = lrint (mgd77snifferdefs[i].maxValue);	/* Year or month has error so we use 31 as last day in this month */
+									last_day = (int)lrint (mgd77snifferdefs[i].maxValue);	/* Year or month has error so we use 31 as last day in this month */
 								else
-									last_day = (int)GMT_gmonth_length (lrint(D[curr].number[MGD77_YEAR]), lrint(D[curr].number[MGD77_MONTH]));			/* Number of day in the specified month */
+									last_day = (int)GMT_gmonth_length ((int)lrint(D[curr].number[MGD77_YEAR]), (int)lrint(D[curr].number[MGD77_MONTH]));			/* Number of day in the specified month */
 
 								if (GMT_is_dnan (D[curr].number[i]) && (D[curr].number[i] < mgd77snifferdefs[i].minValue || D[curr].number[i] > last_day)) {
 									E[curr].flags[E77_VALUE] |= (1 << i);
@@ -2787,7 +2787,7 @@ void regress_lms (struct GMT_CTRL *GMT, double *x, double *y, unsigned int nvalu
 
 	d_angle = 1.0;
 	limit = 0.1;
-	n_angle = lrint ((180.0 - 2 * d_angle) / d_angle) + 1;
+	n_angle = (int)lrint ((180.0 - 2 * d_angle) / d_angle) + 1;
 	regresslms_sub (GMT, x, y, -90.0 + d_angle, 90.0 - d_angle, nvalues, n_angle, stats, col);
 	old_error = stats[MGD77_RLS_STD];
 	d_error = stats[MGD77_RLS_STD];
@@ -2889,8 +2889,8 @@ void read_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, double wesn[
 
 		/* Get grid dimensions */
 		info->one_or_zero = (info->G->header->registration) ? 0 : 1;
-		info->nx = lrint ( (info->G->header->wesn[XHI] - info->G->header->wesn[XLO]) / info->G->header->inc[GMT_X]) + info->one_or_zero;
-		info->ny = lrint ( (info->G->header->wesn[YHI] - info->G->header->wesn[YLO]) / info->G->header->inc[GMT_Y]) + info->one_or_zero;
+		info->nx = (unsigned int)lrint ( (info->G->header->wesn[XHI] - info->G->header->wesn[XLO]) / info->G->header->inc[GMT_X]) + info->one_or_zero;
+		info->ny = (unsigned int)lrint ( (info->G->header->wesn[YHI] - info->G->header->wesn[YLO]) / info->G->header->inc[GMT_Y]) + info->one_or_zero;
 
 		if (GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, wesn, info->fname, info->G) == NULL) {	/* Get subset */
 			return;
@@ -2960,7 +2960,7 @@ int decimate (struct GMT_CTRL *GMT, double *new, double *orig, unsigned int ncle
 #endif
 
 	/* Create a 2-D bin table */
-	n = lrint ((max - min)/delta) + 1;
+	n = (unsigned int)lrint ((max - min)/delta) + 1;
 	bin2d = GMT_memory (GMT, NULL, n, int *);
 	for (j = 0; j < n; j++)
 		bin2d[j] = GMT_memory (GMT, NULL, n, int);
@@ -2970,8 +2970,8 @@ int decimate (struct GMT_CTRL *GMT, double *new, double *orig, unsigned int ncle
 	for (j = 0; j < nclean; j++) {
 		/* Need to skip ship values that are outside of acceptable range */
 		if (orig[j] >= min && orig[j] <= max) {
-			ship_bin = lrint ((orig[j] - min)/delta);
-			grid_bin = lrint ((new[j] - min)/delta);
+			ship_bin = (unsigned int)lrint ((orig[j] - min)/delta);
+			grid_bin = (unsigned int)lrint ((new[j] - min)/delta);
 			bin2d[ship_bin][grid_bin]++;    /* Add up # of pairs in this bin */
 		}
 		else *extreme=*extreme+1;

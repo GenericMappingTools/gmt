@@ -716,7 +716,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 		anti_lon = GMT->current.proj.central_meridian + 180.0;
 		if (anti_lon >= 360.0) anti_lon -= 360.0;
 		anti_lat = -GMT->current.proj.pole;
-		anti_bin = lrint (floor ((90.0 - anti_lat) / c.bsize)) * c.bin_nx + lrint (floor (anti_lon / c.bsize));
+		anti_bin = (int)lrint (floor ((90.0 - anti_lat) / c.bsize)) * c.bin_nx + lrint (floor (anti_lon / c.bsize));
 		GMT_geo_to_xy (GMT, anti_lon, anti_lat, &anti_x, &anti_y);
 		GMT_geo_to_xy (GMT, GMT->current.proj.central_meridian, GMT->current.proj.pole, &x_0, &y_0);
 		if (Ctrl->G.active) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Fill/clip continent option (-G) may not work for this projection.\nIf the antipole (%g/%g) is in the ocean then chances are good\nElse: avoid projection center coordinates that are exact multiples of %g degrees\n", anti_lon, anti_lat, c.bsize);
@@ -885,7 +885,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 					}
 				}
 				else if (Ctrl->W.use[p[i].level-1]) {
-					if (donut_hell) p[i].n = GMT_fix_up_path (GMT, &p[i].lon, &p[i].lat, p[i].n, 0.0, 0);
+					if (donut_hell) p[i].n = (int)GMT_fix_up_path (GMT, &p[i].lon, &p[i].lat, p[i].n, 0.0, 0);
 					GMT->current.plot.n = GMT_geo_to_xy_line (GMT, p[i].lon, p[i].lat, p[i].n);
 					if (!GMT->current.plot.n) continue;
 
@@ -894,7 +894,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 						GMT_setpen (GMT, &Ctrl->W.pen[k]);
 						last_pen_level = k;
 					}
-					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n);
+					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, (unsigned int)GMT->current.plot.n);
 				}
 			}
 
@@ -956,7 +956,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 						GMT_setpen (GMT, &Ctrl->I.pen[k]);
 						last_k = k;
 					}
-					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n);
+					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, (unsigned int)GMT->current.plot.n);
 				}
 			}
 
@@ -1009,7 +1009,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 					}
 				}
 				else {
-					p[i].n = GMT_fix_up_path (GMT, &p[i].lon, &p[i].lat, p[i].n, step, 0);
+					p[i].n = (int)GMT_fix_up_path (GMT, &p[i].lon, &p[i].lat, p[i].n, step, 0);
 					GMT->current.plot.n = GMT_geo_to_xy_line (GMT, p[i].lon, p[i].lat, p[i].n);
 					if (!GMT->current.plot.n) continue;
 
@@ -1018,7 +1018,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 						GMT_setpen (GMT, &Ctrl->N.pen[k]);
 						last_k = k;
 					}
-					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n);
+					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, (unsigned int)GMT->current.plot.n);
 				}
 			}
 

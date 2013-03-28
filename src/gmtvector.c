@@ -331,8 +331,8 @@ void mean_vector (struct GMT_CTRL *GMT, struct GMT_DATASET *D, bool cartesian, d
 {
 	/* Determines the mean vector M and the covariance matrix C */
 	
-	unsigned int i, j, k, tbl, n_components, nrots;
-	uint64_t row, n, seg, p;
+	unsigned int i, j, k, n_components, nrots;
+	uint64_t row, n, seg, tbl, p;
 	double lambda[3], V[9], work1[3], work2[3], lon, lat, lon2, lat2, scl, L, Y;
 	double *P[3], X[3], B[3], C[9];
 	struct GMT_DATASEGMENT *S = NULL;

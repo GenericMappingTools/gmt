@@ -283,9 +283,9 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 	bool mixed = false, check_for_NaN = false, both, first;
 	bool internal = true;	/* false if only external xovers are needed */
 	bool external = true;	/* false if only internal xovers are needed */
-	uint64_t i, j, k, one, two, n_items, n_out, n_tracks;
+	uint64_t i, j, k, one, two, n_items, n_tracks;
 	uint64_t p, np_use = 0, nx_use = 0, np, m, nx, *trk_nx = NULL;
-	unsigned int n_weights = 0, coe_kind;
+	unsigned int n_weights = 0, coe_kind, n_out;
 	int error = 0, id;
 	double *wesn = NULL, val[2], out[128], corr[2] = {0.0, 0.0}, sec_2_unit = 1.0, w_k, w;
 	double fixed_weight = 1.0, *weights = NULL, *trk_symm = NULL;
@@ -657,7 +657,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 			if (mixed)
 				GMT_fputs ("\n", GMT->session.std[GMT_OUT]);
 			else
-				GMT->current.io.output (GMT, GMT->session.std[GMT_OUT], j, out);
+				GMT->current.io.output (GMT, GMT->session.std[GMT_OUT], (unsigned int)j, out);
 		}
 	}
 	GMT_Report (API, GMT_MSG_VERBOSE, "Output %" PRIu64 " pairs and a total of %" PRIu64 " crossover records.\n", np_use, nx_use);

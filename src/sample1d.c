@@ -241,14 +241,14 @@ int GMT_sample1d_parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct
 
 int GMT_sample1d (void *V_API, int mode, void *args)
 {
-	unsigned int tbl, col, geometry;
+	unsigned int geometry;
 	bool resample_path = false;
 	int error = 0, result;
 	
 	unsigned char *nan_flag = NULL;
 	
 	size_t m_alloc;
-	uint64_t k, row, seg, m = 0, m_supplied = 0;
+	uint64_t k, tbl, col, row, seg, m = 0, m_supplied = 0;
 
 	double *t_supplied_out = NULL, *t_out = NULL, *dist_in = NULL, *ttime = NULL, *data = NULL;
 	double tt, low_t, high_t, last_t, *lon = NULL, *lat = NULL;

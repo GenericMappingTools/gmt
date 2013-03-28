@@ -308,7 +308,7 @@ int got_default_answer (char *line, char *answer)
 {
 	int i, k, len;
 	
-	len = strlen (line) - 1;
+	len = (int)strlen (line) - 1;
 	GMT_memset (answer, GMT_BUFSIZ, char);	/* No default answer */
 	if (line[len] == ']') {	/* Got a default answer for this item */
 		for (k = i = len; i && line[i] != '['; i--);
@@ -617,7 +617,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 		GMT_memset (wesn, 4, double);
 		if (GMT->common.R.active) GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting for subset */
 		if ((G = GMT_create_grid (GMT)) == NULL) Return (API->error);
-		GMT_read_img (GMT, Ctrl->A.file, G, wesn, Ctrl->A.parameters[IMG_SCALE], lrint(Ctrl->A.parameters[IMG_MODE]), Ctrl->A.parameters[IMG_LAT], true);
+		GMT_read_img (GMT, Ctrl->A.file, G, wesn, Ctrl->A.parameters[IMG_SCALE], (unsigned int)lrint(Ctrl->A.parameters[IMG_MODE]), Ctrl->A.parameters[IMG_LAT], true);
 		interpolate = (GMT->common.n.threshold > 0.0);
 	}
 	else if (got_table) {	/* Got a one- or two-column table to read */
@@ -658,7 +658,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 			tmp_string = GMT_memory (GMT, NULL, n_alloc, char *);
 			while (GMT_fgets (GMT, word, GMT_BUFSIZ, fp)) {
 				if (word[0] == '#') continue;
-				width = strlen (word);
+				width = (int)strlen (word);
 				tmp_string[n] = GMT_memory (GMT, NULL, width + 1, char);
 				strcpy (tmp_string[n], word);
 				if (width > LEN) LEN = (signed char)width;
@@ -774,7 +774,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 				if (D->H.info[In.order[column].set].col[In.order[column].item].text) n_dims++;
 			}
 			
-			pos = n_delete = 0;
+			pos = 0; n_delete = 0;
 			(void) time (&now);
 			sprintf (history, "%s [%s] removed columns", ctime(&now), In.user);
 			for (i = 0; history[i]; i++) if (history[i] == '\n') history[i] = ' ';	/* Remove the \n returned by ctime() */
@@ -819,10 +819,10 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 			
 			/* Update header history */
 
-			k = strlen (history);
+			k = (int)strlen (history);
 			for (i = 0; i < k; i++) if (history[i] == '\n') history[i] = ' ';	/* Remove the \n returned by ctime() */
 			history[k++] = '\n';	history[k] = '\0';				/* Add LF at end of line */
-			k += strlen (D->H.history);
+			k += (int)strlen (D->H.history);
 			D->H.history = GMT_memory (GMT, D->H.history, k+1, char);
 			strcat (D->H.history, history);		/* MGD77_Write_FILE_cdf will use this to create the history attribute, thus preserving earlier history */
 
@@ -972,8 +972,8 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 					colvalue[rec] = GMT_get_bcr_z (GMT, G, x, y);
 				}
 				else {	/* Take IMG nearest node and do special stuff (values already set during read) */
-					col = GMT_grd_x_to_col (GMT, x, G->header);
-					row = GMT_grd_y_to_row (GMT, y, G->header);
+					col = (unsigned int)GMT_grd_x_to_col (GMT, x, G->header);
+					row = (unsigned int)GMT_grd_y_to_row (GMT, y, G->header);
 					colvalue[rec] = G->data[GMT_IJP(G->header,row,col)];
 				}
 				n_sampled++;
@@ -1524,10 +1524,10 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 
 		(void) time (&now);
 		sprintf (history, "%s [%s] Column %s added", ctime(&now), In.user, Ctrl->I.c_abbrev);
-		k = strlen (history);
+		k = (int)strlen (history);
 		for (i = 0; i < k; i++) if (history[i] == '\n') history[i] = ' ';	/* Remove the \n returned by ctime() */
 		history[k++] = '\n';	history[k] = '\0';    /* Add LF at end of line */
-		k += (strlen (D->H.history) + 1);             /* +1 because the '\0' of 'history' that is also copied by strcat */
+		k += (int)(strlen (D->H.history) + 1);             /* +1 because the '\0' of 'history' that is also copied by strcat */
 		D->H.history = GMT_memory (GMT, D->H.history, k, char);
 		strcat (D->H.history, history);
 		MGD77_nc_status (GMT, nc_put_att_text (In.nc_id, NC_GLOBAL, "history", strlen (D->H.history), D->H.history));

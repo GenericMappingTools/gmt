@@ -1100,8 +1100,8 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 			else
 				strncpy (out_file, Ctrl->F.file, GMT_BUFSIZ);
 			strcat (out_file, ext[Ctrl->T.device]);
-			pix_w = lrint (ceil (w * Ctrl->E.dpi / 72.0));
-			pix_h = lrint (ceil (h * Ctrl->E.dpi / 72.0));
+			pix_w = (unsigned int)lrint (ceil (w * Ctrl->E.dpi / 72.0));
+			pix_h = (unsigned int)lrint (ceil (h * Ctrl->E.dpi / 72.0));
 			sprintf (cmd, "%s%s %s %s -sDEVICE=%s -g%dx%d -r%d -sOutputFile=%s -f%s",
 				at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, device[Ctrl->T.device],
 				pix_w, pix_h, Ctrl->E.dpi, out_file, tmp_file);

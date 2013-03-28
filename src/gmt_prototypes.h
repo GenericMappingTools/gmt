@@ -149,7 +149,7 @@ EXTERN_MSC FILE * GMT_fopen (struct GMT_CTRL *GMT, const char *filename, const c
 EXTERN_MSC char * GMT_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path);	/* Look for data file */
 EXTERN_MSC char * GMT_getsharepath (struct GMT_CTRL *GMT, const char *subdir, const char *stem, const char *suffix, char *path);	/* Look for shared file */
 EXTERN_MSC void GMT_write_tableheader (struct GMT_CTRL *GMT, FILE *fp, char *txt);
-EXTERN_MSC void GMT_write_segmentheader (struct GMT_CTRL *GMT, FILE *fp, unsigned int n_cols);		/* Write segment header back out */
+EXTERN_MSC void GMT_write_segmentheader (struct GMT_CTRL *GMT, FILE *fp, uint64_t n_cols);		/* Write segment header back out */
 EXTERN_MSC void GMT_write_textrecord (struct GMT_CTRL *GMT, FILE *fp, char *txt);
 EXTERN_MSC void GMT_ascii_format_col (struct GMT_CTRL *GMT, char *text, double x, unsigned int col);
 EXTERN_MSC void GMT_lon_range_adjust (unsigned int range, double *lon);		/* Adjust the longitude given the desired range */
@@ -161,17 +161,17 @@ EXTERN_MSC bool GMT_not_numeric (struct GMT_CTRL *GMT, char *text);				/* Rules 
 EXTERN_MSC bool GMT_parse_segment_item (struct GMT_CTRL *GMT, char *in_string, char *pattern, char *out_string);
 EXTERN_MSC int GMT_set_cols (struct GMT_CTRL *GMT, unsigned int direction, unsigned int expected);
 EXTERN_MSC int GMT_get_cols (struct GMT_CTRL *GMT, unsigned int direction);
-EXTERN_MSC struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *GMT, unsigned int n_tables, uint64_t n_segments, unsigned int n_columns, uint64_t n_rows, unsigned int geometry, bool alloc_only);
-EXTERN_MSC struct GMT_DATATABLE * GMT_create_table (struct GMT_CTRL *GMT, uint64_t n_segments, unsigned int n_columns, uint64_t n_rows, bool alloc_only);
+EXTERN_MSC struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *GMT, uint64_t n_tables, uint64_t n_segments, uint64_t n_columns, uint64_t n_rows, unsigned int geometry, bool alloc_only);
+EXTERN_MSC struct GMT_DATATABLE * GMT_create_table (struct GMT_CTRL *GMT, uint64_t n_segments, uint64_t n_columns, uint64_t n_rows, bool alloc_only);
 EXTERN_MSC void GMT_free_textset (struct GMT_CTRL *GMT, struct GMT_TEXTSET **data);
 EXTERN_MSC struct GMT_TEXTSET * GMT_duplicate_textset (struct GMT_CTRL *GMT, struct GMT_TEXTSET *Din, unsigned int mode);
-EXTERN_MSC void GMT_adjust_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D, unsigned int n_columns);
-EXTERN_MSC struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, unsigned int n_columns, uint64_t n_rows, unsigned int mode);
+EXTERN_MSC void GMT_adjust_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t n_columns);
+EXTERN_MSC struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, uint64_t n_columns, uint64_t n_rows, unsigned int mode);
 EXTERN_MSC struct GMT_DATASET * GMT_duplicate_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, unsigned int mode, unsigned int *geometry);
 EXTERN_MSC struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsigned int source_type, bool greenwich, bool poly, bool use_GMT_io);
 EXTERN_MSC int GMT_write_dataset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, struct GMT_DATASET *D, bool use_GMT_io, int table);
 EXTERN_MSC int GMT_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, struct GMT_DATATABLE *T, bool use_GMT_io, unsigned int io_mode);
-EXTERN_MSC int GMT_alloc_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, uint64_t n_rows, unsigned int n_columns, bool first);
+EXTERN_MSC int GMT_alloc_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, uint64_t n_rows, uint64_t n_columns, bool first);
 EXTERN_MSC void GMT_free_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *segment);
 EXTERN_MSC void GMT_free_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *table);
 EXTERN_MSC void GMT_free_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET **data);
@@ -180,9 +180,9 @@ EXTERN_MSC void GMT_free_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE **P);
 EXTERN_MSC struct GMT_IMAGE * GMT_create_image (struct GMT_CTRL *GMT);
 EXTERN_MSC void GMT_free_image (struct GMT_CTRL *GMT, struct GMT_IMAGE **I, bool free_image);
 #endif
-EXTERN_MSC struct GMT_MATRIX * GMT_create_matrix (struct GMT_CTRL *GMT, unsigned int n_layers);
+EXTERN_MSC struct GMT_MATRIX * GMT_create_matrix (struct GMT_CTRL *GMT, uint64_t n_layers);
 EXTERN_MSC void GMT_free_matrix (struct GMT_CTRL *GMT, struct GMT_MATRIX **M, bool free_matrix);
-EXTERN_MSC struct GMT_VECTOR * GMT_create_vector (struct GMT_CTRL *GMT, unsigned int n_columns);
+EXTERN_MSC struct GMT_VECTOR * GMT_create_vector (struct GMT_CTRL *GMT, uint64_t n_columns);
 EXTERN_MSC void GMT_free_vector (struct GMT_CTRL *GMT, struct GMT_VECTOR **V, bool free_vector);
 EXTERN_MSC int GMT_load_aspatial_string (struct GMT_CTRL *GMT, struct GMT_OGR *G, unsigned int col, char out[GMT_BUFSIZ]);
 EXTERN_MSC double GMT_get_aspatial_value (struct GMT_CTRL *GMT, unsigned int col, struct GMT_DATASEGMENT *S);
@@ -202,7 +202,7 @@ EXTERN_MSC void GMT_init_z_io (struct GMT_CTRL *GMT, char format[], bool repeat[
 EXTERN_MSC int GMT_set_z_io (struct GMT_CTRL *GMT, struct GMT_Z_IO *r, struct GMT_GRID *G);
 EXTERN_MSC void GMT_check_z_io (struct GMT_CTRL *GMT, struct GMT_Z_IO *r, struct GMT_GRID *G);
 EXTERN_MSC void GMT_init_io_columns (struct GMT_CTRL *GMT, unsigned int dir);
-EXTERN_MSC void GMT_write_newheaders (struct GMT_CTRL *GMT, FILE *fp, unsigned int n_columns);
+EXTERN_MSC void GMT_write_newheaders (struct GMT_CTRL *GMT, FILE *fp, uint64_t n_columns);
 
 /* gmt_support.c: */
 
@@ -371,9 +371,9 @@ EXTERN_MSC struct GMT_DATASET * GMT_crosstracks (struct GMT_CTRL *GMT, struct GM
 EXTERN_MSC uint64_t GMT_resample_path (struct GMT_CTRL *GMT, double **x, double **y, uint64_t n_in, double step_out, enum GMT_enum_track mode);
 EXTERN_MSC bool GMT_crossing_dateline (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S);
 EXTERN_MSC int GMT_err_func (struct GMT_CTRL *GMT, int err, bool fail, char *file, const char *where);
-EXTERN_MSC int GMT_delaunay (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, int **link);
+EXTERN_MSC int64_t GMT_delaunay (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, int **link);
 EXTERN_MSC unsigned int GMT_get_prime_factors (struct GMT_CTRL *GMT, uint64_t n, unsigned int *f);
-EXTERN_MSC int GMT_voronoi (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, double *we, double **x_out, double **y_out);
+EXTERN_MSC int64_t GMT_voronoi (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, double *we, double **x_out, double **y_out);
 
 /* gmt_regexp.c */
 

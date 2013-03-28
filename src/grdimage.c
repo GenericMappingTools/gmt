@@ -179,7 +179,7 @@ int GMT_grdimage_parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct
 			case 'A':	/* Get image file name plus driver name to write via GDAL */
 				Ctrl->A.active = true;
 				Ctrl->A.file = strdup (opt->arg);
-				n = strlen(Ctrl->A.file) - 1;
+				n = (int)strlen(Ctrl->A.file) - 1;
 				while (Ctrl->A.file[n] != '=' && n > 0) n--;
 				if (n == 0) {
 					GMT_Report (API, GMT_MSG_NORMAL, "ERROR: missing driver name in option -A.\n");
@@ -550,8 +550,8 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 	}
 
 	if (n_grids) {
-		nx = GMT_get_n (GMT, wesn[XLO], wesn[XHI], Grid_orig[0]->header->inc[GMT_X], Grid_orig[0]->header->registration);
-		ny = GMT_get_n (GMT, wesn[YLO], wesn[YHI], Grid_orig[0]->header->inc[GMT_Y], Grid_orig[0]->header->registration);
+		nx = (unsigned int) GMT_get_n (GMT, wesn[XLO], wesn[XHI], Grid_orig[0]->header->inc[GMT_X], Grid_orig[0]->header->registration);
+		ny = (unsigned int) GMT_get_n (GMT, wesn[YLO], wesn[YHI], Grid_orig[0]->header->inc[GMT_Y], Grid_orig[0]->header->registration);
 	}
 
 #ifdef HAVE_GDAL
@@ -910,12 +910,12 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Creating 1-bit B/W image\n");
 
-		nx8 = lrint (ceil (nx / 8.0));	/* Image width must equal a multiple of 8 bits */
+		nx8 = (int)lrint (ceil (nx / 8.0));	/* Image width must equal a multiple of 8 bits */
 		nx_pixels = nx8 * 8;
 		bit = GMT_memory (GMT, NULL, nx8 * ny, unsigned char);
 
 		for (row = k = k8 = 0; row < ny; row++) {
-			shift = byte = 0;
+			shift = 0; byte = 0;
 			for (col = 0; col < nx; col++, k++) {
 				b_or_w = (bitimage_8[k] == 255);
 				byte |= b_or_w;

@@ -356,9 +356,9 @@ int GMT_grdmask (void *V_API, int mode, void *args)
 
 					/* OK, this point is within bounds, but may be exactly on the border */
 
-					col_0 = GMT_grd_x_to_col (GMT, xtmp, Grid->header);
+					col_0 = (unsigned int)GMT_grd_x_to_col (GMT, xtmp, Grid->header);
 					if (col_0 == Grid->header->nx) col_0--;	/* Was exactly on the xmax edge */
-					row_0 = GMT_grd_y_to_row (GMT, S->coord[GMT_Y][k], Grid->header);
+					row_0 = (unsigned int)GMT_grd_y_to_row (GMT, S->coord[GMT_Y][k], Grid->header);
 					if (row_0 == Grid->header->ny) row_0--;	/* Was exactly on the ymin edge */
 					ij = GMT_IJP (Grid->header, row_0, col_0);
 					Grid->data[ij] = mask_val[GMT_INSIDE];	/* This is the nearest node */

@@ -58,7 +58,7 @@ struct GRDHISTEQ_CTRL {
 
 struct	INDEXED_DATA {
 	float x;
-	int i;
+	uint64_t i;
 };
 
 struct	CELL {
@@ -191,7 +191,7 @@ float get_cell (float x, struct CELL *cell, unsigned int n_cells_m1, unsigned in
 			i = (low + high) / 2;
 		}
 	} while (true);
-	return (0.0);	/* Cannot get here - just used to quiet compiler */
+	return (0.0f);	/* Cannot get here - just used to quiet compiler */
 }
 
 int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *outfile, unsigned int n_cells, bool quadratic, bool dump_intervals)
@@ -218,7 +218,8 @@ int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *out
 	last_cell = n_cells / 2;
 	n_cells_m1 = n_cells - 1;
 
-	current_cell = i = 0;
+	current_cell = 0;
+	i = 0;
 	delta_cell = ((double)nxy) / ((double)n_cells);
 
 	while (current_cell < n_cells) {

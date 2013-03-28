@@ -102,7 +102,7 @@ int loadraw (struct GMT_CTRL *GMT, char *file, struct imageinfo *header, int byt
 	header->width = nx;
 	header->height = ny;
 	nm = (size_t)nx * (size_t)ny * (size_t)byte_per_pixel;
-	header->length = nm;
+	header->length = (int)nm;
 
 	buffer = GMT_memory (GMT, NULL, nm, unsigned char);
 	if (GMT_fread (buffer, 1U, nm, fp) != nm) {
@@ -188,7 +188,7 @@ int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_per_pixel, 
 	/* *raw_nx = j;		*raw_ny = lrint((float)n_pix / raw_nx);*/
 
 	/* So be it */
-	*raw_ny = j;		*raw_nx = lrint((float)n_pix / (*raw_ny));
+	*raw_ny = j;		*raw_nx = (unsigned int)lrint((float)n_pix / (*raw_ny));
 
 	if ((*raw_nx) * (*raw_ny) != n_pix) {
 		/* Let's make another attempt to find the right nx * ny combination. The idea is that we
@@ -198,9 +198,9 @@ int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_per_pixel, 
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: first test based on FFT failed to guess image dimensions.\n\tI'll do now a second try\t");
 		k = 1;		pm = 1;		l = 1;
 		while (k < 41) {
-			i = *raw_ny + lrint (copysign((double)l, (double)pm));
+			i = *raw_ny + (unsigned int)lrint (copysign((double)l, (double)pm));
 			pm *= -1.;
-			j = (*raw_nx) + lrint (copysign((double)l, (double)pm));
+			j = (*raw_nx) + (unsigned int)lrint (copysign((double)l, (double)pm));
 			if (i*j == n_pix) {	/* Got a good candidate */
 				*raw_ny = i;	*raw_nx = j;
 				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "... SUCCESS (W = %d, H = %d)\n", *raw_nx, *raw_ny);
@@ -477,8 +477,8 @@ int GMT_grd2rgb (void *V_API, int mode, void *args)
 			GMT_Report (API, GMT_MSG_VERBOSE, "Assign default -R0/%g/0/%g\n", GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI]);
 		}
 
-		nx = GMT_get_n (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], Ctrl->I.inc[GMT_X], GMT->common.r.registration);
-		ny = GMT_get_n (GMT, GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], Ctrl->I.inc[GMT_Y], GMT->common.r.registration);
+		nx = (int)GMT_get_n (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], Ctrl->I.inc[GMT_X], GMT->common.r.registration);
+		ny = (int)GMT_get_n (GMT, GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI], Ctrl->I.inc[GMT_Y], GMT->common.r.registration);
 		if (Ctrl->W.active && !Ctrl->I.active) {		/* This isn't correct because it doesn't deal with -r */
 			nx = Ctrl->W.nx;
 			ny = Ctrl->W.ny;

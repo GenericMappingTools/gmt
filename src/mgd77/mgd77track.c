@@ -363,11 +363,11 @@ int GMT_mgd77track_parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, st
 				switch (opt->arg[0]) {
 					case 'd':	/* Distance gap in km */
 					Ctrl->G.active[GAP_D] = true;
-						Ctrl->G.value[GAP_D] = lrint (atof (&opt->arg[1]) * 1000.0);	/* Gap converted to m from km */
+						Ctrl->G.value[GAP_D] = (unsigned int)lrint (atof (&opt->arg[1]) * 1000.0);	/* Gap converted to m from km */
 						break;
 					case 't':	/* Distance gap in minutes */
 						Ctrl->G.active[GAP_T] = true;
-						Ctrl->G.value[GAP_T] = lrint (atof (&opt->arg[1]) * 60.0);	/* Gap converted to seconds from minutes */
+						Ctrl->G.value[GAP_T] = (unsigned int)lrint (atof (&opt->arg[1]) * 60.0);	/* Gap converted to seconds from minutes */
 						break;
 					default:
 						GMT_Report (API, GMT_MSG_NORMAL, "Error -G: Requires t|d and a positive value in km (d) or minutes (t)\n");
@@ -673,7 +673,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 			while (start <= last_rec) {
 				stop = start;
 				while (stop < last_rec && ((Ctrl->G.active[GAP_D] && (track_dist[stop+1] - track_dist[stop]) < Ctrl->G.value[GAP_D]) || (Ctrl->G.active[GAP_T] && (track_time[stop+1] - track_time[stop]) < Ctrl->G.value[GAP_T]))) stop++;	/* stop will be last point in segment */
-				GMT_geo_line (GMT, &lon[start], &lat[start], stop-start+1);
+				GMT_geo_line (GMT, &lon[start], &lat[start], (unsigned int)(stop-start+1));
 				start = stop + 1;
 				while (start < last_rec && ((Ctrl->G.active[GAP_D] && (track_dist[start+1] - track_dist[start]) > Ctrl->G.value[GAP_D]) || (Ctrl->G.active[GAP_T] && (track_time[start+1] - track_time[start]) > Ctrl->G.value[GAP_T]))) {	/* First start of first segment */
 					lon[start] = GMT->session.d_NaN;	/* Flag to make sure we do not plot this gap later */
@@ -682,7 +682,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 			}
 		}
 		else {	/* Plot the whole shabang */
-			GMT_geo_line (GMT, lon, lat, D->H.n_records);
+			GMT_geo_line (GMT, lon, lat, (unsigned int)D->H.n_records);
 		}
 
 		first = true;
@@ -694,7 +694,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 			GMT_geo_to_xy (GMT, lon[rec], lat[rec], &x, &y);
 			if (first) {
 				if (Ctrl->A.mode > 0) {
-					c_angle = get_heading (GMT, rec, lon, lat, D->H.n_records);
+					c_angle = get_heading (GMT, (int)rec, lon, lat, (int)D->H.n_records);
 					if (Ctrl->N.active) {	/* Keep these in a list to plot after clipping is turned off */
 						cruise_id[n_id].x = x;
 						cruise_id[n_id].y = y;
@@ -744,7 +744,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 				}
 			}
 			if (annot_tick[ANNOT]) {
-				angle = get_heading (GMT, rec, lon, lat, D->H.n_records);
+				angle = get_heading (GMT, (int)rec, lon, lat, (int)D->H.n_records);
 				if (angle < 0.0)
 					angle += 90.0;
 				else
@@ -797,7 +797,7 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 			}
 			if (annot_tick[ANNOT] || draw_tick[ANNOT]) annot_tick[ANNOT] = draw_tick[ANNOT] = false;
 			if (annot_tick[LABEL]) {
-				angle = get_heading (GMT, rec, lon, lat, D->H.n_records);
+				angle = get_heading (GMT, (int)rec, lon, lat, (int)D->H.n_records);
 				if (angle < 0.0)
 					angle += 90.0;
 				else

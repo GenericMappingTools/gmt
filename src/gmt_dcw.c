@@ -100,10 +100,11 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	 * mode = GMT_DCW_DUMP		: Dump the polygons
 	 * mode = GMT_DCW_EXTRACT	: Return a dataset structure
 	 */
-	int ks, j, retval, ncid, xvarid, yvarid, id, first, last;
+	int ks, j, retval, ncid, xvarid, yvarid, id;
+	int64_t first, last;
 	size_t np, max_np = 0U;
-	uint64_t seg, n_segments;
-	unsigned int k, n_items = 1, pos = 0, kk, tbl = 0;
+	uint64_t k, seg, n_segments;
+	unsigned int n_items = 1, pos = 0, kk, tbl = 0;
 	unsigned short int *dx = NULL, *dy = NULL;
 	bool done, want_state, outline = (F->mode & 4), fill = (F->mode & 8);
 	char code[GMT_TEXT_LEN16], state[GMT_TEXT_LEN16], file[GMT_TEXT_LEN16], msg[GMT_BUFSIZ], path[GMT_BUFSIZ];
@@ -278,7 +279,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 				}
 				else {	/* Plot outline only */
 					if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, P->coord[GMT_X], P->coord[GMT_Y], P->n_rows)) == 0) continue;
-					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n);
+					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, (unsigned int)GMT->current.plot.n);
 				}
 			}
 		}

@@ -112,16 +112,16 @@ uint64_t gmt_bcr_prep (struct GMT_GRID_HEADER *h, double xx, double yy, double w
 
 	if (h->bcr_interpolant == BCR_NEARNEIGHBOR) {
 		/* Find the indices (i,j) of the closest node. */
-		col = lrint (x);
-		row = lrint (y);
+		col = (int)lrint (x);
+		row = (int)lrint (y);
 	}
 	else {
 		/* Find the indices (i,j) of the node to the upper left of that.
 	   	   Because of padding, i and j can be on the edge. */
 		xi  = floor (x);
 		yj  = floor (y);
-		col = lrint (xi);
-		row = lrint (yj);
+		col = (int)lrint (xi);
+		row = (int)lrint (yj);
 
 		/* Determine the offset of (x,y) with respect to (i,j). */
 		x -= xi;

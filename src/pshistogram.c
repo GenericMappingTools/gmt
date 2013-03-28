@@ -105,12 +105,13 @@ struct PSHISTOGRAM_INFO {	/* Control structure for pshistogram */
 	int *boxh;
 };
 
-int fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *data, int n) {
+int fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *data, uint64_t n) {
 
 	double add_half = 0.0;
-	int b0, b1, i, ibox, count_sum;
+	int b0, b1, ibox, count_sum;
+	uint64_t i;
 
-	F->n_boxes = lrint (ceil(((F->wesn[XHI] - F->wesn[XLO]) / F->box_width) + 0.5));
+	F->n_boxes = (int)lrint (ceil(((F->wesn[XHI] - F->wesn[XLO]) / F->box_width) + 0.5));
 
 	if (F->center_box) {
 		F->n_boxes++;
@@ -126,7 +127,7 @@ int fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *data, 
 	/* First fill boxes with counts  */
 
 	for (i = 0; i < n; i++) {
-		ibox = lrint (floor (((data[i] - F->wesn[XLO]) / F->box_width) + add_half));
+		ibox = (int)lrint (floor (((data[i] - F->wesn[XLO]) / F->box_width) + add_half));
 		if (ibox < 0 || ibox >= F->n_boxes) continue;
 		F->boxh[ibox]++;
 		F->n_counted++;

@@ -294,7 +294,7 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 			wesn_new[YLO] = G->header->wesn[YLO];
 		}
 		else {	/* Possibly adjust south a bit using chosen distance calculation */
-			row = GMT_grd_y_to_row (GMT, wesn_new[YLO], G->header);		/* Nearest row with this latitude */
+			row = (int)GMT_grd_y_to_row (GMT, wesn_new[YLO], G->header);		/* Nearest row with this latitude */
 			lat = GMT_grd_row_to_y (GMT, row, G->header);			/* Latitude of that row */
 			distance = GMT_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, Ctrl->S.lon, lat);
 			while (distance <= Ctrl->S.radius) {	/* Extend region by one more row until we are outside */
@@ -309,7 +309,7 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 			wesn_new[YHI] = G->header->wesn[YHI];
 		}
 		else {	/* Possibly adjust north a bit using chosen distance calculation */
-			row = GMT_grd_y_to_row (GMT, wesn_new[YHI], G->header);		/* Nearest row with this latitude */
+			row = (int)GMT_grd_y_to_row (GMT, wesn_new[YHI], G->header);		/* Nearest row with this latitude */
 			lat = GMT_grd_row_to_y (GMT, row, G->header);			/* Latitude of that row */
 			distance = GMT_distance (GMT, Ctrl->S.lon, Ctrl->S.lat, Ctrl->S.lon, lat);
 			while (distance <= Ctrl->S.radius) {	/* Extend region by one more row until we are outside */
@@ -331,7 +331,7 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 				wesn_new[XLO] = G->header->wesn[XLO];
 			}
 			else {
-				col = GMT_grd_x_to_col (GMT, wesn_new[XLO], G->header);		/* Nearest col with this longitude */
+				col = (int)GMT_grd_x_to_col (GMT, wesn_new[XLO], G->header);		/* Nearest col with this longitude */
 				lon = GMT_grd_col_to_x (GMT, col, G->header);			/* Longitude of that col */
 				distance = GMT_distance (GMT, lon, Ctrl->S.lat, Ctrl->S.lon, Ctrl->S.lat);
 				while (distance <= Ctrl->S.radius) {	/* Extend region by one more col until we are outside */
@@ -345,7 +345,7 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 				wesn_new[XHI] = G->header->wesn[XHI];
 			}
 			else {
-				col = GMT_grd_x_to_col (GMT, wesn_new[XHI], G->header);		/* Nearest col with this longitude */
+				col = (int)GMT_grd_x_to_col (GMT, wesn_new[XHI], G->header);		/* Nearest col with this longitude */
 				lon = GMT_grd_col_to_x (GMT, col, G->header);			/* Longitude of that col */
 				distance = GMT_distance (GMT, lon, Ctrl->S.lat, Ctrl->S.lon, Ctrl->S.lat);
 				while (distance <= Ctrl->S.radius) {	/* Extend region by one more col until we are outside */

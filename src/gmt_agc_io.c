@@ -137,10 +137,10 @@ int GMT_is_agc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	y_inc = recdata[4];	x_inc = recdata[5];
 	if (x_inc <= 0.0 || y_inc <= 0.0)
 		return (GMT_GRDIO_BAD_VAL);
-	nx = GMT_get_n (GMT, x_min, x_max, x_inc, 0);
+	nx = (int)GMT_get_n (GMT, x_min, x_max, x_inc, 0);
 	if (nx <= 0)
 		return (GMT_GRDIO_BAD_VAL);
-	ny = GMT_get_n (GMT, y_min, y_max, y_inc, 0);
+	ny = (int)GMT_get_n (GMT, y_min, y_max, y_inc, 0);
 	if (ny <= 0)
 		return (GMT_GRDIO_BAD_VAL);
 	/* OK so far; see if file size matches the predicted size given the header info */
@@ -178,8 +178,8 @@ int GMT_agc_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	header->wesn[YHI]  = recdata[1];
 	header->inc[GMT_Y] = recdata[4];
 	header->inc[GMT_X] = recdata[5];
-	header->nx = GMT_grd_get_nx (GMT, header);
-	header->ny = GMT_grd_get_ny (GMT, header);
+	header->nx = (unsigned int)GMT_grd_get_nx (GMT, header);
+	header->ny = (unsigned int)GMT_grd_get_ny (GMT, header);
 	header->z_scale_factor = 1.0;
 	header->z_add_offset = 0.0;
 	for (i = 6; i < PREHEADSIZE; i++) agchead[i-6] = recdata[i];
@@ -260,8 +260,8 @@ int GMT_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	
 	header->z_min = +DBL_MAX;	header->z_max = -DBL_MAX;
 	
-	n_blocks_y = lrint (ceil ((double)header->ny / (double)ZBLOCKHEIGHT));
-	n_blocks_x = lrint (ceil ((double)header->nx / (double)ZBLOCKWIDTH));
+	n_blocks_y = (unsigned int)lrint (ceil ((double)header->ny / (double)ZBLOCKHEIGHT));
+	n_blocks_x = (unsigned int)lrint (ceil ((double)header->nx / (double)ZBLOCKWIDTH));
 	n_blocks = n_blocks_x * n_blocks_y;
 	datablockcol = datablockrow = 0;
 	for (block = 0; block < n_blocks; block++) {
@@ -348,7 +348,7 @@ int GMT_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		for (i = first_col, i2 = pad[XLO]; i <= last_col; i++, i2++) {
 			kk = ij + i2;
 			if (GMT_is_fnan (grid[kk]))	/* in AGC, NaN <--> 0.0 */
-				grid[ij] = 0.0;
+				grid[ij] = 0.0f;
 			else {
 				header->z_min = MIN (header->z_min, (double)grid[kk]);
 				header->z_max = MAX (header->z_max, (double)grid[kk]);
@@ -365,8 +365,8 @@ int GMT_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	
 	packAGCheader (prez, postz, header);	/* Stuff header info into the AGC arrays */
 
-	n_blocks_y = lrint (ceil ((double)header->ny / (double)ZBLOCKHEIGHT));
-	n_blocks_x = lrint (ceil ((double)header->nx / (double)ZBLOCKWIDTH));
+	n_blocks_y = (unsigned int)lrint (ceil ((double)header->ny / (double)ZBLOCKHEIGHT));
+	n_blocks_x = (unsigned int)lrint (ceil ((double)header->nx / (double)ZBLOCKWIDTH));
 	n_blocks = n_blocks_x * n_blocks_y;
 	datablockcol = datablockrow = 0;
 	for (block = 0; block < n_blocks; block++) {

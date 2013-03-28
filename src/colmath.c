@@ -167,9 +167,9 @@ int GMT_colmath_parse (struct GMT_CTRL *GMT, struct COLMATH_CTRL *Ctrl, struct G
 int GMT_colmath (void *V_API, int mode, void *args)
 {
 	int error = 0;
-	unsigned int tbl, col, n_cols_in, n_cols_out, out_col;
-	unsigned int n_horizontal_tbls, n_vertical_tbls, tbl_ver, tbl_hor, use_tbl;
 	bool match = false, warn = false;
+	uint64_t tbl, col, n_cols_in, n_cols_out, out_col;
+	uint64_t n_horizontal_tbls, n_vertical_tbls, tbl_ver, tbl_hor, use_tbl;
 	uint64_t row, last_row, n_rows, seg, out_seg = 0, n_out_seg = 0;
 	
 	double *val = NULL;

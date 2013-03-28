@@ -141,8 +141,8 @@ int GMT_grdseamount_parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, 
 				Ctrl->A.active = true;
 				if (opt->arg[0]) {
 					sscanf (opt->arg, "%[^/]/%s", T1, T2);
-					Ctrl->A.value[GMT_OUT] = (T1[0] == 'N') ? GMT->session.f_NaN : atof (T1);
-					Ctrl->A.value[GMT_IN]  = (T2[0] == 'N') ? GMT->session.f_NaN : atof (T2);
+					Ctrl->A.value[GMT_OUT] = (T1[0] == 'N') ? GMT->session.f_NaN : (float)atof (T1);
+					Ctrl->A.value[GMT_IN]  = (T2[0] == 'N') ? GMT->session.f_NaN : (float)atof (T2);
 				}
 				break;
 			case 'C':
@@ -264,8 +264,8 @@ void gaussian_area_volume_height (double a, double b, double h, double hc, doubl
 int GMT_grdseamount (void *V_API, int mode, void *args)
 {
 	int error, scol, srow, scol_0, srow_0;
-	unsigned int n_expected_fields, n_out, nx1, d_mode = 0, row, col, row_0, col_0, ij, max_d_col, d_row, *d_col = NULL;
-	uint64_t n_read = 0, n_smts = 0;
+	unsigned int n_expected_fields, n_out, nx1, d_mode = 0, row, col, row_0, col_0, max_d_col, d_row, *d_col = NULL;
+	uint64_t n_read = 0, n_smts = 0, ij;
 	bool map = false, periodic = false, replicate, first;
 	char unit = 'X';
 	double x, y, r, i_r, c, *in, this_r, A, B, C, e, e2, ca, sa, ca2, sa2, r_in, dx, dy;
@@ -359,10 +359,10 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 
 		/* Ok, we are inside the region - process data */
 			
-		scol_0 = GMT_grd_x_to_col (GMT, in[GMT_X], Grid->header);
+		scol_0 = (int)GMT_grd_x_to_col (GMT, in[GMT_X], Grid->header);
 		if (scol_0 < 0) continue;	/* Still outside x-range */
 		if ((col_0 = scol_0) >= Grid->header->nx) continue;	/* Still outside x-range */
-		srow_0 = GMT_grd_y_to_row (GMT, in[GMT_Y], Grid->header);
+		srow_0 = (int)GMT_grd_y_to_row (GMT, in[GMT_Y], Grid->header);
 		if (srow_0 < 0) continue;	/* Still outside y-range */
 		if ((row_0 = srow_0) >= Grid->header->ny) continue;	/* Still outside y-range */
 		if (Ctrl->E.active) {	/* Elliptical seamount parameters */
@@ -468,16 +468,16 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 				if (Ctrl->A.active)	/* Just set inside value for mask */
 					Grid->data[ij] = Ctrl->A.value[GMT_IN];
 				else {	/* Add in contribution and keep track of max height */
-					Grid->data[ij] += z_assign;
+					Grid->data[ij] += (float)z_assign;
 					if (Grid->data[ij] > max) max = Grid->data[ij];
 				}
 				if (first) {	/* May have to copy to repeated column in global gridline-registered grids */
 					if (col == 0) {	/* Must copy from x_min to repeated column at x_max */
-						if (Ctrl->A.active) Grid->data[ij+nx1] = Ctrl->A.value[GMT_IN]; else Grid->data[ij+nx1] += z_assign;
+						if (Ctrl->A.active) Grid->data[ij+nx1] = Ctrl->A.value[GMT_IN]; else Grid->data[ij+nx1] += (float)z_assign;
 						first = false;
 					}
 					else if (col == nx1) {	/* Must copy from x_max to repeated column at x_min */
-						if (Ctrl->A.active) Grid->data[ij-nx1] = Ctrl->A.value[GMT_IN]; else Grid->data[ij-nx1] += z_assign;
+						if (Ctrl->A.active) Grid->data[ij-nx1] = Ctrl->A.value[GMT_IN]; else Grid->data[ij-nx1] += (float)z_assign;
 						first = false;
 					}
 				}
@@ -500,11 +500,11 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 		if (Ctrl->N.active) {	/* Normalize so max height == N.value */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Normalize seamount amplitude so max height is %g\r", Ctrl->N.value);
 			Ctrl->N.value /= max;
-			for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] *= Ctrl->N.value;
+			for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] *= (float)Ctrl->N.value;
 		}
 		if (Ctrl->Z.active) {	/* Add in the background depth */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Add in a background level of %g\r", Ctrl->Z.value);
-			for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] += Ctrl->Z.value;
+			for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] += (float)Ctrl->Z.value;
 		}
 	
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
