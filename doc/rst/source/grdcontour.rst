@@ -9,14 +9,14 @@ grdcontour - Make contour map using a grid
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdcontour** *grid* **-C**\ *cont\_int*\ \|\ *cpt*
-**-J**\ *parameters* [ **-A**\ [**-**\ \|\ *annot\_int*][*labelinfo*]
-] [ **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-D**\ *template* ] [
+**grdcontour** *grid* **-C**\ [+]\ *cont\_int*\ \|\ *cpt*
+**-J**\ *parameters* [ **-A**\ [**-**\ \|\ [+]\ *annot\_int*][*labelinfo*] ]
+[ **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-D**\ *template* ] [
 **-F**\ [**l**\ \|\ **r**] ]
 [ **-G**\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ] 
 [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [ **-L**\ *low/high* ]
 [ **-O** ] [ **-P** ] [ **-Q**\ *cut* ] [
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ] ] [
+**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**] ] [
 **-S**\ *smoothfactor* ] [
 **-T**\ [**+\|-**][*gap/length*][\ **:**\ [*labels*]] ] [
 **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*]
@@ -46,18 +46,18 @@ may be saved to one or more output files (or stdout) and no plot is produced.
 
 *grid*
     2-D gridded data set to be contoured. (See GRID FILE FORMATS below).
-**-C**\ *cont\_int*
-    The contours to be drawn may be specified in one of three possible
-    ways:
 
-    (1) If *cont\_int* has the suffix ".cpt" and can be opened as a
+**-C**\ [+]\ *cont\_int*
+    The contours to be drawn may be specified in one of three possible ways:
+
+    (1) If *cont_int* has the suffix ".cpt" and can be opened as a
         file, it is assumed to be a color palette table. The color
         boundaries are then used as contour levels. If the cpt-file has
         annotation flags in the last column then those contours will be
         annotated. By default all contours are labeled; use **-A-** to
         disable all annotations.
 
-    (2) If *cont\_int* is a file but not a cpt-file, it is expected to
+    (2) If *cont_int* is a file but not a cpt-file, it is expected to
         contain contour levels in column 1 and a
         C(ontour) OR A(nnotate) in
         col 2. The levels marked C (or c) are contoured, the levels marked A
@@ -65,9 +65,13 @@ may be saved to one or more output files (or stdout) and no plot is produced.
         be present and contain the fixed annotation angle for this contour
         level.
 
-    (3) If no file is found, then *cont\_int* is interpreted as a
-        constant contour interval. If **-A** is set and **-C** is not, then
-        the contour interval is set equal to the specified annotation interval.
+    (3) If no file is found, then *cont_int* is interpreted as a
+        constant contour interval. However, if prepended with the + sign the
+        *cont_int* is taken as meaning draw that single contour. The **-A**
+        option offers the same possibility so they may be used together to
+        plot only one annotated and one non-annotated contour.
+        If **-A** is set and **-C** is not, then the contour interval is set
+        equal to the specified annotation interval.
 
     If a file is given and **-T** is set, then only contours marked with
     upper case C or A will have tickmarks. In all cases the contour
@@ -78,10 +82,11 @@ may be saved to one or more output files (or stdout) and no plot is produced.
 `Optional Arguments <#toc5>`_
 -----------------------------
 
-**-A**\ [**-**\ \|\ *annot\_int*][*labelinfo*]
-    *annot\_int* is annotation interval in data units; it is ignored if
+**-A**\ [**-**\ \|\ [+]\ *annot\_int*][*labelinfo*]
+    *annot_int* is annotation interval in data units; it is ignored if
     contour levels are given in a file. [Default is no annotations]. Append
-    **-** to disable all annotations implied by **-C**. The optional
+    **-** to disable all annotations implied by **-C**. Alternatively prepend
+    + to the annotation interval to plot that as a single contour. The optional
     *labelinfo* controls the specifics of the label formatting and consists
     of a concatenated string made up of any of the following control arguments:
 

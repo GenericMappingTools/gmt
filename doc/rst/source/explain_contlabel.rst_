@@ -23,9 +23,10 @@
         *line* specification is *start/stop*, where *start* and *stop*
         are either a specified point *lon/lat* or a 2-character **XY**
         key that uses the justification format employed in **pstext** to
-        indicate a point on the map, given as [LCR][BMT]. **L** will
-        interpret the point pairs as defining great circles [Default is
-        straight line].
+        indicate a point on the map, given as [LCR][BMT]. 
+        In addition, you can use Z-, Z+ to mean the global minimum and
+        maximum locations in the grid. **L** will interpret the point pairs
+        as defining great circles [Default is straight line].
     **n**\ *n\_label*
         Specifies the number of equidistant labels for quoted lines line
         [1]. Upper case **N** starts labeling exactly at the start of
