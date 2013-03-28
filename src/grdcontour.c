@@ -43,12 +43,14 @@ struct GRDCONTOUR_CTRL {
 		bool active;
 		unsigned int mode;	/* 1 turns off all labels */
 		double interval;
+		double single_cont;
 	} A;
 	struct C {	/* -C<cont_int> */
 		bool active;
 		bool cpt;
 		char *file;
 		double interval;
+		double single_cont;
 	} C;
 	struct D {	/* -D<dumpfile> */
 		bool active;
@@ -127,6 +129,8 @@ void *New_grdcontour_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
 	GMT_contlabel_init (GMT, &C->contour, 1);
+	C->A.single_cont = GMT->session.d_NaN;
+	C->C.single_cont = GMT->session.d_NaN;
 	C->D.file = strdup ("contour");
 	C->L.low = -DBL_MAX;
 	C->L.high = DBL_MAX;
@@ -158,7 +162,7 @@ int GMT_grdcontour_usage (struct GMTAPI_CTRL *API, int level)
 	/* This displays the grdcontour synopsis and optionally full usage information */
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdcontour <grid> -C<cont_int>|<cpt> [-A[-|<annot_int>][<labelinfo>] [%s ] [%s]\n", GMT_B_OPT, GMT_J_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdcontour <grid> -C[+]<cont_int>|<cpt> [-A[-|[+]<annot_int>][<labelinfo>] [%s ] [%s]\n", GMT_B_OPT, GMT_J_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D<template>] [-F[l|r]] [%s] [%s] [-K] [-L<low>/<high>]\n", GMT_Jz_OPT, GMT_CONTG);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-O] [-P] [-Q<cut>] [%s] [-S<smooth>]\n", GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n", GMT_CONTT, GMT_U_OPT);
@@ -170,7 +174,7 @@ int GMT_grdcontour_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<grid> is the grid file to be contoured.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Contours to be drawn can be specified in one of three ways:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   1. Fixed contour interval.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   1. Fixed contour interval, or a single contour if prepended with a + sign.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   2. File with contour levels in col 1 and C(ont) or A(nnot) in col 2\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      [and optionally an individual annotation angle in col 3].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   3. Name of a cpt-file.\n");
@@ -182,6 +186,7 @@ int GMT_grdcontour_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Annotation label information. [Default is no annoted contours].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give annotation interval OR - to disable all contour annotations\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   implied by the informatino provided in -C.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively prepend + to annotation interval to plot that as a single contour.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <labelinfo> controls the specifics of the labels.  Choose from:\n");
 	GMT_label_syntax (API->GMT, 5, 0);
 	GMT_Option (API, "B-");
@@ -268,6 +273,10 @@ int GMT_grdcontour_parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, st
 				}
 				else if (opt->arg[0] == '-')
 					Ctrl->A.mode = 1;	/* Turn off all labels */
+				else if (opt->arg[0] == '+') {
+					Ctrl->A.single_cont = atof (&opt->arg[1]);
+					Ctrl->contour.annot = true;
+				}
 				else {
 					Ctrl->A.interval = atof (opt->arg);
 					Ctrl->contour.annot = true;
@@ -280,6 +289,8 @@ int GMT_grdcontour_parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, st
 					Ctrl->C.cpt = (!strncmp (&opt->arg[strlen(opt->arg)-4], ".cpt", 4U)) ? true : false;
 					Ctrl->C.file = strdup (opt->arg);
 				}
+				else if (opt->arg[0] == '+')
+					Ctrl->C.single_cont = atof (&opt->arg[1]);
 				else
 					Ctrl->C.interval = atof (opt->arg);
 				break;
@@ -416,7 +427,9 @@ int GMT_grdcontour_parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, st
 
 	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error: Must specify a single grid file\n");
 	n_errors += GMT_check_condition (GMT, !GMT->common.J.active && !Ctrl->D.active, "Syntax error: Must specify a map projection with the -J option\n");
-	n_errors += GMT_check_condition (GMT, !Ctrl->C.file && Ctrl->C.interval <= 0.0, "Syntax error -C option: Must specify contour interval, file name with levels, or cpt-file\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->C.file && Ctrl->C.interval <= 0.0 && 
+			GMT_is_dnan (Ctrl->C.single_cont) && GMT_is_dnan (Ctrl->A.single_cont), 
+			"Syntax error -C option: Must specify contour interval, file name with levels, or cpt-file\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->L.low >= Ctrl->L.high, "Syntax error -L option: lower limit >= upper!\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->F.active && !Ctrl->D.active, "Syntax error -F option: Must also specify -D\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->contour.label_dist_spacing <= 0.0 || Ctrl->contour.half_width <= 0, "Syntax error -G option: Correct syntax:\n\t-G<annot_dist>/<npoints>, both values must be > 0\n");
@@ -944,10 +957,29 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 	}
+	else if (!GMT_is_dnan (Ctrl->C.single_cont) || !GMT_is_dnan (Ctrl->A.single_cont)) {	/* Plot one or two contours only  */
+		n_contours = 0;
+		n_tmp = 0;
+		GMT_malloc2 (GMT, contour, cont_angle, 2, &n_tmp, double);		/* Allocate 2, even if we only have 1 */
+		GMT_malloc2 (GMT, cont_type, cont_do_tick, 2, &n_alloc, char);
+		if (!GMT_is_dnan (Ctrl->C.single_cont)) {
+			cont_type[n_contours] = 'C';
+			contour[n_contours++] = Ctrl->C.single_cont;
+		}
+		if (!GMT_is_dnan (Ctrl->A.single_cont)) {
+			cont_type[n_contours] = 'A';
+			contour[n_contours] = Ctrl->A.single_cont;
+			cont_do_tick[n_contours] = Ctrl->T.active ? 1 : 0;
+			cont_angle[n_contours] = (Ctrl->contour.angle_type == 2) ? Ctrl->contour.label_angle : GMT->session.d_NaN;
+			n_contours++;
+		}
+	}
 	else {	/* Set up contour intervals automatically from Ctrl->C.interval and Ctrl->A.interval */
 		double min, max;
-		min = floor (G->header->z_min / Ctrl->C.interval) * Ctrl->C.interval; if (!GMT->current.map.z_periodic && min < G->header->z_min) min += Ctrl->C.interval;
-		max = ceil (G->header->z_max / Ctrl->C.interval) * Ctrl->C.interval; if (max > G->header->z_max) max -= Ctrl->C.interval;
+		min = floor (G->header->z_min / Ctrl->C.interval) * Ctrl->C.interval;
+		if (!GMT->current.map.z_periodic && min < G->header->z_min) min += Ctrl->C.interval;
+		max = ceil (G->header->z_max / Ctrl->C.interval) * Ctrl->C.interval;
+		if (max > G->header->z_max) max -= Ctrl->C.interval;
 		for (c = (int)lrint (min/Ctrl->C.interval), n_contours = 0; c <= (int)lrint (max/Ctrl->C.interval); c++, n_contours++) {
 			if (n_contours == n_alloc) {
 				n_tmp = n_alloc;
