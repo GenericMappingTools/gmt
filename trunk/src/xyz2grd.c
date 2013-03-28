@@ -581,11 +581,11 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 
 			/* Ok, we are inside the region - process data */
 
-			scol = GMT_grd_x_to_col (GMT, in[GMT_X], Grid->header);
+			scol = (int)GMT_grd_x_to_col (GMT, in[GMT_X], Grid->header);
 			if (scol == -1) scol++, n_confused++;
 			col = scol;
 			if (col == Grid->header->nx) col--, n_confused++;
-			srow = GMT_grd_y_to_row (GMT, in[GMT_Y], Grid->header);
+			srow = (int)GMT_grd_y_to_row (GMT, in[GMT_Y], Grid->header);
 			if (srow == -1) srow++, n_confused++;
 			row = srow;
 			if (row == Grid->header->ny) row--, n_confused++;
@@ -686,7 +686,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 
 		for (ij = 0; ij < Grid->header->nm; ij++) {	/* Check if all nodes got one value only */
 			if (flag[ij] == 1) {	/* This catches nodes with one value or the -Al|u single values */
-				if (Amode == 'n') Grid->data[ij] = 1.0;
+				if (Amode == 'n') Grid->data[ij] = 1.0f;
 				n_filled++;
 			}
 			else if (flag[ij] == 0) {

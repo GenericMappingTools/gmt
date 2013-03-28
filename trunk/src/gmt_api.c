@@ -441,7 +441,8 @@ double * GMTAPI_image_coord (struct GMTAPI_CTRL *API, int dim, struct GMT_IMAGE 
 double * GMTAPI_matrix_coord (struct GMTAPI_CTRL *API, int dim, struct GMT_MATRIX *M)
 {	/* Allocate and compute coordinates along one dimension of a matrix */
 	double *coord, off, inc;
-	unsigned int k, n, min, max;
+	unsigned int min, max;
+	uint64_t k, n;
 	
 	if (M->n_layers <= 1 && dim == GMT_Z) return (NULL);	/* No z-dimension */
 	n = (dim == GMT_X) ? M->n_columns : ((dim == GMT_Y) ? M->n_rows : M->n_layers);
@@ -475,8 +476,8 @@ void GMTAPI_grdheader_to_info (struct GMT_GRID_HEADER *h, struct GMT_MATRIX *M_o
 
 void GMTAPI_info_to_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, struct GMT_MATRIX *M_obj)
 {	/* Unpacks the necessary items into the grid header from the matrix parameters */
-	h->nx = M_obj->n_columns;
-	h->ny = M_obj->n_rows;
+	h->nx = (unsigned int)M_obj->n_columns;
+	h->ny = (unsigned int)M_obj->n_rows;
 	h->registration = M_obj->registration;
 	GMT_memcpy (h->wesn, M_obj->range, 4, double);
 	/* Compute xy_off and increments */
@@ -1195,7 +1196,7 @@ int GMTAPI_Export_CPT (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode
 	return GMT_OK;
 }
 
-bool col_check (struct GMT_DATATABLE *T, unsigned int *n_cols) {
+bool col_check (struct GMT_DATATABLE *T, uint64_t *n_cols) {
 	uint64_t seg;
 	/* Checks that all segments in this table has the correct number of columns.
 	 * If *n_cols == 0 we set it to the number of columns found in the first segment. */
@@ -1216,8 +1217,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_
 	int item, first_item = 0, this_item = GMTAPI_NOTSET, last_item, geometry;
 	bool allocate = false, update = false, all_D, use_GMT_io, poly;
 	size_t n_alloc;
-	uint64_t row, seg, ij;
-	unsigned int col;
+	uint64_t row, seg, col, ij;
 	p_func_size_t GMT_2D_to_index = NULL;
 	
 	struct GMT_DATASET *D_obj = NULL, *Din_obj = NULL;
@@ -1318,7 +1318,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_
 				GMT_2D_to_index = GMTAPI_get_2D_to_index (M_obj->shape, GMT_GRID_IS_REAL);
 				for (row = 0; row < M_obj->n_rows; row++) {
 					for (col = 0; col < M_obj->n_columns; col++) {
-						ij = GMT_2D_to_index (row, col, (int)M_obj->dim);
+						ij = GMT_2D_to_index ((int)row, (int)col, (int)M_obj->dim);
 						D_obj->table[D_obj->n_tables]->segment[0]->coord[col][row] = GMTAPI_get_val (API, &(M_obj->data), ij, M_obj->type);
 					}
 				}
@@ -1431,7 +1431,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 	 * See the GMTAPI documentation for how mode is used to create multiple files from segments, etc.
 	 */
 	int item, error, default_method;
-	unsigned int tbl, col, offset;
+	uint64_t tbl, col, offset;
 	uint64_t row, seg, ij;
 	p_func_size_t GMT_2D_to_index = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
@@ -1511,7 +1511,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 				for (seg = 0; seg < D_obj->table[tbl]->n_segments; seg++) {
 					for (row = 0; row < D_obj->table[tbl]->segment[seg]->n_rows; row++) {
 						for (col = 0; col < D_obj->table[tbl]->segment[seg]->n_columns; col++) {
-							ij = GMT_2D_to_index (row + offset, col, (int)M_obj->dim);
+							ij = GMT_2D_to_index ((int)(row + offset), (int)col, (int)M_obj->dim);
 							GMTAPI_put_val (API, &(M_obj->data), D_obj->table[tbl]->segment[seg]->coord[col][row], ij, M_obj->type);
 						}
 					}
@@ -1698,8 +1698,7 @@ int GMTAPI_Export_Textset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 	 * Again, see GMTAPI documentation for the meaning of mode.
 	 */
 	int item, error, default_method;
-	unsigned int tbl;
-	uint64_t row, seg, offset;
+	uint64_t tbl, row, seg, offset;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_TEXTSET *T_copy = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
@@ -1878,10 +1877,10 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, 
 			/* Here we need to do more work: Either extract subset or add/change padding, or both. */
 			/* Get start/stop row/cols for subset (or the entire domain) */
 			dx = I_obj->header->inc[GMT_X] * I_obj->header->xy_off;	dy = I_obj->header->inc[GMT_Y] * I_obj->header->xy_off;
-			j1 = GMT_grd_y_to_row (API->GMT, I_obj->header->wesn[YLO]+dy, I_orig->header);
-			j0 = GMT_grd_y_to_row (API->GMT, I_obj->header->wesn[YHI]-dy, I_orig->header);
-			i0 = GMT_grd_x_to_col (API->GMT, I_obj->header->wesn[XLO]+dx, I_orig->header);
-			i1 = GMT_grd_x_to_col (API->GMT, I_obj->header->wesn[XHI]-dx, I_orig->header);
+			j1 = (unsigned int) GMT_grd_y_to_row (API->GMT, I_obj->header->wesn[YLO]+dy, I_orig->header);
+			j0 = (unsigned int) GMT_grd_y_to_row (API->GMT, I_obj->header->wesn[YHI]-dy, I_orig->header);
+			i0 = (unsigned int) GMT_grd_x_to_col (API->GMT, I_obj->header->wesn[XLO]+dx, I_orig->header);
+			i1 = (unsigned int) GMT_grd_x_to_col (API->GMT, I_obj->header->wesn[XHI]-dx, I_orig->header);
 			GMT_memcpy (I_obj->header->pad, API->GMT->current.io.pad, 4, int);	/* Set desired padding */
 			for (row = j0; row <= j1; row++) {
 				for (col = i0; col <= i1; col++, ij++) {
@@ -1932,7 +1931,7 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, 
 			I_obj->data = GMT_memory (API->GMT, NULL, I_obj->header->size, unsigned char);
 			GMT_2D_to_index = GMTAPI_get_2D_to_index (M_obj->shape, mode);
 			GMT_grd_loop (API->GMT, I_obj, row, col, ij) {
-				ij_orig = GMT_2D_to_index (row, col, (int)M_obj->dim);
+				ij_orig = GMT_2D_to_index ((int)row, (int)col, (int)M_obj->dim);
 				I_obj->data[ij] = (char)GMTAPI_get_val (API, &(M_obj->data), ij_orig, M_obj->type);
 			}
 			break;
@@ -2095,10 +2094,10 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, un
 			/* Here we need to do more work: Either extract subset or add/change padding, or both. */
 			/* Get start/stop row/cols for subset (or the entire domain) */
 			dx = G_obj->header->inc[GMT_X] * G_obj->header->xy_off;	dy = G_obj->header->inc[GMT_Y] * G_obj->header->xy_off;
-			j1 = GMT_grd_y_to_row (API->GMT, G_obj->header->wesn[YLO]+dy, G_orig->header);
-			j0 = GMT_grd_y_to_row (API->GMT, G_obj->header->wesn[YHI]-dy, G_orig->header);
-			i0 = GMT_grd_x_to_col (API->GMT, G_obj->header->wesn[XLO]+dx, G_orig->header);
-			i1 = GMT_grd_x_to_col (API->GMT, G_obj->header->wesn[XHI]-dx, G_orig->header);
+			j1 = (unsigned int)GMT_grd_y_to_row (API->GMT, G_obj->header->wesn[YLO]+dy, G_orig->header);
+			j0 = (unsigned int)GMT_grd_y_to_row (API->GMT, G_obj->header->wesn[YHI]-dy, G_orig->header);
+			i0 = (unsigned int)GMT_grd_x_to_col (API->GMT, G_obj->header->wesn[XLO]+dx, G_orig->header);
+			i1 = (unsigned int)GMT_grd_x_to_col (API->GMT, G_obj->header->wesn[XHI]-dx, G_orig->header);
 			GMT_memcpy (G_obj->header->pad, API->GMT->current.io.pad, 4, int);	/* Set desired padding */
 			for (row = j0; row <= j1; row++) {
 				for (col = i0; col <= i1; col++, ij++) {
@@ -2155,7 +2154,7 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, un
 			G_obj->data = GMT_memory_aligned (API->GMT, NULL, G_obj->header->size, float);
 			GMT_2D_to_index = GMTAPI_get_2D_to_index (M_obj->shape, mode);
 			GMT_grd_loop (API->GMT, G_obj, row, col, ij) {
-				ij_orig = GMT_2D_to_index (row, col, (int)M_obj->dim);
+				ij_orig = GMT_2D_to_index ((int)row, (int)col, (int)M_obj->dim);
 				G_obj->data[ij] = (float)GMTAPI_get_val (API, &(M_obj->data), ij_orig, M_obj->type);
 			}
 			GMT_BC_init (API->GMT, G_obj->header);	/* Initialize grid interpolation and boundary condition parameters */
@@ -2281,10 +2280,10 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mod
 			GMT_memcpy (G_copy->header, G_obj->header, 1, struct GMT_GRID_HEADER);
 			GMT_memcpy (G_copy->header->wesn, S_obj->wesn, 4, double);
 			dx = G_obj->header->inc[GMT_X] * G_obj->header->xy_off;	dy = G_obj->header->inc[GMT_Y] * G_obj->header->xy_off;
-			j1 = GMT_grd_y_to_row (API->GMT, G_obj->header->wesn[YLO]+dy, G_obj->header);
-			j0 = GMT_grd_y_to_row (API->GMT, G_obj->header->wesn[YHI]-dy, G_obj->header);
-			i0 = GMT_grd_x_to_col (API->GMT, G_obj->header->wesn[XLO]+dx, G_obj->header);
-			i1 = GMT_grd_x_to_col (API->GMT, G_obj->header->wesn[XHI]-dx, G_obj->header);
+			j1 = (unsigned int) GMT_grd_y_to_row (API->GMT, G_obj->header->wesn[YLO]+dy, G_obj->header);
+			j0 = (unsigned int) GMT_grd_y_to_row (API->GMT, G_obj->header->wesn[YHI]-dy, G_obj->header);
+			i0 = (unsigned int) GMT_grd_x_to_col (API->GMT, G_obj->header->wesn[XLO]+dx, G_obj->header);
+			i1 = (unsigned int) GMT_grd_x_to_col (API->GMT, G_obj->header->wesn[XHI]-dx, G_obj->header);
 			GMT_memcpy (G_obj->header->pad, API->GMT->current.io.pad, 4, int);		/* Set desired padding */
 			G_copy->header->size = GMTAPI_set_grdarray_size (API->GMT, G_obj->header, mode, S_obj->wesn);	/* Get array dimension only, which may include padding */
 			G_copy->data = GMT_memory_aligned (API->GMT, NULL, G_copy->header->size, float);
@@ -2328,7 +2327,7 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mod
 			if ((error = GMT_alloc_univector (API->GMT, &(M_obj->data), M_obj->type, size)) != GMT_OK) return (error);
 			GMT_2D_to_index = GMTAPI_get_2D_to_index (M_obj->shape, mode);
 			GMT_grd_loop (API->GMT, G_obj, row, col, ijp) {
-				ij = GMT_2D_to_index (row, col, (int)M_obj->dim);
+				ij = GMT_2D_to_index ((int)row, (int)col, (int)M_obj->dim);
 				GMTAPI_put_val (API, &(M_obj->data), (double)G_obj->data[ijp], ij, M_obj->type);
 			}
 			S_obj->resource = M_obj;	/* Set resource pointer to the matrix */
@@ -3728,10 +3727,10 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval)
 	 * If not a data record we return NULL, and pass status via API->GMT->current.io.status.
 	 */
 
-	int status, n_fields = 0;
+	int status;
+	int64_t n_fields = 0;
 	bool get_next_record;
-	unsigned int col, n_nan;
-	uint64_t *p = NULL, ij;
+	uint64_t *p = NULL, col, ij, n_nan;
 	char *t_record = NULL;
 	void *record = NULL;
 	p_func_size_t GMT_2D_to_index = NULL;
@@ -3806,7 +3805,7 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval)
 				M_obj = S_obj->resource;
 				GMT_2D_to_index = GMTAPI_get_2D_to_index (M_obj->shape, GMT_GRID_IS_REAL);
 				for (col = n_nan = 0; col < S_obj->n_columns; col++) {	/* We know the number of columns from registration */
-					ij = GMT_2D_to_index (API->current_rec[GMT_IN], col, (int)M_obj->dim);
+					ij = GMT_2D_to_index ((int)API->current_rec[GMT_IN], (int)col, (int)M_obj->dim);
 					API->GMT->current.io.curr_rec[col] = GMTAPI_get_val (API, &(M_obj->data), ij, M_obj->type);
 					if (GMT_is_dnan (API->GMT->current.io.curr_rec[col])) n_nan++;
 				}
@@ -3858,7 +3857,8 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval)
 					if (p[1] == DS_obj->table[p[0]]->n_segments) {		/* Also the end of a table ("file") */
 						p[0]++, p[1] = 0;
 						if (mode & GMT_FILE_BREAK) {			/* Return empty handed to indicate a break between files */
-							status = n_fields = GMT_IO_NEXT_FILE;
+							status = GMT_IO_NEXT_FILE;
+							n_fields = GMT_IO_NEXT_FILE;
 							record = NULL;
 						}
 					}
@@ -3903,7 +3903,7 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval)
 							 *                 marker and leading whitespace
 							 */
 							strncpy (API->GMT->current.io.segment_header,
-											GMT_trim_segheader (API->GMT, t_record), GMT_BUFSIZ);
+								GMT_trim_segheader (API->GMT, t_record), GMT_BUFSIZ);
 							API->GMT->current.io.status = GMT_IO_SEGMENT_HEADER;
 							record = NULL;
 						}
@@ -3924,7 +3924,7 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval)
 	
 	if (!(n_fields == EOF || n_fields == GMT_IO_NEXT_FILE)) API->current_rec[GMT_IN]++;	/* Increase record count, unless EOF */
 
-	if (retval) *retval = n_fields;	/* Requested we return the number of fields found */
+	if (retval) *retval = (int)n_fields;	/* Requested we return the number of fields found */
 	return (record);	/* Return pointer to current record */		
 }
 
@@ -3947,8 +3947,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 	 * If an error occurs we return true and set API->error.
 	 */
 	int error = 0, wrote = 1;
-	unsigned int col;
-	uint64_t *p = NULL, ij;
+	uint64_t *p = NULL, col, ij;
 	char *s = NULL;
 	double *d = NULL;
 	p_func_size_t GMT_2D_to_index = NULL;
@@ -4096,7 +4095,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 			}
 			GMT_2D_to_index = GMTAPI_get_2D_to_index (M_obj->shape, GMT_GRID_IS_REAL);
 			for (col = 0; col < API->GMT->common.b.ncol[GMT_OUT]; col++) {	/* Place the output items */
-				ij = GMT_2D_to_index (API->current_rec[GMT_OUT], col, (int)M_obj->dim);
+				ij = GMT_2D_to_index ((int)API->current_rec[GMT_OUT], (int)col, (int)M_obj->dim);
 				GMTAPI_put_val (API, &(M_obj->data), d[col], ij, M_obj->type);
 			}
 			M_obj->n_rows++;
@@ -4169,7 +4168,8 @@ int GMT_Get_Row (void *V_API, int row_no, struct GMT_GRID *G, float *row)
 	 * If R->auto_advance is true it reads the current row and advances R->row++
 	 * In this case row_no is not used.
 	 */
-	unsigned int col, err;
+	unsigned int err;
+ 	unsigned int col;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 	char *fmt = API->GMT->session.grdformat[G->header->type];
 	struct GMT_GRID_ROWBYROW *R = gmt_get_rbr_ptr (G->extra);
@@ -4246,7 +4246,8 @@ int GMT_Put_Row (void *V_API, int rec_no, struct GMT_GRID *G, float *row)
 	 * In this case row_no is not used.
 	 */
 
-	unsigned int col, err;	/* Required by GMT_err_trap */
+	unsigned int err;	/* Required by GMT_err_trap */
+	unsigned int col;
 	size_t n_items = G->header->nx;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 	char *fmt = API->GMT->session.grdformat[G->header->type];
@@ -4402,7 +4403,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 	 */
 	
 	int error = GMT_OK, object_ID = GMTAPI_NOTSET, item;
-	unsigned int n_layers;
+	uint64_t n_layers;
 	bool already_registered = false, has_ID;
 	void *new = NULL, *p_data;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
@@ -4508,7 +4509,7 @@ int64_t GMT_Get_Index (struct GMT_GRID_HEADER *header, int row, int col)
 }
 
 #ifdef FORTRAN_API
-int GMT_Get_Index_ (void *h, int *row, int *col)
+int64_t GMT_Get_Index_ (void *h, int *row, int *col)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Get_Index (h, *row, *col));
 }
@@ -4942,8 +4943,7 @@ double GMT_FFT_Wavenumber_ (uint64_t *k, unsigned int *mode, void *v_K)
 int GMTAPI_FFT_1d (struct GMTAPI_CTRL *API, struct GMT_DATASET *D, int direction, unsigned int mode, struct GMT_FFT_WAVENUMBER *K)
 {	/* The 1-D FFT operating on DATASET segments */
 	int status;
-	unsigned int tbl, col = 0;
-	uint64_t seg, row, last = 0;
+	uint64_t seg, row, tbl, last = 0, col = 0;
 	float *data = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 	/* Not at all finished */
@@ -4954,8 +4954,8 @@ int GMTAPI_FFT_1d (struct GMTAPI_CTRL *API, struct GMT_DATASET *D, int direction
 				data = GMT_memory (API->GMT, data, S->n_rows, float);
 				last = S->n_rows;
 			}
-			for (row = 0; S->n_rows; row++) data[row] = S->coord[col][row];
-			status = GMT_fft_1d (API->GMT, data, S->n_rows, direction, mode, K);
+			for (row = 0; S->n_rows; row++) data[row] = (float)S->coord[col][row];
+			status = GMT_fft_1d (API->GMT, data, (unsigned int)S->n_rows, direction, mode, K);
 			for (row = 0; S->n_rows; row++) S->coord[col][row] = data[row];
 		}
 	}
@@ -5182,9 +5182,9 @@ int GMT_Message (void *V_API, unsigned int mode, char *format, ...)
 		case 2:
 		case 6:
 			S = toc - API->GMT->current.time.tic;
-			H = floor (S * GMT_SEC2HR);
+			H = (unsigned int)lrint (floor (S * GMT_SEC2HR));
 			S -= H * GMT_HR2SEC_I;
-			M = floor (S * GMT_SEC2MIN);
+			M = (unsigned int)lrint (floor (S * GMT_SEC2MIN));
 			S -= M * GMT_MIN2SEC_I;
 			sprintf (stamp, "Elapsed time %2.2d:%2.2d:%2.2d", H, M, (int)S);
 			break;
@@ -5263,7 +5263,8 @@ int GMT_Get_Value (void *V_API, char *arg, double par[])
 	 * Geographic dd:mm:ss[W|E|S|N] coordinates are returned in decimal degrees.
 	 * DateTtime moments are returned in time in chosen units [sec] since chosen epoch [1970] */
 
-	unsigned int pos = 0, n_arg = 0, mode, len, col_type_save[2][2];
+	unsigned int pos = 0, n_arg = 0, mode, col_type_save[2][2];
+	size_t len;
 	char p[GMT_BUFSIZ], unit;
 	double value;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);

@@ -6234,7 +6234,7 @@ int gmt_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char *in, char
 	if (!GMT->current.map.frame.primary) flag = (char) toupper ((int)flag);
 	
 	if (A->type == GMT_TIME) {	/* Strict check on time intervals */
-		if (GMT_verify_time_step (GMT, lrint (val), unit)) GMT_exit (EXIT_FAILURE);
+		if (GMT_verify_time_step (GMT, (int)lrint (val), unit)) GMT_exit (EXIT_FAILURE);
 		if ((fmod (val, 1.0) > GMT_CONV_LIMIT)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Time step interval (%g) must be an integer\n", val);
 			GMT_exit (EXIT_FAILURE);
@@ -6760,45 +6760,45 @@ int gmt_project_type (char *args, int *pos, bool *width_given)
 	   projection names (followed by a slash) or the 1- or 2-letter abbreviation
 	   used prior to GMT 4.2.2. Case is ignored */
 
-	if ((*pos = GMT_strlcmp ("aea/"      , args))) return (GMT_ALBERS);
-	if ((*pos = GMT_strlcmp ("aeqd/"     , args))) return (GMT_AZ_EQDIST);
-	if ((*pos = GMT_strlcmp ("cyl_stere/", args))) return (GMT_CYL_STEREO);
-	if ((*pos = GMT_strlcmp ("cass/"     , args))) return (GMT_CASSINI);
-	if ((*pos = GMT_strlcmp ("cea/"      , args))) return (GMT_CYL_EQ);
-	if ((*pos = GMT_strlcmp ("eck4/"     , args))) return (GMT_ECKERT4);
-	if ((*pos = GMT_strlcmp ("eck6/"     , args))) return (GMT_ECKERT6);
-	if ((*pos = GMT_strlcmp ("eqc/"      , args))) return (GMT_CYL_EQDIST);
-	if ((*pos = GMT_strlcmp ("eqdc/"     , args))) return (GMT_ECONIC);
-	if ((*pos = GMT_strlcmp ("gnom/"     , args))) return (GMT_GNOMONIC);
-	if ((*pos = GMT_strlcmp ("hammer/"   , args))) return (GMT_HAMMER);
-	if ((*pos = GMT_strlcmp ("laea/"     , args))) return (GMT_LAMB_AZ_EQ);
-	if ((*pos = GMT_strlcmp ("lcc/"      , args))) return (GMT_LAMBERT);
-	if ((*pos = GMT_strlcmp ("merc/"     , args))) return (GMT_MERCATOR);
-	if ((*pos = GMT_strlcmp ("mill/"     , args))) return (GMT_MILLER);
-	if ((*pos = GMT_strlcmp ("moll/"     , args))) return (GMT_MOLLWEIDE);
-	if ((*pos = GMT_strlcmp ("nsper/"    , args))) return (GMT_GENPER);
-	if ((*pos = GMT_strlcmp ("omerc/"    , args))) return (GMT_OBLIQUE_MERC);
-	if ((*pos = GMT_strlcmp ("omercp/"   , args))) return (GMT_OBLIQUE_MERC_POLE);
-	if ((*pos = GMT_strlcmp ("ortho/"    , args))) return (GMT_ORTHO);
-	if ((*pos = GMT_strlcmp ("polar/"    , args))) return (GMT_POLAR);
-	if ((*pos = GMT_strlcmp ("poly/"     , args))) return (GMT_POLYCONIC);
-	if ((*pos = GMT_strlcmp ("robin/"    , args))) return (GMT_ROBINSON);
-	if ((*pos = GMT_strlcmp ("sinu/"     , args))) return (GMT_SINUSOIDAL);
-	if ((*pos = GMT_strlcmp ("stere/"    , args))) return (GMT_STEREO);
-	if ((*pos = GMT_strlcmp ("tmerc/"    , args))) return (GMT_TM);
-	if ((*pos = GMT_strlcmp ("utm/"      , args))) return (GMT_UTM);
-	if ((*pos = GMT_strlcmp ("vandg/"    , args))) return (GMT_VANGRINTEN);
-	if ((*pos = GMT_strlcmp ("wintri/"   , args))) return (GMT_WINKEL);
-	if ((*pos = GMT_strlcmp ("xy/"       , args))) return (GMT_LINEAR);
-	if ((*pos = GMT_strlcmp ("z/"        , args))) return (GMT_ZAXIS);
+	if ((*pos = (int)GMT_strlcmp ("aea/"      , args))) return (GMT_ALBERS);
+	if ((*pos = (int)GMT_strlcmp ("aeqd/"     , args))) return (GMT_AZ_EQDIST);
+	if ((*pos = (int)GMT_strlcmp ("cyl_stere/", args))) return (GMT_CYL_STEREO);
+	if ((*pos = (int)GMT_strlcmp ("cass/"     , args))) return (GMT_CASSINI);
+	if ((*pos = (int)GMT_strlcmp ("cea/"      , args))) return (GMT_CYL_EQ);
+	if ((*pos = (int)GMT_strlcmp ("eck4/"     , args))) return (GMT_ECKERT4);
+	if ((*pos = (int)GMT_strlcmp ("eck6/"     , args))) return (GMT_ECKERT6);
+	if ((*pos = (int)GMT_strlcmp ("eqc/"      , args))) return (GMT_CYL_EQDIST);
+	if ((*pos = (int)GMT_strlcmp ("eqdc/"     , args))) return (GMT_ECONIC);
+	if ((*pos = (int)GMT_strlcmp ("gnom/"     , args))) return (GMT_GNOMONIC);
+	if ((*pos = (int)GMT_strlcmp ("hammer/"   , args))) return (GMT_HAMMER);
+	if ((*pos = (int)GMT_strlcmp ("laea/"     , args))) return (GMT_LAMB_AZ_EQ);
+	if ((*pos = (int)GMT_strlcmp ("lcc/"      , args))) return (GMT_LAMBERT);
+	if ((*pos = (int)GMT_strlcmp ("merc/"     , args))) return (GMT_MERCATOR);
+	if ((*pos = (int)GMT_strlcmp ("mill/"     , args))) return (GMT_MILLER);
+	if ((*pos = (int)GMT_strlcmp ("moll/"     , args))) return (GMT_MOLLWEIDE);
+	if ((*pos = (int)GMT_strlcmp ("nsper/"    , args))) return (GMT_GENPER);
+	if ((*pos = (int)GMT_strlcmp ("omerc/"    , args))) return (GMT_OBLIQUE_MERC);
+	if ((*pos = (int)GMT_strlcmp ("omercp/"   , args))) return (GMT_OBLIQUE_MERC_POLE);
+	if ((*pos = (int)GMT_strlcmp ("ortho/"    , args))) return (GMT_ORTHO);
+	if ((*pos = (int)GMT_strlcmp ("polar/"    , args))) return (GMT_POLAR);
+	if ((*pos = (int)GMT_strlcmp ("poly/"     , args))) return (GMT_POLYCONIC);
+	if ((*pos = (int)GMT_strlcmp ("robin/"    , args))) return (GMT_ROBINSON);
+	if ((*pos = (int)GMT_strlcmp ("sinu/"     , args))) return (GMT_SINUSOIDAL);
+	if ((*pos = (int)GMT_strlcmp ("stere/"    , args))) return (GMT_STEREO);
+	if ((*pos = (int)GMT_strlcmp ("tmerc/"    , args))) return (GMT_TM);
+	if ((*pos = (int)GMT_strlcmp ("utm/"      , args))) return (GMT_UTM);
+	if ((*pos = (int)GMT_strlcmp ("vandg/"    , args))) return (GMT_VANGRINTEN);
+	if ((*pos = (int)GMT_strlcmp ("wintri/"   , args))) return (GMT_WINKEL);
+	if ((*pos = (int)GMT_strlcmp ("xy/"       , args))) return (GMT_LINEAR);
+	if ((*pos = (int)GMT_strlcmp ("z/"        , args))) return (GMT_ZAXIS);
 
 	/* These older codes (up to GMT 4.2.1) took 2 characters */
 
-	if ((*pos = GMT_strlcmp ("kf", args))) return (GMT_ECKERT4);
-	if ((*pos = GMT_strlcmp ("ks", args))) return (GMT_ECKERT6);
-	if ((*pos = GMT_strlcmp ("oa", args))) return (GMT_OBLIQUE_MERC);
-	if ((*pos = GMT_strlcmp ("ob", args))) return (GMT_OBLIQUE_MERC);
-	if ((*pos = GMT_strlcmp ("oc", args))) return (GMT_OBLIQUE_MERC_POLE);
+	if ((*pos = (int)GMT_strlcmp ("kf", args))) return (GMT_ECKERT4);
+	if ((*pos = (int)GMT_strlcmp ("ks", args))) return (GMT_ECKERT6);
+	if ((*pos = (int)GMT_strlcmp ("oa", args))) return (GMT_OBLIQUE_MERC);
+	if ((*pos = (int)GMT_strlcmp ("ob", args))) return (GMT_OBLIQUE_MERC);
+	if ((*pos = (int)GMT_strlcmp ("oc", args))) return (GMT_OBLIQUE_MERC_POLE);
 
 	/* Finally, check only the first letter (used until GMT 4.2.1) */
 
@@ -7450,7 +7450,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args)
 			}
 			GMT->current.proj.pars[0] = fabs (GMT->current.proj.pars[0]);
 			GMT->current.proj.lat0 = 0.0;
-			k = lrint (GMT->current.proj.pars[0]);
+			k = (int)lrint (GMT->current.proj.pars[0]);
 			GMT->current.proj.lon0 = -180.0 + k * 6.0 - 3.0;
 			
 			error += (k < 1 || k > 60);	/* Zones must be 1-60 */
@@ -7519,7 +7519,7 @@ int GMT_parse_vector (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *S)
 	S->v.pen = GMT->current.setting.map_default_pen;
 	GMT_init_fill (GMT, &S->v.fill, -1.0, -1.0, -1.0);	/* Default is no fill */
 	S->v.status = 0;	/* Start with no flags turned on */
-	S->v.v_angle = 30.0;	S->v.v_norm = -1.0;
+	S->v.v_angle = 30.0f;	S->v.v_norm = -1.0f;
 	for (k = 0; text[k] && text[k] != '+'; k++);	/* Either find the first plus or run out or chars */
 	strncpy (p, text, k); p[k] = 0;
 	
@@ -7573,7 +7573,7 @@ int GMT_parse_vector (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *S)
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +o<plon>/<plat> modifier %c\n", &p[1]);
 					error++;
 				}
-				S->v.pole[GMT_X] = pole[GMT_X];	S->v.pole[GMT_Y] = pole[GMT_Y];
+				S->v.pole[GMT_X] = (float)pole[GMT_X];	S->v.pole[GMT_Y] = (float)pole[GMT_Y];
 				break;
 			case 'p':	/* Vector pen and head outline +p[-][<pen>] */
 				p_opt = true;	/* Marks that +p was used */
@@ -7830,8 +7830,8 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		if (slash) {	/* Separate x/y sizes */
 			n = sscanf (text_cp, "%c%[^/]/%s", &symbol_type, txt_a, txt_b);
 			decode_error = (n != 3);
-			if ((len = strlen (txt_a)) && txt_a[len-1] == 'u') p->user_unit[GMT_X] = true;	/* Specified xwidth in user units */
-			if ((len = strlen (txt_b)) && txt_b[len-1] == 'u') p->user_unit[GMT_Y] = true;	/* Specified ywidth in user units */
+			if ((len = (int)strlen (txt_a)) && txt_a[len-1] == 'u') p->user_unit[GMT_X] = true;	/* Specified xwidth in user units */
+			if ((len = (int)strlen (txt_b)) && txt_b[len-1] == 'u') p->user_unit[GMT_Y] = true;	/* Specified ywidth in user units */
 			if (p->user_unit[GMT_X])
 				p->size_x = p->given_size_x = atof (txt_a);
 			else
@@ -7843,7 +7843,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		}
 		else {	/* Only a single x = y size */
 			n = sscanf (text_cp, "%c%s", &symbol_type, txt_a);
-			if ((len = strlen (txt_a)) && txt_a[len-1] == 'u') p->user_unit[GMT_X] = p->user_unit[GMT_Y] = true;	/* Specified xwidth [=ywidth] in user units */
+			if ((len = (int)strlen (txt_a)) && txt_a[len-1] == 'u') p->user_unit[GMT_X] = p->user_unit[GMT_Y] = true;	/* Specified xwidth [=ywidth] in user units */
 			if (n == 2) {	/* Gave size */
 				if (p->user_unit[GMT_X])
 					p->size_x = p->size_y = p->given_size_x = p->given_size_y = atof (txt_a);
@@ -7996,7 +7996,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				GMT_exit (EXIT_FAILURE);
 			}
 			if (p->f.f_gap < 0.0) {	/* Gave -# of ticks desired */
-				k = lrint (fabs (p->f.f_gap));
+				k = (int)lrint (fabs (p->f.f_gap));
 				if (k == 0) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in Option -Sf: Number of front ticks cannot be zero!\n");
 					GMT_exit (EXIT_FAILURE);

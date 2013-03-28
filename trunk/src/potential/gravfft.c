@@ -1017,7 +1017,7 @@ void load_from_top_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GRA
 	twopi = 2 * M_PI;
 	D = (YOUNGS_MODULUS * Ctrl->T.te * Ctrl->T.te * Ctrl->T.te) / (12.0 * (1.0 - POISSONS_RATIO * POISSONS_RATIO));
 	alfa = pow(twopi,4.) * D / (NORMAL_GRAVITY * Ctrl->T.rho_mc);
-	raised[0] = 0.0;		raised[1] = 0.0;
+	raised[0] = 0.0f;		raised[1] = 0.0f;
 
 	for (k = 0; k < Grid->header->size; k+= 2) {
 		mk = GMT_fft_get_wave (k, K) / twopi;
@@ -1057,7 +1057,7 @@ void load_from_below_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct G
 	twopi = 2. * M_PI;
 	D = (YOUNGS_MODULUS * Ctrl->T.te * Ctrl->T.te * Ctrl->T.te) / (12.0 * (1.0 - POISSONS_RATIO * POISSONS_RATIO));
 	alfa = pow(twopi,4.) * D / (NORMAL_GRAVITY * Ctrl->T.rho_mc);
-	raised[0] = 0.0;		raised[1] = 0.0;
+	raised[0] = 0.0f;		raised[1] = 0.0f;
 
 	for (k = 0; k < Grid->header->size; k+= 2) {
 		mk = GMT_fft_get_wave (k, K) / twopi;

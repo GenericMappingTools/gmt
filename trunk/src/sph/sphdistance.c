@@ -233,8 +233,8 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 	bool first = false, periodic;
 	int error = 0, s_row, south_row, north_row, w_col, e_col;
 
-	unsigned int row, col, p_col, west_col, east_col;
-	uint64_t nx1, n_dup = 0, n_set = 0, side, ij, node, n = 0;
+	unsigned int row, col, p_col, west_col, east_col, nx1;
+	uint64_t n_dup = 0, n_set = 0, side, ij, node, n = 0;
 	uint64_t vertex, node_stop, node_new, vertex_new, node_last, vertex_last;
 
 	size_t n_alloc, p_alloc = 0;
@@ -470,12 +470,12 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 		
 		prepare_polygon (GMT, P);	/* Determine the enclosing sector */
 
-		south_row = GMT_grd_y_to_row (GMT, P->min[GMT_Y], Grid->header);
-		north_row = GMT_grd_y_to_row (GMT, P->max[GMT_Y], Grid->header);
-		w_col  = GMT_grd_x_to_col (GMT, P->min[GMT_X], Grid->header);
+		south_row = (int)GMT_grd_y_to_row (GMT, P->min[GMT_Y], Grid->header);
+		north_row = (int)GMT_grd_y_to_row (GMT, P->max[GMT_Y], Grid->header);
+		w_col  = (int)GMT_grd_x_to_col (GMT, P->min[GMT_X], Grid->header);
 		while (w_col < 0) w_col += nx1;
 		west_col = w_col;
-		e_col = GMT_grd_x_to_col (GMT, P->max[GMT_X], Grid->header);
+		e_col = (int)GMT_grd_x_to_col (GMT, P->max[GMT_X], Grid->header);
 		while (e_col < w_col) e_col += nx1;
 		east_col = e_col;
 		/* So here, any polygon will have a positive (or 0) west_col with an east_col >= west_col */

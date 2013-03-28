@@ -376,8 +376,8 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 
 		/* Find row/col indices of the node closest to this data point.  Note: These may be negative */
 
-		col_0 = GMT_grd_x_to_col (GMT, in[GMT_X], Grid->header);
-		row_0 = GMT_grd_y_to_row (GMT, in[GMT_Y], Grid->header);
+		col_0 = (int)GMT_grd_x_to_col (GMT, in[GMT_X], Grid->header);
+		row_0 = (int)GMT_grd_y_to_row (GMT, in[GMT_Y], Grid->header);
 
 		/* Loop over all nodes within radius of this node */
 
@@ -413,7 +413,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 
 				/* OK, this point should constrain this node.  Calculate which sector and assign the value */
 
-				sector = (lrint (floor (((d_atan2 (dy, dx) + M_PI) * factor)))) % Ctrl->N.sectors;
+				sector = (unsigned int)(lrint (floor (((d_atan2 (dy, dx) + M_PI) * factor)))) % Ctrl->N.sectors;
 				assign_node (GMT, &grid_node[kk], Ctrl->N.sectors, sector, distance, n);
 
 				/* With periodic, gridline-registered grids there are duplicate rows and/or columns

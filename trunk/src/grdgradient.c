@@ -434,7 +434,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args)
 		dx_grid /= lim_x;	dy_grid /= lim_y;
 		x_factor = -dy_grid / (2.0 * lim_z);	y_factor = -dx_grid / (2.0 * lim_z);
 	}
-	for (row = ij0 = 0; row < Surf->header->ny; row++) {	/* ij0 is the index in a non-padded grid */
+	for (row = 0, ij0 = 0ULL; row < Surf->header->ny; row++) {	/* ij0 is the index in a non-padded grid */
 		if (GMT_is_geographic (GMT, GMT_IN) && !Ctrl->E.active) {	/* Evaluate latitude-dependent factors */
 			lat = GMT_grd_row_to_y (GMT, row, Surf->header);
 			dx_grid = GMT->current.proj.DIST_M_PR_DEG * Surf->header->inc[GMT_X] * cosd (lat);

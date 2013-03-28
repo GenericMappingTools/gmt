@@ -157,7 +157,7 @@ unsigned int do_differentiate (struct GMT_GRID *Grid, double *par, struct GMT_FF
 	/* Differentiate in frequency domain by multiplying by kr [scale optional] */
 
 	scale = (*par != 0.0) ? *par : 1.0;
-	datac[0] = datac[1] = 0.0;	/* Derivative of the mean is zero */
+	datac[0] = datac[1] = 0.0f;	/* Derivative of the mean is zero */
 	for (k = 2; k < Grid->header->size; k += 2) {
 		fact = scale * GMT_fft_get_wave (k, K);
 		datac[k]   *= (float)fact;
@@ -174,7 +174,7 @@ unsigned int do_integrate (struct GMT_GRID *Grid, double *par, struct GMT_FFT_WA
 	float *datac = Grid->data;	/* Shorthand */
 
 	scale = (*par != 0.0) ? *par : 1.0;
-	datac[0] = datac[1] = 0.0;
+	datac[0] = datac[1] = 0.0f;
 	for (k = 2; k < Grid->header->size; k += 2) {
 		fact = 1.0 / (scale * GMT_fft_get_wave (k, K));
 		datac[k]   *= (float)fact;

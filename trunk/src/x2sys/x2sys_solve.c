@@ -337,7 +337,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 	char **trk_list = NULL;
 	char trk[2][GMT_TEXT_LEN64], t_txt[2][GMT_TEXT_LEN64], z_txt[GMT_TEXT_LEN64], w_txt[GMT_TEXT_LEN64], line[GMT_BUFSIZ];
 	bool grow_list = false, normalize = false, active_col[N_COE_PARS];
-	int *ID[2] = {NULL, NULL};
+	int *ID[2] = {NULL, NULL}, ks;
 	uint64_t n_par = 0, n, m, t, n_tracks = 0, n_active;
 	uint64_t i, p, j, k, r, s, off, row, n_COE = 0;
 	int error = 0, ierror;
@@ -472,7 +472,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 		n_expected_fields = (unsigned int)(n_active + Ctrl->W.active);
 		while ((in = GMT->current.io.input (GMT, fp, &n_expected_fields, &n_fields)) && !(GMT->current.io.status & GMT_IO_EOF)) {	/* Not yet EOF */
 			for (i = 0; i < 2; i++) {	/* Get IDs and keept track of min/max values */
-				ID[i][n_COE] = lrint (in[i]);
+				ID[i][n_COE] = (int)lrint (in[i]);
 				if (ID[i][n_COE] < min_ID) min_ID = ID[i][n_COE];
 				if (ID[i][n_COE] > max_ID) max_ID = ID[i][n_COE];
 			}
@@ -691,11 +691,12 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 					sgn = -1.0;	t = 1;
 				} else continue;
 				sw2 = sgn * data[COL_WW][k] * data[COL_WW][k];
+				ks = (int)k;
 				for (r = 0, off = m * row; r < n_par; r++) {	/* For each track's parameter in f(p)  */
-					N[off+i*n_par+r] += sw2 * (basis[r](data,0,k) * basis[s](data,t,k));
-					N[off+j*n_par+r] -= sw2 * (basis[r](data,1,k) * basis[s](data,t,k));
+					N[off+i*n_par+r] += sw2 * (basis[r](data,0,ks) * basis[s](data,t,ks));
+					N[off+j*n_par+r] -= sw2 * (basis[r](data,1,ks) * basis[s](data,t,ks));
 				}
-				b[row] += sw2 * (data[COL_COE][k] * basis[s](data,t,k));
+				b[row] += sw2 * (data[COL_COE][k] * basis[s](data,t,ks));
 			}
 			if (Ctrl->E.mode != F_IS_SCALE && s == 0) N[m*row+m-1] = 1.0;	/* Augmented column entry for Lagrange multiplier */
 		}
@@ -714,7 +715,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 
 	/* Get LS solution */
 
-	if ((ierror = GMT_gauss (GMT, N, b, m, m, true)))
+	if ((ierror = GMT_gauss (GMT, N, b, (unsigned int)m, (unsigned int)m, true)))
 		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Divisions by a small number (< DBL_EPSILON) occurred in GMT_gauss()!\n");
 
 	GMT_free (GMT, N);
@@ -726,8 +727,9 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 		i = ID[0][k];	/* Get track # 1 ID */
 		j = ID[1][k];	/* Get track # 2 ID */
 		e_k = data[COL_COE][k];
+		ks = (int)k;
 		for (r = 0; r < n_par; r++) {	/* Correct crossover for track adjustments  */
-			e_k += a[j*n_par+r]*basis[r](data,1,k) - a[i*n_par+r]*basis[r](data,0,k);
+			e_k += a[j*n_par+r]*basis[r](data,1,ks) - a[i*n_par+r]*basis[r](data,0,ks);
 		}
 
 		if (Ctrl->W.unweighted_stats) {

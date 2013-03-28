@@ -252,9 +252,9 @@ static void jumpProc (Widget bar, PanScrollRec *data, float *fraction)
      range X/2 .. 1 - X/2, so scale such a value
      back to 0..1. Values below 0.0 or above 1.0 are
      clipped.					*/
-  scaleFrac = (*fraction - (thumbSize/2)) / (1.0 - thumbSize);
-  scaleFrac = Max(scaleFrac, 0.0);
-  scaleFrac = Min(scaleFrac, 1.0);
+  scaleFrac = (*fraction - (thumbSize/2)) / (1.0f - thumbSize);
+  scaleFrac = Max(scaleFrac, 0.0f);
+  scaleFrac = Min(scaleFrac, 1.0f);
   previous = data->position;
   data->position = (int)(scaleFrac * (data->range - data->shown));
   recalculateBar(data);
@@ -289,7 +289,7 @@ static void scrollProc (Widget bar, PanScrollRec *data, int position)
   if (data->scroll_step != 0)
     distance = data->scroll_step;
   else
-    distance = Max(0.9 * data->shown, 4);
+    distance = (int)Max(0.9 * data->shown, 4);
   if (position < 0)
     data->position -= distance;
   else

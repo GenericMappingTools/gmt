@@ -804,10 +804,10 @@ int grdgravmag3d_body_set(struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, struct
 		body_verts[3].y = body_verts[2].y;
 		if (inc_i == 1) {
 			int ij;
-			ij = GMT_IJP(h,j,i);
+			ij = (int)GMT_IJP(h,j,i);
 			body_verts[0].z = z[ij];
 			body_verts[1].z = z[ij + 1];  /* z[GMT_IJP(h,j,i1)];  */
-			ij = GMT_IJP(h,j1,i1);
+			ij = (int)GMT_IJP(h,j1,i1);
 			body_verts[2].z = z[ij];      /* z[GMT_IJP(h,j1,i1)]; */
 			body_verts[3].z = z[ij - 1];  /* z[GMT_IJP(h,j1,i)];  */
 		}

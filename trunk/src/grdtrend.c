@@ -276,7 +276,7 @@ void compute_trend (struct GMT_CTRL *GMT, struct GMT_GRID *T, double *xval, doub
 
 	GMT_grd_loop (GMT, T, row, col, ij) {
 		load_pstuff (pstuff, n_model, xval[col], yval[row], 1, (!(col)));
-		T->data[ij] = 0.0;
+		T->data[ij] = 0.0f;
 		for (k = 0; k < n_model; k++) T->data[ij] += (float)(pstuff[k]*gtd[k]);
 	}
 }
@@ -558,7 +558,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 		}
 		if (set_ones) {
 			if ((W = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_ALLOC, G)) == NULL) Return (API->error);	/* Pointer for grid with unit weights  */
-			GMT_setnval (W->data, W->header->size, 1.0);
+			GMT_setnval (W->data, W->header->size, 1.0f);
 		}
 	}
 

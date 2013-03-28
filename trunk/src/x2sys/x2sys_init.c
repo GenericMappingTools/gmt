@@ -298,7 +298,7 @@ int GMT_x2sys_init (void *V_API, int mode, void *args)
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to open local definition file : %s\n", def_file);
 		Return (EXIT_FAILURE);
 	}
-	for (d_start = strlen (Ctrl->D.file)-1; d_start >= 0 && Ctrl->D.file[d_start] != '/'; d_start--);	/* Find pos of last slash */
+	for (d_start = (int)strlen (Ctrl->D.file)-1; d_start >= 0 && Ctrl->D.file[d_start] != '/'; d_start--);	/* Find pos of last slash */
 	d_start++;		/* Find start of file name */
 	
 	/* Determine the TAG directory */

@@ -275,7 +275,7 @@ int GMT_psclip (void *V_API, int mode, void *args)
 						GMT_geo_to_xy (GMT, S->coord[GMT_X][row], S->coord[GMT_Y][row], &x0, &y0);
 						x[row] = x0; y[row] = y0;
 					}
-					PSL_beginclipping (PSL, x, y, S->n_rows, GMT->session.no_rgb, first);
+					PSL_beginclipping (PSL, x, y, (int)S->n_rows, GMT->session.no_rgb, first);
 					first = 0;
 					if (D->alloc_mode == GMT_READONLY) {	/* Free temp arrays */
 						GMT_free (GMT, x);	GMT_free (GMT, y);

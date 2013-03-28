@@ -202,7 +202,7 @@ void median_output (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, uint64_t fi
 	if (go_quickly == 1) return;	/* Already have everything requested so we return */
 
 	if (go_quickly == 2) {	/* Return center of block instead of computing a representative location */
-		unsigned int row, col;
+		uint64_t row, col;
 		row = GMT_row (h, data[node].ij);
 		col = GMT_col (h, data[node].ij);
 		out[GMT_X] = GMT_grd_col_to_x (GMT, col, h);

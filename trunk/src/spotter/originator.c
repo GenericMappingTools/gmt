@@ -604,7 +604,7 @@ int GMT_originator (void *V_API, int mode, void *args)
 
 			k = 0;
 			while (k < n_stages && hot[spot].np_time <= p[k].t_stop) k++;
-			hot[spot].stage = n_stages - k;
+			hot[spot].stage = n_stages - (unsigned int)k;
 			if (hot[spot].stage == 0) hot[spot].stage++;
 		}
 

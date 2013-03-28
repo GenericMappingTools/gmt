@@ -6321,8 +6321,8 @@ uint64_t GMT_compact_line (struct GMT_CTRL *GMT, double *x, double *y, uint64_t 
 int GMT_project_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double *inc, unsigned int nx, unsigned int ny, unsigned int dpi, unsigned int offset)
 {
 	if (inc[GMT_X] > 0.0 && inc[GMT_Y] > 0.0) {
-		header->nx = GMT_get_n (GMT, header->wesn[XLO], header->wesn[XHI], inc[GMT_X], offset);
-		header->ny = GMT_get_n (GMT, header->wesn[YLO], header->wesn[YHI], inc[GMT_Y], offset);
+		header->nx = (unsigned int) GMT_get_n (GMT, header->wesn[XLO], header->wesn[XHI], inc[GMT_X], offset);
+		header->ny = (unsigned int) GMT_get_n (GMT, header->wesn[YLO], header->wesn[YHI], inc[GMT_Y], offset);
 		header->inc[GMT_X] = GMT_get_inc (GMT, header->wesn[XLO], header->wesn[XHI], header->nx, offset);
 		header->inc[GMT_Y] = GMT_get_inc (GMT, header->wesn[YLO], header->wesn[YHI], header->ny, offset);
 	}
@@ -6332,8 +6332,8 @@ int GMT_project_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, doub
 		header->inc[GMT_Y] = GMT_get_inc (GMT, header->wesn[YLO], header->wesn[YHI], header->ny, offset);
 	}
 	else if (dpi > 0) {
-		header->nx = lrint ((header->wesn[XHI] - header->wesn[XLO]) * dpi) + 1 - offset;
-		header->ny = lrint ((header->wesn[YHI] - header->wesn[YLO]) * dpi) + 1 - offset;
+		header->nx = (unsigned int)lrint ((header->wesn[XHI] - header->wesn[XLO]) * dpi) + 1 - offset;
+		header->ny = (unsigned int)lrint ((header->wesn[YHI] - header->wesn[YLO]) * dpi) + 1 - offset;
 		header->inc[GMT_X] = GMT_get_inc (GMT, header->wesn[XLO], header->wesn[XHI], header->nx, offset);
 		header->inc[GMT_Y] = GMT_get_inc (GMT, header->wesn[YLO], header->wesn[YHI], header->ny, offset);
 	}
@@ -6601,9 +6601,9 @@ int GMT_img_project (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, struct GMT_IMAGE
 
 				/* Here, (x_proj, y_proj) is the projected grid point.  Now find nearest node on the output grid */
 
-				row_out = GMT_grd_y_to_row (GMT, y_proj, O->header);
+				row_out = (int)GMT_grd_y_to_row (GMT, y_proj, O->header);
 				if (row_out < 0 || row_out >= ny) continue;	/* Outside our grid region */
-				col_out = GMT_grd_x_to_col (GMT, x_proj, O->header);
+				col_out = (int)GMT_grd_x_to_col (GMT, x_proj, O->header);
 				if (col_out < 0 || col_out >= nx) continue;	/* Outside our grid region */
 
 				/* OK, this projected point falls inside the projected grid's rectangular domain */
@@ -7479,7 +7479,7 @@ int gmt_init_three_D (struct GMT_CTRL *GMT) {
 
 	if (GMT->current.proj.z_project.view_azimuth >= 360.0) GMT->current.proj.z_project.view_azimuth -= 360.0;
 	if (GMT->current.proj.z_project.view_azimuth < 0.0)    GMT->current.proj.z_project.view_azimuth += 360.0;
-	GMT->current.proj.z_project.quadrant = lrint (floor (GMT->current.proj.z_project.view_azimuth / 90.0)) + 1;
+	GMT->current.proj.z_project.quadrant = (unsigned int)lrint (floor (GMT->current.proj.z_project.view_azimuth / 90.0)) + 1;
 	sincosd (GMT->current.proj.z_project.view_azimuth, &GMT->current.proj.z_project.sin_az, &GMT->current.proj.z_project.cos_az);
 	sincosd (GMT->current.proj.z_project.view_elevation, &GMT->current.proj.z_project.sin_el, &GMT->current.proj.z_project.cos_el);
 
@@ -7866,8 +7866,8 @@ int GMT_map_setup (struct GMT_CTRL *GMT, double wesn[])
 	GMT->current.map.half_width  = 0.5 * GMT->current.map.width;
 	GMT->current.map.half_height = 0.5 * GMT->current.map.height;
 
-	if (!GMT->current.map.n_lon_nodes) GMT->current.map.n_lon_nodes = lrint (GMT->current.map.width / GMT->current.setting.map_line_step);
-	if (!GMT->current.map.n_lat_nodes) GMT->current.map.n_lat_nodes = lrint (GMT->current.map.height / GMT->current.setting.map_line_step);
+	if (!GMT->current.map.n_lon_nodes) GMT->current.map.n_lon_nodes = (unsigned int)lrint (GMT->current.map.width / GMT->current.setting.map_line_step);
+	if (!GMT->current.map.n_lat_nodes) GMT->current.map.n_lat_nodes = (unsigned int)lrint (GMT->current.map.height / GMT->current.setting.map_line_step);
 
 	GMT->current.map.dlon = (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) / GMT->current.map.n_lon_nodes;
 	GMT->current.map.dlat = (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) / GMT->current.map.n_lat_nodes;

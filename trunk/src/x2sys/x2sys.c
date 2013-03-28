@@ -421,7 +421,7 @@ unsigned int x2sys_record_length (struct GMT_CTRL *GMT, struct X2SYS_INFO *s)
 				rec_length += 4;
 				break;
 			case 'l':
-				rec_length += sizeof (long);
+				rec_length += (unsigned int)sizeof (long);
 				break;
 			case 'd':
 				rec_length += 8;
@@ -694,8 +694,8 @@ int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struc
 	 * MGG format from old Lamont by Wessel and Smith.
 	 */
 
-	int year, n_records;	/* These must remain 4-byte ints */
-	int i, rata_day;
+	int i, year, n_records;	/* These must remain 4-byte ints */
+	int64_t rata_day;
 	uint64_t j;
 	char path[GMT_BUFSIZ];
 	FILE *fp = NULL;
@@ -1235,8 +1235,8 @@ void x2sys_bix_init (struct GMT_CTRL *GMT, struct X2SYS_BIX *B, bool alloc)
 {
 	B->i_bin_x = 1.0 / B->inc[GMT_X];
 	B->i_bin_y = 1.0 / B->inc[GMT_Y];
-	B->nx_bin = lrint ((B->wesn[XHI] - B->wesn[XLO]) * B->i_bin_x);
-	B->ny_bin = lrint ((B->wesn[YHI] - B->wesn[YLO]) * B->i_bin_y);
+	B->nx_bin = (int)lrint ((B->wesn[XHI] - B->wesn[XLO]) * B->i_bin_x);
+	B->ny_bin = (int)lrint ((B->wesn[YHI] - B->wesn[YLO]) * B->i_bin_y);
 	B->nm_bin = B->nx_bin * B->ny_bin;
 	if (alloc) B->binflag = GMT_memory (GMT, NULL, B->nm_bin, unsigned int);
 }
@@ -1391,12 +1391,12 @@ int x2sys_bix_get_index (struct GMT_CTRL *GMT, double x, double y, int *i, int *
 	uint64_t index = 0;
 	int64_t tmp;
 
-	*j = (y == B->wesn[YHI]) ? B->ny_bin - 1 : lrint (floor ((y - B->wesn[YLO]) * B->i_bin_y));
+	*j = (y == B->wesn[YHI]) ? B->ny_bin - 1 : (int)lrint (floor ((y - B->wesn[YLO]) * B->i_bin_y));
 	if ((*j) < 0 || (*j) >= B->ny_bin) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "row (%d) outside range implied by -R -I! [0-%d>\n", *j, B->ny_bin);
 		return (X2SYS_BIX_BAD_ROW);
 	}
-	*i = (x == B->wesn[XHI]) ? B->nx_bin - 1 : lrint (floor ((x - B->wesn[XLO])  * B->i_bin_x));
+	*i = (x == B->wesn[XHI]) ? B->nx_bin - 1 : (int)lrint (floor ((x - B->wesn[XLO])  * B->i_bin_x));
 	if (B->periodic) {
 		while (*i < 0) *i += B->nx_bin;
 		while (*i >= B->nx_bin) *i -= B->nx_bin;
@@ -1611,7 +1611,7 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 				if (txt[strlen(txt)-1] == '1') two_values = true;	/* Option -2 was used */
 				while (our_item == -1 && (GMT_strtok (&line[2], " \t", &pos, ptr))) {    /* Process all tokens */
 					item++;
-					i = strlen (ptr) - 1;
+					i = (int)strlen (ptr) - 1;
 					while (i >= 0 && ptr[i] != '_') i--;	/* Start at end and find last underscore */
 					if (i < 0) continue;		/* First records 'lon' & 'lat' have no '_' */
 					strncpy (txt, ptr, i);
@@ -1799,7 +1799,7 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 		}
 		else {
 			P[p].COE = GMT_memory (GMT, P[p].COE, k, struct X2SYS_COE);
-			P[p].nx = k;
+			P[p].nx = (unsigned int)k;
 			*nx += k;
 		}
 	}
@@ -1902,7 +1902,7 @@ unsigned int separate_aux_columns2 (struct GMT_CTRL *GMT, unsigned int n_items, 
 void x2sys_get_corrtable (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char *ctable, uint64_t ntracks, char **trk_name, char *column, struct MGD77_AUX_INFO *aux, struct MGD77_AUXLIST *auxlist, struct MGD77_CORRTABLE ***CORR)
 {	/* Load an ephemeral correction table */
 	/* Pass aux as NULL if the auxillary columns do not matter (only used by x2sys_datalist) */
-	uint64_t i, n_items, n_aux = 0, n_cols, missing;
+	unsigned int i, n_items, n_aux = 0, n_cols, missing;
 	int ks;
 	char path[GMT_BUFSIZ], **item_names = NULL, **col_name = NULL, **aux_name = NULL;
 

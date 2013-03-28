@@ -831,8 +831,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 	
 	if (Ctrl->L.active) {	/* Remove tile lines only */
 		int gap = 0, first, prev_OK;
-		uint64_t row, seg;
-		unsigned int tbl;
+		uint64_t row, seg, tbl;
 		double dx, dy, DX, DY, dist;
 
 		GMT_init_distaz (GMT, GMT_MAP_DIST_UNIT, 2, GMT_MAP_DIST);	/* Default is m using great-circle distances */
@@ -878,8 +877,8 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 	
 	if (Ctrl->Q.active) {	/* Calculate centroid and polygon areas or line lengths and place in segment headers */
 		double out[3];
-		uint64_t seg, row_f, row_l;
-		unsigned int handedness = 0, tbl, col;
+		uint64_t seg, row_f, row_l, tbl, col;
+		unsigned int handedness = 0;
 		int mode, poly, geo = GMT_is_geographic (GMT, GMT_IN);
 
 		char line[GMT_BUFSIZ];
@@ -956,8 +955,8 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 	
 	if (Ctrl->I.active || external) {	/* Crossovers between polygons */
 		bool same_feature;
-		unsigned int tbl1, tbl2, col, in;
-		uint64_t nx, row, seg1, seg2;
+		unsigned int in;
+		uint64_t tbl1, tbl2, col, nx, row, seg1, seg2;
 		struct GMT_XSEGMENT *ylist1 = NULL, *ylist2 = NULL;
 		struct GMT_XOVER XC;
 		char T1[GMT_BUFSIZ], T2[GMT_BUFSIZ], fmt[GMT_BUFSIZ];
@@ -1141,8 +1140,8 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 	}
 	
 	if (Ctrl->D.active) {	/* Look for duplicates of lines or polygons */
-		unsigned int tbl, tbl2, col, n_dup, poly_D, poly_S2;
-		uint64_t seg, seg2;
+		unsigned int n_dup, poly_D, poly_S2;
+		uint64_t tbl, tbl2, col, seg, seg2;
 		bool same_feature = false;
 		char *kind[9] = {"approximate-reversed-superset", "approximate-reversed-subset", "approximate-reversed", "exact-reversed" , "", "exact", "approximate", "approximate-subset", "approximate-superset"};
 		char record[GMT_BUFSIZ], format[GMT_BUFSIZ], src[GMT_BUFSIZ], dup[GMT_BUFSIZ], *feature[2] = {"polygon", "line"}, *from = NULL;
@@ -1232,8 +1231,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 	}
 	
 	if (Ctrl->C.active) {	/* Clip polygon to bounding box */
-		uint64_t np, p, nx;
-		unsigned int tbl, seg, col;
+		uint64_t np, p, nx, tbl, seg, col;
 		double *cp[2] = {NULL, NULL};
 		if (!GMT->common.J.active) {	/* -J not specified, set one implicitly */
 			/* Supply dummy linear proj */
@@ -1364,9 +1362,8 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 		Return (EXIT_SUCCESS);
 	}
 	if (Ctrl->S.active) {	/* Do geospatial operations */
-		unsigned int tbl;
-		uint64_t n_split = 0, seg_out, seg, n_segs, kseg;
 		bool crossing;
+		uint64_t n_split = 0, tbl, seg_out, seg, n_segs, kseg;
 		uint64_t dim[4] = {0, 1, 0, 0};
 		struct GMT_DATASET *Dout = NULL;
 		struct GMT_DATATABLE *T = NULL;

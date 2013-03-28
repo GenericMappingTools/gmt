@@ -84,8 +84,8 @@ struct PSMASK_CTRL {
 
 struct PSMASK_INFO {
 	bool first_dump;
-	int p[5], i_off[5], j_off[5], k_off[5], offset;
-	unsigned int bit[32];
+	int p[5], i_off[5], j_off[5], k_off[5];
+	unsigned int bit[32], offset;
 };
 
 void draw_clip_contours (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx, double *yy, uint64_t nn, double rgb[], unsigned int id, unsigned int flag)
@@ -102,11 +102,11 @@ void draw_clip_contours (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx,
 	nn = GMT_compact_line (GMT, xx, yy, nn, false, 0);
 
 	if (nn > 0) PSL_comment (PSL, "Start of clip path sub-segment %d\n", id);
-	PSL_beginclipping (PSL, xx, yy, nn, rgb, flag);
+	PSL_beginclipping (PSL, xx, yy, (int)nn, rgb, flag);
 	if (nn > 0) PSL_comment (PSL, "End of clip path sub-segment %d\n", id);
 }
 
-int trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, unsigned int *edge, struct GMT_GRID_HEADER *h, double inc2[], double **xx, double **yy, int i, int j, int kk, uint64_t *max)
+uint64_t trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, unsigned int *edge, struct GMT_GRID_HEADER *h, double inc2[], double **xx, double **yy, int i, int j, int kk, uint64_t *max)
 {
 	int k, k0, n_cuts, kk_opposite, first_k, more;
 	uint64_t n = 1, edge_word, edge_bit, ij, ij0, m;
@@ -236,13 +236,13 @@ int clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, st
 	 * trace_clip_contours will try to allocate more memory in blocks of GMT_CHUNK points
 	 */
 	 
-	unsigned int n_edges, edge_word, edge_bit, i, j, n = 0;
+	unsigned int n_edges, edge_word, edge_bit, i, j;
 	static unsigned int i0, j0, side;
-	uint64_t ij;
+	uint64_t ij, n = 0;
 	bool go_on = true;
 	 
 	 
-	n_edges = h->ny * lrint (ceil (h->nx / 16.0));
+	n_edges = h->ny * ((unsigned int)lrint (ceil (h->nx / 16.0)));
 	 
 	 /* Reset edge-flags to zero, if necessary */
 	 if (first) {
@@ -307,10 +307,10 @@ int clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, st
 	return (n);
 }
 
-void shrink_clip_contours (struct GMT_CTRL *GMT, double *x, double *y, unsigned int n, double w, double e)
+void shrink_clip_contours (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double w, double e)
 {
 	/* Moves outside points to boundary */
-	unsigned int i;
+	uint64_t i;
 
 	for (i = 0; i < n; i++) {
 		if (x[i] < w)
@@ -699,7 +699,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 			x = GMT_memory (GMT, NULL, GMT_CHUNK, double);
 			y = GMT_memory (GMT, NULL, GMT_CHUNK, double);
 
-			n_edges = Grid->header->ny * lrint (ceil (Grid->header->nx / 16.0));
+			n_edges = Grid->header->ny * ((unsigned int)lrint (ceil (Grid->header->nx / 16.0)));
 			edge = GMT_memory (GMT, NULL, n_edges, unsigned int);
 
 			if (make_plot) GMT_map_basemap (GMT);
@@ -770,16 +770,16 @@ int GMT_psmask (void *V_API, int mode, void *args)
 
 						GMT->current.plot.n = GMT_map_truncate (GMT, xp, yp, plot_n, start, -1);
 						n_use = GMT_compact_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, false, 0);
-						PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, n_use);
+						PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, (int)n_use);
 
 						/* Then truncate against right border */
 
 						GMT->current.plot.n = GMT_map_truncate (GMT, xp, yp, plot_n, start, +1);
 						n_use = GMT_compact_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, false, 0);
-						PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, n_use);
+						PSL_plotpolygon (PSL, GMT->current.plot.x, GMT->current.plot.y, (int)n_use);
 					}
 					else
-						PSL_plotpolygon (PSL, xp, yp, plot_n);
+						PSL_plotpolygon (PSL, xp, yp, (int)plot_n);
 					GMT_free (GMT, xp);
 					GMT_free (GMT, yp);
 				}

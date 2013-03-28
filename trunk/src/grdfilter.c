@@ -681,7 +681,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	if (Ctrl->D.mode > GRDFILTER_XY_CARTESIAN) {	/* Data on a sphere so must check for both periodic and polar wrap-arounds */
 		spherical = true;
 		/* Compute the wrap-around delta_nx to use [may differ from nx unless a 360 grid] */
-		nx_wrap = GMT_get_n (GMT, 0.0, 360.0, Gin->header->inc[GMT_X], GMT_GRID_PIXEL_REG);	/* So we basically bypass the duplicate point at east */
+		nx_wrap = (int)GMT_get_n (GMT, 0.0, 360.0, Gin->header->inc[GMT_X], GMT_GRID_PIXEL_REG);	/* So we basically bypass the duplicate point at east */
 	}	
 #ifdef DEBUG
 	if ((A = init_area_weights (GMT, Gin, Ctrl->D.mode, Ctrl->W.file)) == NULL) Return (API->error);	/* Precalculate area weights, save debug grid */
@@ -775,8 +775,8 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	x_width = Ctrl->F.width / (Gin->header->inc[GMT_X] * x_scale);
 	y_width = ((F.rect) ? Ctrl->F.width2 : Ctrl->F.width) / (Gin->header->inc[GMT_Y] * y_scale);
 	if (!Ctrl->F.custom) {	/* Parameters computed from width and other settings */
-		F.x_half_width = lrint (ceil (x_width / 2.0));
-		F.y_half_width = lrint (ceil (y_width / 2.0));
+		F.x_half_width = (int)lrint (ceil (x_width / 2.0));
+		F.y_half_width = (int)lrint (ceil (y_width / 2.0));
 		F.nx = 2 * F.x_half_width + 1;
 		F.ny = 2 * F.y_half_width + 1;
 		if (GMT_IS_ZERO (x_scale) || F.x_half_width < 0 || F.nx > Gin->header->nx) {	/* Safety valve when x_scale -> 0.0 */
@@ -850,7 +850,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 
 	for (col_out = 0; col_out < Gout->header->nx; col_out++) {
 		x_out = GMT_grd_col_to_x (GMT, col_out, Gout->header);	/* Current longitude */
-		col_origin[col_out] = GMT_grd_x_to_col (GMT, x_out, Gin->header);
+		col_origin[col_out] = (int)GMT_grd_x_to_col (GMT, x_out, Gin->header);
 		if (!fast_way) x_shift[col_out] = x_out - GMT_grd_col_to_x (GMT, col_origin[col_out], Gin->header);
 	}
 
@@ -891,14 +891,14 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 #endif
 		y_out = GMT_grd_row_to_y (GMT, row_out, Gout->header);		/* Current output y [or latitude] */
 		lat_out = (Ctrl->D.mode == GRDFILTER_GEO_MERCATOR) ? IMG2LAT (y_out) : y_out;	/* Adjust lat if IMG grid */
-		row_origin = GMT_grd_y_to_row (GMT, y_out, Gin->header);		/* Closest row in input grid */
+		row_origin = (int)GMT_grd_y_to_row (GMT, y_out, Gin->header);		/* Closest row in input grid */
 		if (Ctrl->D.mode == GRDFILTER_GEO_FLATEARTH2) par[GRDFILTER_X_SCALE] = GMT->current.proj.DIST_KM_PR_DEG * cosd (lat_out);	/* Update flat-Earth longitude scale */
 
 		if (Ctrl->D.mode > GRDFILTER_GEO_FLATEARTH1) {	/* Update max filterweight nodes to deal with for this latitude */
 			unsigned int test_nx;
 			y = fabs (lat_out);
 			if (Ctrl->D.mode == GRDFILTER_GEO_SPHERICAL) y += (par[GRDFILTER_HALF_WIDTH] / par[GRDFILTER_Y_SCALE]);	/* Highest latitude within filter radius */
-			test_nx = lrint (par[GRDFILTER_HALF_WIDTH] / (F.dx * par[GRDFILTER_Y_SCALE] * cosd (y)));
+			test_nx = (unsigned int)lrint (par[GRDFILTER_HALF_WIDTH] / (F.dx * par[GRDFILTER_Y_SCALE] * cosd (y)));
 			F.x_half_width = (y < 90.0) ? MIN ((F.nx - 1) / 2, test_nx) : (F.nx - 1) / 2;
 			if (y > 90.0 && (F.nx - 2 * F.x_half_width - 1) > 0) F.x_half_width++;	/* When nx is even we may come up short by 1 */
 			visit_check = ((2 * F.x_half_width + 1) >= (int)Gin->header->nx);	/* Must make sure we only visit each node once along a row */

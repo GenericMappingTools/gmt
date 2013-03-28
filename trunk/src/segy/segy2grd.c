@@ -267,11 +267,11 @@ int GMT_segy2grd (void *V_API, int mode, void *args)
 {
 	bool  read_cont = false, swap_bytes = !GMT_BIGENDIAN;
 	int error = 0;
-	unsigned int n_samp = 0, ij0;
+	unsigned int n_samp = 0;
 	unsigned int ii, jj, n_read = 0, n_filled = 0, n_used = 0, *flag = NULL;
 	unsigned int n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0, check, ix, isamp;
 
-	uint64_t ij;
+	uint64_t ij, ij0;
 	
 	double idy, x0, yval;
 
@@ -496,12 +496,12 @@ int GMT_segy2grd (void *V_API, int mode, void *args)
 
 			if (!(x0 < GMT->common.R.wesn[XLO] || x0 > GMT->common.R.wesn[XHI])) {	/* inside x-range */
 				/* find horizontal grid pos of this trace */
-				ii = GMT_grd_x_to_col (GMT, x0, Grid->header);
+				ii = (unsigned int)GMT_grd_x_to_col (GMT, x0, Grid->header);
 				if (ii == Grid->header->nx) ii--, n_confused++;
 				for (isamp = 0; isamp< n_samp; ++isamp) {
 					yval = isamp*Ctrl->Q.value[Y_ID];
 					if (!(yval < GMT->common.R.wesn[YLO] || yval > GMT->common.R.wesn[YHI])) {	/* inside y-range */
-						jj = GMT_grd_y_to_row (GMT, yval, Grid->header);
+						jj = (unsigned int)GMT_grd_y_to_row (GMT, yval, Grid->header);
 						if (jj == Grid->header->ny) jj--, n_confused++;
 						ij = GMT_IJ0 (Grid->header, jj, ii);
 						Grid->data[ij] += data[isamp];	/* Add up incase we must average */
@@ -517,7 +517,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args)
 
 		for (ij = 0; ij < Grid->header->nm; ij++) {	/* Check if all nodes got one value only */
 			if (flag[ij] == 1) {
-				if (Ctrl->A.mode == COUNT) Grid->data[ij] = 1.0;
+				if (Ctrl->A.mode == COUNT) Grid->data[ij] = 1.0f;
 				n_filled++;
 			}
 			else if (flag[ij] == 0) {

@@ -274,10 +274,9 @@ uint64_t Douglas_Peucker_geog (struct GMT_CTRL *GMT, double x_source[], double y
 
 int GMT_gmtdp (void *V_API, int mode, void *args)
 {
-	unsigned int tbl, col;
 	int error;
 	bool geo;
-	uint64_t row, seg, np_out, *index = NULL;
+	uint64_t tbl, col, row, seg, np_out, *index = NULL;
 	
 	double tolerance;
 	

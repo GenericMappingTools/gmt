@@ -508,8 +508,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	}
 	
 	if (Ctrl->C.active) {	/* Special case of requesting cross-profiles for given line segments */
-		unsigned int tbl, col, n_cols = Ctrl->G.n_grids;
-		uint64_t row, seg;
+		uint64_t tbl, col, row, seg, n_cols = Ctrl->G.n_grids;
 		struct GMT_DATASET *Dtmp = NULL;
 		struct GMT_DATATABLE *T = NULL;
 		struct GMT_DATASEGMENT *S = NULL;
@@ -595,8 +594,8 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			struct GMT_DATASET *Stack = NULL;
 			struct GMT_DATASEGMENT *M = NULL;
 			uint64_t dim[4], n_rows;
+			uint64_t colx, col0 = 4 + Ctrl->G.n_grids;		/* First column for stacked value in cross-profiles */
 			unsigned int n_step = (Ctrl->S.mode < STACK_LOWER) ? 6 : 4;	/* Number of columns per gridded data in stack file */
-			unsigned int colx, col0 = 4 + Ctrl->G.n_grids;		/* First column for stacked value in cross-profiles */
 			unsigned int GMT_mode_selection = 0, GMT_n_multiples = 0;
 			double **stack = NULL, *stacked_val = NULL, *stacked_dev = NULL, *stacked_hi = NULL, *stacked_lo = NULL, *dev = NULL;
 			dim[0] = 1;				/* One table */
@@ -684,9 +683,9 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		}
 	}
 	else if (Ctrl->E.active) {	/* Quick sampling along given lines */
-		int n_cols = Din->n_columns + Ctrl->G.n_grids, status;
-		unsigned int col, k;
-		uint64_t row, seg;
+		int status;
+		unsigned int k;
+		uint64_t col, n_cols = Din->n_columns + Ctrl->G.n_grids, row, seg;
 		struct GMT_DATASEGMENT *Sin = NULL, *Sout = NULL;
 		
 		Dout = GMT_alloc_dataset (GMT, Din, n_cols, 0, GMT_ALLOC_NORMAL);	/* Same table length as Din, but with up to n_cols columns (lon, lat, dist, g1, g2, ...) */

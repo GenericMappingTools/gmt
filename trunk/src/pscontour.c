@@ -329,7 +329,7 @@ void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAV
 		}
 		if (s < PSCONTOUR_MIN_LENGTH) continue;	/* Contour is too short to be ticked or labeled */
 
-		n_ticks = lrint (floor (s / tick_gap));
+		n_ticks = (unsigned int)lrint (floor (s / tick_gap));
 		if (n_ticks == 0) continue;	/* Too short to be ticked or labeled */
 
 		GMT_setpen (GMT, &save[pol].pen);
@@ -344,7 +344,7 @@ void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAV
 				dx = save[pol].x[j] - save[pol].x[j-1];
 				dy = save[pol].y[j] - save[pol].y[j-1];
 				length = hypot (dx, dy);
-				n_ticks = lrint (ceil (length / tick_gap));	/* At least one per side */
+				n_ticks = (unsigned int)lrint (ceil (length / tick_gap));	/* At least one per side */
 				a = atan2 (dy, dx) + add;
 				sincos (a, &sa, &ca);
 				for (kk = 0; kk <= n_ticks; kk++) {
@@ -613,11 +613,11 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 	
 	unsigned int pscontour_sum, n, nx, k2, k3, node1, node2, c, cont_counts[2] = {0, 0};
 	unsigned int label_mode = 0, last_entry, last_exit, fmt[3] = {0, 0, 0};
-	unsigned int np, k, i, low, high, n_contours = 0, n_tables = 0, tbl_scl = 0, io_mode = 0, tbl, id, *vert = NULL, *cind = NULL;
+	unsigned int i, low, high, n_contours = 0, n_tables = 0, tbl_scl = 0, io_mode = 0, tbl, id, *vert = NULL, *cind = NULL;
 	
 	size_t n_alloc, n_save = 0, n_save_alloc = 0, *n_seg_alloc = NULL, c_alloc = 0;
 	
-	uint64_t ij, *n_seg = NULL;
+	uint64_t k, np, ij, *n_seg = NULL;
 	
 	int *ind = NULL;	/* Must remain int due to triangle */
 	
@@ -752,8 +752,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 	for (i = 0; i < n; i++) GMT_geo_to_xy (GMT, x[i], y[i], &x[i], &y[i]);
 
 	if (Ctrl->Q.active) {	/* Read precalculated triangulation indices */
-		int col;
-		uint64_t seg, row;
+		uint64_t seg, row, col;
 		struct GMT_DATASET *Tin = NULL;
 		struct GMT_DATATABLE *T = NULL;
 
@@ -870,7 +869,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 		}
 		else	/* No annotations, set aval outside range */
 			aval = xyz[1][GMT_Z] + 1.0;
-		for (ic = lrint (min/Ctrl->C.interval), c = 0; ic <= lrint (max/Ctrl->C.interval); ic++, c++) {
+		for (ic = (int)lrint (min/Ctrl->C.interval), c = 0; ic <= (int)lrint (max/Ctrl->C.interval); ic++, c++) {
 			if (c == c_alloc) cont = GMT_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
 			cont[c].val = ic * Ctrl->C.interval;
 			if (Ctrl->contour.annot && (cont[c].val - aval) > GMT_SMALL) aval += Ctrl->A.interval;

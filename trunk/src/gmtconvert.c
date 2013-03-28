@@ -268,8 +268,8 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 {
 	bool match = false, ogr_match = false;
 	int error = 0, ogr_item = 0;
-	unsigned int out_col, col, n_cols_in, n_cols_out, tbl;
-	unsigned int n_horizontal_tbls, n_vertical_tbls, tbl_ver, tbl_hor, use_tbl;
+	uint64_t out_col, col, n_cols_in, n_cols_out, tbl;
+	uint64_t n_horizontal_tbls, n_vertical_tbls, tbl_ver, tbl_hor, use_tbl;
 	uint64_t last_row, n_rows, row, seg, n_out_seg = 0, out_seg = 0;
 	
 	double *val = NULL;

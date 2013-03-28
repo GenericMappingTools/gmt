@@ -247,14 +247,14 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 
 	bool save_type = false, first, wrap_up = false, done, *skip = NULL;
 
-	unsigned int nearest_end[2][2], j, tbl, n_columns, n_qfiles = 0, G, end_order;
+	unsigned int nearest_end[2][2], j, n_qfiles = 0, G, end_order;
 	unsigned int io_mode = GMT_WRITE_SET, q_mode = GMT_WRITE_SET, d_mode = 0, ii, end;
 
 	uint64_t dim_tscr[4] = {1, 1, 0, 0};
 
 	size_t n_seg_alloc[2] = {0, 0}, n_alloc_pts;
 
-	uint64_t n, k, n_rows, seg, np, ns, n_open, out_seg, out_p, id, id2, start_id, iseg, jseg;
+	uint64_t tbl, n_columns, n, k, n_rows, seg, np, ns, n_open, out_seg, out_p, id, id2, start_id, iseg, jseg;
 	uint64_t n_islands = 0, n_trouble = 0, n_closed = 0, chain = 0, match = 0, L, n_steps, n_seg_length;
 
 	double dd[2][2], p_last_x, p_last_y, p_first_x, p_first_y, distance, closed_dist = 0.0;

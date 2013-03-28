@@ -509,8 +509,8 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 		y_width = Ctrl->F.width / (Gin->header->inc[GMT_Y] * y_scale);
 		F.d_flag = Ctrl->D.mode;
 		F.f_flag = Ctrl->F.filter;
-		F.y_half_width = lrint (ceil(y_width) / 2.0);
-		F.x_half_width = lrint (ceil(x_width) / 2.0);
+		F.y_half_width = (int)lrint (ceil(y_width) / 2.0);
+		F.x_half_width = (int)lrint (ceil(x_width) / 2.0);
 		F.dx = Gin->header->inc[GMT_X];
 		F.dy = Gin->header->inc[GMT_Y];
 
@@ -548,7 +548,7 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 
 		for (col_out = 0; col_out < Gout->header->nx; col_out++) {
 			x_out = GMT_grd_col_to_x (GMT, col_out, Gout->header);	/* Current longitude */
-			i_origin[col_out] = GMT_grd_x_to_col (GMT, x_out, Gin->header);
+			i_origin[col_out] = (int)GMT_grd_x_to_col (GMT, x_out, Gin->header);
 			if (!fast_way) x_shift[col_out] = x_out - GMT_grd_col_to_x (GMT, i_origin[col_out], Gin->header);
 		}
 
@@ -602,7 +602,7 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 
 			GMT_Report (API, GMT_MSG_VERBOSE, "Processing output line %d\r", row_out);
 			y_out = GMT_grd_row_to_y (GMT, row_out, Gout->header);
-			j_origin = GMT_grd_y_to_row (GMT, y_out, Gin->header);
+			j_origin = (int)GMT_grd_y_to_row (GMT, y_out, Gin->header);
 			if (effort_level == 2) set_weight_matrix_dim (&F, Gout->header, y_out, shift);
 
 			for (col_out = 0; col_out < Gout->header->nx; col_out++) {

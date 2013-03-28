@@ -97,7 +97,7 @@ void *New_psvelo_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	C->A.S.size_x = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
 	C->A.S.v.h_length = (float)C->A.S.size_x;	/* 9p */
-	C->A.S.v.v_angle = 30.0;
+	C->A.S.v.v_angle = 30.0f;
 	C->A.S.v.status = GMT_VEC_END + GMT_VEC_FILL + GMT_VEC_OUTLINE;
 	C->A.S.v.pen = GMT->current.setting.map_default_pen;
 #ifdef GMT_COMPAT

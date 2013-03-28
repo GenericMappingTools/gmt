@@ -411,7 +411,7 @@ int set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 		get_weight[FILTER1D_COS_ARCH] = &cosine_weight_filter1d;
 		get_weight[FILTER1D_GAUSSIAN] = &gaussian_weight;
 		F->half_width = 0.5 * F->filter_width;
-		F->half_n_f_wts = lrint (floor (F->half_width / F->dt));
+		F->half_n_f_wts = (unsigned int)lrint (floor (F->half_width / F->dt));
 		F->n_f_wts = 2 * F->half_n_f_wts + 1;
 
 		F->f_wt = GMT_memory (GMT, F->f_wt, F->n_f_wts, double);
@@ -562,7 +562,7 @@ int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 	time = F->t_start;
 	left = right = 0;		/* Left/right end of filter window */
 
-	iq = lrint (F->q_factor);
+	iq = (unsigned int)lrint (F->q_factor);
 
 	while (time <= (F->t_stop + small)) {
 		while ((time - F->data[F->t_col][left] - small) > F->half_width) ++left;
@@ -654,7 +654,7 @@ int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 
 			for (i_row = left; i_row < right; ++i_row) {
 				delta_time = time - F->data[F->t_col][i_row];
-				i_f_wt = F->half_n_f_wts + lrint (floor (0.5 + delta_time/F->dt));
+				i_f_wt = F->half_n_f_wts + (int)lrint (floor (0.5 + delta_time/F->dt));
 				if ((i_f_wt < 0) || (i_f_wt >= (int)F->n_f_wts)) continue;
 
 				for(i_col = 0; i_col < F->n_cols; ++i_col) {

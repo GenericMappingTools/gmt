@@ -186,12 +186,12 @@ void compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x
 
 	C->d_n_windows = (double)n_data / (double)C->window;
 
-	n_windows = lrint (2.0 * C->d_n_windows) - 1;
+	n_windows = (int)lrint (2.0 * C->d_n_windows) - 1;
 	one_on_nw = 1.0 / (double)n_windows;
 	dw = (n_windows > 1) ? (double)(n_data - C->window) / (double)(n_windows - 1) : 1.0;
 
 	for (w = 0; w < n_windows; w++) {
-		t_start = lrint (floor (0.5 + w * dw));
+		t_start = (int)lrint (floor (0.5 + w * dw));
 		t_stop = t_start + C->window;
 		if (C->y_given) {
 			for (t = t_start, i = 0; t < t_stop; t++, i+=2) {
@@ -202,7 +202,7 @@ void compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x
 		else {
 			for (t = t_start, i = 0; t < t_stop; t++, i+=2) {
 				C->datac[i] = (float)x[t];
-				C->datac[i+1] = 0.0;
+				C->datac[i+1] = 0.0f;
 			}
 		}
 
@@ -642,9 +642,9 @@ int GMT_spectrum1d (void *V_API, int mode, void *args)
 {
 	bool one_table;
 	int error = 0;
-	unsigned int tbl, k, n_outputs;
+	unsigned int k, n_outputs;
 	
-	uint64_t seg;
+	uint64_t tbl, seg;
 
 	struct SPECTRUM1D_INFO C;
 	struct GMT_DATASET *Din = NULL, *Dout = NULL;

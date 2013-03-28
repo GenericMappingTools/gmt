@@ -403,10 +403,10 @@ int GMT_triangulate (void *V_API, int mode, void *args)
 			   in the -R region (Grid->header->wesn[XLO]/x_max etc.)  Always, col_min <= col_max, row_min <= row_max.
 			 */
 
-			xp = MIN (MIN (vx[0], vx[1]), vx[2]);	col_min = GMT_grd_x_to_col (GMT, xp, Grid->header);
-			xp = MAX (MAX (vx[0], vx[1]), vx[2]);	col_max = GMT_grd_x_to_col (GMT, xp, Grid->header);
-			yp = MAX (MAX (vy[0], vy[1]), vy[2]);	row_min = GMT_grd_y_to_row (GMT, yp, Grid->header);
-			yp = MIN (MIN (vy[0], vy[1]), vy[2]);	row_max = GMT_grd_y_to_row (GMT, yp, Grid->header);
+			xp = MIN (MIN (vx[0], vx[1]), vx[2]);	col_min = (int)GMT_grd_x_to_col (GMT, xp, Grid->header);
+			xp = MAX (MAX (vx[0], vx[1]), vx[2]);	col_max = (int)GMT_grd_x_to_col (GMT, xp, Grid->header);
+			yp = MAX (MAX (vy[0], vy[1]), vy[2]);	row_min = (int)GMT_grd_y_to_row (GMT, yp, Grid->header);
+			yp = MIN (MIN (vy[0], vy[1]), vy[2]);	row_max = (int)GMT_grd_y_to_row (GMT, yp, Grid->header);
 
 			/* Adjustments for triangles outside -R region. */
 			/* Triangle to the left or right. */

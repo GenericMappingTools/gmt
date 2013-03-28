@@ -462,7 +462,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args)
 		r_smt = in[3];
 		r_smt /= EQ_RAD;				/* Converts radius in km to radians */
 		norm = -4.5 / (r_smt * r_smt);			/* Gaussian normalization */
-		node_y_width = lrint (ceil (i_yinc_r * r_smt));	/* y-node coverage */
+		node_y_width = (int)lrint (ceil (i_yinc_r * r_smt));	/* y-node coverage */
 
 		/* STEP 3: Convolve this flowline with seamount shape and add to CVA grid */
 
@@ -489,16 +489,16 @@ int GMT_hotspotter (void *V_API, int mode, void *args)
 
 			/* OK, this point is within our region, get node index */
 
-			col = GMT_grd_x_to_col (GMT, c[kx], G_rad->header);
+			col = (unsigned int)GMT_grd_x_to_col (GMT, c[kx], G_rad->header);
 			yg = GMT_lat_swap (GMT, R2D * c[ky], GMT_LATSWAP_O2G);		/* Convert back to geodetic */
-			row = GMT_grd_y_to_row (GMT, yg, G->header);
+			row = (unsigned int)GMT_grd_y_to_row (GMT, yg, G->header);
 			node = GMT_IJP (G->header, row, col);
 
 			if (!processed_node[node]) {	/* Have not added to the CVA at this node yet */
 
 				/* Shape is z_smt * exp (r^2 * norm) */
 
-				node_x_width = lrint (ceil (r_smt * ilatfactor[row]));
+				node_x_width = (int)lrint (ceil (r_smt * ilatfactor[row]));
 				dx = c[kx] - xpos[col];
 				dy = c[ky] - ypos[row];
 

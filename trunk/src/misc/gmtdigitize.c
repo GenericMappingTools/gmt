@@ -119,7 +119,7 @@ int get_digitize_raw (struct GMT_CTRL *GMT, int digunit, double *xdig, double *y
 	int i, n, ix, iy;
 	char buffer[256], button;
 	
-	n = read (digunit, buffer, 255U);
+	n = (int)read (digunit, buffer, 255U);
 	if (n <= 0) return (END_BUTTON);
 	n--;
 	buffer[n] = 0;

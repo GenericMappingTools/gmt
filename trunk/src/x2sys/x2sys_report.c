@@ -227,8 +227,9 @@ int GMT_x2sys_report (void *V_API, int mode, void *args)
 	int error = 0;
 	bool internal = false;	/* false if only external xovers are needed */
 	bool external = true;	/* false if only internal xovers are needed */
-	uint64_t i, k, n, coe_kind, n_use, n_tracks;
+	uint64_t i, k, n, n_use, n_tracks;
 	uint64_t p, np, nx, Tnx = 0;
+	unsigned int coe_kind;
 	double sum, sum2, sum_w, Tsum, Tsum2, COE, sign, scale, corr[2] = {0.0, 0.0};
 	double Tmean, Tstdev, Trms;
 	struct GMT_OPTION *opt = NULL;
@@ -452,7 +453,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args)
 	GMT_free (GMT, trk_name);
 	GMT_free (GMT, R);
 
-	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, n_tracks);
+	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, (unsigned int)n_tracks);
 	x2sys_end (GMT, s);
 
 	Return (GMT_OK);

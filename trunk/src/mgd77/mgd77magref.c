@@ -530,7 +530,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args)
 	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
-	n_out = n_field_components + ((Ctrl->copy_input) ? Din->n_columns : 0);
+	n_out = n_field_components + ((Ctrl->copy_input) ? (unsigned int)Din->n_columns : 0);
 	if (cm4_igrf_T) n_out -= 2;	/* Decrease by 2 because the x,y,z were imposed internaly only. i.e not for output */
 	if ((error = GMT_set_cols (GMT, GMT_OUT, n_out)) != GMT_OK) {
 		Return (error);
