@@ -798,7 +798,7 @@ double spline2d_lookup (struct GMT_CTRL *GMT, double x, double par[], double *y)
 	f = (x - par[10]) * par[9];	/* Floating point index */
 	f0 = floor (f);
 	df = f - f0;
-	k = (int)lrint (f0);
+	k = irint (f0);
 	if (df == 0.0) return (y[k]);
 	return (y[k]*(1.0 - df) + y[k+1] * df);
 }
@@ -824,7 +824,7 @@ void spline2d_Wessel_Becker_init (struct GMT_CTRL *GMT, double par[], double *z,
 	fp = fopen ("greenspline.b", "wb");
 	n_out = (grad) ? 3 : 2;
 #endif
-	nx = (int)lrint (par[7]);
+	nx = irint (par[7]);
 	for (i = 0; i < nx; i++) {
 		x = par[10] + i * par[8];
 		z[i] = spline2d_Wessel_Becker (GMT, x, par, NULL);
@@ -1402,11 +1402,11 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 			if (dimension == 3) {	/* Also set nz */
 				Z.z_min = Ctrl->R3.range[4];	Z.z_max = Ctrl->R3.range[5];
 				Z.z_inc = Ctrl->I.inc[GMT_Z];
-				Z.nz = (unsigned int) GMT_get_n (GMT, Z.z_min, Z.z_max, Z.z_inc, Grid->header->registration);
+				Z.nz = GMT_get_n (GMT, Z.z_min, Z.z_max, Z.z_inc, Grid->header->registration);
 			}
 		}
 		else
-			Grid->header->nx = (unsigned int) GMT_grd_get_nx (GMT, Grid->header);
+			Grid->header->nx = GMT_grd_get_nx (GMT, Grid->header);
 		nxy = n_ok = Grid->header->size * Z.nz;
 		if (dimension == 2) Grid->data = GMT_memory_aligned (GMT, NULL, nxy, float);
 		Out = Grid;	/* Just point since we created Grid */
@@ -1515,7 +1515,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 				par[8] = (Ctrl->S.rval[1] - Ctrl->S.rval[0]) / (par[7] - 1.0);
 				par[9] = 1.0 / par[8];
 				par[10] = Ctrl->S.rval[0];
-				nx = (int)lrint (par[7]);
+				nx = irint (par[7]);
 				GMT_Report (API, GMT_MSG_VERBOSE, "Precalculate -SQ lookup table with %d items from %g to %g...", nx, Ctrl->S.rval[0], Ctrl->S.rval[1]);
 				WB_z = GMT_memory (GMT, NULL, nx, double);
 				if (Ctrl->A.active) WB_g = GMT_memory (GMT, NULL, nx, double);

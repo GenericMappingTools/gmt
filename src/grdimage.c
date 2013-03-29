@@ -550,8 +550,8 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 	}
 
 	if (n_grids) {
-		nx = (unsigned int) GMT_get_n (GMT, wesn[XLO], wesn[XHI], Grid_orig[0]->header->inc[GMT_X], Grid_orig[0]->header->registration);
-		ny = (unsigned int) GMT_get_n (GMT, wesn[YLO], wesn[YHI], Grid_orig[0]->header->inc[GMT_Y], Grid_orig[0]->header->registration);
+		nx = GMT_get_n (GMT, wesn[XLO], wesn[XHI], Grid_orig[0]->header->inc[GMT_X], Grid_orig[0]->header->registration);
+		ny = GMT_get_n (GMT, wesn[YLO], wesn[YHI], Grid_orig[0]->header->inc[GMT_Y], Grid_orig[0]->header->registration);
 	}
 
 #ifdef HAVE_GDAL
@@ -910,7 +910,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Creating 1-bit B/W image\n");
 
-		nx8 = (int)lrint (ceil (nx / 8.0));	/* Image width must equal a multiple of 8 bits */
+		nx8 = irint (ceil (nx / 8.0));	/* Image width must equal a multiple of 8 bits */
 		nx_pixels = nx8 * 8;
 		bit = GMT_memory (GMT, NULL, nx8 * ny, unsigned char);
 

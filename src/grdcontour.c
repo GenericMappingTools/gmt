@@ -572,7 +572,7 @@ void grd_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct
 		
 		s = GMT_memory (GMT, NULL, np, double);	/* Compute distance along the contour */
 		for (j = 1, s[0] = 0.0; j < np; j++) s[j] = s[j-1] + hypot (xp[j]-xp[j-1], yp[j]-yp[j-1]);
-		n_ticks = (int)lrint (floor (s[np-1] / tick_gap));
+		n_ticks = irint (floor (s[np-1] / tick_gap));
 		if (s[np-1] < GRDCONTOUR_MIN_LENGTH || n_ticks == 0) {	/* Contour is too short to be ticked or labeled */
 			save[pol].do_it = false;
 			GMT_free (GMT, s);	GMT_free (GMT, xp);	GMT_free (GMT, yp);
@@ -980,7 +980,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 		if (!GMT->current.map.z_periodic && min < G->header->z_min) min += Ctrl->C.interval;
 		max = ceil (G->header->z_max / Ctrl->C.interval) * Ctrl->C.interval;
 		if (max > G->header->z_max) max -= Ctrl->C.interval;
-		for (c = (int)lrint (min/Ctrl->C.interval), n_contours = 0; c <= (int)lrint (max/Ctrl->C.interval); c++, n_contours++) {
+		for (c = irint (min/Ctrl->C.interval), n_contours = 0; c <= irint (max/Ctrl->C.interval); c++, n_contours++) {
 			if (n_contours == n_alloc) {
 				n_tmp = n_alloc;
 				GMT_malloc2 (GMT, contour, cont_angle, n_contours, &n_tmp, double);
@@ -1037,7 +1037,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 	 * original grid values and subtract the current contour value. */
 
  	if ((G_orig = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA, G)) == NULL) Return (EXIT_FAILURE); /* Original copy of grid used for contouring */
-	n_edges = G->header->ny * ((unsigned int)lrint (ceil (G->header->nx / 16.0)));
+	n_edges = G->header->ny * (urint (ceil (G->header->nx / 16.0)));
 	edge = GMT_memory (GMT, NULL, n_edges, unsigned int);	/* Bit flags used to keep track of contours */
 
 	if (Ctrl->D.active) {

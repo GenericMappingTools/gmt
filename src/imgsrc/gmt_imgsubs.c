@@ -69,11 +69,11 @@ int GMT_img_setup_coord (struct GMT_CTRL *GMT, struct GMT_IMG_RANGE *r, struct G
 		return (-1);
 	}
 	
-	c->nxcol  = (int)lrint (r->maxlon * 60.0 / r->mpixel);
-	c->nx360  = (int)lrint (360.0 * 60.0 / r->mpixel);
+	c->nxcol  = irint (r->maxlon * 60.0 / r->mpixel);
+	c->nx360  = irint (360.0 * 60.0 / r->mpixel);
 	c->radius = c->nx360 / (2.0 * M_PI);
-	c->nytop  = (int)lrint (c->radius * GMT_img_gud_inv(r->maxlat*D2R) );
-	c->nyrow  = c->nytop - (int)lrint (c->radius * GMT_img_gud_inv(r->minlat*D2R) );
+	c->nytop  = irint (c->radius * GMT_img_gud_inv(r->maxlat*D2R) );
+	c->nyrow  = c->nytop - irint (c->radius * GMT_img_gud_inv(r->minlat*D2R) );
 	
 	return (0);
 }

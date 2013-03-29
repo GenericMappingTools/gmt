@@ -420,23 +420,23 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 		GMT_RI_prepare (GMT, &tmp_h);	/* Convert to make sure we have correct increments */
 		GMT_memcpy (Ctrl->I.inc, tmp_h.inc, 2, double);
 		val = Ctrl->I.inc[GMT_Y] * Grid[0]->header->r_inc[GMT_Y];
-		d_row = (unsigned int)lrint (val);
+		d_row = urint (val);
 		if (d_row == 0 || !doubleAlmostEqualZero (d_row, val)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: New y grid spacing (%g) is not a multiple of actual grid spacing (%g)\n", Ctrl->I.inc[GMT_Y], Grid[0]->header->inc[GMT_Y]);
 			Return (EXIT_FAILURE);
 		}
 		val = Ctrl->I.inc[GMT_X] * Grid[0]->header->r_inc[GMT_X];
-		d_col = (unsigned int)lrint (val);
+		d_col = urint (val);
 		if (d_col == 0 || !doubleAlmostEqualZero (d_col, val)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: New x grid spacing (%g) is not a multiple of actual grid spacing (%g)\n", Ctrl->I.inc[GMT_X], Grid[0]->header->inc[GMT_X]);
 			Return (EXIT_FAILURE);
 		}
 		tmp = ceil (Grid[0]->header->wesn[YHI] / Ctrl->I.inc[GMT_Y]) * Ctrl->I.inc[GMT_Y];
 		if (tmp > Grid[0]->header->wesn[YHI]) tmp -= Ctrl->I.inc[GMT_Y];
-		row_0 = (unsigned int)lrint ((Grid[0]->header->wesn[YHI] - tmp) * Grid[0]->header->r_inc[GMT_Y]);
+		row_0 = urint ((Grid[0]->header->wesn[YHI] - tmp) * Grid[0]->header->r_inc[GMT_Y]);
 		tmp = floor (Grid[0]->header->wesn[XLO] / Ctrl->I.inc[GMT_X]) * Ctrl->I.inc[GMT_X];
 		if (tmp < Grid[0]->header->wesn[XLO]) tmp += Ctrl->I.inc[GMT_X];
-		col_0 = (unsigned int)lrint ((tmp - Grid[0]->header->wesn[XLO]) * Grid[0]->header->r_inc[GMT_X]);
+		col_0 = urint ((tmp - Grid[0]->header->wesn[XLO]) * Grid[0]->header->r_inc[GMT_X]);
 	}
 
 	dim[5] = GMT->current.setting.map_vector_shape;	/* These do not change inside the loop */

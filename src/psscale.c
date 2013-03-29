@@ -501,8 +501,8 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 	if (gap < 0.0) gap = 0.0;
 
 	if (use_image || intens) {	/* Make bitimage for colorbar using bit_dpi */
-		nx = (P->is_continuous) ? (unsigned int)lrint (length * bit_dpi) : P->n_colors;
-		ny = (intens) ? (unsigned int)lrint (width * bit_dpi) : 1;
+		nx = (P->is_continuous) ? urint (length * bit_dpi) : P->n_colors;
+		ny = (intens) ? urint (width * bit_dpi) : 1;
 		nm = nx * ny;
 		inc_i = length / nx;
 		inc_j = (ny > 1) ? (max_intens[1] - max_intens[0]) / (ny - 1) : 0.0;
@@ -763,7 +763,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 					else if (center && interval_annot)
 						sprintf (text, format, P->range[i].z_low, P->range[i].z_high);
 					else if (logscl) {
-						p_val = (unsigned int)lrint (P->range[i].z_low);
+						p_val = urint (P->range[i].z_low);
 						if (doubleAlmostEqualZero (P->range[i].z_low, (double)p_val))
 							sprintf (text, "10@+%ld@+", lrint (P->range[i].z_low));
 						else
@@ -786,7 +786,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 					this_just = justify;
 					do_annot = true;
 					if (logscl) {
-						p_val = (unsigned int)lrint (P->range[i].z_high);
+						p_val = urint (P->range[i].z_high);
 						if (doubleAlmostEqualZero (P->range[i].z_high, (double)p_val))
 							sprintf (text, "10@+%d@+", p_val);
 						else
@@ -985,7 +985,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 					else if (center && interval_annot)
 						sprintf (text, format, P->range[i].z_low, P->range[i].z_high);
 					else if (logscl) {
-						p_val = (unsigned int)lrint (P->range[i].z_low);
+						p_val = urint (P->range[i].z_low);
 						if (doubleAlmostEqualZero (P->range[i].z_low, (double)p_val))
 							sprintf (text, "10@+%d@+", p_val);
 						else
@@ -1010,7 +1010,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 					this_just = justify;
 					do_annot = true;
 					if (logscl) {
-						p_val = (unsigned int)lrint (P->range[i].z_high);
+						p_val = urint (P->range[i].z_high);
 						if (doubleAlmostEqualZero (P->range[i].z_high, (double)p_val))
 							sprintf (text, "10@+%d@+", p_val);
 						else

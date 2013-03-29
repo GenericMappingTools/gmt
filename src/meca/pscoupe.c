@@ -313,7 +313,7 @@ int gutm (double lon, double lat, double *xutm, double *yutm, int fuseau)
 	double aj2, aj4, aj6, amo, al, arcme;
 	double si, co, ecoxi, eta, gn, uuu, vvv, xi;
 
-	if (fuseau == 0) fuseau = (int)lrint (floor ((lon + 186.) / 6.));
+	if (fuseau == 0) fuseau = irint (floor ((lon + 186.) / 6.));
 
 	/* calcul des coordonnees utm */
 	amo = ((double)fuseau * 6. - 183.);

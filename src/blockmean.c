@@ -162,7 +162,7 @@ int GMT_blockmean_parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, stru
 int GMT_blockmean (void *V_API, int mode, void *args)
 {
 	uint64_t node, n_cells_filled, n_read, n_lost, n_pitched, *np = NULL;
-	unsigned int row, col, w_col;
+	uint64_t row, col, w_col;
 	int error;
 	bool use_xy, use_weight;
 

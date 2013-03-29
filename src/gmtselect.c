@@ -711,9 +711,9 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 			int brow, i, this_node;
 			xx = lon;
 			while (xx < 0.0) xx += 360.0;
-			brow = (int)lrint (floor ((90.0 - in[GMT_Y]) / c.bsize));
+			brow = irint (floor ((90.0 - in[GMT_Y]) / c.bsize));
 			if (brow >= c.bin_ny) brow = c.bin_ny - 1;	/* Presumably only kicks in for south pole */
-			col = (unsigned int)lrint (floor (xx / c.bsize));
+			col = urint (floor (xx / c.bsize));
 			bin = brow * c.bin_nx + col;
 			if (bin != last_bin) {	/* Do this upon entering new bin */
 				ind = 0;

@@ -413,7 +413,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 
 				/* OK, this point should constrain this node.  Calculate which sector and assign the value */
 
-				sector = (unsigned int)(lrint (floor (((d_atan2 (dy, dx) + M_PI) * factor)))) % Ctrl->N.sectors;
+				sector = urint (floor (((d_atan2 (dy, dx) + M_PI) * factor))) % Ctrl->N.sectors;
 				assign_node (GMT, &grid_node[kk], Ctrl->N.sectors, sector, distance, n);
 
 				/* With periodic, gridline-registered grids there are duplicate rows and/or columns

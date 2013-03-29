@@ -1195,8 +1195,8 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 		GMT_memcpy (wesn_new, GMT->common.R.wesn, 4, double);
 
 	one_or_zero = (Gin->header->registration == GMT_GRID_PIXEL_REG) ? 0 : 1;
-	nx_new = (unsigned int)lrint ((wesn_new[XHI] - wesn_new[XLO]) / Gin->header->inc[GMT_X]) + one_or_zero;
-	ny_new = (unsigned int)lrint ((wesn_new[YHI] - wesn_new[YLO]) / Gin->header->inc[GMT_Y]) + one_or_zero;
+	nx_new = urint ((wesn_new[XHI] - wesn_new[XLO]) / Gin->header->inc[GMT_X]) + one_or_zero;
+	ny_new = urint ((wesn_new[YHI] - wesn_new[YLO]) / Gin->header->inc[GMT_Y]) + one_or_zero;
 
 	Ctrl->S.nx = nx_new;		Ctrl->S.ny = ny_new;
 
@@ -1278,8 +1278,8 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	for (col = 0; col < Gin->header->nx; col++) ftlon[col] = GMT_grd_col_to_x (GMT, col, Gin->header);
 	for (row = 0; row < Gin->header->ny; row++) ftlat[row] = GMT_grd_row_to_y (GMT, row, Gin->header);
 
-	n_jlon = (unsigned int)lrint ((Gin->header->wesn[XHI] - Gin->header->wesn[XLO]) / Ctrl->W.wid) + 1;
-	n_jlat = (unsigned int)lrint ((Gin->header->wesn[YHI] - Gin->header->wesn[YLO]) / Ctrl->W.wid) + 1;
+	n_jlon = urint ((Gin->header->wesn[XHI] - Gin->header->wesn[XLO]) / Ctrl->W.wid) + 1;
+	n_jlat = urint ((Gin->header->wesn[YHI] - Gin->header->wesn[YLO]) / Ctrl->W.wid) + 1;
 
 	if (Ctrl->C.const_f) {
 		alfa = -cos(Ctrl->C.dip) * cos(Ctrl->C.dec);

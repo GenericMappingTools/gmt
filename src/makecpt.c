@@ -339,7 +339,7 @@ int GMT_makecpt (void *V_API, int mode, void *args)
 			Return (GMT_RUNTIME_ERROR);
 		}
 		else
-			nz = (int)lrint ((Ctrl->T.high - Ctrl->T.low) / Ctrl->T.inc) + 1;
+			nz = irint ((Ctrl->T.high - Ctrl->T.low) / Ctrl->T.inc) + 1;
 
 		z = GMT_memory (GMT, NULL, nz, double);
 		for (i = 0; i < nz; i++) z[i] = Ctrl->T.low + i * Ctrl->T.inc;	/* Desired z values */

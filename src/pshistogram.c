@@ -111,7 +111,7 @@ int fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *data, 
 	int b0, b1, ibox, count_sum;
 	uint64_t i;
 
-	F->n_boxes = (int)lrint (ceil(((F->wesn[XHI] - F->wesn[XLO]) / F->box_width) + 0.5));
+	F->n_boxes = irint (ceil(((F->wesn[XHI] - F->wesn[XLO]) / F->box_width) + 0.5));
 
 	if (F->center_box) {
 		F->n_boxes++;
@@ -127,7 +127,7 @@ int fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *data, 
 	/* First fill boxes with counts  */
 
 	for (i = 0; i < n; i++) {
-		ibox = (int)lrint (floor (((data[i] - F->wesn[XLO]) / F->box_width) + add_half));
+		ibox = irint (floor (((data[i] - F->wesn[XLO]) / F->box_width) + add_half));
 		if (ibox < 0 || ibox >= F->n_boxes) continue;
 		F->boxh[ibox]++;
 		F->n_counted++;
@@ -641,8 +641,8 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 
 	if (Ctrl->I.active) {	/* Only info requested, quit before plotting */
 		if (Ctrl->I.mode) {
-			int ibox, n_boxes = 0;
-			uint64_t dim[4] = {1, 1, 2, 0}, row;
+			int n_boxes = 0;
+			uint64_t dim[4] = {1, 1, 2, 0}, ibox, row;
 			double xx, yy;
 			struct GMT_DATASET *D = NULL;
 			struct GMT_DATASEGMENT *S = NULL;

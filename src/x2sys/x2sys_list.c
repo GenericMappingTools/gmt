@@ -668,7 +668,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 	GMT_free (GMT, trk_nx);
 	if (Ctrl->A.active) GMT_free (GMT,  trk_symm);
 
-	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, n_tracks);
+	if (Ctrl->L.active) MGD77_Free_Correction (GMT, CORR, (unsigned int)n_tracks);
 	GMT_free (GMT, trk_name);
 	x2sys_end (GMT, s);
 

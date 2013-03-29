@@ -49,6 +49,10 @@
 #define GMT_abs(n) abs(n)
 #endif
 
+/* Limit casting to one place (here) for dropping lrint output to signed or unsigned ints */
+#define irint(x) ((int)lrint(x))
+#define urint(x) ((unsigned int)lrint(x))
+
 /* Checking of h,m,s */
 
 #define GMT_hms_is_bad(h,m,s) ((h) < 0 || (h) > 23 || (m) < 0 || (m) > 59 || (s) < 0.0 || (s) >= 61.0)

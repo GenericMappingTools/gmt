@@ -509,8 +509,8 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 		y_width = Ctrl->F.width / (Gin->header->inc[GMT_Y] * y_scale);
 		F.d_flag = Ctrl->D.mode;
 		F.f_flag = Ctrl->F.filter;
-		F.y_half_width = (int)lrint (ceil(y_width) / 2.0);
-		F.x_half_width = (int)lrint (ceil(x_width) / 2.0);
+		F.y_half_width = irint (ceil(y_width) / 2.0);
+		F.x_half_width = irint (ceil(x_width) / 2.0);
 		F.dx = Gin->header->inc[GMT_X];
 		F.dy = Gin->header->inc[GMT_Y];
 
