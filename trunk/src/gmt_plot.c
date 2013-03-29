@@ -2490,16 +2490,18 @@ void gmt_echo_command (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_OP
 {
 	/* This routine will echo the command and its arguments to the
 	 * PostScript output file so that the user can see what scales
-	 * etc was used to produce this plot
+	 * etc was used to produce this plot.  For the -B and -U option
+	 * we will determine if the text stings have spaces and if so
+	 * add in the missing double quotes that the shell ate.
 	 */
-	size_t length = 0;
-	char outstring[GMT_BUFSIZ];
+	size_t length = 0, i, k, in, start;
+	char outstring[GMT_BUFSIZ], tmpstring[GMT_BUFSIZ];
 	struct GMT_OPTION *opt = NULL;
 
 	GMT_memset (outstring, GMT_BUFSIZ, char);
 	PSL_command (PSL, "\n%% PostScript produced by:\n%%%%GMT: %s", gmt_module_name(GMT));
 	for (opt = options; opt; opt = opt->next) {
-		if (length >= 120) {
+		if (length >= 512) {
 			PSL_command (PSL, "%s \\\n%%%%GMT:+", outstring);
 			length = 0;
 			GMT_memset (outstring, GMT_BUFSIZ, char);
@@ -2509,8 +2511,34 @@ void gmt_echo_command (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_OP
 			outstring[length++] = '-';
 			outstring[length++] = opt->option;
 		}
-		strcat (outstring, opt->arg);
-		length += strlen (opt->arg);
+		if (opt->option == 'B' && strchr (opt->arg, ' ')) {	/* Restore double quotes for multi-word titles and labels */
+			for (i = in = k = 0; i < strlen (opt->arg); i++) {
+				if (opt->arg[i] == ':') {
+					if (in) tmpstring[k++] = '\"';
+					tmpstring[k++] = opt->arg[i];
+					if (!in) {
+						if (opt->arg[i+1] == '.') tmpstring[k++] = '.', i++;	/* The period indicating a title */
+						tmpstring[k++] = '\"';
+					}
+					in = !in;
+				}
+				else
+					tmpstring[k++] = opt->arg[i];
+			}
+			tmpstring[k++] = '\0';
+		}
+		else if (opt->option == 'U' && strchr (opt->arg, ' ')) {	/* Restore double quotes for multi-word label */
+			GMT_memset (tmpstring, GMT_BUFSIZ, char);
+			for (i = strlen (opt->arg), start = 0; start == 0 && i > 0; i--) if (opt->arg[i] == '/') start = i + 1;	/* First start of label */
+			for (i = 0; i < start; i++) tmpstring[i] = opt->arg[i];	/* Any leading coordinates */
+			tmpstring[i] = '\"';
+			strcat (tmpstring, &opt->arg[i]);
+			strcat (tmpstring, "\"");
+		}
+		else
+			strcpy (tmpstring, opt->arg);
+		strcat (outstring, tmpstring);
+		length += strlen (tmpstring);
 	}
 	PSL_command (PSL, "%s\n", outstring);
 }

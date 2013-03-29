@@ -896,7 +896,7 @@ int x2sys_read_mgd77ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, s
 int x2sys_read_ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec)
 {
 	int n_fields, ns = s->n_out_columns;
-	unsigned int n_expect = GMT_MAX_COLUMNS;
+	uint64_t n_expect = GMT_MAX_COLUMNS;
 	uint64_t i, j;
 	char path[GMT_BUFSIZ];
 	double **z = NULL, *in = NULL;

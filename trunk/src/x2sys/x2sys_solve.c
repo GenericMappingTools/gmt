@@ -463,13 +463,12 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 		/* Here, first two cols have track IDs and we do not write track names */
 		int min_ID, max_ID;
 		int n_fields;
-		unsigned int n_expected_fields;
-		uint64_t n_tracks2;
+		uint64_t n_expected_fields, n_tracks2;
 		double *in = NULL;
 		char *check = NULL;
 		
 		min_ID = INT_MAX;	max_ID = -INT_MAX;
-		n_expected_fields = (unsigned int)(n_active + Ctrl->W.active);
+		n_expected_fields = n_active + Ctrl->W.active;
 		while ((in = GMT->current.io.input (GMT, fp, &n_expected_fields, &n_fields)) && !(GMT->current.io.status & GMT_IO_EOF)) {	/* Not yet EOF */
 			for (i = 0; i < 2; i++) {	/* Get IDs and keept track of min/max values */
 				ID[i][n_COE] = irint (in[i]);

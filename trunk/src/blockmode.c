@@ -344,11 +344,11 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 	
 	int way, error = 0;
 	
-	unsigned int row, emode = 0, n_input, n_output;
+	unsigned int row, col, emode = 0, n_input, n_output;
 
 	uint64_t node, first_in_cell, first_in_new_cell, n_lost, n_read;
 	uint64_t n_cells_filled, n_in_cell, nz, n_pitched, src_id;
-	uint64_t col, w_col, i_col = 0, sid_col;
+	uint64_t w_col, i_col = 0, sid_col;
 	
 	size_t n_alloc = 0, nz_alloc = 0;
 
