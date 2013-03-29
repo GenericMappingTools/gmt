@@ -509,6 +509,8 @@ int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, int
 	int ix, iy, nscan;
 	char txt_x[GMT_TEXT_LEN256], txt_y[GMT_TEXT_LEN256], txt_z[GMT_TEXT_LEN256];
 
+	ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
+
 	if (Ctrl->Z.active) {	/* Expect z in 3rd column */
 		nscan = sscanf (record, "%s %s %s %[^\n]\n", txt_x, txt_y, txt_z, buffer);
 		if ((GMT_scanf (GMT, txt_z, GMT->current.io.col_type[GMT_IN][GMT_Z], &GMT->current.io.curr_rec[GMT_Z]) == GMT_IS_NAN)) {
@@ -522,18 +524,18 @@ int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, int
 		i = Ctrl->F.R_justify % 4;		/* See GMT_just_decode in gmt_support.c */
 		j = Ctrl->F.R_justify / 4;
 		if (i == 1)
-			sprintf(txt_x,"%12g", GMT->common.R.wesn[XLO]);
+			GMT->current.io.curr_rec[ix] = GMT->common.R.wesn[XLO];
 		else if (i == 2)
-			sprintf(txt_x,"%12g", (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]) / 2);
+			GMT->current.io.curr_rec[ix] = (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]) / 2;
 		else
-			sprintf(txt_x,"%12g", GMT->common.R.wesn[XHI]);
+			GMT->current.io.curr_rec[ix] = GMT->common.R.wesn[XHI];
 
 		if (j == 0)
-			sprintf(txt_y,"%12g", GMT->common.R.wesn[YLO]);
+			GMT->current.io.curr_rec[iy] = GMT->common.R.wesn[YLO];
 		else if (j == 1)
-			sprintf(txt_y,"%12g", (GMT->common.R.wesn[YLO] + GMT->common.R.wesn[YHI]) / 2);
+			GMT->current.io.curr_rec[iy] = (GMT->common.R.wesn[YLO] + GMT->common.R.wesn[YHI]) / 2;
 		else
-			sprintf(txt_y,"%12g", GMT->common.R.wesn[YHI]);
+			GMT->current.io.curr_rec[iy] = GMT->common.R.wesn[YHI];
 
 		nscan = 2;
 		nscan += sscanf (record, "%[^\n]\n", buffer);
@@ -543,14 +545,16 @@ int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, int
 		nscan = sscanf (record, "%s %s %[^\n]\n", txt_x, txt_y, buffer);
 		GMT->current.io.curr_rec[GMT_Z] = GMT->current.proj.z_level;
 	}
-	ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
-	if (GMT_scanf (GMT, txt_x, GMT->current.io.col_type[GMT_IN][GMT_X], &GMT->current.io.curr_rec[ix]) == GMT_IS_NAN) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Record %d had bad x coordinate, skipped)\n", rec_no);
-		return (-1);
-	}
-	if (GMT_scanf (GMT, txt_y, GMT->current.io.col_type[GMT_IN][GMT_Y], &GMT->current.io.curr_rec[iy]) == GMT_IS_NAN) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Record %d had bad y coordinate, skipped)\n", rec_no);
-		return (-1);
+
+	if (!Ctrl->F.R_justify) {
+		if (GMT_scanf (GMT, txt_x, GMT->current.io.col_type[GMT_IN][GMT_X], &GMT->current.io.curr_rec[ix]) == GMT_IS_NAN) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Record %d had bad x coordinate, skipped)\n", rec_no);
+			return (-1);
+		}
+		if (GMT_scanf (GMT, txt_y, GMT->current.io.col_type[GMT_IN][GMT_Y], &GMT->current.io.curr_rec[iy]) == GMT_IS_NAN) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Record %d had bad y coordinate, skipped)\n", rec_no);
+			return (-1);
+		}
 	}
 	return (nscan);
 }
