@@ -234,14 +234,14 @@ void median_output (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, uint64_t fi
 int GMT_blockmedian (void *V_API, int mode, void *args)
 {
 	uint64_t n_lost, node, first_in_cell, first_in_new_cell;
-	uint64_t n_read, nz, n_pitched, n_cells_filled, col, w_col, i_col = 0, sid_col;
+	uint64_t n_read, nz, n_pitched, n_cells_filled, w_col, i_col = 0, sid_col;
 	
 	size_t n_alloc = 0, nz_alloc = 0;
 	
 	bool do_extra;
 	
 	int error = 0;
-	unsigned int row, emode = 0, n_input, n_output, n_quantiles = 1, go_quickly = 0;
+	unsigned int row, col, emode = 0, n_input, n_output, n_quantiles = 1, go_quickly = 0;
 	
 	double out[8], wesn[4], quantile[3] = {0.25, 0.5, 0.75}, extra[8], weight, *in = NULL, *z_tmp = NULL;
 

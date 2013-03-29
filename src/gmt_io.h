@@ -230,10 +230,10 @@ struct GMT_COL_TYPE {	/* Used by -b for binary formatting */
 };
 
 struct GMT_IO {				/* Used to process input data records */
-	void * (*input) (struct GMT_CTRL *, FILE *, unsigned int *, int *);	/* Pointer to function reading ascii or binary tables */
-	int (*output) (struct GMT_CTRL *, FILE *, unsigned int, double *);	/* Pointer to function writing ascii or binary tables */
-	int (*read_item) (struct GMT_CTRL *, FILE *, unsigned, double *);		/* Pointer to function reading 1-col z tables in grd2xyz */
-	int (*write_item) (struct GMT_CTRL *, FILE *, unsigned, double *);		/* Pointer to function writing 1-col z tables in xyz2grd */
+	void * (*input) (struct GMT_CTRL *, FILE *, uint64_t *, int *);	/* Pointer to function reading ascii or binary tables */
+	int (*output) (struct GMT_CTRL *, FILE *, uint64_t, double *);	/* Pointer to function writing ascii or binary tables */
+	int (*read_item) (struct GMT_CTRL *, FILE *, uint64_t, double *);		/* Pointer to function reading 1-col z tables in grd2xyz */
+	int (*write_item) (struct GMT_CTRL *, FILE *, uint64_t, double *);		/* Pointer to function writing 1-col z tables in xyz2grd */
 	bool (*ogr_parser) (struct GMT_CTRL *, char *);				/* Set to handle either header or data OGR records */
 
 	unsigned int pad[4];		/* pad[0] = west, pad[1] = east, pad[2] = south, pad[3] = north */

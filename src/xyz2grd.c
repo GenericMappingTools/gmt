@@ -308,8 +308,8 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 
 	float no_data_f;
 
-	void * (*save_i) (struct GMT_CTRL *, FILE *, unsigned int *, int *) = NULL;
-	int (*save_o) (struct GMT_CTRL *, FILE *, unsigned int, double *);
+	void * (*save_i) (struct GMT_CTRL *, FILE *, uint64_t *, int *) = NULL;
+	int (*save_o) (struct GMT_CTRL *, FILE *, uint64_t, double *);
 	
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_Z_IO io;

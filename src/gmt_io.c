@@ -1483,7 +1483,7 @@ void * gmt_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status
 	return ((GMT->current.io.status) ? NULL : GMT->current.io.curr_rec);	/* Pass back pointer to data array */
 }
 
-void * GMT_ascii_textinput (struct GMT_CTRL *GMT, FILE *fp, unsigned int *n, int *status)
+void * GMT_ascii_textinput (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status)
 {
 	bool more = true;
 	char line[GMT_BUFSIZ], *p = NULL;
@@ -1511,7 +1511,7 @@ void * GMT_ascii_textinput (struct GMT_CTRL *GMT, FILE *fp, unsigned int *n, int
 		}
 		if (!p) {	/* Ran out of records */
 			GMT->current.io.status = GMT_IO_EOF;
-			*n = 0;
+			*n = 0ULL;
 			*status = -1;
 			return (NULL);
 		}
@@ -1519,7 +1519,7 @@ void * GMT_ascii_textinput (struct GMT_CTRL *GMT, FILE *fp, unsigned int *n, int
 			if (GMT->common.h.mode == GMT_COMMENT_IS_RESET) continue;	/* Simplest way to replace headers on output is to ignore them on input */
 			strncpy (GMT->current.io.current_record, line, GMT_BUFSIZ);
 			GMT->current.io.status = GMT_IO_TABLE_HEADER;
-			*n = 1;
+			*n = 1ULL;
 			*status = 0;
 			return (NULL);
 		}
@@ -1530,7 +1530,7 @@ void * GMT_ascii_textinput (struct GMT_CTRL *GMT, FILE *fp, unsigned int *n, int
 			GMT->current.io.seg_no++;
 			/* Just save the header content, not the marker and leading whitespace */
 			strncpy (GMT->current.io.segment_header, GMT_trim_segheader (GMT, line), GMT_BUFSIZ);
-			*n = 1;
+			*n = 1ULL;
 			*status = 0;
 			return (NULL);
 		}
@@ -1547,7 +1547,7 @@ void * GMT_ascii_textinput (struct GMT_CTRL *GMT, FILE *fp, unsigned int *n, int
 
 	GMT->current.io.status = 0;
 	GMT->current.io.pt_no++;	/* Got a valid text record */
-	*n = 1;			/* We always return 1 item as there are no columns */
+	*n = 1ULL;			/* We always return 1 item as there are no columns */
 	*status = 1;
 	return (GMT->current.io.current_record);
 }

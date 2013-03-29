@@ -505,8 +505,8 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 	bool transform, verified, strings = false, got_grid, got_table;
 	bool two_cols = false, constant, ok_to_read = true, interpolate = false;
 	
-	unsigned int MTF_col = 1, pos, c_kind = 0, n_expected_fields, row, col;
-	uint64_t argno, n_paths = 0, n_delete = 0, n_bad, n_sampled = 0, n_changed = 0, n = 0, rec, jrec;
+	unsigned int MTF_col = 1, pos, c_kind = 0, row, col;
+	uint64_t argno, n_expected_fields, n_paths = 0, n_delete = 0, n_bad, n_sampled = 0, n_changed = 0, n = 0, rec, jrec;
 	size_t n_alloc = GMT_CHUNK;
 	
 	time_t now;
