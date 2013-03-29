@@ -100,7 +100,7 @@ void GMT_dt2rdc (struct GMT_CTRL *GMT, double t, int64_t *rd, double *s) {
 
 int gmt_cal_imod (int64_t x, int y) {
 	assert (y != 0);
-	return ( (int)(x - y * lrint (floor ((double)x / (double)y))) );
+	return ((int)(x - y * lrint (floor ((double)x / (double)y))));
 }
 
 /* kday functions:
@@ -205,13 +205,13 @@ int gmt_gyear_from_rd (int64_t date) {
 	int year, n400, n100, n4, n1;
 	
 	d0 = date - 1;
-	n400 = (int)lrint (floor (d0 / 146097.0));
+	n400 = irint (floor (d0 / 146097.0));
 	d1 = gmt_cal_imod (d0, 146097);
-	n100 = (int)lrint (floor (d1 / 36524.0));
+	n100 = irint (floor (d1 / 36524.0));
 	d2 = gmt_cal_imod (d1, 36524);
-	n4 = (int)lrint (floor (d2 / 1461.0));
+	n4 = irint (floor (d2 / 1461.0));
 	d3 = gmt_cal_imod (d2, 1461);
-	n1 = (int)lrint (floor (d3 / 365.0));
+	n1 = irint (floor (d3 / 365.0));
 	/* d4 = gmt_cal_imod (d3, 365) + 1; NOT USED (removed) */
 	year = 400*n400 + 100*n100 + 4*n4 + n1;
 	
@@ -258,7 +258,7 @@ void GMT_gcal_from_rd (struct GMT_CTRL *GMT, int64_t date, struct GMT_gcal *gcal
 	else
 		corexn = (GMT_is_gleap (gcal->year)) ? 1 : 2;
 	
-	gcal->month = (unsigned int)lrint (floor ((12*(prior_days + corexn) + 373)/367.0));
+	gcal->month = urint (floor ((12*(prior_days + corexn) + 373)/367.0));
 	
 	tempdate = GMT_rd_from_gymd (GMT, gcal->year, gcal->month, 1);
 	
@@ -269,7 +269,7 @@ void GMT_gcal_from_rd (struct GMT_CTRL *GMT, int64_t date, struct GMT_gcal *gcal
 	tempyear = (prior_days >= 3) ? gcal->year : gcal->year - 1;
 	tempdate = GMT_rd_from_iywd (GMT, tempyear+1, 1, 1);
 	gcal->iso_y = (date >= tempdate) ? tempyear + 1 : tempyear;
-	gcal->iso_w = 1U + (unsigned int)lrint (floor((date - GMT_rd_from_iywd (GMT, gcal->iso_y, 1, 1))/7.0));
+	gcal->iso_w = 1U + urint (floor((date - GMT_rd_from_iywd (GMT, gcal->iso_y, 1, 1))/7.0));
 	gcal->iso_d = (gcal->day_w) ? gcal->day_w : 7U;
 }
 
@@ -875,8 +875,8 @@ void GMT_format_calendar (struct GMT_CTRL *GMT, char *date, char *clock, struct 
 	if (!clock || W->skip) return;	/* Do not want a formatted clock string - return here */
 	
 	GMT_memset (clock, GMT_TEXT_LEN16, char);			/* To set all to zero */
-	i_sec = (int)lrint (floor (calendar.sec));
-	m_sec = (int)lrint (floor (W->f_sec_to_int * (calendar.sec - i_sec)));
+	i_sec = irint (floor (calendar.sec));
+	m_sec = irint (floor (W->f_sec_to_int * (calendar.sec - i_sec)));
 	
 	if (W->twelve_hr_clock) {		/* Must deal with am/pm formatting */
 		if (calendar.hour < 12)
@@ -970,7 +970,7 @@ void GMT_get_time_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CAL
 			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Unit c for seconds is deprecated; use s.\n");
 #endif
 		case 's':	/* 2-digit seconds */
-			(P->date.compact) ? sprintf (string, "%d", (int)lrint(calendar.sec)) : sprintf (string, "%02d", (int)lrint(calendar.sec));
+			(P->date.compact) ? sprintf (string, "%d", irint(calendar.sec)) : sprintf (string, "%02d", irint(calendar.sec));
 			break;
 		default:
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: wrong unit passed to GMT_get_time_label\n");

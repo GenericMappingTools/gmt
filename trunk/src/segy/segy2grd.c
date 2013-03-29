@@ -414,7 +414,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args)
 			if (!(n_samp = samp_rd (header))) n_samp = Ctrl->L.value;
 
 			ij0 = lrint (GMT->common.R.wesn[YLO] * idy);
-			if (n_samp - ij0 > Grid->header->ny) n_samp = Grid->header->ny + ij0;
+			if ((n_samp - ij0) > (uint64_t)Grid->header->ny) n_samp = Grid->header->ny + ij0;
 
 			if (swap_bytes) {
 				/* need to swap the order of the bytes in the data even though assuming IEEE format */

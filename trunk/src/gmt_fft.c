@@ -371,7 +371,7 @@ void gmt_fft_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_FFT_
 	double width;
 	struct GMT_GRID_HEADER *h = Grid->header;	/* For shorthand */
 
-	width_percent = (int)lrint (F->taper_width);
+	width_percent = irint (F->taper_width);
 
 	if ((Grid->header->nx == F->nx && Grid->header->ny == F->ny) || F->taper_mode == GMT_FFT_EXTEND_NONE) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Data and FFT dimensions are equal - no data extension will take place\n");
@@ -413,12 +413,12 @@ void gmt_fft_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_FFT_
 		width = F->taper_width / 100.0;	/* Was percent, now fraction */
 	
 	if (F->taper_mode == GMT_FFT_EXTEND_NONE) {	/* No extension, just tapering inside the data grid */
-		i_width = (int)lrint (Grid->header->nx * width);	/* Interior columns over which tapering will take place */
-		j_width = (int)lrint (Grid->header->ny * width);	/* Extended rows over which tapering will take place */
+		i_width = irint (Grid->header->nx * width);	/* Interior columns over which tapering will take place */
+		j_width = irint (Grid->header->ny * width);	/* Extended rows over which tapering will take place */
 	}
 	else {	/* We wish to extend data into the margin pads between FFT grid and data grid */
-		i_width = (int)lrint (i_data_start * width);	/* Extended columns over which tapering will take place */
-		j_width = (int)lrint (j_data_start * width);	/* Extended rows over which tapering will take place */
+		i_width = irint (i_data_start * width);	/* Extended columns over which tapering will take place */
+		j_width = irint (j_data_start * width);	/* Extended rows over which tapering will take place */
 	}
 	if (i_width == 0 && j_width == 0) one = 1;	/* So we do nothing further down */
 
@@ -513,9 +513,10 @@ void gmt_fft_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_FFT_
 char *file_name_with_suffix (struct GMT_CTRL *GMT, char *name, char *suffix)
 {
 	static char file[GMT_BUFSIZ];
-	unsigned int len, i, j;
+	uint64_t i, j;
+	size_t len;
 	
-	if ((len = (unsigned int)strlen (name)) == 0) {	/* Grids that are being created have no filename yet */
+	if ((len = strlen (name)) == 0) {	/* Grids that are being created have no filename yet */
 		sprintf (file, "tmpgrid_%s.grd", suffix);
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Created grid has no name to derive new names from; choose %s\n", file);
 		return (file);
@@ -524,7 +525,7 @@ char *file_name_with_suffix (struct GMT_CTRL *GMT, char *name, char *suffix)
 	if (i) i++;	/* Move to 1st char after / */
 	for (j = len; j > 0 && name[j] != '.'; j--);	/* j points to period before extension, or it is 0 if no extension */
 	strcpy (file, &name[i]);			/* Make a full copy of filename without leading directories */
-	len = (unsigned int)strlen (file);
+	len = strlen (file);
 	for (i = len; i > 0 && file[i] != '.'; i--);	/* i now points to period before extension in file, or it is 0 if no extension */
 	if (i) file[i] = '\0';	/* Truncate at the extension */
 	strcat (file, "_");
@@ -674,21 +675,21 @@ void gmt_fft_save2d (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int dire
 	if (direction == GMT_OUT && K->info->save[GMT_OUT]) gmt_grd_save_fft (GMT, G, K->info);
 }
 
-static inline unsigned int propose_radix2 (unsigned n) {
+static inline uint64_t propose_radix2 (uint64_t n) {
 	/* Returns the smallest base 2 exponent, log2n, that satisfies: 2^log2n >= n */
-	unsigned log2n = 1;
-	while ( 1U<<log2n < n ) ++log2n; /* log2n = 1<<(unsigned)ceil(log2(n)); */
+	uint64_t log2n = 1;
+	while ( 1ULL<<log2n < n ) ++log2n; /* log2n = 1<<(unsigned)ceil(log2(n)); */
 	return log2n;
 }
 
-static inline unsigned int radix2 (unsigned n) {
+static inline uint64_t radix2 (uint64_t n) {
 	/* Returns the base 2 exponent that represents 'n' if 'n' is a power of 2,
 	 * 0 otherwise */
-	unsigned log2n = 1;
-	while ( 1U<<log2n < n ) ++log2n; /* log2n = 1<<(unsigned)ceil(log2(n)); */
-	if (n == 1U<<log2n)
+	uint64_t log2n = 1ULL;
+	while ( 1ULL<<log2n < n ) ++log2n; /* log2n = 1<<(unsigned)ceil(log2(n)); */
+	if (n == 1ULL<<log2n)
 		return log2n;
-	return 0;
+	return 0ULL;
 }
 
 #ifdef HAVE_FFTW3F
@@ -1939,7 +1940,7 @@ int GMT_fft_2d_brenner (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsi
         return (GMT_OK);
 }
 
-int GMT_fft_1d_selection (struct GMT_CTRL *GMT, unsigned int n) {
+int gmt_fft_1d_selection (struct GMT_CTRL *GMT, uint64_t n) {
 	/* Returns the most suitable 1-D FFT for the job - or the one requested via GMT_FFT */
 	if (GMT->current.setting.fft != k_fft_auto) {
 		/* Specific selection requested */
@@ -1955,7 +1956,7 @@ int GMT_fft_1d_selection (struct GMT_CTRL *GMT, unsigned int n) {
 	return k_fft_kiss; /* Default/fallback general-purpose FFT */
 }
 
-int GMT_fft_2d_selection (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny) {
+int gmt_fft_2d_selection (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny) {
 	/* Returns the most suitable 2-D FFT for the job - or the one requested via GMT_FFT */
 	if (GMT->current.setting.fft != k_fft_auto) {
 		/* Specific selection requested */
@@ -1971,7 +1972,7 @@ int GMT_fft_2d_selection (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny
 	return k_fft_kiss; /* Default/fallback general-purpose FFT */
 }
 
-int GMT_fft_1d (struct GMT_CTRL *GMT, float *data, unsigned int n, int direction, unsigned int mode, struct GMT_FFT_WAVENUMBER *info) {
+int GMT_fft_1d (struct GMT_CTRL *GMT, float *data, uint64_t n, int direction, unsigned int mode, struct GMT_FFT_WAVENUMBER *info) {
 	/* data is an array of length n (or 2*n for complex) data points
 	 * n is the number of data points
 	 * direction is either GMT_FFT_FWD (forward) or GMT_FFT_INV (inverse)
@@ -1980,9 +1981,9 @@ int GMT_fft_1d (struct GMT_CTRL *GMT, float *data, unsigned int n, int direction
 	 */
 	int status, use;
 	assert (mode == GMT_FFT_COMPLEX); /* GMT_FFT_REAL not implemented yet */
-	use = GMT_fft_1d_selection (GMT, n);
+	use = gmt_fft_1d_selection (GMT, n);
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "1-D FFT using %s\n", GMT_fft_algo[use]);
-	status = GMT->session.fft1d[use] (GMT, data, n, direction, mode);
+	status = GMT->session.fft1d[use] (GMT, data, (unsigned int)n, direction, mode);
 	if (direction == GMT_FFT_INV) {	/* Undo the 2/nm factor */
 		uint64_t nm = 2ULL * n;
 		GMT_scale_and_offset_f (GMT, data, nm, 2.0 / nm, 0);
@@ -1999,7 +2000,7 @@ int GMT_fft_2d (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsigned int
 	 */
 	int status, use;
 	assert (mode == GMT_FFT_COMPLEX); /* GMT_FFT_REAL not implemented yet */
-	use = GMT_fft_2d_selection (GMT, nx, ny);
+	use = gmt_fft_2d_selection (GMT, nx, ny);
 	
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "2-D FFT using %s\n", GMT_fft_algo[use]);
 	status = GMT->session.fft2d[use] (GMT, data, nx, ny, direction, mode);

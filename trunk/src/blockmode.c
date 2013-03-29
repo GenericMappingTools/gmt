@@ -210,8 +210,8 @@ struct BIN_MODE_INFO *bin_setup (struct GMT_CTRL *GMT, struct BLK_DATA *d, doubl
 	B->o_offset = (center) ? 0.0 : 0.5;
 	B->width = width;
 	B->i_width = 1.0 / width;
-	B->min = (int)lrint (floor ((d[0].a[k]   * B->i_width) + B->i_offset));
-	B->max = (int)lrint (ceil  ((d[n-1].a[k] * B->i_width) + B->i_offset));
+	B->min = irint (floor ((d[0].a[k]   * B->i_width) + B->i_offset));
+	B->max = irint (ceil  ((d[n-1].a[k] * B->i_width) + B->i_offset));
 	B->n_bins = B->max - B->min + 1;
 	B->count = GMT_memory (GMT, NULL, B->n_bins, unsigned int);
 	B->mode_choice = mode_choice;
@@ -233,7 +233,7 @@ double bin_mode (struct GMT_CTRL *GMT, struct BLK_DATA *d, uint64_t n, uint64_t 
 
 	GMT_memset (B->count, B->n_bins, unsigned int);	/* Reset the counts */
 	for (i = 0; i < n; i++) {	/* Loop over sorted data points */
-		bin = (unsigned int)lrint (floor ((d[i].a[k] * B->i_width) + B->i_offset)) - B->min;
+		bin = urint (floor ((d[i].a[k] * B->i_width) + B->i_offset)) - B->min;
 		B->count[bin]++;
 		if (B->count[bin] > mode_count) {	/* New max count value; make a note */
 			mode_count = B->count[bin];	/* Highest count so far... */
@@ -344,10 +344,11 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 	
 	int way, error = 0;
 	
-	unsigned int row, col, w_col, i_col = 0, sid_col, emode = 0, n_input, n_output;
+	unsigned int row, emode = 0, n_input, n_output;
 
 	uint64_t node, first_in_cell, first_in_new_cell, n_lost, n_read;
 	uint64_t n_cells_filled, n_in_cell, nz, n_pitched, src_id;
+	uint64_t col, w_col, i_col = 0, sid_col;
 	
 	size_t n_alloc = 0, nz_alloc = 0;
 

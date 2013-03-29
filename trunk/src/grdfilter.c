@@ -775,8 +775,8 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	x_width = Ctrl->F.width / (Gin->header->inc[GMT_X] * x_scale);
 	y_width = ((F.rect) ? Ctrl->F.width2 : Ctrl->F.width) / (Gin->header->inc[GMT_Y] * y_scale);
 	if (!Ctrl->F.custom) {	/* Parameters computed from width and other settings */
-		F.x_half_width = (int)lrint (ceil (x_width / 2.0));
-		F.y_half_width = (int)lrint (ceil (y_width / 2.0));
+		F.x_half_width = irint (ceil (x_width / 2.0));
+		F.y_half_width = irint (ceil (y_width / 2.0));
 		F.nx = 2 * F.x_half_width + 1;
 		F.ny = 2 * F.y_half_width + 1;
 		if (GMT_IS_ZERO (x_scale) || F.x_half_width < 0 || F.nx > Gin->header->nx) {	/* Safety valve when x_scale -> 0.0 */
@@ -898,7 +898,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 			unsigned int test_nx;
 			y = fabs (lat_out);
 			if (Ctrl->D.mode == GRDFILTER_GEO_SPHERICAL) y += (par[GRDFILTER_HALF_WIDTH] / par[GRDFILTER_Y_SCALE]);	/* Highest latitude within filter radius */
-			test_nx = (unsigned int)lrint (par[GRDFILTER_HALF_WIDTH] / (F.dx * par[GRDFILTER_Y_SCALE] * cosd (y)));
+			test_nx = urint (par[GRDFILTER_HALF_WIDTH] / (F.dx * par[GRDFILTER_Y_SCALE] * cosd (y)));
 			F.x_half_width = (y < 90.0) ? MIN ((F.nx - 1) / 2, test_nx) : (F.nx - 1) / 2;
 			if (y > 90.0 && (F.nx - 2 * F.x_half_width - 1) > 0) F.x_half_width++;	/* When nx is even we may come up short by 1 */
 			visit_check = ((2 * F.x_half_width + 1) >= (int)Gin->header->nx);	/* Must make sure we only visit each node once along a row */

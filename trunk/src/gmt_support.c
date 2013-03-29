@@ -416,7 +416,7 @@ void gmt_hsv_to_rgb (struct GMT_CTRL *GMT, double rgb[], double hsv[])
 		while (h >= 360.0) h -= 360.0;
 		while (h < 0.0) h += 360.0;
 		h /= 60.0;
-		i = (int)lrint (floor (h));
+		i = irint (floor (h));
 		f = h - i;
 		p = hsv[2] * (1.0 - hsv[1]);
 		q = hsv[2] * (1.0 - (hsv[1] * f));
@@ -616,7 +616,7 @@ unsigned int GMT_get_prime_factors (struct GMT_CTRL *GMT, uint64_t n, unsigned i
 
 	m = (unsigned int)GMT_abs (n);
 	if (m < 2) return (0);
-	max_factor = (unsigned int)lrint (floor(sqrt((double)m)));
+	max_factor = urint (floor(sqrt((double)m)));
 
 	/* First find the 2s, 3s, and 5s */
 	for (k = 0; k < 3; k++) {
@@ -1942,7 +1942,7 @@ void GMT_RI_prepare (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h)
 	}
 	if (!(GMT->current.io.inc_code[GMT_X] & (GMT_INC_IS_NNODES | GMT_INC_IS_EXACT))) {	/* Adjust x_inc to exactly fit west/east */
 		s = h->wesn[XHI] - h->wesn[XLO];
-		h->nx = (unsigned int)lrint (s / h->inc[GMT_X]);
+		h->nx = urint (s / h->inc[GMT_X]);
 		s /= h->nx;
 		h->nx += one_or_zero;
 		if (fabs (s - h->inc[GMT_X]) > 0.0) {
@@ -1953,7 +1953,7 @@ void GMT_RI_prepare (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h)
 
 	/* Determine nx */
 
-	h->nx = (unsigned int)GMT_grd_get_nx (GMT, h);
+	h->nx = GMT_grd_get_nx (GMT, h);
 
 	if (GMT->current.io.inc_code[GMT_X] & GMT_INC_IS_EXACT) {	/* Want to keep x_inc exactly as given; adjust x_max accordingly */
 		s = (h->wesn[XHI] - h->wesn[XLO]) - h->inc[GMT_X] * (h->nx - one_or_zero);
@@ -1998,7 +1998,7 @@ void GMT_RI_prepare (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h)
 	}
 	if (!(GMT->current.io.inc_code[GMT_Y] & (GMT_INC_IS_NNODES | GMT_INC_IS_EXACT))) {	/* Adjust y_inc to exactly fit south/north */
 		s = h->wesn[YHI] - h->wesn[YLO];
-		h->ny = (unsigned int)lrint (s / h->inc[GMT_Y]);
+		h->ny = urint (s / h->inc[GMT_Y]);
 		s /= h->ny;
 		h->ny += one_or_zero;
 		if (fabs (s - h->inc[GMT_Y]) > 0.0) {
@@ -2009,7 +2009,7 @@ void GMT_RI_prepare (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h)
 
 	/* Determine ny */
 
-	h->ny = (unsigned int)GMT_grd_get_ny (GMT, h);
+	h->ny = GMT_grd_get_ny (GMT, h);
 
 	if (GMT->current.io.inc_code[GMT_Y] & GMT_INC_IS_EXACT) {	/* Want to keep y_inc exactly as given; adjust y_max accordingly */
 		s = (h->wesn[YHI] - h->wesn[YLO]) - h->inc[GMT_Y] * (h->ny - one_or_zero);
@@ -4150,7 +4150,7 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char 
 			if (p_mode & GMT_GOT_INC) {
 				step = (step / GMT->current.map.dist[GMT_MAP_DIST].scale) / GMT->current.proj.DIST_M_PR_DEG;	/* Get degrees */
 				L = (GMT_is_geographic (GMT, GMT_IN)) ? sind (y0) * 360.0 : 2.0 * M_PI * r;
-				np = (unsigned int)lrint (L / step);
+				np = urint (L / step);
 			}
 			S->coord[GMT_X] = GMT_memory (GMT, S->coord[GMT_X], np, double);
 			S->coord[GMT_Y] = GMT_memory (GMT, S->coord[GMT_Y], np, double);
@@ -4547,7 +4547,7 @@ void gmt_setcontjump (float *z, uint64_t nz)
 	}
 }
 
-uint64_t gmt_trace_contour (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool test, unsigned int *edge, double **x, double **y, unsigned int col, unsigned int row, unsigned int side, uint64_t offset, size_t *bit, unsigned int *nan_flag)
+uint64_t gmt_trace_contour (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool test, unsigned int *edge, double **x, double **y, unsigned int col, unsigned int row, unsigned int side, uint64_t offset, unsigned int *bit, unsigned int *nan_flag)
 {
 	/* Note: side must be signed due to calculations like (side-2)%2 which will not work with unsigned */
 	unsigned int side_in, this_side, old_side, n_exits, opposite_side, n_nan, edge_word, edge_bit;
@@ -4930,7 +4930,7 @@ uint64_t GMT_contours (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int sm
 	int scol;
 	uint64_t n = 0, n2, n_edges, offset;
 	double *x2 = NULL, *y2 = NULL;
-	static size_t bit[32];
+	static unsigned int bit[32];
 
 	n_edges = G->header->ny * (uint64_t) ceil (G->header->nx / 16.0);
 	offset = n_edges / 2;
@@ -5135,7 +5135,7 @@ char * GMT_make_filename (struct GMT_CTRL *GMT, char *template, unsigned int fmt
 	return (strdup (file));
 }
 
-bool gmt_label_is_OK (struct GMT_CTRL *GMT, struct GMT_LABEL *L, char *this_label, char *label, double this_dist, double this_value_dist, int xl, int fj, struct GMT_CONTOUR *G)
+bool gmt_label_is_OK (struct GMT_CTRL *GMT, struct GMT_LABEL *L, char *this_label, char *label, double this_dist, double this_value_dist, uint64_t xl, uint64_t fj, struct GMT_CONTOUR *G)
 {	/* Determines if the proposed label passes various tests.  Return true if we should go ahead and add this label to the list */
 	bool label_OK = true;
 	uint64_t seg, k;
@@ -5339,7 +5339,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, double **yyy, uin
 						this_value_dist = value_dist[i-1] + f * (value_dist[i] - value_dist[i-1]);
 					}
 					this_dist = G->label_dist_spacing - dist_offset + last_label_dist;
-					if (gmt_label_is_OK (GMT, new_label, this_label, label, this_dist, this_value_dist, -1, -1, G)) {
+					if (gmt_label_is_OK (GMT, new_label, this_label, label, this_dist, this_value_dist, 0, 0, G)) {
 						gmt_place_label (GMT, new_label, this_label, G, !(G->label_type == 0 || G->label_type == 3));
 						new_label->node = i - 1;
 						gmt_contlabel_angle (xx, yy, i - 1, i, cangle, nn, new_label, G);
@@ -5406,7 +5406,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, double **yyy, uin
 				}
 				if ((new_label->dist - last_dist) >= G->min_dist) {	/* OK to accept this label */
 					this_dist = dist;
-					if (gmt_label_is_OK (GMT, new_label, this_label, label, this_dist, this_value_dist, -1, -1, G)) {
+					if (gmt_label_is_OK (GMT, new_label, this_label, label, this_dist, this_value_dist, 0, 0, G)) {
 						gmt_place_label (GMT, new_label, this_label, G, !(G->label_type == 0));
 						new_label->node = (j == 0) ? 0 : j - 1;
 						gmt_contlabel_angle (xx, yy, new_label->node, j, cangle, nn, new_label, G);
@@ -5459,7 +5459,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, double **yyy, uin
 						new_label->dist = map_dist[right] - f * (map_dist[right] - map_dist[left]);
 						this_value_dist = value_dist[right] - f * (value_dist[right] - value_dist[left]);
 					}
-					if (gmt_label_is_OK (GMT, new_label, this_label, label, this_dist, this_value_dist, line_no, -1, G)) {
+					if (gmt_label_is_OK (GMT, new_label, this_label, label, this_dist, this_value_dist, line_no, 0, G)) {
 						gmt_place_label (GMT, new_label, this_label, G, !(G->label_type == 0));
 						gmt_contlabel_angle (xx, yy, left, right, cangle, nn, new_label, G);
 						G->L[G->n_label++] = new_label;
@@ -5497,7 +5497,7 @@ void gmt_hold_contour_sub (struct GMT_CTRL *GMT, double **xxx, double **yyy, uin
 					this_dist = track_dist[start];
 					new_label->dist = map_dist[start];
 					this_value_dist = value_dist[start];
-					if (gmt_label_is_OK (GMT, new_label, this_label, label, this_dist, this_value_dist, -1, j, G)) {
+					if (gmt_label_is_OK (GMT, new_label, this_label, label, this_dist, this_value_dist, 0, j, G)) {
 						gmt_place_label (GMT, new_label, this_label, G, !(G->label_type == 0));
 						gmt_contlabel_angle (xx, yy, start, start, cangle, nn, new_label, G);
 						G->L[G->n_label++] = new_label;
@@ -6508,7 +6508,7 @@ int GMT_BC_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h)
 			for (i = 0; i < 4; i++) if (h->BC[i] == GMT_BC_IS_NOTSET) h->BC[i] = GMT_BC_IS_NATURAL;
 		}
 		else {
-			h->nxp = (unsigned int)lrint (360.0 * h->r_inc[GMT_X]);
+			h->nxp = urint (360.0 * h->r_inc[GMT_X]);
 			h->nyp = 0;
 			h->gn = ((fabs(h->wesn[YHI] - 90.0)) < (GMT_SMALL * h->inc[GMT_Y]));
 			h->gs = ((fabs(h->wesn[YLO] + 90.0)) < (GMT_SMALL * h->inc[GMT_Y]));
@@ -8111,7 +8111,7 @@ unsigned int GMT_get_arc (struct GMT_CTRL *GMT, double x0, double y0, double r, 
 	unsigned int i, n;
 	double da, s, c, *xx = NULL, *yy = NULL;
 
-	n = (unsigned int)lrint (D2R * fabs (dir2 - dir1) * r / GMT->current.setting.map_line_step);
+	n = urint (D2R * fabs (dir2 - dir1) * r / GMT->current.setting.map_line_step);
 	if (n < 2) n = 2;	/* To prevent division by 0 below */
 	xx = GMT_memory (GMT, NULL, n, double);
 	yy = GMT_memory (GMT, NULL, n, double);
@@ -8580,11 +8580,11 @@ unsigned int GMT_linear_array (struct GMT_CTRL *GMT, double min, double max, dou
 	max = (max - phase) / delta;
 
 	/* Look for first value */
-	first = (int)lrint (floor (min));
+	first = irint (floor (min));
 	while (min - first > GMT_SMALL) first++;
 
 	/* Look for last value */
-	last = (int)lrint (ceil (max));
+	last = irint (ceil (max));
 	while (last - max > GMT_SMALL) last--;
 
 	n = last - first + 1;
@@ -8610,8 +8610,8 @@ unsigned int GMT_log_array (struct GMT_CTRL *GMT, double min, double max, double
 		return (0);
 	min = d_log10 (GMT, min);
 	max = d_log10 (GMT, max);
-	first = (int)lrint (floor (min));
-	last = (int)lrint (ceil (max));
+	first = irint (floor (min));
+	last = irint (ceil (max));
 
 	if (delta < 0) {	/* Coarser than every magnitude */
 		n = GMT_linear_array (GMT, min, max, fabs (delta), 0.0, array);
@@ -8718,7 +8718,7 @@ unsigned int GMT_time_array (struct GMT_CTRL *GMT, double min, double max, struc
 	if (!T->active) return (0);
 	val = GMT_memory (GMT, NULL, n_alloc, double);
 	I.unit = T->unit;
-	I.step = (unsigned int)lrint (T->interval);
+	I.step = urint (T->interval);
 	interval = (T->type == 'i' || T->type == 'I');	/* Only for i/I axis items */
 	GMT_moment_interval (GMT, &I, min, true);	/* First time we pass true for initialization */
 	while (I.dt[0] <= max) {		/* As long as we are not gone way past the end time */
@@ -9657,23 +9657,23 @@ unsigned int * GMT_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, do
 
 	dist_y = GMT_distance (GMT, G->header->wesn[XLO], G->header->wesn[YLO], G->header->wesn[XLO], G->header->wesn[YLO] + G->header->inc[GMT_Y]);
 	if (mode) {	/* Input data is geographical, so circle widens with latitude due to cos(lat) effect */
-		max_d_col = (unsigned int)lrint (ceil (G->header->nx / 2.0) + 0.1);	/* Upper limit on +- halfwidth */
+		max_d_col = urint (ceil (G->header->nx / 2.0) + 0.1);	/* Upper limit on +- halfwidth */
 		*actual_max_d_col = 0;
 		for (row = 0; row < G->header->ny; row++) {
 			lat = GMT_grd_row_to_y (GMT, row, G->header);
 			/* Determine longitudinal width of one grid ell at this latitude */
 			dist_x = GMT_distance (GMT, G->header->wesn[XLO], lat, lon, lat);
-			d_col[row] = (fabs (lat) == 90.0) ? max_d_col : (unsigned int)lrint (ceil (radius / dist_x) + 0.1);
+			d_col[row] = (fabs (lat) == 90.0) ? max_d_col : urint (ceil (radius / dist_x) + 0.1);
 			if (d_col[row] > max_d_col) d_col[row] = max_d_col;	/* Safety valve */
 			if (d_col[row] > (*actual_max_d_col)) *actual_max_d_col = d_col[row];
 		}
 	}
 	else {	/* Plain Cartesian data with rectangular box */
 		dist_x = GMT_distance (GMT, G->header->wesn[XLO], G->header->wesn[YLO], lon, G->header->wesn[YLO]);
-		*actual_max_d_col = max_d_col = (unsigned int)lrint (ceil (radius / dist_x) + 0.1);
+		*actual_max_d_col = max_d_col = urint (ceil (radius / dist_x) + 0.1);
 		for (row = 0; row < G->header->ny; row++) d_col[row] = max_d_col;
 	}
-	*d_row = (unsigned int)lrint (ceil (radius / dist_y) + 0.1);	/* The constant half-width of nodes in y-direction */
+	*d_row = urint (ceil (radius / dist_y) + 0.1);	/* The constant half-width of nodes in y-direction */
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Max node-search half-widths are: half_x = %d, half_y = %d\n", *d_row, *actual_max_d_col);
 	return (d_col);		/* The (possibly variable) half-width of nodes in x-direction as function of y */
 }
@@ -9901,7 +9901,7 @@ struct GMT_DATASET * gmt_resample_data_spherical (struct GMT_CTRL *GMT, struct G
 	resample = (!GMT_IS_ZERO(along_ds));
 	n_cols = 2 + mode + ex_cols;
 	D = GMT_alloc_dataset (GMT, Din, n_cols, 0, GMT_ALLOC_NORMAL);	/* Same table length as Din, but with up to 4 columns (lon, lat, dist, az) */
-	ndig = (int)lrint (floor (log10 ((double)Din->n_segments))) + 1;	/* Determine how many decimals are needed for largest segment id */
+	ndig = irint (floor (log10 ((double)Din->n_segments))) + 1;	/* Determine how many decimals are needed for largest segment id */
 
 	for (tbl = seg_no = 0; tbl < Din->n_tables; tbl++) {
 		Tin  = Din->table[tbl];
@@ -9957,7 +9957,7 @@ struct GMT_DATASET * gmt_resample_data_cartesian (struct GMT_CTRL *GMT, struct G
 	resample = (!GMT_IS_ZERO(along_ds));
 	n_cols = 2 + mode + ex_cols;
 	D = GMT_alloc_dataset (GMT, Din, n_cols, 0, GMT_ALLOC_NORMAL);	/* Same table length as Din, but with up to 4 columns (lon, lat, dist, az) */
-	ndig = (int) lrint (floor (log10 ((double)Din->n_segments))) + 1;	/* Determine how many decimals are needed for largest segment id */
+	ndig = irint (floor (log10 ((double)Din->n_segments))) + 1;	/* Determine how many decimals are needed for largest segment id */
 
 	for (tbl = seg_no = 0; tbl < Din->n_tables; tbl++) {
 		Tin  = Din->table[tbl];
@@ -10023,7 +10023,7 @@ struct GMT_DATASET * GMT_resample_data (struct GMT_CTRL *GMT, struct GMT_DATASET
 	return (D);
 }
 
-struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, unsigned int n_cols, bool alternate)
+struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, uint64_t n_cols, bool alternate)
 {
 	/* Din is a data set with at least two columns (lon/lat);
 	 * it can contain any number of tables and segments.
@@ -10036,11 +10036,11 @@ struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT
 
 	int k, ndig, sdig, n_half_cross;
 
-	unsigned int ii, np_cross, n_tot_cols;
+	unsigned int ii, np_cross;
 	
 	uint64_t dim[4] = {0, 0, 0, 0};
 	
-	uint64_t tbl, row, left, right, seg, seg_no;
+	uint64_t tbl, row, left, right, seg, seg_no, n_tot_cols;
 	size_t n_x_seg = 0, n_x_seg_alloc = 0;
 	
 	bool skip_seg_no;
@@ -10066,20 +10066,20 @@ struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT
 
 	cross_length *= 0.5;	/* Now half-length in user's units */
 	cross_half_width = cross_length / GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Now in meters */
-	n_half_cross = (int)lrint (cross_length / across_ds);	/* Half-width of points in a cross profile */
+	n_half_cross = irint (cross_length / across_ds);	/* Half-width of points in a cross profile */
 	across_ds_radians = D2R * (cross_half_width / GMT->current.proj.DIST_M_PR_DEG) / n_half_cross;	/* Angular change from point to point */
 	np_cross = 2 * n_half_cross + 1;			/* Total cross-profile length */
 	n_tot_cols = 4 + n_cols;	/* Total number of columns in the resulting data set */
 	dim[0] = Din->n_tables;	dim[2] = n_tot_cols;	dim[3] = np_cross;
 	if ((Xout = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (NULL);	/* An empty dataset of n_tot_cols columns and np_cross rows */
-	sdig = (int) lrint (floor (log10 ((double)Din->n_segments))) + 1;	/* Determine how many decimals are needed for largest segment id */
+	sdig = irint (floor (log10 ((double)Din->n_segments))) + 1;	/* Determine how many decimals are needed for largest segment id */
 	skip_seg_no = (Din->n_tables == 1 && Din->table[0]->n_segments == 1);
 	for (tbl = seg_no = 0; tbl < Din->n_tables; tbl++) {	/* Process all tables */
 		Tin  = Din->table[tbl];
 		Tout = Xout->table[tbl];
 		for (seg = 0; seg < Tin->n_segments; seg++, seg_no++) {	/* Process all segments */
 
-			ndig = (int) lrint (floor (log10 ((double)Tin->segment[seg]->n_rows))) + 1;	/* Determine how many decimals are needed for largest id */
+			ndig = irint (floor (log10 ((double)Tin->segment[seg]->n_rows))) + 1;	/* Determine how many decimals are needed for largest id */
 
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Process Segment %s [segment %ld] which has %ld crossing profiles\n", Tin->segment[seg]->label, seg, Tin->segment[seg]->n_rows);
 
@@ -10166,7 +10166,7 @@ struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT
 	return (Xout);
 }
 
-struct GMT_DATASET * gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, unsigned int n_cols, bool alternate)
+struct GMT_DATASET * gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, uint64_t n_cols, bool alternate)
 {
 	/* Din is a data set with at least two columns (x,y);
 	 * it can contain any number of tables and segments.
@@ -10178,9 +10178,9 @@ struct GMT_DATASET * gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT
 
 	int k, ndig, sdig, n_half_cross;
 
-	unsigned int tbl, ii, np_cross, n_tot_cols;
+	unsigned int ii, np_cross;
 	
-	uint64_t row, seg, seg_no;
+	uint64_t tbl, row, seg, seg_no, n_tot_cols;
 	
 	uint64_t dim[4] = {0, 0, 0, 0};
 	size_t n_x_seg = 0, n_x_seg_alloc = 0;
@@ -10203,20 +10203,20 @@ struct GMT_DATASET * gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT
 	/* Get resampling step size and zone width in degrees */
 
 	cross_length *= 0.5;					/* Now half-length in user's units */
-	n_half_cross = (int)lrint (cross_length / across_ds);	/* Half-width of points in a cross profile */
+	n_half_cross = irint (cross_length / across_ds);	/* Half-width of points in a cross profile */
 	np_cross = 2 * n_half_cross + 1;			/* Total cross-profile length */
 	across_ds = cross_length / n_half_cross;		/* Exact increment (recalculated in case of roundoff) */
 	n_tot_cols = 4 + n_cols;				/* Total number of columns in the resulting data set */
 	dim[0] = Din->n_tables;	dim[2] = n_tot_cols;	dim[3] = np_cross;
 	if ((Xout = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (NULL);	/* An empty dataset of n_tot_cols columns and np_cross rows */
-	sdig = (int)lrint (floor (log10 ((double)Din->n_segments))) + 1;	/* Determine how many decimals are needed for largest segment id */
+	sdig = irint (floor (log10 ((double)Din->n_segments))) + 1;	/* Determine how many decimals are needed for largest segment id */
 
 	for (tbl = seg_no = 0; tbl < Din->n_tables; tbl++) {	/* Process all tables */
 		Tin  = Din->table[tbl];
 		Tout = Xout->table[tbl];
 		for (seg = 0; seg < Tin->n_segments; seg++, seg_no++) {	/* Process all segments */
 
-			ndig = (int)lrint (floor (log10 ((double)Tin->segment[seg]->n_rows))) + 1;	/* Determine how many decimals are needed for largest id */
+			ndig = irint (floor (log10 ((double)Tin->segment[seg]->n_rows))) + 1;	/* Determine how many decimals are needed for largest id */
 
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Process Segment %s [segment %ld] which has %ld crossing profiles\n", Tin->segment[seg]->label, seg, Tin->segment[seg]->n_rows);
 
@@ -10280,7 +10280,7 @@ struct GMT_DATASET * gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT
 	return (Xout);
 }
 
-struct GMT_DATASET * GMT_crosstracks (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, unsigned int n_cols, bool alternate)
+struct GMT_DATASET * GMT_crosstracks (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, uint64_t n_cols, bool alternate)
 {	/* Call either the spherical or Cartesian version */
 	struct GMT_DATASET *D = NULL;
 	if (GMT_is_geographic (GMT, GMT_IN))

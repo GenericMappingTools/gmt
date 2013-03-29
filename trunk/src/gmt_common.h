@@ -114,7 +114,7 @@ struct GMT_COMMON {
 		bool active[2];		/* true if current input/output is in native binary format */
 		bool o_delay;		/* true if we dont know number of output columns until we have read at least one input record */
 		enum GMT_swap_direction swab[2];	/* k_swap_in or k_swap_out if current binary input/output must be byte-swapped, else k_swap_none */
-		unsigned int ncol[2];		/* Number of expected columns of input/output
+		uint64_t ncol[2];		/* Number of expected columns of input/output
 						   0 means it will be determined by program */
 		char type[2];			/* Default column type, if set [d for double] */
 #ifdef GMT_COMPAT
@@ -131,10 +131,10 @@ struct GMT_COMMON {
 	struct g {	/* -g[+]x|x|y|Y|d|Y<gap>[unit]  */
 		bool active;
 		unsigned int n_methods;			/* How many different criteria to apply */
-		unsigned int n_col;				/* Largest column-number needed to be read */
+		uint64_t n_col;				/* Largest column-number needed to be read */
 		bool match_all;			/* If true then all specified criteria must be met to be a gap [default is any of them] */
 		enum GMT_enum_gaps method[GMT_N_GAP_METHODS];	/* How distances are computed for each criteria */
-		int col[GMT_N_GAP_METHODS];	/* Which column to use (-1 for x,y distance) */
+		uint64_t col[GMT_N_GAP_METHODS];	/* Which column to use (-1 for x,y distance) */
 		double gap[GMT_N_GAP_METHODS];		/* The critical distances for each criteria */
 		double (*get_dist[GMT_N_GAP_METHODS]) (struct GMT_CTRL *GMT, int);	/* Pointers to functions that compute those distances */
 	} g;
@@ -149,7 +149,7 @@ struct GMT_COMMON {
 	} h;	
 	struct i {	/* -i<col>|<colrange>,.. */
 		bool active;
-		unsigned int n_cols;
+		uint64_t n_cols;
 	} i;
 	struct n {	/* -n[b|c|l|n][+a][+b<BC>][+t<threshold>] */
 		bool active;
@@ -161,7 +161,7 @@ struct GMT_COMMON {
 	} n;
 	struct o {	/* -o<col>|<colrange>,.. */
 		bool active;
-		unsigned int n_cols;
+		uint64_t n_cols;
 	} o;
 	struct p {	/* -p<az>/<el>[+wlon0/lat0[/z0]][+vx0[cip]/y0[cip]] */
 		bool active;

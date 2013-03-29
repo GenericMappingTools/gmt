@@ -716,7 +716,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 		anti_lon = GMT->current.proj.central_meridian + 180.0;
 		if (anti_lon >= 360.0) anti_lon -= 360.0;
 		anti_lat = -GMT->current.proj.pole;
-		anti_bin = (int)lrint (floor ((90.0 - anti_lat) / c.bsize)) * c.bin_nx + lrint (floor (anti_lon / c.bsize));
+		anti_bin = irint (floor ((90.0 - anti_lat) / c.bsize)) * c.bin_nx + irint (floor (anti_lon / c.bsize));
 		GMT_geo_to_xy (GMT, anti_lon, anti_lat, &anti_x, &anti_y);
 		GMT_geo_to_xy (GMT, GMT->current.proj.central_meridian, GMT->current.proj.pole, &x_0, &y_0);
 		if (Ctrl->G.active) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Fill/clip continent option (-G) may not work for this projection.\nIf the antipole (%g/%g) is in the ocean then chances are good\nElse: avoid projection center coordinates that are exact multiples of %g degrees\n", anti_lon, anti_lat, c.bsize);
@@ -729,7 +729,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 	}
 
 	if (clobber_background) {	/* Paint entire map as ocean first, then lay land on top */
-		n = GMT_map_clip_path (GMT, &xtmp, &ytmp, &donut);
+		n = (int)GMT_map_clip_path (GMT, &xtmp, &ytmp, &donut);
 		GMT_setfill (GMT, &Ctrl->S.fill, false);
 		if (donut) {
 			/* If donut, then the path consists of two path of np points */
@@ -853,7 +853,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 				for (k = 0; k < np_new; k++) {
 					if (p[k].n == 0 || p[k].level < level_to_be_painted) continue;
 					if (donut_hell && GMT_non_zero_winding (GMT, anti_x, anti_y, p[k].lon, p[k].lat, p[k].n)) {	/* Antipode inside polygon, must do donut */
-						n = GMT_map_clip_path (GMT, &xtmp, &ytmp, &donut);
+						n = (int)GMT_map_clip_path (GMT, &xtmp, &ytmp, &donut);
 						GMT_setfill (GMT, &fill[p[k].fid], false);
 						PSL_plotline (PSL, xtmp, ytmp, n, PSL_MOVE + PSL_CLOSE);
 						PSL_plotpolygon (PSL, p[k].lon, p[k].lat, p[k].n);
@@ -894,7 +894,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 						GMT_setpen (GMT, &Ctrl->W.pen[k]);
 						last_pen_level = k;
 					}
-					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, (unsigned int)GMT->current.plot.n);
+					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n);
 				}
 			}
 
@@ -956,7 +956,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 						GMT_setpen (GMT, &Ctrl->I.pen[k]);
 						last_k = k;
 					}
-					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, (unsigned int)GMT->current.plot.n);
+					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n);
 				}
 			}
 
@@ -1018,7 +1018,7 @@ int GMT_pscoast (void *V_API, int mode, void *args)
 						GMT_setpen (GMT, &Ctrl->N.pen[k]);
 						last_k = k;
 					}
-					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, (unsigned int)GMT->current.plot.n);
+					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n);
 				}
 			}
 

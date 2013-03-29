@@ -63,8 +63,8 @@ struct GMTAPI_DATA_OBJECT {
 	 * needed while reading/writing from a table (file or array) */
 	uint64_t n_rows;			/* Number or rows in this array [GMT_DATASET and GMT_TEXTSET to/from MATRIX/VETOR only] */
 	uint64_t n_columns;			/* Number of columns to process in this dataset [GMT_DATASET only] */
+	uint64_t n_expected_fields;		/* Number of expected columns for this dataset [GMT_DATASET only] */
 	unsigned int ID;			/* Unique identifier which is >= 0 */
-	unsigned int n_expected_fields;	/* Number of expected columns for this dataset [GMT_DATASET only] */
 	unsigned int level;			/* Nested module level when object was allocated */
 	bool selected;				/* true if requested by current module, false otherwise */
 	bool close_file;			/* true if we opened source as a file and thus need to close it when done */
@@ -81,7 +81,7 @@ struct GMTAPI_DATA_OBJECT {
 	void *data;				/* Points to container associated with this object [for garbage collection purposes] */
 	FILE *fp;				/* Pointer to source/destination stream [For rec-by-rec procession, NULL if memory location] */
 	char *filename;				/* Filename, stream, of file handle (otherwise NULL) */
-	void * (*import) (struct GMT_CTRL *, FILE *, unsigned int *, int *);	/* Pointer to input function (for DATASET/TEXTSET only) */
+	void * (*import) (struct GMT_CTRL *, FILE *, uint64_t *, int *);	/* Pointer to input function (for DATASET/TEXTSET only) */
 };
 
 struct GMTAPI_CTRL {

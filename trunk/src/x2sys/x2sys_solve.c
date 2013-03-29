@@ -337,8 +337,8 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 	char **trk_list = NULL;
 	char trk[2][GMT_TEXT_LEN64], t_txt[2][GMT_TEXT_LEN64], z_txt[GMT_TEXT_LEN64], w_txt[GMT_TEXT_LEN64], line[GMT_BUFSIZ];
 	bool grow_list = false, normalize = false, active_col[N_COE_PARS];
-	int *ID[2] = {NULL, NULL}, ks;
-	uint64_t n_par = 0, n, m, t, n_tracks = 0, n_active;
+	int *ID[2] = {NULL, NULL}, ks, t;
+	uint64_t n_par = 0, n, m, n_tracks = 0, n_active;
 	uint64_t i, p, j, k, r, s, off, row, n_COE = 0;
 	int error = 0, ierror;
 	size_t n_alloc = GMT_CHUNK, n_alloc_t = GMT_CHUNK;
@@ -472,7 +472,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 		n_expected_fields = (unsigned int)(n_active + Ctrl->W.active);
 		while ((in = GMT->current.io.input (GMT, fp, &n_expected_fields, &n_fields)) && !(GMT->current.io.status & GMT_IO_EOF)) {	/* Not yet EOF */
 			for (i = 0; i < 2; i++) {	/* Get IDs and keept track of min/max values */
-				ID[i][n_COE] = (int)lrint (in[i]);
+				ID[i][n_COE] = irint (in[i]);
 				if (ID[i][n_COE] < min_ID) min_ID = ID[i][n_COE];
 				if (ID[i][n_COE] > max_ID) max_ID = ID[i][n_COE];
 			}

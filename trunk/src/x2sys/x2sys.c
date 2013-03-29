@@ -1235,8 +1235,8 @@ void x2sys_bix_init (struct GMT_CTRL *GMT, struct X2SYS_BIX *B, bool alloc)
 {
 	B->i_bin_x = 1.0 / B->inc[GMT_X];
 	B->i_bin_y = 1.0 / B->inc[GMT_Y];
-	B->nx_bin = (int)lrint ((B->wesn[XHI] - B->wesn[XLO]) * B->i_bin_x);
-	B->ny_bin = (int)lrint ((B->wesn[YHI] - B->wesn[YLO]) * B->i_bin_y);
+	B->nx_bin = irint ((B->wesn[XHI] - B->wesn[XLO]) * B->i_bin_x);
+	B->ny_bin = irint ((B->wesn[YHI] - B->wesn[YLO]) * B->i_bin_y);
 	B->nm_bin = B->nx_bin * B->ny_bin;
 	if (alloc) B->binflag = GMT_memory (GMT, NULL, B->nm_bin, unsigned int);
 }
@@ -1391,12 +1391,12 @@ int x2sys_bix_get_index (struct GMT_CTRL *GMT, double x, double y, int *i, int *
 	uint64_t index = 0;
 	int64_t tmp;
 
-	*j = (y == B->wesn[YHI]) ? B->ny_bin - 1 : (int)lrint (floor ((y - B->wesn[YLO]) * B->i_bin_y));
+	*j = (y == B->wesn[YHI]) ? B->ny_bin - 1 : irint (floor ((y - B->wesn[YLO]) * B->i_bin_y));
 	if ((*j) < 0 || (*j) >= B->ny_bin) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "row (%d) outside range implied by -R -I! [0-%d>\n", *j, B->ny_bin);
 		return (X2SYS_BIX_BAD_ROW);
 	}
-	*i = (x == B->wesn[XHI]) ? B->nx_bin - 1 : (int)lrint (floor ((x - B->wesn[XLO])  * B->i_bin_x));
+	*i = (x == B->wesn[XHI]) ? B->nx_bin - 1 : irint (floor ((x - B->wesn[XLO])  * B->i_bin_x));
 	if (B->periodic) {
 		while (*i < 0) *i += B->nx_bin;
 		while (*i >= B->nx_bin) *i -= B->nx_bin;
@@ -1930,7 +1930,7 @@ void x2sys_get_corrtable (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char *ctab
 		col_name = GMT_memory (GMT, NULL, n_cols, char *);
 		for (i = 0; i < n_cols; i++) col_name[i] = strdup (S->info[S->out_order[i]].name);
 	}
-	n_items = MGD77_Scan_Corrtable (GMT, ctable, trk_name, ntracks, n_cols, col_name, &item_names, 0);
+	n_items = MGD77_Scan_Corrtable (GMT, ctable, trk_name, (unsigned int)ntracks, n_cols, col_name, &item_names, 0);
 	if (aux && (n_aux = separate_aux_columns2 (GMT, n_items, item_names, aux, auxlist))) {	/* Determine which auxillary columns are requested (if any) */
 		aux_name = GMT_memory (GMT, NULL, n_aux, char *);
 		for (i = 0; i < n_aux; i++) aux_name[i] = strdup (auxlist[aux[i].type].name);
@@ -1947,7 +1947,7 @@ void x2sys_get_corrtable (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char *ctab
 	}
 	MGD77_Free_Table (GMT, n_items, item_names);
 	x2sys_free_list (GMT, aux_name, n_aux);
-	if (!missing) MGD77_Parse_Corrtable (GMT, ctable, trk_name, ntracks, n_cols, col_name, 0, CORR);
+	if (!missing) MGD77_Parse_Corrtable (GMT, ctable, trk_name, (unsigned int)ntracks, n_cols, col_name, 0, CORR);
 	x2sys_free_list (GMT, col_name, n_cols);
 	if (missing) exit (EXIT_FAILURE);
 }

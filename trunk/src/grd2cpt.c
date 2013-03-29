@@ -460,7 +460,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 		unsigned int i, j;
 
 		Ctrl->E.levels = (G[0]->header->z_min < Ctrl->S.low) ? 1 : 0;
-		Ctrl->E.levels += (unsigned int) lrint (floor((Ctrl->S.high - Ctrl->S.low)/Ctrl->S.inc)) + 1;
+		Ctrl->E.levels += urint (floor((Ctrl->S.high - Ctrl->S.low)/Ctrl->S.inc)) + 1;
 		if (G[0]->header->z_max > Ctrl->S.high) Ctrl->E.levels++;
 		cdf_cpt = GMT_memory (GMT, NULL, Ctrl->E.levels, struct CDF_CPT);
 		if (G[0]->header->z_min < Ctrl->S.low) {

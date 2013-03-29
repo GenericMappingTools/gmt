@@ -417,7 +417,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args)
 
 	if (!Ctrl->S.active) {	/* Must extend table with 2 cols to hold d and az */
 		n_columns = D[GMT_IN]->n_columns + 2;
-		d_col = D[GMT_IN]->n_columns;
+		d_col = (unsigned int)D[GMT_IN]->n_columns;
 		h_col = d_col + 1;
 	}
 	else {	/* Comes with d and az in file */

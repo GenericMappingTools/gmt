@@ -84,7 +84,7 @@ struct LINK {	/* Information on linking segments together */
 	uint64_t orig_id;
 	uint64_t pos;
 	uint64_t n;
-	unsigned int group;
+	uint64_t group;
 	bool used;
 	double x_end[2];
 	double y_end[2];
@@ -626,7 +626,8 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 
 		done = false;
 		id = start_id;	/* This is the first line segment in a new chain */
-		end_order = n_steps = n_alloc_pts = 0;	/* Nothing appended yet to this single line segment */
+		end_order = 0;
+		n_steps = n_alloc_pts = 0;	/* Nothing appended yet to this single line segment */
 #ifdef DEBUG2
 		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 "\n", segment[id].orig_id);
 #endif

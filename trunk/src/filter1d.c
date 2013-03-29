@@ -110,13 +110,13 @@ struct FILTER1D_INFO {	/* Control structure for all aspects of the filter setup 
 	bool out_at_time;		/* true when output is required at evenly spaced intervals */
 	bool f_operator;		/* true if custom weights coefficients sum to zero */
 
-	unsigned int *n_this_col;	/* Pointer to array of counters [one per column]  */
-	unsigned int *n_left;		/* Pointer to array of counters [one per column]  */
-	unsigned int *n_right;	/* Pointer to array of counters [one per column]  */
-	unsigned int n_cols;		/* Number of columns of input  */
-	unsigned int t_col;		/* Column of time abscissae (independent variable)  */
-	unsigned int n_f_wts;		/* Number of filter weights  */
-	unsigned int half_n_f_wts;	/* Half the number of filter weights  */
+	uint64_t *n_this_col;		/* Pointer to array of counters [one per column]  */
+	uint64_t *n_left;		/* Pointer to array of counters [one per column]  */
+	uint64_t *n_right;		/* Pointer to array of counters [one per column]  */
+	uint64_t n_cols;		/* Number of columns of input  */
+	uint64_t t_col;			/* Column of time abscissae (independent variable)  */
+	uint64_t n_f_wts;		/* Number of filter weights  */
+	uint64_t half_n_f_wts;		/* Half the number of filter weights  */
 	uint64_t n_rows;		/* Number of rows of input  */
 	size_t n_row_alloc;		/* Number of rows of data to allocate  */
 	size_t n_work_alloc;		/* Number of rows of workspace to allocate  */
@@ -368,21 +368,21 @@ double gaussian_weight (double radius, double half_width)
 
 void allocate_data_space (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 {
-	unsigned int i;
+	uint64_t i;
 
 	for (i = 0; i < F->n_cols; ++i) F->data[i] = GMT_memory (GMT, F->data[i], F->n_row_alloc, double);
 }
 
 void allocate_more_work_space (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 {
-	unsigned int i;
+	uint64_t i;
 
 	for (i = 0; i < F->n_cols; ++i) F->work[i] = GMT_memory (GMT, F->work[i], F->n_work_alloc, double);
 }
 
 int set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 {
-	unsigned int i, i1, i2;
+	uint64_t i, i1, i2;
 	bool normalize = false;
 	double t_0, t_1, time, w_sum;
 	double (*get_weight[3]) (double, double);	/* Pointers to desired weight function.  */
@@ -393,7 +393,7 @@ int set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 	if (F->equidist) F->dt = (t_1 - t_0) / (F->n_rows - 1);
 
 	if (F->filter_type == FILTER1D_CUSTOM) {	/* Use coefficients we read from file */
-		F->n_f_wts = (unsigned int)F->Fin->n_records;
+		F->n_f_wts = F->Fin->n_records;
 		while (F->n_f_wts <= F->n_work_alloc) {	/* Need more memory */
 			F->n_work_alloc <<= 1;
 			allocate_more_work_space (GMT, F);
@@ -411,7 +411,7 @@ int set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 		get_weight[FILTER1D_COS_ARCH] = &cosine_weight_filter1d;
 		get_weight[FILTER1D_GAUSSIAN] = &gaussian_weight;
 		F->half_width = 0.5 * F->filter_width;
-		F->half_n_f_wts = (unsigned int)lrint (floor (F->half_width / F->dt));
+		F->half_n_f_wts = lrint (floor (F->half_width / F->dt));
 		F->n_f_wts = 2 * F->half_n_f_wts + 1;
 
 		F->f_wt = GMT_memory (GMT, F->f_wt, F->n_f_wts, double);
@@ -538,10 +538,10 @@ int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 {
 	uint64_t i_row, left, right, n_l, n_r;
 	uint64_t i_t_output = 0, n_in_filter, n_for_call, n_good_ones;
-	unsigned int iq, i_col;
-	int i_f_wt;
+	uint64_t iq, i_col;
+	int64_t i_f_wt;
 	bool *good_one = NULL;	/* Pointer to array of logicals [one per column]  */
-	double time, delta_time, *outval = NULL, wt, val, med, scl, small, symmetry;
+	double t_time, delta_time, *outval = NULL, wt, val, med, scl, small, symmetry;
 	double *wt_sum = NULL;		/* Pointer for array of weight sums [each column]  */
 	double *data_sum = NULL;	/* Pointer for array of data * weight sums [columns]  */
 	struct GMT_CTRL *GMT = C->GMT;
@@ -559,21 +559,21 @@ int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 		small = F->t_int;
 
 	small *= GMT_CONV_LIMIT;
-	time = F->t_start;
+	t_time = F->t_start;
 	left = right = 0;		/* Left/right end of filter window */
 
-	iq = (unsigned int)lrint (F->q_factor);
+	iq = lrint (F->q_factor);
 
-	while (time <= (F->t_stop + small)) {
-		while ((time - F->data[F->t_col][left] - small) > F->half_width) ++left;
-		while (right < F->n_rows && (F->data[F->t_col][right] - time - small) <= F->half_width) ++right;
+	while (t_time <= (F->t_stop + small)) {
+		while ((t_time - F->data[F->t_col][left] - small) > F->half_width) ++left;
+		while (right < F->n_rows && (F->data[F->t_col][right] - t_time - small) <= F->half_width) ++right;
 		n_in_filter = right - left;
 		if ( (!(n_in_filter)) || (F->check_lack && ( (F->filter_width / n_in_filter) > F->lack_width) ) ) {
 			if (F->out_at_time)
-				time += F->t_int;
+				t_time += F->t_int;
 			else {
 				++i_t_output;
-				time = (i_t_output < F->n_rows) ? F->data[F->t_col][i_t_output] : F->t_stop + 1.0;
+				t_time = (i_t_output < F->n_rows) ? F->data[F->t_col][i_t_output] : F->t_stop + 1.0;
 			}
 			continue;
 		}
@@ -602,8 +602,8 @@ int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 						F->work[i_col][F->n_this_col[i_col]] = F->data[i_col][i_row];
 						F->n_this_col[i_col]++;
 						if (F->check_asym) {
-							if (F->data[F->t_col][i_row] < time) F->n_left[i_col]++;
-							if (F->data[F->t_col][i_row] > time) F->n_right[i_col]++;
+							if (F->data[F->t_col][i_row] < t_time) F->n_left[i_col]++;
+							if (F->data[F->t_col][i_row] > t_time) F->n_right[i_col]++;
 						}
 					}
 				}
@@ -639,7 +639,7 @@ int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 			n_good_ones = 0;
 			for (i_col = 0; i_col < F->n_cols; ++i_col) {
 				if (i_col == F->t_col)
-					data_sum[i_col] = time;
+					data_sum[i_col] = t_time;
 				else if (good_one[i_col]) {
 					data_sum[i_col] = F->this_loc[i_col];
 					++n_good_ones;
@@ -653,8 +653,8 @@ int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 			if (F->robust) for (i_col = 0; i_col < F->n_cols; ++i_col) F->n_this_col[i_col] = 0;
 
 			for (i_row = left; i_row < right; ++i_row) {
-				delta_time = time - F->data[F->t_col][i_row];
-				i_f_wt = F->half_n_f_wts + (int)lrint (floor (0.5 + delta_time/F->dt));
+				delta_time = t_time - F->data[F->t_col][i_row];
+				i_f_wt = F->half_n_f_wts + lrint (floor (0.5 + delta_time/F->dt));
 				if ((i_f_wt < 0) || (i_f_wt >= (int)F->n_f_wts)) continue;
 
 				for(i_col = 0; i_col < F->n_cols; ++i_col) {
@@ -668,8 +668,8 @@ int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 							val = ((fabs(val-med)) > (2.5 * scl)) ? med : val;
 						}
 						else if (F->check_asym) {	/* This wasn't already done  */
-							if (F->data[F->t_col][i_row] < time) F->n_left[i_col]++;
-							if (F->data[F->t_col][i_row] > time) F->n_right[i_col]++;
+							if (F->data[F->t_col][i_row] < t_time) F->n_left[i_col]++;
+							if (F->data[F->t_col][i_row] > t_time) F->n_right[i_col]++;
 						}
 						wt_sum[i_col] += wt;
 						data_sum[i_col] += (wt * val);
@@ -702,7 +702,7 @@ int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 			if (n_good_ones) {
 				for (i_col = 0; i_col < F->n_cols; ++i_col) {
 					if (i_col == F->t_col)
-						outval[i_col] = time;
+						outval[i_col] = t_time;
 					else if (good_one[i_col])
 						outval[i_col] = (F->f_operator) ? data_sum[i_col] : data_sum[i_col] / wt_sum[i_col];
 					else
@@ -715,10 +715,10 @@ int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 		/* Go to next output time */
 
 		if (F->out_at_time)
-			time += F->t_int;
+			t_time += F->t_int;
 		else {
 			++i_t_output;
-			time = (i_t_output < F->n_rows) ? F->data[F->t_col][i_t_output] : F->t_stop + 1.0;
+			t_time = (i_t_output < F->n_rows) ? F->data[F->t_col][i_t_output] : F->t_stop + 1.0;
 		}
 	}
 
@@ -732,14 +732,14 @@ int do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INFO *F)
 
 int allocate_space (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 {
-	F->n_this_col = GMT_memory (GMT, NULL, F->n_cols, unsigned int);
+	F->n_this_col = GMT_memory (GMT, NULL, F->n_cols, uint64_t);
 	F->data = GMT_memory_aligned (GMT, NULL, F->n_cols, double *);
 
-	if (F->check_asym) F->n_left = GMT_memory (GMT, NULL, F->n_cols, unsigned int);
-	if (F->check_asym) F->n_right = GMT_memory (GMT, NULL, F->n_cols, unsigned int);
+	if (F->check_asym) F->n_left = GMT_memory (GMT, NULL, F->n_cols, uint64_t);
+	if (F->check_asym) F->n_right = GMT_memory (GMT, NULL, F->n_cols, uint64_t);
 
 	if (F->robust || (F->filter_type > FILTER1D_CONVOLVE) ) {	/* Then we need workspace  */
-		unsigned int i;
+		uint64_t i;
 
 		F->work = GMT_memory (GMT, NULL, F->n_cols, double *);
 		for (i = 0; i < F->n_cols; ++i) F->work[i] = GMT_memory (GMT, NULL, F->n_work_alloc, double);
@@ -757,7 +757,7 @@ int allocate_space (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 
 void free_space_filter1d (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 {
-	unsigned int i;
+	uint64_t i;
 	if (!F) return;
 	if (F->robust || (F->filter_type > FILTER1D_CONVOLVE) ) {
 		for (i = 0; i < F->n_cols; ++i)	GMT_free (GMT, F->work[i]);
@@ -779,7 +779,7 @@ void free_space_filter1d (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 	if (F->n_f_wts) GMT_free (GMT, F->f_wt);
 }
 
-void load_parameters_filter1d (struct FILTER1D_INFO *F, struct FILTER1D_CTRL *Ctrl, int n_cols)
+void load_parameters_filter1d (struct FILTER1D_INFO *F, struct FILTER1D_CTRL *Ctrl, uint64_t n_cols)
 {
 	F->filter_width = Ctrl->F.width;
 	F->dt = Ctrl->D.inc;
@@ -806,8 +806,7 @@ void load_parameters_filter1d (struct FILTER1D_INFO *F, struct FILTER1D_CTRL *Ct
 
 int GMT_filter1d (void *V_API, int mode, void *args)
 {
-	unsigned int col, tbl;
-	uint64_t row, seg;
+	uint64_t col, tbl, row, seg;
 	int error;
 
 	double last_time, new_time, in;

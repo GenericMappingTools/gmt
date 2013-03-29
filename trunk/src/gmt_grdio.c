@@ -1156,15 +1156,15 @@ int GMT_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, doubl
 
 		/* Get dimension of subregion */
 
-		*width  = (unsigned int)lrint ((wesn[XHI] - wesn[XLO]) * header->r_inc[GMT_X]) + one_or_zero;
-		*height = (unsigned int)lrint ((wesn[YHI] - wesn[YLO]) * header->r_inc[GMT_Y]) + one_or_zero;
+		*width  = urint ((wesn[XHI] - wesn[XLO]) * header->r_inc[GMT_X]) + one_or_zero;
+		*height = urint ((wesn[YHI] - wesn[YLO]) * header->r_inc[GMT_Y]) + one_or_zero;
 
 		/* Get first and last row and column numbers */
 
-		*first_col = (int)lrint (floor ((wesn[XLO] - header->wesn[XLO]) * header->r_inc[GMT_X] + small));
-		*last_col  = (int)lrint (ceil  ((wesn[XHI] - header->wesn[XLO]) * header->r_inc[GMT_X] - small)) - 1 + one_or_zero;
-		*first_row = (int)lrint (floor ((header->wesn[YHI] - wesn[YHI]) * header->r_inc[GMT_Y] + small));
-		*last_row  = (int)lrint (ceil  ((header->wesn[YHI] - wesn[YLO]) * header->r_inc[GMT_Y] - small)) - 1 + one_or_zero;
+		*first_col = irint (floor ((wesn[XLO] - header->wesn[XLO]) * header->r_inc[GMT_X] + small));
+		*last_col  = irint (ceil  ((wesn[XHI] - header->wesn[XLO]) * header->r_inc[GMT_X] - small)) - 1 + one_or_zero;
+		*first_row = irint (floor ((header->wesn[YHI] - wesn[YHI]) * header->r_inc[GMT_Y] + small));
+		*last_row  = irint (ceil  ((header->wesn[YHI] - wesn[YLO]) * header->r_inc[GMT_Y] - small)) - 1 + one_or_zero;
 	}
 
 	actual_col = GMT_memory (GMT, NULL, *width, unsigned int);
@@ -1283,8 +1283,8 @@ void GMT_set_grdinc (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h)
 
 void GMT_set_grddim (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h)
 {	/* Assumes pad is set and then computes nx, ny, mx, my, nm, size, xy_off based on w/e/s/n.  */
-	h->nx = (unsigned int)GMT_grd_get_nx (GMT, h);		/* Set nx, ny based on w/e/s/n and offset */
-	h->ny = (unsigned int)GMT_grd_get_ny (GMT, h);
+	h->nx = GMT_grd_get_nx (GMT, h);		/* Set nx, ny based on w/e/s/n and offset */
+	h->ny = GMT_grd_get_ny (GMT, h);
 	h->mx = gmt_grd_get_nxpad (h, h->pad);	/* Set mx, my based on h->{nx,ny} and the current pad */
 	h->my = gmt_grd_get_nypad (h, h->pad);
 	h->nm = gmt_grd_get_nm (h);		/* Sets the number of actual data items */
@@ -1360,8 +1360,8 @@ void GMT_grd_shift (struct GMT_CTRL *GMT, struct GMT_GRID *G, double shift)
 	uint64_t ij;
 	float *tmp = NULL;
 
-	n_shift = (int)lrint (shift * G->header->r_inc[GMT_X]);
-	width = (unsigned int)lrint (360.0 * G->header->r_inc[GMT_X]);
+	n_shift = irint (shift * G->header->r_inc[GMT_X]);
+	width = urint (360.0 * G->header->r_inc[GMT_X]);
 	if (width > G->header->nx) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot rotate grid, width is too small\n");
 		return;
@@ -1734,7 +1734,7 @@ int GMT_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *Grid, do
 	Grid->data = GMT_memory_aligned (GMT, NULL, Grid->header->size, float);
 
 	n_cols = (min == 1) ? GMT_IMG_NLON_1M : GMT_IMG_NLON_2M;		/* Number of columns (10800 or 21600) */
-	first_i = (int)lrint (floor (Grid->header->wesn[XLO] * Grid->header->r_inc[GMT_X]));				/* first tile partly or fully inside region */
+	first_i = irint (floor (Grid->header->wesn[XLO] * Grid->header->r_inc[GMT_X]));				/* first tile partly or fully inside region */
 	if (first_i < 0) first_i += n_cols;
 	n_skip = lrint (floor ((GMT->current.proj.rect[YHI] - Grid->header->wesn[YHI]) * Grid->header->r_inc[GMT_Y]));	/* Number of rows clearly above y_max */
 	if (fseek (fp, n_skip * n_cols * GMT_IMG_ITEMSIZE, SEEK_SET)) return (GMT_GRDIO_SEEK_FAILED);

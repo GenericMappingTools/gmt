@@ -87,8 +87,8 @@ static void getIndexes (Grid *_grid, GridPoint *coord, XPoint *index)
   int column, row;
   GMTGrid *grid = (GMTGrid *)_grid;
   
-  column = (int)lrint ((coord->x - grid->header.wesn[XLO]) / grid->header.inc[GMT_X]);
-  row    = (int)lrint ((coord->y - grid->header.wesn[YLO]) / grid->header.inc[GMT_Y]);
+  column = irint ((coord->x - grid->header.wesn[XLO]) / grid->header.inc[GMT_X]);
+  row    = irint ((coord->y - grid->header.wesn[YLO]) / grid->header.inc[GMT_Y]);
   index->x = column;
   /* Allow for origin being at the bottom rather than the top */
   index->y = grid->header.ny - row;

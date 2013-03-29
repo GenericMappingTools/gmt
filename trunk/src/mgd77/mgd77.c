@@ -169,8 +169,8 @@ static inline int MGD77_bit_test (double value, double limit)
 
 	if (GMT_is_dnan (value)) return (false);	/* Cannot pass a test with a NaN */
 	if (GMT_is_dnan (limit)) return (false);	/* Cannot pass a test with a NaN */
-	ivalue = (unsigned int) lrint (value);
-	ilimit = (unsigned int) lrint (limit);
+	ivalue = urint (value);
+	ilimit = urint (limit);
 	return (ivalue & ilimit);			/* true if any of the bits in limit line up with value */
 }
 
@@ -1258,9 +1258,9 @@ static int MGD77_Read_Data_Record_m77 (struct GMT_CTRL *GMT, struct MGD77_CONTRO
 	/* Get absolute time, if all the pieces are there */
 
 	if ((MGD77Record->bit_pattern & MGD77_TIME_BITS) == MGD77_TIME_BITS) {	/* Got all the time items */
-		yyyy = (int)lrint (MGD77Record->number[MGD77_YEAR]);
-		mm = (int)lrint (MGD77Record->number[MGD77_MONTH]);
-		dd = (int)lrint (MGD77Record->number[MGD77_DAY]);
+		yyyy = irint (MGD77Record->number[MGD77_YEAR]);
+		mm = irint (MGD77Record->number[MGD77_MONTH]);
+		dd = irint (MGD77Record->number[MGD77_DAY]);
 		rata_die = GMT_rd_from_gymd (GMT, yyyy, mm, dd);
 		tz = (GMT_is_dnan (MGD77Record->number[MGD77_TZ])) ? 0.0 : MGD77Record->number[MGD77_TZ];
 		secs = GMT_HR2SEC_I * (MGD77Record->number[MGD77_HOUR] + tz) + GMT_MIN2SEC_I * MGD77Record->number[MGD77_MIN];
@@ -1382,9 +1382,9 @@ static int MGD77_Read_Data_Record_txt (struct GMT_CTRL *GMT, struct MGD77_CONTRO
 	/* Get absolute time, if all the pieces are there */
 
 	if ((MGD77Record->bit_pattern & MGD77_TIME_BITS) == MGD77_TIME_BITS) {	/* Got all the time items */
-		yyyy = (int)lrint (MGD77Record->number[MGD77_YEAR]);
-		mm = (int)lrint (MGD77Record->number[MGD77_MONTH]);
-		dd = (int)lrint (MGD77Record->number[MGD77_DAY]);
+		yyyy = irint (MGD77Record->number[MGD77_YEAR]);
+		mm = irint (MGD77Record->number[MGD77_MONTH]);
+		dd = irint (MGD77Record->number[MGD77_DAY]);
 		rata_die = GMT_rd_from_gymd (GMT, yyyy, mm, dd);
 		tz = (GMT_is_dnan (MGD77Record->number[MGD77_TZ])) ? 0.0 : MGD77Record->number[MGD77_TZ];
 		secs = GMT_HR2SEC_I * (MGD77Record->number[MGD77_HOUR] + tz) + GMT_MIN2SEC_I * MGD77Record->number[MGD77_MIN];
@@ -3487,8 +3487,8 @@ void MGD77_Verify_Prep_m77 (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struc
 		lon = D[i].number[MGD77_LONGITUDE];
 		lat = D[i].number[MGD77_LATITUDE];
 		if (lon >= 180.0) lon -= 360.0;
-		ix = (int)lrint (floor (fabs(lon) / 10.0));	/* Gives 0-18 for 19 possible values */
-		iy = (int)lrint (floor (fabs(lat) / 10.0));	/* Gives 0-9 for 10 possible values */
+		ix = irint (floor (fabs(lon) / 10.0));	/* Gives 0-18 for 19 possible values */
+		iy = irint (floor (fabs(lat) / 10.0));	/* Gives 0-9 for 10 possible values */
 		if (lon >= 0.0) ix += 19;
 		if (lat >= 0.0) iy += 10;
 		C->ten_box[iy][ix] = 1;
@@ -3505,33 +3505,33 @@ void MGD77_Verify_Prep_m77 (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struc
 	xpmin = floor (xpmin);	xnmin = floor (xnmin);	ymin = floor (ymin);
 	xpmax = ceil (xpmax);	xnmax = ceil (xnmax);	ymax = ceil (ymax);
 	if (xpmin == DBL_MAX) {	/* Only negative longitudes found */
-		C->w = (int)lrint (xnmin);
-		C->e = (int)lrint (xnmax);
+		C->w = irint (xnmin);
+		C->e = irint (xnmax);
 	}
 	else if (xnmin == DBL_MAX) {	/* Only positive longitudes found */
-		C->w = (int)lrint (xpmin);
-		C->e = (int)lrint (xpmax);
+		C->w = irint (xpmin);
+		C->e = irint (xpmax);
 	}
 	else if ((xpmin - xnmax) < 90.0) {	/* Crossed Greenwich */
-		C->w = (int)lrint (xnmin);
-		C->e = (int)lrint (xpmax);
+		C->w = irint (xnmin);
+		C->e = irint (xpmax);
 	}
 	else {					/* Crossed Dateline */
-		C->w = (int)lrint (xpmin);
-		C->e = (int)lrint (xnmax);
+		C->w = irint (xpmin);
+		C->e = irint (xnmax);
 	}
-	C->s = (int)lrint (ymin);
-	C->n = (int)lrint (ymax);
+	C->s = irint (ymin);
+	C->n = irint (ymax);
 
 	/* Get the cruise time period for later checking against IGRF used, etc. */
 
 	if (!GMT_is_dnan (D[0].time)) {	/* We have  time - obtain yyyy/mm/dd of departure and arrival days */
-		C->Departure[0] = (int)lrint (D[0].number[MGD77_YEAR]);
-		C->Departure[1] = (int)lrint (D[0].number[MGD77_MONTH]);
-		C->Departure[2] = (int)lrint (D[0].number[MGD77_DAY]);
-		C->Arrival[0] = (int)lrint (D[nrec-1].number[MGD77_YEAR]);
-		C->Arrival[1] = (int)lrint (D[nrec-1].number[MGD77_MONTH]);
-		C->Arrival[2] = (int)lrint (D[nrec-1].number[MGD77_DAY]);
+		C->Departure[0] = irint (D[0].number[MGD77_YEAR]);
+		C->Departure[1] = irint (D[0].number[MGD77_MONTH]);
+		C->Departure[2] = irint (D[0].number[MGD77_DAY]);
+		C->Arrival[0] = irint (D[nrec-1].number[MGD77_YEAR]);
+		C->Arrival[1] = irint (D[nrec-1].number[MGD77_MONTH]);
+		C->Arrival[2] = irint (D[nrec-1].number[MGD77_DAY]);
 	}
 
 	for (iy = 0; iy < 20; iy++) {
@@ -3562,8 +3562,8 @@ void MGD77_Verify_Prep (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MG
 		lat = values[1][rec];
 		lon = values[2][rec];
 		if (lon > 180.0) lon -= 360.0;
-		ix = (int)lrint (floor (fabs(lon) / 10.0));	/* Gives 0-18 for 19 possible values */
-		iy = (int)lrint (floor (fabs(lat) / 10.0));	/* Gives 0-9 for 10 possible values */
+		ix = irint (floor (fabs(lon) / 10.0));	/* Gives 0-18 for 19 possible values */
+		iy = irint (floor (fabs(lat) / 10.0));	/* Gives 0-9 for 10 possible values */
 		if (lon >= 0.0) ix += 19;
 		if (lat >= 0.0) iy += 10;
 		C->ten_box[iy][ix] = 1;
@@ -3577,23 +3577,23 @@ void MGD77_Verify_Prep (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MG
 	xpmin = floor (xpmin);	xnmin = floor (xnmin);	ymin = floor (ymin);
 	xpmax = ceil (xpmax);	xnmax = ceil (xnmax);	ymax = ceil (ymax);
 	if (xpmin == DBL_MAX) {	/* Only negative longitudes found */
-		C->w = (int)lrint (xnmin);
-		C->e = (int)lrint (xnmax);
+		C->w = irint (xnmin);
+		C->e = irint (xnmax);
 	}
 	else if (xnmin == DBL_MAX) {	/* Only positive longitudes found */
-		C->w = (int)lrint (xpmin);
-		C->e = (int)lrint (xpmax);
+		C->w = irint (xpmin);
+		C->e = irint (xpmax);
 	}
 	else if ((xpmin - xnmax) < 90.0) {	/* Crossed Greenwich */
-		C->w = (int)lrint (xnmin);
-		C->e = (int)lrint (xpmax);
+		C->w = irint (xnmin);
+		C->e = irint (xpmax);
 	}
 	else {					/* Crossed Dateline */
-		C->w = (int)lrint (xpmin);
-		C->e = (int)lrint (xnmax);
+		C->w = irint (xpmin);
+		C->e = irint (xnmax);
 	}
-	C->s = (int)lrint (ymin);
-	C->n = (int)lrint (ymax);
+	C->s = irint (ymin);
+	C->n = irint (ymax);
 
 	if (!GMT_is_dnan (values[0][0])) {	/* We have time - obtain yyyy/mm/dd of departure and arrival days */
 		struct GMT_gcal CAL;
@@ -4522,10 +4522,10 @@ int MGD77_carter_get_bin (struct GMT_CTRL *GMT, double lon, double lat, int *bin
 	}
 	while (lon >= 360.0) lon -= 360.0;
 	while (lon < 0.0) lon += 360.0;
-	latdeg = (int)lrint (floor (lat + 90.0));
+	latdeg = irint (floor (lat + 90.0));
 	if (latdeg == 180) latdeg = 179;	/* Map north pole to previous row  */
 
-	londeg = (int)lrint (floor (lon));
+	londeg = irint (floor (lon));
 	*bin = 360 * latdeg + londeg;
 
 	return (MGD77_NO_ERROR);
@@ -4595,14 +4595,14 @@ int MGD77_carter_depth_from_twt (struct GMT_CTRL *GMT, int zone, double twt_in_m
 		return (-1);
 	}
 
-	nominal_z1500 = (int)lrint (0.75 * twt_in_msec);
+	nominal_z1500 = irint (0.75 * twt_in_msec);
 
 	if (nominal_z1500 <= 100.0) {	/* There is no correction in water this shallow.  */
 		*depth_in_corr_m = nominal_z1500;
 		return (MGD77_NO_ERROR);
 	}
 
-	low_hundred = (int)lrint (floor (nominal_z1500 / 100.0));
+	low_hundred = irint (floor (nominal_z1500 / 100.0));
 	i = C->carter_offset[zone-1] + low_hundred - 1;	/* -1 'cause .f indices */
 
 	if (i >= (C->carter_offset[zone] - 1) ) {
@@ -4610,7 +4610,7 @@ int MGD77_carter_depth_from_twt (struct GMT_CTRL *GMT, int zone, double twt_in_m
 		return (-1);
 	}
 
-	part_in_100 = (int)lrint (fmod ((double)nominal_z1500, 100.0));
+	part_in_100 = irint (fmod ((double)nominal_z1500, 100.0));
 
 	if (part_in_100 > 0.0) {	/* We have to interpolate the table  */
 
@@ -4673,7 +4673,7 @@ int MGD77_carter_twt_from_depth (struct GMT_CTRL *GMT, int zone, double depth_in
 		return (MGD77_NO_ERROR);
 	}
 
-	guess = (int)lrint ((depth_in_corr_m / 100.0)) + min;
+	guess = irint ((depth_in_corr_m / 100.0)) + min;
 	if (guess > max) guess = max;
 	while (guess < max && C->carter_correction[guess] < depth_in_corr_m) guess++;
 	while (guess > min && C->carter_correction[guess] > depth_in_corr_m) guess--;

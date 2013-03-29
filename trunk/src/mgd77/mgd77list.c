@@ -1333,7 +1333,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args)
 						date = MGD77_time_to_fyear (GMT, &M, dvalue[t_col][rec]);
 						need_date = false;
 					}
-					i = (int)lrint (dvalue[ms_col][rec]);
+					i = irint (dvalue[ms_col][rec]);
 					k = (i == 2) ? m2_col : m1_col;
 					m = MGD77_Recalc_Mag_Anomaly_IGRF (GMT, &M, date, dvalue[x_col][rec], dvalue[y_col][rec], dvalue[k][rec], false);
 				}
@@ -1342,7 +1342,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args)
 						date = MGD77_time_to_fyear (GMT, &M, dvalue[t_col][rec]);
 						need_date = false;
 					}
-					i = (int)lrint (dvalue[ms_col][rec]);
+					i = irint (dvalue[ms_col][rec]);
 					k = (i == 2) ? m1_col : m2_col;
 					m = MGD77_Recalc_Mag_Anomaly_IGRF (GMT, &M, date, dvalue[x_col][rec], dvalue[y_col][rec], dvalue[k][rec], false);
 				}

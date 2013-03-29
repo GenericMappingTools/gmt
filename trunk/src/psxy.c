@@ -1109,11 +1109,11 @@ int GMT_psxy (void *V_API, int mode, void *args)
 				}
 				else {	/* Plot line */
 					if ((GMT->current.plot.n = GMT_geo_to_xy_line (GMT, L->coord[GMT_X], L->coord[GMT_Y], L->n_rows)) == 0) continue;
-					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, (unsigned int)GMT->current.plot.n);
+					GMT_plot_line (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.pen, GMT->current.plot.n);
 				}
 				if (S.symbol == GMT_SYMBOL_FRONT) { /* Must also draw fault crossbars */
 					GMT_setfill (GMT, &current_fill, outline_active);
-					GMT_draw_front (GMT, GMT->current.plot.x, GMT->current.plot.y, (unsigned int)GMT->current.plot.n, &S.f);
+					GMT_draw_front (GMT, GMT->current.plot.x, GMT->current.plot.y, GMT->current.plot.n, &S.f);
 				}
 			}
 		}

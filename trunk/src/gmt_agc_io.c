@@ -178,8 +178,8 @@ int GMT_agc_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	header->wesn[YHI]  = recdata[1];
 	header->inc[GMT_Y] = recdata[4];
 	header->inc[GMT_X] = recdata[5];
-	header->nx = (unsigned int)GMT_grd_get_nx (GMT, header);
-	header->ny = (unsigned int)GMT_grd_get_ny (GMT, header);
+	header->nx = GMT_grd_get_nx (GMT, header);
+	header->ny = GMT_grd_get_ny (GMT, header);
 	header->z_scale_factor = 1.0;
 	header->z_add_offset = 0.0;
 	for (i = 6; i < PREHEADSIZE; i++) agchead[i-6] = recdata[i];
@@ -260,8 +260,8 @@ int GMT_agc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	
 	header->z_min = +DBL_MAX;	header->z_max = -DBL_MAX;
 	
-	n_blocks_y = (unsigned int)lrint (ceil ((double)header->ny / (double)ZBLOCKHEIGHT));
-	n_blocks_x = (unsigned int)lrint (ceil ((double)header->nx / (double)ZBLOCKWIDTH));
+	n_blocks_y = urint (ceil ((double)header->ny / (double)ZBLOCKHEIGHT));
+	n_blocks_x = urint (ceil ((double)header->nx / (double)ZBLOCKWIDTH));
 	n_blocks = n_blocks_x * n_blocks_y;
 	datablockcol = datablockrow = 0;
 	for (block = 0; block < n_blocks; block++) {
@@ -365,18 +365,18 @@ int GMT_agc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	
 	packAGCheader (prez, postz, header);	/* Stuff header info into the AGC arrays */
 
-	n_blocks_y = (unsigned int)lrint (ceil ((double)header->ny / (double)ZBLOCKHEIGHT));
-	n_blocks_x = (unsigned int)lrint (ceil ((double)header->nx / (double)ZBLOCKWIDTH));
+	n_blocks_y = urint (ceil ((double)header->ny / (double)ZBLOCKHEIGHT));
+	n_blocks_x = urint (ceil ((double)header->nx / (double)ZBLOCKWIDTH));
 	n_blocks = n_blocks_x * n_blocks_y;
 	datablockcol = datablockrow = 0;
 	for (block = 0; block < n_blocks; block++) {
 		rowstart = datablockrow * ZBLOCKHEIGHT;
-		rowend = MIN (rowstart + ZBLOCKHEIGHT, (unsigned int)header->ny);
+		rowend = MIN (rowstart + ZBLOCKHEIGHT, header->ny);
 		for (i = 0, row = rowstart; row < rowend; i++, row++) {
 			j_gmt = header->ny - 1 - row;	/* GMT internal row number */
 			if (j_gmt < first_row || j_gmt > last_row) continue;
 			colstart = datablockcol * ZBLOCKWIDTH;
-			colend = MIN (colstart + ZBLOCKWIDTH, (unsigned int)header->nx);
+			colend = MIN (colstart + ZBLOCKWIDTH, header->nx);
 			for (j = 0, col = colstart; col < colend; j++, col++) {
 				if (col < first_col || col > last_col) continue;
 				ij = imag_offset + ((j_gmt - first_row) + pad[YHI]) * width_in + (col - first_col) + pad[XLO];

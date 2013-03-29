@@ -709,7 +709,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 	if (get_contours) {	/* Need to find contours */
 		struct GMT_GRID *Z_orig = NULL;
 		GMT_Report (API, GMT_MSG_VERBOSE, "Find contours\n");
-		n_edges = Z->header->ny * ((unsigned int)lrint (ceil (Z->header->nx / 16.0)));
+		n_edges = Z->header->ny * (urint (ceil (Z->header->nx / 16.0)));
 		edge = GMT_memory (GMT, NULL, n_edges, unsigned int);
 		binij = GMT_memory (GMT, NULL, Topo->header->nm, struct GRDVIEW_BIN);
 		small = GMT_SMALL * (Z->header->z_max - Z->header->z_min);
@@ -738,8 +738,8 @@ int GMT_grdview (void *V_API, int mode, void *args)
 				i_bin_old = j_bin_old = -1;
 				for (pt = 1; pt < n; pt++) {
 					/* Compute the lower-left bin i,j of the tile cut by the start of the contour (first 2 points) */
-					i_bin = (int)lrint (floor (((0.5 * (x[pt-1] + x[pt]) - Z->header->wesn[XLO]) / Z->header->inc[GMT_X])));
-					j_bin = (int)lrint (floor (((Z->header->wesn[YHI] - 0.5 * (y[pt-1] + y[pt])) / Z->header->inc[GMT_Y]))) + 1;
+					i_bin = irint (floor (((0.5 * (x[pt-1] + x[pt]) - Z->header->wesn[XLO]) / Z->header->inc[GMT_X])));
+					j_bin = irint (floor (((Z->header->wesn[YHI] - 0.5 * (y[pt-1] + y[pt])) / Z->header->inc[GMT_Y]))) + 1;
 					if (i_bin != i_bin_old || j_bin != j_bin_old) {	/* Entering new bin */
 						bin = j_bin * Z->header->nx + i_bin;
 						this_cont = get_cont_struct (GMT, bin, binij, cval);
@@ -942,8 +942,8 @@ int GMT_grdview (void *V_API, int mode, void *args)
 
 		x_width = GMT->current.proj.z_project.xmax - GMT->current.proj.z_project.xmin;	/* Size of image in inches */
 		y_width = GMT->current.proj.z_project.ymax - GMT->current.proj.z_project.ymin;
-		nx_i = (int)lrint (x_width * Ctrl->Q.dpi);	/* Size of image in pixels */
-		ny_i = (int)lrint (y_width * Ctrl->Q.dpi);
+		nx_i = irint (x_width * Ctrl->Q.dpi);	/* Size of image in pixels */
+		ny_i = irint (y_width * Ctrl->Q.dpi);
 		last_i = nx_i - 1;	last_j = ny_i - 1;
 
 		if (drape_resample) {
@@ -961,8 +961,8 @@ int GMT_grdview (void *V_API, int mode, void *args)
 				else {
 					GMT_geoz_to_xy (GMT, x_drape[col], y_drape[row], value, &xp, &yp);
 					/* Make sure ix,iy fall in the range (0,nx_i-1), (0,ny_i-1) */
-					ix[bin] = MAX(0, MIN((int)lrint (floor((xp - GMT->current.proj.z_project.xmin) * Ctrl->Q.dpi)), last_i));
-					iy[bin] = MAX(0, MIN((int)lrint (floor((yp - GMT->current.proj.z_project.ymin) * Ctrl->Q.dpi)), last_j));
+					ix[bin] = MAX(0, MIN(irint (floor((xp - GMT->current.proj.z_project.xmin) * Ctrl->Q.dpi)), last_i));
+					iy[bin] = MAX(0, MIN(irint (floor((yp - GMT->current.proj.z_project.ymin) * Ctrl->Q.dpi)), last_j));
 				}
 				if (Ctrl->I.active) int_drape[ij] = (float)GMT_get_bcr_z (GMT, Intens, x_drape[col], y_drape[row]);
 				bin++;
@@ -984,8 +984,8 @@ int GMT_grdview (void *V_API, int mode, void *args)
 				else {
 					GMT_geoz_to_xy (GMT, xval[col], yval[row], (double)Topo->data[ij], &xp, &yp);
 					/* Make sure ix,iy fall in the range (0,nx_i-1), (0,ny_i-1) */
-					ix[bin] = MAX(0, MIN((int)lrint (floor((xp - GMT->current.proj.z_project.xmin) * Ctrl->Q.dpi)), last_i));
-					iy[bin] = MAX(0, MIN((int)lrint (floor((yp - GMT->current.proj.z_project.ymin) * Ctrl->Q.dpi)), last_j));
+					ix[bin] = MAX(0, MIN(irint (floor((xp - GMT->current.proj.z_project.xmin) * Ctrl->Q.dpi)), last_i));
+					iy[bin] = MAX(0, MIN(irint (floor((yp - GMT->current.proj.z_project.ymin) * Ctrl->Q.dpi)), last_j));
 				}
 				bin++;
 			}

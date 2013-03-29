@@ -677,7 +677,7 @@ unsigned int spotter_backtrack (struct GMT_CTRL *GMT, double xp[], double yp[], 
 			}
 			if (path) {
 				if (!bend) {
-					nd = (unsigned int)lrint (ceil ((fabs (d_lon) * c_lat) * i_km));
+					nd = urint (ceil ((fabs (d_lon) * c_lat) * i_km));
 					i_nd = 1.0 / nd;
 					dd = d_lon * i_nd;
 					tt = dt * i_nd;
@@ -858,7 +858,7 @@ unsigned int spotter_forthtrack (struct GMT_CTRL *GMT, double xp[], double yp[],
 			}
 			if (path) {
 				if (!bend) {
-					nd = (unsigned int)lrint (ceil ((fabs (d_lon) * c_lat) * i_km));
+					nd = urint (ceil ((fabs (d_lon) * c_lat) * i_km));
 					i_nd = 1.0 / nd;
 					dd = d_lon * i_nd;
 					tt = dt * i_nd;

@@ -279,8 +279,8 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 	for (tbl = 0; tbl < D->n_tables; tbl++) for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 		T = D->table[tbl]->segment[seg];
 		for (drow = 0; drow < T->n_rows; drow++) {
-			L = (int)lrint (T->coord[0][drow]);
-			M = (int)lrint (T->coord[1][drow]);
+			L = irint (T->coord[0][drow]);
+			M = irint (T->coord[1][drow]);
 			if (L > L_max) L_max = L;
 			if (M > M_max) M_max = M;
 		}
@@ -293,12 +293,12 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 	GMT_Report (API, GMT_MSG_VERBOSE, "Coefficient file has L_max = %d and M_max = %d\n", L_max, M_max);
 	
 	if (Ctrl->F.active && Ctrl->F.mode == SPH2GRD_BANDPASS) {	/* See if we can save work by ignoring low or high terms */
-		L = (Ctrl->F.hc < DBL_MAX) ? (int)lrint (Ctrl->F.hc) : INT_MAX;	/* Get the highest L needed given the high-cut filter */
+		L = (Ctrl->F.hc < DBL_MAX) ? irint (Ctrl->F.hc) : INT_MAX;	/* Get the highest L needed given the high-cut filter */
 		if (L_max > L) {
 			L_max = L;
 			GMT_Report (API, GMT_MSG_VERBOSE, "Chosen high-cut bandpass filter sets effective L_max = %d and M_max = %d\n", L_max, MIN(L_max,M_max));
 		}
-		L = (int)lrint (Ctrl->F.lc);	/* Get the lowest L needed given the low-cut filter */
+		L = irint (Ctrl->F.lc);	/* Get the lowest L needed given the low-cut filter */
 		if (L > L_min) {
 			L_min = L;
 			GMT_Report (API, GMT_MSG_VERBOSE, "Chosen low-cut bandpass filter sets effective L_min = %d\n", L_min);
@@ -314,10 +314,10 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 	for (tbl = 0; tbl < D->n_tables; tbl++) for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 		T = D->table[tbl]->segment[seg];	/* Short-hand notation for current segment */
 		for (drow = 0; drow < T->n_rows; drow++) {
-			L = (int)lrint (T->coord[0][drow]);
+			L = irint (T->coord[0][drow]);
 			if (L > L_max) continue;	/* Skip stuff beyond the high cut-off filter */
 			if (L < L_min) continue;	/* Skip stuff beyond the low cut-off filter */
-			M = (int)lrint (T->coord[1][drow]);
+			M = irint (T->coord[1][drow]);
 			C[L][M]  = T->coord[2][drow];
 			S[L][M]  = T->coord[3][drow];
 			if (!Ctrl->F.active) continue;	/* No filtering selected */
@@ -419,7 +419,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 			percent += percent_inc;
 			if (percent > (double)next_10_percent) {
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Finished %3.3d %% of evaluation\n", next_10_percent);
-				next_10_percent = (unsigned int)lrint (ceil (percent / 10.0)) * 10;
+				next_10_percent = urint (ceil (percent / 10.0)) * 10;
 			}
 			GMT_ascii_format_col (GMT, text, lat, GMT_Y);
 			GMT_Report (API, GMT_MSG_DEBUG, "Working on latitude: %s\n", text);

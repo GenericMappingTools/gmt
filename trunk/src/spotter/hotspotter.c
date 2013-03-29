@@ -462,7 +462,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args)
 		r_smt = in[3];
 		r_smt /= EQ_RAD;				/* Converts radius in km to radians */
 		norm = -4.5 / (r_smt * r_smt);			/* Gaussian normalization */
-		node_y_width = (int)lrint (ceil (i_yinc_r * r_smt));	/* y-node coverage */
+		node_y_width = irint (ceil (i_yinc_r * r_smt));	/* y-node coverage */
 
 		/* STEP 3: Convolve this flowline with seamount shape and add to CVA grid */
 
@@ -498,7 +498,7 @@ int GMT_hotspotter (void *V_API, int mode, void *args)
 
 				/* Shape is z_smt * exp (r^2 * norm) */
 
-				node_x_width = (int)lrint (ceil (r_smt * ilatfactor[row]));
+				node_x_width = irint (ceil (r_smt * ilatfactor[row]));
 				dx = c[kx] - xpos[col];
 				dy = c[ky] - ypos[row];
 

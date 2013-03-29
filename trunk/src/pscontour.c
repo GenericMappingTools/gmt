@@ -333,7 +333,7 @@ void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAV
 		}
 		if (s < PSCONTOUR_MIN_LENGTH) continue;	/* Contour is too short to be ticked or labeled */
 
-		n_ticks = (unsigned int)lrint (floor (s / tick_gap));
+		n_ticks = urint (floor (s / tick_gap));
 		if (n_ticks == 0) continue;	/* Too short to be ticked or labeled */
 
 		GMT_setpen (GMT, &save[pol].pen);
@@ -348,7 +348,7 @@ void sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct SAV
 				dx = save[pol].x[j] - save[pol].x[j-1];
 				dy = save[pol].y[j] - save[pol].y[j-1];
 				length = hypot (dx, dy);
-				n_ticks = (unsigned int)lrint (ceil (length / tick_gap));	/* At least one per side */
+				n_ticks = urint (ceil (length / tick_gap));	/* At least one per side */
 				a = atan2 (dy, dx) + add;
 				sincos (a, &sa, &ca);
 				for (kk = 0; kk <= n_ticks; kk++) {
@@ -793,7 +793,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 		ind = GMT_memory (GMT, NULL, 3 * np, int);	/* Allocate the integer index array */
 		for (seg = ij = 0; seg < T->n_segments; seg++) {
 			for (row = 0; row < T->segment[seg]->n_rows; row++, ij++) {
-				for (col = 0; col < 3; col++) ind[ij++] = lrint (T->segment[seg]->coord[col][row]);
+				for (col = 0; col < 3; col++) ind[ij++] = irint (T->segment[seg]->coord[col][row]);
 			}
 		}
 		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Tin) != GMT_OK) {
@@ -905,7 +905,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 		}
 		else	/* No annotations, set aval outside range */
 			aval = xyz[1][GMT_Z] + 1.0;
-		for (ic = (int)lrint (min/Ctrl->C.interval), c = 0; ic <= (int)lrint (max/Ctrl->C.interval); ic++, c++) {
+		for (ic = irint (min/Ctrl->C.interval), c = 0; ic <= irint (max/Ctrl->C.interval); ic++, c++) {
 			if (c == c_alloc) cont = GMT_malloc (GMT, cont, c, &c_alloc, struct PSCONTOUR);
 			cont[c].val = ic * Ctrl->C.interval;
 			if (Ctrl->contour.annot && (cont[c].val - aval) > GMT_SMALL) aval += Ctrl->A.interval;

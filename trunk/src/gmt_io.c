@@ -223,20 +223,20 @@ bool GMT_is_ascii_record (struct GMT_CTRL *GMT)
 	return (true);	/* Might be able to treat record as an ascii record */
 }
 
-static inline unsigned int gmt_n_cols_needed_for_gaps (struct GMT_CTRL *GMT, unsigned int n) {
+static inline uint64_t gmt_n_cols_needed_for_gaps (struct GMT_CTRL *GMT, uint64_t n) {
 	/* Return the actual items needed (which may be more than n if gap testing demands it) */
 	if (GMT->common.g.active) return (MAX (n, GMT->common.g.n_col));	/* n or n_col (if larger) */
 	return (n);	/* No gap checking, n it is */
 }
 
-static inline void gmt_update_prev_rec (struct GMT_CTRL *GMT, unsigned int n_use) {
+static inline void gmt_update_prev_rec (struct GMT_CTRL *GMT, uint64_t n_use) {
 	/* Update previous record before reading the new record*/
 	if (GMT->current.io.need_previous) GMT_memcpy (GMT->current.io.prev_rec, GMT->current.io.curr_rec, n_use, double);
 }
 
 bool gmt_gap_detected (struct GMT_CTRL *GMT)
 {	/* Determine if two points are "far enough apart" to constitude a data gap and thus "pen up" */
-	unsigned int i;
+	uint64_t i;
 
 	if (!GMT->common.g.active || GMT->current.io.pt_no == 0) return (false);	/* Not active or on first point in a segment */
 	/* Here we must determine if any or all of the selected gap criteria [see gmt_set_gap_param] are met */
@@ -280,11 +280,11 @@ void GMT_set_tableheader (struct GMT_CTRL *GMT, int direction, bool true_false)
 	GMT->current.setting.io_header[direction] = true_false;
 }
 
-int gmt_process_binary_input (struct GMT_CTRL *GMT, unsigned int n_read) {
+int gmt_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 	/* Process a binary record to determine what kind of record it is. Return values:
 	 * 0 = regular record; 1 = segment header (all NaNs); 2 = skip this record
 	*/
-	unsigned int col_no, n_NaN;
+	uint64_t col_no, n_NaN;
 	bool bad_record = false, set_nan_flag = false;
 	/* Here, GMT->current.io.curr_rec has been filled in by fread */
 
@@ -327,14 +327,15 @@ int gmt_process_binary_input (struct GMT_CTRL *GMT, unsigned int n_read) {
 	return (0);	/* 0 means OK regular record */
 }
 
-void * gmt_nc_input (struct GMT_CTRL *GMT, FILE *fp, unsigned int *n, int *retval)
+void * gmt_nc_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *retval)
 {
-	int status, i, j, n_use, ns;
+	int status;
+	uint64_t n_use, i, j;
 
 	GMT->current.io.status = 0;
 	if (*n == GMT_MAX_COLUMNS)
 		*n = GMT->current.io.ncols;
-	else if ((ns = *n) > GMT->current.io.ncols) {
+	else if (*n > GMT->current.io.ncols) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_nc_input is asking for %d columns, but file has only %d\n", *n, GMT->current.io.ncols);
 		GMT->current.io.status = GMT_IO_MISMATCH;
 	}
@@ -369,7 +370,7 @@ void * gmt_nc_input (struct GMT_CTRL *GMT, FILE *fp, unsigned int *n, int *retva
 		return (GMT->current.io.curr_rec);
 	}
 	GMT->current.io.pt_no++;
-	*retval = *n;
+	*retval = (int)*n;
 	return (GMT->current.io.curr_rec);
 }
 
@@ -586,7 +587,7 @@ void GMT_io_banner (struct GMT_CTRL *GMT, unsigned int direction)
 	static const char *gmt_direction[2] = {"Input", "Output"};
 	char message[GMT_TEXT_LEN256], skip[GMT_TEXT_LEN64];
 	char *letter = "cuhHiIlLfditTn", s[2] = {0, 0};	/* letter order matches the type order in GMT_enum_type */
-	unsigned int col;
+	uint64_t col;
 	uint64_t n_bytes;
 	
 	if (GMT->current.setting.verbose < GMT_MSG_VERBOSE) return;	/* Not in verbose mode anyway */
@@ -621,7 +622,7 @@ void GMT_io_banner (struct GMT_CTRL *GMT, unsigned int direction)
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%s %d columns via binary records using format %s\n", gmt_direction[direction], GMT->common.b.ncol[direction], message);
 }
 
-int GMT_get_cols (struct GMT_CTRL *GMT, unsigned int direction)
+uint64_t GMT_get_cols (struct GMT_CTRL *GMT, unsigned int direction)
 {
 	/* Return the number of columns currently in play in this direction.
 	 * This can be complicated.. For BINARY data:
@@ -639,14 +640,14 @@ int GMT_get_cols (struct GMT_CTRL *GMT, unsigned int direction)
 	 * For ASCII data it is the same except for on output, where we return the output
 	 * cols as set.
 	 */
-	unsigned int n_cols;
+	uint64_t n_cols;
 	if (! (direction == GMT_IN || direction == GMT_OUT)) return (GMT_NOT_A_VALID_DIRECTION);
 
 	if (direction == GMT_IN) {
 		n_cols = (GMT->common.i.active) ? GMT->common.i.n_cols : GMT->common.b.ncol[GMT_IN];
 	}
 	else {
-		unsigned int in_n_cols = (GMT->common.i.active) ? GMT->common.i.n_cols : GMT->common.b.ncol[GMT_IN];
+		uint64_t in_n_cols = (GMT->common.i.active) ? GMT->common.i.n_cols : GMT->common.b.ncol[GMT_IN];
 		if (GMT->common.b.active[GMT_OUT])
 			n_cols = (GMT->common.o.active) ? in_n_cols : GMT->common.b.ncol[GMT_OUT];
 		else
@@ -655,7 +656,7 @@ int GMT_get_cols (struct GMT_CTRL *GMT, unsigned int direction)
 	return (n_cols);
 }
 
-int GMT_set_cols (struct GMT_CTRL *GMT, unsigned int direction, unsigned int expected)
+int GMT_set_cols (struct GMT_CTRL *GMT, unsigned int direction, uint64_t expected)
 {	/* Initializes the internal GMT->common.b.ncol[] settings.
 	 * direction is either GMT_IN or GMT_OUT.
 	 * expected is the expected or known number of columns.  Use 0 if not known.
@@ -678,7 +679,7 @@ int GMT_set_cols (struct GMT_CTRL *GMT, unsigned int direction, unsigned int exp
 	}
 	/* Here we may set the number of data columns */
 	if (GMT->common.b.active[direction]) {	/* Must set uninitialized input/output pointers */
-		unsigned int col;
+		uint64_t col;
 		char type = (GMT->common.b.type[direction]) ? GMT->common.b.type[direction] : 'd';
 		for (col = GMT->common.b.ncol[direction]; col < expected; col++) {
 			GMT->current.io.fmt[direction][col].io = GMT_get_io_ptr (GMT, direction, GMT->common.b.swab[direction], type);
@@ -1324,10 +1325,10 @@ unsigned int gmt_is_segment_header (struct GMT_CTRL *GMT, char *line)
 /* This is the lowest-most input function in GMT.  All ASCII table data are read via
  * gmt_ascii_input.  Changes here affect all programs that read such data. */
 
-void * gmt_ascii_input (struct GMT_CTRL *GMT, FILE *fp, unsigned int *n, int *status)
+void * gmt_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status)
 {
-	unsigned int pos, col_no = 0, col_pos, n_convert, n_ok = 0, kind, add, n_use = 0;
-	int in_col;
+	uint64_t pos, col_no = 0, col_pos, n_convert, n_ok = 0, kind, add, n_use = 0;
+	int64_t in_col;
 	bool done = false, bad_record, set_nan_flag = false;
 	char line[GMT_BUFSIZ], *p = NULL, *token, *stringp;
 	double val;
@@ -1473,8 +1474,8 @@ void * gmt_ascii_input (struct GMT_CTRL *GMT, FILE *fp, unsigned int *n, int *st
 
 	if (gmt_gap_detected (GMT)) {*status = gmt_set_gap (GMT); return (GMT->current.io.curr_rec); }	/* A gap between this an previous record was detected (see -g) so we set status and return 0 */
 
-	GMT->current.io.pt_no++;			/* Got a valid data record (which is true even if it was a gap) */
-	*status = n_ok;				/* Return the number of fields successfully read */
+	GMT->current.io.pt_no++;	/* Got a valid data record (which is true even if it was a gap) */
+	*status = (int)n_ok;			/* Return the number of fields successfully read */
 	if (set_nan_flag) {
 		GMT->current.io.status |= GMT_IO_NAN;	/* Say we found NaNs */
 		return (GMT->current.io.curr_rec);	/* Pass back pointer to data array */
@@ -1559,9 +1560,9 @@ bool GMT_is_a_blank_line (char *line) {
 	return (false);
 }
 
-unsigned int gmt_bin_colselect (struct GMT_CTRL *GMT)
+uint64_t gmt_bin_colselect (struct GMT_CTRL *GMT)
 {	/* When -i<cols> is used we must pull out and reset the current record */
-	unsigned int col;
+	uint64_t col;
 	static double tmp[GMT_BUFSIZ];
 	for (col = 0; col < GMT->common.i.n_cols; col++) {
 		tmp[GMT->current.io.col[GMT_IN][col].order] = GMT->current.io.curr_rec[GMT->current.io.col[GMT_IN][col].col];
@@ -1569,7 +1570,6 @@ unsigned int gmt_bin_colselect (struct GMT_CTRL *GMT)
 	}
 	GMT_memcpy (GMT->current.io.curr_rec, tmp, GMT->common.i.n_cols, double);
 	return (GMT->common.i.n_cols);
-	
 }
 
 /* Sub functions for gmt_bin_input */
@@ -1583,9 +1583,9 @@ int gmt_x_read (struct GMT_CTRL *GMT, FILE *fp, off_t rel_move)
 	return (1);
 }
 
-bool gmt_get_binary_input (struct GMT_CTRL *GMT, FILE *fp, unsigned int n) {
+bool gmt_get_binary_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t n) {
 	/* Reads the n binary doubles from input and saves to GMT->current.io.curr_rec[] */
-	unsigned int i;
+	uint64_t i;
 
 	if (n > GMT_MAX_COLUMNS) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Number of data columns (%d) exceeds limit (GMT_MAX_COLUMS = %d)\n", n, GMT_MAX_COLUMNS);
@@ -1608,9 +1608,10 @@ bool gmt_get_binary_input (struct GMT_CTRL *GMT, FILE *fp, unsigned int n) {
 	return (false);	/* OK so far */
 }
 
-void * gmt_bin_input (struct GMT_CTRL *GMT, FILE *fp, unsigned int *n, int *retval)
+void * gmt_bin_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *retval)
 {	/* General binary read function which calls function pointed to by GMT->current.io.read_binary to handle actual reading (and possbily swabbing) */
-	unsigned int status, n_use, n_read;
+	unsigned int status;
+	uint64_t n_use, n_read;
 
 	GMT->current.io.status = 0;
 	do {	/* Keep reading until (1) EOF, (2) got a segment record, or (3) a valid data record */
@@ -1626,13 +1627,13 @@ void * gmt_bin_input (struct GMT_CTRL *GMT, FILE *fp, unsigned int *n, int *retv
 	if (gmt_gap_detected (GMT)) { *retval = gmt_set_gap (GMT); return (GMT->current.io.curr_rec); }
 	GMT->current.io.pt_no++;
 
-	*retval = n_read;
+	*retval = (int)n_read;
 	return (GMT->current.io.curr_rec);
 }
 
-bool gmt_skip_output (struct GMT_CTRL *GMT, double *cols, unsigned int n_cols)
+bool gmt_skip_output (struct GMT_CTRL *GMT, double *cols, uint64_t n_cols)
 {	/* Consult the -s[<cols>][a|r] setting and the cols values to determine if this record should be output */
-	unsigned int c, n_nan;
+	uint64_t c, n_nan;
 	
 	if (n_cols > GMT_MAX_COLUMNS) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Number of output data columns (%d) exceeds limit (GMT_MAX_COLUMS = %d)\n", n_cols, GMT_MAX_COLUMNS);
@@ -1663,16 +1664,16 @@ int gmt_x_write (struct GMT_CTRL *GMT, FILE *fp, off_t n)
 	return (GMT_NOERROR);
 }
 
-int gmt_bin_output (struct GMT_CTRL *GMT, FILE *fp, unsigned int n, double *ptr)
+int gmt_bin_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr)
 {
 	int k;
-	unsigned int i, n_out, col_pos;
+	uint64_t i, n_out, col_pos;
 	double val;
 	
 	if (gmt_skip_output (GMT, ptr, n)) return (0);	/* Record was skipped via -s[a|r] */
 	if (GMT->current.setting.io_lonlat_toggle[GMT_OUT]) double_swap (ptr[GMT_X], ptr[GMT_Y]);	/* Write lat/lon instead of lon/lat */
 	n_out = (GMT->common.o.active) ? GMT->common.o.n_cols : n;
-	for (i = k = 0; i < n_out; i++) {
+	for (i = 0, k = 0; i < n_out; i++) {
 		col_pos = (GMT->common.o.active) ? GMT->current.io.col[GMT_OUT][i].col : i;	/* Which data column to pick */
 		val = (col_pos >= n) ? GMT->session.d_NaN : ptr[col_pos];	/* If we request beyond length of array, return NaN */
 		if (GMT->current.io.col_type[GMT_OUT][col_pos] == GMT_IS_LON) GMT_lon_range_adjust (GMT->current.io.geo.range, &val);
@@ -1696,7 +1697,7 @@ void GMT_set_bin_input (struct GMT_CTRL *GMT)
 	}
 }
 
-int GMT_ascii_output_col (struct GMT_CTRL *GMT, FILE *fp, double x, unsigned int col)
+int GMT_ascii_output_col (struct GMT_CTRL *GMT, FILE *fp, double x, uint64_t col)
 {	/* Formats x according to to output column number */
 	char text[GMT_TEXT_LEN256];
 
@@ -1704,9 +1705,9 @@ int GMT_ascii_output_col (struct GMT_CTRL *GMT, FILE *fp, double x, unsigned int
 	return (fprintf (fp, "%s", text));
 }
 
-int GMT_ascii_output (struct GMT_CTRL *GMT, FILE *fp, unsigned int n, double *ptr)
+int GMT_ascii_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr)
 {
-	unsigned int i, col, last, n_out;
+	uint64_t i, col, last, n_out;
 	int e = 0, wn = 0;
 	double val;
 
@@ -1791,7 +1792,7 @@ void gmt_format_abstime_output (struct GMT_CTRL *GMT, double dt, char *text)
 		sprintf (text, "%sT%s", date, tclock);
 }
 
-void GMT_ascii_format_col (struct GMT_CTRL *GMT, char *text, double x, unsigned int col)
+void GMT_ascii_format_col (struct GMT_CTRL *GMT, char *text, double x, uint64_t col)
 {	/* Format based on column position */
 	if (GMT_is_dnan (x)) {	/* NaN, just write it as a string */
 		sprintf (text, "NaN");
@@ -1937,7 +1938,7 @@ void GMT_quad_add (struct GMT_CTRL *GMT, struct GMT_QUAD *Q, double x)
 		Q->min[way] = MIN (x, Q->min[way]);
 		Q->max[way] = MAX (x, Q->max[way]);
 	}
-	quad_no = (unsigned int)lrint (floor (x / 90.0));	/* Now x is 0-360; this yields quadrants 0-3 */
+	quad_no = urint (floor (x / 90.0));	/* Now x is 0-360; this yields quadrants 0-3 */
 	if (quad_no == 4) quad_no = 0;		/* When x == 360.0 */
 	Q->quad[quad_no] = true;		/* Our x fell in this quadrant */
 }
@@ -1945,7 +1946,8 @@ void GMT_quad_add (struct GMT_CTRL *GMT, struct GMT_QUAD *Q, double x)
 unsigned int GMT_quad_finalize (struct GMT_CTRL *GMT, struct GMT_QUAD *Q)
 {
 	/* Finalize longitude range settings */
-	uint64_t n_quad, way;
+	uint64_t n_quad;
+	unsigned int way;
 	
 	n_quad = Q->quad[0] + Q->quad[1] + Q->quad[2] + Q->quad[3];		/* How many quadrants had data */
 	if (Q->quad[0] && Q->quad[3])		/* Longitudes on either side of Greenwich only, must use -180/+180 notation */
@@ -1959,7 +1961,7 @@ unsigned int GMT_quad_finalize (struct GMT_CTRL *GMT, struct GMT_QUAD *Q)
 	/* Final adjustments */
 	if (Q->min[way] > Q->max[way]) Q->min[way] -= 360.0;
 	if (Q->min[way] < 0.0 && Q->max[way] < 0.0) Q->min[way] += 360.0, Q->max[way] += 360.0;
-	return ((unsigned int)way);
+	return (way);
 }
 
 void GMT_get_lon_minmax (struct GMT_CTRL *GMT, double *lon, uint64_t n_rows, double *min, double *max)
@@ -1998,9 +2000,9 @@ void GMT_set_seg_polar (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S)
 		lon_sum += dlon;
 		lat_sum += S->coord[GMT_Y][row];
 	}
-	n_360 = (int)lrint (lon_sum / 360.0);	/* This is either -1, 0, or +1 since lon_sum is either -360, 0, +360 plus some noise */
+	n_360 = irint (lon_sum / 360.0);	/* This is either -1, 0, or +1 since lon_sum is either -360, 0, +360 plus some noise */
 	if (n_360) {	/* true if contains a pole; adjust rectangular bounds and set pole flag */
-		S->pole = (int)lrint (copysign (1.0, lat_sum));	/* So, 0 means not polar */
+		S->pole = irint (copysign (1.0, lat_sum));	/* So, 0 means not polar */
 		S->min[GMT_X] = 0.0;	S->max[GMT_X] = 360.0;
 		if (S->pole == -1) S->lat_limit = S->min[GMT_Y], S->min[GMT_Y] = -90.0;
 		if (S->pole == +1) S->lat_limit = S->max[GMT_Y], S->max[GMT_Y] = +90.0;
@@ -2022,33 +2024,33 @@ bool GMT_geo_to_dms (double val, int n_items, double fact, int *d, int *m,  int 
 
 	if (n_items == 3) {		/* Want dd:mm:ss[.xxx] format */
 		sec = GMT_DEG2SEC_F * fabs (val) + step;	/* Convert to seconds */
-		isec = (int)lrint (floor (sec));		/* Integer seconds */
+		isec = irint (floor (sec));			/* Integer seconds */
 		fsec = sec - (double)isec;  			/* Leftover fractional second */
 		*d = isec / GMT_DEG2SEC_I;			/* Integer degrees */
 		isec -= ((*d) * GMT_DEG2SEC_I);			/* Left-over seconds in the last degree */
 		*m = isec / GMT_MIN2SEC_I;			/* Integer minutes */
 		isec -= ((*m) * GMT_MIN2SEC_I);			/* Leftover seconds in the last minute */
 		*s = isec;					/* Integer seconds */
-		*ix = (int)lrint (floor (fsec * fact));		/* Fractional seconds scaled to integer */
+		*ix = irint (floor (fsec * fact));		/* Fractional seconds scaled to integer */
 	}
 	else if (n_items == 2) {		/* Want dd:mm[.xxx] format */
 		min = GMT_DEG2MIN_F * fabs (val) + step;	/* Convert to minutes */
-		imin = (int)lrint (floor (min));		/* Integer minutes */
+		imin = irint (floor (min));			/* Integer minutes */
 		fmin = min - (double)imin;  			/* Leftover fractional minute */
 		*d = imin / GMT_DEG2MIN_I;			/* Integer degrees */
 		imin -= ((*d) * GMT_DEG2MIN_I);			/* Left-over seconds in the last degree */
 		*m = imin;					/* Integer minutes */
 		*s = 0;						/* No seconds */
-		*ix = (int)lrint (floor (fmin * fact));		/* Fractional minutes scaled to integer */
+		*ix = irint (floor (fmin * fact));		/* Fractional minutes scaled to integer */
 	}
 	else {		/* Want dd[.xxx] format */
 		min = fabs (val) + step;			/* Convert to degrees */
-		imin = (int)lrint (floor (min));		/* Integer degrees */
+		imin = irint (floor (min));			/* Integer degrees */
 		fmin = min - (double)imin;  			/* Leftover fractional degree */
 		*d = imin;					/* Integer degrees */
 		*m = 0;						/* Integer minutes */
 		*s = 0;						/* No seconds */
-		*ix = (int)lrint (floor (fmin * fact));		/* Fractional degrees scaled to integer */
+		*ix = irint (floor (fmin * fact));		/* Fractional degrees scaled to integer */
 	}
 	if (minus) {	/* OK, change sign, but watch for *d = 0 */
 		if (*d)	/* Non-zero degree term is easy */
@@ -2059,7 +2061,7 @@ bool GMT_geo_to_dms (double val, int n_items, double fact, int *d, int *m,  int 
 	return (false);
 }
 
-void GMT_add_to_record (struct GMT_CTRL *GMT, char *record, double val, unsigned int col, unsigned int sep)
+void GMT_add_to_record (struct GMT_CTRL *GMT, char *record, double val, uint64_t col, unsigned int sep)
 {	/* formats and appends val to the record texts string.
 	 * If sep is 1 we prepend col separator.
 	 * If sep is 2 we append col separator
@@ -3166,16 +3168,16 @@ void GMT_init_z_io (struct GMT_CTRL *GMT, char format[], bool repeat[], enum GMT
 }
 
 /* GMT_z_input and GMT_z_output are used in grd2xyz/xyz2grd to fascilitate reading of one-col items via the general i/o machinery */
-void * GMT_z_input (struct GMT_CTRL *GMT, FILE *fp, unsigned int *n, int *status)
+void * GMT_z_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status)
 {
-	if ((*status = GMT->current.io.read_item (GMT, fp, *n, GMT->current.io.curr_rec)) == -1) return (NULL);
+	if ((*status = (int)GMT->current.io.read_item (GMT, fp, *n, GMT->current.io.curr_rec)) == -1) return (NULL);
 	return (GMT->current.io.curr_rec);
 }
 	
-int GMT_z_output (struct GMT_CTRL *GMT, FILE *fp, unsigned int n, double *data)
+int GMT_z_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *data)
 {
 	if (gmt_skip_output (GMT, data, n)) return (0);	/* Record was skipped via -s[a|r] */
-	return (GMT->current.io.write_item (GMT, fp, n, data));
+	return ((int)GMT->current.io.write_item (GMT, fp, n, data));
 }
 	
 int GMT_set_z_io (struct GMT_CTRL *GMT, struct GMT_Z_IO *r, struct GMT_GRID *G)
@@ -4591,7 +4593,7 @@ struct GMT_TEXTTABLE * GMT_read_texttable (struct GMT_CTRL *GMT, void *source, u
 		}
 		T->segment[seg]->n_rows = row;	/* Number of records in this segment */
 		T->n_records += row;		/* Total number of records so far */
-		T->segment[seg]->id = (unsigned int)seg;	/* Internal segment number */
+		T->segment[seg]->id = seg;	/* Internal segment number */
 
 		/* Reallocate to free up some memory */
 
@@ -4623,8 +4625,7 @@ struct GMT_TEXTTABLE * GMT_read_texttable (struct GMT_CTRL *GMT, void *source, u
 
 void GMT_set_seg_minmax (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S)
 {	/* Determine the min/max values for each column in the segment */
-	unsigned int col;
-	uint64_t row;
+	uint64_t row, col;
 
 	for (col = 0; col < S->n_columns; col++) {
 		if (GMT->current.io.col_type[GMT_IN][col] == GMT_IS_LON) /* Requires separate quandrant assessment */
@@ -4641,8 +4642,7 @@ void GMT_set_seg_minmax (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S)
 
 void GMT_set_tbl_minmax (struct GMT_CTRL *GMT, struct GMT_DATATABLE *T)
 {	/* Update the min/max of all segments and the entire table */
-	unsigned int col;
-	uint64_t seg;
+	uint64_t seg, col;
 	struct GMT_DATASEGMENT *S = NULL;
 
 	if (!T) return;	/* No table given */
@@ -5614,7 +5614,7 @@ void gmt_adjust_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, unsign
 	S->n_columns = n_columns;
 }
 
-void gmt_adjust_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *T, unsigned int n_columns)
+void gmt_adjust_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *T, uint64_t n_columns)
 {
 	/* Let table have n_columns (so either deallocate or allocate columns). */
 	uint64_t seg;
@@ -5762,7 +5762,7 @@ struct GMT_TEXTSET * GMT_duplicate_textset (struct GMT_CTRL *GMT, struct GMT_TEX
 	return (D);
 }
 
-struct GMT_DATATABLE * gmt_alloc_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *Tin, unsigned int n_columns, uint64_t n_rows)
+struct GMT_DATATABLE * gmt_alloc_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *Tin, uint64_t n_columns, uint64_t n_rows)
 {
 	/* Allocate the new Table structure with same # of segments and rows/segment as input table.
 	 * However, n_columns is given separately and could differ.
@@ -5868,7 +5868,7 @@ struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsig
 
 	bool ascii, close_file = false, header = true, no_segments, first_seg = true;
 	int status;
-	unsigned int n_expected_fields;
+	uint64_t n_expected_fields;
 	uint64_t n_read = 0, row = 0, seg = 0, col;
 	size_t n_row_alloc, n_head_alloc = GMT_TINY_CHUNK;
 	char open_mode[4], file[GMT_BUFSIZ], line[GMT_TEXT_LEN64];
@@ -6709,11 +6709,11 @@ int GMT_load_aspatial_values (struct GMT_CTRL *GMT, struct GMT_OGR *G)
 }
 #endif
 
-double GMT_get_aspatial_value (struct GMT_CTRL *GMT, unsigned int col, struct GMT_DATASEGMENT *S)
+double GMT_get_aspatial_value (struct GMT_CTRL *GMT, uint64_t col, struct GMT_DATASEGMENT *S)
 {
 	/* Return the value associated with the aspatial values given for this column col */
 
-	unsigned int k;
+	uint64_t k;
 	int id, scol = col;
 	char *V = NULL;
 	for (k = 0; k < GMT->common.a.n_aspatial; k++) {	/* For each item specified in -a */
@@ -6726,11 +6726,11 @@ double GMT_get_aspatial_value (struct GMT_CTRL *GMT, unsigned int col, struct GM
 	return (GMT->session.d_NaN);
 }
 
-int GMT_load_aspatial_string (struct GMT_CTRL *GMT, struct GMT_OGR *G, unsigned int col, char out[GMT_BUFSIZ])
+int GMT_load_aspatial_string (struct GMT_CTRL *GMT, struct GMT_OGR *G, uint64_t col, char out[GMT_BUFSIZ])
 {
 	/* Uses the info in -a and OGR to retrieve the requested aspatial string */
 
-	unsigned int k;
+	uint64_t k;
 	size_t len;
 	int id = GMTAPI_NOTSET, scol = col;
 	if (GMT->current.io.ogr != GMT_OGR_TRUE) return (0);		/* No point checking further since file is not GMT/OGR */

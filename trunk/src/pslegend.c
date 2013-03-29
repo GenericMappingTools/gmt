@@ -527,7 +527,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		double x_lines;
 		/* Guess: Given legend width and approximate char width, do the simple expression */
 		x_lines = n_char * (average_char_width * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH) / ((Ctrl->D.width - 2 * Ctrl->C.dx));
-		n_lines = lrint (ceil (x_lines));
+		n_lines = irint (ceil (x_lines));
 		height += n_lines * Ctrl->L.spacing * GMT->current.setting.font_annot[0].size / PSL_POINTS_PER_INCH;
 		GMT_Report (API, GMT_MSG_DEBUG, "Estimating %d lines of typeset paragraph text [%.1f].\n", n_lines, x_lines);
 	}

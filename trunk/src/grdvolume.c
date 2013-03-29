@@ -463,7 +463,7 @@ int GMT_grdvolume (void *V_API, int mode, void *args)
 		cellsize *= dist_pr_deg * dist_pr_deg;
 	}
 
-	n_contours = (Ctrl->C.active) ? (unsigned int)lrint ((Ctrl->C.high - Ctrl->C.low) / Ctrl->C.inc) + 1U : 1U;
+	n_contours = (Ctrl->C.active) ? urint ((Ctrl->C.high - Ctrl->C.low) / Ctrl->C.inc) + 1U : 1U;
 
 	height = GMT_memory (GMT, NULL, n_contours, double);
 	vol    = GMT_memory (GMT, NULL, n_contours, double);

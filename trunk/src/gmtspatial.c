@@ -1259,8 +1259,8 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 	}
 	
 	if (Ctrl->N.active) {	/* Report the polygons that contain the given features */
-		uint64_t row, first, last, n, p, np, seg, seg2, n_inside;
-		unsigned int tbl, *count = NULL;
+		uint64_t tbl, row, first, last, n, p, np, seg, seg2, n_inside;
+		unsigned int *count = NULL;
 		int ID = -1;
 		char seg_label[GMT_TEXT_LEN64], record[GMT_BUFSIZ], *kind[2] = {"Middle point", "All points"};
 		struct GMT_DATASET *C = NULL;
@@ -1292,7 +1292,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Look for points/features inside polygon segment %" PRIu64 " :\n", seg2);
 			if (Ctrl->N.ID == 0) {	/* Look for polygon IDs in the data headers */
 				if (S2->ogr)	/* OGR data */
-					ID = lrint (GMT_get_aspatial_value (GMT, GMT_IS_Z, S2));
+					ID = irint (GMT_get_aspatial_value (GMT, GMT_IS_Z, S2));
 				else if (GMT_parse_segment_item (GMT, S2->header, "-Z", seg_label))	/* Look for segment header ID */
 					ID = atoi (seg_label);
 				else if (GMT_parse_segment_item (GMT, S2->header, "-L", seg_label))	/* Look for segment header ID */
@@ -1314,18 +1314,18 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 					}
 					if (n < np) continue;	/* Not inside this polygon */
 					if (count[p]) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Segment %d-%" PRIu64 " already inside another polygon; skipped\n", tbl, seg);
+						GMT_Report (API, GMT_MSG_NORMAL, "Segment %" PRIu64 "-%" PRIu64 " already inside another polygon; skipped\n", tbl, seg);
 						continue;
 					}
 					count[p]++;
 					/* Here we are inside */
 					if (Ctrl->N.mode == 1) {	/* Just report on which polygon contains each feature */
-						sprintf (record, "%s from table %d segment %" PRIu64 " is inside polygon # %d", kind[Ctrl->N.all], tbl, seg, ID);
+						sprintf (record, "%s from table %" PRIu64 " segment %" PRIu64 " is inside polygon # %d", kind[Ctrl->N.all], tbl, seg, ID);
 						GMT_Put_Record (API, GMT_WRITE_TEXT, record);
 					}
 					else if (Ctrl->N.mode == 2) {	/* Add ID as last data column */
 						for (row = 0, n = S->n_columns-1; row < S->n_rows; row++) S->coord[n][row] = (double)ID;
-						GMT_Report (API, GMT_MSG_VERBOSE, "%s from table %d segment %" PRIu64 " is inside polygon # %d\n", kind[Ctrl->N.all], tbl, seg, ID);
+						GMT_Report (API, GMT_MSG_VERBOSE, "%s from table %" PRIu64 " segment %" PRIu64 " is inside polygon # %d\n", kind[Ctrl->N.all], tbl, seg, ID);
 					}
 					else {	/* Add ID via the segment header -Z */
 						if (GMT_parse_segment_item (GMT, S->header, "-Z", NULL))
@@ -1337,7 +1337,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 							sprintf (txt, " -Z%d", ID);
 							strcat (buffer, txt);
 							S->header = strdup (buffer);
-							GMT_Report (API, GMT_MSG_VERBOSE, "%s from table %d segment %" PRIu64 " is inside polygon # %d\n", kind[Ctrl->N.all], tbl, seg, ID);
+							GMT_Report (API, GMT_MSG_VERBOSE, "%s from table %" PRIu64 " segment %" PRIu64 " is inside polygon # %d\n", kind[Ctrl->N.all], tbl, seg, ID);
 						}
 					}
 				}

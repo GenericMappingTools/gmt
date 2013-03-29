@@ -402,8 +402,8 @@ int GMTAPI_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *range, 
 	if (range == NULL && inc == NULL) {	/* Not an equidistant vector arrangement, use dim */
 		double dummy_range[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};	/* Flag vector as such */
 		GMT_memcpy (M->range, dummy_range, 2 * dims, double);
-		M->n_rows = (unsigned int)dim[0];
-		M->n_columns = (unsigned int)dim[1];
+		M->n_rows = dim[0];
+		M->n_columns = dim[1];
 	}
 	else {
 		GMT_memcpy (M->range, range, 2 * dims, double);
@@ -4955,7 +4955,7 @@ int GMTAPI_FFT_1d (struct GMTAPI_CTRL *API, struct GMT_DATASET *D, int direction
 				last = S->n_rows;
 			}
 			for (row = 0; S->n_rows; row++) data[row] = (float)S->coord[col][row];
-			status = GMT_fft_1d (API->GMT, data, (unsigned int)S->n_rows, direction, mode, K);
+			status = GMT_fft_1d (API->GMT, data, S->n_rows, direction, mode, K);
 			for (row = 0; S->n_rows; row++) S->coord[col][row] = data[row];
 		}
 	}
@@ -5057,9 +5057,9 @@ int GMT_Get_Common (void *V_API, unsigned int option, double par[])
 		case 'f':	if (GMT->common.f.active[GMT_IN]) ret = GMT_IN; else if (GMT->common.f.active[GMT_OUT]) ret = GMT_OUT; break;
 		case 'g':	if (GMT->common.g.active) ret = 0; break;
 		case 'h':	if (GMT->common.h.active) ret = GMT->common.h.mode; break;
-		case 'i':	if (GMT->common.i.active) ret = GMT->common.i.n_cols; break;
+		case 'i':	if (GMT->common.i.active) ret = (int)GMT->common.i.n_cols; break;
 		case 'n':	if (GMT->common.n.active) ret = 0; break;
-		case 'o':	if (GMT->common.o.active) ret = GMT->common.o.n_cols; break;
+		case 'o':	if (GMT->common.o.active) ret = (int)GMT->common.o.n_cols; break;
 		case 'p':	if (GMT->common.p.active) ret = 0; break;
 		case 'r':	if (GMT->common.r.active) ret = GMT->common.r.registration; break;
 		case 's':	if (GMT->common.s.active) ret = 0; break;
@@ -5182,9 +5182,9 @@ int GMT_Message (void *V_API, unsigned int mode, char *format, ...)
 		case 2:
 		case 6:
 			S = toc - API->GMT->current.time.tic;
-			H = (unsigned int)lrint (floor (S * GMT_SEC2HR));
+			H = urint (floor (S * GMT_SEC2HR));
 			S -= H * GMT_HR2SEC_I;
-			M = (unsigned int)lrint (floor (S * GMT_SEC2MIN));
+			M = urint (floor (S * GMT_SEC2MIN));
 			S -= M * GMT_MIN2SEC_I;
 			sprintf (stamp, "Elapsed time %2.2d:%2.2d:%2.2d", H, M, (int)S);
 			break;

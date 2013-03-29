@@ -236,13 +236,13 @@ int clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, st
 	 * trace_clip_contours will try to allocate more memory in blocks of GMT_CHUNK points
 	 */
 	 
-	unsigned int n_edges, edge_word, edge_bit, i, j;
+	unsigned int n_edges, edge_bit, i, j;
 	static unsigned int i0, j0, side;
-	uint64_t ij, n = 0;
+	uint64_t edge_word, ij, n = 0;
 	bool go_on = true;
 	 
 	 
-	n_edges = h->ny * ((unsigned int)lrint (ceil (h->nx / 16.0)));
+	n_edges = h->ny * (urint (ceil (h->nx / 16.0)));
 	 
 	 /* Reset edge-flags to zero, if necessary */
 	 if (first) {
@@ -699,7 +699,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 			x = GMT_memory (GMT, NULL, GMT_CHUNK, double);
 			y = GMT_memory (GMT, NULL, GMT_CHUNK, double);
 
-			n_edges = Grid->header->ny * ((unsigned int)lrint (ceil (Grid->header->nx / 16.0)));
+			n_edges = Grid->header->ny * (urint (ceil (Grid->header->nx / 16.0)));
 			edge = GMT_memory (GMT, NULL, n_edges, unsigned int);
 
 			if (make_plot) GMT_map_basemap (GMT);

@@ -188,7 +188,7 @@ int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_per_pixel, 
 	/* *raw_nx = j;		*raw_ny = lrint((float)n_pix / raw_nx);*/
 
 	/* So be it */
-	*raw_ny = j;		*raw_nx = (unsigned int)lrint((float)n_pix / (*raw_ny));
+	*raw_ny = j;		*raw_nx = urint((float)n_pix / (*raw_ny));
 
 	if ((*raw_nx) * (*raw_ny) != n_pix) {
 		/* Let's make another attempt to find the right nx * ny combination. The idea is that we
@@ -198,9 +198,9 @@ int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_per_pixel, 
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: first test based on FFT failed to guess image dimensions.\n\tI'll do now a second try\t");
 		k = 1;		pm = 1;		l = 1;
 		while (k < 41) {
-			i = *raw_ny + (unsigned int)lrint (copysign((double)l, (double)pm));
-			pm *= -1.;
-			j = (*raw_nx) + (unsigned int)lrint (copysign((double)l, (double)pm));
+			i = *raw_ny + urint (copysign((double)l, (double)pm));
+			pm = -pm;
+			j = (*raw_nx) + urint (copysign((double)l, (double)pm));
 			if (i*j == n_pix) {	/* Got a good candidate */
 				*raw_ny = i;	*raw_nx = j;
 				GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "... SUCCESS (W = %d, H = %d)\n", *raw_nx, *raw_ny);

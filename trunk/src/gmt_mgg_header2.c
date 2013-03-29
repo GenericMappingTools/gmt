@@ -110,13 +110,13 @@ int gmt_GMTtoMGG2 (struct GMT_GRID_HEADER *gmt, MGG_GRID_HEADER_2 *mgg)
 	mgg->cellRegistration = gmt->registration;
 	mgg->lonNumCells = gmt->nx;
 	f  = gmt->inc[GMT_X] * SEC_PER_DEG;
-	mgg->lonSpacing  = (int)lrint(f);
+	mgg->lonSpacing  = irint(f);
 	if (fabs (f - (double)mgg->lonSpacing) > GMT_CONV_LIMIT) return (GMT_GRDIO_GRD98_XINC);
 	gmt_degrees2dms(gmt->wesn[XLO], &mgg->lonDeg, &mgg->lonMin, &mgg->lonSec);
 	
 	mgg->latNumCells = gmt->ny;
 	f  = gmt->inc[GMT_Y] * SEC_PER_DEG;
-	mgg->latSpacing  = (int)lrint(gmt->inc[GMT_Y] * SEC_PER_DEG);
+	mgg->latSpacing  = irint(gmt->inc[GMT_Y] * SEC_PER_DEG);
 	if (fabs (f - (double)mgg->latSpacing) > GMT_CONV_LIMIT) return (GMT_GRDIO_GRD98_YINC);
 	gmt_degrees2dms(gmt->wesn[YHI], &mgg->latDeg, &mgg->latMin, &mgg->latSec);
 
@@ -125,8 +125,8 @@ int gmt_GMTtoMGG2 (struct GMT_GRID_HEADER *gmt, MGG_GRID_HEADER_2 *mgg)
 	mgg->precision   = GRD98_DEFAULT_PREC;
 	mgg->nanValue    = GRD98_NAN_VALUE;
 	mgg->numType     = sizeof (int);
-	mgg->minValue    = (int)lrint(gmt->z_min * mgg->precision);
-	mgg->maxValue    = (int)lrint(gmt->z_max * mgg->precision);
+	mgg->minValue    = irint(gmt->z_min * mgg->precision);
+	mgg->maxValue    = irint(gmt->z_max * mgg->precision);
 
 	/* Data fits in two byte boundry */
 	if ((-SHRT_MAX <= mgg->minValue) && (mgg->maxValue <= SHRT_MAX)) {
@@ -139,8 +139,8 @@ int gmt_GMTtoMGG2 (struct GMT_GRID_HEADER *gmt, MGG_GRID_HEADER_2 *mgg)
 		mgg->numType   = sizeof (char);
 		mgg->nanValue  = (char)255;
 		mgg->precision = 1;
-		mgg->minValue  = (int)lrint (gmt->z_min);
-		mgg->maxValue  = (int)lrint (gmt->z_max);
+		mgg->minValue  = irint (gmt->z_min);
+		mgg->maxValue  = irint (gmt->z_max);
 	}
 #endif
 	return (GMT_NOERROR);

@@ -2033,7 +2033,7 @@ void GMT_check_lattice (struct GMT_CTRL *GMT, double *inc, unsigned int *registr
 	if (active) *active = true;	/* When 4th arg is not NULL it is set to true (for Ctrl->active args) */
 }
 
-int GMT_check_binary_io (struct GMT_CTRL *GMT, unsigned int n_req) {
+int GMT_check_binary_io (struct GMT_CTRL *GMT, uint64_t n_req) {
 	int n_errors = 0;
 
 	/* Check the binary options that are used with most GMT programs.
@@ -2149,22 +2149,22 @@ int gmt_parse_colon_option (struct GMT_CTRL *GMT, char *item) {
 	return (error);
 }
 
-double gmt_neg_col_dist (struct GMT_CTRL *GMT, int col)
+double gmt_neg_col_dist (struct GMT_CTRL *GMT, uint64_t col)
 {	/* Compute reverse col-separation before mapping */
 	return (GMT->current.io.prev_rec[col] - GMT->current.io.curr_rec[col]);
 }
 
-double gmt_pos_col_dist (struct GMT_CTRL *GMT, int col)
+double gmt_pos_col_dist (struct GMT_CTRL *GMT, uint64_t col)
 {	/* Compute forward col-separation before mapping */
 	return (GMT->current.io.curr_rec[col] - GMT->current.io.prev_rec[col]);
 }
 
-double gmt_abs_col_dist (struct GMT_CTRL *GMT, int col)
+double gmt_abs_col_dist (struct GMT_CTRL *GMT, uint64_t col)
 {	/* Compute absolute col-separation before mapping */
 	return (fabs (GMT->current.io.curr_rec[col] - GMT->current.io.prev_rec[col]));
 }
 
-double gmt_neg_col_map_dist (struct GMT_CTRL *GMT, int col)
+double gmt_neg_col_map_dist (struct GMT_CTRL *GMT, uint64_t col)
 {	/* Compute reverse col-separation after mapping */
 	double X[2][2];
 	GMT_geo_to_xy (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], &X[GMT_X][0], &X[GMT_Y][0]);
@@ -2172,7 +2172,7 @@ double gmt_neg_col_map_dist (struct GMT_CTRL *GMT, int col)
 	return (X[col][0] - X[col][1]);
 }
 
-double gmt_pos_col_map_dist (struct GMT_CTRL *GMT, int col)
+double gmt_pos_col_map_dist (struct GMT_CTRL *GMT, uint64_t col)
 {	/* Compute forward col-separation after mapping */
 	double X[2][2];
 	GMT_geo_to_xy (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], &X[GMT_X][0], &X[GMT_Y][0]);
@@ -2180,7 +2180,7 @@ double gmt_pos_col_map_dist (struct GMT_CTRL *GMT, int col)
 	return (X[col][1] - X[col][0]);
 }
 
-double gmt_abs_col_map_dist (struct GMT_CTRL *GMT, int col)
+double gmt_abs_col_map_dist (struct GMT_CTRL *GMT, uint64_t col)
 {	/* Compute forward col-separation after mapping */
 	double X[2][2];
 	GMT_geo_to_xy (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], &X[GMT_X][0], &X[GMT_Y][0]);
@@ -2188,22 +2188,22 @@ double gmt_abs_col_map_dist (struct GMT_CTRL *GMT, int col)
 	return (fabs (X[col][1] - X[col][0]));
 }
 
-double gmt_xy_map_dist (struct GMT_CTRL *GMT, int col)
+double gmt_xy_map_dist (struct GMT_CTRL *GMT, uint64_t col)
 {	/* Compute point-separation after mapping */
 	return (GMT_cartesian_dist_proj (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]));
 }
 
-double gmt_xy_deg_dist (struct GMT_CTRL *GMT, int col)
+double gmt_xy_deg_dist (struct GMT_CTRL *GMT, uint64_t col)
 {
 	return (GMT_great_circle_dist_degree (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]));
 }
 
-double gmt_xy_true_dist (struct GMT_CTRL *GMT, int col)
+double gmt_xy_true_dist (struct GMT_CTRL *GMT, uint64_t col)
 {
 	return (GMT_great_circle_dist_meter (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]));
 }
 
-double gmt_xy_cart_dist (struct GMT_CTRL *GMT, int col)
+double gmt_xy_cart_dist (struct GMT_CTRL *GMT, uint64_t col)
 {
 	return (GMT_cartesian_dist (GMT, GMT->current.io.prev_rec[GMT_X], GMT->current.io.prev_rec[GMT_Y], GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]));
 }
@@ -2362,7 +2362,7 @@ int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt)
 				break;
 		}
 	}
-	if ((GMT->common.g.col[i] + 1) > (int)GMT->common.g.n_col) GMT->common.g.n_col = GMT->common.g.col[i] + 1;	/* Needed when checking since it may otherwise not be read */
+	if ((GMT->common.g.col[i] + 1) > GMT->common.g.n_col) GMT->common.g.n_col = GMT->common.g.col[i] + 1;	/* Needed when checking since it may otherwise not be read */
 	GMT->common.g.n_methods++;
 	return (GMT_NOERROR);
 }
@@ -2898,7 +2898,8 @@ void gmt_parse_format_float_out (struct GMT_CTRL *GMT, char *value)
 
 unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 {
-	unsigned int pos, len;
+	unsigned int pos;
+	size_t len;
 	int i, ival, case_val, manual;
 	bool error = false, tf_answer;
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], lower_value[GMT_BUFSIZ];
@@ -2908,7 +2909,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 	if (!value) return (1);		/* value argument missing */
 	strncpy (lower_value, value, GMT_BUFSIZ);	/* Get a lower case version */
 	GMT_str_tolower (lower_value);
-	len = (unsigned int)strlen (value);
+	len = strlen (value);
 
 	case_val = GMT_hash_lookup (GMT, keyword, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
 
@@ -3570,14 +3571,14 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 #endif
 		case GMTCASE_PS_MEDIA:
 			manual = false;
-			ival = len - 1;
-			if (lower_value[ival] == '-') {	/* Manual Feed selected */
-				lower_value[ival] = '\0';
+			len--;
+			if (lower_value[len] == '-') {	/* Manual Feed selected */
+				lower_value[len] = '\0';
 				manual = true;
 			}
 #ifdef GMT_COMPAT
-			else if (lower_value[ival] == '+') {	/* EPS format selected */
-				lower_value[ival] = '\0';
+			else if (lower_value[len] == '+') {	/* EPS format selected */
+				lower_value[len] = '\0';
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Production of EPS format is no longer supported, remove + after paper size\n");
 			}
 #endif
@@ -6117,7 +6118,7 @@ int gmt_split_info_strings (struct GMT_CTRL *GMT, const char *in, char *x_info, 
 	/* Take the -B string (minus the leading -B) and chop into 3 strings for x, y, and z */
 
 	bool mute = false;
-	unsigned int i, n_slash, s_pos[2];
+	size_t i, n_slash, s_pos[2];
 
 	x_info[0] = y_info[0] = z_info[0] = '\0';
 
@@ -6133,13 +6134,13 @@ int gmt_split_info_strings (struct GMT_CTRL *GMT, const char *in, char *x_info, 
 	}
 
 	if (n_slash == 2) {	/* Got x/y/z */
-		i = (unsigned int)strlen (in);
+		i = strlen (in);
 		strncpy (x_info, in, s_pos[0]);					x_info[s_pos[0]] = '\0';
 		strncpy (y_info, &in[s_pos[0]+1], s_pos[1] - s_pos[0] - 1);	y_info[s_pos[1] - s_pos[0] - 1] = '\0';
 		strncpy (z_info, &in[s_pos[1]+1], i - s_pos[1] - 1);		z_info[i - s_pos[1] - 1] = '\0';
 	}
 	else if (n_slash == 1) {	/* Got x/y */
-		i = (unsigned int)strlen (in);
+		i = strlen (in);
 		strncpy (x_info, in, s_pos[0]);					x_info[s_pos[0]] = '\0';
 		strncpy (y_info, &in[s_pos[0]+1], i - s_pos[0] - 1);		y_info[i - s_pos[0] - 1] = '\0';
 	}
@@ -6234,7 +6235,7 @@ int gmt_set_titem (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *A, char *in, char
 	if (!GMT->current.map.frame.primary) flag = (char) toupper ((int)flag);
 	
 	if (A->type == GMT_TIME) {	/* Strict check on time intervals */
-		if (GMT_verify_time_step (GMT, (int)lrint (val), unit)) GMT_exit (EXIT_FAILURE);
+		if (GMT_verify_time_step (GMT, irint (val), unit)) GMT_exit (EXIT_FAILURE);
 		if ((fmod (val, 1.0) > GMT_CONV_LIMIT)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Time step interval (%g) must be an integer\n", val);
 			GMT_exit (EXIT_FAILURE);
@@ -7450,7 +7451,7 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args)
 			}
 			GMT->current.proj.pars[0] = fabs (GMT->current.proj.pars[0]);
 			GMT->current.proj.lat0 = 0.0;
-			k = (int)lrint (GMT->current.proj.pars[0]);
+			k = irint (GMT->current.proj.pars[0]);
 			GMT->current.proj.lon0 = -180.0 + k * 6.0 - 3.0;
 			
 			error += (k < 1 || k > 60);	/* Zones must be 1-60 */
@@ -7510,7 +7511,8 @@ int GMT_parse_vector (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *S)
 {
 	/* Parser for -Sv|V, -S=, and -Sm */
 	
-	unsigned int pos = 0, k, error = 0, len;
+	unsigned int pos = 0, k, error = 0;
+	size_t len;
 	bool p_opt = false, g_opt = false;
 	int j;
 	char p[GMT_BUFSIZ];
@@ -7550,7 +7552,7 @@ int GMT_parse_vector (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *S)
 				}
 				break;
 			case 'n':	/* Vector shrinking head */
-				len = (unsigned int)strlen (p);
+				len = strlen (p);
 				j = (text[0] == 'v' || text[0] == 'V') ? gmt_get_unit (GMT, p[len]) : -1;	/* Only -Sv|V takes unit */
 				if (j >= 0) { S->u = j; S->u_set = true; }
 				S->v.v_norm = (float)atof (&p[1]);
@@ -7996,7 +7998,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				GMT_exit (EXIT_FAILURE);
 			}
 			if (p->f.f_gap < 0.0) {	/* Gave -# of ticks desired */
-				k = (int)lrint (fabs (p->f.f_gap));
+				k = irint (fabs (p->f.f_gap));
 				if (k == 0) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in Option -Sf: Number of front ticks cannot be zero!\n");
 					GMT_exit (EXIT_FAILURE);

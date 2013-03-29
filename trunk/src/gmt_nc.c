@@ -1116,14 +1116,14 @@ int nc_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double
 			assert (wesn[XLO] >= header->wesn[XLO] && wesn[XHI] <= header->wesn[XHI]);
 
 		/* Get dimension of subregion */
-		*width  = (unsigned int)lrint ((wesn[XHI] - wesn[XLO]) * header->r_inc[GMT_X]) + is_gridline_reg;
-		*height = (unsigned int)lrint ((wesn[YHI] - wesn[YLO]) * header->r_inc[GMT_Y]) + is_gridline_reg;
+		*width  = urint ((wesn[XHI] - wesn[XLO]) * header->r_inc[GMT_X]) + is_gridline_reg;
+		*height = urint ((wesn[YHI] - wesn[YLO]) * header->r_inc[GMT_Y]) + is_gridline_reg;
 
 		/* Get first and last row and column numbers */
-		first_col = (unsigned int)lrint ((wesn[XLO] - header->wesn[XLO]) * header->r_inc[GMT_X]);
-		last_col  = (unsigned int)lrint ((wesn[XHI] - header->wesn[XLO]) * header->r_inc[GMT_X]) - 1 + is_gridline_reg;
-		first_row = (unsigned int)lrint ((header->wesn[YHI] - wesn[YHI]) * header->r_inc[GMT_Y]);
-		last_row  = (unsigned int)lrint ((header->wesn[YHI] - wesn[YLO]) * header->r_inc[GMT_Y]) - 1 + is_gridline_reg;
+		first_col = urint ((wesn[XLO] - header->wesn[XLO]) * header->r_inc[GMT_X]);
+		last_col  = urint ((wesn[XHI] - header->wesn[XLO]) * header->r_inc[GMT_X]) - 1 + is_gridline_reg;
+		first_row = urint ((header->wesn[YHI] - wesn[YHI]) * header->r_inc[GMT_Y]);
+		last_row  = urint ((header->wesn[YHI] - wesn[YLO]) * header->r_inc[GMT_Y]) - 1 + is_gridline_reg;
 
 		/* Adjust first_row */
 		if (header->row_order == k_nc_start_south)

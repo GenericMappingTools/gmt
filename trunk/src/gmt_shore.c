@@ -327,7 +327,7 @@ void GMT_set_levels (struct GMT_CTRL *GMT, char *info, struct GMT_SHORE_SELECT *
 	if (strstr (info, "+l"))  I->flag = GSHHS_NO_RIVERLAKES;
 	if (strstr (info, "+r"))  I->flag = GSHHS_NO_LAKES;
 	if ((p = strstr (info, "+p"))) {	/* Requested percentage limit on small features */
-		I->fraction = (int)lrint (1e6 * 0.01 * atoi (&p[2]));	/* Convert to integer microfraction */
+		I->fraction = irint (1e6 * 0.01 * atoi (&p[2]));	/* Convert to integer microfraction */
 	}
 	n = sscanf (info, "%lf/%d/%d", &I->area, &I->low, &I->high);
 	if (n == 0) {
@@ -461,16 +461,16 @@ int GMT_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 
 	/* Round off area to nearest multiple of block-dimension */
 
-	iw = (int)lrint (floor (wesn[XLO] / c->bsize) * c->bsize);
-	ie = (int)lrint (ceil (wesn[XHI] / c->bsize) * c->bsize);
-	is = 90 - (int)lrint (ceil ((90.0 - wesn[YLO]) / c->bsize) * c->bsize);
-	in = 90 - (int)lrint (floor ((90.0 - wesn[YHI]) / c->bsize) * c->bsize);
-	idiv = (int)lrint (360.0 / c->bsize);	/* Number of blocks per latitude band */
+	iw = irint (floor (wesn[XLO] / c->bsize) * c->bsize);
+	ie = irint (ceil (wesn[XHI] / c->bsize) * c->bsize);
+	is = 90 - irint (ceil ((90.0 - wesn[YLO]) / c->bsize) * c->bsize);
+	in = 90 - irint (floor ((90.0 - wesn[YHI]) / c->bsize) * c->bsize);
+	idiv = irint (360.0 / c->bsize);	/* Number of blocks per latitude band */
 
 	for (i = nb = 0; i < c->n_bin; i++) {	/* Find which bins are needed */
-		this_south = 90 - (int)lrint (c->bsize * ((i / idiv) + 1));
+		this_south = 90 - irint (c->bsize * ((i / idiv) + 1));
 		if (this_south < is || this_south >= in) continue;
-		this_west = (int)lrint (c->bsize * (i % idiv)) - 360;
+		this_west = irint (c->bsize * (i % idiv)) - 360;
 		while (this_west < iw) this_west += 360;
 		if (this_west >= ie) continue;
 		c->bins[nb] = i;
@@ -731,16 +731,16 @@ int GMT_init_br (struct GMT_CTRL *GMT, char which, char res, struct GMT_BR *c, d
 
 	/* Round off area to nearest multiple of block-dimension */
 
-	iw = (int)lrint (floor (wesn[XLO] / c->bsize) * c->bsize);
-	ie = (int)lrint (ceil (wesn[XHI] / c->bsize) * c->bsize);
-	is = 90 - (int)lrint (ceil ((90.0 - wesn[YLO]) / c->bsize) * c->bsize);
-	in = 90 - (int)lrint (floor ((90.0 - wesn[YHI]) / c->bsize) * c->bsize);
-	idiv = (int)lrint (360.0 / c->bsize);	/* Number of blocks per latitude band */
+	iw = irint (floor (wesn[XLO] / c->bsize) * c->bsize);
+	ie = irint (ceil (wesn[XHI] / c->bsize) * c->bsize);
+	is = 90 - irint (ceil ((90.0 - wesn[YLO]) / c->bsize) * c->bsize);
+	in = 90 - irint (floor ((90.0 - wesn[YHI]) / c->bsize) * c->bsize);
+	idiv = irint (360.0 / c->bsize);	/* Number of blocks per latitude band */
 
 	for (i = nb = 0; i < c->n_bin; i++) {	/* Find which bins are needed */
-		this_south = 90 - (int)lrint (c->bsize * ((i / idiv) + 1));
+		this_south = 90 - irint (c->bsize * ((i / idiv) + 1));
 		if (this_south < is || this_south >= in) continue;
-		this_west = (int)lrint (c->bsize * (i % idiv)) - 360;
+		this_west = irint (c->bsize * (i % idiv)) - 360;
 		while (this_west < iw) this_west += 360;
 		if (this_west >= ie) continue;
 		c->bins[nb] = i;

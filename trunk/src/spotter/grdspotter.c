@@ -644,7 +644,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 		
 		/* Store IDs in a int array instead */
 		ID = GMT_memory (GMT, NULL, L->header->size, int);
-		for (ij = 0; ij < L->header->size; ij++) ID[ij] = (int)lrint ((double)L->data[ij]);
+		for (ij = 0; ij < L->header->size; ij++) ID[ij] = irint ((double)L->data[ij]);
 		GMT_free_aligned (GMT, L->data);	/* Just free the array since we use ID; Grid stuct is destroyed at end */
 		
 		ID_info = GMT_memory (GMT, NULL, lrint (L->header->z_max) + 1, struct ID);
@@ -816,7 +816,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 			strcat (format, &Ctrl->G.file[len]);	/* Should add the extension from said file */
 		}
 		CVA_inc = GMT_memory (GMT, NULL, G->header->size, float);
-		nz = (unsigned int)lrint ((Ctrl->Z.max - Ctrl->Z.min) / Ctrl->Z.inc);
+		nz = urint ((Ctrl->Z.max - Ctrl->Z.min) / Ctrl->Z.inc);
 		for (layer = 0; layer < nz; layer++) {
 			z0 = Ctrl->Z.min + layer * Ctrl->Z.inc;
 			z1 = z0 + Ctrl->Z.inc;
@@ -968,8 +968,8 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 		
 			GMT_memset (G->data, G->header->size, float);	/* Start with fresh grid */
 			for (m = 0; m < n_nodes; m++) {	/* Loop over all indices */
-				row = (unsigned int)lrint (floor (rand() * y_scale));		/* Get a random integer in 0 to ny-1 range */
-				col = (unsigned int)lrint (floor (rand() * x_scale));		/* Get a random integer in 0 to nx-1 range */
+				row = urint (floor (rand() * y_scale));		/* Get a random integer in 0 to ny-1 range */
+				col = urint (floor (rand() * x_scale));		/* Get a random integer in 0 to nx-1 range */
 				ij = GMT_IJP (G->header, row, col);		/* Get the node index */
 				GMT_memset (processed_node, G->header->size, char);		/* Fresh start for this flowline convolution */
 				zz = Z->data[flowline[ij].ij];
