@@ -98,18 +98,19 @@ struct PSHISTOGRAM_INFO {	/* Control structure for pshistogram */
 	double yy0, yy1;
 	double box_width;
 	double wesn[4];
-	int n_boxes;
-	int n_counted;
-	int center_box, cumulative;
-	int hist_type;
-	int *boxh;
+	uint64_t n_boxes;
+	uint64_t n_counted;
+	bool center_box, cumulative;
+	unsigned int hist_type;
+	unsigned int *boxh;
 };
 
 int fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *data, uint64_t n) {
 
 	double add_half = 0.0;
-	int b0, b1, ibox, count_sum;
+	uint64_t b0, b1, ibox, count_sum;
 	uint64_t i;
+	int64_t sbox;
 
 	F->n_boxes = irint (ceil(((F->wesn[XHI] - F->wesn[XLO]) / F->box_width) + 0.5));
 
@@ -127,8 +128,10 @@ int fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *data, 
 	/* First fill boxes with counts  */
 
 	for (i = 0; i < n; i++) {
-		ibox = irint (floor (((data[i] - F->wesn[XLO]) / F->box_width) + add_half));
-		if (ibox < 0 || ibox >= F->n_boxes) continue;
+		sbox = irint (floor (((data[i] - F->wesn[XLO]) / F->box_width) + add_half));
+		if (sbox < 0) continue;
+		ibox = sbox;
+		if (ibox >= F->n_boxes) continue;
 		F->boxh[ibox]++;
 		F->n_counted++;
 	}
@@ -188,7 +191,8 @@ int fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *data, 
 
 double plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, struct PSHISTOGRAM_INFO *F, int stairs, int flip_to_y, int draw_outline, struct GMT_PEN *pen, struct GMT_FILL *fill, int cpt)
 {
-	int i, ibox, index;
+	int i, index;
+	uint64_t ibox;
 	bool first = true;
 	double area = 0.0, rgb[4], x[4], y[4], xx, yy, xval, *px = NULL, *py = NULL;
 	struct GMT_FILL *f = NULL;
@@ -501,10 +505,8 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 {
 	bool automatic = false;
 	int error = 0;
-	unsigned int type;
 	
 	uint64_t n;
-	
 	size_t n_alloc = GMT_CHUNK;
 
 	char format[GMT_BUFSIZ];
@@ -538,9 +540,8 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 	GMT_memset (&F, 1, struct PSHISTOGRAM_INFO);
-	F.hist_type = PSHISTOGRAM_COUNTS;
-	F.hist_type = Ctrl->Z.mode;
-	F.box_width = Ctrl->W.inc;
+	F.hist_type  = Ctrl->Z.mode;
+	F.box_width  = Ctrl->W.inc;
 	F.cumulative = Ctrl->Q.active;
 	F.center_box = Ctrl->F.active;
 	if (!Ctrl->I.active && !GMT->common.R.active) automatic = true;
@@ -641,7 +642,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 
 	if (Ctrl->I.active) {	/* Only info requested, quit before plotting */
 		if (Ctrl->I.mode) {
-			int n_boxes = 0;
+			uint64_t n_boxes = 0;
 			uint64_t dim[4] = {1, 1, 2, 0}, ibox, row;
 			double xx, yy;
 			struct GMT_DATASET *D = NULL;
@@ -694,11 +695,11 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 		}
 		else {	/* Report the min/max values as the data result */
 			double out[4];
-			int col_type[4];
-			GMT_memcpy (col_type, GMT->current.io.col_type[GMT_OUT], 4, int);	/* Save first 4 current output col types */
+			unsigned int col_type[4];
+			GMT_memcpy (col_type, GMT->current.io.col_type[GMT_OUT], 4U, unsigned int);	/* Save first 4 current output col types */
 			GMT->current.io.col_type[GMT_OUT][0] = GMT->current.io.col_type[GMT_OUT][1] = GMT->current.io.col_type[GMT_IN][0];
 			GMT->current.io.col_type[GMT_OUT][2] = GMT->current.io.col_type[GMT_OUT][3] = GMT_IS_FLOAT;
-			if ((error = GMT_set_cols (GMT, GMT_OUT, 4)) != GMT_OK) {
+			if ((error = GMT_set_cols (GMT, GMT_OUT, 4U)) != GMT_OK) {
 				Return (error);
 			}
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
@@ -715,7 +716,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 				Return (API->error);
 			}
-			GMT_memcpy (GMT->current.io.col_type[GMT_OUT], col_type, 4, int);	/* Restore 4 current output col types */
+			GMT_memcpy (GMT->current.io.col_type[GMT_OUT], col_type, 4U, unsigned int);	/* Restore 4 current output col types */
 		}
 		GMT_free (GMT, data);
 		GMT_free (GMT, F.boxh);
@@ -772,8 +773,8 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 	area = plot_boxes (GMT, PSL, P, &F, Ctrl->S.active, Ctrl->A.active, Ctrl->L.active, &Ctrl->L.pen, &Ctrl->G.fill, Ctrl->C.active);
 	GMT_Report (API, GMT_MSG_VERBOSE, "Area under histogram is %g\n", area);
 	
-	if (Ctrl->N.active) {	/* Want to draw one or more normal distributions */
-		unsigned int k, NP = 101U;
+	if (Ctrl->N.active) {	/* Want to draw one or more normal distributions; we sue 101 points to do so */
+		unsigned int type, k, NP = 101U;
 		double f, z, xtmp, ytmp, inc;
 		double *xp = GMT_memory (GMT, NULL, NP, double);
 		double *yp = GMT_memory (GMT, NULL, NP, double);

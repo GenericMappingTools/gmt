@@ -226,7 +226,7 @@ struct GMT_COL_INFO {	/* Used by -i and input parsing */
 struct GMT_COL_TYPE {	/* Used by -b for binary formatting */
 	unsigned int type;	/* Data type e.g., GMT_FLOAT */
 	off_t skip;		/* Rather than read/write an item, jump |skip| bytes before (-ve) or after (+ve) read/write */
-	int (*io) (struct GMT_CTRL *, FILE *, unsigned, double *);	/* Pointer to the correct read or write function given type/swab */
+	int (*io) (struct GMT_CTRL *, FILE *, uint64_t, double *);	/* Pointer to the correct read or write function given type/swab */
 };
 
 struct GMT_IO {				/* Used to process input data records */
@@ -273,7 +273,8 @@ struct GMT_IO {				/* Used to process input data records */
 	char current_filename[2][GMT_BUFSIZ];	/* Current filenames (or <stdin>/<stdout>) */
 	char *o_format[GMT_MAX_COLUMNS];	/* Custom output ascii format to overrule format_float_out */
 	int ncid;			/* NetCDF file ID (when opening netCDF file) */
-	int nvars, ncols;			/* Number of requested variables and total columns in netCDF file */
+	int nvars;			/* Number of requested variablesin netCDF file */
+	uint64_t ncols;			/* Number of total columns in netCDF file */
 	size_t t_index[GMT_MAX_COLUMNS][5];		/* Indices for cross-sections (netCDF only) */
 	size_t count[GMT_MAX_COLUMNS][5];		/* Count used for cross-sections (netCDF only) */
 	size_t ndim;			/* Length of the column dimension */
