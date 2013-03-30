@@ -4363,10 +4363,10 @@ struct behavior *b;
              SUBSEGPERBLOCK, SUBSEGPERBLOCK, 4);
 
     /* Initialize the "outer space" triangle and omnipresent subsegment. */
-    dummyinit(m, b, m->triangles.itembytes, m->subsegs.itembytes);
+    dummyinit(m, b, (int)m->triangles.itembytes, (int)m->subsegs.itembytes);
   } else {
     /* Initialize the "outer space" triangle. */
-    dummyinit(m, b, m->triangles.itembytes, 0);
+    dummyinit(m, b, (int)m->triangles.itembytes, 0);
   }
 }
 
@@ -4596,10 +4596,10 @@ unsigned int number;
   /* Find the right block. */
   if (current + m->vertices.itemsfirstblock <= number) {
     getblock = (VOID **) *getblock;
-    current += m->vertices.itemsfirstblock;
+    current += (int)m->vertices.itemsfirstblock;
     while (current + m->vertices.itemsperblock <= number) {
       getblock = (VOID **) *getblock;
-      current += m->vertices.itemsperblock;
+      current += (int)m->vertices.itemsperblock;
     }
   }
 
@@ -7709,10 +7709,10 @@ struct otri *searchtri;
   samplesperblock = (m->samples * TRIPERBLOCK - 1) / m->triangles.maxitems + 1;
   /* We'll draw ceiling(samples * itemsfirstblock / maxitems) random samples */
   /*   from the first block of triangles.                                    */
-  samplesleft = (m->samples * m->triangles.itemsfirstblock - 1) /
-                m->triangles.maxitems + 1;
+  samplesleft = (long)((m->samples * m->triangles.itemsfirstblock - 1) /
+                m->triangles.maxitems + 1);
   totalsamplesleft = m->samples;
-  population = m->triangles.itemsfirstblock;
+  population = (long)m->triangles.itemsfirstblock;
   totalpopulation = m->triangles.maxitems;
   sampleblock = m->triangles.firstblock;
   sampletri.orient = 0;
