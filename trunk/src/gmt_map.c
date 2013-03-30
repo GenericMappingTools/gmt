@@ -552,9 +552,9 @@ bool gmt_rect_outside (struct GMT_CTRL *GMT, double lon, double lat)
 		GMT->current.map.this_x_status = -1;
 	else if (GMT->current.map.on_border_is_outside && fabs (x - GMT->current.proj.rect[XHI]) < GMT_SMALL)
 		GMT->current.map.this_x_status = 1;
-	else if (x < GMT->current.proj.rect[XLO])
+	else if (x < GMT->current.proj.rect[XLO] - GMT_CONV_LIMIT)
 		GMT->current.map.this_x_status = -2;
-	else if (x > GMT->current.proj.rect[XHI])
+	else if (x > GMT->current.proj.rect[XHI] + GMT_CONV_LIMIT)
 		GMT->current.map.this_x_status = 2;
 	else
 		GMT->current.map.this_x_status = 0;
@@ -563,9 +563,9 @@ bool gmt_rect_outside (struct GMT_CTRL *GMT, double lon, double lat)
 		GMT->current.map.this_y_status = -1;
 	else if (GMT->current.map.on_border_is_outside && fabs (y - GMT->current.proj.rect[YHI]) < GMT_SMALL)
 		GMT->current.map.this_y_status = 1;
-	else if (y < GMT->current.proj.rect[YLO])
+	else if (y < GMT->current.proj.rect[YLO] - GMT_CONV_LIMIT)
 		GMT->current.map.this_y_status = -2;
-	else if (y > GMT->current.proj.rect[YHI])
+	else if (y > GMT->current.proj.rect[YHI] + GMT_CONV_LIMIT)
 		GMT->current.map.this_y_status = 2;
 	else
 		GMT->current.map.this_y_status = 0;
