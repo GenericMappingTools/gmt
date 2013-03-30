@@ -22,8 +22,7 @@ static void kf_bfly2(
         kiss_fft_cpx * Fout,
         const size_t fstride,
         const kiss_fft_cfg st,
-        int m
-        )
+        int m)
 {
     kiss_fft_cpx * Fout2;
     kiss_fft_cpx * tw1 = st->twiddles;
@@ -45,8 +44,7 @@ static void kf_bfly4(
         kiss_fft_cpx * Fout,
         const size_t fstride,
         const kiss_fft_cfg st,
-        const size_t m
-        )
+        const size_t m)
 {
     kiss_fft_cpx *tw1,*tw2,*tw3;
     kiss_fft_cpx scratch[6];
@@ -93,8 +91,7 @@ static void kf_bfly3(
          kiss_fft_cpx * Fout,
          const size_t fstride,
          const kiss_fft_cfg st,
-         size_t m
-         )
+         size_t m)
 {
      size_t k=m;
      const size_t m2 = 2*m;
@@ -116,8 +113,8 @@ static void kf_bfly3(
          tw1 += fstride;
          tw2 += fstride*2;
 
-         Fout[m].r = Fout->r - HALF_OF(scratch[3].r);
-         Fout[m].i = Fout->i - HALF_OF(scratch[3].i);
+         Fout[m].r = (float)(Fout->r - HALF_OF(scratch[3].r));
+         Fout[m].i = (float)(Fout->i - HALF_OF(scratch[3].i));
 
          C_MULBYSCALAR( scratch[0] , epi3.i );
 
@@ -137,8 +134,7 @@ static void kf_bfly5(
         kiss_fft_cpx * Fout,
         const size_t fstride,
         const kiss_fft_cfg st,
-        int m
-        )
+        int m)
 {
     kiss_fft_cpx *Fout0,*Fout1,*Fout2,*Fout3,*Fout4;
     int u;
@@ -156,7 +152,7 @@ static void kf_bfly5(
     Fout4=Fout0+4*m;
 
     tw=st->twiddles;
-    for ( u=0; u<m; ++u ) {
+    for (u = 0; u < m; u++) {
         C_FIXDIV( *Fout0,5); C_FIXDIV( *Fout1,5); C_FIXDIV( *Fout2,5); C_FIXDIV( *Fout3,5); C_FIXDIV( *Fout4,5);
         scratch[0] = *Fout0;
 
@@ -200,8 +196,7 @@ static void kf_bfly_generic(
         const size_t fstride,
         const kiss_fft_cfg st,
         int m,
-        int p
-        )
+        int p)
 {
     int u,k,q1,q;
     kiss_fft_cpx * twiddles = st->twiddles;
@@ -210,20 +205,20 @@ static void kf_bfly_generic(
 
     kiss_fft_cpx * scratch = (kiss_fft_cpx*)KISS_FFT_TMP_ALLOC(sizeof(kiss_fft_cpx)*p);
 
-    for ( u=0; u<m; ++u ) {
+    for (u = 0; u < m; u++) {
         k=u;
-        for ( q1=0 ; q1<p ; ++q1 ) {
+        for (q1=0 ; q1<p ; q1++) {
             scratch[q1] = Fout[ k  ];
             C_FIXDIV(scratch[q1],p);
             k += m;
         }
 
         k=u;
-        for ( q1=0 ; q1<p ; ++q1 ) {
+        for (q1 = 0; q1 < p; q1++) {
             int twidx=0;
             Fout[ k ] = scratch[0];
-            for (q=1;q<p;++q ) {
-                twidx += fstride * k;
+            for (q = 1; q < p; q++) {
+                twidx += (int)fstride * k;
                 if (twidx>=Norig) twidx-=Norig;
                 C_MUL(t,scratch[q] , twiddles[twidx] );
                 C_ADDTO( Fout[ k ] ,t);
@@ -241,8 +236,7 @@ void kf_work(
         const size_t fstride,
         int in_stride,
         int * factors,
-        const kiss_fft_cfg st
-        )
+        const kiss_fft_cfg st)
 {
     kiss_fft_cpx * Fout_beg=Fout;
     const int p=*factors++; /* the radix  */
@@ -252,8 +246,7 @@ void kf_work(
 #ifdef _OPENMP
     // use openmp extensions at the 
     // top-level (not recursive)
-    if (fstride==1 && p<=5)
-    {
+    if (fstride==1 && p<=5) {
         int k;
 
         // execute the p different work units in different threads
@@ -278,7 +271,8 @@ void kf_work(
             *Fout = *f;
             f += fstride*in_stride;
         }while(++Fout != Fout_end );
-    }else{
+    }
+    else{
         do{
             // recursive call:
             // DFT of size m*p performed by doing
@@ -344,7 +338,8 @@ kiss_fft_cfg kiss_fft_alloc(int nfft,int inverse_fft,void * mem,size_t * lenmem 
 
     if ( lenmem==NULL ) {
         st = ( kiss_fft_cfg)KISS_FFT_MALLOC( memneeded );
-    }else{
+    }
+    else{
         if (mem != NULL && *lenmem >= memneeded)
             st = (kiss_fft_cfg)mem;
         *lenmem = memneeded;
@@ -377,7 +372,8 @@ void kiss_fft_stride(kiss_fft_cfg st,const kiss_fft_cpx *fin,kiss_fft_cpx *fout,
         kf_work(tmpbuf,fin,1,in_stride, st->factors,st);
         memcpy(fout,tmpbuf,sizeof(kiss_fft_cpx)*st->nfft);
         KISS_FFT_TMP_FREE(tmpbuf);
-    }else{
+    }
+    else{
         kf_work( fout, fin, 1,in_stride, st->factors,st );
     }
 }
