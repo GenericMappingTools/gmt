@@ -411,7 +411,7 @@ int GMT_grd2xyz (void *V_API, int mode, void *args)
 
 			GMT_grd_loop (GMT, G, row, col, ij) {
 				if (Ctrl->C.mode == 2) {
-					out[GMT_X] = GMT_IJ0 (G->header, row, col);
+					out[GMT_X] = (double)GMT_IJ0 (G->header, row, col);
 					out[GMT_Y] = G->data[ij];
 					if (Ctrl->N.active && GMT_is_dnan (out[GMT_Y])) out[GMT_Y] = Ctrl->N.value;
 				}
