@@ -61,7 +61,7 @@ struct X2SYS_DATALIST_CTRL {
 };
 
 struct X2SYS_ADJUST {
-	int n;
+	uint64_t n;
 	double *d, *c;
 };
 
@@ -169,8 +169,9 @@ int GMT_x2sys_datalist_parse (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *
 
 bool x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, char *track, char *column, struct X2SYS_ADJUST **A)
 {
-	unsigned int n_expected_fields = 2, n = 0, k, type[2] = {GMT_IS_FLOAT, GMT_IS_FLOAT};
+	unsigned int k, type[2] = {GMT_IS_FLOAT, GMT_IS_FLOAT};
 	int n_fields;
+	uint64_t n = 0, n_expected_fields = 2;
 	size_t n_alloc = GMT_CHUNK;
 	double *in = NULL;
 	char file[GMT_BUFSIZ];

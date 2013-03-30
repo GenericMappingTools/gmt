@@ -329,14 +329,14 @@ int gmt_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 
 void * gmt_nc_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *retval)
 {
-	int status;
-	uint64_t n_use, i, j;
+	int status, i;
+	uint64_t n_use, j;
 
 	GMT->current.io.status = 0;
 	if (*n == GMT_MAX_COLUMNS)
 		*n = GMT->current.io.ncols;
 	else if (*n > GMT->current.io.ncols) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_nc_input is asking for %d columns, but file has only %d\n", *n, GMT->current.io.ncols);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_nc_input is asking for %d columns, but file has only %" PRIu64 "\n", *n, GMT->current.io.ncols);
 		GMT->current.io.status = GMT_IO_MISMATCH;
 	}
 	do {	/* Keep reading until (1) EOF, (2) got a segment record, or (3) a valid data record */
@@ -348,7 +348,7 @@ void * gmt_nc_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *retval)
 			*retval = -1;
 			return (NULL);
 		}
-		for (i = j = 0; i < GMT->current.io.nvars && j < n_use; ++i) {
+		for (i = 0, j = 0; i < GMT->current.io.nvars && j < n_use; ++i) {
 			unsigned n;
 			GMT->current.io.t_index[i][0] = GMT->current.io.nrec;
 			nc_get_vara_double (GMT->current.io.ncid, GMT->current.io.varid[i], GMT->current.io.t_index[i], GMT->current.io.count[i], &GMT->current.io.curr_rec[j]);
@@ -2146,10 +2146,10 @@ void GMT_write_textrecord (struct GMT_CTRL *GMT, FILE *fp, char *txt)
  * and the x,y are implicit from the -R -I arguments.
  */
 
-int gmt_A_read (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_A_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 { /* Can read one or more items from input records. Limitation is
 	 * that they must be floating point values (no dates or ddd:mm:ss) */
-	unsigned i;
+	uint64_t i;
 	for (i = 0; i < n; ++i) {
 		if (fscanf (fp, "%lg", &d[i]) <= 0)
 			/* Read was unsuccessful */
@@ -2158,7 +2158,7 @@ int gmt_A_read (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (1);
 }
 
-int gmt_a_read (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_a_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 { /* Only reads one item regardless of *n */
 	char line[GMT_TEXT_LEN64], *p;
 	if (!fgets (line, GMT_TEXT_LEN64, fp)) {
@@ -2178,10 +2178,10 @@ int gmt_a_read (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (1);
 }
 
-int gmt_c_read (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_c_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* read int8_t aka char */
-	unsigned i;
+	uint64_t i;
 	int8_t s;
 	for (i = 0; i < n; ++i) {
 		if (!GMT_fread (&s, sizeof (int8_t), 1U, fp)) {
@@ -2194,10 +2194,10 @@ int gmt_c_read (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (1);
 }
 
-int gmt_u_read (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_u_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* read uint8_t aka unsigned char */
-	unsigned i;
+	uint64_t i;
 	uint8_t u;
 	for (i = 0; i < n; ++i) {
 		if (!GMT_fread (&u, sizeof (uint8_t), 1U, fp)) {
@@ -2209,10 +2209,10 @@ int gmt_u_read (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (1);
 }
 
-int gmt_h_read (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_h_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* read int16_t */
-	unsigned i;
+	uint64_t i;
 	int16_t s;
 	for (i = 0; i < n; ++i) {
 		if (!GMT_fread (&s, sizeof (int16_t), 1U, fp)) {
@@ -2224,10 +2224,10 @@ int gmt_h_read (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (1);
 }
 
-int gmt_h_read_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_h_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* read byteswapped int16_t */
-	unsigned i;
+	uint64_t i;
 	uint16_t u;
 	int16_t *s = (int16_t *)&u;
 	for (i = 0; i < n; ++i) {
@@ -2241,10 +2241,10 @@ int gmt_h_read_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (1);
 }
 
-int gmt_H_read (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_H_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* read uint16_t */
-	unsigned i;
+	uint64_t i;
 	uint16_t u;
 	for (i = 0; i < n; ++i) {
 		if (!GMT_fread (&u, sizeof (uint16_t), 1U, fp)) {
@@ -2256,10 +2256,10 @@ int gmt_H_read (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (1);
 }
 
-int gmt_H_read_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_H_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* read byteswapped uint16_t */
-	unsigned i;
+	uint64_t i;
 	uint16_t u;
 	for (i = 0; i < n; ++i) {
 		if (!GMT_fread (&u, sizeof (uint16_t), 1U, fp)) {
@@ -2271,10 +2271,10 @@ int gmt_H_read_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (1);
 }
 
-int gmt_i_read (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_i_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* read int32_t */
-	unsigned i;
+	uint64_t i;
 	int32_t s;
 	for (i = 0; i < n; ++i) {
 		if (!GMT_fread (&s, sizeof (int32_t), 1U, fp)) {
@@ -2286,10 +2286,10 @@ int gmt_i_read (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (1);
 }
 
-int gmt_i_read_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_i_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* read byteswapped int32_t */
-	unsigned i;
+	uint64_t i;
 	uint32_t u;
 	int32_t *s = (int32_t *)&u;
 	for (i = 0; i < n; ++i) {
@@ -2303,10 +2303,10 @@ int gmt_i_read_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (1);
 }
 
-int gmt_I_read (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_I_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* read uint32_t */
-	unsigned i;
+	uint64_t i;
 	uint32_t u;
 	for (i = 0; i < n; ++i) {
 		if (!GMT_fread (&u, sizeof (uint32_t), 1U, fp)) {
@@ -2318,10 +2318,10 @@ int gmt_I_read (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (1);
 }
 
-int gmt_I_read_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_I_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* read byteswapped uint32_t */
-	unsigned i;
+	uint64_t i;
 	uint32_t u;
 	for (i = 0; i < n; ++i) {
 		if (!GMT_fread (&u, sizeof (uint32_t), 1U, fp)) {
@@ -2333,10 +2333,10 @@ int gmt_I_read_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (1);
 }
 
-int gmt_l_read (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_l_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* read int64_t */
-	unsigned i;
+	uint64_t i;
 	int64_t s;
 
 	for (i = 0; i < n; ++i) {
@@ -2349,10 +2349,10 @@ int gmt_l_read (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (1);
 }
 
-int gmt_l_read_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_l_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* read byteswapped int64_t */
-	unsigned i;
+	uint64_t i;
 	uint64_t u;
 	int64_t *s = (int64_t *)&u;
 	for (i = 0; i < n; ++i) {
@@ -2366,10 +2366,10 @@ int gmt_l_read_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (1);
 }
 
-int gmt_L_read (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_L_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* read uint64_t */
-	unsigned i;
+	uint64_t i;
 	uint64_t u;
 
 	for (i = 0; i < n; ++i) {
@@ -2382,10 +2382,10 @@ int gmt_L_read (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (1);
 }
 
-int gmt_L_read_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_L_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* read byteswapped uint64_t */
-	unsigned i;
+	uint64_t i;
 	uint64_t u;
 
 	for (i = 0; i < n; ++i) {
@@ -2398,10 +2398,10 @@ int gmt_L_read_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (1);
 }
 
-int gmt_f_read (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_f_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* read float */
-	unsigned i;
+	uint64_t i;
 	float f;
 	for (i = 0; i < n; ++i) {
 		if (!GMT_fread (&f, sizeof (float), 1U, fp)) {
@@ -2413,10 +2413,10 @@ int gmt_f_read (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (1);
 }
 
-int gmt_f_read_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_f_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* read byteswapped float */
-	unsigned i;
+	uint64_t i;
 	union {
 		float f;
 		uint32_t bits;
@@ -2432,10 +2432,10 @@ int gmt_f_read_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (1);
 }
 
-int gmt_d_read (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_d_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* read double */
-	unsigned i;
+	uint64_t i;
 	for (i = 0; i < n; ++i) {
 		if (!GMT_fread (&d[i], sizeof (double), 1U, fp)) {
 			GMT->current.io.status = GMT_IO_EOF;
@@ -2445,10 +2445,10 @@ int gmt_d_read (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (1);
 }
 
-int gmt_d_read_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_d_read_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* read byteswapped double */
-	unsigned i;
+	uint64_t i;
 	union {
 		double d;
 		uint64_t bits;
@@ -2464,10 +2464,10 @@ int gmt_d_read_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (1);
 }
 
-int gmt_a_write (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_a_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* write ascii */
-	unsigned i;
+	uint64_t i;
 	for (i = 0; i < (n - 1); ++i) {
 		GMT_ascii_output_col (GMT, fp, d[i], GMT_Z);
 		fprintf (fp, "\t");
@@ -2478,10 +2478,10 @@ int gmt_a_write (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (n);
 }
 
-int gmt_c_write (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_c_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* write int8_t aka char */
-	unsigned i;
+	uint64_t i;
 	int8_t s;
 	for (i = 0; i < n; ++i) {
 		s = (int8_t) d[i];
@@ -2491,10 +2491,10 @@ int gmt_c_write (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (n);
 }
 
-int gmt_u_write (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_u_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* write uint8_t aka unsigned char */
-	unsigned i;
+	uint64_t i;
 	uint8_t u;
 	for (i = 0; i < n; ++i) {
 		u = (uint8_t) d[i];
@@ -2504,10 +2504,10 @@ int gmt_u_write (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (n);
 }
 
-int gmt_h_write (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_h_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* write int16_t */
-	unsigned i;
+	uint64_t i;
 	int16_t s;
 	for (i = 0; i < n; ++i) {
 		s = (int16_t) d[i];
@@ -2517,10 +2517,10 @@ int gmt_h_write (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (n);
 }
 
-int gmt_h_write_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_h_write_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* write byteswapped int16_t */
-	unsigned i;
+	uint64_t i;
 	uint16_t u;
 	int16_t *s = (int16_t *)&u;
 	for (i = 0; i < n; ++i) {
@@ -2532,10 +2532,10 @@ int gmt_h_write_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (n);
 }
 
-int gmt_H_write (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_H_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* write uint16_t */
-	unsigned i;
+	uint64_t i;
 	uint16_t u;
 	for (i = 0; i < n; ++i) {
 		u = (uint16_t) d[i];
@@ -2545,10 +2545,10 @@ int gmt_H_write (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (n);
 }
 
-int gmt_H_write_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_H_write_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* write byteswapped uint16_t */
-	unsigned i;
+	uint64_t i;
 	uint16_t u;
 	for (i = 0; i < n; ++i) {
 		u = bswap16 ((uint16_t) d[i]);
@@ -2558,10 +2558,10 @@ int gmt_H_write_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (n);
 }
 
-int gmt_i_write (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_i_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* write int32_t */
-	unsigned i;
+	uint64_t i;
 	int32_t s;
 	for (i = 0; i < n; ++i) {
 		s = (int32_t) d[i];
@@ -2571,10 +2571,10 @@ int gmt_i_write (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (n);
 }
 
-int gmt_i_write_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_i_write_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* write byteswapped int32_t */
-	unsigned i;
+	uint64_t i;
 	uint32_t u;
 	int32_t *s = (int32_t *)&u;
 	for (i = 0; i < n; ++i) {
@@ -2586,10 +2586,10 @@ int gmt_i_write_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (n);
 }
 
-int gmt_I_write (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_I_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* write uint32_t */
-	unsigned i;
+	uint64_t i;
 	uint32_t u;
 	for (i = 0; i < n; ++i) {
 		u = (uint32_t) d[i];
@@ -2599,10 +2599,10 @@ int gmt_I_write (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (n);
 }
 
-int gmt_I_write_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_I_write_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* write byteswapped uint32_t */
-	unsigned i;
+	uint64_t i;
 	uint32_t u;
 	for (i = 0; i < n; ++i) {
 		u = bswap32 ((uint32_t) d[i]);
@@ -2612,10 +2612,10 @@ int gmt_I_write_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (n);
 }
 
-int gmt_l_write (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_l_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* write int64_t */
-	unsigned i;
+	uint64_t i;
 	int64_t s;
 	for (i = 0; i < n; ++i) {
 		s = (int64_t) d[i];
@@ -2625,10 +2625,10 @@ int gmt_l_write (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (n);
 }
 
-int gmt_l_write_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_l_write_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* write byteswapped int64_t */
-	unsigned i;
+	uint64_t i;
 	uint64_t u;
 	int64_t *s = (int64_t *)&u;
 	for (i = 0; i < n; ++i) {
@@ -2640,10 +2640,10 @@ int gmt_l_write_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (n);
 }
 
-int gmt_L_write (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_L_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* write uint64_t */
-	unsigned i;
+	uint64_t i;
 	uint64_t u;
 	for (i = 0; i < n; ++i) {
 		u = (uint64_t) d[i];
@@ -2653,10 +2653,10 @@ int gmt_L_write (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (n);
 }
 
-int gmt_L_write_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_L_write_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* write byteswapped uint64_t */
-	unsigned i;
+	uint64_t i;
 	uint64_t u;
 	for (i = 0; i < n; ++i) {
 		u = bswap64((uint64_t) d[i]);
@@ -2666,10 +2666,10 @@ int gmt_L_write_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (n);
 }
 
-int gmt_f_write (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_f_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* write float */
-	unsigned i;
+	uint64_t i;
 	for (i = 0; i < n; ++i) {
 		float f = (float) d[i];
 		if (GMT_fwrite (&f, sizeof (float), 1U, fp) != 1U)
@@ -2678,10 +2678,10 @@ int gmt_f_write (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (n);
 }
 
-int gmt_f_write_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_f_write_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* write byteswapped float */
-	unsigned i;
+	uint64_t i;
 	union {
 		float f;
 		uint32_t bits;
@@ -2695,7 +2695,7 @@ int gmt_f_write_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (n);
 }
 
-int gmt_d_write (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_d_write (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* write double */
 	if (GMT_fwrite (d, sizeof (double), n, fp) != n)
@@ -2703,10 +2703,10 @@ int gmt_d_write (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
 	return (n);
 }
 
-int gmt_d_write_swab (struct GMT_CTRL *GMT, FILE *fp, unsigned n, double *d)
+int gmt_d_write_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 {
 	/* write byteswapped double */
-	unsigned i;
+	uint64_t i;
 	union {
 		double d;
 		uint64_t bits;
@@ -4473,9 +4473,8 @@ struct GMT_TEXTTABLE * GMT_read_texttable (struct GMT_CTRL *GMT, void *source, u
 
 	bool close_file = false, header = true, no_segments, first_seg = true;
 	int status;
-	unsigned int ncol = 0;
 	size_t n_row_alloc = GMT_CHUNK, n_seg_alloc = GMT_CHUNK, n_head_alloc = GMT_TINY_CHUNK;
-	uint64_t row = 0, n_read = 0, seg = 0;
+	uint64_t row = 0, n_read = 0, seg = 0, ncol = 0;
 	char file[GMT_BUFSIZ], *in = NULL;
 	FILE *fp = NULL;
 	struct GMT_TEXTTABLE *T = NULL;
@@ -5238,7 +5237,7 @@ int GMT_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, s
 	char open_mode[4], file[GMT_BUFSIZ], tmpfile[GMT_BUFSIZ], *out_file = tmpfile;
 	double *out = NULL;
 	FILE *fp = NULL;
-	int (*psave) (struct GMT_CTRL *, FILE *, unsigned int, double *) = NULL;	/* Pointer to function writing tables */
+	int (*psave) (struct GMT_CTRL *, FILE *, uint64_t, double *) = NULL;	/* Pointer to function writing tables */
 	
 
 	if (table->mode == GMT_WRITE_SKIP) return (0);	/* Skip this table */
@@ -5875,7 +5874,7 @@ struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsig
 	double d, *in = NULL;
 	FILE *fp = NULL;
 	struct GMT_DATATABLE *T = NULL;
-	void * (*psave) (struct GMT_CTRL *, FILE *, unsigned int *, int *) = NULL;	/* Pointer to function reading tables */
+	void * (*psave) (struct GMT_CTRL *, FILE *, uint64_t *, int *) = NULL;	/* Pointer to function reading tables */
 
 	if (use_GMT_io) {	/* Use GMT->current.io.info settings to determine if input is ascii/binary, else it defaults to ascii */
 		n_expected_fields = GMT->common.b.active[GMT_IN] ? GMT->common.b.ncol[GMT_IN] : GMT_MAX_COLUMNS;
