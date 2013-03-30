@@ -421,8 +421,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 	GMT_free (GMT, val);
 
 	if (Ctrl->I.active) {	/* Must reverse the order of tables, segments and/or records */
-		unsigned int tbl1, tbl2;
-		uint64_t row1, row2, seg1, seg2;
+		uint64_t tbl1, tbl2, row1, row2, seg1, seg2;
 		void *p = NULL;
 		if (Ctrl->I.mode & INV_ROWS) {	/* Must actually swap rows */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reversing order of records within each segment.\n");

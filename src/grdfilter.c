@@ -873,7 +873,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	if (effort_level == 1) set_weight_matrix (GMT, &F, weight, 0.0, par, x_fix, y_fix);
 	
 #ifdef DEBUG
-	if (Ctrl->A.active) for (ij_in = 0; ij_in < Gin->header->size; ij_in++) Gin->data[ij_in] = 0.0;	/* We are using Gin to store filter weights etc instead */
+	if (Ctrl->A.active) for (ij_in = 0; ij_in < Gin->header->size; ij_in++) Gin->data[ij_in] = 0.0f;	/* We are using Gin to store filter weights etc instead */
 #endif
 
 #ifdef _OPENMP

@@ -709,7 +709,8 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	}
 	else {	/* Standard resampling point case */
 		bool pure_ascii = false;
-		int ix, iy, n_fields, rmode, n_out = 0;
+		int ix, iy, n_fields, rmode;
+		uint64_t n_out = 0;
 		double *in = NULL, *out = NULL;
 		char record[GMT_BUFSIZ];
 		bool gmt_skip_output (struct GMT_CTRL *C, double *cols, int n_cols);

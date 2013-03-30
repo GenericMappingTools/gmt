@@ -3943,10 +3943,10 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 	 *   GMT_WRITE_DOUBLE:    Write an ASCII or binary data record
 	 *   GMT_WRITE_TEXT:      Write an ASCII data record
 	 * For text: If record == NULL use internal current record or header.
-	 * Returns false if a record was written successfully(See what -s[r] can do).
-	 * If an error occurs we return true and set API->error.
+	 * Returns 0 if a record was written successfully (See what -s[r] can do).
+	 * If an error occurs we return -1 and set API->error.
 	 */
-	int error = 0, wrote = 1;
+	int error = 0;
 	uint64_t *p = NULL, col, ij;
 	char *s = NULL;
 	double *d = NULL;
@@ -3976,12 +3976,11 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 					break;
 				case GMT_WRITE_DOUBLE:		/* Export either a formatted ASCII data record or a binary record */
 					if (API->GMT->common.b.ncol[GMT_OUT] == UINT_MAX) API->GMT->common.b.ncol[GMT_OUT] = API->GMT->common.b.ncol[GMT_IN];
-					wrote = API->GMT->current.io.output (API->GMT, S_obj->fp, API->GMT->common.b.ncol[GMT_OUT], record);
+					error = API->GMT->current.io.output (API->GMT, S_obj->fp, API->GMT->common.b.ncol[GMT_OUT], record);
 					break;
 				case GMT_WRITE_TEXT:		/* Export the current text record; skip if binary */
 					s = (record) ? record : API->GMT->current.io.current_record;
 					GMT_write_textrecord (API->GMT, S_obj->fp, s);
-					wrote = 1;
 					break;
 				case GMT_WRITE_TABLE_START:	/* Write title and command to start of file; skip if binary */
 					GMT_write_newheaders (API->GMT, S_obj->fp, S_obj->n_columns);
@@ -4130,7 +4129,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 			break;
 	}
 
-	if (wrote && (mode == GMT_WRITE_DOUBLE || mode == GMT_WRITE_TEXT)) API->current_rec[GMT_OUT]++;	/* Only increment if we placed a data record on the output */
+	if (!error && (mode == GMT_WRITE_DOUBLE || mode == GMT_WRITE_TEXT)) API->current_rec[GMT_OUT]++;	/* Only increment if we placed a data record on the output */
 	
 	if (S_obj->n_alloc && API->current_rec[GMT_OUT] == S_obj->n_alloc) {	/* Must allocate more memory */
 		size_t size;
@@ -4149,7 +4148,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 	}
 	S_obj->status = GMT_IS_USING;	/* Have started writing to this destination */
 	
-	return ((wrote) ? false : true);		
+	return ((error) ? -1 : 0);		
 }
 
 #ifdef FORTRAN_API

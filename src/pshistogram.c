@@ -100,9 +100,9 @@ struct PSHISTOGRAM_INFO {	/* Control structure for pshistogram */
 	double wesn[4];
 	uint64_t n_boxes;
 	uint64_t n_counted;
+	uint64_t *boxh;
 	bool center_box, cumulative;
 	unsigned int hist_type;
-	unsigned int *boxh;
 };
 
 int fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *data, uint64_t n) {
@@ -112,25 +112,25 @@ int fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *data, 
 	uint64_t i;
 	int64_t sbox;
 
-	F->n_boxes = irint (ceil(((F->wesn[XHI] - F->wesn[XLO]) / F->box_width) + 0.5));
+	F->n_boxes = lrint (ceil(((F->wesn[XHI] - F->wesn[XLO]) / F->box_width) + 0.5));
 
 	if (F->center_box) {
 		F->n_boxes++;
 		add_half = 0.5;
 	}
 
-	if (F->n_boxes <= 0) return (-1);
+	if (F->n_boxes == 0) return (-1);
 
-	F->boxh = GMT_memory (GMT, NULL, F->n_boxes, int);
+	F->boxh = GMT_memory (GMT, NULL, F->n_boxes, uint64_t);
 
 	F->n_counted = 0;
 
 	/* First fill boxes with counts  */
 
 	for (i = 0; i < n; i++) {
-		sbox = irint (floor (((data[i] - F->wesn[XLO]) / F->box_width) + add_half));
+		sbox = lrint (floor (((data[i] - F->wesn[XLO]) / F->box_width) + add_half));
 		if (sbox < 0) continue;
-		ibox = sbox;
+		ibox = (uint64_t)sbox;
 		if (ibox >= F->n_boxes) continue;
 		F->boxh[ibox]++;
 		F->n_counted++;
@@ -773,7 +773,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 	area = plot_boxes (GMT, PSL, P, &F, Ctrl->S.active, Ctrl->A.active, Ctrl->L.active, &Ctrl->L.pen, &Ctrl->G.fill, Ctrl->C.active);
 	GMT_Report (API, GMT_MSG_VERBOSE, "Area under histogram is %g\n", area);
 	
-	if (Ctrl->N.active) {	/* Want to draw one or more normal distributions; we sue 101 points to do so */
+	if (Ctrl->N.active) {	/* Want to draw one or more normal distributions; we use 101 points to do so */
 		unsigned int type, k, NP = 101U;
 		double f, z, xtmp, ytmp, inc;
 		double *xp = GMT_memory (GMT, NULL, NP, double);

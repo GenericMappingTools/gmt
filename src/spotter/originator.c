@@ -347,9 +347,9 @@ int GMT_originator_parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, st
 
 int GMT_originator (void *V_API, int mode, void *args)
 {
-	unsigned int n_max_spots, n_input, n_expected_fields, n_out;
+	unsigned int n_max_spots, n_input;
 	unsigned int spot, smt, n_stages, n_hotspots, n_read, n_skipped = 0;
-	uint64_t k, kk, np;
+	uint64_t k, kk, np, n_expected_fields, n_out;
 	
 	int error = 0;
 	bool better;

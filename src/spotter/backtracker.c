@@ -376,8 +376,8 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 	uint64_t n_read = 0;		/* Number of records read */
 	uint64_t row;
 	uint64_t i, j;
+	uint64_t n_out, n_expected_fields, col;
 	unsigned int n_stages = 0;		/* Number of stage poles */
-	unsigned int n_out, n_expected_fields, col;
 	bool make_path = false;		/* true means create continuous path, false works on discrete points */
 	int n_fields, error;		/* Misc. signed counters */
 	int spotter_way = 0;		/* Either SPOTTER_FWD or SPOTTER_BACK */
