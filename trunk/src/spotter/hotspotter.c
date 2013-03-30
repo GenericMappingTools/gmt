@@ -291,8 +291,8 @@ int GMT_hotspotter (void *V_API, int mode, void *args)
 	uint64_t n_track;		/* Number of points along a single flowline */
 	uint64_t n_read = 0;	/* Number of records read */
 	uint64_t node, node_0;		/* Grid indices */
+	uint64_t n_expected_fields;
 	unsigned int n_stages;	/* Number of stage rotations (poles) */
-	unsigned int n_expected_fields;
 	unsigned int row, col, kx, ky, m;
 	int node_x_width;		/* Number of x-nodes covered by the seamount in question (y-dependent) */
 	int node_y_width;		/* Number of y-nodes covered by the seamount */

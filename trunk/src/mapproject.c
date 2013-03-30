@@ -415,14 +415,14 @@ int GMT_mapproject_parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, st
 
 int GMT_mapproject (void *V_API, int mode, void *args)
 {
-	int k, x, y, rmode, n_fields, n_output = 0, two, way, error = 0;
+	int x, y, ks, rmode, n_fields, two, way, error = 0;
 	int fmt[2], save[2] = {0,0}, unit = 0, proj_type = 0, lat_mode = 0;
 	bool line_start = true, do_geo_conv = false;
 	bool geodetic_calc = false, datum_conv_only = false, double_whammy = false;
 	
 	unsigned int i = 0, pos;
 	
-	uint64_t row, n_read_in_seg, seg, n_read = 0, n = 0;
+	uint64_t row, n_read_in_seg, seg, n_read = 0, n = 0, k, n_output = 0;
 
 	double x_in = 0.0, y_in = 0.0, d = 0.0, fwd_scale, inv_scale, xtmp, ytmp, *out = NULL;
 	double xmin, xmax, ymin, ymax, inch_to_unit, unit_to_inch, u_scale, y_out_min;
@@ -915,11 +915,11 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 						GMT_set_cols (GMT, GMT_OUT, GMT_get_cols (GMT, GMT_IN) + 1 + 2 * Ctrl->L.active);
 						n_output = GMT_get_cols (GMT, GMT_OUT);
 					}
-					for (k = 0; k < n_fields; k++) out[k] = in[k];
-					out[k++] = d;
+					for (ks = 0; ks < n_fields; ks++) out[ks] = in[ks];
+					out[ks++] = d;
 					if (Ctrl->L.active) {
-						out[k++] = xnear;
-						out[k++] = ynear;
+						out[ks++] = xnear;
+						out[ks++] = ynear;
 					}
 					GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 				}

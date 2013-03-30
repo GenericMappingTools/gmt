@@ -229,7 +229,7 @@ uint64_t trace_clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, ch
 	return (n);
 }
 
-int clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, struct GMT_GRID_HEADER *h, double inc2[], unsigned int *edge, unsigned int first, double **x, double **y, uint64_t *max)
+uint64_t clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, struct GMT_GRID_HEADER *h, double inc2[], unsigned int *edge, unsigned int first, double **x, double **y, uint64_t *max)
 {
 	/* The routine finds the zero-contour in the grd dataset.  it assumes that
 	 * no node has a value exactly == 0.0.  If more than max points are found
@@ -265,7 +265,7 @@ int clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, st
 			ij = GMT_IJP (h, j, i0);
 			for (i = i0; go_on && i < h->nx-1; i++, ij++) {	/* nx-1 since the last bin starts at nx-2 and ends at nx-1 */
 				edge_word = ij / 32 + info->offset;
-				edge_bit = ij % 32;
+				edge_bit = (unsigned int)(ij % 32ULL);
 				if (!(edge[edge_word] & info->bit[edge_bit]) && ((grd[ij]+grd[ij-h->nx]) == 1)) { /* Start tracing contour */
 					*x[0] = GMT_grd_col_to_x (GMT, i, h);
 					*y[0] = GMT_grd_row_to_y (GMT, j, h);
@@ -289,7 +289,7 @@ int clip_contours (struct GMT_CTRL *GMT, struct PSMASK_INFO *info, char *grd, st
 			ij = GMT_IJP (h, j, i0);
 			for (i = i0; go_on && i < h->nx-1; i++, ij++) {
 				edge_word = ij / 32 + info->offset;
-				edge_bit = ij % 32;
+				edge_bit = (unsigned int)(ij % 32ULL);
 				if (!(edge[edge_word] & info->bit[edge_bit]) && ((grd[ij]+grd[ij+1]) == 1)) { /* Start tracing contour */
 					*x[0] = GMT_grd_col_to_x (GMT, i, h);
 					*y[0] = GMT_grd_row_to_y (GMT, j, h);

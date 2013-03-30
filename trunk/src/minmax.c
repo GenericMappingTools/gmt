@@ -50,7 +50,7 @@ struct MINMAX_CTRL {	/* All control options for this program (except common args
 		bool active;
 		bool abs;
 		int mode;	/* -1, 0, +1 */
-		unsigned int col;
+		uint64_t col;
 	} E;
 	struct I {	/* -Idx[/dy[/<dz>..]] */
 		bool active;
@@ -245,8 +245,8 @@ int GMT_minmax (void *V_API, int mode, void *args)
 	bool got_stuff = false, first_data_record, give_r_string = false;
 	bool brackets = false, work_on_abs_value, do_report, save_range, done;
 	int i, j, error = 0, col_type[GMT_MAX_COLUMNS];
-	unsigned int col, ncol = 0, fixed_phase[2] = {1, 1}, min_cols;
-	uint64_t n = 0;
+	unsigned int fixed_phase[2] = {1, 1}, min_cols;
+	uint64_t col, ncol = 0, n = 0;
 
 	char file[GMT_BUFSIZ], chosen[GMT_BUFSIZ], record[GMT_BUFSIZ], buffer[GMT_BUFSIZ], delimeter[2];
 

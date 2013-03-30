@@ -91,8 +91,8 @@ struct PROJECT_DATA {
 
 struct PROJECT_INFO {
 	uint64_t n_used;
-	unsigned int n_outputs;
-	unsigned int n_z;
+	uint64_t n_outputs;
+	uint64_t n_z;
 	int output_choice[PROJECT_N_FARGS];
 	bool find_new_point;
 	bool want_z_output;
@@ -537,8 +537,7 @@ int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, double t
 {
 	int error;
 	bool pure_ascii;
-	unsigned int n_items, col, k;
-	uint64_t rec;
+	uint64_t col, n_items, rec, k;
 	double sin_theta, cos_theta, e[9], x[3], xt[3], *out = NULL;
 	char record[GMT_BUFSIZ], text[GMT_BUFSIZ];
 
@@ -621,8 +620,8 @@ int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, double t
 
 int GMT_project (void *V_API, int mode, void *args)
 {
-	uint64_t rec, n_total_read, n_total_used = 0;
-	unsigned int rmode, col;
+	uint64_t rec, n_total_read, col, n_total_used = 0;
+	unsigned int rmode;
 	bool pure_ascii, skip, z_first = true;
 #ifdef MEMDEBUG
 	bool mem_track_enabled;
@@ -716,9 +715,9 @@ int GMT_project (void *V_API, int mode, void *args)
 
 	if (P.n_outputs == 0 && !Ctrl->G.active) {	/* Generate default -F setting (all) */
 		P.n_outputs = PROJECT_N_FARGS;
-		for (col = 0; col < 2; col++) P.output_choice[col] = col;
+		for (col = 0; col < 2; col++) P.output_choice[col] = (int)col;
 		P.output_choice[2] = -1;
-		for (col = 3; col < P.n_outputs; col++) P.output_choice[col] = col - 1;
+		for (col = 3; col < P.n_outputs; col++) P.output_choice[col] = (int)col - 1;
 		P.find_new_point = true;
 	}
 	if (Ctrl->G.active) P.n_outputs = 3;
@@ -941,7 +940,7 @@ int GMT_project (void *V_API, int mode, void *args)
 			/* Data record to process */
 
 			if (z_first) {
-				unsigned int n_cols = GMT_get_cols (GMT, GMT_IN);
+				uint64_t n_cols = GMT_get_cols (GMT, GMT_IN);
 				if (n_cols == 2 && P.want_z_output) {
 					GMT_Report (API, GMT_MSG_NORMAL, "No data columns, cannot use z flag in -F\n");
 					Return (EXIT_FAILURE);

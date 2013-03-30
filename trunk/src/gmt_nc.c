@@ -577,7 +577,7 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 				GMT_err_trap (nc_put_att_double (ncid, z_id, "_FillValue", z_type, 1U, &header->nan_value));
 			}
 			else {
-				i = lrint (header->nan_value);
+				i = irint (header->nan_value);
 				GMT_err_trap (nc_put_att_int (ncid, z_id, "_FillValue", z_type, 1U, &i));
 			}
 		}
@@ -900,7 +900,7 @@ void grid_fix_repeat_col (struct GMT_CTRL *GMT, void *gridp, const unsigned n_co
 static inline void setup_chunk_cache (void) {
 	static bool already_setup = false;
 	if (!already_setup) {
-		nc_set_chunk_cache(NC_CACHE_SIZE, NC_CACHE_NELEMS, NC_CACHE_PREEMPTION);
+		nc_set_chunk_cache (NC_CACHE_SIZE, NC_CACHE_NELEMS, NC_CACHE_PREEMPTION);
 		already_setup = true;
 	}
 }
@@ -971,7 +971,7 @@ static inline int io_nc_varm_float (int ncid, int varid, const size_t *startp,
 }
 
 /* Read and write classic or chunked netcdf files */
-int io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, unsigned dim[], unsigned origin[], unsigned stride, unsigned io_mode, float* grid) {
+int io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, unsigned dim[], unsigned origin[], size_t stride, unsigned io_mode, float* grid) {
 	/* io_mode = k_get_netcdf: read a netcdf file to grid
 	 * io_mode = k_put_netcdf: write a grid to netcdf */
 	int status = NC_NOERR;
@@ -1016,7 +1016,7 @@ int io_nc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, unsigned d
 
 		/* adjust row count, so that it ends on the bottom of a chunk */
 		count[yx_dim[0]] = chunksize[yx_dim[0]] * n_contiguous_chunk_rows;
-		remainder = (unsigned int)start[yx_dim[0]] % chunksize[yx_dim[0]];
+		remainder = (unsigned int)(start[yx_dim[0]] % chunksize[yx_dim[0]]);
 		count[yx_dim[0]] -= remainder;
 
 		count[yx_dim[1]] = width;

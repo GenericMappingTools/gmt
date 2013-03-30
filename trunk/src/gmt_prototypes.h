@@ -137,8 +137,8 @@ EXTERN_MSC void GMT_io_binary_header (struct GMT_CTRL *GMT, FILE *fp, unsigned i
 EXTERN_MSC void * GMT_z_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status);
 EXTERN_MSC int GMT_z_output (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *data);
 EXTERN_MSC int GMT_get_io_type (struct GMT_CTRL *GMT, char type);
-EXTERN_MSC struct GMT_QUAD * GMT_quad_init (struct GMT_CTRL *GMT, unsigned int n_items);
-EXTERN_MSC void GMT_quad_reset (struct GMT_CTRL *GMT, struct GMT_QUAD *Q, unsigned int n_items);
+EXTERN_MSC struct GMT_QUAD * GMT_quad_init (struct GMT_CTRL *GMT, uint64_t n_items);
+EXTERN_MSC void GMT_quad_reset (struct GMT_CTRL *GMT, struct GMT_QUAD *Q, uint64_t n_items);
 EXTERN_MSC void GMT_quad_add (struct GMT_CTRL *GMT, struct GMT_QUAD *Q, double x);
 EXTERN_MSC unsigned int GMT_quad_finalize (struct GMT_CTRL *GMT, struct GMT_QUAD *Q);
 EXTERN_MSC char * GMT_fgets (struct GMT_CTRL *GMT, char *str, int size, FILE *stream);

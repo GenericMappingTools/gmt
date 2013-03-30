@@ -267,11 +267,10 @@ int GMT_segy2grd (void *V_API, int mode, void *args)
 {
 	bool  read_cont = false, swap_bytes = !GMT_BIGENDIAN;
 	int error = 0;
-	unsigned int n_samp = 0;
 	unsigned int ii, jj, n_read = 0, n_filled = 0, n_used = 0, *flag = NULL;
-	unsigned int n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0, check, ix, isamp;
+	unsigned int n_empty = 0, n_stuffed = 0, n_bad = 0, n_confused = 0, check, ix;
 
-	uint64_t ij, ij0;
+	uint64_t ij, ij0, n_samp = 0, isamp;
 	
 	double idy, x0, yval;
 
@@ -426,7 +425,7 @@ int GMT_segy2grd (void *V_API, int mode, void *args)
 				}
 			}
 
-			for (ij = ij0; ij < (uint64_t)n_samp ; ij++) {  /* n*idy is index of first sample to be included in the grid */
+			for (ij = ij0; ij < n_samp ; ij++) {  /* n*idy is index of first sample to be included in the grid */
 				Grid->data[ix + Grid->header->nx*(Grid->header->ny+ij0-ij-1)] = data[ij];
 			}
 

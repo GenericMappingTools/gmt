@@ -111,8 +111,8 @@ struct GMTMATH_INFO {
 	bool local;		/* Per segment operation (true) or global operation (false) */
 	bool notime;		/* No time-array avaible for operators who depend on that */
 	unsigned int n_roots;	/* Number of roots found */
-	unsigned int r_col;	/* The column used to find roots */
-	unsigned int n_col;	/* Number of columns */
+	uint64_t r_col;	/* The column used to find roots */
+	uint64_t n_col;	/* Number of columns */
 	double t_min, t_max, t_inc;
 	struct GMT_DATATABLE *T;	/* Table with all time information */
 };
@@ -171,7 +171,7 @@ bool decode_columns (struct GMT_CTRL *GMT, char *txt, bool *skip, uint64_t n_col
 	}
 	else {	/* Set the selected columns */
 		for (i = 0; i < n_col; i++) skip[i] = true;
-		pos = col = 0;
+		pos = 0, col = 0;
 		while ((GMT_strtok (txt, ",", &pos, p))) {
 			if (strchr (p, '-'))
 				sscanf (p, "%" PRIu64 "-%" PRIu64, &start, &stop);
@@ -195,7 +195,7 @@ int gmtmath_find_stored_item (struct GMT_CTRL *GMT, struct GMTMATH_STORED *recal
 
 /* ---------------------- start convenience functions --------------------- */
 
-int solve_LSQFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S, unsigned int n_col, bool skip[], char *file)
+int solve_LSQFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S, uint64_t n_col, bool skip[], char *file)
 {
 	/* Consider the current table the augmented matrix [A | b], making up the linear system Ax = b.
 	 * We will set up the normal equations, solve for x, and output the solution before quitting.
@@ -204,9 +204,9 @@ int solve_LSQFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 	 * we do a full SVD decomposition and set small eigenvalues to zero, yielding an approximate solution.
 	 */
 
-	unsigned int i, j, k, k0, i2, j2, rhs, n;
+	unsigned int i, j, k, k0, i2, j2, n;
 	int ier;
-	uint64_t row, seg;
+	uint64_t row, seg, rhs;
 	double cond, *N = NULL, *B = NULL, *d = NULL, *x = NULL, *b = NULL, *z = NULL, *v = NULL, *lambda = NULL;
 	FILE *fp = NULL;
 	struct GMT_DATATABLE *T = S->D->table[0];
@@ -304,7 +304,7 @@ int solve_LSQFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 	return (EXIT_SUCCESS);
 }
 
-void load_column (struct GMT_DATASET *to, unsigned int to_col, struct GMT_DATATABLE *from, unsigned int from_col)
+void load_column (struct GMT_DATASET *to, uint64_t to_col, struct GMT_DATATABLE *from, uint64_t from_col)
 {	/* Copies data from one column to another */
 	uint64_t seg;
 	for (seg = 0; seg < from->n_segments; seg++) {
@@ -312,7 +312,7 @@ void load_column (struct GMT_DATASET *to, unsigned int to_col, struct GMT_DATATA
 	}
 }
 
-void load_const_column (struct GMT_DATASET *to, unsigned int to_col, double factor)
+void load_const_column (struct GMT_DATASET *to, uint64_t to_col, double factor)
 {	/* Sets all rows in a column to a constant factor */
 	uint64_t row, seg;
 	for (seg = 0; seg < to->n_segments; seg++) {
@@ -328,7 +328,7 @@ bool same_size (struct GMT_DATASET *A, struct GMT_DATASET *B)
 	return (true);
 }
 
-bool same_domain (struct GMT_DATASET *A, unsigned int t_col, struct GMT_DATATABLE *B)
+bool same_domain (struct GMT_DATASET *A, uint64_t t_col, struct GMT_DATATABLE *B)
 {	/* Are the two dataset the same domain */
 	uint64_t seg;
 	for (seg = 0; seg < A->table[0]->n_segments; seg++) {
@@ -3210,10 +3210,10 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 {
 	int i, k, op = 0;
 	unsigned int consumed_operands[GMTMATH_N_OPERATORS], produced_operands[GMTMATH_N_OPERATORS], new_stack = INT_MAX;
-	unsigned int j, use_t_col = 0, nstack = 0, n_stored = 0, kk;
+	unsigned int j, nstack = 0, n_stored = 0, kk;
 	bool error = false, set_equidistant_t = false, got_t_from_file = false, free_time = false;
 	bool read_stdin = false, t_check_required = true, touched_t_col = false, done;
-	uint64_t row, n_records, n_rows = 0, n_columns = 0, seg;
+	uint64_t use_t_col = 0, row, n_records, n_rows = 0, n_columns = 0, seg;
 	unsigned int n_macros;
 	
 	uint64_t dim[4] = {1, 1, 0, 0};
