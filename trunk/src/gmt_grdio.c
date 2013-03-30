@@ -393,6 +393,8 @@ void GMT_grd_mux_demux (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	 * format before writing takes place.
 	 * GMT_grd_mux_demux performs either multiplex or demultiplex, depending on desired_mode.
 	 * If grid is not complex then we just return doing nothing.
+	 * Note: At this point the grid is mx * my and we visit all the nodes, including the pads.
+	 * hence we use header->mx/my and GMT_IJ below.
 	 */
 	uint64_t row, col, col_1, col_2, left_node_1, left_node_2, offset, ij, ij2;
 	float *array = NULL;
@@ -416,9 +418,9 @@ void GMT_grd_mux_demux (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 			/* One advantage is that the padding is all zero by virtue of the allocation */
 			array = GMT_memory_aligned (GMT, NULL, header->size, float);
 			offset = header->size / 2;	/* Position of 1st row in imag portion of RRRR...IIII... */
-			for (row = 0; row < header->ny; row++) {	/* Going from first to last row */
-				for (col = 0; col < header->nx; col++) {
-					ij = GMT_IJP (header, row, col);	/* Position of an 'R' in the RRRRR portion */
+			for (row = 0; row < header->my; row++) {	/* Going from first to last row */
+				for (col = 0; col < header->mx; col++) {
+					ij = GMT_IJ (header, row, col);	/* Position of an 'R' in the RRRRR portion */
 					ij2 = 2 * ij;
 					array[ij2++] = data[ij];
 					array[ij2] = data[ij+offset];
@@ -429,10 +431,10 @@ void GMT_grd_mux_demux (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 		}
 		else if (header->complex_mode & GMT_GRID_IS_COMPLEX_REAL) {
 			/* Here we have RRRRRR..._________ and want R_R_R_R_... */
-			for (row = header->ny; row > 0; row--) {	/* Going from last to first row */
-				left_node_1 = GMT_IJP (header, row-1, 0);	/* Start of row in RRRRR layout */
+			for (row = header->my; row > 0; row--) {	/* Going from last to first row */
+				left_node_1 = GMT_IJ (header, row-1, 0);	/* Start of row in RRRRR layout */
 				left_node_2 = 2 * left_node_1;			/* Start of same row in R_R_R_ layout */
-				for (col = header->nx, col_1 = col - 1, col_2 = 2*col - 1; col > 0; col--, col_1--) { /* Go from right to left */
+				for (col = header->mx, col_1 = col - 1, col_2 = 2*col - 1; col > 0; col--, col_1--) { /* Go from right to left */
 					data[left_node_2+col_2] = 0.0f;	col_2--;	/* Set the Imag component to zero */
 					data[left_node_2+col_2] = data[left_node_1+col_1];	col_2--;
 				}
@@ -441,11 +443,11 @@ void GMT_grd_mux_demux (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 		else {
 			/* Here we have _____...IIIII and want _I_I_I_I */
 			offset = header->size / 2;	/* Position of 1st row in imag portion of ____...IIII... */
-			for (row = 0; row < header->ny; row++) {	/* Going from first to last row */
-				left_node_1 = GMT_IJP (header, row, 0);		/* Start of row in _____IIII layout not counting ____*/
+			for (row = 0; row < header->my; row++) {	/* Going from first to last row */
+				left_node_1 = GMT_IJ (header, row, 0);		/* Start of row in _____IIII layout not counting ____*/
 				left_node_2 = 2 * left_node_1;			/* Start of same row in _I_I_I... layout */
 				left_node_1 += offset;				/* Move past length of all ____... */
-				for (col_1 = 0, col_2 = 1; col_1 < header->nx; col_1++, col_2 += 2) {
+				for (col_1 = 0, col_2 = 1; col_1 < header->mx; col_1++, col_2 += 2) {
 					data[left_node_2+col_2] = data[left_node_1+col_1];
 					data[left_node_1+col_1] = 0.0f;	/* Set the Real component to zero */
 				}
@@ -459,9 +461,9 @@ void GMT_grd_mux_demux (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 			/* One advantage is that the padding is all zero by virtue of the allocation */
 			array = GMT_memory_aligned (GMT, NULL, header->size, float);
 			offset = header->size / 2;	/* Position of 1st row in imag portion of RRRR...IIII... */
-			for (row = 0; row < header->ny; row++) {	/* Going from first to last row */
-				for (col = 0; col < header->nx; col++) {
-					ij = GMT_IJP (header, row, col);	/* Position of an 'R' in the RRRRR portion */
+			for (row = 0; row < header->my; row++) {	/* Going from first to last row */
+				for (col = 0; col < header->mx; col++) {
+					ij = GMT_IJ (header, row, col);	/* Position of an 'R' in the RRRRR portion */
 					ij2 = 2 * ij;
 					array[ij] = data[ij2++];
 					array[ij+offset] = data[ij2];
@@ -472,10 +474,10 @@ void GMT_grd_mux_demux (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 		}
 		else if (header->complex_mode & GMT_GRID_IS_COMPLEX_REAL) {
 			/* Here we have R_R_R_R_... and want RRRRRR..._______  */
-			for (row = 0; row < header->ny; row++) {	/* Doing from first to last row */
-				left_node_1 = GMT_IJP (header, row, 0);	/* Start of row in RRRRR... */
+			for (row = 0; row < header->my; row++) {	/* Doing from first to last row */
+				left_node_1 = GMT_IJ (header, row, 0);	/* Start of row in RRRRR... */
 				left_node_2 = 2 * left_node_1;		/* Start of same row in R_R_R_R... layout */
-				for (col_1 = col_2 = 0; col_1 < header->nx; col_1++, col_2 += 2) {
+				for (col_1 = col_2 = 0; col_1 < header->mx; col_1++, col_2 += 2) {
 					data[left_node_1+col_1] = data[left_node_2+col_2];
 				}
 			}
@@ -484,11 +486,11 @@ void GMT_grd_mux_demux (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 		}
 		else {	/* Here we have _I_I_I_I and want _____...IIIII */
 			offset = header->size / 2;	/* Position of 1st row in imag portion of ____...IIII... */
-			for (row = header->ny; row > 0; row--) {	/* Going from last to first row */
-				left_node_1 = GMT_IJP (header, row, 0);	/* Start of row in _____IIII layout not counting ____*/
+			for (row = header->my; row > 0; row--) {	/* Going from last to first row */
+				left_node_1 = GMT_IJ (header, row, 0);	/* Start of row in _____IIII layout not counting ____*/
 				left_node_2 = 2 * left_node_1;		/* Start of same row in _I_I_I... layout */
 				left_node_1 += offset;			/* Move past length of all ____... */
-				for (col = header->nx, col_1 = col - 1, col_2 = 2*col - 1; col > 0; col--, col_1--, col_2 -= 2) { /* Go from right to left */
+				for (col = header->mx, col_1 = col - 1, col_2 = 2*col - 1; col > 0; col--, col_1--, col_2 -= 2) { /* Go from right to left */
 					data[left_node_1+col_1] = data[left_node_2+col_2];
 				}
 			}

@@ -104,7 +104,8 @@ enum Grdfft_operators {
 	GRDFFT_FILTER_BW	   ,
 	GRDFFT_FILTER_COS	   ,
 	GRDFFT_SPECTRUM		   ,
-	GRDFFT_ISOSTASY		   };
+	GRDFFT_ISOSTASY		   ,
+	GRDFFT_NOTHING		   };
 
 #define	MGAL_AT_45	980619.9203 	/* Moritz's 1980 IGF value for gravity in mGal at 45 degrees latitude */
 
@@ -775,7 +776,7 @@ int GMT_grdfft_parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_I
 #endif
 #ifdef DEBUG
 			case '=':	/* Do nothing */
-				add_operation (GMT, Ctrl, -1, 1, par);
+				add_operation (GMT, Ctrl, GRDFFT_NOTHING, 1, par);
 				if (opt->arg[0] == '+') show_n = true;
 				break;
 #endif
@@ -933,6 +934,8 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 				status = do_spectrum (GMT, Grid[0], Grid[1], &Ctrl->par[par_count], Ctrl->E.give_wavelength, Ctrl->E.km, Ctrl->G.file, K);
 				if (status < 0) Return (status);
 				par_count += status;
+				break;
+			case GRDFFT_NOTHING:
 				break;
 		}
 	}
