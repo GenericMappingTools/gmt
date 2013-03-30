@@ -1496,7 +1496,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 		/* REGRESSION ON REPORTED VS RECOMPUTED FAA AND MAG ANOMALIES */
 		if (do_regression && (M.bit_pattern[0] & (1 << MGD77_GOBS) &&  M.bit_pattern[0] & (1 << MGD77_FAA))) {
 			/* CHECK FAA REFERENCE MODEL */
-			for (m=0; m<(1+((M.bit_pattern[0] & (1 << MGD77_EOT))>0)); m++) { /* If cruise stores eot then run regression twice */
+			for (m=0; m < (unsigned int)(1+((M.bit_pattern[0] & (1 << MGD77_EOT))>0)); m++) { /* If cruise stores eot then run regression twice */
 				n_alloc = GMT_CHUNK;
 				new_anom = GMT_memory (GMT, NULL, n_alloc, double);
 				old_anom = GMT_memory (GMT, NULL, n_alloc, double);
