@@ -1620,7 +1620,7 @@ void grd_ISFINITE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMA
 	uint64_t node;
 	float a = 0.0f;
 
-	if (stack[last]->constant) a = isfinite (stack[last]->factor);
+	if (stack[last]->constant) a = (float)isfinite (stack[last]->factor);
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : isfinite (stack[last]->G->data[node]);
 }
 
@@ -1630,7 +1630,7 @@ void grd_ISNAN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 	uint64_t node;
 	float a = 0.0f;
 
-	if (stack[last]->constant) a = GMT_is_fnan (stack[last]->factor);
+	if (stack[last]->constant) a = (float)GMT_is_fnan (stack[last]->factor);
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : GMT_is_fnan (stack[last]->G->data[node]);
 }
 

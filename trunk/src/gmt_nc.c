@@ -213,7 +213,7 @@ void set_optimal_chunksize (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	 * Do NOT set n = floor (d / N), for example 128 = floor (257 / 2). */
 
 	double chunksize[2] = {128, 128};                            /* default min chunksize */
-	const size_t min_chunk_pixels = chunksize[0] * chunksize[1]; /* min pixel count per chunk */
+	const size_t min_chunk_pixels = (size_t)(chunksize[0] * chunksize[1]); /* min pixel count per chunk */
 
 	if (GMT->current.setting.io_nc4_chunksize[0] == k_netcdf_io_classic)
 		/* no chunking with classic model */
@@ -1235,7 +1235,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 		io_nc_grid (GMT, header, dim, origin, header->stride, k_get_netcdf, pgrid + header->data_offset);
 	else {
 		/* read grid in two parts */
-		unsigned stride_or_width = header->stride != 0 ? header->stride : width;
+		unsigned int stride_or_width = header->stride != 0 ? (unsigned int)header->stride : (unsigned int)width;
 		io_nc_grid (GMT, header, dim, origin, stride_or_width, k_get_netcdf, pgrid + header->data_offset);
 		io_nc_grid (GMT, header, dim2, origin2, stride_or_width, k_get_netcdf, pgrid + header->data_offset + dim[1]);
 	}
@@ -1266,7 +1266,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 		unsigned col;
 		for (col = 0; col < width; col ++) {
 			if (adj_nan_value && p_data[col] == (float)header->nan_value) { /* cast to avoid round-off errors */
-				p_data[col] = NAN;
+				p_data[col] = (float)NAN;
 				continue;
 			}
 			else if (!isnan (p_data[col])) {

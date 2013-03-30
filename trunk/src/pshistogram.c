@@ -233,7 +233,7 @@ double plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETT
 				y[2] = (double)F->boxh[ibox];
 			y[3] = y[2];
 			if (F->cumulative)
-				area = F->boxh[ibox];	/* Just pick up the final bin as it has the entire sum */
+				area = (double)F->boxh[ibox];	/* Just pick up the final bin as it has the entire sum */
 			else
 				area += F->boxh[ibox];
 

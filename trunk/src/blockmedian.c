@@ -184,8 +184,8 @@ void median_output (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, uint64_t fi
 			}
 			if (k == 0 && emode) {	/* Return record number of median, selecting the high or the low value since it is a tie */
 				way = (data[node].a[BLK_Z] >= data[node1].a[BLK_Z]) ? +1 : -1;
-				if (emode & BLK_DO_INDEX_HI) extra[3] = (way == +1) ? data[node].src_id : data[node1].src_id;
-				else extra[3] = (way == +1) ? data[node1].src_id : data[node].src_id;
+				if (emode & BLK_DO_INDEX_HI) extra[3] = (way == +1) ? (double)data[node].src_id : (double)data[node1].src_id;
+				else extra[3] = (way == +1) ? (double)data[node1].src_id : (double)data[node].src_id;
 			}
 		}
 		else {
@@ -194,7 +194,7 @@ void median_output (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, uint64_t fi
 				out[GMT_X] = data[node].a[GMT_X];
 				out[GMT_Y] = data[node].a[GMT_Y];
 			}
-			if (k == 0 && emode) extra[3] = data[node].src_id;	/* Return record number of median */
+			if (k == 0 && emode) extra[3] = (double)data[node].src_id;	/* Return record number of median */
 		}
 	}
 	out[GMT_Z] = extra[k_for_xy];	/* The desired quantile is passed via z */
