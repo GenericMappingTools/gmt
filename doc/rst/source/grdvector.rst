@@ -84,13 +84,15 @@ theta). **grdvector** is basically a short-hand for using 2 calls to
 .. include:: explain_-R.rst_
 
 **-S**\ [**l**\ ]\ *scale*
-    Sets scale for vector length in data units per distance measurement
+    Sets scale for Cartesian vector length in data units per distance measurement
     unit [1]. Append **c**, **i**, or **p** to indicate the measurement
     unit (cm, inch,or point). Prepend **l** to indicate a fixed length
-    for all vectors.
+    for all vectors.  For Geographic data, give scale in dat units per
+    km.
+
 **-T**
-    Means azimuth should be converted to angles based on the selected
-    map projection. 
+    Means azimuth of Cartesian data sets should be adjusted for different scales
+    in the x- and y-directions [Leave alone].
 
 .. include:: explain_-U.rst_
 
@@ -133,6 +135,11 @@ stick plot, scale vector magnitudes so that 10 units equal 1 inch, and
 center vectors on the node locations, run
 
     grdvector r.nc theta.nc **-Jx**\ 5\ **c** -A -Q0.1i+e+jc **-S**\ 10\ **i** > gradient.ps
+
+To plot a geographic data sets given the files com_x.nc and comp_y.nc,
+using a scale of 200 km per data unit, try
+
+grdvector comp_x.nc comp_y.nc **-JH**\ 0/20\ **c** -Q0.1i+e+jc **-S**\ 200 > globe.ps
 
 `See Also <#toc9>`_
 -------------------
