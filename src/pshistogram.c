@@ -391,7 +391,7 @@ int GMT_pshistogram_parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, 
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0, mode;
+	unsigned int n_errors = 0, n_files = 0, mode = 0;
 	int sval;
 	char *c = NULL;
 	struct GMT_OPTION *opt = NULL;

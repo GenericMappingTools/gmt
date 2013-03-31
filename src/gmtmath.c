@@ -153,7 +153,7 @@ void Free_gmtmath_Ctrl (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *C) {	/* Deall
 
 bool decode_columns (struct GMT_CTRL *GMT, char *txt, bool *skip, uint64_t n_col, uint64_t t_col)
 {
-	uint64_t i, start, stop, col;
+	uint64_t i, start, stop;
 	unsigned int pos;
 	char p[GMT_BUFSIZ];
 
@@ -171,7 +171,7 @@ bool decode_columns (struct GMT_CTRL *GMT, char *txt, bool *skip, uint64_t n_col
 	}
 	else {	/* Set the selected columns */
 		for (i = 0; i < n_col; i++) skip[i] = true;
-		pos = 0, col = 0;
+		pos = 0;
 		while ((GMT_strtok (txt, ",", &pos, p))) {
 			if (strchr (p, '-'))
 				sscanf (p, "%" PRIu64 "-%" PRIu64, &start, &stop);
