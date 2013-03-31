@@ -749,7 +749,10 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 					break;
 				case GMT_SYMBOL_GEOVECTOR:
 					GMT_init_vector_param (GMT, &S);	/* Update vector head parameters */
-					S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
+					if (S.v.status & GMT_VEC_OUTLINE2)
+						S.v.v_width = (float)(S.v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
+					else
+						S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 					data[n].dim[0] = in[ex1+S.read_size];	/* direction */
 					data[n].dim[1] = in[ex2+S.read_size];	/* length */
 					data[n].x = in[GMT_X];			/* Revert to longitude and latitude */

@@ -129,7 +129,7 @@ struct GMT_VECT_ATTR {
 	float h_width;		/* Width of vector head in inches */
 	float pole[2];		/* Longitude and latitude of geovector pole */
 	float scale;		/* Converts inches to spherical degrees */
-	struct GMT_PEN pen;	/* Pen for outline of head [NOT USED YET] */
+	struct GMT_PEN pen;	/* Pen for outline of head */
 	struct GMT_FILL fill;	/* Fill for head [USED IN PSROSE] */
 };
 

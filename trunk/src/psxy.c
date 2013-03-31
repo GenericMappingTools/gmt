@@ -707,7 +707,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 	if (S.symbol == GMT_SYMBOL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == GMT_SYMBOL_MARC ) {	/* One of the vector symbols */
 		if ((S.v.status & GMT_VEC_FILL) == 0) Ctrl->G.active = false;	/* Want to fill so override -G*/
 		if (S.v.status & GMT_VEC_FILL2) current_fill = S.v.fill;	/* Override -G<fill> (if set) with specified head fill */
-		if (S.v.status & GMT_VEC_OUTLINE2) current_pen = S.v.pen, Ctrl->W.active = true;	/* Override -W (if set) with specified vector pen */
+		//if (S.v.status & GMT_VEC_OUTLINE2) current_pen = S.v.pen, Ctrl->W.active = true;	/* Override -W (if set) with specified vector pen */
 	}
 	if (penset_OK) GMT_setpen (GMT, &current_pen);
 
@@ -984,7 +984,10 @@ int GMT_psxy (void *V_API, int mode, void *args)
 					break;
 				case GMT_SYMBOL_GEOVECTOR:
 					GMT_init_vector_param (GMT, &S);	/* Update vector head parameters */
-					S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
+					if (S.v.status & GMT_VEC_OUTLINE2)
+						S.v.v_width = (float)(S.v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
+					else
+						S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 					GMT_geo_vector (GMT, in[GMT_X], in[GMT_Y], in[ex1+S.read_size], in[ex2+S.read_size], &S);
 					break;
 				case GMT_SYMBOL_MARC:

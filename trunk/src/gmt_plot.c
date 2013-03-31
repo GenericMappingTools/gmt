@@ -4639,15 +4639,15 @@ void gmt_geo_vector_greatcircle (struct GMT_CTRL *GMT, double lon0, double lat0,
 
 	/* Get array of lon,lat points that defines the arc */
 	
-	n1 = (unsigned int)gmt_great_circle_arc (GMT, Ax, Bx, 0.0, C.longway, S, &xp, &yp);	/* Draw the (possibly shortened) arc */
+	n1 = gmt_great_circle_arc (GMT, Ax, Bx, 0.0, C.longway, S, &xp, &yp);	/* Draw the (possibly shortened) arc */
 
-	/* Plotting starts here, under gsave/grestore protection */
-	
-	PSL_command (GMT->PSL, "V\n");
-	PSL_setlinewidth (GMT->PSL, arc_width * PSL_POINTS_PER_INCH);
+	/* Plotting starts here, with the heads under gsave/grestore protection */
 	
 	GMT_geo_line (GMT, xp, yp, n1);	/* Draw the arc with current pen */
 	GMT_free (GMT, xp);	GMT_free (GMT, yp);	/* Done with arc */
+	
+	PSL_command (GMT->PSL, "V\n");
+	PSL_setlinewidth (GMT->PSL, arc_width * PSL_POINTS_PER_INCH);
 	
 	if (heads) { /* Get half-angle at head and possibly change pen */
 		da = 0.5 * S->v.v_angle;	/* Half-opening angle at arrow head */
@@ -4673,14 +4673,14 @@ void gmt_geo_vector_greatcircle (struct GMT_CTRL *GMT, double lon0, double lat0,
 		}
 		else
 			GMT_geo_to_cart (GMT, mlat, mlon, P, true);	/* Start from (adjusted) mid point instead */
-		n1 = (unsigned int)gmt_great_circle_arc (GMT, P, C.A, 0.0, false, S, &xp, &yp);	/* Compute great circle arc from P to A */
+		n1 = gmt_great_circle_arc (GMT, P, C.A, 0.0, false, S, &xp, &yp);	/* Compute great circle arc from P to A */
 		if (side != -1) {	/* Want to draw right side of arrow */
 			GMT_get_point_from_r_az (GMT, olon[0], olat[0], dr[0]+off[0], oaz[0]-da, &tlon, &tlat);	/* End point of arrow on right side */
 			GMT_geo_to_cart (GMT, tlat, tlon, P, true);
 		}
 		else
 			GMT_geo_to_cart (GMT, mlat, mlon, P, true);	/* End at (adjusted) mid point instead */
-		n2 = (unsigned int)gmt_great_circle_arc (GMT, C.A, P, 0.0, false, S, &xp2, &yp2);	/* Compute great circle arc from A to P */
+		n2 = gmt_great_circle_arc (GMT, C.A, P, 0.0, false, S, &xp2, &yp2);	/* Compute great circle arc from A to P */
 		add = (side == 0) ? 1 : 0;	/* Need to add mid point explicitly */
 		n_alloc = n = n1 + n2 + add;
 		GMT_malloc2 (GMT, xp, yp, 0U, &n_alloc, double);	/* Allocate space for total path */
@@ -4715,14 +4715,14 @@ void gmt_geo_vector_greatcircle (struct GMT_CTRL *GMT, double lon0, double lat0,
 		}
 		else
 			GMT_geo_to_cart (GMT, mlat, mlon, P, true);	/* Start from (adjusted)mid point instead */
-		n1 = (unsigned int)gmt_great_circle_arc (GMT, P, C.B, 0.0, false, S, &xp, &yp);	/* Compute great circle arc from P to B */
+		n1 = gmt_great_circle_arc (GMT, P, C.B, 0.0, false, S, &xp, &yp);	/* Compute great circle arc from P to B */
 		if (side != -1) {	/* Want to draw right side of arrow */
 			GMT_get_point_from_r_az (GMT, olon[1], olat[1], dr[1]+off[1], oaz[1]-da, &tlon, &tlat);	/* Start point of arrow on other side */
 			GMT_geo_to_cart (GMT, tlat, tlon, P, true);
 		}
 		else
 			GMT_geo_to_cart (GMT, mlat, mlon, P, true);	/* End at (adjusted) mid point instead */
-		n2 = (unsigned int)gmt_great_circle_arc (GMT, C.B, P, 0.0, false, S, &xp2, &yp2);	/* Compute great circle arc from B to P */
+		n2 = gmt_great_circle_arc (GMT, C.B, P, 0.0, false, S, &xp2, &yp2);	/* Compute great circle arc from B to P */
 		add = (side == 0) ? 1 : 0;	/* Need to add mid point explicitly */
 		n_alloc = n = n1 + n2 + add;
 		GMT_malloc2 (GMT, xp, yp, 0U, &n_alloc, double);	/* Allocate space for total path */
