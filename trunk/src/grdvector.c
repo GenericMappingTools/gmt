@@ -121,10 +121,11 @@ int GMT_grdvector_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Modify vector attributes [Default gives stick-plot].\n");
 	GMT_vector_syntax (API->GMT, 15);
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Set scale for vector length in data units per %s [1].\n", API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+	GMT_Message (API, GMT_TIME_NONE, "\t-S Set scale for Cartesian vector lengths in data units per %s [1].\n", API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append c, i, or p to indicate cm, inch, or points as the distance unit.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, prepend l to indicate a fixed length for all vectors.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Means azimuth should be converted to angles based on map projection.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For Geographic vectors, set scale in data units per km.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Transform angles for Cartesian grids when x- and y-scales differ [Leave alone].\n");
 	GMT_Option (API, "U,V");
 	GMT_pen_syntax (API->GMT, 'W', "Set pen attributes.");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default pen attributes [%s].\n", GMT_putpen(API->GMT, API->GMT->current.setting.map_default_pen));
@@ -252,7 +253,7 @@ int GMT_grdvector_parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, stru
 				else
 					Ctrl->S.factor = atof (opt->arg);
 				break;
-			case 'T':	/* Convert azimuths */
+			case 'T':	/* Rescale Cartesian angles */
 				Ctrl->T.active = true;
 				break;
 			case 'W':	/* Set line attributes */
@@ -294,11 +295,11 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 {
 	unsigned int row, col, col_0, row_0, d_col, d_row, k;
 	int error = 0;
-	bool justify;
+	bool justify, Geographic;
 	
 	uint64_t ij;
 
-	double tmp, x, y, plot_x, plot_y, x_off, y_off, f;
+	double tmp, x, y, plot_x, plot_y, x_off, y_off, f, h_length, h_width, v_width;
 	double x2, y2, wesn[4], vec_length, vec_azim, scaled_vec_length, c, s, dim[PSL_MAX_DIMS];
 
 	struct GMT_GRID *Grid[2] = {NULL, NULL};
@@ -441,7 +442,11 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 
 	dim[5] = GMT->current.setting.map_vector_shape;	/* These do not change inside the loop */
 	dim[6] = (double)Ctrl->Q.S.v.status;
-	
+	Geographic = (GMT_is_geographic (GMT, GMT_IN));
+	if (Geographic) {
+		v_width = Ctrl->Q.S.v.v_width;	h_length = Ctrl->Q.S.v.h_length;	h_width = Ctrl->Q.S.v.h_width;
+		
+	}
 	for (row = row_0; row < Grid[1]->header->ny; row += d_row) {
 		y = GMT_grd_row_to_y (GMT, row, Grid[0]->header);
 		for (col = col_0; col < Grid[1]->header->nx; col += d_col) {
@@ -459,9 +464,9 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 				else if (vec_length == 0.0) continue;	/* No length = no plotting */
 			}
 			else {	/* Cartesian grids: Compute length and direction */
-				vec_length = hypot (Grid[1]->data[ij], Grid[0]->data[ij]);
+				vec_length = hypot (Grid[GMT_X]->data[ij], Grid[GMT_Y]->data[ij]);
 				if (vec_length == 0.0) continue;
-				vec_azim = atan2d (Grid[1]->data[ij], Grid[0]->data[ij]);
+				vec_azim = atan2d (Grid[GMT_Y]->data[ij], Grid[GMT_X]->data[ij]);
 			}
 
 			x = GMT_grd_col_to_x (GMT, col, Grid[0]->header);
@@ -469,46 +474,58 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 				GMT_map_outside (GMT, x, y);
 				if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;
 			}
-			GMT_geo_to_xy (GMT, x, y, &plot_x, &plot_y);
-
-			if (Ctrl->T.active) {	/* Transform azimuths to plot angle */
-				if (!Ctrl->Z.active) vec_azim = 90.0 - vec_azim;
-				vec_azim = GMT_azim_to_angle (GMT, x, y, 0.1, vec_azim);
-			}
-			vec_azim *= D2R;
-			/* vec_azim is now in radians */
-			scaled_vec_length = (Ctrl->S.constant) ? Ctrl->S.factor : vec_length * Ctrl->S.factor;
-			/* scaled_vec_length is now in inches */
-			sincos (vec_azim, &s, &c);
-			x2 = plot_x + scaled_vec_length * c;
-			y2 = plot_y + scaled_vec_length * s;
-
-			justify = GMT_vec_justify (Ctrl->Q.S.v.status);	/* Return justification as 0-2 */
-			if (justify) {	/* Justify vector at center, or tip [beginning] */
-				x_off = justify * 0.5 * (x2 - plot_x);	y_off = justify * 0.5 * (y2 - plot_y);
-				plot_x -= x_off;	plot_y -= y_off;
-				x2 -= x_off;		y2 -= y_off;
-			}
-
+			
 			if (Ctrl->C.active) {	/* Update pen and fill color based on the vector length */
 				GMT_get_rgb_from_z (GMT, P, vec_length, Ctrl->G.fill.rgb);
 				GMT_rgb_copy (Ctrl->W.pen.rgb, Ctrl->G.fill.rgb);
 				GMT_setpen (GMT, &Ctrl->W.pen);
 				if (Ctrl->Q.active) GMT_setfill (GMT, &Ctrl->G.fill, Ctrl->W.active);
 			}
+			scaled_vec_length = (Ctrl->S.constant) ? Ctrl->S.factor : vec_length * Ctrl->S.factor;
+			/* scaled_vec_length is now in inches (Cartesian) or km (Geographic) */
 			
-			if (!Ctrl->Q.active) {	/* Just a line segment */
-				PSL_plotsegment (PSL, plot_x, plot_y, x2, y2);
-				continue;
+			if (Geographic) {	/* Draw great-circle geo-vectors */
+				if (scaled_vec_length < Ctrl->Q.S.v.v_norm) {	/* Scale arrow attributes down with length */
+					f = scaled_vec_length / Ctrl->Q.S.v.v_norm;
+					Ctrl->Q.S.v.v_width *= f;	Ctrl->Q.S.v.h_length *= f;	Ctrl->Q.S.v.h_width *= f;
+				}
+				GMT_geo_vector (GMT, x, y, vec_azim, scaled_vec_length, &Ctrl->Q.S);
+				if (scaled_vec_length < Ctrl->Q.S.v.v_norm) {	/* Reset arrow attributes */
+					Ctrl->Q.S.v.v_width = v_width;	Ctrl->Q.S.v.h_length = h_length;	Ctrl->Q.S.v.h_width = h_width;
+				}
 			}
-			/* Must plot a vector */
-			dim[0] = x2; dim[1] = y2;
-			dim[2] = Ctrl->Q.S.v.v_width;	dim[3] = Ctrl->Q.S.v.h_length;	dim[4] = Ctrl->Q.S.v.h_width;
-			if (scaled_vec_length < Ctrl->Q.S.v.v_norm) {	/* Scale arrow attributes down with length */
-				f = scaled_vec_length / Ctrl->Q.S.v.v_norm;
-				for (k = 2; k <= 4; k++) dim[k] *= f;
+			else {	/* Draw straight Cartesian vectors */
+				GMT_geo_to_xy (GMT, x, y, &plot_x, &plot_y);
+				if (Ctrl->T.active) {	/* Transform azimuths to plot angle */
+					if (!Ctrl->Z.active) vec_azim = 90.0 - vec_azim;
+					vec_azim = GMT_azim_to_angle (GMT, x, y, 0.1, vec_azim);
+				}
+				vec_azim *= D2R;
+				/* vec_azim is now in radians */
+				sincos (vec_azim, &s, &c);
+				x2 = plot_x + scaled_vec_length * c;
+				y2 = plot_y + scaled_vec_length * s;
+
+				justify = GMT_vec_justify (Ctrl->Q.S.v.status);	/* Return justification as 0-2 */
+				if (justify) {	/* Justify vector at center, or tip [beginning] */
+					x_off = justify * 0.5 * (x2 - plot_x);	y_off = justify * 0.5 * (y2 - plot_y);
+					plot_x -= x_off;	plot_y -= y_off;
+					x2 -= x_off;		y2 -= y_off;
+				}
+
+				if (!Ctrl->Q.active) {	/* Just a line segment */
+					PSL_plotsegment (PSL, plot_x, plot_y, x2, y2);
+					continue;
+				}
+				/* Must plot a vector */
+				dim[0] = x2; dim[1] = y2;
+				dim[2] = Ctrl->Q.S.v.v_width;	dim[3] = Ctrl->Q.S.v.h_length;	dim[4] = Ctrl->Q.S.v.h_width;
+				if (scaled_vec_length < Ctrl->Q.S.v.v_norm) {	/* Scale arrow attributes down with length */
+					f = scaled_vec_length / Ctrl->Q.S.v.v_norm;
+					for (k = 2; k <= 4; k++) dim[k] *= f;
+				}
+				PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);
 			}
-			PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);
 		}
 	}
 

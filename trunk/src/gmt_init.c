@@ -196,7 +196,7 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 			GMT_message (GMT, "\t     Use lower case w, e, s, n, z to draw & tick but not to annotate those axes.\n");
 			GMT_message (GMT, "\t     Z+ will also draw a 3-D box.\n");
 			GMT_message (GMT, "\t   Append +g<fill> to pain the inside of the map region before plotting [no fill].\n");
-			GMT_message (GMT, "\t   Append +o<plon>/<plat> to draw oblique gridlines about this pole [regular gridlines].\n");
+			GMT_message (GMT, "\t   Append +o[<plon>/<plat>] to draw oblique gridlines about this pole [regular gridlines].\n");
 			GMT_message (GMT, "\t   Log10 axis: Append l to annotate log10 (x) or p for 10^(log10(x)) [Default annotates x].\n");
 			GMT_message (GMT, "\t   Power axis: append p to annotate x at equidistant pow increments [Default is nonlinear].\n");
 			GMT_message (GMT, "\t   See psbasemap man pages for more details and examples of all settings.\n");
@@ -887,7 +887,7 @@ void GMT_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode)
 	if (mode & 1) GMT_message (GMT, "\t     +j<just> to justify vector at (b)eginning [default], (e)nd, or (c)enter.\n");
 	GMT_message (GMT, "\t     +l to only draw left side of heads [both].\n");
 	GMT_message (GMT, "\t     +n<norm> to shrink attributes if vector length < <norm> [none].\n");
-	GMT_message (GMT, "\t     +o<plon/plat> sets pole for great or small circles; only give length via input.\n");
+	GMT_message (GMT, "\t     +o[<plon/plat>] sets pole [north pole] for great or small circles; only give length via input.\n");
 	if (mode & 4) GMT_message (GMT, "\t     +p[-][<pen>] to set pen attributes, prepend - to turn off head outlines [default pen and outline].\n");
 	GMT_message (GMT, "\t     +q if start and stop opening angle is given instead of (azimuth,length) on input.\n");
 	GMT_message (GMT, "\t     +r to only draw right side of heads [both].\n");
@@ -7571,11 +7571,15 @@ int GMT_parse_vector (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *S)
 				break;
 			case 'o':	/* Sets oblique pole for small or great circles */
 				S->v.status |= GMT_VEC_POLE;
-				if ((j = GMT_Get_Value (GMT->parent, &p[1], pole)) != 2) {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +o<plon>/<plat> modifier %c\n", &p[1]);
+				if (!p[1]) {	/* Gave no pole, use North pole */
+					S->v.pole[GMT_X] = 0.0f;	S->v.pole[GMT_Y] = 90.0f;
+				}
+				else if ((j = GMT_Get_Value (GMT->parent, &p[1], pole)) != 2) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +o[<plon>/<plat>] modifier %c\n", &p[1]);
 					error++;
 				}
-				S->v.pole[GMT_X] = (float)pole[GMT_X];	S->v.pole[GMT_Y] = (float)pole[GMT_Y];
+				else {	/* Successful parsing of pole */
+					S->v.pole[GMT_X] = (float)pole[GMT_X];	S->v.pole[GMT_Y] = (float)pole[GMT_Y];}
 				break;
 			case 'p':	/* Vector pen and head outline +p[-][<pen>] */
 				p_opt = true;	/* Marks that +p was used */
