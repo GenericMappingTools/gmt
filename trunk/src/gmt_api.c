@@ -4941,7 +4941,7 @@ double GMT_FFT_Wavenumber_ (uint64_t *k, unsigned int *mode, void *v_K)
 
 int GMTAPI_FFT_1d (struct GMTAPI_CTRL *API, struct GMT_DATASET *D, int direction, unsigned int mode, struct GMT_FFT_WAVENUMBER *K)
 {	/* The 1-D FFT operating on DATASET segments */
-	int status;
+	int status = 0;
 	uint64_t seg, row, tbl, last = 0, col = 0;
 	float *data = NULL;
 	struct GMT_DATASEGMENT *S = NULL;

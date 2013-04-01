@@ -364,7 +364,7 @@ void gmt_fft_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_FFT_
 	 * width is relative width in percent of the margin that will be tapered [100]. */
 	int il1, ir1, il2, ir2, jb1, jb2, jt1, jt2, im, jm, j, end_i, end_j, min_i, min_j, one;
 	int i, i_data_start, j_data_start, mx, i_width, j_width, width_percent;
-	unsigned int ju, n_components = 1, start_component = 0, stop_component = 0, component;
+	unsigned int ju, n_components, start_component = 0, stop_component = 0, component;
 	uint64_t off;
 	char *method[2] = {"edge-point", "mirror"}, *comp[2] = {"real", "imaginary"};
 	float *datac = Grid->data, scale, cos_wt;
