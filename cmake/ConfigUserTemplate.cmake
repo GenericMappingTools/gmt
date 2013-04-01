@@ -55,6 +55,9 @@
 # Set location of single precision FFTW (can be root directory or path to header file) [auto]:
 #set (FFTW3_ROOT "fftw_install_prefix")
 
+# List extra sub-dirs of 'src' with a CMakeList.txt to build non-module codes that link against gmt
+#set(EXTRA_BUILD_DIRS apidemo)
+
 ##
 ## Section 2: GMT features
 ##
