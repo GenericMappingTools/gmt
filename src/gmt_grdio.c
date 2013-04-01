@@ -2150,7 +2150,7 @@ void GMT_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode
 	 * components coefficients are returned.
 	 */
 
-	unsigned int col, row, one_or_zero, n_components = 1, start_component = 0, stop_component = 0, component;
+	unsigned int col, row, one_or_zero, n_components, start_component = 0, stop_component = 0, component;
 	uint64_t ij, offset;
 	bool is_complex = false;
 	double x_half_length, one_on_xhl, y_half_length, one_on_yhl;

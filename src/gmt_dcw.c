@@ -100,7 +100,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	 * mode = GMT_DCW_DUMP		: Dump the polygons
 	 * mode = GMT_DCW_EXTRACT	: Return a dataset structure
 	 */
-	int ks, j, retval, ncid, xvarid, yvarid, id;
+	int ks, j = 0, retval, ncid, xvarid, yvarid, id;
 	int64_t first, last;
 	size_t np, max_np = 0U;
 	uint64_t k, seg, n_segments;
