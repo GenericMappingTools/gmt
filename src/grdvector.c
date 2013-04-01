@@ -487,11 +487,13 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 			if (Geographic) {	/* Draw great-circle geo-vectors */
 				if (scaled_vec_length < Ctrl->Q.S.v.v_norm) {	/* Scale arrow attributes down with length */
 					f = scaled_vec_length / Ctrl->Q.S.v.v_norm;
-					Ctrl->Q.S.v.v_width *= f;	Ctrl->Q.S.v.h_length *= f;	Ctrl->Q.S.v.h_width *= f;
+					Ctrl->Q.S.v.v_width *= (float)f;	Ctrl->Q.S.v.h_length *= (float)f;
+					Ctrl->Q.S.v.h_width *= (float)f;
 				}
 				GMT_geo_vector (GMT, x, y, vec_azim, scaled_vec_length, &Ctrl->Q.S);
 				if (scaled_vec_length < Ctrl->Q.S.v.v_norm) {	/* Reset arrow attributes */
-					Ctrl->Q.S.v.v_width = v_width;	Ctrl->Q.S.v.h_length = h_length;	Ctrl->Q.S.v.h_width = h_width;
+					Ctrl->Q.S.v.v_width = (float)v_width;	Ctrl->Q.S.v.h_length = (float)h_length;
+					Ctrl->Q.S.v.h_width = (float)h_width;
 				}
 			}
 			else {	/* Draw straight Cartesian vectors */
