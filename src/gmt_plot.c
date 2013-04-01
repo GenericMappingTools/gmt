@@ -4244,8 +4244,7 @@ uint64_t gmt_small_circle_arc (struct GMT_CTRL *GMT, double *A, double *B, doubl
 	double X[3], R[3][3], R0[3][3], w, *xx = NULL, *yy = NULL;
 	
 	if (GMT_IS_ZERO (step)) step = GMT->current.map.path_step;	/* Use default map-step if given as 0 */
-	n = lrint (ceil (fabs (rot)
-	 / step)) + 1;	/* Number of segments needed for smooth curve from A to B inclusive */
+	n = lrint (ceil (fabs (rot) / step)) + 1;	/* Number of segments needed for smooth curve from A to B inclusive */
 	step = D2R * rot / (n - 1);	/* Adjust step for exact fit, convert to radians */
 	GMT_malloc2 (GMT, xx, yy, n, NULL, double);	/* Allocate space for arrays */
 	gmt_init_rot_matrix (R0, P);			/* Get partial rotation matrix since no actual angle is applied yet */
@@ -4258,6 +4257,51 @@ uint64_t gmt_small_circle_arc (struct GMT_CTRL *GMT, double *A, double *B, doubl
 	}
 	*xp = xx;	*yp = yy;
 	return (n);
+}
+
+void gmt_circle_pen_poly (struct GMT_CTRL *GMT, double *A, double *B, bool longway, double rot, struct GMT_PEN *pen, struct GMT_SYMBOL *S, struct GMT_CIRCLE *C)
+{	/* Given vectors A and B, return a small circle polygon path sampled every step that approximates a pen of given width
+ 	 * drawn on the map.  Use small circle pole and its opening rot */
+	uint64_t k, n, n2;
+	double Ai[3], Ao[3], Px[3], X[3], R[3][3], R0[3][3], w, step;
+	struct GMT_DATASEGMENT *L = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
+	
+	GMT_cross3v (GMT, A, C->P, Px);	/* Px is Pole to plane through A and P  */
+	GMT_normalize3v (GMT, Px);			/* Rotation pole unit vector */
+	/* Rotate A back/fore by rotation angle of +/- pen halfwidth about Px */
+	w = 0.5 * pen->width * GMT->session.u2u[GMT_PT][GMT_INCH] * S->v.scale;		/* Half-width of pen in degrees */
+	GMT_make_rot_matrix2 (GMT, Px, +w, R);		/* Rotation of rot_v degrees about pole P */
+	GMT_matrix_vect_mult (GMT, 3U, R, A, Ai);	/* Get Ai = R * A */
+	GMT_make_rot_matrix2 (GMT, Px, -w, R);		/* Rotation of rot_v degrees about pole P */
+	GMT_matrix_vect_mult (GMT, 3U, R, A, Ao);	/* Get Ao = R * A */
+	if (longway) rot = 360.0 - rot;
+	
+	step = GMT->current.map.path_step;		/* Use default map-step if given as 0 */
+	n = lrint (ceil (fabs (rot) / step)) + 1;	/* Number of segments needed for smooth curve from A to B inclusive */
+	step = D2R * rot / (n - 1);			/* Adjust step for exact fit, convert to radians */
+	GMT_alloc_segment (GMT, L, 2*n+1, 2, true);	/* Allocate polygon to draw filled path */
+	n2 = 2*n-1;
+	gmt_init_rot_matrix (R0, C->P);			/* Get partial rotation matrix since no actual angle is applied yet */
+	for (k = 0; k < n; k++) {	/* March along the arc */
+		w = k * step;					/* Opening angle from A to this point X */
+		GMT_memcpy (R, R0, 9U, double);			/* Get a copy of the "0-angle" rotation matrix */
+		gmt_load_rot_matrix (w, R, C->P);			/* Build the actual rotation matrix for this angle */
+		gmt_matrix_vect_mult (R, Ai, X);		/* Rotate point Ai towards B and get X */
+		GMT_cart_to_geo (GMT, &L->coord[GMT_Y][k], &L->coord[GMT_X][k], X, true);	/* Get lon/lat of this point along arc */
+		gmt_matrix_vect_mult (R, Ao, X);		/* Rotate point Ai towards B and get X */
+		GMT_cart_to_geo (GMT, &L->coord[GMT_Y][n2-k], &L->coord[GMT_X][n2-k], X, true);	/* Get lon/lat of this point along arc */
+	}
+	L->coord[GMT_X][2*n] = L->coord[GMT_X][0];	/* Explicitly close the polygon */
+	L->coord[GMT_Y][2*n] = L->coord[GMT_Y][0];
+	
+	/* Plot pen as a closed filled polygon without outline */
+	PSL_command (GMT->PSL, "V\n");
+	GMT_setpen (GMT, pen);		/* Set pen width just so later setpen's will work */
+	PSL_setfill (GMT->PSL, pen->rgb, 0);	/* Fill, no outline */
+	GMT_geo_polygons (GMT, L);	/* "Draw" the line */
+	PSL_command (GMT->PSL, "U\n");
+	
+	GMT_free_segment (GMT, L);
 }
 
 void gmt_gcircle_sub (struct GMT_CTRL *GMT, double lon0, double lat0, double azimuth, double length, struct GMT_SYMBOL *S, struct GMT_CIRCLE *C)
@@ -4303,6 +4347,12 @@ void gmt_gcircle_sub (struct GMT_CTRL *GMT, double lon0, double lat0, double azi
 			GMT_geo_to_cart (GMT, C->lat[1], C->lon[1], C->B, true);	/* Get B */
 			C->r0 = C->r = d_acosd (GMT_dot3v (GMT, C->A, C->B));		/* Arc length in degrees */
 			break;
+	}
+	GMT_cross3v (GMT, C->A, C->B, C->P);	/* Rotation pole */
+	GMT_normalize3v (GMT, C->P);		/* Rotation pole unit vector */
+
+	if (C->longway) {	/* Want to go the long way */
+		C->P[0] = -C->P[0], C->P[1] = -C->P[1], C->P[2] = -C->P[2];
 	}
 }
 
@@ -4383,18 +4433,20 @@ double GMT_smallcircle_az (struct GMT_CTRL *GMT, double lon0, double lat0, doubl
 	return (az);
 }
 
-void gmt_geo_vector_smallcircle (struct GMT_CTRL *GMT, double lon0, double lat0, double azimuth, double length, struct GMT_SYMBOL *S)
+void gmt_geo_vector_smallcircle (struct GMT_CTRL *GMT, double lon0, double lat0, double azimuth, double length, struct GMT_PEN *ppen, struct GMT_SYMBOL *S)
 {
 	/* Draws a small-circle vector with our without heads etc. */
 
 	uint64_t n1, n2, n, add;
 	int heads, side, justify;
+	int outline = 0;
 	size_t n_alloc;
 	double P[3], Pa[3], Ax[3], Bx[3], Ax2[3], Bx2[3], R[3][3];
 	double dr[2] = {0.0, 0.0}, az[2] = {0.0, 0.0}, oaz[2] = {0.0, 0.0};
 	double da = 0.0, dshift, s, olon[2], olat[2], head_length, arc_width, n_az, arc;
 	double rot[2] = {0.0, 0.0}, rot_v[2] = {0.0, 0.0};
 	double *xp = NULL, *yp = NULL, *xp2 = NULL, *yp2 = NULL;
+	double *rgb = S->v.fill.rgb;
 	struct GMT_CIRCLE C;
 
 	/* We must determine points A and B, whose great-circle connector is the arc we seek to draw */
@@ -4469,21 +4521,24 @@ void gmt_geo_vector_smallcircle (struct GMT_CTRL *GMT, double lon0, double lat0,
 		GMT_memcpy (Ax2, Ax, 3, double);	/* No need to shorten arc at end */
 		GMT_memcpy (Bx2, Bx, 3, double);	/* No need to shorten arc at end */
 	}
-	n1 = (unsigned int)gmt_small_circle_arc (GMT, Ax2, Bx2, 0.0, C.P, C.rot, S, &xp, &yp);	/* Draw the (possibly shortened) arc */
+	
+	gmt_circle_pen_poly (GMT, Ax2, Bx2, false, C.rot, ppen, S, &C);
+	
+	if (!heads) return;	/* All done */
 
-	/* Plotting starts here, under gsave/grestore protection */
-	
 	PSL_command (GMT->PSL, "V\n");
-	PSL_setlinewidth (GMT->PSL, arc_width * PSL_POINTS_PER_INCH);
-	
-	GMT_geo_line (GMT, xp, yp, n1);	/* Draw the arc with current pen */
-	GMT_free (GMT, xp);	GMT_free (GMT, yp);	/* Done with arc */
-	
-	if (heads) { /* Get half-angle at head and possibly change pen */
-		da = 0.5 * S->v.v_angle;	/* Half-opening angle at arrow head */
-		if ((S->v.status & GMT_VEC_OUTLINE) == 0) PSL_command (GMT->PSL, "O0\n");	/* Turn off outline */
-		if ((S->v.status & GMT_VEC_FILL) == 0) PSL_command (GMT->PSL, "FQ\n");	/* Turn off vector head fill */
+	/* Get half-angle at head and possibly change pen */
+	da = 0.5 * S->v.v_angle;	/* Half-opening angle at arrow head */
+	if ((S->v.status & GMT_VEC_OUTLINE) == 0)
+		PSL_command (GMT->PSL, "O0\n");	/* Turn off outline */
+	else {
+		GMT_setpen (GMT, &S->v.pen);
+		outline = 1;
 	}
+	if ((S->v.status & GMT_VEC_FILL) == 0)
+		PSL_command (GMT->PSL, "FQ\n");	/* Turn off vector head fill */
+	else
+		PSL_setfill (GMT->PSL, rgb, outline);
 
 	if (heads & 1) { /* Place arrow head at A */
 		if (C.longway) az[0] += 180.0;
@@ -4578,17 +4633,19 @@ void gmt_geo_vector_smallcircle (struct GMT_CTRL *GMT, double lon0, double lat0,
 	PSL_command (GMT->PSL, "U\n");
 }
 
-void gmt_geo_vector_greatcircle (struct GMT_CTRL *GMT, double lon0, double lat0, double azimuth, double length, struct GMT_SYMBOL *S)
+void gmt_geo_vector_greatcircle (struct GMT_CTRL *GMT, double lon0, double lat0, double azimuth, double length, struct GMT_PEN *ppen, struct GMT_SYMBOL *S)
 {
 	/* Draws a great-circle vector with our without heads, etc. */
 
 	uint64_t n1, n2, n, add;
 	int heads, side, justify;
+	int outline = 0;
 	size_t n_alloc;
 	double tlon, tlat, mlon, mlat, P[3], Ax[3], Bx[3];
 	double dr[2] = {0.0, 0.0}, az[2] = {0.0, 0.0}, oaz[2] = {0.0, 0.0}, off[2] = {0.0, 0.0};
-	double da = 0.0, dshift, s, olon[2], olat[2], head_length, arc_width;
+	double da = 0.0, dshift, s, olon[2], olat[2], head_length, arc_width, rot;
 	double *xp = NULL, *yp = NULL, *xp2 = NULL, *yp2 = NULL;
+	double *rgb = S->v.fill.rgb;
 	struct GMT_CIRCLE C;
 
 	/* We must determine points A and B, whose great-circle connector is the arc we seek to draw */
@@ -4637,23 +4694,24 @@ void gmt_geo_vector_greatcircle (struct GMT_CTRL *GMT, double lon0, double lat0,
 
 	GMT_memcpy (oaz, az, 2, double);	/* Keep copy of original azimuths */
 
-	/* Get array of lon,lat points that defines the arc */
+	rot = d_acosd (GMT_dot3v (GMT, Ax, Bx));	/* opening angle in degrees */
+	gmt_circle_pen_poly (GMT, Ax, Bx, C.longway, rot, ppen, S, &C);
 	
-	n1 = gmt_great_circle_arc (GMT, Ax, Bx, 0.0, C.longway, S, &xp, &yp);	/* Draw the (possibly shortened) arc */
-
-	/* Plotting starts here, with the heads under gsave/grestore protection */
+	if (!heads) return;	/* All done */
 	
-	GMT_geo_line (GMT, xp, yp, n1);	/* Draw the arc with current pen */
-	GMT_free (GMT, xp);	GMT_free (GMT, yp);	/* Done with arc */
-	
+	/* Get half-angle at head and possibly change pen */
+	da = 0.5 * S->v.v_angle;	/* Half-opening angle at arrow head */
 	PSL_command (GMT->PSL, "V\n");
-	PSL_setlinewidth (GMT->PSL, arc_width * PSL_POINTS_PER_INCH);
-	
-	if (heads) { /* Get half-angle at head and possibly change pen */
-		da = 0.5 * S->v.v_angle;	/* Half-opening angle at arrow head */
-		if ((S->v.status & GMT_VEC_OUTLINE) == 0) PSL_command (GMT->PSL, "O0\n");	/* Turn off outline */
-		if ((S->v.status & GMT_VEC_FILL) == 0) PSL_command (GMT->PSL, "FQ\n");	/* Turn off vector head fill */
+	if ((S->v.status & GMT_VEC_OUTLINE) == 0)
+		PSL_command (GMT->PSL, "O0\n");	/* Turn off outline */
+	else {
+		GMT_setpen (GMT, &S->v.pen);
+		outline = 1;
 	}
+	if ((S->v.status & GMT_VEC_FILL) == 0)
+		PSL_command (GMT->PSL, "FQ\n");	/* Turn off vector head fill */
+	else
+		PSL_setfill (GMT->PSL, rgb, outline);
 
 	if (heads & 1) { /* Place arrow head at A */
 		if (C.longway) az[0] += 180.0;
@@ -4742,7 +4800,7 @@ void gmt_geo_vector_greatcircle (struct GMT_CTRL *GMT, double lon0, double lat0,
 	PSL_command (GMT->PSL, "U\n");
 }
 
-void GMT_geo_vector (struct GMT_CTRL *GMT, double lon0, double lat0, double azimuth, double length, struct GMT_SYMBOL *S)
+void GMT_geo_vector (struct GMT_CTRL *GMT, double lon0, double lat0, double azimuth, double length, struct GMT_PEN *pen, struct GMT_SYMBOL *S)
 {
 	/* GMT_geo_vector takes the location lon0, lat0, azimuth of the vector at that point, and the
 	   length (in km), and and draws the vector using the chosen map projection.  If arrow heads
@@ -4757,9 +4815,9 @@ void GMT_geo_vector (struct GMT_CTRL *GMT, double lon0, double lat0, double azim
 	}
 		
 	if (S->v.status & GMT_VEC_POLE)
-		gmt_geo_vector_smallcircle (GMT, lon0, lat0, azimuth, length, S);
+		gmt_geo_vector_smallcircle (GMT, lon0, lat0, azimuth, length, pen, S);
 	else
-		gmt_geo_vector_greatcircle (GMT, lon0, lat0, azimuth, length, S);
+		gmt_geo_vector_greatcircle (GMT, lon0, lat0, azimuth, length, pen, S);
 }
 
 void GMT_geo_rectangle (struct GMT_CTRL *GMT, double lon, double lat, double width, double height, double azimuth)

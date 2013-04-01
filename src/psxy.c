@@ -504,7 +504,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 	bool polygon, penset_OK = true, not_line, old_is_world;
 	bool get_rgb, read_symbol, clip_set = false, fill_active;
 	bool error_x = false, error_y = false, def_err_xy = false;
-	bool default_outline, outline_active;
+	bool default_outline, outline_active, vector = false;
 	unsigned int set_type, n_needed, n_cols_start = 2, justify, tbl;
 	unsigned int i, n_total_read = 0, j, geometry, read_mode;
 	unsigned int bcol, ex1, ex2, ex3, change, pos2x, pos2y, save_u = false;
@@ -705,9 +705,9 @@ int GMT_psxy (void *V_API, int mode, void *args)
 		GMT->current.io.col_type[GMT_IN][pos2y] = GMT->current.io.col_type[GMT_IN][GMT_Y];
 	}
 	if (S.symbol == GMT_SYMBOL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == GMT_SYMBOL_MARC ) {	/* One of the vector symbols */
-		if ((S.v.status & GMT_VEC_FILL) == 0) Ctrl->G.active = false;	/* Want to fill so override -G*/
-		if (S.v.status & GMT_VEC_FILL2) current_fill = S.v.fill;	/* Override -G<fill> (if set) with specified head fill */
-		//if (S.v.status & GMT_VEC_OUTLINE2) current_pen = S.v.pen, Ctrl->W.active = true;	/* Override -W (if set) with specified vector pen */
+		vector = true;
+		if ((S.v.status & GMT_VEC_FILL) == 0) Ctrl->G.active = false;	/* Want no fill so override -G*/
+		if (S.v.status & GMT_VEC_FILL) S.v.fill = current_fill;		/* Override -G<fill> (if set) with specified head fill */
 	}
 	if (penset_OK) GMT_setpen (GMT, &current_pen);
 
@@ -739,6 +739,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 		if (GMT_Begin_IO (API, set_type, GMT_IN, GMT_HEADER_ON) != GMT_OK) {		/* Enables data input and sets access mode */
 			Return (API->error);
 		}
+		PSL_command (GMT->PSL, "V\n");
 		GMT->current.map.is_world = !(S.symbol == GMT_SYMBOL_ELLIPSE && S.convert_angles);
 		do {	/* Keep returning records until we reach EOF */
 			if ((record = GMT_Get_Record (API, read_mode, NULL)) == NULL) {	/* Read next record, get NULL if special case */
@@ -847,8 +848,13 @@ int GMT_psxy (void *V_API, int mode, void *args)
 			}
 			if (Ctrl->W.mode & 1) GMT_rgb_copy (current_fill.rgb, GMT->session.no_rgb);
 
-			GMT_setfill (GMT, &current_fill, outline_active);
-			GMT_setpen (GMT, &current_pen);
+			if (vector) {
+				if (get_rgb) S.v.fill = current_fill;
+			}
+			else {	/* Vectors do it separately */
+				GMT_setfill (GMT, &current_fill, outline_active);
+				GMT_setpen (GMT, &current_pen);
+			}
 
 			if (S.base_set == 2) {
 				bcol = (S.read_size) ? ex2 : ex1;
@@ -988,7 +994,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 						S.v.v_width = (float)(S.v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 					else
 						S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
-					GMT_geo_vector (GMT, in[GMT_X], in[GMT_Y], in[ex1+S.read_size], in[ex2+S.read_size], &S);
+					GMT_geo_vector (GMT, in[GMT_X], in[GMT_Y], in[ex1+S.read_size], in[ex2+S.read_size], &current_pen, &S);
 					break;
 				case GMT_SYMBOL_MARC:
 					GMT_init_vector_param (GMT, &S);	/* Update vector head parameters */
@@ -1028,6 +1034,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 					break;
 			}
 		} while (true);
+		PSL_command (GMT->PSL, "U\n");
 		
 		if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 			Return (API->error);
@@ -1142,6 +1149,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 
 	if (current_pen.style) PSL_setdash (PSL, NULL, 0);
 	GMT->current.map.is_world = old_is_world;
+	if (vector) PSL->current.linewidth = 0.0;	/* Since we changed things under clip; this will force it to be set next */
 
 	GMT_map_basemap (GMT);
 	GMT_plane_perspective (GMT, -1, 0.0);
