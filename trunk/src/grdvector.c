@@ -102,7 +102,7 @@ int GMT_grdvector_usage (struct GMTAPI_CTRL *API, int level)
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdvector <gridx> <gridy> %s %s [-A]\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-G<fill>] [-I<dx>/<dy>] [-K] [-N] [-O] [-P] [-Q<params>]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-S[l]<scale>[<unit>]] [-T] [%s] [%s] [-W<pen>]\n\t[%s] [%s] [-Z] [%s]\n\t[%s] [%s] [%s]\n\n", 
+	GMT_Message (API, GMT_TIME_NONE, "\t[-S[i|l]<scale>[<unit>]] [-T] [%s] [%s] [-W<pen>]\n\t[%s] [%s] [-Z] [%s]\n\t[%s] [%s] [%s]\n\n", 
 		GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_f_OPT, GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -125,7 +125,8 @@ int GMT_grdvector_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append c, i, or p to indicate cm, inch, or points as the distance unit.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, prepend l to indicate a fixed length for all vectors.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For Geographic vectors, set scale in data units per km.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Transform angles for Cartesian grids when x- and y-scales differ [Leave alone].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Si<scale> to give the reciprocal scale, i.e., %s/ unit or km/unit\n", API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Transform angles for Cartesian grids when x- and y-scles differ [Leave alone].\n");
 	GMT_Option (API, "U,V");
 	GMT_pen_syntax (API->GMT, 'W', "Set pen attributes.");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default pen attributes [%s].\n", GMT_putpen(API->GMT, API->GMT->current.setting.map_default_pen));
@@ -240,6 +241,7 @@ int GMT_grdvector_parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, stru
 			case 'S':	/* Scale */
 				Ctrl->S.active = true;
 				len = strlen (opt->arg) - 1;
+				j = (opt->arg[0] = 'i') ? 1 : 0;
 				if (strchr (GMT_DIM_UNITS, (int)opt->arg[len]))	/* Recognized unit character */
 					Ctrl->S.unit = opt->arg[len];
 				else if (! (opt->arg[len] == '.' || isdigit ((int)opt->arg[len]))) {	/* Not decimal point or digit means trouble */
@@ -251,7 +253,8 @@ int GMT_grdvector_parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, stru
 					Ctrl->S.factor = atof (&opt->arg[1]);
 				}
 				else
-					Ctrl->S.factor = atof (opt->arg);
+					Ctrl->S.factor = atof (&opt->arg[j]);
+				if (j == 1) Ctrl->S.factor = 1.0 / Ctrl->S.factor;	/* Got the inverse value */
 				break;
 			case 'T':	/* Rescale Cartesian angles */
 				Ctrl->T.active = true;
@@ -400,7 +403,7 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 
 	Ctrl->Q.S.v.v_width = (float)(Ctrl->W.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 	if (Ctrl->Q.active) {	/* Prepare vector parameters */
-		GMT_init_vector_param (GMT, &Ctrl->Q.S);
+		GMT_init_vector_param (GMT, &Ctrl->Q.S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);
 	}
 	dim[6] = 0.0;
 	PSL = GMT_plotinit (GMT, options);
@@ -480,6 +483,7 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 				GMT_rgb_copy (Ctrl->W.pen.rgb, Ctrl->G.fill.rgb);
 				GMT_setpen (GMT, &Ctrl->W.pen);
 				if (Ctrl->Q.active) GMT_setfill (GMT, &Ctrl->G.fill, Ctrl->W.active);
+				GMT_init_vector_param (GMT, &Ctrl->Q.S, true, Ctrl->W.active, &Ctrl->W.pen, true, &Ctrl->G.fill);
 			}
 			scaled_vec_length = (Ctrl->S.constant) ? Ctrl->S.factor : vec_length * Ctrl->S.factor;
 			/* scaled_vec_length is now in inches (Cartesian) or km (Geographic) */

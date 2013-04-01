@@ -99,6 +99,7 @@ enum GMT_enum_vecattr {GMT_VEC_LEFT = 1,	/* Only draw left half of vector head *
 	GMT_VEC_RIGHT		= 2,		/* Only draw right half of vector head */
 	GMT_VEC_BEGIN		= 4,		/* Place vector head at beginning of vector */
 	GMT_VEC_END		= 8,		/* Place vector head at end of vector */
+	GMT_VEC_HEADS		= 12,		/* Mask for either head end */
 	GMT_VEC_JUST_B		= 0,		/* Align vector beginning at (x,y) */
 	GMT_VEC_JUST_C		= 16,		/* Align vector center at (x,y) */
 	GMT_VEC_JUST_E		= 32,		/* Align vector end at (x,y) */
@@ -110,7 +111,7 @@ enum GMT_enum_vecattr {GMT_VEC_LEFT = 1,	/* Only draw left half of vector head *
 	GMT_VEC_FILL		= 2048,		/* Fill vector head using default fill */
 	GMT_VEC_FILL2		= 4096,		/* Fill vector head using supplied v_fill) */
 	GMT_VEC_MARC90		= 8192,		/* Matharc only: if angles subtend 90, draw straight angle symbol */
-	GMT_VEC_SCALE		= 32768};	/* Not needed in pslib: If not set we determine required incth-to-degree scale */
+	GMT_VEC_SCALE		= 32768};	/* Not needed in pslib: If not set we determine the required inch-to-degree scale */
 
 #define GMT_vec_justify(status) ((status>>4)&3)			/* Return justification as 0-3 */
 #define GMT_vec_head(status) ((status>>2)&3)			/* Return head selection as 0-3 */

@@ -375,7 +375,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 {	/* High-level function that implements the psxyz task */
 	bool polygon, penset_OK = true, not_line, old_is_world;
 	bool get_rgb, read_symbol, clip_set = false, fill_active;
-	bool default_outline, outline_active, save_u = false, vector = false;
+	bool default_outline, outline_active, save_u = false, geovector = false;
 	unsigned int k, j, geometry, tbl, pos2x, pos2y, set_type;
 	unsigned int n_cols_start = 3, justify;
 	unsigned int bcol, ex1, ex2, ex3, change, n_needed, read_mode;
@@ -515,7 +515,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 	if (S.symbol == GMT_SYMBOL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == GMT_SYMBOL_MARC ) {	/* One of the vector symbols */
 		if ((S.v.status & GMT_VEC_FILL) == 0) Ctrl->G.active = false;	/* Want to fill so override -G*/
 		if (S.v.status & GMT_VEC_FILL2) current_fill = S.v.fill;	/* Override -G<fill> (if set) with specified head fill */
-		vector = true;
+		geovector = (S.symbol == GMT_SYMBOL_GEOVECTOR);
 	}
 	if (penset_OK) GMT_setpen (GMT, &current_pen);
 	fill_active = Ctrl->G.active;	/* Make copies because we will change the values */
@@ -702,7 +702,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 					data[n].string = strdup (S.string);
 					break;
 				case GMT_SYMBOL_VECTOR:
-					GMT_init_vector_param (GMT, &S);	/* Update vector head parameters */
+					GMT_init_vector_param (GMT, &S, false, false, NULL, false, NULL);	/* Update vector head parameters */
 #ifdef GMT_COMPAT
 					if (S.v.parsed_v4) {	/* Got v_width directly from V4 syntax so no messing with it here if under compatibility */
 						/* But have to improvise as far as outline|fill goes... */
@@ -748,7 +748,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 					data[n].dim[6] = (double)S.v.status;
 					break;
 				case GMT_SYMBOL_GEOVECTOR:
-					GMT_init_vector_param (GMT, &S);	/* Update vector head parameters */
+					GMT_init_vector_param (GMT, &S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);	/* Update vector head parameters */
 					if (S.v.status & GMT_VEC_OUTLINE2)
 						S.v.v_width = (float)(S.v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 					else
@@ -760,7 +760,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 					data[n].v = S.v;
 					break;
 				case GMT_SYMBOL_MARC:
-					GMT_init_vector_param (GMT, &S);	/* Update vector head parameters */
+					GMT_init_vector_param (GMT, &S, false, false, NULL, false, NULL);	/* Update vector head parameters */
 					S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 					data[n].dim[0] = in[ex1+S.read_size];	/* Radius */
 					data[n].dim[1] = in[ex2+S.read_size];	/* Start direction in degrees */
@@ -827,7 +827,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 				}
 			}
 
-			if (!vector) {	/* Vectors do it separately */
+			if (!geovector) {	/* Vectors do it separately */
 				GMT_setfill (GMT, &data[i].f, data[i].outline);
 				GMT_setpen (GMT, &data[i].p);
 			}
@@ -1074,7 +1074,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 	if (Ctrl->D.active) PSL_setorigin (PSL, -DX, -DY, 0.0, PSL_FWD);	/* Shift plot a bit */
 
 	if (current_pen.style) PSL_setdash (PSL, NULL, 0);
-	if (vector) PSL->current.linewidth = 0.0;	/* Since we changed things under clip; this will force it to be set next */
+	if (geovector) PSL->current.linewidth = 0.0;	/* Since we changed things under clip; this will force it to be set next */
 	GMT_vertical_axis (GMT, 2);	/* Draw foreground axis */
 	GMT->current.map.is_world = old_is_world;
 
