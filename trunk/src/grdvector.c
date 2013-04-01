@@ -444,9 +444,9 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 	dim[6] = (double)Ctrl->Q.S.v.status;
 	Geographic = (GMT_is_geographic (GMT, GMT_IN));
 	if (Geographic) {
-		v_width = Ctrl->Q.S.v.v_width;	h_length = Ctrl->Q.S.v.h_length;	h_width = Ctrl->Q.S.v.h_width;
-		
+		v_width = Ctrl->Q.S.v.v_width;	h_length = Ctrl->Q.S.v.h_length;	h_width = Ctrl->Q.S.v.h_width;	
 	}
+	PSL_command (GMT->PSL, "V\n");
 	for (row = row_0; row < Grid[1]->header->ny; row += d_row) {
 		y = GMT_grd_row_to_y (GMT, row, Grid[0]->header);
 		for (col = col_0; col < Grid[1]->header->nx; col += d_col) {
@@ -490,7 +490,7 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 					Ctrl->Q.S.v.v_width *= (float)f;	Ctrl->Q.S.v.h_length *= (float)f;
 					Ctrl->Q.S.v.h_width *= (float)f;
 				}
-				GMT_geo_vector (GMT, x, y, vec_azim, scaled_vec_length, &Ctrl->Q.S);
+				GMT_geo_vector (GMT, x, y, vec_azim, scaled_vec_length, &Ctrl->W.pen, &Ctrl->Q.S);
 				if (scaled_vec_length < Ctrl->Q.S.v.v_norm) {	/* Reset arrow attributes */
 					Ctrl->Q.S.v.v_width = (float)v_width;	Ctrl->Q.S.v.h_length = (float)h_length;
 					Ctrl->Q.S.v.h_width = (float)h_width;
@@ -530,6 +530,8 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 			}
 		}
 	}
+	PSL_command (GMT->PSL, "U\n");
+	PSL->current.linewidth = 0.0;	/* Since we changed things under clip; this will force it to be set next */
 
 	if (!Ctrl->N.active) GMT_map_clip_off (GMT);
 
