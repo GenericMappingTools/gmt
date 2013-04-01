@@ -706,7 +706,7 @@ int GMT_psrose (void *V_API, int mode, void *args)
 			GMT_init_pen (GMT, &Ctrl->M.S.v.pen, VECTOR_LINE_WIDTH);
 			GMT_init_fill (GMT, &Ctrl->M.S.v.fill, 0.0, 0.0, 0.0);		/* Default vector fill = black */
 		}
-		GMT_init_vector_param (GMT, &Ctrl->M.S);
+		GMT_init_vector_param (GMT, &Ctrl->M.S, false, false, NULL, false, NULL);
 		Ctrl->M.S.v.v_width = (float)(Ctrl->W.pen[1].width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 		dim[2] = Ctrl->M.S.v.v_width, dim[3] = Ctrl->M.S.v.h_length, dim[4] = Ctrl->M.S.v.h_width;
 		dim[5] = GMT->current.setting.map_vector_shape;

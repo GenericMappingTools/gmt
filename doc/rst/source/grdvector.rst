@@ -15,7 +15,7 @@ grdvector - Plot vector field from two component grids
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
 ] [ **-K** ] [ **-N** ] [ **-O** ] [ **-P** ] [ **-Q**\ *parameters* ] [
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
-**-S**\ [**l**\ ]\ *scale* ] [ **-T** ] [
+**-S**\ [**i**\ \|\ **l**\ ]\ *scale* ] [ **-T** ] [
 **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*\ ]
 ] [ **-W**\ *pen* ] [
 **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
@@ -83,12 +83,13 @@ theta). **grdvector** is basically a short-hand for using 2 calls to
 .. |Add_-R| replace:: Specify a subset of the grid.
 .. include:: explain_-R.rst_
 
-**-S**\ [**l**\ ]\ *scale*
+**-S**\ [**i**\ \|\ **l**\ ]\ *scale*
     Sets scale for Cartesian vector length in data units per distance measurement
     unit [1]. Append **c**, **i**, or **p** to indicate the measurement
     unit (cm, inch,or point). Prepend **l** to indicate a fixed length
-    for all vectors.  For Geographic data, give scale in dat units per
-    km.
+    for all vectors.  For Geographic data, give scale in data units per
+    km. Use **-Si** if it is simpler to give the reciprocal scale in
+    measurement unit per data unit or km per data unit.
 
 **-T**
     Means azimuth of Cartesian data sets should be adjusted for different scales

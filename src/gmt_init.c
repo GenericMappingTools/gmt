@@ -7500,11 +7500,25 @@ int gmt_get_unit (struct GMT_CTRL *GMT, char c)
 	return (i);
 }
 
-void GMT_init_vector_param (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S)
-{	/* Update vector head length and width parameters based on size_z and v_angle */
+int GMT_init_vector_param (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S, bool set, bool outline, struct GMT_PEN *pen, bool do_fill, struct GMT_FILL *fill)
+{	/* Update vector head length and width parameters based on size_z and v_angle, and deal with pen/fill settings */
+	bool no_outline = false, no_fill = false;
+	if (set) {	/* Determine proper settings for head fill or outline */
+		if (outline && (S->v.status & GMT_VEC_OUTLINE2) == 0) S->v.pen = *pen;	/* If no +p<pen> but -W<pen> was used, use same pen for vector heads */
+		else if (!outline && S->v.status & GMT_VEC_OUTLINE2) *pen = S->v.pen;	/* If no -W<pen> was set but +p<pen> given, use same pen for vector tails */
+		else if (!outline && (S->v.status & GMT_VEC_OUTLINE2) == 0) no_outline = true;
+		if (do_fill && (S->v.status & GMT_VEC_FILL2) == 0) S->v.fill = *fill;	/* If no +g<fill> but -G<fill> was used, use same fill for vector heads */
+		else if (!do_fill && S->v.status & GMT_VEC_FILL2) no_fill = false;		/* If no -G<fill> was set but +g<fill> given, we do nothing here */
+		else if (!do_fill && (S->v.status & GMT_VEC_FILL2) == 0) no_fill = true;	/* Neither -G<fill> nor +g<fill> were set */
+		if (no_outline && no_fill && (S->v.status && GMT_VEC_HEADS)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot draw vector heads without specifying at least one of head outline or head fill.\n");
+			return 1;
+		}
+	}
 	if (GMT_IS_ZERO (S->size_x)) return;	/* Not set yet */
 	S->v.h_length = (float)S->size_x;
 	S->v.h_width = (float)(2.0 * S->v.h_length * tand (0.5 * S->v.v_angle));
+	return 0;
 }
 
 int GMT_parse_vector (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *S)
@@ -7608,7 +7622,7 @@ int GMT_parse_vector (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *S)
 	if (!p_opt) S->v.status |= GMT_VEC_OUTLINE;	/* Default is to draw vector head outline with current pen unless explicitly turned off with +p- */
 	
 	/* Set head parameters */
-	GMT_init_vector_param (GMT, S);
+	GMT_init_vector_param (GMT, S, false, false, NULL, false, NULL);
 	
 	return (error);
 }
