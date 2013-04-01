@@ -7556,7 +7556,7 @@ int GMT_parse_vector (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *S)
 				j = (text[0] == 'v' || text[0] == 'V') ? gmt_get_unit (GMT, p[len]) : -1;	/* Only -Sv|V takes unit */
 				if (j >= 0) { S->u = j; S->u_set = true; }
 				S->v.v_norm = (float)atof (&p[1]);
-				if (text[0] == '=') S->v.v_norm /= GMT->current.proj.DIST_KM_PR_DEG;	/* Since norm distance is in km and we compute spherical degrees later */
+				if (text[0] == '=') S->v.v_norm /= (float)GMT->current.proj.DIST_KM_PR_DEG;	/* Since norm distance is in km and we compute spherical degrees later */
 				break;
 			case 'g':	/* Vector head fill [Used in psrose, for instance] */
 				g_opt = true;	/* Marks that +g was used */
