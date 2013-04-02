@@ -241,7 +241,7 @@ int GMT_grdvector_parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, stru
 			case 'S':	/* Scale */
 				Ctrl->S.active = true;
 				len = strlen (opt->arg) - 1;
-				j = (opt->arg[0] = 'i') ? 1 : 0;
+				j = (opt->arg[0] == 'i') ? 1 : 0;
 				if (strchr (GMT_DIM_UNITS, (int)opt->arg[len]))	/* Recognized unit character */
 					Ctrl->S.unit = opt->arg[len];
 				else if (! (opt->arg[len] == '.' || isdigit ((int)opt->arg[len]))) {	/* Not decimal point or digit means trouble */
