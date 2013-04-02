@@ -7510,12 +7510,12 @@ int GMT_init_vector_param (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S, bool set,
 		if (do_fill && (S->v.status & GMT_VEC_FILL2) == 0) S->v.fill = *fill;	/* If no +g<fill> but -G<fill> was used, use same fill for vector heads */
 		else if (!do_fill && S->v.status & GMT_VEC_FILL2) no_fill = false;		/* If no -G<fill> was set but +g<fill> given, we do nothing here */
 		else if (!do_fill && (S->v.status & GMT_VEC_FILL2) == 0) no_fill = true;	/* Neither -G<fill> nor +g<fill> were set */
-		if (no_outline && no_fill && (S->v.status && GMT_VEC_HEADS)) {
+		if (no_outline && no_fill && (S->v.status & GMT_VEC_HEADS)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot draw vector heads without specifying at least one of head outline or head fill.\n");
 			return 1;
 		}
 	}
-	if (GMT_IS_ZERO (S->size_x)) return;	/* Not set yet */
+	if (GMT_IS_ZERO (S->size_x)) return 0;	/* Not set yet */
 	S->v.h_length = (float)S->size_x;
 	S->v.h_width = (float)(2.0 * S->v.h_length * tand (0.5 * S->v.v_angle));
 	return 0;
