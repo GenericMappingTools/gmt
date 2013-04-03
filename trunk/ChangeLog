@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-04-03	pwessel
+	* gmt_map.c:		When -Jx is used with longitudes we must use the wesn-clipping
+				and outside functions, not the Cartesian ones.
+
 2013-03-26	pwessel
 	* psxy[z]:		The -S= geovector now has modifiers +o<plon>/<plat> for
 				specifying small circle geovectors; input is then just
