@@ -637,7 +637,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 			for (m = 0; m < Grid[0]->header->size; m++)
 				raised[m] = (float)pow(topo[m], (double)n);
 
-		if (GMT_fft_2d (GMT, raised, K->nx2, K->ny2, GMT_FFT_FWD, GMT_FFT_COMPLEX, K))
+		if (GMT_fft_2d (GMT, raised, K->nx2, K->ny2, GMT_FFT_FWD, GMT_FFT_COMPLEX))
 			Return (EXIT_FAILURE);
 
 		if (Ctrl->D.active || Ctrl->T.moho)	/* "classical" anomaly */

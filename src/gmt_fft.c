@@ -53,6 +53,8 @@
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 
+static inline struct GMTAPI_CTRL * gmt_get_api_ptr (struct GMTAPI_CTRL *ptr) {return (ptr);}
+
 static char *GMT_fft_algo[] = {
 	"Auto-Select",
 	"Accelerate Framework",
@@ -1972,14 +1974,15 @@ int gmt_fft_2d_selection (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny
 	return k_fft_kiss; /* Default/fallback general-purpose FFT */
 }
 
-int GMT_fft_1d (struct GMT_CTRL *GMT, float *data, uint64_t n, int direction, unsigned int mode, struct GMT_FFT_WAVENUMBER *info) {
+int GMT_fft_1d (void *V_API, float *data, uint64_t n, int direction, unsigned int mode) {
 	/* data is an array of length n (or 2*n for complex) data points
 	 * n is the number of data points
 	 * direction is either GMT_FFT_FWD (forward) or GMT_FFT_INV (inverse)
 	 * mode is either GMT_FFT_REAL or GMT_FFT_COMPLEX
-	 * info is a pointer to struct GMT_FFT_INFO, or NULL if not used
 	 */
 	int status, use;
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+	struct GMT_CTRL *GMT = API->GMT;
 	assert (mode == GMT_FFT_COMPLEX); /* GMT_FFT_REAL not implemented yet */
 	use = gmt_fft_1d_selection (GMT, n);
 	GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "1-D FFT using %s\n", GMT_fft_algo[use]);
@@ -1991,14 +1994,15 @@ int GMT_fft_1d (struct GMT_CTRL *GMT, float *data, uint64_t n, int direction, un
 	return status;
 }
 
-int GMT_fft_2d (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode, struct GMT_FFT_WAVENUMBER *K) {
+int GMT_fft_2d (void *V_API, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode) {
 	/* data is an array of length nx*ny (or 2*nx*ny for complex) data points
 	 * nx, ny is the number of data nodes
 	 * direction is either GMT_FFT_FWD (forward) or GMT_FFT_INV (inverse)
 	 * mode is either GMT_FFT_REAL or GMT_FFT_COMPLEX
-	 * info is a pointer to struct GMT_FFT_INFO, or NULL if not used
 	 */
 	int status, use;
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+	struct GMT_CTRL *GMT = API->GMT;
 	assert (mode == GMT_FFT_COMPLEX); /* GMT_FFT_REAL not implemented yet */
 	use = gmt_fft_2d_selection (GMT, nx, ny);
 	
