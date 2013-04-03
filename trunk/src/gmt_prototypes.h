@@ -47,8 +47,6 @@ EXTERN_MSC int GMT_gdalwrite (struct GMT_CTRL *GMT, char *filename, struct GDALW
 
 /* gmt_fft.c: */
 
-EXTERN_MSC int GMT_fft_1d (struct GMT_CTRL *GMT, float *data, uint64_t n, int direction, unsigned int mode, struct GMT_FFT_WAVENUMBER *info);
-EXTERN_MSC int GMT_fft_2d (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode, struct GMT_FFT_WAVENUMBER *info);
 EXTERN_MSC void GMT_fft_initialization (struct GMT_CTRL *GMT);
 EXTERN_MSC void GMT_fft_cleanup (void);
 EXTERN_MSC void GMT_fft_set_k (struct GMT_CTRL *GMT, unsigned int mode, struct GMT_FFT_WAVENUMBER *K);

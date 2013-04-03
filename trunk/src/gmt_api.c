@@ -4954,7 +4954,7 @@ int GMTAPI_FFT_1d (struct GMTAPI_CTRL *API, struct GMT_DATASET *D, int direction
 				last = S->n_rows;
 			}
 			for (row = 0; S->n_rows; row++) data[row] = (float)S->coord[col][row];
-			status = GMT_fft_1d (API->GMT, data, S->n_rows, direction, mode, K);
+			status = GMT_fft_1d (API, data, S->n_rows, direction, mode);
 			for (row = 0; S->n_rows; row++) S->coord[col][row] = data[row];
 		}
 	}
@@ -4968,7 +4968,7 @@ int GMTAPI_FFT_2d (struct GMTAPI_CTRL *API, struct GMT_GRID *G, int direction, u
 	if (K && direction == GMT_FFT_FWD) gmt_fft_save2d (API->GMT, G, GMT_IN, K);	/* Save intermediate grid, if requested, before interleaving */
 	GMT_grd_mux_demux (API->GMT, G->header, G->data, GMT_GRID_IS_INTERLEAVED);
 	grd_dump (API->GMT, G->header, G->data, true, "After demux");
-	status = GMT_fft_2d (API->GMT, G->data, G->header->mx, G->header->my, direction, mode, K);
+	status = GMT_fft_2d (API, G->data, G->header->mx, G->header->my, direction, mode);
 	grd_dump (API->GMT, G->header, G->data, true, "After FFT");
 	if (K && direction == GMT_FFT_FWD) gmt_fft_save2d (API->GMT, G, GMT_OUT, K);	/* Save complex grid, if requested */
 	return (status);

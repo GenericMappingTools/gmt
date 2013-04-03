@@ -117,13 +117,15 @@ EXTERN_MSC int GMT_Update_Option			(void *C, char option, char *arg, struct GMT_
 EXTERN_MSC int GMT_Delete_Option			(void *C, struct GMT_OPTION *current);
 EXTERN_MSC int GMT_Parse_Common				(void *C, char *given_options, struct GMT_OPTION *options);
 
-/* 6 GMT_FFT_* functions */
+/* 8 GMT_FFT_* functions */
 EXTERN_MSC unsigned int GMT_FFT_Option	(void *C, char option, unsigned int dim, char *string);
 EXTERN_MSC void * GMT_FFT_Parse		(void *C, char option, unsigned int dim, char *args);
 EXTERN_MSC void * GMT_FFT_Create	(void *C, void *X, unsigned int dim, unsigned int subdivide, unsigned int mode, void *F);
 EXTERN_MSC double GMT_FFT_Wavenumber	(void *C, uint64_t k, unsigned int mode, void *K);
 EXTERN_MSC int GMT_FFT			(void *C, void *X, int direction, unsigned int mode, void *K);
 EXTERN_MSC int GMT_FFT_Destroy		(void *C, void *K);
+EXTERN_MSC int GMT_fft_1d		(void *C, float *data, uint64_t n, int direction, unsigned int mode);
+EXTERN_MSC int GMT_fft_2d		(void *C, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode);
 
 /* 3 F77 basic grid i/ functions */
 

@@ -208,7 +208,7 @@ void compute_spectra (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, double *x
 
 		detrend_and_hanning (C, leave_trend, mode);
 
-		if (GMT_fft_1d (GMT, C->datac, C->window, GMT_FFT_FWD, GMT_FFT_COMPLEX, NULL))
+		if (GMT_fft_1d (GMT, C->datac, C->window, GMT_FFT_FWD, GMT_FFT_COMPLEX))
 			exit (EXIT_FAILURE);
 
 		/* Get one-sided estimates */
