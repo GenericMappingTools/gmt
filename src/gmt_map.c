@@ -2770,10 +2770,20 @@ bool gmt_map_init_linear (struct GMT_CTRL *GMT) {
 	GMT->current.proj.KM_PR_DEG = GMT->current.proj.M_PR_DEG / METERS_IN_A_KM;
 
 	gmt_map_setxy (GMT, xmin, xmax, ymin, ymax);
-	GMT->current.map.outside = &gmt_rect_outside;
-	GMT->current.map.crossing = &gmt_rect_crossing;
-	GMT->current.map.overlap = &gmt_rect_overlap;
-	GMT->current.map.clip = &gmt_rect_clip;
+	if (GMT->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_LON) {	/* Using linear projection with longitudes */
+		GMT->current.map.outside = &gmt_wesn_outside;
+		GMT->current.map.crossing = &gmt_wesn_crossing;
+		GMT->current.map.overlap = &gmt_wesn_overlap;
+		GMT->current.map.clip = &GMT_wesn_clip;
+	}
+	else {
+		GMT->current.map.outside = &gmt_rect_outside;
+		GMT->current.map.crossing = &gmt_rect_crossing;
+		GMT->current.map.overlap = &gmt_rect_overlap;
+		GMT->current.map.clip = &gmt_rect_clip;
+	}
+	GMT->current.map.n_lat_nodes = 2;
+	GMT->current.map.n_lon_nodes = 3;	/* > 2 to avoid map-jumps */
 	GMT->current.map.frame.check_side = true;
 	GMT->current.map.frame.horizontal = 1;
 	GMT->current.map.meridian_straight = GMT->current.map.parallel_straight = true;
