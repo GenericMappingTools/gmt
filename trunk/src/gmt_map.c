@@ -1593,6 +1593,8 @@ uint64_t GMT_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t
 	else if (border[3] > border[1] && way == 1) border[1] += 360.0;
 	/* Final safety valve for e,w somehow gotten wound too far east; if so take out 360 */
 	if (border[1] > 360.0 && border[3] > 0.0) {border[1] -= 360.0; border[3] -= 360.0;}
+	/* Final safety valve for e,w somehow gotten wound too far west; if so add 360 */
+	if (border[3] < -180.0 && border[1] < 0.0) {border[1] += 360.0; border[3] += 360.0;}
 
 	n_get = lrint (1.05*n+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
 	/* Create a pair of arrays for holding input and output */
