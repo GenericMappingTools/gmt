@@ -171,10 +171,10 @@ projection names stands for Equal-Area and Conformal, respectively):
         *lon0/lat0* specifies the projection center. *horizon* specifies
         the max distance from projection center (in degrees, < 180,
         default 90). Give *scale* as **1:**\ *xxxx* (true at pole) or
-        *lat0*/**1:**\ *xxxx* (true at standard parallel *lat0*) or
+        *lat0*/**1:**\ *xxxx* (true at standard parallel *lat*) or
         *radius/lat* (*radius* in UNIT from origin to the oblique
         latitude *lat*). Note if **1:**\ *xxxx* is used then to specify
-        *horizon* you must also specify the *lat0* as +-90 to avoid
+        *horizon* you must also specify the *lat* as +-90 to avoid
         ambiguity.
 
     **MISCELLANEOUS PROJECTIONS:**
