@@ -1479,7 +1479,7 @@ int GMT_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 #ifdef HAVE_GDAL
 #include "gmt_gdalread.c"
 #include "gmt_gdalwrite.c"
-/* Experimental GDAL support */
+/* GDAL support */
 /*-----------------------------------------------------------
  * Format :	gd
  * Type :	GDAL compatible format
