@@ -507,7 +507,7 @@ void print_altmode (int extrude, int fmode, int altmode, int ntabs)
 {
 	char *RefLevel[5] = {"clampToGround", "relativeToGround", "absolute", "relativeToSeaFloor", "clampToSeaFloor"};
 	if (extrude) tabs (ntabs), printf ("<extrude>1</extrude>\n"); 
-	if (fmode) tabs (ntabs), printf ("<tesselate>1</tesselate>\n");
+	if (fmode) tabs (ntabs), printf ("<tessellate>1</tessellate>\n");
 	if (altmode == KML_GROUND_REL || altmode == KML_ABSOLUTE) tabs (ntabs), printf ("<altitudeMode>%s</altitudeMode>\n", RefLevel[altmode]);
 	if (altmode == KML_SEAFLOOR_REL || altmode == KML_SEAFLOOR) tabs (ntabs), printf ("<gx:altitudeMode>%s</gx:altitudeMode>\n", RefLevel[altmode]);
 }
