@@ -24,3 +24,11 @@
     hh:mm:ss[.xxx]. The use of delimiters and their type and positions
     must be exactly as indicated (however, input, output and plot
     formats are customizable; see **gmt.conf**).
+    You can also use Cartesian projected coordinates compatible with the
+    chosen projection.  Give them with a leading length *unit*, (e.g.,
+    **k**-200/200/-300/300 for a 400 by 600 km rectangular area centered
+    on the projection center (0, 0). These coordinates are internally
+    converted to the corresponding geographic (longitude, latitude)
+    coordinates for the lower left and upper right corners. This form is
+    convenient when you want to specify a region directly in the
+    projected units (e.g., UTM meters).
