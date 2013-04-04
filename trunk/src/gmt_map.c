@@ -7873,18 +7873,17 @@ int GMT_map_setup (struct GMT_CTRL *GMT, double wesn[])
 	GMT->current.map.dlon = (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) / GMT->current.map.n_lon_nodes;
 	GMT->current.map.dlat = (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) / GMT->current.map.n_lat_nodes;
 
-	if (GMT->current.map.width > 400.0 && !GMT->PSL) {	/* PSL not active so we assume this is ***project calling */
-		search = false;	/* Safe-guard that prevents region search below for mapproject and others (400 inch = ~> 10 meters) */
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Warning: GMT_map_setup perimeter search skipped due to excessive (> 10m) plot size; probably a mapproject process.\n");
+	if (GMT->current.map.width > 400.0 && (GMT->init.module_id == k_mod_grdproject || GMT->init.module_id == k_mod_mapproject)) {	/* ***project calling with true scale, probably  */
+		search = false;	/* Safe-guard that prevents region search below for (map|grd)project and others (400 inch = ~> 10 meters) */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Warning: GMT_map_setup perimeter search skipped when using true scale with grdproject or mapproject.\n");
 	}
 
 	if (search) {	/* Loop around rectangular perimeter and determine min/max lon/lat extent */
 		gmt_wesn_search (GMT, GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI], &GMT->common.R.wesn[XLO], &GMT->common.R.wesn[XHI], &GMT->common.R.wesn[YLO], &GMT->common.R.wesn[YHI]);
 		GMT->current.map.dlon = (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) / GMT->current.map.n_lon_nodes;
 		GMT->current.map.dlat = (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) / GMT->current.map.n_lat_nodes;
+		if (GMT_IS_AZIMUTHAL(GMT) && GMT->common.R.oblique) gmt_horizon_search (GMT, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI]);
 	}
-
-	if (GMT_IS_AZIMUTHAL(GMT) && GMT->common.R.oblique) gmt_horizon_search (GMT, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI]);
 
 	if (GMT->current.proj.central_meridian < GMT->common.R.wesn[XLO] && (GMT->current.proj.central_meridian + 360.0) <= GMT->common.R.wesn[XHI]) GMT->current.proj.central_meridian += 360.0;
 	if (GMT->current.proj.central_meridian > GMT->common.R.wesn[XHI] && (GMT->current.proj.central_meridian - 360.0) >= GMT->common.R.wesn[XLO]) GMT->current.proj.central_meridian -= 360.0;
