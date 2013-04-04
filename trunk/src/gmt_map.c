@@ -1537,8 +1537,8 @@ uint64_t GMT_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t
 	char *x_type = NULL;
 	size_t n_alloc = 0, n_x_alloc = 0, n_t_alloc = 0;
 	uint64_t new_n, i, n_get, n, m, n_cross = 0, *x_index = NULL;
-	unsigned int range, j, np, side, in = 1, out = 0;
-	int way, cross = 0;
+	unsigned int j, np, side, in = 1, out = 0;
+	int cross = 0;
 	bool curved, jump = false, polygon, periodic = false;
 	double *xtmp[2] = {NULL, NULL}, *ytmp[2] = {NULL, NULL}, xx[2], yy[2], border[4];
 	double x1, x2, y1, y2;
@@ -1546,7 +1546,6 @@ uint64_t GMT_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t
 	bool (*inside[4]) (double, double);
 	bool (*outside[4]) (double, double);
 	
-	struct GMT_QUAD *Q = NULL;
 #ifdef DEBUG
 	FILE *fp = NULL;
 	bool dump = false;
@@ -1576,25 +1575,15 @@ uint64_t GMT_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t
 
 	clipper[0] = gmt_clip_sn;	clipper[1] = gmt_clip_we; clipper[2] = gmt_clip_sn;	clipper[3] = gmt_clip_we;
 	inside[1] = inside[2] = gmt_inside_upper_boundary;	outside[1] = outside[2] = gmt_outside_upper_boundary;
-	inside[0] = inside[3] = gmt_inside_lower_boundary;		outside[0] = outside[3] = gmt_outside_lower_boundary;
+	inside[0] = inside[3] = gmt_inside_lower_boundary;	outside[0] = outside[3] = gmt_outside_lower_boundary;
 	border[0] = GMT->common.R.wesn[YLO]; border[3] = GMT->common.R.wesn[XLO];	border[1] = GMT->common.R.wesn[XHI];	border[2] = GMT->common.R.wesn[YHI];
 	/* Make data longitudes have no jumps */
-	Q = GMT_quad_init (GMT, 1);	/* Allocate and initialize one QUAD structure */
-	/* We must keep separate min/max for both Dateline and Greenwich conventions */
-	for (i = 0; i < n; i++) GMT_quad_add (GMT, Q, lon[i]);
-	GMT_quad_add (GMT, Q, border[1]);	GMT_quad_add (GMT, Q, border[3]);
-	/* Finalize longitude range settings */
-	way = GMT_quad_finalize (GMT, Q);
-	GMT_free (GMT, Q);
-	range = (way) ? GMT_IS_0_TO_P360_RANGE : GMT_IS_M180_TO_P180_RANGE;
-	for (i = 0; i < n; i++) GMT_lon_range_adjust (range, &lon[i]);
-	GMT_lon_range_adjust (range, &border[1]);	GMT_lon_range_adjust (range, &border[3]);
-	if (border[3] > border[1] && way == 0) border[3] -= 360.0;
-	else if (border[3] > border[1] && way == 1) border[1] += 360.0;
-	/* Final safety valve for e,w somehow gotten wound too far east; if so take out 360 */
-	if (border[1] > 360.0 && border[3] > 0.0) {border[1] -= 360.0; border[3] -= 360.0;}
-	/* Final safety valve for e,w somehow gotten wound too far west; if so add 360 */
-	if (border[3] < -180.0 && border[1] < 0.0) {border[1] += 360.0; border[3] += 360.0;}
+	for (i = 0; i < n; i++) {
+		if (lon[i] < border[3] && (lon[i] + 360.0) <= border[1])
+			lon[i] += 360.0;
+		else if (lon[i] > border[1] && (lon[i] - 360.0) >= border[3])
+			lon[i] -= 360.0;
+	}
 
 	n_get = lrint (1.05*n+5);	/* Anticipate just a few crossings (5%)+5, allocate more later if needed */
 	/* Create a pair of arrays for holding input and output */
