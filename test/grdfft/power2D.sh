@@ -13,9 +13,13 @@ grdfft t.nc -Exw -N+l --GMT_FFT=brenner > pow5.txt
 # Compare with legacy result from GMT 4 (also Brenner FFT)
 #/Users/pwessel/UH/RESEARCH/CVSPROJECTS/GMTdev/gmt4/bin/grdfft t.nc -Exw -Vl -L > pow4.txt
 
-psxy -R2/100/1e-18/1 -JX-6il/2.5il -Ba2f3/a-2pWsNe -O -K -Y7i pow5.txt -W0.25p >> $ps
-psxy -R -J -O -K pow4.txt -Sc0.1c -Gred >> $ps
+psxy -R2/100/1e-19/1 -JX-6il/2.5il -Ba2f3/a-2pWsNe -O -K -Y7i pow5.txt -Sc0.15c -Ggreen >> $ps
+psxy -R -J -O -K pow4.txt -Sc0.075c -Gred >> $ps
 psxy -R -J -O -W0.25p,- << EOF >> $ps
-25.6	1e-18
+>
+25.6	1e-19
 25.6	1
+>
+2	1e-15
+100	1e-15
 EOF

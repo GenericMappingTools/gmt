@@ -97,9 +97,9 @@ void grd_dump (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid
 	fprintf (stderr, "Dump [%s]:\n---------------------------------------------\n", txt);
 	for (row = 0; row < header->my; row++) {
 		if (is_complex)
-			for (col = 0; col < header->mx; col++, k+= 2) fprintf (stderr, "(%d,%d)\t", (int)grid[k], (int)grid[k+1]);
+			for (col = 0; col < header->mx; col++, k+= 2) fprintf (stderr, "(%g,%g)\t", grid[k], grid[k+1]);
 		else
-			for (col = 0; col < header->mx; col++, k++) fprintf (stderr, "%d\t", (int)grid[k]);
+			for (col = 0; col < header->mx; col++, k++) fprintf (stderr, "%g\t", grid[k]);
 		fprintf (stderr, "\n");
 	}
 	fprintf (stderr, "---------------------------------------------\n");
