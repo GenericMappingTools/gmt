@@ -4879,7 +4879,7 @@ struct GMT_FFT_WAVENUMBER * GMTAPI_FFT_init_2d (struct GMTAPI_CTRL *API, struct 
 		if (GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY | mode, NULL, G->header->name, G) == NULL)	/* Get data only */
 			return (NULL);
 	}
-	grd_dump (GMT, G->header, G->data, false, "Read in FFT_Create");
+	//grd_dump (GMT, G->header, G->data, false, "Read in FFT_Create");
 	
 	/* Make sure there are no NaNs in the grid - that is a fatal flaw */
 	
@@ -4890,9 +4890,9 @@ struct GMT_FFT_WAVENUMBER * GMTAPI_FFT_init_2d (struct GMTAPI_CTRL *API, struct 
 	}
 	
 	GMT_grd_detrend (GMT, G, F->trend_mode, K->coeff);	/* Detrend data, if requested */
-	grd_dump (GMT, G->header, G->data, false, "After detrend");
+	//grd_dump (GMT, G->header, G->data, false, "After detrend");
 	gmt_fft_taper (GMT, G, F);				/* Taper data, if requested */
-	grd_dump (GMT, G->header, G->data, false, "After Taper");
+	//grd_dump (GMT, G->header, G->data, false, "After Taper");
 	K->dim = 2;	/* 2-D FFT */
 	return (K);
 }
@@ -4969,7 +4969,7 @@ int GMTAPI_FFT_2d (struct GMTAPI_CTRL *API, struct GMT_GRID *G, int direction, u
 	GMT_grd_mux_demux (API->GMT, G->header, G->data, GMT_GRID_IS_INTERLEAVED);
 	grd_dump (API->GMT, G->header, G->data, true, "After demux");
 	status = GMT_fft_2d (API, G->data, G->header->mx, G->header->my, direction, mode);
-	grd_dump (API->GMT, G->header, G->data, true, "After FFT");
+	//grd_dump (API->GMT, G->header, G->data, true, "After FFT");
 	if (K && direction == GMT_FFT_FWD) gmt_fft_save2d (API->GMT, G, GMT_OUT, K);	/* Save complex grid, if requested */
 	return (status);
 }

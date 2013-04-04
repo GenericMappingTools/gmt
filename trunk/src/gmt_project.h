@@ -87,6 +87,7 @@ enum GMT_enum_conic {GMT_ALBERS = 200,
 
 /* Azimuthal projections tagged 300-399 */
 #define GMT_IS_AZIMUTHAL(C) (C->current.proj.projection / 100 == 3)
+#define GMT_IS_PERSPECTIVE(C) (C->current.proj.projection == GMT_ORTHO || C->current.proj.projection == GMT_GENPER)
 enum GMT_enum_azim {GMT_STEREO = 300,
 	GMT_LAMB_AZ_EQ,
 	GMT_ORTHO,

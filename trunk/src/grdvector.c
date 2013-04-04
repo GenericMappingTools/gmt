@@ -384,21 +384,24 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 
+	Geographic = (GMT_is_geographic (GMT, GMT_IN));
 	if (!Ctrl->S.constant) Ctrl->S.factor = 1.0 / Ctrl->S.factor;
 
-	switch (Ctrl->S.unit) {	/* Adjust for possible unit selection */
-		case 'c':
-			Ctrl->S.factor *= GMT->session.u2u[GMT_CM][GMT_INCH];
-			break;
-		case 'i':
-			Ctrl->S.factor *= GMT->session.u2u[GMT_INCH][GMT_INCH];
-			break;
-		case 'p':
-			Ctrl->S.factor *= GMT->session.u2u[GMT_PT][GMT_INCH];
-			break;
-		default:
-			Ctrl->S.factor *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
-			break;
+	if (!Geographic) {
+		switch (Ctrl->S.unit) {	/* Adjust for possible unit selection */
+			case 'c':
+				Ctrl->S.factor *= GMT->session.u2u[GMT_CM][GMT_INCH];
+				break;
+			case 'i':
+				Ctrl->S.factor *= GMT->session.u2u[GMT_INCH][GMT_INCH];
+				break;
+			case 'p':
+				Ctrl->S.factor *= GMT->session.u2u[GMT_PT][GMT_INCH];
+				break;
+			default:
+				Ctrl->S.factor *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
+				break;
+		}
 	}
 
 	Ctrl->Q.S.v.v_width = (float)(Ctrl->W.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
@@ -445,7 +448,6 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 
 	dim[5] = GMT->current.setting.map_vector_shape;	/* These do not change inside the loop */
 	dim[6] = (double)Ctrl->Q.S.v.status;
-	Geographic = (GMT_is_geographic (GMT, GMT_IN));
 	if (Geographic) {
 		v_width = Ctrl->Q.S.v.v_width;	h_length = Ctrl->Q.S.v.h_length;	h_width = Ctrl->Q.S.v.h_width;	
 	}
