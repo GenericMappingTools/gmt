@@ -376,6 +376,14 @@ int GMT_grdproject (void *V_API, int mode, void *args)
 
 		if ((Geo = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, Rect)) == NULL) Return (API->error);	/* Just to get a header we can change */
 
+		if (GMT_IS_AZIMUTHAL(GMT) && GMT->current.proj.polar) {	/* Watch out for polar cap grids */
+			if (doubleAlmostEqual (GMT->current.proj.pole, -90.0)) {	/* Covers S pole; implies 360 longitude range */
+				wesn[XLO] = -180.0;	wesn[XHI] = +180.0;	wesn[YHI] = MAX(wesn[YLO], wesn[YHI]);	wesn[YLO] = -90.0;
+			}
+			else if (doubleAlmostEqual (GMT->current.proj.pole, +90.0)) {	/* Covers N pole; implies 360 longitude range */
+				wesn[XLO] = -180.0;	wesn[XHI] = +180.0;	wesn[YLO] = MIN(wesn[YLO], wesn[YHI]);	wesn[YHI] = +90.0;
+			}
+		}
 		GMT_memcpy (Geo->header->wesn, wesn, 4, double);
 
 		offset = Rect->header->registration;	/* Same as input */
