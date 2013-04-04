@@ -13,13 +13,13 @@ cat tmp.eps >> $ps
 # Median without -E
 psxy -R -J -O -T -K -Y-2.5i >> $ps
 cat tmp.eps >> $ps
-filter1d -Fm100 -N0 noise.txt | psxy -R -J -O -K -W2p,blue >> $ps
+filter1d -Fm100 -N0 noise.txt | psxy -R-500/500/-300/300 -J -O -K -W2p,blue >> $ps
 # Median with -E
 psxy -R -J -O -T -K -Y-2.5i >> $ps
 cat tmp.eps >> $ps
-filter1d -Fm100 -E -N0 noise.txt | psxy -R -J -O -K -W2p,blue >> $ps
+filter1d -Fm100 -E -N0 noise.txt | psxy -R-500/500/-300/300 -J -O -K -W2p,blue >> $ps
 # Median with -E then Gaussian
 psxy -R -J -O -T -K -Y-2.5i >> $ps
 cat tmp.eps >> $ps
-filter1d -Fm100 -E -N0 noise.txt | filter1d -Fg100 -E -N0 | psxy -R -J -O -K -W2p,blue >> $ps
+filter1d -Fm100 -E -N0 noise.txt | filter1d -Fg100 -E -N0 | psxy -R-500/500/-300/300 -J -O -K -W2p,blue >> $ps
 psxy -R -J -O -T >> $ps
