@@ -1006,6 +1006,8 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 		free(Ctrl->A.file);
 	}
 #endif
-
+	if (!Ctrl->C.active && GMT_Destroy_Data (API, GMT_ALLOCATED, &P) != GMT_OK) {
+		Return (API->error);
+	}
 	Return (EXIT_SUCCESS);
 }
