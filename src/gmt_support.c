@@ -2604,7 +2604,7 @@ struct GMT_PALETTE * GMT_Get_CPT (struct GMT_CTRL *GMT, char *file, enum GMT_enu
 	if (GMT_File_Is_Memory (file) || (file && file[0] && !access (file, R_OK))) {	/* A cptfile was given and exists or is memory location */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, file, NULL);
 	}
-	else {	/* Create a rought equidistant, continuous 16-level CPT on the fly */
+	else {	/* Create a roughly equidistant, continuous 16-level CPT on the fly */
 		char out_string[GMTAPI_STRLEN], buffer[GMT_BUFSIZ], *master = NULL;
 		int object_ID;
 

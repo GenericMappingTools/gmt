@@ -1019,17 +1019,23 @@ int GMTAPI_is_registered (struct GMTAPI_CTRL *API, unsigned int family, unsigned
 	for (i = 0, item = GMTAPI_NOTSET; item == GMTAPI_NOTSET && i < API->n_objects; i++) {
 		if (!API->object[i]) continue;					/* Empty object */
 		if (API->object[i]->status != GMT_IS_UNUSED) {	/* Has already been read - do we wish to reset this count ? */
-			if (family == GMT_IS_GRID && (mode & GMT_GRID_IS_COMPLEX_MASK) && (mode & GMT_GRID_DATA_ONLY)) {
-				/* Check if complex grid already has one layer and we are reading the next one */
-				struct GMT_GRID *G = gmt_get_grid_data (resource);	/* Get pointer to grid */
-				unsigned int cmplx = mode & GMT_GRID_IS_COMPLEX_MASK;
-				if (G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK && G->header->complex_mode != cmplx && filename) {
-					/* Apparently so, either had real and now getting image or vice versa. */
-					free ((void *)API->object[i]->filename);	/* Free previous grid name and replace with current name */
-					API->object[i]->filename = strdup (filename);
-					mode |= GMT_IO_RESET;	/* Reset so we may read in the 2nd component grid */
+			if (family == GMT_IS_GRID && (mode & GMT_GRID_DATA_ONLY)) {
+				if (mode & GMT_GRID_IS_COMPLEX_MASK) {
+					/* Check if complex grid already has one layer and we are reading the next one */
+					struct GMT_GRID *G = gmt_get_grid_data (resource);	/* Get pointer to grid */
+					unsigned int cmplx = mode & GMT_GRID_IS_COMPLEX_MASK;
+					if (G->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK && G->header->complex_mode != cmplx && filename) {
+						/* Apparently so, either had real and now getting image or vice versa. */
+						free ((void *)API->object[i]->filename);	/* Free previous grid name and replace with current name */
+						API->object[i]->filename = strdup (filename);
+						mode |= GMT_IO_RESET;	/* Reset so we may read in the 2nd component grid */
+					}
+				}
+				else {	/* Just read the header earlier, do the reset */
+					mode |= GMT_IO_RESET;	/* Reset so we may read in the grid data */
 				}
 			}
+			
 			if (!(mode & GMT_IO_RESET)) continue;	/* No reset so we refuse */
 			API->object[i]->status = GMT_IS_UNUSED;	/* Reset so we may continue to read it */
 		}
@@ -3651,6 +3657,16 @@ int GMT_Write_Data (void *V_API, unsigned int family, unsigned int method, unsig
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 
 	if (output) {	/* Case 1: Save to a single specified destination.  Register it first. */
+#if 0		/* This is unresolved */
+		if ((out_ID = GMTAPI_Memory_Registered (API, family, GMT_OUT, output)) != GMTAPI_NOTSET) {	/* Output is a memory resource */
+			int in_ID, item = GMTAPI_ptr2id (API, data);
+			if (item == GMTAPI_NOTSET) {	/* Register this resource since it otherwise wont get destroyed */
+				if ((in_ID = GMT_Register_IO (API, family, GMT_IS_REFERENCE, geometry, GMT_IN, wesn, data)) == GMTAPI_NOTSET) return_error (API, API->error);
+				if ((item = GMTAPI_Validate_ID (API, family, in_ID, GMT_IN)) == GMTAPI_NOTSET) return_error (API, API->error);
+				API->object[item]->data = data;	/* Hook the resources to be written to memory here so it can be destroyed later */
+			}
+		}
+#endif
 		if ((out_ID = GMT_Register_IO (API, family, method, geometry, GMT_OUT, wesn, output)) == GMTAPI_NOTSET) return_error (API, API->error);
 	}
 	else if (output == NULL && geometry) {	/* Case 2: Save to stdout.  Register stdout first. */
