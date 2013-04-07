@@ -1315,6 +1315,7 @@ uint64_t gmt_resample_path_spherical (struct GMT_CTRL *GMT, double **lon, double
 	
 	GMT_free (GMT, lon_in);
 	GMT_free (GMT, lat_in);
+	GMT_free (GMT, dist_in);
 	*lon = lon_out;
 	*lat = lat_out;
 	return (n_out);
@@ -1379,6 +1380,7 @@ uint64_t gmt_resample_path_cartesian (struct GMT_CTRL *GMT, double **x, double *
 	
 	GMT_free (GMT, x_in);
 	GMT_free (GMT, y_in);
+	GMT_free (GMT, dist_in);
 	*x = x_out;
 	*y = y_out;
 	return (n_out);

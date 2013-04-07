@@ -442,6 +442,8 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 				GMT_free (GMT, dist_in);	GMT_free (GMT, t_out);
 				GMT_free (GMT, lon);		GMT_free (GMT, lat);
 			}
+			else if (!Ctrl->N.active)
+				GMT_free (GMT, t_out);
 		}
 	}
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, geometry, Dout->io_mode, NULL, Ctrl->Out.file, Dout) != GMT_OK) {
