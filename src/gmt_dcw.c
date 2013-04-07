@@ -114,14 +114,6 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	
 	if (!F->codes || F->codes[0] == '\0') return NULL;
 	
-	GMT_getsharepath (GMT, "coast/DCW/NA", "US", ".nc", path);	/* Look for the US polygon */
-	if (GMT_access (GMT, path, F_OK)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The DCW country polygons are not available.  Download the file\n");
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "http://www.soest.hawaii.edu/gmt/gmt-dcw.zip and unzip in your\n");
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT5 installation's share/coast directory.\n");
-		return NULL;
-	}
-	
 	for (k = 0; k < strlen (F->codes); k++) if (F->codes[k] == ',') n_items++;
 
 	qsort ((void *)GMT_DCW_country, (size_t)GMT_DCW_COUNTRIES, sizeof (struct GMT_DCW_COUNTRY), gmt_dcw_comp_countries);	/* Sort on country code */
@@ -174,7 +166,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		else
 			sprintf (file, "%s/%s", GMT_DCW_country[k].continent, GMT_DCW_country[k].code);
 			
-		GMT_getsharepath (GMT, "coast/DCW", file, ".nc", path);
+		GMT_getsharepath (GMT, "DCW", file, ".nc", path);
 
 		if ((retval = nc_open (path, NC_NOWRITE, &ncid))) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s!\n", path);

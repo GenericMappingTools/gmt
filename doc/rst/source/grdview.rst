@@ -12,7 +12,7 @@ grdview - Create 3-D perspective image or surface mesh from a grid
 **grdview** *relief\_file* **-J**\ *parameters* [
 **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ *cptfile*] [
 **-G**\ *drapefile* \| **-G**\ *grd\_r*,\ *grd\_g*,\ *grd\_b* ] [
-**-I**\ *intensfile* ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [
+**-I**\ *intensfile*\ \|\ *intensity* ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [
 **-N**\ *level*\ [/*color*] ] [ **-O** ] [ **-P** ] [
 **-Q**\ *type*\ [**g**\ ] ] [
 **-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ] ] [
@@ -72,8 +72,9 @@ on intensities provided in a separate grid file.
     separated by commas. These files must contain the red, green, and
     blue colors directly (in 0-255 range) and no cpt file is needed. The
     *drapefile* may be of higher resolution than the *relief\_file*.
-**-I**\ *intensfile*
-    Gives the name of a grid file with intensities in the (-1,+1) range.
+**-I**\ *intensfile*\ \|\ *intensity*
+    Gives the name of a grid file with intensities in the (-1,+1) range,
+    or a constant intensity to apply everywhere.
     [Default is no illumination]. 
 
 .. include:: explain_-K.rst_

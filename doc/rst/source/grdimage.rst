@@ -13,7 +13,7 @@ grdimage - Project grids or images and plot them on maps
 **-A**\ *out\_img*\ **=**\ *driver* ] **-C**\ *cptfile* [
 **-D**\ [**r**\ ] ] **-J**\ *parameters* [
 **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-Ei**\ [\|*dpi*] ] [
-**-G**\ [**f**\ \|\ **b**]\ *color* ] [ **-I**\ *intensfile* ] [
+**-G**\ [**f**\ \|\ **b**]\ *color* ] [ **-I**\ *intensfile*\ \|\ *intensity* ] [
 **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [ **-M** ] [ **-N** ] [
 **-O** ] [ **-P** ] [ **-Q** ] [
 **-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ] ] [
@@ -120,8 +120,9 @@ A (color) *PostScript* file is output.
     option will instead use the image as a transparent mask and paint
     the mask (or its inverse, with **-Gb**) with the given color
     combination.
-**-I**\ *intensfile*
-    Gives the name of a grid file with intensities in the (-1,+1) range.
+**-I**\ *intensfile*\ \|\ *intensity*
+    Gives the name of a grid file with intensities in the (-1,+1) range,
+    or a constant intensity to apply everywhere.
     [Default is no illumination]. 
 
 .. include:: explain_-Jz.rst_

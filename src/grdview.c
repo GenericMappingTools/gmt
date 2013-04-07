@@ -71,8 +71,10 @@ struct GRDVIEW_CTRL {
 		bool image;
 		char *file[3];
 	} G;
-	struct I {	/* -G<intensfile> */
+	struct I {	/* -I<intensfile>|<value> */
 		bool active;
+		bool constant;
+		double value;
 		char *file;
 	} I;
 	struct N {	/* -N<level>[/<color>] */
@@ -322,7 +324,7 @@ int GMT_grdview_usage (struct GMTAPI_CTRL *API, int level)
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdview <topogrid> %s [-B<tickinfo>] [-C<cpt>] [-G<drapegrid> | -G<grd_r>,<grd_g>,<grd_b>]\n", GMT_J_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I<intensgrid>] [%s] [-K] [-N<level>[/<color>]] [-O] [-P] [-Q<type>[g]]\n", GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I-I<intensgrid>|<value>] [%s] [-K] [-N<level>[/<color>]] [-O] [-P] [-Q<type>[g]]\n", GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S<smooth>] [-T[s][o[<pen>]]]\n", GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<type><pen>] [%s]\n\t[%s] [%s] [%s]\n", GMT_c_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_f_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\n", GMT_n_OPT, GMT_p_OPT, GMT_t_OPT);
@@ -339,7 +341,8 @@ int GMT_grdview_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note that -Jz and -N always refers to the <topogrid>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give three grid files with the red, green, and blue components in 0-255 range.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If so, you must also choose -Qi.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Give name of intensity file and selects illumination.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-I Use illumination. Append name of intensity grid file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For a constant intensity, just give the value instead.\n");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Draw a horizontal plane at z = level.  Append color [/<color>] to paint\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   the facade between the plane and the data perimeter.\n");
@@ -419,9 +422,18 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 					n_errors++;
 				}
 				break;
-			case 'I':	/* Intensity grid */
+			case 'I':	/* Use intensity from grid or constant */
 				Ctrl->I.active = true;
-				Ctrl->I.file = strdup (opt->arg);
+				if (!GMT_access (GMT, opt->arg, R_OK))	/* Got a file */
+					Ctrl->I.file = strdup (opt->arg);
+				else if (opt->arg[0] && !GMT_not_numeric (GMT, opt->arg)) {	/* Looks like a constant value */
+					Ctrl->I.value = atof (opt->arg);
+					Ctrl->I.constant = true;
+				}
+				else {
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I: Requires a valid grid file or a constant\n");
+					n_errors++;
+				}
 				break;
 #ifdef GMT_COMPAT
 			case 'L':	/* BCs */
@@ -538,7 +550,7 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 		}
 		n_errors += GMT_check_condition (GMT, n_drape == 3 && Ctrl->Q.mode != GRDVIEW_IMAGE, "R/G/B drape requires -Qi option\n");
 	}
-	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->I.file, "Syntax error -I option: Must specify intensity file\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->I.active && !Ctrl->I.constant && !Ctrl->I.file, "Syntax error -I option: Must specify intensity file or value\n");
 	n_errors += GMT_check_condition (GMT, (Ctrl->Q.mode == GRDVIEW_SURF || Ctrl->Q.mode == GRDVIEW_IMAGE || Ctrl->W.contour) && !Ctrl->C.file && !Ctrl->G.image, "Syntax error: Must specify color palette table\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Q.mode == GRDVIEW_IMAGE && Ctrl->Q.dpi <= 0, "Syntax error -Qi option: Must specify positive dpi\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && GMT->current.proj.JZ_set, "Syntax error -T option: Cannot specify -JZ|z\n");
@@ -551,7 +563,8 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 
 int GMT_grdview (void *V_API, int mode, void *args)
 {
-	bool get_contours, bad, good, pen_set, begin, saddle, drape_resample = false, nothing_inside = false;
+	bool get_contours, bad, good, pen_set, begin, saddle, drape_resample = false;
+	bool nothing_inside = false, use_intensity_grid;
 	unsigned int c, nk, n4, row, col, n_drape = 0, n_edges, d_reg[3], i_reg = 0;
 	unsigned int t_reg, n_out, k, k1, ii, jj, PS_colormask_off = 0, *edge = NULL;
 	int i, j, i_bin, j_bin, i_bin_old, j_bin_old, i_start, i_stop, j_start, j_stop;
@@ -596,6 +609,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 	/*---------------------------- This is the grdview main code ----------------------------*/
 
 	GMT->current.plot.mode_3D = 1;	/* Only do background axis first; do foreground at end */
+	use_intensity_grid = (Ctrl->I.active && !Ctrl->I.constant);	/* We want to use the intensity grid */
 	
 	if (Ctrl->C.active) {
 		if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
@@ -613,7 +627,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 	if ((Topo = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
-	if (Ctrl->I.active && (Intens = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->I.file, NULL)) == NULL) {	/* Get header only */
+	if (use_intensity_grid && (Intens = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->I.file, NULL)) == NULL) {	/* Get header only */
 		Return (API->error);
 	}
 
@@ -641,7 +655,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 
 	if (!GMT_grd_setregion (GMT, Topo->header, wesn, BCR_BILINEAR))
 		nothing_inside = true;
-	else if (Ctrl->I.active && !GMT_grd_setregion (GMT, Intens->header, wesn, BCR_BILINEAR))
+	else if (use_intensity_grid && !GMT_grd_setregion (GMT, Intens->header, wesn, BCR_BILINEAR))
 		nothing_inside = true;
 	
 	if (nothing_inside) {
@@ -779,7 +793,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 		GMT_change_grdreg (GMT, Z->header, GMT_GRID_NODE_REG);	/* Ensure gridline registration, again */
 	}
 
-	if (Ctrl->I.active) {	/* Illumination wanted */
+	if (use_intensity_grid) {	/* Illumination wanted */
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing illumination grid\n");
 
@@ -910,9 +924,12 @@ int GMT_grdview (void *V_API, int mode, void *args)
 		S.coord = GMT_memory (GMT, NULL, 2, double *);
 		GMT_grd_loop (GMT, Z, row, col, ij) {	/* Compute rgb for each pixel */
 			if (GMT_is_fnan (Topo->data[ij]) && Ctrl->T.skip) continue;
-			if (Ctrl->I.active && Ctrl->T.skip && GMT_is_fnan (Intens->data[ij])) continue;
+			if (use_intensity_grid && Ctrl->T.skip && GMT_is_fnan (Intens->data[ij])) continue;
 			GMT_get_rgb_from_z (GMT, P, Topo->data[ij], fill.rgb);
-			if (Ctrl->I.active) GMT_illuminate (GMT, Intens->data[ij], fill.rgb);
+			if (use_intensity_grid)
+				GMT_illuminate (GMT, Intens->data[ij], fill.rgb);
+			else
+				GMT_illuminate (GMT, Ctrl->I.value, fill.rgb);
 			n = GMT_graticule_path (GMT, &xx, &yy, 1, xval[col] - inc2[GMT_X], xval[col] + inc2[GMT_X], yval[row] - inc2[GMT_Y], yval[row] + inc2[GMT_Y]);
 			GMT_setfill (GMT, &fill, Ctrl->T.outline);
 			S.coord[GMT_X] = xx;	S.coord[GMT_Y] = yy;	S.n_rows = n;
@@ -952,7 +969,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 			iy = GMT_memory (GMT, NULL, Z->header->nm, int);
 			x_drape = GMT_grd_coord (GMT, Z->header, GMT_X);
 			y_drape = GMT_grd_coord (GMT, Z->header, GMT_Y);
-			if (Ctrl->I.active) int_drape = GMT_memory (GMT, NULL, Z->header->mx*Z->header->my, float);
+			if (use_intensity_grid) int_drape = GMT_memory (GMT, NULL, Z->header->mx*Z->header->my, float);
 			bin = 0;
 			GMT_grd_loop (GMT, Z, row, col, ij) {	/* Get projected coordinates converted to pixel locations */
 				value = GMT_get_bcr_z (GMT, Topo, x_drape[col], y_drape[row]);
@@ -964,12 +981,12 @@ int GMT_grdview (void *V_API, int mode, void *args)
 					ix[bin] = MAX(0, MIN(irint (floor((xp - GMT->current.proj.z_project.xmin) * Ctrl->Q.dpi)), last_i));
 					iy[bin] = MAX(0, MIN(irint (floor((yp - GMT->current.proj.z_project.ymin) * Ctrl->Q.dpi)), last_j));
 				}
-				if (Ctrl->I.active) int_drape[ij] = (float)GMT_get_bcr_z (GMT, Intens, x_drape[col], y_drape[row]);
+				if (use_intensity_grid) int_drape[ij] = (float)GMT_get_bcr_z (GMT, Intens, x_drape[col], y_drape[row]);
 				bin++;
 			}
 			GMT_free (GMT, x_drape);
 			GMT_free (GMT, y_drape);
-			if (Ctrl->I.active) {	/* Reset intensity grid so that we have no boundary row/cols */
+			if (use_intensity_grid) {	/* Reset intensity grid so that we have no boundary row/cols */
 				GMT_free_aligned (GMT, Intens->data);
 				Intens->data = int_drape;
 			}
@@ -1075,21 +1092,21 @@ int GMT_grdview (void *V_API, int mode, void *args)
 								GMT_get_rgb_from_z (GMT, P, Z->data[d_node], rgb);
 								if (GMT_is_fnan (Z->data[d_node])) continue;	/* Skip NaNs in the z-data*/
 							}
-							if (Ctrl->I.active && GMT_is_fnan (Intens->data[d_node])) continue;	/* Skip NaNs in the intensity data*/
+							if (use_intensity_grid && GMT_is_fnan (Intens->data[d_node])) continue;	/* Skip NaNs in the intensity data*/
 							/* We don't want to blend in the (typically) gray NaN colors with the others. */
 							
 							good++;
 							dist = quick_idist (GMT, ip, jp, ix[node], iy[node]);
 							if (dist == 0) {	/* Only need this corner value */
 								done = true;
-								if (Ctrl->I.active) intval = Intens->data[d_node];
+								if (Ctrl->I.active) intval = (use_intensity_grid) ? Intens->data[d_node] : Ctrl->I.value;
 							}
 							else {	/* Crude weighted average based on 1/distance to the nearest node */
 								w = 1.0 / (double)dist;
 								sum_r += rgb[0] * w;
 								sum_g += rgb[1] * w;
 								sum_b += rgb[2] * w;
-								if (Ctrl->I.active) sum_i += Intens->data[d_node] * w;
+								if (use_intensity_grid) sum_i += Intens->data[d_node] * w;
 								sum_w += w;
 							}
 						}
@@ -1098,7 +1115,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 							rgb[0] = sum_r * sum_w;
 							rgb[1] = sum_g * sum_w;
 							rgb[2] = sum_b * sum_w;
-							if (Ctrl->I.active) intval = sum_i * sum_w;
+							if (Ctrl->I.active) intval = (use_intensity_grid) ? sum_i * sum_w : Ctrl->I.value;
 						}
 						if (Ctrl->Q.special) GMT_get_rgb_from_z (GMT, P, Z->data[ij], rgb);
 						if (Ctrl->I.active && good) GMT_illuminate (GMT, intval, rgb);
@@ -1262,8 +1279,12 @@ int GMT_grdview (void *V_API, int mode, void *args)
 				}
 
 				if (Ctrl->I.active) {
-					this_intensity = get_intensity (GMT, Intens, ij);
-					if (GMT_is_dnan (this_intensity)) continue;
+					if (use_intensity_grid) {
+						this_intensity = get_intensity (GMT, Intens, ij);
+						if (GMT_is_dnan (this_intensity)) continue;
+					}
+					else
+						this_intensity = Ctrl->I.value;
 				}
 	
 				/* Get mesh polygon */
@@ -1634,7 +1655,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 	}
 
 	GMT_change_grdreg (GMT, Topo->header, t_reg);	/* Reset registration, if required */
-	if (Ctrl->I.active) {
+	if (use_intensity_grid) {
 		GMT_change_grdreg (GMT, Intens->header, i_reg);	/* Reset registration, if required */
 	}
 	GMT_free (GMT, xx);
