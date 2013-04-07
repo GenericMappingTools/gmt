@@ -2,6 +2,13 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-04-07	pwessel
+	* share/DCW		Add the DCW files to share/DCW so all have access via pscoast.
+
+2013-04-06	pwessel
+	* grdimage.c:		Allow -I to take a constant for uniform ambient illumination
+	* grdview.c:		---"---
+
 2013-04-03	pwessel
 	* gmt_map.c:		When -Jx is used with longitudes we must use the wesn-clipping
 				and outside functions, not the Cartesian ones.

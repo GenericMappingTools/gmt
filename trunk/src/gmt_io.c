@@ -908,7 +908,8 @@ char *GMT_getsharepath (struct GMT_CTRL *GMT, const char *subdir, const char *st
 int GMT_access (struct GMT_CTRL *GMT, const char* filename, int mode)
 {	/* Like access but also checks the GMT_*DIR places */
 	char file[GMT_BUFSIZ], *c = NULL;
-
+	
+	if (GMT_File_Is_Memory (filename)) return (0);	/* Memory location always exists */
 	file[0] = '\0';		/* 'Initialize' it so we can test if it's still 'empty' after the sscanf below */
 	if (!filename || !filename[0])
 		return (-1);	/* No file given */
