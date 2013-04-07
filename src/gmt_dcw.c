@@ -167,7 +167,6 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			sprintf (file, "%s/%s", GMT_DCW_country[k].continent, GMT_DCW_country[k].code);
 			
 		GMT_getsharepath (GMT, "DCW", file, ".nc", path);
-		fprintf (stderr, "Trying to open %s\n", path);
 
 		if ((retval = nc_open (path, NC_NOWRITE, &ncid))) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s!\n", path);
