@@ -1499,6 +1499,10 @@ int GMT_grd_setregion (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *
 	/* Shift a geographic grid 360 degrees up or down to maximize the amount of longitude range */
 
 	if (GMT_x_is_lon (GMT, GMT_IN)) {
+		if (GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])) {
+			wesn[XLO] = h->wesn[XLO], wesn[XHI] = h->wesn[XHI];
+			return (1);
+		}
 		x_range = MIN (wesn[XLO], h->wesn[XHI]) - MAX (wesn[XHI], h->wesn[XLO]);
 		if (MIN (wesn[XLO], h->wesn[XHI] + 360.0) - MAX (wesn[XHI], h->wesn[XLO] + 360.0) > x_range)
 			shift_x = 360.0;
