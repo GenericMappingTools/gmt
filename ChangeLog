@@ -4,6 +4,9 @@
 
 2013-04-07	pwessel
 	* share/DCW		Add the DCW files to share/DCW so all have access via pscoast.
+	* gmt_grdio.c:		Would restrict grid region in grdimage despite doing a global map
+				with azimuthal projections.
+
 
 2013-04-06	pwessel
 	* grdimage.c:		Allow -I to take a constant for uniform ambient illumination
