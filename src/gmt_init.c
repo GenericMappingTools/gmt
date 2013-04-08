@@ -3982,9 +3982,12 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 		/* DIR GROUP */
 
 		case GMTCASE_DIR_GSHHG:
-			if (*value)
+			if (*value) {
+				if (GMT->session.GSHHGDIR)
+					free (GMT->session.GSHHGDIR);
 				/* Set session GSHHG dir */
 				GMT->session.GSHHGDIR = strdup (value);
+			}
 			break;
 		case GMTCASE_DIR_TMP:
 			if (*value) {

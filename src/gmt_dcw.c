@@ -309,6 +309,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		P->coord[GMT_X] = P->coord[GMT_Y] = NULL;
 		GMT_free_segment (GMT, P);
 	}
+	free ((void *)F->codes);
 	return (D);
 }
 
