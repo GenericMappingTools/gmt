@@ -5661,6 +5661,9 @@ void GMT_end (struct GMT_CTRL *GMT)
 	for (i = 0; i < GMT_N_PROJ4; i++)
 		free (GMT->current.proj.proj4[i].name);
 	GMT_free (GMT, GMT->current.proj.proj4);
+	for (i = 0; i < GMT_N_UNIQUE; i++) {
+		if (GMT->init.history[i]) free ((void *) GMT->init.history[i]);
+	}
 
 	if (GMT->current.setting.io_gridfile_shorthand) gmt_freeshorthand (GMT);
 
