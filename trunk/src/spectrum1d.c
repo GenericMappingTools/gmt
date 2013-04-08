@@ -720,7 +720,7 @@ int GMT_spectrum1d (void *V_API, int mode, void *args)
 
 			if (one_table) {
 				Sout = Tout->segment[seg];	/* Current output segment */
-				GMT_alloc_segment (GMT, Sout, C.n_spec, Tout->n_columns, true);
+				GMT_alloc_segment (GMT, Sout, C.n_spec, Tout->n_columns, false);
 				assign_output_spectrum1d (GMT, &C, Ctrl->C.col, n_outputs, Ctrl->W.active, Sout->coord);
 			}
 			else {

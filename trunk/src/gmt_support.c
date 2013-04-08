@@ -181,6 +181,11 @@ void GMT_memtrack_init (struct GMT_CTRL *GMT, struct MEMORY_TRACKER *M)
 	char *env = getenv ("GMT_TRACK_MEMORY"); /* 0: off; any: track; 2: log to file */
 	M->active = ( env && strncmp (env, "0", 1) != 0 ); /* track if GMT_TRACK_MEMORY != 0 */
 	M->do_log = ( env && strncmp (env, "2", 1) == 0 ); /* log if GMT_TRACK_MEMORY == 2 */
+	if (M->active) {
+		uint64_t ID;
+		ID = atoi (env);
+		if (ID > 2) M->find = ID;
+	}
 	M->search = true;
 	M->list_tail = calloc (1U, sizeof *M->list_tail);
 	M->list_tail->l = M->list_tail;
@@ -279,6 +284,11 @@ void gmt_memtrack_add (struct GMT_CTRL *GMT, struct MEMORY_TRACKER *M, const cha
 		M->n_reallocated++;
 		kind = 1;
 	}
+	if (M->find && M->find == M->n_ID) {	/* All code to stop here if set in ddd */
+		/* The item you are looking for is being allocated now */
+		int found = true;	/* Add a debug stop point here and then examine where you are */
+	}
+	entry->ID = M->n_ID++;
 
 	if (old > size) {	/* Reduction in memory */
 		kind = 2;
@@ -326,7 +336,7 @@ void gmt_treereport (struct GMT_CTRL *GMT, struct MEMORY_ITEM *x) {
 	unsigned int u;
 	char *unit[3] = {"kb", "Mb", "Gb"};
 	double tot = gmt_memtrack_mem (GMT, x->size, &u);
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Memory not freed first allocated in %s: %.3f %s [%" PRIuS " bytes]\n", x->name, tot, unit[u], x->size);
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Memory not freed first allocated in %s (ID = %" PRIu64 "): %.3f %s [%" PRIuS " bytes]\n", x->name, x->ID, tot, unit[u], x->size);
 }
 
 void gmt_treeprint (struct GMT_CTRL *GMT, struct MEMORY_TRACKER *M, struct MEMORY_ITEM *x)
@@ -4159,6 +4169,7 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char 
 		}
 		if (resample) S->n_rows = GMT_resample_path (GMT, &S->coord[GMT_X], &S->coord[GMT_Y], S->n_rows, step, mode);
 		if (get_distances) {	/* Compute cumulative distances along line */
+			if (S->coord[GMT_Z]) GMT_free (GMT, S->coord[GMT_Z]);	/* Free so we can alloc a new array */
 			S->coord[GMT_Z] = GMT_dist_array (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, true);
 			if (p_mode & GMT_GOT_ORIENT) {	/* Adjust distances to have 0 at specified origin */
 				L = 0.5 * S->coord[GMT_Z][S->n_rows-1];	/* Half-way distance to remove */

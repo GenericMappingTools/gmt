@@ -64,9 +64,10 @@ struct MATH_MACRO {
 #ifdef MEMDEBUG
 
 struct MEMORY_ITEM {
-	size_t size; /* Size of memory allocated */
-	void *ptr;   /* Memory pointer */
-	char *name;  /* Source filename and line or function name */
+	size_t size;	/* Size of memory allocated */
+	void *ptr;	/* Memory pointer */
+	char *name;	/* Source filename and line or function name */
+	uint64_t ID;	/* Unique ID for this allocation */
 	struct MEMORY_ITEM *l, *r;
 };
 
@@ -78,6 +79,8 @@ struct MEMORY_TRACKER {
 	uint64_t n_allocated;	/* Number of items allocated by GMT_memory */
 	uint64_t n_reallocated;	/* Number of items reallocated by GMT_memory */
 	uint64_t n_freed;	/* Number of items freed by GMT_free */
+	uint64_t n_ID;		/* Running number assigned to new allocations */
+	uint64_t find;		/* If > 0 then we look for this ID to be allocated */
 	size_t current;		/* Memory allocated at current time */
 	size_t maximum;		/* Highest memory count during execution */
 	size_t largest;		/* Highest memory allocation to a single variable */
