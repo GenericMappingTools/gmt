@@ -266,6 +266,7 @@ char *gmt_shore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path) {
 			if ( gshhg_require_min_version (path, version) ) {
 				fclose (fp);
 				/* update invalid GMT->session.GSHHGDIR */
+				if (GMT->session.GSHHGDIR) free ((void *)GMT->session.GSHHGDIR);
 				GMT->session.GSHHGDIR = strdup (dir);
 				return (path);
 			}
@@ -279,6 +280,7 @@ char *gmt_shore_getpathname (struct GMT_CTRL *GMT, char *stem, char *path) {
 		if ( gshhg_require_min_version (path, version) ) {
 			/* update invalid GMT->session.GSHHGDIR */
 			sprintf (dir, "%s/%s", GMT->session.SHAREDIR, "coast");
+			if (GMT->session.GSHHGDIR) free ((void *)GMT->session.GSHHGDIR);
 			GMT->session.GSHHGDIR = strdup (dir);
 			return (path);
 		}
