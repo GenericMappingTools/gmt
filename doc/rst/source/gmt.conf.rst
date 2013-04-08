@@ -119,18 +119,18 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
 
 .. _FORMAT Parameters:
 
-**FORMAT\_CLOCK\_IN**
+**FORMAT_CLOCK_IN**
     Formatting template that indicates how an input clock string is
     formatted. This template is then used to guide the reading of clock
     strings in data fields. To properly decode 12-hour clocks, append am
     or pm (or upper case) to match your data records. As examples, try
     hh:mm, hh:mm:ssAM, etc. [hh:mm:ss].
-**FORMAT\_CLOCK\_MAP**
+**FORMAT_CLOCK_MAP**
     Formatting template that indicates how an output clock string is to
     be plotted. This template is then used to guide the formatting of
-    clock strings in plot annotations. See **FORMAT\_CLOCK\_OUT** for
+    clock strings in plot annotations. See **FORMAT_CLOCK_OUT** for
     details. [hh:mm:ss].
-**FORMAT\_CLOCK\_OUT**
+**FORMAT_CLOCK_OUT**
     Formatting template that indicates how an output clock string is to
     be formatted. This template is then used to guide the writing of
     clock strings in data fields. To use a floating point format for the
@@ -144,13 +144,13 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
     examples, try hh:mm, hh.mm.ss, hh:mm:ss.xxxx, hha.m., etc.
     [hh:mm:ss]. If the format is simply - then no clock is output and
     the ISO T divider between date and clock is omitted.
-**FORMAT\_DATE\_IN**
+**FORMAT_DATE_IN**
     Formatting template that indicates how an input date string is
     formatted. This template is then used to guide the reading of date
     strings in data fields. You may specify either Gregorian calendar
     format or ISO week calendar format. Gregorian calendar: Use any
     combination of yyyy (or yy for 2-digit years; if so see
-    **TIME\_Y2K\_OFFSET\_YEAR**), mm (or o for abbreviated month name in
+    **TIME_Y2K_OFFSET_YEAR**), mm (or o for abbreviated month name in
     the current time language), and dd, with or without delimiters. For
     day-of-year data, use jjj instead of mm and/or dd. Examples can be
     ddmmyyyy, yy-mm-dd, dd-o-yyyy, yyyy/dd/mm, yyyy-jjj, etc. ISO
@@ -158,16 +158,16 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
     week and d is ISO week day. Either template must be consistent,
     e.g., you cannot specify months if you do not specify years.
     Examples are yyyyWwwd, yyyy-Www, etc. [yyyy-mm-dd].
-**FORMAT\_DATE\_MAP**
+**FORMAT_DATE_MAP**
     Formatting template that indicates how an output date string is to
     be plotted. This template is then used to guide the plotting of date
-    strings in data fields. See **FORMAT\_DATE\_OUT** for details. In
+    strings in data fields. See **FORMAT_DATE_OUT** for details. In
     addition, you may use a single o instead of mm (to plot month name)
     and u instead of W[-]ww to plot "Week ##". Both of these text
-    strings will be affected by the **TIME\_LANGUAGE**,
-    **FORMAT\_TIME\_PRIMARY\_MAP** and **FORMAT\_TIME\_SECONDARY\_MAP**
+    strings will be affected by the **TIME_LANGUAGE**,
+    **FORMAT_TIME_PRIMARY_MAP** and **FORMAT_TIME_SECONDARY_MAP**
     setting. [yyyy-mm-dd].
-**FORMAT\_DATE\_OUT**
+**FORMAT_DATE_OUT**
     Formatting template that indicates how an output date string is to
     be formatted. This template is then used to guide the writing of
     date strings in data fields. You may specify either Gregorian
@@ -185,15 +185,15 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
     leading zeros (default uses fixed width formats) [yyyy-mm-dd]. If
     the format is simply - then no date is output and the ISO T divider
     between date and clock is omitted.
-**FORMAT\_GEO\_MAP**
+**FORMAT_GEO_MAP**
     Formatting template that indicates how an output geographical
     coordinate is to be plotted. This template is then used to guide the
     plotting of geographical coordinates in data fields. See
-    **FORMAT\_GEO\_OUT** for details. In addition, you can append A
+    **FORMAT_GEO_OUT** for details. In addition, you can append A
     which plots the absolute value of the coordinate. The default is
     ddd:mm:ss. Not all items may be plotted as this depends on the
     annotation interval.
-**FORMAT\_GEO\_OUT**
+**FORMAT_GEO_OUT**
     Formatting template that indicates how an output geographical
     coordinate is to be formatted. This template is then used to guide
     the writing of geographical coordinates in data fields. The template
@@ -201,11 +201,11 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
     By default, longitudes will be reported in the range [-180,180]. The
     various terms have the following purpose:
 
-    + Output longitude in the range [0,360]
+    +D Output longitude in the range [0,360]
 
-    - Output longitude in the range [-360,0]
+    -D Output longitude in the range [-360,0]
 
-    D Use **FORMAT\_FLOAT\_OUT** for floating point degrees.
+    D Use **FORMAT_FLOAT_OUT** for floating point degrees.
 
     ddd Fixed format integer degrees
 
@@ -223,31 +223,31 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
 
     The default is D.
 
-**FORMAT\_FLOAT\_MAP**
+**FORMAT_FLOAT_MAP**
     Format (C language printf syntax) to be used when plotting double
     precision floating point numbers on maps. For geographic
-    coordinates, see **FORMAT\_GEO\_MAP**. [%.12lg].
-**FORMAT\_FLOAT\_OUT**
+    coordinates, see **FORMAT_GEO_MAP**. [%.12lg].
+**FORMAT_FLOAT_OUT**
     Format (C language printf syntax) to be used when printing double
     precision floating point numbers to output files. For geographic
-    coordinates, see **FORMAT\_GEO\_OUT**. [%.12lg]. To give some
+    coordinates, see **FORMAT_GEO_OUT**. [%.12lg]. To give some
     columns a separate format, supply one or more comma-separated
     *cols*:*format* specifications, where *cols* can be specific columns
     (e.g., 5 for 6th since 0 is the first) or a range of columns (e.g.,
     3-7). The last specification without column information will
     override the format for all other columns.
-**FORMAT\_TIME\_PRIMARY\_MAP**
+**FORMAT_TIME_PRIMARY_MAP**
     Controls how primary month-, week-, and weekday-names are formatted.
     Choose among **full**, **abbreviated**, and **character**. If the
     leading **f**, **a**, or **c** are replaced with **F**, **A**, and
     **C** the entire annotation will be in upper case [full].
-**FORMAT\_TIME\_SECONDARY\_MAP**
+**FORMAT_TIME_SECONDARY_MAP**
     Controls how secondary month-, week-, and weekday-names are
     formatted. Choose among **full**, **abbreviated**, and
     **character**. If the leading **f**, **a**, or **c** are replaced
     with **F**, **A**, and **C** the entire annotation will be in upper
     case [full].
-**FORMAT\_TIME\_STAMP**
+**FORMAT_TIME_STAMP**
     Defines the format of the time information in the UNIX time stamp.
     This format is parsed by the C function **strftime**, so that
     virtually any text can be used (even not containing any time
@@ -255,11 +255,11 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
 
 .. _GMT Miscellaneous Parameters:
 
-**GMT\_FFT**
+**GMT_FFT**
     Determines which Fast Fourier Transform (FFT) should be used among
     those that have been configured during installation. Choose from
     **auto** (pick the most suitable for the task among available
-    algorithms), **fftw**\ [,*planner\_flag*] (The Fastest Fourier
+    algorithms), **fftw**\ [,\ *planner_flag*] (The Fastest Fourier
     Transform in the West), **accelerate** (Use the Accelerate Framework
     under OS X; Note, that the number of samples to be processed must be
     a base 2 exponent), **kiss**, (Kiss FFT), **brenner** Brenner Legacy
@@ -267,25 +267,25 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
     FFTW can "learn" how to optimally compute Fourier transforms on the
     current hardware and OS by computing several FFTs and measuring
     their execution time. This so gained "Wisdom" will be stored in and
-    reloaded from the file fftw\_wisdom\_<hostname> in DIR\_USER or, if
-    DIR\_USER is not writable, in the current directory. To use this
-    feature append *planner\_flag*, which can be one of *measure*,
+    reloaded from the file fftw\_wisdom\_<hostname> in DIR_USER or, if
+    DIR_USER is not writable, in the current directory. To use this
+    feature append *planner_flag*, which can be one of *measure*,
     *patient*, and *exhaustive*; see FFTW reference for details. The
     default FFTW planner flag is *estimate*, i.e., pick a (probably
     sub-optimal) plan quickly. Note: if you need a single transform of a
     given size only, the one-time cost of the smart planner becomes
     significant. In that case, stick to the default planner, *estimate*,
     based on heuristics.
-**GMT\_HISTORY**
+**GMT_HISTORY**
     Passes the history of past common command options via the hidden
     .gmtcommands file. The different values for this setting are:
     **true**, **readonly**, **false**, to either read and write to the
     .gmtcommands file, only read, or not use the file at all [true].
-**GMT\_INTERPOLANT**
+**GMT_INTERPOLANT**
     Determines if linear (linear), Akima’s spline (akima), natural cubic
     spline (cubic) or no interpolation (none) should be used for 1-D
     interpolations in various programs [akima].
-**GMT\_EXTRAPOLATE\_VAL**
+**GMT_EXTRAPOLATE_VAL**
     Determines what to do if extrapolating beyond the data domain.
     Choose among ’NaN’, ’extrap’ or ’extrapval,val’ (with no quotes). In
     the first case return NaN for any element of x that is outside range
@@ -293,12 +293,12 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
     extrapolation values. Third case sets the extrapolation values to
     the constant value passed in ’val’ (this value must off course be
     numeric).
-**GMT\_TRIANGULATE**
+**GMT_TRIANGULATE**
     Determines if we use the **Watson** [Default] or **Shewchuk**
     algorithm (if configured during installation) for triangulation.
     Note that Shewchuk is required for operations involving Voronoi
     constructions.
-**GMT\_VERBOSE**
+**GMT_VERBOSE**
     (**\* -V**) Determines the level of verbosity used by **GMT**
     programs. Choose among 6 levels; each level adds to the verbosity of
     the lower levels: **q**\ uiet, **n**\ normal (errors and warnings),

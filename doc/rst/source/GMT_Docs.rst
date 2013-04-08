@@ -4315,7 +4315,12 @@ Figure [fig:GMT\ :sub:`l`\ inear].
 
 The complete commands given to produce this plot were
 
-Normally, the user’s *x*-values will increase to the right and the
+   ::
+
+     psxy -R0/100/0/10 -JX3i/1.5i -Ba20f10g10/a2f1g2WSne -Wthick,- -P -K sqrt.d > GMT_linear.ps  
+     psxy -R -J -St0.075i -Glightgray -W -O sqrt.d10 >> GMT_linear.ps  
+
+Normally, the user's *x*-values will increase to the right and the
 *y*-values will increase upwards. It should be noted that in many
 situations it is desirable to have the direction of positive coordinates
 be reversed. For example, when plotting depth on the *y*-axis it makes
@@ -4341,6 +4346,12 @@ geographical) or **d** (for degrees) directly after **-R** or by
 appending a **g** or **d** to the end of the **-Jx** (or **-JX**)
 option. As an example, we want to plot a crude world map centered on
 125E. Our command will be
+
+    ::
+
+      gmtset GRID_CROSS_SIZE_PRIMARY 0.1i BASEMAP_TYPE FANCY PLOT_DEGREE_FORMAT ddd:mm:ssF  
+      pscoast -Rg-55/305/-90/90 -Jx0.014i -B60g30f15/30g30f15WSen -Dc -A1000 -Glightgray -Wthinnest -P \  
+              > GMT_linear_d.ps  
 
 with the result reproduced in
 Figure [fig:GMT\ :sub:`l`\ inear\ :sub:`d`].
@@ -4492,8 +4503,8 @@ the option to use the abbreviations used by the **Proj4** mapping
 package. Since some of the *GMT* projections are not in **Proj4**, we
 invented some of our own as well. For a full list of both the old 1- and
 2-letter codes, as well as the **Proj4**-equivalents see the quick
-reference cards in Section [sec:purpose]. For example, **-JM**15c and
-**-JMerc**/15c have the same meaning.
+reference cards in Section [sec:purpose]. For example, **-JM**\ 15c and
+**-JMerc**\ /15c have the same meaning.
 
 Conic projections
 -----------------
@@ -5334,8 +5345,11 @@ parallels (and central meridian). To use it, you need to select:
 -  Scale along equator in inch/degree or 1:xxxxx (**-Ji**), or map width
    (**-JI**).
 
-A simple world map using the sinusoidal projection is therefore obtained
-by
+A simple world map using the sinusoidal projection is therefore obtained by
+
+   ::
+
+     pscoast -Rd -JI4.5i -Bg30/g15 -Dc -A10000 -Ggray -P > GMT_sinusoidal.ps         
 
 To reduce distortion of shape the interrupted sinusoidal projection was
 introduced in 1927. Here, three symmetrical segments are used to cover
@@ -5345,7 +5359,13 @@ the entire world. Traditionally, the interruptions are at 160W, 20W, and
 the results. To produce an interrupted world map (with the traditional
 boundaries just mentioned) that is 5.04 inches wide we use the scale
 5.04/360 = 0.014 and offset the subsequent plots horizontally by their
-widths (140:math:`\cdot`\ 0.014 and 80\ :math:`\cdot`\ 0.014):
+widths (140\ :math:`\cdot`\ 0.014 and 80\ :math:`\cdot`\ 0.014):
+
+   ::
+
+     pscoast -R200/340/-90/90 -Ji0.014i -Bg30/g15 -A10000 -Dc -Gblack -K -P > GMT_sinus_int.ps  
+     pscoast -R-20/60/-90/90 -Ji0.014i -Bg30/g15 -Dc -A10000 -Gblack -X1.96i -O -K >> GMT_sinus_int.ps  
+     pscoast -R60/200/-90/90 -Ji0.014i -Bg30/g15 -Dc -A10000 -Gblack -X1.12i -O >> GMT_sinus_int.ps  
 
 The usefulness of the interrupted sinusoidal projection is basically
 limited to display of global, discontinuous data distributions like
@@ -5365,6 +5385,10 @@ world enclosed in a circle. To use it you must enter
 -  Scale along equator in inch/degree or 1:xxxxx (**-Jv**), or map width (**-JV**).
 
 Centered on the Dateline, the example below was created by this command:
+
+    ::
+
+      pscoast -Rg -JV4i -Bg30/g15 -Dc -Glightgray -A10000 -Wthinnest -P > GMT_grinten.ps 
 
 Creating GMT Graphics
 =====================
