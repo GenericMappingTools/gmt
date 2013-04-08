@@ -1,5 +1,7 @@
 .. |SYN_OPT-B| replace:: **-B**\ [**p**\ \|\ **s**]\ *parameters*
 
+.. |SYN_OPT-I| replace:: **-I**\ *xinc*\ [*unit*][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*][\ **=**\ \|\ **+**]]
+
 .. |SYN_OPT-R| replace:: **-R**\ [*unit*]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**]
 
 .. |SYN_OPT-Rz| replace:: **-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ]

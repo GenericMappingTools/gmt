@@ -4,8 +4,8 @@ grdvector
 
 grdvector - Plot vector field from two component grids
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
@@ -13,18 +13,18 @@ grdvector - Plot vector field from two component grids
 **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ *cptfile* ] [
 **-G**\ *fill* ] [
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
-] [ **-K** ] [ **-N** ] [ **-O** ] [ **-P** ] [ **-Q**\ *parameters* ] [
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
+] [ **-K** ] [ **-N** ] [ **-O** ] [ **-P** ] [ **-Q**\ *parameters* ]
+[ **-R**\ *west*/*east*/*south*/*north*\ [**r**] ] [
 **-S**\ [**i**\ \|\ **l**\ ]\ *scale* ] [ **-T** ] [
-**-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*\ ]
+**-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*]
 ] [ **-W**\ *pen* ] [
-**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
+**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**]]
 ] [
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
+**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**]]
 ] [ **-Z** ] [ **-c**\ *copies* ] [
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
 **-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
-] [ **-t**\ [*transp*\ ] ]
+] [ **-t**\ [*transp*] ]
 
 `Description <#toc2>`_
 ----------------------
@@ -34,7 +34,7 @@ y-components of a vector field and produces a vector field plot by
 drawing vectors with orientation and length according to the information
 in the files. Alternatively, polar coordinate components may be used (r,
 theta). **grdvector** is basically a short-hand for using 2 calls to
-**grd2xyz** and pasting the output through **psxy** **-SV**. 
+`grd2xyz <grd2xyz.html>`_ and pasting the output through **psxy -SV**. 
 
 .. include:: explain_commonitems.rst_
 
@@ -127,23 +127,23 @@ theta). **grdvector** is basically a short-hand for using 2 calls to
 .. include:: explain_vectors.rst_
 
 
-`Examples <#toc8>`_
--------------------
+Examples
+--------
 
 To draw the vector field given by the files r.nc and theta.nc on a
 linear plot with scale 5 cm per data unit, using vector rather than
 stick plot, scale vector magnitudes so that 10 units equal 1 inch, and
 center vectors on the node locations, run
 
-    grdvector r.nc theta.nc **-Jx**\ 5\ **c** -A -Q0.1i+e+jc **-S**\ 10\ **i** > gradient.ps
+    grdvector r.nc theta.nc -Jx5c -A -Q0.1i+e+jc -S10i > gradient.ps
 
 To plot a geographic data sets given the files com_x.nc and comp_y.nc,
 using a scale of 200 km per data unit, try
 
-grdvector comp_x.nc comp_y.nc **-JH**\ 0/20\ **c** -Q0.1i+e+jc **-S**\ 200 > globe.ps
+    grdvector comp_x.nc comp_y.nc -JH0/20c -Q0.1i+e+jc -S200 > globe.ps
 
-`See Also <#toc9>`_
--------------------
+See Also
+--------
 
 `gmt <gmt.html>`_, `gmtcolors <gmtcolors.html>`_,
 `grdcontour <grdcontour.html>`_, `psxy <psxy.html>`_
