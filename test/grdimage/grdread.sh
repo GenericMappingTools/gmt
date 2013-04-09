@@ -6,7 +6,7 @@
 
 ps=grdread.ps
 $AWK 'BEGIN{n=12;m=0;for (j=0;j<6*n;j++) {if (j%n==0) m--;print sin(m*3.14159265/6);m++}}' | \
-	xyz2grd -R15/345/-75/75 -I30 -Gtmp.nc -ZTLa -fg $*
+	xyz2grd -R15/345/-75/75 -I30 -Gtmp.nc -ZTLa -fg
 grdreformat tmp.nc tmp.b=bf
 makecpt -Crainbow -T-1/1/0.1 > tmp.cpt
 # Read netCDF grid
