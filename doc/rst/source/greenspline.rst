@@ -172,7 +172,7 @@ None.
     not exceed the range of the given data.  The next is a 2-D or 3-D spline: (**r**)
     Regularized spline in tension [*Mitasova and Mitas*, 1993]; again,
     append *tension* and optional *scale*. The last two are spherical
-    surface splines and both imply **-D**\ 4 **-fg**: (**p**) Minimum
+    surface splines and both imply **-D**\ 4: (**p**) Minimum
     curvature spline [*Parker*, 1994], (**q**) Continuous curvature
     spline in tension [*Wessel and Becker*, 2008]; append *tension*. The
     G(\ **x’**; **x’**) for the last method is slower to compute; by
@@ -272,12 +272,12 @@ a measure of uranium oxide concentrations (in percent), try
 To recreate Parker’s [1994] example on a global 1x1 degree grid,
 assuming the data are in file mag\_obs\_1990.d, try
 
-    greenspline -V -Rg -fg -Sp -D3 -I1 -GP1994.nc mag\_obs\_1990.d
+    greenspline -V -Rg -Sp -D3 -I1 -GP1994.nc mag\_obs\_1990.d
 
 To do the same problem but applying tension and use pre-calculated Green
 functions, use
 
-    greenspline -V -Rg -fg -SQ0.85 -D3 -I1 -GWB2008.nc mag\_obs\_1990.d
+    greenspline -V -Rg -SQ0.85 -D3 -I1 -GWB2008.nc mag\_obs\_1990.d
 
 `Considerations <#toc10>`_
 --------------------------
