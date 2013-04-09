@@ -2411,8 +2411,12 @@ this flexibility with a series of examples. While all our examples will
 only show a single :math:`x`-axis, time-axis is supported for all axes.
 
 Our first example shows a time period of almost two months in Spring
-2000. We want to annotate the month intervals as well as the date at the
-start of each week:
+2000. We want to annotate the month intervals as well as the date at the start of each week:
+
+   ::
+
+     gmtset FORMAT_DATE_MAP=-o FONT_ANNOT_PRIMARY +9p
+     psbasemap -R2000-4-1T/2000-5-25T/0/1 -JX5i/0.2i -Bpa7Rf1d -Bsa1OS -P > GMT_-B_time1.ps
 
 These commands result in Figure . Note the leading hyphen in the
 **FORMAT\_DATE\_MAP** removes leading zeros from calendar items (e.g.,
@@ -2421,21 +2425,31 @@ These commands result in Figure . Note the leading hyphen in the
 The next example shows two different ways to annotate an axis portraying
 2 days in July 1969:
 
+   ::
+
+     gmtset FORMAT_DATE_MAP "o dd" FORMAT_CLOCK_MAP hh:mm FONT_ANNOT_PRIMARY +9p
+     psbasemap -R1969-7-21T/1969-7-23T/0/1 -JX5i/0.2i -Bpa6Hf1h -Bsa1KS -P -K > GMT_-B_time2.ps
+     psbasemap -R -J -Bpa6Hf1h -Bsa1DS -O -Y0.65i >> GMT_-B_time2.ps  
+
 The lower example (Figure ) chooses to annotate the weekdays (by
 specifying **a**\ 1\ **K**) while the upper example choses dates (by
 specifying **a**\ 1\ **D**). Note how the clock format only selects
 hours and minutes (no seconds) and the date format selects a month name,
 followed by one space and a two-digit day-of-month number.
 
-The third example presents two years, annotating both the years and
-every 3rd month.
+The third example presents two years, annotating both the years and every 3rd month.
+
+   ::
+
+     gmtset FORMAT_DATE_MAP o FORMAT_TIME_PRIMARY_MAP Character FONT_ANNOT_PRIMARY +9p
+     psbasemap -R1997T/1999T/0/1 -JX5i/0.2i -Bpa3Of1o -Bsa1YS -P > GMT_-B_time3.ps 
 
 Note that while the year annotation is centered on the 1-year interval,
 the month annotations must be centered on the corresponding month and
-*not* the 3-month interval. The **FORMAT\_DATE\_MAP** selects month name
-only and **FORMAT\_TIME\_PRIMARY\_MAP** selects the 1-character, upper
+*not* the 3-month interval. The **FORMAT_DATE_MAP** selects month name
+only and **FORMAT_TIME_PRIMARY_MAP** selects the 1-character, upper
 case abbreviation of month names using the current language (selected by
-**TIME\_LANGUAGE**).
+**TIME_LANGUAGE**).
 
 The fourth example (Figure ) only shows a few hours of a day, using
 relative time by specifying **t** in the **-R** option while the
@@ -2443,21 +2457,44 @@ relative time by specifying **t** in the **-R** option while the
 annotations, ask for a 12-hour clock, and let time go from right to
 left:
 
+   ::
+
+     gmtset FORMAT_CLOCK_MAP=-hham FONT_ANNOT_PRIMARY +9p
+     psbasemap -R0.2t/0.35t/0/1 -JX-5i/0.2i -Bpa15mf5m -Bsa1HS -P > GMT_-B_time4.ps 
+
 The fifth example shows a few weeks of time (Figure ). The lower axis
 shows ISO weeks with week numbers and abbreviated names of the weekdays.
 The upper uses Gregorian weeks (which start at the day chosen by
-**TIME\_WEEK\_START**); they do not have numbers.
+**TIME_WEEK_START**); they do not have numbers.
+
+   ::
+
+    gmtset FORMAT_DATE_MAP u FORMAT_TIME_PRIMARY_MAP Character FORMAT_TIME_SECONDARY_MAP full \
+           FONT_ANNOT_PRIMARY +9p
+    psbasemap -R1969-7-21T/1969-8-9T/0/1 -JX5i/0.2i -Bpa1K -Bsa1US -P -K > GMT_-B_time5.ps
+    gmtset FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_TIME_SECONDARY_MAP Chararacter
+    psbasemap -R -J -Bpa3Kf1k -Bsa1rS -O -Y0.65i >> GMT_-B_time5.ps 
 
 Our sixth example shows the first five months of 1996, and we have
 annotated each month with an abbreviated, upper case name and 2-digit
 year. Only the primary axes information is specified.
 
+   ::
+
+    gmtset FORMAT_DATE_MAP "o yy" FORMAT_TIME_PRIMARY_MAP Abbreviated
+    psbasemap -R1996T/1996-6T/0/1 -JX5i/0.2i -Ba1Of1dS -P > GMT_-B_time6.ps 
+
 Our seventh and final example illustrates annotation of year-days.
 Unless we specify the formatting with a leading hyphen in
-**FORMAT\_DATE\_MAP** we get 3-digit integer days. Note that in order to
+**FORMAT_DATE_MAP** we get 3-digit integer days. Note that in order to
 have the two years annotated we need to allow for the annotation of
 small fractional intervals; normally such truncated interval must be at
 least half of a full interval.
+
+   ::
+
+    gmtset FORMAT_DATE_MAP jjj TIME_INTERVAL_FRACTION 0.05 FONT_ANNOT_PRIMARY +9p
+    psbasemap -R2000-12-15T/2001-1-15T/0/1 -JX5i/0.2i -Bpa5Df1d -Bsa1YS -P > GMT_-B_time7.ps
 
 Custom axes
 ^^^^^^^^^^^
@@ -2480,6 +2517,32 @@ is allowed. The coordinates should be arranged in increasing order. If
 *label* is given it replaces the normal annotation based on the *coord*
 value. Our last example shows such a custom basemap with an interval
 annotations on the *x*-axis and irregular annotations on the *y*-axis.
+
+   ::
+
+    cat << EOF >| xannots.txt
+    416.0 ig Devonian
+    443.7 ig Silurian
+    488.3 ig Ordovician
+    542 ig Cambrian
+    EOF
+    cat << EOF >| yannots.txt
+    0 a
+    1 a
+    2 f
+    2.71828 ag e
+    3 f
+    3.1415926 ag @~p@~
+    4 f
+    5 f
+    6 f
+    6.2831852 ag 2@~p@~
+    EOF
+    psbasemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bp25f5g25:,Ma:/cyannots.txt,WS+glightblue \
+              -P -K > GMT_-B_custom.ps
+    psbasemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bscxannots.txt/0,WS -O \
+              --MAP_ANNOT_OFFSET_SECONDARY=10p --MAP_GRID_PEN_SECONDARY=2p >> GMT_-B_custom.ps
+    rm -f [xy]annots.txt
 
 Portrait plot orientation: The **-P** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3632,9 +3695,9 @@ added (Table [tbl:scand]):
 
 *PostScript* fonts used in *GMT* may be re-encoded to include several
 accented characters used in many European languages. To access these,
-you must specify the full octal code :math:`\backslash`\ xxx allowed for
+you must specify the full octal code \\xxx allowed for
 your choice of character encodings determined by the
-**PS\_CHAR\_ENCODING** setting described in the
+**PS_CHAR_ENCODING** setting described in the
 `gmt.conf <gmt.conf.html>`_ man page. Only the special
 characters belonging to a particular encoding will be available. Many
 characters not directly available by using single octal codes may be
@@ -3643,7 +3706,7 @@ constructed with the composite character mechanism @!.
 Some examples of escape sequences and embedded octal codes in
 *GMT* strings using the Standard+ encoding:
 
-| XXX\ ``2@~p@~r@+2@+h@-0@- E\363tv\363s``\ XXXX = XXXXtext ``2@~p@~r@+2@+h@-0@- E\363tv\363s`` = 2\ :math:`\pi r^2h_0` Eötvös
+| ``2@~p@~r@+2@+h@-0@- E\363tv\363s`` = 2\ :math:`\pi r^2h_0` Eötvös
 | ``10@+-3 @Angstr@om`` = 10\ :math:`^{-3}` Ångstrøm
 | ``Se@nor Gar@con`` = Señor Garçon
 | ``M@!\305anoa stra@se`` = Mānoa straße
@@ -3813,7 +3876,7 @@ to specify the various file formats. The user may create a file called
 ``~/.gmt`` and define any number of custom formats. The following is an example of
 a ``.gmt_io`` file:
 
-| MMM# suffix format\_id scale ōffset NaNxxxComments # GMT i/o shorthand file
+| # suffix format\_id scale ōffset NaNxxxComments # GMT i/o shorthand file
 | # It can have any number of comment lines like this one anywhere
 | # suffix format\_id scale offset NaNComments
 | grd nf - - - Default format
@@ -4317,8 +4380,8 @@ The complete commands given to produce this plot were
 
    ::
 
-     psxy -R0/100/0/10 -JX3i/1.5i -Ba20f10g10/a2f1g2WSne -Wthick,- -P -K sqrt.d > GMT_linear.ps  
-     psxy -R -J -St0.075i -Glightgray -W -O sqrt.d10 >> GMT_linear.ps  
+    psxy -R0/100/0/10 -JX3i/1.5i -BagWSne+gsnow -Wthick,blue,- -P -K sqrt.d > GMT_linear.ps
+    psxy -R -J -St0.1i -N -Gred -Wfaint -O sqrt.d10 >> GMT_linear.ps  
 
 Normally, the user's *x*-values will increase to the right and the
 *y*-values will increase upwards. It should be noted that in many
@@ -4347,11 +4410,11 @@ appending a **g** or **d** to the end of the **-Jx** (or **-JX**)
 option. As an example, we want to plot a crude world map centered on
 125E. Our command will be
 
-    ::
+  ::
 
-      gmtset GRID_CROSS_SIZE_PRIMARY 0.1i BASEMAP_TYPE FANCY PLOT_DEGREE_FORMAT ddd:mm:ssF  
-      pscoast -Rg-55/305/-90/90 -Jx0.014i -B60g30f15/30g30f15WSen -Dc -A1000 -Glightgray -Wthinnest -P \  
-              > GMT_linear_d.ps  
+    gmtset MAP_GRID_CROSS_SIZE_PRIMARY 0.1i MAP_FRAME_TYPE FANCY FORMAT_GEO_MAP ddd:mm:ssF
+    pscoast -Rg-55/305/-90/90 -Jx0.014i -BagfWSen -Dc -A1000 -Glightbrown -Wthinnest -P \
+            -Slightblue > GMT_linear_d.ps  
 
 with the result reproduced in
 Figure [fig:GMT\ :sub:`l`\ inear\ :sub:`d`].
@@ -4384,6 +4447,12 @@ projection type given by **-JX** (including the optional **d**, **g**,
 **t** or **T**) conflict, *GMT* will warn the users about it. In
 general, the options provided with **-JX** will prevail.
 
+   ::
+
+    gmtset FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_CLOCK_MAP=-hham FORMAT_TIME_PRIMARY_MAP full
+    psbasemap -R2001-9-24T/2001-9-29T/T07:0/T15:0 -JX4i/-2i -Ba1Kf1kg1d/a1Hg1hWsNe+glightyellow \
+              -P > GMT_linear_cal.ps
+
 Cartesian logarithmic projection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -4392,6 +4461,11 @@ The log\ :math:`_{10}` transformation is simply
 (lower case L) immediately following the scale (or axis length) value.
 Hence, to produce a plot in which the *x*-axis is logarithmic (the
 *y*-axis remains linear, i.e., a semi-log plot), try
+
+   ::
+
+    psxy -R1/100/0/10 -Jx1.5il/0.15i -B2g3/a2f1g2WSne+gbisque -Wthick,blue,- -P -K -h sqrt.d > GMT_log.ps
+    psxy -R -J -Ss0.1i -N -Gred -W -O -h sqrt.d10 >> GMT_log.ps
 
 Note that if *x*- and *y*-scaling are different and a
 log\ :math:`_{10}`-log:math:`_{10}` plot is desired, the **l** must be
@@ -4409,6 +4483,11 @@ While :math:`p` and :math:`q` can be any values, we will select :math:`p
 case P) followed by the desired exponent, in our case 0.5. Since
 :math:`q = 1` we do not need to specify **p**\ 1 since it is identical
 to the linear transformation. Thus our command becomes
+
+   ::
+
+    psxy -R0/100/0/10 -Jx0.3ip0.5/0.15i -Ba1p/a2f1WSne+givory -Wthick -P -K sqrt.d > GMT_pow.ps
+    psxy -R -J -Sc0.075i -Ggreen -W -O sqrt.d10 >> GMT_pow.ps
 
 Linear projection with polar (:math:`\theta, r`) coordinates (**-Jp** **-JP**)
 -------------------------------------------------------------------------------
@@ -4454,13 +4533,19 @@ polar coordinates :math:`z(\theta, r) = r^2 \cdot \cos{4\theta}` using
 `grdmath <grdmath.html>`_, a RPN calculator that
 operates on or creates grid files.
 
+   ::
+
+    grdmath -R0/360/2/4 -I6/0.1 X 4 MUL PI MUL 180 DIV COS Y 2 POW MUL = $$.nc
+    grdcontour $$.nc -JP3i -B30Ns+ghoneydew -P -C2 -S4 --FORMAT_GEO_MAP=+ddd > GMT_polar.ps
+    rm -f $$.nc
+
 We used `grdcontour <grdcontour.html>`_ to make a
 contour map of this data. Because the data file only contains values
 with :math:`2 \leq r \leq 4`, a donut shaped plot appears in
 Figure [fig:GMT\ :sub:`p`\ olar].
 
-`GMT <http://gmt.soest.hawaii.edu>`_ Map Projections
-=========================================================
+GMT Map Projections
+===================
 
 [ch:6]
 
@@ -4540,6 +4625,11 @@ Taiwan. We choose the center of the projection to be at 125 E/20 N and
 inches wide. The complete command needed to generate the map below is
 therefore given by:
 
+   ::
+
+    gmtset MAP_GRID_CROSS_SIZE_PRIMARY 0
+    pscoast -R110/140/20/35 -JB125/20/25/45/5i -Bag -Dl -Ggreen -Wthinnest -A250 -P > GMT_albers.ps
+
 Equidistant conic projection (**-Jd** **-JD**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -4559,6 +4649,12 @@ projection, i.e.,
 
 The equidistant conic projection is often used for atlases with maps of
 small countries. As an example, we generate a map of Cuba:
+
+   ::
+
+    gmtset FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0.05i
+    pscoast -R-88/-70/18/24 -JD-79/21/19/23/4.5i -Bag -Di -N1/thick,red -Glightgreen \
+            -Wthinnest -P > GMT_equidistant_conic.ps
 
 Lambert conic conformal projection (**-Jl** **-JL**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4587,6 +4683,12 @@ Note that with all the projections you have the option of selecting a
 rectangular border rather than one defined by meridians and parallels.
 Here, we choose the regular WESN region, a “fancy” basemap frame, and
 use degrees west for longitudes. The generating commands used were
+
+   ::
+
+    gmtset MAP_FRAME_TYPE FANCY FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0.05i
+    pscoast -R-130/-70/24/52 -Jl-100/35/33/45/1:50000000 -Bag -Dl -N1/thick,red -N2/thinner \
+            -A500 -Gtan -Wthinnest,white -Sblue -P > GMT_lambert_conic.ps
 
 The choice for projection center does not affect the projection but it
 indicates which meridian (here 100W) will be vertical on the map. The
@@ -4617,6 +4719,11 @@ meridians.
 
 Below we reproduce the illustration by *Snyder* [1987], with a gridline
 every 10 and annotations only every 30 in longitude:
+
+   ::
+
+    pscoast -R-180/-20/0/90 -JPoly/4i -B30g10/10g10 -Dc -A1000 -Glightgray -Wthinnest -P \
+            > GMT_polyconic.ps
 
 Azimuthal projections
 ---------------------
@@ -4655,16 +4762,26 @@ for map boundaries. Instead we require that the map boundaries be
 rectangular by defining the corners of a rectangular map boundary. Using
 0E/40S (lower left) and 60E/10S (upper right) as our corners we try
 
+   ::
+
+    gmtset FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0
+    pscoast -R0/-40/60/-10r -JA30/-30/4.5i -Bag -Dl -A500 -Gp300/10 -Wthinnest -P \
+            > GMT_lambert_az_rect.ps
+
 Note that an “r” is appended to the **-R** option to inform *GMT* that
 the region has been selected using the rectangle technique, otherwise it
 would try to decode the values as *west, east, south, north* and report
-an error since *’east’* :math:`<` *’west’*.
+an error since *’east’* < *’west’*.
 
 Hemisphere map
 ^^^^^^^^^^^^^^
 
 [sec:lamb] Here, you must specify the world as your region (**-Rg** or
 **-Rd**). E.g., to obtain a hemisphere view that shows the Americas, try
+
+   ::
+
+    pscoast -Rg -JA280/30/3.5i -Bg -Dc -A1000 -Gnavy -P > GMT_lambert_az_hemi.ps
 
 To geologists, the Lambert azimuthal equal-area projection (with origin
 at 0/0) is known as the *equal-area* (Schmidt) stereonet and used for
@@ -4706,6 +4823,11 @@ pole. This means we have a polar stereographic projection and the map
 boundaries will coincide with lines of constant longitude and latitude.
 An example is given by
 
+   ::
+
+    pscoast -R-30/30/60/72 -Js0/90/4.5i/60 -B10g -Dl -A250 -Groyalblue \
+            -Sseashell -P > GMT_stereographic_polar.ps
+
 Rectangular stereographic map
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -4716,6 +4838,12 @@ two points as corners in the rectangle and appending an “r” to the
 **-R** option. This command produces a map as presented in
 Figure [fig:GMT\ :sub:`s`\ tereographic\ :sub:`r`\ ect]:
 
+   ::
+
+    gmtset MAP_ANNOT_OBLIQUE 30
+    pscoast -R-25/59/70/72r -JS10/90/11c -B20g -Dl -A250 -Gdarkbrown -Wthinnest -P \
+            -Slightgray > GMT_stereographic_rect.ps
+
 General stereographic map
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -4723,6 +4851,12 @@ In terms of usage this projection is identical to the Lambert azimuthal
 equal-area projection. Thus, one can make both rectangular and
 hemispheric maps. Our example shows Australia using a projection pole at
 130E/30S. The command used was
+
+   ::
+
+    gmtset MAP_ANNOT_OBLIQUE 0
+    pscoast -R100/-42/160/-8r -JS130/-30/4i -Bag -Dl -A500 -Ggreen -P \
+            -Slightblue -Wthinnest > GMT_stereographic_general.ps
 
 By choosing 0/0as the pole, we obtain the conformal stereonet presented
 next to its equal-area cousin in the Section [sec:lamb] on the Lambert
@@ -4768,6 +4902,11 @@ The imagined view of northwest Europe from a Space Shuttle at 230 km
 looking due east is thus accomplished by the following
 `pscoast <pscoast.html>`_ command:
 
+   ::
+
+    pscoast -Rg -JG4/52/230/90/60/180/60/60/5i -B2g2/1g1 -Ia -Di -Glightbrown -Wthinnest -P \
+            -Slightblue --MAP_ANNOT_MIN_SPACING=0.25i > GMT_perspective.ps
+
 Orthographic projection (**-Jg** **-JG**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -4795,8 +4934,11 @@ to supply:
    oblique] latitude (**-Jg**), or map width (**-JG**).
 
 Our example of a perspective view centered on 75W/40N can therefore be
-generated by the following `pscoast <pscoast.html>`_
-command:
+generated by the following `pscoast <pscoast.html>`_ command:
+
+   ::
+
+    pscoast -Rg -JG-75/41/4.5i -Bg -Dc -A5000 -Gpink -Sthistle -P > GMT_orthographic.ps
 
 Azimuthal Equidistant projection (**-Je** **-JE**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4825,6 +4967,10 @@ generated by the following `pscoast <pscoast.html>`_
 command. Note that the antipodal point is 180 away from the center, but
 in this projection this point plots as the entire map perimeter:
 
+   ::
+
+    pscoast -Rg -JE-100/40/4.5i -Bg -Dc -A10000 -Glightgray -Wthinnest -P > GMT_az_equidistant.ps
+
 Gnomonic projection (**-Jf** **-JF**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -4852,6 +4998,10 @@ To specify the Gnomonic projection you must supply:
 Using a horizon of 60, our example of this projection centered on
 120W/35N can therefore be generated by the following
 `pscoast <pscoast.html>`_ command:
+
+   ::
+
+    pscoast -Rg -JF-120/35/60/4.5i -B30g15 -Dc -A10000 -Gtan -Scyan -Wthinnest -P > GMT_gnomonic.ps
 
 Cylindrical projections
 -----------------------
@@ -4905,6 +5055,11 @@ are optional and have defaults):
 Our example presents a world map at a scale of 0.012 inch pr degree
 which will give a map 4.32 inch wide. It was created with the command:
 
+   ::
+
+    gmtset MAP_FRAME_TYPE fancy
+    pscoast -R0/360/-70/70 -Jm1.2e-2i -Ba60f15/a30f15 -Dc -A5000 -Gred -P > GMT_mercator.ps
+
 While this example is centered on the Dateline, one can easily choose
 another configuration with the **-R** option. A map centered on
 Greenwich would specify the region with **-R**-180/180/-70/70.
@@ -4933,8 +5088,17 @@ Although defaulting to 1, you can change the map scale factor via the
 Mercator map of south-east Europe and the Middle East with 35E as the
 central meridian:
 
+   ::
+
+    pscoast -R20/30/50/45r -Jt35/0.18i -Bag -Dl -A250 -Glightbrown -Wthinnest -P \
+            -Sseashell > GMT_transverse_merc.ps
+
 The transverse Mercator can also be used to generate a global map—the
 equivalent of the 360 Mercator map. Using the command
+
+   ::
+
+    pscoast -R0/360/-80/80 -JT330/-45/3.5i -Ba30gWSne -Dc -A2000 -Slightblue -G0 -P > GMT_TM.ps
 
 we made the map illustrated in Figure [fig:GMT\ :sub:`T`\ M]. Note that
 when a world map is given (indicated by **-R**\ *0/360/s/n*), the
@@ -5018,6 +5182,11 @@ projection. *GMT* offers three different definitions:
 
 Our example was produced by the command
 
+   ::
+
+    pscoast -R270/20/305/25r -JOc280/25.5/22/69/4.8i -Bag -Di -A250 -Gburlywood -Wthinnest -P \
+            -Tf301.5/23/0.4i/2 -Sazure --FONT_TITLE=8p --MAP_TITLE_OFFSET=0.05i > GMT_obl_merc.ps
+
 It uses definition 3 for an oblique view of some Caribbean islands. Note
 that we define our region using the rectangular system described
 earlier. If we do not append an “r” to the **-R** string then the
@@ -5047,6 +5216,11 @@ The requirements to define this projection are:
 A detailed map of the island of Sardinia centered on the 845’E meridian
 using the Cassini projection can be obtained by running the command:
 
+   ::
+
+    pscoast -R7:30/38:30/10:30/41:30r -JC8.75/40/2.5i -Bafg -Lf9.5/38.8/40/60 -Dh -Gspringgreen \
+            -Sazure -Wthinnest -Ia/thinner -P --FONT_LABEL=12p > GMT_cassini.ps
+
 As with the previous projections, the user can choose between a
 rectangular boundary (used here) or a geographical (WESN) boundary.
 
@@ -5070,6 +5244,10 @@ parallel is defined, the central meridian must be supplied as well.
 
 A world map centered on the dateline using this projection can be
 obtained by running the command:
+
+   ::
+
+    pscoast -Rg -JQ4.5i -B60f30g30 -Dc -A5000 -Gtan4 -Slightcyan -P > GMT_equi_cyl.ps
 
 Different relative scalings of longitudes and latitudes can be obtained
 by selecting a standard parallel different from the equator. Some
@@ -5139,6 +5317,11 @@ For instance, a world map centered on the 35E meridian using the Behrman
 projection (Figure [fig:GMT:sub:`g`\ eneral\ :sub:`c`\ yl]) can be
 obtained by running the command:
 
+   ::
+
+    pscoast -R-145/215/-90/90 -JY35/30/4.5i -B45g45 -Dc -A10000 -Sdodgerblue -Wthinnest -P > \
+            GMT_general_cyl.ps
+
 As one can see there is considerable distortion at high latitudes since
 the poles map into lines.
 
@@ -5161,6 +5344,11 @@ this projection. Specify the projection by:
 For instance, a world map centered on the 90E meridian at a map scale of
 1:400,000,000 (Figure [fig:GMT:sub:`m`\ iller]) can be obtained as
 follows:
+
+   ::
+
+    pscoast -R-90/270/-80/90 -Jj1:400000000 -B45g45/30g30 -Dc -A10000 -Gkhaki -Wthinnest -P \
+            -Sazure > GMT_miller.ps
 
 Cylindrical stereographic projections (**-Jcyl_stere** **-JCyl_stere**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5208,6 +5396,12 @@ stereographic projection (standard parallel is 45,
 Figure [fig:GMT\ :sub:`g`\ all\ :sub:`s`\ tereo]), is obtained as
 follows:
 
+   ::
+
+    gmtset FORMAT_GEO_MAP dddA
+    pscoast -R-180/180/-60/80 -JCyl_stere/0/45/4.5i -Ba60f30g30/a30g30 -Dc -A5000 -Wblack -Gseashell4 \
+            -Santiquewhite1 -P > GMT_gall_stereo.ps
+
 Miscellaneous projections
 -------------------------
 
@@ -5236,8 +5430,11 @@ defined by selecting:
 -  Scale along equator in inch/degree or 1:xxxxx (**-Jh**), or map width
    (**-JH**).
 
-A view of the Pacific ocean using the Dateline as central meridian is
-accomplished thus
+A view of the Pacific ocean using the Dateline as central meridian is accomplished thus
+
+   ::
+
+    pscoast -Rg -JH4.5i -Bg -Dc -A10000 -Gblack -Scornsilk -P > GMT_hammer.ps
 
 Mollweide projection (**-Jw** **-JW**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5258,6 +5455,10 @@ longitudes and latitudes into rectangular *x*/*y* coordinates:
    (**-JW**).
 
 An example centered on Greenwich can be generated thus:
+
+   ::
+
+    pscoast -Rd -JW4.5i -Bg -Dc -A10000 -Gtomato1 -Sskyblue -P > GMT_mollweide.ps
 
 Winkel Tripel projection (**-Jr** **-JR**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5286,6 +5487,10 @@ use it you must enter
 Centered on Greenwich, the example in Figure [fig:GMT\ :sub:`w`\ inkel]
 was created by this command:
 
+   ::
+
+    pscoast -Rd -JR4.5i -Bg -Dc -A10000 -Gburlywood4 -Swheat1 -P > GMT_winkel.ps
+
 Robinson projection (**-Jn** **-JN**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -5304,8 +5509,11 @@ enter
 -  Scale along equator in inch/degree or 1:xxxxx (**-Jn**), or map width
    (**-JN**).
 
-Again centered on Greenwich, the example below was created by this
-command:
+Again centered on Greenwich, the example below was created by this command:
+
+   ::
+
+    pscoast -Rd -JN4.5i -Bg -Dc -A10000 -Ggoldenrod -Ssnow2 -P > GMT_robinson.ps
 
 Eckert IV and VI projection (**-Jk** **-JK**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5327,6 +5535,10 @@ addition, you must enter
 
 Centered on the Dateline, the Eckert IV example below was created by
 this command:
+
+   ::
+
+    pscoast -Rg -JKf4.5i -Bg -Dc -A10000 -Wthinnest -Givory -Sbisque3 -P > GMT_eckert4.ps
 
 The same script, with **s** instead of **f**, yields the Eckert VI map:
 
@@ -5445,9 +5657,29 @@ occur for every 50 m contour level, and both contour maps should show
 the continents in light gray in the background. Finally, we want a
 rectangular frame surrounding the two maps. This is how it is done:
 
+   ::
+
+    #!/bin/bash
+    # GMT EXAMPLE 01
+    #
+    # Purpose: Make two contour maps based on the data in the file osu91a1f_16.nc
+    # GMT progs: gmtset, grdcontour, psbasemap, pscoast
+    # Unix progs: rm
+    #
+    ps=../example_01.ps
+    gmtset MAP_GRID_CROSS_SIZE_PRIMARY 0 FONT_ANNOT_PRIMARY 10p
+    psbasemap -R0/6.5/0/9 -Jx1i -B0 -P -K -U"Example 1 in Cookbook" > $ps
+    pscoast -Rg -JH0/6i -X0.25i -Y0.5i -O -K -Bg30 -Dc -Glightgray >> $ps
+    grdcontour osu91a1f_16.nc -J -C10 -A50+f7p -Gd4i -L-1000/-1 -Wcthinnest,- -Wathin,- -O -K \
+               -T0.1i/0.02i >> $ps
+    grdcontour osu91a1f_16.nc -J -C10 -A50+f7p -Gd4i -L-1/1000 -O -K -T0.1i/0.02i >> $ps
+    pscoast -Rg -JH6i -Y4i -O -K -Bg30:."Low Order Geoid": -Dc -Glightgray >> $ps
+    grdcontour osu91a1f_16.nc -J -C10 -A50+f7p -Gd4i -L-1000/-1 -Wcthinnest,- -Wathin,- -O -K \
+               -T0.1i/0.02i:-+ >> $ps
+    grdcontour osu91a1f_16.nc -J -C10 -A50+f7p -Gd4i -L-1/1000 -O -T0.1i/0.02i:-+ >> $ps
+
 The first command draws a box surrounding the maps. This is followed by
-two sequences of `pscoast <pscoast.html>`_,
-`grdcontour <grdcontour.html>`_,
+two sequences of `pscoast <pscoast.html>`_, `grdcontour <grdcontour.html>`_,
 `grdcontour <grdcontour.html>`_. They differ in that the
 first is centered on Greenwich; the second on the dateline. We use the
 limit option (**-L**) in `grdcontour <grdcontour.html>`_
@@ -5477,6 +5709,32 @@ image a rectangular region defined by the longitudes and latitudes of
 the lower left and upper right corner of region. In our case we choose
 (160, 20) and (220, 30) as the corners. We use
 `grdimage <grdimage.html>`_ to make the illustration:
+
+   ::
+
+    #!/bin/bash
+    # GMT EXAMPLE 02
+    #
+    # Purpose: Make two color images based gridded data
+    # GMT progs: gmtset, grd2cpt, grdgradient, grdimage, makecpt, psscale, pstext
+    # Unix progs: rm
+    #
+    ps=../example_02.ps
+    gmtset FONT_TITLE 30p MAP_ANNOT_OBLIQUE 0
+    makecpt -Crainbow -T-2/14/2 > g.cpt
+    grdimage HI_geoid2.nc -R160/20/220/30r -JOc190/25.5/292/69/4.5i -E50 -K -P \
+            -U/-1.25i/-1i/"Example 2 in Cookbook" -B10 -Cg.cpt -X1.5i -Y1.25i > $ps
+    psscale -Cg.cpt -D5.1i/1.35i/2.88i/0.4i -O -K -Ac -B2:GEOID:/:m: -E >> $ps
+    grd2cpt HI_topo2.nc -Crelief -Z > t.cpt
+    grdgradient HI_topo2.nc -A0 -Nt -GHI_topo2_int.nc
+    grdimage HI_topo2.nc -IHI_topo2_int.nc -R -J -E50 -B10:."H@#awaiian@# T@#opo and @#G@#eoid:" -O -K \
+            -Ct.cpt -Y4.5i --MAP_TITLE_OFFSET=0.5i >> $ps
+    psscale -Ct.cpt -D5.1i/1.35i/2.88i/0.4i -O -K -I0.3 -Ac -B2:TOPO:/:km: >> $ps
+    pstext -R0/8.5/0/11 -Jx1i -F+f30p,Helvetica-Bold+jCB -O -N -Y-4.5i >> $ps << END
+    -0.4 7.5 a)
+    -0.4 3.0 b)
+    END
+    rm -f HI_topo2_int.nc ?.cpt
 
 The first step extracts the 2-D data sets from the local data base using
 `grdraster <supplemments/dbase/grdraster.html>`__, which is a supplemental
@@ -5530,7 +5788,7 @@ and maximum values for multi-column ASCII tables. Use this information
 to select the range of the projected distance coordinate they have in
 common. The script prompts you for that information after reporting the
 values. We decide to make a file of equidistant sampling points spaced 1
-km apart from -1167 to +1169, and use the *UNIX* utility **AWK** to
+km apart from -1167 to +1169, and use the *UNIX* utility **awk** to
 accomplish this step. We can then resample the projected data, and carry
 out the cross-spectral calculations, assuming that the ship is the input
 and the satellite is the output data. There are several intermediate
@@ -5540,8 +5798,213 @@ in one diagram and the coherency on another diagram, both on the same
 page. Note the extended use of `pstext <pstext.html>`_
 and `psxy <psxy.html>`_ to put labels and legends
 directly on the plots. For that purpose we often use **-Jx**\ 1i and
-specify positions in inches directly. Thus, the complete automated
-script reads:
+specify positions in inches directly. Thus, the complete automated script reads:
+
+   ::
+
+    #!/bin/bash
+    # GMT EXAMPLE 03
+    #
+    # Purpose: Resample track data, do spectral analysis, and plot
+    # GMT progs: filter1d, fitcircle, minmax, project, sample1d
+    # GMT progs: spectrum1d, trend1d, pshistogram, psxy, pstext
+    # Unix progs: awk, cat, echo, head, paste, rm, tail
+    #
+    # This example begins with data files "ship.xyg" and "sat.xyg" which
+    # are measurements of a quantity "g" (a "gravity anomaly" which is an
+    # anomalous increase or decrease in the magnitude of the acceleration
+    # of gravity at sea level). g is measured at a sequence of points "x,y"
+    # which in this case are "longitude,latitude". The "sat.xyg" data were
+    # obtained by a satellite and the sequence of points lies almost along
+    # a great circle. The "ship.xyg" data were obtained by a ship which
+    # tried to follow the satellite’s path but deviated from it in places.
+    # Thus the two data sets are not measured at the same of points,
+    # and we use various GMT tools to facilitate their comparison.
+    # The main illustration (example_03.ps) are accompanied with 5 support
+    # plots (03a-f) showing data distributions and various intermediate steps.
+    #
+    # First, we use "fitcircle" to find the parameters of a great circle
+    # most closely fitting the x,y points in "sat.xyg":
+    #
+    ps=../example_03.ps
+    fitcircle sat.xyg -L2 > report
+    cposx=‘grep "L2 Average Position" report | cut -f1‘
+    cposy=‘grep "L2 Average Position" report | cut -f2‘
+    pposx=‘grep "L2 N Hemisphere" report | cut -f1‘
+    pposy=‘grep "L2 N Hemisphere" report | cut -f2‘
+    #
+    # Now we use "project" to project the data in both sat.xyg and ship.xyg
+    # into data.pg, where g is the same and p is the oblique longitude around
+    # the great circle. We use -Q to get the p distance in kilometers, and -S
+    # to sort the output into increasing p values.
+    #
+    project sat.xyg -C$cposx/$cposy -T$pposx/$pposy -S -Fpz -Q > sat.pg
+    project ship.xyg -C$cposx/$cposy -T$pposx/$pposy -S -Fpz -Q > ship.pg
+    #
+    # The minmax utility will report the minimum and maximum values for all columns.
+    # We use this information first with a large -I value to find the appropriate -R
+    # to use to plot the .pg data.
+    #
+    R=‘cat sat.pg ship.pg | minmax -I100/25‘
+    psxy $R -U/-1.75i/-1.25i/"Example 3a in Cookbook" \
+         -Ba500f100:"Distance along great circle":/a100f25:"Gravity anomaly (mGal)":WeSn \
+         -JX8i/5i -X2i -Y1.5i -K -Wthick sat.pg > ../example_03a.ps
+    psxy -R -JX -O -Sp0.03i ship.pg >> ../example_03a.ps
+    #
+    # From this plot we see that the ship data have some "spikes" and also greatly
+    # differ from the satellite data at a point about p ~= +250 km, where both of
+    # them show a very large anomaly.
+    #
+    # To facilitate comparison of the two with a cross-spectral analysis using "spectrum1d",
+    # we resample both data sets at intervals of 1 km. First we find out how the data are
+    # typically spaced using awk to get the delta-p between points and view it with
+    # "pshistogram".
+    #
+    awk ’{ if (NR > 1) print $1 - last1; last1=$1; }’ ship.pg | pshistogram -W0.1 -Gblack -JX3i -K \
+         -X2i -Y1.5i -B:."Ship": -U/-1.75i/-1.25i/"Example 3b in Cookbook" > ../example_03b.ps
+    awk ’{ if (NR > 1) print $1 - last1; last1=$1; }’ sat.pg | pshistogram -W0.1 -Gblack -JX3i -O \
+         -X5i -B:."Sat": >> ../example_03b.ps
+    #
+    # This experience shows that the satellite values are spaced fairly evenly, with
+    # delta-p between 3.222 and 3.418. The ship values are spaced quite unevelnly, with
+    # delta-p between 0.095 and 9.017. This means that when we want 1 km even sampling,
+    # we can use "sample1d" to interpolate the sat data, but the same procedure applied
+    # to the ship data could alias information at shorter wavelengths. So we have to use
+    # "filter1d" to resample the ship data. Also, since we observed spikes in the ship
+    # data, we use a median filter to clean up the ship values. We will want to use "paste"
+    # to put the two sampled data sets together, so they must start and end at the same
+    # point, without NaNs. So we want to get a starting and ending point which works for
+    # both of them. This is a job for gmtmath UPPER/LOWER.
+    #
+    head -1 ship.pg > tmp
+    head -1 sat.pg >> tmp
+    sampr1=‘gmtmath tmp -Ca -Sf -o0 UPPER CEIL =‘
+    tail -1 ship.pg > tmp
+    tail -1 sat.pg >> tmp
+    sampr2=‘gmtmath tmp -Ca -Sf -o0 LOWER FLOOR =‘
+    #
+    # Now we can use sampr1|2 in gmtmath to make a sampling points file for sample1d:
+    gmtmath -T$sampr1/$sampr2/1 -N1/0 T = samp.x
+    #
+    # Now we can resample the projected satellite data:
+    #
+    sample1d sat.pg -Nsamp.x > samp_sat.pg
+    #
+    # For reasons above, we use filter1d to pre-treat the ship data. We also need to sample it
+    # because of the gaps > 1 km we found. So we use filter1d | sample1d. We also use the -E
+    # on filter1d to use the data all the way out to sampr1/sampr2 :
+    #
+    filter1d ship.pg -Fm1 -T$sampr1/$sampr2/1 -E | sample1d -Nsamp.x > samp_ship.pg
+    #
+    # Now we plot them again to see if we have done the right thing:
+    #
+    psxy $R -JX8i/5i -X2i -Y1.5i -K -Wthick samp_sat.pg \
+         -Ba500f100:"Distance along great circle":/a100f25:"Gravity anomaly (mGal)":WeSn \
+         -U/-1.75i/-1.25i/"Example 3c in Cookbook" > ../example_03c.ps
+    psxy -R -JX -O -Sp0.03i samp_ship.pg >> ../example_03c.ps
+    #
+    # Now to do the cross-spectra, assuming that the ship is the input and the sat is the output
+    # data, we do this:
+    #
+    gmtconvert -A samp_ship.pg samp_sat.pg -o1,3 | spectrum1d -S256 -D1 -W -C > /dev/null
+    #
+    # Now we want to plot the spectra. The following commands will plot the ship and sat
+    # power in one diagram and the coherency on another diagram, both on the same page.
+    # Note the extended use of pstext and psxy to put labels and legends directly on the plots.
+    # For that purpose we often use -Jx1i and specify positions in inches directly:
+    #
+    psxy spectrum.coh -Ba1f3p:"Wavelength (km)":/a0.25f0.05:"Coherency@+2@+":WeSn -JX-4il/3.75i \
+         -R1/1000/0/1 -U/-2.25i/-1.25i/"Example 3 in Cookbook" -P -K -X2.5i -Sc0.07i -Gblack \
+         -Ey/0.5p -Y1.5i > $ps
+    echo "3.85 3.6 Coherency@+2@+" | pstext -R0/4/0/3.75 -Jx1i -F+f18p,Helvetica-Bold+jTR -O -K >> $ps
+    cat > box.d << END
+    2.375 3.75
+    2.375 3.25
+    4 3.25
+    END
+    psxy -R -Jx -O -K -Wthicker box.d >> $ps
+    psxy -Ba1f3p/a1f3p:"Power (mGal@+2@+km)"::."Ship and Satellite Gravity":WeSn spectrum.xpower \
+         -Gblack -ST0.07i -O -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/0.5p >> $ps
+    psxy spectrum.ypower -R -JX -O -K -Gblack -Sc0.07i -Ey/0.5p >> $ps
+    echo "3.9 3.6 Input Power" | pstext -R0/4/0/3.75 -Jx -F+f18p,Helvetica-Bold+jTR -O -K >> $ps
+    psxy -R -Jx -O -K -Wthicker box.d >> $ps
+    psxy -R -Jx -O -K -Glightgray -L -Wthicker >> $ps << END
+    0.25 0.25
+    1.4 0.25
+    1.4 0.9
+    0.25 0.9
+    END
+    echo "0.4 0.7" | psxy -R -Jx -O -K -ST0.07i -Gblack >> $ps
+    echo "0.5 0.7 Ship" | pstext -R -Jx -F+f14p,Helvetica-Bold+jLM -O -K >> $ps
+    echo "0.4 0.4" | psxy -R -Jx -O -K -Sc0.07i -Gblack >> $ps
+    echo "0.5 0.4 Satellite" | pstext -R -Jx -F+f14p,Helvetica-Bold+jLM -O >> $ps
+    #
+    # Now we wonder if removing that large feature at 250 km would make any difference.
+    # We could throw away a section of data with $AWK or sed or head and tail, but we
+    # demonstrate the use of "trend1d" to identify outliers instead. We will fit a
+    # straight line to the samp_ship.pg data by an iteratively-reweighted method and
+    # save the weights on output. Then we will plot the weights and see how things
+    # look:
+    #
+    trend1d -Fxw -N2r samp_ship.pg > samp_ship.xw
+    psxy $R -JX8i/4i -X2i -Y1.5i -K -Sp0.03i \
+         -Ba500f100:"Distance along great circle":/a100f25:"Gravity anomaly (mGal)":WeSn \
+         -U/-1.75i/-1.25i/"Example 3d in Cookbook" samp_ship.pg > ../example_03d.ps
+    R=‘minmax samp_ship.xw -I100/1.1‘
+    psxy $R -JX8i/1.1i -O -Y4.25i -Bf100/a0.5f0.1:"Weight":Wesn -Sp0.03i samp_ship.xw \
+         >> ../example_03d.ps
+    #
+    # From this we see that we might want to throw away values where w < 0.6. So we try that,
+    # and this time we also use trend1d to return the residual from the model fit (the
+    # de-trended data):
+    trend1d -Fxrw -N2r samp_ship.pg | $AWK ’{ if ($3 > 0.6) print $1, $2 }’ \
+         | sample1d -Nsamp.x > samp2_ship.pg
+    trend1d -Fxrw -N2r samp_sat.pg | $AWK ’{ if ($3 > 0.6) print $1, $2 }’ \
+         | sample1d -Nsamp.x > samp2_sat.pg
+    #
+    # We plot these to see how they look:
+    #
+    R=‘cat samp2_sat.pg samp2_ship.pg | minmax -I100/25‘
+    psxy $R -JX8i/5i -X2i -Y1.5i -K -Wthick \
+         -Ba500f100:"Distance along great circle":/a50f25:"Gravity anomaly (mGal)":WeSn \
+         -U/-1.75i/-1.25i/"Example 3e in Cookbook" samp2_sat.pg > ../example_03e.ps
+    psxy -R -JX -O -Sp0.03i samp2_ship.pg >> ../example_03e.ps
+    #
+    # Now we do the cross-spectral analysis again. Comparing this plot (example_03e.ps) with
+    # the previous one (example_03d.ps) we see that throwing out the large feature has reduced
+    # the power in both data sets and reduced the coherency at wavelengths between 20--60 km.
+    #
+    gmtconvert -A samp2_ship.pg samp2_sat.pg -o1,3 | spectrum1d -S256 -D1 -W -C > /dev/null
+    #
+    psxy spectrum.coh -Ba1f3p:"Wavelength (km)":/a0.25f0.05:"Coherency@+2@+":WeSn -JX-4il/3.75i \
+         -R1/1000/0/1 -U/-2.25i/-1.25i/"Example 3f in Cookbook" -P -K -X2.5i -Sc0.07i -Gblack \
+         -Ey/0.5p -Y1.5i > ../example_03f.ps
+    echo "3.85 3.6 Coherency@+2@+" | pstext -R0/4/0/3.75 -Jx -F+f18p,Helvetica-Bold+jTR -O \
+         -K >> ../example_03f.ps
+    cat > box.d << END
+    2.375 3.75
+    2.375 3.25
+    4 3.25
+    END
+    psxy -R -Jx -O -K -Wthicker box.d >> ../example_03f.ps
+    psxy -Ba1f3p/a1f3p:"Power (mGal@+2@+km)"::."Ship and Satellite Gravity":WeSn spectrum.xpower \
+    -ST0.07i -O -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/0.5p >> ../example_03f.ps
+    psxy spectrum.ypower -R -JX -O -K -Gblack -Sc0.07i -Ey/0.5p >> ../example_03f.ps
+    echo "3.9 3.6 Input Power" | pstext -R0/4/0/3.75 -Jx -F+f18p,Helvetica-Bold+jTR -O \
+         -K >> ../example_03f.ps
+    psxy -R -Jx -O -K -Wthicker box.d >> ../example_03f.ps
+    psxy -R -Jx -O -K -Glightgray -L -Wthicker >> ../example_03f.ps << END
+    0.25 0.25
+    1.4 0.25
+    1.4 0.9
+    0.25 0.9
+    END
+    echo "0.4 0.7" | psxy -R -Jx -O -K -ST0.07i -Gblack >> ../example_03f.ps
+    echo "0.5 0.7 Ship" | pstext -R -Jx -F+f14p,Helvetica-Bold+jLM -O -K >> ../example_03f.ps
+    echo "0.4 0.4" | psxy -R -Jx -O -K -Sc0.07i -Gblack >> ../example_03f.ps
+    echo "0.5 0.4 Satellite" | pstext -R -Jx -F+f14p,Helvetica-Bold+jLM -O >> ../example_03f.ps
+    #
+    rm -f box.d report tmp samp* *.pg *.extr spectrum.*
 
 The final illustration (Figure [fig:example:sub:`0`\ 3]) shows that the
 ship gravity anomalies have more power than altimetry derived gravity
