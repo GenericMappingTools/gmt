@@ -5940,7 +5940,7 @@ specify positions in inches directly. Thus, the complete automated script reads:
     echo "0.5 0.4 Satellite" | pstext -R -Jx -F+f14p,Helvetica-Bold+jLM -O >> $ps
     #
     # Now we wonder if removing that large feature at 250 km would make any difference.
-    # We could throw away a section of data with $AWK or sed or head and tail, but we
+    # We could throw away a section of data with awk or sed or head and tail, but we
     # demonstrate the use of "trend1d" to identify outliers instead. We will fit a
     # straight line to the samp_ship.pg data by an iteratively-reweighted method and
     # save the weights on output. Then we will plot the weights and see how things
@@ -5957,9 +5957,9 @@ specify positions in inches directly. Thus, the complete automated script reads:
     # From this we see that we might want to throw away values where w < 0.6. So we try that,
     # and this time we also use trend1d to return the residual from the model fit (the
     # de-trended data):
-    trend1d -Fxrw -N2r samp_ship.pg | $AWK ’{ if ($3 > 0.6) print $1, $2 }’ \
+    trend1d -Fxrw -N2r samp_ship.pg | awk ’{ if ($3 > 0.6) print $1, $2 }’ \
          | sample1d -Nsamp.x > samp2_ship.pg
-    trend1d -Fxrw -N2r samp_sat.pg | $AWK ’{ if ($3 > 0.6) print $1, $2 }’ \
+    trend1d -Fxrw -N2r samp_sat.pg | awk ’{ if ($3 > 0.6) print $1, $2 }’ \
          | sample1d -Nsamp.x > samp2_sat.pg
     #
     # We plot these to see how they look:
@@ -6024,6 +6024,43 @@ second layer showing the 3-D mesh plot of the topography. We also add an
 arrow pointing north and some text. The first part of this script shows
 how to do it:
 
+   ::
+
+    #!/bin/bash
+    #		GMT EXAMPLE 04
+    #		$Id: example_04.sh 11031 2013-03-02 01:27:34Z pwessel $
+    #
+    # Purpose:	3-D mesh and color plot of Hawaiian topography and geoid
+    # GMT progs:	grdcontour, grdgradient, grdimage, grdview, psbasemap, pscoast, pstext
+    # Unix progs:	echo, rm
+    #
+    ps=example_04.ps
+    echo '-10  255   0  255' > zero.cpt
+    echo '  0  100  10  100' >> zero.cpt
+    grdcontour HI_geoid4.nc -R195/210/18/25 -Jm0.45i -p60/30 -C1 -A5+o -Gd4i -K -P \
+    	-X1.25i -Y1.25i -UL/-0.5i/-1i/"Example 4 in Cookbook" > $ps
+    pscoast -R -J -p -B2/2NEsw -Gblack -O -K -T209/19.5/1i >> $ps
+    grdview HI_topo4.nc -R195/210/18/25/-6/4 -J -Jz0.34i -p -Czero.cpt -O -K \
+    	-N-6/lightgray -Qsm -B2/2/2:"Topo (km)":neswZ -Y2.2i >> $ps
+    echo '3.25 5.75 H@#awaiian@# R@#idge' | pstext -R0/10/0/10 -Jx1i \
+    	-F+f60p,ZapfChancery-MediumItalic+jCB -O >> $ps
+    rm -f zero.cpt
+    #
+    ps=example_04c.ps
+    grdgradient HI_geoid4.nc -A0 -Gg_intens.nc -Nt0.75 -fg
+    grdgradient HI_topo4.nc -A0 -Gt_intens.nc -Nt0.75 -fg
+    grdimage HI_geoid4.nc -Ig_intens.nc -R195/210/18/25 -JM6.75i -p60/30 -Cgeoid.cpt -E100 -K -P \
+    	-X1.25i -Y1.25i -UL/-0.5i/-1i/"Example 4c in Cookbook" > $ps
+    pscoast -R -J -p -B2/2NEsw -Gblack -O -K >> $ps
+    psbasemap -R -J -p -O -K -T209/19.5/1i --COLOR_BACKGROUND=red --FONT=red \
+    	--MAP_TICK_PEN_PRIMARY=thinner,red >> $ps
+    psscale -R -J -p240/30 -D3.375i/-0.5i/5i/0.3ih -Cgeoid.cpt -I -O -K "-B2:Geoid (m):" >> $ps
+    grdview HI_topo4.nc -It_intens.nc -R195/210/18/25/-6/4 -J -JZ3.4i -p60/30 -Ctopo.cpt -O -K \
+    	-N-6/lightgray -Qc100 -B2/2/2:"Topo (km)":neswZ -Y2.2i >> $ps
+    echo '3.25 5.75 H@#awaiian@# R@#idge' | pstext -R0/10/0/10 -Jx1i \
+    	-F+f60p,ZapfChancery-MediumItalic+jCB -O >> $ps
+    rm -f *_intens.nc
+
 The purpose of the color palette file ``zero.cpt`` is to have the positive topography
 mesh painted light gray (the remainder is white). The left side of
 Figure [fig:example\ :sub:`0`\ 4] shows the complete illustration.
@@ -6066,6 +6103,26 @@ the gray level 128. Thus, variations in shade are entirely due to
 variations in gradients, or illuminations. We choose to illuminate from
 the SW and view the surface from SE:
 
+   ::
+
+    #!/bin/bash
+    #		GMT EXAMPLE 05
+    #
+    # Purpose:	Generate grid and show monochrome 3-D perspective
+    # GMT progs:	grdgradient, grdmath, grdview, pstext
+    # Unix progs:	echo, rm
+    #
+    ps=example_05.ps
+    grdmath -R-15/15/-15/15 -I0.3 X Y HYPOT DUP 2 MUL PI MUL 8 DIV COS EXCH NEG 10 DIV \
+    	EXP MUL = sombrero.nc
+    echo '-5 128 5 128' > gray.cpt
+    grdgradient sombrero.nc -A225 -Gintensity.nc -Nt0.75
+    grdview sombrero.nc -JX6i -JZ2i -B5/5/0.5SEwnZ -N-1/white -Qs -Iintensity.nc -X1.5i \
+    	-Cgray.cpt -R-15/15/-15/15/-1/1 -K -p120/30 -UL/-1.25i/-0.75i/"Example 5 in Cookbook" > $ps
+    echo "4.1 5.5 z(r) = cos (2@~p@~r/8) @~\327@~e@+-r/10@+" | pstext -R0/11/0/8.5 -Jx1i \
+    	-F+f50p,ZapfChancery-MediumItalic+jBC -O >> $ps
+    rm -f gray.cpt sombrero.nc intensity.nc
+
 The variations in intensity could be made more dramatic by using
 `grdmath <grdmath.html>`_ to scale the intensity file
 before running `grdview <grdview.html>`_. For very rough
@@ -6087,6 +6144,21 @@ file ``v3206.t`` contains all the bathymetry measurements from *Vema* cruise 320
 Our complete figure (Figure [fig:example:sub:`0`\ 6]) was made running
 this script:
 
+   ::
+
+    #!/bin/bash
+    #		GMT EXAMPLE 06
+    #
+    # Purpose:	Make standard and polar histograms
+    # GMT progs:	pshistogram, psrose
+    # Unix progs:	rm
+    #
+    ps=example_06.ps
+    psrose fractures.d -: -A10r -S1.8in -UL/-2.25i/-0.75i/"Example 6 in Cookbook" -P -Gorange \
+    	-R0/1/0/360 -X2.5i -K -B0.2g0.2/30g30+glightblue -W1p > $ps
+    pshistogram -Ba2000f1000:"Topography (m)":/a10f5:"Frequency"::,%::."Histograms":WSne+glightblue \
+    	v3206.t -R-6000/0/0/30 -JX4.8i/2.4i -Gorange -O -Y5.5i -X-0.5i -L1p -Z1 -W250 >> $ps
+
 A simple location map
 ---------------------
 
@@ -6101,6 +6173,42 @@ to use magnitude/100 for the symbol-size in inches. The digital fracture
 zone traces (``fz.xy``) and isochrons (0 isochron as ``ridge.xy``, the rest as ``isochrons.xy``) were
 digitized from available maps [25]_. We create the final location map
 (Figure [fig:example:sub:`0`\ 7]) with the following script:
+
+   ::
+
+    #!/bin/bash
+    #		GMT EXAMPLE 07
+    #
+    # Purpose:	Make a basemap with earthquakes and isochrons etc
+    # GMT progs:	pscoast, pstext, psxy
+    # Unix progs:	echo, rm
+    #
+    ps=example_07.ps
+    pscoast -R-50/0/-10/20 -JM9i -K -Slightblue -GP300/26:FtanBdarkbrown -Dl -Wthinnest \
+    	-B10 -U"Example 7 in Cookbook" --FORMAT_GEO_MAP=dddF > $ps
+    psxy -R -J -O -K fz.xy -Wthinner,- >> $ps
+    psxy quakes.xym -R -J -O -K -h1 -Sci+s0.01 -Gred -Wthinnest >> $ps
+    psxy -R -J -O -K isochron.xy -Wthin,blue >> $ps
+    psxy -R -J -O -K ridge.xy -Wthicker,orange >> $ps
+    psxy -R -J -O -K -Gwhite -Wthick -A >> $ps << END
+    -14.5	15.2
+     -2	15.2
+     -2	17.8
+    -14.5	17.8
+    END
+    psxy -R -J -O -K -Gwhite -Wthinner -A >> $ps << END
+    -14.35	15.35
+     -2.15	15.35
+     -2.15	17.65
+    -14.35	17.65
+    END
+    echo "-13.5 16.5" | psxy -R -J -O -K -Sc0.08i -Gred -Wthinner >> $ps
+    echo "-12.5 16.5 ISC Earthquakes" | pstext -R -J -F+f18p,Times-Italic+jLM -O -K >> $ps
+    pstext -R -J -O -F+f30,Helvetica-Bold,white=thin >> $ps << END
+    -43 -5 SOUTH
+    -43 -8 AMERICA
+     -7 11 AFRICA
+    END
 
 The same figure could equally well be made in color, which could be
 rasterized and made into a slide for a meeting presentation. The script
@@ -6119,6 +6227,23 @@ histogram in a 3-D perspective view. Our gridded bathymetry file is
 called ``guinea_bay.nc`` and covers the region from 0 to 5 E and 0 to 5 N. Depth ranges
 from -5000 meter to sea-level. We produce the
 Figure [fig:example\ :sub:`0`\ 8] by running this script:
+
+   ::
+
+    #!/bin/bash
+    #		GMT EXAMPLE 08
+    #		$Id: example_08.sh 9872 2012-03-15 20:57:29Z remko $
+    #
+    # Purpose:	Make a 3-D bar plot
+    # GMT progs:	grd2xyz, pstext, psxyz
+    # Unix progs:	echo, rm
+    #
+    ps=example_08.ps
+    grd2xyz guinea_bay.nc | psxyz -B1/1/1000:"Topography (m)"::.ETOPO5:WSneZ+ \
+    	-R-0.1/5.1/-0.1/5.1/-5000/0 -JM5i -JZ6i -p200/30 -So0.0833333ub-5000 -P \
+    	-U"Example 8 in Cookbook" -Wthinnest -Glightgreen -K > $ps
+    echo '0.1 4.9 This is the surface of cube' | pstext -R -J -JZ -Z0 \
+    	-F+f24p,Helvetica-Bold+jTL -p -O >> $ps
 
 Plotting time-series along tracks
 ---------------------------------
@@ -6145,6 +6270,31 @@ the format needed for `pstext <pstext.html>`_. Note we
 offset the positions by -0.05 inch with **-D** in order to have a small
 gap between the profile and the label:
 
+   ::
+
+    #!/bin/bash
+    #		GMT EXAMPLE 09
+    #		$Id: example_09.sh 11031 2013-03-02 01:27:34Z pwessel $
+    #
+    # Purpose:	Make wiggle plot along track from geoid deflections
+    # GMT progs:	gmtconvert, pswiggle, pstext, psxy
+    # Unix progs:	awk, ls, paste, rm
+    #
+    ps=example_09.ps
+    pswiggle track_*.xys -R185/250/-68/-42 -U"Example 9 in Cookbook" -K -Jm0.13i \
+    	-Ba10f5WSne+g240/255/240 -G+red -G-blue -Z2000 -Wthinnest -S240/-67/500/@~m@~rad \
+    	--FORMAT_GEO_MAP=dddF > $ps
+    psxy -R -J -O -K ridge.xy -Wthicker >> $ps
+    psxy -R -J -O -K fz.xy -Wthinner,- >> $ps
+    # Make label file from last record of each track
+    gmtconvert -El track_*.xys > tmp
+    # Extract track number from file name
+    ls -1 track_*.xys | awk -F. '{print $2}' > tracks.lis
+    # Combine the two to make input for labels
+    paste tmp tracks.lis | awk '{print $1, $2, $4}' \
+    	| pstext -R -J -F+f10p,Helvetica-Bold+a50+jRM -D-0.05i/-0.05i -O >> $ps
+    rm -f tmp tracks.lis
+
 The output shows the sea-surface slopes along 42 descending Geosat
 tracks in the Eltanin and Udintsev fracture zone region in a Mercator
 projection (Figure [fig:example:sub:`0`\ 9]).
@@ -6162,6 +6312,25 @@ logarithm of the membership. A log\ :math:`_{10}`-scale is used since
 the memberships vary by almost 3 orders of magnitude. We choose a plain
 linear projection for the basemap and add the columns and text on top.
 Our script that produces Figure [fig:example\ :sub:`1`\ 0] reads:
+
+   ::
+
+    #!/bin/bash
+    #		GMT EXAMPLE 10
+    #		$Id: example_10.sh 11031 2013-03-02 01:27:34Z pwessel $
+    #
+    # Purpose:	Make 3-D bar graph on top of perspective map
+    # GMT progs:	pscoast, pstext, psxyz
+    # Unix progs:	awk, rm
+    #
+    ps=example_10.ps
+    pscoast -Rd -JX8id/5id -Dc -Slightblue -Glightbrown -Wfaint -A1000 -p200/40 -K \
+    	-U"Example 10 in Cookbook" > $ps
+    awk '{print $1, $2, $3}' agu2008.d \
+    	| pstext -R -J -O -K -p -D-0.2i/0 -F+f20p,Helvetica-Bold,blue=thinner+jRM >> $ps
+    psxyz agu2008.d -R-180/180/-90/90/1.01/100000 -J -JZ2.5il -So0.3ib1 -Gdarkgreen -Wthinner \
+    	--FONT_TITLE=30p,Times-Bold --MAP_TITLE_OFFSET=-0.7i \
+    	"-B60g60/30g30/a1p:Memberships::.AGU 2008 Membership Distribution:WSneZ" -O -p >> $ps
 
 Making a 3-D RGB color cube
 ---------------------------
@@ -6191,8 +6360,104 @@ other 3 faces of the cube, around the black corner, the white decimal
 numbers indicate brightnesses between 0 and 1, with saturation fixed at
 1.
 
-Here is the shell script to generate the RGB cube in
-Figure [fig:example\ :sub:`1`\ 1]:
+Here is the shell script to generate the RGB cube in Figure [fig:example\ :sub:`1`\ 1]:
+
+   ::
+
+    #!/bin/bash
+    #		GMT EXAMPLE 11
+    #
+    # Purpose:	Create a 3-D RGB Cube
+    # GMT progs:	gmtset, grdimage, grdmath, pstext, psxy
+    # Unix progs:	rm
+    ps=example_11.ps
+    
+    # Use psxy to plot "cut-along-the-dotted" lines.
+    
+    gmtset MAP_TICK_LENGTH_PRIMARY 0
+    
+    psxy cut-here.dat -Wthinnest,. -R-51/306/0/1071 -JX3.5i/10.5i -X2.5i -Y0.5i \
+    	-P -UL/-2.0i/-0.2i/"Example 11 in Cookbook" -K > $ps
+    
+    # First, create grids of ascending X and Y and constant 0.
+    # These are to be used to represent R, G and B values of the darker 3 faces of the cube.
+    
+    grdmath -I1 -R0/255/0/255 X = x.nc
+    grdmath -I1 -R Y = y.nc
+    grdmath -I1 -R 0 = c.nc
+    
+    gmtset FONT_ANNOT_PRIMARY 12p,Helvetica-Bold
+    
+    grdimage x.nc y.nc c.nc -JX2.5i/-2.5i -R -K -O -X0.5i >> $ps
+    psxy -Wthinner,white,- rays.dat -J -R -K -O -Bwesn >> $ps
+    pstext --FONT=white -J -R -K -O -F+f+a >> $ps << END
+    128 128 12p -45 60\217
+    102  26 12p -90 0.4
+    204  26 12p -90 0.8
+    10  140 16p 180 G
+    END
+    echo 0 0 0 128 | psxy -N -Sv0.15i+s+e -Gwhite -W2p,white -J -R -K -O >> $ps
+    
+    grdimage x.nc c.nc y.nc -JX2.5i/2.5i -R -K -O -Y2.5i >> $ps
+    psxy -Wthinner,white,- rays.dat -J -R -K -O -Bwesn >> $ps
+    pstext --FONT=white -J -R -K -O -F+f+a >> $ps << END
+    128 128 12p  45 300\217
+    26  102 12p   0 0.4
+    26  204 12p   0 0.8
+    140  10 16p -90 R
+    100 100 16p -45 V
+    END
+    echo 0 0 128 0 | psxy -N -Sv0.15i+s+e -Gwhite -W2p,white -J -R -K -O >> $ps
+    echo 0 0 90 90 | psxy -N -Sv0.15i+s+e -Gwhite -W2p,white -J -R -K -O >> $ps
+    
+    grdimage c.nc x.nc y.nc -JX-2.5i/2.5i -R -K -O -X-2.5i >> $ps
+    psxy -Wthinner,white,- rays.dat -J -R -K -O -Bwesn >> $ps
+    pstext --FONT=white -J -R -K -O -F+f+a >> $ps << END
+    128 128 12p 135 180\217
+    102  26 12p  90 0.4
+    204  26 12p  90 0.8
+    10  140 16p   0 B
+    END
+    echo 0 0 0 128 | psxy -N -Sv0.15i+s+e -Gwhite -W2p,white -J -R -K -O >> $ps
+    echo 0 0 128 0 | psxy -N -Sv0.15i+s+e -Gwhite -W2p,white -J -R -K -O >> $ps
+    
+    # Second, create grids of descending X and Y and constant 255.
+    # These are to be used to represent R, G and B values of the lighter 3 faces of the cube.
+    
+    grdmath -I1 -R 255 X SUB = x.nc
+    grdmath -I1 -R 255 Y SUB = y.nc
+    grdmath -I1 -R 255       = c.nc
+    
+    grdimage x.nc y.nc c.nc -JX-2.5i/-2.5i -R -K -O -X2.5i -Y2.5i >> $ps
+    psxy -Wthinner,black,- rays.dat -J -R -K -O -Bwesn >> $ps
+    pstext -J -R -K -O -F+f+a >> $ps << END
+    128 128 12p 225 240\217
+    102  26 12p 270 0.4
+    204  26 12p 270 0.8
+    END
+    
+    grdimage c.nc y.nc x.nc -JX2.5i/-2.5i -R -K -O -X2.5i >> $ps
+    psxy -Wthinner,black,- rays.dat -J -R -K -O -Bwesn >> $ps
+    pstext -J -R -K -O -F+f+a >> $ps << END
+    128 128 12p -45 0\217
+    26  102 12p   0 0.4
+    26  204 12p   0 0.8
+    100 100 16p  45 S
+    204  66 16p  90 H
+    END
+    echo 0 0 90 90 | psxy -N -Sv0.15i+s+e -Gblack -W2p -J -R -K -O >> $ps
+    echo 204 204 204 76 | psxy -N -Sv0.15i+s+e -Gblack -W2p -J -R -K -O >> $ps
+    
+    grdimage x.nc c.nc y.nc -JX-2.5i/2.5i -R -K -O -X-2.5i -Y2.5i >> $ps
+    psxy -Wthinner,black,- rays.dat -J -R -K -O -Bwesn >> $ps
+    pstext -J -R -O -F+f+a >> $ps << END
+    128 128 12p 135 120\217
+    26  102 12p 180 0.4
+    26  204 12p 180 0.8
+    200 200 16p 225 GMT 5
+    END
+    
+    rm -f *.nc gmt.conf
 
 Optimal triangulation of data
 -----------------------------
@@ -6212,6 +6477,45 @@ image the data. We use a color palette table ``topo.cpt`` (created via
 `minmax <minmax.html>`_ and
 `makecpt <makecpt.html>`_). The script becomes:
 
+   ::
+
+    #!/bin/bash
+    #		GMT EXAMPLE 12
+    #
+    # Purpose:	Illustrates Delaunay triangulation of points, and contouring
+    # GMT progs:	makecpt, minmax, pscontour, pstext, psxy, triangulate
+    # Unix progs:	awk, echo, rm
+    #
+    # First draw network and label the nodes
+    #
+    ps=example_12.ps
+    triangulate table_5.11 -M > net.xy
+    psxy -R0/6.5/-0.2/6.5 -JX3.06i/3.15i -B2f1WSNe net.xy -Wthinner -P -K -X0.9i -Y4.65i > $ps
+    psxy table_5.11 -R -J -O -K -Sc0.12i -Gwhite -Wthinnest >> $ps
+    awk '{print $1, $2, NR-1}' table_5.11 | pstext -R -J -F+f6p -O -K >> $ps
+    #
+    # Then draw network and print the node values
+    #
+    psxy -R -J -B2f1eSNw net.xy -Wthinner -O -K -X3.25i >> $ps
+    psxy -R -J -O -K table_5.11 -Sc0.03i -Gblack >> $ps
+    pstext table_5.11 -R -J -F+f6p+jLM -O -K -Gwhite -W -C0.01i -D0.08i/0i -N >> $ps
+    #
+    # Then contour the data and draw triangles using dashed pen; use "minmax" and "makecpt" to make a
+    # color palette (.cpt) file
+    #
+    T=`minmax -T25/2 table_5.11`
+    makecpt -Cjet $T > topo.cpt
+    pscontour -R -J table_5.11 -B2f1WSne -Wthin -Ctopo.cpt -Lthinnest,- -Gd1i -X-3.25i -Y-3.65i \
+    	-O -K -U"Example 12 in Cookbook" >> $ps
+    #
+    # Finally color the topography
+    #
+    pscontour -R -J table_5.11 -B2f1eSnw -Ctopo.cpt -I -X3.25i -O -K >> $ps
+    echo "3.16 8 Delaunay Triangulation" | \
+    	pstext -R0/8/0/11 -Jx1i -F+f30p,Helvetica-Bold+jCB -O -X-3.25i >> $ps
+    #
+    rm -f net.xy topo.cpt
+
 Plotting of vector fields
 -------------------------
 
@@ -6229,6 +6533,30 @@ the components of the gradient in separate windows. A
 `pstext <pstext.html>`_ call to place a header finishes
 the plot (Figure [fig:example:sub:`1`\ 3]:
 
+   ::
+
+    #!/bin/bash
+    #		GMT EXAMPLE 13
+    #
+    # Purpose:	Illustrate vectors and contouring
+    # GMT progs:	grdmath, grdcontour, grdvector, pstext
+    # Unix progs:	echo, rm
+    #
+    ps=example_13.ps
+    grdmath -R-2/2/-2/2 -I0.1 X Y R2 NEG EXP X MUL = z.nc
+    grdmath z.nc DDX = dzdx.nc
+    grdmath z.nc DDY = dzdy.nc
+    grdcontour dzdx.nc -JX3i -B1/1WSne -C0.1 -A0.5 -K -P -Gd2i -S4 -T0.1i/0.03i \
+    	-U"Example 13 in Cookbook" > $ps
+    grdcontour dzdy.nc -J -B -C0.05 -A0.2 -O -K -Gd2i -S4 -T0.1i/0.03i -Xa3.45i >> $ps
+    grdcontour z.nc -J -B -C0.05 -A0.1 -O -K -Gd2i -S4 -T0.1i/0.03i -Y3.45i >> $ps
+    grdcontour z.nc -J -B -C0.05 -O -K -Gd2i -S4 -X3.45i >> $ps
+    grdvector dzdx.nc dzdy.nc -I0.2 -J -O -K -Q0.1i+e+n0.25i -Gblack -W1p -S5i \
+    	--MAP_VECTOR_SHAPE=0.5 >> $ps
+    echo "3.2 3.6 z(x,y) = x@~\327@~exp(-x@+2@+-y@+2@+)" \
+    	| pstext -R0/6/0/4.5 -Jx1i -F+f40p,Times-Italic+jCB -O -X-3.45i >> $ps
+    rm -f z.nc dzdx.nc dzdy.nc
+
 Gridding of data and trend surfaces
 -----------------------------------
 
@@ -6242,8 +6570,7 @@ a given bin will be averaged. The logical blocks are drawn from a
 temporary file we make on the fly within the shell script. The processed
 data is then gridded with the `surface <surface.html>`_
 program and contoured every 25 units. A most important point here is
-that `blockmean <blockmean.html>`_,
-`blockmedian <blockmedian.html>`_, or
+that `blockmean <blockmean.html>`_, `blockmedian <blockmedian.html>`_, or
 `blockmode <blockmode.html>`_ should always be run prior
 to running `surface <surface.html>`_, and both of these
 steps must use the same grid interval. We use
@@ -6254,6 +6581,56 @@ files along a diagonal transect using
 the gridded (solid line) and bicubic trend (dashed line) along the
 transect using `psxy <psxy.html>`_
 (Figure [fig:example:sub:`1`\ 4]):
+
+   ::
+
+    #!/bin/bash
+    #		GMT EXAMPLE 14
+    #
+    # Purpose:	Showing simple gridding, contouring, and resampling along tracks
+    # GMT progs:	blockmean, grdcontour, grdtrack, grdtrend, minmax, project
+    # GMT progs:	gmtset, pstext, psbasemap, psxy, surface
+    # Unix progs:	rm
+    #
+    ps=example_14.ps
+    
+    # First draw network and label the nodes
+    
+    gmtset MAP_GRID_PEN_PRIMARY thinnest,-
+    psxy table_5.11 -R0/7/0/7 -JX3.06i/3.15i -B2f1WSNe -Sc0.05i -Gblack -P -K -Y6.45i > $ps
+    pstext table_5.11 -R -J -D0.1c/0 -F+f6p+jLM -O -K -N >> $ps
+    blockmean table_5.11 -R0/7/0/7 -I1 > mean.xyz
+    
+    # Then draw blockmean cells
+    
+    psbasemap -R0.5/7.5/0.5/7.5 -J -O -K -Bg1 -X3.25i >> $ps
+    psxy -R0/7/0/7 -J -B2f1eSNw mean.xyz -Ss0.05i -Gblack -O -K >> $ps
+    # Reformat to one decimal for annotation purposes
+    gmtconvert mean.xyz --FORMAT_FLOAT_OUT=%.1f | \
+    	pstext -R -J -D0.15c/0 -F+f6p+jLM -O -K -Gwhite -W -C0.01i -N >> $ps
+    
+    # Then surface and contour the data
+    
+    surface mean.xyz -R -I1 -Gdata.nc
+    grdcontour data.nc -J -B2f1WSne -C25 -A50 -Gd3i -S4 -O -K -X-3.25i -Y-3.55i >> $ps
+    psxy -R -J mean.xyz -Ss0.05i -Gblack -O -K >> $ps
+    
+    # Fit bicubic trend to data and compare to gridded surface
+    
+    grdtrend data.nc -N10 -Ttrend.nc
+    project -C0/0 -E7/7 -G0.1 -N > track
+    grdcontour trend.nc -J -B2f1wSne -C25 -A50 -Glct/cb -S4 -O -K -X3.25i >> $ps
+    psxy -R -J track -Wthick,. -O -K >> $ps
+    
+    # Sample along diagonal
+    
+    grdtrack track -Gdata.nc -o2,3 > data.d
+    grdtrack track -Gtrend.nc -o2,3 > trend.d
+    psxy `minmax data.d trend.d -I0.5/25` -JX6.3i/1.4i data.d -Wthick -O -K -X-3.25i -Y-1.9i \
+    	-B1/50WSne >> $ps
+    psxy -R -J trend.d -Wthinner,- -O -U"Example 14 in Cookbook" >> $ps
+    
+    rm -f mean.xyz track *.nc *.d gmt.conf
 
 Gridding, contouring, and masking of unconstrained areas
 --------------------------------------------------------
@@ -6282,6 +6659,40 @@ star at the deepest point on the map with
 `psxy <psxy.html>`_. This point was extracted from the
 grid files using `grdinfo <grdinfo.html>`_.
 
+   ::
+
+    #!/bin/bash
+    #		GMT EXAMPLE 15
+    #
+    # Purpose:	Gridding and clipping when data are missing
+    # GMT progs:	blockmedian, gmtconvert, grdclip, grdcontour, grdinfo, minmax
+    # GMT progs:	nearneighbor, pscoast, psmask, pstext, surface
+    # Unix progs:	echo, rm
+    #
+    ps=example_15.ps
+    gmtconvert ship.xyz -bo > ship.b
+    #
+    region=`minmax ship.b -I1 -bi3`
+    nearneighbor $region -I10m -S40k -Gship.nc ship.b -bi3
+    grdcontour ship.nc -JM3i -P -B2WSne -C250 -A1000 -Gd2i -K -U"Example 15 in Cookbook" > $ps
+    #
+    blockmedian $region -I10m ship.b -bi3 -bo > ship_10m.b
+    surface $region -I10m ship_10m.b -Gship.nc -bi3
+    psmask $region -I10m ship.b -J -O -K -T -Glightgray -bi3 -X3.6i >> $ps
+    grdcontour ship.nc -J -B -C250 -L-8000/0 -A1000 -Gd2i -O -K >> $ps
+    #
+    psmask $region -I10m ship_10m.b -bi3 -J -B -O -K -X-3.6i -Y3.75i >> $ps
+    grdcontour ship.nc -J -C250 -A1000 -L-8000/0 -Gd2i -O -K >> $ps
+    psmask -C -O -K >> $ps
+    #
+    grdclip ship.nc -Sa-1/NaN -Gship_clipped.nc
+    grdcontour ship_clipped.nc -J -B -C250 -A1000 -L-8000/0 -Gd2i -O -K -X3.6i >> $ps
+    pscoast $region -J -O -K -Ggray -Wthinnest >> $ps
+    grdinfo -C -M ship.nc | psxy -R -J -O -K -Sa0.15i -Wthick -i11,12 >> $ps
+    echo "-0.3 3.6 Gridding with missing data" | pstext -R0/3/0/4 -Jx1i \
+    	-F+f24p,Helvetica-Bold+jCB -O -N >> $ps
+    rm -f ship.b ship_10m.b ship.nc ship_clipped.nc
+
 Gridding of data, continued
 ---------------------------
 
@@ -6299,16 +6710,14 @@ physically reasonable, but it can be filtered later (last panel below).
 `surface <surface.html>`_ can be used to generate a
 higher-order (smooth and differentiable) interpolation of
 :math:`z(x, y)` onto a grid, after which the grid may be illustrated
-(`grdcontour <grdcontour.html>`_,
-`grdimage <grdimage.html>`_,
+(`grdcontour <grdcontour.html>`_, `grdimage <grdimage.html>`_,
 `grdview <grdview.html>`_).
 `surface <surface.html>`_ will interpolate to all (*x,
 y*) points in a rectangular region, and thus will extrapolate beyond the
 convex hull of the data. However, this can be masked out in various ways
 (see Section [sec:example\ :sub:`1`\ 5]).
 
-A more serious objection is that
-`surface <surface.html>`_ may estimate *z* values
+A more serious objection is that `surface <surface.html>`_ may estimate *z* values
 outside the local range of the data (note area near *x* = 0.8, *y* =
 5.3). This commonly happens when the default tension value of zero is
 used to create a “minimum curvature” (most smooth) interpolant.
@@ -6323,12 +6732,10 @@ perpendicular direction. A solution is to use
 `surface <surface.html>`_ in a larger area and then use
 `grdcut <grdcut.html>`_ to cut out the desired smaller
 area. Another way to achieve a compromise is to interpolate the data to
-a grid and then filter the grid using
-`grdfft <grdfft.html>`_ or
+a grid and then filter the grid using `grdfft <grdfft.html>`_ or
 `grdfilter <grdfilter.html>`_. The latter can handle
 grids containing “NaN” values and it can do median and mode filters as
-well as convolutions. Shown here is
-`triangulate <triangulate.html>`_ followed by
+well as convolutions. Shown here is `triangulate <triangulate.html>`_ followed by
 `grdfilter <grdfilter.html>`_. Note that the filter has
 done some extrapolation beyond the convex hull of the original *x, y*
 values. The “best” smooth approximation of :math:`z(x, y)` depends on
@@ -6338,6 +6745,42 @@ combinations of tools. We illustrate all four solutions using a CPT file
 that contains color fills, predefined patterns for interval (900,925)
 and NaN, an image pattern for interval (875,900), and a “skip slice”
 request for interval (700,725).
+
+   ::
+
+    #!/bin/bash
+    #		GMT EXAMPLE 16
+    #
+    # Purpose:	Illustrates interpolation methods using same data as Example 12.
+    # GMT progs:	gmtset, grdview, grdfilter, pscontour, psscale, pstext, surface, triangulate
+    # Unix progs:	echo, rm
+    #
+    # Illustrate various means of contouring, using triangulate and surface.
+    #
+    ps=example_16.ps
+    gmtset FONT_ANNOT_PRIMARY 9p
+    #
+    pscontour -R0/6.5/-0.2/6.5 -Jx0.45i -P -K -Y5.5i -Ba2f1WSne table_5.11 -Cex16.cpt -I > $ps
+    echo "3.25 7 pscontour (triangulate)" | pstext -R -J -O -K -N -F+f18p,Times-Roman+jCB >> $ps
+    #
+    surface table_5.11 -R -I0.2 -Graws0.nc
+    grdview raws0.nc -R -J -B -Cex16.cpt -Qs -O -K -X3.5i >> $ps
+    echo "3.25 7 surface (tension = 0)" | pstext -R -J -O -K -N -F+f18p,Times-Roman+jCB >> $ps
+    #
+    surface table_5.11 -R -I0.2 -Graws5.nc -T0.5
+    grdview raws5.nc -R -J -B -Cex16.cpt -Qs -O -K -Y-3.75i -X-3.5i >> $ps
+    echo "3.25 7 surface (tension = 0.5)" | pstext -R -J -O -K -N -F+f18p,Times-Roman+jCB >> $ps
+    #
+    triangulate table_5.11 -Grawt.nc -R -I0.2 > /dev/null
+    grdfilter rawt.nc -Gfiltered.nc -D0 -Fc1
+    grdview filtered.nc -R -J -B -Cex16.cpt -Qs -O -K -X3.5i >> $ps
+    echo "3.25 7 triangulate @~\256@~ grdfilter" | pstext -R -J -O -K -N \
+    	-F+f18p,Times-Roman+jCB >> $ps
+    echo "3.2125 7.5 Gridding of Data" | pstext -R0/10/0/10 -Jx1i -O -K -N \
+    	-F+f32p,Times-Roman+jCB -X-3.5i >> $ps
+    psscale -D3.25i/0.35i/5i/0.25ih -Cex16.cpt -O -U"Example 16 in Cookbook" -Y-0.75i >> $ps
+    #
+    rm -f *.nc gmt.conf
 
 Images clipped by coastlines
 ----------------------------
@@ -6368,6 +6811,56 @@ For this image it is appropriate to use the **-I** option in
 similar to the geoid grid. See Appendix [app:M] to learn more about
 color palettes and ways to draw color legends.
 
+   ::
+
+    #!/bin/bash
+    #		GMT EXAMPLE 17
+    #		$Id: example_17.sh 9872 2012-03-15 20:57:29Z remko $
+    #
+    # Purpose:	Illustrates clipping of images using coastlines
+    # GMT progs:	grd2cpt, grdgradient, grdimage, pscoast, pstext
+    # Unix progs:	rm
+    #
+    ps=example_17.ps
+    
+    # First generate geoid image w/ shading
+    
+    grd2cpt india_geoid.nc -Crainbow > geoid.cpt
+    grdgradient india_geoid.nc -Nt1 -A45 -Gindia_geoid_i.nc
+    grdimage india_geoid.nc -Iindia_geoid_i.nc -JM6.5i -Cgeoid.cpt -P -K \
+    	-U"Example 17 in Cookbook" > $ps
+    
+    # Then use pscoast to initiate clip path for land
+    
+    pscoast -Rindia_geoid.nc -J -O -K -Dl -Gc >> $ps
+    
+    # Now generate topography image w/shading
+    
+    echo "-10000 150 10000 150" > gray.cpt
+    grdgradient india_topo.nc -Nt1 -A45 -Gindia_topo_i.nc
+    grdimage india_topo.nc -Iindia_topo_i.nc -J -Cgray.cpt -O -K >> $ps
+    
+    # Finally undo clipping and overlay basemap
+    
+    pscoast -R -J -O -K -Q -B10f5:."Clipping of Images": >> $ps
+    
+    # Put a color legend on top of the land mask
+    
+    psscale -D4i/7.6i/4i/0.2ih -Cgeoid.cpt -B5f1/:m: -I -O -K >> $ps
+    
+    # Add a text paragraph
+    
+    pstext -R -J -O -M -Gwhite -Wthinner -TO -D-0.1i/0.1i -F+f12,Times-Roman+jRB >> $ps << END
+    > 90 -10 12p 3i j
+    @_@%5%Example 17.@%%@_  We first plot the color geoid image
+    for the entire region, followed by a gray-shaded @#etopo5@#
+    image that is clipped so it is only visible inside the coastlines.
+    END
+    
+    # Clean up
+    
+    rm -f geoid.cpt gray.cpt *_i.nc
+
 Volumes and Spatial Selections
 ------------------------------
 
@@ -6385,6 +6878,87 @@ points within 200 km of Pratt. We then mask out all the data outside
 this radius and use `grdvolume <grdvolume.html>`_ to
 determine the combined area and volumes of the chosen seamounts. Our
 illustration is presented in Figure [fig:example\ :sub:`1`\ 8].
+
+   ::
+
+    #!/bin/bash
+    #		GMT EXAMPLE 18
+    #
+    # Purpose:	Illustrates volumes of grids inside contours and spatial
+    #		selection of data
+    # GMT progs:	gmtset, gmtselect, gmtspatial, grdclip, grdcontour, grdgradient, grdimage
+    # GMT progs:	grdmath, grdvolume, makecpt, pscoast, psscale, pstext, psxy
+    # Unix progs:	awk, cat, rm
+    #
+    ps=example_18.ps
+    
+    # Use spherical projection since SS data define on sphere
+    gmtset PROJ_ELLIPSOID Sphere FORMAT_FLOAT_OUT %g
+    
+    # Define location of Pratt seamount
+    echo "-142.65 56.25" > pratt.d
+    
+    # First generate gravity image w/ shading, label Pratt, and draw a circle
+    # of radius = 200 km centered on Pratt.
+    
+    makecpt -Crainbow -T-60/60/120 -Z > grav.cpt
+    grdgradient AK_gulf_grav.nc -Nt1 -A45 -GAK_gulf_grav_i.nc
+    grdimage AK_gulf_grav.nc -IAK_gulf_grav_i.nc -JM5.5i -Cgrav.cpt -B2f1 -P -K -X1.5i \
+    	-Y5.85i > $ps
+    pscoast -RAK_gulf_grav.nc -J -O -K -Di -Ggray -Wthinnest >> $ps
+    psscale -D2.75i/-0.4i/4i/0.15ih -Cgrav.cpt -B20f10/:mGal: -O -K >> $ps
+    awk '{print $1, $2, "Pratt"}' pratt.d | pstext -R -J -O -K -D0.1i/0.1i \
+    	-F+f12p,Helvetica-Bold+jLB >> $ps
+    awk '{print $1, $2, 0, 400, 400}' pratt.d | psxy -R -J -O -K -SE -Wthinnest >> $ps
+    
+    # Then draw 10 mGal contours and overlay 50 mGal contour in green
+    
+    grdcontour AK_gulf_grav.nc -J -C20 -B2f1WSEn -O -K -Y-4.85i \
+    	-UL/-1.25i/-0.75i/"Example 18 in Cookbook" >> $ps
+    # Save 50 mGal contours to individual files, then plot them
+    grdcontour AK_gulf_grav.nc -C10 -L49/51 -Dsm_%d_%c.txt
+    psxy -R -J -O -K -Wthin,green sm_*.txt >> $ps
+    pscoast -R -J -O -K -Di -Ggray -Wthinnest >> $ps
+    awk '{print $1, $2, 0, 400, 400}' pratt.d | psxy -R -J -O -K -SE -Wthinnest >> $ps
+    rm -f sm_*_O.txt	# Only consider the closed contours
+    
+    # Now determine centers of each enclosed seamount > 50 mGal but only plot
+    # the ones within 200 km of Pratt seamount.
+    
+    # First determine mean location of each closed contour and
+    # add it to the file centers.d
+    
+    gmtspatial -Q -fg sm_*_C.txt > centers.d
+    
+    # Only plot the ones within 200 km
+    
+    gmtselect -C200k/pratt.d centers.d -fg | psxy -R -J -O -K -SC0.04i -Gred -Wthinnest >> $ps
+    psxy -R -J -O -K -ST0.1i -Gyellow -Wthinnest pratt.d >> $ps
+    
+    # Then report the volume and area of these seamounts only
+    # by masking out data outside the 200 km-radius circle
+    # and then evaluate area/volume for the 50 mGal contour
+    
+    grdmath -R `cat pratt.d` SDIST = mask.nc
+    grdclip mask.nc -Sa200/NaN -Sb200/1 -Gmask.nc
+    grdmath AK_gulf_grav.nc mask.nc MUL = tmp.nc
+    area=`grdvolume tmp.nc -C50 -Sk | cut -f2`
+    volume=`grdvolume tmp.nc -C50 -Sk | cut -f3`
+    
+    psxy -R -J -A -O -K -L -Wthin -Gwhite >> $ps << END
+    -148.5	52.75
+    -140.5	52.75
+    -140.5	53.75
+    -148.5	53.75
+    END
+    pstext -R -J -O -F+f14p,Helvetica-Bold+jLM >> $ps << END
+    -148 53.08 Areas: $area km@+2@+
+    -148 53.42 Volumes: $volume mGal\264km@+2@+
+    END
+    
+    # Clean up
+    
+    rm -f grav.cpt sm_*.txt *_i.nc tmp.nc mask.nc pratt.d center* gmt.conf
 
 Color patterns on maps
 ----------------------
@@ -6406,6 +6980,54 @@ format). The text *GMT* in the center is an off-line *PostScript* file
 that was overlaid using `psimage <psimage.html>`_. The
 final panel repeats the top panel except that the land and sea images
 have changed places (Figure [fig:example:sub:`1`\ 9]).
+
+   ::
+
+    #!/bin/bash
+    #		GMT EXAMPLE 19
+    #
+    # Purpose:	Illustrates various color pattern effects for maps
+    # GMT progs:	gmtset, grdimage, grdmath, makecpt, pscoast, pstext, psimage
+    # Unix progs:	rm
+    #
+    ps=example_19.ps
+    
+    # First make a worldmap with graded blue oceans and rainbow continents
+    
+    grdmath -Rd -I1 -r Y COSD 2 POW = lat.nc
+    grdmath -Rd -I1 -r X = lon.nc
+    echo "0 white 1 blue" > lat.cpt
+    makecpt -Crainbow -T-180/180/360 -Z > lon.cpt
+    grdimage lat.nc -JI0/6.5i -Clat.cpt -P -K -Y7.5i -B0 -nl > $ps
+    pscoast -R -J -O -K -Dc -A5000 -Gc >> $ps
+    grdimage lon.nc -J -Clon.cpt -O -K -nl >> $ps
+    pscoast -R -J -O -K -Q >> $ps
+    pscoast -R -J -O -K -Dc -A5000 -Wthinnest >> $ps
+    echo "0 20 10TH INTERNATIONAL" | pstext -R -J -O -K -F+f32p,Helvetica-Bold,red=thinner >> $ps
+    echo "0 -10 GMT CONFERENCE" | pstext -R -J -O -K -F+f32p,Helvetica-Bold,red=thinner >> $ps
+    echo "0 -30 Honolulu, Hawaii, April 1, 2013" | pstext -R -J -O -K \
+    	-F+f18p,Helvetica-Bold,green=thinnest >> $ps
+    
+    # Then show example of color patterns and placing a PostScript image
+    
+    pscoast -R -J -O -K -Dc -A5000 -Gp100/86:FredByellow -Sp100/circuit.ras -B0 -Y-3.25i >> $ps
+    echo "0 30 SILLY USES OF" | pstext -R -J -O -K -F+f32p,Helvetica-Bold,lightgreen=thinner >> $ps
+    echo "0 -30 COLOR PATTERNS" | pstext -R -J -O -K -F+f32p,Helvetica-Bold,magenta=thinner >> $ps
+    psimage -C3.25i/1.625i/CM -W3i GMT_covertext.eps -O -K >> $ps
+    
+    # Finally repeat 1st plot but exchange the patterns
+    
+    grdimage lon.nc -J -Clon.cpt -O -K -Y-3.25i -B0 -U"Example 19 in Cookbook" -nl >> $ps
+    pscoast -R -J -O -K -Dc -A5000 -Gc >> $ps
+    grdimage lat.nc -J -Clat.cpt -O -K -nl >> $ps
+    pscoast -R -J -O -K -Q >> $ps
+    pscoast -R -J -O -K -Dc -A5000 -Wthinnest >> $ps
+    echo "0 20 10TH INTERNATIONAL" | pstext -R -J -O -K -F+f32p,Helvetica-Bold,red=thinner >> $ps
+    echo "0 -10 GMT CONFERENCE" | pstext -R -J -O -K -F+f32p,Helvetica-Bold,red=thinner >> $ps
+    echo "0 -30 Honolulu, Hawaii, April 1, 2013" | pstext -R -J -O \
+    	-F+f18p,Helvetica-Bold,green=thinnest >> $ps
+    
+    rm -f l*.nc l*.cpt gmt.conf
 
 Custom plot symbols
 -------------------
@@ -6479,8 +7101,52 @@ custom-built volcano symbol and `psxy <psxy.html>`_. We
 do something similar with the bulls eye symbols. Without the **-G**
 option, however, they get the colors defined in ``bullseye.def``.
 
-Here is our final map script that produces
-Figure [fig:example\ :sub:`2`\ 0]:
+Here is our final map script that produces Figure [fig:example\ :sub:`2`\ 0]:
+
+   ::
+
+    #!/bin/bash
+    #		GMT EXAMPLE 20
+    #		$Id: example_20.sh 11031 2013-03-02 01:27:34Z pwessel $
+    #
+    # Purpose:	Extend GMT to plot custom symbols
+    # GMT progs:	pscoast, psxy
+    # Unix progs:	rm
+    #
+    # Plot a world-map with volcano symbols of different sizes
+    # on top given locations and sizes in hotspots.d
+    ps=example_20.ps
+    
+    cat > hotspots.d << END
+    55.5	-21.0	0.25
+    63.0	-49.0	0.25
+    -12.0	-37.0	0.25
+    -28.5	29.34	0.25
+    48.4	-53.4	0.25
+    155.5	-40.4	0.25
+    -155.5	19.6	0.5
+    -138.1	-50.9	0.25
+    -153.5	-21.0	0.25
+    -116.7	-26.3	0.25
+    -16.5	64.4	0.25
+    END
+    
+    pscoast -Rg -JR9i -B60/30:."Hotspot Islands and Cities": -Gdarkgreen -Slightblue -Dc -A5000 \
+    	-K -U"Example 20 in Cookbook" > $ps
+    
+    psxy -R -J hotspots.d -Skvolcano -O -K -Wthinnest -Gred >> $ps
+    
+    # Overlay a few bullseyes at NY, Cairo, and Perth
+    
+    cat > cities.d << END
+    286	40.45	0.8
+    31.15	30.03	0.8
+    115.49	-31.58	0.8
+    END
+    
+    psxy -R -J cities.d -Skbullseye -O >> $ps
+    
+    rm -f hotspots.d cities.d
 
 Given these guidelines you can easily make your own symbols. Symbols
 with more than one color can be obtained by making several symbol
@@ -6521,6 +7187,98 @@ we must change the default input/output formats used by *GMT*. Finally,
 we want to prefix prices with the $ symbol to indicate the currency.
 Here is how it all comes out:
 
+   ::
+
+    #!/bin/bash
+    #		GMT EXAMPLE 21
+    #
+    # Purpose:	Plot a time-series
+    # GMT progs:	gmtset, gmtconvert, minmax, psbasemap, psxy 
+    # Unix progs:	cut, echo
+    #
+    ps=example_21.ps
+    
+    # File has time stored as dd-Mon-yy so set input format to match it
+    
+    gmtset FORMAT_DATE_IN dd-o-yy FORMAT_DATE_MAP o FONT_ANNOT_PRIMARY +10p
+    gmtset FORMAT_TIME_PRIMARY_MAP abbreviated PS_CHAR_ENCODING ISOLatin1+
+    
+    # Pull out a suitable region string in yyy-mm-dd format
+    
+    minmax -fT -I50 -C RHAT_price.csv > RHAT.info
+    w=`cut -f1 RHAT.info`
+    e=`cut -f2 RHAT.info`
+    s=`cut -f3 RHAT.info`
+    n=`cut -f4 RHAT.info`
+    R="-R$w/$e/$s/$n"
+    
+    # Lay down the basemap:
+    
+    psbasemap $R -JX9i/6i -K -U"Example 21 in Cookbook" -Bs1Y/WSen \
+       -Bpa3Of1o/50:=\$::."RedHat (RHT) Stock Price Trend since IPO":WSen+glightgreen > $ps
+    
+    # Plot main window with open price as red line over yellow envelope of low/highs
+    
+    gmtset FORMAT_DATE_OUT dd-o-yy
+    gmtconvert -o0,2 -f0T RHAT_price.csv > RHAT.env
+    gmtconvert -o0,3 -f0T -I -T RHAT_price.csv >> RHAT.env
+    psxy -R -J -Gyellow -O -K RHAT.env >> $ps
+    psxy -R -J RHAT_price.csv -Wthin,red -O -K >> $ps
+    
+    # Draw P Wessel's purchase price as line and label it.  Note we temporary switch
+    # back to default yyyy-mm-dd format since that is what minmax gave us.
+    
+    echo "05-May-00	0" > RHAT.pw
+    echo "05-May-00	300" >> RHAT.pw
+    psxy -R -J RHAT.pw -Wthinner,- -O -K >> $ps
+    echo "01-Jan-99	25" > RHAT.pw
+    echo "01-Jan-02	25" >> RHAT.pw
+    psxy -R -J RHAT.pw -Wthick,- -O -K >> $ps
+    gmtset FORMAT_DATE_IN yyyy-mm-dd
+    echo "$w 25 PW buy" | pstext -R -J -O -K -D1.5i/0.05i -N -F+f12p,Bookman-Demi+jLB >> $ps
+    gmtset FORMAT_DATE_IN dd-o-yy
+    
+    # Draw P Wessel's sales price as line and label it.
+    
+    echo "25-Jun-07	0" > RHAT.pw
+    echo "25-Jun-07	300" >> RHAT.pw
+    psxy -R -J RHAT.pw -Wthinner,- -O -K >> $ps
+    echo "01-Aug-06	23.8852" > RHAT.pw
+    echo "01-Jan-08	23.8852" >> RHAT.pw
+    psxy -R -J RHAT.pw -Wthick,- -O -K >> $ps
+    gmtset FORMAT_DATE_IN yyyy-mm-dd
+    echo "$e 23.8852 PW sell" | pstext -R -J -O -K -Dj0.8i/0.05i -N \
+    	-F+f12p,Bookman-Demi+jRB >> $ps
+    gmtset FORMAT_DATE_IN dd-o-yy
+    
+    # Get smaller region for insert for trend since 2004
+    
+    R="-R2004T/$e/$s/40"
+    
+    # Lay down the basemap, using Finnish annotations and place the insert in the upper right
+    
+    psbasemap --TIME_LANGUAGE=fi $R -JX6i/3i -Bpa3Of3o/10:=\$:ESw+glightblue -Bs1Y/ \
+    	-O -K -X3i -Y3i >> $ps
+    
+    # Again, plot close price as red line over yellow envelope of low/highs
+    
+    psxy -R -J -Gyellow -O -K RHAT.env >> $ps
+    psxy -R -J RHAT_price.csv -Wthin,red -O -K >> $ps
+    
+    # Draw P Wessel's sales price as dashed line
+    
+    psxy -R -J RHAT.pw -Wthick,- -O -K >> $ps
+    
+    # Mark sales date
+    
+    echo "25-Jun-07	0" > RHAT.pw
+    echo "25-Jun-07	300" >> RHAT.pw
+    psxy -R -J RHAT.pw -Wthinner,- -O >> $ps
+    
+    # Clean up after ourselves:
+    
+    rm -f RHAT.* gmt.conf
+
 which produces the plot in Figure [fig:example\ :sub:`2`\ 1], suggesting
 Wessel has missed a few trains if he had hoped to cash in on the
 Internet bubble...
@@ -6546,6 +7304,106 @@ Sun raster file, is used to spice up the legend.
 The script produces the plot in Figure [fig:example\ :sub:`2`\ 2],
 giving the URL where these and similar data can be obtained.
 
+   ::
+
+    #!/bin/bash
+    #		GMT EXAMPLE 22
+    #
+    # Purpose:	Automatic map of last 7 days of world-wide seismicity
+    # GMT progs:	gmtset, pscoast, psxy, pslegend
+    # Unix progs:	cat, sed, awk, wget|curl
+    #
+    ps=example_22.ps
+    gmtset FONT_ANNOT_PRIMARY 10p FONT_TITLE 18p FORMAT_GEO_MAP ddd:mm:ssF
+    
+    # Get the data (-q quietly) from USGS using the wget (comment out in case
+    # your system does not have wget or curl)
+    
+    #wget http://neic.usgs.gov/neis/gis/bulletin.asc -q -O neic_quakes.d
+    #curl http://neic.usgs.gov/neis/gis/bulletin.asc -s > neic_quakes.d
+    
+    # Count the number of events (to be used in title later. one less due to header)
+    
+    n=`cat neic_quakes.d | wc -l`
+    n=`expr $n - 1`
+    
+    # Pull out the first and last timestamp to use in legend title
+    
+    first=`sed -n 2p neic_quakes.d | awk -F, '{printf "%s %s\n", $1, $2}'`
+    last=`sed -n '$p' neic_quakes.d | awk -F, '{printf "%s %s\n", $1, $2}'`
+    
+    # Assign a string that contains the current user @ the current computer node.
+    # Note that two @@ is needed to print a single @ in pstext:
+    
+    #set me = "$user@@`hostname`"
+    me="GMT guru @@ GMTbox"
+    
+    # Create standard seismicity color table
+    
+    cat > neis.cpt << END
+    0	red	100	red
+    100	green	300	green
+    300	blue	10000	blue
+    END
+    
+    # Start plotting. First lay down map, then plot quakes with size = magintude/50":
+    
+    pscoast -Rg -JK180/9i -B45g30:."World-wide earthquake activity": -Gbrown -Slightblue \
+            -Dc -A1000 -K -UL/-0.75i/-2.5i/"Example 22 in Cookbook" -Y2.75i > $ps
+    awk -F, '{ print $4, $3, $6, $5*0.02}' neic_quakes.d \
+            | psxy -R -JK -O -K -Cneis.cpt -Sci -Wthin -h >> $ps
+    # Create legend input file for NEIS quake plot
+    
+    cat > neis.legend << END
+    H 16 1 $n events during $first to $last
+    D 0 1p
+    N 3
+    V 0 1p
+    S 0.1i c 0.1i red 0.25p 0.2i Shallow depth (0-100 km)
+    S 0.1i c 0.1i green 0.25p 0.2i Intermediate depth (100-300 km)
+    S 0.1i c 0.1i blue 0.25p 0.2i Very deep (> 300 km)
+    V 0 1p
+    D 0 1p
+    N 7
+    V 0 1p
+    S 0.1i c 0.06i - 0.25p 0.3i M 3
+    S 0.1i c 0.08i - 0.25p 0.3i M 4
+    S 0.1i c 0.10i - 0.25p 0.3i M 5
+    S 0.1i c 0.12i - 0.25p 0.3i M 6
+    S 0.1i c 0.14i - 0.25p 0.3i M 7
+    S 0.1i c 0.16i - 0.25p 0.3i M 8
+    S 0.1i c 0.18i - 0.25p 0.3i M 9
+    V 0 1p
+    D 0 1p
+    N 1
+    END
+    
+    # Put together a reasonable legend text, and add logo and user's name:
+    
+    cat << END >> neis.legend
+    P
+    T USGS/NEIS most recent earthquakes for the last seven days.  The data were
+    T obtained automatically from the USGS Earthquake Hazards Program page at
+    T @_http://neic/usgs.gov @_.  Interested users may also receive email alerts
+    T from the USGS.
+    T This script can be called daily to update the latest information.
+    G 0.4i
+    # Add USGS logo
+    I USGS.ras 1i RT
+    G -0.3i
+    L 12 6 LB $me
+    END
+    
+    # OK, now we can actually run pslegend.  We center the legend below the map.
+    # Trial and error shows that 1.7i is a good legend height:
+    
+    pslegend -Dx4.5i/-0.4i/7i/1.7i/TC -O -F neis.legend -Glightyellow >> $ps
+    
+    # Clean up after ourselves:
+    
+    rm -f neis.* gmt.conf
+
+
 All great-circle paths lead to Rome
 -----------------------------------
 
@@ -6570,6 +7428,66 @@ how interesting the path to Seattle appears in this particular
 projection (Hammer). We also note that Rome’s antipode lies somewhere
 near the Chatham plateau (antipodes will be revisited in
 Section [sec:example\ :sub:`2`\ 5]).
+
+   ::
+
+    #!/bin/bash
+    #		GMT EXAMPLE 23
+    #
+    # Purpose:	Plot distances from Rome and draw shortest paths
+    # GMT progs:	grdmath, grdcontour, pscoast, psxy, pstext, grdtrack
+    # Unix progs:	echo, cat, awk
+    #
+    ps=example_23.ps
+    
+    # Position and name of central point:
+    
+    lon=12.50
+    lat=41.99
+    name="Rome"
+    
+    # Calculate distances (km) to all points on a global 1x1 grid
+    
+    grdmath -Rg -I1 $lon $lat SDIST 111.13 MUL = dist.nc
+    
+    # Location info for 5 other cities + label justification
+    
+    cat << END > cities.d
+    105.87	21.02	HANOI		LM
+    282.95	-12.1	LIMA		LM
+    178.42	-18.13	SUVA		LM
+    237.67	47.58	SEATTLE		RM
+    28.20	-25.75	PRETORIA	LM
+    END
+    
+    pscoast -Rg -JH90/9i -Glightgreen -Sblue -U"Example 23 in Cookbook" -A1000 \
+    	-Bg30:."Distances from $name to the World": -K -Dc -Wthinnest > $ps
+    
+    grdcontour dist.nc -A1000+v+ukm+fwhite -Glz-/z+ -S8 -C500 -O -K -J \
+    	-Wathin,white -Wcthinnest,white,- >> $ps
+    
+    # For each of the cities, plot great circle arc to Rome with psxy
+    
+    while read clon clat city; do
+    	(echo $lon $lat; echo $clon $clat) | psxy -R -J -O -K -Wthickest,red >> $ps
+    done < cities.d
+    
+    # Plot red squares at cities and plot names:
+    psxy -R -J -O -K -Ss0.2 -Gred -Wthinnest cities.d >> $ps
+    awk '{print $1, $2, $4, $3}' cities.d | pstext -R -J -O -K -Dj0.15/0 \
+    	-F+f12p,Courier-Bold,red+j -N >> $ps
+    # Place a yellow star at Rome
+    echo "$lon $lat" | psxy -R -J -O -K -Sa0.2i -Gyellow -Wthin >> $ps
+    
+    # Sample the distance grid at the cities and use the distance in km for labels
+    
+    grdtrack -Gdist.nc cities.d \
+    	| awk '{printf "%s %s %d\n", $1, $2, int($NF+0.5)}' \
+    	| pstext -R -J -O -D0/-0.2i -N -Gwhite -W -C0.02i -F+f12p,Helvetica-Bold+jCT >> $ps
+    
+    # Clean up after ourselves:
+    
+    rm -f cities.d dist.nc
 
 Data selection based on geospatial criteria
 -------------------------------------------
@@ -6598,8 +7516,37 @@ the Dateline is just a line along the 180 meridian.
 The script produces the plot in Figure [fig:example\ :sub:`2`\ 4]. Note
 that the horizontal distance from the dateline seems to increase as we
 go south; however that is just the projected distance (Mercator
-distortion) and not the actual distance which remains constant at 1000
-km.
+distortion) and not the actual distance which remains constant at 1000 km.
+
+   ::
+
+    #!/bin/bash
+    #		GMT EXAMPLE 24
+    #
+    # Purpose:	Extract subsets of data based on geospatial criteria
+    # GMT progs:	gmtselect, pscoast, psxy, minmax
+    # Unix progs:	echo, cat, awk
+    #
+    # Highlight oceanic earthquakes within 3000 km of Hobart and > 1000 km from dateline
+    ps=example_24.ps
+    echo "147:13 -42:48 3000 Hobart" > point.d
+    cat << END > dateline.d
+    > Our proxy for the dateline
+    180	0
+    180	-90
+    END
+    R=`minmax -I10 oz_quakes.d`
+    pscoast $R -JM9i -K -Gtan -Sdarkblue -Wthin,white -Dl -A500 -Ba20f10g10WeSn \
+    	-U"Example 24 in Cookbook" > $ps
+    psxy -R -J -O -K oz_quakes.d -Sc0.05i -Gred >> $ps
+    gmtselect oz_quakes.d -L1000k/dateline.d -Nk/s -C3000k/point.d -fg -R -Il \
+    	| psxy -R -JM -O -K -Sc0.05i -Ggreen >> $ps
+    awk '{print $1, $2, 0, 2*$3, 2*$3}' point.d | psxy -R -J -O -K -SE -Wfat,white >> $ps
+    awk '{print $1, $2, $4}' point.d | pstext -R -J -O -K -F+f14p,Helvetica-Bold,white+jLT \
+    	-D0.1i/-0.1i >> $ps
+    psxy -R -J -O -K point.d -Wfat,white -S+0.2i >> $ps
+    psxy -R -J -O dateline.d -Wfat,white -A >> $ps
+    rm -f point.d dateline.d
 
 Global distribution of antipodes
 --------------------------------
@@ -6611,8 +7558,7 @@ antipodes. The antipode of a point at :math:`(\phi, \lambda)` is the
 point at :math:`(-\phi, \lambda + 180)`. We seek an answer to the
 question that has plagued so many for so long: Given the distribution of
 land and ocean, how often is the antipode of a point on land also on
-land? And what about marine antipodes? We use
-`grdlandmask <grdlandmask.html>`_ and
+land? And what about marine antipodes? We use `grdlandmask <grdlandmask.html>`_ and
 `grdmath <grdmath.html>`_ to map these distributions and
 calculate the area of the Earth (in percent) that goes with each of the
 three possibilities. To make sense of our
@@ -6628,8 +7574,7 @@ sum to that of the whole area of the Earth, and finally convert that
 ratio to percent. Since the :math:`\Delta \lambda`, :math:`\Delta \phi`
 terms appear twice in these expressions they cancel out, leaving the
 somewhat intractable expressions below where the sum of
-:math:`\cos (\phi)` for all :math:`\phi` is known to equal
-:math:`2N_y / \pi`:
+:math:`\cos (\phi)` for all :math:`\phi` is known to equal :math:`2N_y / \pi`:
 
 In the end we obtain a funny-looking map depicting the antipodal
 distribution as well as displaying in legend form the requested
@@ -6643,6 +7588,52 @@ The call to `grdimage <grdimage.html>`_ includes the
 ``–Sn`` to suspend interpolation and only return the value of the
 nearest neighbor. This option is particularly practical for plotting
 categorical data, like these, that should not be interpolated.
+
+   ::
+
+    #!/bin/bash
+    #		GMT EXAMPLE 25
+    #
+    # Purpose:	Display distribution of antipode types
+    # GMT progs:	gmtset, grdlandmask, grdmath, grd2xyz, gmtmath, grdimage, pscoast, pslegend
+    # Unix progs:	cat
+    #
+    # Create D minutes global grid with -1 over oceans and +1 over land
+    ps=example_25.ps
+    D=30
+    grdlandmask -Rg -I${D}m -Dc -A500 -N-1/1/1/1/1 -r -Gwetdry.nc
+    # Manipulate so -1 means ocean/ocean antipode, +1 = land/land, and 0 elsewhere
+    grdmath -fg wetdry.nc DUP 180 ROTX FLIPUD ADD 2 DIV = key.nc
+    # Calculate percentage area of each type of antipode match.
+    grdmath -Rg -I${D}m -r Y COSD 60 $D DIV 360 MUL DUP MUL PI DIV DIV 100 MUL = scale.nc
+    grdmath -fg key.nc -1 EQ 0 NAN scale.nc MUL = tmp.nc
+    grd2xyz tmp.nc -s -ZTLf > key.b
+    ocean=`gmtmath -bi1f -Ca -S key.b SUM UPPER RINT =`
+    grdmath -fg key.nc 1 EQ 0 NAN scale.nc MUL = tmp.nc
+    grd2xyz tmp.nc -s -ZTLf > key.b
+    land=`gmtmath -bi1f -Ca -S key.b SUM UPPER RINT =`
+    grdmath -fg key.nc 0 EQ 0 NAN scale.nc MUL = tmp.nc
+    grd2xyz tmp.nc -s -ZTLf > key.b
+    mixed=`gmtmath -bi1f -Ca -S key.b SUM UPPER RINT =`
+    # Generate corresponding color table
+    cat << END > key.cpt
+    -1.5	blue	-0.5	blue
+    -0.5	gray	0.5	gray
+    0.5	red	1.5	red
+    END
+    # Create the final plot and overlay coastlines
+    gmtset FONT_ANNOT_PRIMARY +10p FORMAT_GEO_MAP dddF
+    grdimage key.nc -JKs180/9i -B60/30:."Antipodal comparisons":WsNE -K -Ckey.cpt -Y1.2i \
+    	-UL/-0.75i/-0.95i/"Example 25 in Cookbook" -nn > $ps
+    pscoast -R -J -O -K -Wthinnest -Dc -A500 >> $ps
+    # Place an explanatory legend below
+    pslegend -R0/9/0/0.5 -Jx1i -O -Dx4.5i/0/6i/TC -Y-0.2i -Fthick >> $ps << END
+    N 3
+    S 0.15i s 0.2i red  0.25p 0.3i Terrestrial Antipodes [$land %]
+    S 0.15i s 0.2i blue 0.25p 0.3i Oceanic Antipodes [$ocean %]
+    S 0.15i s 0.2i gray 0.25p 0.3i Mixed Antipodes [$mixed %]
+    END
+    rm -f *.nc key.* gmt.conf
 
 General vertical perspective projection
 ---------------------------------------
@@ -6663,6 +7654,47 @@ projection is only implemented in
 `grdimage <grdimage.html>`_. We hope to refine this
 further and extend the availability of the full projection to all of the
 *GMT* mapping programs.
+
+   ::
+
+    #!/bin/bash
+    #		GMT EXAMPLE 26
+    #
+    # Purpose:	Demonstrate general vertical perspective projection
+    # GMT progs:	pscoast
+    # Unix progs:	rm
+    #
+    ps=example_26.ps
+    
+    # first do an overhead of the east coast from 160 km altitude point straight down
+    
+    latitude=41.5
+    longitude=-74.0
+    altitude=160.0
+    tilt=0
+    azimuth=0
+    twist=0
+    Width=0.0
+    Height=0.0
+    
+    PROJ=-JG${longitude}/${latitude}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/4i
+    
+    pscoast -Rg $PROJ -X1i -B5g5/5g5 -Glightbrown -Slightblue -W -Dl -N1/1p,red -N2,0.5p -P -K \
+    	-Y5i > $ps
+    
+    # now point from an altitude of 160 km with a specific tilt and azimuth and with a wider restricted
+    # view and a boresight twist of 45 degrees
+    
+    tilt=55
+    azimuth=210
+    twist=45
+    Width=30.0
+    Height=30.0
+    
+    PROJ=-JG${longitude}/${latitude}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/5i
+    
+    pscoast -R $PROJ -B5g5/5g5 -Glightbrown -Slightblue -W -Ia/blue -Di -Na -O -X1i -Y-4i \
+    	-UL/-1.75i/-0.75i/"Example 26 in Cookbook" >> $ps
 
 Plotting Sandwell/Smith Mercator img grids
 ------------------------------------------
@@ -6693,8 +7725,54 @@ remember two key issues:
    the linear projection.
 
 This map of the Tasman Sea shows the marine gravity anomalies with land
-painted black. A color scale bar was then added to complete the
-illustration.
+painted black. A color scale bar was then added to complete the illustration.
+
+   ::
+
+    #!/bin/bash
+    #		GMT EXAMPLE 27
+    #
+    # Purpose:	Illustrates how to plot Mercator img grids
+    # GMT progs:	makecpt, grdgradient, grdimage, grdinfo, pscoast
+    # GMT supplement: img2grd (to read Sandwell/Smith img files)
+    # Unix progs:	rm, grep, awk
+    #
+    ps=example_27.ps
+    
+    # Gravity in tasman_grav.nc is in 0.1 mGal increments and the grid
+    # is already in projected Mercator x/y units.
+    # First get gradients.
+    
+    grdgradient tasman_grav.nc -Nt1 -A45 -Gtasman_grav_i.nc
+    
+    # Make a suitable cpt file for mGal
+    
+    makecpt -T-120/120/240 -Z -Crainbow > grav.cpt
+    
+    # Since this is a Mercator grid we use a linear projection
+    
+    grdimage tasman_grav.nc=ns/0.1 -Itasman_grav_i.nc -Jx0.25i -Cgrav.cpt -P -K \
+    	-U"Example 27 in Cookbook" > $ps
+    
+    # Then use pscoast to plot land; get original -R from grid remark
+    # and use Mercator projection with same scale as above on a spherical Earth
+    
+    R=`grdinfo tasman_grav.nc | grep Remark | awk '{print $NF}'`
+    
+    pscoast $R -Jm0.25i -Ba10f5WSne -O -K -Gblack --PROJ_ELLIPSOID=Sphere \
+    	-Cwhite -Dh+ --FORMAT_GEO_MAP=dddF >> $ps
+    
+    # Put a color legend on top of the land mask justified with 147E,31S
+    
+    #echo 147E 31S 1i 2.5i | psxy -R -J -O -K -Sr -D0.25i/0.05i -Gwhite -W1p \
+    #	--PROJ_ELLIPSOID=Sphere >> $ps
+    pos=`echo 147E 31S | mapproject -R -J --PROJ_ELLIPSOID=Sphere | \
+    	awk '{printf "%si/%si\n", $1, $2}'`
+    psscale -D$pos/2i/0.15i -Cgrav.cpt -B50f10/:mGal: -I -O -T+gwhite+p1p >> $ps
+    
+    # Clean up
+    
+    rm -f grav.cpt *_i.nc
 
 Mixing UTM and geographic data sets
 -----------------------------------
@@ -6721,6 +7799,36 @@ We do some trickery by converting the UTM domain to km so that we can
 add custom annotations to the map. Finally, we place a scale bar and
 label Kilauea crater to complete the figure.
 
+   ::
+
+    #!/bin/bash
+    #		GMT EXAMPLE 28
+    #
+    # Purpose:	Illustrates how to mix UTM data and UTM projection
+    # GMT progs:	makecpt, grdgradient, grdimage, grdinfo, grdmath, pscoast, pstext, mapproject
+    # Unix progs:	rm, echo
+    #
+    ps=example_28.ps
+    
+    # Get intensity grid and set up a color table
+    grdgradient Kilauea.utm.nc -Nt1 -A45 -GKilauea.utm_i.nc
+    makecpt -Ccopper -T0/1500/100 -Z > Kilauea.cpt
+    # Lay down the UTM topo grid using a 1:16,000 scale
+    grdimage Kilauea.utm.nc -IKilauea.utm_i.nc -CKilauea.cpt -Jx1:160000 -P -K \
+    	-U"Example 28 in Cookbook" --FORMAT_FLOAT_OUT=%.10g --FONT_ANNOT_PRIMARY=9p \
+    	> $ps
+    # Overlay geographic data and coregister by using correct region and projection with the same scale
+    pscoast -RKilauea.utm.nc -Ju5Q/1:160000 -O -K -Df+ -Slightblue -W0.5p -B5mg5mNE \
+    	--FONT_ANNOT_PRIMARY=12p --FORMAT_GEO_MAP=ddd:mmF >> $ps
+    echo 155:16:20W 19:26:20N KILAUEA | pstext -R -J -O -K -F+f12p,Helvetica-Bold+jCB >> $ps
+    psbasemap -R -J -O -K --FONT_ANNOT_PRIMARY=9p -Lf155:07:30W/19:15:40N/19:23N/5k+l1:16,000+u \
+    	--FONT_LABEL=10p >> $ps
+    # Annotate in km but append ,000m to annotations to get customized meter labels
+    psbasemap -RKilauea.utm.nc+Uk -Jx1:160 -B5g5:,"-@:8:000m":WSne -O --FONT_ANNOT_PRIMARY=10p \
+    	--MAP_GRID_CROSS_SIZE_PRIMARY=0.1i --FONT_LABEL=10p >> $ps
+    # Clean up
+    rm -f Kilauea.utm_i.nc Kilauea.cpt tmp.txt
+
 Gridding spherical surface data using splines
 ---------------------------------------------
 
@@ -6744,8 +7852,52 @@ reference surface from the gridded radii. We run the gridding twice:
 First with no tension using *Parker*\ ’s [1990] method and then with
 tension using the *Wessel and Becker* [2008] method. The grids are then
 imaged with `grdimage <grdimage.html>`_ and
-`grdcontour <grdcontour.html>`_ and a color scale is
-placed between them.
+`grdcontour <grdcontour.html>`_ and a color scale is placed between them.
+
+   ::
+
+    #!/bin/bash
+    #		GMT EXAMPLE 29
+    #
+    # Purpose:	Illustrates spherical surface gridding with Green's function of splines
+    # GMT progs:	makecpt, grdcontour, grdgradient, grdimage, grdmath greenspline, psscale, pstext
+    # Unix progs:	rm, echo
+    #
+    ps=example_29.ps
+    
+    # This example uses 370 radio occultation data for Mars to grid the topography.
+    # Data and information from Smith, D. E., and M. T. Zuber (1996), The shape of
+    # Mars and the topographic signature of the hemispheric dichotomy, Science, 271, 184–187.
+    
+    # Make Mars PROJ_ELLIPSOID given their three best-fitting axes:
+    a=3399.472
+    b=3394.329
+    c=3376.502
+    grdmath -Rg -I4 -r X COSD $a DIV DUP MUL X SIND $b DIV DUP MUL ADD Y COSD DUP MUL MUL Y \
+    	SIND $c DIV DUP MUL ADD SQRT INV = PROJ_ELLIPSOID.nc
+    
+    #  Do both Parker and Wessel/Becker solutions (tension = 0.9975)
+    greenspline -RPROJ_ELLIPSOID.nc mars370.in -D4 -Sp -Gmars.nc
+    greenspline -RPROJ_ELLIPSOID.nc mars370.in -D4 -SQ0.9975/5001 -Gmars2.nc
+    # Scale to km and remove PROJ_ELLIPSOID
+    grdmath mars.nc 1000 DIV PROJ_ELLIPSOID.nc SUB = mars.nc
+    grdmath mars2.nc 1000 DIV PROJ_ELLIPSOID.nc SUB = mars2.nc
+    makecpt -Crainbow -T-7/15/22 -Z > mars.cpt
+    grdgradient mars2.nc -fg -Ne0.75 -A45 -Gmars2_i.nc
+    grdimage mars2.nc -Imars2_i.nc -Cmars.cpt -B30g30Wsne -JH0/7i -P -K -E200 \
+    	-UL/-0.5i/-0.75i/"Example 29 in Cookbook" --FONT_ANNOT_PRIMARY=12p -X0.75i > $ps
+    grdcontour mars2.nc -J -O -K -C1 -A5 -Glz+/z- >> $ps
+    psxy -Rg -J -O -K -Sc0.045i -Gblack mars370.in  >> $ps
+    echo "0 90 b)" | pstext -R -J -O -K -N -D-3.5i/-0.2i -F+f14p,Helvetica-Bold+jLB >> $ps
+    grdgradient mars.nc -fg -Ne0.75 -A45 -Gmars_i.nc
+    grdimage mars.nc -Imars_i.nc -Cmars.cpt -B30g30Wsne -J -O -K -Y4.2i -E200 \
+    	--FONT_ANNOT_PRIMARY=12p >> $ps
+    grdcontour mars.nc -J -O -K -C1 -A5 -Glz+/z- >> $ps
+    psxy -Rg -J -O -K -Sc0.045i -Gblack mars370.in  >> $ps
+    psscale -Cmars.cpt -O -K -D3.5i/-0.15i/6i/0.1ih -I --FONT_ANNOT_PRIMARY=12p -B2f1/:km: >> $ps
+    echo "0 90 a)" | pstext -R -J -O -N -D-3.5i/-0.2i -F+f14p,Helvetica-Bold+jLB >> $ps
+    # Clean up
+    rm -f *.nc mars.cpt
 
 Trigonometric functions plotted in graph mode
 ---------------------------------------------
@@ -6758,6 +7910,73 @@ The script simply draws a graph basemap, computes sine and cosine and
 plots them as lines, then indicates on a circle that these quantities
 are simply the projections of an unit vector on the x- and y-axis, at
 the given angle.
+
+   ::
+
+    #!/bin/bash
+    #		GMT EXAMPLE 30
+    #
+    # Purpose:	Show graph mode and math angles
+    # GMT progs:	gmtmath, psbasemap, pstext and psxy
+    # Unix progs:	echo, rm
+    #
+    # Draw generic x-y axes with arrows
+    ps=example_30.ps
+    
+    psbasemap -R0/360/-1.25/1.75 -JX8i/6i -B90f30:,-\\312:/1g10:."Two Trigonometric Functions":WS \
+    	-K -U"Example 30 in Cookbook" --MAP_FRAME_TYPE=graph --MAP_VECTOR_SHAPE=0.5 > $ps
+    
+    # Draw sine an cosine curves
+    
+    gmtmath -T0/360/0.1 T COSD = | psxy -R -J -O -K -W3p >> $ps
+    gmtmath -T0/360/0.1 T SIND = | psxy -R -J -O -K -W3p,0_6:0 --PS_LINE_CAP=round >> $ps
+    
+    # Indicate the x-angle = 120 degrees
+    psxy -R -J -O -K -W0.5p,- << EOF >> $ps
+    120	-1.25
+    120	1.25
+    EOF
+    
+    pstext -R -J -O -K -Dj0.2c -N -F+f+j << EOF >> $ps
+    360 1 18p,Times-Roman RB x = cos(@%12%a@%%)
+    360 0 18p,Times-Roman RB y = sin(@%12%a@%%)
+    120 -1.25 14p,Times-Roman LB 120\\312
+    370 -1.35 24p,Symbol LT a
+    -5 1.85 24p,Times-Roman RT x,y
+    EOF
+    
+    # Draw a circle and indicate the 0-70 degree angle
+    
+    echo 0 0 | psxy -R-1/1/-1/1 -Jx1.5i -O -K -X3.625i -Y2.75i -Sc2i -W1p -N >> $ps
+    psxy -R -J -O -K -W1p << EOF >> $ps
+    > x-gridline  -Wdefault
+    -1	0
+    1	0
+    > y-gridline  -Wdefault
+    0	-1
+    0	1
+    > angle = 0
+    0	0
+    1	0
+    > angle = 120
+    0	0
+    -0.5	0.866025
+    > x-projection -W2p
+    -0.3333	0
+    0	0
+    > y-projection -W2p
+    -0.3333	0.57735
+    -0.3333	0
+    EOF
+    
+    pstext -R -J -O -K -Dj0.05i -F+f+a+j << EOF >> $ps
+    -0.16666 0 12p,Times-Roman 0 CT x
+    -0.3333 0.2888675 12p,Times-Roman 0 RM y
+    0.22 0.27 12p,Symbol -30 CB a
+    -0.33333 0.6 12p,Times-Roman 30 LB 120\\312
+    EOF
+    
+    echo 0 0 0.5i 0 120 | psxy -R -J -O -Sm0.15i+e -W1p -Gblack >> $ps
 
 Using non-default fonts in *PostScript*
 ---------------------------------------
@@ -6787,6 +8006,111 @@ Libertine (title) and Linux Biolinum (annotations). Uncomment the
 appropriate lines in the script to make a *PostScript*-file with
 outlined fonts or to convert to a PDF-file.
 
+   ::
+
+    #!/bin/bash
+    #		GMT EXAMPLE 31
+    #
+    # Purpose:	Illustrate usage of non-default fonts in PostScript
+    # GMT progs:	gmtset, pscoast, psxy, pstext, pslegend
+    # Unix progs:	gs, awk, cat, rm
+    #
+    file=example_31
+    ps=${file}.ps
+    ps_outlined=${file}_outlined.ps
+    eps_outlined=${file}_outlined.eps
+    
+    # create file CUSTOM_font_info.d in current working directory
+    # and add PostScript font names of Linux Biolinum and Libertine
+    awk '{print $1, 0.700, 0}' << EOF > CUSTOM_font_info.d
+    LinBiolinumO
+    LinBiolinumOI
+    LinBiolinumOB
+    LinLibertineOB
+    EOF
+    
+    # common settings
+    gmtset FORMAT_GEO_MAP ddd:mm:ssF \
+    MAP_DEGREE_SYMBOL colon \
+    MAP_TITLE_OFFSET 20p \
+    MAP_GRID_CROSS_SIZE_PRIMARY 0.4c \
+    PS_LINE_JOIN round \
+    PS_CHAR_ENCODING ISO-8859-5 \
+    FONT LinBiolinumO \
+    FONT_TITLE 24p,LinLibertineOB \
+    MAP_ANNOT_OBLIQUE 42
+    
+    # map of countries
+    pscoast -Dl -R-7/31/64/66/r -JL15/50/40/60/16c -P \
+    -B10g10/5g5:."Europe\072 Countries and Capital Cities": -A250 \
+    -U"Example 31 in Cookbook" -Slightblue -Glightgreen -W0.25p -N1/1p,white -K > $ps
+    
+    # mark capitals
+    psxy europe-capitals-ru.csv -R -J -i0,1 \
+    -Sc0.15c -G196/80/80 -O -K >> $ps
+    
+    # small EU cities
+    awk 'BEGIN {FS=","} $4 !="" && $4 <= 1000000 {print $1, $2}' europe-capitals-ru.csv | \
+    psxy -R -J -Sc0.15c -W0.25p -O -K >> $ps
+    
+    # big EU cities
+    awk 'BEGIN {FS=","} $4 > 1000000 {print $1, $2}' europe-capitals-ru.csv | \
+    psxy -R -J -Sc0.15c -W1.25p -O -K >> $ps
+    
+    # label big EU cities
+    awk 'BEGIN {FS=","} $4 > 1000000 {print $1, $2, $3}' europe-capitals-ru.csv | \
+    pstext -R -J -F+f7p,LinBiolinumOI+jBL -Dj0.1c -Gwhite -C5% -Qu -TO -O -K >> $ps
+    
+    # construct legend
+    cat << EOF > legend.txt
+    G -0.1c
+    H 10 LinBiolinumOB Population of the European Union capital cities
+    G 0.15c
+    N 2
+    S 0.15c c 0.15c 196/80/80 0.25p 0.5c < 1 Million inhabitants
+    S 0.15c c 0.15c 196/80/80 1.25p 0.5c > 1 Million inhabitants
+    N 1
+    G 0.15c
+    L 8 LinBiolinumOB L Population in Millions 
+    N 6
+    EOF
+    
+    # append city names and population to legend
+    awk 'BEGIN {FS=","; f="L 8 LinBiolinumO L"}
+      $4 > 1000000 {printf "%s %s:\n%s %.2f\n", f, $3, f, $4/1e6}' \
+      europe-capitals-ru.csv >> legend.txt
+    
+    # reduce annotation font size for legend
+    gmtset FONT_ANNOT_PRIMARY 8p
+    
+    # plot legend
+    pslegend -R -J -Gwhite -Dx7.9c/12.6c/8.0c/BL \
+    -C0.3c/0.4c -L1.2 -F -O legend.txt >> $ps
+    
+    # make a PostScript and a PDF file with outlined fonts
+    # unfortunately ps2raster won't be able to crop that file correctly anymore
+    # use Heiko Oberdiek's pdfcrop (http://code.google.com/p/pdfcrop2/) instead
+    # or crop with ps2raster -A -Te before
+    #
+    # a. remove GMT logo and crop EPS:
+    #ps2raster -P -Au -Te -C-sFONTPATH="${PWD}/fonts" -Fex31CropNoLogo $ps
+    # b. make PS with outlined fonts:
+    #gs -q -sPAPERSIZE=a3 -dNOCACHE -dSAFER -dNOPAUSE -dBATCH -dNOPLATFONTS \
+    #  -sDEVICE=pswrite -sFONTPATH="${PWD}/fonts" -sOutputFile=$ps_outlined ex31CropNoLogo.eps
+    # c. make croppepd EPS:
+    #gs -q -dNOCACHE -dSAFER -dNOPAUSE -dBATCH -dEPSCrop -sDEVICE=epswrite \
+    #  -sOutputFile=$eps_outlined $ps_outlined
+    # d. make cropped PDF:
+    #ps2raster -P -A -Tf $ps_outlined
+    # uncomment to do conversation to PDF and PNG
+    # you will get a PDF with subsetted TrueType/PostScript fonts embedded
+    # which you can still edit with your favorite vector graphics editor
+    #export GS_FONTPATH="${PWD}/fonts"
+    #ps2raster -P -A -Tf $ps
+    #ps2raster -P -A -Tg -E110 $ps
+    # clean up
+    rm -f .gmtcommands* gmt.conf CUSTOM_font_info.d legend.txt ex31CropNoLogo.eps
+    
 Draping an image over topography
 --------------------------------
 
@@ -6805,8 +8129,7 @@ already done. First we get the EU flag directly from the web and convert
 it to a grid with values ranging from 0 to 255, where the higher values
 will become yellow and the lower values blue. This use of
 `grdreformat <grdreformat.html>`_ requires GDAL support.
-`grdedit <grdedit.html>`_ then adds the right grid
-dimension.
+`grdedit <grdedit.html>`_ then adds the right grid dimension.
 
 The second step is to reformat the GTOPO30 DEM file to a netCDF grid as
 well and then subsample it at the same pixels as the EU flag. We then
@@ -6828,8 +8151,77 @@ the `grdreformat <grdreformat.html>`_, but we have
 commented that out in the example because it requires compilation with
 GDAL support. You will also see the
 `grdcut <grdcut.html>`_ command commented out because we
-did not want to store the 58 MB DEM file, whose location is mentioned in
-the script.
+did not want to store the 58 MB DEM file, whose location is mentioned in the script.
+
+   ::
+
+    #!/bin/bash
+    #		GMT EXAMPLE 32
+    #
+    # Purpose:	Illustrate draping of an image over topography
+    # GMT progs:	grdcut, grdedit, grdgradient, grdreformat, grdtrack, grdview
+    # GMT progs:	pscoast, pstext, psxyz
+    # Unix progs:	cat, rm
+    # Credits:	Original by Stephan Eickschen
+    #
+    ps=example_32.ps
+    
+    # Here we get and convert the flag of Europe directly from the web through grdreformat using
+    # GDAL support. We take into account the dimension of the flag (1000x667 pixels)
+    # for a ratio of 3x2.
+    # Because GDAL support will not be standard for most users, we have stored
+    # the result, euflag.nc in this directory.
+    
+    Rflag=-R3/9/50/54
+    # grdreformat \
+    #   http://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Flag_of_Europe.svg/1000px-Flag_of_Europe.svg.png=gd \
+    #   euflag.nc=ns
+    # grdedit euflag.nc -fg $Rflag
+    
+    # Now get the topography for the same area from GTOPO30 and store it as topo.nc.
+    # The DEM file comes from http://eros.usgs.gov/#/Find_Data/Products_and_Data_Available/gtopo30/w020n90
+    # We make an gradient grid as well, which we will use to "illuminate" the flag.
+    
+    # grdcut W020N90.DEM $Rflag -Gtopo.nc=ns
+    grdgradient topo.nc -A0/270 -Gillum.nc -Ne0.6
+    
+    # The color map assigns "Reflex Blue" to the lower half of the 0-255 range and
+    # "Yellow" to the upper half.
+    cat << EOF > euflag.cpt
+    0	0/51/153	127	0/51/153
+    127	255/204/0	255	255/204/0
+    EOF
+    
+    # The next step is the plotting of the image.
+    # We use grdview to plot the topography, euflag.nc to give the color, and illum.nc to give
+    # the shading.
+    
+    Rplot=$Rflag/-10/790
+    grdview topo.nc -JM13c $Rplot -Ceuflag.cpt -Geuflag.nc -Iillum.nc -Qc -JZ1c -p157.5/30 -P \
+    	-K -U"Example 32 in Cookbook" > $ps
+    
+    # We now add borders. Because we have a 3-D plot, we want them to be plotted "at elevation".
+    # So we write out the borders, pipe them through grdtack and then plot them with psxyz.
+    
+    pscoast $Rflag -Df -M -N1 | grdtrack -Gtopo.nc -sa | psxyz $Rplot -J -JZ -p -W1p,white \
+    	-O -K >> $ps
+    
+    # Finally, we add dots and names for three cities.
+    # Again, grdtrack is used to put the dots "at elevation".
+    
+    cat << EOF > cities.txt
+    05:41:27 50:51:05 Maastricht
+    04:21:00 50:51:00 Bruxelles
+    07:07:03 50:43:09 Bonn
+    EOF
+    
+    grdtrack -Gtopo.nc -sa cities.txt | psxyz -i0,1,3 $Rplot -J -JZ -p -Sc7p -W1p,white -Gred \
+    	-K -O >> $ps
+    pstext $Rplot -J -JZ -p -F+f12p,Helvetica-Bold,red+jRM -Dj0.1i/0.0i -O cities.txt >> $ps
+    
+    # cleanup
+    
+    rm -f gmt.conf euflag.cpt illum.nc cities.txt
 
 Stacking automatically generated cross-profiles
 -----------------------------------------------
@@ -6842,6 +8234,47 @@ profiles; we also use the median stacking option to create a stacked
 profile, showed above the map, with the gray area representing the
 variations about the stacked median profile.
 
+   ::
+
+    #!/bin/bash
+    #               GMT EXAMPLE 33
+    #
+    # Purpose:      Illustrate grdtracks new cross-track and stacking options
+    # GMT progs:    makecpt, gmtconvert, grdimage, grdgradient, grdtrack, pstext, psxy
+    # GMT progs:    pscoast, pstext, psxyz
+    # Unix progs:   cat, rm
+    #
+    ps=example_33.ps
+    
+    # Extract a subset of ETOPO1m for the East Pacific Rise
+    # grdcut etopo1m_grd.nc -R118W/107W/49S/42S -Gspac.nc
+    makecpt -Crainbow -T-5000/-2000/500 -Z > z.cpt
+    grdgradient spac.nc -A15 -Ne0.75 -Gspac_int.nc
+    grdimage spac.nc -Ispac_int.nc -Cz.cpt -JM6i -P -Baf -K -Xc --FORMAT_GEO_MAP=dddF \
+    	-U"Example 33 in Cookbook" > $ps
+    # Select two points along the ridge
+    cat << EOF > ridge.txt
+    -111.6	-43.0
+    -113.3	-47.5
+    EOF
+    # Plot ridge segment and end points
+    psxy -Rspac.nc -J -O -K -W2p,blue ridge.txt >> $ps
+    psxy -R -J -O -K -Sc0.1i -Gblue ridge.txt >> $ps
+    # Generate cross-profiles 400 km long, spaced 10 km, samped every 2km
+    # and stack these using the median, write stacked profile
+    grdtrack ridge.txt -Gspac.nc -C400k/2k/10k -Sm+sstack.txt > table.txt
+    psxy -R -J -O -K -W0.5p table.txt >> $ps
+    # Show upper/lower values encountered as an envelope
+    gmtconvert stack.txt -o0,5 > env.txt
+    gmtconvert stack.txt -o0,6 -I -T >> env.txt
+    psxy -R-200/200/-3500/-2000 -Bafg1000:"Distance from ridge (km)":/af:"Depth (m)":WSne \
+    	-JX6i/3i -O -K -Glightgray env.txt -Y6.5i >> $ps
+    psxy -R -J -O -K -W3p stack.txt >> $ps
+    echo "0 -2000 MEDIAN STACKED PROFILE" | pstext -R -J -O -K -Gwhite -F+jTC+f14p -Dj0.1i >> $ps
+    psxy -R -J -O -T >> $ps
+    # cleanup
+    rm -f gmt.conf z.cpt spac_int.nc ridge.txt table.txt env.txt stack.txt
+
 Using country polygons for plotting and shading
 -----------------------------------------------
 
@@ -6852,6 +8285,29 @@ a basic basemap and another where we lay down a color topography
 image and then place a transparent layer identifying the future
 Franco-Italian Union whose untimely breakup in 2045 the historians
 will continue to debate for some time.
+
+   ::
+
+    #!/bin/bash
+    #               GMT EXAMPLE 34
+    #
+    # Purpose:      Illustrate pscoast with DCW country polygons
+    # GMT progs:    pscoast, makecpt, grdimage, grdgradient
+    # Unix progs:   rm
+    #
+    ps=example_34.ps
+    gmtset FORMAT_GEO_MAP dddF
+    pscoast -JM4.5i -R-6/20/35/52 -FFR,IT+fP300/8 -Glightgray -BafWSne -P -K \
+    	-X2i -U-1.75i/-0.75i/"Example 34 in Cookbook" > $ps
+    # Extract a subset of ETOPO2m for this part of Europe
+    # grdcut etopo2m_grd.nc -R -GFR+IT.nc=ns
+    makecpt -Cglobe -T-5000/5000/500 -Z > z.cpt
+    grdgradient FR+IT.nc -A15 -Ne0.75 -GFR+IT_int.nc
+    grdimage FR+IT.nc -IFR+IT_int.nc -Cz.cpt -J -O -K -Y4.5i \
+    	-BafWsnE:."Franco-Italian Union, 2042-45": >> $ps
+    pscoast -J -R -FFR,IT+fred@60 -O >> $ps
+    # cleanup
+    rm -f gmt.conf FR+IT_int.nc z.cpt
 
 Creating GMT Animations
 =======================
