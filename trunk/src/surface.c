@@ -170,12 +170,6 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	struct GMT_GRID *Low, *High;		/* arrays for minmax values, if set */
 };
 
-struct SURFACE_SUGGESTION {	/* Used to find top ten list of faster grid dimensions  */
-	unsigned int nx;
-	unsigned int ny;
-	double factor;	/* Speed up by a factor of factor  */
-};
-
 void set_coefficients (struct SURFACE_INFO *C)
 {
 	double e_4, loose, a0;
@@ -1252,166 +1246,22 @@ int rescale_z_values (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 	if (C->converge_limit == 0.0) C->converge_limit = 0.001 * C->z_scale; /* i.e., 1 ppt of L2 scale */
 	return (0);
 }
-/* gcd_euclid.c  Greatest common divisor routine  */
-
-unsigned int gcd_euclid (unsigned int a, unsigned int b)
-{
-	/* Returns the greatest common divisor of u and v by Euclid's method.
-	 * I have experimented also with Stein's method, which involves only
-	 * subtraction and left/right shifting; Euclid is faster, both for
-	 * integers of size 0 - 1024 and also for random integers of a size
-	 * which fits in a long integer.  Stein's algorithm might be better
-	 * when the integers are HUGE, but for our purposes, Euclid is fine.
-	 *
-	 * Walter H. F. Smith, 25 Feb 1992, after D. E. Knuth, vol. II  */
-
-	unsigned int u, v, r;
-
-	u = MAX (a, b);
-	v = MIN (a, b);
-
-	while (v > 0) {
-		r = u % v;	/* Knuth notes that u < 2v 40% of the time;  */
-		u = v;		/* thus we could have tried a subtraction  */
-		v = r;		/* followed by an if test to do r = u%v  */
-	}
-	return (u);
-}
-
-double guess_surface_time (struct GMT_CTRL *GMT, unsigned int factors[], unsigned int nx, unsigned int ny)
-{
-	/* Routine to guess a number proportional to the operations
-	 * required by surface working on a user-desired grid of
-	 * size nx by ny, where nx = (x_max - x_min)/dx, and same for
-	 * ny.  (That is, one less than actually used in routine.)
-	 *
-	 * This is based on the following untested conjecture:
-	 * 	The operations are proportional to T = nxg*nyg*L,
-	 *	where L is a measure of the distance that data
-	 *	constraints must propagate, and nxg, nyg are the
-	 * 	current size of the grid.
-	 *	For nx,ny relatively prime, we will go through only
-	 * 	one grid cycle, L = max(nx,ny), and T = nx*ny*L.
-	 *	But for nx,ny whose greatest common divisor is a highly
-	 * 	composite number, we will have L equal to the division
-	 * 	step made at each new grid cycle, and nxg,nyg will
-	 * 	also be smaller than nx,ny.  Thus we can hope to find
-	 *	some nx,ny for which the total value of T is C->small.
-	 *
-	 * The above is pure speculation and has not been derived
-	 * empirically.  In actual practice, the distribution of the
-	 * data, both spatially and in terms of their values, will
-	 * have a strong effect on convergence.
-	 *
-	 * W. H. F. Smith, 26 Feb 1992.  */
-
-	unsigned int gcd;		/* Current value of the gcd  */
-	unsigned int nxg, nyg;	/* Current value of the grid dimensions  */
-	unsigned int nfactors = 0;	/* Number of prime factors of current gcd  */
-	unsigned int factor;	/* Currently used factor  */
-	/* Doubles are used below, even though the values will be integers,
-		because the multiplications might reach sizes of O(n**3)  */
-	double t_sum;		/* Sum of values of T at each grid cycle  */
-	double length;		/* Current propagation distance.  */
-
-	gcd = gcd_euclid (nx, ny);
-	if (gcd > 1) {
-		nfactors = GMT_get_prime_factors (GMT, gcd, factors);
-		nxg = nx/gcd;
-		nyg = ny/gcd;
-		if (nxg < 3 || nyg < 3) {
-			factor = factors[nfactors - 1];
-			nfactors--;
-			gcd /= factor;
-			nxg *= factor;
-			nyg *= factor;
-		}
-	}
-	else {
-		nxg = nx;
-		nyg = ny;
-	}
-	length = (double)MAX(nxg, nyg);
-	t_sum = nxg * (nyg * length);	/* Make it double at each multiply  */
-
-	/* Are there more grid cycles ?  */
-	while (gcd > 1) {
-		factor = factors[nfactors - 1];
-		nfactors--;
-		gcd /= factor;
-		nxg *= factor;
-		nyg *= factor;
-		length = (double)factor;
-		t_sum += nxg * (nyg * length);
-	}
-	return (t_sum);
-}
-
-int compare_sugs (const void *point_1, const void *point_2)
-{
-	/* Sorts sugs into DESCENDING order!  */
-	if (((struct SURFACE_SUGGESTION *)point_1)->factor < ((struct SURFACE_SUGGESTION *)point_2)->factor) return (1);
-	if (((struct SURFACE_SUGGESTION *)point_1)->factor > ((struct SURFACE_SUGGESTION *)point_2)->factor) return(-1);
-	return (0);
-}
 
 void suggest_sizes_for_surface (struct GMT_CTRL *GMT, unsigned int factors[], unsigned int nx, unsigned int ny)
 {
-	/* Calls guess_surface_time for a variety of trial grid
-	 * sizes, where the trials are highly composite numbers
-	 * with lots of factors of 2, 3, and 5.  The sizes are
-	 * within the range (nx,ny) - (2*nx, 2*ny).  Prints to
-	 * GMT->session.std[GMT_ERR] the values which are an improvement over the
-	 * user's original nx,ny.
-	 * Should be called with nx=(x_max-x_min)/dx, and ditto
-	 * for ny; that is, one smaller than the lattice used
-	 * in surface.c
+	/* Calls GMT_optimal_dim_for_surface to determine if there are
+	 * better choices for nx, ny that might speed up calculations
+	 * by having many more common factors.
 	 *
 	 * W. H. F. Smith, 26 Feb 1992.  */
 
-	double users_time;	/* Time for user's nx, ny  */
-	double current_time;	/* Time for current nxg, nyg  */
 	unsigned int i;
-	unsigned int nxg, nyg;	/* Guessed by this routine  */
-	unsigned int nx2, ny2, nx3, ny3, nx5, ny5;	/* For powers  */
-	unsigned int xstop, ystop;	/* Set to 2*nx, 2*ny  */
 	unsigned int n_sug = 0;	/* N of suggestions found  */
-	struct SURFACE_SUGGESTION *sug = NULL;
+	struct GMT_SURFACE_SUGGESTION *sug = NULL;
 
-	users_time = guess_surface_time (GMT, factors, nx, ny);
-	xstop = 2*nx;
-	ystop = 2*ny;
-
-	for (nx2 = 2; nx2 <= xstop; nx2 *= 2) {
-	  for (nx3 = 1; nx3 <= xstop; nx3 *= 3) {
-	    for (nx5 = 1; nx5 <= xstop; nx5 *= 5) {
-		nxg = nx2 * nx3 * nx5;
-		if (nxg < nx || nxg > xstop) continue;
-
-		for (ny2 = 2; ny2 <= ystop; ny2 *= 2) {
-		  for (ny3 = 1; ny3 <= ystop; ny3 *= 3) {
-		    for (ny5 = 1; ny5 <= ystop; ny5 *= 5) {
-			nyg = ny2 * ny3 * ny5;
-			if (nyg < ny || nyg > ystop) continue;
-
-			current_time = guess_surface_time (GMT, factors, nxg, nyg);
-			if (current_time < users_time) {
-				n_sug++;
-				sug = GMT_memory (GMT, sug, n_sug, struct SURFACE_SUGGESTION);
-				sug[n_sug-1].nx = nxg;
-				sug[n_sug-1].ny = nyg;
-				sug[n_sug-1].factor = users_time/current_time;
-			}
-
-		    }
-		  }
-		}
-	    }
-	  }
-	}
+	n_sug = GMT_optimal_dim_for_surface (GMT, factors, nx, ny, &sug);
 
 	if (n_sug) {
-		qsort (sug, n_sug, sizeof(struct SURFACE_SUGGESTION), compare_sugs);
 		for (i = 0; i < n_sug && i < 10; i++) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Hint: Choosing nx = %d, ny = %d might cut run time by a factor of %.8g\n",
 				sug[i].nx, sug[i].ny, sug[i].factor);
@@ -1832,7 +1682,7 @@ int GMT_surface (void *V_API, int mode, void *args)
 	GMT_Surface_Global.y_min = C.Grid->header->wesn[YLO];
 
 	/* New stuff here for v4.3: Check out the grid dimensions */
-	C.grid = gcd_euclid (C.nx-1, C.ny-1);
+	C.grid = GMT_gcd_euclid (C.nx-1, C.ny-1);
 
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE) || Ctrl->Q.active) {
 		sprintf (C.format, "Grid domain: W: %s E: %s S: %s N: %s nx: %%d ny: %%d [", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
@@ -1874,7 +1724,7 @@ int GMT_surface (void *V_API, int mode, void *args)
 
 	/* Set up factors and reset grid to first value  */
 
-	C.grid = gcd_euclid (C.nx-1, C.ny-1);
+	C.grid = GMT_gcd_euclid (C.nx-1, C.ny-1);
 	C.n_fact = GMT_get_prime_factors (GMT, C.grid, C.factors);
 	set_grid_parameters (&C);
 	while (C.block_nx < 4 || C.block_ny < 4) {

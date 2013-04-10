@@ -76,7 +76,6 @@ EXTERN_MSC double GMT_fft_kx (uint64_t k, struct GMT_FFT_WAVENUMBER *K);
 EXTERN_MSC double GMT_fft_ky (uint64_t k, struct GMT_FFT_WAVENUMBER *K);
 EXTERN_MSC double GMT_fft_kr (uint64_t k, struct GMT_FFT_WAVENUMBER *K);
 EXTERN_MSC void gmt_fft_save2d (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direction, struct GMT_FFT_WAVENUMBER *K);
-EXTERN_MSC void gmt_suggest_fft_dim (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, struct GMT_FFT_SUGGESTION *fft_sug, bool do_print);
 EXTERN_MSC void gmt_fft_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_FFT_INFO *F);
 EXTERN_MSC void gmt_fft_Singleton_list (void);
 
@@ -4837,7 +4836,7 @@ struct GMT_FFT_WAVENUMBER * GMTAPI_FFT_init_2d (struct GMTAPI_CTRL *API, struct 
 			F->ny = G->header->ny;
 		}
 		else {
-			gmt_suggest_fft_dim (GMT, G->header->nx, G->header->ny, fft_sug, (GMT_is_verbose (GMT, GMT_MSG_VERBOSE) || F->info_mode == GMT_FFT_QUERY));
+			GMT_suggest_fft_dim (GMT, G->header->nx, G->header->ny, fft_sug, (GMT_is_verbose (GMT, GMT_MSG_VERBOSE) || F->info_mode == GMT_FFT_QUERY));
 			if (fft_sug[1].totalbytes < fft_sug[0].totalbytes) {
 				/* The most accurate solution needs same or less storage
 				 * as the fastest solution; use the most accurate's dimensions */

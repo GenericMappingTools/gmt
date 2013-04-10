@@ -186,7 +186,7 @@ void gmt_fourt_stats (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, un
 	return;
 }
 
-void gmt_suggest_fft_dim (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, struct GMT_FFT_SUGGESTION *fft_sug, bool do_print)
+void GMT_suggest_fft_dim (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, struct GMT_FFT_SUGGESTION *fft_sug, bool do_print)
 {
 	unsigned int f[32], xstop, ystop;
 	unsigned int nx_best_t, ny_best_t;
@@ -875,43 +875,59 @@ int GMT_fft_2d_fftwf (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsign
 
 #ifdef __APPLE__ /* Accelerate framework */
 
-#include <Accelerate/Accelerate.h>
+void GMT_fft_1d_vDSP_reset (struct GMT_FFT_HIDDEN *Z)
+{
+	if (Z->setup_1d) {	/* Free single-precision FFT data structure and arrays */
+  		vDSP_destroy_fftsetup (Z->setup_1d);
+		free (Z->dsp_split_complex_1d.realp);
+		free (Z->dsp_split_complex_1d.imagp);
+	}
+}
 
 int GMT_fft_1d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int n, int direction, unsigned int mode)
 {
 	FFTDirection fft_direction = direction == GMT_FFT_FWD ?
 			kFFTDirection_Forward : kFFTDirection_Inverse;
 	DSPComplex *dsp_complex = (DSPComplex *)data;
-	DSPSplitComplex dsp_split_complex;
 
 	/* Base 2 exponent that specifies the largest power of
 	 * two that can be processed by fft: */
 	vDSP_Length log2n = radix2 (n);
-	FFTSetup setup;
 
 	if (log2n == 0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Need Radix-2 input try: %u [n]\n", 1U<<propose_radix2 (n));
 		return -1;
 	}
 
-	/* Build data structure that contains precalculated data for use by
-	 * single-precision FFT functions: */
-	setup = vDSP_create_fftsetup (log2n, kFFTRadix2);
+	if (GMT->current.fft.n_1d != n) {	/* Must update the FFT setup arrays */
+		/* Build data structure that contains precalculated data for use by
+	 	* single-precision FFT functions: */
+		GMT_fft_1d_vDSP_reset (&GMT->current.fft);
+		GMT->current.fft.setup_1d = vDSP_create_fftsetup (log2n, kFFTRadix2);
+		GMT->current.fft.dsp_split_complex_1d.realp = malloc (n * sizeof(float));
+		GMT->current.fft.dsp_split_complex_1d.imagp = malloc (n * sizeof(float));
+		if (GMT->current.fft.dsp_split_complex_1d.realp == NULL || GMT->current.fft.dsp_split_complex_1d.imagp == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to allocate dsp_split_complex array of length %u\n", n);
+			return -1; /* out of memory */
+		}
+		GMT->current.fft.n_1d = n;
+	}
+	vDSP_ctoz (dsp_complex, 2, &GMT->current.fft.dsp_split_complex_1d, 1, n);
 
-	dsp_split_complex.realp = malloc(n * sizeof(float));
-	dsp_split_complex.imagp = malloc(n * sizeof(float));
-	if (dsp_split_complex.realp == NULL || dsp_split_complex.imagp == NULL)
-		return -1; /* out of memory */
-	vDSP_ctoz (dsp_complex, 2, &dsp_split_complex, 1, n);
+	vDSP_fft_zip (GMT->current.fft.setup_1d, &GMT->current.fft.dsp_split_complex_1d, 1, log2n, fft_direction);
 
-	vDSP_fft_zip (setup, &dsp_split_complex, 1, log2n, fft_direction);
-
-	vDSP_ztoc (&dsp_split_complex, 1, dsp_complex, 2, n);
-	free (dsp_split_complex.realp);
-	free (dsp_split_complex.imagp);
-	vDSP_destroy_fftsetup (setup); /* Free single-precision FFT data structure */
+	vDSP_ztoc (&GMT->current.fft.dsp_split_complex_1d, 1, dsp_complex, 2, n);
 
 	return GMT_NOERROR;
+}
+
+void GMT_fft_2d_vDSP_reset (struct GMT_FFT_HIDDEN *Z)
+{
+	if (Z->setup_2d) {	/* Free single-precision 2D FFT data structure and arrays */
+  		vDSP_destroy_fftsetup (Z->setup_2d);
+		free (Z->dsp_split_complex_2d.realp);
+		free (Z->dsp_split_complex_2d.imagp);
+	}
 }
 
 int GMT_fft_2d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode)
@@ -919,14 +935,12 @@ int GMT_fft_2d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsigne
 	FFTDirection fft_direction = direction == GMT_FFT_FWD ?
 			kFFTDirection_Forward : kFFTDirection_Inverse;
 	DSPComplex *dsp_complex = (DSPComplex *)data;
-	DSPSplitComplex dsp_split_complex;
 
 	/* Base 2 exponent that specifies the largest power of
 	 * two that can be processed by fft: */
 	vDSP_Length log2nx = radix2 (nx);
 	vDSP_Length log2ny = radix2 (ny);
 	unsigned int n_xy = nx * ny;
-	FFTSetup setup;
 
 	if (log2nx == 0 || log2ny == 0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Need Radix-2 input try: %u/%u [nx/ny]\n",
@@ -934,25 +948,27 @@ int GMT_fft_2d_vDSP (struct GMT_CTRL *GMT, float *data, unsigned int nx, unsigne
 		return -1;
 	}
 
-	/* Build data structure that contains precalculated data for use by
-	 * single-precision FFT functions: */
-	setup = vDSP_create_fftsetup (MAX (log2nx, log2ny), kFFTRadix2);
-
-	dsp_split_complex.realp = malloc(n_xy * sizeof(float));
-	dsp_split_complex.imagp = malloc(n_xy * sizeof(float));
-	if (dsp_split_complex.realp == NULL || dsp_split_complex.imagp == NULL)
-		return -1; /* out of memory */
-	vDSP_ctoz (dsp_complex, 2, &dsp_split_complex, 1, n_xy);
+	if (GMT->current.fft.n_2d != n_xy) {	/* Must update the 2-D FFT setup arrays */
+		/* Build data structure that contains precalculated data for use by
+	 	* single-precision FFT functions: */
+		GMT_fft_2d_vDSP_reset (&GMT->current.fft);
+		GMT->current.fft.setup_2d = vDSP_create_fftsetup (MAX (log2nx, log2ny), kFFTRadix2);
+		GMT->current.fft.dsp_split_complex_2d.realp = malloc (n_xy * sizeof(float));
+		GMT->current.fft.dsp_split_complex_2d.imagp = malloc (n_xy * sizeof(float));
+		if (GMT->current.fft.dsp_split_complex_2d.realp == NULL || GMT->current.fft.dsp_split_complex_2d.imagp == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to allocate dsp_split_complex array of length %u\n", n_xy);
+			return -1; /* out of memory */
+		}
+		GMT->current.fft.n_2d = n_xy;
+	}
+	vDSP_ctoz (dsp_complex, 2, &GMT->current.fft.dsp_split_complex_2d, 1, n_xy);
 
 	/* complex: */
-	vDSP_fft2d_zip (setup, &dsp_split_complex, 1, 0, log2ny, log2nx, fft_direction);
+	vDSP_fft2d_zip (GMT->current.fft.setup_2d, &GMT->current.fft.dsp_split_complex_2d, 1, 0, log2ny, log2nx, fft_direction);
 	/* real:
-	vDSP_fft2d_zrip (setup, &dsp_split_complex, 1, 0, log2ny, log2nx, fft_direction); */
+	vDSP_fft2d_zrip (setup, &GMT->current.fft.dsp_split_complex_2d, 1, 0, log2ny, log2nx, fft_direction); */
 
-	vDSP_ztoc (&dsp_split_complex, 1, dsp_complex, 2, n_xy);
-	free (dsp_split_complex.realp);
-	free (dsp_split_complex.imagp);
-	vDSP_destroy_fftsetup (setup); /* Free single-precision FFT data structure */
+	vDSP_ztoc (&GMT->current.fft.dsp_split_complex_2d, 1, dsp_complex, 2, n_xy);
 
 	return GMT_NOERROR;
 }
@@ -969,7 +985,7 @@ int GMT_fft_1d_kiss (struct GMT_CTRL *GMT, float *data, unsigned int n, int dire
 
 	/* Initialize a FFT (or IFFT) config/state data structure */
 	config = kiss_fft_alloc(n, direction == GMT_FFT_INV, NULL, NULL);
-  fin = fout = (kiss_fft_cpx *)data;
+	fin = fout = (kiss_fft_cpx *)data;
 	kiss_fft (config, fin, fout); /* do transform */
 	free (config); /* Free config data structure */
 
@@ -2063,9 +2079,13 @@ void GMT_fft_initialization (struct GMT_CTRL *GMT) {
 	GMT->session.fft2d[k_fft_brenner] = &GMT_fft_2d_brenner;
 }
 
-void GMT_fft_cleanup (void) {
+void GMT_fft_cleanup (struct GMT_CTRL *GMT) {
 	/* Called by GMT_end */
 #if defined HAVE_FFTW3F_THREADS
 	fftwf_cleanup_threads(); /* clean resources allocated internally by FFTW */
+#endif
+#ifdef __APPLE__ /* Accelerate framework */
+	GMT_fft_1d_vDSP_reset (&GMT->current.fft);
+	GMT_fft_2d_vDSP_reset (&GMT->current.fft);
 #endif
 }

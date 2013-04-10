@@ -5679,9 +5679,9 @@ void GMT_end (struct GMT_CTRL *GMT)
 #ifdef MEMDEBUG
 	GMT_memtrack_report (GMT, &g_mem_keeper);
 #endif
-	Free_GMT_Ctrl (GMT);	/* Deallocate control structure */
+	GMT_fft_cleanup (GMT); /* Clean FFT resources */
 
-	GMT_fft_cleanup (); /* clean FFT resources */
+	Free_GMT_Ctrl (GMT);	/* Deallocate control structure */
 }
 
 struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, char *mod_name, struct GMT_CTRL **Ccopy)

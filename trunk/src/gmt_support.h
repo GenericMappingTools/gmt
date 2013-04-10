@@ -32,6 +32,13 @@ struct MATH_MACRO {
 	char **arg;	/* List of those commands */
 };
 
+/* Definition of structure use for finding optimal nx.ny for surface */
+struct GMT_SURFACE_SUGGESTION {	/* Used to find top ten list of faster grid dimensions  */
+	unsigned int nx;
+	unsigned int ny;
+	double factor;	/* Speed up by a factor of factor  */
+};
+
 /* Macros to reallocate memory for groups of 2, 3 or 4 arrays at a time of the same size/type */
 #ifdef DEBUG
 #define GMT_malloc(C,a,n,n_alloc,type) GMT_malloc_func(C,a,n,n_alloc,sizeof(type),__SOURCE_LINE)

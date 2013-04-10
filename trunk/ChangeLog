@@ -2,6 +2,11 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-04-09	pwessel
+	* minmax.c:		Enhanced -I[f|s] that will extend the region otherwise reported
+				to ensure the dimensions are optimized for fastest performance
+				in programs like grdfft (f) or surface (s).
+
 2013-04-07	pwessel
 	* share/DCW		Add the DCW files to share/DCW so all have access via pscoast.
 	* gmt_grdio.c:		Would restrict grid region in grdimage despite doing a global map

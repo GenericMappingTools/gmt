@@ -26,6 +26,9 @@
 
 #ifndef GMT_FFT_H
 #define GMT_FFT_H
+#ifdef __APPLE__ /* Accelerate framework */
+#include <Accelerate/Accelerate.h>
+#endif
 
 enum GMT_FFT_EXTEND {
 	GMT_FFT_EXTEND_POINT_SYMMETRY = 0,
@@ -85,5 +88,14 @@ struct GMT_FFT_SUGGESTION {
 	double rms_rel_err;
 }; /* [0] holds fastest, [1] most accurate, [2] least storage  */
 
+
+struct GMT_FFT_HIDDEN {	/* Items needed by various FFT packages */
+#ifdef __APPLE__ /* Accelerate framework */
+	FFTSetup setup_1d, setup_2d;
+	DSPSplitComplex dsp_split_complex_1d;
+	DSPSplitComplex dsp_split_complex_2d;
+	unsigned int n_1d, n_2d;
+#endif
+};
 
 #endif

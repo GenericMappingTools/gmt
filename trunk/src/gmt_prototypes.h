@@ -48,11 +48,12 @@ EXTERN_MSC int GMT_gdalwrite (struct GMT_CTRL *GMT, char *filename, struct GDALW
 /* gmt_fft.c: */
 
 EXTERN_MSC void GMT_fft_initialization (struct GMT_CTRL *GMT);
-EXTERN_MSC void GMT_fft_cleanup (void);
+EXTERN_MSC void GMT_fft_cleanup (struct GMT_CTRL *GMT);
 EXTERN_MSC void GMT_fft_set_k (struct GMT_CTRL *GMT, unsigned int mode, struct GMT_FFT_WAVENUMBER *K);
 EXTERN_MSC void GMT_fft_set_wave (struct GMT_CTRL *GMT, unsigned int mode, struct GMT_FFT_WAVENUMBER *K);
 EXTERN_MSC double GMT_fft_get_wave (uint64_t k, struct GMT_FFT_WAVENUMBER *K);
 EXTERN_MSC double GMT_fft_any_wave (uint64_t k, unsigned int mode, struct GMT_FFT_WAVENUMBER *K);
+EXTERN_MSC void GMT_suggest_fft_dim (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, struct GMT_FFT_SUGGESTION *fft_sug, bool do_print);
 
 /* gmt_grdio.c: */
 
@@ -238,6 +239,9 @@ EXTERN_MSC char * GMT_putusername (struct GMT_CTRL *GMT);
 EXTERN_MSC unsigned int * GMT_prep_nodesearch (struct GMT_CTRL *GMT, struct GMT_GRID *G, double radius, unsigned int mode, unsigned int *d_row, unsigned int *actual_max_d_col);
 EXTERN_MSC int GMT_detrend (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double increment, double *intercept, double *slope, int mode);
 EXTERN_MSC struct GMT_PALETTE * GMT_Get_CPT (struct GMT_CTRL *GMT, char *file, enum GMT_enum_cpt mode, double zmin, double zmax);
+EXTERN_MSC unsigned int GMT_gcd_euclid (unsigned int a, unsigned int b);
+EXTERN_MSC unsigned int GMT_optimal_dim_for_surface (struct GMT_CTRL *GMT, unsigned int factors[], unsigned int nx, unsigned int ny, struct GMT_SURFACE_SUGGESTION **S);
+EXTERN_MSC int GMT_best_dim_choice (struct GMT_CTRL *GMT, unsigned int mode, unsigned int in_dim[], unsigned int out_dim[]);
 
 /* gmt_calclock.c: */
 
