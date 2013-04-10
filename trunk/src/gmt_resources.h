@@ -325,7 +325,7 @@ struct GMT_GRID {	/* To hold a GMT float grid and its header in one container */
 /*============== GMT_DATASET Public Declaration ============== */
 /*============================================================ */
 
-/* GIS geometries, with GMT_IS_NONE as 0 for no such thing */
+/* GIS geometries, with GMT_IS_NONE as 16 for no such thing */
 enum GMT_enum_geometries {
 	GMT_IS_POINT	= 1,
 	GMT_IS_LINE	= 2,
