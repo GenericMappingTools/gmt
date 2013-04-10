@@ -172,6 +172,12 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 
+	/* We read the input from stdin or file via fscanf and fgets. We cannot easily
+	 * switch this over to using GMT_Get_Record since the kml file may have multiple
+	 * coordinate pairs/triplets on the same line.  It is also unlikely anyone really
+	 * needs to call GMT_kml2gmt with a memory pointer, so this is a small sacrifice.
+	 * P. Wessel, April 2013. */
+	
 	if (Ctrl->In.active) {
 		if ((fp = fopen (Ctrl->In.file, "r")) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->In.file);
