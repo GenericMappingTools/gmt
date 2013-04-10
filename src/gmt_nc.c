@@ -1107,7 +1107,8 @@ int nc_grd_prep_io (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double
 		/* Global grids: ensure that wesn >= header->wesn (w+e only) */
 		if ( is_global ) {
 			while (wesn[XLO] < header->wesn[XLO]) {
-				unsigned int diff = (unsigned int)(header->wesn[XHI] - header->wesn[XLO]);
+				//unsigned int diff = (unsigned int)(header->wesn[XHI] - header->wesn[XLO]);
+				unsigned int diff = 360;
 				wesn[XLO] += diff;
 				wesn[XHI] += diff;
 			}
