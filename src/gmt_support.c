@@ -3023,7 +3023,8 @@ int GMT_get_index (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double value)
 	unsigned int index, lo, hi, mid;
 
 	if (GMT_is_dnan (value)) return (GMT_NAN - 3);				/* Set to NaN color */
-	if (value > P->range[P->n_colors-1].z_high) return (GMT_FGD - 3);	/* Set to foreground color */
+	if (value > P->range[P->n_colors-1].z_high)
+		return (GMT_FGD - 3);	/* Set to foreground color */
 	if (value < P->range[0].z_low) return (GMT_BGD - 3);	/* Set to background color */
 
 	/* Must search for correct index */
