@@ -65,6 +65,7 @@
 
 #include "gmt_dev.h"
 #include "gmt_internals.h"
+#include <stdarg.h>
 
 EXTERN_MSC int gmt_alloc_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid);
 EXTERN_MSC int gmt_alloc_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *Image);
