@@ -90,11 +90,11 @@ struct GMT_FFT_SUGGESTION {
 
 
 struct GMT_FFT_HIDDEN {	/* Items needed by various FFT packages */
+	unsigned int n_1d, n_2d;	/* Bill Gates says: error C2016: C requires that a struct or union has at least one member */
 #ifdef __APPLE__ /* Accelerate framework */
 	FFTSetup setup_1d, setup_2d;
 	DSPSplitComplex dsp_split_complex_1d;
 	DSPSplitComplex dsp_split_complex_2d;
-	unsigned int n_1d, n_2d;
 #endif
 };
 
