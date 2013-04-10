@@ -37,6 +37,9 @@ unsigned int GMT_log_array (struct GMT_CTRL *GMT, double min, double max, double
 #define REPORT_PER_TABLE	1
 #define REPORT_PER_SEGMENT	2
 
+#define BEST_FOR_SURF	1
+#define BEST_FOR_FFT	2
+
 struct MINMAX_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	struct A {	/* -A */
@@ -52,9 +55,10 @@ struct MINMAX_CTRL {	/* All control options for this program (except common args
 		int mode;	/* -1, 0, +1 */
 		uint64_t col;
 	} E;
-	struct I {	/* -Idx[/dy[/<dz>..]] */
+	struct I {	/* -I[f|p|s]dx[/dy[/<dz>..]] */
 		bool active;
 		unsigned int ncol;
+		unsigned int mode;	/* Nominally 0, unless set to BEST_FOR_SURF or BEST_FOR_FFT */
 		double inc[GMT_MAX_COLUMNS];
 	} I;
 	struct S {	/* -S[x|y] */
@@ -95,7 +99,7 @@ void Free_minmax_Ctrl (struct GMT_CTRL *GMT, struct MINMAX_CTRL *C) {	/* Dealloc
 int GMT_minmax_usage (struct GMTAPI_CTRL *API, int level)
 {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_Message (API, GMT_TIME_NONE, "usage: minmax [<table>] [-Aa|f|s] [-C] [-E<L|l|H|h><col>] [-I[p]<dx>[/<dy>[/<dz>..]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: minmax [<table>] [-Aa|f|s] [-C] [-E<L|l|H|h><col>] [-I[p|f|s]<dx>[/<dy>[/<dz>..]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S[x][y]] [-T<dz>[/<col>]] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
 
@@ -115,6 +119,8 @@ int GMT_minmax_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   To override this behaviour, use -Ip<dx>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If input data are regularly distributed we use observed phase shifts in determining -R [no phase shift]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     and allow -r to change from gridline-registration to pixel-registration.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -If<dx>[/<dy>] to report an extended region optimized for fastest results in FFTs.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Is<dx>[/<dy>] to report an extended region optimized for fastest results in surface.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Add extra space for error bars. Useful together with -I.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sx leaves space for horizontal error bar using value in third (2) column.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sy leaves space for vertical error bar using value in third (2) column.\n");
@@ -191,8 +197,13 @@ int GMT_minmax_parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT
 				break;
 			case 'I':	/* Granularity */
 				Ctrl->I.active = true;
-				if (opt->arg[0] == 'p') special = true;
-				j = (special) ? 1 : 0;
+				j = 1;
+				switch (opt->arg[0]) {
+					case 'p': special = true; break;
+					case 'f': Ctrl->I.mode = BEST_FOR_FFT; break;
+					case 's': Ctrl->I.mode = BEST_FOR_SURF; break;
+					default: j = 0;	break;
+				}
 				Ctrl->I.ncol = GMT_getincn (GMT, &opt->arg[j], Ctrl->I.inc, GMT_MAX_COLUMNS);
 				break;
 			case 'S':	/* Error bar output */
@@ -345,14 +356,14 @@ int GMT_minmax (void *V_API, int mode, void *args)
 				GMT->current.io.geo.range = Q[col].range[j];		/* Override this setting explicitly */
 				xyzmin[col] = Q[col].min[j];	xyzmax[col] = Q[col].max[j];
 			}
-			if (give_r_string) {	/* Return -R string */
+			if (Ctrl->I.active) {	/* Must report multiples of dx/dy etc */
 				if (n > 1 && fixed_phase[GMT_X] && fixed_phase[GMT_Y]) {	/* Got xy[z] data that lined up on a grid, so use the common phase shift */
-					GMT_Report (API, GMT_MSG_VERBOSE, "Input (x,y) data are regularly distributed; fixed phase shifts are %g/%g.\n", phase[GMT_X], phase[GMT_Y]);
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Input (x,y) data are regularly distributed; fixed phase shifts are %g/%g.\n", phase[GMT_X], phase[GMT_Y]);
 				}
 				else {	/* Data not on grid, just return bounding box rounded off to nearest inc */
 					buffer[0] = '.';	buffer[1] = 0;
 					if (GMT->common.r.active) strcpy (buffer, " (-r is ignored).");
-					GMT_Report (API, GMT_MSG_VERBOSE, "Input (x,y) data are irregularly distributed; phase shifts set to 0/0%s\n", buffer);
+					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Input (x,y) data are irregularly distributed; phase shifts set to 0/0%s\n", buffer);
 					phase[GMT_X] = phase[GMT_Y] = off = 0.0;
 				}
 				west  = (floor ((xyzmin[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) - off) * Ctrl->I.inc[GMT_X] + phase[GMT_X];
@@ -360,6 +371,22 @@ int GMT_minmax (void *V_API, int mode, void *args)
 				south = (floor ((xyzmin[GMT_Y] - phase[GMT_Y]) / Ctrl->I.inc[GMT_Y]) - off) * Ctrl->I.inc[GMT_Y] + phase[GMT_Y];
 				north = (ceil  ((xyzmax[GMT_Y] - phase[GMT_Y]) / Ctrl->I.inc[GMT_Y]) + off) * Ctrl->I.inc[GMT_Y] + phase[GMT_Y];
 				if (east < west) east += 360.0;
+				if (Ctrl->I.mode) {	/* Wish to extend the region to optimize the resulting nx/ny */
+					unsigned int sub, add, in_dim[2], out_dim[2];
+					double ww, ee, ss, nn;
+					in_dim[GMT_X] = GMT_get_n (GMT, west, east, Ctrl->I.inc[GMT_X], GMT->common.r.active);
+					in_dim[GMT_Y] = GMT_get_n (GMT, south, north, Ctrl->I.inc[GMT_Y], GMT->common.r.active);
+					ww = west;	ee = east; ss = south;	nn = north;
+					GMT_best_dim_choice (GMT, Ctrl->I.mode, in_dim, out_dim);
+					sub = (out_dim[GMT_X] - in_dim[GMT_X]) / 2;	add = out_dim[GMT_X] - in_dim[GMT_X] - sub;
+					west  -= sub * Ctrl->I.inc[GMT_X];		east  += add * Ctrl->I.inc[GMT_X];
+					sub = (out_dim[GMT_Y] - in_dim[GMT_Y]) / 2;	add = out_dim[GMT_Y] - in_dim[GMT_Y] - sub;
+					south -= sub * Ctrl->I.inc[GMT_Y];		north += add * Ctrl->I.inc[GMT_Y];
+					GMT_Report (API, GMT_MSG_VERBOSE, "Initial -R: %g/%g/%g/%g [nx = %u ny = %u] --> Suggested -R:  %g/%g/%g/%g [nx = %u ny = %u].\n",
+						ww, ee, ss, nn, in_dim[GMT_X], in_dim[GMT_Y], west, east, south, north, out_dim[GMT_X], out_dim[GMT_Y]);
+				}
+			}
+			if (give_r_string) {	/* Return -R string */
 				sprintf (record, "-R");
 				i = strip_blanks_and_output (GMT, buffer, west, GMT_X);		strcat (record, &buffer[i]);	strcat (record, "/");
 				i = strip_blanks_and_output (GMT, buffer, east, GMT_X);		strcat (record, &buffer[i]);	strcat (record, "/");
@@ -392,8 +419,18 @@ int GMT_minmax (void *V_API, int mode, void *args)
 					if (xyzmin[col] == DBL_MAX)	/* Encountered NaNs only */
 						low = high = GMT->session.d_NaN;
 					else if (col < Ctrl->I.ncol) {	/* Special treatment for x and y (and perhaps more) if -I selected */
-						low  = (Ctrl->I.active) ? floor (xyzmin[col] / Ctrl->I.inc[col]) * Ctrl->I.inc[col] : xyzmin[col];
-						high = (Ctrl->I.active) ? ceil  (xyzmax[col] / Ctrl->I.inc[col]) * Ctrl->I.inc[col] : xyzmax[col];
+						if (Ctrl->I.mode && col == GMT_X) {
+							low  = west;
+							high = east;
+						}
+						else if (Ctrl->I.mode && col == GMT_Y) {
+							low  = south;
+							high = north;
+						}
+						else {
+							low  = (Ctrl->I.active) ? floor (xyzmin[col] / Ctrl->I.inc[col]) * Ctrl->I.inc[col] : xyzmin[col];
+							high = (Ctrl->I.active) ? ceil  (xyzmax[col] / Ctrl->I.inc[col]) * Ctrl->I.inc[col] : xyzmax[col];
+						}
 					}
 					else {	/* Just the facts, ma'am */
 						low = xyzmin[col];

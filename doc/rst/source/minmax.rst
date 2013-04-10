@@ -11,7 +11,7 @@ minmax - Find extreme values in data tables
 
 **minmax** [ *table*] [ **-A**\ **a**\ \|\ **f**\ \|\ **s** ] [ **-C** ]
 [ **-EL**\ \|\ **l**\ \|\ **H**\ \|\ **h**\ *col* ] [
-**-I**\ [**p**\ ]\ *dx*\ [/*dy*\ [/*dz*...] ] [
+**-I**\ [**p**\ |\ **f**\ |\ **s**\ ]\ *dx*\ [/*dy*\ [/*dz*...] ] [
 **-S**\ [**x**\ ][**y**\ ] ] [ **-T**\ *dz*\ [/*col*] ] [
 **-V**\ [*level*\ ] ] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
@@ -62,7 +62,7 @@ None.
     (**L\|H**) works on absolute value of the data. In case of multiple
     matches, only the first record is returned. If *col* is not
     specified we default to the last column in the data.
-**-I**\ [**p**\ ]\ *dx*\ [/*dy*\ [/*dz*...]
+**-I**\ [**p**\ |\ **f**\ |\ **s**\ ]\ *dx*\ [/*dy*\ [/*dz*...]
     Report the min/max of the first *n* columns to the nearest multiple
     of the provided increments (separate the *n* increments by slashes),
     and output results in the form **-R**\ *w/e/s/n* (unless **-C** is
@@ -73,6 +73,10 @@ None.
     use those phase shifts in determining the region, and you may use
     **-r** to switch from gridline-registration to pixel-registration.
     For irregular data both phase shifts are set to 0 and the **-r** is ignored.
+    Use **-If**\ *dx*\ [/*dy*] to report an extended region optimized
+    to give grid dimensions for fastest results in programs using FFTs.
+    Use **-Is**\ *dx*\ [/*dy*] to report an extended region optimized to
+    give grid dimensions for fastest results in programs like surface.
 **-S**\ [**x**\ ][**y**\ ]
     Add extra space for error bars. Useful together with **-I** option
     and when later plotting with **psxy** **-E**. **-Sx** leaves space

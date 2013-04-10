@@ -37,6 +37,7 @@
 struct KML2GMT_CTRL {
 	struct In {	/* in file */
 		bool active;
+		char *file;
 	} In;
 	struct Z {	/* -Z */
 		bool active;
@@ -54,6 +55,7 @@ void *New_kml2gmt_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 }
 
 void Free_kml2gmt_Ctrl (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *C) {	/* Deallocate control structure */
+	if (C->In.file) free (C->In.file);
 	GMT_free (GMT, C);
 }
 
@@ -84,14 +86,16 @@ int GMT_kml2gmt_parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0;
+	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
 		switch (opt->option) {
 
-			case '<':	/* Input file(s) */
+			case '<':	/* Input files */
+				Ctrl->In.active = true;
+				if (n_files++ == 0) Ctrl->In.file = strdup (opt->arg);
 				break;
 
 			/* Processes program-specific parameters */
@@ -106,6 +110,8 @@ int GMT_kml2gmt_parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct G
 	}
 
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = 2;
+	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Only one file can be processed at the time\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->In.active && access (Ctrl->In.file, R_OK), "Syntax error: Cannot read file %s\n", Ctrl->In.file);
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -120,7 +126,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 	size_t length;
 	bool scan = true, first = true;
 	
-	char *line = NULL, save[GMT_TEXT_LEN64], buffer[GMT_BUFSIZ], header[GMT_BUFSIZ], name[GMT_BUFSIZ], description[GMT_BUFSIZ];
+	char line[GMT_BUFSIZ], buffer[GMT_BUFSIZ], header[GMT_BUFSIZ], name[GMT_BUFSIZ], description[GMT_BUFSIZ];
 
 	double out[3];
 	
@@ -149,8 +155,6 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 	/*---------------------------- This is the kml2gmt main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input KML data\n");
-	strcpy (save, GMT->current.setting.format_float_out);		/* Keep copy of original */
-	strcpy (GMT->current.setting.format_float_out, "%.12g");	/* Get enough decimals */
 	GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
 	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
 	GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
@@ -161,34 +165,33 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 	if ((error = GMT_set_cols (GMT, GMT_OUT, 2 + Ctrl->Z.active)) != GMT_OK) {
 		Return (error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
-		Return (API->error);
-	}
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
-		Return (API->error);
-	}
-	if (GMT_Begin_IO (API, GMT_IS_TEXTSET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
 		Return (API->error);
 	}
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
 		Return (API->error);
 	}
 
-	sprintf (buffer, "# kml2gmt: KML read from %s\n", API->GMT->current.io.current_filename[GMT_IN]);
-	GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, buffer);	/* Write this to output */
-
+	if (Ctrl->In.active) {
+		if ((fp = fopen (Ctrl->In.file, "r")) == NULL) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Cannot open file %s\n", Ctrl->In.file);
+			Return (EXIT_FAILURE);
+		}
+		GMT_Report (API, GMT_MSG_VERBOSE, "Processing %s\n", Ctrl->In.file);
+		sprintf (buffer, "# kml2gmt: KML read from %s\n", Ctrl->In.file);
+	}
+	else {     /* Just read standard input */
+		fp = stdin;
+		GMT_Report (API, GMT_MSG_VERBOSE, "Reading from standard input\n");
+		sprintf (buffer, "# kml2gmt: KML read from standard input\n");
+	}
 	/* Now we are ready to take on some input values */
 
-	do {	/* Keep returning records until we reach EOF */
-		if ((line = GMT_Get_Record (GMT->parent, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
-				return (GMT_RUNTIME_ERROR);
-			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
-				break;
-		}
-		
-		/* Data record to process */
+	strcpy (GMT->current.setting.format_float_out, "%.12g");	/* Get enough decimals */
+	
+	GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, buffer);	/* Write this to output */
 
+	while (fgets (line, GMT_BUFSIZ, fp)) {
 		if (strstr (line, "<Placemark")) scan = true;
 		if (strstr (line, "</Placemark")) scan = false;
 		if (!scan) continue;
@@ -247,11 +250,8 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 			}
 		}
-	} while (true);
-	
-	if (GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
-		Return (API->error);
 	}
+	if (fp != stdin) fclose (fp);
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 		Return (API->error);
 	}
