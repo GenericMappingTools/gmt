@@ -248,7 +248,7 @@ support via ``GMT_grdimage`` [4]_.
 
 .. _tbl-image:
 
-::
+  ::
 
     struct GMT_IMAGE {
         enum GMT_enum_type type;        /* Data type, e.g. GMT_FLOAT */
@@ -280,7 +280,7 @@ data set *via* a ``struct GMT_VECTOR`` it will know how to read the data correct
 
 .. _tbl-univector:
 
-::
+  ::
 
     union GMT_UNIVECTOR { 
         uint8_t  *uc1;       /* Pointer for unsigned 1-byte array */ 
@@ -309,7 +309,7 @@ data set *via* a ``struct GMT_VECTOR`` it will know how to read the data correct
 
 .. _tbl-vector:
 
-::
+  ::
 
     struct GMT_VECTOR {
         uint64_t             n_columns;     /* Number of vectors */
@@ -329,7 +329,7 @@ User data matrices (GMT matrices)
 
 .. _tbl-matrix:
 
-::
+  ::
 
     struct GMT_MATRIX {
         uint64_t n_rows;                    /* Number of rows in the matrix */
@@ -488,6 +488,8 @@ Table [tbl:API] gives a list of all the functions and their purpose.
 +-------------------------+---------------------------------------------------+
 | GMT_Create_Data_        | Create an empty data resource                     |
 +-------------------------+---------------------------------------------------+
+| GMT_Create_Options_     | Create a linked list of program options           |
++-------------------------+---------------------------------------------------+
 | GMT_Create_Session_     | Initialize a new GMT session                      |
 +-------------------------+---------------------------------------------------+
 | GMT_Delete_Option_      | Delete an option structure from the linked list   |
@@ -589,13 +591,13 @@ To initiate the new session we use
 
 .. _GMT_Create_Session:
 
-::
+  ::
 
     void *GMT_Create_Session (char *tag, unsigned int pad, unsigned int mode);
 
 and you will typically call it thus:
 
-::
+  ::
 
     void *API = NULL;
     API = GMT_Create_Session ("Session name", 2, 0);
@@ -634,7 +636,7 @@ Registration involves a direct or indirect call to
 
 .. _GMT_Register_IO:
 
-::
+  ::
 
     int GMT_Register_IO (void *API, unsigned int family, unsigned int method,
                          unsigned int geometry, unsigned int direction, 
@@ -667,7 +669,7 @@ using the function
 
 .. _GMT_Encode_ID:
 
-::
+  ::
 
     int GMT_Encode_ID (void *API, char *filename, int ID);
 
@@ -786,7 +788,7 @@ options). The prototype for this function is
 
 .. _GMT_Init_IO:
 
-::
+  ::
 
     int GMT_Init_IO (void *API, unsigned int family, unsigned int geometry,
                      unsigned int direction, unsigned int mode,
@@ -869,7 +871,7 @@ etc.), then youGMT_Create_Data can obtain a “blank slate” by calling
 
 .. _GMT_Create_Data:
 
-::
+  ::
 
     void *GMT_Create_Data (void *API, unsigned int family, unsigned int geometry,
                            unsigned int mode, uint64_t par[], double *wesn, 
@@ -945,7 +947,7 @@ are addressed by
 
 .. _GMT_Duplicate_Data:
 
-::
+  ::
 
     void *GMT_Duplicate_Data (void *API, unsigned int family,
                               unsigned int mode, void *data);
@@ -996,7 +998,7 @@ upcoming import. The prototype is
 
 .. _GMT_Begin_IO:
 
-::
+  ::
 
     int GMT_Begin_IO (void *API, unsigned int family, unsigned int direction,
                       unsigned int mode, unsigned int header);
@@ -1040,7 +1042,7 @@ To read an entire resource from a file, stream, or file handle, use
 
 .. _GMT_Read_Data:
 
-::
+  ::
 
     void *GMT_Read_Data (void *API, unsigned int family, unsigned int method,
                          unsigned int geometry, unsigned int mode, double wesn[],
@@ -1118,7 +1120,7 @@ the resource. The function is described as follows:
 
 .. _GMT_Get_Data:
 
-::
+  ::
 
     void *GMT_Get_Data (void *API, int ID, unsigned int mode, void *ptr);
 
@@ -1145,7 +1147,7 @@ resource. The function is described as follows:
 
 .. _GMT_Retrieve_Data:
 
-::
+  ::
 
     void *GMT_Retrieve_Data (void *API, int ID);
 
@@ -1163,7 +1165,7 @@ records in a loop using
 
 .. _GMT_Get_Record:
 
-::
+  ::
 
     void *GMT_Get_Record (void *API, unsigned int mode, int *nfields);
 
@@ -1204,7 +1206,7 @@ record. The internal i/o status mode can be interrogated with the function
 
 .. _GMT_Status_IO:
 
-::
+  ::
 
     int GMT_Status_IO (void *API, unsigned int mode);
 
@@ -1254,7 +1256,7 @@ row-by-row reading with ``GMT_Read_Data`` and then use the
 
 .. _GMT_Get_Row:
 
-::
+  ::
 
     int GMT_Get_Row (void *API, int row_no, struct GMT_GRID *G, float *row);
 
@@ -1274,7 +1276,7 @@ function disables further record-by-record data import; its prototype is
 
 .. _GMT_End_IO:
 
-::
+  ::
 
     int GMT_End_IO (void *API, unsigned int direction, unsigned int mode);
 
@@ -1298,7 +1300,7 @@ can be obtained via arrays of coordinates for each dimension, obtained by
 
 .. _GMT_Get_Coord:
 
-::
+  ::
 
     double *GMT_Get_Coord (void *API, unsigned int family, unsigned int dim, void *data);
 
@@ -1312,7 +1314,7 @@ the relationship is not straightforward, hence we supply
 
 .. _GMT_Get_Index:
 
-::
+  ::
 
     int64_t GMT_Get_Index (struct GMT_GRID_HEADER *header, int row, int col);
 
@@ -1330,7 +1332,7 @@ so, the coordinates at each node may also be required for a calculation.
 Below is a snippet of code that shows how to do visit all nodes in a
 grid and assign each node the product x \* y:
 
-::
+  ::
 
     int row, col, node;
     double *x_coord = NULL, *y_coord = NULL;
@@ -1352,7 +1354,7 @@ complexity in ``GMT_Get_Index``. Note that for trivial procedures such
 setting all grid nodes to a constant (e.g., -9999.0) where the row and
 column does not enter you can instead do a single loop:
 
-::
+  ::
 
     int node;
     < ... create a grid G or read one ... >
@@ -1373,7 +1375,7 @@ contain one or more columns, you will need to have multiple loops to
 visit all entries. The following code snippet will visit all data
 records and add 1 to all columns beyond the first two (x and y):
 
-::
+  ::
 
     int tbl, seg, row, col;
     struct GMT_DATATABLE *T = NULL;
@@ -1399,7 +1401,7 @@ When data file contain text mixed in with numbers you must open the file
 as a GMT\_TEXTSET and do your own parsing of the data records. The
 following code snippet will visit all text records and print them out:
 
-::
+  ::
 
     int tbl, seg, row, col;
     struct GMT_TEXTTABLE *T = NULL;
@@ -1428,7 +1430,7 @@ the verbosity settings specified via ``-V``.
 
 .. _GMT_Report:
 
-::
+  ::
 
     int GMT_Report (void *API, unsigned int level, char *message, ...);
 
@@ -1462,7 +1464,7 @@ lower or equal to the ``-V``\ *level* will be printed.
 
 .. _GMT_Message:
 
-::
+  ::
 
     int GMT_Message (void *API, unsigned int mode, char *format, ...);
 
@@ -1511,7 +1513,7 @@ You can have your program menu display the standard usage message for a
 
 .. _GMT_Option:
 
-::
+  ::
 
     void GMT_Option (void *API, char *options);
 
@@ -1528,7 +1530,7 @@ The parsing of all *GMT* common option is done by
 
 .. _GMT_Parse_Common:
 
-::
+  ::
 
     int GMT_Parse_Common (void *API, char *args, struct GMT_OPTION *list);
 
@@ -1548,7 +1550,7 @@ option has been parsed and in some cases determine the values that was set with
 
 .. _GMT_Get_Common:
 
-::
+  ::
 
     int GMT_Get_Common (void *API, unsigned int option, double *par);
 
@@ -1558,7 +1560,7 @@ been parsed then the function returns the number of parameters passed
 back via ``par``; otherwise we return -1. For instance, to determine if
 the ``-R`` was set and what the resulting region was set to you may call
 
-::
+  ::
 
     if (GMT_Get_Common (API, 'R', wesn)) != -1) {
         /* wesn now contains the boundary information */
@@ -1577,7 +1579,7 @@ tedious to program. You can simplify this by using
 
 .. _GMT_Get_Value:
 
-::
+  ::
 
     int GMT_Get_Value (void *API, char *arg, double par[]);
 
@@ -1589,7 +1591,7 @@ the character string ``origin`` was given by the user as two geographic
 coordinates separated by a slash (e.g., ``"35:45W/19:30:55.3S"``). We
 obtain the two coordinates as decimal degrees by calling
 
-::
+  ::
 
     n = GMT_Get_Value (API, origin, pair);
 
@@ -1609,7 +1611,7 @@ If your program needs to determine one or more of the current
 
 .. _GMT_Get_Default:
 
-::
+  ::
 
     int GMT_Get_Default (void *API, char *keyword, char *value);
 
@@ -1631,7 +1633,7 @@ interfaces are identical are looks like
 
 .. _GMT_Get_module:
 
-::
+  ::
 
     int GMT_module (void *API, int mode, void *args);
 
@@ -1695,7 +1697,7 @@ sort it internally according to need. The option structure is defined below.
 
 .. _options:
 
-::
+  ::
 
     struct GMT_OPTION {
         char               option;    /* Single character of the option (e.g., 'G' for -G) */
@@ -1712,7 +1714,7 @@ allow you to convert between the two argument formats. They are
 
 .. _GMT_Create_Options:
 
-::
+  ::
 
     struct GMT_OPTIONS *GMT_Create_Options (void *API, int argc, void *args);
 
@@ -1731,7 +1733,7 @@ multiple options (in lieu of an array of text strings), then pass
 
 .. _GMT_Destroy_Options:
 
-::
+  ::
 
     int GMT_Destroy_Options (void *API, struct GMT_OPTION **list);
 
@@ -1742,7 +1744,7 @@ The inverse function prototype is
 
 .. _GMT_Create_Args:
 
-::
+  ::
 
     char **GMT_Create_Args (void *API, int *argc, struct GMT_OPTIONS *list);
 
@@ -1756,7 +1758,7 @@ any use for the text array, call
 
 .. _GMT_Destroy_Args:
 
-::
+  ::
 
     int GMT_Destroy_Args (void *API, int argc, char *argv[]);
 
@@ -1769,7 +1771,7 @@ text string command, use
 
 .. _GMT_Create_Cmd:
 
-::
+  ::
 
     char *GMT_Create_Cmd (void *API, struct GMT_OPTION *list);
 
@@ -1800,7 +1802,7 @@ structure. The prototype is
 
 .. _GMT_Make_Option:
 
-::
+  ::
 
     struct GMT_OPTION *GMT_Make_Option (void *API, char option, char *arg);
 
@@ -1816,7 +1818,7 @@ the doubly-linked ``list``. The prototype is
 
 .. _GMT_Append_Option:
 
-::
+  ::
 
     struct GMT_OPTION *GMT_Append_Option (void *API, struct GMT_OPTION *option, \
                                           struct GMT_OPTION *list);
@@ -1835,7 +1837,7 @@ an error we still set ``API->error`` accordingly. The prototype is
 
 .. _GMT_Find_Option:
 
-::
+  ::
 
     struct GMT_OPTION *GMT_Find_Option (void *API, char option,
                                         struct GMT_OPTION *list);
@@ -1844,7 +1846,7 @@ If you need to look for multiple occurrences of a certain option you
 will need to call ``GMT_Find_Option`` again, passing the option
 following the previously found option as the ``list`` entry, i.e.,
 
-::
+  ::
 
     list = *ptr->next;
 
@@ -1857,7 +1859,7 @@ and append it to the end of the linked ``list``. The prototype is
 
 .. _GMT_Update_Option:
 
-::
+  ::
 
     int GMT_Update_Option (void *API, char option, char *arg,
                            struct GMT_OPTION *list);
@@ -1875,7 +1877,7 @@ You may use ``GMT_Delete_Option`` to remove ``option`` from the linked
 
 .. _GMT_Delete_Option:
 
-::
+  ::
 
     int GMT_Delete_Option (void *API, struct GMT_OPTION *current);
 
@@ -1895,7 +1897,7 @@ indicate an output file. In order to append to an existing file, use
 >>. For example the following command would read from file.A and
 append to file.B:
 
-::
+  ::
 
     gmtconvert -<file.A ->>file.B
 
@@ -1921,7 +1923,7 @@ information to the existing headers. This is achieved with
 
 .. _GMT_Set_Comment:
 
-::
+  ::
 
     int GMT_Set_Comment (void *API, unsigned int family, unsigned int mode
                          void *arg, void *data)
@@ -2023,7 +2025,7 @@ The prototype for writing to a file (via name, stream, or file handle) is
 
 .. _GMT_Write_Data:
 
-::
+  ::
 
     int GMT_Write_Data (void *API, unsigned int family, unsigned int method,
                         unsigned int geometry, unsigned int mode,
@@ -2104,7 +2106,7 @@ destination and then use the returned ID with ``GMT_Put_Data`` instead:
 
 .. _GMT_Put_Data:
 
-::
+  ::
 
     int GMT_Put_Data (void *API, int ID, unsigned int mode, void *data);
 
@@ -2124,7 +2126,7 @@ enable record-by-record writing with ``GMT_Begin_IO`` and then use the
 
 .. _GMT_Put_Record:
 
-::
+  ::
 
     int GMT_Put_Record (void *API, unsigned int mode, void *rec);
 
@@ -2172,7 +2174,7 @@ row-by-row writing with ``GMT_Read_Data`` and then use the
 
 .. _GMT_Put_Row:
 
-::
+  ::
 
     int GMT_Put_Row (void *API, int row_no, struct GMT_GRID *G, float *row);
 
@@ -2200,7 +2202,7 @@ function, whose prototype is
 
 .. _GMT_Destroy_Data:
 
-::
+  ::
 
     int GMT_Destroy_Data (void *API, unsigned int mode, void *data);
 
@@ -2225,7 +2227,7 @@ Before your program exits it should properly terminate the
 
 .. _GMT_Destroy_Session:
 
-::
+  ::
 
     int GMT_Destroy_Session (void *API);
 
@@ -2261,7 +2263,7 @@ your program needs to present the option usage you can call
 
 .. _GMT_FFT_Option:
 
-::
+  ::
 
     unsigned int GMT_FFT_Option (void *API, char option, unsigned int dim,
                                  char *string);
@@ -2278,7 +2280,7 @@ To parse the user's selection you call
 
 .. _GMT_FFT_Parse:
 
-::
+  ::
 
     void *GMT_FFT_Parse (void *API, char option, unsigned int dim, char *args);
 
@@ -2295,7 +2297,7 @@ conveniently performed for you by
 
 .. _GMT_FFT_Create:
 
-::
+  ::
 
     void *GMT_FFT_Create (void *API, void *X, unsigned int dim,
                           unsigned int subdivide, unsigned int mode, void *F);
@@ -2319,7 +2321,7 @@ Now that everything has been set up you can perform the transform with
 
 .. _GMT_FFT:
 
-::
+  ::
 
     void *GMT_FFT (void *API, void *X, int direction, unsigned int mode, void *K);
 
@@ -2342,7 +2344,7 @@ present the function that returns an individual wavenumber:
 
 .. _GMT_FFT_Wavenumber:
 
-::
+  ::
 
     double GMT_FFT_Wavenumber (void *API, uint64_t k, unsigned int mode, void *K);
 
@@ -2367,7 +2369,7 @@ corresponding wavenumber we simply need to loop over ``size`` and call
 ``GMT_FFT_Wavenumber``. This code snippet multiples the complex grid by
 the radial wavenumber:
 
-::
+  ::
 
     uint64_t k;
     for (k = 0; k < Grid->header->size; k++) {
@@ -2379,7 +2381,7 @@ Alternatively, you may choose to be more specific about which components
 are real and imaginary (especially if they are to be treated
 differently), and set up the loop this way:
 
-::
+  ::
 
     uint64_t re, im;
     for (re = 0, im = 1; re < Grid->header->size; re += 2, im += 2) {
@@ -2395,7 +2397,7 @@ When done you terminate the FFT machinery with
 
 .. _GMT_FFT_Destroy:
 
-::
+  ::
 
     double GMT_FFT_Destroy (void *API, void *K);
 
@@ -2422,9 +2424,10 @@ inquire about the range of information in a grid, use
 
 .. _GMT_F77_readgrdinfo:
 
-::
+  ::
 
-    int GMT_F77_readgrdinfo (unsigned int dim[], double limits[], double inc[], char *title, char *remark, char *file)
+    int GMT_F77_readgrdinfo (unsigned int dim[], double limits[], double inc[],
+                             char *title, char *remark, char *file)
 
 where ``dim`` returns the grid width, height, and registration, ``limits`` returns the min and max values for x, y, and z
 as three consecutive pairs, ``inc`` returns the x and y increment, the ``title`` and ``remark`` returns the values of these strings.  The ``file``
@@ -2434,9 +2437,10 @@ To actually read the grid, we use
 
 .. _GMT_F77_readgrd:
 
-::
+  ::
 
-    int GMT_F77_readgrd (float *array, unsigned int dim[], double wesn[], double inc[], char *title, char *remark, char *file)
+    int GMT_F77_readgrd (float *array, unsigned int dim[], double wesn[], double inc[],
+                         char *title, char *remark, char *file)
 
 where ``array`` is the 1-D grid data array, ``dim`` returns the grid width, height, and registration,
 ``limits`` returns the min and max values for x, y, and z, ``inc`` returns the x and y increments,
@@ -2449,9 +2453,10 @@ Finally, to write a grid to file you cam use
 
 .. _GMT_F77_writegrd:
 
-::
+  ::
 
-    int GMT_F77_writegrd_(float *array, unsigned int dim[], double wesn[], double inc[], char *title, char *remark, char *file)
+    int GMT_F77_writegrd_(float *array, unsigned int dim[], double wesn[], double inc[],
+                          char *title, char *remark, char *file)
 
 where ``array`` is the 1-D grid data array, ``dim`` specifies the grid width, height, and registration,
 ``limits`` may be used to specify a subset (normally, just pass zeros), ``inc`` specifies the x and y increments,

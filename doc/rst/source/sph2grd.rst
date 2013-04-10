@@ -4,25 +4,23 @@ sph2grd
 
 sph2grd - Compute grid from spherical harmonic coefficients
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
 **sph2grd** [ *table* ] **-G**\ *grdfile*
-**-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [ **-D**\ [**g**\ \|\ **n**\ ] ]
-[ **-E** ] [ **-F**\ [**k**]\ *filter* ] [ **-N**\ [*norm*\ ] ] [ **-Q** ] [ **-V**\ [*level*\ ] ] [
-[ **-bi**\ [*ncols*\ ][*type*\ ] ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-r** ]
+|SYN_OPT-I|
+|SYN_OPT-R| [ **-D**\ [**g**\ \|\ **n**\ ] ]
+[ **-E** ] [ **-F**\ [**k**]\ *filter* ] [ **-N**\ [*norm*\ ] ] [ **-Q** ] [ |SYN_OPT-V| ]
+[ **-bi**\ [*ncols*][*type*] ] [ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ] [ **-r** ]
 
 `Description <#toc2>`_
 ----------------------
 
-    **sph2grd** reads a spherical harmonics coefficient table with records of
-    L, M, C[L,M], S[L,M] and evaluates the spherical harmonic model on the
-    specified grid. 
+**sph2grd** reads a spherical harmonics coefficient table with records of
+L, M, C[L,M], S[L,M] and evaluates the spherical harmonic model on the specified grid. 
 
 .. include:: explain_commonitems.rst_
 
@@ -48,7 +46,7 @@ sph2grd - Compute grid from spherical harmonic coefficients
 **-D**\ [**g**\ \|\ **n**]
     Will evaluate a derived field from a geopotential model.  Choose
     between **Dg** which will compute the gravitational field or **Dn**
-    to compute the geoid [Add **E** for anomalies on the ellipsoid].
+    to compute the geoid [Add **-E** for anomalies on the ellipsoid].
 **-E**
     Evaluate expansion on the current ellipsoid [Default is sphere].
 **-F**\ [**d**]\ *filter*
