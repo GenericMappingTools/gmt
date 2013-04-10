@@ -1729,7 +1729,7 @@ then ``argv[0]`` will contain the name of the calling program. To avoid
 passing this as a file name option, call ``GMT_Create_Options`` with
 ``argc-1`` and ``argv+1``. If you wish to pass a single text string with
 multiple options (in lieu of an array of text strings), then pass
-``arg`` = 0. When no longer needed you can remove the entire list by calling
+``argc`` = 0. When no longer needed you can remove the entire list by calling
 
 .. _GMT_Destroy_Options:
 
