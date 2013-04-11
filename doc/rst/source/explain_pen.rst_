@@ -1,5 +1,5 @@
-`Specifying Pens <#toc12>`_
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+`Specifying Pens`_
+~~~~~~~~~~~~~~~~~~
 *pen*
     The attributes of lines and symbol outlines as defined by *pen* is a
     comma-delimited list of *width*, *color* and *style*, each of which
@@ -8,7 +8,7 @@
     **faint**, **default**, **thin**\ [**ner**\ \|\ **nest**],
     **thick**\ [**er**\ \|\ **est**], **fat**\ [**ter**\ \|\ **test**],
     or **obese**. *color* specifies a gray shade or color (see
-    SPECIFYING COLOR above). *style* is a combination of dashes ‘-’ and
-    dots ‘.’. If any of the attributes is omitted their default or
+    `Specifying Color`_ above). *style* is a combination of dashes '-' and
+    dots '.'. If any of the attributes is omitted their default or
     previous setting will be retained. See **GMT** Cookbook & Technical
     Reference Chapter 4 for more information.

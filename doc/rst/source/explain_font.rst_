@@ -1,5 +1,5 @@
-Specifying Fonts
-~~~~~~~~~~~~~~~~
+`Specifying Fonts`_
+~~~~~~~~~~~~~~~~~~~
 
 *font*
     The attributes of text fonts as defined by *font* is a comma
@@ -8,7 +8,7 @@ Specifying Fonts
     **i** can be added to indicate other units. *fonttype* is the name
     (case sensitive!) of the font or its equivalent numerical ID (e.g.,
     Helvetica-Bold or 1). *fill* specifies the gray shade, color or
-    pattern of the text (see SPECIFYING FILL above). Optionally, you may
+    pattern of the text (see `Specifying Fill`_ above). Optionally, you may
     append **=**\ *pen* to the *fill* value in order to draw the text
     outline; if used you may optionally skip the text fill by setting it
     to **-**. If any of the attributes is omitted their default or
