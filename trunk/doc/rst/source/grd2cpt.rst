@@ -144,7 +144,7 @@ line will be used.
 
 Sometimes you don't want to make a cpt file (yet) but would find it
 helpful to know that 90% of your data lie between z1 and z2, something
-you cannot learn from `grdinfo <grdinfo.thml>`_. So you can do this to see some points
+you cannot learn from `grdinfo <grdinfo.thml>`__. So you can do this to see some points
 on the CDF(Z) curve (use **-V** option to see more):
 
     grd2cpt mydata.nc -V > /dev/null
@@ -159,4 +159,4 @@ file relief, run
 -------------------
 
 `gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
-`grdhisteq <grdhisteq.html>`_, `grdinfo <grdinfo.html>`_ , `makecpt <makecpt.html>`_
+`grdhisteq <grdhisteq.html>`_, `grdinfo <grdinfo.html>`__ , `makecpt <makecpt.html>`_

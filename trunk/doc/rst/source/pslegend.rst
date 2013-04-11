@@ -39,7 +39,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 
 **-D**\ [**x**\ ]\ *lon*/*lat*/*width*\ [/*height*]/\ *just*\ [/*dx*/*dy*]
     Positions the legend and specifies its size. The *just* is a 2-char
-    justification string (see `psxy <pstext.html>`_) that relates the given
+    justification string (see `psxy <pstext.html>`__) that relates the given
     position to a point on the rectangular legend box. If you want to
     specify the position in map plot units (i.e., inches or cm), use
     **-Dx**; in that case the **-R** and **-J** are optional (provided
@@ -69,8 +69,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     indicates the shift relative to the foreground frame
     [4\ **p**/-4\ **p**] and *fill* sets the shading to use [SHADE].
 **-G**\ *fill*
-    Select fill shade, color or pattern of the legend box [Default is no
-    fill]. 
+    Select fill shade, color or pattern of the legend box [Default is no fill]. 
 
 .. include:: explain_-J.rst_
 
@@ -171,22 +170,22 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     columns stay in effect until **N** is used again.
 **S** *dx1 symbol size fill pen* [ *dx2 text* ]
     Plots the selected symbol with specified diameter, fill, and outline
-    (see `psxy <psxy.html>`_). The symbol is centered at *dx1* from the left margin
+    (see `psxy <psxy.html>`__). The symbol is centered at *dx1* from the left margin
     of the column, with the optional explanatory *text* starting *dx2*
     from the margin, printed with **FONT\_ANNOT\_PRIMARY**. Use **-** if
     no *fill* or outline (*pen*) is required. When plotting just a
     symbol, without text, *dx2* and *text* can be omitted. Two **psxy**
     symbols may take special modifiers: front (**f**) and vector (**v**). 
     You can append modifiers to the symbol and affect how the fronts and
-    vectors are presented (see `psxy <psxy.html>`_ man page for modifiers).
+    vectors are presented (see `psxy <psxy.html>`__ man page for modifiers).
     **pslegend** will determine default settings for all modifiers and
     secondary arguments if not provided.  A few other symbols (the rectangles,
     ellipse, wedge, mathangle) may take more than a single argument size.
     If just a single size if given then **pslegend** will provide reasonable
-    arguments to plot the symbol  (See :ref:`Defaults <#toc7>`).
+    arguments to plot the symbol  (See `Defaults`_).
     Alternatively, combine the required
     arguments into a single, comma-separated string and use that as the
-    symbol size (again, see `psxy <psxy.html>`_ for details on the arguments needed).
+    symbol size (again, see `psxy <psxy.html>`__ for details on the arguments needed).
 **T** *paragraph-text*
     One or more of these **T** records with *paragraph-text* printed
     with **FONT\_ANNOT\_PRIMARY**. To specify special positioning and
@@ -205,10 +204,9 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     specify all and set the ones you want to leave at their default
     value to **-**.
 
-.. _#toc7:
 
-`Defaults <#toc7>`_
--------------------
+Defaults
+--------
 
 When attributes are not provided, or extended symbol information (for symbols taking more than just an overall size) are
 not given as comma-separated quantities, **pslegend** will provide the following defaults:
@@ -328,4 +326,4 @@ See Also
 `gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
 `gmtcolors <gmtcolors.html>`_,
 `psbasemap <psbasemap.html>`_, `pstext <pstext.html>`_,
-`psxy <psxy.html>`_
+`psxy <psxy.html>`__
