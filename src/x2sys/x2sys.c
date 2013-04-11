@@ -119,7 +119,6 @@ struct MGD77_CONTROL M;
 char *x2sys_datadir[MAX_DATA_PATHS];	/* Directories where track data may live */
 unsigned int n_x2sys_paths = 0;	/* Number of these directories */
 
-#ifdef GMT_COMPAT
 /* Here are legacy functions for old GMT MGG supplement needed in x2sys */
 
 char *gmtmgg_path[10];  /* Max 10 directories for now */
@@ -178,7 +177,6 @@ void gmtmggpath_init (struct GMT_CTRL *GMT) {
 	}
 	fclose (fp);
 }
-#endif
 
 int get_first_year (struct GMT_CTRL *GMT, double t)
 {
@@ -306,14 +304,12 @@ int x2sys_initialize (struct GMT_CTRL *GMT, char *TAG, char *fname, struct GMT_I
 		X->dist_flag = 2;	/* Creat circle distances */
 		MGD77_Init (GMT, &M);	/* Initialize MGD77 Machinery */
 	}
-#ifdef GMT_COMPAT
-	else if (!strcmp (fname, "gmt")) {
+	else if (!strcmp (fname, "gmt") && GMT_compat_check (GMT, 4)) {
 		X->read_file = &x2sys_read_gmtfile;
 		X->geographic = true;
 		X->geodetic = GMT_IS_0_TO_P360_RANGE;
 		X->dist_flag = 2;	/* Creat circle distances */
 	}
-#endif
 	else if (!strcmp (fname, "mgd77")) {
 		X->read_file = &x2sys_read_mgd77file;
 		X->geographic = true;
@@ -685,7 +681,6 @@ int x2sys_read_file (struct GMT_CTRL *GMT, char *fname, double ***data, struct X
 	return (X2SYS_NOERROR);
 }
 
-#ifdef GMT_COMPAT
 int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec)
 {
 	/* Reads the entire contents of the file given and returns the
@@ -773,7 +768,6 @@ int x2sys_read_gmtfile (struct GMT_CTRL *GMT, char *fname, double ***data, struc
 
 	return (X2SYS_NOERROR);
 }
-#endif
 
 int x2sys_read_mgd77file (struct GMT_CTRL *GMT, char *fname, double ***data, struct X2SYS_INFO *s, struct X2SYS_FILE_INFO *p, struct GMT_IO *G, uint64_t *n_rec)
 {
@@ -1073,12 +1067,15 @@ int x2sys_set_system (struct GMT_CTRL *GMT, char *TAG, struct X2SYS_INFO **S, st
 					GMT->common.R.active = parsed_command_R;	/* Only true if command-line -R was parsed, not this tag file */
 					break;
 
-#ifdef GMT_COMPAT
-				case 'M':	/* Backwards compatibility */
+				case 'M':	/* GMT4 Backwards compatibility */
 				case 'm':
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -%c is deprecated. Segment headers are automatically identified.\n", p[1]);
+					if (GMT_compat_check (GMT, 4))
+						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -%c is deprecated. Segment headers are automatically identified.\n", p[1]);
+					else {
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad arg in x2sys_set_system! (%s)\n", p);
+						return (X2SYS_BAD_ARG);
+					}
 					break;
-#endif
 				/* Supplemental parameters */
 
 				case 'C':	/* Distance calculation flag */

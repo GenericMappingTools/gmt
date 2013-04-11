@@ -165,14 +165,12 @@ int GMT_grdlandmask_parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, 
 			case 'N':	/* Mask values */
 				Ctrl->N.active = true;
 				strncpy (line, opt->arg,  GMT_TEXT_LEN256);
-#ifdef GMT_COMPAT
-				if (line[strlen(line)-1] == 'o') { /* Edge is considered outside */
+				if (line[strlen(line)-1] == 'o' && GMT_compat_check (GMT, 4)) { /* Edge is considered outside */
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -N...o is deprecated; use -E instead\n");
 					Ctrl->E.active = true;
 					Ctrl->E.inside = GMT_INSIDE;
 					line[strlen(line)-1] = 0;
 				}
-#endif
 				j = pos = 0;
 				while (j < 5 && (GMT_strtok (line, "/", &pos, ptr))) {
 					Ctrl->N.mask[j] = (ptr[0] == 'N' || ptr[0] == 'n') ? GMT->session.f_NaN : (float)atof (ptr);

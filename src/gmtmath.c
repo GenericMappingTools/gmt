@@ -405,9 +405,7 @@ int GMT_gmtmath_parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct G
 	bool missing_equal = true;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
-#ifdef GMT_COMPAT
 	int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg);
-#endif
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -434,12 +432,14 @@ int GMT_gmtmath_parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct G
 				break;
 			case 'C':	/* Processed in the main loop but not here; just skip */
 				break;
-#ifdef GMT_COMPAT
-			case 'F':	/* Now obsolete due to -o */
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -F is deprecated; use -o instead\n");
-				gmt_parse_o_option (GMT, opt->arg);
+			case 'F':	/* Now obsolete, using -o instead */
+				if (GMT_compat_check (GMT, 4)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -F is deprecated; use -o instead\n");
+					gmt_parse_o_option (GMT, opt->arg);
+				}
+				else
+					n_errors += GMT_default_error (GMT, opt->option);
 				break;
-#endif
 			case 'I':	/* Reverse output order */
 				Ctrl->I.active = true;
 				break;

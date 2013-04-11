@@ -37,9 +37,7 @@
 
 #define GMT_PROG_OPTIONS "-:>BJKOPRUVXYbcfghipstxy" GMT_OPT("EHMm")
 
-#ifdef GMT_COMPAT
 int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt);
-#endif
 
 struct PSWIGGLE_CTRL {
 	struct A {	/* -A<azimuth> */
@@ -250,9 +248,7 @@ int GMT_pswiggle_parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct
 	 */
 
 	unsigned int j, k, wantx, wanty, n_errors = 0;
-#ifdef GMT_COMPAT
 	bool N_active = false;
-#endif
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], *units = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -274,19 +270,21 @@ int GMT_pswiggle_parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct
 				Ctrl->C.active = true;
 				Ctrl->C.value = atof (opt->arg);
 				break;
-#ifdef GMT_COMPAT
 			case 'D':
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -D option is deprecated; use -g instead.\n");
-				GMT->common.g.active = true;
-				if (opt->arg[0] == 'x')		/* Determine gaps using projected distances */
-					sprintf (txt_a, "d%s", &opt->arg[1]);
-				else if (GMT_is_geographic (GMT, GMT_IN))	
-					sprintf (txt_a, "D%sk", opt->arg);	/* Hardwired to be km */
+				if (GMT_compat_check (GMT, 4)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -D option is deprecated; use -g instead.\n");
+					GMT->common.g.active = true;
+					if (opt->arg[0] == 'x')		/* Determine gaps using projected distances */
+						sprintf (txt_a, "d%s", &opt->arg[1]);
+					else if (GMT_is_geographic (GMT, GMT_IN))	
+						sprintf (txt_a, "D%sk", opt->arg);	/* Hardwired to be km */
+					else
+						sprintf (txt_a, "d%s", opt->arg);	/* Cartesian */
+					n_errors += gmt_parse_g_option (GMT, txt_a);
+				}
 				else
-					sprintf (txt_a, "d%s", opt->arg);	/* Cartesian */
-				n_errors += gmt_parse_g_option (GMT, txt_a);
+					n_errors += GMT_default_error (GMT, opt->option);
 				break;
-#endif
 			case 'G':
 				switch (opt->arg[0]) {
 					case '=':
@@ -305,12 +303,14 @@ int GMT_pswiggle_parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct
 				Ctrl->I.value = atof (opt->arg);
 				Ctrl->I.active = true;
 				break;
-#ifdef GMT_COMPAT
 			case 'N':
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -N option is deprecated; use -G-<fill> instead.\n");
-				N_active = true;
+				if (GMT_compat_check (GMT, 4)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -N option is deprecated; use -G-<fill> instead.\n");
+					N_active = true;
+				}
+				else
+					n_errors += GMT_default_error (GMT, opt->option);
 				break;
-#endif
 			case 'S':
 				Ctrl->S.active = true;
 				j = 0;
@@ -353,13 +353,11 @@ int GMT_pswiggle_parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct
 		}
 	}
 
-#ifdef GMT_COMPAT
-	if (N_active) {
+	if (N_active && GMT_compat_check (GMT, 4)) {
 		Ctrl->G.active[1] = Ctrl->G.active[0];
 		Ctrl->G.active[0] = false;
 		Ctrl->G.fill[1] = Ctrl->G.fill[0];
 	}
-#endif
 
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
 	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");

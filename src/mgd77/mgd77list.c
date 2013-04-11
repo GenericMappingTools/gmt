@@ -542,12 +542,10 @@ int GMT_mgd77list_parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, stru
 				break;
 
 			case 'N':	/* Nautical units (knots, nautical miles) */
-#ifdef GMT_COMPAT
-				if (opt->arg[1] == 'm') {
+				if (opt->arg[1] == 'm' && GMT_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning -N: Unit m for miles is deprecated; use unit M instead\n");
 					opt->arg[1] = 'M';
 				}
-#endif
 				switch (opt->arg[0]) {
 					case 'd':	/* Distance unit selection */
 						Ctrl->N.active[N_D] = true;

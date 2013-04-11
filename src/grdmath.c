@@ -1803,9 +1803,7 @@ struct GMT_DATASET *ASCII_read (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 	struct GMT_DATASET *D = NULL;
 	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Spherical (in degrees) */
 		GMT_init_distaz (GMT, 'd', 1 + GMT_sph_mode (GMT), GMT_MAP_DIST);
-#ifdef GMT_COMPAT
-		if (!strcmp (op, "LDIST") || !strcmp (op, "PDIST")) GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: %s returns distances in spherical degrees; in GMT4 it returned km.  Use DEG2KM for conversion, if needed.\n", op);
-#endif
+		if (GMT_compat_check (GMT, 4) && (!strcmp (op, "LDIST") || !strcmp (op, "PDIST"))) GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: %s returns distances in spherical degrees; in GMT4 it returned km.  Use DEG2KM for conversion, if needed.\n", op);
 	}
 	else
 		GMT_init_distaz (GMT, 'X', 0, GMT_MAP_DIST);	/* Cartesian */

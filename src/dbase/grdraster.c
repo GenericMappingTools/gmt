@@ -517,13 +517,17 @@ int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char endian
 				case 'b':	/* Big endian byte order */
 					rasinfo[nfound].swap_me = (endian != 'B');	/* Must swap */
 					break;
-#ifdef GMT_COMPAT
 				case 'H':
-				case 'h':	/* Give header size for skipping */
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: H<skip>field is deprecated; header is detected automatically.\n");
-					rasinfo[nfound].skip = (off_t)atoi (&rasinfo[nfound].h.command[i+1]);	/* Must skip header */
+				case 'h':	/* GMT4 LEVEL: Give header size for skipping */
+					if (GMT_compat_check (GMT, 4)) {
+						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: H<skip>field is deprecated; header is detected automatically.\n");
+						rasinfo[nfound].skip = (off_t)atoi (&rasinfo[nfound].h.command[i+1]);	/* Must skip header */
+					}
+					else {	/* Not allowing backwards compatibility */
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Byte order conversion error).\n");
+						continue;
+					}
 					break;
-#endif
 				default:
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Byte order conversion error).\n");
 					continue;
@@ -545,13 +549,17 @@ int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char endian
 				case 'b':	/* Big endian byte order */
 					rasinfo[nfound].swap_me = (endian != 'B');	/* Must swap */
 					break;
-#ifdef GMT_COMPAT
 				case 'H':
-				case 'h':	/* Give header size for skipping */
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: H<skip>field is deprecated; header is detected automatically.\n");
-					rasinfo[nfound].skip = (off_t)atoi (&rasinfo[nfound].h.command[i+1]);	/* Must skip header */
+				case 'h':	/* GMT4 LEVEL: Give header size for skipping */
+					if (GMT_compat_check (GMT, 4)) {
+						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: H<skip>field is deprecated; header is detected automatically.\n");
+						rasinfo[nfound].skip = (off_t)atoi (&rasinfo[nfound].h.command[i+1]);	/* Must skip header */
+					}
+					else {	/* Not allowing backwards compatibility */
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Byte order conversion error).\n");
+						continue;
+					}
 					break;
-#endif
 				default:
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Byte order conversion error).\n");
 					continue;
@@ -720,10 +728,10 @@ int GMT_grdraster_parse (struct GMT_CTRL *GMT, struct GRDRASTER_CTRL *Ctrl, stru
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0), "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += GMT_check_condition (GMT, n_files != 1, "Syntax error -I option: You must specify only one raster file ID.\n");
-#ifndef GMT_COMPAT	/* In old version we default to triplet output if -G was not set */
-	n_errors += GMT_check_condition (GMT, Ctrl->G.active && Ctrl->T.active, "Syntax error: You must select only one of -G or -T.\n");
-	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->T.active), "Syntax error: You must select either -G or -T.\n");
-#endif
+	if (GMT_compat_check (GMT, 4)) {	/* GMT4 LEVEL: In old version we default to triplet output if -G was not set */
+		n_errors += GMT_check_condition (GMT, Ctrl->G.active && Ctrl->T.active, "Syntax error: You must select only one of -G or -T.\n");
+		n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->T.active), "Syntax error: You must select either -G or -T.\n");
+	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -836,9 +844,9 @@ int GMT_grdraster (void *V_API, int mode, void *args)
 		myras = rasinfo[j];
 	}
 
-#ifdef GMT_COMPAT	/* In old version we default to triplet output if -G was not set */
-	if (!Ctrl->G.active) Ctrl->T.active = true;
-#endif
+	if (GMT_compat_check (GMT, 4)) {	/* GMT4 LEVEL: In old version we default to triplet output if -G was not set */
+		if (!Ctrl->G.active) Ctrl->T.active = true;
+	}
 
 	if (error) Return (EXIT_FAILURE);
 

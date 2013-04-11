@@ -375,11 +375,20 @@ int GMT_verify_time_step (struct GMT_CTRL *GMT, int step, char unit) {
 	}
 
 	switch (unit) {
-#ifdef GMT_COMPAT
 		case 'c':
 		case 'C':
-			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Unit c for seconds is deprecated; use s.\n");
-#endif
+			if (GMT_compat_check (GMT, 4)) {
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Unit c for seconds is deprecated; use s.\n");
+				if (step > 60) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: time steps in seconds must be <= 60\n");
+					retval = -1;
+				}
+			}
+			else {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Unrecognized time axis unit.\n");
+				retval = -1;
+			}
+			break;
 		case 's':
 		case 'S':
 			if (step > 60) {
@@ -568,11 +577,17 @@ void GMT_moment_interval (struct GMT_CTRL *GMT, struct GMT_MOMENT_INTERVAL *p, d
 	}
 	
 	switch (p->unit) {
-#ifdef GMT_COMPAT
 		case 'c':
 		case 'C':
-			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Unit c for seconds is deprecated; use s.\n");
-#endif
+			if (GMT_compat_check (GMT, 4)) {
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Unit c for seconds is deprecated; use s.\n");
+				k = p->step;
+				gmt_small_moment_interval (GMT, p, k, init);
+			}
+			else {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_LOGIC_BUG:  Bad unit in GMT_init_moment_interval()\n");
+			}
+			break;
 		case 's':
 		case 'S':
 
@@ -958,17 +973,29 @@ void GMT_get_time_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CAL
 		case 'm':	/* 2-digit minutes */
 			(P->date.compact) ? sprintf (string, "%d", calendar.min) : sprintf (string, "%02d", calendar.min);
 			break;
-#ifdef GMT_COMPAT
 		case 'C':
-			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Unit C for seconds is deprecated; use S.\n");
-#endif
+			if (GMT_compat_check (GMT, 4)) {
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Unit C for seconds is deprecated; use S.\n");
+				GMT_format_calendar (GMT, NULL, string, &P->date, &P->clock, T->upper_case, T->flavor, t);
+			}
+			else {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: wrong unit passed to GMT_get_time_label\n");
+				sprintf (string, "NaN");
+			}
+			break;
 		case 'S':	/* Seconds via clock format */
 			GMT_format_calendar (GMT, NULL, string, &P->date, &P->clock, T->upper_case, T->flavor, t);
 			break;
-#ifdef GMT_COMPAT
 		case 'c':
-			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Unit c for seconds is deprecated; use s.\n");
-#endif
+			if (GMT_compat_check (GMT, 4)) {
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Unit c for seconds is deprecated; use s.\n");
+				(P->date.compact) ? sprintf (string, "%d", irint(calendar.sec)) : sprintf (string, "%02d", irint(calendar.sec));
+			}
+			else {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: wrong unit passed to GMT_get_time_label\n");
+				sprintf (string, "NaN");
+			}
+			break;
 		case 's':	/* 2-digit seconds */
 			(P->date.compact) ? sprintf (string, "%d", irint(calendar.sec)) : sprintf (string, "%02d", irint(calendar.sec));
 			break;

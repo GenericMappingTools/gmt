@@ -435,12 +435,14 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 					n_errors++;
 				}
 				break;
-#ifdef GMT_COMPAT
-			case 'L':	/* BCs */
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
-				strncpy (GMT->common.n.BC, opt->arg, 4U);
+			case 'L':	/* GMT4 BCs */
+				if (GMT_compat_check (GMT, 4)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
+					strncpy (GMT->common.n.BC, opt->arg, 4U);
+				}
+				else
+					n_errors += GMT_default_error (GMT, opt->option);
 				break;
-#endif
 			case 'N':	/* Facade */
 				if (opt->arg[0]) {
 					char colors[GMT_TEXT_LEN64];

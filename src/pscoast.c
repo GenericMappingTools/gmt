@@ -354,10 +354,13 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 				Ctrl->L.active = true;
 				n_errors += GMT_getscale (GMT, opt->arg, &Ctrl->L.item);
 				break;
-#ifdef GMT_COMPAT
 			case 'm':
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -m option is deprecated and reverted back to -M.\n");
-#endif
+				if (GMT_compat_check (GMT, 4))	/* Warn and fall through */
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -m option is deprecated and reverted back to -M.\n");
+				else {
+					n_errors += GMT_default_error (GMT, opt->option);
+					break;
+				}
 			case 'M':
 				Ctrl->M.active = true;
 				break;

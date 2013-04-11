@@ -31,9 +31,7 @@
 
 #define GMT_PROG_OPTIONS "-:RVbfhirs" GMT_OPT("FH")
 
-#ifdef GMT_COMPAT
 void GMT_str_tolower (char *string);
-#endif
 
 struct XYZ2GRD_CTRL {
 	struct In {
@@ -48,13 +46,11 @@ struct XYZ2GRD_CTRL {
 		bool active;
 		char *information;
 	} D;
-#ifdef GMT_COMPAT
 	struct E {	/* -E[<nodata>] */
 		bool active;
 		bool set;
 		double nodata;
 	} E;
-#endif
 	struct G {	/* -G<output_grdfile> */
 		bool active;
 		char *file;
@@ -181,15 +177,12 @@ int GMT_xyz2grd_parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct G
 			/* Processes program-specific parameters */
 
 			case 'A':
-#ifdef GMT_COMPAT
-				if (!opt->arg[0]) {	/* In GMT4, just -A implied -Az */
+				if (!opt->arg[0] && GMT_compat_check (GMT, 4)) {	/* In GMT4, just -A implied -Az */
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -A is deprecated; use -Az instead.\n");
 					Ctrl->A.active = true;
 					Ctrl->A.mode = 'z';
 				}
-				else
-#endif
-				if (!strchr ("flmnrsuz", opt->arg[0])) {
+				else if (!strchr ("flmnrsuz", opt->arg[0])) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A option: Select -Af, -Al, -Am, -An, -Ar, -As, -Au, or -Az\n");
 					n_errors++;
 				}
@@ -202,16 +195,18 @@ int GMT_xyz2grd_parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct G
 				Ctrl->D.active = true;
 				Ctrl->D.information = strdup (opt->arg);
 				break;
-#ifdef GMT_COMPAT
 			case 'E':
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -E is deprecated; use grdreformat instead.\n");
-				Ctrl->E.active = true;
-				if (opt->arg[0]) {
-					Ctrl->E.nodata = atof (opt->arg);
-					Ctrl->E.set = true;
+				if (GMT_compat_check (GMT, 4)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -E is deprecated; use grdreformat instead.\n");
+					Ctrl->E.active = true;
+					if (opt->arg[0]) {
+						Ctrl->E.nodata = atof (opt->arg);
+						Ctrl->E.set = true;
+					}
 				}
+				else
+					n_errors += GMT_default_error (GMT, opt->option);
 				break;
-#endif
 			case 'G':
 				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
@@ -276,11 +271,7 @@ int GMT_xyz2grd_parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct G
 		}
 	}
 
-#ifdef GMT_COMPAT
 	do_grid = !(Ctrl->S.active || Ctrl->E.active);
-#else
-	do_grid = !(Ctrl->S.active);
-#endif
 	if (do_grid) {
 		n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
 		n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
@@ -409,8 +400,8 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 
-#ifdef GMT_COMPAT	/* PW: This is now done in grdreformat since ESRI Arc Interchange is a recognized format */
-	if (Ctrl->E.active) {	/* Read an ESRI Arc Interchange grid format in ASCII.  This must be a single physical file. */
+	/* PW: This is now done in grdreformat since ESRI Arc Interchange is a recognized format */
+	if (Ctrl->E.active && GMT_compat_check (GMT, 4)) {	/* Read an ESRI Arc Interchange grid format in ASCII.  This must be a single physical file. */
 		uint64_t n_left;
 		double value;
 		char line[GMT_BUFSIZ];
@@ -496,7 +487,6 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 		}
 		Return (EXIT_SUCCESS);
 	}
-#endif
 
 	/* Here we will read either x,y,z or z data, using -R -I [-r] for sizeing */
 	

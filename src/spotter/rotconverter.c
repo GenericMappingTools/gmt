@@ -182,10 +182,14 @@ int GMT_rotconverter_parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl
 					continue;
 				}
 				switch (opt->arg[0]) {	/* Output format */
-#ifdef GMT_COMPAT
 					case 'f':
-						GMT_Report (API, GMT_MSG_COMPAT, "Warning: -Ff is deprecated; use -Ft instead.\n");
-#endif
+						if (GMT_compat_check (GMT, 4)) /* Warn and fall through */
+							GMT_Report (API, GMT_MSG_COMPAT, "Warning: -Ff is deprecated; use -Ft instead.\n");
+						else {
+							GMT_Report (API, GMT_MSG_NORMAL, "Error: Must specify t|s\n");
+							n_errors++;
+							break;
+						}
 					case 't':
 						Ctrl->F.mode = true;
 						break;

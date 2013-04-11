@@ -149,10 +149,7 @@ int GMT_grdvector_parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, stru
 	unsigned int n_errors = 0, n_files = 0;
 	int j;
 	size_t len;
-	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
-#ifdef GMT_COMPAT
-	char txt_c[GMT_TEXT_LEN256];
-#endif
+	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -173,12 +170,14 @@ int GMT_grdvector_parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, stru
 				Ctrl->C.active = true;
 				Ctrl->C.file = strdup (opt->arg);
 				break;
-#ifdef GMT_COMPAT
 			case 'E':	/* Center vectors [OBSOLETE; use modifier +jc in -Q ] */
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -E is deprecated; use modifier +jc in -Q instead.\n");
-				Ctrl->Q.S.v.status |= GMT_VEC_JUST_C;
+				if (GMT_compat_check (GMT, 4)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -E is deprecated; use modifier +jc in -Q instead.\n");
+					Ctrl->Q.S.v.status |= GMT_VEC_JUST_C;
+				}
+				else
+					n_errors += GMT_default_error (GMT, opt->option);
 				break;
-#endif
 			case 'G':	/* Set fill for vectors */
 				Ctrl->G.active = true;
 				if (GMT_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
@@ -198,8 +197,7 @@ int GMT_grdvector_parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, stru
 				break;
 			case 'Q':	/* Vector plots, with parameters */
 				Ctrl->Q.active = true;
-#ifdef GMT_COMPAT
-				if (strchr (opt->arg, '/') && !strchr (opt->arg, '+')) {	/* Old-style args */
+				if (GMT_compat_check (GMT, 4) && (strchr (opt->arg, '/') && !strchr (opt->arg, '+'))) {	/* Old-style args */
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Vector arrowwidth/headlength/headwidth is deprecated; see -Q documentation.\n");
 					for (j = 0; opt->arg[j] && opt->arg[j] != 'n'; j++);
 					if (opt->arg[j]) {	/* Normalize option used */
@@ -223,7 +221,6 @@ int GMT_grdvector_parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, stru
 					Ctrl->Q.S.v.status |= (GMT_VEC_JUST_B + GMT_VEC_FILL);	/* Start filled vector at node location */
 				}
 				else {
-#endif
 					if (opt->arg[0] == '+') {	/* No size (use default), just attributes */
 						Ctrl->Q.S.size_x = VECTOR_HEAD_LENGTH * GMT->session.u2u[GMT_PT][GMT_INCH];	/* 9p */
 						n_errors += GMT_parse_vector (GMT, opt->arg, &Ctrl->Q.S);
@@ -234,9 +231,7 @@ int GMT_grdvector_parse (struct GMT_CTRL *GMT, struct GRDVECTOR_CTRL *Ctrl, stru
 						Ctrl->Q.S.size_x = GMT_to_inch (GMT, txt_a);	/* Length of vector */
 						n_errors += GMT_parse_vector (GMT, txt_b, &Ctrl->Q.S);
 					}
-#ifdef GMT_COMPAT
 				}
-#endif
 				break;
 			case 'S':	/* Scale */
 				Ctrl->S.active = true;

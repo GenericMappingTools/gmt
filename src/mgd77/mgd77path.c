@@ -91,10 +91,15 @@ int GMT_mgd77path_parse (struct GMT_CTRL *GMT, struct MGD77PATH_CTRL *Ctrl, stru
 
 			/* Processes program-specific parameters */
 
-#ifdef GMT_COMPAT
 			case 'P':
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -P is deprecated; use -A instead.\n");
-#endif
+				if (GMT_compat_check (GMT, 4)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -P is deprecated; use -A instead mext time.\n");
+					Ctrl->A.active = true;
+				}
+				else {
+					n_errors += GMT_default_error (GMT, opt->option);
+					break;
+				}
 			case 'A':	/* Show list of paths to MGD77 files */
 				Ctrl->A.active = true;
 				if (opt->arg[0] == '-') Ctrl->A.mode = true;

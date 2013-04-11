@@ -11,7 +11,7 @@ INSTALL INFO:	The x2sys directory should install under GMT/src
 1.4 UPDATE [3-AUG-2010]
 
 Modularized as part of new GMT5-style design.
-Make any old mgg .gmt involvement subject to GMT_COMPAT compile mode
+Make any old mgg .gmt involvement subject to GMT_COMPATIBILTY setting
 
 1.3 UPDATE [24-JULY-2009]
 

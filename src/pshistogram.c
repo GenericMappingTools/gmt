@@ -29,9 +29,7 @@
 
 #define GMT_PROG_OPTIONS "->BJKOPRUVXYbcfhipsxy" GMT_OPT("E")
 
-#ifdef GMT_COMPAT
-int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg);
-#endif
+EXTERN_MSC int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg);
 
 struct PSHISTOGRAM_CTRL {
 	struct Out {	/* -> */
@@ -462,12 +460,14 @@ int GMT_pshistogram_parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, 
 			case 'S':
 				Ctrl->S.active = true;
 				break;
-#ifdef GMT_COMPAT
 			case 'T':
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: The -T option is deprecated; use -i instead.\n");
-				n_errors += gmt_parse_i_option (GMT, opt->arg);
+				if (GMT_compat_check (GMT, 4)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: The -T option is deprecated; use -i instead.\n");
+					n_errors += gmt_parse_i_option (GMT, opt->arg);
+				}
+				else
+					n_errors += GMT_default_error (GMT, opt->option);
 				break;
-#endif
 			case 'W':
 				Ctrl->W.active = true;
 				Ctrl->W.inc = atof (opt->arg);

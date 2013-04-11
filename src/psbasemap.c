@@ -104,16 +104,18 @@ int GMT_psbasemap_parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, stru
 
 			/* Processes program-specific parameters */
 
-#ifdef GMT_COMPAT
 			case 'G':	/* Set canvas color */
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -G is deprecated; -B...+g%s was set instead, use this in the future.\n", opt->arg);
-				GMT->current.map.frame.paint = true;
-				if (GMT_getfill (GMT, opt->arg, &GMT->current.map.frame.fill)) {
-					GMT_fill_syntax (GMT, 'G', " ");
-					n_errors++;
+				if (GMT_compat_check (GMT, 4)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -G is deprecated; -B...+g%s was set instead, use this in the future.\n", opt->arg);
+					GMT->current.map.frame.paint = true;
+					if (GMT_getfill (GMT, opt->arg, &GMT->current.map.frame.fill)) {
+						GMT_fill_syntax (GMT, 'G', " ");
+						n_errors++;
+					}
 				}
+				else
+					n_errors += GMT_default_error (GMT, opt->option);
 				break;
-#endif
 			case 'L':	/* Draw map scale */
 				Ctrl->L.active = true;
 				n_errors += GMT_getscale (GMT, opt->arg, &Ctrl->L.item);

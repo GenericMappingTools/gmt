@@ -166,20 +166,19 @@ int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct G
 	unsigned int n_errors = 0;
 
 	int n, override_mode = GMT_FFT_REMOVE_MEAN;
-	struct GMT_OPTION *opt = NULL;
+	struct GMT_OPTION *opt = NULL,  *popt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
-	char   ptr[GMT_BUFSIZ], t_or_b[4];
-#ifdef GMT_COMPAT
-	struct GMT_OPTION *popt = NULL;
-	char *mod = NULL, argument[GMT_TEXT_LEN16], combined[GMT_BUFSIZ];
-	if ((popt = GMT_Find_Option (API, 'L', options))) {	/* Gave old -L */
-		mod = popt->arg; /* Gave old -L option */
-		GMT_memset (argument, GMT_TEXT_LEN16, char);
-		if (mod[0] == '\0') strcat (argument, "+l");		/* Leave trend alone -L */
-		else if (mod[0] == 'm') strcat (argument, "+a");	/* Remove mean -Lm */
-		else if (mod[0] == 'h') strcat (argument, "+h");	/* Remove mid-value -Lh */
+	char   ptr[GMT_BUFSIZ], t_or_b[4], argument[GMT_TEXT_LEN16], combined[GMT_BUFSIZ];
+	if (GMT_compat_check (GMT, 4)) {
+		char *mod = NULL;
+		if ((popt = GMT_Find_Option (API, 'L', options))) {	/* Gave old -L */
+			mod = popt->arg; /* Gave old -L option */
+			GMT_memset (argument, GMT_TEXT_LEN16, char);
+			if (mod[0] == '\0') strcat (argument, "+l");		/* Leave trend alone -L */
+			else if (mod[0] == 'm') strcat (argument, "+a");	/* Remove mean -Lm */
+			else if (mod[0] == 'h') strcat (argument, "+h");	/* Remove mid-value -Lh */
+		}
 	}
-#endif
 
 	for (opt = options; opt; opt = opt->next) {		/* Process all the options given */
 		switch (opt->option) {
@@ -274,20 +273,20 @@ int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct G
 					}
 				}
 				break;
-#ifdef GMT_COMPAT
 			case 'L':	/* Leave trend alone */
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; use -N modifiers in the future.\n");
+				if (GMT_compat_check (GMT, 4))
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; use -N modifiers in the future.\n");
+				else
+					n_errors += GMT_default_error (GMT, opt->option);
 				break;
-#endif
 			case 'N':
 				Ctrl->N.active = true;
-#ifdef GMT_COMPAT
-				if (popt) {	/* Got both old -L and -N; append */
+				if (popt && GMT_compat_check (GMT, 4)) {	/* Got both old -L and -N; append */
 					sprintf (combined, "%s%s", opt->arg, argument);
 					Ctrl->N.info = GMT_FFT_Parse (API, 'N', GMT_FFT_DIM, combined);
-				} else
-#endif
-				Ctrl->N.info = GMT_FFT_Parse (API, 'N', GMT_FFT_DIM, opt->arg);
+				}
+				else
+					Ctrl->N.info = GMT_FFT_Parse (API, 'N', GMT_FFT_DIM, opt->arg);
 				if (Ctrl->N.info == NULL) n_errors++;
 				Ctrl->N.active = true;
 				break;
@@ -321,11 +320,9 @@ int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct G
 				break;
 		}
 	}
-#ifdef GMT_COMPAT
-	if (!Ctrl->N.active && popt) {	/* User set -L but no -N so nothing got appended above... Sigh...*/
+	if (GMT_compat_check (GMT, 4) && !Ctrl->N.active && popt) {	/* User set -L but no -N so nothing got appended above... Sigh...*/
 		Ctrl->N.info = GMT_FFT_Parse (API, 'N', GMT_FFT_DIM, argument);
 	}
-#endif
 
 	if (override_mode >= 0) {		/* FAKE TEST AS IT WAS SET ABOVE override_mode = GMT_FFT_REMOVE_MEAN */
 		if (Ctrl->N.info == NULL) {	/* User neither gave -L nor -N... Sigh...*/

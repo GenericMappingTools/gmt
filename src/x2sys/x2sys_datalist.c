@@ -339,10 +339,14 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args)
 			vel_scale *= (3600.0 / dist_scale);		/* Must counteract any distance scaling to get km. dt is in sec so 3600 gives km/hr */
 			strcpy (auxlist[MGD77_AUX_SP].header, "v(km/hr)");
 			break;
-#ifdef GMT_COMPAT
 		case 'm':
-			GMT_Report (API, GMT_MSG_COMPAT, "Warning: Unit m for miles is deprecated; use unit M instead\n");
-#endif
+			if (GMT_compat_check (GMT, 4)) /* Warn and fall through */
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Unit m for miles is deprecated; use unit M instead\n");
+			else {
+				GMT_Report (API, GMT_MSG_NORMAL, "Error: Unit m for miles is not recognized\n");
+				exit (EXIT_FAILURE);
+				break;
+			}
 		case 'M':
 			vel_scale *= (3600.0 / dist_scale);		/* Must counteract any distance scaling to get miles. dt is in sec so 3600 gives miles/hr */
 			strcpy (auxlist[MGD77_AUX_SP].header, "v(mi/hr)");
@@ -369,10 +373,14 @@ int GMT_x2sys_datalist (void *V_API, int mode, void *args)
 		case 'k':
 			strcpy (auxlist[MGD77_AUX_DS].header, "d(km)");
 			break;
-#ifdef GMT_COMPAT
 		case 'm':
-			GMT_Report (API, GMT_MSG_COMPAT, "Warning: Unit m for miles is deprecated; use unit M instead\n");
-#endif
+			if (GMT_compat_check (GMT, 4)) /* Warn and fall through */
+				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Unit m for miles is deprecated; use unit M instead\n");
+			else {
+				GMT_Report (API, GMT_MSG_NORMAL, "Error: Unit m for miles is not recognized\n");
+				exit (EXIT_FAILURE);
+				break;
+			}
 		case 'M':
 			strcpy (auxlist[MGD77_AUX_DS].header, "d(miles)");
 			break;

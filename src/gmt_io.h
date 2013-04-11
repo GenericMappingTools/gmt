@@ -31,12 +31,8 @@
 #ifndef _GMT_IO_H
 #define _GMT_IO_H
 
-#ifdef GMT_COMPAT
 /* Must add M, m, E, Z, and/or S to the common option processing list */
 #define GMT_OPT(opt) opt
-#else
-#define GMT_OPT(opt) ""
-#endif
 
 enum GMT_enum_fmt {
 	GMT_COLUMN_FORMAT	= 1,	/* 2-D grid is Fortran-style with columns */

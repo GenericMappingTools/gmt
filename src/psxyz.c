@@ -703,15 +703,13 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 					break;
 				case GMT_SYMBOL_VECTOR:
 					GMT_init_vector_param (GMT, &S, false, false, NULL, false, NULL);	/* Update vector head parameters */
-#ifdef GMT_COMPAT
-					if (S.v.parsed_v4) {	/* Got v_width directly from V4 syntax so no messing with it here if under compatibility */
+					if (S.v.parsed_v4 && GMT_compat_check (GMT, 4)) {	/* Got v_width directly from V4 syntax so no messing with it here if under compatibility */
 						/* But have to improvise as far as outline|fill goes... */
 						if (outline_active) S.v.status |= PSL_VEC_OUTLINE;	/* Choosing to draw head outline */
 						if (fill_active) S.v.status |= PSL_VEC_FILL;		/* Choosing to fill head */
 						if (!(S.v.status & PSL_VEC_OUTLINE) && !(S.v.status & PSL_VEC_FILL)) S.v.status |= PSL_VEC_OUTLINE;	/* Gotta do something */
 					}
 					else
-#endif
 						S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 					if (!S.convert_angles)	/* Use direction as given */
 						data[n].dim[0] = in[ex1+S.read_size];	/* direction */

@@ -217,9 +217,7 @@ int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, stru
 	char ptr[GMT_BUFSIZ], buffer[GMT_BUFSIZ], za[GMT_TEXT_LEN64], zb[GMT_TEXT_LEN64];
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
-#ifdef GMT_COMPAT
 	bool fix = false;
-#endif
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -235,13 +233,11 @@ int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, stru
 				break;
 			case 'C':	/* Near a point test */
 				Ctrl->C.active = true;
-#ifdef GMT_COMPAT
-				if (opt->arg[0] == 'f') {
+				if (opt->arg[0] == 'f' && GMT_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -Cf is deprecated; use -C- instead\n");
 					opt->arg[0] = '-';
 					fix = true;
 				}
-#endif
 				for (j = 0; opt->arg[j] && opt->arg[j] != '/'; j++);
 				if (opt->arg[j]) {
 					Ctrl->C.file = strdup (&opt->arg[j+1]);
@@ -253,9 +249,7 @@ int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, stru
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Expects -C%s/<file>\n", GMT_DIST_OPT);
 					n_errors++;
 				}
-#ifdef GMT_COMPAT
 				if (fix) opt->arg[0] = 'f';
-#endif
 				break;
 			case 'D':	/* Set GSHHS resolution */
 				Ctrl->D.active = true;
@@ -336,14 +330,12 @@ int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, stru
 			case 'N':	/* Inside/outside GSHHS land */
 				Ctrl->N.active = true;
 				strncpy (buffer, opt->arg, GMT_BUFSIZ);
-#ifdef GMT_COMPAT
-				if (buffer[strlen(buffer)-1] == 'o') { /* Edge is considered outside */
+				if (buffer[strlen(buffer)-1] == 'o' && GMT_compat_check (GMT, 4)) { /* Edge is considered outside */
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -N...o is deprecated; use -E instead\n");
 					Ctrl->E.active = true;
 					Ctrl->E.inside[N_ITEM] = GMT_INSIDE;
 					buffer[strlen(buffer)-1] = 0;
 				}
-#endif
 				j = pos = 0;
 				while (j < GMTSELECT_N_CLASSES && (GMT_strtok (buffer, "/", &pos, ptr))) {
 					switch (ptr[0]) {

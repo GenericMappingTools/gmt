@@ -520,14 +520,12 @@ int GMT_pscontour_parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, stru
 				Ctrl->S.active = true;
 				break;
 			case 'T':	/* Embellish innermost closed contours */
-#ifdef GMT_COMPAT
-				if (!GMT_access (GMT, opt->arg, F_OK)) {	/* Must be the old -T<indexfile> option, set to -Q */
+				if (!GMT_access (GMT, opt->arg, F_OK) && GMT_compat_check (GMT, 4)) {	/* Must be the old -T<indexfile> option, set to -Q */
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -T is deprecated; use -Q instead.\n");
 					Ctrl->Q.file = strdup (opt->arg);
 					Ctrl->Q.active = true;
 					break;
 				}
-#endif
 				Ctrl->T.active = Ctrl->T.high = Ctrl->T.low = true;	/* Default if just -T is given */
 				if (opt->arg[0]) {	/* But here we gave more options */
 					if (opt->arg[0] == '+')			/* Only tick local highs */

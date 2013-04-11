@@ -644,7 +644,7 @@ bool crossed_dateline (double this_x, double last_x)
 
 int GMT_gmt2kml (void *V_API, int mode, void *args)
 {
-	bool first = true, get_z = false, use_folder = false, do_description, no_dateline = false;
+	bool first = true, get_z = false, use_folder = false, do_description, no_dateline = false, act;
 	unsigned int n_coord = 0, t1_col, t2_col, pnt_nr = 0, tbl, col, pos, ix, iy;
 	
 	uint64_t row, seg;
@@ -844,11 +844,11 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 					printf ("<name>%s</name>\n", T->segment[seg]->label);
 				else
 					printf ("<name>%s Set %d</name>\n", name[Ctrl->F.mode], set_nr);
-#ifdef GMT_COMPAT
-				if (GMT_parse_segment_item (GMT, T->segment[seg]->header, "-D", description) || GMT_parse_segment_item (GMT, T->segment[seg]->header, "-T", description)) {
-#else
-				if (GMT_parse_segment_item (GMT, T->segment[seg]->header, "-T", description)) {
-#endif
+				if (GMT_compat_check (GMT, 4))	/* GMT4 LEVEL: Accept either -D or -T */
+					act = (GMT_parse_segment_item (GMT, T->segment[seg]->header, "-D", buffer) || GMT_parse_segment_item (GMT, T->segment[seg]->header, "-T", buffer));
+				else
+					act = (GMT_parse_segment_item (GMT, T->segment[seg]->header, "-T", buffer));
+				if (act) {
 					tabs (N); printf ("<description>%s</description>\n", description);
 				}
 			}
@@ -872,11 +872,11 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 					do_description = true;
 					strcat (description, buffer);
 				}
-#ifdef GMT_COMPAT
-				if (GMT_parse_segment_item (GMT, T->segment[seg]->header, "-D", buffer) || GMT_parse_segment_item (GMT, T->segment[seg]->header, "-T", buffer)) {
-#else
-				if (GMT_parse_segment_item (GMT, T->segment[seg]->header, "-T", buffer)) {
-#endif
+				if (GMT_compat_check (GMT, 4))	/* GMT4 LEVEL: Accept either -D or -T */
+					act = (GMT_parse_segment_item (GMT, T->segment[seg]->header, "-D", buffer) || GMT_parse_segment_item (GMT, T->segment[seg]->header, "-T", buffer));
+				else
+					act = (GMT_parse_segment_item (GMT, T->segment[seg]->header, "-T", buffer));
+				if (act) {
 					if (do_description) strcat (description, " ");
 					strcat (description, buffer);
 					do_description = true;

@@ -243,8 +243,7 @@ int GMT_psrose_parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT
 				break;
 			case 'M':	/* Get arrow parameters */
 				Ctrl->M.active = true;
-#ifdef GMT_COMPAT
-				if (strchr (opt->arg, '/') && !strchr (opt->arg, '+')) {	/* Old-style args */
+				if (GMT_compat_check (GMT, 4) && (strchr (opt->arg, '/') && !strchr (opt->arg, '+'))) {	/* Old-style args */
 					n = sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
 					if (n != 4 || GMT_getrgb (GMT, txt_d, Ctrl->M.S.v.fill.rgb)) {
 						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -M option: Expected\n\t-M<tailwidth/headlength/headwidth/<color>>\n");
@@ -260,7 +259,6 @@ int GMT_psrose_parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT
 					}
 				}
 				else {
-#endif
 					if (opt->arg[0] == '+') {	/* No size (use default), just attributes */
 						n_errors += GMT_parse_vector (GMT, opt->arg, &Ctrl->M.S);
 					}
@@ -271,9 +269,7 @@ int GMT_psrose_parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT
 						n_errors += GMT_parse_vector (GMT, txt_b, &Ctrl->M.S);
 					}
 					Ctrl->M.S.v.status |= GMT_VEC_OUTLINE;
-#ifdef GMT_COMPAT
 				}
-#endif
 				break;
 			case 'N':	/* Make sectors area be proportional to frequency instead of radius */
 				Ctrl->N.active = true;

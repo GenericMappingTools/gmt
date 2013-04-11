@@ -87,12 +87,11 @@ struct GRDFFT_CTRL {
 		bool active;
 		double scale;
 	} S;
-#ifdef GMT_COMPAT	/* Now in gravfft in potential supplement; left for backwards compatibility */
+	/* Now in gravfft in potential supplement; left for backwards compatibility */
 	struct T {	/* -T<te/rl/rm/rw/ri> */
 		bool active;
 		double te, rhol, rhom, rhow, rhoi;
 	} T;
-#endif
 };
 
 enum Grdfft_operators {
@@ -218,7 +217,6 @@ unsigned int do_azimuthal_derivative (struct GMT_GRID *Grid, double *azim, struc
 	return (1);	/* Number of parameters used */
 }
 
-#ifdef GMT_COMPAT
 /* Now obsolete but left for backwards compatibility.  Users are encouraged to use gravfft */
 #define	POISSONS_RATIO	0.25
 #define	YOUNGS_MODULUS	1.0e11		/* Pascal = Nt/m**2  */
@@ -263,7 +261,6 @@ unsigned int do_isostasy (struct GMT_GRID *Grid, struct GRDFFT_CTRL *Ctrl, doubl
 	}
 	return (5);	/* Number of parameters used */
 }
-#endif
 
 #ifndef M_LN2
 #define M_LN2			0.69314718055994530942  /* log_e 2 */
@@ -647,19 +644,20 @@ int GMT_grdfft_parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_I
 	unsigned int j, k, n_errors = 0, filter_type = 0;
 	int n_scan;
 	double par[5];
-	struct GMT_OPTION *opt = NULL;
+	char combined[GMT_BUFSIZ], argument[GMT_TEXT_LEN16];
+	struct GMT_OPTION *opt = NULL, *ptr = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
-#ifdef GMT_COMPAT
-	struct GMT_OPTION *ptr = NULL;
-	char *mod = NULL, argument[GMT_TEXT_LEN16], combined[GMT_BUFSIZ];
-	if ((ptr = GMT_Find_Option (API, 'L', options))) {	/* Gave old -L */
-		mod = ptr->arg; /* Gave old -L option */
-		GMT_memset (argument, GMT_TEXT_LEN16, char);
-		if (mod[0] == '\0') strcat (argument, "+l");		/* Leave trend alone -L */
-		else if (mod[0] == 'm') strcat (argument, "+a");	/* Remove mean -Lm */
-		else if (mod[0] == 'h') strcat (argument, "+h");	/* Remove mid-value -Lh */
+
+	if (GMT_compat_check (GMT, 4)) {
+		char *mod = NULL;
+		if ((ptr = GMT_Find_Option (API, 'L', options))) {	/* Gave old -L */
+			mod = ptr->arg; /* Gave old -L option */
+			GMT_memset (argument, GMT_TEXT_LEN16, char);
+			if (mod[0] == '\0') strcat (argument, "+l");		/* Leave trend alone -L */
+			else if (mod[0] == 'm') strcat (argument, "+a");	/* Remove mean -Lm */
+			else if (mod[0] == 'h') strcat (argument, "+h");	/* Remove mid-value -Lh */
+		}
 	}
-#endif
 
 	GMT_memset (f_info, 1, struct F_INFO);
 	for (j = 0; j < 3; j++) {
@@ -737,43 +735,47 @@ int GMT_grdfft_parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_I
 				n_errors += GMT_check_condition (GMT, par[0] == 0.0, "Syntax error -I option: scale must be nonzero\n");
 				add_operation (GMT, Ctrl, GRDFFT_INTEGRATE, 1, par);
 				break;
-#ifdef GMT_COMPAT
 			case 'L':	/* Leave trend alone */
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; use -N modifiers in the future.\n");
-#endif
+				if (GMT_compat_check (GMT, 4))
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; use -N modifiers in the future.\n");
+				else
+					n_errors += GMT_default_error (GMT, opt->option);
 				break;
-#ifdef GMT_COMPAT
 			case 'M':	/* Geographic data */
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
-				if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
+				if (GMT_compat_check (GMT, 4)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
+					if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
+				}
+				else
+					n_errors += GMT_default_error (GMT, opt->option);
 				break;
-#endif
 			case 'N':	/* Grid dimension setting or inquiery */
 				Ctrl->N.active = true;
-#ifdef GMT_COMPAT
-				if (ptr) {	/* Got both old -L and -N; append */
+				if (ptr && GMT_compat_check (GMT, 4)) {	/* Got both old -L and -N; append */
 					sprintf (combined, "%s%s", opt->arg, argument);
 					Ctrl->N.info = GMT_FFT_Parse (API, 'N', GMT_FFT_DIM, combined);
-				} else
-#endif
-				Ctrl->N.info = GMT_FFT_Parse (API, 'N', GMT_FFT_DIM, opt->arg);
+				}
+				else
+					Ctrl->N.info = GMT_FFT_Parse (API, 'N', GMT_FFT_DIM, opt->arg);
 				if (Ctrl->N.info == NULL) n_errors++;
 				break;
 			case 'S':	/* Scale */
 				Ctrl->S.active = true;
 				Ctrl->S.scale = (opt->arg[0] == 'd' || opt->arg[0] == 'D') ? 1.0e6 : atof (opt->arg);
 				break;
-#ifdef GMT_COMPAT
 			case 'T':	/* Flexural isostasy */
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -T is deprecated; see gravfft for isostasy and gravity calculations.\n");
-				Ctrl->T.active = true;
-				n_scan = sscanf (opt->arg, "%lf/%lf/%lf/%lf/%lf", &par[0], &par[1], &par[2], &par[3], &par[4]);
-				for (j = 1, k = 0; j < 5; j++) if (par[j] < 0.0) k++;
-				n_errors += GMT_check_condition (GMT, n_scan != 5 || k > 0, 
-					"Syntax error -T option: Correct syntax:\n\t-T<te>/<rhol>/<rhom>/<rhow>/<rhoi>, all densities >= 0\n");
-				add_operation (GMT, Ctrl, GRDFFT_ISOSTASY, 5, par);
+				if (GMT_compat_check (GMT, 4)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -T is deprecated; see gravfft for isostasy and gravity calculations.\n");
+					Ctrl->T.active = true;
+					n_scan = sscanf (opt->arg, "%lf/%lf/%lf/%lf/%lf", &par[0], &par[1], &par[2], &par[3], &par[4]);
+					for (j = 1, k = 0; j < 5; j++) if (par[j] < 0.0) k++;
+					n_errors += GMT_check_condition (GMT, n_scan != 5 || k > 0, 
+						"Syntax error -T option: Correct syntax:\n\t-T<te>/<rhol>/<rhom>/<rhow>/<rhoi>, all densities >= 0\n");
+					add_operation (GMT, Ctrl, GRDFFT_ISOSTASY, 5, par);
+				}
+				else
+					n_errors += GMT_default_error (GMT, opt->option);
 				break;
-#endif
 #ifdef DEBUG
 			case '=':	/* Do nothing */
 				add_operation (GMT, Ctrl, GRDFFT_NOTHING, 1, par);
@@ -785,18 +787,14 @@ int GMT_grdfft_parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_I
 				break;
 		}
 	}
-#ifdef GMT_COMPAT
-	if (!Ctrl->N.active && ptr) {	/* User set -L but no -N so nothing got appended above... Sigh...*/
+	if (GMT_compat_check (GMT, 4) && !Ctrl->N.active && ptr) {	/* User set -L but no -N so nothing got appended above... Sigh...*/
 		Ctrl->N.info = GMT_FFT_Parse (API, 'N', GMT_FFT_DIM, argument);
 	}
-#endif
 	if (Ctrl->N.active && Ctrl->N.info->info_mode == GMT_FFT_LIST) {
 		return (GMT_PARSE_ERROR);	/* So that we exit the program */
 	}
 
-#ifdef GMT_COMPAT
-	if (Ctrl->T.active) Ctrl->N.info->trend_mode = GMT_FFT_LEAVE_TREND;
-#endif
+	if (GMT_compat_check (GMT, 4) && Ctrl->T.active) Ctrl->N.info->trend_mode = GMT_FFT_LEAVE_TREND;
 
 	n_errors += GMT_check_condition (GMT, !(Ctrl->n_op_count), "Syntax error: Must specify at least one operation\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->S.scale == 0.0, "Syntax error -S option: scale must be nonzero\n");
@@ -911,12 +909,10 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "integrate...\n");
 				par_count += do_integrate (Grid[0], &Ctrl->par[par_count], K);
 				break;
-#ifdef GMT_COMPAT
 			case GRDFFT_ISOSTASY:
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "isostasy...\n");
 				par_count += do_isostasy (Grid[0], Ctrl, &Ctrl->par[par_count], K);
 				break;
-#endif
 			case GRDFFT_FILTER_COS:
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "cosine filter...\n");
 				do_filter (Grid[0], &f_info, K);
