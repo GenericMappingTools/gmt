@@ -2618,7 +2618,7 @@ struct GMT_PALETTE * GMT_Get_CPT (struct GMT_CTRL *GMT, char *file, enum GMT_enu
 	else {	/* Create a roughly equidistant, continuous 16-level CPT on the fly */
 		char out_string[GMTAPI_STRLEN], buffer[GMT_BUFSIZ], *master = NULL;
 		int object_ID;
-		double noize;
+		double noise;
 
 		if (GMT_is_dnan (zmin) || GMT_is_dnan (zmax)) {	/* Safety valve 1 */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Passing zmax or zmin == NaN prevents automatic CPT generation!\n");
