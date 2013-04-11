@@ -17,6 +17,8 @@ grdpmodeler - Evaluate a plate model on a geographic grid
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -25,8 +27,6 @@ and evaluates one of several model predictions. Optionally, the user may
 supply a clipping polygon in multiple-segment format; then, only the
 part of the grid inside the polygon is used to determine the model
 prediction; the remainder of the grid is set to NaN.
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

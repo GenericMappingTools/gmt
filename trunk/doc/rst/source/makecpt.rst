@@ -16,6 +16,8 @@ makecpt - Make GMT color palette tables
 **-T**\ *z\_min*/*z\_max*\ [/*z\_inc*\ [+]] \| **-T**\ *ztable* ] [
 **-V**\ [*level*\ ] ] [ **-W** ] [ **-Z** ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -42,8 +44,6 @@ will be the same as specified in the header of the master cpt file. When
 there is no **COLOR\_MODEL** entry in the master cpt file, the
 **COLOR\_MODEL** specified in the `gmt.conf <gmt.conf.html>`_ file or on the command
 line will be used. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

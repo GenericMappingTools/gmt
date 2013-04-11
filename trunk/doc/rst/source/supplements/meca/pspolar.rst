@@ -26,6 +26,8 @@ pspolar [ *table* ] **-J**\ *parameters*
 ] [ **-c**\ *copies* ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,...] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -45,8 +47,6 @@ Parameters are expected to be in the following columns:
         - rarefaction can be d,D,r,R,-
 
         - not defined is anything else
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

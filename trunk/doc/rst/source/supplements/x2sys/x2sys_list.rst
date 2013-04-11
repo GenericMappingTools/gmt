@@ -16,14 +16,14 @@ x2sys\_list - Extract subset from crossover data base
 ] [ **-S**\ *track* ] [ **-V**\ [*level*\ ] ] [ **-W**\ [*list*\ ] ] [
 **-bo**\ [*ncols*\ ][*type*\ ] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
 **x2sys\_list** will read the crossover ASCII data base *coedbase.txt*
 (or *stdin*) and extract a subset of the crossovers based on the other
 arguments. The output may be ASCII or binary.
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

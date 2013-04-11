@@ -25,6 +25,8 @@ grdtrack - Sample grids at specified (x,y) locations
 ] [ **-o**\ *cols*\ [,*...*] ] [ **-s**\ [*cols*\ ][\ **a**\ \|\ **r**]
 ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -41,8 +43,6 @@ B-spline or nearest-neighbor (see **-n**) interpolation is used,
 requiring boundary conditions at the limits of the region (see **-n**;
 Default uses "natural" conditions (second partial derivative normal to
 edge is zero) unless the grid is automatically recognized as periodic.)
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

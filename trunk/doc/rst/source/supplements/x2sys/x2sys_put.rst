@@ -12,6 +12,8 @@ x2sys\_put - Update track index database from track bin file
 **x2sys\_put** [ *info.tbf* ] **-T**\ *TAG* [ **-D** ] [ **-F** ] [
 **-V**\ [*level*\ ] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -22,8 +24,6 @@ new information for older tracks (**-F**) and even completely remove
 information for certain tracks (**-D**). The x2sys *TAG* must match the
 tag encoded in the *info.tbf* file. To inquire about tracks in the data
 base, use **x2sys\_get**.
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

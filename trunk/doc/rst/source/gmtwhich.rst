@@ -11,6 +11,8 @@ gmtwhich - Find full path to specified files
 
 **gmtwhich** *files* [ **-C** ] [ **-D** ] [ **-V**\ [*level*\ ] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -23,8 +25,6 @@ $GMT\_DATADIR environment variables can be colon-separated list of
 directories, and we search recursively down any directory that ends with
 / (i.e., /export/data is a single directory whereas /export/data/ will
 be searched recursively.) 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

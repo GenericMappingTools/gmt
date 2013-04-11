@@ -30,6 +30,8 @@ psmeca [ *table* ] **-J**\ *parameters*
 ] [ **-o** ] [ **-p**\ [*pen*\ ] ] [ **-t**\ [*pen*\ ] ] [
 **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -37,8 +39,6 @@ psmeca [ *table* ] **-J**\ *parameters*
 generates *PostScript* code that will plot focal mechanisms on a map.
 Most options are the same as for **psxy**. The *PostScript* code is
 written to standard output.
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

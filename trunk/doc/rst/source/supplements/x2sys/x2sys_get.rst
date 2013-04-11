@@ -14,6 +14,8 @@ x2sys\_get - Get track listing from the x2sys track index databases
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-V**\ [*level*\ ]
 ] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -22,8 +24,6 @@ x2sys data base for this TAG that match the given requirements. You may
 choose a specific region and optionally ask only for tracks that meet
 certain data criteria. Finally, you may select an option to list all
 possible pairs that might generate crossovers.
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

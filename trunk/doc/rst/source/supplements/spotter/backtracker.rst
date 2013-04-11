@@ -20,6 +20,8 @@ backtracker - Generate forward and backward flowlines and hotspot tracks
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-o**\ *cols*\ [,*...*] ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -31,8 +33,6 @@ track) between the initial and final positions. The former mode allows
 additional data fields after the first 3 columns which must have
 (longitude,latitude,age). See option **-:** on how to read
 (latitude,longitude,age) files.
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

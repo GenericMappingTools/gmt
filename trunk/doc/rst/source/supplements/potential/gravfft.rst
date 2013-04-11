@@ -17,6 +17,8 @@ Synopsis
 [ **-Q** ] [ **-T**\ <te/rl/rm/rw>[+m] ] [ **-V**\ [*level*] ] [ **-Z**\ <zm>[/<zl>] ]
 [ **-fg** ]
 
+|No-spaces|
+
 Description
 -----------
 
@@ -38,8 +40,6 @@ this to meters using `grdedit <grdedit.html>`_ or scale the output with `grdmath
 Given the number of choices this program offers, is difficult to state
 what are options and what are required arguments. It depends on what you
 are doing.
-
-.. include:: ../../explain_commonitems.rst_
 
 Required Arguments
 ------------------

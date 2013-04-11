@@ -17,6 +17,8 @@ coordinates
 **-Zk**\ \|\ **v** ] [ **-bo**\ [*ncols*\ ][*type*\ ] ] [
 **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [ > output.d ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -26,8 +28,6 @@ projection. The program is interactive and will take you through the
 setup procedure and how you will digitize points. The program will
 determine the actual map scale as well as rotation of the paper that is
 taped to the digitizer table. By default the output will go to stdout.
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

@@ -16,6 +16,8 @@ grdinfo - Extract information from grids
 **-T**\ [**s**]\ *dz* ] [ **-V**\ [*level*\ ] ] [
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -26,10 +28,7 @@ and *z*, where the min/max of *z* occur, the *x*- and *y*-increments,
 and the number of *x* and *y* nodes, and [optionally] the mean, standard
 deviation, and/or the median, L1 scale of *z*, and number of nodes set
 to NaN. We also report if the grid is pixel- or gridline-registered and
-if it is a Cartesian or Geographic data set (based on metadata in the
-file). 
-
-.. include:: explain_commonitems.rst_
+if it is a Cartesian or Geographic data set (based on metadata in the file). 
 
 `Required Arguments <#toc4>`_
 -----------------------------

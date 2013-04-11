@@ -26,6 +26,8 @@ Synopsis
 [ |SYN_OPT-p| ]
 [ **-tr** ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -59,9 +61,6 @@ The **-R** option can be used to select a map region larger or smaller
 than that implied by the extent of the grid.
 
 A (color) *PostScript* file is output. 
-
-.. include:: explain_commonitems.rst_
-
 
 `Required Arguments <#toc4>`_
 -----------------------------

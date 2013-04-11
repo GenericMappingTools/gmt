@@ -12,6 +12,8 @@ grdpaste - Join two grids along their common edge
 **grdpaste** *file\_a.nc file\_b.nc* **-G**\ *outfile.nc* [
 **-V**\ [*level*\ ] ] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -21,8 +23,6 @@ grdpaste - Join two grids along their common edge
 edge in common. If in doubt, check with **grdinfo** and use **grdcut**
 and/or **grdsample** if necessary to prepare the edge joint. For
 geographical grids, use **-f** to handle periodic longitudes. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

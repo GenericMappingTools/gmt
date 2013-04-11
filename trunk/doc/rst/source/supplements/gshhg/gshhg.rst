@@ -14,6 +14,8 @@ gshhg - Extract data tables from binary GSHHG or WDBII data files
 **-bo**\ [*ncols*\ ][*type*\ ] ] [ **-o**\ *cols*\ [,*...*] ] >
 *asciifile.txt*
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -34,8 +36,6 @@ reduced to yield this polygon (-1 if full resolution since there is no
 ancestor). For line data the header is simply *ID npoints
 hierarchical-level source west east south north*. For more information
 about the file formats, see TECHNICAL INFORMATION below.
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

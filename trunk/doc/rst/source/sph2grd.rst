@@ -16,13 +16,13 @@ Synopsis
 [ **-bi**\ [*ncols*][*type*] ] [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ] [ **-r** ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
 **sph2grd** reads a spherical harmonics coefficient table with records of
 L, M, C[L,M], S[L,M] and evaluates the spherical harmonic model on the specified grid. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

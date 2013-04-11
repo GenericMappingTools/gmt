@@ -25,6 +25,8 @@ psbasemap - Plot *PostScript* base maps
 **-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
 ] [ **-t**\ [*transp*\ ] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -37,8 +39,6 @@ At least one of the options **-B**,
 ], or
 **-T**\ [**f**\ \|\ **m**][**x**\ ]\ *lon0*/*lat0*/*size*\ [/*info*][\ **:**\ *w*,\ *e*,\ *s*,\ *n*\ **:**][\ **+**\ *gint*\ [/*mint*]]
 must be specified. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

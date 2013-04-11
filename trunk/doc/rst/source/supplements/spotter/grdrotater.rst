@@ -20,6 +20,8 @@ grdrotater - Finite rotation reconstruction of geographic grid
 **-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*]
 ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -29,8 +31,6 @@ clipping polygon in multiple-segment format; then, only the part of the
 grid inside the polygon is used to determine the return grid region. The
 outline of the projected region is returned on stdout provided the
 rotated region is not the entire globe.
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

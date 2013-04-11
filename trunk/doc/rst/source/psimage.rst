@@ -24,6 +24,8 @@ Synopsis
 **-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
 ] [ **-t**\ [*transp*\ ] ]
 
+|No-spaces|
+
 Description
 -----------
 
@@ -41,8 +43,6 @@ which, when preceded by appropriate clip paths, may allow larger
 custom-designed fill patterns to be implemented (the **-Gp** mechanism
 offered in most **GMT** programs is limited to rasters smaller than 146
 by 146). 
-
-.. include:: explain_commonitems.rst_
 
 Required Arguments
 ------------------

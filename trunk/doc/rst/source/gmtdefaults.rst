@@ -11,6 +11,8 @@ Synopsis
 
 **gmtdefaults** [ **-D**\ [**u**\ \|\ **s**] ]
 
+|No-spaces|
+
 Description
 -----------
 

@@ -17,6 +17,8 @@ hotspotter - Create CVA image from seamount locations
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-o**\ *cols*\ [,*...*] ] [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -27,8 +29,6 @@ flowlines are convolved with the shape of the seamount (using a Gaussian
 shape given amplitude and radius = 6 sigma) and added up to give a
 Cumulative Volcano Amplitude grid (CVA). See option **-:** on how to
 read (latitude,longitude,...) files.
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

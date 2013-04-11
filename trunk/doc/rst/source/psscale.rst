@@ -29,6 +29,8 @@ psscale - Plot a gray or color scale-bar on maps
 **-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
 ] [ **-t**\ [*transp*\ ] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -42,8 +44,6 @@ scale, all be equal size, or by providing a file with individual tile
 widths. The font used for the annotations along the scale and optional
 units is specified by **FONT\_ANNOT\_PRIMARY**. If a label is requested,
 it is plotted with **FONT\_LABEL** 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

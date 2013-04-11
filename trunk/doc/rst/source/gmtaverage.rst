@@ -21,6 +21,8 @@ median, or mode estimation
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-o**\ *cols*\ [,*...*] ] [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -35,8 +37,6 @@ wavelengths, but is also generally useful for decimating or averaging
 format by editing the **FORMAT\_FLOAT\_OUT** parameter in your
 `gmt.conf <gmt.conf.html>`_ file, or you may choose binary input and/or output using
 single or double precision storage. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

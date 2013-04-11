@@ -16,6 +16,8 @@ dimfilter - Directional filtering of 2-D gridded files in the space (or time) do
 ] [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-T** ] [
 **-V**\ [*level*\ ] ] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -36,8 +38,6 @@ do because it returns a minimum median out of *N* medians of *N*
 sectors. The output can be rought unless the input data is noise-free.
 Thus, an additional filtering (e.g., Gaussian via **grdfilter**) of the
 DiM-filtered data is generally recommended.
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

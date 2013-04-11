@@ -15,6 +15,8 @@ x2sys\_report - Report statistics from crossover data base
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-S**\ *track* ] [
 **-V**\ [*level*\ ] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -22,8 +24,6 @@ x2sys\_report - Report statistics from crossover data base
 *coedbase.txt* (or *stdin*) and report on the statistics of crossovers
 (*n*, *mean*, *stdev*, *rms*, *weight*) for each track. Options are
 available to let you exclude tracks and limit the output.
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

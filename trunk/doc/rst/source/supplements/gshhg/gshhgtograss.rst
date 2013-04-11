@@ -13,6 +13,8 @@ format
 **gshhg2grass** **-i** gshhs\_[f\|h\|i\|l\|c].b [ **-x**\ *minx* ]
 [**-X**\ *maxx* ] [ **-y**\ *miny* ] [ **-Y**\ *maxy* ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -46,7 +48,7 @@ handles byte-swabbing between different architectures.
 
 To convert the full GSHHG data set, try
 
-    gshhg2grass gshhs\_f.b
+    gshhg2grass gshhs_f.b
 
 `Bugs <#toc6>`_
 ---------------

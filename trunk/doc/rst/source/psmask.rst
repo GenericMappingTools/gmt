@@ -31,6 +31,8 @@ psmask - Use data tables to clip or mask map areas with no coverage
 
 **psmask** **-C** [ **-K** ] [ **-O** ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -45,8 +47,6 @@ paint tiles to mask these nodes (with the **-T** switch), or use
 contouring to create polygons that will clip out regions of no interest.
 When clipping is initiated, it will stay in effect until turned off by a
 second call to **psmask** using the **-C** option. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

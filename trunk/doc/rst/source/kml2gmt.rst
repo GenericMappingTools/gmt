@@ -12,6 +12,8 @@ kml2gmt - Extract GMT table data from Google Earth KML files
 **kml2gmt** [ *kmlfiles* ] [ **-V**\ [*level*\ ] ] [ **-Z** ] [
 **-bo**\ [*ncols*\ ][*type*\ ] ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -23,8 +25,6 @@ intended is to capture coordinates modified in Google Earth and then
 reinsert the modified data into the original GMT data file. For a more
 complete reformatting, consider using **ogr2ogr -f** "GMT" somefile.gmt
 somefile.kml. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

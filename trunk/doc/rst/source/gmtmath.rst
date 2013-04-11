@@ -22,6 +22,8 @@ gmtmath - Reverse Polish Notation (RPN) calculator for data tables
 ] *operand* [ *operand* ] **OPERATOR** [ *operand* ] **OPERATOR** ...
 **=** [ *outfile* ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -40,8 +42,6 @@ given on the command line. By default, all columns except the "time"
 column are operated on, but this can be changed (see **-C**).
 Complicated or frequently occurring expressions may be coded as a macro
 for future use or stored and recalled via named memory locations. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

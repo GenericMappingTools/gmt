@@ -14,6 +14,8 @@ grdhisteq - Perform histogram equalization for a grid
 **-Q** ] [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
 **-V**\ [*level*\ ] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -49,12 +51,10 @@ The locations of these values will correspond to the locations of the
 input; that is, the most negative output value will be in the (x,y)
 location of the most negative input value, and so on. 
 
-.. include:: explain_commonitems.rst_
-
 `Required Arguments <#toc4>`_
 -----------------------------
 
-*in\_grdfile*
+*in_grdfile*
     2-D binary grid file to be equalized. (See GRID FILE FORMATS below).
 
 `Optional Arguments <#toc5>`_

@@ -19,6 +19,8 @@ Synopsis
 ] [ **-Z**\ *level* ] [ **-V**\ [*level*\ ] ] [
 **-fg**\ ]
 
+|No-spaces|
+
 Description
 -----------
 
@@ -26,8 +28,6 @@ Description
 described by a set of triangles. The output can either be along a given
 set of xy locations or on a grid. This method is not particularly fast
 but allows computing the anomaly of arbitrarily complex shapes.
-
-.. include:: ../../explain_commonitems.rst_
 
 Required Arguments
 ------------------

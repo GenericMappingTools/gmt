@@ -19,6 +19,8 @@ nearneighbor - Grid table data using a "Nearest neighbor" algorithm
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-n**\ [**+b**\ *BC*] ] [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -31,8 +33,6 @@ inside the search radius. The weighting function used is w(r) = 1 / (1 +
 d ^ 2), where d = 3 \* r / search\_radius and r is distance from the
 node. This weight is modulated by the observation points’ weights [if
 supplied]. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

@@ -29,6 +29,8 @@ pstext - Plot or typeset text on maps
 **-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
 ] [ **-t**\ [*transp*\ ] ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -53,8 +55,6 @@ Appendix F in the **GMT** Technical Reference and Cookbook. Note that
 **-G** or **-W** options, a rectangle underlying the text may be plotted
 (does not work for strings with sub/super scripts, symbols, or composite
 characters, except in paragraph mode (**-M**)). 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

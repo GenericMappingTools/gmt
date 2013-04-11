@@ -15,6 +15,8 @@ grdcut - Extract subregion from a grid
 ] [ **-Z**\ [**n**\ ]\ *min/max*] ] [
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -25,8 +27,6 @@ run **grdinfo** to check range. Alternatively, define the subregion
 indirectly via a range check on the node values or via distances from a
 given point. Complementary to **grdcut** there is **grdpaste**, which
 will join together two grid files along a common edge. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

@@ -14,14 +14,14 @@ grdreformat - Convert between different grid formats
 [ **-N** ] [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [ **-V**\ [*level*\ ] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
 **grdreformat** reads a grid file in one format and writes it out using
 another format. As an option the user may select a subset of the data to
 be written and to specify scaling, translation, and NaN-value. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

@@ -17,6 +17,8 @@ grdfilter - Filter a grid in the space (or time) domain
 [ |SYN_OPT-R| ] [ **-T** ]
 [ |SYN_OPT-V| ] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -29,8 +31,6 @@ registration (via **-T**). In this way, one may have "extra space" in
 the input data so that the edges will not be used and the output can be
 within one-half- width of the input edges. If the filter is low-pass,
 then the output may be less frequently sampled than the input. 
-
-..  include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

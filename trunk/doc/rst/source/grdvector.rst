@@ -26,6 +26,8 @@ Synopsis
 **-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
 ] [ **-t**\ [*transp*] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -35,8 +37,6 @@ drawing vectors with orientation and length according to the information
 in the files. Alternatively, polar coordinate components may be used (r,
 theta). **grdvector** is basically a short-hand for using 2 calls to
 `grd2xyz <grd2xyz.html>`_ and pasting the output through **psxy -SV**. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

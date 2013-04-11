@@ -17,6 +17,8 @@ grid
 **-Q** ] [ **-Z**\ *scale* ] [ **-V**\ [*level*\ ] ] [ **-W** ] [
 **-f**\ *colinfo* ] [ **-r** ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -30,8 +32,6 @@ share the final output grid’s node registration and grid spacing will
 automatically be resampled via calls to grdsample. Note: Due to the
 row-by-row i/o nature of operations in grdblend we only support the
 netCDF and native binary grid formats for both input and output. 
-
-..  include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

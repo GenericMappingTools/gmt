@@ -15,6 +15,8 @@ x2sys_cross
 **-Sl**\ \|\ **u**\ \|\ **h**\ *speed* ] [ **-V**\ [*level*\ ] ] [
 **-W**\ *size* ] [ **-Z** ] [ **-bo**\ [*ncols*\ ][*type*\ ] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -27,8 +29,6 @@ are passed on the command line. By default, **x2sys\_cross** will look
 for both external and internal COEs. As an option, you may choose to
 project all data using one of the map-projections prior to calculating
 the COE.
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

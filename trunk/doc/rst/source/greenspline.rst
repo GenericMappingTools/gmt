@@ -22,6 +22,8 @@ dimensions
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-o**\ *cols*\ [,*...*] ] [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -44,8 +46,6 @@ Alternatively, you may choose to perform a singular value decomposition
 (SVD) and eliminate the contribution from the smallest eigenvalues; this
 approach yields an approximate solution. Trends and scales are restored
 when evaluating the output. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

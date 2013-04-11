@@ -21,6 +21,8 @@ Synopsis
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-o**\ *cols*\ [,*...*] ]
 
+|No-spaces|
+
 Description
 -----------
 
@@ -30,8 +32,6 @@ independent variable). (See **-N** option below). The fastest operation
 occurs when the input time series are equally spaced and have no gaps or
 outliers and the special options are not needed. **filter1d** has
 options **-L**, **-Q**, and **-S** for unevenly sampled data with gaps.
-
-.. include:: explain_commonitems.rst_
 
 Required Arguments
 ------------------

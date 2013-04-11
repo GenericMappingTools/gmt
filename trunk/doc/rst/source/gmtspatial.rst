@@ -25,6 +25,8 @@ gmtspatial - Do geospatial operations on lines and polygons
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-o**\ *cols*\ [,*...*] ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -32,8 +34,6 @@ gmtspatial - Do geospatial operations on lines and polygons
 files) that contains closed polygons and operates of these polygons in
 the specified way. Operations include area calculation, handedness
 reversals, and polygon intersections. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

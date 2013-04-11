@@ -14,6 +14,8 @@ Synopsis
 [ **-Sb**\ *low/below* ] [ **-Si**\ *low/high/between* ] [ **-Sr**\ *old/new* ]
 [ **-V**\ [*level*] ]
 
+|No-spaces|
+
 Description
 -----------
 
@@ -26,8 +28,6 @@ range of data values is required, or for reclassification of data values.
 *above*, *below*, *between*, *old* and *new* can be any number or even NaN
 (Not a Number). You must choose at least one of the **-S** options. Use
 **-R** to only extract a subset of the *ingrid* file. 
-
-.. include:: explain_commonitems.rst_
 
 Required Arguments
 ------------------

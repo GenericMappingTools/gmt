@@ -2,8 +2,7 @@
 spectrum1d
 **********
 
-spectrum1d - Compute auto- [and cross- ] spectra from one [or two]
-time-series
+spectrum1d - Compute auto- [and cross- ] spectra from one [or two] time-series
 
 `Synopsis <#toc1>`_
 -------------------
@@ -17,8 +16,9 @@ time-series
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
 **-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
 ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-]
+**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] ]
+
+|No-spaces|
 
 `Description <#toc2>`_
 ----------------------
@@ -58,10 +58,7 @@ ASCII unless **-bo**\ [*ncols*\ ][*type*\ ] is set) are as follows:
 *name\_stem*.coh
     (Squared) coherency spectrum, or linear correlation coefficient as a
     function of frequency. Dimensionless number in [0, 1]. The
-    Signal-to-Noise-Ratio (SNR) is coh / (1 - coh). SNR = 1 when coh =
-    0.5. 
-
-.. include:: explain_commonitems.rst_
+    Signal-to-Noise-Ratio (SNR) is coh / (1 - coh). SNR = 1 when coh = 0.5. 
 
 `Required Arguments <#toc4>`_
 -----------------------------

@@ -16,6 +16,8 @@ grd2xyz - Convert grid file to data table
 **-ho**\ [*n*\ ] ] [ **-o**\ *cols*\ [,*...*] ] [
 **-s**\ [*cols*\ ][\ **a**\ \|\ **r**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -26,8 +28,6 @@ precision of the ASCII output format by editing the
 **--D\_FORMAT**\ =\ *format* on the command line, or choose binary
 output using single or double precision storage. As an option you may
 output z-values without the (x,y) coordinates; see **-Z** below. 
-
-..  include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

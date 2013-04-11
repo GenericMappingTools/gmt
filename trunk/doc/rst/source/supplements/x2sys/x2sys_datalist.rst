@@ -16,6 +16,8 @@ x2sys\_datalist - Extract content of track data files
 **-V**\ [*level*\ ] ] [ **-bo**\ [*ncols*\ ][*type*\ ] ] [
 **-h**\ [**i**\ \|\ **o**][*n*\ ] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -25,8 +27,6 @@ described and passed with the **-T** option. You may limit the output to
 a geographic region, and insist that the output from several files be
 separated by a multiple segment header. Only the named data fields will
 be output [Default selects all columns].
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

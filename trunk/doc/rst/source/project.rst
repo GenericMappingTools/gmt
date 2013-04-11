@@ -24,6 +24,8 @@ Synopsis
 ] [ **-s**\ [*cols*\ ][\ **a**\ \|\ **r**] ] [
 **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 Description
 -----------
 
@@ -92,8 +94,6 @@ back-azimuths or azimuths are better done using **mapproject**.
 **project** is CASE SENSITIVE. Use UPPER CASE for all one-letter
 designators which begin optional arguments. Use lower case for the
 xyzpqrs letters in **-flags**. 
-
-.. include:: explain_commonitems.rst_
 
 Required Arguments
 ------------------

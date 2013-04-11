@@ -19,6 +19,8 @@ colmath - Do mathematics on columns from data tables
 ] [ **-o**\ *cols*\ [,*...*] ] [ **-s**\ [*cols*\ ][\ **a**\ \|\ **r**]
 ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -30,8 +32,6 @@ horizontally into a single file, (3) extract a subset of the available
 columns, (4) do mathematics on the columns. Input (and hence output) may
 have multiple sub-headers, and ASCII tables may have regular headers as
 well. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

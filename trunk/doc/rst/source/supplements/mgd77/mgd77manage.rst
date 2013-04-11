@@ -18,6 +18,8 @@ mgd77manage - Manage the content of MGD77+ files
 **-V**\ [*level*\ ] ] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [
 **-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -32,8 +34,6 @@ Mercator \*.img grid) along track. The new data will be appended to the
 MGD77+ file in the form of an extra data column of specified type. The
 data file will be modified; no new file will be created. For the big
 issues, see the DISCUSSION section below. 
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

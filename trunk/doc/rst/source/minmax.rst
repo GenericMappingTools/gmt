@@ -22,6 +22,8 @@ Synopsis
 [ **-o**\ *cols*\ [,\ *...*] ]
 [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 Description
 -----------
 
@@ -35,8 +37,6 @@ used directly in the command line for other programs (hence only *dx*
 and *dy* are needed), or the output will be in column form for as many
 columns as there are increments provided. A similar option (**-T**) will
 provide a **-T**\ *zmin/zmax/dz* string for makecpt. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

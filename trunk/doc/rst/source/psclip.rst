@@ -30,6 +30,8 @@ psclip - Initialize or terminate polygonal clip paths
 **psclip** **-C**\ [**c**\ \|\ **s**\ \|[\ **a**\ \|\ *n*] [ **-K** ] [
 **-O** ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -46,8 +48,6 @@ what is the inside and outside of the paths by plotting a clipping path
 along the map boundary. After subsequent plotting, which will be clipped
 against these paths, the clipping may be deactivated by running
 **psclip** a second time with the **-C** option only. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

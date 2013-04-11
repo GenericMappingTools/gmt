@@ -29,6 +29,8 @@ pscontour - Contour table data by direct triangulation [method]
 **-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
 ] [ **-t**\ [*transp*\ ] ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 Description
 -----------
 
@@ -42,8 +44,6 @@ mesh used for finite element modeling. In addition to contours, the area
 between contours may be painted according to the color palette file.
 Alternatively, the x/y/z positions of the contour lines may be saved to
 one or more output files (or stdout) and no plot is produced. 
-
-.. include:: explain_commonitems.rst_
 
 Required Arguments
 ------------------

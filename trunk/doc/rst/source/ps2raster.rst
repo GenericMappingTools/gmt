@@ -18,6 +18,8 @@ ps2raster - Convert [E]PS file(s) to other formats using GhostScript
 **-W**\ [**+g**\ ][\ **+t**\ *docname*][\ **+n**\ *layername*][\ **+o**\ *foldername*][\ **+a**\ *altmode*\ [*alt*\ ]][\ **+l**\ *minLOD/maxLOD*][\ **+f**\ *minfade/maxfade*][\ **+u**\ *URL*]
 ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -29,8 +31,6 @@ HiResBoundingBox, if present). As an option, a tight (HiRes)BoundingBox
 may be computed first. As another option, it can compute ESRI type world
 files used to reference, for instance, tif files and make them be
 recognized as geotiff. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

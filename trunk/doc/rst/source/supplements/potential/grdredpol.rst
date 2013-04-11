@@ -15,6 +15,8 @@ grdredpol - Compute the Continuous Reduction To the Pole, AKA differential RTP.
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-T<year>** ] [
 **-Z<filter>** ] [ **-V**\ [*level*\ ] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -34,8 +36,6 @@ magnetization vector change by a very small amount. Inside each of those
 windows, or bins, a set of filter coefficients are calculate and
 reconstruct for each individual point the component filter using a first
 order Taylor series expansion.
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

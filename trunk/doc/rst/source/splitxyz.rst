@@ -20,6 +20,8 @@ splitxyz - Split xyz[dh] data tables into individual segments
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -34,8 +36,6 @@ data extraction and **pswiggle** plotting, and can also be used to
 divide a large x,y,z dataset into segments. The output is always in the
 ASCII format; input may be ASCII or binary (see
 **-bi**\ [*ncols*\ ][*type*\ ]). 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

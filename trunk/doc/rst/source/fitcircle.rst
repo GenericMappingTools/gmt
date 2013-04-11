@@ -18,6 +18,8 @@ circle to points on a sphere.
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-o**\ *cols*\ [,*...*] ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -48,8 +50,6 @@ locations. This method may be more subject to roundoff errors when there
 are thousands of data. The pole is given by the eigenvector
 corresponding to the smallest eigenvalue; it is the least-well
 represented factor in the data and is not easily estimated by either method. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

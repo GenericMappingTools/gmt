@@ -13,6 +13,8 @@ grdtrend - Fit trend surface to grids and compute residuals
 ] [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
 **-T**\ *trend.nc* ] [ **-V**\ [*level*\ ] ] [ **-W**\ *weight.nc* ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -35,8 +37,6 @@ such as a local mountain on a regional surface.
 If data file has values set to NaN, these will be ignored during
 fitting; if output files are written, these will also have NaN in the
 same locations. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

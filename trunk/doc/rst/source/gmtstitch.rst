@@ -22,6 +22,8 @@ tolerance
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-o**\ *cols*\ [,*...*] ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -35,8 +37,6 @@ segments are then written out to standard output or specified output
 file. If it is not clear what the separation tolerance should be then
 use **-L** to get a list of all separation distances and analyze them to
 determine a suitable cutoff. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
