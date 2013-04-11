@@ -292,19 +292,19 @@ int GMT_filter1d_parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct
 				break;
 			case 'N':	/* Select column with independent coordinate [0] */
 				Ctrl->N.active = true;
-#ifdef GMT_COMPAT
-				if (strchr (opt->arg, '/')) { /* Gave obsolete format */
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -N<ncol>/<tcol> option is deprecated; use -N<tcol> instead.\n");
-					if (sscanf (opt->arg, "%*s/%d", &sval) != 1) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N option: Syntax is -N<tcol>\n");
-						++n_errors;
+				if (GMT_compat_check (GMT, 4)) {	/* GMT4 LEVEL */
+					if (strchr (opt->arg, '/')) { /* Gave obsolete format */
+						GMT_Report (API, GMT_MSG_COMPAT, "Warning: -N<ncol>/<tcol> option is deprecated; use -N<tcol> instead.\n");
+						if (sscanf (opt->arg, "%*s/%d", &sval) != 1) {
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N option: Syntax is -N<tcol>\n");
+							++n_errors;
+						}
 					}
+					else if (!strchr (opt->arg, '/'))
+						sval = atoi (opt->arg);
 				}
-				else if (!strchr (opt->arg, '/'))
+				else
 					sval = atoi (opt->arg);
-#else
-					sval = atoi (opt->arg);
-#endif
 				n_errors += GMT_check_condition (GMT, sval < 0, "Syntax error -N option: Time column cannot be negative.\n");
 				Ctrl->N.col = sval;
 				break;

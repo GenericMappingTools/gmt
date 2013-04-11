@@ -431,12 +431,12 @@ FILE *gmt_nc_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode
 		file, varnm[0], varnm[1], varnm[2], varnm[3], varnm[4], varnm[5], varnm[6], varnm[7], varnm[8], varnm[9], varnm[10],
 		varnm[11], varnm[12], varnm[13], varnm[14], varnm[15], varnm[16], varnm[17], varnm[18], varnm[19]) - 1;
 	if (nc_open (GMT_getdatapath (GMT, file, path), NC_NOWRITE, &GMT->current.io.ncid)) return (NULL);
-#ifdef GMT_COMPAT
-	if (nvars <= 0) nvars = sscanf (GMT->common.b.varnames,
-		"%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]",
-		varnm[0], varnm[1], varnm[2], varnm[3], varnm[4], varnm[5], varnm[6], varnm[7], varnm[8], varnm[9], varnm[10],
-		varnm[11], varnm[12], varnm[13], varnm[14], varnm[15], varnm[16], varnm[17], varnm[18], varnm[19]);
-#endif
+	if (GMT_compat_check (GMT, 4)) {
+		if (nvars <= 0) nvars = sscanf (GMT->common.b.varnames,
+			"%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]",
+			varnm[0], varnm[1], varnm[2], varnm[3], varnm[4], varnm[5], varnm[6], varnm[7], varnm[8], varnm[9], varnm[10],
+			varnm[11], varnm[12], varnm[13], varnm[14], varnm[15], varnm[16], varnm[17], varnm[18], varnm[19]);
+	}
 	if (nvars <= 0)
 		nc_inq_nvars (GMT->current.io.ncid, &GMT->current.io.nvars);
 	else
@@ -557,10 +557,8 @@ FILE *GMT_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode)
 		return (fopen (filename, mode));
 	else if (GMT->common.b.active[GMT_IN])	/* Definitely not netCDF */
 		return (fopen (GMT_getdatapath(GMT, filename, path), mode));
-#ifdef GMT_COMPAT
-	else if (GMT->common.b.varnames[0])	/* Definitely netCDF */
+	else if (GMT_compat_check (GMT, 4) && GMT->common.b.varnames[0])	/* Definitely netCDF */
 		return (gmt_nc_fopen (GMT, filename, mode));
-#endif
 	else if (strchr (filename, '?'))	/* Definitely netCDF */
 		return (gmt_nc_fopen (GMT, filename, mode));
 #ifdef WIN32
@@ -797,13 +795,8 @@ char *GMT_getdatapath (struct GMT_CTRL *GMT, const char *stem, char *path)
 		while (!found && (GMT_strtok (udir[d], path_separator, &pos, dir))) {
 			L = strlen (dir);
 #ifdef HAVE_DIRENT_H_
-#ifdef GMT_COMPAT
-			if (dir[L-1] == '*' || dir[L-1] == '/') {	/* Must search recursively from this dir */
+			if (dir[L-1] == '/' || (GMT_compat_check (GMT, 4) && dir[L-1] == '*')) {	/* Must search recursively from this dir */
 				N = (dir[L-1] == '/') ? L - 1 : L - 2;
-#else
-			if (dir[L-1] == '/') {	/* Must search recursively from this dir */
-				N = L - 1;
-#endif /* GMT_COMPAT */
 				strncpy (path, dir, N);	path[N] = 0;
 				found = gmt_traverse_dir (stem, path);
 			}

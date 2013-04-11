@@ -255,6 +255,11 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
 
 .. _GMT Miscellaneous Parameters:
 
+**GMT_COMPATIBILITY**
+    Determines if this GMT version should be able to parse command-line
+    options for a prior major release.  Specify either 4 or 5. If 4 is
+    set we will parse obsolete GMT 4 options and issue warnings; if 5
+    is set then parsing GMT-4 only syntax will result in errors.
 **GMT_FFT**
     Determines which Fast Fourier Transform (FFT) should be used among
     those that have been configured during installation. Choose from

@@ -122,11 +122,8 @@ int GMT_grdproject_parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, st
 	 */
 
 	unsigned int n_errors = 0, n_files = 0;
-	int sval;
-#ifdef GMT_COMPAT
-	int ii = 0, jj = 0;
+	int sval, ii = 0, jj = 0;
 	char format[GMT_BUFSIZ];
-#endif
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -173,19 +170,21 @@ int GMT_grdproject_parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, st
 				Ctrl->M.active = true;
 				Ctrl->M.unit = opt->arg[0];
 				break;
-#ifdef GMT_COMPAT
-			case 'N':	/* Backwards compatible.  nx/ny can now be set with -D */
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -N option is deprecated; use -D instead.\n");
-				Ctrl->D.active = true;
-				sscanf (opt->arg, "%d/%d", &ii, &jj);
-				if (jj == 0) jj = ii;
-				sprintf (format, "%d+/%d+", ii, jj);
-				if (GMT_getinc (GMT, format, Ctrl->D.inc)) {
-					GMT_inc_syntax (GMT, 'D', 1);
-					n_errors++;
+			case 'N':	/* GMT4 Backwards compatible.  nx/ny can now be set with -D */
+				if (GMT_compat_check (GMT, 4)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -N option is deprecated; use -D instead.\n");
+					Ctrl->D.active = true;
+					sscanf (opt->arg, "%d/%d", &ii, &jj);
+					if (jj == 0) jj = ii;
+					sprintf (format, "%d+/%d+", ii, jj);
+					if (GMT_getinc (GMT, format, Ctrl->D.inc)) {
+						GMT_inc_syntax (GMT, 'D', 1);
+						n_errors++;
+					}
 				}
+				else
+					n_errors += GMT_default_error (GMT, opt->option);
 				break;
-#endif
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
 				break;

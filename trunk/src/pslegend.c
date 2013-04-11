@@ -320,10 +320,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	char tw[GMT_TEXT_LEN256], jj[GMT_TEXT_LEN256], sarg[GMT_TEXT_LEN256], txtcolor[GMT_TEXT_LEN256] = {""}, buffer[GMT_BUFSIZ];
 	char bar_cpt[GMT_TEXT_LEN256], bar_gap[GMT_TEXT_LEN256], bar_height[GMT_TEXT_LEN256], bar_opts[GMT_BUFSIZ], *opt = NULL;
 	char A[GMT_TEXT_LEN32], B[GMT_TEXT_LEN32], C[GMT_TEXT_LEN32];
-	char *line = NULL, string[GMTAPI_STRLEN];
-#ifdef GMT_COMPAT
-	char save_EOF;
-#endif
+	char *line = NULL, string[GMTAPI_STRLEN], save_EOF;
 #ifdef DEBUG
 	int guide = 0;
 #endif
@@ -366,12 +363,12 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	/*---------------------------- This is the pslegend main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input text table data\n");
-#ifdef GMT_COMPAT
-	/* Since pslegend v4 used '>' to indicate a paragraph record we avoid confusion with multiple segmentheaders by *
-	 * temporarily setting # as segment header flag since all headers are skipped anyway */
-	save_EOF = GMT->current.setting.io_seg_marker[GMT_IN];
-	GMT->current.setting.io_seg_marker[GMT_IN] = '#';
-#endif
+	if (GMT_compat_check (GMT, 4)) {
+		/* Since pslegend v4 used '>' to indicate a paragraph record we avoid confusion with multiple segmentheaders by *
+		 * temporarily setting # as segment header flag since all headers are skipped anyway */
+		save_EOF = GMT->current.setting.io_seg_marker[GMT_IN];
+		GMT->current.setting.io_seg_marker[GMT_IN] = '#';
+	}
 
 	if (GMT_Init_IO (API, GMT_IS_TEXTSET, GMT_IS_NONE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 		Return (API->error);
@@ -488,10 +485,14 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						column_number = 0;
 						break;
 
-#ifdef GMT_COMPAT
 					case '>':	/* Paragraph text header */
-						GMT_Report (API, GMT_MSG_COMPAT, "Warning: paragraph text header flag > is deprecated; use P instead\n");
-#endif
+						if (GMT_compat_check (GMT, 4)) /* Warn and fall through */
+							GMT_Report (API, GMT_MSG_COMPAT, "Warning: paragraph text header flag > is deprecated; use P instead\n");
+						else {
+							GMT_Report (API, GMT_MSG_NORMAL, "Error: Unrecognized record (%s)\n", line);
+							Return (GMT_RUNTIME_ERROR);
+							break;
+						}
 					case 'P':	/* Paragraph text header */
 						flush_paragraph = true;
 						column_number = 0;
@@ -794,20 +795,25 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						column_number = 0;
 						break;
 
-#ifdef GMT_COMPAT
 					case '>':	/* Paragraph text header */
-						GMT_Report (API, GMT_MSG_COMPAT, "Warning: paragraph text header flag > is deprecated; use P instead\n");
-						n = sscanf (&line[1], "%s %s %s %s %s %s %s %s %s", xx, yy, size, angle, font, key, lspace, tw, jj);
-						if (n < 0) n = 0;	/* Since -1 is returned if no arguments */
-						if (!(n == 0 || n == 9)) {
-							GMT_Report (API, GMT_MSG_NORMAL, "Error: The > record must have 0 or 9 arguments (only %d found)\n", n);
-							Return (GMT_RUNTIME_ERROR);
+						if (GMT_compat_check (GMT, 4)) {	/* Warn and fall through */
+							GMT_Report (API, GMT_MSG_COMPAT, "Warning: paragraph text header flag > is deprecated; use P instead\n");
+							n = sscanf (&line[1], "%s %s %s %s %s %s %s %s %s", xx, yy, size, angle, font, key, lspace, tw, jj);
+							if (n < 0) n = 0;	/* Since -1 is returned if no arguments */
+							if (!(n == 0 || n == 9)) {
+								GMT_Report (API, GMT_MSG_NORMAL, "Error: The > record must have 0 or 9 arguments (only %d found)\n", n);
+								Return (GMT_RUNTIME_ERROR);
+							}
+							if (n == 0 || size[0] == '-') sprintf (size, "%g", GMT->current.setting.font_annot[0].size);
+							if (n == 0 || font[0] == '-') sprintf (font, "%d", GMT->current.setting.font_annot[0].id);
+							sprintf (tmp, "%s,%s,", size, font);
+							did_old = true;
 						}
-						if (n == 0 || size[0] == '-') sprintf (size, "%g", GMT->current.setting.font_annot[0].size);
-						if (n == 0 || font[0] == '-') sprintf (font, "%d", GMT->current.setting.font_annot[0].id);
-						sprintf (tmp, "%s,%s,", size, font);
-						did_old = true;
-#endif
+						else {
+							GMT_Report (API, GMT_MSG_NORMAL, "Error: Unrecognized record (%s)\n", line);
+							Return (GMT_RUNTIME_ERROR);
+							break;
+						}
 					case 'P':	/* Paragraph text header */
 						if (!did_old) {
 							n = sscanf (&line[1], "%s %s %s %s %s %s %s %s", xx, yy, tmp, angle, key, lspace, tw, jj);
@@ -937,16 +943,13 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 									az1 = 0.0;
 									x = GMT_to_inch (GMT, size);
 								}
-#ifdef GMT_COMPAT
-								if (strchr (size, '/'))  {	/* The necessary arguments was supplied via GMT4 size arguments */
+								if (strchr (size, '/') && GMT_compat_check (GMT, 4))  {	/* The necessary arguments was supplied via GMT4 size arguments */
 									i = 0;
 									while (size[i] != '/' && size[i]) i++;
 									size[i++] = '\0';	/* So GMT_to_inch won't complain */
 									sprintf (sub, "%s%s+jc+e", symbol, &size[i]);
 								}
-								else
-#endif
-								if (!strchr (symbol, '+'))  {	/* The necessary arguments not supplied! */
+								else if (!strchr (symbol, '+'))  {	/* The necessary arguments not supplied! */
 									sprintf (sub, "v%gi+jc+e", 0.3*x);	/* Head size is 30% of length */
 								}
 								if (txt_c[0] == '-') strcat (sub, "+g-");
@@ -1108,10 +1111,8 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 
-#ifdef GMT_COMPAT
 	/* Reset the flag */
-	GMT->current.setting.io_seg_marker[GMT_IN] = save_EOF;
-#endif
+	if (GMT_compat_check (GMT, 4)) GMT->current.setting.io_seg_marker[GMT_IN] = save_EOF;
 
 	if (Front && GMT_Destroy_Data (API, GMT_ALLOCATED, &Front) != GMT_OK) {
 		Return (API->error);

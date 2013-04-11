@@ -33,10 +33,6 @@
 
 #define GMT_PROG_OPTIONS "-:>Vbfghios" GMT_OPT("HMm")
 
-#ifdef GMT_COMPAT
-int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg);
-#endif
-
 /* Control structure for colmath */
 
 struct COLMATH_CTRL {

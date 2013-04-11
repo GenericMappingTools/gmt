@@ -248,25 +248,29 @@ int GMT_grdgradient_parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, 
 				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
-#ifdef GMT_COMPAT
-			case 'L':	/* BCs */
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
-				strncpy (GMT->common.n.BC, opt->arg, 4U);
-				/* We turn on geographic coordinates if -Lg is given by faking -fg */
-				/* But since GMT_parse_f_option is private to gmt_init and all it does */
-				/* in this case are 2 lines bellow we code it here */
-				if (!strcmp (GMT->common.n.BC, "g")) {
-					GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
-					GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
+			case 'L':	/* GMT4 BCs */
+				if (GMT_compat_check (GMT, 4)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
+					strncpy (GMT->common.n.BC, opt->arg, 4U);
+					/* We turn on geographic coordinates if -Lg is given by faking -fg */
+					/* But since GMT_parse_f_option is private to gmt_init and all it does */
+					/* in this case are 2 lines bellow we code it here */
+					if (!strcmp (GMT->common.n.BC, "g")) {
+						GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
+						GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
+					}
 				}
+				else
+					n_errors += GMT_default_error (GMT, opt->option);
 				break;
-#endif
 
-#ifdef GMT_COMPAT
 			case 'M':	/* Geographic data */
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
-				if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
-#endif
+				if (GMT_compat_check (GMT, 4)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
+					if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
+				}
+				else
+					n_errors += GMT_default_error (GMT, opt->option);
 				break;
 			case 'N':	/* Normalization */
 				Ctrl->N.active = true;

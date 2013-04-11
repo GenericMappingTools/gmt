@@ -389,9 +389,7 @@ int GMT_psmask_parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-#ifdef GMT_COMPAT
-	int n_plus, k;
-#endif
+	int n_plus = -1, k;
 	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -411,23 +409,21 @@ int GMT_psmask_parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT
 			case 'D':	/* Dump the polygons to files */
 				Ctrl->D.active = true;
 
-#ifdef GMT_COMPAT
-				for (n_plus = -1, k = 0; opt->arg[k]; k++) {
-					if (opt->arg[k] == '+' && opt->arg[k+1] == 'n') {
-						GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -D..+n<min> is deprecated; use -Q instead.\n");
-						Ctrl->Q.min = atoi (&opt->arg[k + 2]);
-						Ctrl->Q.active = true;
-						n_plus = k;
-						break;
+				if (GMT_compat_check (GMT, 4)) {
+					for (n_plus = -1, k = 0; opt->arg[k]; k++) {
+						if (opt->arg[k] == '+' && opt->arg[k+1] == 'n') {
+							GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -D..+n<min> is deprecated; use -Q instead.\n");
+							Ctrl->Q.min = atoi (&opt->arg[k + 2]);
+							Ctrl->Q.active = true;
+							n_plus = k;
+							break;
+						}
 					}
-				}
 
-				if (n_plus >= 0) opt->arg[n_plus] = '\0';	/* If extra option rip it before check if there is a prefix */
-#endif
+					if (n_plus >= 0) opt->arg[n_plus] = '\0';	/* If extra option rip it before check if there is a prefix */
+				}
 				Ctrl->D.file = strdup (opt->arg);
-#ifdef GMT_COMPAT
 				if (n_plus >= 0) opt->arg[n_plus] = '+';	/* Restore it */
-#endif
 				break;
 			case 'G':
 				Ctrl->G.active = true;

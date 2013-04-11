@@ -273,11 +273,12 @@ int GMT_grdspotter_parse (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *Ctrl, st
 				Ctrl->A.active = true;
 				Ctrl->A.file = strdup (opt->arg);
 				break;
-#ifdef GMT_COMPAT
 			case 'C':	/* Now done automatically in spotter_init */
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
+				if (GMT_compat_check (GMT, 4))
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
+				else
+					n_errors += GMT_default_error (GMT, opt->option);
 				break;
-#endif
 			case 'E':
 				Ctrl->E.active = true;	k = 0;
 				if (opt->arg[0] == '+') { Ctrl->E.mode = true; k = 1;}

@@ -1,7 +1,7 @@
 #
 #	$Id$
 #
-#	Copyright (c) 1991-2011 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
+#	Copyright (c) 1991-2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe
 #	See LICENSE.TXT file for copying and redistribution conditions.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -116,22 +116,22 @@ configure_file (
 # Configuration done
 message(
 	"*  Options:\n"
-	"*  Found GSHHG database : ${GSHHG_PATH} (${GSHHG_VERSION})\n"
-	"*  NetCDF library       : ${NETCDF_LIBRARY}\n"
-	"*  NetCDF include dir   : ${NETCDF_INCLUDE_DIR}\n"
-	"*  GDAL library         : ${GDAL_LIBRARY}\n"
-	"*  GDAL include dir     : ${GDAL_INCLUDE_DIR}\n"
-	"*  Regex support        : ${GMT_CONFIG_REGEX_MESSAGE}\n"
-	"*  File locking         : ${FLOCK}\n"
-	"*  Compatibility mode   : ${GMT_COMPAT}\n"
-	"*  Build Matlab API     : ${GMT_MATLAB}\n"
-	"*  License restriction  : ${LICENSE_RESTRICTED}\n"
-	"*  Triangulation method : ${GMT_TRIANGULATE}\n"
+	"*  Found GSHHG database         : ${GSHHG_PATH} (${GSHHG_VERSION})\n"
+	"*  NetCDF library               : ${NETCDF_LIBRARY}\n"
+	"*  NetCDF include dir           : ${NETCDF_INCLUDE_DIR}\n"
+	"*  GDAL library                 : ${GDAL_LIBRARY}\n"
+	"*  GDAL include dir             : ${GDAL_INCLUDE_DIR}\n"
+	"*  Regex support                : ${GMT_CONFIG_REGEX_MESSAGE}\n"
+	"*  File locking                 : ${FLOCK}\n"
+	"*  Compatibility with version   : ${GMT_COMPAT}\n"
+	"*  Build Matlab API             : ${GMT_MATLAB}\n"
+	"*  License restriction          : ${LICENSE_RESTRICTED}\n"
+	"*  Triangulation method         : ${GMT_TRIANGULATE}\n"
 	"*\n"
 	"*  Locations:\n"
-	"*  Installing GMT in    : ${CMAKE_INSTALL_PREFIX}\n"
-	"*  GMT_SHARE_PATH       : ${CMAKE_INSTALL_PREFIX}/${GMT_SHARE_PATH}\n"
-	"*  GMT_DOC_PATH         : ${CMAKE_INSTALL_PREFIX}/${GMT_DOC_PATH}\n"
-	"*  GMT_MAN_PATH         : ${CMAKE_INSTALL_PREFIX}/${GMT_MAN_PATH}")
+	"*  Installing GMT in            : ${CMAKE_INSTALL_PREFIX}\n"
+	"*  GMT_SHARE_PATH               : ${CMAKE_INSTALL_PREFIX}/${GMT_SHARE_PATH}\n"
+	"*  GMT_DOC_PATH                 : ${CMAKE_INSTALL_PREFIX}/${GMT_DOC_PATH}\n"
+	"*  GMT_MAN_PATH                 : ${CMAKE_INSTALL_PREFIX}/${GMT_MAN_PATH}")
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

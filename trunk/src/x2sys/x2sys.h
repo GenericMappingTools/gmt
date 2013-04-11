@@ -66,7 +66,6 @@
 #include "mgd77/mgd77.h"
 #include "gmt_dev.h"
 
-#ifdef GMT_COMPAT
 /* Here are legacy functions for old GMT MGG supplement needed in x2sys */
 
 struct GMTMGG_REC {	/* Format of old *.gmt file records */
@@ -76,7 +75,6 @@ struct GMTMGG_REC {	/* Format of old *.gmt file records */
 
 #define GMTMGG_NODATA (-32000)		/* .gmt file NaN proxy */
 #define MDEG2DEG	0.000001	/* Convert millidegrees to degrees */
-#endif
 
 #define S_RDONLY 0000444
 

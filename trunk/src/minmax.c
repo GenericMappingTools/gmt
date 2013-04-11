@@ -222,10 +222,8 @@ int GMT_minmax_parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT
 				if (j == 1) Ctrl->T.col = 0;
 				break;
 
-#ifdef GMT_COMPAT
 			case 'b':	/* -b[i]c will land here */
-			break;
-#endif
+				if (GMT_compat_check (GMT, 4)) break;
 
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);

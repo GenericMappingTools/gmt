@@ -117,9 +117,7 @@ struct GMT_COMMON {
 		uint64_t ncol[2];		/* Number of expected columns of input/output
 						   0 means it will be determined by program */
 		char type[2];			/* Default column type, if set [d for double] */
-#ifdef GMT_COMPAT
-		char varnames[GMT_BUFSIZ];	/* List of variable names to be input/output in netCDF mode */
-#endif
+		char varnames[GMT_BUFSIZ];	/* List of variable names to be input/output in netCDF mode [GMT4 COMPATIBILITY ONLY] */
 	} b;
 	struct c {	/* -c */
 		bool active;

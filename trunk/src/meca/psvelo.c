@@ -100,9 +100,7 @@ void *New_psvelo_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->A.S.v.v_angle = 30.0f;
 	C->A.S.v.status = GMT_VEC_END + GMT_VEC_FILL + GMT_VEC_OUTLINE;
 	C->A.S.v.pen = GMT->current.setting.map_default_pen;
-#ifdef GMT_COMPAT
-	GMT->current.setting.map_vector_shape = 0.4;	/* Historical reasons */
-#endif
+	if (GMT_compat_check (GMT, 4)) GMT->current.setting.map_vector_shape = 0.4;	/* Historical reasons */
 	C->D.scale = 1.0;
 	GMT_init_fill (GMT, &C->E.fill, 1.0, 1.0, 1.0);
 	GMT_init_fill (GMT, &C->G.fill, 0.0, 0.0, 0.0);
@@ -170,10 +168,7 @@ int GMT_psvelo_parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT
 	unsigned int n_errors = 0;
 	int n;
 	bool no_size_needed, n_set, got_A = false;
-	char txt[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
-#ifdef GMT_COMPAT
-	char txt_c[GMT_TEXT_LEN256];
-#endif
+	char txt[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -187,8 +182,7 @@ int GMT_psvelo_parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT
 
 			case 'A':	/* Change size of arrow head */
 				got_A = true;
-#ifdef GMT_COMPAT
-				if (strchr (opt->arg, '/') && !strchr (opt->arg, '+')) {	/* Old-style args */
+				if (GMT_compat_check (GMT, 4) && (strchr (opt->arg, '/') && !strchr (opt->arg, '+'))) {	/* Old-style args */
 					sscanf (opt->arg, "%[^/]/%[^/]/%s", txt, txt_b, txt_c);
 					Ctrl->A.S.v.pen.width = GMT_to_points (GMT, txt);
 					Ctrl->A.S.v.h_length = (float)GMT_to_inch (GMT, txt_b);
@@ -197,7 +191,6 @@ int GMT_psvelo_parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT
 					Ctrl->A.S.v.status |= GMT_VEC_OUTLINE2;
 				}
 				else {
-#endif
 					if (opt->arg[0] == '+') {	/* No size (use default), just attributes */
 						n_errors += GMT_parse_vector (GMT, opt->arg, &Ctrl->A.S);
 					}
@@ -207,9 +200,7 @@ int GMT_psvelo_parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT
 						Ctrl->A.S.size_x = GMT_to_inch (GMT, txt);	/* Length of vector */
 						n_errors += GMT_parse_vector (GMT, txt_b, &Ctrl->A.S);
 					}
-#ifdef GMT_COMPAT
 				}
-#endif
 				break;
 			case 'D':	/* Rescale Sigmas */
 				Ctrl->D.active = true;

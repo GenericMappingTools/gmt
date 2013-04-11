@@ -171,11 +171,12 @@ int GMT_sphdistance_parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, 
 			case 'C':
 				Ctrl->C.active = true;
 				break;
-#ifdef GMT_COMPAT
 			case 'D':
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -D option is deprecated; duplicates are automatically removed.\n");
+				if (GMT_compat_check (GMT, 4))
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -D option is deprecated; duplicates are automatically removed.\n");
+				else
+					n_errors += GMT_default_error (GMT, opt->option);
 				break;
-#endif
 			case 'E':
 				Ctrl->E.active = true;
 				break;

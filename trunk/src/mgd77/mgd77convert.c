@@ -171,10 +171,14 @@ int GMT_mgd77convert_parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl
 						break;
 				}
 				break;
-#ifdef GMT_COMPAT
 			case '4':	/* Selected high-resolution 4-byte integer MGD77+ format for mag, diur, faa, eot [2-byte integer] */
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -4 is deprecated; use -D instead.\n");
-#endif
+				if (GMT_compat_check (GMT, 4)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -4 is deprecated; use -D instead next time.\n");
+					Ctrl->D.active = true;
+				}
+				else
+					n_errors += GMT_default_error (GMT, opt->option);
+				break;
 			case 'C':
 				Ctrl->C.active = true;
 				break;

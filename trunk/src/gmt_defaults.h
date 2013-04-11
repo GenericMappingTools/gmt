@@ -79,6 +79,7 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	char format_time[2][GMT_TEXT_LEN64];	/* Controls annotation format for Months/Weeks/Weekdays for primary and secondary axes */
 	char format_time_stamp[GMT_TEXT_LEN256];	/* Specify the format for writing time stamps (see strftime) */
 	/* GMT group */
+	unsigned int compatibility; /* Choose between 4 (GMT4) and up to latest version (5 for now) */
 	unsigned int interpolant; /* Choose between 0 (Linear), 1 (Akima), or 2 (Cubic spline) */
 	unsigned int triangulate; /* 0 for Watson [Default], 1 for Shewchuk (if configured) */
 	unsigned int verbose;     /* Level of verbosity 0-4 [1] */
@@ -143,9 +144,7 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	double ps_magnify[2];			/* Width and height of paper to plot on in points [Letter or A4] */
 	double ps_transparency;			/* Later transparency [0] */
 	unsigned int ps_color_mode;		/* Postscript encoding of color [PSL_RGB | PSL_CMYK | PSL_HSV | PSL_GRAY] */
-#ifdef GMT_COMPAT
-	unsigned int ps_copies;		/* How man copies of each plot [>=1] */
-#endif
+	unsigned int ps_copies;		/* How man copies of each plot [>=1] [GMT4 COMPATIBILITY ONLY] */
 	int ps_media;			/* Default paper media [25(Letter)]; negative if custom size */
 	bool ps_orientation;			/* Orientation of page [false = Landscape, true = Portrait] */
 	bool ps_comments;			/* true if we write comments in the PS file */

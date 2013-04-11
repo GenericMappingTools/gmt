@@ -265,9 +265,7 @@ EXTERN_MSC void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level);
 EXTERN_MSC char * GMT_create_header_item (struct GMTAPI_CTRL *API, unsigned int mode, void *arg);
 
 /* For supplements */
-#ifdef GMT_COMPAT
-	EXTERN_MSC int backwards_SQ_parsing (struct GMT_CTRL *GMT, char option, char *item);
-#endif
+EXTERN_MSC int backwards_SQ_parsing (struct GMT_CTRL *GMT, char option, char *item);
 EXTERN_MSC int gmt_comp_double_asc (const void *p_1, const void *p_2);
 
 EXTERN_MSC void gmt_set_double_ptr (double **ptr, double *array);

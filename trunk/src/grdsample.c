@@ -96,11 +96,8 @@ int GMT_grdsample_parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	int n_errors = 0, n_files = 0;
-#ifdef GMT_COMPAT
-	int ii = 0, jj = 0;
+	int n_errors = 0, n_files = 0, ii = 0, jj = 0;
 	char format[GMT_BUFSIZ];
-#endif
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -125,30 +122,36 @@ int GMT_grdsample_parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, stru
 					n_errors++;
 				}
 				break;
-#ifdef GMT_COMPAT
 			case 'L':	/* BCs */
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
-				strncpy (GMT->common.n.BC, opt->arg, 4U);
-				/* We turn on geographic coordinates if -Lg is given by faking -fg */
-				/* But since GMT_parse_f_option is private to gmt_init and all it does */
-				/* in this case are 2 lines bellow we code it here */
-				if (!strcmp (GMT->common.n.BC, "g")) {
-					GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
-					GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
+				if (GMT_compat_check (GMT, 4)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
+					strncpy (GMT->common.n.BC, opt->arg, 4U);
+					/* We turn on geographic coordinates if -Lg is given by faking -fg */
+					/* But since GMT_parse_f_option is private to gmt_init and all it does */
+					/* in this case are 2 lines bellow we code it here */
+					if (!strcmp (GMT->common.n.BC, "g")) {
+						GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
+						GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
+					}
 				}
+				else
+					n_errors += GMT_default_error (GMT, opt->option);
 				break;
 			case 'N':	/* Backwards compatible.  nx/ny can now be set with -I */
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -N<nx>/<ny> is deprecated; use -I<nx>+/<ny>+ instead.\n");
-				Ctrl->I.active = true;
-				sscanf (opt->arg, "%d/%d", &ii, &jj);
-				if (jj == 0) jj = ii;
-				sprintf (format, "%d+/%d+", ii, jj);
-				if (GMT_getinc (GMT, format, Ctrl->I.inc)) {
-					GMT_inc_syntax (GMT, 'I', 1);
-					n_errors++;
+				if (GMT_compat_check (GMT, 4)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -N<nx>/<ny> is deprecated; use -I<nx>+/<ny>+ instead.\n");
+					Ctrl->I.active = true;
+					sscanf (opt->arg, "%d/%d", &ii, &jj);
+					if (jj == 0) jj = ii;
+					sprintf (format, "%d+/%d+", ii, jj);
+					if (GMT_getinc (GMT, format, Ctrl->I.inc)) {
+						GMT_inc_syntax (GMT, 'I', 1);
+						n_errors++;
+					}
 				}
+				else
+					n_errors += GMT_default_error (GMT, opt->option);
 				break;
-#endif
 			case 'T':	/* Convert from pixel file <-> gridfile */
 				Ctrl->T.active = true;
 				break;

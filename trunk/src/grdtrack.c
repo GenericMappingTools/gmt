@@ -285,30 +285,30 @@ int GMT_grdtrack_parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct
 					ng++;
 				}
 				break;
-#ifdef GMT_COMPAT
-			case 'L':	/* Sets BCs */
-				if (opt->arg[0]) {
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -L<flag> is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
-					strncpy (GMT->common.n.BC, opt->arg, 4U);
+			case 'L':	/* GMT4 Sets BCs */
+				if (GMT_compat_check (GMT, 4)) {
+					if (opt->arg[0]) {
+						GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -L<flag> is deprecated; -n+b%s was set instead, use this in the future.\n", opt->arg);
+						strncpy (GMT->common.n.BC, opt->arg, 4U);
+					}
+					else {
+						GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
+						GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
+						GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; please use -fg instead.\n");
+					}
 				}
-				else {
-					GMT->current.io.col_type[GMT_IN][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT_IS_LON;
-					GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_LAT;
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -L is deprecated; please use -fg instead.\n");
-				}
+				else
+					n_errors += GMT_default_error (GMT, opt->option);
 				break;
-#endif
 			case 'N':
 				Ctrl->N.active = true;
 				break;
 			case 'S':
-#ifdef GMT_COMPAT
-				if (opt->arg[0] == 0) {	/* Under COMPAT: Interpret -S (no args) as old-style -S option to skip output with NaNs */
+				if (opt->arg[0] == 0 && GMT_compat_check (GMT, 4)) {	/* Under COMPAT: Interpret -S (no args) as old-style -S option to skip output with NaNs */
 					GMT_Report (API, GMT_MSG_NORMAL, "Warning: Option -S deprecated. Use -sa instead.\n");
 					GMT->current.setting.io_nan_mode = GMT_IO_NAN_ONE;
 					break;
 				}
-#endif
 				Ctrl->S.active = true;
 				switch (opt->arg[0]) {
 					case 'a': Ctrl->S.mode = STACK_MEAN;   break;

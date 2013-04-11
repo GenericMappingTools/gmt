@@ -47,6 +47,7 @@ FORMAT_TIME_STAMP		= %Y %b %d %H:%M:%S
 #
 # GMT Miscellaneous Parameters
 #
+GMT_COMPATIBILITY		= @GMT_COMPATIBILITY@
 GMT_FFT				= auto
 GMT_HISTORY			= true
 GMT_INTERPOLANT			= akima

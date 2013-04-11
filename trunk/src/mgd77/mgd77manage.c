@@ -26,9 +26,7 @@
 
 #define GMT_PROG_OPTIONS "-RVbn"
 
-#ifdef GMT_COMPAT
-	int backwards_SQ_parsing (struct GMT_CTRL *GMT, char option, char *item);
-#endif
+int backwards_SQ_parsing (struct GMT_CTRL *GMT, char option, char *item);
 
 #define N_PAR		7
 #define COL_SCALE	0
@@ -452,23 +450,22 @@ int GMT_mgd77manage_parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, 
 			case 'N':	/* Set distance units */
 				Ctrl->N.active = true;
 				Ctrl->N.code[0] = opt->arg[0];
-#ifdef GMT_COMPAT
-				if (Ctrl->N.code[0] == 'm') {
+				if (Ctrl->N.code[0] == 'm' && GMT_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning -N: Unit m for miles is deprecated; use unit M instead\n");
 					Ctrl->N.code[0] = 'M';
 				}
-#endif
 				if (!strchr (GMT_LEN_UNITS2, (int)Ctrl->N.code[0])) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error -N: Unit must be from %s\n", GMT_LEN_UNITS2_DISPLAY);
 					n_errors++;
 				}
 				break;
 				
-#ifdef GMT_COMPAT
 			case 'Q':	/* Backwards compatible.  Grid interpolation options are now be set with -n */
-				n_errors += backwards_SQ_parsing (GMT, 'Q', opt->arg);
+				if (GMT_compat_check (GMT, 4))
+					n_errors += backwards_SQ_parsing (GMT, 'Q', opt->arg);
+				else
+					n_errors += GMT_default_error (GMT, opt->option);
 				break;
-#endif
 			default:	/* Report bad options */
 				n_errors += GMT_default_error (GMT, opt->option);
 				break;

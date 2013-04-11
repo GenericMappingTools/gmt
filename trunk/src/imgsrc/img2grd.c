@@ -208,10 +208,13 @@ int GMT_img2grd_parse (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *Ctrl, struct G
 				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
-#ifdef GMT_COMPAT
 			case 'm':
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -m<inc> is deprecated; use -I<inc> instead.\n");
-#endif
+				if (GMT_compat_check (GMT, 4))	/* Warn and fall through */
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -m<inc> is deprecated; use -I<inc> instead.\n");
+				else {
+					n_errors += GMT_default_error (GMT, opt->option);
+					break;
+				}
 			case 'I':
 				Ctrl->I.active = true;
 				if ((sscanf (opt->arg, "%lf", &Ctrl->I.value)) != 1) {

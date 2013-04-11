@@ -1778,10 +1778,14 @@ int GMT_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsigned int n)
 				p[last] = 0;
 				scale = GMT_MIN2DEG;
 				break;
-#ifdef GMT_COMPAT
 			case 'c':
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Second interval unit c is deprecated; use s instead\n");
-#endif
+				if (GMT_compat_check (GMT, 4)) {	/* Warn and fall through */
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Second interval unit c is deprecated; use s instead\n");
+				}
+				else {
+					scale = 1.0;
+					break;
+				}
 			case 's':	/* Gave arc seconds */
 				p[last] = 0;
 				scale = GMT_SEC2DEG;
@@ -1875,12 +1879,10 @@ int GMT_get_distance (struct GMT_CTRL *GMT, char *line, double *dist, char *unit
 	last = (int)strlen (line) - 1;
 	if (strchr (GMT_LEN_UNITS GMT_OPT("c"), (int)copy[last])) {	/* Got a valid distance unit */
 		*unit = copy[last];
-#ifdef GMT_COMPAT
-		if (*unit == 'c') {
+		if (GMT_compat_check (GMT, 4) && *unit == 'c') {
 			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Unit c is deprecated; use s instead\n");
 			*unit = 's';
 		}
-#endif
 		copy[last] = '\0';	/* Chop off the unit */
 	}
 	else if (!strchr ("0123456789.", (int)copy[last])) {	/* Got an invalid distance unit */
@@ -3707,12 +3709,14 @@ int GMT_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 				txt_a[0] = p[1];	txt_a[1] = p[2];	txt_a[2] = '\0';
 				G->just = GMT_just_decode (GMT, txt_a, 6);
 				break;
-#ifdef GMT_COMPAT
 			case 'k':	/* Font color specification (backwards compatibility only since font color is now part of font specification */
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "+k<fontcolor> in contour label spec is obsolete, now part of +f<font>\n");
-				if (GMT_getfill (GMT, &p[1], &(G->font_label.fill))) bad++;
+				if (GMT_compat_check (GMT, 4)) {
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "+k<fontcolor> in contour label spec is obsolete, now part of +f<font>\n");
+					if (GMT_getfill (GMT, &p[1], &(G->font_label.fill))) bad++;
+				}
+				else
+					bad++;
 				break;
-#endif
 			case 'l':	/* Exact Label specification */
 				strncpy (G->label, &p[1], GMT_BUFSIZ);
 				G->label_type = 1;
@@ -3778,13 +3782,15 @@ int GMT_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 				G->min_radius = GMT_to_inch (GMT, &p[1]);
 				break;
 
-#ifdef GMT_COMPAT
 			case 's':	/* Font size specification (for backward compatibility only since size is part of font specification) */
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "+s<fontsize> in contour label spec is obsolete, now part of +f<font>\n");
-				G->font_label.size = GMT_convert_units (GMT, &p[1], GMT_PT, GMT_PT);
-				if (G->font_label.size <= 0.0) bad++;
+				if (GMT_compat_check (GMT, 4)) {
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "+s<fontsize> in contour label spec is obsolete, now part of +f<font>\n");
+					G->font_label.size = GMT_convert_units (GMT, &p[1], GMT_PT, GMT_PT);
+					if (G->font_label.size <= 0.0) bad++;
+				}
+				else
+					bad++;
 				break;
-#endif
 			case 'T':	/* Save contour label locations to given file [x y angle label] */
 				G->save_labels = 1;
 			case 't':	/* Save contour label locations to given file [x y label] */
@@ -7932,10 +7938,12 @@ double GMT_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS_ITEM *T)
 		case 'm':	/* arc Minutes */
 			return (T->interval * GMT_MIN2DEG);
 			break;
-#ifdef GMT_COMPAT
 		case 'c':	/* arc Seconds [deprecated] */
-			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Second interval unit c is deprecated; use s instead\n");
-#endif
+			if (GMT_compat_check (GMT, 4)) {	/* Warn and fall through */
+				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Second interval unit c is deprecated; use s instead\n");
+			}
+			else
+				return (T->interval);
 		case 's':	/* arc Seconds */
 			return (T->interval * GMT_SEC2DEG);
 			break;

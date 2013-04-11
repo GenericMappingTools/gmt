@@ -35,13 +35,11 @@ struct GRD2XYZ_CTRL {
 		bool active;
 		unsigned int mode;
 	} C;
-#ifdef GMT_COMPAT
 	struct E {	/* -E[f][<nodata>] */
 		bool active;
 		bool floating;
 		double nodata;
 	} E;
-#endif
 	struct N {	/* -N<nodata> */
 		bool active;
 		double value;
@@ -60,9 +58,7 @@ void *New_grd2xyz_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	
-#ifdef GMT_COMPAT
 	C->E.nodata = -9999.0;
-#endif
 	C->W.weight = 1.0;
 	C->Z.type = 'a';
 	C->Z.format[0] = 'T';	C->Z.format[1] = 'L';
@@ -142,23 +138,29 @@ int GMT_grd2xyz_parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct G
 				else if (opt->arg[0] == 'f') Ctrl->C.mode = 1;
 				else if (opt->arg[0] == 'i') Ctrl->C.mode = 2;
 				break;
-#ifdef GMT_COMPAT
 			case 'E':	/* Old ESRI option */
-				Ctrl->E.active = true;
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -E is deprecated; use grdreformat instead.\n");
-				if (opt->arg[0] == 'f') Ctrl->E.floating = true;
-				if (opt->arg[Ctrl->E.floating]) Ctrl->E.nodata = atof (&opt->arg[Ctrl->E.floating]);
+				if (GMT_compat_check (GMT, 4)) {
+					Ctrl->E.active = true;
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -E is deprecated; use grdreformat instead.\n");
+					if (opt->arg[0] == 'f') Ctrl->E.floating = true;
+					if (opt->arg[Ctrl->E.floating]) Ctrl->E.nodata = atof (&opt->arg[Ctrl->E.floating]);
+				}
+				else
+					n_errors += GMT_default_error (GMT, opt->option);
 				break;
 			case 'S':	/* Suppress/no-suppress NaNs on output */
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -S is deprecated; use -s instead.\n");
-				GMT_memset (GMT->current.io.io_nan_col, GMT_MAX_COLUMNS, int);
-				GMT->current.io.io_nan_col[0] = GMT_Z;	/* The default is to examine the z-column */
-				GMT->current.io.io_nan_ncols = GMT_IO_NAN_SKIP;		/* Default is that single z column */
-				GMT->current.setting.io_nan_mode = 1;	/* Plain -S */
-				if (opt->arg[0] == 'r') GMT->current.setting.io_nan_mode = GMT_IO_NAN_KEEP;	/* Old -Sr */
-				GMT->common.s.active = true;
+				if (GMT_compat_check (GMT, 4)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -S is deprecated; use -s instead.\n");
+					GMT_memset (GMT->current.io.io_nan_col, GMT_MAX_COLUMNS, int);
+					GMT->current.io.io_nan_col[0] = GMT_Z;	/* The default is to examine the z-column */
+					GMT->current.io.io_nan_ncols = GMT_IO_NAN_SKIP;		/* Default is that single z column */
+					GMT->current.setting.io_nan_mode = 1;	/* Plain -S */
+					if (opt->arg[0] == 'r') GMT->current.setting.io_nan_mode = GMT_IO_NAN_KEEP;	/* Old -Sr */
+					GMT->common.s.active = true;
+				}
+				else
+					n_errors += GMT_default_error (GMT, opt->option);
 				break;
-#endif
 			case 'N':	/* Nan-value */
 				Ctrl->N.active = true;
 				if (opt->arg[0])
@@ -186,10 +188,8 @@ int GMT_grd2xyz_parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct G
 	GMT_init_z_io (GMT, Ctrl->Z.format, Ctrl->Z.repeat, Ctrl->Z.swab, Ctrl->Z.skip, Ctrl->Z.type, io);
 
 	n_errors += GMT_check_condition (GMT, n_files == 0, "Syntax error: Must specify at least one input file\n");
-#ifdef GMT_COMPAT
 	n_errors += GMT_check_condition (GMT, n_files > 1 && Ctrl->E.active, "Syntax error: -E can only handle one input file\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && Ctrl->E.active, "Syntax error: -E is not compatible with -Z\n");
-#endif
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -243,12 +243,10 @@ int GMT_grd2xyz (void *V_API, int mode, void *args)
 			GMT_Report (API, GMT_MSG_NORMAL, "Warning: -Z overrides -bo\n");
 			GMT->common.b.active[GMT_OUT] = false;
 		}
-#ifdef GMT_COMPAT
-		if (Ctrl->E.active) {
+		if (Ctrl->E.active && GMT_compat_check (GMT, 4)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Warning: -E overrides -bo\n");
 			GMT->common.b.active[GMT_OUT] = false;
 		}
-#endif
 	}
 	else if (io.binary) GMT->common.b.active[GMT_OUT] = true;
 
@@ -306,7 +304,6 @@ int GMT_grd2xyz (void *V_API, int mode, void *args)
 			GMT->common.b.active[GMT_OUT] = previous;	/* Reset binary */
 			if (rst) GMT->current.io.io_nan_col[0] = GMT_Z;	/* Reset to what it was */
 		}
-#ifdef GMT_COMPAT
 		else if (Ctrl->E.active) {	/* ESRI format */
 			double slop;
 			char *record = NULL, item[GMT_BUFSIZ];
@@ -369,7 +366,6 @@ int GMT_grd2xyz (void *V_API, int mode, void *args)
 			}
 			GMT_free (GMT, record);
 		}
-#endif
 		else {	/* Regular x,y,z[,w] output */
 			if (first && GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_STDIO_IF_NONE, 0, options) != GMT_OK) {	/* Establishes data output */
 				Return (API->error);

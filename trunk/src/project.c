@@ -427,13 +427,15 @@ int GMT_project_parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct G
 					if (n_errors) GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -C option: Undecipherable argument %s\n", opt->arg);
 				}
 				break;
-#ifdef GMT_COMPAT
 			case 'D':
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -D is deprecated; use --FORMAT_GEO_OUT instead\n");
-				if (opt->arg[0] == 'g') GMT->current.io.geo.range = GMT_IS_0_TO_P360_RANGE;
-				if (opt->arg[0] == 'd') GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
+				if (GMT_compat_check (GMT, 4)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -D is deprecated; use --FORMAT_GEO_OUT instead\n");
+					if (opt->arg[0] == 'g') GMT->current.io.geo.range = GMT_IS_0_TO_P360_RANGE;
+					if (opt->arg[0] == 'd') GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
+				}
+				else
+					n_errors += GMT_default_error (GMT, opt->option);
 				break;
-#endif
 			case 'E':
 				Ctrl->E.active = true;
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) != 2) {

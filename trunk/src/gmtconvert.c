@@ -35,9 +35,7 @@
 #define GMT_PROG_OPTIONS "-:>Vabfghios" GMT_OPT("HMm")
 
 int gmt_get_ogr_id (struct GMT_OGR *G, char *name);
-#ifdef GMT_COMPAT
 int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg);
-#endif
 
 #define INV_ROWS	1
 #define INV_SEGS	2
@@ -193,12 +191,14 @@ int GMT_gmtconvert_parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, st
 						Ctrl->E.mode = -3; break;
 				}
 				break;
-#ifdef GMT_COMPAT
 			case 'F':	/* Now obsolete, using -o instead */
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -F is deprecated; use -o instead\n");
-				gmt_parse_o_option (GMT, opt->arg);
+				if (GMT_compat_check (GMT, 4)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -F is deprecated; use -o instead\n");
+					gmt_parse_o_option (GMT, opt->arg);
+				}
+				else
+					n_errors += GMT_default_error (GMT, opt->option);
 				break;
-#endif
 			case 'I':	/* Invert order or tables, segments, rows as indicated */
 				Ctrl->I.active = true;
 				for (k = 0; opt->arg[k]; k++) {

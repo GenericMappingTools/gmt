@@ -109,11 +109,14 @@ int GMT_blockmean_parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, stru
 			case 'S':	/* Set report mode for z */
 				Ctrl->S.active = true;
 				switch (opt->arg[0]) {
-#ifdef GMT_COMPAT
-					case '\0': case 'z':	/* Report data sums */
-						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -S and -Sz options are deprecated; use -Ss instead.\n");
-						Ctrl->S.mode = 1; break;
-#endif
+					case '\0': case 'z':	/* GMT4 LEVEL: Report data sums */
+						if (GMT_compat_check (GMT, 4)) {
+							GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: -S and -Sz options are deprecated; use -Ss instead.\n");
+							Ctrl->S.mode = 1;
+						}
+						else /* Not allowing backwards compatibility */
+							n_errors++;
+						break;
 					case 's':	/* Report data sums */
 						Ctrl->S.mode = 1; break;
 					case 'w': 	/* Report weight sums */

@@ -144,11 +144,12 @@ int GMT_grdrotater_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, st
 
 			/* Supplemental parameters */
 			
-#ifdef GMT_COMPAT
 			case 'C':	/* Now done automatically in spotter_init */
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
+				if (GMT_compat_check (GMT, 4))
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -C is no longer needed as total reconstruction vs stage rotation is detected automatically.\n");
+				else
+					n_errors += GMT_default_error (GMT, opt->option);
 				break;
-#endif
 			case 'D':
 				Ctrl->D.active = true;
 				Ctrl->D.file = strdup (opt->arg);
@@ -160,21 +161,23 @@ int GMT_grdrotater_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, st
 				break;
 			case 'T':	/* New: -Tage; compat mode: -Tlon/lat/angle Finite rotation parameters */
 				n = sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
-#ifdef GMT_COMPAT
 				if (n == 3) {	/* Gave -Tlon/lat/angle */
-					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -T<lon>/<lat>/<angle> is deprecated; use -e<lon>/<lat>/<angle> instead.\n");
-					Ctrl->e.active  = true;
-					Ctrl->e.w = atof (txt_c);
-					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->e.lon), txt_a);
-					n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->e.lat), txt_b);
+					if (GMT_compat_check (GMT, 4)) {
+						GMT_Report (API, GMT_MSG_COMPAT, "Warning: -T<lon>/<lat>/<angle> is deprecated; use -e<lon>/<lat>/<angle> instead.\n");
+						Ctrl->e.active  = true;
+						Ctrl->e.w = atof (txt_c);
+						n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_X], GMT_scanf_arg (GMT, txt_a, GMT->current.io.col_type[GMT_IN][GMT_X], &Ctrl->e.lon), txt_a);
+						n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Y], GMT_scanf_arg (GMT, txt_b, GMT->current.io.col_type[GMT_IN][GMT_Y], &Ctrl->e.lat), txt_b);
+					}
+					else {
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -T option: Must specify age of rotation\n");
+						n_errors++;
+					}
 				}
 				else {			
-#endif
 					Ctrl->T.active = true;
 					Ctrl->T.value = atof (txt_a);
-#ifdef GMT_COMPAT
 				}
-#endif
 				break;
 			case 'e':
 				Ctrl->e.active  = true;

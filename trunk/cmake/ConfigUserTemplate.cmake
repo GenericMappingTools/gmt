@@ -70,8 +70,8 @@
 # Configure default units (possible values are SI and US) [SI]:
 #set (UNITS "US")
 
-# Enable compatibility mode [TRUE]:
-#set (GMT_COMPAT FALSE)
+# Enable lower GMT version compatibility [4]:
+#set (GMT_COMPAT "4")
 
 # Enable file locking [FALSE]:
 #set (FLOCK TRUE)

@@ -2629,12 +2629,10 @@ void GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 	if (!GMT_is_geographic (GMT, GMT_IN)) return;	/* Only for geographic projections */
 
 	measure = (ms->measure == 0) ? 'k' : ms->measure;	/* Km is default */
-#ifdef GMT_COMPAT
-	if (measure == 'm') {
+	if (GMT_compat_check (GMT, 4) && measure == 'm') {
 		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Distance unit m is deprecated; use M for statute miles\n");
 		measure = 'M';
 	}
-#endif
 	if ((unit = GMT_get_unit_number (GMT, measure)) == GMT_IS_NOUNIT) {
 		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error: Bad distance unit %c\n", measure);
 		GMT_exit (EXIT_FAILURE);
@@ -3227,11 +3225,16 @@ void GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double 
 				if (s->pen) current_pen = s->pen;
 				break;
 
-#ifdef GMT_COMPAT
 			case (int)'C':
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Circle macro symbol C is deprecated; use c instead\n");
-				s->action = GMT_SYMBOL_CIRCLE;	/* Backwards compatibility, circles are now 'c' */
-#endif
+				if (GMT_compat_check (GMT, 4)) {	/* Warn and fall through */
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Circle macro symbol C is deprecated; use c instead\n");
+					s->action = GMT_SYMBOL_CIRCLE;	/* Backwards compatibility, circles are now 'c' */
+				}
+				else {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unrecognized symbol code (%d = '%c') passed to GMT_draw_custom_symbol\n", s->action, (char)s->action);
+					GMT_exit (EXIT_FAILURE);
+					break;
+				}
 			case GMT_SYMBOL_CROSS:
 			case GMT_SYMBOL_CIRCLE:
 			case GMT_SYMBOL_SQUARE:
@@ -3772,9 +3775,7 @@ struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 	PSL = GMT->PSL;	/* Shorthand */
 
 	PSL->internal.verbose = GMT->current.setting.verbose;		/* Inherit verbosity level from GMT */
-#ifdef GMT_COMPAT
-	if (GMT->current.setting.ps_copies > 1) PSL->init.copies = GMT->current.setting.ps_copies;
-#endif
+	if (GMT_compat_check (GMT, 4) && GMT->current.setting.ps_copies > 1) PSL->init.copies = GMT->current.setting.ps_copies;
 	PSL_setdefaults (PSL, GMT->current.setting.ps_magnify, GMT->current.setting.ps_page_rgb, GMT->current.setting.ps_encoding.name);
 
 	if ((Out = GMT_Find_Option (GMT->parent, '>', options))) {	/* Want to use a specific output file */

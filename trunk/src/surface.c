@@ -1550,12 +1550,10 @@ int GMT_surface_parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct G
 				Ctrl->S.active = true;
 				Ctrl->S.radius = atof (opt->arg);
 				Ctrl->S.unit = opt->arg[strlen(opt->arg)-1];
-#ifdef GMT_COMPAT
-				if (Ctrl->S.unit == 'c') {
+				if (Ctrl->S.unit == 'c' && GMT_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Unit c is deprecated; use s instead.\n");
 					Ctrl->S.unit = 's';
 				}
-#endif
 				if (!strchr ("sm ", Ctrl->S.unit)) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -S option: Unrecognized unit %c\n", Ctrl->S.unit);
 					n_errors++;
@@ -1564,13 +1562,17 @@ int GMT_surface_parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct G
 			case 'T':
 				Ctrl->T.active = true;
 				k = 0;
-#ifdef GMT_COMPAT
-				modifier = opt->arg[strlen(opt->arg)-1];
-				if (modifier == 'B') modifier = 'b';
-				else if (modifier == 'I') modifier = 'i';
-				if (!(modifier == 'b' || modifier == 'i'))
-#endif
-					modifier = opt->arg[0], k = 1;
+				if (GMT_compat_check (GMT, 4)) {	/* GMT4 syntax allowed for upper case */
+					modifier = opt->arg[strlen(opt->arg)-1];
+					if (modifier == 'B') modifier = 'b';
+					else if (modifier == 'I') modifier = 'i';
+					if (!(modifier == 'b' || modifier == 'i'))
+						modifier = opt->arg[0], k = 1;
+				}
+				else {
+					modifier = opt->arg[0];
+					k = 1;
+				}
 				if (modifier == 'b') {
 					Ctrl->T.b_tension = atof (&opt->arg[k]);
 				}

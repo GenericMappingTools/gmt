@@ -33,9 +33,7 @@
 #define SPLITXYZ_F_RES			1000	/* Number of points in filter halfwidth  */
 #define SPLITXYZ_N_OUTPUT_CHOICES	5
 
-#ifdef GMT_COMPAT
 int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt);
-#endif
 
 struct SPLITXYZ_CTRL {
 	struct Out {	/* -> */
@@ -200,9 +198,7 @@ int GMT_splitxyz_parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct
 
 	unsigned int j, n_errors = 0, n_outputs = 0, n_files = 0;
 	bool z_selected = false;
-#ifdef GMT_COMPAT
 	char txt_a[GMT_TEXT_LEN256];
-#endif
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -234,23 +230,27 @@ int GMT_splitxyz_parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct
 				Ctrl->F.active = true;
 				n_errors += GMT_check_condition (GMT,  (sscanf(opt->arg, "%lf/%lf", &Ctrl->F.xy_filter, &Ctrl->F.z_filter)) != 2, "Syntax error -F option: Can't decipher values\n");
 				break;
-#ifdef GMT_COMPAT
 			case 'G':
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -G option is deprecated; use -g instead.\n");
-				GMT->common.g.active = true;
-				if (GMT_is_geographic (GMT, GMT_IN))	
-					sprintf (txt_a, "D%sk", opt->arg);	/* Hardwired to be km */
+				if (GMT_compat_check (GMT, 4)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -G option is deprecated; use -g instead.\n");
+					GMT->common.g.active = true;
+					if (GMT_is_geographic (GMT, GMT_IN))	
+						sprintf (txt_a, "D%sk", opt->arg);	/* Hardwired to be km */
+					else
+						sprintf (txt_a, "d%s", opt->arg);	/* Cartesian */
+					n_errors += gmt_parse_g_option (GMT, txt_a);
+				}
 				else
-					sprintf (txt_a, "d%s", opt->arg);	/* Cartesian */
-				n_errors += gmt_parse_g_option (GMT, txt_a);
+					n_errors += GMT_default_error (GMT, opt->option);
 				break;
-#endif
-#ifdef GMT_COMPAT
 			case 'M':
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
-				if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
+				if (GMT_compat_check (GMT, 4)) {
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -M is deprecated; -fg was set instead, use this in the future.\n");
+					if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg unless already set */
+				}
+				else
+					n_errors += GMT_default_error (GMT, opt->option);
 				break;
-#endif
 			case 'N':
 				Ctrl->N.active = true;
 				if (opt->arg[0]) Ctrl->N.name = strdup (opt->arg);

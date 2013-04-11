@@ -30,6 +30,8 @@
  *			GMT MACROS DEFINITIONS
  *--------------------------------------------------------------------*/
 
+#define GMT_compat_check(C,version) (C->current.setting.compatibility <= version)	/* true if this section should be processed with backwards compatibility to given version */
+
 #ifndef MIN
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))	/* min and max value macros */
 #endif
