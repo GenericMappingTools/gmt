@@ -4,8 +4,8 @@ grd2cpt
 
 grd2cpt - Make linear or histogram-equalized color palette table from grid
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
@@ -13,11 +13,11 @@ grd2cpt - Make linear or histogram-equalized color palette table from grid
 **-C**\ *cptmaster* ] [ **-D**\ [**i**\ \|\ **o**] ] [ **-E**\ *nlevels*
 ] [ **-F**\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c** ] [ **-I** ] [
 **-L**\ *minlimit/maxlimit* ] [ **-M** ] [ **-N** ] [
-**-Q**\ [**i**\ \|\ **o**] ] [
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
-**-S**\ *zstart/zstop/zinc* ] [
-**-T**\ **-**\ \|\ **+**\ \|\ **\_**\ \|\ **=** ] [ **-V**\ [*level*\ ]
-] [ **-W** ] [ **-Z** ]
+**-Q**\ [**i**\ \|\ **o**] ]
+[ |SYN_OPT-R| ]
+[ **-S**\ *zstart/zstop/zinc* ] [
+**-T**\ **-**\ \|\ **+**\ \|\ **\_**\ \|\ **=** ] [ |SYN_OPT-V| ]
+[ **-W** ] [ **-Z** ]
 
 `Description <#toc2>`_
 ----------------------
@@ -41,7 +41,7 @@ whereever values are undefined.
 
 If the master cpt file includes B, F, and N entries, these will be
 copied into the new master file. If not, the parameters
-**COLOR\_BACKGROUND**, **COLOR\_FOREGROUND**, and **COLOR\_NAN** from
+**COLOR_BACKGROUND**, **COLOR_FOREGROUND**, and **COLOR_NAN** from
 the `gmt.conf <gmt.conf.html>`_ file or the command line will be used. This default
 behavior can be overruled using the options **-D**, **-M** or **-N**.
 
