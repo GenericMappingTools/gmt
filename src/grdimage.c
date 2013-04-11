@@ -483,42 +483,6 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 
 	if (n_grids) header_work = Grid_orig[0]->header;	/* OK, we are in GRID mode and this was not set further above. Do it now */
 
-	/* Get/calculate a color palette file */
-
-	if (!Ctrl->In.do_rgb) {
-		if (Ctrl->C.active) {		/* Read palette file */
-			if ((P = GMT_Get_CPT (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, header_work->z_min, header_work->z_max)) == NULL) {
-				Return (API->error);
-			}
-			gray_only = (P && P->is_gray);
-		}
-#ifdef HAVE_GDAL
-		else if (Ctrl->D.active) {
-			uint64_t dim[1] = {256};
-			/* We won't use much of the next 'P' but we still need to use some of its fields */
-			if ((P = GMT_Create_Data (API, GMT_IS_CPT, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
-			P->model = GMT_RGB;
-			if (I->ColorMap == NULL && !strncmp (I->ColorInterp, "Gray", 4)) {
-				r_table = GMT_memory (GMT, NULL, 256, double);
-				for (k = 0; k < 256; k++) r_table[k] = GMT_is255 (k);
-				gray_only = true;
-			}
-			else if (I->ColorMap != NULL) {
-				r_table = GMT_memory (GMT, NULL, 256, double);
-				g_table = GMT_memory (GMT, NULL, 256, double);
-				b_table = GMT_memory (GMT, NULL, 256, double);
-				for (k = 0; k < 256; k++) {
-					r_table[k] = GMT_is255 (I->ColorMap[k*4]);	/* 4 because color table is RGBA */
-					g_table[k] = GMT_is255 (I->ColorMap[k*4 + 1]);
-					b_table[k] = GMT_is255 (I->ColorMap[k*4 + 2]);
-				}
-				do_indexed = true;		/* Now it will be RGB */
-				gray_only = false;
-			}
-		}
-#endif
-	}
-
 	if (n_grids && Ctrl->In.do_rgb) {	/* Must ensure all three grids are coregistered */
 		if (!GMT_grd_same_region (GMT, Grid_orig[0], Grid_orig[1])) error++;
 		if (!GMT_grd_same_region (GMT, Grid_orig[0], Grid_orig[2])) error++;
@@ -733,6 +697,43 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 	nm = header_work->nm;
 	nx = header_work->nx;
 	ny = header_work->ny;
+
+	/* Get/calculate a color palette file */
+
+	if (!Ctrl->In.do_rgb) {
+		if (Ctrl->C.active) {		/* Read palette file */
+			if ((P = GMT_Get_CPT (GMT, Ctrl->C.file, GMT_CPT_OPTIONAL, header_work->z_min, header_work->z_max)) == NULL) {
+				Return (API->error);
+			}
+			gray_only = (P && P->is_gray);
+		}
+#ifdef HAVE_GDAL
+		else if (Ctrl->D.active) {
+			uint64_t dim[1] = {256};
+			/* We won't use much of the next 'P' but we still need to use some of its fields */
+			if ((P = GMT_Create_Data (API, GMT_IS_CPT, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
+			P->model = GMT_RGB;
+			if (I->ColorMap == NULL && !strncmp (I->ColorInterp, "Gray", 4)) {
+				r_table = GMT_memory (GMT, NULL, 256, double);
+				for (k = 0; k < 256; k++) r_table[k] = GMT_is255 (k);
+				gray_only = true;
+			}
+			else if (I->ColorMap != NULL) {
+				r_table = GMT_memory (GMT, NULL, 256, double);
+				g_table = GMT_memory (GMT, NULL, 256, double);
+				b_table = GMT_memory (GMT, NULL, 256, double);
+				for (k = 0; k < 256; k++) {
+					r_table[k] = GMT_is255 (I->ColorMap[k*4]);	/* 4 because color table is RGBA */
+					g_table[k] = GMT_is255 (I->ColorMap[k*4 + 1]);
+					b_table[k] = GMT_is255 (I->ColorMap[k*4 + 2]);
+				}
+				do_indexed = true;		/* Now it will be RGB */
+				gray_only = false;
+			}
+		}
+#endif
+	}
+
 
 	if (P && P->has_pattern) GMT_Report (API, GMT_MSG_VERBOSE, "Warning: Patterns in cpt file only apply to -T\n");
 	GMT_Report (API, GMT_MSG_VERBOSE, "Evaluate pixel colors\n");
