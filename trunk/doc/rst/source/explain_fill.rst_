@@ -1,9 +1,9 @@
-Specifying Fill
-~~~~~~~~~~~~~~~
+`Specifying Fill`_
+~~~~~~~~~~~~~~~~~~
 
 *fill*
     The attribute *fill* specifies the solid shade or solid *color* (see
-    SPECIFYING COLOR above) or the pattern used for filling polygons.
+    `Specifying Color`_ above) or the pattern used for filling polygons.
     Patterns are specified as **p**\ *dpi/pattern*, where *pattern*
     gives the number of the built-in pattern (1-90) *or* the name of a
     Sun 1-, 8-, or 24-bit raster file. The *dpi* sets the resolution of
