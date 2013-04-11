@@ -16,6 +16,8 @@ grdseamount - Compute synthetic seamount (Gaussian or cone, circular or elliptic
 [ **-V**\ [*level*\ ] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [ **-fg** ]
 [ **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] [ **r** ] 
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -27,8 +29,6 @@ a background depth.  The input must contain *lon, lat, radius, height* for each 
 For elliptical features (**-E**) we expect *lon, lat, azimuth, semi-major, semi-minor,
 radius, height* instead.  If flattening is specified (**TT**) then a final column with
 flattening is expected.
-
-..  include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

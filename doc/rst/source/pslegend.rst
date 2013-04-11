@@ -24,6 +24,8 @@ Synopsis
 **-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
 ] [ **-t**\ [*transp*\ ] ]
 
+|No-spaces|
+
 Description
 -----------
 
@@ -31,8 +33,6 @@ Description
 specific legend-related information from an input file [or stdin].
 Unless otherwise noted, annotations will be made using the primary
 annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY) 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

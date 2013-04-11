@@ -33,6 +33,8 @@ psxy - Plot lines, polygons, and symbols on maps
 [ |SYN_OPT-p| ]
 [ **-t**\ [*transp*] ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -48,8 +50,6 @@ data points will be drawn instead. To explicitly close polygons, use
 whether the polygon outline is drawn or not. If a symbol is selected,
 **-G** and **-W** determines the fill and outline/no outline,
 respectively. The *PostScript* code is written to standard output. 
-
-..  include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

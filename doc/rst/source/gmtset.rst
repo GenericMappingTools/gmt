@@ -14,6 +14,8 @@ gmtset - Change individual **GMT** default parameters
 PARAMETER1 [=] *value1* PARAMETER2 [=] *value2* PARAMETER3 [=] *value3*
 ...
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 

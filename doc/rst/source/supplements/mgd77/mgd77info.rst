@@ -14,6 +14,8 @@ mgd77info - Extract information about MGD77 files
 **-Mf**\ [*item*\ ]\|\ **r**\ \|\ **e**\ \|\ **h** ] [ **-L**\ [**v**\ ]
 ] [ **-V**\ [*level*\ ] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -28,8 +30,6 @@ If you need to know which tracks are crossing through a given region and
 what kinds of geophysical observations are available, consider using the
 x2sys tools to set up a tracks index data base (see **x2sys\_init** for
 more information). 
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

@@ -12,6 +12,8 @@ x2sys\_merge - Merge an updated COEs table (smaller) into the main table
 
 **x2sys\_merge** **-A**\ *main\_COElist.d* **-M**\ *new\_COElist.d*
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -23,8 +25,6 @@ point is NOT checked in the code). This program is useful when, for any
 good reason like file editing NAV correction or whatever, one had to
 recompute only the COEs between the edited files and the rest of the
 database.
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

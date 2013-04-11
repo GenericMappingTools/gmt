@@ -28,6 +28,8 @@ grdview - Create 3-D perspective image or surface mesh from a grid
 **-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
 ] [ **-t**\ [*transp*\ ] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -37,8 +39,6 @@ polygons, or by scanline conversion of these polygons to a raster image.
 Options include draping a data set on top of a surface, plotting of
 contours on top of the surface, and apply artificial illumination based
 on intensities provided in a separate grid file. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

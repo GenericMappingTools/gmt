@@ -20,6 +20,8 @@ trend1d - Fit a [weighted] [robust] polynomial [or Fourier] model for y
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -29,8 +31,6 @@ by [weighted] least squares. The functional form of f(x) may be chosen
 as polynomial or Fourier, and the fit may be made robust by iterative
 reweighting of the data. The user may also search for the number of
 terms in f(x) which significantly reduce the variance in y. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

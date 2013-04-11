@@ -17,6 +17,8 @@ SUN rasterfile
 **-V**\ [*level*\ ] ] [ **-W**\ *width*/*height*\ [/*n\_bytes*] ] [
 **-r** ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -35,14 +37,11 @@ via the **-W** option.
 -----------------------------
 
 *infile*
-    `The (1) <The.html>`_ Sun raster file, (2) 2-D binary grid file, `or
-    (3) <or.html>`_ raw raster file to be converted.
+    The (1) Sun raster file, (2) 2-D binary grid file, or (3) raw raster file to be converted.
 **-G**\ *template*
     Provide an output name template for the three output grids. The
     template should be a regular grid file name except it must contain
     the string %c which on output will be replaced by r, g, or b. 
-
-.. include:: explain_commonitems.rst_
 
 `Optional Arguments <#toc5>`_
 -----------------------------

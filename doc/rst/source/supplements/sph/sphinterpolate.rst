@@ -18,6 +18,8 @@ sphinterpolate - Spherical gridding in tension of data on a sphere
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -28,8 +30,6 @@ grid is saved to the specified file. Several options may be used to
 affect the outcome, such as choosing local versus global gradient
 estimation or optimize the tension selection to satisfy one of four
 criteria.
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

@@ -17,6 +17,8 @@ originator - Associate seamounts with nearest hotspot point sources
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -32,8 +34,6 @@ HWI), the stage id of the flowline segment that came closest, the
 pseudo-age of the seamount, and the closest distance to the hotspot (in
 km). See option **-:** on how to read (latitude, longitude,height,
 radius, crustal\_age) files.
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

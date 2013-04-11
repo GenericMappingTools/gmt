@@ -12,6 +12,8 @@ x2sys\_binlist - Create bin index listing from track data files
 **x2sys\_binlist** *track(s)* **-T**\ *TAG* [ **-D** ] [ **-E** ] [
 **-V**\ [*level*\ ] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -29,8 +31,6 @@ data base for miscellaneous track queries, such as when needing to
 determine which tracks should be compared in a crossover analysis. You
 must run **x2sys\_init** to initialize the tag before you can run the
 indexing.
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

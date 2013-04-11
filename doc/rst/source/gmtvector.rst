@@ -21,6 +21,8 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ **-o**\ *cols*\ [,*...*] ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -38,8 +40,6 @@ cross products, vector sums, and vector rotations) can be selected; most
 require a single second vector, provided via **-S**. The output vectors
 will be converted back to (lon, lat) or (r, theta) unless **-Co** is set
 which requests (x, y[, z]) Cartesian coordinates. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

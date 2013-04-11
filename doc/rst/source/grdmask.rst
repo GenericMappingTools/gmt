@@ -21,6 +21,8 @@ grdmask - Create mask grid from polygons or point coverage
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -35,8 +37,6 @@ and the mask is set to the inside or outside value depending on whether
 a node is within a maximum distance from the nearest data point. If the
 distance specified is zero then only the nodes nearest each data point
 are considered "inside". 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

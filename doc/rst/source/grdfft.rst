@@ -19,6 +19,8 @@ frequency) domain
 ] [ **-S**\ *scale* ] [ |SYN_OPT-V| ] [
 **-fg** ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -30,8 +32,6 @@ dimensions of the grid are assumed to be in meters. Geographical grids
 may be used by specifying the **-fg** option that scales degrees to
 meters. If you have grids with dimensions in km, you could change this
 to meters using `grdedit <grdedit.html>`_ or scale the output with `grdmath <grdmath.html>`_. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

@@ -28,14 +28,14 @@ mgd77track - Plot track-line map of MGD77 cruises
 **-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
 ] [ **-t**\ [*transp*\ ] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
 **mgd77track** reads NGDC MGD77 cruises and creates *PostScript* code
 that will plot one or more ship tracks on a map using the specified
 projection. The *PostScript* code is written to standard output.
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

@@ -12,6 +12,8 @@ gmtget - Get individual **GMT** default parameters
 **gmtget** [ **-G**\ *defaultsfile* ] [ **-L** ] *PARAMETER1* [
 *PARAMETER2* *PARAMETER3* ... ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 

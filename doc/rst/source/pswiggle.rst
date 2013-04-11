@@ -31,6 +31,8 @@ pswiggle - Plot z = f(x,y) anomalies along tracks
 **-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
 ] [ **-t**\ [*transp*\ ] ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -43,8 +45,6 @@ positive normal is outside the plus/minus 90 degree window around the
 preferred direction, then 180 degrees are added to the direction. Either
 the positive or the negative wiggle may be shaded. The resulting
 *PostScript* code is written to standard output. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

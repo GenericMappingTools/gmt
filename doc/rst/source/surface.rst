@@ -2,8 +2,7 @@
 surface
 *******
 
-surface - Grid table data using adjustable tension continuous curvature
-splines
+surface - Grid table data using adjustable tension continuous curvature splines
 
 `Synopsis <#toc1>`_
 -------------------
@@ -22,6 +21,8 @@ splines
 [ **-f**\ *colinfo* ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-:**\ [**i**\ \|\ **o**] ]
+
+|No-spaces|
 
 `Description <#toc2>`_
 ----------------------
@@ -46,8 +47,6 @@ spatial aliasing and eliminate redundant data. You may impose lower
 and/or upper bounds on the solution. These may be entered in the form of
 a fixed value, a grid with values, or simply be the minimum/maximum
 input data values. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

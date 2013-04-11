@@ -21,6 +21,8 @@ pssegyz - Create imagemasked postscript from SEGY file
 **-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
 ] [ **-t**\ [*transp*\ ] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -47,8 +49,6 @@ The SEGY file should be a disk image of the tape format (ie 3200 byte
 text header, which is ignored, 400 byte binary reel header, and 240 byte
 header for each trace) with samples as native real\*4 (IEEE real on all
 the platforms to which I have access)
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

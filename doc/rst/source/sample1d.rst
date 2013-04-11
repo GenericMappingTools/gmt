@@ -21,6 +21,8 @@ sample1d - Resample 1-D table data using splines
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-o**\ *cols*\ [,*...*] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -32,8 +34,6 @@ variable. Equidistant or arbitrary sampling can be selected. All columns
 are resampled based on the new sampling interval. Several interpolation
 schemes are available. Extrapolation outside the range of the input data
 is not supported. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

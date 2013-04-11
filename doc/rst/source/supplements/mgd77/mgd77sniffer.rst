@@ -24,6 +24,8 @@ mgd77sniffer - Along-track quality control of MGD77 cruises
 **-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*]
 ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -46,8 +48,6 @@ The mgd77sniffer links with Generic Mapping Tools 4.0 or later along
 with the supplemental GMT packages x2sys and mgd77. See
 `http://gmt.soest.hawaii.edu <http://gmt.soest.hawaii.edu>`_ for GMT
 details. Grids for comparison with cruise data may be downloaded via the web. 
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc5>`_
 -----------------------------

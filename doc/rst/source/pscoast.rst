@@ -30,6 +30,8 @@ Synopsis
 **-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
 ] [ **-t**\ [*transp*\ ] ]
 
+|No-spaces|
+
 Description
 -----------
 
@@ -48,8 +50,6 @@ earlier graphics drawn in those areas will not be overwritten).
 Likewise, if the water-areas are painted and no land fill is set then
 the land-areas will be transparent. A map projection must be supplied.
 The *PostScript* code is written to standard output. 
-
-.. include:: explain_commonitems.rst_
 
 Required Arguments
 ------------------

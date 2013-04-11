@@ -11,14 +11,14 @@ Synopsis
 
 **gmtlogo** *dx* *dy* [ **-G**\ *fill* ] [ **-W**\ [*pen*] ] >> *plot.ps*
 
+|No-spaces|
+
 Description
 -----------
 
 This scrips appends the **GMT** logo as an overlay to an "open"
 *PostScript* file. The logo is 2 inches wide and 1 inch high and will be
 positioned relative to the current plot origin. 
-
-.. include:: explain_commonitems.rst_
 
 Required Arguments
 ------------------

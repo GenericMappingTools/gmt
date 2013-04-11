@@ -15,6 +15,8 @@ Synopsis
 [ **-J**\ *parameters* ] [ |SYN_OPT-V| ]
 [ **-bo**\ [*ncols*][*type*] ] [ **-o**\ *cols*\ [,...] ]
 
+|No-spaces|
+
 Description
 -----------
 
@@ -38,8 +40,6 @@ by anonymous ftp and on CD-ROM (see README page in dbase directory).
 **grdraster** will list the available files if no arguments are given.
 Finally, **grdraster** will write xyz-triplets to stdout if no output
 gridfile name is given 
-
-.. include:: ../../explain_commonitems.rst_
 
 Required Arguments
 ------------------

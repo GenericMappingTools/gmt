@@ -24,6 +24,8 @@ psvelo - Plot velocity vectors, crosses, and wedges on maps
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -33,8 +35,6 @@ Most options are the same as for `psxy <../../psxy.html>`_, except **-S**. The
 *PostScript* code is written to standard output. The previous version
 (**psvelomeca**) is now obsolete. It has been replaced by **psvelo** and
 `psmeca <psmeca.html>`_.
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

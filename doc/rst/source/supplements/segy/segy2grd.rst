@@ -18,6 +18,8 @@ segy2grd - Converting SEGY data to a GMT grid
 **-V**\ [*level*\ ] ] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [ **-r** ] [
 **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -28,8 +30,6 @@ one sample in the SEGY file can be done. **segy2grd** will report if
 some of the nodes are not filled in with data. Such unconstrained nodes
 are set to a value specified by the user [Default is NaN]. Nodes with
 more than one value will be set to the average value.
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

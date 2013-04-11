@@ -25,6 +25,8 @@ Synopsis
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-:**\ [**i**\ \|\ **o**] ] [ > *output.kml* ]
 
+|No-spaces|
+
 Description
 -----------
 
@@ -42,8 +44,6 @@ The input files should contain the following columns:
 where *lon* and *lat* are required for all features, *alt* is optional
 for all features (see also **-A** and **-C**), and *timestart* and
 *timestop* apply to events and timespan features. 
-
-.. include:: explain_commonitems.rst_
 
 Required Arguments
 ------------------

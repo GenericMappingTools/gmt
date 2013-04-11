@@ -23,6 +23,8 @@ mgd77list - Extract data from MGD77 files
 ] [ **-Z**\ *+*\ \|\ **-** ] [ **-bo**\ [*ncols*\ ][*type*\ ] ] [ **-h**
 ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -43,8 +45,6 @@ time- or distance-intervals along track or by selecting a geographical
 region. Finally, each output record may be required to pass any number
 of logical tests involving data values or bit flags. If multiple cruises
 are requested then they are separated by segment headers.
-
- .. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

@@ -2,7 +2,7 @@
 x2sys_solve
 ***********
 
-x2sys\_solve - Determine least-squares systematic correction from crossovers
+x2sys_solve - Determine least-squares systematic correction from crossovers
 
 `Synopsis <#toc1>`_
 -------------------
@@ -13,6 +13,8 @@ x2sys\_solve - Determine least-squares systematic correction from crossovers
 *COE\_list.d* ] [ **-V**\ [*level*\ ] ] [ **-W[u]** ] [
 **-bi**\ [*ncols*\ ][*type*\ ] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -21,8 +23,6 @@ for systematic corrections that can then be applied per track to improve
 data quality. Several systematic corrections can be solved for using a
 least-squares approach. Note: Only one data column can be processed at
 the time.
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

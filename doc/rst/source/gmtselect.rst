@@ -27,6 +27,8 @@ gmtselect - Select data table subsets based on multiple spatial criteria
 ] [ **-o**\ *cols*\ [,*...*] ] [ **-s**\ [*cols*\ ][\ **a**\ \|\ **r**]
 ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -41,8 +43,6 @@ of the polygons in the *polygonfile*, 5) inside geographical features
 sense of the tests can be reversed for each of these 6 criteria by using
 the **-I** option. See option **-:** on how to read (latitude,longitude)
 files. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

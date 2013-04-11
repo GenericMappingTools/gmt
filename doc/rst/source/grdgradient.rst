@@ -17,6 +17,8 @@ Synopsis
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-S**\ *slopefile*
 ] [ **-V**\ [*level*\ ] ] [ **-fg**\ ]
 
+|No-spaces|
+
 Description
 -----------
 
@@ -26,8 +28,6 @@ given direction (**-A**), or the direction (**-S**) [and the magnitude
 
 Estimated values in the first/last row/column of output depend on
 boundary conditions (see **-L**). 
-
-.. include:: explain_commonitems.rst_
 
 Required Arguments
 ------------------

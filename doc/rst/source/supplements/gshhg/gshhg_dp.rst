@@ -11,6 +11,8 @@ gshhg\_dp - Line reduction using the Douglas-Peucker algorithm
 
 **gshhg\_dp** *input.b tolerance output.b* [ **-v** ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -43,7 +45,7 @@ byte-swabbing between different architectures.
 
 To simplify the full GSHHG data set with a custom tolerance of 2 km, try
 
-    gshhg\_dp gshhs\_f.b 2 gshhs\_2km.b
+    gshhg_dp gshhs_f.b 2 gshhs_2km.b
 
 `References <#toc6>`_
 ---------------------

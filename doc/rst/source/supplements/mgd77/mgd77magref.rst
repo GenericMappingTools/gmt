@@ -17,13 +17,13 @@ mgd77magref - Evaluate the IGRF or CM4 magnetic field models
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
 **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
 **mgd77magref** will evaluate the IGRF or the CM4 geomagnetic models at
 the specified locations and times. 
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

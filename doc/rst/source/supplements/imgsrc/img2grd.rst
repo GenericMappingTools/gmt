@@ -16,6 +16,8 @@ img2grd - Extract subset of img file in Mercator or Geographic format
 **-V**\ [*level*\ ] ] [ **-W**\ *maxlon* ] [
 **-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -24,8 +26,6 @@ to a grid file. The **-M** option dictates whether or not the Spherical
 Mercator projection of the img file is preserved or if a Geographic grid
 should be written by undoing the Mercator projection. If geographic grid
 is selected you can also request a resampling onto the exact **-R** given.
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

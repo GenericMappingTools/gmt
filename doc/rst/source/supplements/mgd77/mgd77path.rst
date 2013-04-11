@@ -12,14 +12,14 @@ mgd77path - Return paths to MGD77 cruises and directories
 **mgd77path** *NGDC-ids* [ **-A**\ [**-**\ ] ] [ **-D** ] [
 **-I**\ *ignore* ] [ **-V**\ [*level*\ ] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
 **mgd77path** returns the full pathname to one or more MGD77 files. The
 pathname returned for a given cruise may change with time due to
 reshuffling of disks/subdirectories. 
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

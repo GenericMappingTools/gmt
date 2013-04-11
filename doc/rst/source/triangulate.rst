@@ -22,6 +22,8 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 Description
 -----------
 
@@ -40,8 +42,6 @@ surface defined by the planar triangles. The actual algorithm used in
 the triangulations is either that of Watson [1982] [Default] or Shewchuk
 [1996] (if installed; type **triangulate -** to see which method is
 selected). This choice is made during the **GMT** installation. 
-
-.. include:: explain_commonitems.rst_
 
 Required Arguments
 ------------------

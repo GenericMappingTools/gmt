@@ -23,6 +23,8 @@ gmtconvert - Convert, Paste, and/or Extract columns from data tables
 ] [ **-o**\ *cols*\ [,*...*] ] [ **-s**\ [*cols*\ ][\ **a**\ \|\ **r**]
 ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -36,8 +38,6 @@ list segment headers and no data records, (6) extract first and/or last
 data record for each segment, `and (7) <and.7.html>`_ reverse the order
 of items on output. Input (and hence output) may have multiple
 sub-headers, and ASCII tables may have regular headers as well. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

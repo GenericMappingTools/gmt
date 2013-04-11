@@ -28,6 +28,8 @@ conversions and geodesy
 ] [ **-o**\ *cols*\ [,*...*] ] [ **-s**\ [*cols*\ ][\ **a**\ \|\ **r**]
 ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -42,8 +44,6 @@ to a line. Finally, can be used to perform various datum conversions.
 Additional data fields are permitted after the first 2 columns which
 must have (longitude,latitude) or (x,y). See option **-:** on how to
 read (latitude,longitude) files. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

@@ -16,6 +16,8 @@ x2sys\_init - Initialize a new x2sys track database
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-V**\ [*level*\ ]
 ] [ **-Wt**\ \|\ **d**\ *gap* ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -37,8 +39,6 @@ crossovers, use **x2sys\_report** to report crossover statistics or
 **x2sys\_solve** can use to determine track-specific systematic
 corrections. These corrections may be used with **x2sys\_datalist** to
 extract corrected data values for use in subsequent work.
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

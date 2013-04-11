@@ -14,6 +14,8 @@ rotconverter - Manipulate total reconstruction and stage rotations
 **-E**\ [*fact*\ ] ] [ **-F**\ *out* ] [ **-G** ] [ **-N** ] [ **-S** ]
 [ **-T** ] [ **-V**\ [*level*\ ] ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -24,8 +26,6 @@ they were listed. The minus sign means we should first transpose the
 rotation and then add it to the previous rotation. If a file cannot be
 opened we will attempt to decode the file name as a single rotation
 whose parameters are separated by slashes.
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

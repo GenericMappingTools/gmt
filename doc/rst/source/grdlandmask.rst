@@ -16,6 +16,8 @@ grdlandmask - Create a "wet-dry" mask grid from shoreline data base
 ] [ **-D**\ *resolution*\ [**+**\ ] ] [ **-N**\ *maskvalues*\ [**o**\ ]
 ] [ **-V**\ [*level*\ ] ] [ **-r** ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -25,10 +27,7 @@ over water. The nodes defined by the selected region and lattice spacing
 will be set according to one of two criteria: (1) land vs water, `or
 (2) <or.2.html>`_ the more detailed (hierarchical) ocean vs land vs lake
 vs island vs pond. The resulting mask may be used in subsequent
-operations involving **grdmath** to mask out data from land [or water]
-areas. 
-
-.. include:: explain_commonitems.rst_
+operations involving **grdmath** to mask out data from land [or water] areas. 
 
 `Required Arguments <#toc4>`_
 -----------------------------

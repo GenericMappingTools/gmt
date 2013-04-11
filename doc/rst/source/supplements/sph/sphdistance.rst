@@ -18,6 +18,8 @@ sphdistance - Make grid of distances to nearest points on a sphere
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -29,8 +31,6 @@ The Voronoi algorithm used is STRIPACK. As an option, you may provide
 pre-calculated Voronoi polygon file in the format written by
 **sphtriangulate**, thus bypassing the memory- and time-consuming
 triangularization.
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

@@ -25,3 +25,5 @@
 .. |SYN_OPT-n| replace:: **-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*]
 
 .. |SYN_OPT-p| replace:: **-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
+
+.. |No-spaces| replace:: **Note:** No space is allowed between the option flag and the associated arguments. 

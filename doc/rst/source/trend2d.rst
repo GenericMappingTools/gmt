@@ -19,6 +19,8 @@ Synopsis
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 Description
 -----------
 
@@ -41,8 +43,6 @@ robust scale estimate, in order to converge to a solution insensitive to
 outliers. This may be handy when separating a "regional" field from a
 "residual" which should have non-zero mean, such as a local mountain on
 a regional surface. 
-
-.. include:: explain_commonitems.rst_
 
 Required Arguments
 ------------------

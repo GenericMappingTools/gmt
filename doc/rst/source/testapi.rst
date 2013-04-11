@@ -15,6 +15,8 @@ testapi - Test API i/o methods for any data type
 **-W**\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **r**\ \|\ **s**\ [/**m**\ \|\ **v**]
 [ **-V**\ [*level*\ ] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -23,8 +25,6 @@ types (DATASET, TEXTSET, CPT, GRID, and IMAGE) can be read from or
 written to 5 different ways (file, stream, file descriptor, copy from
 memory, reference from memory). We use this tool to check the various
 possibilities, for each data type. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

@@ -18,6 +18,8 @@ data
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -30,8 +32,6 @@ Voronoi polygons. Normally, either set of polygons will be written as
 fillable segment output; use **-T** to write unique arcs instead. As an
 option, compute the area of each triangle or polygon. The algorithm used
 is STRIPACK.
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

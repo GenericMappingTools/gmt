@@ -13,6 +13,8 @@ mgd77convert - Convert MGD77 data to other file formats
 **-T**\ [**+**\ ]\ **a**\ \|\ **b**\ \|\ **t** [ **-C** ] [ **-D** ] [
 **-L**\ [**w**\ ][**e**\ ][**+**\ ] ] [ **-V**\ [*level*\ ] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 

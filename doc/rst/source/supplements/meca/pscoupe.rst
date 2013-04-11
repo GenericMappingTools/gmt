@@ -28,6 +28,8 @@ pscoupe - Plot cross-sections of focal mechanisms
 ] [ **-p**\ [*pen*\ ] ] [ **-t**\ [*pen*\ ] ] [
 **-:**\ [**i**\ \|\ **o**] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -47,8 +49,6 @@ plane is not horizontal,
 Axis angles are defined in the same way as in horizontal plane in the new system.
 Moment tensor (initially in r, t, f system that is up, south, east) is
 defined in (-u^s, -u, s) system.
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

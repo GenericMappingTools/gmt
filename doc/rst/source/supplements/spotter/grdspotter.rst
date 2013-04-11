@@ -18,6 +18,8 @@ grdspotter - Create CVA image from a gravity or topography grid
 **-V**\ [*level*\ ] ] [ **-Z**\ *z\_min*\ [/*z\_max*\ [/*z\_inc*]] ] [
 **-r** ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -26,8 +28,6 @@ calculates flowlines from each node that exceeds a minimum value using
 the specified rotations file. These flowlines are then convolved with
 the volume of the prism represented by each grid node and added up to
 give a Cumulative Volcano Amplitude grid (CVA).
-
-.. include:: ../../explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

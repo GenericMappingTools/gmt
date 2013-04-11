@@ -18,6 +18,8 @@ grdproject - Forward and inverse map transformation of grids
 **-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*]
 ] [ **-r** ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -39,8 +41,6 @@ NaN.
 
 The **-R** option can be used to select a map region larger or smaller
 than that implied by the extent of the grid file. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

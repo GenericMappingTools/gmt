@@ -15,6 +15,8 @@ grdvolume - Calculate grid volume and area constrained by a contour
 **-V**\ [*level*\ ] ] [ **-Z**\ *fact*\ [/*shift*] ] [ **-f**\ *colinfo*
 ] [ **-o**\ *cols*\ [,*...*] ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -27,8 +29,6 @@ contour for all contour values. Using **-T**, the contour that produced
 the maximum mean height (or maximum curvature of heights vs contour
 value) is reported as well. This feature may be used with **grdfilter**
 in designing an Optimal Robust Separator [*Wessel*, 1998]. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------

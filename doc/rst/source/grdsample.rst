@@ -16,6 +16,8 @@ grdsample - Resample a grid onto a new lattice
 **-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*]
 ] [ **-r** ]
 
+|No-spaces|
+
 `Description <#toc2>`_
 ----------------------
 
@@ -34,8 +36,6 @@ the input grid. When **-I** is omitted, the grid spacing of the output
 grid will be the same as the input grid. Either **-r** or **-T** can be
 used to change the grid registration. When omitted, the output grid will
 have the same registration as the input grid. 
-
-.. include:: explain_commonitems.rst_
 
 `Required Arguments <#toc4>`_
 -----------------------------
