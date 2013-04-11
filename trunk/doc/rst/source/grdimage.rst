@@ -4,29 +4,27 @@ grdimage
 
 grdimage - Project grids or images and plot them on maps
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdimage** *grd\_z* \| *grd\_r grd\_g grd\_b* [
-**-A**\ *out\_img*\ **=**\ *driver* ] **-C**\ *cptfile* [
-**-D**\ [**r**\ ] ] **-J**\ *parameters* [
-**-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-Ei**\ [\|*dpi*] ] [
+**grdimage** *grd\_z* \| *grd\_r grd\_g grd\_b*
+[ **-A**\ *out_img*\ **=**\ *driver* ] [ **-C**\ *cptfile* ]
+[ **-D**\ [**r**\ ] ] **-J**\ *parameters* [
+**-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-Ei**\ [\|\ *dpi*] ] [
 **-G**\ [**f**\ \|\ **b**]\ *color* ] [ **-I**\ *intensfile*\ \|\ *intensity* ] [
 **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [ **-M** ] [ **-N** ] [
-**-O** ] [ **-P** ] [ **-Q** ] [
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ] ] [
-**-T** ] [ **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [
-**-V**\ [*level*\ ] ] [
-**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-] [
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-] [ **-c**\ *copies* ] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
-**-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*]
-] [
-**-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
-] [ **-tr** ]
+**-O** ] [ **-P** ] [ **-Q** ]
+[ |SYN_OPT-Rz| ]
+[ **-T** ] [ **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-X| ]
+[ |SYN_OPT-Y| ]
+[ **-c**\ *copies* ] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ]
+[ |SYN_OPT-n| ]
+[ |SYN_OPT-p| ]
+[ **-tr** ]
 
 `Description <#toc2>`_
 ----------------------
@@ -102,7 +100,7 @@ A (color) *PostScript* file is output.
     is a valid file syntax. Note, however, that to use it this way you
     must not be blocked by a proxy. If you are, chances are good that it
     can work by setting the environmental variable
-    `http\_proxy <http_proxy>`_ with the value ’your\_proxy:port’ Append
+    *http_proxy* with the value ’your\_proxy:port’ Append
     **r** to use the region specified by **-R** to apply to the image.
     For example, if you have used **-Rd** then the image will be
     assigned the limits of a global domain. The interest of this mode is

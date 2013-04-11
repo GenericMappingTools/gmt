@@ -488,7 +488,7 @@ Table [tbl:API] gives a list of all the functions and their purpose.
 +-------------------------+---------------------------------------------------+
 | GMT_Create_Data_        | Create an empty data resource                     |
 +-------------------------+---------------------------------------------------+
-| GMT_Create_Options_     | Create a linked list of program options           |
+| GMT_Create_Options_     | Convert command line options to linked list       |
 +-------------------------+---------------------------------------------------+
 | GMT_Create_Session_     | Initialize a new GMT session                      |
 +-------------------------+---------------------------------------------------+
@@ -543,8 +543,6 @@ Table [tbl:API] gives a list of all the functions and their purpose.
 | GMT_Option_             | Explain one or more GMT common options            |
 +-------------------------+---------------------------------------------------+
 | GMT_Parse_Common_       | Parse the GMT common options                      |
-+-------------------------+---------------------------------------------------+
-| GMT_Prep_Options        | Convert command line options to linked list       |
 +-------------------------+---------------------------------------------------+
 | GMT_Put_Data_           | Export to a registered data resource              |
 +-------------------------+---------------------------------------------------+
@@ -1426,7 +1424,7 @@ Message and Verbose Reporting
 The API provides two functions for your program to present information
 to the user during the run of the program. One is used for messages that
 are always written while the other is used for reports that must exceed
-the verbosity settings specified via ``-V``.
+the verbosity settings specified via **-V**.
 
 .. _GMT_Report:
 
@@ -1438,9 +1436,9 @@ This function takes a verbosity level and a multi-part message (e.g., a
 format statement and zero or more variables). The verbosity ``level`` is
 an integer in the 0–5 range; these are listed in Table [tbl:verbosity].
 You assign an appropriate verbosity level to your message, and depending
-on the chosen run-time verbosity level set via ``-V`` your message may
+on the chosen run-time verbosity level set via **-V** your message may
 or may not be reported. Only messages whose stated verbosity level is
-lower or equal to the ``-V``\ *level* will be printed.
+lower or equal to the **-V**\ *level* will be printed.
 
 .. _tbl-verbosity:
 
