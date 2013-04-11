@@ -27,7 +27,7 @@ completely general and will handle any (x,y) or (x,y,z) data as input.
 where module is the name of a **GMT** program and the options are those
 that pertain to that particular program.
 
-`Gmt Overview <#toc3>`_
+`GMT Overview <#toc3>`_
 -----------------------
 
 The following is a summary of all the programs supplied with **GMT** and
@@ -36,7 +36,7 @@ each program can be found in the separate manual pages.
 
 .. include:: explain_gmt_modules.rst_
 
-`The Common Gmt Options <#toc4>`_
+`The Common GMT Options <#toc4>`_
 ---------------------------------
 
 **-B**\ [**p**\ \|\ **s**]\ *parameters* **-J**\ *parameters*
