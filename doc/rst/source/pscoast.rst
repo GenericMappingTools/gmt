@@ -187,7 +187,7 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-**-W**\ [*level*/]*pen*
+**-W**\ [*level*/]\ *pen* :ref:`(more ...) <set-pens>` 
     Draw shorelines [Default is no shorelines]. Append pen attributes
     [Defaults: width = default, color = black, style = solid] which
     apply to all four levels. To set the pen for each level differently,

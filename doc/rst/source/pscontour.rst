@@ -119,7 +119,7 @@ Optional Arguments
 
 .. include:: explain_-K.rst_
 
-**-L**\ *pen*
+**-L**\ *pen* :ref:`(more ...) <set-pens>`
     Draw the underlying triangular mesh using the specified pen
     attributes [Default is no mesh].
 **-N**
@@ -157,7 +157,7 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-**-W**\ [**+**\ ]\ *pen*
+**-W**\ [**+**\ ]\ *pen* :ref:`(more ...) <set-pens>`
     Select contouring and set contour pen attributes. If the **+** flag
     is prepended then the color of the contour lines are taken from the
     cpt file (see **-C**). If the **-** flag is prepended then the color

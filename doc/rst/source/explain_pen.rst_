@@ -1,5 +1,8 @@
-`Specifying Pens`_
-~~~~~~~~~~~~~~~~~~
+.. _set-pens:
+
+Specifying Pens
+~~~~~~~~~~~~~~~
+
 *pen*
     The attributes of lines and symbol outlines as defined by *pen* is a
     comma-delimited list of *width*, *color* and *style*, each of which
