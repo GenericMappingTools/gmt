@@ -910,7 +910,7 @@ int gmt_map_jump_x (struct GMT_CTRL *GMT, double x0, double y0, double x1, doubl
 	/* true if x-distance between points exceeds 1/2 map width at this y value */
 	double dx, map_half_size;
 
-	if (!(GMT_IS_CYLINDRICAL (GMT) || GMT_IS_MISC (GMT))) return (0);	/* Only projections with peroidic boundaries may apply */
+	if (!(GMT_IS_CYLINDRICAL (GMT) || GMT_IS_PERSPECTIVE (GMT) || GMT_IS_MISC (GMT))) return (0);	/* Only projections with peroidic boundaries may apply */
 
 	if (!GMT_is_geographic (GMT, GMT_IN) || fabs (GMT->common.R.wesn[XLO] - GMT->common.R.wesn[XHI]) < 90.0) return (0);
 
@@ -4981,8 +4981,6 @@ double GMT_half_map_width (struct GMT_CTRL *GMT, double y)
 
 		case GMT_STEREO:	/* Must compute width of circular map based on y value (ASSUMES FULL CIRCLE!!!) */
 		case GMT_LAMB_AZ_EQ:
-		case GMT_ORTHO:
-		case GMT_GENPER:
 		case GMT_GNOMONIC:
 		case GMT_AZ_EQDIST:
 		case GMT_VANGRINTEN:
@@ -4994,6 +4992,15 @@ double GMT_half_map_width (struct GMT_CTRL *GMT, double y)
 				half_width = GMT->current.map.half_width;
 			break;
 
+		case GMT_ORTHO:
+		case GMT_GENPER:
+			if (!GMT->common.R.oblique && GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])) {
+				y -= GMT->current.proj.r;
+				half_width = d_sqrt (GMT->current.proj.r * GMT->current.proj.r - y * y);
+			}
+			else
+				half_width = GMT->current.map.half_width;
+			break;
 		case GMT_MOLLWEIDE:		/* Must compute width of Mollweide map based on y value */
 		case GMT_HAMMER:
 		case GMT_WINKEL:
@@ -5904,9 +5911,9 @@ uint64_t *GMT_split_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint64
 	for (n_seg = 0, i = 1; i < *nn; i++) {
 		if ((l_or_r = gmt_map_jump_x (GMT, xin[i], yin[i], xin[i-1], yin[i-1]))) {
 			if (n_seg == n_alloc) {
-				GMT_malloc (GMT, pos, n_seg, &n_alloc, uint64_t);
+				pos = GMT_malloc (GMT, pos, n_seg, &n_alloc, uint64_t);
 				n_alloc = n_seg;
-				GMT_malloc (GMT, way, n_seg, &n_alloc, char);
+				way = GMT_malloc (GMT, way, n_seg, &n_alloc, char);
 			}
 			pos[n_seg] = i;		/* 2nd of the two points that generate the jump */
 			way[n_seg] = l_or_r;	/* Which way we jump : +1 is right to left, -1 is left to right */

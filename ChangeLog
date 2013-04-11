@@ -2,6 +2,11 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-04-10	pwessel
+	* gmt_map.c:		Fixed clipping of invisible lines over horizon on azimuthal maps.
+				Added two scripts, general_p.sh (which still has one problem) and
+				ortho.sh, both derived from issue #208.
+
 2013-04-09	pwessel
 	* minmax.c:		Enhanced -I[f|s] that will extend the region otherwise reported
 				to ensure the dimensions are optimized for fastest performance
