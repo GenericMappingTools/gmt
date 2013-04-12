@@ -76,6 +76,9 @@
 # Enable file locking [FALSE]:
 #set (FLOCK TRUE)
 
+# Enable building of static library [FALSE]:
+#set (BUILD_SHARED_LIBS false)
+
 ## Advanced configuration begins here. Usually it is not necessary to edit any
 ## settings below. You should know what you are doing if you do though.
 
