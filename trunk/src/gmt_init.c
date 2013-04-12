@@ -1628,7 +1628,7 @@ int gmt_parse_b_option (struct GMT_CTRL *GMT, char *text)
 
 	unsigned int i, col = 0, id = GMT_IN, swap_flag;
 	int k, ncol = 0;
-	bool endian_swab = false, swab = false, error = false, i_or_o = false, set = false;
+	bool endian_swab = false, swab = false, error = false, i_or_o = false, set = false, v4_parse = false;
 	char *p = NULL, c;
 
 	if (!text || !text[0])
@@ -1669,14 +1669,16 @@ int gmt_parse_b_option (struct GMT_CTRL *GMT, char *text)
 			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Syntax warning: -b[i]c now applies to character tables, not to netCDF\n");
 			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Syntax warning: If input is netCDF, just leave out -b[i]c\n");
 			GMT->common.b.type[id] = 'c';
+			v4_parse = true;
 		}
 		else if (text[k] == 'c' && text[k+1] != ',') {	/* netCDF */
 			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Syntax warning: -b[i]c<varlist> is deprecated. Use <file>?<varlist> instead.\n");
 			GMT->common.b.active[id] = false;
 			strncpy (GMT->common.b.varnames, &text[k+1], GMT_BUFSIZ);
+			v4_parse = true;
 		}
 	}
-	else if (text[k] && strchr ("cuhHiIfd" GMT_OPT ("sSD"), text[k]) && (!text[k+1] || (text[k+1] == 'w' && !text[k+2] ))) {	/* Just save the type for the entire record */
+	if (!v4_parse && text[k] && strchr ("cuhHiIfd" GMT_OPT ("sSD"), text[k]) && (!text[k+1] || (text[k+1] == 'w' && !text[k+2] ))) {	/* Just save the type for the entire record */
 		GMT->common.b.type[id] = text[k];			/* Default column type */
 		if (GMT_compat_check (GMT, 4)) {	/* GMT4: Must switch s,S,D to f, f(with swab), and d (with swab) */
 			if (GMT->common.b.type[id] == 's') GMT->common.b.type[id] = 'f';
@@ -1685,7 +1687,7 @@ int gmt_parse_b_option (struct GMT_CTRL *GMT, char *text)
 		}
 		if (text[k+1] == 'w') GMT->common.b.swab[id] = (id == GMT_IN) ? k_swap_in : k_swap_out;	/* Default swab */
 	}
-	else {
+	else if (!v4_parse) {
 		for (i = k; text[i]; i++) {
 			c = text[i];
 			switch (c) {
@@ -8079,12 +8081,9 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			col_off++;
 			if (cmd) p->read_size_cmd = true;
 		}
-		else if (GMT_compat_check (GMT, 4) && !p->v.parsed_v4) {	/* Got arrow size (length) */
+		else if (!p->v.parsed_v4) {	/* Need to get size */
 			if (cmd) p->read_size_cmd = false;
-		}
-		else {
 			p->size_x = p->given_size_x = GMT_to_inch (GMT, arg), check = false;
-			if (cmd) p->read_size_cmd = false;
 		}
 	}
 	else if (strchr (allowed_symbols[mode], (int) text[0]) && strchr (GMT_DIM_UNITS, (int) text[1])) {	/* Symbol, but no size given (size assumed given on command line), only unit information */
@@ -8267,6 +8266,8 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 					p->f.f_gap = (txt_a[0] == '-') ? atof (txt_a) : GMT_to_inch (GMT, txt_a);
 					p->f.f_len = GMT_to_inch (GMT, txt_b);
 				}
+				else
+					GMT_parse_front (GMT, text_cp, p);	/* Parse new -Sf syntax */
 			}
 			else
 				GMT_parse_front (GMT, text_cp, p);	/* Parse new -Sf syntax */
