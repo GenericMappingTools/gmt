@@ -20,10 +20,11 @@
 # to developers that need to include/link GMT5 resources.
 #--------------------------------------------------------------------*/
 #
+GMT_EXEDIR=`dirname $0`
 CONFIG_CFLAGS="-I@CMAKE_INSTALL_PREFIX@/include"
-CONFIG_DATA=$(gmt --show-sharedir)
+CONFIG_DATA=$($GMT_EXEDIR/gmt --show-sharedir)
 CONFIG_DEP_LIBS="@NETCDF_LIBRARIES@ @GMT_OPTIONAL_LIBRARIES@"
-CONFIG_GSHHG=$(gmtget DIR_GSHHG)
+CONFIG_GSHHG=$($GMT_EXEDIR/gmtget DIR_GSHHG)
 CONFIG_LIBS="-L@CMAKE_INSTALL_PREFIX@/@GMT_LIBDIR@ -lgmt"
 CONFIG_PREFIX="@CMAKE_INSTALL_PREFIX@"
 CONFIG_VERSION="@GMT_PACKAGE_VERSION@"
