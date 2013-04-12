@@ -259,7 +259,7 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
     Determines if this GMT version should be able to parse command-line
     options for a prior major release.  Specify either 4 or 5. If 4 is
     set we will parse obsolete GMT 4 options and issue warnings; if 5
-    is set then parsing GMT-4 only syntax will result in errors.
+    is set then parsing GMT-4 only syntax will result in errors [4].
 **GMT_FFT**
     Determines which Fast Fourier Transform (FFT) should be used among
     those that have been configured during installation. Choose from
@@ -287,16 +287,16 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
     **true**, **readonly**, **false**, to either read and write to the
     .gmtcommands file, only read, or not use the file at all [true].
 **GMT_INTERPOLANT**
-    Determines if linear (linear), Akima’s spline (akima), natural cubic
+    Determines if linear (linear), Akima's spline (akima), natural cubic
     spline (cubic) or no interpolation (none) should be used for 1-D
     interpolations in various programs [akima].
 **GMT_EXTRAPOLATE_VAL**
     Determines what to do if extrapolating beyond the data domain.
-    Choose among ’NaN’, ’extrap’ or ’extrapval,val’ (with no quotes). In
+    Choose among 'NaN', 'extrap' or 'extrapval,val' (without quotes). In
     the first case return NaN for any element of x that is outside range
     [Default]. Second case lets the selected algorithm compute the
     extrapolation values. Third case sets the extrapolation values to
-    the constant value passed in ’val’ (this value must off course be
+    the constant value passed in 'val' (this value must off course be
     numeric).
 **GMT_TRIANGULATE**
     Determines if we use the **Watson** [Default] or **Shewchuk**
