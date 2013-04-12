@@ -2908,7 +2908,7 @@ void gmt_parse_format_float_out (struct GMT_CTRL *GMT, char *value)
 
 bool gmt_badvalreport (struct GMT_CTRL *GMT, char *keyword)
 {
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Unrecognized keyword %s. You may have been using a deprecated GMT3 or GMT4 keyword.\nChange keyword or recompile with GMT_COMPAT=true. " GMT_COMPAT_INFO, keyword);
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error: Unrecognized keyword %s. You may have been using a deprecated GMT3 or GMT4 keyword.\nChange keyword or use with GMT_COMPATIBILITY=4. " GMT_COMPAT_INFO, keyword);
 	return (true);
 }
 
