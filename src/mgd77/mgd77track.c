@@ -572,8 +572,8 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	Ctrl = New_mgd77track_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_mgd77track_usage (API, GMTAPI_USAGE, Ctrl));	/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_mgd77track_usage (API, GMTAPI_SYNOPSIS, Ctrl));	/* Return the synopsis */
+	if (!options || options->option == GMTAPI_OPT_USAGE) Return (GMT_mgd77track_usage (API, GMTAPI_USAGE, Ctrl));	/* Return the usage message */
+	if (options->option == GMTAPI_OPT_SYNOPSIS) Return (GMT_mgd77track_usage (API, GMTAPI_SYNOPSIS, Ctrl));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 

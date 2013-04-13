@@ -211,12 +211,12 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
+	options = GMT_prep_module_options (API, mode, args);	if (API->error) bailout (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMTAPI_OPT_USAGE) 
-		return (GMT_x2sys_get_usage (API, GMTAPI_USAGE));	/* Return the usage message */
+		bailout (GMT_x2sys_get_usage (API, GMTAPI_USAGE));	/* Return the usage message */
 	if (options->option == GMTAPI_OPT_SYNOPSIS) 
-		return (GMT_x2sys_get_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+		bailout (GMT_x2sys_get_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 

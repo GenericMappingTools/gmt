@@ -231,7 +231,7 @@ int GMT_sphdistance_parse (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *Ctrl, 
 
 int GMT_sphdistance (void *V_API, int mode, void *args)
 {
-	bool first = false, periodic;
+	bool first = false, periodic, duplicate_col;
 	int error = 0, s_row, south_row, north_row, w_col, e_col;
 
 	unsigned int row, col, p_col, west_col, east_col, nx1;
@@ -280,7 +280,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 	if (!GMT->common.R.active) {	/* Default to a global grid */
 		GMT->common.R.wesn[XLO] = 0.0;	GMT->common.R.wesn[XHI] = 360.0;	GMT->common.R.wesn[YLO] = -90.0;	GMT->common.R.wesn[YHI] = 90.0;
 	}
-	periodic = GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
+
 	/* Now we are ready to take on some input values */
 
 	if (Ctrl->Q.active) {	/* Expect a single file with Voronoi polygons */
@@ -417,7 +417,9 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 	grid_lon = GMT_grd_coord (GMT, Grid->header, GMT_X);
 	grid_lat = GMT_grd_coord (GMT, Grid->header, GMT_Y);
 
-	nx1 = (Grid->header->registration) ? Grid->header->nx : Grid->header->nx - 1;
+	nx1 = (Grid->header->registration == GMT_GRID_PIXEL_REG) ? Grid->header->nx : Grid->header->nx - 1;
+	periodic = GMT_360_RANGE (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
+	duplicate_col = (periodic && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
 
 	if (Ctrl->Q.active) {	/* Pre-chewed, just get number of nodes */
 		n = Table->n_segments;
@@ -496,6 +498,10 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 				if (side == 0) continue;	/* Outside spherical polygon */
 				ij = GMT_IJP (Grid->header, row, col);
 				Grid->data[ij] = (Ctrl->E.active) ? (float)node : (float)GMT_distance (GMT, grid_lon[col], grid_lat[row], lon[node], lat[node]);
+				if (duplicate_col) {	/* Duplicate the repeating column on the other side of this one */
+					if (col == 0) Grid->data[ij+nx1] = Grid->data[ij], n_set++;
+					else if (col == nx1) Grid->data[ij-nx1] = Grid->data[ij], n_set++;
+				}
 				n_set++;
 			}
 		}

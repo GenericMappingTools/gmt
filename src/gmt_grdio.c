@@ -1355,10 +1355,12 @@ void GMT_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct 
 void GMT_grd_shift (struct GMT_CTRL *GMT, struct GMT_GRID *G, double shift)
 {
 	/* Rotate geographical, global grid in e-w direction
-	 * This function will shift a grid by shift degrees */
+	 * This function will shift a grid by shift degrees.
+	 * It is only called when we know the grid is geographic. */
 
 	unsigned int col, row, width, n_warn = 0;
 	int n_shift, actual_col;
+	bool gridline;
 	uint64_t ij;
 	float *tmp = NULL;
 
@@ -1368,12 +1370,13 @@ void GMT_grd_shift (struct GMT_CTRL *GMT, struct GMT_GRID *G, double shift)
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Cannot rotate grid, width is too small\n");
 		return;
 	}
+	gridline = (width < G->header->nx);	/* Gridline-registrered grids will have width = nx-1, pixel grids have width = nx */
 
 	tmp = GMT_memory (GMT, NULL, G->header->nx, float);
 
 	for (row = 0; row < G->header->ny; row++) {
 		ij = GMT_IJP (G->header, row, 0);
-		if (width < G->header->nx && G->data[ij] != G->data[ij+width]) n_warn++;
+		if (gridline && G->data[ij] != G->data[ij+width]) n_warn++;
 		for (col = 0; col < G->header->nx; col++) {
 			actual_col = (col - n_shift) % width;
 			if (actual_col < 0) actual_col += width;
@@ -1397,7 +1400,8 @@ void GMT_grd_shift (struct GMT_CTRL *GMT, struct GMT_GRID *G, double shift)
 	}
 
 	if (n_warn)
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Gridline-registered global grid has inconsistent values at repeated node for %d rows\n", n_warn);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Inconsistent values at repeated longitude nodes (%g and %g) for %d rows\n",
+			G->header->wesn[XLO], G->header->wesn[XHI], n_warn);
 }
 
 int GMT_grd_setregion (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *wesn, unsigned int interpolant)
