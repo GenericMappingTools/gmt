@@ -838,6 +838,20 @@ void GMT_rgb_syntax (struct GMT_CTRL *GMT, char option, char *string)
 	GMT_message (GMT, "\t   For PDF fill transparency, append @<transparency> in the range 0-100 [0 = opaque].\n");
 }
 
+void GMT_mapinsert_syntax (struct GMT_CTRL *GMT, char option, char *string)
+{
+	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
+	GMT_message (GMT, "\t-%c %s\n", option, string);
+	GMT_message (GMT, "\t     a) Give west/east/south/north of bounding recangle in geographic coordinates.\n");
+	GMT_message (GMT, "\t     b) Give <unit>/xmin/xmax/ymin/ymax of bounding recangle in projected coordinates.\n");
+	GMT_message (GMT, "\t     c) Give <unit>/width[/height] of bounding recangle and use +c to set box center.\n");
+	GMT_message (GMT, "\t   Append any combination of these modifiers to draw the insert box:\n");
+	GMT_message (GMT, "\t     +c[<lon>/<lat>] to specify box center [Default is projection center]\n");
+	GMT_message (GMT, "\t     +p<pen> to draw the insert outline [no outline].\n");
+	GMT_message (GMT, "\t     +g<fill> to paint a insert [no fill]\n");
+	GMT_message (GMT, "\t     +r<radius> for a rounded rectangle, append corner radius in %c\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit][0]);
+}
+
 void GMT_mapscale_syntax (struct GMT_CTRL *GMT, char option, char *string)
 {
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
@@ -1290,13 +1304,15 @@ bool GMT_check_region (struct GMT_CTRL *GMT, double wesn[])
 	return ((wesn[XLO] >= wesn[XHI] || wesn[YLO] >= wesn[YHI]));
 }
 
-int gmt_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rect[], double out_wesn[])
+int GMT_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rect[], double out_wesn[], bool get_R)
 {
 	/* If user gives -Re|f|k|M|n<xmin>/<xmax>/<ymin>/<ymax>[/<zmin>/<zmax>][r] then we must
-	 * call GMT_mapproject to convert this to geographic degrees. */
+	 * call GMT_mapproject to convert this to geographic degrees.
+	 * get_R is true when this is done to obtain the -R setting.  */
 	
 	int object_ID, proj_class;
 	uint64_t dim[4] = {1, 1, 2, 2};	/* Just a single data table with one segment with two 2-column records */
+	bool was_R, was_J;
 	double wesn[4];
 	char buffer[GMT_BUFSIZ], in_string[GMTAPI_STRLEN], out_string[GMTAPI_STRLEN];
 	struct GMT_DATASET *In = NULL, *Out = NULL;
@@ -1332,6 +1348,7 @@ int gmt_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rect[], double ou
 	if (GMT_Encode_ID (GMT->parent, out_string, object_ID)) {
 		return (GMT->parent->error);	/* Make filename with embedded object ID */
 	}
+	was_R = GMT->common.R.active ;	was_J = GMT->common.J.active;
 	GMT->common.R.active = GMT->common.J.active = false;	/* To allow new entries */
 	
 	/* Determine suitable -R setting for this projection */
@@ -1341,6 +1358,7 @@ int gmt_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rect[], double ou
 	wesn[YLO] = MAX (GMT->current.proj.lat0 -1.0, -90.0);	wesn[YHI] = MIN (GMT->current.proj.lat0 + 1.0, 90.0);
 	
 	proj_class = GMT->current.proj.projection / 100;	/* 1-4 for valid projections */
+	if (GMT->current.proj.projection == GMT_AZ_EQDIST) proj_class = 4;	/* Make -JE use global region */
 	switch (proj_class) {
 		case 1:	/* Cylindrical: pick small equatoral patch centered on central meridian */
 			if (GMT->current.proj.projection == GMT_UTM && GMT_UTMzone_to_wesn (GMT, GMT->current.proj.utm_zonex, GMT->current.proj.utm_zoney, GMT->current.proj.utm_hemisphere, wesn))
@@ -1371,11 +1389,11 @@ int gmt_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rect[], double ou
 			break;
 	}
 	sprintf (buffer, "-R%g/%g/%g/%g -J%s -I -F%c -C -bi2d -bo2d -<%s ->%s", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], GMT->common.J.string, unit, in_string, out_string);
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Obtain geographic corner coordinates via mapproject %s\n", buffer);
+	if (get_R) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Obtain geographic corner coordinates via mapproject %s\n", buffer);
 	if (GMT_mapproject (GMT->parent, 0, buffer) != GMT_OK) {	/* Get the corners in degrees via mapproject */
 		return (GMT->parent->error);
 	}
-	GMT->common.R.active = GMT->common.J.active = true;
+	GMT->common.R.active = was_R;	GMT->common.J.active = was_J;
 	if ((Out = GMT_Retrieve_Data (GMT->parent, object_ID)) == NULL) {
 		return (GMT->parent->error);
 	}
@@ -1384,7 +1402,7 @@ int gmt_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rect[], double ou
 	out_wesn[XHI] = Out->table[0]->segment[0]->coord[GMT_X][1];
 	out_wesn[YHI] = Out->table[0]->segment[0]->coord[GMT_Y][1];
 	
-	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Region selection -R%s is replaced by the equivalent geographic region -R%.12g/%.12g/%.12g/%.12gr\n", GMT->common.R.string, out_wesn[XLO], out_wesn[YLO], out_wesn[XHI], out_wesn[YHI]);
+	if (get_R) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Region selection -R%s is replaced by the equivalent geographic region -R%.12g/%.12g/%.12g/%.12gr\n", GMT->common.R.string, out_wesn[XLO], out_wesn[YLO], out_wesn[XHI], out_wesn[YHI]);
 
 	GMT_free_dataset (GMT, &Out);
 	if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &In) != GMT_OK) {
@@ -1515,7 +1533,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 	if (inv_project) {	/* Convert rectangular distances to geographic corner coordinates */
 		double wesn[4];
 		GMT->common.R.oblique = false;
-		error += gmt_rectR_to_geoR (GMT, r_unit, p, wesn);
+		error += GMT_rectR_to_geoR (GMT, r_unit, p, wesn, true);
 		GMT_memcpy (p, wesn, 4, double);
 		GMT->common.R.oblique = true;
 	}
@@ -5980,6 +5998,17 @@ struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, char *mod_name, str
 		Csave->session.user_media = GMT_memory (GMT, NULL, GMT->session.n_user_media, struct GMT_MEDIA);
 		Csave->session.user_media_name = GMT_memory (GMT, NULL, GMT->session.n_user_media, char *);
 		for (i = 0; i < GMT->session.n_user_media; i++) Csave->session.user_media_name[i] = strdup (GMT->session.user_media_name[i]);
+	}
+
+	/* GMT_PLOT */
+	if (GMT->current.plot.n_alloc) {
+		Csave->current.plot.n_alloc = GMT->current.plot.n_alloc;
+		Csave->current.plot.x = GMT_memory (GMT, NULL, GMT->current.plot.n_alloc, double);
+		Csave->current.plot.y = GMT_memory (GMT, NULL, GMT->current.plot.n_alloc, double);
+		Csave->current.plot.pen = GMT_memory (GMT, NULL, GMT->current.plot.n_alloc, unsigned int);
+		GMT_memcpy (Csave->current.plot.x, GMT->current.plot.x, GMT->current.plot.n_alloc, double);
+		GMT_memcpy (Csave->current.plot.y, GMT->current.plot.y, GMT->current.plot.n_alloc, double);
+		GMT_memcpy (Csave->current.plot.pen, GMT->current.plot.pen, GMT->current.plot.n_alloc, unsigned int);
 	}
 
 	/* GMT_IO */

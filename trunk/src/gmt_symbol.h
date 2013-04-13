@@ -55,6 +55,20 @@ struct GMT_CUSTOM_SYMBOL {
 	struct GMT_CUSTOM_SYMBOL_ITEM *first;
 };
 
+struct GMT_MAP_INSERT {	/* Used to plot a map insert box in psbasemap */
+	/* -D[unit]xmin/xmax/ymin/ymax|width[/height][+c<clon>/<clat>][+p<pen>][+g<fill>] */
+	bool center;		/* Gave center of insert */
+	bool plot;		/* true if we want to draw the insert */
+	bool boxdraw;		/* true if we want to plot a rectangle to indicate the insert */
+	bool boxfill;		/* true if we want to paint/fill the insert */
+	char unit;		/* Unit of projected coordinates or 0 for geographic */
+	double x0, y0;		/* Center of insert, if given */
+	double wesn[4];		/* Geographic or projected boundaries */
+	double dim[2];		/* Width & height of box */
+	struct GMT_FILL fill;	/* Fill for insert */
+	struct GMT_PEN pen;	/* Pen for insert */
+};
+
 struct GMT_MAP_SCALE {	/* Used to plot a map scale in psbasemap and pscoast */
 	double lon, lat;	/* Location of top/mid point of scale on the map in lon/lat space */
 	double x0, y0;		/* Location of top/mid point of scale on the map in inches x/y */

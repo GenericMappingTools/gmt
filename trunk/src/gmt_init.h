@@ -62,6 +62,7 @@ EXTERN_MSC void GMT_syntax (struct GMT_CTRL *GMT, char option);
 EXTERN_MSC void GMT_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int kind);
 EXTERN_MSC void GMT_mapscale_syntax (struct GMT_CTRL *GMT, char option, char *string);
 EXTERN_MSC void GMT_maprose_syntax (struct GMT_CTRL *GMT, char option, char *string);
+EXTERN_MSC void GMT_mapinsert_syntax (struct GMT_CTRL *GMT, char option, char *string);
 EXTERN_MSC void GMT_fill_syntax (struct GMT_CTRL *GMT, char option, char *string);
 EXTERN_MSC void GMT_pen_syntax (struct GMT_CTRL *GMT, char option, char *string);
 EXTERN_MSC void GMT_rgb_syntax (struct GMT_CTRL *GMT, char option, char *string);
@@ -92,6 +93,7 @@ EXTERN_MSC int GMT_loaddefaults (struct GMT_CTRL *GMT, char *file);
 EXTERN_MSC int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *p, unsigned int mode, bool cmd);
 EXTERN_MSC int GMT_message (struct GMT_CTRL *GMT, char *format, ...);
 EXTERN_MSC int GMT_report_func (struct GMT_CTRL *GMT, unsigned int level, const char *source_line, const char *format, ...);
+EXTERN_MSC int GMT_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rect[], double out_wesn[], bool get_R);
 
 #ifdef WIN32
 EXTERN_MSC void GMT_setmode (struct GMT_CTRL *GMT, int direction);
