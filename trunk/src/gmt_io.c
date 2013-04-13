@@ -4298,7 +4298,7 @@ int gmt_scanf_argtime (struct GMT_CTRL *GMT, char *s, double *t)
 	for (i = (negate_year) ? 1 : 0; s[k+i] && s[k+i] != '-'; i++); /* Goes to first - between yyyy and jjj or yyyy and mm */
 	dash = (unsigned int)i++;	/* Position of first character after the first dash (could be end of string if no dash) */
 	while (s[k+i] && !(s[k+i] == '-' || s[k+i] == 'T')) i++;	/* Goto the ending T character or get stuck on a second - */
-	got_yd = ((i - dash) == 3 && s[k+i] == 'T');		/* Must have a field of 3-characters between - and T to constitute a valid day-of-year format */
+	got_yd = ((i - dash - 1) == 3 && s[k+i] == 'T');		/* Must have a field of 3-characters between - and T to constitute a valid day-of-year format */
 
 	if (got_yd) {	/* Gregorian yyyy-jjj calendar */
 		if ( (j = sscanf(&s[k], "%4d-%3d", &ival[0], &ival[1]) ) != 2) return (GMT_IS_NAN);
