@@ -164,9 +164,9 @@ int GMT_pscoast_usage (struct GMTAPI_CTRL *API, int level)
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pscoast %s %s [%s] [%s]\n", GMT_B_OPT, GMT_J_OPT, GMT_A_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C[<feature>/]<fill>] [-D<resolution>][+] [%s] -G[<fill>]] [-I<feature>[/<pen>]]\n", DCW_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-K] [%s]\n", GMT_Jz_OPT, GMT_SCALE);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-K] [-L%s]\n", GMT_Jz_OPT, GMT_SCALE);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-M] [-N<feature>[/<pen>]] [-O] [-P] [-Q] [-S<fill>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n", GMT_TROSE, GMT_U_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-T%s] [%s]\n", GMT_TROSE, GMT_U_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[<feature>/][<pen>]] [%s] [%s]\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n", GMT_bo_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT);
 #ifdef DEBUG
@@ -352,7 +352,7 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 				break;
 			case 'L':
 				Ctrl->L.active = true;
-				n_errors += GMT_getscale (GMT, opt->arg, &Ctrl->L.item);
+				n_errors += GMT_getscale (GMT, 'L', opt->arg, &Ctrl->L.item);
 				break;
 			case 'm':
 				if (GMT_compat_check (GMT, 4))	/* Warn and fall through */
@@ -407,7 +407,7 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 				break;
 			case 'T':
 				Ctrl->T.active = true;
-				n_errors += GMT_getrose (GMT, opt->arg, &Ctrl->T.item);
+				n_errors += GMT_getrose (GMT, 'T', opt->arg, &Ctrl->T.item);
 				break;
 			case 'W':
 				Ctrl->W.active = true;	/* Want to draw shorelines */

@@ -80,12 +80,10 @@ struct PSTEXT_CTRL {
 		bool active;
 		int mode;	/* 0 = do nothing, -1 = force lower case, +1 = force upper case */
 	} Q;
-#ifdef GMT_COMPAT
 	struct PSTEXT_S {	/* -S<pen> */
 		bool active;
 		struct GMT_PEN pen;
 	} S;
-#endif
 	struct PSTEXT_T {	/* -To|O|c|C */
 		bool active;
 		char mode;
@@ -128,9 +126,7 @@ void *New_pstext_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->F.justify = 6;	/* CM */
 	C->F.font = GMT->current.setting.font_annot[0];		/* Default font */
 	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* No fill */
-#ifdef GMT_COMPAT
 	C->S.pen = GMT->current.setting.map_default_pen;
-#endif
 
 	return (C);
 }
@@ -209,7 +205,6 @@ void load_parameters_pstext (struct PSTEXT_INFO *T, struct PSTEXT_CTRL *C)
 	T->block_justify = C->F.justify;
 }
 
-#ifdef GMT_COMPAT
 bool check_for_old_format (struct GMT_CTRL *GMT, char *buffer, int mode)
 {
 	/* Try to determine if input is the old GMT4-style format.
@@ -246,7 +241,6 @@ bool check_for_old_format (struct GMT_CTRL *GMT, char *buffer, int mode)
 	GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: use of old style pstext input is deprecated.\n");
 	return (true);
 }
-#endif
 
 int GMT_pstext_usage (struct GMTAPI_CTRL *API, int level, int show_fonts)
 {
@@ -434,26 +428,29 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 			case 'L':
 				Ctrl->L.active = true;
 				break;
-#ifdef GMT_COMPAT
 			case 'm':
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -m option is deprecated and reverted back to -M to indicate paragraph mode.\n");
-#endif
+				if (GMT_compat_check (GMT, 4)) /* Warn and pass through */
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -m option is deprecated and reverted back to -M to indicate paragraph mode.\n");
+				else
+					n_errors += GMT_default_error (GMT, opt->option);
 			case 'M':	/* Paragraph mode */
 				Ctrl->M.active = true;
 				break;
 			case 'N':	/* Do not clip at border */
 				Ctrl->N.active = true;
 				break;
-#ifdef GMT_COMPAT
 			case 'S':
-				GMT_Report (API, GMT_MSG_COMPAT, "Warning: -S option is deprecated; use font pen setting instead.\n");
-				Ctrl->S.active = true;
-				if (GMT_getpen (GMT, opt->arg, &Ctrl->S.pen)) {
-					GMT_pen_syntax (GMT, 'S', "draws outline of characters.  Append pen attributes [Default pen is %s]");
-					n_errors++;
+				if (GMT_compat_check (GMT, 4)) { /* Warn and pass through */
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: -S option is deprecated; use font pen setting instead.\n");
+					Ctrl->S.active = true;
+					if (GMT_getpen (GMT, opt->arg, &Ctrl->S.pen)) {
+						GMT_pen_syntax (GMT, 'S', "draws outline of characters.  Append pen attributes [Default pen is %s]");
+						n_errors++;
+					}
 				}
+				else
+					n_errors += GMT_default_error (GMT, opt->option);
 				break;
-#endif
 			case 'Q':
 				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'l') Ctrl->Q.mode = -1;
@@ -578,10 +575,8 @@ int GMT_pstext (void *V_API, int mode, void *args)
 
 	char text[GMT_BUFSIZ], buffer[GMT_BUFSIZ], pjust_key[5], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
 	char *paragraph = NULL, *line = NULL, *curr_txt = NULL, *in_txt = NULL, **c_txt = NULL;
-#ifdef GMT_COMPAT
 	char this_size[GMT_TEXT_LEN256], this_font[GMT_TEXT_LEN256], just_key[5], txt_f[GMT_TEXT_LEN256];
 	int is_old_format = GMTAPI_NOTSET;
-#endif
 	struct PSTEXT_INFO T;
 	struct PSTEXT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
@@ -678,9 +673,9 @@ int GMT_pstext (void *V_API, int mode, void *args)
 				
 				pos = 0;
 
-#ifdef GMT_COMPAT
-				if (is_old_format == GMTAPI_NOTSET) is_old_format = check_for_old_format (GMT, buffer, 1);
-
+				if (GMT_compat_check (GMT, 4)) {
+					if (is_old_format == GMTAPI_NOTSET) is_old_format = check_for_old_format (GMT, buffer, 1);
+				}
 				if (is_old_format == 1) {	/* Old-style GMT 4 records */
 					nscan += sscanf (buffer, "%s %lf %s %s %s %s %s\n", this_size, &T.paragraph_angle, this_font, just_key, txt_a, txt_b, pjust_key);
 					T.block_justify = GMT_just_decode (GMT, just_key, 12);
@@ -693,9 +688,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 					in_txt = NULL;
 					n_expected_cols = 9 + Ctrl->Z.active;
 				}
-				else
-#endif
-				if (!Ctrl->F.nread)	/* All attributes given via -F (or we accept defaults); skip to paragraph attributes */
+				else if (!Ctrl->F.nread)	/* All attributes given via -F (or we accept defaults); skip to paragraph attributes */
 					in_txt = buffer;
 				else {	/* Must pick up 1-3 attributes from data file */
 					for (k = 0; k < Ctrl->F.nread; k++) {
@@ -785,9 +778,9 @@ int GMT_pstext (void *V_API, int mode, void *args)
 			if ((nscan = validate_coord_and_text (GMT, Ctrl, n_read, line, buffer)) == -1) continue;	/* Failure */
 			pos = 0;
 
-#ifdef GMT_COMPAT
-			if (is_old_format == GMTAPI_NOTSET) is_old_format = check_for_old_format (GMT, buffer, 0);
-
+			if (GMT_compat_check (GMT, 4)) {
+				if (is_old_format == GMTAPI_NOTSET) is_old_format = check_for_old_format (GMT, buffer, 0);
+			}
 			if (is_old_format == 1) {	/* Old-style GMT 4 records */
 				nscan--; /* Since we have already counted "text" */
 				nscan += sscanf (buffer, "%s %lf %s %s %[^\n]\n", this_size, &T.paragraph_angle, this_font, just_key, text);
@@ -798,10 +791,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 				in_txt = text;
 				n_expected_cols = 7 + Ctrl->Z.active;
 			}
-			else
-#endif
-
-			if (!Ctrl->F.nread)	/* All attributes given via -F (or we accept defaults); just need text */
+			else if (!Ctrl->F.nread)	/* All attributes given via -F (or we accept defaults); just need text */
 				in_txt = buffer;
 			else {	/* Must pick up 1-3 attributes from data file */
 				for (k = 0; k < Ctrl->F.nread; k++) {
@@ -810,12 +800,12 @@ int GMT_pstext (void *V_API, int mode, void *args)
 						case 'f':
 							T.font = Ctrl->F.font;
 							if (GMT_getfont (GMT, text, &T.font)) GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, GMT_putfont (GMT, T.font));
-#ifdef GMT_COMPAT
-							if (Ctrl->S.active) {
-								T.font.form |= 2;
-								T.font.pen = Ctrl->S.pen;
+							if (GMT_compat_check (GMT, 4)) {
+								if (Ctrl->S.active) {
+									T.font.form |= 2;
+									T.font.pen = Ctrl->S.pen;
+								}
 							}
-#endif
 							break;
 						case 'a':
 							T.paragraph_angle = atof (text);

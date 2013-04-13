@@ -7561,14 +7561,14 @@ bool GMT_x_is_outside (struct GMT_CTRL *GMT, double *x, double left, double righ
 		return (((*x) < left || (*x) > right) ? true : false);
 }
 
-int GMT_getinsert (struct GMT_CTRL *GMT, char *text, struct GMT_MAP_INSERT *B)
+int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_INSERT *B)
 {	/* Parse the map insert option: 
-	 * -D[unit]xmin/xmax/ymin/ymax|width[/height][+c<clon>/<clat>][+p<pen>][+g<fill>] */
+	 * -D[unit]<xmin/xmax/ymin/ymax>|<width>[/<height>][+c<clon>/<clat>][+p<pen>][+g<fill>] */
 	unsigned int col_type[2], k = 0, i, start = 0, pos = 0, error = 0, n;
 	char p[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256];
 	
 	if (!text) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No argument given\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option %c: No argument given\n", option);
 		GMT_exit (EXIT_FAILURE);
 	}
 	GMT_memset (B, 1, struct GMT_MAP_INSERT);
@@ -7595,7 +7595,7 @@ int GMT_getinsert (struct GMT_CTRL *GMT, char *text, struct GMT_MAP_INSERT *B)
 						error += GMT_verify_expectations (GMT, col_type[GMT_Y], GMT_scanf (GMT, txt_b, col_type[GMT_Y], &B->y0), txt_b);
 					}
 					else {
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error D option:  Must specify +c<lon>/<lat> for center\n");
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Must specify +c<lon>/<lat> for center\n", option);
 						return (1);
 					}
 					break;
@@ -7609,37 +7609,49 @@ int GMT_getinsert (struct GMT_CTRL *GMT, char *text, struct GMT_MAP_INSERT *B)
 					break;
 				default:
 					error++;
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error D option:  Unrecognized modifier +%c\n", p[0]);
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Unrecognized modifier +%c\n", option, p[0]);
 					break;
 			}
 		}
 		text[start] = '\0';	/* Truncate string for now */
 	}
 	if (! (B->boxdraw || B->boxfill)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error D option:  Need to add at least one of +<pen> or +g<fill>\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Need to add at least one of +<pen> or +f<fill>\n", option);
 		return (1);
 	}
 	/* Decode the w/e/s/n or width[/height] part */
 	n = sscanf (&text[k], "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
 	if (!B->center && n != 4) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error D option:  Must specify w/e/s/n or unit/xmin/xmax/ymin/ymax\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Must specify w/e/s/n or unit/xmin/xmax/ymin/ymax\n", option);
 		return (1);
 	}
 	else if (B->center && n > 2) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error D option:  Must specify unit/width/height\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Must specify unit/width/height\n", option);
 		return (1);
 	}
-	if (k == 0 && !B->center) {	/* Got geographic w/e/s/n */
-		error += GMT_verify_expectations (GMT, col_type[GMT_X], GMT_scanf (GMT, txt_a, col_type[GMT_X], &B->wesn[XLO]), txt_a);
-		error += GMT_verify_expectations (GMT, col_type[GMT_X], GMT_scanf (GMT, txt_b, col_type[GMT_X], &B->wesn[XHI]), txt_b);
-		error += GMT_verify_expectations (GMT, col_type[GMT_Y], GMT_scanf (GMT, txt_a, col_type[GMT_Y], &B->wesn[YLO]), txt_c);
-		error += GMT_verify_expectations (GMT, col_type[GMT_Y], GMT_scanf (GMT, txt_b, col_type[GMT_Y], &B->wesn[YHI]), txt_d);
+	if (k == 0 && !B->center) {	/* Got geographic w/e/s/n or <w/s/e/n>r */
+		n = strlen(txt_d) - 1;
+		if (txt_d[n] == 'r') {	/* Got <w/s/e/n>r for rectangular box */
+			B->oblique = true;
+			txt_d[n] = '\0';
+			error += GMT_verify_expectations (GMT, col_type[GMT_X], GMT_scanf (GMT, txt_a, col_type[GMT_X], &B->wesn[XLO]), txt_a);
+			error += GMT_verify_expectations (GMT, col_type[GMT_Y], GMT_scanf (GMT, txt_b, col_type[GMT_Y], &B->wesn[YLO]), txt_b);
+			error += GMT_verify_expectations (GMT, col_type[GMT_X], GMT_scanf (GMT, txt_c, col_type[GMT_X], &B->wesn[XHI]), txt_c);
+			error += GMT_verify_expectations (GMT, col_type[GMT_Y], GMT_scanf (GMT, txt_d, col_type[GMT_Y], &B->wesn[YHI]), txt_d);
+			txt_d[n] = 'r';
+		}
+		else {	/* Got  w/e/s/n for box that follows meridians and parallels */
+			error += GMT_verify_expectations (GMT, col_type[GMT_X], GMT_scanf (GMT, txt_a, col_type[GMT_X], &B->wesn[XLO]), txt_a);
+			error += GMT_verify_expectations (GMT, col_type[GMT_X], GMT_scanf (GMT, txt_b, col_type[GMT_X], &B->wesn[XHI]), txt_b);
+			error += GMT_verify_expectations (GMT, col_type[GMT_Y], GMT_scanf (GMT, txt_c, col_type[GMT_Y], &B->wesn[YLO]), txt_c);
+			error += GMT_verify_expectations (GMT, col_type[GMT_Y], GMT_scanf (GMT, txt_d, col_type[GMT_Y], &B->wesn[YHI]), txt_d);
+		}
 	}
-	else if (!B->center) {	/* Got projected xmin/xmax/ymin/ymax */
+	else if (!B->center) {	/* Got projected xmin/xmax/ymin/ymax for rectangular box */
 		B->wesn[XLO] = atof (txt_a);	B->wesn[XHI] = atof (txt_b);
 		B->wesn[YLO] = atof (txt_c);	B->wesn[YHI] = atof (txt_d);
 	}
-	else {	/* Got width[/height] + center */
+	else {	/* Got width[/height] + center for rectangular box */
 		B->dim[GMT_X] = atof (txt_a);
 		B->dim[GMT_Y] = (n == 2) ? atof (txt_b) : B->dim[GMT_X];
 		if (k == 0) B->unit = 'e';	/* Default unit is meter */
@@ -7649,7 +7661,7 @@ int GMT_getinsert (struct GMT_CTRL *GMT, char *text, struct GMT_MAP_INSERT *B)
 	return (error);
 }
 
-int GMT_getscale (struct GMT_CTRL *GMT, char *text, struct GMT_MAP_SCALE *ms)
+int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_SCALE *ms)
 {
 	/* Pass text as &argv[i][2] */
 
@@ -7657,7 +7669,7 @@ int GMT_getscale (struct GMT_CTRL *GMT, char *text, struct GMT_MAP_SCALE *ms)
 	char txt_cpy[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_sx[GMT_TEXT_LEN256], txt_sy[GMT_TEXT_LEN256], txt_len[GMT_TEXT_LEN256];
 
 	if (!text) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No argument given\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error %c: No argument given\n", option);
 		GMT_exit (EXIT_FAILURE);
 	}
 
@@ -7699,7 +7711,7 @@ int GMT_getscale (struct GMT_CTRL *GMT, char *text, struct GMT_MAP_SCALE *ms)
 			txt_len[i] = '\0';
 		}
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -L option:  Valid distance units are %s\n", GMT_LEN_UNITS2_DISPLAY);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Valid distance units are %s\n", option, GMT_LEN_UNITS2_DISPLAY);
 			error++;
 		}
 	}
@@ -7713,11 +7725,11 @@ int GMT_getscale (struct GMT_CTRL *GMT, char *text, struct GMT_MAP_SCALE *ms)
 		error += GMT_verify_expectations (GMT, GMT_IS_LON, GMT_scanf (GMT, txt_a, GMT_IS_LON, &ms->x0), txt_a);
 		error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_b, GMT_IS_LAT, &ms->y0), txt_b);
 		if (fabs (ms->y0) > 90.0) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -L option:  Position latitude is out of range\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Position latitude is out of range\n", option);
 			error++;
 		}
 		if (fabs (ms->x0) > 360.0) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -L option:  Position longitude is out of range\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Position longitude is out of range\n", option);
 			error++;
 		}
 	}
@@ -7727,19 +7739,19 @@ int GMT_getscale (struct GMT_CTRL *GMT, char *text, struct GMT_MAP_SCALE *ms)
 	else		/* Default to central meridian */
 		ms->scale_lon = GMT->current.proj.central_meridian;
 	if (fabs (ms->scale_lat) > 90.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -L option:  Scale latitude is out of range\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Scale latitude is out of range\n", option);
 		error++;
 	}
 	if (fabs (ms->scale_lon) > 360.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -L option:  Scale longitude is out of range\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Scale longitude is out of range\n", option);
 		error++;
 	}
 	if (ms->length <= 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -L option:  Length must be positive\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Length must be positive\n", option);
 		error++;
 	}
 	if (fabs (ms->scale_lat) > 90.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -L option:  Defining latitude is out of range\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Defining latitude is out of range\n", option);
 		error++;
 	}
 	if (options > 0) {	/* Gave +?<args> which now must be processed */
@@ -7782,8 +7794,8 @@ int GMT_getscale (struct GMT_CTRL *GMT, char *text, struct GMT_MAP_SCALE *ms)
 	}
 
 	if (error) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -L option:  Correct syntax\n");
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "\t-L[f][x]<x0>/<y0>/[<lon>/]<lat>/<length>[%s][+l<label>][+j<just>][+p<pen>][+f<fill>][+u]\n", GMT_LEN_UNITS2_DISPLAY);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -%c option:  Correct syntax\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "\t-%c[f][x]<x0>/<y0>/[<lon>/]<lat>/<length>[%s][+l<label>][+j<just>][+p<pen>][+f<fill>][+u]\n", option, GMT_LEN_UNITS2_DISPLAY);
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "\t  Append length distance unit from %s [k]\n", GMT_LEN_UNITS2_DISPLAY);
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "\t  Justification can be l, r, b, or t [Default]\n");
 	}
@@ -7791,20 +7803,20 @@ int GMT_getscale (struct GMT_CTRL *GMT, char *text, struct GMT_MAP_SCALE *ms)
 	return (error);
 }
 
-int GMT_getrose (struct GMT_CTRL *GMT, char *text, struct GMT_MAP_ROSE *ms)
+int GMT_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_ROSE *ms)
 {
 	int plus;
 	unsigned int j = 0, i, error = 0, colon, slash, k, pos, order[4] = {3,1,0,2};
 	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256], tmpstring[GMT_TEXT_LEN256], p[GMT_TEXT_LEN256];
 
-	/* SYNTAX is -T[f|m][x]<lon0>/<lat0>/<size>[/<info>][:label:][+<aint>/<fint>/<gint>[/<aint>/<fint>/<gint>]], where <info> is
-	 * 1)  -Tf: <info> is <kind> = 1,2,3 which is the level of directions [1].
-	 * 2)  -Tm: <info> is <dec>/<dlabel>, where <Dec> is magnetic declination and dlabel its label [no mag].
-	 * If -Tm, optionally set annotation interval with +
+	/* SYNTAX is -?[f|m][x]<lon0>/<lat0>/<size>[/<info>][:label:][+<aint>/<fint>/<gint>[/<aint>/<fint>/<gint>]], where <info> is
+	 * 1)  -?f: <info> is <kind> = 1,2,3 which is the level of directions [1].
+	 * 2)  -?m: <info> is <dec>/<dlabel>, where <Dec> is magnetic declination and dlabel its label [no mag].
+	 * If -?m, optionally set annotation interval with +
 	 */
 
 	if (!text) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No argument given\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error %c: No argument given\n", option);
 		GMT_exit (EXIT_FAILURE);
 	}
 
@@ -7839,7 +7851,7 @@ int GMT_getrose (struct GMT_CTRL *GMT, char *text, struct GMT_MAP_ROSE *ms)
 	if (plus > 0) {		/* Get annotation interval(s) */
 		k = sscanf (&text[plus], "%lf/%lf/%lf/%lf/%lf/%lf", &ms->a_int[1], &ms->f_int[1], &ms->g_int[1], &ms->a_int[0], &ms->f_int[0], &ms->g_int[0]);
 		if (k < 1) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -T option:  Give annotation interval(s)\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Give annotation interval(s)\n", option);
 			error++;
 		}
 		if (k == 3) ms->a_int[0] = ms->a_int[1], ms->f_int[0] = ms->f_int[1], ms->g_int[0] = ms->g_int[1];
@@ -7848,7 +7860,7 @@ int GMT_getrose (struct GMT_CTRL *GMT, char *text, struct GMT_MAP_ROSE *ms)
 	if (colon > 0) {	/* Get labels in string :w,e,s,n: */
 		for (k = colon; text[k] && text[k] != ':'; k++);	/* Look for terminating colon */
 		if (text[k] != ':') { /* Ran out, missing terminating colon */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -T option: Labels must be given in format :w,e,s,n:\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Labels must be given in format :w,e,s,n:\n", option);
 			error++;
 			return (error);
 		}
@@ -7862,18 +7874,18 @@ int GMT_getrose (struct GMT_CTRL *GMT, char *text, struct GMT_MAP_ROSE *ms)
 		if (k == 0)	/* No labels wanted */
 			ms->label[0][0] = ms->label[1][0] = ms->label[2][0] = ms->label[3][0] = '\0';
 		else if (k != 4) {	/* Ran out of labels */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -T option: Labels must be given in format :w,e,s,n:\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option: Labels must be given in format :w,e,s,n:\n", option);
 			error++;
 		}
 		text[colon-1] = '\0';	/* Break string so sscanf wont get confused later */
 	}
 
-	/* -L[f][x]<x0>/<y0>/<size>[/<kind>][:label:] OR -L[m][x]<x0>/<y0>/<size>[/<dec>/<declabel>][:label:][+gint[/mint]] */
+	/* -?[f][x]<x0>/<y0>/<size>[/<kind>][:label:] OR -L[m][x]<x0>/<y0>/<size>[/<dec>/<declabel>][:label:][+gint[/mint]] */
 	if (ms->type == 2) {	/* Magnetic rose */
 		k = sscanf (&text[j], "%[^/]/%[^/]/%[^/]/%[^/]/%[^/]", txt_a, txt_b, txt_c, txt_d, ms->dlabel);
 		if (! (k == 3 || k == 5)) {	/* Wrong number of parameters */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -T option:  Correct syntax\n");
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "\t-T[f|m][x]<x0>/<y0>/<size>[/<info>][:wesnlabels:][+<gint>[/<mint>]]\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -%c option:  Correct syntax\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "\t-%c[f|m][x]<x0>/<y0>/<size>[/<info>][:wesnlabels:][+<gint>[/<mint>]]\n", option);
 			error++;
 		}
 		if (k == 3) {	/* No magnetic north directions */
@@ -7890,8 +7902,8 @@ int GMT_getrose (struct GMT_CTRL *GMT, char *text, struct GMT_MAP_ROSE *ms)
 		k = sscanf (&text[j], "%[^/]/%[^/]/%[^/]/%d", txt_a, txt_b, txt_c, &ms->kind);
 		if (k == 3) ms->kind = 1;
 		if (k < 3 || k > 4) {	/* Wrong number of parameters */
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -T option:  Correct syntax\n");
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "\t-T[f|m][x]<x0>/<y0>/<size>[/<info>][:wesnlabels:][+<gint>[/<mint>]]\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Correct syntax\n", option);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "\t-%c[f|m][x]<x0>/<y0>/<size>[/<info>][:wesnlabels:][+<gint>[/<mint>]]\n", option);
 			error++;
 		}
 	}
@@ -7905,21 +7917,21 @@ int GMT_getrose (struct GMT_CTRL *GMT, char *text, struct GMT_MAP_ROSE *ms)
 		error += GMT_verify_expectations (GMT, GMT_IS_LON, GMT_scanf (GMT, txt_a, GMT_IS_LON, &ms->x0), txt_a);
 		error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_b, GMT_IS_LAT, &ms->y0), txt_b);
 		if (fabs (ms->y0) > 90.0) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -T option:  Position latitude is out of range\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Position latitude is out of range\n", option);
 			error++;
 		}
 		if (fabs (ms->x0) > 360.0) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -T option:  Position longitude is out of range\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Position longitude is out of range\n", option);
 			error++;
 		}
 	}
 	ms->size = GMT_to_inch (GMT, txt_c);
 	if (ms->size <= 0.0) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -T option:  Size must be positive\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Size must be positive\n", option);
 		error++;
 	}
 	if (ms->kind < 1 || ms->kind > 3) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -L option:  <kind> must be 1, 2, or 3\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  <kind> must be 1, 2, or 3\n", option);
 		error++;
 	}
 

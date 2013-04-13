@@ -61,6 +61,7 @@ struct GMT_MAP_INSERT {	/* Used to plot a map insert box in psbasemap */
 	bool plot;		/* true if we want to draw the insert */
 	bool boxdraw;		/* true if we want to plot a rectangle to indicate the insert */
 	bool boxfill;		/* true if we want to paint/fill the insert */
+	bool oblique;		/* true if we want got <w/s/e/n>r instead of <w/e/s/n> */
 	char unit;		/* Unit of projected coordinates or 0 for geographic */
 	double x0, y0;		/* Center of insert, if given */
 	double wesn[4];		/* Geographic or projected boundaries */

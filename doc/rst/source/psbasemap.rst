@@ -11,8 +11,9 @@ psbasemap - Plot *PostScript* base maps
 
 **psbasemap** **-J**\ *parameters*
 **-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ] [
-**-B**\ [**p**\ \|\ **s**]\ *parameters* ] [
-**-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [
+**-B**\ [**p**\ \|\ **s**]\ *parameters* ]
+[**-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**]\ \|\ *width*[/*height*][**+c**\ *clon/clat*][**+p**\ *pen*][**+f**\ *fill*]]
+[ **-K** ] [**-Jz**\ \|\ **Z**\ *parameters* ]
 **-L**\ [**f**\ ][**x**\ ]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**][\ **+l**\ *label*][\ **+j**\ *just*][\ **+p**\ *pen*][\ **+f**\ *fill*][**+u**\ ]
 ] ] [ **-O** ] [ **-P** ] [
 **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [
@@ -55,6 +56,18 @@ must be specified.
 -----------------------------
 
 .. include:: explain_-B.rst_
+
+[**-D**\ [*unit*]\ *xmin/xmax/ymin/ymax*\ [**r**]\ \|\ *width*[/*height*][**+c**\ *clon/clat*][**+p**\ *pen*][**+f**\ *fill*]]
+    Draw a simple map insert box on the map.  Specify the box in one of three ways:
+    (a) Give *west/east/south/north* of geographic rectangle bounded by parallels
+    and meridians; append **r** if the coordinates instead are the lower left and
+    upper right corners of the desired rectangle. (b) Give **u**\ *xmin/xmax/ymin/ymax*
+    of bounding rectangle in projected coordinates (here, **u** is the coordinate unit).
+    (c) Give [**u**]\ *width*[/*height*] of bounding rectangle and use **+c** to set
+    box center. Append any combination of the following modifiers to draw the insert box:
+    **+c**\ *lon/lat* to specify box center.
+    **+f**\ *fill* to paint a insert [no fill].
+    **+p**\ *pen* to draw the insert outline [no outline].
 
 .. include:: explain_-Jz.rst_
 

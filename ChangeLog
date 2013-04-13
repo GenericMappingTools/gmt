@@ -3,6 +3,7 @@
 -----------------------------------------------------------------------------------------
 
 2013-04-13	pwessel/remko
+	* psbasemap.c:		Added -D option to draw map insert box.
 	* ConfigUserTemplate.cmake ConfigDefaults.cmake gmt_init.c gmt.conf.in:
 				Removed GMT_COMPAT as a compiler option. Can now be set in run-
 				time using the setting GMT_COMPATIBILITY.
