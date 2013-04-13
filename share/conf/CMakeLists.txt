@@ -21,11 +21,6 @@
 
 # Generate system defaults file
 set (GMT_CONF_TEMPLATE "System-wide")
-if (GMT_COMPAT EQUAL "5")
-	set (GMT_COMPATIBILITY 5)
-else (GMT_COMPAT EQUAL "5")
-	set (GMT_COMPATIBILITY 4)
-endif (GMT_COMPAT EQUAL "5")
 
 if (UNITS EQUAL "US")
 	set (GMT_PS_CHAR_ENCODING "Standard+")
