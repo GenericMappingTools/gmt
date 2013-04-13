@@ -842,14 +842,14 @@ void GMT_mapinsert_syntax (struct GMT_CTRL *GMT, char option, char *string)
 {
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	GMT_message (GMT, "\t-%c %s\n", option, string);
-	GMT_message (GMT, "\t     a) Give west/east/south/north of bounding recangle in geographic coordinates.\n");
-	GMT_message (GMT, "\t     b) Give <unit>/xmin/xmax/ymin/ymax of bounding recangle in projected coordinates.\n");
-	GMT_message (GMT, "\t     c) Give <unit>/width[/height] of bounding recangle and use +c to set box center.\n");
-	GMT_message (GMT, "\t   Append any combination of these modifiers to draw the insert box:\n");
-	GMT_message (GMT, "\t     +c[<lon>/<lat>] to specify box center [Default is projection center]\n");
-	GMT_message (GMT, "\t     +p<pen> to draw the insert outline [no outline].\n");
-	GMT_message (GMT, "\t     +g<fill> to paint a insert [no fill]\n");
-	GMT_message (GMT, "\t     +r<radius> for a rounded rectangle, append corner radius in %c\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit][0]);
+	GMT_message (GMT, "\t     a) Give <west>/<east>/<south>/<north> of geographic rectangle bounded by meridians and parallels.\n");
+	GMT_message (GMT, "\t        Append r if coordinates are the lower left and upper right corners of a rectangular area.\n");
+	GMT_message (GMT, "\t     b) Give <unit><xmin>/<xmax>/<ymin>/<ymax> of bounding recangle in projected coordinates.\n");
+	GMT_message (GMT, "\t     c) Give [<unit>]width[/height] of bounding recangle and use +c to set box center.\n");
+	GMT_message (GMT, "\t   Append any combination of these modifiers to draw the map insert rectangle:\n");
+	GMT_message (GMT, "\t     +c<lon>/<lat> to specify insert rectangle center.\n");
+	GMT_message (GMT, "\t     +f<fill> to paint the insert rectangle[no fill]\n");
+	GMT_message (GMT, "\t     +p<pen> to draw the insert rectangle outline [no outline].\n");
 }
 
 void GMT_mapscale_syntax (struct GMT_CTRL *GMT, char option, char *string)

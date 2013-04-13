@@ -2612,26 +2612,30 @@ void GMT_plot_line (struct GMT_CTRL *GMT, double *x, double *y, unsigned int *pe
 }
 
 void GMT_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B)
-{
+{	/* Place a rectangle on the map, as defined by center point and dimensions or w/e/s/n in geo or projected coordinates */
 	uint64_t n, k, np, nx, ny;
 	size_t n_alloc = 0;
-	double rect[4], wesn[4], dim[3], x0, y0, w, h, dx, dy;
+	double rect[4], dim[3], x0, y0;
 	double *lon = NULL, *lat = NULL;
 	struct GMT_DATASEGMENT *S = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 	
 	/* First convert the information we have into the center and dimensions of a rectangle */
-	if (B->unit) {	/* Dealing with projected coordinates and dimensions */
-		GMT_init_distaz (GMT, B->unit, GMT_GREATCIRCLE, GMT_MAP_DIST);
-		if (B->center) {	/* Got a geographic center point */
-			GMT_geo_to_xy (GMT, B->x0, B->y0, &x0, &y0);
-			GMT_memcpy (dim, B->dim, 2, double);
-			for (k = 0; k < 2; k++) dim[k] /= GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Turns units to meters */
-			w = 0.5 * (dim[GMT_X] * GMT->current.proj.scale[GMT_X]);	/* Turns meters into inches on map */
-			h = 0.5 * (dim[GMT_Y] * GMT->current.proj.scale[GMT_Y]);
-			rect[XLO] = x0 - w;	rect[XHI] = x0 + w;
-			rect[YLO] = y0 - h;	rect[YHI] = y0 + h;
+	if (B->unit || B->oblique) {	/* Dealing with projected coordinates and dimensions or got oblique box */
+		if (B->unit) GMT_init_distaz (GMT, B->unit, GMT_GREATCIRCLE, GMT_MAP_DIST);	/* Get scales for this unit */
+		if (B->center) {	/* Got a geographic center point for a rectangular box */
+			GMT_geo_to_xy (GMT, B->x0, B->y0, &x0, &y0);	/* Get map location in inches */
+			GMT_memcpy (dim, B->dim, 2, double);		/* Duplicate the width/height of rectangle */
+			for (k = 0; k < 2; k++) dim[k] /= GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Convert units to meters */
+			dim[GMT_X] = 0.5 * (dim[GMT_X] * GMT->current.proj.scale[GMT_X]);		/* Turns meters into inches on map amd get half-dims */
+			dim[GMT_Y] = 0.5 * (dim[GMT_Y] * GMT->current.proj.scale[GMT_Y]);
+			rect[XLO] = x0 - dim[GMT_X];	rect[XHI] = x0 + dim[GMT_X];	/* Get the min/max map coordinates of the rectangle */
+			rect[YLO] = y0 - dim[GMT_Y];	rect[YHI] = y0 + dim[GMT_Y];
 		}
-		else {	/* Got 4 sides in projected units */
+		else if (B->oblique) {	/* Got lower left and upper right coordinates of rectangular box */
+			GMT_geo_to_xy (GMT, B->wesn[XLO], B->wesn[YLO], &rect[XLO], &rect[YLO]);	/* Lower left corner in inches */
+			GMT_geo_to_xy (GMT, B->wesn[XHI], B->wesn[YHI], &rect[XHI], &rect[YHI]);	/* Lower left corner in inches */
+		}
+		else {	/* Got 4 sides in projected units or a rectangular box*/
 			GMT_memcpy (rect, B->wesn, 4, double);
 			for (k = 0; k < 4; k++) rect[k] /= GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Turns units to meters */
 			/* Turns meters into inches on map */
@@ -2640,21 +2644,22 @@ void GMT_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B)
 			rect[YLO] = rect[YLO] * GMT->current.proj.scale[GMT_Y] + GMT->current.proj.origin[GMT_Y];
 			rect[YHI] = rect[YHI] * GMT->current.proj.scale[GMT_Y] + GMT->current.proj.origin[GMT_Y];
 		}
-		/* Now convert these to lon,lat array */
-		nx = lrint ((rect[XHI] - rect[XLO]) / GMT->current.setting.map_line_step);
-		dim[GMT_X] = (rect[XHI] - rect[XLO]) / (nx - 1);
-		ny = lrint ((rect[YHI] - rect[YLO]) / GMT->current.setting.map_line_step);
-		dim[GMT_Y] = (rect[YHI] - rect[YLO]) / (ny - 1);
-		nx--;	ny--;
-		np = 2 * (nx + ny);
+		/* Now convert these to equidistant lon,lat array going counter-clockwise from lower-left point */
+		nx = lrint ((rect[XHI] - rect[XLO]) / GMT->current.setting.map_line_step) - 1;
+		dim[GMT_X] = (rect[XHI] - rect[XLO]) / nx;
+		ny = lrint ((rect[YHI] - rect[YLO]) / GMT->current.setting.map_line_step) - 1;
+		dim[GMT_Y] = (rect[YHI] - rect[YLO]) / ny;
+		np = 2 * (nx + ny) + 1;
 		GMT_malloc2 (GMT, lon, lat, np, &n_alloc, double);
-		for (n = k = 0; k < nx; k++, n++) GMT_xy_to_geo (GMT, &lon[n], &lat[n], rect[XLO] + k * dx, rect[YLO]);	/* South */
-		for (k = 0; k < ny; k++, n++) GMT_xy_to_geo (GMT, &lon[n], &lat[n], rect[XHI], rect[YLO] + k * dy);	/* East */
-		for (k = 0; k < nx; k++, n++) GMT_xy_to_geo (GMT, &lon[n], &lat[n], rect[XHI] - k * dx, rect[YHI]);	/* North */
-		for (k = 0; k < ny; k++, n++) GMT_xy_to_geo (GMT, &lon[n], &lat[n], rect[XLO], rect[YHI] - k * dy);	/* West */
+		n = 0;
+		for (k = 0; k < nx; k++, n++) GMT_xy_to_geo (GMT, &lon[n], &lat[n], rect[XLO] + k * dim[GMT_X], rect[YLO]);	/* South */
+		for (k = 0; k < ny; k++, n++) GMT_xy_to_geo (GMT, &lon[n], &lat[n], rect[XHI], rect[YLO] + k * dim[GMT_Y]);	/* East */
+		for (k = 0; k < nx; k++, n++) GMT_xy_to_geo (GMT, &lon[n], &lat[n], rect[XHI] - k * dim[GMT_X], rect[YHI]);	/* North */
+		for (k = 0; k < ny; k++, n++) GMT_xy_to_geo (GMT, &lon[n], &lat[n], rect[XLO], rect[YHI] - k * dim[GMT_Y]);	/* West */
+		lon[n] = lon[0];	lat[n] = lat[0];	/* Close polygon */
 	}
 	else	/* Got geographic coordinates */
-		np = GMT_graticule_path (GMT, &lon, &lat, 1, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
+		np = GMT_graticule_path (GMT, &lon, &lat, 1, B->wesn[XLO], B->wesn[XHI], B->wesn[YLO], B->wesn[YHI]);
 	GMT_alloc_segment (GMT, S, 0, 2, true);	/* Just get empty array pointers */
 	S->coord[GMT_X] = lon;	S->coord[GMT_Y] = lat;
 	S->n_rows = np;

@@ -342,9 +342,9 @@ EXTERN_MSC int GMT_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsi
 EXTERN_MSC int GMT_getfont (struct GMT_CTRL *GMT, char *line, struct GMT_FONT *F);
 EXTERN_MSC bool GMT_getpen (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *pen);
 EXTERN_MSC bool GMT_getrgb (struct GMT_CTRL *GMT, char *line, double *rgb);
-EXTERN_MSC int GMT_getrose (struct GMT_CTRL *GMT, char *text, struct GMT_MAP_ROSE *mr);
-EXTERN_MSC int GMT_getscale (struct GMT_CTRL *GMT, char *text, struct GMT_MAP_SCALE *ms);
-EXTERN_MSC int GMT_getinsert (struct GMT_CTRL *GMT, char *text, struct GMT_MAP_INSERT *B);
+EXTERN_MSC int GMT_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_ROSE *mr);
+EXTERN_MSC int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_SCALE *ms);
+EXTERN_MSC int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_INSERT *B);
 EXTERN_MSC char * GMT_putfont (struct GMT_CTRL *GMT, struct GMT_FONT F);
 EXTERN_MSC char * GMT_putpen (struct GMT_CTRL *GMT, struct GMT_PEN pen);
 EXTERN_MSC unsigned int GMT_inonout (struct GMT_CTRL *GMT, double x, double y, const struct GMT_DATASEGMENT *S);

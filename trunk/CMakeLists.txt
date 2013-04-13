@@ -123,7 +123,6 @@ message(
 	"*  GDAL include dir           : ${GDAL_INCLUDE_DIR}\n"
 	"*  Regex support              : ${GMT_CONFIG_REGEX_MESSAGE}\n"
 	"*  File locking               : ${FLOCK}\n"
-	"*  GMT compatibility version  : ${GMT_COMPAT}\n"
 	"*  Build Matlab API           : ${GMT_MATLAB}\n"
 	"*  License restriction        : ${LICENSE_RESTRICTED}\n"
 	"*  Triangulation method       : ${GMT_TRIANGULATE}\n"

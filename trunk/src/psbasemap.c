@@ -72,9 +72,9 @@ int GMT_psbasemap_usage (struct GMTAPI_CTRL *API, int level)
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: psbasemap %s %s %s\n", GMT_B_OPT, GMT_J_OPT, GMT_Rgeoz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-K]\n", GMT_INSERT, GMT_Jz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s]\n", GMT_SCALE);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-O] [-P] [%s]\n", GMT_TROSE);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D%s] [%s] [-K]\n", GMT_INSERT, GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L%s]\n", GMT_SCALE);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-O] [-P] [-T%s]\n", GMT_TROSE);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s]\n\n", GMT_U_OPT, GMT_V_OPT,
 		GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_f_OPT, GMT_p_OPT, GMT_t_OPT);
 
@@ -82,7 +82,7 @@ int GMT_psbasemap_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_Option (API, "B,JZ,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	//GMT_mapinsert_syntax (API->GMT, 'D', "Draw a simple map insert box as specified below:");
+	GMT_mapinsert_syntax (API->GMT, 'D', "Draw a simple map insert box as specified below:");
 	GMT_Option (API, "K");
 	GMT_mapscale_syntax (API->GMT, 'L', "Draw a simple map scale centered on <lon0>/<lat0>.");
 	GMT_Option (API, "O,P");
@@ -113,7 +113,7 @@ int GMT_psbasemap_parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, stru
 
 			case 'D':	/* Draw map insert */
 				Ctrl->D.active = true;
-				n_errors += GMT_getinsert (GMT, opt->arg, &Ctrl->D.item);
+				n_errors += GMT_getinsert (GMT, 'D', opt->arg, &Ctrl->D.item);
 				break;
 			case 'G':	/* Set canvas color */
 				if (GMT_compat_check (GMT, 4)) {
@@ -129,11 +129,11 @@ int GMT_psbasemap_parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, stru
 				break;
 			case 'L':	/* Draw map scale */
 				Ctrl->L.active = true;
-				n_errors += GMT_getscale (GMT, opt->arg, &Ctrl->L.item);
+				n_errors += GMT_getscale (GMT, 'L', opt->arg, &Ctrl->L.item);
 				break;
 			case 'T':	/* Draw map rose */
 				Ctrl->T.active = true;
-				n_errors += GMT_getrose (GMT, opt->arg, &Ctrl->T.item);
+				n_errors += GMT_getrose (GMT, 'T', opt->arg, &Ctrl->T.item);
 				break;
 
 			default:	/* Report bad options */
@@ -144,7 +144,7 @@ int GMT_psbasemap_parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, stru
 
 	n_errors += GMT_check_condition (GMT, !GMT->common.J.active, "Syntax error: Must specify a map projection with the -J option\n");
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
-	n_errors += GMT_check_condition (GMT, !(GMT->current.map.frame.init || Ctrl->L.active || Ctrl->T.active), "Syntax error: Must specify at least one of -B, -L, -T\n");
+	n_errors += GMT_check_condition (GMT, !(GMT->current.map.frame.init || Ctrl->D.active || Ctrl->L.active || Ctrl->T.active), "Syntax error: Must specify at least one of -B, -E, -L, -T\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->L.active && !GMT_is_geographic (GMT, GMT_IN), "Syntax error: -L applies to geographical data only\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -193,7 +193,7 @@ int GMT_psbasemap (void *V_API, int mode, void *args)
 
 	GMT_map_basemap (GMT);	/* Plot base map */
 
-	//if (Ctrl->D.active) GMT_draw_map_insert (GMT, &Ctrl->D.item);
+	if (Ctrl->D.active) GMT_draw_map_insert (GMT, &Ctrl->D.item);
 	if (Ctrl->L.active) GMT_draw_map_scale (GMT, &Ctrl->L.item);
 	if (Ctrl->T.active) GMT_draw_map_rose (GMT, &Ctrl->T.item);
 
