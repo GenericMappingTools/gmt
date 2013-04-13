@@ -9170,7 +9170,7 @@ accomplished.
 -  A command-line alternative is to use freely-available program
    **epstool** from the makers of Aladdin **ghostscript**. Running
 
-   ::
+      ::
 
        epstool -c -b myplot.ps
 
@@ -9180,7 +9180,7 @@ accomplished.
 -  Another option is to use **ps2epsi** which also comes with the
    **ghostscript** package. Running
 
-   ::
+      ::
 
        ps2epsi myplot.ps myplot.eps
 
@@ -9196,7 +9196,7 @@ accomplished.
    figure out the tightest BoundingBox, again using **ghostscript** in
    the background. For example, running
 
-   ::
+      ::
 
        ps2raster -A -Te myplot.ps
 
@@ -9337,7 +9337,7 @@ default the fonts are rendered at 720 dots-per-inch in a PDF file and
 images are sampled to 300 dpi, but that can be changed with the **-E**
 option. Simply run
 
-::
+   ::
 
     ps2raster -A -P -Tf *.ps
 
@@ -9370,20 +9370,20 @@ To add the graphics into the LaTeX document we use the
 ``\includegraphics`` command supplied by the package. In the preamble of
 your LaTeX document you will need to include the line
 
-::
+   ::
 
-    \usepackage{graphicx}
+     \usepackage{graphicx}
 
 The inclusion of the graphics will probably be inside a floating figure
 environment; something like this
 
-::
+   ::
 
-    \begin{figure}
-       \includegraphics{myplot}
-       \caption{This is my first plot in \LaTeX.}
-       \label{fig:myplot}
-    \end{figure}
+     \begin{figure}
+        \includegraphics{myplot}
+        \caption{This is my first plot in \LaTeX.}
+        \label{fig:myplot}
+     \end{figure}
 
 Note that the ``\includegraphics`` command does not require you to add
 the suffix ``.pdf`` to the file name. If you run **pdflatex**, it will
@@ -9395,9 +9395,9 @@ Landscape mode (i.e., you did *not* use *GMT*\ ’s **-P** option: not
 while plotting, nor in `ps2raster <ps2raster.html>`_),
 you will need to rotate the plot as well. For example,
 
-::
+   ::
 
-    \includegraphics[angle=-90,width=0.8\textwidth]{myplot}
+     \includegraphics[angle=-90,width=0.8\textwidth]{myplot}
 
 will rotate the image 90 clockwise and scale it such that its width
 (after rotation) will be 80% of the width of the text column.
@@ -9473,17 +9473,17 @@ this utility is not installed on your system, you must obtained it by
 your system's package manager or install it separately [40]_. The GMT
 archives are as follows:
 
-gmt-5.0.1b (r).tar.bz2
-    Contains all *GMT* and supplemental source code needed for
-    compilation, support files needed at run-time (cpt files, symbols
-    and *PostScript* patterns), and all documentation (man pages,
-    Cookbook and Technical Reference, and the tutorial), the data files
-    used in the tutorial, and all the shell scripts and support data
-    used in the Cookbook section.
+    gmt-5.0.1b (r).tar.bz2
+        Contains all *GMT* and supplemental source code needed for
+        compilation, support files needed at run-time (cpt files, symbols
+        and *PostScript* patterns), and all documentation (man pages,
+        Cookbook and Technical Reference, and the tutorial), the data files
+        used in the tutorial, and all the shell scripts and support data
+        used in the Cookbook section.
 
-gshhg-gmt-nc4-2.2.0.tar.bz2
-    Contains all resolutions (full, high, intermediate, low, and crude)
-    of the GSHHG coastline database. Required to run *GMT*.
+    gshhg-gmt-nc4-2.2.0.tar.bz2
+        Contains all resolutions (full, high, intermediate, low, and crude)
+        of the GSHHG coastline database. Required to run *GMT*.
 
 The netCDF library that makes up the backbone of the grid file i/o
 operations can be obtained from Unidata by downloading the file ``netcdf.tar.gz`` from the
@@ -9494,9 +9494,9 @@ Install via subversion
 
 The *GMT* development tree can be installed via subversion. Simply run
 
-::
+   ::
 
-    	svn checkout svn://gmtserver.soest.hawaii.edu/gmt5
+    svn checkout svn://gmtserver.soest.hawaii.edu/gmt5
 
 Pre-compiled Executables
 ------------------------
@@ -9590,7 +9590,7 @@ the file C``USTOM_font_info.d``. You can either edit the existing file distribut
 *GMT* to make the changes global or you can create a new file in the
 current working directory, e.g.,
 
-::
+   ::
 
     LinBiolinumO      0.700    0
     LinLibertineOB    0.700    0
@@ -9604,12 +9604,12 @@ might be from the font size ratio so that the vertical position of
 labels and titles can be adjusted to a more uniform typesetting. Now,
 you can set the *GMT* font parameters to your non-standard fonts:
 
-::
+   ::
 
     gmtset FONT LinBiolinumO \
-     FONT_TITLE 28p,LinLibertineOB \
-     PS_CHAR_ENCODING ISO-8859-1 \
-     MAP_DEGREE_SYMBOL degree
+    FONT_TITLE 28p,LinLibertineOB \
+    PS_CHAR_ENCODING ISO-8859-1 \
+    MAP_DEGREE_SYMBOL degree
 
 After setting the encoding and the degree symbol, the configuration part
 for *GMT* is finished and you can proceed to create *GMT*-maps as usual.
@@ -9647,11 +9647,11 @@ If you do not want or cannot embed the fonts you can convert them to
 outlines (shapes with fills) with **Ghostscript** in the following
 way:
 
-::
+   ::
 
-    gs -q -dNOCACHE -dSAFER -dNOPAUSE -dBATCH -dNOPLATFONTS \
-      -sDEVICE=pswrite -sFONTPATH="/path/to/fontdir" \
-      -sOutputFile=mapWithOutlinedFonts.ps map.ps
+     gs -q -dNOCACHE -dSAFER -dNOPAUSE -dBATCH -dNOPLATFONTS \
+        -sDEVICE=pswrite -sFONTPATH="/path/to/fontdir" \
+        -sOutputFile=mapWithOutlinedFonts.ps map.ps
 
 Note, that this only works with the *pswrite* device. If you need
 outlined fonts in PDF, create the PDF from the converted
@@ -9952,11 +9952,10 @@ thesis, for example, it might be worth trying to save and print all your
 color plots using the CMYK system. Letting *GMT* do the conversion to
 CMYK may avoid some nasty surprises when it comes down to printing. To
 specify the color space of your *PostScript* file, set
-**PS\_COLOR\_MODEL** in the ``gmt.conf`` file to RGB, HSV, or CMYK.
+**PS_COLOR_MODEL** in the ``gmt.conf`` file to RGB, HSV, or CMYK.
 
 I. Filtering of data in GMT
 ===========================
-
 
 The *GMT* programs `filter1d <filter1d.html>`_ (for
 tables of data indexed to one independent variable) and
@@ -10084,7 +10083,7 @@ becomes a complicated processing step.
    simplest combinations. The WVS segments joined to produce more than
    200,000 polygons, the largest being the Africa-Eurasia polygon which
    has 1.4 million points. The WDB data resulted in a smaller data base
-   (:math:`\sim`\ 25% of WVS).
+   (~25% of WVS).
 
 #. We now needed to combine the WVS and WDB data bases. The main problem
    here is that we have duplicates of polygons: most of the features in
@@ -10142,8 +10141,7 @@ becomes a complicated processing step.
    subset was approximately 20% the size of the next higher resolution.
    The five resolutions are called **f**\ ull, **h**\ igh,
    **i**\ ntermediate, **l**\ ow, and **c**\ rude; they are accessed in
-   `pscoast <pscoast.html>`_,
-   `gmtselect <gmtselect.html>`_, and
+   `pscoast <pscoast.html>`_, `gmtselect <gmtselect.html>`_, and
    `grdlandmask <grdlandmask.html>`_ with the **-D**
    option [45]_. For each of these 5 data sets (**f**, **h**, **i**,
    **l**, **c**) we specified an equidistant grid (1, 2, 5, 10, 20) and
@@ -10207,12 +10205,12 @@ total file size of the coastlines, rivers, and borders database is only
   ::
 
     gmtset MAP_GRID_CROSS_SIZE_PRIMARY 0 MAP_ANNOT_OBLIQUE 22 MAP_ANNOT_MIN_SPACING 0.3i
-    pscoast -Rk-9000/9000/-9000/9000 -JE130.35/-0.2/3.5i -P -Dc \
-      -A500 -Gburlywood -Sazure -Wthinnest -N1/thinnest,- -B20g20WSne -K > GMT_App_K_1.ps
+    pscoast -Rk-9000/9000/-9000/9000 -JE130.35/-0.2/3.5i -P -Dc -A500 \
+            -Gburlywood -Sazure -Wthinnest -N1/thinnest,- -B20g20WSne -K > GMT_App_K_1.ps
     psbasemap -R -J -O -Dk2000+c130.35/-0.2+pthicker >> GMT_App_K_1.ps
 
-Here, we use the **MAP\_ANNOT\_OBLIQUE** bit flags to achieve horizontal
-annotations and set **MAP\_ANNOT\_MIN\_SPACING** to suppress some
+Here, we use the **MAP_ANNOT_OBLIQUE** bit flags to achieve horizontal
+annotations and set **MAP_ANNOT_MIN_SPACING** to suppress some
 longitudinal annotations near the S pole that otherwise would overprint.
 The square box indicates the outline of the next map.
 
@@ -10223,7 +10221,7 @@ We have now reduced the map area by zooming in on the map center. Now,
 the edges of the map are all 2000 km true distance from the projection
 center. At this scale we choose the low resolution data that faithfully
 reproduce the dominant geographic features in the region. We cut back on
-minor features less than 100 km\ :math:`^2` in area. We still add
+minor features less than 100 km^2 in area. We still add
 national borders to the plot. The low database is less decimated and
 simplified by the DP-routine: The total file size of the coastlines,
 rivers, and borders combined grows to 907 kbytes; it is the default
@@ -10243,7 +10241,7 @@ map are all 500 km true distance from the projection center. We abandon
 the low resolution data set as it would look too jagged at this scale
 and instead employ the intermediate resolution data that faithfully
 reproduce the dominant geographic features in the region. This time, we
-ignore features less than 20 km\ :math:`^2` in area. Although the script
+ignore features less than 20 km^2 in area. Although the script
 still asks for national borders none exist within our region. The
 intermediate database is moderately decimated and simplified by the
 DP-routine: The combined file size of the coastlines, rivers, and
@@ -10265,7 +10263,7 @@ The relentless zooming continues! Now, the edges of the map are all 100
 km true distance from the projection center. We step up to the high
 resolution data set as it is needed to accurately portray the detailed
 geographic features within the region. Because of the small scale we
-only ignore features less than 1 km\ :math:`^2` in area. The high
+only ignore features less than 1 km^2 in area. The high
 resolution database has undergone minor decimation and simplification by
 the DP-routine: The combined file size of the coastlines, rivers, and
 borders now swells to 12.3 Mbytes. The map and the final outline box are
@@ -10362,7 +10360,7 @@ careful when using **regtool** since damaging your system registry can
 result in an unusable system. This example sets the local machine memory
 limit to 1024 Mb:
 
-::
+   ::
 
     regtool -i set /HKLM/Software/Cygnus\ Solutions/Cygwin/heap_chunk_in_mb 1024
     regtool -v list /HKLM/Software/Cygnus\ Solutions/Cygwin
@@ -10666,7 +10664,7 @@ must appear by itself with no other text, and that the **elseif** and
 same line (and nothing else). You may nest tests as well (up to 10
 levels deep), e.g.,
 
-::
+   ::
 
     if $1 > 45 then {
             if $2 [> 0:10 then 0 0 0.5 c -Gred
@@ -11110,7 +11108,6 @@ several (temporary) files to communicate between the different commands
 that make up the script that finally creates a plot. Among those files
 are:
 
-.
     **gmt.conf** This file covers about 100 different settings that influence the
        layout of your plot, from font sizes to tick lengths and date
        formats (See Section [sec:gmt.conf]). Those settings can be altered
@@ -11122,7 +11119,6 @@ are:
        often necessary to revert to the original ``gmt.conf`` file. *Isolation mode*
        avoids that issue.
 
-.
     **.gmtcommands** This file is created to communicate the command line history from
        one command to the next (Section [sec:gmtcommands]) so that
        shorthands like **-R** or **-J** can be used once it has been set in
@@ -11233,18 +11229,17 @@ The OGR/GMT format
 Several key properties of the OGR/GMT format is summarized below:
 
 -  All new data fields are stored as comment lines, i.e., in lines
-   starting with a “#”. OGR/GMT files are therefore compatible with
+   starting with a "#". OGR/GMT files are therefore compatible with
    *GMT* 4 binaries, which will simply ignore this new information.
 
 -  To be consistent with current practice in *GMT*, data fields are
    represented as whitespace-separated strings within the comments, each
-   identified by the “@” character as a prefix, followed by a single
+   identified by the "@" character as a prefix, followed by a single
    character identifying the content of the field. To avoid confusion
    between words and strings, the word (field) separator within strings
-   will be the “:math:`|`” (pipe or vertical bar) character.
+   will be the "\|" (pipe or vertical bar) character.
 
--  Standard UNIX “:math:`\backslash`” escaping is used, such as
-   :math:`\backslash`\ n for newline in a string.
+-  Standard UNIX "\\" escaping is used, such as \\n for newline in a string.
 
 -  All new data are stored before the spatial data (coordinates) in the
    file, so when any *GMT* 5 program is processing the coordinate data
@@ -11304,8 +11299,6 @@ The comment header line will include a version identifier providing for
 possible different versions in future. It is indicated by the **@V**
 sequence.
 
-[h]
-
 +------------+----------------+---------------------------------------------------------------------+
 | **Code**   | **Argument**   | **Description**                                                     |
 +============+================+=====================================================================+
@@ -11316,7 +11309,7 @@ sequence.
 
 An OGR/GMT file must therefore begin with the line
 
-::
+   ::
 
     # @VGMT1.0
 
@@ -11371,7 +11364,7 @@ Table [tbl:geometries].
 An example *GMT* polygon file header using this specification (in format
 1.0) is
 
-::
+   ::
 
     # @VGMT1.0 @GPOLYGON
 
@@ -11383,7 +11376,7 @@ region will be stored in *GMT* **-R** format (i.e., **-R**\ *W/E/S/N*,
 where the *W/E/S/N* values represent the extent of features); the **@R**
 code sequence marks the domain information. A sample region header is:
 
-::
+   ::
 
     # @R150/190/-45/-54
 
@@ -11410,7 +11403,7 @@ the format, as shown in Table [tbl:projectspec].
 
 Sample projection strings are:
 
-::
+   ::
 
     # @Je4326 @JgX @Jp"+proj=longlat +ellps=WGS84+datum=WGS84 +no_defs"
     # @Jw"GEOGCS[\"WGS84\",DATUM[\"WGS_1984\",SPHEROID\"WGS84\",6378137,\
@@ -11463,7 +11456,7 @@ will be stored as appropriately formatted text strings.
 
 An example header record containing all these is
 
-::
+   ::
 
     # @VGMT1.0 @GPOLYGON @Nname|depth|id @Tstring|double|integer
 
@@ -11501,14 +11494,14 @@ null, they will be represented as no characters between the field
 separator, (e.g., #@D\ :math:`|`\ :math:`|`\ :math:`|`). A Sample header
 and corresponding data line for points are
 
-::
+   ::
 
     # @VGMT1.0 @GPOINT @Nname|depth|id @Tstring|double|integer
     # @D"Point 1"|-34.5|1
 
 while for a polygon it may look like
 
-::
+   ::
 
     # @VGMT1.0 @GPOLYGON @Nname|depth|id @Tstring|double|integer
     >
@@ -11540,7 +11533,7 @@ Sample point, line and polygon files are (the new data structures are in
 lines starting with “#” in strings prefixed with “@)”. Here is a typical
 point file:
 
-::
+   ::
 
     # @VGMT1.0 @GPOINT @Nname|depth|id
     # @Tstring|double|integer
@@ -11556,7 +11549,7 @@ point file:
 
 Next is an example of a line file:
 
-::
+   ::
 
     # @VGMT1.0 @GLINESTRING @Nname|depth|id
     # @Tstring|double|integer
@@ -11576,7 +11569,7 @@ Next is an example of a line file:
 
 Finally we show an example of a polygon file:
 
-::
+   ::
 
     # @VGMT1.0 @GPOLYGON @N"Polygon name"|substrate|id @Tstring|string|integer
     # @R178.1/178.6/-48.7/-45.6
