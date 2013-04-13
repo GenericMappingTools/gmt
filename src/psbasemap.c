@@ -35,6 +35,10 @@
 /* Control structure for psbasemap */
 
 struct PSBASEMAP_CTRL {
+	struct D {	/* -D */
+		bool active;
+		struct GMT_MAP_INSERT item;
+	} D;
 	struct L {	/* -L */
 		bool active;
 		struct GMT_MAP_SCALE item;
@@ -51,6 +55,7 @@ void *New_psbasemap_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C = GMT_memory (GMT, NULL, 1, struct PSBASEMAP_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
+	GMT_memset (&C->D.item, 1, struct GMT_MAP_INSERT);
 	GMT_memset (&C->L.item, 1, struct GMT_MAP_SCALE);
 	GMT_memset (&C->T.item, 1, struct GMT_MAP_ROSE);
 
@@ -66,7 +71,8 @@ int GMT_psbasemap_usage (struct GMTAPI_CTRL *API, int level)
 	/* This displays the psbasemap synopsis and optionally full usage information */
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_Message (API, GMT_TIME_NONE, "usage: psbasemap %s %s %s [-K] [%s]\n", GMT_B_OPT, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: psbasemap %s %s %s\n", GMT_B_OPT, GMT_J_OPT, GMT_Rgeoz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-K]\n", GMT_INSERT, GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s]\n", GMT_SCALE);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-O] [-P] [%s]\n", GMT_TROSE);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s]\n\n", GMT_U_OPT, GMT_V_OPT,
@@ -76,6 +82,7 @@ int GMT_psbasemap_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_Option (API, "B,JZ,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	//GMT_mapinsert_syntax (API->GMT, 'D', "Draw a simple map insert box as specified below:");
 	GMT_Option (API, "K");
 	GMT_mapscale_syntax (API->GMT, 'L', "Draw a simple map scale centered on <lon0>/<lat0>.");
 	GMT_Option (API, "O,P");
@@ -104,6 +111,10 @@ int GMT_psbasemap_parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, stru
 
 			/* Processes program-specific parameters */
 
+			case 'D':	/* Draw map insert */
+				Ctrl->D.active = true;
+				n_errors += GMT_getinsert (GMT, opt->arg, &Ctrl->D.item);
+				break;
 			case 'G':	/* Set canvas color */
 				if (GMT_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -G is deprecated; -B...+g%s was set instead, use this in the future.\n", opt->arg);
@@ -182,6 +193,7 @@ int GMT_psbasemap (void *V_API, int mode, void *args)
 
 	GMT_map_basemap (GMT);	/* Plot base map */
 
+	//if (Ctrl->D.active) GMT_draw_map_insert (GMT, &Ctrl->D.item);
 	if (Ctrl->L.active) GMT_draw_map_scale (GMT, &Ctrl->L.item);
 	if (Ctrl->T.active) GMT_draw_map_rose (GMT, &Ctrl->T.item);
 

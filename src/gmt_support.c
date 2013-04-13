@@ -7561,6 +7561,94 @@ bool GMT_x_is_outside (struct GMT_CTRL *GMT, double *x, double left, double righ
 		return (((*x) < left || (*x) > right) ? true : false);
 }
 
+int GMT_getinsert (struct GMT_CTRL *GMT, char *text, struct GMT_MAP_INSERT *B)
+{	/* Parse the map insert option: 
+	 * -D[unit]xmin/xmax/ymin/ymax|width[/height][+c<clon>/<clat>][+p<pen>][+g<fill>] */
+	unsigned int col_type[2], k = 0, i, start = 0, pos = 0, error = 0, n;
+	char p[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256];
+	
+	if (!text) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No argument given\n");
+		GMT_exit (EXIT_FAILURE);
+	}
+	GMT_memset (B, 1, struct GMT_MAP_INSERT);
+	
+	if (strchr (GMT_LEN_UNITS2, text[0])) {
+		B->unit = text[0];
+		k = 1;
+	}
+	for (i = k; start == 0 && text[i]; i++) {
+		if (text[i] == '+') {
+			if (strchr ("cfp", text[i+1])) start = i;
+		}
+	}
+	col_type[GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_X];
+	col_type[GMT_Y] = GMT->current.io.col_type[GMT_IN][GMT_Y];
+	
+	if (start) {	/* Process modifiers */
+		while ((GMT_strtok (&text[start], "+", &pos, p))) {
+			switch (p[0]) {
+				case 'c':	/* Set insert center */
+					B->center = true;
+					if ((n = sscanf (&p[1], "%[^/]/%s", txt_a, txt_b)) == 2) {
+						error += GMT_verify_expectations (GMT, col_type[GMT_X], GMT_scanf (GMT, txt_a, col_type[GMT_X], &B->x0), txt_a);
+						error += GMT_verify_expectations (GMT, col_type[GMT_Y], GMT_scanf (GMT, txt_b, col_type[GMT_Y], &B->y0), txt_b);
+					}
+					else {
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error D option:  Must specify +c<lon>/<lat> for center\n");
+						return (1);
+					}
+					break;
+				case 'f':	/* Fill specification */
+					if (GMT_getfill (GMT, &p[1], &B->fill)) error++;
+					B->boxfill = true;
+					break;
+				case 'p':	/* Pen specification */
+					if (GMT_getpen (GMT, &p[1], &B->pen)) error++;
+					B->boxdraw = true;
+					break;
+				default:
+					error++;
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error D option:  Unrecognized modifier +%c\n", p[0]);
+					break;
+			}
+		}
+		text[start] = '\0';	/* Truncate string for now */
+	}
+	if (! (B->boxdraw || B->boxfill)) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error D option:  Need to add at least one of +<pen> or +g<fill>\n");
+		return (1);
+	}
+	/* Decode the w/e/s/n or width[/height] part */
+	n = sscanf (&text[k], "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
+	if (!B->center && n != 4) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error D option:  Must specify w/e/s/n or unit/xmin/xmax/ymin/ymax\n");
+		return (1);
+	}
+	else if (B->center && n > 2) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error D option:  Must specify unit/width/height\n");
+		return (1);
+	}
+	if (k == 0 && !B->center) {	/* Got geographic w/e/s/n */
+		error += GMT_verify_expectations (GMT, col_type[GMT_X], GMT_scanf (GMT, txt_a, col_type[GMT_X], &B->wesn[XLO]), txt_a);
+		error += GMT_verify_expectations (GMT, col_type[GMT_X], GMT_scanf (GMT, txt_b, col_type[GMT_X], &B->wesn[XHI]), txt_b);
+		error += GMT_verify_expectations (GMT, col_type[GMT_Y], GMT_scanf (GMT, txt_a, col_type[GMT_Y], &B->wesn[YLO]), txt_c);
+		error += GMT_verify_expectations (GMT, col_type[GMT_Y], GMT_scanf (GMT, txt_b, col_type[GMT_Y], &B->wesn[YHI]), txt_d);
+	}
+	else if (!B->center) {	/* Got projected xmin/xmax/ymin/ymax */
+		B->wesn[XLO] = atof (txt_a);	B->wesn[XHI] = atof (txt_b);
+		B->wesn[YLO] = atof (txt_c);	B->wesn[YHI] = atof (txt_d);
+	}
+	else {	/* Got width[/height] + center */
+		B->dim[GMT_X] = atof (txt_a);
+		B->dim[GMT_Y] = (n == 2) ? atof (txt_b) : B->dim[GMT_X];
+		if (k == 0) B->unit = 'e';	/* Default unit is meter */
+	}
+	if (start) text[start] = '+';	/* Restore string*/
+	B->plot = true;
+	return (error);
+}
+
 int GMT_getscale (struct GMT_CTRL *GMT, char *text, struct GMT_MAP_SCALE *ms)
 {
 	/* Pass text as &argv[i][2] */
