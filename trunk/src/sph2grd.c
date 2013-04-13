@@ -218,10 +218,10 @@ int GMT_sph2grd_parse (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *Ctrl, struct G
 
 int GMT_sph2grd (void *V_API, int mode, void *args)
 {
-	bool ortho = false;
+	bool ortho = false, duplicate_col;
 	int error, L_sign = 1, L, L_min = 0, L_max = 0, M, M_max = 0;
-	unsigned int row, col, n_PLM, n_CS, n_CS_nx, next_10_percent = 10;
-	uint64_t tbl, seg, drow, node, k;
+	unsigned int row, col, nx, n_PLM, n_CS, n_CS_nx, next_10_percent = 10;
+	uint64_t tbl, seg, drow, node, node_L, k;
 	char text[GMT_TEXT_LEN32];
 	double lon, lat, sum, lo, hi, filter, percent_inc, percent = 0;
 	struct GMT_GRID *Grid = NULL;
@@ -401,6 +401,8 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Using a total of %.3g %cb for grid and all arrays.\n", mem, unit[kind]);
 	}
 	percent_inc = 100.0 / Grid->header->ny;	/* Percentage of whole grid represented by one row */
+	duplicate_col = (GMT_360_RANGE (Grid->header->wesn[XLO], Grid->header->wesn[XHI]) && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
+	nx = (duplicate_col) ? Grid->header->nx - 1 : Grid->header->nx;
 	
 	GMT_Report (API, GMT_MSG_VERBOSE, "Start evaluating the spherical harmonic series\n");
 	
@@ -414,7 +416,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 	GMT_row_loop (GMT, Grid, row) {					/* For each output latitude */
 		lat = GMT_grd_row_to_y (GMT, row, Grid->header);	/* Current latitude */
 		/* Compute all P_lm needed for this latitude at once via GMT_plm_bar_all */
-		GMT_plm_bar_all (GMT, L_sign * L_max, sind (lat), ortho, P_lm);	/* I.e., cosine of colatitude */
+		GMT_plm_bar_all (GMT, L_sign * L_max, sind (lat), ortho, P_lm);	/* sind(lat) = cosine of colatitude */
 		if (GMT_is_verbose (GMT, GMT_MSG_LONG_VERBOSE)) {	/* Give user feedback on progress every 10 percent */
 			percent += percent_inc;
 			if (percent > (double)next_10_percent) {
@@ -424,7 +426,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 			GMT_ascii_format_col (GMT, text, lat, GMT_Y);
 			GMT_Report (API, GMT_MSG_DEBUG, "Working on latitude: %s\n", text);
 		}
-		GMT_col_loop (GMT, Grid, row, col, node) {	/* For each longitude along this parallel */
+		for (col = 0, node = node_L = GMT_IJP (Grid->header, row, 0); col < nx; col++, node++) {	/* For each longitude along this parallel */
 			sum = 0.0;	/* Initialize sum to zero for new output node */
 			k = (L_min) ? LM_index (L_min, 0) : 0;	/* Set start index for P_lm packed array */
 			for (L = L_min; L <= L_max; L++) {	/* For all degrees */
@@ -434,6 +436,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 			}
 			Grid->data[node] = (float)sum;	/* Assign total to the grid, cast as float */
 		}
+		if (duplicate_col) Grid->data[node] = Grid->data[node_L];	/* Just copy over what we found on the western boundary */
 	}
 	GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Finished 100 %% of evaluation\n");
 	
