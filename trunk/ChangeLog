@@ -2,6 +2,11 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-04-13	pwessel/remko
+	* ConfigUserTemplate.cmake ConfigDefaults.cmake gmt_init.c gmt.conf.in:
+				Removed GMT_COMPAT as a compiler option. Can now be set in run-
+				time using the setting GMT_COMPATIBILITY.
+
 2013-04-10	pwessel
 	* gmt_map.c:		Fixed clipping of invisible lines over horizon on azimuthal maps.
 				Added two scripts, general_p.sh (which still has one problem) and
@@ -13,7 +18,7 @@
 				in programs like grdfft (f) or surface (s).
 
 2013-04-07	pwessel
-	* share/DCW		Add the DCW files to share/DCW so all have access via pscoast.
+	* share/DCW:		Add the DCW files to share/DCW so all have access via pscoast.
 	* gmt_grdio.c:		Would restrict grid region in grdimage despite doing a global map
 				with azimuthal projections.
 
@@ -123,7 +128,7 @@
 	* grdmath.c		---"---
 
 2013-01-18      pwessel
-        * mgd77/mgd77list.c:    The azimuth written was back-azimuth, not forward.
+	* mgd77/mgd77list.c:    The azimuth written was back-azimuth, not forward.
 
 2013-01-17	pwessel
 	* gmt_grdio.[ch]:	Add latest dimensions for Sandwell/Smith ~85N/S img files

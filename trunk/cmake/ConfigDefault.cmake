@@ -82,11 +82,6 @@ if (NOT DEFINED LICENSE_RESTRICTED)
 	set (LICENSE_RESTRICTED no)
 endif (NOT DEFINED LICENSE_RESTRICTED)
 
-# Set compatibility with 4 and 5 as default.
-if (NOT DEFINED GMT_COMPAT)
-	set (GMT_COMPAT "4")
-endif (NOT DEFINED GMT_COMPAT)
-
 # Default location of release documentation. If the directory exists in the
 # source tree, the files will be copied to GMT_DOC_PATH instead of creating
 # PDFs from source:
