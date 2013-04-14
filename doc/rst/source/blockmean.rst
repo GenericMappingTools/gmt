@@ -12,7 +12,7 @@ Synopsis
 **blockmean** [ *table* ]
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
 |SYN_OPT-R| [ **-C** ] [
-**-E** ] [ **-S**\ [**m**\ \|\ **n**\ \|\ **s**\ \|\ **w**] ]
+**-E**\ [**p**] ] [ **-S**\ [**m**\ \|\ **n**\ \|\ **s**\ \|\ **w**] ]
 [ |SYN_OPT-V| ] [ **-W**\ [**i**\ \|\ **o**] ] [
 **-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [ **-h**\ [**i**\ \|\ **o**][*n*] ] [
@@ -55,12 +55,14 @@ Optional Arguments
 **-C**
     Use the center of the block as the output location [Default uses the
     mean location].
-**-E**
+**-E**\ [**p**]
     Provide Extended report which includes **s** (the standard deviation
     about the mean), **l**, the lowest value, and **h**, the high value
     for each block. Output order becomes
     *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,\ *w*]. [Default outputs
     *x*,\ *y*,\ *z*\ [,\ *w*]. See **-W** for *w* output.
+    If **-Ep** is used we assume weights are 1/(sigma squared) and *s*
+    becomes the propagated error of the mean.
 **-S**\ [**m**\ \|\ **n**\ \|\ **s**\ \|\ **w**]
     Use **-Sn** to report the number of points inside each block,
     **-Ss** to report the sum of all *z*-values inside a block, **-Sw**

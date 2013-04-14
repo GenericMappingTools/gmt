@@ -42,7 +42,7 @@ int GMT_blockmean_usage (struct GMTAPI_CTRL *API, int level)
 {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: blockmean [<table>] %s\n", GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s [-C] [-E] [-S[m|n|s|w]] [%s] [-W[i][o]]\n", GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s [-C] [-E[p]] [-S[m|n|s|w]] [%s] [-W[i][o]]\n", GMT_Rgeo_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_a_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT);
 
@@ -56,6 +56,7 @@ int GMT_blockmean_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Extend output with st.dev (s), low (l), and high (h) value per block,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   i.e., output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w])];\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   see -W regarding the weight w.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If -Ep is used we assume weights are 1/sigma^2 and s becomes the propagated error.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Set the quantity to be reported per block; choose among:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sm report mean values [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Sn report number of data points.\n");
@@ -98,6 +99,7 @@ int GMT_blockmean_parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, stru
 				break;
 			case 'E':	/* Extended report with standard deviation, min, and max in cols 4-6 */
 				Ctrl->E.active = true;
+				if (opt->arg[0] == 'p') Ctrl->E.mode = 1;
 				break;
 			case 'I':	/* Get block dimensions */
 				Ctrl->I.active = true;
@@ -152,6 +154,7 @@ int GMT_blockmean_parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, stru
 	GMT_check_lattice (GMT, Ctrl->I.inc, &GMT->common.r.registration, &Ctrl->I.active);	/* If -R<grdfile> was given we may get incs unless -I was used */
 
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->E.mode && !Ctrl->W.weighted[GMT_IN], "Syntax error: The -Ep option requires weights (= 1/sigma^2) on input\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += GMT_check_binary_io (GMT, (Ctrl->W.weighted[GMT_IN]) ? 4 : 3);
 
@@ -160,7 +163,7 @@ int GMT_blockmean_parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, stru
 
 /* Must free allocated memory before returning */
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid); GMT_free (GMT, zw); if (xy) GMT_free (GMT, xy); if (np) GMT_free (GMT, np); if (slh) GMT_free (GMT, slh); Free_blockmean_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout(code);}
+#define Return(code) {GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid); GMT_free (GMT, zw); if (xy) GMT_free (GMT, xy); if (np) GMT_free (GMT, np); if (slhg) GMT_free (GMT, slhg); Free_blockmean_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout(code);}
 
 int GMT_blockmean (void *V_API, int mode, void *args)
 {
@@ -176,7 +179,7 @@ int GMT_blockmean (void *V_API, int mode, void *args)
 	struct GMT_OPTION *options = NULL;
 	struct GMT_GRID *Grid = NULL;
 	struct BLK_PAIR *xy = NULL, *zw = NULL;
-	struct BLK_SLH *slh = NULL;
+	struct BLK_SLHG *slhg = NULL;
 	struct BLOCKMEAN_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
@@ -208,7 +211,7 @@ int GMT_blockmean (void *V_API, int mode, void *args)
 	use_xy = !Ctrl->C.active;	/* If not -C then we must keep track of x,y locations */
 	zw = GMT_memory (GMT, NULL, Grid->header->nm, struct BLK_PAIR);
 	if (use_xy) xy = GMT_memory (GMT, NULL, Grid->header->nm, struct BLK_PAIR);
-	if (Ctrl->E.active) slh = GMT_memory (GMT, NULL, Grid->header->nm, struct BLK_SLH);
+	if (Ctrl->E.active) slhg = GMT_memory (GMT, NULL, Grid->header->nm, struct BLK_SLHG);
 	if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) np = GMT_memory (GMT, NULL, Grid->header->nm, uint64_t);
 
 	/* Specify input and output expected columns */
@@ -239,7 +242,7 @@ int GMT_blockmean (void *V_API, int mode, void *args)
 		double mem;
 		char *unit = "KMG";	/* Kilo-, Mega-, Giga- */
 		if (!Ctrl->C.active) n_bytes_per_record += sizeof (struct BLK_PAIR);
-		if (Ctrl->E.active)  n_bytes_per_record += sizeof (struct BLK_SLH);
+		if (Ctrl->E.active)  n_bytes_per_record += sizeof (struct BLK_SLHG);
 		if (Ctrl->W.weighted[GMT_IN] && Ctrl->E.active) n_bytes_per_record += sizeof (uint64_t);
 		mem = n_bytes_per_record * Grid->header->nm / 1024.0;	/* Report kbytes unless it is too much */
 		while (mem > 1024.0 && kind < 2) { mem /= 1024.0;	kind++; }	/* Goto next higher unit */
@@ -295,14 +298,15 @@ int GMT_blockmean (void *V_API, int mode, void *args)
 			xy[node].a[GMT_Y] += (in[GMT_Y] * weight);
 		}
 		if (Ctrl->E.active) {	/* Add up sum (w*z^2) and n for weighted stdev and keep track of min,max */
-			slh[node].a[BLK_S] += (weighted_z * in[GMT_Z]);
+			slhg[node].a[BLK_S] += (weighted_z * in[GMT_Z]);
 			if (Ctrl->W.weighted[GMT_IN]) np[node]++;
 			if (zw[node].a[BLK_W] == 0.0) {	/* Initialize low,high the first time */
-				slh[node].a[BLK_L] = +DBL_MAX;
-				slh[node].a[BLK_H] = -DBL_MAX;
+				slhg[node].a[BLK_L] = +DBL_MAX;
+				slhg[node].a[BLK_H] = -DBL_MAX;
 			}
-			if (in[GMT_Z] < slh[node].a[BLK_L]) slh[node].a[BLK_L] = in[GMT_Z];
-			if (in[GMT_Z] > slh[node].a[BLK_H]) slh[node].a[BLK_H] = in[GMT_Z];
+			if (in[GMT_Z] < slhg[node].a[BLK_L]) slhg[node].a[BLK_L] = in[GMT_Z];
+			if (in[GMT_Z] > slhg[node].a[BLK_H]) slhg[node].a[BLK_H] = in[GMT_Z];
+			if (Ctrl->E.mode == 1) slhg[node].a[BLK_G] += 1.0 / weight;	/* Sum of sigma squared*/
 		}
 		zw[node].a[BLK_W] += weight;		/* Sum up the weights */
 		zw[node].a[BLK_Z] += weighted_z;	/* Sum up the weighted values */
@@ -369,15 +373,20 @@ int GMT_blockmean (void *V_API, int mode, void *args)
 			out[GMT_Z] = zw[node].a[BLK_Z] * iw;
 		if (Ctrl->E.active) {	/* Compute and report extended attributes */
 			if (Ctrl->W.weighted[GMT_IN]) {	/* Weighted standard deviation */
-				out[3] = (np[node] > 1) ? d_sqrt ((zw[node].a[BLK_W] * slh[node].a[BLK_S] - zw[node].a[BLK_Z] * zw[node].a[BLK_Z]) \
-				/ (zw[node].a[BLK_W] * zw[node].a[BLK_W] * ((np[node] - 1.0) / np[node]))) : GMT->session.d_NaN;
+				if (Ctrl->E.mode == 1) {	/* Error propagation assuming weights were 1/sigma^2 */
+					out[3] = d_sqrt (slhg[node].a[BLK_G] / np[node]);
+				}
+				else {
+					out[3] = (np[node] > 1) ? d_sqrt ((zw[node].a[BLK_W] * slhg[node].a[BLK_S] - zw[node].a[BLK_Z] * zw[node].a[BLK_Z]) \
+					/ (zw[node].a[BLK_W] * zw[node].a[BLK_W] * ((np[node] - 1.0) / np[node]))) : GMT->session.d_NaN;
+				}
 			}
 			else {					/* Normal standard deviation */
-				out[3] = (zw[node].a[BLK_W] > 1.0) ? d_sqrt ((zw[node].a[BLK_W] * slh[node].a[BLK_S] - zw[node].a[BLK_Z] * zw[node].a[BLK_Z]) \
+				out[3] = (zw[node].a[BLK_W] > 1.0) ? d_sqrt ((zw[node].a[BLK_W] * slhg[node].a[BLK_S] - zw[node].a[BLK_Z] * zw[node].a[BLK_Z]) \
 				/ (zw[node].a[BLK_W] * (zw[node].a[BLK_W] - 1.0))) : GMT->session.d_NaN;
 			}
-			out[4] = slh[node].a[BLK_L];	/* Minimum value in block */
-			out[5] = slh[node].a[BLK_H];	/* Maximum value in block */
+			out[4] = slhg[node].a[BLK_L];	/* Minimum value in block */
+			out[5] = slhg[node].a[BLK_H];	/* Maximum value in block */
 		}
 		GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
 	}
