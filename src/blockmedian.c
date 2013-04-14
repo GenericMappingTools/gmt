@@ -238,12 +238,12 @@ int GMT_blockmedian (void *V_API, int mode, void *args)
 	
 	size_t n_alloc = 0, nz_alloc = 0;
 	
-	bool do_extra;
+	bool do_extra, duplicate_col;
 	
 	int error = 0;
 	unsigned int row, col, emode = 0, n_input, n_output, n_quantiles = 1, go_quickly = 0;
 	
-	double out[8], wesn[4], quantile[3] = {0.25, 0.5, 0.75}, extra[8], weight, *in = NULL, *z_tmp = NULL;
+	double out[8], wesn[4], quantile[3] = {0.25, 0.5, 0.75}, extra[8], weight, half_dx, *in = NULL, *z_tmp = NULL;
 
 	char format[GMT_BUFSIZ], *old_format = NULL;
 
@@ -276,6 +276,8 @@ int GMT_blockmedian (void *V_API, int mode, void *args)
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc, \
 		GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL) Return (API->error);
 
+	duplicate_col = (GMT_360_RANGE (Grid->header->wesn[XLO], Grid->header->wesn[XHI]) && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
+	half_dx = 0.5 * Grid->header->inc[GMT_X];
 	go_quickly = (Ctrl->Q.active) ? 1 : 0;
 	if (Ctrl->C.active && go_quickly == 1) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Warning: -C overrides -Q\n");
@@ -357,6 +359,10 @@ int GMT_blockmedian (void *V_API, int mode, void *args)
 		/* We appear to be inside: Get row and col indices of this block */
 
 		if (GMT_row_col_out_of_bounds (GMT, in, Grid->header, &row, &col)) continue;	/* Sorry, outside after all */
+		if (duplicate_col && (wesn[XHI]-in[GMT_X] < half_dx)) {	/* Only compute median values for the west column and not the repeating east column with lon += 360 */
+			in[GMT_X] -= 360.0;	/* Make this point be considered for the western block mean value */
+			col = 0;
+		}
 
 		/* OK, this point is definitively inside and will be used */
 

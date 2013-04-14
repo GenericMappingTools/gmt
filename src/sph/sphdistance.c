@@ -498,11 +498,11 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 				if (side == 0) continue;	/* Outside spherical polygon */
 				ij = GMT_IJP (Grid->header, row, col);
 				Grid->data[ij] = (Ctrl->E.active) ? (float)node : (float)GMT_distance (GMT, grid_lon[col], grid_lat[row], lon[node], lat[node]);
+				n_set++;
 				if (duplicate_col) {	/* Duplicate the repeating column on the other side of this one */
 					if (col == 0) Grid->data[ij+nx1] = Grid->data[ij], n_set++;
 					else if (col == nx1) Grid->data[ij-nx1] = Grid->data[ij], n_set++;
 				}
-				n_set++;
 			}
 		}
 	}
@@ -533,6 +533,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 
+	if (n_set > Grid->header->nm) n_set = Grid->header->nm;	/* Not confuse the public */
 	GMT_Report (API, GMT_MSG_VERBOSE, "Spherical distance calculation completed, %" PRIu64 " nodes visited (at least once)\n", n_set);
 	
 	Return (GMT_OK);

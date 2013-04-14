@@ -340,7 +340,7 @@ double weighted_mode (struct BLK_DATA *d, double wsum, unsigned int emode, uint6
 
 int GMT_blockmode (void *V_API, int mode, void *args)
 {
-	bool mode_xy, do_extra, is_integer;
+	bool mode_xy, do_extra, is_integer, duplicate_col;
 	
 	int way, error = 0;
 	
@@ -352,7 +352,7 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 	
 	size_t n_alloc = 0, nz_alloc = 0;
 
-	double out[7], wesn[4], i_n_in_cell, d_intval, weight, *in = NULL, *z_tmp = NULL;
+	double out[7], wesn[4], i_n_in_cell, d_intval, weight, half_dx, *in = NULL, *z_tmp = NULL;
 
 	char format[GMT_BUFSIZ], *old_format = NULL;
 
@@ -390,6 +390,8 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc, \
 		GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL) Return (API->error);
 
+	duplicate_col = (GMT_360_RANGE (Grid->header->wesn[XLO], Grid->header->wesn[XHI]) && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
+	half_dx = 0.5 * Grid->header->inc[GMT_X];
 	mode_xy = !Ctrl->C.active;
 
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
@@ -459,6 +461,10 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 		/* We appear to be inside: Get row and col indices of this block */
 
 		if (GMT_row_col_out_of_bounds (GMT, in, Grid->header, &row, &col)) continue;	/* Sorry, outside after all */
+		if (duplicate_col && (wesn[XHI]-in[GMT_X] < half_dx)) {	/* Only compute modal values for the west column and not the repeating east column with lon += 360 */
+			in[GMT_X] -= 360.0;	/* Make this point be considered for the western block mean value */
+			col = 0;
+		}
 
 		/* OK, this point is definitively inside and will be used */
 
