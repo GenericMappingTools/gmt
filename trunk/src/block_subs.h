@@ -49,9 +49,7 @@ struct BLOCK_CTRL {	/* All control options for this program (except common args)
 #endif
 	struct E {	/* -E */
 		bool active;
-#if !defined(BLOCKMEAN)		/* Blockmedian has -Eb and blockmedian & blockmode has -Er[-] option */
 		unsigned int mode;
-#endif
 	} E;
 	struct G {	/* -G<outfile> */
 		bool active;
@@ -130,14 +128,15 @@ enum GMT_enum_blks {BLK_Z	= 0,
 	BLK_W		= 1,
 	BLK_S		= 0,
 	BLK_L		= 1,
-	BLK_H		= 2};
+	BLK_H		= 2,
+	BLK_G		= 3};
 
 struct BLK_PAIR {	/* Used for weighted mean location */
 	double a[2];	/* a[0] = x, a[1] = y */
 };
 
-struct BLK_SLH {	/* Holds std, low, and high values */
-	double a[3];	/* a[0] = w.std, a[1] = min, a[2] = max */
+struct BLK_SLHG {	/* Holds std, low, high, and sigma^2 values */
+	double a[4];	/* a[0] = w.std, a[1] = min, a[2] = max, a[3] = sigma^2 */
 };
 #else	/* Only used by blockmedian and blockmode */
 #define BLK_DO_EXTEND3	1
