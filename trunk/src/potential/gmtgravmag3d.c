@@ -152,10 +152,10 @@ int check_triang_cw (unsigned int n, unsigned int type);
 
 int GMT_gmtgravmag3d_usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtgravmag3d [-C<density>] [-G<outgrid>] [%s] [%s]\n", GMT_I_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E<thick>] [-F<xy_file>] [-L<z_observation>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtgravmag3d [-C<density>] [-G<outgrid>] [%s]\n", GMT_I_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-E<thick>] [-F<xy_file>] [-L<z_observation>]\n", GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-H<f_dec>/<f_dip>/<m_int></m_dec>/<m_dip>] [-S<radius>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T<[d]xyz_file>/<vert_file>[/m]|<[r|s]raw_file> [-Z<level>]\n\t[%s] [-fg] [%s]\n", 
+	GMT_Message (API, GMT_TIME_NONE, "\t[-T<[d]xyz_file>/<vert_file>[/m]|<[r|s]raw_file> [-Z<level>] [%s] [-fg] [%s]\n", 
 		GMT_V_OPT, GMT_r_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

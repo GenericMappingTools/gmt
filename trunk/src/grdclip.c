@@ -89,8 +89,8 @@ void Free_grdclip_Ctrl (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *C) {	/* Deall
 
 int GMT_grdclip_usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdclip <ingrid> -G<outgrid> [%s]\n", GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Sa<high>/<above>] [-Sb<low>/<below>] [-Si<low>/<high>/<between>] [-Sr<old>/<new>] [%s]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdclip <ingrid> -G<outgrid> [%s] [-Sa<high>/<above>]\n", GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Sb<low>/<below>] [-Si<low>/<high>/<between>] [-Sr<old>/<new>] [%s]\n", GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 

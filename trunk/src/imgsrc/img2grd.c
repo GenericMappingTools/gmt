@@ -130,7 +130,7 @@ void Free_img2grd_Ctrl (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *C) {	/* Deall
 int GMT_img2grd_usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: img2grd <world_image_filename> %s -G<outgrid> -T<type> [-C]\n", GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D[<minlat>/<maxlat>]] [-E] [-I<min>] [-M] [-N<navg>] [-S[<scale>]] [%s] [-W<maxlon>] [%s]\n\n", GMT_V_OPT, GMT_n_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D[<minlat>/<maxlat>]] [-E] [-I<min>] [-M] [-N<navg>] [-S[<scale>]] [%s]\n\t[-W<maxlon>] [%s]\n\n", GMT_V_OPT, GMT_n_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 	

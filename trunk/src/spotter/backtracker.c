@@ -149,8 +149,9 @@ void Free_backtracker_Ctrl (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *C) {	
 int GMT_backtracker_usage (struct GMTAPI_CTRL *API, int level)
 {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_Message (API, GMT_TIME_NONE, "usage: backtracker [<table>] -E[+]<rottable> OR -e<plon>/<plat>/<prot> [-A[<young></old>]] [-Df|b] [-F<driftfile] [-Lf|b<d_km>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N<upper_age>] [-Q<t_fix>] [-S<stem>] [-T<t_zero>] [%s] [-W] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: backtracker [<table>] -E[+]<rottable> OR -e<plon>/<plat>/<prot> [-A[<young></old>]] [-Df|b]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-F<driftfile] [-Lf|b<d_km>] [-N<upper_age>] [-Q<t_fix>] [-S<stem>] [-T<t_zero>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

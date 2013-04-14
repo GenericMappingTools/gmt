@@ -132,10 +132,10 @@ void Free_pssegyz_Ctrl (struct GMT_CTRL *GMT, struct PSSEGYZ_CTRL *C) {	/* Deall
 int GMT_pssegyz_usage (struct GMTAPI_CTRL *API, int level)
 {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_Message (API, GMT_TIME_NONE, "usage: pssegyz [<segyfile>] -D<dev> -F<color> | -W %s %s \n", GMT_Jx_OPT, GMT_Rx_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-A] [-C<clip>] [-E<slop>] [-I] [-K] [-L<nsamp>] [-M<ntraces>] [-N]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-O] [-P] [-Q<mode><value>] [-S<header>] [-T<tracefile>] [%s]\n", GMT_U_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W] [%s] [%s] [-Z] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: pssegyz [<segyfile>] -D<dev> -F<color> | -W %s\n", GMT_Jx_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A] [-C<clip>] [-E<slop>] [-I] [-K] [-L<nsamp>]\n", GMT_Rx_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-M<ntraces>] [-N] [-O] [-P] [-Q<mode><value>] [-S<header>] [-T<tracefile>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W] [%s]\n\t[%s] [-Z] [%s]\n\t[%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
