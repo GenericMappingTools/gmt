@@ -140,6 +140,7 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 	int block_ny;		/* Number of nodes in y-dir for a given grid factor */
 	unsigned int max_iterations;	/* Max iter per call to iterate */
 	uint64_t total_iterations;
+	bool periodic;		/* true if geographic grid and west-east == 360 */
 	int grid_east;
 	int offset[25][12];	/* Indices of 12 nearby points in 25 cases of edge conditions  */
 	bool constrained;		/* true if set_low or set_high is true */
@@ -532,8 +533,8 @@ void initialize_grid (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_OPTION *options)
 {
 	int i, j, error;
-	uint64_t k, kmax = 0, kmin = 0;
-	double *in, zmin = DBL_MAX, zmax = -DBL_MAX, wesn_lim[4];
+	uint64_t k, kmax = 0, kmin = 0, n_dup = 0;
+	double *in, half_dx, zmin = DBL_MAX, zmax = -DBL_MAX, wesn_lim[4];
 	struct GMT_GRID_HEADER *h = C->Grid->header;
 
 	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Processing input table data\n");
@@ -553,6 +554,7 @@ int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_
 	/* Initially allow points to be within 1 grid spacing of the grid */
 	wesn_lim[XLO] = h->wesn[XLO] - C->grid_xinc;	wesn_lim[XHI] = h->wesn[XHI] + C->grid_xinc;
 	wesn_lim[YLO] = h->wesn[YLO] - C->grid_yinc;	wesn_lim[YHI] = h->wesn[YHI] + C->grid_yinc;
+	half_dx = 0.5 * C->grid_xinc;
 
 	if (GMT_Begin_IO (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
 		return (GMT->parent->error);
@@ -572,8 +574,12 @@ int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_
 		if (GMT_is_dnan (in[GMT_Z])) continue;
 		if (GMT_y_is_outside (GMT, in[GMT_Y], wesn_lim[YLO], wesn_lim[YHI])) continue;	/* Outside y-range */
 		if (GMT_x_is_outside (GMT, &in[GMT_X], wesn_lim[XLO], wesn_lim[XHI])) continue;	/* Outside x-range (or longitude) */
-
-		i = irint (floor(((in[GMT_X]-h->wesn[XLO])*C->r_grid_xinc) + 0.5));
+		if (C->periodic && (h->wesn[XHI]-in[GMT_X] < half_dx)) {	/* Push all values to the western nodes */
+			in[GMT_X] -= 360.0;	/* Make this point be constraining the western node value */
+			i = 0;
+		}
+		else
+			i = irint (floor(((in[GMT_X]-h->wesn[XLO])*C->r_grid_xinc) + 0.5));
 		if (i < 0 || i >= C->block_nx) continue;
 		j = irint (floor(((in[GMT_Y]-h->wesn[YLO])*C->r_grid_yinc) + 0.5));
 		if (j < 0 || j >= C->block_ny) continue;
@@ -590,7 +596,24 @@ int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_
 			C->n_alloc <<= 1;
 			C->data = GMT_memory (GMT, C->data, C->n_alloc, struct SURFACE_DATA);
 		}
+		if (C->periodic && i == 0) {	/* Replicate information to eastern boundary */
+			i = C->block_nx - 1;
+			C->data[k].index = i * C->block_ny + j;
+			C->data[k].x = (float)(in[GMT_X] + 360.0);
+			C->data[k].y = (float)in[GMT_Y];
+			C->data[k].z = (float)in[GMT_Z];
+			if (zmin > in[GMT_Z]) zmin = in[GMT_Z], kmin = k;
+			if (zmax < in[GMT_Z]) zmax = in[GMT_Z], kmax = k;
+			k++;
+			C->z_mean += in[GMT_Z];
+			if (k == C->n_alloc) {
+				C->n_alloc <<= 1;
+				C->data = GMT_memory (GMT, C->data, C->n_alloc, struct SURFACE_DATA);
+			}
+			n_dup++;
+		}
 	} while (true);
+
 	
 	if (GMT_End_IO (GMT->parent, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
 		return (GMT->parent->error);
@@ -610,6 +633,7 @@ int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, C->format, (double)C->data[kmin].x, (double)C->data[kmin].y, (double)C->data[kmin].z);
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Maximum value of your dataset x,y,z at: ");
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, C->format, (double)C->data[kmax].x, (double)C->data[kmax].y, (double)C->data[kmax].z);
+		if (C->periodic && n_dup) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Number of input values shared between repeating west and east column nodes: %" PRIu64 "\n", n_dup);
 	}
 	C->data = GMT_memory (GMT, C->data, C->npoints, struct SURFACE_DATA);
 
@@ -720,6 +744,12 @@ int write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, char *gr
 			if (C->set_high && !GMT_is_fnan (C->High->data[k]) && v2[k] > C->High->data[k]) v2[k] = C->High->data[k];
 		}
 	}
+	if (C->periodic) {	/* Ensure periodicity of E-W boundaries */
+		for (j = 0; j < C->ny; j++) {
+			k = GMT_IJP (C->Grid->header, j, 0);
+			v2[k] = v2[k+C->nx-1] = 0.5 * (v2[k] + v2[k+C->nx-1]);	/* Set these to the same as their average */
+		}
+	}
 	GMT_free_aligned (GMT, C->Grid->data);	/* Free original column-oriented grid */
 	C->Grid->data = v2;			/* Hook in new scanline-oriented grid */
 	if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, grdfile, C->Grid) != GMT_OK) {
@@ -736,7 +766,7 @@ int write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, char *gr
 
 uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mode)
 {
-	uint64_t ij, briggs_index, ij_v2, iteration_count = 0;
+	uint64_t ij, briggs_index, ij_v2, iteration_count = 0, ij_sw, ij_se;
 	int i, j, k, kase;
 	int x_case, y_case, x_w_case, x_e_case, y_s_case, y_n_case;
 	char *iu = C->iu;
@@ -775,16 +805,26 @@ uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mode)
 			u[ij + 1] = (float)(y_0_const * u[ij] + y_1_const * u[ij - C->grid]);
 
 		}
-
-		for (j = 0; j < C->ny; j += C->grid) {
-			/* set d2[]/dx2 = 0 on west side */
-			ij = C->ij_sw_corner + j;
-			/* u[ij - my] = 2 * u[ij] - u[ij + grid_east];  */
-			u[ij - C->my] = (float)(x_1_const * u[ij + C->grid_east] + x_0_const * u[ij]);
-			/* set d2[]/dx2 = 0 on east side */
-			ij = C->ij_se_corner + j;
-			/* u[ij + my] = 2 * u[ij] - u[ij - grid_east];  */
-			u[ij + C->my] = (float)(x_1_const * u[ij - C->grid_east] + x_0_const * u[ij]);
+		if (C->periodic) {	/* Set periodic boundary conditions in longitude */
+			for (j = 0; j < C->ny; j += C->grid) {
+				ij_sw = C->ij_sw_corner + j;
+				ij_se = C->ij_se_corner + j;
+				u[ij_sw+C->offset[0][5]]  = u[ij_se+C->offset[20][5]];
+				u[ij_se+C->offset[20][6]] = u[ij_sw+C->offset[0][6]];
+				u[ij_se] = u[ij_sw] = 0.5 * (u[ij_se] + u[ij_sw]);	/* Set to average of east and west */
+			}
+		}
+		else {
+			for (j = 0; j < C->ny; j += C->grid) {
+				/* set d2[]/dx2 = 0 on west side */
+				ij = C->ij_sw_corner + j;
+				/* u[ij - my] = 2 * u[ij] - u[ij + grid_east];  */
+				u[ij - C->my] = (float)(x_1_const * u[ij + C->grid_east] + x_0_const * u[ij]);
+				/* set d2[]/dx2 = 0 on east side */
+				ij = C->ij_se_corner + j;
+				/* u[ij + my] = 2 * u[ij] - u[ij - grid_east];  */
+				u[ij + C->my] = (float)(x_1_const * u[ij - C->grid_east] + x_0_const * u[ij]);
+			}
 		}
 
 		/* Now set d2[]/dxdy = 0 at each corner */
@@ -844,22 +884,34 @@ uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mode)
 			else
 				y_case = 2;
 
-			/* West side */
-			kase = y_case;
-			ij = C->ij_sw_corner + j;
-			u[ij+C->offset[kase][4]] = 
-				u[ij + C->offset[kase][7]] + (float)(C->eps_p2 * (u[ij + C->offset[kase][3]] + u[ij + C->offset[kase][10]]
-				-u[ij + C->offset[kase][1]] - u[ij + C->offset[kase][8]])
-				+ C->two_plus_ep2 * (u[ij + C->offset[kase][5]] - u[ij + C->offset[kase][6]]));
-				/*  + tense * (u[ij + C->offset[kase][6]] - u[ij + C->offset[kase][5]]) / (1.0 - tense);  */
-			/* East side */
-			kase = 20 + y_case;
-			ij = C->ij_se_corner + j;
-			u[ij + C->offset[kase][7]] = 
-				- (float)(-u[ij + C->offset[kase][4]] + C->eps_p2 * (u[ij + C->offset[kase][3]] + u[ij + C->offset[kase][10]]
-				- u[ij + C->offset[kase][1]] - u[ij + C->offset[kase][8]])
-				+ C->two_plus_ep2 * (u[ij + C->offset[kase][5]] - u[ij + C->offset[kase][6]]) );
-				/*  - tense * (u[ij + C->offset[kase][6]] - u[ij + C->offset[kase][5]]) / (1.0 - tense);  */
+			if (C->periodic) {	/* Set periodic boundary conditions in longitude */
+				/* West side */
+				kase = y_case;
+				ij_sw = C->ij_sw_corner + j;
+				ij_se = C->ij_se_corner + j;
+				u[ij_sw+C->offset[kase][4]] = u[ij_se+C->offset[20+kase][4]];
+				/* East side */
+				kase = 20 + y_case;
+				u[ij_se + C->offset[kase][7]] = u[ij_sw+C->offset[y_case][7]];
+			}
+			else {
+				/* West side */
+				kase = y_case;
+				ij = C->ij_sw_corner + j;
+				u[ij+C->offset[kase][4]] = 
+					u[ij + C->offset[kase][7]] + (float)(C->eps_p2 * (u[ij + C->offset[kase][3]] + u[ij + C->offset[kase][10]]
+					-u[ij + C->offset[kase][1]] - u[ij + C->offset[kase][8]])
+					+ C->two_plus_ep2 * (u[ij + C->offset[kase][5]] - u[ij + C->offset[kase][6]]));
+					/*  + tense * (u[ij + C->offset[kase][6]] - u[ij + C->offset[kase][5]]) / (1.0 - tense);  */
+				/* East side */
+				kase = 20 + y_case;
+				ij = C->ij_se_corner + j;
+				u[ij + C->offset[kase][7]] = 
+					- (float)(-u[ij + C->offset[kase][4]] + C->eps_p2 * (u[ij + C->offset[kase][3]] + u[ij + C->offset[kase][10]]
+					- u[ij + C->offset[kase][1]] - u[ij + C->offset[kase][8]])
+					+ C->two_plus_ep2 * (u[ij + C->offset[kase][5]] - u[ij + C->offset[kase][6]]) );
+					/*  - tense * (u[ij + C->offset[kase][6]] - u[ij + C->offset[kase][5]]) / (1.0 - tense);  */
+			}
 		}
 
 
@@ -956,7 +1008,7 @@ uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mode)
 						sum_ij = C->High->data[ij_v2];
 				}
 
-				change = fabs(sum_ij - u[ij]);
+				change = fabs (sum_ij - u[ij]);
 				u[ij] = (float)sum_ij;
 				if (change > max_change) max_change = change;
 			}
@@ -1158,6 +1210,7 @@ void remove_planar_trend (struct SURFACE_INFO *C)
 	C->plane_c0 = a / d;
 	C->plane_c1 = b / d;
 	C->plane_c2 = c / d;
+	if (C->periodic) C->plane_c1 = 0.0;	/* Cannot have x-trend for periodic geographic data */
 
 	for (i = 0; i < C->npoints; i++) {
 		xx = (C->data[i].x - h->wesn[XLO]) * h->r_inc[GMT_X];
@@ -1452,6 +1505,7 @@ int GMT_surface_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend b to set tension in boundary conditions only;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend i to set tension in interior equations only;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   No appended letter sets tension for both to same value.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Geographic data with 360-degree range use periodic boundary condition in longitude.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Query for grid sizes that might run faster than your -R -I give.\n");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set <over_relaxation parameter>.  Default = 1.4\n");
@@ -1653,7 +1707,7 @@ int GMT_surface (void *V_API, int mode, void *args)
 
 	GMT_memcpy (C.wesn_orig, GMT->common.R.wesn, 4, double);	/* Save original region in case of -r */
 	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);		/* Specified region */
-
+	C.periodic = (GMT_is_geographic (GMT, GMT_IN) && GMT_360_RANGE (wesn[XLO], wesn[XHI]));
 	if (GMT->common.r.active) {		/* Pixel registration request. Use the trick of offset area by x_inc(y_inc) / 2 */
 		wesn[XLO] += Ctrl->I.inc[GMT_X] / 2.0;	wesn[XHI] += Ctrl->I.inc[GMT_X] / 2.0;
 		wesn[YLO] += Ctrl->I.inc[GMT_Y] / 2.0;	wesn[YHI] += Ctrl->I.inc[GMT_Y] / 2.0;

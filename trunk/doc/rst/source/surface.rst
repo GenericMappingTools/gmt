@@ -46,7 +46,9 @@ data with **blockmean**, **blockmedian**, or **blockmode** to avoid
 spatial aliasing and eliminate redundant data. You may impose lower
 and/or upper bounds on the solution. These may be entered in the form of
 a fixed value, a grid with values, or simply be the minimum/maximum
-input data values. 
+input data values. Natural boundary conditions are applied at the edges,
+except for geographic data with 360-degree range where we apply periodic
+boundary conditions in the longitude direction.
 
 `Required Arguments <#toc4>`_
 -----------------------------
