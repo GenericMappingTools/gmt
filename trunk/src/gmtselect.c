@@ -57,6 +57,12 @@ struct GMTSELECT_DATA {	/* Used for temporary storage when sorting data on x coo
 	double x, y, d;
 };
 
+struct GMTSELECT_ZLIMIT {	/* Used to hold info for each -Z option given */
+	unsigned int col;	/* Column to test */
+	double min;	/* Smallest z-value to pass through, for this column */
+	double max;	/* Largest z-value to pass through, for this column */
+};
+
 struct GMTSELECT_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	struct A {	/* -A<min_area>[/<min_level>/<max_level>] */
@@ -100,10 +106,11 @@ struct GMTSELECT_CTRL {	/* All control options for this program (except common a
 		unsigned int mode;	/* 1 if dry/wet only, 0 if 5 mask levels */
 		bool mask[GMTSELECT_N_CLASSES];	/* Mask for each level */
 	} N;
-	struct Z {	/* -Z<min>/<max> */
+	struct Z {	/* -Z<min>/<max>[+c<col>] */
 		bool active;
-		double min;	/* Smallest z-value to pass through */
-		double max;	/* Largest z-value to pass through */
+		unsigned int n_tests;	/* How many of these tests did we get */
+		unsigned int max_col;	/* The largest column we encountered */
+		struct GMTSELECT_ZLIMIT *limit;
 	} Z;
 	struct dbg {	/* -+step */
 		bool active;
@@ -125,7 +132,7 @@ void *New_gmtselect_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	for (i = 0; i < GMTSELECT_N_TESTS; i++) C->I.pass[i] = true;	/* Default is to pass if we are inside */
 	GMT_memset (C->N.mask, GMTSELECT_N_CLASSES, bool);		/* Default for "wet" areas = false (outside) */
 	C->N.mask[1] = C->N.mask[3] = true;				/* Default for "dry" areas = true (inside) */
-	C->Z.min = -DBL_MAX;	C->Z.max = DBL_MAX;			/* No limits on z-range */
+	C->Z.max_col = 2;						/* Minimum number of columns to expect */
 	
 	return (C);
 }
@@ -135,6 +142,7 @@ void Free_gmtselect_Ctrl (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *C) {	/* D
 	if (C->C.file) free (C->C.file);	
 	if (C->F.file) free (C->F.file);	
 	if (C->L.file) free (C->L.file);	
+	if (C->Z.n_tests) GMT_free (GMT, C->Z.limit);	
 	GMT_free (GMT, C);	
 }
 
@@ -152,7 +160,7 @@ int GMT_gmtselect_usage (struct GMTAPI_CTRL *API, int level)
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtselect [<table>] [%s]\n", GMT_A_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C%s/<ptfile>] [-D<resolution>][+] [-E[f][n]] [-F<polygon>] [%s]\n", GMT_DIST_OPT, GMT_J_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I[cflrsz] [-L[p]%s/<lfile>] [-N<info>] [%s]\n\t[%s] [%s] [-Z<min>/<max>] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I[cflrsz] [-L[p]%s/<lfile>] [-N<info>] [%s]\n\t[%s] [%s] [-Z<min>/<max>[+c<col>]] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_DIST_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -198,6 +206,8 @@ int GMT_gmtselect_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Option (API, "R,V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Assume the 3rd data column contains z-values and we want to keep records with\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <min> <= z <= <max>.  Use - for <min> or <max> if there is no lower/upper limit.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c<col> to select another column than the third [2].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The -Z option is repeatable.\n");
 	GMT_Option (API, "a,bi0");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is 2 input columns (3 if -Z is used).\n");
 	GMT_Option (API, "bo,f,g,h,i,o,s,:,.");
@@ -213,8 +223,8 @@ int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, pos, j, k;
-	char ptr[GMT_BUFSIZ], buffer[GMT_BUFSIZ], za[GMT_TEXT_LEN64], zb[GMT_TEXT_LEN64];
+	unsigned int n_errors = 0, pos, j, k, col, n_z_alloc = 0;
+	char ptr[GMT_BUFSIZ], buffer[GMT_BUFSIZ], za[GMT_TEXT_LEN64], zb[GMT_TEXT_LEN64], *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 	bool fix = false;
@@ -357,15 +367,25 @@ int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, stru
 				}
 				Ctrl->N.mode = (j == 2);
 				break;
-			case 'Z':	/* Test z-range */
+			case 'Z':	/* Test column-ranges */
 				Ctrl->Z.active = true;
+				col = ((c = strstr (opt->arg, "+c"))) ? atoi (&c[2]) : GMT_Z;
+				if (c) c[0] = '\0';
 				j = sscanf (opt->arg, "%[^/]/%s", za, zb);
+				if (c) c[0] = '+';
 				if (j != 2) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Z option: Specify z_min and z_max\n");
 					n_errors++;
 				}
-				if (!(za[0] == '-' && za[1] == '\0')) n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], GMT_scanf_arg (GMT, za, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.min), za);
-				if (!(zb[0] == '-' && zb[1] == '\0')) n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], GMT_scanf_arg (GMT, zb, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.max), zb);
+				if (Ctrl->Z.n_tests == n_z_alloc) Ctrl->Z.limit = GMT_memory (GMT, Ctrl->Z.limit, n_z_alloc += 8, struct GMTSELECT_ZLIMIT);
+				Ctrl->Z.limit[Ctrl->Z.n_tests].min = -DBL_MAX;
+				Ctrl->Z.limit[Ctrl->Z.n_tests].max = +DBL_MAX;
+				if (!(za[0] == '-' && za[1] == '\0')) n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], GMT_scanf_arg (GMT, za, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.limit[Ctrl->Z.n_tests].min), za);
+				if (!(zb[0] == '-' && zb[1] == '\0')) n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], GMT_scanf_arg (GMT, zb, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.limit[Ctrl->Z.n_tests].max), zb);
+				n_errors += GMT_check_condition (GMT, Ctrl->Z.limit[Ctrl->Z.n_tests].max <= Ctrl->Z.limit[Ctrl->Z.n_tests].min, "Syntax error: -Z must have zmax > zmin!\n");
+				Ctrl->Z.limit[Ctrl->Z.n_tests].col = col;
+				if (col > Ctrl->Z.max_col) Ctrl->Z.max_col = col;
+				Ctrl->Z.n_tests++;
 				break;
 #ifdef DEBUG
 			case '+':	/* Undocumented option to increase path-fix resolution */
@@ -378,6 +398,7 @@ int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, stru
 				break;
 		}
 	}
+	if (Ctrl->Z.n_tests) Ctrl->Z.limit = GMT_memory (GMT, Ctrl->Z.limit, Ctrl->Z.n_tests, struct GMTSELECT_ZLIMIT);
 
 	n_errors += GMT_check_condition (GMT, Ctrl->C.mode == -1, "Syntax error -C: Unrecognized distance unit\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->C.mode == -2, "Syntax error -C: Unable to decode distance\n");
@@ -389,9 +410,9 @@ int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, stru
 	n_errors += GMT_check_condition (GMT, Ctrl->L.mode == -2, "Syntax error -L: Unable to decode distance\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->L.mode == -3, "Syntax error -L: Distance is negative\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->N.active && (Ctrl->A.active || Ctrl->D.active), "Syntax error: -A and -D requires -N!\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->Z.active && Ctrl->Z.max <= Ctrl->Z.min, "Syntax error: -Z must have zmax > zmin!\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->L.active && Ctrl->C.active && !(Ctrl->C.mode == Ctrl->L.mode && Ctrl->C.unit == Ctrl->L.unit), "Syntax error: If both -C and -L are used they must use the same distance unit and calculation mode\n");
-	n_errors += GMT_check_binary_io (GMT, 2 + Ctrl->Z.active);
+	n_errors += GMT_check_binary_io (GMT, Ctrl->Z.max_col);
+	n_errors += GMT_check_condition (GMT, Ctrl->Z.n_tests > 1 && Ctrl->I.active && !Ctrl->I.pass[5], "Syntax error: -Iz can only be used with one -Z range\n");
 	
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -407,7 +428,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 	unsigned int side, col, id;
 	int n_fields, ind, wd[2] = {0, 0}, n_minimum = 2, bin, last_bin = INT_MAX, error = 0;
 	bool inside, need_header = false, shuffle, just_copy_record = false, pt_cartesian = false;
-	bool output_header = false, do_project = false, no_resample = false;
+	bool output_header = false, do_project = false, no_resample = false, keep;
 
 	uint64_t k, row, seg, n_read = 0, n_pass = 0;
 
@@ -447,7 +468,7 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 	if (Ctrl->C.active && !GMT_is_geographic (GMT, GMT_IN)) pt_cartesian = true;
 
 	shuffle = (GMT->current.setting.io_lonlat_toggle[GMT_IN] != GMT->current.setting.io_lonlat_toggle[GMT_OUT]);	/* Must rewrite output record */
-	n_minimum = (Ctrl->Z.active) ? 3 : 2;	/* Minimum number of columns in ASCII input */
+	n_minimum = Ctrl->Z.max_col;	/* Minimum number of columns in ASCII input */
 	
 	if (!GMT->common.R.active && Ctrl->N.active) {	/* If we use coastline data or used -fg but didnt give -R we implicitly set -Rg */
 		GMT->common.R.active = true;
@@ -649,16 +670,20 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 
 		if (n_fields < n_minimum) {	/* Bad number of columns */
 			if (Ctrl->Z.active)
-				GMT_Report (API, GMT_MSG_NORMAL, "-Z requires a data file with at least 3 columns; this file only has %ld near line %ld. Exiting.\n", n_fields, n_read);
+				GMT_Report (API, GMT_MSG_NORMAL, "-Z requires a data file with at least %u columns; this file only has %ld near line %ld. Exiting.\n", n_minimum, n_fields, n_read);
 			else
 				GMT_Report (API, GMT_MSG_NORMAL, "Data file must have at least 2 columns; this file only has %ld near line %ld. Exiting.\n", n_fields, n_read);
 			Return (EXIT_FAILURE);
 		}
 
-		if (Ctrl->Z.active) {	/* Apply z-range test */
-			if (GMT_is_dnan (in[GMT_Z])) { output_header = need_header; continue;}	/* cannot keep when no z */
-			inside = (in[GMT_Z] >= Ctrl->Z.min && in[GMT_Z] <= Ctrl->Z.max); 
-			if (inside != Ctrl->I.pass[5]) { output_header = need_header; continue;}
+		if (Ctrl->Z.active) {	/* Apply z-range test(s) */
+			for (k = 0, keep = true; keep && k < Ctrl->Z.n_tests; k++) {
+				col = Ctrl->Z.limit[k].col;			/* Shorthand notation */
+				if (GMT_is_dnan (in[col])) keep = false;	/* Cannot keep when no z-value */
+				inside = (in[col] >= Ctrl->Z.limit[k].min && in[col] <= Ctrl->Z.limit[k].max); 
+				if (inside != Ctrl->I.pass[5]) keep = false;
+			}
+			if (!keep) { output_header = need_header; continue;}
 		}
 
 		lon = in[GMT_X];	/* Use copy since we may have to wrap 360 */
