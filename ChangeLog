@@ -7,6 +7,8 @@
 	* blockm*.c:		Did not use data near west column nodes that were off by 360 for
 				gridline registered grids.
 	* gmt_init.c:		The -R option failed to handle yyyy-jjjT coordinates.
+	* surface.c:		Share points near periodic w|e boundaries with both of them.
+				Introduced periodic BC for longitudes if 360 range.
 
 2013-04-13	pwessel/remko
 	* psbasemap.c:		Added -D option to draw map insert box.
