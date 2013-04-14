@@ -2,6 +2,12 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-04-14	pwessel
+	* sph/sphdistance.c:	Make sure we visit replicated columns for gridline registered grids.
+	* blockm*.c:		Did not use data near west column nodes that were off by 360 for
+				gridline registered grids.
+	* gmt_init.c:		The -R option failed to handle yyyy-jjjT coordinates.
+
 2013-04-13	pwessel/remko
 	* psbasemap.c:		Added -D option to draw map insert box.
 	* ConfigUserTemplate.cmake ConfigDefaults.cmake gmt_init.c gmt.conf.in:

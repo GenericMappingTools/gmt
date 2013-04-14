@@ -167,9 +167,9 @@ int GMT_blockmean (void *V_API, int mode, void *args)
 	uint64_t node, n_cells_filled, n_read, n_lost, n_pitched, w_col, *np = NULL;
 	unsigned int row, col;
 	int error;
-	bool use_xy, use_weight;
+	bool use_xy, use_weight, duplicate_col;
 
-	double weight, weighted_z, iw, wesn[4], out[7], *in = NULL;
+	double weight, weighted_z, iw, half_dx, wesn[4], out[7], *in = NULL;
 
 	char format[GMT_BUFSIZ];
 
@@ -201,8 +201,10 @@ int GMT_blockmean (void *V_API, int mode, void *args)
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc, \
-		GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL) Return (API->error);
+		GMT_GRID_DEFAULT_REG, 0, NULL)) == NULL) Return (API->error);	/* Note: 0 for pad */
 
+	duplicate_col = (GMT_360_RANGE (Grid->header->wesn[XLO], Grid->header->wesn[XHI]) && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
+	half_dx = 0.5 * Grid->header->inc[GMT_X];
 	use_xy = !Ctrl->C.active;	/* If not -C then we must keep track of x,y locations */
 	zw = GMT_memory (GMT, NULL, Grid->header->nm, struct BLK_PAIR);
 	if (use_xy) xy = GMT_memory (GMT, NULL, Grid->header->nm, struct BLK_PAIR);
@@ -278,6 +280,10 @@ int GMT_blockmean (void *V_API, int mode, void *args)
 		/* We appear to be inside: Get row and col indices of this block */
 
 		if (GMT_row_col_out_of_bounds (GMT, in, Grid->header, &row, &col)) continue;	/* Sorry, outside after all */
+		if (duplicate_col && (wesn[XHI]-in[GMT_X] < half_dx)) {	/* Only compute mean values for the west column and not the repeating east column with lon += 360 */
+			in[GMT_X] -= 360.0;	/* Make this point be considered for the western block mean value */
+			col = 0;
+		}
 
 		/* OK, this point is definitively inside and will be used */
 
