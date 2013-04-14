@@ -380,8 +380,8 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gravfft <topo_grd> [<ingrid2>] -G<outgrid>[-A<z_offset>] [-C<n/wavelength/mean_depth/tbw>]\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t[-D<density>] [-E<n_terms>] [-F[f|g|v|n|e]] [-I<wbctk>]\n");
-	GMT_Message (API, GMT_TIME_NONE,"\t[-N%s] [-Q] [-T<te/rl/rm/rw>[+m]]\n", GMT_FFT_OPT);
-	GMT_Message (API, GMT_TIME_NONE,"\t[%s] [-Z<zm>[/<zl>]] [-fg]\n\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE,"\t[-N%s] [-Q]\n", GMT_FFT_OPT);
+	GMT_Message (API, GMT_TIME_NONE,"\t[-T<te/rl/rm/rw>[+m]] [%s] [-Z<zm>[/<zl>]] [-fg]\n\n", GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 

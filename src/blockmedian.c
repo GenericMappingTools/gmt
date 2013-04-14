@@ -39,9 +39,9 @@
 int GMT_blockmedian_usage (struct GMTAPI_CTRL *API, int level)
 {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_Message (API, GMT_TIME_NONE, "usage: blockmedian [<table>] %s %s\n", GMT_I_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C] [-E[b]] [-Er|s[-]] [-Q] [-T<q>] [%s] [-W[i][o]] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-		GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: blockmedian [<table>] %s\n", GMT_I_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s [-C] [-E[b]] [-Er|s[-]] [-Q] [-T<q>] [%s]\n\t[-W[i][o]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+		GMT_Rgeo_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 

@@ -98,7 +98,7 @@ int GMT_pslegend_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "usage: pslegend [<infofile>] -D[x]<x0>/<y0>/<w>[/<h>]/<just>[/<dx>/<dy>] [%s]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>/<dy>] [-F[+i[[<gap>/]<pen>]][+p<pen>][+r[<radius>]][+s[<dx>/<dy>/][<fill>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<fill>] [%s] [-K] [-L<spacing>] [-O] [-P] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\tReads legend layout information from <infofile> [or stdin].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t(See manual page for more information and <infofile> format).\n");
 

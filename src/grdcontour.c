@@ -162,12 +162,12 @@ int GMT_grdcontour_usage (struct GMTAPI_CTRL *API, int level)
 	/* This displays the grdcontour synopsis and optionally full usage information */
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdcontour <grid> -C[+]<cont_int>|<cpt> [-A[-|[+]<annot_int>][<labelinfo>] [%s ] [%s]\n", GMT_B_OPT, GMT_J_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D<template>] [-F[l|r]] [%s] [%s] [-K] [-L<low>/<high>]\n", GMT_Jz_OPT, GMT_CONTG);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-O] [-P] [-Q<cut>] [%s] [-S<smooth>]\n", GMT_Rgeoz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n", GMT_CONTT, GMT_U_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[+]<type><pen>] [%s] [%s]\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Z[<fact>[/<shift>]][p]] [%s] [%s] [%s]\n", GMT_bo_OPT, GMT_c_OPT, GMT_ho_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdcontour <grid> -C[+]<cont_int>|<cpt> [-A[-|[+]<annot_int>][<labelinfo>] [%s ]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-D<template>] [-F[l|r]] [%s] [%s] [-K]\n", GMT_J_OPT, GMT_Jz_OPT, GMT_CONTG);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L<low>/<high>] [-O] [-P] [-Q<cut>] [%s]\n", GMT_Rgeoz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-S<smooth>] [%s]\n", GMT_CONTT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W[+]<type><pen>]\n\t[%s] [%s] [-Z[<fact>[/<shift>]][p]]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n", GMT_bo_OPT, GMT_c_OPT, GMT_ho_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\n", GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

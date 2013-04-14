@@ -391,7 +391,7 @@ int GMT_sphtriangulate_usage (struct GMTAPI_CTRL *API, int level)
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "usage: sphtriangulate [<table>] [-A] [-C] [-D] [-L<unit>] [-N<nodetable>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Qd|v] [-T] [%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_b_OPT, GMT_h_OPT, GMT_i_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Qd|v] [-T] [%s] [%s]\n\t[%s] [%s]\n", GMT_V_OPT, GMT_b_OPT, GMT_h_OPT, GMT_i_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\n", GMT_s_OPT, GMT_colon_OPT);
                
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

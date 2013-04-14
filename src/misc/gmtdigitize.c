@@ -174,9 +174,9 @@ FILE *next_file (struct GMT_CTRL *GMT, char *name, int n_segments, char *this_fi
 int GMT_gmtdigitize_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_Message (API, GMT_TIME_NONE, "gmtdigitize %s - Digitizing and inverse map transformation of map x/y coordinates\n\n", GMT_VERSION);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtdigitize %s %s\n", GMT_J_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-A] [-C<device>] [-D<limit>] [-F] [-H] [-L<lpi>] [-N<namestem>] [-S]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Zk|v] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_bo_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtdigitize %s %s [-A] [-C<device>] [-D<limit>] [-F]\n", GMT_J_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-H] [-L<lpi>] [-N<namestem>] [-S] [%s] [-Zk|v] [%s]\n", GMT_V_OPT, GMT_bo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\n", GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_colon_OPT);
 	
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 	
@@ -269,7 +269,8 @@ int GMT_gmtdigitize_parse (struct GMT_CTRL *GMT, struct GMTDIGITIZE_CTRL *Ctrl, 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-#define Return(code) {Free_gmtdigitize_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
+#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define Return(code) {Free_gmtdigitize_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_gmtdigitize (struct GMTAPI_CTRL *API, int mode, void *args)
 {
@@ -302,10 +303,10 @@ int GMT_gmtdigitize (struct GMTAPI_CTRL *API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-        options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);   /* Set or get option list */
+        options = GMT_prep_module_options (API, mode, args);	if (API->error) bailout (API->error);   /* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) return (GMT_gmtdigitize_usage (API, GMTAPI_USAGE));	/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) return (GMT_gmtdigitize_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_gmtdigitize_usage (API, GMTAPI_USAGE));	/* Return the usage message */
+	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_gmtdigitize_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 

@@ -106,10 +106,10 @@ void Free_dimfilter_Ctrl (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *C) {	/* D
 
 int GMT_dimfilter_usage (struct GMTAPI_CTRL *API, int level)
 {
-	GMT_Message (API, GMT_TIME_NONE, "dimfilter %s - Directional filtering of 2-D grdfiles in the Space domain\n\n", GMT_VERSION);
-	GMT_Message (API, GMT_TIME_NONE, "usage: dimfilter <ingrid> -D<distance_flag> -F<type><filter_width>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G<outgrid> -N<type><n_sectors> [%s]\n", GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Q<cols>] [%s] [-T] [%s] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "dimfilter %s - Directional filtering of grids in the Space domain\n\n", GMT_VERSION);
+	GMT_Message (API, GMT_TIME_NONE, "usage: dimfilter <ingrid> -D<distance_flag> -F<type><filter_width> -G<outgrid> -N<type><n_sectors>\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Q<cols>]\n", GMT_I_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T] [%s] [%s]\n\t[%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -359,7 +359,8 @@ void set_weight_matrix_dim (struct DIMFILTER_INFO *F, struct GMT_GRID_HEADER *h,
 	}
 }
 
-#define Return(code) {Free_dimfilter_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); return (code);}
+#define bailout(code) {GMT_Free_Options (mode); return (code);}
+#define Return(code) {Free_dimfilter_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 {
@@ -402,10 +403,10 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-        options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);   /* Set or get option list */
+        options = GMT_prep_module_options (API, mode, args);	if (API->error) bailout (API->error);   /* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) return (GMT_dimfilter_usage (API, GMTAPI_USAGE));/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) return (GMT_dimfilter_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_dimfilter_usage (API, GMTAPI_USAGE));/* Return the usage message */
+	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_dimfilter_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 

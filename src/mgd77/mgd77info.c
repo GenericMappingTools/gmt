@@ -81,7 +81,7 @@ int GMT_mgd77info_usage (struct GMTAPI_CTRL *API, int level, struct MGD77INFO_CT
 	struct MGD77_CONTROL M;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_Message (API, GMT_TIME_NONE, "usage: mgd77info <cruise(s)> [-C[m|e]] [-E[m|e]] [-I<code>] [-Mf[<item>]|r|e|h] [-L[v]] [%s]\n\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: mgd77info <cruise(s)> [-C[m|e]] [-E[m|e]] [-I<code>] [-Mf[<item>]|r|e|h] [-L[v]]\n\t[%s]\n\n", GMT_V_OPT);
         
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
              

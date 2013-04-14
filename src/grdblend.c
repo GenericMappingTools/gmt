@@ -439,8 +439,8 @@ void Free_grdblend_Ctrl (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *C) {	/* Dea
 int GMT_grdblend_usage (struct GMTAPI_CTRL *API, int level)
 {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdblend [<blendfile> | <grid1> <grid2> ...] -G<outgrid> %s\n", GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s [-Cf|l|o|u] [-N<nodata>] [-Q] [%s] [-W]\n\t[-Z<scale>] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_r_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdblend [<blendfile> | <grid1> <grid2> ...] -G<outgrid>\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t%s %s [-Cf|l|o|u]\n\t[-N<nodata>] [-Q] [%s] [-W] [-Z<scale>] [%s] [%s]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_r_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 

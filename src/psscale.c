@@ -123,10 +123,10 @@ int GMT_psscale_usage (struct GMTAPI_CTRL *API, int level)
 	/* This displays the psscale synopsis and optionally full usage information */
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_Message (API, GMT_TIME_NONE, "usage: psscale -D<xpos>/<ypos>/<length>/<width>[h] [-A[a|l|c]] [-C<cpt>] [-E[b|f][<length>][+n[<txt>]]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-I[<max_intens>|<low_i>/<high_i>] [%s] [%s] [-K] [-L[i][<gap>[<unit>]]]\n", GMT_B_OPT, GMT_J_OPT, GMT_Jz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-M] [-O] [-P] [-Q] [-S] [-T[+p<pen>][+g<fill>][+l|r|b|t<off>]]\n\t[%s] [%s]\n", GMT_Rgeoz_OPT, GMT_U_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [-Z<zfile>] [%s]\n\t[%s] [%s]\n\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: psscale -D<xpos>/<ypos>/<length>/<width>[h] [-A[a|l|c]] [-C<cpt>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-E[b|f][<length>][+n[<txt>]]] [%s] [-I[<max_intens>|<low_i>/<high_i>] [%s]\n\t[%s] [-K] [-L[i][<gap>[<unit>]]] [-M] [-O] [-P] [-Q]\n", GMT_B_OPT, GMT_J_OPT, GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S]\n\t[-T[+p<pen>][+g<fill>][+l|r|b|t<off>]] [%s] [%s]\n", GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<zfile>] [%s]\n\t[%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 

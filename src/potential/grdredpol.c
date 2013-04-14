@@ -989,9 +989,8 @@ int igrf10syn (struct GMT_CTRL *C, int isv, double date, int itype, double alt, 
 
 int GMT_grdredpol_usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdredpol <anomgrid> -G<rtp_grdfile> [-C<dec>/<dip>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "       [-E<dip_grd>/<dec_grd>] [-F<m>/<n>] [-M<m|r>] [-N] [-W<win_width>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "       [%s] [-T<year>] [-Z<filter>] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdredpol <anomgrid> -G<rtp_grdfile> [-C<dec>/<dip>] [-E<dip_grd>/<dec_grd>] [-F<m>/<n>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-M<m|r>] [-N] [-W<win_width>] [%s] [-T<year>] [-Z<filter>]\n\t[%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
                 

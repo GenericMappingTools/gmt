@@ -85,8 +85,8 @@ void Free_grdseamount_Ctrl (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *C) {	
 int GMT_grdseamount_usage (struct GMTAPI_CTRL *API, int level)
 {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdseamount [infile(s)] -G<outgrid> %s %s [-A[<out>/<in>]] [-C]\n", GMT_I_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L[<hcut>]] [-N<norm>] [-S<r_scale>] [-T[<flat>]] [-Z<base>]\n[%s] [%s] [%s] [%s] [%s]\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdseamount [infile(s)] -G<outgrid> %s\n\t%s [-A[<out>/<in>]] [-C] [-L[<hcut>]] [-N<norm>]\n", GMT_I_OPT, GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-S<r_scale>] [-T[<flat>]] [-Z<base>] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n",
 		GMT_bi_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

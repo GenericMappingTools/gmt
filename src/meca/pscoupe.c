@@ -427,16 +427,14 @@ int GMT_pscoupe_usage (struct GMTAPI_CTRL *API, int level)
 	/* This displays the pscoupe synopsis and optionally full usage information */
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_Message (API, GMT_TIME_NONE, "usage: pscoupe [<table>] -A<params> %s %s\n", GMT_J_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-E<fill>] [-G<fill>]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-K] [-L<pen>] [-M] [-N] [-O] [-P]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: pscoupe [<table>] -A<params> %s %s [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-E<fill>] [-G<fill>] [-K] [-L<pen>] [-M] [-N] [-O] [-P]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S<format><scale>[/<fontsize>[/<justify>/<offset>/<angle>/<form>]]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-s<symbol><scale>[/<fontsize>[/<justify>/<offset>/<angle>/<form>]]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T<nplane>[/<pen>]] [%s]\n", GMT_U_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-V] [-W<pen>] [%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Z<cpt>] [-a[<size>][/<Psymbol>[<Tsymbol>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-e<fill>] [-g<fill>] [-r<fill>] [-p[<pen>]] [-t[<pen>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n", GMT_c_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>] \n", GMT_U_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<cpt>]\n", GMT_X_OPT, GMT_Y_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-a[<size>][/<Psymbol>[<Tsymbol>]] [-e<fill>] [-g<fill>] [-r<fill>] [-p[<pen>]] [-t[<pen>]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n", GMT_c_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 

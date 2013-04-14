@@ -211,411 +211,392 @@ int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char endian
 
 	Return 0 if cannot read files correctly, or nrasters if successful.  */
 
-	int nfound = 0, ksize = 0, n_alloc, object_ID;
-	uint64_t expected_size;
+	int nfound = 0, ksize = 0, n_alloc;
+	uint64_t expected_size, tbl, seg, row;
 	size_t length, i, j, stop_point;
 	off_t delta;
 	double global_lon, lon_tol;
-	char path[GMT_BUFSIZ], buf[GMT_GRID_REMARK_LEN160], dir[GMT_GRID_REMARK_LEN160], *l = NULL, *record = NULL, *file = NULL;
+	char path[GMT_BUFSIZ], buf[GMT_GRID_REMARK_LEN160], *record = NULL, *file = "grdraster.info";
 	struct GRDRASTER_INFO *rasinfo = NULL;
+	struct GMT_TEXTSET *In = NULL;
 	struct stat F;
 
 	/* Find and open the file grdraster.info */
 
-	if (!(GMT_getdatapath (GMT, "grdraster.info", dir) || GMT_getsharepath (GMT, "dbase", "grdraster", ".info", dir))) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR cannot find file grdraster.info\n");
-		return (0);
-	}
-	file = dir;
-
-	if ((object_ID = GMT_Register_IO (GMT->parent, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_IN, NULL, file)) == GMTAPI_NOTSET) {
-		return (0);
-	}
-
-	if (GMT_Begin_IO (GMT->parent, GMT_IS_TEXTSET, GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error reading grdraster.info. Error code = %d\n", GMT->parent->error);
+	if ((In = GMT_Read_Data (GMT->parent, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, file, NULL)) == NULL) {
 		return (0);
 	}
 
 	/* Truncate the pathname of grdraster.info to just the directory name */
 
-	if ((l = strstr (dir, "grdraster.info"))) *l = '\0';
-
 	n_alloc = GMT_SMALL_CHUNK;
 	rasinfo = GMT_memory (GMT, NULL, n_alloc, struct GRDRASTER_INFO);
 
-	do {	/* Keep returning records until we reach EOF */
-		if ((record = GMT_Get_Record (GMT->parent, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
-			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
-				return (GMT_RUNTIME_ERROR);
-			if (GMT_REC_IS_ANY_HEADER (GMT)) 	/* Skip all table and segment headers */
-				continue;
-			if (GMT_REC_IS_EOF (GMT)) 		/* Reached end of file */
-				break;
-		}
+	for (tbl = 0; tbl < In->n_tables; tbl++) {	/* We only expect one table but who knows what the user does */
+		for (seg = 0; seg < In->table[tbl]->n_segments; seg++) {	/* We only expect one segment in each table but again... */
+			for (row = 0; row < In->table[tbl]->segment[seg]->n_rows; row++) {	/* Finally processing the rows */
+				record = In->table[tbl]->segment[seg]->record[row];
+				if (record[0] == '#') continue;	/* Skip all headers */
 
-		/* Strip off trailing "\r\n" */
-		GMT_chop (record);
-		length = strlen(record);
-		if (length == 0) continue;	/* Skip blank lines */
+				/* Strip off trailing "\r\n" */
+				GMT_chop (record);
+				length = strlen(record);
+				if (length == 0) continue;	/* Skip blank lines */
 
-		strncpy (rasinfo[nfound].h.command, record, GMT_GRID_COMMAND_LEN320);
+				strncpy (rasinfo[nfound].h.command, record, GMT_GRID_COMMAND_LEN320);
 
-		/* Find the integer file name first */
-		i = 0;
-		while (i < length && (rasinfo[nfound].h.command[i] == ' ' ||  rasinfo[nfound].h.command[i] == '\t') ) i++;
-		if (i == length) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (File number conversion error).\n");
-			continue;
-		}
-		j = i+1;
-		while (j < length && !(rasinfo[nfound].h.command[j] == ' ' ||  rasinfo[nfound].h.command[j] == '\t') ) j++;
-		if (j == length) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (File number conversion error).\n");
-			continue;
-		}
+				/* Find the integer file name first */
+				i = 0;
+				while (i < length && (rasinfo[nfound].h.command[i] == ' ' ||  rasinfo[nfound].h.command[i] == '\t') ) i++;
+				if (i == length) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (File number conversion error).\n");
+					continue;
+				}
+				j = i+1;
+				while (j < length && !(rasinfo[nfound].h.command[j] == ' ' ||  rasinfo[nfound].h.command[j] == '\t') ) j++;
+				if (j == length) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (File number conversion error).\n");
+					continue;
+				}
 
-		strncpy (buf, &rasinfo[nfound].h.command[i], j-i);
-		buf[j-i] = '\0';
-		if ( (sscanf(buf, "%d", &rasinfo[nfound].id) ) != 1) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (File number conversion error).\n");
-			continue;
-		}
+				strncpy (buf, &rasinfo[nfound].h.command[i], j-i);
+				buf[j-i] = '\0';
+				if ( (sscanf(buf, "%d", &rasinfo[nfound].id) ) != 1) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (File number conversion error).\n");
+					continue;
+				}
 
-		/* Now find the title string */
-		i = j+1;
-		while (i < length && (rasinfo[nfound].h.command[i] != '"') ) i++;
-		if (i == length) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Title string conversion error).\n");
-			continue;
-		}
-		j = i+1;
-		while (j < length && (rasinfo[nfound].h.command[j] != '"') ) j++;
-		if (j == length) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Title string conversion error).\n");
-			continue;
-		}
-		i++;
-		if (i == j) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Title string conversion error).\n");
-			continue;
-		}
-		strncpy(rasinfo[nfound].h.title, &rasinfo[nfound].h.command[i], j-i);
-		rasinfo[nfound].h.title[j-i] = '\0';
+				/* Now find the title string */
+				i = j+1;
+				while (i < length && (rasinfo[nfound].h.command[i] != '"') ) i++;
+				if (i == length) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Title string conversion error).\n");
+					continue;
+				}
+				j = i+1;
+				while (j < length && (rasinfo[nfound].h.command[j] != '"') ) j++;
+				if (j == length) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Title string conversion error).\n");
+					continue;
+				}
+				i++;
+				if (i == j) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Title string conversion error).\n");
+					continue;
+				}
+				strncpy(rasinfo[nfound].h.title, &rasinfo[nfound].h.command[i], j-i);
+				rasinfo[nfound].h.title[j-i] = '\0';
 
-		/* Now find the z_unit string */
-		i = j+1;
-		while (i < length && (rasinfo[nfound].h.command[i] != '"') ) i++;
-		if (i == length) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Units string conversion error).\n");
-			continue;
-		}
-		j = i+1;
-		while (j < length && (rasinfo[nfound].h.command[j] != '"') ) j++;
-		if (j == length) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Units string conversion error).\n");
-			continue;
-		}
-		i++;
-		if (i == j) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Units string conversion error).\n");
-			continue;
-		}
-		strncpy(rasinfo[nfound].h.z_units, &rasinfo[nfound].h.command[i], j-i);
-		rasinfo[nfound].h.z_units[j-i] = '\0';
+				/* Now find the z_unit string */
+				i = j+1;
+				while (i < length && (rasinfo[nfound].h.command[i] != '"') ) i++;
+				if (i == length) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Units string conversion error).\n");
+					continue;
+				}
+				j = i+1;
+				while (j < length && (rasinfo[nfound].h.command[j] != '"') ) j++;
+				if (j == length) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Units string conversion error).\n");
+					continue;
+				}
+				i++;
+				if (i == j) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Units string conversion error).\n");
+					continue;
+				}
+				strncpy(rasinfo[nfound].h.z_units, &rasinfo[nfound].h.command[i], j-i);
+				rasinfo[nfound].h.z_units[j-i] = '\0';
 
-		/* Now find the -R string */
-		i = j+1;
-		while (i < length && (rasinfo[nfound].h.command[i] != '-') ) i++;
-		if (i == length) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (-R string conversion error).\n");
-			continue;
-		}
-		i += 2;	/* Skip past the -R */
-		j = i+1;
-		while (j < length && !(rasinfo[nfound].h.command[j] == ' ' ||  rasinfo[nfound].h.command[j] == '\t') ) j++;
-		if (j == length) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (-R string conversion error).\n");
-			continue;
-		}
-		strncpy(buf, &rasinfo[nfound].h.command[i], j-i);
-		buf[j-i]='\0';
-		if (strchr (buf, ':') || strchr (buf, 'W') || strchr (buf, 'E') || strchr (buf, 'S') || strchr (buf, 'N')) {
-			GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;
-			GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
-		}
-		else {
-			GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_FLOAT;
-			GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_FLOAT;
-		}
+				/* Now find the -R string */
+				i = j+1;
+				while (i < length && (rasinfo[nfound].h.command[i] != '-') ) i++;
+				if (i == length) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (-R string conversion error).\n");
+					continue;
+				}
+				i += 2;	/* Skip past the -R */
+				j = i+1;
+				while (j < length && !(rasinfo[nfound].h.command[j] == ' ' ||  rasinfo[nfound].h.command[j] == '\t') ) j++;
+				if (j == length) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (-R string conversion error).\n");
+					continue;
+				}
+				strncpy(buf, &rasinfo[nfound].h.command[i], j-i);
+				buf[j-i]='\0';
+				if (strchr (buf, ':') || strchr (buf, 'W') || strchr (buf, 'E') || strchr (buf, 'S') || strchr (buf, 'N')) {
+					GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_LON;
+					GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_LAT;
+				}
+				else {
+					GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_FLOAT;
+					GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_FLOAT;
+				}
 
-		GMT->common.R.active = false;	/* Forget that -R was used before */
-		if (GMT_parse_common_options (GMT, "R", 'R', buf)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (-R string conversion error).\n");
-			continue;
-		}
-		rasinfo[nfound].h.wesn[XLO] = GMT->common.R.wesn[XLO];
-		rasinfo[nfound].h.wesn[XHI] = GMT->common.R.wesn[XHI];
-		rasinfo[nfound].h.wesn[YLO] = GMT->common.R.wesn[YLO];
-		rasinfo[nfound].h.wesn[YHI] = GMT->common.R.wesn[YHI];
-		rasinfo[nfound].geo = (fabs (rasinfo[nfound].h.wesn[XLO]) > 360.0 || fabs (rasinfo[nfound].h.wesn[XHI]) > 360.0 || fabs (rasinfo[nfound].h.wesn[YLO]) > 90.0 || fabs (rasinfo[nfound].h.wesn[YHI]) > 90.0) ? false : true;
-		/* Now find the -I string */
-		i = j+1;
-		while (i < length && (rasinfo[nfound].h.command[i] != '-') ) i++;
-		if (i == length) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (-I string conversion error).\n");
-			continue;
-		}
-		j = i+1;
-		while (j < length && !(rasinfo[nfound].h.command[j] == ' ' ||  rasinfo[nfound].h.command[j] == '\t') ) j++;
-		if (j == length || i+2 >= j) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (-I string conversion error).\n");
-			continue;
-		}
-		i += 2;
-		strncpy(buf, &rasinfo[nfound].h.command[i], j-i);
-		buf[j-i]='\0';
-		if (GMT_getinc (GMT, buf, rasinfo[nfound].h.inc) ) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (-I string conversion error).\n");
-			continue;
-		}
+				GMT->common.R.active = false;	/* Forget that -R was used before */
+				if (GMT_parse_common_options (GMT, "R", 'R', buf)) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (-R string conversion error).\n");
+					continue;
+				}
+				rasinfo[nfound].h.wesn[XLO] = GMT->common.R.wesn[XLO];
+				rasinfo[nfound].h.wesn[XHI] = GMT->common.R.wesn[XHI];
+				rasinfo[nfound].h.wesn[YLO] = GMT->common.R.wesn[YLO];
+				rasinfo[nfound].h.wesn[YHI] = GMT->common.R.wesn[YHI];
+				rasinfo[nfound].geo = (fabs (rasinfo[nfound].h.wesn[XLO]) > 360.0 || fabs (rasinfo[nfound].h.wesn[XHI]) > 360.0 || fabs (rasinfo[nfound].h.wesn[YLO]) > 90.0 || fabs (rasinfo[nfound].h.wesn[YHI]) > 90.0) ? false : true;
+				/* Now find the -I string */
+				i = j+1;
+				while (i < length && (rasinfo[nfound].h.command[i] != '-') ) i++;
+				if (i == length) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (-I string conversion error).\n");
+					continue;
+				}
+				j = i+1;
+				while (j < length && !(rasinfo[nfound].h.command[j] == ' ' ||  rasinfo[nfound].h.command[j] == '\t') ) j++;
+				if (j == length || i+2 >= j) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (-I string conversion error).\n");
+					continue;
+				}
+				i += 2;
+				strncpy(buf, &rasinfo[nfound].h.command[i], j-i);
+				buf[j-i]='\0';
+				if (GMT_getinc (GMT, buf, rasinfo[nfound].h.inc) ) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (-I string conversion error).\n");
+					continue;
+				}
 
-		/* Get P or G */
-		i = j+1;
-		while(i < length && !(rasinfo[nfound].h.command[i] == 'P' || rasinfo[nfound].h.command[i] == 'G') ) i++;
-		if (i == length) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (P or G not found).\n");
-			continue;
-		}
-		rasinfo[nfound].h.registration = (rasinfo[nfound].h.command[i] == 'P') ? 1 : 0;
+				/* Get P or G */
+				i = j+1;
+				while(i < length && !(rasinfo[nfound].h.command[i] == 'P' || rasinfo[nfound].h.command[i] == 'G') ) i++;
+				if (i == length) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (P or G not found).\n");
+					continue;
+				}
+				rasinfo[nfound].h.registration = (rasinfo[nfound].h.command[i] == 'P') ? 1 : 0;
 
-		/* Check if we have optional G (geographic) or C (Cartesian) that should override the auto test above */
+				/* Check if we have optional G (geographic) or C (Cartesian) that should override the auto test above */
 
-		if (rasinfo[nfound].h.command[i+1] == 'G') {	/* Explicit geographic grid */
-			rasinfo[nfound].geo = true;
-			i++;
-		}
-		else if (rasinfo[nfound].h.command[i+1] == 'C') {	/* Explicit Cartesian grid */
-			rasinfo[nfound].geo = false;
-			i++;
-		}
+				if (rasinfo[nfound].h.command[i+1] == 'G') {	/* Explicit geographic grid */
+					rasinfo[nfound].geo = true;
+					i++;
+				}
+				else if (rasinfo[nfound].h.command[i+1] == 'C') {	/* Explicit Cartesian grid */
+					rasinfo[nfound].geo = false;
+					i++;
+				}
 
-		stop_point = i + 1;
+				stop_point = i + 1;
 
-		/* Get type  */
-		j = i + 1;
-		while (j < length && (rasinfo[nfound].h.command[j] == ' ' || rasinfo[nfound].h.command[j] == '\t') ) j++;
-		if (j == length) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Type conversion error).\n");
-			continue;
-		}
-		switch (rasinfo[nfound].h.command[j]) {
-			case 'b':
-			case 'c':
-			case 'd':
-			case 'i':
-			case 'l':
-			case 'u':
-				rasinfo[nfound].type = rasinfo[nfound].h.command[j];
-				break;
-			default:
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Invalid type).\n");
-				continue;
-		}
+				/* Get type  */
+				j = i + 1;
+				while (j < length && (rasinfo[nfound].h.command[j] == ' ' || rasinfo[nfound].h.command[j] == '\t') ) j++;
+				if (j == length) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Type conversion error).\n");
+					continue;
+				}
+				switch (rasinfo[nfound].h.command[j]) {
+					case 'b':
+					case 'c':
+					case 'd':
+					case 'i':
+					case 'l':
+					case 'u':
+						rasinfo[nfound].type = rasinfo[nfound].h.command[j];
+						break;
+					default:
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Invalid type).\n");
+						continue;
+				}
 
-		/* Get scale factor  */
-		i = j + 1;
-		while (i < length && (rasinfo[nfound].h.command[i] == ' ' || rasinfo[nfound].h.command[i] == '\t') ) i++;
-		if (i == length) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Scale factor conversion error).\n");
-			continue;
-		}
-		j = i + 1;
-		while (j < length && !(rasinfo[nfound].h.command[j] == ' ' || rasinfo[nfound].h.command[j] == '\t') ) j++;
-		if (j == length) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Scale factor conversion error).\n");
-			continue;
-		}
-		strncpy(buf, &rasinfo[nfound].h.command[i], j-i);
-		buf[j-i] = '\0';
-		if ( (sscanf(buf, "%lf", &rasinfo[nfound].h.z_scale_factor) ) != 1) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Scale factor conversion error).\n");
-			continue;
-		}
+				/* Get scale factor  */
+				i = j + 1;
+				while (i < length && (rasinfo[nfound].h.command[i] == ' ' || rasinfo[nfound].h.command[i] == '\t') ) i++;
+				if (i == length) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Scale factor conversion error).\n");
+					continue;
+				}
+				j = i + 1;
+				while (j < length && !(rasinfo[nfound].h.command[j] == ' ' || rasinfo[nfound].h.command[j] == '\t') ) j++;
+				if (j == length) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Scale factor conversion error).\n");
+					continue;
+				}
+				strncpy(buf, &rasinfo[nfound].h.command[i], j-i);
+				buf[j-i] = '\0';
+				if ( (sscanf(buf, "%lf", &rasinfo[nfound].h.z_scale_factor) ) != 1) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Scale factor conversion error).\n");
+					continue;
+				}
 
-		/* Get offset  */
-		i = j+1;
-		while (i < length && (rasinfo[nfound].h.command[i] == ' ' || rasinfo[nfound].h.command[i] == '\t') ) i++;
-		if (i == length) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Offset conversion error).\n");
-			continue;
-		}
-		j = i + 1;
-		while (j < length && !(rasinfo[nfound].h.command[j] == ' ' || rasinfo[nfound].h.command[j] == '\t') ) j++;
-		if (j == length) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Offset conversion error).\n");
-			continue;
-		}
-		strncpy(buf, &rasinfo[nfound].h.command[i], j-i);
-		buf[j-i] = '\0';
-		if ( (sscanf(buf, "%lf", &rasinfo[nfound].h.z_add_offset) ) != 1) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Offset conversion error).\n");
-			continue;
-		}
+				/* Get offset  */
+				i = j+1;
+				while (i < length && (rasinfo[nfound].h.command[i] == ' ' || rasinfo[nfound].h.command[i] == '\t') ) i++;
+				if (i == length) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Offset conversion error).\n");
+					continue;
+				}
+				j = i + 1;
+				while (j < length && !(rasinfo[nfound].h.command[j] == ' ' || rasinfo[nfound].h.command[j] == '\t') ) j++;
+				if (j == length) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Offset conversion error).\n");
+					continue;
+				}
+				strncpy(buf, &rasinfo[nfound].h.command[i], j-i);
+				buf[j-i] = '\0';
+				if ( (sscanf(buf, "%lf", &rasinfo[nfound].h.z_add_offset) ) != 1) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Offset conversion error).\n");
+					continue;
+				}
 
-		/* Get NaNflag  */
-		i = j+1;
-		while (i < length && (rasinfo[nfound].h.command[i] == ' ' || rasinfo[nfound].h.command[i] == '\t') ) i++;
-		if (i == length) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (NaN flag conversion error).\n");
-			continue;
-		}
-		j = i + 1;
-		while (j < length && !(rasinfo[nfound].h.command[j] == ' ' || rasinfo[nfound].h.command[j] == '\t') ) j++;
-		if (j == length) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (NaN flag conversion error).\n");
-			continue;
-		}
-		strncpy(buf, &rasinfo[nfound].h.command[i], j-i);
-		buf[j-i] = '\0';
-		if (buf[0] == 'n' || buf[0] == 'N') {
-			rasinfo[nfound].nanset = 0;
-		}
-		else {
-			rasinfo[nfound].nanset = 1;
-			if ( (sscanf(buf, "%d", &rasinfo[nfound].nanflag) ) != 1) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (NaN flag conversion error).\n");
-				continue;
-			}
-		}
-
-		/* Get filename */
-		i = j+1;
-		while (i < length && (rasinfo[nfound].h.command[i] == ' ' || rasinfo[nfound].h.command[i] == '\t') ) i++;
-		if (i == length) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (File name conversion error).\n");
-			continue;
-		}
-		j = i + 1;
-		while (j < length && !(rasinfo[nfound].h.command[j] == ' ' || rasinfo[nfound].h.command[j] == '\t') ) j++;
-		strncpy(buf, &rasinfo[nfound].h.command[i], j-i);
-		buf[j-i] = '\0';
-
-		strncpy (rasinfo[nfound].h.remark, buf, GMT_GRID_REMARK_LEN160);
-
-		/* Decode SWAP flag or SKIP command, if present  */
-
-		i = j + 1;
-		while (i < length && (rasinfo[nfound].h.command[i] == ' ' || rasinfo[nfound].h.command[i] == '\t') ) i++;
-		if (i < length) {	/* Swap or skip flag set*/
-			switch (rasinfo[nfound].h.command[i]) {
-				case 'L':
-				case 'l':	/* Little endian byte order */
-					rasinfo[nfound].swap_me = (endian != 'L');	/* Must swap */
-					break;
-				case 'B':
-				case 'b':	/* Big endian byte order */
-					rasinfo[nfound].swap_me = (endian != 'B');	/* Must swap */
-					break;
-				case 'H':
-				case 'h':	/* GMT4 LEVEL: Give header size for skipping */
-					if (GMT_compat_check (GMT, 4)) {
-						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: H<skip>field is deprecated; header is detected automatically.\n");
-						rasinfo[nfound].skip = (off_t)atoi (&rasinfo[nfound].h.command[i+1]);	/* Must skip header */
-					}
-					else {	/* Not allowing backwards compatibility */
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Byte order conversion error).\n");
+				/* Get NaNflag  */
+				i = j+1;
+				while (i < length && (rasinfo[nfound].h.command[i] == ' ' || rasinfo[nfound].h.command[i] == '\t') ) i++;
+				if (i == length) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (NaN flag conversion error).\n");
+					continue;
+				}
+				j = i + 1;
+				while (j < length && !(rasinfo[nfound].h.command[j] == ' ' || rasinfo[nfound].h.command[j] == '\t') ) j++;
+				if (j == length) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (NaN flag conversion error).\n");
+					continue;
+				}
+				strncpy(buf, &rasinfo[nfound].h.command[i], j-i);
+				buf[j-i] = '\0';
+				if (buf[0] == 'n' || buf[0] == 'N') {
+					rasinfo[nfound].nanset = 0;
+				}
+				else {
+					rasinfo[nfound].nanset = 1;
+					if ( (sscanf(buf, "%d", &rasinfo[nfound].nanflag) ) != 1) {
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (NaN flag conversion error).\n");
 						continue;
 					}
-					break;
-				default:
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Byte order conversion error).\n");
+				}
+
+				/* Get filename */
+				i = j+1;
+				while (i < length && (rasinfo[nfound].h.command[i] == ' ' || rasinfo[nfound].h.command[i] == '\t') ) i++;
+				if (i == length) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (File name conversion error).\n");
 					continue;
+				}
+				j = i + 1;
+				while (j < length && !(rasinfo[nfound].h.command[j] == ' ' || rasinfo[nfound].h.command[j] == '\t') ) j++;
+				strncpy(buf, &rasinfo[nfound].h.command[i], j-i);
+				buf[j-i] = '\0';
+
+				strncpy (rasinfo[nfound].h.remark, buf, GMT_GRID_REMARK_LEN160);
+
+				/* Decode SWAP flag or SKIP command, if present  */
+
+				i = j + 1;
+				while (i < length && (rasinfo[nfound].h.command[i] == ' ' || rasinfo[nfound].h.command[i] == '\t') ) i++;
+				if (i < length) {	/* Swap or skip flag set*/
+					switch (rasinfo[nfound].h.command[i]) {
+						case 'L':
+						case 'l':	/* Little endian byte order */
+							rasinfo[nfound].swap_me = (endian != 'L');	/* Must swap */
+							break;
+						case 'B':
+						case 'b':	/* Big endian byte order */
+							rasinfo[nfound].swap_me = (endian != 'B');	/* Must swap */
+							break;
+						case 'H':
+						case 'h':	/* GMT4 LEVEL: Give header size for skipping */
+							if (GMT_compat_check (GMT, 4)) {
+								GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: H<skip>field is deprecated; header is detected automatically.\n");
+								rasinfo[nfound].skip = (off_t)atoi (&rasinfo[nfound].h.command[i+1]);	/* Must skip header */
+							}
+							else {	/* Not allowing backwards compatibility */
+								GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Byte order conversion error).\n");
+								continue;
+							}
+							break;
+						default:
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Byte order conversion error).\n");
+							continue;
+					}
+				}
+				j = i + 1;
+
+				/* Decode 2nd SWAP flag or SKIP command, if present  */
+
+				i = j + 1;
+				while (i < length && (rasinfo[nfound].h.command[i] == ' ' || rasinfo[nfound].h.command[i] == '\t') ) i++;
+				if (i < length) {	/* Swap or skip flag set*/
+					switch (rasinfo[nfound].h.command[i]) {
+						case 'L':
+						case 'l':	/* Little endian byte order */
+							rasinfo[nfound].swap_me = (endian != 'L');	/* Must swap */
+							break;
+						case 'B':
+						case 'b':	/* Big endian byte order */
+							rasinfo[nfound].swap_me = (endian != 'B');	/* Must swap */
+							break;
+						case 'H':
+						case 'h':	/* GMT4 LEVEL: Give header size for skipping */
+							if (GMT_compat_check (GMT, 4)) {
+								GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: H<skip>field is deprecated; header is detected automatically.\n");
+								rasinfo[nfound].skip = (off_t)atoi (&rasinfo[nfound].h.command[i+1]);	/* Must skip header */
+							}
+							else {	/* Not allowing backwards compatibility */
+								GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Byte order conversion error).\n");
+								continue;
+							}
+							break;
+						default:
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Byte order conversion error).\n");
+							continue;
+					}
+				}
+
+				/* Get here when all is OK for this line */
+				global_lon = 360.0 - (1 - rasinfo[nfound].h.registration) * rasinfo[nfound].h.inc[GMT_X];
+				lon_tol = 0.01 * rasinfo[nfound].h.inc[GMT_X];
+				global_lon -= lon_tol;	/* make sure we don't fail to find a truly global file  */
+				if (rasinfo[nfound].geo && rasinfo[nfound].h.wesn[XHI] - rasinfo[nfound].h.wesn[XLO] >= global_lon) {
+					rasinfo[nfound].nglobal = irint (360.0 / rasinfo[nfound].h.inc[GMT_X]);
+				}
+				else
+					rasinfo[nfound].nglobal = 0;
+
+				rasinfo[nfound].h.command[stop_point] = '\0';
+
+				i = lrint ((rasinfo[nfound].h.wesn[XHI] - rasinfo[nfound].h.wesn[XLO])/rasinfo[nfound].h.inc[GMT_X]);
+				rasinfo[nfound].h.nx = (unsigned int)((rasinfo[nfound].h.registration) ? i : i + 1);
+				j = lrint ((rasinfo[nfound].h.wesn[YHI] - rasinfo[nfound].h.wesn[YLO])/rasinfo[nfound].h.inc[GMT_Y]);
+				rasinfo[nfound].h.ny = (unsigned int)((rasinfo[nfound].h.registration) ? j : j + 1);
+
+				if ((ksize = get_byte_size (GMT, rasinfo[nfound].type)) == 0)
+					expected_size = lrint ((ceil (GMT_get_nm (GMT, rasinfo[nfound].h.nx, rasinfo[nfound].h.ny) * 0.125)) + rasinfo[nfound].skip);
+				else
+					expected_size = (GMT_get_nm (GMT, rasinfo[nfound].h.nx, rasinfo[nfound].h.ny) * ksize + rasinfo[nfound].skip);
+				if (GMT_getdatapath (GMT, rasinfo[nfound].h.remark, path) || GMT_getsharepath (GMT, "dbase", rasinfo[nfound].h.remark, "", path)) {
+					strncpy (rasinfo[nfound].h.remark, path, GMT_GRID_REMARK_LEN160);
+					stat (path, &F);
+				}
+				else {	/* Inquiry about file failed somehow */
+					GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Unable to find file %s - Skipping it.\n", rasinfo[nfound].h.remark);
+					continue;
+				}
+
+				delta = F.st_size - expected_size;
+				if (delta == GMT_GRID_HEADER_SIZE)
+					rasinfo[nfound].skip = (off_t)GMT_GRID_HEADER_SIZE;	/* Must skip GMT grd header */
+				else if (delta) {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Metadata conflict: Actual size of file %s [%" PRIi64 "] differs from expected [%" PRIu64 "]. Verify file and its grdraster.info details.\n", rasinfo[nfound].h.remark, (int64_t)F.st_size, expected_size);
+					continue;
+				}
+				nfound++;
+
+				if (nfound == n_alloc) {
+					n_alloc <<= 1;
+					rasinfo = GMT_memory (GMT, rasinfo, n_alloc, struct GRDRASTER_INFO);
+				}
 			}
 		}
-		j = i + 1;
-
-		/* Decode 2nd SWAP flag or SKIP command, if present  */
-
-		i = j + 1;
-		while (i < length && (rasinfo[nfound].h.command[i] == ' ' || rasinfo[nfound].h.command[i] == '\t') ) i++;
-		if (i < length) {	/* Swap or skip flag set*/
-			switch (rasinfo[nfound].h.command[i]) {
-				case 'L':
-				case 'l':	/* Little endian byte order */
-					rasinfo[nfound].swap_me = (endian != 'L');	/* Must swap */
-					break;
-				case 'B':
-				case 'b':	/* Big endian byte order */
-					rasinfo[nfound].swap_me = (endian != 'B');	/* Must swap */
-					break;
-				case 'H':
-				case 'h':	/* GMT4 LEVEL: Give header size for skipping */
-					if (GMT_compat_check (GMT, 4)) {
-						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: H<skip>field is deprecated; header is detected automatically.\n");
-						rasinfo[nfound].skip = (off_t)atoi (&rasinfo[nfound].h.command[i+1]);	/* Must skip header */
-					}
-					else {	/* Not allowing backwards compatibility */
-						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Byte order conversion error).\n");
-						continue;
-					}
-					break;
-				default:
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Skipping record in grdraster.info (Byte order conversion error).\n");
-					continue;
-			}
-		}
-
-		/* Get here when all is OK for this line */
-		global_lon = 360.0 - (1 - rasinfo[nfound].h.registration) * rasinfo[nfound].h.inc[GMT_X];
-		lon_tol = 0.01 * rasinfo[nfound].h.inc[GMT_X];
-		global_lon -= lon_tol;	/* make sure we don't fail to find a truly global file  */
-		if (rasinfo[nfound].geo && rasinfo[nfound].h.wesn[XHI] - rasinfo[nfound].h.wesn[XLO] >= global_lon) {
-			rasinfo[nfound].nglobal = irint (360.0 / rasinfo[nfound].h.inc[GMT_X]);
-		}
-		else
-			rasinfo[nfound].nglobal = 0;
-
-		rasinfo[nfound].h.command[stop_point] = '\0';
-
-		i = lrint ((rasinfo[nfound].h.wesn[XHI] - rasinfo[nfound].h.wesn[XLO])/rasinfo[nfound].h.inc[GMT_X]);
-		rasinfo[nfound].h.nx = (unsigned int)((rasinfo[nfound].h.registration) ? i : i + 1);
-		j = lrint ((rasinfo[nfound].h.wesn[YHI] - rasinfo[nfound].h.wesn[YLO])/rasinfo[nfound].h.inc[GMT_Y]);
-		rasinfo[nfound].h.ny = (unsigned int)((rasinfo[nfound].h.registration) ? j : j + 1);
-
-		if ((ksize = get_byte_size (GMT, rasinfo[nfound].type)) == 0)
-			expected_size = lrint ((ceil (GMT_get_nm (GMT, rasinfo[nfound].h.nx, rasinfo[nfound].h.ny) * 0.125)) + rasinfo[nfound].skip);
-		else
-			expected_size = (GMT_get_nm (GMT, rasinfo[nfound].h.nx, rasinfo[nfound].h.ny) * ksize + rasinfo[nfound].skip);
-		if (GMT_getdatapath (GMT, rasinfo[nfound].h.remark, path) || GMT_getsharepath (GMT, "dbase", rasinfo[nfound].h.remark, "", path)) {
-			strncpy (rasinfo[nfound].h.remark, path, GMT_GRID_REMARK_LEN160);
-			stat (path, &F);
-		}
-		else {	/* Inquiry about file failed somehow */
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: Unable to find file %s - Skipping it.\n", rasinfo[nfound].h.remark);
-			continue;
-		}
-
-		delta = F.st_size - expected_size;
-		if (delta == GMT_GRID_HEADER_SIZE)
-			rasinfo[nfound].skip = (off_t)GMT_GRID_HEADER_SIZE;	/* Must skip GMT grd header */
-		else if (delta) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Metadata conflict: Actual size of file %s [%" PRIi64 "] differs from expected [%" PRIu64 "]. Verify file and its grdraster.info details.\n", rasinfo[nfound].h.remark, (int64_t)F.st_size, expected_size);
-			continue;
-		}
-		nfound++;
-
-		if (nfound == n_alloc) {
-			n_alloc <<= 1;
-			rasinfo = GMT_memory (GMT, rasinfo, n_alloc, struct GRDRASTER_INFO);
-		}
-	} while (true);
-	
-	if (GMT_End_IO (GMT->parent, GMT_IN, 0) != GMT_OK) {	/* Disables further data input */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error closing grdraster.info file. Error code = %d.\n", GMT->parent->error);
-		return (GMT->parent->error);
 	}
-
+	
 	if (!nfound)
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No valid records or no existing grid files found in grdraster.info\n");
 	else
@@ -646,8 +627,8 @@ int GMT_grdraster_usage (struct GMTAPI_CTRL *API, int level) {
 	int i, nrasters;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdraster <file number>|<text> %s [-G<outgrid>] [%s]\n", GMT_Rgeo_OPT, GMT_Id_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T<table>] [%s] [%s] [%s]\n", GMT_bo_OPT, GMT_ho_OPT, GMT_o_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdraster <file number>|<text> %s [-G<outgrid>]\n", GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T<table>] [%s]\n\t[%s] [%s]\n", GMT_Id_OPT, GMT_bo_OPT, GMT_ho_OPT, GMT_o_OPT);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<file number> (#) or <text> corresponds to one of the datasets listed.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[<text> can be a unique substring of the description].\n\n");

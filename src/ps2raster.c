@@ -253,9 +253,9 @@ void Free_ps2raster_Ctrl (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {	/* D
 int GMT_ps2raster_usage (struct GMTAPI_CTRL *API, int level)
 {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_Message (API, GMT_TIME_NONE, "usage: ps2raster <psfile1> <psfile2> <...> [-A[u][-][<margin(s)>]] [-C<gs_command>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-L<listfile>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N] [-P] [-Q[g|t]1|2|4] [-S] [-Tb|e|f|F|g|G|j|m|p|t] [%s]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: ps2raster <psfile1> <psfile2> <...> [-A[u][-][<margin(s)>]] [-C<gs_command>] [-D<dir>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-E<resolution>] [-F<out_name>] [-G<gs_path>] [-L<listfile>] [-N] [-P] [-Q[g|t]1|2|4] [-S]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Tb|e|f|F|g|G|j|m|p|t] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]\n\n");
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

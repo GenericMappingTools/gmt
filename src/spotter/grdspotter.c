@@ -211,8 +211,8 @@ int GMT_grdspotter_usage (struct GMTAPI_CTRL *API, int level)
 {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdspotter <ingrid> -E[+]<rottable> -G<CVAgrid> %s\n", GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A<agegrid>] [-D[i|p]<grdfile>] [-L<IDgrid>]\n", GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-M] [-N<upper_age>] [-Q<IDinfo>] [-S] [-Tt|-u<age>] [%s] [-W<n_try]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A<agegrid>] [-D[i|p]<grdfile>] [-L<IDgrid>] [-M]\n", GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-N<upper_age>] [-Q<IDinfo>] [-S] [-Tt|-u<age>] [%s] [-W<n_try]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Z<z_min>[/<z_max>[/<z_inc>]]] [%s] [%s]\n\n", GMT_ho_OPT, GMT_r_OPT);
 	
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

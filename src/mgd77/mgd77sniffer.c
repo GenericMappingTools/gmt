@@ -54,9 +54,9 @@ int GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *API, int level)
 {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: mgd77sniffer <cruises> [-A<fieldabbrev>,<scale>,<offset>] [-Cmaxspd] [-Dd|e|E|f|l|m|s|v][r]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-g<fieldabbrev>,<imggrid>,<scale>,<mode>[,<latmax>]] [-G<fieldabbrev>,<grid>] [-H] [-I<fieldabbrev>,<rec1>,<recN>] [-K]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L<custom_limits_file> ] [-N] [%s] [-Sd|s|t] [-T<gap>]\n",GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Wc|g|o|s|t|v|x] [-Wc|g|o|s|t|v|x] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_bo_OPT, GMT_n_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-g<fieldabbrev>,<imggrid>,<scale>,<mode>[,<latmax>]] [-G<fieldabbrev>,<grid>] [-H]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I<fieldabbrev>,<rec1>,<recN>] [-K] [-L<custom_limits_file> ] [-N]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sd|s|t] [-T<gap>] [-Wc|g|o|s|t|v|x] [-Wc|g|o|s|t|v|x]\n\t[%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_n_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 

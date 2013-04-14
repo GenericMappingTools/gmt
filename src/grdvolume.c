@@ -297,8 +297,8 @@ void Free_grdvolume_Ctrl (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *C) {	/* D
 int GMT_grdvolume_usage (struct GMTAPI_CTRL *API, int level)
 {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdvolume <ingrid> [-C<cval> or -C<low>/<high>/<delta>] [-L<base>] [-S<unit>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T[c|h]]\n\t[%s] [%s] [-Z<fact>[/<shift>]] [%s] [%s] [%s]\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdvolume <ingrid> [-C<cval> or -C<low>/<high>/<delta>] [-L<base>] [-S<unit>] [-T[c|h]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<fact>[/<shift>]] [%s]\n\t[%s] [%s]\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

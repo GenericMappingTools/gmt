@@ -162,13 +162,13 @@ int GMT_pscoast_usage (struct GMTAPI_CTRL *API, int level)
 	/* This displays the pscoast synopsis and optionally full usage information */
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_Message (API, GMT_TIME_NONE, "usage: pscoast %s %s [%s] [%s]\n", GMT_B_OPT, GMT_J_OPT, GMT_A_OPT, GMT_Rgeoz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C[<feature>/]<fill>] [-D<resolution>][+] [%s] -G[<fill>]] [-I<feature>[/<pen>]]\n", DCW_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-K] [-L%s]\n", GMT_Jz_OPT, GMT_SCALE);
+	GMT_Message (API, GMT_TIME_NONE, "usage: pscoast %s %s [%s]\n", GMT_B_OPT, GMT_J_OPT, GMT_A_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C[<feature>/]<fill>]\n\t[-D<resolution>][+] [%s] -G[<fill>]]\n", GMT_Rgeoz_OPT, DCW_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I<feature>[/<pen>]] [%s] [-K]\n\t[-L%s]\n", GMT_Jz_OPT, GMT_SCALE);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-M] [-N<feature>[/<pen>]] [-O] [-P] [-Q] [-S<fill>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T%s] [%s]\n", GMT_TROSE, GMT_U_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[<feature>/][<pen>]] [%s] [%s]\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n", GMT_bo_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-T%s]\n\t[%s] [%s] [-W[<feature>/][<pen>]]\n", GMT_TROSE, GMT_U_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_bo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n", GMT_c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT);
 #ifdef DEBUG
 	GMT_Message (API, GMT_TIME_NONE, "\t[-+<bin>]\n");
 #endif

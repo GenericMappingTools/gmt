@@ -323,11 +323,11 @@ int GMT_grdview_usage (struct GMTAPI_CTRL *API, int level)
 	struct GMT_PEN P;
 
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdview <topogrid> %s [-B<tickinfo>] [-C<cpt>] [-G<drapegrid> | -G<grd_r>,<grd_g>,<grd_b>]\n", GMT_J_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdview <topogrid> %s [%s] [-C<cpt>] [-G<drapegrid> | -G<grd_r>,<grd_g>,<grd_b>]\n", GMT_J_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I-I<intensgrid>|<value>] [%s] [-K] [-N<level>[/<color>]] [-O] [-P] [-Q<type>[g]]\n", GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S<smooth>] [-T[s][o[<pen>]]]\n", GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<type><pen>] [%s]\n\t[%s] [%s] [%s]\n", GMT_c_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_f_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\n", GMT_n_OPT, GMT_p_OPT, GMT_t_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s]\n\t[%s] [%s]\n\n", GMT_n_OPT, GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 

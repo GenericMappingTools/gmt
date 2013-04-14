@@ -1467,9 +1467,9 @@ int GMT_surface_usage (struct GMTAPI_CTRL *API, int level)
 {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: surface [<table>] -G<outgrid> %s\n", GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A<aspect_ratio>] [-C<convergence_limit>] [-D<breakline>]\n", GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Ll<limit>] [-Lu<limit>] [-N<n_iterations>] ] [-S<search_radius>[m|s]] [-T[i|b]<tension>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Q] [%s] [-Z<over_relaxation_parameter>] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A<aspect_ratio>] [-C<convergence_limit>]\n", GMT_Rgeo_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D<breakline>] [-Ll<limit>] [-Lu<limit>] [-N<n_iterations>] ] [-S<search_radius>[m|s]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-T[i|b]<tension>] [-Q] [%s] [-Z<over_relaxation_parameter>]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_bi_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

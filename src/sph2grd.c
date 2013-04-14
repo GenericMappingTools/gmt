@@ -92,9 +92,9 @@ void Free_sph2grd_Ctrl (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *C) {	/* Deall
 int GMT_sph2grd_usage (struct GMTAPI_CTRL *API, int level)
 {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_Message (API, GMT_TIME_NONE, "usage: sph2grd [coeff_file] -G<grdfile> %s %s [-Dg|n]\n", GMT_I_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E] [-F[k]<filter>] [-N<norm>] [-Q] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-		GMT_V_OPT, GMT_bi_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: sph2grd [coeff_file] -G<grdfile> %s\n", GMT_I_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s [-Dg|n] [-E] [-F[k]<filter>] [-N<norm>] [-Q]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
+		GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_s_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
