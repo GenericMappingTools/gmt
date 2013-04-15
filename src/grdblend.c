@@ -175,7 +175,7 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 	bool do_sample, not_supported;
 	unsigned int one_or_zero = !h->registration, n = 0, nr;
 	struct GRDBLEND_INFO *B = NULL;
-	char *sense[2] = {"normal", "inverse"}, buffer[GMT_BUFSIZ];
+	char *sense[2] = {"normal", "inverse"}, *V_level = "qncvld", buffer[GMT_BUFSIZ];
 	char Targs[GMT_TEXT_LEN256], Iargs[GMT_TEXT_LEN256], Rargs[GMT_TEXT_LEN256], cmd[GMT_BUFSIZ];
 	struct BLEND_LIST {
 		char *file;
@@ -274,15 +274,16 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 			do_sample |= 1;
 		}
 		if (out_of_phase (B[n].G->header, h)) {	/* Set explicit -R for resampling that is multiple of desired increments AND inside both original grid and desired grid */
-			double wesn[4];
-			wesn[XLO] = GMT_grd_col_to_x (GMT, GMT_grd_x_to_col (GMT, B[n].G->header->wesn[XLO], h), h);
-			while ((wesn[XLO] + GMT_CONV_LIMIT) < MAX (h->wesn[XLO], B[n].G->header->wesn[XLO])) wesn[XLO] += h->inc[GMT_X];
-			wesn[XHI] = GMT_grd_col_to_x (GMT, GMT_grd_x_to_col (GMT, B[n].G->header->wesn[XHI], h), h);
-			while ((wesn[XHI] - GMT_CONV_LIMIT) > MIN (h->wesn[XHI], B[n].G->header->wesn[XHI])) wesn[XHI] -= h->inc[GMT_X];
-			wesn[YLO] = GMT_grd_row_to_y (GMT, GMT_grd_y_to_row (GMT, B[n].G->header->wesn[YLO], h), h);
-			while ((wesn[YLO] + GMT_CONV_LIMIT) < MAX (h->wesn[YLO], B[n].G->header->wesn[YLO])) wesn[YLO] += h->inc[GMT_Y];
-			wesn[YHI] = GMT_grd_row_to_y (GMT, GMT_grd_y_to_row (GMT, B[n].G->header->wesn[YHI], h), h);
-			while ((wesn[YHI] - GMT_CONV_LIMIT) > MIN (h->wesn[YHI], B[n].G->header->wesn[YHI])) wesn[YHI] -= h->inc[GMT_Y];
+			double wesn[4];	/* Make sure wesn is equal to or larger than B[n].G->header->wesn so all points are included */
+			unsigned int k;
+			k = (unsigned int)floor ((MAX (h->wesn[XLO], B[n].G->header->wesn[XLO]) - h->wesn[XLO]) / h->inc[GMT_X] - h->xy_off);
+			wesn[XLO] = GMT_grd_col_to_x (GMT, k, h);
+			k = (unsigned int)ceil  ((MIN (h->wesn[XHI], B[n].G->header->wesn[XHI]) - h->wesn[XLO]) / h->inc[GMT_X] - h->xy_off);
+			wesn[XHI] = GMT_grd_col_to_x (GMT, k, h);
+			k = h->ny - 1 - (unsigned int)floor ((MAX (h->wesn[YLO], B[n].G->header->wesn[YLO]) - h->wesn[YLO]) / h->inc[GMT_Y] - h->xy_off);
+			wesn[YLO] = GMT_grd_row_to_y (GMT, k, h);
+			k = h->ny - 1 - (unsigned int)ceil  ((MIN (h->wesn[YHI], B[n].G->header->wesn[YHI]) - h->wesn[YLO]) / h->inc[GMT_Y] - h->xy_off);
+			wesn[YHI] = GMT_grd_row_to_y (GMT, k, h);
 			sprintf (Rargs, "-R%.12g/%.12g/%.12g/%.12g", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "File %s coordinates are phase-shifted w.r.t. the output grid - must resample\n", B[n].file);
 			do_sample |= 1;
@@ -300,7 +301,7 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 		if (do_sample) {	/* One or more reasons to call grdsample before using this grid */
 			if (do_sample & 1) {	/* Resampling of the grid */
 				sprintf (buffer, "/tmp/grdblend_resampled_%d_%d.nc", (int)getpid(), n);
-				sprintf (cmd, "%s %s %s %s -G%s -V%d", B[n].file, Targs, Iargs, Rargs, buffer, GMT->current.setting.verbose);
+				sprintf (cmd, "%s %s %s %s -G%s -V%c", B[n].file, Targs, Iargs, Rargs, buffer, V_level[GMT->current.setting.verbose]);
 				if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Resample %s via grdsample %s\n", B[n].file, cmd);
 				if ((status = GMT_grdsample (GMT->parent, 0, cmd))) {	/* Resample the file */
@@ -310,7 +311,7 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 			}
 			else {	/* Just reformat to netCDF so this grid may be used as well */
 				sprintf (buffer, "/tmp/grdblend_reformatted_%d_%d.nc", (int)getpid(), n);
-				sprintf (cmd, "%s %s %s -V%d", B[n].file, Rargs, buffer, GMT->current.setting.verbose);
+				sprintf (cmd, "%s %s %s -V%c", B[n].file, Rargs, buffer, V_level[GMT->current.setting.verbose]);
 				if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Reformat %s via grdreformat %s\n", B[n].file, cmd);
 				if ((status = GMT_grdreformat (GMT->parent, 0, cmd))) {	/* Resample the file */
@@ -793,8 +794,8 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 
 	if (reformat) {	/* Must reformat the output grid to the non-supported format */
 		int status;
-		char cmd[GMT_BUFSIZ];
-		sprintf (cmd, "%s %s -V%d", outfile, Ctrl->G.file, GMT->current.setting.verbose);
+		char cmd[GMT_BUFSIZ], *V_level = "qncvld";
+		sprintf (cmd, "%s %s -V%c", outfile, Ctrl->G.file, V_level[GMT->current.setting.verbose]);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reformat %s via grdreformat %s\n", outfile, cmd);
 		if ((status = GMT_grdreformat (GMT->parent, 0, cmd))) {	/* Resample the file */
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to resample file %s.\n", outfile);
