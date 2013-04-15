@@ -18,7 +18,7 @@ gmtselect - Select data table subsets based on multiple spatial criteria
 **-L**\ [**p**\ ]\ *dist*\ [*unit*\ ]/\ *linefile* ] [
 **-N**\ *maskvalues* ] [
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-V**\ [*level*\ ]
-] [ **-Z**\ *min/max*\ [**+c**\ *col*] ] [
+] [ **-Z**\ *min*\ [/*max*]\ [**+c**\ *col*] ] [
 **-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
 **-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
@@ -138,14 +138,15 @@ None
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-**-Z**\ *min/max*\ [**+c**\ *col*]
-    Pass all records whose 3rd column (z; *col* = 2) lies within the given range.
+**-Z**\ *min*\ [/*max*]\ [**+c**\ *col*]
+    Pass all records whose 3rd column (*z*; *col* = 2) lies within the given range.
+    If *max* is omitted then we test if *z* equals *min* instead.
     Input file must have at least three columns. To indicate no limit on
     min or max, specify a hyphen (-). If your 3rd column is absolute
     time then remember to supply **-f**\ 2T. To specify another column, append
     **+c**\ *col*, and to specify several tests just repeat the **Z** option as
     many times has you have columns to test. Note: when more than one **Z** option
-    is given then **Iz** cannot be used.
+    is given then the **Iz** option cannot be used.
 
 .. |Add_-bi| replace:: [Default is 2 input columns]. 
 .. include:: explain_-bi.rst_

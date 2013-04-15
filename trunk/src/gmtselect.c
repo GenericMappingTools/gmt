@@ -59,6 +59,7 @@ struct GMTSELECT_DATA {	/* Used for temporary storage when sorting data on x coo
 
 struct GMTSELECT_ZLIMIT {	/* Used to hold info for each -Z option given */
 	unsigned int col;	/* Column to test */
+	bool equal;	/* Just check if z == min withing 5 ULps */
 	double min;	/* Smallest z-value to pass through, for this column */
 	double max;	/* Largest z-value to pass through, for this column */
 };
@@ -160,7 +161,7 @@ int GMT_gmtselect_usage (struct GMTAPI_CTRL *API, int level)
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtselect [<table>] [%s]\n", GMT_A_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C%s/<ptfile>] [-D<resolution>][+] [-E[f][n]] [-F<polygon>] [%s]\n", GMT_DIST_OPT, GMT_J_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I[cflrsz] [-L[p]%s/<lfile>] [-N<info>]\n\t[%s] [%s] [%s]\n\t[-Z<min>/<max>[+c<col>]] [%s] [%s]\n\t[%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I[cflrsz] [-L[p]%s/<lfile>] [-N<info>]\n\t[%s] [%s] [%s]\n\t[-Z<min>[/<max>][+c<col>]] [%s] [%s]\n\t[%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_DIST_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -207,6 +208,7 @@ int GMT_gmtselect_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Assume the 3rd data column contains z-values and we want to keep records with\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <min> <= z <= <max>.  Use - for <min> or <max> if there is no lower/upper limit.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c<col> to select another column than the third [2].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If <max> is not given we pass records whose z equal <min>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The -Z option is repeatable.\n");
 	GMT_Option (API, "a,bi0");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is 2 input columns (3 if -Z is used).\n");
@@ -270,12 +272,8 @@ int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, stru
 				Ctrl->E.active = true;
 				for (j = 0; opt->arg[j]; j++) {
 					switch (opt->arg[j]) {
-						case 'f':
-							Ctrl->E.inside[F_ITEM] = GMT_INSIDE;
-							break;
-						case 'n':
-							Ctrl->E.inside[N_ITEM] = GMT_INSIDE;
-							break;
+						case 'f': Ctrl->E.inside[F_ITEM] = GMT_INSIDE; break;
+						case 'n': Ctrl->E.inside[N_ITEM] = GMT_INSIDE; break;
 						default:
 							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -E option: Expects -Ef, -En, or -Efn\n");
 							n_errors++;
@@ -291,24 +289,12 @@ int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, stru
 				Ctrl->I.active = true;
 				for (j = 0; opt->arg[j]; j++) {
 					switch (opt->arg[j]) {
-						case 'r':
-							Ctrl->I.pass[0] = false;
-							break;
-						case 'c':
-							Ctrl->I.pass[1] = false;
-							break;
-						case 'l':
-							Ctrl->I.pass[2] = false;
-							break;
-						case 'f':
-							Ctrl->I.pass[3] = false;
-							break;
-						case 's':
-							Ctrl->I.pass[4] = false;
-							break;
-						case 'z':
-							Ctrl->I.pass[5] = false;
-							break;
+						case 'r': Ctrl->I.pass[0] = false; break;
+						case 'c': Ctrl->I.pass[1] = false; break;
+						case 'l': Ctrl->I.pass[2] = false; break;
+						case 'f': Ctrl->I.pass[3] = false; break;
+						case 's': Ctrl->I.pass[4] = false; break;
+						case 'z': Ctrl->I.pass[5] = false; break;
 						default:
 							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -I option: Expects -Icflrsz\n");
 							n_errors++;
@@ -373,15 +359,21 @@ int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, stru
 				if (c) c[0] = '\0';
 				j = sscanf (opt->arg, "%[^/]/%s", za, zb);
 				if (c) c[0] = '+';
-				if (j != 2) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Z option: Specify z_min and z_max\n");
+				if (j < 1) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Z option: Specify z_min [and z_max]\n");
 					n_errors++;
 				}
 				if (Ctrl->Z.n_tests == n_z_alloc) Ctrl->Z.limit = GMT_memory (GMT, Ctrl->Z.limit, n_z_alloc += 8, struct GMTSELECT_ZLIMIT);
 				Ctrl->Z.limit[Ctrl->Z.n_tests].min = -DBL_MAX;
 				Ctrl->Z.limit[Ctrl->Z.n_tests].max = +DBL_MAX;
-				if (!(za[0] == '-' && za[1] == '\0')) n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], GMT_scanf_arg (GMT, za, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.limit[Ctrl->Z.n_tests].min), za);
-				if (!(zb[0] == '-' && zb[1] == '\0')) n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z], GMT_scanf_arg (GMT, zb, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.limit[Ctrl->Z.n_tests].max), zb);
+				if (!(za[0] == '-' && za[1] == '\0')) n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z],
+					GMT_scanf_arg (GMT, za, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.limit[Ctrl->Z.n_tests].min), za);
+				if (j == 1)
+					Ctrl->Z.limit[Ctrl->Z.n_tests].equal = true;
+				else {
+					if (!(zb[0] == '-' && zb[1] == '\0')) n_errors += GMT_verify_expectations (GMT, GMT->current.io.col_type[GMT_IN][GMT_Z],
+						GMT_scanf_arg (GMT, zb, GMT->current.io.col_type[GMT_IN][GMT_Z], &Ctrl->Z.limit[Ctrl->Z.n_tests].max), zb);
+				}
 				n_errors += GMT_check_condition (GMT, Ctrl->Z.limit[Ctrl->Z.n_tests].max <= Ctrl->Z.limit[Ctrl->Z.n_tests].min, "Syntax error: -Z must have zmax > zmin!\n");
 				Ctrl->Z.limit[Ctrl->Z.n_tests].col = col;
 				if (col > Ctrl->Z.max_col) Ctrl->Z.max_col = col;
@@ -680,7 +672,10 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 			for (k = 0, keep = true; keep && k < Ctrl->Z.n_tests; k++) {
 				col = Ctrl->Z.limit[k].col;			/* Shorthand notation */
 				if (GMT_is_dnan (in[col])) keep = false;	/* Cannot keep when no z-value */
-				inside = (in[col] >= Ctrl->Z.limit[k].min && in[col] <= Ctrl->Z.limit[k].max); 
+				if (Ctrl->Z.limit[k].equal)
+					inside = doubleAlmostEqualZero (in[col], Ctrl->Z.limit[k].min);
+				else
+					inside = (in[col] >= Ctrl->Z.limit[k].min && in[col] <= Ctrl->Z.limit[k].max); 
 				if (inside != Ctrl->I.pass[5]) keep = false;
 			}
 			if (!keep) { output_header = need_header; continue;}
