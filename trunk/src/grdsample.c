@@ -226,8 +226,8 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 		registration = Gin->header->registration;
 
 	if (GMT->common.R.active) {	/* Make sure input grid and output -R has an overlap */
-		if (wesn[YLO] < Gin->header->wesn[YLO] - GMT_SMALL || wesn[YHI] > Gin->header->wesn[YHI] + GMT_SMALL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: Selected region exceeds the Y-boundaries of the grid file!\n");
+		if (wesn[YLO] < (Gin->header->wesn[YLO] - Gin->header->inc[GMT_Y]) || wesn[YHI] > (Gin->header->wesn[YHI] + Gin->header->inc[GMT_Y])) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Error: Selected region exceeds the Y-boundaries of the grid file by more than one y-increment!\n");
 			Return (EXIT_FAILURE);
 		}
 		if (GMT_is_geographic (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap */
@@ -239,8 +239,8 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "File %s region needed longitude adjustment to fit final grid region\n", Ctrl->In.file);
 			}
 		}
-		else if (wesn[XLO] < Gin->header->wesn[XLO] - GMT_SMALL || wesn[XHI] > Gin->header->wesn[XHI] + GMT_SMALL) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Error: Selected region exceeds the X-boundaries of the grid file!\n");
+		else if (wesn[XLO] < (Gin->header->wesn[XLO] - Gin->header->inc[GMT_X]) || wesn[XHI] > (Gin->header->wesn[XHI] + Gin->header->inc[GMT_X])) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Error: Selected region exceeds the X-boundaries of the grid file by more than one x-increment!\n");
 			return (EXIT_FAILURE);
 		}
 	}
