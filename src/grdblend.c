@@ -206,7 +206,10 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 					break;
 			}
 			
-			/* Data record to process */
+			/* Data record to process.  We permint this kind of records:
+			 * file [-Rinner_region ] [weight]
+			 * i.e., file is required but region [grid extent] and/or weight [1] are optional
+			 */
 
 			nr = sscanf (line, "%s %s %lf", file, r_in, &weight);
 			if (nr < 1) {
@@ -215,8 +218,9 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 			}
 			if (n == n_alloc) L = GMT_malloc (GMT, L, n, &n_alloc, struct BLEND_LIST);
 			L[n].file = strdup (file);
-			L[n].region = strdup (r_in);
-			L[n].weight = (nr == 1) ? 1.0 : weight;	/* Default weight if not given */
+			L[n].region = (nr > 1 && r_in[0] == '-' && r_in[1] == 'R') ? strdup (r_in) : strdup ("-");
+			if (n == 2 && !(r_in[0] == '-' && (r_in[1] == '\0' || r_in[1] == 'R'))) weight = atof (r_in);	/* Got "file weight" record */
+			L[n].weight = (nr == 1 || (n == 2 && r_in[0] == '-')) ? 1.0 : weight;	/* Default weight is 1 if none were given */
 			n++;
 		} while (true);
 		GMT_reset_meminc (GMT);
@@ -446,11 +450,11 @@ int GMT_grdblend_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<blendfile> is an ASCII file (or stdin) with blending parameters for each input grid.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Each record has three items: filename -Rw/e/s/n weight.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Relative weights are <weight> inside the given -R and cosine taper to 0 at actual grid -R.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give filename - weight if inner region should equal the actual region.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Each record has 1-3 items: filename [-R<inner_reg>] [<weight>].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Relative weights are <weight> [1] inside the given -R [grid domain] and cosine taper to 0 at actual grid -R.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Skip <inner_reg> if inner region should equal the actual region.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give a negative weight to invert the sense of the taper (i.e., |<weight>| outside given R.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If only filename is given we interpret that as if filename - 1.0 was given.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If <weight> is not given we default to 1.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Grids not in netCDF or native binary format will be converted first.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Grids not coregistered with the output -R -I will be resampled first.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tAlternatively, if all grids have the same weight (1) and inner region should equal the outer,\n");

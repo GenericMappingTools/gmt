@@ -52,24 +52,24 @@ netCDF and native binary grid formats for both input and output.
 
 *blendfile*
     ASCII file with one record per grid file to include in the blend.
-    Each record must contain three items, separated by spaces or tabs:
-    the gridfile name, the **-R**-setting for the interior region, and
-    the relative weight *wr*. In the combined weighting scheme, this
+    Each record may contain up to three items, separated by spaces or tabs:
+    the gridfile name (required), the **-R**-setting for the interior region
+    (optional), and the relative weight *wr* (optional). In the combined weighting scheme, this
     grid will be given zero weight outside its domain, weight = *wr*
     inside the interior region, and a 2-D cosine-tapered weight between
     those end-members in the boundary strip. However, if a negative *wr*
     is given then the sense of tapering is inverted (i.e., zero weight
     inside its domain). If the inner region should instead exactly match
-    the grid region then specify a - instead of the **-R**-setting.
-    Finally, if only a gridfile name is found we will use the grid
-    domain as inner region and set weight to 1. If the ASCII file is not
+    the grid region then specify a - instead of the **-R**-setting, or
+    leave it off entirely.  Likewise, if a weight *wr* is not specified
+    we default to a weight of 1.  If the ASCII *blendfile* file is not
     given **grdblend** will read standard input. Alternatively, if you
     have more than one grid file to blend and you wish (a) all input
     grids to have the same `weight (1) <weight.html>`_ and (b) all grids
-    should use their region as the interior region, then you may simply
+    should use their actual region as the interior region, then you may simply
     list all the grids on the command line instead of providing a
     *blendfile*. You must specify at least 2 input grids for this
-    mechanism to work. Any grid that is not coregistered with the
+    mechanism to work. Any grid that is not co-registered with the
     desired output layout implied by **-R**, **-I** (and **-r**) will
     first be resampled via **grdsample**. Also, grids that are not in
     netCDF or native binary format will first be reformatted via
@@ -117,13 +117,14 @@ netCDF and native binary grid formats for both input and output.
 `Examples <#toc8>`_
 -------------------
 
-To create a grid file from the four grid files piece\_?.nc, make the blendfile like this
+To create a grid file from the four grid files piece\_?.nc, giving them each the different
+weights, make the blendfile like this
 
     piece\_1.nc -R<subregion\_1> 1
 
-    piece\_2.nc -R<subregion\_2> 1
+    piece\_2.nc -R<subregion\_2> 1.5
 
-    piece\_3.nc -R<subregion\_3> 1
+    piece\_3.nc -R<subregion\_3> 0.9
 
     piece\_4.nc -R<subregion\_4> 1
 
