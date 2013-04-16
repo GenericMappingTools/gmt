@@ -192,7 +192,7 @@ None.
 **-W**
    Expect data weights in the final input column, typically given as
    weight = 1 / sigma, the data uncertainty.  This results in a weighted
-   least squares fit.
+   least squares fit.  Note that this only has an effect if **-CC* is used.
 
 .. |Add_-bi| replace:: [Default is 2-4 input
     columns (**x**,\ *w*); the number depends on the chosen dimension].
