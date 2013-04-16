@@ -17,7 +17,7 @@ dimensions
 ] [ **-Q**\ *az*\ \|\ *x/y/z* ] [
 **-R**\ *xmin*/*xmax*\ [/*ymin*/*ymax*\ [/*zmin*\ *zmax*]] ] [
 **-S**\ **c\|l\|t\|g\|p\|q**\ [*pars*\ ] ] [ **-T**\ *maskgrid* ] [
-**-V**\ [*level*\ ] ] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [
+**-V**\ [*level*\ ] ] [ **-W** ]  [ **-bi**\ [*ncols*\ ][*type*\ ] ] [
 **-bo**\ [*ncols*\ ][*type*\ ] ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
 ] [ **-o**\ *cols*\ [,*...*] ] [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
@@ -188,6 +188,11 @@ None.
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
+
+**-W**
+   Expect data weights in the final input column, typically given as
+   weight = 1 / sigma, the data uncertainty.  This results in a weighted
+   least squares fit.
 
 .. |Add_-bi| replace:: [Default is 2-4 input
     columns (**x**,\ *w*); the number depends on the chosen dimension].

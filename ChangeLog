@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-04-15	pwessel
+	* greenspline.c:	Add -W for weighted fit.
+
 2013-04-14	pwessel
 	* blockmean.c:		The -Ep will produce propagated errors on the mean.
 

@@ -105,6 +105,9 @@ struct GREENSPLINE_CTRL {
 		bool active;
 		char *file;
 	} T;
+	struct W {	/* -W */
+		bool active;
+	} W;
 };
 
 #define SANDWELL_1987_1D		0
@@ -172,8 +175,8 @@ int GMT_greenspline_usage (struct GMTAPI_CTRL *API, int level)
 {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: greenspline [<table>] -G<outfile> [-A[<format>,]<gradientfile>]\n\t[-R<xmin>/<xmax[/<ymin>/<ymax>[/<zmin>/<zmax>]]]");
-	GMT_Message (API, GMT_TIME_NONE, "\t [-I<dx>[/<dy>[/<dz>]] [-C[v]<cut>[/<file>]]\n\t[-D<mode>] [-L] [-N<nodes>] [-Q<az>] [-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>] [%s]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I<dx>[/<dy>[/<dz>]] [-C[v]<cut>[/<file>]]\n\t[-D<mode>] [-L] [-N<nodes>] [-Q<az>] [-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>] [%s]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-W] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_bi_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
 	
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
@@ -233,8 +236,9 @@ int GMT_greenspline_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t      Use -SQ to speed up calculations by using precalculated lookup tables.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Append /n to set the (odd) number of points in the spline [%d].\n", N_X);
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Mask grid file whose values are NaN or 0; its header implicitly sets -R, -I (and -r).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-W Expects one extra input column with data weights (e.g., w_i = 1/sigma_i).\n");
 	GMT_Option (API, "V,bi");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default is 2-4 input columns depending on dimensionality (see -D).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default is 2-5 input columns depending on dimensionality (see -D) and weights (see -W).\n");
 	GMT_Option (API, "g,h,i,o,r,s,:,.");
 	
 	return (EXIT_FAILURE);
@@ -431,6 +435,9 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 			case 'T':	/* Input mask grid */
 				Ctrl->T.active = true;
 				Ctrl->T.file = strdup (opt->arg);
+				break;
+			case 'W':	/* Expect data weights in last column */
+				Ctrl->W.active = true;
 				break;
 #ifdef DEBUG
 			case '+':	/* Turn on TEST mode */
@@ -1091,7 +1098,7 @@ double get_dircosine (struct GMT_CTRL *GMT, double *D, double *X0, double *X1, u
 int GMT_greenspline (void *V_API, int mode, void *args)
 {
 	uint64_t row, p, k, i, j, seg, m, n, nm, nxy, n_ok = 0, ij, ji, ii;
-	unsigned int dimension = 0, normalize = 1, unit = 0;
+	unsigned int dimension = 0, normalize = 1, unit = 0, n_cols;
 	size_t old_n_alloc, n_alloc;
 	int error, out_ID, way;
 	bool new_grid = false, delete_grid = false, check_longitude;
@@ -1111,7 +1118,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 	char *mem_unit[3] = {"kb", "Mb", "Gb"};
 	
 	double *obs = NULL, **D = NULL, **X = NULL, *alpha = NULL, *WB_z = NULL, *WB_g = NULL, *in = NULL;
-	double mem, part, C, p_val, r, par[11], norm[7], az, grad;
+	double mem, part, C, p_val, r, par[11], norm[7], az, grad, weight;
 	double *A = NULL;
 #ifdef DEBUG
 	double x0 = 0.0, x1 = 5.0;
@@ -1210,7 +1217,8 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 
 	n_alloc = GMT_CHUNK;
 	X = GMT_memory (GMT, NULL, n_alloc, double *);
-	for (k = 0; k < n_alloc; k++) X[k] = GMT_memory (GMT, NULL, dimension, double);
+	n_cols = (Ctrl->W.active) ? dimension + 1 : dimension;	/* So X[k][dimension] holds the weight if -W is active */
+	for (k = 0; k < n_alloc; k++) X[k] = GMT_memory (GMT, NULL, n_cols, double);
 	obs = GMT_memory (GMT, NULL, n_alloc, double);
 	check_longitude = (dimension == 2 && (Ctrl->D.mode == 1 || Ctrl->D.mode == 2));
 
@@ -1243,7 +1251,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 			old_n_alloc = n_alloc;
 			n_alloc <<= 1;
 			X = GMT_memory (GMT, X, n_alloc, double *);
-			for (k = old_n_alloc; k < n_alloc; k++) X[k] = GMT_memory (GMT, X[k], dimension, double);
+			for (k = old_n_alloc; k < n_alloc; k++) X[k] = GMT_memory (GMT, X[k], n_cols, double);
 			obs = GMT_memory (GMT, obs, n_alloc, double);
 		}
 	} while (true);
@@ -1268,13 +1276,13 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 		m = S->n_records;	/* Total number of gradient constraints */
 		nm += m;		/* New total of linear equations to solve */
 		X = GMT_memory (GMT, X, nm, double *);
-		for (k = n; k < nm; k++) X[k] = GMT_memory (GMT, NULL, dimension, double);
+		for (k = n; k < nm; k++) X[k] = GMT_memory (GMT, NULL, n_cols, double);
 		obs = GMT_memory (GMT, obs, nm, double);
 		D = GMT_memory (GMT, NULL, m, double *);
-		for (k = 0; k < m; k++) D[k] = GMT_memory (GMT, NULL, dimension, double);
+		for (k = 0; k < m; k++) D[k] = GMT_memory (GMT, NULL, n_cols, double);
 		for (seg = k = 0, p = n; seg < S->n_segments; seg++) {
 			for (row = 0; row < S->segment[seg]->n_rows; row++, k++, p++) {
-				for (ii = 0; ii < dimension; ii++) X[p][ii] = S->segment[seg]->coord[ii][row];
+				for (ii = 0; ii < n_cols; ii++) X[p][ii] = S->segment[seg]->coord[ii][row];
 				switch (dimension) {
 					case 1:	/* 1-D */
 						switch (Ctrl->A.mode) {
@@ -1558,7 +1566,12 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 	GMT_Report (API, GMT_MSG_VERBOSE, "Build linear system using %s\n", method[Ctrl->S.mode]);
 
 	Ctrl->S.rval[0] = DBL_MAX;	Ctrl->S.rval[1] = -DBL_MAX;
+	weight = 1.0;
 	for (j = 0; j < nm; j++) {	/* For each value or slope constraint */
+		if (Ctrl->W.active) {
+			weight = X[j][dimension];
+			obs[j] *= weight;
+		}
 		for (i = j; i < nm; i++) {
 			ij = j * nm + i;
 			ji = i * nm + j;
@@ -1566,7 +1579,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 			if (r < Ctrl->S.rval[0]) Ctrl->S.rval[0] = r;
 			if (r > Ctrl->S.rval[1]) Ctrl->S.rval[1] = r;
 			if (j < n) {	/* Value constraint */
-				A[ij] = G (GMT, r, par, WB_z);
+				A[ij] = weight * G (GMT, r, par, WB_z);
 				if (ij == ji) continue;	/* Do the diagonal terms only once */
 				if (i < n)
 					A[ji] = A[ij];
@@ -1576,16 +1589,16 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 					/* A[ji] = dGdr (r, par, WB_g) * C; */
 					C = get_dircosine (GMT, D[i-n], X[i], X[j], dimension, false);
 					grad = dGdr (GMT, r, par, WB_g);
-					A[ji] = grad * C;
+					A[ji] = weight * grad * C;
 				}
 			}
 			else if (i > n) {	/* Remaining gradient constraints */
 				if (ij == ji) continue;	/* Diagonal gradient terms are zero */
 				C = get_dircosine (GMT, D[j-n], X[i], X[j], dimension, true);
 				grad = dGdr (GMT, r, par, WB_g);
-				A[ij] = grad * C;
+				A[ij] = weight * grad * C;
 				C = get_dircosine (GMT, D[i-n], X[i], X[j], dimension, false);
-				A[ji] = grad * C;
+				A[ji] = weight * grad * C;
 			}
 		}
 	}
@@ -1699,7 +1712,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 		}
 		GMT_fclose (GMT, fp);
 	}
-	else {
+	else {	/* Output on equidistance lattice */
 		uint64_t nz_off, nxy;
 		unsigned int col, row, layer, wmode = GMT_ADD_DEFAULT;
 		double *xp = NULL, *yp = NULL, wp, V[4];
