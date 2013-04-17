@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-04-16	pwessel
+	* gmtspatial.c:		Added -A option for nearest neighbor analysis, and a test-
+				script nn.sh in the test suite.
+
 2013-04-15	pwessel
 	* greenspline.c:	Add -W for weighted fit.
 

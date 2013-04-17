@@ -172,7 +172,7 @@ struct SURFACE_INFO {	/* Control structure for surface setup and execution */
 };
 
 void set_coefficients (struct SURFACE_INFO *C)
-{
+{	/* These are the coefficients in the finite-difference expressionss */
 	double e_4, loose, a0;
 
 	loose = 1.0 - C->interior_tension;
@@ -215,7 +215,16 @@ void set_coefficients (struct SURFACE_INFO *C)
 }
 
 void set_offset (struct SURFACE_INFO *C)
-{
+{	/* Because of the multigrid approach the distance from the central node to
+	 * its neighbors needed in the finite difference expressions varies.  E.g.,
+	 * when C->grid is 8 then the next neighbor to the right is 8 columns over.
+	 * But at the boundaries the spacing is always 1.  Thus, as the current node
+	 * moves over the interior of the grid the distances change as we get close
+	 * to any of the 4 boundaries.  The offset array is used to determine what
+	 * the offset in rows and columns are relative to the current point, given
+	 * what "kase" we are examining.  kase is a combination of x and y information
+	 * related to how close we are to the left/right or top/bottom boundary.
+	 */
 	int add_w[5], add_e[5], add_s[5], add_n[5], add_w2[5], add_e2[5], add_s2[5], add_n2[5];
 	unsigned int i, j, kase;
 
@@ -351,14 +360,14 @@ int compare_points (const void *point_1v, const void *point_2v)
 	return (0);
 }
 
-void smart_divide (struct SURFACE_INFO *C) {
-		/* Divide grid by its largest prime factor */
+void smart_divide (struct SURFACE_INFO *C)
+{	/* Divide grid by its largest prime factor */
 	C->grid /= C->factors[C->n_fact - 1];
 	C->n_fact--;
 }
 
-void set_index (struct SURFACE_INFO *C) {
-	/* recomputes data[k].index for new value of grid,
+void set_index (struct SURFACE_INFO *C)
+{	/* recomputes data[k].index for new value of grid,
 	   sorts data on index and radii, and throws away
 	   data which are now outside the usable limits. */
 	int i, j;
@@ -382,7 +391,9 @@ void set_index (struct SURFACE_INFO *C) {
 
 }
 
-void find_nearest_point (struct SURFACE_INFO *C) {
+void find_nearest_point (struct SURFACE_INFO *C)
+{	/* Determines the nearest data point epr bin and sets the
+	 * Briggs parameters or, if really close, sets the node value */
 	uint64_t ij_v2, k, last_index, iu_index, briggs_index;
 	int i, j, block_i, block_j;
 	double x0, y0, dx, dy, xys, xy1, btemp, b0, b1, b2, b3, b4, b5;
@@ -464,7 +475,7 @@ void find_nearest_point (struct SURFACE_INFO *C) {
 }
 
 void set_grid_parameters (struct SURFACE_INFO *C)
-{
+{	/* Updates the grid space parameters given the new C->grid setting */
 	GMT_Surface_Global.block_ny = C->block_ny = (C->ny - 1) / C->grid + 1;
 	C->block_nx = (C->nx - 1) / C->grid + 1;
 	GMT_Surface_Global.grid_xinc = C->grid_xinc = C->grid * C->Grid->header->inc[GMT_X];
@@ -531,7 +542,7 @@ void initialize_grid (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 }
 
 int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_OPTION *options)
-{
+{	/* Procdss input data into data structure */
 	int i, j, error;
 	uint64_t k, kmax = 0, kmin = 0, n_dup = 0;
 	double *in, half_dx, zmin = DBL_MAX, zmax = -DBL_MAX, wesn_lim[4];
@@ -653,7 +664,7 @@ int read_data_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_
 }
 
 int load_constraints (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int transform)
-{
+{	/* Deal with the constants or grids supplied via -L */
 	unsigned int i, j;
 	uint64_t ij;
 	double yy;
@@ -765,7 +776,7 @@ int write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, char *gr
 }
 
 uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mode)
-{
+{	/* Main finite difference solver */
 	uint64_t ij, briggs_index, ij_v2, iteration_count = 0, ij_sw, ij_se;
 	int i, j, k, kase;
 	int x_case, y_case, x_w_case, x_e_case, y_s_case, y_n_case;
@@ -814,7 +825,7 @@ uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mode)
 				u[ij_se] = u[ij_sw] = 0.5 * (u[ij_se] + u[ij_sw]);	/* Set to average of east and west */
 			}
 		}
-		else {
+		else {	/* Regular natural BC */
 			for (j = 0; j < C->ny; j += C->grid) {
 				/* set d2[]/dx2 = 0 on west side */
 				ij = C->ij_sw_corner + j;
@@ -894,7 +905,7 @@ uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mode)
 				kase = 20 + y_case;
 				u[ij_se + C->offset[kase][7]] = u[ij_sw+C->offset[y_case][7]];
 			}
-			else {
+			else {	/* Natural BCs */
 				/* West side */
 				kase = y_case;
 				ij = C->ij_sw_corner + j;
@@ -1027,7 +1038,8 @@ uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mode)
 	return (iteration_count);
 }
 
-void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
+void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
+{	/* Compute misfits at data locations */
 
 	int i, j, move_over[12];
 	uint64_t ij, k;
@@ -1172,7 +1184,7 @@ void check_errors (struct GMT_CTRL *GMT, struct SURFACE_INFO *C) {
  }
 
 void remove_planar_trend (struct SURFACE_INFO *C)
-{
+{	/* Fit LS plane and remove from data; we restore before output */
 	uint64_t i;
 	double a, b, c, d, xx, yy, zz;
 	double sx, sy, sz, sxx, sxy, sxz, syy, syz;
@@ -1220,7 +1232,7 @@ void remove_planar_trend (struct SURFACE_INFO *C)
 }
 
 void replace_planar_trend (struct SURFACE_INFO *C)
-{
+{	/* Restore the LS plan we removed */
 	int i, j;
 	uint64_t ij;
 	float *u = C->Grid->data;
@@ -1276,7 +1288,7 @@ void throw_away_unusables (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
 }
 
 int rescale_z_values (struct GMT_CTRL *GMT, struct SURFACE_INFO *C)
-{
+{	/* Find and normalize data by its rms */
 	uint64_t i;
 	double ssz = 0.0;
 
@@ -1327,7 +1339,11 @@ void suggest_sizes_for_surface (struct GMT_CTRL *GMT, unsigned int factors[], un
 }
 
 void load_parameters_surface (struct SURFACE_INFO *C, struct SURFACE_CTRL *Ctrl)
-{
+{	/* Place program options into the surface struct.  This was done this way
+	 * since surface.c relied heavily on global variables which are a no-no
+	 * in GMT5.  The simplest solution was to collect all those variables into
+	 * a single structure and pass a pointer to that structure to functions.
+	 */
 	if (Ctrl->S.active) {
 		if (Ctrl->S.unit == 'm') Ctrl->S.radius /= 60.0;
 		if (Ctrl->S.unit == 's') Ctrl->S.radius /= 3600.0;
@@ -1348,7 +1364,8 @@ void load_parameters_surface (struct SURFACE_INFO *C, struct SURFACE_CTRL *Ctrl)
 	C->converge_limit = Ctrl->C.value;
 }
 
-void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_DATATABLE *xyzline) {
+void interp_breakline (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, struct GMT_DATATABLE *xyzline)
+{	/* Add constraints from breaklines */
 
 	uint64_t n_tot = 0, this_ini = 0, this_end = 0, n_int = 0;
 	uint64_t k = 0, n, kmax = 0, kmin = 0, row, seg;
@@ -1708,11 +1725,11 @@ int GMT_surface (void *V_API, int mode, void *args)
 	GMT_memcpy (C.wesn_orig, GMT->common.R.wesn, 4, double);	/* Save original region in case of -r */
 	GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);		/* Specified region */
 	C.periodic = (GMT_is_geographic (GMT, GMT_IN) && GMT_360_RANGE (wesn[XLO], wesn[XHI]));
-	if (GMT->common.r.active) {		/* Pixel registration request. Use the trick of offset area by x_inc(y_inc) / 2 */
+	if (GMT->common.r.active) {		/* Pixel registration request. Use the trick of offsetting area by x_inc(y_inc) / 2 */
 		wesn[XLO] += Ctrl->I.inc[GMT_X] / 2.0;	wesn[XHI] += Ctrl->I.inc[GMT_X] / 2.0;
 		wesn[YLO] += Ctrl->I.inc[GMT_Y] / 2.0;	wesn[YHI] += Ctrl->I.inc[GMT_Y] / 2.0;
 		one++;	/* Just so we can report correct nx,ny for the grid; internally it is the same until output */
-		/* nx,ny remains the same for now but nodes are in "pixel" position.  Must reduce nx,ny by 1 when we write result */
+		/* nx,ny remains the same for now but nodes are in "pixel" position.  Must reset to original wesn and reduce nx,ny by 1 when we write result */
 	}
 	
 	if ((C.Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, wesn, Ctrl->I.inc, \

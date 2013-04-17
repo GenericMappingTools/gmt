@@ -249,7 +249,8 @@ int GMT_Destroy_Args (void *V_API, int argc, char *args[])
 
 char * GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head)
 {	/* This function creates a single character string with the command line options that
-	 * correspond to the linked options provided.
+	 * correspond to the linked options provided.  We allocate with malloc since the API
+	 * user does not have access to GMT_free.
 	 */
 
 	char *txt = NULL, buffer[GMT_BUFSIZ];
@@ -263,7 +264,7 @@ char * GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head)
 	if (head == NULL) return_null (API, GMT_OPTION_LIST_NULL);	/* No list of options was given */
 
 	G = API->GMT;	/* GMT control structure */
-	txt = GMT_memory (G, NULL, n_alloc, char);
+	txt = malloc (n_alloc * sizeof (char));
 
 	for (opt = head; opt; opt = opt->next) {	/* Loop over all options in the linked list */
 		if (!opt->option) continue;			/* Skip all empty options */
@@ -278,7 +279,10 @@ char * GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head)
 
 		inc = strlen (buffer);
 		if (!first) inc++;	/* Count the space */
-		if ((length + inc) >= n_alloc) txt = GMT_memory (G, NULL, n_alloc *= 2, char);
+		if ((length + inc) >= n_alloc) {
+			n_alloc <<= 1;
+			txt = realloc (txt, n_alloc * sizeof (char));
+		}
 		if (!first) strcat (txt, " ");
 		strcat (txt, buffer);
 		length += inc;
@@ -287,10 +291,11 @@ char * GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head)
 	length++;	/* Need space for trailing \0 */
 	/* OK, done processing all options */
 	if (length == 1) {	/* Found no options, so delete the string we allocated */
-		GMT_free (G, txt);
+		free ((void *)txt);
+		txt = NULL;
 	}
 	else if (length < n_alloc) {	/* Trim back on the list to fit what we want */
-		txt = GMT_memory (G, txt, length, char);
+		txt = realloc (txt, length * sizeof (char));
 	}
 
 	return (txt);		/* Pass back the results to the calling module */
