@@ -356,21 +356,17 @@ struct GMT_OPTION * GMT_Find_Option (void *V_API, char option, struct GMT_OPTION
 	return (current);	/* NULL if not found */
 }
 
-int GMT_Update_Option (void *V_API, char option, char *arg, struct GMT_OPTION *head)
+int GMT_Update_Option (void *V_API, struct GMT_OPTION *opt, char *arg)
 {
-	/* If the option exists in the list we will update the arguments, otherwise
-	 * we create a new option and append it to the end of the list.
-	 * Note: The option order may be changed by this function. */
+	/* Replaces the argument of this option with arg. */
 
-	struct GMT_OPTION *old = NULL, *new = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);		/* GMT_Create_Session has not been called */
-	if (head == NULL) return_error (API, GMT_OPTION_LIST_NULL);	/* We were given no list to update */
-	if ((old = GMT_Find_Option (API, option, head)) == NULL) return_error (API, GMT_OPTION_NOT_FOUND);	/* Try to see if it already exists */
-	if ((new = GMT_Make_Option (API, option, arg)) == NULL) return_error (API, API->error);		/* new holds what the updated option should be */
-	GMT_Delete_Option (API, old);	/* Option is present in the list - remove it first */
-	if ((head = GMT_Append_Option (API, new, head)) == NULL) return_error (API, API->error);	/* Append revised option to list */
+	if (opt == NULL) return_error (API, GMT_OPTION_IS_NULL);	/* We pass NULL as the option */
+	if (arg == NULL) return_error (API, GMT_ARG_IS_NULL);		/* We pass NULL as the argument */
+	if (opt->arg) free ((void *)opt->arg);
+	opt->arg = strdup (arg);
 
 	return (GMT_OK);	/* No error encountered */
 }
