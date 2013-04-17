@@ -1119,7 +1119,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 	char *mem_unit[3] = {"kb", "Mb", "Gb"};
 	
 	double *obs = NULL, **D = NULL, **X = NULL, *alpha = NULL, *WB_z = NULL, *WB_g = NULL, *in = NULL;
-	double mem, part, C, p_val, r, par[11], norm[7], az, grad, weight;
+	double mem, part, C, p_val, r, par[11], norm[7], az, grad, weight_i, weight_j;
 	double *A = NULL;
 #ifdef DEBUG
 	double x0 = 0.0, x1 = 5.0;
@@ -1245,7 +1245,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 			else if (in[GMT_X] > Ctrl->R3.range[XHI] && (in[GMT_X] - 360.0) > Ctrl->R3.range[XLO]) in[GMT_X] -= 360.0;
 		}
 
-		for (k = 0; k < dimension; k++) X[n][k] = in[k];
+		for (k = 0; k < n_cols; k++) X[n][k] = in[k];	/* Get coordinates + optional weights (if -W) */
 		obs[n++] = in[dimension];
 
 		if (n == n_alloc) {	/* Get more memory */
@@ -1567,39 +1567,42 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 	GMT_Report (API, GMT_MSG_VERBOSE, "Build linear system using %s\n", method[Ctrl->S.mode]);
 
 	Ctrl->S.rval[0] = DBL_MAX;	Ctrl->S.rval[1] = -DBL_MAX;
-	weight = 1.0;
+	weight_i = weight_j = 1.0;
 	for (j = 0; j < nm; j++) {	/* For each value or slope constraint */
 		if (Ctrl->W.active) {
-			weight = X[j][dimension];
-			obs[j] *= weight;
+			weight_j = X[j][dimension];
+			obs[j] *= weight_j;
 		}
 		for (i = j; i < nm; i++) {
+			if (Ctrl->W.active) weight_i = X[i][dimension];
 			ij = j * nm + i;
 			ji = i * nm + j;
 			r = get_radius (GMT, X[i], X[j], dimension);
 			if (r < Ctrl->S.rval[0]) Ctrl->S.rval[0] = r;
 			if (r > Ctrl->S.rval[1]) Ctrl->S.rval[1] = r;
 			if (j < n) {	/* Value constraint */
-				A[ij] = weight * G (GMT, r, par, WB_z);
+				A[ij] = G (GMT, r, par, WB_z);
 				if (ij == ji) continue;	/* Do the diagonal terms only once */
-				if (i < n)
-					A[ji] = A[ij];
+				if (i < n) {
+					A[ji] = weight_i * A[ij];
+				}
 				else {
 					/* Get D, the directional cosine between the two points */
 					/* Then get C = GMT_dot3v (GMT, D, dataD); */
 					/* A[ji] = dGdr (r, par, WB_g) * C; */
 					C = get_dircosine (GMT, D[i-n], X[i], X[j], dimension, false);
 					grad = dGdr (GMT, r, par, WB_g);
-					A[ji] = weight * grad * C;
+					A[ji] = weight_i * grad * C;
 				}
+				A[ij] *= weight_j;
 			}
 			else if (i > n) {	/* Remaining gradient constraints */
 				if (ij == ji) continue;	/* Diagonal gradient terms are zero */
 				C = get_dircosine (GMT, D[j-n], X[i], X[j], dimension, true);
 				grad = dGdr (GMT, r, par, WB_g);
-				A[ij] = weight * grad * C;
+				A[ij] = weight_j * grad * C;
 				C = get_dircosine (GMT, D[i-n], X[i], X[j], dimension, false);
-				A[ji] = weight * grad * C;
+				A[ji] = weight_i * grad * C;
 			}
 		}
 	}
