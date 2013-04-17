@@ -1758,7 +1758,7 @@ any use for the text array, call
 
   ::
 
-    int GMT_Destroy_Args (void *API, int argc, char *argv[]);
+    int GMT_Destroy_Args (void *API, int argc, char **argv[]);
 
 to deallocate the space used. This function returns TRUE (1) if there is
 an error (which is passed back with ``API->error``), otherwise it

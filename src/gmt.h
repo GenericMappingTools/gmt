@@ -103,7 +103,7 @@ EXTERN_MSC int GMT_Get_Value		(void *C, char *arg, double *par);
 EXTERN_MSC int GMT_Report		(void *C, unsigned int level, char *message, ...);
 EXTERN_MSC int GMT_Message		(void *C, unsigned int mode, char *format, ...);
 
-/* 11 secondary functions for argument and option parsing */
+/* 12 secondary functions for argument and option parsing */
 
 EXTERN_MSC struct GMT_OPTION * GMT_Create_Options	(void *C, int argc, void *in);
 EXTERN_MSC struct GMT_OPTION * GMT_Make_Option		(void *C, char option, char *arg);
@@ -112,7 +112,8 @@ EXTERN_MSC struct GMT_OPTION * GMT_Append_Option	(void *C, struct GMT_OPTION *cu
 EXTERN_MSC char ** GMT_Create_Args			(void *C, int *argc, struct GMT_OPTION *head);
 EXTERN_MSC char * GMT_Create_Cmd			(void *C, struct GMT_OPTION *head);
 EXTERN_MSC int GMT_Destroy_Options			(void *C, struct GMT_OPTION **head);
-EXTERN_MSC int GMT_Destroy_Args				(void *C, int argc, char *argv[]);
+EXTERN_MSC int GMT_Destroy_Args				(void *C, int argc, char **argv[]);
+EXTERN_MSC int GMT_Destroy_Cmd				(void *C, char **cmd);
 EXTERN_MSC int GMT_Update_Option			(void *C, char option, char *arg, struct GMT_OPTION *head);
 EXTERN_MSC int GMT_Delete_Option			(void *C, struct GMT_OPTION *current);
 EXTERN_MSC int GMT_Parse_Common				(void *C, char *given_options, struct GMT_OPTION *options);

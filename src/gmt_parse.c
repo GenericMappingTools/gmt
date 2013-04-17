@@ -235,22 +235,21 @@ char ** GMT_Create_Args (void *V_API, int *argc, struct GMT_OPTION *head)
 	return (txt);		/* Pass back the char* array to the calling module */
 }
 
-int GMT_Destroy_Args (void *V_API, int argc, char *args[])
+int GMT_Destroy_Args (void *V_API, int argc, char **args[])
 {	/* Delete all text arguments, perhaps those created by GMT_Create_Args */
 
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);		/* GMT_Create_Session has not been called */
 	if (argc == 0 || !args) return_error (API, GMT_ARGV_LIST_NULL);	/* We were given no args to destroy, so there! */
 	/* Just deallocate the space taken by the list of arguments */
-	while (argc--) GMT_free (API->GMT, args[argc]);
-	GMT_free (API->GMT, args);
+	while (argc--) GMT_free (API->GMT, *args[argc]);
+	GMT_free (API->GMT, *args);
 	return (GMT_OK);	/* No error encountered */
 }
 
 char * GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head)
 {	/* This function creates a single character string with the command line options that
-	 * correspond to the linked options provided.  We allocate with malloc since the API
-	 * user does not have access to GMT_free.
+	 * correspond to the linked options provided.
 	 */
 
 	char *txt = NULL, buffer[GMT_BUFSIZ];
@@ -264,7 +263,7 @@ char * GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head)
 	if (head == NULL) return_null (API, GMT_OPTION_LIST_NULL);	/* No list of options was given */
 
 	G = API->GMT;	/* GMT control structure */
-	txt = malloc (n_alloc * sizeof (char));
+	txt = GMT_memory (G, NULL, n_alloc, char);
 
 	for (opt = head; opt; opt = opt->next) {	/* Loop over all options in the linked list */
 		if (!opt->option) continue;			/* Skip all empty options */
@@ -281,7 +280,8 @@ char * GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head)
 		if (!first) inc++;	/* Count the space */
 		if ((length + inc) >= n_alloc) {
 			n_alloc <<= 1;
-			txt = realloc (txt, n_alloc * sizeof (char));
+			txt = GMT_memory (G, txt, n_alloc, char);
+			
 		}
 		if (!first) strcat (txt, " ");
 		strcat (txt, buffer);
@@ -290,16 +290,23 @@ char * GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head)
 	}
 	length++;	/* Need space for trailing \0 */
 	/* OK, done processing all options */
-	if (length == 1) {	/* Found no options, so delete the string we allocated */
-		free ((void *)txt);
-		txt = NULL;
-	}
-	else if (length < n_alloc) {	/* Trim back on the list to fit what we want */
-		txt = realloc (txt, length * sizeof (char));
-	}
+	if (length == 1)	/* Found no options, so delete the string we allocated */
+		GMT_free (G, txt);
+	else if (length < n_alloc)	/* Trim back on the list to fit what we want */
+		txt = GMT_memory (G, txt, length, char);
 
 	return (txt);		/* Pass back the results to the calling module */
 }
+
+int GMT_Destroy_Cmd (void *V_API, char **cmd)
+{	/* Delete string created by GMT_Create_Cmd, pass its address */
+
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);		/* GMT_Create_Session has not been called */
+	GMT_free (API->GMT, *cmd);
+	return (GMT_OK);	/* No error encountered */
+}
+
 
 struct GMT_OPTION * GMT_prep_module_options (struct GMTAPI_CTRL *API, int mode, void *args)
 {	/* Either we passed the module an option struct list or we passed argc, argv and must convert to get option list */

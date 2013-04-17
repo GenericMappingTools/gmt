@@ -1348,7 +1348,7 @@ void GMT_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct 
 		}
 		header->command[len] = 0;
 		sprintf (header->title, "Produced by %s", gmt_module_name(GMT));
-		GMT_Destroy_Args (API, argc, argv);
+		GMT_Destroy_Args (API, argc, &argv);
 	}
 }
 
