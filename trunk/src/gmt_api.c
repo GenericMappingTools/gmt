@@ -626,7 +626,7 @@ void update_txt_item (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, siz
 	strcat (buffer, txt);			/* Append new text */
 	GMT_memset (string, length, char);	/* Wipe string completely */
 	strncpy (string, buffer, length);	/* Only copy over max length bytes */
-	if ((mode & GMT_COMMENT_IS_OPTION)) GMT_free (API->GMT, txt);
+	if (mode & GMT_COMMENT_IS_OPTION) free ((void *)txt);
 }
 
 void GMTAPI_GI_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, struct GMT_GRID_HEADER *H)
@@ -674,7 +674,7 @@ char * GMT_create_header_item (struct GMTAPI_CTRL *API, unsigned int mode, void 
 	}
 	if (mode & GMT_COMMENT_IS_REMARK)  strcat (buffer, " Remark : ");
 	strcat (buffer, txt);
-	if (mode & GMT_COMMENT_IS_OPTION) GMT_free (API->GMT, txt);
+	if (mode & GMT_COMMENT_IS_OPTION) free ((void *)txt);
 	return (buffer);
 }
 
