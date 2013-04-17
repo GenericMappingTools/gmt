@@ -540,36 +540,41 @@ int GMT_is_duplicate (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct GM
 	return (n_dup);
 }
 
-struct NN_POINT {
+struct NN_DIST {
 	double coord[4];	/* Up to x,y,z,weight */
 	double distance;	/* Distance to nearest neighbor */
-	int64_t ID;		/* Input ID # of this point */
+	int64_t ID;		/* Input ID # of this point (original input record number 0,1,...)*/
 	int64_t neighbor;	/* Input ID # of this point's neighbor */
 };
 
 struct NN_INFO {
-	int64_t ID;		/* Input ID # of this point */
-	int64_t neighbor;	/* Input ID # of this point's neighbor */
+	int64_t sort_rec;	/* Input ID # of this point's neighbor */
+	int64_t orig_rec;	/* Rec # of this point */
 };
 
 int compare_nn_points (const void *point_1v, const void *point_2v)
 {	/*  Routine for qsort to sort NN data structure on distance.
 		*/
-	const struct NN_POINT *point_1 = point_1v, *point_2 = point_2v;
+	const struct NN_DIST *point_1 = point_1v, *point_2 = point_2v;
 	
+	if (GMT_is_dnan (point_1->distance)) return (+1);
+	if (GMT_is_dnan (point_2->distance)) return (-1);
 	if (point_1->distance < point_2->distance) return (-1);
 	if (point_1->distance > point_2->distance) return (+1);
 	return (0);
 }
 
-struct NN_POINT * NNA_update_dist (struct GMT_CTRL *GMT, struct NN_POINT *P, uint64_t n_points)
+struct NN_DIST * NNA_update_dist (struct GMT_CTRL *GMT, struct NN_DIST *P, uint64_t *n_points)
 {	/* Return array of NN results sorted on smallest distances */
-	uint64_t k, k2;
+	uint64_t k, k2, np;
 	double distance;
 	
-	for (k = 0; k < (n_points-1); k++) {
+	np = *n_points;
+	for (k = 0; k < (np-1); k++) {
+		if (GMT_is_dnan (P[k].distance)) continue;	/* Skip deleted point */
 		P[k].distance = DBL_MAX;
-		for (k2 = k + 1; k2 < n_points; k2++) {
+		for (k2 = k + 1; k2 < np; k2++) {
+			if (GMT_is_dnan (P[k2].distance)) continue;	/* Skip deleted point */
 			distance = GMT_distance (GMT, P[k].coord[GMT_X], P[k].coord[GMT_Y], P[k2].coord[GMT_X], P[k2].coord[GMT_Y]);
 			if (distance < P[k].distance) {
 				P[k].distance = distance;
@@ -581,16 +586,18 @@ struct NN_POINT * NNA_update_dist (struct GMT_CTRL *GMT, struct NN_POINT *P, uin
 			}
 		}
 	}
-	qsort (P, n_points, sizeof (struct NN_POINT), compare_nn_points);
+	qsort (P, np, sizeof (struct NN_DIST), compare_nn_points);
+	for (k = np; k > 0 && GMT_is_dnan (P[k-1].distance); k--);	/* Skip the NaN distances */
+	*n_points = k;	/* Update point count */
 	return (P);
 }
 
-struct NN_POINT * NNA_init_dist (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t *n_points)
+struct NN_DIST * NNA_init_dist (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t *n_points)
 {	/* Return array of NN results sorted on smallest distances */
 	uint64_t np = 0, k, tbl, seg, row, col, n_cols;
 	double distance;
 	struct GMT_DATASEGMENT *S = NULL;
-	struct NN_POINT *P = GMT_memory (GMT, NULL, D->n_records, struct NN_POINT);
+	struct NN_DIST *P = GMT_memory (GMT, NULL, D->n_records, struct NN_DIST);
 	
 	n_cols = MIN (D->n_columns, 4);
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
@@ -616,37 +623,32 @@ struct NN_POINT * NNA_init_dist (struct GMT_CTRL *GMT, struct GMT_DATASET *D, ui
 			}
 		}
 	}
-	qsort (P, np, sizeof (struct NN_POINT), compare_nn_points);
+	qsort (P, np, sizeof (struct NN_DIST), compare_nn_points);
 	*n_points = np;
 	return (P);
 }
 
 int compare_nn_info (const void *point_1v, const void *point_2v)
-{	/*  Routine for qsort to sort NN data structure on distance.
+{	/*  Routine for qsort to sort NN rec numbers structure on original record order.
 		*/
 	const struct NN_INFO *point_1 = point_1v, *point_2 = point_2v;
 	
-	if (point_1->neighbor < point_2->neighbor) return (-1);
-	if (point_1->neighbor > point_2->neighbor) return (+1);
+	if (point_1->orig_rec < point_2->orig_rec) return (-1);
+	if (point_1->orig_rec > point_2->orig_rec) return (+1);
 	return (0);
 }
 
-struct NN_INFO * NNA_update_info (struct GMT_CTRL *GMT, struct NN_INFO *NN_info, uint64_t n_points)
+struct NN_INFO * NNA_update_info (struct GMT_CTRL *GMT, struct NN_INFO * I, struct NN_DIST *NN_dist, uint64_t n_points)
 {	/* Return revised array of NN ID lookups via sorting on neighbor IDs */
-	qsort (NN_info, n_points, sizeof (struct NN_INFO), compare_nn_info);
-	return (NN_info);
-}
-
-struct NN_INFO * NNA_init_info (struct GMT_CTRL *GMT, struct NN_POINT *NN_dist, uint64_t n_points)
-{	/* Return array of sorted NN ID lookups, so I[k].ID gives original record number of point k after sorting */
 	uint64_t k;
-	struct NN_INFO *I = GMT_memory (GMT, NULL, n_points, struct NN_INFO);
+	struct NN_INFO *info = (I) ? I : GMT_memory (GMT, NULL, n_points, struct NN_INFO);
 	for (k = 0; k < n_points; k++) {
-		I[k].ID = k;
-		I[k].neighbor = NN_dist[k].ID;
+		info[k].sort_rec = k;
+		info[k].orig_rec = labs(NN_dist[k].ID);
 	}
-	I = NNA_update_info (GMT, I, n_points);
-	return (I);
+	qsort (info, n_points, sizeof (struct NN_INFO), compare_nn_info);
+	/* Now, I[k].sort_rec will take the original record # k and return the corresponding record in the sorted array */
+	return (info);
 }
 
 int GMT_gmtspatial_usage (struct GMTAPI_CTRL *API, int level) {
@@ -742,8 +744,8 @@ int GMT_gmtspatial_parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, st
 
 			case 'A':	/* Do nearest neighbor analysis */
 				Ctrl->A.active = true;
-				if (opt->arg[0] == 'a') {	/* Spatially average points until minimum NN distance is less than given distance */
-					Ctrl->A.mode = 1;
+				if (opt->arg[0] == 'a' || opt->arg[0] == 'A') {	/* Spatially average points until minimum NN distance is less than given distance */
+					Ctrl->A.mode = (opt->arg[0] == 'A') ? 2 : 1;	/* Slow mode */
 					Ctrl->A.smode = GMT_get_distance (GMT, &opt->arg[1], &(Ctrl->A.min_dist), &(Ctrl->A.unit));
 				}
 				else if (((opt->arg[0] == '-' || opt->arg[0] == '+') && strchr (GMT_LEN_UNITS, opt->arg[1])) || (opt->arg[0] && strchr (GMT_LEN_UNITS, opt->arg[0]))) {
@@ -978,12 +980,12 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 	if (Ctrl->A.active) {	/* Nearest neighbor analysis. We compute distance between all point pairs and sort on minimum distance */
 		uint64_t n_points, k, a, b, n, col;
 		double A[3], B[3], w, iw, d_bar, out[7];
-		struct NN_POINT tmp, *NN_dist = NULL;
+		struct NN_DIST *NN_dist = NULL;
 		struct NN_INFO  *NN_info = NULL;
 		GMT_init_distaz (GMT, Ctrl->A.unit, Ctrl->A.smode, GMT_MAP_DIST);	/* Set the unit and distance calculation we requested */
 		
-		NN_dist = NNA_init_dist (GMT, D, &n_points);		/* Return array of NN results sorted on smallest distances */
-		NN_info = NNA_init_info (GMT, NN_dist, n_points);	/* Return array of NN ID lookups */
+		NN_dist = NNA_init_dist (GMT, D, &n_points);		/* Return array of NN results sorted on smallest distances */		
+		NN_info = NNA_update_info (GMT, NN_info, NN_dist, n_points);	/* Return array of NN ID record look-ups */
 		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {	/* All data now in NN_dist so free original dataset */
 			Return (API->error);
 		}
@@ -997,10 +999,15 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 			n = 0;
 			while (n < n_points && NN_dist[n].distance < Ctrl->A.min_dist) n++;
 			while (n) {	/* Must do more combining since n pairs exceed threshold distance */
+				GMT_Report (API, GMT_MSG_VERBOSE, "NNA Found %" PRIu64 " points, %" PRIu64 " pairs are too close and will be combined by their weighted average\n", n_points, n/2);
+				if (Ctrl->A.mode == 2) {
+					GMT_Report (API, GMT_MSG_VERBOSE, "Slow mode: Replace the single closest pair with its weighted average, then redo NNA\n");
+					n = 1;
+				}
 				for (k = 0; k < n; k++) {	/* Loop over pairs that are too close */
+					if (GMT_is_dnan (NN_dist[k].distance)) continue;	/* Already processed */
 					a = k;	/* The current point */
-					if (NN_dist[a].distance >= Ctrl->A.min_dist) continue;	/* Replacement from the back, just skip here */
-					b = NN_info[NN_dist[k].neighbor].ID;			/* a's neighbor in the sorted NN_dist array */
+					b = NN_info[labs(NN_dist[a].neighbor)].sort_rec;	/* a's neighbor location in the sorted NN_dist array */
 					w = NN_dist[a].coord[GMT_W] + NN_dist[b].coord[GMT_W];	/* Weight sum */
 					iw = 1.0 / w;	/* Inverse weight for scaling */
 					/* Compute weighted average z */
@@ -1019,15 +1026,11 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 						NN_dist[a].coord[GMT_Y] = iw * (NN_dist[a].coord[GMT_Y] * NN_dist[a].coord[GMT_W] + NN_dist[b].coord[GMT_Y] * NN_dist[b].coord[GMT_W]);
 					}
 					NN_dist[a].coord[GMT_W] = 0.5 * w;	/* Replace with the average weight */
-					NN_dist[a].ID = -NN_dist[a].ID;		/* Negative means it was averaged with other points */
-					/* Swap the last entry with b and shrink array size */
-					GMT_memcpy (&tmp, &NN_dist[n_points-1], 1, struct NN_POINT);		/* Save the last point */
-					GMT_memcpy (&NN_dist[n_points-1], &NN_dist[b], 1, struct NN_POINT);	/* Make b the last point */
-					GMT_memcpy (&NN_dist[b], &tmp, 1, struct NN_POINT);			/* Make the new b the previously last point */
-					n_points--;	/* Shrink size of array so old b falls outside list of active points */
+					NN_dist[a].ID = -labs (NN_dist[a].ID);	/* Negative means it was averaged with other points */
+					NN_dist[b].distance = GMT->session.d_NaN;	/* Flag this point as used.  NNA_update_dist will sort it and place all NaNs at the end */
 				}
-				NN_dist = NNA_update_dist (GMT, NN_dist, n_points);	/* Return recomputed array of NN NN_dist sorted on smallest distances */
-				NN_info = NNA_update_info (GMT, NN_info, n_points);	/* Return resorted array of NN ID lookups */
+				NN_dist = NNA_update_dist (GMT, NN_dist, &n_points);		/* Return recomputed array of NN NN_dist sorted on smallest distances */
+				NN_info = NNA_update_info (GMT, NN_info, NN_dist, n_points);	/* Return resorted array of NN ID lookups */
 				n = 0;
 				while (n < n_points && NN_dist[n].distance < Ctrl->A.min_dist) n++;	/* Any more pairs exceeding the threshold ? */
 			}

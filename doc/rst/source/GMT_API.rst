@@ -1851,21 +1851,18 @@ following the previously found option as the ``list`` entry, i.e.,
 Update an existing option in the list
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-``GMT_Update_Option`` will first determine if ``option`` exists; if so
-it will delete it. Then, it will make a new option from the arguments
-and append it to the end of the linked ``list``. The prototype is
+``GMT_Update_Option`` will replace the argument of ``current`` with the
+new argument ``arg`` and otherwise leave the option at its place in the
+list. The prototype is
 
 .. _GMT_Update_Option:
 
   ::
 
-    int GMT_Update_Option (void *API, char option, char *arg,
-                           struct GMT_OPTION *list);
+    int GMT_Update_Option (void *API, struct GMT_OPTION *current, char *arg);
 
-An error will be reported if (a) ``list`` is NULL or (b) the option is
-not found. The function returns TRUE (1) if there is an error (i.e.,
-``list`` is NULL or the option is not found); the error code is passed
-back via ``API->error``. Otherwise it returns FALSE (0).
+An error will be reported if (a) ``current`` is NULL or (b) ``arg`` is
+NULL. The function returns TRUE (1) if there is an error, otherwise it returns FALSE (0).
 
 Delete an existing option in the linked list
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
