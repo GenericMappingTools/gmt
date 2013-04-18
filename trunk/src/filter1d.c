@@ -295,7 +295,7 @@ int GMT_filter1d_parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct
 				if (GMT_compat_check (GMT, 4)) {	/* GMT4 LEVEL */
 					if (strchr (opt->arg, '/')) { /* Gave obsolete format */
 						GMT_Report (API, GMT_MSG_COMPAT, "Warning: -N<ncol>/<tcol> option is deprecated; use -N<tcol> instead.\n");
-						if (sscanf (opt->arg, "%*s/%d", &sval) != 1) {
+						if (sscanf (opt->arg, "%*s/%d", &sval) != 2) {
 							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N option: Syntax is -N<tcol>\n");
 							++n_errors;
 						}
@@ -411,7 +411,7 @@ int set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 		get_weight[FILTER1D_COS_ARCH] = &cosine_weight_filter1d;
 		get_weight[FILTER1D_GAUSSIAN] = &gaussian_weight;
 		F->half_width = 0.5 * F->filter_width;
-		F->half_n_f_wts = lrint (floor (F->half_width / F->dt));
+		F->half_n_f_wts = lrint (F->half_width / F->dt);
 		F->n_f_wts = 2 * F->half_n_f_wts + 1;
 
 		F->f_wt = GMT_memory (GMT, F->f_wt, F->n_f_wts, double);
@@ -465,9 +465,10 @@ int set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO *F)
 		}
 		else {
 			uint64_t row;
-			for (row = 0; (F->data[F->t_col][row] - t_0) < F->half_width; ++row);
+			double small = (F->data[F->t_col][1] - F->data[F->t_col][0]) * GMT_CONV_LIMIT;
+			for (row = 0; (F->data[F->t_col][row] - t_0 + small) < F->half_width; ++row);
 			F->t_start = F->data[F->t_col][row];
-			for (row = F->n_rows - 1; row > 0 && (t_1 - F->data[F->t_col][row]) < F->half_width; --row);
+			for (row = F->n_rows - 1; row > 0 && (t_1 - F->data[F->t_col][row] + small) < F->half_width; --row);
 			F->t_stop = F->data[F->t_col][row];
 		}
 	}

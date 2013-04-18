@@ -2,12 +2,16 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-04-17	pwessel
+	* filter1d.c:		Susceptible to round-off when determining t of first and last output
+				point when -T was not given.  Fixes issue # 241.
+
 2013-04-16	pwessel
-	* gmtspatial.c:		Added -A option for nearest neighbor analysis, and a test-
-				script nn.sh in the test suite.
+	* gmtspatial.c:		Added -A option for nearest neighbor analysis, and two test-
+				script nn.sh and decpolar.sh in the test suite.
 
 2013-04-15	pwessel
-	* greenspline.c:	Add -W for weighted fit.
+	* greenspline.c:	Add -W for weighted fit. Need to be used with -C to have any effect.
 
 2013-04-14	pwessel
 	* blockmean.c:		The -Ep will produce propagated errors on the mean.
