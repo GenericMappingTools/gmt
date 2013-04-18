@@ -1249,6 +1249,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_
 	D_obj->table = GMT_memory (API->GMT, NULL, n_alloc, struct GMT_DATATABLE *);
 	D_obj->alloc_mode = GMT_ALLOCATED;		/* So GMT_* modules can free this memory (may override below) */
 	use_GMT_io = !(mode & GMT_IO_ASCII);	/* false if we insist on ASCII reading */
+	API->GMT->current.io.seg_no = API->GMT->current.io.rec_no = API->GMT->current.io.rec_in_tbl_no = 0;	/* Reset for each new dataset */
 	
 	for (item = first_item; item <= last_item; item++) {	/* Look through all sources for registered inputs (or just one) */
 		S_obj = API->object[item];	/* S_obj is the current data object */
