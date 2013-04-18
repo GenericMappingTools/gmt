@@ -665,10 +665,10 @@ int GMT_gmtspatial_usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Nearest Neighbor Analysis. Computes minimum distances beetween nearest point pairs.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append unit for distance calculation.  We return minimum distances and the point IDs of the pairs.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give a threshold distance and we replace neighbors with their weighted average location until.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   no point pairs have a separation less than the threshold distance [0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Nearest Neighbor (NN) Analysis. Compute minimum distances between NN point pairs.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append unit used for NN distance calculation.  Returns minimum distances and point IDs for pairs.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Aa to replace close neighbor pairs with their weighted average location until\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   no point pair has a NN distance less than the specified <min_dist> distance [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Clip polygons to the given region box (requires -R), possibly yielding new closed polygons.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For truncation instead (possibly yielding open polygons, i.e., lines), see -T.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Look for (near-)duplicates in <table>, or append +f to compare <table> against <file>.\n");
