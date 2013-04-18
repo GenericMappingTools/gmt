@@ -3201,13 +3201,13 @@ void GMT_check_z_io (struct GMT_CTRL *GMT, struct GMT_Z_IO *r, struct GMT_GRID *
 	if (r->y_missing) for (col = 0, k_top = GMT_IJP (G->header, 0, 0), k_bot = GMT_IJP (G->header, G->header->ny-1, 0); col < G->header->nx; col++) G->data[col+k_top] = G->data[col+k_bot];
 }
 
-int gmt_get_ymdj_order (struct GMT_CTRL *GMT, char *text, struct GMT_DATE_IO *S)
+unsigned int gmt_get_ymdj_order (struct GMT_CTRL *GMT, char *text, struct GMT_DATE_IO *S)
 {	/* Reads a YYYY-MM-DD or YYYYMMDD-like string and determines order.
 	 * order[0] is the order of the year, [1] is month, etc.
 	 * Items not encountered are left as -1.
 	 */
 
-	unsigned int i, j, order, n_y, n_m, n_d, n_j, n_w, error = 0;
+	unsigned int i, j, order, n_y, n_m, n_d, n_j, n_w, error = 0, T_pos = 0;
 	int k, last, n_delim;
 
 	GMT_memset (S, 1, struct GMT_DATE_IO);
@@ -3227,14 +3227,14 @@ int gmt_get_ymdj_order (struct GMT_CTRL *GMT, char *text, struct GMT_DATE_IO *S)
 					S->item_pos[0] = order++;
 				else if (text[i-1] != 'y')	/* Done it before, previous char must be y */
 					error++;
-				n_y++;
+				n_y++;	T_pos++;
 				break;
 			case 'm':	/* Month */
 				if (S->item_pos[1] < 0)		/* First time we encounter a m */
 					S->item_pos[1] = order++;
 				else if (text[i-1] != 'm')	/* Done it before, previous char must be m */
 					error++;
-				n_m++;
+				n_m++;	T_pos++;
 				break;
 			case 'o':	/* Month name (plot output only) */
 				if (S->item_pos[1] < 0)		/* First time we encounter an o */
@@ -3242,7 +3242,7 @@ int gmt_get_ymdj_order (struct GMT_CTRL *GMT, char *text, struct GMT_DATE_IO *S)
 				else				/* Done it before is error here */
 					error++;
 				S->mw_text = true;
-				n_m = 2;
+				n_m = 2;	T_pos += 3;
 				break;
 
 			case 'W':	/* ISO Week flag */
@@ -3255,7 +3255,7 @@ int gmt_get_ymdj_order (struct GMT_CTRL *GMT, char *text, struct GMT_DATE_IO *S)
 				}
 				else if (text[i-1] != 'w')	/* Done it before, previous char must be w */
 					error++;
-				n_w++;
+				n_w++;	T_pos += 2;
 				break;
 			case 'u':	/* ISO Week name ("Week 04") (plot output only) */
 				S->iso_calendar = true;
@@ -3272,7 +3272,7 @@ int gmt_get_ymdj_order (struct GMT_CTRL *GMT, char *text, struct GMT_DATE_IO *S)
 					S->item_pos[2] = order++;
 				else if (text[i-1] != 'd')	/* Done it before, previous char must be d */
 					error++;
-				n_d++;
+				n_d++;	T_pos++;
 				break;
 			case 'j':	/* Day of year  */
 				S->day_of_year = true;
@@ -3280,13 +3280,14 @@ int gmt_get_ymdj_order (struct GMT_CTRL *GMT, char *text, struct GMT_DATE_IO *S)
 					S->item_pos[3] = order++;
 				else if (text[i-1] != 'j')	/* Done it before, previous char must be j */
 					error++;
-				n_j++;
+				n_j++;	T_pos++;
 				break;
 			default:	/* Delimiter of some kind */
 				if (n_delim == 2)
 					error++;
 				else
 					S->delimiter[n_delim++][0] = text[i];
+				T_pos++;
 				break;
 		}
 	}
@@ -3317,7 +3318,7 @@ int gmt_get_ymdj_order (struct GMT_CTRL *GMT, char *text, struct GMT_DATE_IO *S)
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unacceptable date template %s\n", text);
 		GMT_exit (EXIT_FAILURE);
 	}
-	return (GMT_NOERROR);
+	return (T_pos);	/* Expected position of 'T' in <date>T<clock> strings */
 }
 
 int gmt_get_hms_order (struct GMT_CTRL *GMT, char *text, struct GMT_CLOCK_IO *S)
@@ -3639,7 +3640,7 @@ void gmt_date_C_format (struct GMT_CTRL *GMT, char *form, struct GMT_DATE_IO *S,
 	
 	/* Get the order of year, month, day or day-of-year in input/output formats for dates */
 
-	gmt_get_ymdj_order (GMT, form, S);
+	S->T_pos = gmt_get_ymdj_order (GMT, form, S);
 
 	/* Craft the actual C-format to use for i/o date strings */
 
@@ -3676,8 +3677,16 @@ void gmt_date_C_format (struct GMT_CTRL *GMT, char *form, struct GMT_DATE_IO *S,
 	else if (S->item_order[0] >= 0) {			/* Gregorian Calendar string: At least one item is needed */
 		k = (S->item_order[0] == 0 && !S->Y2K_year) ? ywidth : 2;
 		if (S->item_order[0] == 3) k = 3;	/* Day of year */
-		if (S->mw_text && S->item_order[0] == 1)	/* Prepare for "Monthname" format */
-			(mode == 0) ? sprintf (S->format, "%%[^%s]", S->delimiter[0]) : sprintf (S->format, "%%s");
+		if (S->mw_text && S->item_order[0] == 1) {	/* Prepare for "Monthname" format */
+			if (mode == 0) {
+				if (no_delim)
+					sprintf (S->format, "%%3s");
+				else
+					sprintf (S->format, "%%[^%s]", S->delimiter[0]);
+			}
+			else
+				sprintf (S->format, "%%s");
+		}
 		else if (S->compact)			/* Numerical formatting of month or year w/o leading zeros */
 			sprintf (S->format, "%%d");
 		else					/* Numerical formatting of month or year */
@@ -3686,8 +3695,15 @@ void gmt_date_C_format (struct GMT_CTRL *GMT, char *form, struct GMT_DATE_IO *S,
 			if (S->delimiter[0][0]) strcat (S->format, S->delimiter[0]);
 			k = (S->item_order[1] == 0 && !S->Y2K_year) ? ywidth : 2;
 			if (S->item_order[1] == 3) k = 3;	/* Day of year */
-			if (S->mw_text && S->item_order[1] == 1)	/* Prepare for "Monthname" format */
-				(mode == 0) ? sprintf (fmt, "%%[^%s]", S->delimiter[1]) : sprintf (fmt, "%%s");
+			if (S->mw_text && S->item_order[1] == 1) {	/* Prepare for "Monthname" format */
+				if (mode == 0) {
+					if (no_delim)
+						sprintf (fmt, "%%3s");
+					else
+						sprintf (fmt, "%%[^%s]", S->delimiter[1]);
+				}
+				else sprintf (fmt, "%%s");
+			}
 			else if (S->compact && !S->Y2K_year)		/* Numerical formatting of month or 4-digit year w/o leading zeros */
 				sprintf (fmt, "%%d");
 			else
@@ -4382,18 +4398,25 @@ int GMT_scanf (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *
 		callen = strlen (s);
 		if (callen < 2) return (GMT_IS_NAN);	/* Maybe should be more than 2  */
 
-		if ((p = strchr ( s, (int)('T'))) == NULL) {
-			/* There is no T.  Put all of s in calstring.  */
+		//if ((p = strchr ( s, (int)('T'))) == NULL) {	/* This was too naive, being tricked by data like 12-OCT-20 (no trailing T, so OCT was it) */
+		if (callen <= GMT->current.io.date_input.T_pos) {	/* There is no trailing T.  Put all of s in calstring.  */
 			clocklen = 0;
 			strncpy (calstring, s, GMT_TEXT_LEN64);
 		}
-		else {
+		else if (callen == (GMT->current.io.date_input.T_pos+1)) {	/* Just a trailing T but no clock */
+			clocklen = 0;
+			strncpy (calstring, s, GMT->current.io.date_input.T_pos);
+			calstring[GMT->current.io.date_input.T_pos] = 0;
+		}
+		else {	/* Have something following the T */
+			p = &s[GMT->current.io.date_input.T_pos+1];
+			if (p[0] == 'T') ++p;	/* Probably negative year pushed everything off by one */
 			clocklen = strlen (p);
-			callen -= clocklen;
+			callen -= (clocklen + 1);	/* The one is for the 'T' */
 			strncpy (calstring, s, callen);
 			calstring[callen] = 0;
-			strncpy (clockstring, &p[1], GMT_TEXT_LEN64);
-			clocklen--;
+			strncpy (clockstring, p, GMT_TEXT_LEN64);
+			if (clocklen) clocklen--;
 		}
 		x = 0.0;
 		if (clocklen && gmt_scanf_clock (GMT, clockstring, &x)) return (GMT_IS_NAN);

@@ -242,7 +242,7 @@ int GMT_Destroy_Args (void *V_API, int argc, char **args[])
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);		/* GMT_Create_Session has not been called */
 	if (argc == 0 || !args) return_error (API, GMT_ARGV_LIST_NULL);	/* We were given no args to destroy, so there! */
 	/* Just deallocate the space taken by the list of arguments */
-	while (argc--) GMT_free (API->GMT, *args[argc]);
+	while (argc--) GMT_free (API->GMT, (*args)[argc]);
 	GMT_free (API->GMT, *args);
 	return (GMT_OK);	/* No error encountered */
 }
