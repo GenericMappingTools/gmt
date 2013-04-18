@@ -47,15 +47,15 @@ None.
 .. include:: explain_intables.rst_
 
 **-A**\ [**a**\ *min_dist*][*unit*]
-   Perform spatial nearest neighbor analysis: Determine the nearest
-   neighbor to each point and report the distances and the point IDs
+   Perform spatial nearest neighbor (NN) analysis: Determine the nearest
+   neighbor of each point and report the NN distances and the point IDs
    involved in each pair (IDs are the input record numbers starting at 0).
-   To decimate the data so that the minimum nearest neighbor distance is
-   not lower than a threshold, append **a**\ *min_dist*.  In this case we
-   write out the (possibly averaged) coordinates and the updated nearest
-   neighbor distances and points.  Negative point numbers mean the point
-   has been averaged (the abs value gives the ID of one of the original
-   points.)
+   Use **-Aa** to decimate a data set so that no NN distance is lower than
+   the threshold *min_dist*.  In this case we write out the (possibly
+   averaged) coordinates and the updated NN distances and point IDs.  A
+   negative point number means the original point was replaced by a weighted
+   average (the absolute ID value gives the ID of the first original point
+   ID to be included in the average.)
 **-C**
     Clips polygons to the map region, including map boundary to the
     polygon as needed. The result is a closed polygon (see **-T** for
