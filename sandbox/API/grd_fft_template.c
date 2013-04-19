@@ -189,7 +189,7 @@ int main (int argc, char *argv[])
 	void *API = NULL;				/* The API pointer assigned below */
 
 	/* 2. Initializing new GMT session */
-	if ((API = GMT_Create_Session (argv[0], 2U, 0U)) == NULL) return EXIT_FAILURE;
+	if ((API = GMT_Create_Session (argv[0], 2U, 0U, NULL)) == NULL) return EXIT_FAILURE;
 
 	/* 3. Program initialization and parsing */
 
