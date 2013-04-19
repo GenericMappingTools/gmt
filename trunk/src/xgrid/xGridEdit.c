@@ -58,7 +58,7 @@ int main (int argc, String argv[])
   struct GMT_CTRL *GMT = NULL;
 
   /* 1. Initializing new GMT session */
-  if ((API = GMT_Create_Session (argv[0], 2U, 0U)) == NULL) exit (EXIT_FAILURE);
+  if ((API = GMT_Create_Session (argv[0], 2U, 0U, NULL)) == NULL) exit (EXIT_FAILURE);
 
   GMT = API->GMT;
   /* This is a pretty simple application, so don't bother

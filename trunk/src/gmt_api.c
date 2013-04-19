@@ -2861,7 +2861,7 @@ int GMTAPI_Memory_Registered (struct GMTAPI_CTRL *API, unsigned int family, unsi
 
 /*===>  Create a new GMT Session */
 
-void * GMT_Create_Session (char *session, unsigned int pad, unsigned int mode)
+void * GMT_Create_Session (char *session, unsigned int pad, unsigned int mode, void *print)
 {
 	/* Initializes the GMT API for a new session. This is typically called once in a program,
 	 * but programs that manage many threads might call it several times to create as many
@@ -2888,7 +2888,8 @@ void * GMT_Create_Session (char *session, unsigned int pad, unsigned int mode)
 	}
 	G->GMT->parent = G;	/* So we know who's your daddy */
 	G->pad = pad;		/* Preserve the default pad value for this session */
-	G->print_func = gmt_print_func;
+	G->print_func = (print == NULL) ? gmt_print_func : print;	/* Pointer to the print function to use in GMT_Message|Report */
+	G->do_not_exit = mode & 1;	/* if set, then GMT_exit is simply a return; otherwise it is an exit */
 		
 	/* Allocate memory to keep track of registered data resources */
 	
@@ -2905,9 +2906,9 @@ void * GMT_Create_Session (char *session, unsigned int pad, unsigned int mode)
 
 #ifdef FORTRAN_API
 /* Fortran binding [THESE MAY CHANGE ONCE WE ACTUALLY TRY TO USE THESE] */
-struct GMTAPI_CTRL * GMT_Create_Session_ (char *tag, unsigned int *pad, unsigned int *mode, int len)
+struct GMTAPI_CTRL * GMT_Create_Session_ (char *tag, unsigned int *pad, unsigned int *mode, void *print, int len)
 {	/* Fortran version: We pass the hidden global GMT_FORTRAN structure */
-	return (GMT_Create_Session (tag, *pad, *mode));
+	return (GMT_Create_Session (tag, *pad, *mode, print));
 }
 #endif
 
@@ -5331,7 +5332,7 @@ int GMT_F77_readgrdinfo_ (unsigned int dim[], double limit[], double inc[], char
 	struct GMT_GRID_HEADER header;
 	struct GMTAPI_CTRL *API = NULL;	/* The API pointer assigned below */
 
-	if ((API = GMT_Create_Session (argv, 0U, 0U)) == NULL) return EXIT_FAILURE;
+	if ((API = GMT_Create_Session (argv, 0U, 0U, NULL)) == NULL) return EXIT_FAILURE;
 
 	/* Read the grid header */
 
@@ -5365,7 +5366,7 @@ int GMT_F77_readgrd_ (float *array, unsigned int dim[], double limit[], double i
 	struct GMT_GRID_HEADER header;
 	struct GMTAPI_CTRL *API = NULL;	/* The API pointer assigned below */
 
-	if ((API = GMT_Create_Session (argv, 0U, 0U)) == NULL) return EXIT_FAILURE;
+	if ((API = GMT_Create_Session (argv, 0U, 0U, NULL)) == NULL) return EXIT_FAILURE;
 
 	/* Read the grid header */
 	GMT_grd_init (API->GMT, &header, NULL, false);
@@ -5405,7 +5406,7 @@ int GMT_F77_writegrd_ (float *array, unsigned int dim[], double limit[], double 
 	
 	/* Initialize with default values */
 	
-	if ((API = GMT_Create_Session (argv, 0U, 0U)) == NULL) return EXIT_FAILURE;
+	if ((API = GMT_Create_Session (argv, 0U, 0U, NULL)) == NULL) return EXIT_FAILURE;
 
 	GMT_grd_init (API->GMT, &header, NULL, false);
 	

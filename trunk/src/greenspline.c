@@ -56,7 +56,7 @@ struct GREENSPLINE_CTRL {
 		unsigned int mode;	/* 0 = azimuths, 1 = directions, 2 = dx,dy components, 3 = dx, dy, dz components */
 		char *file;
 	} A	;
-	struct C {	/* -C[v]<cutoff>[/<file>] */
+	struct C {	/* -C[n|v]<cutoff>[/<file>] */
 		bool active;
 		unsigned int mode;
 		double value;
@@ -175,7 +175,7 @@ int GMT_greenspline_usage (struct GMTAPI_CTRL *API, int level)
 {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: greenspline [<table>] -G<outfile> [-A[<format>,]<gradientfile>]\n\t[-R<xmin>/<xmax[/<ymin>/<ymax>[/<zmin>/<zmax>]]]");
-	GMT_Message (API, GMT_TIME_NONE, "[-I<dx>[/<dy>[/<dz>]] [-C[v]<cut>[/<file>]]\n\t[-D<mode>] [-L] [-N<nodes>] [-Q<az>] [-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>] [%s]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "[-I<dx>[/<dy>[/<dz>]] [-C[n|v]<cut>[/<file>]]\n\t[-D<mode>] [-L] [-N<nodes>] [-Q<az>] [-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_bi_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT);
 	
@@ -195,10 +195,11 @@ int GMT_greenspline_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   (0) For 1-D: x, slope, (1) X, Vmagnitude, Vazimuth(s), (2) X, Vazimuth(s), Vmagnitude,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (3) X, Vmagnitude, Vangle(s), (4) X, Vcomponents, or (5) X, Vunit-vector, Vmagnitude.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Here, X = (x, y[, z]) is the position vector, V is the gradient vector.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Solve by SVD and eliminate eigenvalues whose ratio to largest eigenvalue is less than <cut>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Solve by SVD and eliminate eigenvalues whose ratio to largest eigenvalue is less than <cut> [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append /<filename> to save the eigenvalues to this file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   A negative cutoff will stop execution after saving the eigenvalues.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Cv to select eigenvalues needed to explain <cut> %% of data variance.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Cn to select only the largest <cut> eigenvalues [all].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Cv to select only eigenvalues needed to explain <cut> %% of data variance [all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses Gauss-Jordan elimination to solve the linear system]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Distance flag determines how we calculate distances between (x,y) points:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Options 0 apples to Cartesian 1-D spline interpolation.\n");
@@ -329,13 +330,15 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 			case 'C':	/* Solve by SVD */
 				Ctrl->C.active = true;
 				if (opt->arg[0] == 'v') Ctrl->C.mode = 1;
+				else if (opt->arg[0] == 'n') Ctrl->C.mode = 2;
+				k = (Ctrl->C.mode) ? 1 : 0;
 				if (strchr (opt->arg, '/')) {
 					char tmp[GMT_BUFSIZ];
-					sscanf (&opt->arg[Ctrl->C.mode], "%lf/%s", &Ctrl->C.value, tmp);
+					sscanf (&opt->arg[k], "%lf/%s", &Ctrl->C.value, tmp);
 					Ctrl->C.file = strdup (tmp);
 				}
 				else
-					Ctrl->C.value = atof (&opt->arg[Ctrl->C.mode]);
+					Ctrl->C.value = atof (&opt->arg[k]);
 				break;
 			case 'D':	/* Distance mode */
 				Ctrl->D.active = true;
@@ -1657,10 +1660,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 		limit = Ctrl->C.value;
 		n_use = GMT_solve_svd (GMT, A, (unsigned int)nm, (unsigned int)nm, v, s, b, 1U, obs, &limit, Ctrl->C.mode);
 		if (n_use == -1) Return (EXIT_FAILURE);
-		if (Ctrl->C.mode == 1)
-			GMT_Report (API, GMT_MSG_VERBOSE, "[%d of %" PRIu64 " eigen-values used to explain %.1f %% of data variance]\n", n_use, nm, limit);
-		else
-			GMT_Report (API, GMT_MSG_VERBOSE, "[%d of %" PRIu64 " eigen-values used]\n", n_use, nm);
+		GMT_Report (API, GMT_MSG_VERBOSE, "[%d of %" PRIu64 " eigen-values used to explain %.1f %% of data variance]\n", n_use, nm, limit);
 			
 		GMT_free (GMT, s);
 		GMT_free (GMT, v);
