@@ -496,6 +496,8 @@ Table [tbl:API] gives a list of all the functions and their purpose.
 +-------------------------+---------------------------------------------------+
 | GMT_Destroy_Args_       | Delete text array of arguments                    |
 +-------------------------+---------------------------------------------------+
+| GMT_Destroy_Cmd_        | Delete text command of arguments                  |
++-------------------------+---------------------------------------------------+
 | GMT_Destroy_Data_       | Delete a data resource                            |
 +-------------------------+---------------------------------------------------+
 | GMT_Destroy_Options_    | Delete the linked list of option structures       |
@@ -1776,7 +1778,18 @@ text string command, use
 Developers who plan to import and export *GMT* shell scripts might find
 it convenient to use these functions. In case of an error we return a
 NULL pointer and set ``API->error``, otherwise a pointer to an allocated
-string is returned. It
+string is returned.  When you no longer have
+any use for the text string, call
+
+.. _GMT_Destroy_Cmd:
+
+  ::
+
+    int _GMT_Destroy_Cmd (void *API, char **argv);
+
+to deallocate the space used. This function returns TRUE (1) if there is
+an error (which is passed back with ``API->error``), otherwise it
+returns FALSE (0).
 
 Manage the linked list of options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
