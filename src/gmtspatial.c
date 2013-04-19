@@ -644,7 +644,7 @@ struct NN_INFO * NNA_update_info (struct GMT_CTRL *GMT, struct NN_INFO * I, stru
 	struct NN_INFO *info = (I) ? I : GMT_memory (GMT, NULL, n_points, struct NN_INFO);
 	for (k = 0; k < n_points; k++) {
 		info[k].sort_rec = k;
-		info[k].orig_rec = labs(NN_dist[k].ID);
+		info[k].orig_rec = labs (NN_dist[k].ID);
 	}
 	qsort (info, n_points, sizeof (struct NN_INFO), compare_nn_info);
 	/* Now, I[k].sort_rec will take the original record # k and return the corresponding record in the sorted array */
@@ -1045,13 +1045,13 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 			}
 		}
 		else {	/* Just output the NN analysis results */
-			if (GMT->common.h.add_colnames) {
-				char header[GMT_BUFSIZ];
-				sprintf (header, "#NN_dist[4]\tID[5]\tNN_ID[6]");
-				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, header);	
-			}
 			GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;	/* Since we are not writing coordinates */
 			if ((error = GMT_set_cols (GMT, GMT_OUT, 3))) Return (error);
+			if (GMT->common.h.add_colnames) {
+				char header[GMT_BUFSIZ];
+				sprintf (header, "#NN_dist[0]\tID[1]\tNN_ID[2]");
+				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, header);	
+			}
 		}
 		d_bar = 0.0;
 		for (k = 0; k < n_points; k++) {
