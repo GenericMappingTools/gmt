@@ -97,7 +97,7 @@ struct MEMORY_TRACKER {
 };
 
 /* Items needed if -DMEMDEBUG is in effect */
-EXTERN_MSC void GMT_memtrack_init (struct GMT_CTRL *GMT, struct MEMORY_TRACKER *M);
+EXTERN_MSC int GMT_memtrack_init (struct GMT_CTRL *GMT, struct MEMORY_TRACKER *M);
 EXTERN_MSC void GMT_memtrack_report (struct GMT_CTRL *GMT, struct MEMORY_TRACKER *M);
 EXTERN_MSC void GMT_memtrack_on (struct GMT_CTRL *GMT, struct MEMORY_TRACKER *M);
 EXTERN_MSC void GMT_memtrack_off (struct GMT_CTRL *GMT, struct MEMORY_TRACKER *M);

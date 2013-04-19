@@ -77,7 +77,7 @@ int gmt_regexp_match (struct GMT_CTRL *GMT, const char *subject, const char *pat
 
 	if (re == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_regexp_match: PCRE compilation failed at offset %d: %s.\n", erroffset, error);
-		GMT_exit (EXIT_FAILURE);
+		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 	}
 	
 	/*************************************************************************
@@ -103,7 +103,7 @@ int gmt_regexp_match (struct GMT_CTRL *GMT, const char *subject, const char *pat
 			/* Handle other special cases if you like */
 			default: 
 				 GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_regexp_match: PCRE matching error %d.\n", rc);
-				 GMT_exit (EXIT_FAILURE);
+				 GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 				 break;
 		}
 		pcre_free(re);	/* Release memory used for the compiled pattern */
@@ -128,7 +128,7 @@ int gmt_regexp_match (struct GMT_CTRL *GMT, const char *subject, const char *pat
 	if ( (status = regcomp(&re, pattern, cflags)) != 0) {
 		regerror(status, &re, err_msg, MAX_ERR_LENGTH);
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_regexp_match: POSIX ERE compilation failed: %s\n", err_msg);
-		GMT_exit (EXIT_FAILURE);
+		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 	}
 
 	/* execute the RE against the subject string */
@@ -140,7 +140,7 @@ int gmt_regexp_match (struct GMT_CTRL *GMT, const char *subject, const char *pat
 		/* this is when errors have been encountered */
 		regerror(status, &re, err_msg, MAX_ERR_LENGTH);
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_regexp_match: POSIX ERE matching error: %s\n", err_msg); /* Report error. */
-		GMT_exit (EXIT_FAILURE);
+		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 	}
 	return (0); /* No match */
 
@@ -148,7 +148,7 @@ int gmt_regexp_match (struct GMT_CTRL *GMT, const char *subject, const char *pat
 
 	/* disable ERE support */
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_regexp_match: this GMT version was compiled without regular expression support.\n");
-	GMT_exit (EXIT_FAILURE);
+	GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 
 #endif
 }

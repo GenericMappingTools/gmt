@@ -260,7 +260,7 @@ EXTERN_MSC int x2sys_bix_get_index (struct GMT_CTRL *GMT, double x, double y, in
 EXTERN_MSC void x2sys_path_init (struct GMT_CTRL *GMT, struct X2SYS_INFO *s);
 EXTERN_MSC int x2sys_get_data_path (struct GMT_CTRL *GMT, char *track_path, char *track, char *suffix);
 EXTERN_MSC int x2sys_err_pass (struct GMT_CTRL *GMT, int err, char *file);
-EXTERN_MSC void x2sys_err_fail (struct GMT_CTRL *GMT, int err, char *file);
+EXTERN_MSC int x2sys_err_fail (struct GMT_CTRL *GMT, int err, char *file);
 EXTERN_MSC const char * x2sys_strerror (struct GMT_CTRL *GMT, int err);
 
 EXTERN_MSC uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *s, char *dbase, char *ignorefile, double *wesn, char *fflag, int coe_kind, char *one_trk, struct X2SYS_COE_PAIR **xpairs, uint64_t *nx, uint64_t *ntracks);

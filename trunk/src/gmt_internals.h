@@ -59,7 +59,7 @@ EXTERN_MSC struct GMT_CUSTOM_SYMBOL * GMT_get_custom_symbol (struct GMT_CTRL *GM
 EXTERN_MSC void GMT_free_custom_symbols (struct GMT_CTRL *GMT);
 EXTERN_MSC bool GMT_geo_to_dms (double val, int n_items, double fact, int *d, int *m,  int *s,  int *ix);
 EXTERN_MSC double GMT_get_annot_offset (struct GMT_CTRL *GMT, bool *flip, unsigned int level);
-EXTERN_MSC void GMT_get_coordinate_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord);
+EXTERN_MSC int GMT_get_coordinate_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord);
 EXTERN_MSC void GMT_get_time_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CALCLOCK *P, struct GMT_PLOT_AXIS_ITEM *T, double t);
 EXTERN_MSC int GMT_getrgb_index (struct GMT_CTRL *GMT, double *rgb);
 EXTERN_MSC char * GMT_getuserpath (struct GMT_CTRL *GMT, const char *stem, char *path);	/* Look for user file */
@@ -102,7 +102,7 @@ EXTERN_MSC void gmt_init_rot_matrix (double R[3][3], double E[]);
 EXTERN_MSC void gmt_load_rot_matrix (double w, double R[3][3], double E[]);
 EXTERN_MSC void gmt_matrix_vect_mult (double a[3][3], double b[3], double c[3]);
 EXTERN_MSC void gmt_geo_polygon (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t n);
-EXTERN_MSC void GMT_io_banner (struct GMT_CTRL *GMT, unsigned int direction);
+EXTERN_MSC int GMT_io_banner (struct GMT_CTRL *GMT, unsigned int direction);
 
 EXTERN_MSC int GMT_gmonth_length (int year, int month);
 EXTERN_MSC void GMT_gcal_from_dt (struct GMT_CTRL *GMT, double t, struct GMT_gcal *cal);	/* Break internal time into calendar and clock struct info  */

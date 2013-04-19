@@ -2669,7 +2669,7 @@ void GMT_draw_map_insert (struct GMT_CTRL *GMT, struct GMT_MAP_INSERT *B)
 	GMT_free_segment (GMT, S);
 }
 
-void GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
+int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 {
 	unsigned int i, j, jj, form;
 	unsigned int n_f_ticks[10] = {5, 4, 6, 4, 5, 6, 7, 4, 3, 5};
@@ -2682,9 +2682,9 @@ void GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 	char *units[GMT_N_UNITS] = {"m", "km", "mi", "nm", "in", "cm", "pt", "ft", "usft"}, measure;
 	struct PSL_CTRL *PSL= GMT->PSL;
 	
-	if (!ms->plot) return;
+	if (!ms->plot) return GMT_OK;
 
-	if (!GMT_is_geographic (GMT, GMT_IN)) return;	/* Only for geographic projections */
+	if (!GMT_is_geographic (GMT, GMT_IN)) return GMT_OK;	/* Only for geographic projections */
 
 	measure = (ms->measure == 0) ? 'k' : ms->measure;	/* Km is default */
 	if (GMT_compat_check (GMT, 4) && measure == 'm') {
@@ -2693,7 +2693,7 @@ void GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 	}
 	if ((unit = GMT_get_unit_number (GMT, measure)) == GMT_IS_NOUNIT) {
 		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error: Bad distance unit %c\n", measure);
-		GMT_exit (EXIT_FAILURE);
+		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 	}
 	
 	bar_length = 0.001 * GMT->current.proj.m_per_unit[unit] * ms->length;	/* Now in km */
@@ -2805,6 +2805,7 @@ void GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 		form = GMT_setfont (GMT, &GMT->current.setting.font_annot[0]);
 		PSL_plottext (PSL, ms->x0, ms->y0 - off, GMT->current.setting.font_annot[0].size, txt, 0.0, 10, form);
 	}
+	return GMT_OK;
 }
 
 void gmt_Nstar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double y0, double r)
@@ -3133,7 +3134,7 @@ bool gmt_custum_failed_bool_test (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL
 			break;
 		default:
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unrecognized symbol macro operator (%d = '%c') passed to GMT_draw_custom_symbol\n", s->operator, (char)s->operator);
-			GMT_exit (EXIT_FAILURE);
+			GMT_exit (GMT->parent->do_not_exit, false);
 			break;
 		
 	}
@@ -3158,7 +3159,7 @@ void gmt_flush_symbol_piece (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double 
 	*n = 0;
 }
 
-void GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double size[], struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, unsigned int outline)
+int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double size[], struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, unsigned int outline)
 {
 	unsigned int na, i, level = 0;
 	bool flush = false, this_outline = false, found_elseif = false, skip[11];
@@ -3203,7 +3204,7 @@ void GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double 
 			}
 			if (level == 10) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Symbol macro (%s) logical nesting too deep [> 10]\n", symbol->name);
-				GMT_exit (EXIT_FAILURE);
+				GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 			}
 			if (s->conditional == 4) level--, found_elseif = false;	/* Simply reduce indent */
 			if (s->conditional == 6) {	/* else branch */
@@ -3290,7 +3291,7 @@ void GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double 
 				}
 				else {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unrecognized symbol code (%d = '%c') passed to GMT_draw_custom_symbol\n", s->action, (char)s->action);
-					GMT_exit (EXIT_FAILURE);
+					GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 					break;
 				}
 			case GMT_SYMBOL_CROSS:
@@ -3374,7 +3375,7 @@ void GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double 
 
 			default:
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unrecognized symbol code (%d = '%c') passed to GMT_draw_custom_symbol\n", s->action, (char)s->action);
-				GMT_exit (EXIT_FAILURE);
+				GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 				break;
 		}
 
@@ -3387,6 +3388,8 @@ void GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double 
 
 	if (xx) GMT_free (GMT, xx);
 	if (yy) GMT_free (GMT, yy);
+	
+	return (GMT_OK);
 }
 
 /* Plotting functions related to contours */
@@ -3843,7 +3846,7 @@ struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 		}
 		if ((fp = PSL_fopen (&(Out->arg[k]), mode[k])) == NULL) {	/* Must open inside PSL DLL */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open %s with mode %s\n", &(Out->arg[k]), mode[k]);
-			GMT_exit (GMT_RUNTIME_ERROR);
+			GMT_exit (GMT->parent->do_not_exit, NULL);
 		}
 	}
 

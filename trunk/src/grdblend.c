@@ -310,7 +310,7 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Resample %s via grdsample %s\n", B[n].file, cmd);
 				if ((status = GMT_grdsample (GMT->parent, 0, cmd))) {	/* Resample the file */
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to resample file %s - exiting\n", B[n].file);
-					GMT_exit (EXIT_FAILURE);
+					GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 				}
 			}
 			else {	/* Just reformat to netCDF so this grid may be used as well */
@@ -320,7 +320,7 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Reformat %s via grdreformat %s\n", B[n].file, cmd);
 				if ((status = GMT_grdreformat (GMT->parent, 0, cmd))) {	/* Resample the file */
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to resample file %s - exiting\n", B[n].file);
-					GMT_exit (EXIT_FAILURE);
+					GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 				}
 			}
 			strncpy (B[n].file, buffer, GMT_TEXT_LEN256);	/* Use the temporary file instead */
@@ -386,7 +386,7 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 	return (n_files);
 }
 
-void sync_input_rows (struct GMT_CTRL *GMT, int row, struct GRDBLEND_INFO *B, unsigned int n_blend, double half) {
+int sync_input_rows (struct GMT_CTRL *GMT, int row, struct GRDBLEND_INFO *B, unsigned int n_blend, double half) {
 	unsigned int k;
 
 	for (k = 0; k < n_blend; k++) {	/* Get every input grid ready for the new row */
@@ -394,7 +394,7 @@ void sync_input_rows (struct GMT_CTRL *GMT, int row, struct GRDBLEND_INFO *B, un
 		if (row < B[k].out_j0 || row > B[k].out_j1) {	/* Either done with grid or haven't gotten to this range yet */
 			B[k].outside = true;
 			if (B[k].open) {
-				if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &B[k].G)) return;
+				if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &B[k].G)) return GMT_OK;
 				B[k].open = false;
 				GMT_free (GMT, B[k].z);
 				if (B[k].delete) remove (B[k].file);	/* Delete the temporary resampled file */
@@ -412,7 +412,7 @@ void sync_input_rows (struct GMT_CTRL *GMT, int row, struct GRDBLEND_INFO *B, un
 
 		if (!B[k].open) {
 			if ((B[k].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[k].file, NULL)) == NULL) {
-				GMT_exit (-1);
+				GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 			}
 			if (B[k].skip) fseek (B[k].RbR->fp, B[k].skip, SEEK_CUR);	/* Position for native binary files */
 			B[k].RbR->start[0] += B[k].offset;					/* Start position for netCDF files */
@@ -420,6 +420,7 @@ void sync_input_rows (struct GMT_CTRL *GMT, int row, struct GRDBLEND_INFO *B, un
 		}
 		GMT_Get_Row (GMT->parent, 0, B[k].G, B[k].z);	/* Get one row from this file */
 	}
+	return GMT_OK;
 }
 
 void *New_grdblend_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */

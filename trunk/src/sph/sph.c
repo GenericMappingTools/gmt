@@ -55,7 +55,7 @@ typedef uint32_t logical;
 #include "stripack.c"
 #include "ssrfpack.c"
 
-void stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *y, double *z, struct STRIPACK *T)
+int stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *y, double *z, struct STRIPACK *T)
 {
  	/* n, the number of points.
 	 * x, y, z, the arrays with coordinates of points 
@@ -90,19 +90,19 @@ void stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *y, 
 
 	if (ierror == -2) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "STRIPACK: Error in TRMESH. The first 3 nodes are collinear.\n");
-		GMT_exit (EXIT_FAILURE);
+		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 	}
 
 	if (ierror > 0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "STRIPACK: Error in TRMESH.  Duplicate nodes encountered.\n");
-		GMT_exit (EXIT_FAILURE);
+		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 	}
 
 	if (T->mode == INTERPOLATE) {	/* Pass back the three lists from trmesh_ */
 		T->I.list = list;	/* Save these for output */
 		T->I.lptr = lptr;
 		T->I.lend = lend;
-		return;
+		return GMT_OK;
 	}
 	
 	/* Create a triangle list which returns the number of triangles and their node list tri */
@@ -116,7 +116,7 @@ void stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *y, 
 
 	if (ierror) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "STRIPACK: Error in TRLIST.\n");
-		GMT_exit (EXIT_FAILURE);
+		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 	}
 	
 	if (T->mode == VORONOI) {	/* Construct the Voronoi diagram */
@@ -154,7 +154,7 @@ void stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *y, 
 
 		if (0 < ierror) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "STRIPACK: Error in CRLIST.  IERROR = %" PRId64 ".\n", ierror);
-			GMT_exit (EXIT_FAILURE);
+			GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 		}
 		
 		/* Adjust Fortran to GMT indeces */
@@ -172,6 +172,7 @@ void stripack_lists (struct GMT_CTRL *GMT, uint64_t n_in, double *x, double *y, 
 	for (kk = 0; kk < TRI_NROW*T->D.n; kk++) T->D.tri[kk]--;
 	
 	GMT_free (GMT, list);
+	return (GMT_OK);
 }
 
 double stripack_areas (double *V1, double *V2, double *V3)
@@ -202,7 +203,7 @@ int compare_arc (const void *p1, const void *p2)
 
 /* Functions for spherical surface interpolation */
 
-void ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, double *w, uint64_t n_in, unsigned int mode, double *par, bool vartens, struct GMT_GRID_HEADER *h, double *f)
+int ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, double *w, uint64_t n_in, unsigned int mode, double *par, bool vartens, struct GMT_GRID_HEADER *h, double *f)
 {
 	int64_t ierror, plus = 1, minus = -1, ij, nxp, k, n = n_in;
 	int64_t nm, n_sig, ist, iflgs, iter, itgs, nx = h->nx, ny = h->ny;
@@ -241,7 +242,7 @@ void ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, doubl
 				if (ierror > 0) nxp++;
 	            		if (ierror < 0) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in INTRC0: I = %d, J = %d, IER = %" PRId64 "\n", row, col, ierror);
-					GMT_exit (EXIT_FAILURE);
+					GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 	            		}
 			}
 		}
@@ -256,7 +257,7 @@ void ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, doubl
 			gradl_ (&n, &k1, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &grad[3*k], &ierror);
 			if (ierror < 0) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in GRADL: K = %" PRId64 " IER = %" PRId64 "\n", k1, ierror);
-				GMT_exit (EXIT_FAILURE);
+				GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
             		}
 			sum += (double)ierror;
 		}
@@ -266,7 +267,7 @@ void ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, doubl
 			getsig_ (&n, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, grad, &tol, sigma, &dsm, &ierror);
 			if (ierror < 0) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in GETSIG: IER = %" PRId64 "\n", ierror);
-				GMT_exit (EXIT_FAILURE);
+				GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 			}
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "GETSIG: %" PRId64 " tension factors altered;  Max change = %g\n", ierror, dsm);
 	        }
@@ -278,7 +279,7 @@ void ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, doubl
 		unif_ (&n, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, &ny, &ny, &nx, plat, plon, &plus, grad, f, &ierror);
 		if (ierror < 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in UNIF: IER = %" PRId64 "\n", ierror);
-			GMT_exit (EXIT_FAILURE);
+			GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 		}
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "UNIF: Number of evaluation points = %" PRId64 ", number of extrapolation points = %" PRId64 "\n", nm, ierror);
 	}
@@ -300,7 +301,7 @@ void ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, doubl
 			gradg_ (&n, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, &nitg, &dgmx, grad, &ierror);
 			if (ierror < 0) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in GRADG (iteration %" PRId64 "): IER = %" PRId64 "\n", iter, ierror);
-				GMT_exit (EXIT_FAILURE);
+				GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 			}
 			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "GRADG (iteration %" PRId64 "): tolerance = %g max change = %g  maxit = %" PRId64 " no. iterations = %" PRId64 " ier = %" PRId64 "\n",
 				iter, dgmax, dgmx, maxit, nitg, ierror);
@@ -310,7 +311,7 @@ void ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, doubl
 				getsig_ (&n, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, grad, &tol, sigma, &dsm, &ierror);
 				if (ierror < 0) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in GETSIG (iteration %" PRId64 "): ier = %" PRId64 "\n", iter, ierror);
-					GMT_exit (EXIT_FAILURE);
+					GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 				}
 				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "GETSIG (iteration %" PRId64 "): %" PRId64 " tension factors altered;  Max change = %g\n", iter, ierror, dsm);
 			}
@@ -320,7 +321,7 @@ void ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, doubl
 		unif_ (&n, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, &ny, &ny, &nx, plat, plon, &plus, grad, f, &ierror);
 		if (ierror < 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in UNIF: IER = %" PRId64 "\n", ierror);
-			GMT_exit (EXIT_FAILURE);
+			GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 		}
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "UNIF: Number of evaluations = %" PRId64 ", number of extrapolations = %" PRId64 "\n", nm, ierror);
 	}
@@ -343,7 +344,7 @@ void ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, doubl
 			smsurf_ (&n, x, y, z, w, P.I.list, P.I.lptr, P.I.lend, &iflgs, sigma, wt, &sm, &smtol, &gstol, &minus, f, grad, &ierror);
 			if (ierror < 0) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in SMSURF (iteration %" PRId64 "): IER = %" PRId64 "\n", iter, ierror);
-				GMT_exit (EXIT_FAILURE);
+				GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 			}
 			if (ierror == 1) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Error in SMSURF: inactive constraint in SMSURF (iteration %" PRId64 ").  f is a constant function\n", iter);
 			if (vartens) {	/* compute tension factors sigma (getsig).  iflgs > 0 if vt = true. */
@@ -351,7 +352,7 @@ void ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, doubl
 				getsig_ (&n, x, y, z, f, P.I.list, P.I.lptr, P.I.lend, grad, &tol, sigma, &dsm, &ierror);
 				if (ierror < 0) {
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in GETSIG (iteration %" PRId64 "): IER = %" PRId64 "\n", iter, ierror);
-					GMT_exit (EXIT_FAILURE);
+					GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 				}
 				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "GETSIG (iteration %" PRId64 "): %" PRId64 " tension factors altered;  Max change = %g\n", iter, ierror, dsm);
 			}
@@ -361,7 +362,7 @@ void ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, doubl
 		GMT_free (GMT, wt);
 		if (ierror < 0) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in UNIF: ier = %" PRId64 "\n", ierror);
-			GMT_exit (EXIT_FAILURE);
+			GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 		}
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "UNIF: Number of evaluations = %" PRId64 ", number of extrapolations = %" PRId64 "\n", nm, ierror);
 	}
@@ -373,4 +374,5 @@ void ssrfpack_grid (struct GMT_CTRL *GMT, double *x, double *y, double *z, doubl
 	GMT_free (GMT, P.I.lend);
 	if (sigma) GMT_free (GMT, sigma);
 	if (grad) GMT_free (GMT, grad);
+	return (GMT_OK);
 }

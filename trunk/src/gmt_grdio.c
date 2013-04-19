@@ -106,16 +106,16 @@ void grd_dump (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid
 #endif
 }
 
-void gmt_grd_layout (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, unsigned int complex_mode, unsigned int direction)
+int gmt_grd_layout (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float *grid, unsigned int complex_mode, unsigned int direction)
 {	/* Checks or sets the array arrangement for a complex array */
 	size_t needed_size;	/* Space required to hold both components of a complex grid */
 	
-	if ((complex_mode & GMT_GRID_IS_COMPLEX_MASK) == 0) return;	/* Regular, non-complex grid, nothing special to do */
+	if ((complex_mode & GMT_GRID_IS_COMPLEX_MASK) == 0) return GMT_OK;	/* Regular, non-complex grid, nothing special to do */
 	
 	needed_size = 2ULL * header->mx * header->my;	/* For the complex array */
 	if (header->size < needed_size) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal Error: Complex grid not large enough to hold both components!.\n");
-		GMT_exit (EXIT_FAILURE);
+		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 	}
 	if (direction == GMT_IN) {	/* About to read in a complex component; another one might have been read in earlier */
 		if (header->arrangement == GMT_GRID_IS_INTERLEAVED) {
@@ -132,17 +132,17 @@ void gmt_grd_layout (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 	else {	/* About to write out a complex component */
 		if ((header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) == 0) {	/* Not a complex grid */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal Error: Asking to write out complex components from a non-complex grid.\n");
-			GMT_exit (EXIT_FAILURE);
+			GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 		}
 		if ((complex_mode & GMT_GRID_IS_COMPLEX_REAL) && (header->complex_mode & GMT_GRID_IS_COMPLEX_REAL) == 0) {
 			/* Programming error: Requesting to write real components when there are none */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal Error: Complex grid has no real components that can be written to file.\n");
-			GMT_exit (EXIT_FAILURE);
+			GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 		}
 		else if ((complex_mode & GMT_GRID_IS_COMPLEX_IMAG) && (header->complex_mode & GMT_GRID_IS_COMPLEX_IMAG) == 0) {
 			/* Programming error: Requesting to write imag components when there are none */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal Error: Complex grid has no imaginary components that can be written to file.\n");
-			GMT_exit (EXIT_FAILURE);
+			GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 		}
 		if (header->arrangement == GMT_GRID_IS_INTERLEAVED) {	/* Must first demultiplex the grid */
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Demultiplexing complex grid before writing can take place.\n");
@@ -150,6 +150,7 @@ void gmt_grd_layout (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 		}
 	}
 	/* header->arrangment might now have been changed accordingly */
+	return GMT_OK;
 }
 
 void gmt_grd_parse_xy_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, char *file, unsigned int direction)
@@ -2022,13 +2023,13 @@ int GMT_set_outgrid (struct GMT_CTRL *GMT, char *file, struct GMT_GRID *G, struc
 	return (false);
 }
 
-void gmt_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct GMT_OPTION *options, double wesn[], double inc[], unsigned int registration, unsigned int mode)
+int gmt_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct GMT_OPTION *options, double wesn[], double inc[], unsigned int registration, unsigned int mode)
 {	/* Convenient way of setting a header struct wesn, inc, and registartion, then compute dimensions, etc. */
 	double wesn_dup[4], inc_dup[2];
 	if (wesn == NULL) {	/* Must select -R setting */
 		if (!GMT->common.R.active) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No wesn given and no -R in effect.  Cannot initialize new grid\n");
-			GMT_exit (EXIT_FAILURE);
+			GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 		}
 	}
 	else	/* In case user is passing header->wesn etc we must save them first as GMT_grd_init will clobber them */
@@ -2036,7 +2037,7 @@ void gmt_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, s
 	if (inc == NULL) {	/* Must select -I setting */
 		if (!GMT->common.API_I.active) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No inc given and no -I in effect.  Cannot initialize new grid\n");
-			GMT_exit (EXIT_FAILURE);
+			GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 		}
 	}
 	else	/* In case user is passing header->inc etc we must save them first as GMT_grd_init will clobber them */
@@ -2060,6 +2061,7 @@ void gmt_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, s
 	GMT_err_pass (GMT, GMT_grd_RI_verify (GMT, header, 1), "");
 	GMT_grd_setpad (GMT, header, GMT->current.io.pad);	/* Assign default GMT pad */
 	GMT_set_grddim (GMT, header);	/* Set all dimensions before returning */
+	return (GMT_NOERROR);
 }
 
 int gmt_alloc_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid)
