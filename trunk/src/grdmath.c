@@ -68,6 +68,8 @@ void gmt_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, struct MATH_M
 #define GRDMATH_RECALL_CMD		"RCL@"
 #define GRDMATH_CLEAR_CMD		"CLR@"
 
+#define FLOAT_BIT_MASK (255U << 24U)	/* This will be 00000000 11111111 11111111 11111111 and sets to 0 anything larger than 2^24 which is max integer in float */
+
 struct GRDMATH_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	struct Out {	/* = <filename> */
@@ -452,7 +454,7 @@ void grd_BITAND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 			stack[prev]->G->data[node] = GMT->session.f_NaN;
 		else {
 			a = (unsigned int)af;	b = (unsigned int)bf;
-			stack[prev]->G->data[node] = (float)(a & b);
+			stack[prev]->G->data[node] = (float)((a & b) & FLOAT_BIT_MASK);
 		}
 	}
 }
@@ -483,7 +485,7 @@ void grd_BITLEFT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMAT
 			}
 			else {		
 				b = (unsigned int)b_signed;
-				stack[prev]->G->data[node] = (float) (a << b);
+				stack[prev]->G->data[node] = (float) ((a << b) & FLOAT_BIT_MASK);
 			}
 		}
 	}
@@ -504,7 +506,7 @@ void grd_BITNOT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 		else {
 			a = (unsigned int)af;
 			a = ~a;
-			stack[last]->G->data[node] = (float)a;
+			stack[last]->G->data[node] = (float)(a & FLOAT_BIT_MASK);
 		}
 	}
 }
@@ -526,7 +528,7 @@ void grd_BITOR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 			stack[prev]->G->data[node] = GMT->session.f_NaN;
 		else {
 			a = (unsigned int)af;	b = (unsigned int)bf;
-			stack[prev]->G->data[node] = (float)(a | b);
+			stack[prev]->G->data[node] = (float)((a | b) & FLOAT_BIT_MASK);
 		}
 	}
 }
@@ -557,7 +559,7 @@ void grd_BITRIGHT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMA
 			}
 			else {		
 				b = (unsigned int)b_signed;
-				stack[prev]->G->data[node] = (float) (a >> b);
+				stack[prev]->G->data[node] = (float) ((a >> b) & FLOAT_BIT_MASK);
 			}
 		}
 	}
@@ -590,7 +592,7 @@ void grd_BITTEST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMAT
 			else {
 				b = (unsigned int)b_signed;
 				b = 1U << b;
-				stack[prev]->G->data[node] = (a & b) ? 1.0f : 0.0f;
+				stack[prev]->G->data[node] = ((a & b) & FLOAT_BIT_MASK) ? 1.0f : 0.0f;
 			}
 		}
 	}
@@ -613,7 +615,7 @@ void grd_BITXOR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 			stack[prev]->G->data[node] = GMT->session.f_NaN;
 		else {
 			a = (unsigned int)af;	b = (unsigned int)bf;
-			stack[prev]->G->data[node] = (float)(a ^ b);
+			stack[prev]->G->data[node] = (float)((a ^ b) & FLOAT_BIT_MASK);
 		}
 	}
 }

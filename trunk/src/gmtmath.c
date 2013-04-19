@@ -66,6 +66,8 @@ EXTERN_MSC void gmt_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, st
 #define COL_T	0	/* These are the first and 2nd columns in the Time structure */
 #define COL_TN	1
 
+#define DOUBLE_BIT_MASK (4095ULL << 52ULL)	/* This will be 00000000 00001111 11111111 .... and sets to 0 anything larger than 2^53 which is max integer in double */
+
 struct GMTMATH_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
 	struct Out {	/* = <filename> */
@@ -711,7 +713,7 @@ void table_BITAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMA
 			T_prev->segment[s]->coord[col][row] = GMT->session.d_NaN;
 		else {
 			a = (uint64_t)ad;	b = (uint64_t)bd;
-			T_prev->segment[s]->coord[col][row] = (double)(a & b);
+			T_prev->segment[s]->coord[col][row] = (double)((a & b) & DOUBLE_BIT_MASK);
 		}
 	}
 }
@@ -742,7 +744,7 @@ void table_BITLEFT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTM
 			}
 			else {		
 				b = (uint64_t)b_signed;
-				T_prev->segment[s]->coord[col][row] = (double)(a << b);
+				T_prev->segment[s]->coord[col][row] = (double)((a << b) & DOUBLE_BIT_MASK);
 			}
 		}
 	}
@@ -763,7 +765,7 @@ void table_BITNOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMA
 		else {
 			a = (uint64_t)ad;
 			a = ~a;
-			T->segment[s]->coord[col][row] = (double)a;
+			T->segment[s]->coord[col][row] = (double)(a & DOUBLE_BIT_MASK);
 		}
 	}
 }
@@ -785,7 +787,7 @@ void table_BITOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 			T_prev->segment[s]->coord[col][row] = GMT->session.d_NaN;
 		else {
 			a = (uint64_t)ad;	b = (uint64_t)bd;
-			T_prev->segment[s]->coord[col][row] = (double)(a | b);
+			T_prev->segment[s]->coord[col][row] = (double)((a | b) & DOUBLE_BIT_MASK);
 		}
 	}
 }
@@ -816,7 +818,7 @@ void table_BITRIGHT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT
 			}
 			else {		
 				b = (uint64_t)b_signed;
-				T_prev->segment[s]->coord[col][row] = (double)(a >> b);
+				T_prev->segment[s]->coord[col][row] = (double)((a >> b) & DOUBLE_BIT_MASK);
 			}
 		}
 	}
@@ -849,7 +851,7 @@ void table_BITTEST (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTM
 			else {
 				b = (uint64_t)b_signed;
 				b = 1ULL << b;
-				T_prev->segment[s]->coord[col][row] = (a & b) ? 1.0 : 0.0;
+				T_prev->segment[s]->coord[col][row] = ((a & b) & DOUBLE_BIT_MASK) ? 1.0 : 0.0;
 			}
 		}
 	}
@@ -872,7 +874,7 @@ void table_BITXOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMA
 			T_prev->segment[s]->coord[col][row] = GMT->session.d_NaN;
 		else {
 			a = (uint64_t)ad;	b = (uint64_t)bd;
-			T_prev->segment[s]->coord[col][row] = (double)(a ^ b);
+			T_prev->segment[s]->coord[col][row] = (double)((a ^ b) & DOUBLE_BIT_MASK);
 		}
 	}
 }
