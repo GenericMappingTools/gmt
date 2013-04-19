@@ -242,8 +242,8 @@ We have completely revamped the code base so that high-level
 *GMT* functionality is now accessible via *GMT* “modules”. These are
 high-level functions named after their corresponding programs (.e.g.,
 ``GMT_grdimage``) that contains all of the functionality of that program
-within the function. While currently callable from C/C++ only, we have
-built several of the Matlab interface modules as well and will soon
+within the function. While currently callable from C/C++ only, we are
+making progress on the Matlab interface modules as well and will soon
 start on the Python version. Developers should consult the GMT API
 Documentation for more details.
 
@@ -8603,17 +8603,6 @@ and geodesists for plotting focal mechanisms (including cross-sections
 and polarities), error ellipses, velocity arrows, rotational wedges, and
 more. The package was developed by Kurt Feigl [34]_ and Genevieve
 Patau [35]_ but is now maintained by the *GMT* team.
-
-mex: Matlab/Octave–\ GMT interface
-------------------------------------
-
-Here you will find the mex files
-`grdinfo <grdinfo.html>`_,
-`grdread <supplements/mex/grdread.html>`_, and
-`grdwrite <supplements/mex/grdwrite.html>`_, which can be used in Matlab
-or Octave to read and write grid files. The package originated with
-David Sandwell, UCSD, and was subsequently modified by Paul Wessel and
-Phil Sharfstein, UCSB. It is now maintained by Paul Wessel.
 
 mgd77: MGD77 extractor and plotting tools
 -----------------------------------------
