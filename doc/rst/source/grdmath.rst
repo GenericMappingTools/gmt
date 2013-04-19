@@ -517,9 +517,10 @@ directory (i.e., ./LOG).
 etc.) are passed the absolute value of their argument. (9) The bitwise
 operators (**BITAND**, **BITLEFT**, **BITNOT**, **BITOR**, **BITRIGHT**,
 **BITTEST**, and **BITXOR**) convert a grid’s single precision values to
-unsigned 64-bit ints to perform the bitwise operations. Consequently,
+unsigned 32-bit ints to perform the bitwise operations. Consequently,
 the largest whole integer value that can be stored in a float grid is
-2^23-1 or 8,388,607. All bitwise operators return NaN if given NaN
+2^24 or 16777216. Any higher result will be masked to fit in the lower
+24 bits.  All bitwise operators return NaN if given NaN
 arguments or bit-settings <= 0. 
 
 .. include:: explain_float.rst_
