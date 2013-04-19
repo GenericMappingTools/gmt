@@ -1005,7 +1005,7 @@ void gmt_genper_toxy (struct GMT_CTRL *P, double lat, double lon, double h, doub
 	}
 }
 
-void gmt_genper_tolatlong (struct GMT_CTRL *GMT, double x, double y, double h, double *lat, double *lon)
+int gmt_genper_tolatlong (struct GMT_CTRL *GMT, double x, double y, double h, double *lat, double *lon)
 {
 	double P, H, B, D;
 	double u, v, t, Kp, X, Y;
@@ -1149,11 +1149,11 @@ void gmt_genper_tolatlong (struct GMT_CTRL *GMT, double x, double y, double h, d
 	if (set_exit == 1) GMT_message (GMT, "gmt_genper_tolatlong - 5\n");
 	if (set_exit || GMT->current.proj.g_debug > 1) {
 		GMT_message (GMT, "phi    %12.7f\n", phi*R2D);
-		GMT_exit(1);
+		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 	}
 	*lat = phi * R2D;
 	*lon = atan2d (Y, X) + GMT->current.proj.g_lon0;
-	return;
+	return (GMT_OK);
 }
 
 void gmt_genper_setup (struct GMT_CTRL *GMT, double h0, double altitude, double lat, double lon0)
@@ -1631,7 +1631,6 @@ void GMT_genper (struct GMT_CTRL *GMT, double lon, double lat, double *xt, doubl
 		GMT_message (GMT, "genper: yt or xt nan\n");
 		GMT_message (GMT, "genper: lon %6.3f lat %6.3f\n", lon, lat);
 		GMT_message (GMT, "genper: xt %10.3e yt %10.3e\n", *xt, *yt);
-		GMT_exit(1);
 	}
 }
 
@@ -2449,7 +2448,7 @@ double GMT_left_robinson (struct GMT_CTRL *GMT, double y)
 	Y = fabs (y * GMT->current.proj.n_i_cy);
 	if (GMT_intpol (GMT, GMT->current.proj.n_Y, GMT->current.proj.n_X, GMT_N_ROBINSON, 1, &Y, &X, GMT->current.setting.interpolant)) {
 		GMT_message (GMT, "GMT Internal error in GMT_left_robinson!\n");
-		GMT_exit (EXIT_FAILURE);
+		GMT_exit (GMT->parent->do_not_exit, GMT->session.d_NaN);
 	}
 
 	x = GMT->current.proj.n_cx * X * (GMT->common.R.wesn[XLO] - GMT->current.proj.central_meridian);
@@ -2465,7 +2464,7 @@ double GMT_right_robinson (struct GMT_CTRL *GMT, double y)
 	Y = fabs (y * GMT->current.proj.n_i_cy);
 	if (GMT_intpol (GMT, GMT->current.proj.n_Y, GMT->current.proj.n_X, GMT_N_ROBINSON, 1, &Y, &X, GMT->current.setting.interpolant)) {
 		GMT_message (GMT, "GMT Internal error in GMT_right_robinson!\n");
-		GMT_exit (EXIT_FAILURE);
+		GMT_exit (GMT->parent->do_not_exit, GMT->session.d_NaN);
 	}
 
 	x = GMT->current.proj.n_cx * X * (GMT->common.R.wesn[XHI] - GMT->current.proj.central_meridian);

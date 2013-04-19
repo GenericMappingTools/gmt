@@ -1535,15 +1535,15 @@ int x2sys_err_pass (struct GMT_CTRL *GMT, int err, char *file)
 	return (err);
 }
 
-void x2sys_err_fail (struct GMT_CTRL *GMT, int err, char *file)
+int x2sys_err_fail (struct GMT_CTRL *GMT, int err, char *file)
 {
-	if (err == X2SYS_NOERROR) return;
+	if (err == X2SYS_NOERROR) return X2SYS_NOERROR;
 	/* When error code is non-zero: print error message and exit */
 	if (file && file[0])
 		GMT_message (GMT, "%s: %s [%s]\n", X2SYS_program, x2sys_strerror(GMT, err), file);
 	else
 		GMT_message (GMT, "%s: %s\n", X2SYS_program, x2sys_strerror(GMT, err));
-	GMT_exit (EXIT_FAILURE);
+	GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 }
 
 /* Functions dealing with the reading of the COE ascii database */

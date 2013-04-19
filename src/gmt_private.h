@@ -106,6 +106,8 @@ struct GMTAPI_CTRL {
 	struct GMTAPI_DATA_OBJECT **object;	/* List of registered data objects */
 	char *session_tag;			/* Name tag for this session (or NULL) */
 	bool deep_debug;			/* temprorary for debug */
+	int (*print_func) (FILE *, const char *);	/* Pointer to fprintf function (may be reset by external APIs like MEX) */
+	unsigned int do_not_exit;		/* 0 by default, mieaning it is OK to call exit  (may be reset by external APIs like MEX to call return instead) */
 };
 
 EXTERN_MSC void GMT_list_API (struct GMTAPI_CTRL *ptr, char *txt);

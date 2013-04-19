@@ -71,7 +71,7 @@ EXTERN_MSC int gmt_alloc_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid);
 EXTERN_MSC int gmt_alloc_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *Image);
 EXTERN_MSC int gmt_alloc_vectors (struct GMT_CTRL *GMT, struct GMT_VECTOR *V);
 EXTERN_MSC int gmt_alloc_matrix (struct GMT_CTRL *GMT, struct GMT_MATRIX *M);
-EXTERN_MSC void gmt_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct GMT_OPTION *options, double wesn[], double inc[], unsigned int registration, unsigned int mode);
+EXTERN_MSC int gmt_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct GMT_OPTION *options, double wesn[], double inc[], unsigned int registration, unsigned int mode);
 EXTERN_MSC void gmt_fourt_stats (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny, unsigned int *f, double *r, size_t *s, double *t);
 EXTERN_MSC double GMT_fft_kx (uint64_t k, struct GMT_FFT_WAVENUMBER *K);
 EXTERN_MSC double GMT_fft_ky (uint64_t k, struct GMT_FFT_WAVENUMBER *K);
@@ -112,6 +112,17 @@ enum GMT_enum_iomode {
  *		PRIVATE FUNCTIONS ONLY USED BY THIS LIBRARY FILE
  *==================================================================================================
  */
+
+int gmt_print_func (FILE *fp, const char *message)
+{
+	/* Just print this message to fp.  It is being used indirectly via
+	 * API->print_func.  Purpose of this is to allow external APIs such
+	 * as Matlab (which cannot use printf) to reset API->print_func to
+	 * mexPrintf or similar functions. */
+	
+	fprintf (fp, "%s", message);
+	return 0;
+}
 
 unsigned int gmtry (unsigned int geometry)
 {
@@ -315,7 +326,7 @@ size_t GMTAPI_2D_to_index_F_cplx_imag (int row, int col, int dim)
 	return (2*((size_t)col * (size_t)dim) + (size_t)row + 1);	/* Complex grid, imag(2) component */
 }
 
-p_func_size_t GMTAPI_get_2D_to_index (unsigned int shape, unsigned int mode)
+p_func_size_t GMTAPI_get_2D_to_index (struct GMTAPI_CTRL *API, unsigned int shape, unsigned int mode)
 {
 	/* Return pointer to the required 2D-index function above.  Here
 	 * shape is either GMTAPI_ORDER_ROW (C) or GMTAPI_ORDER_COL (FORTRAN);
@@ -335,7 +346,7 @@ p_func_size_t GMTAPI_get_2D_to_index (unsigned int shape, unsigned int mode)
 			break;
 		default:
 			fprintf (stderr, "GMTAPI_get_2D_to_index: Illegal mode passed - aborting\n");
-			GMT_exit (-1);
+			GMT_exit (API->do_not_exit, NULL);
 	}
 	return (p);
 }
@@ -1322,7 +1333,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_
 				D_obj->table[D_obj->n_tables]->segment = GMT_memory (API->GMT, NULL, 1, struct GMT_DATASEGMENT *);
 				D_obj->table[D_obj->n_tables]->segment[0] = GMT_memory (API->GMT, NULL, 1, struct GMT_DATASEGMENT);
 				GMT_alloc_segment (API->GMT, D_obj->table[D_obj->n_tables]->segment[0], M_obj->n_rows, M_obj->n_columns, true);
-				GMT_2D_to_index = GMTAPI_get_2D_to_index (M_obj->shape, GMT_GRID_IS_REAL);
+				GMT_2D_to_index = GMTAPI_get_2D_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
 				for (row = 0; row < M_obj->n_rows; row++) {
 					for (col = 0; col < M_obj->n_columns; col++) {
 						ij = GMT_2D_to_index ((int)row, (int)col, (int)M_obj->dim);
@@ -1512,7 +1523,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 				S_obj->n_alloc = M_obj->n_columns * M_obj->dim;	/* Get total number of elements as n_columns * dim */
 			}
 			if ((error = GMT_alloc_univector (API->GMT, &(M_obj->data), M_obj->type, S_obj->n_alloc)) != GMT_OK) return (GMTAPI_report_error (API, error));
-			GMT_2D_to_index = GMTAPI_get_2D_to_index (M_obj->shape, GMT_GRID_IS_REAL);
+			GMT_2D_to_index = GMTAPI_get_2D_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
 				
 			for (tbl = offset = 0; tbl < D_obj->n_tables; tbl++) {
 				for (seg = 0; seg < D_obj->table[tbl]->n_segments; seg++) {
@@ -1936,7 +1947,7 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, 
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Importing image data from user memory location\n");
 			GMT_set_grddim (API->GMT, I_obj->header);	/* Set all dimensions */
 			I_obj->data = GMT_memory (API->GMT, NULL, I_obj->header->size, unsigned char);
-			GMT_2D_to_index = GMTAPI_get_2D_to_index (M_obj->shape, mode);
+			GMT_2D_to_index = GMTAPI_get_2D_to_index (API, M_obj->shape, mode);
 			GMT_grd_loop (API->GMT, I_obj, row, col, ij) {
 				ij_orig = GMT_2D_to_index ((int)row, (int)col, (int)M_obj->dim);
 				I_obj->data[ij] = (char)GMTAPI_get_val (API, &(M_obj->data), ij_orig, M_obj->type);
@@ -2159,7 +2170,7 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, un
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Importing grid data from user memory location\n");
 			GMT_set_grddim (API->GMT, G_obj->header);	/* Set all dimensions */
 			G_obj->data = GMT_memory_aligned (API->GMT, NULL, G_obj->header->size, float);
-			GMT_2D_to_index = GMTAPI_get_2D_to_index (M_obj->shape, mode);
+			GMT_2D_to_index = GMTAPI_get_2D_to_index (API, M_obj->shape, mode);
 			GMT_grd_loop (API->GMT, G_obj, row, col, ij) {
 				ij_orig = GMT_2D_to_index ((int)row, (int)col, (int)M_obj->dim);
 				G_obj->data[ij] = (float)GMTAPI_get_val (API, &(M_obj->data), ij_orig, M_obj->type);
@@ -2332,7 +2343,7 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mod
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Exporting grid data to user memory location\n");
 			size = GMT_get_nm (API->GMT, G_obj->header->nx, G_obj->header->ny);
 			if ((error = GMT_alloc_univector (API->GMT, &(M_obj->data), M_obj->type, size)) != GMT_OK) return (error);
-			GMT_2D_to_index = GMTAPI_get_2D_to_index (M_obj->shape, mode);
+			GMT_2D_to_index = GMTAPI_get_2D_to_index (API, M_obj->shape, mode);
 			GMT_grd_loop (API->GMT, G_obj, row, col, ijp) {
 				ij = GMT_2D_to_index ((int)row, (int)col, (int)M_obj->dim);
 				GMTAPI_put_val (API, &(M_obj->data), (double)G_obj->data[ijp], ij, M_obj->type);
@@ -2877,6 +2888,7 @@ void * GMT_Create_Session (char *session, unsigned int pad, unsigned int mode)
 	}
 	G->GMT->parent = G;	/* So we know who's your daddy */
 	G->pad = pad;		/* Preserve the default pad value for this session */
+	G->print_func = gmt_print_func;
 		
 	/* Allocate memory to keep track of registered data resources */
 	
@@ -3820,7 +3832,7 @@ void * GMT_Get_Record (void *V_API, unsigned int mode, int *retval)
 				else
 					S_obj->status = GMT_IS_USING;				/* Mark as being read */
 				M_obj = S_obj->resource;
-				GMT_2D_to_index = GMTAPI_get_2D_to_index (M_obj->shape, GMT_GRID_IS_REAL);
+				GMT_2D_to_index = GMTAPI_get_2D_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
 				for (col = n_nan = 0; col < S_obj->n_columns; col++) {	/* We know the number of columns from registration */
 					ij = GMT_2D_to_index ((int)API->current_rec[GMT_IN], (int)col, (int)M_obj->dim);
 					API->GMT->current.io.curr_rec[col] = GMTAPI_get_val (API, &(M_obj->data), ij, M_obj->type);
@@ -4109,7 +4121,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 				S_obj->resource = M_obj;
 				M_obj->type = GMT_DOUBLE;
 			}
-			GMT_2D_to_index = GMTAPI_get_2D_to_index (M_obj->shape, GMT_GRID_IS_REAL);
+			GMT_2D_to_index = GMTAPI_get_2D_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
 			for (col = 0; col < API->GMT->common.b.ncol[GMT_OUT]; col++) {	/* Place the output items */
 				ij = GMT_2D_to_index ((int)API->current_rec[GMT_OUT], (int)col, (int)M_obj->dim);
 				GMTAPI_put_val (API, &(M_obj->data), d[col], ij, M_obj->type);
@@ -5179,17 +5191,15 @@ int GMT_Message (void *V_API, unsigned int mode, char *format, ...)
 	 * mode = 6:	Reset elapsed time and report it as well.
 	 */
 	time_t toc, S;
+	size_t source_info_len;
 	unsigned int H, M;
-	char stamp[GMT_TEXT_LEN256];
+	char message[GMT_BUFSIZ], stamp[GMT_TEXT_LEN256];
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
-
-#ifdef GMT_MATLAB
-	char line[GMT_BUFSIZ];
-#endif
 	va_list args;
 	
 	if (mode) toc = time ((time_t *)0);
 	if (mode & 4) API->GMT->current.time.tic = toc;
+	GMT_memset (message, GMT_BUFSIZ, char);	/* Start with clean slate */
 
 	switch (mode) {
 		case 1:
@@ -5207,15 +5217,10 @@ int GMT_Message (void *V_API, unsigned int mode, char *format, ...)
 		default: break;
 	}
 	va_start (args, format);
-#ifdef GMT_MATLAB
-	/* Version used by Matlab MEXs that are not able to print to stdout/stderr */
-	if (mode % 4) mexPrintf ("%s | ", stamp);	/* Issue time stamp */
-	vsnprintf (line, GMT_BUFSIZ, format, args);
-	mexPrintf ("%s", line);
-#else
-	if (mode % 4) fprintf (API->GMT->session.std[GMT_ERR], "%s | ", stamp);	/* Issue time stamp */
-	vfprintf (API->GMT->session.std[GMT_ERR], format, args);
-#endif
+	if (mode % 4) sprintf (message, "%s | ", stamp);	/* Lead with the time stamp */
+	source_info_len = strlen (message);
+	vsnprintf (message + source_info_len, GMT_BUFSIZ - source_info_len, format, args);
+	API->print_func (API->GMT->session.std[GMT_ERR], message);	/* Do the printing */
 	va_end (args);
 	return (GMT_NOERROR);
 }
@@ -5250,12 +5255,7 @@ int GMT_Report (void *V_API, unsigned int level, char *format, ...)
 	/* append format to the message: */
 	vsnprintf (message + source_info_len, GMT_BUFSIZ - source_info_len, format, args);
 	va_end (args);
-#ifdef GMT_MATLAB
-	/* Version used by Matlab MEXs that are not able to print to stdout/stderr */
-	mexPrintf ("%s", message);
-#else
-	fprintf (API->GMT->session.std[GMT_ERR], "%s", message);
-#endif
+	API->print_func (API->GMT->session.std[GMT_ERR], message);
 	return (GMT_NOERROR);
 }
 

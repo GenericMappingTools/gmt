@@ -119,12 +119,6 @@
 ## Section 4: Advanced tweaking
 ##
 
-# Enable Matlab API [FALSE]:
-#set (GMT_MATLAB TRUE)
-# If Matlab is not found, point MATLAB_ROOT to its installation path, e.g.:
-#set (MATLAB_ROOT /Applications/MATLAB_R2010a.app)  # MacOSX
-#set (MATLAB_ROOT /opt/matlab-7sp1)                 # Linux
-
 # Enable running examples/tests with "make check" (out-of-source)
 # Need to set either DO_EXAMPLES, DO_TESTS or both and uncomment
 # the following line:

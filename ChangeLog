@@ -5,6 +5,7 @@
 2013-04-17	pwessel
 	* filter1d.c:		Susceptible to round-off when determining t of first and last output
 				point when -T was not given.  Fixes issue # 241.
+	* mex:			Removed as mex API will be separate repository gmtmex.
 
 2013-04-16	pwessel
 	* gmtspatial.c:		Added -A option for nearest neighbor analysis, and two test-

@@ -329,7 +329,7 @@ int gmt_res_to_int (char res)
 
 /* Main Public GMT shore functions */
 
-void GMT_set_levels (struct GMT_CTRL *GMT, char *info, struct GMT_SHORE_SELECT *I)
+int GMT_set_levels (struct GMT_CTRL *GMT, char *info, struct GMT_SHORE_SELECT *I)
 {	/* Decode GMT's -A option for coastline levels */
 	int n;
 	char *p = NULL;
@@ -341,9 +341,10 @@ void GMT_set_levels (struct GMT_CTRL *GMT, char *info, struct GMT_SHORE_SELECT *
 	n = sscanf (info, "%lf/%d/%d", &I->area, &I->low, &I->high);
 	if (n == 0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -A option: No area given\n");
-		GMT_exit (EXIT_FAILURE);
+		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 	}
 	if (n == 1) I->low = 0, I->high = GSHHS_MAX_LEVEL;
+	return (GMT_OK);
 }
 
 int GMT_set_resolution (struct GMT_CTRL *GMT, char *res, char opt)

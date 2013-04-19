@@ -44,7 +44,7 @@ EXTERN_MSC struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, char *mo
 EXTERN_MSC void GMT_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy);
 EXTERN_MSC int GMT_Complete_Options (struct GMT_CTRL *GMT, struct GMT_OPTION *options);
 EXTERN_MSC int GMT_init_time_system_structure (struct GMT_CTRL *GMT, struct GMT_TIME_SYSTEM *time_system);
-EXTERN_MSC void GMT_init_scales (struct GMT_CTRL *GMT, unsigned int unit, double *fwd_scale, double *inv_scale, double *inch_to_unit, double *unit_to_inch, char *unit_name);
+EXTERN_MSC int GMT_init_scales (struct GMT_CTRL *GMT, unsigned int unit, double *fwd_scale, double *inv_scale, double *inch_to_unit, double *unit_to_inch, char *unit_name);
 EXTERN_MSC int GMT_set_measure_unit (struct GMT_CTRL *GMT, char unit);
 EXTERN_MSC char * GMT_putfill (struct GMT_CTRL *GMT, struct GMT_FILL *F);
 EXTERN_MSC char * GMT_putcolor (struct GMT_CTRL *GMT, double *rgb);
@@ -75,7 +75,7 @@ EXTERN_MSC void GMT_fft_syntax (struct GMT_CTRL *GMT, char option, char *string)
 EXTERN_MSC void GMT_explain_options (struct GMT_CTRL *GMT, char *options);
 EXTERN_MSC void GMT_getdefaults (struct GMT_CTRL *GMT, char *this_file);
 EXTERN_MSC void GMT_putdefaults (struct GMT_CTRL *GMT, char *this_file);
-EXTERN_MSC void GMT_hash_init (struct GMT_CTRL *GMT, struct GMT_HASH *hashnode , char **keys, unsigned int n_hash, unsigned int n_keys);
+EXTERN_MSC int GMT_hash_init (struct GMT_CTRL *GMT, struct GMT_HASH *hashnode , char **keys, unsigned int n_hash, unsigned int n_keys);
 EXTERN_MSC int GMT_getdefpath (struct GMT_CTRL *GMT, char get, char **path);
 EXTERN_MSC void GMT_extract_label (struct GMT_CTRL *GMT, char *line, char *label, struct GMT_OGR_SEG *G);
 EXTERN_MSC void GMT_check_lattice (struct GMT_CTRL *GMT, double *inc, unsigned int *registration, bool *active);

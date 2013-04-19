@@ -250,7 +250,6 @@ Currently, the supplemental archive include the directories:
   imgsrc    - Data extractor for Smith/Sandwell altimetry grids.
   meca      - Plotting of focal mechanisms, velocity arrows,
               and error ellipses on maps.
-  mex       - Matlab or Octave mex files for grid file I/O.
   mgg       - Programs for MGD-77 data in .gmt format.
   mgd77     - Programs for handling of native MGD77 files.
   misc      - psmegaplot, makepattern, gmtdigitize,
@@ -262,8 +261,8 @@ Currently, the supplemental archive include the directories:
   x_system  - Track intersection (crossover) tools (old version).
   xgrid     - X11 editor for grid files.
 
-These are installed automatically, except for mex and xgrid which
-requires more configuration as they depend on non-GMT libraries.
+These are installed automatically, except for xgrid which
+requires more configuration as it depends on X11 libraries.
 
 
 Example Scripts
