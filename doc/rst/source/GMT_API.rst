@@ -593,14 +593,14 @@ To initiate the new session we use
 
   ::
 
-    void *GMT_Create_Session (char *tag, unsigned int pad, unsigned int mode);
+    void *GMT_Create_Session (char *tag, unsigned int pad, unsigned int mode, void *print);
 
 and you will typically call it thus:
 
   ::
 
     void *API = NULL;
-    API = GMT_Create_Session ("Session name", 2, 0);
+    API = GMT_Create_Session ("Session name", 2, 0, NULL);
 
 where ``API`` is an opaque pointer to the hidden *GMT* API control
 structure. You will need to pass this pointer to *all* subsequent
@@ -611,9 +611,13 @@ projections, plotting, i/o, etc. The initialization also allocates space
 for internal structures used to register resources. The ``pad`` argument
 sets how many rows and columns should be used for padding for grids and
 images so that boundary conditions can be applied. *GMT* uses 2 so we
-recommend that value. The ``mode`` argument is currently unused and
-reserved for future expansion. Should something go wrong then ``API``
-will be returned as ``NULL``.
+recommend that value. The ``mode`` argument is only used for external APIs
+that need to replace GMT's calls to a hard exit upon failure with a soft return. Likewise,
+the *print* argument is a pointer to a function that is used to print
+messages via GMT_Message or GMT_Report from APIs that cannot use the
+standard printf (this is the case for the Matlab API, for instance).
+All other uses should simply pass 0 and NULL for these two arguments.
+Should something go wrong then ``API`` will be returned as ``NULL``.
 
 Register input or output resources
 ----------------------------------

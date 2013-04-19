@@ -33,7 +33,7 @@ int main (int argc, char *argv[]) {
 	struct Gmt_moduleinfo this_module = g_module[MODULE_ID];
 
 	/* 1. Initializing new GMT session */
-	if ((api_ctrl = GMT_Create_Session (argv[0], 2U, 0U)) == NULL)
+	if ((api_ctrl = GMT_Create_Session (argv[0], 2U, 0U, NULL)) == NULL)
 		return EXIT_FAILURE;
 
 	/* 2. Run GMT function, or give usage message if errors arise during parsing */

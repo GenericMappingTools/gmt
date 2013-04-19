@@ -12,7 +12,7 @@ dimensions
 
 **greenspline** [ *table* ] [
 **-A**\ [**1**\ \|\ **2**\ \|\ **3**\ \|\ **4**\ \|\ **5**,]\ *gradfile*
-] [ **-C**\ [**v**]\ *cut*\ [/*file*] ] [ **-D**\ *mode* ] [ **-G**\ *grdfile* ]
+] [ **-C**\ [**n**\ |\ **v**]\ *cut*\ [/*file*] ] [ **-D**\ *mode* ] [ **-G**\ *grdfile* ]
 [ **-I**\ *xinc*\ [/*yinc*\ [/*zinc*\ ]] ] [ **-L** ] [ **-N**\ *nodefile*
 ] [ **-Q**\ *az*\ \|\ *x/y/z* ] [
 **-R**\ *xmin*/*xmax*\ [/*ymin*/*ymax*\ [/*zmin*\ *zmax*]] ] [
@@ -79,7 +79,7 @@ None.
     **x**, **v**. **5**: records contain **x**, **n**, *v*. Append name
     of ASCII file with the surface gradients (following a comma if a
     format is specified).
-**-C**\ [**v**]\ *cut*\ [/*file*]
+**-C**\ [**n**\ |\ **v**]\ *cut*\ [/*file*]
     Find an approximate surface fit: Solve the linear system for the
     spline coefficients by SVD and eliminate the contribution from all
     eigenvalues whose ratio to the largest eigenvalue is less than *cut*
@@ -88,8 +88,9 @@ None.
     eigenvalue ratios to the specified file for further analysis.
     Finally, if a negative *cut* is given then /*file* is required and
     execution will stop after saving the eigenvalues, i.e., no surface
-    output is produced.  Alternatively, specify **-Cv** to use the
+    output is produced.  Specify **-Cv** to use the
     largest eigenvalues needed to explain *cut* % of the data variance.
+    Alternatively, use **-Cn** to select the *cut* largest eigenvalues.
     If a *file* is given with **-Cv** then we save the eigenvalues instead
     of the ratios.
 **-D**\ *mode*

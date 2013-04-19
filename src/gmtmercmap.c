@@ -212,7 +212,7 @@ int main (int argc, char **argv)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	/* Initializing new GMT session */
-	if ((API = GMT_Create_Session ("gmtmercmap", 2U, 0U)) == NULL) exit (EXIT_FAILURE);
+	if ((API = GMT_Create_Session ("gmtmercmap", 2U, 0U, NULL)) == NULL) exit (EXIT_FAILURE);
 	options = GMT_prep_module_options (API, argc-1, argv+1);
 	if (API->error) return (API->error);	/* Set or get option list */
 	if (!options || options->option == GMTAPI_OPT_USAGE) 
