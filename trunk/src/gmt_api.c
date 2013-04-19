@@ -5193,7 +5193,7 @@ int GMT_Message (void *V_API, unsigned int mode, char *format, ...)
 	time_t toc, S;
 	size_t source_info_len;
 	unsigned int H, M;
-	char message[GMT_BUFSIZ], stamp[GMT_TEXT_LEN256];
+	char message[4*GMT_BUFSIZ], stamp[GMT_TEXT_LEN256];
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 	va_list args;
 	
@@ -5219,7 +5219,7 @@ int GMT_Message (void *V_API, unsigned int mode, char *format, ...)
 	va_start (args, format);
 	if (mode % 4) sprintf (message, "%s | ", stamp);	/* Lead with the time stamp */
 	source_info_len = strlen (message);
-	vsnprintf (message + source_info_len, GMT_BUFSIZ - source_info_len, format, args);
+	vsnprintf (message + source_info_len, 4*GMT_BUFSIZ - source_info_len, format, args);
 	API->print_func (API->GMT->session.std[GMT_ERR], message);	/* Do the printing */
 	va_end (args);
 	return (GMT_NOERROR);

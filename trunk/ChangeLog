@@ -170,6 +170,8 @@
 	* gmtmath.c:		The MIN and MAX operators ignored NaNs, but result should
 				be NaN if one of the operands equal NaN.
 	* grdmath.c:		---"---
+				The XOR operator was incorrect, it is now clarified to be
+				0 if A == NaN and B == NaN, NaN if B == NaN, else A.
 	
 2013-01-10	pwessel
 	* gmt_proj.c:		The -JE projection returned NaN if projection center was used,
