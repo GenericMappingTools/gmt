@@ -4,6 +4,9 @@
 
 2013-04-19	pwessel
 	* greenspline.c:	Also added -Cn<n> to directly select the n largest eigenvalues.
+	* grdview.c:		The -C with no argument [rainbow] or master CPT name is accepted
+				and results in an automatic CPT given the data range.
+	* grdvector.c:		Same -C setup as grdview.c
 
 2013-04-17	pwessel
 	* filter1d.c:		Susceptible to round-off when determining t of first and last output

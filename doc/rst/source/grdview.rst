@@ -10,7 +10,7 @@ grdview - Create 3-D perspective image or surface mesh from a grid
 .. include:: common_SYN_OPTs.rst_
 
 **grdview** *relief\_file* **-J**\ *parameters* [
-**-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ *cptfile*] [
+**-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ [*cptfile*]] [
 **-G**\ *drapefile* \| **-G**\ *grd\_r*,\ *grd\_g*,\ *grd\_b* ] [
 **-I**\ *intensfile*\ \|\ *intensity* ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [
 **-N**\ *level*\ [/*color*] ] [ **-O** ] [ **-P** ] [
@@ -56,13 +56,16 @@ on intensities provided in a separate grid file.
 
 .. include:: explain_-B.rst_
 
-**-C**\ *cptfile*
+**-C**\ [*cptfile*]
     name of the color palette file. Must be present if you `want
     (1) <want.html>`_ mesh plot with contours (**-Qm**), `or
     (2) <or.2.html>`_ shaded/colored perspective image (**-Qs** or
     **-Qi**). For **-Qs**: You can specify that you want to skip a
     z-slice by setting red = -; to use a pattern give red =
     **P\|p**\ *dpi/pattern*\ [:**F**\ *color*\ [**B**\ *color*]].
+    Alternatively, supply the name of a GMT color master CPT [rainbow] and let
+    **grdview** automatically determine a 16-level continuous CPT from
+    the grid’s z-range.
 **-G**\ *drapefile* \| **-G**\ *grd\_r*,\ *grd\_g*,\ *grd\_b*
     Drape the image in *drapefile* on top of the relief provided by
     *relief\_file*. [Default is *relief\_file*]. Note that **-Jz** and
