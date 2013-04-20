@@ -194,7 +194,7 @@ int GMT_grdlandmask_parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, 
 	n_errors += GMT_check_condition (GMT, !GMT->common.R.active, "Syntax error: Must specify -R option\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->G.file, "Syntax error -G: Must specify an output file\n");
-	n_errors += GMT_check_condition (GMT, n_files, "Syntax error: Use -G to specify output an file\n");
+	n_errors += GMT_check_condition (GMT, n_files, "Syntax error: No input files allowed.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
