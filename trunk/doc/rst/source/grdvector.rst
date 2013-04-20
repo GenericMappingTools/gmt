@@ -10,7 +10,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **grdvector** *compx.nc* *compy.nc* **-J**\ *parameters* [ **-A** ] [
-**-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ *cptfile* ] [
+**-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ [*cptfile*] ] [
 **-G**\ *fill* ] [
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
 ] [ **-K** ] [ **-N** ] [ **-O** ] [ **-P** ] [ **-Q**\ *parameters* ]
@@ -57,8 +57,11 @@ theta). **grdvector** is basically a short-hand for using 2 calls to
 
 .. include:: explain_-B.rst_
 
-**-C**\ *cptfile*
-    Use *cptfile* to assign colors based on vector length.
+**-C**\ [*cptfile*]
+    Use *cptfile* to assign colors based on vector length.  Alternatively,
+    supply the name of a GMT color master CPT [rainbow] and let
+    **grdvector** automatically determine a 16-level continuous CPT from
+    the grid’s z-range.
 **-G**\ *fill*
     Sets color or shade for vector interiors [Default is no fill].
 **-I**
