@@ -483,9 +483,10 @@ natural boundary conditions.
 **BITTEST**, and **BITXOR**) convert a tables’s double precision values
 to unsigned 64-bit ints to perform the bitwise operations. Consequently,
 the largest whole integer value that can be stored in a double precision
-value is 2^54 or 9,007,199,254,740,992. Any higher result will be masked
-to fit in the lower 54 bits.  All bitwise operators return
-NaN if given NaN arguments or bit-settings <= 0.
+value is 2^53 or 9,007,199,254,740,992. Any higher result will be masked
+to fit in the lower 54 bits.  Thus, bit operations are effectively limited
+to 54 bits.  All bitwise operators return NaN if given NaN arguments or
+bit-settings <= 0.
 
 (9) TAPER will interpret its argument to be a width in the same units as
 the time-axis, but if no time is provided (i.e., plain data tables) then

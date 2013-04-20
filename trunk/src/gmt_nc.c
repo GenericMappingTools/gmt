@@ -1430,7 +1430,7 @@ int GMT_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 		/* Warn if z-range exceeds the precision of a single precision float: */
 		static const uint32_t exp2_24 = 0x1000000; /* exp2 (24) */
 		unsigned int level;
-		if (fabs(header->z_min) >= exp2_24 || fabs(header->z_max) >= exp2_24)
+		if (fabs(header->z_min) > exp2_24 || fabs(header->z_max) > exp2_24)
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: The z-range, [%g,%g], exceeds the significand's precision of 24 bits; round-off errors may occur.\n", header->z_min, header->z_max);
 
 		/* report z-range of grid (with scale and offset applied): */

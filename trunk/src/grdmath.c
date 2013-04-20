@@ -68,7 +68,7 @@ void gmt_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, struct MATH_M
 #define GRDMATH_RECALL_CMD		"RCL@"
 #define GRDMATH_CLEAR_CMD		"CLR@"
 
-#define FLOAT_BIT_MASK (~(255U << 24U))	/* This will be 00000000 11111111 11111111 11111111 and sets to 0 anything larger than 2^24 which is max integer in float */
+#define FLOAT_BIT_MASK (~(127U << 25U))	/* This will be 00000001 11111111 11111111 11111111 and sets to 0 anything larger than 2^24 which is max integer in float */
 
 struct GRDMATH_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -113,8 +113,6 @@ struct GRDMATH_STORE {
 	char *label;	/* Name of this stored memory */
 	struct GRDMATH_STACK stored;
 };
-
-/* External math-related functions from gmt*.c not in standard gmt*.h files */
 
 void *New_grdmath_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GRDMATH_CTRL *C = GMT_memory (GMT, NULL, 1, struct GRDMATH_CTRL);
