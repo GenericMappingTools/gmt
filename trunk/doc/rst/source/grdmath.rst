@@ -519,7 +519,7 @@ operators (**BITAND**, **BITLEFT**, **BITNOT**, **BITOR**, **BITRIGHT**,
 **BITTEST**, and **BITXOR**) convert a grid’s single precision values to
 unsigned 32-bit ints to perform the bitwise operations. Consequently,
 the largest whole integer value that can be stored in a float grid is
-2^24 or 16777216. Any higher result will be masked to fit in the lower
+2^24 or 16,777,216. Any higher result will be masked to fit in the lower
 24 bits.  Thus, bit operations are effectively limited to 24 bit.  All
 bitwise operators return NaN if given NaN arguments or bit-settings <= 0. 
 
