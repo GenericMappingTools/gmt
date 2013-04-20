@@ -129,6 +129,35 @@ gawk '
 
 cat << EOF >> ${FILE_GMT_MODULE_H}
 
+/* These enums can be used as module IDs in GMT_Call_Module. Alternatively,
+ * obtain the corrensponding ID from the module name via GMT_Get_Module.
+ */
+
+enum GMT_MODULE_ID {
+	GMT_ID_NONE = -1,
+EOF
+
+gawk '
+	BEGIN {
+		FS = "\t";
+		first_record = 1;
+	}
+	/^[ \t]*#/ {
+		next;
+	}
+	first_record {
+		printf "\tGMT_ID_%s = 0,\n", $1;
+		first_record = 0;
+		next;
+	}
+	{
+		printf "\tGMT_ID_%s,\n", $1;
+	}' ${FILE_MODULEINFO} | tr 'a-z' 'A-Z' >> ${FILE_GMT_MODULE_H}
+
+cat << EOF >> ${FILE_GMT_MODULE_H}
+	GMT_N_MODULES
+};
+
 #ifdef __cplusplus
 }
 #endif

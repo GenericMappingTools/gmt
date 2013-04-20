@@ -103,6 +103,12 @@ EXTERN_MSC int GMT_Get_Value		(void *C, char *arg, double *par);
 EXTERN_MSC int GMT_Report		(void *C, unsigned int level, char *message, ...);
 EXTERN_MSC int GMT_Message		(void *C, unsigned int mode, char *format, ...);
 
+/* 3 functions to find, list, and call GMT modules */
+
+EXTERN_MSC int GMT_Get_Module		(void *C, char *module_name);
+EXTERN_MSC int GMT_Call_Module		(void *C, int module_id, int mode, void *args);
+EXTERN_MSC void GMT_List_Module		(void *C, int module_id);
+
 /* 12 secondary functions for argument and option parsing */
 
 EXTERN_MSC struct GMT_OPTION * GMT_Create_Options	(void *C, int argc, void *in);
