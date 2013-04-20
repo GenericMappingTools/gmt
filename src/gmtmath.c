@@ -66,7 +66,7 @@ EXTERN_MSC void gmt_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, st
 #define COL_T	0	/* These are the first and 2nd columns in the Time structure */
 #define COL_TN	1
 
-#define DOUBLE_BIT_MASK (~(4095ULL << 52ULL))	/* This will be 00000000 00001111 11111111 .... and sets to 0 anything larger than 2^53 which is max integer in double */
+#define DOUBLE_BIT_MASK (~(1023ULL << 54ULL))	/* This will be 00000000 00111111 11111111 .... and sets to 0 anything larger than 2^53 which is max integer in double */
 
 struct GMTMATH_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
