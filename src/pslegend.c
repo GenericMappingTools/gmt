@@ -337,7 +337,6 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	struct PSL_CTRL *PSL = NULL;		/* General PSL interal parameters */
 	struct GMT_OPTION *r_ptr = NULL, *j_ptr = NULL;
 	struct GMT_FONT ifont;
-	struct GMT_FILL current_fill;
 	struct GMT_PEN current_pen;
 	struct GMT_TEXTSET *In = NULL, *D[N_CMD] = {NULL, NULL, NULL};
 	struct GMT_DATASET *Front = NULL;
@@ -586,9 +585,8 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	/* First draw legend frame box. */
 
 	current_pen = GMT->current.setting.map_default_pen;
-	current_fill = Ctrl->G.fill;
 
-	if (Ctrl->F.active) {	/* First draw legend frame box */
+	if (Ctrl->F.active || Ctrl->G.active) {	/* First draw legend frame box */
 		sdim[0] = Ctrl->D.width;
 		sdim[1] = Ctrl->D.height;
 		sdim[2] = Ctrl->F.radius;
@@ -596,8 +594,9 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 			GMT_setfill (GMT, &Ctrl->F.fill, false);
 			PSL_plotsymbol (PSL, Ctrl->D.lon + 0.5 * Ctrl->D.width + Ctrl->F.dx, Ctrl->D.lat + 0.5 * Ctrl->D.height + Ctrl->F.dy, sdim, (Ctrl->F.mode & 2) ? PSL_RNDRECT : PSL_RECT);
 		}
-		GMT_setpen (GMT, &Ctrl->F.pen1);	/* Always draw frame outline, with or without fill */
-		GMT_setfill (GMT, (Ctrl->G.active) ? &current_fill : NULL, true);
+		/* When requested, draw frame outline and/or fill */
+		if (Ctrl->F.active) GMT_setpen (GMT, &Ctrl->F.pen1);
+		GMT_setfill (GMT, Ctrl->G.active ? &Ctrl->G.fill : NULL, Ctrl->F.active);
 		PSL_plotsymbol (PSL, Ctrl->D.lon + 0.5 * Ctrl->D.width, Ctrl->D.lat + 0.5 * Ctrl->D.height, sdim, (Ctrl->F.mode & 2) ? PSL_RNDRECT : PSL_RECT);
 		if (Ctrl->F.mode & 1) {	/* Also draw secondary frame on the inside */
 			sdim[0] = Ctrl->D.width - 2.0 * Ctrl->F.gap;

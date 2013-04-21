@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-04-21	remko
+	* pslegend.c:		Honour the use of fill without frame (-G without -F).
+
 2013-04-19	pwessel
 	* greenspline.c:	Also added -Cn<n> to directly select the n largest eigenvalues.
 	* grdview.c:		The -C with no argument [rainbow] or master CPT name is accepted
