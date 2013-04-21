@@ -4,6 +4,8 @@
 
 2013-04-21	remko
 	* pslegend.c:		Honour the use of fill without frame (-G without -F).
+				Return pen to black (and no transparency) after drawing frame box.
+	* pslib.c:		Avoid that fill takes transparency of frame.
 
 2013-04-19	pwessel
 	* greenspline.c:	Also added -Cn<n> to directly select the n largest eigenvalues.
