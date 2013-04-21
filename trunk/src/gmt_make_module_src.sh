@@ -128,15 +128,6 @@ gawk '
 		printf "EXTERN_MSC int GMT_%s (void *api_ctrl, int mode, void *args);\n", $1;
 	}' ${FILE_MODULEINFO} >> ${FILE_GMT_MODULE_PRIVATE_H}
 
-# $1 = name, $2 = core/supplement, $3 = Api_mode, $4 = purpose
-gawk '
-	BEGIN {
-		FS = "\t";
-	}
-	!/^[ \t]*#/ {
-		printf "EXTERN_MSC int GMT_%s (void *api_ctrl, int mode, void *args);\n", $1;
-	}' ${FILE_MODULEINFO} >> ${FILE_GMT_MODULE_H}
-
 cat << EOF >> ${FILE_GMT_MODULE_H}
 
 /* These enums can be used as module IDs in GMT_Call_Module. Alternatively,

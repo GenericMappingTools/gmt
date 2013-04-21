@@ -482,6 +482,8 @@ Table [tbl:API] gives a list of all the functions and their purpose.
 +-------------------------+---------------------------------------------------+
 | GMT_Begin_IO_           | Enable record-by-record i/o                       |
 +-------------------------+---------------------------------------------------+
+| GMT_Call_Module_        | Call any of the GMT_N_MODULES (120) GMT modules   |
++-------------------------+---------------------------------------------------+
 | GMT_Create_Args_        | Convert linked list of options to text array      |
 +-------------------------+---------------------------------------------------+
 | GMT_Create_Cmd_         | Convert linked list of options to command line    |
@@ -532,11 +534,15 @@ Table [tbl:API] gives a list of all the functions and their purpose.
 +-------------------------+---------------------------------------------------+
 | GMT_Get_Index_          | Convert row, col into a grid or image index       |
 +-------------------------+---------------------------------------------------+
+| GMT_Get_Module_         | Get the ID of a GMT module by its name            |
++-------------------------+---------------------------------------------------+
 | GMT_Get_Record_         | Import a single data record                       |
 +-------------------------+---------------------------------------------------+
 | GMT_Get_Row_            | Import a single grid row                          |
 +-------------------------+---------------------------------------------------+
 | GMT_Init_IO_            | Initialize i/o given registered resources         |
++-------------------------+---------------------------------------------------+
+| GMT_List_Module_        | List the usage of one or all modules              |
 +-------------------------+---------------------------------------------------+
 | GMT_Make_Option_        | Create an option structure                        |
 +-------------------------+---------------------------------------------------+
@@ -1635,12 +1641,13 @@ the node you can simply set up options and call ``GMT_grdmath`` to do it
 for you and accept the result back as an input grid. All the module
 interfaces are identical are looks like
 
-.. _GMT_Get_module:
+.. _GMT_Call_Module:
 
   ::
 
-    int GMT_module (void *API, int mode, void *args);
+    int GMT_Call_Module (void *API, int module_ID, int mode, void *args);
 
+The ``module_ID`` is an integer that selects which module to execute.
 All GMT modules may be called with one of three sets of ``args``
 depending on ``mode``. The three modes differ in how the options are
 passed to the module:
@@ -1657,10 +1664,30 @@ passed to the module:
     *mode == 0*
         Expects ``args`` to be a single text string with all required options.
 
-Here, ``GMT_module`` stands for any of the *GMT* modules, such as
-``GMT_psxy`` or ``GMT_grdvolume``. All modules returns FALSE (0) if they
-completed successfully; otherwise they produce error messages and return
-an error code back to the calling environment.
+If module name rather than module ID is available, you can obtain the latter
+via a call to
+
+.. _GMT_Get_Module:
+
+  ::
+
+    int GMT_Get_Module (void *API, char *module_name);
+
+
+Here, ``module_name`` can be any of the *GMT* modules, such as
+``psxy`` or ``grdvolume``.  The ID return can then be used in
+GMT_Call_Module.  If no module by the given name is found we
+return GMT_NO_MODULE (-1).  Should your program need to display
+the purpose of a particular module you can call
+
+.. _GMT_List_Module:
+
+  ::
+
+    int GMT_List_Module (void *API, int module_ID);
+
+and a brief one-line summary is presented.  If ``module_ID`` equals -1
+then we list summaries for all the modules.
 
 Set program options via text array arguments
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
