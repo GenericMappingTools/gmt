@@ -435,9 +435,9 @@ void grd_BER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_ST
 void grd_BITAND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: BITAND 2 1 A & B (bitwise AND operator).  */
 {
-	uint64_t node;
+	uint64_t node, n_warn = 0;
 	float af = 0.0f, bf = 0.0f;
-	unsigned int prev, a = 0, b = 0;
+	unsigned int prev, a = 0, b = 0, result, result_trunc;
 
 	prev = last - 1;
 	if (stack[prev]->constant) af = (float)stack[prev]->factor;
@@ -449,16 +449,21 @@ void grd_BITAND (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 			stack[prev]->G->data[node] = GMT->session.f_NaN;
 		else {
 			a = (unsigned int)af;	b = (unsigned int)bf;
-			stack[prev]->G->data[node] = (float)((a & b) & FLOAT_BIT_MASK);
+			result = a & b;
+			result_trunc = (result & FLOAT_BIT_MASK);
+			if (result != result_trunc) n_warn++;
+			stack[prev]->G->data[node] = (float)result_trunc;
 		}
 	}
+	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: BITAND resulted in %" PRIu64 " values truncated to fit in the 24 available bits\n");
+	
 }
 
 void grd_BITLEFT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: BITLEFT 2 1 A << B (bitwise left-shift operator).  */
 {
-	uint64_t node;
-	unsigned int prev, a = 0, b = 0;
+	uint64_t node, n_warn = 0;
+	unsigned int prev, a = 0, b = 0, result, result_trunc;
 	int b_signed;
 	bool first = true;
 	float af = 0.0f, bf = 0.0f;
@@ -480,17 +485,21 @@ void grd_BITLEFT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMAT
 			}
 			else {		
 				b = (unsigned int)b_signed;
-				stack[prev]->G->data[node] = (float) ((a << b) & FLOAT_BIT_MASK);
+				result = a << b;
+				result_trunc = (result & FLOAT_BIT_MASK);
+				if (result != result_trunc) n_warn++;
+				stack[prev]->G->data[node] = (float) result_trunc;
 			}
 		}
 	}
+	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: BITLEFT resulted in %" PRIu64 " values truncated to fit in the 24 available bits\n");
 }
 
 void grd_BITNOT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: BITNOT 1 1  ~A (bitwise NOT operator, i.e., return two's complement).  */
 {
-	uint64_t node;
-	unsigned int a = 0;
+	uint64_t node, n_warn = 0;
+	unsigned int a = 0, result, result_trunc;
 	float af = 0.0f;
 
 	if (stack[last]->constant) af = (float)stack[last]->factor;
@@ -500,17 +509,20 @@ void grd_BITNOT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 			stack[last]->G->data[node] = GMT->session.f_NaN;
 		else {
 			a = (unsigned int)af;
-			a = ~a;
-			stack[last]->G->data[node] = (float)(a & FLOAT_BIT_MASK);
+			result = ~a;
+			result_trunc = (result & FLOAT_BIT_MASK);
+			if (result != result_trunc) n_warn++;
+			stack[last]->G->data[node] = (float)result_trunc;
 		}
 	}
+	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: BITNOT resulted in %" PRIu64 " values truncated to fit in the 24 available bits\n");
 }
 
 void grd_BITOR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: BITOR 2 1 A | B (bitwise OR operator).  */
 {
-	uint64_t node;
-	unsigned int prev, a = 0, b = 0;
+	uint64_t node, n_warn = 0;
+	unsigned int prev, a = 0, b = 0, result, result_trunc;
 	float af = 0.0f, bf = 0.0f;
 
 	prev = last - 1;
@@ -523,16 +535,20 @@ void grd_BITOR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 			stack[prev]->G->data[node] = GMT->session.f_NaN;
 		else {
 			a = (unsigned int)af;	b = (unsigned int)bf;
-			stack[prev]->G->data[node] = (float)((a | b) & FLOAT_BIT_MASK);
+			result = a | b;
+			result_trunc = (result & FLOAT_BIT_MASK);
+			if (result != result_trunc) n_warn++;
+			stack[prev]->G->data[node] = (float)result_trunc;
 		}
 	}
+	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: BITOR resulted in %" PRIu64 " values truncated to fit in the 24 available bits\n");
 }
 
 void grd_BITRIGHT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: BITRIGHT 2 1 A >> B (bitwise right-shift operator).  */
 {
-	uint64_t node;
-	unsigned int prev, a = 0, b = 0;
+	uint64_t node, n_warn = 0;
+	unsigned int prev, a = 0, b = 0, result, result_trunc;
 	int b_signed;
 	bool first = true;
 	float af = 0.0f, bf = 0.0f;
@@ -554,17 +570,21 @@ void grd_BITRIGHT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMA
 			}
 			else {		
 				b = (unsigned int)b_signed;
-				stack[prev]->G->data[node] = (float) ((a >> b) & FLOAT_BIT_MASK);
+				result = a >> b;
+				result_trunc = (result & FLOAT_BIT_MASK);
+				if (result != result_trunc) n_warn++;
+				stack[prev]->G->data[node] = (float)result_trunc;
 			}
 		}
 	}
+	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: BITRIGHT resulted in %" PRIu64 " values truncated to fit in the 24 available bits\n");
 }
 
 void grd_BITTEST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: BITTEST 2 1 1 if bit B of A is set, else 0 (bitwise TEST operator).  */
 {
-	uint64_t node;
-	unsigned int prev, a = 0, b = 0;
+	uint64_t node, n_warn = 0;
+	unsigned int prev, a = 0, b = 0, result, result_trunc;
 	int b_signed;
 	bool first = true;
 	float af = 0.0f, bf = 0.0f;
@@ -587,17 +607,21 @@ void grd_BITTEST (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMAT
 			else {
 				b = (unsigned int)b_signed;
 				b = 1U << b;
-				stack[prev]->G->data[node] = ((a & b) & FLOAT_BIT_MASK) ? 1.0f : 0.0f;
+				result = a & b;
+				result_trunc = (result & FLOAT_BIT_MASK);
+				if (result != result_trunc) n_warn++;
+				stack[prev]->G->data[node] = (result_trunc) ? 1.0f : 0.0f;
 			}
 		}
 	}
+	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: BITTEST resulted in %" PRIu64 " values truncated to fit in the 24 available bits\n");
 }
 
 void grd_BITXOR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: BITXOR 2 1 A ^ B (bitwise XOR operator).  */
 {
-	uint64_t node;
-	unsigned int prev, a = 0, b = 0;
+	uint64_t node, n_warn = 0;
+	unsigned int prev, a = 0, b = 0, result, result_trunc;
 	float af = 0.0f, bf = 0.0f;
 
 	prev = last - 1;
@@ -610,9 +634,13 @@ void grd_BITXOR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 			stack[prev]->G->data[node] = GMT->session.f_NaN;
 		else {
 			a = (unsigned int)af;	b = (unsigned int)bf;
-			stack[prev]->G->data[node] = (float)((a ^ b) & FLOAT_BIT_MASK);
+			result = a ^ b;
+			result_trunc = (result & FLOAT_BIT_MASK);
+			if (result != result_trunc) n_warn++;
+			stack[prev]->G->data[node] = (float)result_trunc;
 		}
 	}
+	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: BITXOR resulted in %" PRIu64 " values truncated to fit in the 24 available bits\n");
 }
 
 void grd_CAZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)

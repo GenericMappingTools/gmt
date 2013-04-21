@@ -697,7 +697,7 @@ void table_BER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 void table_BITAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: BITAND 2 1 A & B (bitwise AND operator).  */
 {
-	uint64_t s, row, a = 0, b = 0;
+	uint64_t s, row, a = 0, b = 0, n_warn = 0, result, result_trunc;
 	unsigned int prev = last - 1;
 	double ad = 0.0, bd = 0.0;
 	struct GMT_DATATABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev = S[prev]->D->table[0];
@@ -711,15 +711,19 @@ void table_BITAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMA
 			T_prev->segment[s]->coord[col][row] = GMT->session.d_NaN;
 		else {
 			a = (uint64_t)ad;	b = (uint64_t)bd;
-			T_prev->segment[s]->coord[col][row] = (double)((a & b) & DOUBLE_BIT_MASK);
+			result = a & b;
+			result_trunc = result & DOUBLE_BIT_MASK;
+			if (result != result_trunc) n_warn++;
+			T_prev->segment[s]->coord[col][row] = (double)result_trunc;
 		}
 	}
+	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: BITAND resulted in %" PRIu64 " values truncated to fit in the 53 available bits\n");
 }
 
 void table_BITLEFT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: BITLEFT 2 1 A << B (bitwise left-shift operator).  */
 {
-	uint64_t s, row, a = 0, b = 0;
+	uint64_t s, row, a = 0, b = 0, n_warn = 0, result, result_trunc;
 	int64_t b_signed;
 	unsigned int prev = last - 1;
 	bool first = true;
@@ -742,16 +746,20 @@ void table_BITLEFT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTM
 			}
 			else {		
 				b = (uint64_t)b_signed;
-				T_prev->segment[s]->coord[col][row] = (double)((a << b) & DOUBLE_BIT_MASK);
+				result = a << b;
+				result_trunc = result & DOUBLE_BIT_MASK;
+				if (result != result_trunc) n_warn++;
+				T_prev->segment[s]->coord[col][row] = (double)result_trunc;
 			}
 		}
 	}
+	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: BITLEFT resulted in %" PRIu64 " values truncated to fit in the 53 available bits\n");
 }
 
 void table_BITNOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: BITNOT 1 1 ~A (bitwise NOT operator, i.e., return two's complement).  */
 {
-	uint64_t s, row, a = 0;
+	uint64_t s, row, a = 0, n_warn = 0, result, result_trunc;
 	double ad = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
 
@@ -762,16 +770,19 @@ void table_BITNOT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMA
 			T->segment[s]->coord[col][row] = GMT->session.d_NaN;
 		else {
 			a = (uint64_t)ad;
-			a = ~a;
-			T->segment[s]->coord[col][row] = (double)(a & DOUBLE_BIT_MASK);
+			result = ~a;
+			result_trunc = result & DOUBLE_BIT_MASK;
+			if (result != result_trunc) n_warn++;
+			T->segment[s]->coord[col][row] = (double)result_trunc;
 		}
 	}
+	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: BITNOT resulted in %" PRIu64 " values truncated to fit in the 53 available bits\n");
 }
 
 void table_BITOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: BITOR 2 1 A | B (bitwise OR operator).  */
 {
-	uint64_t s, row, a = 0, b = 0;
+	uint64_t s, row, a = 0, b = 0, n_warn = 0, result, result_trunc;
 	unsigned int prev = last - 1;
 	double ad = 0.0, bd = 0.0;
 	struct GMT_DATATABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev = S[prev]->D->table[0];
@@ -785,15 +796,19 @@ void table_BITOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 			T_prev->segment[s]->coord[col][row] = GMT->session.d_NaN;
 		else {
 			a = (uint64_t)ad;	b = (uint64_t)bd;
-			T_prev->segment[s]->coord[col][row] = (double)((a | b) & DOUBLE_BIT_MASK);
+			result = a | b;
+			result_trunc = result & DOUBLE_BIT_MASK;
+			if (result != result_trunc) n_warn++;
+			T_prev->segment[s]->coord[col][row] = (double)result_trunc;
 		}
 	}
+	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: BITOR resulted in %" PRIu64 " values truncated to fit in the 53 available bits\n");
 }
 
 void table_BITRIGHT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: BITRIGHT 2 1 A >> B (bitwise right-shift operator).  */
 {
-	uint64_t s, row, a = 0, b = 0;
+	uint64_t s, row, a = 0, b = 0, n_warn = 0, result, result_trunc;
 	int64_t b_signed;
 	unsigned int prev = last - 1;
 	bool first = true;
@@ -816,16 +831,20 @@ void table_BITRIGHT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT
 			}
 			else {		
 				b = (uint64_t)b_signed;
-				T_prev->segment[s]->coord[col][row] = (double)((a >> b) & DOUBLE_BIT_MASK);
+				result = a >> b;
+				result_trunc = result & DOUBLE_BIT_MASK;
+				if (result != result_trunc) n_warn++;
+				T_prev->segment[s]->coord[col][row] = (double)result_trunc;
 			}
 		}
 	}
+	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: BITRIGHT resulted in %" PRIu64 " values truncated to fit in the 53 available bits\n");
 }
 
 void table_BITTEST (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: BITTEST 2 1 1 if bit B of A is set, else 0 (bitwise TEST operator).  */
 {
-	uint64_t s, row, a = 0, b = 0;
+	uint64_t s, row, a = 0, b = 0, n_warn = 0, result, result_trunc;
 	int64_t b_signed;
 	unsigned int prev = last - 1;
 	bool first = true;
@@ -849,16 +868,20 @@ void table_BITTEST (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTM
 			else {
 				b = (uint64_t)b_signed;
 				b = 1ULL << b;
-				T_prev->segment[s]->coord[col][row] = ((a & b) & DOUBLE_BIT_MASK) ? 1.0 : 0.0;
+				result = a & b;
+				result_trunc = result & DOUBLE_BIT_MASK;
+				if (result != result_trunc) n_warn++;
+				T_prev->segment[s]->coord[col][row] = (result_trunc) ? 1.0 : 0.0;
 			}
 		}
 	}
+	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: BITTEST resulted in %" PRIu64 " values truncated to fit in the 53 available bits\n");
 }
 
 void table_BITXOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: BITXOR 2 1 A ^ B (bitwise XOR operator).  */
 {
-	uint64_t s, row, a = 0, b = 0;
+	uint64_t s, row, a = 0, b = 0, n_warn = 0, result, result_trunc;
 	unsigned int prev = last - 1;
 	double ad = 0.0, bd = 0.0;
 	struct GMT_DATATABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev = S[prev]->D->table[0];
@@ -872,9 +895,13 @@ void table_BITXOR (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMA
 			T_prev->segment[s]->coord[col][row] = GMT->session.d_NaN;
 		else {
 			a = (uint64_t)ad;	b = (uint64_t)bd;
-			T_prev->segment[s]->coord[col][row] = (double)((a ^ b) & DOUBLE_BIT_MASK);
+			result = a ^ b;
+			result_trunc = result & DOUBLE_BIT_MASK;
+			if (result != result_trunc) n_warn++;
+			T_prev->segment[s]->coord[col][row] = (double)result_trunc;
 		}
 	}
+	if (n_warn) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: BITXOR resulted in %" PRIu64 " values truncated to fit in the 53 available bits\n");
 }
 
 void table_CEIL (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
