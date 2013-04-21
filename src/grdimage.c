@@ -591,7 +591,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 			}
 
 			sprintf (cmd, "%s -G%s -I%d+/%d+", in_string, out_string, nx, ny);
-			if (GMT_grdsample (GMT->parent, 0, cmd) != GMT_OK) return (API->error);	/* Do the resampling */
+			if (GMT_Call_Module (GMT->parent, GMT_ID_GRDSAMPLE, 0, cmd) != GMT_OK) return (API->error);	/* Do the resampling */
 			if ((G2 = GMT_Retrieve_Data (API, object_ID)) == NULL) {
 				Return (API->error);
 			}

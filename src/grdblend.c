@@ -308,7 +308,7 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 				sprintf (cmd, "%s %s %s %s -G%s -V%c", B[n].file, Targs, Iargs, Rargs, buffer, V_level[GMT->current.setting.verbose]);
 				if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Resample %s via grdsample %s\n", B[n].file, cmd);
-				if ((status = GMT_grdsample (GMT->parent, 0, cmd))) {	/* Resample the file */
+				if ((status = GMT_Call_Module (GMT->parent, GMT_ID_GRDSAMPLE, 0, cmd))) {	/* Resample the file */
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to resample file %s - exiting\n", B[n].file);
 					GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 				}
@@ -318,7 +318,7 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 				sprintf (cmd, "%s %s %s -V%c", B[n].file, Rargs, buffer, V_level[GMT->current.setting.verbose]);
 				if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Reformat %s via grdreformat %s\n", B[n].file, cmd);
-				if ((status = GMT_grdreformat (GMT->parent, 0, cmd))) {	/* Resample the file */
+				if ((status = GMT_Call_Module (GMT->parent, GMT_ID_GRDREFORMAT, 0, cmd))) {	/* Resample the file */
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to resample file %s - exiting\n", B[n].file);
 					GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 				}
@@ -802,7 +802,7 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 		char cmd[GMT_BUFSIZ], *V_level = "qncvld";
 		sprintf (cmd, "%s %s -V%c", outfile, Ctrl->G.file, V_level[GMT->current.setting.verbose]);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reformat %s via grdreformat %s\n", outfile, cmd);
-		if ((status = GMT_grdreformat (GMT->parent, 0, cmd))) {	/* Resample the file */
+		if ((status = GMT_Call_Module (GMT->parent, GMT_ID_GRDREFORMAT, 0, cmd))) {	/* Resample the file */
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to resample file %s.\n", outfile);
 		}
 	}

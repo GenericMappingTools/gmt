@@ -4532,15 +4532,15 @@ void * GMT_Create_Data_ (unsigned int *family, unsigned int *geometry, unsigned 
 #endif
 
 /* Convenience function to get grid or image node */
-int64_t GMT_Get_Index (struct GMT_GRID_HEADER *header, int row, int col)
-{
+int64_t GMT_Get_Index (void *V_API, struct GMT_GRID_HEADER *header, int row, int col)
+{	/* V_API not used but all API functions take V_API so no exceptions */
 	return (GMT_IJP (header, row, col));
 }
 
 #ifdef FORTRAN_API
 int64_t GMT_Get_Index_ (void *h, int *row, int *col)
 {	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Get_Index (h, *row, *col));
+	return (GMT_Get_Index (GMT_FORTRAN, h, *row, *col));
 }
 #endif
 
@@ -5040,7 +5040,6 @@ int GMT_FFT_Destroy_ (void *v_K)
 
 int GMT_Get_Module (void *V_API, char *module)
 {	/* Return module ID given its name */
-	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 	enum Gmt_module_id ID = gmt_module_lookup (module);
 	return (ID);
 }
@@ -5073,7 +5072,7 @@ int GMT_Call_Module (void *V_API, int module_id, int mode, void *args)
 }
 
 #ifdef FORTRAN_API
-void GMT_Call_Module_ (int *module_id, int *mode, void *args)
+int GMT_Call_Module_ (int *module_id, int *mode, void *args)
 {
 	return (GMT_Call_Module (GMT_FORTRAN, *module_id, *mode, args));
 }

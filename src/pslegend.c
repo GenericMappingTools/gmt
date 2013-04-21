@@ -638,7 +638,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						sscanf (&line[2], "%s %s %s %[^\n]", bar_cpt, bar_gap, bar_height, bar_opts);
 						x_off = GMT_to_inch (GMT, bar_gap);
 						sprintf (buffer, "-C%s -O -K -D%gi/%gi/%gi/%sh %s", bar_cpt, Ctrl->D.lon + 0.5 * Ctrl->D.width, y0, Ctrl->D.width - 2 * x_off, bar_height, bar_opts);
-						status = GMT_psscale (API, 0, buffer);	/* Plot the colorbar */
+						status = GMT_Call_Module (API, GMT_ID_PSSCALE, 0, buffer);	/* Plot the colorbar */
 						if (status) {
 							GMT_Report (API, GMT_MSG_NORMAL, "GMT_psscale returned error %d.\n", status);
 							Return (EXIT_FAILURE);
@@ -703,7 +703,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						x_off = Ctrl->D.lon;
 						x_off += (justify%4 == 1) ? Ctrl->C.dx : ((justify%4 == 3) ? Ctrl->D.width - Ctrl->C.dx : 0.5 * Ctrl->D.width);
 						sprintf (buffer, "-O -K %s -W%s -C%gi/%gi/%s", image, size, x_off, y0, key);
-						status = GMT_psimage (API, 0, buffer);	/* Plot the image */
+						status = GMT_Call_Module (API, GMT_ID_PSIMAGE, 0, buffer);	/* Plot the image */
 						if (status) {
 							GMT_Report (API, GMT_MSG_NORMAL, "GMT_psimage returned error %d.\n", status);
 							Return (EXIT_FAILURE);
@@ -776,7 +776,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							}
 							sprintf (buffer, "-R%s -J%s -O -K -L%s", r_ptr->arg, j_ptr->arg, &mapscale[k]);
 						}
-						status = GMT_psbasemap (API, 0, buffer);	/* Plot the scale */
+						status = GMT_Call_Module (API, GMT_ID_PSBASEMAP, 0, buffer);	/* Plot the scale */
 						if (status) {
 							GMT_Report (API, GMT_MSG_NORMAL, "GMT_psbasemap returned error %d.\n", status);
 							Return (EXIT_FAILURE);
@@ -1143,7 +1143,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 			Return (API->error);	/* Make filename with embedded object ID */
 		}
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -F+f+j %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
-		if (GMT_pstext (API, 0, buffer) != GMT_OK) {
+		if (GMT_Call_Module (API, GMT_ID_PSTEXT, 0, buffer) != GMT_OK) {
 			Return (API->error);	/* Plot the symbols */
 		}
 	}
@@ -1156,7 +1156,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 			Return (API->error);	/* Make filename with embedded object ID */
 		}
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -M -F+f+a+j %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
-		if (GMT_pstext (API, 0, buffer) != GMT_OK) Return (API->error);	/* Plot the symbols */
+		if (GMT_Call_Module (API, GMT_ID_PSTEXT, 0, buffer) != GMT_OK) Return (API->error);	/* Plot the symbols */
 	}
 
 	for (id = 0; id < 3; id++) {
