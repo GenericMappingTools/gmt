@@ -819,7 +819,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							n = sscanf (&line[1], "%s %s %s %s %s %s %s %s", xx, yy, tmp, angle, key, lspace, tw, jj);
 							if (n < 0) n = 0;	/* Since -1 is returned if no arguments */
 							if (!(n == 0 || n == 8)) {
-								GMT_Report (API, GMT_MSG_NORMAL, "Error: The P record must have 0 or 9 arguments (only %d found)\n", n);
+								GMT_Report (API, GMT_MSG_NORMAL, "Error: The P record must have 0 or 8 arguments (only %d found)\n", n);
 								Return (GMT_RUNTIME_ERROR);
 							}
 						}
