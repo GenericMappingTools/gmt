@@ -46,7 +46,7 @@ struct PSLEGEND_CTRL {
 		double lon, lat, width, height, dx, dy;
 		char justify[3];
 	} D;
-	struct F {	/* -F+r[<radius>][+f<fill>][+p[<pen>]][+i[<off>/][<pen>]][+s[<dx>/<dy>/][<shade>]] */
+	struct F {	/* -F[+r[<radius>]][+f<fill>][+p[<pen>]][+i[<off>/][<pen>]][+s[<dx>/<dy>/][<shade>]] */
 		bool active;
 		unsigned int mode;		/* 0 = rectangular, 1 = rounded, 2 = secondary frame, 4 = shade, 8 = fill, 16 = outline */
 		double radius;			/* Radius for rounded corner */
@@ -111,8 +111,9 @@ int GMT_pslegend_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
 	GMT_Option (API, "B-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Set the clearance between legend frame and internal items [%gp/%gp].\n", FRAME_CLEARANCE, FRAME_CLEARANCE);
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Draw rectangular border around the legend (using MAP_FRAME_PEN) [Default is no border].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f<fill> to et the fill for the legend box [Default is no fill].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Without further options: draw rectangular border around the legend (using MAP_FRAME_PEN)\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      [Default is no border].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f<fill> to set the fill for the legend box [Default is no fill].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +i[[<gap>/]<pen>] to add a secondary inner frame boundary [Default gap is %gp].\n", FRAME_GAP);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p[<pen>] to draw the border and optionally change the border pen [%s].\n",
 		GMT_putpen (API->GMT, API->GMT->current.setting.map_frame_pen));
