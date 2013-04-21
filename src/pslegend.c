@@ -605,6 +605,8 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 			GMT_setfill (GMT, NULL, true);	/* No fill for inner frame */
 			PSL_plotsymbol (PSL, Ctrl->D.lon + 0.5 * Ctrl->D.width, Ctrl->D.lat + 0.5 * Ctrl->D.height, sdim, (Ctrl->F.mode & 2) ? PSL_RNDRECT : PSL_RECT);
 		}
+		/* Reset color */
+		PSL_setcolor (PSL, GMT->current.setting.map_frame_pen.rgb, PSL_IS_STROKE);
 	}
 
 	/* We use a standard x/y inch coordinate system here, unlike old pslegend. */
