@@ -5036,7 +5036,50 @@ int GMT_FFT_Destroy_ (void *v_K)
 }
 #endif
 
-/* Parsin Extension: to present,examine GMT Common Option current settings and GMT Default settings */
+/* Module Extension: Allow finding and calling modules by name */
+
+int GMT_Get_Module (void *V_API, char *module)
+{	/* Return module ID given its name */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+	enum Gmt_module_id ID = gmt_module_lookup (module);
+	return (ID);
+}
+
+#ifdef FORTRAN_API
+int GMT_Get_Module_ (char *module, int len)
+{
+	return (GMT_Get_Module (GMT_FORTRAN, module));
+}
+#endif
+
+void GMT_List_Module (void *V_API, int ID)
+{	/* List the usage of this module, or all modules if -1 */
+	if (ID == k_mod_nongmt)
+		gmt_module_show_all ();
+	else
+		gmt_module_show_name_and_purpose (ID);
+}
+
+#ifdef FORTRAN_API
+void GMT_List_Module_ (int *ID)
+{
+	GMT_List_Module (GMT_FORTRAN, *ID);
+}
+#endif
+
+int GMT_Call_Module (void *V_API, int module_id, int mode, void *args)
+{	/* Call the specified module and pass the mode and args */
+	return (g_module[module_id].p_func (V_API, mode, args));
+}
+
+#ifdef FORTRAN_API
+void GMT_Call_Module_ (int *module_id, int *mode, void *args)
+{
+	return (GMT_Call_Module (GMT_FORTRAN, *module_id, *mode, args));
+}
+#endif
+
+/* Parsing Extension: to present,examine GMT Common Option current settings and GMT Default settings */
 
 int GMT_Get_Common (void *V_API, unsigned int option, double par[])
 {	/* Inquires if specified GMT option has been set and obtains current values for some of them.
