@@ -342,7 +342,7 @@ int GMT_testapi (void *V_API, int mode, void *args)
 			Return (API->error);	/* Make filename with embedded object ID */
 		}
 		sprintf (buffer, "%s -W6i -P -F0.25p --PS_MEDIA=letter --PS_CHAR_ENCODING=Standard+", string);
-		if (GMT_psimage (API, 0, buffer) != GMT_OK) {	/* Plot the image */
+		if (GMT_Call_Module (API, GMT_ID_PSIMAGE, 0, buffer) != GMT_OK) {	/* Plot the image */
 			Return (API->error);
 		}
 		if (GMT_Destroy_Data (API, GMT_CLOBBER, &Intmp) != GMT_OK) {

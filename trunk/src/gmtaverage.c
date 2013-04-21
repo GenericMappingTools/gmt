@@ -174,12 +174,11 @@ int GMT_gmtaverage_parse (struct GMT_CTRL *GMT, struct GMTAVERAGE_CTRL *Ctrl, st
 
 int GMT_gmtaverage (void *V_API, int mode, void *args)
 {
-	int error = 0;
+	int error = 0, mod_ID;
 
 	struct GMT_OPTION *options = NULL, *t_ptr = NULL;
 	struct GMTAVERAGE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
-	int (*func) (void *, int, void *) = NULL;
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
@@ -206,21 +205,21 @@ int GMT_gmtaverage (void *V_API, int mode, void *args)
 	switch (t_ptr->arg[0]) {	/* Determine what GMT_block* module we need */
 		case 'm': case 'n': case 's': case 'w':	/* Call blockmean */
 			t_ptr->option = 'S';	/* Since blockmean uses -S, not -T to select type */
-			func = GMT_blockmean;
+			mod_ID = GMT_ID_BLOCKMEAN;
 			break;
 		case 'e':	/* Call blockmedian */
 			GMT_Delete_Option (API, t_ptr);	/* Since -Te = -T0.5 is the default */
-			func = GMT_blockmedian;
+			mod_ID = GMT_ID_BLOCKMEDIAN;
 			break;
 		case 'o':	/* Call blockmode */
 			GMT_Delete_Option (API, t_ptr);	/* Since no special option -T is known to blockmode */
-			func = GMT_blockmode;
+			mod_ID = GMT_ID_BLOCKMODE;
 			break;
 		default:	/* Call blockmedian for some arbitrary quantile by passing the given -T<q> */
-			func = GMT_blockmedian;
+			mod_ID = GMT_ID_BLOCKMEDIAN;
 			break;
 	}
 	
-	error = func (API, mode, options);	/* If errors then we return that next */
+	error = GMT_Call_Module (API, mod_ID, mode, options);	/* If errors then we return that next */
 	Return (error);
 }

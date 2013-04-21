@@ -648,7 +648,7 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 	else	/* The output here is the final result */
 		strncpy (s_out_ID, Ctrl->G.file, GMT_TEXT_LEN256);
 	sprintf (cmd, "-R%g/%g/%g/%g -Jm1 -I %s -G%s --PROJ_ELLIPSOID=Sphere --PROJ_LENGTH_UNIT=inch", west, east, south2, north2, s_in_ID, s_out_ID);
-	if (GMT_grdproject (API, 0, cmd)!= GMT_OK) {	/* Inverse project the grid or fail */
+	if (GMT_Call_Module (API, GMT_ID_GRDPROJECT, 0, cmd)!= GMT_OK) {	/* Inverse project the grid or fail */
 		Return (API->error);
 	}
 	if (GMT_Destroy_Data (API, GMT_CLOBBER, &Merc) != GMT_OK) {
@@ -672,7 +672,7 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 		sprintf (cmd, "-R%g/%g/%g/%g -I%gm %s -G%s -fg", west, east, south, north, Ctrl->I.value, s_in_ID, Ctrl->G.file);
-		if (GMT_grdsample (API, 0, cmd) != GMT_OK) {	/* Resample the grid or fail */
+		if (GMT_Call_Module (API, GMT_ID_GRDSAMPLE, 0, cmd) != GMT_OK) {	/* Resample the grid or fail */
 			Return (API->error);
 		}
 		if (GMT_Destroy_Data (API, GMT_CLOBBER, &Geo) != GMT_OK) {	/* Clobber since we know we allocated this grid */

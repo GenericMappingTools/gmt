@@ -232,7 +232,7 @@ int main (int argc, char *argv[])
 	}
 	
 	/* Place our spike at the desired location; 2 * since grid is complex */
-	node = 2 * GMT_Get_Index (Grid->header, Ctrl->A.row, Ctrl->A.col);
+	node = 2 * GMT_Get_Index (API, Grid->header, Ctrl->A.row, Ctrl->A.col);
 	Grid->data[node] = 1.0;	/* The deadly spike */
 	GMT_Message (API, GMT_TIME_CLOCK, "Placed spike at %g, %g [col = %u, row = %u]\n", x[Ctrl->A.col], y[Ctrl->A.row], Ctrl->A.col, Ctrl->A.row);
 	

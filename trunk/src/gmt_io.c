@@ -5073,7 +5073,7 @@ int gmt_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 		return (GMT->parent->error);	/* Make filename with embedded object ID */
 	}
 	sprintf (buffer, "-C -fg -<%s ->%s", in_string, out_string);
-	if (GMT_minmax (GMT->parent, 0, buffer) != GMT_OK) {	/* Get the extent via minmax */
+	if (GMT_Call_Module (GMT->parent, GMT_ID_MINMAX, 0, buffer) != GMT_OK) {	/* Get the extent via minmax */
 		return (GMT->parent->error);
 	}
 	if ((M = GMT_Retrieve_Data (GMT->parent, object_ID)) == NULL) {

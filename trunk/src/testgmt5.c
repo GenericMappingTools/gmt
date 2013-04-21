@@ -67,7 +67,7 @@ int main (int argc, char *argv[]) {
 	if ((head = GMT_Append_Option (API, new, head)) == NULL) exit (EXIT_FAILURE);
 
 	/* 5. Run GMT cmd function, or give usage message if errors arise during parsing */
-	status = GMT_grdcut (API, -1, head);	/* This allocates memory for the export grid associated with the -G option */
+	status = GMT_Call_Module (API, GMT_ID_GRDCUT, -1, head);	/* This allocates memory for the export grid associated with the -G option */
 	if (status) {
 		GMT_Report (API, GMT_MSG_NORMAL, "GMT_grdcut returned error %d\n", status);
 		exit (EXIT_FAILURE);
