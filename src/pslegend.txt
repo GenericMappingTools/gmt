@@ -41,17 +41,15 @@ are recognized, and the syntax for each of these records are presented below (se
 OPT(C)IT(dx)/IT(dy)
 Sets the clearance between the legend frame and the internal items [CLEARANCE].
 .TP
-OPT(F)[BD(+i)[[IT(gap)/]IT(pen)]][BD(+p)IT(pen)][BD(+r)[IT(radius)]][BD(+s)[[IT(dx)/IT(dy)/][IT(fill)]]]
-Draws a rectangular border around the legend using BD(MAP_FRAME_PEN); specify a different pen with BD(+p)IT(pen).
+OPT(F)[BD(+i)[[IT(gap)/]IT(pen)]][BD(+f)IT(fill)][BD(+p)IT(pen)][BD(+r)[IT(radius)]][BD(+s)[[IT(dx)/IT(dy)/][IT(shade)]]]
+Without any further options, OPT(F) draws a rectangular border around the legend using BD(MAP_FRAME_PEN); specify a different pen with BD(+p)IT(pen).
+Append BD(+f) to fill the box using IT(fill).
 Append BD(+i) to draw a secondary, inner border as well.  We use a IT(gap) between borders
 of GAP and the BD(MAP_DEFAULTS_PEN) unless other values are specified.
 Append BD(+r) to draw rounded rectangular borders instead, with a RADIUS corner radius.  You can override this radius by
 appending another value.
 Finally, append BD(+s) to draw an offset background shaded region.  Here, IT(dx)/IT(dy) indicates the shift relative to
-the foreground frame [SHIFT] and IT(fill) sets the shading to use [SHADE].
-.TP
-OPT(G)IT(fill)
-Select fill shade, color or pattern of the legend box [Default is no fill].
+the foreground frame [SHIFT] and IT(shade) sets the fill style to use for shading.
 #include "explain_-J.txt"
 #include "explain_-K.txt"
 .TP

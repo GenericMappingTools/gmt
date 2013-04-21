@@ -57,8 +57,8 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 **-C**\ *dx*/*dy*
     Sets the clearance between the legend frame and the internal items
     [4\ **p**/4\ **p**].
-**-F**\ [\ **+f**\ *fill*][**+i**\ [[*gap*/]*pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*fill*\ ]]]
-    WIth **=P**, draws a rectangular border around the legend using
+**-F**\ [\ **+f**\ *fill*][**+i**\ [[*gap*/]*pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
+    Without further options, draws a rectangular border around the legend using
     **MAP\_FRAME\_PEN**; specify a different pen with **+p**\ *pen*.
     Add **+f**\ *fill* to fill the legend box [no fill]
     Append **+i** to draw a secondary, inner border as well. We use a
@@ -68,7 +68,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     override this radius by appending another value. Finally, append
     **+s** to draw an offset background shaded region. Here, *dx*/*dy*
     indicates the shift relative to the foreground frame
-    [4\ **p**/-4\ **p**] and *fill* sets the shading to use [SHADE].
+    [4\ **p**/-4\ **p**] and *shade* sets the fill style to use for shading.
 
 .. include:: explain_-J.rst_
 
