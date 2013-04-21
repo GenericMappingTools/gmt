@@ -362,7 +362,7 @@ int GMT_gmtdp (void *V_API, int mode, void *args)
 				S[GMT_OUT]->coord[col][row] = S[GMT_IN]->coord[col][index[row]];
 			}
 			GMT_free (GMT, index);
-			GMT_Report (API, GMT_MSG_VERBOSE, "Points in: %ld Points out: %ld\n", S[GMT_IN]->n_rows, np_out);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Points in: %" PRIu64 " Points out: %" PRIu64 "\n", S[GMT_IN]->n_rows, np_out);
 		}
 	}
 

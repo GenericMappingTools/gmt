@@ -294,7 +294,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 
 	if (Ctrl->D.active) {	/* We want to output to go to individual files for each segment [Default writes to stdout] */
 		io_mode = GMT_WRITE_SEGMENT;	/* This means write segments to separate files */
-		if (!Ctrl->D.format) Ctrl->D.format = strdup ("gmtstitch_segment_%ld.txt");	/* Default naming convention for segments */
+		if (!Ctrl->D.format) Ctrl->D.format = strdup ("gmtstitch_segment_%d.txt");	/* Default naming convention for segments */
 		if (strstr (Ctrl->D.format, "%c")) save_type = true;	/* Also add C (closed) or O (open) to the filename */
 		if (Ctrl->Q.active) {	/* We also want to build list(s) those files */
 			if (!Ctrl->Q.file) Ctrl->Q.file = strdup ("gmtstitch_list.txt");	/* Default -Q name if not given */

@@ -90,7 +90,7 @@ END
 # OK, now we can actually run pslegend.  We center the legend below the map.
 # Trial and error shows that 1.7i is a good legend height:
 
-pslegend -Dx4.5i/-0.4i/7i/1.7i/TC -O -F neis.legend -Glightyellow >> $ps
+pslegend -Dx4.5i/-0.4i/7i/1.7i/TC -O -F+p+flightyellow neis.legend  >> $ps
 
 # Clean up after ourselves:
 
