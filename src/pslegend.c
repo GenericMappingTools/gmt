@@ -236,6 +236,7 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 							break;
 					}
 				}
+				if (GMT_compat_check (GMT, 4) && !opt->arg[0]) Ctrl->F.mode |= 16;	/* Draw frame if just -F is given if in compatibility mode */
 				break;
 			case 'G':	/* Inside legend box fill */
 				if (GMT_compat_check (GMT, 4)) {
