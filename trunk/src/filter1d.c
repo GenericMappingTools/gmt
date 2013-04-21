@@ -903,7 +903,7 @@ int GMT_filter1d (void *V_API, int mode, void *args)
 			if ((F.Fin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 				Return (API->error, "Error Reading input\n");
 			}
-			GMT_Report (API, GMT_MSG_VERBOSE, "Read %ld filter weights from file %s.\n", F.Fin->n_records, Ctrl->F.file);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Read %" PRIu64 " filter weights from file %s.\n", F.Fin->n_records, Ctrl->F.file);
 			break;
 	}
 	if (F.filter_type > FILTER1D_CONVOLVE) F.robust = false;
@@ -942,7 +942,7 @@ int GMT_filter1d (void *V_API, int mode, void *args)
 				in = D->table[tbl]->segment[seg]->coord[F.t_col][row];
 				if (GMT_is_dnan (in)) continue;	/* Skip records with time == NaN */
 				new_time = in;
-				if (new_time < last_time) Return (GMT_DATA_READ_ERROR, "Error! Time decreases at line # %ld\n\tUse UNIX utility sort and then try again.\n", row);
+				if (new_time < last_time) Return (GMT_DATA_READ_ERROR, "Error! Time decreases at line # %" PRIu64 "\n\tUse UNIX utility sort and then try again.\n", row);
 				last_time = new_time;
 				for (col = 0; col < F.n_cols; ++col) {
 					in = D->table[tbl]->segment[seg]->coord[col][row];
@@ -956,7 +956,7 @@ int GMT_filter1d (void *V_API, int mode, void *args)
 					}
 				}
 			}
-			GMT_Report (API, GMT_MSG_VERBOSE, "Read %ld records from table %d, segment %ld\n", F.n_rows, tbl, seg);
+			GMT_Report (API, GMT_MSG_VERBOSE, "Read %" PRIu64 " records from table %" PRIu64 ", segment %" PRIu64 "\n", F.n_rows, tbl, seg);
 			
 			/* FILTER: Initialize scale parameters and last_loc based on min and max of data  */
 

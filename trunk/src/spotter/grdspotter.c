@@ -813,7 +813,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 		for (len = strlen (Ctrl->G.file); len > 0 && Ctrl->G.file[len] != '.'; len--);
 		if (Ctrl->G.file[len] == '.') {	/* Make a filename template from the CVA filename using the period as delimeter */
 			strncpy (format, Ctrl->G.file, len);	/* Should keep the prefix from a file called prefix.ext */
-			strcat (format, "_%%ld");		/* Make filenames like prefix_#.ext */
+			strcat (format, "_%%d");		/* Make filenames like prefix_#.ext */
 			strcat (format, &Ctrl->G.file[len]);	/* Should add the extension from said file */
 		}
 		CVA_inc = GMT_memory (GMT, NULL, G->header->size, float);

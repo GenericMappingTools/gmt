@@ -658,13 +658,13 @@ int GMT_gmtselect (void *V_API, int mode, void *args)
 		/* Data record to process */
 
 		n_read++;
-		if (n_read%1000 == 0) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %ld records, passed %ld records\r", n_read, n_pass);
+		if (n_read%1000 == 0) GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Read %" PRIu64 " records, passed %" PRIu64 "records\r", n_read, n_pass);
 
 		if (n_fields < n_minimum) {	/* Bad number of columns */
 			if (Ctrl->Z.active)
-				GMT_Report (API, GMT_MSG_NORMAL, "-Z requires a data file with at least %u columns; this file only has %ld near line %ld. Exiting.\n", n_minimum, n_fields, n_read);
+				GMT_Report (API, GMT_MSG_NORMAL, "-Z requires a data file with at least %u columns; this file only has %d near line %" PRIu64 ". Exiting.\n", n_minimum, n_fields, n_read);
 			else
-				GMT_Report (API, GMT_MSG_NORMAL, "Data file must have at least 2 columns; this file only has %ld near line %ld. Exiting.\n", n_fields, n_read);
+				GMT_Report (API, GMT_MSG_NORMAL, "Data file must have at least 2 columns; this file only has %d near line %" PRIu64 ". Exiting.\n", n_fields, n_read);
 			Return (EXIT_FAILURE);
 		}
 

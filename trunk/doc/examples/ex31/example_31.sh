@@ -75,8 +75,8 @@ $AWK 'BEGIN {FS=","; f="L 8 LinBiolinumO L"}
 gmtset FONT_ANNOT_PRIMARY 8p
 
 # plot legend
-pslegend -R -J -Gwhite -Dx7.9c/12.6c/8.0c/BL \
--C0.3c/0.4c -L1.2 -F -O legend.txt >> $ps
+pslegend -R -J -Dx7.9c/12.6c/8.0c/BL \
+-C0.3c/0.4c -L1.2 -F+p+fwhite -O legend.txt >> $ps
 
 # make a PostScript and a PDF file with outlined fonts
 # unfortunately ps2raster won't be able to crop that file correctly anymore

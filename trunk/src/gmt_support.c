@@ -10209,7 +10209,7 @@ struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT
 
 			ndig = irint (floor (log10 ((double)Tin->segment[seg]->n_rows))) + 1;	/* Determine how many decimals are needed for largest id */
 
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Process Segment %s [segment %ld] which has %ld crossing profiles\n", Tin->segment[seg]->label, seg, Tin->segment[seg]->n_rows);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Process Segment %s [segment %" PRIu64 "] which has %" PRIu64 " crossing profiles\n", Tin->segment[seg]->label, seg, Tin->segment[seg]->n_rows);
 
 			/* Resample control point track along great circle paths using specified sampling interval */
 
@@ -10217,7 +10217,7 @@ struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT
 				/* Compute segment line orientation (-90/90) from azimuths */
 				orientation = 0.5 * fmod (2.0 * Tin->segment[seg]->coord[SEG_AZIM][row], 360.0);
 				if (orientation > 90.0) orientation -= 180.0;
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Working on cross profile %ld [local line orientation = %06.1f]\n", row, orientation);
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Working on cross profile %" PRIu64 " [local line orientation = %06.1f]\n", row, orientation);
 
 				x = Tin->segment[seg]->coord[GMT_X][row];	y = Tin->segment[seg]->coord[GMT_Y][row];	/* Reset since now we want lon/lat regardless of grid format */
 				GMT_geo_to_cart (GMT, y, x, P, true);		/* 3-D vector of current point P */
@@ -10346,13 +10346,13 @@ struct GMT_DATASET * gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT
 
 			ndig = irint (floor (log10 ((double)Tin->segment[seg]->n_rows))) + 1;	/* Determine how many decimals are needed for largest id */
 
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Process Segment %s [segment %ld] which has %ld crossing profiles\n", Tin->segment[seg]->label, seg, Tin->segment[seg]->n_rows);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Process Segment %s [segment %" PRIu64 "] which has %" PRIu64 " crossing profiles\n", Tin->segment[seg]->label, seg, Tin->segment[seg]->n_rows);
 
 			for (row = 0; row < Tin->segment[seg]->n_rows; row++) {	/* Process each point along segment */
 				/* Compute segment line orientation (-90/90) from azimuths */
 				orientation = 0.5 * fmod (2.0 * Tin->segment[seg]->coord[SEG_AZIM][row], 360.0);
 				if (orientation > 90.0) orientation -= 180.0;
-				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Working on cross profile %ld [local line orientation = %06.1f]\n", row, orientation);
+				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Working on cross profile %" PRIu64 " [local line orientation = %06.1f]\n", row, orientation);
 
 				x = Tin->segment[seg]->coord[GMT_X][row];	y = Tin->segment[seg]->coord[GMT_Y][row];	/* Reset since now we want lon/lat regardless of grid format */
 				az_cross = fmod (Tin->segment[seg]->coord[SEG_AZIM][row] + 270.0, 360.0);	/* Azimuth of cross-profile in 0-360 range */

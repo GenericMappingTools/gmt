@@ -282,8 +282,8 @@ int GMT_colmath (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 	
-	GMT_Report (API, GMT_MSG_VERBOSE, "%d tables %s, %ld records passed (input cols = %d; output cols = %d)\n", D[GMT_IN]->n_tables, method[Ctrl->A.active], D[GMT_OUT]->n_records, n_cols_in, n_cols_out);
-	if (Ctrl->S.active) GMT_Report (API, GMT_MSG_VERBOSE, "Extracted %ld from a total of %ld segments\n", n_out_seg, D[GMT_OUT]->table[tbl_ver]->n_segments);
+	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " tables %s, %" PRIu64 " records passed (input cols = %" PRIu64 "; output cols = %" PRIu64 ")\n", D[GMT_IN]->n_tables, method[Ctrl->A.active], D[GMT_OUT]->n_records, n_cols_in, n_cols_out);
+	if (Ctrl->S.active) GMT_Report (API, GMT_MSG_VERBOSE, "Extracted %" PRIu64 " from a total of %" PRIu64 "segments\n", n_out_seg, D[GMT_OUT]->table[tbl_ver]->n_segments);
 
 	Return (GMT_OK);
 }

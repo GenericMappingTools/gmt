@@ -5165,7 +5165,7 @@ int gmt_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 		
 		for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment in the table */
 			if (!GMT_crossing_dateline (GMT, T->segment[seg])) continue;	/* GIS-safe feature! */
-			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Feature %ld crosses the Dateline\n", seg);
+			GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Feature %" PRIu64 " crosses the Dateline\n", seg);
 			if (!GMT->common.a.clip) continue;	/* Not asked to clip */
 			/* Here we must split into east and west part(s) */
 			if (T->ogr->geometry == GMT_IS_POLYGON || T->ogr->geometry == GMT_IS_MULTIPOLYGON) {	/* Clipping must add dateline segments */

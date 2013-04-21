@@ -168,9 +168,9 @@ int GMT_splitxyz_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use negative width to highpass.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Write individual segments to separate files [Default writes one\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   multisegment file to stdout].  Append file name template which MUST\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   contain a C-style format for a long integer (e.g., %%ld) that represents\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   contain a C-style format for a long integer (e.g., %%d) that represents\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   a sequential segment number across all tables (if more than one table).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses splitxyz_segment_%%ld.txt (or .bin for binary)].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses splitxyz_segment_%%d.txt (or .bin for binary)].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, supply a template with two long formats and we will\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   replace them with the table number and table segment numbers.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Indicate what output you want as one or more of xyzdh in any order;\n");
@@ -567,7 +567,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args)
 	GMT_Report (API, GMT_MSG_VERBOSE, " Split %" PRIu64 " data into %" PRIu64 " segments.\n", D[GMT_IN]->n_records, nprofiles);
 	if (Ctrl->N.active) {
 		int n_formats = 0;
-		if (!Ctrl->N.name) Ctrl->N.name = (GMT->common.b.active[GMT_OUT]) ? strdup ("splitxyz_segment_%ld.bin") : strdup ("splitxyz_segment_%ld.txt");
+		if (!Ctrl->N.name) Ctrl->N.name = (GMT->common.b.active[GMT_OUT]) ? strdup ("splitxyz_segment_%d.bin") : strdup ("splitxyz_segment_%d.txt");
 		for (k = 0; Ctrl->N.name[k]; k++) if (Ctrl->N.name[k] == '%') n_formats++;
 		D[GMT_OUT]->io_mode = (n_formats == 2) ? GMT_WRITE_TABLE_SEGMENT: GMT_WRITE_SEGMENT;
 		/* The io_mode tells the i/o function to split segments into files */

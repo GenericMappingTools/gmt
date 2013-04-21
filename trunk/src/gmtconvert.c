@@ -472,11 +472,11 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 			while ( (p = strchr (p, '%')) ) {
 				/* found %, now check format */
 				++p;	/* Skip the % sign */
-				p += strspn (p, "0123456789"); /* span past digits */
+				p += strspn (p, "0123456789."); /* span past digits */
 				if ( strspn (p, "diu") == 0 ) {
 					/* no valid conversion specifier */
 					GMT_Report (API, GMT_MSG_NORMAL,
-							"Syntax error: Use of unsupported conversion specifier at %" PRIuS " in format string '%s'.\n",
+							"Syntax error: Use of unsupported conversion specifier at position %" PRIuS " in format string '%s'.\n",
 							p - Ctrl->D.name + 1, Ctrl->D.name);
 					exit (EXIT_FAILURE);
 				}
@@ -506,8 +506,8 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "%d tables %s, %ld records passed (input cols = %d; output cols = %d)\n", D[GMT_IN]->n_tables, method[Ctrl->A.active], D[GMT_OUT]->n_records, n_cols_in, n_cols_out);
-	if (Ctrl->S.active) GMT_Report (API, GMT_MSG_VERBOSE, "Extracted %ld from a total of %ld segments\n", n_out_seg, D[GMT_OUT]->n_segments);
+	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " tables %s, %" PRIu64 "records passed (input cols = %d; output cols = %d)\n", D[GMT_IN]->n_tables, method[Ctrl->A.active], D[GMT_OUT]->n_records, n_cols_in, n_cols_out);
+	if (Ctrl->S.active) GMT_Report (API, GMT_MSG_VERBOSE, "Extracted %" PRIu64 " from a total of %" PRIu64 " segments\n", n_out_seg, D[GMT_OUT]->n_segments);
 
 	Return (GMT_OK);
 }

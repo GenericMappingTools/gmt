@@ -402,7 +402,7 @@ int GMT_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		GMT_free (GMT, tmp_i);
 	}
 
-	if (nr_oor > 0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %ld out-of-range grid values converted to _FillValue [%s]\n", nr_oor, header->name);
+	if (nr_oor > 0) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: %" PRIu64 " out-of-range grid values converted to _FillValue [%s]\n", nr_oor, header->name);
 
 	GMT_free (GMT, actual_col);
 
