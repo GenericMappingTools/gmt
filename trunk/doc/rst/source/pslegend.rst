@@ -12,7 +12,7 @@ Synopsis
 **pslegend** [ *textfile* ]
 **-D**\ [**x**\ ]\ *lon*/*lat*/*width*\ [/*height*]/\ *just*\ [/*dx*/*dy*]
 [ **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ *dx*/*dy* ] [
-**-F**\ [**+i**\ [[*gap*/]*pen*]][\ **+p**\ *pen*][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*fill*\ ]]] ] [
+**-F**\ [\ **+f**\ *fill*][**+i**\ [[*gap*/]*pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ] [
 **-J**\ *parameters* ] [ **-K** ] [ **-L**\ *spacing* ] [ **-O** ] [
 **-P** ] [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
 **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*\ ]
@@ -57,9 +57,10 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 **-C**\ *dx*/*dy*
     Sets the clearance between the legend frame and the internal items
     [4\ **p**/4\ **p**].
-**-F**\ [**+i**\ [[*gap*/]*pen*]][\ **+p**\ *pen*][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*fill*\ ]]]
-    Draws a rectangular border around the legend using
+**-F**\ [\ **+f**\ *fill*][**+i**\ [[*gap*/]*pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*fill*\ ]]]
+    WIth **=P**, draws a rectangular border around the legend using
     **MAP\_FRAME\_PEN**; specify a different pen with **+p**\ *pen*.
+    Add **+f**\ *fill* to fill the legend box [no fill]
     Append **+i** to draw a secondary, inner border as well. We use a
     *gap* between borders of 2\ **p** and the **MAP\_DEFAULTS\_PEN**
     unless other values are specified. Append **+r** to draw rounded
@@ -68,8 +69,6 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     **+s** to draw an offset background shaded region. Here, *dx*/*dy*
     indicates the shift relative to the foreground frame
     [4\ **p**/-4\ **p**] and *fill* sets the shading to use [SHADE].
-**-G**\ *fill*
-    Select fill shade, color or pattern of the legend box [Default is no fill]. 
 
 .. include:: explain_-J.rst_
 
@@ -233,8 +232,8 @@ Wedge: Angles are -30 and 30 degrees.
 To add an example of a legend to a Mercator plot (map.ps) with the given
 specifications, use
 
-    pslegend -R-10/10/-10/10 -JM6i -Gazure1 -Dx0.5i/0.5i/5i/3.3i/BL
-    -C0.1i/0.1i -L1.2 -Fr -B5f1 << EOF >> map.ps
+    pslegend -R-10/10/-10/10 -JM6i -F+fazure1 -Dx0.5i/0.5i/5i/3.3i/BL
+    -C0.1i/0.1i -L1.2 -B5f1 << EOF >> map.ps
 
     # Legend test for pslegend
 
