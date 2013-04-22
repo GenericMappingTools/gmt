@@ -2,25 +2,24 @@
 greenspline
 ***********
 
-greenspline - Interpolate using Green’s functions for splines in 1-3
-dimensions
+greenspline - Interpolate using Green’s functions for splines in 1-3 dimensions
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
-**greenspline** [ *table* ] [
-**-A**\ [**1**\ \|\ **2**\ \|\ **3**\ \|\ **4**\ \|\ **5**,]\ *gradfile*
-] [ **-C**\ [**n**\ |\ **v**]\ *cut*\ [/*file*] ] [ **-D**\ *mode* ] [ **-G**\ *grdfile* ]
-[ **-I**\ *xinc*\ [/*yinc*\ [/*zinc*\ ]] ] [ **-L** ] [ **-N**\ *nodefile*
-] [ **-Q**\ *az*\ \|\ *x/y/z* ] [
-**-R**\ *xmin*/*xmax*\ [/*ymin*/*ymax*\ [/*zmin*\ *zmax*]] ] [
-**-S**\ **c\|l\|t\|g\|p\|q**\ [*pars*\ ] ] [ **-T**\ *maskgrid* ] [
-**-V**\ [*level*\ ] ] [ **-W** ]  [ **-bi**\ [*ncols*\ ][*type*\ ] ] [
-**-bo**\ [*ncols*\ ][*type*\ ] ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-o**\ *cols*\ [,*...*] ] [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
+**greenspline** [ *table* ]
+[ **-A**\ [**1**\ \|\ **2**\ \|\ **3**\ \|\ **4**\ \|\ **5**,]\ *gradfile* ]
+[ **-C**\ [**n**\ \|\ **v**]\ *cut*\ [/*file*] ] [ **-D**\ *mode* ] [ **-G**\ *grdfile* ]
+[ **-I**\ *xinc*\ [/*yinc*\ [/*zinc*]] ] [ **-L** ] [ **-N**\ *nodefile* ]
+[ **-Q**\ *az*\ \|\ *x/y/z* ]
+[ |SYN_OPT-Rz| ]
+[ **-S**\ **c\|l\|t\|g\|p\|q**\ [*pars*] ] [ **-T**\ *maskgrid* ]
+[ |SYN_OPT-V| ] [ **-W** ]  [ **-bi**\ [*ncols*][*type*] ]
+[ **-bo**\ [*ncols*][*type*] ] [ **-h**\ [**i**\ \|\ **o**][*n*] ]
+[ |SYN_OPT-i| ]
+[ **-o**\ *cols*\ [,\ *...*] ] [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
 
 |No-spaces|
 
@@ -79,7 +78,7 @@ None.
     **x**, **v**. **5**: records contain **x**, **n**, *v*. Append name
     of ASCII file with the surface gradients (following a comma if a
     format is specified).
-**-C**\ [**n**\ |\ **v**]\ *cut*\ [/*file*]
+**-C**\ [**n**\ \|\ **v**]\ *cut*\ [/*file*]
     Find an approximate surface fit: Solve the linear system for the
     spline coefficients by SVD and eliminate the contribution from all
     eigenvalues whose ratio to the largest eigenvalue is less than *cut*
@@ -160,7 +159,7 @@ None.
     coordinates are geographical; note the shorthands **-Rg** and
     **-Rd** cannot be used if a 3-D domain is specified.
 
-**-S**\ **c\|l\|t\|g\|p\|q**\ [*pars*\ ]
+**-S**\ **c\|l\|t\|g\|p\|q**\ [*pars*]
     Select one of six different splines. The first two are used for
     1-D, 2-D, or 3-D Cartesian splines (see **-D** for discussion). Note
     that all tension values are expected to be normalized tension in the
@@ -193,10 +192,10 @@ None.
 **-W**
    Expect data weights in the final input column, typically given as
    weight = 1 / sigma, the data uncertainty.  This results in a weighted
-   least squares fit.  Note that this only has an effect if **-CC* is used.
+   least squares fit.  Note that this only has an effect if **-CC** is used.
 
 .. |Add_-bi| replace:: [Default is 2-4 input
-    columns (**x**,\ *w*); the number depends on the chosen dimension].
+   columns (**x**,\ *w*); the number depends on the chosen dimension].
 .. include:: explain_-bi.rst_
     
 .. |Add_-bo| unicode:: 0x20 .. just an invisible code
