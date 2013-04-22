@@ -34,7 +34,7 @@ int main (int argc, char *argv[]) {
 
 	for (k = strlen (argv[0]); k > 0 && argv[0][k] != '/'; k--);	/* Find start of program name after any leading dirs */
 	if (k) k++;	/* Unless there is no slash, advance one past the last slash we found */
-	if (strncmp (&argv[0][k], "gmt5", 4)) {	/* Does not match gmt5 so it is another module via symbolic link */
+	if (strncmp (&argv[0][k], "gmt", 3)) {	/* Does not match gmt so it is another module via symbolic link */
 		item = 0;	/* Argv[0] holds the name of the module */
 		module = &argv[0][k];
 	}
@@ -42,7 +42,7 @@ int main (int argc, char *argv[]) {
 		module = argv[1];
 	
 	if (argc < 2 && item == 1) {
-		fprintf (stderr, "gmt5 - The Generic Mapping Tools, Version %s\n", GMT_VERSION);
+		fprintf (stderr, "gmt - The Generic Mapping Tools, Version %s\n", GMT_VERSION);
 		fprintf (stderr, "Copyright 1991-%d Paul Wessel, Walter H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe\n\n", GMT_VERSION_YEAR);
 
 		fprintf (stderr, "This program comes with NO WARRANTY, to the extent permitted by law.\n");
@@ -90,7 +90,7 @@ int main (int argc, char *argv[]) {
 	}
 
 	if ((module_id = gmt_module_lookup (module)) == k_mod_nongmt) {
-		fprintf (stderr, "gmt5: No such program: %s\n", module);
+		fprintf (stderr, "gmt: No such program: %s\n", module);
 		return EXIT_FAILURE;
 	}
 
