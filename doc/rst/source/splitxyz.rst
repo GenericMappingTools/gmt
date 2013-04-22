@@ -168,4 +168,4 @@ this:
 `See Also <#toc9>`_
 -------------------
 
-`gmt <gmt.html>`_, `mgd77list <mgd77list.html>`_, `pswiggle <pswiggle.html>`_
+`gmt5 <gmt5.html>`_, `mgd77list <mgd77list.html>`_, `pswiggle <pswiggle.html>`_

@@ -171,4 +171,4 @@ reconstructions, see the GMT "spotter" supplement.
 See Also
 --------
 
-`gmt <gmt.html>`_, `project <project.html>`_, `mapproject <mapproject.html>`_
+`gmt5 <gmt5.html>`_, `project <project.html>`_, `mapproject <mapproject.html>`_

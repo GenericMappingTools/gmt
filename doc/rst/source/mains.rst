@@ -12,7 +12,7 @@ Mains
    filter1d
    fitcircle
    gmt.conf
-   gmt
+   gmt5
    gmt2kml
    gmtaverage
    gmtcolors

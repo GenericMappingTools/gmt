@@ -261,7 +261,7 @@ correct BoundingBox.
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
+`gmt5 <gmt5.html>`_, `gmt.conf <gmt.conf.html>`_,
 `gmtcolors <gmtcolors.html>`_,
 `ps2raster <ps2raster.html>`_,
 `psbasemap <psbasemap.html>`_,

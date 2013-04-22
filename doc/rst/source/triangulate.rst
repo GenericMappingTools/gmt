@@ -143,7 +143,7 @@ To instead plot the Voronoi cell outlines, try
 See Also
 --------
 
-`gmt <gmt.html>`_, `pscontour <pscontour.html>`_
+`gmt5 <gmt5.html>`_, `pscontour <pscontour.html>`_
 
 References
 ----------

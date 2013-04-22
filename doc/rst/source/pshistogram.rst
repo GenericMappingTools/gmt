@@ -175,6 +175,6 @@ the current setting of **TIME\_UNIT**.
 `See Also <#toc8>`_
 -------------------
 
-`gmt <gmt.html>`_, `gmtcolors <gmtcolors.html>`_,
+`gmt5 <gmt5.html>`_, `gmtcolors <gmtcolors.html>`_,
 `psbasemap <psbasemap.html>`_, `psrose <psrose.html>`_,
 `psxy <psxy.html>`_

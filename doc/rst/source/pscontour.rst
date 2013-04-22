@@ -219,7 +219,7 @@ pscontour topo.txt -C100 -Dcontours\_%.0f.txt
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
+`gmt5 <gmt5.html>`_, `gmt.conf <gmt.conf.html>`_,
 `gmtcolors <gmtcolors.html>`_,
 `grdcontour <grdcontour.html>`_,
 `grdimage <grdimage.html>`_,

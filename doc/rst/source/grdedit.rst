@@ -126,4 +126,4 @@ this information, run
 `See Also <#toc9>`_
 -------------------
 
-`gmt <gmt.html>`_, `grd2xyz <grd2xyz.html>`_, `xyz2grd <xyz2grd.html>`_
+`gmt5 <gmt5.html>`_, `grd2xyz <grd2xyz.html>`_, `xyz2grd <xyz2grd.html>`_

@@ -245,5 +245,5 @@ origin.d for a certain projection, try
 `See Also <#toc13>`_
 --------------------
 
-`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_, `grdlandmask <grdlandmask.html>`_,
+`gmt5 <gmt5.html>`_, `gmt.conf <gmt.conf.html>`_, `grdlandmask <grdlandmask.html>`_,
 `pscoast <pscoast.html>`_

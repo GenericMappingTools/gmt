@@ -5263,10 +5263,9 @@ int GMT_Message (void *V_API, unsigned int mode, char *format, ...)
 	if (mode % 4) sprintf (message, "%s | ", stamp);	/* Lead with the time stamp */
 	source_info_len = strlen (message);
 	vsnprintf (message + source_info_len, 4*GMT_BUFSIZ - source_info_len, format, args);
-	assert (strlen (message) >= 4*GMT_BUFSIZ);
-	API->print_func (API->GMT->session.std[GMT_ERR], message);	/* Do the printing */
 	va_end (args);
-	assert (strlen (message) >= 4*GMT_BUFSIZ);
+	assert (strlen (message) < GMT_BUFSIZ);
+	API->print_func (API->GMT->session.std[GMT_ERR], message);	/* Do the printing */
 	return (GMT_NOERROR);
 }
 
@@ -5300,8 +5299,8 @@ int GMT_Report (void *V_API, unsigned int level, char *format, ...)
 	/* append format to the message: */
 	vsnprintf (message + source_info_len, GMT_BUFSIZ - source_info_len, format, args);
 	va_end (args);
+	assert (strlen (message) < GMT_BUFSIZ);
 	API->print_func (API->GMT->session.std[GMT_ERR], message);
-	assert (strlen (message) >= GMT_BUFSIZ);
 	return (GMT_NOERROR);
 }
 

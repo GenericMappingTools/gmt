@@ -287,7 +287,7 @@ Institute, Lensfield Road, Cambridge CB2 1ER, United Kingdom.
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
+`gmt5 <gmt5.html>`_, `gmt.conf <gmt.conf.html>`_,
 `gmtcolors <gmtcolors.html>`_,
 `grdlandmask <grdlandmask.html>`_,
 `psbasemap <psbasemap.html>`_

@@ -322,7 +322,7 @@ such duplication.
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
+`gmt5 <gmt5.html>`_, `gmt.conf <gmt.conf.html>`_,
 `gmtcolors <gmtcolors.html>`_,
 `psbasemap <psbasemap.html>`_, `pstext <pstext.html>`_,
 `psxy <psxy.html>`__

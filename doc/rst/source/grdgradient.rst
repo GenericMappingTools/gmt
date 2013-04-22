@@ -173,7 +173,7 @@ IEEE, Vol. 69, No. 1, January 1981, pp. 14-47.
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_ 
+`gmt5 <gmt5.html>`_, `gmt.conf <gmt.conf.html>`_ 
 `grdhisteq <grdhisteq.html>`_,
 `grdimage <grdimage.html>`_, `grdview <grdview.html>`_,
 `grdvector <grdvector.html>`_

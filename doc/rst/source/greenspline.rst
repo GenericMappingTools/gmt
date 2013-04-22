@@ -355,7 +355,7 @@ Wessel, P., 2009, A general-purpose Green's function interpolator,
 `See Also <#toc13>`_
 --------------------
 
-`gmt <gmt.html>`_, `gmtmath <gmtmath.html>`_,
+`gmt5 <gmt5.html>`_, `gmtmath <gmtmath.html>`_,
 `nearneighbor <nearneighbor.html>`_, `psxy <psxy.html>`_,
 `surface <surface.html>`_,
 `triangulate <triangulate.html>`_, `xyz2grd <xyz2grd.html>`_

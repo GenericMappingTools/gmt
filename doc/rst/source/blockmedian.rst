@@ -142,7 +142,7 @@ See Also
 --------
 
 `blockmean <blockmean.html>`_,
-`blockmode <blockmode.html>`_, `gmt <gmt.html>`_,
+`blockmode <blockmode.html>`_, `gmt5 <gmt5.html>`_,
 `gmt.conf <gmt.conf.html>`_,
 `nearneighbor <nearneighbor.html>`_,
 `surface <surface.html>`_,

@@ -130,6 +130,6 @@ at least one value:
 
 `blockmean <blockmean.html>`_,
 `blockmedian <blockmedian.html>`_,
-`blockmode <blockmode.html>`_, `gmt <gmt.html>`_,
+`blockmode <blockmode.html>`_, `gmt5 <gmt5.html>`_,
 `surface <surface.html>`_,
 `triangulate <triangulate.html>`_

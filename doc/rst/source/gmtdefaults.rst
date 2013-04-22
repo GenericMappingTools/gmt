@@ -79,6 +79,6 @@ parameters will be used.
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
+`gmt5 <gmt5.html>`_, `gmt.conf <gmt.conf.html>`_,
 `gmtcolors <gmtcolors.html>`_, `gmtget <gmtget.html>`_,
 `gmtset <gmtset.html>`_

@@ -223,7 +223,7 @@ remotely located Jessica Rabbit
 `See Also <#toc9>`_
 -------------------
 
-`gmt <gmt.html>`_, `grd2rgb <grd2rgb.html>`_,
+`gmt5 <gmt5.html>`_, `grd2rgb <grd2rgb.html>`_,
 `grdcontour <grdcontour.html>`_,
 `grdview <grdview.html>`_,
 `grdgradient <grdgradient.html>`_,

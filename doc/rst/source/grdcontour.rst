@@ -220,7 +220,7 @@ contours_O.txt for open contours, try
 `See Also <#toc9>`_
 -------------------
 
-`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
+`gmt5 <gmt5.html>`_, `gmt.conf <gmt.conf.html>`_,
 `gmtcolors <gmtcolors.html>`_,
 `psbasemap <psbasemap.html>`_,
 `grdimage <grdimage.html>`_, `grdview <grdview.html>`_,

@@ -604,6 +604,6 @@ Publishing Corp.
 `See Also <#toc16>`_
 --------------------
 
-`gmt <gmt.html>`_, `gmtmath <gmtmath.html>`_,
+`gmt5 <gmt5.html>`_, `gmtmath <gmtmath.html>`_,
 `grd2xyz <grd2xyz.html>`_, `grdedit <grdedit.html>`_,
 `grdinfo <grdinfo.html>`_, `xyz2grd <xyz2grd.html>`_

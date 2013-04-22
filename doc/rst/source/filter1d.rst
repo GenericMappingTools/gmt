@@ -161,4 +161,4 @@ v3312.dt, checking for gaps of 10km and asymmetry of 0.3:
 See Also
 --------
 
-`gmt <gmt.html>`_ , `sample1d <sample1d.html>`_
+`gmt5 <gmt5.html>`_ , `sample1d <sample1d.html>`_

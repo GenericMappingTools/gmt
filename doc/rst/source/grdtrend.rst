@@ -103,4 +103,4 @@ and reporting the progress:
 `See Also <#toc9>`_
 -------------------
 
-`gmt <gmt.html>`_, `grdfft <grdfft.html>`_, `grdfilter <grdfilter.html>`_
+`gmt5 <gmt5.html>`_, `grdfft <grdfft.html>`_, `grdfilter <grdfilter.html>`_

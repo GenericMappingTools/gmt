@@ -165,7 +165,7 @@ and plot this data set instead.
 `See Also <#toc8>`_
 -------------------
 
-`gmt <gmt.html>`_, `gmtcolors <gmtcolors.html>`_,
+`gmt5 <gmt5.html>`_, `gmtcolors <gmtcolors.html>`_,
 `filter1d <filter1d.html>`_,
 `psbasemap <psbasemap.html>`_,
 `splitxyz <splitxyz.html>`_

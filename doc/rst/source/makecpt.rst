@@ -143,4 +143,4 @@ as an output filename; hence the my\_gebco.cpt in the example.
 `See Also <#toc8>`_
 -------------------
 
-`gmt <gmt.html>`_, `grd2cpt <grd2cpt.html>`_
+`gmt5 <gmt5.html>`_, `grd2cpt <grd2cpt.html>`_

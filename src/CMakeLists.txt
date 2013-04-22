@@ -114,7 +114,7 @@ set (GMT_PROGS2_SRCS gmtaverage.c testapi.c)
 set (GMT_DEMOS2_SRCS gmtmercmap.c testgmt5.c testgmtio.c testgrdio.c testio.c)
 
 # source files
-set (GMT_DEMOS_SRCS gmt.c ${GMT_DEMOS2_SRCS})
+set (GMT_DEMOS_SRCS gmt5.c ${GMT_DEMOS2_SRCS})
 
 if (NOT LICENSE_RESTRICTED) # off
 	# enable Shewchuk's triangle routine
@@ -152,7 +152,7 @@ list (APPEND GMT_PROGS_SRCS ${GMT_PROGS2_SRCS})
 set (GMT_PSL_SRCS pslib.c common_string.c common_string.h common_runpath.c
 	common_runpath.h declspec.h gmt_config.h gmt_notposix.h)
 
-# libgmt
+# libgmt5
 set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	common_runpath.h common_string.h declspec.h getopt.h gmt_dev.h gmt_calclock.h
 	gmt_colors.h gmt_common.h gmt_constants.h gmt_contour.h gmt_crossing.h
@@ -321,7 +321,7 @@ endif (HAVE_M_LIBRARY)
 # set the build version (VERSION) and the API version (SOVERSION)
 set_target_properties (pslib
 	PROPERTIES
-	OUTPUT_NAME psl
+	OUTPUT_NAME psl5
 	PREFIX lib
 	IMPORT_PREFIX lib
 	VERSION ${GMT_PACKAGE_VERSION}
@@ -364,7 +364,7 @@ foreach (_dir ${GMT_SUPPL_DIRS})
 	include_directories (${CMAKE_CURRENT_BINARY_DIR}/${_dir})
 endforeach (_dir)
 
-# libgmt
+# libgmt5
 add_library (gmtlib
 	${GMT_GEN_HDRS}
 	${GMT_LIB_SRCS}
@@ -387,7 +387,7 @@ endif (HAVE_M_LIBRARY)
 # set the build version (VERSION) and the API version (SOVERSION)
 set_target_properties (gmtlib
 	PROPERTIES
-	OUTPUT_NAME gmt
+	OUTPUT_NAME gmt5
 	PREFIX lib
 	IMPORT_PREFIX lib
 	VERSION ${GMT_PACKAGE_VERSION}
@@ -454,11 +454,11 @@ create_debug_sym (${GMT_LIBS} ${GMT_PROGS} ${GMT_DEMOS})
 add_dependencies (check ${GMT_PROGS} ${GMT_DEMOS} psldemo
 	gmt_suppl)
 
-# Rename gmt target on non-monolithic installs to prevent version clash
+# Rename gmt5 target on non-monolithic installs to prevent version clash
 if (NOT GMT_INSTALL_MONOLITHIC)
-	set_target_properties (gmt
+	set_target_properties (gmt5
 		PROPERTIES
-		OUTPUT_NAME gmt${GMT_INSTALL_NAME_SUFFIX})
+		OUTPUT_NAME gmt5${GMT_INSTALL_NAME_SUFFIX})
 endif (NOT GMT_INSTALL_MONOLITHIC)
 
 # add the install targets
@@ -474,7 +474,7 @@ if (WIN32 AND _debug_build)
 	# install program database files
 	set (_pdb_files)
 	if (NOT DEFINED PSL_DLL_RENAME)
-		foreach (_target libpsl libgmt ${GMT_PROGS} ${GMT_DEMOS})
+		foreach (_target libpsl5 libgmt5 ${GMT_PROGS} ${GMT_DEMOS})
 			list (APPEND _pdb_files "${CMAKE_CURRENT_BINARY_DIR}/${_target}.pdb")
 		endforeach ()
 	else ()

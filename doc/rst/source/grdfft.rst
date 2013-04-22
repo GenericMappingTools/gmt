@@ -195,5 +195,5 @@ You can now make plots of the data in topo\_taper.nc, topo\_real.nc, and topo\_i
 See Also
 --------
 
-`gmt <gmt.html>`_, `grdedit <grdedit.html>`_,
+`gmt5 <gmt5.html>`_, `grdedit <grdedit.html>`_,
 `grdmath <grdmath.html>`_, `grdproject <grdproject.html>`_
