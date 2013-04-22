@@ -149,4 +149,4 @@ all close lines.
 `See Also <#toc10>`_
 --------------------
 
-`gmt5 <gmt5.html>`_ , `mapproject <mapproject.html>`_
+`gmt <gmt.html>`_ , `mapproject <mapproject.html>`_

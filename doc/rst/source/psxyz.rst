@@ -227,6 +227,6 @@ to obtain the correct BoundingBox.
 See Also
 --------
 
-`gmt5 <gmt5.html>`_, `gmt.conf <gmt.conf.html>`_,
+`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
 `gmtcolors <gmtcolors.html>`_,
 `psbasemap <psbasemap.html>`_, `psxy <psxy.html>`_

@@ -61,6 +61,6 @@ To extract the lon,lat values from the KML file google.kml, try
 `See Also <#toc7>`_
 -------------------
 
-`gmt5 <gmt5.html>`_, `gmt.conf <gmt.conf.html>`_,
+`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
 `img2google <img2google.html>`_,
 `ps2raster <ps2raster.html>`_, `gmt2kml <gmt2kml.html>`_

@@ -248,4 +248,4 @@ To creat a dumb file saved as a 32 bits float GeoTiff using GDAL, run
 `See Also <#toc11>`_
 --------------------
 
-`gmt.conf <gmt.conf.html>`_, `gmt5 <gmt5.html>`_, `grdmath <grdmath.html>`_
+`gmt.conf <gmt.conf.html>`_, `gmt <gmt.html>`_, `grdmath <grdmath.html>`_

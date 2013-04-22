@@ -160,4 +160,4 @@ the current setting of **TIME_UNIT**.
 See Also
 --------
 
-`gmt5 <gmt5.html>`_
+`gmt <gmt.html>`_

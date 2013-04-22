@@ -119,5 +119,5 @@ ship.xyg
 `See Also <#toc8>`_
 -------------------
 
-`gmt5 <gmt5.html>`_ , `project <project.html>`_ ,
+`gmt <gmt.html>`_ , `project <project.html>`_ ,
 `sample1d <sample1d.html>`_

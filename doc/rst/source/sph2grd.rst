@@ -106,4 +106,4 @@ degree and order normalized associated Legendre functions:
 See Also
 --------
 
-`gmt5 <gmt5.html>`_, `grdfft <grdfft.html>`_
+`gmt <gmt.html>`_, `grdfft <grdfft.html>`_

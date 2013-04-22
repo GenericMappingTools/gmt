@@ -139,5 +139,5 @@ To blend all the grids called MB\_\*.nc given them all equal weight, try
 `See Also <#toc9>`_
 -------------------
 
-`gmt5 <gmt5.html>`_, `grd2xyz <grd2xyz.html>`_,
+`gmt <gmt.html>`_, `grd2xyz <grd2xyz.html>`_,
 `grdedit <grdedit.html>`_ `grdraster <grdraster.html>`_

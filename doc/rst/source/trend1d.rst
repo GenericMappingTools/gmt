@@ -156,7 +156,7 @@ interpolant are significant in fitting data.xy, use:
 `See Also <#toc9>`_
 -------------------
 
-`gmt5 <gmt5.html>`_, `gmtmath <gmtmath.html>`_,
+`gmt <gmt.html>`_, `gmtmath <gmtmath.html>`_,
 `grdtrend <grdtrend.html>`_, `trend2d <trend2d.html>`_
 
 `References <#toc10>`_

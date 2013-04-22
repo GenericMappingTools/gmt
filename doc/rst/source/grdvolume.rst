@@ -115,7 +115,7 @@ rim in pixel oriented grids is ignored when using the **-C** flag.
 `See Also <#toc9>`_
 -------------------
 
-`gmt5 <gmt5.html>`_, `grdfilter <grdfilter.html>`_
+`gmt <gmt.html>`_, `grdfilter <grdfilter.html>`_
 
 `References <#toc10>`_
 ----------------------

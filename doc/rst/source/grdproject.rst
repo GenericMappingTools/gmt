@@ -131,4 +131,4 @@ than you are interested in.
 `See Also <#toc9>`_
 -------------------
 
-`gmt5 <gmt5.html>`_, `gmt.conf <gmt.conf.html>`_, `mapproject <mapproject.html>`_
+`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_, `mapproject <mapproject.html>`_

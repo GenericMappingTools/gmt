@@ -150,7 +150,7 @@ depths.xyz and send output to an ASCII table, run
 `See Also <#toc8>`_
 -------------------
 
-`gmt5 <gmt5.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
+`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
 `nearneighbor <nearneighbor.html>`_ ,
 `surface <surface.html>`_ ,
 `triangulate <triangulate.html>`_

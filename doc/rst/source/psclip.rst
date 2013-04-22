@@ -157,5 +157,5 @@ to give the desired effect.
 `See Also <#toc8>`_
 -------------------
 
-`gmt5 <gmt5.html>`_, `grdmask <grdmask.html>`_,
+`gmt <gmt.html>`_, `grdmask <grdmask.html>`_,
 `psbasemap <psbasemap.html>`_, `psmask <psmask.html>`_

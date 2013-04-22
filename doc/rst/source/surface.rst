@@ -181,7 +181,7 @@ grid using `grdsample <grdsample.html>`_ **-T**.
 
 `blockmean <blockmean.html>`_,
 `blockmedian <blockmedian.html>`_,
-`blockmode <blockmode.html>`_, `gmt5 <gmt5.html>`_,
+`blockmode <blockmode.html>`_, `gmt <gmt.html>`_,
 `nearneighbor <nearneighbor.html>`_,
 `triangulate <triangulate.html>`_
 

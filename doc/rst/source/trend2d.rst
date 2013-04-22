@@ -168,7 +168,7 @@ significant in fitting data.xyz, use:
 See Also
 --------
 
-`gmt5 <gmt5.html>`_, `grdmath <grdmath.html>`_,
+`gmt <gmt.html>`_, `grdmath <grdmath.html>`_,
 `grdtrend <grdtrend.html>`_, `trend1d <trend1d.html>`_
 
 References

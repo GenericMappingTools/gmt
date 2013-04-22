@@ -50,4 +50,4 @@ be searched recursively.)
 `See Also <#toc6>`_
 -------------------
 
-`gmt5 <gmt5.html>`_
+`gmt <gmt.html>`_

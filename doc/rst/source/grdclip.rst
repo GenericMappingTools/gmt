@@ -79,6 +79,6 @@ exchange 17 for 11 and all values < 10 to 0 in file classes.nc, try
 See Also
 --------
 
-`gmt5 <gmt5.html>`_, `grdlandmask <grdlandmask.html>`_,
+`gmt <gmt.html>`_, `grdlandmask <grdlandmask.html>`_,
 `grdmask <grdmask.html>`_, `grdmath <grdmath.html>`_,
 `grd2xyz <grd2xyz.html>`_, `xyz2grd <xyz2grd.html>`_

@@ -155,4 +155,4 @@ To obtain a rhumb line (loxodrome) sampled every 5 km instead, use
 `See Also <#toc10>`_
 --------------------
 
-`gmt5 <gmt5.html>`_, `gmt.conf <gmt.conf.html>`_, `filter1d <filter1d.html>`_
+`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_, `filter1d <filter1d.html>`_
