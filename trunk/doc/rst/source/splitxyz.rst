@@ -168,4 +168,4 @@ this:
 See Also
 --------
 
-`gmt5 <gmt5.html>`_, `mgd77list <mgd77list.html>`__, `pswiggle <pswiggle.html>`_
+`gmt <gmt.html>`_, `mgd77list <mgd77list.html>`__, `pswiggle <pswiggle.html>`_

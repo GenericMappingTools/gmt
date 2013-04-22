@@ -79,4 +79,4 @@ user matrix before saving to a grid file, try
 `See Also <#toc7>`_
 -------------------
 
-`gmt5 <gmt5.html>`_
+`gmt <gmt.html>`_

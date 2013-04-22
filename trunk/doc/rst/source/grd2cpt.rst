@@ -158,5 +158,5 @@ file relief, run
 `See Also <#toc8>`_
 -------------------
 
-`gmt5 <gmt5.html>`_, `gmt.conf <gmt.conf.html>`_,
+`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
 `grdhisteq <grdhisteq.html>`_, `grdinfo <grdinfo.html>`__ , `makecpt <makecpt.html>`_

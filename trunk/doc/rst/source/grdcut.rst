@@ -92,5 +92,5 @@ distance of 500 km from the point 45,30 try
 `See Also <#toc10>`_
 --------------------
 
-`gmt5 <gmt5.html>`_, `grdpaste <grdpaste.html>`_,
+`gmt <gmt.html>`_, `grdpaste <grdpaste.html>`_,
 `grdinfo <grdinfo.html>`_

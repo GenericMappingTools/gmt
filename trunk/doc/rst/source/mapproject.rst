@@ -264,7 +264,7 @@ results produced with other settings.
 `See Also <#toc11>`_
 --------------------
 
-`gmt5 <gmt5.html>`_, `gmt.conf <gmt.conf.html>`_, `project <project.html>`_
+`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_, `project <project.html>`_
 
 `References <#toc12>`_
 ----------------------

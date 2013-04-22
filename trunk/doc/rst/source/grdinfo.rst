@@ -102,5 +102,5 @@ To obtain all the information about the data set in file hawaii\_topo.nc:
 `See Also <#toc8>`_
 -------------------
 
-`gmt5 <gmt5.html>`_, `grd2cpt <grd2cpt.html>`_,
+`gmt <gmt.html>`_, `grd2cpt <grd2cpt.html>`_,
 `grd2xyz <grd2xyz.html>`_, `grdedit <grdedit.html>`_

@@ -231,4 +231,4 @@ erecting cross-profiles every 25 km and sampling the grid every 3 km, try
 `See Also <#toc11>`_
 --------------------
 
-`gmt5 <gmt5.html>`_, `surface <surface.html>`_, `sample1d <sample1d.html>`_
+`gmt <gmt.html>`_, `surface <surface.html>`_, `sample1d <sample1d.html>`_

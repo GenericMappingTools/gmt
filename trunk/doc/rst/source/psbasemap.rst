@@ -429,4 +429,4 @@ However, it is fairly simple for most applications (see examples).
 See Also
 --------
 
-`gmt5 <gmt5.html>`_, `gmt.conf <gmt.conf.html>`_, `gmtcolors <gmtcolors.html>`_
+`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_, `gmtcolors <gmtcolors.html>`_

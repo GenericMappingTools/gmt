@@ -88,6 +88,6 @@ To output the red component from the Sun raster radiation.ras file, use
 `See Also <#toc7>`_
 -------------------
 
-`gmt5 <gmt5.html>`_, `gmt.conf <gmt.conf.html>`_,
+`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
 `grdedit <grdedit.html>`_, `grdimage <grdimage.html>`_,
 `grdmath <grdmath.html>`_ , `grdview <grdview.html>`_

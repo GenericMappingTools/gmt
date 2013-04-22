@@ -135,6 +135,6 @@ Same exercise, but instead compute running polygon IDs starting at 100, do
 `See Also <#toc10>`_
 --------------------
 
-`gmt5 <gmt5.html>`_, `grdlandmask <grdlandmask.html>`_,
+`gmt <gmt.html>`_, `grdlandmask <grdlandmask.html>`_,
 `grdmath <grdmath.html>`_, `grdclip <grdclip.html>`_,
 `psmask <psmask.html>`_, `psclip <psclip.html>`_

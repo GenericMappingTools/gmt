@@ -186,4 +186,4 @@ of records within each segment, try
 `See Also <#toc8>`_
 -------------------
 
-`gmt5 <gmt5.html>`_ , `minmax <minmax.html>`_
+`gmt <gmt.html>`_ , `minmax <minmax.html>`_

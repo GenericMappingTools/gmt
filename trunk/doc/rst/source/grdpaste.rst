@@ -59,6 +59,6 @@ Suppose file\_a.nc is 150E - 180E and 0 - 30N, and file\_b.nc is 150E -
 `See Also <#toc8>`_
 -------------------
 
-`gmt5 <gmt5.html>`_, `grdblend <grdblend.html>`_,
+`gmt <gmt.html>`_, `grdblend <grdblend.html>`_,
 `grdcut <grdcut.html>`_, `grdinfo <grdinfo.html>`_,
 `grdsample <grdsample.html>`_

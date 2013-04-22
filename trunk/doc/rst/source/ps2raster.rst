@@ -295,4 +295,4 @@ documentation.
 `See Also <#toc10>`_
 --------------------
 
-`gmt5 <gmt5.html>`_
+`gmt <gmt.html>`_

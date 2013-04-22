@@ -195,4 +195,4 @@ Equator (i.e., x = y = 0 correspond to lon = lat = 0).
 `See Also <#toc10>`_
 --------------------
 
-`gmt5 <gmt5.html>`_, `grdfft <grdfft.html>`_ `img2mercgrd <img2mercgrd.html>`_
+`gmt <gmt.html>`_, `grdfft <grdfft.html>`_ `img2mercgrd <img2mercgrd.html>`_

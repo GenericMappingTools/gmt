@@ -40,5 +40,5 @@ Optional Arguments
 See Also
 --------
 
-`gmt5 <gmt5.html>`_, `gmtcolors <gmtcolors.html>`_,
+`gmt <gmt.html>`_, `gmtcolors <gmtcolors.html>`_,
 `psimage <psimage.html>`_
