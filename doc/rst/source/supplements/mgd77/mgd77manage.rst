@@ -4,24 +4,25 @@ mgd77manage
 
 mgd77manage - Manage the content of MGD77+ files
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**mgd77manage** *NGDC-ids* [
-**-A**\ [**+**\ ]\ **a**\ \|\ **c**\ \|\ **d**\ \|\ **D**\ \|\ **e**\ \|\ **E**\ \|\ **g**\ \|\ **i**\ \|\ **n**\ \|\ **t**\ \|\ **T**\ *fileinfo*
-] [ **-C**\ **f**\ \|\ **g**\ \|\ **e** ] [
-**-D**\ *abbrev1*,\ *abbrev2*,...) ] [ **-E**\ *empty* ] [ **-F** ] [
-**-I**\ *abbrev*/*name*/*unit*/**t**/*scale*/*offset*/*comment* ] [
-**-N**\ *unit* ] [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
-**-V**\ [*level*\ ] ] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [
-**-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*] ]
+**mgd77manage** *NGDC-ids*
+[ **-A**\ [**+**]\ **a**\ \|\ **c**\ \|\ **d**\ \|\ **D**\ \|\ **e**\ \|\ **E**\ \|\ **g**\ \|\ **i**\ \|\ **n**\ \|\ **t**\ \|\ **T**\ *fileinfo* ] 
+[ **-C**\ **f**\ \|\ **g**\ \|\ **e** ]
+[ **-D**\ *abbrev1*,\ *abbrev2*,...) ] [ **-E**\ *empty* ] [ **-F** ]
+[ **-I**\ *abbrev*/*name*/*unit*/**t**/*scale*/*offset*/*comment* ]
+[ **-N**\ *unit* ]
+[ **-R**\ *west*/*east*/*south*/*north*\ [**r**] ]
+[ |SYN_OPT-V| ] [ **-bi**\ [*ncols*\ ][*type*] ]
+[ |SYN_OPT-n| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **mgd77manage** deals with maintaining extra custom columns in MGD77+
 netCDF files. You can either delete one or more columns, add a new
@@ -35,14 +36,14 @@ MGD77+ file in the form of an extra data column of specified type. The
 data file will be modified; no new file will be created. For the big
 issues, see the DISCUSSION section below. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 .. include:: explain_ncid.rst_
 
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-A**\ [**+**\ ]\ **a**\ \|\ **c**\ \|\ **d**\ \|\ **D**\ \|\ **e**\ \|\ **E**\ \|\ **g**\ \|\ **i**\ \|\ **n**\ \|\ **t**\ \|\ **T**\ *fileinfo*
     Add a new data column. If an existing column with the same
@@ -79,8 +80,8 @@ issues, see the DISCUSSION section below.
     for choosing how distances are calculated.
 
     **e** Expects to find an e77 error/correction log from
-    **mgd77sniffer** with the name *NGDC\_ID*.e77 in the current
-    directory or in $MGD77\_HOME/E77; this file will examined and used
+    **mgd77sniffer** with the name *NGDC_ID*.e77 in the current
+    directory or in $MGD77_HOME/E77; this file will examined and used
     to make modifications to the header values, specify a systematic
     correction for certain columns (such as scale and offset), specify
     that a certain anomaly should be recalculated from the observations
@@ -119,9 +120,8 @@ issues, see the DISCUSSION section below.
     stand for the following: (0) Img files with no constraint code,
     returns data at all points, (1) Img file with constraints coded,
     return data at all points, (2) Img file with constraints coded,
-    return data only at constrained points and NaN elsewhere, `and
-    (3) <and.html>`_ Img file with constraints coded, return 1 at
-    constraints and 0 elsewhere.
+    return data only at constrained points and NaN elsewhere, and
+    (3) Img file with constraints coded, return 1 at constraints and 0 elsewhere.
 
     **n** Append filename of a two-column table with the first column
     holding the record number (0 to nrows - 1) and the second column
@@ -201,8 +201,8 @@ issues, see the DISCUSSION section below.
 
 .. include:: ../../explain_distunits.rst_
 
-`Examples <#toc7>`_
--------------------
+Examples
+--------
 
 To append Geosat/ERS-1 gravity version 11.2 as an extra data column in
 the cruises 01010047.nc and 01010008.nc, storing the values as mGal\*10
@@ -229,15 +229,15 @@ all MGD77+ files, try
     mgd77manage =allmgd77.lis -Acm -Iigrf/"IGRF reference
     field"/"nTesla"/f/1/0/"IGRF version 10 for 1990-2010" -V
 
-`Discussion <#toc8>`_
----------------------
+Discussion
+----------
 
 **1. Preamble**
 
-The mgd77 supplement is an attempt `to (1) <to.html>`_ improve on the
+The mgd77 supplement is an attempt to (1) improve on the
 limited functionality of the existing mgg supplement, (2) incorporate
 some of the ideas from Scripps’ gmt+ supplement by allowing extra data
-columns, `and (3) <and.html>`_ add new capabilities for managing marine
+columns, and (3) add new capabilities for managing marine
 geophysical trackline data stored in an architecture-independent CF-1.0-
 and COARDS-compliant netCDF file format. Here are some of the underlying
 ideas and steps you need to take to maintain your files.
@@ -250,9 +250,9 @@ locally we choose the "Carter corrected depth" option which will fill in
 the depth column using the two-way traveltimes and the Carter tables if
 twt is present. This step yields ~5000 individual cruise files. Place
 these in one or more sub-directories of your choice, list these
-sub-directories (one per line) in the file mgd77\_paths.txt, and place
-that file in the directory pointed to by **$MGD77\_HOME**; if not set
-this variable defaults to **$GMT\_SHAREDIR**/mgd77.
+sub-directories (one per line) in the file mgd77_paths.txt, and place
+that file in the directory pointed to by **$MGD77_HOME**; if not set
+this variable defaults to **$GMT_SHAREDIR**/mgd77.
 
 **3. Conversion**
 
@@ -260,12 +260,12 @@ Convert the ASCII MGD77 files to the new netCDF MGD77+ format using
 **mgd77convert**. Typically, you will make a list of all the cruises to
 be converted (with or without extension), and you then run
 
-mgd77convert =cruises.lis -Fa -Tc -V -Lwe+ > log.txt
+    mgd77convert =cruises.lis -Fa -Tc -V -Lwe+ > log.txt
 
 The verbose settings will ensure that all problems found during
 conversion will be reported. The new \*.nc files may also be placed in
 one or more separate sub-directories and these should also be listed in
-the mgd77\_paths.txt file. We suggest you place the directories with
+the mgd77_paths.txt file. We suggest you place the directories with
 \*.nc files ahead of the \*.mgd77 directories. When you later want to
 limit a search to files of a certain extension you should use the **-I**
 option.
@@ -279,7 +279,7 @@ or an existing column that have been filtered or manipulated for a
 particular purpose. The format supports up to 32 such extra columns. See
 this man page for how to add columns. You may later decide to remove
 some of these columns or update the data associated with a certain
-column. Data extraction tools such as **mgd77list** can be used to
+column. Data extraction tools such as `mgd77list <mgd77list.html>`__ can be used to
 extract a mix of standard MGD77 columns (navigation, time, and the usual
 geophysical observations) and your custom columns.
 
@@ -291,7 +291,7 @@ occur when some of the information fields in the header do not comply
 with the MGD77 specification or required information is missing.
 **mgd77convert** will list these errors when the extended verbose
 setting is selected. These errors typically do not affect the data and
-are instead errors in the `*meta-data* (2) <meta-data.2.html>`_ Fixed
+are instead errors in the *meta-data* (2). Fixed
 systematic errors occur when a particular data column, despite the MGD77
 specification, has been encoded incorrectly. This usually means the data
 will be off by a constant factor such as 10 or 0.1, or in some cases
@@ -326,15 +326,15 @@ verify that the suggested corrections are indeed valid (we only want to
 correct truly obvious unit errors), edit these error logs and modify
 such correction terms and activate them by changing the relevant code
 key (see **mgd77sniffer** for more details). **mgd77manage** can ingest
-these error logs `and (1) <and.html>`_ correct bad header records given
+these error logs and (1) correct bad header records given
 the suggestions in the log, (2) insert scale/offset correction terms to
-be used when reading certain columns, `and (3) <and.html>`_ insert any
+be used when reading certain columns, and (3) insert any
 bit-flags found. Rerun this step if you later find other problems as all
 E77 settings or flags will be recreated based on the latest E77 log.
 
 **7. Error corrections**
 
-The extraction program **mgd77list** allows for corrections to be
+The extraction program `mgd77list <mgd77list.html>`__ allows for corrections to be
 applied on-the-fly when data are requested. First, data with BAD
 bitflags are suppressed. Second, data with fixed systematic correction
 terms are corrected accordingly. Third, data with ephemeral correction
@@ -345,15 +345,15 @@ add their own bitflags as separate data columns and use
 **mgd77list**\ ’s logical tests to further dictate which data are
 suppressed from output.
 
-`Credits <#toc9>`_
-------------------
+Credits
+-------
 
 The IGRF calculations are based on a Fortran program written by Susan
 Macmillan, British Geological Survey, translated to C via f2c by Joaquim
 Luis, and adapted to GMT style by Paul Wessel.
 
-`See Also <#toc10>`_
---------------------
+See Also
+--------
 
 `gd77convert <mgd77convert.html>`_,
 `mgd77list <mgd77list.html>`_,
@@ -362,8 +362,8 @@ Luis, and adapted to GMT style by Paul Wessel.
 `mgd77track <mgd77track.html>`_
 `x2sys_init <x2sys_init.html>`_
 
-`References <#toc11>`_
-----------------------
+References
+----------
 
 The Marine Geophysical Data Exchange Format - MGD77, see
 `http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt <http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_

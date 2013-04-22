@@ -4,26 +4,26 @@ splitxyz
 
 splitxyz - Split xyz[dh] data tables into individual segments
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
-**splitxyz** [ *table* ] **-C**\ *course\_change* [
-**-A**\ *azimuth*/*tolerance* ] [ **-D**\ *minimum\_distance* ] [
-**-F**\ *xy\_filter*/*z\_filter* ] [ **-N**\ *template* ] [
-**-Q**\ *flags* ] [ **-S** ] [ **-V**\ [*level*\ ] ] [ **-Z** ] [
-**-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
-**-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
-] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-:**\ [**i**\ \|\ **o**] ]
+**splitxyz** [ *table* ] **-C**\ *course_change*
+[ **-A**\ *azimuth*/*tolerance* ] [ **-D**\ *minimum\_distance* ]
+[ **-F**\ *xy\_filter*/*z\_filter* ] [ **-N**\ *template* ]
+[ **-Q**\ *flags* ] [ **-S** ] [ |SYN_OPT-V| ] [ **-Z** ]
+[ **-b**\ [*ncol*][**t**][\ **+L**\ \|\ **+B**] ]
+[ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ]
+[ |SYN_OPT-g| ]
+[ **-h**\ [**i**\ \|\ **o**][*n*] ]
+[ |SYN_OPT-i| ]
+[ **-:**\ [**i**\ \|\ **o**] ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **splitxyz** reads a series of (x,y[,z]) records [or optionally
 (x,y,z,d,h); see **-S** option] from standard input [or *xyz[dh]file*]
@@ -35,17 +35,17 @@ values and/or the x,y values. **splitxyz** is a useful filter between
 data extraction and **pswiggle** plotting, and can also be used to
 divide a large x,y,z dataset into segments. The output is always in the
 ASCII format; input may be ASCII or binary (see
-**-bi**\ [*ncols*\ ][*type*\ ]). 
+**-bi**\ [*ncols*\ ][*type*]). 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 **-C**\ *course\_change*
     Terminate a segment when a course change exceeding *course\_change*
     degrees of heading is detected.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 *table*
     One or more ASCII [or binary, see **-bi**\ [*ncols*\ ][*type*\ ]]
@@ -141,8 +141,8 @@ given then x,y are in degrees of longitude, latitude, distances are in
 kilometers, and angles are azimuths. Otherwise, distances are Cartesian
 in same units as x,y and angles are counter-clockwise from horizontal.
 
-`Examples <#toc8>`_
--------------------
+Examples
+--------
 
 Suppose you want to make a wiggle plot of magnetic anomalies on segments
 oriented approximately east-west from a cruise called cag71 in the
@@ -155,7 +155,7 @@ anomalies. Try this:
     -W0.75p -Ggray -Z200 > cag71\_wiggles.ps
 
 MGD-77 users: For this application we recommend that you extract d, h
-from `mgd77list <./supplements/mgd77/mgd77list.html>`_ rather than have **splitxyz** compute them
+from `mgd77list <./supplements/mgd77/mgd77list.html>`__ rather than have **splitxyz** compute them
 separately.
 
 Suppose you have been given a binary, double-precision file containing
@@ -165,7 +165,7 @@ this:
 
     splitxyz survey.bin -Nsurvey\_%03d.txt -V -gd100k -D100 -: -fg -bi3d
 
-`See Also <#toc9>`_
--------------------
+See Also
+--------
 
-`gmt5 <gmt5.html>`_, `mgd77list <mgd77list.html>`_, `pswiggle <pswiggle.html>`_
+`gmt5 <gmt5.html>`_, `mgd77list <mgd77list.html>`__, `pswiggle <pswiggle.html>`_
