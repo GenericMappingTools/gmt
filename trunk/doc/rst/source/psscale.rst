@@ -186,4 +186,4 @@ colors for the two methods given identical RGB values.
 `See Also <#toc8>`_
 -------------------
 
-`gmt <gmt.html>`_, `makecpt <makecpt.html>`_, `grd2cpt <grd2cpt.html>`_
+`gmt5 <gmt5.html>`_, `makecpt <makecpt.html>`_, `grd2cpt <grd2cpt.html>`_

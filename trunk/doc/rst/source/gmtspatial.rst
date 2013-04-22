@@ -184,4 +184,4 @@ To determine the intersections between the polygons A.d and B.d, run
 `See Also <#toc9>`_
 -------------------
 
-`gmt <gmt.html>`_
+`gmt5 <gmt5.html>`_

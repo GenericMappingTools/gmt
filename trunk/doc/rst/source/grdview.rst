@@ -219,7 +219,7 @@ polygons.
 `See Also <#toc9>`_
 -------------------
 
-`gmt <gmt.html>`_, `grd2rgb <grd2rgb.html>`_,
+`gmt5 <gmt5.html>`_, `grd2rgb <grd2rgb.html>`_,
 `gmtcolors <gmtcolors.html>`_,
 `grdcontour <grdcontour.html>`_,
 `grdimage <grdimage.html>`_,

@@ -162,6 +162,6 @@ A repeat of the first example but this time we use white tiling:
 `See Also <#toc8>`_
 -------------------
 
-`gmt <gmt.html>`_, `gmtcolors <gmtcolors.html>`_,
+`gmt5 <gmt5.html>`_, `gmtcolors <gmtcolors.html>`_,
 `grdmask <grdmask.html>`_, `surface <surface.html>`_,
 `psbasemap <psbasemap.html>`_, `psclip <psclip.html>`_

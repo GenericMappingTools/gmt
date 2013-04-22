@@ -1,8 +1,8 @@
-***
-gmt
-***
+****
+gmt5
+****
 
-gmt - The Generic Mapping Tools data processing and display software
+gmt5 - The Generic Mapping Tools data processing and display software
 package
 
 `Introduction <#toc1>`_
@@ -20,9 +20,9 @@ completely general and will handle any (x,y) or (x,y,z) data as input.
 `Synopsis <#toc2>`_
 -------------------
 
-**gmt** is a wrapper program that can start any of the programs:
+**gmt5** is a wrapper program that can start any of the programs:
 
-**gmt** module module-options
+**gmt5** module module-options
 
 where module is the name of a **GMT** program and the options are those
 that pertain to that particular program.
@@ -138,7 +138,7 @@ programs. No space between the option flag and the associated arguments.
 --------------------
 
 Look up the individual man pages for more details and full syntax. Run
-**gmt --help** to list all GMT programs and to show all installation
+**gmt5 --help** to list all GMT programs and to show all installation
 directories. For an explanation of the various **GMT** settings in this
 man page (like **FORMAT\_FLOAT\_OUT**), see the man page of the GMT
 configuration file `gmt.conf <gmt.conf.html>`_. Information is also available on the

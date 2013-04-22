@@ -68,5 +68,5 @@ size 0.1 inch, and set annotation offset to 0.2 cm:
 `See Also <#toc6>`_
 -------------------
 
-`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
+`gmt5 <gmt5.html>`_, `gmt.conf <gmt.conf.html>`_,
 `gmtdefaults <gmtdefaults.html>`_, `gmtget <gmtget.html>`_

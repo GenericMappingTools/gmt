@@ -123,7 +123,7 @@ range [-1, 1]. Alternatively, supply a normalization factor with **-N**.
 `See Also <#toc9>`_
 -------------------
 
-`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
+`gmt5 <gmt5.html>`_, `gmt.conf <gmt.conf.html>`_,
 `grd2cpt <grd2cpt.html>`_,
 `grdgradient <grdgradient.html>`_,
 `grdimage <grdimage.html>`_, `grdmath <grdmath.html>`_,

@@ -597,4 +597,4 @@ Publishing Corp.
 `See Also <#toc14>`_
 --------------------
 
-`gmt <gmt.html>`_, `grdmath <grdmath.html>`_
+`gmt5 <gmt5.html>`_, `grdmath <grdmath.html>`_

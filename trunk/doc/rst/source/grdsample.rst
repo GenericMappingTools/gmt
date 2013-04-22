@@ -93,5 +93,5 @@ registration while keeping the same region and grid interval:
 `See Also <#toc10>`_
 --------------------
 
-`gmt <gmt.html>`_, `grdedit <grdedit.html>`_,
+`gmt5 <gmt5.html>`_, `grdedit <grdedit.html>`_,
 `grdfft <grdfft.html>`_, `grdfilter <grdfilter.html>`_

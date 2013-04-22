@@ -148,5 +148,5 @@ using a scale of 200 km per data unit, try
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmtcolors <gmtcolors.html>`_,
+`gmt5 <gmt5.html>`_, `gmtcolors <gmtcolors.html>`_,
 `grdcontour <grdcontour.html>`_, `psxy <psxy.html>`_

@@ -95,6 +95,6 @@ nodes based on the low resolution data:
 `See Also <#toc9>`_
 -------------------
 
-`gmt <gmt.html>`_, `grdmath <grdmath.html>`_,
+`gmt5 <gmt5.html>`_, `grdmath <grdmath.html>`_,
 `grdclip <grdclip.html>`_, `psmask <psmask.html>`_,
 `psclip <psclip.html>`_, `pscoast <pscoast.html>`_

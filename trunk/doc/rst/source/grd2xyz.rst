@@ -148,7 +148,7 @@ the file raw\_data.nc file, using scanline orientation, run
 `See Also <#toc10>`_
 --------------------
 
-`gmt.conf <gmt.conf.html>`_ , `gmt <gmt.html>`_ ,
+`gmt.conf <gmt.conf.html>`_ , `gmt5 <gmt5.html>`_ ,
 `grdedit <grdedit.html>`_ ,
 `grdreformat <grdreformat.html>`_ ,
 `xyz2grd <xyz2grd.html>`_

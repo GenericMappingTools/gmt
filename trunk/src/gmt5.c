@@ -27,11 +27,22 @@
 
 int main (int argc, char *argv[]) {
 	int status = EXIT_SUCCESS;           /* Status code from GMT API */
+	unsigned int item = 1, k;
+	char *module = NULL;
 	enum Gmt_module_id module_id = 0;    /* Module ID */
 	struct GMTAPI_CTRL *api_ctrl = NULL; /* GMT API control structure */
 
-	if (argc < 2) {
-		fprintf (stderr, "gmt - The Generic Mapping Tools, Version %s\n", GMT_VERSION);
+	for (k = strlen (argv[0]); k > 0 && argv[0][k] != '/'; k--);	/* Find start of program name after any leading dirs */
+	if (k) k++;	/* Unless there is no slash, advance one past the last slash we found */
+	if (strncmp (&argv[0][k], "gmt5", 4)) {	/* Does not match gmt5 so it is another module via symbolic link */
+		item = 0;	/* Argv[0] holds the name of the module */
+		module = &argv[0][k];
+	}
+	else if (argc > 1)
+		module = argv[1];
+	
+	if (argc < 2 && item == 1) {
+		fprintf (stderr, "gmt5 - The Generic Mapping Tools, Version %s\n", GMT_VERSION);
 		fprintf (stderr, "Copyright 1991-%d Paul Wessel, Walter H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe\n\n", GMT_VERSION_YEAR);
 
 		fprintf (stderr, "This program comes with NO WARRANTY, to the extent permitted by law.\n");
@@ -78,8 +89,8 @@ int main (int argc, char *argv[]) {
 		return EXIT_FAILURE;
 	}
 
-	if ((module_id = gmt_module_lookup (argv[1])) == k_mod_nongmt) {
-		fprintf (stderr, "gmt: No such program: %s\n", argv[1]);
+	if ((module_id = gmt_module_lookup (module)) == k_mod_nongmt) {
+		fprintf (stderr, "gmt5: No such program: %s\n", module);
 		return EXIT_FAILURE;
 	}
 
@@ -90,11 +101,11 @@ int main (int argc, char *argv[]) {
 		return EXIT_FAILURE;
 
 	/* 2. Run selected GMT cmd function, or give usage message if errors arise during parsing */
-	status = g_module[module_id].p_func (api_ctrl, argc-2, argv+2);
+	status = g_module[module_id].p_func (api_ctrl, argc-1-item, argv+1+item);
 
 	/* 3. Destroy GMT session */
 	if (GMT_Destroy_Session (api_ctrl))
 		return EXIT_FAILURE;
 
-	return status; /* Return the status from FUNC */
+	return status; /* Return the status from the module */
 }

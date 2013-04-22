@@ -54,4 +54,4 @@ GRID\_CROSS\_SIZE\_PRIMARY and GRID\_CROSS\_SIZE\_SECONDARY on one line, try
 `See Also <#toc6>`_
 -------------------
 
-`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_, `gmtset <gmtset.html>`_
+`gmt5 <gmt5.html>`_, `gmt.conf <gmt.conf.html>`_, `gmtset <gmtset.html>`_

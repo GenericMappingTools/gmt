@@ -27,7 +27,7 @@ read via the **gmt.conf** file; these are labeled (static).
 --------------------------------
 
 The full explanation for how to specify pens, pattern fills, colors, and
-fonts can be found in the `gmt <gmt.html>`_ man page.
+fonts can be found in the `gmt5 <gmt5.html>`_ man page.
 
 
 +---------------------------------+----------------+
@@ -883,6 +883,6 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
 `See Also <#toc3>`_
 -------------------
 
-`gmt <gmt.html>`_ , `gmtdefaults <gmtdefaults.html>`_ ,
+`gmt5 <gmt5.html>`_ , `gmtdefaults <gmtdefaults.html>`_ ,
 `gmtcolors <gmtcolors.html>`_ , `gmtget <gmtget.html>`_ ,
 `gmtset <gmtset.html>`_

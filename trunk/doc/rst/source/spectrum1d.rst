@@ -148,7 +148,7 @@ data.g as output, use
 `See Also <#toc8>`_
 -------------------
 
-`gmt <gmt.html>`_, `grdfft <grdfft.html>`_
+`gmt5 <gmt5.html>`_, `grdfft <grdfft.html>`_
 
 `References <#toc9>`_
 ---------------------
