@@ -644,7 +644,7 @@ struct NN_INFO * NNA_update_info (struct GMT_CTRL *GMT, struct NN_INFO * I, stru
 	struct NN_INFO *info = (I) ? I : GMT_memory (GMT, NULL, n_points, struct NN_INFO);
 	for (k = 0; k < n_points; k++) {
 		info[k].sort_rec = k;
-		info[k].orig_rec = labs (NN_dist[k].ID);
+		info[k].orig_rec = GMT_abs (NN_dist[k].ID);
 	}
 	qsort (info, n_points, sizeof (struct NN_INFO), compare_nn_info);
 	/* Now, I[k].sort_rec will take the original record # k and return the corresponding record in the sorted array */
@@ -1007,7 +1007,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 				for (k = 0; k < n; k++) {	/* Loop over pairs that are too close */
 					if (GMT_is_dnan (NN_dist[k].distance)) continue;	/* Already processed */
 					a = k;	/* The current point */
-					b = NN_info[labs(NN_dist[a].neighbor)].sort_rec;	/* a's neighbor location in the sorted NN_dist array */
+					b = NN_info[GMT_abs(NN_dist[a].neighbor)].sort_rec;	/* a's neighbor location in the sorted NN_dist array */
 					w = NN_dist[a].coord[GMT_W] + NN_dist[b].coord[GMT_W];	/* Weight sum */
 					iw = 1.0 / w;	/* Inverse weight for scaling */
 					/* Compute weighted average z */
@@ -1026,7 +1026,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 						NN_dist[a].coord[GMT_Y] = iw * (NN_dist[a].coord[GMT_Y] * NN_dist[a].coord[GMT_W] + NN_dist[b].coord[GMT_Y] * NN_dist[b].coord[GMT_W]);
 					}
 					NN_dist[a].coord[GMT_W] = 0.5 * w;	/* Replace with the average weight */
-					NN_dist[a].ID = -labs (NN_dist[a].ID);	/* Negative means it was averaged with other points */
+					NN_dist[a].ID = -GMT_abs (NN_dist[a].ID);	/* Negative means it was averaged with other points */
 					NN_dist[b].distance = GMT->session.d_NaN;	/* Flag this point as used.  NNA_update_dist will sort it and place all NaNs at the end */
 				}
 				NN_dist = NNA_update_dist (GMT, NN_dist, &n_points);		/* Return recomputed array of NN NN_dist sorted on smallest distances */
