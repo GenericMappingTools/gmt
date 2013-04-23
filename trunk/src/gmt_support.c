@@ -1123,7 +1123,7 @@ bool GMT_getrgb (struct GMT_CTRL *GMT, char *line, double rgb[])
 	/* Definitely wrong, at this point, is something that does not end in a number */
 
 	c = buffer[strlen(buffer)-1];
-	if (!(isdigit (c) || c == '.')) return (true);
+	if (c <= 0 || !(isdigit (c) || c == '.')) return (true);
 
 	count = (int)gmt_char_count (buffer, '/');
 
