@@ -1065,8 +1065,8 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 				col = 0;
 			}
 			out[col++] = NN_dist[k].distance;
-			out[col++] = NN_dist[k].ID;
-			out[col++] = NN_dist[k].neighbor;
+			out[col++] = (double)NN_dist[k].ID;
+			out[col++] = (double)NN_dist[k].neighbor;
 			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write area or length to output */
 		}
 		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
