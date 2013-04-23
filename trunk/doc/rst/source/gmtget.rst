@@ -4,8 +4,8 @@ gmtget
 
 gmtget - Get individual **GMT** default parameters
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
@@ -14,21 +14,21 @@ gmtget - Get individual **GMT** default parameters
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **gmtget** will list the value of one or more **GMT** default parameters.
 
-`Required Arguments <#toc3>`_
------------------------------
+Required Arguments
+------------------
 
 PARAMETER
     Provide one or several parameters of interest. The current value of
     those parameters will be writen to *stdout*. For a complete listing
     of available parameters and their meaning, see the `gmt.conf <gmt.conf.html>`_ man page.
 
-`Optional Arguments <#toc4>`_
------------------------------
+Optional Arguments
+------------------
 
 **-G**\ *defaultsfile*
     Name of specific `gmt.conf <gmt.conf.html>`_ file to read [Default looks first in
@@ -39,19 +39,19 @@ PARAMETER
     returns all selected parameter values on one line separated by
     spaces]
 
-`Example <#toc5>`_
-------------------
+Example
+-------
 
-To list the value of the parameter PS\_COMMENTS:
+To list the value of the parameter PS_COMMENTS:
 
-    **gmtget** PS\_COMMENTS
+    gmtget PS_COMMENTS
 
 To get both the values of the parameter
-GRID\_CROSS\_SIZE\_PRIMARY and GRID\_CROSS\_SIZE\_SECONDARY on one line, try
+MAP_GRID_CROSS_SIZE_PRIMARY and MAP_GRID_CROSS_SIZE_SECONDARY on one line, try
 
-    **gmtget** GRID\_CROSS\_SIZE\_PRIMARY GRID\_CROSS\_SIZE\_SECONDARY
+    gmtget MAP_GRID_CROSS_SIZE_PRIMARY MAP_GRID_CROSS_SIZE_SECONDARY
 
-`See Also <#toc6>`_
--------------------
+See Also
+--------
 
 `gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_, `gmtset <gmtset.html>`_
