@@ -6,7 +6,7 @@ GM
    :maxdepth: 1
 
    gmt.conf
-   gmt5
+   gmt
    gmt2kml
    gmtaverage
    gmtcolors
