@@ -1839,7 +1839,7 @@ void GMT_azeqdist (struct GMT_CTRL *GMT, double lon, double lat, double *x, doub
 	}
 	else {
 		c = d_acos (cc);
-		k = GMT->current.proj.EQ_RAD * c / sin (c);
+		k = (GMT_IS_ZERO (c)) ? GMT->current.proj.EQ_RAD : GMT->current.proj.EQ_RAD * c / sin (c);
 		*x = k * clat * slon;
 		*y = k * (GMT->current.proj.cosp * slat - GMT->current.proj.sinp * t);
 	}
