@@ -12,7 +12,6 @@ test -z "$1" && exit 1
 # Name of the script and the directory portion of it
 script_name="$1"
 script_dir=$(dirname "${script_name}")
-script_base=$(basename "${script_name}")
 script="@GMT_SOURCE_DIR@/test/${script_name}"
 if ! [ -x "${script}" ]; then
   echo "error: cannot execute script ${script}." 1>&2
@@ -154,7 +153,7 @@ exec_dir="@CMAKE_CURRENT_BINARY_DIR@/${script_name%.sh}"
 rm -rf "$exec_dir"
 mkdir -p "$exec_dir"
 cd "$exec_dir"
-cp -f "$script" .
+ln -sf "$script" .
 
 # Make a script to capture everything that can be run again
 cat > gmtest.sh <<%
@@ -164,7 +163,7 @@ export GMT_SHAREDIR="$GMT_SHAREDIR"
 export GMT_USERDIR="$GMT_USERDIR"
 export GMT_DATADIR="$src"
 gmtset -Du
-. "$script_base"
+. "$script"
 %
 chmod 755 gmtest.sh
 
