@@ -77,6 +77,9 @@
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 
+#define GMT_PROJ_MAX_ITERATIONS	200
+#define GMT_PROJ_CONV_LIMIT	1e-9
+
 void gmt_check_R_J (struct GMT_CTRL *GMT, double *clon)	/* Make sure -R and -J agree for global plots; J given priority */
 {
 	double lon0 = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
@@ -550,7 +553,7 @@ void GMT_ilamb (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double
 	rho = copysign (hypot (x, dy), GMT->current.proj.l_N);
 	t = pow (rho * GMT->current.proj.l_i_rF, GMT->current.proj.l_i_N);
 	phi = 0.0; tphi = 999.0;	/* Initialize phi = 0 */
-	for (i = 0; i < 100 && fabs (tphi - phi) > GMT_CONV_LIMIT; i++) {
+	for (i = 0; i < GMT_PROJ_MAX_ITERATIONS && fabs (tphi - phi) > GMT_PROJ_CONV_LIMIT; i++) {
 		tphi = phi;
 		r = GMT->current.proj.ECC * sin (phi);
 		phi = M_PI_2 - 2.0 * atan (t * pow ((1.0 - r) / (1.0 + r), GMT->current.proj.half_ECC));
@@ -1901,7 +1904,7 @@ void GMT_mollweide (struct GMT_CTRL *GMT, double lon, double lat, double *x, dou
 		delta = -(phi + s - psin_lat) / (1.0 + c);
 		phi += delta;
 	}
-	while (fabs (delta) > GMT_CONV_LIMIT && i < 100);
+	while (fabs (delta) > GMT_PROJ_CONV_LIMIT && i < GMT_PROJ_MAX_ITERATIONS);
 	phi *= 0.5;
 	sincos (phi, &s, &c);
 	*x = GMT->current.proj.w_x * lon * c;
@@ -1963,7 +1966,7 @@ void GMT_ihammer (struct GMT_CTRL *GMT, double *lon, double *lat, double x, doub
 	a = 0.5 * rho * GMT->current.proj.i_EQ_RAD;			/* a = sin(c/2)		*/
 	a *= a;							/* a = sin(c/2)**2	*/
 	cos_c = 1.0 - 2.0 * a;					/* cos_c = cos(c)	*/
-	if (cos_c < -GMT_CONV_LIMIT) {					/* Horizon		*/
+	if (cos_c < -GMT_PROJ_CONV_LIMIT) {					/* Horizon		*/
 		*lat = *lon = GMT->session.d_NaN;
 		return;
 	}
@@ -1989,7 +1992,7 @@ void GMT_grinten (struct GMT_CTRL *GMT, double lon, double lat, double *x, doubl
 	double flat, A, A2, G, P, P2, Q, P2A2, i_P2A2, GP2, c, s, theta;
 
 	flat = fabs (lat);
-	if (flat > (90.0 - GMT_CONV_LIMIT)) {	/* Save time */
+	if (flat > (90.0 - GMT_PROJ_CONV_LIMIT)) {	/* Save time */
 		*x = 0.0;
 		*y = M_PI * copysign (GMT->current.proj.EQ_RAD, lat);
 		return;
@@ -2108,7 +2111,7 @@ void GMT_iwinkel (struct GMT_CTRL *P, double *lon, double *lat, double x, double
 	y *= P->current.proj.i_EQ_RAD;
 	*lat = y / M_PI;	/* Initial guesses for lon and lat */
 	*lon = x / M_PI;
-	if (fabs (y) < GMT_CONV_LIMIT) {	/* On ~equator, C is ~zero so no division */
+	if (fabs (y) < GMT_PROJ_CONV_LIMIT) {	/* On ~equator, C is ~zero so no division */
 		*lon *= R2D;
 		*lon += P->current.proj.central_meridian;
 		return;
@@ -2136,7 +2139,7 @@ void GMT_iwinkel (struct GMT_CTRL *P, double *lon, double *lat, double x, double
 		delta = fabs (*lat - phi0) + fabs (*lon - lambda0);
 		n_iter++;
 	}
-	while (delta > 1e-12 && n_iter < 100);
+	while (delta > 1e-12 && n_iter < GMT_PROJ_MAX_ITERATIONS);
 	*lon *= R2D;
 	if (fabs (*lon) > 180.0) {	/* Horizon */
 		*lat = *lon = P->session.d_NaN;
@@ -2160,7 +2163,7 @@ void gmt_iwinkel_sub (struct GMT_CTRL *GMT, double y, double *phi)
 		delta = fabs (*phi - phi0);
 		n_iter++;
 	}
-	while (delta > GMT_CONV_LIMIT && n_iter < 100);
+	while (delta > GMT_PROJ_CONV_LIMIT && n_iter < GMT_PROJ_MAX_ITERATIONS);
 	*phi *= R2D;
 }
 
@@ -2213,7 +2216,7 @@ void GMT_eckert4 (struct GMT_CTRL *GMT, double lon, double lat, double *x, doubl
 		delta = -(phi + s * c + 2.0 * s - (2.0 + M_PI_2) * s_lat) / (2.0 * c * (1.0 + c));
 		phi += delta;
 	}
-	while (fabs(delta) > GMT_CONV_LIMIT && n_iter < 100);
+	while (fabs(delta) > GMT_PROJ_CONV_LIMIT && n_iter < GMT_PROJ_MAX_ITERATIONS);
 
 	sincos (phi, &s, &c);
 	*x = GMT->current.proj.k4_x * lon * D2R * (1.0 + c);
@@ -2284,7 +2287,7 @@ void GMT_eckert6 (struct GMT_CTRL *GMT, double lon, double lat, double *x, doubl
 		delta = -(phi + s - (1.0 + M_PI_2) * s_lat) / (1.0 + c);
 		phi += delta;
 	}
-	while (fabs(delta) > GMT_CONV_LIMIT && n_iter < 100);
+	while (fabs(delta) > GMT_PROJ_CONV_LIMIT && n_iter < GMT_PROJ_MAX_ITERATIONS);
 
 	*x = GMT->current.proj.k6_r * lon * D2R * (1.0 + cos (phi));
 	*y = 2.0 * GMT->current.proj.k6_r * phi;
@@ -2431,7 +2434,7 @@ void GMT_irobinson (struct GMT_CTRL *GMT, double *lon, double *lat, double x, do
 	*lat = gmt_robinson_spline (GMT, Y, GMT->current.proj.n_Y, GMT->current.proj.n_phi, GMT->current.proj.n_iy_coeff);
 	X = gmt_robinson_spline (GMT, *lat, GMT->current.proj.n_phi, GMT->current.proj.n_X, GMT->current.proj.n_x_coeff);
 	*lon = x / (GMT->current.proj.n_cx * X);
-	if ((fabs (*lon) - GMT_CONV_LIMIT) > 180.0) {	/* Horizon */
+	if ((fabs (*lon) - GMT_PROJ_CONV_LIMIT) > 180.0) {	/* Horizon */
 		*lat = *lon = GMT->session.d_NaN;
 		return;
 	}
@@ -2739,7 +2742,7 @@ void GMT_ialbers (struct GMT_CTRL *GMT, double *lon, double *lat, double x, doub
 			delta = fabs (phi - phi0);
 			n_iter++;
 		}
-		while (delta > GMT_CONV_LIMIT && n_iter < 100);
+		while (delta > GMT_PROJ_CONV_LIMIT && n_iter < GMT_PROJ_MAX_ITERATIONS);
 		*lat = R2D * phi;
 	}
 	*lon = GMT->current.proj.central_meridian + R2D * theta * GMT->current.proj.a_i_n;
@@ -2873,7 +2876,7 @@ void GMT_ipolyconic (struct GMT_CTRL *GMT, double *lon, double *lat, double x, d
 			delta = fabs (phi - phi0);
 			n_iter++;
 		}
-		while (delta > GMT_CONV_LIMIT && n_iter < 100);
+		while (delta > GMT_PROJ_CONV_LIMIT && n_iter < GMT_PROJ_MAX_ITERATIONS);
 		*lat = R2D * phi;
 		*lon = GMT->current.proj.central_meridian + asind(x * tanp) / sin(phi);
 	}
@@ -2901,7 +2904,7 @@ void gmt_ipolyconic_sub (struct GMT_CTRL *GMT, double y, double lon, double *x)
 			delta = fabs (phi - phi0);
 			n_iter++;
 		}
-		while (delta > GMT_CONV_LIMIT && n_iter < 100);
+		while (delta > GMT_PROJ_CONV_LIMIT && n_iter < GMT_PROJ_MAX_ITERATIONS);
 		*x = GMT->current.proj.EQ_RAD * cp * sin(E);
 	}
 }
