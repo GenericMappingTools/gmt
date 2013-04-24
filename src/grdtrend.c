@@ -81,7 +81,7 @@
  * are conveniently sized near 0 or 1.
  */
 
-#define THIS_MODULE k_mod_grdtrend /* I am grdtrend */
+#define THIS_MODULE GMT_ID_GRDTREND /* I am grdtrend */
 
 #include "gmt_dev.h"
 

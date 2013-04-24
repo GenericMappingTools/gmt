@@ -25,7 +25,7 @@
  * Version:	5 API
  */
 
-#define THIS_MODULE k_mod_grdtrack /* I am grdtrack */
+#define THIS_MODULE GMT_ID_GRDTRACK /* I am grdtrack */
 
 #include "gmt_dev.h"
 

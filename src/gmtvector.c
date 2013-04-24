@@ -24,7 +24,7 @@
  * Version:	5 API
  */
 
-#define THIS_MODULE k_mod_gmtvector /* I am gmtvector */
+#define THIS_MODULE GMT_ID_GMTVECTOR /* I am gmtvector */
 
 #include "gmt_dev.h"
 

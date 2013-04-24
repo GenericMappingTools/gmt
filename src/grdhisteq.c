@@ -24,7 +24,7 @@
  * Version:	5 API
  */
  
-#define THIS_MODULE k_mod_grdhisteq /* I am grdhisteq */
+#define THIS_MODULE GMT_ID_GRDHISTEQ /* I am grdhisteq */
 
 #include "gmt_dev.h"
 

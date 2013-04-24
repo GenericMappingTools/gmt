@@ -25,7 +25,7 @@
  *
  */
 
-#define THIS_MODULE k_mod_grdimage /* I am grdimage */
+#define THIS_MODULE GMT_ID_GRDIMAGE /* I am grdimage */
 
 #include "gmt_dev.h"
 

@@ -23,7 +23,7 @@
  * Ver:		1
  */
 
-#define THIS_MODULE k_mod_grdrotater /* I am grdrotater */
+#define THIS_MODULE GMT_ID_GRDROTATER /* I am grdrotater */
 
 #include "spotter.h"
 

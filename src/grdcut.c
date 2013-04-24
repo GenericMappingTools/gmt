@@ -26,7 +26,7 @@
  * to a new file.
  */
  
-#define THIS_MODULE k_mod_grdcut /* I am grdcut */
+#define THIS_MODULE GMT_ID_GRDCUT /* I am grdcut */
 
 #include "gmt_dev.h"
 

@@ -29,7 +29,7 @@
 #undef _OPENMP
 
 #define GMT_WITH_NO_PS
-#define THIS_MODULE k_mod_grdfilter /* I am grdfilter */
+#define THIS_MODULE GMT_ID_GRDFILTER /* I am grdfilter */
 
 #include "gmt_dev.h"
 

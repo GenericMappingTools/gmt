@@ -24,7 +24,7 @@
  * Version:	 API
  */
 
-#define THIS_MODULE k_mod_minmax /* I am minmax */
+#define THIS_MODULE GMT_ID_MINMAX /* I am minmax */
 
 #include "gmt_dev.h"
 

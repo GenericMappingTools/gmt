@@ -36,7 +36,7 @@
  * Version:	5 API
  */
 
-#define THIS_MODULE k_mod_psmask /* I am psmask */
+#define THIS_MODULE GMT_ID_PSMASK /* I am psmask */
 
 #include "gmt_dev.h"
 

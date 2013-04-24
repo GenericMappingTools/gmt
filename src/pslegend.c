@@ -25,7 +25,7 @@
  * Version:	5 API
  */
 
-#define THIS_MODULE k_mod_pslegend /* I am pslegend */
+#define THIS_MODULE GMT_ID_PSLEGEND /* I am pslegend */
 
 #include "gmt_dev.h"
 

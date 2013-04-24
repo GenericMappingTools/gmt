@@ -71,7 +71,7 @@
  * all these reasons I use Chebyshev polynomials.
  */
 
-#define THIS_MODULE k_mod_trend1d /* I am trend1d */
+#define THIS_MODULE GMT_ID_TREND1D /* I am trend1d */
 
 #include "gmt_dev.h"
 

@@ -123,7 +123,7 @@
  *
  */
  
-#define THIS_MODULE k_mod_hotspotter /* I am hotspotter */
+#define THIS_MODULE GMT_ID_HOTSPOTTER /* I am hotspotter */
 
 #include "spotter.h"
 

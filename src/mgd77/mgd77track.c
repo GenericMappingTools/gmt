@@ -21,7 +21,7 @@
  *
  */
  
-#define THIS_MODULE k_mod_mgd77track /* I am mgd77track */
+#define THIS_MODULE GMT_ID_MGD77TRACK /* I am mgd77track */
 
 #include "gmt_dev.h"
 #include "mgd77.h"

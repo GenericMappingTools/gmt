@@ -26,7 +26,7 @@
  * the specified map projection.
  */
 
-#define THIS_MODULE k_mod_psbasemap /* I am psbasemap */
+#define THIS_MODULE GMT_ID_PSBASEMAP /* I am psbasemap */
 
 #include "gmt_dev.h"
 

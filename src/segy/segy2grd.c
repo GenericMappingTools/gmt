@@ -25,7 +25,7 @@
  * Version:	3.4.1
  */
  
-#define THIS_MODULE k_mod_segy2grd /* I am segy2grd */
+#define THIS_MODULE GMT_ID_SEGY2GRD /* I am segy2grd */
 
 #include "gmt_dev.h"
 #include "segy_io.h"

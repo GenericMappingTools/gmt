@@ -26,7 +26,7 @@
  *
  */
 
-#define THIS_MODULE k_mod_x2sys_binlist /* I am x2sys_binlist */
+#define THIS_MODULE GMT_ID_X2SYS_BINLIST /* I am x2sys_binlist */
 
 #include "x2sys.h"
 

@@ -28,7 +28,7 @@
  * including NaN.
  */
 
-#define THIS_MODULE k_mod_grdclip /* I am grdclip */
+#define THIS_MODULE GMT_ID_GRDCLIP /* I am grdclip */
 
 #include "gmt_dev.h"
 

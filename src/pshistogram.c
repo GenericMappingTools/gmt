@@ -23,7 +23,7 @@
  * Version:	5 API
  */
 
-#define THIS_MODULE k_mod_pshistogram /* I am pshistogram */
+#define THIS_MODULE GMT_ID_PSHISTOGRAM /* I am pshistogram */
 
 #include "gmt_dev.h"
 

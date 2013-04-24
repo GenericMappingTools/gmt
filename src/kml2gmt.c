@@ -24,7 +24,7 @@
  * Version:	5 API
  */
  
-#define THIS_MODULE k_mod_kml2gmt /* I am kml2gmt */
+#define THIS_MODULE GMT_ID_KML2GMT /* I am kml2gmt */
 
 #include "gmt_dev.h"
 

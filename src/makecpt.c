@@ -28,7 +28,7 @@
  *
  */
 
-#define THIS_MODULE k_mod_makecpt /* I am makecpt */
+#define THIS_MODULE GMT_ID_MAKECPT /* I am makecpt */
 
 #include "gmt_dev.h"
 

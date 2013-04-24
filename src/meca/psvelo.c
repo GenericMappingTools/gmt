@@ -23,7 +23,7 @@ PostScript code is written to stdout.
 
 */
 
-#define THIS_MODULE k_mod_psvelo /* I am psvelo */
+#define THIS_MODULE GMT_ID_PSVELO /* I am psvelo */
 
 #include "gmt_dev.h"
 

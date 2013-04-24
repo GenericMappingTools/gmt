@@ -29,7 +29,7 @@
  *
  */
 
-#define THIS_MODULE k_mod_gmtmath /* I am gmtmath */
+#define THIS_MODULE GMT_ID_GMTMATH /* I am gmtmath */
 
 #include "gmt_dev.h"
 

@@ -32,7 +32,7 @@
  * Version:	5 API
  */
 
-#define THIS_MODULE k_mod_trend2d /* I am trend2d */
+#define THIS_MODULE GMT_ID_TREND2D /* I am trend2d */
 
 #include "gmt_dev.h"
 

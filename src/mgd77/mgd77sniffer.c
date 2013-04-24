@@ -21,7 +21,7 @@
  *
  * ------------------------------------------------------------------*/
 
-#define THIS_MODULE k_mod_mgd77sniffer /* I am mgd77sniffer */
+#define THIS_MODULE GMT_ID_MGD77SNIFFER /* I am mgd77sniffer */
 
 #include "mgd77.h"
 #include "gmt_dev.h"

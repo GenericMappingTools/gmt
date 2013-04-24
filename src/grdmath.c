@@ -26,7 +26,7 @@
  * Version:	5 API
  */
 
-#define THIS_MODULE k_mod_grdmath /* I am grdmath */
+#define THIS_MODULE GMT_ID_GRDMATH /* I am grdmath */
 
 #include "gmt_dev.h"
 

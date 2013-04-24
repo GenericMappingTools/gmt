@@ -20,8 +20,6 @@ extern "C" {
 /* Declaration modifiers for DLL support (MSC et al) */
 #include "declspec.h"
 
-/* function prototypes of all GMT modules */
-
 /* These enums can be used as module IDs in GMT_Call_Module. Alternatively,
  * obtain the corrensponding ID from the module name via GMT_Get_Module.
  */

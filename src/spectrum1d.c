@@ -36,7 +36,7 @@
  *    	June, 1967.
  */
 
-#define THIS_MODULE k_mod_spectrum1d /* I am spectrum1d */
+#define THIS_MODULE GMT_ID_SPECTRUM1D /* I am spectrum1d */
 
 #include "gmt_dev.h"
 

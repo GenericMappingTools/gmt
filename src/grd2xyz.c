@@ -24,7 +24,7 @@
  * Version:	5 API
  */
 
-#define THIS_MODULE k_mod_grd2xyz /* I am grd2xyz */
+#define THIS_MODULE GMT_ID_GRD2XYZ /* I am grd2xyz */
 
 #include "gmt_dev.h"
 

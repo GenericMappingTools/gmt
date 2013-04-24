@@ -38,7 +38,7 @@
 * solution here.
 */
 
-#define THIS_MODULE k_mod_gmtdp /* I am gmtdp */
+#define THIS_MODULE GMT_ID_GMTDP /* I am gmtdp */
 
 #include "gmt_dev.h"
 

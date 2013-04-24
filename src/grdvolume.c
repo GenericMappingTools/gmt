@@ -26,7 +26,7 @@
  * Version:	5 API
  */
 
-#define THIS_MODULE k_mod_grdvolume /* I am grdvolume */
+#define THIS_MODULE GMT_ID_GRDVOLUME /* I am grdvolume */
 
 #include "gmt_dev.h"
 

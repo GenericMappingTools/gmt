@@ -25,7 +25,7 @@
  * Version:	5 API
  */
 
-#define THIS_MODULE k_mod_pscontour /* I am pscontour */
+#define THIS_MODULE GMT_ID_PSCONTOUR /* I am pscontour */
 
 #include "gmt_dev.h"
 

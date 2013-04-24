@@ -38,7 +38,7 @@
  * Version:	5 API
  */
 
-#define THIS_MODULE k_mod_grdblend /* I am grdblend */
+#define THIS_MODULE GMT_ID_GRDBLEND /* I am grdblend */
 
 #include "gmt_dev.h"
 

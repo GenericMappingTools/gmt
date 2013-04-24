@@ -28,7 +28,7 @@
  *
  */
 
-#define THIS_MODULE k_mod_x2sys_cross /* I am x2sys_cross */
+#define THIS_MODULE GMT_ID_X2SYS_CROSS /* I am x2sys_cross */
 
 #include "x2sys.h"
 

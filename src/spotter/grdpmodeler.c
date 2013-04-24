@@ -24,7 +24,7 @@
  * Ver:		5
  */
 
-#define THIS_MODULE k_mod_grdpmodeler /* I am grdpmodeler */
+#define THIS_MODULE GMT_ID_GRDPMODELER /* I am grdpmodeler */
 
 #include "spotter.h"
 

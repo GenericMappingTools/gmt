@@ -28,7 +28,7 @@
  * Version:	5 API
  */
  
-#define THIS_MODULE k_mod_sample1d /* I am sample1d */
+#define THIS_MODULE GMT_ID_SAMPLE1D /* I am sample1d */
 
 #include "gmt_dev.h"
 

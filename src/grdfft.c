@@ -27,7 +27,7 @@
  *		in gmt_fft.c, called GMT_fft_*.
  */
 
-#define THIS_MODULE k_mod_grdfft /* I am grdfft */
+#define THIS_MODULE GMT_ID_GRDFFT /* I am grdfft */
 
 #include "gmt_dev.h"
 

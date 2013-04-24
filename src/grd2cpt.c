@@ -33,7 +33,7 @@
  *
  */
 
-#define THIS_MODULE k_mod_grd2cpt /* I am grd2cpt */
+#define THIS_MODULE GMT_ID_GRD2CPT /* I am grd2cpt */
 
 #include "gmt_dev.h"
 

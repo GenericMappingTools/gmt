@@ -52,7 +52,7 @@
  *
  */
 
-#define THIS_MODULE k_mod_img2grd /* I am img2grd */
+#define THIS_MODULE GMT_ID_IMG2GRD /* I am img2grd */
 
 #include "gmt_imgsubs.h"
 #include "gmt_dev.h"

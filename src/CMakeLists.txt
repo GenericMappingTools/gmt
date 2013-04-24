@@ -411,8 +411,9 @@ endif ()
 string (REPLACE ".c" "" GMT_PROGS "${GMT_PROGS_SRCS}")
 foreach (_gmtprog ${GMT_PROGS})
 	add_executable (${_gmtprog} ${GMT_PROGRAM})
+	string (TOUPPER "${_gmtprog}" _UCASEname)
 	set_target_properties (${_gmtprog}
-		PROPERTIES COMPILE_DEFINITIONS "MODULE_ID=k_mod_${_gmtprog}")
+		PROPERTIES COMPILE_DEFINITIONS "MODULE_ID=GMT_ID_${_UCASEname}")
 	# Do not create the manifest files
 	if (WIN32)
 		set_target_properties(${_gmtprog} PROPERTIES LINK_FLAGS " /MANIFEST:NO")

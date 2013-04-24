@@ -1074,7 +1074,7 @@ uint64_t GMT_clip_to_map (struct GMT_CTRL *GMT, double *lon, double *lat, uint64
 				}
 				/* Otherwise the polygon completely contains -R and we pass it along */
 			}
-			else if (GMT->common.R.oblique && GMT->current.proj.projection == GMT_AZ_EQDIST && n <= 5 && GMT->init.module_id == k_mod_pscoast) {
+			else if (GMT->common.R.oblique && GMT->current.proj.projection == GMT_AZ_EQDIST && n <= 5 && GMT->init.module_id == GMT_ID_PSCOAST) {
 				/* Special check for -JE where a coastline block is completely outside yet fully surrounds the rectangular -R -JE...r region.
 				   This results in a rectangular closed polygon after the clipping. */
 				n = 0;
@@ -7880,7 +7880,7 @@ int GMT_map_setup (struct GMT_CTRL *GMT, double wesn[])
 	GMT->current.map.dlon = (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) / GMT->current.map.n_lon_nodes;
 	GMT->current.map.dlat = (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) / GMT->current.map.n_lat_nodes;
 
-	if (GMT->current.map.width > 400.0 && (GMT->init.module_id == k_mod_grdproject || GMT->init.module_id == k_mod_mapproject)) {	/* ***project calling with true scale, probably  */
+	if (GMT->current.map.width > 400.0 && (GMT->init.module_id == GMT_ID_GRDPROJECT || GMT->init.module_id == GMT_ID_MAPPROJECT)) {	/* ***project calling with true scale, probably  */
 		search = false;	/* Safe-guard that prevents region search below for (map|grd)project and others (400 inch = ~> 10 meters) */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Warning: GMT_map_setup perimeter search skipped when using true scale with grdproject or mapproject.\n");
 	}

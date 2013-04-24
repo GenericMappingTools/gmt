@@ -24,7 +24,7 @@
  * Version:	5 API
  */
 
-#define THIS_MODULE k_mod_splitxyz /* I am splitxyz */
+#define THIS_MODULE GMT_ID_SPLITXYZ /* I am splitxyz */
 
 #include "gmt_dev.h"
 

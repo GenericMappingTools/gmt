@@ -36,7 +36,7 @@
  *	Computers & Geosciences, 35: 1247–1254".
  */
 
-#define THIS_MODULE k_mod_greenspline /* I am greenspline */
+#define THIS_MODULE GMT_ID_GREENSPLINE /* I am greenspline */
 
 #include "gmt_dev.h"
 

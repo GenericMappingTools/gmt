@@ -30,7 +30,7 @@
  * grids using metadata from the grdraster.info table.
  */
 
-#define THIS_MODULE k_mod_grdraster /* I am grdraster */
+#define THIS_MODULE GMT_ID_GRDRASTER /* I am grdraster */
 
 #include "gmt_dev.h"
 #include "common_byteswap.h"

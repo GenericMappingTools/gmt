@@ -28,7 +28,7 @@
  * headers, and only report segments that passes a segment header search.
  */
 
-#define THIS_MODULE k_mod_gmtconvert /* I am gmtconvert */
+#define THIS_MODULE GMT_ID_GMTCONVERT /* I am gmtconvert */
 
 #include "gmt_dev.h"
 

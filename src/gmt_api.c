@@ -5039,8 +5039,8 @@ int GMT_FFT_Destroy_ (void *v_K)
 /* Module Extension: Allow finding and calling modules by name */
 
 int GMT_Get_Module (void *V_API, char *module)
-{	/* Return module ID given its name */
-	enum Gmt_module_id ID = gmt_module_lookup (module);
+{	/* Return module ID given its name, or GMT_ID_NONE (-1) if not found */
+	enum GMT_MODULE_ID ID = gmt_module_lookup (module);
 	return (ID);
 }
 
@@ -5052,8 +5052,8 @@ int GMT_Get_Module_ (char *module, int len)
 #endif
 
 void GMT_List_Module (void *V_API, int ID)
-{	/* List the usage of this module, or all modules if -1 */
-	if (ID == k_mod_nongmt)
+{	/* List the usage of this module, or all modules if -1 (GMT_ID_NONE) */
+	if (ID == GMT_ID_NONE)
 		gmt_module_show_all ();
 	else
 		gmt_module_show_name_and_purpose (ID);

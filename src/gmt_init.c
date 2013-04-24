@@ -6036,7 +6036,7 @@ struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, char *mod_name, str
 	if (mod_name != NULL) {
 		/* mod_name should only be set for non-GMT modules. For internally
 		 * registered modules: mod_name == NULL */
-		GMT->init.module_id = k_mod_nongmt;
+		GMT->init.module_id = GMT_ID_NONE;
 		GMT->init.module_name = strdup (mod_name);
 	}
 	else
@@ -9288,7 +9288,7 @@ struct GMT_CTRL *New_GMT_Ctrl (char *session, unsigned int pad) {	/* Allocate an
 #endif
 
 	/* We default to non-GMT module id */
-	GMT->init.module_id = k_mod_nongmt;
+	GMT->init.module_id = GMT_ID_NONE;
 
 	/* We don't know the module name yet */
 	GMT->init.module_name = NULL;

@@ -23,7 +23,7 @@
  * Version:	5 API
  */
 
-#define THIS_MODULE k_mod_grdreformat /* I am grdreformat */
+#define THIS_MODULE GMT_ID_GRDREFORMAT /* I am grdreformat */
 
 #include "gmt_dev.h"
 
