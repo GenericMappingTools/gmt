@@ -250,7 +250,7 @@ Documentation for more details.
 Most of the *GMT* default parameters have changed named in order to
 group parameters into logical groups and to use more consistent naming.
 Some new default parameters have been added as well, such as
-**MAP\_ANNOT\_ORTHO**, which controls whether axes annotations for
+**MAP_ANNOT_ORTHO**, which controls whether axes annotations for
 Cartesian plots are horizontal or orthogonal to the individual axes.
 
 Because of the default name changes and other command-line changes (such
@@ -5651,7 +5651,7 @@ The making of contour maps
 
 We want to create two contour maps of the low order geoid using the
 Hammer equal area projection. Our gridded data file is called ``osu91a1f_16.nc`` and
-contains a global 1  by 1 gridded geoid (we will see how to make gridded
+contains a global 1 by 1 gridded geoid (we will see how to make gridded
 files later). We would like to show one map centered on Greenwich and
 one centered on the dateline. Positive contours should be drawn with a
 solid pen and negative contours with a dashed pen. Annotations should
@@ -5690,7 +5690,14 @@ positive contours only and draw with a solid pen [Default]. The **-T**
 option causes tickmarks pointing in the downhill direction to be drawn
 on the innermost, closed contours. For the upper panel we also added -
 and + to the local lows and highs. You can find this illustration as
-Figure [fig:example\ :sub:`0`\ 1].
+
+.. figure:: _images/example_01.png
+   :height: 903 px
+   :width: 653 px
+   :align: center
+   :scale: 60 %
+
+   Figure ex_01: Contour maps of gridded data. 
 
 Image presentations
 -------------------
@@ -5763,16 +5770,22 @@ of the Geosat geoid heights, and draw a color legend to the right of the
 image with `psscale <psscale.html>`_. Similarly, we run
 `grdimage <grdimage.html>`_ but specify **-Y**\ 4.5i to
 plot above the previous image. Adding scale and label the two plots a)
-and b) completes the illustration (Figure [fig:example:sub:`0`\ 2]).
+and b) completes the illustration.
+
+.. figure:: _images/example_02.png
+   :height: 882 px
+   :width: 670 px
+   :align: center
+   :scale: 70 %
+
+   Figure ex_02: Color images from gridded data.
 
 Spectral estimation and xy-plots
 --------------------------------
 
 In this example we will show how to use the *GMT* programs
-`fitcircle <fitcircle.html>`_,
-`project <project.html>`_,
-`sample1d <sample1d.html>`_,
-`spectrum1d <spectrum1d.html>`_,
+`fitcircle <fitcircle.html>`_, `project <project.html>`_,
+`sample1d <sample1d.html>`_, `spectrum1d <spectrum1d.html>`_,
 `psxy <psxy.html>`_, and
 `pstext <pstext.html>`_. Suppose you have (lon, lat,
 gravity) along a satellite track in a file called ``sat.xyg``, and (lon, lat,
@@ -6011,7 +6024,15 @@ specify positions in inches directly. Thus, the complete automated script reads:
 The final illustration (Figure [fig:example:sub:`0`\ 3]) shows that the
 ship gravity anomalies have more power than altimetry derived gravity
 for short wavelengths and that the coherency between the two signals
-improves dramatically for wavelengths :math:`>` 20 km.
+improves dramatically for wavelengths > 20 km.
+
+.. figure:: _images/example_03.png
+   :height: 904 px
+   :width: 488 px
+   :align: center
+   :scale: 70 %
+
+   Figure ex_03: Spectral estimation and x=y-plots.
 
 A 3-D perspective mesh plot
 ---------------------------
@@ -6065,9 +6086,15 @@ how to do it:
 
 The purpose of the color palette file ``zero.cpt`` is to have the positive topography
 mesh painted light gray (the remainder is white). The left side of
-Figure [fig:example\ :sub:`0`\ 4] shows the complete illustration.
+Figure shows the complete illustration.
 
-[ht] |image|\ |image| [fig:example:sub:`0`\ 4]
+.. figure:: _images/example_04.png
+   :height: 856 px
+   :width: 685 px
+   :align: center
+   :scale: 60 %
+
+   Figure ex_04: 3-D perspective mesh plot (left) and colored version (right).
 
 The second part of the script shows how to make the color version of
 this figure that was printed in our first article in *EOS Trans. AGU* (8
@@ -6133,6 +6160,14 @@ the output of `grdgradient <grdgradient.html>`_ to
 `grdhisteq <grdhisteq.html>`_. The shell-script above
 will result in a plot like the one in Figure [fig:example\ :sub:`0`\ 5].
 
+.. figure:: _images/example_05.png
+   :height: 619 px
+   :width: 868 px
+   :align: center
+   :scale: 50 %
+
+   Figure ex_05: 3-D illuminated surface.
+
 Plotting of histograms
 ----------------------
 
@@ -6160,6 +6195,14 @@ this script:
     	-R0/1/0/360 -X2.5i -K -B0.2g0.2/30g30+glightblue -W1p > $ps
     pshistogram -Ba2000f1000:"Topography (m)":/a10f5:"Frequency"::,%::."Histograms":WSne+glightblue \
     	v3206.t -R-6000/0/0/30 -JX4.8i/2.4i -Gorange -O -Y5.5i -X-0.5i -L1p -Z1 -W250 >> $ps
+
+.. figure:: _images/example_06.png
+   :height: 872 px
+   :width: 567 px
+   :align: center
+   :scale: 60 %
+
+   Figure ex_06: Two kinds of histograms.
 
 A simple location map
 ---------------------
@@ -6212,6 +6255,14 @@ digitized from available maps [25]_. We create the final location map
      -7 11 AFRICA
     END
 
+.. figure:: _images/example_07.png
+   :height: 599 px
+   :width: 999 px
+   :align: center
+   :scale: 50 %
+
+   Figure ex_07: A typical location map.
+
 The same figure could equally well be made in color, which could be
 rasterized and made into a slide for a meeting presentation. The script
 is similar to the one outlined above, except we would choose a color for
@@ -6246,6 +6297,14 @@ Figure [fig:example\ :sub:`0`\ 8] by running this script:
     	-U"Example 8 in Cookbook" -Wthinnest -Glightgreen -K > $ps
     echo '0.1 4.9 This is the surface of cube' | pstext -R -J -JZ -Z0 \
     	-F+f24p,Helvetica-Bold+jTL -p -O >> $ps
+
+.. figure:: _images/example_08.png
+   :height: 895 px
+   :width: 699 px
+   :align: center
+   :scale: 60 %
+
+   Figure ex_08: A 3-D histogram.
 
 Plotting time-series along tracks
 ---------------------------------
@@ -6299,7 +6358,15 @@ gap between the profile and the label:
 
 The output shows the sea-surface slopes along 42 descending Geosat
 tracks in the Eltanin and Udintsev fracture zone region in a Mercator
-projection (Figure [fig:example:sub:`0`\ 9]).
+projection.
+
+.. figure:: _images/example_09.png
+   :height: 651 px
+   :width: 918 px
+   :align: center
+   :scale: 60 %
+
+   Figure ex_09: Time-series as "wiggles" along a track.
 
 A geographical bar graph plot
 -----------------------------
@@ -6313,7 +6380,7 @@ centered on each continent with a height that is proportional to the
 logarithm of the membership. A log\ :math:`_{10}`-scale is used since
 the memberships vary by almost 3 orders of magnitude. We choose a plain
 linear projection for the basemap and add the columns and text on top.
-Our script that produces Figure [fig:example\ :sub:`1`\ 0] reads:
+Our script that produces Figure ex_10 reads:
 
    ::
 
@@ -6333,6 +6400,14 @@ Our script that produces Figure [fig:example\ :sub:`1`\ 0] reads:
     psxyz agu2008.d -R-180/180/-90/90/1.01/100000 -J -JZ2.5il -So0.3ib1 -Gdarkgreen -Wthinner \
     	--FONT_TITLE=30p,Times-Bold --MAP_TITLE_OFFSET=-0.7i \
     	"-B60g60/30g30/a1p:Memberships::.AGU 2008 Membership Distribution:WSneZ" -O -p >> $ps
+
+.. figure:: _images/example_10.png
+   :height: 647 px
+   :width: 993 px
+   :align: center
+   :scale: 60 %
+
+   Figure ex_10: Geographical bar graph.
 
 Making a 3-D RGB color cube
 ---------------------------
@@ -6461,6 +6536,14 @@ Here is the shell script to generate the RGB cube in Figure [fig:example\ :sub:`
     
     rm -f *.nc gmt.conf
 
+.. figure:: _images/example_11.png
+   :height: 1020 px
+   :width: 751 px
+   :align: center
+   :scale: 60 %
+
+   Figure ex_11: The RGB color cube.
+
 Optimal triangulation of data
 -----------------------------
 
@@ -6518,6 +6601,14 @@ image the data. We use a color palette table ``topo.cpt`` (created via
     #
     rm -f net.xy topo.cpt
 
+.. figure:: _images/example_12.png
+   :height: 857 px
+   :width: 667 px
+   :align: center
+   :scale: 70 %
+
+   Figure ex_12: Optimal triangulation of data.
+
 Plotting of vector fields
 -------------------------
 
@@ -6558,6 +6649,14 @@ the plot (Figure [fig:example:sub:`1`\ 3]:
     echo "3.2 3.6 z(x,y) = x@~\327@~exp(-x@+2@+-y@+2@+)" \
     	| pstext -R0/6/0/4.5 -Jx1i -F+f40p,Times-Italic+jCB -O -X-3.45i >> $ps
     rm -f z.nc dzdx.nc dzdy.nc
+
+.. figure:: _images/example_13.png
+   :height: 777 px
+   :width: 681 px
+   :align: center
+   :scale: 60 %
+
+   Figure ex_13: Display of vector fields in GMT.
 
 Gridding of data and trend surfaces
 -----------------------------------
@@ -6634,6 +6733,14 @@ transect using `psxy <psxy.html>`_
     
     rm -f mean.xyz track *.nc *.d gmt.conf
 
+.. figure:: _images/example_14.png
+   :height: 912 px
+   :width: 688 px
+   :align: center
+   :scale: 60 %
+
+   Figure ex_14: Gridding of data and trend surfaces.
+
 Gridding, contouring, and masking of unconstrained areas
 --------------------------------------------------------
 
@@ -6694,6 +6801,14 @@ grid files using `grdinfo <grdinfo.html>`_.
     echo "-0.3 3.6 Gridding with missing data" | pstext -R0/3/0/4 -Jx1i \
     	-F+f24p,Helvetica-Bold+jCB -O -N >> $ps
     rm -f ship.b ship_10m.b ship.nc ship_clipped.nc
+
+.. figure:: _images/example_15.png
+   :height: 787 px
+   :width: 705 px
+   :align: center
+   :scale: 70 %
+
+   Figure ex_15: Gridding, contouring, and masking of data.
 
 Gridding of data, continued
 ---------------------------
@@ -6784,6 +6899,14 @@ request for interval (700,725).
     #
     rm -f *.nc gmt.conf
 
+.. figure:: _images/example_16.png
+   :height: 869 px
+   :width: 671 px
+   :align: center
+   :scale: 70 %
+
+   Figure ex_16: More ways to grid data.
+
 Images clipped by coastlines
 ----------------------------
 
@@ -6862,6 +6985,14 @@ color palettes and ways to draw color legends.
     # Clean up
     
     rm -f geoid.cpt gray.cpt *_i.nc
+
+.. figure:: _images/example_17.png
+   :height: 870 px
+   :width: 736 px
+   :align: center
+   :scale: 60 %
+
+   Figure ex_17: Clipping of images using coastlines.
 
 Volumes and Spatial Selections
 ------------------------------
@@ -6962,6 +7093,14 @@ illustration is presented in Figure [fig:example\ :sub:`1`\ 8].
     
     rm -f grav.cpt sm_*.txt *_i.nc tmp.nc mask.nc pratt.d center* gmt.conf
 
+.. figure:: _images/example_18.png
+   :height: 919 px
+   :width: 625 px
+   :align: center
+   :scale: 70 %
+
+   Figure ex_18: Volumes and geo-spatial selections.
+
 Color patterns on maps
 ----------------------
 
@@ -7030,6 +7169,14 @@ have changed places (Figure [fig:example:sub:`1`\ 9]).
     	-F+f18p,Helvetica-Bold,green=thinnest >> $ps
     
     rm -f l*.nc l*.cpt gmt.conf
+
+.. figure:: _images/example_19.png
+   :height: 977 px
+   :width: 653 px
+   :align: center
+   :scale: 70 %
+
+   Figure ex_19: Using color patterns and additional PostScript material in illustrations.
 
 Custom plot symbols
 -------------------
@@ -7149,6 +7296,14 @@ Here is our final map script that produces Figure [fig:example\ :sub:`2`\ 0]:
     psxy -R -J cities.d -Skbullseye -O >> $ps
     
     rm -f hotspots.d cities.d
+
+.. figure:: _images/example_20.png
+   :height: 648 px
+   :width: 956 px
+   :align: center
+   :scale: 50 %
+
+   Figure ex_20: Using custom symbols in GMT.
 
 Given these guidelines you can easily make your own symbols. Symbols
 with more than one color can be obtained by making several symbol
@@ -7285,6 +7440,14 @@ which produces the plot in Figure [fig:example\ :sub:`2`\ 1], suggesting
 Wessel has missed a few trains if he had hoped to cash in on the
 Internet bubble...
 
+.. figure:: _images/example_21.png
+   :height: 694 px
+   :width: 984 px
+   :align: center
+   :scale: 50 %
+
+   Figure ex_21: Time-series of RedHat stock price since IPO.
+
 World-wide seismicity the last 7 days
 -------------------------------------
 
@@ -7405,6 +7568,14 @@ giving the URL where these and similar data can be obtained.
     
     rm -f neis.* gmt.conf
 
+.. figure:: _images/example_22.png
+   :height: 724 px
+   :width: 951 px
+   :align: center
+   :scale: 50 %
+
+   Figure ex_22: World-wide seismicity the last 7 days.
+
 
 All great-circle paths lead to Rome
 -----------------------------------
@@ -7491,6 +7662,14 @@ Section [sec:example\ :sub:`2`\ 5]).
     
     rm -f cities.d dist.nc
 
+.. figure:: _images/example_23.png
+   :height: 522 px
+   :width: 903 px
+   :align: center
+   :scale: 60 %
+
+   Figure ex_23: All great-circle paths lead to Rome.
+
 Data selection based on geospatial criteria
 -------------------------------------------
 
@@ -7549,6 +7728,14 @@ distortion) and not the actual distance which remains constant at 1000 km.
     psxy -R -J -O -K point.d -Wfat,white -S+0.2i >> $ps
     psxy -R -J -O dateline.d -Wfat,white -A >> $ps
     rm -f point.d dateline.d
+
+.. figure:: _images/example_24.png
+   :height: 711 px
+   :width: 961 px
+   :align: center
+   :scale: 50 %
+
+   Figure ex_24: Data selection based on geospatial criteria.
 
 Global distribution of antipodes
 --------------------------------
@@ -7637,6 +7824,14 @@ categorical data, like these, that should not be interpolated.
     END
     rm -f *.nc key.* gmt.conf
 
+.. figure:: _images/example_25.png
+   :height: 560 px
+   :width: 947 px
+   :align: center
+   :scale: 60 %
+
+   Figure ex_25: Global distribution of antipodes.
+
 General vertical perspective projection
 ---------------------------------------
 
@@ -7697,6 +7892,14 @@ further and extend the availability of the full projection to all of the
     
     pscoast -R $PROJ -B5g5/5g5 -Glightbrown -Slightblue -W -Ia/blue -Di -Na -O -X1i -Y-4i \
     	-UL/-1.75i/-0.75i/"Example 26 in Cookbook" >> $ps
+
+.. figure:: _images/example_26.png
+   :height: 837 px
+   :width: 644 px
+   :align: center
+   :scale: 60 %
+
+   Figure ex_26: General vertical perspective projection.
 
 Plotting Sandwell/Smith Mercator img grids
 ------------------------------------------
@@ -7776,6 +7979,14 @@ painted black. A color scale bar was then added to complete the illustration.
     
     rm -f grav.cpt *_i.nc
 
+.. figure:: _images/example_27.png
+   :height: 838 px
+   :width: 695 px
+   :align: center
+   :scale: 60 %
+
+   Figure ex_27: Plotting Sandwell/Smith Mercator img grids.
+
 Mixing UTM and geographic data sets
 -----------------------------------
 
@@ -7830,6 +8041,15 @@ label Kilauea crater to complete the figure.
     	--MAP_GRID_CROSS_SIZE_PRIMARY=0.1i --FONT_LABEL=10p >> $ps
     # Clean up
     rm -f Kilauea.utm_i.nc Kilauea.cpt tmp.txt
+
+.. figure:: _images/example_28.png
+   :height: 636 px
+   :width: 775 px
+   :align: center
+   :scale: 70 %
+
+   Figure ex_28: Mixing UTM and geographic data sets requires knowledge of the map region domain in
+   both UTM and lon/lat coordinates and consistent use of the same map scale.
 
 Gridding spherical surface data using splines
 ---------------------------------------------
@@ -7900,6 +8120,14 @@ imaged with `grdimage <grdimage.html>`_ and
     echo "0 90 a)" | pstext -R -J -O -N -D-3.5i/-0.2i -F+f14p,Helvetica-Bold+jLB >> $ps
     # Clean up
     rm -f *.nc mars.cpt
+
+.. figure:: _images/example_29.png
+   :height: 773 px
+   :width: 735 px
+   :align: center
+   :scale: 60 %
+
+   Figure ex_29: Gridding of spherical surface data using Green's function splines.
 
 Trigonometric functions plotted in graph mode
 ---------------------------------------------
@@ -7979,6 +8207,14 @@ the given angle.
     EOF
     
     echo 0 0 0.5i 0 120 | psxy -R -J -O -Sm0.15i+e -W1p -Gblack >> $ps
+
+.. figure:: _images/example_30.png
+   :height: 691 px
+   :width: 921 px
+   :align: center
+   :scale: 50 %
+
+   Figure ex_30: Trigonometric functions plotted in graph mode.
 
 Using non-default fonts in *PostScript*
 ---------------------------------------
@@ -8112,6 +8348,14 @@ outlined fonts or to convert to a PDF-file.
     #ps2raster -P -A -Tg -E110 $ps
     # clean up
     rm -f .gmtcommands* gmt.conf CUSTOM_font_info.d legend.txt ex31CropNoLogo.eps
+
+.. figure:: _images/example_31.png
+   :height: 732 px
+   :width: 716 px
+   :align: center
+   :scale: 70 %
+
+   Figure ex_31: Using non-default fonts in *PostScript*\ .
     
 Draping an image over topography
 --------------------------------
@@ -8224,6 +8468,14 @@ did not want to store the 58 MB DEM file, whose location is mentioned in the scr
     # cleanup
     
     rm -f gmt.conf euflag.cpt illum.nc cities.txt
+
+.. figure:: _images/example_32.png
+   :height: 388 px
+   :width: 685 px
+   :align: center
+   :scale: 70 %
+
+   Figure ex_32: Draping an image over topography.
 
 Stacking automatically generated cross-profiles
 -----------------------------------------------
@@ -11797,8 +12049,6 @@ Finally we show an example of a polygon file:
    **ttt**; see
 
 .. |image| image:: GMT_utm_zones
-.. |image| image:: example_04
-.. |image| image:: example_04c
 .. |image| image:: GMT_volcano
 .. |image| image:: rendering.png
 .. |image| image:: formatpicture.png
@@ -11816,6 +12066,6 @@ Finally we show an example of a polygon file:
 .. |image| image:: GMT_App_M_2
 .. |image| image:: GMT_App_P_2
 
-.. |more| image:: ../fig/more.png
+.. |more| image:: _images/more.png
           :align: middle
           :alt: more info
