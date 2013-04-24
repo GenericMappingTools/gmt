@@ -41,7 +41,7 @@
  * Both binary and ASCII data files are accommodated
  */
  
-#define THIS_MODULE k_mod_gmtselect /* I am gmtselect */
+#define THIS_MODULE GMT_ID_GMTSELECT /* I am gmtselect */
 
 #include "gmt_dev.h"
 

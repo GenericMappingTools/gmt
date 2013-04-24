@@ -33,7 +33,7 @@
  * under the terms of the GNU public license, see http://www.gnu.org
  */
 
-#define THIS_MODULE k_mod_pssegyz /* I am pssegyz */
+#define THIS_MODULE GMT_ID_PSSEGYZ /* I am pssegyz */
 
 #include "gmt_dev.h"
 #include "segy_io.h"

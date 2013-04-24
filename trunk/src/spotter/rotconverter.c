@@ -62,7 +62,7 @@
  * 265.37800	 55.69932	150.0000	 82.9957
  */
 
-#define THIS_MODULE k_mod_rotconverter /* I am rotconverter */
+#define THIS_MODULE GMT_ID_ROTCONVERTER /* I am rotconverter */
 
 #include "spotter.h"
 

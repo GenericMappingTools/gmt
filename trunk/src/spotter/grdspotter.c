@@ -102,7 +102,7 @@
  *
  */
  
-#define THIS_MODULE k_mod_grdspotter /* I am grdspotter */
+#define THIS_MODULE GMT_ID_GRDSPOTTER /* I am grdspotter */
 
 #include "spotter.h"
 

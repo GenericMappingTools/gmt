@@ -26,7 +26,7 @@
  * Version:	5 API
  */
 
-#define THIS_MODULE k_mod_psclip /* I am psclip */
+#define THIS_MODULE GMT_ID_PSCLIP /* I am psclip */
 
 #include "gmt_dev.h"
 

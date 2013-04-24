@@ -26,7 +26,7 @@
  *
  */
 
-#define THIS_MODULE k_mod_grd2rgb /* I am grd2rgb */
+#define THIS_MODULE GMT_ID_GRD2RGB /* I am grd2rgb */
 
 #include "gmt_dev.h"
 

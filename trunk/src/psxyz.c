@@ -24,7 +24,7 @@
  * or polygons in a 3-D perspective view.
  */
 
-#define THIS_MODULE k_mod_psxyz /* I am psxyz */
+#define THIS_MODULE GMT_ID_PSXYZ /* I am psxyz */
 
 #include "gmt_dev.h"
 

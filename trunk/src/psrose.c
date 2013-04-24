@@ -30,7 +30,7 @@
  * Version:	5 API
  */
  
-#define THIS_MODULE k_mod_psrose /* I am psrose */
+#define THIS_MODULE GMT_ID_PSROSE /* I am psrose */
 
 #include "gmt_dev.h"
 

@@ -27,7 +27,7 @@
  * and do math on those columns. Then report the combined result.
  */
 
-#define THIS_MODULE k_mod_colmath /* I am colmath */
+#define THIS_MODULE GMT_ID_COLMATH /* I am colmath */
 
 #include "gmt_dev.h"
 

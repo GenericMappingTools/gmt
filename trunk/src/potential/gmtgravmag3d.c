@@ -26,7 +26,7 @@
  *
  */
 
-#define THIS_MODULE k_mod_gmtgravmag3d /* I am gmtgravmag3d */
+#define THIS_MODULE GMT_ID_GMTGRAVMAG3D /* I am gmtgravmag3d */
 
 #include "gmt_dev.h"
 #include "okbfuns.h"

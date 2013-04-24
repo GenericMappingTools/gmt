@@ -26,7 +26,7 @@
  * Ver:		5 API
  */
 
-#define THIS_MODULE k_mod_grdproject /* I am grdproject */
+#define THIS_MODULE GMT_ID_GRDPROJECT /* I am grdproject */
 
 #include "gmt_dev.h"
 

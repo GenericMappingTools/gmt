@@ -37,7 +37,7 @@
  * Version:	5 API
  */
  
-#define THIS_MODULE k_mod_grdview /* I am grdview */
+#define THIS_MODULE GMT_ID_GRDVIEW /* I am grdview */
 
 #include "gmt_dev.h"
 

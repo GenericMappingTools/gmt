@@ -29,7 +29,7 @@ int main (int argc, char *argv[]) {
 	int status = EXIT_SUCCESS;           /* Status code from GMT API */
 	unsigned int item = 1, k;
 	char *module = NULL;
-	enum Gmt_module_id module_id = 0;    /* Module ID */
+	enum GMT_MODULE_ID module_id = 0;    /* Module ID */
 	struct GMTAPI_CTRL *api_ctrl = NULL; /* GMT API control structure */
 
 	for (k = strlen (argv[0]); k > 0 && argv[0][k] != '/'; k--);	/* Find start of program name after any leading dirs */
@@ -89,7 +89,7 @@ int main (int argc, char *argv[]) {
 		return EXIT_FAILURE;
 	}
 
-	if ((module_id = gmt_module_lookup (module)) == k_mod_nongmt) {
+	if ((module_id = gmt_module_lookup (module)) == GMT_ID_NONE) {
 		fprintf (stderr, "gmt: No such program: %s\n", module);
 		return EXIT_FAILURE;
 	}

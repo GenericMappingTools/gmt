@@ -25,7 +25,7 @@
  *
  */
 
-#define THIS_MODULE k_mod_grdcontour /* I am grdcontour */
+#define THIS_MODULE GMT_ID_GRDCONTOUR /* I am grdcontour */
 
 #include "gmt_dev.h"
 

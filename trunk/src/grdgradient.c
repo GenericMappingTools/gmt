@@ -29,7 +29,7 @@
  * Version:	5 API
  */
  
-#define THIS_MODULE k_mod_grdgradient /* I am grdgradient */
+#define THIS_MODULE GMT_ID_GRDGRADIENT /* I am grdgradient */
 
 #include "gmt_dev.h"
 

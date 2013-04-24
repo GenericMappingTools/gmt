@@ -26,7 +26,7 @@
  * Version:	5 API
  */
  
-#define THIS_MODULE k_mod_grdmask /* I am grdmask */
+#define THIS_MODULE GMT_ID_GRDMASK /* I am grdmask */
 
 #include "gmt_dev.h"
 

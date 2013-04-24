@@ -24,7 +24,7 @@
  * Version:	5 API
  */
 
-#define THIS_MODULE k_mod_gmtspatial /* I am gmtspatial */
+#define THIS_MODULE GMT_ID_GMTSPATIAL /* I am gmtspatial */
 
 #include "gmt_dev.h"
 

@@ -32,7 +32,7 @@
  *
  */
  
-#define THIS_MODULE k_mod_mgd77list /* I am mgd77list */
+#define THIS_MODULE GMT_ID_MGD77LIST /* I am mgd77list */
 
 #include "gmt_dev.h"
 #include "mgd77.h"

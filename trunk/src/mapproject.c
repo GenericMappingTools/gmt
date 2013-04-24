@@ -37,7 +37,7 @@
  * Version:	5 API
  */
 
-#define THIS_MODULE k_mod_mapproject /* I am mapproject */
+#define THIS_MODULE GMT_ID_MAPPROJECT /* I am mapproject */
 
 #include "gmt_dev.h"
 

@@ -42,7 +42,7 @@
  *
  *	Contact info: www.soest.hawaii.edu/pwessel */
 
-#define THIS_MODULE k_mod_gshhg /* I am gshhg */
+#define THIS_MODULE GMT_ID_GSHHG /* I am gshhg */
 
 #include "gmt_dev.h"
 #include "gshhg.h"

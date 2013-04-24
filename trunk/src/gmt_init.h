@@ -107,7 +107,7 @@ EXTERN_MSC void GMT_end_for_mex (struct GMT_CTRL *GMT);
 /* Inline functions */
 
 /* Wrapper around GMT_begin_module for internally registered GMT modules */
-static inline struct GMT_CTRL* GMT_begin_gmt_module (struct GMTAPI_CTRL *api_ctrl, enum Gmt_module_id module_id, struct GMT_CTRL **gmt_ctrl_copy)
+static inline struct GMT_CTRL* GMT_begin_gmt_module (struct GMTAPI_CTRL *api_ctrl, enum GMT_MODULE_ID module_id, struct GMT_CTRL **gmt_ctrl_copy)
 {
 	/* Init module with NULL-name */
 	struct GMT_CTRL *gmt_ctrl = GMT_begin_module (api_ctrl, NULL, gmt_ctrl_copy);

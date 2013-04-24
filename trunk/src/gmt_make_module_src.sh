@@ -49,7 +49,6 @@ extern "C" {
 /* Declaration modifiers for DLL support (MSC et al) */
 #include "declspec.h"
 
-/* function prototypes of all GMT modules */
 EOF
 
 cat << EOF > ${FILE_GMT_MODULE_PRIVATE_H}
@@ -91,34 +90,7 @@ struct Gmt_moduleinfo {
 /* external array with program paramerters for all GMT modules */
 EXTERN_MSC struct Gmt_moduleinfo g_module[];
 
-/* enumerator with same order and length as array g_module */
-enum Gmt_module_id {
 EOF
-
-# $1 = name, $2 = core/supplement, $3 = Api_mode, $4 = purpose
-gawk '
-	BEGIN {
-		FS = "\t";
-		first_record = 1;
-	}
-	/^[ \t]*#/ {
-		next;
-	}
-	first_record {
-		printf "\tk_mod_%s = 0,\n", $1;
-		first_record = 0;
-		next;
-	}
-	{
-		printf "\tk_mod_%s,\n", $1;
-	}' ${FILE_MODULEINFO} >> ${FILE_GMT_MODULE_PRIVATE_H}
-
-cat << EOF >> ${FILE_GMT_MODULE_PRIVATE_H}
-	k_mod_nongmt
-};
-
-EOF
-
 # $1 = name, $2 = core/supplement, $3 = Api_mode, $4 = purpose
 gawk '
 	BEGIN {
@@ -129,7 +101,6 @@ gawk '
 	}' ${FILE_MODULEINFO} >> ${FILE_GMT_MODULE_PRIVATE_H}
 
 cat << EOF >> ${FILE_GMT_MODULE_H}
-
 /* These enums can be used as module IDs in GMT_Call_Module. Alternatively,
  * obtain the corrensponding ID from the module name via GMT_Get_Module.
  */
@@ -172,10 +143,10 @@ cat << EOF >> ${FILE_GMT_MODULE_PRIVATE_H}
 EXTERN_MSC void gmt_module_show_all();
 
 /* Pretty print module names and purposes */
-EXTERN_MSC void gmt_module_show_name_and_purpose(enum Gmt_module_id module);
+EXTERN_MSC void gmt_module_show_name_and_purpose(enum GMT_MODULE_ID module);
 
 /* Lookup module id by name */
-EXTERN_MSC enum Gmt_module_id gmt_module_lookup (const char *candidate);
+EXTERN_MSC enum GMT_MODULE_ID gmt_module_lookup (const char *candidate);
 
 /* Get module name */
 EXTERN_MSC const char *gmt_module_name (struct GMT_CTRL *gmt_ctrl);
@@ -205,9 +176,9 @@ cat << EOF > ${FILE_GMT_MODULE_C}
  * parameter array:
  *   void gmt_module_show_all(); - Pretty print all module names and their
  *           purposes
- *   void gmt_module_show_name_and_purpose(enum Gmt_module_id module); - Pretty
+ *   void gmt_module_show_name_and_purpose(enum GMT_MODULE_ID module); - Pretty
  *           print module names and purposes
- *   enum Gmt_module_id gmt_module_lookup (const char *candidate); - Lookup module id by
+ *   enum GMT_MODULE_ID gmt_module_lookup (const char *candidate); - Lookup module id by
  *           name
  *   const char *gmt_module_name (struct GMT_CTRL *gmt_ctrl); - Get module name
  *
@@ -238,7 +209,7 @@ cat << EOF >> ${FILE_GMT_MODULE_C}
 
 /* Pretty print all module names and their purposes */
 void gmt_module_show_all() {
-	enum Gmt_module_id module_id = 0; /* Module ID */
+	enum GMT_MODULE_ID module_id = 0; /* Module ID */
 	char module_name_comp[GMT_TEXT_LEN64];
 
 	fprintf (stderr, "Program                Purpose of Program\n");
@@ -252,8 +223,8 @@ void gmt_module_show_all() {
 }
 
 /* Pretty print module names and purposes */
-void gmt_module_show_name_and_purpose(enum Gmt_module_id module_id) {
-	assert (module_id != k_mod_nongmt);
+void gmt_module_show_name_and_purpose(enum GMT_MODULE_ID module_id) {
+	assert (module_id != GMT_ID_NONE);
 	fprintf (stderr, "%s(%s) %s - %s\n\n",
 			g_module[module_id].name,
 			g_module[module_id].component,
@@ -262,23 +233,23 @@ void gmt_module_show_name_and_purpose(enum Gmt_module_id module_id) {
 }
 
 /* Lookup module id by name */
-enum Gmt_module_id gmt_module_lookup (const char *candidate) {
-	enum Gmt_module_id module_id = 0; /* Module ID */
+enum GMT_MODULE_ID gmt_module_lookup (const char *candidate) {
+	enum GMT_MODULE_ID module_id = 0; /* Module ID */
 
 	/* Match candidate against g_module[module_id].name */
 	while ( g_module[module_id].name != NULL &&
 			strcmp (candidate, g_module[module_id].name) )
 		++module_id;
 
-	/* Return matching Module ID or k_mod_nongmt */
-	return module_id;
+	/* Return matching Module ID or GMT_ID_NONE */
+	return (module_id == GMT_N_MODULES) ? GMT_ID_NONE : module_id;
 }
 
 /* Get module name */
 const char *gmt_module_name (struct GMT_CTRL *gmt_ctrl) {
 	static const char no_module[] = "core"; /* when called before GMT_begin_module */
 	const char *module_name;
-	module_name = gmt_ctrl->init.module_id == k_mod_nongmt ?
+	module_name = gmt_ctrl->init.module_id == GMT_ID_NONE ?
 			gmt_ctrl->init.module_name : g_module[gmt_ctrl->init.module_id].name;
 	if (module_name == NULL)
 		/* when called before GMT_begin_module or after GMT_end_module */

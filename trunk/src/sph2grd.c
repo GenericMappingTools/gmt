@@ -22,7 +22,7 @@
  * Date:	1-JUN-2006
  */
  
-#define THIS_MODULE k_mod_sph2grd /* I am sph2grd */
+#define THIS_MODULE GMT_ID_SPH2GRD /* I am sph2grd */
 
 #include "gmt_dev.h"
 

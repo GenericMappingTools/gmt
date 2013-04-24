@@ -32,7 +32,7 @@
  * Version:	5 API
  */
  
-#define THIS_MODULE k_mod_triangulate /* I am triangulate */
+#define THIS_MODULE GMT_ID_TRIANGULATE /* I am triangulate */
 
 #include "gmt_dev.h"
 

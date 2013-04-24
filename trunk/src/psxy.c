@@ -24,7 +24,7 @@
  * or polygons on maps.
  */
 
-#define THIS_MODULE k_mod_psxy /* I am psxy */
+#define THIS_MODULE GMT_ID_PSXY /* I am psxy */
 
 #include "gmt_dev.h"
 

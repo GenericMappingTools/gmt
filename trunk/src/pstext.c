@@ -26,7 +26,7 @@
  * Version:	5 API
  */
 
-#define THIS_MODULE k_mod_pstext /* I am pstext */
+#define THIS_MODULE GMT_ID_PSTEXT /* I am pstext */
 
 #include "gmt_dev.h"
 

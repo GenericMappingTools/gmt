@@ -33,7 +33,7 @@
  * Version:	5 API
  */
  
-#define THIS_MODULE k_mod_sphinterpolate /* I am sphinterpolate */
+#define THIS_MODULE GMT_ID_SPHINTERPOLATE /* I am sphinterpolate */
 
 #include "gmt_dev.h"
 #include "sph.h"

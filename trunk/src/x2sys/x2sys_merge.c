@@ -25,7 +25,7 @@
  *
  */
 
-#define THIS_MODULE k_mod_x2sys_merge /* I am x2sys_merge */
+#define THIS_MODULE GMT_ID_X2SYS_MERGE /* I am x2sys_merge */
 
 #include "gmt_dev.h"
 

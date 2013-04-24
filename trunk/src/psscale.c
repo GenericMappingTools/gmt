@@ -25,7 +25,7 @@
  *
  */
 
-#define THIS_MODULE k_mod_psscale /* I am psscale */
+#define THIS_MODULE GMT_ID_PSSCALE /* I am psscale */
 
 #include "gmt_dev.h"
 

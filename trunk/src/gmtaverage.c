@@ -28,7 +28,7 @@
  * number of points, datasum, weightsum, or a specified quantile q.
  */
 
-#define THIS_MODULE k_mod_gmtaverage /* I am gmtaverage */
+#define THIS_MODULE GMT_ID_GMTAVERAGE /* I am gmtaverage */
 
 #include "gmt_dev.h"
 

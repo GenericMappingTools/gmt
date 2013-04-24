@@ -19,7 +19,7 @@
  *
  */
 
-#define THIS_MODULE k_mod_pspolar /* I am pspolar */
+#define THIS_MODULE GMT_ID_PSPOLAR /* I am pspolar */
 
 #include "gmt_dev.h"
 

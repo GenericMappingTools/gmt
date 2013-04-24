@@ -31,7 +31,7 @@
  * Version:	5 API
  */
  
-#define THIS_MODULE k_mod_nearneighbor /* I am nearneighbor */
+#define THIS_MODULE GMT_ID_NEARNEIGHBOR /* I am nearneighbor */
 
 #include "gmt_dev.h"
 

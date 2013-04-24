@@ -30,7 +30,7 @@
  *
  */
  
-#define THIS_MODULE k_mod_sphtriangulate /* I am sphtriangulate */
+#define THIS_MODULE GMT_ID_SPHTRIANGULATE /* I am sphtriangulate */
 
 #include "gmt_dev.h"
 #include "sph.h"

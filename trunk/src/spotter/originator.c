@@ -104,7 +104,7 @@
  * 212		-18	SOC	Society
  */
  
-#define THIS_MODULE k_mod_originator /* I am originator */
+#define THIS_MODULE GMT_ID_ORIGINATOR /* I am originator */
 
 #include "spotter.h"
 

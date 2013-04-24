@@ -26,7 +26,7 @@
  */
  
 #define GMT_WITH_NO_PS
-#define THIS_MODULE k_mod_gmtdefaults /* I am gmtdefaults */
+#define THIS_MODULE GMT_ID_GMTDEFAULTS /* I am gmtdefaults */
 
 #include "gmt_dev.h"
 

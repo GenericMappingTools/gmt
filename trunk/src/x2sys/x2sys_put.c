@@ -29,7 +29,7 @@
  *
  */
 
-#define THIS_MODULE k_mod_x2sys_put /* I am x2sys_put */
+#define THIS_MODULE GMT_ID_X2SYS_PUT /* I am x2sys_put */
 
 #include "x2sys.h"
 

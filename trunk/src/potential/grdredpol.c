@@ -31,7 +31,7 @@
  * Version:	5 API
  */
 
-#define THIS_MODULE k_mod_grdredpol /* I am grdredpol */
+#define THIS_MODULE GMT_ID_GRDREDPOL /* I am grdredpol */
 
 #include "gmt_dev.h"
 

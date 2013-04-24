@@ -26,7 +26,7 @@
  * Version:	5 API
  */
 
-#define THIS_MODULE k_mod_grdvector /* I am grdvector */
+#define THIS_MODULE GMT_ID_GRDVECTOR /* I am grdvector */
 
 #include "gmt_dev.h"
 

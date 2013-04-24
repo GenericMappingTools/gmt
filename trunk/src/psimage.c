@@ -25,7 +25,7 @@
  * Version:	5 API
  */
 
-#define THIS_MODULE k_mod_psimage /* I am psimage */
+#define THIS_MODULE GMT_ID_PSIMAGE /* I am psimage */
 
 #include "gmt_dev.h"
 

@@ -32,7 +32,7 @@
 
 /* #define DEBUGX */	/* Uncomment for testing */
 
-#define THIS_MODULE k_mod_x2sys_solve /* I am x2sys_solve */
+#define THIS_MODULE GMT_ID_X2SYS_SOLVE /* I am x2sys_solve */
 
 #include "x2sys.h"
 

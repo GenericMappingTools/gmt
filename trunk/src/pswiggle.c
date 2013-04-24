@@ -31,7 +31,7 @@
  *
  */
  
-#define THIS_MODULE k_mod_pswiggle /* I am pswiggle */
+#define THIS_MODULE GMT_ID_PSWIGGLE /* I am pswiggle */
 
 #include "gmt_dev.h"
 

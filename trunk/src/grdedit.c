@@ -32,7 +32,7 @@
  * Version:	5 API
  */
  
-#define THIS_MODULE k_mod_grdedit /* I am grdedit */
+#define THIS_MODULE GMT_ID_GRDEDIT /* I am grdedit */
 
 #include "gmt_dev.h"
 

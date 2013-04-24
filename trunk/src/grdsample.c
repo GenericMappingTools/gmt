@@ -29,7 +29,7 @@
  * Version:	5 API
  */
 
-#define THIS_MODULE k_mod_grdsample /* I am grdsample */
+#define THIS_MODULE GMT_ID_GRDSAMPLE /* I am grdsample */
 
 #include "gmt_dev.h"
 

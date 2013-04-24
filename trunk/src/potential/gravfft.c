@@ -31,7 +31,7 @@
  *
  * */
 
-#define THIS_MODULE k_mod_gravfft /* I am gravfft */
+#define THIS_MODULE GMT_ID_GRAVFFT /* I am gravfft */
 
 #include "gmt_dev.h"
 

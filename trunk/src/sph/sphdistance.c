@@ -35,7 +35,7 @@
  *
  */
  
-#define THIS_MODULE k_mod_sphdistance /* I am sphdistance */
+#define THIS_MODULE GMT_ID_SPHDISTANCE /* I am sphdistance */
 
 #include "gmt_dev.h"
 #include "sph.h"

@@ -27,7 +27,7 @@
  *
  */
 
-#define THIS_MODULE k_mod_x2sys_get /* I am x2sys_get */
+#define THIS_MODULE GMT_ID_X2SYS_GET /* I am x2sys_get */
 
 #include "x2sys.h"
 

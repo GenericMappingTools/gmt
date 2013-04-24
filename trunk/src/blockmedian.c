@@ -29,7 +29,7 @@
 
 #define BLOCKMEDIAN	/* Since mean, median, mode share near-similar macros we require this setting */
 
-#define THIS_MODULE k_mod_blockmedian /* I am blockmedian */
+#define THIS_MODULE GMT_ID_BLOCKMEDIAN /* I am blockmedian */
 
 #include "gmt_dev.h"
 #include "block_subs.h"

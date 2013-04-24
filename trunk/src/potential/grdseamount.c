@@ -9,7 +9,7 @@
  * Date: 3-MAR-2031
  */
 
-#define THIS_MODULE k_mod_grdseamount /* I am grdseamount */
+#define THIS_MODULE GMT_ID_GRDSEAMOUNT /* I am grdseamount */
 
 #include "gmt_dev.h"
 

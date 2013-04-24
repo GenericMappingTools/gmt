@@ -38,7 +38,7 @@
  *
  */
 
-#define THIS_MODULE k_mod_filter1d /* I am filter1d */
+#define THIS_MODULE GMT_ID_FILTER1D /* I am filter1d */
 
 #include "gmt_dev.h"
 

@@ -72,7 +72,7 @@
 	  2) New option to only output pole and ave, i.e., not text messages
  */
 
-#define THIS_MODULE k_mod_fitcircle /* I am fitcircle */
+#define THIS_MODULE GMT_ID_FITCIRCLE /* I am fitcircle */
 
 #include "gmt_dev.h"
 

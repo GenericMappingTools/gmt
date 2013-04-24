@@ -24,7 +24,7 @@
  *
  */
 
-#define THIS_MODULE k_mod_testapi /* I am testapi */
+#define THIS_MODULE GMT_ID_TESTAPI /* I am testapi */
 
 #include "gmt_dev.h"
 

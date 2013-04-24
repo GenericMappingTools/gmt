@@ -27,7 +27,7 @@
  * between segment endpoints exceeds a specified threshold.
  */
 
-#define THIS_MODULE k_mod_gmtstitch /* I am gmtstitch */
+#define THIS_MODULE GMT_ID_GMTSTITCH /* I am gmtstitch */
 
 #include "gmt_dev.h"
 

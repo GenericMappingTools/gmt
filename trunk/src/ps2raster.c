@@ -33,7 +33,7 @@
  */
 
 #define GMT_WITH_NO_PS
-#define THIS_MODULE k_mod_ps2raster /* I am ps2raster */
+#define THIS_MODULE GMT_ID_PS2RASTER /* I am ps2raster */
 
 #include "gmt_dev.h"
 

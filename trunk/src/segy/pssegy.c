@@ -30,7 +30,7 @@
  * of the GNU public license.
  */
 
-#define THIS_MODULE k_mod_pssegy /* I am pssegy */
+#define THIS_MODULE GMT_ID_PSSEGY /* I am pssegy */
 
 #include "gmt_dev.h"
 #include "segy_io.h"

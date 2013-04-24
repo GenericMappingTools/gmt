@@ -24,7 +24,7 @@
  * Version:	5 API
  */
 
-#define THIS_MODULE k_mod_gmtwhich /* I am gmtwhich */
+#define THIS_MODULE GMT_ID_GMTWHICH /* I am gmtwhich */
 
 #include "gmt_dev.h"
 

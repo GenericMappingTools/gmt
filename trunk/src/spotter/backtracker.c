@@ -70,7 +70,7 @@
  * either single or double precision (see -bi option)
  */
 
-#define THIS_MODULE k_mod_backtracker /* I am backtracker */
+#define THIS_MODULE GMT_ID_BACKTRACKER /* I am backtracker */
 
 #include "spotter.h"
 

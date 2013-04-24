@@ -19,7 +19,7 @@ PostScript code is written to stdout.
  Roots:		based on psxy.c
  */
 
-#define THIS_MODULE k_mod_psmeca /* I am psmeca */
+#define THIS_MODULE GMT_ID_PSMECA /* I am psmeca */
 
 #include "gmt_dev.h"
 

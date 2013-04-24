@@ -18,7 +18,7 @@
  *
  */
 
-#define THIS_MODULE k_mod_mgd77manage /* I am mgd77manage */
+#define THIS_MODULE GMT_ID_MGD77MANAGE /* I am mgd77manage */
 
 #include "gmt_dev.h"
 #include "mgd77.h"

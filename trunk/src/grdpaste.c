@@ -24,7 +24,7 @@
  * Version:	5 API
  */
 
-#define THIS_MODULE k_mod_grdpaste /* I am grdpaste */
+#define THIS_MODULE GMT_ID_GRDPASTE /* I am grdpaste */
 
 #include "gmt_dev.h"
 

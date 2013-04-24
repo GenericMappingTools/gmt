@@ -39,7 +39,7 @@
  *		2. No support for periodic boundary conditions.
  */
 
-#define THIS_MODULE k_mod_surface /* I am surface */
+#define THIS_MODULE GMT_ID_SURFACE /* I am surface */
 
 #include "gmt_dev.h"
 
