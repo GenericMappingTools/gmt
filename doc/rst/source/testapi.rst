@@ -4,16 +4,16 @@ testapi
 
 testapi - Test API i/o methods for any data type
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
 **testapi**
 **-I**\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **r**\ \|\ **s**\ [/**m**\ \|\ **v**]
-**-T**\ **c**\ \|\ **d**\ \|\ **g**\ \|GD(i)\|GD(t)
+**-T**\ **c**\ \|\ **d**\ \|\ **g**\ \|\ **i**\ \|\ **t**
 **-W**\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **r**\ \|\ **s**\ [/**m**\ \|\ **v**]
-[ **-V**\ [*level*\ ] ]
+[ **-V**\ [*level*] ]
 
 |No-spaces|
 
@@ -26,8 +26,8 @@ written to 5 different ways (file, stream, file descriptor, copy from
 memory, reference from memory). We use this tool to check the various
 possibilities, for each data type. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 **-I**\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **r**\ \|\ **s**\ [/**m**\ \|\ **v**]
     Set input method; choose from **c**\ opy from memory, file
@@ -39,7 +39,7 @@ possibilities, for each data type.
     vectors and pass that as the source instead of a data file. **-Td**
     may take either **m**\ \|\ **v** while **-Tg** can only take the
     **m** modifier.
-**-T**\ **c**\ \|\ **d**\ \|\ **g**\ \|GD(i)\|GD(t)
+**-T**\ **c**\ \|\ **d**\ \|\ **g**\ \|\ **i**\ \|\ **t**
     Specify data type; choose from **c**\ pt, **d**\ ataset, **g**\ rid,
     **i**\ mage, or **t**\ extset.
 **-W**\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **r**\ \|\ **s**\ [/**m**\ \|\ **v**]
@@ -52,31 +52,36 @@ possibilities, for each data type.
     file. **-Td** may take either **m**\ \|\ **v** while **-Tg** can
     only take the **m** modifier.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
-To check if reading and writing the test dataset file yields an
-identical copy, try
+To check if reading and writing the test dataset file yields an identical copy, try
+
+   ::
 
     testapi -Td -If -Wf -V
 
 To check if reading the test grid from memory and writing it to file
 yields an identical copy, try
 
+   ::
+
     testapi -Tg -Ic -Wf -V
 
 To read the test grid via user matrix memory and writing it via another
 user matrix before saving to a grid file, try
 
+   ::
+
     testapi -Tg -Ic/m -Wf/m -V
 
-`See Also <#toc7>`_
--------------------
+See Also
+--------
 
 `gmt <gmt.html>`_

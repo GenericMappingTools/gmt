@@ -10,20 +10,21 @@ xyz2grd - Convert data table to a grid file
 .. include:: common_SYN_OPTs.rst_
 
 **xyz2grd** [ *table* ] **-G**\ *grdfile*
-**-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [
-**-A**\ [**f**\ \|\ **l**\ \|\ **m**\ \|\ **n**\ \|\ **r**\ \|\ **s**\ \|\ **u**\ \|\ **z**]
-] [ **-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*title*/*remark* ]
-[ **-N**\ *nodata* ] [ **-S**\ [*zfile*\ ] ] [ **-V**\ [*level*\ ] ] [
-**-Z**\ [*flags*\ ] ] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [
-**-f**\ *colinfo* ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
+|SYN_OPT-I|
+|SYN_OPT-R|
+[ **-A**\ [**f**\ \|\ **l**\ \|\ **m**\ \|\ **n**\ \|\ **r**\ \|\ **s**\ \|\ **u**\ \|\ **z**] ] 
+[ **-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*title*/*remark* ]
+[ **-N**\ *nodata* ] [ **-S**\ [*zfile*] ]
+[ |SYN_OPT-V| ]
+[ **-Z**\ [*flags*\ ] ] [ **-bi**\ [*ncols*\ ][*type*] ]
+[ **-f**\ *colinfo* ] [ **-h**\ [**i**\ \|\ **o**][*n*] ]
+[ |SYN_OPT-i| ]
+[ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **xyz2grd** reads one or more z or xyz tables and creates a binary grid
 file. **xyz2grd** will report if some of the nodes are not filled in
@@ -33,8 +34,8 @@ mean value. As an option (using **-Z**), a 1-column z-table may be read
 assuming all nodes are present (z-tables can be in organized in a number
 of formats, see **-Z** below.) 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 **-G**\ *grdfile*
     *grdfile* is the name of the binary output grid file. (See GRID FILE
@@ -45,8 +46,8 @@ of formats, see **-Z** below.)
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 *table*
     One or more ASCII [or binary, see **-bi**\ [*ncols*\ ][*type*\ ]]
@@ -172,8 +173,8 @@ Examples
 
 To create a grid file from the ASCII data in hawaii\_grv.xyz, use
 
-    xyz2grd hawaii\_grv.xyz -Ddegree/degree/mGal/1/0/"Hawaiian
-    Gravity"/"GRS-80 Ellipsoid used" -Ghawaii\_grv\_new.nc -R198/208/18/25 -I5m -V
+    xyz2grd hawaii_grv.xyz -Ddegree/degree/mGal/1/0/"Hawaiian Gravity"/"GRS-80 Ellipsoid used" \
+            -Ghawaii\_grv\_new.nc -R198/208/18/25 -I5m -V
 
 To create a grid file from the raw binary (3-column, single-precision
 scanline-oriented data raw.b, use
@@ -191,7 +192,7 @@ Say you have received a binary file with 4-byte floating points that
 were written on a machine of different byte-order than yours. You can
 swap the byte-order with
 
-    xyz2grd floats.bin -Snew\_floats.bin -V -Zf
+    xyz2grd floats.bin -Snew_floats.bin -V -Zf
 
 See Also
 --------
