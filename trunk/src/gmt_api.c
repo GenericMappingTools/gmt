@@ -2861,7 +2861,7 @@ int GMTAPI_Memory_Registered (struct GMTAPI_CTRL *API, unsigned int family, unsi
 
 /*===>  Create a new GMT Session */
 
-void * GMT_Create_Session (char *session, unsigned int pad, unsigned int mode, void *print)
+void * GMT_Create_Session (char *session, unsigned int pad, unsigned int mode, int (*print_func) (FILE *, const char *))
 {
 	/* Initializes the GMT API for a new session. This is typically called once in a program,
 	 * but programs that manage many threads might call it several times to create as many
@@ -2888,7 +2888,7 @@ void * GMT_Create_Session (char *session, unsigned int pad, unsigned int mode, v
 	}
 	G->GMT->parent = G;	/* So we know who's your daddy */
 	G->pad = pad;		/* Preserve the default pad value for this session */
-	G->print_func = (print == NULL) ? gmt_print_func : print;	/* Pointer to the print function to use in GMT_Message|Report */
+	G->print_func = (print_func == NULL) ? gmt_print_func : print_func;	/* Pointer to the print function to use in GMT_Message|Report */
 	G->do_not_exit = mode & 1;	/* if set, then GMT_exit is simply a return; otherwise it is an exit */
 		
 	/* Allocate memory to keep track of registered data resources */

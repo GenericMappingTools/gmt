@@ -599,7 +599,7 @@ To initiate the new session we use
 
   ::
 
-    void *GMT_Create_Session (char *tag, unsigned int pad, unsigned int mode, void *print);
+    void *GMT_Create_Session (char *tag, unsigned int pad, unsigned int mode, int (*print_func) (FILE *, const char *));
 
 and you will typically call it thus:
 
@@ -619,7 +619,7 @@ sets how many rows and columns should be used for padding for grids and
 images so that boundary conditions can be applied. *GMT* uses 2 so we
 recommend that value. The ``mode`` argument is only used for external APIs
 that need to replace GMT's calls to a hard exit upon failure with a soft return. Likewise,
-the *print* argument is a pointer to a function that is used to print
+the *print_func* argument is a pointer to a function that is used to print
 messages via GMT_Message or GMT_Report from APIs that cannot use the
 standard printf (this is the case for the Matlab API, for instance).
 All other uses should simply pass 0 and NULL for these two arguments.
