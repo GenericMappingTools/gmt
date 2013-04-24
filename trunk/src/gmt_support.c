@@ -1122,6 +1122,7 @@ bool GMT_getrgb (struct GMT_CTRL *GMT, char *line, double rgb[])
 
 	/* Definitely wrong, at this point, is something that does not end in a number */
 
+	if (strlen(buffer) < 1) return (true);	/* Nothing, which is bad */ 
 	c = buffer[strlen(buffer)-1];
 	if (c <= 0 || !(isdigit (c) || c == '.')) return (true);
 
@@ -1212,6 +1213,7 @@ bool gmt_gethsv (struct GMT_CTRL *GMT, char *line, double hsv[])
 
 	/* Definitely wrong, at this point, is something that does not end in a number */
 
+	if (strlen(buffer) < 1) return (true);	/* Nothing, which is bad */ 
 	c = buffer[strlen(buffer)-1];
 	if (!(isdigit (c) || c == '.')) return (true);
 
