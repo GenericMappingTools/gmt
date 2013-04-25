@@ -26,7 +26,7 @@ this application, the user might have a grid of flat topography with a
 mountain in the middle. Ordinary gray shading of this file (using
 grdimage/grdview) with a linear mapping from topography to graytone will
 result in most of the image being very dark gray, with the mountain
-being almost white. One could use **grdhisteq** to write to stdout an
+being almost white. One could use **grdhisteq** to write to stdout or file an
 ASCII list of those data values which divide the range of the data into
 *n\_cells* segments, each of which has an equal area in the image. Using
 **awk** or **makecpt** one can take this output and build a cpt file;
@@ -43,10 +43,10 @@ a grid using *n\_cells* = 10, and then contour the result to trace the 1
 contour. This will enclose the lowest 10% of the data, regardless of
 their original values. Another example is in equalizing the output of
 **grdgradient**. For shading purposes it is desired that the data have a
-smooth distribution, such as a gaussian. If you run **grdhisteq** on
+smooth distribution, such as a Gaussian. If you run **grdhisteq** on
 output from **grdgradient** and make a grid file output with the
 Gaussian option, you will have a grid whose values are distributed
-according to a gaussian distribution with zero mean and unit variance.
+according to a Gaussian distribution with zero mean and unit variance.
 The locations of these values will correspond to the locations of the
 input; that is, the most negative output value will be in the (x,y)
 location of the most negative input value, and so on. 
@@ -61,7 +61,7 @@ location of the most negative input value, and so on.
 -----------------------------
 
 **-C**\ *n\_cells*
-    Sets how many cells (or divisions) of data range to make.
+    Sets how many cells (or divisions) of data range to make [16].
 **-D**
     Dump level information to *file*, or standard output if no file is
     provided.
@@ -103,10 +103,10 @@ suitable for use with **grdimage** or **grdview**, run
 `Restrictions <#toc8>`_
 -----------------------
 
-If you use **grdhisteq** to make a gaussian output for gradient shading
+If you use **grdhisteq** to make a Gaussian output for gradient shading
 in **grdimage** or **grdview**, you should be aware of the following:
 the output will be in the range [-x, x], where x is based on the number
-of data in the input grid (nx \* ny) and the cumulative gaussian
+of data in the input grid (nx \* ny) and the cumulative Gaussian
 distribution function F(x). That is, let N = nx \* ny. Then x will be
 adjusted so that F(x) = (N - 1 + 0.5)/N. Since about 68% of the values
 from a standard normal distribution fall within +/- 1, this will be true
