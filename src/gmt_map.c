@@ -6260,7 +6260,7 @@ uint64_t GMT_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 		else if (GMT->current.map.is_world)
 			nx = (*GMT->current.map.wrap_around_check) (GMT, dummy, last_x, last_y, this_x, this_y, xx, yy, sides);
 		if (nx == 1) {	/* inside-outside or outside-inside */
-			if (GMT_is_dnan (yy[0])) fprintf (stderr, "y[0] NaN\n");
+			// if (GMT_is_dnan (yy[0])) fprintf (stderr, "y[0] NaN\n");
 			GMT->current.plot.x[np] = xx[0];	GMT->current.plot.y[np] = yy[0];
 			GMT->current.plot.pen[np++] = (inside) ? PSL_MOVE : PSL_DRAW;
 			if (np == GMT->current.plot.n_alloc) GMT_get_plot_array (GMT);
@@ -6275,7 +6275,7 @@ uint64_t GMT_geo_to_xy_line (struct GMT_CTRL *GMT, double *lon, double *lat, uin
 		}
 		if (inside) {
 			if ( np >= GMT->current.plot.n_alloc ) {
-				fprintf(stderr, "bad access: cannot access current.plot.x[%" PRIu64 "], np=%" PRIu64 ", GMT->current.plot.n=%" PRIu64 "\n", np, np, GMT->current.plot.n);
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "bad access: cannot access current.plot.x[%" PRIu64 "], np=%" PRIu64 ", GMT->current.plot.n=%" PRIu64 "\n", np, np, GMT->current.plot.n);
 			}
 			else {
 				GMT->current.plot.x[np] = this_x;	GMT->current.plot.y[np] = this_y;

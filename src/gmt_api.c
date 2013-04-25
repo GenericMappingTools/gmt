@@ -78,7 +78,7 @@ EXTERN_MSC double GMT_fft_ky (uint64_t k, struct GMT_FFT_WAVENUMBER *K);
 EXTERN_MSC double GMT_fft_kr (uint64_t k, struct GMT_FFT_WAVENUMBER *K);
 EXTERN_MSC void gmt_fft_save2d (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direction, struct GMT_FFT_WAVENUMBER *K);
 EXTERN_MSC void gmt_fft_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_FFT_INFO *F);
-EXTERN_MSC void gmt_fft_Singleton_list (void);
+EXTERN_MSC void gmt_fft_Singleton_list (struct GMTAPI_CTRL *API);
 
 #define GMTAPI_MAX_ID 100000	/* Largest integer to keep in %06d format */
 
@@ -222,7 +222,7 @@ double GMTAPI_get_val (struct GMTAPI_CTRL *API, union GMT_UNIVECTOR *u, uint64_t
 		case GMT_FLOAT:	val = u->f4[row];	break;
 		case GMT_DOUBLE:	val = u->f8[row];	break;
 		default:
-			fprintf (stderr, "GMT API: Internal error in GMTAPI_get_val: Passed bad type (%d)\n", type);
+			GMT_Report (API, GMT_MSG_NORMAL, "Internal error in GMTAPI_get_val: Passed bad type (%d)\n", type);
 			val = 0.0;
 			API->error = GMT_NOT_A_VALID_TYPE;
 			break;
@@ -247,7 +247,7 @@ void GMTAPI_put_val (struct GMTAPI_CTRL *API, union GMT_UNIVECTOR *u, double val
 		case GMT_FLOAT:  u->f4[row]  = (float)val;    break;
 		case GMT_DOUBLE: u->f8[row]  = val;           break;
 		default:
-			fprintf (stderr, "GMT API: Internal error in GMTAPI_put_val: Passed bad type (%d)\n", type);
+			GMT_Report (API, GMT_MSG_NORMAL, "Internal error in GMTAPI_get_val: Passed bad type (%d)\n", type);
 			API->error = GMT_NOT_A_VALID_TYPE;
 			break;
 	}
@@ -345,7 +345,7 @@ p_func_size_t GMTAPI_get_2D_to_index (struct GMTAPI_CTRL *API, unsigned int shap
 			p = (shape == GMTAPI_ORDER_ROW) ? GMTAPI_2D_to_index_C_cplx_imag : GMTAPI_2D_to_index_F_cplx_imag;
 			break;
 		default:
-			fprintf (stderr, "GMTAPI_get_2D_to_index: Illegal mode passed - aborting\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI_get_2D_to_index: Illegal mode passed - aborting\n");
 			GMT_exit (API->do_not_exit, NULL);
 	}
 	return (p);
@@ -2950,13 +2950,19 @@ int GMTAPI_report_error (void *V_API, int error)
  	 * All functions can call this, even if API has not been initialized. */
 	FILE *fp = NULL;
 	bool report;
+	char message[GMT_BUFSIZ];
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 	
 	report = (API) ? API->error != API->last_error : true;
 	if (report && error != GMT_OK) {	/* Report error */
 		if (!API || !API->GMT || (fp = API->GMT->session.std[GMT_ERR]) == NULL) fp = stderr;
-		if (API && API->session_tag) fprintf (fp, "[Session %s (%d)]: ", API->session_tag, API->session_ID);
-		fprintf (fp, "Error returned from GMT API: %s (%d)\n", g_api_error_string[error], error);
+		if (API && API->session_tag) {
+			sprintf (message, "[Session %s (%d)]: Error returned from GMT API: %s (%d)\n",
+				API->session_tag, API->session_ID, g_api_error_string[error], error);
+			GMT_Message (API, GMT_TIME_NONE, message);
+		}
+		else
+			fprintf (fp, "Error returned from GMT API: %s (%d)\n", g_api_error_string[error], error);
 	}
 	if (API) API->last_error = API->error, API->error = error;	/* Update API error value if API exists */
 	return (error);
@@ -4769,7 +4775,7 @@ void * GMT_FFT_Parse (void *V_API, char option, unsigned int dim, char *args)
 		n_errors++;
 	}
 	if (info->info_mode == GMT_FFT_LIST) {
-		gmt_fft_Singleton_list ();
+		gmt_fft_Singleton_list (API);
 		n_errors++;	/* So parsing fails and stops the program after this listing */
 	}
 	if (n_errors) {
@@ -5382,7 +5388,7 @@ int GMT_F77_readgrdinfo_ (unsigned int dim[], double limit[], double inc[], char
 	/* Read the grid header */
 
 	if (GMT_read_grd_info (API->GMT, file, &header)) {
-		fprintf (stderr, "%s: Error opening file %s\n", argv, file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Error opening file %s\n", file);
 		return EXIT_FAILURE;
 	}
 
@@ -5416,14 +5422,14 @@ int GMT_F77_readgrd_ (float *array, unsigned int dim[], double limit[], double i
 	/* Read the grid header */
 	GMT_grd_init (API->GMT, &header, NULL, false);
 	if (GMT_read_grd_info (API->GMT, file, &header)) {
-		fprintf (stderr, "%s: Error opening file %s\n", argv, file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Error opening file %s\n", file);
 		return EXIT_FAILURE;
 	}
 
 	/* Read the grid, possibly after first allocating array space */
 	if (dim[GMT_Z] == 1) array = GMT_memory (API->GMT, NULL, header.size, float);
 	if (GMT_read_grd (API->GMT, file, &header, array, no_wesn, no_pad, 0)) {
-		fprintf (stderr, "%s: Error reading file %s\n", argv, file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Error reading file %s\n", file);
 		return EXIT_FAILURE;
 	}
 
@@ -5467,7 +5473,7 @@ int GMT_F77_writegrd_ (float *array, unsigned int dim[], double limit[], double 
 	/* Write the file */
 	
 	if (GMT_write_grd (API->GMT, file, &header, array, no_wesn, no_pad, 0)) {
-		fprintf (stderr, "%s: Error writing file %s\n", argv, file);
+		GMT_Report (API, GMT_MSG_NORMAL, "Error writing file %s\n", file);
 		return EXIT_FAILURE;
 	}
 	

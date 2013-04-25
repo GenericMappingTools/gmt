@@ -644,7 +644,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 		else if (Ctrl->S.active)				/* Compute "loading from below" grav|geoid */
 			load_from_below_grid (GMT, Grid[0], Ctrl, K, raised, n);
 		else
-			fprintf (stderr, "It SHOULDN'T pass here\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "It SHOULDN'T pass here\n");
 	}
 
 	GMT_Report (API, GMT_MSG_VERBOSE, " Inverse FFT...");
