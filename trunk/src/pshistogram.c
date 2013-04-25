@@ -334,7 +334,7 @@ void Free_pshistogram_Ctrl (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *C) {	
 
 int GMT_pshistogram_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pshistogram [<table>] %s -W<width> [%s] [-C<cpt>] [-F] [-G<fill>] [-I[o|O]]\n", GMT_Jx_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-K] [-L<pen>] [-N[<mode>][+p<pen>]] [-O] [-P] [-Q]\n", GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S] [%s]\n\t[%s] [%s] [%s] [-Z[0-5]]\n", GMT_Rx_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);

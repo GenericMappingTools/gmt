@@ -123,7 +123,7 @@ int GMT_pspolar_usage (struct GMTAPI_CTRL *API, int level)
 {
 	/* This displays the pspolar synopsis and optionally full usage information */
 
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pspolar [<table>] %s %s -D<longitude>/<latitude>\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t-M<size>[i/c] -S<symbol><size>[i/c] [-A] [%s]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<longitude>/<latitude>[W<pen>][P<pointsize>]] [-E<fill>] [-e[<pen>]] [-F<fill>]\n");

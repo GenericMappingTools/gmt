@@ -343,7 +343,7 @@ void Free_psmask_Ctrl (struct GMT_CTRL *GMT, struct PSMASK_CTRL *C) {	/* Dealloc
 
 int GMT_psmask_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: psmask <table> %s %s\n", GMT_I_OPT, GMT_J_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [%s] [-C] [-D<template>] [-G<fill>]\n\t[%s] [-K] [-N] [-O] [-P] [-Q<min>] [-S%s] [-T]\n", GMT_Rgeoz_OPT, GMT_B_OPT, GMT_Jz_OPT, GMT_RADIUS_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT);

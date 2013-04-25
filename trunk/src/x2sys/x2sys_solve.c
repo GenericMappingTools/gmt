@@ -176,7 +176,7 @@ void Free_x2sys_solve_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *C) {	
 }
 
 int GMT_x2sys_solve_usage (struct GMTAPI_CTRL *API, int level) {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 #ifdef SAVEFORLATER
 	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_solve -C<column> -E<flag> -T<TAG> [<coedata>] [-I<tracklist>] [%s] [-W]\n\t[%s]\n\n", GMT_V_OPT, GMT_bi_OPT);
 #else

@@ -205,7 +205,7 @@ int comp_hs (const void *p1, const void *p2)
 
 int GMT_originator_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: originator [<table>] -E[+]<rottable> -F[+]<hotspottable> [-D<d_km>] [-H] [-L[<flag>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N<upper_age>] [-Qr/t] [-S<n_hs>] [-T] [%s] [-W<maxdist>] [-Z]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_h_OPT, GMT_i_OPT, GMT_s_OPT, GMT_colon_OPT);

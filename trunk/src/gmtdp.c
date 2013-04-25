@@ -75,7 +75,7 @@ void Free_gmtdp_Ctrl (struct GMT_CTRL *GMT, struct GMTDP_CTRL *C) {	/* Deallocat
 
 int GMT_gmtdp_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtdp [<table>] -T<tolerance>[<unit>] [-G<outtable>] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
 		GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_colon_OPT);

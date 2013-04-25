@@ -108,7 +108,7 @@ int GMT_psxyz_usage (struct GMTAPI_CTRL *API, int level)
 {
 	/* This displays the psxyz synopsis and optionally full usage information */
 
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: psxyz [<table>] %s %s [%s]\n", GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-D<dx>/<dy>[/<dz>]] [-G<fill>] [-I<intens>] [-K] [-L] [-N] [-O]\n", GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [-Q] [-S[<symbol>][<size>[<unit>]|+s<scaling>][/size_y]]\n\t[%s] [%s] [-W[+|-][<pen>]]\n", GMT_U_OPT, GMT_V_OPT);

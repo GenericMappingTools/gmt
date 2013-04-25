@@ -125,7 +125,7 @@ void Free_grd2cpt_Ctrl (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *C) {	/* Deall
 
 int GMT_grd2cpt_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grd2cpt <grid> [-A[+]<transparency>] [-C<cpt>] [-D[i|o]] [-F[R|r|h|c] [-E<nlevels>] [-I]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L<min_limit>/<max_limit>] [-M] [-N] [-Q[i|o]] [%s]\n\t[-S<z_start>/<z_stop>/<z_inc> or -S<n>] [-T<-|+|=|_>] [%s] [-Z]\n", GMT_Rgeo_OPT, GMT_V_OPT);
 

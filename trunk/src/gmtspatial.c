@@ -652,7 +652,7 @@ struct NN_INFO * NNA_update_info (struct GMT_CTRL *GMT, struct NN_INFO * I, stru
 }
 
 int GMT_gmtspatial_usage (struct GMTAPI_CTRL *API, int level) {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 #ifdef PW_TESTING
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtspatial [<table>] [-A[a<min_dist>][unit]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+s<sfact>][+p]]\n\t[-E+|-] [-I[i|e]]\n\t[-L%s/<pnoise>/<offset>] [-Q[<unit>][+]]\n", GMT_DIST_OPT, GMT_DIST_OPT);
 #else

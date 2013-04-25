@@ -102,7 +102,7 @@ void Free_grdimage_Ctrl (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *C) {	/* Dea
 
 int GMT_grdimage_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 #ifdef HAVE_GDAL
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdimage <grd_z>|<grd_r> <grd_g> <grd_b> %s [%s] [-A<out_img=driver>] [-C<cpt>]\n", GMT_J_OPT, GMT_B_OPT); 
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D[r]] [-Ei|<dpi>] [-G[f|b]<rgb>] [-I<intensgrid>|<value>] [-K] [-M] [-N] [-O] [-P] [-Q]\n");

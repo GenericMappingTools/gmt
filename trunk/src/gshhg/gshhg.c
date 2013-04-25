@@ -100,7 +100,7 @@ void Free_gshhg_Ctrl (struct GMT_CTRL *GMT, struct GSHHG_CTRL *C) {	/* Deallocat
 
 int GMT_gshhg_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gshhg gshhs|wdb_rivers|wdb_borders_[f|h|i|l|c].b [-A<area>] [-G] [-I<id>] [-L] [-N<level>]\n\t[-Qe|i] [%s] [%s] [%s] > table\n", GMT_V_OPT, GMT_bo_OPT, GMT_o_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

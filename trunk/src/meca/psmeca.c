@@ -164,7 +164,7 @@ int GMT_psmeca_usage (struct GMTAPI_CTRL *API, int level)
 {
 	/* This displays the psmeca synopsis and optionally full usage information */
 
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: psmeca [<table>] %s %s\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t-S<format><scale>[/<fontsize>[/<justify>/<offset>/<angle>/<form>]] [%s]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C[<pen>][P<pointsize>]] [-D<depmin>/<depmax>] [-E<fill>] [-G<fill>] [-K] [-L<pen>] [-M]\n");

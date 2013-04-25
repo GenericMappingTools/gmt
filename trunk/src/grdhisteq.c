@@ -86,7 +86,7 @@ void Free_grdhisteq_Ctrl (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *C) {	/* D
 
 int GMT_grdhisteq_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdhisteq <ingrid> [-G<outgrid>] [-C[<n_cells>]] [-D[<table>]] [-N[<norm>]] [-Q]\n");
 	GMT_Message (API, GMT_TIME_NONE, "[%s] [%s]\n\t[%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_ho_OPT);
 	

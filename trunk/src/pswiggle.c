@@ -201,7 +201,7 @@ int GMT_pswiggle_usage (struct GMTAPI_CTRL *API, int level)
 
 	/* This displays the pswiggle synopsis and optionally full usage information */
 
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pswiggle [<table>] %s %s -Z<scale>\n", GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-A<azimuth>] [%s] [-C<center>] [-G[-|+|=]<fill>] [-I<az>] [%s] [-K] [-O]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [-S[x]<lon0>/<lat0>/<length>/<units>] [-T<trackpen>] [%s]\n", GMT_Jz_OPT, GMT_U_OPT);

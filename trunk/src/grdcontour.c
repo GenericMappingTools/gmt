@@ -161,7 +161,7 @@ int GMT_grdcontour_usage (struct GMTAPI_CTRL *API, int level)
 
 	/* This displays the grdcontour synopsis and optionally full usage information */
 
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdcontour <grid> -C[+]<cont_int>|<cpt> [-A[-|[+]<annot_int>][<labelinfo>] [%s ]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-D<template>] [-F[l|r]] [%s] [%s] [-K]\n", GMT_J_OPT, GMT_Jz_OPT, GMT_CONTG);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L<low>/<high>] [-O] [-P] [-Q<cut>] [%s]\n", GMT_Rgeoz_OPT);

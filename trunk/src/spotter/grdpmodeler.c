@@ -93,7 +93,7 @@ void Free_grdpmodeler_Ctrl (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *C) {	/
 
 int GMT_grdpmodeler_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdpmodeler <agegrdfile> -E<rottable> -G<outgrid> [-F<polygontable>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Sa|d|r|w|x|y|X|Y]\n\t[-T<time>] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\n",
 		GMT_Id_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT);

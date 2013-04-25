@@ -40,7 +40,7 @@
 
 int GMT_blockmean_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: blockmean [<table>] %s\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-C] [-E[p]] [-S[m|n|s|w]] [%s] [-W[i][o]]\n", GMT_Rgeo_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",

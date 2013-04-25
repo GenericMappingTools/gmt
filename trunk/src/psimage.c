@@ -96,7 +96,7 @@ int GMT_psimage_usage (struct GMTAPI_CTRL *API, int level)
 {
 	/* This displays the psimage synopsis and optionally full usage information */
 
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: psimage <imagefile> [-E<dpi> or -W[-]<width>[/<height>]] [-C<xpos>/<ypos>[/<justify>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F<pen>] [-G[b|f|t]<color>] [-I] [%s] [%s] [-K] [-M] [-N<nx>[/<ny>]] [-O]\n", GMT_J_OPT, GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [%s] [%s]\n", GMT_Rgeoz_OPT, GMT_U_OPT);

@@ -158,7 +158,7 @@ int compare_x (const void *point_1, const void *point_2)
 
 int GMT_gmtselect_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtselect [<table>] [%s]\n", GMT_A_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C%s/<ptfile>] [-D<resolution>][+] [-E[f][n]] [-F<polygon>] [%s]\n", GMT_DIST_OPT, GMT_J_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I[cflrsz] [-L[p]%s/<lfile>] [-N<info>]\n\t[%s] [%s] [%s]\n\t[-Z<min>[/<max>][+c<col>]] [%s] [%s]\n\t[%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",

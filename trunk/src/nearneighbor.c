@@ -126,7 +126,7 @@ void free_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE *node)
 
 int GMT_nearneighbor_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: nearneighbor [<table>] -G<outgrid> %s\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t-N<sectors>[/<min_sectors>] %s -S%s\n", GMT_Rgeo_OPT, GMT_RADIUS_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E<empty>] [%s] [-W] [%s] [%s]\n", GMT_V_OPT, GMT_bi_OPT, GMT_f_OPT);

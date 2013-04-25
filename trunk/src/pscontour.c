@@ -367,7 +367,7 @@ int GMT_pscontour_usage (struct GMTAPI_CTRL *API, int level)
 {
 	struct GMT_PEN P;
 
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pscontour <table> -C[+]<cont_int>|<cpt> %s\n", GMT_J_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A[-|[+]<annot_int>][<labelinfo>]\n\t[%s] [-D<template>] ", GMT_Rgeoz_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-I] [%s] [-K] [-L<pen>] [-N]\n", GMT_CONTG, GMT_Jz_OPT);

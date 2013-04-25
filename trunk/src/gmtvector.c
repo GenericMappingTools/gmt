@@ -99,7 +99,7 @@ void Free_gmtvector_Ctrl (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *C) {	/* D
 }
 
 int GMT_gmtvector_usage (struct GMTAPI_CTRL *API, int level) {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtvector [<table>] [-Am[<conf>]|<vector>] [-C[i|o]] [-E] [-N] [-S<vector>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Ta|b|d|D|p<az>|s|r<rot>|x] [%s] [%s]\n\t[%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
 		GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);

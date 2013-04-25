@@ -9,10 +9,10 @@
  * and purpose strings, and function pointers to call the module functions.
  * This file also contains the following convenience functions to access the module
  * parameter array:
- *   void gmt_module_show_all(); - Pretty print all module names and their
+ *   void gmt_module_show_all(struct GMTAPI_CTRL *API); - Pretty print all module names and their
  *           purposes
- *   void gmt_module_show_name_and_purpose(enum GMT_MODULE_ID module); - Pretty
- *           print module names and purposes
+ *   void gmt_module_show_name_and_purpose(struct GMTAPI_CTRL *API, enum GMT_MODULE_ID module);
+ *           - Pretty print module names and purposes
  *   enum GMT_MODULE_ID gmt_module_lookup (const char *candidate); - Lookup module id by
  *           name
  *   const char *gmt_module_name (struct GMT_CTRL *gmt_ctrl); - Get module name
@@ -151,28 +151,31 @@ struct Gmt_moduleinfo g_module[] = {
 };
 
 /* Pretty print all module names and their purposes */
-void gmt_module_show_all() {
+void gmt_module_show_all(struct GMTAPI_CTRL *API) {
 	enum GMT_MODULE_ID module_id = 0; /* Module ID */
-	char module_name_comp[GMT_TEXT_LEN64];
+	char module_name_comp[GMT_TEXT_LEN64], message[GMT_TEXT_LEN256];
 
-	fprintf (stderr, "Program                Purpose of Program\n");
+	GMT_Message (API, GMT_TIME_NONE, "Program                Purpose of Program\n");
 	while (g_module[module_id].name != NULL) {
 		snprintf (module_name_comp, GMT_TEXT_LEN64, "%s(%s)",
 				g_module[module_id].name, g_module[module_id].component);
-		fprintf (stderr, "%-22s %s\n",
+		sprintf (message, "%-22s %s\n",
 				module_name_comp, g_module[module_id].purpose);
+		GMT_Message (API, GMT_TIME_NONE, message);
 		++module_id;
 	}
 }
 
 /* Pretty print module names and purposes */
-void gmt_module_show_name_and_purpose(enum GMT_MODULE_ID module_id) {
+void gmt_module_show_name_and_purpose(struct GMTAPI_CTRL *API, enum GMT_MODULE_ID module_id) {
+	char message[GMT_TEXT_LEN256];
 	assert (module_id != GMT_ID_NONE);
-	fprintf (stderr, "%s(%s) %s - %s\n\n",
+	sprintf (message, "%s(%s) %s - %s\n\n",
 			g_module[module_id].name,
 			g_module[module_id].component,
 			GMT_version(),
 			g_module[module_id].purpose);
+	GMT_Message (API, GMT_TIME_NONE, message);
 }
 
 /* Lookup module id by name */

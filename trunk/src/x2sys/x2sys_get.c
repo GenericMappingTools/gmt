@@ -85,7 +85,7 @@ void Free_x2sys_get_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *C) {	/* D
 }
 
 int GMT_x2sys_get_usage (struct GMTAPI_CTRL *API, int level) {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_get -T<TAG> [-C] [-D] [-F<fflags>] [-G] [-L[+][list]] [-N<nflags>]\n\t[%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

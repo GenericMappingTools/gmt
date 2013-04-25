@@ -571,7 +571,7 @@ bool parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 
 int GMT_grdfft_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdfft <ingrid> [<ingrid2>] [-G<outgrid>|<table>] [-A<azimuth>] [-C<zlevel>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D[<scale>|g]] [-E[r|x|y][w[k]] [-F[r|x|y]<parameters>] [-I[<scale>|g]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N%s] [-S<scale>]\n", GMT_FFT_OPT);

@@ -128,7 +128,7 @@ int GMT_psrose_usage (struct GMTAPI_CTRL *API, int level)
 
 	/* This displays the psrose synopsis and optionally full usage information */
 
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: psrose [<table>] [-A[r]<sector_angle>] [%s] [-C[<modes>]] [-D] [-G<fill>] [-I] [-K]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L[<wlab>/<elab>/<slab>/<nlab>]] [-M[<size>][<modifiers>]] [-N] [-O] [-P]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-R<r0>/<r1>/<theta0>/<theta1>] [-S[n]<scale>] [-T] [%s]\n", GMT_U_OPT);

@@ -145,7 +145,7 @@ void Free_mgd77track_Ctrl (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *C) {	/*
 
 int GMT_mgd77track_usage (struct GMTAPI_CTRL *API, int level, struct MGD77TRACK_CTRL *Ctrl)
 {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: mgd77track cruise(s) %s %s\n\t[-A[c][<size>]][,<inc><unit>] [%s] ", GMT_Rgeo_OPT, GMT_J_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Cf|g|e] [-Da<startdate>] [-Db<stopdate>] [-F]\n\t[-Gt|d<gap>] [-I<code>] [-K] [-L<trackticks>] [-N] [-O] [-P] [-Sa<startdist>[<unit>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Sb<stopdist>[<unit>]] [-TT|t|d<ms,mc,mfs,mf,mfc>] [%s]\n\t[%s] [-W<pen>] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);

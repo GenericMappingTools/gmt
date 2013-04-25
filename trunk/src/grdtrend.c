@@ -131,7 +131,7 @@ void Free_grdtrend_Ctrl (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *C) {	/* Dea
 }
 
 int GMT_grdtrend_usage (struct GMTAPI_CTRL *API, int level) {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdtrend <ingrid> -N<n_model>[r] [-D<diffgrid>] [%s]\n", GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T<trendgrid>] [%s] [-W<weightgrid>]\n\n", GMT_V_OPT);
 

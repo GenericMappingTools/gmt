@@ -147,7 +147,7 @@ int GMT_splitxyz_usage (struct GMTAPI_CTRL *API, int level)
 {
 	/* This displays the splitxyz synopsis and optionally full usage information */
 
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: splitxyz [<table>] -C<course_change> [-A<azimuth>/<tolerance>] [-D<minimum_distance>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F<xy_filter>/<z_filter>] [-N<template>] [-Q<flags>] [-S] [%s] [-Z]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",

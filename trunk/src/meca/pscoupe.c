@@ -426,7 +426,7 @@ int GMT_pscoupe_usage (struct GMTAPI_CTRL *API, int level)
 {
 	/* This displays the pscoupe synopsis and optionally full usage information */
 
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pscoupe [<table>] -A<params> %s %s [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E<fill>] [-G<fill>] [-K] [-L<pen>] [-M] [-N] [-O] [-P]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S<format><scale>[/<fontsize>[/<justify>/<offset>/<angle>/<form>]]]\n");

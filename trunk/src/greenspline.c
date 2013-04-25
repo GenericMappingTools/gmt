@@ -173,7 +173,7 @@ void Free_greenspline_Ctrl (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *C) {	
 
 int GMT_greenspline_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: greenspline [<table>] -G<outfile> [-A[<format>,]<gradientfile>]\n\t[-R<xmin>/<xmax[/<ymin>/<ymax>[/<zmin>/<zmax>]]]");
 	GMT_Message (API, GMT_TIME_NONE, "[-I<dx>[/<dy>[/<dz>]] [-C[n|v]<cut>[/<file>]]\n\t[-D<mode>] [-L] [-N<nodes>] [-Q<az>] [-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",

@@ -151,7 +151,7 @@ int facet_raw (struct XYZOKB_CTRL *Ctrl, struct BODY_VERTS *body_verts, unsigned
 int check_triang_cw (unsigned int n, unsigned int type);
 
 int GMT_gmtgravmag3d_usage (struct GMTAPI_CTRL *API, int level) {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtgravmag3d [-C<density>] [-G<outgrid>] [%s]\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-E<thick>] [-F<xy_file>] [-L<z_observation>]\n", GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-H<f_dec>/<f_dip>/<m_int></m_dec>/<m_dip>] [-S<radius>]\n");

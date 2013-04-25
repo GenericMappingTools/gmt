@@ -209,7 +209,7 @@ void Free_grdspotter_Ctrl (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *C) {	/*
 
 int GMT_grdspotter_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdspotter <ingrid> -E[+]<rottable> -G<CVAgrid> %s\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A<agegrid>] [-D[i|p]<grdfile>] [-L<IDgrid>] [-M]\n", GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N<upper_age>] [-Q<IDinfo>] [-S] [-Tt|-u<age>] [%s] [-W<n_try]\n", GMT_V_OPT);

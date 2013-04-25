@@ -237,7 +237,7 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *API, int level)
 {
 	/* This displays the psxy synopsis and optionally full usage information */
 
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: psxy [<table>] %s %s [-A[m|p]]\n", GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-D<dx>/<dy>] [-E[x|y|X|Y][n][cap][/[+|-]<pen>]] [-G<fill>]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-I<intens>] [-K] [-L] [-N] [-O] [-P] [-S[<symbol>][<size>|+s<scaling>]] [-T]\n", GMT_Jz_OPT);

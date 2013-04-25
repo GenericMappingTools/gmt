@@ -158,10 +158,10 @@ EXTERN_MSC int GMT_x2sys_solve (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_xyz2grd (void *api_ctrl, int mode, void *args);
 
 /* Pretty print all module names and their purposes */
-EXTERN_MSC void gmt_module_show_all();
+EXTERN_MSC void gmt_module_show_all(struct GMTAPI_CTRL *API);
 
 /* Pretty print module names and purposes */
-EXTERN_MSC void gmt_module_show_name_and_purpose(enum GMT_MODULE_ID module);
+EXTERN_MSC void gmt_module_show_name_and_purpose(struct GMTAPI_CTRL *API, enum GMT_MODULE_ID module);
 
 /* Lookup module id by name */
 EXTERN_MSC enum GMT_MODULE_ID gmt_module_lookup (const char *candidate);

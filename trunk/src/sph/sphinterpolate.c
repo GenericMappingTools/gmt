@@ -92,7 +92,7 @@ int get_args (struct GMT_CTRL *GMT, char *arg, double par[], char *msg)
 
 int GMT_sphinterpolate_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "usage: sphinterpolate [<table>] -G<outgrid> %s\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Q<mode>][/<args>] [-T] [%s] [-Z] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
