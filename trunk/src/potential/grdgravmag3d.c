@@ -662,7 +662,6 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 		}
 #endif
 	/*---------------------------------------------------------------------------------------------*/
-	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) fprintf (stderr, "\n");
 
 	if (Ctrl->G.active) {
 		if (Ctrl->C.active) {

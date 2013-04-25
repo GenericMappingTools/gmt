@@ -81,12 +81,14 @@ int Singleton_list[N_SINGLETON_LIST] = {
 	2400,2430,2500,2560,2592,2700,2880,2916,3000,3072,3125,3200,3240,3375,3456,
 	3600,3645,3750,3840,3888,4000,4096,4320,4374,4500,4608,4800,4860,5000};
 
-void gmt_fft_Singleton_list (void) {
+void gmt_fft_Singleton_list (struct GMTAPI_CTRL *API) {
 	unsigned int k;
-	fprintf (stderr, "\t\"Good\" numbers for FFT dimensions [Singleton, 1967]:\n");
+	char message[GMT_TEXT_LEN16];
+	GMT_Message (API, GMT_TIME_NONE, "\t\"Good\" numbers for FFT dimensions [Singleton, 1967]:\n");
 	for (k = 0; k < N_SINGLETON_LIST; k++) {
-		fprintf (stderr, "\t%d", Singleton_list[k]);
-		if ((k+1) % 10 == 0 || k == (N_SINGLETON_LIST-1)) fprintf (stderr, "\n");
+		sprintf (message, "\t%d", Singleton_list[k]);
+		if ((k+1) % 10 == 0 || k == (N_SINGLETON_LIST-1)) strcat (message, "\n");
+		GMT_Message (API, GMT_TIME_NONE, message);
 	}
 }
 

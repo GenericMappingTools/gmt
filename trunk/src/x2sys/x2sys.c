@@ -162,8 +162,8 @@ void gmtmggpath_init (struct GMT_CTRL *GMT) {
 	n_gmtmgg_paths = 0;
 
 	if ((fp = fopen (line, "r")) == NULL) {
-		fprintf (stderr, "Warning: path file %s for *.gmt files not found\n", line);
-		fprintf (stderr, "(Will only look in current directory for such files)\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: path file %s for *.gmt files not found\n", line);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "(Will only look in current directory for such files)\n");
 		return;
 	}
 
