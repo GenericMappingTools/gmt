@@ -73,7 +73,7 @@ void Free_mgd77convert_Ctrl (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *C) 
 
 int GMT_mgd77convert_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: mgd77convert <cruise(s)> -Fa|c|m|t -T[+]a|c|m|t [-C] [-D] [-L[e][w][+]] [%s]\n\n", GMT_V_OPT);
         
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

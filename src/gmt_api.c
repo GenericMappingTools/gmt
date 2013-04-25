@@ -5053,10 +5053,11 @@ int GMT_Get_Module_ (char *module, int len)
 
 void GMT_List_Module (void *V_API, int ID)
 {	/* List the usage of this module, or all modules if -1 (GMT_ID_NONE) */
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 	if (ID == GMT_ID_NONE)
-		gmt_module_show_all ();
+		gmt_module_show_all (API);
 	else
-		gmt_module_show_name_and_purpose (ID);
+		gmt_module_show_name_and_purpose (API, ID);
 }
 
 #ifdef FORTRAN_API

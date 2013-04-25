@@ -61,7 +61,7 @@ void Free_kml2gmt_Ctrl (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *C) {	/* Deall
 
 int GMT_kml2gmt_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: kml2gmt [<kmlfiles>] [%s] [-Z] [%s] [%s] [%s] > GMTdata.txt\n", GMT_V_OPT, GMT_bo_OPT, GMT_ho_OPT, GMT_colon_OPT);
 
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

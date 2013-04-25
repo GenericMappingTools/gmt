@@ -105,7 +105,7 @@ void Free_makecpt_Ctrl (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *C) {	/* Deall
 
 int GMT_makecpt_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: makecpt [-A[+]<transparency>] [-C<cpt>] [-D[i|o]] [-F[R|r|h|c] [-I] [-M] [-N] [-Q[i|o]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "	[-T<z_min>/<z_max>[/<z_inc>[+]] | -T<table>] [%s] [-Z]\n\t[%s]\n", GMT_V_OPT, GMT_ho_OPT);
 

@@ -70,7 +70,7 @@ int GMT_psbasemap_usage (struct GMTAPI_CTRL *API, int level)
 {
 	/* This displays the psbasemap synopsis and optionally full usage information */
 
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: psbasemap %s %s %s\n", GMT_B_OPT, GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D%s]\n\t[%s] [-K]\n", GMT_INSERT, GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L%s]\n", GMT_SCALE);

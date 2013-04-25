@@ -54,7 +54,7 @@ void Free_mgd77path_Ctrl (struct GMT_CTRL *GMT, struct MGD77PATH_CTRL *C) {	/* D
 
 int GMT_mgd77path_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: mgd77path <cruise(s)> A[-] -D [-I<code>] [%s]\n\n", GMT_V_OPT);
         
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

@@ -79,7 +79,7 @@ int GMT_sph2grd_usage (struct GMTAPI_CTRL *API, int level)
 	char type[3] = {'l', 'a', 'c'};
 
 	GMT_Message (API, GMT_TIME_NONE, "sph2grd - Evaluate spherical harmonic models on a grid\n\n");
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: sph2grd [coeff_file] %s %s [-Dg|n]\n", GMT_I_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E] [-F] [-G<grdfile>] [-L[d]<filter>] [-N<norm>] [-Q] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_h_OPT);
 

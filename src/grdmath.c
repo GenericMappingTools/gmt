@@ -129,7 +129,7 @@ void Free_grdmath_Ctrl (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *C) {	/* Deall
 
 int GMT_grdmath_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdmath [%s] [%s]\n\t[-M] [-N] [%s] [%s] [%s]\n\t[%s]\n\t[%s]"
 		" [%s]\n\t[%s] [%s] [%s]\n",	GMT_Rgeo_OPT, GMT_I_OPT, GMT_V_OPT, GMT_bi_OPT,
 		GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_r_OPT, GMT_s_OPT);

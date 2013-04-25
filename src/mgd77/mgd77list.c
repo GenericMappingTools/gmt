@@ -158,7 +158,7 @@ void Free_mgd77list_Ctrl (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *C) {	/* D
 
 int GMT_mgd77list_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: mgd77list <cruise(s)> -F<dataflags>[,<tests>] [-A[+]c|d|f|m|t[<code>]] [-Cf|g|e]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Da<startdate>] [-Db<stopdate>] [-E] [-Ga<startrec>] [-Gb<stoprec>] [-I<code>]\n\t[-L[<corrtable.txt>]] [-N[s|p][<unit>]]] [-Qa|v<min>/<max>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sa<startdist>[<unit>]] [-Sb<stopdist>[<unit>]]\n\t[-T[m|e]] [%s] [-W<Weight>] [-Z[+|-] [%s] [-h] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_colon_OPT);

@@ -322,7 +322,7 @@ int GMT_grdview_usage (struct GMTAPI_CTRL *API, int level)
 {
 	struct GMT_PEN P;
 
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdview <topogrid> %s [%s] [-C[<cpt>]] [-G<drapegrid> | -G<grd_r>,<grd_g>,<grd_b>]\n", GMT_J_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I-I<intensgrid>|<value>] [%s] [-K] [-N<level>[/<color>]] [-O] [-P] [-Q<type>[g]]\n", GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S<smooth>] [-T[s][o[<pen>]]]\n", GMT_Rgeoz_OPT);

@@ -98,7 +98,7 @@ void Free_x2sys_cross_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *C) {	
 }
 
 int GMT_x2sys_cross_usage (struct GMTAPI_CTRL *API, int level) {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_cross <files> -T<TAG> [-A<combi.lis>] [-C[<fname>]] [-Il|a|c] [%s] [-Qe|i]\n", GMT_J_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sl|h|u<speed>] [%s] [-W<size>] [-Z]\n", GMT_Rgeo_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s]\n\n", GMT_bo_OPT);

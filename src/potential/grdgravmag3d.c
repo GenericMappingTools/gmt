@@ -123,7 +123,7 @@ void Free_grdgravmag3d_Ctrl (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *C) {	/* D
 }
 
 int GMT_grdgravmag3d_usage (struct GMTAPI_CTRL *API, int level) {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdgravmag3d grdfile_up [grdfile_low] [-C<density>] [-D] [-F<xy_file>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<outfile>] [%s] [-L<z_obs>]\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Q[n<n_pad>]|[pad_dist]|[<w/e/s/n>]]\n");

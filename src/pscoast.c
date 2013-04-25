@@ -161,7 +161,7 @@ int GMT_pscoast_usage (struct GMTAPI_CTRL *API, int level)
 {
 	/* This displays the pscoast synopsis and optionally full usage information */
 
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pscoast %s %s [%s]\n", GMT_B_OPT, GMT_J_OPT, GMT_A_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C[<feature>/]<fill>]\n\t[-D<resolution>][+] [%s] -G[<fill>]]\n", GMT_Rgeoz_OPT, DCW_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<feature>[/<pen>]] [%s] [-K]\n\t[-L%s]\n", GMT_Jz_OPT, GMT_SCALE);

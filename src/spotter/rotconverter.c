@@ -117,7 +117,7 @@ void Free_rotconverter_Ctrl (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *C) 
 
 int GMT_rotconverter_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: rotconverter [+][-] <rotA> [[+][-] <rotB>] [[+][-] <rotC>] ... [-A] [-D] [-E[<factor>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F<out>] [-G] [-N] [-S] [-T] [%s]\n\t[%s] > outfile\n\n", GMT_V_OPT, GMT_h_OPT);
 	

@@ -115,7 +115,7 @@ void Free_segy2grd_Ctrl (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *C) {	/* Dea
 
 int GMT_segy2grd_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: segy2grd <segyfile> -G<grdfile> %s\n", GMT_Id_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A[n|z]]\n\t[%s] [-L<nsamp>]\n", GMT_Rgeo_OPT, GMT_GRDEDIT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-M<ntraces>] [-N<nodata>][-Q<mode><value>] [-S<header>] [%s] [%s]\n\n", GMT_V_OPT, GMT_r_OPT);

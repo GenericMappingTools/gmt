@@ -122,7 +122,7 @@ int GMT_psscale_usage (struct GMTAPI_CTRL *API, int level)
 {
 	/* This displays the psscale synopsis and optionally full usage information */
 
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: psscale -D<xpos>/<ypos>/<length>/<width>[h] [-A[a|l|c]] [-C<cpt>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E[b|f][<length>][+n[<txt>]]] [%s] [-I[<max_intens>|<low_i>/<high_i>] [%s]\n\t[%s] [-K] [-L[i][<gap>[<unit>]]] [-M] [-O] [-P] [-Q]\n", GMT_B_OPT, GMT_J_OPT, GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S]\n\t[-T[+p<pen>][+g<fill>][+l|r|b|t<off>]] [%s] [%s]\n", GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT);

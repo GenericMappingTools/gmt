@@ -626,7 +626,7 @@ int GMT_grdraster_usage (struct GMTAPI_CTRL *API, int level) {
 	struct GRDRASTER_INFO *rasinfo = NULL;
 	int i, nrasters;
 
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdraster <file number>|<text> %s [-G<outgrid>]\n", GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T<table>] [%s]\n\t[%s] [%s]\n", GMT_Id_OPT, GMT_bo_OPT, GMT_ho_OPT, GMT_o_OPT);
 

@@ -246,7 +246,7 @@ int GMT_pstext_usage (struct GMTAPI_CTRL *API, int level, int show_fonts)
 {
 	/* This displays the pstext synopsis and optionally full usage information */
 
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pstext [<table>] %s %s [-A] [%s]\n", GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>/<dy>] [-D[j|J]<dx>[/<dy>][v[<pen>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F[a+<angle>][+f<font>][+j<justify>][+c<justify>]] [-G<color>] [%s] [-K] [-L] [-M]\n", GMT_Jz_OPT);

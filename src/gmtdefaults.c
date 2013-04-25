@@ -54,7 +54,7 @@ void Free_gmtdefaults_Ctrl (struct GMT_CTRL *GMT, struct GMTDEFAULTS_CTRL *C) {	
 
 int GMT_gmtdefaults_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtdefaults [-D[s|u]]\n\n");
 	
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);

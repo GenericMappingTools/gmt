@@ -102,7 +102,7 @@ void Free_triangulate_Ctrl (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *C) {	
 
 int GMT_triangulate_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: triangulate [<table>] [-Dx|y] [-E<empty>] [-G<outgrid>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-M[z]] [-Q]\n\t", GMT_I_OPT, GMT_J_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S] [%s] [-Z] [%s]\n\t[%s] [%s]n\t[%s] [%s] [%s] [%s]\n\n",

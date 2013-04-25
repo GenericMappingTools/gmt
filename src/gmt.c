@@ -84,26 +84,30 @@ int main (int argc, char *argv[]) {
 		return EXIT_SUCCESS;
 	}
 
+	/* Initializing new GMT session */
+	if ((api_ctrl = GMT_Create_Session (argv[0], 2U, 0U, NULL)) == NULL)
+		return EXIT_FAILURE;
+
 	if (argc == 2 && !strcmp (argv[1], "--help")) {
-		gmt_module_show_all();
+		gmt_module_show_all(api_ctrl);
+		if (GMT_Destroy_Session (api_ctrl))
+			return EXIT_FAILURE;
 		return EXIT_FAILURE;
 	}
 
 	if ((module_id = gmt_module_lookup (module)) == GMT_ID_NONE) {
 		fprintf (stderr, "gmt: No such program: %s\n", module);
+		if (GMT_Destroy_Session (api_ctrl))
+			return EXIT_FAILURE;
 		return EXIT_FAILURE;
 	}
 
-	/* OK, here we found a recognized GMT module; do the job */
+	/* OK, here we found a recognized GMT module and the API has been initialized; do the job */
 
-	/* 1. Initializing new GMT session */
-	if ((api_ctrl = GMT_Create_Session (argv[0], 2U, 0U, NULL)) == NULL)
-		return EXIT_FAILURE;
-
-	/* 2. Run selected GMT cmd function, or give usage message if errors arise during parsing */
+	/* Run selected GMT cmd function, or give usage message if errors arise during parsing */
 	status = g_module[module_id].p_func (api_ctrl, argc-1-item, argv+1+item);
 
-	/* 3. Destroy GMT session */
+	/* Destroy GMT session */
 	if (GMT_Destroy_Session (api_ctrl))
 		return EXIT_FAILURE;
 

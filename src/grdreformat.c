@@ -60,7 +60,7 @@ int GMT_grdreformat_usage (struct GMTAPI_CTRL *API, int level)
 	int i;
 	char **grdformats = GMT_grdformats_sorted (API->GMT);
 
-	gmt_module_show_name_and_purpose (THIS_MODULE);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdreformat <ingrid>[=<id>[/<scale>/<offset>[/<nan>]]]\n\t<outgrid>[=<id>[/<scale>/<offset>[/<nan>]][:<driver>[/<dataType>]]] [-N]\n\t[%s] [%s] [%s]\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
