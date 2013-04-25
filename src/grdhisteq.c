@@ -72,6 +72,7 @@ void *New_grdhisteq_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	C = GMT_memory (GMT, NULL, 1, struct GRDHISTEQ_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
+	C->C.value = 16;
 	return (C);
 }
 
@@ -86,14 +87,14 @@ void Free_grdhisteq_Ctrl (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *C) {	/* D
 int GMT_grdhisteq_usage (struct GMTAPI_CTRL *API, int level)
 {
 	gmt_module_show_name_and_purpose (THIS_MODULE);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdhisteq <ingrid> [-G<outgrid>] [-C<n_cells>] [-D[<table>]] [-N[<norm>]] [-Q]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdhisteq <ingrid> [-G<outgrid>] [-C[<n_cells>]] [-D[<table>]] [-N[<norm>]] [-Q]\n");
 	GMT_Message (API, GMT_TIME_NONE, "[%s] [%s]\n\t[%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_ho_OPT);
 	
 	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
 	
 	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is name of input grid file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Set how many cells (divisions) of data range to make.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-C Set how many cells (divisions) of data range to make [16].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Dump level information to <table> or stdout if not given.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Create an equalized output grid file called <outgrid>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Use with -G to make an output grid file with standard normal scores.\n");
@@ -158,6 +159,8 @@ int GMT_grdhisteq_parse (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *Ctrl, stru
 	n_errors += GMT_check_condition (GMT, n_files > 1, "Syntax error: Must specify a single input grid file\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->In.file, "Syntax error: Must specify input grid file\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->N.active && !Ctrl->G.file, "Syntax error -N option: Must also specify output grid file with -G\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->C.active && Ctrl->C.value <= 0, "Syntax error -C option: n_cells must be positive\n");
+	n_errors += GMT_check_condition (GMT, !Ctrl->D.active && !Ctrl->G.active, "Syntax error: Either -D or -G is required for output\n");
 	n_errors += GMT_check_condition (GMT, !strcmp (Ctrl->In.file, "="), "Syntax error: Piping of input grid file not supported!\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -208,8 +211,10 @@ int do_hist_equalization (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, char *out
 
 	GMT_memcpy (pad, Grid->header->pad, 4, int);	/* Save the original pad */
 	GMT_grd_pad_off (GMT, Grid);	/* Undo pad if one existed so we can sort the entire grid */
-	if (outfile) Orig = GMT_Duplicate_Data (GMT->parent, GMT_IS_GRID, GMT_DUPLICATE_DATA, Grid); /* Must keep original if readonly */
-	if (Orig == NULL) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Grid duplication failed - memory error?\n");
+	if (outfile) {
+		Orig = GMT_Duplicate_Data (GMT->parent, GMT_IS_GRID, GMT_DUPLICATE_DATA, Grid); /* Must keep original if readonly */
+		if (Orig == NULL) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Grid duplication failed - memory error?\n");
+	}
 	GMT_sort_array (GMT, Grid->data, Grid->header->nm, GMT_FLOAT);
 	
 	nxy = Grid->header->nm;
