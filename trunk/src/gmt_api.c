@@ -191,14 +191,17 @@ void GMT_list_API (struct GMTAPI_CTRL *API, char *txt)
 {	/* Can be used to display API-object info wherever it is called as part of a debug operation */
 	unsigned int item;
 	struct GMTAPI_DATA_OBJECT *S;
+	char message[GMT_BUFSIZ];
 	if (API->deep_debug == false) return;
-	fprintf (stderr, "%s\n", txt);
-	fprintf (stderr, "N = %3.3d -----------------------------------------------------------------\n", API->n_objects);
+	GMT_Message (API, GMT_TIME_NONE, txt);
+	sprintf (message, "N = %3.3d -----------------------------------------------------------------\n", API->n_objects);
+	GMT_Message (API, GMT_TIME_NONE, message);
 	for (item = 0; item < API->n_objects; item++) {
 		if ((S = API->object[item]) == NULL) continue;
-		fprintf (stderr, "%3.3d %3.3d %12" PRIxS " %12" PRIxS " %s\n" , item, S->ID, (size_t)S->resource, (size_t)S->data, GMT_family[S->family]);
+		sprintf (message, "%3.3d %3.3d %12" PRIxS " %12" PRIxS " %s\n" , item, S->ID, (size_t)S->resource, (size_t)S->data, GMT_family[S->family]);
+		GMT_Message (API, GMT_TIME_NONE, message);
 	}
-	fprintf (stderr, "-------------------------------------------------------------------------\n");
+	GMT_Message (API, GMT_TIME_NONE, "-------------------------------------------------------------------------\n");
 }
 #endif
 
@@ -2877,31 +2880,31 @@ void * GMT_Create_Session (char *session, unsigned int pad, unsigned int mode, i
 	 * We terminate each session with a call to GMT_Destroy_Session.
 	 */
 	
-	struct GMTAPI_CTRL *G = NULL;
+	struct GMTAPI_CTRL *API = NULL;
 
-	if ((G = calloc (1, sizeof (struct GMTAPI_CTRL))) == NULL) return_null (NULL, GMT_MEMORY_ERROR);	/* Failed to allocate the structure */
+	if ((API = calloc (1, sizeof (struct GMTAPI_CTRL))) == NULL) return_null (NULL, GMT_MEMORY_ERROR);	/* Failed to allocate the structure */
+	API->pad = pad;		/* Preserve the default pad value for this session */
+	API->print_func = (print_func == NULL) ? gmt_print_func : print_func;	/* Pointer to the print function to use in GMT_Message|Report */
+	API->do_not_exit = mode & 1;	/* if set, then GMT_exit is simply a return; otherwise it is an exit */
 	
 	/* GMT_begin initializes, among onther things, the settings in the user's (or the system's) gmt.conf file */
-	if ((G->GMT = GMT_begin (session, pad)) == NULL) {		/* Initializing GMT and PSL machinery failed */
-		free (G);	/* Free G */
-		return_null (G, GMT_MEMORY_ERROR);
+	if ((API->GMT = GMT_begin (API, session, pad)) == NULL) {		/* Initializing GMT and PSL machinery failed */
+		free (API);	/* Free API */
+		return_null (API, GMT_MEMORY_ERROR);
 	}
-	G->GMT->parent = G;	/* So we know who's your daddy */
-	G->pad = pad;		/* Preserve the default pad value for this session */
-	G->print_func = (print_func == NULL) ? gmt_print_func : print_func;	/* Pointer to the print function to use in GMT_Message|Report */
-	G->do_not_exit = mode & 1;	/* if set, then GMT_exit is simply a return; otherwise it is an exit */
+	API->GMT->parent = API;	/* So we know who's your daddy */
 		
 	/* Allocate memory to keep track of registered data resources */
 	
-	G->n_objects_alloc = GMT_SMALL_CHUNK;	/* Start small; this may grow as more resources are registered */
-	G->object = GMT_memory (G->GMT, NULL, G->n_objects_alloc, struct GMTAPI_DATA_OBJECT *);
+	API->n_objects_alloc = GMT_SMALL_CHUNK;	/* Start small; this may grow as more resources are registered */
+	API->object = GMT_memory (API->GMT, NULL, API->n_objects_alloc, struct GMTAPI_DATA_OBJECT *);
 	
 	/* Set the unique Session parameters */
 	
-	G->session_ID = GMTAPI_session_counter++;		/* Guarantees each session ID will be unique and sequential from 0 up */
-	if (session) G->session_tag = strdup (session);		/* Only used in reporting and error messages */
+	API->session_ID = GMTAPI_session_counter++;		/* Guarantees each session ID will be unique and sequential from 0 up */
+	if (session) API->session_tag = strdup (session);		/* Only used in reporting and error messages */
 	
-	return (G);	/* Pass the structure back out */
+	return (API);	/* Pass the structure back out */
 }
 
 #ifdef FORTRAN_API

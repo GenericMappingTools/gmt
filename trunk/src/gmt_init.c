@@ -9356,7 +9356,7 @@ struct GMT_CTRL *New_GMT_Ctrl (char *session, unsigned int pad) {	/* Allocate an
 	return (GMT);
 }
 
-struct GMT_CTRL *GMT_begin (char *session, unsigned int pad)
+struct GMT_CTRL *GMT_begin (struct GMTAPI_CTRL *API, char *session, unsigned int pad)
 {
 	/* GMT_begin is called once by GMT_Create_Session and does basic
 	 * one-time initialization of GMT before the GMT modules take over.
@@ -9390,19 +9390,19 @@ struct GMT_CTRL *GMT_begin (char *session, unsigned int pad)
 #ifdef WIN32
 	/* Set all I/O to binary mode */
 	if ( _setmode(_fileno(stdin), _O_BINARY) == -1 ) {
-		fprintf (stderr, "Could not set binary mode for stdin.\n");
+		GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for stdin.\n");
 		return NULL;
 	}
 	if ( _setmode(_fileno(stdout), _O_BINARY) == -1 ) {
-		fprintf (stderr, "Could not set binary mode for stdout.\n");
+		GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for stdout.\n");
 		return NULL;
 	}
 	if ( _setmode(_fileno(stderr), _O_BINARY) == -1 ) {
-		fprintf (stderr, "Could not set binary mode for stderr.\n");
+		GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for stderr.\n");
 		return NULL;
 	}
 	if ( _set_fmode(_O_BINARY) != 0 ) {
-		fprintf (stderr, "Could not set binary mode for file I/O.\n");
+		GMT_Message (API, GMT_TIME_NONE, "Could not set binary mode for file I/O.\n");
 		return NULL;
 	}
 #endif
@@ -9411,7 +9411,7 @@ struct GMT_CTRL *GMT_begin (char *session, unsigned int pad)
 
 	GMT->PSL = New_PSL_Ctrl ("GMT5");		/* Allocate a PSL control structure */
 	if (!GMT->PSL) {
-		fprintf (stderr, "Error: Could not initialize PSL - Aborting.\n");
+		GMT_Message (API, GMT_TIME_NONE, "Error: Could not initialize PSL - Aborting.\n");
 		Free_GMT_Ctrl (GMT);	/* Deallocate control structure */
 		return NULL;
 	}
@@ -9436,7 +9436,7 @@ struct GMT_CTRL *GMT_begin (char *session, unsigned int pad)
 	if (access (path, R_OK)) {
 		/* Not found in SHAREDIR, try USERDIR instead */
 		if (GMT_getuserpath (GMT, "conf/gmt.conf", path) == NULL) {
-			fprintf (stderr, "Error: Could not find system defaults file %s - Aborting.\n", path);
+			GMT_Message (API, GMT_TIME_NONE, "Error: Could not find system defaults file %s - Aborting.\n", path);
 			Free_GMT_Ctrl (GMT);	/* Deallocate control structure */
 			return NULL;
 		}

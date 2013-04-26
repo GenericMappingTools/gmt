@@ -110,7 +110,7 @@ int main (int argc, char *argv[]) {
 	sprintf (buffer, "-<%s -R0/3/0/3 ->%s", i_string, o_string);
 	
 	/* 5. Run GMT cmd function, or give usage message if errors arise during parsing */
-	fprintf (stderr, "\ngmtselect output\n");
+	GMT_Message (API, GMT_TIME_NONE, "\ngmtselect output\n");
 	status = GMT_Call_Module (API, GMT_ID_GMTSELECT, 0, buffer);
 	if (status) {
 		GMT_Report (API, GMT_MSG_NORMAL, "GMT_gmtselect returned error %d\n", status);
