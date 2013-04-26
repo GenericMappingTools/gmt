@@ -492,8 +492,6 @@ int GMT_gmtmath_parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct G
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->T.min > Ctrl->T.max, "Syntax error -T: min > max!\n");
 	n_errors += GMT_check_condition (GMT, missing_equal, "Syntax error: Usage is <operations> = [outfile]\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->Q.active && (Ctrl->T.active || Ctrl->N.active || Ctrl->C.active), "Syntax error: Cannot use -T, -N, or -C when -Q has been set\n");
-	n_req = (Ctrl->N.active) ? Ctrl->N.ncol : 0;
-	n_errors += GMT_check_binary_io (GMT, n_req);
 	n_errors += GMT_check_condition (GMT, Ctrl->N.active && (Ctrl->N.ncol == 0 || Ctrl->N.tcol >= Ctrl->N.ncol),
 		"Syntax error: -N must have positive n_cols and 0 <= t_col < n_col\n");
 
