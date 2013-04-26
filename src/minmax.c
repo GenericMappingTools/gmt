@@ -39,6 +39,7 @@ unsigned int GMT_log_array (struct GMT_CTRL *GMT, double min, double max, double
 
 #define BEST_FOR_SURF	1
 #define BEST_FOR_FFT	2
+#define ACTUAL_BOUNDS	3
 
 struct MINMAX_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -58,7 +59,7 @@ struct MINMAX_CTRL {	/* All control options for this program (except common args
 	struct I {	/* -I[f|p|s]dx[/dy[/<dz>..]] */
 		bool active;
 		unsigned int ncol;
-		unsigned int mode;	/* Nominally 0, unless set to BEST_FOR_SURF or BEST_FOR_FFT */
+		unsigned int mode;	/* Nominally 0, unless set to BEST_FOR_SURF, BEST_FOR_FFT or ACTUAL_BOUNDS */
 		double inc[GMT_MAX_COLUMNS];
 	} I;
 	struct S {	/* -S[x|y] */
@@ -113,6 +114,7 @@ int GMT_minmax_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Specify l or h for min or max value, respectively.  Upper case L or H\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   means we operate instead on the absolute values of the data.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Return textstring -Rw/e/s/n to nearest multiple of dx/dy (assumes at least 2 columns).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Give -I- to just report the min/max extent in the -Rw/e/s/n string (no multiples).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -C is set then no -R string is issued.  Instead, the number of increments\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   given determines how many columns are rounded off to the nearest multiple.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If only one increment is given we also use it for the second column (for backwards compatibility).\n");
@@ -202,9 +204,10 @@ int GMT_minmax_parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT
 					case 'p': special = true; break;
 					case 'f': Ctrl->I.mode = BEST_FOR_FFT; break;
 					case 's': Ctrl->I.mode = BEST_FOR_SURF; break;
+					case '-': Ctrl->I.mode = ACTUAL_BOUNDS; break;
 					default: j = 0;	break;
 				}
-				Ctrl->I.ncol = GMT_getincn (GMT, &opt->arg[j], Ctrl->I.inc, GMT_MAX_COLUMNS);
+				Ctrl->I.ncol = (Ctrl->I.mode == ACTUAL_BOUNDS) ? 2 : GMT_getincn (GMT, &opt->arg[j], Ctrl->I.inc, GMT_MAX_COLUMNS);
 				break;
 			case 'S':	/* Error bar output */
 				Ctrl->S.active = true;
@@ -231,7 +234,7 @@ int GMT_minmax_parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	GMT_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
+	if (Ctrl->I.mode != ACTUAL_BOUNDS) GMT_check_lattice (GMT, Ctrl->I.inc, NULL, &Ctrl->I.active);
 	if (Ctrl->I.active && !special && Ctrl->I.ncol == 1) {		/* Special case of dy = dx if not given */
 		Ctrl->I.inc[GMT_Y] = Ctrl->I.inc[GMT_X];
 		Ctrl->I.ncol = 2;
@@ -240,7 +243,7 @@ int GMT_minmax_parse (struct GMT_CTRL *GMT, struct MINMAX_CTRL *Ctrl, struct GMT
 	n_errors += GMT_check_condition (GMT, Ctrl->I.active && Ctrl->T.active, "Syntax error: Only one of -I and -T can be specified\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->T.active && Ctrl->T.inc <= 0.0 , "Syntax error -T option: Must specify a positive increment\n");
 	for (k = 0; Ctrl->I.active && k < Ctrl->I.ncol; k++) {
-		n_errors += GMT_check_condition (GMT, Ctrl->I.inc[k] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
+		n_errors += GMT_check_condition (GMT, Ctrl->I.mode != ACTUAL_BOUNDS && Ctrl->I.inc[k] <= 0.0, "Syntax error -I option: Must specify positive increment(s)\n");
 	}
 	n_errors += GMT_check_binary_io (GMT, 1);
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
@@ -364,12 +367,18 @@ int GMT_minmax (void *V_API, int mode, void *args)
 					GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Input (x,y) data are irregularly distributed; phase shifts set to 0/0%s\n", buffer);
 					phase[GMT_X] = phase[GMT_Y] = off = 0.0;
 				}
-				west  = (floor ((xyzmin[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) - off) * Ctrl->I.inc[GMT_X] + phase[GMT_X];
-				east  = (ceil  ((xyzmax[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) + off) * Ctrl->I.inc[GMT_X] + phase[GMT_X];
-				south = (floor ((xyzmin[GMT_Y] - phase[GMT_Y]) / Ctrl->I.inc[GMT_Y]) - off) * Ctrl->I.inc[GMT_Y] + phase[GMT_Y];
-				north = (ceil  ((xyzmax[GMT_Y] - phase[GMT_Y]) / Ctrl->I.inc[GMT_Y]) + off) * Ctrl->I.inc[GMT_Y] + phase[GMT_Y];
+				if (Ctrl->I.mode == ACTUAL_BOUNDS) {
+					west  = xyzmin[GMT_X];	east  = xyzmax[GMT_X];
+					south = xyzmin[GMT_Y];	north = xyzmax[GMT_Y];
+				}
+				else {
+					west  = (floor ((xyzmin[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) - off) * Ctrl->I.inc[GMT_X] + phase[GMT_X];
+					east  = (ceil  ((xyzmax[GMT_X] - phase[GMT_X]) / Ctrl->I.inc[GMT_X]) + off) * Ctrl->I.inc[GMT_X] + phase[GMT_X];
+					south = (floor ((xyzmin[GMT_Y] - phase[GMT_Y]) / Ctrl->I.inc[GMT_Y]) - off) * Ctrl->I.inc[GMT_Y] + phase[GMT_Y];
+					north = (ceil  ((xyzmax[GMT_Y] - phase[GMT_Y]) / Ctrl->I.inc[GMT_Y]) + off) * Ctrl->I.inc[GMT_Y] + phase[GMT_Y];
+				}
 				if (east < west) east += 360.0;
-				if (Ctrl->I.mode) {	/* Wish to extend the region to optimize the resulting nx/ny */
+				if (Ctrl->I.mode == BEST_FOR_FFT || Ctrl->I.mode == BEST_FOR_SURF) {	/* Wish to extend the region to optimize the resulting nx/ny */
 					unsigned int sub, add, in_dim[2], out_dim[2];
 					double ww, ee, ss, nn;
 					in_dim[GMT_X] = GMT_get_n (GMT, west, east, Ctrl->I.inc[GMT_X], GMT->common.r.active);

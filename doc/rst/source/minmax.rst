@@ -79,6 +79,8 @@ None.
     to give grid dimensions for fastest results in programs using FFTs.
     Use **-Is**\ *dx*\ [/*dy*] to report an extended region optimized to
     give grid dimensions for fastest results in programs like surface.
+    If *dx* is given as - then the actual min/max of the input is given
+    in the **-R** string.
 **-S**\ [**x**][**y**]
     Add extra space for error bars. Useful together with **-I** option
     and when later plotting with **psxy** **-E**. **-Sx** leaves space
