@@ -40,6 +40,9 @@ int main (int argc, char *argv[]) {
 	}
 	else if (argc > 1)
 		module = argv[1];
+
+	/* gmt.c is not a module and hence can use fprintf (stderr, ...). Any API needing a
+	 * gmt-like application will write one separately [see mex API] */
 	
 	if (argc < 2 && item == 1) {
 		fprintf (stderr, "gmt - The Generic Mapping Tools, Version %s\n", GMT_VERSION);

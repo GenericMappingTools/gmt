@@ -401,7 +401,6 @@ int GMT_gmtmath_parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct G
 	 */
 
 	unsigned int n_errors = 0, n_files = 0;
-	uint64_t n_req;
 	bool missing_equal = true;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;

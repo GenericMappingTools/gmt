@@ -269,7 +269,7 @@ int psl_colorimage_rgb (double x, double y, double xsize, double ysize, unsigned
 int psl_colorimage_cmap (double x, double y, double xsize, double ysize, psl_indexed_image_t image, int nx, int ny, int nbits);
 int psl_load_raster (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *header, unsigned char **buffer);
 int psl_load_eps (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *header, unsigned char **buffer);
-int psl_get_boundingbox (FILE *fp, int *llx, int *lly, int *trx, int *try);
+int psl_get_boundingbox (struct PSL_CTRL *PSL, FILE *fp, int *llx, int *lly, int *trx, int *try);
 char *psl_getsharepath (struct PSL_CTRL *PSL, const char *subdir, const char *stem, const char *suffix, char *path);
 int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[]);
 int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[]);
@@ -3275,7 +3275,7 @@ int psl_load_eps (struct PSL_CTRL *PSL, FILE *fp, struct imageinfo *h, unsigned 
 
 	/* Scan for BoundingBox */
 
-	psl_get_boundingbox (fp, &llx, &lly, &trx, &try);
+	psl_get_boundingbox (PSL, fp, &llx, &lly, &trx, &try);
 
 	/* Rewind and load into buffer */
 
@@ -4469,7 +4469,7 @@ int psl_bitreduce (struct PSL_CTRL *PSL, unsigned char *buffer, int nx, int ny, 
 	return (nbits);
 }
 
-int psl_get_boundingbox (FILE *fp, int *llx, int *lly, int *trx, int *try)
+int psl_get_boundingbox (struct PSL_CTRL *PSL, FILE *fp, int *llx, int *lly, int *trx, int *try)
 {
 	int nested;
 	char buf[PSL_BUFSIZ];
@@ -4492,7 +4492,7 @@ int psl_get_boundingbox (FILE *fp, int *llx, int *lly, int *trx, int *try)
 
 	if (*llx >= *trx || *lly >= *try) {
 		*llx = 0; *trx = 720; *lly = 0; *try = 720;
-		fprintf(stderr, "No proper BoundingBox, defaults assumed: %d %d %d %d\n", *llx, *lly, *trx, *try);
+		PSL_message (PSL, PSL_MSG_NORMAL, "No proper BoundingBox, defaults assumed: %d %d %d %d\n", *llx, *lly, *trx, *try);
 		return 1;
 	}
 
