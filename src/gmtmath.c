@@ -3745,13 +3745,13 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 		(outfile) ? GMT_Message (API, GMT_TIME_NONE, "= %s", outfile) : GMT_Message (API, GMT_TIME_NONE,  "= <stdout>");
 	}
 
-	if (new_stack == INT_MAX && stack[0]->constant) {	/* Only a constant provided, set table accordingly */
+	if (stack[0]->constant) {	/* Only a constant provided, set table accordingly */
 		if (!stack[0]->D) {
 			stack[0]->D = GMT_alloc_dataset (GMT, Template, n_columns, 0, GMT_ALLOC_NORMAL);
 			stack[0]->alloc_mode = 1;
 		}
 		for (j = 0; j < n_columns; j++) {
-			if (j == COL_T && !Ctrl->Q.active)
+			if (j == COL_T && !Ctrl->Q.active && Ctrl->C.cols[j])
 				load_column (stack[0]->D, j, info.T, COL_T);
 			else
 				load_const_column (stack[0]->D, j, stack[0]->factor);
