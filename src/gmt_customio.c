@@ -968,8 +968,8 @@ int GMT_native_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, 
 	/* Round off to chosen type */
 
 	if (type != 'f' && type != 'd') {
-		header->z_min = lrint (header->z_min);
-		header->z_max = lrint (header->z_max);
+		header->z_min = (double)lrint (header->z_min);
+		header->z_max = (double)lrint (header->z_max);
 	}
 
 	/* Store header information and array */

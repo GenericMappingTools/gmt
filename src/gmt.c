@@ -32,7 +32,7 @@ int main (int argc, char *argv[]) {
 	enum GMT_MODULE_ID module_id = 0;    /* Module ID */
 	struct GMTAPI_CTRL *api_ctrl = NULL; /* GMT API control structure */
 
-	for (k = strlen (argv[0]); k > 0 && argv[0][k] != '/'; k--);	/* Find start of program name after any leading dirs */
+	for (k = (unsigned int)strlen (argv[0]); k > 0 && argv[0][k] != '/'; k--);	/* Find start of program name after any leading dirs */
 	if (k) k++;	/* Unless there is no slash, advance one past the last slash we found */
 	if (strncmp (&argv[0][k], "gmt", 3)) {	/* Does not match gmt so it is another module via symbolic link */
 		item = 0;	/* Argv[0] holds the name of the module */
