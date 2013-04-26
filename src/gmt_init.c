@@ -2620,6 +2620,11 @@ int GMT_loaddefaults (struct GMT_CTRL *GMT, char *file)
 	while (fgets (line, GMT_BUFSIZ, fp)) {
 		rec++;
 		GMT_chop (line); /* Get rid of [\r]\n */
+		if (rec == 1 && (line[0] == 'S' || line[0] == 'U'))	{	/* An onld GMT4 gmt.conf got in the way */
+			fclose (fp);
+			return (GMT_NOERROR);
+		}
+
 		if (rec != 2) { /* Nothing */ }
 		else if (strlen (line) < 7 || strtol (&line[6], NULL, 10) != gmt_version_major )
 			GMT_message (GMT, "Warning: Your gmt.conf file (%s) may not be GMT %d compatible\n", file, gmt_version_major);
@@ -4049,7 +4054,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 		/* GMT GROUP */
 
 		case GMTCASE_GMT_COMPATIBILITY:
-			ival = atof (value);
+			ival = (int)atof (value);
 			if (ival < 4) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_COMPATIBILITY: Expects values from 4 to %d; reset to 4.\n", GMT_MAJOR_VERSION);
 				GMT->current.setting.compatibility = 4;
