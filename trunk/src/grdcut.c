@@ -174,8 +174,11 @@ int GMT_grdcut_parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT
 int GMT_grdcut (void *V_API, int mode, void *args)
 {
 	int error = 0;
-	unsigned int nx_old, ny_old, add_mode = 0U;
+	unsigned int nx_old, ny_old, add_mode = 0U, side, type = 0U;
 	uint64_t node;
+	bool outside[4] = {false, false, false, false};
+	
+	char *name[2][4] = {{"left", "right", "bottom", "top"}, {"west", "east", "south", "north"}};
 
 	double wesn_new[4], wesn_old[4];
 	double lon, lat, distance, radius;
@@ -365,8 +368,8 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 		GMT_memcpy (wesn_new, GMT->common.R.wesn, 4, double);
 	}
 	
-	if (wesn_new[YLO] < G->header->wesn[YLO] || wesn_new[YLO] > G->header->wesn[YHI]) error++;
-	if (wesn_new[YHI] < G->header->wesn[YLO] || wesn_new[YHI] > G->header->wesn[YHI]) error++;
+	if (wesn_new[YLO] < G->header->wesn[YLO]) wesn_new[YLO] = G->header->wesn[YLO], outside[YLO] = true;
+	if (wesn_new[YHI] > G->header->wesn[YHI]) wesn_new[YHI] = G->header->wesn[YHI], outside[YHI] = true;
 
 	if (GMT_is_geographic (GMT, GMT_IN)) {	/* Geographic data */
 		if (wesn_new[XLO] < G->header->wesn[XLO] && wesn_new[XHI] < G->header->wesn[XLO]) {
@@ -377,14 +380,19 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 			G->header->wesn[XLO] += 360.0;
 			G->header->wesn[XHI] += 360.0;
 		}
-		if (!GMT_grd_is_global (GMT, G->header) && (wesn_new[XLO] < G->header->wesn[XLO] || wesn_new[XHI] > G->header->wesn[XHI])) error++;
+		if (!GMT_grd_is_global (GMT, G->header)) {
+			if (wesn_new[XLO] < G->header->wesn[XLO]) wesn_new[XLO] = G->header->wesn[XLO], outside[XLO] = true;
+			if (wesn_new[XHI] > G->header->wesn[XHI]) wesn_new[XHI] = G->header->wesn[XHI], outside[XHI] = true;
+		}
+		type = 1U;
 	}
-	else if (wesn_new[XLO] < G->header->wesn[XLO] || wesn_new[XHI] > G->header->wesn[XHI])
-		error++;
+	else {
+		if (wesn_new[XLO] < G->header->wesn[XLO]) wesn_new[XLO] = G->header->wesn[XLO], outside[XLO] = true;
+		if (wesn_new[XHI] > G->header->wesn[XHI]) wesn_new[XHI] = G->header->wesn[XHI], outside[XHI] = true;
+	}
 
-	if (error) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Subset exceeds data domain!\n");
-		Return (GMT_RUNTIME_ERROR);
+	for (side = 0; side < 4; side++) {
+		if (outside[side]) GMT_Report (API, GMT_MSG_NORMAL, "Warning: Requested subset exceeds data domain on the %s side - truncated to match grid bounds\n", name[type][side]);
 	}
 
 	/* Make sure output grid is kosher */
