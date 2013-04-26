@@ -7634,7 +7634,7 @@ int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP
 		return (1);
 	}
 	if (k == 0 && !B->center) {	/* Got geographic w/e/s/n or <w/s/e/n>r */
-		n = strlen(txt_d) - 1;
+		n = (unsigned int)strlen(txt_d) - 1;
 		if (txt_d[n] == 'r') {	/* Got <w/s/e/n>r for rectangular box */
 			B->oblique = true;
 			txt_d[n] = '\0';

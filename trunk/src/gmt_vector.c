@@ -798,7 +798,7 @@ int GMT_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 		qsort (eigen, n, sizeof (struct GMT_SINGULAR_VALUE), compare_singular_values);
 		/* Need desired variance level in % */
 		limit = (*cutoff) * total_variance * 0.01;
-		if (mode == 2) n_eigen = lrint (*cutoff);
+		if (mode == 2) n_eigen = (unsigned int)lrint (*cutoff);
 		for (i = 0; i < n; i++) {	/* Visit all singular values in decreasing magnitude */
 			if ((mode == 1 && variance <= limit) || (mode == 2 && i < n_eigen)) {	/* Still within specified limit so we add this singular value */
 				variance += eigen[i].value;

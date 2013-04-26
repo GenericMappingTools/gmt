@@ -758,7 +758,7 @@ int write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, char *gr
 	if (C->periodic) {	/* Ensure periodicity of E-W boundaries */
 		for (j = 0; j < C->ny; j++) {
 			k = GMT_IJP (C->Grid->header, j, 0);
-			v2[k] = v2[k+C->nx-1] = 0.5 * (v2[k] + v2[k+C->nx-1]);	/* Set these to the same as their average */
+			v2[k] = v2[k+C->nx-1] = (float)(0.5 * (v2[k] + v2[k+C->nx-1]));	/* Set these to the same as their average */
 		}
 	}
 	GMT_free_aligned (GMT, C->Grid->data);	/* Free original column-oriented grid */
@@ -822,7 +822,7 @@ uint64_t iterate (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, int mode)
 				ij_se = C->ij_se_corner + j;
 				u[ij_sw+C->offset[0][5]]  = u[ij_se+C->offset[20][5]];
 				u[ij_se+C->offset[20][6]] = u[ij_sw+C->offset[0][6]];
-				u[ij_se] = u[ij_sw] = 0.5 * (u[ij_se] + u[ij_sw]);	/* Set to average of east and west */
+				u[ij_se] = u[ij_sw] = 0.5f * (u[ij_se] + u[ij_sw]);	/* Set to average of east and west */
 			}
 		}
 		else {	/* Regular natural BC */
