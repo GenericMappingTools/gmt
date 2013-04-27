@@ -136,7 +136,8 @@ enum GMT_enum_alloc {
 	GMT_ALLOCATED = 0, /* Item was allocated so GMT_* modules should free when GMT_Destroy_Data is called */
 	GMT_REFERENCE,     /* Item was not allocated so GMT_* modules should NOT free when GMT_Destroy_Data is called, but may realloc if needed */
 	GMT_READONLY,      /* Item was not allocated so GMT_* modules should NOT free when GMT_Destroy_Data is called . Consider read-only data */
-	GMT_CLOBBER};      /* Free item no matter what its allocation status */
+	GMT_CLOBBER,       /* Free item no matter what its allocation status */
+	GMT_NO_CLOBBER};   /* Never free as item was allocated outside GMT */
 
 enum GMT_enum_shape {
 	GMT_ALLOC_NORMAL = 0,	/* Normal allocation of new dataset based on shape of input dataset */
