@@ -2010,13 +2010,14 @@ int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg)
 int gmt_parse_dash_option (struct GMT_CTRL *GMT, char *text)
 {	/* parse any --PARAM[=value] arguments */
 	int n;
-	char *this = NULL;
+	char *this = NULL, message[GMT_TEXT_LEN128];
 	if (!text)
 		return (GMT_NOERROR);
 
 	/* print version and exit */
 	if (strcmp (text, "version") == 0) {
-		fprintf (stdout, "%s\n", GMT_PACKAGE_VERSION_WITH_SVN_REVISION);
+		sprintf (message, "%s\n", GMT_PACKAGE_VERSION_WITH_SVN_REVISION);
+		GMT->parent->print_func (stdout, message);
 		/* cannot call GMT_Free_Options() from here, so we are leaking on exit.
 		 * struct GMTAPI_CTRL *G = GMT->parent;
 		 * if (GMT_Destroy_Session (G))
@@ -2026,7 +2027,8 @@ int gmt_parse_dash_option (struct GMT_CTRL *GMT, char *text)
 
 	/* print GMT folders and exit */
 	if (strcmp (text, "show-sharedir") == 0) {
-		fprintf (stdout, "%s\n", GMT->session.SHAREDIR);
+		sprintf (message, "%s\n", GMT->session.SHAREDIR);
+		GMT->parent->print_func (stdout, message);
 		/* leaking on exit same as above. */
 		exit (EXIT_SUCCESS);
 	}
@@ -5237,12 +5239,12 @@ void GMT_pickdefaults (struct GMT_CTRL *GMT, bool lines, struct GMT_OPTION *opti
 
 	for (opt = options; opt; opt = opt->next) {
 		if (!(opt->option == '<' || opt->option == '#') || !opt->arg) continue;		/* Skip other and empty options */
-		if (!lines && n) fprintf (GMT->session.std[GMT_OUT], " ");	/* Separate by spaces */
-		fprintf (GMT->session.std[GMT_OUT], "%s", GMT_putparameter (GMT, opt->arg));		
-		if (lines) fprintf (GMT->session.std[GMT_OUT], "\n");	/* Separate lines */
+		if (!lines && n) GMT->parent->print_func (GMT->session.std[GMT_OUT], " ");	/* Separate by spaces */
+		GMT->parent->print_func (GMT->session.std[GMT_OUT], GMT_putparameter (GMT, opt->arg));		
+		if (lines) GMT->parent->print_func (GMT->session.std[GMT_OUT], "\n");		/* Separate lines */
 		n++;
 	}
-	if (!lines && n) fprintf (GMT->session.std[GMT_OUT], "\n");	/* Single lines */
+	if (!lines && n) GMT->parent->print_func (GMT->session.std[GMT_OUT], "\n");		/* Single lines */
 }
 
 int GMT_savedefaults (struct GMT_CTRL *GMT, char *file)

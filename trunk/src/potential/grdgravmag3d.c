@@ -678,8 +678,25 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 		}
 	}
 	else {
-		for (k = 0; k < ndata; k++)
-			fprintf (stdout, "%lg %lg %lg\n", data[k].x, data[k].y, g[k]);
+		double out[3];
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+			Return (API->error);
+		}
+		if ((error = GMT_set_cols (GMT, GMT_OUT, 3)) != GMT_OK) {
+			Return (API->error);
+		}
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+			Return (API->error);
+		}
+		for (k = 0; k < ndata; k++) {
+			out[GMT_X] = data[k].x;
+			out[GMT_Y] = data[k].y;
+			out[GMT_Z] = g[k];
+			GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
+		}
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data input */
+			Return (API->error);
+		}
 	}
 
 	GMT_free (GMT, x_grd);

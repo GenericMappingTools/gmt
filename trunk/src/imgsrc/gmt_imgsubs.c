@@ -65,7 +65,7 @@ int GMT_img_setup_coord (struct GMT_CTRL *GMT, struct GMT_IMG_RANGE *r, struct G
 	 * 0 on success.  */
 
 	if (r->maxlon < 360.0) {
-		fprintf (GMT->session.std[GMT_ERR], "ERROR from GMT_img_setup_coord: Cannot handle maxlon < 360.\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR from GMT_img_setup_coord: Cannot handle maxlon < 360.\n");
 		return (-1);
 	}
 	
