@@ -796,12 +796,14 @@ int GMT_trend1d (void *V_API, int mode, void *args)
 		write_output_trend1d (GMT, data, n_data, Ctrl->F.col, Ctrl->n_outputs);
 	else {				/* Write only the model parameters */
 		GMT_cheb_to_pol (GMT, c_model, n_model, xmin, xmax);
-		sprintf (format, "%s", GMT->current.setting.format_float_out);
 		for (i = 0; i < n_model - 1; i++) {
-			fprintf(stdout, GMT->current.setting.format_float_out, c_model[i]);	fprintf(stdout, "%s", GMT->current.setting.io_col_separator);
+			sprintf (format, GMT->current.setting.format_float_out, c_model[i]);
+			strcat (format, GMT->current.setting.io_col_separator);
+			API->print_func (stdout, format);
 		}
-		fprintf(stdout, GMT->current.setting.format_float_out, c_model[n_model-1]);
-		fprintf(stdout, "\n");
+		sprintf (format, GMT->current.setting.format_float_out, c_model[n_model-1]);
+		strcat (format, "\n");
+		API->print_func (stdout, format);
 	}
 
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */

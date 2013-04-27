@@ -714,7 +714,10 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 			at_sign, Ctrl->G.file, Ctrl->C.arg, Ctrl->E.dpi, Ctrl->F.file, all_names_in);
 
 		system (cmd2);		/* Execute the GhostScript command */
-		if (Ctrl->S.active) fprintf (stdout, "%s\n", cmd2);
+		if (Ctrl->S.active) {
+			API->print_func (stdout, cmd2);
+			API->print_func (stdout, "\n");
+		}
 
 		GMT_free (GMT, all_names_in);
 		GMT_free (GMT, cmd2);
@@ -808,7 +811,10 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 							at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, device[Ctrl->T.device],
 							Ctrl->E.dpi, tmp_file, ps_file);
 						sys_retval = system (cmd);		/* Execute the GhostScript command */
-						if (Ctrl->S.active) fprintf (stdout, "%s\n", cmd);
+						if (Ctrl->S.active) {
+							API->print_func (stdout, cmd);
+							API->print_func (stdout, "\n");
+						}
 						if (sys_retval) {
 							GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd, sys_retval);
 							Return (EXIT_FAILURE);
@@ -1106,9 +1112,10 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 				at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, device[Ctrl->T.device],
 				pix_w, pix_h, Ctrl->E.dpi, out_file, tmp_file);
 
-			if (Ctrl->S.active)
-				/* Print GhostScript command */
-				fprintf (stdout, "%s\n", cmd);
+			if (Ctrl->S.active) {	/* Print GhostScript command */
+				API->print_func (stdout, cmd);
+				API->print_func (stdout, "\n");
+			}
 
 			/* Execute the GhostScript command */
 			sys_retval = system (cmd);

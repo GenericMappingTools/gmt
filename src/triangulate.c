@@ -237,6 +237,7 @@ int GMT_triangulate (void *V_API, int mode, void *args)
 	double *xe = NULL, *ye = NULL;
 
 	char *tri_algorithm[2] = {"Watson", "Shewchuk"};
+	char record[GMT_BUFSIZ];
 
 	struct GMT_GRID *Grid = NULL;
 
@@ -451,9 +452,11 @@ int GMT_triangulate (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 	if (Ctrl->M.active) {	/* Must find unique edges to output only once */
+		GMT_set_segmentheader (GMT, GMT_OUT, true);
 		if (Ctrl->Q.active) {	/* Voronoi edges */
 			for (i = j = 0; i < np; i++) {
-				fprintf (GMT->session.std[GMT_OUT], "%c Edge %" PRIu64 "\n", GMT->current.setting.io_seg_marker[GMT_OUT], i);
+				sprintf (record, "Edge %" PRIu64, i);
+				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
 				out[GMT_X] = xe[j];	out[GMT_Y] = ye[j++];
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 				out[GMT_X] = xe[j];	out[GMT_Y] = ye[j++];
@@ -482,7 +485,8 @@ int GMT_triangulate (void *V_API, int mode, void *args)
 			GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " unique triangle edges\n", n_edge);
 
 			for (i = 0; i < n_edge; i++) {
-				fprintf (GMT->session.std[GMT_OUT], "%c Edge %d-%d\n", GMT->current.setting.io_seg_marker[GMT_OUT], edge[i].begin, edge[i].end);
+				sprintf (record, "Edge %d-%d", edge[i].begin, edge[i].end);
+				GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
 				out[GMT_X] = xx[edge[i].begin];	out[GMT_Y] = yy[edge[i].begin];	if (triplets[GMT_OUT]) out[GMT_Z] = zz[edge[i].begin];
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);
 				out[GMT_X] = xx[edge[i].end];	out[GMT_Y] = yy[edge[i].end];	if (triplets[GMT_OUT]) out[GMT_Z] = zz[edge[i].end];
@@ -492,8 +496,10 @@ int GMT_triangulate (void *V_API, int mode, void *args)
 		}
 	}
 	else if (Ctrl->S.active)  {	/* Write triangle polygons */
+		GMT_set_segmentheader (GMT, GMT_OUT, true);
 		for (i = ij = 0; i < np; i++, ij += 3) {
-			fprintf (GMT->session.std[GMT_OUT], "%c Polygon %d-%d-%d\n", GMT->current.setting.io_seg_marker[GMT_OUT], link[ij], link[ij+1], link[ij+2]);
+			sprintf (record, "Polygon %d-%d-%d", link[ij], link[ij+1], link[ij+2]);
+			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
 			for (k = 0; k < 3; k++) {	/* Three vertices */
 				out[GMT_X] = xx[link[ij+k]];	out[GMT_Y] = yy[link[ij+k]];	if (triplets[GMT_OUT]) out[GMT_Z] = zz[link[ij+k]];
 				GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);	/* Write this to output */
