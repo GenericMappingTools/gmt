@@ -843,6 +843,8 @@ int GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, unsigned int direction)
 			break;
 
 	 	case GMT_IS_DUPLICATE + GMT_VIA_MATRIX:	/* This means getting a dataset via a user matrix [PW: not tested] */
+		case GMT_IS_REFERENCE + GMT_VIA_MATRIX:
+		case GMT_IS_READONLY  + GMT_VIA_MATRIX:
 			if (S_obj->family != GMT_IS_DATASET) return (GMTAPI_report_error (API, GMT_NOT_A_VALID_TYPE));
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s %s %s %s memory location via %s\n", 
 				operation[direction], GMT_family[S_obj->family], dir[direction], GMT_direction[direction], GMT_via[via]);
@@ -852,8 +854,10 @@ int GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, unsigned int direction)
 				/* S_obj->n_rows is 0 which means we are allocating more space as we need it */
 				if ((error = GMT_alloc_univector (API->GMT, &(M_obj->data), M_obj->type, S_obj->n_alloc)) != GMT_OK) return (GMTAPI_report_error (API, error));
 			}
-			else
+			else {
 				S_obj->n_rows = M_obj->n_rows;	/* Hard-wired limit as pass in from calling program */
+				S_obj->n_columns = M_obj->n_columns;
+			}
 			API->GMT->common.b.ncol[direction] = M_obj->n_columns;	/* Basically, we are doing what GMT calls binary i/o */
 			API->GMT->common.b.active[direction] = true;
 			strcpy (API->GMT->current.io.current_filename[direction], "<memory>");
@@ -2256,8 +2260,7 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mod
 	S_obj = API->object[item];	/* The current object whose data we will export */
 	if (S_obj->status != GMT_IS_UNUSED && !(mode & GMT_IO_RESET)) return (GMTAPI_report_error (API, GMT_WRITTEN_ONCE));	/* Only allow writing of a data set once, unless overridden by mode */
 	row_by_row = ((mode & GMT_GRID_ROW_BY_ROW) || (mode & GMT_GRID_ROW_BY_ROW_MANUAL));
-	if (row_by_row && S_obj->method != GMT_IS_FILE) 
-	{
+	if (row_by_row && S_obj->method != GMT_IS_FILE) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Can only use method GMT_IS_FILE when row-by-row writing of grid is selected\n");
 		return (GMTAPI_report_error (API, GMT_NOT_A_VALID_METHOD));
 	}
