@@ -3143,16 +3143,16 @@ int GMT_init_z_io (struct GMT_CTRL *GMT, char format[], bool repeat[], enum GMT_
 		switch (format[k]) {
 			/* These 4 cases will set the format orientation for input */
 			case 'T':
-				if (first) r->format = GMT_ROW_FORMAT;
+				if (first) r->format = GMT_IS_ROW_FORMAT;
 				r->y_step = 1;	first = false;	break;
 			case 'B':
-				if (first) r->format = GMT_ROW_FORMAT;
+				if (first) r->format = GMT_IS_ROW_FORMAT;
 				r->y_step = -1;	first = false;	break;
 			case 'L':
-				if (first) r->format = GMT_COLUMN_FORMAT;
+				if (first) r->format = GMT_IS_COL_FORMAT;
 				r->x_step = 1;	first = false;	break;
 			case 'R':
-				if (first) r->format = GMT_COLUMN_FORMAT;
+				if (first) r->format = GMT_IS_COL_FORMAT;
 				r->x_step = -1;	first = false;	break;
 			default:
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -Z: %c not a valid format specifier!\n", format[k]);
@@ -3201,7 +3201,7 @@ int GMT_set_z_io (struct GMT_CTRL *GMT, struct GMT_Z_IO *r, struct GMT_GRID *G)
 	*/
 	r->start_col = ((r->x_step == 1) ? 0 : G->header->nx - 1 - r->x_missing);
 	r->start_row = ((r->y_step == 1) ? r->y_missing : G->header->ny - 1);
-	r->get_gmt_ij = (r->format == GMT_COLUMN_FORMAT) ? gmt_col_ij : gmt_row_ij;
+	r->get_gmt_ij = (r->format == GMT_IS_COL_FORMAT) ? gmt_col_ij : gmt_row_ij;
 	r->x_period = G->header->nx - r->x_missing;
 	r->y_period = G->header->ny - r->y_missing;
 	r->n_expected = r->x_period * r->y_period;

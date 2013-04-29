@@ -619,6 +619,10 @@ struct GMT_VECTOR {	/* Single container for user vector(s) of data */
 /*=============== GMT_MATRIX Public Declaration ============== */
 /*============================================================ */
 
+enum GMT_enum_fmt {
+	GMT_IS_COL_FORMAT	= 1,	/* 2-D grid is Fortran-style with columns */
+	GMT_IS_ROW_FORMAT	= 2};	/* 2-D grid is C-style with rows */
+
 /* These containers are used to pass user vectors and matrices in/out of GMT */
 
 struct GMT_MATRIX {	/* Single container for a user matrix of data */
