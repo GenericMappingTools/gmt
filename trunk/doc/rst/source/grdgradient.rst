@@ -9,13 +9,13 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdgradient** *in\_grdfile* **-G**\ *out\_grdfile* [
-**-A**\ *azim*\ [/*azim2*] ] [ **-D**\ [**c**\ ][**o**\ ][**n**\ ] ] [
-**-E**\ [**s\|p**\ ]\ *azim/elev*\ [/*ambient*/*diffuse*/*specular*/*shine*]
-] [ **-L**\ *flag* ] [
-**-N**\ [**e**\ ][**t**\ ][*amp*\ ][/\ *sigma*\ [/*offset*]] ] [
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-S**\ *slopefile*
-] [ **-V**\ [*level*\ ] ] [ **-fg**\ ]
+**grdgradient** *in_grdfile* **-G**\ *out_grdfile*
+[ **-A**\ *azim*\ [/*azim2*] ] [ **-D**\ [**c**][**o**][**n**] ]
+[ **-E**\ [**s\|p**\ ]\ *azim/elev*\ [/*ambient*/*diffuse*/*specular*/*shine*] ] 
+[ **-L**\ *flag* ] 
+[ **-N**\ [**e**\ ][**t**][*amp*][/\ *sigma*\ [/*offset*]] ]
+[ |SYN_OPT-R| ] [ **-S**\ *slopefile* ]
+[ |SYN_OPT-V| ] [ **-fg** ] [ |SYN_OPT-n| ]
 
 |No-spaces|
 
@@ -57,7 +57,7 @@ Optional Arguments
     retained; this is useful for illuminating data with two directions
     of lineated structures, e.g., **-A**\ *0*/*270* illuminates from the
     north (top) and west (left).
-**-D**\ [**c**\ ][**o**\ ][**n**\ ]
+**-D**\ [**c**][**o**][**n**]
     Find the direction of the gradient of the data. By default, the
     directions are measured clockwise from north, as *azim* in **-A**
     above. Append **c** to use conventional Cartesian angles measured
@@ -65,7 +65,7 @@ Optional Arguments
     to report orientations (0-180) rather than directions (0-360).
     Append **n** to add 90 degrees to all angles (e.g., to give
     orientation of lineated features).
-**-E**\ [**s\|p**\ ]\ *azim/elev*\ [/*ambient*/*diffuse*/*specular*/*shine*]
+**-E**\ [**s\|p**]\ *azim/elev*\ [/*ambient*/*diffuse*/*specular*/*shine*]
     Compute Lambertian radiance appropriate to use with **grdimage** and
     **grdview**. The Lambertian Reflection assumes an ideal surface that
     reflects all the light that strikes it and the surface appears
@@ -89,7 +89,7 @@ Optional Arguments
     indicating geographical conditions (x and y are lon and lat).
     [Default uses "natural" conditions (second partial derivative normal
     to edge is zero).]
-**-N**\ [**e**\ ][**t**\ ][*amp*\ ][/\ *sigma*\ [/*offset*]]
+**-N**\ [**e**][**t**][*amp*][/\ *sigma*\ [/*offset*]]
     Normalization. [Default: no normalization.] The actual gradients *g*
     are offset and scaled to produce normalized gradients *gn* with a
     maximum output magnitude of *amp*. If *amp* is not given, default
@@ -97,7 +97,7 @@ Optional Arguments
     *g*. **-N** yields *gn* = *amp* \* (*g* - *offset*)/max(abs(\ *g* -
     *offset*)). **-Ne** normalizes using a cumulative Laplace
     distribution yielding *gn* = *amp* \* (1.0 -
-    exp(\ `sqrt(2) <sqrt.2.html>`_ \* (*g* - *offset*)/ *sigma*)) where
+    exp(sqrt(2) \* (*g* - *offset*)/ *sigma*)) where
     *sigma* is estimated using the L1 norm of (*g* - *offset*) if it is
     not given. **-Nt** normalizes using a cumulative Cauchy distribution
     yielding *gn* = (2 \* *amp* / PI) \* atan( (*g* - *offset*)/
@@ -119,6 +119,8 @@ Optional Arguments
 **-fg**
    Geographic grids (dimensions of longitude, latitude) will be converted to
    meters via a "Flat Earth" approximation using the current ellipsoid parameters.
+
+.. include:: explain_-n.rst_
 
 .. include:: explain_help.rst_
 
