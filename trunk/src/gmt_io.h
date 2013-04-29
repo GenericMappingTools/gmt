@@ -34,10 +34,6 @@
 /* Must add M, m, E, Z, and/or S to the common option processing list */
 #define GMT_OPT(opt) opt
 
-enum GMT_enum_fmt {
-	GMT_COLUMN_FORMAT	= 1,	/* 2-D grid is Fortran-style with columns */
-	GMT_ROW_FORMAT		= 2};	/* 2-D grid is C-style with rows */
-
 /* Three different i/o status: unused, actively using, or used */
 enum GMT_enum_status {
 	GMT_IS_UNUSED = 0,	/* We have not yet read from/written to this resource */
@@ -303,7 +299,7 @@ struct GMT_Z_IO {		/* Used when processing z(x,y) table input when (x,y) is impl
 	int y_step;	/* +1 if logical y values increase upwards, else -1 */
 	unsigned int x_missing;	/* 1 if a periodic (right) column is implicit (i.e., not stored) */
 	unsigned int y_missing;	/* 1 if a periodic (top) row is implicit (i.e., not stored) */
-	unsigned int format;	/* Either GMT_COLUMN_FORMAT or GMT_ROW_FORMAT */
+	unsigned int format;	/* Either GMT_IS_COL_FORMAT or GMT_IS_ROW_FORMAT */
 	unsigned int x_period;	/* length of a row in the input data ( <= nx, see x_missing) */
 	unsigned int y_period;	/* length of a col in the input data ( <= ny, see y_missing) */
 	unsigned int start_col;	/* First logical column in file */

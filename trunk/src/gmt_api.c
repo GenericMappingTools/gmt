@@ -1519,7 +1519,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 			M_obj->n_rows = D_obj->n_records;	/* Number of rows needed to hold the data records */
 			M_obj->n_columns = D_obj->n_columns;	/* Number of columns needed to hold the data records */
 			if (API->GMT->current.io.multi_segments[GMT_OUT]) M_obj->n_rows += D_obj->n_segments;	/* Add one row for each segment header */
-			if (M_obj->shape == GMT_ROW_FORMAT) {	/* C-style matrix layout */
+			if (M_obj->shape == GMT_IS_ROW_FORMAT) {	/* C-style matrix layout */
 				if (M_obj->dim == 0) M_obj->dim = D_obj->n_columns;
 				if (M_obj->dim < D_obj->n_columns) return (GMTAPI_report_error (API, GMT_DIM_TOO_SMALL));
 				S_obj->n_alloc = M_obj->n_rows * M_obj->dim;	/* Get total number of elements as n_rows * dim */
