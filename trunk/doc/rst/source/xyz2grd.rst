@@ -4,8 +4,8 @@ xyz2grd
 
 xyz2grd - Convert data table to a grid file
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
@@ -17,9 +17,9 @@ xyz2grd - Convert data table to a grid file
 [ **-N**\ *nodata* ] [ **-S**\ [*zfile*] ]
 [ |SYN_OPT-V| ]
 [ **-Z**\ [*flags*\ ] ] [ **-bi**\ [*ncols*\ ][*type*] ]
-[ **-f**\ *colinfo* ] [ **-h**\ [**i**\ \|\ **o**][*n*] ]
+[ |SYN_OPT-f| ] [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
-[ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
+[ **-r** ] [ |SYN_OPT-:| ]
 
 |No-spaces|
 
@@ -76,7 +76,7 @@ Optional Arguments
     No data. Set nodes with no input xyz triplet to this value [Default
     is NaN]. For z-tables, this option is used to replace z-values that
     equal *nodata* with NaN.
-**-S**\ [*zfile*\ ]
+**-S**\ [*zfile*]
     Swap the byte-order of the input only. No grid file is produced. You
     must also supply the **-Z** option. The output is written to *zfile*
     (or stdout if not supplied). 
@@ -84,7 +84,7 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-**-Z**\ [*flags*\ ]
+**-Z**\ [*flags*]
     Read a 1-column ASCII [or binary] table. This assumes that all the
     nodes are present and sorted according to specified ordering
     convention contained in *flags*. If incoming data represents rows,
@@ -107,21 +107,21 @@ Optional Arguments
 
     **a** ASCII representation of a single item per record
 
-    **c** int8\_t, signed 1-byte character
+    **c** int8_t, signed 1-byte character
 
-    **u** uint8\_t, unsigned 1-byte character
+    **u** uint8_t, unsigned 1-byte character
 
-    **h** int16\_t, signed 2-byte integer
+    **h** int16_t, signed 2-byte integer
 
-    **H** uint16\_t, unsigned 2-byte integer
+    **H** uint16_t, unsigned 2-byte integer
 
-    **i** int32\_t, signed 4-byte integer
+    **i** int32_t, signed 4-byte integer
 
-    **I** uint32\_t, unsigned 4-byte integer
+    **I** uint32_t, unsigned 4-byte integer
 
-    **l** int64\_t, long (8-byte) integer
+    **l** int64_t, long (8-byte) integer
 
-    **L** uint64\_t, unsigned long (8-byte) integer
+    **L** uint64_t, unsigned long (8-byte) integer
 
     **f** 4-byte floating point single precision
 
@@ -174,7 +174,7 @@ Examples
 To create a grid file from the ASCII data in hawaii\_grv.xyz, use
 
     xyz2grd hawaii_grv.xyz -Ddegree/degree/mGal/1/0/"Hawaiian Gravity"/"GRS-80 Ellipsoid used" \
-            -Ghawaii\_grv\_new.nc -R198/208/18/25 -I5m -V
+            -Ghawaii_grv_new.nc -R198/208/18/25 -I5m -V
 
 To create a grid file from the raw binary (3-column, single-precision
 scanline-oriented data raw.b, use

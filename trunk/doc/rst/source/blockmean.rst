@@ -10,14 +10,14 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **blockmean** [ *table* ]
-**-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
-|SYN_OPT-R| [ **-C** ] [
-**-E**\ [**p**] ] [ **-S**\ [**m**\ \|\ **n**\ \|\ **s**\ \|\ **w**] ]
-[ |SYN_OPT-V| ] [ **-W**\ [**i**\ \|\ **o**] ] [
-**-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
-**-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [ **-h**\ [**i**\ \|\ **o**][*n*] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-o**\ *cols*\ [,*...*] ] [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
+|SYN_OPT-I|
+|SYN_OPT-R| [ **-C** ]
+[ **-E**\ [**p**] ] [ **-S**\ [**m**\ \|\ **n**\ \|\ **s**\ \|\ **w**] ]
+[ |SYN_OPT-V| ] [ **-W**\ [**i**\ \|\ **o**] ]
+[ |SYN_OPT-b| ]
+[ |SYN_OPT-f| ] [ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-o| ] [ **-r** ] [ |SYN_OPT-:| ]
 
 |No-spaces|
 
@@ -33,7 +33,7 @@ and **-I** arguments. Either **blockmean**, `blockmedian <blockmedian.html>`_, o
 `surface <surface.html>`_ to avoid aliasing short wavelengths. These routines are also
 generally useful for decimating or averaging (*x*,\ *y*,\ *z*) data. You
 can modify the precision of the output format by editing the
-**FORMAT\_FLOAT\_OUT** parameter in your `gmt.conf <gmt.conf.html>`_ file, or you may
+**FORMAT_FLOAT_OUT** parameter in your `gmt.conf <gmt.conf.html>`_ file, or you may
 choose binary input and/or output to avoid loss of precision.
 
 Required Arguments
@@ -49,7 +49,7 @@ Optional Arguments
 
 *table*
     3 [or 4, see **-W**] column ASCII data table file(s) [or binary, see
-    **-bi**\ [*ncols*\ ][*type*\ ]] holding (*x*,\ *y*,\ *z*\ [,\ *w*])
+    **-bi**\ [*ncols*][*type*]] holding (*x*,\ *y*,\ *z*\ [,\ *w*])
     data values. [\ *w*] is an optional weight for the data. If no file
     is specified, **blockmean** will read from standard input.
 **-C**
@@ -112,7 +112,9 @@ Examples
 
 To find 5 by 5 minute block mean values from the ASCII data in hawaii.xyg, run
 
-    blockmean hawaii.xyg -R198/208/18/25 -I5m > hawaii\_5x5.xyg
+   ::
+
+    blockmean hawaii.xyg -R198/208/18/25 -I5m > hawaii_5x5.xyg
 
 See Also
 --------
