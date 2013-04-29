@@ -2,11 +2,10 @@
 gmt
 ***
 
-gmt - The Generic Mapping Tools data processing and display software
-package
+gmt - The Generic Mapping Tools data processing and display software package
 
-`Introduction <#toc1>`_
------------------------
+Introduction
+------------
 
 **GMT** is a collection of public-domain Unix tools that allows you to
 manipulate x,y and x,y,z data sets (filtering, trend fitting, gridding,
@@ -17,8 +16,8 @@ and power scaling is supported in addition to over 30 common map
 projections. The processing and display routines within **GMT** are
 completely general and will handle any (x,y) or (x,y,z) data as input.
 
-`Synopsis <#toc2>`_
--------------------
+Synopsis
+--------
 
 **gmt** is a wrapper program that can start any of the programs:
 
@@ -27,8 +26,8 @@ completely general and will handle any (x,y) or (x,y,z) data as input.
 where module is the name of a **GMT** program and the options are those
 that pertain to that particular program.
 
-`GMT Overview <#toc3>`_
------------------------
+GMT Overview
+------------
 
 The following is a summary of all the programs supplied with **GMT** and
 a very short description of their purpose. Detailed information about
@@ -36,28 +35,34 @@ each program can be found in the separate manual pages.
 
 .. include:: explain_gmt_modules.rst_
 
-`The Common GMT Options <#toc4>`_
----------------------------------
-
-**-B**\ [**p**\ \|\ **s**]\ *parameters* **-J**\ *parameters*
-**-Jz**\ \|\ **Z**\ *parameters* **-K** **-O** **-P**
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ]
-**-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] **-V**\ [*level*\ ]
-**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-**-a**\ *col*\ =\ *name*\ [*...*\ ]
-**-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] **-c**\ *copies*
-**-f**\ [**i**\ \|\ **o**]\ *colinfo*
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
-**-h**\ [**i**\ \|\ **o**][*n*\ ]
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-**-o**\ *cols*\ [,*...*]
-**-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
-**-r** **-s**\ [*cols*\ ][\ **a**\ \|\ **r**] **-t**\ [*transp*\ ]
-**-:**\ [**i**\ \|\ **o**]
-
-`Description <#toc5>`_
+The Common GMT Options
 ----------------------
+
+.. include:: common_SYN_OPTs.rst_
+
+|SYN_OPT-B|
+**-J**\ *parameters*
+**-Jz**\ \|\ **Z**\ *parameters* **-K** **-O** **-P**
+|SYN_OPT-Rz|
+|SYN_OPT-U|
+|SYN_OPT-V|
+|SYN_OPT-X|
+|SYN_OPT-Y|
+|SYN_OPT-a|
+|SYN_OPT-b|
+|SYN_OPT-f|
+|SYN_OPT-g|
+|SYN_OPT-h|
+|SYN_OPT-i|
+|SYN_OPT-o|
+|SYN_OPT-p|
+**-r**
+|SYN_OPT-s|
+|SYN_OPT-t|
+|SYN_OPT-:|
+
+Description
+-----------
 
 These are all the common GMT options that remain the same for all GMT
 programs. No space between the option flag and the associated arguments.
@@ -134,12 +139,12 @@ programs. No space between the option flag and the associated arguments.
 .. include:: explain_grd_input.rst_
 
 
-`See Also <#toc12>`_
---------------------
+See Also
+--------
 
 Look up the individual man pages for more details and full syntax. Run
 **gmt --help** to list all GMT programs and to show all installation
 directories. For an explanation of the various **GMT** settings in this
-man page (like **FORMAT\_FLOAT\_OUT**), see the man page of the GMT
+man page (like **FORMAT_FLOAT_OUT**), see the man page of the GMT
 configuration file `gmt.conf <gmt.conf.html>`_. Information is also available on the
 **GMT** home page gmt.soest.hawaii.edu
