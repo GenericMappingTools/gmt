@@ -4,31 +4,31 @@ grdtrack
 
 grdtrack - Sample grids at specified (x,y) locations
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdtrack** [ *xyfile* ] **-G**\ *grd1* **-G**\ *grd2* ... [
-**-A**\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**\ ] ] [
-**-C**\ *length*\ [**u**\ ]/\ *ds*\ [*spacing*\ ][**+a**\ ] ] [**-D**\ *dfile* ]
-[ **-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+i**\ *inc*[**u**]][**+l** \*length*[**u**]][**+n*\ *np*][**+r**\ *radius*[**u**]]
-[ **-N** ] [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
-**-S**\ *method*/*modifiers* ][ **-V**\ [*level*\ ] ] [ **-Z** ] [
-**-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
-**-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
-] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [
-**-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*]
-] [ **-o**\ *cols*\ [,*...*] ] [ **-s**\ [*cols*\ ][\ **a**\ \|\ **r**]
-] [ **-:**\ [**i**\ \|\ **o**] ]
+**grdtrack** [ *xyfile* ] **-G**\ *grd1* **-G**\ *grd2* ...
+[ **-A**\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**] ]
+[ **-C**\ *length*\ [**u**]/\ *ds*\ [*spacing*][**+a**] ] [**-D**\ *dfile* ]
+[ **-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+i**\ *inc*\ [**u**]][**+l**\ *length*\ [**u**]][**+n**\ *np*][**+r**\ *radius*\ [**u**] ]
+[ **-N** ] 
+[ |SYN_OPT-R| ]
+[ **-S**\ *method*/*modifiers* ][ **-V**\ [*level*] ] [ **-Z** ]
+[ **-b**\ [*ncol*][**t**][\ **+L**\ \|\ **+B**] ]
+[ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ]
+[ |SYN_OPT-g| ] 
+[ |SYN_OPT-h| ] 
+[ |SYN_OPT-i| ] 
+[ |SYN_OPT-n| ]
+[ **-o**\ *cols*\ [,...] ] [ **-s**\ [*cols*][\ **a**\ \|\ **r**] ]
+[ **-:**\ [**i**\ \|\ **o**] ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **grdtrack** reads one or more grid files (or a Sandwell/Smith IMG
 files) and a table (from file or standard input; but see **-E** for
@@ -44,8 +44,8 @@ requiring boundary conditions at the limits of the region (see **-n**;
 Default uses "natural" conditions (second partial derivative normal to
 edge is zero) unless the grid is automatically recognized as periodic.)
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 **-G**\ *gridfile*
     *grdfile* is a 2-D binary grid file with the function f(x,y). If the
@@ -62,8 +62,8 @@ edge is zero) unless the grid is automatically recognized as periodic.)
     are sampled and results are output in the order given. (See GRID
     FILE FORMAT below.)
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 *xyfile*
     This is an ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ])
@@ -99,7 +99,7 @@ edge is zero) unless the grid is automatically recognized as periodic.)
     lines to the file *dfile* [Default only saves the cross-profiles].
     The columns will be *lon*, *lat*, *dist*, *azimuth*, *z1*, *z2*, ...
     (sampled value for each grid)
-[ **-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+i**\ *inc*[**u**]][**+l** \*length*[**u**]][**+n*\ *np*][**+r**\ *radius*[**u**]]
+**-E**\ *line*\ [,\ *line*,...][**+a**\ *az*][**+i**\ *inc*\ [**u**]][**+l**\ *length*\ [**u**]][**+n**\ *np*][**+r**\ *radius*\ [**u**]
     Instead of reading input track coordinates, specify profiles via
     coordinates and modifiers. The format of each *line* is
     *start*/*stop*, where *start* or *stop* are either *lon*/*lat* (*x*/*y* for
@@ -132,12 +132,12 @@ edge is zero) unless the grid is automatically recognized as periodic.)
     computed: **a** = mean (average), **m** = median, **p** = mode
     (maximum likelihood), **l** = lower, **L** = lower but only consider
     positive values, **u** = upper, **U** = upper but only consider
-    negative values [**a**\ ]. The *modifiers* control the output;
+    negative values [**a**]. The *modifiers* control the output;
     choose one or more among these choices: **+a** : Append stacked
     values to all cross-profiles. **+d** : Append stack deviations to
     all cross-profiles. **+d** : Append data residuals (data - stack) to
-    all cross-profiles. **+s**\ [*file*\ ] : Save stacked profile to
-    *file* [grdtrack\_stacked\_profile.txt]. **+c**\ *fact* : Compute
+    all cross-profiles. **+s**\ [*file*] : Save stacked profile to
+    *file* [grdtrack\_stacked_profile.txt]. **+c**\ *fact* : Compute
     envelope on stacked profile as +/- *fact*\ \*\ *deviation* [2].
     Notes: (1) Deviations depend on *method* and are st.dev (**a**), L1
     scale (**e** and **p**), or half-range (upper-lower)/2. (2) The
@@ -158,6 +158,7 @@ edge is zero) unless the grid is automatically recognized as periodic.)
 
 **-Z**
     Only write out the sampled z-values [Default writes all columns].
+
 **-:**
     Toggles between (longitude,latitude) and (latitude,longitude)
     input/output. [Default is (longitude,latitude)]. 
@@ -193,8 +194,8 @@ edge is zero) unless the grid is automatically recognized as periodic.)
 
 .. include:: explain_grd_input.rst_
 
-`Hints <#toc9>`_
-----------------
+Hints
+-----
 
 If an interpolation point is not on a node of the input grid, then a NaN
 at any node in the neighborhood surrounding the point will yield an
@@ -205,30 +206,36 @@ yields only zeroth-order continuity. Use bicubic when smoothness is
 important. Use bilinear to minimize the propagation of NaNs, or lower
 *threshold*.
 
-`Examples <#toc10>`_
---------------------
+Examples
+--------
 
 To sample the file hawaii\_topo.nc along the SEASAT track track\_4.xyg
 (An ASCII table containing longitude, latitude, and SEASAT-derived
 gravity, preceded by one header record):
 
-    grdtrack track\_4.xyg -Ghawaii\_topo.nc -h > track\_4.xygt
+   ::
+
+    grdtrack track_4.xyg -Ghawaii_topo.nc -h > track_4.xygt
 
 To sample the Sandwell/Smith IMG format file topo.8.2.img (2 minute
 predicted bathymetry on a Mercator grid) and the Muller et al age grid
 age.3.2.nc along the lon,lat coordinates given in the file
-cruise\_track.xy, try
+cruise_track.xy, try
 
-    grdtrack cruise\_track.xy -Gtopo.8.2.img,1,1 -Gage.3.2.nc > depths-age.d
+   ::
+
+    grdtrack cruise_track.xy -Gtopo.8.2.img,1,1 -Gage.3.2.nc > depths-age.d
 
 To sample the Sandwell/Smith IMG format file grav.18.1.img (1 minute
 free-air anomalies on a Mercator grid) along 100-km-long cross-profiles
 that are orthogonal to the line segment given in the file track.xy,
 erecting cross-profiles every 25 km and sampling the grid every 3 km, try
 
+   ::
+
     grdtrack track.xy -Ggrav.18.1.img,0.1,1 -C100k/3/25 -Ar > xprofiles.d
 
-`See Also <#toc11>`_
---------------------
+See Also
+--------
 
 `gmt <gmt.html>`_, `surface <surface.html>`_, `sample1d <sample1d.html>`_
