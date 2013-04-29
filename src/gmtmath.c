@@ -3750,7 +3750,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 		for (j = 0; j < n_columns; j++) {
 			if (j == COL_T && !Ctrl->Q.active && Ctrl->C.cols[j])
 				load_column (stack[0]->D, j, info.T, COL_T);
-			else
+			else if (!Ctrl->C.cols[j])
 				load_const_column (stack[0]->D, j, stack[0]->factor);
 		}
 		GMT_set_tbl_minmax (GMT, stack[0]->D->table[0]);
