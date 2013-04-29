@@ -21,8 +21,6 @@
 
 enum GMT_enum_api {
 	GMTAPI_NOTSET		= -1,	/* Object ID when not set */
-	GMTAPI_ORDER_ROW 	= 0,	/* C-style array order: as index increase we move across rows */
-	GMTAPI_ORDER_COL	= 1,	/* Fortran-style array order: as index increase we move down columns */
 	GMTAPI_USAGE		= 0,	/* Want to report full program usage message */
 	GMTAPI_SYNOPSIS		= 1,	/* Just want the synopsis of usage */
 	GMTAPI_N_GRID_ARGS	= 4,	/* Minimum size of information array used to specify grid parameters */
