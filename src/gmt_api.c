@@ -2292,7 +2292,8 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mod
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Duplicating grid data to GMT_GRID memory location\n");
 			if (!S_obj->region) {	/* No subset, possibly same padding */
 				G_copy = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA, G_obj);
-				if (GMTAPI_adjust_grdpadding (G_copy->header, API->GMT->current.io.pad)) GMT_grd_pad_on (API->GMT, G_copy, API->GMT->current.io.pad);
+				if (GMTAPI_adjust_grdpadding (G_copy->header, API->GMT->current.io.pad))
+					GMT_grd_pad_on (API->GMT, G_copy, API->GMT->current.io.pad);
 				GMT_BC_init (API->GMT, G_copy->header);	/* Initialize grid interpolation and boundary condition parameters */
 				if (GMT_err_pass (API->GMT, GMT_grd_BC_set (API->GMT, G_copy, GMT_OUT), "Grid memory")) return (GMTAPI_report_error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
 				S_obj->resource = G_copy;	/* Set resource pointer to the grid */
@@ -2333,7 +2334,8 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mod
 			if (S_obj->region) return (GMTAPI_report_error (API, GMT_SUBSET_NOT_ALLOWED));
 			if (mode & GMT_GRID_HEADER_ONLY) return (GMTAPI_report_error (API, GMT_NOT_A_VALID_MODE));
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing grid data to GMT_GRID memory location\n");
-			if (GMTAPI_adjust_grdpadding (G_obj->header, API->GMT->current.io.pad)) GMT_grd_pad_on (API->GMT, G_obj, API->GMT->current.io.pad);	/* Adjust pad */
+			if (GMTAPI_adjust_grdpadding (G_obj->header, API->GMT->current.io.pad))
+				GMT_grd_pad_on (API->GMT, G_obj, API->GMT->current.io.pad);	/* Adjust pad */
 			G_obj->alloc_mode = GMT_REFERENCE;	/* So we dont accidentally free this later */
 			GMT_grd_zminmax (API->GMT, G_obj->header, G_obj->data);	/* Must set zmin/zmax since we are not writing */
 			GMT_BC_init (API->GMT, G_obj->header);	/* Initialize grid interpolation and boundary condition parameters */
@@ -2360,9 +2362,11 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mod
 	 	case GMT_IS_REFERENCE + GMT_VIA_MATRIX:	/* The user's 2-D grid array of some sort, + info in the args [NOT FULLY TESTED] */
 			if (S_obj->resource == NULL) return (GMTAPI_report_error (API, GMT_PTR_IS_NULL));	/* The output resource pointer cannot be NULL for matrix */
 			if (mode & GMT_GRID_HEADER_ONLY) return (GMTAPI_report_error (API, GMT_NOT_A_VALID_MODE));
+			if (GMTAPI_adjust_grdpadding (G_obj->header, API->GMT->current.io.pad))
+				GMT_grd_pad_on (API->GMT, G_obj, API->GMT->current.io.pad);	/* Adjust pad */
 			M_obj = GMT_duplicate_matrix (API->GMT, S_obj->resource, false);
 			if (!(M_obj->shape == GMT_IS_ROW_FORMAT && M_obj->type == GMT_FLOAT && M_obj->alloc_mode == 0 && (mode & GMT_GRID_IS_COMPLEX_MASK))) 
-				return (GMTAPI_report_error (API, GMT_NOT_A_VALID_IO_ACCESS));
+				;//return (GMTAPI_report_error (API, GMT_NOT_A_VALID_IO_ACCESS));
 			GMTAPI_grdheader_to_info (G_obj->header, M_obj);	/* Populate an array with GRD header information */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing grid data to user memory location\n");
 			M_obj->data.f4 = G_obj->data;
