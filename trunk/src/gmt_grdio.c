@@ -1795,7 +1795,7 @@ int GMT_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *Grid, do
 		GMT->common.J.active = false;
 	}
 	GMT_BC_init (GMT, Grid->header);	/* Initialize grid interpolation and boundary condition parameters */
-	GMT_grd_BC_set (GMT, Grid);	/* Set boundary conditions */
+	GMT_grd_BC_set (GMT, Grid, GMT_IN);	/* Set boundary conditions */
 	return (GMT_NOERROR);
 }
 

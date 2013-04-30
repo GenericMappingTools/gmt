@@ -6575,7 +6575,7 @@ int GMT_BC_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h)
 	return (GMT_NOERROR);
 }
 
-int GMT_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G)
+int GMT_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direction)
 {
 	/* Set two rows of padding (pad[] can be larger) around data according
 	   to desired boundary condition info in that header.
@@ -6628,7 +6628,7 @@ int GMT_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G)
 	/* Check that pad is at least 2 */
 	for (i = bok = 0; i < 4; i++) if (G->header->pad[i] < 2) bok++;
 	if (bok > 0) {
-		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "called with a pad < 2; skipped.\n");
+		if (direction == GMT_IN) GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "called with a pad < 2; skipped.\n");
 		return (GMT_NOERROR);
 	}
 

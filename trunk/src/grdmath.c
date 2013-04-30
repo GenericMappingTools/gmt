@@ -862,7 +862,7 @@ void grd_CURV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_S
 	 * as a BC == GMT_BC_IS_DATA then the pad already constains observations. */
 
 	GMT_BC_init (GMT, stack[last]->G->header);	/* Initialize grid interpolation and boundary condition parameters */
-	GMT_grd_BC_set (GMT, stack[last]->G);	/* Set boundary conditions */
+	GMT_grd_BC_set (GMT, stack[last]->G, GMT_IN);	/* Set boundary conditions */
 	
 	/* Now, stack[last]->G->data has boundary rows/cols all set according to the boundary conditions (or actual data).
 	 * We can then operate on the interior of the grid and temporarily assign values to the z grid */
@@ -974,7 +974,7 @@ void grd_D2DXY (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 	 * as a BC == GMT_BC_IS_DATA then the pad already constains observations. */
 
 	GMT_BC_init (GMT, stack[last]->G->header);	/* Initialize grid interpolation and boundary condition parameters */
-	GMT_grd_BC_set (GMT, stack[last]->G);	/* Set boundary conditions */
+	GMT_grd_BC_set (GMT, stack[last]->G, GMT_IN);	/* Set boundary conditions */
 	
 	/* Now, stack[last]->G->data has boundary rows/cols all set according to the boundary conditions (or actual data).
 	 * We can then operate on the interior of the grid and temporarily assign values to the z grid */
@@ -1271,7 +1271,7 @@ void grd_EXTREMA (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMAT
 	 * as a BC == GMT_BC_IS_DATA then the pad already constains observations. */
 
 	GMT_BC_init (GMT, stack[last]->G->header);	/* Initialize grid interpolation and boundary condition parameters */
-	GMT_grd_BC_set (GMT, stack[last]->G);	/* Set boundary conditions */
+	GMT_grd_BC_set (GMT, stack[last]->G, GMT_IN);	/* Set boundary conditions */
 	
 	/* Now, stack[last]->G->data has boundary rows/cols all set according to the boundary conditions (or actual data).
 	 * We can then operate on the interior of the grid and temporarily assign values to the z grid */
