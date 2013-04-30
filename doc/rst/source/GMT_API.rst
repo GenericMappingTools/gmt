@@ -667,7 +667,7 @@ resources you may request to obtain a subset via the :ref:`wesn <tbl-wesn>` arra
 Table :ref:`wesn <tbl-wesn>` for information); otherwise, pass NULL to obtain the
 entire grid (or image). The ``direction`` indicates input or output and
 is either GMT_IN (0) or GMT_OUT (1). Finally, the function returns a
-unique resource ID, or GMTAPI_NOTSET (-1) if there was an error.
+unique resource ID, or GMT_NOTSET (-1) if there was an error.
 
 Object ID encoding
 ~~~~~~~~~~~~~~~~~~

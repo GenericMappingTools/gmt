@@ -57,7 +57,7 @@ int GMT_gmtdefaults_usage (struct GMTAPI_CTRL *API, int level)
 	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtdefaults [-D[s|u]]\n\n");
 	
-	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 	
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Print the GMT default settings.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to see the SI version of defaults.\n");
@@ -130,8 +130,8 @@ int GMT_gmtdefaults (void *V_API, int mode, void *args)
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (options) {
-		if (options->option == GMTAPI_OPT_USAGE) bailout (GMT_gmtdefaults_usage (API, GMTAPI_USAGE));		/* Return the usage message */
-		if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_gmtdefaults_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+		if (options->option == GMT_OPT_USAGE) bailout (GMT_gmtdefaults_usage (API, GMT_USAGE));		/* Return the usage message */
+		if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_gmtdefaults_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 	}
 
 	/* Parse the command-line arguments */

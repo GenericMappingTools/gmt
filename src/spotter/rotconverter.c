@@ -121,7 +121,7 @@ int GMT_rotconverter_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "usage: rotconverter [+][-] <rotA> [[+][-] <rotB>] [[+][-] <rotC>] ... [-A] [-D] [-E[<factor>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F<out>] [-G] [-N] [-S] [-T] [%s]\n\t[%s] > outfile\n\n", GMT_V_OPT, GMT_h_OPT);
 	
-	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<rotA>, <rotB>, etc. are total reconstruction or stage rotation pole files.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, they can be a single rotation in lon/lat[/tstart[/tstop]]/angle format.\n");
@@ -288,20 +288,20 @@ int GMT_rotconverter (void *V_API, int mode, void *args)
 				sprintf (record, "-%c%s", opt->option, opt->arg);
 				free (opt->arg);
 				opt->arg = strdup (record);
-				opt->option = GMTAPI_OPT_INFILE;
+				opt->option = GMT_OPT_INFILE;
 				break;
-			case GMTAPI_OPT_SYNOPSIS:
+			case GMT_OPT_SYNOPSIS:
 				free (opt->arg);
 				opt->arg = strdup ("-");
-				opt->option = GMTAPI_OPT_INFILE;
+				opt->option = GMT_OPT_INFILE;
 				confusion = true;	/* Since we don't know if just a single - was given */
 				break;
 			default:	/* Do nothing */
 				break;
 		}
 	}
-	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_rotconverter_usage (API, GMTAPI_USAGE));	/* Return the usage message */
-	if (n_opt == 1 && confusion) bailout (GMT_rotconverter_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_rotconverter_usage (API, GMT_USAGE));	/* Return the usage message */
+	if (n_opt == 1 && confusion) bailout (GMT_rotconverter_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
@@ -322,15 +322,15 @@ int GMT_rotconverter (void *V_API, int mode, void *args)
 	
 	last_sign = +1;
 	for (opt = options; opt; opt = opt->next) {
-		if (opt->option != GMTAPI_OPT_INFILE) continue;	/* Only consider files (or rotations) from here on */
+		if (opt->option != GMT_OPT_INFILE) continue;	/* Only consider files (or rotations) from here on */
 
 		/* Here a single + would have been parsed as a file with name "+"; change to a plus sign */
-		if (opt->option == GMTAPI_OPT_INFILE && opt->arg[0] == '+' && opt->arg[1] == '\0') {
+		if (opt->option == GMT_OPT_INFILE && opt->arg[0] == '+' && opt->arg[1] == '\0') {
 			last_sign = +1;
 			continue;
 		}
 		/* Here a single - would have been parsed as a file with name "-"; change to a minus sign */
-		if (opt->option == GMTAPI_OPT_INFILE && opt->arg[0] == '-' && opt->arg[1] == '\0') {
+		if (opt->option == GMT_OPT_INFILE && opt->arg[0] == '-' && opt->arg[1] == '\0') {
 			last_sign = -1;
 			continue;
 		}

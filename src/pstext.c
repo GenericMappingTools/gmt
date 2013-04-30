@@ -279,7 +279,7 @@ int GMT_pstext_usage (struct GMTAPI_CTRL *API, int level, int show_fonts)
 	}
 
 	if (show_fonts) return (EXIT_SUCCESS);
-	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Option (API, "J-Z,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -576,7 +576,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 	char text[GMT_BUFSIZ], buffer[GMT_BUFSIZ], pjust_key[5], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
 	char *paragraph = NULL, *line = NULL, *curr_txt = NULL, *in_txt = NULL, **c_txt = NULL;
 	char this_size[GMT_TEXT_LEN256], this_font[GMT_TEXT_LEN256], just_key[5], txt_f[GMT_TEXT_LEN256];
-	int is_old_format = GMTAPI_NOTSET;
+	int is_old_format = GMT_NOTSET;
 	struct PSTEXT_INFO T;
 	struct PSTEXT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
@@ -589,8 +589,8 @@ int GMT_pstext (void *V_API, int mode, void *args)
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_pstext_usage (API, GMTAPI_USAGE, false));	/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_pstext_usage (API, GMTAPI_SYNOPSIS, false));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_pstext_usage (API, GMT_USAGE, false));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_pstext_usage (API, GMT_SYNOPSIS, false));	/* Return the synopsis */
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
@@ -598,7 +598,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_pstext_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_pstext_parse (GMT, Ctrl, options))) Return (error);
-	if (Ctrl->L.active) Return (GMT_pstext_usage (API, GMTAPI_SYNOPSIS, true));	/* Return the synopsis with font listing */
+	if (Ctrl->L.active) Return (GMT_pstext_usage (API, GMT_SYNOPSIS, true));	/* Return the synopsis with font listing */
 
 	/*---------------------------- This is the pstext main code ----------------------------*/
 
@@ -674,7 +674,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 				pos = 0;
 
 				if (GMT_compat_check (GMT, 4)) {
-					if (is_old_format == GMTAPI_NOTSET) is_old_format = check_for_old_format (GMT, buffer, 1);
+					if (is_old_format == GMT_NOTSET) is_old_format = check_for_old_format (GMT, buffer, 1);
 				}
 				if (is_old_format == 1) {	/* Old-style GMT 4 records */
 					nscan += sscanf (buffer, "%s %lf %s %s %s %s %s\n", this_size, &T.paragraph_angle, this_font, just_key, txt_a, txt_b, pjust_key);
@@ -779,7 +779,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 			pos = 0;
 
 			if (GMT_compat_check (GMT, 4)) {
-				if (is_old_format == GMTAPI_NOTSET) is_old_format = check_for_old_format (GMT, buffer, 0);
+				if (is_old_format == GMT_NOTSET) is_old_format = check_for_old_format (GMT, buffer, 0);
 			}
 			if (is_old_format == 1) {	/* Old-style GMT 4 records */
 				nscan--; /* Since we have already counted "text" */

@@ -4082,7 +4082,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 #endif
 
 	for (opt = options; opt; opt = opt->next) {
-		if (!(opt->option == GMTAPI_OPT_INFILE)) continue;	/* Skip command line options other that -< which is how numerical ID files may appear */
+		if (!(opt->option == GMT_OPT_INFILE)) continue;	/* Skip command line options other that -< which is how numerical ID files may appear */
 		if (opt->arg[0] == '=')  {		/* Specified a file list of files */
 			flist = &(opt->arg[1]);
 			continue;
@@ -4115,7 +4115,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 			NGDC_ID_likely = true;
 		}
 		else {
-			if (!(opt->option == GMTAPI_OPT_INFILE)) continue;	/* Skip command line options other that -< which is how numerical ID files may appear */
+			if (!(opt->option == GMT_OPT_INFILE)) continue;	/* Skip command line options other that -< which is how numerical ID files may appear */
 			if (opt->arg[0] == '=') continue;	/* Already dealt with file list */
 			/* Strip off any extension in case a user gave 12345678.mgd77 */
 			for (i = (int)strlen (opt->arg)-1; i >= 0 && opt->arg[i] != '.'; --i); /* Wind back to last period (or get i == -1) */

@@ -83,6 +83,7 @@ enum GMT_enum_comments {
 	GMT_COMMENT_IS_RESET	= 256};	/* Wipe existing header first [append] */
 
 enum GMT_api_err_enum {
+	GMT_NOTSET  = -1,	/* When something is not set */
 	GMT_NOERROR = 0};	/* Code when all is well */
 
 /* Array indices for input/output/stderr variables */

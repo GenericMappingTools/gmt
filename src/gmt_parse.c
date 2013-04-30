@@ -70,9 +70,9 @@ int GMT_List_Args (void *V_API, struct GMT_OPTION *head)
 	for (opt = head; opt; opt = opt->next) {
 		if (!opt->option) continue;			/* Skip all empty options */
 		if (opt != head) fprintf (stderr, " ");
-		if (opt->option == GMTAPI_OPT_SYNOPSIS)			/* Produce special - command for synopsis */
+		if (opt->option == GMT_OPT_SYNOPSIS)			/* Produce special - command for synopsis */
 			fprintf (stderr, "-");
-		else if (opt->option == GMTAPI_OPT_INFILE)		/* Option for input filename [or number] */
+		else if (opt->option == GMT_OPT_INFILE)		/* Option for input filename [or number] */
 			fprintf (stderr, "%s", opt->arg);
 		else if (opt->arg && opt->arg[0])			/* Regular -?arg commandline argument */
 			fprintf (stderr, "-%c%s", opt->option, opt->arg);
@@ -134,19 +134,19 @@ struct GMT_OPTION * GMT_Create_Options (void *V_API, int n_args_in, void *in)
 		if (!args[arg]) continue;	/* Skip any NULL arguments quietly */
 
 		if (args[arg][0] == '<' && !args[arg][1] && (arg+1) < n_args && args[arg+1][0] != '-')	/* string command with "< file" for input */
-			first_char = 0, option = GMTAPI_OPT_INFILE, arg++;
+			first_char = 0, option = GMT_OPT_INFILE, arg++;
 		else if (args[arg][0] == '>' && !args[arg][1] && (arg+1) < n_args && args[arg+1][0] != '-')	/* string command with "> file" for output */
-			first_char = 0, option = GMTAPI_OPT_OUTFILE, arg++;
+			first_char = 0, option = GMT_OPT_OUTFILE, arg++;
 		else if (args[arg][0] == '+' && !args[arg][1] && n_args == 1)	/* extended synopsis + */
-			first_char = 1, option = GMTAPI_OPT_USAGE, G->common.synopsis.extended = true;
+			first_char = 1, option = GMT_OPT_USAGE, G->common.synopsis.extended = true;
 		else if (args[arg][0] != '-')	/* Probably a file (could also be a gmt/grdmath OPERATOR or number, to be handled later by GMT_Make_Option) */
-			first_char = 0, option = GMTAPI_OPT_INFILE;
+			first_char = 0, option = GMT_OPT_INFILE;
 		else if (!args[arg][1])	/* Found the special synopsis option "-" */
-			first_char = 1, option = GMTAPI_OPT_SYNOPSIS;
+			first_char = 1, option = GMT_OPT_SYNOPSIS;
 		else if (!strcmp(args[arg], "--help"))	/* Translate '--help' to '-?' */
-			first_char = 6, option = GMTAPI_OPT_USAGE;
+			first_char = 6, option = GMT_OPT_USAGE;
 		else if ((isdigit ((int)args[arg][1]) || args[arg][1] == '.') && !GMT_not_numeric (API->GMT, args[arg])) /* A negative number, most likely; convert to "file" for now */
-				first_char = 0, option = GMTAPI_OPT_INFILE;
+				first_char = 0, option = GMT_OPT_INFILE;
 		else	/* Most likely found a regular option flag (e.g., -D45.0/3) */
 			first_char = 2, option = args[arg][1];
 
@@ -204,9 +204,9 @@ char ** GMT_Create_Args (void *V_API, int *argc, struct GMT_OPTION *head)
 
 	for (opt = head; opt; opt = opt->next) {	/* Loop over all options in the linked list */
 		if (!opt->option) continue;			/* Skip all empty options */
-		if (opt->option == GMTAPI_OPT_SYNOPSIS)		/* Produce special - option for synopsis */
+		if (opt->option == GMT_OPT_SYNOPSIS)		/* Produce special - option for synopsis */
 			sprintf (buffer, "-");
-		else if (opt->option == GMTAPI_OPT_INFILE)		/* Option for input filename [or numbers] */
+		else if (opt->option == GMT_OPT_INFILE)		/* Option for input filename [or numbers] */
 			sprintf (buffer, "%s", opt->arg);
 		else if (opt->arg && opt->arg[0])			/* Regular -?arg commandline option with argument for some ? */
 			sprintf (buffer, "-%c%s", opt->option, opt->arg);
@@ -267,9 +267,9 @@ char * GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head)
 
 	for (opt = head; opt; opt = opt->next) {	/* Loop over all options in the linked list */
 		if (!opt->option) continue;			/* Skip all empty options */
-		if (opt->option == GMTAPI_OPT_SYNOPSIS)		/* Produce special - option for synopsis */
+		if (opt->option == GMT_OPT_SYNOPSIS)		/* Produce special - option for synopsis */
 			sprintf (buffer, "-");
-		else if (opt->option == GMTAPI_OPT_INFILE)		/* Option for input filename [or numbers] */
+		else if (opt->option == GMT_OPT_INFILE)		/* Option for input filename [or numbers] */
 			sprintf (buffer, "%s", opt->arg);
 		else if (opt->arg && opt->arg[0])			/* Regular -?arg commandline option with argument for some ? */
 			sprintf (buffer, "-%c%s", opt->option, opt->arg);
@@ -385,10 +385,10 @@ struct GMT_OPTION * GMT_Append_Option (void *V_API, struct GMT_OPTION *new, stru
 
 	/* Here the list already existed with head != NULL */
 
-	if (new->option == GMTAPI_OPT_OUTFILE) {	/* Only allow one output file on command line */
+	if (new->option == GMT_OPT_OUTFILE) {	/* Only allow one output file on command line */
 		/* Search for existing output option */
-		for (current = head; current->next && current->option != GMTAPI_OPT_OUTFILE; current = current->next);
-		if (current->option == GMTAPI_OPT_OUTFILE) return_null (API, GMT_ONLY_ONE_ALLOWED);	/* Cannot have > 1 output file */
+		for (current = head; current->next && current->option != GMT_OPT_OUTFILE; current = current->next);
+		if (current->option == GMT_OPT_OUTFILE) return_null (API, GMT_ONLY_ONE_ALLOWED);	/* Cannot have > 1 output file */
 		/* Here current is at end so no need to loop again */
 	}
 	else {	/* Not an output file name so just go to end of list */

@@ -66,7 +66,7 @@ int GMT_gmtset_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtset [-C | -D[s|u] | -G<defaultsfile>] [-[" GMT_SHORTHAND_OPTIONS "]<value>] PARAMETER1 [=] value1 PARAMETER2 [=] value2 PARAMETER3 [=] value3 ...\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tFor available PARAMETERS, see gmt.conf man page.\n");
 
-	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Convert GMT4 .gmtdefaults4 to GMT5 gmt.conf file.\n");
@@ -146,8 +146,8 @@ int GMT_gmtset (void *V_API, int mode, void *args)
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (options) {
-		if (options->option == GMTAPI_OPT_USAGE) bailout (GMT_gmtset_usage (API, GMTAPI_USAGE));		/* Return the usage message */
-		if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_gmtset_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+		if (options->option == GMT_OPT_USAGE) bailout (GMT_gmtset_usage (API, GMT_USAGE));		/* Return the usage message */
+		if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_gmtset_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 	}
 
 	/* Parse the command-line arguments */

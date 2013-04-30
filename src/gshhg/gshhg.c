@@ -103,7 +103,7 @@ int GMT_gshhg_usage (struct GMTAPI_CTRL *API, int level)
 	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gshhg gshhs|wdb_rivers|wdb_borders_[f|h|i|l|c].b [-A<area>] [-G] [-I<id>] [-L] [-N<level>]\n\t[-Qe|i] [%s] [%s] [%s] > table\n", GMT_V_OPT, GMT_bo_OPT, GMT_o_OPT);
 
-	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
         GMT_Message (API, GMT_TIME_NONE, "-A Extract polygons whose area is greater than or equal to <area> (in km^2) [all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "-G Write '%%' at start of each segment header [P or L] (overwrites -M)\n");
@@ -237,8 +237,8 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_gshhg_usage (API, GMTAPI_USAGE));	/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_gshhg_usage (API, GMTAPI_SYNOPSIS));		/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_gshhg_usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_gshhg_usage (API, GMT_SYNOPSIS));		/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 

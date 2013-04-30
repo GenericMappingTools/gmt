@@ -76,7 +76,7 @@ int GMT_mgd77convert_usage (struct GMTAPI_CTRL *API, int level)
 	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: mgd77convert <cruise(s)> -Fa|c|m|t -T[+]a|c|m|t [-C] [-D] [-L[e][w][+]] [%s]\n\n", GMT_V_OPT);
         
-	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
              
 	MGD77_Cruise_Explain (API->GMT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[Files are read from data repositories and written to current directory]\n");
@@ -224,8 +224,8 @@ int GMT_mgd77convert (void *V_API, int mode, void *args)
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_mgd77convert_usage (API, GMTAPI_USAGE));	/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_mgd77convert_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_mgd77convert_usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_mgd77convert_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 

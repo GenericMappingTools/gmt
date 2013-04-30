@@ -135,7 +135,7 @@ int GMT_grdtrend_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdtrend <ingrid> -N<n_model>[r] [-D<diffgrid>] [%s]\n", GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T<trendgrid>] [%s] [-W<weightgrid>]\n\n", GMT_V_OPT);
 
-	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is name of grid file to fit trend to.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Fit a [robust] model with <n_model> terms.  <n_model> in [1,10].  E.g., robust planar = -N3r.\n");
@@ -499,8 +499,8 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_grdtrend_usage (API, GMTAPI_USAGE));	/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_grdtrend_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_grdtrend_usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_grdtrend_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);

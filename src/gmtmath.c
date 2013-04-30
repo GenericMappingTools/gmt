@@ -346,7 +346,7 @@ int GMT_gmtmath_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T[<t_min>/<t_max>/<t_inc>[+]]] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\tA B op C op ... = [outfile]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT);
 
-	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE,
 		"\tA, B, etc are table files, constants, or symbols (see below).\n"
@@ -412,7 +412,7 @@ int GMT_gmtmath_parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct G
 			case '<':	/* Input files */
 				if (opt->arg[0] == '=' && opt->arg[1] == 0) {
 					missing_equal = false;
-					if (opt->next && opt->next->option == GMTAPI_OPT_INFILE) {
+					if (opt->next && opt->next->option == GMT_OPT_INFILE) {
 						Ctrl->Out.active = true;
 						if (opt->next->arg) Ctrl->Out.file = strdup (opt->next->arg);
 					}
@@ -3268,8 +3268,8 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_gmtmath_usage (API, GMTAPI_USAGE));/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_gmtmath_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_gmtmath_usage (API, GMT_USAGE));/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_gmtmath_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
@@ -3293,18 +3293,18 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 	/* Internally replace the = [file] sequence with a single output option ->file */
 
 	for (i = 0, opt = options; opt; opt = opt->next) {
-		if (opt->option == GMTAPI_OPT_INFILE && !strcmp (opt->arg, "=")) {	/* Found the output sequence */
+		if (opt->option == GMT_OPT_INFILE && !strcmp (opt->arg, "=")) {	/* Found the output sequence */
 			if (opt->next) {	/* opt->next->arg may be NULL if stdout is implied */
-				ptr = GMT_Make_Option (API, GMTAPI_OPT_OUTFILE, opt->next->arg);
+				ptr = GMT_Make_Option (API, GMT_OPT_OUTFILE, opt->next->arg);
 				opt = opt->next;	/* Now we must skip that option */
 			}
 			else	/* Standard output */
-				ptr = GMT_Make_Option (API, GMTAPI_OPT_OUTFILE, NULL);
+				ptr = GMT_Make_Option (API, GMT_OPT_OUTFILE, NULL);
 		}
-		else if (opt->option == GMTAPI_OPT_INFILE && (k = gmt_find_macro (opt->arg, n_macros, M)) != GMTAPI_NOTSET) {
+		else if (opt->option == GMT_OPT_INFILE && (k = gmt_find_macro (opt->arg, n_macros, M)) != GMT_NOTSET) {
 			/* Add in the replacement commands from the macro */
 			for (kk = 0; kk < M[k].n_arg; kk++) {
-				ptr = GMT_Make_Option (API, GMTAPI_OPT_INFILE, M[k].arg[kk]);
+				ptr = GMT_Make_Option (API, GMT_OPT_INFILE, M[k].arg[kk]);
 				if ((list = GMT_Append_Option (API, ptr, list)) == NULL) Return1 (EXIT_FAILURE);
 			}
 			continue;
@@ -3313,7 +3313,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 			ptr = GMT_Make_Option (API, opt->option, opt->arg);
 
 		if (ptr == NULL || (list = GMT_Append_Option (API, ptr, list)) == NULL) Return1 (EXIT_FAILURE);
-		if (ptr->option == GMTAPI_OPT_OUTFILE) i++;
+		if (ptr->option == GMT_OPT_OUTFILE) i++;
 	}
 	gmt_free_macros (GMT, n_macros, &M);
 
@@ -3340,7 +3340,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 
 	/* Check sanity of all arguments and also look for an input file to get t from */
 	for (opt = list, got_t_from_file = 0; got_t_from_file == 0 && opt; opt = opt->next) {
-		if (!(opt->option == GMTAPI_OPT_INFILE))	continue;	/* Skip command line options and output */
+		if (!(opt->option == GMT_OPT_INFILE))	continue;	/* Skip command line options and output */
 		/* Filenames,  operators, some numbers and = will all have been flagged as files by the parser */
 		op = decode_gmt_argument (GMT, opt->arg, &value, localhashnode);	/* Determine what this is */
 		if (op == GMTMATH_ARG_IS_BAD) Return (EXIT_FAILURE);		/* Horrible */
@@ -3533,7 +3533,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 			if (decode_columns (GMT, opt->arg, Ctrl->C.cols, n_columns, Ctrl->N.tcol)) touched_t_col = true;
 			continue;
 		}
-		if (opt->option == GMTAPI_OPT_OUTFILE) continue;	/* We do output after the loop */
+		if (opt->option == GMT_OPT_OUTFILE) continue;	/* We do output after the loop */
 
 		op = decode_gmt_argument (GMT, opt->arg, &value, localhashnode);
 

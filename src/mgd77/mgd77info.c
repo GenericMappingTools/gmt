@@ -83,7 +83,7 @@ int GMT_mgd77info_usage (struct GMTAPI_CTRL *API, int level, struct MGD77INFO_CT
 	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: mgd77info <cruise(s)> [-C[m|e]] [-E[m|e]] [-I<code>] [-Mf[<item>]|r|e|h] [-L[v]]\n\t[%s]\n\n", GMT_V_OPT);
         
-	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
              
 	MGD77_Init (API->GMT, &M);		/* Initialize MGD77 Machinery */
 	MGD77_Cruise_Explain (API->GMT);
@@ -270,8 +270,8 @@ int GMT_mgd77info (void *V_API, int mode, void *args)
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_mgd77info_usage (API, GMTAPI_USAGE, Ctrl));	/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_mgd77info_usage (API, GMTAPI_SYNOPSIS, Ctrl));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_mgd77info_usage (API, GMT_USAGE, Ctrl));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_mgd77info_usage (API, GMT_SYNOPSIS, Ctrl));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 

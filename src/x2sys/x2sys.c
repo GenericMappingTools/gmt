@@ -1840,7 +1840,7 @@ int x2sys_get_tracknames (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char
 	struct GMT_OPTION *opt = NULL, *list = NULL;
 
 	/* Backwards checking for :list in addition to the new 9as in mgd77) =list mechanism */
-	for (opt = options; !list && opt; opt = opt->next) if (opt->option == GMTAPI_OPT_INFILE && (opt->arg[0] == ':' || opt->arg[0] == '=')) list = opt;
+	for (opt = options; !list && opt; opt = opt->next) if (opt->option == GMT_OPT_INFILE && (opt->arg[0] == ':' || opt->arg[0] == '=')) list = opt;
 
 	if (list) {	/* Got a file with a list of filenames */
 		*cmdline = false;
@@ -1856,7 +1856,7 @@ int x2sys_get_tracknames (struct GMT_CTRL *GMT, struct GMT_OPTION *options, char
 
 		*cmdline = true;
 		for (opt = options, A = 0; opt; opt = opt->next) {
-			if (opt->option != GMTAPI_OPT_INFILE) continue;	/* Skip options */
+			if (opt->option != GMT_OPT_INFILE) continue;	/* Skip options */
 
 			file[A++] = strdup (opt->arg);
 			if (A == n_alloc) {

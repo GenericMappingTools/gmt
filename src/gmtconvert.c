@@ -110,7 +110,7 @@ int GMT_gmtconvert_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S[~]\"search string\"] [-T] [%s] [%s]\n\t[%s] [%s] [%s]\n", GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
-	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<");
@@ -287,8 +287,8 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_gmtconvert_usage (API, GMTAPI_USAGE));/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_gmtconvert_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_gmtconvert_usage (API, GMT_USAGE));/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_gmtconvert_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
@@ -350,7 +350,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 	
 	if (Ctrl->S.active && GMT->current.io.ogr == GMT_OGR_TRUE && (p = strchr (Ctrl->S.pattern, '=')) != NULL) {	/* Want to search for an aspatial value */
 		*p = 0;	/* Skip the = sign */
-		if ((ogr_item = gmt_get_ogr_id (GMT->current.io.OGR, Ctrl->S.pattern)) != GMTAPI_NOTSET) {
+		if ((ogr_item = gmt_get_ogr_id (GMT->current.io.OGR, Ctrl->S.pattern)) != GMT_NOTSET) {
 			ogr_match = true;
 			p++;
 			strcpy (Ctrl->S.pattern, p);	/* Move the value over to the start */

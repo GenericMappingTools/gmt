@@ -58,7 +58,7 @@ int GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<fieldabbrev>,<rec1>,<recN>] [-K] [-L<custom_limits_file> ] [-N]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sd|s|t] [-T<gap>] [-Wc|g|o|s|t|v|x] [-Wc|g|o|s|t|v|x]\n\t[%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_n_OPT);
 
-	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tScan MGD77 files for errors using point-by-point sanity checking,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t\talong-track detection of excessive slopes and comparison of cruise\n");
@@ -291,8 +291,8 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_mgd77sniffer_usage (API, GMTAPI_USAGE));	/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_mgd77sniffer_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_mgd77sniffer_usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_mgd77sniffer_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 

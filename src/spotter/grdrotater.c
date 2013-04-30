@@ -97,7 +97,7 @@ int GMT_grdrotater_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D<rotoutline>] [-N] [%s] [-S] [-T<time>] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] > projpol\n\n", GMT_b_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT);
 
-	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<grid> is a gridded data file in geographic coordinates to be rotated.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set output filename of the new, rotated grid.  The boundary of the\n");
@@ -343,8 +343,8 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_grdrotater_usage (API, GMTAPI_USAGE));	/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_grdrotater_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_grdrotater_usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_grdrotater_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
@@ -464,7 +464,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 	GMT->common.R.active = true;
 	
 	if ((G_rot = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, G->header->inc, \
-		GMT_GRID_DEFAULT_REG, GMTAPI_NOTSET, Ctrl->G.file)) == NULL) Return (API->error);
+		GMT_GRID_DEFAULT_REG, GMT_NOTSET, Ctrl->G.file)) == NULL) Return (API->error);
 
 	/* Precalculate node coordinates in both degrees and radians */
 	grd_x = GMT_grd_coord (GMT, G_rot->header, GMT_X);

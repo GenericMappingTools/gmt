@@ -129,7 +129,7 @@ int GMT_grdgravmag3d_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Q[n<n_pad>]|[pad_dist]|[<w/e/s/n>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<level>] [-fg]\n", GMT_Rgeo_OPT, GMT_V_OPT);
 
-	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tgrdfile_up is the grdfile whose gravity efect is to be computed.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If two grids are provided then the gravity/magnetic efect of the\n");
@@ -320,10 +320,10 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	options = GMT_prep_module_options (API, mode, args);
 	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE)
-		bailout (GMT_grdgravmag3d_usage (API, GMTAPI_USAGE));		/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS)
-		bailout (GMT_grdgravmag3d_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE)
+		bailout (GMT_grdgravmag3d_usage (API, GMT_USAGE));		/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS)
+		bailout (GMT_grdgravmag3d_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
@@ -374,7 +374,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 		}
 
 		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn, inc, \
-			GridA->header->registration, GMTAPI_NOTSET, Ctrl->G.file)) == NULL) Return (API->error);
+			GridA->header->registration, GMT_NOTSET, Ctrl->G.file)) == NULL) Return (API->error);
 
 		GMT_Report (API, GMT_MSG_VERBOSE, "Grid dimensions are nx = %d, ny = %d\n",
 					Gout->header->nx, Gout->header->ny);

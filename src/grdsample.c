@@ -74,7 +74,7 @@ int GMT_grdsample_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdsample <ingrid> -G<outgrid> [%s]\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T] [%s] [%s]\n\t[%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT, GMT_r_OPT);
 
-	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is data set to be resampled.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set the name of the interpolated output grid file.\n");
@@ -198,8 +198,8 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_grdsample_usage (API, GMTAPI_USAGE));	/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_grdsample_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_grdsample_usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_grdsample_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
@@ -246,7 +246,7 @@ int GMT_grdsample (void *V_API, int mode, void *args) {
 	}
 
 	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn, inc, \
-		registration, GMTAPI_NOTSET, Ctrl->G.file)) == NULL) Return (API->error);
+		registration, GMT_NOTSET, Ctrl->G.file)) == NULL) Return (API->error);
 
 	sprintf (format, "Input  grid (%s/%s/%s/%s) nx = %%d ny = %%d dx = %s dy = %s registration = %%d\n", 
 		GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, 

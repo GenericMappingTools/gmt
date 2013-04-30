@@ -129,7 +129,7 @@ int GMT_grd2cpt_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "usage: grd2cpt <grid> [-A[+]<transparency>] [-C<cpt>] [-D[i|o]] [-F[R|r|h|c] [-E<nlevels>] [-I]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L<min_limit>/<max_limit>] [-M] [-N] [-Q[i|o]] [%s]\n\t[-S<z_start>/<z_stop>/<z_inc> or -S<n>] [-T<-|+|=|_>] [%s] [-Z]\n", GMT_Rgeo_OPT, GMT_V_OPT);
 
-	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<grid> is name of one or more grid files.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -332,8 +332,8 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_grd2cpt_usage (API, GMTAPI_USAGE));	/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_grd2cpt_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_grd2cpt_usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_grd2cpt_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 

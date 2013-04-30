@@ -448,7 +448,7 @@ int GMT_grdblend_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdblend [<blendfile> | <grid1> <grid2> ...] -G<outgrid>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t%s %s [-Cf|l|o|u]\n\t[-N<nodata>] [-Q] [%s] [-W] [-Z<scale>] [%s] [%s]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_r_OPT);
 
-	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<blendfile> is an ASCII file (or stdin) with blending parameters for each input grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Each record has 1-3 items: filename [-R<inner_reg>] [<weight>].\n");
@@ -595,8 +595,8 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_grdblend_usage (API, GMTAPI_USAGE));	/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_grdblend_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_grdblend_usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_grdblend_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
@@ -608,7 +608,7 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 	/*---------------------------- This is the grdblend main code ----------------------------*/
 
 	if ((Grid = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc, \
-		GMT_GRID_DEFAULT_REG, GMTAPI_NOTSET, Ctrl->G.file)) == NULL) Return (API->error);
+		GMT_GRID_DEFAULT_REG, GMT_NOTSET, Ctrl->G.file)) == NULL) Return (API->error);
 
 	if ((err = GMT_grd_get_format (GMT, Ctrl->G.file, Grid->header, false)) != GMT_NOERROR){
 		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: %s [%s]\n", GMT_strerror(err), Ctrl->G.file); Return (EXIT_FAILURE);

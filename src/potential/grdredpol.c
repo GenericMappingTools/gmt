@@ -992,7 +992,7 @@ int GMT_grdredpol_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdredpol <anomgrid> -G<rtp_grdfile> [-C<dec>/<dip>] [-E<dip_grd>/<dec_grd>] [-F<m>/<n>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-M<m|r>] [-N] [-W<win_width>] [%s] [-T<year>] [-Z<filter>]\n\t[%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
 
-	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
                 
 	GMT_Message (API, GMT_TIME_NONE, "\t<anomgrid> is the input grdfile with the magnetic anomaly\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Filename for output grid with the RTP solution\n");
@@ -1159,10 +1159,10 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) 
-		bailout (GMT_grdredpol_usage (API, GMTAPI_USAGE));		/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) 
-		bailout (GMT_grdredpol_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) 
+		bailout (GMT_grdredpol_usage (API, GMT_USAGE));		/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) 
+		bailout (GMT_grdredpol_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
@@ -1290,7 +1290,7 @@ int GMT_grdredpol (void *V_API, int mode, void *args) {
 	psi = TWO_PI / Ctrl->F.ncoef_col;
 
 	if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn_new, Gin->header->inc, \
-		Gin->header->registration, GMTAPI_NOTSET, Ctrl->G.file)) == NULL) Return (API->error);
+		Gin->header->registration, GMT_NOTSET, Ctrl->G.file)) == NULL) Return (API->error);
 					
 	if (Ctrl->Z.active) {		/* Create one grid to hold the filter coefficients */
 		double wesn[4], inc[2];
