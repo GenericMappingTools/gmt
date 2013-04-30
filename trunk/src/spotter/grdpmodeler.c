@@ -98,7 +98,7 @@ int GMT_grdpmodeler_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Sa|d|r|w|x|y|X|Y]\n\t[-T<time>] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\n",
 		GMT_Id_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT);
 
-	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<agegrdfile> is a gridded data file in geographic coordinates with crustal ages.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Specify the rotation file to be used (see man page for format).\n");
@@ -250,8 +250,8 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_grdpmodeler_usage (API, GMTAPI_USAGE));	/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_grdpmodeler_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_grdpmodeler_usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_grdpmodeler_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
@@ -307,7 +307,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 	}
 	
 	if ((G_mod = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, NULL, inc, \
-		registration, GMTAPI_NOTSET, Ctrl->G.file)) == NULL) Return (API->error);
+		registration, GMT_NOTSET, Ctrl->G.file)) == NULL) Return (API->error);
 
 	grd_x = GMT_memory (GMT, NULL, G_mod->header->nx, double);
 	grd_y = GMT_memory (GMT, NULL, G_mod->header->ny, double);

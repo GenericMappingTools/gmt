@@ -383,7 +383,7 @@ int GMT_gravfft_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE,"\t[-N%s] [-Q]\n", GMT_FFT_OPT);
 	GMT_Message (API, GMT_TIME_NONE,"\t[-T<te/rl/rm/rw>[+m]] [%s] [-Z<zm>[/<zl>]] [-fg]\n\n", GMT_V_OPT);
 
-	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE,"\ttopo_grd is the input grdfile with topography values\n");
 	GMT_Message (API, GMT_TIME_NONE,"\t-G filename for output netCDF grdfile with gravity [or geoid] values\n");
@@ -463,10 +463,10 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	options = GMT_prep_module_options (API, mode, args);
 	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE)
-		bailout (GMT_gravfft_usage (API, GMTAPI_USAGE));		/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS)
-		bailout (GMT_gravfft_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE)
+		bailout (GMT_gravfft_usage (API, GMT_USAGE));		/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS)
+		bailout (GMT_gravfft_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 

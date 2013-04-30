@@ -36,7 +36,7 @@ int main (int argc, char *argv[]) {
 	struct GMTAPI_CTRL *API = NULL;			/* GMT API control structure */
 
 	int in_grdcut_ID, out_grdcut_ID;
-	char *in_grid = "t.nc", *out_grid = "new.nc", string[GMTAPI_STRLEN];
+	char *in_grid = "t.nc", *out_grid = "new.nc", string[GMT_STR16];
 	double w = 2.0, e = 4.0, s = 1.0, n = 3.0;	/* Hardwired region for test */
 	struct GMT_GRID *Gin = NULL, *Gout = NULL;
 
@@ -48,9 +48,9 @@ int main (int argc, char *argv[]) {
 
 	/* 3. PREPARING SOURCE AND DESTINATION FOR GMT_grdcut */
 	/* 3a. Register the Gin grid to be the source read by grdcut by passing a pointer */
-	if ((in_grdcut_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_DUPLICATE, GMT_IS_SURFACE, GMT_IN, NULL, Gin)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
+	if ((in_grdcut_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_DUPLICATE, GMT_IS_SURFACE, GMT_IN, NULL, Gin)) == GMT_NOTSET) exit (EXIT_FAILURE);
 	/* 3b. Register a grid struct Gout to be the destination allocated and written to by grdcut */
-	if ((out_grdcut_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) exit (EXIT_FAILURE);
+	if ((out_grdcut_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_OUT, NULL, NULL)) == GMT_NOTSET) exit (EXIT_FAILURE);
 
 	/* 4. Create linked options for GMT_grdcut equivalent to "grdcut t.nc -R2/4/2/4 -Gnew.nc -V" */
 

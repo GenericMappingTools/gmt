@@ -1314,7 +1314,7 @@ int GMT_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rect[], double ou
 	uint64_t dim[4] = {1, 1, 2, 2};	/* Just a single data table with one segment with two 2-column records */
 	bool was_R, was_J;
 	double wesn[4];
-	char buffer[GMT_BUFSIZ], in_string[GMTAPI_STRLEN], out_string[GMTAPI_STRLEN];
+	char buffer[GMT_BUFSIZ], in_string[GMT_STR16], out_string[GMT_STR16];
 	struct GMT_DATASET *In = NULL, *Out = NULL;
 
 	if (GMT_is_dnan (GMT->current.proj.lon0)) {
@@ -1336,13 +1336,13 @@ int GMT_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rect[], double ou
 	/* Set up machinery to call mapproject */
 
 	/* Register In as input source via ref */
-	if ((object_ID = GMT_Register_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_REFERENCE, GMT_IS_POINT, GMT_IN, NULL, In)) == GMTAPI_NOTSET) {
+	if ((object_ID = GMT_Register_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_REFERENCE, GMT_IS_POINT, GMT_IN, NULL, In)) == GMT_NOTSET) {
 		return (GMT->parent->error);
 	}
 	if (GMT_Encode_ID (GMT->parent, in_string, object_ID) != GMT_OK) {	/* Make filename with embedded object ID */
 		return (GMT->parent->error);
 	}
-	if ((object_ID = GMT_Register_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_DUPLICATE, GMT_IS_POINT, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) {
+	if ((object_ID = GMT_Register_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_DUPLICATE, GMT_IS_POINT, GMT_OUT, NULL, NULL)) == GMT_NOTSET) {
 		return (GMT->parent->error);
 	}
 	if (GMT_Encode_ID (GMT->parent, out_string, object_ID)) {

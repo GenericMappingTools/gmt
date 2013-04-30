@@ -2507,7 +2507,7 @@ void gmt_echo_command (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_OP
 			GMT_memset (outstring, GMT_BUFSIZ, char);
 		}
 		strcat (outstring, " ");	length++;
-		if (!(opt->option == GMTAPI_OPT_INFILE || opt->option == GMTAPI_OPT_OUTFILE)) {
+		if (!(opt->option == GMT_OPT_INFILE || opt->option == GMT_OPT_OUTFILE)) {
 			outstring[length++] = '-';
 			outstring[length++] = opt->option;
 		}
@@ -3427,7 +3427,7 @@ int GMT_contlabel_save_begin (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G)
 
 	/* Save the lon, lat, angle, text for each annotation to specified file*/
 
-	if ((object_ID = GMT_Register_IO (GMT->parent, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_OUT, NULL, name)) == GMTAPI_NOTSET) {
+	if ((object_ID = GMT_Register_IO (GMT->parent, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_OUT, NULL, name)) == GMT_NOTSET) {
 		return (EXIT_FAILURE);
 	}
 	if ((error = GMT_set_cols (GMT, GMT_OUT, 1)) != GMT_OK) {
@@ -3931,7 +3931,7 @@ struct PSL_CTRL * GMT_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options
 		/* -Uc was given as shorthand for "plot current command line" */
 		strncpy (GMT->current.ps.map_logo_label, gmt_module_name(GMT), GMT_BUFSIZ);
 		for (opt = options; opt; opt = opt->next) {
-			if (opt->option == GMTAPI_OPT_INFILE || opt->option == GMTAPI_OPT_OUTFILE) continue;	/* Skip file names */
+			if (opt->option == GMT_OPT_INFILE || opt->option == GMT_OPT_OUTFILE) continue;	/* Skip file names */
 			txt[2] = opt->option;
 			strcat (GMT->current.ps.map_logo_label, txt);
 			strcat (GMT->current.ps.map_logo_label, opt->arg);

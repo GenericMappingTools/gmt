@@ -1102,7 +1102,7 @@ int gmt_get_ogr_id (struct GMT_OGR *G, char *name)
 {
 	unsigned int k;
 	for (k = 0; k < G->n_aspatial; k++) if (!strcmp (name, G->name[k])) return (k);
-	return (GMTAPI_NOTSET);
+	return (GMT_NOTSET);
 }
 
 void gmt_align_ogr_values (struct GMT_CTRL *GMT)
@@ -5057,7 +5057,7 @@ int gmt_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 
 	int object_ID, col, stop, n_reg, item, error = 0;
 	uint64_t row, seg, seg1, seg2, k;
-	char buffer[GMT_BUFSIZ], in_string[GMTAPI_STRLEN], out_string[GMTAPI_STRLEN];
+	char buffer[GMT_BUFSIZ], in_string[GMT_STR16], out_string[GMT_STR16];
 	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASET *M = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
@@ -5069,7 +5069,7 @@ int gmt_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 
 	n_reg = GMTAPI_n_items (GMT->parent, GMT_IS_DATASET, GMT_OUT, &object_ID);	/* Are there outputs registered already? */
 	if (n_reg == 1) {	/* Yes, must save and unregister, then reregister later */
-		if ((item = GMTAPI_Validate_ID (GMT->parent, GMT_IS_DATASET, object_ID, GMT_OUT)) == GMTAPI_NOTSET) return (GMTAPI_report_error (GMT->parent, error));
+		if ((item = GMTAPI_Validate_ID (GMT->parent, GMT_IS_DATASET, object_ID, GMT_OUT)) == GMT_NOTSET) return (GMTAPI_report_error (GMT->parent, error));
 		GMT_memcpy (&O, GMT->parent->object[item], 1, struct GMTAPI_DATA_OBJECT);
 		GMTAPI_Unregister_IO (GMT->parent, object_ID, GMT_OUT);
 	}
@@ -5077,13 +5077,13 @@ int gmt_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 	/* Determine w/e/s/n via GMT_minmax */
 
 	/* Create option list, register D as input source via ref */
-	if ((object_ID = GMT_Register_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_REFERENCE, GMT_IS_POINT, GMT_IN, NULL, D)) == GMTAPI_NOTSET) {
+	if ((object_ID = GMT_Register_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_REFERENCE, GMT_IS_POINT, GMT_IN, NULL, D)) == GMT_NOTSET) {
 		return (GMT->parent->error);
 	}
 	if (GMT_Encode_ID (GMT->parent, in_string, object_ID) != GMT_OK) {
 		return (GMT->parent->error);	/* Make filename with embedded object ID */
 	}
-	if ((object_ID = GMT_Register_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_DUPLICATE, GMT_IS_POINT, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) {
+	if ((object_ID = GMT_Register_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_DUPLICATE, GMT_IS_POINT, GMT_OUT, NULL, NULL)) == GMT_NOTSET) {
 		return (GMT->parent->error);
 	}
 	if (GMT_Encode_ID (GMT->parent, out_string, object_ID)) {
@@ -5099,10 +5099,10 @@ int gmt_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 	
 	/* Time to reregister the original destination */
 	
-	if ((object_ID = GMT_Register_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, NULL, D)) == GMTAPI_NOTSET) {
+	if ((object_ID = GMT_Register_IO (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_OUT, NULL, D)) == GMT_NOTSET) {
 		return (GMT->parent->error);
 	}
-	if ((item = GMTAPI_Validate_ID (GMT->parent, GMT_IS_DATASET, object_ID, GMT_OUT)) == GMTAPI_NOTSET) {
+	if ((item = GMTAPI_Validate_ID (GMT->parent, GMT_IS_DATASET, object_ID, GMT_OUT)) == GMT_NOTSET) {
 		return (GMTAPI_report_error (GMT->parent, error));
 	}
 	GMT_memcpy (GMT->parent->object[item], &O, 1, struct GMTAPI_DATA_OBJECT);	/* Restore what we had before */
@@ -5441,7 +5441,7 @@ int GMT_write_dataset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type,
 		return (EXIT_FAILURE);
 	}	
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
-		if (table != GMTAPI_NOTSET && (u_table = table) != tbl) continue;	/* Selected a specific table */
+		if (table != GMT_NOTSET && (u_table = table) != tbl) continue;	/* Selected a specific table */
 		if (D->io_mode > GMT_WRITE_TABLE) {	/* Write segments to separate files; must pass original file name in case a template */
 			if ((error = GMT_write_table (GMT, dest, GMT_IS_FILE, D->table[tbl], use_GMT_io, D->io_mode))) return (error);
 		}
@@ -5613,7 +5613,7 @@ int GMT_write_textset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type,
 	}
 
 	for (tbl = 0; tbl < D->n_tables; tbl++) {
-		if (table != GMTAPI_NOTSET && (u_table = table) != tbl) continue;	/* Selected a specific table */
+		if (table != GMT_NOTSET && (u_table = table) != tbl) continue;	/* Selected a specific table */
 		if (D->io_mode > GMT_WRITE_TABLE) {	/* Must pass original file name in case a template */
 			if ((error = gmt_write_texttable (GMT, dest, GMT_IS_FILE, D->table[tbl], D->io_mode))) return (error);
 		}
@@ -6646,7 +6646,7 @@ int gmt_ogr_get_type (char *item)
 	if (!strcmp (item, "string") || !strcmp (item, "STRING")) return (GMT_TEXT);
 	if (!strcmp (item, "datetime") || !strcmp (item, "DATETIME")) return (GMT_DATETIME);
 	if (!strcmp (item, "logical") || !strcmp (item, "LOGICAL")) return (GMT_UCHAR);
-	return (GMTAPI_NOTSET);
+	return (GMT_NOTSET);
 }
 
 int gmt_ogr_get_geometry (char *item)
@@ -6657,7 +6657,7 @@ int gmt_ogr_get_geometry (char *item)
 	if (!strcmp (item, "mline") || !strcmp (item, "MLINE")) return (GMT_IS_MULTILINESTRING);
 	if (!strcmp (item, "poly") || !strcmp (item, "POLY")) return (GMT_IS_POLYGON);
 	if (!strcmp (item, "mpoly") || !strcmp (item, "MPOLY")) return (GMT_IS_MULTIPOLYGON);
-	return (GMTAPI_NOTSET);
+	return (GMT_NOTSET);
 }
 
 void GMT_free_ogr (struct GMT_CTRL *GMT, struct GMT_OGR **G, unsigned int mode)
@@ -6716,7 +6716,7 @@ int GMT_load_aspatial_values (struct GMT_CTRL *GMT, struct GMT_OGR *G)
 	unsigned int k, n;
 	int id;
 	for (k = n = 0; k < GMT->common.a.n_aspatial; k++) {	/* For each item specified in -a */
-		if ((id = gmt_get_ogr_id (G, GMT->common.a.name[k])) == GMTAPI_NOTSET) {
+		if ((id = gmt_get_ogr_id (G, GMT->common.a.name[k])) == GMT_NOTSET) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: No aspatial value found for column %s\n", GMT->common.a.name[k]);
 			GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 		}
@@ -6768,15 +6768,15 @@ int GMT_load_aspatial_string (struct GMT_CTRL *GMT, struct GMT_OGR *G, uint64_t 
 	/* Uses the info in -a and OGR to retrieve the requested aspatial string */
 
 	uint64_t k;
-	int64_t scol = col, id = GMTAPI_NOTSET;
+	int64_t scol = col, id = GMT_NOTSET;
 	size_t len;
 	if (GMT->current.io.ogr != GMT_OGR_TRUE) return (0);		/* No point checking further since file is not GMT/OGR */
 	for (k = 0; k < GMT->common.a.n_aspatial; k++) {	/* For each item specified in -a */
 		if (GMT->common.a.col[k] == scol) id = k;			/* ..that matches the given column */
 	}
-	if (id == GMTAPI_NOTSET) return (0);
+	if (id == GMT_NOTSET) return (0);
 	id = gmt_get_ogr_id (G, GMT->common.a.name[id]);
-	if (id == GMTAPI_NOTSET) return (0);
+	if (id == GMT_NOTSET) return (0);
 	len = strlen (G->value[id]);
 	GMT_memset (out, GMT_BUFSIZ, char);
 	if (G->value[id][0] == '\"' && G->value[id][len-1] == '\"')	/* Skip opening and closing quotes */

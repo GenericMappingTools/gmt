@@ -111,7 +111,7 @@ int GMT_dimfilter_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Q<cols>]\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T] [%s] [%s]\n\t[%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT);
 
-	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is grid to be filtered.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tDistance flag determines how grid (x,y) maps into distance units of filter width as follows:\n");
@@ -405,8 +405,8 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 	if (API == NULL) return (GMT_NOT_A_SESSION);
         options = GMT_prep_module_options (API, mode, args);	if (API->error) bailout (API->error);   /* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_dimfilter_usage (API, GMTAPI_USAGE));/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_dimfilter_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_dimfilter_usage (API, GMT_USAGE));/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_dimfilter_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
@@ -460,7 +460,7 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 		z_min = Gin->header->z_min;	z_max = Gin->header->z_max;
 
 		if ((Gout = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, wesn, inc, \
-			!one_or_zero, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
+			!one_or_zero, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 
 		/* We can save time by computing a weight matrix once [or once pr scanline] only
 		   if new grid spacing is multiple of old spacing */

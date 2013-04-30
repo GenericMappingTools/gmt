@@ -135,7 +135,7 @@ int GMT_grdmath_usage (struct GMTAPI_CTRL *API, int level)
 		GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_r_OPT, GMT_s_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\tA B op C op D op ... = outfile\n\n");
 
-	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE,
 		"\tA, B, etc are grid files, constants, or symbols (see below).\n"
@@ -192,7 +192,7 @@ int GMT_grdmath_parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct G
 			case '<':	/* Input files */
 				if (opt->arg[0] == '=' && !opt->arg[1]) {
 					missing_equal = false;
-					if (opt->next && opt->next->option == GMTAPI_OPT_INFILE) {
+					if (opt->next && opt->next->option == GMT_OPT_INFILE) {
 						Ctrl->Out.active = true;
 						if (opt->next->arg) Ctrl->Out.file = strdup (opt->next->arg);
 					}
@@ -243,7 +243,7 @@ int GMT_grdmath_parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct G
 struct GMT_GRID * alloc_stack_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Template)
 {	/* Allocate a new GMT_GRID structure based on dimensions etc of the Template */
 	struct GMT_GRID *New = GMT_Create_Data (GMT->parent, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Template->header->wesn, Template->header->inc, \
-		Template->header->registration, GMTAPI_NOTSET, NULL);
+		Template->header->registration, GMT_NOTSET, NULL);
 	return (New);
 }
 
@@ -3225,7 +3225,7 @@ int decode_grd_argument (struct GMT_CTRL *GMT, struct GMT_OPTION *opt, double *v
 	bool possible_number = false;
 	double tmp = 0.0;
 
-	if (opt->option == GMTAPI_OPT_OUTFILE) return GRDMATH_ARG_IS_SAVE;	/* Time to save stack; arg is filename */
+	if (opt->option == GMT_OPT_OUTFILE) return GRDMATH_ARG_IS_SAVE;	/* Time to save stack; arg is filename */
 
 	/* Check if argument is operator */
 
@@ -3363,8 +3363,8 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_grdmath_usage (API, GMTAPI_USAGE));/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_grdmath_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_grdmath_usage (API, GMT_USAGE));/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_grdmath_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
@@ -3386,9 +3386,9 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 	/* Internally replace the = [file] sequence with an output option */
 
 	for (opt = options; opt; opt = opt->next) {
-		if (opt->option == GMTAPI_OPT_INFILE && !strcmp (opt->arg, "=")) {	/* Found the output sequence */
+		if (opt->option == GMT_OPT_INFILE && !strcmp (opt->arg, "=")) {	/* Found the output sequence */
 			if (opt->next) {
-				ptr = GMT_Make_Option (API, GMTAPI_OPT_OUTFILE, opt->next->arg);
+				ptr = GMT_Make_Option (API, GMT_OPT_OUTFILE, opt->next->arg);
 				opt = opt->next;	/* Now we must skip that option */
 			}
 			else {	/* Standard output */
@@ -3396,10 +3396,10 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 				Return (EXIT_FAILURE);
 			}
 		}
-		else if (opt->option == GMTAPI_OPT_INFILE && (k = gmt_find_macro (opt->arg, n_macros, M)) != GMTAPI_NOTSET) {
+		else if (opt->option == GMT_OPT_INFILE && (k = gmt_find_macro (opt->arg, n_macros, M)) != GMT_NOTSET) {
 			/* Add in the replacement commands from the macro */
 			for (kk = 0; kk < M[k].n_arg; kk++) {
-				ptr = GMT_Make_Option (API, GMTAPI_OPT_INFILE, M[k].arg[kk]);
+				ptr = GMT_Make_Option (API, GMT_OPT_INFILE, M[k].arg[kk]);
 				if (ptr == NULL || (list = GMT_Append_Option (API, ptr, list)) == NULL) Return (API->error);
 			}
 			continue;
@@ -3418,7 +3418,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 	/* Read the first file we encounter so we may allocate space */
 
 	for (opt = list; !G_in && opt; opt = opt->next) {	/* Look for a grid file, if given */
-		if (!(opt->option == GMTAPI_OPT_INFILE))	continue;	/* Skip command line options and output file */
+		if (!(opt->option == GMT_OPT_INFILE))	continue;	/* Skip command line options and output file */
 		if (opt->next && !(strncmp (opt->next->arg, "LDIST", 5U) && strncmp (opt->next->arg, "PDIST", 5U) && strncmp (opt->next->arg, "INSIDE", 6U))) continue;	/* Not grids */
 		/* Filenames,  operators, some numbers and = will all have been flagged as files by the parser */
 		status = decode_grd_argument (GMT, opt, &value, localhashnode);		/* Determine what this is */
@@ -3455,7 +3455,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 	else if (GMT->common.R.active && Ctrl->I.active) {	/* Must create from -R -I [-r] */
 		/* Completely determine the header for the new grid; croak if there are issues.  No memory is allocated here. */
 		if ((info.G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, NULL, Ctrl->I.inc, \
-			GMT_GRID_DEFAULT_REG, GMTAPI_NOTSET, NULL)) == NULL) Return (API->error);
+			GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 	}
 	else {
 		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Expression must contain at least one grid file or -R, -I\n");
@@ -3531,7 +3531,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 		/* First check if we should skip optional arguments */
 
 		if (strchr ("IMNRVbfnr-" GMT_OPT("F"), opt->option)) continue;
-		/* if (opt->option == GMTAPI_OPT_OUTFILE) continue; */	/* We do output after the loop */
+		/* if (opt->option == GMT_OPT_OUTFILE) continue; */	/* We do output after the loop */
 
 		op = decode_grd_argument (GMT, opt, &value, localhashnode);
 

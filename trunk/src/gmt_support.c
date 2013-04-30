@@ -2622,7 +2622,7 @@ struct GMT_PALETTE * GMT_Get_CPT (struct GMT_CTRL *GMT, char *file, enum GMT_enu
 		P = GMT_Read_Data (GMT->parent, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, file, NULL);
 	}
 	else {	/* Create a roughly equidistant, continuous 16-level CPT on the fly */
-		char out_string[GMTAPI_STRLEN], buffer[GMT_BUFSIZ], *master = NULL;
+		char out_string[GMT_STR16], buffer[GMT_BUFSIZ], *master = NULL;
 		int object_ID;
 		double noise;
 
@@ -2635,7 +2635,7 @@ struct GMT_PALETTE * GMT_Get_CPT (struct GMT_CTRL *GMT, char *file, enum GMT_enu
 			return (NULL);
 		}
 		/* Here it should be safe to let makecpt create a CPT for us */
-		if ((object_ID = GMT_Register_IO (GMT->parent, GMT_IS_CPT, GMT_IS_DUPLICATE, GMT_IS_NONE, GMT_OUT, NULL, NULL)) == GMTAPI_NOTSET) {	/* Register output */
+		if ((object_ID = GMT_Register_IO (GMT->parent, GMT_IS_CPT, GMT_IS_DUPLICATE, GMT_IS_NONE, GMT_OUT, NULL, NULL)) == GMT_NOTSET) {	/* Register output */
 			return (NULL);
 		}
 		if (GMT_Encode_ID (GMT->parent, out_string, object_ID)) {	/* Make filename with embedded object ID */
@@ -9854,11 +9854,11 @@ int gmt_find_macro (char *arg, unsigned int n_macros, struct MATH_MACRO *M)
 
 	unsigned int n;
 
-	if (n_macros == 0 || !M) return (GMTAPI_NOTSET);
+	if (n_macros == 0 || !M) return (GMT_NOTSET);
 
 	for (n = 0; n < n_macros; n++) if (!strcmp (arg, M[n].name)) return (n);
 
-	return (GMTAPI_NOTSET);
+	return (GMT_NOTSET);
 }
 
 void gmt_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, struct MATH_MACRO **M)

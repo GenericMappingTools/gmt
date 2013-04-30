@@ -151,7 +151,7 @@ int GMT_mgd77track_usage (struct GMTAPI_CTRL *API, int level, struct MGD77TRACK_
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Sb<stopdist>[<unit>]] [-TT|t|d<ms,mc,mfs,mf,mfc>] [%s]\n\t[%s] [-W<pen>] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s]\n\n", GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
      
-	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
              
 	MGD77_Cruise_Explain (API->GMT);
 	GMT_Option (API, "J-,R");
@@ -572,8 +572,8 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
 	Ctrl = New_mgd77track_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if (!options || options->option == GMTAPI_OPT_USAGE) Return (GMT_mgd77track_usage (API, GMTAPI_USAGE, Ctrl));	/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) Return (GMT_mgd77track_usage (API, GMTAPI_SYNOPSIS, Ctrl));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) Return (GMT_mgd77track_usage (API, GMT_USAGE, Ctrl));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) Return (GMT_mgd77track_usage (API, GMT_SYNOPSIS, Ctrl));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 

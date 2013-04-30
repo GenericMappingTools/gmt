@@ -99,7 +99,7 @@ int GMT_pslegend_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\tReads legend layout information from <infofile> [or stdin].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t(See manual page for more information and <infofile> format).\n");
 
-	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Set position and size of legend box.  Prepend x if coordinates are projected;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   if so the -R -J options only required if -O is not given.  Append the justification\n");
@@ -330,7 +330,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	char tw[GMT_TEXT_LEN256], jj[GMT_TEXT_LEN256], sarg[GMT_TEXT_LEN256], txtcolor[GMT_TEXT_LEN256] = {""}, buffer[GMT_BUFSIZ];
 	char bar_cpt[GMT_TEXT_LEN256], bar_gap[GMT_TEXT_LEN256], bar_height[GMT_TEXT_LEN256], bar_opts[GMT_BUFSIZ], *opt = NULL;
 	char A[GMT_TEXT_LEN32], B[GMT_TEXT_LEN32], C[GMT_TEXT_LEN32];
-	char *line = NULL, string[GMTAPI_STRLEN], save_EOF;
+	char *line = NULL, string[GMT_STR16], save_EOF;
 #ifdef DEBUG
 	int guide = 0;
 #endif
@@ -359,8 +359,8 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) bailout (GMT_pslegend_usage (API, GMTAPI_USAGE));	/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) bailout (GMT_pslegend_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_pslegend_usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_pslegend_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
@@ -897,7 +897,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							F->coord[GMT_X][0] = x_off + off_ss-x;	F->coord[GMT_Y][0] = y0;
 							F->coord[GMT_X][1] = x_off + off_ss+x;	F->coord[GMT_Y][1] = y0;
 							Front->n_records = F->n_rows = 2;
-							if ((object_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REFERENCE, GMT_IS_LINE, GMT_IN, NULL, Front)) == GMTAPI_NOTSET) {
+							if ((object_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REFERENCE, GMT_IS_LINE, GMT_IN, NULL, Front)) == GMT_NOTSET) {
 								Return (API->error);
 							}
 							if (GMT_Encode_ID (API, string, object_ID) != GMT_OK) {	/* Make filename with embedded object ID */
@@ -1132,7 +1132,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 
 	if (S[SYM] && S[SYM]->n_rows) {
 		/* Create option list, register D[SYM] as input source */
-		if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REFERENCE, GMT_IS_POINT, GMT_IN, NULL, D[SYM])) == GMTAPI_NOTSET) {
+		if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REFERENCE, GMT_IS_POINT, GMT_IN, NULL, D[SYM])) == GMT_NOTSET) {
 			Return (API->error);
 		}
 		if (GMT_Encode_ID (API, string, object_ID) != GMT_OK) {
@@ -1146,7 +1146,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	}
 	if (S[TXT] && S[TXT]->n_rows) {
 		/* Create option list, register D[TXT] as input source */
-		if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REFERENCE, GMT_IS_NONE, GMT_IN, NULL, D[TXT])) == GMTAPI_NOTSET) {
+		if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REFERENCE, GMT_IS_NONE, GMT_IN, NULL, D[TXT])) == GMT_NOTSET) {
 			Return (API->error);
 		}
 		if (GMT_Encode_ID (API, string, object_ID) != GMT_OK) {
@@ -1159,7 +1159,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	}
 	if (S[PAR] && S[PAR]->n_rows) {
 		/* Create option list, register D[PAR] as input source */
-		if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REFERENCE, GMT_IS_NONE, GMT_IN, NULL, D[PAR])) == GMTAPI_NOTSET) {
+		if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REFERENCE, GMT_IS_NONE, GMT_IN, NULL, D[PAR])) == GMT_NOTSET) {
 			Return (API->error);
 		}
 		if (GMT_Encode_ID (API, string, object_ID) != GMT_OK) {

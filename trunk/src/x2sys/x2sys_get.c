@@ -88,7 +88,7 @@ int GMT_x2sys_get_usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_get -T<TAG> [-C] [-D] [-F<fflags>] [-G] [-L[+][list]] [-N<nflags>]\n\t[%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
 
-	if (level == GMTAPI_SYNOPSIS) return (EXIT_FAILURE);
+	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Report center of each tile with tracks instead [Default is track files].\n");
@@ -213,10 +213,10 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) bailout (API->error);	/* Set or get option list */
 
-	if (!options || options->option == GMTAPI_OPT_USAGE) 
-		bailout (GMT_x2sys_get_usage (API, GMTAPI_USAGE));	/* Return the usage message */
-	if (options->option == GMTAPI_OPT_SYNOPSIS) 
-		bailout (GMT_x2sys_get_usage (API, GMTAPI_SYNOPSIS));	/* Return the synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) 
+		bailout (GMT_x2sys_get_usage (API, GMT_USAGE));	/* Return the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) 
+		bailout (GMT_x2sys_get_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
@@ -377,7 +377,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 			if (!Ctrl->D.active) {
 				printf ("# Search command: %s", gmt_module_name(GMT));
 				for (opt = options; opt; opt = opt->next)
-					(opt->option == GMTAPI_OPT_INFILE) ? printf (" %s", opt->arg) : printf (" -%c%s", opt->option, opt->arg);
+					(opt->option == GMT_OPT_INFILE) ? printf (" %s", opt->arg) : printf (" -%c%s", opt->option, opt->arg);
 				printf ("\n#track_ID%s", GMT->current.setting.io_col_separator);
 				for (ii = 0; ii < (s->n_fields-1); ii++)
 					printf ("%s%s", s->info[ii].name, GMT->current.setting.io_col_separator);
