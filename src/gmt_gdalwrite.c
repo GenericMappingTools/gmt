@@ -164,7 +164,7 @@ int GMT_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GDALWRITE_CTRL *prh
 	}
 
 	/* Use compression with GeoTiff driver */
-	if (!stricmp(pszFormat,"GTiff")) {
+	if (!strcmp(pszFormat,"GTiff")) {
 		papszOptions = CSLAddString( papszOptions, "COMPRESS=DEFLATE" ); 
 		/* tiles are less efficient in small grids (padding) and are not
 		 * supported everywhere, when nx < tile_width || ny < tile_height */
