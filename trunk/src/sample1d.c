@@ -167,7 +167,7 @@ int GMT_sample1d_parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct
 					case 'p': Ctrl->A.mode = GMT_TRACK_FILL_P; break;
 					case 'r': Ctrl->A.mode = GMT_TRACK_SAMPLE_FIX; break;
 					case 'R': Ctrl->A.mode = GMT_TRACK_SAMPLE_ADJ; break;
-					default: GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G option: Bad modifier %c\n", opt->arg[0]); n_errors++; break;
+					default: GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -A option: Bad modifier %c\n", opt->arg[0]); n_errors++; break;
 				}
 				if (strstr (opt->arg, "+l")) Ctrl->A.loxo = true;
 				break;
