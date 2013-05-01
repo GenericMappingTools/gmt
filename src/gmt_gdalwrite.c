@@ -43,19 +43,19 @@ int GMT_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GDALWRITE_CTRL *prh
 	double adfGeoTransform[6] = {0,1,0,0,0,1}; 
 	char *pszSRS_WKT = NULL;
 	OGRSpatialReferenceH hSRS;
-	GDALDatasetH	hDstDS, hOutDS;
-	GDALDriverH	hDriver, hDriverOut;
-	GDALRasterBandH hBand;
-	GDALColorTableH	hColorTable = NULL;
-	GDALColorEntry	sEntry;
-	GDALProgressFunc    pfnProgress = GDALTermProgress;
+	GDALDatasetH     hDstDS, hOutDS;
+	GDALDriverH      hDriver, hDriverOut;
+	GDALRasterBandH  hBand;
+	GDALColorTableH  hColorTable = NULL;
+	GDALColorEntry   sEntry;
+	GDALProgressFunc pfnProgress = GDALTermProgress;
 
-	int	nx, ny, i, nn;
-	int	typeCLASS, nColors, n_byteOffset, n_bands, registration = 1;
-	int	is_geog = 0;
-	void	*data;
+	int  nx, ny, i, nn;
+	int  typeCLASS, nColors, n_byteOffset, n_bands, registration = 1;
+	int  is_geog = 0;
+	void *data;
 	unsigned char *outByte = NULL, *tmpByte;
-	float	*ptr;
+	float *ptr;
 
 	pszFormat = prhs->driver;
 	adfGeoTransform[0] =  prhs->ULx;
@@ -164,7 +164,7 @@ int GMT_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GDALWRITE_CTRL *prh
 	}
 
 	/* Use compression with GeoTiff driver */
-	if (!strcmp(pszFormat,"GTiff")) {
+	if (!stricmp(pszFormat,"GTiff")) {
 		papszOptions = CSLAddString( papszOptions, "COMPRESS=DEFLATE" ); 
 		/* tiles are less efficient in small grids (padding) and are not
 		 * supported everywhere, when nx < tile_width || ny < tile_height */
