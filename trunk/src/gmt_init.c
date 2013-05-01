@@ -9415,6 +9415,7 @@ struct GMT_CTRL *GMT_begin (struct GMTAPI_CTRL *API, char *session, unsigned int
 #endif
 
 	GMT = New_GMT_Ctrl (session, pad);	/* Allocate and initialize a new common control structure */
+	GMT->parent = API;	/* So we know who's your daddy */
 
 	GMT->PSL = New_PSL_Ctrl ("GMT5");		/* Allocate a PSL control structure */
 	if (!GMT->PSL) {

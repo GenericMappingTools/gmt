@@ -2899,7 +2899,6 @@ void * GMT_Create_Session (char *session, unsigned int pad, unsigned int mode, i
 		free (API);	/* Free API */
 		return_null (API, GMT_MEMORY_ERROR);
 	}
-	API->GMT->parent = API;	/* So we know who's your daddy */
 		
 	/* Allocate memory to keep track of registered data resources */
 	
