@@ -450,6 +450,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 	GMT_memset (wesn, 4, double);
 	if (GMT->common.R.active) GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Specified a subset */
+	GMT_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
 
 	GC = GMT_memory (GMT, NULL, Ctrl->G.n_grids, struct GRD_CONTAINER);
 	value = GMT_memory (GMT, NULL, Ctrl->G.n_grids, double);
@@ -819,6 +820,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	}
 	GMT_free (GMT, value);
 	GMT_free (GMT, GC);
+	GMT_set_pad (GMT, API->pad);	/* Reset to session default pad */
 
 	Return (EXIT_SUCCESS);
 }

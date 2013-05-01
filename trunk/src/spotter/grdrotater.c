@@ -356,6 +356,8 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 	
 	/*---------------------------- This is the grdrotater main code ----------------------------*/
 
+	GMT_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
+
 	/* Check limits and get data file */
 
 	if (Ctrl->In.file) {
@@ -533,6 +535,8 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 	/* Now write rotated grid */
 	
 	GMT_Report (API, GMT_MSG_VERBOSE, "Write reconstructed grid\n");
+
+	GMT_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 
 	sprintf (G_rot->header->remark, "Grid rotated using R[lon lat omega] = %g %g %g", Ctrl->e.lon, Ctrl->e.lat, Ctrl->e.w);
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, G_rot) != GMT_OK) {

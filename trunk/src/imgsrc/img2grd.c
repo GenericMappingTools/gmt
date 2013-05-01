@@ -327,6 +327,8 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the img2grd main code ----------------------------*/
 
+	GMT_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
+
 	/* Set up default settings if not specified */
 
 	if (Ctrl->W.active) imgrange.maxlon = Ctrl->W.value;
@@ -619,6 +621,7 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 	
 	GMT_Report (API, GMT_MSG_VERBOSE, "Created %d by %d Mercatorized grid file.  Min, Max values are %.8g  %.8g\n", Merc->header->nx, Merc->header->ny, Merc->header->z_min, Merc->header->z_max);
 	if (Ctrl->M.active) {	/* Write out the Mercator grid and return, no projection needed */
+		GMT_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Merc) != GMT_OK) {
 			Return (API->error);
 		}

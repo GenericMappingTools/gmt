@@ -240,6 +240,7 @@ int GMT_grdproject (void *V_API, int mode, void *args)
 	/*---------------------------- This is the grdproject main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid\n");
+	GMT_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
 	if ((Ctrl->D.active + Ctrl->E.active) == 0) set_n = true;
 	if (Ctrl->M.active) GMT_err_fail (GMT, GMT_set_measure_unit (GMT, Ctrl->M.unit), "-M");
 	shift_xy = !(Ctrl->C.easting == 0.0 && Ctrl->C.northing == 0.0);
@@ -435,6 +436,7 @@ int GMT_grdproject (void *V_API, int mode, void *args)
 
 		GMT_grd_project (GMT, Rect, Geo, true);
 
+		GMT_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Geo) != GMT_OK) {
 			Return (API->error);
 		}
@@ -512,6 +514,7 @@ int GMT_grdproject (void *V_API, int mode, void *args)
 
 		/* rect xy values are here in GMT projected units chosen by user */
 
+		GMT_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Rect) != GMT_OK) {
 			Return (API->error);
 		}
