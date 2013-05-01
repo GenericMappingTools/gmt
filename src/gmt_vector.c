@@ -1244,7 +1244,10 @@ uint64_t gmt_resample_path_spherical (struct GMT_CTRL *GMT, double **lon, double
 	}
 	
 	if (mode < GMT_TRACK_SAMPLE_FIX) {
-		step_out = (step_out / GMT->current.map.dist[GMT_MAP_DIST].scale) / GMT->current.proj.DIST_M_PR_DEG;	/* Get degrees */
+		if (GMT->current.map.dist[GMT_MAP_DIST].arc)	/* Gave an increment in arc lenght (degree, min, sec) */
+			step_out /= GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Get degrees */
+		else	/* Gave increment in spatial distance (km, meter, etc.) */
+			step_out = (step_out / GMT->current.map.dist[GMT_MAP_DIST].scale) / GMT->current.proj.DIST_M_PR_DEG;	/* Get degrees */
 		return (GMT_fix_up_path (GMT, lon, lat, n_in, step_out, mode));	/* Insert extra points only */
 	}
 	
