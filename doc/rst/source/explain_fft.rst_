@@ -23,20 +23,24 @@
         **+l**: Leave data alone.
 
     Control extension and tapering of data:
-    Use modifiers to control how the extension and tapering are to
-    be performed: **+e** extends the grid by imposing edge-point
-    symmetry [Default], **+m** extends the grid by imposing edge mirror
-    symmetry, while **+n** turns off data extension. Tapering is
-    performed from the data edge to the FFT grid edge [100%]. Change
-    this percentage via **+t**\ *width*. When **+n** is in effect, the
-    tapering is applied instead to the data margins as no extension is
-    available [0%].
+    Use modifiers to control how the extension and tapering are to be performed:
+
+        **+e** extends the grid by imposing edge-point symmetry [Default],
+
+        **+m** extends the grid by imposing edge mirror symmetry
+
+        **+n** turns off data extension.
+
+        Tapering is performed from the data edge to the FFT grid edge [100%].
+        Change this percentage via **+t**\ *width*. When **+n** is in effect,
+        the tapering is applied instead to the data margins as no extension is
+        available [0%].
+
     Control writing of temporary results:
-    For detailed investigation you can write the
-    intermediate grid being passed to the forward FFT; this is likely to
-    have been detrended, extended by point-symmetry along all edges, and
-    tapered. Append **+w**\ [*suffix*\ ] from which output file name(s)
-    will be created (i.e., *ingrid_prefix.ext*)
+    For detailed investigation you can write the intermediate grid being passed
+    to the forward FFT; this is likely to have been detrended, extended by
+    point-symmetry along all edges, and tapered. Append **+w**\ [*suffix*] from
+    which output file name(s) will be created (i.e., *ingrid_prefix.ext*)
     [tapered], where *ext* is your file extension. Finally, you may save
     the complex grid produced by the forward FFT by appending **+z**. By
     default we write the real and imaginary components to
