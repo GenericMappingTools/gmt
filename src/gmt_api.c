@@ -2895,7 +2895,7 @@ void * GMT_Create_Session (char *session, unsigned int pad, unsigned int mode, i
 	API->do_not_exit = mode & 1;	/* if set, then GMT_exit is simply a return; otherwise it is an exit */
 	
 	/* GMT_begin initializes, among onther things, the settings in the user's (or the system's) gmt.conf file */
-	if ((API->GMT = GMT_begin (API, session, pad)) == NULL) {		/* Initializing GMT and PSL machinery failed */
+	if (GMT_begin (API, session, pad) == NULL) {		/* Initializing GMT and PSL machinery failed */
 		free (API);	/* Free API */
 		return_null (API, GMT_MEMORY_ERROR);
 	}
