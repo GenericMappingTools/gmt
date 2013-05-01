@@ -342,8 +342,12 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 		Tout = GMT_create_table (GMT, Din->table[tbl]->n_segments, Din->n_columns, 0, false);
 		Dout->table[tbl] = Tout;
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
-			GMT_memset (nan_flag, Din->n_columns, unsigned char);
 			S = Din->table[tbl]->segment[seg];	/* Current segment */
+			if (S->n_rows < 2) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Warning: Segment %" PRIu64 " in table %" PRIu64 " has < 2 records - skipped as no interpolation is possible\n", seg, tbl);
+				continue;
+			}
+			GMT_memset (nan_flag, Din->n_columns, unsigned char);
 			for (col = 0; col < Din->n_columns; col++) for (row = 0; row < S->n_rows; row++) if (GMT_is_dnan (S->coord[col][row])) nan_flag[col] = true;
 			if (resample_path) {	/* Need distances for path interpolation */
 				dist_in = GMT_dist_array (GMT, S->coord[GMT_X], S->coord[GMT_Y], S->n_rows, true);

@@ -1386,12 +1386,12 @@ void * gmt_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status
 			GMT->current.io.status = GMT_IO_SEGMENT_HEADER;
 			GMT_set_segmentheader (GMT, GMT_OUT, true);	/* Turn on segment headers on output */
 			GMT->current.io.seg_no++;
+			GMT->current.io.segment_header[0] = '\0';
 			if (kind == 1) {
 				/* Just save the header content, not the marker and leading whitespace */
 				strncpy (GMT->current.io.segment_header, GMT_trim_segheader (GMT, line), GMT_BUFSIZ);
 			}
-			else	/* Got a segment break instead - set header to NULL */
-				GMT->current.io.segment_header[0] = '\0';
+			/* else we got a segment break instead - and header was set to NULL */
 			*status = 0;
 			return (NULL);
 		}
@@ -5358,7 +5358,7 @@ int GMT_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, s
 		}
 		if (GMT->current.io.multi_segments[GMT_OUT]) {	/* Want to write segment headers */
 			if (table->segment[seg]->ogr) gmt_build_segheader_from_ogr (GMT, table->segment[seg]);	/* We have access to OGR metadata */
-			if (table->segment[seg]->header) strncpy (GMT->current.io.segment_header, table->segment[seg]->header, GMT_BUFSIZ);
+			if (table->segment[seg]->header) strncpy (GMT->current.io.segment_header, table->segment[seg]->header, GMT_BUFSIZ); else GMT->current.io.segment_header[0] = '\0';
 			GMT_write_segmentheader (GMT, fp, table->segment[seg]->n_columns);
 			if (table->segment[seg]->ogr && GMT->common.a.output) gmt_write_ogr_segheader (GMT, fp, table->segment[seg]);
 		}
@@ -5543,7 +5543,7 @@ int gmt_write_texttable (struct GMT_CTRL *GMT, void *dest, int dest_type, struct
 			}
 		}
 		if (GMT->current.io.multi_segments[GMT_OUT]) {	/* Want to write segment headers */
-			if (table->segment[seg]->header) strncpy (GMT->current.io.segment_header, table->segment[seg]->header, GMT_BUFSIZ);
+			if (table->segment[seg]->header) strncpy (GMT->current.io.segment_header, table->segment[seg]->header, GMT_BUFSIZ); else GMT->current.io.segment_header[0] = '\0';
 			GMT_write_segmentheader (GMT, fp, 0);
 		}
 		if (table->segment[seg]->mode == GMT_WRITE_HEADER) continue;	/* Skip after writing segment header */
