@@ -545,7 +545,8 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 	
 	/*---------------------------- This is the mgd77manage main code ----------------------------*/
 
-	MGD77_Init (GMT, &In);			/* Initialize MGD77 Machinery */
+	GMT_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
+	MGD77_Init (GMT, &In);	/* Initialize MGD77 Machinery */
 
 	/* Default e77_skip_mode will apply header and fix corrections if prefix is Y and set all data bits */
 	
@@ -1577,6 +1578,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 	
 	MGD77_Path_Free (GMT, n_paths, list);
 	MGD77_end (GMT, &In);
+	GMT_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 
 	Return (GMT_OK);
 }

@@ -3382,6 +3382,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 	for (k = 0; k < GRDMATH_STACK_SIZE; k++) stack[k] = GMT_memory (GMT, NULL, 1, struct GRDMATH_STACK);
 	n_macros = gmt_load_macros (GMT, "grdmath.macros", &M);	/* Load in any macros */
 	if (n_macros) GMT_Report (API, GMT_MSG_VERBOSE, "Found and loaded %d user macros.\n", n_macros);
+	GMT_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
 	
 	/* Internally replace the = [file] sequence with an output option */
 
@@ -3551,9 +3552,12 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 			this_stack = nstack - 1;
 			GMT_grd_init (GMT, stack[this_stack]->G->header, options, true);	/* Update command history only */
 			
+			GMT_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
+
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, opt->arg, stack[this_stack]->G) != GMT_OK) {
 				Return (API->error);
 			}
+			GMT_set_pad (GMT, 2U);			/* Ensure space for BCs in case an API passed pad == 0 */
 			stack[this_stack]->alloc_mode = 2;	/* Since it now is registered */
 			if (n_items) nstack--;	/* Pop off the current stack if there is one */
 			new_stack = nstack;

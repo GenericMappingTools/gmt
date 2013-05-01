@@ -356,7 +356,8 @@ int GMT_grdgradient (void *V_API, int mode, void *args)
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input grid\n");
 	GMT_memset (s, 3, double);
-
+	GMT_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
+	
 	if (Ctrl->N.active && Ctrl->N.sigma  != 0.0) sigma_set  = true;
 	if (Ctrl->N.active && Ctrl->N.offset != 0.0) offset_set = true;
 	if (Ctrl->A.active) {	/* Get azimuth in 0-360 range */
@@ -607,6 +608,8 @@ int GMT_grdgradient (void *V_API, int mode, void *args)
 			}
 		}
 	}
+
+	GMT_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 
 	/* Now we write out: */
 
