@@ -1151,6 +1151,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 
 		char line[GMT_BUFSIZ];
 		
+		if (!GMT_is_geographic (GMT, GMT_IN) && Ctrl->Q.unit && strchr (GMT_LEN_UNITS, Ctrl->Q.unit)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg if -Q uses unit */
 		if (GMT_is_geographic (GMT, GMT_IN)) GMT_init_distaz (GMT, Ctrl->Q.unit, 2, GMT_MAP_DIST);	/* Default is m using great-circle distances */
 
 		if (Ctrl->Q.header) {	/* Add line length or polygon area stuff to segment header */
@@ -1195,9 +1196,9 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 					}
 					else {
 						if (poly)
-							sprintf (line, "%c -A%.12g -C%.12g/%.12g %s", GMT->current.setting.io_seg_marker[GMT_OUT], out[GMT_Z], out[GMT_X], out[GMT_Y], kind[handedness]);
+							sprintf (line, "-A%.12g -C%.12g/%.12g %s", out[GMT_Z], out[GMT_X], out[GMT_Y], kind[handedness]);
 						else
-							sprintf (line, "%s -D%.12g -M%.12g/%.12g", S->header, out[GMT_Z], out[GMT_X], out[GMT_Y]);
+							sprintf (line, "-D%.12g -M%.12g/%.12g", out[GMT_Z], out[GMT_X], out[GMT_Y]);
 					}
 					S->header = strdup (line);
 				}
