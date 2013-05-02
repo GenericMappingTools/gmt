@@ -14,7 +14,7 @@ Synopsis
 [ **-C**\ <n/wavelength/mean\_depth/tbw> ] [ **-A**\ *z\_offset* ] [ **-D**\ <density> ]
 [ **-E**\ <n\_terms> ] [ **-F**\ [f\|g\|v\|n\|e] ] [ **-I**\ <wbctk> ]
 **-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][**+a**\ \|\ **d**\ \|\ **h** \|\ **l**][**+e**\ \|\ **n**\ \|\ **m**][**+t**\ *width*][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
-[ **-Q** ] [ **-T**\ <te/rl/rm/rw>[+m] ] [ **-V**\ [*level*] ] [ **-Z**\ <zm>[/<zl>] ]
+[ **-Q** ] [ **-T**\ <te/rl/rm/rw>[+m] ] [ |SYN_OPT-V| ] [ **-Z**\ <zm>[/<zl>] ]
 [ **-fg** ]
 
 |No-spaces|
@@ -36,7 +36,7 @@ Optionally, the model admittance may also be calculated. The horizontal
 dimensions of the grdfiles are assumed to be in meters. Geographical
 grids may be used by specifying the **-fg** option that scales degrees
 to meters. If you have grids with dimensions in km, you could change
-this to meters using `grdedit <grdedit.html>`_ or scale the output with `grdmath <grdmath.html>`_.
+this to meters using `grdedit <grdedit.html>`_ or scale the output with `grdmath <grdmath.html>`__.
 Given the number of choices this program offers, is difficult to state
 what are options and what are required arguments. It depends on what you
 are doing.
@@ -80,9 +80,9 @@ Optional Arguments
 |       **n** = North deflections of the vertical (micro-radian).
 
 **-I**\ *<wbctk>*
-    Use <ingrid2> and <topo\_grd> to estimate admittance\|coherence and
+    Use <ingrid2> and <topo_grd> to estimate admittance\|coherence and
     write it to stdout (-G ignored if set). This grid should contain
-    gravity or geoid for the same region of <topo\_grd>. Default
+    gravity or geoid for the same region of <topo_grd>. Default
     computes admittance. Output contains 3 or 4 columns. Frequency
     (wavelength), admittance (coherence) one sigma error bar and,
     optionally, a theoretical admittance. Append dataflags (one to
@@ -132,8 +132,9 @@ Optional Arguments
 Grid Distance Units
 -------------------
 
-If the grid does not have meter as the horizontal unit, append **+u**\ *unit* to the input file name to convert from the
-specified unit to meter.  If your grid is geographic, convert distances to meters by supplying **-fg** instead.
+If the grid does not have meter as the horizontal unit, append **+u**\ *unit*
+to the input file name to convert from the specified unit to meter.  If your
+grid is geographic, convert distances to meters by supplying **-fg** instead.
 
 Considerations
 --------------
@@ -149,10 +150,12 @@ Examples
 
 To compute the effect of the water layer above the bat.grd bathymetry
 using 2700 and 1035 for the densities of crust and water and writing the
-result on water\_g.grd (computing up to the fourth power of bathymetry
+result on water_g.grd (computing up to the fourth power of bathymetry
 in Parker expansion):
 
-    gravfft bat.grd -D1665 -Gwater\_g.grd -E4
+   ::
+
+    gravfft bat.grd -D1665 -Gwater_g.grd -E4
 
 Now subtract it to your free-air anomaly faa.grd and you’ll get the
 Bouguer anomaly. You may wonder why we are subtracting and not adding.
@@ -162,7 +165,9 @@ dense than the rocks below. The answer relyies on the way gravity
 effects are computed by the Parker's method and practical aspects of
 using the FFT.
 
-    grdmath faa.grd water\_g.grd SUB = bouguer.grd
+   ::
+
+    grdmath faa.grd water_g.grd SUB = bouguer.grd
 
 Want an MBA anomaly? Well compute the crust mantle contribution and add
 it to the sea-bottom anomaly. Assuming a 6 km thick crust of density
@@ -174,15 +179,21 @@ didn't need to do that before because mean water depth was computed
 directly from data. (notice also the negative sign of the argument to
 **-A**, remember z positive up):
 
-    gravfft bat.grd -D600 -Gmoho\_g.grd -A-6000
+   ::
+
+    gravfft bat.grd -D600 -Gmoho_g.grd -A-6000
 
 Now, add it to the sea-bottom anomaly to obtain the MBA anomaly. That is:
 
-    grdmath water\_g.grd moho\_g.grd ADD = mba.grd
+   ::
+
+    grdmath water_g.grd moho_g.grd ADD = mba.grd
 
 To compute the Moho gravity effect of an elastic plate bat.grd with Te =
 7 km, density of 2700, over a mantle of density 3300, at an averge depth
 of 9 km
+
+   ::
 
     gravfft bat.grd -Gelastic.grd -T7000/2700/3300/1035+m -Z9000
 
@@ -190,11 +201,11 @@ If you add now the sea-bottom and Moho’s effects, you’ll get the full
 gravity response of your isostatic model. We will use here only the
 first term in Parker expansion (default).
 
-    gravfft bat.grd -D1665 -Gwater\_g.grd
+   ::
 
+    gravfft bat.grd -D1665 -Gwater_g.grd
     gravfft bat.grd -Gelastic.grd -T7000/2700/3300/1035+m -Z9000
-
-    grdmath water\_g.grd elastic.grd ADD = model.grd
+    grdmath water_g.grd elastic.grd ADD = model.grd
 
 The same result can be obtained directly by the next command. However,
 PAY ATTENTION to the following. I don't yet know if it's because of a
@@ -203,18 +214,24 @@ the previous commands only give the same result if **-E**\ 1 (the
 default) is used. For higher powers of bathymetry in Parker expansion,
 only the above example seams to give the correct result.
 
+   ::
+
     gravfft bat.grd -Gmodel.grd -T7000/2700/3300/1035 -Z9000
 
 And what would be the geoid anomaly produced by a load at 50 km depth,
 below the a region whose bathymetry is given by bat.grd, a Moho at 9 km
 depth and the same densities as before?
 
-    gravfft topo.grd -Gswell\_geoid.grd -T7000/2700/3300/1035 -Fg -Z9000/50000 -S
+   ::
+
+    gravfft topo.grd -Gswell_geoid.grd -T7000/2700/3300/1035 -Fg -Z9000/50000 -S
 
 To compute the admittance between the topo.grd bathymetry and faa.grd
 free-air anomaly grid using the elastic plate model of a crust of 6 km
 mean thickness with 10 km efective elastic thickness in a region of 3 km
 mean water depth:
+
+   ::
 
     gravfft topo.grd faa.grd -It -T10000/2700/3300/1035 -Z9000
 
@@ -223,10 +240,14 @@ geoid grid with the "loading from below" (LFB) model with the same as
 above and sub-surface load at 40 km, but assuming now the grids are in
 geographic and we want wavelengths instead of frequency:
 
+   ::
+
     gravfft topo.grd geoid.grd -Ibw -T10000/2700/3300/1035 -Z9000/40000 -fg
 
 To compute the gravity theoretical admittance of a LFB along a 1000 km
 long profile using the same parameters as above
+
+   ::
 
     gravfft -C400/5000/3000/b -T10000/2700/3300/1035 -Z9000/40000
 
@@ -242,4 +263,4 @@ See Also
 --------
 
 `gmt <../../gmt.html>`_, `grdfft <../../grdfft.html>`_,
-`grdmath <../../grdmath.html>`_, `grdproject <../../grdproject.html>`_
+`grdmath <../../grdmath.html>`__, `grdproject <../../grdproject.html>`_

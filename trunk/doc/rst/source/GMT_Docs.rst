@@ -6,7 +6,7 @@
 
 **Pål (Paul) Wessel**
 
-**SOEST, University of Hawai’i at Mānoa**
+**SOEST, University of Hawai'i at Mānoa**
 
 **Walter H. F. Smith**
 
@@ -120,7 +120,7 @@ The EOS articles on *GMT* are
 
 -  Wessel, P., and W. H. F. Smith, New version of the Generic Mapping
    Tools released, *EOS Trans. Amer. Geophys. U. electronic supplement*,
-   http://www.agu.org/eos\_elec/95154e.html, 1995.
+   http://www.agu.org/eos_elec/95154e.html, 1995.
 
 -  Wessel, P., and W. H. F. Smith, Free software helps map and display
    data, *EOS Trans. Amer. Geophys. U.*, vol. 72 (41), pp. 441, 445-446, 1991.
@@ -137,7 +137,7 @@ published, such as
    Splines in Tension, *Geophysics*, vol. 55 (3), pp. 293–305, 1990
    [`surface.c <surface.html>`_].
 
--  Wessel, P., A General-purpose Green’s Function-based Interpolator,
+-  Wessel, P., A General-purpose Green's Function-based Interpolator,
    *Computers & Geosciences*, vol. 35, pp. 1247–1254, 2009
    [`greenspline.c <greenspline.html>`_].
 
@@ -146,7 +146,7 @@ published, such as
    [**x2sys** supplement].
 
 -  Wessel, P. and J. M. Becker, Interpolation using a Generalized
-   Green’s Function for a Spherical Surface Spline in Tension, *Geophys.
+   Green's Function for a Spherical Surface Spline in Tension, *Geophys.
    J. Int.*, vol. 174, pp. 21–28, 2008
    [`greenspline.c <greenspline.html>`_].
 
@@ -154,19 +154,19 @@ Finally, *GMT* includes some code supplied by others, in particular the
 Triangle code used for Delaunay triangulation. Its author, Jonathan
 Shewchuk, says
 
-    “If you use Triangle, and especially if you use it to accomplish
+    "If you use Triangle, and especially if you use it to accomplish
     real work, I would like very much to hear from you. A short letter
     or email (to jrs@cs.cmu.edu) describing how you use Triangle will
     mean a lot to me. The more people I know are using this program, the
     more easily I can justify spending time on improvements and on the
     three-dimensional successor to Triangle, which in turn will benefit
-    you.”
+    you."
 
 A few *GMT* users take the time to write us letters, telling us of the
 difference *GMT* is making in their work. We appreciate receiving these
 letters. On days when we wonder why we ever released *GMT* we pull these
 letters out and read them. Seriously, as financial support for
-*GMT* depends on how well we can “sell” the idea to funding agencies and
+*GMT* depends on how well we can "sell" the idea to funding agencies and
 our superiors, letter-writing is one area where *GMT* users can affect
 such decisions by supporting the *GMT* project.
 
@@ -216,8 +216,8 @@ rapid, and numerous releases have seen the light of day since the early
 versions. For a detailed history of the changes from release to release,
 see file ``ChangeLog`` in the main *GMT* directory. For a nightly snapshot of ongoing
 activity, see the online page. For a historical perspective of the
-origins and development of *GMT* see the video podcast “20 Years with
-GMT – The Generic Mapping Tools” produced following a seminar given by
+origins and development of *GMT* see the video podcast "20 Years with
+GMT – The Generic Mapping Tools" produced following a seminar given by
 Paul Wessel on the 20th anniversary of *GMT*; a link is available on the
 *GMT* website.
 
@@ -239,7 +239,7 @@ eliminated the need for the **-m** option. Our *PostScript* library
 and produce shorter and more compact *PostScript*. However, the big news
 is for developers who wish to leverage *GMT* in their own applications.
 We have completely revamped the code base so that high-level
-*GMT* functionality is now accessible via *GMT* “modules”. These are
+*GMT* functionality is now accessible via *GMT* "modules". These are
 high-level functions named after their corresponding programs (.e.g.,
 ``GMT_grdimage``) that contains all of the functionality of that program
 within the function. While currently callable from C/C++ only, we are
@@ -309,7 +309,7 @@ Below is a list of improvements that affect several
 
 #. Programs that read data tables can now process the aspatial metadata
    in OGR/GMT files with the new **-a** option. These are produced by
-   **ogr2ogr** (a GDAL tool) when selecting the -f “GMT” output
+   **ogr2ogr** (a GDAL tool) when selecting the -f "GMT" output
    format. See Appendix `P. The GMT Vector Data Format for OGR Compatibility`_
    for an explanation of the OGR/GMT file format.
    Because all GIS information is encoded via *GMT* comment lines these
@@ -340,15 +340,15 @@ Below is a list of improvements that affect several
 
 #. There is new *GMT*  defaults
    parameters that control which algorithms to use for Fourier
-   transforms (GMT\_FFT) and triangulation (GMT\_TRIANGULATE).
+   transforms (GMT_FFT) and triangulation (GMT_TRIANGULATE).
 
 #. Great circle distance approximations can now be fine-tuned via new
    *GMT* default parameters
-   PROJ\_MEAN\_RADIUS and PROJ\_AUX\_LATITUDE. Geodesics are now even
+   PROJ_MEAN_RADIUS and PROJ_AUX_LATITUDE. Geodesics are now even
    more accurate by using the Vincenty [1975] algorithm instead of
-   Rudoe’s method.
+   Rudoe's method.
 
-#. New parameter EXTRAPOLATE\_VAL controls what splines should do if
+#. New parameter EXTRAPOLATE_VAL controls what splines should do if
    requested to extrapolate beyond the given data domain.
 
 #. *GMT* 5 only produces *PostScript* and no longer has a setting for
@@ -385,7 +385,7 @@ Below is a list of improvements that affect several
    outline pens. In the past, only
    `pstext <pstext.html>`_ could plot outline fonts via
    **-S**\ *pen*. Now, any text can be an outline text by manipulating
-   the corresponding FONT defaults (e.g., **FONT\_TITLE**).
+   the corresponding FONT defaults (e.g., **FONT_TITLE**).
 
 #. All color or fill specifications may append @\ *transparency* to
    change the PDF transparency level for that item. See **-t** for
@@ -429,7 +429,7 @@ Here is a list of recent enhancements to specific programs:
    **-Ts**\ *dz* which returns a symmetrical range about zero.
 
 #. `grdmask <grdmask.html>`_ has new option
-   **-Ni**\ :math:`|`\ I\ :math:`|`\ p\ :math:`|`\ P to set inside of
+   **-Ni**\ \|\ I\ \|\ p\ \|\ P to set inside of
    polygons to the polygon IDs. These may come from OGR aspatial values,
    segment head **-L**\ ID, or a running number, starting at a specified
    origin [0]. Now correctly handles polygons with perimeters and holes.
@@ -547,7 +547,7 @@ established scripts and the habits of many
 situation we have introduced a configuration that allows
 `GMT <http://gmt.soest.hawaii.edu>`_ to tolerate and process
 obsolete program syntax (to the extent possible). To activate you must
-make sure **GMT\_COMPAT** is not set to “no”in your ``ConfigUser.cmake`` file. When not
+make sure **GMT_COMPAT** is not set to "no"in your ``ConfigUser.cmake`` file. When not
 running in compatibility mode any obsolete syntax will be considered as
 errors. We recommend that users with prior
 `GMT <http://gmt.soest.hawaii.edu>`_ 4 experience run
@@ -567,8 +567,8 @@ correctly with a warning under compatibility mode:
    organized the default parameters logically by group and renamed
    several to be easier to remember and to group. Old and new names can
    be found in Tables [tbl:obsoletedefs1] and [tbl:obsoletedefs2]. In
-   addition, a few defaults are no longer recognized, such as N\_COPIES,
-   PS\_COPIES, DOTS\_PR\_INCH, GMT\_CPTDIR, PS\_DPI, and PS\_EPS,
+   addition, a few defaults are no longer recognized, such as N_COPIES,
+   PS_COPIES, DOTS_PR_INCH, GMT_CPTDIR, PS_DPI, and PS_EPS,
    TRANSPARENCY. This also means the old common option **-c** for
    specifying *PostScript* copies is no longer available.
 
@@ -579,7 +579,7 @@ correctly with a warning under compatibility mode:
 #. **Contour labels**: The modifiers **+k**\ *fontcolor* and
    **+s**\ *fontsize* are obsolete, now being part of **+f**\ *font*.
 
-#. **Ellipsoids**: Assigning **PROJ\_ELLIPSOID** a file name is
+#. **Ellipsoids**: Assigning **PROJ_ELLIPSOID** a file name is
    deprecated, use comma-separated parameters *a, f\ :math:`^{-1}`*
    instead.
 
@@ -692,7 +692,7 @@ correctly with a warning under compatibility mode:
    deprecated; use common option **-n** instead.
 
 #. `project <project.html>`_: **-D** is deprecated; use
-   --FORMAT\_GEO\_OUT instead.
+   --FORMAT_GEO_OUT instead.
 
 #. `psbasemap <psbasemap.html>`_: **-G** is deprecated;
    specify canvas color via **-B** modifier **+g**\ *color*.
@@ -761,7 +761,7 @@ correctly with a warning under compatibility mode:
 
 #. `mgd77/mgd77manage <supplements/mgd77/mgd77manage.html>`_: The
    unit **m** is deprecated; use **M** for statute miles. The **-Q** is
-   deprecated; use **-n**\ *mode*\ [**+a**\ ][\ **+t**\ *threshold*]
+   deprecated; use **-n**\ *mode*\ [**+a**][\ **+t**\ *threshold*]
    instead
 
 #. `mgd77/mgd77path <supplements/mgd77/mgd77path.html>`_: **-P** is
@@ -799,7 +799,7 @@ correctly with a warning under compatibility mode:
 +------------------------------------+---------------------------------------------+
 | **Old Name**                       | **New Name**                                |
 +====================================+=============================================+
-| **INPUT\_CLOCK\_FORMAT**           | **FORMAT\_CLOCK\_IN**                       |
+| **INPUT_CLOCK_FORMAT**             | **FORMAT_CLOCK_IN**                         |
 +------------------------------------+---------------------------------------------+
 | **INPUT\_DATE\_FORMAT**            | **FORMAT\_DATE\_IN**                        |
 +------------------------------------+---------------------------------------------+
@@ -982,7 +982,7 @@ laserwriter or at 2470 dpi on a phototypesetter when ultimate quality is
 needed. *GMT* software is written as a set of *UNIX* tools [3]_ and is
 totally self-contained and fully documented. The system is offered free
 of charge and is distributed over the computer network (Internet)
-[*Wessel and Smith, 1991; 1995a,b; 1998*\ ].
+[*Wessel and Smith, 1991; 1995a,b; 1998*].
 
 The original version 1.0 of *GMT* was released in the summer of 1988
 when the authors were graduate students at Lamont-Doherty Earth
@@ -1001,7 +1001,7 @@ data, perform mathematical operations (including filtering) on 2-D data
 sets both in the space and frequency domain, sample surfaces along
 arbitrary tracks or onto a new grid, calculate volumes, and find trend
 surfaces. The plotting programs will let the user make linear,
-log\ :math:`_{10}`, and *x\ :math:`^a`*–*y\ :math:`^b`* diagrams, polar
+log\ :math:`_{10}`, and *x\ :math:`^a`*-*y\ :math:`^b`* diagrams, polar
 and rectangular histograms, maps with filled continents and coastlines
 choosing from many common map projections, contour plots, mesh plots,
 monochrome or color images, and artificially illuminated shaded-relief
@@ -1058,7 +1058,7 @@ pages. In addition, the programs offer friendly help messages which make
 them essentially self-teaching – if a user enters invalid or ambiguous
 command arguments, the program will print a warning to the screen with a
 synopsis of the valid arguments. All the documentation is available for
-web browsing and may be installed at the user’s site.
+web browsing and may be installed at the user's site.
 
 The processing and display routines within *GMT* are completely general
 and will handle any (*x,y*) or (*x,y,z*) data as input. For many
@@ -1107,7 +1107,7 @@ these types of output:
 
 #. Reports – Several *GMT* programs read input files and report
    statistics and other information. Nearly all programs have an
-   optional “verbose” operation, which reports on the progress of
+   optional "verbose" operation, which reports on the progress of
    computation. All programs feature usage messages, which prompt the
    user if incorrect commands have been given. Such text is written to
    the standard error stream and can therefore be separated from ASCII
@@ -1796,7 +1796,7 @@ alternatives that trade off accuracy and computation time.
 Flat Earth distances
 ^^^^^^^^^^^^^^^^^^^^
 
-Quick, but approximate “Flat Earth” calculations make a first-order
+Quick, but approximate "Flat Earth" calculations make a first-order
 correction for the spherical nature of a planetary body by computing the
 distance between two points A and B as
 
@@ -1805,7 +1805,7 @@ distance between two points A and B as
    d_f = R \sqrt{(\theta_A - \theta_B)^2 + \cos \left [ \frac{\theta_A + \theta_B}{2} \right ] \Delta \lambda^2},
    	\label{eq:flatearth}
 
-where :math:`R` is the representative (or spherical) radius of the
+where *R* is the representative (or spherical) radius of the
 planet, :math:`\theta` is latitude, and the difference in longitudes,
 :math:`\Delta \lambda = \lambda_A - \lambda_B`, is adjusted for any
 jumps that might occur across Greenwich or the Dateline. As written, the
@@ -1822,7 +1822,7 @@ Great circle distances
 ^^^^^^^^^^^^^^^^^^^^^^
 
 This is the default distance calculation, which will also approximate
-the planetary body by a sphere of mean radius :math:`R`. However, we
+the planetary body by a sphere of mean radius *R*. However, we
 compute an exact distance between two points A and B on such a sphere
 via the Haversine equation
 
@@ -1839,7 +1839,7 @@ would be specified as **-S**\ 5000\ **f**.
 Note: There are two additional
 `GMT <http://gmt.soest.hawaii.edu>`_ defaults that control how
 great circle (and Flat Earth) distances are computed. One concerns the
-selection of the “mean radius”. This is selected by
+selection of the "mean radius". This is selected by
 **PROJ\_MEAN\_RADIUS**, which selects one of several possible
 representative radii. The second is **PROJ\_AUX\_LATITUDE**, which
 converts geodetic latitudes into one of several possible auxiliary
@@ -1852,7 +1852,7 @@ Geodesic distances
 ^^^^^^^^^^^^^^^^^^
 
 For the most accurate calculations we use a full ellipsoidal
-formulation. Currently, we are using Vincenty’s [1975] formula [7]_. You
+formulation. Currently, we are using Vincenty's [1975] formula [7]_. You
 select this mode of computation by using the **+** prefix to the
 specified distance (or to the unit itself in cases where no distance is
 required). For instance, a search radius of 20 km using this mode of
@@ -1969,7 +1969,7 @@ ways in which this can be accomplished.
 #. Finally, *GMT* provides to possibility to override the settings only
    during the running of a single script, reverting to the original
    settings after the script is run, as if the script was run in
-   “isolation”. The isolation mode is discussed in
+   "isolation". The isolation mode is discussed in
    Section [sec:isolationmode].
 
 In addition to those parameters that directly affect the plot there are
@@ -1984,7 +1984,7 @@ Command line arguments
 
 Each program requires certain arguments specific to its operation. These
 are explained in the manual pages and in the usage messages. Most
-programs are “case-sensitive”; almost all options must start with an
+programs are "case-sensitive"; almost all options must start with an
 upper-case letter. We have tried to choose letters of the alphabet which
 stand for the argument so that they will be easy to remember. Each
 argument specification begins with a hyphen (except input file names;
@@ -2093,9 +2093,9 @@ data), the boundary coordinates may take on several different formats:
 Geographic coordinates:
     These are longitudes and latitudes and may be given in decimal
     degrees (e.g., -123.45417) or in the
-    []*ddd*\ [:*mm*\ [:*ss*\ [*.xxx*\ ]]][\ **W**\ :math:`|`\ **E**\ :math:`|`\ **S**\ :math:`|`\ **N**]
+    []*ddd*\ [:*mm*\ [:*ss*\ [*.xxx*\ ]]][\ **W**\ \|\ **E**\ \|\ **S**\ \|\ **N**]
     format (e.g., 123:27:15W). Note that **-Rg** and **-Rd** are
-    shorthands for “global domain” **-R**\ *0*/*360*/*-90*/*90* and
+    shorthands for "global domain" **-R**\ *0*/*360*/*-90*/*90* and
     **-R**\ *-180*/*180*/*-90*/*90*, respectively.
 
     When used in conjunction with the Cartesian Linear Transformation
@@ -2145,7 +2145,7 @@ Calendar time coordinates:
     precision seconds since proleptic Gregorian date Monday January 1
     00:00:00 0001. Proleptic means we assume that the modern calendar
     can be extrapolated forward and backward; a year zero is used, and
-    Gregory’s reforms [11]_ are extrapolated backward. Note that this is
+    Gregory's reforms [11]_ are extrapolated backward. Note that this is
     not historical.
 
 Relative time coordinates:
@@ -2217,7 +2217,7 @@ Map frame and axes annotations: The **-B** option
 [sec:timeaxis] This is by far the most complicated option in *GMT*,
 but most examples of its usage are actually quite simple. Given as
 **-B**\ [**p**\ \|\ **s**]\ *xinfo*\ [/*yinfo*\ [/*zinfo*]][:."title
-string":][\ **W**\ :math:`|`\ **w**][\ **E**\ :math:`|`\ **e**][\ **S**\ :math:`|`\ **s**][\ **N**\ :math:`|`\ **n**][\ **Z**\ :math:`|`\ **z**\ [**+**\ ]][\ **+g**\ *fill*],
+string":][\ **W**\ \|\ **w**][\ **E**\ \|\ **e**][\ **S**\ \|\ **s**][\ **N**\ \|\ **n**][\ **Z**\ \|\ **z**\ [**+**]][\ **+g**\ *fill*],
 this switch specifies map boundaries (or plot axes) to be plotted by
 using the selected information. The optional flag following **-B**
 selects **p** (rimary) [Default] or **s** (econdary) axes information
@@ -2234,8 +2234,8 @@ By default, all 4 map boundaries (or plot axes) are plotted (denoted
 **W**, **E**, **S**, **N**). To change this selection, append the codes
 for those you want (e.g., **WSn**). In this example, the lower case
 **n** denotes to draw the axis and (major and minor) tick marks on the
-“northern” (top) edge of the plot. The upper case **WS** will annotate
-the “western” and “southern” axes with numerals and plot the optional
+"northern" (top) edge of the plot. The upper case **WS** will annotate
+the "western" and "southern" axes with numerals and plot the optional
 axis label in addition to draw axis/tick-marks. The title, if given,
 will appear centered above the plot. Unit label or prefix may start with
 a leading – to suppress the space between it and the annotation.
@@ -2328,20 +2328,20 @@ and arc seconds, respectively, when a map projection is in effect.
 
 [tbl:units]
 
-There may be two levels of annotations. Here, “primary” refers to the
+There may be two levels of annotations. Here, "primary" refers to the
 annotation that is closest to the axis (this is the primary annotation),
-while “secondary” refers to the secondary annotation that is plotted
+while "secondary" refers to the secondary annotation that is plotted
 further from the axis. The examples below will clarify what is meant.
-Note that the terms “primary” and “secondary” do not reflect any
-hierarchical order of units: The “primary” annotation interval is
-usually smaller (e.g., days) while the “secondary” annotation interval
+Note that the terms "primary" and "secondary" do not reflect any
+hierarchical order of units: The "primary" annotation interval is
+usually smaller (e.g., days) while the "secondary" annotation interval
 typically is larger (e.g., months).
 
 Geographic basemaps
 ^^^^^^^^^^^^^^^^^^^
 
 Geographic basemaps may differ from regular plot axis in that some
-projections support a “fancy” form of axis and is selected by the
+projections support a "fancy" form of axis and is selected by the
 **MAP\_FRAME\_TYPE** setting. The annotations will be formatted
 according to the **FORMAT\_GEO\_MAP** template and
 **MAP\_DEGREE\_SYMBOL** setting. A simple example of part of a basemap
@@ -2360,12 +2360,12 @@ Cartesian linear axes
 For non-geographic axes, the **MAP\_FRAME\_TYPE** setting is implicitly
 set to plain. Other than that, cartesian linear axes are very similar to
 geographic axes. The annotation format may be controlled with the
-**FORMAT\_FLOAT\_OUT** parameter. By default, it is set to “%g”, which
+**FORMAT\_FLOAT\_OUT** parameter. By default, it is set to "%g", which
 is a C language format statement for floating point numbers [13]_, and
 with this setting the various axis routines will automatically determine
 how many decimal points should be used by inspecting the *stride*
 settings. If **FORMAT\_FLOAT\_OUT** is set to another format it will be
-used directly (.e.g, “%.2f” for a fixed, two decimals format). Note that
+used directly (.e.g, "%.2f" for a fixed, two decimals format). Note that
 for these axes you may use the *unit* setting to add a unit string to
 each annotation (see Figure ).
 
@@ -2376,14 +2376,14 @@ Due to the logarithmic nature of annotation spacings, the *stride*
 parameter takes on specific meanings. The following concerns are
 specific to log axes:
 
-#. *stride* must be 1, 2, 3, or a negative integer :math:`-n`.
+#. *stride* must be 1, 2, 3, or a negative integer -n.
    Annotations/ticks will then occur at 1, 1–2–5, or 1,2,3,4,...,9,
    respectively, for each magnitude range. For :math:`-n` the
-   annotations will take place every *n*\ ’th magnitude.
+   annotations will take place every *n*\ 'th magnitude.
 
 #. Append **l** to *stride*. Then, log\ :math:`_{10}` of the annotation
    is plotted at every integer log\ :math:`_{10}` value (e.g.,
-   :math:`x = 100` will be annotated as “2”) [Default annotates
+   :math:`x = 100` will be annotated as "2") [Default annotates
    :math:`x` as is].
 
 #. Append **p** to *stride*. Then, annotations appear as 10 raised to
@@ -2410,7 +2410,7 @@ only do we have both primary and secondary annotation items but we also
 have interval annotations versus tickmark annotations, numerous time
 units, and several ways in which to modify the plot. We will demonstrate
 this flexibility with a series of examples. While all our examples will
-only show a single :math:`x`-axis, time-axis is supported for all axes.
+only show a single *x*\ -axis, time-axis is supported for all axes.
 
 Our first example shows a time period of almost two months in Spring
 2000. We want to annotate the month intervals as well as the date at the start of each week:
@@ -2612,7 +2612,7 @@ translations are relative to the previous origin (see Figure ). Supply
 offset as **c** to center the plot in that direction relative to the
 page margin. Absolute translations (i.e., relative to a fixed point
 (0,0) at the lower left corner of the paper) can be achieve by
-prepending “a” to the offsets. Subsequent overlays will be co-registered
+prepending "a" to the offsets. Subsequent overlays will be co-registered
 with the previous plot unless the origin is shifted using these options.
 The offsets are measured in the current coordinates system (which can be
 rotated using the initial **-P** option; subsequent **-P** options for
@@ -2662,7 +2662,7 @@ entries of **D**, **G**, **L**, **T**, **W**, or **Z** to have values
 stored as options in segment headers be used as the source for the name
 aspatial field. Finally, for output you must append
 +\ **g**\ *geometry*, where *geometry* can be any of
-[**M**\ ]\ **POINT**\ :math:`|`\ **LINE**\ :math:`|`\ **POLY**; the
+[**M**\ ]\ **POINT**\ \|\ **LINE**\ \|\ **POLY**; the
 **M** represent the multi-versions of these three geometries. Use
 upper-case +\ **G** to signal that you want to split any line or polygon
 features that straddle the Dateline.
@@ -2691,13 +2691,13 @@ double-precision float). In addition, use **x** to skip *n* bytes
 anywhere in the record. For a mixed-type data record you can concatenate
 several [*n*\ ]\ **t** combinations, separated by commas. You may append
 **w** to any of the items to force byte-swapping. Alternatively, append
-**+L**\ :math:`|`\ **B** to indicate that the entire data file should be
+**+L**\ \|\ **B** to indicate that the entire data file should be
 read or written as little- or big-endian, respectively. Here, *n* is the
 number of each item in your binary file. Note that *n* may be larger
 than *m*, the number of columns that the *GMT* program requires to do
 its task. If *n* is not given then it defaults to *m* and all columns
 are assumed to be of the single specified type **t** [**d** (double), if
-not set]. If *n* :math:`<` *m* an error is generated. Multiple segment
+not set]. If *n* < *m* an error is generated. Multiple segment
 files are allowed and the segment headers are assumed to be records
 where all the fields equal NaN.
 
@@ -2743,9 +2743,9 @@ coordinates (latitude, longitude) with absolute calendar coordinates in
 the columns 3 and 4, we would specify
 **fi**\ 0\ **y**,1\ **x**,3-4\ **T**. All other columns are assumed to
 have the default, floating point format and need not be set
-individually. The shorthand **-f**\ [**i**\ :math:`|`\ **o**]\ **g**
-means **-f**\ [**i**\ :math:`|`\ **o**]0x,1y (i.e., geographic
-coordinates). A special use of **-f** is to select **-fp**\ [*unit*\ ],
+individually. The shorthand **-f**\ [**i**\ \|\ **o**]\ **g**
+means **-f**\ [**i**\ \|\ **o**]0x,1y (i.e., geographic
+coordinates). A special use of **-f** is to select **-fp**\ [*unit*],
 which *requires* **-J** and lets you use *projected* map coordinates
 (e.g., UTM meters) as data input. Such coordinates are automatically
 inverted to longitude, latitude during the data import. Optionally,
@@ -2783,7 +2783,7 @@ the unit is instead controlled by **TIME\_UNIT**.
 Header data records: The **-h** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[sec:header] The **-h**\ [**i**\ :math:`|`\ **o**][*n\_recs*\ ] option
+[sec:header] The **-h**\ [**i**\ \|\ **o**][*n\_recs*\ ] option
 lets *GMT* know that input file(s) have *n\_recs* header records [0]. If
 there are more than one header record you must specify the number after
 the **-h** option, e.g., **-h**\ 4. Note that blank lines and records
@@ -2900,7 +2900,7 @@ by
    \end{array}
 
 which for the example in Figure [fig:GMT\ :sub:`r`\ egistration] yields
-:math:`nx = ny = 4`.
+nx = ny = 4.
 
 Pixel registration
 ^^^^^^^^^^^^^^^^^^
@@ -2920,7 +2920,7 @@ spacing by
 
 Thus, given the same region (**-R**) and grid spacing, the
 pixel-registered grids have one less column and one less row than the
-gridline-registered grids; here we find :math:`nx = ny = 3`.
+gridline-registered grids; here we find nx = ny = 3.
 
 NaN-record treatment: The **-s** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2962,7 +2962,7 @@ Command line history
 
 [sec:gmtcommands]
 
-*GMT* programs “remember” the standardized command line options (See
+*GMT* programs "remember" the standardized command line options (See
 Section [sec:stopt]) given during their previous invocations and this
 provides a shorthand notation for complex options. For example, if a
 basemap was created with an oblique Mercator projection, specified as
@@ -3019,7 +3019,7 @@ allows you to connect programs with pipes if you like. If your input is
 ASCII and has one or more header records that do not begin with #, you
 must use the **-h** option (see Section [sec:header]). ASCII files may
 in many cases also contain segment-headers separating data segments.
-These are called “multi-segment files”. For binary table data the **-h**
+These are called "multi-segment files". For binary table data the **-h**
 option may specify how many bytes should be skipped before the data
 section is reached. Binary files may also contain segment-headers
 separating data segments. These segment-headers are simply data records
@@ -3051,7 +3051,7 @@ Verbose operation
 -----------------
 
 Most of the programs take an optional **-V** argument which will run the
-program in the “verbose” mode (see Section [sec:verbose]). Verbose will
+program in the "verbose" mode (see Section [sec:verbose]). Verbose will
 write to standard error information about the progress of the operation
 you are running. Verbose reports things such as counts of points read,
 names of data files processed, convergence of iterative solutions, and
@@ -3099,7 +3099,7 @@ Input data formats
 
 [sec:input data]
 
-Most of the time, *GMT* will know what kind of :math:`x` and :math:`y`
+Most of the time, *GMT* will know what kind of *x* and *y*
 coordinates it is reading because you have selected a particular
 coordinate transformation or map projection. However, there may be times
 when you must explicitly specify what you are providing as input using
@@ -3132,14 +3132,14 @@ know what kind of data to expect, and the input processing is done
 accordingly. However, some programs that simply report on minimum and
 maximum values or just do a reformatting of the data will in general not
 know what to expect, and furthermore there is no way for the programs to
-know what kind of data other columns (beyond the leading :math:`x` and
-:math:`y` columns) contain. In such instances we must explicitly tell
+know what kind of data other columns (beyond the leading *x* and
+*y* columns) contain. In such instances we must explicitly tell
 *GMT* that we are feeding it data in the specific geographic or calendar
 formats (floating point data are assumed by default). We specify the
 data type via the **-f** option (which sets both input and output
 formats; use **-fi** and **-fo** to set input and output separately).
 For instance, to specify that the the first two columns are longitude
-and latitude, and that the third column (e.g., :math:`z`) is absolute
+and latitude, and that the third column (e.g., *z*) is absolute
 calendar time, we add **-fi**\ 0x,1y,2T to the command line. For more
 details, see the man page for the program you need to use.
 
@@ -3193,7 +3193,7 @@ Specifying pen attributes
 *style*. Most programs will accept pen attributes in the form of an
 option argument, with commas separating the given attributes, e.g.,
 
-**-W**\ [*width*\ [**c\ :math:`|`\ i\ :math:`|`\ p**\ ]],[*color*\ ],[\ *style*\ [**c\ :math:`|`\ i\ :math:`|`\ p\ :math:`|`**\ ]]
+**-W**\ [*width*\ [**c\ \|\ i\ \|\ p**\ ]],[*color*\ ],[\ *style*\ [**c\ \|\ i\ \|\ p\ \|**]]
 
 :math:`\rightarrow`
     *Width* is by default measured in points (1/72 of an inch). Append
@@ -3201,7 +3201,7 @@ option argument, with commas separating the given attributes, e.g.,
     respectively. Minimum-thickness pens can be achieved by giving zero
     width, but the result is device-dependent. Finally, a few predefined
     pen names can be used: default, faint, and {thin, thick,
-    fat}[er\ :math:`|`\ est], and obese. Table [tbl:pennames] shows this
+    fat}[er\ \|\ est], and obese. Table [tbl:pennames] shows this
     list and the corresponding pen widths.
 
     [h]
@@ -3242,15 +3242,15 @@ option argument, with commas separating the given attributes, e.g.,
     #. Name. Specify one of 663 valid color names. Use **man
        gmtcolors** to list all valid names. A very small yet versatile
        subset consists of the 29 choices *white*, *black*, and
-       [light:math:`|`\ dark]{*red, orange, yellow, green, cyan, blue,
-       magenta, gray\ :math:`|`\ grey, brown*\ }. The color names are
+       [light:\|\ dark]{*red, orange, yellow, green, cyan, blue,
+       magenta, gray\ \|\ grey, brown*\ }. The color names are
        case-insensitive, so mixed upper and lower case can be used (like
        *DarkGreen*).
 
 :math:`\rightarrow`
-    The *style* attribute controls the appearance of the line. A “.”
-    yields a dotted line, whereas a dashed pen is requested with “-”.
-    Also combinations of dots and dashes, like “.-” for a dot-dashed
+    The *style* attribute controls the appearance of the line. A "."
+    yields a dotted line, whereas a dashed pen is requested with "-".
+    Also combinations of dots and dashes, like ".-" for a dot-dashed
     line, are allowed. The lengths of dots and dashes are scaled
     relative to the pen width (dots has a length that equals the pen
     width while dashes are 8 times as long; gaps between segments are 4
@@ -3335,7 +3335,7 @@ pattern:
     reproduced in Appendix [app:E]. The latter allows the user to create
     customized, repeating images using standard Sun raster files [18]_.
     The *dpi* parameter sets the resolution of this image on the page;
-    the area fill is thus made up of a series of these “tiles”.
+    the area fill is thus made up of a series of these "tiles".
     Specifying *dpi* as 0 will result in highest resolution obtainable
     given the present dpi setting in  ``.gmtcommands``. By specifying upper case **-GP**
     instead of **-Gp** the image will be bit-reversed, i.e., white and
@@ -3431,7 +3431,7 @@ information, see for instance (search online for) the Adobe pdfmark
 Reference Manual. Most printers and many *PostScript* viewers can
 neither print nor show transparency. They will simply ignore your
 attempt to create transparency and will plot any material as opaque.
-**GhostScript** and its derivatives such as *GMT*\ ’s
+**GhostScript** and its derivatives such as *GMT*\ 's
 `ps2raster <ps2raster.html>`_ support transparency (if
 compiled with the correct build option). Note: If you use **Acrobat
 Distiller** to create a PDF file you must first change some settings to
@@ -3511,7 +3511,7 @@ z\ :math:`_{n-2}` & Color\ :math:`_{min}` & z\ :math:`_{n-1}` &
 Color\ :math:`_{max}` & [**A**\ ] & [;*label*]
 **
 
-Thus, for each “*z*-slice”, defined as the interval between two
+Thus, for each "*z*-slice", defined as the interval between two
 boundaries (e.g., *z\ :math:`_0`* to *z\ :math:`_1`*), the color can be
 constant (by letting Color\ :math:`_{max}` = Color\ :math:`_{min}` or -)
 or a continuous, linear function of *z*. If patterns are used then the
@@ -3529,7 +3529,7 @@ make `psscale <psscale.html>`_, when used with the
 **-L** option, place the supplied label instead of formatted *z*-values.
 
 As for categorical tables, the background color (for *z*-values
-:math:`<` *z\ :math:`_0`*), foreground color (for *z*-values :math:`>`
+< *z\ :math:`_0`*), foreground color (for *z*-values >
 *z\ :math:`_{n-1}`*), and not-a-number (NaN) color (for *z*-values =
 NaN) are all defined in the ``gmt.conf`` file, but can be overridden by the
 statements
@@ -3556,8 +3556,8 @@ A few programs (i.e., those that plot polygons such as
 `psxyz <psxyz.html>`_) can accept pattern fills instead
 of gray-shades. You must specify the pattern as in Section [sec:fill]
 (no leading **-G** of course), and only the first pattern (for low
-:math:`z`) is used (we cannot interpolate between patterns). Finally,
-some programs let you skip features whose :math:`z`-slice in the CPT
+*z*) is used (we cannot interpolate between patterns). Finally,
+some programs let you skip features whose *z*-slice in the CPT
 file has gray-shades set to –. As an example, consider
 
 | lllll 30 & p200/16 & 80 & –
@@ -3565,18 +3565,18 @@ file has gray-shades set to –. As an example, consider
 | 100 & 200/0/0 & 200/255/255 & 0
 | 200 & yellow & 300 & green
 
-where slice :math:`30 < z < 80` is painted with pattern # 16 at 200 dpi,
-slice :math:`80 < z < 100` is skipped, slice :math:`100 < z < 200` is
+where slice 30 < z < 80 is painted with pattern # 16 at 200 dpi,
+slice 80 < z < 100 is skipped, slice 100 < z < 200 is
 painted in a range of dark red to yellow, whereas the slice
-:math:`200 < z < 300` will linearly yield colors from yellow to green,
-depending on the actual value of :math:`z`.
+200 < z < 300 will linearly yield colors from yellow to green,
+depending on the actual value of *z*.
 
 Some programs like `grdimage <grdimage.html>`_ and
 `grdview <grdview.html>`_ apply artificial illumination
 to achieve shaded relief maps. This is typically done by finding the
 directional gradient in the direction of the artificial light source and
 scaling the gradients to have approximately a normal distribution on the
-interval [-1,+1]. These intensities are used to add “white” or “black”
+interval [-1,+1]. These intensities are used to add "white" or "black"
 to the color as defined by the *z*-values and the CPT file. An intensity
 of zero leaves the color unchanged. Higher values will brighten the
 color, lower values will darken it, all without changing the original
@@ -3841,7 +3841,7 @@ from standard input which means you can connect *GMT* programs that
 operate on grid files with pipes, thereby speeding up execution and
 eliminating the need for large, intermediate grid files. You specify
 standard input/output by leaving out the filename entirely. That means
-the “filename” will begin with “=\ *ID*” since no *GMT*  netCDF format
+the "filename" will begin with "=\ *ID*" since no *GMT*  netCDF format
 allow piping (due to the design of netCDF).
 
 Everything looks clearer after a few examples:
@@ -3852,7 +3852,7 @@ Everything looks clearer after a few examples:
    then add 32000, but first let values that equal 32767 be set to NaN,
    use the filename ``my_file.i2=bs/10/32000/32767``.
 
-#. To read a Golden Software “surfer” format 6 grid file, just pass the
+#. To read a Golden Software "surfer" format 6 grid file, just pass the
    file name, e.g., ``my_surferfile.grd``.
 
 #. To read a 8-bit standard Sun raster file (with values in the 0–255
@@ -3868,7 +3868,7 @@ Everything looks clearer after a few examples:
 Programs that both read and/or write more than one grid file may specify
 different formats and/or scaling for the files involved. The only
 restriction with the embedded grid specification mechanism is that no
-grid files may actually use the “=” character as part of their name
+grid files may actually use the "=" character as part of their name
 (presumably, a small sacrifice).
 
 One can also define special file suffixes to imply a specific file
@@ -3912,7 +3912,7 @@ the coordinates of the grid passed to such programs:
 
 -  You have a geographic grid (i.e., in longitude and latitude). Simply
    supply the **-fg** option and your grid coordinates will
-   automatically be converted to meters via a “Flat Earth” approximation
+   automatically be converted to meters via a "Flat Earth" approximation
    on the currently selected ellipsoid (Note: this is only possible in
    those few programs that require this capability. In general, **-fg**
    is used to specify table coordinates).
@@ -3942,25 +3942,25 @@ Modifiers for COARDS-compliant netCDF files
 When the netCDF grid file contains more than one 2-dimensional variable,
 *GMT* programs will load the first such variable in the file and ignore
 all others. Alternatively, the user can select the required variable by
-adding the suffix “?\ *varname*” to the grid file name. For example, to
-get information on the variable “slp” in file , use:
+adding the suffix "?\ *varname*" to the grid file name. For example, to
+get information on the variable "slp" in file , use:
 
 ::
 
     	grdinfo "file.nc?slp"
 
 Since COARDS-compliant netCDF files are the default, the additional
-suffix “=nf” can be omitted.
+suffix "=nf" can be omitted.
 
 In case the named grid is 3-dimensional, *GMT* will load the first
-(bottom) layer. If another layer is required, either add “[*index*\ ]”
-or “(*level*)”, where *index* is the index of the third (depth) variable
+(bottom) layer. If another layer is required, either add "[*index*\ ]"
+or "(*level*)", where *index* is the index of the third (depth) variable
 (starting at 0 for the first layer) and *level* is the numerical value
 of the third (depth) variable associated with the requested layer. To
-indicate the second layer of the 3-D variable “slp” use as file name: ``file.nc?slp[1]``.
+indicate the second layer of the 3-D variable "slp" use as file name: ``file.nc?slp[1]``.
 
 When you supply the numerical value for the third variable using
-“(*level*)”, *GMT* will pick the layer closest to that value. No
+"(*level*)", *GMT* will pick the layer closest to that value. No
 interpolation is performed.
 
 Note that the question mark, brackets and parentheses have special
@@ -4023,7 +4023,7 @@ If, for example, only the second temperature column is needed, use
 
 The COARDS conventions set restrictions on the names that can be used
 for the units of the variables and coordinates. For example, the units
-of longitude and latitude are “degrees\_east” and “degrees\_north”,
+of longitude and latitude are "degrees\_east" and "degrees\_north",
 respectively. Here is an example of the header of a COARDS compliant
 netCDF file (to be obtained using **ncdump**):
 
@@ -4062,7 +4062,7 @@ same method can be used in reverse to set the proper variable names and
 units when writing a grid. However, when the coordinates are set
 properly as geographical or time axes, *GMT* will take care of this. The
 user is, however, still responsible for setting the variable name and
-unit of the z-coordinate. The default is simply “z”.
+unit of the z-coordinate. The default is simply "z".
 
 Modifiers to read and write grids and images via GDAL
 -----------------------------------------------------
@@ -4120,7 +4120,7 @@ Reading more complex multi-band IMAGES or GRIDS
 
 It is also possible to access to sub-datasets in a multi-band grid. The
 next example shows how we can extract the SST from the MODIS file ``A20030012003365.L3m_YR_NSST_9``
-that is stored in the HDF “format”. We need to run the GDAL program
+that is stored in the HDF "format". We need to run the GDAL program
 **gdalinfo** on the file because we first
 must extract the necessary metadata from the file:
 
@@ -4170,8 +4170,8 @@ simple example using `grdinfo <grdinfo.html>`_ would be
     HDF4_SDS:UNKNOWN:A20030012003365.L3m_YR_NSST_9:0: scale_factor: 1 add_offset: 0
 
 Be warned, however, that things are not yet completed because while the
-data are scaled according to the equation printed above (“Scaling
-Equation=(Slope\*l3m\_data) + Intercept = Parameter value”), this
+data are scaled according to the equation printed above ("Scaling
+Equation=(Slope\*l3m\_data) + Intercept = Parameter value"), this
 scaling is not applied by GDAL on reading so it cannot be done
 automatically by *GMT*. One solution is to do the reading and scaling
 via `grdmath <grdmath.html>`_ first, i.e.,
@@ -4208,15 +4208,15 @@ The NaN data value
 ------------------
 
 For a variety of data processing and plotting tasks there is a need to
-acknowledge that a data point is missing or unassigned. In the “old
-days” such information was passed by letting a value like -9999.99 take
-on the special meaning of “this is not really a value, it is missing”.
+acknowledge that a data point is missing or unassigned. In the "old
+days" such information was passed by letting a value like -9999.99 take
+on the special meaning of "this is not really a value, it is missing".
 The problem with this scheme is that -9999.99 (or any other floating
 point value) may be a perfectly reasonable data value and in such a
 scenario would be skipped. The solution adopted in *GMT* is to use the
 IEEE concept Not-a-Number (NaN) for this purpose. Mathematically, a NaN
 is what you get if you do an undefined mathematical operation like
-:math:`0/0`; in ASCII data files they appear as the textstring NaN. This
+0/0; in ASCII data files they appear as the textstring NaN. This
 value is internally stored with a particular bit pattern defined by IEEE
 so that special action can be taken when it is encountered by programs.
 In particular, a standard library function called ``isnan`` is used to
@@ -4231,7 +4231,7 @@ and vice versa, thus facilitating arbitrary masking and clipping of data
 sets. Note that a few computers do not have native IEEE hardware
 support. At this point, this applies to some of the older Cray
 super-computers. Users on such machines may have to adopt the old
-‘-9999.99’’ scheme to achieve the desired results.
+‘-9999.99'' scheme to achieve the desired results.
 
 Data records that contain NaN values for the *x* or *y* columns (or the
 *z* column for cases when 3-D Cartesian data are expected) are usually
@@ -4344,8 +4344,8 @@ Two subsets of linear will be discussed separately; these are a polar
 (cylindrical) projection and a linear projection applied to geographic
 coordinates (with a 360 periodicity in the :math:`x`-coordinate). We
 will show examples of all of these projections using dummy data sets
-created with `gmtmath <gmtmath.html>`_, a “Reverse
-Polish Notation” (RPN) calculator that operates on or creates table
+created with `gmtmath <gmtmath.html>`_, a "Reverse
+Polish Notation" (RPN) calculator that operates on or creates table
 data:
 
 Cartesian linear transformation (**-Jx** **-JX**)
@@ -4617,7 +4617,7 @@ the projection in *GMT* you need to provide the following information:
 -  Map scale in inch/degree or 1:xxxxx notation (**-Jb**), or map width
    (**-JB**).
 
-Note that you must include the “1:” if you choose to specify the scale
+Note that you must include the "1:" if you choose to specify the scale
 that way. E.g., you can say 0.5 which means 0.5 inch/degree or 1:200000
 which means 1 inch on the map equals 200,000 inches along the standard
 parallels. The projection center defines the origin of the rectangular
@@ -4664,7 +4664,7 @@ Lambert conic conformal projection (**-Jl** **-JL**)
 This conic projection was designed by the Alsatian mathematician Johann
 Heinrich Lambert (1772) and has been used extensively for mapping of
 regions with predominantly east-west orientation, just like the Albers
-projection. Unlike the Albers projection, Lambert’s conformal projection
+projection. Unlike the Albers projection, Lambert's conformal projection
 is not equal-area. The parallels are arcs of circles with a common
 origin, and meridians are the equally spaced radii of these circles. As
 with Albers projection, it is only the two standard parallels that are
@@ -4683,7 +4683,7 @@ The Lambert conformal projection has been used for basemaps for all the
 We will generate a map of the continental USA using these parameters.
 Note that with all the projections you have the option of selecting a
 rectangular border rather than one defined by meridians and parallels.
-Here, we choose the regular WESN region, a “fancy” basemap frame, and
+Here, we choose the regular WESN region, a "fancy" basemap frame, and
 use degrees west for longitudes. The generating commands used were
 
    ::
@@ -4770,10 +4770,10 @@ rectangular by defining the corners of a rectangular map boundary. Using
     pscoast -R0/-40/60/-10r -JA30/-30/4.5i -Bag -Dl -A500 -Gp300/10 -Wthinnest -P \
             > GMT_lambert_az_rect.ps
 
-Note that an “r” is appended to the **-R** option to inform *GMT* that
+Note that an "r" is appended to the **-R** option to inform *GMT* that
 the region has been selected using the rectangle technique, otherwise it
 would try to decode the values as *west, east, south, north* and report
-an error since *’east’* < *’west’*.
+an error since *'east'* < *'west'*.
 
 Hemisphere map
 ^^^^^^^^^^^^^^
@@ -4833,10 +4833,10 @@ An example is given by
 Rectangular stereographic map
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-As with Lambert’s azimuthal equal-area projection we have the option to
+As with Lambert's azimuthal equal-area projection we have the option to
 use rectangular boundaries rather than the wedge-shape typically
 associated with polar projections. This choice is defined by selecting
-two points as corners in the rectangle and appending an “r” to the
+two points as corners in the rectangle and appending an "r" to the
 **-R** option. This command produces a map as presented in
 Figure [fig:GMT\ :sub:`s`\ tereographic\ :sub:`r`\ ect]:
 
@@ -4877,7 +4877,7 @@ Figure [fig:GMT\ :sub:`p`\ erspective] between brackets.
 
 -  Altitude of the viewer above sea level in kilometers (230 km). If
    this value is less than 10, it is assumed to be the distance of the
-   viewer from the center of the earth in earth radii. If an “r” is
+   viewer from the center of the earth in earth radii. If an "r" is
    appended, it is the distance from the center of the earth in
    kilometers.
 
@@ -4914,7 +4914,7 @@ Orthographic projection (**-Jg** **-JG**)
 
 The orthographic azimuthal projection is a perspective projection from
 infinite distance. It is therefore often used to give the appearance of
-a globe viewed from outer space. As with Lambert’s equal-area and the
+a globe viewed from outer space. As with Lambert's equal-area and the
 stereographic projection, only one hemisphere can be viewed at any time.
 The projection is neither equal-area nor conformal, and much distortion
 is introduced near the edge of the hemisphere. The directions from the
@@ -5106,7 +5106,7 @@ we made the map illustrated in Figure [fig:GMT\ :sub:`T`\ M]. Note that
 when a world map is given (indicated by **-R**\ *0/360/s/n*), the
 arguments are interpreted to mean oblique degrees, i.e., the 360 range
 is understood to mean the extent of the plot along the central meridian,
-while the “south” and “north” values represent how far from the central
+while the "south" and "north" values represent how far from the central
 longitude we want the plot to extend. These values correspond to
 latitudes in the regular Mercator projection and must therefore be less
 than 90.
@@ -5191,7 +5191,7 @@ Our example was produced by the command
 
 It uses definition 3 for an oblique view of some Caribbean islands. Note
 that we define our region using the rectangular system described
-earlier. If we do not append an “r” to the **-R** string then the
+earlier. If we do not append an "r" to the **-R** string then the
 information provided with the **-R** option is assumed to be oblique
 degrees about the projection center rather than the usual geographic
 coordinates. This interpretation is chosen since in general the
@@ -5215,7 +5215,7 @@ The requirements to define this projection are:
 
 -  Scale in inch/degree or as 1:xxxxx (**-Jc**), or map width (**-JC**).
 
-A detailed map of the island of Sardinia centered on the 845’E meridian
+A detailed map of the island of Sardinia centered on the 845'E meridian
 using the Cassini projection can be obtained by running the command:
 
    ::
@@ -5302,11 +5302,11 @@ Table [tbl:JY].
 +-------------------+---------------------+
 | Gall-Peters       | 45                  |
 +-------------------+---------------------+
-| Hobo-Dyer         | 3730’ (= 37.5)      |
+| Hobo-Dyer         | 3730' (= 37.5)      |
 +-------------------+---------------------+
-| Trystan Edwards   | 3724’ (= 37.4)      |
+| Trystan Edwards   | 3724' (= 37.4)      |
 +-------------------+---------------------+
-| Caster            | 3704’ (= 37.0666)   |
+| Caster            | 3704' (= 37.0666)   |
 +-------------------+---------------------+
 | Behrman           | 30                  |
 +-------------------+---------------------+
@@ -5334,7 +5334,7 @@ This cylindrical projection, presented by Osborn Maitland Miller of the
 American Geographic Society in 1942, is neither equal nor conformal. All
 meridians and parallels are straight lines. The projection was designed
 to be a compromise between Mercator and other cylindrical projections.
-Specifically, Miller spaced the parallels by using Mercator’s formula
+Specifically, Miller spaced the parallels by using Mercator's formula
 with 0.8 times the actual latitude, thus avoiding the singular poles;
 the result was then divided by 0.8. There is only a spherical form for
 this projection. Specify the projection by:
@@ -5380,20 +5380,20 @@ cartographer or publication that popularized the projection
 
 +---------------------------------------------------------+-------------+
 +=========================================================+=============+
-| Miller’s modified Gall                                  | 66.159467   |
+| Miller's modified Gall                                  | 66.159467   |
 +---------------------------------------------------------+-------------+
-| Kamenetskiy’s First                                     | 55          |
+| Kamenetskiy's First                                     | 55          |
 +---------------------------------------------------------+-------------+
-| Gall’s stereographic                                    | 45          |
+| Gall's stereographic                                    | 45          |
 +---------------------------------------------------------+-------------+
-| Bolshoi Sovietskii Atlas Mira or Kamenetskiy’s Second   | 30          |
+| Bolshoi Sovietskii Atlas Mira or Kamenetskiy's Second   | 30          |
 +---------------------------------------------------------+-------------+
-| Braun’s cylindrical                                     | 0           |
+| Braun's cylindrical                                     | 0           |
 +---------------------------------------------------------+-------------+
 
 [tbl:JCylstere]
 
-A map of the world, centered on the Greenwich meridian, using the Gall’s
+A map of the world, centered on the Greenwich meridian, using the Gall's
 stereographic projection (standard parallel is 45,
 Figure [fig:GMT\ :sub:`g`\ all\ :sub:`s`\ tereo]), is obtained as
 follows:
@@ -5429,8 +5429,7 @@ defined by selecting:
 
 -  The central meridian [Middle of your map].
 
--  Scale along equator in inch/degree or 1:xxxxx (**-Jh**), or map width
-   (**-JH**).
+-  Scale along equator in inch/degree or 1:xxxxx (**-Jh**), or map width (**-JH**).
 
 A view of the Pacific ocean using the Dateline as central meridian is accomplished thus
 
@@ -5445,7 +5444,7 @@ This pseudo-cylindrical, equal-area projection was developed by the
 German mathematician and astronomer Karl Brandan Mollweide in 1805.
 Parallels are unequally spaced straight lines with the meridians being
 equally spaced elliptical arcs. The scale is only true along latitudes
-4044’ north and south. The projection is used mainly for global maps
+4044' north and south. The projection is used mainly for global maps
 showing data distributions. It is occasionally referenced under the name
 homalographic projection. Like the Hammer projection, outlined above, we
 need to specify only two parameters to completely define the mapping of
@@ -5467,10 +5466,10 @@ Winkel Tripel projection (**-Jr** **-JR**)
 
 In 1921, the German mathematician Oswald Winkel a projection that was to
 strike a compromise between the properties of three elements (area,
-angle and distance). The German word “tripel” refers to this junction of
+angle and distance). The German word "tripel" refers to this junction of
 where each of these elements are least distorted when plotting global
 maps. The projection was popularized when Bartholomew and Son started to
-use it in its world-renowned “The Times Atlas of the World” in the mid
+use it in its world-renowned "The Times Atlas of the World" in the mid
 20th century. In 1998, the National Geographic Society made the Winkel
 Tripel as its map projection of choice for global maps.
 
@@ -5483,8 +5482,7 @@ use it you must enter
 
 -  The central meridian [Middle of your map].
 
--  Scale along equator in inch/degree or 1:xxxxx (**-Jr**), or map width
-   (**-JR**).
+-  Scale along equator in inch/degree or 1:xxxxx (**-Jr**), or map width (**-JR**).
 
 Centered on Greenwich, the example in Figure [fig:GMT\ :sub:`w`\ inkel]
 was created by this command:
@@ -5501,7 +5499,7 @@ cartographer Arthur H. Robinson in 1963, is a modified cylindrical
 projection that is neither conformal nor equal-area. Central meridian
 and all parallels are straight lines; other meridians are curved. It
 uses lookup tables rather than analytic expressions to make the world
-map “look” right [23]_. The scale is true along latitudes 38. The
+map "look" right [23]_. The scale is true along latitudes 38. The
 projection was originally developed for use by Rand McNally and is
 currently used by the National Geographic Society. To use it you must
 enter
@@ -5524,10 +5522,10 @@ The Eckert IV and VI projections, presented by the German cartographer
 Max Eckert-Greiffendorff in 1906, are pseudocylindrical equal-area
 projections. Central meridian and all parallels are straight lines;
 other meridians are equally spaced elliptical arcs (IV) or sinusoids
-(VI). The scale is true along latitudes 4030’ (IV) and 4916’ (VI). Their
+(VI). The scale is true along latitudes 4030' (IV) and 4916' (VI). Their
 main use is in thematic world maps. To select Eckert IV you must use
-**-JKf** (**f** for “four”) while Eckert VI is selected with **-JKs**
-(**s** for “six”). If no modifier is given it defaults to Eckert VI. In
+**-JKf** (**f** for "four") while Eckert VI is selected with **-JKs**
+(**s** for "six"). If no modifier is given it defaults to Eckert VI. In
 addition, you must enter
 
 -  The central meridian [Middle of your map].
@@ -5549,7 +5547,7 @@ Sinusoidal projection (**-Ji** **-JI**)
 
 The sinusoidal projection is one of the oldest known projections, is
 equal-area, and has been used since the mid-16th century. It has also
-been called the “Equal-area Mercator” projection. The central meridian
+been called the "Equal-area Mercator" projection. The central meridian
 is a straight line; all other meridians are sinusoidal curves. Parallels
 are all equally spaced straight lines, with scale being true along all
 parallels (and central meridian). To use it, you need to select:
@@ -5634,7 +5632,7 @@ are discussed here) and support data used below. Note that all examples
 explicitly specifies the measurement units, so although we use inches
 you should be able to run these scripts and get the same plots even if
 you have cm as the default measure unit. The examples are all written to
-be “quiet”, that is no information is echoed to the screen. Thus, these
+be "quiet", that is no information is echoed to the screen. Thus, these
 scripts are well suited for background execution.
 
 Note that we also end each script by cleaning up after ourselves.
@@ -5832,7 +5830,7 @@ specify positions in inches directly. Thus, the complete automated script reads:
     # which in this case are "longitude,latitude". The "sat.xyg" data were
     # obtained by a satellite and the sequence of points lies almost along
     # a great circle. The "ship.xyg" data were obtained by a ship which
-    # tried to follow the satellite’s path but deviated from it in places.
+    # tried to follow the satellite's path but deviated from it in places.
     # Thus the two data sets are not measured at the same of points,
     # and we use various GMT tools to facilitate their comparison.
     # The main illustration (example_03.ps) are accompanied with 5 support
@@ -5875,9 +5873,9 @@ specify positions in inches directly. Thus, the complete automated script reads:
     # typically spaced using awk to get the delta-p between points and view it with
     # "pshistogram".
     #
-    awk ’{ if (NR > 1) print $1 - last1; last1=$1; }’ ship.pg | pshistogram -W0.1 -Gblack -JX3i -K \
+    awk '{ if (NR > 1) print $1 - last1; last1=$1; }' ship.pg | pshistogram -W0.1 -Gblack -JX3i -K \
          -X2i -Y1.5i -B:."Ship": -U/-1.75i/-1.25i/"Example 3b in Cookbook" > ../example_03b.ps
-    awk ’{ if (NR > 1) print $1 - last1; last1=$1; }’ sat.pg | pshistogram -W0.1 -Gblack -JX3i -O \
+    awk '{ if (NR > 1) print $1 - last1; last1=$1; }' sat.pg | pshistogram -W0.1 -Gblack -JX3i -O \
          -X5i -B:."Sat": >> ../example_03b.ps
     #
     # This experience shows that the satellite values are spaced fairly evenly, with
@@ -5972,9 +5970,9 @@ specify positions in inches directly. Thus, the complete automated script reads:
     # From this we see that we might want to throw away values where w < 0.6. So we try that,
     # and this time we also use trend1d to return the residual from the model fit (the
     # de-trended data):
-    trend1d -Fxrw -N2r samp_ship.pg | awk ’{ if ($3 > 0.6) print $1, $2 }’ \
+    trend1d -Fxrw -N2r samp_ship.pg | awk '{ if ($3 > 0.6) print $1, $2 }' \
          | sample1d -Nsamp.x > samp2_ship.pg
-    trend1d -Fxrw -N2r samp_sat.pg | awk ’{ if ($3 > 0.6) print $1, $2 }’ \
+    trend1d -Fxrw -N2r samp_sat.pg | awk '{ if ($3 > 0.6) print $1, $2 }' \
          | sample1d -Nsamp.x > samp2_sat.pg
     #
     # We plot these to see how they look:
@@ -6310,14 +6308,14 @@ Plotting time-series along tracks
 ---------------------------------
 
 A common application in many scientific disciplines involves plotting
-one or several time-series as as “wiggles” along tracks. Marine
+one or several time-series as as "wiggles" along tracks. Marine
 geophysicists often display magnetic anomalies in this manner, and
 seismologists use the technique when plotting individual seismic traces.
 In our example we will show how a set of Geosat sea surface slope
-profiles from the south Pacific can be plotted as “wiggles” using the
+profiles from the south Pacific can be plotted as "wiggles" using the
 `pswiggle <pswiggle.html>`_ program. We will embellish
 the plot with track numbers, the location of the Pacific-Antarctic
-Ridge, recognized fracture zones in the area, and a “wiggle” scale. The
+Ridge, recognized fracture zones in the area, and a "wiggle" scale. The
 Geosat tracks are stored in the files ``*.xys``, the ridge in ``ridge.xy``, and all the
 fracture zones are stored in the multiple segment file ``fz.xy``. We extract the
 profile id (which is the first part of the file name for each profile)
@@ -6837,7 +6835,7 @@ convex hull of the data. However, this can be masked out in various ways
 A more serious objection is that `surface <surface.html>`_ may estimate *z* values
 outside the local range of the data (note area near *x* = 0.8, *y* =
 5.3). This commonly happens when the default tension value of zero is
-used to create a “minimum curvature” (most smooth) interpolant.
+used to create a "minimum curvature" (most smooth) interpolant.
 `surface <surface.html>`_ can be used with non-zero
 tension to partially overcome this problem. The limiting value
 :math:`tension = 1` should approximate the triangulation, while a value
@@ -6851,16 +6849,16 @@ perpendicular direction. A solution is to use
 area. Another way to achieve a compromise is to interpolate the data to
 a grid and then filter the grid using `grdfft <grdfft.html>`_ or
 `grdfilter <grdfilter.html>`_. The latter can handle
-grids containing “NaN” values and it can do median and mode filters as
+grids containing "NaN" values and it can do median and mode filters as
 well as convolutions. Shown here is `triangulate <triangulate.html>`_ followed by
 `grdfilter <grdfilter.html>`_. Note that the filter has
 done some extrapolation beyond the convex hull of the original *x, y*
-values. The “best” smooth approximation of :math:`z(x, y)` depends on
+values. The "best" smooth approximation of :math:`z(x, y)` depends on
 the errors in the data and the physical laws obeyed by *z*. *GMT* cannot
-always do the “best” thing but it offers great flexibility through its
+always do the "best" thing but it offers great flexibility through its
 combinations of tools. We illustrate all four solutions using a CPT file
 that contains color fills, predefined patterns for interval (900,925)
-and NaN, an image pattern for interval (875,900), and a “skip slice”
+and NaN, an image pattern for interval (875,900), and a "skip slice"
 request for interval (700,725).
 
    ::
@@ -6924,7 +6922,7 @@ clippath with a second call to `pscoast <pscoast.html>`_
 with the option **-Q** (Figure [fig:example:sub:`1`\ 7]):
 
 We also plot a color legend on top of the land. So here we basically
-have three layers of “paint” stacked on top of each other: the
+have three layers of "paint" stacked on top of each other: the
 underlaying geoid map, the land mask, and finally the color legend. This
 legend makes clear how `grd2cpt <grd2cpt.html>`_
 distributed the colors over the range: they are not of equal length put
@@ -7463,7 +7461,7 @@ legend may be composed using the new tool
 pull out information from the data file that is later used in the
 legend. The legend will normally have the email address of the script
 owner; here that command is commented out and the user is hardwired to
-“GMT guru”. The USGS logo, taken from their web page and converted to a
+"GMT guru". The USGS logo, taken from their web page and converted to a
 Sun raster file, is used to spice up the legend.
 
 The script produces the plot in Figure [fig:example\ :sub:`2`\ 2],
@@ -7582,8 +7580,8 @@ All great-circle paths lead to Rome
 
 [sec:example:sub:`2`\ 3]
 
-While motorists recently have started to question the old saying “all
-roads lead to Rome”, aircraft pilots have known from the start that only
+While motorists recently have started to question the old saying "all
+roads lead to Rome", aircraft pilots have known from the start that only
 one great-circle path connects the points of departure and
 arrival [28]_. This provides the inspiration for our next example which
 uses `grdmath <grdmath.html>`_ to calculate distances
@@ -7598,7 +7596,7 @@ the shape of the contours.
 
 The script produces the plot in Figure [fig:example\ :sub:`2`\ 3]; note
 how interesting the path to Seattle appears in this particular
-projection (Hammer). We also note that Rome’s antipode lies somewhere
+projection (Hammer). We also note that Rome's antipode lies somewhere
 near the Chatham plateau (antipodes will be revisited in
 Section [sec:example\ :sub:`2`\ 5]).
 
@@ -7757,7 +7755,7 @@ land, -1 if both are in the ocean, and 0 elsewhere. We then seek to
 calculate the area distribution of dry antipodes by only pulling out the
 nodes that equal +1. As each point represent an area approximated by
 :math:`\Delta \phi \times \Delta \lambda` where the
-:math:`\Delta \lambda` term’s actual dimension depends on
+:math:`\Delta \lambda` term's actual dimension depends on
 :math:`\cos (\phi)`, we need to allow for that shrinkage, normalize our
 sum to that of the whole area of the Earth, and finally convert that
 ratio to percent. Since the :math:`\Delta \lambda`, :math:`\Delta \phi`
@@ -8055,7 +8053,7 @@ Gridding spherical surface data using splines
 ---------------------------------------------
 
 Finally, we demonstrate how gridding on a spherical surface can be
-accomplished using Green’s functions of surface splines, with or without
+accomplished using Green's functions of surface splines, with or without
 tension. Global gridding does not work particularly well in Cartesian
 coordinates hence the chosen approach. We use
 `greenspline <greenspline.html>`_ to produce a crude
@@ -8071,7 +8069,7 @@ tension is particularly slow to compute.
 Our script must first estimate the ellipsoidal shape of Mars from the
 parameters given by *Smith and Zuber* so that we can remove this
 reference surface from the gridded radii. We run the gridding twice:
-First with no tension using *Parker*\ ’s [1990] method and then with
+First with no tension using *Parker*\ 's [1990] method and then with
 tension using the *Wessel and Becker* [2008] method. The grids are then
 imaged with `grdimage <grdimage.html>`_ and
 `grdcontour <grdcontour.html>`_ and a color scale is placed between them.
@@ -8236,7 +8234,7 @@ includes the following steps:
 
 -  create a *PostScript*-File with outlined fonts (optional);
 
--  convert *GMT*\ ’s *PostScript* output to PDF or any image format (optional).
+-  convert *GMT*\ 's *PostScript* output to PDF or any image format (optional).
 
 The script produces the plot in Figure [fig:example\ :sub:`3`\ 1]. All
 standard fonts have been substituted by the free OpenType fonts Linux
@@ -8360,7 +8358,7 @@ outlined fonts or to convert to a PDF-file.
 Draping an image over topography
 --------------------------------
 
-In some cases, it is nice to “drape” an arbitrary image over a
+In some cases, it is nice to "drape" an arbitrary image over a
 topographic map. We have already seen how to use
 `psimage <psimage.html>`_ to plot an image anywhere in
 out plot. But here are aim is different, we want to manipulate an image
@@ -8368,7 +8366,7 @@ to shade it and plot it in 3-D over topography. This example was
 originally created by Stephan Eickschen for a flyer emphasizing the
 historical economical and cultural bond between Brussels, Maastricht and
 Bonn. Obviously, the flag of the European Union came to mind as a good
-“background”.
+"background".
 
 To avoid adding large files to this example, some steps have been
 already done. First we get the EU flag directly from the web and convert
@@ -8388,7 +8386,7 @@ topography map of northwest continental Europe, with the flagged draped
 over it and with shading to show the little topography there is.
 `pscoast <pscoast.html>`_ is used in conjunction with
 `grdtrack <grdtrack.html>`_ and *GMT*\ psxyz to plot
-borders “at altitude”. Something similar is done at the end to plot some
+borders "at altitude". Something similar is done at the end to plot some
 symbols and names for cities.
 
 The script produces the plot in Figure [fig:example\ :sub:`3`\ 2]. Note
@@ -8574,7 +8572,7 @@ is nothing more than a series of individual images played back in an
 orderly fashion. Here, these images will have been created with *GMT*.
 To ensure a smooth transition from frame to frame we will be following
 some general guidelines when writing our scripts. Since there is no
-“movie” mode in *GMT* we must take care of all the book-keeping in our
+"movie" mode in *GMT* we must take care of all the book-keeping in our
 script. Thus, animations may require a bit of planning and may use more
 advanced scripting than the previous static examples. Note: This is a
 new chapter introduced with the 4.4.0 version and should be considered
@@ -8614,7 +8612,7 @@ example.
    (e.g., 480 by 320 pixels) then you should specify a paper size and
    *dpi* so that their product yields the desired pixel dimensions. For
    instance, here it might make sense to plan your plotting on a 4.8 by
-   3.2 inch “paper” and use 100 *dpi* to convert it to pixels, but you
+   3.2 inch "paper" and use 100 *dpi* to convert it to pixels, but you
    are free to use any combination that multiplies to the desired
    dimensions. After deciding on frame size you need to consider how
    many frames your movie should have. This depends on lots of things
@@ -8707,7 +8705,7 @@ gridded data. The red arrow points in the direction of the illumination.
 
 As you can see, these sorts of animations are not terribly difficult to
 put together, especially since our vantage point is fixed. In the next
-example we will move the “camera” around and must therefore deal with
+example we will move the "camera" around and must therefore deal with
 how to frame perspective views.
 
 Orbiting a static map
@@ -8734,7 +8732,7 @@ path on the ground, and add frame numbers to each frame. As this
 animation generates 355 frames we can use 3rd party tools to turn the
 image sequence into a MPEG-4 movie [31]_. Note: At the moment,
 `grdview <grdview.html>`_ cannot use general perspective
-view projection to allow “fly-through” animations like Fledermaus; we
+view projection to allow "fly-through" animations like Fledermaus; we
 expect to add this functionality in a future version.
 
 Mailing lists, updates, and bug reports
@@ -8764,17 +8762,17 @@ users may subscribe to. It basically provides a forum for *GMT* users to
 exchange ideas and ask questions about *GMT* usage, installation and
 portability, etc. Please use this utility rather than sending questions
 directly to us personally. We hope you appreciate that we simply do not
-have time to be everybody’s personal *GMT* tutor.
+have time to be everybody's personal *GMT* tutor.
 
 The electronic mailing lists are maintained automatically by a program.
 To subscribe to one or both of the lists, send a message to containing
 the command(s):
 
-subscribe gmt-group :math:`<`\ your full name, not email address\ :math:`>`
+subscribe gmt-group <your full name, not email address>
 
-subscribe gmt-help :math:`<`\ your full name, not email address\ :math:`>`
+subscribe gmt-help <your full name, not email address>
 
-(Do not type the angular brackets :math:`<`\ :math:`>`). You may also
+(Do not type the angular brackets <>). You may also
 register electronically via the *GMT* home web page
 (gmt.soest.hawaii.edu). For information on what commands you may send,
 send a message containing the word help. You must interact with the
@@ -8799,7 +8797,7 @@ A. GMT supplemental packages
 These packages are for the most part written and supported by us, but
 there are some exceptions. They provide extensions of *GMT* that are
 needed for particular rather than general applications. The software is
-provided in a separate, supplemental archive (GMT\_suppl.tar.gz (or
+provided in a separate, supplemental archive (GMT_suppl.tar.gz (or
 .bz2); see Appendix `D. Availability of GMT and related code`_).
 Questions or bug reports for this software
 should be addressed to the person(s) listed in the ``README`` file associated with
@@ -8965,7 +8963,7 @@ tracks. Newly added are the tools
 `x2sys_merge <supplements/x2sys/x2sys_merge.html>`_ which extends the
 track-management system employed by the mgg supplement to generic track
 data of any format. This package represents a new generation of tools
-and replaces the old **x\_system** package. The package is maintained by
+and replaces the old **x_system** package. The package is maintained by
 Paul Wessel.
 
 
@@ -8986,10 +8984,10 @@ Optional file header records
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The first data record may be preceded by one or more header records. Any
-records that begins with ’#’ is considered a header or comment line and
+records that begins with '#' is considered a header or comment line and
 are always processed correctly. If your data file has leading header
-records that do *not* start with ’#’ then you must make sure to use the
-**-h** option and set the parameter **IO\_N\_HEADER\_RECS** in the ``gmt.conf`` file
+records that do *not* start with '#' then you must make sure to use the
+**-h** option and set the parameter **IO_N_HEADER_RECS** in the ``gmt.conf`` file
 (*GMT* default is one header record if **-h** is given; you may also use
 **-h**\ *nrecs* directly). Fields within a record must be separated by
 spaces, tabs, or commas. Each field can be an integer or floating-point
@@ -8997,7 +8995,7 @@ number or a geographic coordinate string using the
 [+\ \|\ -]dd[:mm[:ss]][W:\ \|\ S\ \|\ N\ \|\ E\ \|\ w\ \|\ s\ \|\ n\ \|\ e]
 format. Thus, 12:30:44.5W, 17.5S, 1:00:05, and 200:45E are all valid
 input strings. On output, fields will be separated by the character
-given by the parameter **IO\_COL\_SEPARATOR**, which by default is a
+given by the parameter **IO_COL_SEPARATOR**, which by default is a
 TAB.
 
 Optional segment header records
@@ -9014,20 +9012,20 @@ called *multiple segment files* and are identical to the ones just
 outlined except that they have segment headers interspersed with data
 records that signal the start of a new segment. The segment headers may
 be of any format, but all must have the same character in the first
-column. The unique character is by default ’\ :math:`>`\ ’, but you can
-override that by modifying the **IO\_SEGMENT\_MARKER** default setting.
+column. The unique character is by default '\ >\ ', but you can
+override that by modifying the **IO_SEGMENT_MARKER** default setting.
 Programs can examine the segment headers to see if they contain **-D**
 for a distance value, **-W** and **-G** options for specifying pen and
 fill attributes for individual segments, **-Z** to change color via a
 CPT file, **-L** for label specifications, or **-T** for general-purpose
 text descriptions. These settings (and occasionally others) will
 override the corresponding command line options. *GMT* also provides for
-two special values for **IO\_SEGMENT\_MARKER** that can make
+two special values for **IO_SEGMENT_MARKER** that can make
 interoperability with other software packages easier. Choose the marker
 **B** to have blank lines recognized as segment breaks, or use **N** to
 have data records whose fields equal NaN mean segment breaks (e.g., as
 used by GNU Octave or Matlab). When these markers are used then no other
-segment header will be considered. Note that **IO\_SEGMENT\_MARKER** can
+segment header will be considered. Note that **IO_SEGMENT_MARKER** can
 be set differently for input and output.
 
 Binary tables
@@ -9084,23 +9082,23 @@ slightly deviating from the standards used by *GMT* can also be read.
 | Conventions & COARDS, CF-1.5 (optional)
 | title & Title (optional)
 | source & How file was created (optional)
-| node\_offset & absent or 0 for gridline node registration (default), 1 for pixel registration
+| node_offset & absent or 0 for gridline node registration (default), 1 for pixel registration
 | & *:math:`x`- and :math:`y`-variable attributes*
-| long\_name & Coordinate name (e.g., “Longitude” and “Latitude”)
-| units & Unit of the coordinate (e.g., “degrees\_east” and “degrees\_north”)
-| actual\_range & Minimum and maximum :math:`x` and :math:`y` of region; if absent the first and last :math:`x`- and :math:`y`-values are queried
+| long_name & Coordinate name (e.g., "Longitude" and "Latitude")
+| units & Unit of the coordinate (e.g., "degrees_east" and "degrees_north")
+| actual_range & Minimum and maximum :math:`x` and :math:`y` of region; if absent the first and last :math:`x`- and :math:`y`-values are queried
 | & *:math:`z`-variable attributes*
-| long\_name & Name of the variable (default: “z”)
+| long_name & Name of the variable (default: "z")
 | units & Unit of the variable
-| scale\_factor & Factor to multiply :math:`z` with (default: 1)
-| add\_offset & Offset to add to scaled :math:`z` (default: 0)
-| actual\_range & Minimum and maximum :math:`z` (in unpacked units, optional) and :math:`z`
-| \_FillValue & Value associated with missing or invalid data points; if absent an appropriate default value is assumed, depending on data type.
+| scale_factor & Factor to multiply :math:`z` with (default: 1)
+| add_offset & Offset to add to scaled :math:`z` (default: 0)
+| actual_range & Minimum and maximum :math:`z` (in unpacked units, optional) and :math:`z`
+| _FillValue & Value associated with missing or invalid data points; if absent an appropriate default value is assumed, depending on data type.
 
 [tbl:netcdf-format]
 
 By default, the first 2-dimensional variable in a netCDF file will by
-read as the :math:`z` variable and the coordinate axes :math:`x` and
+read as the *z* variable and the coordinate axes *x* and
 :math:`y` will be determined from the dimensions of the :math:`z`
 variable. *GMT* will recognize whether the :math:`y` (latitude) variable
 increases or decreases. Both forms of data storage are handled
@@ -9123,9 +9121,9 @@ Gridline and Pixel node registration
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Scanline format means that the data are stored in rows (*y* = constant)
-going from the “top” (:math:`y = y_{max}` (north)) to the “bottom”
+going from the "top" (:math:`y = y_{max}` (north)) to the "bottom"
 (:math:`y = y_{min}` (south)). Data within each row are ordered from
-“left” (:math:`x = x_{min}` (west)) to “right” (:math:`x = x_{max}`
+"left" (:math:`x = x_{min}` (west)) to "right" (:math:`x = x_{max}`
 (east)). The *registration* signals how the nodes are laid out. The grid
 is always defined as the intersections of all *x* (
 :math:` x = x_{min}, x_{min} + x_{inc}, x_{min} + 2 \cdot x_{inc}, \ldots, x_{max} `
@@ -9158,7 +9156,7 @@ condition can be set with the common *GMT* option **-n**; see Section
 [sec:resample]. The boundary conditions come into play when
 interpolating or computing derivatives near the limits of the region
 covered by the grid. The *default* boundary conditions used are those
-which are “natural” for the boundary of a minimum curvature
+which are "natural" for the boundary of a minimum curvature
 interpolating surface. If the user knows that the data are periodic in
 *x* (and/or *y*), or that the data cover a sphere with *x*,\ *y*
 representing *longitude*,\ *latitude*, then there are better choices for
@@ -9189,14 +9187,14 @@ Geographical
        on the :math:`x` boundaries.
 
     #. If condition 1 is true and also :math:`y_{max} = 90` then a
-       “north pole condition” is used at :math:`y_{max}`, else a default
+       "north pole condition" is used at :math:`y_{max}`, else a default
        condition is used there.
 
     #. If condition 1 is true and also :math:`y_{min} = -90` then a
-       “south pole condition” is used at :math:`y_{min}`, else a default
+       "south pole condition" is used at :math:`y_{min}`, else a default
        condition is used there.
 
-    “Pole conditions” use a 180 phase-shift of the data, requiring 180
+    "Pole conditions" use a 180 phase-shift of the data, requiring 180
     modulo :math:`x_{inc} = 0`.
 
 Default
@@ -9385,7 +9383,7 @@ Making `GMT <http://gmt.soest.hawaii.edu>`_ Encapsulated *PostScript* Files
 *GMT* produces freeform *PostScript* files. Note that a freeform
 *PostScript* file may contain special operators (such as
 ``Setpagedevice``) that is specific to printers (e.g., selection of
-paper tray). Some previewers (among them, Sun’s **pageview**) may not
+paper tray). Some previewers (among them, Sun's **pageview**) may not
 understand these valid instructions and may fail to image the file.
 Also, embedding freeform *PostScript* with such instructions in it into
 a larger document can cause printing to fail. While you could choose
@@ -9401,7 +9399,7 @@ correct bounding box parameters. These are found in the
 EPS files should set these parameters correctly. Because *GMT*\ makes
 the *PostScript* files on the fly, often with several overlays, it is
 not possible to do so accurately. Therefore, if you need and EPS version
-with a “tight” BoundingBox you need to post-process your
+with a "tight" BoundingBox you need to post-process your
 *PostScript* file. There are several ways in which this can be
 accomplished.
 
@@ -9426,7 +9424,7 @@ accomplished.
        ps2epsi myplot.ps myplot.eps
 
    should also do the trick. The downside is that this program adds an
-   “image” of the plot in the preamble of the EPS file, thus increasing
+   "image" of the plot in the preamble of the EPS file, thus increasing
    the file size significantly. This image is a rough rendering of your
    *PostScript* graphics that some programs will show on screen while
    you are editing your document. This image is basically a placeholder
@@ -9456,14 +9454,14 @@ on-screen, but it will print correctly.
 Converting `GMT <http://gmt.soest.hawaii.edu>`_ *PostScript* to PDF or raster images
 -------------------------------------------------------------------------------------
 
-Since Adobe’s PDF (Portable Document Format) seems to have become the
+Since Adobe's PDF (Portable Document Format) seems to have become the
 *de facto* standard for vector graphics, you are often well off
 converting *GMT* produced *PostScript* files to PDF. Being both vector
 formats (i.e., they basically describe all objects, text and graphics as
 lines and curves), such conversion sounds awfully straightforward and
 not worth a full section in this document. But experience has shown
 differently, since most converters cut corners by using the same tool
-(Aladdin’s **ghostscript**) with basic default options that are not
+(Aladdin's **ghostscript**) with basic default options that are not
 devised to produce the best quality PDF files.
 
 For some applications it is practical or even essential that you convert
@@ -9474,14 +9472,14 @@ page is better served with a raster image that will immediately show on
 a web browser, than with a *PostScript* file that needs to be downloaded
 to view, despite the better printing quality of the *PostScript* image.
 A less obvious reason to convert your image to a raster format is to
-by-pass **PowerPoint**\ ’s rendering engine in case you want to embed
+by-pass **PowerPoint**\ 's rendering engine in case you want to embed
 the image into a presentation.
 
 The are a number of programs that will convert *PostScript* files to PDF
-or raster formats, like Aladdin’s **pstopdf**, pbmplus’ **pstoimg**,
-or ImageMagick’s **convert**, most of which run **ghostscript**
+or raster formats, like Aladdin's **pstopdf**, pbmplus' **pstoimg**,
+or ImageMagick's **convert**, most of which run **ghostscript**
 behind the scenes. The same is true for viewers like **ghostview** and
-Apple’s **Preview**. So a lot of the times when people report that
+Apple's **Preview**. So a lot of the times when people report that
 their *PostScript* plot does not look right but prints fine, it is the
 way **ghostscript** is used with its most basic settings that is to
 blame.
@@ -9501,7 +9499,7 @@ Rendering.
 
 Image compression.
     There are *lossy* and *non-lossy* compressions. A compression
-    algorithm is called “lossy” when information is lost in the
+    algorithm is called "lossy" when information is lost in the
     conversion: there is no way back to get the full original. The
     effect can be seen when there are sharp color transitions in your
     image: the edges will get blurry in order to allow a more efficient
@@ -9512,10 +9510,9 @@ Image compression.
 
 Embedded image compression.
     When your *GMT* plot includes objects produced by
-    `grdimage <grdimage.html>`_,
-    `psimage <psimage.html>`_ or
+    `grdimage <grdimage.html>`_, `psimage <psimage.html>`_ or
     `pslegend <pslegend.html>`_, they are seen as
-    “images”. The default options of **ghostscript** will use a
+    "images". The default options of **ghostscript** will use a
     *lossy* compression (similar to JPEG) on those images when
     converting them to PDF objects. This can be avoided, however, by
     inhibiting the compression altogether, or using the non-lossy
@@ -9530,9 +9527,9 @@ Auto-rotation.
     you have an image that was printed in portrait mode but happens to
     have a width larger than height (for example a global map), it would
     suddenly get rotated. Again, this function needs to be switched off.
-    Apple’s **Preview** uses the **ghostscript** engine and suffers
+    Apple's **Preview** uses the **ghostscript** engine and suffers
     from the same annoying habit. Oddly enough, **ghostscript** does
-    not force landscape plots to be “horizontal”.
+    not force landscape plots to be "horizontal".
 
 Anti-aliasing.
     This is not something to worry about when converting to PDF, but
@@ -9540,7 +9537,7 @@ Anti-aliasing.
     *Anti-aliasing* in this context means that the rendering tries to
     avoid *aliasing*, for example, sampling only the blacks in a
     black-and-white hachure. It does so by first oversampling the image
-    and then using “gray-shades” when a target pixel is only partially
+    and then using "gray-shades" when a target pixel is only partially
     white or black.
 
     Clearly, this can lead to some unwanted results. First, all edges
@@ -9570,8 +9567,7 @@ The remedy to all the problems mentioned in the previous section is
 readily available to you in the form of the *GMT* utility
 `ps2raster <ps2raster.html>`_. It is designed to provide
 the best quality PDF and raster files using **ghostscript** as a
-rendering engine. The program
-`ps2raster <ps2raster.html>`_ avoids anti-aliasing and
+rendering engine. The program `ps2raster <ps2raster.html>`_ avoids anti-aliasing and
 lossy compression techniques that are default to **ghostscript** and
 includes the fonts into the resulting PDF file to ensure portability. By
 default the fonts are rendered at 720 dots-per-inch in a PDF file and
@@ -9632,7 +9628,7 @@ look automatically for ``myplot.pdf``. If you run **latex**, it will use ``myplo
 
 You can scale your plot using the options ``width=``, ``height=``, or
 ``scale=``. In addition, if your original graphics was produced in
-Landscape mode (i.e., you did *not* use *GMT*\ ’s **-P** option: not
+Landscape mode (i.e., you did *not* use *GMT*\ 's **-P** option: not
 while plotting, nor in `ps2raster <ps2raster.html>`_),
 you will need to rotate the plot as well. For example,
 
@@ -9664,7 +9660,7 @@ rendering, we do not get the best result:
    even when the tiles join seamlessly.
 
 #. The background color was assumed to be white, hence the text is
-   “smoothed” using gray shades. Instead, shades of blue which would be
+   "smoothed" using gray shades. Instead, shades of blue which would be
    appropriate for the background we are using.
 
 On the central column of Figure [fig:rendering] we have included PNG
@@ -9681,8 +9677,8 @@ blocky. The solution is to render the image at a higher resolution
 (e.g., 300 dpi) without anti-aliasing and then shrink the image to the
 appropriate size (bottom of the central column in
 Figure [fig:rendering]). The scaling, rotation as well as the selection
-of the transparent color can be accomplished through the “Formatting”
-tool bar and the “Format Picture” dialogue box of **PowerPoint**
+of the transparent color can be accomplished through the "Formatting"
+tool bar and the "Format Picture" dialogue box of **PowerPoint**
 (Figure [fig:formatpicture]), which can be found by double clicking the
 included image (or selecting and right-clicking or control-clicking on a
 one-button mouse).
@@ -9746,19 +9742,19 @@ For Windows users who just want executables we have three Windows
 installers available. Choose one of the first two and *optionally* the
 third:
 
-gmt-5.0.1b (r)\_install32.exe
+gmt-5.0.1b (r)_install32.exe
     The 32-bit install with all *GMT* executables (including
     supplements), the netCDF DLL, the complete set of GSHHG coastlines,
     rivers, and borders, the example batch scripts and data, and all
     documentation in HTML format.
 
-gmt-5.0.1b (r)\_install64.exe
+gmt-5.0.1b (r)_install64.exe
     The 64-bit install with all *GMT* executables (including
     supplements), the netCDF DLL, the complete set of GSHHG coastlines,
     rivers, and borders, the example batch scripts and data, and all
     documentation in HTML format.
 
-gmt-5.0.1b (r)\_pdf\_install.exe
+gmt-5.0.1b (r)_pdf_install.exe
     Installer for the optional *GMT* documentation in PDF format.
 
 Usually, only one of the 32- or 64-bit installers will be needed.
@@ -9784,7 +9780,7 @@ encoded fonts are shown in
 Figure [fig:GMT\ :sub:`A`\ pp\ :sub:`Ft`\ ext]. Light red areas signify
 codes reserved for control characters. In order to use all the extended
 characters (shown in the light green boxes) you need to set
-**PS\_CHAR\_ENCODING** to Standard+ or ISOLatin1+ in your ``gmt.conf`` file [41]_.
+**PS_CHAR_ENCODING** to Standard+ or ISOLatin1+ in your ``gmt.conf`` file [41]_.
 
 [h] |image|\ |image| [fig:GMT:sub:`A`\ pp\ :sub:`Ft`\ ext]
 
@@ -9794,7 +9790,7 @@ Figure [fig:GMT\ :sub:`A`\ pp\ :sub:`Fs`\ ymbol] below. The octal code
 is obtained by appending the column value to the :math:`\backslash`??
 value, e.g., :math:`\partial` is :math:`\backslash`\ 266 in the Symbol
 font. The euro currency symbol is :math:`\backslash`\ 240 in the Symbol
-font and will print if your printer supports it (older printer’s
+font and will print if your printer supports it (older printer's
 firmware will not know about the euro).
 
 [h] |image|\ |image| [fig:GMT:sub:`A`\ pp\ :sub:`Fs`\ ymbol]
@@ -9873,7 +9869,7 @@ When you have used the correct *PostScript*-names of the fonts in ``CUSTOM_font_
 only need to point the ``GS_FONTPATH`` environment variable to the
 directory where the font files can be found and invoke
 `ps2raster <ps2raster.html>`_ in the usual way. Likewise
-you can specify **Ghostscript**\ ’s ``-sFONTPATH`` option on the
+you can specify **Ghostscript**\ 's ``-sFONTPATH`` option on the
 command line with ``–C-sFONTPATH=/path/to/fontdir``. **Ghostscript**,
 which is invoked by `ps2raster <ps2raster.html>`_, does
 not depend on file names. It will automatically find the relevant font
@@ -9882,7 +9878,7 @@ PDF-files. This is quite convenient as the document can be displayed and
 printed even on other computers when the font is not available locally.
 There is no need to convert your fonts as **Ghostscript** can handle
 all Type 1, TrueType and OpenType fonts. Note also, that you do not need
-to edit **Ghostscript**\ ’s Fontmap.GS.
+to edit **Ghostscript**\ 's Fontmap.GS.
 
 If you do not want or cannot embed the fonts you can convert them to
 outlines (shapes with fills) with **Ghostscript** in the following
@@ -9898,7 +9894,7 @@ Note, that this only works with the *pswrite* device. If you need
 outlined fonts in PDF, create the PDF from the converted
 *PostScript*-file. Also, `ps2raster <ps2raster.html>`_
 cannot correctly crop **Ghostscript** converted *PostScript*-files
-anymore. Use Heiko Oberdiek’s instead or crop with
+anymore. Use Heiko Oberdiek's instead or crop with
 `ps2raster <ps2raster.html>`_ **-A** **-Te** before (See
 Example [sec:non-default-fonts-example]).
 
@@ -9928,7 +9924,7 @@ CPT file. Below, we will explain why this all matters.
 RGB color system
 ----------------
 
-Remember your (parents’) first color television set? Likely it had three
+Remember your (parents') first color television set? Likely it had three
 little bright colored squares on it: red, green, and blue. And that is
 exactly what each color on the tube is made of: varying levels of red,
 green and blue light. Switch all of them off, :math:`r=g=b=0`, then you
@@ -9949,7 +9945,7 @@ level will turn it into brown.
 
 Is chocolate your favorite color, but you do not know the RGB equivalent
 values? Then look them up in Figure [fig:RGBchart] or type **man
-gmtcolors** for a full list. It’s 210/105/30. But *GMT* makes it easy
+gmtcolors** for a full list. It's 210/105/30. But *GMT* makes it easy
 on you: you can specify pen, fill, and palette colors by any of the more
 than 500 unique colors found in that file.
 
@@ -9972,12 +9968,12 @@ another coordinate system was invented: HSV (hue, saturation, value).
 Those terms can be made clear best by looking at the color sliders in
 Figure [fig:gimp]\ *a*. Hue (running from 0 to 360) gives you the full
 spectrum of saturated colors. Saturation (from 0 to 1, or 100%) tells
-you how ‘full’ your color is: reduce it to zero and you only have gray
+you how ‘full' your color is: reduce it to zero and you only have gray
 scales. Value (from 0 to 1, or 100%) will bring you from black to a
-fully saturated color. Note that “value” is not the same as “intensity”,
-or “lightness”, used in other color geometries. “Brilliance” may be the
-best alternative word to describe “value”. Apple calls it as
-“brightness”, and hence refers to HSB for this color space.
+fully saturated color. Note that "value" is not the same as "intensity",
+or "lightness", used in other color geometries. "Brilliance" may be the
+best alternative word to describe "value". Apple calls it as
+"brightness", and hence refers to HSB for this color space.
 
 Want more chartreuse or chocolate? You can specify them in *GMT* as
 90-1-1 and 25-0.86-0.82, respectively.
@@ -10020,7 +10016,7 @@ dashed black lines indicate varying levels of saturation: :math:`s`
 ranges from 0 to 1 with contours every 0.1.
 
 Now turn the cube around on its vertical axis (running from the black to
-the white corner). Along the six edges that zigzag around the “equator”,
+the white corner). Along the six edges that zigzag around the "equator",
 both saturation and value are maximum, so :math:`s = v = 1`. Twirling
 the cube around and tracing the zigzag, you will visit six of the eight
 corners of the cube, with changing hue (:math:`h`): red (0), yellow
@@ -10033,7 +10029,7 @@ undefined and :math:`r = g = b`. Any point on this axis is a shade of
 gray.
 
 Let us call the points where :math:`s = v = 1` (points along the RYGCBM
-path described above) the “pure” colors. If we start at a pure color and
+path described above) the "pure" colors. If we start at a pure color and
 we want to whiten it, we can keep :math:`h` constant and :math:`v = 1`
 while decreasing :math:`s`; this will move us along one of the cube
 faces toward the white point. If we start at a pure color and we want to
@@ -10055,8 +10051,8 @@ possible to construct this line, and all points on this line have the
 same hue. This construction shows that any point in RGB space can be
 thought of as a mixture of a pure color plus a shade of gray. If we move
 along this line away from the gray axis toward the pure color, we are
-“purifying” the color by “removing gray”; this move increases the
-color’s saturation. When we get to the point where we cannot remove any
+"purifying" the color by "removing gray"; this move increases the
+color's saturation. When we get to the point where we cannot remove any
 more gray, at least one of (:math:`r`,\ :math:`g`,\ :math:`b`) will have
 become zero and the color is now fully saturated; :math:`s = 1`.
 Conversely, any point on the gray axis is completely undersaturated, so
@@ -10081,7 +10077,7 @@ end of the line, where :math:`v = 1`, then it is possible to move along
 the line in that direction so as to increase
 (:math:`r`,\ :math:`g`,\ :math:`b`) while keeping the same hue. The
 effect this has on a color monitor is to make the color more
-“brilliant”, your hue will become “stronger”; if you are already on a
+"brilliant", your hue will become "stronger"; if you are already on a
 plane where at least one of (:math:`r`,\ :math:`g`,\ :math:`b`) = 255,
 then you cannot get a stronger version of the same hue. Thus, :math:`v`
 measures brilliance or strength. Note that it is not quite true to say
@@ -10111,7 +10107,7 @@ yellow.
 Depending on the design of your color palette, you may want to have it
 either way. By default, *GMT* interpolates in RGB space, even when the
 original color palette is in the HSV system. However, when you add the
-line ``#COLOR_MODEL=+HSV`` (with the leading ‘+’ sign) in the header of
+line ``#COLOR_MODEL=+HSV`` (with the leading ‘+' sign) in the header of
 the color palette file, *GMT* will not only read the color
 representation as HSV values, but also interpolate colors in the HSV
 system. That means that H, S, and V values are interpolated linearly
@@ -10136,33 +10132,33 @@ images (e.g., **-I** option in
 the intensity is non-zero, the color is either lightened or darkened
 depending on the illumination. The color is first converted to HSV (if
 necessary) and then darkened by moving (:math:`s`,\ :math:`v`) toward
-(**COLOR\_HSV\_MIN\_S**, **COLOR\_HSV\_MIN\_V**) if the intensity is
+(**COLOR_HSV_MIN_S**, **COLOR_HSV_MIN_V**) if the intensity is
 negative, or lightened by sliding (:math:`s`,\ :math:`v`) toward
-(**COLOR\_HSV\_MAX\_S**, **COLOR\_HSV\_MAX\_V**) if the illumination is
+(**COLOR_HSV_MAX_S**, **COLOR_HSV_MAX_V**) if the illumination is
 positive. The extremes of the :math:`s` and :math:`v` are defined in the
 ``gmt.conf`` file and are usually chosen so the corresponding points are nearly black
 (:math:`s` = 1, :math:`v` = 0) and white (:math:`s` = 0, :math:`v` = 1).
 The reason this works is that the HSV system allows movements in color
-space which correspond more closely to what we mean by “tint” and
-“shade”; an instruction like “add white” is easy in HSV and not so
+space which correspond more closely to what we mean by "tint" and
+"shade"; an instruction like "add white" is easy in HSV and not so
 obvious in RGB.
 
 Thinking in RGB or HSV
 ----------------------
 
 The RGB system is understandable because it is cartesian, and we all
-learned cartesian coordinates in school. But it doesn’t help us create a
-tint or shade of a color; we cannot say, “We want orange, and a lighter
-shade of orange, or a less vivid orange”. With HSV we can do this, by
-saying, “Orange must be between red and yellow, so its hue is about
+learned cartesian coordinates in school. But it doesn't help us create a
+tint or shade of a color; we cannot say, "We want orange, and a lighter
+shade of orange, or a less vivid orange". With HSV we can do this, by
+saying, "Orange must be between red and yellow, so its hue is about
 :math:`h` = 30; a less vivid orange has a lesser :math:`s`, a darker
-orange has a lesser :math:`v`”. On the other hand, the HSV system is a
+orange has a lesser :math:`v`". On the other hand, the HSV system is a
 peculiar geometric construction, more like a cone
 (Figure [fig:hsv-cone]). It is not an orthogonal coordinate system, and
 it is not found by a matrix transformation of RGB; these make it
 difficult in some cases too. Note that a move toward black or a move
 toward white will change both :math:`s` and :math:`v`, in the general
-case of an interior point in the cube. The HSV system also doesn’t
+case of an interior point in the cube. The HSV system also doesn't
 behave well for very dark colors, where the gray point is near black and
 the two lines we constructed above are almost parallel. If you are
 trying to create nice colors for drawing chocolates, for example, you
@@ -10175,7 +10171,7 @@ Finally, you can imagine that printers work in a different way: they mix
 different paints to make a color. The more paint, the darker the color,
 which is the reverse of adding more light. Also, mixing more colored
 paints does not give you true black, so that means that you really need
-four colors to do it right. Open up your color printer and you’ll
+four colors to do it right. Open up your color printer and you'll
 probably find four cartridges: cyan, magenta, yellow (often these are
 combined into one), and black. They form the CMYK system of colors, each
 value running from 0 to 1 (or 100%). In *GMT* CMYK color coding can be
@@ -10205,7 +10201,7 @@ tables of data indexed to one independent variable) and
 (To filter a grid by Fourier transform use
 `grdfft <grdfft.html>`_.) Both programs use an argument
 **-F**\ :math:`<`\ *type*\ :math:`><`\ *width*\ :math:`>` to specify the
-type of process and the window’s width (in 1-d) or diameter (in 2-d).
+type of process and the window's width (in 1-d) or diameter (in 2-d).
 (In `filter1d <filter1d.html>`_ the width is a length of
 the time or space ordinate axis, while in
 `grdfilter <grdfilter.html>`_ it is the diameter of a
@@ -10238,9 +10234,9 @@ while in 2-d it is around :math:`f \sim 1.2`. The 1-d cosine transfer
 function has its first zero crossing at :math:`f = 2`; so a cosine
 filter needs to be twice as wide as a boxcar filter in order to zero the
 same lowest frequency. As a general rule, the cosine and gaussian
-filters are “better” in the sense that they do not have the “side lobes”
+filters are "better" in the sense that they do not have the "side lobes"
 (large-amplitude oscillations in the transfer function) that the boxcar
-filter has. However, they are correspondingly “worse” in the sense that
+filter has. However, they are correspondingly "worse" in the sense that
 they require more work (doubling the width to achieve the same cut-off
 wavelength).
 
@@ -10310,11 +10306,11 @@ any manipulation of these data must be automated. For instance, the
 reasonable requirement that no coastline should cross another coastline
 becomes a complicated processing step.
 
-#. To begin, we first made sure that all data were “clean”, i.e., that
+#. To begin, we first made sure that all data were "clean", i.e., that
    there were no outliers and bad points. We had to write several
-   programs to ensure data consistency and remove “spikes” and bad
+   programs to ensure data consistency and remove "spikes" and bad
    points from the raw data. Also, crossing segments were automatically
-   “trimmed” provided only a few points had to be deleted. A few hundred
+   "trimmed" provided only a few points had to be deleted. A few hundred
    more complicated cases had to be examined semi-manually.
 
 #. Programs were written to examine all the loose segments and determine
@@ -10361,9 +10357,9 @@ becomes a complicated processing step.
    would typically run for 3 days on a Sparc-2 workstation.
 
 #. Once we know what type a polygon is we can enforce a common
-   “orientation” for all polygons. We arranged them so that when you
+   "orientation" for all polygons. We arranged them so that when you
    move along a polygon from beginning to end, your left hand is
-   pointing toward “land”. At this step we also computed the area of all
+   pointing toward "land". At this step we also computed the area of all
    polygons since we would like the option to plot only features that
    are bigger than a minimum area to be specified by the user.
 
@@ -10406,9 +10402,9 @@ becomes a complicated processing step.
       to paint the land or the oceans.
 
    -  We want to nest the polygons so that no paint falls on areas that
-      are “wet” (or “dry”); e.g., if a grid cell completely on land
+      are "wet" (or "dry"); e.g., if a grid cell completely on land
       contains a lake with a small island, we do not want to paint the
-      lake and then draw the island, but paint the annulus or “donut”
+      lake and then draw the island, but paint the annulus or "donut"
       that is represented by the land and lake, and then plot the
       island.
 
@@ -10431,14 +10427,14 @@ The crude resolution (**-Dc**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We begin with an azimuthal equidistant map of the hemisphere centered on
-13021’E, 012’S, which is slightly west of New Guinea, near the Strait of
+13021'E, 012'S, which is slightly west of New Guinea, near the Strait of
 Dampier. The edges of the map are all 9000 km true distance from the
 projection center. At this scale (and for global maps) the crude
 resolution data will usually be adequate to capture the main geographic
 features. To avoid cluttering the map with insignificant detail we only
 plot features (i.e., polygons) that exceed 500 km\ :math:`^2` in area.
 Smaller features would only occupy a few pixels on the plot and make the
-map look “dirty”. We also add national borders to the plot. The crude
+map look "dirty". We also add national borders to the plot. The crude
 database is heavily decimated and simplified by the DP-routine: The
 total file size of the coastlines, rivers, and borders database is only
 283 kbytes. The plot is produced by the script:
@@ -10580,12 +10576,12 @@ package; note you must explicitly add all the development tool packages
 (e.g., **gcc** etc) as the basic installation does not include them by
 default. Once you are up and running under Cygwin, you may install
 *GMT*  the same way you do under any other *UNIX* platform by either
-running the automated install via **install\_gmt** or manually running
+running the automated install via **install_gmt** or manually running
 configure first, then type make all. If you install via the web form,
 make sure you save the parameter file without DOS CR/LF endings. Use
 **dos2unix** to get rid of those if need be.
 
-Finally, from Cygwin’s User Guide: By default, no Cygwin program can
+Finally, from Cygwin's User Guide: By default, no Cygwin program can
 allocate more than 384 MB of memory (program and data). You should not
 need to change this default in most circumstances. However, if you need
 to use more real or virtual memory in your machine you may add an entry
@@ -10595,7 +10591,7 @@ the registry. Add the DWORD value **heap_chunk_in_mb** and set it to
 the desired memory limit in decimal Mb. It is preferred to do this in
 Cygwin using the **regtool** program included in the Cygwin package.
 (For more information about **regtool** or the other Cygwin utilities,
-see the Section called Cygwin Utilities in Chapter 3 of the Cygwin’s
+see the Section called Cygwin Utilities in Chapter 3 of the Cygwin's
 User Guide or use the help option of each utility.) You should always be
 careful when using **regtool** since damaging your system registry can
 result in an unusable system. This example sets the local machine memory
@@ -10642,7 +10638,7 @@ Figure [fig:GMT\ :sub:`A`\ pp\ :sub:`M1`] shows each of the 22 built-in
 color palettes, stored in so-called CPT tables [49]_. The programs
 `makecpt <makecpt.html>`_ and
 `grd2cpt <grd2cpt.html>`_ are used to access these
-master CPT tables and translate/scale them to fit the user’s range of
+master CPT tables and translate/scale them to fit the user's range of
 :math:`z`-values. The top half of the color bars in the Figure shows the
 original color scale, which can be either discrete or continuous, though
 some (like **globe**) are a mix of the two. The bottom half the color
@@ -10689,7 +10685,7 @@ custom symbols comes pre-configured with *GMT*\ (see
 Figure [fig:GMT\ :sub:`A`\ pp\ :sub:`N1`])
 
 You may find it convenient to examine some of these and use them as a
-starting point for your own design; they can be found in *GMT*\ ’s
+starting point for your own design; they can be found in *GMT*\ 's
 share/custom directory.
 
 The macro language
@@ -10723,10 +10719,10 @@ symbols, such as the ellipse or vector symbols, may require more
 parameters. If your custom symbol requires more than the single size
 parameter you must include the line
 
-    **N**: *n\_extra\_parameters* [*types*\ ]
+    **N**: *n_extra_parameters* [*types*\ ]
 
 before any other macro commands. It is an optional statement in that
-*n\_extra\_parameters* will default to 0 unless explicitly set. By
+*n_extra_parameters* will default to 0 unless explicitly set. By
 default the extra parameters are considered to be quantities that should
 be passed directly to the symbol machinery. However, you can use the
 *types* argument to specify different types of parameters. The available
@@ -10738,7 +10734,7 @@ a
 
 l
     : Length, i.e., an additional length scale (in cm, inch, or point as
-    per **PROJ\_LENGTH\_UNIT**) in addition to the given symbol size.
+    per **PROJ_LENGTH_UNIT**) in addition to the given symbol size.
 
 o
     : Other, i.e., a quantity to be passed to the custom symbol as is.
@@ -10942,8 +10938,8 @@ Label Placement
 
 While the previous *GMT* versions 1–3 allowed for a single algorithm
 that determined where labels would be placed, *GMT* 4 allows for five
-different algorithms. Furthermore, a new “symbol” option (**-Sq** for
-“quoted line”) has been added to `psxy <psxy.html>`_ and
+different algorithms. Furthermore, a new "symbol" option (**-Sq** for
+"quoted line") has been added to `psxy <psxy.html>`_ and
 `psxyz <psxyz.html>`_ and hence the new label placement
 mechanisms apply to those programs as well. The contouring programs
 expect the algorithm to be specified as arguments to **-G** while the
@@ -10952,7 +10948,7 @@ information appended to these options is the same in both cases and is
 of the form [**code**]\ *info*. The five algorithms correspond to the
 five codes below (some codes will appear in both upper and lower case;
 they share the same algorithm but differ in some other ways). In what
-follows, the phrase “line segment” is taken to mean either a contour or
+follows, the phrase "line segment" is taken to mean either a contour or
 a line to be labeled. The codes are:
 
 d:
@@ -10960,7 +10956,7 @@ d:
     **d**\ *dist*\ [**c\ \|\ i\ \|\ p**][/\ *frac*].
     Place labels according to the distance measured along the projected
     line on the map. Append the unit you want to measure distances in
-    [Default is taken from **PROJ\_LENGTH\_UNIT**]. Starting at the
+    [Default is taken from **PROJ_LENGTH_UNIT**]. Starting at the
     beginning of a line, place labels every *dist* increment of distance
     along the line. To ensure that closed lines whose total length is
     less than *dist* get annotated, we may append *frac* which will
@@ -10988,7 +10984,7 @@ f:
     lines at which locations the labels should be placed. Labels will
     only be placed if the coordinates match the line coordinates to
     within a distance of *slop* (append unit or we use
-    **PROJ\_LENGTH\_UNIT**). The default *slop* is zero, meaning only
+    **PROJ_LENGTH_UNIT**). The default *slop* is zero, meaning only
     exact coordinate matches will do.
 
 l:
@@ -11006,7 +11002,7 @@ l:
     the second determines the :math:`y`-coordinate. In
     `grdcontour <grdcontour.html>`_, you can also use
     the two codes **Z+** and **Z-** as shorthands for the location of
-    the grid’s global maximum and minimum, respectively. For example,
+    the grid's global maximum and minimum, respectively. For example,
     the *line* **LT**/**RB** is a diagonal from the upper left to the
     lower right map corner, while **Z-**/135W/15S is a line from the
     grid minimum to the point (135W, 15S).
@@ -11072,7 +11068,7 @@ universally. These codes are:
     edge always face the next higher or lower contour line.
 
 +c:
-    Surrounding each label is an imaginary label “textbox” which defines
+    Surrounding each label is an imaginary label "textbox" which defines
     a region in which no segment lines should be visible. The initial
     box provides an exact fit to the enclosed text but clearance may be
     extended in both the horizontal and vertical directions (relative to
@@ -11094,12 +11090,12 @@ universally. These codes are:
 +f:
     Specifies the desired label font, including size or color. See
     `pstext <pstext.html>`_ for font names or numbers.
-    The default font is given by **FONT\_ANNOT\_PRIMARY**.
+    The default font is given by **FONT_ANNOT_PRIMARY**.
 
 +g:
     Selects opaque rather than the default transparent text boxes. You
     may optionally append the color you want to fill the label boxes;
-    the default is the same as **PS\_PAGE\_COLOR**.
+    the default is the same as **PS_PAGE_COLOR**.
 
 +j:
     Selects the justification of the label relative to the placement
@@ -11166,15 +11162,15 @@ modified by **+u** or **+=**). However, for quoted lines other options apply:
         Take the label from the current multi-segment header (hence it
         is assumed that the input line segments are given in the
         multi-segment file format; if not we pick the single label from
-        the file’s header record). We first scan the header for an
+        the file's header record). We first scan the header for an
         embedded **-L**\ *label* option; if none is found we instead use
         the first word following the segment marker [:math:`>`\ ].
 
     +Ld:
         Take the Cartesian plot distances along the line as the label;
         append **c\ \|\ i\ \|\ p** as the unit [Default is
-        **PROJ\_LENGTH\_UNIT**]. The label will be formatted according
-        to the **FORMAT\_FLOAT\_OUT** string, *unless* label placement
+        **PROJ_LENGTH_UNIT**]. The label will be formatted according
+        to the **FORMAT_FLOAT_OUT** string, *unless* label placement
         was determined from map distances along the segment lines, in
         which case we determine the appropriate format from the distance
         value itself.
@@ -11210,8 +11206,8 @@ Examples of Contour Label Placement
 
 We will demonstrate the use of these options with a few simple examples.
 First, we will contour a subset of the global geoid data used in
-*GMT* Example 01; the region selected encompasses the world’s strongest
-“geoid dipole”: the Indian Low and the New Guinea High.
+*GMT* Example 01; the region selected encompasses the world's strongest
+"geoid dipole": the Indian Low and the New Guinea High.
 
 Equidistant labels
 ~~~~~~~~~~~~~~~~~~
@@ -11240,13 +11236,13 @@ Prescribed label placements
 
 Here, we specify four points where we would like contour labels to be
 placed. Our points are not exactly on the contour lines so we give a
-nonzero “slop” to be used in the distance calculations: The point on the
+nonzero "slop" to be used in the distance calculations: The point on the
 contour closest to our fixed points and within the given maximum
 distance will host the label.
 
 The angle of the label is evaluated from the contour line geometry, and
 the final result is shown in Figure [fig:GMT\ :sub:`A`\ pp\ :sub:`O3`].
-To aid in understanding the algorithm we chose to specify “debug” mode
+To aid in understanding the algorithm we chose to specify "debug" mode
 (**+d**) which placed a small circle at each of the fixed points.
 
 Label placement at simple line intersections
@@ -11297,7 +11293,7 @@ are placed normal to the line:
 
 The composite illustration in Figure [fig:GMT\ :sub:`A`\ pp\ :sub:`O6`]
 shows the new effects. Note that the line connecting the extrema does
-not end exactly at the ‘-’ and ‘+’ symbols. This is because the
+not end exactly at the ‘-' and ‘+' symbols. This is because the
 placements of those symbols are based on the mean coordinates of the
 contour and not the locations of the (local or global) extrema.
 
@@ -11318,7 +11314,7 @@ In the next example we will use the bathymetry values along the transect
 as our label, with placement determined by the distance along track. We
 choose to place labels every 1500 km. To do this we need to pull out
 those records whose distances are multiples of 1500 km and create a
-“fixed points” file that can be used to place labels and specify the
+"fixed points" file that can be used to place labels and specify the
 labels. This is done with **awk**.
 
 The output is presented as Figure [fig:GMT\ :sub:`A`\ pp\ :sub:`O8`].
@@ -11421,7 +11417,7 @@ environment (the details are shell-dependent but explained by
    directory that will point to a directory with one of the installed
    GMT versions.
 
-#. Make sure **$HOME**/this\_gmt/bin is in your executable **PATH**.
+#. Make sure **$HOME**/this_gmt/bin is in your executable **PATH**.
 
 Make those edits, logout, and log and back in again. The next time you
 run **gmtswitch** you will be able to switch between versions. Typing
@@ -11429,7 +11425,7 @@ run **gmtswitch** you will be able to switch between versions. Typing
 numerical menu and prompt you to choose one, whereas **gmtswitch**
 *version* will immediately switch to that version (*version* must be a
 piece of unique text making up the full path to a version, e.g., 4.5.9).
-If you use **tcsh** or **csh** you may have to type “rehash” to
+If you use **tcsh** or **csh** you may have to type "rehash" to
 initiate the path changes. On Windows, the process is similar [Joaquim,
 please elaborate].
 
@@ -11495,7 +11491,7 @@ Several key properties of the OGR/GMT format is summarized below:
 
 -  For consistency with other GIS formats (such as shapefiles) the
    OGR/GMT format explicitly contains a field specifying whether the
-   features are points, linestrings or polygons, or the “multi” versions
+   features are points, linestrings or polygons, or the "multi" versions
    of these. (Other shapefile feature types will not be supported at
    this stage). At present, *GMT* programs are informed of this via
    command line parameters. This will now be explicit in the data file,
@@ -11503,11 +11499,11 @@ Several key properties of the OGR/GMT format is summarized below:
    plotting polygons as lines (perimeters) or with fills, as is
    currently the practice.
 
--  Note that what is currently called a “multiline” (multi-segment) file
-   in *GMT* parlance is generally a set of “lines” in shapefile/OGR
+-  Note that what is currently called a "multiline" (multi-segment) file
+   in *GMT* parlance is generally a set of "lines" in shapefile/OGR
    usage. A multiline in this context is a single feature comprising
    multiple lines. For example, all the transects from a particular
-   survey may be stored as lines, each with it’s own attribute set, such
+   survey may be stored as lines, each with it's own attribute set, such
    as transect number, date/time, etc. They may also be stored as a
    single multiline feature with one attribute set, such as trip ID.
    This difference is explicitly stored in the data in OGR/shapefiles,
@@ -11666,13 +11662,11 @@ Declaration of aspatial fields
 The string describing the aspatial field names associated with the
 features is flagged by the **@N** prefix.
 
-[H]
-
-+------------+------------------------------------------+------------------------------------------------------------------------+
-| **Code**   | **Argument**                             | **Description**                                                        |
-+============+==========================================+========================================================================+
-| N          | word\ :math:`|`\ word\ :math:`|`\ word   | A “:math:`|`”-separated string of names of the attribute field names   |
-+------------+------------------------------------------+------------------------------------------------------------------------+
++------------+---------------------------------------+-----------------------------------------------------------------+
+| **Code**   | **Argument**                          | **Description**                                                 |
++============+=======================================+=================================================================+
+| N          | word\ \|\ word\ \|\ word              | A "\|" -separated string of names of the attribute field names  |
++------------+---------------------------------------+-----------------------------------------------------------------+
 
 [tbl:Q3]
 
@@ -11680,13 +11674,11 @@ Any name containing a space must be quoted. The **@N** selection must be
 combined with a matching string specifying the data type for each of the
 named fields, using the **@T** prefix.
 
-[H]
-
-+------------+------------------------------------------+--------------------------------------------------------------------+
-| **Code**   | **Argument**                             | **Description**                                                    |
-+============+==========================================+====================================================================+
-| T          | word\ :math:`|`\ word\ :math:`|`\ word   | A “:math:`|`”-separated string of the attribute field data types   |
-+------------+------------------------------------------+--------------------------------------------------------------------+
++------------+---------------------------------------+-------------------------------------------------------------+
+| **Code**   | **Argument**                          | **Description**                                             |
++============+=======================================+=============================================================+
+| T          | word\ \|\ word\ \|\ word              | A "\|" -separated string of the attribute field data types  |
++------------+---------------------------------------+-------------------------------------------------------------+
 
 [tbl:Q4]
 
@@ -11706,9 +11698,9 @@ OGR/GMT Data
 
 All generic fields must be at the start of the file before any
 feature-specific content (feature attribute data follow the metadata, as
-do the feature coordinates, separated by a comment line comprising “#
-FEATURE\_DATA”. Provided each string is formatted as specified, and
-occurs on a line prefixed with “#” (i.e., is a comment), the format is
+do the feature coordinates, separated by a comment line comprising "#
+FEATURE_DATA". Provided each string is formatted as specified, and
+occurs on a line prefixed with "#" (i.e., is a comment), the format is
 free form, in that as many comment lines as desired may be used, with
 one or more parameter strings in any order in any line. E.g., one
 parameter per line, or all parameters on one line.
@@ -11719,20 +11711,20 @@ Embedding aspatial data
 Following this header line is the data itself, both aspatial and
 spatial. For line and polygon (including multiline and multipolygon)
 data, features are separated using a predefined character, by default
-“>”. For point (and multipoint) data, no such separator is required. The
+">". For point (and multipoint) data, no such separator is required. The
 comment line containing the aspatial data for each feature will
 immediately precede the coordinate line(s). Thus in the case of lines
-and polygons, it will immediately follow the “>” line. The data line
-will be a comment flag (“#”) followed by **@D**, followed by a string of
-“:math:`|`”-separated words comprising the data fields defined in the
+and polygons, it will immediately follow the ">" line. The data line
+will be a comment flag ("#") followed by **@D**, followed by a string of
+"\|"-separated words comprising the data fields defined in the
 header record.
 
 To allow for names and values containing spaces, such string items among
 the **@N** or **@D** specifiers must be enclosed in double quotes.
 (Where double quotes or pipe characters are included in the string, they
-must be escaped using “:math:`\backslash`”). Where any data values are
+must be escaped using ":math:`\backslash`"). Where any data values are
 null, they will be represented as no characters between the field
-separator, (e.g., #@D\ :math:`|`\ :math:`|`\ :math:`|`). A Sample header
+separator, (e.g., #@D\ \|\ \|\ \|). A Sample header
 and corresponding data line for points are
 
    ::
@@ -11754,7 +11746,7 @@ Polygon topologies
 New to *GMT* is the concept of polygon holes. Most other formats do
 support this structure, so that a polygon is specified as a sequence of
 point defining the perimeter, optionally followed by similar coordinate
-sequences defining any holes (the “donut” polygon concept).
+sequences defining any holes (the "donut" polygon concept).
 
 To implement this in a way which is compatible with previous
 *GMT*\ versions, each polygon feature must be able to be identified as
@@ -11771,7 +11763,7 @@ Examples
 --------
 
 Sample point, line and polygon files are (the new data structures are in
-lines starting with “#” in strings prefixed with “@)”. Here is a typical
+lines starting with "#" in strings prefixed with "@)". Here is a typical
 point file:
 
    ::
@@ -11887,7 +11879,7 @@ Finally we show an example of a polygon file:
    further drift in the dates. The important effects of the change were
    (a) Drop 10 days from October 1582 to realign the Vernal Equinox with
    21 March, (b) change leap year selection so that not all years ending
-   in “00” are leap years, and (c) change the beginning of the year to 1
+   in "00" are leap years, and (c) change the beginning of the year to 1
    January from 25 March. Adoption of the new calendar was essentially
    immediate within Catholic countries. In the Protestant countries,
    where papal authority was neither recognized not appreciated,
@@ -11899,8 +11891,8 @@ Finally we show an example of a polygon file:
 
 .. [12]
    While UTM coordinates clearly refer to points on the Earth, in this
-   context they are considered “other”. Thus, when we refer to
-   “geographical” coordinates herein we imply longitude, latitude.
+   context they are considered "other". Thus, when we refer to
+   "geographical" coordinates herein we imply longitude, latitude.
 
 .. [13]
    Please consult the man page for *printf* or any book on C .
@@ -11914,13 +11906,13 @@ Finally we show an example of a polygon file:
 
 .. [16]
    To keep *PostScript* files small, such comments are by default turned
-   off; see **PS\_COMMENTS** to enable them.
+   off; see **PS_COMMENTS** to enable them.
 
 .. [17]
    For an overview of color systems such as HSV, see Appendix [app:I].
 
 .. [18]
-   Convert other graphics formats to Sun ras format using ImageMagick’s
+   Convert other graphics formats to Sun ras format using ImageMagick's
    **convert** program.
 
 .. [19]
@@ -11942,7 +11934,7 @@ Finally we show an example of a polygon file:
    every 5. To project values for intermediate latitudes one must
    interpolate the table. Different interpolants may result in slightly
    different maps. `GMT <http://gmt.soest.hawaii.edu>`_ uses the
-   interpolant selected by the parameter **GMT\_INTERPOLANT** in the
+   interpolant selected by the parameter **GMT_INTERPOLANT** in the
    file.
 
 .. [24]
@@ -11952,13 +11944,13 @@ Finally we show an example of a polygon file:
    These data are available on CD-ROM from NGDC (www.ngdc.noaa.gov).
 
 .. [26]
-   See http://topex.ucsd.edu/marine\_grav/mar\_grav.html.
+   See http://topex.ucsd.edu/marine_grav/mar_grav.html.
 
 .. [27]
    You can also use the utility **curl**
 
 .. [28]
-   Pedants who wish to argue about the “other” arc going the long way
+   Pedants who wish to argue about the "other" arc going the long way
    should consider using it.
 
 .. [29]
@@ -11977,7 +11969,7 @@ Finally we show an example of a polygon file:
 
 .. [33]
    For data bases, see
-   http://topex.ucsd.edu/marine\_grav/mar\_grav.html.
+   http://topex.ucsd.edu/marine_grav/mar_grav.html.
 
 .. [34]
    Kurt.Feigl@cnes.fr

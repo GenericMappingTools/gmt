@@ -5,8 +5,8 @@ grdfft
 grdfft - Do mathematical operations on grids in the wavenumber (or
 frequency) domain
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
@@ -15,14 +15,14 @@ frequency) domain
 [ **-E**\ [**r**\ \|\ **x**\ \|\ **y**][\ **w**\ [**k**]] ]
 [ **-F**\ [**r**\ \|\ **x**\ \|\ **y**]\ *params* ]
 [ **-I**\ [*scale*\ \|\ **g**] ]
-[ **-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][\ **+a**\ \|\ **d**\ \|\ **h**\ \|\ **l**][\ **+e**\ \|\ **n**\ \|\ **m**][\ **+t**\ *width*][\ **+w**\ [*suffix*]][\ **+z**\ [**p**]]
-] [ **-S**\ *scale* ] [ |SYN_OPT-V| ] [
-**-fg** ]
+[ **-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][\ **+a**\ \|\ **d**\ \|\ **h**\ \|\ **l**][\ **+e**\ \|\ **n**\ \|\ **m**][\ **+t**\ *width*][\ **+w**\ [*suffix*]][\ **+z**\ [**p**]] ]
+[ **-S**\ *scale* ] [ |SYN_OPT-V| ]
+[ **-fg** ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **grdfft** will take the 2-D forward Fast Fourier Transform and perform
 one or more mathematical operations in the frequency domain before
@@ -33,8 +33,8 @@ may be used by specifying the **-fg** option that scales degrees to
 meters. If you have grids with dimensions in km, you could change this
 to meters using `grdedit <grdedit.html>`_ or scale the output with `grdmath <grdmath.html>`_. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *ingrid*
     2-D binary grid file to be operated on. (See GRID FILE FORMATS
@@ -44,8 +44,8 @@ to meters using `grdedit <grdedit.html>`_ or scale the output with `grdmath <grd
     Specify the name of the output grid file or the 1-D spectrum table
     (see **-E**). (See GRID FILE FORMATS below).
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-A**\ *azimuth*
     Take the directional derivative in the *azimuth* direction measured
@@ -63,7 +63,7 @@ to meters using `grdedit <grdedit.html>`_ or scale the output with `grdmath <grd
     heights in meters and output should be gravity anomalies in mGal.
     [Default is no scale].
 
-**-E**\ [**r**\ \|\ **x**\ \|\ **y**][\ **w**\ [**k**\ ]]
+**-E**\ [**r**\ \|\ **x**\ \|\ **y**][\ **w**\ [**k**]]
     Estimate power spectrum in the radial direction [**r**\ ]. Place
     **x** or **y** immediately after **-E** to compute the spectrum in
     the x or y direction instead. No grid file is created. If one grid
@@ -157,12 +157,16 @@ Examples
 --------
 
 To upward continue the sea-level magnetic anomalies in the file
-mag\_0.nc to a level 800 m above sealevel:
+mag_0.nc to a level 800 m above sealevel:
 
-    grdfft mag\_0.nc -C800 -V -Gmag\_800.nc
+   ::
+
+    grdfft mag_0.nc -C800 -V -Gmag_800.nc
 
 To transform geoid heights in m (geoid.nc) on a geographical grid to
 free-air gravity anomalies in mGal:
+
+   ::
 
     grdfft geoid.nc -Dg -V -Ggrav.nc
 
@@ -171,26 +175,34 @@ vertical (in micro-radians) in the 038 direction, we must first
 integrate gravity to get geoid, then take the directional derivative,
 and finally scale radians to micro-radians:
 
-    grdfft faa.nc -Ig -A38 -S1e6 -V -Gdefl\_38.nc
+   ::
+
+    grdfft faa.nc -Ig -A38 -S1e6 -V -Gdefl_38.nc
 
 Second vertical derivatives of gravity anomalies are related to the
 curvature of the field. We can compute these as mGal/m^2 by
 differentiating twice:
 
-    grdfft gravity.nc -D -D -V -Ggrav\_2nd\_derivative.nc
+   ::
+
+    grdfft gravity.nc -D -D -V -Ggrav_2nd_derivative.nc
 
 To compute cross-spectral estimates for co-registered bathymetry and
 gravity grids, and report result as functions of wavelengths in km, try
 
-    grdfft bathymetry.nc gravity.grd -Ewk -fg -V > cross\_spectra.txt
+   ::
+
+    grdfft bathymetry.nc gravity.grd -Ewk -fg -V > cross_spectra.txt
 
 To examine the pre-FFT grid after detrending, point-symmetry reflection,
 and tapering has been applied, as well as saving the real and imaginary
 components of the raw spectrum of the data in topo.nc, try
 
+   ::
+
     grdfft topo.nc -N+w+z -fg -V
 
-You can now make plots of the data in topo\_taper.nc, topo\_real.nc, and topo\_imag.nc.
+You can now make plots of the data in topo_taper.nc, topo_real.nc, and topo_imag.nc.
 
 See Also
 --------
