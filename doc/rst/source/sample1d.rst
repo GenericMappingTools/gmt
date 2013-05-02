@@ -52,7 +52,8 @@ None.
 **-A**\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**
     For track resampling (if **-T**...\ *unit* is set) we can select how
     this is to be performed. Append **f** to keep original points, but
-    add intermediate points if needed [Default], **m** as **f**, but
+    add intermediate points if needed; note this selection does not
+    necessarily yield equidistant points [Default], **m** as **f**, but
     first follow meridian (along y) then parallel (along x), **p** as
     **f**, but first follow parallel (along y) then meridian (along x),
     **r** to resample at equidistant locations; input points are not
