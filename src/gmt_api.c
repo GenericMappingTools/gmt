@@ -5383,6 +5383,59 @@ int GMT_Get_Value_ (char *arg, double par[], int len)
 }
 #endif
 
+/* The basic gmtread|write module meat */
+
+int GMT_copy (struct GMTAPI_CTRL *API, unsigned int family, unsigned int direction, char *ifile, char *ofile)
+{	/* Duplicate ifile on ofile.  Calling program is responsible to ensure correct args are passed */
+	double *wesn = NULL;	/* For grid and image subsets */
+	struct GMT_DATASET *D = NULL;
+	struct GMT_TEXTSET *T = NULL;
+	struct GMT_PALETTE *C = NULL;
+	struct GMT_GRID *G = NULL;
+	struct GMT_IMAGE *I = NULL;
+
+	GMT_Report (API, GMT_MSG_VERBOSE, "Read %s from %s and write to %s\n", GMT_family[family], ifile, ofile);
+
+	switch (family) {
+		case GMT_IS_DATASET:	/* Pass geometry as point since PLP or POLY would auto-close the polygons */
+			if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, ifile, NULL)) == NULL)
+				return (API->error);
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, D->geometry, D->io_mode, NULL, ofile, D) != GMT_OK)
+				return (API->error);
+			break;
+		case GMT_IS_TEXTSET:
+			if ((T = GMT_Read_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, ifile, NULL)) == NULL)
+				return (API->error);
+			if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, T->io_mode, NULL, ofile, T) != GMT_OK)
+				return (API->error);
+			break;
+		case GMT_IS_GRID:
+			wesn = (direction == GMT_IN && API->GMT->common.R.active) ? API->GMT->common.R.wesn : NULL;
+			if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_READ_NORMAL, wesn, ifile, NULL)) == NULL)
+				return (API->error);
+			wesn = (direction == GMT_OUT && API->GMT->common.R.active) ? API->GMT->common.R.wesn : NULL;
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, wesn, ofile, G) != GMT_OK)
+				return (API->error);
+			break;
+		case GMT_IS_IMAGE:
+			wesn = (direction == GMT_IN && API->GMT->common.R.active) ? API->GMT->common.R.wesn : NULL;
+			if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_READ_NORMAL, wesn, ifile, NULL)) == NULL)
+				return (API->error);
+			wesn = (direction == GMT_OUT && API->GMT->common.R.active) ? API->GMT->common.R.wesn : NULL;
+			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, wesn, ofile, I) != GMT_OK)
+				return (API->error);
+			break;
+		case GMT_IS_CPT:
+			if ((C = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, ifile, NULL)) == NULL)
+				return (API->error);
+			if (GMT_Write_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, C->cpt_flags, NULL, ofile, C) != GMT_OK)
+				return (API->error);
+			break;
+	}
+		
+	return GMT_OK;
+}
+
 /* Here lies the very basic F77 support for grid read and write only. */
 
 int GMT_F77_readgrdinfo_ (unsigned int dim[], double limit[], double inc[], char *title, char *remark, char *file)

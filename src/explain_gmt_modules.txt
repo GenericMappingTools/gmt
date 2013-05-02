@@ -13,12 +13,14 @@ l l .
 \fBgmtdp\fP	
 \fBgmtget\fP	
 \fBgmtmath\fP	
+\fBgmtread\fP	
 \fBgmtselect\fP	
 \fBgmtset\fP	
 \fBgmtspatial\fP	
 \fBgmtstitch\fP	
 \fBgmtvector\fP	
 \fBgmtwhich\fP	
+\fBgmtwrite\fP	
 \fBgrd2cpt\fP	
 \fBgrd2rgb\fP	
 \fBgrd2xyz\fP	

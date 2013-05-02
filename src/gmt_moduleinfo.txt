@@ -18,12 +18,14 @@ gmtdp	core	Line reduction using the Douglas-Peucker algorithm
 gmtget	core	Get individual GMT default parameters
 gmtgravmag3d	potential	Compute the gravity/magnetic anomaly of a body by the method of Okabe
 gmtmath	core	Reverse Polish Notation (RPN) calculator for data tables
+gmtread	core	Read from file into memory location [API only]
 gmtselect	core	Select data table subsets based on multiple spatial criteria
 gmtset	core	Change individual GMT default parameters
 gmtspatial	core	Do geospatial operations on lines and polygons
 gmtstitch	core	Join individual lines whose end points match within tolerance
 gmtvector	core	Basic manipulation of Cartesian vectors
 gmtwhich	core	Find full path to specified files
+gmtwrite	core	Write to file from memory location [API only]
 gravfft	potential	Compute gravitational attraction of 3-D surfaces and a little more (ATTENTION z positive up)
 grd2cpt	core	Make linear or histogram-equalized color palette table from grid
 grd2rgb	core	Write r/g/b grid files from a grid file, a raw RGB file, or SUN rasterfile
