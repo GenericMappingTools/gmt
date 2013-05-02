@@ -3189,11 +3189,13 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 		case GMT_IS_DUPLICATE:
 		case GMT_IS_REFERENCE:
 		case GMT_IS_READONLY:
+#if 0
 			if (direction == GMT_OUT && resource != NULL) {
 				return_value (API, GMT_PTR_NOT_NULL, GMT_NOTSET);	/* Output registration of memory takes no resource */
-			}
-			else if (direction == GMT_IN && resource == NULL) {
-				return_value (API, GMT_PTR_IS_NULL, GMT_NOTSET);	/* Output registration of memory takes no resource */
+			} else
+#endif
+			if (direction == GMT_IN && resource == NULL) {
+				return_value (API, GMT_PTR_IS_NULL, GMT_NOTSET);	/* Input registration of memory takes a resource */
 			}
 			if ((S_obj = GMTAPI_Make_DataObject (API, family, method, geometry, resource, direction)) == NULL) {
 				return_value (API, GMT_MEMORY_ERROR, GMT_NOTSET);	/* No more memory */
