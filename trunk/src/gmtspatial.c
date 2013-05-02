@@ -1147,11 +1147,14 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 		double out[3];
 		uint64_t seg, row_f, row_l, tbl, col;
 		unsigned int handedness = 0;
-		int mode, poly, geo = GMT_is_geographic (GMT, GMT_IN);
+		int mode, poly, geo;
 
 		char line[GMT_BUFSIZ];
 		
-		if (!GMT_is_geographic (GMT, GMT_IN) && Ctrl->Q.unit && strchr (GMT_LEN_UNITS, Ctrl->Q.unit)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg if -Q uses unit */
+		if (!GMT_is_geographic (GMT, GMT_IN) && Ctrl->Q.unit && strchr (GMT_LEN_UNITS, Ctrl->Q.unit)) {
+			GMT_parse_common_options (GMT, "f", 'f', "g"); /* Set -fg if -Q uses unit */
+		}
+		geo = GMT_is_geographic (GMT, GMT_IN);
 		if (GMT_is_geographic (GMT, GMT_IN)) GMT_init_distaz (GMT, Ctrl->Q.unit, 2, GMT_MAP_DIST);	/* Default is m using great-circle distances */
 
 		if (Ctrl->Q.header) {	/* Add line length or polygon area stuff to segment header */
