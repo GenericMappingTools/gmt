@@ -91,10 +91,10 @@ EXTERN_MSC int GMT_Set_Comment		(void *API, unsigned int family, unsigned int mo
 
 /* 2 functions to relate (row,col) to a 1-D index and to precompute equidistant coordinates for grids and images */
 
-EXTERN_MSC double * GMT_Get_Coord	(void *API, unsigned int family, unsigned int dim, void *container);
 EXTERN_MSC int64_t GMT_Get_Index	(void *API, struct GMT_GRID_HEADER *header, int row, int col);
+EXTERN_MSC double * GMT_Get_Coord	(void *API, unsigned int family, unsigned int dim, void *container);
 
-/* 6 functions to show and inquire about GMT common options, GMT default settings, convert strings to double, and message and report printers */
+/* 6 functions to show and inquire about GMT common options, GMT default settings, convert strings to double, and message and report printing */
 
 EXTERN_MSC void GMT_Option		(void *API, char *options);
 EXTERN_MSC int GMT_Get_Common		(void *API, unsigned int option, double *par);
@@ -106,8 +106,8 @@ EXTERN_MSC int GMT_Message		(void *API, unsigned int mode, char *format, ...);
 /* 3 functions to find, list, and call the GMT_N_MODULES GMT modules */
 
 EXTERN_MSC int GMT_Get_Module		(void *API, char *module_name);
-EXTERN_MSC int GMT_Call_Module		(void *API, int module_id, int mode, void *args);
 EXTERN_MSC void GMT_List_Module		(void *API, int module_id);
+EXTERN_MSC int GMT_Call_Module		(void *API, int module_id, int mode, void *args);
 
 /* 12 secondary functions for argument and option parsing */
 
