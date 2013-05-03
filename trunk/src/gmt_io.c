@@ -6500,22 +6500,23 @@ int gmt_alloc_vectors (struct GMT_CTRL *GMT, struct GMT_VECTOR *V)
 	return (GMT_OK);
 }
 
-void GMT_free_vector_ptr (struct GMT_CTRL *GMT, struct GMT_VECTOR *V, bool free_vector)
+unsigned int GMT_free_vector_ptr (struct GMT_CTRL *GMT, struct GMT_VECTOR *V, bool free_vector)
 {	/* By taking a reference to the vector pointer we can set it to NULL when done */
 	/* free_vector = false means the vectors are not to be freed but the data array itself will be */
-	if (!V) return;	/* Nothing to deallocate */
-	if (V->data && free_vector) {
+	if (!V) return 0;	/* Nothing to deallocate */
+	if (V->data && free_vector && V->alloc_mode != GMT_NO_CLOBBER) {
 		uint64_t col;
 		for (col = 0; col < V->n_columns; col++) GMT_free_univector (GMT, &(V->data[col]), V->type[col]);
 	}
 	GMT_free (GMT, V->data);
 	GMT_free (GMT, V->type);
+	return (V->alloc_mode);
 }
 
 void GMT_free_vector (struct GMT_CTRL *GMT, struct GMT_VECTOR **V, bool free_vector)
 {	/* By taking a reference to the vector pointer we can set it to NULL when done */
 	/* free_vector = false means the vectors are not to be freed but the data array itself will be */
-	GMT_free_vector_ptr (GMT, *V, free_vector);
+	(void)GMT_free_vector_ptr (GMT, *V, free_vector);
 	GMT_free (GMT, *V);
 }
 
@@ -6570,15 +6571,16 @@ struct GMT_MATRIX * GMT_duplicate_matrix (struct GMT_CTRL *GMT, struct GMT_MATRI
 	return (M);
 }
 
-void GMT_free_matrix_ptr (struct GMT_CTRL *GMT, struct GMT_MATRIX *M, bool free_matrix)
+unsigned int GMT_free_matrix_ptr (struct GMT_CTRL *GMT, struct GMT_MATRIX *M, bool free_matrix)
 {	/* Free everything but the struct itself  */
-	if (!M) return;	/* Nothing to deallocate */
+	if (!M) return 0;	/* Nothing to deallocate */
 	if (free_matrix && M->alloc_mode != GMT_NO_CLOBBER) GMT_free_univector (GMT, &(M->data), M->type);
+	return (M->alloc_mode);
 }
 
 void GMT_free_matrix (struct GMT_CTRL *GMT, struct GMT_MATRIX **M, bool free_matrix)
 {	/* By taking a reference to the matrix pointer we can set it to NULL when done */
-	GMT_free_matrix_ptr (GMT, *M, free_matrix);
+	(void)GMT_free_matrix_ptr (GMT, *M, free_matrix);
 	GMT_free (GMT, *M);
 }
 
