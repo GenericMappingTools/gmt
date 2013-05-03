@@ -6573,7 +6573,7 @@ struct GMT_MATRIX * GMT_duplicate_matrix (struct GMT_CTRL *GMT, struct GMT_MATRI
 void GMT_free_matrix_ptr (struct GMT_CTRL *GMT, struct GMT_MATRIX *M, bool free_matrix)
 {	/* Free everything but the struct itself  */
 	if (!M) return;	/* Nothing to deallocate */
-	if (free_matrix) GMT_free_univector (GMT, &(M->data), M->type);
+	if (free_matrix && M->alloc_mode != GMT_NO_CLOBBER) GMT_free_univector (GMT, &(M->data), M->type);
 }
 
 void GMT_free_matrix (struct GMT_CTRL *GMT, struct GMT_MATRIX **M, bool free_matrix)
