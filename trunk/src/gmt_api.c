@@ -2750,7 +2750,7 @@ int GMTAPI_Destroy_Coord (struct GMTAPI_CTRL *API, unsigned int mode, double **p
 int GMT_destroy_data_ptr (struct GMTAPI_CTRL *API, unsigned int family, void *ptr)
 {
 	/* Like GMT_Destroy_Data but takes pointer to data rather than address of pointer.
-	 * We pass GMT_CLOBBER to make sure we free the memory.
+	 * We pass true to make sure we free the memory.
 	 */
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
@@ -2758,7 +2758,7 @@ int GMT_destroy_data_ptr (struct GMTAPI_CTRL *API, unsigned int family, void *pt
 	
 	switch (family) {	/* dataset, cpt, text table or grid */
 		case GMT_IS_GRID:	/* GMT grid */
-			GMT_free_grid_ptr (API->GMT, ptr, GMT_CLOBBER);
+			GMT_free_grid_ptr (API->GMT, ptr, true);
 			break;
 		case GMT_IS_DATASET:
 			GMT_free_dataset_ptr (API->GMT, ptr);
@@ -2771,7 +2771,7 @@ int GMT_destroy_data_ptr (struct GMTAPI_CTRL *API, unsigned int family, void *pt
 			break;
 #ifdef HAVE_GDAL
 		case GMT_IS_IMAGE:
-			GMT_free_image_ptr (API->GMT, ptr, GMT_CLOBBER);
+			GMT_free_image_ptr (API->GMT, ptr, true);
 			break;
 #endif
 		case GMT_IS_COORD:
@@ -2780,10 +2780,10 @@ int GMT_destroy_data_ptr (struct GMTAPI_CTRL *API, unsigned int family, void *pt
 			
 		/* Also allow destoying of intermediate vector and matrix containers */
 		case GMT_IS_MATRIX:
-			GMT_free_matrix_ptr (API->GMT, ptr, GMT_CLOBBER);
+			GMT_free_matrix_ptr (API->GMT, ptr, true);
 			break;
 		case GMT_IS_VECTOR:
-			GMT_free_vector_ptr (API->GMT, ptr, GMT_CLOBBER);
+			GMT_free_vector_ptr (API->GMT, ptr, true);
 			break;
 		default:
 			return (GMTAPI_report_error (API, GMT_WRONG_KIND));
