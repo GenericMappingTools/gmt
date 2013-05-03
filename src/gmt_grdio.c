@@ -1991,17 +1991,18 @@ struct GMT_GRID *GMT_duplicate_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 	return (Gnew);
 }
 
-void GMT_free_grid_ptr (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool free_grid)
+unsigned int GMT_free_grid_ptr (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool free_grid)
 {	/* By taking a reference to the grid pointer we can set it to NULL when done */
-	if (!G) return;	/* Nothing to deallocate */
+	if (!G) return 0;	/* Nothing to deallocate */
 	if (G->data && free_grid && G->alloc_mode != GMT_NO_CLOBBER) GMT_free_aligned (GMT, G->data);
 	if (G->extra) gmt_close_grd (GMT, G);	/* Close input file used for row-by-row i/o */
 	if (G->header) GMT_free (GMT, G->header);
+	return (G->alloc_mode);
 }
 
 void GMT_free_grid (struct GMT_CTRL *GMT, struct GMT_GRID **G, bool free_grid)
 {	/* By taking a reference to the grid pointer we can set it to NULL when done */
-	GMT_free_grid_ptr (GMT, *G, free_grid);
+	(void)GMT_free_grid_ptr (GMT, *G, free_grid);
 	if (*G) GMT_free (GMT, *G);
 }
 

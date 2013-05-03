@@ -2747,7 +2747,7 @@ int GMTAPI_Destroy_Coord (struct GMTAPI_CTRL *API, unsigned int mode, double **p
 	return GMT_OK;
 }
 
-int GMT_destroy_data_ptr (struct GMTAPI_CTRL *API, unsigned int family, void *ptr)
+int GMTAPI_destroy_data_ptr (struct GMTAPI_CTRL *API, unsigned int family, void *ptr, unsigned int *alloc_mode)
 {
 	/* Like GMT_Destroy_Data but takes pointer to data rather than address of pointer.
 	 * We pass true to make sure we free the memory.
@@ -2755,10 +2755,11 @@ int GMT_destroy_data_ptr (struct GMTAPI_CTRL *API, unsigned int family, void *pt
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	if (!ptr) return (GMT_OK);	/* Null pointer */
+	*alloc_mode = 0;
 	
 	switch (family) {	/* dataset, cpt, text table or grid */
 		case GMT_IS_GRID:	/* GMT grid */
-			GMT_free_grid_ptr (API->GMT, ptr, true);
+			*alloc_mode = GMT_free_grid_ptr (API->GMT, ptr, true);
 			break;
 		case GMT_IS_DATASET:
 			GMT_free_dataset_ptr (API->GMT, ptr);
@@ -2780,10 +2781,10 @@ int GMT_destroy_data_ptr (struct GMTAPI_CTRL *API, unsigned int family, void *pt
 			
 		/* Also allow destoying of intermediate vector and matrix containers */
 		case GMT_IS_MATRIX:
-			GMT_free_matrix_ptr (API->GMT, ptr, true);
+			*alloc_mode = GMT_free_matrix_ptr (API->GMT, ptr, true);
 			break;
 		case GMT_IS_VECTOR:
-			GMT_free_vector_ptr (API->GMT, ptr, true);
+			*alloc_mode = GMT_free_vector_ptr (API->GMT, ptr, true);
 			break;
 		default:
 			return (GMTAPI_report_error (API, GMT_WRONG_KIND));
@@ -2799,7 +2800,7 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level)
 	/* GMT_Garbage_Collection frees all registered memory associated with the current module level,
 	 * or for the entire session if level == GMT_NOTSET (-1) */
 	
-	unsigned int i, j, n_free, u_level = 0;
+	unsigned int i, j, n_free, u_level = 0, alloc_mode = 0;
 	int error;
 	void *address = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
@@ -2827,13 +2828,16 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level)
 		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Garbage_Collection: Destroying object: C=%d A=%d ID=%d W=%s F=%s M=%s S=%s P=%" PRIxS " D=%" PRIxS " N=%s\n",
 			S_obj->close_file, S_obj->alloc_mode, S_obj->ID, GMT_direction[S_obj->direction], GMT_family[S_obj->family], GMT_method[S_obj->method], GMT_status[S_obj->status], (size_t)S_obj->resource, (size_t)S_obj->data, S_obj->filename);
 		address = S_obj->data;	/* Keep a record of what the address was (since S_obj->data will be set to NULL when freed) */
-		error = GMT_destroy_data_ptr (API, S_obj->family, API->object[i]->data);	/* Do the dirty deed */
+		error = GMTAPI_destroy_data_ptr (API, S_obj->family, API->object[i]->data, &alloc_mode);	/* Do the dirty deed */
 
 		if (error < 0) {	/* Failed to destroy this memory; that cannot be a good thing... */
 			GMT_Report (API, GMT_MSG_NORMAL, "GMT_Garbage_Collection failed to destroy memory for object % d [Bug?]\n", i++);
 			/* Skip it for now; but this is possibly a fatal error [Bug]? */
 		}
-		else {	/* Successfully freed.  See if this address occurs more than once (e.g., both for in and output); if so just set repeated data pointer to NULL */
+		else if (alloc_mode == GMT_NO_CLOBBER && level != GMT_NOTSET) {	/* Something allocated outside of GMT, leave until final Destroy_Session */
+			S_obj->alloc_mode = GMT_NO_CLOBBER;
+		}
+		else  {	/* Successfully freed.  See if this address occurs more than once (e.g., both for in and output); if so just set repeated data pointer to NULL */
 			S_obj->data = NULL;
 			for (j = i; j < API->n_objects; j++) if (API->object[j]->data == address) API->object[j]->data = NULL;	/* Yes, set to NULL so we don't try to free twice */
 			n_free++;	/* Number of freed n_objects; do not increment i since GMT_Destroy_Data shuffled the array */
@@ -2846,7 +2850,7 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level)
 	i = 0;
 	while (i < API->n_objects) {	/* While there are more objects to consider */
 		S_obj = API->object[i];	/* Shorthand for the the current object */
-		if (S_obj && (level == GMT_NOTSET || S_obj->level == u_level))	/* Yes, this object was added in this module (or we dont care), get rid of it; leave i where it is */
+		if (S_obj && (level == GMT_NOTSET || (S_obj->level == u_level && S_obj->alloc_mode != GMT_NO_CLOBBER)))	/* Yes, this object was added in this module (or we dont care), get rid of it; leave i where it is */
 			GMTAPI_Unregister_IO (API, S_obj->ID, GMT_NOTSET);	/* This shuffles the object array and reduces n_objects */
 		else
 			i++;	/* Was allocated higher up, leave alone and go to next */
