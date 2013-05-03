@@ -34,7 +34,7 @@
 
 struct GMTWRITE_CTRL {
 	struct IO {	/* Need two args with filenames */
-		bool active;
+		bool active[2];
 		char *file[2];
 	} IO;
 	struct T {	/* -T sets data type */
@@ -95,8 +95,19 @@ int GMT_gmtwrite_parse (struct GMT_CTRL *GMT, struct GMTWRITE_CTRL *Ctrl, struct
 			/* Processes program-specific parameters */
 
 			case GMT_OPT_INFILE:	/* File args */
-				Ctrl->IO.active = true;
-				if (n_files < 2) Ctrl->IO.file[n_files] = strdup (opt->arg);
+				if (Ctrl->IO.active[GMT_OUT]) {	/* User gave output as ->outfile and it was found on the command line earlier */
+					Ctrl->IO.active[GMT_IN] = true;
+					Ctrl->IO.file[GMT_IN] = strdup (opt->arg);
+				}
+				else if (n_files < 2) {	/* Encountered input file(s); the 2nd would be output */
+					Ctrl->IO.active[n_files] = true;
+					Ctrl->IO.file[n_files] = strdup (opt->arg);
+				}
+				n_files++;
+				break;
+			case GMT_OPT_OUTFILE:	/* Got specific output argument */
+				Ctrl->IO.active[GMT_OUT] = true;
+				Ctrl->IO.file[GMT_OUT] = strdup (opt->arg);
 				n_files++;
 				break;
 			case 'T':	/* Type */
@@ -120,9 +131,10 @@ int GMT_gmtwrite_parse (struct GMT_CTRL *GMT, struct GMTWRITE_CTRL *Ctrl, struct
 		}
 	}
 	
-	n_errors += GMT_check_condition (GMT, !(Ctrl->IO.active && n_files == 2), "Syntax error: Must specify two filenames (input and output)\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->IO.active && (!Ctrl->IO.file[GMT_IN] || !Ctrl->IO.file[GMT_IN][0]), "Syntax error: Must specify input filename\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->IO.active && (!Ctrl->IO.file[GMT_OUT] || !Ctrl->IO.file[GMT_OUT][0]), "Syntax error: Must specify output filename\n");
+	n_errors += GMT_check_condition (GMT, !(Ctrl->IO.active[GMT_IN] && Ctrl->IO.active[GMT_OUT]), "Syntax error: Must specify both input and output filenames\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->IO.active[GMT_IN] && (!Ctrl->IO.file[GMT_IN] || !Ctrl->IO.file[GMT_IN][0]), "Syntax error: Must specify input filename\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->IO.active[GMT_OUT] && (!Ctrl->IO.file[GMT_OUT] || !Ctrl->IO.file[GMT_OUT][0]), "Syntax error: Must specify output filename\n");
+	n_errors += GMT_check_condition (GMT, n_files != 2, "Syntax error: Must specify only two filenames (input and output)\n");
 	n_errors += GMT_check_condition (GMT, !Ctrl->T.active, "Syntax error -T option: Must specify a valid datatype\n");
 	
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
