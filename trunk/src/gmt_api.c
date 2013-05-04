@@ -183,6 +183,18 @@ struct GMTAPI_CTRL * GMT_get_API_ptr (struct GMTAPI_CTRL *ptr)
 	return (ptr);
 }
 
+void GMT_Set_Object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *obj)
+{
+	switch (obj->family) {
+		case GMT_IS_GRID:	obj->G = obj->data; break;
+		case GMT_IS_DATASET:	obj->D = obj->data; break;
+		case GMT_IS_TEXTSET:	obj->T = obj->data; break;
+		case GMT_IS_CPT:	obj->C = obj->data; break;
+		case GMT_IS_MATRIX:	obj->M = obj->data; break;
+		case GMT_IS_VECTOR:	obj->V = obj->data; break;
+	}
+}
+
 /* p_func_size_t is used as a pointer to functions that returns a size_t dimension */
 typedef size_t (*p_func_size_t) (int row, int col, int dim);
 
@@ -2790,10 +2802,9 @@ int GMTAPI_destroy_data_ptr (struct GMTAPI_CTRL *API, unsigned int family, void 
 			return (GMTAPI_report_error (API, GMT_WRONG_KIND));
 			break;		
 	}
-	GMT_free (API->GMT, ptr);
+	if (*alloc_mode != GMT_NO_CLOBBER) GMT_free (API->GMT, ptr);
 	return (GMT_OK);	/* Null pointer */
 }
-
 
 void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level)
 {
@@ -2815,7 +2826,7 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level)
 	while (i < API->n_objects) {	/* While there are more objects to consider */
 		S_obj = API->object[i];	/* Shorthand for the the current object */
 		if (!S_obj) {		/* Skip empty object [Should not happen?] */
-			GMT_Report (API, GMT_MSG_NORMAL, "GMT_Garbage_Collection found empty object number % d [Bug?]\n", i++);
+			GMT_Report (API, GMT_MSG_NORMAL, "GMT_Garbage_Collection found empty object number %d [Bug?]\n", i++);
 			continue;
 		}
 		if (!(level == GMT_NOTSET || S_obj->level == u_level)) {	/* Not the right module level (or not end of session) */
@@ -3536,6 +3547,7 @@ void * GMT_Get_Data (void *V_API, int object_ID, unsigned int mode, void *data)
 	if (!was_enabled && GMT_End_IO (API, GMT_IN, 0) != GMT_OK) {	/* Disables data input if we had to set it in this function */
 		return_null (API, API->error);
 	}
+	GMT_Set_Object (API, API->object[item]);
 	return (new);		/* Return pointer to the data container */
 }
 
@@ -3589,6 +3601,7 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 		if ((item = GMTAPI_Validate_ID (API, GMT_NOTSET, in_ID, GMT_NOTSET)) == GMT_NOTSET) {
 			return_null (API, API->error);
 		}
+		GMT_Set_Object (API, API->object[item]);
 		return ((API->object[item]->data) ? API->object[item]->data : API->object[item]->resource);	/* Return pointer to the data */
 	}
 	
@@ -3752,6 +3765,7 @@ int GMT_Put_Data (void *V_API, int object_ID, unsigned int mode, void *data)
 	if (!was_enabled && GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables data output if we had to set it in this function */
 		return_error (API, API->error);
 	}
+	GMT_Set_Object (API, API->object[item]);
 	return (GMT_OK);	/* No error encountered */
 }
 
