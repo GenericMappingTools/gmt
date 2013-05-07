@@ -4,34 +4,34 @@ mgd77magref
 
 mgd77magref - Evaluate the IGRF or CM4 magnetic field models
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**mgd77magref** [ *inputfile* ] [
-**-A**\ [**+a**\ *alt*\ **+t**\ *date*\ **+y**] ] [ **-C**\ *cm4file* ]
-[ **-D**\ *Dstfile* ] [ **-E**\ *f107file* ] [ **-F**\ *flags* ] [
-**-G** ] [ **-Sc**\ \|\ **l**\ *low/high* ] [ **-V**\ [*level*\ ] ] [
-**-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
-**-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
-**-h**\ [**i**\ \|\ **o**][*n*\ ] ] [ **-:**\ [**i**\ \|\ **o**] ]
+**mgd77magref** [ *inputfile* ]
+[ **-A**\ [**+a**\ *alt*\ **+t**\ *date*\ **+y**] ] [ **-C**\ *cm4file* ]
+[ **-D**\ *Dstfile* ] [ **-E**\ *f107file* ] [ **-F**\ *flags* ]
+[ **-G** ] [ **-Sc**\ \|\ **l**\ *low/high* ] [ |SYN_OPT-V| ]
+[ |SYN_OPT-b| ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-h| ] [ |SYN_OPT-:| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **mgd77magref** will evaluate the IGRF or the CM4 geomagnetic models at
 the specified locations and times. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 None.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 *inputfile*
     Contains the moments in space-time where we want to evaluate the
@@ -48,14 +48,15 @@ None.
     coefficient files up to 2006, which means that one can compute
     external contributions up until 2006 but the Secular Variation will
     be biased (non reliable). New indices files may be retrieved
-    from:ftp://ftp.ngdc.noaa.gov/STP/GEOMAGNETIC\_DATA/INDICES/DST/ (the
+    from:ftp://ftp.ngdc.noaa.gov/STP/GEOMAGNETIC_DATA/INDICES/DST/ (the
     *Dst* coefficients) and
-    ftp://ftp.ngdc.noaa.gov/STP/SOLAR\_DATA/SOLAR\_RADIO/FLUX/ (The
+    ftp://ftp.ngdc.noaa.gov/STP/SOLAR_DATA/SOLAR_RADIO/FLUX/ (The
     *F10.7* index file is a MONTHPLT.ABS). NOTE: since the *Dst* files
     in the .../DST/ directory are still only up to 2006, for GMT4.5.3 we
     extended the *Dst* until August 2009 by reformatting the data in the
-    preliminary file Est\_Ist\_index\_0\_mean.pli, which is at
-    ftp://ftp.ngdc.noaa.gov/STP/GEOMAGNETIC\_DATA/INDICES/EST\_IST/
+    preliminary file Est_Ist_index_0_mean.pli, which is at
+    ftp://ftp.ngdc.noaa.gov/STP/GEOMAGNETIC_DATA/INDICES/EST_IST/
+
 **-A**\ [**+a**\ *alt*\ **+t**\ *date*\ **+y**]
     Adjusts how the input record is interpreted. Append **+a** to set a
     fixed *altitude* (in km) that should apply to all data records
@@ -67,51 +68,54 @@ None.
     format].
 **-C**\ *cm4file*
     Specify an alternate CM4 coefficient file [umdl.CM4].
+
 **-D**\ *Dstfile*
     Specify an alternate file with hourly means of the Dst index for CM4
-    [Dst\_all.wdc]. Alternatively, simply specify a single index to
+    [Dst_all.wdc]. Alternatively, simply specify a single index to
     apply for all records.
+
 **-E**\ *f107file*
     Specify an alternate file with monthly means of absolute F10.7 solar
-    radio flux for CM4 [F107\_mon.plt]. Alternatively, simply specify a
+    radio flux for CM4 [F107_mon.plt]. Alternatively, simply specify a
     single flux to apply for all records.
+
 **-F**\ *flags*
     Selects output items; *flags* is a string made up of one or more of
     these characters:
 
-    **r** means output all input columns before adding the items below (all in nTesla).
+    **r** means output all input columns before adding the items below
 
-    **t** means list total field.
+    **t** means list total field (nT).
 
-    **h** means list horizontal field.
+    **h** means list horizontal field (nT).
 
-    **x** means list X component.
+    **x** means list X component (nT, positive north).
 
-    **y** means list Y component.
+    **y** means list Y component (nT, positive east).
 
-    **z** means list Z component.
+    **z** means list Z component (nT, positive down).
 
-    **d** means list declination.
+    **d** means list declination (deg, clockwise from north).
 
-    **i** means list inclination.
+    **i** means list inclination (deg, positive down).
 
     Append one or more number to indicate the requested field contribution(s):
 
     **0** means IGRF field (no combinations allowed)
 
-    **1** means Core field
+    **1** means CM4 Core field
 
-    **2** means Lithospheric
+    **2** means CM4 Lithospheric
 
-    **3** Primary Magnetospheric field
+    **3** means CM4 Primary Magnetospheric field
 
-    **4** Induced Magnetospheric field
+    **4** means CM4 Induced Magnetospheric field
 
-    **5** Primary ionospheric field
+    **5** means CM4 Primary ionospheric field
 
-    **6** Induced ionospheric field
+    **6** means CM4 Induced ionospheric field
 
-    **7** Toroidal field
+    **7** means CM4 Toroidal field
 
     **9** means Core field from IGRF and other contributions from CM4.
     DO NOT USE BOTH 0 AND 9.
@@ -127,11 +131,11 @@ None.
 
 **-G**
     Specifies that coordinates are geocentric [geodetic].
+
 **-L**
     Computes J field vectors from certain external sources.
 
-    **r** means output all input columns before adding the items below
-    (all in Ampers/m).
+    **r** means output all input columns before adding the items below (all in Ampers/m).
 
     **t** means list magnitude field.
 
@@ -154,6 +158,7 @@ None.
 **-Sc**\ *low/high*
     Limits the wavelengths of the core field contribution to the band
     indicated by the low and high spherical harmonic order [1/13].
+
 **-Sl**\ *low/high*
     Limits the wavelengths of the lithosphere field contribution to the
     band indicated by the low and high spherical harmonic order [14/65].
@@ -174,39 +179,42 @@ None.
 
 .. include:: ../../explain_help.rst_
 
-`Time Settings <#toc6>`_
-------------------------
+Time Settings
+-------------
 
 If binary input files are used then absolute time are stored as time
 relative to the selected epoch. However, since the epoch used is not
 stored in the data files there can be problems decoding the correct
 time. The mgd77 supplement uses the Unix time system as its default;
 thus you should make sure that binary data files with time uses the same
-system (see the GMT default TIME\_SYSTEM).
+system (see the GMT default TIME_SYSTEM).
 
-`Examples <#toc7>`_
--------------------
+Examples
+--------
 
 To get the CM4 Total field, Declination and Inclination due to all but
 lithospheric and toroidal field at a one point location and decimal time
 2000.0, try
 
-    echo -28 38 0 2000.0 \| mgd77magref -A+y -Ftdi/13456
+   ::
+
+    echo -28 38 0 2000.0 | mgd77magref -A+y -Ftdi/13456
 
 To do the same as above but at noon (Universal Time) of first May 2001, try
 
-    echo -28 38 0 2001-05-01T12:00:00 \| mgd77magref -Ftdi/13456
+   ::
 
-`See Also <#toc8>`_
--------------------
+    echo -28 38 0 2001-05-01T12:00:00 | mgd77magref -Ftdi/13456
 
-`GMT <GMT.html>`_ `mgd77info <mgd77info.html>`_
-`mgd77list <mgd77list.html>`_
-`mgd77manage <mgd77manage.html>`_
+See Also
+--------
+
+`GMT <GMT.html>`_, `mgd77info <mgd77info.html>`_,
+`mgd77list <mgd77list.html>`_, `mgd77manage <mgd77manage.html>`_,
 `mgd77track <mgd77track.html>`_
 
-`References <#toc9>`_
----------------------
+References
+----------
 
 Comprehensive Modeling of the Geomagnetic Field, see
 `http://denali.gsfc.nasa.gov/cm/ <http://denali.gsfc.nasa.gov/cm/>`_
