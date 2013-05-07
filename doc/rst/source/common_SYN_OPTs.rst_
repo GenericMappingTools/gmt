@@ -16,7 +16,9 @@
 
 .. |SYN_OPT-a| replace:: **-a**\ *col*\ =\ *name*\ [*...*\ ]
 
-.. |SYN_OPT-b| replace:: **-b**\ [*ncol*][**t**][\ **+L**\ \|\ **+B**] **-c**\ *copies*
+.. |SYN_OPT-b| replace:: **-b**\ [*ncol*][**t**][\ **+L**\ \|\ **+B**]
+
+.. |SYN_OPT-c| replace:: **-c**\ *copies*
 
 .. |SYN_OPT-f| replace:: **-f**\ [**i**\ \|\ **o**]\ *colinfo*
 
