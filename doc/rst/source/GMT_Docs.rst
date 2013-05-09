@@ -10756,7 +10756,7 @@ are listed in Table [tbl:custsymb].
 +---------------+------------+----------------------------------------+--------------------------------------------+
 | **Name**      | **Code**   | **Purpose**                            | **Arguments**                              |
 +===============+============+========================================+============================================+
-| rotate        | **R**      | Rotate the coordinate system           | :math:`\alpha`                             |
+| rotate        | **R**      | Rotate the coordinate system           | :math:`\alpha`\[**a**]                     |
 +---------------+------------+----------------------------------------+--------------------------------------------+
 | moveto        | **M**      | Set a new anchor point                 | :math:`x_0, y_0`                           |
 +---------------+------------+----------------------------------------+--------------------------------------------+
@@ -10807,6 +10807,8 @@ are listed in Table [tbl:custsymb].
 
 [tbl:custsymb]
 
+Note for **R**\: if an **a** is appended then :math:`\alpha` is considered
+to be a map azimuth; otherwise it is a Cartesian angle.
 For **M**, **T**, and all the lower-case symbol codes you may optionally
 append specific pens (with **-W**\ *pen*) and fills (with
 **-G**\ *pen*). These settings will override the pens and fills you may

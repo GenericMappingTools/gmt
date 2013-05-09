@@ -3165,7 +3165,7 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 	bool flush = false, this_outline = false, found_elseif = false, skip[11];
 	uint64_t n = 0;
 	size_t n_alloc = 0;
-	double x, y, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL, dim[3];
+	double x, y, lon, lat, angle, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL, dim[3];
 	char *c = NULL;
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL;
 	struct GMT_FILL *f = NULL, *current_fill = fill;
@@ -3272,6 +3272,14 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 			case GMT_SYMBOL_ROTATE:		/* Rotate the symbol coordinate system by a fixed amount */
 				if (flush) gmt_flush_symbol_piece (GMT, PSL, xx, yy, &n, p, f, this_outline, &flush);
 				PSL_setorigin (PSL, 0.0, 0.0, s->p[0], PSL_FWD);
+				break;
+
+			case GMT_SYMBOL_AZIMROTATE:	/* Rotate the symbol y-axis to the a fixed azimuth */
+				if (flush) gmt_flush_symbol_piece (GMT, PSL, xx, yy, &n, p, f, this_outline, &flush);
+				/* Need to recover actual lon,lat location of symbol first */
+				GMT_xy_to_geo (GMT, &lon, &lat, x0, y0);
+				angle = GMT_azim_to_angle (GMT, lon, lat, 0.1, 90.0 - s->p[0]);
+				PSL_setorigin (PSL, 0.0, 0.0, angle, PSL_FWD);
 				break;
 
 			case GMT_SYMBOL_VARROTATE:	/* Rotate the symbol coordinate system by a variable amount */
