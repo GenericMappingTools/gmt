@@ -9562,16 +9562,16 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *name, struct GMT_CUSTOM_
 
 			case 'R':		/* Rotate coordinate system about (0,0) */
 				if (last != 1) error++;
-				k = strlen (col[0]) - 1;	/* Index of last character */
+				k = (unsigned int)strlen (col[0]) - 1;	/* Index of last character */
 				if (col[0][0] == '$') {	/* Got a variable as angle */
 					s->var = atoi (&col[0][1]);
 					s->action = GMT_SYMBOL_VARROTATE;	/* Mark as a different rotate action */
 				}
 				else if (col[0][k] == 'a') {	/* Got a fixed azimuth */
-					col[0][k] == '\0';	/* Temporarily remove the trailing 'a' */
+					col[0][k] = '\0';	/* Temporarily remove the trailing 'a' */
 					s->p[0] = atof (col[0]);	/* Get azimuth */
 					s->action = GMT_SYMBOL_AZIMROTATE;	/* Mark as a different rotate action */
-					col[0][k] == 'a';	/* Restore the trailing 'a' */
+					col[0][k] = 'a';	/* Restore the trailing 'a' */
 				}
 				else	/* Got a fixed Cartesian angle */
 					s->p[0] = atof (col[0]);
