@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-05-09	pwessel
+	* share/x2sys:		Added dat.def for mgd77 ASCII DAT format.
+
 2013-04-21	remko
 	* pslegend.c:		Honour the use of fill without frame (-G without -F).
 				Return pen to black (and no transparency) after drawing frame box.
