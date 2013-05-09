@@ -133,7 +133,7 @@ void *New_gmtselect_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a n
 	for (i = 0; i < GMTSELECT_N_TESTS; i++) C->I.pass[i] = true;	/* Default is to pass if we are inside */
 	GMT_memset (C->N.mask, GMTSELECT_N_CLASSES, bool);		/* Default for "wet" areas = false (outside) */
 	C->N.mask[1] = C->N.mask[3] = true;				/* Default for "dry" areas = true (inside) */
-	C->Z.max_col = 2;						/* Minimum number of columns to expect */
+	C->Z.max_col = 1;						/* Minimum number of columns to expect is 1 unless "x,y" data are implied [2] */
 	
 	return (C);
 }
@@ -390,6 +390,7 @@ int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, stru
 				break;
 		}
 	}
+	if (Ctrl->Z.max_col == 1 && (Ctrl->C.active || Ctrl->E.active || Ctrl->F.active || Ctrl->L.active || Ctrl->N.active || GMT->common.R.active)) Ctrl->Z.max_col = 2;
 	if (Ctrl->Z.n_tests) Ctrl->Z.limit = GMT_memory (GMT, Ctrl->Z.limit, Ctrl->Z.n_tests, struct GMTSELECT_ZLIMIT);
 
 	n_errors += GMT_check_condition (GMT, Ctrl->C.mode == -1, "Syntax error -C: Unrecognized distance unit\n");
