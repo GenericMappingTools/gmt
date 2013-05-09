@@ -63,6 +63,7 @@
 #define GMT_SYMBOL_ARC		((int)'A')
 #define GMT_SYMBOL_ROTATE	((int)'R')
 #define GMT_SYMBOL_VARROTATE	((int)'V')
+#define GMT_SYMBOL_AZIMROTATE	((int)'Z')
 #define GMT_SYMBOL_TEXTURE	((int)'T')
 #define GMT_SYMBOL_GEOVECTOR	((int)'=')
 
