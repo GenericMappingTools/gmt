@@ -2806,6 +2806,27 @@ int GMTAPI_destroy_data_ptr (struct GMTAPI_CTRL *API, unsigned int family, void 
 	return (GMT_OK);	/* Null pointer */
 }
 
+void GMTAPI_update_allocmode (struct GMTAPI_CTRL *API)
+{
+	/* Ensure that if any objects are flagged with alloc_mode = GMT_NO_CLOBBER
+	 * then objects with duplicate container pointers must have their alloc_mode
+	 * reset to GMT_NO_CLOBBER as well.  This can happne when an external API wishes
+	 * to read a file into memory, and the "writing" to memory is set to NO_CLOBBER,
+	 * but the "write" function will see this as a GMT_REFERENCE initially. */
+	unsigned int i, j;
+	
+	for (i = 0; i < API->n_objects; i++) {
+		if (API->object[i]->alloc_mode != GMT_NO_CLOBBER) continue;	/* Not set to clobber so nothing to do */
+		for (j = 0; j < API->n_objects; j++) {
+			if (j == i) continue;	/* No self-serving stuff, please */
+			if (API->object[j]->alloc_mode == GMT_REFERENCE && API->object[j]->data == API->object[i]->data) {	/* Same container */
+				API->object[j]->alloc_mode = GMT_NO_CLOBBER;
+				GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_update_allocmode: Objects %u and %u share same container and has alloc_mode == GMT_NO_CLOBBER\n", i, j);
+			}
+		}
+	}
+}
+
 void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level)
 {
 	/* GMT_Garbage_Collection frees all registered memory associated with the current module level,
@@ -2821,6 +2842,8 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level)
 	 * the API->object array, reducing API->n_objects by one we must
 	 * be aware that API->n_objects changes in the loop below, hence the while loop */
 	
+	GMTAPI_update_allocmode (API);	/* See if any alloc_modes need updating */
+
 	i = n_free = 0;
 	if (level != GMT_NOTSET) u_level = level;
 	while (i < API->n_objects) {	/* While there are more objects to consider */
