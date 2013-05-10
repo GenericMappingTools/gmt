@@ -499,7 +499,7 @@ Here is a list of recent enhancements to specific programs:
    distance from point to annotation.
 
 #. `psxy.c <psxy.html>`_ and `psxyz.c <psxyz.html>`_ can take symbol modifier
-   **+s**\ *scale*\ [*unit*\ ][/\ *origin*][ **l**] in **-S** to adjust
+   **+s**\ *scale*\ [*unit*][/\ *origin*][ **l**] in **-S** to adjust
    scales read from files. This is used when you have data in the third
    column that should be used for symbol size but they need to be offset
    (by *origin*) and scaled by (*scale*) first; **l** means take the
@@ -580,7 +580,7 @@ correctly with a warning under compatibility mode:
    **+s**\ *fontsize* are obsolete, now being part of **+f**\ *font*.
 
 #. **Ellipsoids**: Assigning **PROJ_ELLIPSOID** a file name is
-   deprecated, use comma-separated parameters *a, f\ :math:`^{-1}`*
+   deprecated, use comma-separated parameters *a, :math:`f^{-1}`*
    instead.
 
 #. **Custom symbol macros:** Circle macro symbol **C** is deprecated;
@@ -1001,7 +1001,7 @@ data, perform mathematical operations (including filtering) on 2-D data
 sets both in the space and frequency domain, sample surfaces along
 arbitrary tracks or onto a new grid, calculate volumes, and find trend
 surfaces. The plotting programs will let the user make linear,
-log\ :math:`_{10}`, and *x\ :math:`^a`*-*y\ :math:`^b`* diagrams, polar
+log\ :math:`_{10}`, and :math:`x^a - y^b` diagrams, polar
 and rectangular histograms, maps with filled continents and coastlines
 choosing from many common map projections, contour plots, mesh plots,
 monochrome or color images, and artificially illuminated shaded-relief
@@ -1092,12 +1092,12 @@ Most of the programs will produce some form of output, which falls into
 four categories. Several of the programs may produce more than one of
 these types of output:
 
-#. 1-D ASCII Tables — For example, a (:math:`x,y`) series may be
+#. 1-D ASCII Tables — For example, a (*x,y*) series may be
    filtered and the filtered values output. ASCII output is written to
    the standard output stream.
 
 #. 2-D binary (netCDF or user-defined) grid files – Programs that grid
-   ASCII (:math:`x,y,z`) data or operate on existing grid files produce
+   ASCII (*x,y,z*) data or operate on existing grid files produce
    this type of output.
 
 #. *PostScript* – The plotting programs all use the *PostScript*\ page
@@ -1699,13 +1699,13 @@ Finally, the rest of the *GMT* common options are given below:
 +------------------------------------------------------------+--------------------------------------------------------+
 | **-V**                                                     | Run in verbose mode                                    |
 +------------------------------------------------------------+--------------------------------------------------------+
-| **-X**\ [**a**\ \| \ **c**\ \| \ **r**]\ *off*\ [**u**\ ]  | Shift plot origin in :math:`x`-direction               |
+| **-X**\ [**a**\ \| \ **c**\ \| \ **r**]\ *off*\ [**u**]    | Shift plot origin in *x*-direction                     |
 +------------------------------------------------------------+--------------------------------------------------------+
-| **-Y**\ [**a**\ \| \ **c**\ \| \ **r**]\ *off*\ [**u**\ ]  | Shift plot origin in :math:`y`-direction               |
+| **-Y**\ [**a**\ \| \ **c**\ \| \ **r**]\ *off*\ [**u**]    | Shift plot origin in *y*-direction                     |
 +------------------------------------------------------------+--------------------------------------------------------+
 | **-a**\ *name=col,...*                                     | Associates aspatial data with columns                  |
 +------------------------------------------------------------+--------------------------------------------------------+
-| **-b**\ [**i**\ \| \ **o**][*ncol*\ ][**t**\ ]             | Select binary input or output                          |
+| **-b**\ [**i**\ \| \ **o**][*ncol*\ ][**t**]               | Select binary input or output                          |
 +------------------------------------------------------------+--------------------------------------------------------+
 | **-c**\ *copies*                                           | Set number of plot copies [1]                          |
 +------------------------------------------------------------+--------------------------------------------------------+
@@ -2378,13 +2378,13 @@ specific to log axes:
 
 #. *stride* must be 1, 2, 3, or a negative integer -n.
    Annotations/ticks will then occur at 1, 1–2–5, or 1,2,3,4,...,9,
-   respectively, for each magnitude range. For :math:`-n` the
+   respectively, for each magnitude range. For *-n* the
    annotations will take place every *n*\ 'th magnitude.
 
 #. Append **l** to *stride*. Then, log\ :math:`_{10}` of the annotation
    is plotted at every integer log\ :math:`_{10}` value (e.g.,
-   :math:`x = 100` will be annotated as "2") [Default annotates
-   :math:`x` as is].
+   *x = 100* will be annotated as "2") [Default annotates
+   *x* as is].
 
 #. Append **p** to *stride*. Then, annotations appear as 10 raised to
    log\ :math:`_{10}` of the value (e.g., :math:`10^{-5}`).
@@ -2421,7 +2421,7 @@ Our first example shows a time period of almost two months in Spring
      psbasemap -R2000-4-1T/2000-5-25T/0/1 -JX5i/0.2i -Bpa7Rf1d -Bsa1OS -P > GMT_-B_time1.ps
 
 These commands result in Figure . Note the leading hyphen in the
-**FORMAT\_DATE\_MAP** removes leading zeros from calendar items (e.g.,
+**FORMAT_DATE_MAP** removes leading zeros from calendar items (e.g.,
 02 becomes 2).
 
 The next example shows two different ways to annotate an axis portraying
@@ -3485,8 +3485,8 @@ consecutive. The format is
 
 The *Fill* information follows the format given in Section [sec:fill].
 While not always applicable to categorical data, the background color
-(for *key*-values :math:`<` *key\ :math:`_1`*), foreground color (for
-*key*-values :math:`>` *key\ :math:`_{n}`*), and not-a-number (NaN)
+(for *key*-values < :math:`key_1`), foreground color (for
+*key*-values > math:`key_{n}`), and not-a-number (NaN)
 color (for *key*-values = NaN) are all defined in the ``gmt.conf`` file, but can be
 overridden by the statements
 
@@ -3504,22 +3504,22 @@ Regular CPT files
 Suitable for continuous data types and allowing for color
 interpolations, the format of the regular CPT files is:
 
-llllll z\ :math:`_0` & Color\ :math:`_{min}` & z\ :math:`_1` &
+llllll :math:`z_0` & Color\ :math:`_{min}` & :math:`z_1` &
 Color\ :math:`_{max}` & [**A] & [;*label*]
 …& & & & &
-z\ :math:`_{n-2}` & Color\ :math:`_{min}` & z\ :math:`_{n-1}` &
-Color\ :math:`_{max}` & [**A**\ ] & [;*label*]
+z\ :math:`_{n-2}` & Color\ :math:`_{min}` & :math:`z_{n-1}` &
+Color\ :math:`_{max}` & [**A**] & [;*label*]
 **
 
 Thus, for each "*z*-slice", defined as the interval between two
-boundaries (e.g., *z\ :math:`_0`* to *z\ :math:`_1`*), the color can be
+boundaries (e.g., :math:`z_0` to :math:`z_1`), the color can be
 constant (by letting Color\ :math:`_{max}` = Color\ :math:`_{min}` or -)
 or a continuous, linear function of *z*. If patterns are used then the
 second (max) pattern must be set to -. The optional flag **A** is used
 to indicate annotation of the color scale when plotted using
 `psscale <psscale.html>`_. The optional flag **A** may
 be **L**, **U**, or **B** to select annotation of the lower, upper, or
-both limits of the particular :math:`z`-slice, respectively. However,
+both limits of the particular *z*-slice, respectively. However,
 the standard **-B** option can be used by
 `psscale <psscale.html>`_ to affect annotation and
 ticking of color scales. Just as other *GMT* programs, the *stride* can
@@ -3529,8 +3529,8 @@ make `psscale <psscale.html>`_, when used with the
 **-L** option, place the supplied label instead of formatted *z*-values.
 
 As for categorical tables, the background color (for *z*-values
-< *z\ :math:`_0`*), foreground color (for *z*-values >
-*z\ :math:`_{n-1}`*), and not-a-number (NaN) color (for *z*-values =
+< :math:`z_0`), foreground color (for *z*-values >
+:math:`z_{n-1}`), and not-a-number (NaN) color (for *z*-values =
 NaN) are all defined in the ``gmt.conf`` file, but can be overridden by the
 statements
 
@@ -4331,18 +4331,18 @@ Cartesian transformations
 
 These transformations convert input coordinates :math:`(x,y)` to
 locations :math:`(x', y')` on a plot. There is no coupling between
-:math:`x` and :math:`y` (i.e., :math:`x' = f(x)` and :math:`y' = f(y)`);
+*x* and *y* (i.e., :math:`x' = f(x)` and :math:`y' = f(y)`);
 it is a **one-dimensional** projection. Hence, we may use separate
-transformations for the :math:`x`- and :math:`y`-axes (and
-:math:`z`-axes for 3-D plots). Below, we will use the expression
-:math:`u' = f(u)`, where :math:`u` is either :math:`x` or :math:`y` (or
-:math:`z` for 3-D plots). The coefficients in :math:`f(u)` depend on the
+transformations for the *x*- and *y*-axes (and
+*z*-axes for 3-D plots). Below, we will use the expression
+:math:`u' = f(u)`, where *u* is either *x* or *y* (or
+*z* for 3-D plots). The coefficients in :math:`f(u)` depend on the
 desired plot size (or scale), the chosen :math:`(x,y)` domain, and the
-nature of :math:`f` itself.
+nature of *f* itself.
 
 Two subsets of linear will be discussed separately; these are a polar
 (cylindrical) projection and a linear projection applied to geographic
-coordinates (with a 360 periodicity in the :math:`x`-coordinate). We
+coordinates (with a 360 periodicity in the *x*-coordinate). We
 will show examples of all of these projections using dummy data sets
 created with `gmtmath <gmtmath.html>`_, a "Reverse
 Polish Notation" (RPN) calculator that operates on or creates table
@@ -4478,12 +4478,12 @@ Cartesian power projection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This projection uses :math:`u' = a u^b + c` and allows us to explore
-exponential relationships like *x\ :math:`^p`* versus *y\ :math:`^q`*.
-While :math:`p` and :math:`q` can be any values, we will select :math:`p
-= 0.5` and :math:`q = 1` which means we will plot :math:`x` versus
+exponential relationships like :math:`x^p` versus :math:`y^q`.
+While *p* and *q* can be any values, we will select *p
+= 0.5* and *q = 1* which means we will plot *x* versus
 :math:`\sqrt{x}`. We indicate this scaling by appending a **p** (lower
 case P) followed by the desired exponent, in our case 0.5. Since
-:math:`q = 1` we do not need to specify **p**\ 1 since it is identical
+*q = 1* we do not need to specify **p**\ 1 since it is identical
 to the linear transformation. Thus our command becomes
 
    ::
@@ -4495,9 +4495,9 @@ Linear projection with polar (:math:`\theta, r`) coordinates (**-Jp** **-JP**)
 -------------------------------------------------------------------------------
 
 This transformation converts polar coordinates (angle :math:`\theta` and
-radius :math:`r`) to positions on a plot. Now :math:`x' = f(\theta,r)`
+radius *r*) to positions on a plot. Now :math:`x' = f(\theta,r)`
 and :math:`y' = g(\theta,r)`, hence it is similar to a regular map
-projection because :math:`x` and :math:`y` are coupled and :math:`x`
+projection because *x* and *y* are coupled and *x*
 (i.e., :math:`\theta`) has a 360 periodicity. With input and output
 points both in the plane it is a **two-dimensional** projection. The
 transformation comes in two flavors:
@@ -4522,8 +4522,7 @@ Consequently, the polar transformation is defined by providing
 -  Optionally, insert **a** after **p\ \| \ P** to indicate CW
    azimuths rather than CCW directions
 
--  Optionally, append /:math:`origin` in degrees to indicate an angular
-   offset [0]
+-  Optionally, append /\ *origin* in degrees to indicate an angular offset [0]
 
 -  Optionally, append **r** to reverse the radial direction (here,
    *south* and *north* must be elevations in 0–90 range).
@@ -4554,9 +4553,9 @@ GMT Map Projections
 *GMT* implements more than 30 different projections. They all project
 the input coordinates longitude and latitude to positions on a map. In
 general, :math:`x' = f(x,y,z)` and :math:`y' = g(x,y,z)`, where
-:math:`z` is implicitly given as the radial vector length to the
-:math:`(x,y)` point on the chosen ellipsoid. The functions :math:`f` and
-:math:`g` can be quite nasty and we will refrain from presenting details
+*z* is implicitly given as the radial vector length to the
+:math:`(x,y)` point on the chosen ellipsoid. The functions *f* and
+*g* can be quite nasty and we will refrain from presenting details
 in this document. The interested read is referred to *Snyder*
 [1987] [21]_. We will mostly be using the
 `pscoast <pscoast.html>`_ command to demonstrate each of
@@ -4571,7 +4570,7 @@ depending on the nature of the projection. The groups are
 
 #. Miscellaneous projections
 
-Because :math:`x` and :math:`y` are coupled we can only specify one
+Because *x* and *y* are coupled we can only specify one
 plot-dimensional scale, typically a map *scale* (for lower-case map
 projection code) or a map *width* (for upper-case map projection code).
 However, in some cases it would be more practical to specify map
@@ -4804,7 +4803,7 @@ center of projection. The requirements are
 -  Longitude and latitude of the projection center.
 
 -  Optionally, the horizon, i.e., the number of degrees from the center
-   to the edge (:math:`<`\ 180, default is 90).
+   to the edge (< 180, default is 90).
 
 -  Scale as 1:xxxxx (true scale at pole), slat/1:xxxxx (true scale at
    standard parallel slat), or radius/latitude where radius is distance
@@ -4991,7 +4990,7 @@ To specify the Gnomonic projection you must supply:
 -  Longitude and latitude of the projection center.
 
 -  Optionally, the horizon, i.e., the number of degrees from the center
-   to the edge (:math:`<`\ 90, default is 60).
+   to the edge (< 90, default is 60).
 
 -  Scale as 1:xxxxx or as radius/latitude where radius is distance on
    map in inches from projection center to a particular [possibly
@@ -6273,7 +6272,7 @@ A 3-D histogram
 The program `psxyz <psxyz.html>`_ allows us to plot
 three-dimensional symbols, including columnar plots. As a simple
 demonstration, we will convert a gridded netCDF of bathymetry into an
-ASCII :math:`xyz` table and use the height information to draw a 2-D
+ASCII *xyz* table and use the height information to draw a 2-D
 histogram in a 3-D perspective view. Our gridded bathymetry file is
 called ``guinea_bay.nc`` and covers the region from 0 to 5 E and 0 to 5 N. Depth ranges
 from -5000 meter to sea-level. We produce the
@@ -6814,17 +6813,17 @@ Gridding of data, continued
 `pscontour <pscontour.html>`_ (for contouring) and
 `triangulate <triangulate.html>`_ (for gridding) use the
 simplest method of interpolating data: a Delaunay triangulation (see
-Section [sec:example\ :sub:`1`\ 2]) which forms :math:`z(x, y)` as a
+Section [sec:example\ :sub:`1`\ 2]) which forms *z(x, y)* as a
 union of planar triangular facets. One advantage of this method is that
-it will not extrapolate :math:`z(x, y)` beyond the convex hull of the
+it will not extrapolate *z(x, y)* beyond the convex hull of the
 input (*x, y*) data. Another is that it will not estimate a *z* value
 above or below the local bounds on any triangle. A disadvantage is that
-the :math:`z(x, y)` surface is not differentiable, but has sharp kinks
+the *z(x, y)* surface is not differentiable, but has sharp kinks
 at triangle edges and thus also along contours. This may not look
 physically reasonable, but it can be filtered later (last panel below).
 `surface <surface.html>`_ can be used to generate a
 higher-order (smooth and differentiable) interpolation of
-:math:`z(x, y)` onto a grid, after which the grid may be illustrated
+*z(x, y)* onto a grid, after which the grid may be illustrated
 (`grdcontour <grdcontour.html>`_, `grdimage <grdimage.html>`_,
 `grdview <grdview.html>`_).
 `surface <surface.html>`_ will interpolate to all (*x,
@@ -6838,7 +6837,7 @@ outside the local range of the data (note area near *x* = 0.8, *y* =
 used to create a "minimum curvature" (most smooth) interpolant.
 `surface <surface.html>`_ can be used with non-zero
 tension to partially overcome this problem. The limiting value
-:math:`tension = 1` should approximate the triangulation, while a value
+*tension = 1* should approximate the triangulation, while a value
 between 0 and 1 may yield a good compromise between the above two cases.
 A value of 0.5 is shown here (Figure [fig:example:sub:`1`\ 6]). A side
 effect of the tension is that it tends to make the contours turn near
@@ -6853,7 +6852,7 @@ grids containing "NaN" values and it can do median and mode filters as
 well as convolutions. Shown here is `triangulate <triangulate.html>`_ followed by
 `grdfilter <grdfilter.html>`_. Note that the filter has
 done some extrapolation beyond the convex hull of the original *x, y*
-values. The "best" smooth approximation of :math:`z(x, y)` depends on
+values. The "best" smooth approximation of *z(x, y)* depends on
 the errors in the data and the physical laws obeyed by *z*. *GMT* cannot
 always do the "best" thing but it offers great flexibility through its
 combinations of tools. We illustrate all four solutions using a CPT file
@@ -7201,24 +7200,24 @@ The following recipe is used when designing a new symbol.
    rules. In our case we describe our volcano and bulls eye using these
    three freeform polygon generators:
 
-   :math:`x_0` :math:`y_0` :math:`r` **C** [ **-G**\ *fill* ] [
+   :math:`x_0` :math:`y_0` *r* **C** [ **-G**\ *fill* ] [
    **-W**\ *pen* ] Draw :math:`x_0` :math:`y_0` **M** [ **-G**\ *fill* ]
    [ **-W**\ *pen* ] Start new element at :math:`x_0`, :math:`y_0`
 
    :math:`x_1` :math:`y_1` **D** Draw straight line from current point
    to :math:`x_1`, :math:`y_1` around (:math:`x_0`, :math:`y_0`)
 
-   :math:`x_0` :math:`y_0` :math:`r` :math:`\alpha_1` :math:`\alpha_2`
-   **A** Draw arc segment of radius :math:`r` from angle
+   :math:`x_0` :math:`y_0` *r* :math:`\alpha_1` :math:`\alpha_2`
+   **A** Draw arc segment of radius *r* from angle
    :math:`\alpha_1` to :math:`\alpha_2`
 
    We also add a few stand-alone circles (for other symbols, see
    `psxy <psxy.html>`_ man page):
 
-   :math:`x_0` :math:`y_0` :math:`r` **C** [ **-G**\ *fill* ] [
-   **-W**\ *pen* ] Draw :math:`x_0` :math:`y_0` :math:`r` **c** [
+   :math:`x_0` :math:`y_0` *r* **C** [ **-G**\ *fill* ] [
+   **-W**\ *pen* ] Draw :math:`x_0` :math:`y_0` *r* **c** [
    **-G**\ *fill* ] [ **-W**\ *pen* ] Draw single circle of radius
-   :math:`r` around :math:`x_0`, :math:`y_0`
+   *r* around :math:`x_0`, :math:`y_0`
 
    The optional **-G** and **-W** can be used to hardwire the color fill
    and pen for segments (use **–** to disallow fill or line for any
@@ -7766,10 +7765,10 @@ somewhat intractable expressions below where the sum of
 In the end we obtain a funny-looking map depicting the antipodal
 distribution as well as displaying in legend form the requested
 percentages (Figure [fig:example:sub:`2`\ 5]). Note that the script is
-set to evaluate a global 30 minute grid for expediency (:math:`D = 30`),
+set to evaluate a global 30 minute grid for expediency (*D = 30*),
 hence several smaller land masses that do have terrestrial antipodes do
 not show up. If you want a more accurate map you can set the parameter
-:math:`D` to a smaller increment (try 5 and wait a few minutes).
+*D* to a smaller increment (try 5 and wait a few minutes).
 
 The call to `grdimage <grdimage.html>`_ includes the
 ``–Sn`` to suspend interpolation and only return the value of the
@@ -9083,24 +9082,24 @@ slightly deviating from the standards used by *GMT* can also be read.
 | title & Title (optional)
 | source & How file was created (optional)
 | node_offset & absent or 0 for gridline node registration (default), 1 for pixel registration
-| & *:math:`x`- and :math:`y`-variable attributes*
+| & *x*- and *y*-variable attributes
 | long_name & Coordinate name (e.g., "Longitude" and "Latitude")
 | units & Unit of the coordinate (e.g., "degrees_east" and "degrees_north")
-| actual_range & Minimum and maximum :math:`x` and :math:`y` of region; if absent the first and last :math:`x`- and :math:`y`-values are queried
-| & *:math:`z`-variable attributes*
+| actual_range & Minimum and maximum *x* and *y* of region; if absent the first and last *x*- and *y*-values are queried
+| & *z-variable attributes*
 | long_name & Name of the variable (default: "z")
 | units & Unit of the variable
-| scale_factor & Factor to multiply :math:`z` with (default: 1)
-| add_offset & Offset to add to scaled :math:`z` (default: 0)
-| actual_range & Minimum and maximum :math:`z` (in unpacked units, optional) and :math:`z`
+| scale_factor & Factor to multiply *z* with (default: 1)
+| add_offset & Offset to add to scaled *z* (default: 0)
+| actual_range & Minimum and maximum *z* (in unpacked units, optional) and *z*
 | _FillValue & Value associated with missing or invalid data points; if absent an appropriate default value is assumed, depending on data type.
 
 [tbl:netcdf-format]
 
 By default, the first 2-dimensional variable in a netCDF file will by
 read as the *z* variable and the coordinate axes *x* and
-:math:`y` will be determined from the dimensions of the :math:`z`
-variable. *GMT* will recognize whether the :math:`y` (latitude) variable
+*y* will be determined from the dimensions of the *z*
+variable. *GMT* will recognize whether the *y* (latitude) variable
 increases or decreases. Both forms of data storage are handled
 appropriately.
 
@@ -9166,25 +9165,25 @@ global spherical cases are specified using the *g* (geographical) flag.
 Behavior of these conditions is as follows:
 
 Periodic
-    conditions on :math:`x` indicate that the data are periodic in the
+    conditions on *x* indicate that the data are periodic in the
     distance (:math:`x_{max} - x_{min}`) and thus repeat values after
     every :math:`N = (x_{max} - x_{min})/x_{inc}`. Note that this
     implies that in a grid-registered file the values in the first and
     last columns are equal, since these are located at
     :math:`x = x_{min}` and :math:`x = x_{max}`, and there are
-    :math:`N + 1` columns in the file. This is not the case in a
-    pixel-registered file, where there are only :math:`N` and the first
+    *N + 1* columns in the file. This is not the case in a
+    pixel-registered file, where there are only *N* and the first
     and last columns are located at :math:`x_{min} + x_{inc}/2` and
-    :math:`x_{max} - x_{inc}/2`. If :math:`y` is periodic all the same
-    holds for :math:`y`.
+    :math:`x_{max} - x_{inc}/2`. If *y* is periodic all the same
+    holds for *y*.
 
 Geographical
     conditions indicate the following:
 
     #. If :math:`(x_{max} - x_{min}) \geq 360` and also 180 modulo
        :math:`x_{inc} = 0` then a periodic condition is used on
-       :math:`x` with a period of 360; else a default condition is used
-       on the :math:`x` boundaries.
+       *x* with a period of 360; else a default condition is used
+       on the *x* boundaries.
 
     #. If condition 1 is true and also :math:`y_{max} = 90` then a
        "north pole condition" is used at :math:`y_{max}`, else a default
@@ -9220,7 +9219,7 @@ containing a number of attributes defining the content. The
 `grdedit <grdedit.html>`_ utility program will allow you
 to edit parts of the header of an existing grid file. The attributes
 listed in Table [tbl:grdheader] are contained within the header record
-in the order given (except the :math:`z`-array which is not part of the
+in the order given (except the *z*-array which is not part of the
 header structure, but makes up the rest of the file). As this header was
 designed long before 64-bit architectures became available, the jump
 from the first three integers to the subsequent doubles in the structure
@@ -9228,49 +9227,49 @@ does not occur on a 16-byte alignment. While *GMT* handles the reading
 of these structures correctly, enterprising programmers must take care
 to read this header correctly (see our code for details).
 
-+---------------------------------+----------------------------------------------------------+
-| **Parameter**                   | **Description**                                          |
-+=================================+==========================================================+
-| **int** *nx*                    | Number of nodes in the :math:`x`-dimension               |
-+---------------------------------+----------------------------------------------------------+
-| **int** *ny*                    | Number of nodes in the y-dimension                       |
-+---------------------------------+----------------------------------------------------------+
-| **int** *registration*          | 0 for grid line registration, 1 for pixel registration   |
-+---------------------------------+----------------------------------------------------------+
-| **double** *x\_min*             | Minimum :math:`x`-value of region                        |
-+---------------------------------+----------------------------------------------------------+
-| **double** *x\_max*             | Maximum :math:`x`-value of region                        |
-+---------------------------------+----------------------------------------------------------+
-| **double** *y\_min*             | Minimum :math:`y`-value of region                        |
-+---------------------------------+----------------------------------------------------------+
-| **double** *y\_max*             | Maximum :math:`y`-value of region                        |
-+---------------------------------+----------------------------------------------------------+
-| **double** *z\_min*             | Minimum :math:`z`-value in data set                      |
-+---------------------------------+----------------------------------------------------------+
-| **double** *z\_max*             | Maximum :math:`z`-value in data set                      |
-+---------------------------------+----------------------------------------------------------+
-| **double** *x\_inc*             | Node spacing in :math:`x`-dimension                      |
-+---------------------------------+----------------------------------------------------------+
-| **double** *y\_inc*             | Node spacing in :math:`y`-dimension                      |
-+---------------------------------+----------------------------------------------------------+
-| **double** *z\_scale\_factor*   | Factor to multiply :math:`z`-values after read           |
-+---------------------------------+----------------------------------------------------------+
-| **double** *z\_add\_offset*     | Offset to add to scaled :math:`z`-values                 |
-+---------------------------------+----------------------------------------------------------+
-| **char** *x\_units*\ [80]       | Units of the :math:`x`-dimension                         |
-+---------------------------------+----------------------------------------------------------+
-| **char** *y\_units*\ [80]       | Units of the :math:`y`-dimension                         |
-+---------------------------------+----------------------------------------------------------+
-| **char** *z\_units*\ [80]       | Units of the :math:`z`-dimension                         |
-+---------------------------------+----------------------------------------------------------+
-| **char** *title*\ [80]          | Descriptive title of the data set                        |
-+---------------------------------+----------------------------------------------------------+
-| **char** *command*\ [320]       | Command line that produced the grid file                 |
-+---------------------------------+----------------------------------------------------------+
-| **char** *remark*\ [160]        | Any additional comments                                  |
-+---------------------------------+----------------------------------------------------------+
-| **TYPE** *z*\ [nx\*ny]          | 1-D array with :math:`z`-values in scanline format       |
-+---------------------------------+----------------------------------------------------------+
++---------------------------------+--------------------------------------------------------+
+| **Parameter**                   | **Description**                                        |
++=================================+========================================================+
+| **int** *nx*                    | Number of nodes in the *x*-dimension                   |
++---------------------------------+--------------------------------------------------------+
+| **int** *ny*                    | Number of nodes in the *y*-dimension                   |
++---------------------------------+--------------------------------------------------------+
+| **int** *registration*          | 0 for grid line registration, 1 for pixel registration |
++---------------------------------+--------------------------------------------------------+
+| **double** *x\_min*             | Minimum *x*-value of region                            |
++---------------------------------+--------------------------------------------------------+
+| **double** *x\_max*             | Maximum *x*-value of region                            |
++---------------------------------+--------------------------------------------------------+
+| **double** *y\_min*             | Minimum *y*-value of region                            |
++---------------------------------+--------------------------------------------------------+
+| **double** *y\_max*             | Maximum *y*-value of region                            |
++---------------------------------+--------------------------------------------------------+
+| **double** *z\_min*             | Minimum *z*-value in data set                          |
++---------------------------------+--------------------------------------------------------+
+| **double** *z\_max*             | Maximum *z*-value in data set                          |
++---------------------------------+--------------------------------------------------------+
+| **double** *x\_inc*             | Node spacing in *x*-dimension                          |
++---------------------------------+--------------------------------------------------------+
+| **double** *y\_inc*             | Node spacing in *y*-dimension                          |
++---------------------------------+--------------------------------------------------------+
+| **double** *z\_scale\_factor*   | Factor to multiply *z*-values after read               |
++---------------------------------+--------------------------------------------------------+
+| **double** *z\_add\_offset*     | Offset to add to scaled *z*-values                     |
++---------------------------------+--------------------------------------------------------+
+| **char** *x\_units*\ [80]       | Units of the *x*-dimension                             |
++---------------------------------+--------------------------------------------------------+
+| **char** *y\_units*\ [80]       | Units of the *y*-dimension                             |
++---------------------------------+--------------------------------------------------------+
+| **char** *z\_units*\ [80]       | Units of the *z*-dimension                             |
++---------------------------------+--------------------------------------------------------+
+| **char** *title*\ [80]          | Descriptive title of the data set                      |
++---------------------------------+--------------------------------------------------------+
+| **char** *command*\ [320]       | Command line that produced the grid file               |
++---------------------------------+--------------------------------------------------------+
+| **char** *remark*\ [160]        | Any additional comments                                |
++---------------------------------+--------------------------------------------------------+
+| **TYPE** *z*\ [nx\*ny]          | 1-D array with *z*-values in scanline format           |
++---------------------------------+--------------------------------------------------------+
 
 [tbl:grdheader]
 
@@ -9308,9 +9307,9 @@ header structure is outline in Table [tbl:sunheader].
 
 [tbl:sunheader]
 
-After the header, the color map (if *ras\_maptype* is not RMT\_NONE)
-follows for *ras\_maplength* bytes, followed by an image of
-*ras\_length* bytes. Some related definitions are given in
+After the header, the color map (if *ras_maptype* is not RMT\_NONE)
+follows for *ras_maplength* bytes, followed by an image of
+*ras_length* bytes. Some related definitions are given in
 Table [tbl:sundef].
 
 [H]
@@ -9787,9 +9786,9 @@ characters (shown in the light green boxes) you need to set
 The chart for the Symbol character set (*GMT* font number 12) and Pifont
 ZapfDingbats character set (font number 34) are presented in
 Figure [fig:GMT\ :sub:`A`\ pp\ :sub:`Fs`\ ymbol] below. The octal code
-is obtained by appending the column value to the :math:`\backslash`??
-value, e.g., :math:`\partial` is :math:`\backslash`\ 266 in the Symbol
-font. The euro currency symbol is :math:`\backslash`\ 240 in the Symbol
+is obtained by appending the column value to the \\??
+value, e.g., :math:`\partial` is \\266 in the Symbol
+font. The euro currency symbol is \\240 in the Symbol
 font and will print if your printer supports it (older printer's
 firmware will not know about the euro).
 
@@ -9927,13 +9926,13 @@ RGB color system
 Remember your (parents') first color television set? Likely it had three
 little bright colored squares on it: red, green, and blue. And that is
 exactly what each color on the tube is made of: varying levels of red,
-green and blue light. Switch all of them off, :math:`r=g=b=0`, then you
-have black. All of them at maximum, :math:`r=g=b=255`, creates white.
+green and blue light. Switch all of them off, *r=g=b=0*, then you
+have black. All of them at maximum, *r=g=b=255*, creates white.
 Your computer screen works the same way.
 
 A mix of levels of red, green, and blue creates basically any color
 imaginable. In *GMT* each color can be represented by the triplet
-:math:`r`/:math:`g`/:math:`b`. For example, 127/255/0 (half red, full
+*r7g7b*. For example, 127/255/0 (half red, full
 green, and no blue) creates a color called chartreuse. The color sliders
 in the graphics program **GIMP** are an excellent way to experiment
 with colors, since they show you in advance how moving one of the color
@@ -9987,13 +9986,12 @@ Figure [fig:example\ :sub:`1`\ 1]. The geometric picture is most
 helpful, we think, since HSV are not orthogonal coordinates and not
 found from RGB by a simple algebraic transformation. So here goes: Look
 at the cube face with black, red, magenta, and blue corners. This is the
-:math:`g` = 0 face. Orient the cube so that you are looking at this face
+*g* = 0 face. Orient the cube so that you are looking at this face
 with black in the lower left corner. Now imagine a right-handed
-cartesian (:math:`r`,\ :math:`g`,\ :math:`b`) coordinate system with
-origin at the black point; you are looking at the :math:`g = 0` plane
-with :math:`r` increasing to your right, :math:`g` increasing away from
-you, and :math:`b` increasing up. Keep this sense of
-(:math:`r`,\ :math:`g`,\ :math:`b`) as you look at the cube.
+cartesian (*rgb*) coordinate system with
+origin at the black point; you are looking at the *g = 0* plane
+with *r* increasing to your right, *g* increasing away from
+you, and *b* increasing up. Keep this sense of (*rgb*) as you look at the cube.
 
 Now tip the cube such that the black corner faces down and the white
 corner up. When looking from the top, you can see the hue, contoured in
@@ -10002,48 +10000,48 @@ with shades of red (0), then goes through green (120) and blue (240),
 back to red.
 
 On the three faces that are now on the lower side (with the white print)
-one of (:math:`r`,\ :math:`g`,\ :math:`b`) is equal to 0. These three
-faces meet at the black corner, where :math:`r = g = b = 0`. On these
-three faces the colors are fully saturated: :math:`s` = 1. The dashed
-white lines indicate different levels of :math:`v`, ranging from 0 to 1
+one of (*rgb*) is equal to 0. These three
+faces meet at the black corner, where *r = g = b = 0*. On these
+three faces the colors are fully saturated: *s = 1*. The dashed
+white lines indicate different levels of *v*, ranging from 0 to 1
 with contours every 0.1.
 
 On the upper three faces (with the black print), one of
-(:math:`r`,\ :math:`g`,\ :math:`b`) is equal to the maximum value. These
-three faces meet at the white corner, where :math:`r = g = b = 255`. On
-these three faces value is at its maximum: :math:`v` = 1 (or 100%). The
-dashed black lines indicate varying levels of saturation: :math:`s`
+(*rgb*) is equal to the maximum value. These
+three faces meet at the white corner, where *r = g = b = 255*. On
+these three faces value is at its maximum: *v = 1* (or 100%). The
+dashed black lines indicate varying levels of saturation: *s*
 ranges from 0 to 1 with contours every 0.1.
 
 Now turn the cube around on its vertical axis (running from the black to
 the white corner). Along the six edges that zigzag around the "equator",
-both saturation and value are maximum, so :math:`s = v = 1`. Twirling
+both saturation and value are maximum, so *s = v = 1*. Twirling
 the cube around and tracing the zigzag, you will visit six of the eight
-corners of the cube, with changing hue (:math:`h`): red (0), yellow
+corners of the cube, with changing hue (*h*): red (0), yellow
 (60), green (120), cyan (180), blue (240), and magenta (300). Three of
 these are the RGB colors; the other three are the CMY colors which are
 the complement of RGB and are used in many color hardcopy devices (see
 below). The only cube corners you did not visit on this path are the
 black and white corners. They lie on the vertical axis where hue is
-undefined and :math:`r = g = b`. Any point on this axis is a shade of
+undefined and *r = g = b*. Any point on this axis is a shade of
 gray.
 
-Let us call the points where :math:`s = v = 1` (points along the RYGCBM
+Let us call the points where *s = v = 1* (points along the RYGCBM
 path described above) the "pure" colors. If we start at a pure color and
-we want to whiten it, we can keep :math:`h` constant and :math:`v = 1`
-while decreasing :math:`s`; this will move us along one of the cube
+we want to whiten it, we can keep *h* constant and *v = 1*
+while decreasing *s*; this will move us along one of the cube
 faces toward the white point. If we start at a pure color and we want to
-blacken it, we can keep :math:`h` constant and :math:`s = 1` while
-decreasing :math:`v`; this will move us along one of the cube faces
-toward the black point. Any point in (:math:`r`,\ :math:`g`,\ :math:`b`)
+blacken it, we can keep *h* constant and *s = 1* while
+decreasing *v*; this will move us along one of the cube faces
+toward the black point. Any point in (*rgb*)
 space which can be thought of as a mixture of pure color + white, or
 pure color + black, is on a face of the cube.
 
 The points in the interior of the cube are a little harder to describe.
-The definition for :math:`h` above works at all points in (non-gray)
-(:math:`r`,\ :math:`g`,\ :math:`b`) space, but so far we have only
-looked at (:math:`s`, :math:`v`) on the cube faces, not inside it. At
-interior points, none of (:math:`r`,\ :math:`g`,\ :math:`b`) is equal to
+The definition for *h* above works at all points in (non-gray)
+(*rgb*) space, but so far we have only
+looked at (*s*, *v*) on the cube faces, not inside it. At
+interior points, none of (*rgb*) is equal to
 either 0 or 255. Choose such a point, not on the gray axis. Now draw a
 line through your point so that the line intersects the gray axis and
 also intersects the RYGCBM path of edges somewhere. It is always
@@ -10053,18 +10051,18 @@ thought of as a mixture of a pure color plus a shade of gray. If we move
 along this line away from the gray axis toward the pure color, we are
 "purifying" the color by "removing gray"; this move increases the
 color's saturation. When we get to the point where we cannot remove any
-more gray, at least one of (:math:`r`,\ :math:`g`,\ :math:`b`) will have
-become zero and the color is now fully saturated; :math:`s = 1`.
+more gray, at least one of (*rgb*) will have
+become zero and the color is now fully saturated; *s = 1*.
 Conversely, any point on the gray axis is completely undersaturated, so
-that :math:`s = 0` there. Now we see that the black point is special,
-:math:`s` is both 0 and 1 at the same time. In other words, at the black
+that *s = 0* there. Now we see that the black point is special,
+*s* is both 0 and 1 at the same time. In other words, at the black
 point saturation in undefined (and so is hue). The convention is to use
-:math:`h = s = v = 0` at this point.
+*h = s = v = 0* at this point.
 
 It remains to define value. To do so, try this: Take your point in RGB
 space and construct a line through it so that this line goes through the
 black point; produce this line from black past your point until it hits
-a face on which :math:`v = 1`. All points on this line have the same
+a face on which *v = 1*. All points on this line have the same
 hue. Note that this line and the line we made in the previous paragraph
 are both contained in the plane whose hue is constant. These two lines
 meet at some arbitrary angle which varies depending on which point you
@@ -10073,16 +10071,16 @@ made in the previous paragraph happened to touch the gray axis at the
 black point, then these two lines are the same line, which is why the
 black point is special. Now, the line we made in this paragraph
 illustrates the following: If your chosen point is not already at the
-end of the line, where :math:`v = 1`, then it is possible to move along
+end of the line, where *v = 1*, then it is possible to move along
 the line in that direction so as to increase
-(:math:`r`,\ :math:`g`,\ :math:`b`) while keeping the same hue. The
+(*rgb*) while keeping the same hue. The
 effect this has on a color monitor is to make the color more
 "brilliant", your hue will become "stronger"; if you are already on a
-plane where at least one of (:math:`r`,\ :math:`g`,\ :math:`b`) = 255,
-then you cannot get a stronger version of the same hue. Thus, :math:`v`
+plane where at least one of (*rgb*) = 255,
+then you cannot get a stronger version of the same hue. Thus, *v*
 measures brilliance or strength. Note that it is not quite true to say
-that :math:`v` measures distance away from the black point, because
-:math:`v` is not equal to :math:`\sqrt{r^2 + g^2 + b^2}/255`.
+that *v* measures distance away from the black point, because
+*v* is not equal to :math:`\sqrt{r^2 + g^2 + b^2}/255`.
 
 Another representation of the HSV space is the color cone illustrated in
 Figure [fig:hsv-cone].
@@ -10131,13 +10129,13 @@ images (e.g., **-I** option in
 (flat illumination), the data are colored according to the CPT file. If
 the intensity is non-zero, the color is either lightened or darkened
 depending on the illumination. The color is first converted to HSV (if
-necessary) and then darkened by moving (:math:`s`,\ :math:`v`) toward
+necessary) and then darkened by moving (*sv*) toward
 (**COLOR_HSV_MIN_S**, **COLOR_HSV_MIN_V**) if the intensity is
-negative, or lightened by sliding (:math:`s`,\ :math:`v`) toward
+negative, or lightened by sliding (*sv*) toward
 (**COLOR_HSV_MAX_S**, **COLOR_HSV_MAX_V**) if the illumination is
-positive. The extremes of the :math:`s` and :math:`v` are defined in the
+positive. The extremes of the *s* and *v* are defined in the
 ``gmt.conf`` file and are usually chosen so the corresponding points are nearly black
-(:math:`s` = 1, :math:`v` = 0) and white (:math:`s` = 0, :math:`v` = 1).
+(*s = 1*, *v = 0*) and white (*s = 0*, *v = 1*).
 The reason this works is that the HSV system allows movements in color
 space which correspond more closely to what we mean by "tint" and
 "shade"; an instruction like "add white" is easy in HSV and not so
@@ -10151,13 +10149,13 @@ learned cartesian coordinates in school. But it doesn't help us create a
 tint or shade of a color; we cannot say, "We want orange, and a lighter
 shade of orange, or a less vivid orange". With HSV we can do this, by
 saying, "Orange must be between red and yellow, so its hue is about
-:math:`h` = 30; a less vivid orange has a lesser :math:`s`, a darker
-orange has a lesser :math:`v`". On the other hand, the HSV system is a
+*h = 30*; a less vivid orange has a lesser *s*, a darker
+orange has a lesser *v*". On the other hand, the HSV system is a
 peculiar geometric construction, more like a cone
 (Figure [fig:hsv-cone]). It is not an orthogonal coordinate system, and
 it is not found by a matrix transformation of RGB; these make it
 difficult in some cases too. Note that a move toward black or a move
-toward white will change both :math:`s` and :math:`v`, in the general
+toward white will change both *s* and *v*, in the general
 case of an interior point in the cube. The HSV system also doesn't
 behave well for very dark colors, where the gray point is near black and
 the two lines we constructed above are almost parallel. If you are
@@ -10175,7 +10173,7 @@ four colors to do it right. Open up your color printer and you'll
 probably find four cartridges: cyan, magenta, yellow (often these are
 combined into one), and black. They form the CMYK system of colors, each
 value running from 0 to 1 (or 100%). In *GMT* CMYK color coding can be
-achieved using :math:`c`/:math:`m`/:math:`y`/:math:`k` quadruplets.
+achieved using *c/m/y/k* quadruplets.
 
 Obviously, there is no unique way to go from the 3-dimensional RGB
 system to the 4-dimensional CMYK system. So, again, there is a lot of
@@ -10200,7 +10198,7 @@ tables of data indexed to one independent variable) and
 2-dimensional grids) allow filtering of data by a moving-window process.
 (To filter a grid by Fourier transform use
 `grdfft <grdfft.html>`_.) Both programs use an argument
-**-F**\ :math:`<`\ *type*\ :math:`><`\ *width*\ :math:`>` to specify the
+**-F**\ <\ *type*\ ><\ *width*> to specify the
 type of process and the window's width (in 1-d) or diameter (in 2-d).
 (In `filter1d <filter1d.html>`_ the width is a length of
 the time or space ordinate axis, while in
@@ -10229,9 +10227,9 @@ Fourier transform of the impulse response, while in 2-d it is the Hankel
 transform of the impulse response. These are shown in
 Figures [fig:GMT\ :sub:`A`\ pp\ :sub:`J2`] and
 [fig:GMT:sub:`A`\ pp\ :sub:`J3`], respectively. Note that in 1-d the
-boxcar transfer function has its first zero crossing at :math:`f = 1`,
+boxcar transfer function has its first zero crossing at *f = 1*,
 while in 2-d it is around :math:`f \sim 1.2`. The 1-d cosine transfer
-function has its first zero crossing at :math:`f = 2`; so a cosine
+function has its first zero crossing at *f = 2*; so a cosine
 filter needs to be twice as wide as a boxcar filter in order to zero the
 same lowest frequency. As a general rule, the cosine and gaussian
 filters are "better" in the sense that they do not have the "side lobes"
@@ -10639,7 +10637,7 @@ color palettes, stored in so-called CPT tables [49]_. The programs
 `makecpt <makecpt.html>`_ and
 `grd2cpt <grd2cpt.html>`_ are used to access these
 master CPT tables and translate/scale them to fit the user's range of
-:math:`z`-values. The top half of the color bars in the Figure shows the
+*z*-values. The top half of the color bars in the Figure shows the
 original color scale, which can be either discrete or continuous, though
 some (like **globe**) are a mix of the two. The bottom half the color
 bar are built by using `makecpt <makecpt.html>`_
@@ -10828,29 +10826,29 @@ one) of many logical operators, as listed in Table [tbl:custop].
 +----------------+----------------------------------------------------------+
 | **Operator**   | **Purpose**                                              |
 +================+==========================================================+
-| :math:`<`      | Is *var* less than *constant*?                           |
+| <              | Is *var* less than *constant*?                           |
 +----------------+----------------------------------------------------------+
-| :math:`<=`     | Is *var* less than or equal to *constant*?               |
+| <=             | Is *var* less than or equal to *constant*?               |
 +----------------+----------------------------------------------------------+
-| :math:`==`     | Is *var* equal to *constant*?                            |
+| ==             | Is *var* equal to *constant*?                            |
 +----------------+----------------------------------------------------------+
 | !=             | Is *var* not equal to *constant*?                        |
 +----------------+----------------------------------------------------------+
-| :math:`>=`     | Is *var* greater than or equal to *constant*?            |
+| >=             | Is *var* greater than or equal to *constant*?            |
 +----------------+----------------------------------------------------------+
-| :math:`>`      | Is *var* greater than *constant*?                        |
+| >              | Is *var* greater than *constant*?                        |
 +----------------+----------------------------------------------------------+
 | %              | Does *var* have a remainder with *constant*?             |
 +----------------+----------------------------------------------------------+
 | !%             | Is *var* an exact multiple of *constant*?                |
 +----------------+----------------------------------------------------------+
-| :math:`<>`     | Is *var* within the exclusive range of *constant*?       |
+| <>             | Is *var* within the exclusive range of *constant*?       |
 +----------------+----------------------------------------------------------+
-| :math:`[\;]`   | Is *var* within the inclusive range of *constant*?       |
+| []             | Is *var* within the inclusive range of *constant*?       |
 +----------------+----------------------------------------------------------+
-| :math:`<]`     | Is *var* within the in/ex-clusive range of *constant*?   |
+| <]             | Is *var* within the in/ex-clusive range of *constant*?   |
 +----------------+----------------------------------------------------------+
-| :math:`[>`     | Is *var* within the ex/in-clusive range of *constant*?   |
+| [>             | Is *var* within the ex/in-clusive range of *constant*?   |
 +----------------+----------------------------------------------------------+
 
 [tbl:custop]
@@ -10962,7 +10960,7 @@ d:
     beginning of a line, place labels every *dist* increment of distance
     along the line. To ensure that closed lines whose total length is
     less than *dist* get annotated, we may append *frac* which will
-    place the first label at the distance :math:`d =` *dist*
+    place the first label at the distance *d = dist*
     :math:`\times` *frac* from the start of a closed line (and every
     *dist* thereafter). If not given, *frac* defaults to 0.25.
 
@@ -11000,8 +10998,8 @@ l:
     predetermined points relative to the map region. These codes are
     taken from the `pstext <pstext.html>`_ justification keys
     [**L\ \|\ C\ \|\ R**][**B\ \|\ M\ \|\ T**]
-    so that the first character determines the :math:`x`-coordinate and
-    the second determines the :math:`y`-coordinate. In
+    so that the first character determines the *x*-coordinate and
+    the second determines the *y*-coordinate. In
     `grdcontour <grdcontour.html>`_, you can also use
     the two codes **Z+** and **Z-** as shorthands for the location of
     the grid's global maximum and minimum, respectively. For example,
@@ -11028,9 +11026,9 @@ N:
     **N**\ *number*\ [/*minlength*\ [**c\ \|\ i\ \|\ p**]].
     Similar to code **n** but here labels are placed at the ends of each
     segment (for *number* :math:`\geq 2`). A special case arises for
-    *number* :math:`= 1` when a single label will be placed according to
-    the sign of *number*: :math:`-1` places one label justified at the
-    start of the line, while :math:`+1` places one label justified at
+    *number = 1* when a single label will be placed according to
+    the sign of *number*: -1 places one label justified at the
+    start of the line, while +1 places one label justified at
     the end of the line.
 
 x:
@@ -11131,7 +11129,7 @@ universally. These codes are:
     append a *unit* that begins with a hyphen (–). If you are contouring
     with `grdcontour <grdcontour.html>`_ and you specify
     this option without appending a unit, the unit will be taken from
-    the :math:`z`-unit attribute of the grid header.
+    the *z*-unit attribute of the grid header.
 
 +v:
     Place curved labels that follow the wiggles of the line segments.
@@ -11166,7 +11164,7 @@ modified by **+u** or **+=**). However, for quoted lines other options apply:
         multi-segment file format; if not we pick the single label from
         the file's header record). We first scan the header for an
         embedded **-L**\ *label* option; if none is found we instead use
-        the first word following the segment marker [:math:`>`\ ].
+        the first word following the segment marker [>].
 
     +Ld:
         Take the Cartesian plot distances along the line as the label;
@@ -11219,8 +11217,8 @@ size of the map we request contour labels every 1.5 inches along the
 lines:
 
 As seen in Figure [fig:GMT\ :sub:`A`\ pp\ :sub:`O1`], the contours are
-placed rather arbitrary. The string of contours for :math:`-40` to
-:math:`60` align well but that is a fortuitous consequence of reaching
+placed rather arbitrary. The string of contours for -40 to
+60 align well but that is a fortuitous consequence of reaching
 the 1.5 inch distance from the start at the bottom of the map.
 
 Fixed number of labels
@@ -11724,7 +11722,7 @@ header record.
 To allow for names and values containing spaces, such string items among
 the **@N** or **@D** specifiers must be enclosed in double quotes.
 (Where double quotes or pipe characters are included in the string, they
-must be escaped using ":math:`\backslash`"). Where any data values are
+must be escaped using "\\"). Where any data values are
 null, they will be represented as no characters between the field
 separator, (e.g., #@D\ \|\ \|\ \|). A Sample header
 and corresponding data line for points are
@@ -11932,7 +11930,7 @@ Finally we show an example of a polygon file:
    circle connecting the two points.
 
 .. [23]
-   Robinson provided a table of :math:`y`-coordinates for latitudes
+   Robinson provided a table of *y*-coordinates for latitudes
    every 5. To project values for intermediate latitudes one must
    interpolate the table. Different interpolants may result in slightly
    different maps. `GMT <http://gmt.soest.hawaii.edu>`_ uses the
