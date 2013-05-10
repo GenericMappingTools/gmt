@@ -3546,7 +3546,7 @@ int GMT_Get_ID (void *V_API, unsigned int family, unsigned int direction, void *
 		if (API->object[i]->resource == resource) item = i;	/* Pick the requested object regardless of direction */
 	}
 	if (item == GMT_NOTSET) { API->error = GMT_NOT_A_VALID_ID; return (GMT_NOTSET); }	/* No such resource found */
-	return (API->object[i]->ID);
+	return (API->object[item]->ID);
 }
 
 #ifdef FORTRAN_API
