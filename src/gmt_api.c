@@ -220,6 +220,27 @@ void GMT_list_API (struct GMTAPI_CTRL *API, char *txt)
 /* Note: Many/all of these do not need to check if API == NULL since they are called from functions that do. */
 /* Private functions used by this library only.  These are not accessed outside this file. */
 
+unsigned int GMTAPI_alloc_mode (struct GMTAPI_CTRL *API, unsigned int family, void *data)
+{
+	unsigned int mode;
+	struct GMT_DATASET *D = NULL;
+	struct GMT_GRID *G = NULL;
+	struct GMT_TEXTSET *T = NULL;
+	struct GMT_PALETTE *P = NULL;
+	struct GMT_MATRIX *M = NULL;
+	struct GMT_VECTOR *V = NULL;
+	if (data == NULL) return 0;
+	switch (family) {
+		case GMT_IS_GRID:	G = data; mode = G->alloc_mode; break;
+		case GMT_IS_DATASET:	D = data; mode = D->alloc_mode; break;
+		case GMT_IS_TEXTSET:	T = data; mode = T->alloc_mode; break;
+		case GMT_IS_CPT:	P = data; mode = P->alloc_mode; break;
+		case GMT_IS_MATRIX:	M = data; mode = M->alloc_mode; break;
+		case GMT_IS_VECTOR:	V = data; mode = V->alloc_mode; break;
+	}
+	return (mode);
+}
+
 double GMTAPI_get_val (struct GMTAPI_CTRL *API, union GMT_UNIVECTOR *u, uint64_t row, unsigned int type)
 {	/* Returns a double value from the <type> column array pointed to by the union pointer *u, at row position row.
  	 * Used in GMTAPI_Import_Dataset and GMTAPI_Import_Grid. */
@@ -2061,6 +2082,9 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, un
 		return_null (API, GMT_NOT_A_VALID_METHOD);
 	}
 	
+	if (S_obj->region && grid) {	/* See if this is really a subset or just the same region as the grid */
+		if (grid->header->wesn[XLO] == S_obj->wesn[XLO] && grid->header->wesn[XHI] == S_obj->wesn[XHI] && grid->header->wesn[YLO] == S_obj->wesn[YLO] && grid->header->wesn[YHI] == S_obj->wesn[YHI]) S_obj->region = false;
+	}
 	switch (S_obj->method) {
 		case GMT_IS_FILE:	/* Name of a grid file on disk */
 			if (grid == NULL) {	/* Only allocate grid struct when not already allocated */
@@ -2255,7 +2279,7 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mod
 {	/* Writes out a single grid to destination */
 	int item, error;
 	bool done = true, row_by_row;
-	unsigned int row, col, i0, i1, j0, j1;
+	unsigned int row, col, i0, i1, j0, j1, a_mode;
 	uint64_t ij, ijp, ij_orig;
 	size_t size;
 	double dx, dy;
@@ -2275,6 +2299,9 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mod
 	if (row_by_row && S_obj->method != GMT_IS_FILE) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Can only use method GMT_IS_FILE when row-by-row writing of grid is selected\n");
 		return (GMTAPI_report_error (API, GMT_NOT_A_VALID_METHOD));
+	}
+	if (S_obj->region && G_obj) {	/* See if this is really a subset or just the same region as the grid */
+		if (G_obj->header->wesn[XLO] == S_obj->wesn[XLO] && G_obj->header->wesn[XHI] == S_obj->wesn[XHI] && G_obj->header->wesn[YLO] == S_obj->wesn[YLO] && G_obj->header->wesn[YHI] == S_obj->wesn[YHI]) S_obj->region = false;
 	}
 	switch (S_obj->method) {
 		case GMT_IS_FILE:	/* Name of a grid file on disk */
@@ -2352,6 +2379,8 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mod
 			GMT_BC_init (API->GMT, G_obj->header);	/* Initialize grid interpolation and boundary condition parameters */
 			if (GMT_err_pass (API->GMT, GMT_grd_BC_set (API->GMT, G_obj, GMT_OUT), "Grid memory")) return (GMTAPI_report_error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
 			S_obj->resource = G_obj;	/* Set resource pointer to the grid */
+			if ((a_mode = GMTAPI_alloc_mode (API, GMT_IS_GRID, S_obj->data)) == GMT_NO_CLOBBER)
+				S_obj->alloc_mode = G_obj->alloc_mode = GMT_NO_CLOBBER;
 			break;
 			
 	 	case GMT_IS_DUPLICATE + GMT_VIA_MATRIX:	/* The user's 2-D grid array of some sort, + info in the args [NOT FULLY TESTED] */
@@ -3168,10 +3197,10 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 
 	if ((object_ID = GMTAPI_is_registered (API, family, geometry, direction, mode, NULL, resource)) != GMT_NOTSET) {	/* Registered before */
 		if ((item = GMTAPI_Validate_ID (API, GMT_NOTSET, object_ID, direction)) == GMT_NOTSET) return_value (API, API->error, GMT_NOTSET);
-		if ((family == GMT_IS_GRID || family == GMT_IS_IMAGE) && wesn) {	/* Update the subset region if given (for grids/images only) */
+		if ((family == GMT_IS_GRID || family == GMT_IS_IMAGE) && wesn && !(wesn[XLO] == wesn[XHI] && wesn[YLO] == wesn[YHI])) {	/* Update the subset region if given (for grids/images only) */
 			S_obj = API->object[item];	/* Use S as shorthand */
 			GMT_memcpy (S_obj->wesn, wesn, 4, double);
-			S_obj->region = 1;
+			S_obj->region = true;
 		}
 		return (object_ID);	/* Already registered so we are done */
 	}
@@ -3288,9 +3317,9 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 			break;
 	}
 
-	if (wesn && (wesn[0] || wesn[1] || wesn[2] || wesn[3])) {	/* Copy the subset region if it was given (for grids) */
+	if (wesn && !(wesn[XLO] == wesn[XHI] && wesn[YLO] == wesn[YHI])) {	/* Copy the subset region if it was given (for grids) */
 		GMT_memcpy (S_obj->wesn, wesn, 4, double);
-		S_obj->region = 1;
+		S_obj->region = true;
 	}
 	
 	S_obj->level = API->GMT->hidden.func_level;	/* Object was allocated at this module nesting level */
