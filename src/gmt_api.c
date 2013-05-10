@@ -1847,7 +1847,7 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, 
 	
 	S_obj = API->object[item];		/* Current data object */
 	if (S_obj->status != GMT_IS_UNUSED && !(mode & GMT_IO_RESET)) return_null (API, GMT_READ_ONCE);	/* Already read this resources before, so fail unless overridden by mode */
-	S_obj->alloc_mode = true;
+	S_obj->alloc_mode = GMT_REFERENCE;
 	if ((mode & both_set) == both_set) mode -= both_set;	/* Allow users to have set GMT_GRID_HEADER_ONLY | GMT_GRID_DATA_ONLY; reset to GMT_GRID_ALL */ 
 	
 	switch (S_obj->method) {
@@ -1986,7 +1986,7 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, 
 				return_null (API, GMT_NOT_A_VALID_IO_ACCESS);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing image data from user memory location\n");
 			I_obj->data = (unsigned char *)(M_obj->data.sc1);
-			S_obj->alloc_mode = false;	/* No memory needed to be allocated (so none should be freed later */
+			S_obj->alloc_mode = GMT_REFERENCE;	/* No memory needed to be allocated (so none should be freed later */
 			I_obj->alloc_mode = GMT_REFERENCE;	/* So we dont accidentally free this memory */
 			if (!GMTAPI_adjust_grdpadding (I_obj->header, API->GMT->current.io.pad)) break;	/* Pad is correct so we are done */
 			/* Here we extend I_obj->data to allow for padding, then rearrange rows */
@@ -2006,7 +2006,7 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, 
 				return_null (API, GMT_NOT_A_VALID_IO_ACCESS);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing image data from user read-only memory location\n");
 			I_obj->data = (unsigned char *)(M_obj->data.sc1);
-			S_obj->alloc_mode = false;	/* No memory needed to be allocated (so none should be freed later */
+			S_obj->alloc_mode = GMT_REFERENCE;	/* No memory needed to be allocated (so none should be freed later */
 			I_obj->alloc_mode = GMT_READONLY;	/* So we dont accidentally free this memory */
 			break;
 			
@@ -2052,7 +2052,7 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, un
 	
 	S_obj = API->object[item];		/* Current data object */
 	if (S_obj->status != GMT_IS_UNUSED && !(mode & GMT_IO_RESET)) return_null (API, GMT_READ_ONCE);	/* Already read this resources before, so fail unless overridden by mode */
-	S_obj->alloc_mode = true;
+	S_obj->alloc_mode = GMT_REFERENCE;
 	if ((mode & both_set) == both_set) mode -= both_set;	/* Allow users to have set GMT_GRID_HEADER_ONLY | GMT_GRID_DATA_ONLY; reset to GMT_GRID_ALL */
 	row_by_row = ((mode & GMT_GRID_ROW_BY_ROW) || (mode & GMT_GRID_ROW_BY_ROW_MANUAL));
 	if (row_by_row && S_obj->method != GMT_IS_FILE) 
@@ -2211,7 +2211,7 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, un
 				 return_null (API, GMT_NOT_A_VALID_IO_ACCESS);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing grid data from user memory location\n");
 			G_obj->data = M_obj->data.f4;
-			S_obj->alloc_mode = false;	/* No memory needed to be allocated (so none should be freed later */
+			S_obj->alloc_mode = GMT_REFERENCE;	/* No memory needed to be allocated (so none should be freed later */
 			G_obj->alloc_mode = GMT_REFERENCE;	/* So we dont accidentally free this memory */
 			GMT_BC_init (API->GMT, G_obj->header);	/* Initialize grid interpolation and boundary condition parameters */
 			if (GMT_err_pass (API->GMT, GMT_grd_BC_set (API->GMT, G_obj, GMT_IN), "Grid memory")) return_null (API, GMT_GRID_BC_ERROR);	/* Set boundary conditions */
@@ -2233,7 +2233,7 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, un
 				return_null (API, GMT_NOT_A_VALID_IO_ACCESS);
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing grid data from user read-only memory location\n");
 			G_obj->data = M_obj->data.f4;
-			S_obj->alloc_mode = false;	/* No memory needed to be allocated (so none should be freed later */
+			S_obj->alloc_mode = GMT_REFERENCE;	/* No memory needed to be allocated (so none should be freed later */
 			G_obj->alloc_mode = GMT_READONLY;	/* So we dont accidentally free this memory */
 			GMT_BC_init (API->GMT, G_obj->header);	/* Initialize grid interpolation and boundary condition parameters */
 			if (GMT_err_pass (API->GMT, GMT_grd_BC_set (API->GMT, G_obj, GMT_IN), "Grid memory")) return_null (API, GMT_GRID_BC_ERROR);	/* Set boundary conditions */
@@ -2347,7 +2347,7 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mod
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing grid data to GMT_GRID memory location\n");
 			if (GMTAPI_adjust_grdpadding (G_obj->header, API->GMT->current.io.pad))
 				GMT_grd_pad_on (API->GMT, G_obj, API->GMT->current.io.pad);	/* Adjust pad */
-			G_obj->alloc_mode = GMT_REFERENCE;	/* So we dont accidentally free this later */
+			if (G_obj->alloc_mode != GMT_NO_CLOBBER) G_obj->alloc_mode = GMT_REFERENCE;	/* So we dont accidentally free this later */
 			GMT_grd_zminmax (API->GMT, G_obj->header, G_obj->data);	/* Must set zmin/zmax since we are not writing */
 			GMT_BC_init (API->GMT, G_obj->header);	/* Initialize grid interpolation and boundary condition parameters */
 			if (GMT_err_pass (API->GMT, GMT_grd_BC_set (API->GMT, G_obj, GMT_OUT), "Grid memory")) return (GMTAPI_report_error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
