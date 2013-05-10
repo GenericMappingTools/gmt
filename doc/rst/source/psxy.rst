@@ -18,7 +18,7 @@ psxy - Plot lines, polygons, and symbols on maps
 [ **-G**\ *fill* ] [ **-I**\ *intens* ] 
 [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [ **-L** ] [ **-N** ] 
 [ **-O** ] [ **-P** ] 
-[ **-S**\ [*symbol*][\ *size*\ \|\ **+s**\ *scaling*] ] 
+[ **-S**\ [*symbol*][\ *size*\ \|\ **+s**\ *scale*\ [**u**][/*origin*][**l**]] ] 
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ **-W**\ [**-**\ \|\ **+**][*pen*\ ] ]

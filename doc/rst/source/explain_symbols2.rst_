@@ -1,4 +1,4 @@
-**-S**\ [*symbol*][\ *size*\ \|\ **+s**\ *scaling*]
+**-S**\ [*symbol*][\ *size*\ \|\ **+s**\ *scale*\ [**u**][/*origin*][**l**]][/*size_y*]
     Plot symbols. If present, *size* is symbol size in the unit set in
     `gmt.conf <gmt.conf.html>`_ (unless **c**, **i**, or **p** is appended). If the symbol
     code (see below) is not given it will be read from the last column in
@@ -9,6 +9,7 @@
     **PROJ\_LENGTH\_UNIT**]. Note: if you give both size and symbol via the
     input file you must use **PROJ\_LENGTH\_UNIT** to indicate the units
     used for the symbol size or append the units to the size in the file.
+    Some 2-dimensional symbols optionally take the second size via *size_y*.
     If the symbol size is expected via the fourth
     data column then you may convert those values to symbol sizes by
     appending **+s**\ *scale*\ [/*origin*][**l**] which will compute size

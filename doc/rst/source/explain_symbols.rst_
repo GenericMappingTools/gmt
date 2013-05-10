@@ -1,4 +1,4 @@
-**-S**\ [*symbol*][\ *size*\ \|\ **+s**\ *scaling*]
+**-S**\ [*symbol*][\ *size*\ \|\ **+s**\ *scale*\ [**u**][/*origin*][**l**]]
     Plot symbols. If present, *size* is symbol size in the unit set in
     `gmt.conf <gmt.conf.html>`_ (unless **c**, **i**, or **p** is appended). If the symbol
     code (see below) is not given it will be read from the last column in
