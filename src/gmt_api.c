@@ -2337,7 +2337,7 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mod
 				}
 			}
 			GMT_BC_init (API->GMT, G_copy->header);	/* Initialize grid interpolation and boundary condition parameters */
-			if (GMT_err_pass (API->GMT, GMT_grd_BC_set (API->GMT, G_copy, GMT_OUT), "Grid memory")) return (GMTAPI_report_error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */			
+			if (GMT_err_pass (API->GMT, GMT_grd_BC_set (API->GMT, G_copy, GMT_OUT), "Grid memory")) return (GMTAPI_report_error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
 			S_obj->resource = G_copy;	/* Set resource pointer to the grid */
 			break;
 			
@@ -3288,7 +3288,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 			break;
 	}
 
-	if (wesn) {	/* Copy the subset region if it was given (for grids) */
+	if (wesn && (wesn[0] || wesn[1] || wesn[2] || wesn[3])) {	/* Copy the subset region if it was given (for grids) */
 		GMT_memcpy (S_obj->wesn, wesn, 4, double);
 		S_obj->region = 1;
 	}
