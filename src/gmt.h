@@ -88,6 +88,7 @@ EXTERN_MSC int GMT_Encode_ID		(void *API, char *string, int object_ID);
 EXTERN_MSC int GMT_Get_Row		(void *API, int rec_no, struct GMT_GRID *G, float *row);
 EXTERN_MSC int GMT_Put_Row		(void *API, int rec_no, struct GMT_GRID *G, float *row);
 EXTERN_MSC int GMT_Set_Comment		(void *API, unsigned int family, unsigned int mode, void *arg, void *data);
+EXTERN_MSC int GMT_Get_ID (void *V_API, unsigned int family, unsigned int direction, void *resource);
 
 /* 2 functions to relate (row,col) to a 1-D index and to precompute equidistant coordinates for grids and images */
 

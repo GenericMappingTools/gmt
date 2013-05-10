@@ -3532,6 +3532,30 @@ void * GMT_Retrieve_Data_ (int *object_ID)
 }
 #endif
 
+int GMT_Get_ID (void *V_API, unsigned int family, unsigned int direction, void *resource)
+{
+	unsigned int i;
+	int item;
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+	
+	for (i = 0, item = GMT_NOTSET; item == GMT_NOTSET && i < API->n_objects; i++) {
+		if (!API->object[i]) continue;				/* Empty object */
+		if (!API->object[i]->resource) continue;		/* Empty resource */
+		if (API->object[i]->family != family) continue;		/* Not the required data type */
+		if (API->object[i]->direction != direction) continue;	/* Not the required direction */
+		if (API->object[i]->resource == resource) item = i;	/* Pick the requested object regardless of direction */
+	}
+	if (item == GMT_NOTSET) { API->error = GMT_NOT_A_VALID_ID; return (GMT_NOTSET); }	/* No such resource found */
+	return (API->object[i]->ID);
+}
+
+#ifdef FORTRAN_API
+int GMT_Get_ID_ (unsigned int *family, unsigned int *direction, void *resource)
+{	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Get_ID (GMT_FORTRAN, *family, *direction, resource));
+}
+#endif
+
 void * GMT_Get_Data (void *V_API, int object_ID, unsigned int mode, void *data)
 {
 	/* Function to import registered data sources directly into program memory as a set (not record-by-record).
@@ -4569,8 +4593,10 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 	}
 	if (API->error) return_null (API, API->error);
 	if (!already_registered) {	/* Now register this dataset so it can be deleted by GMT_Destroy_Data */
-		int direction = (object_ID == GMT_NOTSET) ? GMT_IN : GMT_NOTSET;	/* Do not consider direction if pre-registered */
-		if (object_ID == GMT_NOTSET && (object_ID = GMT_Register_IO (API, family, GMT_IS_REFERENCE, geometry, GMT_IN, range, new)) == GMT_NOTSET) return_null (API, API->error);	/* Failure to register */
+		int direction, def_direction = GMT_IN;	/* Default direction is GMT_IN unless mode & GMT_VIA_OUTPUT was passed */
+		if (mode & GMT_VIA_OUTPUT) def_direction = GMT_OUT;	/* Create item for output instead */
+		direction = (object_ID == GMT_NOTSET) ? def_direction : GMT_NOTSET;	/* Do not consider direction if pre-registered */
+		if (object_ID == GMT_NOTSET && (object_ID = GMT_Register_IO (API, family, GMT_IS_REFERENCE, geometry, def_direction, range, new)) == GMT_NOTSET) return_null (API, API->error);	/* Failure to register */
 		if ((item = GMTAPI_Validate_ID (API, family, object_ID, direction)) == GMT_NOTSET) return_null (API, API->error);
 		API->object[item]->data = new;		/* Retain pointer to the allocated data so we use garbage collection later */
 		GMT_Report (API, GMT_MSG_DEBUG, "Successfully created a new %s\n", GMT_family[family]);
