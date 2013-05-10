@@ -55,7 +55,8 @@ enum GMT_enum_methods {
 
 enum GMT_enum_via {
 	GMT_VIA_VECTOR = 100,	/* Data passed via user matrix */
-	GMT_VIA_MATRIX = 200};	/* Data passed via user vectors */
+	GMT_VIA_MATRIX = 200,	/* Data passed via user vectors */
+	GMT_VIA_OUTPUT = 2048};	/* For GMT_Create_Data mode to set dir = output */
 
 /* These are the 5 families of data types, + a coordinate array + 2 help containers for vector and matrix */
 enum GMT_enum_families {
