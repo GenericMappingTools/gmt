@@ -3558,10 +3558,6 @@ void * GMT_Retrieve_Data (void *V_API, int object_ID)
 		return_null (API, GMT_PTR_IS_NULL);
 	}
 	
-	if (API->object[item]->family == GMT_IS_GRID) {
-		unsigned int code = API->object[item]->G->alloc_mode;
-		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Retrieve_Data: The Grids alloc_mode = %u\n", code);
-	}
 	return (API->object[item]->resource);	/* Return pointer to the container */
 }
 
