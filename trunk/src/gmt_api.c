@@ -227,8 +227,9 @@ void GMT_list_API (struct GMTAPI_CTRL *API, char *txt)
 /* Note: Many/all of these do not need to check if API == NULL since they are called from functions that do. */
 /* Private functions used by this library only.  These are not accessed outside this file. */
 
-unsigned int GMTAPI_alloc_mode (struct GMTAPI_CTRL *API, unsigned int family, void *data)
-{
+unsigned int GMTAPI_get_alloc_mode (struct GMTAPI_CTRL *API, unsigned int family, void *data)
+{	/* Return the alloc mode of the container, given the family type, as long as the
+	 * container pointer *data is not NULL */
 	unsigned int mode;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_GRID *G = NULL;
@@ -246,6 +247,26 @@ unsigned int GMTAPI_alloc_mode (struct GMTAPI_CTRL *API, unsigned int family, vo
 		case GMT_IS_VECTOR:	V = data; mode = V->alloc_mode; break;
 	}
 	return (mode);
+}
+
+void GMTAPI_set_alloc_mode (struct GMTAPI_CTRL *API, unsigned int family, void *data)
+{	/* Sets the alloc mode of the container, given the family type, to GMT_REFERENCE,
+	 * as long as the container pointer *data is not NULL */
+	struct GMT_DATASET *D = NULL;
+	struct GMT_GRID *G = NULL;
+	struct GMT_TEXTSET *T = NULL;
+	struct GMT_PALETTE *P = NULL;
+	struct GMT_MATRIX *M = NULL;
+	struct GMT_VECTOR *V = NULL;
+	if (data == NULL) return;
+	switch (family) {
+		case GMT_IS_GRID:	G = data; if (G->alloc_mode == GMT_NO_CLOBBER) G->alloc_mode = GMT_REFERENCE; break;
+		case GMT_IS_DATASET:	D = data; if (D->alloc_mode == GMT_NO_CLOBBER) D->alloc_mode = GMT_REFERENCE; break;
+		case GMT_IS_TEXTSET:	T = data; if (T->alloc_mode == GMT_NO_CLOBBER) T->alloc_mode = GMT_REFERENCE; break;
+		case GMT_IS_CPT:	P = data; if (P->alloc_mode == GMT_NO_CLOBBER) P->alloc_mode = GMT_REFERENCE; break;
+		case GMT_IS_MATRIX:	M = data; if (M->alloc_mode == GMT_NO_CLOBBER) M->alloc_mode = GMT_REFERENCE; break;
+		case GMT_IS_VECTOR:	V = data; if (V->alloc_mode == GMT_NO_CLOBBER) V->alloc_mode = GMT_REFERENCE; break;
+	}
 }
 
 double GMTAPI_get_val (struct GMTAPI_CTRL *API, union GMT_UNIVECTOR *u, uint64_t row, unsigned int type)
@@ -2386,7 +2407,7 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mod
 			GMT_BC_init (API->GMT, G_obj->header);	/* Initialize grid interpolation and boundary condition parameters */
 			if (GMT_err_pass (API->GMT, GMT_grd_BC_set (API->GMT, G_obj, GMT_OUT), "Grid memory")) return (GMTAPI_report_error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
 			S_obj->resource = G_obj;	/* Set resource pointer to the grid */
-			if ((a_mode = GMTAPI_alloc_mode (API, GMT_IS_GRID, S_obj->data)) == GMT_NO_CLOBBER)
+			if ((a_mode = GMTAPI_get_alloc_mode (API, GMT_IS_GRID, S_obj->data)) == GMT_NO_CLOBBER)
 				S_obj->alloc_mode = G_obj->alloc_mode = GMT_NO_CLOBBER;
 			break;
 			
@@ -2842,7 +2863,7 @@ int GMTAPI_destroy_data_ptr (struct GMTAPI_CTRL *API, unsigned int family, void 
 	return (GMT_OK);	/* Null pointer */
 }
 
-void GMTAPI_update_allocmode (struct GMTAPI_CTRL *API)
+void GMTAPI_update_allocmode (struct GMTAPI_CTRL *API, int level)
 {
 	/* Ensure that if any objects are flagged with alloc_mode = GMT_NO_CLOBBER
 	 * then objects with duplicate container pointers must have their alloc_mode
@@ -2851,13 +2872,22 @@ void GMTAPI_update_allocmode (struct GMTAPI_CTRL *API)
 	 * but the "write" function will see this as a GMT_REFERENCE initially. */
 	unsigned int i, j;
 	
-	for (i = 0; i < API->n_objects; i++) {
-		if (API->object[i]->alloc_mode != GMT_NO_CLOBBER) continue;	/* Not set to clobber so nothing to do */
-		for (j = 0; j < API->n_objects; j++) {
-			if (j == i) continue;	/* No self-serving stuff, please */
-			if (API->object[j]->alloc_mode == GMT_REFERENCE && API->object[j]->data == API->object[i]->data) {	/* Same container */
-				API->object[j]->alloc_mode = GMT_NO_CLOBBER;
-				GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_update_allocmode: Objects %u and %u share same container and has alloc_mode == GMT_NO_CLOBBER\n", i, j);
+	if (level == GMT_NOTSET) {	/* Time to change all GMT_NO_CLOBBER to GMT_REFERENCE so they can be destroyed */
+		for (i = 0; i < API->n_objects; i++) {
+			if (API->object[i]->alloc_mode != GMT_NO_CLOBBER) continue;	/* Not set to clobber so nothing to do */
+			API->object[i]->alloc_mode = GMT_REFERENCE;
+			GMTAPI_set_alloc_mode (API, API->object[i]->family, API->object[i]->data);
+		}
+	}
+	else {
+		for (i = 0; i < API->n_objects; i++) {
+			if (API->object[i]->alloc_mode != GMT_NO_CLOBBER) continue;	/* Not set to clobber so nothing to do */
+			for (j = 0; j < API->n_objects; j++) {
+				if (j == i) continue;	/* No self-serving stuff, please */
+				if (API->object[j]->alloc_mode == GMT_REFERENCE && API->object[j]->data == API->object[i]->data) {	/* Same container */
+					API->object[j]->alloc_mode = GMT_NO_CLOBBER;
+					GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_update_allocmode: Objects %u and %u share same container and has alloc_mode == GMT_NO_CLOBBER\n", i, j);
+				}
 			}
 		}
 	}
@@ -2878,7 +2908,7 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level)
 	 * the API->object array, reducing API->n_objects by one we must
 	 * be aware that API->n_objects changes in the loop below, hence the while loop */
 	
-	GMTAPI_update_allocmode (API);	/* See if any alloc_modes need updating */
+	GMTAPI_update_allocmode (API, level);	/* See if any alloc_modes need updating */
 
 	i = n_free = 0;
 	if (level != GMT_NOTSET) u_level = level;
