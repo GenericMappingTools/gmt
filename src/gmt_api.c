@@ -22,7 +22,8 @@
  * Date:	1-JAN-2010
  * Version:	1.1
  *
- * The API consists of 16 functions plus all the GMT_<modules>.
+ * The API consists of 21 functions plus all the GMT modules accessible
+ * via GMT_Call_Module.
  *
  * There are 2 public functions used for GMT API session handling.
  * This part of the API helps the developer create and delete GMT sessions:
@@ -30,10 +31,11 @@
  * GMT_Create_Session	: Initialize a new GMT session
  * GMT_Destroy_Session	: Destroy a GMT session
  *
- * There is 1 public function for common error reporting.
+ * There is 2 public functions for common error reporting.
  * Errors will be reported to stderr or selected log file:
  *
- * GMTAPI_report_error	: Report an error given an error code
+ * GMT_Report		: Report an error given an error code
+ * GMT_Message		: Report an message given a verbosity level
  *
  * There are 13 further public functions used for GMT i/o activities:
  *
@@ -42,15 +44,20 @@
  * GMT_Init_IO		: Initialize i/o machinery before program use
  * GMT_Begin_IO		: Allow i/o to take place
  * GMT_End_IO		: Disallow further i/o
+ * GMT_Status_IO	: Exmine status of record-by-record i/o
  * GMT_Read_Data	: Load data set into program memory from selected source
  * GMT_Get_Data		: Load data set into program memory from registered source
  * GMT_Retrieve_Data	: Retrieve pointer to registered container with data
+ * GMT_Duplicate_Data	: Make an exact duplicate of a dataset
  * GMT_Write_Data	: Place data set from program memory to selected destination
  * GMT_Put_Data		: Place data set from program memory to registered destination
  * GMT_Get_Record	: Get the next single data record from the source(s)
  * GMT_Put_Record	: Send the next output record to its destination
  * GMT_Create_Data	: Return an empty container for a data set
  * GMT_Destroy_Data	: Destroy a data set and its container
+ * GMT_Get_Row		: Read one row from a grid
+ * GMT_Put_Row		: Write one row to a grid
+ * GMT_Set_Comment	: Update a comment for a data set
  *
  * The above functions deal with registration of input sources (files,
  * streams, file handles, or memory locations) and output destinations
