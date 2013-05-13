@@ -1672,7 +1672,7 @@ int gmt_parse_b_option (struct GMT_CTRL *GMT, char *text)
 		endian_swab = true;
 	}
 
-	/* Now deal with [i|o] modifier */
+	/* Now deal with [i|o] modifier Note: If there is no i|o then id is GMT_IN */
 	if (text[0] == 'i') { id = GMT_IN; i_or_o = true; }
 	if (text[0] == 'o') { id = GMT_OUT; i_or_o = true; }
 	GMT->common.b.active[id] = true;
@@ -1681,7 +1681,7 @@ int gmt_parse_b_option (struct GMT_CTRL *GMT, char *text)
 
 	/* Because under GMT_COMPAT c means either netCDF or signed char we deal with netCDF up front */
 
-	k = i_or_o;
+	k = (i_or_o) ? 1 : 0;
 	if (GMT_compat_check (GMT, 4)) {	/* GMT4 */
 		if (text[k] == 'c' && !text[k+1]) {	/* Ambiguous case "-bic" which MAY mean netCDF */
 			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Syntax warning: -b[i]c now applies to character tables, not to netCDF\n");
@@ -1738,6 +1738,10 @@ int gmt_parse_b_option (struct GMT_CTRL *GMT, char *text)
 					for (k = 0; k < ncol; k++, col++) {	/* Assign io function pointer and data type for each column */
 						GMT->current.io.fmt[id][col].io = GMT_get_io_ptr (GMT, id, swap_flag, c);
 						GMT->current.io.fmt[id][col].type = GMT_get_io_type (GMT, c);
+						if (!i_or_o) {	/* Must also set output */
+							GMT->current.io.fmt[GMT_OUT][col].io = GMT_get_io_ptr (GMT, GMT_OUT, swap_flag, c);
+							GMT->current.io.fmt[GMT_OUT][col].type = GMT_get_io_type (GMT, c);
+						}
 					}
 					ncol = 0;	/* Must parse a new number for each item */
 					break;
@@ -1746,6 +1750,7 @@ int gmt_parse_b_option (struct GMT_CTRL *GMT, char *text)
 						GMT->current.io.fmt[id][col].skip = -ncol;	/* Number of bytes to skip */
 					else	/* Skip after reading previous column (hence col-1) */
 						GMT->current.io.fmt[id][col-1].skip = ncol;	/* Number of bytes to skip */
+					if (!i_or_o) GMT->current.io.fmt[GMT_OUT][col-1].skip = GMT->current.io.fmt[id][col-1].skip;
 					break;
 				case '0':	/* Number of columns */
 				case '1': case '2': case '3':
@@ -1776,18 +1781,24 @@ int gmt_parse_b_option (struct GMT_CTRL *GMT, char *text)
 	if (col == 0)
 		col = ncol; /* Maybe we got a column count */
 	GMT->common.b.ncol[id] = col;
-	if (col && !set)
+	if (col && !set) {
 		for (col = 0; col < GMT->common.b.ncol[id]; col++) {
 			/* Default binary type is double */
 			GMT->current.io.fmt[id][col].io   = GMT_get_io_ptr (GMT, id, swab, 'd');
 			GMT->current.io.fmt[id][col].type = GMT_get_io_type (GMT, 'd');
+			if (!i_or_o) {	/* Must also set output */
+				GMT->current.io.fmt[GMT_OUT][col].io   = GMT_get_io_ptr (GMT, GMT_OUT, swab, 'd');
+				GMT->current.io.fmt[GMT_OUT][col].type = GMT_get_io_type (GMT, 'd');
+			}
+		}
 	}
 
 	if (!i_or_o) {	/* Specified neither i or o so let settings apply to both */
 		GMT->common.b.active[GMT_OUT] = GMT->common.b.active[GMT_IN];
 		GMT->common.b.ncol[GMT_OUT] = GMT->common.b.ncol[GMT_IN];
 		GMT->common.b.type[GMT_OUT] = GMT->common.b.type[GMT_IN];
-		GMT_memcpy (GMT->current.io.fmt[GMT_OUT], GMT->current.io.fmt[GMT_OUT], GMT->common.b.ncol[GMT_IN], struct GMT_COL_TYPE);
+		if (GMT->common.b.swab[GMT_IN] == k_swap_in) GMT->common.b.swab[GMT_OUT] = k_swap_out;
+	//	GMT_memcpy (GMT->current.io.fmt[GMT_OUT], GMT->current.io.fmt[GMT_OUT], GMT->common.b.ncol[GMT_IN], struct GMT_COL_TYPE);
 	}
 
 	GMT_set_bin_input (GMT);	/* Make sure we point to binary i/o functions after processing -b option */
