@@ -217,6 +217,7 @@ int GMT_grdreformat (void *V_API, int mode, void *args)
 
 	GMT_grd_init (GMT, Grid->header, options, true);
 
+	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, hmode, NULL, Ctrl->IO.file[1], Grid) != GMT_OK) {
 		Return (API->error);
 	}

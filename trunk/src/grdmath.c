@@ -3554,6 +3554,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 			
 			GMT_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 
+			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, stack[this_stack]->G)) Return (API->error);
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, opt->arg, stack[this_stack]->G) != GMT_OK) {
 				Return (API->error);
 			}
