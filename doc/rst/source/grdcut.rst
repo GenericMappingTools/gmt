@@ -10,7 +10,7 @@ grdcut - Extract subregion from a grid
 .. include:: common_SYN_OPTs.rst_
 
 **grdcut** *ingrid* **-G**\ *outgrid*
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [
+**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [ **-N**\ [*nodata*] ] [
 **-S**\ [**n**\ ]\ *lon/lat/radius*\ [*unit*\ ] ] [ **-V**\ [*level*\ ]
 ] [ **-Z**\ [**n**\ ]\ *min/max*] ] [
 **-f**\ [**i**\ \|\ **o**]\ *colinfo* ]
@@ -38,6 +38,10 @@ will join together two grid files along a common edge.
 
 `Optional Arguments <#toc5>`_
 -----------------------------
+
+**-N**\ [*nodata*]
+    Allow grid to be extended if new **-R** exceeds existing boundaries.
+    Append *nodata* value to initialize nodes outside current region [Default is NaN].
 
 .. |Add_-R| replace:: This defines the subregion to be cut out.
 .. include:: explain_-R.rst_

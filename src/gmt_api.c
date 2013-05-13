@@ -697,7 +697,7 @@ void update_txt_item (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, siz
 	static char buffer[GMT_BUFSIZ];
 	char *txt = (mode & GMT_COMMENT_IS_OPTION) ? GMT_Create_Cmd (API, arg) : (char *)arg;
 	GMT_memset (buffer, GMT_BUFSIZ, char);	/* Start with a clean slate */
-	if ((mode & GMT_COMMENT_IS_RESET) == 0 && string[0]) strcat (buffer, string);	/* Use old text is we are not resetting */
+	if ((mode & GMT_COMMENT_IS_OPTION) == 0 && (mode & GMT_COMMENT_IS_RESET) == 0 && string[0]) strcat (buffer, string);	/* Use old text is we are not resetting */
 	if (mode & GMT_COMMENT_IS_OPTION) {	/* Must start with module name since it is not part of the option args */
 		strcat (buffer, gmt_module_name (API->GMT));
 		strcat (buffer, " ");
