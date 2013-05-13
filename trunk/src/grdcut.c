@@ -43,6 +43,10 @@ struct GRDCUT_CTRL {
 		bool active;
 		char *file;
 	} G;
+	struct N {	/* -N<nodata> */
+		bool active;
+		float value;
+	} N;
 	struct S {	/* -S[n]<lon>/<lat>/[-|=|+]<radius>[d|e|f|k|m|M|n] */
 		bool active;
 		bool set_nan;
@@ -67,6 +71,7 @@ void *New_grdcut_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
+	C->N.value = GMT->session.d_NaN;
 	C->Z.min = -DBL_MAX;	C->Z.max = DBL_MAX;			/* No limits on z-range */
 	return (C);
 }
@@ -81,7 +86,7 @@ void Free_grdcut_Ctrl (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *C) {	/* Dealloc
 int GMT_grdcut_usage (struct GMTAPI_CTRL *API, int level)
 {
 	gmt_module_show_name_and_purpose (API, THIS_MODULE);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grdcut <ingrid> -G<outgrid> %s [%s]\n\t[-S[n]<lon>/<lat>/<radius>] [-Z[n][<min>/<max>]] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grdcut <ingrid> -G<outgrid> %s [-N[<nodata>]]\n\t[%s] [-S[n]<lon>/<lat>/<radius>] [-Z[n][<min>/<max>]] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -91,6 +96,8 @@ int GMT_grdcut_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   The WESN you specify must be within the WESN of the input grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If in doubt, run grdinfo first and check range of old file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Allow grid to be extended if new -R exceeds existing boundaries.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append value to initialize nodes outside current region [Default is NaN].\n");
 	GMT_Option (API, "V");
 	GMT_dist_syntax (API->GMT, 'S', "Specify an origin and radius to find the corresponding rectangular area.");
 	GMT_Message (API, GMT_TIME_NONE, "\t   All nodes on or inside the radius are contained in the subset grid.\n");
@@ -128,6 +135,11 @@ int GMT_grdcut_parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT
  			case 'G':	/* Output file */
 				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
+				break;
+			case 'N':
+				Ctrl->N.active = true;
+				if (opt->arg[0])
+					Ctrl->N.value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.f_NaN : (float)atof (opt->arg);
 				break;
  			case 'S':	/* Origin and radius */
 				Ctrl->S.active = true;
@@ -174,13 +186,13 @@ int GMT_grdcut_parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT
 int GMT_grdcut (void *V_API, int mode, void *args)
 {
 	int error = 0;
-	unsigned int nx_old, ny_old, add_mode = 0U, side, type = 0U;
+	unsigned int nx_old, ny_old, add_mode = 0U, side, extend, type = 0U, def_pad[4], pad[4];
 	uint64_t node;
 	bool outside[4] = {false, false, false, false};
 	
 	char *name[2][4] = {{"left", "right", "bottom", "top"}, {"west", "east", "south", "north"}};
 
-	double wesn_new[4], wesn_old[4];
+	double wesn_new[4], wesn_old[4], wesn_requested[4];
 	double lon, lat, distance, radius;
 
 	struct GMT_GRID_HEADER test_header;
@@ -361,13 +373,14 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 			if (wesn_new[XHI] < 0.0)   wesn_new[XLO] += 360.0, wesn_new[XHI] += 360.0;
 		}
 	}
-	else {	/* Just the usual subset selection via -R */
+	else {	/* Just the usual subset selection via -R.  First get the header */
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);	/* Get header only */
 		}
 		GMT_memcpy (wesn_new, GMT->common.R.wesn, 4, double);
 	}
 	
+	GMT_memcpy (wesn_requested, wesn_new, 4, double);
 	if (wesn_new[YLO] < G->header->wesn[YLO]) wesn_new[YLO] = G->header->wesn[YLO], outside[YLO] = true;
 	if (wesn_new[YHI] > G->header->wesn[YHI]) wesn_new[YHI] = G->header->wesn[YHI], outside[YHI] = true;
 
@@ -391,8 +404,13 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 		if (wesn_new[XHI] > G->header->wesn[XHI]) wesn_new[XHI] = G->header->wesn[XHI], outside[XHI] = true;
 	}
 
-	for (side = 0; side < 4; side++) {
-		if (outside[side]) GMT_Report (API, GMT_MSG_NORMAL, "Warning: Requested subset exceeds data domain on the %s side - truncated to match grid bounds\n", name[type][side]);
+	for (side = extend = 0; side < 4; side++) {
+		if (!outside[side]) continue;
+		extend++;
+		if (Ctrl->N.active)
+			GMT_Report (API, GMT_MSG_NORMAL, "Requested subset exceeds data domain on the %s side - nodes in the extra area will be initialized to %g\n", name[type][side], Ctrl->N.value);
+		else
+			GMT_Report (API, GMT_MSG_NORMAL, "Warning: Requested subset exceeds data domain on the %s side - truncated to match grid bounds\n", name[type][side]);
 	}
 
 	/* Make sure output grid is kosher */
@@ -427,8 +445,43 @@ int GMT_grdcut (void *V_API, int mode, void *args)
 	GMT_memcpy (wesn_old, G->header->wesn, 4, double);
 	nx_old = G->header->nx;		ny_old = G->header->ny;
 	
+	if (Ctrl->N.active && extend) {	/* Determine the pad needed for the extended area */
+		GMT_memcpy (def_pad, GMT->current.io.pad, 4, unsigned int);	/* Default pad */
+		GMT_memcpy (pad, def_pad, 4, unsigned int);			/* Starting pad */
+		if (outside[XLO]) pad[XLO] += urint ((G->header->wesn[XLO] - wesn_requested[XLO]) * G->header->r_inc[GMT_X]);
+		if (outside[XHI]) pad[XHI] += urint ((wesn_requested[XHI] - G->header->wesn[XHI]) * G->header->r_inc[GMT_X]);
+		if (outside[YLO]) pad[YLO] += urint ((G->header->wesn[YLO] - wesn_requested[YLO]) * G->header->r_inc[GMT_Y]);
+		if (outside[YHI]) pad[YHI] += urint ((wesn_requested[YHI] - G->header->wesn[YHI]) * G->header->r_inc[GMT_Y]);
+		GMT_grd_setpad (GMT, G->header, pad);	/* Set the active pad */
+		GMT_memcpy (GMT->current.io.pad, pad, 4, unsigned int);	/* Change default pad */
+		GMT_set_grddim (GMT, G->header);	/* Update dimensions given the change of pad */
+	}
 	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY | add_mode, wesn_new, Ctrl->In.file, G) == NULL) {	/* Get subset */
 		Return (API->error);
+	}
+	if (Ctrl->N.active && extend) {	/* Now shrink pad back to default and simultaneously extend region and apply nodata values */
+		unsigned int xlo, xhi, ylo, yhi, row, col;
+		GMT_memcpy (G->header->wesn, wesn_requested, 4, double);
+		GMT_memcpy (GMT->current.io.pad, def_pad, 4, unsigned int);	/* Reset default pad */
+		GMT_grd_setpad (GMT, G->header, GMT->current.io.pad);	/* Set the default pad */
+		GMT_set_grddim (GMT, G->header);			/* Update dimensions given the change of wesn and pad */
+		GMT_memcpy (wesn_new, wesn_requested, 4, double);	/* So reporting below is accurate */
+		xlo = GMT_grd_x_to_col (GMT, wesn_old[XLO], G->header);
+		xhi = GMT_grd_x_to_col (GMT, wesn_old[XHI], G->header);
+		ylo = GMT_grd_y_to_row (GMT, wesn_old[YLO], G->header);
+		yhi = GMT_grd_y_to_row (GMT, wesn_old[YHI], G->header);
+		if (outside[XLO]) {
+			for (row = 0; row < G->header->ny; row++) for (col = 0; col < xlo; col++) G->data[GMT_IJP(G->header,row,col)] = Ctrl->N.value;
+		}
+		if (outside[XHI]) {
+			for (row = 0; row < G->header->ny; row++) for (col = xhi+1; col < G->header->nx; col++) G->data[GMT_IJP(G->header,row,col)] = Ctrl->N.value;
+		}
+		if (outside[YLO]) {
+			for (row = ylo+1; row < G->header->ny; row++) for (col = xlo; col <= xhi; col++) G->data[GMT_IJP(G->header,row,col)] = Ctrl->N.value;
+		}
+		if (outside[YHI]) {
+			for (row = 0; row < yhi; row++) for (col = xlo; col <= xhi; col++) G->data[GMT_IJP(G->header,row,col)] = Ctrl->N.value;
+		}
 	}
 
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
