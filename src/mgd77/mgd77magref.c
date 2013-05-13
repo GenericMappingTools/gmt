@@ -551,7 +551,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args)
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {	/* Loop over all input tables */
 		T = Din->table[tbl];	/* Current table */
 
-		if (T->n_columns != n_in) {
+		if (T->n_columns < n_in) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Table %d has %d columns, when from used options we expect %d\n",
 				tbl + 1, T->n_columns, n_in);
 			continue;
