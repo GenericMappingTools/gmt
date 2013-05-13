@@ -385,7 +385,8 @@ int GMT_mgd77magref_parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, 
 	}
 
 	n_out = 4 - (Ctrl->A.fixed_alt + Ctrl->A.fixed_time);	/* Minimum input columns (could be more) */
-	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_out;
+	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0)
+		GMT->common.b.ncol[GMT_IN] = n_out;
 	n_errors += GMT_check_condition (GMT, GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0, 
 			"Syntax error: Binary input data (-bi) must have at least %d columns\n", n_out);
 	n_errors += GMT_check_condition (GMT, Ctrl->CM4->CM4_F.active && Ctrl->CM4->CM4_L.curr, 
@@ -401,7 +402,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args)
 {
 	unsigned int j, nval = 0, nfval = 0, error = 0;
 	unsigned int lval = 0, lfval = 0, n_field_components, tbl;
-	unsigned int n_out = 0, t_col = 3;
+	unsigned int n_out = 0, n_in, t_col = 3;
 	bool cm4_igrf_T = false;
 	
 	size_t i, s, need = 0, n_alloc = 0;
@@ -435,6 +436,8 @@ int GMT_mgd77magref (void *V_API, int mode, void *args)
 	if ((error = GMT_mgd77magref_parse (GMT, Ctrl, options))) Return (error);
 
 	/*---------------------------- This is the mgd77magref main code ----------------------------*/
+
+	n_in = 4 - (Ctrl->A.fixed_alt + Ctrl->A.fixed_time);
 
 	Ctrl->CM4->CM4_D.dst = calloc (1U, sizeof(double));	/* We need at least a size of one in case a value is given in input */
 	GMT->current.io.col_type[GMT_IN][t_col] = GMT->current.io.col_type[GMT_OUT][t_col] = GMT_IS_ABSTIME;	/* By default, time is in 4th input column */
@@ -548,10 +551,16 @@ int GMT_mgd77magref (void *V_API, int mode, void *args)
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {	/* Loop over all input tables */
 		T = Din->table[tbl];	/* Current table */
 
+		if (T->n_columns != n_in) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Table %d has %d columns, when from used options we expect %d\n",
+				tbl + 1, T->n_columns, n_in);
+			continue;
+		}
+
 		for (s = 0; s < T->n_segments; s++) {	/* Process each file segment separately */
 			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, T->segment[s]->header);
-			need = T->segment[s]->n_rows;	/* Size of output array needed in MGD77_cm4field */
-			if (need > n_alloc) {	/* Need to reallocate */
+			need = T->segment[s]->n_rows;   /* Size of output array needed in MGD77_cm4field */
+			if (need > n_alloc) {           /* Need to reallocate */
 				n_alloc = need;
 				Ctrl->CM4->CM4_DATA.out_field = GMT_memory (GMT, Ctrl->CM4->CM4_DATA.out_field, n_alloc * n_field_components, double);
 				if (!(Ctrl->A.years || Ctrl->A.fixed_time))
@@ -578,8 +587,9 @@ int GMT_mgd77magref (void *V_API, int mode, void *args)
 			}
 
 			if (!(Ctrl->do_IGRF || Ctrl->joint_IGRF_CM4 ) && !s && time_array[0] > 2002.7) {	/* Only atmospheric terms may be reliable */
-				GMT_Message (API, GMT_TIME_NONE, "Warning: Time is outside the CM4 strict validity domain [1960-2002.7].\n");
-				GMT_Message (API, GMT_TIME_NONE, "\tThough extended here to 2009 the secular variation estimation will be unreliable.\n");
+				GMT_Message (API, GMT_TIME_NONE, "Warning: Time is outside the CM4 strict validity domain [1960.0-2002.7].\n");
+				GMT_Message (API, GMT_TIME_NONE, "\tThe secular variation estimation will be unreliable. In this"
+							"case you really should use the IGRF to estimate the core contribution\n");
 			}
 
 			Ctrl->CM4->CM4_DATA.n_pts = (int)T->segment[s]->n_rows;
@@ -604,8 +614,16 @@ int GMT_mgd77magref (void *V_API, int mode, void *args)
 				}
 			}
 
-			if (Ctrl->do_CM4) 				/* DO CM4 only. Eval CM4 at all points */
-				MGD77_cm4field (GMT, Ctrl->CM4, T->segment[s]->coord[GMT_X], T->segment[s]->coord[GMT_Y], alt_array, time_array);
+			if (Ctrl->do_CM4) {				/* DO CM4 only. Eval CM4 at all points */
+				int err;
+				if (err = MGD77_cm4field (GMT, Ctrl->CM4, T->segment[s]->coord[GMT_X],
+							T->segment[s]->coord[GMT_Y], alt_array, time_array)) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Error: this segment has a record generating error.\n"
+						"Unfortunaltely, this means all other eventualy good\n"
+						"records are also ignored. Fixe it and come back again.\n");
+					continue;
+				}
+			}
 
 			if ((Ctrl->do_CM4 || Ctrl->do_IGRF) && !Ctrl->joint_IGRF_CM4) {	/* DID CM4 or (exclusive) IGRF only. */
 				for (i = 0; i < T->segment[s]->n_rows; i++) {	/* Output the requested columns */

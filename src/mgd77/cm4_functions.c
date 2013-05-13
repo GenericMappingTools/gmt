@@ -1628,23 +1628,25 @@ void bfield(int rgen, int nmxi, int nmxe, int nmni, int nmne, int mmxi, int mmxe
 		&bkne[0], &tdge[0], &u[0], cerr);
 	if (*cerr >= 50) return;
 	if (*nc > 0) {
-	    fdsdc_(&rgen, &ityp, &etyp, &nsi, &nse, nc, &nci, &ep, &tm, &dst, &dstt, &dsti[0], &bori[0], &bkni[0], &bkpi[0], &tdgi[0], 
-		&dste[0], &bore[0], &bkne[0], &bkpe[0], &tdge[0], &u[0], &w[0], &dsdc[0], cerr);
+		fdsdc_(&rgen, &ityp, &etyp, &nsi, &nse, nc, &nci, &ep, &tm, &dst, &dstt, &dsti[0], &bori[0],
+			&bkni[0], &bkpi[0], &tdgi[0], &dste[0], &bore[0], &bkne[0], &bkpe[0], &tdge[0], &u[0],
+			&w[0], &dsdc[0], cerr);
+		if (*cerr >= 50) return;
+		fdlds_(&rgen, &grad, &ctyp, &clat, &phi, &h, &re, &rp, &rm, ro, &nsi, nc, &nci, &np, &ii, &ie,
+			&nmni, &nmxi, &nmne, &nmxe, &nmax, &mmni, &mmxi, &mmne, &mmxe, &mmin, &mmax, theta, &p[0],
+			&r[0], &t[0], &u[0], &w[0], &dldc[0], cerr);
 	    if (*cerr >= 50) return;
-	    fdlds_(&rgen, &grad, &ctyp, &clat, &phi, &h, &re, &rp, &rm, ro, &nsi, nc, &nci, &np, &ii, &ie, &nmni, &nmxi, &nmne, &nmxe, &nmax, 
-		    &mmni, &mmxi, &mmne, &mmxe, &mmin, &mmax, theta, &p[0], &r[0], &t[0], &u[0], &w[0], &dldc[0], cerr);
-	    if (*cerr >= 50) return;
-	    if (rgen > 0) {
-		rgen = 0;
-		memset(b, 0, (grad * 36 + 28) * sizeof(double));
-		fdldc(grad, *nc, &dsdc[0], &dldc[0]);
-		blgen(grad, *nc, &b[0], &c[0], &dldc[0]);
-		bngen_(&b[0]);
-	    }
-	    if (dtyp == 2) {
-		tec(grad, atyp[0], *nc, theta, &phi, &b[0], &dldc[0], &w[0]);
-		tse(grad, atyp[1], *nc, &rse[0], &b[0], &dldc[0], &w[0]);
-	    }
+		if (rgen > 0) {
+			rgen = 0;
+			memset(b, 0, (grad * 36 + 28) * sizeof(double));
+			fdldc(grad, *nc, &dsdc[0], &dldc[0]);
+			blgen(grad, *nc, &b[0], &c[0], &dldc[0]);
+			bngen_(&b[0]);
+		}
+		if (dtyp == 2) {
+			tec(grad, atyp[0], *nc, theta, &phi, &b[0], &dldc[0], &w[0]);
+			tse(grad, atyp[1], *nc, &rse[0], &b[0], &dldc[0], &w[0]);
+		}
 	}
 	r8vgathp(1, 1, 15, 14, &b[0], &b[0]);
 	if (grad == 1)
@@ -1690,19 +1692,23 @@ void prebf_(int *rgen, int *ityp, int *etyp, int *dtyp, int *grad, int *nmni, in
 	i__1 = MIN(MIN(*nmni,*nmxi), *nmne);
 	if (MIN(i__1,*nmxe) < 0) {
 		fprintf(stderr, "SUBROUTINE BFIELD -- ERROR CODE 50 -- NMNI, NMXI, NMNE, OR NMXE < 0 -- ABORT\n");
+		*cerr = 50;
 		return;
 	}
 	i__1 = MIN(MIN(*mmni,*mmxi), *mmne);
 	if (MIN(i__1,*mmxe) < 0) {
 		fprintf(stderr, "SUBROUTINE BFIELD -- ERROR CODE 51 -- MMNI, MMXI, MMNE, OR MMXE < 0 -- ABORT\n");
+		*cerr = 51;
 		return;
 	}
 	if (*mmni > *mmxi || *mmne > *mmxe) {
 		fprintf(stderr, "SUBROUTINE BFIELD -- ERROR CODE 52 -- EITHER MMNI > MMXI OR MMNE > MMXE -- ABORT\n");
+		*cerr = 52;
 		return;
 	}
 	if (*mmxi > *nmxi || *mmxe > *nmxe) {
 		fprintf(stderr, "SUBROUTINE BFIELD -- ERROR CODE 53 -- EITHER MMXI > NMXI OR MMXE > NMXE -- ABORT\n");
+		*cerr = 53;
 		return;
 	}
 	isvr = *ityp % 3;
@@ -1721,14 +1727,14 @@ void prebf_(int *rgen, int *ityp, int *etyp, int *dtyp, int *grad, int *nmni, in
 	*nci = 0;
 	if (*nsi > 0) {
 	    i8vset(1, *nsi, 1, &u[1]);
-	    if (isvr == 1)
-		i8vadd(1, 1, 1, *nsi, &tdgi[1], &u[1], &u[1]);
-	    else if (isvr == 2) {
-		i8vadd(1, 1, 1, *nsi, &bori[1], &u[1], &u[1]);
-		i8vadd(1, 1, 1, *nsi, &bkni[1], &u[1], &u[1]);
-	    }
-	    if (idst == 1)
-		i8vadd(1, 1, 1, *nsi, &dsti[1], &u[1], &u[1]);
+		if (isvr == 1)
+			i8vadd(1, 1, 1, *nsi, &tdgi[1], &u[1], &u[1]);
+		else if (isvr == 2) {
+			i8vadd(1, 1, 1, *nsi, &bori[1], &u[1], &u[1]);
+			i8vadd(1, 1, 1, *nsi, &bkni[1], &u[1], &u[1]);
+		}
+		if (idst == 1)
+			i8vadd(1, 1, 1, *nsi, &dsti[1], &u[1], &u[1]);
 
 	    *nci = i8ssum(1, *nsi, &u[1]);
 	}
@@ -1814,7 +1820,7 @@ void fdlds_(int *rgen, int *grad, int *ctyp, double *clat, double *phi, double *
 	++(*rgen);
 	roo = *ro;
     }
-    if (*rgen > 0) {
+	if (*rgen > 0) {
 	if (sinthe == 0.) {
 	    if (*grad == 0)
 		fprintf(stderr, "SUBROUTINE BFIELD -- ERROR CODE 1 -- GEOGRAPHIC POLAR POSITION DETECTED, B-PHI INDETERMINABLE -- WARNING\n");
@@ -2261,78 +2267,73 @@ void fdsdc_(int *rgen, int *ityp, int *etyp, int *nsi, int *nse, int *nc, int *n
 	double *tb, double *dst, double *dstt, int *dsti, int *bori, int *bkni, double *bkpi, int *tdgi, 
 	int *dste, int *bore, int *bkne, double *bkpe, int *tdge, int *u, double *w, double *dsdc, int *cerr) {
 
-    static double tbo = 0.;
+	static double tbo = 0.;
 
-    /* System generated locals */
-    int i__1;
+	/* Local variables */
+	int i__1, tgen, edst, idst, esvr, isvr;
 
-    /* Local variables */
-    int tgen, edst, idst, esvr, isvr;
+	/* Parameter adjustments */
+	--dsdc;
+	--w;
+	--u;
+	--tdge;
+	--bkpe;
+	--bkne;
+	--bore;
+	--dste;
+	--tdgi;
+	--bkpi;
+	--bkni;
+	--bori;
+	--dsti;
 
-    /* Parameter adjustments */
-    --dsdc;
-    --w;
-    --u;
-    --tdge;
-    --bkpe;
-    --bkne;
-    --bore;
-    --dste;
-    --tdgi;
-    --bkpi;
-    --bkni;
-    --bori;
-    --dsti;
-
-    /* Function Body */
-    tgen = MAX(0,*rgen - 6);
-    if (tbo != *tb) {
-	tgen = MIN(1,tgen + *ityp + *etyp);
-	*rgen += tgen;
-	tbo = *tb;
-    }
-    if (tgen > 0) {
-	r8vset(1, *nc << 1, 0., &dsdc[1]);
-	if (*nsi > 0) {
-	    isvr = *ityp % 3;
-	    idst = *ityp / 3;
-	    i8vcum(1, 1, *nsi, &u[1]);
-	    r8vscats(1, *nsi, 1., &u[1], &dsdc[1]);
-	    r8vscats(1, *nsi, 0., &u[1], &dsdc[*nc + 1]);
-	    i8vadds(1, 1, *nsi, 1, &u[1], &u[1]);
-	    if (isvr == 1)
-		taylor(*nc, *nsi, *ta, *tb, &tdgi[1], &u[1], &w[1], &dsdc[1]);
-	    else if (isvr == 2) {
-		bsplyn(*nc, *nsi, ta, tb, &bori[1], &bkni[1], &bkpi[1], &u[1], &w[1], &dsdc[1], cerr);
-		if (*cerr >= 50) goto L10;
-	    }
-	    if (idst == 1)
-		dstorm(*nc, *nsi, dst, dstt, &dsti[1], &u[1], &dsdc[1]);
-
+	/* Function Body */
+	tgen = MAX(0,*rgen - 6);
+	if (tbo != *tb) {
+		tgen = MIN(1,tgen + *ityp + *etyp);
+		*rgen += tgen;
+		tbo = *tb;
+	}
+	if (tgen > 0) {
+		r8vset(1, *nc << 1, 0., &dsdc[1]);
+		if (*nsi > 0) {
+			isvr = *ityp % 3;
+			idst = *ityp / 3;
+			i8vcum(1, 1, *nsi, &u[1]);
+			r8vscats(1, *nsi, 1., &u[1], &dsdc[1]);
+			r8vscats(1, *nsi, 0., &u[1], &dsdc[*nc + 1]);
+			i8vadds(1, 1, *nsi, 1, &u[1], &u[1]);
+			if (isvr == 1)
+				taylor(*nc, *nsi, *ta, *tb, &tdgi[1], &u[1], &w[1], &dsdc[1]);
+			else if (isvr == 2) {
+				bsplyn(*nc, *nsi, ta, tb, &bori[1], &bkni[1], &bkpi[1], &u[1], &w[1], &dsdc[1], cerr);
+				if (*cerr >= 50) goto L10;
+			}
+			if (idst == 1)
+				dstorm(*nc, *nsi, dst, dstt, &dsti[1], &u[1], &dsdc[1]);
 L10:
-	    i8vdel(1, 1, *nsi, &u[1]);
-	}
-	if (*nse > 0) {
-	    esvr = *etyp % 3;
-	    edst = *etyp / 3;
-	    i__1 = *nsi + 1;
-	    i8vcum(1, i__1, *nse, &u[1]);
-	    r8vscats(i__1, *nse, 1., &u[1], &dsdc[*nci + 1]);
-	    r8vscats(i__1, *nse, 0., &u[1], &dsdc[*nc + *nci + 1]);
-	    i8vadds(i__1, i__1, *nse, 1, &u[1], &u[1]);
-	    if (esvr == 1)
-		taylor(*nc, *nse, *ta, *tb, &tdge[1], &u[*nsi + 1], &w[1], &dsdc[*nci + 1]);
-	    else if (esvr == 2) {
-		bsplyn(*nc, *nse, ta, tb, &bore[1], &bkne[1], &bkpe[1], &u[*nsi + 1], &w[1], &dsdc[*nci + 1], cerr);
-		if (*cerr >= 50) goto L20;
-	    }
-	    if (edst == 1)
-		dstorm(*nc, *nse, dst, dstt, &dste[1], &u[*nsi + 1], &dsdc[*nci + 1]);
-
+			i8vdel(1, 1, *nsi, &u[1]);
+		}
+		if (*nse > 0) {
+			esvr = *etyp % 3;
+			edst = *etyp / 3;
+			i__1 = *nsi + 1;
+			i8vcum(1, i__1, *nse, &u[1]);
+			r8vscats(i__1, *nse, 1., &u[1], &dsdc[*nci + 1]);
+			r8vscats(i__1, *nse, 0., &u[1], &dsdc[*nc + *nci + 1]);
+			i8vadds(i__1, i__1, *nse, 1, &u[1], &u[1]);
+			if (esvr == 1)
+				taylor(*nc, *nse, *ta, *tb, &tdge[1], &u[*nsi + 1], &w[1], &dsdc[*nci + 1]);
+			else if (esvr == 2) {
+				bsplyn(*nc, *nse, ta, tb, &bore[1], &bkne[1], &bkpe[1], &u[*nsi + 1], &w[1], &dsdc[*nci + 1], cerr);
+				if (*cerr >= 50) goto L20;
+			}
+			if (edst == 1)
+				dstorm(*nc, *nse, dst, dstt, &dste[1], &u[*nsi + 1], &dsdc[*nci + 1]);
 L20:
-	    i8vdel(1, *nsi + 1, *nse, &u[1]);
+			i8vdel(1, *nsi + 1, *nse, &u[1]);
+		}
 	}
-    }
 }
 
 void taylor(int nc, int ns, double ta, double tb, int *tdeg, int *u, double *dsdt, double *dsdc) {
