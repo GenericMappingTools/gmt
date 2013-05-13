@@ -626,6 +626,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) write_model_parameters (GMT, gtd, Ctrl->N.value);
 	if (Ctrl->T.file) {
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "trend surface", T)) Return (API->error);
+		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, T)) Return (API->error);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->T.file, T) != GMT_OK) {
 			Return (API->error);
 		}
@@ -635,6 +636,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->D.file) {
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "trend residuals", R)) Return (API->error);
+		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, R)) Return (API->error);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->D.file, R) != GMT_OK) {
 			Return (API->error);
 		}
@@ -646,6 +648,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->W.file && Ctrl->N.robust) {
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, "trend weights", W)) Return (API->error);
+		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, W)) Return (API->error);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->W.file, W) != GMT_OK) {
 			Return (API->error);
 		}

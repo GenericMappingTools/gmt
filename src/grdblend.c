@@ -658,6 +658,8 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 
 	z = GMT_memory (GMT, NULL, Grid->header->nx, float);	/* Memory for one output row */
 
+	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
+
 	if (GMT_File_Is_Memory (Ctrl->G.file)) {	/* GMT_grdblend is called by another module; must return as GMT_GRID */
 		/* Allocate space for the entire output grid */
 		if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_GRID, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid) == NULL) Return (API->error);

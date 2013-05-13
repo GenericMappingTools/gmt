@@ -798,6 +798,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 		
 	GMT_Report (API, GMT_MSG_VERBOSE, "Write CVA grid %s\n", Ctrl->G.file);
 
+	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G)) Return (API->error);
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, G) != GMT_OK) {
 		Return (API->error);
 	}
@@ -849,6 +850,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 			sprintf (file, format, layer);
 			G->data = CVA_inc;	/* Temporarily change the array pointer */
 			GMT_Report (API, GMT_MSG_VERBOSE, "Save z-slice CVA to file %s\n", file);
+			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G)) Return (API->error);
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, file, G) != GMT_OK) {
 				Return (API->error);
 			}
@@ -926,6 +928,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 		if (Ctrl->D.active) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Write DI grid %s\n", Ctrl->D.file);
 			sprintf (DI->header->remark, "CVA maxima along flowlines from each node");
+			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, DI)) Return (API->error);
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->D.file, DI) != GMT_OK) {
 				Return (API->error);
 			}
@@ -933,6 +936,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 		if (Ctrl->PA.active) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Write PA grid %s\n", Ctrl->PA.file);
 			sprintf (PA->header->remark, "Predicted age for each node");
+			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, PA)) Return (API->error);
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->PA.file, PA) != GMT_OK) {
 				Return (API->error);
 			}

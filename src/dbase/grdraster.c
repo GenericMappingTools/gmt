@@ -1129,8 +1129,11 @@ int GMT_grdraster (void *V_API, int mode, void *args)
 		}
 		GMT_free (GMT, x);
 	}
-	else if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
-		Return (API->error);
+	else {
+		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);
+		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Grid) != GMT_OK) {
+			Return (API->error);
+		}
 	}
 
 	Return (GMT_OK);

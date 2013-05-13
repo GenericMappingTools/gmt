@@ -622,6 +622,7 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 	GMT_Report (API, GMT_MSG_VERBOSE, "Created %d by %d Mercatorized grid file.  Min, Max values are %.8g  %.8g\n", Merc->header->nx, Merc->header->ny, Merc->header->z_min, Merc->header->z_max);
 	if (Ctrl->M.active) {	/* Write out the Mercator grid and return, no projection needed */
 		GMT_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
+		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Merc)) Return (API->error);
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Merc) != GMT_OK) {
 			Return (API->error);
 		}

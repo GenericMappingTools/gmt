@@ -539,6 +539,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 	GMT_set_pad (GMT, API->pad);	/* Reset to session default pad before output */
 
 	sprintf (G_rot->header->remark, "Grid rotated using R[lon lat omega] = %g %g %g", Ctrl->e.lon, Ctrl->e.lat, Ctrl->e.w);
+	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G_rot)) Return (API->error);
 	if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, G_rot) != GMT_OK) {
 		Return (API->error);
 	}

@@ -1099,6 +1099,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 	
 	/* At last, that's it!  Output: */
 
+	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Gout)) Return (API->error);
 #ifdef DEBUG
 	if (Ctrl->A.active) {	/* Save the debug output instead */
 		FILE *fp = fopen ("n_conv.txt", "w");
