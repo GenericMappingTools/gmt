@@ -593,7 +593,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args)
 			if (!(Ctrl->do_IGRF || Ctrl->joint_IGRF_CM4 ) && !s && time_array[0] > 2002.7) {	/* Only atmospheric terms may be reliable */
 				GMT_Message (API, GMT_TIME_NONE, "Warning: Time is outside the CM4 strict validity domain [1960.0-2002.7].\n");
 				GMT_Message (API, GMT_TIME_NONE, "\tThe secular variation estimation will be unreliable. In this"
-							"case you really should use the IGRF to estimate the core contribution\n");
+							"\n\tcase you really should use the IGRF to estimate the core contribution\n");
 			}
 
 			Ctrl->CM4->CM4_DATA.n_pts = (int)T->segment[s]->n_rows;
