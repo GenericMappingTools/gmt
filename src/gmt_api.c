@@ -4795,6 +4795,7 @@ int GMT_Set_Comment (void *V_API, unsigned int family, unsigned int mode, void *
 
 unsigned int GMT_FFT_Option (void *V_API, char option, unsigned int dim, char *string)
 {	/* For programs that will do 1-D or 2-D FFT work */
+	unsigned int d1 = dim - 1;	/* Index into text strings for 1-D (0) and 2-D (1) case */
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 	char *data[2] = {"table", "grid"}, *dname[2] = {"<nx>", "<nx>/<ny>"}, *trend[2] = {"line", "plane"};
 	char *msg[2] = {"Choose or inquire about suitable table dimensions for 1-D FFT, and set modifiers.",
@@ -4805,31 +4806,31 @@ unsigned int GMT_FFT_Option (void *V_API, char option, unsigned int dim, char *s
 	if (string)
 		GMT_Message (API, GMT_TIME_NONE, "\t-%c %s\n", option, string);
 	else
-		GMT_Message (API, GMT_TIME_NONE, "\t-%c %s\n", option, msg[dim]);
+		GMT_Message (API, GMT_TIME_NONE, "\t-%c %s\n", option, msg[d1]);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Setting the FFT dimensions:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Nf will force the FFT to use the dimensions of the %s.\n", data[dim]);
+	GMT_Message (API, GMT_TIME_NONE, "\t     -Nf will force the FFT to use the dimensions of the %s.\n", data[d1]);
 	GMT_Message (API, GMT_TIME_NONE, "\t     -Nq will inQuire about more suitable dimensions, report, then continue.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -Ns will list Singleton's [1967] recommended dimensions, then exit.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -N%s will do FFT on array size %s (Must be >= grid size).\n", dname[dim], dname[dim]);
+	GMT_Message (API, GMT_TIME_NONE, "\t     -N%s will do FFT on array size %s (Must be >= grid size).\n", dname[d1], dname[d1]);
 	GMT_Message (API, GMT_TIME_NONE, "\t     Default chooses dimensions >= data which optimize speed, accuracy of FFT.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append modifiers for removing a %s trend:\n", data[dim]);
-	GMT_Message (API, GMT_TIME_NONE, "\t     +d: Detrend data, i.e. remove best-fitting %s [Default].\n", trend[dim]);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append modifiers for removing a %s trend:\n", data[d1]);
+	GMT_Message (API, GMT_TIME_NONE, "\t     +d: Detrend data, i.e. remove best-fitting %s [Default].\n", trend[d1]);
 	GMT_Message (API, GMT_TIME_NONE, "\t     +a: Only remove mean value, i.e. 0.5 * (max + min).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +h: Only remove mid value, i.e. 0.5 * (max + min).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +l: Leave data alone.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append modifiers for extending the %s via symmetries:\n", data[dim]);
-	GMT_Message (API, GMT_TIME_NONE, "\t     If FFT dimensions > %s dimensions, data are extended via edge point symmetry\n", data[dim]);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append modifiers for extending the %s via symmetries:\n", data[d1]);
+	GMT_Message (API, GMT_TIME_NONE, "\t     If FFT dimensions > %s dimensions, data are extended via edge point symmetry\n", data[d1]);
 	GMT_Message (API, GMT_TIME_NONE, "\t     and tapered to zero.  Several modifers can be set to change this behavior:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +e: Extend data via edge point symmetry [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +m: Extend data via edge mirror symmetry.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +n: Do NOT extend data.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     +t<w>: Limit tapering to <w> %% of the extended margins [100].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If +n is set then +t instead sets the boundary width of the interior\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     %s margin to be tapered [0].\n", data[dim]);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append modifiers for saving modified %s before or after the %u-D FFT is called:\n", data[dim], dim);
-	GMT_Message (API, GMT_TIME_NONE, "\t     +w[<suffix>] will write intermediate %s passed to FFT after detrending/extention/tapering.\n", data[dim]);
+	GMT_Message (API, GMT_TIME_NONE, "\t     %s margin to be tapered [0].\n", data[d1]);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append modifiers for saving modified %s before or after the %u-D FFT is called:\n", data[d1], dim);
+	GMT_Message (API, GMT_TIME_NONE, "\t     +w[<suffix>] will write intermediate %s passed to FFT after detrending/extention/tapering.\n", data[d1]);
 	GMT_Message (API, GMT_TIME_NONE, "\t       File name will have _<suffix> [tapered] inserted before file extension.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +z[p] will write raw complex spectrum to two separate %s files.\n", data[dim]);
+	GMT_Message (API, GMT_TIME_NONE, "\t     +z[p] will write raw complex spectrum to two separate %s files.\n", data[d1]);
 	GMT_Message (API, GMT_TIME_NONE, "\t       File name will have _real/_imag inserted before the file extensions.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t       Append p to store polar forms instead, using _mag/_phase instead.\n");
 	

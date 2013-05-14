@@ -6689,7 +6689,7 @@ int gmt_decode_tinfo (struct GMT_CTRL *GMT, int axis, char flag, char *in, struc
 	return (GMT_NOERROR);	
 }
 
-unsigned int gmt_B_option_style (struct GMT_CTRL *GMT, char *in) {
+unsigned int gmt_B_option_inspector (struct GMT_CTRL *GMT, char *in) {
 	/* Determines if the -B option indicates old GMT4-style switches and flags
 	 * or if it follows the GMT 5 specification.  This is only called when
 	 * compatibility mode has been compiled in; otherwise we only check GMT 5
@@ -6697,7 +6697,7 @@ unsigned int gmt_B_option_style (struct GMT_CTRL *GMT, char *in) {
 	 * if no decision could be make and 0 if mixing of GMT4 & 5 styles are
 	 * ound = that is an error. */
 	size_t k, last;
-	int gmt4 = 0, gmt5 = 0, n_colons = 0;
+	int gmt4 = 0, gmt5 = 0, n_colons = 0, n_slashes = 0, colon_text = 0;
 	bool ignore = false;	/* true if inside a colon-separated string under GMT4 style assumption */
 	
 	last = strlen (in);
@@ -6708,18 +6708,19 @@ unsigned int gmt_B_option_style (struct GMT_CTRL *GMT, char *in) {
 #endif
 			ignore = !ignore, n_colons++;	/* Possibly stepping into a label/title */
 			if (!ignore) continue;	/* End of title or label, skip check for next character */
-			if (k < last && in[k+1] == '.') gmt4++;	/* Title */
-			if (k < last && in[k+1] == '=') gmt4++;	/* Annotation prefix */
-			if (k < last && in[k+1] == ',') gmt4++;	/* Annotation suffix */
+			if (k < last && in[k+1] == '.') colon_text++;	/* Title */
+			if (k < last && in[k+1] == '=') colon_text++;	/* Annotation prefix */
+			if (k < last && in[k+1] == ',') colon_text++;	/* Annotation suffix */
 		}
-		if (ignore) continue;	/* Inside a title or label */
+		if (ignore) continue;	/* Don't look inside a title or label */
 		switch (in[k]) {
-			case '/': gmt4++; break;	/* Only GMT4 uses slashes */
+			case '/': n_slashes++; break;	/* Only GMT4 uses slashes */
 			case '+':	/* Plus, might be GMT5 modifier switch */
 				if (k < last && in[k+1] == 's') gmt5++;	/* suffix settings */
 				if (k < last && in[k+1] == 'p') gmt5++;	/* prefix settings */
 				if (k < last && in[k+1] == 'l') gmt5++;	/* Label */
 				if (k < last && in[k+1] == 't') gmt5++;	/* title */
+				if (k && (in[k-1] == 'Z' || in[k-1] == 'z')) gmt4++;	/* Z-axis with 3-D box */
 				break;
 			case 'c':	/* If following a number this is unit c for seconds in GMT4 */
 				if (k && (in[k-1] == '.' || isdigit (in[k-1]))) gmt4++;	/* Old-style second unit */
@@ -6727,20 +6728,25 @@ unsigned int gmt_B_option_style (struct GMT_CTRL *GMT, char *in) {
 		}
 	}
 	if (n_colons && (n_colons % 2) == 0) gmt4++;	/* Presumably :labels: in GMT4 style as any +mod would have kicked in above */
+	if (n_slashes) gmt4++;				/* Presumably / to separate axis in GMT4 style */
+	if (colon_text) gmt4++;				/* Gave title, suffix, prefix in GMT4 style */
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_B_option_inspector: GMT4 = %d GMT5 = %d\n", gmt4, gmt5);
 	if (gmt5 && !gmt4) {
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_B_option_style: Detected GMT5 style format in -B option\n");
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_B_option_inspector: Detected GMT 5 style elements in -B option\n");
 		return (5);
 	}
-	else if (gmt4 && !gmt5) {
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_B_option_style: Detected GMT4 style format in -B option\n");
+	else if (gmt4 && !gmt5 && !GMT_compat_check (GMT, 4)) {
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_B_option_inspector: Detected GMT 4 style elements in -B option, but GMT_COMPATIBILITY = %d\n", GMT->current.setting.compatibility);
 		return (4);
 	}
-	else if (gmt4 && gmt5) {
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_B_option_style: Detected both GMT4 and GMT5 style format in -B option?\n");
+	else if (gmt4 && gmt5) {	/* Mixed case is never allowed */
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_B_option_inspector: Error: Detected both GMT 4 and GMT 5 style elements in -B option. Unable to parse.\n");
+		if (n_slashes) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_B_option_inspector: Slashes no longer separate axis specifications, use -B[xyz] and repeat\n");
+		if (colon_text || n_colons) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_B_option_inspector: Colons no longer used for titles, labels, prefix, and suffix; see +t, +l, +p, +s\n");
 		return (0);
 	}
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_B_option_style: Assume GMT5 style format in -B option\n");
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_B_option_inspector: Assume GMT 5 style format in -B option\n");
 		return (1);
 	}
 }
@@ -7203,18 +7209,18 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 }
 
 int gmt_parse_B_option (struct GMT_CTRL *GMT, char *in) {
-	unsigned int version = gmt_B_option_style (GMT, in);	/* 5, 4, 1 (undetermined) or 0 (mixing) */
+	unsigned int version = gmt_B_option_inspector (GMT, in);	/* 5, 4, 1 (undetermined) or 0 (mixing) */
 	int error = 0;
-	// TESTING: Forcing 4 for now */
-	version = 4;
 	if (version == 0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -B option: Mixing of GMT 4 and 5 level syntax is not possible\n");
 		return 1;
 	}
 	if (!GMT_compat_check (GMT, 4) && version == 4) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -B option: Cannot use 5 level syntax when not in compatibility mode\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -B option: Cannot use GMT 4 syntax except in compatibility mode\n");
 		return 1;
 	}
+	//TESTING with version == 4
+	version = 4;
 	/* Here we are able to parse the option */
 	if (version == 4)
 		error = gmt4_parse_B_option (GMT, in);
