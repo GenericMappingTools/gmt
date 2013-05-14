@@ -2,31 +2,28 @@
 grdmath
 *******
 
-grdmath - Reverse Polish Notation (RPN) calculator for grids (element by
-element)
+grdmath - Reverse Polish Notation (RPN) calculator for grids (element by element)
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdmath** [
-**-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
-] [ **-M** ] [ **-N** ] [
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-V**\ [*level*\ ]
-] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [ **-f**\ *colinfo* ] [
-**-h**\ [**i**\ \|\ **o**][*n*\ ] ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ]
-] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [
-**-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*]
-] [ **-r** ] *operand* [ *operand* ] **OPERATOR** [ *operand* ]
+**grdmath**
+[ |SYN_OPT-I| ]
+[ **-M** ] [ **-N** ]
+[ |SYN_OPT-R| ] [ |SYN_OPT-V| ]
+[ **-bi**\ [*ncols*\ ][*type*] ] [ **-f**\ *colinfo* ]
+[ **-h**\ [**i**\ \|\ **o**][*n*] ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-n| ]
+[ **-r** ] *operand* [ *operand* ] **OPERATOR** [ *operand* ]
 **OPERATOR** ... **=** *outgrdfile*
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **grdmath** will perform operations like add, subtract, multiply, and
 divide on one or more grid files or constants using Reverse Polish
@@ -41,8 +38,8 @@ the depth of the stack allows in order to save intermediate results.
 Complicated or frequently occurring expressions may be coded as a macro
 for future use or stored and recalled via named memory locations. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *operand*
     If *operand* can be opened as a file it will be read as a grid file.
@@ -52,20 +49,20 @@ for future use or stored and recalled via named memory locations.
     The name of a 2-D grid file that will hold the final result. (See
     GRID FILE FORMATS below).
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. include:: explain_-I.rst_
 
 **-M**
-    By default any derivatives calculated are in z\_units/ x(or
+    By default any derivatives calculated are in z_units/ x(or
     y)\_units. However, the user may choose this option to convert dx,dy
     in degrees of longitude,latitude into meters using a flat Earth
-    approximation, so that gradients are in z\_units/meter.
+    approximation, so that gradients are in z_units/meter.
 **-N**
     Turn off strict domain match checking when multiple grids are
     manipulated [Default will insist that each grid domain is within
-    1e-4 \* grid\_spacing of the domain of the first grid listed]. 
+    1e-4 \* grid_spacing of the domain of the first grid listed]. 
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
@@ -96,8 +93,8 @@ for future use or stored and recalled via named memory locations.
 
 .. include:: explain_help.rst_
 
-`Operators <#toc6>`_
---------------------
+Operators
+---------
 
 Choose among the following 161 operators. "args" are the number of input
 and output arguments.
@@ -139,7 +136,7 @@ and output arguments.
 +-----------------+--------+----------------------------------------------------------------------------------------------+
 | **BITLEFT**     | 2 1    | A << B (bitwise left-shift operator)                                                         |
 +-----------------+--------+----------------------------------------------------------------------------------------------+
-| **BITNOT**      | 1 1    | ~A (bitwise NOT operator, i.e., return two’s complement)                                     |
+| **BITNOT**      | 1 1    | ~A (bitwise NOT operator, i.e., return two's complement)                                     |
 +-----------------+--------+----------------------------------------------------------------------------------------------+
 | **BITOR**       | 2 1    | A \| B (bitwise OR operator)                                                                 |
 +-----------------+--------+----------------------------------------------------------------------------------------------+
@@ -337,7 +334,7 @@ and output arguments.
 +-----------------+--------+----------------------------------------------------------------------------------------------+
 | **POW**         | 2 1    | A ^ B                                                                                        |
 +-----------------+--------+----------------------------------------------------------------------------------------------+
-| **PQUANT**      | 2 1    | The B’th Quantile (0-100%) of A                                                              |
+| **PQUANT**      | 2 1    | The B'th Quantile (0-100%) of A                                                              |
 +-----------------+--------+----------------------------------------------------------------------------------------------+
 | **PSI**         | 1 1    | Psi (or Digamma) of A                                                                        |
 +-----------------+--------+----------------------------------------------------------------------------------------------+
@@ -405,9 +402,9 @@ and output arguments.
 +-----------------+--------+----------------------------------------------------------------------------------------------+
 | **TN**          | 2 1    | Chebyshev polynomial Tn(-1<t<+1,n), with t = A, and n = B                                    |
 +-----------------+--------+----------------------------------------------------------------------------------------------+
-| **TCRIT**       | 2 1    | Critical value for Student’s t-distribution, with alpha = A and n = B                        |
+| **TCRIT**       | 2 1    | Critical value for Student's t-distribution, with alpha = A and n = B                        |
 +-----------------+--------+----------------------------------------------------------------------------------------------+
-| **TDIST**       | 2 1    | Student’s t-distribution A(t,n), with t = A, and n = B                                       |
+| **TDIST**       | 2 1    | Student's t-distribution A(t,n), with t = A, and n = B                                       |
 +-----------------+--------+----------------------------------------------------------------------------------------------+
 | **UPPER**       | 1 1    | The highest (maximum) value of A                                                             |
 +-----------------+--------+----------------------------------------------------------------------------------------------+
@@ -428,8 +425,8 @@ and output arguments.
 | **ZDIST**       | 1 1    | Cumulative normal-distribution C(x), with x = A                                              |
 +-----------------+--------+----------------------------------------------------------------------------------------------+
 
-`Symbols <#toc7>`_
-------------------
+Symbols
+-------
 
 The following symbols have special meaning:
 
@@ -465,8 +462,8 @@ The following symbols have special meaning:
 | **Yn**      | Grid with normalized [-1 to +1] y-coordinates   |
 +-------------+-------------------------------------------------+
 
-`Notes On Operators <#toc8>`_
------------------------------
+Notes On Operators
+------------------
 
 (1) The operator **SDIST** calculates spherical distances between the
 (lon, lat) point on the stack and all node positions in the grid. The
@@ -475,7 +472,7 @@ Similarly, the **SAZ** and **SBAZ** operators calculate spherical
 azimuth and back-azimuths in degrees, respectively. The operators
 **LDIST** and **PDIST** also computes spherical distances (if **-fg** is
 set), else they return Cartesian distances. Note: If the current
-**PROJ\_ELLIPSOID** is not spherical then geodesics are used in
+:ref:`PROJ_ELLIPSOID <Projection Parameters>` is not spherical then geodesics are used in
 spherical calculations.
 
 (2) The operator **PLM** calculates the associated Legendre polynomial
@@ -531,8 +528,8 @@ bitwise operators return NaN if given NaN arguments or bit-settings <= 0.
 
 .. include:: explain_sto_rcl_clr.rst_
 
-`Macros <#toc13>`_
-------------------
+Macros
+------
 
 Users may save their favorite operator combinations as macros via the
 file *grdmath.macros* in their current or user directory. The file may contain
@@ -547,45 +544,54 @@ modes that are inside the given circle to 1 and those outside to 0:
 INCIRCLE = CDIST EXCH DIV 1 LE : usage: r x y INCIRCLE to return 1
 inside circle
 
-`Examples <#toc14>`_
---------------------
+Examples
+--------
 
 To take log10 of the average of 2 files, use
+
+   ::
 
     grdmath file1.nc file2.nc ADD 0.5 MUL LOG10 = file3.nc
 
 Given the file ages.nc, which holds seafloor ages in m.y., use the
-relation depth(in m) = 2500 + 350 \* sqrt (age) to estimate normal
-seafloor depths:
+relation depth(in m) = 2500 + 350 \* sqrt (age) to estimate normal seafloor depths:
+
+   ::
 
     grdmath ages.nc SQRT 350 MUL 2500 ADD = depths.nc
 
 To find the angle a (in degrees) of the largest principal stress from
-the stress tensor given by the three files s\_xx.nc s\_yy.nc, and
-s\_xy.nc from the relation tan (2\*a) = 2 \* s\_xy / (s\_xx - s\_yy), use
+the stress tensor given by the three files s_xx.nc s_yy.nc, and
+s_xy.nc from the relation tan (2\*a) = 2 \* s_xy / (s_xx - s_yy), use
 
-    grdmath 2 s\_xy.nc MUL s\_xx.nc s\_yy.nc SUB DIV ATAN2 2 DIV = direction.nc
+   ::
+
+    grdmath 2 s_xy.nc MUL s_xx.nc s_yy.nc SUB DIV ATAN2 2 DIV = direction.nc
 
 To calculate the fully normalized spherical harmonic of degree 8 and
 order 4 on a 1 by 1 degree world map, using the real amplitude 0.4 and
 the imaginary amplitude 1.1:
 
+   ::
+
     grdmath -R0/360/-90/90 -I1 8 4 YML 1.1 MUL EXCH 0.4 MUL ADD = harm.nc
 
-To extract the locations of local maxima that exceed 100 mGal in the
-file faa.nc:
+To extract the locations of local maxima that exceed 100 mGal in the file faa.nc:
+
+   ::
 
     grdmath faa.nc DUP EXTREMA 2 EQ MUL DUP 100 GT MUL 0 NAN = z.nc
-
     grd2xyz z.nc -s > max.xyz
 
 To demonstrate the use of named variables, consider this radial wave
 where we store and recall the normalized radial arguments in radians:
 
+   ::
+
     grdmath -R0/10/0/10 -I0.25 5 5 CDIST 2 MUL PI MUL 5 DIV STO@r COS @r SIN MUL = wave.nc
 
-`References <#toc15>`_
-----------------------
+References
+----------
 
 Abramowitz, M., and I. A. Stegun, 1964, *Handbook of Mathematical
 Functions*, Applied Mathematics Series, vol. 55, Dover, New York.
@@ -601,8 +607,8 @@ Press, W. H., S. A. Teukolsky, W. T. Vetterling, and B. P. Flannery,
 Spanier, J., and K. B. Oldman, 1987, *An Atlas of Functions*, Hemisphere
 Publishing Corp.
 
-`See Also <#toc16>`_
---------------------
+See Also
+--------
 
 `gmt <gmt.html>`_, `gmtmath <gmtmath.html>`_,
 `grd2xyz <grd2xyz.html>`_, `grdedit <grdedit.html>`_,
