@@ -6925,7 +6925,7 @@ void gmt5_handle_plussign (struct GMT_CTRL *GMT, char *in, unsigned way)
 	bool quote = false;
 	size_t k;
 	for (k = 0; in[k]; k++) {
-		if (in[k] == '\"' || '\'') quote = !quote;
+		if (in[k] == '\"' || in[k] == '\'') quote = !quote;
 		if (quote && in[k] == find[way])  in[k] = replace[way];
 	}
 }
@@ -7100,7 +7100,7 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 		strncpy (GMT->common.B.string[no], in, GMT_TEXT_LEN256);	/* Keep a copy of the actual option(s) */
 
 	/* Set which axes this option applies to */
-	while (!(in[k] == '+' || in[k] == '.' || isdigit (in[k]))) {
+	while (in[k] && strchr ("xyz", in[k])) {	/* As long as there are leading x,y,z axes specifiers */
 		switch (in[k]) {	/* We specified a named axis */
 			case 'x': side[GMT_X] = true; break;
 			case 'y': side[GMT_Y] = true; break;
@@ -7108,23 +7108,23 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 		}
 		k++;
 	}
-	if (!(side[GMT_X] || side[GMT_Y] || side[GMT_Z])) side[GMT_X] = side[GMT_Y] = true;	/* If no axis are named we default to both x and y */
+	if (!(side[GMT_X] || side[GMT_Y] || side[GMT_Z])) side[GMT_X] = side[GMT_Y] = true;	/* If no axis were named we default to both x and y */
 	
-	strcpy (text, &in[k]);	/* Make a copy of the input, starting after the leading -B[p|s][xyz] */
-	gmt5_handle_plussign (GMT, text, 0);	/* Temporarily change plus-signs inside quoted strings to ASCII 1 */
-	k = 0;					/* Start at beginning of text and look for first occurence of +l, +p, or +s */
+	strcpy (text, &in[k]);			/* Make a copy of the input, starting after the leading -B[p|s][xyz] indicators */
+	gmt5_handle_plussign (GMT, text, 0);	/* Temporarily change any plus-signs inside quoted strings to ASCII 1 to avoid interference with +modifiers */
+	k = 0;					/* Start at beginning of text and look for first occurrence of +l, +p, or +s */
 	while (text[k] && !(text[k] == '+' && strchr ("lps", text[k+1]))) k++;
 	strncpy (orig_string, text, k);		/* orig_string now has the interval information */
-	if (text[k]) mod = &text[k];		/* mod points to the modifier information in text*/
+	if (text[k]) mod = &text[k];		/* mod points to the start of the modifier information in text*/
 	for (no = 0; no < 3; no++) {		/* Process each axis separately */
-		if (!side[no]) continue;	/* We did not specify this axis */
-		if (!text[0]) continue;	 	/* Skip empty format string */
-		if (text[0] == '0' && !text[1]) {	 /* Skip format '0' to mean "no annotation, ticks, or gridlines" */
+		if (!side[no]) continue;	/* Except we did not specify this axis */
+		if (!text[0]) continue;	 	/* Skip any empty format string */
+		if (text[0] == '0' && !text[1]) {	 /* Understand format '0' to mean "no annotation, ticks, or gridlines" */
 			GMT->current.map.frame.draw = true;	/* But we do wish to draw the frame */
 			continue;
 		}
 
-		if (mod) {	/* Process the axis modifiers */
+		if (mod) {	/* Process the given axis modifiers */
 			unsigned int pos = 0;
 			char p[GMT_BUFSIZ];
 			while ((GMT_strtok (mod, "+", &pos, p))) {	/* Parse any +<modifier> statements */
@@ -7170,22 +7170,23 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 			}
 		}
 		
-		strcpy (string, orig_string);	/* Make a copy of string as it gets messed with below */
 		/* Now parse the annotation/tick info string */
-		if (string[0] == 'c')	/* Special custom annotation information given by file */
+
+		strcpy (string, orig_string);	/* Make a copy of string as it gets messed with below */
+		if (string[0] == 'c')		/* Special custom annotation information given via file */
 			error += gmt_decode_tinfo (GMT, no, 'c', string, &GMT->current.map.frame.axis[no]);
-		else {	/* Parse from back for 'a', 'f', 'g' chunks */
+		else {				/* Parse from back of string for 'a', 'f', 'g' chunks */
 			for (k = (int)strlen (string) - 1; k >= 0; k--) {
 				if (string[k] == 'a' || string[k] == 'f' || string[k] == 'g') {
 					error += gmt_decode_tinfo (GMT, no, string[k], &string[k+1], &GMT->current.map.frame.axis[no]);
-					string[k] = '\0';	/* Replace with terminator */
+					string[k] = '\0';	/* Done with this chunk; replace with terminator */
 				}
-				else if (k == 0)	/* If no [a|f|g] then it is implicitly 'a' */
+				else if (k == 0)		/* If no [a|f|g] given then it is implicitly 'a' */
 					error += gmt_decode_tinfo (GMT, no, 'a', string, &GMT->current.map.frame.axis[no]);
 			}
 		}
 
-		/* Make sure we have ticks to match annotation stride */
+		/* Make sure we have ticks to match specified annotation stride */
 		A = &GMT->current.map.frame.axis[no];
 		if (A->item[GMT_ANNOT_UPPER].active && !A->item[GMT_TICK_UPPER].active)	/* Set frame ticks = annot stride */
 			GMT_memcpy (&A->item[GMT_TICK_UPPER], &A->item[GMT_ANNOT_UPPER], 1, struct GMT_PLOT_AXIS_ITEM);
@@ -7194,7 +7195,7 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 		/* Note that item[].type will say 'a', 'A', 'i' or 'I' in these cases, so we know when minor ticks were not set */
 	}
 
-	/* Check if we asked for linear projections of geographic coordinates and did not specify a unit - if so set degree symbol as unit */
+	/* Check if we asked for linear projections of geographic coordinates and did not specify a unit (suffix) - if so set degree symbol as suffix */
 	if (GMT->current.proj.projection == GMT_LINEAR && GMT->current.setting.map_degree_symbol != gmt_none) {
 		for (no = 0; no < 2; no++) {
 			if (GMT->current.io.col_type[GMT_IN][no] & GMT_IS_GEO && GMT->current.map.frame.axis[no].unit[0] == 0) {
