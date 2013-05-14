@@ -85,7 +85,7 @@ BD(6) Induced ionospheric field
 .sp
 BD(7) Toroidal field
 .sp
-BD(9) means Core field from IGRF and other contributions from CM4. DO NOT USE BOTH 0 AND 9.
+BD(9) means Core field from IGRF and other contributions from CM4. DO NOT USE BOTH 1 AND 9.
 .sp
 Appending several numbers (1-7) will add up the different contributions. For example
 OPT(Ft)/BD(12) computes the total field due to Core and Lithospheric sources.
