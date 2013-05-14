@@ -4,27 +4,27 @@ grdmask
 
 grdmask - Create mask grid from polygons or point coverage
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
 **grdmask** *pathfiles* **-G**\ *mask\_grd\_file*]
-**-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [
-**-A**\ [**m**\ \|\ **p**] ] [
-**-N**\ [**z**\ \|\ **Z**\ \|\ **p**\ \|\ **P**]\ *values* ] [
-**-S**\ *search\_radius*\ [*unit*\ ] ] [ **-V**\ [*level*\ ] ] [
-**-bi**\ [*ncols*\ ][*type*\ ] ] [ **-f**\ *colinfo* ] [
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
-] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
+|SYN_OPT-I|
+|SYN_OPT-R|
+[ **-A**\ [**m**\ \|\ **p**] ]
+[ **-N**\ [**z**\ \|\ **Z**\ \|\ **p**\ \|\ **P**]\ *values* ]
+[ **-S**\ *search\_radius*\ [*unit*\ ] ] [ |SYN_OPT-V| ]
+[ **-bi**\ [*ncols*][*type*] ] [ **-f**\ *colinfo* ]
+[ |SYN_OPT-g| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ **-r** ] [ |SYN_OPT-:| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **grdmask** can operate in two different modes. 1. It reads one or more
 xy-files that each define a closed polygon. The nodes defined by the
@@ -38,13 +38,13 @@ a node is within a maximum distance from the nearest data point. If the
 distance specified is zero then only the nodes nearest each data point
 are considered "inside". 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *pathfiles*
     The name of 1 or more ASCII [or binary, see
-    **-bi**\ [*ncols*\ ][*type*\ ]] files holding the polygon(s) or data points.
-**-G**\ *mask\_grd\_file*]
+    **-bi**\ [*ncols*][*type*]] files holding the polygon(s) or data points.
+**-G**\ *mask_grd_file*]
     Name of resulting output mask grid file. (See GRID FILE FORMATS below). 
 
 .. include:: explain_-I.rst_
@@ -52,8 +52,8 @@ are considered "inside".
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-A**\ [**m**\ \|\ **p**]
     If the input data are geographic (as indicated by **-fi**) then the
@@ -75,7 +75,7 @@ are considered "inside".
     perimeter as inside. Note:
     **-N**\ **z**\ \|\ **Z**\ \|\ **p**\ \|\ **P** cannot be used in
     conjunction with **-S**; they also all optionally accept /*out* [0].
-**-S**\ *search\_radius*\ [*unit*\ ]
+**-S**\ *search\_radius*\ [*unit*]
     Set nodes to inside, on edge, or outside depending on their distance
     to the nearest data point. Nodes within *radius* [0] from the
     nearest data point are considered inside; append a distance unit
@@ -111,29 +111,37 @@ are considered "inside".
 
 .. include:: explain_grd_coord.rst_
 
-`Examples <#toc9>`_
--------------------
+Examples
+--------
 
-To set all nodes inside and on the polygons coastline\_\*.xy to 0, and
+To set all nodes inside and on the polygons coastline_\*.xy to 0, and
 outside points to 1, do
 
-    grdmask coastline\_\*.xy -R-60/-40/-40/-30 -I5m -N1/0/0 -Gland\_mask.nc=nb -V
+   ::
+
+    grdmask coastline_*.xy -R-60/-40/-40/-30 -I5m -N1/0/0 -Gland_mask.nc=nb -V
 
 To set nodes within 50 km of data points to 1 and other nodes to NaN, do
 
-    grdmask data.xyz -R-60/-40/-40/-30 -I5m -NNaN/1/1 -S50k -Gdata\_mask.nc=nb -V
+   ::
+
+    grdmask data.xyz -R-60/-40/-40/-30 -I5m -NNaN/1/1 -S50k -Gdata_mask.nc=nb -V
 
 To assign polygon IDs to the gridnodes using the insides of the polygons
-in plates.gmt, based on the attribute POL\_ID, do
+in plates.gmt, based on the attribute POL_ID, do
 
-    grdmask plates.gmt -R-40/40/-40/40 -I2m -Nz -Gplate\_IDs.nc -aZ=POL\_ID -V
+   ::
+
+    grdmask plates.gmt -R-40/40/-40/40 -I2m -Nz -Gplate_IDs.nc -aZ=POL_ID -V
 
 Same exercise, but instead compute running polygon IDs starting at 100, do
 
-    grdmask plates.gmt -R-40/40/-40/40 -I2m -Np100 -Gplate\_IDs.nc -V
+   ::
 
-`See Also <#toc10>`_
---------------------
+    grdmask plates.gmt -R-40/40/-40/40 -I2m -Np100 -Gplate_IDs.nc -V
+
+See Also
+--------
 
 `gmt <gmt.html>`_, `grdlandmask <grdlandmask.html>`_,
 `grdmath <grdmath.html>`_, `grdclip <grdclip.html>`_,
