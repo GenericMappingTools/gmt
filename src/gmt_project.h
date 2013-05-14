@@ -470,6 +470,7 @@ struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundar
 	bool obl_grid;			/* true if +o was given to draw oblique gridlines */
 	unsigned int horizontal;	/* 1 is S/N annotations should be parallel to axes, 2 if forced */
 	unsigned int side[5];		/* Which sides (0-3 in plane; 4 = z) to plot. 2 is annot/draw, 1 is draw, 0 is not */
+	unsigned int z_axis[4];		/* Which axes to use for the 3-D z-axis [auto] */
 };
 
 #endif /* _GMT_PROJECT_H */
