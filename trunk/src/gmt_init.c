@@ -6718,7 +6718,6 @@ unsigned int gmt_B_option_style (struct GMT_CTRL *GMT, char *in) {
 			case '+':	/* Plus, might be GMT5 modifier switch */
 				if (k < last && in[k+1] == 's') gmt5++;	/* suffix settings */
 				if (k < last && in[k+1] == 'p') gmt5++;	/* prefix settings */
-				if (k < last && in[k+1] == 'g') gmt5++;	/* fill settings */
 				if (k < last && in[k+1] == 'l') gmt5++;	/* Label */
 				if (k < last && in[k+1] == 't') gmt5++;	/* title */
 				break;
@@ -7206,6 +7205,8 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 int gmt_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 	unsigned int version = gmt_B_option_style (GMT, in);	/* 5, 4, 1 (undetermined) or 0 (mixing) */
 	int error = 0;
+	// TESTING: Forcing 4 for now */
+	version = 4;
 	if (version == 0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -B option: Mixing of GMT 4 and 5 level syntax is not possible\n");
 		return 1;
@@ -7214,8 +7215,6 @@ int gmt_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -B option: Cannot use 5 level syntax when not in compatibility mode\n");
 		return 1;
 	}
-	// TESTING: Forcing 4 for now */
-	version = 4;
 	/* Here we are able to parse the option */
 	if (version == 4)
 		error = gmt4_parse_B_option (GMT, in);
