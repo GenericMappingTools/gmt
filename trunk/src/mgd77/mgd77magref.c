@@ -437,7 +437,10 @@ int GMT_mgd77magref (void *V_API, int mode, void *args)
 	Ctrl = New_mgd77magref_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	MGD77_Init (GMT, &M);			/* Initialize MGD77 Machinery */
 	MGD77_CM4_init (GMT, &M, Ctrl->CM4);	/* Presets path using strdup */
-	if ((error = GMT_mgd77magref_parse (GMT, Ctrl, options))) Return (error);
+	if ((error = GMT_mgd77magref_parse (GMT, Ctrl, options))) {
+		MGD77_end (GMT, &M);
+		Return (error);
+	}
 
 	/*---------------------------- This is the mgd77magref main code ----------------------------*/
 
