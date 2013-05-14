@@ -35,26 +35,26 @@
 /* Control structure for grdcontour */
 
 struct GRDCUT_CTRL {
-	struct In {
+	struct GRDCUT_In {
 		bool active;
 		char *file;
 	} In;
-	struct G {	/* -G<output_grdfile> */
+	struct GRDCUT_G {	/* -G<output_grdfile> */
 		bool active;
 		char *file;
 	} G;
-	struct N {	/* -N<nodata> */
+	struct GRDCUT_N {	/* -N<nodata> */
 		bool active;
 		float value;
 	} N;
-	struct S {	/* -S[n]<lon>/<lat>/[-|=|+]<radius>[d|e|f|k|m|M|n] */
+	struct GRDCUT_S {	/* -S[n]<lon>/<lat>/[-|=|+]<radius>[d|e|f|k|m|M|n] */
 		bool active;
 		bool set_nan;
 		int mode;	/* Could be negative */
 		char unit;
 		double lon, lat, radius;
 	} S;
-	struct Z {	/* -Z[min/max] */
+	struct GRDCUT_Z {	/* -Z[min/max] */
 		bool active;
 		unsigned int mode;	/* 1 means NaN */
 		double min, max;
@@ -71,7 +71,7 @@ void *New_grdcut_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
-	C->N.value = GMT->session.d_NaN;
+	C->N.value = GMT->session.f_NaN;
 	C->Z.min = -DBL_MAX;	C->Z.max = DBL_MAX;			/* No limits on z-range */
 	return (C);
 }
