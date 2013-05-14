@@ -119,7 +119,7 @@ int GMT_mgd77magref_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t	 5 Primary ionospheric field.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t	 6 Induced ionospheric field.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t	 7 Toroidal field.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	 9 means Core field from IGRF and other contributions from CM4. DO NOT USE BOTH 0 AND 9.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t	 9 means Core field from IGRF and other contributions from CM4. DO NOT USE BOTH 1 AND 9.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append several numbers to add up the different contributions. For example,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -Ft/12 computes the total field due to CM4 Core and Lithospheric sources.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Two special cases are allowed which mix which Core field from IGRF and other sources from CM4.\n");
@@ -161,6 +161,7 @@ int GMT_mgd77magref_parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, 
 	unsigned int n_errors = 0, pos, n_out, lfval = 0, pos_slash = 0, nval = 0, nfval = 0, lval = 0;
 	int j;
 	char p[GMT_BUFSIZ], tfixed[GMT_TEXT_LEN64];
+	bool do_CM4core = false;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -281,6 +282,7 @@ int GMT_mgd77magref_parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, 
 								break;
 							case '1':		/* Main field 1 */
 								Ctrl->CM4->CM4_F.field_sources[nfval++] = 0;
+								do_CM4core = true;
 								break;
 							case '2':		/* Main field 2 */
 								Ctrl->CM4->CM4_F.field_sources[nfval++] = 1;
@@ -391,6 +393,8 @@ int GMT_mgd77magref_parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, 
 			"Syntax error: Binary input data (-bi) must have at least %d columns\n", n_out);
 	n_errors += GMT_check_condition (GMT, Ctrl->CM4->CM4_F.active && Ctrl->CM4->CM4_L.curr, 
 			"Syntax error: You cannot select both -F and -L options\n");
+	n_errors += GMT_check_condition (GMT, (do_CM4core && Ctrl->do_IGRF) || (do_CM4core && Ctrl->joint_IGRF_CM4),
+			"Syntax error: You cannot select both CM4 core (1) and IGRF as they are both core fields.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
