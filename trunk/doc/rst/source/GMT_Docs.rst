@@ -2369,8 +2369,8 @@ used directly (.e.g, "%.2f" for a fixed, two decimals format). Note that
 for these axes you may use the *unit* setting to add a unit string to
 each annotation (see Figure ).
 
-Cartesian log\ :math:`_{10}` axes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Cartesian log\ :sub:`10` axes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Due to the logarithmic nature of annotation spacings, the *stride*
 parameter takes on specific meanings. The following concerns are
@@ -2381,13 +2381,13 @@ specific to log axes:
    respectively, for each magnitude range. For *-n* the
    annotations will take place every *n*\ 'th magnitude.
 
-#. Append **l** to *stride*. Then, log\ :math:`_{10}` of the annotation
-   is plotted at every integer log\ :math:`_{10}` value (e.g.,
+#. Append **l** to *stride*. Then, log\ :sub:`10` of the annotation
+   is plotted at every integer log\ :sub:`10` value (e.g.,
    *x = 100* will be annotated as "2") [Default annotates
    *x* as is].
 
 #. Append **p** to *stride*. Then, annotations appear as 10 raised to
-   log\ :math:`_{10}` of the value (e.g., :math:`10^{-5}`).
+   log\ :sub:`10` of the value (e.g., 10\ :sup:`-5`).
 
 Cartesian exponential axes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -2817,7 +2817,7 @@ read all the data columns in the file, starting with the first column
 **-i**\ 3,6,2 (since 0 is the first column). The chosen data columns
 will be used as is. Optionally, you can specify that input columns
 should be transformed according to a linear or logarithmic conversion.
-Do so by appending [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*] to
+Do so by appending [**l**][\ **s**\ *scale*][\ **o**\ *offset*] to
 each column (or range of columns). All items are optional: The **l**
 implies we should first take :math:`\log_{10}` of the data [leave as
 is]. Next, we may scale the result by the given *scale* [1]. Finally, we
@@ -4098,8 +4098,7 @@ a gray-scale image, and
 
     psimage jpeg_image_with_three_bands.jpg+b2,1,0
 
-will plot the same image in color but where the RGB band order has been
-reversed.
+will plot the same image in color but where the RGB band order has been reversed.
 
 Instead of treating them as images, all other *GMT* programs that
 process grids can read individual bands from an image but will consider
@@ -4437,7 +4436,7 @@ specify whether the time coordinate is absolute or relative. An absolute
 time entry must be given as [*date*\ ]\ **T**\ [*clock*\ ] (with *date*
 given as *yyyy*\ [-*mm*\ [-*dd*]], *yyyy*\ [-*jjj*], or
 *yyyy*\ [-**W**\ *ww*\ [-*d*]], and *clock* using the
-*hh*\ [:*mm*\ [:*ss*\ [*.xxx*\ ]]] 24-hour clock format) whereas the
+*hh*\ [:*mm*\ [:*ss*\ [*.xxx*]]] 24-hour clock format) whereas the
 relative time is simply given as the units of time since the epoch
 followed by **t** (see **TIME\_UNIT** and **TIME\_EPOCH** for
 information on specifying the time unit and the epoch). As a simple
@@ -4613,8 +4612,7 @@ the projection in *GMT* you need to provide the following information:
 
 -  Two standard parallels.
 
--  Map scale in inch/degree or 1:xxxxx notation (**-Jb**), or map width
-   (**-JB**).
+-  Map scale in inch/degree or 1:xxxxx notation (**-Jb**), or map width (**-JB**).
 
 Note that you must include the "1:" if you choose to specify the scale
 that way. E.g., you can say 0.5 which means 0.5 inch/degree or 1:200000
@@ -4674,8 +4672,7 @@ same information as for the Albers projection, i.e.,
 
 -  Two standard parallels.
 
--  Map scale in inch/degree or 1:xxxxx notation (**-Jl**), or map width
-   (**-JL**).
+-  Map scale in inch/degree or 1:xxxxx notation (**-Jl**), or map width (**-JL**).
 
 The Lambert conformal projection has been used for basemaps for all the
 48 contiguous States with the two fixed standard parallels 33N and 45N.
@@ -4715,8 +4712,7 @@ The polyconic projection is neither equal-area, nor conformal. It is
 true to scale without distortion along the central meridian. Each
 parallel is true to scale as well, but the meridians are not as they get
 further away from the central meridian. As a consequence, no parallel is
-standard because conformity is lost with the lengthening of the
-meridians.
+standard because conformity is lost with the lengthening of the meridians.
 
 Below we reproduce the illustration by *Snyder* [1987], with a gridline
 every 10 and annotations only every 30 in longitude:
@@ -4922,8 +4918,7 @@ and Greeks more than 2,000 years ago. Because it is mainly used for
 pictorial views at a small scale, only the spherical form is necessary.
 
 To specify the orthographic projection the same options **-Jg** or
-**-JG** as the perspective projection are used, but with fewer variables
-to supply:
+**-JG** as the perspective projection are used, but with fewer variables to supply:
 
 -  Longitude and latitude of the projection center.
 

@@ -4,8 +4,8 @@ hotspotter
 
 hotspotter - Create CVA image from seamount locations
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
@@ -19,8 +19,8 @@ hotspotter - Create CVA image from seamount locations
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **hotspotter** reads (longitude, latitude, amplitude, radius, age)
 records from *infiles* [or standard input] and calculates flowlines
@@ -30,16 +30,15 @@ shape given amplitude and radius = 6 sigma) and added up to give a
 Cumulative Volcano Amplitude grid (CVA). See option **-:** on how to
 read (latitude,longitude,...) files.
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
 
 **-E**\ *rotfile*
     Give file with rotation parameters. This file must contain one
-    record for each rotation; each record must be of the following
-    format:
+    record for each rotation; each record must be of the following format:
 
     *lon lat tstart [tstop] angle* [ *khat a b c d e f g df* ]
 
@@ -69,18 +68,21 @@ read (latitude,longitude,...) files.
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-D**\ *factor*
     Modify the sampling interval along flowlines. Default [0.5] gives
     approximately 2 points within each grid box. Smaller factors gives
     higher resolutions at the expense of longer processing time.
+
 **-N**\ *upper\_age*
     Set the upper age to assign seamounts whose crustal age is unknown
     (i.e., NaN) [no upper age].
+
 **-S**
     Normalize the resulting CVA grid to percentages of the CVA maximum.
+
 **-T**
     Truncate seamount ages exceeding the upper age set with **-N** [no
     truncation].
@@ -103,20 +105,20 @@ read (latitude,longitude,...) files.
 .. include:: ../../explain_colon.rst_
 .. include:: ../../explain_help.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
 To create a CVA image from the Pacific (x,y,z,r,t) data in the file
 seamounts.d, using the DC85.d Euler poles, run
 
     hotspotter seamounts.d -EDC85.d -GCVA.nc -R130/260/-66/60 -I10m -N145 -T -V
 
-This file can then be plotted with `grdimage <../../grdimage.html>`_.
+This file can then be plotted with `grdimage <../../grdimage.html>`__.
 
-`See Also <#toc7>`_
--------------------
+See Also
+--------
 
-`GMT <GMT.html>`_, `grdimage <grdimage.html>`_,
+`GMT <GMT.html>`_, `grdimage <grdimage.html>`__,
 `grdrotater <grdrotater.html>`_,
 `grdspotter <grdspotter.html>`_,
 `project <project.html>`_,
@@ -124,8 +126,8 @@ This file can then be plotted with `grdimage <../../grdimage.html>`_.
 `backtracker <backtracker.html>`_,
 `originator <originator.html>`_
 
-`References <#toc8>`_
----------------------
+References
+----------
 
 Wessel, P., 1999, "Hotspotting" tools released, EOS Trans. AGU, 80 (29), p. 319.
 

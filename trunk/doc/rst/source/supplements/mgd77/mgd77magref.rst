@@ -105,7 +105,7 @@ Optional Arguments
 
     **1** means CM4 Core field
 
-    **2** means CM4 Lithospheric
+    **2** means CM4 Lithospheric field
 
     **3** means CM4 Primary Magnetospheric field
 

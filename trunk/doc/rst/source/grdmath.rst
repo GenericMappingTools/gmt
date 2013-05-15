@@ -45,6 +45,7 @@ Required Arguments
     If *operand* can be opened as a file it will be read as a grid file.
     If not a file, it is interpreted as a numerical constant or a
     special symbol (see below).
+
 *outgrdfile*
     The name of a 2-D grid file that will hold the final result. (See
     GRID FILE FORMATS below).
@@ -59,6 +60,7 @@ Optional Arguments
     y)\_units. However, the user may choose this option to convert dx,dy
     in degrees of longitude,latitude into meters using a flat Earth
     approximation, so that gradients are in z_units/meter.
+
 **-N**
     Turn off strict domain match checking when multiple grids are
     manipulated [Default will insist that each grid domain is within
@@ -465,60 +467,59 @@ The following symbols have special meaning:
 Notes On Operators
 ------------------
 
-(1) The operator **SDIST** calculates spherical distances between the
-(lon, lat) point on the stack and all node positions in the grid. The
-grid domain and the (lon, lat) point are expected to be in degrees.
-Similarly, the **SAZ** and **SBAZ** operators calculate spherical
-azimuth and back-azimuths in degrees, respectively. The operators
-**LDIST** and **PDIST** also computes spherical distances (if **-fg** is
-set), else they return Cartesian distances. Note: If the current
-:ref:`PROJ_ELLIPSOID <Projection Parameters>` is not spherical then geodesics are used in
-spherical calculations.
+#. The operator **SDIST** calculates spherical distances between the
+   (lon, lat) point on the stack and all node positions in the grid. The
+   grid domain and the (lon, lat) point are expected to be in degrees.
+   Similarly, the **SAZ** and **SBAZ** operators calculate spherical
+   azimuth and back-azimuths in degrees, respectively. The operators
+   **LDIST** and **PDIST** also computes spherical distances (if **-fg** is
+   set), else they return Cartesian distances. Note: If the current
+   :ref:`PROJ_ELLIPSOID <Projection Parameters>` is not spherical then geodesics are used in
+   spherical calculations.
 
-(2) The operator **PLM** calculates the associated Legendre polynomial
-of degree L and order M (0 <= M <= L), and its argument is the sine of
-the latitude. **PLM** is not normalized and includes the Condon-Shortley
-phase (-1)^M. **PLMg** is normalized in the way that is most commonly
-used in geophysics. The C-S phase can be added by using -M as argument.
-**PLM** will overflow at higher degrees, whereas **PLMg** is stable
-until ultra high degrees (at least 3000).
+#. The operator **PLM** calculates the associated Legendre polynomial
+   of degree L and order M (0 <= M <= L), and its argument is the sine of
+   the latitude. **PLM** is not normalized and includes the Condon-Shortley
+   phase (-1)^M. **PLMg** is normalized in the way that is most commonly
+   used in geophysics. The C-S phase can be added by using -M as argument.
+   **PLM** will overflow at higher degrees, whereas **PLMg** is stable
+   until ultra high degrees (at least 3000).
 
-(3) The operators **YLM** and **YLMg** calculate normalized spherical
-harmonics for degree L and order M (0 <= M <= L) for all positions in
-the grid, which is assumed to be in degrees. **YLM** and **YLMg** return
-two grids, the real (cosine) and imaginary (sine) component of the
-complex spherical harmonic. Use the **POP** operator (and **EXCH**) to
-get rid of one of them, or save both by giving two consecutive = file.nc
-calls.
+#. The operators **YLM** and **YLMg** calculate normalized spherical
+   harmonics for degree L and order M (0 <= M <= L) for all positions in
+   the grid, which is assumed to be in degrees. **YLM** and **YLMg** return
+   two grids, the real (cosine) and imaginary (sine) component of the
+   complex spherical harmonic. Use the **POP** operator (and **EXCH**) to
+   get rid of one of them, or save both by giving two consecutive = file.nc calls.
 
-The orthonormalized complex harmonics **YLM** are most commonly used in
-physics and seismology. The square of **YLM** integrates to 1 over a
-sphere. In geophysics, **YLMg** is normalized to produce unit power when
-averaging the cosine and sine terms (separately!) over a sphere (i.e.,
-their squares each integrate to 4 pi). The Condon-Shortley phase (-1)^M
-is not included in **YLM** or **YLMg**, but it can be added by using -M
-as argument.
+   The orthonormalized complex harmonics **YLM** are most commonly used in
+   physics and seismology. The square of **YLM** integrates to 1 over a
+   sphere. In geophysics, **YLMg** is normalized to produce unit power when
+   averaging the cosine and sine terms (separately!) over a sphere (i.e.,
+   their squares each integrate to 4 pi). The Condon-Shortley phase (-1)^M
+   is not included in **YLM** or **YLMg**, but it can be added by using -M
+   as argument.
 
-(4) All the derivatives are based on central finite differences, with
-natural boundary conditions.
+#. All the derivatives are based on central finite differences, with
+   natural boundary conditions.
 
-(5) Files that have the same names as some operators, e.g., **ADD**,
-**SIGN**, **=**, etc. should be identified by prepending the current
-directory (i.e., ./LOG).
+#. Files that have the same names as some operators, e.g., **ADD**,
+   **SIGN**, **=**, etc. should be identified by prepending the current
+   directory (i.e., ./LOG).
 
-(6) Piping of files is not allowed.
+#. Piping of files is not allowed.
 
-(7) The stack depth limit is hard-wired to 100.
+#. The stack depth limit is hard-wired to 100.
 
-(8) All functions expecting a positive radius (e.g., **LOG**, **KEI**,
-etc.) are passed the absolute value of their argument. (9) The bitwise
-operators (**BITAND**, **BITLEFT**, **BITNOT**, **BITOR**, **BITRIGHT**,
-**BITTEST**, and **BITXOR**) convert a grid’s single precision values to
-unsigned 32-bit ints to perform the bitwise operations. Consequently,
-the largest whole integer value that can be stored in a float grid is
-2^24 or 16,777,216. Any higher result will be masked to fit in the lower
-24 bits.  Thus, bit operations are effectively limited to 24 bit.  All
-bitwise operators return NaN if given NaN arguments or bit-settings <= 0.
+#. All functions expecting a positive radius (e.g., **LOG**, **KEI**,
+   etc.) are passed the absolute value of their argument. (9) The bitwise
+   operators (**BITAND**, **BITLEFT**, **BITNOT**, **BITOR**, **BITRIGHT**,
+   **BITTEST**, and **BITXOR**) convert a grid’s single precision values to
+   unsigned 32-bit ints to perform the bitwise operations. Consequently,
+   the largest whole integer value that can be stored in a float grid is
+   2^24 or 16,777,216. Any higher result will be masked to fit in the lower
+   24 bits.  Thus, bit operations are effectively limited to 24 bit.  All
+   bitwise operators return NaN if given NaN arguments or bit-settings <= 0.
 
 .. include:: explain_float.rst_
 

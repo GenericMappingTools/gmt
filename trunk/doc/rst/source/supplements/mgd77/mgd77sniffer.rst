@@ -20,14 +20,13 @@ mgd77sniffer - Along-track quality control of MGD77 cruises
 **-S**\ **d**\ \|\ **s**\ \|\ **t** ] [ **-T**\ *gap* ] [
 **-V**\ [*level*\ ] ] [
 **-W**\ **c**\ \|\ **g**\ \|\ **o**\ \|\ **s**\ \|\ **t**\ \|\ **v**\ \|\ **x**
-] [ **-bo**\ [*ncols*\ ][*type*\ ] ] [
-**-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*]
-]
+] [ **-bo**\ [*ncols*\ ][*type*\ ] ]
+[ **-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*] ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **mgd77sniffer** scans old (pre-Y2K) and new format ASCII MGD77 files
 for errors using point-by-point sanity checking, along-track detection
@@ -41,31 +40,32 @@ derived from histograms of all MGD77 geophysical data collected between
 1952 and January, 2006. Thresholds are adjustable with the **-L**
 option.
 
-`Requirements <#toc3>`_
------------------------
+Requirements
+------------
 
 The mgd77sniffer links with Generic Mapping Tools 4.0 or later along
 with the supplemental GMT packages x2sys and mgd77. See
 `http://gmt.soest.hawaii.edu <http://gmt.soest.hawaii.edu>`_ for GMT
 details. Grids for comparison with cruise data may be downloaded via the web. 
 
-`Required Arguments <#toc5>`_
------------------------------
+Required Arguments
+------------------
 
 .. include:: explain_ncid.rst_
 
-`Optional Arguments <#toc6>`_
------------------------------
+Optional Arguments
+------------------
 
 **-A**\ *fieldabbrev*,\ *scale*,\ *offset*
     Apply scale factor and DC adjustment to specified data field. Allows
     adjustment of cruise data prior to along-track analysis. CAUTION:
     data must be thoroughly examined before applying these global data
     adjustments. May not be used for multiple cruises.
+
 **-C**\ *maxspd*
     Set maximum ship speed in m/s, or knots with **-N** option. Ship
-    speeds exceeding 10 m/s (~20 knots) are flagged as excessive by
-    default.
+    speeds exceeding 10 m/s (~20 knots) are flagged as excessive by default.
+
 **-D**\ **d**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **l**\ \|\ **m**\ \|\ **s**\ \|\ **v**\ [*r*\ ]
     Suppress default warning output and only dump cruise data row-by-row
     such as values, gradients, grid-cruise differences, E77 error
@@ -116,14 +116,11 @@ details. Grids for comparison with cruise data may be downloaded via the web.
 
     **-Ds** output calculated gradients for speed and geophysical
     fields. Gradients correspond to the gradient type selected in the
-    **-S** option (spatial derivatives by default). Output columns
-    include:
+    **-S** option (spatial derivatives by default). Output columns include:
 
-    *speed d[twt] d[depth] d[mtf1] d[mtf2] d[mag] d[diur] d[msd] d[gobs]
-    d[eot] d[faa]*
+    *speed d[twt] d[depth] d[mtf1] d[mtf2] d[mag] d[diur] d[msd] d[gobs] d[eot] d[faa]*
 
-    See **MGD77 FIELD INFO** below for field and abbreviations
-    descriptions.
+    See **MGD77 FIELD INFO** below for field and abbreviations descriptions.
 
     **-Dv** display values for the twelve position and geophysical
     fields for each MGD77 data record (in this order):
@@ -143,6 +140,7 @@ details. Grids for comparison with cruise data may be downloaded via the web.
     constraints coded, return data only at constrained points and NaN
     elsewhere, `and (3) <and.html>`_ Img file with constraints coded,
     return 1 at constraints and 0 elsewhere.
+
 **-G**\ *fieldabbrev*,\ *grid*
     Compare cruise data to the specified grid. Requires a valid MGD77
     field abbreviation (see **MGD77 FIELD INFO** below) followed by a
@@ -171,8 +169,7 @@ details. Grids for comparison with cruise data may be downloaded via the web.
 
     **-Hb** analyze both (default), report better of two.
 
-    **-Hd** to disable data decimation (equivalent to -H with no
-    argument).
+    **-Hd** to disable data decimation (equivalent to -H with no argument).
 
     **-Hf** to force data decimation.
 
@@ -181,12 +178,14 @@ details. Grids for comparison with cruise data may be downloaded via the web.
     of records that should be flagged as bad (and set to NaN prior to
     the analysis). Repeat as many times as needed. May not be used for
     multiple cruises.
+
 **-K**
     Reverse navigation quality flags (good to bad and vice versa). May
     be necessary when a majority of navigation fixes are erroneously
     flagged bad, which can happen when a cruise’s first navigation fix
     is extremely erroneous. Caution! This will affect sniffer output and
     should only be attempted after careful manual navigation review.
+
 **-L**\ *custom-limits-file*
     Override mgd77sniffer default error detection limits. Supply path
     and filename to the custom limits file. Rows not beginning with a
@@ -284,8 +283,8 @@ details. Grids for comparison with cruise data may be downloaded via the web.
 | Free        | Air              | Anomaly     |
 +-------------+------------------+-------------+
 
-`Grid File Info <#toc8>`_
--------------------------
+Grid File Info
+--------------
 
 For **-g** the grids must be in the format used by Sandwell & Smith,
 which is a spherical Mercator 2-byte grid with no header. For **-G** the
@@ -293,26 +292,25 @@ grid files can be of any grid type supported by GMT and therefore must
 contain a GMT header. A correctly formatted \*.i2 grid file can be
 generated using grdraster as shown below.
 
-gmtset GRIDFILE\_SHORTHAND TRUE
+gmtset GRIDFILE_SHORTHAND TRUE
 
-Create/edit .gmt\_io file to include the following rows:
+Create/edit .gmt_io file to include the following rows:
 
-’## GMT I/O shorthand file
+## GMT I/O shorthand file
 
-’##
-suffix\ `` `` `` `` format\_id`` `` `` `` scale`` `` `` `` offset`` `` `` `` NaN
+## suffix\ `` `` `` `` format\_id`` `` `` `` scale`` `` `` `` offset`` `` `` `` NaN
 
 grd\ `` `` `` `` 0`` `` `` `` -`` `` `` `` -`` `` `` `` -
 
 i2\ `` `` `` `` 2`` `` `` `` -`` `` `` `` -`` `` `` `` 32767
 
-grdraster 1 -R0/359:55/-90/90 -Getopo5\_hdr.i2
+grdraster 1 -R0/359:55/-90/90 -Getopo5_hdr.i2
 
-The new grid, etopo5\_hdr.i2 in this example, contains a GMT header and
+The new grid, etopo5_hdr.i2 in this example, contains a GMT header and
 can be used in the **-G** option to compare cruise depth with grid values.
 
-`E77 Error Format <#toc9>`_
----------------------------
+E77 Error Format
+----------------
 
 **Header**
     Information pertaining to an entire cruise, such as NGDC and survey
@@ -328,7 +326,7 @@ can be used in the **-G** option to compare cruise depth with grid values.
 
     ’## Examined: Wed Oct 3 16:30:13 2007 by mtchandl
 
-    ’## Arguments: -De -Gdepth,/data/GRIDS/etopo5\_hdr.i2
+    ’## Arguments: -De -Gdepth,/data/GRIDS/etopo5_hdr.i2
 
     N Errata table verification status
 
@@ -352,8 +350,7 @@ can be used in the **-G** option to compare cruise depth with grid values.
     Y-I-08010039-depth-00: RLS m: 1.00053 b: 0 rms: 127.851 r: 0.973422
     significant: 1 decimation: 0
 
-    Y-W-08010039-twt-09: More recent bathymetry correction table
-    available
+    Y-W-08010039-twt-09: More recent bathymetry correction table available
 
     Y-W-08010039-mtf1-10: Integer precision
 

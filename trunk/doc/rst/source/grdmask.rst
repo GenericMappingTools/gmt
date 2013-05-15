@@ -14,7 +14,7 @@ Synopsis
 |SYN_OPT-R|
 [ **-A**\ [**m**\ \|\ **p**] ]
 [ **-N**\ [**z**\ \|\ **Z**\ \|\ **p**\ \|\ **P**]\ *values* ]
-[ **-S**\ *search\_radius*\ [*unit*\ ] ] [ |SYN_OPT-V| ]
+[ **-S**\ *search\_radius*\ [*unit*] ] [ |SYN_OPT-V| ]
 [ **-bi**\ [*ncols*][*type*] ] [ **-f**\ *colinfo* ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
@@ -44,6 +44,7 @@ Required Arguments
 *pathfiles*
     The name of 1 or more ASCII [or binary, see
     **-bi**\ [*ncols*][*type*]] files holding the polygon(s) or data points.
+
 **-G**\ *mask_grd_file*]
     Name of resulting output mask grid file. (See GRID FILE FORMATS below). 
 
@@ -60,8 +61,8 @@ Optional Arguments
     sides in the polygons will be approximated by great circle arcs.
     When using the **-A** sides will be regarded as straight lines.
     Alternatively, append **m** to have sides first follow meridians,
-    then parallels. Or append **p** to first follow parallels, then
-    meridians.
+    then parallels. Or append **p** to first follow parallels, then meridians.
+
 **-N**\ [**z**\ \|\ **Z**\ \|\ **p**\ \|\ **P**]\ *values*
     Sets the *out/edge/in* that will be assigned to nodes that are
     *out*\ side the polygons, on the *edge*, or *in*\ side. Values can
@@ -75,6 +76,7 @@ Optional Arguments
     perimeter as inside. Note:
     **-N**\ **z**\ \|\ **Z**\ \|\ **p**\ \|\ **P** cannot be used in
     conjunction with **-S**; they also all optionally accept /*out* [0].
+
 **-S**\ *search\_radius*\ [*unit*]
     Set nodes to inside, on edge, or outside depending on their distance
     to the nearest data point. Nodes within *radius* [0] from the
@@ -114,7 +116,7 @@ Optional Arguments
 Examples
 --------
 
-To set all nodes inside and on the polygons coastline_\*.xy to 0, and
+To set all nodes inside and on the polygons coastline_*.xy to 0, and
 outside points to 1, do
 
    ::
