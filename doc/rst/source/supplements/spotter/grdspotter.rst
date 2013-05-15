@@ -4,8 +4,8 @@ grdspotter
 
 grdspotter - Create CVA image from a gravity or topography grid
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
@@ -20,8 +20,8 @@ grdspotter - Create CVA image from a gravity or topography grid
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **grdspotter** reads a grid file with residual bathymetry or gravity and
 calculates flowlines from each node that exceeds a minimum value using
@@ -29,8 +29,8 @@ the specified rotations file. These flowlines are then convolved with
 the volume of the prism represented by each grid node and added up to
 give a Cumulative Volcano Amplitude grid (CVA).
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *grdfile*
     Data grid to be processed, typically residual bathymetry or free-air
@@ -68,38 +68,45 @@ give a Cumulative Volcano Amplitude grid (CVA).
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-A**\ *agegrid*
     Supply a crustal age grid that is co-registered with the input data
     grid. These ages become the upper ages to use when constructing
     flowlines [Default extend flowlines back to oldest age found in the
     rotation file; but see **-N**].
+
 **-B**\ *n\_try*
     Get *n\_try* bootstrap estimates of the maximum CVA location; the
     longitude and latitude results are written to stdout [Default is no
     bootstrapping]. Cannot be used with **-M**.
+
 **-D**\ *DIgrid*
     Use flowlines to determine the maximum CVA encountered along each
     flowline and create a Data Importance (DI) grid with these values at
     the originating nodes.
+
 **-L**\ *IDgrid*
     Supply a co-registered grid with seamount chain IDs for each node.
     This option requires that you also use **-Q**.
+
 **-M**
     Do not attempt to keep all flowlines in memory when using **-D**
     and/or **-P**. Should you run out of memory you can use this option
     to compute flowlines on-the-fly. It will be slower as we no longer
     can reuse the flowlines calculated for the CVA step. Cannot be used
     with **-B** or the multi-slice mode in **-Z**.
+
 **-N**\ *upper\_age*
     Set the upper age to assign to nodes whose crustal age is unknown
     (i.e., NaN) [no upper age]. Also see **-A**.
+
 **-P**\ *PAgrid*
     Use flowlines to determine the flowline age at the CVA maximum for
     each node and create a Predicted Age (PA) grid with these values at
     the originating nodes.
+
 **-Q**\ *IDinfo*
     Either `give (1) <give.html>`_ a single ID to use `or
     (2) <or.2.html>`_ the name of a file with a list of IDs to use
@@ -107,9 +114,11 @@ give a Cumulative Volcano Amplitude grid (CVA).
     *w/e/s/n* zoom box is optional; if specified it means we only trace
     the flowline if inside this region [Default uses region set by
     **-R**]. Requires **-L**.
+
 **-S**
     Normalize the resulting CVA grid to percentages of the CVA maximum.
     This also normalizes the DI grid (if requested).
+
 **-T**\ **t**\ \|\ **u**\ *fixed\_val*
     Selects ways to adjust ages; repeatable. Choose from **-Tt** to
     truncate crustal ages given via the **-A** option that exceed the
@@ -132,29 +141,31 @@ give a Cumulative Volcano Amplitude grid (CVA).
 
 .. include:: ../../explain_help.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
 To create a CVA image from the Pacific topography grid
-Pac\_res\_topo.nc, using the DC85.d Euler poles, and only output a grid
+Pac_res_topo.nc, using the DC85.d Euler poles, and only output a grid
 for the specified domain, run
 
-    grdspotter Pac\_res\_topo.nc -EDC85.d -GCVA.nc -R190/220/15/25 -I2m -N145 -Tt -V
+   ::
 
-This file can then be plotted with `grdimage <../../grdimage.html>`_.
+    grdspotter Pac_res_topo.nc -EDC85.d -GCVA.nc -R190/220/15/25 -I2m -N145 -Tt -V
 
-`See Also <#toc7>`_
--------------------
+This file can then be plotted with `grdimage <../../grdimage.html>`__.
 
-`GMT <GMT.html>`_, `grdimage <grdimage.html>`_,
+See Also
+--------
+
+`GMT <GMT.html>`_, `grdimage <grdimage.html>`__,
 `project <project.html>`_,
 `mapproject <mapproject.html>`_,
 `backtracker <backtracker.html>`_,
 `hotspotter <hotspotter.html>`_,
 `originator <originator.html>`_
 
-`References <#toc8>`_
----------------------
+References
+----------
 
 Wessel, P., 1999, "Hotspotting" tools released, EOS Trans. AGU, 80 (29), p. 319.
 

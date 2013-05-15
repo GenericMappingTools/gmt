@@ -4,8 +4,8 @@ sphdistance
 
 sphdistance - Make grid of distances to nearest points on a sphere
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
@@ -20,8 +20,8 @@ sphdistance - Make grid of distances to nearest points on a sphere
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **sphdistance** reads one or more ASCII [or binary] files (or standard
 input) containing lon, lat and performs the construction of Voronoi
@@ -32,14 +32,14 @@ pre-calculated Voronoi polygon file in the format written by
 **sphtriangulate**, thus bypassing the memory- and time-consuming
 triangularization.
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 **-G**\ *grdfile*
     Name of the output grid to hold the computed distances.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
@@ -60,16 +60,16 @@ triangularization.
     Specify the unit used for distance calculations. Choose among **d**
     (spherical degree), **e** (m), **f** (feet), **k** (km), **M**
     (mile), **n** (nautical mile) or **u** survey foot. A spherical
-    approximation is used unless **PROJ\_ELLIPSOID** is set to an actual
+    approximation is used unless :ref:`PROJ_ELLIPSOID <Projection Parameters>` is set to an actual
     ellipsoid. **-N** Read the information pertaining to each Voronoi
     polygon (the unique node lon, lat and polygon area) from a separate
     file [Default acquires this information from the ASCII segment
-    headers of the output file]. Required if binary input via **-Q** is
-    used.
+    headers of the output file]. Required if binary input via **-Q** is used.
+
 **-Q**\ *voronoi.d*
     Append the name of a file with pre-calculated Voronoi polygons
     [Default performs the Voronoi construction on input data]. For
-    binary data **-bi**\ [*ncols*\ ][*type*\ ] you must specify the node
+    binary data **-bi**\ [*ncols*][*type*] you must specify the node
     information separately (via **-N**).
 
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
@@ -97,20 +97,20 @@ triangularization.
 .. include:: ../../explain_precision.rst_
 .. include:: ../../explain_float.rst_
 
-`Ascii Format Precision <#toc6>`_
----------------------------------
+Ascii Format Precision
+----------------------
 
 The ASCII output formats of numerical data are controlled by parameters
 in your `gmt.conf <gmt.conf.html>`_ file. Longitude and latitude are formatted
-according to **FORMAT\_GEO\_OUT**, whereas other values are formatted
-according to **FORMAT\_FLOAT\_OUT**. Be aware that the format in effect
+according to **FORMAT_GEO_OUT**, whereas other values are formatted
+according to **FORMAT_FLOAT_OUT**. Be aware that the format in effect
 can lead to loss of precision in the output, which can lead to various
 problems downstream. If you find the output is not written with enough
 precision, consider switching to binary output (**-bo** if available) or
-specify more decimals using the **FORMAT\_FLOAT\_OUT** setting.
+specify more decimals using the **FORMAT_FLOAT_OUT** setting.
 
-`Grid Values Precision <#toc7>`_
---------------------------------
+Grid Values Precision
+---------------------
 
 Regardless of the precision of the input data, GMT programs that create
 grid files will internally hold the grids in 4-byte floating point
@@ -121,32 +121,31 @@ precision once GMT operates on the grid or writes out new grids. To
 limit loss of precision when processing data you should always consider
 normalizing the data prior to processing.
 
-`Examples <#toc8>`_
--------------------
+Examples
+--------
 
 To construct Voronoi polygons from the points in the file testdata.txt
-and then calculate distances from the data to a global 1x1 degree grid,
-use
+and then calculate distances from the data to a global 1x1 degree grid, use
+
+   ::
 
     sphdistance testdata.txt -Rg -I1 -Gglobedist.nc
 
-To generate the same grid in two steps using **sphtriangulate**
-separately, try
+To generate the same grid in two steps using **sphtriangulate** separately, try
+
+   ::
 
     sphtriangulate testdata.txt -Qv > voronoi.d
-
     sphdistance -Qvoronoi.d -Rg -I1 -Gglobedist.nc
 
-`See Also <#toc9>`_
--------------------
+See Also
+--------
 
-`GMT <GMT.html>`_ ,
-`sphinterpolate <sphinterpolate.html>`_
-`sphtriangulate <sphtriangulate.html>`_
-`triangulate <triangulate.html>`_
+`GMT <GMT.html>`_ , `sphinterpolate <sphinterpolate.html>`_
+`sphtriangulate <sphtriangulate.html>`_ `triangulate <triangulate.html>`_
 
-`References <#toc10>`_
-----------------------
+References
+----------
 
 Renka, R, J., 1997, Algorithm 772: STRIPACK: Delaunay Triangulation and
 Voronoi Diagram on the Surface of a Sphere, *AMC Trans. Math. Software*,

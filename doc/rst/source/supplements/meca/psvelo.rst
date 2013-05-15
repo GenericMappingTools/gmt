@@ -4,8 +4,8 @@ psvelo
 
 psvelo - Plot velocity vectors, crosses, and wedges on maps
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
@@ -26,18 +26,18 @@ psvelo - Plot velocity vectors, crosses, and wedges on maps
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **psvelo** reads data values from *files* [or standard input] and
 generates *PostScript* code that will plot velocity arrows on a map.
-Most options are the same as for `psxy <../../psxy.html>`_, except **-S**. The
+Most options are the same as for `psxy <../../psxy.html>`__, except **-S**. The
 *PostScript* code is written to standard output. The previous version
 (**psvelomeca**) is now obsolete. It has been replaced by **psvelo** and
 `psmeca <psmeca.html>`_.
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
@@ -158,16 +158,16 @@ are expected to be in the following columns:
 
 **-D**\ *Sigma\_scale*
     can be used to rescale the uncertainties of velocities (**-Se** and
-    **-Sr**) and rotations (**-Sw**). Can be combined with the
-    *confidence* variable.
+    **-Sr**) and rotations (**-Sw**). Can be combined with the *confidence* variable.
+
 **-F**\ *fill*
-    Sets the color or shade used for frame and annotation. [Default is
-    black]
+    Sets the color or shade used for frame and annotation. [Default is black]
+
 **-E**\ *fill*
     Sets the color or shade used for filling uncertainty wedges
     (**-Sw**) or velocity error ellipses (**-Se** or **-Sr**). [If
-    **-E** is not specified, the uncertainty regions will be
-    transparent.]
+    **-E** is not specified, the uncertainty regions will be transparent.]
+
 **-G**\ *fill*
     Specify color (for symbols/polygons) or pattern (for polygons)
     [Default is black]. Optionally, specify
@@ -208,8 +208,8 @@ are expected to be in the following columns:
 
 .. include:: ../../explain_vectors.rst_
 
-`Examples <#toc7>`_
--------------------
+Examples
+--------
 
 The following should make big red arrows with green ellipses, outlined
 in red. Note that the 39% confidence scaling will give an ellipse which
@@ -263,18 +263,18 @@ lon lat spin(rad/yr) spin\_sigma (rad/yr)
 
 END
 
-`See Also <#toc8>`_
--------------------
+See Also
+--------
 
-`GMT <GMT.html>`_, `psbasemap <psbasemap.html>`_, `psxy <psxy.html>`_
+`GMT <GMT.html>`_, `psbasemap <psbasemap.html>`_, `psxy <psxy.html>`__
 
-`References <#toc9>`_
----------------------
+References
+----------
 
 Bomford, G., Geodesy, 4th ed., Oxford University Press, 1980.
 
-`Authors <#toc10>`_
--------------------
+Authors
+-------
 
 Kurt Feigl CNRS UMR 5562 Toulouse, France (Kurt.Feigl@.cnes.fr)
 
