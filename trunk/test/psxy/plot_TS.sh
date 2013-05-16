@@ -5,6 +5,6 @@
 
 ps=plot_TS.ps
 
-psxy chkPts_tseries.dat -i0,12 -JX24c/16c -Ba24f3/a2f1WS -R0/324/12/26 -W1 -K > $ps
+psxy chkPts_tseries.dat -i0,12 -JX24c/16c -Bxa24f3 -Bya2f1 -BWS -R0/324/12/26 -W1 -K > $ps
 psxy chkPts_tseries.dat -i0,11 -JX -R -W1,red -O >> $ps
 

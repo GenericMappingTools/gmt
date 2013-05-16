@@ -12,7 +12,7 @@ Synopsis
 **pslegend** [ *textfile* ]
 **-D**\ [**x**\ ]\ *lon*/*lat*/*width*\ [/*height*]/\ *just*\ [/*dx*/*dy*]
 [ **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ *dx*/*dy* ] [
-**-F**\ [\ **+f**\ *fill*][**+i**\ [[*gap*/]*pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ] [
+**-F**\ [\ **+g**\ *fill*][**+i**\ [[*gap*/]*pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]] ] [
 **-J**\ *parameters* ] [ **-K** ] [ **-L**\ *spacing* ] [ **-O** ] [
 **-P** ] [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
 **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*\ ]
@@ -57,10 +57,10 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 **-C**\ *dx*/*dy*
     Sets the clearance between the legend frame and the internal items
     [4\ **p**/4\ **p**].
-**-F**\ [\ **+f**\ *fill*][**+i**\ [[*gap*/]*pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
+**-F**\ [\ **+g**\ *fill*][**+i**\ [[*gap*/]*pen*]][\ **+p**\ [*pen*]][\ **+r**\ [*radius*\ ]][\ **+s**\ [[*dx*/*dy*/][*shade*\ ]]]
     Without further options, draws a rectangular border around the legend using
     **MAP\_FRAME\_PEN**; specify a different pen with **+p**\ *pen*.
-    Add **+f**\ *fill* to fill the legend box [no fill]
+    Add **+g**\ *fill* to fill the legend box [no fill]
     Append **+i** to draw a secondary, inner border as well. We use a
     *gap* between borders of 2\ **p** and the **MAP\_DEFAULTS\_PEN**
     unless other values are specified. Append **+r** to draw rounded
@@ -232,7 +232,7 @@ Wedge: Angles are -30 and 30 degrees.
 To add an example of a legend to a Mercator plot (map.ps) with the given
 specifications, use
 
-    pslegend -R-10/10/-10/10 -JM6i -F+fazure1 -Dx0.5i/0.5i/5i/3.3i/BL
+    pslegend -R-10/10/-10/10 -JM6i -F+gazure1 -Dx0.5i/0.5i/5i/3.3i/BL
     -C0.1i/0.1i -L1.2 -B5f1 << EOF >> map.ps
 
     # Legend test for pslegend

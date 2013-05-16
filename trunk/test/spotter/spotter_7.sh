@@ -14,7 +14,7 @@ APM=WK97.d
 grdspotter pac_residual_topo.nc -E$APM -Gcva_bathy.nc -R200/210/15/25 -I5m -r -N140 -S -Tt
 makecpt -Chot -T0/100/10 -Z > h.cpt
 # Lay down CVA image in percent
-grdimage -JM6i cva_bathy.nc -Ipac_int.nc -Ei --FORMAT_GEO_MAP=ddd:mm:ssF -Ch.cpt -BafWSne -P -K -X1.5i -Y2i > $ps
+grdimage -JM6i cva_bathy.nc -Ipac_int.nc -Ei --FORMAT_GEO_MAP=ddd:mm:ssF -Ch.cpt -Baf -BWSne -P -K -X1.5i -Y2i > $ps
 # Show 10% contours
 grdcontour cva_bathy.nc -J -O -K -C10 -W1p -Q10 >> $ps
 pscoast -R -J -O -K -Df -W1p,white >> $ps
@@ -30,6 +30,6 @@ info=`grdinfo -C -M cva_bathy.nc`
 x=`echo $info | cut -f14 -d' '`
 y=`echo $info | cut -f15 -d' '`
 echo $x $y | psxy -R -J -O -K -Sx0.2i -W2p >> $ps
-psscale -Ch.cpt -D3/-0.4/4i/0.125h -O -K -Ba20f10:,-%:/:"CVA": -I0.5 >> $ps
+psscale -Ch.cpt -D3/-0.4/4i/0.125h -O -K -Bxa20f10+s% -By+l"CVA" -I0.5 >> $ps
 psxy -R -J -O -T >> $ps
 

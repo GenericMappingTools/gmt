@@ -6,7 +6,7 @@ makeps () {
 # Must redirect sample1d's stderr messages to avoid seeing them for the 3 bad records
 gmtset IO_NAN_RECORDS skip
 R=-R-1/15/-3/3 
-psbasemap $R -JX6i/3i -P -K -Y6i -B5f1g1:".Skipping NaNs and interpolating through": --FONT_TITLE=18p
+psbasemap $R -JX6i/3i -P -K -Y6i -B5f1g1 -B+t"Skipping NaNs and interpolating through" --FONT_TITLE=18p
 psxy $tmp $R -JX6i/3i -Sc0.1i -W0.25p -Ggreen -O -K 2> /dev/null
 gmtmath $tmp ISNAN 4 SUB = | psxy -R -J -O -K -St0.2i -Gblack -W0.25p
 psxy $tmp $R -J -O -K -W2p,red 2> /dev/null
@@ -16,7 +16,7 @@ psxy $tmp $R -J -O -K -W2p,red 2> /dev/null
 
 # New behavior with upper case switches
 gmtset IO_NAN_RECORDS pass
-psbasemap $R -J -O -K -Y-4.5i -B5f1g1:".Honoring NaNs as segment indicators": --FONT_TITLE=18p
+psbasemap $R -J -O -K -Y-4.5i -B5f1g1 -B+t"Honoring NaNs as segment indicators" --FONT_TITLE=18p
 psxy $tmp $R -J -Sc0.1i -W0.25p -Ggreen -O -K
 gmtmath $tmp ISNAN 4 SUB = | psxy $R -J -O -K -St0.2i -Gblack -W0.25p
 psxy $tmp $R -J -O -K -W2p,red

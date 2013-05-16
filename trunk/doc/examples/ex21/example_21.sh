@@ -24,8 +24,8 @@ R="-R$w/$e/$s/$n"
 
 # Lay down the basemap:
 
-psbasemap $R -JX9i/6i -K -U"Example 21 in Cookbook" -Bs1Y/WSen \
-   -Bpa3Of1o/50:=\$::."RedHat (RHT) Stock Price Trend since IPO":WSen+glightgreen > $ps
+psbasemap $R -JX9i/6i -K -U"Example 21 in Cookbook" -Bsx1Y \
+   -Bpxa3Of1o -Bpy50+p"$ " -BWSen+t"RedHat (RHT) Stock Price Trend since IPO"+glightgreen > $ps
 
 # Plot main window with open price as red line over yellow envelope of low/highs
 
@@ -67,7 +67,7 @@ R="-R2004T/$e/$s/40"
 
 # Lay down the basemap, using Finnish annotations and place the insert in the upper right
 
-psbasemap --TIME_LANGUAGE=fi $R -JX6i/3i -Bpa3Of3o/10:=\$:ESw+glightblue -Bs1Y/ \
+psbasemap --TIME_LANGUAGE=fi $R -JX6i/3i -Bpxa3Of3o -Bpy10+p"$ " -BESw+glightblue -Bsx1Y \
 	-O -K -X3i -Y3i >> $ps
 
 # Again, plot close price as red line over yellow envelope of low/highs

@@ -20,7 +20,7 @@ EOF
 plots () {
 y_offset=-2.5i
 for a in $1 $2 $3 ; do
-    pscoupe -R0/250/0/100 -JX1.5i/-1.5i -Ba100f10/a50f10WesN \
+    pscoupe -R0/250/0/100 -JX1.5i/-1.5i -Bxa100f10 -Bya50f10 -BWesN \
         -Q -L -Sc0.4 -Ab$4/$5/$a/250/90/$6/0/100f -Ggrey -a0.1i/cc $7 $8 \
         -Y$y_offset -X$x_offset -O -K << EOF
 # lon   lat  dep str dip rake str dip rake m ex nx ny 

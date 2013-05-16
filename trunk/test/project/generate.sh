@@ -25,7 +25,7 @@ pstext -R -J -F+f12p,Helvetica-Bold,green+jTR -O -K >> $ps <<< "6.6 9 30\312"
 
 # Between two given points
 project -C15/5 -E2/20 -G1 -N > tt.xy
-psxy -R -J -O -K tt.xy -W2p,blue -B5g5WSne >> $ps
+psxy -R -J -O -K tt.xy -W2p,blue -B5g5 -BWSne >> $ps
 psxy -R -J -O -K -Sc0.1i -Gblue << EOF >> $ps
 15	5
 2	20

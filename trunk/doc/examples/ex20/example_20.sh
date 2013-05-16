@@ -24,7 +24,7 @@ cat > hotspots.d << END
 -16.5	64.4	0.25
 END
 
-pscoast -Rg -JR9i -B60/30:."Hotspot Islands and Cities": -Gdarkgreen -Slightblue -Dc -A5000 \
+pscoast -Rg -JR9i -Bx60 -By30 -B+t"Hotspot Islands and Cities" -Gdarkgreen -Slightblue -Dc -A5000 \
 	-K -U"Example 20 in Cookbook" > $ps
 
 psxy -R -J hotspots.d -Skvolcano -O -K -Wthinnest -Gred >> $ps

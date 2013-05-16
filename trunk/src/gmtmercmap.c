@@ -331,7 +331,7 @@ int main (int argc, char **argv)
 			if (GMT->common.B.active[1]) printf (" -B%s", GMT->common.B.string[1]);
 		}
 		else
-			printf (" -BaWSne");	/* Add default frame annotation */
+			printf (" -Ba -BWSne");	/* Add default frame annotation */
 		if (GMT->common.O.active) printf (" -O");	/* Add optional user options */
 		if (GMT->common.P.active) printf (" -P");	/* Add optional user options */
 		if (Ctrl->S.active || GMT->common.K.active) printf (" -K");	/* Either gave -K or implicit via -S */
@@ -342,7 +342,7 @@ int main (int argc, char **argv)
 		printf (" > %s\n", get_var (Ctrl->D.mode, "map"));
 		if (Ctrl->S.active) {	/* Plot color bar centered beneath map */
 			printf ("%s %d. Overlay color scale:\n", comment[Ctrl->D.mode], ++step);
-			printf ("psscale -C%s_color.cpt -D%s/%s/%s/%sh -Ba/:m: -O", prefix, get_var (Ctrl->D.mode, "scale_pos"), get_var (Ctrl->D.mode, "scale_shift"), get_var (Ctrl->D.mode, "scale_width"), get_var (Ctrl->D.mode, "scale_height"));	/* The psscale command line */
+			printf ("psscale -C%s_color.cpt -D%s/%s/%s/%sh -Bxa -By+lm -O", prefix, get_var (Ctrl->D.mode, "scale_pos"), get_var (Ctrl->D.mode, "scale_shift"), get_var (Ctrl->D.mode, "scale_width"), get_var (Ctrl->D.mode, "scale_height"));	/* The psscale command line */
 			if (GMT->common.K.active) printf (" -K");		/* Add optional user options */
 			printf (" >> %s\n", get_var (Ctrl->D.mode, "map"));
 		}
@@ -402,7 +402,7 @@ int main (int argc, char **argv)
 	if ((c_ID = GMT_Register_IO (API, GMT_IS_CPT, GMT_IS_READONLY|GMT_IO_RESET, GMT_IS_NONE, GMT_IN, NULL, P)) == GMT_NOTSET) exit (EXIT_FAILURE);
 	if (GMT_Encode_ID (API, c_file, c_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	GMT_memset (cmd, GMT_BUFSIZ, char);
-	sprintf (cmd, "%s -I%s -C%s -JM%gi -BaWSne", z_file, i_file, c_file, Ctrl->W.width);	/* The grdimage command line */
+	sprintf (cmd, "%s -I%s -C%s -JM%gi -Ba -BWSne", z_file, i_file, c_file, Ctrl->W.width);	/* The grdimage command line */
 	if (GMT->common.O.active) strcat (cmd, " -O");	/* Add optional user options */
 	if (GMT->common.P.active) strcat (cmd, " -P");	/* Add optional user options */
 	if (Ctrl->S.active || GMT->common.K.active) strcat (cmd, " -K");	/* Either gave -K or it is implicit via -S */
@@ -421,7 +421,7 @@ int main (int argc, char **argv)
 		if ((c_ID = GMT_Register_IO (API, GMT_IS_CPT, GMT_IS_READONLY|GMT_IO_RESET, GMT_IS_NONE, GMT_IN, NULL, P)) == GMT_NOTSET) exit (EXIT_FAILURE);
 		if (GMT_Encode_ID (API, c_file, c_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 		GMT_memset (cmd, GMT_BUFSIZ, char);
-		sprintf (cmd, "-C%s -D%gi/%s/%gi/%sh -Ba/:m: -O", c_file, x, MAP_BAR_GAP, 0.9*Ctrl->W.width, MAP_BAR_HEIGHT);	/* The psscale command line */
+		sprintf (cmd, "-C%s -D%gi/%s/%gi/%sh -Bxa -By+lm -O", c_file, x, MAP_BAR_GAP, 0.9*Ctrl->W.width, MAP_BAR_HEIGHT);	/* The psscale command line */
 		if (GMT->common.K.active) strcat (cmd, " -K");		/* Add optional user options */
 		if (GMT_Call_Module (API, GMT_ID_PSSCALE, 0, cmd) != GMT_OK) exit (EXIT_FAILURE);	/* Place the color bar */
 	}

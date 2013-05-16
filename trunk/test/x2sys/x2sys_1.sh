@@ -13,6 +13,6 @@ makecpt -Crainbow -T-80/80/10 -Z > faa.cpt
 grdgradient -Ne0.75 -A65 -fg ss_faa.nc -Gss_faa_int.nc
 
 grdimage ss_faa.nc -Iss_faa_int.nc -JM5.5i -P -K -Cfaa.cpt -X1.75i -Y2.5i > $ps
-psxy -R$R -J "${src:=.}"/data/*.xyg -W0.25p -O -K -B1WSne --MAP_FRAME_WIDTH=3p --FORMAT_GEO_MAP=dddF >> $ps
-psscale -Cfaa.cpt -D2.5i/-0.5i/4.5i/0.15ih -O -E -B20f10/:"mGal": >> $ps
+psxy -R$R -J "${src:=.}"/data/*.xyg -W0.25p -O -K -B1 -BWSne --MAP_FRAME_WIDTH=3p --FORMAT_GEO_MAP=dddF >> $ps
+psscale -Cfaa.cpt -D2.5i/-0.5i/4.5i/0.15ih -O -E -Bx20f10 -By+l"mGal" >> $ps
 

@@ -2,7 +2,7 @@
 #	$Id$
 #
 gmtset MAP_FRAME_TYPE fancy FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0.1i FONT_ANNOT_PRIMARY +8p
-psbasemap -X2i -R-60/-30/-10/10 -JM2.25i -Ba10f5g5WSne:."Plot Title": -P -K > GMT_Defaults_1a.ps
+psbasemap -X2i -R-60/-30/-10/10 -JM2.25i -Ba10f5g5 -BWSne+t"Plot Title" -P -K > GMT_Defaults_1a.ps
 pstext -R -J -O -K -N -F+f7p,Helvetica-Bold,blue+j << EOF >> GMT_Defaults_1a.ps
 -62  -7 RT MAP_FRAME_TYPE
 -38 -14 RT MAP_ANNOT_OFFSET_PRIMARY

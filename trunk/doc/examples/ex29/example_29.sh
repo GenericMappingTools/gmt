@@ -27,17 +27,17 @@ grdmath mars.nc 1000 DIV PROJ_ELLIPSOID.nc SUB = mars.nc
 grdmath mars2.nc 1000 DIV PROJ_ELLIPSOID.nc SUB = mars2.nc
 makecpt -Crainbow -T-7/15/22 -Z > mars.cpt
 grdgradient mars2.nc -fg -Ne0.75 -A45 -Gmars2_i.nc
-grdimage mars2.nc -Imars2_i.nc -Cmars.cpt -B30g30Wsne -JH0/7i -P -K -E200 \
+grdimage mars2.nc -Imars2_i.nc -Cmars.cpt -B30g30 -BWsne -JH0/7i -P -K -E200 \
 	-UL/-0.5i/-0.75i/"Example 29 in Cookbook" --FONT_ANNOT_PRIMARY=12p -X0.75i > $ps
 grdcontour mars2.nc -J -O -K -C1 -A5 -Glz+/z- >> $ps
 psxy -Rg -J -O -K -Sc0.045i -Gblack mars370.in  >> $ps
 echo "0 90 b)" | pstext -R -J -O -K -N -D-3.5i/-0.2i -F+f14p,Helvetica-Bold+jLB >> $ps
 grdgradient mars.nc -fg -Ne0.75 -A45 -Gmars_i.nc
-grdimage mars.nc -Imars_i.nc -Cmars.cpt -B30g30Wsne -J -O -K -Y4.2i -E200 \
+grdimage mars.nc -Imars_i.nc -Cmars.cpt -B30g30 -BWsne -J -O -K -Y4.2i -E200 \
 	--FONT_ANNOT_PRIMARY=12p >> $ps
 grdcontour mars.nc -J -O -K -C1 -A5 -Glz+/z- >> $ps
 psxy -Rg -J -O -K -Sc0.045i -Gblack mars370.in  >> $ps
-psscale -Cmars.cpt -O -K -D3.5i/-0.15i/6i/0.1ih -I --FONT_ANNOT_PRIMARY=12p -B2f1/:km: >> $ps
+psscale -Cmars.cpt -O -K -D3.5i/-0.15i/6i/0.1ih -I --FONT_ANNOT_PRIMARY=12p -Bx2f1 -By+lkm >> $ps
 echo "0 90 a)" | pstext -R -J -O -N -D-3.5i/-0.2i -F+f14p,Helvetica-Bold+jLB >> $ps
 # Clean up
 rm -f *.nc mars.cpt

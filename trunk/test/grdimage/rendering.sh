@@ -27,7 +27,7 @@ xyz2grd -R0/360/0/90 -r -I60/30 -Gt.nc <<%
 %
 
 render () {
-grdimage -R -JW0/6i -B60/30 t.nc -Ct.cpt -E100 -O -K $*
+grdimage -R -JW0/6i -Bx60 -By30 t.nc -Ct.cpt -E100 -O -K $*
 pstext -R -J -F+f16p,Helvetica-Bold+jBL -O -K -N <<< "180 35 $1"
 }
 

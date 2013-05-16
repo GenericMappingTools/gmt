@@ -15,7 +15,7 @@ cat << EOF > track.txt
 38	68
 EOF
 #Cartesian resampling with small spacing
-psxy track.txt $RJ -P -Sc0.2c -Ggreen -W0.25p -BafWSne -K > $ps
+psxy track.txt $RJ -P -Sc0.2c -Ggreen -W0.25p -Baf -BWSne -K > $ps
 psxy track.txt $RJ -O -K -W0.25p >> $ps
 # equidistant sampling as is
 sample1d track.txt -I2c -Ar | psxy $RJ -O -K -Sc0.1c -Gcyan >> $ps
@@ -28,7 +28,7 @@ sample1d track.txt -I0.1c -Ap | psxy $RJ -O -K -W0.25p,orange,- >> $ps
 
 #Geographic resampling with small spacing
 RJ="-R-10/50/67/77 -JM6i"
-psxy track.txt $RJ -O -K -Sc0.2c -Ggreen -W0.25p -BafWSne -Y6.5i >> $ps
+psxy track.txt $RJ -O -K -Sc0.2c -Ggreen -W0.25p -Baf -BWSne -Y6.5i >> $ps
 psxy track.txt $RJ -O -K -W0.25p >> $ps
 # Loxodrome sampling
 sample1d track.txt -I100k -AR+l | psxy $RJ -O -K -W0.25p,red,- >> $ps

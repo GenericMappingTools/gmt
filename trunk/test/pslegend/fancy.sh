@@ -26,13 +26,13 @@ S 0.1i i 0.15i cyan 0.25p 0.3i This triangle is boring
 V 0 1p
 EOF
 psbasemap -R0/6.5/0/10 -Jx1i -P -B0 -K -Y0.5i > $ps
-pslegend -R -J -O -K -Dx0.25i/9.75i/2.75i/TL -C0.1i/0.1i -L1.2 -F+p+fwhite tt.txt >> $ps
-pslegend -R -J -O -K -Dx6.25i/9.75i/2.75i/TR -C0.1i/0.1i -L1.2 -F+p+fwhite+r tt.txt >> $ps
-pslegend -R -J -O -K -Dx0.25i/7.25i/2.75i/TL -C0.1i/0.1i -L1.2 -F+p2p+fwhite+i0.5p tt.txt >> $ps
-pslegend -R -J -O -K -Dx6.25i/7.25i/2.75i/TR -C0.1i/0.1i -L1.2 -F+p2p+fwhite+i0.5p+s5p/-3p/gray tt.txt >> $ps
-pslegend -R -J -O -K -Dx0.25i/4.75i/2.75i/TL -C0.1i/0.1i -L1.2 -F+p2p,blue+fwhite+i0.5p,blue tt.txt >> $ps
-pslegend -R -J -O -K -Dx6.25i/4.75i/2.75i/TR -C0.1i/0.1i -L1.2 -F+p2p,blue+fwhite+i0.5p,blue+s5p/-3p/navy tt.txt >> $ps
-pslegend -R -J -O -K -Dx0.25i/2.25i/2.75i/TL -C0.1i/0.1i -L1.2 -F+i2p,blue+fwhite+p0.5p,blue tt.txt >> $ps
-pslegend -R -J -O -K -Dx6.25i/2.25i/2.75i/TR -C0.1i/0.1i -L1.2 -F+fcornsilk+i2p+p0.5p+s-5p/-3p/orange+r tt.txt >> $ps
+pslegend -R -J -O -K -Dx0.25i/9.75i/2.75i/TL -C0.1i/0.1i -L1.2 -F+p+gwhite tt.txt >> $ps
+pslegend -R -J -O -K -Dx6.25i/9.75i/2.75i/TR -C0.1i/0.1i -L1.2 -F+p+gwhite+r tt.txt >> $ps
+pslegend -R -J -O -K -Dx0.25i/7.25i/2.75i/TL -C0.1i/0.1i -L1.2 -F+p2p+gwhite+i0.5p tt.txt >> $ps
+pslegend -R -J -O -K -Dx6.25i/7.25i/2.75i/TR -C0.1i/0.1i -L1.2 -F+p2p+gwhite+i0.5p+s5p/-3p/gray tt.txt >> $ps
+pslegend -R -J -O -K -Dx0.25i/4.75i/2.75i/TL -C0.1i/0.1i -L1.2 -F+p2p,blue+gwhite+i0.5p,blue tt.txt >> $ps
+pslegend -R -J -O -K -Dx6.25i/4.75i/2.75i/TR -C0.1i/0.1i -L1.2 -F+p2p,blue+gwhite+i0.5p,blue+s5p/-3p/navy tt.txt >> $ps
+pslegend -R -J -O -K -Dx0.25i/2.25i/2.75i/TL -C0.1i/0.1i -L1.2 -F+i2p,blue+gwhite+p0.5p,blue tt.txt >> $ps
+pslegend -R -J -O -K -Dx6.25i/2.25i/2.75i/TR -C0.1i/0.1i -L1.2 -F+gcornsilk+i2p+p0.5p+s-5p/-3p/orange+r tt.txt >> $ps
 psxy -R -J -O -T >> $ps
 

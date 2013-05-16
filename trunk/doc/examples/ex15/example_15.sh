@@ -12,7 +12,7 @@ gmtconvert ship.xyz -bo > ship.b
 #
 region=`minmax ship.b -I1 -bi3`
 nearneighbor $region -I10m -S40k -Gship.nc ship.b -bi3
-grdcontour ship.nc -JM3i -P -B2WSne -C250 -A1000 -Gd2i -K -U"Example 15 in Cookbook" > $ps
+grdcontour ship.nc -JM3i -P -B2 -BWSne -C250 -A1000 -Gd2i -K -U"Example 15 in Cookbook" > $ps
 #
 blockmedian $region -I10m ship.b -bi3 -bo > ship_10m.b
 surface $region -I10m ship_10m.b -Gship.nc -bi3

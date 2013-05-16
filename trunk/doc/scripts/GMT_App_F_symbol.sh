@@ -50,7 +50,7 @@ BEGIN {
 EOF
 
 $AWK -f tt.awk tt.txt > tt.d
-psxy -R0/9/3/16 -Jx0.345i/-0.21i -B:.Symbol:N -P -K -Glightgreen -Y2.58i << EOF > GMT_App_F_symbol.ps
+psxy -R0/9/3/16 -Jx0.345i/-0.21i -BN+tSymbol -P -K -Glightgreen -Y2.58i << EOF > GMT_App_F_symbol.ps
 >
 8	16
 9	16

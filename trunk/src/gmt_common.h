@@ -53,6 +53,7 @@ struct GMT_COMMON {
 	} synopsis;
 	struct B {	/* -B<params> */
 		bool active[2];	/* 0 = primary annotation, 1 = secondary annotations */
+		int mode;	/* 5 = GMT 5 syntax, 4 = GMT 4 syntax, 1 = Either, -1 = mix (error), 0 = not set yet */
 		char string[2][GMT_TEXT_LEN256];
 	} B;	
 	struct API_I {	/* -I<xinc>[/<yinc>] grids only, and for API use only */

@@ -9,7 +9,7 @@ function plot {
 
 ps=corner_justify.ps
 
-psbasemap -R0/16/0/12 -Jx1c -B5g1WSne -P -K > $ps
+psbasemap -R0/16/0/12 -Jx1c -B5g1 -BWSne -P -K > $ps
 echo TopLeft   | plot -F+cTL >> $ps
 echo MidLeft   | plot -F+cML >> $ps
 echo BotLeft   | plot -F+cBL >> $ps

@@ -51,7 +51,7 @@ $AWK -f tt.awk tt.txt > tt.d
 # Chart for ZapfDingbats
 gmtset PS_CHAR_ENCODING ISOLatin1+
 
-psxy -R0/9/3/16 -Jx0.345i/-0.21i -B:.ZapfDingbats:N -P -K -Glightgreen -Y2.58i << EOF > GMT_App_F_dingbats.ps
+psxy -R0/9/3/16 -Jx0.345i/-0.21i -BN+tZapfDingbats -P -K -Glightgreen -Y2.58i << EOF > GMT_App_F_dingbats.ps
 >
 8	16
 9	16

@@ -15,7 +15,7 @@ cat << END > dateline.d
 180	-90
 END
 R=`minmax -I10 oz_quakes.d`
-pscoast $R -JM9i -K -Gtan -Sdarkblue -Wthin,white -Dl -A500 -Ba20f10g10WeSn \
+pscoast $R -JM9i -K -Gtan -Sdarkblue -Wthin,white -Dl -A500 -Ba20f10g10 -BWeSn \
 	-U"Example 24 in Cookbook" > $ps
 psxy -R -J -O -K oz_quakes.d -Sc0.05i -Gred >> $ps
 gmtselect oz_quakes.d -L1000k/dateline.d -Nk/s -C3000k/point.d -fg -R -Il \

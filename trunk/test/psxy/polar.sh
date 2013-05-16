@@ -6,7 +6,7 @@
 
 ps=polar.ps
 
-pscoast -R315/20/135/20r -JS0/90/15c -Dl -B45g45WESN -A15000 -W0.25p -Slightblue -Gyellow -P -K > $ps
+pscoast -R315/20/135/20r -JS0/90/15c -Dl -B45g45 -BWESN -A15000 -W0.25p -Slightblue -Gyellow -P -K > $ps
 
 # Pan-Arctic domain
 psxy -R -J -W3p,blue -A -L -O -K << END >> $ps

@@ -29,16 +29,14 @@ grdimage tasman_grav.nc=ns/0.1 -Itasman_grav_i.nc -Jx0.25i -Cgrav.cpt -P -K \
 
 R=`grdinfo tasman_grav.nc | grep Remark | $AWK '{print $NF}'`
 
-pscoast $R -Jm0.25i -Ba10f5WSne -O -K -Gblack --PROJ_ELLIPSOID=Sphere \
+pscoast $R -Jm0.25i -Ba10f5 -BWSne -O -K -Gblack --PROJ_ELLIPSOID=Sphere \
 	-Cwhite -Dh+ --FORMAT_GEO_MAP=dddF >> $ps
 
 # Put a color legend on top of the land mask justified with 147E,31S
 
-#echo 147E 31S 1i 2.5i | psxy -R -J -O -K -Sr -D0.25i/0.05i -Gwhite -W1p \
-#	--PROJ_ELLIPSOID=Sphere >> $ps
 pos=`echo 147E 31S | mapproject -R -J --PROJ_ELLIPSOID=Sphere | \
 	$AWK '{printf "%si/%si\n", $1, $2}'`
-psscale -D$pos/2i/0.15i -Cgrav.cpt -B50f10/:mGal: -I -O -T+gwhite+p1p >> $ps
+psscale -D$pos/2i/0.15i -Cgrav.cpt -Bx50f10 -By+lmGal -I -O -T+gwhite+p1p >> $ps
 
 # Clean up
 

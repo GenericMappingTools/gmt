@@ -18,7 +18,7 @@ tens=0.85
 greenspline -R$R3D -I$dz -G3D.xyzw $T -S${method}${tens} -D5
 k=0
 rm -f total_dump
-psbasemap -R$R2D/$Z -JX6/3 -JZ2.5 -p$view -B5f1g1/1g1/2f1WSneZ+ -P -K > $ps
+psbasemap -R$R2D/$Z -JX6/3 -JZ2.5 -p$view -Bx5f1g1 -By1g1 -Bz2f1 -BWSneZd -P -K > $ps
 psxyz -R -JX -JZ -p$view -O -K $T -Su0.05i -Gblack -Wfaint >> $ps
 while [ $k -lt 22 ]; do
 	z=`gmtmath -Q 5 $k $dz MUL ADD =`

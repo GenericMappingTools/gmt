@@ -28,13 +28,13 @@ makecpt -Crainbow -T-80/80/10 -Z > faa.cpt
 # Grid the corrected data
 x2sys_datalist -TTEST -Lcorrections.txt =bad.lis -Flon,lat,z | blockmean -R$R -I1m | surface -R$R -I1m -Gss_gridded_fix1.nc -T0.25
 grdgradient ss_gridded_fix1.nc -Ne0.75 -A65 -fg -Gss_gridded_fix1_int.nc
-grdimage ss_gridded_fix1.nc -Iss_gridded_fix1_int.nc -Ei -JM5.5i -P -K -Cfaa.cpt -B1Wsne -X1.75i -Y5.75i --MAP_FRAME_WIDTH=3p --FORMAT_GEO_MAP=dddF > $ps
+grdimage ss_gridded_fix1.nc -Iss_gridded_fix1_int.nc -Ei -JM5.5i -P -K -Cfaa.cpt -B1 -BWsne -X1.75i -Y5.75i --MAP_FRAME_WIDTH=3p --FORMAT_GEO_MAP=dddF > $ps
 
 # Obtain adjustments and grid the corrected and adjusted data
 x2sys_report -TTEST -Cz COE_orig.txt -Lcorrections.txt -A > /dev/null
 x2sys_datalist -TTEST -A -Lcorrections.txt =bad.lis -Flon,lat,z | blockmean -R$R -I1m | surface -R$R -I1m -Gss_gridded_fix2.nc -T0.25
 grdgradient ss_gridded_fix2.nc -Ne0.75 -A65 -fg -Gss_gridded_fix2_int.nc
-grdimage ss_gridded_fix2.nc -Iss_gridded_fix2_int.nc -Ei -JM5.5i -O -K -Cfaa.cpt -B1WSne -Y-4.5i --MAP_FRAME_WIDTH=3p --FORMAT_GEO_MAP=dddF >> $ps
+grdimage ss_gridded_fix2.nc -Iss_gridded_fix2_int.nc -Ei -JM5.5i -O -K -Cfaa.cpt -B1 -BWSne -Y-4.5i --MAP_FRAME_WIDTH=3p --FORMAT_GEO_MAP=dddF >> $ps
 psxy -R -J -O -T >> $ps
 
 if [ ! "X$OLDX" = "X" ]; then	# Reset prior setting

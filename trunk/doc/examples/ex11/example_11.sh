@@ -24,7 +24,7 @@ grdmath -I1 -R 0 = c.nc
 gmtset FONT_ANNOT_PRIMARY 12p,Helvetica-Bold
 
 grdimage x.nc y.nc c.nc -JX2.5i/-2.5i -R -K -O -X0.5i >> $ps
-psxy -Wthinner,white,- rays.dat -J -R -K -O -Bwesn >> $ps
+psxy -Wthinner,white,- rays.dat -J -R -K -O >> $ps
 pstext --FONT=white -J -R -K -O -F+f+a >> $ps << END
 128 128 12p -45 60\217
 102  26 12p -90 0.4
@@ -34,7 +34,7 @@ END
 echo 0 0 0 128 | psxy -N -Sv0.15i+s+e -Gwhite -W2p,white -J -R -K -O >> $ps
 
 grdimage x.nc c.nc y.nc -JX2.5i/2.5i -R -K -O -Y2.5i >> $ps
-psxy -Wthinner,white,- rays.dat -J -R -K -O -Bwesn >> $ps
+psxy -Wthinner,white,- rays.dat -J -R -K -O >> $ps
 pstext --FONT=white -J -R -K -O -F+f+a >> $ps << END
 128 128 12p  45 300\217
 26  102 12p   0 0.4
@@ -46,7 +46,7 @@ echo 0 0 128 0 | psxy -N -Sv0.15i+s+e -Gwhite -W2p,white -J -R -K -O >> $ps
 echo 0 0 90 90 | psxy -N -Sv0.15i+s+e -Gwhite -W2p,white -J -R -K -O >> $ps
 
 grdimage c.nc x.nc y.nc -JX-2.5i/2.5i -R -K -O -X-2.5i >> $ps
-psxy -Wthinner,white,- rays.dat -J -R -K -O -Bwesn >> $ps
+psxy -Wthinner,white,- rays.dat -J -R -K -O >> $ps
 pstext --FONT=white -J -R -K -O -F+f+a >> $ps << END
 128 128 12p 135 180\217
 102  26 12p  90 0.4
@@ -64,7 +64,7 @@ grdmath -I1 -R 255 Y SUB = y.nc
 grdmath -I1 -R 255       = c.nc
 
 grdimage x.nc y.nc c.nc -JX-2.5i/-2.5i -R -K -O -X2.5i -Y2.5i >> $ps
-psxy -Wthinner,black,- rays.dat -J -R -K -O -Bwesn >> $ps
+psxy -Wthinner,black,- rays.dat -J -R -K -O >> $ps
 pstext -J -R -K -O -F+f+a >> $ps << END
 128 128 12p 225 240\217
 102  26 12p 270 0.4
@@ -72,7 +72,7 @@ pstext -J -R -K -O -F+f+a >> $ps << END
 END
 
 grdimage c.nc y.nc x.nc -JX2.5i/-2.5i -R -K -O -X2.5i >> $ps
-psxy -Wthinner,black,- rays.dat -J -R -K -O -Bwesn >> $ps
+psxy -Wthinner,black,- rays.dat -J -R -K -O >> $ps
 pstext -J -R -K -O -F+f+a >> $ps << END
 128 128 12p -45 0\217
 26  102 12p   0 0.4
@@ -84,7 +84,7 @@ echo 0 0 90 90 | psxy -N -Sv0.15i+s+e -Gblack -W2p -J -R -K -O >> $ps
 echo 204 204 204 76 | psxy -N -Sv0.15i+s+e -Gblack -W2p -J -R -K -O >> $ps
 
 grdimage x.nc c.nc y.nc -JX-2.5i/2.5i -R -K -O -X-2.5i -Y2.5i >> $ps
-psxy -Wthinner,black,- rays.dat -J -R -K -O -Bwesn >> $ps
+psxy -Wthinner,black,- rays.dat -J -R -K -O >> $ps
 pstext -J -R -O -F+f+a >> $ps << END
 128 128 12p 135 120\217
 26  102 12p 180 0.4

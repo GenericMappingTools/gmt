@@ -16,7 +16,7 @@ POLES=WK97.d	# Rotation poles to use
 
 echo "205 20 80.0" > loihi.d
 echo "170 44 100" > suiko.d
-pscoast -R150/220/00/65 -JM6i -P -K -G30/120/30 -A500 -Dl -W0.25p -B20WSne > $ps
+pscoast -R150/220/00/65 -JM6i -P -K -G30/120/30 -A500 -Dl -W0.25p -B20 -BWSne > $ps
 psxy -R -J -O -K -Sc0.1i -Gred -W0.5p loihi.d >> $ps
 # Task 1.1:
 backtracker loihi.d -Df -Lb25 -E${POLES} | psxy -R -J -O -K -W1p >> $ps

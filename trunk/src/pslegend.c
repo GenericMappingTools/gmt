@@ -46,7 +46,7 @@ struct PSLEGEND_CTRL {
 		double lon, lat, width, height, dx, dy;
 		char justify[3];
 	} D;
-	struct F {	/* -F[+r[<radius>]][+f<fill>][+p[<pen>]][+i[<off>/][<pen>]][+s[<dx>/<dy>/][<shade>]] */
+	struct F {	/* -F[+r[<radius>]][+g<fill>][+p[<pen>]][+i[<off>/][<pen>]][+s[<dx>/<dy>/][<shade>]] */
 		bool active;
 		unsigned int mode;		/* 0 = rectangular, 1 = rounded, 2 = secondary frame, 4 = shade, 8 = fill, 16 = outline */
 		double radius;			/* Radius for rounded corner */
@@ -93,7 +93,7 @@ int GMT_pslegend_usage (struct GMTAPI_CTRL *API, int level)
 
 	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pslegend [<infofile>] -D[x]<x0>/<y0>/<w>[/<h>]/<just>[/<dx>/<dy>] [%s]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>/<dy>] [-F[+i[[<gap>/]<pen>]][+f<fill>][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<fill>]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>/<dy>] [-F[+i[[<gap>/]<pen>]][+g<fill>][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<fill>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-K] [-L<spacing>] [-O] [-P] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\tReads legend layout information from <infofile> [or stdin].\n");
@@ -113,7 +113,7 @@ int GMT_pslegend_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Set the clearance between legend frame and internal items [%gp/%gp].\n", FRAME_CLEARANCE, FRAME_CLEARANCE);
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Without further options: draw rectangular border around the legend (using MAP_FRAME_PEN)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      [Default is no border].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f<fill> to set the fill for the legend box [Default is no fill].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g<fill> to set the fill for the legend box [Default is no fill].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +i[[<gap>/]<pen>] to add a secondary inner frame boundary [Default gap is %gp].\n", FRAME_GAP);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p[<pen>] to draw the border and optionally change the border pen [%s].\n",
 		GMT_putpen (API->GMT, API->GMT->current.setting.map_frame_pen));
@@ -191,7 +191,7 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 			case 'F':
 				Ctrl->F.active = true;
 				pos = 0;
-				while (GMT_getmodopt (GMT, opt->arg, "ifprs", &pos, p)) {	/* Looking for +i, +f, +p, +r, +s */
+				while (GMT_getmodopt (GMT, opt->arg, "igprs", &pos, p)) {	/* Looking for +i, +f, +p, +r, +s */
 					switch (p[0]) {
 						case 'i':	/* Secondary pen info */
 							Ctrl->F.mode |= 1;
@@ -205,7 +205,7 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 									if (GMT_getpen (GMT, txt_a, &Ctrl->F.pen2)) n_errors++;
 							}
 							break;
-						case 'f':	/* Set fill */
+						case 'g':	/* Set fill */
 							if (!p[1] || GMT_getfill (GMT, &p[1], &Ctrl->F.fill)) n_errors++;
 							Ctrl->F.mode |= 8;
 							break;
@@ -241,7 +241,7 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 				break;
 			case 'G':	/* Inside legend box fill */
 				if (GMT_compat_check (GMT, 4)) {
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -G is deprecated; -F...+f%s was set instead, use this in the future.\n", opt->arg);
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -G is deprecated; -F...+g%s was set instead, use this in the future.\n", opt->arg);
 					Ctrl->F.active = true;
 					Ctrl->F.mode |= 8;
 					if (GMT_getfill (GMT, opt->arg, &Ctrl->F.fill)) {	/* We check syntax here */

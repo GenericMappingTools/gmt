@@ -5,7 +5,7 @@
 
 ps=matharc.ps
 
-psbasemap -R0/6/0/3 -Jx1i -P -B1g1WSne -K -Xc -p155/35 > $ps
+psbasemap -R0/6/0/3 -Jx1i -P -B1g1 -BWSne -K -Xc -p155/35 > $ps
 gmtset MAP_VECTOR_SHAPE 1
 # Math angle vectors
 psxyz -R -J -O -K -W1p -Gred -S -p155/35 << EOF >> $ps
@@ -35,7 +35,7 @@ psxyz -R -J -O -K -W1p -S -p155/35 << EOF >> $ps
 5	2	0	1i	30	80	m0.2i+e+r
 EOF
 # Normalized by angle below
-psbasemap -R0/4/0/4 -J -O -B1g1WSne -K -X1i -Y4i -p155/35 >> $ps
+psbasemap -R0/4/0/4 -J -O -B1g1 -BWSne -K -X1i -Y4i -p155/35 >> $ps
 psxyz -R -J -O -K -W1p -Gblack -Sm0.3i+b+e+n90 << EOF -p155/35 >> $ps
 0	0	0	4.0i	0	90
 0	0	0	3.6i	0	80

@@ -71,7 +71,7 @@ $AWK -f tt.awk tt.txt > tt.d
 gmtset PS_CHAR_ENCODING Standard+
 
 # First mark uncoded entries
-psxy -R0/9/2/32 -Jx0.345i/-0.21i -B:.Standard+:N -P -K -Glightred -Y0.0 << EOF > GMT_App_F_stand+.ps
+psxy -R0/9/2/32 -Jx0.345i/-0.21i -BN+tStandard++ -P -K -Glightred -Y0.0 << EOF > GMT_App_F_stand+.ps
 >
 1	4
 2	4

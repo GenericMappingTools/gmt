@@ -8,7 +8,7 @@
 #
 ps=example_09.ps
 pswiggle track_*.xys -R185/250/-68/-42 -U"Example 9 in Cookbook" -K -Jm0.13i \
-	-Ba10f5WSne+g240/255/240 -G+red -G-blue -Z2000 -Wthinnest -S240/-67/500/@~m@~rad \
+	-Ba10f5 -BWSne+g240/255/240 -G+red -G-blue -Z2000 -Wthinnest -S240/-67/500/@~m@~rad \
 	--FORMAT_GEO_MAP=dddF > $ps
 psxy -R -J -O -K ridge.xy -Wthicker >> $ps
 psxy -R -J -O -K fz.xy -Wthinner,- >> $ps

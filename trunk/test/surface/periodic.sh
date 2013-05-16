@@ -19,16 +19,16 @@ surface -Rg -I1 -fg data.txt -Gdatag.nc
 # Grid with surface so periodic boundaries are -180/+180
 surface -Rd -I1 -fg data.txt -Gdatad.nc
 # Contour grid where Greenwhich was in the middle when gridding
-grdcontour datad.nc -C10 -A50 -JQ0/5.5i -P -BafWSne -K -Xc -Y0.5i > $ps
+grdcontour datad.nc -C10 -A50 -JQ0/5.5i -P -Baf -BWSne -K -Xc -Y0.5i > $ps
 psxy -R -J -O -K path.txt -W1p,green >> $ps
 psxy -R -J -O -K data.txt -Ss0.05i -Gred >> $ps
 # Contour grid where Dateline was in the middle when gridding
-grdcontour datag.nc -C10 -A50 -JQ0/5.5i -O -BafWsne -K -Y3i >> $ps
+grdcontour datag.nc -C10 -A50 -JQ0/5.5i -O -Baf -BWsne -K -Y3i >> $ps
 psxy -R -J -O -K path.txt -W1p,blue >> $ps
 psxy -R -J -O -K data.txt -Ss0.05i -Gred >> $ps
 # Original synthetic grid for comparison
-grdcontour t.nc -C10 -A50 -JQ0/5.5i -O -BafWsne -K -Y3i >> $ps
+grdcontour t.nc -C10 -A50 -JQ0/5.5i -O -Baf -BWsne -K -Y3i >> $ps
 # Plot crossection along Equator
-grdtrack path.txt -Gdatad.nc -o0,2 | psxy -R-45/45/-70/70 -JX5.5i/1i -Y3i -Bafg90Wsne -W2p,green -O -K >> $ps
+grdtrack path.txt -Gdatad.nc -o0,2 | psxy -R-45/45/-70/70 -JX5.5i/1i -Y3i -Bafg90 -BWsne -W2p,green -O -K >> $ps
 grdtrack path.txt -Rd -Gdatag.nc -o0,2 | psxy -R-45/45/-70/70 -J -W0.5p,blue -O -K >> $ps
 psxy -R -J -O -T >> $ps

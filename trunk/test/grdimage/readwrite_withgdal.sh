@@ -16,7 +16,7 @@ grdimage -D gdal/needle.jpg -JX7c/0 -P -Y20c -K > $ps
 grdimage -D gdal/needle.png -JX7c/0 -X7.5c -O -K >> $ps
 
 # Projected
-grdimage -Dr gdal/needle.jpg -Rd -JW10c -Bg30/g15 -X-5.0c -Y-7c -O -K >> $ps
+grdimage -Dr gdal/needle.jpg -Rd -JW10c -Bxg30 -Byg15 -X-5.0c -Y-7c -O -K >> $ps
 
 # Illuminated
 grdmath -R-15/15/-15/15 -I0.2 X Y HYPOT DUP 2 MUL PI MUL 8 DIV COS EXCH NEG 10 DIV EXP MUL = somb.nc

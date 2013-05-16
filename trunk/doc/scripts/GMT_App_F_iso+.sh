@@ -71,7 +71,7 @@ $AWK -f tt.awk tt.txt > tt.d
 gmtset PS_CHAR_ENCODING ISOLatin1+
 
 # First the uncoded ones
-psxy -R0/9/2/32 -Jx0.345i/-0.21i -B:.ISOLatin1+:N -P -K -Glightred -Y0.0 << EOF > GMT_App_F_iso+.ps
+psxy -R0/9/2/32 -Jx0.345i/-0.21i -BN+tISOLatin1++ -P -K -Glightred -Y0.0 << EOF > GMT_App_F_iso+.ps
 >
 1	4
 2	4
