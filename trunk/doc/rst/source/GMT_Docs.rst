@@ -2212,35 +2212,74 @@ summary of projection syntax was given in Chapter [ch:3].
 Map frame and axes annotations: The **-B** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[sec:timeaxis] This is by far the most complicated option in *GMT*,
-but most examples of its usage are actually quite simple. Given as
-**-B**\ [**p**\ \|\ **s**]\ *xinfo*\ [/*yinfo*\ [/*zinfo*]][:."title
-string":][\ **W**\ \|\ **w**][\ **E**\ \|\ **e**][\ **S**\ \|\ **s**][\ **N**\ \|\ **n**][\ **Z**\ \|\ **z**\ [**+**]][\ **+g**\ *fill*],
-this switch specifies map boundaries (or plot axes) to be plotted by
-using the selected information. The optional flag following **-B**
-selects **p** (rimary) [Default] or **s** (econdary) axes information
-(mostly used for time axes annotations; see examples below). The
-components *xinfo*, *yinfo* and *zinfo* are of the form
+[sec:timeaxis] This is potentially the most complicated option in *GMT*,
+but most examples of its usage are actually quite simple. We distinguish
+between to sets of information: Frame settings and Axes parameters.  These
+are set separately by their own **-B** invocations; hence multiple **-B**
+specifications may be specified.  The frame settings covers things such
+as which axes should be plotted, canvas fill, plot title, and what type
+of gridlines be drawn, whereas the Axes settings deal with annotation,
+tick, and gridline intervals, axes labels, and annotation units.
 
-*info*\ [:"axis label":][:="prefix":][:,"unit label":]
+The Frame settings are specified by
 
-where *info* is one or more concatenated substrings of the form
-[**t**]\ *stride*\ [*phase*][**u**]. The **t** flag sets the axis
+**-B**\ [*axes*][**+b**][**+g**\ *fill*][**+o**\ *lon/lat*][**+t**\ *title*]
+
+Here, the optional *axes* dictates which of the axes should be drawn
+and possibly annotated.  By default, all 4 map boundaries (or plot axes)
+are plotted (denoted **W**, **E**, **S**, **N**). To change this selection,
+append the codes for those you want (e.g., **WSn**). In this example,
+the lower case **n** denotes to draw the axis and (major and minor) tick
+marks on the "northern" (top) edge of the plot. The upper case **WS** will
+annotate the "western" and "southern" axes with numerals and plot the
+any axis labels in addition to draw axis/tick-marks.  For 3-D plots you can
+also specify **Z** or **z**.  By default a single vertical axes will then be
+plotted at the most suitable map corner.  You can override this by appending
+any combination of corner ids **1234**, where **1** represents the lower left
+corner and the order goes counter-clockwise.  Append **+b** to draw the outline
+of the 3-D box defined by **-R**; this modifier is also needed to display
+gridlines in the x-z, y-z planes.  You may paint the
+map canvas by appending the **+g**\ *fill* modifier [Default is no fill].
+If gridlines are specified via the Axes parameters (discussed below) then
+by default these are referenced to the North pole.  If, however, you wish
+to produce oblique gridlines about another pole you can append **+o**\ *lon/lat*
+to change this behavior (the modifier is ignored if no gridlines are requested).
+Finally, you may optionally add **+t**\ *title* to place a title that
+will appear centered above the plot frame.
+
+The Axes settings are specified by
+
+**-B**\ [**p**|**s**][**x**|**x**|**z**]*intervals*[**+l**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
+
+but you may also split this into two separate invocations for clarity, i.e.,
+
+**-B**\ [**p**|**s**][**x**|**x**|**z**][**+l**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
+**-B**\ [**p**|**s**][**x**|**x**|**z**]*intervals*
+
+The first optional flag following **-B** selects **p** (rimary) [Default] or
+**s** (econdary) axes information (which is mostly used for time axes
+annotations; see examples below). The next optional flags specifies which
+axes you are providing information for.  This can be an individual axis
+ (e.g., just **x**) or a combination (e.g., **xz**).  If none are given then
+we default to **xy**.  Thus, if you wish to give different annotation intervals
+or labels for the various axes then you must repeat the **B** option for
+each axis.  To add a label to an axis, just append **+l**\ *label*.  If the
+axis annotation should have a leading text prefix (e.g., dollar sign for those
+plots of your net worth) you can append **+p**\ *prefix*.  For geographic maps
+the addition of degree symbols, etc. is automatic (and controlled by the GMT
+default setting **FORMAT\_GEO\_MAP**).  However, for other plots you can add
+specific units by adding **+u**\ *unit*.  If any of these text strings contain
+spaces or special UNIX characters you will need to enclose them in quotes.
+The *intervals* specification is a concatenated string made up of substrings
+of the form
+
+[**t**]\ *stride*\ [*phase*][**u**].
+
+The **t** flag sets the axis
 item of interest; the available items are listed in Table [tbl:inttype].
-
-By default, all 4 map boundaries (or plot axes) are plotted (denoted
-**W**, **E**, **S**, **N**). To change this selection, append the codes
-for those you want (e.g., **WSn**). In this example, the lower case
-**n** denotes to draw the axis and (major and minor) tick marks on the
-"northern" (top) edge of the plot. The upper case **WS** will annotate
-the "western" and "southern" axes with numerals and plot the optional
-axis label in addition to draw axis/tick-marks. The title, if given,
-will appear centered above the plot. Unit label or prefix may start with
-a leading – to suppress the space between it and the annotation.
 Normally, equidistant annotations occur at multiples of *stride*; you
 can phase-shift this by appending *phase*, which can be a positive or
-negative number. Finally, note you may paint the canvas by appending the
-**+g**\ *fill* modifier.
+negative number.
 
 [H]
 
@@ -2326,7 +2365,7 @@ and arc seconds, respectively, when a map projection is in effect.
 
 [tbl:units]
 
-There may be two levels of annotations. Here, "primary" refers to the
+As mentioned, there may be two levels of annotations. Here, "primary" refers to the
 annotation that is closest to the axis (this is the primary annotation),
 while "secondary" refers to the secondary annotation that is plotted
 further from the axis. The examples below will clarify what is meant.
@@ -2408,7 +2447,8 @@ only do we have both primary and secondary annotation items but we also
 have interval annotations versus tickmark annotations, numerous time
 units, and several ways in which to modify the plot. We will demonstrate
 this flexibility with a series of examples. While all our examples will
-only show a single *x*\ -axis, time-axis is supported for all axes.
+only show a single *x*\ -axis (south, selected via **-BS** ), time-axis
+annotations are supported for all axes.
 
 Our first example shows a time period of almost two months in Spring
 2000. We want to annotate the month intervals as well as the date at the start of each week:
@@ -2416,7 +2456,7 @@ Our first example shows a time period of almost two months in Spring
    ::
 
      gmtset FORMAT_DATE_MAP=-o FONT_ANNOT_PRIMARY +9p
-     psbasemap -R2000-4-1T/2000-5-25T/0/1 -JX5i/0.2i -Bpa7Rf1d -Bsa1OS -P > GMT_-B_time1.ps
+     psbasemap -R2000-4-1T/2000-5-25T/0/1 -JX5i/0.2i -Bpa7Rf1d -Bsa1O -BS -P > GMT_-B_time1.ps
 
 These commands result in Figure . Note the leading hyphen in the
 **FORMAT_DATE_MAP** removes leading zeros from calendar items (e.g.,
@@ -2428,8 +2468,8 @@ The next example shows two different ways to annotate an axis portraying
    ::
 
      gmtset FORMAT_DATE_MAP "o dd" FORMAT_CLOCK_MAP hh:mm FONT_ANNOT_PRIMARY +9p
-     psbasemap -R1969-7-21T/1969-7-23T/0/1 -JX5i/0.2i -Bpa6Hf1h -Bsa1KS -P -K > GMT_-B_time2.ps
-     psbasemap -R -J -Bpa6Hf1h -Bsa1DS -O -Y0.65i >> GMT_-B_time2.ps  
+     psbasemap -R1969-7-21T/1969-7-23T/0/1 -JX5i/0.2i -Bpa6Hf1h -Bsa1K -BS -P -K > GMT_-B_time2.ps
+     psbasemap -R -J -Bpa6Hf1h -Bsa1D -BS -O -Y0.65i >> GMT_-B_time2.ps  
 
 The lower example (Figure ) chooses to annotate the weekdays (by
 specifying **a**\ 1\ **K**) while the upper example choses dates (by
@@ -2442,7 +2482,7 @@ The third example presents two years, annotating both the years and every 3rd mo
    ::
 
      gmtset FORMAT_DATE_MAP o FORMAT_TIME_PRIMARY_MAP Character FONT_ANNOT_PRIMARY +9p
-     psbasemap -R1997T/1999T/0/1 -JX5i/0.2i -Bpa3Of1o -Bsa1YS -P > GMT_-B_time3.ps 
+     psbasemap -R1997T/1999T/0/1 -JX5i/0.2i -Bpa3Of1o -Bsa1Y -BS -P > GMT_-B_time3.ps 
 
 Note that while the year annotation is centered on the 1-year interval,
 the month annotations must be centered on the corresponding month and
@@ -2460,7 +2500,7 @@ left:
    ::
 
      gmtset FORMAT_CLOCK_MAP=-hham FONT_ANNOT_PRIMARY +9p
-     psbasemap -R0.2t/0.35t/0/1 -JX-5i/0.2i -Bpa15mf5m -Bsa1HS -P > GMT_-B_time4.ps 
+     psbasemap -R0.2t/0.35t/0/1 -JX-5i/0.2i -Bpa15mf5m -Bsa1H -BS -P > GMT_-B_time4.ps 
 
 The fifth example shows a few weeks of time (Figure ). The lower axis
 shows ISO weeks with week numbers and abbreviated names of the weekdays.
@@ -2471,9 +2511,9 @@ The upper uses Gregorian weeks (which start at the day chosen by
 
     gmtset FORMAT_DATE_MAP u FORMAT_TIME_PRIMARY_MAP Character FORMAT_TIME_SECONDARY_MAP full \
            FONT_ANNOT_PRIMARY +9p
-    psbasemap -R1969-7-21T/1969-8-9T/0/1 -JX5i/0.2i -Bpa1K -Bsa1US -P -K > GMT_-B_time5.ps
+    psbasemap -R1969-7-21T/1969-8-9T/0/1 -JX5i/0.2i -Bpa1K -Bsa1U -BS -P -K > GMT_-B_time5.ps
     gmtset FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_TIME_SECONDARY_MAP Chararacter
-    psbasemap -R -J -Bpa3Kf1k -Bsa1rS -O -Y0.65i >> GMT_-B_time5.ps 
+    psbasemap -R -J -Bpa3Kf1k -Bsa1r -BS -O -Y0.65i >> GMT_-B_time5.ps 
 
 Our sixth example shows the first five months of 1996, and we have
 annotated each month with an abbreviated, upper case name and 2-digit
@@ -2482,7 +2522,7 @@ year. Only the primary axes information is specified.
    ::
 
     gmtset FORMAT_DATE_MAP "o yy" FORMAT_TIME_PRIMARY_MAP Abbreviated
-    psbasemap -R1996T/1996-6T/0/1 -JX5i/0.2i -Ba1Of1dS -P > GMT_-B_time6.ps 
+    psbasemap -R1996T/1996-6T/0/1 -JX5i/0.2i -Ba1Of1d -BS -P > GMT_-B_time6.ps 
 
 Our seventh and final example illustrates annotation of year-days.
 Unless we specify the formatting with a leading hyphen in
@@ -2494,7 +2534,7 @@ least half of a full interval.
    ::
 
     gmtset FORMAT_DATE_MAP jjj TIME_INTERVAL_FRACTION 0.05 FONT_ANNOT_PRIMARY +9p
-    psbasemap -R2000-12-15T/2001-1-15T/0/1 -JX5i/0.2i -Bpa5Df1d -Bsa1YS -P > GMT_-B_time7.ps
+    psbasemap -R2000-12-15T/2001-1-15T/0/1 -JX5i/0.2i -Bpa5Df1d -Bsa1Y -BS -P > GMT_-B_time7.ps
 
 Custom axes
 ^^^^^^^^^^^
@@ -2538,9 +2578,9 @@ annotations on the *x*-axis and irregular annotations on the *y*-axis.
     6 f
     6.2831852 ag 2@~p@~
     EOF
-    psbasemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bp25f5g25:,Ma:/cyannots.txt,WS+glightblue \
+    psbasemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bpx25f5g25+u" Ma" -Bpycyannots.txt -BWS+glightblue \
               -P -K > GMT_-B_custom.ps
-    psbasemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bscxannots.txt/0,WS -O \
+    psbasemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bsxcxannots.txt -BWS -O \
               --MAP_ANNOT_OFFSET_SECONDARY=10p --MAP_GRID_PEN_SECONDARY=2p >> GMT_-B_custom.ps
     rm -f [xy]annots.txt
 
@@ -4365,7 +4405,7 @@ The complete commands given to produce this plot were
 
    ::
 
-    psxy -R0/100/0/10 -JX3i/1.5i -BagWSne+gsnow -Wthick,blue,- -P -K sqrt.d > GMT_linear.ps
+    psxy -R0/100/0/10 -JX3i/1.5i -Bag -BWSne+gsnow -Wthick,blue,- -P -K sqrt.d > GMT_linear.ps
     psxy -R -J -St0.1i -N -Gred -Wfaint -O sqrt.d10 >> GMT_linear.ps  
 
 Normally, the user's *x*-values will increase to the right and the
@@ -4398,7 +4438,7 @@ option. As an example, we want to plot a crude world map centered on
   ::
 
     gmtset MAP_GRID_CROSS_SIZE_PRIMARY 0.1i MAP_FRAME_TYPE FANCY FORMAT_GEO_MAP ddd:mm:ssF
-    pscoast -Rg-55/305/-90/90 -Jx0.014i -BagfWSen -Dc -A1000 -Glightbrown -Wthinnest -P \
+    pscoast -Rg-55/305/-90/90 -Jx0.014i -Bagf -BWSen -Dc -A1000 -Glightbrown -Wthinnest -P \
             -Slightblue > GMT_linear_d.ps  
 
 with the result reproduced in
@@ -4435,7 +4475,7 @@ general, the options provided with **-JX** will prevail.
    ::
 
     gmtset FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_CLOCK_MAP=-hham FORMAT_TIME_PRIMARY_MAP full
-    psbasemap -R2001-9-24T/2001-9-29T/T07:0/T15:0 -JX4i/-2i -Ba1Kf1kg1d/a1Hg1hWsNe+glightyellow \
+    psbasemap -R2001-9-24T/2001-9-29T/T07:0/T15:0 -JX4i/-2i -Bxa1Kf1kg1d -Bya1Hg1h -BWsNe+glightyellow \
               -P > GMT_linear_cal.ps
 
 Cartesian logarithmic projection
@@ -4449,7 +4489,7 @@ Hence, to produce a plot in which the *x*-axis is logarithmic (the
 
    ::
 
-    psxy -R1/100/0/10 -Jx1.5il/0.15i -B2g3/a2f1g2WSne+gbisque -Wthick,blue,- -P -K -h sqrt.d > GMT_log.ps
+    psxy -R1/100/0/10 -Jx1.5il/0.15i -Bx2g3 -Bya2f1g2 -BWSne+gbisque -Wthick,blue,- -P -K -h sqrt.d > GMT_log.ps
     psxy -R -J -Ss0.1i -N -Gred -W -O -h sqrt.d10 >> GMT_log.ps
 
 Note that if *x*- and *y*-scaling are different and a
@@ -4471,7 +4511,7 @@ to the linear transformation. Thus our command becomes
 
    ::
 
-    psxy -R0/100/0/10 -Jx0.3ip0.5/0.15i -Ba1p/a2f1WSne+givory -Wthick -P -K sqrt.d > GMT_pow.ps
+    psxy -R0/100/0/10 -Jx0.3ip0.5/0.15i -Bxa1p -Bya2f1 -BWSne+givory -Wthick -P -K sqrt.d > GMT_pow.ps
     psxy -R -J -Sc0.075i -Ggreen -W -O sqrt.d10 >> GMT_pow.ps
 
 Linear projection with polar (:math:`\theta, r`) coordinates (**-Jp** **-JP**)
@@ -4520,7 +4560,7 @@ operates on or creates grid files.
    ::
 
     grdmath -R0/360/2/4 -I6/0.1 X 4 MUL PI MUL 180 DIV COS Y 2 POW MUL = $$.nc
-    grdcontour $$.nc -JP3i -B30Ns+ghoneydew -P -C2 -S4 --FORMAT_GEO_MAP=+ddd > GMT_polar.ps
+    grdcontour $$.nc -JP3i -B30 -BNs+ghoneydew -P -C2 -S4 --FORMAT_GEO_MAP=+ddd > GMT_polar.ps
     rm -f $$.nc
 
 We used `grdcontour <grdcontour.html>`_ to make a
@@ -4703,7 +4743,7 @@ every 10 and annotations only every 30 in longitude:
 
    ::
 
-    pscoast -R-180/-20/0/90 -JPoly/4i -B30g10/10g10 -Dc -A1000 -Glightgray -Wthinnest -P \
+    pscoast -R-180/-20/0/90 -JPoly/4i -Bx30g10 -By10g10 -Dc -A1000 -Glightgray -Wthinnest -P \
             > GMT_polyconic.ps
 
 Azimuthal projections
@@ -4885,7 +4925,7 @@ looking due east is thus accomplished by the following
 
    ::
 
-    pscoast -Rg -JG4/52/230/90/60/180/60/60/5i -B2g2/1g1 -Ia -Di -Glightbrown -Wthinnest -P \
+    pscoast -Rg -JG4/52/230/90/60/180/60/60/5i -Bx2g2 -By1g1 -Ia -Di -Glightbrown -Wthinnest -P \
             -Slightblue --MAP_ANNOT_MIN_SPACING=0.25i > GMT_perspective.ps
 
 Orthographic projection (**-Jg** **-JG**)
@@ -5038,7 +5078,7 @@ which will give a map 4.32 inch wide. It was created with the command:
    ::
 
     gmtset MAP_FRAME_TYPE fancy
-    pscoast -R0/360/-70/70 -Jm1.2e-2i -Ba60f15/a30f15 -Dc -A5000 -Gred -P > GMT_mercator.ps
+    pscoast -R0/360/-70/70 -Jm1.2e-2i -Bxa60f15 -Bya30f15 -Dc -A5000 -Gred -P > GMT_mercator.ps
 
 While this example is centered on the Dateline, one can easily choose
 another configuration with the **-R** option. A map centered on
@@ -5078,7 +5118,7 @@ equivalent of the 360 Mercator map. Using the command
 
    ::
 
-    pscoast -R0/360/-80/80 -JT330/-45/3.5i -Ba30gWSne -Dc -A2000 -Slightblue -G0 -P > GMT_TM.ps
+    pscoast -R0/360/-80/80 -JT330/-45/3.5i -Ba30g -BWSne -Dc -A2000 -Slightblue -G0 -P > GMT_TM.ps
 
 we made the map illustrated in Figure [fig:GMT\ :sub:`T`\ M]. Note that
 when a world map is given (indicated by **-R**\ *0/360/s/n*), the
@@ -5327,7 +5367,7 @@ follows:
 
    ::
 
-    pscoast -R-90/270/-80/90 -Jj1:400000000 -B45g45/30g30 -Dc -A10000 -Gkhaki -Wthinnest -P \
+    pscoast -R-90/270/-80/90 -Jj1:400000000 -Bx45g45 -By30g30 -Dc -A10000 -Gkhaki -Wthinnest -P \
             -Sazure > GMT_miller.ps
 
 Cylindrical stereographic projections (**-Jcyl_stere** **-JCyl_stere**)
@@ -5379,7 +5419,7 @@ follows:
    ::
 
     gmtset FORMAT_GEO_MAP dddA
-    pscoast -R-180/180/-60/80 -JCyl_stere/0/45/4.5i -Ba60f30g30/a30g30 -Dc -A5000 -Wblack -Gseashell4 \
+    pscoast -R-180/180/-60/80 -JCyl_stere/0/45/4.5i -Bxa60f30g30 -Bya30g30 -Dc -A5000 -Wblack -Gseashell4 \
             -Santiquewhite1 -P > GMT_gall_stereo.ps
 
 Miscellaneous projections
@@ -5539,7 +5579,7 @@ A simple world map using the sinusoidal projection is therefore obtained by
 
    ::
 
-     pscoast -Rd -JI4.5i -Bg30/g15 -Dc -A10000 -Ggray -P > GMT_sinusoidal.ps         
+     pscoast -Rd -JI4.5i -Bxg30 -Byg15 -Dc -A10000 -Ggray -P > GMT_sinusoidal.ps         
 
 To reduce distortion of shape the interrupted sinusoidal projection was
 introduced in 1927. Here, three symmetrical segments are used to cover
@@ -5553,9 +5593,9 @@ widths (140\ :math:`\cdot`\ 0.014 and 80\ :math:`\cdot`\ 0.014):
 
    ::
 
-     pscoast -R200/340/-90/90 -Ji0.014i -Bg30/g15 -A10000 -Dc -Gblack -K -P > GMT_sinus_int.ps  
-     pscoast -R-20/60/-90/90 -Ji0.014i -Bg30/g15 -Dc -A10000 -Gblack -X1.96i -O -K >> GMT_sinus_int.ps  
-     pscoast -R60/200/-90/90 -Ji0.014i -Bg30/g15 -Dc -A10000 -Gblack -X1.12i -O >> GMT_sinus_int.ps  
+     pscoast -R200/340/-90/90 -Ji0.014i -Bxg30 -Byg15 -A10000 -Dc -Gblack -K -P > GMT_sinus_int.ps  
+     pscoast -R-20/60/-90/90 -Ji0.014i -Bxg30 -Byg15 -Dc -A10000 -Gblack -X1.96i -O -K >> GMT_sinus_int.ps  
+     pscoast -R60/200/-90/90 -Ji0.014i -Bxg30 -Byg15 -Dc -A10000 -Gblack -X1.12i -O >> GMT_sinus_int.ps  
 
 The usefulness of the interrupted sinusoidal projection is basically
 limited to display of global, discontinuous data distributions like
@@ -5578,7 +5618,7 @@ Centered on the Dateline, the example below was created by this command:
 
     ::
 
-      pscoast -Rg -JV4i -Bg30/g15 -Dc -Glightgray -A10000 -Wthinnest -P > GMT_grinten.ps 
+      pscoast -Rg -JV4i -Bxg30 -Byg15 -Dc -Glightgray -A10000 -Wthinnest -P > GMT_grinten.ps 
 
 Creating GMT Graphics
 =====================
@@ -5651,7 +5691,7 @@ rectangular frame surrounding the two maps. This is how it is done:
     grdcontour osu91a1f_16.nc -J -C10 -A50+f7p -Gd4i -L-1000/-1 -Wcthinnest,- -Wathin,- -O -K \
                -T0.1i/0.02i >> $ps
     grdcontour osu91a1f_16.nc -J -C10 -A50+f7p -Gd4i -L-1/1000 -O -K -T0.1i/0.02i >> $ps
-    pscoast -Rg -JH6i -Y4i -O -K -Bg30:."Low Order Geoid": -Dc -Glightgray >> $ps
+    pscoast -Rg -JH6i -Y4i -O -K -Bg30 -B+t"Low Order Geoid" -Dc -Glightgray >> $ps
     grdcontour osu91a1f_16.nc -J -C10 -A50+f7p -Gd4i -L-1000/-1 -Wcthinnest,- -Wathin,- -O -K \
                -T0.1i/0.02i:-+ >> $ps
     grdcontour osu91a1f_16.nc -J -C10 -A50+f7p -Gd4i -L-1/1000 -O -T0.1i/0.02i:-+ >> $ps
@@ -5709,12 +5749,12 @@ the lower left and upper right corner of region. In our case we choose
     makecpt -Crainbow -T-2/14/2 > g.cpt
     grdimage HI_geoid2.nc -R160/20/220/30r -JOc190/25.5/292/69/4.5i -E50 -K -P \
             -U/-1.25i/-1i/"Example 2 in Cookbook" -B10 -Cg.cpt -X1.5i -Y1.25i > $ps
-    psscale -Cg.cpt -D5.1i/1.35i/2.88i/0.4i -O -K -Ac -B2:GEOID:/:m: -E >> $ps
+    psscale -Cg.cpt -D5.1i/1.35i/2.88i/0.4i -O -K -Ac -Bx2+lGEOID -By+lm -E >> $ps
     grd2cpt HI_topo2.nc -Crelief -Z > t.cpt
     grdgradient HI_topo2.nc -A0 -Nt -GHI_topo2_int.nc
-    grdimage HI_topo2.nc -IHI_topo2_int.nc -R -J -E50 -B10:."H@#awaiian@# T@#opo and @#G@#eoid:" -O -K \
+    grdimage HI_topo2.nc -IHI_topo2_int.nc -R -J -E50 -B10 -B+t"H@#awaiian@# T@#opo and @#G@#eoid" -O -K \
             -Ct.cpt -Y4.5i --MAP_TITLE_OFFSET=0.5i >> $ps
-    psscale -Ct.cpt -D5.1i/1.35i/2.88i/0.4i -O -K -I0.3 -Ac -B2:TOPO:/:km: >> $ps
+    psscale -Ct.cpt -D5.1i/1.35i/2.88i/0.4i -O -K -I0.3 -Ac -Bx2+lTOPO -By+lkm >> $ps
     pstext -R0/8.5/0/11 -Jx1i -F+f30p,Helvetica-Bold+jCB -O -N -Y-4.5i >> $ps << END
     -0.4 7.5 a)
     -0.4 3.0 b)
@@ -5838,7 +5878,7 @@ specify positions in inches directly. Thus, the complete automated script reads:
     #
     R=‘cat sat.pg ship.pg | minmax -I100/25‘
     psxy $R -U/-1.75i/-1.25i/"Example 3a in Cookbook" \
-         -Ba500f100:"Distance along great circle":/a100f25:"Gravity anomaly (mGal)":WeSn \
+         -Bxa500f100+l"Distance along great circle" -Bya100f25+l"Gravity anomaly (mGal)" -BWeSn \
          -JX8i/5i -X2i -Y1.5i -K -Wthick sat.pg > ../example_03a.ps
     psxy -R -JX -O -Sp0.03i ship.pg >> ../example_03a.ps
     #
@@ -5852,9 +5892,9 @@ specify positions in inches directly. Thus, the complete automated script reads:
     # "pshistogram".
     #
     awk '{ if (NR > 1) print $1 - last1; last1=$1; }' ship.pg | pshistogram -W0.1 -Gblack -JX3i -K \
-         -X2i -Y1.5i -B:."Ship": -U/-1.75i/-1.25i/"Example 3b in Cookbook" > ../example_03b.ps
+         -X2i -Y1.5i -B+t"Ship" -U/-1.75i/-1.25i/"Example 3b in Cookbook" > ../example_03b.ps
     awk '{ if (NR > 1) print $1 - last1; last1=$1; }' sat.pg | pshistogram -W0.1 -Gblack -JX3i -O \
-         -X5i -B:."Sat": >> ../example_03b.ps
+         -X5i -B+t"Sat" >> ../example_03b.ps
     #
     # This experience shows that the satellite values are spaced fairly evenly, with
     # delta-p between 3.222 and 3.418. The ship values are spaced quite unevelnly, with
@@ -5890,7 +5930,7 @@ specify positions in inches directly. Thus, the complete automated script reads:
     # Now we plot them again to see if we have done the right thing:
     #
     psxy $R -JX8i/5i -X2i -Y1.5i -K -Wthick samp_sat.pg \
-         -Ba500f100:"Distance along great circle":/a100f25:"Gravity anomaly (mGal)":WeSn \
+         -Bxa500f100+l"Distance along great circle" -Bya100f25+l"Gravity anomaly (mGal)" -BWeSn \
          -U/-1.75i/-1.25i/"Example 3c in Cookbook" > ../example_03c.ps
     psxy -R -JX -O -Sp0.03i samp_ship.pg >> ../example_03c.ps
     #
@@ -5904,7 +5944,7 @@ specify positions in inches directly. Thus, the complete automated script reads:
     # Note the extended use of pstext and psxy to put labels and legends directly on the plots.
     # For that purpose we often use -Jx1i and specify positions in inches directly:
     #
-    psxy spectrum.coh -Ba1f3p:"Wavelength (km)":/a0.25f0.05:"Coherency@+2@+":WeSn -JX-4il/3.75i \
+    psxy spectrum.coh -Bxa1f3p+l"Wavelength (km)" -Bya0.25f0.05+l"Coherency@+2@+" -BWeSn -JX-4il/3.75i \
          -R1/1000/0/1 -U/-2.25i/-1.25i/"Example 3 in Cookbook" -P -K -X2.5i -Sc0.07i -Gblack \
          -Ey/0.5p -Y1.5i > $ps
     echo "3.85 3.6 Coherency@+2@+" | pstext -R0/4/0/3.75 -Jx1i -F+f18p,Helvetica-Bold+jTR -O -K >> $ps
@@ -5914,7 +5954,7 @@ specify positions in inches directly. Thus, the complete automated script reads:
     4 3.25
     END
     psxy -R -Jx -O -K -Wthicker box.d >> $ps
-    psxy -Ba1f3p/a1f3p:"Power (mGal@+2@+km)"::."Ship and Satellite Gravity":WeSn spectrum.xpower \
+    psxy -Bxa1f3p -Bya1f3p+l"Power (mGal@+2@+km)" -BWeSn+t"Ship and Satellite Gravity" spectrum.xpower \
          -Gblack -ST0.07i -O -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/0.5p >> $ps
     psxy spectrum.ypower -R -JX -O -K -Gblack -Sc0.07i -Ey/0.5p >> $ps
     echo "3.9 3.6 Input Power" | pstext -R0/4/0/3.75 -Jx -F+f18p,Helvetica-Bold+jTR -O -K >> $ps
@@ -5939,10 +5979,10 @@ specify positions in inches directly. Thus, the complete automated script reads:
     #
     trend1d -Fxw -N2r samp_ship.pg > samp_ship.xw
     psxy $R -JX8i/4i -X2i -Y1.5i -K -Sp0.03i \
-         -Ba500f100:"Distance along great circle":/a100f25:"Gravity anomaly (mGal)":WeSn \
+         -Bxa500f100+l"Distance along great circle" -Bya100f25+l"Gravity anomaly (mGal)" -BWeSn \
          -U/-1.75i/-1.25i/"Example 3d in Cookbook" samp_ship.pg > ../example_03d.ps
     R=‘minmax samp_ship.xw -I100/1.1‘
-    psxy $R -JX8i/1.1i -O -Y4.25i -Bf100/a0.5f0.1:"Weight":Wesn -Sp0.03i samp_ship.xw \
+    psxy $R -JX8i/1.1i -O -Y4.25i -Bxf100 -Bya0.5f0.1+l"Weight" -BWesn -Sp0.03i samp_ship.xw \
          >> ../example_03d.ps
     #
     # From this we see that we might want to throw away values where w < 0.6. So we try that,
@@ -5957,7 +5997,7 @@ specify positions in inches directly. Thus, the complete automated script reads:
     #
     R=‘cat samp2_sat.pg samp2_ship.pg | minmax -I100/25‘
     psxy $R -JX8i/5i -X2i -Y1.5i -K -Wthick \
-         -Ba500f100:"Distance along great circle":/a50f25:"Gravity anomaly (mGal)":WeSn \
+         -Bxa500f100:+l"Distance along great circle" -Bya50f25+l"Gravity anomaly (mGal)" -BWeSn \
          -U/-1.75i/-1.25i/"Example 3e in Cookbook" samp2_sat.pg > ../example_03e.ps
     psxy -R -JX -O -Sp0.03i samp2_ship.pg >> ../example_03e.ps
     #
@@ -5967,7 +6007,7 @@ specify positions in inches directly. Thus, the complete automated script reads:
     #
     gmtconvert -A samp2_ship.pg samp2_sat.pg -o1,3 | spectrum1d -S256 -D1 -W -C > /dev/null
     #
-    psxy spectrum.coh -Ba1f3p:"Wavelength (km)":/a0.25f0.05:"Coherency@+2@+":WeSn -JX-4il/3.75i \
+    psxy spectrum.coh -Bxa1f3p+l"Wavelength (km)" -Bya0.25f0.05+l"Coherency@+2@+" -BWeSn -JX-4il/3.75i \
          -R1/1000/0/1 -U/-2.25i/-1.25i/"Example 3f in Cookbook" -P -K -X2.5i -Sc0.07i -Gblack \
          -Ey/0.5p -Y1.5i > ../example_03f.ps
     echo "3.85 3.6 Coherency@+2@+" | pstext -R0/4/0/3.75 -Jx -F+f18p,Helvetica-Bold+jTR -O \
@@ -5978,7 +6018,7 @@ specify positions in inches directly. Thus, the complete automated script reads:
     4 3.25
     END
     psxy -R -Jx -O -K -Wthicker box.d >> ../example_03f.ps
-    psxy -Ba1f3p/a1f3p:"Power (mGal@+2@+km)"::."Ship and Satellite Gravity":WeSn spectrum.xpower \
+    psxy -Bxa1f3p -Bya1f3p+l"Power (mGal@+2@+km)" -BWeSn+t"Ship and Satellite Gravity" spectrum.xpower \
     -ST0.07i -O -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/0.5p >> ../example_03f.ps
     psxy spectrum.ypower -R -JX -O -K -Gblack -Sc0.07i -Ey/0.5p >> ../example_03f.ps
     echo "3.9 3.6 Input Power" | pstext -R0/4/0/3.75 -Jx -F+f18p,Helvetica-Bold+jTR -O \
@@ -6038,9 +6078,9 @@ how to do it:
     echo '  0  100  10  100' >> zero.cpt
     grdcontour HI_geoid4.nc -R195/210/18/25 -Jm0.45i -p60/30 -C1 -A5+o -Gd4i -K -P \
     	-X1.25i -Y1.25i -UL/-0.5i/-1i/"Example 4 in Cookbook" > $ps
-    pscoast -R -J -p -B2/2NEsw -Gblack -O -K -T209/19.5/1i >> $ps
+    pscoast -R -J -p -B2 -WNEsw -Gblack -O -K -T209/19.5/1i >> $ps
     grdview HI_topo4.nc -R195/210/18/25/-6/4 -J -Jz0.34i -p -Czero.cpt -O -K \
-    	-N-6/lightgray -Qsm -B2/2/2:"Topo (km)":neswZ -Y2.2i >> $ps
+    	-N-6/lightgray -Qsm -B2 -Bz2+l"Topo (km)" -BneswZ -Y2.2i >> $ps
     echo '3.25 5.75 H@#awaiian@# R@#idge' | pstext -R0/10/0/10 -Jx1i \
     	-F+f60p,ZapfChancery-MediumItalic+jCB -O >> $ps
     rm -f zero.cpt
@@ -6050,12 +6090,12 @@ how to do it:
     grdgradient HI_topo4.nc -A0 -Gt_intens.nc -Nt0.75 -fg
     grdimage HI_geoid4.nc -Ig_intens.nc -R195/210/18/25 -JM6.75i -p60/30 -Cgeoid.cpt -E100 -K -P \
     	-X1.25i -Y1.25i -UL/-0.5i/-1i/"Example 4c in Cookbook" > $ps
-    pscoast -R -J -p -B2/2NEsw -Gblack -O -K >> $ps
+    pscoast -R -J -p -B2 -BNEsw -Gblack -O -K >> $ps
     psbasemap -R -J -p -O -K -T209/19.5/1i --COLOR_BACKGROUND=red --FONT=red \
     	--MAP_TICK_PEN_PRIMARY=thinner,red >> $ps
-    psscale -R -J -p240/30 -D3.375i/-0.5i/5i/0.3ih -Cgeoid.cpt -I -O -K "-B2:Geoid (m):" >> $ps
+    psscale -R -J -p240/30 -D3.375i/-0.5i/5i/0.3ih -Cgeoid.cpt -I -O -K -Bx2+lGeoid (m)" >> $ps
     grdview HI_topo4.nc -It_intens.nc -R195/210/18/25/-6/4 -J -JZ3.4i -p60/30 -Ctopo.cpt -O -K \
-    	-N-6/lightgray -Qc100 -B2/2/2:"Topo (km)":neswZ -Y2.2i >> $ps
+    	-N-6/lightgray -Qc100 -B2 -Bz2+l"Topo (km)" -BneswZ -Y2.2i >> $ps
     echo '3.25 5.75 H@#awaiian@# R@#idge' | pstext -R0/10/0/10 -Jx1i \
     	-F+f60p,ZapfChancery-MediumItalic+jCB -O >> $ps
     rm -f *_intens.nc
@@ -6122,7 +6162,7 @@ the SW and view the surface from SE:
     	EXP MUL = sombrero.nc
     echo '-5 128 5 128' > gray.cpt
     grdgradient sombrero.nc -A225 -Gintensity.nc -Nt0.75
-    grdview sombrero.nc -JX6i -JZ2i -B5/5/0.5SEwnZ -N-1/white -Qs -Iintensity.nc -X1.5i \
+    grdview sombrero.nc -JX6i -JZ2i -B5 -B0.5 -BSEwnZ -N-1/white -Qs -Iintensity.nc -X1.5i \
     	-Cgray.cpt -R-15/15/-15/15/-1/1 -K -p120/30 -UL/-1.25i/-0.75i/"Example 5 in Cookbook" > $ps
     echo "4.1 5.5 z(r) = cos (2@~p@~r/8) @~\327@~e@+-r/10@+" | pstext -R0/11/0/8.5 -Jx1i \
     	-F+f50p,ZapfChancery-MediumItalic+jBC -O >> $ps
@@ -6168,8 +6208,8 @@ this script:
     #
     ps=example_06.ps
     psrose fractures.d -: -A10r -S1.8in -UL/-2.25i/-0.75i/"Example 6 in Cookbook" -P -Gorange \
-    	-R0/1/0/360 -X2.5i -K -B0.2g0.2/30g30+glightblue -W1p > $ps
-    pshistogram -Ba2000f1000:"Topography (m)":/a10f5:"Frequency"::,%::."Histograms":WSne+glightblue \
+    	-R0/1/0/360 -X2.5i -K -Bx0.2g0.2 -By30g30 -B+glightblue -W1p > $ps
+    pshistogram -Bxa2000f1000+l"Topography (m)" -Bya10f5+l"Frequency"+u% -BWSne+t"Histograms"+glightblue \
     	v3206.t -R-6000/0/0/30 -JX4.8i/2.4i -Gorange -O -Y5.5i -X-0.5i -L1p -Z1 -W250 >> $ps
 
 .. figure:: _images/example_06.png
@@ -6268,7 +6308,7 @@ Figure [fig:example\ :sub:`0`\ 8] by running this script:
     # Unix progs:	echo, rm
     #
     ps=example_08.ps
-    grd2xyz guinea_bay.nc | psxyz -B1/1/1000:"Topography (m)"::.ETOPO5:WSneZ+ \
+    grd2xyz guinea_bay.nc | psxyz -B1 -Bz1000:+l"Topography (m)" -BWSneZ+b+tETOPO5 \
     	-R-0.1/5.1/-0.1/5.1/-5000/0 -JM5i -JZ6i -p200/30 -So0.0833333ub-5000 -P \
     	-U"Example 8 in Cookbook" -Wthinnest -Glightgreen -K > $ps
     echo '0.1 4.9 This is the surface of cube' | pstext -R -J -JZ -Z0 \
@@ -6319,7 +6359,7 @@ gap between the profile and the label:
     #
     ps=example_09.ps
     pswiggle track_*.xys -R185/250/-68/-42 -U"Example 9 in Cookbook" -K -Jm0.13i \
-    	-Ba10f5WSne+g240/255/240 -G+red -G-blue -Z2000 -Wthinnest -S240/-67/500/@~m@~rad \
+    	-Ba10f5 -BWSne+g240/255/240 -G+red -G-blue -Z2000 -Wthinnest -S240/-67/500/@~m@~rad \
     	--FORMAT_GEO_MAP=dddF > $ps
     psxy -R -J -O -K ridge.xy -Wthicker >> $ps
     psxy -R -J -O -K fz.xy -Wthinner,- >> $ps
@@ -6375,7 +6415,7 @@ Our script that produces Figure ex_10 reads:
     	| pstext -R -J -O -K -p -D-0.2i/0 -F+f20p,Helvetica-Bold,blue=thinner+jRM >> $ps
     psxyz agu2008.d -R-180/180/-90/90/1.01/100000 -J -JZ2.5il -So0.3ib1 -Gdarkgreen -Wthinner \
     	--FONT_TITLE=30p,Times-Bold --MAP_TITLE_OFFSET=-0.7i \
-    	"-B60g60/30g30/a1p:Memberships::.AGU 2008 Membership Distribution:WSneZ" -O -p >> $ps
+    	-Bx60g60 -By30g30 -Bza1p+lMemberships" -BWSneZ+t"AGU 2008 Membership Distribution" -O -p >> $ps
 
 .. figure:: _images/example_10.png
    :height: 647 px
@@ -6442,7 +6482,7 @@ Here is the shell script to generate the RGB cube in Figure [fig:example\ :sub:`
     gmtset FONT_ANNOT_PRIMARY 12p,Helvetica-Bold
     
     grdimage x.nc y.nc c.nc -JX2.5i/-2.5i -R -K -O -X0.5i >> $ps
-    psxy -Wthinner,white,- rays.dat -J -R -K -O -Bwesn >> $ps
+    psxy -Wthinner,white,- rays.dat -J -R -K -O >> $ps
     pstext --FONT=white -J -R -K -O -F+f+a >> $ps << END
     128 128 12p -45 60\217
     102  26 12p -90 0.4
@@ -6452,7 +6492,7 @@ Here is the shell script to generate the RGB cube in Figure [fig:example\ :sub:`
     echo 0 0 0 128 | psxy -N -Sv0.15i+s+e -Gwhite -W2p,white -J -R -K -O >> $ps
     
     grdimage x.nc c.nc y.nc -JX2.5i/2.5i -R -K -O -Y2.5i >> $ps
-    psxy -Wthinner,white,- rays.dat -J -R -K -O -Bwesn >> $ps
+    psxy -Wthinner,white,- rays.dat -J -R -K -O >> $ps
     pstext --FONT=white -J -R -K -O -F+f+a >> $ps << END
     128 128 12p  45 300\217
     26  102 12p   0 0.4
@@ -6464,7 +6504,7 @@ Here is the shell script to generate the RGB cube in Figure [fig:example\ :sub:`
     echo 0 0 90 90 | psxy -N -Sv0.15i+s+e -Gwhite -W2p,white -J -R -K -O >> $ps
     
     grdimage c.nc x.nc y.nc -JX-2.5i/2.5i -R -K -O -X-2.5i >> $ps
-    psxy -Wthinner,white,- rays.dat -J -R -K -O -Bwesn >> $ps
+    psxy -Wthinner,white,- rays.dat -J -R -K -O >> $ps
     pstext --FONT=white -J -R -K -O -F+f+a >> $ps << END
     128 128 12p 135 180\217
     102  26 12p  90 0.4
@@ -6482,7 +6522,7 @@ Here is the shell script to generate the RGB cube in Figure [fig:example\ :sub:`
     grdmath -I1 -R 255       = c.nc
     
     grdimage x.nc y.nc c.nc -JX-2.5i/-2.5i -R -K -O -X2.5i -Y2.5i >> $ps
-    psxy -Wthinner,black,- rays.dat -J -R -K -O -Bwesn >> $ps
+    psxy -Wthinner,black,- rays.dat -J -R -K -O >> $ps
     pstext -J -R -K -O -F+f+a >> $ps << END
     128 128 12p 225 240\217
     102  26 12p 270 0.4
@@ -6490,7 +6530,7 @@ Here is the shell script to generate the RGB cube in Figure [fig:example\ :sub:`
     END
     
     grdimage c.nc y.nc x.nc -JX2.5i/-2.5i -R -K -O -X2.5i >> $ps
-    psxy -Wthinner,black,- rays.dat -J -R -K -O -Bwesn >> $ps
+    psxy -Wthinner,black,- rays.dat -J -R -K -O >> $ps
     pstext -J -R -K -O -F+f+a >> $ps << END
     128 128 12p -45 0\217
     26  102 12p   0 0.4
@@ -6502,7 +6542,7 @@ Here is the shell script to generate the RGB cube in Figure [fig:example\ :sub:`
     echo 204 204 204 76 | psxy -N -Sv0.15i+s+e -Gblack -W2p -J -R -K -O >> $ps
     
     grdimage x.nc c.nc y.nc -JX-2.5i/2.5i -R -K -O -X-2.5i -Y2.5i >> $ps
-    psxy -Wthinner,black,- rays.dat -J -R -K -O -Bwesn >> $ps
+    psxy -Wthinner,black,- rays.dat -J -R -K -O >> $ps
     pstext -J -R -O -F+f+a >> $ps << END
     128 128 12p 135 120\217
     26  102 12p 180 0.4
@@ -6551,13 +6591,13 @@ image the data. We use a color palette table ``topo.cpt`` (created via
     #
     ps=example_12.ps
     triangulate table_5.11 -M > net.xy
-    psxy -R0/6.5/-0.2/6.5 -JX3.06i/3.15i -B2f1WSNe net.xy -Wthinner -P -K -X0.9i -Y4.65i > $ps
+    psxy -R0/6.5/-0.2/6.5 -JX3.06i/3.15i -B2f1 -BWSNe net.xy -Wthinner -P -K -X0.9i -Y4.65i > $ps
     psxy table_5.11 -R -J -O -K -Sc0.12i -Gwhite -Wthinnest >> $ps
     awk '{print $1, $2, NR-1}' table_5.11 | pstext -R -J -F+f6p -O -K >> $ps
     #
     # Then draw network and print the node values
     #
-    psxy -R -J -B2f1eSNw net.xy -Wthinner -O -K -X3.25i >> $ps
+    psxy -R -J -B2f1 -BeSNw net.xy -Wthinner -O -K -X3.25i >> $ps
     psxy -R -J -O -K table_5.11 -Sc0.03i -Gblack >> $ps
     pstext table_5.11 -R -J -F+f6p+jLM -O -K -Gwhite -W -C0.01i -D0.08i/0i -N >> $ps
     #
@@ -6566,12 +6606,12 @@ image the data. We use a color palette table ``topo.cpt`` (created via
     #
     T=`minmax -T25/2 table_5.11`
     makecpt -Cjet $T > topo.cpt
-    pscontour -R -J table_5.11 -B2f1WSne -Wthin -Ctopo.cpt -Lthinnest,- -Gd1i -X-3.25i -Y-3.65i \
+    pscontour -R -J table_5.11 -B2f1 -BWSne -Wthin -Ctopo.cpt -Lthinnest,- -Gd1i -X-3.25i -Y-3.65i \
     	-O -K -U"Example 12 in Cookbook" >> $ps
     #
     # Finally color the topography
     #
-    pscontour -R -J table_5.11 -B2f1eSnw -Ctopo.cpt -I -X3.25i -O -K >> $ps
+    pscontour -R -J table_5.11 -B2f1 -BeSnw -Ctopo.cpt -I -X3.25i -O -K >> $ps
     echo "3.16 8 Delaunay Triangulation" | \
     	pstext -R0/8/0/11 -Jx1i -F+f30p,Helvetica-Bold+jCB -O -X-3.25i >> $ps
     #
@@ -6615,7 +6655,7 @@ the plot (Figure [fig:example:sub:`1`\ 3]:
     grdmath -R-2/2/-2/2 -I0.1 X Y R2 NEG EXP X MUL = z.nc
     grdmath z.nc DDX = dzdx.nc
     grdmath z.nc DDY = dzdy.nc
-    grdcontour dzdx.nc -JX3i -B1/1WSne -C0.1 -A0.5 -K -P -Gd2i -S4 -T0.1i/0.03i \
+    grdcontour dzdx.nc -JX3i -B1 -BWSne -C0.1 -A0.5 -K -P -Gd2i -S4 -T0.1i/0.03i \
     	-U"Example 13 in Cookbook" > $ps
     grdcontour dzdy.nc -J -B -C0.05 -A0.2 -O -K -Gd2i -S4 -T0.1i/0.03i -Xa3.45i >> $ps
     grdcontour z.nc -J -B -C0.05 -A0.1 -O -K -Gd2i -S4 -T0.1i/0.03i -Y3.45i >> $ps
@@ -6674,14 +6714,14 @@ transect using `psxy <psxy.html>`_
     # First draw network and label the nodes
     
     gmtset MAP_GRID_PEN_PRIMARY thinnest,-
-    psxy table_5.11 -R0/7/0/7 -JX3.06i/3.15i -B2f1WSNe -Sc0.05i -Gblack -P -K -Y6.45i > $ps
+    psxy table_5.11 -R0/7/0/7 -JX3.06i/3.15i -B2f1 -BWSNe -Sc0.05i -Gblack -P -K -Y6.45i > $ps
     pstext table_5.11 -R -J -D0.1c/0 -F+f6p+jLM -O -K -N >> $ps
     blockmean table_5.11 -R0/7/0/7 -I1 > mean.xyz
     
     # Then draw blockmean cells
     
     psbasemap -R0.5/7.5/0.5/7.5 -J -O -K -Bg1 -X3.25i >> $ps
-    psxy -R0/7/0/7 -J -B2f1eSNw mean.xyz -Ss0.05i -Gblack -O -K >> $ps
+    psxy -R0/7/0/7 -J -B2f1 -BeSNw mean.xyz -Ss0.05i -Gblack -O -K >> $ps
     # Reformat to one decimal for annotation purposes
     gmtconvert mean.xyz --FORMAT_FLOAT_OUT=%.1f | \
     	pstext -R -J -D0.15c/0 -F+f6p+jLM -O -K -Gwhite -W -C0.01i -N >> $ps
@@ -6689,14 +6729,14 @@ transect using `psxy <psxy.html>`_
     # Then surface and contour the data
     
     surface mean.xyz -R -I1 -Gdata.nc
-    grdcontour data.nc -J -B2f1WSne -C25 -A50 -Gd3i -S4 -O -K -X-3.25i -Y-3.55i >> $ps
+    grdcontour data.nc -J -B2f1 -BWSne -C25 -A50 -Gd3i -S4 -O -K -X-3.25i -Y-3.55i >> $ps
     psxy -R -J mean.xyz -Ss0.05i -Gblack -O -K >> $ps
     
     # Fit bicubic trend to data and compare to gridded surface
     
     grdtrend data.nc -N10 -Ttrend.nc
     project -C0/0 -E7/7 -G0.1 -N > track
-    grdcontour trend.nc -J -B2f1wSne -C25 -A50 -Glct/cb -S4 -O -K -X3.25i >> $ps
+    grdcontour trend.nc -J -B2f1 -BwSne -C25 -A50 -Glct/cb -S4 -O -K -X3.25i >> $ps
     psxy -R -J track -Wthick,. -O -K >> $ps
     
     # Sample along diagonal
@@ -6704,7 +6744,7 @@ transect using `psxy <psxy.html>`_
     grdtrack track -Gdata.nc -o2,3 > data.d
     grdtrack track -Gtrend.nc -o2,3 > trend.d
     psxy `minmax data.d trend.d -I0.5/25` -JX6.3i/1.4i data.d -Wthick -O -K -X-3.25i -Y-1.9i \
-    	-B1/50WSne >> $ps
+    	-Bx1 -By50 -BWSne >> $ps
     psxy -R -J trend.d -Wthinner,- -O -U"Example 14 in Cookbook" >> $ps
     
     rm -f mean.xyz track *.nc *.d gmt.conf
@@ -6759,7 +6799,7 @@ grid files using `grdinfo <grdinfo.html>`_.
     #
     region=`minmax ship.b -I1 -bi3`
     nearneighbor $region -I10m -S40k -Gship.nc ship.b -bi3
-    grdcontour ship.nc -JM3i -P -B2WSne -C250 -A1000 -Gd2i -K -U"Example 15 in Cookbook" > $ps
+    grdcontour ship.nc -JM3i -P -B2 -BWSne -C250 -A1000 -Gd2i -K -U"Example 15 in Cookbook" > $ps
     #
     blockmedian $region -I10m ship.b -bi3 -bo > ship_10m.b
     surface $region -I10m ship_10m.b -Gship.nc -bi3
@@ -6853,7 +6893,7 @@ request for interval (700,725).
     ps=example_16.ps
     gmtset FONT_ANNOT_PRIMARY 9p
     #
-    pscontour -R0/6.5/-0.2/6.5 -Jx0.45i -P -K -Y5.5i -Ba2f1WSne table_5.11 -Cex16.cpt -I > $ps
+    pscontour -R0/6.5/-0.2/6.5 -Jx0.45i -P -K -Y5.5i -Ba2f1 -BWSne table_5.11 -Cex16.cpt -I > $ps
     echo "3.25 7 pscontour (triangulate)" | pstext -R -J -O -K -N -F+f18p,Times-Roman+jCB >> $ps
     #
     surface table_5.11 -R -I0.2 -Graws0.nc
@@ -6943,11 +6983,11 @@ color palettes and ways to draw color legends.
     
     # Finally undo clipping and overlay basemap
     
-    pscoast -R -J -O -K -Q -B10f5:."Clipping of Images": >> $ps
+    pscoast -R -J -O -K -Q -B10f5 -B+t"Clipping of Images" >> $ps
     
     # Put a color legend on top of the land mask
     
-    psscale -D4i/7.6i/4i/0.2ih -Cgeoid.cpt -B5f1/:m: -I -O -K >> $ps
+    psscale -D4i/7.6i/4i/0.2ih -Cgeoid.cpt -Bx5f1 -By+lm -I -O -K >> $ps
     
     # Add a text paragraph
     
@@ -7015,14 +7055,14 @@ illustration is presented in Figure [fig:example\ :sub:`1`\ 8].
     grdimage AK_gulf_grav.nc -IAK_gulf_grav_i.nc -JM5.5i -Cgrav.cpt -B2f1 -P -K -X1.5i \
     	-Y5.85i > $ps
     pscoast -RAK_gulf_grav.nc -J -O -K -Di -Ggray -Wthinnest >> $ps
-    psscale -D2.75i/-0.4i/4i/0.15ih -Cgrav.cpt -B20f10/:mGal: -O -K >> $ps
+    psscale -D2.75i/-0.4i/4i/0.15ih -Cgrav.cpt -Bx20f10 -By+lmGal -O -K >> $ps
     awk '{print $1, $2, "Pratt"}' pratt.d | pstext -R -J -O -K -D0.1i/0.1i \
     	-F+f12p,Helvetica-Bold+jLB >> $ps
     awk '{print $1, $2, 0, 400, 400}' pratt.d | psxy -R -J -O -K -SE -Wthinnest >> $ps
     
     # Then draw 10 mGal contours and overlay 50 mGal contour in green
     
-    grdcontour AK_gulf_grav.nc -J -C20 -B2f1WSEn -O -K -Y-4.85i \
+    grdcontour AK_gulf_grav.nc -J -C20 -B2f1 -BWSEn -O -K -Y-4.85i \
     	-UL/-1.25i/-0.75i/"Example 18 in Cookbook" >> $ps
     # Save 50 mGal contours to individual files, then plot them
     grdcontour AK_gulf_grav.nc -C10 -L49/51 -Dsm_%d_%c.txt
@@ -7256,7 +7296,7 @@ Here is our final map script that produces Figure [fig:example\ :sub:`2`\ 0]:
     -16.5	64.4	0.25
     END
     
-    pscoast -Rg -JR9i -B60/30:."Hotspot Islands and Cities": -Gdarkgreen -Slightblue -Dc -A5000 \
+    pscoast -Rg -JR9i -Bx60 -By30 -B+t"Hotspot Islands and Cities" -Gdarkgreen -Slightblue -Dc -A5000 \
     	-K -U"Example 20 in Cookbook" > $ps
     
     psxy -R -J hotspots.d -Skvolcano -O -K -Wthinnest -Gred >> $ps
@@ -7347,8 +7387,8 @@ Here is how it all comes out:
     
     # Lay down the basemap:
     
-    psbasemap $R -JX9i/6i -K -U"Example 21 in Cookbook" -Bs1Y/WSen \
-       -Bpa3Of1o/50:=\$::."RedHat (RHT) Stock Price Trend since IPO":WSen+glightgreen > $ps
+    psbasemap $R -JX9i/6i -K -U"Example 21 in Cookbook" -Bs1Y -BWSen \
+       -Bpxa3Of1o -Bpy50+p"$ " -BWSen+t"RedHat (RHT) Stock Price Trend since IPO"+glightgreen > $ps
     
     # Plot main window with open price as red line over yellow envelope of low/highs
     
@@ -7390,7 +7430,7 @@ Here is how it all comes out:
     
     # Lay down the basemap, using Finnish annotations and place the insert in the upper right
     
-    psbasemap --TIME_LANGUAGE=fi $R -JX6i/3i -Bpa3Of3o/10:=\$:ESw+glightblue -Bs1Y/ \
+    psbasemap --TIME_LANGUAGE=fi $R -JX6i/3i -Bpxa3Of3o -Bpy10+p"$ " -BESw+glightblue -Bsx1Y \
     	-O -K -X3i -Y3i >> $ps
     
     # Again, plot close price as red line over yellow envelope of low/highs
@@ -7489,7 +7529,7 @@ giving the URL where these and similar data can be obtained.
     
     # Start plotting. First lay down map, then plot quakes with size = magintude/50":
     
-    pscoast -Rg -JK180/9i -B45g30:."World-wide earthquake activity": -Gbrown -Slightblue \
+    pscoast -Rg -JK180/9i -B45g30 -B+t"World-wide earthquake activity" -Gbrown -Slightblue \
             -Dc -A1000 -K -UL/-0.75i/-2.5i/"Example 22 in Cookbook" -Y2.75i > $ps
     awk -F, '{ print $4, $3, $6, $5*0.02}' neic_quakes.d \
             | psxy -R -JK -O -K -Cneis.cpt -Sci -Wthin -h >> $ps
@@ -7610,7 +7650,7 @@ Section [sec:example\ :sub:`2`\ 5]).
     END
     
     pscoast -Rg -JH90/9i -Glightgreen -Sblue -U"Example 23 in Cookbook" -A1000 \
-    	-Bg30:."Distances from $name to the World": -K -Dc -Wthinnest > $ps
+    	-Bg30 -B+t"Distances from $name to the World" -K -Dc -Wthinnest > $ps
     
     grdcontour dist.nc -A1000+v+ukm+fwhite -Glz-/z+ -S8 -C500 -O -K -J \
     	-Wathin,white -Wcthinnest,white,- >> $ps
@@ -7693,7 +7733,7 @@ distortion) and not the actual distance which remains constant at 1000 km.
     180	-90
     END
     R=`minmax -I10 oz_quakes.d`
-    pscoast $R -JM9i -K -Gtan -Sdarkblue -Wthin,white -Dl -A500 -Ba20f10g10WeSn \
+    pscoast $R -JM9i -K -Gtan -Sdarkblue -Wthin,white -Dl -A500 -Ba20f10g10 -BWeSn \
     	-U"Example 24 in Cookbook" > $ps
     psxy -R -J -O -K oz_quakes.d -Sc0.05i -Gred >> $ps
     gmtselect oz_quakes.d -L1000k/dateline.d -Nk/s -C3000k/point.d -fg -R -Il \
@@ -7788,7 +7828,7 @@ categorical data, like these, that should not be interpolated.
     END
     # Create the final plot and overlay coastlines
     gmtset FONT_ANNOT_PRIMARY +10p FORMAT_GEO_MAP dddF
-    grdimage key.nc -JKs180/9i -B60/30:."Antipodal comparisons":WsNE -K -Ckey.cpt -Y1.2i \
+    grdimage key.nc -JKs180/9i -Bx60 -By30 -BWsNE+t"Antipodal comparisons" -K -Ckey.cpt -Y1.2i \
     	-UL/-0.75i/-0.95i/"Example 25 in Cookbook" -nn > $ps
     pscoast -R -J -O -K -Wthinnest -Dc -A500 >> $ps
     # Place an explanatory legend below
@@ -7852,7 +7892,7 @@ further and extend the availability of the full projection to all of the
     
     PROJ=-JG${longitude}/${latitude}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/4i
     
-    pscoast -Rg $PROJ -X1i -B5g5/5g5 -Glightbrown -Slightblue -W -Dl -N1/1p,red -N2,0.5p -P -K \
+    pscoast -Rg $PROJ -X1i -B5g5 -Glightbrown -Slightblue -W -Dl -N1/1p,red -N2,0.5p -P -K \
     	-Y5i > $ps
     
     # now point from an altitude of 160 km with a specific tilt and azimuth and with a wider restricted
@@ -7866,7 +7906,7 @@ further and extend the availability of the full projection to all of the
     
     PROJ=-JG${longitude}/${latitude}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/5i
     
-    pscoast -R $PROJ -B5g5/5g5 -Glightbrown -Slightblue -W -Ia/blue -Di -Na -O -X1i -Y-4i \
+    pscoast -R $PROJ -B5g5-Glightbrown -Slightblue -W -Ia/blue -Di -Na -O -X1i -Y-4i \
     	-UL/-1.75i/-0.75i/"Example 26 in Cookbook" >> $ps
 
 .. figure:: _images/example_26.png
@@ -7940,7 +7980,7 @@ painted black. A color scale bar was then added to complete the illustration.
     
     R=`grdinfo tasman_grav.nc | grep Remark | awk '{print $NF}'`
     
-    pscoast $R -Jm0.25i -Ba10f5WSne -O -K -Gblack --PROJ_ELLIPSOID=Sphere \
+    pscoast $R -Jm0.25i -Ba10f5 -BWSne -O -K -Gblack --PROJ_ELLIPSOID=Sphere \
     	-Cwhite -Dh+ --FORMAT_GEO_MAP=dddF >> $ps
     
     # Put a color legend on top of the land mask justified with 147E,31S
@@ -7949,7 +7989,7 @@ painted black. A color scale bar was then added to complete the illustration.
     #	--PROJ_ELLIPSOID=Sphere >> $ps
     pos=`echo 147E 31S | mapproject -R -J --PROJ_ELLIPSOID=Sphere | \
     	awk '{printf "%si/%si\n", $1, $2}'`
-    psscale -D$pos/2i/0.15i -Cgrav.cpt -B50f10/:mGal: -I -O -T+gwhite+p1p >> $ps
+    psscale -D$pos/2i/0.15i -Cgrav.cpt -Bx50f10 -By+lmGal -I -O -T+gwhite+p1p >> $ps
     
     # Clean up
     
@@ -8007,13 +8047,13 @@ label Kilauea crater to complete the figure.
     	-U"Example 28 in Cookbook" --FORMAT_FLOAT_OUT=%.10g --FONT_ANNOT_PRIMARY=9p \
     	> $ps
     # Overlay geographic data and coregister by using correct region and projection with the same scale
-    pscoast -RKilauea.utm.nc -Ju5Q/1:160000 -O -K -Df+ -Slightblue -W0.5p -B5mg5mNE \
+    pscoast -RKilauea.utm.nc -Ju5Q/1:160000 -O -K -Df+ -Slightblue -W0.5p -B5mg5m -BNE \
     	--FONT_ANNOT_PRIMARY=12p --FORMAT_GEO_MAP=ddd:mmF >> $ps
     echo 155:16:20W 19:26:20N KILAUEA | pstext -R -J -O -K -F+f12p,Helvetica-Bold+jCB >> $ps
     psbasemap -R -J -O -K --FONT_ANNOT_PRIMARY=9p -Lf155:07:30W/19:15:40N/19:23N/5k+l1:16,000+u \
     	--FONT_LABEL=10p >> $ps
     # Annotate in km but append ,000m to annotations to get customized meter labels
-    psbasemap -RKilauea.utm.nc+Uk -Jx1:160 -B5g5:,"-@:8:000m":WSne -O --FONT_ANNOT_PRIMARY=10p \
+    psbasemap -RKilauea.utm.nc+Uk -Jx1:160 -B5g5+u"@:8:000m" -BWSne -O --FONT_ANNOT_PRIMARY=10p \
     	--MAP_GRID_CROSS_SIZE_PRIMARY=0.1i --FONT_LABEL=10p >> $ps
     # Clean up
     rm -f Kilauea.utm_i.nc Kilauea.cpt tmp.txt
@@ -8082,17 +8122,17 @@ imaged with `grdimage <grdimage.html>`_ and
     grdmath mars2.nc 1000 DIV PROJ_ELLIPSOID.nc SUB = mars2.nc
     makecpt -Crainbow -T-7/15/22 -Z > mars.cpt
     grdgradient mars2.nc -fg -Ne0.75 -A45 -Gmars2_i.nc
-    grdimage mars2.nc -Imars2_i.nc -Cmars.cpt -B30g30Wsne -JH0/7i -P -K -E200 \
+    grdimage mars2.nc -Imars2_i.nc -Cmars.cpt -B30g30 -BWsne -JH0/7i -P -K -E200 \
     	-UL/-0.5i/-0.75i/"Example 29 in Cookbook" --FONT_ANNOT_PRIMARY=12p -X0.75i > $ps
     grdcontour mars2.nc -J -O -K -C1 -A5 -Glz+/z- >> $ps
     psxy -Rg -J -O -K -Sc0.045i -Gblack mars370.in  >> $ps
     echo "0 90 b)" | pstext -R -J -O -K -N -D-3.5i/-0.2i -F+f14p,Helvetica-Bold+jLB >> $ps
     grdgradient mars.nc -fg -Ne0.75 -A45 -Gmars_i.nc
-    grdimage mars.nc -Imars_i.nc -Cmars.cpt -B30g30Wsne -J -O -K -Y4.2i -E200 \
+    grdimage mars.nc -Imars_i.nc -Cmars.cpt -B30g30 -BWsne -J -O -K -Y4.2i -E200 \
     	--FONT_ANNOT_PRIMARY=12p >> $ps
     grdcontour mars.nc -J -O -K -C1 -A5 -Glz+/z- >> $ps
     psxy -Rg -J -O -K -Sc0.045i -Gblack mars370.in  >> $ps
-    psscale -Cmars.cpt -O -K -D3.5i/-0.15i/6i/0.1ih -I --FONT_ANNOT_PRIMARY=12p -B2f1/:km: >> $ps
+    psscale -Cmars.cpt -O -K -D3.5i/-0.15i/6i/0.1ih -I --FONT_ANNOT_PRIMARY=12p -Bx2f1 -By+lkm >> $ps
     echo "0 90 a)" | pstext -R -J -O -N -D-3.5i/-0.2i -F+f14p,Helvetica-Bold+jLB >> $ps
     # Clean up
     rm -f *.nc mars.cpt
@@ -8129,7 +8169,7 @@ the given angle.
     # Draw generic x-y axes with arrows
     ps=example_30.ps
     
-    psbasemap -R0/360/-1.25/1.75 -JX8i/6i -B90f30:,-\\312:/1g10:."Two Trigonometric Functions":WS \
+    psbasemap -R0/360/-1.25/1.75 -JX8i/6i -B90f30+u"\\312" -By1g10 -BWS+t"Two Trigonometric Functions" \
     	-K -U"Example 30 in Cookbook" --MAP_FRAME_TYPE=graph --MAP_VECTOR_SHAPE=0.5 > $ps
     
     # Draw sine an cosine curves
@@ -8256,7 +8296,7 @@ outlined fonts or to convert to a PDF-file.
     
     # map of countries
     pscoast -Dl -R-7/31/64/66/r -JL15/50/40/60/16c -P \
-    -B10g10/5g5:."Europe\072 Countries and Capital Cities": -A250 \
+    -Bx10g10 -By5g5 -B+t"Europe\072 Countries and Capital Cities" -A250 \
     -U"Example 31 in Cookbook" -Slightblue -Glightgreen -W0.25p -N1/1p,white -K > $ps
     
     # mark capitals
@@ -8497,7 +8537,7 @@ variations about the stacked median profile.
     # Show upper/lower values encountered as an envelope
     gmtconvert stack.txt -o0,5 > env.txt
     gmtconvert stack.txt -o0,6 -I -T >> env.txt
-    psxy -R-200/200/-3500/-2000 -Bafg1000:"Distance from ridge (km)":/af:"Depth (m)":WSne \
+    psxy -R-200/200/-3500/-2000 -Bxafg1000+l"Distance from ridge (km)" -Byaf+l"Depth (m)" -BWSne \
     	-JX6i/3i -O -K -Glightgray env.txt -Y6.5i >> $ps
     psxy -R -J -O -K -W3p stack.txt >> $ps
     echo "0 -2000 MEDIAN STACKED PROFILE" | pstext -R -J -O -K -Gwhite -F+jTC+f14p -Dj0.1i >> $ps
@@ -8527,14 +8567,14 @@ will continue to debate for some time.
     #
     ps=example_34.ps
     gmtset FORMAT_GEO_MAP dddF
-    pscoast -JM4.5i -R-6/20/35/52 -FFR,IT+fP300/8 -Glightgray -BafWSne -P -K \
+    pscoast -JM4.5i -R-6/20/35/52 -FFR,IT+fP300/8 -Glightgray -Baf -BWSne -P -K \
     	-X2i -U-1.75i/-0.75i/"Example 34 in Cookbook" > $ps
     # Extract a subset of ETOPO2m for this part of Europe
     # grdcut etopo2m_grd.nc -R -GFR+IT.nc=ns
     makecpt -Cglobe -T-5000/5000/500 -Z > z.cpt
     grdgradient FR+IT.nc -A15 -Ne0.75 -GFR+IT_int.nc
     grdimage FR+IT.nc -IFR+IT_int.nc -Cz.cpt -J -O -K -Y4.5i \
-    	-BafWsnE:."Franco-Italian Union, 2042-45": >> $ps
+    	-Baf -BWsnE+t"Franco-Italian Union, 2042-45" >> $ps
     pscoast -J -R -FFR,IT+fred@60 -O >> $ps
     # cleanup
     rm -f gmt.conf FR+IT_int.nc z.cpt
@@ -10436,7 +10476,7 @@ total file size of the coastlines, rivers, and borders database is only
 
     gmtset MAP_GRID_CROSS_SIZE_PRIMARY 0 MAP_ANNOT_OBLIQUE 22 MAP_ANNOT_MIN_SPACING 0.3i
     pscoast -Rk-9000/9000/-9000/9000 -JE130.35/-0.2/3.5i -P -Dc -A500 \
-            -Gburlywood -Sazure -Wthinnest -N1/thinnest,- -B20g20WSne -K > GMT_App_K_1.ps
+            -Gburlywood -Sazure -Wthinnest -N1/thinnest,- -B20g20 -BWSne -K > GMT_App_K_1.ps
     psbasemap -R -J -O -Dk2000+c130.35/-0.2+pthicker >> GMT_App_K_1.ps
 
 Here, we use the **MAP_ANNOT_OBLIQUE** bit flags to achieve horizontal
@@ -10460,7 +10500,7 @@ resolution in *GMT*. The plot is generated by the script:
   ::
 
     pscoast -Rk-2000/2000/-2000/2000 -JE130.35/-0.2/3.5i -P -Dl -A100 -Gburlywood \
-            -Sazure -Wthinnest -N1/thinnest,- -B10g5WSne -K > GMT_App_K_2.ps
+            -Sazure -Wthinnest -N1/thinnest,- -B10g5 -BWSne -K > GMT_App_K_2.ps
     psbasemap -R -J -O -Dk500+c130.35/-0.2+pthicker >> GMT_App_K_2.ps
 
 The intermediate resolution (**-Di**)
@@ -10480,7 +10520,7 @@ borders now exceeds 3.35 Mbytes. The plot is generated by the script:
   ::
 
     pscoast -Rk-500/500/-500/500 -JE130.35/-0.2/3.5i -P -Di -A20 -Gburlywood \
-            -Sazure -Wthinnest -N1/thinnest,- -B2g1WSne -K > GMT_App_K_3.ps
+            -Sazure -Wthinnest -N1/thinnest,- -B2g1 -BWSne -K > GMT_App_K_3.ps
     echo 133 2 | psxy -R -J -O -K -Sc1.4i -Gwhite >> GMT_App_K_3.ps
     psbasemap -R -J -O -K -Tm133/2/1i::+45/10/5 --FONT_TITLE=12p --MAP_TICK_LENGTH_PRIMARY=0.05i \
               --FONT_ANNOT_SECONDARY=8p >> GMT_App_K_3.ps
@@ -10502,7 +10542,7 @@ generated by these commands:
   ::
 
     pscoast -Rk-100/100/-100/100 -JE130.35/-0.2/3.5i -P -Dh -A1 -Gburlywood \
-            -Sazure -Wthinnest -N1/thinnest,- -B30mg10mWSne -K > GMT_App_K_4.ps
+            -Sazure -Wthinnest -N1/thinnest,- -B30mg10m -BWSne -K > GMT_App_K_4.ps
     psbasemap -R -J -O -Dk20+c130.35/-0.2+pthicker >> GMT_App_K_4.ps
 
 The full resolution (**-Df**)
@@ -10520,7 +10560,7 @@ reproduced by the single command:
   ::
 
     pscoast -Rk-20/20/-20/20 -JE130.35/-0.2/3.5i -P -Df -Gburlywood \
-            -Sazure -Wthinnest -N1/thinnest,- -B10mg2mWSne > GMT_App_K_5.ps
+            -Sazure -Wthinnest -N1/thinnest,- -B10mg2m -BWSne > GMT_App_K_5.ps
 
 We hope you will study these examples to enable you to make efficient
 and wise use of this vast data set.

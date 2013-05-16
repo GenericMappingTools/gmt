@@ -146,63 +146,85 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 
 		case 'B':	/* Tickmark option */
 
-			GMT_message (GMT, "\t-B Specify basemap frame info.  <tickinfo> is a textstring made up of one or\n");
-			GMT_message (GMT, "\t   more substrings of the form [a|f|g][<stride>[+-<phase>][<unit>]], where the (optional) a\n");
-			GMT_message (GMT, "\t   indicates annotation and major tick interval, f minor tick interval and g grid interval\n");
-			GMT_message (GMT, "\t   <stride> is the spacing between ticks or annotations, the (optional)\n");
-			GMT_message (GMT, "\t   <phase> specifies phase-shifted annotations by that amount, and the (optional)\n");
-			GMT_message (GMT, "\t   <unit> specifies the <stride> unit [Default is unit implied in -R]. There can be\n");
-			GMT_message (GMT, "\t   no spaces between the substrings - just append to make one very long string.\n");
-			GMT_message (GMT, "\t   -B[p] means (p)rimary annotations; use -Bs to specify (s)econdary annotations.\n");
-			GMT_message (GMT, "\t   For custom labels or intervals, let <tickinfo> be c<intfile>,; see man page for details.\n");
-			GMT_message (GMT, "\t   The optional <unit> modifies the <stride> value accordingly.  For maps, you may use\n");
-			GMT_message (GMT, "\t     d: arc degree [Default].\n");
-			GMT_message (GMT, "\t     m: arc minute.\n");
-			GMT_message (GMT, "\t     s: arc second.\n");
-			GMT_message (GMT, "\t   For time axes, several units are recognized:\n");
-			GMT_message (GMT, "\t     Y: year - plot using all 4 digits.\n");
-			GMT_message (GMT, "\t     y: year - plot only last 2 digits.\n");
-			GMT_message (GMT, "\t     O: month - format annotation according to format_date_map.\n");
-			GMT_message (GMT, "\t     o: month - plot as 2-digit integer (1-12).\n");
-			GMT_message (GMT, "\t     U: ISO week - format annotation according to format_date_map.\n");
-			GMT_message (GMT, "\t     u: ISO week - plot as 2-digit integer (1-53).\n");
-			GMT_message (GMT, "\t     r: Gregorian week - 7-day stride from chosen start of week (%s).\n", GMT_weekdays[GMT->current.setting.time_week_start]);
-			GMT_message (GMT, "\t     K: ISO weekday - format annotation according to format_date_map.\n");
-			GMT_message (GMT, "\t     k: weekday - plot name of weekdays in selected language [%s].\n", GMT->current.setting.time_language);
-			GMT_message (GMT, "\t     D: day  - format annotation according to format_date_map, which also determines whether\n");
-			GMT_message (GMT, "\t               we should plot day of month (1-31) or day of year (1-366).\n");
-			GMT_message (GMT, "\t     d: day - plot as 2- (day of month) or 3- (day of year) integer.\n");
-			GMT_message (GMT, "\t     R: Same as d but annotates from start of Gregorian week.\n");
-			GMT_message (GMT, "\t     H: hour - format annotation according to format_clock_map.\n");
-			GMT_message (GMT, "\t     h: hour - plot as 2-digit integer (0-23).\n");
-			GMT_message (GMT, "\t     M: minute - format annotation according to format_clock_map.\n");
-			GMT_message (GMT, "\t     m: minute - plot as 2-digit integer (0-59).\n");
-			GMT_message (GMT, "\t     S: second - format annotation according to format_clock_map.\n");
-			GMT_message (GMT, "\t     s: second - plot as 2-digit integer (0-59; 60-61 if leap seconds are enabled).\n");
-			GMT_message (GMT, "\t   When <stride> is omitted, it will be determined automatically.\n");
-			GMT_message (GMT, "\t   Specify an axis label by surrounding it with colons (e.g., :\"my x label\":).\n");
-			GMT_message (GMT, "\t   To prepend a prefix to each annotation (e.g., $ 10, $ 20 ...) add a prefix that begins\n");
-			GMT_message (GMT, "\t     with the equal-sign (=); the rest is used as annotation prefix (e.g. :=\'$\':).\n");
-			GMT_message (GMT, "\t   To append a unit to each annotation (e.g., 5 km, 10 km ...) add a label that begins\n");
-			GMT_message (GMT, "\t     with a comma; the rest is used as unit annotation (e.g. :\",km\":).\n");
-			GMT_message (GMT, "\t   For separate x and y [and z if -Jz is used] tickinfo, separate the strings with slashes [/].\n");
-			GMT_message (GMT, "\t   Specify an plot title by adding a label whose first character is a period; the rest\n");
-			GMT_message (GMT, "\t     of the label is used as the title (e.g. :\".My Plot Title\":).\n");
-			GMT_message (GMT, "\t   Append any combination of W, E, S, N, Z to annotate those axes only [Default is WESNZ (all)].\n");
-			GMT_message (GMT, "\t     Use lower case w, e, s, n, z to draw & tick but not to annotate those axes.\n");
-			GMT_message (GMT, "\t     Z+ will also draw a 3-D box.\n");
-			GMT_message (GMT, "\t   Append +g<fill> to pain the inside of the map region before plotting [no fill].\n");
-			GMT_message (GMT, "\t   Append +o[<plon>/<plat>] to draw oblique gridlines about this pole [regular gridlines].\n");
-			GMT_message (GMT, "\t   Log10 axis: Append l to annotate log10 (x) or p for 10^(log10(x)) [Default annotates x].\n");
-			GMT_message (GMT, "\t   Power axis: append p to annotate x at equidistant pow increments [Default is nonlinear].\n");
-			GMT_message (GMT, "\t   See psbasemap man pages for more details and examples of all settings.\n");
+			GMT_message (GMT, "\t-B Specify both (1) basemap frame settings and (2) axes parameters.\n");
+			GMT_message (GMT, "\t   Frame settings are modified via an optional single invocation of\n");
+			GMT_message (GMT, "\t     -B[<axes>][+b][+g<fill>][+o<lon>/<lat>][+t<title>]\n");
+			GMT_message (GMT, "\t   Axes parameters are specified via one or more invocations of\n");
+			GMT_message (GMT, "\t     -B[p|s][x|y|z]<info>\n\n");
+			GMT_message (GMT, "\t   1. Frame settings control which axes to plot, frame fill, title, and type of gridlines:\n");
+			GMT_message (GMT, "\t     <axes> is a combination of W,E,S,N,Z and plots those axes only [Default is WESNZ (all)].\n");
+			GMT_message (GMT, "\t     Use lower case w,e,s,n,z just to draw and tick (but not annotate) those axes.\n");
+			GMT_message (GMT, "\t     For 3-D plots the Z|z[<corners>][+b] controls the vertical axis.  The <corners> specifies\n");
+			GMT_message (GMT, "\t     at which corner(s) to erect the axis via a combination of 1,2,3,4; 1 means lower left corner,\n");
+			GMT_message (GMT, "\t     2 is lower right, etc., in a counter-clockwise order. [Default automatically selects one axis].\n");
+			GMT_message (GMT, "\t     The optional +b will erect a 3-D frame box to outline the 3-D domain [no frame box]. The +b\n");
+			GMT_message (GMT, "\t     is also required for x-z or y-z gridlines to be plotted (if such gridlines are selected below).\n");
+			GMT_message (GMT, "\t     Append +g<fill> to paint the inside of the map region before further plotting [no fill].\n");
+			GMT_message (GMT, "\t     Append +o<plon>/<plat> to draw oblique gridlines about this pole [regular gridlines].\n");
+			GMT_message (GMT, "\t     Note: the +o modifier is ignored unless gridlines are specified via the axes parameters (below).\n");
+			GMT_message (GMT, "\t     Append +t<title> to place a title over the map frame [no title].\n");
+			GMT_message (GMT, "\t   2. Axes settings control the annotation, tick, and grid intervals and labels.\n");
+			GMT_message (GMT, "\t     The full axes specification is\n");
+			GMT_message (GMT, "\t       -B[p|s][x|y|z]<intervals>[+l<label>][+p<prefix>][+s<suffix>]\n");
+			GMT_message (GMT, "\t     Alternatively, you may break this syntax into two separate -B options:\n");
+			GMT_message (GMT, "\t       -B[p|s][x|y|z][+l<label>][+p<prefix>][+s<suffix>]\n");
+			GMT_message (GMT, "\t       -B[p|s][x|y|z]<intervals>\n");
+			GMT_message (GMT, "\t     There are two levels of annotations: Primary and secondary (most situations only require primary).\n");
+			GMT_message (GMT, "\t     The -B[p] selects (p)rimary annotations while -Bs specifies (s)econdary annotations.\n");
+			GMT_message (GMT, "\t     The [x|y|z] selects which axes the settings apply to.  If none are given we default to xy.\n");
+			GMT_message (GMT, "\t     To specify different settings for different axes you must repeat the -B axes option for\n");
+			GMT_message (GMT, "\t     each dimension., i.e., provide separate -B[p|s]x, -B[p|s]y, and -B[p|s]z settings.\n");
+			GMT_message (GMT, "\t     To prepend a prefix to each annotation (e.g., $ 10, $ 20 ...), add +p<prefix>.\n");
+			GMT_message (GMT, "\t     To append a unit to each annotation (e.g., 5 km, 10 km ...), add +s<suffix>.\n");
+			GMT_message (GMT, "\t     To label an axis, add +l<label>.  Use quotes if <label>, <prefix> or <suffix> have spaces.\n");
+			GMT_message (GMT, "\t     Geographic map annotations will automatically have degree, minute, seconds suffix.\n");
+			GMT_message (GMT, "\t     The <intervals> setting controls the annotation spacing and is a textstring made up of one or\n");
+			GMT_message (GMT, "\t     more substrings of the form [a|f|g][<stride>[+-<phase>][<unit>]], where the (optional) a\n");
+			GMT_message (GMT, "\t     indicates annotation and major tick interval, f minor tick interval, and g grid interval.\n");
+			GMT_message (GMT, "\t     Here, <stride> is the spacing between ticks or annotations, the (optional)\n");
+			GMT_message (GMT, "\t     <phase> specifies phase-shifted annotations/ticks by that amount, and the (optional)\n");
+			GMT_message (GMT, "\t     <unit> specifies the <stride> unit [Default is the unit implied in -R]. There can be\n");
+			GMT_message (GMT, "\t     no spaces between the substrings; just append items to make one very long string.\n");
+			GMT_message (GMT, "\t     For custom annotations or intervals, let <intervals> be c<intfile>; see man page for details.\n");
+			GMT_message (GMT, "\t     The optional <unit> modifies the <stride> value accordingly.  For geographic maps you may use\n");
+			GMT_message (GMT, "\t       d: arc degree [Default].\n");
+			GMT_message (GMT, "\t       m: arc minute.\n");
+			GMT_message (GMT, "\t       s: arc second.\n");
+			GMT_message (GMT, "\t     For time axes, several units are recognized:\n");
+			GMT_message (GMT, "\t       Y: year - plot using all 4 digits.\n");
+			GMT_message (GMT, "\t       y: year - plot only last 2 digits.\n");
+			GMT_message (GMT, "\t       O: month - format annotation according to format_date_map.\n");
+			GMT_message (GMT, "\t       o: month - plot as 2-digit integer (1-12).\n");
+			GMT_message (GMT, "\t       U: ISO week - format annotation according to format_date_map.\n");
+			GMT_message (GMT, "\t       u: ISO week - plot as 2-digit integer (1-53).\n");
+			GMT_message (GMT, "\t       r: Gregorian week - 7-day stride from chosen start of week (%s).\n", GMT_weekdays[GMT->current.setting.time_week_start]);
+			GMT_message (GMT, "\t       K: ISO weekday - format annotation according to format_date_map.\n");
+			GMT_message (GMT, "\t       k: weekday - plot name of weekdays in selected language [%s].\n", GMT->current.setting.time_language);
+			GMT_message (GMT, "\t       D: day - format annotation according to format_date_map, which also determines whether\n");
+			GMT_message (GMT, "\t                we should plot day of month (1-31) or day of year (1-366).\n");
+			GMT_message (GMT, "\t       d: day - plot as 2- (day of month) or 3- (day of year) integer.\n");
+			GMT_message (GMT, "\t       R: Same as d but annotates from start of Gregorian week.\n");
+			GMT_message (GMT, "\t       H: hour - format annotation according to format_clock_map.\n");
+			GMT_message (GMT, "\t       h: hour - plot as 2-digit integer (0-23).\n");
+			GMT_message (GMT, "\t       M: minute - format annotation according to format_clock_map.\n");
+			GMT_message (GMT, "\t       m: minute - plot as 2-digit integer (0-59).\n");
+			GMT_message (GMT, "\t       S: second - format annotation according to format_clock_map.\n");
+			GMT_message (GMT, "\t       s: second - plot as 2-digit integer (0-59; 60-61 if leap seconds are enabled).\n");
+			GMT_message (GMT, "\t     Cartesian axes takes no units.\n");
+			GMT_message (GMT, "\t     When <stride> is omitted, a reasonable value will be determined automatically, e.g., -Bafg.\n");
+			GMT_message (GMT, "\t     Log10 axis: Append l to annotate log10 (value) or p for 10^(log10(value)) [Default annotates value].\n");
+			GMT_message (GMT, "\t     Power axis: Append p to annotate value at equidistant pow increments [Default is nonlinear].\n");
+			GMT_message (GMT, "\t     See psbasemap man pages for more details and examples of all settings.\n");
 			break;
 
 		case 'b':	/* Condensed tickmark option */
 
-			GMT_message (GMT, "\t-B Basemap boundary annotation attributes.\n");
-			GMT_message (GMT, "\t   Specify -B[p|s]<xinfo>[/<yinfo>[/<zinfo>]][.:\"title\":][wesnzWESNZ+][+g<fill>]\n");
-			GMT_message (GMT, "\t   <?info> is [<type>]<stride>[<unit>][l|p][:\"label\":][:,[-]\"unit\":]\n");
+			GMT_message (GMT, "\t-B Specify both (1) basemap frame settings and (2) axes parameters.\n");
+			GMT_message (GMT, "\t   (1) Frame settings are modified via an optional single invocation of\n");
+			GMT_message (GMT, "\t     -B[<axes>][+g<fill>][+o<lon>/<lat>][+t<title>]\n");
+			GMT_message (GMT, "\t   (2) Axes parameters are specified via one or more invocations of\n");
+			GMT_message (GMT, "\t       -B[p|s][x|y|z]<intervals>[+l<label>][+p<prefix>][+s<suffix>]\n");
+			GMT_message (GMT, "\t   <intervals> is composed of concatenated [<type>]<stride>[<unit>][l|p] sub-strings\n");
 			GMT_message (GMT, "\t   See psbasemap man page for more details and examples of all settings.\n");
 			break;
 
@@ -437,7 +459,7 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 
 			GMT_message (GMT, "\t-R Specify the xmin/xmax/ymin/ymax coordinates of data region in user units.\n");
 			GMT_message (GMT, "\t   Use [yyy[-mm[-dd]]]T[hh[:mm[:ss[.xxx]]]] format for time coordinates.\n");
-			GMT_message (GMT, "\t   Or, give a gridfile to use its limits (and increments if applicable).\n");
+			GMT_message (GMT, "\t   Or, give a gridfile to use its region (and increments, registration if applicable).\n");
 			break;
 
 		case 'G':	/* Geographic Region option */
@@ -645,7 +667,7 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 
 		case 't':	/* -t layer transparency option  */
 
-			GMT_message (GMT, "\t-t Set the overlay PDF transparency from 0-100 [Default is 0; opaque].\n");
+			GMT_message (GMT, "\t-t Set the layer PDF transparency from 0-100 [Default is 0; opaque].\n");
 			break;
 
 		case ':':	/* lon/lat [x/y] or lat/lon [y/x] */
@@ -656,6 +678,7 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 		case '.':	/* Trailer message */
 
 			GMT_message (GMT, "\t-^ Print short synopsis message.\n");
+			GMT_message (GMT, "\t+ Print longer synopsis message.\n");
 			GMT_message (GMT, "\t-? Print this usage message\n");
 			GMT_message (GMT, "\t(See gmt.conf man page for GMT default parameters).\n");
 			break;
@@ -2913,12 +2936,12 @@ int gmt4_decode_wesnz (struct GMT_CTRL *GMT, const char *in, unsigned int side[]
 }
 
 int gmt5_decode_wesnz (struct GMT_CTRL *GMT, const char *in) {
-	/* Scans the WESNZ[1234]wesnz[1234]d flags and sets the side/drawbox parameters
-	 * and returns the length of the remaining string. .
+	/* Scans the WESNZ[1234]wesnz[1234] flags and sets the side/drawbox parameters
+	 * and returns the length of the remaining string.
 	 */
 
 	unsigned int k, error = 0, f_side[5] = {0, 0, 0, 0, 0}, z_axis[4] = {0, 0, 0, 0};
-	bool box = false, s_given = false;
+	bool s_given = false;
 	
 	for (k = 0; in[k]; k++) {
 		switch (in[k]) {
@@ -2936,16 +2959,17 @@ int gmt5_decode_wesnz (struct GMT_CTRL *GMT, const char *in) {
 			case 'z': f_side[Z_SIDE] |= 1; s_given = true; break;
 			/* Draw 3-D box */
 			case '+':
-				if (GMT_compat_check (GMT, 4)) {
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Modifier + in MAP_FRAME_AXES is deprecated; use d instead.\n");
-					box = true;
+				if (in[k+1] == 'b')	/* Got +b appended to MAP_FRAME_AXES, possibly */
+					GMT->current.map.frame.draw_box = true;
+				else if (GMT_compat_check (GMT, 4)) {
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Modifier + in MAP_FRAME_AXES is deprecated; use +b instead.\n");
+					GMT->current.map.frame.draw_box = true;
 				}
 				else {
 					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error: Modifier + in MAP_FRAME_AXES not recognized.\n");
 					error++;
 				}
 				break;
-			case 'd': box = true; break;
 			case '1': if (f_side[Z_SIDE]) z_axis[0] = 1; else error++; break;
 			case '2': if (f_side[Z_SIDE]) z_axis[1] = 1; else error++; break;
 			case '3': if (f_side[Z_SIDE]) z_axis[2] = 1; else error++; break;
@@ -2955,7 +2979,6 @@ int gmt5_decode_wesnz (struct GMT_CTRL *GMT, const char *in) {
 		}
 	}
 	if (s_given) GMT_memcpy (GMT->current.map.frame.side, f_side, 5, unsigned int);	/* Overwrite the GMT defaults */
-	if (s_given) GMT->current.map.frame.draw_box = box;
 	if (z_axis[0] || z_axis[1] || z_axis[2] || z_axis[3]) GMT_memcpy (GMT->current.map.frame.z_axis, z_axis, 4, unsigned int);	/* Overwrite the GMT defaults */
 	return (error);
 }
@@ -7003,11 +7026,12 @@ int gmt5_parse_B_frame_setting (struct GMT_CTRL *GMT, char *in)
 	/* First determine that the given -B<in> string is indeed the framesetting option.  If not return -1 */
 	
 	if (strchr ("pxyz", in[0])) return (-1);	/* -B[p[xyz] is definitively not the frame settings (-Bs is tricker; see below) */
+	if (strstr (in, "+b")) is_frame++;	/* Found a +b so likely frame */
 	if (strstr (in, "+g")) is_frame++;	/* Found a +g so likely frame */
 	if (strstr (in, "+o")) is_frame++;	/* Found a +o so likely frame */
 	if (strstr (in, "+t")) is_frame++;	/* Found a +t so likely frame */
-	if (strchr ("WESNZwenzd", in[0])) is_frame++;	/* Found one of the side specifiers so likely frame (left s off since -Bs could trick it) */
-	if (in[0] == 's' && (in[1] == 0 || strchr ("WESNZwenzd", in[1]) != NULL)) is_frame++;	/* Found -Bs (just draw south axis) or -Bs<another axis flag> */
+	if (strchr ("WESNZwenz", in[0])) is_frame++;	/* Found one of the side specifiers so likely frame (left s off since -Bs could trick it) */
+	if (in[0] == 's' && (in[1] == 0 || strchr ("WESNZwenz", in[1]) != NULL)) is_frame++;	/* Found -Bs (just draw south axis) or -Bs<another axis flag> */
 	if (is_frame == 0) return (-1);		/* No, nothing matched */
 	
 	/* OK, here we are pretty sure this is a frame -B statement */
@@ -7019,6 +7043,9 @@ int gmt5_parse_B_frame_setting (struct GMT_CTRL *GMT, char *in)
 	if ((mod = strchr (text, '+'))) {	/* Find start of modifiers, if any */
 		while ((GMT_strtok (mod, "+", &pos, p))) {	/* Parse any +<modifier> statements */
 			switch (p[0]) {
+				case 'b':	/* Activate 3-D box and x-z, y-z gridlines (if selected) */
+					GMT->current.map.frame.draw_box = true;
+					break;
 				case 'g':	/* Paint the basemap interior */
 					if (p[1] == 0 || GMT_getfill (GMT, &p[1], &GMT->current.map.frame.fill)) {
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad +g<fill> modifier %c\n", &p[1]);
@@ -7069,7 +7096,8 @@ int gmt5_parse_B_frame_setting (struct GMT_CTRL *GMT, char *in)
 int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 	/* GMT5 clean version based on new syntax:
 	 * Frame settings:
-	 *	-B[WESNwesnz|Z[1234]]d[+g<fill>][+o<lon/lat>][+t<title>]
+	 *	-B[WESNwesnz|Z[1234]][+b][+g<fill>][+o<lon/lat>][+t<title>]
+	 *    		+b enables 3-D box and x-z, y-z gridlines.
 	 *    		+g<fill> as plot interior fill [none].
 	 *    		+t<title> as plot title [none].
 	 *    		of one or more of w,e,s,n,z then only those axes will be drawn.
