@@ -7178,7 +7178,7 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 	strcpy (text, &in[k]);			/* Make a copy of the input, starting after the leading -B[p|s][xyz] indicators */
 	gmt5_handle_plussign (GMT, text, 0);	/* Temporarily change any ++ to pair of ASCII 1 to avoid interference with +modifiers */
 	k = 0;					/* Start at beginning of text and look for first occurrence of +l, +p, or +s */
-	while (text[k] && !(text[k] == '+' && strchr ("lps", text[k+1]))) k++;
+	while (text[k] && !(text[k] == '+' && strchr ("lpu", text[k+1]))) k++;
 	GMT_memset (orig_string, GMT_BUFSIZ, char);
 	strncpy (orig_string, text, k);		/* orig_string now has the interval information */
 	if (text[k]) mod = &text[k];		/* mod points to the start of the modifier information in text*/
