@@ -499,7 +499,7 @@ Here is a list of recent enhancements to specific programs:
    distance from point to annotation.
 
 #. `psxy.c <psxy.html>`_ and `psxyz.c <psxyz.html>`_ can take symbol modifier
-   **+s**\ *scale*\ [*unit*][/\ *origin*][ **l**] in **-S** to adjust
+   **+s**\ *scale*\ [*unit*][/\ *origin*][\ **l**] in **-S** to adjust
    scales read from files. This is used when you have data in the third
    column that should be used for symbol size but they need to be offset
    (by *origin*) and scaled by (*scale*) first; **l** means take the
@@ -1758,8 +1758,6 @@ wanted.
 Distance units
 ~~~~~~~~~~~~~~
 
-[h]
-
 +---------+-------------------+---------+------------------+
 +=========+===================+=========+==================+
 | **d**   | Degree of arc     | **M**   | Statute mile     |
@@ -2662,7 +2660,7 @@ entries of **D**, **G**, **L**, **T**, **W**, or **Z** to have values
 stored as options in segment headers be used as the source for the name
 aspatial field. Finally, for output you must append
 +\ **g**\ *geometry*, where *geometry* can be any of
-[**M**\ ]\ **POINT**\ \|\ **LINE**\ \|\ **POLY**; the
+[**M**]\ **POINT**\ \|\ **LINE**\ \|\ **POLY**; the
 **M** represent the multi-versions of these three geometries. Use
 upper-case +\ **G** to signal that you want to split any line or polygon
 features that straddle the Dateline.
@@ -2680,16 +2678,16 @@ different data types and even containing byte-swapped items. When using
 native binary data the user must be aware of the fact that *GMT* has no
 way of determining the actual number of columns in the file. You must
 therefore pass that information to *GMT* via the binary
-**-bi**\ [*n*\ ]\ **t** option, where *n* is the actual number of data
+**-bi**\ [*n*]\ **t** option, where *n* is the actual number of data
 columns and **t** must be one of **c** (signed 1-byte character,
-int8\_t), **u** (unsigned 1-byte character, uint8\_t), **h** (signed
-2-byte int, int16\_t), **H** (unsigned 2-byte int, uint16\_t), **i**
-(signed 4-byte int, int32\_t), **I** (unsigned 4-byte int, uint32\_t),
-**l** (signed 8-byte int, int64\_t), **L** (unsigned 8-byte int,
-uint64\_t), **f** (4-byte single-precision float), and **d** (8-byte
+int8_t), **u** (unsigned 1-byte character, uint8_t), **h** (signed
+2-byte int, int16_t), **H** (unsigned 2-byte int, uint16_t), **i**
+(signed 4-byte int, int32_t), **I** (unsigned 4-byte int, uint32_t),
+**l** (signed 8-byte int, int64_t), **L** (unsigned 8-byte int,
+uint64_t), **f** (4-byte single-precision float), and **d** (8-byte
 double-precision float). In addition, use **x** to skip *n* bytes
 anywhere in the record. For a mixed-type data record you can concatenate
-several [*n*\ ]\ **t** combinations, separated by commas. You may append
+several [*n*]\ **t** combinations, separated by commas. You may append
 **w** to any of the items to force byte-swapping. Alternatively, append
 **+L**\ \|\ **B** to indicate that the entire data file should be
 read or written as little- or big-endian, respectively. Here, *n* is the
@@ -2701,7 +2699,7 @@ not set]. If *n* < *m* an error is generated. Multiple segment
 files are allowed and the segment headers are assumed to be records
 where all the fields equal NaN.
 
-For binary output, use the **-bo**\ [*n*\ ]\ **t** option; see **-bi**
+For binary output, use the **-bo**\ [*n*]\ **t** option; see **-bi**
 for further details.
 
 Because of its meta data, reading netCDF tables (i.e., netCDF files
@@ -2797,8 +2795,7 @@ records if **-h** is used is one of the many parameters in the ``gmt.conf`` file
 tables will output the header records that are found on input. Use
 **-hi** to suppress the writing of header records. You can use the
 **-h** options modifiers to to tell programs to output extra header
-records for titles, remarks or column names identifying each data
-column.
+records for titles, remarks or column names identifying each data column.
 
 When **-b** is used to indicate binary data the **-h** takes on a
 slightly different meaning. Now, the *n\_recs* argument is taken to mean
@@ -2851,8 +2848,7 @@ Output columns selection: The **-o** option
 columns to write on output and in what order. By default, *GMT* will
 write all the data columns produced by the program. Using **-o**
 modifies that process. For instance, to write just the 4th and 2nd data
-column to the output you would use **-o**\ 3,1 (since 0 is the first
-column).
+column to the output you would use **-o**\ 3,1 (since 0 is the first column).
 
 Perspective view: The **-p** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2889,8 +2885,7 @@ In this registration, the nodes are centered on the grid line
 intersections and the data points represent the average value in a cell
 of dimensions (:math:`x_{inc} \cdot y_{inc}`) centered on each node
 (Figure [fig:GMT:sub:`r`\ egistration]). In the case of grid line
-registration the number of nodes are related to region and grid spacing
-by
+registration the number of nodes are related to region and grid spacing by
 
 .. math::
 
@@ -3153,13 +3148,13 @@ used) or ASCII [Default]. In the latter case the issue of formatting
 becomes important. *GMT* provides extensive machinery for allowing just
 about any imaginable format to be used on output. Analogous to the
 processing of input data, several templates guide the formatting
-process. These are **FORMAT\_DATE\_OUT** and **FORMAT\_CLOCK\_OUT** for
-calendar-time coordinates, **FORMAT\_GEO\_OUT** for geographical
-coordinates, and **FORMAT\_FLOAT\_OUT** for generic floating point data.
+process. These are **FORMAT_DATE_OUT** and **FORMAT_CLOCK_OUT** for
+calendar-time coordinates, **FORMAT_GEO_OUT** for geographical
+coordinates, and **FORMAT_FLOAT_OUT** for generic floating point data.
 In addition, the user have control over how columns are separated via
-the **FIELD\_SEPARATOR** parameter. Thus, as an example, it is possible
+the **FIELD_SEPARATOR** parameter. Thus, as an example, it is possible
 to create limited FORTRAN-style card records by setting
-**FORMAT\_FLOAT\_OUT** to %7.3lf and **FIELD\_SEPARATOR** to none
+**FORMAT_FLOAT_OUT** to %7.3lf and **FIELD_SEPARATOR** to none
 [Default is tab].
 
 *PostScript* features
@@ -3269,8 +3264,6 @@ option argument, with commas separating the given attributes, e.g.,
 
 Table [tbl:penex] contains additional examples of pen specifications
 suitable for, say, `psxy <psxy.html>`_.
-
-[h]
 
 +-------------------------------+-----------------------------------------------------+
 +===============================+=====================================================+
@@ -3550,8 +3543,7 @@ gray-shade in the 0–255 range. For CMYK, give *c/m/y/k* values in the
 0–100 range.
 
 A few programs (i.e., those that plot polygons such as
-`grdview <grdview.html>`_,
-`psscale <psscale.html>`_,
+`grdview <grdview.html>`_, `psscale <psscale.html>`_,
 `psxy <psxy.html>`_ and
 `psxyz <psxyz.html>`_) can accept pattern fills instead
 of gray-shades. You must specify the pattern as in Section [sec:fill]
@@ -3643,8 +3635,6 @@ Note that under Windows the percent symbol indicates a batch variable,
 hence you must use two percent-signs for each one required in the escape
 sequence for font switching.
 
-[H]
-
 +-------------------+----------------------------------------------------------------+
 +===================+================================================================+
 | @~                | Turns symbol font on or off                                    |
@@ -3672,8 +3662,6 @@ sequence for font switching.
 
 Shorthand notation for a few special European characters has also been
 added (Table [tbl:scand]):
-
-[H]
 
 +----------+------------+----------+------------+
 | *Code*   | *Effect*   | *Code*   | *Effect*   |
@@ -3731,7 +3719,7 @@ than the default.
 
 By default, *GMT* will create new grid files using the **nf** format;
 however, this behavior can be overridden by setting the
-**IO\_GRIDFILE\_FORMAT** defaults parameter to any of the other
+**IO_GRIDFILE_FORMAT** defaults parameter to any of the other
 recognized values (or by appending *=ID*).
 
 *GMT* can also read netCDF grid files produced by other software
@@ -3945,9 +3933,9 @@ all others. Alternatively, the user can select the required variable by
 adding the suffix "?\ *varname*" to the grid file name. For example, to
 get information on the variable "slp" in file , use:
 
-::
+   ::
 
-    	grdinfo "file.nc?slp"
+    grdinfo "file.nc?slp"
 
 Since COARDS-compliant netCDF files are the default, the additional
 suffix "=nf" can be omitted.
@@ -3972,36 +3960,36 @@ quotes.
 A similar approach is followed for loading 4-dimensional grids. Consider
 a 4-dimensional grid with the following variables:
 
-::
+   ::
 
-    	lat(lat): 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
-    	lon(lon): 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
-    	depth(depth): 0, 10, 20, 30, 40, 50, 60, 70, 80, 90
-    	time(time): 0, 12, 24, 36, 48
-    	pressure(time,depth,lat,lon): (5000 values)
+    lat(lat): 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+    lon(lon): 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
+    depth(depth): 0, 10, 20, 30, 40, 50, 60, 70, 80, 90
+    time(time): 0, 12, 24, 36, 48
+    pressure(time,depth,lat,lon): (5000 values)
 
-To get information on the 10\ :math:`\times`\ 10 grid of pressure at
+To get information on the 10x10 grid of pressure at
 depth 10 and at time 24, one would use:
 
-::
+   ::
 
-    	grdinfo "file.nc?pressure[2,1]"
+    grdinfo "file.nc?pressure[2,1]"
 
 or (only in case the coordinates increase linearly):
 
-::
+   ::
 
-    	grdinfo "file.nc?pressure(24,10)"
+    grdinfo "file.nc?pressure(24,10)"
 
 Programs that generally deal with columns of one-dimensional data, like
 or can use multi-dimensional netCDF files in a very similar way. If a
 variable in a netCDF file is one-dimensional, there is nothing more
 needed than name the variables on the command line. For example:
 
-::
+   ::
 
-    	psxy "file.nc?lon/lat" ...
-    	gmtconvert "file.nc?time/lat/lon"
+    psxy "file.nc?lon/lat" ...
+    gmtconvert "file.nc?time/lat/lon"
 
 If one or more of the selected variables are two-dimensional, and have
 the same leading dimension as the other selected variables they will be
@@ -4009,14 +3997,14 @@ plotted in their entirety. For example, if a netCDF files contains 6
 time steps recording temperature at 4 points, and the variable ``tmp`` is a 6 by
 4 array, then the command ``gmtconvert "file.nc?time/temp"`` can result in:
 
-::
+   ::
 
-    	2012-06-25T00:00:00 20.1 20.2 20.1 20.3
-    	2012-06-25T12:00:00 24.2 23.2 24.5 23.5
-    	2012-06-26T00:00:00 16.1 16.2 16.1 16.3
-    	2012-06-26T12:00:00 22.1 23.0 23.9 23.5
-    	2012-06-27T00:00:00 17.5 16.9 17.2 16.8
-    	2012-06-27T12:00:00 27.2 27.2 27.5 27.5
+    2012-06-25T00:00:00 20.1 20.2 20.1 20.3
+    2012-06-25T12:00:00 24.2 23.2 24.5 23.5
+    2012-06-26T00:00:00 16.1 16.2 16.1 16.3
+    2012-06-26T12:00:00 22.1 23.0 23.9 23.5
+    2012-06-27T00:00:00 17.5 16.9 17.2 16.8
+    2012-06-27T12:00:00 27.2 27.2 27.5 27.5
 
 If, for example, only the second temperature column is needed, use
 ``gmtconvert "file.nc?time/temp"`` (indices start counting at 0).
@@ -4027,7 +4015,7 @@ of longitude and latitude are "degrees\_east" and "degrees\_north",
 respectively. Here is an example of the header of a COARDS compliant
 netCDF file (to be obtained using **ncdump**):
 
-::
+   ::
 
     netcdf M2_fes2004 {
     dimensions:
@@ -4077,24 +4065,22 @@ sources.
 Reading multi-band images
 ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-`grdimage <grdimage.html>`_ and
-`psimage <psimage.html>`_ both lets the user select
+`grdimage <grdimage.html>`_ and `psimage <psimage.html>`_ both lets the user select
 individual bands in a multi-band image file and treats the result as an
 image (that is the values, in the 0–255 range, are treated as colors,
 not data). To select individual bands you use the **+b**\ *band-number*
 mechanism that must be appended to the image filename. Here,
 *band-number* can be the number of one individual band (the counting
-starts at zero), or it could be a comma-separated list of bands. For
-example
+starts at zero), or it could be a comma-separated list of bands. For example
 
-::
+   ::
 
     psimage jpeg_image_with_three_bands.jpg+b0
 
 will plot only the first band (i.e., the red band) of the jpeg image as
 a gray-scale image, and
 
-::
+   ::
 
     psimage jpeg_image_with_three_bands.jpg+b2,1,0
 
@@ -4107,10 +4093,10 @@ multi-band file with a near infrared component in band 4 and red in band
 3. We will compute the NDVI (Normalized Difference Vegetation Index),
 which is defined as NDVI = (NIR - R) / (NIR + R), as
 
-::
+   ::
 
     grdmath multiband=gd+b3 multiband=gd+b2 SUB multiband=gd+b3 \
-    	multiband=gd+b2 ADD DIV = ndvi.nc
+    	    multiband=gd+b2 ADD DIV = ndvi.nc
 
 The resulting grid ``ndvi.nc`` can then be plotted as usual.
 
@@ -4123,7 +4109,7 @@ that is stored in the HDF "format". We need to run the GDAL program
 **gdalinfo** on the file because we first
 must extract the necessary metadata from the file:
 
-::
+   ::
 
     gdalinfo A20030012003365.L3m_YR_NSST_9
     Driver: HDF4/Hierarchical Data Format Release 4
@@ -4154,7 +4140,7 @@ Now, to access this file with *GMT* we need to use the =gd mechanism and
 append the name of the sub-dataset that we want to extract. Here, a
 simple example using `grdinfo <grdinfo.html>`_ would be
 
-::
+   ::
 
     grdinfo A20030012003365.L3m_YR_NSST_9=gd?HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9:0"
 
@@ -4175,10 +4161,10 @@ scaling is not applied by GDAL on reading so it cannot be done
 automatically by *GMT*. One solution is to do the reading and scaling
 via `grdmath <grdmath.html>`_ first, i.e.,
 
-::
+   ::
 
     grdmath A20030012003365.L3m_YR_NSST_9=gd?HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9:0" \
-    	0.000717185 MUL -2 ADD = sst.nc
+            0.000717185 MUL -2 ADD = sst.nc
 
 then plot the ``sst.nc`` directly.
 
@@ -4196,8 +4182,7 @@ name used by GDAL (e.g. GTiff).
 For all other programs that create grids, it is also possible to save
 them using GDAL. To do it one need to use the =gd appended with the
 necessary information regarding the driver and the data type to use.
-Generically,
-=\ **gd**\ [/*scale*/*offset*\ [/*nan*][:<*driver*\ >[/\ *dataType*]]
+Generically, =\ **gd**\ [/*scale*/*offset*\ [/*nan*][:<*driver*\ >[/\ *dataType*]]
 where *driver* is the same as explained above and *dataType* is a 2 or 3
 chars code from: u8\|u16\|i16\|u32\|i32\|float32, and where i\|u denotes
 signed\|unsigned. If not provided the default type is float32. Both
@@ -4250,7 +4235,7 @@ skipped during reading; see Section [sec:gap] for details.
 *GMT* relies on several environment parameters, in particular to find
 data files and program settings.
 
-$GMT\_SHAREDIR
+$GMT_SHAREDIR
     points to the *GMT* share directory where all run-time support files
     such as coastlines, custom symbols, *PostScript* macros, color
     tables, and much more reside. If this parameter is not set it
@@ -4258,7 +4243,7 @@ $GMT\_SHAREDIR
     install process (see if installing from source), which normally is
     the share directory under the *GMT* installation directory.
 
-$GMT\_DATADIR
+$GMT_DATADIR
     points to one or more directories where large and/or widely used
     data files can be placed. All *GMT* programs look in these
     directories when a file is specified on the command line and it is
@@ -4269,7 +4254,7 @@ $GMT\_DATADIR
     semi-colons (;). Any directory name that ends in a trailing / will
     be searched recursively (not under Windows).
 
-$GMT\_USERDIR
+$GMT_USERDIR
     points to a directory where the user may place custom configuration
     files (e.g., an alternate ``coastline.conf`` file, preferred default settings in  ``gmt.conf``,
     custom symbols and color palettes, math macros for
@@ -4279,11 +4264,11 @@ $GMT\_USERDIR
     in this directory as *GMT* programs will search for files given on
     the command line in both **$GMT\_DATADIR** and **$GMT\_USERDIR**.
 
-$GMT\_TMPDIR
+$GMT_TMPDIR
     is where *GMT* will write its state parameters via the two files ``.gmtcommands`` and
-    ``gmt.conf``. If **$GMT\_TMPDIR** is not set, these files are written to the
+    ``gmt.conf``. If **$GMT_TMPDIR** is not set, these files are written to the
     current directory. See Appendix [app:P] for more on the use of
-    **$GMT\_TMPDIR**.
+    **$GMT_TMPDIR**.
 
 Note that files whose full path is given will never be searched for in
 any of these directories.
@@ -4344,8 +4329,7 @@ Two subsets of linear will be discussed separately; these are a polar
 coordinates (with a 360 periodicity in the *x*-coordinate). We
 will show examples of all of these projections using dummy data sets
 created with `gmtmath <gmtmath.html>`_, a "Reverse
-Polish Notation" (RPN) calculator that operates on or creates table
-data:
+Polish Notation" (RPN) calculator that operates on or creates table data:
 
 Cartesian linear transformation (**-Jx** **-JX**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -9633,20 +9617,31 @@ you will need to rotate the plot as well. For example,
 will rotate the image 90 clockwise and scale it such that its width
 (after rotation) will be 80% of the width of the text column.
 
-`GMT <http://gmt.soest.hawaii.edu>`_ graphics in **PowerPoint**
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+GMT graphics in **PowerPoint**
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[b] |image| [fig:rendering]
+.. figure:: _images/rendering.png
+   :height: 540 px
+   :width: 720 px
+   :scale: 70 %
 
-[b] |image| [fig:formatpicture]
+   Figure C.1: Examples of rendered images in a PowerPoint presentation 
 
-In Figure [fig:rendering] we have attempted to include
+
+.. figure:: _images/formatpicture.png
+   :height: 545 px
+   :width: 516 px
+   :scale: 90 %
+
+   Figure C.2: **PowerPoint**'s "Format Picture" dialogue to set scale and rotation. 
+
+In Figure C.1 we have attempted to include
 Figure [fig:example\ :sub:`2`\ 0] into a **PowerPoint** presentation.
 First the *PostScript* file was converted to PDF (using
 `ps2raster <ps2raster.html>`_), then loaded into
 **PowerPoint** and the white background color was made transparent
 using the formatting toolbar (shown on the left side of
-Figure [fig:rendering]). Clearly, when we let **PowerPoint** do the
+Figure C.1). Clearly, when we let **PowerPoint** do the
 rendering, we do not get the best result:
 
 #. The anti-aliasing causes the tiles that make up the land to stand
@@ -9657,7 +9652,7 @@ rendering, we do not get the best result:
    "smoothed" using gray shades. Instead, shades of blue which would be
    appropriate for the background we are using.
 
-On the central column of Figure [fig:rendering] we have included PNG
+On the central column of Figure C.1 we have included PNG
 versions of a portion of the same example. This shows the workings of
 anti-aliasing and different resolutions. All samples were obtained with
 **convert**. The one on the top uses all default settings, resulting
@@ -9670,10 +9665,10 @@ between the tiles, but without anti-aliasing the image becomes very
 blocky. The solution is to render the image at a higher resolution
 (e.g., 300 dpi) without anti-aliasing and then shrink the image to the
 appropriate size (bottom of the central column in
-Figure [fig:rendering]). The scaling, rotation as well as the selection
+Figure C.1). The scaling, rotation as well as the selection
 of the transparent color can be accomplished through the "Formatting"
 tool bar and the "Format Picture" dialogue box of **PowerPoint**
-(Figure [fig:formatpicture]), which can be found by double clicking the
+(Figure C.2), which can be found by double clicking the
 included image (or selecting and right-clicking or control-clicking on a
 one-button mouse).
 
@@ -10078,9 +10073,14 @@ that *v* measures distance away from the black point, because
 *v* is not equal to :math:`\sqrt{r^2 + g^2 + b^2}/255`.
 
 Another representation of the HSV space is the color cone illustrated in
-Figure [fig:hsv-cone].
+Figure I.1
 
-[h] |image| [fig:hsv-cone]
+.. figure:: _images/hsv-cone.png
+   :height: 508 px
+   :width: 750 px
+   :scale: 50 %
+
+   Figure I.1: The HSV color space
 
 Color interpolation
 -------------------
@@ -12034,24 +12034,6 @@ Finally we show an example of a polygon file:
 .. [51]
    Travel times were calculated using Geoware's travel time calculator,
    **ttt**; see
-
-.. |image| image:: GMT_utm_zones
-.. |image| image:: GMT_volcano
-.. |image| image:: rendering.png
-.. |image| image:: formatpicture.png
-.. |image| image:: GMT_App_E
-.. |image| image:: GMT_App_F_stand+
-.. |image| image:: GMT_App_F_iso+
-.. |image| image:: GMT_App_F_symbol
-.. |image| image:: GMT_App_F_dingbats
-.. |image| image:: gimp-sliders.png
-.. |image| image:: gimp-panel.png
-.. |image| image:: GMT_RGBchart_a4
-.. |image| image:: hsv-cone.png
-.. |image| image:: GMT_color_interpolate
-.. |image| image:: GMT_App_M_1
-.. |image| image:: GMT_App_M_2
-.. |image| image:: GMT_App_P_2
 
 .. |more| image:: _images/more.png
           :align: middle
