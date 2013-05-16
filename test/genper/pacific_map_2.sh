@@ -25,6 +25,6 @@ PROJ=-JG${DEBUG}${EARTH_MODEL}${longitude}/${latitude}/${altitude}/${vp_longitud
 
 GRDFILE=etopo2-hawaii.nc
 
-grdimage ${GRDFILE} ${GMT_VERBOSE} -P -Xc -Yc -E200 $REGION $PROJ -C${COLORMAP} -K > $ps
-pscoast ${GMT_VERBOSE} $REGION $PROJ -B5g5 -B+t${TITLE} -Ia -Na -O --MAP_ANNOT_MIN_SPACING=0.5i >> $ps
+gmt grdimage ${GRDFILE} ${GMT_VERBOSE} -P -Xc -Yc -E200 $REGION $PROJ -C${COLORMAP} -K > $ps
+gmt pscoast ${GMT_VERBOSE} $REGION $PROJ -B5g5 -B+t${TITLE} -Ia -Na -O --MAP_ANNOT_MIN_SPACING=0.5i >> $ps
 

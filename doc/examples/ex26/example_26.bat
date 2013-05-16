@@ -23,7 +23,7 @@ set Height=0.0
 
 set PROJ=-JG%longitude%/%latitude%/%altitude%/%azimuth%/%tilt%/%twist%/%Width%/%Height%/4i
 
-pscoast -Rg %PROJ% -X1i -B5g5/5g5 -Glightbrown -Slightblue -W -Dl -N1/1p,red -N2,0.5p -P -K -Y5i > %ps%
+gmt pscoast -Rg %PROJ% -X1i -B5g5/5g5 -Glightbrown -Slightblue -W -Dl -N1/1p,red -N2,0.5p -P -K -Y5i > %ps%
 
 REM now point from an altitude of 160 km with a specific tilt and azimuth and with
 REM a wider restricted view and a boresight twist of 45 degrees
@@ -36,5 +36,5 @@ set Height=30.0
 
 set PROJ=-JG%longitude%/%latitude%/%altitude%/%azimuth%/%tilt%/%twist%/%Width%/%Height%/5i
 
-pscoast -R %PROJ% -B5g5/5g5 -Glightbrown -Slightblue -W -Ia/blue -Di -Na -O -X1i -Y-4i -UL/-1.75i/-0.75i/"Example 26 in Cookbook" >> %ps%
+gmt pscoast -R %PROJ% -B5g5/5g5 -Glightbrown -Slightblue -W -Ia/blue -Di -Na -O -X1i -Y-4i -UL/-1.75i/-0.75i/"Example 26 in Cookbook" >> %ps%
 del .gmt*

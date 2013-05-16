@@ -24,9 +24,9 @@ cat << EOF > tt2.answer
 2000-01-05T12:00:00	1
 EOF
 
-sample1d -I0.5 << EOF > tt2.d
+gmt sample1d -I0.5 << EOF > tt2.d
 0	0
 4	1
 EOF
-gmtconvert tt2.d -fi0t -fo0T --TIME_SYSTEM=j2000 > tt2.result
+gmt gmtconvert tt2.d -fi0t -fo0T --TIME_SYSTEM=j2000 > tt2.result
 diff tt2.result tt2.answer --strip-trailing-cr > fail

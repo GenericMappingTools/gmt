@@ -16,7 +16,7 @@ name="Rome"
 
 # Calculate distances (km) to all points on a global 1x1 grid
 
-grdmath -Rg -I1 $lon $lat SDIST 111.13 MUL = dist.nc
+gmt grdmath -Rg -I1 $lon $lat SDIST 111.13 MUL = dist.nc
 
 # Location info for 5 other cities + label justification
 
@@ -28,30 +28,30 @@ cat << END > cities.d
 28.20	-25.75	PRETORIA	LM
 END
 
-pscoast -Rg -JH90/9i -Glightgreen -Sblue -U"Example 23 in Cookbook" -A1000 \
+gmt pscoast -Rg -JH90/9i -Glightgreen -Sblue -U"Example 23 in Cookbook" -A1000 \
 	-Bg30 -B+t"Distances from $name to the World" -K -Dc -Wthinnest > $ps
 
-grdcontour dist.nc -A1000+v+u" km"+fwhite -Glz-/z+ -S8 -C500 -O -K -J \
+gmt grdcontour dist.nc -A1000+v+u" km"+fwhite -Glz-/z+ -S8 -C500 -O -K -J \
 	-Wathin,white -Wcthinnest,white,- >> $ps
 
-# For each of the cities, plot great circle arc to Rome with psxy
+# For each of the cities, plot great circle arc to Rome with gmt psxy
 
 while read clon clat city; do
-	(echo $lon $lat; echo $clon $clat) | psxy -R -J -O -K -Wthickest,red >> $ps
+	(echo $lon $lat; echo $clon $clat) | gmt psxy -R -J -O -K -Wthickest,red >> $ps
 done < cities.d
 
 # Plot red squares at cities and plot names:
-psxy -R -J -O -K -Ss0.2 -Gred -Wthinnest cities.d >> $ps
-$AWK '{print $1, $2, $4, $3}' cities.d | pstext -R -J -O -K -Dj0.15/0 \
+gmt psxy -R -J -O -K -Ss0.2 -Gred -Wthinnest cities.d >> $ps
+$AWK '{print $1, $2, $4, $3}' cities.d | gmt pstext -R -J -O -K -Dj0.15/0 \
 	-F+f12p,Courier-Bold,red+j -N >> $ps
 # Place a yellow star at Rome
-echo "$lon $lat" | psxy -R -J -O -K -Sa0.2i -Gyellow -Wthin >> $ps
+echo "$lon $lat" | gmt psxy -R -J -O -K -Sa0.2i -Gyellow -Wthin >> $ps
 
 # Sample the distance grid at the cities and use the distance in km for labels
 
-grdtrack -Gdist.nc cities.d \
+gmt grdtrack -Gdist.nc cities.d \
 	| $AWK '{printf "%s %s %d\n", $1, $2, int($NF+0.5)}' \
-	| pstext -R -J -O -D0/-0.2i -N -Gwhite -W -C0.02i -F+f12p,Helvetica-Bold+jCT >> $ps
+	| gmt pstext -R -J -O -D0/-0.2i -N -Gwhite -W -C0.02i -F+f12p,Helvetica-Bold+jCT >> $ps
 
 # Clean up after ourselves:
 

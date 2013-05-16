@@ -5,7 +5,7 @@
 
 ps=plot_symbols.ps
 
-psxy -R0/4/1/6 -Jx1i -P -Bg1 -Gred -W0.25p -S1i -X2i -Y2i << EOF > $ps
+gmt psxy -R0/4/1/6 -Jx1i -P -Bg1 -Gred -W0.25p -S1i -X2i -Y2i << EOF > $ps
 > Fat pen -W2p
 0.5	5.5	-
 > Plain red symbols -W- -Gred

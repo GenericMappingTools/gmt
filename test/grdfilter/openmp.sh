@@ -1,6 +1,6 @@
 #!/bin/sh
 #	$Id$
-# Testing grdfilter if openmp is used.
+# Testing gmt grdfilter if openmp is used.
 
 ps=openmp.ps
 
@@ -13,11 +13,11 @@ INC=1			# 1x1 degree output
 D=1000			# 1000 km filter width
 DATA=../genper/etopo10.nc	# Test on ETOP10 data
 
-# Run grdfilter as specified
-grdfilter -D4 -F${FILT}$D -I$INC $DATA -Gt.nc -fg
-makecpt -Cglobe -Z > t.cpt
-grdimage t.nc -JQ0/7i -Ba -BWSne+t"$D km Gaussian filter" -Ct.cpt -P -K -Xc -Y1.5i > $ps
-psscale -Ct.cpt -D3.5i/-0.5i/6i/0.1ih -O -K -Bxa -By+l"m" >> $ps
-grdimage $DATA -JQ0/7i -Ba -BWSne+t"Original data" -Ct.cpt -O -K -Y4.75i >> $ps
-psxy -Rt.nc -J -O -T >> $ps
+# Run gmt grdfilter as specified
+gmt grdfilter -D4 -F${FILT}$D -I$INC $DATA -Gt.nc -fg
+gmt makecpt -Cglobe -Z > t.cpt
+gmt grdimage t.nc -JQ0/7i -Ba -BWSne+t"$D km Gaussian filter" -Ct.cpt -P -K -Xc -Y1.5i > $ps
+gmt psscale -Ct.cpt -D3.5i/-0.5i/6i/0.1ih -O -K -Bxa -By+l"m" >> $ps
+gmt grdimage $DATA -JQ0/7i -Ba -BWSne+t"Original data" -Ct.cpt -O -K -Y4.75i >> $ps
+gmt psxy -Rt.nc -J -O -T >> $ps
 

@@ -8,7 +8,7 @@ function cpt_check {
 	diff -q --strip-trailing-cr ctest[io].cpt >> fail
 }
 
-makecpt -Cno_green -T0/10/1 > ctesti.cpt
+gmt makecpt -Cno_green -T0/10/1 > ctesti.cpt
 rm -f fail
 # 1. Read File and write CPT via...
 cpt_check f f	# 1a. File

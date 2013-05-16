@@ -12,27 +12,27 @@ set ps=example_17.ps
 
 REM First generate geoid image w/ shading
 
-grd2cpt india_geoid.nc -Crainbow > geoid.cpt
-grdgradient india_geoid.nc -Nt1 -A45 -Gindia_geoid_i.nc
-grdimage india_geoid.nc -Iindia_geoid_i.nc -JM6.5i -Cgeoid.cpt -P -K -U"Example 17 in Cookbook" > %ps%
+gmt grd2cpt india_geoid.nc -Crainbow > geoid.cpt
+gmt grdgradient india_geoid.nc -Nt1 -A45 -Gindia_geoid_i.nc
+gmt grdimage india_geoid.nc -Iindia_geoid_i.nc -JM6.5i -Cgeoid.cpt -P -K -U"Example 17 in Cookbook" > %ps%
 
-REM Then use pscoast to initiate clip path for land
+REM Then use gmt pscoast to initiate clip path for land
 
-pscoast -Rindia_geoid.nc -J -O -K -Dl -Gc >> %ps%
+gmt pscoast -Rindia_geoid.nc -J -O -K -Dl -Gc >> %ps%
 
 REM Now generate topography image w/shading
 
 echo -10000 150 10000 150 > gray.cpt
-grdgradient india_topo.nc -Nt1 -A45 -Gindia_topo_i.nc
-grdimage india_topo.nc -Iindia_topo_i.nc -J -Cgray.cpt -O -K >> %ps%
+gmt grdgradient india_topo.nc -Nt1 -A45 -Gindia_topo_i.nc
+gmt grdimage india_topo.nc -Iindia_topo_i.nc -J -Cgray.cpt -O -K >> %ps%
 
 REM Finally undo clipping and overlay basemap
 
-pscoast -R -J -O -K -Q -B10f5:."Clipping of Images": >> %ps%
+gmt pscoast -R -J -O -K -Q -B10f5:."Clipping of Images": >> %ps%
 
 REM Put a color legend on top of the land mask
 
-psscale -D4i/7.6i/4i/0.2ih -Cgeoid.cpt -B5f1/:m: -I -O -K >> %ps%
+gmt psscale -D4i/7.6i/4i/0.2ih -Cgeoid.cpt -B5f1/:m: -I -O -K >> %ps%
 
 REM Add a text paragraph (Note double %% to get a single % in DOS)
 echo 62 | gawk "{printf \"%%c 90 -10 12p 3i j\n\", $1}" > tmp
@@ -40,7 +40,7 @@ echo @_@%%5%%Example 17.@%%%%@_  We first plot the color geoid image >> tmp
 echo for the entire region, followed by a gray-shaded @#etopo5@# >> tmp
 echo image that is clipped so it is only visible inside the coastlines. >> tmp
 
-pstext -R -J -O -M -Gwhite -Wthinner -TO -D-0.1i/0.1i tmp -F+f12,Times-Roman+jRB >> %ps%
+gmt pstext -R -J -O -M -Gwhite -Wthinner -TO -D-0.1i/0.1i tmp -F+f12,Times-Roman+jRB >> %ps%
 
 REM Clean up
 

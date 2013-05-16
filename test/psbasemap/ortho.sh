@@ -9,13 +9,13 @@ LAT_C='20'
 LON_C='-40'
 RADIUS='1000'
 
-psbasemap -Rg -JG$LON_C/$LAT_C/7i -Ba0f30g30 -K -Xc -P > $ps
+gmt psbasemap -Rg -JG$LON_C/$LAT_C/7i -Ba0f30g30 -K -Xc -P > $ps
 
 # distances from north pole to station
 
 rm -f lines.dat
 touch lines.dat
-project -C$LON_E/90 -E$LON_E/-90 -G$RADIUS -Q > distances.xyp
+gmt project -C$LON_E/90 -E$LON_E/-90 -G$RADIUS -Q > distances.xyp
 for LD in `awk '{if ( ( $2 > 0 ) && ( $3 > 0 ) ) {print $2"/"$3}}' distances.xyp`
 do
    LAT=`echo $LD | awk -F '/' '{print $1}'`
@@ -29,5 +29,5 @@ do
    done
 done
 
-psxy lines.dat -R -J -Sqxdistances.xyp:+f8p,Helvetica,black+gwhite+Lh+ukm+v -W0.5p,red -O >> $ps
+gmt psxy lines.dat -R -J -Sqxdistances.xyp:+f8p,Helvetica,black+gwhite+Lh+ukm+v -W0.5p,red -O >> $ps
 

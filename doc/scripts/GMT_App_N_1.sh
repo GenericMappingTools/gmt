@@ -19,7 +19,7 @@ n_rows_p1=6
 fs=9
 dy=0.15
 
-n_pages=`gmtmath -Q $n $n_cols DIV CEIL $n_rows_p1 SUB 0 MAX $n_rows DIV CEIL 1 ADD =`
+n_pages=`gmt gmtmath -Q $n $n_cols DIV CEIL $n_rows_p1 SUB 0 MAX $n_rows DIV CEIL 1 ADD =`
 touch GMT_Appendix_N_inc.tex
 
 p=0
@@ -33,8 +33,8 @@ while [ $p -lt $n_pages ]; do
 		echo "\GMTfig[h]{GMT_App_N_$p}{Additional custom plot symbols}" >> GMT_Appendix_N_inc.tex
 	fi
 	
-	n_rows_to_go=`gmtmath -Q $n $s SUB $n_cols DIV CEIL $max_rows MIN =`
-	H=`gmtmath -Q $n_rows_to_go 1 $dy ADD MUL =`
+	n_rows_to_go=`gmt gmtmath -Q $n $s SUB $n_cols DIV CEIL $max_rows MIN =`
+	H=`gmt gmtmath -Q $n_rows_to_go 1 $dy ADD MUL =`
 	rm -f tt.lines tt.symbols tt.text tt.bars
 	touch tt.lines tt.symbols tt.text tt.bars
 	c=0
@@ -49,10 +49,10 @@ EOF
 	r=0
 	while [ $r -lt $n_rows_to_go ]; do			# Loop over the rows that will fit this page
 		r=`expr $r + 1`
-		yt=`gmtmath -Q $n_rows_to_go $r SUB 1.0 $dy ADD MUL 0.5 $dy MUL ADD =`
-		ys=`gmtmath -Q $yt 1.0 $dy ADD 0.5 MUL ADD =`
-		ysb=`gmtmath -Q $ys 0.5 SUB =`
-		ytb=`gmtmath -Q $yt 0.5 $dy MUL SUB =`
+		yt=`gmt gmtmath -Q $n_rows_to_go $r SUB 1.0 $dy ADD MUL 0.5 $dy MUL ADD =`
+		ys=`gmt gmtmath -Q $yt 1.0 $dy ADD 0.5 MUL ADD =`
+		ysb=`gmt gmtmath -Q $ys 0.5 SUB =`
+		ytb=`gmt gmtmath -Q $yt 0.5 $dy MUL SUB =`
 		cat << EOF >> tt.lines
 > base of symbol line
 0	$ysb
@@ -65,7 +65,7 @@ EOF
 		while [ $c -lt $n_cols ] && [ $s -lt $n ]; do	# Loop over this row, but watch for end of symbols
 			c=`expr $c + 1`
 			s=`expr $s + 1`
-			x=`gmtmath -Q $c 1 SUB 0.5 ADD =`
+			x=`gmt gmtmath -Q $c 1 SUB 0.5 ADD =`
 			symbol=`sed -n ${s}p tt.lis`
 			echo "$x $ys k${symbol}" >> tt.symbols
 			name=`echo $symbol | tr 'a-z' 'A-Z'`
@@ -73,10 +73,10 @@ EOF
 			echo "$x $yt $width $dy" >> tt.bars
 		done
 	done
-	psxy -R0/$n_cols/0/$H -Jx${width}i -P -K tt.lines -Wthick -B0 > GMT_App_N_$p.ps
-	psxy -R -J -O -K -S${width}i -Wthinnest tt.symbols >> GMT_App_N_$p.ps
-	psxy -R -J -O -K -Sri -Gblack tt.bars >> GMT_App_N_$p.ps
-	pstext -R -J -O tt.text -F+f${fs}p,white >> GMT_App_N_$p.ps
+	gmt psxy -R0/$n_cols/0/$H -Jx${width}i -P -K tt.lines -Wthick -B0 > GMT_App_N_$p.ps
+	gmt psxy -R -J -O -K -S${width}i -Wthinnest tt.symbols >> GMT_App_N_$p.ps
+	gmt psxy -R -J -O -K -Sri -Gblack tt.bars >> GMT_App_N_$p.ps
+	gmt pstext -R -J -O tt.text -F+f${fs}p,white >> GMT_App_N_$p.ps
 done
 
 if ! test -s GMT_Appendix_N_inc.tex ; then

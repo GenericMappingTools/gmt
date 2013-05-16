@@ -7,7 +7,7 @@
 # Unix progs:	cat, sed, awk, wget|curl
 #
 ps=example_22.ps
-gmtset FONT_ANNOT_PRIMARY 10p FONT_TITLE 18p FORMAT_GEO_MAP ddd:mm:ssF
+gmt gmtset FONT_ANNOT_PRIMARY 10p FONT_TITLE 18p FORMAT_GEO_MAP ddd:mm:ssF
 
 # Get the data (-q quietly) from USGS using the wget (comment out in case
 # your system does not have wget or curl)
@@ -26,7 +26,7 @@ first=`sed -n 2p neic_quakes.d | $AWK -F, '{printf "%s %s\n", $1, $2}'`
 last=`sed -n '$p' neic_quakes.d | $AWK -F, '{printf "%s %s\n", $1, $2}'`
 
 # Assign a string that contains the current user @ the current computer node.
-# Note that two @@ is needed to print a single @ in pstext:
+# Note that two @@ is needed to print a single @ in gmt pstext:
 
 #set me = "$user@@`hostname`"
 me="GMT guru @@ GMTbox"
@@ -41,10 +41,10 @@ END
 
 # Start plotting. First lay down map, then plot quakes with size = magintude/50":
 
-pscoast -Rg -JK180/9i -B45g30 -B+t"World-wide earthquake activity" -Gbrown -Slightblue \
+gmt pscoast -Rg -JK180/9i -B45g30 -B+t"World-wide earthquake activity" -Gbrown -Slightblue \
 	-Dc -A1000 -K -UL/-0.75i/-2.5i/"Example 22 in Cookbook" -Y2.75i > $ps
 $AWK -F, '{ print $4, $3, $6, $5*0.02}' neic_quakes.d \
-	| psxy -R -JK -O -K -Cneis.cpt -Sci -Wthin -h >> $ps
+	| gmt psxy -R -JK -O -K -Cneis.cpt -Sci -Wthin -h >> $ps
 # Create legend input file for NEIS quake plot
 
 cat > neis.legend << END
@@ -87,10 +87,10 @@ G -0.3i
 L 12 6 LB $me
 END
 
-# OK, now we can actually run pslegend.  We center the legend below the map.
+# OK, now we can actually run gmt pslegend.  We center the legend below the map.
 # Trial and error shows that 1.7i is a good legend height:
 
-pslegend -Dx4.5i/-0.4i/7i/1.7i/TC -O -F+p+glightyellow neis.legend  >> $ps
+gmt pslegend -Dx4.5i/-0.4i/7i/1.7i/TC -O -F+p+glightyellow neis.legend  >> $ps
 
 # Clean up after ourselves:
 

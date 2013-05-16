@@ -6,14 +6,14 @@
 #
 # W H F Smith, 18 December 1998.
 #
-# 1-dimensional case, "filter1d", Fourier transform.
+# 1-dimensional case, "gmt filter1d", Fourier transform.
 #
 # Impulse responses (relative amplitude, x in units of
 #   length per filter width).
 #
 # Let distance units be expressed relative to filter width,
 # i.e. x = s/w, where s is the user's distance unit and w
-# is the user's filter width in the argument to filter1d.
+# is the user's filter width in the argument to gmt filter1d.
 # Then the impulse responses are non-zero only for fabs(x) < 0.5.
 # The impulse responses for fabs(x) < 0.5 are proportional to:
 #    boxcar:    h(x) = 1.0;
@@ -34,7 +34,7 @@
 # sampling of the data is not accounted for in these formulae.
 #
 #
-# 2-dimensional case, "grdfilter", Hankel transform.
+# 2-dimensional case, "gmt grdfilter", Hankel transform.
 #
 # Impulse response:
 #   Let r be measured in units relative to the filter width.
@@ -585,11 +585,11 @@ EOF
 # These were pre-computed because of the need to do a numerical Hankel transform.
 # Also, I found that j0(x) and j1(x) are not reliable on some machines....
 #
-gmtset FONT_ANNOT_PRIMARY 10p,Times-Roman FONT_TITLE 14p,Times-Roman FONT_LABEL 12p,Times-Roman
-cut -f1,2 tt.r_tr_fns | psxy -R0/5/-0.3/1 -JX4i/2i -P -Bxa1f0.2+l"Frequency (cycles per filter width)" -Bya0.2f0.1g1+l"Gain" -BWeSn -K -Wthick > GMT_App_J_3.ps
-cut -f1,3 tt.r_tr_fns | psxy -R -J -O -K -Wthick,- >> GMT_App_J_3.ps
-cut -f1,4 tt.r_tr_fns | psxy -R -J -O -K -Wthick,. >> GMT_App_J_3.ps
-pstext -R -J -O -F+f9p,Times-Roman+j << END >> GMT_App_J_3.ps
+gmt gmtset FONT_ANNOT_PRIMARY 10p,Times-Roman FONT_TITLE 14p,Times-Roman FONT_LABEL 12p,Times-Roman
+cut -f1,2 tt.r_tr_fns | gmt psxy -R0/5/-0.3/1 -JX4i/2i -P -Bxa1f0.2+l"Frequency (cycles per filter width)" -Bya0.2f0.1g1+l"Gain" -BWeSn -K -Wthick > GMT_App_J_3.ps
+cut -f1,3 tt.r_tr_fns | gmt psxy -R -J -O -K -Wthick,- >> GMT_App_J_3.ps
+cut -f1,4 tt.r_tr_fns | gmt psxy -R -J -O -K -Wthick,. >> GMT_App_J_3.ps
+gmt pstext -R -J -O -F+f9p,Times-Roman+j << END >> GMT_App_J_3.ps
 2.2	0.6	LM	Solid Line:
 2.2	0.5	LM	Dotted Line:
 2.2	0.4	LM	Dashed Line:

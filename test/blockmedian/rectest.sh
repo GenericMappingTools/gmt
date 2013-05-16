@@ -49,8 +49,8 @@ cat << EOF > truth.d
 13
 EOF
 # Record numbers should match truth.d"
-blockmedian -R0/2/0/2 -I1 -Er- -r data.d -o3 > $log
-blockmedian -R0/2/0/2 -I1 -Er+ -r data.d -o3 >> $log
-blockmode   -R0/2/0/2 -I1 -Er- -r data.d -o3 >> $log
-blockmode   -R0/2/0/2 -I1 -Er+ -r data.d -o3 >> $log
+gmt blockmedian -R0/2/0/2 -I1 -Er- -r data.d -o3 > $log
+gmt blockmedian -R0/2/0/2 -I1 -Er+ -r data.d -o3 >> $log
+gmt blockmode   -R0/2/0/2 -I1 -Er- -r data.d -o3 >> $log
+gmt blockmode   -R0/2/0/2 -I1 -Er+ -r data.d -o3 >> $log
 diff $log truth.d --strip-trailing-cr > fail

@@ -11,7 +11,7 @@ REM
 echo GMT EXAMPLE 22
 set ps=example_22.ps
 
-gmtset FONT_ANNOT_PRIMARY 10p FONT_TITLE 18p FORMAT_GEO_MAP ddd:mm:ssF
+gmt gmtset FONT_ANNOT_PRIMARY 10p FONT_TITLE 18p FORMAT_GEO_MAP ddd:mm:ssF
 
 REM Get the data (-q quietly) from USGS using the wget (comment out in case
 REM your system does not have wget or curl)
@@ -33,7 +33,7 @@ set first=04/04/19 00:04:33
 set last=04/04/25 11:11:33
 
 REM Assign a string that contains the current user @ the current computer node.
-REM Note that two @@ is needed to print a single @ in pstext:
+REM Note that two @@ is needed to print a single @ in gmt pstext:
 
 REM set me = "$user@@`hostname`"
 set me=GMT guru @@ GMTbox
@@ -46,8 +46,8 @@ echo 300	blue	10000	blue >> neis.cpt
 
 REM Start plotting. First lay down map, then plot quakes with size = magintude/50":
 
-pscoast -Rg -JK180/9i -B45g30:."World-wide earthquake activity": -Gbrown -Slightblue -Dc -A1000 -K -UL/-0.75i/-2.5i/"Example 22 in Cookbook" -Y2.75i > %ps%
-gawk -F, "{ print $4, $3, $6, $5*0.02}" neic_quakes.d | psxy -R -JK -O -K -Cneis.cpt -Sci -Wthin -h >> %ps%
+gmt pscoast -Rg -JK180/9i -B45g30:."World-wide earthquake activity": -Gbrown -Slightblue -Dc -A1000 -K -UL/-0.75i/-2.5i/"Example 22 in Cookbook" -Y2.75i > %ps%
+gawk -F, "{ print $4, $3, $6, $5*0.02}" neic_quakes.d | gmt psxy -R -JK -O -K -Cneis.cpt -Sci -Wthin -h >> %ps%
 
 REM Create legend input file for NEIS quake plot
 
@@ -85,10 +85,10 @@ echo I USGS.ras 1i RT >> neis.legend
 echo G -0.3i >> neis.legend
 echo L 12 6 LB %me% >> neis.legend
 
-REM OK, now we can actually run pslegend.  We center the legend below the map.
+REM OK, now we can actually run gmt pslegend.  We center the legend below the map.
 REM Trial and error shows that 1.7i is a good legend height:
 
-pslegend -Dx4.5i/-0.4i/7i/1.7i/TC -O -F+p+flightyellow neis.legend >> %ps%
+gmt pslegend -Dx4.5i/-0.4i/7i/1.7i/TC -O -F+p+flightyellow neis.legend >> %ps%
 
 REM Clean up after ourselves:
 

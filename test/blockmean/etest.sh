@@ -30,15 +30,15 @@ cat << EOF > data.d
 EOF
 echo "All the mean/median/mode values should be 5" > $log
 echo "Plain means" >> $log
-blockmean -R0/2/0/2 -I1 -r data.d >> $log
+gmt blockmean -R0/2/0/2 -I1 -r data.d >> $log
 echo "Extended means" >> $log
-blockmean -R0/2/0/2 -I1 -r -E data.d >> $log
+gmt blockmean -R0/2/0/2 -I1 -r -E data.d >> $log
 echo "Plain medians" >> $log
-blockmedian -R0/2/0/2 -I1 -r data.d >> $log
+gmt blockmedian -R0/2/0/2 -I1 -r data.d >> $log
 echo "Extended medians" >> $log
-blockmedian -R0/2/0/2 -I1 -r -E data.d >> $log
+gmt blockmedian -R0/2/0/2 -I1 -r -E data.d >> $log
 echo "Plain modes" >> $log
-blockmode -R0/2/0/2 -I1 -r data.d >> $log
+gmt blockmode -R0/2/0/2 -I1 -r data.d >> $log
 echo "Extended modes" >> $log
-blockmode -R0/2/0/2 -I1 -r -E data.d >> $log
+gmt blockmode -R0/2/0/2 -I1 -r -E data.d >> $log
 $AWK '{if (NF == 6 && $3 != 5) print $0}' $log > fail
