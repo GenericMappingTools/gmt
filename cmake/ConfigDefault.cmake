@@ -1,7 +1,7 @@
 #
 # $Id$
 #
-# Copyright (c) 1991-2012 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
+# Copyright (c) 1991-2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -51,7 +51,7 @@ set (GMT_PACKAGE_VERSION "${GMT_PACKAGE_VERSION_MAJOR}.${GMT_PACKAGE_VERSION_MIN
 
 # GMT_VERSION_YEAR set to current date in cmake/modules/ConfigCMake.cmake
 # if not specified here:
-#set (GMT_VERSION_YEAR "2012")
+#set (GMT_VERSION_YEAR "2013")
 
 # The minimum required GSHHG version
 set (MIN_REQUIRED_GSHHG_VERSION_MAJOR 2)
@@ -104,7 +104,7 @@ endif (NOT DEFINED GMT_RELEASE_PREFIX)
 
 # The GMT copyright - string version to be used in a source file.
 set (GMT_COPYRIGHT_STRING)
-set (GMT_COPYRIGHT_STRING "${GMT_COPYRIGHT_STRING}Copyright 1991-${GMT_VERSION_YEAR} Paul Wessel, Walter H. F. Smith, R. Scharroo, J. Luis\\n")
+set (GMT_COPYRIGHT_STRING "${GMT_COPYRIGHT_STRING}Copyright 1991-${GMT_VERSION_YEAR} Paul Wessel, Walter H. F. Smith, R. Scharroo, J. Luis and F. Wobbe\\n")
 set (GMT_COPYRIGHT_STRING "${GMT_COPYRIGHT_STRING}This program comes with NO WARRANTY, to the extent permitted by law.\\n")
 set (GMT_COPYRIGHT_STRING "${GMT_COPYRIGHT_STRING}You may redistribute copies of this program under the terms of the\\n")
 set (GMT_COPYRIGHT_STRING "${GMT_COPYRIGHT_STRING}GNU General Public License.\\n")

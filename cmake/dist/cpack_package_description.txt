@@ -7,7 +7,7 @@ perspective views; the GMT supplements add another ~70 more
 specialized tools. GMT supports over 30 map projections and
 transformations and comes with support data such as GSHHG
 coastlines, rivers, and political boundaries. GMT is developed and
-maintained by Paul Wessel, Walter H. F. Smith, Remko Scharroo, and
-Joaquim Luis, with help from a global set of volunteers, and is
-supported by the National Science Foundation. It is released under
-the GNU Lesser General Public License.
+maintained by Paul Wessel, Walter H. F. Smith, Remko Scharroo,
+Joaquim Luis and Florian Wobbe, with help from a global set of
+volunteers, and is supported by the National Science Foundation.
+It is released under the GNU Lesser General Public License.
