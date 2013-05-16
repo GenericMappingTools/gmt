@@ -434,7 +434,7 @@ int gmt_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 	last = strlen (in);
 	k = (in[0] == 'p' || in[0] == 's') ? 1 : 0;	/* Skip p|s in -Bp|s */
 	if (strchr ("xyz", in[k])) gmt5++;		/* Definitively GMT5 */
-	if (k == 0 && !isdigit (in[0]) && strchr ("WESNwesnd", in[1])) gmt5++;		/* Definitively GMT5 */
+	if (k == 0 && !isdigit (in[0]) && strchr ("WESNwesn", in[1])) gmt5++;		/* Definitively GMT5 */
 	
 	for (k = 0; k <= last; k++) {
 		if (k && in[k] == '+' && in[k-1] == '@') {	/* Found a @+ PSL sequence, just skip */
@@ -460,6 +460,7 @@ int gmt_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 			case '/': if (mod == 0) n_slashes++; break;	/* Only GMT4 uses slashes */
 			case '+':	/* Plus, might be GMT5 modifier switch */
 				if (k < last && in[k+1] == 's') {mod = 's'; gmt5++;}	/* suffix settings */
+				else if (k < last && in[k+1] == 'b') {mod = 'b'; gmt5++;}	/* 3-D box settings */
 				else if (k < last && in[k+1] == 'g') {mod = 'g'; gmt5++;}	/* fill settings */
 				else if (k < last && in[k+1] == 'o') {mod = 'o'; gmt5++;}	/* oblique pole settings */
 				else if (k < last && in[k+1] == 'p') {mod = 'p'; gmt5++;}	/* prefix settings */
@@ -478,7 +479,7 @@ int gmt_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 	if (n_colons && (n_colons % 2) == 0) gmt4++;	/* Presumably :labels: in GMT4 style as any +mod would have kicked in above */
 	if (n_slashes) gmt4++;				/* Presumably / to separate axis in GMT4 style */
 	if (colon_text) gmt4++;				/* Gave title, suffix, prefix in GMT4 style */
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_B_arg_inspector: GMT4 = %d GMT5 = %d\n", gmt4, gmt5);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_B_arg_inspector: GMT4 = %d GMT5 = %d\n", gmt4, gmt5);
 	if (gmt5 && !gmt4) {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_B_arg_inspector: Detected GMT 5 style elements in -B option\n");
 		return (5);

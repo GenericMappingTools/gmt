@@ -1,16 +1,56 @@
 .. _-B_full:
 
 **-B**\ [**p**\ \|\ **s**]\ *parameters*
-    Set map boundary annotation and tickmark intervals. The format of
-    *tickinfo* is
-    [**p**\ \|\ **s**]\ *xinfo*\ [/*yinfo*\ [/*zinfo*]][\ **:.**"Title"**:**][\ **W**\ \|\ **w**][\ **E**\ \|\ **e**][\ **S**\ \|\ **s**][\ **N**\ \|\ **n**][\ **Z**\ \|\ **z**\ [**+**\ ]][\ **+g**\ *fill*][\ **+o**\ *plon*/*plat*].
-    The leading **p** [Default] or **s** selects the primary or
-    secondary annotation information. Each of the *?info* segments are
-    textstrings of the form *info*\ [**:**"Axis
-    label"**:**][\ **:=**"prefix"**:**][\ **:,**"unit label"**:**]. The
-    *info* string is made up of one or more concatenated substrings of
-    the form
-    [**a**\ \|\ **f**\ \|\ **g**][\ *stride*\ [+-*phase*][*unit*\ ]].
+    Set map Frame and Axes parameters. The Frame parameters are specified by
+
+    **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+o**\ *lon/lat*][**+t**\ *title*]
+
+    where *axes* selects which axes to plot.  By default, all 4 map boundaries
+    (or plot axes) are plotted (named **W**, **E**, **S**, **N**). To customize,
+    append the codes for those you want (e.g., **WSn**).  Upper case means plot
+    and annotate while lower case just plots the specified axes.  If a 3-D basemap
+    is selected with **-p** and **-Jz**, append **Z** or **z** to control the
+    appearance of the vertical axis.  By default a single vertical axes will be
+    plotted at the most suitable map corner.  Override the default by appending
+    any combination of corner ids **1234**, where **1** represents the lower left
+    corner and the order goes counter-clockwise.  Append **+b** to draw the outline of the 3-D
+    cube defined by **-R**; this modifier is also needed to display gridlines in
+    the x-z, y-z planes. Note that for 3-D views the title, if given, will be
+    suppressed.  You can paint the interior of the canvas with **+g**\ *fill*.
+    Optionally append **+o**\ *plon/plat* to draw oblique gridlines about
+    specified pole [regular gridlines].  Ignored if gridlines are not
+    requested (below) and disallowed for the oblique Mercator projection.
+    To add a plot title (**+t**\ *title*).  The Frame setting is optional but
+    can be invoked once to override the above defaults.
+
+    The Axes parameters are specified by
+
+    **-B**\ [**p**|**s**][**x**|**x**|**z**]*intervals*[**+l**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
+
+    but you may also split this into two separate invocations for clarity, i.e.,
+
+    **-B**\ [**p**|**s**][**x**|**x**|**z**][**+l**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
+    **-B**\ [**p**|**s**][**x**|**x**|**z**]*intervals*
+
+    The first optional flag following **-B** selects **p** (rimary) [Default] or
+    **s** (econdary) axes information (mostly used for time axes annotations).
+    The [**x**|**x**|**z**] flags specify which axes you are providing information for.
+    If none are given then we default to **xy**.  If you wish to give different annotation intervals
+    or labels for the various axes then you must repeat the **B** option for
+    each axis (If a 3-D basemap is selected with **-p** and **-Jz**, use **-Bz**
+    to give settings for the vertical axis.).  To add a label to an axis,
+    just append **+l**\ *label* (Cartesian projections only).  If the
+    axis annotation should have a leading text prefix (e.g., dollar sign for those
+    plots of your net worth) you can append **+p**\ *prefix*.  For geographic maps
+    the addition of degree symbols, etc. is automatic (and controlled by the GMT
+    default setting **FORMAT\_GEO\_MAP**).  However, for other plots you can add
+    specific units by adding **+u**\ *unit*.  If any of these text strings contain
+    spaces or special UNIX characters you will need to enclose them in quotes.
+    The *intervals* specification is a concatenated string made up of substrings
+    of the form
+
+    [**a**\ \|\ **f**\ \|\ **g**]\ *stride*\ [*phase*][**u**].
+
     The leading **a** is used to specify the annotation and major tick
     spacing [Default], **f** for minor tick spacing, and **g** for
     gridline spacing. *stride* is the desired stride interval. The
@@ -38,43 +78,12 @@
     and grid lines with the same spacing, **afg** adds suitable minor
     tick intervals, **g** plots grid lines with the same interval as if
     **-Bf** was used.
-    For custom annotations and intervals, let *xinfo*, *yinfo*, or
-    *zinfo* be **c**\ *intfile*, where *intfile* contains any number of
+    For custom annotations and intervals, let *intervals* be given as
+    **c**\ *intfile*, where *intfile* contains any number of
     records with *coord* *type* [*label*\ ]. Here, *type* is one or more
     letters from **a**\ \|\ **i**, **f**, and **g**. For
     **a**\ \|\ **i** you must supply a *label* that will be plotted at
-    the *coord* location. To specify separate x and y ticks, separate
-    the substrings that apply to the x and y axes with a slash [/] (If a
-    3-D basemap is selected with **-p** and **-Jz**, a third substring
-    pertaining to the vertical axis may be appended.) For
-    linear/log/power projections (**-Jx**\ \|\ **X**): Labels for each
-    axis can be added by surrounding them with colons (**:**). If the
-    first character in the label is a period, then the label is used as
-    plot title; if it is a comma (**,**) then the label is appended to
-    each annotation; if it is an equal sign (**=**) the the prefix is
-    prepended to each annotation (start label/prefix with - to avoid
-    space between annotation and item); else it is the axis label. If
-    the label consists of more than one word, enclose the entire label
-    in double quotes (e.g., **:**"my label"**:**). If you need to use a
-    colon (:) as part of your label you must specify it using its octal
-    code (\\072). If you want to plot just the map boundary and nothing
-    else, **-B**\ 0 suffices.
-    By default, all 4 boundaries are plotted (referred to as **W**,
-    **E**, **S**, **N**). To change the default, append the code for
-    only those axes you want (e.g., **WS** for standard lower-left x-
-    and y-axis system). Upper case (e.g., **W**) means draw
-    axis/tickmarks AND annotate it, whereas lower case (e.g., **w**)
-    will only draw axis/tickmarks. If s is appended first, separate it
-    with a comma to avoid its interpretation as the unit of arc second.
-    If a 3-D basemap is selected with **-p** and **-Jz**, append **Z**
-    or **z** to control the appearance of the vertical axis. Append
-    **+** to draw the outline of the cube defined by **-R**; this is
-    also needed to display gridlines in the x-z, y-z planes. Note that
-    for 3-D views the title, if given, will be suppressed. Finally, to
-    paint the inside of the map region, append **+g**\ *fill* [no fill].
-    Finally, append **+o**\ *plon/plat* to draw oblique gridlines about
-    specified pole [regular gridlines].  Ignored if gridlines are not
-    requested and disallowed for the oblique Mercator projection.
+    the *coord* location
     For non-geographical projections: Give negative scale (in **-Jx**)
     or axis length (in **-JX**) to change the direction of increasing
     coordinates (i.e., to make the y-axis positive down). For log10

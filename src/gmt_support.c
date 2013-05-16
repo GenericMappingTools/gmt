@@ -5249,14 +5249,14 @@ void gmt_place_label (struct GMT_CTRL *GMT, struct GMT_LABEL *L, char *txt, stru
 	if (G->prefix && G->prefix[0]) {	/* Must prepend the prefix string */
 		n += strlen (G->prefix) + 1;
 		L->label = GMT_memory (GMT, NULL, n, char);
-		sprintf (L->label, "%s%s", &G->prefix[1], txt);
+		sprintf (L->label, "%s%s", G->prefix, txt);
 	}
 	else {
 		L->label = GMT_memory (GMT, NULL, n, char);
 		strcpy (L->label, txt);
 	}
 	if (use_unit && G->unit && G->unit[0]) {	/* Append a unit string */
-		strcat (L->label, &G->unit[1]);
+		strcat (L->label, G->unit);
 	}
 }
 
