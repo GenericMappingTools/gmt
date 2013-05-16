@@ -13,9 +13,9 @@ EOF
 ln -fs "${src:=.}"/windbarb.def .
 
 # Mercator
-pscoast -JM5i -R110/165/-45/-10 -Gwheat -Sazure1 -Wthin,black -BafgWSen -K -P -Xc > $ps
+pscoast -JM5i -R110/165/-45/-10 -Gwheat -Sazure1 -Wthin,black -Bafg -BWSen -K -P -Xc > $ps
 psxy -J -R -W1p,black -Gblack -L -Skwindbarb/1.5i -O -K tmp >> $ps
 # Stereographic
-pscoast -JS120/-90/5i -R -Gwheat -Sazure1 -Wthin,black -BafgWSen -O -K -Y5i >> $ps
+pscoast -JS120/-90/5i -R -Gwheat -Sazure1 -Wthin,black -Bafg -BWSen -O -K -Y5i >> $ps
 psxy -J -R -W2p,red -Gblack -L -Skwindbarb/1.5i -O tmp >> $ps
 

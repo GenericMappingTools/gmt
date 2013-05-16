@@ -45,7 +45,7 @@ for az in 30 135 200 290 ; do
 	while read x y; do
 		makeaxis $az axes.tt > tt.a
 		makeproj $az $x $y > tt.d
-		psbasemap -R-2/2/-2/2 -JX1.5i -B2g1${Bx}${By} -O -K -Xa$xpos -Ya$ypos >> $ps
+		psbasemap -R-2/2/-2/2 -JX1.5i -B2g1 -B${Bx}${By} -O -K -Xa$xpos -Ya$ypos >> $ps
 		echo "$cx $cy 0 $az" | psxy -R -J -O -K -SW0.2i -W0.25p -Xa$xpos -Ya$ypos >> $ps
 		psxy -R -J -O -K -W1p,red -Xa$xpos -Ya$ypos tt.a >> $ps
 		echo "$cx $cy $az 0.75" | psxy -R -J -O -K -SV0.15i+e+a60 -W0.5p -Gred -Xa$xpos -Ya$ypos >> $ps

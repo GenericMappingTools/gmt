@@ -8,7 +8,7 @@ ps=legend.ps
 makecpt -Cpanoply -T-8/8/1 > tt.cpt
 gmtset FONT_ANNOT_PRIMARY 12p
 
-pslegend -R0/10/0/10 -JM6i -Dx0.5i/0.5i/5i/BL -C0.1i/0.1i -L1.2 -F+p+fazure1+r -B5f1 > $ps <<EOF
+pslegend -R0/10/0/10 -JM6i -Dx0.5i/0.5i/5i/BL -C0.1i/0.1i -L1.2 -F+p+gazure1+r -B5f1 > $ps <<EOF
 # Legend test for pslegend
 # G is vertical gap, V is vertical line, N sets # of columns, D draws horizontal line,
 # H is ps=legend.ps

@@ -54,7 +54,7 @@ BEGIN {
 EOF
 
 gmtset PS_CHAR_ENCODING $1
-psxy -R0/9/-1/32 -Jx0.345i/-0.21i -Bg1:."Octal codes for $1": -P -K -Ggray -X3i -Sri tt.empty
+psxy -R0/9/-1/32 -Jx0.345i/-0.21i -Bg1 -B+t"Octal codes for $1" -P -K -Ggray -X3i -Sri tt.empty
 $AWK -f tt.awk tt.chart | pstext -R -J -O -K -F+f10p,Times-Roman
 psxy -R -J -O -Wthick << EOF
 >

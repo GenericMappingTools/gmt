@@ -19,18 +19,18 @@ xoff=`gmtmath -Q 512 300 SUB 2 DIV $scl MUL NEG =`
 yoff=`gmtmath -Q 200 $scl MUL 0.5 ADD =`
 yoffe=`gmtmath -Q 384 $scl MUL 0.5 ADD =`
 makecpt -Cpolar -T-1/1/0.1 -Z > t.cpt
-grdimage t.nc -Jx${scl}i -Ct.cpt -P -BaWSne -K -X1.75i > $ps
+grdimage t.nc -Jx${scl}i -Ct.cpt -P -Ba -BWSne -K -X1.75i > $ps
 echo "350 100 Original Data" | pstext -R -J -O -K -N -F+jLM+f16p -D0.5i/0 >> $ps
 
 # mirror and taper
 grdfft t.nc -N512/384+n+t10+wtmp+l -E > /dev/null
-grdimage t_tmp.nc -J -Ct.cpt -BaWSne -O -K -Y${yoff}i -X${xoff}i >> $ps
+grdimage t_tmp.nc -J -Ct.cpt -Ba -BWSne -O -K -Y${yoff}i -X${xoff}i >> $ps
 psxy -Rt_tmp.nc -J -O -K -L -W2p box >> $ps
 echo "400 192 Extended" | pstext -R -J -O -K -N -F+jLM+f16p -D0.5i/0 >> $ps
 echo "400 192 10% inward taper" | pstext -R -J -O -K -N -F+jLM+f16p -D0.5i/-0.3i >> $ps
 # edge-symmetry and taper
 grdfft t.nc -N300/200+n+t25+wtmp+l -E > /dev/null
-grdimage t_tmp.nc -J -Ct.cpt -BaWSne -O -K -Y${yoffe}i >> $ps
+grdimage t_tmp.nc -J -Ct.cpt -Ba -BWSne -O -K -Y${yoffe}i >> $ps
 psxy -Rt_tmp.nc -J -O -K -L -W2p box >> $ps
 echo "400 192 No extension" | pstext -R -J -O -K -N -F+jLM+f16p -D0.5i/0 >> $ps
 echo "400 192 25% inward taper" | pstext -R -J -O -K -N -F+jLM+f16p -D0.5i/-0.3i >> $ps

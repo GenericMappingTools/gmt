@@ -31,7 +31,7 @@ while [ ${az} -lt 360 ]; do
 	if [ $# -eq 0 ]; then	# If a single frame is requested we pick this view
 		az=135
 	fi
-	grdview $${_above}.nc -R-26/-12/63/67 -JM2.5i -C$$.cpt -Qi${dpi} -B5g10/5g5 -P -X0.5i -Y0.5i \
+	grdview $${_above}.nc -R-26/-12/63/67 -JM2.5i -C$$.cpt -Qi${dpi} -Bx5g10 -By5g5 -P -X0.5i -Y0.5i \
 		-p${az}/${el}+w${lon}/${lat}+v${x0}/${y0} --PS_MEDIA=${px}ix${py}i > $$.ps
 	if [ $# -eq 0 ]; then
 		mv $$.ps ${ps}

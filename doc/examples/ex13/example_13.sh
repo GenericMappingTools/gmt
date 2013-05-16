@@ -10,7 +10,7 @@ ps=example_13.ps
 grdmath -R-2/2/-2/2 -I0.1 X Y R2 NEG EXP X MUL = z.nc
 grdmath z.nc DDX = dzdx.nc
 grdmath z.nc DDY = dzdy.nc
-grdcontour dzdx.nc -JX3i -B1/1WSne -C0.1 -A0.5 -K -P -Gd2i -S4 -T0.1i/0.03i \
+grdcontour dzdx.nc -JX3i -B1 -BWSne -C0.1 -A0.5 -K -P -Gd2i -S4 -T0.1i/0.03i \
 	-U"Example 13 in Cookbook" > $ps
 grdcontour dzdy.nc -J -B -C0.05 -A0.2 -O -K -Gd2i -S4 -T0.1i/0.03i -Xa3.45i >> $ps
 grdcontour z.nc -J -B -C0.05 -A0.1 -O -K -Gd2i -S4 -T0.1i/0.03i -Y3.45i >> $ps

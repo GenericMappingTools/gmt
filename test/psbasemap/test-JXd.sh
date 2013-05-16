@@ -5,7 +5,7 @@
 psbasemap="psbasemap --FORMAT_GEO_MAP=dddF --FONT_LABEL=16p --MAP_FRAME_AXES=WeSn"
 
 plot1 () {
-   $psbasemap -R -JX$1 -B20f10g20:Longitude:/20f10g20:Latitude: -O -K $2
+   $psbasemap -R -JX$1 -Bx20f10g20+lLongitude -By20f10g20+lLatitude -O -K $2
    annot $1
 }
 

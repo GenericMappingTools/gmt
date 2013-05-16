@@ -12,7 +12,7 @@ DATA="${src:=.}"/points.txt
 # NN analysis
 gmtspatial -Aa0k -fg $DATA > results.txt
 gmtset MAP_FRAME_TYPE plain
-psxy -R-0.5/10.5/-0.5/10.5 -JM4.5i -P -Bag1WSne $DATA -Sc0.1i -Gred -K -Xc > $ps
+psxy -R-0.5/10.5/-0.5/10.5 -JM4.5i -P -Bag1 -BWSne $DATA -Sc0.1i -Gred -K -Xc > $ps
 awk '{print $1, $2, NR-1}' $DATA | pstext -R -J -O -K -F+f12+jCB -Dj0.1i >> $ps
 rm -f tmp
 # Draw links of nearest neighbors
@@ -26,7 +26,7 @@ done < results.txt
 psxy -R -J -O -K -W1p,green tmp >> $ps
 # NN averaging
 gmtspatial -Aa75k -fg $DATA > results.txt
-psxy -R -J -O -K -Bag1Wsne points.txt -Sc0.1i -Glightgray -Y4.75i $DATA >> $ps
+psxy -R -J -O -K -Bag1 -BWsne points.txt -Sc0.1i -Glightgray -Y4.75i $DATA >> $ps
 awk '{print $1, $2, 0, 150, 150}' results.txt | psxy -R -J -O -K -SE -W0.5p,blue >> $ps
 psxy -R -J -O -K results.txt -Sc0.1i -Gred >> $ps
 psxy -R -J -O -T >> $ps

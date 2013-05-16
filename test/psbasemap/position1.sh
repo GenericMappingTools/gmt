@@ -8,7 +8,7 @@ font=Helvetica
 
 gmtset FONT_ANNOT_PRIMARY 24p,$font
 
-psbasemap -JX8i/5i -R0/12/0/12 -B1g1/1g1SW -K > $ps
+psbasemap -JX8i/5i -R0/12/0/12 -B1g1 -BSW -K > $ps
 pstext -F+j -R -J -O -K >> $ps <<%
  1 1 BR 1
  1 2 BC 1
@@ -58,5 +58,5 @@ pstext -F+j -Ggreen -R -J -O -K >> $ps <<%
  6 9 MR oo
 10 9 TR oo
 %
-psbasemap -J -R0/1.2/0/1.2 -B0.1/0.1NE -O >> $ps
+psbasemap -J -R0/1.2/0/1.2 -B0.1 -BNE -O >> $ps
 

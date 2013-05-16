@@ -6,7 +6,7 @@
 
 ps=quotedclip.ps
 
-psbasemap -R0/10/0/10 -JX15c/10c -K -P -B:."Clip path from straight text":+ggray70 --MAP_TITLE_OFFSET=0 --FONT_TITLE=24p > $ps
+psbasemap -R0/10/0/10 -JX15c/10c -K -P -B+t"Clip path from straight text"+ggray70 --MAP_TITLE_OFFSET=0 --FONT_TITLE=24p > $ps
 
 psxy -R -J -W1p,red -Sqn1:+Lh+e+f18p -O -K << EOF >> $ps
 > "The quick brown fox jumps over the lazy dog"
@@ -25,7 +25,7 @@ psxy -R -J -L -Gorange -W0.5p -O -K box.txt >> $ps
 
 psclip -Cs -O -K >> $ps
 
-psbasemap -R -J -O -K -Y12c  -B:."Clip path from curved text":+ggray70 --MAP_TITLE_OFFSET=0 --FONT_TITLE=24p >> $ps
+psbasemap -R -J -O -K -Y12c -B+t"Clip path from curved text"+ggray70 --MAP_TITLE_OFFSET=0 --FONT_TITLE=24p >> $ps
 
 cat << EOF > t.txt
 > "In the Future, the Present will look like Today"

@@ -58,7 +58,7 @@ x2sys_cross -TFAKE track[ABC].xydz -Qe -V -2 > fake_COE_orig.txt
 
 makecpt -T-1/1/0.1 -Cpolar -Z > hat.cpt
 PS=x2sys_1.ps
-grdview hat.nc -Chat.cpt -JX6i -P -B1g1WSne -Qs -Wc1p -K -X1.25i > $PS
+grdview hat.nc -Chat.cpt -JX6i -P -B1g1 -BWSne -Qs -Wc1p -K -X1.25i > $PS
 psxy -R -J -O -K trackA.xydz -W2p,red >> $PS
 psxy -R -J -O -K trackB.xydz -W2p,blue >> $PS
 psxy -R -J -O -K trackC.xydz -W2p,black >> $PS
@@ -66,7 +66,7 @@ psxy -R -J -O -K -M fake_COE_orig.txt -Sc0.15 -W0.5p >> $PS
 head -1 trackA.xydz | psxy -R -J -O -K -Sc0.1i -Gred >> $PS
 head -1 trackB.xydz | psxy -R -J -O -K -Sc0.1i -Gblue >> $PS
 head -1 trackC.xydz | psxy -R -J -O -K -Sc0.1i -Gblack >> $PS
-cut -f3,4 trackA.xydz | psxy -R0/16/-1/1 -JX6i/2i -B5f1/0.2:."X2SYS 1\072 3 tracks":WSne -O -K -Y6.5i -W2p,red >> $PS
+cut -f3,4 trackA.xydz | psxy -R0/16/-1/1 -JX6i/2i -Bx5f1 -By0.2 -BWSne+t"X2SYS 1\072 3 tracks" -O -K -Y6.5i -W2p,red >> $PS
 cut -f3,4 trackB.xydz | psxy -R -J -O -K -W2p,blue >> $PS
 cut -f3,4 trackC.xydz | psxy -R -J -O -W2p,black >> $PS
 gv $PS &
@@ -87,18 +87,18 @@ x2sys_list -TFAKE -Cz fake_COE_constant.txt -Fnc > COE.txt
 # Make track plots for shifted tracks
 
 PS=x2sys_2.ps
-cut -f3,4 trackA.xydz | psxy -R0/16/-1.5/1.5 -JX6i/2.25i -X1.25i -P -Y7.25i -B5f1/0.2g10:."X2SYS 2\072 Constants added":WSne -K -W0.25p,red,- > $PS
+cut -f3,4 trackA.xydz | psxy -R0/16/-1.5/1.5 -JX6i/2.25i -X1.25i -P -Y7.25i -Bx5f1 -By0.2g10 -BWSne+t"X2SYS 2\072 Constants added" -K -W0.25p,red,- > $PS
 cut -f3,4 trackAc.xydz | psxy -R -J -O -K -W2p,red >> $PS
 cut -f3,4 trackB.xydz | psxy -R -J -O -K -W0.25p,blue,- >> $PS
 cut -f3,4 trackBc.xydz | psxy -R -J -O -K -W2p,blue >> $PS
 cut -f3,4 trackC.xydz | psxy -R -J -O -K -W0.25p,black,- >> $PS
 cut -f3,4 trackCc.xydz | psxy -R -J -O -K -W2p,black >> $PS
 
-cut -f3,4 trackAc.xydz | psxy -R -J -O -K -B5f1/0.2g10WSne -Y-2.25i -W1p,red >> $PS
+cut -f3,4 trackAc.xydz | psxy -R -J -O -K -Bx5f1 -By0.2g10 -BWSne -Y-2.25i -W1p,red >> $PS
 x2sys_list -TFAKE -Cz fake_COE_constant.txt -Fdc -StrackA | psxy -R -J -O -K -Sc0.05 -Gblack >> $PS
-cut -f3,4 trackBc.xydz | psxy -R -J -O -K -B5f1/0.2g10WSne -Y-2.25i -W1p,blue >> $PS
+cut -f3,4 trackBc.xydz | psxy -R -J -O -K -Bx5f1 -By0.2g10 -BWSne -Y-2.25i -W1p,blue >> $PS
 x2sys_list -TFAKE -Cz fake_COE_constant.txt -Fdc -StrackB | psxy -R -J -O -K -Sc0.05 -Gblack >> $PS
-cut -f3,4 trackCc.xydz | psxy -R -J -O -K -B5f1/0.2g10WSne -Y-2.25i -W1p,black >> $PS
+cut -f3,4 trackCc.xydz | psxy -R -J -O -K -Bx5f1 -By0.2g10 -BWSne -Y-2.25i -W1p,black >> $PS
 x2sys_list -TFAKE -Cz fake_COE_constant.txt -Fdc -StrackC | psxy -R -J -O -K -Sc0.05 -Gblack >> $PS
 psxy -R -J -O /dev/null >> $PS
 gv $PS &
@@ -118,18 +118,18 @@ x2sys_datalist -TFAKE -Lcorr_const.lis trackCc.xydz > trackCcc.xydz
 x2sys_cross -TFAKE track[ABC]cc.xydz -Qe -V -2 > fake_COE_constant_corr.txt
 
 PS=x2sys_3.ps
-cut -f3,4 trackA.xydz | psxy -R0/16/-1.5/1.5 -JX6i/2.25i -X1.25i -P -Y7.25i -B5f1/0.2g10:."X2SYS 3\072 Constants resolved":WSne -K -W0.25p,red,- > $PS
+cut -f3,4 trackA.xydz | psxy -R0/16/-1.5/1.5 -JX6i/2.25i -X1.25i -P -Y7.25i -Bx5f1 -By0.2g10 -BWSne+t"X2SYS 3\072 Constants resolved" -K -W0.25p,red,- > $PS
 cut -f3,4 trackAcc.xydz | psxy -R -J -O -K -W2p,red >> $PS
 cut -f3,4 trackB.xydz | psxy -R -J -O -K -W0.25p,blue,- >> $PS
 cut -f3,4 trackBcc.xydz | psxy -R -J -O -K -W2p,blue >> $PS
 cut -f3,4 trackC.xydz | psxy -R -J -O -K -W0.25p,black,- >> $PS
 cut -f3,4 trackCcc.xydz | psxy -R -J -O -K -W2p,black >> $PS
 
-cut -f3,4 trackAcc.xydz | psxy -R -J -O -K -B5f1/0.2g10WSne -Y-2.25i -W1p,red >> $PS
+cut -f3,4 trackAcc.xydz | psxy -R -J -O -K -Bx5f1 -By0.2g10 -BWSne -Y-2.25i -W1p,red >> $PS
 x2sys_list -TFAKE -Cz fake_COE_constant_corr.txt -Fdc -StrackA | psxy -R -J -O -K -Sc0.05 -Gblack >> $PS
-cut -f3,4 trackBcc.xydz | psxy -R -J -O -K -B5f1/0.2g10WSne -Y-2.25i -W1p,blue >> $PS
+cut -f3,4 trackBcc.xydz | psxy -R -J -O -K -Bx5f1 -By0.2g10 -BWSne -Y-2.25i -W1p,blue >> $PS
 x2sys_list -TFAKE -Cz fake_COE_constant_corr.txt -Fdc -StrackB | psxy -R -J -O -K -Sc0.05 -Gblack >> $PS
-cut -f3,4 trackCcc.xydz | psxy -R -J -O -K -B5f1/0.2g10WSne -Y-2.25i -W1p,black >> $PS
+cut -f3,4 trackCcc.xydz | psxy -R -J -O -K -Bx5f1 -By0.2g10 -BWSne -Y-2.25i -W1p,black >> $PS
 x2sys_list -TFAKE -Cz fake_COE_constant_corr.txt -Fdc -StrackC | psxy -R -J -O -K -Sc0.05 -Gblack >> $PS
 psxy -R -J -O /dev/null >> $PS
 gv $PS &
@@ -149,18 +149,18 @@ x2sys_list -TFAKE -Cz fake_COE_drift.txt -Fndc > COE.txt
 # Make track plots for shifted tracks
 
 PS=x2sys_4.ps
-cut -f3,4 trackA.xydz | psxy -R0/16/-1.5/1.5 -JX6i/2.25i -X1.25i -P -Y7.25i -B5f1/0.2g10:."X2SYS 4\072 Drifts added":WSne -K -W0.25p,red,- > $PS
+cut -f3,4 trackA.xydz | psxy -R0/16/-1.5/1.5 -JX6i/2.25i -X1.25i -P -Y7.25i -Bx5f1 -By0.2g10 -BWSne+t"X2SYS 4\072 Drifts added" -K -W0.25p,red,- > $PS
 cut -f3,4 trackAd.xydz | psxy -R -J -O -K -W2p,red >> $PS
 cut -f3,4 trackB.xydz | psxy -R -J -O -K -W0.25p,blue,- >> $PS
 cut -f3,4 trackBd.xydz | psxy -R -J -O -K -W2p,blue >> $PS
 cut -f3,4 trackC.xydz | psxy -R -J -O -K -W0.25p,black,- >> $PS
 cut -f3,4 trackCd.xydz | psxy -R -J -O -K -W2p,black >> $PS
 
-cut -f3,4 trackAd.xydz | psxy -R -J -O -K -B5f1/0.2g10WSne -Y-2.25i -W1p,red >> $PS
+cut -f3,4 trackAd.xydz | psxy -R -J -O -K -Bx5f1 -By0.2g10 -BWSne -Y-2.25i -W1p,red >> $PS
 x2sys_list -TFAKE -Cz fake_COE_drift.txt -Fdc -StrackA | psxy -R -J -O -K -Sc0.05 -Gblack >> $PS
-cut -f3,4 trackBd.xydz | psxy -R -J -O -K -B5f1/0.2g10WSne -Y-2.25i -W1p,blue >> $PS
+cut -f3,4 trackBd.xydz | psxy -R -J -O -K -Bx5f1 -By0.2g10 -BWSne -Y-2.25i -W1p,blue >> $PS
 x2sys_list -TFAKE -Cz fake_COE_drift.txt -Fdc -StrackB | psxy -R -J -O -K -Sc0.05 -Gblack >> $PS
-cut -f3,4 trackCd.xydz | psxy -R -J -O -K -B5f1/0.2g10WSne -Y-2.25i -W1p,black >> $PS
+cut -f3,4 trackCd.xydz | psxy -R -J -O -K -Bx5f1 -By0.2g10 -BWSne -Y-2.25i -W1p,black >> $PS
 x2sys_list -TFAKE -Cz fake_COE_drift.txt -Fdc -StrackC | psxy -R -J -O -K -Sc0.05 -Gblack >> $PS
 psxy -R -J -O /dev/null >> $PS
 gv $PS &
@@ -177,18 +177,18 @@ x2sys_datalist -TFAKE -Lcorr_trend.lis trackCd.xydz > trackCdc.xydz
 x2sys_cross -TFAKE track[ABC]dc.xydz -Qe -V -2 > fake_COE_drift_corr.txt
 
 PS=x2sys_5.ps
-cut -f3,4 trackA.xydz | psxy -R0/16/-1.5/1.5 -JX6i/2.25i -X1.25i -P -Y7.25i -B5f1/0.2g10:."X2SYS 5\072 Drifts resolved":WSne -K -W0.25p,red,- > $PS
+cut -f3,4 trackA.xydz | psxy -R0/16/-1.5/1.5 -JX6i/2.25i -X1.25i -P -Y7.25i -Bx5f1 -By0.2g10 -BWSne+t"X2SYS 5\072 Drifts resolved" -K -W0.25p,red,- > $PS
 cut -f3,4 trackAdc.xydz | psxy -R -J -O -K -W2p,red >> $PS
 cut -f3,4 trackB.xydz | psxy -R -J -O -K -W0.25p,blue,- >> $PS
 cut -f3,4 trackBdc.xydz | psxy -R -J -O -K -W2p,blue >> $PS
 cut -f3,4 trackC.xydz | psxy -R -J -O -K -W0.25p,black,- >> $PS
 cut -f3,4 trackCdc.xydz | psxy -R -J -O -K -W2p,black >> $PS
 
-cut -f3,4 trackAdc.xydz | psxy -R -J -O -K -B5f1/0.2g10WSne -Y-2.25i -W1p,red >> $PS
+cut -f3,4 trackAdc.xydz | psxy -R -J -O -K -Bx5f1 -By0.2g10 -BWSne -Y-2.25i -W1p,red >> $PS
 x2sys_list -TFAKE -Cz fake_COE_drift_corr.txt -Fdc -StrackA | psxy -R -J -O -K -Sc0.05 -Gblack >> $PS
-cut -f3,4 trackBdc.xydz | psxy -R -J -O -K -B5f1/0.2g10WSne -Y-2.25i -W1p,blue >> $PS
+cut -f3,4 trackBdc.xydz | psxy -R -J -O -K -Bx5f1 -By0.2g10 -BWSne -Y-2.25i -W1p,blue >> $PS
 x2sys_list -TFAKE -Cz fake_COE_drift_corr.txt -Fdc -StrackB | psxy -R -J -O -K -Sc0.05 -Gblack >> $PS
-cut -f3,4 trackCdc.xydz | psxy -R -J -O -K -B5f1/0.2g10WSne -Y-2.25i -W1p,black >> $PS
+cut -f3,4 trackCdc.xydz | psxy -R -J -O -K -Bx5f1 -By0.2g10 -BWSne -Y-2.25i -W1p,black >> $PS
 x2sys_list -TFAKE -Cz fake_COE_drift_corr.txt -Fdc -StrackC | psxy -R -J -O -K -Sc0.05 -Gblack >> $PS
 psxy -R -J -O /dev/null >> $PS
 gv $PS &

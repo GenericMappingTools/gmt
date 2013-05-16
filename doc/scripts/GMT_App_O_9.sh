@@ -15,10 +15,10 @@ cat << EOF > ttt.cpt
 6	lightgreen	100	lightgreen
 EOF
 grdimage ttt_atl.nc -Itopo5_int.nc -Cttt.cpt $R -JM5.3i -P -K -nc+t1 > GMT_App_O_9.ps
-grdcontour ttt_atl.nc -R -J -O -K -C0.5 -A1+u"hour"+v+f8p,Bookman-Demi \
+grdcontour ttt_atl.nc -R -J -O -K -C0.5 -A1+u" hour"+v+f8p,Bookman-Demi \
 	-GL80W/31N/17W/26N,17W/28N/17W/50N -S2 >> GMT_App_O_9.ps
 psxy -R -J -Wfatter,white great_NY_Canaries.d -O -K  >> GMT_App_O_9.ps
-pscoast -R -J -B20f5:."Tsunami travel times from the Canaries":WSne -N1/thick -O -K \
+pscoast -R -J -B20f5 -BWSne+t"Tsunami travel times from the Canaries" -N1/thick -O -K \
 	-Glightgray -Wfaint -A500 >> GMT_App_O_9.ps
 gmtconvert great_NY_*.d -E | psxy -R -J -O -K -Sa0.15i -Gred -Wthin >> GMT_App_O_9.ps
 psxy -R -J -Wthick great_NY_Canaries.d -O -K \

@@ -21,7 +21,7 @@ e="-13.121354 66.7035842"
 f="-25.3398981 66.6019215"
 
 ### Set up walls between 0 and 200 km depth
-psxyz $popt -R-24.4/63.0/-13.1/66.7/0/200r -JZ-5c -JT-17.927/64.463/15c -Ba2f1/a1f0.5/50ESZ -Wthinnest -K << EOF > $ps
+psxyz $popt -R-24.4/63.0/-13.1/66.7/0/200r -JZ-5c -JT-17.927/64.463/15c -Bxa2f1 -Bya1f0.5 -Bz50 -BESZ -Wthinnest -K << EOF > $ps
 > -G220
 $a 200
 $a 0

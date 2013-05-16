@@ -78,9 +78,7 @@
         Saves line label x, y, and text to *file* [Line\_labels.txt].
         Use **+T** to save x, y, angle, text instead.
     **+u**\ *unit*
-        Appends *unit* to all line labels. If *unit* starts with a
-        leading hyphen (-) then there will be no space between label
-        value and the unit. [Default is no unit].
+        Appends *unit* to all line labels. [Default is no unit].
     **+v**
         Specifies curved labels following the path [Default is straight
         labels].
@@ -88,6 +86,4 @@
         Specifies how many (*x*,\ *y*) points will be used to estimate
         label angles [Default is 10].
     **+=**\ *prefix*
-        Prepends *prefix* to all line labels. If *prefix* starts with a
-        leading hyphen (-) then there will be no space between label
-        value and the prefix. [Default is no prefix].
+        Prepends *prefix* to all line labels. [Default is no prefix].

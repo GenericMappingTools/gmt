@@ -28,7 +28,7 @@ while [ ${frame} -lt ${n_frames} ]; do
 	angle=`gmtmath -Q ${frame} ${del_angle} MUL =`
 	dir=`gmtmath -Q ${angle} 180 ADD =`
 	grdgradient us.nc -A${angle} -Nt2 -fg -G$$.us_int.nc
-	grdimage us.nc -I$$.us_int.nc -JM3i -P -K -C$$.cpt -B1WSne -X0.35i -Y0.3i \
+	grdimage us.nc -I$$.us_int.nc -JM3i -P -K -C$$.cpt -BWSne -B1 -X0.35i -Y0.3i \
 	--PS_MEDIA=${width}x${height} --FONT_ANNOT_PRIMARY=9p > $$.ps
 	psxy -Rus.nc -J -O -K -Sc0.8i -Gwhite -Wthin >> $$.ps <<< "256.25 35.6"
 	psxy -Rus.nc -J -O -Sv0.1i+e -Gred -Wthick >> $$.ps <<< "256.25 35.6 ${dir} 0.37"

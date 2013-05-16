@@ -9,7 +9,7 @@ Rg=-20/10/-20/20
 # Create geographic grid with NaNs inside a circle and 1 outside
 grdmath -R$Rg -I1 -fg 355 2 SDIST 10 GT 0 NAN = tmp.nc
 # Draw all nodes as open circles
-grd2xyz tmp.nc | psxy -R$Rp -JM6i -Sc0.4c -W0.25p -P -K -B10f5WSne -Xc > $ps
+grd2xyz tmp.nc | psxy -R$Rp -JM6i -Sc0.4c -W0.25p -P -K -B10f5 -BWSne -Xc > $ps
 # Fill all non-NaN nodes as blue
 grd2xyz tmp.nc -s | psxy -R$Rp -JM6i -Sc0.3c -Gblue -O -K >> $ps
 # Fill nodes green inside the selected sub region

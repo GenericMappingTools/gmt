@@ -31,7 +31,7 @@ cat << EOF > G.txt
 EOF
 # Rotation without constraining polygons
 grdrotater t.nc -e0/53/60 -Grot.nc > box.txt
-grdcontour -R-10/80/-5/56 -JM5i -P -B10WSne t.nc -A100 -C25 -K -Xc > $ps
+grdcontour -R-10/80/-5/56 -JM5i -P -B10 -BWSne t.nc -A100 -C25 -K -Xc > $ps
 grdcontour -R -J rot.nc -A100 -C25 -O -K -Wa0.75p,red, -Wc0.25p,red >> $ps
 psxy -R -J -O -K G.txt -W1p,blue -A >> $ps
 psxy -R -J -O -K box.txt -W1p,red >> $ps
@@ -40,7 +40,7 @@ echo 0 53 | psxy -R -J -O -K -Sc0.1i -Gblack -N >> $ps
 echo 0 53 0.5i -90 -30 | psxy -R -J -O -K -Sm0.15i+e -Gblack -N -W1p >> $ps
 # Rotating with constraining polygons
 grdrotater t.nc -FP.txt -e0/53/60 -Grot.nc > R.txt
-grdcontour -R-10/80/-5/56 -JM5i -B10WSne t.nc -A100 -C25 -O -K -Y5i >> $ps
+grdcontour -R-10/80/-5/56 -JM5i -B10 -BWSne t.nc -A100 -C25 -O -K -Y5i >> $ps
 grdcontour -R -J rot.nc -A100 -C25 -O -K -Wa0.75p,red, -Wc0.25p,red >> $ps
 psxy -R -J -O -K G.txt -W1p,blue -A >> $ps
 psxy -R -J -O -K box.txt -W1p,red >> $ps

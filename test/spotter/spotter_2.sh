@@ -19,5 +19,5 @@ hotspotter seamounts.d -I10m -R130/260/-66/60 -E${POLES} -Gspotter_2.nc -T -N145
 makecpt -Chot -T0/3000/300 -Z > t.cpt
 
 grdimage spotter_2.nc -JM6i -P -K -Ct.cpt > $ps
-pscoast -R -J -O -Gdarkgreen -A500 -Dl -W0.25p -B20WSne >> $ps
+pscoast -R -J -O -Gdarkgreen -A500 -Dl -W0.25p -B20 -BWSne >> $ps
 

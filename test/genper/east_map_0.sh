@@ -9,7 +9,7 @@ DEBUG=
 X0=-Xc
 Y0=-Yc
 REGION=-Rg
-TITLE=:.${ps%.ps}:
+TITLE=${ps%.ps}
 latitude=41.5
 longitude=-74.0
 altitude=20000.0
@@ -21,5 +21,5 @@ Height=0.0
 
 PROJ=-JG${DEBUG}${EARTH_MODEL}${longitude}/${latitude}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/7i+
 
-pscoast $REGION $PROJ -P -Yc -Xc -B10g10/10g10${TITLE} -G128/255/128 -S128/128/255 -W -Ia -Di -Na --MAP_ANNOT_MIN_SPACING=0.5i > $ps
+pscoast $REGION $PROJ -P -Yc -Xc -B10g10 -B+t${TITLE} -G128/255/128 -S128/128/255 -W -Ia -Di -Na --MAP_ANNOT_MIN_SPACING=0.5i > $ps
 

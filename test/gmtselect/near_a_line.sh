@@ -27,21 +27,21 @@ grd2xyz tt.nc > tt.xyz
 # CARTESIAN DATA: distance D = 1 unit
 D=1
 # Old behavior
-psxy -R0/5/0/5 -JX3.25i -P -B1g1WSne -K -Sc0.02 -Gred tt.xyz -X0.75i -Y1i > $ps
+psxy -R0/5/0/5 -JX3.25i -P -B1g1 -BWSne -K -Sc0.02 -Gred tt.xyz -X0.75i -Y1i > $ps
 gmtselect tt.xyz -L${D}/tt.d | psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
 psxy -R -J -O -K tt.d -W1p >> $ps
 # New behavior
-psxy -R -J -O -B1g1WSne -K -Sc0.02 -Gred tt.xyz -X3.75i >> $ps
+psxy -R -J -O -B1g1 -BWSne -K -Sc0.02 -Gred tt.xyz -X3.75i >> $ps
 gmtselect tt.xyz -Lp${D}/tt.d | psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
 psxy -R -J -O -K tt.d -W1p >> $ps
 # SPHERICAL DATA (-fg): distance D = 1 degree
 D=1d
 # Old behavior
-psxy -R -JM3.25i -O -B1g1WSne -K -Sc0.02 -Gred tt.xyz -X-3.75i -Y4i >> $ps
+psxy -R -JM3.25i -O -B1g1 -BWSne -K -Sc0.02 -Gred tt.xyz -X-3.75i -Y4i >> $ps
 gmtselect tt.xyz -L${D}/tt.d -fg | psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
 psxy -R -J -O -K tt.d -W1p >> $ps
 # New behavior
-psxy -R -J -O -B1g1WSne -K -Sc0.02 -Gred tt.xyz -X3.75i >> $ps
+psxy -R -J -O -B1g1 -BWSne -K -Sc0.02 -Gred tt.xyz -X3.75i >> $ps
 gmtselect tt.xyz -Lp${D}/tt.d -fg | psxy -R -J -O -K -Sc0.02 -Ggreen >> $ps
 psxy -R -J -O tt.d -W1p >> $ps
 

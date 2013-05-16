@@ -19,5 +19,5 @@ psxy -R -J -O -K -W1p,red << EOF >> $ps
 EOF
 psbasemap -R -J -O -K -Bg0.2 >> $ps
 psclip -Cs -O -K  >> $ps
-psbasemap -R -J -O -B2WSne:."Delayed Annotations": >> $ps
+psbasemap -R -J -O -B2 -BWSne+t"Delayed Annotations" >> $ps
 

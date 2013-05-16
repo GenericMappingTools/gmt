@@ -26,8 +26,8 @@ m2=(`minmax zz2.dat -C -f0T`)
 max_Y=`echo ${m1[2]} ${m1[3]} ${m2[2]} ${m2[3]} | $AWK '{if (($2-$1) > ($4-$3)) print($2-$1); else print($4-$3)}'`
 y1_max=`echo ${m1[2]} $max_Y | $AWK '{print $1 + $2}'`
 y2_max=`echo ${m2[2]} $max_Y | $AWK '{print $1 + $2}'`
-psxy zz1.dat -R${m1[0]}/${m1[1]}/${m1[2]}/$y1_max -JX16c/6c -Bpa6Hf1h/10WSn -W1p -Y5.0c -P -K > $ps
-psxy zz2.dat -R${m2[0]}/${m2[1]}/${m2[2]}/$y2_max -J -Bpa6Hf1h/10E -W1p,red --MAP_DEFAULT_PEN=+1p,red -O -K >> $ps
+psxy zz1.dat -R${m1[0]}/${m1[1]}/${m1[2]}/$y1_max -JX16c/6c -Bpxa6Hf1h -By10 -BWSn -W1p -Y5.0c -P -K > $ps
+psxy zz2.dat -R${m2[0]}/${m2[1]}/${m2[2]}/$y2_max -J -Bpxa6Hf1h -By10 -BE -W1p,red --MAP_DEFAULT_PEN=+1p,red -O -K >> $ps
 
 gmtmath zz1.dat zz2.dat SUB -o1 -f0T = dif_T.dat
 std=`gmtmath dif_T.dat STD -S = | $AWK '{printf "%.2f\n", $1}'`
@@ -46,5 +46,5 @@ IGRF=`echo $lon $lat $alt $data | mgd77magref -Ft/0 | $AWK '{printf "%.2f\n", $1
 echo ${m1[0]} ${t[0]} IGRF = $IGRF | pstext -F+f15p,Bookman-Demi+jCT -R -J -N -Xa7.5c -Ya3.0c -O -K >> $ps
 
 # Plot histogram of differences with mean removed
-gmtmath dif_T.dat $mean SUB = | pshistogram -F -W2 -G0 -JX4c/3c -BWN -Xa11.5c -O >> $ps
+gmtmath dif_T.dat $mean SUB = | pshistogram -F -W2 -G0 -JX4c/3c -Bx5 -By100 -BWN -Xa11.5c -O >> $ps
 

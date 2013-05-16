@@ -29,9 +29,9 @@ cat << END > cities.d
 END
 
 pscoast -Rg -JH90/9i -Glightgreen -Sblue -U"Example 23 in Cookbook" -A1000 \
-	-Bg30:."Distances from $name to the World": -K -Dc -Wthinnest > $ps
+	-Bg30 -B+t"Distances from $name to the World" -K -Dc -Wthinnest > $ps
 
-grdcontour dist.nc -A1000+v+ukm+fwhite -Glz-/z+ -S8 -C500 -O -K -J \
+grdcontour dist.nc -A1000+v+u" km"+fwhite -Glz-/z+ -S8 -C500 -O -K -J \
 	-Wathin,white -Wcthinnest,white,- >> $ps
 
 # For each of the cities, plot great circle arc to Rome with psxy

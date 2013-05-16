@@ -6,7 +6,7 @@
 
 ps=globalgrid.ps
 
-plot=grdimage" -Ctmp.cpt tmp.nc -JX3i/1.5i -B60f10/30f10WeSn --MAP_FRAME_TYPE=plain --FONT_ANNOT_PRIMARY=10p --FORMAT_GEO_MAP=DF"
+plot=grdimage" -Ctmp.cpt tmp.nc -JX3i/1.5i -Bx60f10 -By30f10 -BWeSn --MAP_FRAME_TYPE=plain --FONT_ANNOT_PRIMARY=10p --FORMAT_GEO_MAP=DF"
 #
 makegrid ()
 {

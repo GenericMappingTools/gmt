@@ -10,7 +10,7 @@ ps=gspline_1.ps
 
 R=-2000/25000/0/11
 T=Table_4.2.txt
-psbasemap -R-2/25/0/11 -JX6i/3i -P -K -B5f1:"Distance (km)":/2f1:"Mg (ppm)":WSne -X1.25i -Y2i --FONT_LABEL=18p > $ps
+psbasemap -R-2/25/0/11 -JX6i/3i -P -K -Bx5f1+l"Distance (km)" -By2f1+l"Mg (ppm)" -BWSne -X1.25i -Y2i --FONT_LABEL=18p > $ps
 psxy -R$R -J -O -K $T -Sc0.075i -Gblack >> $ps
 greenspline -R-2000/25000 -I100 $T -Sl -D0 | psxy -R$R -JX -O -K -Wthin,. >> $ps
 greenspline -R-2000/25000 -I100 $T -Sc -D0 | psxy -R$R -JX -O -K -Wthin,- >> $ps

@@ -4,7 +4,7 @@
 
 ps=meanvec.ps
 
-psxy -R58/70/-68:30/-61 -JM6i -BafWSne -Sc0.3c -Gred -W0.25p pts.txt -P -K -Xc> $ps
+psxy -R58/70/-68:30/-61 -JM6i -Baf -BWSne -Sc0.3c -Gred -W0.25p pts.txt -P -K -Xc> $ps
 gmtvector pts.txt -Am95 -fg > mean.txt
 psxy -R -J -O -K -Sa0.5i -Gyellow -W1p mean.txt >> $ps
 psxy -R -J -O -K -SE -W2p mean.txt >> $ps

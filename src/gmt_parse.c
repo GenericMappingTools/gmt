@@ -419,6 +419,117 @@ int GMT_Delete_Option (void *V_API, struct GMT_OPTION *current)
 	return (GMT_OK);	/* No error encountered */
 }
 
+int gmt_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
+	/* Determines if the -B option indicates old GMT4-style switches and flags
+	 * or if it follows the GMT 5 specification.  This is only called when
+	 * compatibility mode has been compiled in; otherwise we only check GMT 5
+	 * style arguments.  We return 5 for GMT5 style, 4 for GMT4 style, 9
+	 * if no decision could be make and -1 if mixing of GMT4 & 5 styles are
+	 * ound = that is an error. */
+	size_t k, last;
+	int gmt4 = 0, gmt5 = 0, n_colons = 0, n_slashes = 0, colon_text = 0, wesn_at_end = 0;
+	bool ignore = false;	/* true if inside a colon-separated string under GMT4 style assumption */
+	char mod = 0;
+	
+	last = strlen (in);
+	k = (in[0] == 'p' || in[0] == 's') ? 1 : 0;	/* Skip p|s in -Bp|s */
+	if (strchr ("xyz", in[k])) gmt5++;		/* Definitively GMT5 */
+	if (k == 0 && !isdigit (in[0]) && strchr ("WESNwesnd", in[1])) gmt5++;		/* Definitively GMT5 */
+	
+	for (k = 0; k <= last; k++) {
+		if (k && in[k] == '+' && in[k-1] == '@') {	/* Found a @+ PSL sequence, just skip */
+			continue;	/* Resume processing */
+		}
+		if (in[k] == ':') {
+#ifdef _WIN32		/* Filenames under Windows may be X:\<name> which should not trigger "colon" test */
+			if (!(k && isalpha (in[k-1]) && k < last && in[k+1] == '\\'))
+#endif
+			if (k && in[k-1] == '@') {	/* Found a @:[<font>]: sequence, scan to end */
+				k++;	/* Skip past the colon */
+				while (in[k] && in[k] != ':') k++;	/* Find the matching colon */
+				continue;	/* Resume processing */
+			}
+			ignore = !ignore, n_colons++;	/* Possibly stepping into a label/title */
+			if (!ignore) continue;	/* End of title or label, skip check for next character */
+			if (k < last && in[k+1] == '.') colon_text++;	/* Title */
+			else if (k < last && in[k+1] == '=') colon_text++;	/* Annotation prefix */
+			else if (k < last && in[k+1] == ',') colon_text++;	/* Annotation suffix */
+		}
+		if (ignore) continue;	/* Don't look inside a title or label */
+		switch (in[k]) {
+			case '/': if (mod == 0) n_slashes++; break;	/* Only GMT4 uses slashes */
+			case '+':	/* Plus, might be GMT5 modifier switch */
+				if (k < last && in[k+1] == 's') {mod = 's'; gmt5++;}	/* suffix settings */
+				else if (k < last && in[k+1] == 'g') {mod = 'g'; gmt5++;}	/* fill settings */
+				else if (k < last && in[k+1] == 'o') {mod = 'o'; gmt5++;}	/* oblique pole settings */
+				else if (k < last && in[k+1] == 'p') {mod = 'p'; gmt5++;}	/* prefix settings */
+				else if (k < last && in[k+1] == 'l') {mod = 'l'; gmt5++;}	/* Label */
+				else if (k < last && in[k+1] == 't') {mod = 't'; gmt5++;}	/* title */
+				else if (k && (in[k-1] == 'Z' || in[k-1] == 'z')) gmt4++;	/* Z-axis with 3-D box */
+				break;
+			case 'c':	/* If following a number this is unit c for seconds in GMT4 */
+				if (k && (in[k-1] == '.' || isdigit (in[k-1]))) gmt4++;	/* Old-style second unit */
+			case 'W': case 'E': case 'S': case 'N': case 'Z': case 'w': case 'e': case 'n': case 'z':	/* Not checking s as confusion with seconds */
+				if (k > 1) wesn_at_end++;	/* GMT5 has -B<WESNwesn> up front while GMT4 usually has them at the end */
+				break;
+		}
+	}
+	if (!gmt5 && wesn_at_end) gmt4++;		/* Presumably got WESNwesn stuff towards the end of the option */
+	if (n_colons && (n_colons % 2) == 0) gmt4++;	/* Presumably :labels: in GMT4 style as any +mod would have kicked in above */
+	if (n_slashes) gmt4++;				/* Presumably / to separate axis in GMT4 style */
+	if (colon_text) gmt4++;				/* Gave title, suffix, prefix in GMT4 style */
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_B_arg_inspector: GMT4 = %d GMT5 = %d\n", gmt4, gmt5);
+	if (gmt5 && !gmt4) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_B_arg_inspector: Detected GMT 5 style elements in -B option\n");
+		return (5);
+	}
+	else if (gmt4 && !gmt5) {
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_B_arg_inspector: Detected GMT 4 style elements in -B option\n");
+		return (4);
+	}
+	else if (gmt4 && gmt5) {	/* Mixed case is never allowed */
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_B_arg_inspector: Error: Detected both GMT 4 and GMT 5 style elements in -B option. Unable to parse.\n");
+		if (n_slashes) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_B_arg_inspector: Slashes no longer separate axis specifications, use -B[xyz] and repeat\n");
+		if (colon_text || n_colons) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_B_arg_inspector: Colons no longer used for titles, labels, prefix, and suffix; see +t, +l, +p, +s\n");
+		return (-1);
+	}
+	else {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_B_arg_inspector: Assume GMT 5 style format in -B option\n");
+		return (9);
+	}
+}
+	
+int gmt_check_b_options (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
+{
+	/* Determine how many -B options were given and if it is clear we are
+	 * dealing with GMT4 or GMT5 syntax just by looking at this information.
+	 * We also examine each argument for clues to version compatibility.
+	 * We return 5 if it is clear this is GMT5 syntax, 4 if it is clear it
+	 * is GMT 4 syntax, 9 if we cannot tell, and -1 if it is a mix of both.
+	 * The latter will result in a syntax error.
+	 */
+	struct GMT_OPTION *opt = NULL;
+	unsigned int n4_expected = 0, n_B = 0, gmt4 = 0, gmt5 = 0, k;
+	int verdict;
+	
+	for (opt = options; opt; opt = opt->next) {	/* Loop over all given options */
+		if (opt->option != 'B') continue;	/* But skip anything but -B options */
+		n_B++;					/* Count how many (max 2 in GMT4 if -Bp|s given) */
+		k = (opt->arg[0] == 'p' || opt->arg[0] == 's') ? 1 : 0;	/* Step over any p|s designation */
+		if (k == 1) n4_expected++;		/* Count how many -Bp or -Bs were given */
+		verdict = gmt_B_arg_inspector (GMT, opt->arg);	/* Check this argument, return 5, 4, 1 (undetermined) or 0 (mixing) */
+		if (verdict == 4) gmt4++;
+		if (verdict == 5) gmt5++;
+		if (verdict == -1) gmt4++, gmt5++;	/* This is bad and will lead to a syntax error */
+	}
+	if (n4_expected == 0) n4_expected = 1;	/* If there are no -Bs|p options then GMT4 expects a single -B option */
+	if (n_B > n4_expected) gmt5++;		/* Gave more -B options than expected for GMT4 */
+	if (gmt5 && !gmt4)  return 5;		/* Matched GMT5 syntax only */
+	if (gmt4 && !gmt5)  return 4;		/* Matched GMT4 syntax only */
+	if (!gmt4 && !gmt5) return 9;		/* Could be either */
+	return (-1);				/* Error: Cannot be both */
+}
+
 int GMT_Parse_Common (void *V_API, char *given_options, struct GMT_OPTION *options)
 {
 	/* GMT_Parse_Common parses the option list for a program and detects the GMT common options.
@@ -439,6 +550,8 @@ int GMT_Parse_Common (void *V_API, char *given_options, struct GMT_OPTION *optio
 	 * by consulting the current GMT history machinery.  If not possible then we have an error to report */
 
 	if (GMT_Complete_Options (API->GMT, options)) return_error (API, GMT_OPTION_HISTORY_ERROR);	/* Replace shorthand failed */
+
+	if (API->GMT->common.B.mode == 0) API->GMT->common.B.mode = gmt_check_b_options (API->GMT, options);	/* Determine the syntax of the -B option(s) */
 
 	/* First parse the common options in the order they appear in GMT_CRITICAL_OPT_ORDER */
 	critical_opt_order = strdup (GMT_CRITICAL_OPT_ORDER);

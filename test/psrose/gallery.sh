@@ -2,14 +2,14 @@
 # Test all psrose region and types
 
 ps=gallery.ps
-common0="az_length.txt -: -S2.5c -F -L -Ggray -R0/150/-90/90 -Bg25/g90WESN -O -K"
-common1="az_length.txt -: -S2.5c -F -L -Ggray -R0/150/0/180 -Bg25/g90WESN -O -K"
-common0n="az_length.txt -: -S2.5c -F -L -Ggray -R0/5/-90/90 -Bg1/g90WESN -O -K"
-common1n="az_length.txt -: -S2.5c -F -L -Ggray -R0/5/0/180 -Bg1/g90WESN -O -K"
-common="az_length.txt -: -S2.5c -F -L -Ggray -R0/150/0/360 -Bg25/g90WESN -O -K"
-commonn="az_length.txt -: -S2.5c -F -L -Ggray -R0/1200/0/360 -Bg200/g90WESN -O -K"
-commonu="az_length.txt -: -S2.5c -F -L -R0/5/0/360 -Bg1/g190WESN -O -K"
-commonun="az_length.txt -: -S2.5c -F -L -R0/1/0/360 -Bg0.2/g190WESN -O -K"
+common0="az_length.txt -: -S2.5c -F -L -Ggray -R0/150/-90/90 -Bxg25 -Byg90 -BWESN -O -K"
+common1="az_length.txt -: -S2.5c -F -L -Ggray -R0/150/0/180 -Bxg25 -Byg90 -BWESN -O -K"
+common0n="az_length.txt -: -S2.5c -F -L -Ggray -R0/5/-90/90 -Bxg1 -Byg90 -BWESN -O -K"
+common1n="az_length.txt -: -S2.5c -F -L -Ggray -R0/5/0/180 -Bxg1 -Byg90 -BWESN -O -K"
+common="az_length.txt -: -S2.5c -F -L -Ggray -R0/150/0/360 -Bxg25 -Byg90 -BWESN -O -K"
+commonn="az_length.txt -: -S2.5c -F -L -Ggray -R0/1200/0/360 -Bxg200 -Byg90 -BWESN -O -K"
+commonu="az_length.txt -: -S2.5c -F -L -R0/5/0/360 -Bxg1 -Byg190 -BWESN -O -K"
+commonun="az_length.txt -: -S2.5c -F -L -R0/1/0/360 -Bxg0.2 -Byg190 -BWESN -O -K"
 # Set up blank plot
 psxy -R0/5/0/5 -Jx1c -P -K -T > $ps
 echo "2.5 -0.5 Sector Diagrams" | pstext -R -J -O -K -N -F+jCT+f12p >> $ps

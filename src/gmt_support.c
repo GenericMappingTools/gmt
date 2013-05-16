@@ -5241,30 +5241,22 @@ bool gmt_label_is_OK (struct GMT_CTRL *GMT, struct GMT_LABEL *L, char *this_labe
 
 void gmt_place_label (struct GMT_CTRL *GMT, struct GMT_LABEL *L, char *txt, struct GMT_CONTOUR *G, bool use_unit)
 {	/* Allocates needed space and copies in the label */
-	int n, m = 0;
+	size_t n, m = 0;
 
 	if (use_unit && G->unit && G->unit[0])
-		m = (int)strlen (G->unit) + (G->unit[0] != '-');	/* Must allow extra space for a unit string */
-	n = (int)strlen (txt) + 1 + m;
+		m = strlen (G->unit);
+	n = strlen (txt) + 1 + m;
 	if (G->prefix && G->prefix[0]) {	/* Must prepend the prefix string */
-		n += (int)strlen (G->prefix) + 1;
+		n += strlen (G->prefix) + 1;
 		L->label = GMT_memory (GMT, NULL, n, char);
-		if (G->prefix[0] == '-')	/* No space between annotation and prefix */
-			sprintf (L->label, "%s%s", &G->prefix[1], txt);
-		else
-			sprintf (L->label, "%s %s", G->prefix, txt);
+		sprintf (L->label, "%s%s", &G->prefix[1], txt);
 	}
 	else {
 		L->label = GMT_memory (GMT, NULL, n, char);
 		strcpy (L->label, txt);
 	}
 	if (use_unit && G->unit && G->unit[0]) {	/* Append a unit string */
-		if (G->unit[0] == '-')	/* No space between annotation and prefix */
-			strcat (L->label, &G->unit[1]);
-		else {
-			strcat (L->label, " ");
-			strcat (L->label, G->unit);
-		}
+		strcat (L->label, &G->unit[1]);
 	}
 }
 
@@ -5635,18 +5627,10 @@ int GMT_get_format (struct GMT_CTRL *GMT, double interval, char *unit, char *pre
 			}
 			text[j] = 0;
 		}
-		if (text[0] == '-') {	/* No space between annotation and unit */
-			if (ndec > 0)
-				sprintf (format, "%%.%df%s", ndec, &text[1]);
-			else
-				sprintf (format, "%s%s", GMT->current.setting.format_float_map, &text[1]);
-		}
-		else {			/* 1 space between annotation and unit */
-			if (ndec > 0)
-				sprintf (format, "%%.%df %s", ndec, text);
-			else
-				sprintf (format, "%s %s", GMT->current.setting.format_float_map, text);
-		}
+		if (ndec > 0)
+			sprintf (format, "%%.%df%s", ndec, text);
+		else
+			sprintf (format, "%s%s", GMT->current.setting.format_float_map, text);
 		if (ndec == 0) ndec = 1;	/* To avoid resetting format later */
 	}
 	else if (ndec > 0)
@@ -5657,10 +5641,7 @@ int GMT_get_format (struct GMT_CTRL *GMT, double interval, char *unit, char *pre
 		strcpy (format, GMT->current.setting.format_float_map);
 	}
 	if (prefix && prefix[0]) {	/* Must prepend the prefix string */
-		if (prefix[0] == '-')	/* No space between annotation and unit */
-			sprintf (text, "%s%s", &prefix[1], format);
-		else
-			sprintf (text, "%s %s", prefix, format);
+		sprintf (text, "%s%s", prefix, format);
 		strcpy (format, text);
 	}
 	return (ndec);
@@ -7583,7 +7564,7 @@ int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP
 	}
 	for (i = k; start == 0 && text[i]; i++) {
 		if (text[i] == '+') {
-			if (strchr ("cfp", text[i+1])) start = i;
+			if (strchr ("cgp", text[i+1])) start = i;
 		}
 	}
 	col_type[GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_X];
@@ -7603,7 +7584,7 @@ int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP
 						return (1);
 					}
 					break;
-				case 'f':	/* Fill specification */
+				case 'g':	/* Fill specification */
 					if (GMT_getfill (GMT, &p[1], &B->fill)) error++;
 					B->boxfill = true;
 					break;
@@ -7620,7 +7601,7 @@ int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP
 		text[start] = '\0';	/* Truncate string for now */
 	}
 	if (! (B->boxdraw || B->boxfill)) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Need to add at least one of +<pen> or +f<fill>\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -%c option:  Need to add at least one of +<pen> or +g<fill>\n", option);
 		return (1);
 	}
 	/* Decode the w/e/s/n or width[/height] part */
@@ -7695,8 +7676,8 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	if (options > 0) {	/* Have optional args, make a copy and truncate text */
 		strncpy (txt_cpy, &text[options], GMT_BUFSIZ);
 		text[options] = '\0';
-		for (i = 0; txt_cpy[i]; i++) {	/* Unless +fjlpu, change other + to ascii 1 to bypass strtok trouble later */
-			if (txt_cpy[i] == '+' && !strchr ("fjlpu", (int)txt_cpy[i+1])) txt_cpy[i] = 1;
+		for (i = 0; txt_cpy[i]; i++) {	/* Unless +fgjlpu, change other + to ascii 1 to bypass strtok trouble later [f is now deprecated] */
+			if (txt_cpy[i] == '+' && !strchr ("fgjlpu", (int)txt_cpy[i+1])) txt_cpy[i] = 1;
 		}
 	}
 
@@ -7764,6 +7745,11 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 		while ((GMT_strtok (txt_cpy, "+", &pos, p))) {
 			switch (p[0]) {
 				case 'f':	/* Fill specification */
+					if (GMT_compat_check (GMT, 4))	/* Warn and fall through */
+						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "+f<fill> in map scale is deprecated, use +g<fill> instead\n");
+					else
+						bad++;
+				case 'g':	/* Fill specification */
 					if (GMT_getfill (GMT, &p[1], &ms->fill)) bad++;
 					ms->boxfill = true;
 					break;
@@ -7799,7 +7785,7 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 
 	if (error) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "syntax error -%c option:  Correct syntax\n", option);
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "\t-%c[f][x]<x0>/<y0>/[<lon>/]<lat>/<length>[%s][+l<label>][+j<just>][+p<pen>][+f<fill>][+u]\n", option, GMT_LEN_UNITS2_DISPLAY);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "\t-%c[f][x]<x0>/<y0>/[<lon>/]<lat>/<length>[%s][+l<label>][+j<just>][+p<pen>][+g<fill>][+u]\n", option, GMT_LEN_UNITS2_DISPLAY);
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "\t  Append length distance unit from %s [k]\n", GMT_LEN_UNITS2_DISPLAY);
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "\t  Justification can be l, r, b, or t [Default]\n");
 	}

@@ -182,11 +182,9 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 			GMT_message (GMT, "\t   When <stride> is omitted, it will be determined automatically.\n");
 			GMT_message (GMT, "\t   Specify an axis label by surrounding it with colons (e.g., :\"my x label\":).\n");
 			GMT_message (GMT, "\t   To prepend a prefix to each annotation (e.g., $ 10, $ 20 ...) add a prefix that begins\n");
-			GMT_message (GMT, "\t     with the equal-sign (=); the rest is used as annotation prefix (e.g. :=\'$\':). If the prefix has\n");
-			GMT_message (GMT, "\t     a leading hyphen (-) there will be no space between prefix and annotation (e.g., :=-\'$\':).\n");
+			GMT_message (GMT, "\t     with the equal-sign (=); the rest is used as annotation prefix (e.g. :=\'$\':).\n");
 			GMT_message (GMT, "\t   To append a unit to each annotation (e.g., 5 km, 10 km ...) add a label that begins\n");
-			GMT_message (GMT, "\t     with a comma; the rest is used as unit annotation (e.g. :\",km\":). If the unit has\n");
-			GMT_message (GMT, "\t     a leading hyphen (-) there will be no space between unit and annotation (e.g., :,-%%:).\n");
+			GMT_message (GMT, "\t     with a comma; the rest is used as unit annotation (e.g. :\",km\":).\n");
 			GMT_message (GMT, "\t   For separate x and y [and z if -Jz is used] tickinfo, separate the strings with slashes [/].\n");
 			GMT_message (GMT, "\t   Specify an plot title by adding a label whose first character is a period; the rest\n");
 			GMT_message (GMT, "\t     of the label is used as the title (e.g. :\".My Plot Title\":).\n");
@@ -724,13 +722,11 @@ void GMT_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int k
 	GMT_message (GMT, "%s +r<rmin> skips labels where radius of curvature < <rmin> [0].\n", pad);
 	GMT_message (GMT, "%s +t[<file>] saves (x y label) to <file> [%s_labels.txt].\n", pad, type[kind]);
 	GMT_message (GMT, "%s   use +T to save (x y angle label) instead\n", pad);
-	GMT_message (GMT, "%s +u<unit> to append unit to all labels; Start unit with - for\n", pad);
-	GMT_message (GMT, "%s   no space between annotation and unit.\n", pad);
+	GMT_message (GMT, "%s +u<unit> to append unit to all labels.\n", pad);
 	if (kind == 0) GMT_message (GMT, "%s  If z is appended we use the z-unit from the grdfile [no unit].\n", pad);
 	GMT_message (GMT, "%s +v for placing curved text along path [Default is straight].\n", pad);
 	GMT_message (GMT, "%s +w sets how many (x,y) points to use for angle calculation [10].\n", pad);
-	GMT_message (GMT, "%s +=<prefix> to give all labels a prefix; Start unit with - for\n", pad);
-	GMT_message (GMT, "%s   no space between annotation and prefix.\n", pad);
+	GMT_message (GMT, "%s +=<prefix> to give all labels a prefix.\n", pad);
 }
 
 void GMT_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int kind)
@@ -848,7 +844,7 @@ void GMT_mapinsert_syntax (struct GMT_CTRL *GMT, char option, char *string)
 	GMT_message (GMT, "\t     c) Give [<u>]width[/height] of bounding recangle and use +c to set box center (<u> is unit).\n");
 	GMT_message (GMT, "\t   Append any combination of these modifiers to draw the map insert rectangle:\n");
 	GMT_message (GMT, "\t     +c<lon>/<lat> to specify insert rectangle center.\n");
-	GMT_message (GMT, "\t     +f<fill> to paint the insert rectangle[no fill]\n");
+	GMT_message (GMT, "\t     +g<fill> to paint the insert rectangle[no fill]\n");
 	GMT_message (GMT, "\t     +p<pen> to draw the insert rectangle outline [no outline].\n");
 }
 
@@ -861,7 +857,7 @@ void GMT_mapscale_syntax (struct GMT_CTRL *GMT, char option, char *string)
 	GMT_message (GMT, "\t   append unit from %s [km].  -%cf draws a \"fancy\" scale [Default is plain].\n", GMT_LEN_UNITS2_DISPLAY, option);
 	GMT_message (GMT, "\t   By default, the label is set to the distance unit and placed on top [+jt].  Use the +l<label>\n");
 	GMT_message (GMT, "\t   and +j<just> mechanisms to specify another label and placement (t,b,l,r).  +u sets the label as a unit.\n");
-	GMT_message (GMT, "\t   Append +p<pen> and/or +f<fill> to draw/paint a rectangle behind the scale [no rectangle]\n");
+	GMT_message (GMT, "\t   Append +p<pen> and/or +g<fill> to draw/paint a rectangle behind the scale [no rectangle]\n");
 }
 
 void GMT_maprose_syntax (struct GMT_CTRL *GMT, char option, char *string)
@@ -2872,9 +2868,9 @@ int gmt_load_encoding (struct GMT_CTRL *GMT)
 	return (GMT_NOERROR);
 }
 
-int gmt_decode_wesnz (struct GMT_CTRL *GMT, const char *in, unsigned int side[], bool *draw_box) {
+int gmt4_decode_wesnz (struct GMT_CTRL *GMT, const char *in, unsigned int side[], bool *draw_box) {
 	/* Scans the WESNZwesnz+ flags at the end of string "in" and sets the side/drawbox parameters
-	 * and returns the length of the remaining string.  Assumes any +g<fill> ahs been removed from in.
+	 * and returns the length of the remaining string.  Assumes any +g<fill> has been removed from in.
 	 */
 
 	int i, k;
@@ -2914,6 +2910,54 @@ int gmt_decode_wesnz (struct GMT_CTRL *GMT, const char *in, unsigned int side[],
 	if (i >= 0 && in[i] == ',') i--;	/* Special case for -BCcustomfile,WESNwesn to avoid the filename being parsed for WESN */
 	
 	return (i+1);	/* Return remaining string length */
+}
+
+int gmt5_decode_wesnz (struct GMT_CTRL *GMT, const char *in) {
+	/* Scans the WESNZ[1234]wesnz[1234]d flags and sets the side/drawbox parameters
+	 * and returns the length of the remaining string. .
+	 */
+
+	unsigned int k, error = 0, f_side[5] = {0, 0, 0, 0, 0}, z_axis[4] = {0, 0, 0, 0};
+	bool box = false, s_given = false;
+	
+	for (k = 0; in[k]; k++) {
+		switch (in[k]) {
+			/* Draw AND Annotate */
+			case 'W': f_side[W_SIDE] |= 3; s_given = true; break;
+			case 'E': f_side[E_SIDE] |= 3; s_given = true; break;
+			case 'S': f_side[S_SIDE] |= 3; s_given = true; break;
+			case 'N': f_side[N_SIDE] |= 3; s_given = true; break;
+			case 'Z': f_side[Z_SIDE] |= 3; s_given = true; break;
+			/* Just Draw */
+			case 'w': f_side[W_SIDE] |= 1; s_given = true; break;
+			case 'e': f_side[E_SIDE] |= 1; s_given = true; break;
+			case 's': f_side[S_SIDE] |= 1; s_given = true; break;
+			case 'n': f_side[N_SIDE] |= 1; s_given = true; break;
+			case 'z': f_side[Z_SIDE] |= 1; s_given = true; break;
+			/* Draw 3-D box */
+			case '+':
+				if (GMT_compat_check (GMT, 4)) {
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Modifier + in MAP_FRAME_AXES is deprecated; use d instead.\n");
+					box = true;
+				}
+				else {
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error: Modifier + in MAP_FRAME_AXES not recognized.\n");
+					error++;
+				}
+				break;
+			case 'd': box = true; break;
+			case '1': if (f_side[Z_SIDE]) z_axis[0] = 1; else error++; break;
+			case '2': if (f_side[Z_SIDE]) z_axis[1] = 1; else error++; break;
+			case '3': if (f_side[Z_SIDE]) z_axis[2] = 1; else error++; break;
+			case '4': if (f_side[Z_SIDE]) z_axis[3] = 1; else error++; break;
+			default:
+				error++;
+		}
+	}
+	if (s_given) GMT_memcpy (GMT->current.map.frame.side, f_side, 5, unsigned int);	/* Overwrite the GMT defaults */
+	if (s_given) GMT->current.map.frame.draw_box = box;
+	if (z_axis[0] || z_axis[1] || z_axis[2] || z_axis[3]) GMT_memcpy (GMT->current.map.frame.z_axis, z_axis, 4, unsigned int);	/* Overwrite the GMT defaults */
+	return (error);
 }
 
 void gmt_parse_format_float_out (struct GMT_CTRL *GMT, char *value)
@@ -3292,7 +3336,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 			strncpy (GMT->current.setting.map_frame_axes, value, 5U);
 			for (i = 0; i < 5; i++) GMT->current.map.frame.side[i] = 0;	/* Unset default settings */
 			GMT->current.map.frame.draw_box = false;
-			error += gmt_decode_wesnz (GMT, value, GMT->current.map.frame.side, &GMT->current.map.frame.draw_box);
+			error += gmt5_decode_wesnz (GMT, value);
 			break;
 
 		case GMTCASE_BASEMAP_FRAME_RGB:
@@ -6283,13 +6327,29 @@ int GMT_Complete_Options (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	 * update that entry in the option list.
 	 * Finally, keep the option arguments in the history list.
 	 * However, when func_level > 1, do update the entry, but do not
-	 * remember it in history. */
-	int id, k;
+	 * remember it in history. Note, there are two special cases here:
+	 * -J is special since we also need to deal with the sub-species
+	 *    like -JM, -JX, etc.  So these all have separate entries.
+	 * -B is special because the option is repeatable for different
+	 *    aspects of the basemap.  We concatenate all of them to store
+	 *    in the history file and use RS = ASCII 30 as separator.
+	 *    Also, a single -B in the options may expand to several
+	 *    separate -B<args> so the linked options list may grow.
+	 */
+	int id, k, n_B = 0, B_id;
+	unsigned int pos = 0, B_replace = 1;
 	bool update, remember;
-	struct GMT_OPTION *opt = NULL;
-	char str[3];
+	struct GMT_OPTION *opt = NULL, *opt2 = NULL, *B_next = NULL;
+	char str[3], B_string[GMT_BUFSIZ], p[GMT_BUFSIZ], B_delim[2] = {30, 0};	/* Use ASCII 30 RS Record Separator between -B strings */
 
 	remember = (GMT->hidden.func_level == 1);	/* Only update the history for top level function */
+
+	for (opt = options; opt; opt = opt->next) if (opt->option == 'B') {	/* Do some initial counting of home many -B options and determine if there is just one with no args */
+		if (n_B > 0 || opt->arg[0]) B_replace = 0;
+		n_B++;
+	}
+	for (k = 0, B_id = -1; k < GMT_N_UNIQUE && B_id == -1; k++) if (!strcmp (GMT_unique_option[k], "B")) B_id = k;	/* B_id = 0 but just in case this changes we do this anyway */
+	GMT_memset (B_string, GMT_BUFSIZ, char);
 
 	for (opt = options; opt; opt = opt->next) {
 		if (!strchr (GMT_SHORTHAND_OPTIONS, opt->option)) continue;	/* Not one of the shorthand options */
@@ -6316,21 +6376,51 @@ int GMT_Complete_Options (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			for (k = id + 1, id = -1; k < GMT_N_UNIQUE && id == -1; k++) if (!strcmp (GMT_unique_option[k], str)) id = k;
 			if (id < 0) Return;
 		}
+		else if (opt->option == 'B') {	/* -B is also special since there may be many of these, or just -B */
+			if (B_replace) {	/* Only -B is given and we want to use the history */
+				if (B_replace == 2) continue;	/* Already done this */
+				if (!GMT->init.history[B_id]) Return;
+				opt2 = opt;			/* Since we dont want to change the opt loop avove */
+				B_next = opt->next;		/* Pointer to option following the -B option */
+				if (opt2->arg) free ((void *)opt2->arg);	/* Free previous pointer to arg */
+				GMT_strtok (GMT->init.history[B_id], B_delim, &pos, p);	/* Get the first argument */
+				opt2->arg = strdup (p);		/* Update arg */
+				while (GMT_strtok (GMT->init.history[B_id], B_delim, &pos, p)) {	/* Parse any additional |<component> statements */
+					opt2->next = GMT_Make_Option (GMT->parent, 'B', p);	/* Create new struct */
+					opt2->next->previous = opt2;
+					opt2 = opt2->next;
+				}
+				opt2->next = B_next;	/* Hook back onto main option list */
+				B_replace = 2;	/* Flag to let us know we are done with -B */
+			}
+			else {	/* One of possibly several -B<arg> options; concatenate */
+				strcat (B_string, B_delim);
+				strcat (B_string, opt->arg);
+			}
+		}
 		else {	/* Gave -R[<args>], -B[<args>] etc. so we either use or update history and continue */
 			for (k = 0, id = -1; k < GMT_N_UNIQUE && id == -1; k++) if (!strcmp (GMT_unique_option[k], str)) id = k;
 			if (id < 0) Return;
 			if (opt->arg && opt->arg[0]) update = true;	/* Gave -R<args>, -B<args> etc. so we we want to update history and continue */
 		}
-		if (update) {	/* Gave -J<code><args>, -R<args>, -B<args> etc. so we update history and continue */
-			if (remember) {
-				if (GMT->init.history[id]) free (GMT->init.history[id]);
-				GMT->init.history[id] = strdup (opt->arg);
+		if (opt->option != 'B') {	/* Do -B separately after the loop */
+			if (update) {	/* Gave -J<code><args>, -R<args>, -B<args> etc. so we update history and continue */
+				if (remember) {
+					if (GMT->init.history[id]) free (GMT->init.history[id]);
+					GMT->init.history[id] = strdup (opt->arg);
+				}
+			}
+			else {	/* Gave -J<code>, -R, -B etc. so we complete the option and continue */
+				if (!GMT->init.history[id]) Return;
+				if (opt->arg) free ((void *)opt->arg);	/* Free previous pointer to arg */
+				opt->arg = strdup (GMT->init.history[id]);
 			}
 		}
-		else {	/* Gave -J<code>, -R, -B etc. so we complete the option and continue */
-			if (!GMT->init.history[id]) Return;
-			opt->arg = strdup (GMT->init.history[id]);
-		}
+	}
+
+	if (B_string[0]) {	/* Got a concatenated string with one or more -B args */
+		if (GMT->init.history[B_id]) free (GMT->init.history[B_id]);
+		GMT->init.history[B_id] = strdup (B_string);
 	}
 
 	return (GMT_NOERROR);
@@ -6689,68 +6779,6 @@ int gmt_decode_tinfo (struct GMT_CTRL *GMT, int axis, char flag, char *in, struc
 	return (GMT_NOERROR);	
 }
 
-unsigned int gmt_B_option_inspector (struct GMT_CTRL *GMT, char *in) {
-	/* Determines if the -B option indicates old GMT4-style switches and flags
-	 * or if it follows the GMT 5 specification.  This is only called when
-	 * compatibility mode has been compiled in; otherwise we only check GMT 5
-	 * style arguments.  We return 5 for GMT5 style, 4 for GMT4 style, 1
-	 * if no decision could be make and 0 if mixing of GMT4 & 5 styles are
-	 * ound = that is an error. */
-	size_t k, last;
-	int gmt4 = 0, gmt5 = 0, n_colons = 0, n_slashes = 0, colon_text = 0;
-	bool ignore = false;	/* true if inside a colon-separated string under GMT4 style assumption */
-	
-	last = strlen (in);
-	for (k = 0; k <= last; k++) {
-		if (in[k] == ':') {
-#ifdef _WIN32		/* Filenames under Windows may be X:\<name> which should not trigger "colon" test */
-			if (!(k && isalpha (in[k-1]) && k < last && in[k+1] == '\\'))
-#endif
-			ignore = !ignore, n_colons++;	/* Possibly stepping into a label/title */
-			if (!ignore) continue;	/* End of title or label, skip check for next character */
-			if (k < last && in[k+1] == '.') colon_text++;	/* Title */
-			if (k < last && in[k+1] == '=') colon_text++;	/* Annotation prefix */
-			if (k < last && in[k+1] == ',') colon_text++;	/* Annotation suffix */
-		}
-		if (ignore) continue;	/* Don't look inside a title or label */
-		switch (in[k]) {
-			case '/': n_slashes++; break;	/* Only GMT4 uses slashes */
-			case '+':	/* Plus, might be GMT5 modifier switch */
-				if (k < last && in[k+1] == 's') gmt5++;	/* suffix settings */
-				if (k < last && in[k+1] == 'p') gmt5++;	/* prefix settings */
-				if (k < last && in[k+1] == 'l') gmt5++;	/* Label */
-				if (k < last && in[k+1] == 't') gmt5++;	/* title */
-				if (k && (in[k-1] == 'Z' || in[k-1] == 'z')) gmt4++;	/* Z-axis with 3-D box */
-				break;
-			case 'c':	/* If following a number this is unit c for seconds in GMT4 */
-				if (k && (in[k-1] == '.' || isdigit (in[k-1]))) gmt4++;	/* Old-style second unit */
-				break;
-		}
-	}
-	if (n_colons && (n_colons % 2) == 0) gmt4++;	/* Presumably :labels: in GMT4 style as any +mod would have kicked in above */
-	if (n_slashes) gmt4++;				/* Presumably / to separate axis in GMT4 style */
-	if (colon_text) gmt4++;				/* Gave title, suffix, prefix in GMT4 style */
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "gmt_B_option_inspector: GMT4 = %d GMT5 = %d\n", gmt4, gmt5);
-	if (gmt5 && !gmt4) {
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_B_option_inspector: Detected GMT 5 style elements in -B option\n");
-		return (5);
-	}
-	else if (gmt4 && !gmt5 && !GMT_compat_check (GMT, 4)) {
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_B_option_inspector: Detected GMT 4 style elements in -B option, but GMT_COMPATIBILITY = %d\n", GMT->current.setting.compatibility);
-		return (4);
-	}
-	else if (gmt4 && gmt5) {	/* Mixed case is never allowed */
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_B_option_inspector: Error: Detected both GMT 4 and GMT 5 style elements in -B option. Unable to parse.\n");
-		if (n_slashes) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_B_option_inspector: Slashes no longer separate axis specifications, use -B[xyz] and repeat\n");
-		if (colon_text || n_colons) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "gmt_B_option_inspector: Colons no longer used for titles, labels, prefix, and suffix; see +t, +l, +p, +s\n");
-		return (0);
-	}
-	else {
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_B_option_inspector: Assume GMT 5 style format in -B option\n");
-		return (1);
-	}
-}
-	
 int gmt4_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 	/* gmt4_parse_B_option scans an argument string and extract parameters that
 	 * set the interval for tickmarks and annotations on the boundary.
@@ -6857,7 +6885,7 @@ int gmt4_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 	error += gmt_strip_colonitem (GMT, 0, &in[k], ":.", GMT->current.map.frame.header, out1);	/* Extract header string, if any */
 	GMT_enforce_rgb_triplets (GMT, GMT->current.map.frame.header, GMT_TEXT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 
-	i = gmt_decode_wesnz (GMT, out1, GMT->current.map.frame.side, &GMT->current.map.frame.draw_box);		/* Decode WESNZwesnz+ flags, if any */
+	i = gmt4_decode_wesnz (GMT, out1, GMT->current.map.frame.side, &GMT->current.map.frame.draw_box);		/* Decode WESNZwesnz+ flags, if any */
 	out1[i] = '\0';	/* Strip the WESNZwesnz+ flags off */
 
 	gmt_split_info_strings (GMT, out1, info[0], info[1], info[2]);	/* Chop/copy the three axis strings */
@@ -6878,7 +6906,30 @@ int gmt4_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 		gmt_handle_atcolon (GMT, GMT->current.map.frame.axis[i].label, 1);	/* Restore any @^ to @: */
 		gmt_handle_atcolon (GMT, GMT->current.map.frame.axis[i].prefix, 1);	/* Restore any @^ to @: */
 		gmt_handle_atcolon (GMT, GMT->current.map.frame.axis[i].unit, 1);	/* Restore any @^ to @: */
-
+		
+		if (GMT->current.map.frame.axis[i].prefix[0]) {	/* Deal with space/no space before prefix */
+			char workspace[GMT_TEXT_LEN64];
+			GMT_memset (workspace, GMT_TEXT_LEN64, char);
+			if (GMT->current.map.frame.axis[i].prefix[0] == '-') /* Dont want a space */
+				strcpy (workspace, &GMT->current.map.frame.axis[i].prefix[1]);
+			else {	/* Want a space */
+				workspace[0] = ' ';	/* The leading space */
+				strcpy (&workspace[1], GMT->current.map.frame.axis[i].prefix);
+			}
+			GMT_memcpy (GMT->current.map.frame.axis[i].prefix, workspace, GMT_TEXT_LEN64, char);
+		}
+		if (GMT->current.map.frame.axis[i].unit[0]) {	/* Deal with space/no space before unit */
+			char workspace[GMT_TEXT_LEN64];
+			GMT_memset (workspace, GMT_TEXT_LEN64, char);
+			if (GMT->current.map.frame.axis[i].unit[0] == '-') /* Dont want a space */
+				strcpy (workspace, &GMT->current.map.frame.axis[i].unit[1]);
+			else {	/* Want a space */
+				workspace[0] = ' ';	/* The leading space */
+				strcpy (&workspace[1], GMT->current.map.frame.axis[i].unit);
+			}
+			GMT_memcpy (GMT->current.map.frame.axis[i].unit, workspace, GMT_TEXT_LEN64, char);
+		}
+		
 		/* Parse the annotation/tick info string */
 		if (out3[0] == 'c')
 			error += gmt_decode_tinfo (GMT, i, 'c', out3, &GMT->current.map.frame.axis[i]);
@@ -6920,64 +6971,49 @@ int gmt4_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 /* New GMT5 functions for parsing new -B syntax */
 
 void gmt5_handle_plussign (struct GMT_CTRL *GMT, char *in, unsigned way)
-{	/* Way = 0: replace + with ASCII 1, Way = 1: Replace ASCII 1 with + */
-	char find[2] = {'+', 1}, replace[2] = {1, '+'};
-	bool quote = false;
-	size_t k;
-	for (k = 0; in[k]; k++) {
-		if (in[k] == '\"' || in[k] == '\'') quote = !quote;
-		if (quote && in[k] == find[way])  in[k] = replace[way];
-	}
-}
-
-int gmt5_decode_wesnz (struct GMT_CTRL *GMT, const char *in) {
-	/* Scans the WESNZ[1234]wesnz[1234]d flags and sets the side/drawbox parameters
-	 * and returns the length of the remaining string. .
-	 */
-
-	unsigned int k, error = 0, f_side[5] = {0, 0, 0, 0, 0}, z_axis[4] = {0, 0, 0, 0};
-	bool box = false, s_given = false;
-	
-	for (k = 0; in[k]; k++) {
-		switch (in[k]) {
-			/* Draw AND Annotate */
-			case 'W': f_side[W_SIDE] |= 3; s_given = true; break;
-			case 'E': f_side[E_SIDE] |= 3; s_given = true; break;
-			case 'S': f_side[S_SIDE] |= 3; s_given = true; break;
-			case 'N': f_side[N_SIDE] |= 3; s_given = true; break;
-			case 'Z': f_side[Z_SIDE] |= 3; s_given = true; break;
-			/* Just Draw */
-			case 'w': f_side[W_SIDE] |= 1; s_given = true; break;
-			case 'e': f_side[E_SIDE] |= 1; s_given = true; break;
-			case 's': f_side[S_SIDE] |= 1; s_given = true; break;
-			case 'n': f_side[N_SIDE] |= 1; s_given = true; break;
-			case 'z': f_side[Z_SIDE] |= 1; s_given = true; break;
-			/* Draw 3-D box */
-			case 'd': box = true; break;
-			case '1': if (f_side[Z_SIDE]) z_axis[0] = 1; else error++; break;
-			case '2': if (f_side[Z_SIDE]) z_axis[1] = 1; else error++; break;
-			case '3': if (f_side[Z_SIDE]) z_axis[2] = 1; else error++; break;
-			case '4': if (f_side[Z_SIDE]) z_axis[3] = 1; else error++; break;
-			default:
-				error++;
+{	/* Way = 0: replace ++ with ASCII 1, Way = 1: Replace ASCII 1 with + */
+	size_t i, o;
+	if (way == 0) {	/* Replace pairs of ++ with a single ASCII 1 */
+		for (i = 1, o = 0; in[i]; i++, o++) {
+			if (in[i-1] == '+' && in[i] == '+') {
+				in[o] = 1;	i++;	/* Replace ++ with 1 and skip the next */
+			}
+			else if (i > 1 && in[i-2] == '@' && in[i-1] == '+') {
+				in[o] = 1;	/* Replace @+ with @1  */
+			}
+			else
+				in[o] = in[i-1];
 		}
+		if (in[o-1] != 1) in[o++] = in[i-1];
+		in[o] = '\0';
 	}
-	if (s_given) GMT_memcpy (GMT->current.map.frame.side, f_side, 5, unsigned int);	/* Overwrite the GMT defaults */
-	if (s_given) GMT->current.map.frame.draw_box = box;
-	if (z_axis[0] || z_axis[1] || z_axis[2] || z_axis[3]) GMT_memcpy (GMT->current.map.frame.z_axis, z_axis, 4, unsigned int);	/* Overwrite the GMT defaults */
-	return (error);
+	else {	/* Replace single ASCII 1 with + */
+		for (o = 0; in[o]; o++) if (in[o] == 1) in[o] = '+';
+	}
 }
 
 int gmt5_parse_B_frame_setting (struct GMT_CTRL *GMT, char *in)
 {
-	unsigned int pos = 0, k, error = 0;
+	unsigned int pos = 0, k, error = 0, is_frame = 0;
 	char p[GMT_BUFSIZ], text[GMT_BUFSIZ], *mod = NULL;
 	double pole[2];
 	
-	/* Parsing of -Bf<framesettings> */
+	/* Parsing of -B<framesettings> */
+	
+	/* First determine that the given -B<in> string is indeed the framesetting option.  If not return -1 */
+	
+	if (strchr ("pxyz", in[0])) return (-1);	/* -B[p[xyz] is definitively not the frame settings (-Bs is tricker; see below) */
+	if (strstr (in, "+g")) is_frame++;	/* Found a +g so likely frame */
+	if (strstr (in, "+o")) is_frame++;	/* Found a +o so likely frame */
+	if (strstr (in, "+t")) is_frame++;	/* Found a +t so likely frame */
+	if (strchr ("WESNZwenzd", in[0])) is_frame++;	/* Found one of the side specifiers so likely frame (left s off since -Bs could trick it) */
+	if (in[0] == 's' && (in[1] == 0 || strchr ("WESNZwenzd", in[1]) != NULL)) is_frame++;	/* Found -Bs (just draw south axis) or -Bs<another axis flag> */
+	if (is_frame == 0) return (-1);		/* No, nothing matched */
+	
+	/* OK, here we are pretty sure this is a frame -B statement */
 	
 	strcpy (text, in);
-	gmt5_handle_plussign (GMT, text, 0);	/* Temporarily change plus-signs inside quoted strings to ASCII 1 */
+	gmt5_handle_plussign (GMT, text, 0);	/* Temporarily change double plus-signs to double ASCII 1 to avoid +<modifier> angst */
 	GMT->current.map.frame.header[0] = '\0';
 	
 	if ((mod = strchr (text, '+'))) {	/* Find start of modifiers, if any */
@@ -7011,7 +7047,7 @@ int gmt5_parse_B_frame_setting (struct GMT_CTRL *GMT, char *in)
 					}
 					else {
 						strcpy (GMT->current.map.frame.header, &p[1]);
-						gmt5_handle_plussign (GMT, GMT->current.map.frame.header, 1);	/* Revert to +*/
+						gmt5_handle_plussign (GMT, GMT->current.map.frame.header, 1);	/* Revert to ++ */
 						GMT_enforce_rgb_triplets (GMT, GMT->current.map.frame.header, GMT_TEXT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 					}
 					break;
@@ -7033,7 +7069,7 @@ int gmt5_parse_B_frame_setting (struct GMT_CTRL *GMT, char *in)
 int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 	/* GMT5 clean version based on new syntax:
 	 * Frame settings:
-	 *	-Bf[WESNwesnz|Z[1234]]d[+g<fill>][+o<lon/lat>][+t<title>]
+	 *	-B[WESNwesnz|Z[1234]]d[+g<fill>][+o<lon/lat>][+t<title>]
 	 *    		+g<fill> as plot interior fill [none].
 	 *    		+t<title> as plot title [none].
 	 *    		of one or more of w,e,s,n,z then only those axes will be drawn.
@@ -7065,14 +7101,12 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 
 	char string[GMT_BUFSIZ], orig_string[GMT_BUFSIZ], text[GMT_BUFSIZ], *mod = NULL;
 	struct GMT_PLOT_AXIS *A = NULL;
-	unsigned int no, error = 0;
-	int k;
+	unsigned int no;
+	int k, error = 0;
 	bool side[3] = {false, false, false};
 
 	if (!in || !in[0]) return (GMT_PARSE_ERROR);	/* -B requires an argument */
 
-	if (in[0] == 'f') return (gmt5_parse_B_frame_setting (GMT, &in[1]));	/* Parse the -Bf settings separately */
-	
 	if (!GMT->current.map.frame.init) {	/* First time we initialize stuff */
 		for (no = 0; no < 3; no++) {
 			GMT_memset (&GMT->current.map.frame.axis[no], 1, struct GMT_PLOT_AXIS);
@@ -7085,6 +7119,9 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 		GMT->current.map.frame.draw = false;
 	}
 
+	if ((error = gmt5_parse_B_frame_setting (GMT, in)) >= 0) return (error);	/* Parsed the -B frame settings separately */
+	error = 0;	/* Reset since otherwise it is -1 */
+	
 	/* Below here are the axis settings only -B[p|s][x|y|z] */
 	switch (in[0]) {
 		case 's': GMT->current.map.frame.primary = false; k = 1; break;
@@ -7111,9 +7148,10 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 	if (!(side[GMT_X] || side[GMT_Y] || side[GMT_Z])) side[GMT_X] = side[GMT_Y] = true;	/* If no axis were named we default to both x and y */
 	
 	strcpy (text, &in[k]);			/* Make a copy of the input, starting after the leading -B[p|s][xyz] indicators */
-	gmt5_handle_plussign (GMT, text, 0);	/* Temporarily change any plus-signs inside quoted strings to ASCII 1 to avoid interference with +modifiers */
+	gmt5_handle_plussign (GMT, text, 0);	/* Temporarily change any ++ to pair of ASCII 1 to avoid interference with +modifiers */
 	k = 0;					/* Start at beginning of text and look for first occurrence of +l, +p, or +s */
 	while (text[k] && !(text[k] == '+' && strchr ("lps", text[k+1]))) k++;
+	GMT_memset (orig_string, GMT_BUFSIZ, char);
 	strncpy (orig_string, text, k);		/* orig_string now has the interval information */
 	if (text[k]) mod = &text[k];		/* mod points to the start of the modifier information in text*/
 	for (no = 0; no < 3; no++) {		/* Process each axis separately */
@@ -7136,7 +7174,7 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 						}
 						else {
 							strcpy (GMT->current.map.frame.axis[no].label, &p[1]);
-							gmt5_handle_plussign (GMT, GMT->current.map.frame.axis[no].label, 1);	/* Revert to +*/
+							gmt5_handle_plussign (GMT, GMT->current.map.frame.axis[no].label, 1);	/* Revert to ++ */
 							GMT_enforce_rgb_triplets (GMT, GMT->current.map.frame.axis[no].label, GMT_TEXT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 						}
 						break;
@@ -7147,7 +7185,7 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 						}
 						else {
 							strcpy (GMT->current.map.frame.axis[no].prefix, &p[1]);
-							gmt5_handle_plussign (GMT, GMT->current.map.frame.axis[no].prefix, 1);	/* Revert to +*/
+							gmt5_handle_plussign (GMT, GMT->current.map.frame.axis[no].prefix, 1);	/* Revert to ++ */
 							GMT_enforce_rgb_triplets (GMT, GMT->current.map.frame.axis[no].prefix, GMT_TEXT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 						}
 						break;
@@ -7158,7 +7196,7 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 						}
 						else {
 							strcpy (GMT->current.map.frame.axis[no].unit, &p[1]);
-							gmt5_handle_plussign (GMT, GMT->current.map.frame.axis[no].unit, 1);	/* Revert to +*/
+							gmt5_handle_plussign (GMT, GMT->current.map.frame.axis[no].unit, 1);	/* Revert to ++ */
 							GMT_enforce_rgb_triplets (GMT, GMT->current.map.frame.axis[no].unit, GMT_TEXT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 						}
 						break;
@@ -7172,6 +7210,7 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 		
 		/* Now parse the annotation/tick info string */
 
+		GMT_memset (string, GMT_BUFSIZ, char);
 		strcpy (string, orig_string);	/* Make a copy of string as it gets messed with below */
 		if (string[0] == 'c')		/* Special custom annotation information given via file */
 			error += gmt_decode_tinfo (GMT, no, 'c', string, &GMT->current.map.frame.axis[no]);
@@ -7210,23 +7249,26 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 }
 
 int gmt_parse_B_option (struct GMT_CTRL *GMT, char *in) {
-	unsigned int version = gmt_B_option_inspector (GMT, in);	/* 5, 4, 1 (undetermined) or 0 (mixing) */
 	int error = 0;
-	if (version == 0) {
+	if (GMT->common.B.mode == 0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Internal error: Calling gmt_parse_B_option before gmt_check_b_options somehow\n");
+		error = 1;
+	}
+	else if (GMT->common.B.mode == -1) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -B option: Mixing of GMT 4 and 5 level syntax is not possible\n");
-		return 1;
+		error = 1;
 	}
-	if (!GMT_compat_check (GMT, 4) && version == 4) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -B option: Cannot use GMT 4 syntax except in compatibility mode\n");
-		return 1;
+	else if (GMT->common.B.mode == 4) {	/* Got GMT 4 syntax */
+		if (GMT_compat_check (GMT, 4))
+			error = gmt4_parse_B_option (GMT, in);
+		else {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -B option: Cannot use GMT 4 syntax except in compatibility mode\n");
+			error = 1;
+		}
 	}
-	//TESTING with version == 4
-	version = 4;
-	/* Here we are able to parse the option */
-	if (version == 4)
-		error = gmt4_parse_B_option (GMT, in);
-	else
+	else	/* Clean GMT5 syntax */
 		error = gmt5_parse_B_option (GMT, in);
+
 	return (error);
 }
 
@@ -8063,7 +8105,7 @@ int GMT_parse_vector (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *S)
 				S->v.v_norm = (float)atof (&p[1]);
 				if (text[0] == '=') S->v.v_norm /= (float)GMT->current.proj.DIST_KM_PR_DEG;	/* Since norm distance is in km and we compute spherical degrees later */
 				break;
-			case 'g':	/* Vector head fill [Used in psrose, for instance] */
+			case 'g':	/* Vector head fill +g[-|<fill>]*/
 				g_opt = true;	/* Marks that +g was used */
 				if (p[1] == '-') break; /* Do NOT turn on fill */
 				S->v.status |= GMT_VEC_FILL;

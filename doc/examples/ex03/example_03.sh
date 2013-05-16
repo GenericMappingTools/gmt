@@ -44,7 +44,7 @@ project ship.xyg -C$cposx/$cposy -T$pposx/$pposy -S -Fpz -Q > ship.pg
 #
 R=`cat sat.pg ship.pg | minmax -I100/25`
 psxy $R -UL/-1.75i/-1.25i/"Example 3a in Cookbook" \
-	-Ba500f100:"Distance along great circle":/a100f25:"Gravity anomaly (mGal)":WeSn \
+	-BWeSn -Bxa500f100+l"Distance along great circle" -Bya100f25+l"Gravity anomaly (mGal)" \
 	-JX8i/5i -X2i -Y1.5i -K -Wthick sat.pg > example_03a.ps
 psxy -R -JX -O -Sp0.03i ship.pg >> example_03a.ps
 #
@@ -58,9 +58,9 @@ psxy -R -JX -O -Sp0.03i ship.pg >> example_03a.ps
 # "pshistogram".
 #
 $AWK '{ if (NR > 1) print $1 - last1; last1=$1; }' ship.pg | pshistogram  -W0.1 -Gblack -JX3i \
-	-K -X2i -Y1.5i -B:."Ship": -UL/-1.75i/-1.25i/"Example 3b in Cookbook" > example_03b.ps
+	-K -X2i -Y1.5i -B0 -B+t"Ship" -UL/-1.75i/-1.25i/"Example 3b in Cookbook" > example_03b.ps
 $AWK '{ if (NR > 1) print $1 - last1; last1=$1; }' sat.pg  | pshistogram  -W0.1 -Gblack -JX3i \
-	-O -X5i -B:."Sat": >> example_03b.ps
+	-O -X5i -B0 -B+t"Sat" >> example_03b.ps
 #
 # This experience shows that the satellite values are spaced fairly evenly, with
 # delta-p between 3.222 and 3.418.  The ship values are spaced quite unevenly, with
@@ -96,7 +96,7 @@ filter1d ship.pg -Fm1 -T$sampr1/$sampr2/1 -E | sample1d -Nsamp.x > samp_ship.pg
 # Now we plot them again to see if we have done the right thing:
 #
 psxy $R -JX8i/5i -X2i -Y1.5i -K -Wthick samp_sat.pg \
-	-Ba500f100:"Distance along great circle":/a100f25:"Gravity anomaly (mGal)":WeSn \
+	-Bxa500f100+l"Distance along great circle" -Bya100f25+l"Gravity anomaly (mGal)" -BWeSn \
 	-UL/-1.75i/-1.25i/"Example 3c in Cookbook" > example_03c.ps
 psxy -R -JX -O -Sp0.03i samp_ship.pg >> example_03c.ps
 #
@@ -110,7 +110,7 @@ gmtconvert -A samp_ship.pg samp_sat.pg -o1,3 | spectrum1d -S256 -D1 -W -C > /dev
 # Note the extended use of pstext and psxy to put labels and legends directly on the plots.  
 # For that purpose we often use -Jx1i and specify positions in inches directly:
 #
-psxy spectrum.coh -Ba1f3p:"Wavelength (km)":/a0.25f0.05:"Coherency@+2@+":WeSn -JX-4il/3.75i \
+psxy spectrum.coh -Bxa1f3p+l"Wavelength (km)" -Bya0.25f0.05+l"Coherency@+2@+" -BWeSn -JX-4il/3.75i \
 	-R1/1000/0/1 -UL/-2.25i/-1.25i/"Example 3 in Cookbook" -P -K -X2.5i -Sc0.07i -Gblack \
 	-Ey/0.5p -Y1.5i > $ps
 echo "3.85 3.6 Coherency@+2@+" | pstext -R0/4/0/3.75 -Jx1i -F+f18p,Helvetica-Bold+jTR \
@@ -121,7 +121,7 @@ cat > box.d << END
 4	3.25
 END
 psxy -R -Jx -O -K -Wthicker box.d >> $ps
-psxy -Ba1f3p/a1f3p:"Power (mGal@+2@+km)"::."Ship and Satellite Gravity":WeSn spectrum.xpower \
+psxy -Bxa1f3p -Bya1f3p+l"Power (mGal@+2@+km)" -BWeSn+t"Ship and Satellite Gravity" spectrum.xpower \
 	-Gblack -ST0.07i -O -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/0.5p >> $ps
 psxy spectrum.ypower -R -JX -O -K -Gblack -Sc0.07i -Ey/0.5p >> $ps
 echo "3.9 3.6 Input Power" | pstext -R0/4/0/3.75 -Jx -F+f18p,Helvetica-Bold+jTR -O -K >> $ps
@@ -146,10 +146,10 @@ echo "0.5 0.4 Satellite" | pstext -R -Jx -F+f14p,Helvetica-Bold+jLM -O >> $ps
 #
 trend1d -Fxw -N2r samp_ship.pg > samp_ship.xw
 psxy $R -JX8i/4i -X2i -Y1.5i -K -Sp0.03i \
-	-Ba500f100:"Distance along great circle":/a100f25:"Gravity anomaly (mGal)":WeSn \
+	-Bxa500f100+l"Distance along great circle" -Bya100f25+l"Gravity anomaly (mGal)" -BWeSn \
 	-UL/-1.75i/-1.25i/"Example 3d in Cookbook" samp_ship.pg > example_03d.ps
 R=`minmax samp_ship.xw -I100/1.1`
-psxy $R -JX8i/1.1i -O -Y4.25i -Bf100/a0.5f0.1:"Weight":Wesn -Sp0.03i samp_ship.xw \
+psxy $R -JX8i/1.1i -O -Y4.25i -Bxf100 -Bya0.5f0.1+l"Weight" -BWesn -Sp0.03i samp_ship.xw \
 	>> example_03d.ps
 #
 # From this we see that we might want to throw away values where w < 0.6.  So we try that,
@@ -164,7 +164,7 @@ trend1d -Fxrw -N2r samp_sat.pg  | $AWK '{ if ($3 > 0.6) print $1, $2 }' \
 #
 R=`cat samp2_sat.pg samp2_ship.pg | minmax -I100/25`
 psxy $R -JX8i/5i -X2i -Y1.5i -K -Wthick \
-	-Ba500f100:"Distance along great circle":/a50f25:"Gravity anomaly (mGal)":WeSn \
+	-Bxa500f100+l"Distance along great circle" -Bya50f25+l"Gravity anomaly (mGal)" -BWeSn \
 	-UL/-1.75i/-1.25i/"Example 3e in Cookbook" samp2_sat.pg > example_03e.ps
 psxy -R -JX -O -Sp0.03i samp2_ship.pg >> example_03e.ps
 #
@@ -174,7 +174,7 @@ psxy -R -JX -O -Sp0.03i samp2_ship.pg >> example_03e.ps
 #
 gmtconvert -A samp2_ship.pg samp2_sat.pg -o1,3 | spectrum1d -S256 -D1 -W -C > /dev/null
 # 
-psxy spectrum.coh -Ba1f3p:"Wavelength (km)":/a0.25f0.05:"Coherency@+2@+":WeSn \
+psxy spectrum.coh -Bxa1f3p+l"Wavelength (km)" -Bya0.25f0.05+l"Coherency@+2@+" -BWeSn \
 	-JX-4il/3.75i -R1/1000/0/1 -UL/-2.25i/-1.25i/"Example 3f in Cookbook" -P -K -X2.5i \
 	-Sc0.07i -Gblack -Ey/0.5p -Y1.5i > example_03f.ps
 echo "3.85 3.6 Coherency@+2@+" | pstext -R0/4/0/3.75 -Jx -F+f18p,Helvetica-Bold+jTR -O \
@@ -185,7 +185,7 @@ cat > box.d << END
 4	3.25
 END
 psxy -R -Jx -O -K -Wthicker box.d >> example_03f.ps
-psxy -Ba1f3p/a1f3p:"Power (mGal@+2@+km)"::."Ship and Satellite Gravity":WeSn spectrum.xpower \
+psxy -Bxa1f3p -Bya1f3p+l"Power (mGal@+2@+km)" -BWeSn+t"Ship and Satellite Gravity" spectrum.xpower \
 	-ST0.07i -O -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/0.5p >> example_03f.ps
 psxy spectrum.ypower -R -JX -O -K -Gblack -Sc0.07i -Ey/0.5p >> example_03f.ps
 echo "3.9 3.6 Input Power" | pstext -R0/4/0/3.75 -Jx -F+f18p,Helvetica-Bold+jTR -O \

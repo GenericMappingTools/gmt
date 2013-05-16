@@ -24,7 +24,7 @@ makecpt -Crainbow -T-90/90/180 -Z > $GMT_TMPDIR/lat.cpt
 
 # The grdimage command creates the history file $GMT_TMPDIR/.gmtcommands4
 grdimage $GMT_TMPDIR/lat.nc -JK6.5i -C$GMT_TMPDIR/lat.cpt -P -K -nl > $ps
-pscoast -R -J -O -Dc -A5000 -Gwhite -B60g30/30g30 >> $ps
+pscoast -R -J -O -Dc -A5000 -Gwhite -Bx60g30 -By30g30 >> $ps
 
 # Clean up all temporary files and the temporary directory
 gmt_remove_tmpdir

@@ -12,7 +12,7 @@ grdmath -R4/10/4/10 -I0.1 4 = d.nc
 makecpt -Crainbow -T0/8/1 -Z > t.cpt
 # Just add them up
 grdblend ?.nc -R0/10/0/10 -I0.1 -Gblend.nc
-grdimage blend.nc -Ct.cpt -JX3i -P -B2WSne -K -X0.75i -Y0.75i > $ps
+grdimage blend.nc -Ct.cpt -JX3i -P -B2 -BWSne -K -X0.75i -Y0.75i > $ps
 # Draw grid outlines
 cat << EOF > lines.txt
 > a
@@ -42,7 +42,7 @@ EOF
 echo 10 10 average | pstext -R -J -O -K -Dj0.1i/0.1i -F+jTR+f14p >> $ps
 # Blend the overlapping grids
 grdblend info.txt -R0/10/0/10 -I0.1 -Gblend.nc
-grdimage blend.nc -Ct.cpt -J -O -X3.5i -B2WSne -K >> $ps
+grdimage blend.nc -Ct.cpt -J -O -X3.5i -B2 -BWSne -K >> $ps
 psxy -Rblend.nc lines.txt -J -O -K -W1p >> $ps
 # Draw the inside regions
 psxy -R -J -O -K -W0.5p,- -L << EOF >> $ps
@@ -70,20 +70,20 @@ EOF
 echo 10 10 blend | pstext -R -J -O -K -Dj0.1i/0.1i -F+jTR+f14p >> $ps
 psscale -Ct.cpt -D3.25i/1.5i/2.8i/0.15i -O -K -B1 >> $ps
 grdblend ?.nc -Co -R0/10/0/10 -I0.1 -Gblend.nc
-grdimage blend.nc -Ct.cpt -J -O -X-3.5i -Y3.3i -B2Wsne -K >> $ps
+grdimage blend.nc -Ct.cpt -J -O -X-3.5i -Y3.3i -B2 -BWsne -K >> $ps
 psxy -Rblend.nc lines.txt -J -O -K -W1p >> $ps
 echo 10 10 last | pstext -R -J -O -K -Dj0.1i/0.1i -F+jTR+f14p >> $ps
 grdblend ?.nc -Cf -R0/10/0/10 -I0.1 -Gblend.nc
-grdimage blend.nc -Ct.cpt -J -O -X3.5i -B2Wsne -K >> $ps
+grdimage blend.nc -Ct.cpt -J -O -X3.5i -B2 -BWsne -K >> $ps
 psxy -Rblend.nc lines.txt -J -O -K -W1p >> $ps
 echo 10 10 first | pstext -R -J -O -K -Dj0.1i/0.1i -F+jTR+f14p >> $ps
 psscale -Ct.cpt -D3.25i/1.5i/2.8i/0.15i -O -K -B1 >> $ps
 grdblend ?.nc -Cl -R0/10/0/10 -I0.1 -Gblend.nc
-grdimage blend.nc -Ct.cpt -J -O -X-3.5i -Y3.3i -B2Wsne -K >> $ps
+grdimage blend.nc -Ct.cpt -J -O -X-3.5i -Y3.3i -B2 -BWsne -K >> $ps
 echo 10 10 low | pstext -R -J -O -K -Dj0.1i/0.1i -F+jTR+f14p >> $ps
 psxy -Rblend.nc lines.txt -J -O -K -W1p >> $ps
 grdblend ?.nc -Cu -R0/10/0/10 -I0.1 -Gblend.nc
-grdimage blend.nc -Ct.cpt -J -O -X3.5i -B2Wsne -K >> $ps
+grdimage blend.nc -Ct.cpt -J -O -X3.5i -B2 -BWsne -K >> $ps
 psxy -Rblend.nc lines.txt -J -O -K -W1p >> $ps
 echo 10 10 high | pstext -R -J -O -K -Dj0.1i/0.1i -F+jTR+f14p >> $ps
 psscale -Ct.cpt -D3.25i/1.5i/2.8i/0.15i -O -B1 >> $ps

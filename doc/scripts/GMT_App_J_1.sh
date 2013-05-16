@@ -77,7 +77,7 @@ gmtmath -T-0.5/0.5/0.01 1 = >> tt.tmp
 echo "0.5	0" >> tt.tmp
 
 gmtset FONT_ANNOT_PRIMARY 10p,Times-Roman FONT_TITLE 14p,Times-Roman FONT_LABEL 12p,Times-Roman
-psxy tt.tmp -R-0.6/0.6/-0.1/1.1 -JX4i/2i -P -Ba0.5f0.1:"Distance (units of filter width)":/a0.2f0.1g1:"Relative amplitude":WeSn -K -Wthick > GMT_App_J_1.ps
+psxy tt.tmp -R-0.6/0.6/-0.1/1.1 -JX4i/2i -P -Bxa0.5f0.1+l"Distance (units of filter width)" -Bya0.2f0.1g1+l"Relative amplitude" -BWeSn -K -Wthick > GMT_App_J_1.ps
 gmtmath -T-0.5/0.5/0.01 T PI 2 MUL MUL COS 1 ADD 0.5 MUL = | psxy -R -J -O -K -Wthick,- >> GMT_App_J_1.ps
 gmtmath -T-0.5/0.5/0.01 T T MUL 18 MUL NEG EXP = | psxy -R -J -O -K -Wthick,. >> GMT_App_J_1.ps
 pstext -R -J -O -F+f9p,Times-Roman+j << END >> GMT_App_J_1.ps
