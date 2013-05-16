@@ -38,7 +38,7 @@ gmt gravfft z.nc+uk faa_total.nc+uk -N+d -Iwkt -Ff -Z12000 -T12000/2800/3300/100
 gmt grdfft z.nc+uk faa_total.nc+uk  -N+d -Erwk -h+c > adm.txt
 
 # coherence in red, admittance in blue, theoretical admittance in thick lightgray
-gmt psxy adm.txt -i0,15,16 -R8/512/0/1 -JX-6il/2.75i -O -K -Bxa2g3+s" km" -Byaf+l"Coherence" -BWSn -Sc0.05i \
+gmt psxy adm.txt -i0,15,16 -R8/512/0/1 -JX-6il/2.75i -O -K -Bxa2g3+u" km" -Byaf+l"Coherence" -BWSn -Sc0.05i \
 	-Gred -Ey0.2c/0.5p,red -X-3.25i -Y3.5i --FONT_LABEL=16p,Helvetica,red >> $ps
 gmt psxy adm.txt -i0,15 -R -J -O -K -W0.5p,red >> $ps
 gmt psxy adm.txt -R8/512/0/70 -J -O -Bxa2g3 -Byaf+l"Admittance (mGal/km)" -BE -Sc0.05i -Ey0.2c/0.5p,blue \

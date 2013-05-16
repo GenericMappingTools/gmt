@@ -36,6 +36,6 @@ gmt grdimage ${G}_tmp.nc -I${G}_tmp_int.nc -Jx${scl}i -Cg.cpt -O -K -X3.25i >> $
 gmt psxy -R${G}_tmp.nc -J bbox -O -K -L -W0.5p,- >> $ps
 gmt psbasemap -R-100/91/-94/97 -Jx${sclkm}i -O -K -Ba -BWSne+t"Detrended and extended" >> $ps
 
-gmt psxy -R2/160/0/1 -JX-6il/2.5i -Bxa2f3g3+s" km" -Byafg0.5+l"Coherency@+2@+" -BWsNe -O -K -X-3.25i -Y3.5i cross.txt -i0,15 -W0.5p >> $ps
+gmt psxy -R2/160/0/1 -JX-6il/2.5i -Bxa2f3g3+u" km" -Byafg0.5+l"Coherency@+2@+" -BWsNe -O -K -X-3.25i -Y3.5i cross.txt -i0,15 -W0.5p >> $ps
 gmt psxy -R -J cross.txt -O -K -i0,15,16 -Sc0.075i -Gred -W0.25p -Ey >> $ps
 gmt psxy -R -J -O -T >> $ps
