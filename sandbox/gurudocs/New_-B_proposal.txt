@@ -22,7 +22,7 @@ this proposal ELIMINATES the slash as an axes item separator.
 
 1. FRAME SETTINGS:
 -Bf<args> sets parameters for the entire map frame.
-   <args> is [WESNZwesnz[1234]q][+g<fill>][+t<title>]
+   <args> is [WESNZwesnz[1234][+b]][+g<fill>][+t<title>]
    Append +g<fill> to paint frame interior [none].
    Append +t<title> to plot title [none].
      Lower case w,e,s,n,z will draw those axes, while
