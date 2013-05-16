@@ -22,7 +22,7 @@ echo 155:16:20W 19:26:20N KILAUEA | gmt pstext -R -J -O -K -F+f12p,Helvetica-Bol
 gmt psbasemap -R -J -O -K --FONT_ANNOT_PRIMARY=9p -Lf155:07:30W/19:15:40N/19:23N/5k+l1:16,000+u \
 	--FONT_LABEL=10p >> $ps
 # Annotate in km but append ,000m to annotations to get customized meter labels
-gmt psbasemap -RKilauea.utm.nc+Uk -Jx1:160 -B5g5+s"@:8:000m" -BWSne -O --FONT_ANNOT_PRIMARY=10p \
+gmt psbasemap -RKilauea.utm.nc+Uk -Jx1:160 -B5g5+u"@:8:000m" -BWSne -O --FONT_ANNOT_PRIMARY=10p \
 	--MAP_GRID_CROSS_SIZE_PRIMARY=0.1i --FONT_LABEL=10p >> $ps
 # Clean up
 rm -f Kilauea.utm_i.nc Kilauea.cpt tmp.txt
