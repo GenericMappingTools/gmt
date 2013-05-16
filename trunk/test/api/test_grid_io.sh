@@ -8,8 +8,8 @@
 # so that all formats can be tested.
 
 function check_if_zero {
-	grdmath ${2}=$1 ${3}=$1 SUB = diff.nc
-        N=(`grd2xyz diff.nc -ZTLa | uniq | wc -l`)
+	gmt grdmath ${2}=$1 ${3}=$1 SUB = diff.nc
+        N=(`gmt grd2xyz diff.nc -ZTLa | uniq | wc -l`)
         if [ $N -ne 1 ]; then
                 echo "check_if_zero: $1 : $2 $3 not equal" >> fail
         fi
@@ -17,7 +17,7 @@ function check_if_zero {
 
 rm -f fail
 # Create list of all grdformat codes
-grdreformat 2>&1 | awk '{if ($2 == "=") print $1}' | egrep -v 'sd|gd' > codes.lis
+gmt grdreformat 2>&1 | awk '{if ($2 == "=") print $1}' | egrep -v 'sd|gd' > codes.lis
 while read code; do
 	echo "Try grid format $code"
 	if [ $code = "bm" ]; then	# For bits we can only store 0s and 1s
@@ -26,8 +26,8 @@ while read code; do
 		extra=""
 	fi
 	# Create two different grids with same region and size in this grid format
-	grdmath -R1/5/1/5 -I1 Y 1 SUB NX MUL X ADD $extra = in_real.grd=${code} 
-	grdmath in_real.grd=${code} NX NY MUL ADD $extra  = in_imag.grd=${code}
+	gmt grdmath -R1/5/1/5 -I1 Y 1 SUB NX MUL X ADD $extra = in_real.grd=${code} 
+	gmt grdmath in_real.grd=${code} NX NY MUL ADD $extra  = in_imag.grd=${code}
 	# Run the test with this codec
 	testgrdio =$code
 	# Compare input and output grids

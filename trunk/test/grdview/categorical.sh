@@ -16,7 +16,7 @@ F	white
 N	gray
 EOF
 # The categorical data grid
-cat << EOF | xyz2grd -R0/10/50/60 -I5 -Gtt.nc
+cat << EOF | gmt xyz2grd -R0/10/50/60 -I5 -Gtt.nc
 0       60      1
 5       60      1
 10      60      2
@@ -28,13 +28,13 @@ cat << EOF | xyz2grd -R0/10/50/60 -I5 -Gtt.nc
 10      50      5
 EOF
 #
-# First plot as normal image using surface -Qs:
-grdview tt.nc -Ctt.cpt -JU31/2.75 -P -B5g5 -BWSne+t"-Qs" -Qs -K --MAP_TITLE_OFFSET=-1i > $ps
+# First plot as normal image using gmt surface -Qs:
+gmt grdview tt.nc -Ctt.cpt -JU31/2.75 -P -B5g5 -BWSne+t"-Qs" -Qs -K --MAP_TITLE_OFFSET=-1i > $ps
 # Then plot as texture tiles -Ts:
-grdview tt.nc -Ctt.cpt -J -O -K -B5g5 -BWSne+t"-T" -T -X3.5 --MAP_TITLE_OFFSET=-1i >> $ps
-psscale -Ctt.cpt -D3/3/1.5/0.2 -O -K -L0.1i >> $ps
+gmt grdview tt.nc -Ctt.cpt -J -O -K -B5g5 -BWSne+t"-T" -T -X3.5 --MAP_TITLE_OFFSET=-1i >> $ps
+gmt psscale -Ctt.cpt -D3/3/1.5/0.2 -O -K -L0.1i >> $ps
 # Then plot as image -Qi100
-grdview tt.nc -Ctt.cpt -J -O -K -B5g5 -BWSne+t"-Qi100" -Qi100 -X-3.5 -Y5.0 --MAP_TITLE_OFFSET=-1i >> $ps
+gmt grdview tt.nc -Ctt.cpt -J -O -K -B5g5 -BWSne+t"-Qi100" -Qi100 -X-3.5 -Y5.0 --MAP_TITLE_OFFSET=-1i >> $ps
 # Finally plot as texture image -Qt100
-grdview tt.nc -Ctt.cpt -J -O -B5g5 -BWSne+t"-Qt100" -Qt100 -X3.5 --MAP_TITLE_OFFSET=-1i >> $ps
+gmt grdview tt.nc -Ctt.cpt -J -O -B5g5 -BWSne+t"-Qt100" -Qt100 -X3.5 --MAP_TITLE_OFFSET=-1i >> $ps
 

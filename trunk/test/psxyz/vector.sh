@@ -5,10 +5,10 @@
 
 ps=vector.ps
 
-psbasemap -R0/6/0/3 -Jx1i -P -B1g1 -BWSne -K -Xc -p155/35 > $ps
-gmtset MAP_VECTOR_SHAPE 0.5
+gmt psbasemap -R0/6/0/3 -Jx1i -P -B1g1 -BWSne -K -Xc -p155/35 > $ps
+gmt gmtset MAP_VECTOR_SHAPE 0.5
 # Center justified vectors
-psxyz -R -J -O -K -W1p -Gred -S -p155/35 << EOF >> $ps
+gmt psxyz -R -J -O -K -W1p -Gred -S -p155/35 << EOF >> $ps
 0.5	0.5	0	30	1i	v0.2i+jc
 1.5	0.5	0	30	1i	v0.2i+jc+b
 2.5	0.5	0	30	1i	v0.2i+jc+e+p-
@@ -17,7 +17,7 @@ psxyz -R -J -O -K -W1p -Gred -S -p155/35 << EOF >> $ps
 5.5	0.5	0	30	1i	v0.2i+jc+e+r
 EOF
 # Beginning justified vectors
-psxyz -R -J -O -K -W1p -Gyellow -S -p155/35 << EOF >> $ps
+gmt psxyz -R -J -O -K -W1p -Gyellow -S -p155/35 << EOF >> $ps
 0.1	1.2	0	30	1i	v0.2i+jb
 1.1	1.2	0	30	1i	v0.2i+jb+b
 2.1	1.2	0	30	1i	v0.2i+jb+e+gorange
@@ -26,7 +26,7 @@ psxyz -R -J -O -K -W1p -Gyellow -S -p155/35 << EOF >> $ps
 5.1	1.2	0	30	1i	v0.2i+jb+e+r
 EOF
 # End justified vectors
-psxyz -R -J -O -K -W1p -S -p155/35 << EOF >> $ps
+gmt psxyz -R -J -O -K -W1p -S -p155/35 << EOF >> $ps
 0.9	2.8	0	30	1i	v0.2i+je
 1.9	2.8	0	30	1i	v0.2i+je+b
 2.9	2.8	0	30	1i	v0.2i+je+e
@@ -35,10 +35,10 @@ psxyz -R -J -O -K -W1p -S -p155/35 << EOF >> $ps
 5.9	2.8	0	30	1i	v0.2i+je+e+r
 EOF
 # Then with -SV and Mercator
-gmtset MAP_VECTOR_SHAPE 1
-psbasemap -R0/6/0/3 -Jm1i -P -B1g1 -BWSne -O -K -Y4i -p155/35 >> $ps
+gmt gmtset MAP_VECTOR_SHAPE 1
+gmt psbasemap -R0/6/0/3 -Jm1i -P -B1g1 -BWSne -O -K -Y4i -p155/35 >> $ps
 # Center justified vectors
-psxyz -R -J -O -K -W1p -Gred -S -p155/35 << EOF >> $ps
+gmt psxyz -R -J -O -K -W1p -Gred -S -p155/35 << EOF >> $ps
 0.5	0.5	0	60	1i	V0.2i+jc
 1.5	0.5	0	60	1i	V0.2i+jc+b
 2.5	0.5	0	60	1i	V0.2i+jc+e+p-
@@ -47,7 +47,7 @@ psxyz -R -J -O -K -W1p -Gred -S -p155/35 << EOF >> $ps
 5.5	0.5	0	60	1i	V0.2i+jc+e+r
 EOF
 # Beginning justified vectors
-psxyz -R -J -O -K -W1p -Gyellow -S -p155/35 << EOF >> $ps
+gmt psxyz -R -J -O -K -W1p -Gyellow -S -p155/35 << EOF >> $ps
 0.1	1.2	0	60	1i	V0.2i+jb
 1.1	1.2	0	60	1i	V0.2i+jb+b
 2.1	1.2	0	60	1i	V0.2i+jb+e+gorange
@@ -56,7 +56,7 @@ psxyz -R -J -O -K -W1p -Gyellow -S -p155/35 << EOF >> $ps
 5.1	1.2	0	60	1i	V0.2i+jb+e+r
 EOF
 # End justified vectors
-psxyz -R -J -O -W1p -S -p155/35 << EOF >> $ps
+gmt psxyz -R -J -O -W1p -S -p155/35 << EOF >> $ps
 0.9	2.8	0	60	1i	V0.2i+je
 1.9	2.8	0	60	1i	V0.2i+je+b
 2.9	2.8	0	60	1i	V0.2i+je+e
@@ -64,4 +64,3 @@ psxyz -R -J -O -W1p -S -p155/35 << EOF >> $ps
 4.9	2.8	0	60	1i	V0.2i+je+b+l
 5.9	2.8	0	60	1i	V0.2i+je+e+r
 EOF
-

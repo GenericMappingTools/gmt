@@ -11,9 +11,9 @@ which gmt           | grep -E "^${GMT_PATH}($|[.]exe)$" # note: depending on reg
 echo -n "sharedir    : "
 gmt --show-sharedir | grep "^${GMT_SHAREDIR}$"
 echo -n "userdir     : "
-gmtget DIR_USER     | grep "^${GMT_USERDIR}$"
-echo -n "gshhg dir   : "
-gmtget DIR_GSHHG    | grep "^${GSHHG_DIR}$"
+gmt gmtget DIR_USER     | grep "^${GMT_USERDIR}$"
+echo -n "gmt gshhg dir   : "
+gmt gmtget DIR_GSHHG    | grep "^${GSHHG_DIR}$"
 
 # compare actual version with expected version
 echo -n "gmt version : "

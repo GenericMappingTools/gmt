@@ -1,6 +1,6 @@
 #!/bin/bash
 #	$Id$
-# Test of projection
+# Test of gmt projection
 
 ps=east_map_0.ps
 
@@ -21,5 +21,5 @@ Height=0.0
 
 PROJ=-JG${DEBUG}${EARTH_MODEL}${longitude}/${latitude}/${altitude}/${azimuth}/${tilt}/${twist}/${Width}/${Height}/7i+
 
-pscoast $REGION $PROJ -P -Yc -Xc -B10g10 -B+t${TITLE} -G128/255/128 -S128/128/255 -W -Ia -Di -Na --MAP_ANNOT_MIN_SPACING=0.5i > $ps
+gmt pscoast $REGION $PROJ -P -Yc -Xc -B10g10 -B+t${TITLE} -G128/255/128 -S128/128/255 -W -Ia -Di -Na --MAP_ANNOT_MIN_SPACING=0.5i > $ps
 

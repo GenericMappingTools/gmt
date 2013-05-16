@@ -6,10 +6,10 @@ ps=position1.ps
 
 font=Helvetica
 
-gmtset FONT_ANNOT_PRIMARY 24p,$font
+gmt gmtset FONT_ANNOT_PRIMARY 24p,$font
 
-psbasemap -JX8i/5i -R0/12/0/12 -B1g1 -BSW -K > $ps
-pstext -F+j -R -J -O -K >> $ps <<%
+gmt psbasemap -JX8i/5i -R0/12/0/12 -B1g1 -BSW -K > $ps
+gmt pstext -F+j -R -J -O -K >> $ps <<%
  1 1 BR 1
  1 2 BC 1
  1 3 BL 1
@@ -50,7 +50,7 @@ pstext -F+j -R -J -O -K >> $ps <<%
 12 6 BR 11111111110
 12 7 BR 01234567890
 %
-pstext -F+j -Ggreen -R -J -O -K >> $ps <<%
+gmt pstext -F+j -Ggreen -R -J -O -K >> $ps <<%
  1 9 BR 10@+-1@+
  5 9 MR 10@+-1@+
  9 9 TR 10@+-1@+
@@ -58,5 +58,5 @@ pstext -F+j -Ggreen -R -J -O -K >> $ps <<%
  6 9 MR oo
 10 9 TR oo
 %
-psbasemap -J -R0/1.2/0/1.2 -B0.1 -BNE -O >> $ps
+gmt psbasemap -J -R0/1.2/0/1.2 -B0.1 -BNE -O >> $ps
 

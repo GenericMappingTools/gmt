@@ -1,14 +1,14 @@
 #!/bin/bash
 #	$Id$
 #
-# Testing pslegend fancy frames
+# Testing gmt pslegend fancy frames
 
 ps=fancy.ps
 
-makecpt -Cpanoply -T-8/8/1 > tt.cpt
-gmtset FONT_ANNOT_PRIMARY 12p
+gmt makecpt -Cpanoply -T-8/8/1 > tt.cpt
+gmt gmtset FONT_ANNOT_PRIMARY 12p
 cat << EOF > tt.txt
-# Legend test for pslegend
+# Legend test for gmt pslegend
 # G is vertical gap, V is vertical line, N sets # of columns, D draws horizontal line,
 # H is ps=fancy.ps
 #
@@ -25,14 +25,14 @@ S 0.1i v 0.25i magenta 0.5p 0.3i This is a vector
 S 0.1i i 0.15i cyan 0.25p 0.3i This triangle is boring
 V 0 1p
 EOF
-psbasemap -R0/6.5/0/10 -Jx1i -P -B0 -K -Y0.5i > $ps
-pslegend -R -J -O -K -Dx0.25i/9.75i/2.75i/TL -C0.1i/0.1i -L1.2 -F+p+gwhite tt.txt >> $ps
-pslegend -R -J -O -K -Dx6.25i/9.75i/2.75i/TR -C0.1i/0.1i -L1.2 -F+p+gwhite+r tt.txt >> $ps
-pslegend -R -J -O -K -Dx0.25i/7.25i/2.75i/TL -C0.1i/0.1i -L1.2 -F+p2p+gwhite+i0.5p tt.txt >> $ps
-pslegend -R -J -O -K -Dx6.25i/7.25i/2.75i/TR -C0.1i/0.1i -L1.2 -F+p2p+gwhite+i0.5p+s5p/-3p/gray tt.txt >> $ps
-pslegend -R -J -O -K -Dx0.25i/4.75i/2.75i/TL -C0.1i/0.1i -L1.2 -F+p2p,blue+gwhite+i0.5p,blue tt.txt >> $ps
-pslegend -R -J -O -K -Dx6.25i/4.75i/2.75i/TR -C0.1i/0.1i -L1.2 -F+p2p,blue+gwhite+i0.5p,blue+s5p/-3p/navy tt.txt >> $ps
-pslegend -R -J -O -K -Dx0.25i/2.25i/2.75i/TL -C0.1i/0.1i -L1.2 -F+i2p,blue+gwhite+p0.5p,blue tt.txt >> $ps
-pslegend -R -J -O -K -Dx6.25i/2.25i/2.75i/TR -C0.1i/0.1i -L1.2 -F+gcornsilk+i2p+p0.5p+s-5p/-3p/orange+r tt.txt >> $ps
-psxy -R -J -O -T >> $ps
+gmt psbasemap -R0/6.5/0/10 -Jx1i -P -B0 -K -Y0.5i > $ps
+gmt pslegend -R -J -O -K -Dx0.25i/9.75i/2.75i/TL -C0.1i/0.1i -L1.2 -F+p+gwhite tt.txt >> $ps
+gmt pslegend -R -J -O -K -Dx6.25i/9.75i/2.75i/TR -C0.1i/0.1i -L1.2 -F+p+gwhite+r tt.txt >> $ps
+gmt pslegend -R -J -O -K -Dx0.25i/7.25i/2.75i/TL -C0.1i/0.1i -L1.2 -F+p2p+gwhite+i0.5p tt.txt >> $ps
+gmt pslegend -R -J -O -K -Dx6.25i/7.25i/2.75i/TR -C0.1i/0.1i -L1.2 -F+p2p+gwhite+i0.5p+s5p/-3p/gray tt.txt >> $ps
+gmt pslegend -R -J -O -K -Dx0.25i/4.75i/2.75i/TL -C0.1i/0.1i -L1.2 -F+p2p,blue+gwhite+i0.5p,blue tt.txt >> $ps
+gmt pslegend -R -J -O -K -Dx6.25i/4.75i/2.75i/TR -C0.1i/0.1i -L1.2 -F+p2p,blue+gwhite+i0.5p,blue+s5p/-3p/navy tt.txt >> $ps
+gmt pslegend -R -J -O -K -Dx0.25i/2.25i/2.75i/TL -C0.1i/0.1i -L1.2 -F+i2p,blue+gwhite+p0.5p,blue tt.txt >> $ps
+gmt pslegend -R -J -O -K -Dx6.25i/2.25i/2.75i/TR -C0.1i/0.1i -L1.2 -F+gcornsilk+i2p+p0.5p+s-5p/-3p/orange+r tt.txt >> $ps
+gmt psxy -R -J -O -T >> $ps
 

@@ -1,24 +1,24 @@
 #!/bin/bash
 
-# GMT 5 test script for pseudo perspective on some projections. By Ken McLean.
+# GMT 5 test script for pseudo perspective on some gmt projections. By Ken McLean.
 # Create normal plot, 180 deg rotation, and oblique pseudo perspective of each.
 
 ps=pseudo.ps
 
 coast () {
-pscoast -B+glightblue -Dc -Gblack -O -K -Ya0c -p180/90 $*
-pscoast -B+glightblue -Dc -Gblack -O -K -Ya3.5c -p0/90 $*
-pscoast -B+glightblue -Dc -Gblack -O -K -Ya7c -p135/45 $*
+gmt pscoast -B+glightblue -Dc -Gblack -O -K -Ya0c -p180/90 $*
+gmt pscoast -B+glightblue -Dc -Gblack -O -K -Ya3.5c -p0/90 $*
+gmt pscoast -B+glightblue -Dc -Gblack -O -K -Ya7c -p135/45 $*
 }
 
 basemap () {
-psbasemap -B+glightblue -O -K -Ya0c -p180/90 $*
-psbasemap -B+glightblue -O -K -Ya3.5c -p0/90 $*
-psbasemap -B+glightblue -O -K -Ya7c -p135/45 $*
+gmt psbasemap -B+glightblue -O -K -Ya0c -p180/90 $*
+gmt psbasemap -B+glightblue -O -K -Ya3.5c -p0/90 $*
+gmt psbasemap -B+glightblue -O -K -Ya7c -p135/45 $*
 }
 
 # TOP ROW
-psxy -Rg -JX1c -T -K -Yf10.5c > $ps
+gmt psxy -Rg -JX1c -T -K -Yf10.5c > $ps
 # Transverse Mercator
 coast -R0/360/-80/80 -JT330/-45/3c -Bg15 -A10000 -Xf0c >> $ps
 
@@ -41,7 +41,7 @@ coast -Rg -JK3c -Bg30 -A10000 -Xf20c >> $ps
 coast -Rg -JW3c -Bg30 -A10000 -Xf24c >> $ps
 
 # BOTTOM ROW
-psxy -Rg -JX1c -T -O -K -Yf0c >> $ps
+gmt psxy -Rg -JX1c -T -O -K -Yf0c >> $ps
 # Gnomonic
 coast -Rg -JF-120/35/60/3c -Bg15 -A10000 -Xf0c >> $ps
 
@@ -63,5 +63,5 @@ coast -Rg -JE-100/40/3c -Bg15 -A10000 -Xf20c >> $ps
 # Van der Grinten
 coast -Rg -JV3c -Bg15 -A10000 -Xf24c >> $ps
 
-psxy -R -J -T -O >> $ps
+gmt psxy -R -J -T -O >> $ps
 

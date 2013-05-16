@@ -13,30 +13,30 @@ ps=example_27.ps
 # is already in projected Mercator x/y units.
 # First get gradients.
 
-grdgradient tasman_grav.nc -Nt1 -A45 -Gtasman_grav_i.nc
+gmt grdgradient tasman_grav.nc -Nt1 -A45 -Gtasman_grav_i.nc
 
 # Make a suitable cpt file for mGal
 
-makecpt -T-120/120/240 -Z -Crainbow > grav.cpt
+gmt makecpt -T-120/120/240 -Z -Crainbow > grav.cpt
 
 # Since this is a Mercator grid we use a linear projection
 
-grdimage tasman_grav.nc=ns/0.1 -Itasman_grav_i.nc -Jx0.25i -Cgrav.cpt -P -K \
+gmt grdimage tasman_grav.nc=ns/0.1 -Itasman_grav_i.nc -Jx0.25i -Cgrav.cpt -P -K \
 	-U"Example 27 in Cookbook" > $ps
 
-# Then use pscoast to plot land; get original -R from grid remark
-# and use Mercator projection with same scale as above on a spherical Earth
+# Then use gmt pscoast to plot land; get original -R from grid remark
+# and use Mercator gmt projection with same scale as above on a spherical Earth
 
-R=`grdinfo tasman_grav.nc | grep Remark | $AWK '{print $NF}'`
+R=`gmt grdinfo tasman_grav.nc | grep Remark | $AWK '{print $NF}'`
 
-pscoast $R -Jm0.25i -Ba10f5 -BWSne -O -K -Gblack --PROJ_ELLIPSOID=Sphere \
+gmt pscoast $R -Jm0.25i -Ba10f5 -BWSne -O -K -Gblack --PROJ_ELLIPSOID=Sphere \
 	-Cwhite -Dh+ --FORMAT_GEO_MAP=dddF >> $ps
 
 # Put a color legend on top of the land mask justified with 147E,31S
 
-pos=`echo 147E 31S | mapproject -R -J --PROJ_ELLIPSOID=Sphere | \
+pos=`echo 147E 31S | gmt mapproject -R -J --PROJ_ELLIPSOID=Sphere | \
 	$AWK '{printf "%si/%si\n", $1, $2}'`
-psscale -D$pos/2i/0.15i -Cgrav.cpt -Bx50f10 -By+lmGal -I -O -T+gwhite+p1p >> $ps
+gmt psscale -D$pos/2i/0.15i -Cgrav.cpt -Bx50f10 -By+lmGal -I -O -T+gwhite+p1p >> $ps
 
 # Clean up
 

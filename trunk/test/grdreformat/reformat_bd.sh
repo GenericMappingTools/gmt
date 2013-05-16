@@ -5,17 +5,17 @@
 
 log=reformat_bd.log
 
-grdmath -R-10/10/-10/10 -I1 X = lixo.nc
+gmt grdmath -R-10/10/-10/10 -I1 X = lixo.nc
 
 # First conver to int
-grdreformat lixo.nc lixo.bd=bd
-grdmath lixo.nc lixo.bd=bd SUB = lixo_dif.nc
-grd2xyz lixo_dif.nc -ZTLa > $log
+gmt grdreformat lixo.nc lixo.bd=bd
+gmt grdmath lixo.nc lixo.bd=bd SUB = lixo_dif.nc
+gmt grd2xyz lixo_dif.nc -ZTLa > $log
 
 # Now convert back to .nc
-grdreformat lixo.bd=bd lixo.nc
-grdmath lixo.nc lixo.bd=bd SUB = lixo_dif.nc
-grd2xyz lixo_dif.nc -ZTLa >> $log
+gmt grdreformat lixo.bd=bd lixo.nc
+gmt grdmath lixo.nc lixo.bd=bd SUB = lixo_dif.nc
+gmt grd2xyz lixo_dif.nc -ZTLa >> $log
 
-res=`minmax -C $log`
+res=`gmt minmax -C $log`
 echo ${res[0]} ${res[1]} | $AWK '{if($1 != 0 || $2 != 0) print 1}' > fail

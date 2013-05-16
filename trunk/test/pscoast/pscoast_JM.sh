@@ -5,4 +5,4 @@
 
 ps=pscoast_JM.ps
 
-pscoast -R90/290/-70/65 -JM6i -P -Ggray -Baf > $ps
+gmt pscoast -R90/290/-70/65 -JM6i -P -Ggray -Baf > $ps

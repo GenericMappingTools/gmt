@@ -47,5 +47,5 @@ cat << EOF > q.txt
 2	2	410	6
 2	0	50	9.5
 EOF
-psxy -R-1/3/-1/3 -JM6i -P -Skseis/0.5i -Wthinnest q.txt -B1 > $ps
+gmt psxy -R-1/3/-1/3 -JM6i -P -Skseis/0.5i -Wthinnest q.txt -B1 > $ps
 

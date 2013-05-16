@@ -22,22 +22,22 @@ $xwidth	$ywidth
 0	$ywidth
 END
 
-psbasemap -R0/5.75/0/7.55 -Jx1i -P -B0 -K > $ps
+gmt psbasemap -R0/5.75/0/7.55 -Jx1i -P -B0 -K > $ps
 for iy in 14 13 12 11 10 9 8 7 6 5 4 3 2 1 0
 do
 	for ix in 1 2 3 4 5 6
 	do
 		p=`echo "$iy * 6 + $ix" | bc`
-		psxy -R0/$xwidth/0/$ywidth -Jx1i -Gp300/$p -O -K tt.App_E.d -X${x}i -Y${y}i >> $ps
-		psxy -R -J -Wthinner -L -O -K tt.App_E.d >> $ps
-		psxy -R -J -GP300/$p -O -K tt.App_E.d -X${xwidth}i >> $ps
-		psxy -R -J -Wthinner -L -O -K tt.App_E.d >> $ps
-		echo "0 0.225" | psxy -R0/$w/0/$ywidth -J -O -K -N -Sc0.17i -Wthinnest -Gwhite >> $ps
-		echo "0 0.225 $p" | pstext -R0/$w/0/$ywidth -J -O -K -N -F+f9p,Helvetica-Bold >> $ps
+		gmt psxy -R0/$xwidth/0/$ywidth -Jx1i -Gp300/$p -O -K tt.App_E.d -X${x}i -Y${y}i >> $ps
+		gmt psxy -R -J -Wthinner -L -O -K tt.App_E.d >> $ps
+		gmt psxy -R -J -GP300/$p -O -K tt.App_E.d -X${xwidth}i >> $ps
+		gmt psxy -R -J -Wthinner -L -O -K tt.App_E.d >> $ps
+		echo "0 0.225" | gmt psxy -R0/$w/0/$ywidth -J -O -K -N -Sc0.17i -Wthinnest -Gwhite >> $ps
+		echo "0 0.225 $p" | gmt pstext -R0/$w/0/$ywidth -J -O -K -N -F+f9p,Helvetica-Bold >> $ps
 		y=0.0
 		x=$dx
 	done
 	y=$dy
 	x=$back
 done
-psxy -R -J -T -O >> $ps
+gmt psxy -R -J -T -O >> $ps

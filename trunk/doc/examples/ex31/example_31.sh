@@ -21,7 +21,7 @@ LinLibertineOB
 EOF
 
 # common settings
-gmtset FORMAT_GEO_MAP ddd:mm:ssF \
+gmt gmtset FORMAT_GEO_MAP ddd:mm:ssF \
 MAP_DEGREE_SYMBOL colon \
 MAP_TITLE_OFFSET 20p \
 MAP_GRID_CROSS_SIZE_PRIMARY 0.4c \
@@ -32,25 +32,25 @@ FONT_TITLE 24p,LinLibertineOB \
 MAP_ANNOT_OBLIQUE 42
 
 # map of countries
-pscoast -Dl -R-7/31/64/66/r -JL15/50/40/60/16c -P \
+gmt pscoast -Dl -R-7/31/64/66/r -JL15/50/40/60/16c -P \
 -Bx10g10 -By5g5 -B+t"Europe\072 Countries and Capital Cities" -A250 \
 -U"Example 31 in Cookbook" -Slightblue -Glightgreen -W0.25p -N1/1p,white -K > $ps
 
 # mark capitals
-psxy europe-capitals-ru.csv -R -J -i0,1 \
+gmt psxy europe-capitals-ru.csv -R -J -i0,1 \
 -Sc0.15c -G196/80/80 -O -K >> $ps
 
 # small EU cities
 $AWK 'BEGIN {FS=","} $4 !="" && $4 <= 1000000 {print $1, $2}' europe-capitals-ru.csv | \
-psxy -R -J -Sc0.15c -W0.25p -O -K >> $ps
+gmt psxy -R -J -Sc0.15c -W0.25p -O -K >> $ps
 
 # big EU cities
 $AWK 'BEGIN {FS=","} $4 > 1000000 {print $1, $2}' europe-capitals-ru.csv | \
-psxy -R -J -Sc0.15c -W1.25p -O -K >> $ps
+gmt psxy -R -J -Sc0.15c -W1.25p -O -K >> $ps
 
 # label big EU cities
 $AWK 'BEGIN {FS=","} $4 > 1000000 {print $1, $2, $3}' europe-capitals-ru.csv | \
-pstext -R -J -F+f7p,LinBiolinumOI+jBL -Dj0.1c -Gwhite -C5% -Qu -TO -O -K >> $ps
+gmt pstext -R -J -F+f7p,LinBiolinumOI+jBL -Dj0.1c -Gwhite -C5% -Qu -TO -O -K >> $ps
 
 # construct legend
 cat << EOF > legend.txt
@@ -72,19 +72,19 @@ $AWK 'BEGIN {FS=","; f="L 8 LinBiolinumO L"}
   europe-capitals-ru.csv >> legend.txt
 
 # reduce annotation font size for legend
-gmtset FONT_ANNOT_PRIMARY 8p
+gmt gmtset FONT_ANNOT_PRIMARY 8p
 
 # plot legend
-pslegend -R -J -Dx7.9c/12.6c/8.0c/BL \
+gmt pslegend -R -J -Dx7.9c/12.6c/8.0c/BL \
 -C0.3c/0.4c -L1.2 -F+p+gwhite -O legend.txt >> $ps
 
 # make a PostScript and a PDF file with outlined fonts
-# unfortunately ps2raster won't be able to crop that file correctly anymore
+# unfortunately gmt ps2raster won't be able to crop that file correctly anymore
 # use Heiko Oberdiek's pdfcrop (http://code.google.com/p/pdfcrop2/) instead
-# or crop with ps2raster -A -Te before
+# or crop with gmt ps2raster -A -Te before
 #
 # a. remove GMT logo and crop EPS:
-#ps2raster -P -Au -Te -C-sFONTPATH="${PWD}/fonts" -Fex31CropNoLogo $ps
+#gmt ps2raster -P -Au -Te -C-sFONTPATH="${PWD}/fonts" -Fex31CropNoLogo $ps
 # b. make PS with outlined fonts:
 #gs -q -sPAPERSIZE=a3 -dNOCACHE -dSAFER -dNOPAUSE -dBATCH -dNOPLATFONTS \
 #  -sDEVICE=pswrite -sFONTPATH="${PWD}/fonts" -sOutputFile=$ps_outlined ex31CropNoLogo.eps
@@ -92,13 +92,13 @@ pslegend -R -J -Dx7.9c/12.6c/8.0c/BL \
 #gs -q -dNOCACHE -dSAFER -dNOPAUSE -dBATCH -dEPSCrop -sDEVICE=epswrite \
 #  -sOutputFile=$eps_outlined $ps_outlined
 # d. make cropped PDF:
-#ps2raster -P -A -Tf $ps_outlined
+#gmt ps2raster -P -A -Tf $ps_outlined
 # uncomment to do conversation to PDF and PNG
 # you will get a PDF with subsetted TrueType/PostScript fonts embedded
 # which you can still edit with your favorite vector graphics editor
 #export GS_FONTPATH="${PWD}/fonts"
-#ps2raster -P -A -Tf $ps
-#ps2raster -P -A -Tg -E110 $ps
+#gmt ps2raster -P -A -Tf $ps
+#gmt ps2raster -P -A -Tg -E110 $ps
 # clean up
 rm -f .gmtcommands* gmt.conf CUSTOM_font_info.d legend.txt ex31CropNoLogo.eps
 

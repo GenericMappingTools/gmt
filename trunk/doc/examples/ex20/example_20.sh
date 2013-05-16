@@ -24,10 +24,10 @@ cat > hotspots.d << END
 -16.5	64.4	0.25
 END
 
-pscoast -Rg -JR9i -Bx60 -By30 -B+t"Hotspot Islands and Cities" -Gdarkgreen -Slightblue -Dc -A5000 \
+gmt pscoast -Rg -JR9i -Bx60 -By30 -B+t"Hotspot Islands and Cities" -Gdarkgreen -Slightblue -Dc -A5000 \
 	-K -U"Example 20 in Cookbook" > $ps
 
-psxy -R -J hotspots.d -Skvolcano -O -K -Wthinnest -Gred >> $ps
+gmt psxy -R -J hotspots.d -Skvolcano -O -K -Wthinnest -Gred >> $ps
 
 # Overlay a few bullseyes at NY, Cairo, and Perth
 
@@ -37,6 +37,6 @@ cat > cities.d << END
 115.49	-31.58	0.8
 END
 
-psxy -R -J cities.d -Skbullseye -O >> $ps
+gmt psxy -R -J cities.d -Skbullseye -O >> $ps
 
 rm -f hotspots.d cities.d

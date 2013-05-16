@@ -21,7 +21,7 @@ e="-13.121354 66.7035842"
 f="-25.3398981 66.6019215"
 
 ### Set up walls between 0 and 200 km depth
-psxyz $popt -R-24.4/63.0/-13.1/66.7/0/200r -JZ-5c -JT-17.927/64.463/15c -Bxa2f1 -Bya1f0.5 -Bz50 -BESZ -Wthinnest -K << EOF > $ps
+gmt psxyz $popt -R-24.4/63.0/-13.1/66.7/0/200r -JZ-5c -JT-17.927/64.463/15c -Bxa2f1 -Bya1f0.5 -Bz50 -BESZ -Wthinnest -K << EOF > $ps
 > -G220
 $a 200
 $a 0
@@ -44,7 +44,7 @@ $e 0
 $e 200
 EOF
 
-psxyz -p -R -J -JZ -Wthinnest -O -K << EOF >> $ps
+gmt psxyz -p -R -J -JZ -Wthinnest -O -K << EOF >> $ps
 $a 100
 $b 100
 $c 100
@@ -53,7 +53,7 @@ $e 100
 EOF
  
 ### Set clipping perimeter
-psclip $popt/0 -R -JZ -J -O -K << EOF >> $ps
+gmt psclip $popt/0 -R -JZ -J -O -K << EOF >> $ps
 $a
 $b
 $c
@@ -62,11 +62,11 @@ $e
 $f
 EOF
 
-### Start plotting surface
-grdimage D3-25TV24-resid.nc -E100 -nl -p -R -J -JZ -C$cpt -O -K >> $ps
+### Start plotting gmt surface
+gmt grdimage D3-25TV24-resid.nc -E100 -nl -p -R -J -JZ -C$cpt -O -K >> $ps
 
-grdcontour --PS_COMMENTS=1 D3-25TV24-resid.nc -p -R -J -JZ -Wthinner -A- -C$cpt -W -K -O >> $ps
+gmt grdcontour --PS_COMMENTS=1 D3-25TV24-resid.nc -p -R -J -JZ -Wthinner -A- -C$cpt -W -K -O >> $ps
 
-pscoast -p -R -J -JZ -Dh -A100 -Wthinnest -S135/190/240 -O -K >> $ps
-psclip -C -O >> $ps
+gmt pscoast -p -R -J -JZ -Dh -A100 -Wthinnest -S135/190/240 -O -K >> $ps
+gmt psclip -C -O >> $ps
 

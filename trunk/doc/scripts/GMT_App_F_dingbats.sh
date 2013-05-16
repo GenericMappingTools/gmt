@@ -4,9 +4,9 @@
 #	Makes the octal code charts in Appendix F
 #
 # Use the row, col values to generate the octal code needed and
-# plot it with pstext, including the header row and left column
+# plot it with gmt pstext, including the header row and left column
 
-gmtset MAP_FRAME_PEN thick FONT_TITLE 14p
+gmt gmtset MAP_FRAME_PEN thick FONT_TITLE 14p
 
 # First col is row number, the remaining cols are col number in table
 # that has a printable character
@@ -27,7 +27,7 @@ cat << EOF > tt.txt
 EOF
 
 # Use the row, col values to generate the octal code needed and
-# plot it with pstext, including the header row and left column
+# plot it with gmt pstext, including the header row and left column
 
 cat << EOF > tt.awk
 BEGIN {
@@ -49,17 +49,17 @@ EOF
 $AWK -f tt.awk tt.txt > tt.d
 
 # Chart for ZapfDingbats
-gmtset PS_CHAR_ENCODING ISOLatin1+
+gmt gmtset PS_CHAR_ENCODING ISOLatin1+
 
-psxy -R0/9/3/16 -Jx0.345i/-0.21i -BN+tZapfDingbats -P -K -Glightgreen -Y2.58i << EOF > GMT_App_F_dingbats.ps
+gmt psxy -R0/9/3/16 -Jx0.345i/-0.21i -BN+tZapfDingbats -P -K -Glightgreen -Y2.58i << EOF > GMT_App_F_dingbats.ps
 >
 8	16
 9	16
 9	15
 8	15
 EOF
-pstext tt.d -R -J -O -K -F+f >> GMT_App_F_dingbats.ps
-psxy -R -J -O -Bg1 -K -Wthick << EOF >> GMT_App_F_dingbats.ps
+gmt pstext tt.d -R -J -O -K -F+f >> GMT_App_F_dingbats.ps
+gmt psxy -R -J -O -Bg1 -K -Wthick << EOF >> GMT_App_F_dingbats.ps
 >
 0	4
 9	4
@@ -94,7 +94,7 @@ cat << EOF > tt.awk
 EOF
 
 $AWK -f tt.awk tt.txt > tt.d
-psxy -R0/9/20/32 -J -O -K -Glightgreen -Y-2.58i << EOF >> GMT_App_F_dingbats.ps
+gmt psxy -R0/9/20/32 -J -O -K -Glightgreen -Y-2.58i << EOF >> GMT_App_F_dingbats.ps
 >
 1	21
 2	21
@@ -106,8 +106,8 @@ psxy -R0/9/20/32 -J -O -K -Glightgreen -Y-2.58i << EOF >> GMT_App_F_dingbats.ps
 9	31
 8	31
 EOF
-pstext tt.d -R -J -O -K -F+f >> GMT_App_F_dingbats.ps
-psxy -R -J -O -Bg1 -Wthick << EOF >> GMT_App_F_dingbats.ps
+gmt pstext tt.d -R -J -O -K -F+f >> GMT_App_F_dingbats.ps
+gmt psxy -R -J -O -Bg1 -Wthick << EOF >> GMT_App_F_dingbats.ps
 >
 1	20
 1	32

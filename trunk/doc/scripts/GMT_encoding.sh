@@ -26,7 +26,7 @@ cat << EOF > tt.awk
 EOF
 egrep -v '\[|\]' "${GMT_SHAREDIR}"/share/pslib/$1.ps | $AWK -f tt.awk > tt.chart
 cat << EOF > tt.awk
-# This awk script creates a file for psxy to plot a rectangle for undefined entries
+# This awk script creates a file for gmt psxy to plot a rectangle for undefined entries
 {
 	for (i = 1; i <= 8; i++)
 	{
@@ -53,10 +53,10 @@ BEGIN {
 }
 EOF
 
-gmtset PS_CHAR_ENCODING $1
-psxy -R0/9/-1/32 -Jx0.345i/-0.21i -Bg1 -B+t"Octal codes for $1" -P -K -Ggray -X3i -Sri tt.empty
-$AWK -f tt.awk tt.chart | pstext -R -J -O -K -F+f10p,Times-Roman
-psxy -R -J -O -Wthick << EOF
+gmt gmtset PS_CHAR_ENCODING $1
+gmt psxy -R0/9/-1/32 -Jx0.345i/-0.21i -Bg1 -B+t"Octal codes for $1" -P -K -Ggray -X3i -Sri tt.empty
+$AWK -f tt.awk tt.chart | gmt pstext -R -J -O -K -F+f10p,Times-Roman
+gmt psxy -R -J -O -Wthick << EOF
 >
 0	0
 9	0

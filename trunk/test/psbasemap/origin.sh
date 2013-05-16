@@ -8,7 +8,7 @@ n=0
 
 plot () {
 	let n=$n+1
-	pstext --GMT_VERBOSE=0 -R0/1/0/1 -JX1i -B0 -F+jMC $1 $2 $4 $3 <<%
+	gmt pstext --GMT_VERBOSE=0 -R0/1/0/1 -JX1i -B0 -F+jMC $1 $2 $4 $3 <<%
 0.5 0.8 ($n)
 0.5 0.5 $1
 0.5 0.2 $2
@@ -26,7 +26,7 @@ plot -X -Y -O -K >> $ps
 plot -Xf6i -Y -O -K >> $ps
 plot -X -Y -O -K >> $ps
 plot -Xf4.75i -Yf5i -O -K >> $ps
-psxy -Xf0 -Yf0 -R0/1/0/1 -JX8.5i/11i -Wthinnest,red -O >> $ps <<%
+gmt psxy -Xf0 -Yf0 -R0/1/0/1 -JX8.5i/11i -Wthinnest,red -O >> $ps <<%
 0 0
 1 1
 >

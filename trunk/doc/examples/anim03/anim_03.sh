@@ -3,7 +3,7 @@
 #               $Id$
 #
 # Purpose:      Make web page with simple animated GIF of Iceland topo
-# GMT progs:    gmtset, gmtmath, psbasemap, psxy, ps2raster
+# GMT progs:    gmt gmtset, gmt gmtmath, gmt psbasemap, gmt psxy, gmt ps2raster
 # Unix progs:   awk, mkdir, rm, mv, echo, convert, cat
 # Note:         Run with any argument to build movie; otherwise 1st frame is plotted only.
 #
@@ -23,22 +23,22 @@ name=anim_03
 ps=${name}.ps
 mkdir -p $$
 frame=0
-grdclip -Sb0/-1 -G$${_above}.nc Iceland.nc
-grdgradient -fg -A45 -Nt1 $${_above}.nc -G$$.nc
-makecpt -Crelief -Z > $$.cpt
+gmt grdclip -Sb0/-1 -G$${_above}.nc Iceland.nc
+gmt grdgradient -fg -A45 -Nt1 $${_above}.nc -G$$.nc
+gmt makecpt -Crelief -Z > $$.cpt
 while [ ${az} -lt 360 ]; do
 	file=`gmt_set_framename ${name} ${frame}`
 	if [ $# -eq 0 ]; then	# If a single frame is requested we pick this view
 		az=135
 	fi
-	grdview $${_above}.nc -R-26/-12/63/67 -JM2.5i -C$$.cpt -Qi${dpi} -Bx5g10 -By5g5 -P -X0.5i -Y0.5i \
+	gmt grdview $${_above}.nc -R-26/-12/63/67 -JM2.5i -C$$.cpt -Qi${dpi} -Bx5g10 -By5g5 -P -X0.5i -Y0.5i \
 		-p${az}/${el}+w${lon}/${lat}+v${x0}/${y0} --PS_MEDIA=${px}ix${py}i > $$.ps
 	if [ $# -eq 0 ]; then
 		mv $$.ps ${ps}
 		gmt_cleanup .gmt
 		gmt_abort "${0}: First frame plotted to ${name}.ps"
 	fi
-	ps2raster $$.ps -Tt -E${dpi}
+	gmt ps2raster $$.ps -Tt -E${dpi}
 	mv $$.tif $$/${file}.tif
 	az=`expr ${az} + 5`
         echo "Frame ${file} completed"

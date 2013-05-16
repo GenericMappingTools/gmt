@@ -1,7 +1,7 @@
 #!/bin/bash
 #	$Id$
 #
-pstext -R0/5/0/3 -Jx1i -P -K -F+f+j << EOF > GMT_-J.ps
+gmt pstext -R0/5/0/3 -Jx1i -P -K -F+f+j << EOF > GMT_-J.ps
 2.5	2.8	16p,Helvetica-Bold	BC	GMT PROJECTIONS
 2	2.25	12p,Helvetica-Bold	BC	GEOGRAPHIC PROJECTIONS
 0	1.75	11p,Helvetica		BL	CYLINDRICAL
@@ -10,7 +10,7 @@ pstext -R0/5/0/3 -Jx1i -P -K -F+f+j << EOF > GMT_-J.ps
 3	1.75	11p,Helvetica		BL	THEMATIC
 4	1.75	11p,Helvetica		BL	OTHER
 EOF
-pstext -R -J -O -K -F+f8p+jBL << EOF >> GMT_-J.ps
+gmt pstext -R -J -O -K -F+f8p+jBL << EOF >> GMT_-J.ps
 # Cylindrical
 0	1.35	Basic [E]
 0	1.2	Cassini
@@ -52,7 +52,7 @@ pstext -R -J -O -K -F+f8p+jBL << EOF >> GMT_-J.ps
 0.05	2.6	E = Equal Area
 EOF
 
-psxy -R -J -O -Wthinner << EOF >> GMT_-J.ps
+gmt psxy -R -J -O -Wthinner << EOF >> GMT_-J.ps
 >
 2.3	2.75
 2	2.4

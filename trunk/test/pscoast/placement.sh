@@ -1,26 +1,26 @@
 #!/bin/bash
 #
 #	$Id$
-# GMT 5 test script for plot placement on some projections. By Ken McLean.
+# GMT 5 test script for plot placement on some gmt projections. By Ken McLean.
 # Create triplicate plots of each.
 
 ps=placement.ps
-gmtdefaults > save.conf
+gmt gmtdefaults > save.conf
 
 coast () {
-pscoast -B+glightblue -Dc -Gblack -O -K -Ya0c $*
-pscoast -B+glightblue -Dc -Gblack -O -K -Ya3.5c $*
-pscoast -B+glightblue -Dc -Gblack -O -K -Ya7c $*
+gmt pscoast -B+glightblue -Dc -Gblack -O -K -Ya0c $*
+gmt pscoast -B+glightblue -Dc -Gblack -O -K -Ya3.5c $*
+gmt pscoast -B+glightblue -Dc -Gblack -O -K -Ya7c $*
 }
 
 basemap () {
-psbasemap -B+glightblue -O -K -Ya0c $*
-psbasemap -B+glightblue -O -K -Ya3.5c $*
-psbasemap -B+glightblue -O -K -Ya7c $*
+gmt psbasemap -B+glightblue -O -K -Ya0c $*
+gmt psbasemap -B+glightblue -O -K -Ya3.5c $*
+gmt psbasemap -B+glightblue -O -K -Ya7c $*
 }
 
 # TOP ROW
-psxy -Rg -JX1c -T -K -Yf10.5c > $ps
+gmt psxy -Rg -JX1c -T -K -Yf10.5c > $ps
 # Transverse Mercator
 coast -R0/360/-80/80 -JT330/-45/3c -Bg15 -A10000 -Xf0c >> $ps
 
@@ -43,7 +43,7 @@ coast -Rg -JK3c -Bg30 -A10000 -Xf20c >> $ps
 coast -Rg -JW3c -Bg30 -A10000 -Xf24c >> $ps
 
 # BOTTOM ROW
-psxy -Rg -JX1c -T -O -K -Yf0c >> $ps
+gmt psxy -Rg -JX1c -T -O -K -Yf0c >> $ps
 # Gnomonic
 coast -Rg -JF-120/35/60/3c -Bg15 -A10000 -Xf0c >> $ps
 
@@ -65,5 +65,5 @@ coast -Rg -JE-100/40/3c -Bg15 -A10000 -Xf20c >> $ps
 # Van der Grinten
 coast -Rg -JV3c -Bg15 -A10000 -Xf24c >> $ps
 
-psxy -R -J -T -O >> $ps
+gmt psxy -R -J -T -O >> $ps
 

@@ -5,5 +5,5 @@
 
 ps=pscoast_JE.ps
 
-pscoast -JE13:25/52:31/10/7i -Rg -Gred -Sblue -Dl -P > $ps
+gmt pscoast -JE13:25/52:31/10/7i -Rg -Gred -Sblue -Dl -P > $ps
 

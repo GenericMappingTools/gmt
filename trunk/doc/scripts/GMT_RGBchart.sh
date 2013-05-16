@@ -34,14 +34,14 @@ rects=$GMT_TMPDIR/rects.tmp
 whitetags=$GMT_TMPDIR/whitetags.tmp
 blacktags=$GMT_TMPDIR/blacktags.tmp
 labels=$GMT_TMPDIR/labels.tmp
-gmtset PS_MEDIA $SIZE PS_PAGE_ORIENTATION landscape
+gmt gmtset PS_MEDIA $SIZE PS_PAGE_ORIENTATION landscape
 
 rectheight=0.56
-W=`gmtmath -Q $WIDTH $COL DIV 0.95 MUL =`
-H=`gmtmath -Q $HEIGHT $ROW DIV $rectheight MUL =`
-textheight=`gmtmath -Q 1 $rectheight SUB =`
-fontsize=`gmtmath -Q $HEIGHT $ROW DIV $rectheight MUL 0.6 MUL 72 MUL =`
-fontsizeL=`gmtmath -Q $HEIGHT $ROW DIV $textheight MUL 0.7 MUL 72 MUL =`
+W=`gmt gmtmath -Q $WIDTH $COL DIV 0.95 MUL =`
+H=`gmt gmtmath -Q $HEIGHT $ROW DIV $rectheight MUL =`
+textheight=`gmt gmtmath -Q 1 $rectheight SUB =`
+fontsize=`gmt gmtmath -Q $HEIGHT $ROW DIV $rectheight MUL 0.6 MUL 72 MUL =`
+fontsizeL=`gmt gmtmath -Q $HEIGHT $ROW DIV $textheight MUL 0.7 MUL 72 MUL =`
 
 # Produce $allinfo from color and name files
 egrep -v "^#|grey" "${GMT_SOURCE_DIR}"/src/Colors.txt | $AWK -v COL=$COL -v ROW=$ROW \
@@ -56,19 +56,19 @@ $AWK -v h=$rectheight -v fs=$fontsize  '{if ($2 > 127) printf "%g %g %gp,1 %s\n"
 $AWK -v h=$textheight -v fs=$fontsizeL '{printf "%g %g %gp,1 @#%s@#\n",$4+0.5,$5+0.6*h,fs,$3}' $allinfo > $labels
 
 # Plot all tiles and texts
-psxy -R0/$COL/0/$ROW -JX$WIDTH/-$HEIGHT -X0.25i -Y0.25i -B0 -C$cpt -Sri -W $rects -K > $ps
-pstext -R -J -O -K $labels -F+f --FONT=black >> $ps
-pstext -R -J -O -K $blacktags -F+f --FONT=black >> $ps
-pstext -R -J -O -K $whitetags -F+f --FONT=white >> $ps
+gmt psxy -R0/$COL/0/$ROW -JX$WIDTH/-$HEIGHT -X0.25i -Y0.25i -B0 -C$cpt -Sri -W $rects -K > $ps
+gmt pstext -R -J -O -K $labels -F+f --FONT=black >> $ps
+gmt pstext -R -J -O -K $blacktags -F+f --FONT=black >> $ps
+gmt pstext -R -J -O -K $whitetags -F+f --FONT=white >> $ps
 
 # Put logo in top left corner
-scale=`gmtmath -Q $WIDTH $COL DIV 0.95 MUL 2 DIV =`
-xoff=`gmtmath -Q $WIDTH $COL DIV 0.05 MUL 2 DIV =`
-yoff=`gmtmath -Q $HEIGHT $ROW DIV $ROW 1 SUB MUL $scale 2 DIV SUB =`
+scale=`gmt gmtmath -Q $WIDTH $COL DIV 0.95 MUL 2 DIV =`
+xoff=`gmt gmtmath -Q $WIDTH $COL DIV 0.05 MUL 2 DIV =`
+yoff=`gmt gmtmath -Q $HEIGHT $ROW DIV $ROW 1 SUB MUL $scale 2 DIV SUB =`
 gmtlogo $xoff $yoff $scale >> $ps
 
-H=`gmtmath -Q $HEIGHT $ROW DIV =`
-pslegend -O -Dx0/0/$WIDTH/$H/BL >> $ps <<END
+H=`gmt gmtmath -Q $HEIGHT $ROW DIV =`
+gmt pslegend -O -Dx0/0/$WIDTH/$H/BL >> $ps <<END
 L $fontsizeL 1 R Values are R/G/B. Names are case-insensitive.
 L $fontsizeL 1 R Optionally, use GREY instead of GRAY.
 END

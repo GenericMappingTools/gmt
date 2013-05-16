@@ -4,9 +4,9 @@
 #	Makes the octal code charts in Appendix F
 #
 # Use the row, col values to generate the octal code needed and
-# plot it with pstext, including the header row and left column
+# plot it with gmt pstext, including the header row and left column
 
-gmtset MAP_FRAME_PEN thick FONT_TITLE 14p
+gmt gmtset MAP_FRAME_PEN thick FONT_TITLE 14p
 
 # First chart for standard font
 
@@ -46,7 +46,7 @@ cat << EOF > tt.txt
 EOF
 
 # Use the row, col values to generate the octal code needed and
-# plot it with pstext, including the header row and left column
+# plot it with gmt pstext, including the header row and left column
 
 cat << EOF > tt.awk
 BEGIN {
@@ -68,10 +68,10 @@ EOF
 $AWK -f tt.awk tt.txt > tt.d
 
 # Chart for Standard+ font
-gmtset PS_CHAR_ENCODING Standard+
+gmt gmtset PS_CHAR_ENCODING Standard+
 
 # First mark uncoded entries
-psxy -R0/9/2/32 -Jx0.345i/-0.21i -BN+tStandard++ -P -K -Glightred -Y0.0 << EOF > GMT_App_F_stand+.ps
+gmt psxy -R0/9/2/32 -Jx0.345i/-0.21i -BN+tStandard++ -P -K -Glightred -Y0.0 << EOF > GMT_App_F_stand+.ps
 >
 1	4
 2	4
@@ -84,7 +84,7 @@ psxy -R0/9/2/32 -Jx0.345i/-0.21i -BN+tStandard++ -P -K -Glightred -Y0.0 << EOF >
 1	20
 EOF
 #Then highlight Standard+ enhancements
-psxy -R -J -O -K -Glightgreen << EOF >> GMT_App_F_stand+.ps
+gmt psxy -R -J -O -K -Glightgreen << EOF >> GMT_App_F_stand+.ps
 >
 2	4
 9	4
@@ -191,8 +191,8 @@ psxy -R -J -O -K -Glightgreen << EOF >> GMT_App_F_stand+.ps
 9	31
 5	31
 EOF
-pstext tt.d -R -J -O -K -F+f >> GMT_App_F_stand+.ps
-psxy -R -J -O -Bg1 -Wthick << EOF >> GMT_App_F_stand+.ps
+gmt pstext tt.d -R -J -O -K -F+f >> GMT_App_F_stand+.ps
+gmt psxy -R -J -O -Bg1 -Wthick << EOF >> GMT_App_F_stand+.ps
 >
 0	3
 9	3

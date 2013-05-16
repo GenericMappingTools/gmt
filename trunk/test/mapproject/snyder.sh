@@ -1,18 +1,18 @@
 #!/bin/bash
 #		$Id$
 #
-#	Testing GMT mapproject on examples in Snyder.
+#	Testing GMT gmt mapgmt project on examples in Snyder.
 #
 #
 #	usage:  snyder.sh [-v]
 #
-#	-v will report values for each project. 
+#	-v will report values for each gmt project. 
 #	scipt will report trouble if we do not match Snyder (+- 360 degrees for longitudes)
-#	Slop is 0.11 m for projected values
+#	Slop is 0.11 m for gmt projected values
 
 blabber () {
-	gf=(`echo "${sf[*]}" | mapproject $* -F -C`)
-	gi=(`echo "${gf[*]}" | mapproject $* -F -C -I --FORMAT_FLOAT_OUT=%lg`)
+	gf=(`echo "${sf[*]}" | gmt mapgmt project $* -F -C`)
+	gi=(`echo "${gf[*]}" | gmt mapgmt project $* -F -C -I --FORMAT_FLOAT_OUT=%lg`)
 	if [ $blabber -gt 0 ] ; then
 		echo "-------------------"
 		echo $p
@@ -66,7 +66,7 @@ EOF
 
 blabber=$#
 
-gmtset PROJ_SCALE_FACTOR 1
+gmt gmtset PROJ_SCALE_FACTOR 1
 
 # Make ellipsoids (spheres) of radius 1 and 3:
 unit=1.0
