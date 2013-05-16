@@ -165,9 +165,9 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 			GMT_message (GMT, "\t     Append +t<title> to place a title over the map frame [no title].\n");
 			GMT_message (GMT, "\t   2. Axes settings control the annotation, tick, and grid intervals and labels.\n");
 			GMT_message (GMT, "\t     The full axes specification is\n");
-			GMT_message (GMT, "\t       -B[p|s][x|y|z]<intervals>[+l<label>][+p<prefix>][+s<suffix>]\n");
+			GMT_message (GMT, "\t       -B[p|s][x|y|z]<intervals>[+l<label>][+p<prefix>][+u<unit>]\n");
 			GMT_message (GMT, "\t     Alternatively, you may break this syntax into two separate -B options:\n");
-			GMT_message (GMT, "\t       -B[p|s][x|y|z][+l<label>][+p<prefix>][+s<suffix>]\n");
+			GMT_message (GMT, "\t       -B[p|s][x|y|z][+l<label>][+p<prefix>][+u<unit>]\n");
 			GMT_message (GMT, "\t       -B[p|s][x|y|z]<intervals>\n");
 			GMT_message (GMT, "\t     There are two levels of annotations: Primary and secondary (most situations only require primary).\n");
 			GMT_message (GMT, "\t     The -B[p] selects (p)rimary annotations while -Bs specifies (s)econdary annotations.\n");
@@ -175,9 +175,9 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 			GMT_message (GMT, "\t     To specify different settings for different axes you must repeat the -B axes option for\n");
 			GMT_message (GMT, "\t     each dimension., i.e., provide separate -B[p|s]x, -B[p|s]y, and -B[p|s]z settings.\n");
 			GMT_message (GMT, "\t     To prepend a prefix to each annotation (e.g., $ 10, $ 20 ...), add +p<prefix>.\n");
-			GMT_message (GMT, "\t     To append a unit to each annotation (e.g., 5 km, 10 km ...), add +s<suffix>.\n");
-			GMT_message (GMT, "\t     To label an axis, add +l<label>.  Use quotes if <label>, <prefix> or <suffix> have spaces.\n");
-			GMT_message (GMT, "\t     Geographic map annotations will automatically have degree, minute, seconds suffix.\n");
+			GMT_message (GMT, "\t     To append a unit to each annotation (e.g., 5 km, 10 km ...), add +u<unit>.\n");
+			GMT_message (GMT, "\t     To label an axis, add +l<label>.  Use quotes if <label>, <prefix> or <unit> have spaces.\n");
+			GMT_message (GMT, "\t     Geographic map annotations will automatically have degree, minute, seconds units.\n");
 			GMT_message (GMT, "\t     The <intervals> setting controls the annotation spacing and is a textstring made up of one or\n");
 			GMT_message (GMT, "\t     more substrings of the form [a|f|g][<stride>[+-<phase>][<unit>]], where the (optional) a\n");
 			GMT_message (GMT, "\t     indicates annotation and major tick interval, f minor tick interval, and g grid interval.\n");
@@ -223,7 +223,7 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 			GMT_message (GMT, "\t   (1) Frame settings are modified via an optional single invocation of\n");
 			GMT_message (GMT, "\t     -B[<axes>][+g<fill>][+o<lon>/<lat>][+t<title>]\n");
 			GMT_message (GMT, "\t   (2) Axes parameters are specified via one or more invocations of\n");
-			GMT_message (GMT, "\t       -B[p|s][x|y|z]<intervals>[+l<label>][+p<prefix>][+s<suffix>]\n");
+			GMT_message (GMT, "\t       -B[p|s][x|y|z]<intervals>[+l<label>][+p<prefix>][+u<unit>]\n");
 			GMT_message (GMT, "\t   <intervals> is composed of concatenated [<type>]<stride>[<unit>][l|p] sub-strings\n");
 			GMT_message (GMT, "\t   See psbasemap man page for more details and examples of all settings.\n");
 			break;
@@ -7106,11 +7106,11 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 	 * Axis settings:
 	 * 	-B[p|s][x|y|z]<info>
 	 *   where <info> is of the format
-	 * 	<intervals>[+l<label>][+p<prefix>][+s<suffix>]
+	 * 	<intervals>[+l<label>][+p<prefix>][+u<unit>]
 	 *   and each <intervals> is a concatenation of one or more [t][value][<unit>]
 	 *    		+l<label> as labels for the respective axes [none].
-	 *    		+s<suffix> as as annotation suffix unit [none].
-	 *    		+p<suffix> as as annotation prefix unit [none].
+	 *    		+u<unit> as as annotation suffix unit [none].
+	 *    		+p<prefix> as as annotation prefix unit [none].
 	 *
 	 * The [t] and [<unit] are optional ([ and ] are NOT part of the string and are
 	 * just used to clarify). [t] can be any of [a](annotation int), [f](frame int),
@@ -7217,9 +7217,9 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 							GMT_enforce_rgb_triplets (GMT, GMT->current.map.frame.axis[no].prefix, GMT_TEXT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 						}
 						break;
-					case 's':	/* Annotation suffix */
+					case 'u':	/* Annotation unit */
 						if (p[1] == 0) {
-							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -B option: No annotation suffix given after +s\n");
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -B option: No annotation suffix given after +u\n");
 							error++;
 						}
 						else {
@@ -7262,7 +7262,7 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 		/* Note that item[].type will say 'a', 'A', 'i' or 'I' in these cases, so we know when minor ticks were not set */
 	}
 
-	/* Check if we asked for linear projections of geographic coordinates and did not specify a unit (suffix) - if so set degree symbol as suffix */
+	/* Check if we asked for linear projections of geographic coordinates and did not specify a unit (suffix) - if so set degree symbol as unit */
 	if (GMT->current.proj.projection == GMT_LINEAR && GMT->current.setting.map_degree_symbol != gmt_none) {
 		for (no = 0; no < 2; no++) {
 			if (GMT->current.io.col_type[GMT_IN][no] & GMT_IS_GEO && GMT->current.map.frame.axis[no].unit[0] == 0) {
