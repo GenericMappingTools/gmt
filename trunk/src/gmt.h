@@ -58,6 +58,7 @@ extern "C" {
 /* Include GMT constants, resources, and module prototypes */
 
 #include "gmt_define.h"
+#include "gmt_option.h"
 #include "gmt_resources.h"
 #include "gmt_module.h"
 

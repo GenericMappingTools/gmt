@@ -110,8 +110,8 @@ if (DO_EXAMPLES OR DO_TESTS AND NOT GSHHG_FOUND)
 endif (DO_EXAMPLES OR DO_TESTS AND NOT GSHHG_FOUND)
 
 # These three lines are temporarily here for the beta release
-set (GMT_PROGS2_SRCS gmtaverage.c testapi.c)
-set (GMT_DEMOS2_SRCS gmtmercmap.c testgmt5.c testgmtio.c testgrdio.c testio.c)
+set (GMT_PROGS2_SRCS testapi.c)
+set (GMT_DEMOS2_SRCS gmtaverage.c gmtmercmap.c testgmt5.c testgmtio.c testgrdio.c testio.c)
 
 # source files
 set (GMT_DEMOS_SRCS gmt.c ${GMT_DEMOS2_SRCS})
@@ -159,7 +159,7 @@ set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	gmt_customio.h gmt_dcw.h gmt_defaults.h gmt_error.h gmt_gdalread.h gmt_grd.h
 	gmt_grdio.h gmt_hash.h gmt_init.h gmt_internals.h gmt_io.h gmt_macros.h
 	gmt_map.h gmt_media_name.h gmt_media_size.h gmt_mgg_header2.h gmt_module.h gmt_module_private.h
-	gmt_nan.h gmt_notposix.h gmt_pennames.h gmt_plot.h gmt_project.h
+	gmt_nan.h gmt_notposix.h gmt_option.h gmt_pennames.h gmt_plot.h gmt_project.h
 	gmt_prototypes.h gmt_ps.h gmt_shore.h gmt_stat.h gmt_support.h gmt_symbol.h
 	gmt_synopsis.h gmt_texture.h gmt_time.h gmt_types.h gmt_unique.h
 	gmt_vector.h gmt_version.h gshhg_version.h pslib.h s_rint.h triangle.h
@@ -489,7 +489,7 @@ if (WIN32 AND _debug_build)
 endif (WIN32 AND _debug_build)
 
 # Install public headers
-install (FILES gmt.h gmt_define.h gmt_resources.h gmt_module.h declspec.h
+install (FILES gmt.h gmt_define.h gmt_option.h gmt_resources.h gmt_module.h declspec.h
 	DESTINATION ${GMT_INCDIR}
 	COMPONENT Runtime)
 

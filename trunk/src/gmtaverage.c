@@ -16,10 +16,11 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * API functions to support the gmtaverage application.
+ * Program to demonstrate use of GMT API to call one of the three spatial
+ * data averageing modules GMT_blockmean|median|mode.
  *
  * Author:	Paul Wessel
- * Date:	1-JAN-2011
+ * Date:	1-JAN-2013
  * Version:	5 API
  *
  * Brief synopsis: reads records of x, y, data, [weight] and writes out one (or no)
@@ -28,43 +29,42 @@
  * number of points, datasum, weightsum, or a specified quantile q.
  */
 
-#define THIS_MODULE GMT_ID_GMTAVERAGE /* I am gmtaverage */
+#include "gmt.h"	/* Must include this to use GMT API */
+#include <string.h>
 
-#include "gmt_dev.h"
+#define GMT_PROG_OPTIONS "-:>RVabfghior" "H"	/* The H is for possible compatibility with GMT4 syntax */
 
-#define GMT_PROG_OPTIONS "-:>RVabfghior" GMT_OPT("H")
-
-struct GMTAVERAGE_CTRL {	/* All control options for this program (except common args) */
+struct PROG_CTRL {	/* All local control options for this program (except common args) */
 	struct E {	/* -E[b] */
-		bool active;
+		unsigned int active;
 		unsigned int mode;
 	} E;
 	struct T {	/* -T<quantile> */
-		bool active;
-		bool median;
+		unsigned int active;
+		unsigned int median;
 		double quantile;
 	} T;
 };
 
-void * New_gmtaverage_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
-	struct GMTAVERAGE_CTRL *C;
+void * New_Prog_Ctrl () {	/* Allocate and initialize a new control structure */
+	struct PROG_CTRL *C;
 	
-	C = GMT_memory (GMT, NULL, 1, struct  GMTAVERAGE_CTRL);
+	C = calloc (1, sizeof (struct PROG_CTRL));
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
 	return (C);
 }
 
-void Free_gmtaverage_Ctrl (struct GMT_CTRL *GMT, struct  GMTAVERAGE_CTRL *C) {	/* Deallocate control structure */
-	GMT_free (GMT, C);	
+void Free_Prog_Ctrl (struct PROG_CTRL *C) {	/* Deallocate control structure */
+	free ((void *)C);	
 }
 
-int GMT_gmtaverage_usage (struct GMTAPI_CTRL *API, int level)
+int Gmtaverage_Usage (void *API, int level)
 {
-	gmt_module_show_name_and_purpose (API, THIS_MODULE);
+	GMT_Message (API, GMT_TIME_NONE, "gmtaverage - Block average (x,y,z) data tables by mean, median, or mode estimation\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtaverage [<table>] %s -Te|m|n|o|s|w|<q>\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-C] [-E[b]] [-Q] [%s] [-W[i][o]]\n\t[%s] [%s] [%s]\n\t[%s]\n\t[%s]\n\t[%s] [%s] [%s]\n\n",
-		GMT_Rgeo_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT);
+		GMT_R2_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -99,7 +99,7 @@ int GMT_gmtaverage_usage (struct GMTAPI_CTRL *API, int level)
 	return (EXIT_FAILURE);
 }
 
-int GMT_gmtaverage_parse (struct GMT_CTRL *GMT, struct GMTAVERAGE_CTRL *Ctrl, struct GMT_OPTION *options)
+int Gmtaverage_Parse (void *API, struct PROG_CTRL *Ctrl, struct GMT_OPTION *options)
 {
 	/* This parses the options provided to gmtaverage and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -111,6 +111,7 @@ int GMT_gmtaverage_parse (struct GMT_CTRL *GMT, struct GMTAVERAGE_CTRL *Ctrl, st
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
+		if (strchr (GMT_PROG_OPTIONS, opt->option)) continue;	/* Common options already processed */
 		switch (opt->option) {
 
 			/* Skip options that will be handled by the GMT_block* functions later */
@@ -126,14 +127,14 @@ int GMT_gmtaverage_parse (struct GMT_CTRL *GMT, struct GMTAVERAGE_CTRL *Ctrl, st
 			/* Processes gmtaverage-specific parameters */
 
 			case 'E':	/* Report extended statistics, where blockmedian has an extra modifier */
-				Ctrl->E.active = true;
+				Ctrl->E.active = 1;
 				if (opt->arg[0] == 'b') Ctrl->E.mode = 1;
 				break;	
 			case 'T':	/* Select a particular output value operator */
-				Ctrl->T.active = true;		
+				Ctrl->T.active = 1;		
 				switch (opt->arg[0]) {
 					case 'e':	/* Report medians [blockmedian] */
-						Ctrl->T.median = true;
+						Ctrl->T.median = 1;
 						break;
 					case 'm':	/* Report means [blockmean] */
 					case 'n':	/* Report number of points [blockmean] */
@@ -145,60 +146,58 @@ int GMT_gmtaverage_parse (struct GMT_CTRL *GMT, struct GMTAVERAGE_CTRL *Ctrl, st
 					case '1':
 					case '.':
 						Ctrl->T.quantile = atof (opt->arg);
-						Ctrl->T.median = true;
+						Ctrl->T.median = 1;
 						break;
 					default:
-						n_errors += GMT_check_condition (GMT, true, "Syntax error: Bad modifier in -T option\n");
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Bad modifier in -T option\n");
 						n_errors++;
 						break;
 				}
 				break;
 
 			default:	/* Report bad options */
-				n_errors += GMT_default_error (GMT, opt->option);
+				GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Unrecognized argument %c%s\n", opt->option, opt->arg);
+				n_errors++;
 				break;
 		}
 	}
 	
-	n_errors += GMT_check_condition (GMT, !Ctrl->T.active, "Syntax error: Must specify -T option\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->T.quantile < 0.0 || Ctrl->T.quantile >= 1.0,
-			"Syntax error: 0 < q < 1 for quantile in -T\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->E.mode && !Ctrl->T.median, "Syntax error: -Eb requires -Te|<q>\n");
+	if (Ctrl->T.active) n_errors += GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: Must specify -T option\n");
+	if (Ctrl->T.quantile < 0.0 || Ctrl->T.quantile >= 1.0) n_errors += GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: 0 < q < 1 for quantile in -T\n");
+	if (Ctrl->E.mode && !Ctrl->T.median) n_errors += GMT_Report (API, GMT_MSG_NORMAL, "Syntax error: -Eb requires -Te|<q>\n");
 
-	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
+	return (n_errors);
 }
 
 /* Must free allocated memory before returning */
-#define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_gmtaverage_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Free_Options {if (GMT_Destroy_Options (API, &options) != GMT_NOERROR) exit (EXIT_FAILURE);}
+#define Bailout(code) {Free_Options; exit (code);}
+#define Exit(code) {Free_Prog_Ctrl (Ctrl); Bailout (code);}
 
-int GMT_gmtaverage (void *V_API, int mode, void *args)
+int main (int argc, char *argv[])
 {
 	int error = 0, mod_ID;
 
 	struct GMT_OPTION *options = NULL, *t_ptr = NULL;
-	struct GMTAVERAGE_CTRL *Ctrl = NULL;
-	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
-	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
-
-	/*----------------------- Standard module initialization and parsing ----------------------*/
-
-	if (API == NULL) return (GMT_NOT_A_SESSION);
-	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
-
-	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_gmtaverage_usage (API, GMT_USAGE));	/* Return the usage message */
-	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_gmtaverage_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
-
-	/* Parse the command-line arguments */
-
-	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
-	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
-	Ctrl = New_gmtaverage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
-	if ((error = GMT_gmtaverage_parse (GMT, Ctrl, options))) Return (error);
+	struct PROG_CTRL *Ctrl = NULL;
+	void *API = NULL;
 
 	/*---------------------------- This is the gmtaverage main code ----------------------------*/
 
-	/* Determine which value to report and use that to select correct GMT module */
+        /* Initializing new GMT session */
+	if ((API = GMT_Create_Session (argv[0], 2U, 0U, NULL)) == NULL) Bailout (EXIT_FAILURE);
+        /* Convert argc,argv to linked option list */
+	options = GMT_Create_Options (API, argc-1, (argv+1));
+        /* Handle special cases like usage and synopsis */
+	if (!options || options->option == GMT_OPT_USAGE) Bailout (Gmtaverage_Usage (API, GMT_USAGE));	/* Exit the usage message */
+	if (options->option == GMT_OPT_SYNOPSIS) Bailout (Gmtaverage_Usage (API, GMT_SYNOPSIS));	/* Exit the synopsis */
+	/* Parse the common command-line arguments */
+	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Exit (EXIT_FAILURE);	/* Parse the common options */
+	/* Parse the local command-line arguments */
+	Ctrl = New_Prog_Ctrl ();							/* Allocate gmtaverage control structure */
+	if ((error = Gmtaverage_Parse (API, Ctrl, options))) Exit (EXIT_FAILURE);	/* Parse local option arguments */
+
+	/* Determine which value to report and use that to select the correct GMT module */
 	
 	t_ptr = GMT_Find_Option (API, 'T', options);	/* Find the required -T option */
 	
@@ -220,6 +219,14 @@ int GMT_gmtaverage (void *V_API, int mode, void *args)
 			break;
 	}
 	
-	error = GMT_Call_Module (API, mod_ID, mode, options);	/* If errors then we return that next */
-	Return (error);
+	/* Do the main work via the chosen module */
+	if ((error = GMT_Call_Module (API, mod_ID, -1, options))) Exit (error); 	/* If errors then we return that next */
+
+ 	/* Free option list */
+	if (GMT_Destroy_Options (API, &options)) Exit (EXIT_FAILURE);
+
+ 	/* Done with the GMT API */
+	if (GMT_Destroy_Session (API) != GMT_NOERROR) Exit (EXIT_FAILURE);
+
+	Exit (EXIT_SUCCESS);
 }

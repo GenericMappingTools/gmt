@@ -5236,7 +5236,7 @@ int GMT_Call_Module_ (int *module_id, int *mode, void *args)
 /* Parsing Extension: to present,examine GMT Common Option current settings and GMT Default settings */
 
 int GMT_Get_Common (void *V_API, unsigned int option, double par[])
-{	/* Inquires if specified GMT option has been set and obtains current values for some of them.
+{	/* Inquires if specified GMT option has been set and obtains current values for some of them, if par is not NULL.
 	 * Returns -1 if the option has not been specified.  Otherwise, returns the number of parameters
 	 * it passed back via the par[] array.  Only some options passes back parameters; these are
 	 * -R, -I, -X, -Y, -t, while 
@@ -5250,7 +5250,7 @@ int GMT_Get_Common (void *V_API, unsigned int option, double par[])
 		case 'I':
 			if (GMT->common.API_I.active) {
 				ret = 2;
-				GMT_memcpy (par, GMT->common.API_I.inc, 2, double);
+				if (par) GMT_memcpy (par, GMT->common.API_I.inc, 2, double);
 			}
 			break;
 		case 'J':	if (GMT->common.J.active) ret = 0; break;
@@ -5260,7 +5260,7 @@ int GMT_Get_Common (void *V_API, unsigned int option, double par[])
 		case 'R':
 			if (GMT->common.R.active) {
 				ret = 4;
-				GMT_memcpy (par, GMT->common.R.wesn, 4, double);
+				if (par) GMT_memcpy (par, GMT->common.R.wesn, 4, double);
 			}
 			break;
 		case 'U':	if (GMT->common.U.active) ret = 0; break;
@@ -5268,13 +5268,13 @@ int GMT_Get_Common (void *V_API, unsigned int option, double par[])
 		case 'X':
 			if (GMT->common.X.active) {
 				ret = 1;
-				par[0] = GMT->common.X.off;
+				if (par) par[0] = GMT->common.X.off;
 			}
 			break;
 		case 'Y':
 			if (GMT->common.Y.active) {
 				ret = 1;
-				par[0] = GMT->common.Y.off;
+				if (par) par[0] = GMT->common.Y.off;
 			}
 			break;
 		case 'a':	if (GMT->common.a.active) ret = GMT->common.a.geometry; break;
@@ -5292,7 +5292,7 @@ int GMT_Get_Common (void *V_API, unsigned int option, double par[])
 		case 't':
 			if (GMT->common.t.active) {
 				ret = 1;
-				par[0] = GMT->common.t.value;
+				if (par) par[0] = GMT->common.t.value;
 			}
 			break;
 		case ':':	if (GMT->common.colon.toggle[GMT_IN]) ret = GMT_IN; else if (GMT->common.colon.toggle[GMT_OUT]) ret = GMT_OUT; break;
