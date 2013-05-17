@@ -272,12 +272,12 @@ int GMT_grdproject (void *V_API, int mode, void *args)
 			/* Obtain a first crude estimation of the good -R */
 			x_c = (wesn[XLO] + wesn[XHI]) / 2.0; 		/* mid point of projected coords */
 			y_c = (wesn[YLO] + wesn[YHI]) / 2.0; 
-			if (GMT->current.proj.projection == GMT_UTM && !GMT->current.proj.north_pole && y_c > 0) y_c *= -1;
+			if (GMT->current.proj.projection == GMT_UTM && GMT->current.proj.utm_hemisphere == -1 && y_c > 0) y_c *= -1;
 			if (y_c > 0)
 				GMT_parse_common_options (GMT, "R", 'R', "-180/180/0/80");
 			else
 				GMT_parse_common_options (GMT, "R", 'R', "-180/180/-80/0");
-			if (GMT->current.proj.projection == GMT_UTM && !GMT->current.proj.north_pole && y_c < 0) y_c *= -1;	/* Undo the *-1 (only for the UTM case) */ 
+			if (GMT->current.proj.projection == GMT_UTM && GMT->current.proj.utm_hemisphere == -1 && y_c < 0) y_c *= -1;	/* Undo the *-1 (only for the UTM case) */ 
 			if (shift_xy) {
 				x_c -= Ctrl->C.easting;
 				y_c -= Ctrl->C.northing;
@@ -325,6 +325,7 @@ int GMT_grdproject (void *V_API, int mode, void *args)
 			if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "Second opt_R\t %s\n", opt_R);
 			GMT->common.R.active = false;
 			GMT_parse_common_options (GMT, "R", 'R', opt_R);
+			GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Load up our best wesn setting - it will be used below if -I */
 		}
 		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G) != GMT_OK) {
 			Return (API->error);

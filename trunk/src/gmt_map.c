@@ -6328,6 +6328,12 @@ uint64_t GMT_compact_line (struct GMT_CTRL *GMT, double *x, double *y, uint64_t 
 int GMT_project_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double *inc, unsigned int nx, unsigned int ny, unsigned int dpi, unsigned int offset)
 {
 	if (inc[GMT_X] > 0.0 && inc[GMT_Y] > 0.0) {
+		if (GMT->current.io.inc_code[GMT_X] || GMT->current.io.inc_code[GMT_Y]) {	/* Must convert from distance units to degrees */
+			GMT_memcpy (header->inc, inc, 2, double);	/* Set these temporarily as the grids incs */
+			GMT_RI_prepare (GMT, header);			/* Converts the proper xinc/yinc units */
+			GMT_memcpy (inc, header->inc, 2, double);	/* Restore the inc array for use below */
+			GMT->current.io.inc_code[GMT_X] = GMT->current.io.inc_code[GMT_Y] = 0;
+		}
 		header->nx = GMT_get_n (GMT, header->wesn[XLO], header->wesn[XHI], inc[GMT_X], offset);
 		header->ny = GMT_get_n (GMT, header->wesn[YLO], header->wesn[YHI], inc[GMT_Y], offset);
 		header->inc[GMT_X] = GMT_get_inc (GMT, header->wesn[XLO], header->wesn[XHI], header->nx, offset);

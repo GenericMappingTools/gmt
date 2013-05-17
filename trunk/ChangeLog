@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-05-17	pwessel
+	* gmt_map.c:		GMT_grdproject_init did not handle increments that had been
+				specified as units, e.g., -D30e.
+
 2013-05-09	pwessel
 	* share/x2sys:		Added dat.def for mgd77 ASCII DAT format.
 
