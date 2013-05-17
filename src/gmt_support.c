@@ -2688,7 +2688,7 @@ struct GMT_PALETTE * GMT_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P
 	struct GMT_LUT *lut = NULL;
 	struct GMT_PALETTE *P = NULL;
 
-	GMT_check_condition (GMT, !Pin->is_continuous && continuous, "Warning: Making a continuous cpt from a discrete cpt may give unexpected results!\n");
+	i = GMT_check_condition (GMT, !Pin->is_continuous && continuous, "Warning: Making a continuous cpt from a discrete cpt may give unexpected results!\n");
 
 	if (nz_in < 0) {	/* Called from grd2cpt which wants equal area colors */
 		nz = abs (nz_in);
@@ -2700,7 +2700,7 @@ struct GMT_PALETTE * GMT_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P
 	P = GMT_create_palette (GMT, nz - 1);
 	lut = GMT_memory (GMT, NULL, Pin->n_colors, struct GMT_LUT);
 
-	GMT_check_condition (GMT, no_inter && P->n_colors > Pin->n_colors, "Warning: Number of picked colors exceeds colors in input cpt!\n");
+	i = GMT_check_condition (GMT, no_inter && P->n_colors > Pin->n_colors, "Warning: Number of picked colors exceeds colors in input cpt!\n");
 
 	/* First normalize old cpt file so z-range is 0-1 */
 

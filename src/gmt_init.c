@@ -9050,7 +9050,7 @@ int GMT_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 	 * The API will also consider -I for grid increments.
 	 */
 
-	int error = 0;
+	int i, error = 0;
 
 	if (!list || !strchr (list, option)) return (0);	/* Not a common option we accept */
 
@@ -9094,17 +9094,17 @@ int GMT_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			break;
 
 		case 'K':
-			GMT_more_than_once (GMT, GMT->common.K.active);
+			i = GMT_more_than_once (GMT, GMT->common.K.active);
 			GMT->common.K.active = true;
 			break;
 
 		case 'O':
-			GMT_more_than_once (GMT, GMT->common.O.active);
+			i = GMT_more_than_once (GMT, GMT->common.O.active);
 			GMT->common.O.active = true;
 			break;
 
 		case 'P':
-			GMT_more_than_once (GMT, GMT->common.P.active);
+			i = GMT_more_than_once (GMT, GMT->common.P.active);
 			GMT->common.P.active = true;
 			break;
 
@@ -9131,7 +9131,7 @@ int GMT_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			break;
 
 		case 'V':
-			GMT_more_than_once (GMT, GMT->common.V.active);
+			i = GMT_more_than_once (GMT, GMT->common.V.active);
 			GMT->common.V.active = true;
 			if (item && item[0]) {	/* Specified a verbosity level */
 				if (gmt_parse_V_option (GMT, item[0])) {
