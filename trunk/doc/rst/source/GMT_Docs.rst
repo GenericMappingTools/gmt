@@ -2260,18 +2260,17 @@ The first optional flag following **-B** selects **p** (rimary) [Default] or
 **s** (econdary) axes information (which is mostly used for time axes
 annotations; see examples below). The next optional flags specifies which
 axes you are providing information for.  This can be an individual axis
- (e.g., just **x**) or a combination (e.g., **xz**).  If none are given then
+(e.g., just **x**) or a combination (e.g., **xz**).  If none are given then
 we default to **xy**.  Thus, if you wish to give different annotation intervals
 or labels for the various axes then you must repeat the **B** option for
 each axis.  To add a label to an axis, just append **+l**\ *label*.  If the
 axis annotation should have a leading text prefix (e.g., dollar sign for those
 plots of your net worth) you can append **+p**\ *prefix*.  For geographic maps
 the addition of degree symbols, etc. is automatic (and controlled by the GMT
-default setting **FORMAT\_GEO\_MAP**).  However, for other plots you can add
+default setting **FORMAT_GEO_MAP**).  However, for other plots you can add
 specific units by adding **+u**\ *unit*.  If any of these text strings contain
 spaces or special UNIX characters you will need to enclose them in quotes.
-The *intervals* specification is a concatenated string made up of substrings
-of the form
+The *intervals* specification is a concatenated string made up of substrings of the form
 
 [**t**]\ *stride*\ [*phase*][**u**].
 
@@ -2296,9 +2295,8 @@ negative number.
 [tbl:inttype]
 
 Note that the appearance of certain time annotations (month-, week-, and
-day-names) may be affected by the **TIME\_LANGUAGE**,
-**FORMAT\_TIME\_PRIMARY\_MAP**, and **FORMAT\_TIME\_SECONDARY\_MAP**
-settings.
+day-names) may be affected by the **TIME_LANGUAGE**,
+**FORMAT_TIME_PRIMARY_MAP**, and **FORMAT_TIME_SECONDARY_MAP** settings.
 
 For automated plots the region may not always be the same and thus it
 can be difficult to determine the appropriate *stride* in advance. Here
@@ -5141,7 +5139,12 @@ into latitude bands but these are not needed to specify the projection
 for most cases. See Figure [fig:GMT\ :sub:`u`\ tm\ :sub:`z`\ ones] for
 all zone designations.
 
-[htb] |image| [fig:GMT:sub:`u`\ tm\ :sub:`z`\ ones]
+.. figure:: _images/GMT_utm_zones.png
+   :height: 995 px
+   :width: 1903 px
+   :scale: 40 %
+
+   Figure : Universal Transverse Mercator zone layout.
 
 *GMT* implements both the transverse Mercator and the UTM projection.
 When selecting UTM you must specify:
@@ -7213,7 +7216,11 @@ The following recipe is used when designing a new symbol.
    description of symbol design). In this Section we will create two new
    symbols: a volcano and a bulls eye.
 
-   [ht] |image|
+.. figure:: _images/GMT_volcano.png
+   :height: 562 px
+   :width: 1122 px
+   :align: center
+   :scale: 40 %
 
 #. After designing the symbol we will encode it using a simple set of
    rules. In our case we describe our volcano and bulls eye using these
@@ -9663,6 +9670,7 @@ GMT graphics in **PowerPoint**
 .. figure:: _images/rendering.png
    :height: 540 px
    :width: 720 px
+   :align: center
    :scale: 70 %
 
    Figure C.1: Examples of rendered images in a PowerPoint presentation 
@@ -9671,7 +9679,8 @@ GMT graphics in **PowerPoint**
 .. figure:: _images/formatpicture.png
    :height: 545 px
    :width: 516 px
-   :scale: 90 %
+   :align: center
+   :scale: 80 %
 
    Figure C.2: **PowerPoint**'s "Format Picture" dialogue to set scale and rotation. 
 
@@ -9798,11 +9807,14 @@ The left side of each image was created using **-Gp**, the right side
 shows the inverted version using **-GP**. These patterns are reproduced
 below at 300 dpi using the default black and white shades.
 
-|image|
+.. figure:: _images/GMT_App_E.png
+   :height: 1516 px
+   :width: 1156 px
+   :align: center
+   :scale: 40 %
 
 F. Chart of octal codes for characters
 ======================================
-
 
 The characters and their octal codes in the Standard and ISOLatin1
 encoded fonts are shown in
@@ -9822,11 +9834,16 @@ font. The euro currency symbol is \\240 in the Symbol
 font and will print if your printer supports it (older printer's
 firmware will not know about the euro).
 
-[h] |image|\ |image| [fig:GMT:sub:`A`\ pp\ :sub:`Fs`\ ymbol]
+.. figure:: _images/GMT_App_F_symbol.png
+   :height: 1130 px
+   :width: 626 px
+   :align: center
+   :scale: 50 %
+
+   Figure F.1: Octal codes and corresponding symbols for StandardEncoding (left) and ISOLatin1Encoding (right) fonts.
 
 G. *PostScript* fonts used by GMT
 =================================
-
 
 *GMT* uses the standard 35 fonts that come with most
 *PostScript* laserwriters. If your printer does not support some of
@@ -9838,8 +9855,7 @@ charts in Appendix [app:F]. When specifying fonts in *GMT*, you can
 either give the entire font name *or* just the font number listed in
 this table. To change the fonts used in plotting basemap frames, see the
 man page for `gmt.conf <gmt.conf.html>`_. For direct
-plotting of text-strings, see the man page for
-`pstext <pstext.html>`_.
+plotting of text-strings, see the man page for `pstext <pstext.html>`_.
 
 Using non-default fonts with GMT
 --------------------------------
@@ -9984,7 +10000,15 @@ hash mark (``#``) and follow with the 2 hexadecimal characters for red,
 green, and blue. For example, you can use ``#79ff00`` for chartreuse,
 ``#D2691E`` for chocolate.
 
-|image| [fig:RGBchart]
+.. figure:: _images/GMT_RGBchart_a4.png
+   :height: 2246 px
+   :width: 1566 px
+   :align: center
+   :scale: 30 %
+
+   Figure I.2: The 555 unique color names that can be used in GMT. Lower, upper, or mixed cases, as well as
+   the british spelling of "grey" are allowed. A4, Letter, and Tabloid sized versions of this RGB chart can be
+   found in the GMT documentation directory.
 
 HSV color system
 ----------------
@@ -10118,6 +10142,7 @@ Figure I.1
 .. figure:: _images/hsv-cone.png
    :height: 508 px
    :width: 750 px
+   :align: center
    :scale: 50 %
 
    Figure I.1: The HSV color space
@@ -10152,14 +10177,22 @@ Appendix [app:M]) interpolated in RGB and the palette interpolated in
 HSV. The bottom row of the Figure demonstrates how things can go
 terribly wrong when you do the interpolation in the other system.
 
-[h] |image| [fig:GMT:sub:`c`\ olor\ :sub:`i`\ nterpolate]
+.. figure:: _images/GMT_color_interpolate.png
+   :height: 406 px
+   :width: 1366 px
+   :align: center
+   :scale: 40 %
+
+   Figure I.4: When interpolating colors, the color system matters. The polar palette on the left needs to
+   be interpolated in RGB, otherwise hue will change between blue (240) and white (0). The rainbow
+   palette should be interpolated in HSV, since only hue should change between magenta (300) and red (0).
+   Diamonds indicate which colors are defined in the palettes; they are fixed, the rest is interpolated.
 
 Artificial illumination
 -----------------------
 
 *GMT* uses the HSV system to achieve artificial illumination of colored
-images (e.g., **-I** option in
-`grdimage <grdimage.html>`_) by changing the saturation
+images (e.g., **-I** option in `grdimage <grdimage.html>`_) by changing the saturation
 *s* and value *v* coordinates of the color. When the intensity is zero
 (flat illumination), the data are colored according to the CPT file. If
 the intensity is non-zero, the color is either lightened or darkened
@@ -10678,7 +10711,13 @@ some (like **globe**) are a mix of the two. The bottom half the color
 bar are built by using `makecpt <makecpt.html>`_
 **-T**-1/1/0.25, thus splitting the color scale into 8 discrete colors.
 
-[h] |image| [fig:GMT:sub:`A`\ pp\ :sub:`M1`]
+.. figure:: _images/GMT_App_M_1.png
+   :height: 1382 px
+   :width: 1222 px
+   :align: center
+   :scale: 50 %
+
+   Figure M.1: The standard 22 CPT files supported by GMT
 
 Labeled and non-equidistant color legends
 -----------------------------------------
@@ -10699,7 +10738,11 @@ are centered. The example below also shows how to annotate ranges using
 **-Li** (in which case no name labels should appear in the CPT file),
 and how to switch the color bar around (by using a negative length).
 
-[h] |image| [fig:GMT:sub:`A`\ pp\ :sub:`M2`]
+.. figure:: _images/GMT_App_M_2.png
+   :height: 1395 px
+   :width: 1805 px
+   :align: center
+   :scale: 30 %
 
 M. Custom Plot Symbols
 ======================
@@ -11410,14 +11453,18 @@ temporary files that the script might create in the same directory.
 
 The example below shows how *isolation mode* works.
 
-[h] |image| [fig:GMT:sub:`A`\ pp\ :sub:`P2`]
+.. figure:: _images/GMT_App_P_2.png
+   :height: 766 px
+   :width: 1421 px
+   :align: center
+   :scale: 40 %
+
+   Figure P.1: Example created in isolation mode
 
 The files ``gmt.conf`` and ``.gmtcommands`` are automatically created in the temporary directory
-``$GMT_TMPDIR``. The
-script is also adjusted such that the temporary grid file ``lat.nc`` and colormap
+``$GMT_TMPDIR``. The script is also adjusted such that the temporary grid file ``lat.nc`` and colormap
 ``lat.cpt`` are created in that directory as well. To make things even more easy,
-*GMT* now provides a set of handy shell functions in
-`gmt_shell_functions.sh <gmt_shell_functions.html>`_:
+*GMT* now provides a set of handy shell functions in `gmt_shell_functions.sh <gmt_shell_functions.html>`_:
 simply include that file in the script and the creation and the removal
 of the temporary directory is reduced to a single command.
 
@@ -11571,11 +11618,11 @@ The comment header line will include a version identifier providing for
 possible different versions in future. It is indicated by the **@V**
 sequence.
 
-+------------+----------------+---------------------------------------------------------------------+
-| **Code**   | **Argument**   | **Description**                                                     |
-+============+================+=====================================================================+
-| V          | GMT1.0         | Data in this file is stored using v1.0 of the OGR/GMT data format   |
-+------------+----------------+---------------------------------------------------------------------+
++-----------+---------------+--------------------------------------------------------------------+
+| **Code**  | **Argument**  | **Description**                                                    |
++===========+===============+====================================================================+
+| V         | GMT1.0        | Data in this file is stored using v1.0 of the OGR/GMT data format  |
++-----------+---------------+--------------------------------------------------------------------+
 
 [tbl:Q1]
 
@@ -11597,44 +11644,43 @@ Table [tbl:geometries].
 
 [h]
 
-+------------+-------------------+-----------------------------------------------------------------------------------------+
-| **Code**   | **Geometry**      | **Description**                                                                         |
-+============+===================+=========================================================================================+
-| G          | POINT             | File with point features                                                                |
-+------------+-------------------+-----------------------------------------------------------------------------------------+
-|            |                   | (Each point will have it's own attribute/header line preceding the point coordinates)   |
-+------------+-------------------+-----------------------------------------------------------------------------------------+
-| G          | MULTIPOINT        | File with a single multipoint feature                                                   |
-+------------+-------------------+-----------------------------------------------------------------------------------------+
-|            |                   | (All the point features are a single multipoint, with the same attribute/header         |
-+------------+-------------------+-----------------------------------------------------------------------------------------+
-|            |                   | information)                                                                            |
-+------------+-------------------+-----------------------------------------------------------------------------------------+
-| G          | LINESTRING        | File with features comprising multiple single lines                                     |
-+------------+-------------------+-----------------------------------------------------------------------------------------+
-|            |                   | (Effectively the current *GMT* multiline file, each line feature will have it's own     |
-+------------+-------------------+-----------------------------------------------------------------------------------------+
-|            |                   | attribute and header data)                                                              |
-+------------+-------------------+-----------------------------------------------------------------------------------------+
-| G          | MULTILINESTRING   | File with features comprising a multiline                                               |
-+------------+-------------------+-----------------------------------------------------------------------------------------+
-|            |                   | (All the line features in the file are a single multiline feature, only one attribute   |
-+------------+-------------------+-----------------------------------------------------------------------------------------+
-|            |                   | and header which applies to all the lines)                                              |
-+------------+-------------------+-----------------------------------------------------------------------------------------+
-| G          | POLYGON           | File with one or more polygons                                                          |
-+------------+-------------------+-----------------------------------------------------------------------------------------+
-|            |                   | (Similar to a line file, except the features are closed polygons)                       |
-+------------+-------------------+-----------------------------------------------------------------------------------------+
-| G          | MULTIPOLYGON      | File with a single multipolygon                                                         |
-+------------+-------------------+-----------------------------------------------------------------------------------------+
-|            |                   | (Similar to a *GMT* multiline file, except the feature is a closed multipolygon)        |
-+------------+-------------------+-----------------------------------------------------------------------------------------+
++----------+-----------------+---------------------------------------------------------------------------------------+
+| **Code** | **Geometry**    | **Description**                                                                       |
++==========+=================+=======================================================================================+
+| G        | POINT           | File with point features                                                              |
++----------+-----------------+---------------------------------------------------------------------------------------+
+|          |                 | (Each point will have it's own attribute/header line preceding the point coordinates) |
++----------+-----------------+---------------------------------------------------------------------------------------+
+| G        | MULTIPOINT      | File with a single multipoint feature                                                 |
++----------+-----------------+---------------------------------------------------------------------------------------+
+|          |                 | (All the point features are a single multipoint, with the same attribute/header       |
++----------+-----------------+---------------------------------------------------------------------------------------+
+|          |                 | information)                                                                          |
++----------+-----------------+---------------------------------------------------------------------------------------+
+| G        | LINESTRING      | File with features comprising multiple single lines                                   |
++----------+-----------------+---------------------------------------------------------------------------------------+
+|          |                 | (Effectively the current *GMT* multiline file, each line feature will have it's own   |
++----------+-----------------+---------------------------------------------------------------------------------------+
+|          |                 | attribute and header data)                                                            |
++----------+-----------------+---------------------------------------------------------------------------------------+
+| G        | MULTILINESTRING | File with features comprising a multiline                                             |
++----------+-----------------+---------------------------------------------------------------------------------------+
+|          |                 | (All the line features in the file are a single multiline feature, only one attribute |
++----------+-----------------+---------------------------------------------------------------------------------------+
+|          |                 | and header which applies to all the lines)                                            |
++----------+-----------------+---------------------------------------------------------------------------------------+
+| G        | POLYGON         | File with one or more polygons                                                        |
++----------+-----------------+---------------------------------------------------------------------------------------+
+|          |                 | (Similar to a line file, except the features are closed polygons)                     |
++----------+-----------------+---------------------------------------------------------------------------------------+
+| G        | MULTIPOLYGON    | File with a single multipolygon                                                       |
++----------+-----------------+---------------------------------------------------------------------------------------+
+|          |                 | (Similar to a *GMT* multiline file, except the feature is a closed multipolygon)      |
++----------+-----------------+---------------------------------------------------------------------------------------+
 
 [tbl:geometries]
 
-An example *GMT* polygon file header using this specification (in format
-1.0) is
+An example *GMT* polygon file header using this specification (in format 1.0) is
 
    ::
 

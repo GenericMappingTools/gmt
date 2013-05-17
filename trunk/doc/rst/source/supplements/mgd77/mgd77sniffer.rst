@@ -4,24 +4,24 @@ mgd77sniffer
 
 mgd77sniffer - Along-track quality control of MGD77 cruises
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**mgd77sniffer** *NGDC-ids* [ **-A**\ *fieldabbrev*,\ *scale*,\ *offset*
-] [ **-C**\ *maxspd* ] [
-**-D**\ **d**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **l**\ \|\ **m**\ \|\ **s**\ \|\ **v**\ [*r*\ ]
-] [ **-g**\ *fieldabbrev*,\ *imggrid*,\ *scale*,\ *mode* ] [
-**-G**\ *fieldabbrev*,\ *grid* ] [ **-H** ] [
-**-I**\ *fieldabbrev*,\ *rec1*,\ *recN* ] [ **-K** ] [
-**-L**\ *custom-limits-file* ] [ **-N** ] [
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
-**-S**\ **d**\ \|\ **s**\ \|\ **t** ] [ **-T**\ *gap* ] [
-**-V**\ [*level*\ ] ] [
-**-W**\ **c**\ \|\ **g**\ \|\ **o**\ \|\ **s**\ \|\ **t**\ \|\ **v**\ \|\ **x**
-] [ **-bo**\ [*ncols*\ ][*type*\ ] ]
-[ **-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*] ]
+**mgd77sniffer** *NGDC-ids* [ **-A**\ *fieldabbrev*,\ *scale*,\ *offset* ]
+[ **-C**\ *maxspd* ]
+[ **-D**\ **d**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **l**\ \|\ **m**\ \|\ **s**\ \|\ **v**\ [*r*] ]
+[ **-g**\ *fieldabbrev*,\ *imggrid*,\ *scale*,\ *mode* ]
+[ **-G**\ *fieldabbrev*,\ *grid* ] [ **-H** ]
+[ **-I**\ *fieldabbrev*,\ *rec1*,\ *recN* ] [ **-K** ]
+[ **-L**\ *custom-limits-file* ] [ **-N** ]
+[ **-R**\ *west*/*east*/*south*/*north*\ [**r**] ]
+[ **-S**\ **d**\ \|\ **s**\ \|\ **t** ] [ **-T**\ *gap* ]
+[ **-V**\ [*level*\ ] ]
+[ **-W**\ **c**\ \|\ **g**\ \|\ **o**\ \|\ **s**\ \|\ **t**\ \|\ **v**\ \|\ **x** ]
+[ **-bo**\ [*ncols*][*type*] ]
+[ **-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**][\ **+b**\ *BC*][\ **+t**\ *threshold*] ]
 
 |No-spaces|
 
@@ -66,7 +66,7 @@ Optional Arguments
     Set maximum ship speed in m/s, or knots with **-N** option. Ship
     speeds exceeding 10 m/s (~20 knots) are flagged as excessive by default.
 
-**-D**\ **d**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **l**\ \|\ **m**\ \|\ **s**\ \|\ **v**\ [*r*\ ]
+**-D**\ **d**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **l**\ \|\ **m**\ \|\ **s**\ \|\ **v**\ [*r*]
     Suppress default warning output and only dump cruise data row-by-row
     such as values, gradients, grid-cruise differences, E77 error
     summaries for each record, re-created MGD77 records or sniffer
@@ -84,8 +84,8 @@ Optional Arguments
     command line order.
 
     **-De** output E77 error classification format. Error output is
-    divided `into (1) <into.html>`_ a header containing information
-    globally applicable to the cruise `and (2) <and.2.html>`_ individual
+    divided into (1) a header containing information
+    globally applicable to the cruise and (2) individual
     error records summarizing all errors encountered in each cruise
     record. mgd77sniffer writes E77 directly to <ngdc\_id.e77> file
     handle. See **E77 ERROR FORMAT** below for additional details.
@@ -138,7 +138,7 @@ Optional Arguments
     constraint code, returns data at all points, (1) Img file with
     constraints coded, return data at all points, (2) Img file with
     constraints coded, return data only at constrained points and NaN
-    elsewhere, `and (3) <and.html>`_ Img file with constraints coded,
+    elsewhere, and (3) Img file with constraints coded,
     return 1 at constraints and 0 elsewhere.
 
 **-G**\ *fieldabbrev*,\ *grid*
@@ -202,13 +202,13 @@ Optional Arguments
     Example custom default file contents (see below for units):
 
     +--------------+--------+---------+------------+-----------+
-    | ## abbrev    | min    | max     | maxSlope   | maxArea   |
+    | # abbrev     | min    | max     | maxSlope   | maxArea   |
     +--------------+--------+---------+------------+-----------+
     | twt          | 0      | 15      | 1          | 0         |
     +--------------+--------+---------+------------+-----------+
     | depth        | 0      | 11000   | 500        | 5000      |
     +--------------+--------+---------+------------+-----------+
-    | mag          | -800   | 800     | -          | -         |
+    | mag          | -800   | 800     | --         | --        |
     +--------------+--------+---------+------------+-----------+
     | faa          | -300   | 300     | 100        | 2500      |
     +--------------+--------+---------+------------+-----------+
@@ -218,6 +218,7 @@ Optional Arguments
 
 **-N**
     Use nautical units.
+
 **-P**
     Flag regression statistics that are outside the specified confidence
     level. (i.e., -P5 flags coefficients m, b, rms, and r that fall
@@ -234,9 +235,11 @@ Optional Arguments
     geophysical units per km along the survey track, e.g., mGal/km.
     **-St** Calculate time gradients (dz/dt) [default]. Output is given
     in geophysical units per second along the survey track, e.g., mGal/sec.
+
 **-T**\ *gap*
     Adjusts mgd77sniffer gap handling. By default, data gaps greater
     than 5 km are skipped. Set to zero to de-activate gap skipping.
+
 **-W**\ **c**\ \|\ **g**\ \|\ **o**\ \|\ **s**\ \|\ **t**\ \|\ **v**\ \|\ **x**
     Print out only certain warning types for verbose error messages.
     Comma delimit any combination of **c\|g\|o\|s\|t\|v\|x**: where
@@ -249,15 +252,15 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
-**-bo**\ [*ncols*\ ][*type*\ ]
+**-bo**\ [*ncols*][*type*]
     Output binary data for **-D**\ d\|f\|s\|v option. 
 
 .. include:: ../../explain_-n.rst_
 
 .. include:: ../../explain_help.rst_
 
-`Mgd77 Field Info <#toc7>`_
----------------------------
+Mgd77 Field Info
+----------------
 
 +-------------+------------------+-------------+
 | *Field*     | *Abbreviation*   | *Units*     |
@@ -296,15 +299,17 @@ gmtset GRIDFILE_SHORTHAND TRUE
 
 Create/edit .gmt_io file to include the following rows:
 
-## GMT I/O shorthand file
+# GMT I/O shorthand file
 
-## suffix\ `` `` `` `` format\_id`` `` `` `` scale`` `` `` `` offset`` `` `` `` NaN
+# suffix  format_id  scale  offset  NaN
 
-grd\ `` `` `` `` 0`` `` `` `` -`` `` `` `` -`` `` `` `` -
+grd 0  -  -  -  -
 
-i2\ `` `` `` `` 2`` `` `` `` -`` `` `` `` -`` `` `` `` 32767
+i2  2  -  -  32767
 
-grdraster 1 -R0/359:55/-90/90 -Getopo5_hdr.i2
+   ::
+
+    grdraster 1 -R0/359:55/-90/90 -Getopo5_hdr.i2
 
 The new grid, etopo5_hdr.i2 in this example, contains a GMT header and
 can be used in the **-G** option to compare cruise depth with grid values.
@@ -321,26 +326,25 @@ E77 Error Format
 
     **Sample**
 
-    ’## Cruise 08010039 ID 74010908 MGD77 FILE VERSION: 19801230
-    N\_RECS: 3066
+    # Cruise 08010039 ID 74010908 MGD77 FILE VERSION: 19801230 N_RECS: 3066
 
-    ’## Examined: Wed Oct 3 16:30:13 2007 by mtchandl
+    # Examined: Wed Oct 3 16:30:13 2007 by mtchandl
 
-    ’## Arguments: -De -Gdepth,/data/GRIDS/etopo5_hdr.i2
+    # Arguments: -De -Gdepth,/data/GRIDS/etopo5_hdr.i2
 
     N Errata table verification status
 
-    ’## mgd77manage applies corrections if the errata table is verified
+    # mgd77manage applies corrections if the errata table is verified
     (toggle ’N’ above to ’Y’ after review)
 
-    ’## For instructions on E77 format and usage, see
+    # For instructions on E77 format and usage, see
     `http://gmt.soest.hawaii.edu/mgd77/errata.php <http://gmt.soest.hawaii.edu/mgd77/errata.php>`_
 
-    ’## Verified by:
+    # Verified by:
 
-    ’## Comments:
+    # Comments:
 
-    ’## Errata: Header
+    # Errata: Header
 
     Y-E-08010039-H13-02: Invalid Magnetics Sampling Rate: (99) [ ]
 
@@ -369,10 +373,9 @@ E77 Error Format
 
     **Sample**
 
-    ’## Errata: Data
+    # Errata: Data
 
-    Y\ `` `` `` `` 08010039`` `` `` `` 1975-05-10T22:16:05.88\ `` `` `` `` 74`` `` `` `` C-0-0\ `` `` `` `` 
-    NAV: excessive speed
+    Y  08010039  1975-05-10T22:16:05.88  74  C-0-0 NAV: excessive speed
 
 **Error Code Description**
     Each of the three error classes is separated by a dash ’-’ and
@@ -454,32 +457,38 @@ E77 Error Format
 
     Bit types: (G)eophysical, (C)orrection, (T)ime
 
-`Examples <#toc10>`_
---------------------
+Examples
+--------
 
 To scan for excessive values or gradients, try
+
+   ::
 
     mgd77sniffer 08010001
 
 To dump cruise gradients, try
+
+   ::
 
     mgd77sniffer 08010001 -Ds
 
 To compare cruise depth with ETOPO5 bathymetry and gravity with
 Sandwell/Smith 2 min gravity version 11, try
 
-    mgd77sniffer 08010001 -Gdepth,/data/GRIDS/etopo5\_hdr.i2
-    -gfaa,/data/GRIDS/grav.11.2.img,0.1,1
+   ::
 
-`See Also <#toc11>`_
---------------------
+    mgd77sniffer 08010001 -Gdepth,/data/GRIDS/etopo5_hdr.i2 \
+                 -gfaa,/data/GRIDS/grav.11.2.img,0.1,1
+
+See Also
+--------
 
 `mgd77list <mgd77list.html>`_,
 `mgd77track <mgd77track.html>`_
-`x2sys\_init <x2sys_init.html>`_
+`x2sys_init <x2sys_init.html>`_
 
-`References <#toc12>`_
-----------------------
+References
+----------
 
 The Marine Geophysical Data Exchange Format - MGD77, see
 `*http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt*. <http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt.>`_
