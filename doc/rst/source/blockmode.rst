@@ -10,16 +10,15 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **blockmode** [ *table* ]
-**-I**\ *xinc*\ [*unit*][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*][\ **=**\ \|\ **+**]]
+|SYN_OPT-I|
 |SYN_OPT-R| [ **-C** ]
 [ **-D**\ [*width*]\ [**+c**][**+l**\ \|\ **+h** ]
-[ **-E** ] [ **-E**\ **r**\ \|\ **s**\ [**-**] ] [ **-Q** ]
-[ |SYN_OPT-V| ] [ **-W**\ [**i**\ \|\ **o**] ] [
-**-b**\ [*ncol*][**t**][\ **+L**\ \|\ **+B**] ] [
-**-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
-**-h**\ [**i**\ \|\ **o**][*n*] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-o**\ *cols*\ [,*...*] ] [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
+[ **-E**\ **r**\ \|\ **s**\ [**-**] ] [ **-Q** ]
+[ |SYN_OPT-V| ] [ **-W**\ [**i**\ \|\ **o**] ]
+[ |SYN_OPT-b| ]
+[ |SYN_OPT-f| ] [ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-o| ] [ **-r** ] [ |SYN_OPT-:| ]
 
 |No-spaces|
 
@@ -36,7 +35,7 @@ or **blockmode** should be used as a pre-processor before running
 `surface <surface.html>`_ to avoid aliasing short wavelengths. These routines are also
 generally useful for decimating or averaging (*x*,\ *y*,\ *z*) data. You
 can modify the precision of the output format by editing the
-**FORMAT\_FLOAT\_OUT** parameter in your `gmt.conf <gmt.conf.html>`_ file, or you may
+**FORMAT_FLOAT_OUT** parameter in your `gmt.conf <gmt.conf.html>`_ file, or you may
 choose binary input and/or output to avoid loss of precision. 
 
 Required Arguments
@@ -132,12 +131,16 @@ Examples
 --------
 
 To find 5 by 5 minute block mode estimates from the double precision
-binary data in hawaii\_b.xyg and output an ASCII table, run:
+binary data in hawaii_b.xyg and output an ASCII table, run:
 
-    blockmode hawaii\_b.xyg -R198/208/18/25 -I5m -bi3d > hawaii\_5x5.xyg
+   ::
+
+    blockmode hawaii_b.xyg -R198/208/18/25 -I5m -bi3d > hawaii_5x5.xyg
 
 To determine the most frequently occurring values per 5x5 block using histogram binning, with
 data representing integer counts, try
+
+   ::
 
     blockmode data.txt -R0/100/0/100 -I5 -r -C -D
 

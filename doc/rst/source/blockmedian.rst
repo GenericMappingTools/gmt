@@ -10,21 +10,20 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **blockmedian** [ *table* ]
-**-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
-|SYN_OPT-R| [ **-C** ] [
-**-E**\ [**b**\ ] ] [ **-E**\ **r**\ \|\ **s**\ [**-**\ ] ] [ **-Q** ] [
-**-T**\ *quantile* ] [ |SYN_OPT-V| ] [
-**-W**\ [**i**\ \|\ **o**] ] [
-**-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
-**-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
-**-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-[ **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] ]
-[ **-o**\ *cols*\ [,...] ] [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
+|SYN_OPT-I|
+|SYN_OPT-R| [ **-C** ]
+[ **-E**\ [**b**] ] [ **-E**\ **r**\ \|\ **s**\ [**-**] ] [ **-Q** ]
+[ **-T**\ *quantile* ] [ |SYN_OPT-V| ]
+[ **-W**\ [**i**\ \|\ **o**] ]
+[ |SYN_OPT-b| ]
+[ |SYN_OPT-f| ] [ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-o| ] [ **-r** ] [ |SYN_OPT-:| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **blockmedian** reads arbitrarily located (*x*,\ *y*,\ *z*) triples [or
 optionally weighted quadruples (*x*,\ *y*,\ *z*,\ *w*)] from standard
@@ -35,19 +34,19 @@ and **-I** arguments. Either `blockmean <blockmean.html>`_, **blockmedian**, or
 `surface <surface.html>`_ to avoid aliasing short wavelengths. These routines are also
 generally useful for decimating or averaging (*x*,\ *y*,\ *z*) data. You
 can modify the precision of the output format by editing the
-**FORMAT\_FLOAT\_OUT** parameter in your `gmt.conf <gmt.conf.html>`_ file, or you may
+**FORMAT_FLOAT_OUT** parameter in your `gmt.conf <gmt.conf.html>`_ file, or you may
 choose binary input and/or output to avoid loss of precision.
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 .. include:: explain_-I.rst_
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 *table*
     3 [or 4, see **-W**] column ASCII data table] column ASCII file(s)
@@ -127,16 +126,20 @@ Examples
 --------
 
 To find 5 by 5 minute block medians from the double precision binary
-data in hawaii\_b.xyg and output an ASCII table, run
+data in hawaii_b.xyg and output an ASCII table, run
 
-    blockmedian hawaii\_b.xyg -R198/208/18/25 -I5m -bi3d > hawaii\_5x5.xyg
+   ::
+
+    blockmedian hawaii_b.xyg -R198/208/18/25 -I5m -bi3d > hawaii_5x5.xyg
 
 To compute the shape of a data distribution per bin via a
 box-and-whisker diagram we need the 0%, 25%, 50%, 75%, and 100%
 quantiles. To do so on a global 5 by 5 degree basis from the ASCII table
 depths.xyz and send output to an ASCII table, run
 
-    blockmedian depths.xyz -Rg -I5 -Eb -r > depths\_5x5.txt
+   ::
+
+    blockmedian depths.xyz -Rg -I5 -Eb -r > depths_5x5.txt
 
 See Also
 --------

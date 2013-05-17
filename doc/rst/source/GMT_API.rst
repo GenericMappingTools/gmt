@@ -25,6 +25,10 @@
 **Alfred Wegener Institute, Germany**
 
 .. image:: _images/GMT_coverlogo.png
+   :height: 543 px
+   :width: 1093 px
+   :align: center
+   :scale: 70 %
 
 .. contents:: Table of Contents
 
@@ -37,6 +41,7 @@ Preamble
 .. figure:: _images/GMT4_mode.png
    :height: 535 px
    :width: 1013 px
+   :align: center
    :scale: 50 %
 
    Figure 1: GMT 4 programs contain all the high-level functionality. 
@@ -61,6 +66,7 @@ program to maintain.
 .. figure:: _images/GMT5_mode.png
    :height: 1144 px
    :width: 2034 px
+   :align: center
    :scale: 25 %
 
    Figure 2: GMT 5 programs contain all the high-level functionality. 
