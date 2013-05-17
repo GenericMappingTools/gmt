@@ -11,7 +11,6 @@ colmath	core	Do mathematics on columns from data tables
 filter1d	core	Do time domain filtering of 1-D data tables
 fitcircle	core	Find mean position and best-fitting great- or small-circle to points on sphere
 gmt2kml	core	Convert GMT data tables to KML files for Google Earth
-gmtaverage	core	Block average (x,y,z) data tables by mean, median, or mode estimation
 gmtconvert	core	Convert, paste, or extract columns from data tables
 gmtdefaults	core	List current GMT default parameters
 gmtdp	core	Line reduction using the Douglas-Peucker algorithm

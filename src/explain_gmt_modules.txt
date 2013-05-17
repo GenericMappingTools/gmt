@@ -7,7 +7,6 @@ l l .
 \fBfilter1d\fP	
 \fBfitcircle\fP	
 \fBgmt2kml\fP	
-\fBgmtaverage\fP	
 \fBgmtconvert\fP	
 \fBgmtdefaults\fP	
 \fBgmtdp\fP	

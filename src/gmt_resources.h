@@ -51,7 +51,7 @@ enum GMT_enum_methods {
 	GMT_IS_READONLY,	/* As GMT_IS_REFERENCE, but we are not allowed to change the data in any way. */
 	GMT_N_METHODS};		/* Number of methods we recognize */
 
-/* But Grid can come from a GMT grid OR User Matrix, and Data can come from DATASET or via Vectors|Matrix, and Text from TEXTSET or Matrix */
+/* A Grid can come from a GMT grid OR User Matrix, and Data can come from DATASET or via Vectors|Matrix, and Text from TEXTSET or Matrix */
 
 enum GMT_enum_via {
 	GMT_VIA_VECTOR = 100,	/* Data passed via user matrix */
@@ -645,19 +645,6 @@ struct GMT_MATRIX {	/* Single container for a user matrix of data */
 /* ---- Variables "hidden" from the API ---- */
 	uint64_t id;			/* The internal number of the data set */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0] */
-};
-
-/*============================================================ */
-/*=============== GMT_OPTION Public Declaration ============== */
-/*============================================================ */
-
-/* These struct are used to pass program options in/out of GMT modules */
-
-struct GMT_OPTION {	/* Structure for a single GMT command option */
-	char option;			/* 1-char command line -<option> (e.g. D in -D) identifying the option (* if file) */
-	char *arg;			/* If not NULL, contains the argument for this option */
-	struct GMT_OPTION *next;	/* Pointer to next option in a linked list */
-	struct GMT_OPTION *previous;	/* Pointer to previous option in a linked list */
 };
 
 #endif /* _GMT_RESOURCES_H */

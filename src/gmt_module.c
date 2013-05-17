@@ -35,7 +35,6 @@ struct Gmt_moduleinfo g_module[] = {
 	{"filter1d", "core", "Do time domain filtering of 1-D data tables", &GMT_filter1d},
 	{"fitcircle", "core", "Find mean position and best-fitting great- or small-circle to points on sphere", &GMT_fitcircle},
 	{"gmt2kml", "core", "Convert GMT data tables to KML files for Google Earth", &GMT_gmt2kml},
-	{"gmtaverage", "core", "Block average (x,y,z) data tables by mean, median, or mode estimation", &GMT_gmtaverage},
 	{"gmtconvert", "core", "Convert, paste, or extract columns from data tables", &GMT_gmtconvert},
 	{"gmtdefaults", "core", "List current GMT default parameters", &GMT_gmtdefaults},
 	{"gmtdp", "core", "Line reduction using the Douglas-Peucker algorithm", &GMT_gmtdp},

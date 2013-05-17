@@ -41,9 +41,5 @@ enum GMT_enum_type {
 	GMT_DATETIME,  /* string with date/time info [OGR/GMT use only] */
 	GMT_N_TYPES};  /* The number of supported data types above */
 
-#define GMT_OPT_USAGE		'?'	/* Command-line option for full usage */
-#define GMT_OPT_SYNOPSIS	'^'	/* Command-line option for synopsis */
-#define GMT_OPT_INFILE		'<'	/* Command-line option for input file */
-#define GMT_OPT_OUTFILE		'>'	/* Command-line option for output file */
 
 #endif /* _GMT_DEFINE_H */
