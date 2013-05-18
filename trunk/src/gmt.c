@@ -40,7 +40,7 @@ int main (int argc, char *argv[]) {
 		module_id = gmt_module_lookup (argv[1]); /* either valid id or GMT_ID_NONE */
 	}
 
-	/* Initializing new GMT session */
+	/* Initialize new GMT session */
 	if ((api_ctrl = GMT_Create_Session (NULL, 2U, 0U, NULL)) == NULL)
 		return EXIT_FAILURE;
 
@@ -76,7 +76,9 @@ int main (int argc, char *argv[]) {
 			}
 		} /* for (arg_n = 1; arg_n < argc; ++arg_n) */
 
-		/* gmt.c is not a module and hence can use fprintf (stderr, ...). Any API needing a
+		/* If we get here, we were called without a recognized modulename or option
+		 *
+		 * gmt.c is not a module and hence can use fprintf (stderr, ...). Any API needing a
 		 * gmt-like application will write one separately [see mex API] */
 		fprintf (stderr, "GMT - The Generic Mapping Tools, Version %s\n", GMT_VERSION);
 		fprintf (stderr, "Copyright 1991-%d Paul Wessel, Walter H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe\n\n", GMT_VERSION_YEAR);
@@ -94,9 +96,8 @@ int main (int argc, char *argv[]) {
 		goto exit;
 	} /* module_id == GMT_ID_NONE */
 
-	/* OK, here we found a recognized GMT module and the API has been initialized; do the job */
-
-	/* Run selected GMT cmd function, or give usage message if errors arise during parsing */
+	/* OK, here we found a recognized GMT module and the API has been initialized
+	 * Now run selected GMT module: */
 	status = g_module[module_id].p_func (api_ctrl, argc-1-modulename_arg_n, argv+1+modulename_arg_n);
 
 exit:

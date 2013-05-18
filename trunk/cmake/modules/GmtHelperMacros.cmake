@@ -49,6 +49,35 @@ if(NOT DEFINED _GMT_HELPER_MACROS_CMAKE_)
 		add_dependencies(${_TARGET} ${ARGN})
 	endmacro (ADD_DEPEND_TO_TARGET)
 
+	# add_module_symlink (MODULE [ MODULE ... ])
+	# example: add_module_symlink (grdimage psxy)
+	macro (ADD_MODULE_SYMLINK)
+		if (WIN32)
+			# create .cmd files for gmt modules
+			set (_gmt_win_cmds)
+			foreach (_gmtmodule ${ARGV})
+				list (APPEND _gmt_win_cmds "${CMAKE_CURRENT_BINARY_DIR}/${_gmtmodule}.cmd")
+				configure_file (${CMAKE_SOURCE_DIR}/src/gmtmodule.cmd.in ${_gmtmodule}.cmd @ONLY)
+			endforeach (_gmtmodule)
+			install (PROGRAMS
+				${_gmt_win_cmds}
+				DESTINATION ${GMT_BINDIR}
+				COMPONENT Runtime)
+		else (WIN32)
+			# create gmt module symlinks to gmt
+			#get_target_property(GMT_MAIN_NAME gmt OUTPUT_NAME)
+			file (RELATIVE_PATH _rpath /bin /${GMT_BINDIR}/${GMT_MAIN_NAME})
+			foreach (_gmtmodule ${ARGV})
+				install (CODE "
+				execute_process (COMMAND ${CMAKE_COMMAND} -E remove -f
+					\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/${_gmtmodule})
+				execute_process (COMMAND ${CMAKE_COMMAND} -E create_symlink
+					${_rpath} \$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/${_gmtmodule})
+				" COMPONENT Runtime)
+			endforeach (_gmtmodule)
+		endif (WIN32)
+	endmacro (ADD_MODULE_SYMLINK)
+
 	# add_depend_to_spotless (DEPEND [ DEPEND [ DEPEND ... ]])
 	# example: add_depend_to_spotless (custom_target)
 	macro (ADD_DEPEND_TO_SPOTLESS)
