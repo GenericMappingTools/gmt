@@ -58,12 +58,6 @@ enum GMT_enum_ogr {
 	GMT_IS_MULTILINESTRING,
 	GMT_IS_MULTIPOLYGON};
 
-enum GMT_enum_ioset {
-	GMT_IO_DONE = 0,	/* Tell GMT_End_IO we are done but nothing special is to be done. */
-	GMT_IO_ASCII = 512,		/* Force ASCII mode for reading (ignoring current io settings). */
-	GMT_IO_RESET = 32768,		/* Tell GMT_End_IO that accessed resources should be made read/write-able again. */
-	GMT_IO_UNREG = 16384};		/* Tell GMT_End_IO to unregister all accessed resources. */
-
 /* Codes for aspatial assocation with segment header options: */
 
 enum GMT_enum_segopt {

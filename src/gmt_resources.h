@@ -108,6 +108,12 @@ enum GMT_enum_freg {
 	GMT_ADD_EXISTING = 16,		/* Tell GMT_Init_IO to only use alerady registered resources */
 	GMT_ADD_DEFAULT = 6};		/* Tell GMT_Init_IO to register files, and if none are found then std(in|out), but only if nothing was registered before this call */
 
+enum GMT_enum_ioset {
+	GMT_IO_DONE = 0,	/* Tell GMT_End_IO we are done but nothing special is to be done. */
+	GMT_IO_ASCII = 512,		/* Force ASCII mode for reading (ignoring current io settings). */
+	GMT_IO_RESET = 32768,		/* Tell GMT_End_IO that accessed resources should be made read/write-able again. */
+	GMT_IO_UNREG = 16384};		/* Tell GMT_End_IO to unregister all accessed resources. */
+
 enum GMT_enum_read {
 	GMT_READ_DOUBLE = 0,	/* Read ASCII data record and return double array */
 	GMT_READ_NORMAL = 0,	/* Normal read mode [Default] */
