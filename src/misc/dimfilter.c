@@ -20,6 +20,8 @@
  * 9(Q03005), doi:10.1029/2007GC001850.
  */
 
+#define THIS_MODULE GMT_ID_DIMFILTER /* I am dimfilter */
+
 #include "gmt_dev.h"
 
 #define GMT_PROG_OPTIONS "-:RVfh"
@@ -106,7 +108,7 @@ void Free_dimfilter_Ctrl (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *C) {	/* D
 
 int GMT_dimfilter_usage (struct GMTAPI_CTRL *API, int level)
 {
-	GMT_Message (API, GMT_TIME_NONE, "dimfilter %s - Directional filtering of grids in the Space domain\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: dimfilter <ingrid> -D<distance_flag> -F<type><filter_width> -G<outgrid> -N<type><n_sectors>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Q<cols>]\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T] [%s] [%s]\n\t[%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT);
@@ -362,7 +364,7 @@ void set_weight_matrix_dim (struct DIMFILTER_INFO *F, struct GMT_GRID_HEADER *h,
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_dimfilter_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_dimfilter (void *V_API, int mode, void *args)
 {
 	unsigned short int **sector = NULL;
 
@@ -399,6 +401,7 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct DIMFILTER_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
         struct GMT_OPTION *options = NULL;
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
@@ -1018,21 +1021,4 @@ int GMT_dimfilter (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 
 	Return (GMT_OK);
-}
-
-int main (int argc, char *argv[]) {
-
-	int status = 0;			/* Status code from GMT API */
-	struct GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
-
-	/* 1. Initializing new GMT session */
-	if ((API = GMT_Create_Session (argv[0], 2U, 0U, NULL)) == NULL) exit (EXIT_FAILURE);
-
-	/* 2. Run GMT cmd function, or give usage message if errors arise during parsing */
-	status = GMT_dimfilter (API, argc-1, (argv+1));
-
-	/* 3. Destroy GMT session */
-	if (GMT_Destroy_Session (API)) exit (EXIT_FAILURE);
-
-	exit (status);		/* Return the status from FUNC */
 }

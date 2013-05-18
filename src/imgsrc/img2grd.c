@@ -655,8 +655,8 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 	if (GMT_Call_Module (API, GMT_ID_GRDPROJECT, 0, cmd)!= GMT_OK) {	/* Inverse project the grid or fail */
 		Return (API->error);
 	}
-	if (GMT_Destroy_Data (API, GMT_CLOBBER, &Merc) != GMT_OK) {
-		Return (API->error);	/* Clobber since we know we allocated this grid */
+	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Merc) != GMT_OK) {
+		Return (API->error);
 	}
 	if (Ctrl->E.active) {	/* Resample again using the given -R and the dx/dy in even minutes */
 		/* Preparing source and destination for GMT_grdsample */
@@ -677,9 +677,6 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 		}
 		sprintf (cmd, "-R%g/%g/%g/%g -I%gm %s -G%s -fg", west, east, south, north, Ctrl->I.value, s_in_ID, Ctrl->G.file);
 		if (GMT_Call_Module (API, GMT_ID_GRDSAMPLE, 0, cmd) != GMT_OK) {	/* Resample the grid or fail */
-			Return (API->error);
-		}
-		if (GMT_Destroy_Data (API, GMT_CLOBBER, &Geo) != GMT_OK) {	/* Clobber since we know we allocated this grid */
 			Return (API->error);
 		}
 	}
