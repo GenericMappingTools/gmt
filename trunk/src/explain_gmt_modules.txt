@@ -73,7 +73,6 @@ l l .
 \fBsph2grd\fP	
 \fBsplitxyz\fP	
 \fBsurface\fP	
-\fBtestapi\fP	
 \fBtrend1d\fP	
 \fBtrend2d\fP	
 \fBtriangulate\fP	
