@@ -209,6 +209,8 @@ The development sources from subversion does not contain the precompiled
 documentation in PDF format. The PDFs have to be created from source with
 LaTeX (e.g., TeX Live).
 
+port install py27-sphinx
+
 The GMT documentation includes HTML files for online browsing, user guide,
 cookbook, and manual pages. The Documentation also contains the
 GMT_Tutorial.pdf file which is a short course in how to use GMT.  It can be
