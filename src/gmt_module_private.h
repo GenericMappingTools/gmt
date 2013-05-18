@@ -142,7 +142,6 @@ EXTERN_MSC int GMT_sphinterpolate (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_sphtriangulate (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_splitxyz (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_surface (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_testapi (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_trend1d (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_trend2d (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_triangulate (void *api_ctrl, int mode, void *args);

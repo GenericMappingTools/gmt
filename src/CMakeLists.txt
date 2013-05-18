@@ -110,8 +110,8 @@ if (DO_EXAMPLES OR DO_TESTS AND NOT GSHHG_FOUND)
 endif (DO_EXAMPLES OR DO_TESTS AND NOT GSHHG_FOUND)
 
 # These lines are temporarily here for the beta release
-set (GMT_PROGS2_SRCS testapi.c)
-set (GMT_DEMOS_SRCS gmtaverage.c gmtmercmap.c testgmt5.c testgmtio.c testgrdio.c testio.c)
+# set (GMT_PROGS2_SRCS testapi.c)
+set (GMT_DEMOS_SRCS gmtaverage.c gmtmercmap.c  testapi.c testgmt5.c testgmtio.c testgrdio.c testio.c)
 
 if (NOT LICENSE_RESTRICTED) # off
 	# enable Shewchuk's triangle routine
@@ -143,7 +143,7 @@ set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c
 	pshistogram.c psimage.c psmask.c psrose.c
 	psscale.c pstext.c pswiggle.c psxy.c psxyz.c
 	pslegend.c)
-list (APPEND GMT_PROGS_SRCS ${GMT_PROGS2_SRCS})
+#list (APPEND GMT_PROGS_SRCS ${GMT_PROGS2_SRCS})
 
 # libpslib
 set (GMT_PSL_SRCS pslib.c common_string.c common_string.h common_runpath.c

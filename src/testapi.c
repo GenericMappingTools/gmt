@@ -24,8 +24,6 @@
  *
  */
 
-#define THIS_MODULE GMT_ID_TESTAPI /* I am testapi */
-
 #include "gmt_dev.h"
 
 #define GMT_PROG_OPTIONS "->Vh"
@@ -64,7 +62,7 @@ void Free_testapi_Ctrl (struct GMT_CTRL *GMT, struct TESTAPI_CTRL *C) {	/* Deall
 }
 
 int GMT_testapi_usage (struct GMTAPI_CTRL *API, int level) {
-	gmt_module_show_name_and_purpose (API, THIS_MODULE);
+	GMT_Message (API, GMT_TIME_NONE, "testapi - test API i/o methods for any data type\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "usage: testapi -If|s|d|c|r[/v|m] -Td|t|g|c|i|v|m -Wf|s|d|c|r[/v|m] [%s] [%s]\n", GMT_V_OPT, GMT_h_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -166,7 +164,8 @@ int GMT_testapi_parse (struct GMT_CTRL *GMT, struct TESTAPI_CTRL *Ctrl, struct G
 }
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
-#define Return(code) {Free_testapi_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
+#define Return(code) {Free_testapi_Ctrl (GMT, Ctrl); bailout (code);}
+//#define Return(code) {Free_testapi_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
 int GMT_testapi (void *V_API, int mode, void *args)
 {
@@ -191,7 +190,7 @@ int GMT_testapi (void *V_API, int mode, void *args)
 	struct GMT_MATRIX *M = NULL;
 	struct GMT_VECTOR *V = NULL;
 	void *In = NULL, *Out = NULL, *Intmp = NULL, *Outtmp = NULL;
-	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
+	struct GMT_CTRL *GMT = NULL;
 	struct GMT_OPTION *options = NULL;
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
@@ -205,7 +204,8 @@ int GMT_testapi (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
+	//GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
+	GMT = API->GMT;
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_testapi_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_testapi_parse (GMT, Ctrl, options))) Return (error);
@@ -461,4 +461,21 @@ int GMT_testapi (void *V_API, int mode, void *args)
 	}
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
 	Return (GMT_OK);
+}
+
+int main (int argc, char *argv[]) {
+
+	int status = 0;			/* Status code from GMT API */
+	struct GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
+
+	/* 1. Initializing new GMT session */
+	if ((API = GMT_Create_Session (argv[0], 2U, 0U, NULL)) == NULL) exit (EXIT_FAILURE);
+
+	/* 2. Run GMT cmd function, or give usage message if errors arise during parsing */
+	status = GMT_testapi (API, argc-1, (argv+1));
+
+	/* 3. Destroy GMT session */
+	if (GMT_Destroy_Session (API)) exit (EXIT_FAILURE);
+
+	exit (status);
 }

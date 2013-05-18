@@ -133,7 +133,6 @@ struct Gmt_moduleinfo g_module[] = {
 	{"sphtriangulate", "sph", "Delaunay or Voronoi construction of spherical lon,lat data", &GMT_sphtriangulate},
 	{"splitxyz", "core", "Split xyz[dh] data tables into individual segments", &GMT_splitxyz},
 	{"surface", "core", "Grid table data using adjustable tension continuous curvature splines", &GMT_surface},
-	{"testapi", "core", "test API i/o methods for any data type", &GMT_testapi},
 	{"trend1d", "core", "Fit a [weighted] [robust] polynomial [or Fourier] model for y = f(x) to xy[w] data", &GMT_trend1d},
 	{"trend2d", "core", "Fit a [weighted] [robust] polynomial for z = f(x,y) to xyz[w] data", &GMT_trend2d},
 	{"triangulate", "core", "Do optimal (Delaunay) triangulation and gridding of Cartesian table data", &GMT_triangulate},
