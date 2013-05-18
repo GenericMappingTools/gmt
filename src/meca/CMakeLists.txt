@@ -28,28 +28,8 @@ set (SUPPL_EXAMPLE_FILES README.meca)
 set (LIB_SRCS ${SUPPL_LIB_SRCS} ${SUPPL_PROGSPS_SRCS})
 
 # create build targets
-string (REPLACE ".c" "" SUPPL_PROGSPS "${SUPPL_PROGSPS_SRCS}")
-foreach (prog ${SUPPL_PROGSPS})
-	add_executable (${prog} ${GMT_PROGRAM})
-	string (TOUPPER "${prog}" UCASEname)
-	set_target_properties (${prog}
-		PROPERTIES COMPILE_DEFINITIONS "MODULE_ID=GMT_ID_${UCASEname}")
-	if (WIN32)
-		set_target_properties(${prog} PROPERTIES LINK_FLAGS " /MANIFEST:NO")
-	endif ()
-	target_link_libraries (${prog} gmtlib)
-endforeach (prog)
-
-# generate Mac debugging symbols
-create_debug_sym (${SUPPL_PROGSPS})
-
-# add the install targets
-install (TARGETS ${SUPPL_PROGSPS}
-	RUNTIME DESTINATION ${GMT_BINDIR}
-	COMPONENT Runtime)
-
-# add to gmt_suppl target
-add_depend_to_target (gmt_suppl ${SUPPL_PROGSPS})
+string (REPLACE ".c" "" _gmt_modules "${SUPPL_PROGSPS_SRCS}")
+add_module_symlink (${_gmt_modules})
 
 # Generate manpages
 string (REPLACE ".c" ".1" SUPPL_MAN_1 "${SUPPL_PROGSPS_SRCS}")

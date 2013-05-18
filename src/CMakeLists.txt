@@ -109,12 +109,9 @@ if (DO_EXAMPLES OR DO_TESTS AND NOT GSHHG_FOUND)
 		"Need to either set GSHHG_ROOT or disable tests.")
 endif (DO_EXAMPLES OR DO_TESTS AND NOT GSHHG_FOUND)
 
-# These three lines are temporarily here for the beta release
+# These lines are temporarily here for the beta release
 set (GMT_PROGS2_SRCS testapi.c)
-set (GMT_DEMOS2_SRCS gmtaverage.c gmtmercmap.c testgmt5.c testgmtio.c testgrdio.c testio.c)
-
-# source files
-set (GMT_DEMOS_SRCS gmt.c ${GMT_DEMOS2_SRCS})
+set (GMT_DEMOS_SRCS gmtaverage.c gmtmercmap.c testgmt5.c testgmtio.c testgrdio.c testio.c)
 
 if (NOT LICENSE_RESTRICTED) # off
 	# enable Shewchuk's triangle routine
@@ -344,6 +341,13 @@ set (GMT_OTHER_SUPPL_DIRS misc xgrid ${EXTRA_BUILD_DIRS})
 # path to all binary dirs (used to set PATH in test scripts)
 set (GMT_BINARY_DIR_PATH "${CMAKE_CURRENT_BINARY_DIR}/\${CMAKE_CONFIG_TYPE:-.}")
 
+# temporary hack
+if (NOT GMT_INSTALL_MONOLITHIC)
+	set (GMT_MAIN_NAME gmt${GMT_INSTALL_NAME_SUFFIX})
+else (NOT GMT_INSTALL_MONOLITHIC)
+	set (GMT_MAIN_NAME gmt)
+endif (NOT GMT_INSTALL_MONOLITHIC)
+
 # process supplement directories
 foreach (_dir ${GMT_SUPPL_DIRS} ${GMT_OTHER_SUPPL_DIRS})
 	add_subdirectory (${_dir})
@@ -407,23 +411,9 @@ if (WIN32 AND GMT_DLL_RENAME)
 	set_target_properties (gmtlib PROPERTIES RUNTIME_OUTPUT_NAME ${GMT_DLL_RENAME})
 endif ()
 
-# create build targets for gmt progs
-string (REPLACE ".c" "" GMT_PROGS "${GMT_PROGS_SRCS}")
-foreach (_gmtprog ${GMT_PROGS})
-	add_executable (${_gmtprog} ${GMT_PROGRAM})
-	string (TOUPPER "${_gmtprog}" _UCASEname)
-	set_target_properties (${_gmtprog}
-		PROPERTIES COMPILE_DEFINITIONS "MODULE_ID=GMT_ID_${_UCASEname}")
-	# Do not create the manifest files
-	if (WIN32)
-		set_target_properties(${_gmtprog} PROPERTIES LINK_FLAGS " /MANIFEST:NO")
-	endif ()
-	target_link_libraries (${_gmtprog} gmtlib)
-endforeach (_gmtprog)
-
-# build targets for demos
-string (REPLACE ".c" "" GMT_DEMOS "${GMT_DEMOS_SRCS}")
-foreach (_gmtdemo ${GMT_DEMOS})
+# build targets for standalone gmt target and demos
+string (REPLACE ".c" "" GMT_PROGS "gmt.c;${GMT_DEMOS_SRCS}")
+foreach (_gmtdemo ${GMT_PROGS})
 	add_executable (${_gmtdemo} ${_gmtdemo}.c)
 	target_link_libraries (${_gmtdemo} gmtlib)
 	if (WIN32)
@@ -449,21 +439,21 @@ else (HAVE_GETOPT)
 endif (HAVE_GETOPT)
 
 # generate Mac debugging symbols
-create_debug_sym (${GMT_LIBS} ${GMT_PROGS} ${GMT_DEMOS})
+create_debug_sym (${GMT_LIBS} ${GMT_PROGS})
 
 # Tests depend on GMT progs and supplements:
-add_dependencies (check ${GMT_PROGS} ${GMT_DEMOS} psldemo
+add_dependencies (check ${GMT_PROGS} psldemo
 	gmt_suppl)
 
 # Rename gmt target on non-monolithic installs to prevent version clash
 if (NOT GMT_INSTALL_MONOLITHIC)
 	set_target_properties (gmt
 		PROPERTIES
-		OUTPUT_NAME gmt${GMT_INSTALL_NAME_SUFFIX})
+		OUTPUT_NAME ${GMT_MAIN_NAME})
 endif (NOT GMT_INSTALL_MONOLITHIC)
 
 # add the install targets
-install (TARGETS ${GMT_LIBS} ${GMT_PROGS} ${GMT_DEMOS}
+install (TARGETS ${GMT_LIBS} ${GMT_PROGS}
 	ARCHIVE DESTINATION ${GMT_LIBDIR}
 	COMPONENT Runtime
 	LIBRARY DESTINATION ${GMT_LIBDIR}
@@ -475,11 +465,11 @@ if (WIN32 AND _debug_build)
 	# install program database files
 	set (_pdb_files)
 	if (NOT DEFINED PSL_DLL_RENAME)
-		foreach (_target libpsl libgmt ${GMT_PROGS} ${GMT_DEMOS})
+		foreach (_target libpsl libgmt ${GMT_PROGS})
 			list (APPEND _pdb_files "${CMAKE_CURRENT_BINARY_DIR}/${_target}.pdb")
 		endforeach ()
 	else ()
-		foreach (_target lib${PSL_DLL_RENAME} lib${GMT_DLL_RENAME} ${GMT_PROGS} ${GMT_DEMOS})
+		foreach (_target lib${PSL_DLL_RENAME} lib${GMT_DLL_RENAME} ${GMT_PROGS})
 			list (APPEND _pdb_files "${CMAKE_CURRENT_BINARY_DIR}/${_target}.pdb")
 		endforeach ()
 	endif ()
@@ -488,12 +478,42 @@ if (WIN32 AND _debug_build)
 		COMPONENT Runtime)
 endif (WIN32 AND _debug_build)
 
+string (REPLACE ".c" "" _gmt_modules "${GMT_PROGS_SRCS}")
+add_module_symlink (${_gmt_modules})
+
+#if (UNIX)
+#	# create gmt module symlinks to gmt
+#	#get_target_property(GMT_MAIN_NAME gmt OUTPUT_NAME)
+#	file (RELATIVE_PATH _rpath /bin /${GMT_BINDIR}/${GMT_MAIN_NAME})
+#	string (REPLACE ".c" "" GMT_PROGS "${GMT_PROGS_SRCS}")
+#	foreach (_gmtmodule ${GMT_PROGS})
+#		install (CODE "
+#		execute_process (COMMAND ${CMAKE_COMMAND} -E remove -f
+#			\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/${_gmtmodule})
+#		execute_process (COMMAND ${CMAKE_COMMAND} -E create_symlink
+#			${_rpath} \$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/${_gmtmodule})
+#		"
+#		COMPONENT Runtime)
+#	endforeach (_gmtmodule)
+#
+#	# create .cmd files for gmt modules
+#	set (_gmt_win_cmds)
+#	foreach (_gmtmodule ${GMT_PROGS})
+#		list (APPEND _gmt_win_cmds "${CMAKE_CURRENT_BINARY_DIR}/${_gmtmodule}.cmd")
+#		configure_file (gmtmodule.cmd.in ${_gmtmodule}.cmd @ONLY)
+#	endforeach (_gmtmodule)
+#	install (PROGRAMS
+#		${_gmt_win_cmds}
+#		DESTINATION ${GMT_BINDIR}
+#		COMPONENT Runtime)
+#endif (UNIX)
+
 # Install public headers
 install (FILES gmt.h gmt_define.h gmt_option.h gmt_resources.h gmt_module.h declspec.h
 	DESTINATION ${GMT_INCDIR}
 	COMPONENT Runtime)
 
-install (FILES	compat/inttypes.h compat/qsort.h compat/stdint.h
+install (FILES compat/inttypes.h compat/qsort.h compat/stdint.h
 	DESTINATION ${GMT_INCDIR}/compat
 	COMPONENT Runtime)
 
