@@ -103,6 +103,10 @@ l l .
 \fBmgd77sniffer\fP	
 \fBmgd77track\fP	
 
+	Supplement \fImisc\fP:
+\fBdimfilter\fP	
+\fBgmtdigitize\fP	
+
 	Supplement \fIpotential\fP:
 \fBgmtgravmag3d\fP	
 \fBgravfft\fP	

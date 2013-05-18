@@ -332,11 +332,11 @@ if (WIN32 AND PSL_DLL_RENAME)
 endif ()
 
 # supplement directories (only those, which are to be included in gmtlib)
-set (GMT_SUPPL_DIRS dbase gshhg imgsrc kiss_fft meca mgd77 potential segy sph
+set (GMT_SUPPL_DIRS dbase gshhg imgsrc kiss_fft meca mgd77 misc potential segy sph
 	spotter x2sys)
 
 # other supplement directories (not included in gmtlib)
-set (GMT_OTHER_SUPPL_DIRS misc xgrid ${EXTRA_BUILD_DIRS})
+set (GMT_OTHER_SUPPL_DIRS xgrid ${EXTRA_BUILD_DIRS})
 
 # path to all binary dirs (used to set PATH in test scripts)
 set (GMT_BINARY_DIR_PATH "${CMAKE_CURRENT_BINARY_DIR}/\${CMAKE_CONFIG_TYPE:-.}")

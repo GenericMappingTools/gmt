@@ -23,10 +23,14 @@ if (LICENSE_RESTRICTED AND NOT LICENSE_RESTRICTED STREQUAL GPL)
 endif (LICENSE_RESTRICTED AND NOT LICENSE_RESTRICTED STREQUAL GPL)
 
 # source files
-set (SUPPL_PROGS_SRCS dimfilter.c)
 if (UNIX)
-	set (SUPPL_PROGS_SRCS ${SUPPL_PROGS_SRCS} gmtdigitize.c)
+	set (SUPPL_PROGS_SRCS dimfilter.c gmtdigitize.c)
+else (UNIX)
+	set (SUPPL_PROGS_SRCS dimfilter.c)
 endif (UNIX)
+
+# lib sources
+set (LIB_SRCS ${SUPPL_PROGS_SRCS})
 
 # example files
 set (SUPPL_EXAMPLE_FILES README.misc)
@@ -35,7 +39,10 @@ set (SUPPL_EXAMPLE_PROGS dim.template.sh)
 # create build targets
 string (REPLACE ".c" "" SUPPL_PROGS "${SUPPL_PROGS_SRCS}")
 foreach (prog ${SUPPL_PROGS})
-	add_executable (${prog} ${prog}.c)
+	add_executable (${prog} ${GMT_PROGRAM})
+	string (TOUPPER "${prog}" UCASEname)
+	set_target_properties (${prog}
+		PROPERTIES COMPILE_DEFINITIONS "MODULE_ID=GMT_ID_${UCASEname}")
 	if (WIN32)
 		set_target_properties(${prog} PROPERTIES LINK_FLAGS " /MANIFEST:NO")
 	endif ()
@@ -54,7 +61,8 @@ install (TARGETS ${SUPPL_PROGS}
 add_depend_to_target (gmt_suppl ${SUPPL_PROGS})
 
 # Generate manpages
-string (REPLACE ".c" ".1" SUPPL_MAN_1 "${SUPPL_PROGS_SRCS}")
+string (REPLACE ".c" ".1" SUPPL_MAN_1
+	"${SUPPL_PROGS_SRCS}")
 gmt_create_manpages ("${SUPPL_MAN_1}")
 
 # install example data

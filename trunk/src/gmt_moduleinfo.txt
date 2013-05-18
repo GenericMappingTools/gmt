@@ -8,11 +8,13 @@ blockmean	core	Block average (x,y,z) data tables by L2 norm
 blockmedian	core	Block average (x,y,z) data tables by L1 norm (spatial median)
 blockmode	core	Block average (x,y,z) data tables by mode estimation
 colmath	core	Do mathematics on columns from data tables
+dimfilter	misc	Directional filtering of grids in the Space domain
 filter1d	core	Do time domain filtering of 1-D data tables
 fitcircle	core	Find mean position and best-fitting great- or small-circle to points on sphere
 gmt2kml	core	Convert GMT data tables to KML files for Google Earth
 gmtconvert	core	Convert, paste, or extract columns from data tables
 gmtdefaults	core	List current GMT default parameters
+gmtdigitize	misc	Digitizing and inverse map transformation of map x/y coordinates
 gmtdp	core	Line reduction using the Douglas-Peucker algorithm
 gmtget	core	Get individual GMT default parameters
 gmtgravmag3d	potential	Compute the gravity/magnetic anomaly of a body by the method of Okabe

@@ -31,6 +31,8 @@
  *
  */
  
+#define THIS_MODULE GMT_ID_GMTDIGITIZE /* I am gmtdigitize */
+
 #include "gmt_dev.h"
 
 #define GMT_PROG_OPTIONS "-:>JRVbfho" GMT_OPT("HMm")
@@ -173,7 +175,7 @@ FILE *next_file (struct GMT_CTRL *GMT, char *name, int n_segments, char *this_fi
 
 int GMT_gmtdigitize_usage (struct GMTAPI_CTRL *API, int level)
 {
-	GMT_Message (API, GMT_TIME_NONE, "gmtdigitize %s - Digitizing and inverse map transformation of map x/y coordinates\n\n", GMT_VERSION);
+	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtdigitize %s %s [-A] [-C<device>] [-D<limit>] [-F]\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-H] [-L<lpi>] [-N<namestem>] [-S] [%s] [-Zk|v] [%s]\n", GMT_V_OPT, GMT_bo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\n", GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_colon_OPT);
@@ -272,7 +274,7 @@ int GMT_gmtdigitize_parse (struct GMT_CTRL *GMT, struct GMTDIGITIZE_CTRL *Ctrl, 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gmtdigitize_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-int GMT_gmtdigitize (struct GMTAPI_CTRL *API, int mode, void *args)
+int GMT_gmtdigitize (void *V_API, int mode, void *args)
 {
 	bool ok, multi_files;
 	int i, j, n = 0, n_read = 0, unit = 0, n_expected_fields, digunit, n_segments = 0;
@@ -299,6 +301,7 @@ int GMT_gmtdigitize (struct GMTAPI_CTRL *API, int mode, void *args)
 	struct GMTDIGITIZE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct GMT_OPTION *options = NULL;	/* Linked list of options */
+	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
@@ -636,21 +639,4 @@ int GMT_gmtdigitize (struct GMTAPI_CTRL *API, int mode, void *args)
 	}
 
 	Return (GMT_OK);
-}
-
-int main (int argc, char *argv[]) {
-
-	int status = 0;			/* Status code from GMT API */
-	struct GMTAPI_CTRL *API = NULL;		/* GMT API control structure */
-
-	/* 1. Initializing new GMT session */
-	if ((API = GMT_Create_Session (argv[0], 2U, 0U, NULL)) == NULL) exit (EXIT_FAILURE);
-
-	/* 2. Run GMT cmd function, or give usage message if errors arise during parsing */
-	status = GMT_gmtdigitize (API, argc-1, (argv+1));
-
-	/* 3. Destroy GMT session */
-	if (GMT_Destroy_Session (API)) exit (EXIT_FAILURE);
-
-	exit (status);		/* Return the status from FUNC */
 }
