@@ -1,0 +1,2 @@
+@echo off
+@GMT_MAIN_NAME@ @_gmtmodule@ %*
