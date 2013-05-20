@@ -73,22 +73,22 @@ foreach (_fig ${_scripts_ps})
 			COMMAND
 			set GMT_USERDIR=${GMT_BINARY_DIR}/share
 			set GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/ps2raster -A -P -Tf
+			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster -A -P -Tf
 			-D${CMAKE_CURRENT_BINARY_DIR}
 			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			DEPENDS ps2raster ${_fig})
+			DEPENDS gmt ${_fig})
 	else (WIN32)
 		add_custom_command (
 			OUTPUT ${_pdf_fig}
 			COMMAND
 			GMT_USERDIR=${GMT_BINARY_DIR}/share
 			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/ps2raster -A -P -Tf
+			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster -A -P -Tf
 			-D${CMAKE_CURRENT_BINARY_DIR}
 			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-			DEPENDS ps2raster ${_fig})
+			DEPENDS gmt ${_fig})
 	endif (WIN32)
 endforeach (_fig ${_scripts_ps})
 
