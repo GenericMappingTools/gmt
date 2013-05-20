@@ -42,7 +42,7 @@ original version 1.0 while we were their graduate students at
 Lamont-Doherty Earth Observatory. Doug Shearer and Roger Davis patiently
 answered many questions over e-mail. The subroutine ``gauss`` was
 written and supplied by Bill Menke. Further development of versions
-2.0–2.1 at SOEST would not have been possible without the support from
+2.0-2.1 at SOEST would not have been possible without the support from
 the HIGP/SOEST Post-Doctoral Fellowship program to Paul Wessel. Walter
 H. F. Smith gratefully acknowledges the generous support of the C. H.
 and I. M. Green Foundation for Earth Sciences at the Institute of
@@ -134,20 +134,20 @@ published, such as
    [`dimfilter.c <supplements/misc/dimfilter.c.html>`_ **misc** supplement].
 
 -  Smith, W. H. F., and P. Wessel, Gridding with Continuous Curvature
-   Splines in Tension, *Geophysics*, vol. 55 (3), pp. 293–305, 1990
+   Splines in Tension, *Geophysics*, vol. 55 (3), pp. 293-305, 1990
    [`surface.c <surface.html>`_].
 
 -  Wessel, P., A General-purpose Green's Function-based Interpolator,
-   *Computers & Geosciences*, vol. 35, pp. 1247–1254, 2009
+   *Computers & Geosciences*, vol. 35, pp. 1247-1254, 2009
    [`greenspline.c <greenspline.html>`_].
 
 -  Wessel, P., Tools for Analyzing Intersecting Tracks: the x2sys
-   package, *Computers & Geosciences*, vol. 36, 348–354, 2010
+   package, *Computers & Geosciences*, vol. 36, 348-354, 2010
    [**x2sys** supplement].
 
 -  Wessel, P. and J. M. Becker, Interpolation using a Generalized
    Green's Function for a Spherical Surface Spline in Tension, *Geophys.
-   J. Int.*, vol. 174, pp. 21–28, 2008
+   J. Int.*, vol. 174, pp. 21-28, 2008
    [`greenspline.c <greenspline.html>`_].
 
 Finally, *GMT* includes some code supplied by others, in particular the
@@ -173,7 +173,7 @@ such decisions by supporting the *GMT* project.
 Copyright and Caveat Emptor!
 ============================
 
-Copyright ©1991 – 2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J.
+Copyright ©1991 - 2013 by P. Wessel, W. H. F. Smith, R. Scharroo, J.
 Luis and F. Wobbe
 
 The Generic Mapping Tools (*GMT*) is free software; you can
@@ -217,7 +217,7 @@ versions. For a detailed history of the changes from release to release,
 see file ``ChangeLog`` in the main *GMT* directory. For a nightly snapshot of ongoing
 activity, see the online page. For a historical perspective of the
 origins and development of *GMT* see the video podcast "20 Years with
-GMT – The Generic Mapping Tools" produced following a seminar given by
+GMT - The Generic Mapping Tools" produced following a seminar given by
 Paul Wessel on the 20th anniversary of *GMT*; a link is available on the
 *GMT* website.
 
@@ -614,7 +614,7 @@ correctly with a warning under compatibility mode:
    three kinds of vectors that can be drawn: Cartesian (straight)
    vectors with **-Sv** or **-SV**, geo-vectors (great circles) with
    **-S=**, and circular vectors with **-Sm**. These are all composed of
-   a line (controlled by pen settings) and 0–2 arrow heads (control by
+   a line (controlled by pen settings) and 0-2 arrow heads (control by
    fill and outline settings). Many modifiers common to all arrows have
    been introduced using the **+key**\ [*arg*\ ] format. The *size* of a
    vector refers to the length of its head; all other quantities are
@@ -1055,7 +1055,7 @@ cookbook contains the shell scripts that were used for each example;
 have individual manual pages which can be installed as part of the
 on-line documentation under the *UNIX* **man** utility or as web
 pages. In addition, the programs offer friendly help messages which make
-them essentially self-teaching – if a user enters invalid or ambiguous
+them essentially self-teaching - if a user enters invalid or ambiguous
 command arguments, the program will print a warning to the screen with a
 synopsis of the valid arguments. All the documentation is available for
 web browsing and may be installed at the user's site.
@@ -1096,16 +1096,16 @@ these types of output:
    filtered and the filtered values output. ASCII output is written to
    the standard output stream.
 
-#. 2-D binary (netCDF or user-defined) grid files – Programs that grid
+#. 2-D binary (netCDF or user-defined) grid files - Programs that grid
    ASCII (*x,y,z*) data or operate on existing grid files produce
    this type of output.
 
-#. *PostScript* – The plotting programs all use the *PostScript*\ page
+#. *PostScript* - The plotting programs all use the *PostScript*\ page
    description language to define plots. These commands are stored as
    ASCII text and can be edited should you want to customize the plot
    beyond the options available in the programs themselves.
 
-#. Reports – Several *GMT* programs read input files and report
+#. Reports - Several *GMT* programs read input files and report
    statistics and other information. Nearly all programs have an
    optional "verbose" operation, which reports on the progress of
    computation. All programs feature usage messages, which prompt the
@@ -1157,7 +1157,7 @@ References
    AGU, 68,* 633-635, 1987.
 
 #. Smith, W. H. F., and P. Wessel, Gridding with continuous curvature
-   splines in tension, *Geophysics, 55,* 293–305, 1990.
+   splines in tension, *Geophysics, 55,* 293-305, 1990.
 
 #. Wessel, P., and W. H. F. Smith, New, improved version of Generic
    Mapping Tools released, *EOS trans. AGU*, 79, 579, 1998.
@@ -1170,7 +1170,7 @@ References
    http://www.agu.org/eos\_elec/95154e.html, 1995b.
 
 #. Wessel, P., and W. H. F. Smith, Free software helps map and display
-   data, *EOS trans. AGU*, 72, 441 & 445–446, 1991.
+   data, *EOS trans. AGU*, 72, 441 & 445-446, 1991.
 
 GMT overview and quick reference
 ================================
@@ -1537,75 +1537,85 @@ common option. There are two conventions you may use: (a) *GMT*-style
 syntax and (b) **Proj4**\ -style syntax. The projection codes for the
 *GMT*-style are tabulated below.
 
+.. | **-JA**\ :math:`lon_0/lat_0`\ [/\ *horizon*]/\ *width*   | Lambert azimuthal equal area                           |
+
+.. |lon0| replace:: lon\ :sub:`0`
+.. |lat0| replace:: lat\ :sub:`0`
+.. |lon1| replace:: lon\ :sub:`1`
+.. |lat1| replace:: lat\ :sub:`1`
+.. |lat2| replace:: lat\ :sub:`2`
+.. |lonp| replace:: lon\ :sub:`p`
+.. |latp| replace:: lat\ :sub:`p`
+
 +----------------------------------------------------------+--------------------------------------------------------+
 |         **WITH GMT PROJECTION CODES**                                                                             |
 +==========================================================+========================================================+
 | **-J** (upper case for *width*, lower case for *scale*) Map projection                                            |
 +----------------------------------------------------------+--------------------------------------------------------+
-| **-JA**\ :math:`lon_0/lat_0`\ [/\ *horizon*]/\ *width*   | Lambert azimuthal equal area                           |
+| **-JA**\ |lon0|/|lat0|\ [/\ *horizon*]/\ *width*         | Lambert azimuthal equal area                           |
 +----------------------------------------------------------+--------------------------------------------------------+
-| **-JB**\ :math:`lon_0/lat_0/lat_1/lat_2/`\ *width*       | Albers conic equal area                                |
+| **-JB**\ |lon0|/|lat0|/|lat1|/|lat2|\ *width*            | Albers conic equal area                                |
 +----------------------------------------------------------+--------------------------------------------------------+
-| **-JC**\ :math:`lon_0/lat_0/`\ *width*                   | Cassini cylindrical                                    |
+| **-JC**\ |lon0|/|lat0|\ *width*                          | Cassini cylindrical                                    |
 +----------------------------------------------------------+--------------------------------------------------------+
-| **-JCyl_stere/**\ :math:`[lon_0[/lat_0/]]`\ *width*      | Cylindrical stereographic                              |
+| **-JCyl_stere/**\ [|lon0|\ [/|lat0|/]]\ *width*          | Cylindrical stereographic                              |
 +----------------------------------------------------------+--------------------------------------------------------+
-| **-JD**\ :math:`lon_0/lat_0/lat_1/lat_2/`\ *width*       | Equidistant conic                                      |
+| **-JD**\ |lon0|/|lat0|/|lat1|/|lat2|\ *width*            | Equidistant conic                                      |
 +----------------------------------------------------------+--------------------------------------------------------+
-| **-JE**\ :math:`lon_0/lat_0`\ [/\ *horizon*]/\ *width*   | Azimuthal equidistant                                  |
+| **-JE**\ |lon0|/|lat0|\ [/\ *horizon*]/\ *width*         | Azimuthal equidistant                                  |
 +----------------------------------------------------------+--------------------------------------------------------+
-| **-JF**\ :math:`lon_0/lat_0`\ [/\ *horizon*]/\ *width*   | Azimuthal gnomonic                                     |
+| **-JF**\ |lon0|/|lat0|\ [/\ *horizon*]/\ *width*         | Azimuthal gnomonic                                     |
 +----------------------------------------------------------+--------------------------------------------------------+
-| **-JG**\ :math:`lon_0/lat_0`\ [/\ *horizon*]/\ *width*   | Azimuthal orthographic                                 |
+| **-JG**\ |lon0|/|lat0|\ [/\ *horizon*]/\ *width*         | Azimuthal orthographic                                 |
 +----------------------------------------------------------+--------------------------------------------------------+
-| **-JG**\ :math:`lon_0/lat_0`\                            |                                                        | 
+| **-JG**\ |lon0|/|lat0|\                                  |                                                        | 
 | *alt*/*azim*/*tilt*/*twist*/*W*/*H/width*                | General perspective                                    |
 +----------------------------------------------------------+--------------------------------------------------------+
-| **-JH**\ :math:`lon_0/`\ *width*                         | Hammer equal area                                      |
+| **-JH**\ |lon0|\ *width*                                 | Hammer equal area                                      |
 +----------------------------------------------------------+--------------------------------------------------------+
-| **-JI**\ :math:`lon_0/`\ *width*                         | Sinusoidal equal area                                  |
+| **-JI**\ |lon0|\ *width*                                 | Sinusoidal equal area                                  |
 +----------------------------------------------------------+--------------------------------------------------------+
-| **-JJ**\ :math:`lon_0/`\ *width*                         | Miller cylindrical                                     |
+| **-JJ**\ |lon0|\ *width*                                 | Miller cylindrical                                     |
 +----------------------------------------------------------+--------------------------------------------------------+
-| **-JKf**\ :math:`lon_0/`\ *width*                        | Eckert IV equal area                                   |
+| **-JKf**\ |lon0|\ *width*                                | Eckert IV equal area                                   |
 +----------------------------------------------------------+--------------------------------------------------------+
-| **-JKs**\ :math:`lon_0/`\ *width*                        | Eckert VI equal area                                   |
+| **-JKs**\ |lon0|\ *width*                                | Eckert VI equal area                                   |
 +----------------------------------------------------------+--------------------------------------------------------+
-| **-JL**\ :math:`lon_0/lat_0/lat_1/lat_2/`\ *width*       | Lambert conic conformal                                |
+| **-JL**\ |lon0|/|lat0|/|lat1|/|lat2|\ *width*            | Lambert conic conformal                                |
 +----------------------------------------------------------+--------------------------------------------------------+
-| **-JM**\ :math:`[lon_0[/lat_0/]]`\ *width*               | Mercator cylindrical                                   |
+| **-JM**\ [|lon0|\ [/|lat0|/]]\ *width*                   | Mercator cylindrical                                   |
 +----------------------------------------------------------+--------------------------------------------------------+
-| **-JN**\ :math:`[lon_0/]`\ *width*                       | Robinson                                               |
+| **-JN**\ [|lon0|/]\ *width*                              | Robinson                                               |
 +----------------------------------------------------------+--------------------------------------------------------+
-| **-JOa**\ :math:`lon_0/lat_0/`\ *azim*/*width*           | Oblique Mercator, 1: origin and azimuth                |
+| **-JOa**\ |lon0|/|lat0|\ *azim*/*width*                  | Oblique Mercator, 1: origin and azimuth                |
 +----------------------------------------------------------+--------------------------------------------------------+
-| **-JOb**\ :math:`lon_0/lat_0/lon_1/lat_1/`\ *width*      | Oblique Mercator, 2: two points                        |
+| **-JOb**\ |lon0|/|lat0|/|lon1|/|lat1|\ *width*           | Oblique Mercator, 2: two points                        |
 +----------------------------------------------------------+--------------------------------------------------------+
-| **-JOc**\ :math:`lon_0/lat_0/lon_p/lat_p/`\ *width*      | Oblique Mercator, 3: origin and pole                   |
+| **-JOc**\ |lon0|/|lat0|/|lonp|/|latp|\ *width*           | Oblique Mercator, 3: origin and pole                   |
 +----------------------------------------------------------+--------------------------------------------------------+
 | **-JP**\ [**a**]\ *width*\ [/*origin*]                   | Polar [azimuthal] (:math:`\theta, r`) (or cylindrical) |
 +----------------------------------------------------------+--------------------------------------------------------+
-| **-JPoly**\ :math:`[lon_0[/lat_0/]]`\ *width*            | (American) polyconic                                   |
+| **-JPoly**\ [|lon0|\ [/|lat0|/]]\ *width*                | (American) polyconic                                   |
 +----------------------------------------------------------+--------------------------------------------------------+
-| **-JQ**\ :math:`[lon_0[/lat_0/]]`\ *width*               | Equidistant cylindrical                                |
+| **-JQ**\ [|lon0|\ [/|lat0|/]]\ *width*                   | Equidistant cylindrical                                |
 +----------------------------------------------------------+--------------------------------------------------------+
-| **-JR**\ :math:`[lon_0/]`\ *width*                       | Winkel Tripel                                          |
+| **-JR**\ [|lon0|/]\ *width*                              | Winkel Tripel                                          |
 +----------------------------------------------------------+--------------------------------------------------------+
-| **-JS**\ :math:`lon_0/lat_0`\ [/\ *horizon*]/\ *width*   | General stereographic                                  |
+| **-JS**\ |lon0|/|lat0|\ [/\ *horizon*]/\ *width*         | General stereographic                                  |
 +----------------------------------------------------------+--------------------------------------------------------+
-| **-JT**\ :math:`[lon_0[/lat_0/]]`\ *width*               | Transverse Mercator                                    |
+| **-JT**\ [|lon0|\ [/|lat0|/]]\ *width*                   | Transverse Mercator                                    |
 +----------------------------------------------------------+--------------------------------------------------------+
 | **-JU**\ *zone*/*width*                                  | Universal Transverse Mercator (UTM)                    |
 +----------------------------------------------------------+--------------------------------------------------------+
-| **-JV**\ :math:`[lon_0/]`\ *width*                       | Van der Grinten                                        |
+| **-JV**\ [|lon0|/]\ *width*                              | Van der Grinten                                        |
 +----------------------------------------------------------+--------------------------------------------------------+
-| **-JW**\ :math:`[lon_0/]`\ *width*                       | Mollweide                                              |
+| **-JW**\ [|lon0|/]\ *width*                              | Mollweide                                              |
 +----------------------------------------------------------+--------------------------------------------------------+
 | **-JX**\ *width*\ [**l**\ \|\ **p**\ *exp*\ \|\          |                                                        | 
 | **T**\ \|\ **t**][/\ *height*\ [**l**\ \|\ **p**\        |                                                        |
 | *exp*\ \|\ **T**\ \|\ **t**]][**d**]                     | Linear, log\ :math:`_{10}`, :math:`x^a-y^b`, and time  |
 +----------------------------------------------------------+--------------------------------------------------------+
-| **-JY**\ :math:`lon_0/lat_0/`\ *width*                   | Cylindrical equal area                                 |
+| **-JY**\ |lon0|/|lat0|\ *width*                          | Cylindrical equal area                                 |
 +----------------------------------------------------------+--------------------------------------------------------+
 
 The projection codes for the **Proj4**-style are tabulated below;
@@ -1616,66 +1626,66 @@ these all accept a map *scale*.
 +============================================================+=======================================================+
 | **-J** (lower case for *scale* only) Map projection                                                                |
 +------------------------------------------------------------+-------------------------------------------------------+
-| **-Jaea/**\ :math:`lon_0/lat_0/lat_1/lat_2/`\ *scale*      | Albers conic equal area                               |
+| **-Jaea/**\ |lon0|/|lat0|/|lat1|/|lat2|\ *scale*           | Albers conic equal area                               |
 +------------------------------------------------------------+-------------------------------------------------------+
-| **-Jaeqd/**\ :math:`lon_0/lat_0`\ [/\ *horizon*]/\ *scale* | Azimuthal equidistant                                 |
+| **-Jaeqd/**\ |lon0|/|lat0|\ [/\ *horizon*]/\ *scale*       | Azimuthal equidistant                                 |
 +------------------------------------------------------------+-------------------------------------------------------+
-| **-Jcass/**\ :math:`lon_0/lat_0/`\ *scale*                 | Cassini cylindrical                                   |
+| **-Jcass/**\ |lon0|/|lat0|\ *scale*                        | Cassini cylindrical                                   |
 +------------------------------------------------------------+-------------------------------------------------------+
-| **-Jcea/**\ :math:`lon_0/lat_0/`\ *scale*                  | Cylindrical equal area                                |
+| **-Jcea/**\ |lon0|/|lat0|\ *scale*                         | Cylindrical equal area                                |
 +------------------------------------------------------------+-------------------------------------------------------+
-| **-Jcyl_stere/**\ :math:`[lon_0[/lat_0/]]`\ *scale*        | Cylindrical stereographic                             |
+| **-Jcyl_stere/**\ [|lon0|\ [/|lat0|/]]\ *scale*            | Cylindrical stereographic                             |
 +------------------------------------------------------------+-------------------------------------------------------+
-| **-Jeqc/**\ :math:`[lon_0[/lat_0/]]`\ *scale*              | Equidistant cylindrical                               |
+| **-Jeqc/**\ [|lon0|\ [/|lat0|/]]\ *scale*                  | Equidistant cylindrical                               |
 +------------------------------------------------------------+-------------------------------------------------------+
-| **-Jeqdc/**\ :math:`lon_0/lat_0/lat_1/lat_2/`\ *scale*     | Equidistant conic                                     |
+| **-Jeqdc/**\ |lon0|/|lat0|/|lat1|/|lat2|\ *scale*          | Equidistant conic                                     |
 +------------------------------------------------------------+-------------------------------------------------------+
-| **-Jgnom/**\ :math:`lon_0/lat_0`\ [/\ *horizon*]/\ *scale* | Azimuthal gnomonic                                    |
+| **-Jgnom/**\ |lon0|/|lat0|\ [/\ *horizon*]/\ *scale*       | Azimuthal gnomonic                                    |
 +------------------------------------------------------------+-------------------------------------------------------+
-| **-Jhammer/**\ :math:`lon_0/`\ *scale*                     | Hammer equal area                                     |
+| **-Jhammer/**\ |lon0|\ *scale*                             | Hammer equal area                                     |
 +------------------------------------------------------------+-------------------------------------------------------+
-| **-Jeck4/**\ :math:`lon_0/`\ *scale*                       | Eckert IV equal area                                  |
+| **-Jeck4/**\ |lon0|\ *scale*                               | Eckert IV equal area                                  |
 +------------------------------------------------------------+-------------------------------------------------------+
-| **-Jeck6/**\ :math:`lon_0/`\ *scale*                       | Eckert VI equal area                                  |
+| **-Jeck6/**\ |lon0|\ *scale*                               | Eckert VI equal area                                  |
 +------------------------------------------------------------+-------------------------------------------------------+
-| **-Jlaea/**\ :math:`lon_0/lat_0`\ [/\ *horizon*]/\ *scale* | Lambert azimuthal equal area                          |
+| **-Jlaea/**\ |lon0|/|lat0|\ [/\ *horizon*]/\ *scale*       | Lambert azimuthal equal area                          |
 +------------------------------------------------------------+-------------------------------------------------------+
-| **-Jlcc/**\ :math:`lon_0/lat_0/lat_1/lat_2/`\ *scale*      | Lambert conic conformal                               |
+| **-Jlcc/**\ |lon0|/|lat0|/|lat1|/|lat2|\ *scale*           | Lambert conic conformal                               |
 +------------------------------------------------------------+-------------------------------------------------------+
-| **-Jmerc/**\ :math:`[lon_0[/lat_0/]]`\ *scale*             | Mercator cylindrical                                  |
+| **-Jmerc/**\ [|lon0|\ [/|lat0|/]]\ *scale*                 | Mercator cylindrical                                  |
 +------------------------------------------------------------+-------------------------------------------------------+
-| **-Jmill/**\ :math:`lon_0/`\ *scale*                       | Miller cylindrical                                    |
+| **-Jmill/**\ |lon0|\ *scale*                               | Miller cylindrical                                    |
 +------------------------------------------------------------+-------------------------------------------------------+
-| **-Jmoll/**\ :math:`[lon_0/]`\ *scale*                     | Mollweide                                             |
+| **-Jmoll/**\ [|lon0|/]\ *scale*                            | Mollweide                                             |
 +------------------------------------------------------------+-------------------------------------------------------+
-| **-Jnsper/**\ :math:`lon_0/lat_0`\                         |                                                       | 
+| **-Jnsper/**\ |lon0|/|lat0|\                               |                                                       | 
 | *alt/azim/tilt/twist/W/H/scale*                            | General perspective                                   |
 +------------------------------------------------------------+-------------------------------------------------------+
-| **-Jomerc/**\ :math:`lon_0/lat_0/`\ *azim*/*scale*         | Oblique Mercator, 1: origin and azimuth               |
+| **-Jomerc/**\ |lon0|/|lat0|\ *azim*/*scale*                | Oblique Mercator, 1: origin and azimuth               |
 +------------------------------------------------------------+-------------------------------------------------------+
-| **-Jomerc/**\ :math:`lon_0/lat_0/lon_1/lat_1/`\ *scale*    | Oblique Mercator, 2: two points                       |
+| **-Jomerc/**\ |lon0|/|lat0|/|lon1|/|lat1|\ *scale*         | Oblique Mercator, 2: two points                       |
 +------------------------------------------------------------+-------------------------------------------------------+
-| **-Jomercp/**\ :math:`lon_0/lat_0/lon_p/lat_p/`\ *scale*   | Oblique Mercator, 3: origin and pole                  |
+| **-Jomercp/**\ :|lon0|/|lat0|/|lonp|/|latp|\ *scale*       | Oblique Mercator, 3: origin and pole                  |
 +------------------------------------------------------------+-------------------------------------------------------+
-| **-Jortho/**\ :math:`lon_0/lat_0`\ [/\ *horizon*]/\ *scale*| Azimuthal orthographic                                |
+| **-Jortho/**\ |lon0|/|lat0|\ [/\ *horizon*]/\ *scale*      | Azimuthal orthographic                                |
 +------------------------------------------------------------+-------------------------------------------------------+
 | **-Jpolar/**\ [**a**]\ *scale*\ [/*origin*]                | Polar [azimuthal] (:math:`\theta, r`) (or cylindrical)|
 +------------------------------------------------------------+-------------------------------------------------------+
-| **-Jpoly/**\ :math:`[lon_0[/lat_0/]]`\ *scale*             | (American) polyconic                                  |
+| **-Jpoly/**\ [|lon0|\ [/|lat0|/]]\ *scale*                 | (American) polyconic                                  |
 +------------------------------------------------------------+-------------------------------------------------------+
-| **-Jrobin/**\ :math:`[lon_0/]`\ *scale*                    | Robinson                                              |
+| **-Jrobin/**\ [|lon0|/]\ *scale*                           | Robinson                                              |
 +------------------------------------------------------------+-------------------------------------------------------+
-| **-Jsinu/**\ :math:`lon_0/`\ *scale*                       | Sinusoidal equal area                                 |
+| **-Jsinu/**\ |lat0|\ *scale*                               | Sinusoidal equal area                                 |
 +------------------------------------------------------------+-------------------------------------------------------+
-| **-Jstere/**\ :math:`lon_0/lat_0`\ [/\ *horizon*]/\ *scale*| General stereographic                                 |
+| **-Jstere/**\ |lon0|/|lat0|\ [/\ *horizon*]/\ *scale*      | General stereographic                                 |
 +------------------------------------------------------------+-------------------------------------------------------+
-| **-Jtmerc/**\ :math:`[lon_0[/lat_0/]]`\ *scale*            | Transverse Mercator                                   |
+| **-Jtmerc/**\ [|lon0|\ [/|lat0|/]]\ *scale*                | Transverse Mercator                                   |
 +------------------------------------------------------------+-------------------------------------------------------+
 | **-Jutm/**\ *zone*/*scale*                                 | Universal Transverse Mercator (UTM)                   |
 +------------------------------------------------------------+-------------------------------------------------------+
-| **-Jvandg/**\ :math:`[lon_0/]`\ *scale*                    | Van der Grinten                                       |
+| **-Jvandg/**\ [|lon0|/]\ *scale*                           | Van der Grinten                                       |
 +------------------------------------------------------------+-------------------------------------------------------+
-| **-Jwintri/**\ :math:`[lon_0/]`\ *scale*                   | Winkel Tripel                                         |
+| **-Jwintri/**\ [|lon0|/]\ *scale*                          | Winkel Tripel                                         |
 +------------------------------------------------------------+-------------------------------------------------------+
 | **-Jxy**\ *xscale*\ [**l**\ \|\ **p**\ *exp*\ \|\          |                                                       | 
 | **T**\ \|\ **t**][/\ *yscale*\ [**l**\ \|\ **p**\          |                                                       |
@@ -1788,7 +1798,7 @@ Distance calculations
 
 The calculation of distances on Earth (or other planetary bodies)
 depends on the ellipsoidal parameters of the body (via
-**PROJ\_ELLIPSOID**) and the method of computation. *GMT* offers three
+**PROJ_ELLIPSOID**) and the method of computation. *GMT* offers three
 alternatives that trade off accuracy and computation time.
 
 Flat Earth distances
@@ -1838,8 +1848,8 @@ Note: There are two additional
 `GMT <http://gmt.soest.hawaii.edu>`_ defaults that control how
 great circle (and Flat Earth) distances are computed. One concerns the
 selection of the "mean radius". This is selected by
-**PROJ\_MEAN\_RADIUS**, which selects one of several possible
-representative radii. The second is **PROJ\_AUX\_LATITUDE**, which
+**PROJ_MEAN_RADIUS**, which selects one of several possible
+representative radii. The second is **PROJ_AUX_LATITUDE**, which
 converts geodetic latitudes into one of several possible auxiliary
 latitudes that are better suited for the spherical approximation. While
 both settings have default values to best approximate geodesic distances
@@ -1959,10 +1969,10 @@ ways in which this can be accomplished.
 #. If all you want to achieve is to change a few parameters during the
    execution of a single command but otherwise leave the environment
    intact, consider passing the parameter changes on the command line
-   via the ``–``\ *PAR=value* mechanism. For instance, to temporarily
+   via the ``-``\ *PAR=value* mechanism. For instance, to temporarily
    set the output format for floating points to have lots of decimals,
    say, for map projection coordinate output, append
-   ``–``\ **FORMAT\_FLOAT\_OUT**\ =%.16lg to the command in question.
+   ``-``\ **FORMAT_FLOAT_OUT**\ =%.16lg to the command in question.
 
 #. Finally, *GMT* provides to possibility to override the settings only
    during the running of a single script, reverting to the original
@@ -2127,16 +2137,16 @@ Projected coordinates:
 
 Calendar time coordinates:
     These are absolute time coordinates referring to a Gregorian or ISO
-    calendar. The general format is [*date*\ ]\ **T**\ [*clock*\ ],
-    where *date* must be in the *yyyy*\ [*-mm*\ [*-dd*\ ]] (year, month,
-    day-of-month) or *yyyy*\ [*-jjj*\ ] (year and day-of-year) for
-    Gregorian calendars and *yyyy*\ [*-*\ **W**\ *ww*\ [*-d*\ ]] (year,
+    calendar. The general format is [*date*]\ **T**\ [*clock*],
+    where *date* must be in the *yyyy*\ [*-mm*\ [*-dd*]] (year, month,
+    day-of-month) or *yyyy*\ [*-jjj*] (year and day-of-year) for
+    Gregorian calendars and *yyyy*\ [*-*\ **W**\ *ww*\ [*-d*]] (year,
     week, and day-of-week) for the ISO calendar. If no *date* is given
     we assume the present day. Following the [optional] *date* string we
     require the **T** flag.
 
     The optional *clock* string is a 24-hour clock in
-    *hh*\ [*:mm*\ [*:ss*\ [*.xxx*\ ]]] format. If no *clock* is given it
+    *hh*\ [*:mm*\ [*:ss*\ [*.xxx*]]] format. If no *clock* is given it
     implies 00:00:00, i.e., the start of the specified day. Note that
     not all of the specified entities need be present in the data. All
     calendar date-clock strings are internally represented as double
@@ -2149,8 +2159,8 @@ Calendar time coordinates:
 Relative time coordinates:
     These are coordinates which count seconds, hours, days or years
     relative to a given epoch. A combination of the parameters
-    **TIME\_EPOCH** and **TIME\_UNIT** define the epoch and time unit.
-    The parameter **TIME\_SYSTEM** provides a few shorthands for common
+    **TIME_EPOCH** and **TIME_UNIT** define the epoch and time unit.
+    The parameter **TIME_SYSTEM** provides a few shorthands for common
     combinations of epoch and unit, like **j2000** for days since noon
     of 1 Jan 2000. The default relative time coordinate is that of UNIX
     computers: seconds since 1 Jan 1970. Denote relative time
@@ -2328,11 +2338,11 @@ and arc seconds, respectively, when a map projection is in effect.
 +------------+------------------+----------------------------------------------------------------------------+
 | **O**      | month            | Format annotation using **FORMAT\_DATE\_MAP**                              |
 +------------+------------------+----------------------------------------------------------------------------+
-| **o**      | month            | Plot as 2-digit integer (1–12)                                             |
+| **o**      | month            | Plot as 2-digit integer (1-12)                                             |
 +------------+------------------+----------------------------------------------------------------------------+
 | **U**      | ISO week         | Format annotation using **FORMAT\_DATE\_MAP**                              |
 +------------+------------------+----------------------------------------------------------------------------+
-| **u**      | ISO week         | Plot as 2-digit integer (1–53)                                             |
+| **u**      | ISO week         | Plot as 2-digit integer (1-53)                                             |
 +------------+------------------+----------------------------------------------------------------------------+
 | **r**      | Gregorian week   | 7-day stride from start of week (see **TIME\_WEEK\_START**)                |
 +------------+------------------+----------------------------------------------------------------------------+
@@ -2342,7 +2352,7 @@ and arc seconds, respectively, when a map projection is in effect.
 +------------+------------------+----------------------------------------------------------------------------+
 | **D**      | date             | Format annotation using **FORMAT\_DATE\_MAP**                              |
 +------------+------------------+----------------------------------------------------------------------------+
-| **d**      | day              | Plot day of month (1–31) or day of year (1–366)                            |
+| **d**      | day              | Plot day of month (1-31) or day of year (1-366)                            |
 +------------+------------------+----------------------------------------------------------------------------+
 |            |                  | (see **FORMAT\_DATE\_MAP**                                                 |
 +------------+------------------+----------------------------------------------------------------------------+
@@ -2350,15 +2360,15 @@ and arc seconds, respectively, when a map projection is in effect.
 +------------+------------------+----------------------------------------------------------------------------+
 | **H**      | hour             | Format annotation using **FORMAT\_CLOCK\_MAP**                             |
 +------------+------------------+----------------------------------------------------------------------------+
-| **h**      | hour             | Plot as 2-digit integer (0–24)                                             |
+| **h**      | hour             | Plot as 2-digit integer (0-24)                                             |
 +------------+------------------+----------------------------------------------------------------------------+
 | **M**      | minute           | Format annotation using **FORMAT\_CLOCK\_MAP**                             |
 +------------+------------------+----------------------------------------------------------------------------+
-| **m**      | minute           | Plot as 2-digit integer (0–60)                                             |
+| **m**      | minute           | Plot as 2-digit integer (0-60)                                             |
 +------------+------------------+----------------------------------------------------------------------------+
 | **S**      | seconds          | Format annotation using **FORMAT\_CLOCK\_MAP**                             |
 +------------+------------------+----------------------------------------------------------------------------+
-| **s**      | seconds          | Plot as 2-digit integer (0–60)                                             |
+| **s**      | seconds          | Plot as 2-digit integer (0-60)                                             |
 +------------+------------------+----------------------------------------------------------------------------+
 
 [tbl:units]
@@ -2377,9 +2387,9 @@ Geographic basemaps
 
 Geographic basemaps may differ from regular plot axis in that some
 projections support a "fancy" form of axis and is selected by the
-**MAP\_FRAME\_TYPE** setting. The annotations will be formatted
-according to the **FORMAT\_GEO\_MAP** template and
-**MAP\_DEGREE\_SYMBOL** setting. A simple example of part of a basemap
+**MAP_FRAME_TYPE** setting. The annotations will be formatted
+according to the **FORMAT_GEO_MAP** template and
+**MAP_DEGREE_SYMBOL** setting. A simple example of part of a basemap
 is shown in Figure .
 
 The machinery for primary and secondary annotations introduced for
@@ -2392,14 +2402,14 @@ attributes for grid lines and grid crosses, see Figure .
 Cartesian linear axes
 ^^^^^^^^^^^^^^^^^^^^^
 
-For non-geographic axes, the **MAP\_FRAME\_TYPE** setting is implicitly
+For non-geographic axes, the **MAP_FRAME_TYPE** setting is implicitly
 set to plain. Other than that, cartesian linear axes are very similar to
 geographic axes. The annotation format may be controlled with the
-**FORMAT\_FLOAT\_OUT** parameter. By default, it is set to "%g", which
+**FORMAT_FLOAT_OUT** parameter. By default, it is set to "%g", which
 is a C language format statement for floating point numbers [13]_, and
 with this setting the various axis routines will automatically determine
 how many decimal points should be used by inspecting the *stride*
-settings. If **FORMAT\_FLOAT\_OUT** is set to another format it will be
+settings. If **FORMAT_FLOAT_OUT** is set to another format it will be
 used directly (.e.g, "%.2f" for a fixed, two decimals format). Note that
 for these axes you may use the *unit* setting to add a unit string to
 each annotation (see Figure ).
@@ -2412,7 +2422,7 @@ parameter takes on specific meanings. The following concerns are
 specific to log axes:
 
 #. *stride* must be 1, 2, 3, or a negative integer -n.
-   Annotations/ticks will then occur at 1, 1–2–5, or 1,2,3,4,...,9,
+   Annotations/ticks will then occur at 1, 1-2-5, or 1,2,3,4,...,9,
    respectively, for each magnitude range. For *-n* the
    annotations will take place every *n*\ 'th magnitude.
 
@@ -2491,7 +2501,7 @@ case abbreviation of month names using the current language (selected by
 
 The fourth example (Figure ) only shows a few hours of a day, using
 relative time by specifying **t** in the **-R** option while the
-**TIME\_UNIT** is **d** (for days). We select both primary and secondary
+**TIME_UNIT** is **d** (for days). We select both primary and secondary
 annotations, ask for a 12-hour clock, and let time go from right to
 left:
 
@@ -2507,8 +2517,8 @@ The upper uses Gregorian weeks (which start at the day chosen by
 
    ::
 
-    gmtset FORMAT_DATE_MAP u FORMAT_TIME_PRIMARY_MAP Character FORMAT_TIME_SECONDARY_MAP full \
-           FONT_ANNOT_PRIMARY +9p
+    gmtset FORMAT_DATE_MAP u FORMAT_TIME_PRIMARY_MAP Character \
+           FORMAT_TIME_SECONDARY_MAP full FONT_ANNOT_PRIMARY +9p
     psbasemap -R1969-7-21T/1969-8-9T/0/1 -JX5i/0.2i -Bpa1K -Bsa1U -BS -P -K > GMT_-B_time5.ps
     gmtset FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_TIME_SECONDARY_MAP Chararacter
     psbasemap -R -J -Bpa3Kf1k -Bsa1r -BS -O -Y0.65i >> GMT_-B_time5.ps 
@@ -2593,9 +2603,9 @@ to have *Landscape* orientation. If the long dimension of the paper
 parallels the *y*-axis the orientation is called *Portrait* (think of
 taking pictures with a camera and these words make sense). The default
 Landscape orientation is obtained by translating the origin in the
-*x*-direction (by the width of the chosen paper **PS\_MEDIA)** and then
+*x*-direction (by the width of the chosen paper **PS_MEDIA)** and then
 rotating the coordinate system counterclockwise by 90. By default the
-**PS\_MEDIA** is set to Letter (or A4 if SI is chosen); this value must
+**PS_MEDIA** is set to Letter (or A4 if SI is chosen); this value must
 be changed when using different media, such as 11" x 17" or large format
 plotters (Figure ).
 
@@ -2634,15 +2644,15 @@ error and warning messages. This is the default or can be selected by
 using **-Vn**. If compiled with backward-compatibility support, the
 default is **-Vc**, which includes warnings about deprecated usage.
 Finally, **-Vq** can be used to run without any warnings or errors. This
-option can also be set by specifying the default **GMT\_VERBOSE**, as
-**quiet**, **normal**, **compat**, **verbose**, **long\_verbose**, or
+option can also be set by specifying the default **GMT_VERBOSE**, as
+**quiet**, **normal**, **compat**, **verbose**, **long_verbose**, or
 **debug**, in order of increased verbosity.
 
 Plot positioning and layout: The **-X** **-Y** options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The **-X** and **-Y** options shift origin of plot by (*xoff*,\ *yoff*)
-inches (Default is (**MAP\_ORIGIN\_X**, **MAP\_ORIGIN\_Y**) for new
+inches (Default is (**MAP_ORIGIN_X**, **MAP_ORIGIN_Y**) for new
 plots [15]_ and (0,0) for overlays (**-O**)). By default, all
 translations are relative to the previous origin (see Figure ). Supply
 offset as **c** to center the plot in that direction relative to the
@@ -2668,7 +2678,7 @@ option allows you to supply one or more comma-separated associations
 OGR/GMT file and whose value we wish to as data input for column *col*.
 The given aspatial field thus replaces any other value already set. Note
 that *col = 0* is the first data columns. Note that if no aspatial
-attributes are needed then the **-a** option is not needed – *GMT* will
+attributes are needed then the **-a** option is not needed - *GMT* will
 still process and read such data files.
 
 OGR/GMT input with **-a** option
@@ -2773,7 +2783,7 @@ column (or range of columns) separated by commas. Each string starts
 with the column number (0 is first column) followed by either **x**
 (longitude), **y** (latitude), **T** (absolute calendar time) or **t**
 (relative time). If several consecutive columns have the same format you
-may specify a range of columns rather than a single column, i.e., 0–4
+may specify a range of columns rather than a single column, i.e., 0-4
 for the first 5 columns. For example, if our input file has geographic
 coordinates (latitude, longitude) with absolute calendar coordinates in
 the columns 3 and 4, we would specify
@@ -2819,7 +2829,7 @@ the unit is instead controlled by **TIME\_UNIT**.
 Header data records: The **-h** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[sec:header] The **-h**\ [**i**\ \|\ **o**][*n\_recs*\ ] option
+[sec:header] The **-h**\ [**i**\ \|\ **o**][*n_recs*] option
 lets *GMT* know that input file(s) have *n\_recs* header records [0]. If
 there are more than one header record you must specify the number after
 the **-h** option, e.g., **-h**\ 4. Note that blank lines and records
@@ -2828,15 +2838,15 @@ records and skipped. Thus, *n\_recs* refers to general text lines that
 do *not* start with # and thus must specifically be skipped in order for
 the programs to function properly. The default number of such header
 records if **-h** is used is one of the many parameters in the ``gmt.conf`` file
-(**IO\_N\_HEADER\_RECS**, by default 0), but can be overridden by
-**-h**\ *n\_header\_recs*. Normally, programs that both read and write
+(**IO_N_HEADER_RECS**, by default 0), but can be overridden by
+**-h**\ *n_header_recs*. Normally, programs that both read and write
 tables will output the header records that are found on input. Use
 **-hi** to suppress the writing of header records. You can use the
 **-h** options modifiers to to tell programs to output extra header
 records for titles, remarks or column names identifying each data column.
 
 When **-b** is used to indicate binary data the **-h** takes on a
-slightly different meaning. Now, the *n\_recs* argument is taken to mean
+slightly different meaning. Now, the *n_recs* argument is taken to mean
 how many *bytes* should be skipped (on input) or padded with the space
 character (on output).
 
@@ -2975,7 +2985,7 @@ While the *PostScript* language does not support transparency, PDF does,
 and via *PostScript* extensions one can manipulate the transparency
 levels of objects. The **-t** option allows you to change the
 transparency level for the current overlay by appending a percentage in
-the 0–100 range; the default is 0, or opaque. Transparency may also be
+the 0-100 range; the default is 0, or opaque. Transparency may also be
 controlled on a feature by feature basis when setting color or fill (see
 section [sec:fill]).
 
@@ -3259,18 +3269,18 @@ option argument, with commas separating the given attributes, e.g.,
 :math:`\rightarrow`
     The *color* can be specified in five different ways:
 
-    #. Gray. Specify a *gray* shade in the range 0–255 (linearly going
+    #. Gray. Specify a *gray* shade in the range 0-255 (linearly going
        from black [0] to white [255]).
 
-    #. RGB. Specify *r*/*g*/*b*, each ranging from 0–255. Here 0/0/0 is
+    #. RGB. Specify *r*/*g*/*b*, each ranging from 0-255. Here 0/0/0 is
        black, 255/255/255 is white, 255/0/0 is red, etc.
 
     #. HSV. Specify *hue*-*saturation*-*value*, with the former in the
-       0–360 degree range while the latter two take on the range
-       0–1 [17]_.
+       0-360 degree range while the latter two take on the range
+       0-1 [17]_.
 
     #. CMYK. Specify *cyan*/*magenta*/*yellow*/*black*, each ranging
-       from 0–100%.
+       from 0-100%.
 
     #. Name. Specify one of 663 valid color names. Use **man
        gmtcolors** to list all valid names. A very small yet versatile
@@ -3350,17 +3360,17 @@ symbols. The fill specification may take two forms:
 **-Gp**\ *dpi/pattern*\ [:**B**\ *color*\ [**F**\ *color*]]
 
 fill:
-    In the first case we may specify a *gray* shade (0–255), RGB color
-    (*r*/*g*/*b* all in the 0–255 range or in hexadecimal *#rrggbb*),
-    HSV color (*hue*-*saturation*-*value* in the 0–360, 0–1, 0–1 range),
+    In the first case we may specify a *gray* shade (0-255), RGB color
+    (*r*/*g*/*b* all in the 0-255 range or in hexadecimal *#rrggbb*),
+    HSV color (*hue*-*saturation*-*value* in the 0-360, 0-1, 0-1 range),
     CMYK color (*cyan*/*magenta*/*yellow*/*black*, each ranging from
-    0–100%), or a valid color *name*; in that respect it is similar to
+    0-100%), or a valid color *name*; in that respect it is similar to
     specifying the pen color settings (see pen color discussion under
     Section [sec:pen]).
 
 pattern:
     The second form allows us to use a predefined bit-image pattern.
-    *pattern* can either be a number in the range 1–90 or the name of a
+    *pattern* can either be a number in the range 1-90 or the name of a
     1-, 8-, or 24-bit Sun raster file. The former will result in one of
     the 90 predefined 64 x 64 bit-patterns provided with *GMT* and
     reproduced in Appendix [app:E]. The latter allows the user to create
@@ -3375,7 +3385,7 @@ pattern:
     images one may specify alternative background and foreground colors
     (by appending :**B**\ *color*\ [**F**\ *color*]) that will replace
     the default white and black pixels, respectively. Setting one of the
-    fore- or background colors to – yields a *transparent* image where
+    fore- or background colors to - yields a *transparent* image where
     only the back- *or* foreground pixels will be painted.
 
 Due to *PostScript* implementation limitations the raster images used
@@ -3403,7 +3413,7 @@ Table [tbl:fillex] contains a few examples of fill specifications.
 +---------------------------+-----------------------------------------------------+
 | **-G**\ #00ff00           | Green, hexadecimal RGB code                         |
 +---------------------------+-----------------------------------------------------+
-| **-G**\ 25-0.86-0.82      | Chocolate, h-s-v – style                            |
+| **-G**\ 25-0.86-0.82      | Chocolate, h-s-v - style                            |
 +---------------------------+-----------------------------------------------------+
 | **-G**\ DarkOliveGreen1   | One of the named colors                             |
 +---------------------------+-----------------------------------------------------+
@@ -3509,7 +3519,7 @@ consecutive. The format is
 +-------------------+----------+--------------+
 | key\ :math:`_1`   | *Fill*   | [;*label*]   |
 +-------------------+----------+--------------+
-| …                 |          |              |
+| ...               |          |              |
 +-------------------+----------+--------------+
 | key\ :math:`_n`   | *Fill*   | [;*label*]   |
 +-------------------+----------+--------------+
@@ -3537,7 +3547,7 @@ interpolations, the format of the regular CPT files is:
 
 llllll :math:`z_0` & Color\ :math:`_{min}` & :math:`z_1` &
 Color\ :math:`_{max}` & [**A] & [;*label*]
-…& & & & &
+& & & & &
 z\ :math:`_{n-2}` & Color\ :math:`_{min}` & :math:`z_{n-1}` &
 Color\ :math:`_{max}` & [**A**] & [;*label*]
 **
@@ -3577,8 +3587,8 @@ which can be inserted into the beginning or end of the CPT file. If you
 prefer the HSV system, set the ``gmt.conf`` parameter accordingly and replace red,
 green, blue with hue, saturation, value. Color palette tables that
 contain gray-shades only may replace the *r/g/b* triplets with a single
-gray-shade in the 0–255 range. For CMYK, give *c/m/y/k* values in the
-0–100 range.
+gray-shade in the 0-255 range. For CMYK, give *c/m/y/k* values in the
+0-100 range.
 
 A few programs (i.e., those that plot polygons such as
 `grdview <grdview.html>`_, `psscale <psscale.html>`_,
@@ -3588,10 +3598,10 @@ of gray-shades. You must specify the pattern as in Section [sec:fill]
 (no leading **-G** of course), and only the first pattern (for low
 *z*) is used (we cannot interpolate between patterns). Finally,
 some programs let you skip features whose *z*-slice in the CPT
-file has gray-shades set to –. As an example, consider
+file has gray-shades set to -. As an example, consider
 
-| lllll 30 & p200/16 & 80 & –
-| 80 & – & 100 & –
+| lllll 30 & p200/16 & 80 & -
+| 80 & - & 100 & -
 | 100 & 200/0/0 & 200/255/255 & 0
 | 200 & yellow & 300 & green
 
@@ -3881,7 +3891,7 @@ Everything looks clearer after a few examples:
 #. To read a Golden Software "surfer" format 6 grid file, just pass the
    file name, e.g., ``my_surferfile.grd``.
 
-#. To read a 8-bit standard Sun raster file (with values in the 0–255
+#. To read a 8-bit standard Sun raster file (with values in the 0-255
    range) and convert it to a 1 range, give the name as ``rasterfile=rb/7.84313725e-3/-1`` (i.e., 1/127.5).
 
 #. To write a native binary short integer grid file to standard output
@@ -3904,7 +3914,7 @@ to specify the various file formats. The user may create a file called
 ``~/.gmt`` and define any number of custom formats. The following is an example of
 a ``.gmt_io`` file:
 
-| # suffix format\_id scale ōffset NaNxxxComments # GMT i/o shorthand file
+| # suffix format_id scale offset NaNxxxComments # GMT i/o shorthand file
 | # It can have any number of comment lines like this one anywhere
 | # suffix format\_id scale offset NaNComments
 | grd nf - - - Default format
@@ -3918,7 +3928,7 @@ a ``.gmt_io`` file:
 | ns ns a a - 16-bit integer netCDF grid with auto-scale and auto-offset
 
 These suffices can be anything that makes sense to the user. To activate
-this mechanism, set parameter **IO\_GRIDFILE\_SHORTHAND** to TRUE in
+this mechanism, set parameter **IO_GRIDFILE_SHORTHAND** to TRUE in
 your ``gmt.conf`` file. Then, using the filename ``stuff.i2`` is equivalent to saying ``stuff.i2=bs///32767``, and the
 filename ``wet.mask`` means wet.mask=bm/1/0/0. For a file intended for masking, i.e.,
 the nodes are either 1 or NaN, the bit or mask format file may be as
@@ -3979,7 +3989,7 @@ Since COARDS-compliant netCDF files are the default, the additional
 suffix "=nf" can be omitted.
 
 In case the named grid is 3-dimensional, *GMT* will load the first
-(bottom) layer. If another layer is required, either add "[*index*\ ]"
+(bottom) layer. If another layer is required, either add "[*index*]"
 or "(*level*)", where *index* is the index of the third (depth) variable
 (starting at 0 for the first layer) and *level* is the numerical value
 of the third (depth) variable associated with the requested layer. To
@@ -4049,7 +4059,7 @@ If, for example, only the second temperature column is needed, use
 
 The COARDS conventions set restrictions on the names that can be used
 for the units of the variables and coordinates. For example, the units
-of longitude and latitude are "degrees\_east" and "degrees\_north",
+of longitude and latitude are "degrees_east" and "degrees_north",
 respectively. Here is an example of the header of a COARDS compliant
 netCDF file (to be obtained using **ncdump**):
 
@@ -4105,7 +4115,7 @@ Reading multi-band images
 
 `grdimage <grdimage.html>`_ and `psimage <psimage.html>`_ both lets the user select
 individual bands in a multi-band image file and treats the result as an
-image (that is the values, in the 0–255 range, are treated as colors,
+image (that is the values, in the 0-255 range, are treated as colors,
 not data). To select individual bands you use the **+b**\ *band-number*
 mechanism that must be appended to the image filename. Here,
 *band-number* can be the number of one individual band (the counting
@@ -4253,13 +4263,13 @@ and vice versa, thus facilitating arbitrary masking and clipping of data
 sets. Note that a few computers do not have native IEEE hardware
 support. At this point, this applies to some of the older Cray
 super-computers. Users on such machines may have to adopt the old
-‘-9999.99'' scheme to achieve the desired results.
+'-9999.99' scheme to achieve the desired results.
 
 Data records that contain NaN values for the *x* or *y* columns (or the
 *z* column for cases when 3-D Cartesian data are expected) are usually
 skipped during reading. However, the presence of these bad records can
 be interpreted in two different ways, and this behavior is controlled by
-the **IO\_NAN\_RECORDS** defaults parameter. The default setting (*gap*)
+the **IO_NAN_RECORDS** defaults parameter. The default setting (*gap*)
 considers such records to indicate a gap in an otherwise continuous
 series of points (e.g., a line), and programs can act upon this
 information, e.g., not to draw a line across the gap or to break the
@@ -4267,8 +4277,8 @@ line into separate segments. The alternative setting (*bad*) makes no
 such interpretation and simply reports back how many bad records were
 skipped during reading; see Section [sec:gap] for details.
 
-`GMT <http://gmt.soest.hawaii.edu>`_ environment parameters
-----------------------------------------------------------------
+GMT environment parameters
+--------------------------
 
 *GMT* relies on several environment parameters, in particular to find
 data files and program settings.
@@ -4351,15 +4361,15 @@ Cartesian transformations
 
 -  Power (exponential) coordinate transformation
 
-These transformations convert input coordinates :math:`(x,y)` to
-locations :math:`(x', y')` on a plot. There is no coupling between
-*x* and *y* (i.e., :math:`x' = f(x)` and :math:`y' = f(y)`);
+These transformations convert input coordinates *(x,y)* to
+locations *(x', y')* on a plot. There is no coupling between
+*x* and *y* (i.e., *x' = f(x)* and *y' = f(y)*);
 it is a **one-dimensional** projection. Hence, we may use separate
 transformations for the *x*- and *y*-axes (and
 *z*-axes for 3-D plots). Below, we will use the expression
-:math:`u' = f(u)`, where *u* is either *x* or *y* (or
-*z* for 3-D plots). The coefficients in :math:`f(u)` depend on the
-desired plot size (or scale), the chosen :math:`(x,y)` domain, and the
+*u' = f(u)*, where *u* is either *x* or *y* (or
+*z* for 3-D plots). The coefficients in *f(u)* depend on the
+desired plot size (or scale), the chosen *(x,y)* domain, and the
 nature of *f* itself.
 
 Two subsets of linear will be discussed separately; these are a polar
@@ -4388,7 +4398,7 @@ Regular floating point coordinates
 
 Selection of the Cartesian linear transformation with regular floating
 point coordinates will result in a simple linear scaling
-:math:`u' = au + b` of the input coordinates. The projection is defined
+*u' = au + b* of the input coordinates. The projection is defined
 by stating
 
 -  scale in inches/unit (**-Jx**) or axis length in inches (**-JX**)
@@ -4472,9 +4482,10 @@ general, the options provided with **-JX** will prevail.
 
    ::
 
-    gmtset FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_CLOCK_MAP=-hham FORMAT_TIME_PRIMARY_MAP full
-    psbasemap -R2001-9-24T/2001-9-29T/T07:0/T15:0 -JX4i/-2i -Bxa1Kf1kg1d -Bya1Hg1h -BWsNe+glightyellow \
-              -P > GMT_linear_cal.ps
+    gmtset FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_CLOCK_MAP=-hham \
+           FORMAT_TIME_PRIMARY_MAP full
+    psbasemap -R2001-9-24T/2001-9-29T/T07:0/T15:0 -JX4i/-2i -Bxa1Kf1kg1d -Bya1Hg1h \
+              -BWsNe+glightyellow -P > GMT_linear_cal.ps
 
 Cartesian logarithmic projection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4487,7 +4498,8 @@ Hence, to produce a plot in which the *x*-axis is logarithmic (the
 
    ::
 
-    psxy -R1/100/0/10 -Jx1.5il/0.15i -Bx2g3 -Bya2f1g2 -BWSne+gbisque -Wthick,blue,- -P -K -h sqrt.d > GMT_log.ps
+    psxy -R1/100/0/10 -Jx1.5il/0.15i -Bx2g3 -Bya2f1g2 -BWSne+gbisque -Wthick,blue,- \
+         -P -K -h sqrt.d > GMT_log.ps
     psxy -R -J -Ss0.1i -N -Gred -W -O -h sqrt.d10 >> GMT_log.ps
 
 Note that if *x*- and *y*-scaling are different and a
@@ -4509,7 +4521,8 @@ to the linear transformation. Thus our command becomes
 
    ::
 
-    psxy -R0/100/0/10 -Jx0.3ip0.5/0.15i -Bxa1p -Bya2f1 -BWSne+givory -Wthick -P -K sqrt.d > GMT_pow.ps
+    psxy -R0/100/0/10 -Jx0.3ip0.5/0.15i -Bxa1p -Bya2f1 -BWSne+givory \
+         -Wthick -P -K sqrt.d > GMT_pow.ps
     psxy -R -J -Sc0.075i -Ggreen -W -O sqrt.d10 >> GMT_pow.ps
 
 Linear projection with polar (:math:`\theta, r`) coordinates (**-Jp** **-JP**)
@@ -4546,7 +4559,7 @@ Consequently, the polar transformation is defined by providing
 -  Optionally, append /\ *origin* in degrees to indicate an angular offset [0]
 
 -  Optionally, append **r** to reverse the radial direction (here,
-   *south* and *north* must be elevations in 0–90 range).
+   *south* and *north* must be elevations in 0-90 range).
 
 -  Optionally, append **z** to annotate depths rather than radius.
 
@@ -4573,9 +4586,9 @@ GMT Map Projections
 
 *GMT* implements more than 30 different projections. They all project
 the input coordinates longitude and latitude to positions on a map. In
-general, :math:`x' = f(x,y,z)` and :math:`y' = g(x,y,z)`, where
+general, *x' = f(x,y,z)* and *y' = g(x,y,z)*, where
 *z* is implicitly given as the radial vector length to the
-:math:`(x,y)` point on the chosen ellipsoid. The functions *f* and
+*(x,y)* point on the chosen ellipsoid. The functions *f* and
 *g* can be quite nasty and we will refrain from presenting details
 in this document. The interested read is referred to *Snyder*
 [1987] [21]_. We will mostly be using the
@@ -4649,7 +4662,8 @@ therefore given by:
    ::
 
     gmtset MAP_GRID_CROSS_SIZE_PRIMARY 0
-    pscoast -R110/140/20/35 -JB125/20/25/45/5i -Bag -Dl -Ggreen -Wthinnest -A250 -P > GMT_albers.ps
+    pscoast -R110/140/20/35 -JB125/20/25/45/5i -Bag -Dl -Ggreen -Wthinnest -A250 \
+            -P > GMT_albers.ps
 
 Equidistant conic projection (**-Jd** **-JD**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4707,13 +4721,13 @@ use degrees west for longitudes. The generating commands used were
    ::
 
     gmtset MAP_FRAME_TYPE FANCY FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0.05i
-    pscoast -R-130/-70/24/52 -Jl-100/35/33/45/1:50000000 -Bag -Dl -N1/thick,red -N2/thinner \
-            -A500 -Gtan -Wthinnest,white -Sblue -P > GMT_lambert_conic.ps
+    pscoast -R-130/-70/24/52 -Jl-100/35/33/45/1:50000000 -Bag -Dl -N1/thick,red \
+            -N2/thinner -A500 -Gtan -Wthinnest,white -Sblue -P > GMT_lambert_conic.ps
 
 The choice for projection center does not affect the projection but it
 indicates which meridian (here 100W) will be vertical on the map. The
 standard parallels were originally selected by Adams to provide a
-maximum scale error between latitudes 30.5N and 47.5N of 0.5–1%. Some
+maximum scale error between latitudes 30.5N and 47.5N of 0.5-1%. Some
 areas, like Florida, experience scale errors of up to 2.5%.
 
 (American) polyconic projection (**-Jpoly** **-JPoly**
@@ -4741,8 +4755,8 @@ every 10 and annotations only every 30 in longitude:
 
    ::
 
-    pscoast -R-180/-20/0/90 -JPoly/4i -Bx30g10 -By10g10 -Dc -A1000 -Glightgray -Wthinnest -P \
-            > GMT_polyconic.ps
+    pscoast -R-180/-20/0/90 -JPoly/4i -Bx30g10 -By10g10 -Dc -A1000 -Glightgray -Wthinnest \
+            -P > GMT_polyconic.ps
 
 Azimuthal projections
 ---------------------
@@ -4760,7 +4774,7 @@ following information:
 -  Longitude and latitude of the projection center.
 
 -  Optionally, the horizon, i.e., the number of degrees from the center
-   to the edge (:math:`\le`\ 180, default is 90).
+   to the edge (<= 180, default is 90).
 
 -  Scale as 1:xxxxx or as radius/latitude where radius is the projected
    distance on the map from projection center to an oblique latitude
@@ -4784,8 +4798,8 @@ rectangular by defining the corners of a rectangular map boundary. Using
    ::
 
     gmtset FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0
-    pscoast -R0/-40/60/-10r -JA30/-30/4.5i -Bag -Dl -A500 -Gp300/10 -Wthinnest -P \
-            > GMT_lambert_az_rect.ps
+    pscoast -R0/-40/60/-10r -JA30/-30/4.5i -Bag -Dl -A500 -Gp300/10 -Wthinnest \
+            -P > GMT_lambert_az_rect.ps
 
 Note that an "r" is appended to the **-R** option to inform *GMT* that
 the region has been selected using the rectangle technique, otherwise it
@@ -4844,8 +4858,8 @@ An example is given by
 
    ::
 
-    pscoast -R-30/30/60/72 -Js0/90/4.5i/60 -B10g -Dl -A250 -Groyalblue \
-            -Sseashell -P > GMT_stereographic_polar.ps
+    pscoast -R-30/30/60/72 -Js0/90/4.5i/60 -B10g -Dl -A250 -Groyalblue -Sseashell -P \
+            > GMT_stereographic_polar.ps
 
 Rectangular stereographic map
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -4860,8 +4874,8 @@ Figure [fig:GMT\ :sub:`s`\ tereographic\ :sub:`r`\ ect]:
    ::
 
     gmtset MAP_ANNOT_OBLIQUE 30
-    pscoast -R-25/59/70/72r -JS10/90/11c -B20g -Dl -A250 -Gdarkbrown -Wthinnest -P \
-            -Slightgray > GMT_stereographic_rect.ps
+    pscoast -R-25/59/70/72r -JS10/90/11c -B20g -Dl -A250 -Gdarkbrown -Wthinnest -Slightgray \
+            -P > GMT_stereographic_rect.ps
 
 General stereographic map
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -4874,8 +4888,8 @@ hemispheric maps. Our example shows Australia using a projection pole at
    ::
 
     gmtset MAP_ANNOT_OBLIQUE 0
-    pscoast -R100/-42/160/-8r -JS130/-30/4i -Bag -Dl -A500 -Ggreen -P \
-            -Slightblue -Wthinnest > GMT_stereographic_general.ps
+    pscoast -R100/-42/160/-8r -JS130/-30/4i -Bag -Dl -A500 -Ggreen -Slightblue -Wthinnest \
+            -P > GMT_stereographic_general.ps
 
 By choosing 0/0as the pole, we obtain the conformal stereonet presented
 next to its equal-area cousin in the Section [sec:lamb] on the Lambert
@@ -4923,8 +4937,8 @@ looking due east is thus accomplished by the following
 
    ::
 
-    pscoast -Rg -JG4/52/230/90/60/180/60/60/5i -Bx2g2 -By1g1 -Ia -Di -Glightbrown -Wthinnest -P \
-            -Slightblue --MAP_ANNOT_MIN_SPACING=0.25i > GMT_perspective.ps
+    pscoast -Rg -JG4/52/230/90/60/180/60/60/5i -Bx2g2 -By1g1 -Ia -Di -Glightbrown -Wthinnest \
+            -P -Slightblue --MAP_ANNOT_MIN_SPACING=0.25i > GMT_perspective.ps
 
 Orthographic projection (**-Jg** **-JG**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4945,7 +4959,7 @@ To specify the orthographic projection the same options **-Jg** or
 -  Longitude and latitude of the projection center.
 
 -  Optionally, the horizon, i.e., the number of degrees from the center
-   to the edge (:math:`\le`\ 90, default is 90).
+   to the edge (<= 90, default is 90).
 
 -  Scale as 1:xxxxx or as radius/latitude where radius is distance on
    map in inches from projection center to a particular [possibly
@@ -4974,7 +4988,7 @@ To specify the azimuthal equidistant projection you must supply:
 -  Longitude and latitude of the projection center.
 
 -  Optionally, the horizon, i.e., the number of degrees from the center
-   to the edge (:math:`\le`\ 180, default is 180).
+   to the edge (<= 180, default is 180).
 
 -  Scale as 1:xxxxx or as radius/latitude where radius is distance on
    map in inches from projection center to a particular [possibly
@@ -4987,7 +5001,8 @@ in this projection this point plots as the entire map perimeter:
 
    ::
 
-    pscoast -Rg -JE-100/40/4.5i -Bg -Dc -A10000 -Glightgray -Wthinnest -P > GMT_az_equidistant.ps
+    pscoast -Rg -JE-100/40/4.5i -Bg -Dc -A10000 -Glightgray -Wthinnest -P \
+            > GMT_az_equidistant.ps
 
 Gnomonic projection (**-Jf** **-JF**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5019,7 +5034,8 @@ Using a horizon of 60, our example of this projection centered on
 
    ::
 
-    pscoast -Rg -JF-120/35/60/4.5i -B30g15 -Dc -A10000 -Gtan -Scyan -Wthinnest -P > GMT_gnomonic.ps
+    pscoast -Rg -JF-120/35/60/4.5i -B30g15 -Dc -A10000 -Gtan -Scyan -Wthinnest \
+            -P > GMT_gnomonic.ps
 
 Cylindrical projections
 -----------------------
@@ -5076,7 +5092,8 @@ which will give a map 4.32 inch wide. It was created with the command:
    ::
 
     gmtset MAP_FRAME_TYPE fancy
-    pscoast -R0/360/-70/70 -Jm1.2e-2i -Bxa60f15 -Bya30f15 -Dc -A5000 -Gred -P > GMT_mercator.ps
+    pscoast -R0/360/-70/70 -Jm1.2e-2i -Bxa60f15 -Bya30f15 -Dc -A5000 -Gred \
+            -P > GMT_mercator.ps
 
 While this example is centered on the Dateline, one can easily choose
 another configuration with the **-R** option. A map centered on
@@ -5108,15 +5125,16 @@ central meridian:
 
    ::
 
-    pscoast -R20/30/50/45r -Jt35/0.18i -Bag -Dl -A250 -Glightbrown -Wthinnest -P \
-            -Sseashell > GMT_transverse_merc.ps
+    pscoast -R20/30/50/45r -Jt35/0.18i -Bag -Dl -A250 -Glightbrown -Wthinnest \
+            -P -Sseashell > GMT_transverse_merc.ps
 
-The transverse Mercator can also be used to generate a global map—the
+The transverse Mercator can also be used to generate a global map - the
 equivalent of the 360 Mercator map. Using the command
 
    ::
 
-    pscoast -R0/360/-80/80 -JT330/-45/3.5i -Ba30g -BWSne -Dc -A2000 -Slightblue -G0 -P > GMT_TM.ps
+    pscoast -R0/360/-80/80 -JT330/-45/3.5i -Ba30g -BWSne -Dc -A2000 \
+            -Slightblue -G0 -P > GMT_TM.ps
 
 we made the map illustrated in Figure [fig:GMT\ :sub:`T`\ M]. Note that
 when a world map is given (indicated by **-R**\ *0/360/s/n*), the
@@ -5149,9 +5167,9 @@ all zone designations.
 *GMT* implements both the transverse Mercator and the UTM projection.
 When selecting UTM you must specify:
 
--  UTM zone (A, B, 1–60, Y, Z). Use negative values for numerical zones
-   in the southern hemisphere or append the latitude modifiers C–H, J–N,
-   P–X) to specify an exact UTM grid zone.
+-  UTM zone (A, B, 1-60, Y, Z). Use negative values for numerical zones
+   in the southern hemisphere or append the latitude modifiers C-H, J-N,
+   P-X) to specify an exact UTM grid zone.
 
 -  Scale along the equator in inch/degree or 1:xxxxx (**-Ju**), or map
    width (**-JU**).
@@ -5207,8 +5225,9 @@ Our example was produced by the command
 
    ::
 
-    pscoast -R270/20/305/25r -JOc280/25.5/22/69/4.8i -Bag -Di -A250 -Gburlywood -Wthinnest -P \
-            -Tf301.5/23/0.4i/2 -Sazure --FONT_TITLE=8p --MAP_TITLE_OFFSET=0.05i > GMT_obl_merc.ps
+    pscoast -R270/20/305/25r -JOc280/25.5/22/69/4.8i -Bag -Di -A250 -Gburlywood \
+            -Wthinnest -P -Tf301.5/23/0.4i/2 -Sazure --FONT_TITLE=8p \
+            --MAP_TITLE_OFFSET=0.05i > GMT_obl_merc.ps
 
 It uses definition 3 for an oblique view of some Caribbean islands. Note
 that we define our region using the rectangular system described
@@ -5370,8 +5389,8 @@ follows:
 
    ::
 
-    pscoast -R-90/270/-80/90 -Jj1:400000000 -Bx45g45 -By30g30 -Dc -A10000 -Gkhaki -Wthinnest -P \
-            -Sazure > GMT_miller.ps
+    pscoast -R-90/270/-80/90 -Jj1:400000000 -Bx45g45 -By30g30 -Dc -A10000 -Gkhaki \
+            -Wthinnest -P -Sazure > GMT_miller.ps
 
 Cylindrical stereographic projections (**-Jcyl_stere** **-JCyl_stere**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -7246,7 +7265,7 @@ The following recipe is used when designing a new symbol.
    *r* around :math:`x_0`, :math:`y_0`
 
    The optional **-G** and **-W** can be used to hardwire the color fill
-   and pen for segments (use **–** to disallow fill or line for any
+   and pen for segments (use **-** to disallow fill or line for any
    specific feature). By default the segments are painted based on the
    values of the command line settings.
 
@@ -7797,7 +7816,7 @@ not show up. If you want a more accurate map you can set the parameter
 *D* to a smaller increment (try 5 and wait a few minutes).
 
 The call to `grdimage <grdimage.html>`_ includes the
-``–Sn`` to suspend interpolation and only return the value of the
+``-Sn`` to suspend interpolation and only return the value of the
 nearest neighbor. This option is particularly practical for plotting
 categorical data, like these, that should not be interpolated.
 
@@ -8112,7 +8131,7 @@ imaged with `grdimage <grdimage.html>`_ and
     
     # This example uses 370 radio occultation data for Mars to grid the topography.
     # Data and information from Smith, D. E., and M. T. Zuber (1996), The shape of
-    # Mars and the topographic signature of the hemispheric dichotomy, Science, 271, 184–187.
+    # Mars and the topographic signature of the hemispheric dichotomy, Science, 271, 184-187.
     
     # Make Mars PROJ_ELLIPSOID given their three best-fitting axes:
     a=3399.472
@@ -8701,7 +8720,7 @@ Animation of the sine function
 ------------------------------
 
 Our first animation is not very ambitious: We wish to plot the sine
-function from 0–360 and take snap shots every 20. To get a smooth curve
+function from 0-360 and take snap shots every 20. To get a smooth curve
 we must sample the function much more frequently; we settle on 10 times
 more frequently than the frame spacing. We place a bright red circle at
 the leading edge of the curve, and as we move forward in time (here,
@@ -9838,7 +9857,7 @@ firmware will not know about the euro).
    :height: 1130 px
    :width: 626 px
    :align: center
-   :scale: 50 %
+   :scale: 40 %
 
    Figure F.1: Octal codes and corresponding symbols for StandardEncoding (left) and ISOLatin1Encoding (right) fonts.
 
@@ -9915,7 +9934,7 @@ only need to point the ``GS_FONTPATH`` environment variable to the
 directory where the font files can be found and invoke
 `ps2raster <ps2raster.html>`_ in the usual way. Likewise
 you can specify **Ghostscript**\ 's ``-sFONTPATH`` option on the
-command line with ``–C-sFONTPATH=/path/to/fontdir``. **Ghostscript**,
+command line with ``C -sFONTPATH=/path/to/fontdir``. **Ghostscript**,
 which is invoked by `ps2raster <ps2raster.html>`_, does
 not depend on file names. It will automatically find the relevant font
 files by their *PostScript*-names and embed and subset them in
@@ -10896,7 +10915,7 @@ Conditional statements
 
 There are two types of conditional statements in the macro language: A
 simple condition preceding a single command, or a more elaborate
-if–then–elseif–else construct. In any test you may use one (and only
+if-then-elseif-else construct. In any test you may use one (and only
 one) of many logical operators, as listed in Table [tbl:custop].
 
 [H]
@@ -11014,7 +11033,7 @@ of their use.
 Label Placement
 ---------------
 
-While the previous *GMT* versions 1–3 allowed for a single algorithm
+While the previous *GMT* versions 1-3 allowed for a single algorithm
 that determined where labels would be placed, *GMT* 4 allows for five
 different algorithms. Furthermore, a new "symbol" option (**-Sq** for
 "quoted line") has been added to `psxy <psxy.html>`_ and
@@ -11103,7 +11122,7 @@ N:
     Full syntax is
     **N**\ *number*\ [/*minlength*\ [**c\ \|\ i\ \|\ p**]].
     Similar to code **n** but here labels are placed at the ends of each
-    segment (for *number* :math:`\geq 2`). A special case arises for
+    segment (for *number* >= 2). A special case arises for
     *number = 1* when a single label will be placed according to
     the sign of *number*: -1 places one label justified at the
     start of the line, while +1 places one label justified at
@@ -11204,7 +11223,7 @@ universally. These codes are:
 +u:
     Append the chosen *unit* to the label. Normally a space will
     separate the label and the unit. If you want to close this gap,
-    append a *unit* that begins with a hyphen (–). If you are contouring
+    append a *unit* that begins with a hyphen (-). If you are contouring
     with `grdcontour <grdcontour.html>`_ and you specify
     this option without appending a unit, the unit will be taken from
     the *z*-unit attribute of the grid header.
@@ -11937,7 +11956,7 @@ Finally we show an example of a polygon file:
 .. [7]
    Vicenty, T. (1975), Direct and inverse solutions of geodesics on the
    ellipsoid with application of nested equations, *Surv. Rev.,
-   XXII(176)*, 88–93.
+   XXII(176)*, 88-93.
 
 .. [8]
    *PostScript* definition. In the typesetting industry a slightly
@@ -12036,7 +12055,7 @@ Finally we show an example of a polygon file:
 
 .. [29]
    You could also use `img2mercgrd <img2mercgrd.html>`_
-   directly – your only option under DOS
+   directly - your only option under DOS
 
 .. [30]
    While Quicktime is free you must upgrade to QuickTime Pro (USD 30) to
@@ -12065,7 +12084,7 @@ Finally we show an example of a polygon file:
 .. [37]
    Okabe, M., 1979, Analytical expressions for gravity anomalies due to
    polyhedral bodies and translation into magnetic anomalies,
-   *Geophysics, 44*, 730–741.
+   *Geophysics, 44*, 730-741.
 
 .. [38]
    Timothy.J.Henstock@soc.soton.ac.uk
@@ -12090,7 +12109,7 @@ Finally we show an example of a polygon file:
 .. [44]
    Douglas, D.H., and T. K. Peucker, 1973, Algorithms for the reduction
    of the number of points required to represent a digitized line or its
-   caricature, *Canadian Cartographer*, 10, 112–122.
+   caricature, *Canadian Cartographer*, 10, 112-122.
 
 .. [45]
    The full and high resolution files are in separate archives because
@@ -12101,7 +12120,7 @@ Finally we show an example of a polygon file:
    If you need complete polygons in a simpler format, see the article on
    GSHHG (Wessel, P., and W. H. F. Smith, 1996, A Global,
    self-consistent, hierarchical, high-resolution shoreline database,
-   *J. Geophys. Res. 101*, 8741–8743).
+   *J. Geophys. Res. 101*, 8741-8743).
 
 .. [47]
    Microsoft Services for *UNIX* is formerly known as Interix, in the

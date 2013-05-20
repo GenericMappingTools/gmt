@@ -4,8 +4,8 @@ gmt.conf
 
 gmt.conf - Configuration for **GMT**
 
-`Description <#toc1>`_
-----------------------
+Description
+-----------
 
 The following is a list of the parameters that are user-definable in
 **GMT**. The parameter names are always given in UPPER CASE. The
@@ -23,11 +23,11 @@ parameters can be changed on-the-fly via the **-**\ **-PARAMETER**\ =\ *VALUE*
 option to any **GMT** program. However, a few are static and are only
 read via the **gmt.conf** file; these are labeled (static).
 
-`Common Specifications <#toc2>`_
---------------------------------
+Common Specifications
+---------------------
 
 The full explanation for how to specify pens, pattern fills, colors, and
-fonts can be found in the `gmt <gmt.html>`_ man page.
+fonts can be found in the `gmt <gmt.html>`__ man page.
 
 
 +---------------------------------+----------------+
@@ -56,65 +56,60 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
 
 .. _COLOR Parameters:
 
-**COLOR\_BACKGROUND**
+**COLOR_BACKGROUND**
     Color used for the background of images (i.e., when z < lowest color
     table entry) [black].
-**COLOR\_FOREGROUND**
+**COLOR_FOREGROUND**
     Color used for the foreground of images (i.e., when z > highest
     color table entry) [white].
-**COLOR\_HSV\_MAX\_SATURATION**
-    Maximum saturation (0-1) assigned for most positive intensity value
-    [0.1].
-**COLOR\_HSV\_MIN\_SATURATION**
-    Minimum saturation (0-1) assigned for most negative intensity value
-    [1.0].
-**COLOR\_HSV\_MAX\_VALUE**
-    Maximum value (0-1) assigned for most positive intensity value
-    [1.0].
-**COLOR\_HSV\_MIN\_VALUE**
-    Minimum value (0-1) assigned for most negative intensity value
-    [0.3].
-**COLOR\_MODEL**
+**COLOR_HSV_MAX_SATURATION**
+    Maximum saturation (0-1) assigned for most positive intensity value [0.1].
+**COLOR_HSV_MIN_SATURATION**
+    Minimum saturation (0-1) assigned for most negative intensity value [1.0].
+**COLOR_HSV_MAX_VALUE**
+    Maximum value (0-1) assigned for most positive intensity value [1.0].
+**COLOR_HSV_MIN_VALUE**
+    Minimum value (0-1) assigned for most negative intensity value [0.3].
+**COLOR_MODEL**
     Selects in which color space a color palette should be interpolated.
     By default, color interpolation takes place directly on the RGB
     values which can produce some unexpected hues, whereas interpolation
     directly on the HSV values better preserves those hues. The choices
-    are: **none** (default: use whatever the COLOR\_MODEL setting in the
+    are: **none** (default: use whatever the COLOR_MODEL setting in the
     color palette file demands), **rgb** (force interpolation in RGB),
     **hsv** (force interpolation in HSV), **cmyk** (assumes colors are
     in CMYK but interpolates in RGB).
-**COLOR\_NAN**
-    Color used for the non-defined areas of images (i.e., where z ==
-    NaN) [127.5].
+**COLOR_NAN**
+    Color used for the non-defined areas of images (i.e., where z == NaN) [127.5].
 
 .. _DIR Parameters:
 
-**DIR\_GSHHG**
-    Path to GSHHG files. Defaults to **$GMT\_SHAREDIR**/coast if empty.
-**DIR\_TMP**
-    Replaces the session temp dir **$GMT\_TMPDIR** from the environment.
-**DIR\_USER**
-    Replaces the session user dir **$GMT\_USERDIR** from the
+**DIR_GSHHG**
+    Path to GSHHG files. Defaults to **$GMT_SHAREDIR**/coast if empty.
+**DIR_TMP**
+    Replaces the session temp dir **$GMT_TMPDIR** from the environment.
+**DIR_USER**
+    Replaces the session user dir **$GMT_USERDIR** from the
     environment.
 
 .. _FONT Parameters:
 
 **FONT**
-    Sets the default for all fonts, except FONT\_LOGO. This setting is
+    Sets the default for all fonts, except FONT_LOGO. This setting is
     not included in the **gmt.conf** file.
-**FONT\_ANNOT\_PRIMARY**
+**FONT_ANNOT_PRIMARY**
     Font used for primary annotations, etc. [12p,Helvetica,black]. When
     **+** is prepended, scale fonts, offsets and tick-lengths relative
-    to **FONT\_ANNOT\_PRIMARY**.
-**FONT\_ANNOT\_SECONDARY**
+    to **FONT_ANNOT_PRIMARY**.
+**FONT_ANNOT_SECONDARY**
     Font to use for time axis secondary annotations
     [14p,Helvetica,black].
-**FONT\_LABEL**
+**FONT_LABEL**
     Font to use when plotting labels below axes [16p,Helvetica,black].
-**FONT\_LOGO**
+**FONT_LOGO**
     Font to use for text plotted as part of the GMT time logo
     [8p,Helvetica,black].
-**FONT\_TITLE**
+**FONT_TITLE**
     Font to use when plotting titles over graphs [24p,Helvetica,black].
 
 .. _FORMAT Parameters:
@@ -173,7 +168,7 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
     date strings in data fields. You may specify either Gregorian
     calendar format or ISO week calendar format. Gregorian calendar: Use
     any combination of yyyy (or yy for 2-digit years; if so see
-    **TIME\_Y2K\_OFFSET\_YEAR**), mm (or o for abbreviated month name in
+    **TIME_Y2K_OFFSET_YEAR**), mm (or o for abbreviated month name in
     the current time language), and dd, with or without delimiters. For
     day-of-year data, use jjj instead of mm and/or dd. As examples, try
     yy/mm/dd, yyyy=jjj, dd-o-yyyy, dd-mm-yy, yy-mm, etc. ISO Calendar:
@@ -272,7 +267,7 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
     FFTW can "learn" how to optimally compute Fourier transforms on the
     current hardware and OS by computing several FFTs and measuring
     their execution time. This so gained "Wisdom" will be stored in and
-    reloaded from the file fftw\_wisdom\_<hostname> in DIR_USER or, if
+    reloaded from the file fftw_wisdom_<hostname> in DIR_USER or, if
     DIR_USER is not writable, in the current directory. To use this
     feature append *planner_flag*, which can be one of *measure*,
     *patient*, and *exhaustive*; see FFTW reference for details. The
@@ -312,11 +307,11 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
 
 .. _I/O Parameters:
 
-**IO\_COL\_SEPARATOR**
+**IO_COL_SEPARATOR**
     This setting determines what character will separate ASCII output
     data columns written by **GMT**. Choose from tab, space, comma, and
     none [tab].
-**IO\_GRIDFILE\_FORMAT**
+**IO_GRIDFILE_FORMAT**
     Default file format for grids, with optional scale, offset and
     invalid value, written as *ff*/*scale*/*offset*/*invalid*. The
     2-letter format indicator can be one of
@@ -329,28 +324,28 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
     (=*id/a* is a shorthand for =\ *id/a/a*). When *invalid* is omitted
     the appropriate value for the given format is used (NaN or largest
     negative). [nf].
-**IO\_GRIDFILE\_SHORTHAND**
+**IO_GRIDFILE_SHORTHAND**
     If true, all grid file names are examined to see if they use the
     file extension shorthand discussed in Section 4.17 of the **GMT**
     Technical Reference and Cookbook. If false, no filename expansion is
     done [false].
-**IO\_HEADER**
+**IO_HEADER**
     (**\* -h**) Specifies whether input/output ASCII files have header
     record(s) or not [false].
-**IO\_LONLAT\_TOGGLE**
+**IO_LONLAT_TOGGLE**
     (**\* -:**) Set if the first two columns of input and output files
     contain (latitude,longitude) or (y,x) rather than the expected
     (longitude,latitude) or (x,y). false means we have (x,y) both on
     input and output. true means both input and output should be (y,x).
     IN means only input has (y,x), while OUT means only output should be
     (y,x). [false].
-**IO\_N\_HEADER\_RECS**
+**IO_N_HEADER_RECS**
     Specifies how many header records to expect if **-h** is used [0].
     Note: This will skip the specified number of records regardless of
     what they are.  Since any records starting with # is automatically
     considered a header you will only specify a non-zero number in order
     to skip headers that do not conform to that convention.
-**IO\_NAN\_RECORDS**
+**IO_NAN_RECORDS**
     Determines what happens when input records containing NaNs for *x*
     or *y* (and in some cases *z*) are read. Choose between **skip**,
     which will simply report how many bad records were skipped, and
@@ -359,7 +354,7 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
     NaNs as well, but some will interpret these NaN records to indicate
     gaps in a series; programs may then use that information to detect
     segmentation (if applicable).
-**IO\_NC4\_CHUNK\_SIZE**
+**IO_NC4_CHUNK_SIZE**
     Sets the default chunk size for the **lat** and **lon** dimension of
     the **z** variable. This produces netCDF version 4 files which can
     only be read with the netCDF 4 library. Very large chunk sizes and
@@ -368,9 +363,9 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
     precision floating point variable of size 2896x2896 completely fills
     the chunk cache of 32MiB. Specify the chunk size for each dimension
     separated by a comma, or **a**\ uto for optimally chosen chunk sizes
-    in the range [128,256). Set IO\_NC4\_CHUNK\_SIZE to **c**\ lassic
+    in the range [128,256). Set IO_NC4_CHUNK_SIZE to **c**\ lassic
     for classic netCDF. [auto]
-**IO\_NC4\_DEFLATION\_LEVEL**
+**IO_NC4_DEFLATION_LEVEL**
     Sets the compression level for netCDF4 files upon output. This
     produces netCDF version 4 files which can only be read with the
     netCDF 4 library. Values allowed are integers between 0 (no
@@ -378,7 +373,7 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
     1 can dramatically improve performance and reduce the size of
     certain data. While higher compression levels further reduce the
     data size, they do so at the cost of extra processing time. [0]
-**IO\_SEGMENT\_MARKER**
+**IO_SEGMENT_MARKER**
     This holds the character we expect to indicate a segment header in
     an incoming ASCII data or text table [>]. If this marker should be
     different for output then append another character for the output
@@ -394,16 +389,16 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
 
 .. _MAP Parameters:
 
-**MAP\_ANNOT\_MIN\_ANGLE**
+**MAP_ANNOT_MIN_ANGLE**
     If the angle between the map boundary and the annotation baseline is
     less than this minimum value (in degrees), the annotation is not
     plotted (this may occur for certain oblique projections.) Give a
     value in the range [0,90]. [20]
-**MAP\_ANNOT\_MIN\_SPACING**
+**MAP_ANNOT_MIN_SPACING**
     If an annotation would be plotted less than this minimum distance
     from its closest neighbor, the annotation is not plotted (this may
     occur for certain oblique projections.) [0p]
-**MAP\_ANNOT\_OBLIQUE**
+**MAP_ANNOT_OBLIQUE**
     This integer is a sum of 6 bit flags (most of which only are
     relevant for oblique projections): If bit 1 is set (1),
     annotations will occur wherever a gridline crosses the map
@@ -418,36 +413,36 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
     to the border regardless of gridline angle. If bit 6 is set (32),
     then latitude annotations will be plotted parallel to the border. To
     set a combination of these, add up the values in parentheses. [1].
-**MAP\_ANNOT\_OFFSET\_PRIMARY**
+**MAP_ANNOT_OFFSET_PRIMARY**
     Distance from end of tick-mark to start of annotation [5p].
-**MAP\_ANNOT\_OFFSET\_SECONDARY**
+**MAP_ANNOT_OFFSET_SECONDARY**
     Distance from base of primary annotation to the top of the secondary
     annotation [5p] (Only applies to time axes with both primary and
     secondary annotations).
-**MAP\_ANNOT\_ORTHO**
+**MAP_ANNOT_ORTHO**
     Determines which axes will get their annotations (for linear
     projections) plotted orthogonally to the axes. Combine any **w**,
     **e**, **s**, **n**, **z** (uppercase allowed as well). [we].
-**MAP\_DEFAULT\_PEN**
+**MAP_DEFAULT_PEN**
     Sets the default of all pens related to **-W** options. Prepend
     **+** to overrule the color of the parameters
-    **MAP\_GRID\_PEN\_PRIMARY**, **MAP\_GRID\_PEN\_SECONDARY**,
-    **MAP\_FRAME\_PEN**, **MAP\_TICK\_PEN\_PRIMARY**, and
-    **MAP\_TICK\_PEN\_SECONDARY** by the color of **MAP\_DEFAULT\_PEN**
+    **MAP_GRID_PEN_PRIMARY**, **MAP_GRID_PEN_SECONDARY**,
+    **MAP_FRAME_PEN**, **MAP_TICK_PEN_PRIMARY**, and
+    **MAP_TICK_PEN_SECONDARY** by the color of **MAP_DEFAULT_PEN**
     [default,black].
-**MAP\_DEGREE\_SYMBOL**
+**MAP_DEGREE_SYMBOL**
     Determines what symbol is used to plot the degree symbol on
     geographic map annotations. Choose between ring, degree, colon, or
     none [ring].
-**MAP\_FRAME\_AXES**
+**MAP_FRAME_AXES**
     Sets which axes to draw and annotate. Combine any uppercase **W**,
     **E**, **S**, **N**, **Z** to draw and annotate west, east, south,
     north and/or vertical (perspective view only) axis. Use lower case
     to draw the axis only, but not annotate. Add an optional **+** to
     draw a cube of axes in perspective view. [WESN].
-**MAP\_FRAME\_PEN**
+**MAP_FRAME_PEN**
     Pen attributes used to draw plain map frame [thicker,black].
-**MAP\_FRAME\_TYPE**
+**MAP_FRAME_TYPE**
     Choose between **inside**, **plain** and **fancy** (thick boundary,
     alternating black/white frame; append **+** for rounded corners)
     [fancy]. For some map projections (e.g., Oblique Mercator), plain is
@@ -457,80 +452,80 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
     projections, polar projections). For situations where all boundary
     ticks and annotations must be inside the maps (e.g., for preparing
     geotiffs), chose **inside**.
-**MAP\_FRAME\_WIDTH**
+**MAP_FRAME_WIDTH**
     Width (> 0) of map borders for fancy map frame [5p].
-**MAP\_GRID\_CROSS\_SIZE\_PRIMARY**
+**MAP_GRID_CROSS_SIZE_PRIMARY**
     Size (>= 0) of grid cross at lon-lat intersections. 0 means draw
     continuous gridlines instead [0p].
-**MAP\_GRID\_CROSS\_SIZE\_SECONDARY**
+**MAP_GRID_CROSS_SIZE_SECONDARY**
     Size (>= 0) of grid cross at secondary lon-lat intersections. 0
     means draw continuous gridlines instead [0p].
-**MAP\_GRID\_PEN\_PRIMARY**
+**MAP_GRID_PEN_PRIMARY**
     Pen attributes used to draw primary grid lines in dpi units or
     points (append p) [default,black].
-**MAP\_GRID\_PEN\_SECONDARY**
+**MAP_GRID_PEN_SECONDARY**
     Pen attributes used to draw secondary grid lines in dpi units or
     points (append p) [thinner,black].
-**MAP\_LABEL\_OFFSET**
+**MAP_LABEL_OFFSET**
     Distance from base of axis annotations to the top of the axis label
     [8p].
-**MAP\_LINE\_STEP**
+**MAP_LINE_STEP**
     Determines the maximum length (> 0) of individual straight
     line-segments when drawing arcuate lines [0.75p]
-**MAP\_LOGO**
+**MAP_LOGO**
     (**\* -U**) Specifies if a GMT logo with system timestamp should be
     plotted at the lower left corner of the plot [false].
-**MAP\_LOGO\_POS**
+**MAP_LOGO_POS**
     (**\* -U**) Sets the justification and the position of the
     logo/timestamp box relative to the current plots lower left corner
     of the plot [BL/-54p/-54p].
-**MAP\_ORIGIN\_X**
+**MAP_ORIGIN_X**
     (**\* -X**) Sets the x-coordinate of the origin on the paper for a
     new plot [1i]. For an overlay, the default offset is 0i.
-**MAP\_ORIGIN\_Y**
+**MAP_ORIGIN_Y**
     (**\* -Y**) Sets the y-coordinate of the origin on the paper for a
     new plot [1i]. For an overlay, the default offset is 0i.
-**MAP\_POLAR\_CAP**
+**MAP_POLAR_CAP**
     Controls the appearance of gridlines near the poles for all
     azimuthal projections and a few others in which the geographic poles
     are plotted as points (Lambert Conic, Hammer, Mollweide, Sinusoidal,
     and van der Grinten). Specify either none (in which case there is no
-    special handling) or *pc\_lat*/*pc\_dlon*. In that case, normal
+    special handling) or *pc_lat*/*pc_dlon*. In that case, normal
     gridlines are only drawn between the latitudes
-    -*pc\_lat*/+*pc\_lat*, and above those latitudes the gridlines are
-    spaced at the (presumably coarser) *pc\_dlon* interval; the two
-    domains are separated by a small circle drawn at the *pc\_lat*
+    -*pc_lat*/+*pc_lat*, and above those latitudes the gridlines are
+    spaced at the (presumably coarser) *pc_dlon* interval; the two
+    domains are separated by a small circle drawn at the *pc_lat*
     latitude [85/90]. Note for r-theta (polar) projection where r = 0 is
     at the center of the plot the meaning of the cap is reversed, i.e.,
     the default 85/90 will draw a r = 5 radius circle at the center of
     the map with less frequent radial lines there.
-**MAP\_SCALE\_HEIGHT**
+**MAP_SCALE_HEIGHT**
     Sets the height (> 0) on the map of the map scale bars drawn by
     various programs [5p].
-**MAP\_TICK\_LENGTH\_PRIMARY**
+**MAP_TICK_LENGTH_PRIMARY**
     The length of a primary major/minor tick-marks [5p/2.5p]. If only
     the first value is set, the second is assumed to be 50% of the
     first.
-**MAP\_TICK\_LENGTH\_SECONDARY**
+**MAP_TICK_LENGTH_SECONDARY**
     The length of a secondary major/minor tick-marks [15p/3.75p]. If
     only the first value is set, the second is assumed to be 25% of the
     first.
-**MAP\_TICK\_PEN\_PRIMARY**
+**MAP_TICK_PEN_PRIMARY**
     Pen attributes to be used for primary tick-marks in dpi units or
     points (append p) [thinner,black].
-**MAP\_TICK\_PEN\_SECONDARY**
+**MAP_TICK_PEN_SECONDARY**
     Pen attributes to be used for secondary tick-marks in dpi units or
     points (append p) [thinner,black].
-**MAP\_TITLE\_OFFSET**
+**MAP_TITLE_OFFSET**
     Distance from top of axis annotations (or axis label, if present) to
     base of plot title [14p].
-**MAP\_VECTOR\_SHAPE**
+**MAP_VECTOR_SHAPE**
     Determines the shape of the head of a vector. Normally (i.e., for
-    vector\_shape = 0), the head will be triangular, but can be changed
+    vector_shape = 0), the head will be triangular, but can be changed
     to an arrow (1) or an open V (2).
     Intermediate settings give something in between. Negative values (up
     to -2) are allowed as well [0].
-**PROJ\_AUX\_LATITUDE**
+**PROJ_AUX_LATITUDE**
     Only applies when geodesics are approximated by great circle
     distances on an equivalent sphere. Select from authalic, geocentric,
     conformal, meridional, parametric, or none [authalic]. When not none
@@ -540,7 +535,7 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
 
 .. _Projection Parameters:
 
-**PROJ\_ELLIPSOID**
+**PROJ_ELLIPSOID**
     The (case sensitive) name of the ellipsoid used for the map projections [WGS-84]. Choose among:
 
 |
@@ -629,7 +624,7 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
 
     *a* implies a zero flattening
 
-    *a*,\ *inv\_f* where *inv\_f* is the inverse flattening
+    *a*,\ *inv_f* where *inv_f* is the inverse flattening
 
     *a*,\ **b=**\ *b* where *b* is the semi-minor axis (in m)
 
@@ -641,18 +636,18 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
     `mapproject <mapproject.html>`_ man page for further details and how to view
     ellipsoid and datum parameters.
 
-**PROJ\_LENGTH\_UNIT**
+**PROJ_LENGTH_UNIT**
     Sets the unit length. Choose between **c**\ m, **i**\ nch, or
     **p**\ oint [c (or i)]. Note that, in **GMT**, one point is defined
     as 1/72 inch (the *PostScript* definition), while it is often
     defined as 1/72.27 inch in the typesetting industry. There is no
     universal definition.
-**PROJ\_MEAN\_RADIUS**
+**PROJ_MEAN_RADIUS**
     Applies when geodesics are approximated by great circle distances on
     an equivalent sphere or when surface areas are computed. Select from
-    mean (R\_1), authalic (R\_2), volumetric (R\_3), meridional, or
-    quadratic [authalic]. See also PROJ\_MEAN\_RADIUS.
-**PROJ\_SCALE\_FACTOR**
+    mean (R_1), authalic (R_2), volumetric (R_3), meridional, or
+    quadratic [authalic]. See also PROJ_MEAN_RADIUS.
+**PROJ_SCALE_FACTOR**
     Changes the default map scale factor used for the Polar
     Stereographic [0.9996], UTM [0.9996], and Transverse Mercator [1]
     projections in order to minimize areal distortion. Provide a new
@@ -660,51 +655,51 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
 
 .. _PostScript Parameters:
 
-**PS\_CHAR\_ENCODING**
+**PS_CHAR_ENCODING**
     (static) Names the eight bit character set being used for text in
     files and in command line parameters. This allows **GMT** to ensure
     that the *PostScript* output generates the correct characters on the
     plot.. Choose from Standard, Standard+, ISOLatin1, ISOLatin1+, and
     ISO-8859-x (where x is in the ranges [1,10] or [13,15]). See
     Appendix F for details [ISOLatin1+ (or Standard+)].
-**PS\_COLOR\_MODEL**
+**PS_COLOR_MODEL**
     Determines whether *PostScript* output should use RGB, HSV, CMYK, or
     GRAY when specifying color [rgb]. Note if HSV is selected it does
     not apply to images which in that case uses RGB. When selecting
     GRAY, all colors will be converted to gray scale using YIQ
     (television) conversion.
-**PS\_COMMENTS**
+**PS_COMMENTS**
     (static) If true we will issue comments in the *PostScript* file
     that explain the logic of operations. These are useful if you need
     to edit the file and make changes; otherwise you can set it to false
     which yields a somewhat slimmer *PostScript* file [false].
-**PS\_COPIES**
+**PS_COPIES**
     (**\* -c**) Number of plot copies to make [1].
-**PS\_IMAGE\_COMPRESS**
+**PS_IMAGE_COMPRESS**
     (static) Determines if *PostScript* images are compressed using the
     Run-Length Encoding scheme (rle), Lempel-Ziv-Welch compression
     (lzw), or not at all (none) [lzw].
-**PS\_LINE\_CAP**
+**PS_LINE_CAP**
     Determines how the ends of a line segment will be drawn. Choose
     among a *butt* cap (default) where there is no projection beyond the
     end of the path, a *round* cap where a semicircular arc with
     diameter equal to the line-width is drawn around the end points, and
     *square* cap where a half square of size equal to the line-width
     extends beyond the end of the path [butt].
-**PS\_LINE\_JOIN**
+**PS_LINE_JOIN**
     Determines what happens at kinks in line segments. Choose among a
     *miter* join where the outer edges of the strokes for the two
     segments are extended until they meet at an angle (as in a picture
     frame; if the angle is too acute, a bevel join is used instead, with
-    threshold set by **PS\_MITER\_LIMIT**), *round* join where a
+    threshold set by **PS_MITER_LIMIT**), *round* join where a
     circular arc is used to fill in the cracks at the kinks, and *bevel*
     join which is a miter join that is cut off so kinks are triangular
     in shape [miter].
-**PS\_MEDIA**
+**PS_MEDIA**
     Sets the physical format of the current plot paper [a4 (or letter)].
     The following formats (and their widths and heights in points) are
     recognized (Additional site-specific formats may be specified in the
-    gmt\_custom\_media.conf file in **$GMT\_SHAREDIR**/conf or ~/.gmt;
+    gmt_custom_media.conf file in **$GMT_SHAREDIR**/conf or ~/.gmt;
     see that file for details):
 
     Media width height
@@ -745,27 +740,27 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
     may also specify WxH, where W and H are in points unless you append
     a unit to each dimension (**c**, **i**, **m** or **p** [Default]).
 
-**PS\_MITER\_LIMIT**
+**PS_MITER_LIMIT**
     Sets the threshold angle in degrees (integer in range [0,180]) used
     for mitered joins only. When the angle between joining line segments
     is smaller than the threshold the corner will be bevelled instead of
     mitered. The default threshold is 35 degrees. Setting the threshold
     angle to 0 implies the *PostScript* default of about 11 degrees.
     Setting the threshold angle to 180 causes all joins to be beveled.
-**PS\_PAGE\_COLOR**
+**PS_PAGE_COLOR**
     Sets the color of the imaging background, i.e., the paper [white].
-**PS\_PAGE\_ORIENTATION**
+**PS_PAGE_ORIENTATION**
     (**\* -P**) Sets the orientation of the page. Choose portrait or
     landscape [landscape].
-**PS\_SCALE\_X**
+**PS_SCALE_X**
     Global x-scale (> 0) to apply to plot-coordinates before plotting.
     Normally used to shrink the entire output down to fit a specific
     height/width [1.0].
-**PS\_SCALE\_Y**
+**PS_SCALE_Y**
     Global y-scale (> 0) to apply to plot-coordinates before plotting.
     Normally used to shrink the entire output down to fit a specific
     height/width [1.0].
-**PS\_TRANSPARENCY**
+**PS_TRANSPARENCY**
     Sets the transparency mode to use when preparing PS for rendering to
     PDF. Choose from Color, ColorBurn, ColorDodge, Darken, Difference,
     Exclusion, HardLight, Hue, Lighten, Luminosity, Multiply, Normal,
@@ -773,33 +768,33 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
 
 .. _Calendar/Time Parameters:
 
-**TIME\_EPOCH**
+**TIME_EPOCH**
     Specifies the value of the calendar and clock at the origin (zero
-    point) of relative time units (see **TIME\_UNIT**). It is a string
+    point) of relative time units (see **TIME_UNIT**). It is a string
     of the form yyyy-mm-ddT[hh:mm:ss] (Gregorian) or
     yyyy-Www-ddT[hh:mm:ss] (ISO) Default is 1970-01-01T00:00:00, the
     origin of the UNIX time epoch.
-**TIME\_INTERVAL\_FRACTION**
+**TIME_INTERVAL_FRACTION**
     Determines if partial intervals at the start and end of an axis
     should be annotated. If the range of the partial interval exceeds
     the specified fraction of the normal interval stride we will place
     the annotation centered on the partial interval [0.5].
-**TIME\_IS\_INTERVAL**
+**TIME_IS_INTERVAL**
     Used when input calendar data should be truncated and adjusted to
     the middle of the relevant interval. In the following discussion,
     the unit **u** can be one of these time units: (**y** year, **o**
     month, **u** ISO week, **d** day, **h** hour, **m** minute, and
-    **s** second). **TIME\_IS\_INTERVAL** can have any of the following
+    **s** second). **TIME_IS_INTERVAL** can have any of the following
     three values: (1) OFF [Default]. No adjustment, time is decoded as
     given. (2) +\ *n*\ **u**. Activate interval adjustment for input by
     truncate to previous whole number of *n* units and then center time
     on the following interval. (3) -*n*\ **u**. Same, but center time on
-    the previous interval. For example, with **TIME\_IS\_INTERVAL** =
+    the previous interval. For example, with **TIME_IS_INTERVAL** =
     +1o, an input data string like 1999-12 will be interpreted to mean
     1999-12-15T12:00:00.0 (exactly middle of December), while if
-    **TIME\_IS\_INTERVAL** = off then that date is interpreted to mean
+    **TIME_IS_INTERVAL** = off then that date is interpreted to mean
     1999-12-01T00:00:00.0 (start of December) [off].
-**TIME\_LANGUAGE**
+**TIME_LANGUAGE**
     Language to use when plotting calendar items such as months and
     days. Select from:
 
@@ -839,7 +834,7 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
     or ~/.gmt. Note: Some of these languages may require you to also
     change the **PS_CHAR_ENCODING** setting.
 
-**TIME\_SYSTEM**
+**TIME_SYSTEM**
     Shorthand for a combination of **TIME_EPOCH** and **TIME_UNIT**,
     specifying which time epoch the relative time refers to and what the
     units are. Choose from one of the preset systems below (epoch and
@@ -865,24 +860,24 @@ fonts can be found in the `gmt <gmt.html>`_ man page.
 
 **TIME_UNIT**
     Specifies the units of relative time data since epoch (see
-    **TIME\_EPOCH**). Choose y (year - assumes all years are 365.2425
+    **TIME_EPOCH**). Choose y (year - assumes all years are 365.2425
     days), o (month - assumes all months are of equal length y/12), d
     (day), h (hour), m (minute), or s (second) [s].
-**TIME\_WEEK\_START**
+**TIME_WEEK_START**
     When weeks are indicated on time axes, this parameter determines the
     first day of the week for Gregorian calendars. (The ISO weekly
     calendar always begins weeks with Monday.) [Monday (or Sunday)].
-**TIME\_Y2K\_OFFSET\_YEAR**
+**TIME_Y2K_OFFSET_YEAR**
     When 2-digit years are used to represent 4-digit years (see various
-    **FORMAT\_DATE**\ s), **TIME\_Y2K\_OFFSET\_YEAR** gives the first
+    **FORMAT_DATE**\ s), **TIME_Y2K_OFFSET_YEAR** gives the first
     year in a 100-year sequence. For example, if
-    **TIME\_Y2K\_OFFSET\_YEAR** is 1729, then numbers 29 through 99
+    **TIME_Y2K_OFFSET_YEAR** is 1729, then numbers 29 through 99
     correspond to 1729 through 1799, while numbers 00 through 28
     correspond to 1800 through 1828. [1950].
 
-`See Also <#toc3>`_
--------------------
+See Also
+--------
 
-`gmt <gmt.html>`_ , `gmtdefaults <gmtdefaults.html>`_ ,
+`gmt <gmt.html>`__ , `gmtdefaults <gmtdefaults.html>`_ ,
 `gmtcolors <gmtcolors.html>`_ , `gmtget <gmtget.html>`_ ,
 `gmtset <gmtset.html>`_
