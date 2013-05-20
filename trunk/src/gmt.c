@@ -27,15 +27,16 @@
 
 int main (int argc, char *argv[]) {
 	int status = EXIT_SUCCESS;           /* Status code from GMT API */
-	unsigned int item = 1, k;
+	unsigned int item = 1, k, length;
 	char *module = NULL;
 	enum GMT_MODULE_ID module_id = 0;    /* Module ID */
 	struct GMTAPI_CTRL *api_ctrl = NULL; /* GMT API control structure */
 
-	/* Find start of program name after any leading dirs */
-	for (k = (unsigned int)strlen (argv[0]); k > 0 && argv[0][k] != '/' && argv[0][k] != '\\'; k--);
+	/* Find start of program name after any leading dirs slashes */
+	length = (unsigned int)strlen (argv[0]);
+	for (k = length; k > 0 && argv[0][k] != '/' && argv[0][k] != '\\'; k--);
 	if (k) k++;	/* Unless there is no slash, advance one past the last slash we found */
-	if (strncmp (&argv[0][k], "gmt", 3)) {	/* Does not match gmt so it is another module via symbolic link */
+	if (strncmp (&argv[0][k], "gmt", 3) || ((length-k) > 3 && argv[0][k+3] != '.')) {	/* Does not match "gmt[.exe]" so it is another module via symbolic link */
 		item = 0;	/* Argv[0] holds the name of the module */
 		module = &argv[0][k];
 	}
