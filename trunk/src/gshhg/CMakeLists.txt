@@ -19,7 +19,6 @@
 
 # source files
 set (SUPPL_PROGS_SRCS gshhg.c)
-set (SUPPL_PROGS2_SRCS gshhg_dp.c gshhgtograss.c)
 
 # lib sources
 set (LIB_SRCS ${SUPPL_PROGS_SRCS})
@@ -37,28 +36,21 @@ foreach (prog ${SUPPL_PROGS})
 	target_link_libraries (${prog} gmtlib)
 endforeach (prog)
 
-string (REPLACE ".c" "" SUPPL_PROGS2 "${SUPPL_PROGS2_SRCS}")
-foreach (_prog ${SUPPL_PROGS2})
-	add_executable (${_prog} ${_prog}.c)
-	target_link_libraries (${_prog} gmtlib)
-endforeach (_prog)
-
 # generate Mac debugging symbols
-create_debug_sym (${SUPPL_PROGS} ${SUPPL_PROGS2})
+create_debug_sym (${SUPPL_PROGS})
 
 # add the install targets
-install (TARGETS ${SUPPL_PROGS} ${SUPPL_PROGS2}
+install (TARGETS ${SUPPL_PROGS}
 	RUNTIME DESTINATION ${GMT_BINDIR}
 	COMPONENT Runtime)
 
 # add to gmt_suppl target
 add_depend_to_target (gmt_suppl
-	${SUPPL_PROGS}
-	${SUPPL_PROGS2})
+	${SUPPL_PROGS})
 
 # Generate manpages
 string (REPLACE ".c" ".1" SUPPL_MAN_1
-	"${SUPPL_PROGS_SRCS};${SUPPL_PROGS2_SRCS}")
+	"${SUPPL_PROGS_SRCS}")
 gmt_create_manpages ("${SUPPL_MAN_1}")
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

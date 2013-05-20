@@ -1,10 +1,19 @@
 #	$Id$
 
-			G S H H S
+			G S H H G
 
-Global Self-consistent Hierarchical High-resolution Shorelines
+Global Self-consistent Hierarchical High-resolution Geography
 Distributed under the GNU Lesser Public License; see file
-LICENSE.TXT in main GMT directory.
+LICENSE.TXT in main GMT directory. It was formerly called
+GSHHS (... Shorelines instead of Geography).
+
+Version Jul 1, 2013
+
+We have removed gshhg_dp.c and gshhgtograss.c from gshhg in GMT5.
+The reason is that the Douglas-Peucker algorithm is not ideal for
+coastline polygons as it tends to create self-intersections. The
+GRASS formatter is no longer needed since GSHHG is also distributed
+as shapefiles.
 
 Version Jul 15, 2011
 Work with the latest GSHHG data set version 2.2.0.  Here, the
