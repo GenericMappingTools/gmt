@@ -261,11 +261,6 @@ Currently, the supplemental archive include the directories:
   spotter   - Plate tectonic & kinematics applications.
   x2sys     - Track intersection (crossover) tools.
   x_system  - Track intersection (crossover) tools (old version).
-  xgrid     - X11 editor for grid files.
-
-These are installed automatically, except for xgrid which
-requires more configuration as it depends on X11 libraries.
-
 
 Example Scripts
 ---------------
