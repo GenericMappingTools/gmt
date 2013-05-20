@@ -125,20 +125,19 @@ Definitions
 
 For the purpose of this documentation a few definitions are needed:
 
-#. “Standard *GMT* program” refers to one of the traditional stand-alone
+#. "Standard *GMT* program" refers to one of the traditional stand-alone
    command-line executables known to all *GMT* users, e.g.,
-   `blockmean <blockmean.html>`_,
-   `psxy <psxy.html>`_,
+   `blockmean <blockmean.html>`_, `psxy <psxy.html>`_,
    `grdimage <grdimage.html>`_, etc. Prior to version 5,
    these were the only *GMT* executables available.
 
-#. “*GMT* module” refers to the function in the *GMT* API library that
+#. "\ *GMT* module" refers to the function in the *GMT* API library that
    is responsible for all the action taken by the corresponding
    *GMT* program. All such modules are given the same name as the
    corresponding program but carry the prefix ``GMT_``, e.g.,
    ``GMT_blockmean``.
 
-#. “*GMT* application” refers to a new application written by any
+#. "\ *GMT* application" refers to a new application written by any
    developer and may call one or more *GMT* functions to create a new
    *GMT*-compatible executable.
 
@@ -206,7 +205,7 @@ or more tables or get text records one at the time. A
 ``struct GMT_TEXTSET`` may contain any number of tables, each with any
 number of segments, and each segment with any number of records. Thus,
 the arguments to *GMT* API functions that handle such data sets expect
-this type of variable. The user’s program may then parse and process
+this type of variable. The user's program may then parse and process
 such text records as required. This resources is particularly useful
 when your data consist of a mix or data coordinates and ordinary text
 since regular data tables will be parsed for floating-point columns
@@ -424,7 +423,7 @@ each step will be revealed in the following chapter. We have kept the
 API simple: In addition to the *GMT* modules, there are only 20 public
 functions to become familiar with, but most applications will only use a
 small subset of this selection. Functions either return an integer error
-code (when things go wrong; otherwise it is set to GMT\_OK (0)), or they
+code (when things go wrong; otherwise it is set to GMT_OK (0)), or they
 return a void pointer to a *GMT* resources (or NULL if things go wrong).
 In either case the API will report what the error is. The layout here
 assumes you wish to use data in memory as input sources; if the data are
@@ -441,7 +440,7 @@ simply command-line files then things simplify considerably.
 
    b. Each resource registration generates a unique ID number. For
       memory resources, we embed these numbers in unique filenames of
-      the form “@GMTAPI@-######”. When *GMT* i/o library functions
+      the form "@GMTAPI@-######". When *GMT* i/o library functions
       encounter such filenames they extract the ID and make a connection
       to the corresponding resource. Multiple table data or text sources
       are combined into a single virtual source for *GMT* modules to
@@ -605,7 +604,8 @@ To initiate the new session we use
 
   ::
 
-    void *GMT_Create_Session (char *tag, unsigned int pad, unsigned int mode, int (*print_func) (FILE *, const char *));
+    void *GMT_Create_Session (char *tag, unsigned int pad, unsigned int mode,
+                              int (*print_func) (FILE *, const char *));
 
 and you will typically call it thus:
 
@@ -736,13 +736,13 @@ it returns FALSE (0).
 
 .. _tbl-via:
 
-+------------------+-------+----------------------------------------------------------------+
-| aproach          | value | how mwthod is modified                                         |
-+==================+=======+================================================================+
-| GMT_VIA_VECTOR   | 100   | User's data columns are accessed via a GMT_VECTOR structure    |
-+------------------+-------+----------------------------------------------------------------+
-| GMT_VIA_MATRIX   | 200   | User's matrix is accessed via a GMT_MATRIX structure           |
-+------------------+-------+----------------------------------------------------------------+
++------------------+-------+--------------------------------------------------------------+
+| aproach          | value | how mwthod is modified                                       |
++==================+=======+==============================================================+
+| GMT_VIA_VECTOR   | 100   | User's data columns are accessed via a GMT_VECTOR structure  |
++------------------+-------+--------------------------------------------------------------+
+| GMT_VIA_MATRIX   | 200   | User's matrix is accessed via a GMT_MATRIX structure         |
++------------------+-------+--------------------------------------------------------------+
 
 [tbl:via]
 
@@ -815,17 +815,16 @@ where ``family`` specifies what kind of resource is to be registered,
 ``GMT_IN`` or ``GMT_OUT``, and ``mode`` is a bit flag that determines
 what we do if no resources have been registered. The choices are
 
-    **1** (or GMT_ADD_FILES_IF_NONE) means “add command line (option)
-    files if none have been registered already”
+    **1** (or GMT_ADD_FILES_IF_NONE) means "add command line (option)
+    files if none have been registered already"
 
-    **2** (or GMT_ADD_FILES_ALWAYS) means “always add any command line
-    files”
+    **2** (or GMT_ADD_FILES_ALWAYS) means "always add any command line files"
 
-    **4** (or GMT_ADD_STDIO_IF_NONE) means “add std\* if no other
-    input/output have been specified”
+    **4** (or GMT_ADD_STDIO_IF_NONE) means "add std\* if no other
+    input/output have been specified"
 
-    **8** (or GMT_ADD_STDIO_ALWAYS) means “always add std\* even if
-    resources have been registered”.
+    **8** (or GMT_ADD_STDIO_ALWAYS) means "always add std\* even if
+    resources have been registered".
 
 The standard behavior is 5 (or GMT\_REG\_DEFAULT). Next, ``n_args`` is 0
 if ``args`` is the head of a linked list of options (further discussed
@@ -857,7 +856,7 @@ Dimension parameters for user 2-D table arrays
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 We refer to Table [tbl:matrix]. The ``type`` parameter specifies the
-data type used for the array in the user’s program. All types other than
+data type used for the array in the user's program. All types other than
 GMT_FLOAT will be converted internally in *GMT* to ``float``, thus
 possibly increasing memory requirements. If the type is GMT_FLOAT then
 *GMT* may be able to use the matrix directly by reference. The
@@ -1279,7 +1278,7 @@ row-by-row reading with ``GMT_Read_Data`` and then use the
 where ``row`` is a pointer to a single-precision array to receive the
 current row, ``G`` is the grid in question, and ``row_no`` is the number
 of the current row to be read. Note this value is only considered if the
-row-by-row mode was initialized with GMT\_GRID\_ROW\_BY\_ROW\_MANUAL.
+row-by-row mode was initialized with GMT_GRID_ROW_BY_ROW_MANUAL.
 The user must allocate enough space to hold the entire row in memory.
 
 Disable Data Import
@@ -1713,8 +1712,8 @@ Set program options via text command
 If ``mode`` == 0 then ``args`` will be examined to see if it contains
 several options within a single command string. If so we will break
 these into separate options. This is useful if you wish to pass a single
-string such as “-R120:30/134:45/8S/3N -JM6i mydata.txt -Sc0.2c”. We call
-this the “command” mode.
+string such as "-R120:30/134:45/8S/3N -JM6i mydata.txt -Sc0.2c". We call
+this the "command" mode.
 
 Set program options via linked structures
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2018,7 +2017,7 @@ The named modes (*command*, *remark*, *title*, *name\_x,y,z* and
 fields in the header structures of the data resources, such as
 ``GMT_GRID``. For the various table resources (e.g., ``GMT_DATASET``)
 these modifiers result in a specially formatted comments beginning with
-“Command: ” or “Remark: ”, reflecting how this type of information is
+"Command: " or "Remark: ", reflecting how this type of information is
 encoded in the headers.
 
 Exporting Data
@@ -2051,7 +2050,7 @@ been registered, we signal the API that we are done with the
 registration phase and are ready to start the actual data export. As for
 input, this step is only needed when dealing with record-by-record
 writing. Again, we enable record-by-record writing by calling
-``GMT_Begin_IO``, this time with ``direction`` = GMT\_OUT. This function
+``GMT_Begin_IO``, this time with ``direction`` = GMT_OUT. This function
 enables data export and prepares the registered destinations for the
 upcoming writing.
 
@@ -2094,7 +2093,7 @@ previously. Again, the ``mode`` parameter is specific to each data type:
         Each table in the data set is written to individual files [1].
         You can either specify an output file name that *must* contain
         one C-style format specifier for a int variable (e.g.,
-        “New\_Table\_%06d.txt”), which will be replaced with the table
+        "New_Table\_%06d.txt"), which will be replaced with the table
         number (a running number from 0) *or* you must assign to each
         table *i* a unique output file name via the
         ``D->table[i]->file[GMT_OUT]`` variables prior to calling the
@@ -2109,7 +2108,7 @@ previously. Again, the ``mode`` parameter is specific to each data type:
         Each segment in the data set is written to an individual file
         [3]. You can either specify an output file name that *must*
         contain two C-style format specifiers for two int variables
-        (e.g., “New\_Table\_%06d\_Segment\_%03d.txt”), which will be
+        (e.g., "New\_Table\_%06d\_Segment\_%03d.txt"), which will be
         replaced with the table and segment numbers, *or* you must
         assign to each segment *j* in each table *i* a unique output
         file name via the ``D->table[i]->segment[j]->file[GMT_OUT]``
@@ -2124,7 +2123,7 @@ previously. Again, the ``mode`` parameter is specific to each data type:
 
 **GMT grid**
     Here, ``mode`` may be GMT_GRID_HEADER_ONLY to only update a
-    file’s header structure, but normally it is simply GMT_GRID_ALL
+    file's header structure, but normally it is simply GMT_GRID_ALL
     (0) so the entire grid and its header will be exported (a subset is
     not allowed during export). However, in the event your data array
     holds both the real and imaginary parts of a complex data set you
@@ -2252,7 +2251,7 @@ function, whose prototype is
     int GMT_Destroy_Data (void *API, unsigned int mode, void *data);
 
 where ``data`` is the address of the pointer to a data container. Pass
-``mode`` either as GMT\_ALLOCATED or GMT\_REFERENCE. The former is used
+``mode`` either as GMT_ALLOCATED or GMT_REFERENCE. The former is used
 internally by the *GMT* modules since they can only free resources that
 are not destined to live on in the memory of their calling program. The
 latter mode is used to free resources in your calling program. Note that
@@ -2314,7 +2313,7 @@ your program needs to present the option usage you can call
                                  char *string);
 
 Here, ``option`` is the unique character used for this particular
-program option (most *GMT* programs have standardized on using ‘N’ but
+program option (most *GMT* programs have standardized on using 'N' but
 you are free to choose whatever you want except existing *GMT* common
 options). The ``dim`` sets the dimension of the transform, currently you
 must choose 1 or 2, while the ``string`` is a one-line message that
@@ -2329,7 +2328,7 @@ To parse the user's selection you call
 
     void *GMT_FFT_Parse (void *API, char option, unsigned int dim, char *args);
 
-which accepts the user’s string option via ``args``; the other arguments
+which accepts the user's string option via ``args``; the other arguments
 are the same as those above. The function returns an opaque pointer to a
 structure with the chosen parameters.
 
@@ -2407,7 +2406,7 @@ To be added later.
 2-D FFT manipulation
 ~~~~~~~~~~~~~~~~~~~~
 
-The number of complex pairs in the grid is given by the header’s ``nm``
+The number of complex pairs in the grid is given by the header's ``nm``
 variable, while ``size`` will be twice that value as it holds the number
 of components. To visit all the complex values and obtain the
 corresponding wavenumber we simply need to loop over ``size`` and call
