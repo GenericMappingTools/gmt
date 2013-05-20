@@ -335,9 +335,6 @@ endif ()
 set (GMT_SUPPL_DIRS dbase gshhg imgsrc kiss_fft meca mgd77 misc potential segy sph
 	spotter x2sys)
 
-# other supplement directories (not included in gmtlib)
-set (GMT_OTHER_SUPPL_DIRS xgrid ${EXTRA_BUILD_DIRS})
-
 # path to all binary dirs (used to set PATH in test scripts)
 set (GMT_BINARY_DIR_PATH "${CMAKE_CURRENT_BINARY_DIR}/\${CMAKE_CONFIG_TYPE:-.}")
 
@@ -349,7 +346,7 @@ else (NOT GMT_INSTALL_MONOLITHIC)
 endif (NOT GMT_INSTALL_MONOLITHIC)
 
 # process supplement directories
-foreach (_dir ${GMT_SUPPL_DIRS} ${GMT_OTHER_SUPPL_DIRS})
+foreach (_dir ${GMT_SUPPL_DIRS})
 	add_subdirectory (${_dir})
 	list (APPEND GMT_BINARY_DIR_PATH
 		"${CMAKE_CURRENT_BINARY_DIR}/${_dir}/\${CMAKE_CONFIG_TYPE:-.}")

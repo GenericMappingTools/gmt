@@ -191,7 +191,6 @@ TODO list
 
 * Add further tests/cmake-find-modules:
   - fftw/Accelerate Framework
-  - xgrid
   - WIN32: test for USE_MEM_ALIGNED, defined in src/gmt_config.h.in
 
 * Generate macros
