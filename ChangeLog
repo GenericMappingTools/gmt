@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-05-20	pwessel
+	* gshhg:		Remove gshhg_dp.c and gshhgtograss.c from the supplement as
+				being inadequate or obsolete.
+
 2013-05-17	pwessel
 	* gmt_map.c:		GMT_grdproject_init did not handle increments that had been
 				specified as units, e.g., -D30e.
