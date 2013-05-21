@@ -330,7 +330,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	char tw[GMT_TEXT_LEN256], jj[GMT_TEXT_LEN256], sarg[GMT_TEXT_LEN256], txtcolor[GMT_TEXT_LEN256] = {""}, buffer[GMT_BUFSIZ];
 	char bar_cpt[GMT_TEXT_LEN256], bar_gap[GMT_TEXT_LEN256], bar_height[GMT_TEXT_LEN256], bar_opts[GMT_BUFSIZ], *opt = NULL;
 	char A[GMT_TEXT_LEN32], B[GMT_TEXT_LEN32], C[GMT_TEXT_LEN32];
-	char *line = NULL, string[GMT_STR16], save_EOF;
+	char *line = NULL, string[GMT_STR16], save_EOF = 0;
 #ifdef DEBUG
 	int guide = 0;
 #endif

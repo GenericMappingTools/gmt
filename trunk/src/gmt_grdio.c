@@ -2161,7 +2161,7 @@ void GMT_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode
 	 * components coefficients are returned.
 	 */
 
-	unsigned int col, row, one_or_zero, n_components, start_component = 0, stop_component = 0, component;
+	unsigned int col, row, one_or_zero, start_component = 0, stop_component = 0, component;
 	uint64_t ij, offset;
 	bool is_complex = false;
 	double x_half_length, one_on_xhl, y_half_length, one_on_yhl;
@@ -2182,7 +2182,6 @@ void GMT_grd_detrend (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, unsigned mode
 
 	if (Grid->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) {	/* Complex grid */
 		is_complex = true;
-		n_components = ((Grid->header->complex_mode & GMT_GRID_IS_COMPLEX_MASK) == GMT_GRID_IS_COMPLEX_MASK) ? 2 : 1;
 		start_component = (Grid->header->complex_mode & GMT_GRID_IS_COMPLEX_REAL) ? 0 : 1;
 		stop_component  = (Grid->header->complex_mode & GMT_GRID_IS_COMPLEX_IMAG) ? 1 : 0;
 	}

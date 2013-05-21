@@ -475,7 +475,7 @@ int GMT_psmeca_parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT
 
 int GMT_psmeca (void *V_API, int mode, void *args)
 {	/* High-level function that implements the psmeca task */
-	int i, n, ix = 0, iy = 1, last = 0, form = 0, new;
+	int i, n, k, ix = 0, iy = 1, last = 0, form = 0, new;
 	int n_rec = 0, n_plane_old = 0, error;
 	bool transparence_old = false, not_defined = false;
 
@@ -483,7 +483,7 @@ int GMT_psmeca (void *V_API, int mode, void *args)
 	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, xy[2], xynew[2];
 	double angle = 0.0, fault, depth, size, P_x, P_y, T_x, T_y;
 
-	char string[GMT_BUFSIZ], event_title[GMT_BUFSIZ], *line, col[15][GMT_TEXT_LEN64];
+	char string[GMT_BUFSIZ], event_title[GMT_BUFSIZ], *line = NULL, *p = NULL, col[15][GMT_TEXT_LEN64];
 
 	st_me meca;
 	struct MOMENT moment;
@@ -585,6 +585,7 @@ int GMT_psmeca (void *V_API, int mode, void *args)
 				col[8], col[9], col[10], string);
 			last = 10;
 		}
+ 		for (k = 0; k <= last; k++) if ((p = strchr (col[k], ','))) *p = '\0';	/* Chop of trailing command from input field deliminator */
 
 		/* Immediately skip locations outside of the map area */
 
