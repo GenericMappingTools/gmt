@@ -542,12 +542,8 @@ bool gmt_radial_outside (struct GMT_CTRL *GMT, double lon, double lat)
 	return (GMT->current.map.this_y_status != 0);
 }
 
-bool gmt_rect_outside (struct GMT_CTRL *GMT, double lon, double lat)
-{
-	double x, y;
-
-	GMT_geo_to_xy (GMT, lon, lat, &x, &y);
-
+bool GMT_cart_outside (struct GMT_CTRL *GMT, double x, double y)
+{	/* Expects x,y to be projected and comparing with rectangular projected domain */
 	if (GMT->current.map.on_border_is_outside && fabs (x - GMT->current.proj.rect[XLO]) < GMT_SMALL)
 		GMT->current.map.this_x_status = -1;
 	else if (GMT->current.map.on_border_is_outside && fabs (x - GMT->current.proj.rect[XHI]) < GMT_SMALL)
@@ -570,7 +566,16 @@ bool gmt_rect_outside (struct GMT_CTRL *GMT, double lon, double lat)
 	else
 		GMT->current.map.this_y_status = 0;
 
-	return (GMT->current.map.this_x_status != 0 || GMT->current.map.this_y_status != 0);
+	return ((GMT->current.map.this_x_status != 0 || GMT->current.map.this_y_status != 0) ? true : false);
+}
+
+bool gmt_rect_outside (struct GMT_CTRL *GMT, double lon, double lat)
+{
+	double x, y;
+
+	GMT_geo_to_xy (GMT, lon, lat, &x, &y);
+
+	return (GMT_cart_outside (GMT, x, y));
 }
 
 bool gmt_rect_outside2 (struct GMT_CTRL *GMT, double lon, double lat)

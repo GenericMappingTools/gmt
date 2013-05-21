@@ -16,7 +16,7 @@ pscontour - Contour table data by direct triangulation [method]
 **-G**\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params*
 ] [ **-I** ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [
 **-L**\ *pen* ] [ **-N** ] [ **-O** ] [ **-P** ] [ **-Q**\ *indexfile* ]
-[ **-S** ] [ **-T**\ [**+\|-**\ ][*gap/length*\ ][\ **:**\ [*labels*]]
+[ **-S**\ [*p*\ |\ *t*] ] [ **-T**\ [**+\|-**\ ][*gap/length*\ ][\ **:**\ [*labels*]]
 ] [ **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [
 **-V**\ [*level*\ ] ] [ **-W**\ [**+**\ ]\ *pen* ] [
 **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
@@ -134,9 +134,11 @@ Optional Arguments
     Give name of file with network information. Each record must contain
     triplets of node numbers for a triangle [Default computes these
     using Delaunay triangulation (see **triangulate**)].
-**-S**
+**-S**\ [*p*\ |\ *t*]
     Skip all input *xyz* points that fall outside the region [Default
-    uses all the data in the triangulation].
+    uses all the data in the triangulation].  Alternatively, use **-St**
+    to skip triangles whose three vertices are all outside the region.
+    **-S** with no modifier is interpreted as **-Sp**.
 **-T**\ [**+\|-**][*gap/length*][\ **:**\ [*labels*]]
     Will draw tickmarks pointing in the downward direction every *gap*
     along the innermost closed contours. Append *gap* and tickmark
