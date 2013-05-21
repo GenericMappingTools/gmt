@@ -63,8 +63,9 @@ struct PSCONTOUR_CTRL {
 	struct N {	/* -N */
 		bool active;
 	} N;
-	struct S {	/* -S */
+	struct S {	/* -S[p|t] */
 		bool active;
+		unsigned int mode;	/* 0 skip points; 1 skip triangles */
 	} S;
 	struct T {	/* -T[+|-][<gap>[c|i|p]/<length>[c|i|p]][:LH] */
 		bool active;
@@ -371,7 +372,7 @@ int GMT_pscontour_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "usage: pscontour <table> -C[+]<cont_int>|<cpt> %s\n", GMT_J_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A[-|[+]<annot_int>][<labelinfo>]\n\t[%s] [-D<template>] ", GMT_Rgeoz_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-I] [%s] [-K] [-L<pen>] [-N]\n", GMT_CONTG, GMT_Jz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-O] [-P] [-Q<indextable>] [-S] [%s]\n", GMT_CONTT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-O] [-P] [-Q<indextable>] [-S[p|t]] [%s]\n", GMT_CONTT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[+]<pen>] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_Y_OPT, GMT_b_OPT, GMT_c_OPT, GMT_h_OPT,
 		GMT_i_OPT, GMT_p_OPT, GMT_t_OPT, GMT_s_OPT, GMT_colon_OPT);
@@ -416,7 +417,8 @@ int GMT_pscontour_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q File with triplets of point indices for each triangle\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default performs the Delaunay triangulation on xyz-data].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Skip xyz points outside region [Default keeps all].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-S (or -Sp) Skip xyz points outside region [Default keeps all].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -St to instead skip triangles whose 3 vertices are outside.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Will embellish innermost, closed contours with ticks pointing in\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   the downward direction.  User may specify to tick only highs\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (-T+) or lows (-T-) [-T implies both extrema].\n");
@@ -518,6 +520,8 @@ int GMT_pscontour_parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, stru
 				break;
 			case 'S':	/* Skip points outside border */
 				Ctrl->S.active = true;
+				if (opt->arg[0] == 'p') Ctrl->S.mode = 0;
+				else if (opt->arg[0] == 't') Ctrl->S.mode = 1;
 				break;
 			case 'T':	/* Embellish innermost closed contours */
 				if (!GMT_access (GMT, opt->arg, F_OK) && GMT_compat_check (GMT, 4)) {	/* Must be the old -T<indexfile> option, set to -Q */
@@ -628,10 +632,10 @@ int GMT_pscontour_parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, stru
 int GMT_pscontour (void *V_API, int mode, void *args)
 {
 	int add, error = 0;
-	bool two_only = false, make_plot, skip = false, is_closed;
+	bool two_only = false, make_plot, skip = false, is_closed, skip_points, skip_triangles;
 	
 	unsigned int pscontour_sum, n, nx, k2, k3, node1, node2, c, cont_counts[2] = {0, 0};
-	unsigned int label_mode = 0, last_entry, last_exit, fmt[3] = {0, 0, 0};
+	unsigned int label_mode = 0, last_entry, last_exit, fmt[3] = {0, 0, 0}, n_skipped, n_out;
 	unsigned int i, low, high, n_contours = 0, n_tables = 0, tbl_scl = 0, io_mode = 0, tbl, id, *vert = NULL, *cind = NULL;
 	
 	size_t n_alloc, n_save = 0, n_save_alloc = 0, *n_seg_alloc = NULL, c_alloc = 0;
@@ -709,6 +713,8 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 
 	xyz[0][GMT_Z] = DBL_MAX;	xyz[1][GMT_Z] = -DBL_MAX;
 	n = 0;
+	skip_points = (Ctrl->S.active && Ctrl->S.mode == 0);
+	skip_triangles = (Ctrl->S.active && Ctrl->S.mode == 1);
 
 	do {	/* Keep returning records until we reach EOF */
 		if ((in = GMT_Get_Record (API, GMT_READ_DOUBLE, NULL)) == NULL) {	/* Read next record, get NULL if special case */
@@ -722,7 +728,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 
 		/* Data record to process */
 		
-		if (Ctrl->S.active) {	/* Must check if points are inside plot region */
+		if (skip_points) {	/* Must check if points are inside plot region */
 			GMT_map_outside (GMT, in[GMT_X], in[GMT_Y]);
 			skip = (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1);
 		}
@@ -808,6 +814,22 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 		Return (API->error);
 	}
 
+	/* Determine if some triangles are outside the region and should be removed entirely */
+	
+	if (skip_triangles) {	/* Must check if triangles are outside plot region */
+		for (i = k = 0; i < np; i++) {	/* For all triangles */
+			k2 = k;
+			for (k3 = n_out = 0; k3 < 3; k3++, k++) {
+				if (GMT_cart_outside (GMT, x[ind[k]], y[ind[k]])) n_out++;	/* Count how many vertices are outside */
+			}
+			if (n_out == 3) {
+				ind[k2] = -1;	/* Flag so no longer to be used */
+				n_skipped++;
+			}
+		}
+		if (n_skipped) GMT_Report (API, GMT_MSG_VERBOSE, "Skipped %u triangles whose verticies are all outside the domain.\n", n_skipped);
+	}
+	
 	if (Ctrl->C.cpt) {	/* We already read the cpt-file */
 		/* Set up which contours to draw based on the CPT slices and their attributes */
 		cont = GMT_memory (GMT, NULL, P->n_colors + 1, struct PSCONTOUR);
@@ -971,6 +993,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 		GMT_setpen (GMT, &Ctrl->L.pen);
 
 		for (k = i = 0; i < np; i++) {	/* For all triangles */
+			if (ind[k] < 0) { k += 3; continue;}	/* Skip triangles that are fully outside */
 
 			xx[0] = x[ind[k]];	yy[0] = y[ind[k++]];
 			xx[1] = x[ind[k]];	yy[1] = y[ind[k++]];
@@ -993,6 +1016,8 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 	small = MIN (Ctrl->C.interval, z_range) * 1.0e-6;	/* Our float noise threshold */
 
 	for (ij = i = 0; i < np; i++, ij += 3) {	/* For all triangles */
+
+		if (ind[ij] < 0) continue;	/* Skip triangles that are fully outside */
 
 		k = ij;
 		xx[0] = x[ind[k]];	yy[0] = y[ind[k]];	zz[0] = z[ind[k++]];

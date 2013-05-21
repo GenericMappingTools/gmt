@@ -254,6 +254,7 @@ EXTERN_MSC void GMT_gcal_from_rd (struct GMT_CTRL *GMT, int64_t rd, struct GMT_g
 
 /* gmt_map.c: */
 
+EXTERN_MSC bool GMT_cart_outside (struct GMT_CTRL *GMT, double x, double y);
 EXTERN_MSC void GMT_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned int item);
 EXTERN_MSC double GMT_az_backaz (struct GMT_CTRL *GMT, double lonE, double latE, double lonS, double latS, bool baz);
 EXTERN_MSC double GMT_distance (struct GMT_CTRL *GMT, double lonS, double latS, double lonE, double latE);

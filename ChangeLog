@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-05-21	pwessel
+	* pscontour.c:		Added -St to skip triangles whose 3 vertices are outside domain;
+				in contrast, -S or -Sp skips all points outside domain before
+				triangularization.
 2013-05-20	pwessel
 	* gshhg:		Remove gshhg_dp.c and gshhgtograss.c from the supplement as
 				being inadequate or obsolete.
