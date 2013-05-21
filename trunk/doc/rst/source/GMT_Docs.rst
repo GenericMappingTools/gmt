@@ -3516,28 +3516,28 @@ optional label (usually the category name) marked by a leading
 semi-colon. Keys must be monotonically increasing but do not need to be
 consecutive. The format is
 
-+-------------------+----------+--------------+
-| key\ :math:`_1`   | *Fill*   | [;*label*]   |
-+-------------------+----------+--------------+
-| ...               |          |              |
-+-------------------+----------+--------------+
-| key\ :math:`_n`   | *Fill*   | [;*label*]   |
-+-------------------+----------+--------------+
++-----------------+--------+--------------+
+| :math:`key_1`   | *Fill* | [;\ *label*] |
++-----------------+--------+--------------+
+| ...             |        |              |
++-----------------+--------+--------------+
+| :math:`key_n`   | *Fill* | [;\ *label*] |
++-----------------+--------+--------------+
 
 The *Fill* information follows the format given in Section [sec:fill].
 While not always applicable to categorical data, the background color
 (for *key*-values < :math:`key_1`), foreground color (for
-*key*-values > math:`key_{n}`), and not-a-number (NaN)
+*key*-values > :math:`key_{n}`), and not-a-number (NaN)
 color (for *key*-values = NaN) are all defined in the ``gmt.conf`` file, but can be
 overridden by the statements
 
-+-----+-------------------------+
-| B   | Fill\ :math:`_{back}`   |
-+-----+-------------------------+
-| F   | Fill\ :math:`_{fore}`   |
-+-----+-------------------------+
-| N   | Fill\ :math:`_{nan}`    |
-+-----+-------------------------+
++-----+---------------------+
+| B   | Fill\ :sub:`back`   |
++-----+---------------------+
+| F   | Fill\ :sub:`fore`   |
++-----+---------------------+
+| N   | Fill\ :sub:`nan`    |
++-----+---------------------+
 
 Regular CPT files
 ~~~~~~~~~~~~~~~~~
@@ -3575,13 +3575,13 @@ As for categorical tables, the background color (for *z*-values
 NaN) are all defined in the ``gmt.conf`` file, but can be overridden by the
 statements
 
-+-----+-------------------------+
-| B   | Fill\ :math:`_{back}`   |
-+-----+-------------------------+
-| F   | Fill\ :math:`_{fore}`   |
-+-----+-------------------------+
-| N   | Fill\ :math:`_{nan}`    |
-+-----+-------------------------+
++-----+---------------------+
+| B   | Fill\ :sub:`back`   |
++-----+---------------------+
+| F   | Fill\ :sub:`fore`   |
++-----+---------------------+
+| N   | Fill\ :sub:`nan`    |
++-----+---------------------+
 
 which can be inserted into the beginning or end of the CPT file. If you
 prefer the HSV system, set the ``gmt.conf`` parameter accordingly and replace red,

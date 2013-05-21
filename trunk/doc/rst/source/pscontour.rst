@@ -4,30 +4,30 @@ pscontour
 
 pscontour - Contour table data by direct triangulation [method]
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
 **pscontour** [ *table* ] **-C**\ [+]\ *cptfile* **-J**\ *parameters*
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**]
+|SYN_OPT-Rz|
 [ **-A**\ [**-**\ \|\ [+]\ *annot\_int*][*labelinfo*] ]
-[ **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-D**\ [*template*\ ] ] [
-**-G**\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params*
-] [ **-I** ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [
-**-L**\ *pen* ] [ **-N** ] [ **-O** ] [ **-P** ] [ **-Q**\ *indexfile* ]
-[ **-S**\ [*p*\ |\ *t*] ] [ **-T**\ [**+\|-**\ ][*gap/length*\ ][\ **:**\ [*labels*]]
-] [ **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [
-**-V**\ [*level*\ ] ] [ **-W**\ [**+**\ ]\ *pen* ] [
-**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-] [
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-] [ **-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
-**-c**\ *copies* ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [
-**-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
-] [ **-t**\ [*transp*\ ] ] [ **-:**\ [**i**\ \|\ **o**] ]
+[ |SYN_OPT-B| ]
+[ **-D**\ [*template*] ] 
+[ **-G**\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ] 
+[ **-I** ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] 
+[ **-L**\ *pen* ] [ **-N** ] [ **-O** ] [ **-P** ] [ **-Q**\ *indexfile* ]
+[ **-S**\ [\ *p*\ \|\ *t*] ]
+[ **-T**\ [\ **+\|-**][\ *gap/length*][\ **:**\ [\ *labels*]] ]
+[ |SYN_OPT-U| ] 
+[ |SYN_OPT-V| ] [ **-W**\ [**+**]\ *pen* ] 
+[ |SYN_OPT-X| ] 
+[ |SYN_OPT-Y| ] 
+[ |SYN_OPT-b| ]
+[ **-c**\ *copies* ] [ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ] 
+[ |SYN_OPT-p| ] 
+[ |SYN_OPT-t| ] [ |SYN_OPT-:| ]
 
 |No-spaces|
 
@@ -134,11 +134,13 @@ Optional Arguments
     Give name of file with network information. Each record must contain
     triplets of node numbers for a triangle [Default computes these
     using Delaunay triangulation (see **triangulate**)].
-**-S**\ [*p*\ |\ *t*]
+
+**-S**\ [\ *p*\ \|\ *t*]
     Skip all input *xyz* points that fall outside the region [Default
     uses all the data in the triangulation].  Alternatively, use **-St**
     to skip triangles whose three vertices are all outside the region.
     **-S** with no modifier is interpreted as **-Sp**.
+
 **-T**\ [**+\|-**][*gap/length*][\ **:**\ [*labels*]]
     Will draw tickmarks pointing in the downward direction every *gap*
     along the innermost closed contours. Append *gap* and tickmark
@@ -197,12 +199,16 @@ To make a raw contour plot from the file topo.xyz and drawing the
 contours (pen = 2) given in the color palette file topo.cpt on a Lambert
 map at 0.5 inch/degree along the standard parallels 18 and 24, use
 
-    pscontour topo.xyz -R320/330/20/30 **-Jl**\ 18/24/0.5\ **i** -Ctopo.cpt -W0.5p > topo.ps
+   ::
+
+    pscontour topo.xyz -R320/330/20/30 -Jl18/24/0.5i -Ctopo.cpt -W0.5p > topo.ps
 
 To create a color *PostScript* plot of the numerical temperature
 solution obtained on a triangular mesh whose node coordinates and
 temperatures are stored in temp.xyz and mesh arrangement is given by the
 file mesh.ijk, using the colors in temp.cpt, run
+
+   ::
 
     pscontour temp.xyz -R0/150/0/100 -Jx0.1i -Ctemp.cpt -G -W0.25p > temp.ps
 
