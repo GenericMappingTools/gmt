@@ -442,6 +442,9 @@ int GMT_gmtvector (void *V_API, int mode, void *args)
 	
 	/*---------------------------- This is the gmtvector main code ----------------------------*/
 	
+	GMT_memset (vector_1, 3, double);
+	GMT_memset (vector_2, 3, double);
+	GMT_memset (vector_3, 3, double);
 	if (Ctrl->T.mode == DO_ROT3D)	/* Spherical 3-D rotation */
 		GMT_make_rot_matrix (GMT, Ctrl->T.par[0], Ctrl->T.par[1], Ctrl->T.par[2], R);
 	else if (Ctrl->T.mode == DO_ROT2D) {	/* Cartesian 2-D rotation */
@@ -465,8 +468,6 @@ int GMT_gmtvector (void *V_API, int mode, void *args)
 	
 	/* Read input data set */
 	
-	GMT_memset (vector_1, 3, double);
-	GMT_memset (vector_3, 3, double);
 	if (Ctrl->A.active) {	/* Want a single primary vector */
 		uint64_t dim[4] = {1, 1, 3, 1};
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing single input vector; no files are read\n");
