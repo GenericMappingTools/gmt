@@ -38,7 +38,6 @@ struct Gmt_moduleinfo g_module[] = {
 	{"gmt2kml", "core", "Convert GMT data tables to KML files for Google Earth", &GMT_gmt2kml},
 	{"gmtconvert", "core", "Convert, paste, or extract columns from data tables", &GMT_gmtconvert},
 	{"gmtdefaults", "core", "List current GMT default parameters", &GMT_gmtdefaults},
-	{"gmtdigitize", "misc", "Digitizing and inverse map transformation of map x/y coordinates", &GMT_gmtdigitize},
 	{"gmtdp", "core", "Line reduction using the Douglas-Peucker algorithm", &GMT_gmtdp},
 	{"gmtget", "core", "Get individual GMT default parameters", &GMT_gmtget},
 	{"gmtgravmag3d", "potential", "Compute the gravity/magnetic anomaly of a body by the method of Okabe", &GMT_gmtgravmag3d},

@@ -47,7 +47,6 @@ EXTERN_MSC int GMT_fitcircle (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_gmt2kml (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_gmtconvert (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_gmtdefaults (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_gmtdigitize (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_gmtdp (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_gmtget (void *api_ctrl, int mode, void *args);
 EXTERN_MSC int GMT_gmtgravmag3d (void *api_ctrl, int mode, void *args);
