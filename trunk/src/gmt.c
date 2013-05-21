@@ -44,10 +44,6 @@ int main (int argc, char *argv[]) {
 		module = argv[1];
 	}
 
-	/* Now make sure that module name does not have an extension as added for example by the MSYS shell when running symlinks */
-	for (k = (unsigned int)strlen (module)-1; k > 0 && module[k] != '.'; k--);
-	if (k) module[k] = '\0';
-
 	/* gmt.c is not a module and hence can use fprintf (stderr, ...). Any API needing a
 	 * gmt-like application will write one separately [see mex API] */
 	
@@ -93,6 +89,10 @@ int main (int argc, char *argv[]) {
 			return EXIT_FAILURE;
 		return EXIT_SUCCESS;
 	}
+
+	/* Now make sure that module name does not have an extension as added for example by the MSYS shell when running symlinks */
+	for (k = (unsigned int)strlen (module)-1; k > 0 && module[k] != '.'; k--);
+	if (k) module[k] = '\0';
 
 	/* Initializing new GMT session */
 	if ((api_ctrl = GMT_Create_Session (argv[0], 2U, 0U, NULL)) == NULL)
