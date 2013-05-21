@@ -131,18 +131,6 @@ if(NOT DEFINED _GMT_HELPER_MACROS_CMAKE_)
 
 			# add to gmt_suppl target
 			add_depend_to_target (gmt_module_progs ${ARGV})
-
-			# create .cmd files for gmt modules
-#			DEFUNCT because mingw shell cannot launch .cmd files
-#			set (_gmt_win_cmds)
-#			foreach (_gmtmodule ${ARGV})
-#				list (APPEND _gmt_win_cmds "${CMAKE_CURRENT_BINARY_DIR}/${_gmtmodule}.cmd")
-#				configure_file (${CMAKE_SOURCE_DIR}/src/gmtmodule.cmd.in ${_gmtmodule}.cmd @ONLY)
-#			endforeach (_gmtmodule)
-#			install (PROGRAMS
-#				${_gmt_win_cmds}
-#				DESTINATION ${GMT_BINDIR}
-#				COMPONENT Runtime)
 		else (WIN32)
 			# create gmt module symlinks to gmt
 			#get_target_property(GMT_MAIN_NAME gmt OUTPUT_NAME)
