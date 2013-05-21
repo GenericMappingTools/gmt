@@ -27,13 +27,23 @@ void get_trans (struct GMT_CTRL *GMT, double slon, double slat, double *t11, dou
 
 	/* OUTPUT (returned) */
 	/*   t11,t12,t21,t22 transformation matrix */
+	/* COMMENT BY PW: Fails as provided if slat > 89.0 and for projection that
+	 * gives the same x-coordinates for two different longitudes, as might happen
+	 * at the N or S pole.  Some minor protections were added below to handle this.
+	 */
 
 	/* LOCAL VARIABLES */
 	double su, sv, udlat, vdlat, udlon, vdlon, dudlat, dvdlat, dudlon, dvdlon, dl;
+	int flip = 0;
 
 	/* how much does x,y change for a 1 degree change in lon,lon ? */
 	GMT_geo_to_xy (GMT, slon,     slat,     &su,    &sv );
-	GMT_geo_to_xy (GMT, slon,     slat+1.0, &udlat, &vdlat);
+	if ((slat+1.0) >= 90.0) {	/* PW: Must do something different at/near NP */
+	        GMT_geo_to_xy (GMT, slon,     slat-1.0, &udlat, &vdlat);
+		flip = 1;
+	}
+	else
+		GMT_geo_to_xy (GMT, slon,     slat+1.0, &udlat, &vdlat);
 	GMT_geo_to_xy (GMT, slon+1.0, slat    , &udlon, &vdlon);
 
 	/* Compute dudlat, dudlon, dvdlat, dvdlon */
@@ -41,17 +51,21 @@ void get_trans (struct GMT_CTRL *GMT, double slon, double slat, double *t11, dou
 	dvdlat = vdlat - sv;
 	dudlon = udlon - su;
 	dvdlon = vdlon - sv;
+	if (flip) {	/* Fix what we did above */
+		dudlat = -dudlat;
+		dvdlat = -dvdlat;
+	}
 
 	/* Make unit vectors for the long (e/x) and lat (n/y) */
 	/* to construct local transformation matrix */
 
 	dl = sqrt (dudlon*dudlon + dvdlon*dvdlon);
-	*t11 = dudlon/dl ;
-	*t21 = dvdlon/dl ;
+	*t11 = (dl == 0.0) ? 0.0 : dudlon/dl;
+	*t21 = (dl == 0.0) ? 0.0 : dvdlon/dl;
 
 	dl = sqrt (dudlat*dudlat + dvdlat*dvdlat);
-	*t12 = dudlat/dl ;
-	*t22 = dvdlat/dl ;
+	*t12 = (dl == 0.0) ? 0.0 : dudlat/dl;
+	*t22 = (dl == 0.0) ? 0.0 : dvdlat/dl;
 }
 
 double null_axis_dip (double str1, double dip1, double str2, double dip2)
