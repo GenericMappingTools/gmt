@@ -476,7 +476,7 @@ if (WIN32 AND _debug_build)
 endif (WIN32 AND _debug_build)
 
 string (REPLACE ".c" "" _gmt_modules "${GMT_PROGS_SRCS}")
-add_module_symlink (${_gmt_modules})
+install_module_symlink (${_gmt_modules})
 
 #if (UNIX)
 #	# create gmt module symlinks to gmt

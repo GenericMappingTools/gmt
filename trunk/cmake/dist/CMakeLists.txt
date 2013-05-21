@@ -161,7 +161,7 @@ if (WIN32 AND NOT CYGWIN)
 	install (CODE "
 	if (CMAKE_INSTALL_PREFIX MATCHES \"_CPack_Packages\")
 		include (BundleUtilities)
-		fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/gmtset${CMAKE_EXECUTABLE_SUFFIX}\" \"\" \"\")
+		fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/gmt${CMAKE_EXECUTABLE_SUFFIX}\" \"\" \"\")
 	endif ()
 	" COMPONENT Runtime)
 endif(WIN32 AND NOT CYGWIN)
@@ -191,7 +191,7 @@ if (APPLE)
 		# is_file_executable() from GetPrerequisites.cmake:
 		set (file_cmd /usr/bin/file)
 		include (BundleUtilities)
-		fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/gmtset${CMAKE_EXECUTABLE_SUFFIX}\" \"\" \"\")
+		fixup_bundle(\"\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/gmt${CMAKE_EXECUTABLE_SUFFIX}\" \"\" \"\")
 	endif ()
 	" COMPONENT Runtime)
 

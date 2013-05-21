@@ -25,29 +25,8 @@ set (SUPPL_PROGS_SRCS grdredpol.c gmtgravmag3d.c gravfft.c grdgravmag3d.c grdsea
 set (LIB_SRCS ${SUPPL_LIB_SRCS} ${SUPPL_PROGS_SRCS})
 
 # create build targets
-string (REPLACE ".c" "" SUPPL_PROGS "${SUPPL_PROGS_SRCS}")
-foreach (prog ${SUPPL_PROGS})
-	add_executable (${prog} ${GMT_PROGRAM})
-	string (TOUPPER "${prog}" UCASEname)
-	set_target_properties (${prog}
-		PROPERTIES COMPILE_DEFINITIONS "MODULE_ID=GMT_ID_${UCASEname}")
-	# Do not create the manifest files
-	if (WIN32)
-		set_target_properties(${prog} PROPERTIES LINK_FLAGS " /MANIFEST:NO")
-	endif ()
-	target_link_libraries (${prog} gmtlib)
-endforeach (prog)
-
-# generate Mac debugging symbols
-create_debug_sym (${SUPPL_PROGS})
-
-# add the install targets
-install (TARGETS ${SUPPL_PROGS}
-	RUNTIME DESTINATION ${GMT_BINDIR}
-	COMPONENT Runtime)
-
-# add to gmt_suppl target
-add_depend_to_target (gmt_suppl ${SUPPL_PROGS})
+string (REPLACE ".c" "" _gmt_modules "${SUPPL_PROGS_SRCS}")
+install_module_symlink (${_gmt_modules})
 
 # Generate manpages
 string (REPLACE ".c" ".1" SUPPL_MAN_1 "${SUPPL_PROGS_SRCS}")

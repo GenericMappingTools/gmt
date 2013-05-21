@@ -19,20 +19,20 @@
 
 # source files
 set (SUPPL_LIB_SRCS utilmeca.c nrutil.c)
-set (SUPPL_PROGSPS_SRCS psmeca.c pspolar.c psvelo.c pscoupe.c)
+set (SUPPL_PROGS_SRCS psmeca.c pspolar.c psvelo.c pscoupe.c)
 
 # example files
 set (SUPPL_EXAMPLE_FILES README.meca)
 
 # lib sources
-set (LIB_SRCS ${SUPPL_LIB_SRCS} ${SUPPL_PROGSPS_SRCS})
+set (LIB_SRCS ${SUPPL_LIB_SRCS} ${SUPPL_PROGS_SRCS})
 
 # create build targets
-string (REPLACE ".c" "" _gmt_modules "${SUPPL_PROGSPS_SRCS}")
-add_module_symlink (${_gmt_modules})
+string (REPLACE ".c" "" _gmt_modules "${SUPPL_PROGS_SRCS}")
+install_module_symlink (${_gmt_modules})
 
 # Generate manpages
-string (REPLACE ".c" ".1" SUPPL_MAN_1 "${SUPPL_PROGSPS_SRCS}")
+string (REPLACE ".c" ".1" SUPPL_MAN_1 "${SUPPL_PROGS_SRCS}")
 gmt_create_manpages ("${SUPPL_MAN_1}")
 
 # install example data
