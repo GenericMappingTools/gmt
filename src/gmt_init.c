@@ -1436,7 +1436,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 	int got, col_type[2], expect_to_read;
 	size_t length;
 	bool inv_project = false, scale_coord = false;
-	char text[GMT_BUFSIZ], string[GMT_BUFSIZ], r_unit;
+	char text[GMT_BUFSIZ], string[GMT_BUFSIZ], r_unit = 0;
 	double p[6];
 
 	/* Parse the -R option.  Full syntax: -R<grdfile> or -Rg or -Rd or -R[g|d]w/e/s/n[/z0/z1][r] */
@@ -1557,7 +1557,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 		GMT->common.R.oblique = true;
 	}
 	else if (scale_coord) {	/* Just scale x/y coordinates to meters according to given unit */
-		double fwd_scale, inv_scale, inch_to_unit, unit_to_inch;
+		double fwd_scale, inv_scale = 0.0, inch_to_unit, unit_to_inch;
 		int k_unit;
 		k_unit = GMT_get_unit_number (GMT, item[0]);
 		GMT_init_scales (GMT, k_unit, &fwd_scale, &inv_scale, &inch_to_unit, &unit_to_inch, NULL);
@@ -5307,6 +5307,7 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, char *keyword)
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error in GMT_putparameter: Unrecognized keyword %s\n", keyword);
 			break;
 	}
+	if (error) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error in GMT_putparameter: Unrecognized keyword %s\n", keyword);
 	return (value);
 }
 
@@ -6359,7 +6360,7 @@ int GMT_Complete_Options (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	 *    Also, a single -B in the options may expand to several
 	 *    separate -B<args> so the linked options list may grow.
 	 */
-	int id, k, n_B = 0, B_id;
+	int id = 0, k, n_B = 0, B_id;
 	unsigned int pos = 0, B_replace = 1;
 	bool update, remember;
 	struct GMT_OPTION *opt = NULL, *opt2 = NULL, *B_next = NULL;
@@ -9050,7 +9051,7 @@ int GMT_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 	 * The API will also consider -I for grid increments.
 	 */
 
-	int i, error = 0;
+	int error = 0;
 
 	if (!list || !strchr (list, option)) return (0);	/* Not a common option we accept */
 
@@ -9094,17 +9095,17 @@ int GMT_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			break;
 
 		case 'K':
-			i = GMT_more_than_once (GMT, GMT->common.K.active);
+			GMT_more_than_once (GMT, GMT->common.K.active);
 			GMT->common.K.active = true;
 			break;
 
 		case 'O':
-			i = GMT_more_than_once (GMT, GMT->common.O.active);
+			GMT_more_than_once (GMT, GMT->common.O.active);
 			GMT->common.O.active = true;
 			break;
 
 		case 'P':
-			i = GMT_more_than_once (GMT, GMT->common.P.active);
+			GMT_more_than_once (GMT, GMT->common.P.active);
 			GMT->common.P.active = true;
 			break;
 
@@ -9131,7 +9132,7 @@ int GMT_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			break;
 
 		case 'V':
-			i = GMT_more_than_once (GMT, GMT->common.V.active);
+			GMT_more_than_once (GMT, GMT->common.V.active);
 			GMT->common.V.active = true;
 			if (item && item[0]) {	/* Specified a verbosity level */
 				if (gmt_parse_V_option (GMT, item[0])) {

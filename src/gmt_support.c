@@ -4061,10 +4061,10 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char 
 	 * If resample is true then we sample the track between the end points.
 	 * If project is true then we convert to plot units.
 	 */
-	unsigned int n_cols, np, k, s, pos = 0, pos2 = 0, xtype = GMT->current.io.col_type[GMT_IN][GMT_X], ytype = GMT->current.io.col_type[GMT_IN][GMT_Y];
+	unsigned int n_cols, np = 0, k, s, pos = 0, pos2 = 0, xtype = GMT->current.io.col_type[GMT_IN][GMT_X], ytype = GMT->current.io.col_type[GMT_IN][GMT_Y];
 	enum GMT_profmode p_mode;
 	int n, error = 0;
-	double L, az, length, r;
+	double L, az = 0.0, length = 0.0, r = 0.0;
 	size_t n_alloc = GMT_SMALL_CHUNK, len;
 	char p[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256];
 	char modifiers[GMT_BUFSIZ], p2[GMT_BUFSIZ];

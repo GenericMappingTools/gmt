@@ -268,7 +268,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 	uint64_t n_read = 0, n_smts = 0, ij;
 	bool map = false, periodic = false, replicate, first;
 	char unit = 'X';
-	double x, y, r, i_r, c, *in, this_r, A, B, C, e, e2, ca, sa, ca2, sa2, r_in, dx, dy;
+	double x, y, r, c, *in, this_r, A = 0.0, B = 0.0, C = 0.0, e, e2, ca, sa, ca2, sa2, r_in, dx, dy;
 	double add, f, max = -DBL_MAX, r_km, amplitude, h_scale, z_assign, h_scl, noise;
 	double wesn[4], rr, out[9], a, b, area, volume, height, DEG_PR_KM;
 	void (*shape_func) (double a, double b, double h, double hc, double f, double *A, double *V, double *z);
@@ -306,6 +306,7 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
 		Return (API->error);
 	}
+	shape_func = NULL;
 	if (Ctrl->L.active) {	/* Just list area, volume, etc. for each seamount; no grid needed */
 		n_out = n_expected_fields + 3;
 		if ((error = GMT_set_cols (GMT, GMT_OUT, n_out)) != GMT_OK) {
@@ -377,7 +378,6 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 			r = r_km;
 			if (map) r *= DEG_PR_KM;	/* Was in km so now it is in degrees, same units as grid coordinates */
 			f = -4.5 / (r_km * r_km);	/* So we can take exp (f * radius_in_km^2) */
-			i_r = 1.0 / r;			/* Inverse radius in grid distance units */
 			A = f * (e2 * ca2 + sa2);	/* Elliptical components needed to evalute radius(az) */
 			B = -f * (sa * ca * (1.0 - e2));
 			C = f * (e2 * sa2 + ca2);
@@ -394,7 +394,6 @@ int GMT_grdseamount (void *V_API, int mode, void *args)
 			r = r_km;			/* Copy of r_km */
 			if (map) r *= DEG_PR_KM;	/* Was in km so now it is in degrees, same units as grid coordinates */
 			f = (Ctrl->C.active) ? 1.0 / r_km : -4.5 / (r_km * r_km);	/* So we can take exp (f * radius_in_km^2) */
-			i_r = 1.0 / r;			/* Inverse radius in grid distance units */
 			amplitude = in[3];		/* Seamount max height from base */
 			if (Ctrl->T.mode == 1) Ctrl->T.value = in[4];	/* Flattening given by input file */
 		}

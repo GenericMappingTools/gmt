@@ -768,14 +768,14 @@ int GMT_pscoupe_parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct G
 
 int GMT_pscoupe (void *V_API, int mode, void *args)
 {
-	int ix, iy, n_rec = 0, n_plane_old = 0, form = 0, error;
+	int ix, iy, n_rec = 0, n_plane_old = 0, form = 0, error, k, n_k;
 	int i, transparence_old = 0, not_defined = 0;
 	FILE *pnew = NULL, *pext = NULL;
 
 	double size, xy[2], plot_x, plot_y, angle = 0.0, n_dep, distance, fault, depth;
 	double P_x, P_y, T_x, T_y;
 
-	char event_title[GMT_BUFSIZ], *line = NULL, col[15][GMT_TEXT_LEN64];
+	char event_title[GMT_BUFSIZ], *line = NULL, *p = NULL, col[15][GMT_TEXT_LEN64];
 
 	st_me meca, mecar;
 	struct MOMENT moment;
@@ -848,6 +848,21 @@ int GMT_pscoupe (void *V_API, int mode, void *args)
 		pext = fopen (Ctrl->A.extfile, "w");
 	}
 
+	if (Ctrl->S.readmode == READ_CMT)
+		n_k = 13;
+	else if (Ctrl->S.readmode == READ_AKI)
+		n_k = 9;
+	else if (Ctrl->S.readmode == READ_PLANES)
+		n_k = 10;
+	else if (Ctrl->S.readmode == READ_AXIS)
+		n_k = 15;
+	else if (Ctrl->S.readmode == READ_TENSOR)
+		n_k = 12;
+	else if (GMT_IS_ZERO (Ctrl->S.scale))
+		n_k = 4;
+	else
+		n_k = 3;
+
 	do {	/* Keep returning records until we reach EOF */
 		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 			if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
@@ -900,7 +915,9 @@ int GMT_pscoupe (void *V_API, int mode, void *args)
 		else
 			sscanf (line, "%s %s %s %[^\n]\n", col[0], col[1], col[2], event_title);
 
- 		if ((GMT_scanf (GMT, col[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &xy[ix]) == GMT_IS_NAN) || (GMT_scanf (GMT, col[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[iy]) == GMT_IS_NAN)) {
+ 		for (k = 0; k < n_k; k++) if ((p = strchr (col[k], ','))) *p = '\0';	/* Chop of trailing command from input field deliminator */
+
+		if ((GMT_scanf (GMT, col[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &xy[ix]) == GMT_IS_NAN) || (GMT_scanf (GMT, col[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[iy]) == GMT_IS_NAN)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad x and/or y coordinates, skip)\n", n_rec);
 			continue;
 		}

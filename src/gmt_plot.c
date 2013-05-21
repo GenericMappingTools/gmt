@@ -4528,7 +4528,7 @@ void gmt_geo_vector_smallcircle (struct GMT_CTRL *GMT, double lon0, double lat0,
 	/* Draws a small-circle vector with our without heads etc. */
 
 	uint64_t n1, n2, n, add;
-	int heads, side, justify;
+	int heads, side;
 	int outline = 0;
 	size_t n_alloc;
 	bool perspective;
@@ -4541,7 +4541,7 @@ void gmt_geo_vector_smallcircle (struct GMT_CTRL *GMT, double lon0, double lat0,
 	struct GMT_CIRCLE C;
 
 	/* We must determine points A and B, whose great-circle connector is the arc we seek to draw */
-	justify = GMT_vec_justify (S->v.status);	/* Return justification as 0-3 */
+	//justify = GMT_vec_justify (S->v.status);	/* Return justification as 0-3 */
 	
 	gmt_scircle_sub (GMT, lon0, lat0, azimuth, length, S, &C);
 	
@@ -4732,7 +4732,7 @@ void gmt_geo_vector_greatcircle (struct GMT_CTRL *GMT, double lon0, double lat0,
 	/* Draws a great-circle vector with our without heads, etc. */
 
 	uint64_t n1, n2, n, add;
-	int heads, side, justify;
+	int heads, side;
 	int outline = 0;
 	size_t n_alloc;
 	bool perspective;
@@ -4744,7 +4744,7 @@ void gmt_geo_vector_greatcircle (struct GMT_CTRL *GMT, double lon0, double lat0,
 	struct GMT_CIRCLE C;
 
 	/* We must determine points A and B, whose great-circle connector is the arc we seek to draw */
-	justify = GMT_vec_justify (S->v.status);	/* Return justification as 0-3 */
+	//justify = GMT_vec_justify (S->v.status);	/* Return justification as 0-3 */
 	gmt_gcircle_sub (GMT, lon0, lat0, azimuth, length, S, &C);
 	perspective = GMT_IS_PERSPECTIVE (GMT);
 	

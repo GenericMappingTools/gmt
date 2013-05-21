@@ -230,7 +230,7 @@ void GMT_list_API (struct GMTAPI_CTRL *API, char *txt)
 unsigned int GMTAPI_get_alloc_mode (struct GMTAPI_CTRL *API, unsigned int family, void *data)
 {	/* Return the alloc mode of the container, given the family type, as long as the
 	 * container pointer *data is not NULL */
-	unsigned int mode;
+	unsigned int mode = 0;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_GRID *G = NULL;
 	struct GMT_TEXTSET *T = NULL;

@@ -366,7 +366,7 @@ int GMT_pspolar_parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct G
 
 int GMT_pspolar (void *V_API, int mode, void *args)
 {
-	int n = 0, error = 0;
+	int k, n = 0, error = 0;
 	bool old_is_world;
    
 	double plot_x, plot_y, symbol_size2 = 0, plot_x0, plot_y0, azS = 0, si, co;
@@ -451,6 +451,7 @@ int GMT_pspolar (void *V_API, int mode, void *args)
 
 		/* Data record to process */
 
+		for (k = 0; k < (int)strlen (line); k++) if (line[k] == ',') line[k] = ' ';	/* Replace commas with spaces */
 		if (Ctrl->Q.active) {
 			if (Ctrl->S2.active) {
 				n = sscanf (line, "%s %s %s %s %lf %lf %c %lf", col[0], col[1], col[2], stacode, &azimut, &ih, col[3], &azS);

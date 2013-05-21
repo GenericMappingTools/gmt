@@ -301,7 +301,7 @@ int GMT_psvelo_parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT
 
 int GMT_psvelo (void *V_API, int mode, void *args)
 {
-	int ix = 0, iy = 1, n_rec = 0, justify;
+	int ix = 0, iy = 1, n_rec = 0, k, n_k, justify;
 	int des_ellipse = true, des_arrow = true, error = false;
 
 	double xy[2], plot_x, plot_y, vxy[2], plot_vx, plot_vy, dim[7];
@@ -309,8 +309,8 @@ int GMT_psvelo (void *V_API, int mode, void *args)
 	double direction = 0, small_axis = 0, great_axis = 0, sigma_x, sigma_y, corr_xy;
 	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, hl, hw, vw, ssize;
 
-	char *station_name;
-	char *line, col[12][GMT_TEXT_LEN64];
+	char *station_name = NULL, *p = NULL;
+	char *line = NULL, col[12][GMT_TEXT_LEN64];
 
 	struct PSVELO_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
@@ -361,6 +361,7 @@ int GMT_psvelo (void *V_API, int mode, void *args)
 	if (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE) GMT_Report (API, GMT_MSG_VERBOSE, "psvelo: 2-D confidence interval and scaling factor %f %f\n", Ctrl->S.confidence, Ctrl->S.conrad);
 
 	Ctrl->A.S.v.v_width = (float)(Ctrl->A.S.v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
+	n_k = (Ctrl->S.readmode == READ_ELLIPSE || Ctrl->S.readmode == READ_ROTELLIPSE) ? 7 : 9;
 
 	do {	/* Keep returning records until we reach EOF */
 		if ((line = GMT_Get_Record (API, GMT_READ_TEXT, NULL)) == NULL) {	/* Read next record, get NULL if special case */
@@ -383,6 +384,7 @@ int GMT_psvelo (void *V_API, int mode, void *args)
 			sscanf (line, "%s %s %s %s %s %s %s %s %s %[^\n]\n",
 				col[0], col[1], col[2], col[3], col[4], col[5], col[6], col[7], col[8], station_name);
 		}
+		for (k = 0; k < n_k; k++) if ((p = strchr (col[k], ','))) *p = '\0';	/* Chop of trailing command from input field deliminator */
 
 		if ((GMT_scanf (GMT, col[GMT_X], GMT->current.io.col_type[GMT_IN][GMT_X], &xy[ix]) == GMT_IS_NAN) || (GMT_scanf (GMT, col[GMT_Y], GMT->current.io.col_type[GMT_IN][GMT_Y], &xy[iy]) == GMT_IS_NAN)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad x and/or y coordinates, must exit)\n", n_rec);

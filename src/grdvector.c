@@ -297,7 +297,7 @@ int GMT_grdvector (void *V_API, int mode, void *args)
 	
 	uint64_t ij;
 
-	double tmp, x, y, plot_x, plot_y, x_off, y_off, f, h_length, h_width, v_width;
+	double tmp, x, y, plot_x, plot_y, x_off, y_off, f, h_length = 0.0, h_width = 0.0, v_width = 0.0;
 	double x2, y2, wesn[4], vec_length, vec_azim, scaled_vec_length, c, s, dim[PSL_MAX_DIMS];
 
 	struct GMT_GRID *Grid[2] = {NULL, NULL};
