@@ -23,11 +23,7 @@ if (LICENSE_RESTRICTED AND NOT LICENSE_RESTRICTED STREQUAL GPL)
 endif (LICENSE_RESTRICTED AND NOT LICENSE_RESTRICTED STREQUAL GPL)
 
 # source files
-if (UNIX)
-	set (SUPPL_PROGS_SRCS dimfilter.c gmtdigitize.c)
-else (UNIX)
-	set (SUPPL_PROGS_SRCS dimfilter.c)
-endif (UNIX)
+set (SUPPL_PROGS_SRCS dimfilter.c)
 
 # lib sources
 set (LIB_SRCS ${SUPPL_PROGS_SRCS})
