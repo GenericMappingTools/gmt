@@ -105,7 +105,6 @@ l l .
 
 	Supplement \fImisc\fP:
 \fBdimfilter\fP	
-\fBgmtdigitize\fP	
 
 	Supplement \fIpotential\fP:
 \fBgmtgravmag3d\fP	
