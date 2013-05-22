@@ -64,10 +64,10 @@ symbols and text that make up a map legend, making it a very awkward
 program to maintain.
 
 .. figure:: _images/GMT5_mode.png
-   :height: 1144 px
-   :width: 2034 px
+   :height: 569 px
+   :width: 1013 px
    :align: center
-   :scale: 25 %
+   :scale: 50 %
 
    Figure 2: GMT 5 programs contain all the high-level functionality. 
 
@@ -303,8 +303,8 @@ data set *via* a ``struct GMT_VECTOR`` it will know how to read the data correct
 
 
 .. figure:: _images/GMT5_mode.png
-   :height: 1144 px
-   :width: 2034 px
+   :height: 569 px
+   :width: 1013 px
    :scale: 0 %
 
    Table 1.1: Definition of the GMT_UNIVECTOR union that holds a pointer to any array type.
