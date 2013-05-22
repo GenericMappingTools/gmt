@@ -58,6 +58,9 @@ struct PSMECA_CTRL {
 		bool active;
 		struct GMT_FILL fill;
 	} E;
+ 	struct F {	/* Repeatable -F<mode>[<args>] */
+		bool active;
+	} F;
  	struct G {	/* -G<fill> */
 		bool active;
 		struct GMT_FILL fill;
@@ -168,10 +171,10 @@ int GMT_psmeca_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "usage: psmeca [<table>] %s %s\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t-S<format><scale>[/<fontsize>[/<justify>/<offset>/<angle>/<form>]] [%s]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C[<pen>][P<pointsize>]] [-D<depmin>/<depmax>] [-E<fill>] [-G<fill>] [-K] [-L<pen>] [-M]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Fa[<size>[/<Psymbol>[<Tsymbol>]]] [-Fe<fill>] [-Fg<fill>] [-Fo] [-Fr<fill>] [-Fp[<pen>]] [-Ft[<pen>]] [-Fz[<pen>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N] [-O] [-P] [-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>]\n", GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<cpt>] [-z[<pen>]]\n", GMT_X_OPT, GMT_Y_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-a[<size>[/<Psymbol>[<Tsymbol>]]] [-e<fill>] [-g<fill>] [-r<fill>] [-p[<pen>]] [-t[<pen>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [-o] [%s]\n", GMT_c_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n", GMT_c_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -184,6 +187,15 @@ int GMT_psmeca_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   A small circle is plotted at the initial location. Add P<pointsize> to change the size of the circle.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Plot events between <depmin> and <depmax> deep.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Set color used for extensive parts [default is white].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Sets various attributes of symbols depending on <mode>:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   a Plot axis. Default symbols are circles; otherwise append <size>[/<Psymbol>[<Tsymbol>].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   g Append color used for P_symbol [default as set by -G].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   e Append color used for T_symbol [default as set by -E].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   p Draw P_symbol outline using the default pen (see -W) or append pen attribute for outline.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   t Draw T_symbol outline using the default pen (see -W) or append pen attribute for outline.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   o Use psvelomeca format (Without depth in third column).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   r Draw box behind labels.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   z Overlay zero trace moment tensor using default pen (see -W) or append outline pen.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set color used for compressive parts [default is black].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <r/g/b> (each 0-255) for color or <gray> (0-255) for gray-shade [0].\n");
 	GMT_Option (API, "K");
@@ -191,7 +203,6 @@ int GMT_psmeca_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Same size for any magnitude. Size is given with -S.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do Not skip/clip symbols that fall outside map border [Default will ignore those outside].\n");
 	GMT_Option (API, "O,P");
-	GMT_Message (API, GMT_TIME_NONE, "\t-r Draw a box around text.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Select format type and symbol size (in %s).\n",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Choose format between:\n");
@@ -230,17 +241,9 @@ int GMT_psmeca_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   n = 2 the only second nodal plane is plotted.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   n = 0 both nodal planes are plotted.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If moment tensor is required, nodal planes overlay moment tensor.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-z Overlay zero trace moment tensor using default pen (see -W) or sets outline pen.\n");
 	GMT_Option (API, "U,V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set pen attributes [%s].\n", GMT_putpen (API->GMT, API->GMT->current.setting.map_default_pen));
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Use cpt-file to assign colors based on depth-value in 3rd column.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-a Plot axis. Default symbols are circles.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-g Set color used for P_symbol [default as set by -G].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-e Set color used for T_symbol [default as set by -E].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-p Draw P_symbol outline using the default pen (see -W) or sets pen attribute for outline.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-t Draw T_symbol outline using the default pen (see -W) or sets pen attribute for outline.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-o Use psvelomeca format (Without depth in third column).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-r Draw box behind labels.\n");
 	GMT_Option (API, "X,c,h,i,:,.");
 
 	return (EXIT_FAILURE);
@@ -291,6 +294,71 @@ int GMT_psmeca_parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT
 				if (!opt->arg[0] || (opt->arg[0] && GMT_getfill (GMT, opt->arg, &Ctrl->E.fill))) {
 					GMT_fill_syntax (GMT, 'G', " ");
 					n_errors++;
+				}
+				break;
+			case 'F':	/* Repeatable; Controls various symbol attributes  */
+				Ctrl->F.active = true;
+				switch (opt->arg[0]) {
+					case 'a':	/* plot axis */
+						Ctrl->A2.active = true;
+						strncpy (txt, &opt->arg[2], GMT_TEXT_LEN256);
+						if ((p = strchr (txt, '/'))) p[0] = '\0';
+						if (txt[0]) Ctrl->A2.size = GMT_to_inch (GMT, txt);
+						p++;
+						switch (strlen (p)) {
+							case 1:
+								Ctrl->A2.P_symbol = Ctrl->A2.T_symbol = p[0];
+								break;
+							case 2:
+								Ctrl->A2.P_symbol = p[0], Ctrl->A2.T_symbol = p[1];
+								break;
+						}
+						break;
+					case 'e':	/* Set color for T axis symbol */
+						Ctrl->E2.active = true;
+						if (GMT_getfill (GMT, &opt->arg[1], &Ctrl->E2.fill)) {
+							GMT_fill_syntax (GMT, 'e', " ");
+							n_errors++;
+						}
+						break;
+					case 'g':	/* Set color for P axis symbol */
+						Ctrl->G2.active = true;
+						if (GMT_getfill (GMT, &opt->arg[1], &Ctrl->G2.fill)) {
+							GMT_fill_syntax (GMT, 'g', " ");
+							n_errors++;
+						}
+						break;
+					case 'p':	/* Draw outline of P axis symbol [set outline attributes] */
+						Ctrl->P2.active = true;
+						if (opt->arg[1] && GMT_getpen (GMT, &opt->arg[1], &Ctrl->P2.pen)) {
+							GMT_pen_syntax (GMT, 'p', " ");
+							n_errors++;
+						}
+						break;
+					case 'r':	/* draw box around text */
+						Ctrl->R2.active = true;
+						if (opt->arg[1] && GMT_getfill (GMT, &opt->arg[1], &Ctrl->R2.fill)) {
+							GMT_fill_syntax (GMT, 'r', " ");
+							n_errors++;
+						}
+						break;
+					case 't':	/* Draw outline of T axis symbol [set outline attributes] */
+						Ctrl->T2.active = true;
+						if (opt->arg[1] && GMT_getpen (GMT, &opt->arg[1], &Ctrl->T2.pen)) {
+							GMT_pen_syntax (GMT, 't', " ");
+							n_errors++;
+						}
+						break;
+					case 'o':	/* use psvelomeca format (without depth in 3rd column) */
+						Ctrl->O2.active = true;
+						break;
+					case 'z':	/* overlay zerotrace moment tensor */
+						Ctrl->Z2.active = true;
+						if (opt->arg[1] && GMT_getpen (GMT, &opt->arg[1], &Ctrl->Z2.pen)) { /* Set pen attributes */
+							GMT_pen_syntax (GMT, 'z', " ");
+							n_errors++;
+						}
+						break;
 				}
 				break;
 			case 'G':	/* Set color for compressive parts */
@@ -378,66 +446,6 @@ int GMT_psmeca_parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT
 			case 'Z':	/* Vary symbol color with z */
 				Ctrl->Z.active = true;
 				Ctrl->Z.file = strdup (opt->arg);
-				break;
-			case 'a':	/* plot axis */
-				Ctrl->A2.active = true;
-				strncpy (txt, &opt->arg[1], GMT_TEXT_LEN256);
-				if ((p = strchr (txt, '/'))) p[0] = '\0';
-				if (txt[0]) Ctrl->A2.size = GMT_to_inch (GMT, txt);
-				p++;
-				switch (strlen (p)) {
-					case 1:
-						Ctrl->A2.P_symbol = Ctrl->A2.T_symbol = p[0];
-						break;
-					case 2:
-						Ctrl->A2.P_symbol = p[0], Ctrl->A2.T_symbol = p[1];
-						break;
-				}
-				break;
-			case 'e':	/* Set color for T axis symbol */
-				Ctrl->E2.active = true;
-				if (GMT_getfill (GMT, opt->arg, &Ctrl->E2.fill)) {
-					GMT_fill_syntax (GMT, 'e', " ");
-					n_errors++;
-				}
-				break;
-			case 'g':	/* Set color for P axis symbol */
-				Ctrl->G2.active = true;
-				if (GMT_getfill (GMT, opt->arg, &Ctrl->G2.fill)) {
-					GMT_fill_syntax (GMT, 'g', " ");
-					n_errors++;
-				}
-				break;
-			case 'p':	/* Draw outline of P axis symbol [set outline attributes] */
-				Ctrl->P2.active = true;
-				if (opt->arg[0] && GMT_getpen (GMT, opt->arg, &Ctrl->P2.pen)) {
-					GMT_pen_syntax (GMT, 'p', " ");
-					n_errors++;
-				}
-				break;
-			case 'r':	/* draw box around text */
-				Ctrl->R2.active = true;
-				if (opt->arg[0] && GMT_getfill (GMT, opt->arg, &Ctrl->R2.fill)) {
-					GMT_fill_syntax (GMT, 'r', " ");
-					n_errors++;
-				}
-				break;
-			case 't':	/* Draw outline of T axis symbol [set outline attributes] */
-				Ctrl->T2.active = true;
-				if (opt->arg[0] && GMT_getpen (GMT, opt->arg, &Ctrl->T2.pen)) {
-					GMT_pen_syntax (GMT, 't', " ");
-					n_errors++;
-				}
-				break;
-			case 'o':	/* use psvelomeca format (without depth in 3rd column) */
-				Ctrl->O2.active = true;
-				break;
-			case 'z':	/* overlay zerotrace moment tensor */
-				Ctrl->Z2.active = true;
-				if (opt->arg && GMT_getpen (GMT, opt->arg, &Ctrl->Z2.pen)) { /* Set pen attributes */
-					GMT_pen_syntax (GMT, 'z', " ");
-					n_errors++;
-				}
 				break;
 
 			default:	/* Report bad options */

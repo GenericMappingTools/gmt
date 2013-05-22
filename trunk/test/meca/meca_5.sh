@@ -105,6 +105,3 @@ echo 4.0 0.0 0.0  1.0 -2.0  1.0  0.0  0.0  0.0 23 0 0 Horiz. CLVD | gmt psmeca -
 echo 5.0 1.0 0.0 -2.0  1.0  1.0  0.0  0.0  0.0 23 0 0 Vertical CLVD | gmt psmeca -Sm${size} -L1 -Gblack -R -K -J -O >> $ps
 # Vertical CLVD
 echo 5.0 0.0 0.0  2.0 -1.0 -1.0  0.0  0.0  0.0 23 0 0 Vertical CLVD | gmt psmeca -Sm${size} -L1 -Gblack -R    -J -O >> $ps
-
-
-

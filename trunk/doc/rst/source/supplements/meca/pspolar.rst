@@ -14,10 +14,9 @@ pspolar [ *table* ] **-J**\ *parameters*
 **-M**\ *size* **-S**\ *<symbol><size>* [
 **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [
 **-C**\ *lon*/*lat*\ [/*dash\_width*/*pointsize*] ] [ **-F**\ *color* ]
-[ **-G**\ *fill* ] [ **-g**\ *fill* ] [ **-K** ] [ **-L** ] [ **-N** ] [
-**-O** ] [ **-P** ] [
-**-s**\ *Half-size*\ [**v**\ [[*v\_width*/*h\_length*/*h\_width*/*shape*]][\ **g**\ [*color*]][**l**]
-[ **-T**\ *angle*/*form*/*justify*/*fontsize* ] [ **-t**\ *pen* ] [
+[ **-G**\ *fill* ] [ **-K** ] [ **-L** ] [ **-N** ] [
+**-O** ] [ **-Q**\ *mode*\ [*args*] ]
+[ **-T**\ *angle*/*form*/*justify*/*fontsize* ] [
 **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*]
 ] [ **-W**\ *pen* ] [
 **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**]]
@@ -83,9 +82,6 @@ Parameters are expected to be in the following columns:
     Selects filling of symbols for stations in extensive quadrants. Set
     the color [Default is 250]. If **-E**\ *fill* is the same as
     **-F**\ *fill*, use **-e** to outline.
-**-e**\ [pen])
-    Outline symbols in extensive quadrants using *pen* or the default
-    pen (see **-W**).
 **-F**\ *fill*
     Sets background color of the beach ball. Default is no fill.
 **-G**\ *fill*
@@ -101,6 +97,29 @@ Parameters are expected to be in the following columns:
 .. include:: ../../explain_-O.rst_
 .. include:: ../../explain_-P.rst_
 
+**-Q**\ *mode*\ [*args*]
+    Sets one or more attributes; repeatable. The various combinations are
+
+**-Qe**\ [pen])
+    Outline symbols in extensive quadrants using *pen* or the default
+    pen (see **-W**).
+**-Qf**\ [pen])
+    Outline the beach ball using *pen* or the default pen (see **-W**).
+**-Qg**\ [pen])
+    Outline symbols in compressional quadrants using *pen* or the
+    default pen (see **-W**).
+**-Qh**
+    Use special format derived from HYPO71 output
+**-Qs**\ *half-size*/[**V**\ [*v\_width/h\_length/h\_width/shape*\ ]][\ **G**\ *color*][**L**\ ]
+    Plots S polarity azimuth. S polarity is in last column. It may be a
+    vector (**V** option) or a segment. Give
+    half-size,v\_width,h\_length,h\_width in inch (unless **c**, **i**,
+    **m**, or **p** is appended). [**L**\ ] option is for outline.
+**-Qt**\ *pen*
+    Set pen color to write station code. Default uses the default pen
+    (see **-W**).
+
+
 **-T**\ *angle/form/justify/fontsize in points*
     To write station code. [Default is 0.0/0/5/12].
 
@@ -114,26 +133,7 @@ Parameters are expected to be in the following columns:
 
 .. include:: ../../explain_-XY.rst_
 .. include:: ../../explain_-c.rst_
-
-**-f**\ [pen])
-    Outline the beach ball using *pen* or the default pen (see **-W**).
-**-g**\ [pen])
-    Outline symbols in compressional quadrants using *pen* or the
-    default pen (see **-W**).
-**-h**
-    Use special format derived from HYPO71 output
-
 .. include:: ../../explain_-icols.rst_
-
-**-s**\ *half-size*/[**V**\ [*v\_width/h\_length/h\_width/shape*\ ]][\ **G**\ *color*][**L**\ ]
-    Plots S polarity azimuth. S polarity is in last column. It may be a
-    vector (**V** option) or a segment. Give
-    half-size,v\_width,h\_length,h\_width in inch (unless **c**, **i**,
-    **m**, or **p** is appended). [**L**\ ] option is for outline.
-**-t**\ *pen*
-    Set pen color to write station code. Default uses the default pen
-    (see **-W**).
-
 .. include:: ../../explain_colon.rst_
 .. include:: ../../explain_help.rst_
 
