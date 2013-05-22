@@ -24,10 +24,11 @@
 
 **Alfred Wegener Institute, Germany**
 
-.. figure:: _images/GMT5_Summit_2011.png
-   :height: 887 px
-   :width: 1500 px
-   :scale: 50 %
+.. figure:: _images/GMT5_Summit_2011.jpg
+   :height: 599 px
+   :width: 1013 px
+   :align: center
+   :scale: 75 %
 
    Figure 1: The four horsemen of the GMT apocalypse: Remko Scharroo, Paul Wessel, Walter H.F. Smith,
    and Joaquim Luis at the GMT Developer Summit in Honolulu, Hawaii during February 14-18, 2011.
