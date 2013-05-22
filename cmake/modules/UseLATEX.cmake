@@ -1238,3 +1238,5 @@ ELSE (LATEX_BUILD_COMMAND)
   # Must be part of the actual configure (included from CMakeLists.txt).
   LATEX_SETUP_VARIABLES()
 ENDIF (LATEX_BUILD_COMMAND)
+
+# vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
