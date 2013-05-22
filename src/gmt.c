@@ -27,7 +27,7 @@
 
 int main (int argc, char *argv[]) {
 	int status = EXIT_SUCCESS;              /* Default status code */
-	unsigned int modulename_arg_n = 0;      /* argument number that contains maodule name */
+	unsigned int modulename_arg_n = 0;      /* argument number that contains module name */
 	enum GMT_MODULE_ID module_id = 0;       /* Module ID */
 	struct GMTAPI_CTRL *api_ctrl = NULL;    /* GMT API control structure */
 	char gmt_module[16] = "gmt";
