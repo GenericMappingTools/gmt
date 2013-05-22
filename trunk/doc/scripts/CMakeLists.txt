@@ -61,30 +61,33 @@ set (_scripts_ps ${_scr_nostrip} ${_scr_strip} ${_scr_other}
 string (REPLACE ".sh" ".ps" _scripts_ps "${_scripts_ps}")
 
 set (_scripts_pdf)
+set (_scripts_png)
 set (_install_pdf GMT_RGBchart_a4.pdf GMT_RGBchart_tabloid.pdf GMT_RGBchart_letter.pdf)
 
-# Convert figures to PDF
+# Convert figures to PDF and PNG
 foreach (_fig ${_scripts_ps})
 	string (REPLACE ".ps" ".pdf" _pdf_fig ${_fig})
+	string (REPLACE ".ps" ".png" _png_fig ${_fig})
 	list (APPEND _scripts_pdf ${_pdf_fig})
+	list (APPEND _scripts_png ${_png_fig})
 	if (WIN32)
 		add_custom_command (
-			OUTPUT ${_pdf_fig}
+			OUTPUT ${_pdf_fig} ${_png_fig}
 			COMMAND
 			set GMT_USERDIR=${GMT_BINARY_DIR}/share
 			set GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster -A -P -Tf
+			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster -A -P -Tfg -E200
 			-D${CMAKE_CURRENT_BINARY_DIR}
 			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 			DEPENDS gmt ${_fig})
 	else (WIN32)
 		add_custom_command (
-			OUTPUT ${_pdf_fig}
+			OUTPUT ${_pdf_fig} ${_png_fig}
 			COMMAND
 			GMT_USERDIR=${GMT_BINARY_DIR}/share
 			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster -A -P -Tf
+			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster -A -P -Tfg -E200
 			-D${CMAKE_CURRENT_BINARY_DIR}
 			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
@@ -120,7 +123,9 @@ if (PDFLATEX_COMPILER)
 endif (PDFLATEX_COMPILER)
 
 # Add build target
-add_custom_command (OUTPUT done COMMAND touch done DEPENDS ${_scripts_pdf} ${_scripts_txt})
+add_custom_command (OUTPUT done
+	COMMAND touch done
+	DEPENDS ${_scripts_pdf} ${_scripts_png} ${_scripts_txt})
 add_custom_target (scripts_done DEPENDS done)
 
 # run tests

@@ -65,6 +65,9 @@ find_package (LATEX)
 add_subdirectory (scripts)
 add_subdirectory (examples)
 
+# reST documentation
+add_subdirectory (rst)
+
 if (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 	# Install documentation files from external location without creating PDF
 	# documentation first
