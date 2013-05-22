@@ -1,7 +1,12 @@
 #!/bin/sh
 #	$Id$
 #
-# Script to convert the DCW text polygons to a netCDF file
+# Script to convert the DCW text polygons to individual netCDF files
+# This was the original script for the first version where all the
+# polygons became individual netcdf files.  The next version will
+# create a single netCDF file instead, so this file is mostly for
+# documentation.
+
 . gmt_shell_functions.sh
 
 if [ x`echo -n` = x ]; then     # echo -n works
