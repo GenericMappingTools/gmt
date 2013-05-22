@@ -61,6 +61,9 @@ struct PSCOUPE_CTRL {
 		bool active;
 		struct GMT_FILL fill;
 	} E;
+	struct F {	/* Repeatable -F<mode>[<args>] */
+		bool active;
+	} F;
  	struct G {	/* -G<fill> */
 		bool active;
 		struct GMT_FILL fill;
@@ -448,6 +451,16 @@ int GMT_pscoupe_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<,B-");
 	GMT_fill_syntax (API->GMT, 'E', "Set color used for extensive parts. [default is white]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Sets various attributes of symbols depending on <mode>:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   a Plot axis. Default symbols are circles.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   g Set color used for P_symbol [default as set by -G].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   e Set color used for T_symbol [default as set by -E].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   p Draw P_symbol outline using the current pen (see -W) or sets pen attribute for outline.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   s Select symbol type and symbol size (in %s). Choose between:\n",
+		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+	GMT_Message (API, GMT_TIME_NONE, "\t     st(a)r, (c)ircle, (d)iamond, (h)exagon, (i)nvtriangle, (s)quare, (t)riangle.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   t Draw T_symbol outline using the current pen (see -W) or sets pen attribute for outline.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   r Draw box behind labels.\n");
 	GMT_fill_syntax (API->GMT, 'G', "Set color used for compressive parts. [default is black]\n");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Draw line or symbol outline using the current pen (see -W) or sets pen attribute for outline.\n");
@@ -485,9 +498,6 @@ int GMT_pscoupe_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   fontsize < 0 : no label written;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   offset is from the limit of the beach ball.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   By default label is above the beach ball. Add u to plot it under.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-s Select symbol type and symbol size (in %s). Choose between:\n",
-		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
-	GMT_Message (API, GMT_TIME_NONE, "\t    st(a)r, (c)ircle, (d)iamond, (h)exagon, (i)nvtriangle, (s)quare, (t)riangle.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Tn[/<pen>] draw nodal planes and circumference only to provide a transparent beach ball\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   using the current pen (see -W) or sets pen attribute.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   n = 1 the only first nodal plane is plotted.\n");
@@ -497,12 +507,6 @@ int GMT_pscoupe_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Option (API, "U,V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set pen attributes [%s]\n", GMT_putpen (API->GMT, API->GMT->current.setting.map_default_pen));
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Use cpt-file to assign colors based on depth-value in 3rd column.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-a Plot axis. Default symbols are circles.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-g Set color used for P_symbol [default as set by -G].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-e Set color used for T_symbol [default as set by -E].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-p Draw P_symbol outline using the current pen (see -W) or sets pen attribute for outline.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-t Draw T_symbol outline using the current pen (see -W) or sets pen attribute for outline.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-r Draw box behind labels.\n");
 
 	GMT_Option (API, "X,c,h,i,:,.");
 
@@ -571,6 +575,75 @@ int GMT_pscoupe_parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct G
 					n_errors++;
 				}
 				Ctrl->A.polygon = true;
+				break;
+			case 'F':	/* Set various symbol parameters  */
+				Ctrl->F.active = true;
+				switch (opt->arg[0]) {
+					case 'a':	/* plot axis */
+						Ctrl->A2.active = true;
+						strncpy (txt, &opt->arg[2], GMT_TEXT_LEN256);
+						if ((p = strchr (txt, '/'))) p[0] = '\0';
+						if (txt[0]) Ctrl->A2.size = GMT_to_inch (GMT, txt);
+						if (p) {
+							p++;
+							switch (strlen (p)) {
+								case 1:
+									Ctrl->A2.P_symbol = Ctrl->A2.T_symbol = p[0];
+									break;
+								case 2:
+									Ctrl->A2.P_symbol = p[0], Ctrl->A2.T_symbol = p[1];
+									break;
+							}
+						}
+						break;
+					case 'e':	/* Set color for T axis symbol */
+						Ctrl->E2.active = true;
+						if (GMT_getfill (GMT, &opt->arg[1], &Ctrl->E2.fill)) {
+							GMT_fill_syntax (GMT, 'e', " ");
+							n_errors++;
+						}
+						break;
+					case 'g':	/* Set color for P axis symbol */
+						Ctrl->G2.active = true;
+						if (GMT_getfill (GMT, &opt->arg[1], &Ctrl->G2.fill)) {
+							GMT_fill_syntax (GMT, 'g', " ");
+							n_errors++;
+						}
+						break;
+					case 'p':	/* Draw outline of P axis symbol [set outline attributes] */
+						Ctrl->P2.active = true;
+						if (opt->arg[1] && GMT_getpen (GMT, &opt->arg[1], &Ctrl->P2.pen)) {
+							GMT_pen_syntax (GMT, 'p', " ");
+							n_errors++;
+						}
+						break;
+					case 'r':	/* draw box around text */
+						Ctrl->R2.active = true;
+						if (opt->arg[1] && GMT_getfill (GMT, &opt->arg[1], &Ctrl->R2.fill)) {
+							GMT_fill_syntax (GMT, 'r', " ");
+							n_errors++;
+						}
+						break;
+					case 's':	/* Only points : get symbol [and size] */
+						Ctrl->S.active = true;
+						Ctrl->S.symbol = opt->arg[1];
+						if (opt->arg[strlen(opt->arg)-1] == 'u') Ctrl->S.justify = PSL_TC, opt->arg[strlen(opt->arg)-1] = '\0';
+						txt[0] = txt_b[0] = txt_c[0] = '\0';
+						sscanf (&opt->arg[2], "%[^/]/%[^/]/%s", txt, txt_b, txt_c);
+						if (txt[0]) Ctrl->S.scale = GMT_to_inch (GMT, txt);
+						if (txt_b[0]) Ctrl->S.fontsize = GMT_convert_units (GMT, txt_b, GMT_PT, GMT_PT);
+						if (txt_c[0]) Ctrl->S.offset = GMT_convert_units (GMT, txt_c, GMT_PT, GMT_INCH);
+						if (Ctrl->S.fontsize < 0.0) Ctrl->S.no_label = true;
+						break;
+					case 't':	/* Draw outline of T axis symbol [set outline attributes] */
+						Ctrl->T2.active = true;
+						if (opt->arg[1] && GMT_getpen (GMT, &opt->arg[1], &Ctrl->T2.pen)) {
+							GMT_pen_syntax (GMT, 't', " ");
+							n_errors++;
+						}
+						break;
+					
+				}
 				break;
 			case 'G':	/* Set color for compressive parts */
 				Ctrl->G.active = true;
@@ -652,18 +725,6 @@ int GMT_pscoupe_parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct G
 				}
 				break;
 
-			case 's':	/* Only points : get symbol [and size] */
-				Ctrl->S.active = true;
-				Ctrl->S.symbol = opt->arg[0];
-				if (opt->arg[strlen(opt->arg)-1] == 'u') Ctrl->S.justify = PSL_TC, opt->arg[strlen(opt->arg)-1] = '\0';
-				txt[0] = txt_b[0] = txt_c[0] = '\0';
-				sscanf (&opt->arg[1], "%[^/]/%[^/]/%s", txt, txt_b, txt_c);
-				if (txt[0]) Ctrl->S.scale = GMT_to_inch (GMT, txt);
-				if (txt_b[0]) Ctrl->S.fontsize = GMT_convert_units (GMT, txt_b, GMT_PT, GMT_PT);
-				if (txt_c[0]) Ctrl->S.offset = GMT_convert_units (GMT, txt_c, GMT_PT, GMT_INCH);
-				if (Ctrl->S.fontsize < 0.0) Ctrl->S.no_label = true;
-				break;
-
 			case 'T':
 				Ctrl->T.active = true;
 				sscanf (opt->arg, "%d", &Ctrl->T.n_plane);
@@ -682,58 +743,6 @@ int GMT_pscoupe_parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct G
 			case 'Z':	/* Vary symbol color with z */
 				Ctrl->Z.active = true;
 				Ctrl->Z.file = strdup (opt->arg);
-				break;
-			case 'a':	/* plot axis */
-				Ctrl->A2.active = true;
-				strncpy (txt, &opt->arg[1], GMT_TEXT_LEN256);
-				if ((p = strchr (txt, '/'))) p[0] = '\0';
-				if (txt[0]) Ctrl->A2.size = GMT_to_inch (GMT, txt);
-				if (p) {
-					p++;
-					switch (strlen (p)) {
-						case 1:
-							Ctrl->A2.P_symbol = Ctrl->A2.T_symbol = p[0];
-							break;
-						case 2:
-							Ctrl->A2.P_symbol = p[0], Ctrl->A2.T_symbol = p[1];
-							break;
-					}
-				}
-				break;
-			case 'e':	/* Set color for T axis symbol */
-				Ctrl->E2.active = true;
-				if (GMT_getfill (GMT, opt->arg, &Ctrl->E2.fill)) {
-					GMT_fill_syntax (GMT, 'e', " ");
-					n_errors++;
-				}
-				break;
-			case 'g':	/* Set color for P axis symbol */
-				Ctrl->G2.active = true;
-				if (GMT_getfill (GMT, opt->arg, &Ctrl->G2.fill)) {
-					GMT_fill_syntax (GMT, 'g', " ");
-					n_errors++;
-				}
-				break;
-			case 'p':	/* Draw outline of P axis symbol [set outline attributes] */
-				Ctrl->P2.active = true;
-				if (opt->arg[0] && GMT_getpen (GMT, opt->arg, &Ctrl->P2.pen)) {
-					GMT_pen_syntax (GMT, 'p', " ");
-					n_errors++;
-				}
-				break;
-			case 'r':	/* draw box around text */
-				Ctrl->R2.active = true;
-				if (opt->arg[0] && GMT_getfill (GMT, opt->arg, &Ctrl->R2.fill)) {
-					GMT_fill_syntax (GMT, 'r', " ");
-					n_errors++;
-				}
-				break;
-			case 't':	/* Draw outline of T axis symbol [set outline attributes] */
-				Ctrl->T2.active = true;
-				if (opt->arg[0] && GMT_getpen (GMT, opt->arg, &Ctrl->T2.pen)) {
-					GMT_pen_syntax (GMT, 't', " ");
-					n_errors++;
-				}
 				break;
 
 			default:	/* Report bad options */

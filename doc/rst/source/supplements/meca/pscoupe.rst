@@ -12,21 +12,18 @@ pscoupe - Plot cross-sections of focal mechanisms
 **pscoupe** [ *files* ] **-J**\ *parameters*
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] **-A**\ *parameters* [
 **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-E**\ *fill* ] [
+**-F**\ *mode*\ [*args*] ] [
 **-G**\ *fill* ] [ **-K** ] [ **-L**\ *[pen]* ] [ **-M** ] [ **-N** ] [
-**-O** ] [ **-P** ] [ **-Q** ] [ **-S**\ *<symbol><scale>*\ [/**d**] ] [
-**-s**\ *<format><size>*\ [/**d**] ] [ **-T**\ *n* ] [
-**-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*\ ]
+**-O** ] [ **-Q** ] [ **-S**\ *<symbol><scale>*\ [/**d**] ]
+[ **-T**\ *n* ] [ **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*\ ]
 ] [ **-W**\ *pen* ] [
 **-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
 ] [
 **-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-] [ **-Z**\ *cpt* ] [
-**-a**\ [*size*\ ][/\ *P\_symbol*\ [*T\_symbol*\ ]] ] [ **-c**\ *copies*
-] [ **-e**\ *fill* ] [ **-g**\ *fill* ] [
-**-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
+] [ **-Z**\ *cpt* ] [ **-c**\ *copies*
+] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
 **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-p**\ [*pen*\ ] ] [ **-t**\ [*pen*\ ] ] [
-**-:**\ [**i**\ \|\ **o**] ]
+] [ **-:**\ [**i**\ \|\ **o**] ]
 
 |No-spaces|
 
@@ -252,7 +249,18 @@ Parameters are expected to be in the following columns:
     **16**:
     Text string to appear above the beach ball (optional).
 
-**-s**\ *symbol[size[/fontsize[/offset*\ [**u**\ ]]]
+`Optional Arguments <#toc5>`_
+-----------------------------
+
+.. include:: ../../explain_-B.rst_
+
+**-E**\ *fill*
+    Sets color or fill pattern for extensive quadrants [Default is
+    white].
+**-F**\ *mode*\ [*args*]
+    Sets one or more attributes; repeatable. The various combinations are
+
+**-Fs**\ *symbol[size[/fontsize[/offset*\ [**u**\ ]]]
 
 selects a symbol instead of mechanism. Choose from the following:
 (**c**) circle, (**d**) diamond, (**i**) itriangle, (**s**) square,
@@ -270,15 +278,26 @@ be in the following columns:
     **4**:
     Text string to appear above the beach ball (default) or under (add
     **u**).
+**-Fa**\ [*size*\ ][/\ *P\_symbol*\ [*T\_symbol*\ ]]
+    Computes and plots P and T axes with symbols. Optionally specify
+    *size* and (separate) P and T axis symbols from the following:
+    (**c**) circle, (**d**) diamond, (**h**) hexagon, (**i**) inverse
+    triangle, (**p**) point, (**s**) square, (**t**) triangle, (**x**)
+    cross. [Default: 6\ **p**/**cc**]
+**-Fe**\ *fill*
+    Sets the color or fill pattern for the T axis symbol. [Default as
+    set by **-E**]
+**-Fg**\ *fill*
+    Sets the color or fill pattern for the P axis symbol. [Default as
+    set by **-G**]
+**-Fp**\ [*pen*\ ]
+    Draws the P axis outline using current pen (see **-W**), or sets pen
+    attributes.
+**-Fr**\ [*fill*\ ]
+    Draw a box behind the label (if any). [Default fill is white]
+**-Ft**\ [*pen*\ ]
+    Draws the T axis outline using current pen (see **-W**), or sets pen attributes.
 
-`Optional Arguments <#toc5>`_
------------------------------
-
-.. include:: ../../explain_-B.rst_
-
-**-E**\ *fill*
-    Sets color or fill pattern for extensive quadrants [Default is
-    white].
 **-G**\ *fill*
     Sets color or fill pattern for compressional quadrants [Default is black].
 
@@ -321,25 +340,6 @@ be in the following columns:
 **-Z**\ cptfile
     Give a color palette file and let compressive part color be
     determined by the z-value in the third column.
-**-a**\ [*size*\ ][/\ *P\_symbol*\ [*T\_symbol*\ ]]
-    Computes and plots P and T axes with symbols. Optionally specify
-    *size* and (separate) P and T axis symbols from the following:
-    (**c**) circle, (**d**) diamond, (**h**) hexagon, (**i**) inverse
-    triangle, (**p**) point, (**s**) square, (**t**) triangle, (**x**)
-    cross. [Default: 6\ **p**/**cc**]
-**-e**\ *fill*
-    Sets the color or fill pattern for the T axis symbol. [Default as
-    set by **-E**]
-**-g**\ *fill*
-    Sets the color or fill pattern for the P axis symbol. [Default as
-    set by **-G**]
-**-p**\ [*pen*\ ]
-    Draws the P axis outline using current pen (see **-W**), or sets pen
-    attributes.
-**-r**\ [*fill*\ ]
-    Draw a box behind the label (if any). [Default fill is white]
-**-t**\ [*pen*\ ]
-    Draws the T axis outline using current pen (see **-W**), or sets pen attributes.
 
 .. include:: ../../explain_-c.rst_
 

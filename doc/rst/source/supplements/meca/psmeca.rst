@@ -13,7 +13,7 @@ psmeca [ *table* ] **-J**\ *parameters*
 **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [
 **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [
 **-C**\ [*pen*\ ][\ **P**\ *pointsize*] ] [ **-D**\ *depmin*/*depmax* ]
-[ **-E**\ *fill*] [ **-G**\ *fill*] [ **-K** ] [ **-L**\ [*pen*\ ] ] [
+[ **-E**\ *fill*] [ **-F**\ *mode*\ [*args*] ] [ **-G**\ *fill*] [ **-K** ] [ **-L**\ [*pen*\ ] ] [
 **-M** ] [ **-N** ] [ **-O** ] [ **-P** ] [
 **-S**\ *<format><scale>*\ [/**d**]] [
 **-T**\ *num\_of\_plane*\ [*pen*\ ] ] [
@@ -237,6 +237,34 @@ following columns:
 **-E**\ *fill*
     Selects filling of extensive quadrants. Usually white. Set the color
     [Default is white].
+**-F**\ *mode*\ [*args*]
+    Sets one or more attributes; repeatable. The various combinations are
+
+**-Fa**\ [*size*\ ][/\ *P\_axis\_symbol*\ [*T\_axis\_symbol*\ ]]
+    Computes and plots P and T axes with symbols. Optionally specify
+    *size* and (separate) P and T axis symbols from the following:
+    (**c**) circle, (**d**) diamond, (**h**) hexagon, (**i**) inverse
+    triangle, (**p**) point, (**s**) square, (**t**) triangle, (**x**)
+    cross. [Default: 6\ **p**/**cc**]
+**-Fe**\ *fill*
+    Sets the color or fill pattern for the T axis symbol. [Default as
+    set by **-E**]
+**-Fg**\ *fill*
+    Sets the color or fill pattern for the P axis symbol. [Default as
+    set by **-G**]
+**-Fo**
+    Use the **psvelomeca** input format without depth in the third column.
+**-Fp**\ [*pen*\ ]
+    Draws the P axis outline using default pen (see **-W**), or sets pen attributes.
+**-Fr**\ [*fill*\ ]
+    Draw a box behind the label (if any). [Default fill is white]
+**-Ft**\ [*pen*\ ]
+    Draws the T axis outline using default pen (see **-W**), or sets pen
+    attributes.
+**-Fz**\ [*pen*\ ]
+    Overlay zero trace moment tensor using default pen (see **-W**), or
+    sets pen attributes.
+
 **-G**\ *fill*
     Selects filling of focal mechanisms. By convention, the
     compressional quadrants of the focal mechanism beach balls are
@@ -285,40 +313,12 @@ following columns:
 **-Z**\ *cptfile*
     Give a color palette file and let compressive part color be
     determined by the z-value in the third column.
-**-a**\ [*size*\ ][/\ *P\_axis\_symbol*\ [*T\_axis\_symbol*\ ]]
-    Computes and plots P and T axes with symbols. Optionally specify
-    *size* and (separate) P and T axis symbols from the following:
-    (**c**) circle, (**d**) diamond, (**h**) hexagon, (**i**) inverse
-    triangle, (**p**) point, (**s**) square, (**t**) triangle, (**x**)
-    cross. [Default: 6\ **p**/**cc**]
 
 .. include:: ../../explain_-c.rst_
 
-**-e**\ *fill*
-    Sets the color or fill pattern for the T axis symbol. [Default as
-    set by **-E**]
-**-g**\ *fill*
-    Sets the color or fill pattern for the P axis symbol. [Default as
-    set by **-G**]
-
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_
-
 .. include:: ../../explain_-icols.rst_
-
-**-o**
-    Use the **psvelomeca** input format without depth in the third column.
-**-p**\ [*pen*\ ]
-    Draws the P axis outline using default pen (see **-W**), or sets pen attributes.
-**-r**\ [*fill*\ ]
-    Draw a box behind the label (if any). [Default fill is white]
-**-t**\ [*pen*\ ]
-    Draws the T axis outline using default pen (see **-W**), or sets pen
-    attributes.
-**-z**\ [*pen*\ ]
-    Overlay zero trace moment tensor using default pen (see **-W**), or
-    sets pen attributes.
-
 .. include:: ../../explain_colon.rst_
 .. include:: ../../explain_help.rst_
 

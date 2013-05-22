@@ -62,9 +62,12 @@ struct PSPOLAR_CTRL {
 	struct N {	/* -N */
 		bool active;
 	} N;
-	struct Q {	/* -Q only -h for Hypo71 */
+	struct Q {	/* Repeatable: -Q<mode>[<args>] for various symbol parameters */
 		bool active;
 	} Q;
+	struct H2 {	/* -Qh for Hypo71 */
+		bool active;
+	} H2;
 	struct S {	/* -r<fill> */
 		bool active;
 		int symbol;
@@ -126,10 +129,10 @@ int GMT_pspolar_usage (struct GMTAPI_CTRL *API, int level)
 	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pspolar [<table>] %s %s -D<longitude>/<latitude>\n", GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t-M<size>[i/c] -S<symbol><size>[i/c] [-A] [%s]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C<longitude>/<latitude>[W<pen>][P<pointsize>]] [-E<fill>] [-e[<pen>]] [-F<fill>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-f[<pen>]] [-G<fill>] [-g[<pen>]] [-K] [-N] [-O] [-P]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-s<half-size>/[V[<v_width>/<h_length>/<h_width>/<shape>]][G<fill>][L]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T[<labelinfo>]] [-t<pen>] [%s] [%s] [-W<pen>]\n", GMT_U_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C<longitude>/<latitude>[W<pen>][P<pointsize>]] [-E<fill>] [-F<fill>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-G<fill>] [-K] [-N] [-O] [-P]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Qe[<pen>]] [-Qf[<pen>]] [-Qg[<pen>]] [-Qh] [-Qs<half-size>/[V[<v_width>/<h_length>/<h_width>/<shape>]][G<fill>][L] [-Qt<pen>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-T[<labelinfo>]] [%s] [%s] [-W<pen>]\n", GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_h_OPT, GMT_i_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -151,34 +154,34 @@ int GMT_pspolar_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Fill can be either <r/g/b> (each 0-255) for color \n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or <gray> (0-255) for gray-shade [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is light gray.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-e Outline of station symbol in extensive part.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default is current pen.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify background color of beach ball. It can be\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <r/g/b> (each 0-255) for color or <gray> (0-255) for gray-shade [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is no fill].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-f Outline beach ball.  Add <pen attributes> if not current pen.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify color symbol for station in compressive part. Fill can be either\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Fill can be either <r/g/b> (each 0-255) for color\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or <gray> (0-255) for gray-shade [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Add L[<pen>] to outline [Default is black].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-g Outline of station symbol in compressive part.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Add <pen attributes> if not current pen.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-h Use special format derived from HYPO71 output.\n");
 	GMT_Option (API, "K");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do Not skip/clip symbols that fall outside map border\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default will ignore those outside].\n");
 	GMT_Option (API, "O,P");
-	GMT_Message (API, GMT_TIME_NONE, "\t-s Plot S polarity azimuth.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Azimuth of S polarity is in last column.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   It may be a vector (V option) or a segment. Give half-size in cm.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   L option is for outline\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -s<half-size>/[V[<v_width>/<h_length></h_width>/<shape>]][G<fill>][L]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default definition of v is 0.075/0.3/0.25/1\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Outline is current pen\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T[<info about labal printing>] to write station code.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Q Sets various attributes of symbols depending on <mode>:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   e Outline of station symbol in extensive part [Default is current pen].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   f Outline beach ball.  Add <pen attributes> [Default is current pen].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   g Outline of station symbol in compressive part.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Add <pen attributes> if not current pen.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   h Use special format derived from HYPO71 output.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   s Plot S polarity azimuth.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Azimuth of S polarity is in last column.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     It may be a vector (V option) or a segment. Give half-size in cm.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     L option is for outline\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     -s<half-size>/[V[<v_width>/<h_length></h_width>/<shape>]][G<fill>][L]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Default definition of v is 0.075/0.3/0.25/1\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Outline is current pen\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   t Set pen attributes to write station codes [default is current pen].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T[<info about label printing>] to write station code.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <angle/form/justify/fontsize in points>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is 0.0/0/5/12].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-t Set pen attributes to write station codes [default is current pen].\n");
 	GMT_Option (API, "U,V");
 	GMT_Message (API, GMT_TIME_NONE,  "\t-W Set pen attributes [%s].\n", GMT_putpen (API->GMT, API->GMT->current.setting.map_default_pen));
 	GMT_Option (API, "X,c,h,i,.");
@@ -226,20 +229,12 @@ int GMT_pspolar_parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct G
 					n_errors++;
 				}
 				break;
-			case 'e':	/* Outline station symbol in extensive part */
-				Ctrl->E.active = true;
-				if (strlen (opt->arg)) GMT_getpen (GMT, opt->arg, &Ctrl->E.pen);
-				break;
 			case 'F':	/* Set background color of beach ball */
 				Ctrl->F.active = true;
 				if (GMT_getfill (GMT, opt->arg, &Ctrl->F.fill)) {
 					GMT_fill_syntax (GMT, 'F', " ");
 					n_errors++;
 				}
-				break;
-			case 'f':	/* Outline beach ball */
-				Ctrl->F.active = true;
-				if (strlen (opt->arg))  GMT_getpen (GMT, opt->arg, &Ctrl->F.pen);
 				break;
 			case 'G':	/* Set color for station in compressive part */
 				Ctrl->C.active = true;
@@ -248,12 +243,59 @@ int GMT_pspolar_parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct G
 					n_errors++;
 				}
 				break;
-			case 'g':	/* Outline station symbol in compressive part */
-				Ctrl->G.active = true;
-				if (strlen (opt->arg)) GMT_getpen (GMT, opt->arg, &Ctrl->G.pen);
-				break;
-			case 'Q':	/* Use HYPO71 format */
+			case 'Q':	/* Repeatable; Controls various symbol attributes  */
 				Ctrl->Q.active = true;
+				switch (opt->arg[0]) {
+					case 'e':	/* Outline station symbol in extensive part */
+						Ctrl->E.active = true;
+						if (strlen (&opt->arg[1])) GMT_getpen (GMT, &opt->arg[1], &Ctrl->E.pen);
+						break;
+					case 'f':	/* Outline beach ball */
+						Ctrl->F.active = true;
+						if (strlen (&opt->arg[1]))  GMT_getpen (GMT, &opt->arg[1], &Ctrl->F.pen);
+						break;
+					case 'g':	/* Outline station symbol in compressive part */
+						Ctrl->G.active = true;
+						if (strlen (&opt->arg[1])) GMT_getpen (GMT, &opt->arg[1], &Ctrl->G.pen);
+						break;
+					case 'h':	/* Use HYPO71 format */
+						Ctrl->H2.active = true;
+						break;
+					case 's':	/* Get S polarity */
+						Ctrl->S2.active = true;
+						strncpy (txt, &opt->arg[2], GMT_TEXT_LEN64);
+						n=0; while (txt[n] && txt[n] != '/' && txt[n] != 'V' && txt[n] != 'G' && txt[n] != 'L') n++; txt[n]=0;
+						Ctrl->S2.size = GMT_to_inch (GMT, txt);
+						if (strchr (&opt->arg[1], 'V')) {
+							Ctrl->S2.vector = true;
+							strncpy (txt, strchr (&opt->arg[1], 'V'), GMT_TEXT_LEN64);
+							if (strncmp (txt,"VG",2U) == 0 || strncmp(txt,"VL",2U) == 0 || strlen (txt) == 1) {
+								Ctrl->S2.width = 0.03; Ctrl->S2.length = 0.12; Ctrl->S2.head = 0.1; Ctrl->S2.vector_shape = GMT->current.setting.map_vector_shape;
+								if (!GMT->current.setting.proj_length_unit) {
+									Ctrl->S2.width = 0.075; Ctrl->S2.length = 0.3; Ctrl->S2.head = 0.25; Ctrl->S2.vector_shape = GMT->current.setting.map_vector_shape;
+								}
+							}
+							else {
+								sscanf (strchr (&opt->arg[1], 'V')+1, "%[^/]/%[^/]/%[^/]/%s", txt, txt_b, txt_c, txt_d);
+								Ctrl->S2.width = GMT_to_inch (GMT, txt);
+								Ctrl->S2.length = GMT_to_inch (GMT, txt_b);
+								Ctrl->S2.head = GMT_to_inch (GMT, txt_c);
+								Ctrl->S2.vector_shape = atof(txt_d);
+							}
+						}
+						if (strchr (opt->arg, 'G')) {
+							if (GMT_getfill (GMT, strchr (opt->arg+2,'G')+1, &Ctrl->S2.fill)) {
+								GMT_fill_syntax (GMT, 's', " ");
+								n_errors++;
+							}
+							Ctrl->S2.scolor = true;
+						}
+						if (strchr (&opt->arg[1], 'L')) Ctrl->S2.outline = true;
+						break;
+					case 't':	/* Set color for station label */
+						GMT_getpen (GMT, &opt->arg[1], &Ctrl->T.pen);
+						break;
+				}
 				break;
 			case 'M':	/* Focal sphere size */
 				Ctrl->M.active = true;
@@ -300,47 +342,12 @@ int GMT_pspolar_parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct G
 						break;
 				}
 				break;
-			case 's':	/* Get S polarity */
-				Ctrl->S2.active = true;
-				strncpy (txt, &opt->arg[1], GMT_TEXT_LEN64);
-				n=0; while (txt[n] && txt[n] != '/' && txt[n] != 'V' && txt[n] != 'G' && txt[n] != 'L') n++; txt[n]=0;
-				Ctrl->S2.size = GMT_to_inch (GMT, txt);
-				if (strchr (opt->arg, 'V')) {
-					Ctrl->S2.vector = true;
-					strncpy (txt, strchr (opt->arg, 'V'), GMT_TEXT_LEN64);
-					if (strncmp (txt,"VG",2U) == 0 || strncmp(txt,"VL",2U) == 0 || strlen (txt) == 1) {
-						Ctrl->S2.width = 0.03; Ctrl->S2.length = 0.12; Ctrl->S2.head = 0.1; Ctrl->S2.vector_shape = GMT->current.setting.map_vector_shape;
-						if (!GMT->current.setting.proj_length_unit) {
-							Ctrl->S2.width = 0.075; Ctrl->S2.length = 0.3; Ctrl->S2.head = 0.25; Ctrl->S2.vector_shape = GMT->current.setting.map_vector_shape;
-						}
-					}
-					else {
-						sscanf (strchr (opt->arg, 'V')+1, "%[^/]/%[^/]/%[^/]/%s", txt, txt_b, txt_c, txt_d);
-						Ctrl->S2.width = GMT_to_inch (GMT, txt);
-						Ctrl->S2.length = GMT_to_inch (GMT, txt_b);
-						Ctrl->S2.head = GMT_to_inch (GMT, txt_c);
-						Ctrl->S2.vector_shape = atof(txt_d);
-					}
-				}
-				if (strchr (opt->arg, 'G')) {
-					if (GMT_getfill (GMT, strchr (opt->arg+1,'G')+1, &Ctrl->S2.fill)) {
-						GMT_fill_syntax (GMT, 's', " ");
-						n_errors++;
-					}
-					Ctrl->S2.scolor = true;
-				}
-				if (strchr (opt->arg, 'L')) Ctrl->S2.outline = true;
-				break;
 			case 'T':	/* Information about label printing */
 				Ctrl->T.active = true;
 				if (strlen (opt->arg)) {
 					sscanf (opt->arg, "%lf/%d/%d/%lf/", &Ctrl->T.angle, &Ctrl->T.form, &Ctrl->T.justify, &Ctrl->T.fontsize);
 				}
 				break;
-			case 't':	/* Set color for station label */
-				GMT_getpen (GMT, opt->arg, &Ctrl->T.pen);
-				break;
-
 			case 'W':	/* Set line attributes */
 				Ctrl->W.active = true;
 				if (opt->arg && GMT_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
@@ -452,7 +459,7 @@ int GMT_pspolar (void *V_API, int mode, void *args)
 		/* Data record to process */
 
 		for (k = 0; k < (int)strlen (line); k++) if (line[k] == ',') line[k] = ' ';	/* Replace commas with spaces */
-		if (Ctrl->Q.active) {
+		if (Ctrl->H2.active) {
 			if (Ctrl->S2.active) {
 				n = sscanf (line, "%s %s %s %s %lf %lf %c %lf", col[0], col[1], col[2], stacode, &azimut, &ih, col[3], &azS);
 				pol = col[3][2];
@@ -464,7 +471,7 @@ int GMT_pspolar (void *V_API, int mode, void *args)
 				pol = col[3][2];
 			}
 		}
-		else { /* !Ctrl->Q.active */
+		else { /* !Ctrl->H2.active */
 			if (Ctrl->S2.active)
 				n = sscanf (line, "%s %lf %lf %c %lf", stacode, &azimut, &ih, &pol, &azS);
 				if (n == 4)

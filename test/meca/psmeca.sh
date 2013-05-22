@@ -21,4 +21,3 @@ echo 2.0 1.0 0.0 45 45 -90 5 0 0 Normal | gmt psmeca -Sa2.5c -Gblack -R -J -K -O
 
 # Mixed
 echo 3.4 0.6 0.0 10 35 129 5 0 0 Mixed  | gmt psmeca -Sa2.5c -Gblack -R -J -O >> $ps
-
