@@ -112,6 +112,9 @@ endif (DO_EXAMPLES OR DO_TESTS AND NOT GSHHG_FOUND)
 # These lines are temporarily here for the beta release
 # set (GMT_PROGS2_SRCS testapi.c)
 set (GMT_DEMOS_SRCS gmtaverage.c gmtmercmap.c  testapi.c testgmt5.c testgmtio.c testgrdio.c testio.c)
+if (UNIX)
+	list (APPEND GMT_DEMOS_SRCS gmt_dl.c)
+endif (UNIX)
 
 if (NOT LICENSE_RESTRICTED) # off
 	# enable Shewchuk's triangle routine
