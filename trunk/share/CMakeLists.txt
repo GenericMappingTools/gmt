@@ -19,7 +19,7 @@
 # share CMakeLists.txt
 #
 
-set (_gmt_share_dirs conf DCW cpt custom dbase mgd77 mgg pattern
+set (_gmt_share_dirs conf cpt custom dbase mgd77 mgg pattern
 	pslib time x2sys)
 
 # install target for data
