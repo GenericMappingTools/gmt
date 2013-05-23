@@ -113,7 +113,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	uint64_t k, seg, n_segments;
 	unsigned int n_items = 1, pos = 0, kk, tbl = 0;
 	unsigned short int *dx = NULL, *dy = NULL;
-	bool done, want_state, outline = (F->mode & 4), fill = (F->mode & 8);
+	bool done, found = false, want_state, outline = (F->mode & 4), fill = (F->mode & 8);
 	char TAG[GMT_TEXT_LEN16], dim[GMT_TEXT_LEN16], xname[GMT_TEXT_LEN16], yname[GMT_TEXT_LEN16], code[GMT_TEXT_LEN16], state[GMT_TEXT_LEN16], file[GMT_TEXT_LEN16], msg[GMT_BUFSIZ], path[GMT_BUFSIZ];
 	double west, east, south, north, xscl, yscl, out[2], *lon = NULL, *lat = NULL;
 	struct GMT_DATASET *D = NULL;
@@ -133,9 +133,27 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		wesn[XLO] = wesn[YLO] = +9999.0;	wesn[XHI] = wesn[YHI] = -9999.0;	/* Initialize so we can shrink it below */
 	}
 	
-	if (GMT_getsharepath (GMT, "dcw-gmt", "dcw-gmt", ".nc", path) == NULL) {
+	/* This is the order of checking:
+	 * 1. Check in GMT->session.DCWDIR, if set
+	 * 2. Look via GMT_getsharepath.
+	 */
+	
+	if (GMT->session.DCWDIR) {	/* 1. Check in GMT->session.DCWDIR */
+		sprintf (path, "%s/dcw-gmt.nc", GMT->session.DCWDIR);
+		if ( access (path, R_OK) == 0)
+			found = true;
+		else {
+			/* remove reference to invalid GMT->session.DCWDIR but don't free
+			 * the pointer. this is no leak because the reference still exists
+			 * in the previous copy of the current GMT_CTRL struct. */
+			GMT->session.DCWDIR = NULL;
+		}
+	}
+	if (!found && GMT_getsharepath (GMT, "dcw-gmt", "dcw-gmt", ".nc", path)) found = true;	/* Found it in share or user somewhere */
+	
+	if (!found) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to find or open the Digital Chart of the World for GMT\n");
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Perhaps you did not install this file or placed it in hidden directory\n");
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Perhaps you did not install this file in DIR_DCW, the shared dir, or the user dir?\n");
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Use your package manager to install package dcw-gmt.\n");
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Alternatively, get the latest dcw-gmt.tar.gz or dcw-gmt.tar.zip from the %s.\n", DCW_SITE);
 		return NULL;
