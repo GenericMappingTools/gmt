@@ -18,7 +18,7 @@
 # get GSHHG path
 find_path (GSHHG_PATH
 	NAMES binned_GSHHS_c.nc binned_GSHHS_c.cdf
-	HINTS ${GSHHG_ROOT}
+	HINTS ${GSHHG_ROOT} $ENV{GSHHG_ROOT}
 	PATH_SUFFIXES
 	gshhg-gmt-nc4
 	share/gshhg-gmt-nc4
@@ -31,7 +31,8 @@ find_path (GSHHG_PATH
 	/sw # Fink
 	/opt/local # DarwinPorts
 	/opt/csw # Blastwave
-	/opt)
+	/opt
+  DOC "Global Self-consistent Hierarchical High-resolution Geography")
 
 # get GSHHG file
 if (GSHHG_PATH)

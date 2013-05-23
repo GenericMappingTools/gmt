@@ -72,7 +72,7 @@ int gmt_dcw_comp_countries (const void *p1, const void *p2)
 int gmt_dcw_find_country (char *code, struct GMT_DCW_COUNTRY *list, int n)
 {	/* Basic binary search for country with given code and an alphabetically sorted list */
 	int low = 0, high = n, mid, last = -1, way;
-	
+
 	while (low < high) {
 		mid = (low + high) / 2;
 		if (mid == last) return (-1);	/* No such code */
@@ -88,7 +88,7 @@ int gmt_dcw_find_country (char *code, struct GMT_DCW_COUNTRY *list, int n)
 int gmt_dcw_find_state (char *scode, char *ccode, struct GMT_DCW_STATE *slist, int ns)
 {	/* Return state id given country and state codes using a linear search */
 	int i;
-	
+
 	for (i = 0; i < ns; i++) if (!strcmp (scode, slist[i].code) && !strcmp (ccode, slist[i].country)) return (i);
 	return (-1);
 }
@@ -118,13 +118,13 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	double west, east, south, north, xscl, yscl, out[2], *lon = NULL, *lat = NULL;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *P = NULL, *S = NULL;
-	
+
 	if (!F->codes || F->codes[0] == '\0') return NULL;	/* No countries requested */
-	
+
 	for (k = 0; k < strlen (F->codes); k++) if (F->codes[k] == ',') n_items++;	/* Determine how many items we specified */
 
 	qsort ((void *)GMT_DCW_country, (size_t)GMT_DCW_COUNTRIES, sizeof (struct GMT_DCW_COUNTRY), gmt_dcw_comp_countries);	/* Sort on country code */
- 	
+ 
 	if (mode & GMT_DCW_REGION) {	/* Wish to determine region from polygons */
 		if (wesn == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Must pass wesn array if mode == 0\n");
@@ -132,12 +132,12 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		}
 		wesn[XLO] = wesn[YLO] = +9999.0;	wesn[XHI] = wesn[YHI] = -9999.0;	/* Initialize so we can shrink it below */
 	}
-	
+
 	/* This is the order of checking:
 	 * 1. Check in GMT->session.DCWDIR, if set
 	 * 2. Look via GMT_getsharepath.
 	 */
-	
+
 	if (GMT->session.DCWDIR) {	/* 1. Check in GMT->session.DCWDIR */
 		sprintf (path, "%s/dcw-gmt.nc", GMT->session.DCWDIR);
 		if ( access (path, R_OK) == 0)
@@ -149,8 +149,8 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			GMT->session.DCWDIR = NULL;
 		}
 	}
-	if (!found && GMT_getsharepath (GMT, "dcw-gmt", "dcw-gmt", ".nc", path)) found = true;	/* Found it in share or user somewhere */
-	
+	if (!found && GMT_getsharepath (GMT, "dcw", "dcw-gmt", ".nc", path)) found = true;	/* Found it in share or user somewhere */
+
 	if (!found) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to find or open the Digital Chart of the World for GMT\n");
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Perhaps you did not install this file in DIR_DCW, the shared dir, or the user dir?\n");
@@ -158,7 +158,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Alternatively, get the latest dcw-gmt.tar.gz or dcw-gmt.tar.zip from the %s.\n", DCW_SITE);
 		return NULL;
 	}
-	
+
 	if (mode > GMT_DCW_REGION) {	/* Wish to get actual polygons */
 		P = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 		GMT_alloc_segment (GMT, P, 0, 2, true);
@@ -168,7 +168,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		}
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Extract polygons from DCW - The Digital Chart of the World\n");
 	}
-	
+
 	if (mode & GMT_DCW_EXTRACT) {	/* Plan to return a dataset */
 		uint64_t dim[4] = {n_items, 0, 2, 0};
 		if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
@@ -176,12 +176,12 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			return NULL;
 		}
 	}
-	
+
 	if ((retval = nc_open (path, NC_NOWRITE, &ncid))) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot open file %s!\n", path);
 		return NULL;
 	}
-	
+
 	/* Get global attributes */
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		char version[GMT_TEXT_LEN16], source[GMT_TEXT_LEN256], title[GMT_TEXT_LEN256];
@@ -217,9 +217,9 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		}
 		else
 			sprintf (TAG, "%s", GMT_DCW_country[k].code);
-			
+
 		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE) || mode == 2) {
-			if (want_state) 
+			if (want_state)
 				sprintf (msg, "Extract data for %s (%s)\n", GMT_DCW_states[j].name, GMT_DCW_country[k].name);
 			else
 				sprintf (msg, "Extract data for %s\n", GMT_DCW_country[k].name);
@@ -227,26 +227,26 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			k = strlen (msg) - 1;
 			msg[k] = '\0';
 		}
-		
+
 		/* Open and read the netCDF file */
-		
+
 		sprintf (dim, "%s_length", TAG);
 		if ((retval = nc_inq_dimid (ncid, dim, &id))) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error processing %s!\n", path);
 			continue;
 		}
 		retval = nc_inq_dimlen (ncid, id, &np);
-		
+
 		if (mode > GMT_DCW_REGION && np > max_np) {
 			GMT_malloc2 (GMT, lon, lat, np, NULL, double);
 			GMT_malloc2 (GMT, dx, dy, np, NULL, unsigned short int);
 			max_np = np;
 		}
-		
+
 	        /* Get the varid of the lon and lat variables, based on their names, and get the data */
 
 		sprintf (xname, "%s_lon", TAG);	sprintf (yname, "%s_lat", TAG);
-		
+
 		if ((retval = nc_inq_varid (ncid, xname, &xvarid))) continue;
 		if ((retval = nc_get_att_double (ncid, xvarid, "min", &west))) continue;
 		if ((retval = nc_get_att_double (ncid, xvarid, "max", &east))) continue;
@@ -405,11 +405,11 @@ unsigned int GMT_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 {	/* Parse the F option in pscoast */
 	unsigned int n_errors = 0, pos = 0, n;
 	char p[GMT_BUFSIZ], *c = NULL, *a = NULL;
-		
+
 	if ((a = strchr (args, '+'))) a[0] = '\0';	/* Temporarily chop off modifiers */
 	F->codes = strdup (args);
 	a[0] = '+';	/* Reset modifiers */
-	
+
 	if ((c = strchr (a, '+'))) {	/* Handle modifiers */
 		while ((GMT_strtok (c, "+", &pos, p))) {
 			switch (p[0]) {
@@ -449,7 +449,7 @@ unsigned int GMT_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 					}
 					F->mode |= 8;
 					break;
-				default: 
+				default:
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: Unrecognized modifier +%s.\n", option, p);
 					n_errors++;
 					break;

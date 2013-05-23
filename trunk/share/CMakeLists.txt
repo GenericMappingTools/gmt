@@ -45,11 +45,22 @@ if (GSHHG_PATH AND COPY_GSHHG)
 	set (GSHHG_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/${GMT_SHARE_PATH}/coast)
 	# create coastline.conf which is needed for in-build-dir ctest
 	configure_file (coastline.conf.in coastline.conf @ONLY)
-	message ("${GSHHG_INSTALL_PATH}")
 else (GSHHG_PATH AND COPY_GSHHG)
 	# set installed location
 	set (GSHHG_INSTALL_PATH ${GSHHG_PATH})
 endif (GSHHG_PATH AND COPY_GSHHG)
+
+# only attempt to install DCW file when requested and path is known
+if (DCW_PATH AND COPY_DCW)
+	install (DIRECTORY ${DCW_PATH}/
+		DESTINATION ${GMT_SHARE_PATH}/dcw
+		COMPONENT DCW)
+	# set installed location
+	set (DCW_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/${GMT_SHARE_PATH}/dcw)
+else (DCW_PATH AND COPY_DCW)
+	# set installed location
+	set (DCW_INSTALL_PATH ${DCW_PATH})
+endif (DCW_PATH AND COPY_DCW)
 
 # add subtrees
 add_subdirectory (conf)

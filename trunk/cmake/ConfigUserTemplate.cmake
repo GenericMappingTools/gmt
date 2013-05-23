@@ -44,7 +44,7 @@
 #set (GSHHG_ROOT "gshhg_path")
 
 # Set path to DCW Digital Chart of the World for GMT [auto]:
-#set (DCW_ROOT "dcw-gmt-path")
+#set (DCW_ROOT "dcw-gmt_path")
 
 # Set location of NetCDF (can be root directory, path to header file or path to nc-config) [auto]:
 #set (NETCDF_ROOT "netcdf_install_prefix")
@@ -117,6 +117,9 @@
 
 # Copy GSHHG files to ${GMT_SHARE_PATH}/coast [FALSE]:
 # set (COPY_GSHHG TRUE)
+
+# Copy DCW file to ${GMT_SHARE_PATH}/dcw [FALSE]:
+# set (COPY_DCW TRUE)
 
 ##
 ## Section 4: Advanced tweaking

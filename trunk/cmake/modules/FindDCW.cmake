@@ -13,9 +13,8 @@
 #    DCW_PATH         - A variable pointing to the DCW path
 
 # get DCW path
-find_path (DCW_PATH
-	NAMES dcw-gmt.nc
-	HINTS ${DCW_ROOT}
+find_path (DCW_PATH dcw-gmt.nc
+	HINTS ${DCW_ROOT} $ENV{DCW_ROOT}
 	PATH_SUFFIXES
 	dcw-gmt
 	share/dcw-gmt
@@ -25,17 +24,10 @@ find_path (DCW_PATH
 	/sw # Fink
 	/opt/local # DarwinPorts
 	/opt/csw # Blastwave
-	/opt)
-
-# get DCW file
-if (DCW_PATH)
-	find_file (_DCW_FILE
-		NAMES dcw-gmt.nc
-		HINTS ${DCW_PATH})
-endif (DCW_PATH)
+	/opt
+  DOC "Digital Chart of the World")
 
 include (FindPackageHandleStandardArgs)
-find_package_handle_standard_args (DCW DEFAULT_MSG
-	DCW_PATH)
+find_package_handle_standard_args (DCW DEFAULT_MSG DCW_PATH)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
