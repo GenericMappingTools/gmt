@@ -186,6 +186,9 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	/* Get global attributes */
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		char version[GMT_TEXT_LEN16], source[GMT_TEXT_LEN256], title[GMT_TEXT_LEN256];
+		GMT_memset (version, GMT_TEXT_LEN16, char);
+		GMT_memset (source, GMT_TEXT_LEN256, char);
+		GMT_memset (title, GMT_TEXT_LEN256, char);
 		retval = nc_get_att_text (ncid, NC_GLOBAL, "version", version);
 		retval = nc_get_att_text (ncid, NC_GLOBAL, "title", title);
 		retval = nc_get_att_text (ncid, NC_GLOBAL, "source", source);
