@@ -14,10 +14,10 @@ Synopsis
 **-A**\ *min\_area*\ [/*min\_level*/*max\_level*][\ **+r**\ \|\ **l**][\ **p**\ *percent*]
 ] [ **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [
 **-C**\ [**l**\ \|\ **r**/]\ *fill* ] [ **-D**\ *resolution*\ [**+**\ ] ]
-[ **-F**\ *code1,code2,...*\ [**+l**\|**L**][**f**\ *fill*\ ][**p** \*pen\][**+r**\|**R**\ [*incs*]]]
+[ **-F**\ *code1,code2,...*\ [**+l**\|**L**][**+g**\ *fill*\ ][**+p** \*pen\][**+r**\|**R**\ [*incs*]]]
 [ **-G**\ *fill*\ \|\ **c** ] [ **-I**\ *river*\ [/\ *pen*] ] [
 **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [
-**-L**\ [**f**\ ][**x**\ ]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**][\ **+l**\ *label*][\ **+j**\ *just*][\ **+p**\ *pen*][\ **+f**\ *fill*][**+u**\ ]
+**-L**\ [**f**\ ][**x**\ ]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**][\ **+l**\ *label*][\ **+j**\ *just*][\ **+p**\ *pen*][\ **+g**\ *fill*][**+u**\ ]
 ] ] [ **-M** ] [ **-N**\ *border*\ [/*pen*] ] [ **-O** ] [ **-P** ] [
 **-Q** ] [ **-S**\ *fill*\ \|\ **c** ] [
 **-T**\ [**f**\ \|\ **m**][**x**\ ]\ *lon0*/*lat0*/*size*\ [/*info*][\ **:**\ *w*,\ *e*,\ *s*,\ *n*\ **:**][\ **+**\ *gint*\ [/*mint*]]
@@ -81,7 +81,7 @@ Optional Arguments
     resolution drops off by 80% between data sets [Default is **l**].
     Append )+) to automatically select a lower resolution should the one
     requested not be available [abort if not found].
-[ **-F**\ *code1,code2,...*\ [**+l**\|**L**][**f**\ *fill*\ ][**p** \*pen\][**+r**\|**R**\ [*incs*]]]
+[ **-F**\ *code1,code2,...*\ [**+l**\|**L**][**+g**\ *fill*\ ][**+p** \*pen\][**+r**\|**R**\ [*incs*]]]
     Select painting or dumping country polygons from the Digital Chart of the World.
     Append one or more comma-separated countries using the 2-character
     ISO 3166-1 alpha-2 convention.  To select a state of a country
@@ -93,7 +93,7 @@ Optional Arguments
     region to be a multiple of these steps [no adjustment].  Use **+R** to extend the region
     outward by adding these increments instead [no extension].
     Append **+p**\ *pen* to draw polygon outlines [no outline] and
-    **+f**\ *fill* to fill them [no fill].  One of **+p**\|**f** must be
+    **+g**\ *fill* to fill them [no fill].  One of **+p**\|**g** must be
     specified unless **-M** is in effect.
 **-G**\ *fill*\ \|\ **c**
     Select filling or clipping of "dry" areas. Append the shade, color,

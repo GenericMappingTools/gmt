@@ -117,6 +117,7 @@ configure_file (
 message(
 	"*  Options:\n"
 	"*  Found GSHHG database       : ${GSHHG_PATH} (${GSHHG_VERSION})\n"
+	"*  Found DCW-GMT database     : ${DCW_PATH} (${DCW_VERSION})\n"
 	"*  NetCDF library             : ${NETCDF_LIBRARY}\n"
 	"*  NetCDF include dir         : ${NETCDF_INCLUDE_DIR}\n"
 	"*  GDAL library               : ${GDAL_LIBRARY}\n"
