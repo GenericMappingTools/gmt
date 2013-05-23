@@ -54,6 +54,9 @@ BD(cmyk) (assumes colors are in CMYK but interpolates in RGB).
 .B COLOR_NAN
 Color used for the non-defined areas of images (i.e., where z == NaN)  [127.5].
 .TP
+.B DIR_DCW
+Path to DCW files.  Defaults to BD($GMT_SHAREDIR)/coast if empty.
+.TP
 .B DIR_GSHHG
 Path to GSHHG files.  Defaults to BD($GMT_SHAREDIR)/coast if empty.
 .TP

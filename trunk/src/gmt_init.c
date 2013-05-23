@@ -4258,6 +4258,14 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 
 		/* DIR GROUP */
 
+		case GMTCASE_DIR_DCW:
+			if (*value) {
+				if (GMT->session.DCWDIR)
+					free (GMT->session.DCWDIR);
+				/* Set session DCW dir */
+				GMT->session.DCWDIR = strdup (value);
+			}
+			break;
 		case GMTCASE_DIR_GSHHG:
 			if (*value) {
 				if (GMT->session.GSHHGDIR)
@@ -5253,6 +5261,10 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, char *keyword)
 
 		/* DIR GROUP */
 
+		case GMTCASE_DIR_DCW:
+			/* Force update of session.DCWDIR before copying the string */
+			strncpy (value, (GMT->session.DCWDIR) ? GMT->session.DCWDIR : "", GMT_TEXT_LEN256);
+			break;
 		case GMTCASE_DIR_GSHHG:
 			/* Force update of session.GSHHGDIR before copying the string */
 			GMT_shore_adjust_res (GMT, 'c');
@@ -6022,6 +6034,8 @@ void GMT_end (struct GMT_CTRL *GMT)
 	free (GMT->init.runtime_bindir);
 	free (GMT->session.SHAREDIR);
 	free (GMT->session.HOMEDIR);
+	if (GMT->session.DCWDIR)
+		free (GMT->session.DCWDIR);
 	if (GMT->session.GSHHGDIR)
 		free (GMT->session.GSHHGDIR);
 	if (GMT->session.USERDIR)
