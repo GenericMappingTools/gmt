@@ -43,6 +43,9 @@
 # Set path to GSHHG Shoreline Database [auto]:
 #set (GSHHG_ROOT "gshhg_path")
 
+# Set path to DCW Digital Chart of the World for GMT [auto]:
+#set (DCW_ROOT "dcw-gmt-path")
+
 # Set location of NetCDF (can be root directory, path to header file or path to nc-config) [auto]:
 #set (NETCDF_ROOT "netcdf_install_prefix")
 

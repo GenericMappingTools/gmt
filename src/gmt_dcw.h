@@ -33,7 +33,7 @@
 #define GMT_DCW_N_CONTINENTS		8
 #define GMT_DCW_N_COUNTRIES_WITH_STATES	4
 
-#define DCW_OPT "-F<code1,code2,...>[+l|L][f<fill>][+p<pen>][+r|R[<incs>]]"
+#define DCW_OPT "-F<code1,code2,...>[+l|L][+g<fill>][+p<pen>][+r|R[<incs>]]"
 
 enum GMT_DCW_modes {
 	GMT_DCW_REGION	= 1,

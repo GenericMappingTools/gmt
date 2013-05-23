@@ -4381,7 +4381,7 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, char *keyword)
 {	/* value must hold at least GMT_BUFSIZ chars */
 	static char value[GMT_TEXT_LEN256], txt[8];
 	int case_val;
-	bool error;
+	bool error = false;
 	char pm[2] = {'+', '-'}, *ft[2] = {"false", "true"};
 
 	GMT_memset (value, GMT_TEXT_LEN256, char);
