@@ -154,6 +154,7 @@ void *New_pscoast_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 }
 
 void Free_pscoast_Ctrl (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *C) {	/* Deallocate control structure */
+	if (C->F.active && C->F.info.codes) free ((void *)C->F.info.codes);
 	GMT_free (GMT, C);
 }
 
