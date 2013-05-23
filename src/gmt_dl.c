@@ -37,7 +37,7 @@ int main (int argc, char *argv[]) {
 	char *error;
 
 	/* "load" currently executing process such that the result can be used in
-	 * the same manner as t    he result from dynamically loading a library with
+	 * the same manner as the result from dynamically loading a library with
 	 * dlopen */
 	void* this_process = dlopen(NULL,0);
 	if (!this_process) {
