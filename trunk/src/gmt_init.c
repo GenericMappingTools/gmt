@@ -9065,7 +9065,7 @@ int GMT_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 	 * The API will also consider -I for grid increments.
 	 */
 
-	int error = 0, i = 0;
+	int error = 0, i = 0;	/* The i and i+= GMT_more_than_once are there to avoid compiler warnings... */
 
 	if (!list || !strchr (list, option)) return (0);	/* Not a common option we accept */
 
