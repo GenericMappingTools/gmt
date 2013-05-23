@@ -109,6 +109,13 @@ if (DO_EXAMPLES OR DO_TESTS AND NOT GSHHG_FOUND)
 		"Need to either set GSHHG_ROOT or disable tests.")
 endif (DO_EXAMPLES OR DO_TESTS AND NOT GSHHG_FOUND)
 
+# Examples and tests depend on DCW
+find_package (DCW)
+if (DO_EXAMPLES OR DO_TESTS AND NOT DCW_FOUND)
+	message (FATAL_ERROR "Cannot proceed without DCW polygons. "
+		"Need to either set DCW_ROOT or disable tests.")
+endif (DO_EXAMPLES OR DO_TESTS AND NOT DCW_FOUND)
+
 # These lines are temporarily here for the beta release
 # set (GMT_PROGS2_SRCS testapi.c)
 set (GMT_DEMOS_SRCS gmtaverage.c gmtmercmap.c  testapi.c testgmt5.c testgmtio.c testgrdio.c testio.c)
