@@ -342,7 +342,7 @@ if (WIN32 AND PSL_DLL_RENAME)
 endif ()
 
 # supplement directories (only those, which are to be included in gmtlib)
-set (GMT_SUPPL_DIRS dbase gshhg imgsrc kiss_fft meca mgd77 misc potential segy sph
+set (GMT_SUPPL_DIRS dummy dbase gshhg imgsrc kiss_fft meca mgd77 misc potential segy sph
 	spotter x2sys)
 
 # path to all binary dirs (used to set PATH in test scripts)
@@ -427,6 +427,14 @@ foreach (_gmtdemo ${GMT_PROGS})
 		set_target_properties(${_gmtdemo} PROPERTIES LINK_FLAGS " /MANIFEST:NO")
 	endif ()
 endforeach (_gmtdemo)
+
+# dummy plugin
+set (CMAKE_SHARED_MODULE_PREFIX)
+set (CMAKE_SHARED_MODULE_SUFFIX .so)
+add_library (dummy MODULE dummy/dummy1.c dummy/dummy2.c)
+target_link_libraries (dummy gmtlib)
+add_executable (gmt_dl2 gmt_dl2.c dummy/common_plugin.c)
+target_link_libraries (gmt_dl2 gmtlib)
 
 configure_file (psldemo.h.in psldemo.h @ONLY)
 add_executable (psldemo psldemo.h psldemo.c)
