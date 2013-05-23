@@ -581,15 +581,13 @@ correctly with a warning under compatibility mode:
    **+s**\ *fontsize* are obsolete, now being part of **+f**\ *font*.
 
 #. **Ellipsoids**: Assigning **PROJ_ELLIPSOID** a file name is
-   deprecated, use comma-separated parameters *a, :math:`f^{-1}`*
-   instead.
+   deprecated, use comma-separated parameters *a, :math:`f^{-1}`* instead.
 
 #. **Custom symbol macros:** Circle macro symbol **C** is deprecated;
    use **c** instead.
 
 #. **Map scale**: Used by `psbasemap <psbasemap.html>`_
-   and others. Here, the unit **m** is deprecated; use **M** for statute
-   miles.
+   and others. Here, the unit **m** is deprecated; use **M** for statute miles.
 
 #. **3-D perspective**: Some programs used a combination of **-E**,
    **-Z** to set up a 3-D perspective view, but these options were not
@@ -661,7 +659,7 @@ correctly with a warning under compatibility mode:
    is deprecated; use **-E** instead.
 
 #. `grdimage <grdimage.html>`_: **-S** is deprecated;
-   use **-n**\ *mode*\ [**+a**\ ][\ **+t**\ *threshold*] instead.
+   use **-n**\ *mode*\ [**+a**][\ **+t**\ *threshold*] instead.
 
 #. `grdmath <grdmath.html>`_: LDIST and PDIST now return
    distances in spherical degrees; while in
@@ -673,12 +671,12 @@ correctly with a warning under compatibility mode:
    instead. Also, **-N** is deprecated; use **-D** instead.
 
 #. `grdsample <grdsample.html>`_: **-Q** is deprecated;
-   use **-n**\ *mode*\ [**+a**\ ][\ **+t**\ *threshold*] instead. Also,
+   use **-n**\ *mode*\ [**+a**][\ **+t**\ *threshold*] instead. Also,
    **-L** is deprecated; use common option **-n** instead, and
    **-N**\ *nx>/<ny* is deprecated; use **-I**\ *nx+>/<ny+* instead.
 
 #. `grdtrack <grdtrack.html>`_: **-Q** is deprecated;
-   use **-n**\ *mode*\ [**+a**\ ][\ **+t**\ *threshold*] instead. Also,
+   use **-n**\ *mode*\ [**+a**][\ **+t**\ *threshold*] instead. Also,
    **-L** is deprecated; use common option **-n** instead, and **-S** is
    deprecated; use common option **-sa** instead.
 
@@ -686,33 +684,27 @@ correctly with a warning under compatibility mode:
    use the vector modifier **+jc** as well as the general vector
    specifications discussed earlier.
 
-#. `grdview <grdview.html>`_: **-L** is deprecated; use
-   common option **-n** instead.
+#. `grdview <grdview.html>`_: **-L** is deprecated; use common option **-n** instead.
 
 #. `nearneighbor <nearneighbor.html>`_: **-L** is
    deprecated; use common option **-n** instead.
 
-#. `project <project.html>`_: **-D** is deprecated; use
-   --FORMAT_GEO_OUT instead.
+#. `project <project.html>`_: **-D** is deprecated; use --FORMAT_GEO_OUT instead.
 
 #. `psbasemap <psbasemap.html>`_: **-G** is deprecated;
    specify canvas color via **-B** modifier **+g**\ *color*.
 
 #. `pscoast <pscoast.html>`_: **-m** is deprecated and
-   have reverted to **-M** for selecting data output instead of
-   plotting.
+   have reverted to **-M** for selecting data output instead of plotting.
 
-#. `pscontour <pscontour.html>`_: **-T**\ *indexfile* is
-   deprecated; use **-Q**\ *indexfile*.
+#. `pscontour <pscontour.html>`_: **-T**\ *indexfile* is deprecated; use **-Q**\ *indexfile*.
 
 #. `pshistogram <pshistogram.html>`_: **-T**\ *col* is
    deprecated; use common option **-i** instead.
 
-#. `pslegend <pslegend.html>`_: Paragraph text header
-   flag > is deprecated; use P instead.
+#. `pslegend <pslegend.html>`_: Paragraph text header flag > is deprecated; use P instead.
 
-#. `psmask <psmask.html>`_: **-D**...\ **+n**\ *min* is
-   deprecated; use **-Q** instead.
+#. `psmask <psmask.html>`_: **-D**...\ **+n**\ *min* is deprecated; use **-Q** instead.
 
 #. `psrose <psrose.html>`_: Old vector specifications in
    Option **-M** are deprecated; see new explanations.
@@ -762,13 +754,11 @@ correctly with a warning under compatibility mode:
 
 #. `mgd77/mgd77manage <supplements/mgd77/mgd77manage.html>`_: The
    unit **m** is deprecated; use **M** for statute miles. The **-Q** is
-   deprecated; use **-n**\ *mode*\ [**+a**][\ **+t**\ *threshold*]
-   instead
+   deprecated; use **-n**\ *mode*\ [**+a**][\ **+t**\ *threshold*] instead
 
 #. `mgd77/mgd77path <supplements/mgd77/mgd77path.html>`_: **-P** is
    deprecated (clashes with
-   `GMT <http://gmt.soest.hawaii.edu>`_ common options); use **-A**
-   instead.
+   `GMT <http://gmt.soest.hawaii.edu>`_ common options); use **-A** instead.
 
 #. `spotter/backtracker <supplements/spotter/backtracker.html>`_:
    **-C** is deprecated as stage vs. finite rotations are detected
@@ -1138,8 +1128,7 @@ For more information send e-mail to .
 responses have prompted us to develop these programs even further. It is
 our hope that the new version will satisfy these users and attract new
 users as well. We present this system to the community in order to
-promote sharing of research software among investigators in the US and
-abroad.
+promote sharing of research software among investigators in the US and abroad.
 
 References
 ----------
@@ -1762,9 +1751,8 @@ GMT units
 While *GMT* has default units for both actual Earth distances and plot
 lengths (dimensions) of maps, it is recommended that you specifically
 indicate the units of your arguments by appending the unit character, as
-discussed below. This will aid you in debugging, let others understand
-your scripts, and remove any uncertainty as to what unit you thought you
-wanted.
+discussed below. This will aid you in debugging, let others understand your
+scripts, and remove any uncertainty as to what unit you thought you wanted.
 
 Distance units
 ~~~~~~~~~~~~~~
@@ -1824,8 +1812,7 @@ latitude and computation speed is paramount. You can specify this mode
 of computation by using the **-** prefix to the specified distance (or
 to the unit itself in cases where no distance is required and only a
 unit is expected). For instance, a search radius of 50 statute miles
-using this mode of computation might be specified via
-**-S-**\ 50\ **M**.
+using this mode of computation might be specified via **-S-**\ 50\ **M**.
 
 Great circle distances
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -2234,7 +2221,7 @@ tick, and gridline intervals, axes labels, and annotation units.
 
 The Frame settings are specified by
 
-**-B**\ [*axes*][**+b**][**+g**\ *fill*][**+o**\ *lon/lat*][**+t**\ *title*]
+-  **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+o**\ *lon/lat*][**+t**\ *title*]
 
 Here, the optional *axes* dictates which of the axes should be drawn
 and possibly annotated.  By default, all 4 map boundaries (or plot axes)
@@ -2260,12 +2247,12 @@ will appear centered above the plot frame.
 
 The Axes settings are specified by
 
-**-B**\ [**p**|**s**][**x**|**x**|**z**]*intervals*[**+l**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
+-  **-B**\ [**p**\|\ **s**][**x**\|\ **x**\|\ **z**]\ *intervals*\ [\ **+l**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
 
 but you may also split this into two separate invocations for clarity, i.e.,
 
-**-B**\ [**p**|**s**][**x**|**x**|**z**][**+l**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
-**-B**\ [**p**|**s**][**x**|**x**|**z**]*intervals*
+-  **-B**\ [**p**\|\ **s**][**x**\|\ **x**\|\ **z**][**+l**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
+-  **-B**\ [**p**\|\ **s**][**x**\|\ **x**\|\ **z**]\ *intervals*
 
 The first optional flag following **-B** selects **p** (rimary) [Default] or
 **s** (econdary) axes information (which is mostly used for time axes
@@ -5161,6 +5148,7 @@ all zone designations.
 .. figure:: _images/GMT_utm_zones.png
    :height: 995 px
    :width: 1903 px
+   :align: center
    :scale: 40 %
 
    Figure : Universal Transverse Mercator zone layout.
