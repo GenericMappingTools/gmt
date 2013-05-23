@@ -79,6 +79,10 @@
 # Enable building of static library [FALSE]:
 #set (BUILD_SHARED_LIBS false)
 
+# Install convenience links for GMT modules [FALSE]:
+#set (INSTALL_MODULE_LINKS TRUE)
+
+
 ## Advanced configuration begins here. Usually it is not necessary to edit any
 ## settings below. You should know what you are doing if you do though.
 
