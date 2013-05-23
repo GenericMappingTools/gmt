@@ -113,7 +113,8 @@ endif (DO_EXAMPLES OR DO_TESTS AND NOT GSHHG_FOUND)
 find_package (DCW)
 if (DO_EXAMPLES OR DO_TESTS AND NOT DCW_FOUND)
 	message (FATAL_ERROR "Cannot proceed without DCW polygons. "
-		"Need to either set DCW_ROOT or disable tests.")
+		"Need to either set DCW_ROOT or disable tests."
+		"Obtain dwc-gmt-1.0.0.tar.gz or dwc-gmt-1.0.0.zip from ftp.soest.hawaii.edu://pub/pwessel/dcw-gmt")
 endif (DO_EXAMPLES OR DO_TESTS AND NOT DCW_FOUND)
 
 # These lines are temporarily here for the beta release
