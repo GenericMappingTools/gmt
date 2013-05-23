@@ -1,0 +1,3 @@
+.TP
+OPT(K) (*)
+Do not finalize the IT(PostScript) plot.

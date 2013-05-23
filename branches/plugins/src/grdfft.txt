@@ -1,0 +1,142 @@
+#include "common_options.txt"
+.TH GRDFFT 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+grdfft \- Do mathematical operations on grids in the wavenumber (or frequency) domain 
+.SH SYNOPSIS
+BD(grdfft) IT(ingrid) [ IT(ingrid2) ] OPT(G)IT(outfile) [ OPT(A)IT(azimuth) ] 
+[ OPT(C)IT(zlevel) ] [ OPT(D)[IT(scale)|BD(g)] ] [ OPT(E)[BD(r)|BD(x)|BD(y)][BD(w)[BD(k)]] ] 
+[ OPT(F)[BD(r)|BD(x)|BD(y)]IT(params) ] [ OPT(I)[IT(scale)|BD(g)] ] 
+[ OPT(N)[GMT_FFT_OPT] ] [ OPT(S)IT(scale) ] [ GMT_V_OPT ] [ OPT(fg) ]
+.SH DESCRIPTION
+BD(grdfft) will take the 2-D forward Fast Fourier Transform and perform one or more mathematical
+operations in the frequency domain before transforming back to the space domain.  An option
+is provided to scale the data before writing the new values to an output file.  The
+horizontal dimensions of the grid are assumed to be in meters.  Geographical grids
+may be used by specifying the OPT(fg) option that scales degrees to meters.  If you
+have grids with dimensions in km, you could change this to meters using BD(grdedit)
+or scale the output with BD(grdmath).
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+IT(ingrid)
+2-D binary grid file to be operated on.
+(See GRID FILE FORMATS below).  For cross-spectral operations, also give the second grid file IT(ingrd2).
+.TP
+OPT(G)IT(outfile)
+Specify the name of the output grid file or the 1-D spectrum table (see OPT(E)).
+(See GRID FILE FORMATS below).
+.SH OPTIONAL ARGUMENTS
+.TP
+OPT(A)IT(azimuth)
+Take the directional derivative in the IT(azimuth) direction measured in degrees CW from north.
+.TP
+OPT(C)IT(zlevel)
+Upward (for IT(zlevel) > 0) or downward (for IT(zlevel) < 0) continue the field IT(zlevel) meters.
+.TP
+OPT(D)[IT(scale)|BD(g)]
+Differentiate the field, i.e., take d(field)/dz.  This is equivalent to multiplying by kr in the frequency
+domain (kr is radial wave number).  Append a scale to multiply by (kr * IT(scale)) instead.  Alternatively,
+append BD(g) to indicate that your data are geoid heights in meters and output should be gravity anomalies in mGal. 
+[Default is no scale].
+.TP
+OPT(E)[BD(r)|BD(x)|BD(y)][BD(w)[BD(k)]]
+Estimate power spectrum in the radial direction [BD(r)].  Place BD(x) or BD(y) immediately after OPT(E) to
+compute the spectrum in the x or y direction instead.  No grid file is created.
+If a single grid is given then f (i.e., frequency or wave number), power[f], and 1 standard deviation
+in power[f] are written to the file set by OPT(G) [stdout]. If two grids are given we write f and 8 quantities:
+Xpower[f], Ypower[f], coherent power[f], noise power[f], phase[f], admittance[f], gain[f], coherency[f].
+Each quantity is followed by its own 1-std dev error estimate, hence the output is 17 columns wide.
+Append BD(w) to write wavelength instead of frequency.  If your grid is geographic you may further append BD(k)
+to scale wavelengths from meter [Default] to km.
+.TP
+OPT(F)[BD(r)|BD(x)|BD(y)]IT(params)
+Filter the data.  Place BD(x) or BD(y) immediately after OPT(F) to filter IT(x) or IT(y) direction only; default is isotropic [BD(r)].
+Choose between a cosine-tapered band-pass, a Gaussian band-pass filter, or a Butterworth band-pass filter.
+Cosine-taper: Specify four wavelengths IT(lc)/IT(lp)/IT(hp)/IT(hc) in correct units (see OPT(fg)) to design a bandpass filter: wavelengths greater than 
+IT(lc) or less than IT(hc) will be cut, wavelengths greater than IT(lp) and less than IT(hp) will be 
+passed, and wavelengths in between will be cosine-tapered.  E.g., OPT(F)1000000/250000/50000/10000 OPT(fg) 
+will bandpass, cutting wavelengths > 1000 km and < 10 km, passing wavelengths between 250 km and 50 km.  To make 
+a highpass or lowpass filter, give hyphens (-) for IT(hp)/IT(hc) or IT(lc)/IT(lp).  E.g., OPT(Fx)-/-/50/10 
+will lowpass IT(x), passing wavelengths > 50 and rejecting wavelengths < 10.  OPT(Fy)1000/250/-/- will highpass IT(y), 
+passing wavelengths < 250 and rejecting wavelengths > 1000.  Gaussian band-pass: Append IT(lo)/IT(hi), the two wavelengths in correct units
+(see OPT(fg)) to design a bandpass filter.  At the given wavelengths the Gaussian filter weights will be 0.5. To make
+a highpass or lowpass filter, give a hyphen (-) for the IT(hi) or IT(lo) wavelength, respectively.  E.g., OPT(F)-/30
+will lowpass the data using a Gaussian filter with half-weight at 30, while OPT(F)400/- will highpass the data.
+Butterworth band-pass: Append IT(lo)/IT(hi)/IT(order), the two wavelengths in correct units
+(see OPT(fg)) and the filter order (an integer) to design a bandpass filter.  At the given wavelengths the Butterworth filter weights will be 0.5. To make
+a highpass or lowpass filter, give a hyphen (-) for the IT(hi) or IT(lo) wavelength, respectively.  E.g., OPT(F)-/30/2
+will lowpass the data using a 2nd-order Butterworth filter, with half-weight at 30, while OPT(F)400/-/2 will highpass the data.
+.TP
+OPT(I)[IT(scale)|BD(g)]
+Integrate the field, i.e., compute integral_over_z (field * dz).  This is equivalent to divide by kr
+in the frequency domain (kr is radial wave number).  Append a scale to divide by (kr * IT(scale)) instead.
+Alternatively, append BD(g) to indicate that your data set is gravity anomalies in mGal and output should be geoid
+heights in meters.  [Default is no scale].
+#define FFT_OPT OPT(N)
+#include "explain_fft.txt" 
+.TP
+OPT(S)IT(scale)
+Multiply each element by IT(scale) in the space domain (after the frequency domain operations).
+[Default is 1.0].
+#include "explain_-V.txt"
+.TP
+OPT(fg)
+Geographic grids (dimensions of longitude, latitude) will be converted to meters via a "Flat Earth" approximation
+using the current ellipsoid parameters.
+#include "explain_help.txt"
+#include "explain_grd_inout.txt"
+.SH GRID DISTANCE UNITS
+If the grid does not have meter as the horizontal unit, supply BD(+u)IT(unit) to the input file name to convert from the
+specified unit to meter.  If your grid is geographic, convert distances to meters by supplying OPT(fg) instead.
+.SH CONSIDERATIONS
+netCDF COARDS grids will automatically be recognized as geographic. For other grids geographical grids
+were you want to convert degrees into meters, select OPT(fg).  If the data are close to either pole,
+you should consider projecting the grid file onto a rectangular coordinate system using BD(grdproject).
+.SH EXAMPLES
+To upward continue the sea-level magnetic anomalies in the file mag_0.nc to a level 800 m above sealevel:
+.br
+.sp
+grdfft mag_0.nc -C800 -V -Gmag_800.nc 
+.br
+.sp
+To transform geoid heights in m (geoid.nc) on a geographical grid to free-air gravity anomalies in mGal:
+.br
+.sp
+grdfft geoid.nc -Dg -V -Ggrav.nc
+.br
+.sp
+To transform gravity anomalies in mGal (faa.nc) to deflections of the vertical (in micro-radians) in the
+038 direction, we must first integrate gravity to get geoid, then take the directional derivative, and
+finally scale radians to micro-radians:
+.br
+.sp
+grdfft faa.nc -Ig -A38 -S1e6 -V -Gdefl_38.nc
+.br
+.sp
+Second vertical derivatives of gravity anomalies are related to the curvature of the field.  We can
+compute these as mGal/m^2 by differentiating twice:
+.br
+.sp
+grdfft gravity.nc -D -D -V -Ggrav_2nd_derivative.nc
+.br
+.sp
+To compute cross-spectral estimates for co-registered bathymetry and gravity grids,
+and report result as functions of wavelengths in km, try
+br
+.sp
+grdfft bathymetry.nc gravity.grd -Ewk -fg -V > cross_spectra.txt
+.br
+.sp
+To examine the pre-FFT grid after detrending, point-symmetry reflection, and tapering has been applied,
+as well as saving the real and imaginary components of the raw spectrum of the data in topo.nc, try
+.br
+.sp
+grdfft topo.nc -N+w+z -fg -V
+.br
+.sp
+You can now make plots of the data in topo_taper.nc, topo_real.nc, and topo_imag.nc.
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR grdedit (1),
+.IR grdmath (1),
+.IR grdproject (1)

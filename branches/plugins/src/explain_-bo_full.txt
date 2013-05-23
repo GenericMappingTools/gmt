@@ -1,0 +1,10 @@
+.TP
+GMT_bo_OPT
+Select binary output.  Append one or more comma-separated combinations of
+IT(ncols)/IT(type), where IT(ncols) is the actual number of data columns
+and IT(type) must be one of BD(c), BD(u), BD(h), BD(H), BD(i), BD(I),
+BD(l), BD(L), BD(f), and BD(d) (see OPT(bi)).  Append BD(w) or
+BD(+L)|BD(B) for byte-swapping.  IT(ncols) is the number of each item in
+the binary file.  If no IT(ncols) is specified we assume that IT(type)
+applies to all columns and that IT(ncols) is implied by the default output
+of the program.  NetCDF file output is not supported.

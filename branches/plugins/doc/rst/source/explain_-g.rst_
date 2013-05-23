@@ -1,0 +1,2 @@
+**-g**\ [**a**]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*]\ **z**\ [+\|-]\ *gap*\ [**u**] :ref:`(more ...) <-g_full>`
+    Determine data gaps and line breaks. |Add_-g|

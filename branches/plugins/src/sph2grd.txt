@@ -1,0 +1,67 @@
+#include "common_options.txt"
+.TH SPH2GRD 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+sph2grd \- Compute grid from spherical harmonic coefficients
+.SH SYNOPSIS
+BD(sph2grd)  [ IT(table) ]  -G<grdfile> GMT_I_OPT GMT_r_OPT [ -Dg|n ] [ -E ] [ -F[k]<filter> ] 
+[ -N<norm> ] [ -Q ] [ GMT_V_OPT ] [ GMT_bi_OPT ] [ GMT_hi_OPT]
+.SH DESCRIPTION
+BD(sph2grd) reads a spherical harmonics coefficient file with records of L, M, C[L,M], S[L,M]
+and evaluates the spherical harmonic model on the specified grid.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.TP
+OPT(G)IT(grdfile)
+IT(grdfile) is the name of the binary output grid file.
+(See GRID FILE FORMAT below.)
+#include "explain_-I.txt"
+#include "explain_-R.txt"
+.SH OPTIONAL ARGUMENTS
+.TP
+IT(table)
+The coefficient file for the spherical harmonic model. 
+.TP
+OPT(D)[BD(g)|BD(n)
+Will evaluate a derived field from a geopotential model.  Choose between
+OPT(Dg) will compute the gravitational field [Add OPT(E) for anomalies on ellipsoid] or
+OPT(Dn) will compute the geoid [Add OPT(E) for anomalies on ellipsoid].
+.TP
+OPT(E)
+Evaluate expansion on the current ellipsoid [Default is sphere]
+.TP
+OPT(F)IT(filter)
+Filter coefficients according to one of two kinds of filter specifications:.
+OPT(Lk) if values are given in km  [Default is coefficient degree L].
+a) Cosine band-pass: Append four wavelengths IT(lc/lp/hp/hc). The
+coefficients outside IT(lc/hc) are cut; those inside IT(lp/hp) are passed, while the rest are tapered.
+Replace wavelength by - to skip, e.g., OPT(L)-/-/50/75 is a low-pass filter.
+b) Gaussian band-pass: Append two wavelengths IT(lo/hi) where filter amplitudes = 0.5.
+Replace wavelength by - to skip, e.g., OPT(L)50/- is a high-pass Gaussian filter.
+.TP
+OPT(N)[BD(code)]
+Normalization used for coefficients.  Choose among
+BD(m): Mathematical normalization - inner products summed over surface equal 1 [Default].
+BD(g) Geodesy normalization - inner products summed over surface equal 4pi.
+BD(s): Schmidt normalization - as used in geomagnetism.
+#include "explain_-V.txt"
+.TP
+OPT(Q)
+Coefficients have phase convention from physics, i.e., the (-1)^m factor
+#include "explain_-bi.txt"
+[Default is 4 input columns].
+#include "explain_-h.txt"
+Not used with binary data.
+#include "explain_-icols.txt"
+#include "explain_nodereg.txt"
+#include "explain_colon.txt"
+#include "explain_help.txt"
+#include "explain_float.txt"
+#include "explain_grd_output.txt"
+#include "explain_grd_coord.txt"
+.SH EXAMPLES
+To create a 1 x 1 degree global grid file from the ASCII coefficients in EGM96_to_360.txt, use
+.sp
+sph2grd EGM96_to_360.txt -GEGM96_to_360.nc -Rg -I1 -V
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR grdfft (1)

@@ -1,0 +1,95 @@
+#include "common_options.txt"
+.TH COLMATH 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.SH NAME
+colmath \- Do mathematics on columns from data tables
+.SH SYNOPSIS
+BD(colmath) [ IT(table) ] [ OPT(A) ] [ OPT(N) ] [ OPT(Q)IT(seg) ] 
+[ OPT(S)[BD(~)]IT("search string") ] [ OPT(T) ] [ GMT_V_OPT ] [ GMT_b_OPT ] 
+[ GMT_f_OPT ] [ GMT_g_OPT ] [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_s_OPT ] [ GMT_colon_OPT ]
+.SH DESCRIPTION
+BD(colmath) reads its standard input [or inputfiles] does mathematics in RPN on the columns and then writes
+the result to standard output.  It can do a combination of
+four tasks: (1) convert between binary and ASCII data tables, (2) paste
+corresponding records from multiple files horizontally into a single file, (3)
+extract a subset of the available columns, (4) do mathematics on the columns.
+Input (and hence output) may have multiple sub-headers,
+and ASCII tables may have regular headers as well.
+#include "explain_commonitems.txt"
+.SH REQUIRED ARGUMENTS
+.SH OPTIONAL ARGUMENTS
+#include "explain_intables.txt"
+.TP
+OPT(A)
+The records from the input files should be pasted horizontally, not appended vertically [Default].
+All files must have the same number of segments and number of
+rows per segment.  Note for binary input, all the files you want to paste must
+have the same number of columns (as set with GMT_bi_OPT); ascii tables can have different number
+of columns.
+.TP
+OPT(N)
+Do not write records that only contain NaNs in every field [Default writes all records].
+.TP
+OPT(Q)IT(seg)
+Only write segment number IT(seg) and skip all others.  Cannot be used with OPT(S).
+.TP
+OPT(S)[BD(~)]IT("search string")
+Only output those segments whose header record contains the specified text string.  To reverse the search,
+i.e., to output segments whose headers do IT(not) contain the specified pattern, use OPT(S~).
+Should your pattern happen to start with ~ you need to escape this character with a backslash \ [Default output all segments].
+Cannot be used with OPT(Q).
+.TP
+OPT(T)
+Suppress the writing of segment headers on output.
+#include "explain_-V.txt"
+#include "explain_-bi.txt"
+#include "explain_-bo.txt"
+[Default is same as input].
+#include "explain_-f.txt"
+#include "explain_-g.txt"
+#include "explain_-h.txt"
+#include "explain_-icols.txt"
+#include "explain_-ocols.txt"
+#include "explain_-s.txt"
+#include "explain_colon.txt"
+#include "explain_help.txt"
+#include "explain_precision.txt"
+.SH EXAMPLES
+To convert the binary file test.b (single precision) with 4 columns to ASCII:
+.br
+.sp
+colmath test.b -bi4f > test.dat
+.br
+.sp
+To convert the multiple segment ASCII table test.d to a double precision binary file:
+.br
+.sp
+colmath test.d -bo > test.b
+.br
+.sp
+You have an ASCII table with 6 columns and you want to plot column 5 versus column 0.  Try
+.br
+.sp
+colmath table.d -o5,0 | psxy ...
+.br
+.sp
+If the file instead is the binary file results.b which has 9 single-precision values per record,
+we extract the last column and columns 4-6 and write ASCII with the command
+.br
+.sp
+colmath results.b -o8,4-6 -bi9s | psxy ...
+.br
+.sp
+You want to plot the 2nd column of a 2-column file left.d versus the first column of a file right.d:
+.br
+.sp
+colmath left.d right.d -A -o1,2 | psxy ...
+.br
+.sp
+To extract all segments in the file big_file.d whose headers contain the string "RIDGE AXIS", try
+.br
+.sp
+colmath big_file.d -S"RIDGE AXIS" > subset.d
+.br
+.SH "SEE ALSO"
+.IR gmt (1),
+.IR minmax (1)

@@ -1,0 +1,4 @@
+.TP
+GMT_c_OPT
+Specify number of plot copies. [Default is 1].
+When used without argument, use the same number of copies and specified in the last OPT(c) in a previous BD(GMT) command.

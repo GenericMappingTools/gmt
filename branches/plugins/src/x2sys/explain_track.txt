@@ -1,0 +1,12 @@
+.TP
+IT(tracks)
+Can be one or more ASCII, native binary, or COARDS netCDF 1-D data files.
+To supply the data files via a text file with a list of tracks (one per record),
+specify the name of the track list after a leading equal-sign
+(e.g., =tracks.lis).  If the names are missing their file extension we will
+append the suffix specified for this IT(TAG).  Track files will be searched
+for first in the current directory and second in all directories listed in
+BD($X2SYS_HOME)/IT(TAG)/IT(TAG)_paths.txt (if it exists). [If BD($X2SYS_HOME)
+is not set it will default to BD($GMT_SHAREDIR)/x2sys]. (Note: MGD77 files will
+also be looked for via BD(MGD77_HOME)/mgd77_paths.txt and *.gmt files will be
+searched for via BD($GMT_SHAREDIR)/mgg/gmtfile_paths).

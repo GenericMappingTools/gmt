@@ -1,0 +1,10 @@
+#	$Id$
+#
+# Cyclic spectrum, spans 360 degrees of hue
+# Designed by Remko Scharroo, Altimetrics LLC
+#
+# COLOR_MODEL = hsv
+0	0-1-1	360	360-1-1
+B	0-0-1
+F	0-0-0
+N	0-0-0.75

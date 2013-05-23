@@ -1,0 +1,3 @@
+.TP
+GMT_bi_OPT (*)
+Select binary input.

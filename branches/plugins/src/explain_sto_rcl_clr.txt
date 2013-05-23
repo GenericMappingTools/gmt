@@ -1,0 +1,8 @@
+.SH STORE, RECALL and CLEAR
+You may store intermediate calculations to a named variable that you may recall and place on the stack at
+a later time.  This is useful if you need access to a computed quantity many times in
+your expression as it will shorten the overall expression and improve readability.  To
+save a result you use the special operator BD(STO)@IT(label), where IT(label) is the
+name you choose to give the quantity.  To recall the stored result to the stack at a
+later time, use [BD(RCL)]@IT(label), i.e., BD(RCL) is optional.  To clear memory you
+may use BD(CLR)@IT(label). Note that BD(STO) and BD(CLR) leave the stack unchanged.
