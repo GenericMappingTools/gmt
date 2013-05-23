@@ -113,7 +113,7 @@ if(NOT DEFINED _GMT_HELPER_MACROS_CMAKE_)
 	# install_module_symlink (MODULE [ MODULE ... ])
 	# example: install_module_symlink (grdimage psxy)
 	macro (INSTALL_MODULE_SYMLINK)
-		if (WIN32)
+		if (WIN32 AND INSTALL_MODULE_LINKS)
 			# create build targets
 			foreach (_gmtmodule ${ARGV})
 				add_executable (${_gmtmodule} ${GMT_PROGRAM})
@@ -131,7 +131,7 @@ if(NOT DEFINED _GMT_HELPER_MACROS_CMAKE_)
 
 			# add to gmt_suppl target
 			add_depend_to_target (gmt_module_progs ${ARGV})
-		else (WIN32)
+		elseif (UNIX AND INSTALL_MODULE_LINKS)
 			# create gmt module symlinks to gmt
 			#get_target_property(GMT_MAIN_NAME gmt OUTPUT_NAME)
 			file (RELATIVE_PATH _rpath /bin /${GMT_BINDIR}/${GMT_MAIN_NAME})
@@ -143,7 +143,7 @@ if(NOT DEFINED _GMT_HELPER_MACROS_CMAKE_)
 					${_rpath} \$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/${GMT_BINDIR}/${_gmtmodule})
 				" COMPONENT Runtime)
 			endforeach (_gmtmodule)
-		endif (WIN32)
+		endif (WIN32 AND INSTALL_MODULE_LINKS)
 	endmacro (INSTALL_MODULE_SYMLINK)
 
 endif(NOT DEFINED _GMT_HELPER_MACROS_CMAKE_)
