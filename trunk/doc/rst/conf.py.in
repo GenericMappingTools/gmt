@@ -223,6 +223,7 @@ man_pages = [
 # A final annoyance it that it picks all .rst in sight and converts them, including
 # 'list.rst' and others of the same kind used create the toctree.
 
+import os
 man_pages = []
 for dirpath, dirnames, filenames in os.walk('.'):
     for f in filenames:
