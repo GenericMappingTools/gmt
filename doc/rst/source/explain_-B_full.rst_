@@ -5,22 +5,22 @@
 
     **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+o**\ *lon/lat*][**+t**\ *title*]
 
-    where *axes* selects which axes to plot.  By default, all 4 map boundaries
+    where *axes* selects which axes to plot. By default, all 4 map boundaries
     (or plot axes) are plotted (named **W**, **E**, **S**, **N**). To customize,
-    append the codes for those you want (e.g., **WSn**).  Upper case means plot
+    append the codes for those you want (e.g., **WSn**). Upper case means plot
     and annotate while lower case just plots the specified axes.  If a 3-D basemap
     is selected with **-p** and **-Jz**, append **Z** or **z** to control the
-    appearance of the vertical axis.  By default a single vertical axes will be
-    plotted at the most suitable map corner.  Override the default by appending
+    appearance of the vertical axis. By default a single vertical axes will be
+    plotted at the most suitable map corner. Override the default by appending
     any combination of corner ids **1234**, where **1** represents the lower left
-    corner and the order goes counter-clockwise.  Append **+b** to draw the outline of the 3-D
+    corner and the order goes counter-clockwise. Append **+b** to draw the outline of the 3-D
     cube defined by **-R**; this modifier is also needed to display gridlines in
     the x-z, y-z planes. Note that for 3-D views the title, if given, will be
-    suppressed.  You can paint the interior of the canvas with **+g**\ *fill*.
+    suppressed. You can paint the interior of the canvas with **+g**\ *fill*.
     Optionally append **+o**\ *plon/plat* to draw oblique gridlines about
-    specified pole [regular gridlines].  Ignored if gridlines are not
+    specified pole [regular gridlines]. Ignored if gridlines are not
     requested (below) and disallowed for the oblique Mercator projection.
-    To add a plot title (**+t**\ *title*).  The Frame setting is optional but
+    To add a plot title (**+t**\ *title*). The Frame setting is optional but
     can be invoked once to override the above defaults.
 
     The Axes parameters are specified by
@@ -29,8 +29,8 @@
 
     but you may also split this into two separate invocations for clarity, i.e.,
 
-    **-B**\ [**p**\|\ **s**][**x**\|\ **x**\|\ **z**][**+l**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
-    **-B**\ [**p**\|\ **s**][**x**\|\ **x**\|\ **z**]\ *intervals*
+-   **-B**\ [**p**\|\ **s**][**x**\|\ **x**\|\ **z**][**+l**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
+-   **-B**\ [**p**\|\ **s**][**x**\|\ **x**\|\ **z**]\ *intervals*
 
     The first optional flag following **-B** selects **p** (rimary) [Default] or
     **s** (econdary) axes information (mostly used for time axes annotations).
@@ -43,7 +43,7 @@
     axis annotation should have a leading text prefix (e.g., dollar sign for those
     plots of your net worth) you can append **+p**\ *prefix*.  For geographic maps
     the addition of degree symbols, etc. is automatic (and controlled by the GMT
-    default setting **FORMAT\_GEO\_MAP**).  However, for other plots you can add
+    default setting **FORMAT_GEO_MAP**).  However, for other plots you can add
     specific units by adding **+u**\ *unit*.  If any of these text strings contain
     spaces or special UNIX characters you will need to enclose them in quotes.
     The *intervals* specification is a concatenated string made up of substrings
@@ -58,20 +58,20 @@
     (positive or negative). The optional *unit* indicates the unit of
     the *stride* and can be any of **Y** (year, plot with 4 digits),
     **y** (year, plot with 2 digits), **O** (month, plot using
-    **FORMAT\_DATE\_MAP**), **o** (month, plot with 2 digits), **U**
-    (ISO week, plot using **FORMAT\_DATE\_MAP**), **u** (ISO week, plot
+    **FORMAT_DATE_MAP**), **o** (month, plot with 2 digits), **U**
+    (ISO week, plot using **FORMAT_DATE_MAP**), **u** (ISO week, plot
     using 2 digits), **r** (Gregorian week, 7-day stride from start of
-    week **TIME\_WEEK\_START**), **K** (ISO weekday, plot name of day),
-    **D** (date, plot using **FORMAT\_DATE\_MAP**), **d** (day, plot day
-    of month 0-31 or year 1-366, via **FORMAT\_DATE\_MAP**), **R** (day,
-    same as **d**, aligned with **TIME\_WEEK\_START**), **H** (hour,
-    plot using **FORMAT\_CLOCK\_MAP**), **h** (hour, plot with 2
-    digits), **M** (minute, plot using **FORMAT\_CLOCK\_MAP**), **m**
+    week **TIME_WEEK_START**), **K** (ISO weekday, plot name of day),
+    **D** (date, plot using **FORMAT_DATE_MAP**), **d** (day, plot day
+    of month 0-31 or year 1-366, via **FORMAT_DATE_MAP**), **R** (day,
+    same as **d**, aligned with **TIME_WEEK_START**), **H** (hour,
+    plot using **FORMAT_CLOCK_MAP**), **h** (hour, plot with 2
+    digits), **M** (minute, plot using **FORMAT_CLOCK_MAP**), **m**
     (minute, plot with 2 digits), **S** (second, plot using
-    **FORMAT\_CLOCK\_MAP**), **s** (second, plot with 2 digits). Note
+    **FORMAT_CLOCK_MAP**), **s** (second, plot with 2 digits). Note
     for geographic axes **m** and **s** instead mean arc minutes and arc
     seconds. All entities that are language-specific are under control
-    by **TIME\_LANGUAGE**.
+    by **TIME_LANGUAGE**.
     Alternatively, for linear maps, we can omit *stride*, thus setting
     *xinfo*, *yinfo*, or *zinfo* to **a** plots annotations at
     automatically determined intervals, **ag** plots both annotations
@@ -80,7 +80,7 @@
     **-Bf** was used.
     For custom annotations and intervals, let *intervals* be given as
     **c**\ *intfile*, where *intfile* contains any number of
-    records with *coord* *type* [*label*\ ]. Here, *type* is one or more
+    records with *coord* *type* [*label*]. Here, *type* is one or more
     letters from **a**\ \|\ **i**, **f**, and **g**. For
     **a**\ \|\ **i** you must supply a *label* that will be plotted at
     the *coord* location
@@ -103,16 +103,16 @@
     = 0.5 (i.e., sqrt), then equidistant annotations labeled 1-4-9...
     will appear.
     These GMT parameters can affect the appearance of the map boundary:
-    **MAP\_ANNOT\_MIN\_ANGLE**, **MAP\_ANNOT\_MIN\_SPACING**,
-    **FONT\_ANNOT\_PRIMARY**, **FONT\_ANNOT\_SECONDARY**,
-    **MAP\_ANNOT\_OFFSET\_PRIMARY**, **MAP\_ANNOT\_OFFSET\_SECONDARY**,
-    **MAP\_ANNOT\_ORTHO**, **MAP\_FRAME\_AXES**, **MAP\_DEFAULT\_PEN**,
-    **MAP\_FRAME\_TYPE**, **FORMAT\_GEO\_MAP**, **MAP\_FRAME\_PEN**,
-    **MAP\_FRAME\_WIDTH**, **MAP\_GRID\_CROSS\_SIZE\_PRIMARY**,
-    **MAP\_GRID\_PEN\_PRIMARY**, **MAP\_GRID\_CROSS\_SIZE\_SECONDARY**,
-    **MAP\_GRID\_PEN\_SECONDARY**, **FONT\_TITLE**, **FONT\_LABEL**,
-    **MAP\_LINE\_STEP**, **MAP\_ANNOT\_OBLIQUE**,
-    **FORMAT\_CLOCK\_MAP**, **FORMAT\_DATE\_MAP**,
-    **FORMAT\_TIME\_PRIMARY\_MAP**, **FORMAT\_TIME\_SECONDARY\_MAP**,
-    **TIME\_LANGUAGE**, **TIME\_WEEK\_START**, **MAP\_TICK\_LENGTH**,
-    and **MAP\_TICK\_PEN**; see the **gmt.conf** man page for details.
+    **MAP_ANNOT_MIN_ANGLE**, **MAP_ANNOT_MIN_SPACING**,
+    **FONT_ANNOT_PRIMARY**, **FONT_ANNOT_SECONDARY**,
+    **MAP_ANNOT_OFFSET_PRIMARY**, **MAP_ANNOT_OFFSET_SECONDARY**,
+    **MAP_ANNOT_ORTHO**, **MAP_FRAME_AXES**, **MAP_DEFAULT_PEN**,
+    **MAP_FRAME_TYPE**, **FORMAT_GEO_MAP**, **MAP_FRAME_PEN**,
+    **MAP_FRAME_WIDTH**, **MAP_GRID_CROSS_SIZE_PRIMARY**,
+    **MAP_GRID_PEN_PRIMARY**, **MAP_GRID_CROSS_SIZE_SECONDARY**,
+    **MAP_GRID_PEN_SECONDARY**, **FONT_TITLE**, **FONT_LABEL**,
+    **MAP_LINE_STEP**, **MAP_ANNOT_OBLIQUE**,
+    **FORMAT_CLOCK_MAP**, **FORMAT_DATE_MAP**,
+    **FORMAT_TIME_PRIMARY_MAP**, **FORMAT_TIME_SECONDARY_MAP**,
+    **TIME_LANGUAGE**, **TIME_WEEK_START**, **MAP_TICK_LENGTH**,
+    and **MAP_TICK_PEN**; see the **gmt.conf** man page for details.
