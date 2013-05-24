@@ -1,12 +1,12 @@
 #include "common_options.txt"
-.TH GMTDP 1 MANDATE GMT_STRING "Generic Mapping Tools"
+.TH GMTSIMPLIFY 1 MANDATE GMT_STRING "Generic Mapping Tools"
 .SH NAME
-gmtdp \- Line reduction using the Douglas-Peucker algorithm
+gmtsimplify \- Line reduction using the Douglas-Peucker algorithm
 .SH SYNOPSIS
-BD(gmtdp) [ IT(table) ] OPT(T)IT(tolerance)[IT(unit)] 
+BD(gmtsimplify) [ IT(table) ] OPT(T)IT(tolerance)[IT(unit)] 
 [ GMT_V_OPT ] [ GMT_b_OPT ] [ GMT_bo_OPT ] [ GMT_f_OPT ] [ GMT_g_OPT ]  [ GMT_h_OPT ] [ GMT_i_OPT ] [ GMT_o_OPT ] [ GMT_colon_OPT ]
 .SH DESCRIPTION
-BD(gmtdp) reads one or more data files
+BD(gmtsimplify) reads one or more data files
 and apply the Douglas-Peucker line simplification algorithm. The method recursively 
 subdivides a polygon until a run of points can be replaced by a straight line segment, 
 with no point in that run deviating from the straight line by more than the tolerance. 
@@ -38,19 +38,19 @@ not Cartesian then append the distance unit (see UNITS).
 .sp
 To reduce the geographic line segment.d using a tolerance of 2 km, run 
 .sp
-    gmtdp segment.d -T2k > new_segment.d
+    gmtsimplify segment.d -T2k > new_segment.d
 .sp
 To reduce the Cartesian lines xylines.d using a tolerance of 0.45
 and write the reduced lines to file new_xylines.d, run 
 .sp
-    gmtdp xylines.d -T0.45 > new_xylines.d
+    gmtsimplify xylines.d -T0.45 > new_xylines.d
 .SH BUGS
 One known issue with the Douglas-Peucker has to do with crossovers.
 Specifically, it cannot be guaranteed that the reduced line does
 not cross itself.  Depending on how many lines you are considering
 it is also possible that reduced lines may intersect other reduced lines.
 Finally, the current implementation only does Flat Earth calculations even if
-you specify spherical; BD(gmtdp) will issue a warning and reset the
+you specify spherical; BD(gmtsimplify) will issue a warning and reset the
 calculation mode to Flat Earth.
 .SH REFERENCES
 Douglas, D. H., and T. K. Peucker, Algorithms for the reduction

@@ -9,12 +9,12 @@ l l .
 \fBgmt2kml\fP	
 \fBgmtconvert\fP	
 \fBgmtdefaults\fP	
-\fBgmtdp\fP	
 \fBgmtget\fP	
 \fBgmtmath\fP	
 \fBgmtread\fP	
 \fBgmtselect\fP	
 \fBgmtset\fP	
+\fBgmtsimplify\fP	
 \fBgmtspatial\fP	
 \fBgmtstitch\fP	
 \fBgmtvector\fP	

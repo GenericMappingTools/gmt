@@ -14,13 +14,13 @@ fitcircle	core	Find mean position and best-fitting great- or small-circle to poi
 gmt2kml	core	Convert GMT data tables to KML files for Google Earth
 gmtconvert	core	Convert, paste, or extract columns from data tables
 gmtdefaults	core	List current GMT default parameters
-gmtdp	core	Line reduction using the Douglas-Peucker algorithm
 gmtget	core	Get individual GMT default parameters
 gmtgravmag3d	potential	Compute the gravity/magnetic anomaly of a body by the method of Okabe
 gmtmath	core	Reverse Polish Notation (RPN) calculator for data tables
 gmtread	core	Read from file into memory location [API only]
 gmtselect	core	Select data table subsets based on multiple spatial criteria
 gmtset	core	Change individual GMT default parameters
+gmtsimplify	core	Line reduction using the Douglas-Peucker algorithm
 gmtspatial	core	Do geospatial operations on lines and polygons
 gmtstitch	core	Join individual lines whose end points match within tolerance
 gmtvector	core	Basic manipulation of Cartesian vectors
