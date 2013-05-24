@@ -4,26 +4,27 @@ pscoupe
 
 pscoupe - Plot cross-sections of focal mechanisms
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
 **pscoupe** [ *files* ] **-J**\ *parameters*
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] **-A**\ *parameters* [
-**-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-E**\ *fill* ] [
-**-F**\ *mode*\ [*args*] ] [
-**-G**\ *fill* ] [ **-K** ] [ **-L**\ *[pen]* ] [ **-M** ] [ **-N** ] [
-**-O** ] [ **-Q** ] [ **-S**\ *<symbol><scale>*\ [/**d**] ]
-[ **-T**\ *n* ] [ **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*\ ]
-] [ **-W**\ *pen* ] [
-**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-] [
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-] [ **-Z**\ *cpt* ] [ **-c**\ *copies*
-] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-:**\ [**i**\ \|\ **o**] ]
+|SYN_OPT-R| **-A**\ *parameters*
+[ |SYN_OPT-B| ] [ **-E**\ *fill* ]
+[ **-F**\ *mode*\ [*args*] ]
+[ **-G**\ *fill* ] [ **-K** ] [ **-L**\ *[pen]* ] [ **-M** ] [ **-N** ]
+[ **-O** ] [ **-Q** ]
+[ **-S**\ *<symbol><scale>*\ [/**d**] ]
+[ **-T**\ *n* ]
+[ |SYN_OPT-U| ] [ |SYN_OPT-V| ]
+[ **-W**\ *pen* ]
+[ |SYN_OPT-X| ]
+[ |SYN_OPT-Y| ]
+[ **-Z**\ *cpt* ] [ |SYN_OPT-c| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
@@ -60,146 +61,132 @@ defined in (-u^s, -u, s) system.
 .. include:: ../../explain_-Rgeo.rst_
 
 **-A**
+   selects the cross-section.
 
-selects the cross-section.
-
-**-Aa**\ *lon1/lat1/lon2/lat2/dip/p\_width/dmin/dmax*\ [**f**\ ]
-
-*lon* and *lat* are the longitude and latitude of points 1 and 2
-limiting the length of the cross-section. *dip* is the dip of the plane
-on which the cross-section is made. *p\_width* is the width of the
-cross-section on each side of a vertical plane or above and under an
-oblique plane. *dmin* and *dmax* are the distances min and max from
-horizontal plane, along steepest descent direction. Add **f** to get the
-frame from the cross-section parameters.
+**-Aa**\ *lon1/lat1/lon2/lat2/dip/p\_width/dmin/dmax*\ [**f**]
+   *lon* and *lat* are the longitude and latitude of points 1 and 2
+   limiting the length of the cross-section. *dip* is the dip of the plane
+   on which the cross-section is made. *p\_width* is the width of the
+   cross-section on each side of a vertical plane or above and under an
+   oblique plane. *dmin* and *dmax* are the distances min and max from
+   horizontal plane, along steepest descent direction. Add **f** to get the
+   frame from the cross-section parameters.
 
 **-Ab**\ *lon1/lat1/strike/p\_length/dip/p\_width/dmin/dmax*\ [**f**\ ]
-
-*lon1* and *lat1* are the longitude and latitude of the beginning of the
-cross-section. *strike* is the azimuth of the direction of the
-cross-section. *p\_length* is the length along which the cross-section
-is made. The other parameters are the same as for **-Aa** option.
+   *lon1* and *lat1* are the longitude and latitude of the beginning of the
+   cross-section. *strike* is the azimuth of the direction of the
+   cross-section. *p\_length* is the length along which the cross-section
+   is made. The other parameters are the same as for **-Aa** option.
 
 **-Ac**\ *x1/y1/x2/y2/dip/p\_width/dmin/dmax*\ [**f**\ ]
-
-The same as **-Aa** option with *x* and *y* cartesian coordinates.
+   The same as **-Aa** option with *x* and *y* cartesian coordinates.
 
 **-Ad**\ *x1/y1/strike/p\_length/dip/p\_width/dmin/dmax*\ [**f**\ ]
-
-The same as **-Ab** option with *x* and *y* cartesian coordinates.
+   The same as **-Ab** option with *x* and *y* cartesian coordinates.
 
 **-S**
-
-selects the meaning of the columns in the data file and the figure to be
-plotted.
+   selects the meaning of the columns in the data file and the figure to be plotted.
 
 **-Sa**\ *scale[/fontsize[/offset*\ [**u**\ ]]]
-
-Focal mechanisms in Aki and Richards convention. *scale* adjusts the
-scaling of the radius of the "beach ball", which will be proportional to
-the magnitude. The *scale* is the size for magnitude = 5 in
-**PROJ\_LENGTH\_UNIT** (unless **c**, **i**, **m**, or **p** is appended
-to indicate that the size information is in units of cm, inches, meters,
-or points, respectively). Use the **-T** option to render the beach ball
-transparent by drawing only the nodal planes and the circumference. The
-color or shade of the compressive quadrants can be specified with the
-**-G** option. The color or shade of the extensive quadrants can be
-specified with the **-E** option. Parameters are expected to be in the
-following columns:
+   Focal mechanisms in Aki and Richards convention. *scale* adjusts the
+   scaling of the radius of the "beach ball", which will be proportional to
+   the magnitude. The *scale* is the size for magnitude = 5 in
+   **PROJ_LENGTH_UNIT** (unless **c**, **i**, **m**, or **p** is appended
+   to indicate that the size information is in units of cm, inches, meters,
+   or points, respectively). Use the **-T** option to render the beach ball
+   transparent by drawing only the nodal planes and the circumference. The
+   color or shade of the compressive quadrants can be specified with the
+   **-G** option. The color or shade of the extensive quadrants can be
+   specified with the **-E** option. Parameters are expected to be in the
+   following columns:
 
     **1**,\ **2**:
-    longitude, latitude of event (**-:** option interchanges order)
+      longitude, latitude of event (**-:** option interchanges order)
     **3**:
-    depth of event in kilometers
+      depth of event in kilometers
     **4**,\ **5**,\ **6**:
-    strike, dip and rake
+      strike, dip and rake
     **7**:
-    magnitude
+      magnitude
     **8**,\ **9**:
-    not used; can be 0 0; allows use of the psmeca file format
+      not used; can be 0 0; allows use of the psmeca file format
     **10**:
-    text string to appear above the beach ball (default) or under (add
-    **u**).
+      text string to appear above the beach ball (default) or under (add **u**).
 
 **-Sc**\ *scale*
-
-Focal mechanisms in Harvard CMT convention. *scale* adjusts the scaling
-of the radius of the "beach ball", which will be proportional to the
-magnitude. The *scale* is the size for magnitude = 5 (that is M0 = 4E+23
-dynes-cm.) in **PROJ\_LENGTH\_UNIT** (unless **c**, **i**, **m**, or
-**p** is appended to indicate that the size information is in units of
-cm, inches, meters, or points, respectively). Use the **-T** option to
-render the beach ball transparent by drawing only the nodal planes and
-the circumference. The color or shade of the compressive quadrants can
-be specified with the **-G** option. The color or shade of the extensive
-quadrants can be specified with the **-E** option. Parameters are
-expected to be in the following columns:
+   Focal mechanisms in Harvard CMT convention. *scale* adjusts the scaling
+   of the radius of the "beach ball", which will be proportional to the
+   magnitude. The *scale* is the size for magnitude = 5 (that is M0 = 4E+23
+   dynes-cm.) in **PROJ_LENGTH_UNIT** (unless **c**, **i**, **m**, or
+   **p** is appended to indicate that the size information is in units of
+   cm, inches, meters, or points, respectively). Use the **-T** option to
+   render the beach ball transparent by drawing only the nodal planes and
+   the circumference. The color or shade of the compressive quadrants can
+   be specified with the **-G** option. The color or shade of the extensive
+   quadrants can be specified with the **-E** option. Parameters are
+   expected to be in the following columns:
 
     **1**,\ **2**:
-    longitude, latitude of event (**-:** option interchanges order)
+      longitude, latitude of event (**-:** option interchanges order)
     **3**:
-    depth of event in kilometers
+      depth of event in kilometers
     **4**,\ **5**,\ **6**:
-    strike, dip, and slip of plane 1
+      strike, dip, and slip of plane 1
     **7**,\ **8**,\ **9**:
-    strike, dip, and slip of plane 2
+      strike, dip, and slip of plane 2
     **10**,\ **11**:
-    mantissa and exponent of moment in dyne-cm (if magnitude is uses
-    instead of scalar moment, magnitude is in column 10 and 0 must be in
-    column 11)
+      mantissa and exponent of moment in dyne-cm (if magnitude is uses
+      instead of scalar moment, magnitude is in column 10 and 0 must be in column 11)
     **12**,\ **13**:
-    not used; can be 0 0; allows use of the psmeca file format
+      not used; can be 0 0; allows use of the psmeca file format
     **14**:
-    text string to appear above the beach ball (default) or under (add
-    **u**).
+      text string to appear above the beach ball (default) or under (add **u**).
 
-**-Sp**\ *scale[/fontsize[/offset*\ [**u**\ ]]]
-
-Focal mechanisms given with partial data on both planes. *scale* adjusts
-the scaling of the radius of the "beach ball", which will be
-proportional to the magnitude. The *scale* is the size for magnitude = 5
-in **PROJ\_LENGTH\_UNIT** (unless **c**, **i**, **m**, or **p** is
-appended to indicate that the size information is in units of cm,
-inches, meters, or points, respectively). The color or shade of the
-compressive quadrants can be specified with the **-G** option. The color
-or shade of the extensive quadrants can be specified with the **-E**
-option. Parameters are expected to be in the following columns:
+**-Sp**\ *scale[/fontsize[/offset*\ [**u**]]]
+   Focal mechanisms given with partial data on both planes. *scale* adjusts
+   the scaling of the radius of the "beach ball", which will be
+   proportional to the magnitude. The *scale* is the size for magnitude = 5
+   in **PROJ_LENGTH_UNIT** (unless **c**, **i**, **m**, or **p** is
+   appended to indicate that the size information is in units of cm,
+   inches, meters, or points, respectively). The color or shade of the
+   compressive quadrants can be specified with the **-G** option. The color
+   or shade of the extensive quadrants can be specified with the **-E**
+   option. Parameters are expected to be in the following columns:
 
     **1**,\ **2**:
-    longitude, latitude of event (**-:** option interchanges order)
+      longitude, latitude of event (**-:** option interchanges order)
     **3**:
-    depth
+      depth
     **4**,\ **5**:
-    strike, dip of plane 1
+      strike, dip of plane 1
     **6**:
-    strike of plane 2
+      strike of plane 2
     **7**:
-    must be -1/+1 for a normal/inverse fault
+      must be -1/+1 for a normal/inverse fault
     **8**:
-    magnitude
+      magnitude
     **9**,\ **10**:
-    not used; can be 0 0; allows use of the psmeca file format
+      not used; can be 0 0; allows use of the psmeca file format
     **11**:
-    text string to appear above the beach ball (default) or under (add
-    **u**).
+      text string to appear above the beach ball (default) or under (add **u**).
 
-**-Sm\|d\|z**\ *scale[/fontsize[/offset*\ [**u**\ ]]]
-
-Seismic moment tensor (Harvard CMT, with zero trace). *scale* adjusts
-the scaling of the radius of the "beach ball", which will be
-proportional to the magnitude. The *scale* is the size for magnitude = 5
-(that is seismic scalar moment = 4E+23 dynes-cm) in
-**PROJ\_LENGTH\_UNIT** (unless **c**, **i**, **m**, or **p** is appended
-to indicate that the size information is in units of cm, inches, meters,
-or points, respectively). (**-T**\ *0* option overlays best double
-couple transparently.) Put
-**-Sd**\ *scale[/fontsize[/offset*\ [**u**\ ]]] to plot the only double
-couple part of moment tensor. Put
-**-Sz**\ *scale[/fontsize[/offset*\ [**u**\ ]]] to plot anisotropic part
-of moment tensor (zero trace). The color or shade of the compressive
-quadrants can be specified with the **-G** option. The color or shade of
-the extensive quadrants can be specified with the **-E** option.
-Parameters are expected to be in the following columns:
+**-Sm\|d\|z**\ *scale[/fontsize[/offset*\ [**u**]]]
+   Seismic moment tensor (Harvard CMT, with zero trace). *scale* adjusts
+   the scaling of the radius of the "beach ball", which will be
+   proportional to the magnitude. The *scale* is the size for magnitude = 5
+   (that is seismic scalar moment = 4E+23 dynes-cm) in
+   **PROJ_LENGTH_UNIT** (unless **c**, **i**, **m**, or **p** is appended
+   to indicate that the size information is in units of cm, inches, meters,
+   or points, respectively). (**-T**\ *0* option overlays best double
+   couple transparently.)
+**-Sd**\ *scale[/fontsize[/offset*\ [**u**]]]
+   to plot the only double couple part of moment tensor.
+**-Sz**\ *scale[/fontsize[/offset*\ [**u**]]]
+   to plot anisotropic part
+   of moment tensor (zero trace). The color or shade of the compressive
+   quadrants can be specified with the **-G** option. The color or shade of
+   the extensive quadrants can be specified with the **-E** option.
+   Parameters are expected to be in the following columns:
 
     **1**,\ **2**:
        longitude, latitude of event (**-:** option interchanges order)
@@ -214,88 +201,88 @@ Parameters are expected to be in the following columns:
     **13**:
        Text string to appear above the beach ball (default) or under (add **u**).
 
-**-Sx**\ *scale[/fontsize[/offset*\ [**u**\ ]]]
-
-Principal axis. *scale* adjusts the scaling of the radius of the "beach
-ball", which will be proportional to the magnitude. The *scale* is the
-size for magnitude = 5 (that is seismic scalar moment = 4\*10e+23
-dynes-cm) in **PROJ\_LENGTH\_UNIT** (unless **c**, **i**, **m**, or
-**p** is appended to indicate that the size information is in units of
-cm, inches, meters, or points, respectively). (**-T0** option overlays
-best double couple transparently.) Put
-**-Sy**\ *scale[/fontsize[/offset*\ [**u**\ ]]] to plot the only double
-couple part of moment tensor. Put
-**-St**\ *scale[/fontsize[/offset*\ [**u**\ ]]] to plot anisotropic part
-of moment tensor (zero trace). The color or shade of the compressive
-quadrants can be specified with the **-G** option. The color or shade of
-the extensive quadrants can be specified with the **-E** option.
-Parameters are expected to be in the following columns:
+**-Sx**\ *scale[/fontsize[/offset*\ [**u**]]]
+   Principal axis. *scale* adjusts the scaling of the radius of the "beach
+   ball", which will be proportional to the magnitude. The *scale* is the
+   size for magnitude = 5 (that is seismic scalar moment = 4\*10e+23
+   dynes-cm) in **PROJ\_LENGTH\_UNIT** (unless **c**, **i**, **m**, or
+   **p** is appended to indicate that the size information is in units of
+   cm, inches, meters, or points, respectively). (**-T0** option overlays
+   best double couple transparently.)
+**-Sy**\ *scale[/fontsize[/offset*\ [**u**]]]
+   to plot the only double couple part of moment tensor.
+**-St**\ *scale[/fontsize[/offset*\ [**u**]]]
+   to plot anisotropic part
+   of moment tensor (zero trace). The color or shade of the compressive
+   quadrants can be specified with the **-G** option. The color or shade of
+   the extensive quadrants can be specified with the **-E** option.
+   Parameters are expected to be in the following columns:
 
     **1**,\ **2**:
-    longitude, latitude of event (**-:** option interchanges order)
+      longitude, latitude of event (**-:** option interchanges order)
     **3**:
-    depth of event in kilometers
+      depth of event in kilometers
     **4**,\ **5**,\ **6**,\ **7**,\ **8**,\ **9**,\ **10**,\ **11**,\ **12**:
-    value (in 10\*exponent dynes-cm), azimuth, plunge of the T, N, and P
-    axes.
+      value (in 10\*exponent dynes-cm), azimuth, plunge of the T, N, and P axes.
     **13**:
-    exponent
+      exponent
     **14**,\ **15**:
-    longitude, latitude at which to place beach ball. Entries in these
-    columns are necessary with the **-C** option. Using 0,0 in columns 9
-    and 10 will plot the beach ball at the longitude, latitude given in
-    columns 1 and 2. The **-:** option will interchange the order of
-    columns (1,2) and (9,10).
+      longitude, latitude at which to place beach ball. Entries in these
+      columns are necessary with the **-C** option. Using 0,0 in columns 9
+      and 10 will plot the beach ball at the longitude, latitude given in
+      columns 1 and 2. The **-:** option will interchange the order of
+      columns (1,2) and (9,10).
     **16**:
-    Text string to appear above the beach ball (optional).
+      Text string to appear above the beach ball (optional).
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. include:: ../../explain_-B.rst_
 
 **-E**\ *fill*
-    Sets color or fill pattern for extensive quadrants [Default is
-    white].
+    Sets color or fill pattern for extensive quadrants [Default is white].
+
 **-F**\ *mode*\ [*args*]
     Sets one or more attributes; repeatable. The various combinations are
 
-**-Fs**\ *symbol[size[/fontsize[/offset*\ [**u**\ ]]]
-
-selects a symbol instead of mechanism. Choose from the following:
-(**c**) circle, (**d**) diamond, (**i**) itriangle, (**s**) square,
-(**t**) triangle, (**x**) cross. *size* is the symbol size in
-**PROJ\_LENGTH\_UNIT** (unless **c**, **i**, **m**, or **p** is appended
-to indicate that the size information is in units of cm, inches, meters,
-or points, respectively). If *size* must be read, it must be in column 4
-and the text string will start in column 5. Parameters are expected to
-be in the following columns:
+**-Fs**\ *symbol[size[/fontsize[/offset*\ [**u**]]]
+   selects a symbol instead of mechanism. Choose from the following:
+   (**c**) circle, (**d**) diamond, (**i**) itriangle, (**s**) square,
+   (**t**) triangle, (**x**) cross. *size* is the symbol size in
+   **PROJ_LENGTH_UNIT** (unless **c**, **i**, **m**, or **p** is appended
+   to indicate that the size information is in units of cm, inches, meters,
+   or points, respectively). If *size* must be read, it must be in column 4
+   and the text string will start in column 5. Parameters are expected to
+   be in the following columns:
 
     **1**,\ **2**:
-    longitude, latitude of event (**-:** option interchanges order)
+      longitude, latitude of event (**-:** option interchanges order)
     **3**:
-    depth of event in kilometers
+      depth of event in kilometers
     **4**:
-    Text string to appear above the beach ball (default) or under (add
-    **u**).
-**-Fa**\ [*size*\ ][/\ *P\_symbol*\ [*T\_symbol*\ ]]
+      Text string to appear above the beach ball (default) or under (add **u**).
+
+**-Fa**\ [*size*][/\ *P\_symbol*\ [/\ *T\_symbol*]]
     Computes and plots P and T axes with symbols. Optionally specify
     *size* and (separate) P and T axis symbols from the following:
     (**c**) circle, (**d**) diamond, (**h**) hexagon, (**i**) inverse
     triangle, (**p**) point, (**s**) square, (**t**) triangle, (**x**)
     cross. [Default: 6\ **p**/**cc**]
+
 **-Fe**\ *fill*
-    Sets the color or fill pattern for the T axis symbol. [Default as
-    set by **-E**]
+    Sets the color or fill pattern for the T axis symbol. [Default as set by **-E**]
+
 **-Fg**\ *fill*
-    Sets the color or fill pattern for the P axis symbol. [Default as
-    set by **-G**]
-**-Fp**\ [*pen*\ ]
-    Draws the P axis outline using current pen (see **-W**), or sets pen
-    attributes.
-**-Fr**\ [*fill*\ ]
+    Sets the color or fill pattern for the P axis symbol. [Default as set by **-G**]
+
+**-Fp**\ [*pen*]
+    Draws the P axis outline using current pen (see **-W**), or sets pen attributes.
+
+**-Fr**\ [*fill*]
     Draw a box behind the label (if any). [Default fill is white]
-**-Ft**\ [*pen*\ ]
+
+**-Ft**\ [*pen*]
     Draws the T axis outline using current pen (see **-W**), or sets pen attributes.
 
 **-G**\ *fill*
@@ -303,7 +290,7 @@ be in the following columns:
 
 .. include:: ../../explain_-K.rst_
 
-**-L**\ [*pen*\ ]
+**-L**\ [*pen*]
     Draws the "beach ball" outline using current pen (see **-W**) or
     sets pen attributes.
 **-M**
@@ -316,11 +303,11 @@ be in the following columns:
 .. include:: ../../explain_-P.rst_
 
 **-Q**
-    Suppress the production of files with cross-section and mechanism
-    information.
-**-T**\ [*num\_of\_planes*\ ]
+    Suppress the production of files with cross-section and mechanism information.
+
+**-T**\ [*num_of_planes*]
     Plots the nodal planes and outlines the bubble which is transparent.
-    If *num\_of\_planes* is
+    If *num_of_planes* is
     *0*: both nodal planes are plotted;
     *1*: only the first nodal plane is plotted;
     *2*: only the second nodal plane is plotted
@@ -351,14 +338,14 @@ be in the following columns:
 
 .. include:: ../../explain_help.rst_
 
-`See Also <#toc6>`_
--------------------
+See Also
+--------
 
 `GMT <GMT.html>`_, `psbasemap <psbasemap.html>`_,
 `psmeca <psmeca.html>`_, `psxy <psxy.html>`_
 
-`References <#toc7>`_
----------------------
+References
+----------
 
 Bomford, G., Geodesy, 4th ed., Oxford University Press, 1980.
 
@@ -376,8 +363,8 @@ Thorne Lay, Terry C. Wallace, Modern Global Seismology, Academic Press, 1995, p.
 W.H. Press, S.A. Teukolsky, W.T. Vetterling, B.P. Flannery, Numerical
 Recipes in C, Cambridge University press (routine jacobi)
 
-`Author <#toc8>`_
------------------
+Author
+------
 
 Genevieve Patau CNRS UMR 7580 Seismology Dept. Institut de Physique du
 Globe de Paris (patau@ipgp.jussieu.fr)

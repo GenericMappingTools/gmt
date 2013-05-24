@@ -114,7 +114,8 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	unsigned int n_items = 1, pos = 0, kk, tbl = 0;
 	unsigned short int *dx = NULL, *dy = NULL;
 	bool done, found = false, want_state, outline = (F->mode & 4), fill = (F->mode & 8);
-	char TAG[GMT_TEXT_LEN16], dim[GMT_TEXT_LEN16], xname[GMT_TEXT_LEN16], yname[GMT_TEXT_LEN16], code[GMT_TEXT_LEN16], state[GMT_TEXT_LEN16], file[GMT_TEXT_LEN16], msg[GMT_BUFSIZ], path[GMT_BUFSIZ];
+	char TAG[GMT_TEXT_LEN16], dim[GMT_TEXT_LEN16], xname[GMT_TEXT_LEN16], yname[GMT_TEXT_LEN16], code[GMT_TEXT_LEN16];
+	char state[GMT_TEXT_LEN16], file[GMT_TEXT_LEN16], msg[GMT_BUFSIZ], segment[GMT_TEXT_LEN32], path[GMT_BUFSIZ];
 	double west, east, south, north, xscl, yscl, out[2], *lon = NULL, *lat = NULL;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *P = NULL, *S = NULL;
@@ -185,6 +186,9 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	/* Get global attributes */
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
 		char version[GMT_TEXT_LEN16], source[GMT_TEXT_LEN256], title[GMT_TEXT_LEN256];
+		GMT_memset (version, GMT_TEXT_LEN16, char);
+		GMT_memset (source, GMT_TEXT_LEN256, char);
+		GMT_memset (title, GMT_TEXT_LEN256, char);
 		retval = nc_get_att_text (ncid, NC_GLOBAL, "version", version);
 		retval = nc_get_att_text (ncid, NC_GLOBAL, "title", title);
 		retval = nc_get_att_text (ncid, NC_GLOBAL, "source", source);
@@ -214,19 +218,16 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 				continue;
 			}
 			sprintf (TAG, "%s%s", GMT_DCW_country[k].code, GMT_DCW_states[j].code);
+			sprintf (msg, "Extract data for %s (%s)\n", GMT_DCW_states[j].name, GMT_DCW_country[k].name);
 		}
-		else
+		else {
 			sprintf (TAG, "%s", GMT_DCW_country[k].code);
-
-		if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE) || mode == 2) {
-			if (want_state)
-				sprintf (msg, "Extract data for %s (%s)\n", GMT_DCW_states[j].name, GMT_DCW_country[k].name);
-			else
-				sprintf (msg, "Extract data for %s\n", GMT_DCW_country[k].name);
-			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, msg);
-			k = strlen (msg) - 1;
-			msg[k] = '\0';
+			sprintf (msg, "Extract data for %s\n", GMT_DCW_country[k].name);
 		}
+
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, msg);
+		k = strlen (msg) - 1;
+		msg[k] = '\0';	/* Remove the newline for use as segment header */
 
 		/* Open and read the netCDF file */
 
@@ -296,13 +297,16 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			P->coord[GMT_X] = &lon[first];
 			P->coord[GMT_Y] = &lat[first];
 			if (mode & GMT_DCW_DUMP) {	/* Dump the coordinates to stdout */
+				sprintf (segment, " Segment %" PRIu64, seg);
 				strcpy (GMT->current.io.segment_header, msg);
+				strcat (GMT->current.io.segment_header, segment);
 				GMT_Put_Record (GMT->parent, GMT_WRITE_SEGMENT_HEADER, NULL);
 				for (kk = 0; kk < P->n_rows; kk++) {
 					out[GMT_X] = P->coord[GMT_X][kk];
 					out[GMT_Y] = P->coord[GMT_Y][kk];
 					GMT_Put_Record (GMT->parent, GMT_WRITE_DOUBLE, out);
 				}
+				seg++;
 			}
 			else if (mode & GMT_DCW_EXTRACT) {	/* Attach to dataset */
 				S = D->table[tbl]->segment[seg];
@@ -358,7 +362,6 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		P->coord[GMT_X] = P->coord[GMT_Y] = NULL;
 		GMT_free_segment (GMT, P);
 	}
-	free ((void *)F->codes);
 	return (D);
 }
 
@@ -408,9 +411,9 @@ unsigned int GMT_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 
 	if ((a = strchr (args, '+'))) a[0] = '\0';	/* Temporarily chop off modifiers */
 	F->codes = strdup (args);
-	a[0] = '+';	/* Reset modifiers */
+	if (a) a[0] = '+';	/* Reset modifiers */
 
-	if ((c = strchr (a, '+'))) {	/* Handle modifiers */
+	if (a && (c = strchr (a, '+'))) {	/* Handle modifiers */
 		while ((GMT_strtok (c, "+", &pos, p))) {
 			switch (p[0]) {
 				/* Listings*/

@@ -1908,8 +1908,25 @@ different journals or simply reflecting font changes necessary to make
 readable overheads and slides. Note that any arguments given on the
 command line (see below) will take precedent over the default values.
 E.g., if your ``gmt.conf`` file has *x* offset = 1\ **i** as default, the
-**-X**\ 1.5\ **i** option will override the default and set the offset
-to 1.5 inches.
+**-X**\ 1.5\ **i** option will override the default and set the offset to 1.5 inches.
+
+.. figure:: _images/GMT_Defaults_1a.png
+       :align: center
+
+       Some *GMT* parameters that affect plot appearance.
+
+.. figure:: _images/GMT_Defaults_1b.png
+       :align: center
+       :height: 599 px
+       :width: 1013 px
+       :scale: 75 %
+
+       Figure: More *GMT* parameters that affect plot appearance.
+
+.. figure:: _images/GMT_Defaults_1c.png
+       :align: center
+
+       Even more *GMT* parameters that affect plot appearance.
 
 There are at least two good reasons why the *GMT* default options are
 placed in a separate parameter file:
@@ -2082,6 +2099,12 @@ may be specified in one of three ways (Figure ):
    possibly the grid registration (see
    Section [sec:grid\ :sub:`r`\ egistration]).
 
+.. figure:: _images/GMT_-R.png
+       :align: center
+
+       The plot region can be specified in two different ways. (a) Extreme values
+       for each dimension, or (b) coordinates of lower left and upper right corners.
+
 For rectilinear projections the first two forms give identical results.
 Depending on the selected map projection (or the kind of expected input
 data), the boundary coordinates may take on several different formats:
@@ -2206,6 +2229,11 @@ on all *GMT* projections and the required parameters, see the
 `psbasemap <psbasemap.html>`_ man page. We will also
 show examples of every projection in the next Chapters, and a quick
 summary of projection syntax was given in Chapter [ch:3].
+
+.. figure:: _images/GMT_-J.png
+       :align: center
+
+       The 30+ map projections and coordinate transformations available in *GMT*.
 
 Map frame and axes annotations: The **-B** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2342,7 +2370,7 @@ and arc seconds, respectively, when a map projection is in effect.
 +------------+------------------+----------------------------------------------------------------------------+
 | **d**      | day              | Plot day of month (1-31) or day of year (1-366)                            |
 +------------+------------------+----------------------------------------------------------------------------+
-|            |                  | (see **FORMAT\_DATE\_MAP**                                                 |
+|            |                  | (see **FORMAT_DATE_MAP**                                                   |
 +------------+------------------+----------------------------------------------------------------------------+
 | **R**      | day              | Same as **d**; annotations aligned with week (see **TIME\_WEEK\_START**)   |
 +------------+------------------+----------------------------------------------------------------------------+
@@ -2380,12 +2408,24 @@ according to the **FORMAT_GEO_MAP** template and
 **MAP_DEGREE_SYMBOL** setting. A simple example of part of a basemap
 is shown in Figure .
 
+.. figure:: _images/GMT_-B_geo_1.png
+       :align: center
+
+       Geographic map border using separate selections for annotation,
+       frame, and grid intervals.  Formatting of the annotation is controlled by
+       the parameter **FORMAT_GEO_MAP** in your ``gmt.conf``.
+
 The machinery for primary and secondary annotations introduced for
 time-series axes can also be utilized for geographic basemaps. This may
 be used to separate degree annotations from minutes- and
 seconds-annotations. For a more complicated basemap example using
 several sets of intervals, including different intervals and pen
 attributes for grid lines and grid crosses, see Figure .
+
+.. figure:: _images/GMT_-B_geo_2.png
+       :align: center
+
+       Geographic map border with both primary (P) and secondary (S) components.
 
 Cartesian linear axes
 ^^^^^^^^^^^^^^^^^^^^^
@@ -2402,6 +2442,13 @@ used directly (.e.g, "%.2f" for a fixed, two decimals format). Note that
 for these axes you may use the *unit* setting to add a unit string to
 each annotation (see Figure ).
 
+.. figure:: _images/GMT_-B_linear.png
+       :align: center
+
+       Linear Cartesian projection axis.  Long tickmarks accompany
+       annotations, shorter ticks indicate frame interval.  The axis label is
+       optional. For this example we used -R0/12/0/1 -JX3i/0.4i -Ba4f2g1:Frequency:
+
 Cartesian log\ :sub:`10` axes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -2416,11 +2463,23 @@ specific to log axes:
 
 #. Append **l** to *stride*. Then, log\ :sub:`10` of the annotation
    is plotted at every integer log\ :sub:`10` value (e.g.,
-   *x = 100* will be annotated as "2") [Default annotates
-   *x* as is].
+   *x = 100* will be annotated as "2") [Default annotates *x* as is].
 
 #. Append **p** to *stride*. Then, annotations appear as 10 raised to
    log\ :sub:`10` of the value (e.g., 10\ :sup:`-5`).
+
+.. figure:: _images/GMT_-B_log.png
+       :align: center
+
+       Logarithmic projection axis using separate values for annotation,
+       frame, and grid intervals.  (top) Here, we have chosen to annotate the actual
+       values.  Interval = 1 means every whole power of 10, 2 means 1, 2, 5 times
+       powers of 10, and 3 means every 0.1 times powers of 10.  We used
+       -R1/1000/0/1 -JX3il/0.4i -Ba1f2g3.
+       (middle) Here, we have chosen to
+       annotate log :math:`_10` of the actual values, with -Ba1f2g3l.
+       (bottom) We annotate every power of 10 using log :math:`_10` of the actual values
+       as exponents, with -Ba1f2g3p.
 
 Cartesian exponential axes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -2433,6 +2492,15 @@ annotation interval is expected to be in transformed units, yet the
 annotation itself will be plotted as un-transformed units. E.g., if
 *stride* = 1 and power = 0.5 (i.e., sqrt), then equidistant annotations
 labeled 1, 4, 9, ... will appear.
+
+.. figure:: _images/GMT_-B_pow.png
+       :align: center
+
+       Exponential or power projection axis.  (top) Using an exponent of 0.5
+       yields a :math:`sqrt(x)` axis.  Here, intervals refer to actual data values, in
+       -R0/100/0/1 -JX3ip0.5/0.4i -Ba20f10g5.
+       (bottom) Here, intervals refer to projected values, although the annotation
+       uses the corresponding unprojected values, as in -Ba3f2g1p.
 
 Cartesian time axes
 ^^^^^^^^^^^^^^^^^^^
@@ -2458,8 +2526,12 @@ These commands result in Figure . Note the leading hyphen in the
 **FORMAT_DATE_MAP** removes leading zeros from calendar items (e.g.,
 02 becomes 2).
 
-The next example shows two different ways to annotate an axis portraying
-2 days in July 1969:
+.. figure:: _images/GMT_-B_time1.png
+       :align: center
+
+       Cartesian time axis, example 1.
+
+The next example shows two different ways to annotate an axis portraying 2 days in July 1969:
 
    ::
 
@@ -2472,6 +2544,12 @@ specifying **a**\ 1\ **K**) while the upper example choses dates (by
 specifying **a**\ 1\ **D**). Note how the clock format only selects
 hours and minutes (no seconds) and the date format selects a month name,
 followed by one space and a two-digit day-of-month number.
+
+.. figure:: _images/GMT_-B_time2.png
+       :align: center
+
+       Cartesian time axis, example 2.
+
 
 The third example presents two years, annotating both the years and every 3rd month.
 
@@ -2487,6 +2565,11 @@ only and **FORMAT_TIME_PRIMARY_MAP** selects the 1-character, upper
 case abbreviation of month names using the current language (selected by
 **TIME_LANGUAGE**).
 
+.. figure:: _images/GMT_-B_time3.png
+       :align: center
+
+       Cartesian time axis, example 3.
+
 The fourth example (Figure ) only shows a few hours of a day, using
 relative time by specifying **t** in the **-R** option while the
 **TIME_UNIT** is **d** (for days). We select both primary and secondary
@@ -2497,6 +2580,11 @@ left:
 
      gmtset FORMAT_CLOCK_MAP=-hham FONT_ANNOT_PRIMARY +9p
      psbasemap -R0.2t/0.35t/0/1 -JX-5i/0.2i -Bpa15mf5m -Bsa1H -BS -P > GMT_-B_time4.ps 
+
+.. figure:: _images/GMT_-B_time4.png
+       :align: center
+
+       Cartesian time axis, example 4.
 
 The fifth example shows a few weeks of time (Figure ). The lower axis
 shows ISO weeks with week numbers and abbreviated names of the weekdays.
@@ -2511,6 +2599,11 @@ The upper uses Gregorian weeks (which start at the day chosen by
     gmtset FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_TIME_SECONDARY_MAP Chararacter
     psbasemap -R -J -Bpa3Kf1k -Bsa1r -BS -O -Y0.65i >> GMT_-B_time5.ps 
 
+.. figure:: _images/GMT_-B_time5.png
+       :align: center
+
+       Cartesian time axis, example 5.
+
 Our sixth example shows the first five months of 1996, and we have
 annotated each month with an abbreviated, upper case name and 2-digit
 year. Only the primary axes information is specified.
@@ -2519,6 +2612,11 @@ year. Only the primary axes information is specified.
 
     gmtset FORMAT_DATE_MAP "o yy" FORMAT_TIME_PRIMARY_MAP Abbreviated
     psbasemap -R1996T/1996-6T/0/1 -JX5i/0.2i -Ba1Of1d -BS -P > GMT_-B_time6.ps 
+
+.. figure:: _images/GMT_-B_time6.png
+       :align: center
+
+       Cartesian time axis, example 6.
 
 Our seventh and final example illustrates annotation of year-days.
 Unless we specify the formatting with a leading hyphen in
@@ -2531,6 +2629,12 @@ least half of a full interval.
 
     gmtset FORMAT_DATE_MAP jjj TIME_INTERVAL_FRACTION 0.05 FONT_ANNOT_PRIMARY +9p
     psbasemap -R2000-12-15T/2001-1-15T/0/1 -JX5i/0.2i -Bpa5Df1d -Bsa1Y -BS -P > GMT_-B_time7.ps
+
+.. figure:: _images/GMT_-B_time7.png
+       :align: center
+
+       Cartesian time axis, example 7.
+
 
 Custom axes
 ^^^^^^^^^^^
@@ -2580,6 +2684,11 @@ annotations on the *x*-axis and irregular annotations on the *y*-axis.
               --MAP_ANNOT_OFFSET_SECONDARY=10p --MAP_GRID_PEN_SECONDARY=2p >> GMT_-B_custom.ps
     rm -f [xy]annots.txt
 
+.. figure:: _images/GMT_-B_custom.png
+       :align: center
+
+       Custom and irregular annotations, tick-marks, and gridlines.
+
 Portrait plot orientation: The **-P** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -2596,6 +2705,11 @@ rotating the coordinate system counterclockwise by 90. By default the
 **PS_MEDIA** is set to Letter (or A4 if SI is chosen); this value must
 be changed when using different media, such as 11" x 17" or large format
 plotters (Figure ).
+
+.. figure:: _images/GMT_-P.png
+       :align: center
+
+       Users can specify Landscape [Default] or Portrait -P) orientation.
 
 Plot overlays: The **-K** **-O** options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2615,12 +2729,22 @@ traced to the incorrect use of these options. If you run only one plot
 program, ignore both the **-O** and **-K** options; they are only used
 when stacking plots.
 
+.. figure:: _images/GMT_-OK.png
+       :align: center
+
+       A final **PS** file consists of any number of individual pieces.
+
 Timestamps on plots: The **-U** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The **-U** option draws *UNIX* System time stamp. Optionally, append an
 arbitrary text string (surrounded by double quotes), or the code **c**,
 which will plot the current command string (Figure ).
+
+.. figure:: _images/GMT_-U.png
+       :align: center
+
+       The -U option makes it easy to ``date`` a plot.
 
 Verbose feedback: The **-V** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2651,6 +2775,11 @@ with the previous plot unless the origin is shifted using these options.
 The offsets are measured in the current coordinates system (which can be
 rotated using the initial **-P** option; subsequent **-P** options for
 overlays are ignored).
+
+.. figure:: _images/GMT_-XY.png
+       :align: center
+
+       Plot origin can be translated freely with -X -Y.
 
 OGR/GMT GIS i/o: The **-a** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2941,6 +3070,12 @@ between grid lines, and the data points represent the average values
 within each cell (Figure [fig:GMT:sub:`r`\ egistration]). In the case of
 pixel registration the number of nodes are related to region and grid
 spacing by
+
+.. figure:: _images/GMT_registration.png
+       :align: center
+
+       Gridline- and pixel-registration of data nodes.
+
 
 .. math::
 
@@ -3332,8 +3467,12 @@ created circular dotted lines, and by manipulating the phase shift in
 the *style* attribute and plotting the same line twice one can even
 alternate the color of adjacent items.
 Figure [fig:GMT\ :sub:`l`\ inecap] shows various lines made in this
-fashion. See the `gmt.conf <gmt.conf.html>`_ man page
-for more information.
+fashion. See the `gmt.conf <gmt.conf.html>`_ man page for more information.
+
+.. figure:: _images/GMT_linecap.png
+       :align: center
+
+       Line appearance can be varied by using **PS_LINE_CAP**
 
 Specifying area fill attributes
 -------------------------------
@@ -4380,6 +4519,12 @@ of data:
 #. Geographic coordinates
 
 #. Calendar time coordinates
+
+.. figure:: _images/GMT_arrows.png
+       :align: center
+
+       Examples of Cartesian (left), circular (middle), and geo-vectors (right) for different
+       attribute specifications. Note that both full and half arrow-heads can be specified, as well as no head at all.
 
 Regular floating point coordinates
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

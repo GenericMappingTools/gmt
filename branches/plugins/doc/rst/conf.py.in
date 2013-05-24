@@ -40,8 +40,9 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
+gmt_team = u'P. Wessel, W. H. F. Smith, R. Scharroo, J. Luis and F. Wobbe'
 project = u'GMT5'
-copyright = u'@GMT_VERSION_YEAR@, GMT_TEAM'
+copyright = u' '.join(['@GMT_VERSION_YEAR@,', gmt_team])
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -210,11 +211,10 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [
-    ('index', 'gmt5', u'GMT5 Documentation',
-     [u'GMT_TEAM'], 1)
-]
-
+#man_pages = [
+#    ('index', 'gmt5', u'GMT5 Documentation',
+#     [u'GMT_TEAM'], 1)
+#]
 
 # The following comes after the help in a sphinx forum
 # https://groups.google.com/forum/#!topic/sphinx-users/AT3JOKN02C8
@@ -224,10 +224,10 @@ man_pages = [
 # 'list.rst' and others of the same kind used create the toctree.
 
 man_pages = []
-for dirpath, dirnames, filenames in os.walk('.'):
+for dirpath, dirnames, filenames in os.walk('@CMAKE_CURRENT_SOURCE_DIR@'):
     for f in filenames:
         if f.endswith('.rst'):
-            srcfile = os.path.normpath(os.path.join(dirpath, f[:-4]))
+            srcfile = os.path.relpath(os.path.join(dirpath, f[:-4]), '@CMAKE_CURRENT_SOURCE_DIR@/source')
             outfile = srcfile.replace(os.sep, '-')
             outfile = outfile.replace('supplements-', '')
             outfile = outfile.replace('dbase-', '')
@@ -244,16 +244,18 @@ for dirpath, dirnames, filenames in os.walk('.'):
             man_pages.append((srcfile,
                               outfile,
                               'description of %s' % outfile,
-                             'A. Author', 1))
+                              gmt_team, 1))
 
+# check content of man_pages:
+# sys.stderr.write (', '.join(str(d) for d in man_pages))
 
 # -- Options for Epub output ---------------------------------------------------
 
 # Bibliographic Dublin Core info.
 epub_title = u'GMT5'
-epub_author = u'GMT_TEAM'
-epub_publisher = u'GMT_TEAM'
-epub_copyright = u'2012, GMT_TEAM'
+epub_author = gmt_team
+epub_publisher = gmt_team
+epub_copyright = copyright
 
 # The language of the text. It defaults to the language option
 # or en if the language is not set.
@@ -285,9 +287,4 @@ epub_copyright = u'2012, GMT_TEAM'
 
 # Allow duplicate toc entries.
 #epub_tocdup = True
-
-
-#figure_path = '_img2'
-#rst_epilog = '.. |figure_path| replace:: %s' % figure_path
-rst_epilog = '.. |figure_path| replace:: _img2'
 
