@@ -1,6 +1,6 @@
-****************
+**************
 sphtriangulate
-****************
+**************
 
 sphtriangulate - Delaunay or Voronoi construction of spherical lon,lat
 data

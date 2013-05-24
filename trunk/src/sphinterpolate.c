@@ -36,7 +36,7 @@
 #define THIS_MODULE GMT_ID_SPHINTERPOLATE /* I am sphinterpolate */
 
 #include "gmt_dev.h"
-#include "sph.h"
+#include "gmt_sph.h"
 
 #define GMT_PROG_OPTIONS "-:RVbhirs" GMT_OPT("F")
 
