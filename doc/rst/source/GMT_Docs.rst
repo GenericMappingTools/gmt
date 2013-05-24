@@ -272,7 +272,7 @@ promoted from earlier supplements:
     : A `psxy <psxy.html>`_ -like tool to produce KML
     overlays for Google Earth.
 
-`gmtdp <gmtdp.html>`_
+`gmtsimplify <gmtsimplify.html>`_
     : A line-reduction tool for coastlines and similar lines.
 
 `gmtstitch <gmtstitch.html>`_
@@ -1194,8 +1194,6 @@ listing sorted by program purpose, see Section [sec:purpose].
 +-----------------------------------------------------+---------------------------------------------------------------------+
 |  **gmtdefaults** `(...) <gmtdefaults.html>`__       | List the current default settings                                   |
 +-----------------------------------------------------+---------------------------------------------------------------------+
-|  **gmtdp** `(...) <gmtdp.html>`__                   | Line reduction using the Douglas-Peucker algorithm                  |
-+-----------------------------------------------------+---------------------------------------------------------------------+
 |  **gmtget** `(...) <gmtget.html>`__                 | Retrieve selected parameters in current ``gmt.conf`` file           |
 +-----------------------------------------------------+---------------------------------------------------------------------+
 |  **gmtmath** `(...) <gmtmath.html>`__               | Mathematical operations on table data                               |
@@ -1203,6 +1201,8 @@ listing sorted by program purpose, see Section [sec:purpose].
 |  **gmtselect** `(...) <gmtselect.html>`__           | Select subsets of table data based on multiple spatial criteria     |
 +-----------------------------------------------------+---------------------------------------------------------------------+
 |  **gmtset** `(...) <gmtset.html>`__                 | Change selected parameters in current ``gmt.conf`` file             |
++-----------------------------------------------------+---------------------------------------------------------------------+
+|  **gmtsimplify** `(...) <gmtsimplify.html>`__       | Line reduction using the Douglas-Peucker algorithm                  |
 +-----------------------------------------------------+---------------------------------------------------------------------+
 |  **gmtspatial** `(...) <gmtspatial.html>`__         | Geospatial operations on lines and polygons                         |
 +-----------------------------------------------------+---------------------------------------------------------------------+
@@ -1412,6 +1412,8 @@ summary of the standard command line options and a breakdown of the
 +-----------------------------------------------------+---------------------------------------------------------------------+
 |                                                     | **SAMPLING OF 1-D AND 2-D DATA**                                    |
 +=====================================================+=====================================================================+
+|  **gmtsimplify** `(...) <gmtsimplify.html>`__       | Line reduction using the Douglas-Peucker algorithm                  |
++-----------------------------------------------------+---------------------------------------------------------------------+
 |  **grdsample** `(...) <grdsample.html>`__           | Resample a 2-D gridded data set onto a new grid                     |
 +-----------------------------------------------------+---------------------------------------------------------------------+
 |  **grdtrack** `(...) <grdtrack.html>`__             | Sampling of 2-D gridded data set(s) along 1-D track                 |

@@ -2,6 +2,11 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-05-24	pwessel
+	* gmtsimplify.c:	The new name of the former gmtdp.c program
+	* sph/*.c:		These generic spherical tools are now in the GMT core.
+				Two new examples have been added to the suite.
+
 2013-05-21	pwessel
 	* pscontour.c:		Added -St to skip triangles whose 3 vertices are outside domain;
 				in contrast, -S or -Sp skips all points outside domain before
