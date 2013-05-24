@@ -5898,11 +5898,11 @@ struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *GMT, uint64_t n_tables
 	return (D);
 }
 
-struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsigned int source_type, bool greenwich, bool poly, bool use_GMT_io)
+struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsigned int source_type, bool greenwich, unsigned int *geometry, bool use_GMT_io)
 {
 	/* Reads an entire data set into a single table memory with any number of segments */
 
-	bool ascii, close_file = false, header = true, no_segments, first_seg = true;
+	bool ascii, close_file = false, header = true, no_segments, first_seg = true, poly, check_geometry;
 	int status;
 	uint64_t n_expected_fields;
 	uint64_t n_read = 0, row = 0, seg = 0, col;
@@ -5930,6 +5930,9 @@ struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsig
 	if (!ascii) GMT_setmode (GMT, GMT_IN);
 #endif
 
+	check_geometry = ((*geometry & GMT_IS_POLY) && (*geometry & GMT_IS_LINE));	/* Have to determine if these are closed polygons or not */
+	poly = (((*geometry & GMT_IS_POLY) || *geometry == GMT_IS_MULTIPOLYGON) && (*geometry & GMT_IS_LINE) == 0);	/* To enable polar cap assessment in i/o */
+	
 	/* Determine input source */
 
 	if (source_type == GMT_IS_FILE) {	/* source is a file name */
@@ -6079,6 +6082,11 @@ struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsig
 		T->segment[seg]->id = seg;	/* Internal segment number */
 
 		GMT_set_seg_minmax (GMT, T->segment[seg]);
+		if (check_geometry) {	/* Determine if dealing with closed polygons or lines based on first segment only */
+			if (!GMT_polygon_is_open (GMT, T->segment[seg]->coord[GMT_X], T->segment[seg]->coord[GMT_Y], T->segment[seg]->n_rows)) poly = true;
+			check_geometry = false;	/* Done with one-time checking */
+			*geometry = (poly) ? GMT_IS_POLY : GMT_IS_LINE;	/* Update the geometry setting */
+		}
 		if (poly) {	/* If file contains a polygon then we must close it if needed */
 			if (GMT->current.io.col_type[GMT_IN][GMT_X] & GMT_IS_GEO) {	/* Must check for polar cap */
 				double dlon;

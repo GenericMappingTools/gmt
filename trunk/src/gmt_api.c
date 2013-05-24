@@ -1303,8 +1303,9 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_
 	 * Note: Memory is allocated for the Dataset except for method GMT_IS_DATASET_REF.
 	 */
 	
-	int item, first_item = 0, this_item = GMT_NOTSET, last_item, geometry;
-	bool allocate = false, update = false, all_D, use_GMT_io, poly;
+	int item, first_item = 0, this_item = GMT_NOTSET, last_item;
+	unsigned int geometry;
+	bool allocate = false, update = false, all_D, use_GMT_io;
 	size_t n_alloc;
 	uint64_t row, seg, col, ij;
 	p_func_size_t GMT_2D_to_index = NULL;
@@ -1348,7 +1349,6 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_
 		}
 		if (this_item == GMT_NOTSET) this_item = item;	/* First item that worked */
 		geometry = (API->GMT->common.a.output) ? API->GMT->common.a.geometry : S_obj->geometry;	/* When reading GMT and writing OGR/GMT we must make sure we set this first */
-		poly = ((geometry & GMT_IS_POLY) || geometry == GMT_IS_MULTIPOLYGON );	/* To enable polar cap assessment in i/o */
 		switch (S_obj->method) {	/* File, array, stream etc ? */
 	 		case GMT_IS_FILE:	/* Import all the segments, then count total number of records */
 #ifdef SET_IO_MODE
@@ -1358,7 +1358,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_
 				if (API->GMT->current.io.ogr == GMT_OGR_TRUE && D_obj->n_tables > 0)	/* Only single tables if GMT/OGR */
 					return_null (API, GMT_OGR_ONE_TABLE_ONLY);
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading %s from %s %s\n", GMT_family[S_obj->family], GMT_method[S_obj->method], S_obj->filename);
-				if ((D_obj->table[D_obj->n_tables] = GMT_read_table (API->GMT, S_obj->filename, S_obj->method, false, poly, use_GMT_io)) == NULL) continue;		/* Ran into an empty file (e.g., /dev/null or equivalent). Skip to next item, */
+				if ((D_obj->table[D_obj->n_tables] = GMT_read_table (API->GMT, S_obj->filename, S_obj->method, false, &geometry, use_GMT_io)) == NULL) continue;		/* Ran into an empty file (e.g., /dev/null or equivalent). Skip to next item, */
 				D_obj->table[D_obj->n_tables]->id = D_obj->n_tables;	/* Give sequential internal object_ID numbers to tables */
 				D_obj->n_tables++;	/* Since we just read one */
 				update = true;
@@ -1373,7 +1373,7 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_
 				if (API->GMT->current.io.ogr == GMT_OGR_TRUE && D_obj->n_tables > 0)	/* Only single tables if GMT/OGR */
 					return_null (API, GMT_OGR_ONE_TABLE_ONLY);
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reading %s from %s %" PRIxS "\n", GMT_family[S_obj->family], GMT_method[S_obj->method], (size_t)S_obj->fp);
-				if ((D_obj->table[D_obj->n_tables] = GMT_read_table (API->GMT, S_obj->fp, S_obj->method, false, poly, use_GMT_io)) == NULL) continue;		/* Ran into an empty file (e.g., /dev/null or equivalent). Skip to next item, */
+				if ((D_obj->table[D_obj->n_tables] = GMT_read_table (API->GMT, S_obj->fp, S_obj->method, false, &geometry, use_GMT_io)) == NULL) continue;		/* Ran into an empty file (e.g., /dev/null or equivalent). Skip to next item, */
 				D_obj->table[D_obj->n_tables]->id = D_obj->n_tables;	/* Give sequential internal object_ID numbers to tables */
 				D_obj->n_tables++;	/* Since we just read one */
 				update = true;
@@ -1510,7 +1510,8 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_
 		if (!D_obj->min) D_obj->min = GMT_memory (API->GMT, NULL, D_obj->n_columns, double);
 		if (!D_obj->max) D_obj->max = GMT_memory (API->GMT, NULL, D_obj->n_columns, double);
 	}
-	D_obj->geometry = API->object[this_item]->geometry;
+	//D_obj->geometry = API->object[this_item]->geometry;
+	D_obj->geometry = geometry;	/* Since GMT_read_table may have updated it */
 	API->object[this_item]->data = D_obj;		/* Retain pointer to the allocated data so we use garbage collection later */
 	return (D_obj);		
 }
