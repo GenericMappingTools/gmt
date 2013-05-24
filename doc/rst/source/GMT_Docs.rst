@@ -1927,6 +1927,7 @@ E.g., if your ``gmt.conf`` file has *x* offset = 1\ **i** as default, the
        :align: center
 
        Even more *GMT* parameters that affect plot appearance.
+
 There are at least two good reasons why the *GMT* default options are
 placed in a separate parameter file:
 
@@ -2743,7 +2744,7 @@ which will plot the current command string (Figure ).
 .. figure:: _images/GMT_-U.png
        :align: center
 
-       The -U option makes it easy to ``date'' a plot.
+       The -U option makes it easy to ``date`` a plot.
 
 Verbose feedback: The **-V** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
