@@ -6235,7 +6235,7 @@ struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET
 			D->table[0]->segment[seg]->n_rows = nr;
 			GMT_alloc_segment (GMT, D->table[0]->segment[seg], nr, D->n_columns, true);
 			D->table[0]->segment[seg]->n_columns = D->n_columns;
-			if (mode == GMT_ALLOC_VERTICAL && Din->table[tbl]->segment[seg_in_tbl]->header) D->table[0]->segment[seg]->header = strdup (Din->table[tbl]->segment[seg_in_tbl]->header);
+			if (mode != GMT_ALLOC_HORIZONTAL && Din->table[tbl]->segment[seg_in_tbl]->header) D->table[0]->segment[seg]->header = strdup (Din->table[tbl]->segment[seg_in_tbl]->header);
 			D->n_records += nr;
 			seg_in_tbl++;
 		}

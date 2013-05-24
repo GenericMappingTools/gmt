@@ -3767,14 +3767,14 @@ void * GMT_Duplicate_Data (void *V_API, unsigned int family, unsigned int mode, 
 			break;
 #endif
 		case GMT_IS_DATASET:	/* GMT dataset, allocate the requested tables, segments, rows, and columns */
-			new = GMT_duplicate_dataset (API->GMT, data, mode, &geometry);
+			new = GMT_duplicate_dataset (API->GMT, data, 0, &geometry);
 			break;
 		case GMT_IS_TEXTSET:	/* GMT text dataset, allocate the requested tables, segments, and rows */
-			new = GMT_duplicate_textset (API->GMT, data, mode);
+			new = GMT_duplicate_textset (API->GMT, data, 0);
 			geometry = GMT_IS_NONE;
 			break;
 		case GMT_IS_CPT:	/* GMT CPT table, allocate one with space for dim[0] color entries */
-			new = GMT_duplicate_palette (API->GMT, data, mode);
+			new = GMT_duplicate_palette (API->GMT, data, 0);
 			geometry = GMT_IS_NONE;
 			break;
 		default:
