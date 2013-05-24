@@ -146,7 +146,8 @@ set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c
 	grdtrend.c grdvolume.c greenspline.c kml2gmt.c
 	makecpt.c mapproject.c minmax.c nearneighbor.c
 	project.c ps2raster.c sample1d.c spectrum1d.c
-	sph2grd.c splitxyz.c surface.c trend1d.c trend2d.c
+	sph2grd.c sphdistance.c sphinterpolate.c sphtriangulate.c
+	splitxyz.c surface.c trend1d.c trend2d.c
 	triangulate.c xyz2grd.c gmtdefaults.c gmtget.c
 	gmtset.c
 	grdcontour.c grdimage.c grdvector.c grdview.c
@@ -174,7 +175,7 @@ set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	gmt.h gmt_resources.h gmt_define.h gmt_private.h gmt_error_codes.h
 	gmt_api.c gmt_bcr.c gmt_calclock.c gmt_cdf.c gmt_customio.c gmt_dcw.c gmt_error.c
 	gmt_fft.c gmt_grdio.c gmt_io.c gmt_nc.c gmt_notposix.c gmt_proj.c
-	gmt_shore.c gmt_stat.c gmt_support.c gmt_regexp.c gmt_vector.c
+	gmt_shore.c gmt_sph.c gmt_stat.c gmt_support.c gmt_regexp.c gmt_vector.c
 	gmt_parse.c gmt_error_codes.c gshhg_version.c gmtread.c gmtwrite.c
 	common_math.c common_string.c common_runpath.c compat/qsort.c
 	gmt_module.c gmt_init.c gmt_map.c gmt_plot.c
@@ -343,7 +344,7 @@ if (WIN32 AND PSL_DLL_RENAME)
 endif ()
 
 # supplement directories (only those, which are to be included in gmtlib)
-set (GMT_SUPPL_DIRS dbase gshhg imgsrc kiss_fft meca mgd77 misc potential segy sph
+set (GMT_SUPPL_DIRS dbase gshhg imgsrc kiss_fft meca mgd77 misc potential segy
 	spotter x2sys)
 
 # path to all binary dirs (used to set PATH in test scripts)

@@ -33,7 +33,7 @@
 #define THIS_MODULE GMT_ID_SPHTRIANGULATE /* I am sphtriangulate */
 
 #include "gmt_dev.h"
-#include "sph.h"
+#include "gmt_sph.h"
 
 #define GMT_PROG_OPTIONS "-:RVbhis"
 

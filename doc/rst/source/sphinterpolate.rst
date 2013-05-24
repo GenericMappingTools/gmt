@@ -1,6 +1,6 @@
-****************
+**************
 sphinterpolate
-****************
+**************
 
 sphinterpolate - Spherical gridding in tension of data on a sphere
 

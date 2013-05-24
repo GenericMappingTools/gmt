@@ -71,6 +71,9 @@ l l .
 \fBsample1d\fP	
 \fBspectrum1d\fP	
 \fBsph2grd\fP	
+\fBsphdistance\fP	
+\fBsphinterpolate\fP	
+\fBsphtriangulate\fP	
 \fBsplitxyz\fP	
 \fBsurface\fP	
 \fBtrend1d\fP	
@@ -117,11 +120,6 @@ l l .
 \fBpssegy\fP	
 \fBpssegyz\fP	
 \fBsegy2grd\fP	
-
-	Supplement \fIsph\fP:
-\fBsphdistance\fP	
-\fBsphinterpolate\fP	
-\fBsphtriangulate\fP	
 
 	Supplement \fIspotter\fP:
 \fBbacktracker\fP	

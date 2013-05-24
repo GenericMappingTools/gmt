@@ -35,7 +35,7 @@
  */
  
 #include "gmt_dev.h"
-#include "sph.h"
+#include "gmt_sph.h"
 
 typedef double doublereal;
 typedef int64_t integer;
