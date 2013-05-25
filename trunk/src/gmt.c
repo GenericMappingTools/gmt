@@ -115,7 +115,7 @@ exit:
 	/* Destroy GMT session */
 	if (GMT_Destroy_Session (api_ctrl))
 		return EXIT_FAILURE;
-	free (progname);
+	if (progname) free (progname);
 
 	return status; /* Return the status from the module */
 }
