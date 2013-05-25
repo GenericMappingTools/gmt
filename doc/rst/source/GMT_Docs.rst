@@ -8775,8 +8775,9 @@ placed on top.
     gmt sphdistance -Rg -I1 -Qtt.pol -Gtt.nc -Lk
     makecpt -Chot -T0/3500/500 -Z > t.cpt
     # Make a basic image plot and overlay contours, Voronoi polygons and coastlines
-    gmt grdimage tt.nc -JG-140/30/7i -P -K -Ct.cpt -X0.75i -Y2i > $ps
-    gmt grdcontour tt.nc -J -O -K -C500 -A1000+f10p,Helvetica,white -L500 -GL0/90/203/-10,175/60/170/-30,-50/30/220/-5 -Wa0.75p,white -Wc0.25p,white >> $ps
+    gmt grdimage tt.nc -JG-140/30/7i -P -K -Ct.cpt -X0.75i -Y2i -U/-0.5i/-1.75i/"Example 35 in Cookbook" > $ps
+    gmt grdcontour tt.nc -J -O -K -C500 -A1000+f10p,Helvetica,white -L500 -\
+        GL0/90/203/-10,175/60/170/-30,-50/30/220/-5 -Wa0.75p,white -Wc0.25p,white >> $ps
     gmt psxy -R -J -O -K tt.pol -W0.25p,green,. >> $ps
     gmt pscoast -R -J -O -W1p -Gsteelblue -A0/1/1 -B30g30 -B+t"Distances from GSHHG crude coastlines" >> $ps
     # cleanup
@@ -8811,7 +8812,7 @@ with `greenspline <greenspline.html>`_.
     gmt makecpt -Crainbow -T-7000/15000/1000 -Z > tt.cpt
     # Piecewise linear interpolation; no tension
     gmt sphinterpolate mars370.txt -Rg -I1 -Q0 -Gtt.nc
-    gmt grdimage tt.nc -JH0/6i -Bag -Ctt.cpt -P -Xc -Y7.25i -K > $ps
+    gmt grdimage tt.nc -JH0/6i -Bag -Ctt.cpt -P -Xc -Y7.25i -K -U/-1i/-7i/"Example 36 in Cookbook" > $ps
     gmt psxy -Rg -J -O -K mars370.txt -Sc0.05i -G0 -B30g30 -Y-3.25i >> $ps
     # Smoothing
     gmt sphinterpolate mars370.txt -Rg -I1 -Q3 -Gtt.nc
@@ -8819,6 +8820,107 @@ with `greenspline <greenspline.html>`_.
     gmt psxy -Rg -J -O -T >> $ps
     # cleanup
     rm -f gmt.conf tt.cpt tt.nc
+
+Spectral coherence between gravity and bathymetry grids
+-------------------------------------------------------
+
+The next script produces the plot in Figure [fig:example\ :sub:`3`\ 7].
+We demonstrate how `grdfft <grdfft.html>`_ is used to compute the
+spectral coherence between two data sets, here multibeam bathymetry
+and satellite-derived gravity.  The grids are detrended and tapered
+before the Fourier transform is computed; the intermediate plots show
+the grids being extended and padded to a suitable dimension.
+
+   ::
+
+    #!/bin/bash
+    #               GMT EXAMPLE 37
+    #               $Id$
+    #
+    # Purpose:      Illustrate 2-D FFT and coherence between gravity and bathymetry grids
+    # GMT progs:    psbasemap, psxy, makecpt, grdfft, grdimage, grdinfo, grdgradient
+    # Unix progs:   rm
+    #
+    ps=example_37.ps
+    
+    # Testing gmt grdfft coherence calculation with Karen Marks example data
+    # Prefix of two .nc files
+    
+    G=grav.V18.par.surf.1km.sq
+    T=mb.par.surf.1km.sq
+    gmt gmtset FONT_TITLE 14p
+    
+    gmt makecpt -Crainbow -T-5000/-3000/100 -Z > z.cpt
+    gmt makecpt -Crainbow -T-50/25/5 -Z > g.cpt
+    gmt grdinfo $T.nc -Ib > bbox
+    gmt grdgradient $G.nc -A0 -Nt1 -G${G}_int.nc
+    gmt grdgradient $T.nc -A0 -Nt1 -G${T}_int.nc
+    scl=1.4e-5
+    sclkm=1.4e-2
+    gmt grdimage $T.nc -I${T}_int.nc -Jx${scl}i -Cz.cpt -P -K -X1.474i -Y1i -U/-1.224i/-0.75i/"Example 37 in Cookbook"> $ps
+    gmt psbasemap -R-84/75/-78/81 -Jx${sclkm}i -O -K -Ba -BWSne+t"Multibeam bathymetry" >> $ps
+    gmt grdimage $G.nc -I${G}_int.nc -Jx${scl}i -Cg.cpt -O -K -X3.25i >> $ps
+    gmt psbasemap -R-84/75/-78/81 -Jx${sclkm}i -O -K -Ba -BWSne+t"Satellite gravity" >> $ps
+    
+    gmt grdfft $T.nc $G.nc -Ewk -N192/192+d+wtmp > cross.txt
+    gmt grdgradient ${G}_tmp.nc -A0 -Nt1 -G${G}_tmp_int.nc
+    gmt grdgradient ${T}_tmp.nc -A0 -Nt1 -G${T}_tmp_int.nc
+    
+    gmt makecpt -Crainbow -T-1500/1500/100 -Z > z.cpt
+    gmt makecpt -Crainbow -T-40/40/5 -Z > g.cpt
+    
+    gmt grdimage ${T}_tmp.nc -I${T}_tmp_int.nc -Jx${scl}i -Cz.cpt -O -K -X-3.474i -Y3i >> $ps
+    gmt psxy -R${T}_tmp.nc -J bbox -O -K -L -W0.5p,- >> $ps
+    gmt psbasemap -R-100/91/-94/97 -Jx${sclkm}i -O -K -Ba -BWSne+t"Detrended and extended" >> $ps
+    
+    gmt grdimage ${G}_tmp.nc -I${G}_tmp_int.nc -Jx${scl}i -Cg.cpt -O -K -X3.25i >> $ps
+    gmt psxy -R${G}_tmp.nc -J bbox -O -K -L -W0.5p,- >> $ps
+    gmt psbasemap -R-100/91/-94/97 -Jx${sclkm}i -O -K -Ba -BWSne+t"Detrended and extended" >> $ps
+    
+    gmt gmtset FONT_TITLE 24p
+    gmt psxy -R2/160/0/1 -JX-6il/2.5i -Bxa2f3g3+u" km" -Byafg0.5+l"Coherency@+2@+" -BWsNe+t"Coherency between gravity and bathymetry" -O -K -X-3.25i -Y3.3i cross.txt -i0,15 -W0.5p >> $ps
+    gmt psxy -R -J cross.txt -O -K -i0,15,16 -Sc0.075i -Gred -W0.25p -Ey >> $ps
+    gmt psxy -R -J -O -T >> $ps
+    rm -f cross.txt *_tmp.nc *_int.nc ?.cpt bbox
+
+Histogram equalization of bathymetry grids
+------------------------------------------
+
+The next script produces the plot in Figure [fig:example\ :sub:`3`\ 8].
+This example shows how to use histogram equalization to enhance various
+ranges of a grid depending on its frequency distribution.  The key tool
+used here is `grdhisteq <grdhisteq.html>`_.
+
+   ::
+
+    #!/bin/bash
+    #               GMT EXAMPLE 38
+    #               $Id$
+    #
+    # Purpose:      Illustrate histogram equalization on topography grids
+    # GMT progs:    psscale, pstext, makecpt, grdhisteq, grdimage, grdinfo, grdgradient
+    # Unix progs:   rm
+    #
+    ps=example_38.ps
+    
+    gmt makecpt -Crainbow -T0/1700/100 -Z > t.cpt
+    gmt makecpt -Crainbow -T0/15/1 > c.cpt
+    gmt grdgradient topo.nc -Nt1 -fg -A45 -Gitopo.nc
+    gmt grdhisteq topo.nc -Gout.nc -C16
+    gmt grdimage topo.nc -Iitopo.nc -Ct.cpt -JM3i -Y6i -K -P -B5 -BWSne -U/-0.75i/-5.75i/"Example 38 in Cookbook" > $ps
+    echo "315 -10 Original" | gmt pstext -Rtopo.nc -J -O -K -F+jTR+f14p -T -Gwhite -W1p -Dj0.1i >> $ps
+    gmt grdimage out.nc -Cc.cpt -J -X3.5i -K -O -B5 -BWSne >> $ps
+    echo "315 -10 Equalized" | gmt pstext -R -J -O -K -F+jTR+f14p -T -Gwhite -W1p -Dj0.1i >> $ps
+    gmt psscale -D0i/-0.4i/5i/0.15ih -O -K -Ct.cpt -Ba500 -By+lm -E+n >> $ps
+    gmt grdhisteq topo.nc -Gout.nc -N
+    gmt makecpt -Crainbow -T-3/3/0.1 -Z > c.cpt
+    gmt grdimage out.nc -Cc.cpt -J -X-3.5i -Y-4i -K -O -B5 -BWSne >> $ps
+    echo "315 -10 Normalized" | gmt pstext -R -J -O -K -F+jTR+f14p -T -Gwhite -W1p -Dj0.1i >> $ps
+    gmt grdhisteq topo.nc -Gout.nc -N
+    gmt grdimage out.nc -Cc.cpt -J -X3.5i -K -O -B5 -BWSne >> $ps
+    echo "315 -10 Quadratic" | gmt pstext -R -J -O -K -F+jTR+f14p -T -Gwhite -W1p -Dj0.1i >> $ps
+    gmt psscale -D0i/-0.4i/5i/0.15ih -O -Cc.cpt -Bx1 -By+lz -E+n >> $ps
+    rm -f itopo.nc out.nc ?.cpt
 
 Creating GMT Animations
 =======================
