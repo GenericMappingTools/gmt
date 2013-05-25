@@ -37,22 +37,22 @@ int main (int argc, char *argv[]) {
 	 * by the MSYS shell when executing gmt via symlinks */
 	GMT_chop_ext(progname);
 
-	/* test if argv[0] contains module name: */
-	if ((module_id = gmt_module_lookup (progname)) == GMT_ID_NONE && argc > 1) {
-		/* argv[0] does not contain a valid module name
-		 * argv[1] either holds the name of the module or an option: */
-		modulename_arg_n = 1;
-		module_id = gmt_module_lookup (argv[1]); /* either valid id or GMT_ID_NONE */
-		if (module_id == GMT_ID_NONE) {
-			/* argv[1] does not contain a valid module name; try prepending gmt: */
-			strncat (gmt_module, argv[1], 12);
-			module_id = gmt_module_lookup (gmt_module); /* either valid id or GMT_ID_NONE */
-		}
-	}
-
 	/* Initialize new GMT session */
 	if ((api_ctrl = GMT_Create_Session (NULL, 2U, 0U, NULL)) == NULL)
 		return EXIT_FAILURE;
+
+	/* test if argv[0] contains module name: */
+	if ((module_id = gmt_module_lookup (api_ctrl, progname)) == GMT_ID_NONE && argc > 1) {
+		/* argv[0] does not contain a valid module name
+		 * argv[1] either holds the name of the module or an option: */
+		modulename_arg_n = 1;
+		module_id = gmt_module_lookup (api_ctrl, argv[1]); /* either valid id or GMT_ID_NONE */
+		if (module_id == GMT_ID_NONE) {
+			/* argv[1] does not contain a valid module name; try prepending gmt: */
+			strncat (gmt_module, argv[1], 12);
+			module_id = gmt_module_lookup (api_ctrl, gmt_module); /* either valid id or GMT_ID_NONE */
+		}
+	}
 
 	if (module_id == GMT_ID_NONE) {
 		/* neither argv[0] nor argv[1] contain a valid module name */
