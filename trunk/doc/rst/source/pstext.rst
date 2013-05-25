@@ -13,7 +13,7 @@ pstext - Plot or typeset text on maps
 **-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ] [
 **-A** ] [ **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ *dx/dy*
 ] [ **-D**\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **v**\ [*pen*\ ]] ]
-[ **-F**\ [**+a**\ [*angle*\ ]][\ **+f**\ [*font*\ ]][\ **+j**\ [*justify*\ ]][\ **+c**\ [*justify*]] ] 
+[ **-F**\ [**+a**\ [*angle*\ ]][\ **+c**\ [*justify*]][\ **+f**\ [*font*\ ]][\ **+h**][\ **+j**\ [*justify*\ ]][\ **+l**] ] 
 [ **-G**\ *color* ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [
 **-L** ] [ **-M** ] [ **-N** ] [ **-O** ] [ **-P** ] [
 **-Q**\ **l**\ \|\ **u** ] [
@@ -108,7 +108,7 @@ characters, except in paragraph mode (**-M**)).
     a line from the original point to the shifted point; append a *pen*
     to change the attributes for this line.
 
-**-F**\ [**+a**\ [*angle*]][\ **+f**\ [*font*]][\ **+j**\ [*justify*]][\ **+c**\ [*justify*]] 
+**-F**\ [**+a**\ [*angle*\ ]][\ **+c**\ [*justify*]][\ **+f**\ [*font*\ ]][\ **+h**][\ **+j**\ [*justify*\ ]][\ **+l**] 
     By default, text will be placed horizontally, using the primary
     annotation font attributes (**FONT_ANNOT_PRIMARY**), and centered
     on the data point. Use this option to override these defaults by
@@ -127,7 +127,9 @@ characters, except in paragraph mode (**-M**)).
     The **+c** justification lets us use x,y coordinates extracted from the
     **-R** string instead of providing them from file. For example **-F+c**\ TL
     gets the *x_min*, *y_max* from the **-R** string and plots the text
-    at the Upper Left corner of the map.  
+    at the Upper Left corner of the map.  Normally, the text to be plotted
+    comes from the data record.  Use **+h** or **+l** to instead select the
+    text as the most recent segment header or segment label, respectively.
 
 **-G**\ *color*
     Sets the shade or color used for filling the text box [Default is no

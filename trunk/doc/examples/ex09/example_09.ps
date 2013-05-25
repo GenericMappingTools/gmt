@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:48:34) [64-bit] [C4] Document from GMT_pswiggle
-%%Creator: GMT
-%%For: remko
+%%Title: GMT v5.0.1b_r11577 [64-bit] Document from pswiggle
+%%Creator: GMT5
+%%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 23 12:49:28 2011
+%%CreationDate: Sat May 25 11:31:07 2013
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Landscape
@@ -60,7 +60,7 @@
 /Si {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR FO}!
 /Sj {M MS R dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D MR FO}!
 /Sn {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR FO}!
-/Sp {N 3 -1 roll 0 360 arc F}!
+/Sp {N 3 -1 roll 0 360 arc fs N}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
 /SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
@@ -110,6 +110,11 @@
   count PSL_op_count sub {pop} repeat
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
+}!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -571,14 +576,9 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT:  pswiggle track_d.107.xys track_d.109.xys track_d.111.xys track_d.137.xys track_d.139.xys track_d.165.xys track_d.167.xys track_d.193.xys \
-%%GMT:+ track_d.195.xys track_d.197.xys track_d.21.xys track_d.223.xys track_d.225.xys track_d.23.xys track_d.25.xys track_d.251.xys \
-%%GMT:+ track_d.253.xys track_d.279.xys track_d.281.xys track_d.283.xys track_d.309.xys track_d.311.xys track_d.337.xys track_d.339.xys \
-%%GMT:+ track_d.365.xys track_d.367.xys track_d.369.xys track_d.395.xys track_d.397.xys track_d.423.xys track_d.425.xys track_d.427.xys \
-%%GMT:+ track_d.451.xys track_d.453.xys track_d.455.xys track_d.481.xys track_d.483.xys track_d.49.xys track_d.51.xys track_d.53.xys \
-%%GMT:+ track_d.79.xys track_d.81.xys -R185/250/-68/-42 -UExample 9 in Cookbook -K -Jm0.13i -Ba10f5WSne+g240/255/240 -G+red -G-blue \
-%%GMT:+ -Z2000 -Wthinnest -S240/-67/500/@~m@~rad --FORMAT_GEO_MAP=dddF
+%%GMT: pswiggle tracks.txt -R185/250/-68/-42 -U"Example 9 in Cookbook" -K -Jm0.13i -Ba10f5 -BWSne+g240/255/240 -G+red -G-blue -Z2000 -Wthinnest -S240/-67/500/@~m@~rad --FORMAT_GEO_MAP=dddF
 %%PROJ: merc 185.00000000 250.00000000 -68.00000000 -42.00000000 -3617883.451 3617883.451 -10407332.515 -5132380.528 +proj=merc +lon_0=217.5 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_1
 % Begin GMT time-stamp
 V
 -900 -900 T
@@ -23672,14 +23672,16 @@ S
 (500 ) Z
 200 F12 (m) Z
 200 F0 (rad) Z
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R185/250/-68/-42 -Jm0.13i -O -K ridge.xy -Wthicker
+%%GMT: psxy -R185/250/-68/-42 -Jm0.13i -O -K ridge.xy -Wthicker
 %%PROJ: merc 185.00000000 250.00000000 -68.00000000 -42.00000000 -3617883.451 3617883.451 -10407332.515 -5132380.528 +proj=merc +lon_0=217.5 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -23764,14 +23766,16 @@ O0
 -202 -166 D
 -142 -112 D
 S
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R185/250/-68/-42 -Jm0.13i -O -K fz.xy -Wthinner,-
+%%GMT: psxy -R185/250/-68/-42 -Jm0.13i -O -K fz.xy -Wthinner,-
 %%PROJ: merc 185.00000000 250.00000000 -68.00000000 -42.00000000 -3617883.451 3617883.451 -10407332.515 -5132380.528 +proj=merc +lon_0=217.5 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -24884,14 +24888,16 @@ S
 17 -1 D
 S
 [] 0 B
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  pstext -R185/250/-68/-42 -Jm0.13i -F+f10p,Helvetica-Bold+a50+jRM -D-0.05i/-0.05i -O
+%%GMT: pstext -R185/250/-68/-42 -Jm0.13i -F+f10p,Helvetica-Bold+a50+jRM+h -D-0.05i/-0.05i -O
 %%PROJ: merc 185.00000000 250.00000000 -68.00000000 -42.00000000 -3617883.451 3617883.451 -10407332.515 -5132380.528 +proj=merc +lon_0=217.5 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -24946,6 +24952,7 @@ V 50 R (107) mr Z U
 4711 934 M V 50 R (79) mr Z U
 2234 2363 M V 50 R (81) mr Z U
 PSL_cliprestore
+%%EndObject
 %%PageTrailer
 U
 showpage
