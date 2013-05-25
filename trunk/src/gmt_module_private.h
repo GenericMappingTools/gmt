@@ -33,7 +33,12 @@ struct Gmt_moduleinfo {
 	int (*p_func)(void*, int, void*);
 };
 
-/* external array with program paramerters for all GMT modules */
+struct Gmt_alias {
+	const char *alias;
+	const char *name;
+};
+
+/* external array with program parameters for all GMT modules */
 EXTERN_MSC struct Gmt_moduleinfo g_module[];
 
 EXTERN_MSC int GMT_backtracker (void *api_ctrl, int mode, void *args);
@@ -165,7 +170,7 @@ EXTERN_MSC void gmt_module_show_all(struct GMTAPI_CTRL *API);
 EXTERN_MSC void gmt_module_show_name_and_purpose(struct GMTAPI_CTRL *API, enum GMT_MODULE_ID module);
 
 /* Lookup module id by name */
-EXTERN_MSC enum GMT_MODULE_ID gmt_module_lookup (const char *candidate);
+EXTERN_MSC enum GMT_MODULE_ID gmt_module_lookup (struct GMTAPI_CTRL *API, const char *candidate);
 
 /* Get module name */
 EXTERN_MSC const char *gmt_module_name (struct GMT_CTRL *gmt_ctrl);

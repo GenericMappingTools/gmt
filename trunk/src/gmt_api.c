@@ -5195,7 +5195,8 @@ int GMT_FFT_Destroy_ (void *v_K)
 
 int GMT_Get_Module (void *V_API, char *module)
 {	/* Return module ID given its name, or GMT_ID_NONE (-1) if not found */
-	enum GMT_MODULE_ID ID = gmt_module_lookup (module);
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+	enum GMT_MODULE_ID ID = gmt_module_lookup (API, module);
 	return (ID);
 }
 

@@ -410,6 +410,7 @@ unsigned int GMT_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 	char p[GMT_BUFSIZ], *c = NULL, *a = NULL;
 
 	if ((a = strchr (args, '+'))) a[0] = '\0';	/* Temporarily chop off modifiers */
+	if (F->codes) free ((void *)F->codes);		/* If called more than one we must free first */
 	F->codes = strdup (args);
 	if (a) a[0] = '+';	/* Reset modifiers */
 
