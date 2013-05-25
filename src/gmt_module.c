@@ -153,7 +153,7 @@ struct Gmt_moduleinfo g_module[] = {
 
 /* sorted array with shorter aliases for modules starting with "gmt" */
 struct Gmt_alias gmt_alias[] =
-{	/* Alias:	/* Full name */
+{	/* Alias:	Full name */
 	{"2kml", 	"gmt2kml"},
 	{"convert",	"gmtconvert"},
 	{"defaults",	"gmtdefaults"},
