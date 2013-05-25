@@ -110,31 +110,24 @@ gmt gmtconvert -A samp_ship.pg samp_sat.pg -o1,3 | gmt spectrum1d -S256 -D1 -W -
 # Note the extended use of gmt pstext and gmt psxy to put labels and legends directly on the plots.  
 # For that purpose we often use -Jx1i and specify positions in inches directly:
 #
-gmt psxy spectrum.coh -Bxa1f3p+l"Wavelength (km)" -Bya0.25f0.05+l"Coherency@+2@+" -BWeSn -JX-4il/3.75i \
-	-R1/1000/0/1 -UL/-2.25i/-1.25i/"Example 3 in Cookbook" -P -K -X2.5i -Sc0.07i -Gblack \
+gmt psxy spectrum.coh -Bxa1f3p+l"Wavelength (km)" -Bya0.25f0.05+l"Coherency@+2@+" -BWeSn+g240/255/240 -JX-4il/3.75i \
+	-R1/1000/0/1 -UL/-2.25i/-1.25i/"Example 3 in Cookbook" -P -K -X2.5i -Sc0.07i -Gmagenta \
 	-Ey/0.5p -Y1.5i > $ps
 echo "3.85 3.6 Coherency@+2@+" | gmt pstext -R0/4/0/3.75 -Jx1i -F+f18p,Helvetica-Bold+jTR \
 	-O -K >> $ps
-cat > box.d << END
-2.375	3.75
-2.375	3.25
-4	3.25
-END
-gmt psxy -R -Jx -O -K -Wthicker box.d >> $ps
-gmt psxy -Bxa1f3p -Bya1f3p+l"Power (mGal@+2@+km)" -BWeSn+t"Ship and Satellite Gravity" spectrum.xpower \
-	-Gblack -ST0.07i -O -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/0.5p >> $ps
-gmt psxy spectrum.ypower -R -JX -O -K -Gblack -Sc0.07i -Ey/0.5p >> $ps
+gmt psxy -Bxa1f3p -Bya1f3p+l"Power (mGal@+2@+km)" -BWeSn+t"Ship and Satellite Gravity"+g240/255/240 spectrum.xpower \
+	-Gred -ST0.07i -O -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/0.5p >> $ps
+gmt psxy spectrum.ypower -R -JX -O -K -Gblue -Sc0.07i -Ey/0.5p >> $ps
 echo "3.9 3.6 Input Power" | gmt pstext -R0/4/0/3.75 -Jx -F+f18p,Helvetica-Bold+jTR -O -K >> $ps
-gmt psxy -R -Jx -O -K -Wthicker box.d >> $ps
-gmt psxy -R -Jx -O -K -Glightgray -L -Wthicker >> $ps << END
+gmt psxy -R -Jx -O -K -Gwhite -L -Wthicker >> $ps << END
 0.25	0.25
 1.4	0.25
 1.4	0.9
 0.25	0.9
 END
-echo "0.4 0.7" | gmt psxy -R -Jx -O -K -ST0.07i -Gblack >> $ps
+echo "0.4 0.7" | gmt psxy -R -Jx -O -K -ST0.07i -Gred >> $ps
 echo "0.5 0.7 Ship" | gmt pstext -R -Jx -F+f14p,Helvetica-Bold+jLM -O -K >> $ps
-echo "0.4 0.4" | gmt psxy -R -Jx -O -K -Sc0.07i -Gblack >> $ps
+echo "0.4 0.4" | gmt psxy -R -Jx -O -K -Sc0.07i -Gblue >> $ps
 echo "0.5 0.4 Satellite" | gmt pstext -R -Jx -F+f14p,Helvetica-Bold+jLM -O >> $ps
 #
 # Now we wonder if removing that large feature at 250 km would make any difference.

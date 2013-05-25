@@ -5846,7 +5846,7 @@ files later). We would like to show one map centered on Greenwich and
 one centered on the dateline. Positive contours should be drawn with a
 solid pen and negative contours with a dashed pen. Annotations should
 occur for every 50 m contour level, and both contour maps should show
-the continents in light gray in the background. Finally, we want a
+the continents in light brown in the background. Finally, we want a
 rectangular frame surrounding the two maps. This is how it is done:
 
    ::
@@ -5861,11 +5861,11 @@ rectangular frame surrounding the two maps. This is how it is done:
     ps=../example_01.ps
     gmtset MAP_GRID_CROSS_SIZE_PRIMARY 0 FONT_ANNOT_PRIMARY 10p
     psbasemap -R0/6.5/0/9 -Jx1i -B0 -P -K -U"Example 1 in Cookbook" > $ps
-    pscoast -Rg -JH0/6i -X0.25i -Y0.5i -O -K -Bg30 -Dc -Glightgray >> $ps
+    pscoast -Rg -JH0/6i -X0.25i -Y0.5i -O -K -Bg30 -Dc -Glightbrown -Slightblue >> $ps
     grdcontour osu91a1f_16.nc -J -C10 -A50+f7p -Gd4i -L-1000/-1 -Wcthinnest,- -Wathin,- -O -K \
                -T0.1i/0.02i >> $ps
     grdcontour osu91a1f_16.nc -J -C10 -A50+f7p -Gd4i -L-1/1000 -O -K -T0.1i/0.02i >> $ps
-    pscoast -Rg -JH6i -Y4i -O -K -Bg30 -B+t"Low Order Geoid" -Dc -Glightgray >> $ps
+    pscoast -Rg -JH6i -Y4i -O -K -Bg30 -B+t"Low Order Geoid" -Dc -Glightbrown -Slightblue >> $ps
     grdcontour osu91a1f_16.nc -J -C10 -A50+f7p -Gd4i -L-1000/-1 -Wcthinnest,- -Wathin,- -O -K \
                -T0.1i/0.02i:-+ >> $ps
     grdcontour osu91a1f_16.nc -J -C10 -A50+f7p -Gd4i -L-1/1000 -O -T0.1i/0.02i:-+ >> $ps
@@ -5877,7 +5877,7 @@ first is centered on Greenwich; the second on the dateline. We use the
 limit option (**-L**) in `grdcontour <grdcontour.html>`_
 to select negative contours only and plot those with a dashed pen, then
 positive contours only and draw with a solid pen [Default]. The **-T**
-option causes tickmarks pointing in the downhill direction to be drawn
+option causes tick marks pointing in the downhill direction to be drawn
 on the innermost, closed contours. For the upper panel we also added -
 and + to the local lows and highs. You can find this illustration as
 
@@ -6118,22 +6118,15 @@ specify positions in inches directly. Thus, the complete automated script reads:
     # Note the extended use of pstext and psxy to put labels and legends directly on the plots.
     # For that purpose we often use -Jx1i and specify positions in inches directly:
     #
-    psxy spectrum.coh -Bxa1f3p+l"Wavelength (km)" -Bya0.25f0.05+l"Coherency@+2@+" -BWeSn -JX-4il/3.75i \
-         -R1/1000/0/1 -U/-2.25i/-1.25i/"Example 3 in Cookbook" -P -K -X2.5i -Sc0.07i -Gblack \
+    psxy spectrum.coh -Bxa1f3p+l"Wavelength (km)" -Bya0.25f0.05+l"Coherency@+2@+" -BWeSn+g240/255/240 -JX-4il/3.75i \
+         -R1/1000/0/1 -U/-2.25i/-1.25i/"Example 3 in Cookbook" -P -K -X2.5i -Sc0.07i -Gmagenta \
          -Ey/0.5p -Y1.5i > $ps
     echo "3.85 3.6 Coherency@+2@+" | pstext -R0/4/0/3.75 -Jx1i -F+f18p,Helvetica-Bold+jTR -O -K >> $ps
-    cat > box.d << END
-    2.375 3.75
-    2.375 3.25
-    4 3.25
-    END
-    psxy -R -Jx -O -K -Wthicker box.d >> $ps
     psxy -Bxa1f3p -Bya1f3p+l"Power (mGal@+2@+km)" -BWeSn+t"Ship and Satellite Gravity" spectrum.xpower \
-         -Gblack -ST0.07i -O -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/0.5p >> $ps
-    psxy spectrum.ypower -R -JX -O -K -Gblack -Sc0.07i -Ey/0.5p >> $ps
+         -Gred -ST0.07i -O -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/0.5p >> $ps
+    psxy spectrum.ypower -R -JX -O -K -Gblue -Sc0.07i -Ey/0.5p >> $ps
     echo "3.9 3.6 Input Power" | pstext -R0/4/0/3.75 -Jx -F+f18p,Helvetica-Bold+jTR -O -K >> $ps
-    psxy -R -Jx -O -K -Wthicker box.d >> $ps
-    psxy -R -Jx -O -K -Glightgray -L -Wthicker >> $ps << END
+    psxy -R -Jx -O -K -Gwhite -L -Wthicker >> $ps << END
     0.25 0.25
     1.4 0.25
     1.4 0.9
@@ -6508,16 +6501,16 @@ profiles from the south Pacific can be plotted as "wiggles" using the
 `pswiggle <pswiggle.html>`_ program. We will embellish
 the plot with track numbers, the location of the Pacific-Antarctic
 Ridge, recognized fracture zones in the area, and a "wiggle" scale. The
-Geosat tracks are stored in the files ``*.xys``, the ridge in ``ridge.xy``, and all the
-fracture zones are stored in the multiple segment file ``fz.xy``. We extract the
-profile id (which is the first part of the file name for each profile)
-and the last point in each of the track files to construct an input file
+Geosat tracks are stored in the file ``tracks.txt``, the ridge in ``ridge.xy``, and all the
+fracture zones are stored in the multiple segment file ``fz.xy``. The
+profile id is contained in the segment headers and we wish to use the
+last data point in each of the track segments to construct an input file
 for `pstext <pstext.html>`_ that will label each profile
 with the track number. We know the profiles trend approximately N40E so
 we want the labels to have that same orientation (i.e., the angle with
 the baseline must be 50). We do this by extracting the last record from
-each track, paste this file with the ``tracks.lis`` file, and use **AWK** to create
-the format needed for `pstext <pstext.html>`_. Note we
+each track and select segment header as textstring when running
+the output through `pstext <pstext.html>`_. Note we
 offset the positions by -0.05 inch with **-D** in order to have a small
 gap between the profile and the label:
 
@@ -6529,22 +6522,16 @@ gap between the profile and the label:
     #
     # Purpose:	Make wiggle plot along track from geoid deflections
     # GMT progs:	gmtconvert, pswiggle, pstext, psxy
-    # Unix progs:	awk, ls, paste, rm
+    # Unix progs:	
     #
     ps=example_09.ps
-    pswiggle track_*.xys -R185/250/-68/-42 -U"Example 9 in Cookbook" -K -Jm0.13i \
+    pswiggle tracks.txt -R185/250/-68/-42 -U"Example 9 in Cookbook" -K -Jm0.13i \
     	-Ba10f5 -BWSne+g240/255/240 -G+red -G-blue -Z2000 -Wthinnest -S240/-67/500/@~m@~rad \
     	--FORMAT_GEO_MAP=dddF > $ps
     psxy -R -J -O -K ridge.xy -Wthicker >> $ps
     psxy -R -J -O -K fz.xy -Wthinner,- >> $ps
-    # Make label file from last record of each track
-    gmtconvert -El track_*.xys > tmp
-    # Extract track number from file name
-    ls -1 track_*.xys | awk -F. '{print $2}' > tracks.lis
-    # Combine the two to make input for labels
-    paste tmp tracks.lis | awk '{print $1, $2, $4}' \
-    	| pstext -R -J -F+f10p,Helvetica-Bold+a50+jRM -D-0.05i/-0.05i -O >> $ps
-    rm -f tmp tracks.lis
+    # Take label from segment header and plot near coordinates of last record of each track
+    gmt gmtconvert -El tracks.txt | gmt pstext -R -J -F+f10p,Helvetica-Bold+a50+jRM+h -D-0.05i/-0.05i -O >> $ps
 
 The output shows the sea-surface slopes along 42 descending Geosat
 tracks in the Eltanin and Udintsev fracture zone region in a Mercator
