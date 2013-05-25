@@ -111,10 +111,10 @@ find $DIR -name '*.dat' -print | sed -n -e 's/\.dat//gp '> t.lis
 # macnut: The 50 is chosen so that we only print SP or US/TX, then remove the / to get USTX
 # MacAttack: The 46 is chosen so that we only print SP or US/TX, then remove the / to get USTX
 awk '{print substr($1,46)}' t.lis | sed -e 'sB/BBg' > var.lis
-rm -f DCW.log
-rm -f dim.cdl var.cdl data.cdl DCW.cdl
+rm -f dcw-gmt.log
+rm -f dim.cdl var.cdl data.cdl dcw-gmt.cdl
 echon "Build CDL..."
-echo "netcdf DCW {    // DCW netCDF specification in CDL" > DCW.cdl
+echo "netcdf DCW {    // DCW netCDF specification in CDL" > dcw-gmt.cdl
 cat <<- EOF > dim.cdl
 	dimensions:
 EOF
@@ -139,7 +139,7 @@ while read prefix; do
 	yrange=`awk '{print $4-$3}' BB.txt`
 	xfact=`gmtmath -Q 65535 $xrange DIV =`
 	yfact=`gmtmath -Q 65535 $yrange DIV =`
-	echo "$item: west = $west east = $east xrange = $xrange xfact = $xfact south = $south north = $north yrange = $yrange yfact = $yfact" >> DCW.log
+	echo "$item: west = $west east = $east xrange = $xrange xfact = $xfact south = $south north = $north yrange = $yrange yfact = $yfact" >> dcw-gmt.log
 	gmtmath -fig $prefix.dat -C0 $west SUB 360 ADD 360 MOD $xrange DIV 65534 MUL RINT -C1 $south SUB $yrange DIV 65534 MUL RINT -Ca = tmp.txt
 	VAR=`sed -n ${k}p var.lis`
 cat << EOF >> dim.cdl
@@ -162,14 +162,14 @@ EOF
 	awk -f xformat.awk name="${VAR}_lon" N=$n tmp.txt >> data.cdl
 	awk -f yformat.awk name="${VAR}_lat" N=$n tmp.txt >> data.cdl
 done < t.lis
-cat dim.cdl >> DCW.cdl
-cat var.cdl >> DCW.cdl
-cat data.cdl >> DCW.cdl
-cat <<- EOF >> DCW.cdl
+cat dim.cdl >> dcw-gmt.cdl
+cat var.cdl >> dcw-gmt.cdl
+cat data.cdl >> dcw-gmt.cdl
+cat <<- EOF >> dcw-gmt.cdl
 }
 EOF
 echon "Generate netCDF..."
-ncgen -lc DCW.cdl > DCW.c
-ncgen -b -o DCW.nc  -x DCW.cdl
+#ncgen -lc dcw-gmt.cdl > dcw-gmt.c
+ncgen -b -o dcw-gmt.nc -x dcw-gmt.cdl
 echo ""
 rm -f *.cdl xformat.awk yformat.awk t.lis var.lis BB.txt tmp.txt
