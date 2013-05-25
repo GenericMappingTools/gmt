@@ -31,15 +31,16 @@ int main (int argc, char *argv[]) {
 	enum GMT_MODULE_ID module_id = 0;       /* Module ID */
 	struct GMTAPI_CTRL *api_ctrl = NULL;    /* GMT API control structure */
 	char gmt_module[16] = "gmt";
-	char *progname = GMT_basename(argv[0]); /* Last component from the pathname */
-
-	/* remove any filename extensions added for example
-	 * by the MSYS shell when executing gmt via symlinks */
-	GMT_chop_ext(progname);
+	char *progname = NULL; /* Last component from the pathname */
 
 	/* Initialize new GMT session */
 	if ((api_ctrl = GMT_Create_Session (NULL, 2U, 0U, NULL)) == NULL)
 		return EXIT_FAILURE;
+
+	progname = strdup (GMT_basename(argv[0])); /* Last component from the pathname */
+	/* remove any filename extensions added for example
+	 * by the MSYS shell when executing gmt via symlinks */
+	GMT_chop_ext(progname);
 
 	/* test if argv[0] contains module name: */
 	if ((module_id = gmt_module_lookup (api_ctrl, progname)) == GMT_ID_NONE && argc > 1) {
@@ -114,6 +115,7 @@ exit:
 	/* Destroy GMT session */
 	if (GMT_Destroy_Session (api_ctrl))
 		return EXIT_FAILURE;
+	free (progname);
 
 	return status; /* Return the status from the module */
 }
