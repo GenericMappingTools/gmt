@@ -55,12 +55,13 @@ struct PSTEXT_CTRL {
 		double dx, dy;
 		struct GMT_PEN pen;
 	} D;
-	struct PSTEXT_F {	/* -F[+f<fontinfo>+a<angle>+j<justification>] */
+	struct PSTEXT_F {	/* -F[+f<fontinfo>+a<angle>+j<justification>+l|h] */
 		bool active;
 		struct GMT_FONT font;
 		double angle;
 		int justify, R_justify, nread;
-		char read[3];	/* Contains f, a, and/or j in order required to be read from input */
+		unsigned int get_text;	/* 0 = from data record, 1 = segment label (+l), 2 = segment header (+h) */
+		char read[4];		/* Contains a, c, f, and/or j in order required to be read from input */
 	} F;
 	struct PSTEXT_G {	/* -G<fill> */
 		bool active;
@@ -295,13 +296,16 @@ int GMT_pstext_usage (struct GMTAPI_CTRL *API, int level, int show_fonts)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append v[<pen>] to draw line from text to original point.  If <add_y> is not given it equal <add_x>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify values for text attributes that apply to all text records:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +a<angle> specifies the baseline angle for all text [0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   +c<justify> get the corresponding coordinate from the -R string instead of a given (x,y).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +f<fontinfo> sets the size, font, and optionally the text color [%s].\n",
 		GMT_putfont (API->GMT, API->GMT->current.setting.font_annot[0]));
 	GMT_Message (API, GMT_TIME_NONE, "\t   +j<justify> sets text justification relative to given (x,y) coordinate.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Give a 2-char combo from [T|M|B][L|C|R] (top/middle/bottom/left/center/right) [CM].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +c<justify> get the corresponding coordinate from the -R string instead of a given (x,y).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   +h will use as text the most recent segment header.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   +l will use as text the label specified via -L<label> in the most recent segment header.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If an attribute +f|+a|+j is not followed by a value we read the information from the\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   data file in the order given on the -F option.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Note: +h|l modifiers cannot be used in paragraph mode (-M).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Paint the box underneath the text with specified color [Default is no paint].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append c to set these boxes as clip paths based on text (and -C).  No text is plotted.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   See psclip -Cs to plot the hidden text.  Cannot be used with paragraph mode (-M).\n");
@@ -326,6 +330,10 @@ int GMT_pstext_usage (struct GMTAPI_CTRL *API, int level, int show_fonts)
 	
 	return (EXIT_FAILURE);
 }
+
+#define GET_REC_TEXT	0
+#define GET_SEG_LABEL	1
+#define GET_SEG_HEADER	2
 
 int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPTION *options)
 {
@@ -385,22 +393,11 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 				Ctrl->F.active = true;
 				pos = 0;
 				
-				while (GMT_getmodopt (GMT, opt->arg, "afjc", &pos, p) && Ctrl->F.nread < 4) {	/* Looking for +f, +a, +j, +c */
+				while (GMT_getmodopt (GMT, opt->arg, "afjclh", &pos, p) && Ctrl->F.nread < 4) {	/* Looking for +f, +a, +j, +c, +l|h */
 					switch (p[0]) {
-						case 'f':	/* Font info */
-							if (p[1] == '+' || p[1] == '\0') { Ctrl->F.read[Ctrl->F.nread] = p[0]; Ctrl->F.nread++; }
-							else n_errors += GMT_getfont (GMT, &p[1], &(Ctrl->F.font));
-							break;
 						case 'a':	/* Angle */
 							if (p[1] == '+' || p[1] == '\0') { Ctrl->F.read[Ctrl->F.nread] = p[0]; Ctrl->F.nread++; }
 							else Ctrl->F.angle = atof (&p[1]);
-							break;
-						case 'j':	/* Justification */
-							if (p[1] == '+' || p[1] == '\0') { Ctrl->F.read[Ctrl->F.nread] = p[0]; Ctrl->F.nread++; }
-							else {
-								Ctrl->F.justify = GMT_just_decode (GMT, &p[1], 12);
-								explicit_justify = true;
-							}
 							break;
 						case 'c':	/* -R corner justification */
 							if (p[1] == '+' || p[1] == '\0') { Ctrl->F.read[Ctrl->F.nread] = p[0]; Ctrl->F.nread++; }
@@ -409,6 +406,33 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 								if (!explicit_justify)	/* If not set explicitly, default to same justification as corner */
 									Ctrl->F.justify = Ctrl->F.R_justify;
 							}
+							break;
+						case 'f':	/* Font info */
+							if (p[1] == '+' || p[1] == '\0') { Ctrl->F.read[Ctrl->F.nread] = p[0]; Ctrl->F.nread++; }
+							else n_errors += GMT_getfont (GMT, &p[1], &(Ctrl->F.font));
+							break;
+						case 'j':	/* Justification */
+							if (p[1] == '+' || p[1] == '\0') { Ctrl->F.read[Ctrl->F.nread] = p[0]; Ctrl->F.nread++; }
+							else {
+								Ctrl->F.justify = GMT_just_decode (GMT, &p[1], 12);
+								explicit_justify = true;
+							}
+							break;
+						case 'l':	/* Segment label request */
+							if (Ctrl->F.get_text) {
+								GMT_Report (API, GMT_MSG_COMPAT, "Error: Only one of +l and +h can be selected in -F.\n");
+								n_errors++;
+							}
+							else
+								Ctrl->F.get_text = GET_SEG_LABEL;
+							break;
+						case 'h':	/* Segment header request */
+							if (Ctrl->F.get_text) {
+								GMT_Report (API, GMT_MSG_COMPAT, "Error: Only one of +l and +h can be selected in -F.\n");
+								n_errors++;
+							}
+							else
+								Ctrl->F.get_text = GET_SEG_HEADER;
 							break;
 						default:
 							n_errors++;
@@ -497,6 +521,7 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 	n_errors += GMT_check_condition (GMT, Ctrl->G.mode && Ctrl->M.active, "Syntax error -Gc option: Cannot be used with -M.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.mode && Ctrl->W.active, "Syntax error -Gc option: Cannot be used with -W.\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->G.mode && Ctrl->D.line, "Syntax error -Gc option: Cannot be used with -D...v<pen>.\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->M.active && Ctrl->F.get_text, "Syntax error -M option: Cannot be used with -F...+l|h.\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
@@ -573,7 +598,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 	double plot_x = 0.0, plot_y = 0.0, save_angle = 0.0, xx[2] = {0.0, 0.0}, yy[2] = {0.0, 0.0}, *in = NULL;
 	double offset[2], tmp, *c_x = NULL, *c_y = NULL, *c_angle = NULL;
 
-	char text[GMT_BUFSIZ], buffer[GMT_BUFSIZ], pjust_key[5], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
+	char text[GMT_BUFSIZ], buffer[GMT_BUFSIZ], label[GMT_BUFSIZ], pjust_key[5], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
 	char *paragraph = NULL, *line = NULL, *curr_txt = NULL, *in_txt = NULL, **c_txt = NULL;
 	char this_size[GMT_TEXT_LEN256], this_font[GMT_TEXT_LEN256], just_key[5], txt_f[GMT_TEXT_LEN256];
 	int is_old_format = GMT_NOTSET;
@@ -610,7 +635,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 #endif
 	n_expected_cols = 3 + Ctrl->Z.active + Ctrl->F.nread;
 	if (Ctrl->M.active) n_expected_cols += 3;
-
+	if (Ctrl->F.get_text) n_expected_cols--;
 	add = !(T.x_offset == 0.0 && T.y_offset == 0.0);
 	if (add && Ctrl->D.justify) T.boxflag |= 64;
 
@@ -719,7 +744,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 					GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad justification info (set to LB)\n", n_read);
 					T.block_justify = 1;
 				}
-				if (nscan != (int)n_expected_cols) {
+				if (nscan < (int)n_expected_cols) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Record %d had incomplete paragraph information, skipped)\n", n_read);
 					continue;
 				}
@@ -797,6 +822,9 @@ int GMT_pstext (void *V_API, int mode, void *args)
 				for (k = 0; k < Ctrl->F.nread; k++) {
 					nscan += GMT_strtok (buffer, " \t", &pos, text);
 					switch (Ctrl->F.read[k]) {
+						case 'a':
+							T.paragraph_angle = atof (text);
+							break;
 						case 'f':
 							T.font = Ctrl->F.font;
 							if (GMT_getfont (GMT, text, &T.font)) GMT_Report (API, GMT_MSG_NORMAL, "Record %d had bad font (set to %s)\n", n_read, GMT_putfont (GMT, T.font));
@@ -807,20 +835,28 @@ int GMT_pstext (void *V_API, int mode, void *args)
 								}
 							}
 							break;
-						case 'a':
-							T.paragraph_angle = atof (text);
-							break;
 						case 'j':
 							T.block_justify = GMT_just_decode (GMT, text, 12);
 							break;
 					}
 				}
-				in_txt = &buffer[pos];
+				if (Ctrl->F.get_text == GET_REC_TEXT) in_txt = &buffer[pos];
 			}
-
+			if (Ctrl->F.get_text == GET_SEG_HEADER) {
+				if (GMT->current.io.segment_header[0] == 0)
+					GMT_Report (API, GMT_MSG_NORMAL, "No active segment header to use; text is blank\n");
+				strcpy (label, GMT->current.io.segment_header);
+				in_txt = label;
+			}
+			else if (Ctrl->F.get_text == GET_SEG_LABEL) {
+				if (!GMT_parse_segment_item (GMT, GMT->current.io.segment_header, "-L", label))
+					GMT_Report (API, GMT_MSG_NORMAL, "No active segment label to use; text is blank\n");
+				in_txt = label;
+			}
+			
 			nscan += GMT_load_aspatial_string (GMT, GMT->current.io.OGR, text_col, in_txt);	/* Substitute OGR attribute if used */
 
-			if (nscan != (int)n_expected_cols) {
+			if (nscan < (int)n_expected_cols) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Record %d is incomplete (skipped)\n", n_read);
 				continue;
 			}
