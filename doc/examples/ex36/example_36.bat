@@ -5,6 +5,8 @@ REM Purpose:    Illustrate sphinterpolate with Mars radii data
 REM GMT progs:  psxy, makecpt, grdimage, sphinterpolate
 REM DOS calls:  del
 REM
+
+echo GMT EXAMPLE 36
 set ps=example_36.ps
 
 REM Interpolate data of Mars radius from Mariner9 and Viking Orbiter spacecrafts
