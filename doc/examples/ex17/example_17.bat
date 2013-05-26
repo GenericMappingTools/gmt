@@ -28,11 +28,11 @@ gmt grdimage india_topo.nc -Iindia_topo_i.nc -J -Cgray.cpt -O -K >> %ps%
 
 REM Finally undo clipping and overlay basemap
 
-gmt pscoast -R -J -O -K -Q -B10f5:."Clipping of Images": >> %ps%
+gmt pscoast -R -J -O -K -Q -B10f5 -B+t"Clipping of Images" >> %ps%
 
 REM Put a color legend on top of the land mask
 
-gmt psscale -D4i/7.6i/4i/0.2ih -Cgeoid.cpt -B5f1/:m: -I -O -K >> %ps%
+gmt psscale -D4i/7.6i/4i/0.2ih -Cgeoid.cpt -Bx5f1 -By+lm -I -O -K >> %ps%
 
 REM Add a text paragraph (Note double %% to get a single % in DOS)
 echo 62 | gawk "{printf \"%%c 90 -10 12p 3i j\n\", $1}" > tmp
