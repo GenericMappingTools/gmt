@@ -55,22 +55,22 @@ gmt_get_field() {
 #	Return w/e/s/n from given table file(s)
 #	May also add -Idx/dy to round off answer
 gmt_get_region() {
-	printf "%s/%s/%s/%s\n" `minmax -C $* | cut -d'	' -f1-4`
+	printf "%s/%s/%s/%s\n" `gmt minmax -C $* | cut -d'	' -f1-4`
 }
 
 #	Return the w/e/s/n from the header in grd file
 gmt_get_gridregion() {
-	printf "%s/%s/%s/%s\n" `grdinfo -C $* | cut -d'	' -f2-5`
+	printf "%s/%s/%s/%s\n" `gmt grdinfo -C $* | cut -d'	' -f2-5`
 }
 
 #	Return the current map width (expects -R and -J settings)
 gmt_map_width() {
-	mapproject $* /dev/null -V 2>&1 | grep Transform | awk -F/ '{print $5}'
+	gmt mapproject $* /dev/null -V 2>&1 | grep Transform | awk -F/ '{print $5}'
 }
 
 #	Return the current map height (expects -R and -J settings)
 gmt_map_height() {
-	mapproject $* /dev/null -V 2>&1 | grep Transform | awk -F/ '{print $7}' | cut -f1 -d' '
+	gmt mapproject $* /dev/null -V 2>&1 | grep Transform | awk -F/ '{print $7}' | cut -f1 -d' '
 }
 
 # Make output PostScript file name based on script base name
@@ -88,5 +88,5 @@ gmt_set_framename() {
 # For animations: Increment frame counter by one
 
 gmt_set_framenext() {
-	gmtmath -Q $1 1 ADD =
+	gmt gmtmath -Q $1 1 ADD =
 }
