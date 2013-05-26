@@ -35,27 +35,27 @@
 
 struct MY_FFT_PROGRAM_CTRL {	/* Here is where you collect your programs specific options */
 	struct In {	/* Input grid file */
-		unsigned int active;	/* True if this option was specified */
+		unsigned int active;	/* 1 if this option was specified */
 		char *file;	/* Name of input grid file */
 	} In;
 	struct A {	/* -A<row/col> specifies location where a spike will be added */
-		unsigned int active;	/* True if this option was specified */
+		unsigned int active;	/* 1 if this option was specified */
 		unsigned int row, col;	/* Location in the grid for spike */
 	} A;
 	struct D {	/* -D<dir> sets which wavenumbers to use (r|x|y) */
-		unsigned int active;	/* True if this option was specified */
+		unsigned int active;	/* 1 if this option was specified */
 		char dir;	/* 0, 1, or 2 */
 	} D;
 	struct F {	/* -F<width> sets Gaussian filter width */
-		unsigned int active;	/* True if this option was specified */
+		unsigned int active;	/* 1 if this option was specified */
 		double width;	/* Width Gaussian filter */
 	} F;
 	struct G {	/* -G<outfile> sets the output file name */
-		unsigned int active;	/* True if this option was specified */
+		unsigned int active;	/* 1 if this option was specified */
 		char *file;	/* The filename */
 	} G;
 	struct N {	/* -N[f|q|s<nx>/<ny>][+e|m|n][+t<width>][+w[<suffix>]][+z[p]] */
-		unsigned int active;	/* True if this option was specified */
+		unsigned int active;	/* 1 if this option was specified */
 		void *info;	/* Provided by the API */
 	} N;
 };
