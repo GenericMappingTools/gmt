@@ -57,7 +57,7 @@ echo 0.22 0.27 12p,Symbol -30 CB a >> tmp
 echo -0.33333 0.6 12p,Times-Roman 30 LB 120\312 >> tmp
 gmt pstext -R -J -O -K -Dj0.05i tmp -F+f+a+j >> %ps%
 
-echo 0 0 0 120 | gmt psxy -R -J -O -Sml1i -W1p -Gblack >> %ps%
+echo 0 0 0.5i 0 120 | gmt psxy -R -J -O -Sm0.15i+e -W1p -Gblack >> %ps%
 
 REM Clean up
 del .gmt*

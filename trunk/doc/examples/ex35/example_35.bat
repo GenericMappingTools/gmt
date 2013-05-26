@@ -5,6 +5,8 @@ REM Purpose:    Illustrate sphtriangulate and sphdistance with GSHHG crude data
 REM GMT progs:  pscoast, psxy, makecpt, grdimage, grdcontour, sphtriangulate, sphdistance
 REM DOS calls:  del
 REM
+
+echo GMT EXAMPLE 35
 set ps=example_35.ps
 
 REM Get the crude GSHHS data, select GMT format, and decimate to ~20%:

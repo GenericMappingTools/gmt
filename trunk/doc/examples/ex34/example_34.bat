@@ -5,6 +5,8 @@ REM Purpose:    Illustrate pscoast with DCW country polygons
 REM GMT progs:  pscoast, makecpt, grdimage, grdgradient
 REM DOS calls:  del
 REM
+
+echo GMT EXAMPLE 34
 set ps=example_34.ps
 
 REM Extract a subset of ETOPO2m for this part of Europe
