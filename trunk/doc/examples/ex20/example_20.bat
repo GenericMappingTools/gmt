@@ -12,7 +12,7 @@ set ps=example_20.ps
 REM Plot a world-map with volcano symbols of different sizes
 REM on top given locations and sizes in hotspots.d
 
-gmt pscoast -Rg -JR9i -B60/30:."Hotspot Islands and Cities": -Gdarkgreen -Slightblue -Dc -A5000 -K -U"Example 20 in Cookbook" > %ps%
+gmt pscoast -Rg -JR9i -Bx60 -By30 -B+t"Hotspot Islands and Cities" -Gdarkgreen -Slightblue -Dc -A5000 -K -U"Example 20 in Cookbook" > %ps%
 
 echo 55.5 -21.0 0.25 > hotspots.d
 echo 63.0 -49.0 0.25 >> hotspots.d

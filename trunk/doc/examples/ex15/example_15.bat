@@ -12,7 +12,7 @@ set ps=example_15.ps
 gmt gmtconvert ship.xyz -bod > ship.b
 set region=-R245/255/20/30
 gmt nearneighbor %region% -I10m -S40k -Gship.nc ship.b -bi3
-gmt grdcontour ship.nc -JM3i -P -B2WSne -C250 -A1000 -Gd2i -K -U"Example 15 in Cookbook" > %ps%
+gmt grdcontour ship.nc -JM3i -P -B2 -BWSne -C250 -A1000 -Gd2i -K -U"Example 15 in Cookbook" > %ps%
 REM
 gmt blockmedian %region% -I10m ship.b -bi3 -bod > ship_10m.b
 gmt surface %region% -I10m ship_10m.b -Gship.nc -bi3
