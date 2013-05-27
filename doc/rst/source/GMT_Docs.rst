@@ -4881,8 +4881,8 @@ standard parallels were originally selected by Adams to provide a
 maximum scale error between latitudes 30.5N and 47.5N of 0.5-1%. Some
 areas, like Florida, experience scale errors of up to 2.5%.
 
-(American) polyconic projection (**-Jpoly** **-JPoly**
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+(American) polyconic projection (**-Jpoly** **-JPoly**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The polyconic projection, in Europe usually referred to as the American
 polyconic projection, was introduced shortly before 1820 by the
