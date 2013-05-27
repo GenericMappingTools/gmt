@@ -26,6 +26,7 @@
  */
 
 #define THIS_MODULE GMT_ID_X2SYS_REPORT /* I am x2sys_report */
+#define MODULE_USAGE "Report statistics from crossover data base"
 
 #include "x2sys.h"
 

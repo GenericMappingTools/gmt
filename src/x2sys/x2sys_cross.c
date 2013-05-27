@@ -29,6 +29,7 @@
  */
 
 #define THIS_MODULE GMT_ID_X2SYS_CROSS /* I am x2sys_cross */
+#define MODULE_USAGE "Calculate crossovers between track data files"
 
 #include "x2sys.h"
 

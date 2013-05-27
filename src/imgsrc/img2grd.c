@@ -53,6 +53,7 @@
  */
 
 #define THIS_MODULE GMT_ID_IMG2GRD /* I am img2grd */
+#define MODULE_USAGE "Extract a subset from an img file in Mercator or Geographic format"
 
 #include "gmt_imgsubs.h"
 #include "gmt_dev.h"

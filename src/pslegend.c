@@ -26,6 +26,7 @@
  */
 
 #define THIS_MODULE GMT_ID_PSLEGEND /* I am pslegend */
+#define MODULE_USAGE "Plot legends on maps"
 
 #include "gmt_dev.h"
 

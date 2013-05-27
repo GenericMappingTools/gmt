@@ -20,6 +20,7 @@
  */
 
 #define THIS_MODULE GMT_ID_PSPOLAR /* I am pspolar */
+#define MODULE_USAGE "Plot polarities on the inferior focal half-sphere on maps"
 
 #include "gmt_dev.h"
 

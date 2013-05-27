@@ -79,7 +79,7 @@ minmax	core	Find extreme values in data tables
 nearneighbor	core	Grid table data using a \"Nearest neighbor\" algorithm
 originator	spotter	Associate seamounts with nearest hotspot point sources
 project	core	Project table data onto lines or great circles, generate tracks, or translate coordinates
-ps2raster	core	Convert [E]PS file(s) to other formats using GhostScript.
+ps2raster	core	Convert [E]PS file(s) to other formats using GhostScript
 psbasemap	core	Plot PostScript base maps
 psclip	core	Initialize or terminate polygonal clip paths
 pscoast	core	Plot continents, shorelines, rivers, and borders on maps

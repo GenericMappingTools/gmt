@@ -27,6 +27,7 @@
  */
 
 #define THIS_MODULE GMT_ID_X2SYS_BINLIST /* I am x2sys_binlist */
+#define MODULE_USAGE "Create bin index listing from track data files"
 
 #include "x2sys.h"
 

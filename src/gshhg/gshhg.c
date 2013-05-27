@@ -43,6 +43,7 @@
  *	Contact info: www.soest.hawaii.edu/pwessel */
 
 #define THIS_MODULE GMT_ID_GSHHG /* I am gshhg */
+#define MODULE_USAGE "Extract data tables from binary GSHHS or WDBII data files"
 
 #include "gmt_dev.h"
 #include "gshhg.h"

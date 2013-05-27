@@ -29,6 +29,7 @@
  */
 
 #define THIS_MODULE GMT_ID_MAKECPT /* I am makecpt */
+#define MODULE_USAGE "Make GMT color palette tables"
 
 #include "gmt_dev.h"
 

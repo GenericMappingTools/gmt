@@ -31,6 +31,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GRDRASTER /* I am grdraster */
+#define MODULE_USAGE "Extract subregion from a binary raster and save as a GMT grid"
 
 #include "gmt_dev.h"
 #include "common_byteswap.h"

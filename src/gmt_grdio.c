@@ -61,7 +61,6 @@
  * All functions that begin with lower case gmt_* are private to this file only.
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
-#define GMT_WITH_NO_PS
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 #include "common_byteswap.h"

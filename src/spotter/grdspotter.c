@@ -103,6 +103,7 @@
  */
  
 #define THIS_MODULE GMT_ID_GRDSPOTTER /* I am grdspotter */
+#define MODULE_USAGE "Create CVA image from a gravity or topography grid"
 
 #include "spotter.h"
 

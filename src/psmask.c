@@ -37,6 +37,7 @@
  */
 
 #define THIS_MODULE GMT_ID_PSMASK /* I am psmask */
+#define MODULE_USAGE "Use data tables to clip or mask map areas with no coverage"
 
 #include "gmt_dev.h"
 

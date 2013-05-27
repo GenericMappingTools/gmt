@@ -26,6 +26,7 @@
  */
 
 #define THIS_MODULE GMT_ID_X2SYS_MERGE /* I am x2sys_merge */
+#define MODULE_USAGE "Merge an updated COEs table (smaller) into the main table (bigger)"
 
 #include "gmt_dev.h"
 

@@ -29,6 +29,7 @@
  */
  
 #define THIS_MODULE GMT_ID_SAMPLE1D /* I am sample1d */
+#define MODULE_USAGE "Resample 1-D table data using splines"
 
 #include "gmt_dev.h"
 

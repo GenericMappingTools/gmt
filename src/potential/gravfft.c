@@ -32,6 +32,7 @@
  * */
 
 #define THIS_MODULE GMT_ID_GRAVFFT /* I am gravfft */
+#define MODULE_USAGE "Compute gravitational attraction of 3-D surfaces and a little more (ATTENTION z positive up)"
 
 #include "gmt_dev.h"
 

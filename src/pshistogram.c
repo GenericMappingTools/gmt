@@ -24,6 +24,7 @@
  */
 
 #define THIS_MODULE GMT_ID_PSHISTOGRAM /* I am pshistogram */
+#define MODULE_USAGE "Calculate and plot histograms"
 
 #include "gmt_dev.h"
 

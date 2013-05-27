@@ -26,6 +26,7 @@
  */
 
 #define THIS_MODULE GMT_ID_X2SYS_LIST /* I am x2sys_list */
+#define MODULE_USAGE "Extract subset from crossover data base"
 
 #include "x2sys.h"
 

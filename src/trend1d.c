@@ -72,6 +72,7 @@
  */
 
 #define THIS_MODULE GMT_ID_TREND1D /* I am trend1d */
+#define MODULE_USAGE "Fit a [weighted] [robust] polynomial [or Fourier] model for y = f(x) to xy[w] data"
 
 #include "gmt_dev.h"
 

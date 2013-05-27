@@ -39,6 +39,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GRDBLEND /* I am grdblend */
+#define MODULE_USAGE "Blend several partially over-lapping grids into one larger grid"
 
 #include "gmt_dev.h"
 

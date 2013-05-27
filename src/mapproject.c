@@ -38,6 +38,7 @@
  */
 
 #define THIS_MODULE GMT_ID_MAPPROJECT /* I am mapproject */
+#define MODULE_USAGE "Do forward and inverse map transformations, datum conversions and geodesy"
 
 #include "gmt_dev.h"
 

@@ -25,6 +25,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GRDPASTE /* I am grdpaste */
+#define MODULE_USAGE "Join two grids along their common edge"
 
 #include "gmt_dev.h"
 

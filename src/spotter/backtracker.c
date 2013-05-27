@@ -71,6 +71,7 @@
  */
 
 #define THIS_MODULE GMT_ID_BACKTRACKER /* I am backtracker */
+#define MODULE_USAGE "Generate forward and backward flowlines and hotspot tracks"
 
 #include "spotter.h"
 

@@ -26,6 +26,7 @@
  */
 
 #define THIS_MODULE GMT_ID_PSSCALE /* I am psscale */
+#define MODULE_USAGE "Plot a gray-scale or color-scale on maps"
 
 #include "gmt_dev.h"
 

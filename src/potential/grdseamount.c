@@ -10,6 +10,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GRDSEAMOUNT /* I am grdseamount */
+#define MODULE_USAGE "Compute synthetic seamount (Gaussian or cone, circular or elliptical) bathymetry"
 
 #include "gmt_dev.h"
 

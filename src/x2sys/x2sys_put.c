@@ -30,6 +30,7 @@
  */
 
 #define THIS_MODULE GMT_ID_X2SYS_PUT /* I am x2sys_put */
+#define MODULE_USAGE "Update track index database from track bin file"
 
 #include "x2sys.h"
 

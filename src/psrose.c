@@ -31,6 +31,7 @@
  */
  
 #define THIS_MODULE GMT_ID_PSROSE /* I am psrose */
+#define MODULE_USAGE "Plot a polar histogram (rose, sector, windrose diagrams)"
 
 #include "gmt_dev.h"
 

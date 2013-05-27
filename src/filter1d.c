@@ -39,6 +39,7 @@
  */
 
 #define THIS_MODULE GMT_ID_FILTER1D /* I am filter1d */
+#define MODULE_USAGE "Do time domain filtering of 1-D data tables"
 
 #include "gmt_dev.h"
 

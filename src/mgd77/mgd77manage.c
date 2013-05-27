@@ -19,6 +19,7 @@
  */
 
 #define THIS_MODULE GMT_ID_MGD77MANAGE /* I am mgd77manage */
+#define MODULE_USAGE "Manage the content of MGD77+ files"
 
 #include "gmt_dev.h"
 #include "mgd77.h"

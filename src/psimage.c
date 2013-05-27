@@ -26,6 +26,7 @@
  */
 
 #define THIS_MODULE GMT_ID_PSIMAGE /* I am psimage */
+#define MODULE_USAGE "Place images or EPS files on maps"
 
 #include "gmt_dev.h"
 

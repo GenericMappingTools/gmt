@@ -25,6 +25,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GRD2XYZ /* I am grd2xyz */
+#define MODULE_USAGE "Convert grid file to data table"
 
 #include "gmt_dev.h"
 

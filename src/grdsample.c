@@ -30,6 +30,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GRDSAMPLE /* I am grdsample */
+#define MODULE_USAGE "Resample a grid onto a new lattice"
 
 #include "gmt_dev.h"
 

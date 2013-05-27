@@ -30,6 +30,7 @@
  */
  
 #define THIS_MODULE GMT_ID_GRDGRADIENT /* I am grdgradient */
+#define MODULE_USAGE "Compute directional gradients from a grid"
 
 #include "gmt_dev.h"
 

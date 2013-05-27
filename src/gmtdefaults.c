@@ -25,8 +25,8 @@
  *
  */
  
-#define GMT_WITH_NO_PS
 #define THIS_MODULE GMT_ID_GMTDEFAULTS /* I am gmtdefaults */
+#define MODULE_USAGE "List current GMT default parameters"
 
 #include "gmt_dev.h"
 

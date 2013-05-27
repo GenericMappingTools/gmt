@@ -29,6 +29,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GRDCLIP /* I am grdclip */
+#define MODULE_USAGE "Clip the range of grids"
 
 #include "gmt_dev.h"
 

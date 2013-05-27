@@ -63,6 +63,7 @@
  */
 
 #define THIS_MODULE GMT_ID_ROTCONVERTER /* I am rotconverter */
+#define MODULE_USAGE "Manipulate total reconstruction and stage rotations"
 
 #include "spotter.h"
 

@@ -31,6 +31,7 @@
  */
  
 #define THIS_MODULE GMT_ID_SPHTRIANGULATE /* I am sphtriangulate */
+#define MODULE_USAGE "Delaunay or Voronoi construction of spherical lon,lat data"
 
 #include "gmt_dev.h"
 #include "gmt_sph.h"

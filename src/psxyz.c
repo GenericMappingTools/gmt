@@ -25,6 +25,7 @@
  */
 
 #define THIS_MODULE GMT_ID_PSXYZ /* I am psxyz */
+#define MODULE_USAGE "Plot lines, polygons, and symbols in 3-D"
 
 #include "gmt_dev.h"
 

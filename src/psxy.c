@@ -25,6 +25,7 @@
  */
 
 #define THIS_MODULE GMT_ID_PSXY /* I am psxy */
+#define MODULE_USAGE "Plot lines, polygons, and symbols on maps"
 
 #include "gmt_dev.h"
 

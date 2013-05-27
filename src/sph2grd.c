@@ -23,6 +23,7 @@
  */
  
 #define THIS_MODULE GMT_ID_SPH2GRD /* I am sph2grd */
+#define MODULE_USAGE "Compute grid from spherical harmonic coefficients"
 
 #include "gmt_dev.h"
 

@@ -82,6 +82,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GRDTREND /* I am grdtrend */
+#define MODULE_USAGE "Fit trend surface to grids and compute residuals"
 
 #include "gmt_dev.h"
 

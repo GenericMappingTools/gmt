@@ -33,6 +33,7 @@
  */
  
 #define THIS_MODULE GMT_ID_GRDEDIT /* I am grdedit */
+#define MODULE_USAGE "Modify header or content of a grid"
 
 #include "gmt_dev.h"
 
