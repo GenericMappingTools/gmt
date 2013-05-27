@@ -7,21 +7,24 @@ sphinterpolate - Spherical gridding in tension of data on a sphere
 `Synopsis <#toc1>`_
 -------------------
 
-.. include:: ../../common_SYN_OPTs.rst_
+.. include:: common_SYN_OPTs.rst_
 
-**sphinterpolate** [ *table* ] **-G**\ *grdfile* [
-**-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
-] [ **-Q**\ *mode*\ [/*options*] ] [
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-V**\ [*level*\ ]
-] [ **-Z** ] [ **-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
-**-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
+**sphinterpolate** [ *table* ] **-G**\ *grdfile*
+[ |SYN_OPT-I| ]
+[ **-Q**\ *mode*\ [/*options*] ]
+[ |SYN_OPT-R| ]
+[ |SYN_OPT-V| ]
+[ **-Z** ]
+[ |SYN_OPT-b| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ **-r** ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **sphinterpolate** reads one or more ASCII [or binary] files (or
 standard input) containing lon, lat, f and performs a Delaunay
@@ -31,19 +34,19 @@ affect the outcome, such as choosing local versus global gradient
 estimation or optimize the tension selection to satisfy one of four
 criteria.
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 **-G**\ *grdfile*
     Name of the output grid to hold the interpolation.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_intables.rst_
+.. include:: explain_intables.rst_
 
-.. include:: ../../explain_-I.rst_
+.. include:: explain_-I.rst_
 
 **-Q**\ *mode*\ [/*options*]
     Specify one of four ways to calculate tension factors to preserve
@@ -67,48 +70,48 @@ criteria.
     bound on weighted sum of squares of deviations from data.
 
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-Rgeo.rst_
+.. include:: explain_-Rgeo.rst_
 
 **-T**
     Use variable tension (ignored with **-Q**\ 0 [constant]
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. include:: explain_-V.rst_
 
 **-Z**
     Before interpolation, scale data by the maximum data range [no
     scaling].
 
 .. |Add_-bi| replace:: [Default is 3 input columns].
-.. include:: ../../explain_-bi.rst_
+.. include:: explain_-bi.rst_
 
 .. |Add_-bo| replace:: [Default is same as input].
-.. include:: ../../explain_-bo.rst_
+.. include:: explain_-bo.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-h.rst_
+.. include:: explain_-h.rst_
 
-.. include:: ../../explain_colon.rst_
+.. include:: explain_colon.rst_
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_nodereg.rst_
+.. include:: explain_nodereg.rst_
 
-.. include:: ../../explain_help.rst_
+.. include:: explain_help.rst_
 
-`Ascii Format Precision <#toc6>`_
----------------------------------
+Ascii Format Precision
+----------------------
 
 The ASCII output formats of numerical data are controlled by parameters
 in your `gmt.conf <gmt.conf.html>`_ file. Longitude and latitude are formatted
-according to **FORMAT\_GEO\_OUT**, whereas other values are formatted
-according to **FORMAT\_FLOAT\_OUT**. Be aware that the format in effect
+according to **FORMAT_GEO_OUT**, whereas other values are formatted
+according to **FORMAT_FLOAT_OUT**. Be aware that the format in effect
 can lead to loss of precision in the output, which can lead to various
 problems downstream. If you find the output is not written with enough
 precision, consider switching to binary output (**-bo** if available) or
-specify more decimals using the **FORMAT\_FLOAT\_OUT** setting.
+specify more decimals using the **FORMAT_FLOAT_OUT** setting.
 
-`Grid Values Precision <#toc7>`_
---------------------------------
+Grid Values Precision
+---------------------
 
 Regardless of the precision of the input data, GMT programs that create
 grid files will internally hold the grids in 4-byte floating point
@@ -119,16 +122,16 @@ precision once GMT operates on the grid or writes out new grids. To
 limit loss of precision when processing data you should always consider
 normalizing the data prior to processing.
 
-`Examples <#toc8>`_
--------------------
+Examples
+--------
 
 To interpolate the points in the file testdata.txt on a global 1x1
 degree grid with no tension, use
 
     sphinterpolate testdata.txt -Rg -I1 -Gsolution.nc
 
-`See Also <#toc9>`_
--------------------
+See Also
+--------
 
 `GMT <GMT.html>`_, `greenspline <greenspline.html>`_
 `sphdistance <sphdistance.html>`_
