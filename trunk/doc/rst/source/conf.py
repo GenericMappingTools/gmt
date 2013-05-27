@@ -231,7 +231,6 @@ for dirpath, dirnames, filenames in os.walk('.'):
             srcfile = os.path.normpath(os.path.join(dirpath, f[:-4])) 
             outfile = srcfile.replace(os.sep, '-') 
             outfile = outfile.replace('supplements-', '') 
-            outfile = outfile.replace('dbase-', '') 
             outfile = outfile.replace('gshhg-', '') 
             outfile = outfile.replace('imgsrc-', '') 
             outfile = outfile.replace('meca-', '') 

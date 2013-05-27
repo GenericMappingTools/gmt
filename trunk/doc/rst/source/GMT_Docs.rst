@@ -734,7 +734,7 @@ correctly with a warning under compatibility mode:
    the ESRI ASCII exchange format is one of our recognized formats.
    Also, **-A** (no arguments) is deprecated; use **-Az** instead.
 
-#. `dbase/grdraster <supplements/dbase/grdraster.html>`_: The
+#. `dbase/grdraster <grdraster.html>`_: Now in the main GMT core.  The
    H\ *skip* field in ``grdraster.info`` is no longer expected as we automatically
    determine if a raster has a
    `GMT <http://gmt.soest.hawaii.edu>`_ header. Also, to output
@@ -3219,8 +3219,8 @@ data sets of general use. Normally, the **GMT_DATADIR** directory (or
 directories: add multiple paths by separating them with colons
 (semi-colons under Windows)) will hold data sets of a general nature
 (tables, grids), although a particular use is to make available large
-grids accessible via the supplemental programs
-`grdraster <supplements/dbase/grdraster.html>`__ or
+grids accessible via
+`grdraster <grdraster.html>`__ or the supplemental program
 `img2grd <supplements/imgsrc/img2grd.html>`__; see Appendix [app:A] for
 information about these supplemental programs. The **GMT_USERDIR**
 directory may hold miscellaneous data sets more specific to the user;
@@ -5896,8 +5896,7 @@ Image presentations
 
 As our second example we will demonstrate how to make color images from
 gridded data sets (again, we will defer the actual making of grid files
-to later examples). We will use the supplemental program
-`grdraster <supplements/dbase/grdraster.html>`__ to extract 2-D grid files
+to later examples). We will use `grdraster <grdraster.html>`__ to extract 2-D grid files
 of bathymetry and Geosat geoid heights and put the two images on the
 same page. The region of interest is the Hawaiian islands, and due to
 the oblique trend of the island chain we prefer to rotate our
@@ -5936,15 +5935,14 @@ the lower left and upper right corner of region. In our case we choose
     rm -f HI_topo2_int.nc ?.cpt
 
 The first step extracts the 2-D data sets from the local data base using
-`grdraster <supplemments/dbase/grdraster.html>`__, which is a supplemental
-utility program (see Appendix [app:A]) that may be adapted to reflect
+`grdraster <grdraster.html>`__ that may be adapted to reflect
 the nature of your data base format. It automatically figures out the
 required extent of the region given the two corners points and the
 projection. The extreme meridians and parallels enclosing the oblique
 region is **-R**\ 159:50/220:10/3:10/47:35. This is the area extracted
-by `grdraster <supplemments/dbase/grdraster.html>`__. For your convenience
+by `grdraster <grdraster.html>`__. For your convenience
 we have commented out those lines and provided the two extracted files
-so you do not need `grdraster <supplemments/dbase/grdraster.html>`__ to try
+so you do not need `grdraster <grdraster.html>`__ to try
 this example. By using the embedded grid file format mechanism we saved
 the topography using kilometers as the data unit. We now have two grid
 files with bathymetry and geoid heights, respectively. We use
@@ -6223,7 +6221,7 @@ A 3-D perspective mesh plot
 This example will illustrate how to make a fairly complicated composite
 figure. We need a subset of the ETOPO5 bathymetry [24]_ and Geosat geoid
 data sets which we will extract from the local data bases using
-`grdraster <supplemments/dbase/grdraster.html>`__. We would like to show a
+`grdraster <grdraster.html>`__. We would like to show a
 2-layer perspective plot where layer one shows a contour map of the
 marine geoid with the location of the Hawaiian islands superposed, and a
 second layer showing the 3-D mesh plot of the topography. We also add an
@@ -9218,15 +9216,6 @@ some of these programs work on are not distributed with these packages;
 they must be obtained separately. The contents of the supplemental
 archive may change without notice; at this writing it contains these
 directories:
-
-dbase: gridded data extractor
------------------------------
-
-This package contains `grdraster <supplemments/dbase/grdraster.html>`__
-which you can use to extract data from global gridded data sets such as
-those available from NGDC. We have used it to prepare some of the grids
-in the examples (Chapter [ch:6]). You can also customize it to read your
-own data sets. The package is maintained by the *GMT* developers.
 
 gshhg: GSHHG data extractor
 ---------------------------
