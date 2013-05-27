@@ -29,10 +29,10 @@ Welcome to GMT5's documentation!
 +-----------------------------------+-----------------+-----------------+
 | -- SUPPLEMENTS --                                                     |
 +=================+=================+=================+=================+
-| .. toctree::    | .. toctree::    | .. toctree::    | .. toctree::    |
-|    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |
+|                 | .. toctree::    | .. toctree::    | .. toctree::    |
+|                 |    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |
 |                 |                 |                 |                 |
-|    SUP_DB       |    SUP_GSHHS    |    SUP_IMGSRC   |    SUP_MECA     |
+|                 |    SUP_GSHHS    |    SUP_IMGSRC   |    SUP_MECA     |
 +-----------------+-----------------+-----------------+-----------------+
 | .. toctree::    | .. toctree::    | .. toctree::    | .. toctree::    |
 |    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |
