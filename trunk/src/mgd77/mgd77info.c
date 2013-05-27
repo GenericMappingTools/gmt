@@ -22,6 +22,7 @@
  */
  
 #define THIS_MODULE GMT_ID_MGD77INFO /* I am mgd77info */
+#define MODULE_USAGE "Extract information about MGD77 files"
 
 #include "gmt_dev.h"
 #include "mgd77.h"

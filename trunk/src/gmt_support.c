@@ -77,7 +77,6 @@
  *  gmt_xyz_to_lab          Convert CIELAB XYZ to LAB
  */
 
-#define GMT_WITH_NO_PS
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 

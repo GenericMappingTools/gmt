@@ -28,6 +28,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GRDFFT /* I am grdfft */
+#define MODULE_USAGE "Do mathematical operations on grids in the wavenumber (or frequency) domain"
 
 #include "gmt_dev.h"
 

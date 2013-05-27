@@ -34,6 +34,7 @@
  */
 
 #define THIS_MODULE GMT_ID_PSSEGYZ /* I am pssegyz */
+#define MODULE_USAGE "Plot a SEGY file on a map in 3-D"
 
 #include "gmt_dev.h"
 #include "segy_io.h"

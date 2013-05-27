@@ -73,6 +73,7 @@
  */
 
 #define THIS_MODULE GMT_ID_FITCIRCLE /* I am fitcircle */
+#define MODULE_USAGE "Find mean position and best-fitting great- or small-circle to points on sphere"
 
 #include "gmt_dev.h"
 

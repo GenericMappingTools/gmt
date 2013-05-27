@@ -27,6 +27,7 @@
  */
 
 #define THIS_MODULE GMT_ID_PSTEXT /* I am pstext */
+#define MODULE_USAGE "Plot or typeset text on maps"
 
 #include "gmt_dev.h"
 
@@ -60,7 +61,7 @@ struct PSTEXT_CTRL {
 		struct GMT_FONT font;
 		double angle;
 		int justify, R_justify, nread;
-		unsigned int get_text;	/* 0 = from data record, 1 = segment label (+l), 2 = segment header (+h) */
+		unsigned int get_text;	/* 0 = from data record, 1 = segment label (+l), or 2 = segment header (+h) */
 		char read[4];		/* Contains a, c, f, and/or j in order required to be read from input */
 	} F;
 	struct PSTEXT_G {	/* -G<fill> */
@@ -124,7 +125,7 @@ void *New_pstext_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->D.pen = C->W.pen = GMT->current.setting.map_default_pen;
 	C->C.dx = C->C.dy = 15.0;	/* 15% of font size is default clearance */
 	C->C.percent = true;
-	C->F.justify = 6;	/* CM */
+	C->F.justify = PSL_MC;		/* MC is the default */
 	C->F.font = GMT->current.setting.font_annot[0];		/* Default font */
 	GMT_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);	/* No fill */
 	C->S.pen = GMT->current.setting.map_default_pen;
@@ -145,7 +146,7 @@ void GMT_putwords (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double 
 		offset[0] = 0.01 * T->x_space * T->font.size / PSL_POINTS_PER_INCH;
 		offset[1] = 0.01 * T->y_space * T->font.size / PSL_POINTS_PER_INCH;
 	}
-	else {
+	else {	/* Gave in distance units */
 		offset[0] = T->x_space;
 		offset[1] = T->y_space;
 	}
@@ -250,7 +251,7 @@ int GMT_pstext_usage (struct GMTAPI_CTRL *API, int level, int show_fonts)
 	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pstext [<table>] %s %s [-A] [%s]\n", GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>/<dy>] [-D[j|J]<dx>[/<dy>][v[<pen>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F[a+<angle>][+f<font>][+j<justify>][+c<justify>]] [-G<color>] [%s] [-K] [-L] [-M]\n", GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-F[a+<angle>][+c<justify>][+f<font>][+h|l][+j<justify>]] [-G<color>] [%s] [-K] [-L] [-M]\n", GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N] [-O] [-P] [-Q<case>] [-To|O|c|C] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[<pen>] [%s] [%s] [-Z[<zlevel>|+]]\n", GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s]\n", GMT_a_OPT, GMT_c_OPT, GMT_f_OPT, GMT_h_OPT);
@@ -304,7 +305,7 @@ int GMT_pstext_usage (struct GMTAPI_CTRL *API, int level, int show_fonts)
 	GMT_Message (API, GMT_TIME_NONE, "\t   +h will use as text the most recent segment header.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   +l will use as text the label specified via -L<label> in the most recent segment header.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If an attribute +f|+a|+j is not followed by a value we read the information from the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   data file in the order given on the -F option.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   data file in the order given on the -F option.  Only one of +h or +l can be specified.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: +h|l modifiers cannot be used in paragraph mode (-M).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Paint the box underneath the text with specified color [Default is no paint].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append c to set these boxes as clip paths based on text (and -C).  No text is plotted.\n");
@@ -635,7 +636,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 #endif
 	n_expected_cols = 3 + Ctrl->Z.active + Ctrl->F.nread;
 	if (Ctrl->M.active) n_expected_cols += 3;
-	if (Ctrl->F.get_text) n_expected_cols--;
+	if (Ctrl->F.get_text) n_expected_cols--;	/* No text in the input record */
 	add = !(T.x_offset == 0.0 && T.y_offset == 0.0);
 	if (add && Ctrl->D.justify) T.boxflag |= 64;
 

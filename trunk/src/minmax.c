@@ -25,6 +25,7 @@
  */
 
 #define THIS_MODULE GMT_ID_MINMAX /* I am minmax */
+#define MODULE_USAGE "Find extreme values in data tables"
 
 #include "gmt_dev.h"
 

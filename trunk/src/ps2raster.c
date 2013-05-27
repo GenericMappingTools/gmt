@@ -32,8 +32,8 @@
  * Version:	5 API
  */
 
-#define GMT_WITH_NO_PS
 #define THIS_MODULE GMT_ID_PS2RASTER /* I am ps2raster */
+#define MODULE_USAGE "Convert [E]PS file(s) to other formats using GhostScript"
 
 #include "gmt_dev.h"
 

@@ -103,7 +103,7 @@ struct Gmt_moduleinfo g_module[] = {
 	{"nearneighbor", "core", "Grid table data using a \"Nearest neighbor\" algorithm", &GMT_nearneighbor},
 	{"originator", "spotter", "Associate seamounts with nearest hotspot point sources", &GMT_originator},
 	{"project", "core", "Project table data onto lines or great circles, generate tracks, or translate coordinates", &GMT_project},
-	{"ps2raster", "core", "Convert [E]PS file(s) to other formats using GhostScript.", &GMT_ps2raster},
+	{"ps2raster", "core", "Convert [E]PS file(s) to other formats using GhostScript", &GMT_ps2raster},
 	{"psbasemap", "core", "Plot PostScript base maps", &GMT_psbasemap},
 	{"psclip", "core", "Initialize or terminate polygonal clip paths", &GMT_psclip},
 	{"pscoast", "core", "Plot continents, shorelines, rivers, and borders on maps", &GMT_pscoast},

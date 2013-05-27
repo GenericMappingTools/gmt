@@ -25,6 +25,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GMTWHICH /* I am gmtwhich */
+#define MODULE_USAGE "Find full path to specified files"
 
 #include "gmt_dev.h"
 

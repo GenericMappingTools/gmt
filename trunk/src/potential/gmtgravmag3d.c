@@ -27,6 +27,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GMTGRAVMAG3D /* I am gmtgravmag3d */
+#define MODULE_USAGE "Compute the gravity/magnetic anomaly of a body by the method of Okabe"
 
 #include "gmt_dev.h"
 #include "okbfuns.h"

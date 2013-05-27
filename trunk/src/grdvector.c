@@ -27,6 +27,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GRDVECTOR /* I am grdvector */
+#define MODULE_USAGE "Plot vector field from two component grids"
 
 #include "gmt_dev.h"
 

@@ -28,6 +28,7 @@
  */
 
 #define THIS_MODULE GMT_ID_COLMATH /* I am colmath */
+#define MODULE_USAGE "Do mathematics on columns from data tables"
 
 #include "gmt_dev.h"
 

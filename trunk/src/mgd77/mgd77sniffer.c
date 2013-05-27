@@ -22,6 +22,7 @@
  * ------------------------------------------------------------------*/
 
 #define THIS_MODULE GMT_ID_MGD77SNIFFER /* I am mgd77sniffer */
+#define MODULE_USAGE "Along-track quality control of MGD77 cruises"
 
 #include "mgd77.h"
 #include "gmt_dev.h"

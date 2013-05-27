@@ -26,6 +26,7 @@
  */
 
 #define THIS_MODULE GMT_ID_PSCONTOUR /* I am pscontour */
+#define MODULE_USAGE "Contour table data by direct triangulation"
 
 #include "gmt_dev.h"
 

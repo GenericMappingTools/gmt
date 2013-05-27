@@ -36,6 +36,7 @@
  */
  
 #define THIS_MODULE GMT_ID_SPHDISTANCE /* I am sphdistance */
+#define MODULE_USAGE "Make grid of distances to nearest points on a sphere"
 
 #include "gmt_dev.h"
 #include "gmt_sph.h"

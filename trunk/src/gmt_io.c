@@ -90,7 +90,6 @@
  * Now 64-bit enabled.
  */
 
-#define GMT_WITH_NO_PS
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 #include "common_byteswap.h"

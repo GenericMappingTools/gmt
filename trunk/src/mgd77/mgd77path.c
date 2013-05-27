@@ -16,6 +16,7 @@
  */
  
 #define THIS_MODULE GMT_ID_MGD77PATH /* I am mgd77path */
+#define MODULE_USAGE "Return paths to MGD77 cruises and directories"
 
 #include "gmt_dev.h"
 #include "mgd77.h"

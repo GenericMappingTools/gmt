@@ -25,6 +25,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GMTSPATIAL /* I am gmtspatial */
+#define MODULE_USAGE "Do geospatial operations on lines and polygons"
 
 #include "gmt_dev.h"
 

@@ -29,6 +29,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GMTCONVERT /* I am gmtconvert */
+#define MODULE_USAGE "Convert, paste, or extract columns from data tables"
 
 #include "gmt_dev.h"
 

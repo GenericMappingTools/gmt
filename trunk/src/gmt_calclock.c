@@ -31,7 +31,6 @@
 	W H F Smith, April 2000
 */
 
-#define GMT_WITH_NO_PS
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 

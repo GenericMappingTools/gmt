@@ -27,6 +27,7 @@
  */
  
 #define THIS_MODULE GMT_ID_GMT2KML /* I am gmt2kml */
+#define MODULE_USAGE "Convert GMT data tables to KML files for Google Earth"
 
 #include "gmt_dev.h"
 

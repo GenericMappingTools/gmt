@@ -30,6 +30,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GMTMATH /* I am gmtmath */
+#define MODULE_USAGE "Reverse Polish Notation (RPN) calculator for data tables"
 
 #include "gmt_dev.h"
 

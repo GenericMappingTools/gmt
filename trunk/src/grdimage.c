@@ -26,6 +26,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GRDIMAGE /* I am grdimage */
+#define MODULE_USAGE "Project grids or images and plot them on maps"
 
 #include "gmt_dev.h"
 

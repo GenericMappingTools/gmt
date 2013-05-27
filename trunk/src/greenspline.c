@@ -37,6 +37,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GREENSPLINE /* I am greenspline */
+#define MODULE_USAGE "Interpolate using Green's functions for splines in 1-3 dimensions"
 
 #include "gmt_dev.h"
 

@@ -33,6 +33,7 @@
  */
  
 #define THIS_MODULE GMT_ID_TRIANGULATE /* I am triangulate */
+#define MODULE_USAGE "Do optimal (Delaunay) triangulation and gridding of Cartesian table data"
 
 #include "gmt_dev.h"
 

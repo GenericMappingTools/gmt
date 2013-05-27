@@ -32,6 +32,7 @@
  */
  
 #define THIS_MODULE GMT_ID_NEARNEIGHBOR /* I am nearneighbor */
+#define MODULE_USAGE "Grid table data using a \"Nearest neighbor\" algorithm"
 
 #include "gmt_dev.h"
 

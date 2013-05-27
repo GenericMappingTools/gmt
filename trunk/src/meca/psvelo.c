@@ -24,6 +24,7 @@ PostScript code is written to stdout.
 */
 
 #define THIS_MODULE GMT_ID_PSVELO /* I am psvelo */
+#define MODULE_USAGE "Plot velocity vectors, crosses, and wedges on maps"
 
 #include "gmt_dev.h"
 

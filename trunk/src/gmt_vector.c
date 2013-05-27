@@ -22,7 +22,6 @@
  * Version:	5.x
  */
  
-#define GMT_WITH_NO_PS
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 

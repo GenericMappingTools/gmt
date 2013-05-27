@@ -42,6 +42,7 @@
  */
  
 #define THIS_MODULE GMT_ID_GMTSELECT /* I am gmtselect */
+#define MODULE_USAGE "Select data table subsets based on multiple spatial criteria"
 
 #include "gmt_dev.h"
 

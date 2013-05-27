@@ -29,6 +29,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GRDGRAVMAG3D /* I am grdgravmag3d */
+#define MODULE_USAGE "Computes the gravity effect of one (or two) grids by the method of Okabe"
 
 #include "gmt_dev.h"
 #include "okbfuns.h"

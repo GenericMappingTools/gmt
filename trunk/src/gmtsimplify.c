@@ -39,6 +39,7 @@
 */
 
 #define THIS_MODULE GMT_ID_GMTSIMPLIFY /* I am gmtsimplify */
+#define MODULE_USAGE "Line reduction using the Douglas-Peucker algorithm"
 
 #include "gmt_dev.h"
 

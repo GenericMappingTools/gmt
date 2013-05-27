@@ -34,6 +34,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GRD2CPT /* I am grd2cpt */
+#define MODULE_USAGE "Make linear or histogram-equalized color palette table from grid"
 
 #include "gmt_dev.h"
 

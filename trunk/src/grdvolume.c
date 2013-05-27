@@ -27,6 +27,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GRDVOLUME /* I am grdvolume */
+#define MODULE_USAGE "Calculate grid volume and area constrained by a contour"
 
 #include "gmt_dev.h"
 

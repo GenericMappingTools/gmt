@@ -24,6 +24,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GRDROTATER /* I am grdrotater */
+#define MODULE_USAGE "Finite rotation reconstruction of geographic grid"
 
 #include "spotter.h"
 

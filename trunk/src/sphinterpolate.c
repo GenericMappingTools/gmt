@@ -34,6 +34,7 @@
  */
  
 #define THIS_MODULE GMT_ID_SPHINTERPOLATE /* I am sphinterpolate */
+#define MODULE_USAGE "Spherical gridding in tension of data on a sphere"
 
 #include "gmt_dev.h"
 #include "gmt_sph.h"

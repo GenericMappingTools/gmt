@@ -27,6 +27,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GRDMATH /* I am grdmath */
+#define MODULE_USAGE "Reverse Polish Notation (RPN) calculator for grids (element by element)"
 
 #include "gmt_dev.h"
 

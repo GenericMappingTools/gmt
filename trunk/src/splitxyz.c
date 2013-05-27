@@ -25,6 +25,7 @@
  */
 
 #define THIS_MODULE GMT_ID_SPLITXYZ /* I am splitxyz */
+#define MODULE_USAGE "Split xyz[dh] data tables into individual segments"
 
 #include "gmt_dev.h"
 

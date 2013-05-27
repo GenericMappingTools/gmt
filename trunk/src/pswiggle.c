@@ -32,6 +32,7 @@
  */
  
 #define THIS_MODULE GMT_ID_PSWIGGLE /* I am pswiggle */
+#define MODULE_USAGE "Plot z = f(x,y) anomalies along tracks"
 
 #include "gmt_dev.h"
 

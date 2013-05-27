@@ -28,6 +28,7 @@
  */
 
 #define THIS_MODULE GMT_ID_X2SYS_INIT /* I am x2sys_init */
+#define MODULE_USAGE "Initialize a new x2sys track database"
 
 #include "x2sys.h"
 

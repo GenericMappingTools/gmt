@@ -27,6 +27,7 @@
  */
 
 #define THIS_MODULE GMT_ID_PROJECT /* I am project */
+#define MODULE_USAGE "Project table data onto lines or great circles, generate tracks, or translate coordinates"
 
 #include "gmt_dev.h"
 

@@ -32,6 +32,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GRDREDPOL /* I am grdredpol */
+#define MODULE_USAGE "Compute the Continuous Reduction To the Pole, AKA differential RTP"
 
 #include "gmt_dev.h"
 

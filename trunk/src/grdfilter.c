@@ -28,8 +28,8 @@
 /* OpenMP breaks grdfilter; currently disabled */
 #undef _OPENMP
 
-#define GMT_WITH_NO_PS
 #define THIS_MODULE GMT_ID_GRDFILTER /* I am grdfilter */
+#define MODULE_USAGE "Filter a grid in the space (or time) domain"
 
 #include "gmt_dev.h"
 

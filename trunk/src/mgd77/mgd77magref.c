@@ -15,6 +15,7 @@
  */
 
 #define THIS_MODULE GMT_ID_MGD77MAGREF /* I am mgd77magref */
+#define MODULE_USAGE "Evaluate the IGRF or CM4 magnetic field models"
 
 #include "gmt_dev.h"
 #include "mgd77.h"

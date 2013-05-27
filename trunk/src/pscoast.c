@@ -52,6 +52,7 @@
  */
 
 #define THIS_MODULE GMT_ID_PSCOAST /* I am pscoast */
+#define MODULE_USAGE "Plot continents, countries, shorelines, rivers, and borders on maps"
 
 #include "gmt_dev.h"
 
