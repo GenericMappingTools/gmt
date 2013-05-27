@@ -39,6 +39,7 @@ l l .
 \fBgrdmath\fP	
 \fBgrdpaste\fP	
 \fBgrdproject\fP	
+\fBgrdraster\fP	
 \fBgrdreformat\fP	
 \fBgrdsample\fP	
 \fBgrdtrack\fP	
@@ -80,9 +81,6 @@ l l .
 \fBtrend2d\fP	
 \fBtriangulate\fP	
 \fBxyz2grd\fP	
-
-	Supplement \fIdbase\fP:
-\fBgrdraster\fP	
 
 	Supplement \fIgshhg\fP:
 \fBgshhg\fP	

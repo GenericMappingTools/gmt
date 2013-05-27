@@ -72,7 +72,7 @@ struct Gmt_moduleinfo g_module[] = {
 	{"grdpaste", "core", "Join two grids along their common edge", &GMT_grdpaste},
 	{"grdpmodeler", "spotter", "Evaluate a plate model on a geographic grid", &GMT_grdpmodeler},
 	{"grdproject", "core", "Forward and inverse map transformation of grids", &GMT_grdproject},
-	{"grdraster", "dbase", "Extract subregion from a binary raster and save as a GMT grid", &GMT_grdraster},
+	{"grdraster", "core", "Extract subregion from a binary raster and save as a GMT grid", &GMT_grdraster},
 	{"grdredpol", "potential", "Compute the Continuous Reduction To the Pole, AKA differential RTP", &GMT_grdredpol},
 	{"grdreformat", "core", "Convert between different grid formats", &GMT_grdreformat},
 	{"grdrotater", "spotter", "Finite rotation reconstruction of geographic grid", &GMT_grdrotater},
