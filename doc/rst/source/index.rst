@@ -39,10 +39,10 @@ Welcome to GMT5's documentation!
 |                 |                 |                 |                 |
 |    SUP_MGD77    |    SUP_MISC     |    SUP_POTENTIAL|    SUP_SEGY     |
 +-----------------+-----------------+-----------------+-----------------+
-| .. toctree::    | .. toctree::    | .. toctree::    |                 |
-|    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |                 |
+| .. toctree::    | .. toctree::    |                 |                 |
+|    :maxdepth: 2 |    :maxdepth: 2 |                 |                 |
 |                 |                 |                 |                 |
-|    SUP_SPH      |    SUP_SPOTTER  |    SUP_X2SYS    |                 |
+|    SUP_SPOTTER  |    SUP_X2SYS    |                 |                 |
 +-----------------+-----------------+-----------------+-----------------+
 
 +--------------------+

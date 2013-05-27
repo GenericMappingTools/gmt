@@ -7,16 +7,18 @@ sphdistance - Make grid of distances to nearest points on a sphere
 Synopsis
 --------
 
-.. include:: ../../common_SYN_OPTs.rst_
+.. include:: common_SYN_OPTs.rst_
 
-**sphdistance** [ *table* ] **-G**\ *grdfile* [ **-C** ] [ **-E** ] [
-**-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
-] [ **-L**\ *unit* ] [ **-Q**\ *voronoi.d* ] [
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-V**\ [*level*\ ]
-] [ **-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
-**-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
+**sphdistance** [ *table* ] **-G**\ *grdfile* [ **-C** ] [ **-E** ]
+[ |SYN_OPT-I| ]
+[ **-L**\ *unit* ] [ **-Q**\ *voronoi.d* ]
+[ |SYN_OPT-R| ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-b| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ **-r** ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
@@ -42,7 +44,7 @@ Optional Arguments
 ------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_intables.rst_
+.. include:: explain_intables.rst_
 
 **-C**
     For large data set you can save some memory (at the expense of more
@@ -54,7 +56,7 @@ Optional Arguments
     Instead of computing distances, return the ID numbers of the Voronoi
     polygons that each grid node is inside [Default computes distances].
 
-.. include:: ../../explain_-I.rst_
+.. include:: explain_-I.rst_
 
 **-L**\ *unit*
     Specify the unit used for distance calculations. Choose among **d**
@@ -73,29 +75,29 @@ Optional Arguments
     information separately (via **-N**).
 
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-Rgeo.rst_
+.. include:: explain_-Rgeo.rst_
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. include:: explain_-V.rst_
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
-.. include:: ../../explain_-bi.rst_
+.. include:: explain_-bi.rst_
 
 .. |Add_-bo| replace:: [Default is same as input].
-.. include:: ../../explain_-bo.rst_
+.. include:: explain_-bo.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-h.rst_
+.. include:: explain_-h.rst_
 
-.. include:: ../../explain_-icols.rst_
+.. include:: explain_-icols.rst_
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_nodereg.rst_
+.. include:: explain_nodereg.rst_
 
-.. include:: ../../explain_colon.rst_
-.. include:: ../../explain_help.rst_
-.. include:: ../../explain_precision.rst_
-.. include:: ../../explain_float.rst_
+.. include:: explain_colon.rst_
+.. include:: explain_help.rst_
+.. include:: explain_precision.rst_
+.. include:: explain_float.rst_
 
 Ascii Format Precision
 ----------------------
@@ -141,8 +143,8 @@ To generate the same grid in two steps using **sphtriangulate** separately, try
 See Also
 --------
 
-`GMT <GMT.html>`_ , `sphinterpolate <sphinterpolate.html>`_
-`sphtriangulate <sphtriangulate.html>`_ `triangulate <triangulate.html>`_
+`GMT <GMT.html>`_, `sphinterpolate <sphinterpolate.html>`_,
+`sphtriangulate <sphtriangulate.html>`_, `triangulate <triangulate.html>`_
 
 References
 ----------
