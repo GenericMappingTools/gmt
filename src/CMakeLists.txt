@@ -142,7 +142,7 @@ set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c
 	grdclip.c grdcut.c grdedit.c grdfft.c
 	grdfilter.c grdgradient.c grdhisteq.c grdinfo.c
 	grdlandmask.c grdmask.c grdmath.c grdpaste.c
-	grdproject.c grdsample.c grdreformat.c grdtrack.c
+	grdproject.c grdraster.c grdsample.c grdreformat.c grdtrack.c
 	grdtrend.c grdvolume.c greenspline.c kml2gmt.c
 	makecpt.c mapproject.c minmax.c nearneighbor.c
 	project.c ps2raster.c sample1d.c spectrum1d.c
@@ -344,7 +344,7 @@ if (WIN32 AND PSL_DLL_RENAME)
 endif ()
 
 # supplement directories (only those, which are to be included in gmtlib)
-set (GMT_SUPPL_DIRS dbase gshhg imgsrc kiss_fft meca mgd77 misc potential segy
+set (GMT_SUPPL_DIRS gshhg imgsrc kiss_fft meca mgd77 misc potential segy
 	spotter x2sys)
 
 # path to all binary dirs (used to set PATH in test scripts)

@@ -2,12 +2,16 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-05-26	pwessel
+	* dbase/grdraster.c:	As generic tool it is now in the GMT core
+
 2013-05-25	pwessel
 	* pstext.c:		Added -F...+l|+h modifiers to select text from current
 				segment header instead of data record.
 
 2013-05-24	pwessel
-	* gmtsimplify.c:	The new name of the former gmtdp.c program
+	* gmtsimplify.c:	The new name of the former gmtdp.c program; under GMT 4
+				compatibility we will still recognize gmtdp.
 	* sph/*.c:		These generic spherical tools are now in the GMT core.
 				Two new examples have been added to the suite.
 
