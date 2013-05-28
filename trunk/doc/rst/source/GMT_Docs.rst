@@ -4560,6 +4560,11 @@ lengths) by a slash, e.g., **-Jx**\ 0.1i/0.5i or **-JX**\ 8i/5i. Thus,
 our :math:`y = \sqrt{x}` data sets will plot as shown in
 Figure [fig:GMT\ :sub:`l`\ inear].
 
+.. figure:: _images/GMT_linear.png
+       :align: center
+
+       Linear transformation of Cartesian coordinates.
+
 The complete commands given to produce this plot were
 
    ::
@@ -4582,6 +4587,11 @@ Geographic coordinates
 ^^^^^^^^^^^^^^^^^^^^^^
 
 [sec:linear]
+
+.. figure:: _images/GMT_linear_d.png
+       :align: center
+
+       Linear transformation of map coordinates.
 
 While the Cartesian linear projection is primarily designed for regular
 floating point *x*,\ *y* data, it is sometimes necessary to plot
@@ -4607,6 +4617,11 @@ Calendar time coordinates
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
 [sec:time]
+
+.. figure:: _images/GMT_linear_cal.png
+       :align: center
+
+       Linear transformation of calendar coordinates.
 
 Several particular issues arise when we seek to make linear plots using
 calendar date/time as the input coordinates. As far as setting up the
@@ -4641,6 +4656,11 @@ general, the options provided with **-JX** will prevail.
 Cartesian logarithmic projection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. figure:: _images/GMT_log.png
+       :align: center
+
+       Logarithmic transformation of $x$-coordinates.
+
 The log\ :math:`_{10}` transformation is simply
 :math:`u' = a \log_{10}(u) + b` and is selected by appending an **l**
 (lower case L) immediately following the scale (or axis length) value.
@@ -4661,6 +4681,11 @@ the *y*-scale.
 Cartesian power projection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. figure:: _images/GMT_pow.png
+       :align: center
+
+       Exponential or power transformation of $x$-coordinates.
+
 This projection uses :math:`u' = a u^b + c` and allows us to explore
 exponential relationships like :math:`x^p` versus :math:`y^q`.
 While *p* and *q* can be any values, we will select *p
@@ -4678,6 +4703,11 @@ to the linear transformation. Thus our command becomes
 
 Linear projection with polar (:math:`\theta, r`) coordinates (**-Jp** **-JP**)
 -------------------------------------------------------------------------------
+
+.. figure:: _images/GMT_polar.png
+       :align: center
+
+       Polar (Cylindrical) transformation of (:math:`\theta, r`) coordinates.
 
 This transformation converts polar coordinates (angle :math:`\theta` and
 radius *r*) to positions on a plot. Now :math:`x' = f(\theta,r)`
@@ -4816,6 +4846,11 @@ therefore given by:
     pscoast -R110/140/20/35 -JB125/20/25/45/5i -Bag -Dl -Ggreen -Wthinnest -A250 \
             -P > GMT_albers.ps
 
+.. figure:: _images/GMT_albers.png
+       :align: center
+
+       Albers equal-area conic map projection.
+
 Equidistant conic projection (**-Jd** **-JD**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -4841,6 +4876,11 @@ small countries. As an example, we generate a map of Cuba:
     gmtset FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0.05i
     pscoast -R-88/-70/18/24 -JD-79/21/19/23/4.5i -Bag -Di -N1/thick,red -Glightgreen \
             -Wthinnest -P > GMT_equidistant_conic.ps
+
+.. figure:: _images/GMT_equidistant_conic.png
+       :align: center
+
+       Equidistant conic map projection.
 
 Lambert conic conformal projection (**-Jl** **-JL**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4875,6 +4915,11 @@ use degrees west for longitudes. The generating commands used were
     pscoast -R-130/-70/24/52 -Jl-100/35/33/45/1:50000000 -Bag -Dl -N1/thick,red \
             -N2/thinner -A500 -Gtan -Wthinnest,white -Sblue -P > GMT_lambert_conic.ps
 
+.. figure:: _images/GMT_lambert_conic.png
+       :align: center
+
+       Lambert conformal conic map projection.
+
 The choice for projection center does not affect the projection but it
 indicates which meridian (here 100W) will be vertical on the map. The
 standard parallels were originally selected by Adams to provide a
@@ -4908,6 +4953,11 @@ every 10 and annotations only every 30 in longitude:
 
     pscoast -R-180/-20/0/90 -JPoly/4i -Bx30g10 -By10g10 -Dc -A1000 -Glightgray -Wthinnest \
             -P > GMT_polyconic.ps
+
+.. figure:: _images/GMT_polyconic.png
+       :align: center
+
+       (American) polyconic projection.
 
 Azimuthal projections
 ---------------------
@@ -4952,6 +5002,11 @@ rectangular by defining the corners of a rectangular map boundary. Using
     pscoast -R0/-40/60/-10r -JA30/-30/4.5i -Bag -Dl -A500 -Gp300/10 -Wthinnest \
             -P > GMT_lambert_az_rect.ps
 
+.. figure:: _images/GMT_lambert_az_rect.png
+       :align: center
+
+       Rectangular map using the Lambert azimuthal equal-area projection.
+
 Note that an "r" is appended to the **-R** option to inform *GMT* that
 the region has been selected using the rectangle technique, otherwise it
 would try to decode the values as *west, east, south, north* and report
@@ -4967,12 +5022,21 @@ Hemisphere map
 
     pscoast -Rg -JA280/30/3.5i -Bg -Dc -A1000 -Gnavy -P > GMT_lambert_az_hemi.ps
 
+.. figure:: _images/GMT_lambert_az_hemi.png
+       :align: center
+
+       Hemisphere map using the Lambert azimuthal equal-area projection.
+
 To geologists, the Lambert azimuthal equal-area projection (with origin
 at 0/0) is known as the *equal-area* (Schmidt) stereonet and used for
 plotting fold axes, fault planes, and the like. An *equal-angle* (Wulff)
 stereonet can be obtained by using the stereographic projection
-(discussed later). The stereonets produced by these two projections
-appear below.
+(discussed later). The stereonets produced by these two projections appear below.
+
+.. figure:: _images/GMT_stereonets.png
+       :align: center
+
+       Equal-Area (Schmidt) and Equal-Angle (Wulff) stereo nets.
 
 Stereographic Equal-Angle projection (**-Js** **-JS**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5009,8 +5073,13 @@ An example is given by
 
    ::
 
-    pscoast -R-30/30/60/72 -Js0/90/4.5i/60 -B10g -Dl -A250 -Groyalblue -Sseashell -P \
-            > GMT_stereographic_polar.ps
+    pscoast -R-30/30/60/72 -Js0/90/4.5i/60 -B10g -Dl -A250 -Groyalblue -Sseashell \
+            -P > GMT_stereographic_polar.ps
+
+.. figure:: _images/GMT_stereographic_polar.png
+       :align: center
+
+       Polar stereographic conformal projection.
 
 Rectangular stereographic map
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -5028,6 +5097,11 @@ Figure [fig:GMT\ :sub:`s`\ tereographic\ :sub:`r`\ ect]:
     pscoast -R-25/59/70/72r -JS10/90/11c -B20g -Dl -A250 -Gdarkbrown -Wthinnest -Slightgray \
             -P > GMT_stereographic_rect.ps
 
+.. figure:: _images/GMT_stereographic_rect.png
+       :align: center
+
+       Polar stereographic conformal projection with rectangular borders.
+
 General stereographic map
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -5041,6 +5115,11 @@ hemispheric maps. Our example shows Australia using a projection pole at
     gmtset MAP_ANNOT_OBLIQUE 0
     pscoast -R100/-42/160/-8r -JS130/-30/4i -Bag -Dl -A500 -Ggreen -Slightblue -Wthinnest \
             -P > GMT_stereographic_general.ps
+
+.. figure:: _images/GMT_stereographic_general.png
+       :align: center
+
+       General stereographic conformal projection with rectangular borders.
 
 By choosing 0/0as the pole, we obtain the conformal stereonet presented
 next to its equal-area cousin in the Section [sec:lamb] on the Lambert
@@ -5091,6 +5170,11 @@ looking due east is thus accomplished by the following
     pscoast -Rg -JG4/52/230/90/60/180/60/60/5i -Bx2g2 -By1g1 -Ia -Di -Glightbrown -Wthinnest \
             -P -Slightblue --MAP_ANNOT_MIN_SPACING=0.25i > GMT_perspective.ps
 
+.. figure:: _images/GMT_perspective.png
+       :align: center
+
+       View from the Space Shuttle in Perspective projection.
+
 Orthographic projection (**-Jg** **-JG**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -5122,6 +5206,11 @@ generated by the following `pscoast <pscoast.html>`_ command:
    ::
 
     pscoast -Rg -JG-75/41/4.5i -Bg -Dc -A5000 -Gpink -Sthistle -P > GMT_orthographic.ps
+
+.. figure:: _images/GMT_orthographic.png
+       :align: center
+
+       Hemisphere map using the Orthographic projection.
 
 Azimuthal Equidistant projection (**-Je** **-JE**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5155,6 +5244,11 @@ in this projection this point plots as the entire map perimeter:
     pscoast -Rg -JE-100/40/4.5i -Bg -Dc -A10000 -Glightgray -Wthinnest -P \
             > GMT_az_equidistant.ps
 
+.. figure:: _images/GMT_az_equidistant.png
+       :align: center
+
+       World map using the equidistant azimuthal projection.
+
 Gnomonic projection (**-Jf** **-JF**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -5180,13 +5274,17 @@ To specify the Gnomonic projection you must supply:
    oblique] latitude (**-Jf**), or map width (**-JF**).
 
 Using a horizon of 60, our example of this projection centered on
-120W/35N can therefore be generated by the following
-`pscoast <pscoast.html>`_ command:
+120W/35N can therefore be generated by the following `pscoast <pscoast.html>`_ command:
 
    ::
 
     pscoast -Rg -JF-120/35/60/4.5i -B30g15 -Dc -A10000 -Gtan -Scyan -Wthinnest \
             -P > GMT_gnomonic.ps
+
+.. figure:: _images/GMT_gnomonic.png
+       :align: center
+
+       Gnomonic azimuthal projection.
 
 Cylindrical projections
 -----------------------
@@ -5246,6 +5344,11 @@ which will give a map 4.32 inch wide. It was created with the command:
     pscoast -R0/360/-70/70 -Jm1.2e-2i -Bxa60f15 -Bya30f15 -Dc -A5000 -Gred \
             -P > GMT_mercator.ps
 
+.. figure:: _images/GMT_mercator.png
+       :align: center
+
+       Simple Mercator map.
+
 While this example is centered on the Dateline, one can easily choose
 another configuration with the **-R** option. A map centered on
 Greenwich would specify the region with **-R**-180/180/-70/70.
@@ -5279,6 +5382,11 @@ central meridian:
     pscoast -R20/30/50/45r -Jt35/0.18i -Bag -Dl -A250 -Glightbrown -Wthinnest \
             -P -Sseashell > GMT_transverse_merc.ps
 
+.. figure:: _images/GMT_transverse_merc.png
+       :align: center
+
+       Rectangular Transverse Mercator map.
+
 The transverse Mercator can also be used to generate a global map - the
 equivalent of the 360 Mercator map. Using the command
 
@@ -5295,6 +5403,11 @@ while the "south" and "north" values represent how far from the central
 longitude we want the plot to extend. These values correspond to
 latitudes in the regular Mercator projection and must therefore be less
 than 90.
+
+.. figure:: _images/GMT_TM.png
+       :align: center
+
+       A global transverse Mercator map.
 
 Universal Transverse Mercator (UTM) projection (**-Ju** **-JU**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5381,6 +5494,12 @@ Our example was produced by the command
             -Wthinnest -P -Tf301.5/23/0.4i/2 -Sazure --FONT_TITLE=8p \
             --MAP_TITLE_OFFSET=0.05i > GMT_obl_merc.ps
 
+.. figure:: _images/GMT_obl_merc.png
+       :align: center
+
+       Oblique Mercator map using **-Joc**. We make it clear which direction is North by
+       adding a star rose with the **-T** option.}
+
 It uses definition 3 for an oblique view of some Caribbean islands. Note
 that we define our region using the rectangular system described
 earlier. If we do not append an "r" to the **-R** string then the
@@ -5415,6 +5534,11 @@ using the Cassini projection can be obtained by running the command:
     pscoast -R7:30/38:30/10:30/41:30r -JC8.75/40/2.5i -Bafg -Lf9.5/38.8/40/60 -Dh -Gspringgreen \
             -Sazure -Wthinnest -Ia/thinner -P --FONT_LABEL=12p > GMT_cassini.ps
 
+.. figure:: _images/GMT_cassini.png
+       :align: center
+
+       Cassini map over Sardinia.
+
 As with the previous projections, the user can choose between a
 rectangular boundary (used here) or a geographical (WESN) boundary.
 
@@ -5442,6 +5566,11 @@ obtained by running the command:
    ::
 
     pscoast -Rg -JQ4.5i -B60f30g30 -Dc -A5000 -Gtan4 -Slightcyan -P > GMT_equi_cyl.ps
+
+.. figure:: _images/GMT_equi_cyl.png
+       :align: center
+
+       World map using the Plate Carr\'{e}e projection.
 
 Different relative scalings of longitudes and latitudes can be obtained
 by selecting a standard parallel different from the equator. Some
@@ -5516,6 +5645,11 @@ obtained by running the command:
     pscoast -R-145/215/-90/90 -JY35/30/4.5i -B45g45 -Dc -A10000 -Sdodgerblue -Wthinnest -P > \
             GMT_general_cyl.ps
 
+.. figure:: _images/GMT_general_cyl.png
+       :align: center
+
+       World map using the Behrman cylindrical equal-area projection.
+
 As one can see there is considerable distortion at high latitudes since
 the poles map into lines.
 
@@ -5543,6 +5677,11 @@ follows:
 
     pscoast -R-90/270/-80/90 -Jj1:400000000 -Bx45g45 -By30g30 -Dc -A10000 -Gkhaki \
             -Wthinnest -P -Sazure > GMT_miller.ps
+
+.. figure:: _images/GMT_miller.png
+       :align: center
+
+       World map using the Miller cylindrical projection.
 
 Cylindrical stereographic projections (**-Jcyl_stere** **-JCyl_stere**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5587,14 +5726,18 @@ cartographer or publication that popularized the projection
 
 A map of the world, centered on the Greenwich meridian, using the Gall's
 stereographic projection (standard parallel is 45,
-Figure [fig:GMT\ :sub:`g`\ all\ :sub:`s`\ tereo]), is obtained as
-follows:
+Figure [fig:GMT\ :sub:`g`\ all\ :sub:`s`\ tereo]), is obtained as follows:
 
    ::
 
     gmtset FORMAT_GEO_MAP dddA
-    pscoast -R-180/180/-60/80 -JCyl_stere/0/45/4.5i -Bxa60f30g30 -Bya30g30 -Dc -A5000 -Wblack -Gseashell4 \
-            -Santiquewhite1 -P > GMT_gall_stereo.ps
+    pscoast -R-180/180/-60/80 -JCyl_stere/0/45/4.5i -Bxa60f30g30 -Bya30g30 -Dc -A5000 -Wblack \
+            -Gseashell4 -Santiquewhite1 -P > GMT_gall_stereo.ps
+
+.. figure:: _images/GMT_gall_stereo.png
+       :align: center
+
+       World map using Gall's stereographic projection.
 
 Miscellaneous projections
 -------------------------
@@ -5629,6 +5772,11 @@ A view of the Pacific ocean using the Dateline as central meridian is accomplish
 
     pscoast -Rg -JH4.5i -Bg -Dc -A10000 -Gblack -Scornsilk -P > GMT_hammer.ps
 
+.. figure:: _images/GMT_hammer.png
+       :align: center
+
+       World map using the Hammer projection.
+
 Mollweide projection (**-Jw** **-JW**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -5644,14 +5792,18 @@ longitudes and latitudes into rectangular *x*/*y* coordinates:
 
 -  The central meridian [Middle of your map].
 
--  Scale along equator in inch/degree or 1:xxxxx (**-Jw**), or map width
-   (**-JW**).
+-  Scale along equator in inch/degree or 1:xxxxx (**-Jw**), or map width (**-JW**).
 
 An example centered on Greenwich can be generated thus:
 
    ::
 
     pscoast -Rd -JW4.5i -Bg -Dc -A10000 -Gtomato1 -Sskyblue -P > GMT_mollweide.ps
+
+.. figure:: _images/GMT_mollweide.png
+       :align: center
+
+       World map using the Mollweide projection.
 
 Winkel Tripel projection (**-Jr** **-JR**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5683,6 +5835,11 @@ was created by this command:
 
     pscoast -Rd -JR4.5i -Bg -Dc -A10000 -Gburlywood4 -Swheat1 -P > GMT_winkel.ps
 
+.. figure:: _images/GMT_winkel.png
+       :align: center
+
+       World map using the Winkel Tripel projection.
+
 Robinson projection (**-Jn** **-JN**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -5706,6 +5863,11 @@ Again centered on Greenwich, the example below was created by this command:
    ::
 
     pscoast -Rd -JN4.5i -Bg -Dc -A10000 -Ggoldenrod -Ssnow2 -P > GMT_robinson.ps
+
+.. figure:: _images/GMT_robinson.png
+       :align: center
+
+       World map using the Robinson projection.
 
 Eckert IV and VI projection (**-Jk** **-JK**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5732,7 +5894,17 @@ this command:
 
     pscoast -Rg -JKf4.5i -Bg -Dc -A10000 -Wthinnest -Givory -Sbisque3 -P > GMT_eckert4.ps
 
+.. figure:: _images/GMT_eckert4.png
+       :align: center
+
+       World map using the Eckert IV projection.
+
 The same script, with **s** instead of **f**, yields the Eckert VI map:
+
+.. figure:: _images/GMT_eckert6.png
+       :align: center
+
+       World map using the Eckert VI projection.
 
 Sinusoidal projection (**-Ji** **-JI**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5755,6 +5927,11 @@ A simple world map using the sinusoidal projection is therefore obtained by
 
      pscoast -Rd -JI4.5i -Bxg30 -Byg15 -Dc -A10000 -Ggray -P > GMT_sinusoidal.ps         
 
+.. figure:: _images/GMT_sinusoidal.png
+       :align: center
+
+       World map using the Sinusoidal projection.
+
 To reduce distortion of shape the interrupted sinusoidal projection was
 introduced in 1927. Here, three symmetrical segments are used to cover
 the entire world. Traditionally, the interruptions are at 160W, 20W, and
@@ -5770,6 +5947,11 @@ widths (140\ :math:`\cdot`\ 0.014 and 80\ :math:`\cdot`\ 0.014):
      pscoast -R200/340/-90/90 -Ji0.014i -Bxg30 -Byg15 -A10000 -Dc -Gblack -K -P > GMT_sinus_int.ps  
      pscoast -R-20/60/-90/90 -Ji0.014i -Bxg30 -Byg15 -Dc -A10000 -Gblack -X1.96i -O -K >> GMT_sinus_int.ps  
      pscoast -R60/200/-90/90 -Ji0.014i -Bxg30 -Byg15 -Dc -A10000 -Gblack -X1.12i -O >> GMT_sinus_int.ps  
+
+.. figure:: _images/GMT_sinus_int.png
+       :align: center
+
+       World map using the Interrupted Sinusoidal projection.
 
 The usefulness of the interrupted sinusoidal projection is basically
 limited to display of global, discontinuous data distributions like
@@ -5793,6 +5975,11 @@ Centered on the Dateline, the example below was created by this command:
     ::
 
       pscoast -Rg -JV4i -Bxg30 -Byg15 -Dc -Glightgray -A10000 -Wthinnest -P > GMT_grinten.ps 
+
+.. figure:: _images/GMT_grinten.png
+       :align: center
+
+       World map using the Van der Grinten projection.
 
 Creating GMT Graphics
 =====================
@@ -6031,10 +6218,10 @@ specify positions in inches directly. Thus, the complete automated script reads:
     #
     ps=../example_03.ps
     fitcircle sat.xyg -L2 > report
-    cposx=‘grep "L2 Average Position" report | cut -f1‘
-    cposy=‘grep "L2 Average Position" report | cut -f2‘
-    pposx=‘grep "L2 N Hemisphere" report | cut -f1‘
-    pposy=‘grep "L2 N Hemisphere" report | cut -f2‘
+    cposx=`grep "L2 Average Position" report | cut -f1`
+    cposy=`grep "L2 Average Position" report | cut -f2`
+    pposx=`grep "L2 N Hemisphere" report | cut -f1`
+    pposy=`grep "L2 N Hemisphere" report | cut -f2`
     #
     # Now we use "project" to project the data in both sat.xyg and ship.xyg
     # into data.pg, where g is the same and p is the oblique longitude around
@@ -6048,7 +6235,7 @@ specify positions in inches directly. Thus, the complete automated script reads:
     # We use this information first with a large -I value to find the appropriate -R
     # to use to plot the .pg data.
     #
-    R=‘cat sat.pg ship.pg | minmax -I100/25‘
+    R=`cat sat.pg ship.pg | minmax -I100/25`
     psxy $R -U/-1.75i/-1.25i/"Example 3a in Cookbook" \
          -Bxa500f100+l"Distance along great circle" -Bya100f25+l"Gravity anomaly (mGal)" -BWeSn \
          -JX8i/5i -X2i -Y1.5i -K -Wthick sat.pg > ../example_03a.ps
@@ -6116,9 +6303,9 @@ specify positions in inches directly. Thus, the complete automated script reads:
     # Note the extended use of pstext and psxy to put labels and legends directly on the plots.
     # For that purpose we often use -Jx1i and specify positions in inches directly:
     #
-    psxy spectrum.coh -Bxa1f3p+l"Wavelength (km)" -Bya0.25f0.05+l"Coherency@+2@+" -BWeSn+g240/255/240 -JX-4il/3.75i \
-         -R1/1000/0/1 -U/-2.25i/-1.25i/"Example 3 in Cookbook" -P -K -X2.5i -Sc0.07i -Gmagenta \
-         -Ey/0.5p -Y1.5i > $ps
+    psxy spectrum.coh -Bxa1f3p+l"Wavelength (km)" -Bya0.25f0.05+l"Coherency@+2@+" -BWeSn+g240/255/240 \
+         -JX-4il/3.75i -R1/1000/0/1 -U/-2.25i/-1.25i/"Example 3 in Cookbook" -P -K -X2.5i -Sc0.07i \
+         -Gmagenta -Ey/0.5p -Y1.5i > $ps
     echo "3.85 3.6 Coherency@+2@+" | pstext -R0/4/0/3.75 -Jx1i -F+f18p,Helvetica-Bold+jTR -O -K >> $ps
     psxy -Bxa1f3p -Bya1f3p+l"Power (mGal@+2@+km)" -BWeSn+t"Ship and Satellite Gravity" spectrum.xpower \
          -Gred -ST0.07i -O -R1/1000/0.1/10000 -JX-4il/3.75il -Y4.2i -K -Ey/0.5p >> $ps
@@ -6523,13 +6710,14 @@ gap between the profile and the label:
     # Unix progs:	
     #
     ps=example_09.ps
-    pswiggle tracks.txt -R185/250/-68/-42 -U"Example 9 in Cookbook" -K -Jm0.13i \
+    gmt pswiggle tracks.txt -R185/250/-68/-42 -U"Example 9 in Cookbook" -K -Jm0.13i \
     	-Ba10f5 -BWSne+g240/255/240 -G+red -G-blue -Z2000 -Wthinnest -S240/-67/500/@~m@~rad \
     	--FORMAT_GEO_MAP=dddF > $ps
-    psxy -R -J -O -K ridge.xy -Wthicker >> $ps
-    psxy -R -J -O -K fz.xy -Wthinner,- >> $ps
+    gmt psxy -R -J -O -K ridge.xy -Wthicker >> $ps
+    gmt psxy -R -J -O -K fz.xy -Wthinner,- >> $ps
     # Take label from segment header and plot near coordinates of last record of each track
-    gmt gmtconvert -El tracks.txt | gmt pstext -R -J -F+f10p,Helvetica-Bold+a50+jRM+h -D-0.05i/-0.05i -O >> $ps
+    gmt gmtconvert -El tracks.txt | gmt pstext -R -J -F+f10p,Helvetica-Bold+a50+jRM+h \
+        -D-0.05i/-0.05i -O >> $ps
 
 The output shows the sea-surface slopes along 42 descending Geosat
 tracks in the Eltanin and Udintsev fracture zone region in a Mercator
@@ -8102,7 +8290,7 @@ and features that has geographic longitude/latitude coordinates we must
 remember two key issues:
 
 #. This is a *spherical* Mercator grid so we must use
-   --**PROJ\_ELLIPSOID**\ =Sphere with all commands that involve
+   --**PROJ_ELLIPSOID**\ =Sphere with all commands that involve
    projections (or use `gmtset <gmtset.html>`_ to change the setting).
 
 #. Select Mercator projection and use the same scale that was used with
@@ -8459,24 +8647,23 @@ outlined fonts or to convert to a PDF-file.
     
     # map of countries
     pscoast -Dl -R-7/31/64/66/r -JL15/50/40/60/16c -P \
-    -Bx10g10 -By5g5 -B+t"Europe\072 Countries and Capital Cities" -A250 \
-    -U"Example 31 in Cookbook" -Slightblue -Glightgreen -W0.25p -N1/1p,white -K > $ps
+            -Bx10g10 -By5g5 -B+t"Europe\072 Countries and Capital Cities" -A250 \
+            -U"Example 31 in Cookbook" -Slightblue -Glightgreen -W0.25p -N1/1p,white -K > $ps
     
     # mark capitals
-    psxy europe-capitals-ru.csv -R -J -i0,1 \
-    -Sc0.15c -G196/80/80 -O -K >> $ps
+    psxy europe-capitals-ru.csv -R -J -i0,1 -Sc0.15c -G196/80/80 -O -K >> $ps
     
     # small EU cities
     awk 'BEGIN {FS=","} $4 !="" && $4 <= 1000000 {print $1, $2}' europe-capitals-ru.csv | \
-    psxy -R -J -Sc0.15c -W0.25p -O -K >> $ps
+        psxy -R -J -Sc0.15c -W0.25p -O -K >> $ps
     
     # big EU cities
     awk 'BEGIN {FS=","} $4 > 1000000 {print $1, $2}' europe-capitals-ru.csv | \
-    psxy -R -J -Sc0.15c -W1.25p -O -K >> $ps
+        psxy -R -J -Sc0.15c -W1.25p -O -K >> $ps
     
     # label big EU cities
     awk 'BEGIN {FS=","} $4 > 1000000 {print $1, $2, $3}' europe-capitals-ru.csv | \
-    pstext -R -J -F+f7p,LinBiolinumOI+jBL -Dj0.1c -Gwhite -C5% -Qu -TO -O -K >> $ps
+        pstext -R -J -F+f7p,LinBiolinumOI+jBL -Dj0.1c -Gwhite -C5% -Qu -TO -O -K >> $ps
     
     # construct legend
     cat << EOF > legend.txt
@@ -8494,15 +8681,14 @@ outlined fonts or to convert to a PDF-file.
     
     # append city names and population to legend
     awk 'BEGIN {FS=","; f="L 8 LinBiolinumO L"}
-      $4 > 1000000 {printf "%s %s:\n%s %.2f\n", f, $3, f, $4/1e6}' \
-      europe-capitals-ru.csv >> legend.txt
+        $4 > 1000000 {printf "%s %s:\n%s %.2f\n", f, $3, f, $4/1e6}' \
+        europe-capitals-ru.csv >> legend.txt
     
     # reduce annotation font size for legend
     gmtset FONT_ANNOT_PRIMARY 8p
     
     # plot legend
-    pslegend -R -J -Gwhite -Dx7.9c/12.6c/8.0c/BL \
-    -C0.3c/0.4c -L1.2 -F -O legend.txt >> $ps
+    pslegend -R -J -Gwhite -Dx7.9c/12.6c/8.0c/BL -C0.3c/0.4c -L1.2 -F -O legend.txt >> $ps
     
     # make a PostScript and a PDF file with outlined fonts
     # unfortunately ps2raster won't be able to crop that file correctly anymore
@@ -8742,6 +8928,11 @@ will continue to debate for some time.
     # cleanup
     rm -f gmt.conf FR+IT_int.nc z.cpt
 
+.. figure:: _images/example_34.png
+   :align: center
+
+   Figure ex_34: Using country polygons for plotting and shading.
+
 Spherical triangulation and distance calculations
 -------------------------------------------------
 
@@ -8773,13 +8964,20 @@ placed on top.
     gmt sphdistance -Rg -I1 -Qtt.pol -Gtt.nc -Lk
     makecpt -Chot -T0/3500/500 -Z > t.cpt
     # Make a basic image plot and overlay contours, Voronoi polygons and coastlines
-    gmt grdimage tt.nc -JG-140/30/7i -P -K -Ct.cpt -X0.75i -Y2i -U/-0.5i/-1.75i/"Example 35 in Cookbook" > $ps
+    gmt grdimage tt.nc -JG-140/30/7i -Ct.cpt -U/-0.5i/-1.75i/"Example 35 in Cookbook" \
+        -X0.75i -Y2i -P -K > $ps
     gmt grdcontour tt.nc -J -O -K -C500 -A1000+f10p,Helvetica,white -L500 -\
         GL0/90/203/-10,175/60/170/-30,-50/30/220/-5 -Wa0.75p,white -Wc0.25p,white >> $ps
     gmt psxy -R -J -O -K tt.pol -W0.25p,green,. >> $ps
-    gmt pscoast -R -J -O -W1p -Gsteelblue -A0/1/1 -B30g30 -B+t"Distances from GSHHG crude coastlines" >> $ps
+    gmt pscoast -R -J -W1p -Gsteelblue -A0/1/1 -B30g30 -B+t"Distances from GSHHG crude coastlines" \
+        -O >> $ps
     # cleanup
     rm -f gmt.conf tt.pol tt.nc t.cpt
+
+.. figure:: _images/example_35.png
+   :align: center
+
+   Figure ex_35: Spherical triangulation and distance calculations
 
 Spherical gridding using Renka's algorithms
 -------------------------------------------
@@ -8819,6 +9017,11 @@ with `greenspline <greenspline.html>`_.
     # cleanup
     rm -f gmt.conf tt.cpt tt.nc
 
+.. figure:: _images/example_36.png
+   :align: center
+
+   Figure ex_36: Spherical gridding using Renka's algorithms.
+
 Spectral coherence between gravity and bathymetry grids
 -------------------------------------------------------
 
@@ -8855,7 +9058,8 @@ the grids being extended and padded to a suitable dimension.
     gmt grdgradient $T.nc -A0 -Nt1 -G${T}_int.nc
     scl=1.4e-5
     sclkm=1.4e-2
-    gmt grdimage $T.nc -I${T}_int.nc -Jx${scl}i -Cz.cpt -P -K -X1.474i -Y1i -U/-1.224i/-0.75i/"Example 37 in Cookbook"> $ps
+    gmt grdimage $T.nc -I${T}_int.nc -Jx${scl}i -Cz.cpt -U/-1.224i/-0.75i/"Example 37 in Cookbook" \
+        -P -K -X1.474i -Y1i > $ps
     gmt psbasemap -R-84/75/-78/81 -Jx${sclkm}i -O -K -Ba -BWSne+t"Multibeam bathymetry" >> $ps
     gmt grdimage $G.nc -I${G}_int.nc -Jx${scl}i -Cg.cpt -O -K -X3.25i >> $ps
     gmt psbasemap -R-84/75/-78/81 -Jx${sclkm}i -O -K -Ba -BWSne+t"Satellite gravity" >> $ps
@@ -8876,10 +9080,16 @@ the grids being extended and padded to a suitable dimension.
     gmt psbasemap -R-100/91/-94/97 -Jx${sclkm}i -O -K -Ba -BWSne+t"Detrended and extended" >> $ps
     
     gmt gmtset FONT_TITLE 24p
-    gmt psxy -R2/160/0/1 -JX-6il/2.5i -Bxa2f3g3+u" km" -Byafg0.5+l"Coherency@+2@+" -BWsNe+t"Coherency between gravity and bathymetry" -O -K -X-3.25i -Y3.3i cross.txt -i0,15 -W0.5p >> $ps
+    gmt psxy cross.txt -i0,15 -R2/160/0/1 -JX-6il/2.5i -W0.5p -Bxa2f3g3+u" km" -Byafg0.5+l"Coherency@+2@+" \
+        -BWsNe+t"Coherency between gravity and bathymetry" -O -K -X-3.25i -Y3.3i >> $ps
     gmt psxy -R -J cross.txt -O -K -i0,15,16 -Sc0.075i -Gred -W0.25p -Ey >> $ps
     gmt psxy -R -J -O -T >> $ps
     rm -f cross.txt *_tmp.nc *_int.nc ?.cpt bbox
+
+.. figure:: _images/example_37.png
+   :align: center
+
+   Figure ex_37: Spectral coherence between gravity and bathymetry grids.
 
 Histogram equalization of bathymetry grids
 ------------------------------------------
@@ -8905,7 +9115,8 @@ used here is `grdhisteq <grdhisteq.html>`_.
     gmt makecpt -Crainbow -T0/15/1 > c.cpt
     gmt grdgradient topo.nc -Nt1 -fg -A45 -Gitopo.nc
     gmt grdhisteq topo.nc -Gout.nc -C16
-    gmt grdimage topo.nc -Iitopo.nc -Ct.cpt -JM3i -Y6i -K -P -B5 -BWSne -U/-0.75i/-5.75i/"Example 38 in Cookbook" > $ps
+    gmt grdimage topo.nc -Iitopo.nc -Ct.cpt -B5 -BWSne -U/-0.75i/-5.75i/"Example 38 in Cookbook" \
+        -JM3i -Y6i -K -P > $ps
     echo "315 -10 Original" | gmt pstext -Rtopo.nc -J -O -K -F+jTR+f14p -T -Gwhite -W1p -Dj0.1i >> $ps
     gmt grdimage out.nc -Cc.cpt -J -X3.5i -K -O -B5 -BWSne >> $ps
     echo "315 -10 Equalized" | gmt pstext -R -J -O -K -F+jTR+f14p -T -Gwhite -W1p -Dj0.1i >> $ps
@@ -8919,6 +9130,11 @@ used here is `grdhisteq <grdhisteq.html>`_.
     echo "315 -10 Quadratic" | gmt pstext -R -J -O -K -F+jTR+f14p -T -Gwhite -W1p -Dj0.1i >> $ps
     gmt psscale -D0i/-0.4i/5i/0.15ih -O -Cc.cpt -Bx1 -By+lz -E+n >> $ps
     rm -f itopo.nc out.nc ?.cpt
+
+.. figure:: _images/example_38.png
+   :align: center
+
+   Figure ex_38: Histogram equalization of bathymetry grids.
 
 Evaluation of spherical harmonics coefficients
 ----------------------------------------------
@@ -8968,6 +9184,11 @@ used here is `sph2grd <sph2grd.html>`_.
     echo 3.75 5.4 Venus Spherical Harmonic Model | gmt pstext -R0/6/0/6 -Jx1i -O \
         -F+f24p+jCM -N >> $ps
     rm -f v*.nc t.cpt
+
+.. figure:: _images/example_39.png
+   :align: center
+
+   Figure ex_39: Evaluation of spherical harmonics coefficients.
 
 Creating GMT Animations
 =======================
@@ -9176,9 +9397,8 @@ The electronic mailing lists are maintained automatically by a program.
 To subscribe to one or both of the lists, send a message to containing
 the command(s):
 
-subscribe gmt-group <your full name, not email address>
-
-subscribe gmt-help <your full name, not email address>
+   - subscribe gmt-group <your full name, not email address>
+   - subscribe gmt-help <your full name, not email address>
 
 (Do not type the angular brackets <>). You may also
 register electronically via the *GMT* home web page
@@ -9196,8 +9416,7 @@ cause thousands of mailtools to go BEEP. Communication with other
 *GMT* users should go via gmt-help. Finally, all *GMT* information is
 provided online at the main *GMT* home page in Hawaii, i.e.,
 gmt.soest.hawaii.edu. Changes to *GMT* will also be posted on this page.
-The main *GMT* page has links to the official *GMT* ftp sites around the
-world.
+The main *GMT* page has links to the official *GMT* ftp sites around the world.
 
 A. GMT supplemental packages
 ============================
@@ -9214,8 +9433,7 @@ fully ANSI-C, Y2K, or POSIX compliant, or that they necessarily will
 install smoothly on all platforms, but most do. Note that the data sets
 some of these programs work on are not distributed with these packages;
 they must be obtained separately. The contents of the supplemental
-archive may change without notice; at this writing it contains these
-directories:
+archive may change without notice; at this writing it contains these directories:
 
 gshhg: GSHHG data extractor
 ---------------------------
@@ -9224,8 +9442,7 @@ This package contains `gshhg <supplements/gshhg/gshhg.html>`_ which you
 can use to extract shoreline polygons from the Global Self-consistent
 Hierarchical High-resolution Shorelines (GSHHG) available separately
 from or the (GSHHG is the polygon data base from which the
-*GMT* coastlines derive). The package is maintained by
-Paul Wessel.
+*GMT* coastlines derive). The package is maintained by Paul Wessel.
 
 imgsrc: gridded altimetry extractor
 -----------------------------------
@@ -9233,8 +9450,7 @@ imgsrc: gridded altimetry extractor
 This package consists of the program
 `img2grd <supplements/imgsrc/img2grd.html>`_ to extract subsets of the
 global gravity and predicted topography solutions derived from satellite
-altimetry [33]_. The package is maintained by Walter Smith and Paul
-Wessel.
+altimetry [33]_. The package is maintained by Walter Smith and Paul Wessel.
 
 meca: seismology and geodesy symbols
 ------------------------------------
@@ -9263,13 +9479,12 @@ This package currently holds the programs
 `mgd77track <supplements/mgd77/mgd77track.html>`_ which can be used to
 extract information or data values from or plot marine geophysical data
 files in the ASCII MGD77 or netCDF MGD77+ formats [36]_). This package
-has replaced the old **mgg** package. The package is maintained by Paul
-Wessel.
+has replaced the old **mgg** package. The package is maintained by Paul Wessel.
 
 misc: Miscellaneous tools
 -------------------------
 
-At the moment, this package contains the programs
+At the moment, this package contains the program
 `dimfilter <supplements/misc/dimfilter.html>`_, which is an extension of
 `grdfilter <grdfilter.html>`_ in that it allows for spatial directional filtering.
 The package is maintained by Paul Wessel.
@@ -9300,8 +9515,7 @@ and y:time/depth) while `pssegyz <supplements/segy/pssegyz.html>`_
 generates a 3-D plot (x and y: location coordinates, z: time/depth).
 Locations may be read from predefined or arbitrary portions of each
 trace header. Finally, `segy2grd <supplements/segy/segy2grd.html>`_ can
-convert SEGY data to a *GMT* grid file. The package is maintained by Tim
-Henstock [38]_.
+convert SEGY data to a *GMT* grid file. The package is maintained by Tim Henstock [38]_.
 
 spotter: backtracking and hotspotting
 -------------------------------------
@@ -9526,10 +9740,8 @@ Boundary Conditions for operations on grids
 
 *GMT* has the option to specify boundary conditions in some programs
 that operate on grids (e.g.,
-`grdsample <grdsample.html>`_,
-`grdgradient <grdgradient.html>`_,
-`grdtrack <grdtrack.html>`_,
-`nearneighbor <nearneighbor.html>`_, and
+`grdsample <grdsample.html>`_, `grdgradient <grdgradient.html>`_,
+`grdtrack <grdtrack.html>`_, `nearneighbor <nearneighbor.html>`_, and
 `grdview <grdview.html>`_, to name a few. The desired
 condition can be set with the common *GMT* option **-n**; see Section
 [sec:resample]. The boundary conditions come into play when
@@ -9616,31 +9828,31 @@ to read this header correctly (see our code for details).
 +---------------------------------+--------------------------------------------------------+
 | **int** *registration*          | 0 for grid line registration, 1 for pixel registration |
 +---------------------------------+--------------------------------------------------------+
-| **double** *x\_min*             | Minimum *x*-value of region                            |
+| **double** *x_min*              | Minimum *x*-value of region                            |
 +---------------------------------+--------------------------------------------------------+
-| **double** *x\_max*             | Maximum *x*-value of region                            |
+| **double** *x_max*              | Maximum *x*-value of region                            |
 +---------------------------------+--------------------------------------------------------+
-| **double** *y\_min*             | Minimum *y*-value of region                            |
+| **double** *y_min*              | Minimum *y*-value of region                            |
 +---------------------------------+--------------------------------------------------------+
-| **double** *y\_max*             | Maximum *y*-value of region                            |
+| **double** *y_max*              | Maximum *y*-value of region                            |
 +---------------------------------+--------------------------------------------------------+
-| **double** *z\_min*             | Minimum *z*-value in data set                          |
+| **double** *z_min*              | Minimum *z*-value in data set                          |
 +---------------------------------+--------------------------------------------------------+
-| **double** *z\_max*             | Maximum *z*-value in data set                          |
+| **double** *z_max*              | Maximum *z*-value in data set                          |
 +---------------------------------+--------------------------------------------------------+
-| **double** *x\_inc*             | Node spacing in *x*-dimension                          |
+| **double** *x_inc*              | Node spacing in *x*-dimension                          |
 +---------------------------------+--------------------------------------------------------+
-| **double** *y\_inc*             | Node spacing in *y*-dimension                          |
+| **double** *y_inc*              | Node spacing in *y*-dimension                          |
 +---------------------------------+--------------------------------------------------------+
-| **double** *z\_scale\_factor*   | Factor to multiply *z*-values after read               |
+| **double** *z_scale_factor*     | Factor to multiply *z*-values after read               |
 +---------------------------------+--------------------------------------------------------+
-| **double** *z\_add\_offset*     | Offset to add to scaled *z*-values                     |
+| **double** *z_add_offset*       | Offset to add to scaled *z*-values                     |
 +---------------------------------+--------------------------------------------------------+
-| **char** *x\_units*\ [80]       | Units of the *x*-dimension                             |
+| **char** *x_units*\ [80]        | Units of the *x*-dimension                             |
 +---------------------------------+--------------------------------------------------------+
-| **char** *y\_units*\ [80]       | Units of the *y*-dimension                             |
+| **char** *y_units*\ [80]        | Units of the *y*-dimension                             |
 +---------------------------------+--------------------------------------------------------+
-| **char** *z\_units*\ [80]       | Units of the *z*-dimension                             |
+| **char** *z_units*\ [80]        | Units of the *z*-dimension                             |
 +---------------------------------+--------------------------------------------------------+
 | **char** *title*\ [80]          | Descriptive title of the data set                      |
 +---------------------------------+--------------------------------------------------------+
@@ -9687,28 +9899,28 @@ header structure is outline in Table [tbl:sunheader].
 
 [tbl:sunheader]
 
-After the header, the color map (if *ras_maptype* is not RMT\_NONE)
+After the header, the color map (if *ras_maptype* is not RMT_NONE)
 follows for *ras_maplength* bytes, followed by an image of
 *ras_length* bytes. Some related definitions are given in
 Table [tbl:sundef].
 
 [H]
 
-+---------------------+---------------------------------------------+
-| **Macro name**      | **Description**                             |
-+=====================+=============================================+
-| RAS\_MAGIC          | 0x59a66a95                                  |
-+---------------------+---------------------------------------------+
-| RT\_STANDARD        | 1 (Raw pixrect image in 68000 byte order)   |
-+---------------------+---------------------------------------------+
-| RT\_BYTE\_ENCODED   | 2 (Run-length compression of bytes)         |
-+---------------------+---------------------------------------------+
-| RT\_FORMAT\_RGB     | 3 ([X]RGB instead of [X]BGR)                |
-+---------------------+---------------------------------------------+
-| RMT\_NONE           | 0 (ras\_maplength is expected to be 0)      |
-+---------------------+---------------------------------------------+
-| RMT\_EQUAL\_RGB     | 1 (red[ras\_maplength/3],green[],blue[])    |
-+---------------------+---------------------------------------------+
++---------------------+-------------------------------------------+
+| **Macro name**      | **Description**                           |
++=====================+===========================================+
+| RAS_MAGIC           | 0x59a66a95                                |
++---------------------+-------------------------------------------+
+| RT_STANDARD         | 1 (Raw pixrect image in 68000 byte order) |
++---------------------+-------------------------------------------+
+| RT_BYTE_ENCODED     | 2 (Run-length compression of bytes)       |
++---------------------+-------------------------------------------+
+| RT_FORMAT_RGB       | 3 ([X]RGB instead of [X]BGR)              |
++---------------------+-------------------------------------------+
+| RMT_NONE            | 0 (ras_maplength is expected to be 0)     |
++---------------------+-------------------------------------------+
+| RMT_EQUAL_RGB       | 1 (red[ras_maplength/3],green[],blue[])   |
++---------------------+-------------------------------------------+
 
 [tbl:sundef]
 
@@ -9754,8 +9966,8 @@ a far from trivial exercise. This Appendix will show how to include
 *GMT* graphics into documents and how to achieve the best quality
 results.
 
-Making `GMT <http://gmt.soest.hawaii.edu>`_ Encapsulated *PostScript* Files
-----------------------------------------------------------------------------
+Making GMT Encapsulated *PostScript* Files
+------------------------------------------
 
 [sec:eps]
 
@@ -9830,8 +10042,8 @@ those programs also allow you to include PDF versions of your graphics.
 Except for **Pages**, you will not be able to view the figure
 on-screen, but it will print correctly.
 
-Converting `GMT <http://gmt.soest.hawaii.edu>`_ *PostScript* to PDF or raster images
--------------------------------------------------------------------------------------
+Converting GMT *PostScript* to PDF or raster images
+---------------------------------------------------
 
 Since Adobe's PDF (Portable Document Format) seems to have become the
 *de facto* standard for vector graphics, you are often well off
@@ -9860,8 +10072,7 @@ or ImageMagick's **convert**, most of which run **ghostscript**
 behind the scenes. The same is true for viewers like **ghostview** and
 Apple's **Preview**. So a lot of the times when people report that
 their *PostScript* plot does not look right but prints fine, it is the
-way **ghostscript** is used with its most basic settings that is to
-blame.
+way **ghostscript** is used with its most basic settings that is to blame.
 
 When converting or viewing *PostScript* goes awry
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -9973,8 +10184,8 @@ will only affect Landscape plots; Portrait plots will not be rotated.
 Examples
 --------
 
-`GMT <http://gmt.soest.hawaii.edu>`_ graphics in LaTeX
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+GMT graphics in LaTeX
+~~~~~~~~~~~~~~~~~~~~~
 
 Nearly all illustrations in this *GMT* documentation were *GMT*-produced
 *PostScript* files. They were converted to PDF files using
