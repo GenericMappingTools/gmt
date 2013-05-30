@@ -24,7 +24,7 @@
 
 **Alfred Wegener Institute, Germany**
 
-.. include:: fig_includes/fig_GMT_coverlogo.png.rst_
+.. include:: fig_includes/fig_GMT_coverlogo.rst_
 
 .. contents:: Table of Contents
 
