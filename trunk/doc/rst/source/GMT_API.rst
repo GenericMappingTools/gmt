@@ -24,11 +24,7 @@
 
 **Alfred Wegener Institute, Germany**
 
-.. image:: _images/GMT_coverlogo.png
-   :height: 543 px
-   :width: 1093 px
-   :align: center
-   :scale: 70 %
+.. include:: fig_includes/fig_GMT_coverlogo.png.rst_
 
 .. contents:: Table of Contents
 
