@@ -12216,7 +12216,3 @@ Finally we show an example of a polygon file:
 .. [51]
    Travel times were calculated using Geoware's travel time calculator,
    **ttt**; see
-
-.. |more| image:: _images/more.png
-          :align: middle
-          :alt: more info
