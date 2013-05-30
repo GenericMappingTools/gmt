@@ -8,15 +8,16 @@
 #
 # 3. A small number of images come from the SVN source. Create RST includes form them too
 #
-# This script assumes the build and doc dirs are at the same level
+# This script creates a sub-directory 'docfigs' under 'build'. If there is no 'build'
+# dir, it will be created as well.
 
 DPI=200
-path_build=../../build/docfigs	# Path to where ps2raster dumps the converted PNGs
+path_build=../../build/docfigs		# Path to where ps2raster dumps the converted PNGs
 com="-A -E${DPI} -P -Tg -D${path_build}"
 pato=source/fig_includes/		# Path to where the to-be-included files will be created
 
 if [ ! -d "${path_build}" ]; then
-	mkdir ${path_build}
+	mkdir -p ${path_build}
 fi
 
 function from_scripts {
