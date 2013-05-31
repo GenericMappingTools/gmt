@@ -4925,6 +4925,7 @@ void GMT_geo_rectangle (struct GMT_CTRL *GMT, double lon, double lat, double wid
 	/* GMT_geo_rectangle takes the location, axes (in km), and azimuth of a rectangle
 	   and draws the rectangle using the chosen map projection */
 
+	int jump;
 	double sin_azimuth, cos_azimuth, sinp, cosp, x, y, x_prime, y_prime, rho, c, dim[3];
 	double sin_c, cos_c, center, lon_w, lat_w, lon_h, lat_h, xp, yp, xw, yw, xh, yh;
 	struct PSL_CTRL *PSL= GMT->PSL;
@@ -4960,6 +4961,8 @@ void GMT_geo_rectangle (struct GMT_CTRL *GMT, double lon, double lat, double wid
 	while ((lon_w - center) < -180.0) lon_w += 360.0;
 	while ((lon_w - center) > +180.0) lon_w -= 360.0;
 	GMT_geo_to_xy (GMT, lon_w, lat_w, &xw, &yw);	/* Get projected x,y coordinates */
+	if ((jump = (*GMT->current.map.jump) (GMT, xp, yp, xw, yw)))	/* Adjust for map jumps */
+		xw += jump * 2.0 * GMT_half_map_width (GMT, yp);
 	dim[1] = 2.0 * hypot (xp - xw, yp - yw);	/* Estimate of rectangle width in plot units (inch) */
 	/* Get 2nd point height away from center */
 	sincos (M_PI_2, &y, &x);
@@ -4982,6 +4985,8 @@ void GMT_geo_rectangle (struct GMT_CTRL *GMT, double lon, double lat, double wid
 	while ((lon_h - center) < -180.0) lon_h += 360.0;
 	while ((lon_h - center) > +180.0) lon_h -= 360.0;
 	GMT_geo_to_xy (GMT, lon_h, lat_h, &xh, &yh);
+	if ((jump = (*GMT->current.map.jump) (GMT, xp, yp, xh, yh)))	/* Adjust for map jumps */
+		xh += jump * 2.0 * GMT_half_map_width (GMT, yp);
 	dim[2] = 2.0 * hypot (xp - xh, yp - yh);	/* Estimate of rectangle width in plot units (inch) */
 	PSL_plotsymbol (PSL, xp, yp, dim, PSL_ROTRECT);
 }
