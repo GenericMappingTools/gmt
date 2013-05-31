@@ -439,8 +439,10 @@ int GMT_psvelo (void *V_API, int mode, void *args)
 			if (Ctrl->D.active) spinsig = spinsig * Ctrl->D.scale;
 		}
 
-		GMT_map_outside (GMT, xy[GMT_X], xy[GMT_Y]);
-		if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;
+		if (!Ctrl->N.active) {
+			GMT_map_outside (GMT, xy[GMT_X], xy[GMT_Y]);
+			if (abs (GMT->current.map.this_x_status) > 1 || abs (GMT->current.map.this_y_status) > 1) continue;
+		}
 
 		GMT_geo_to_xy (GMT, xy[GMT_X], xy[GMT_Y], &plot_x, &plot_y);
 
