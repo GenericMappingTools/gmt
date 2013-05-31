@@ -21,9 +21,9 @@ if [ ! -d "${path_build}" ]; then
 fi
 
 function from_scripts {
-ps2raster ../scripts/${name}.ps $com
-W=`grdinfo -C ${path_build}/${name}.png | awk '{print $3}'`
-H=`grdinfo -C ${path_build}/${name}.png | awk '{print $5}'`
+gmt ps2raster ../scripts/${name}.ps $com
+W=`gmt grdinfo -C ${path_build}/${name}.png | awk '{print $3}'`
+H=`gmt grdinfo -C ${path_build}/${name}.png | awk '{print $5}'`
 echo ".. figure:: ../${path_build}/${name}.png" > ${pato}/fig_${name}.rst_
 echo "    :height: $H px" >> ${pato}/fig_${name}.rst_
 echo "    :width: $W px" >> ${pato}/fig_${name}.rst_
@@ -33,9 +33,9 @@ echo "" >> ${pato}/fig_${name}.rst_
 }
 
 function from_examples {
-ps2raster ../examples/ex$1/example_$1.ps $com
-W=`grdinfo -C ${path_build}/${name}.png | awk '{print $3}'`
-H=`grdinfo -C ${path_build}/${name}.png | awk '{print $5}'`
+gmt ps2raster ../examples/ex$1/example_$1.ps $com
+W=`gmt grdinfo -C ${path_build}/${name}.png | awk '{print $3}'`
+H=`gmt grdinfo -C ${path_build}/${name}.png | awk '{print $5}'`
 echo ".. figure:: ../${path_build}/${name}.png" > ${pato}/fig_${name}.rst_
 echo "   :height: $H px" >> ${pato}/fig_${name}.rst_
 echo "   :width: $W px" >> ${pato}/fig_${name}.rst_
@@ -47,8 +47,8 @@ echo "" >> ${pato}/fig_${name}.rst_
 }
 
 function from_fig {
-W=`grdinfo -C ../fig/${name} | awk '{print $3}'`
-H=`grdinfo -C ../fig/${name} | awk '{print $5}'`
+W=`gmt grdinfo -C ../fig/${name} | awk '{print $3}'`
+H=`gmt grdinfo -C ../fig/${name} | awk '{print $5}'`
 echo ".. figure:: ../../fig/${name}" > ${pato}/fig_${name}.rst_
 echo "    :height: $H px" >> ${pato}/fig_${name}.rst_
 echo "    :width: $W px" >> ${pato}/fig_${name}.rst_
