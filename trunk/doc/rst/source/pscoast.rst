@@ -10,25 +10,26 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **pscoast** **-J**\ *parameters*
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ] [
-**-A**\ *min\_area*\ [/*min\_level*/*max\_level*][\ **+r**\ \|\ **l**][\ **p**\ *percent*]
-] [ **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [
-**-C**\ [**l**\ \|\ **r**/]\ *fill* ] [ **-D**\ *resolution*\ [**+**\ ] ]
-[ **-F**\ *code1,code2,...*\ [**+l**\|**L**][**+g**\ *fill*\ ][**+p** \*pen\][**+r**\|**R**\ [*incs*]]]
-[ **-G**\ *fill*\ \|\ **c** ] [ **-I**\ *river*\ [/\ *pen*] ] [
-**-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [
-**-L**\ [**f**\ ][**x**\ ]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**][\ **+l**\ *label*][\ **+j**\ *just*][\ **+p**\ *pen*][\ **+g**\ *fill*][**+u**\ ]
-] ] [ **-M** ] [ **-N**\ *border*\ [/*pen*] ] [ **-O** ] [ **-P** ] [
-**-Q** ] [ **-S**\ *fill*\ \|\ **c** ] [
-**-T**\ [**f**\ \|\ **m**][**x**\ ]\ *lon0*/*lat0*/*size*\ [/*info*][\ **:**\ *w*,\ *e*,\ *s*,\ *n*\ **:**][\ **+**\ *gint*\ [/*mint*]]
-] [ **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [
-**-V**\ [*level*\ ] ] [ **-W**\ [*level*/]*pen* ] [
-**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-] [
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-] [ **-bo**\ [*ncols*\ ][*type*\ ] ] [ **-c**\ *copies* ] [
-**-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
-] [ **-t**\ [*transp*\ ] ]
+|SYN_OPT-R|
+[ **-A**\ *min\_area*\ [/*min\_level*/*max\_level*][\ **+r**\ \|\ **l**][\ **p**\ *percent*] ]
+[ |SYN_OPT-B| ]
+[ **-C**\ [**l**\ \|\ **r**/]\ *fill* ]
+[ **-D**\ *resolution*\ [**+**] ]
+[ **-F**\ *code1,code2,...*\ [**+l**\|\ **L**][**+g**\ *fill*][**+p**\ *pen*][**+r**\|\ **R**\ [*incs*]]]
+[ **-G**\ *fill*\ \|\ **c** ] [ **-I**\ *river*\ [/\ *pen*] ]
+[ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ]
+[ **-L**\ [**f**\ ][**x**\ ]\ *lon0*/*lat0*\ [/*slon*]/\ *slat*/*length*\ [**e**\ \|\ **f**\ \|\ **k**\ \|\ **M**\ \|\ **n**\ \|\ **u**][\ **+l**\ *label*][\ **+j**\ *just*][\ **+p**\ *pen*][\ **+g**\ *fill*][**+u**] ] ]
+[ **-M** ] [ **-N**\ *border*\ [/*pen*] ] [ **-O** ] [ **-P** ]
+[ **-Q** ] [ **-S**\ *fill*\ \|\ **c** ]
+[ **-T**\ [**f**\ \|\ **m**][**x**\ ]\ *lon0*/*lat0*/*size*\ [/*info*][\ **:**\ *w*,\ *e*,\ *s*,\ *n*\ **:**][\ **+**\ *gint*\ [/*mint*]] ]
+[ |SYN_OPT-U| ]
+[ |SYN_OPT-V| ]
+[ **-W**\ [*level*/]*pen* ]
+[ |SYN_OPT-X| ]
+[ |SYN_OPT-Y| ]
+[ **-bo**\ [*ncols*\ ][*type*\ ] ] [ **-c**\ *copies* ]
+[ |SYN_OPT-p| ]
+[ |SYN_OPT-t| ]
 
 |No-spaces|
 
@@ -75,13 +76,15 @@ Optional Arguments
     is the fill chosen for "wet" areas (**-S**)]. Optionally, specify
     separate fills by prepending **l**/ for lakes and **r**/ for
     river-lakes, repeating the **-C** option as needed.
-**-D**\ *resolution*\ [**+**\ ]
+
+**-D**\ *resolution*\ [**+**]
     Selects the resolution of the data set to use ((**f**)ull,
     (**h**)igh, (**i**)ntermediate, (**l**)ow, and (**c**)rude). The
     resolution drops off by 80% between data sets [Default is **l**].
     Append )+) to automatically select a lower resolution should the one
     requested not be available [abort if not found].
-[ **-F**\ *code1,code2,...*\ [**+l**\|**L**][**+g**\ *fill*\ ][**+p** \*pen\][**+r**\|**R**\ [*incs*]]]
+
+**-F**\ *code1,code2,...*\ [**+l**\|\ **L**][**+g**\ *fill*][**+p**\ *pen*][**+r**\|\ **R**\ [*incs*]]
     Select painting or dumping country polygons from the Digital Chart of the World.
     Append one or more comma-separated countries using the 2-character
     ISO 3166-1 alpha-2 convention.  To select a state of a country
@@ -90,14 +93,16 @@ Optional Arguments
     Use **+L** to see states/territories for Australia, Brazil, Canada, and the US.
     Use **+r** obtain the bounding box coordinates from the polygon(s).
     Append *inc*, *xinc*/*yinc*, or *winc*/*einc*/*sinc*/*ninc* to adjust the
-    region to be a multiple of these steps [no adjustment].  Use **+R** to extend the region
+    region to be a multiple of these steps [no adjustment]. Use **+R** to extend the region
     outward by adding these increments instead [no extension].
     Append **+p**\ *pen* to draw polygon outlines [no outline] and
-    **+g**\ *fill* to fill them [no fill].  One of **+p**\|**g** must be
+    **+g**\ *fill* to fill them [no fill].  One of **+p**\|\ **g** must be
     specified unless **-M** is in effect.
+
 **-G**\ *fill*\ \|\ **c**
     Select filling or clipping of "dry" areas. Append the shade, color,
     or pattern; or use **-Gc** for clipping [Default is no fill].
+
 **-I**\ *river*\ [/*pen*]
     Draw rivers. Specify the type of rivers and [optionally] append pen
     attributes [Default pen: width = default, color = black, style =
@@ -150,7 +155,7 @@ Optional Arguments
 
 **-M**
     Dumps a single multisegment ASCII (or binary, see
-    **-bo**\ [*ncols*\ ][*type*\ ]) file to standard output. No plotting
+    **-bo**\ [*ncols*][*type*]) file to standard output. No plotting
     occurs. Specify any combination of **-F**, **-W**, **-I**, **-N**.
     Note: if **-M** is used with **-F** then **-R** or the **+r** modifier
     to **-F** are not required as we automatically determine the region
@@ -221,27 +226,31 @@ permanent major rivers in thick blue pen, additional major rivers in
 thin blue pen, and national borders as dashed lines on a Mercator map at
 scale 0.1 inch/degree, use
 
-    pscoast -R-30/30/-40/40 **-Jm**\ 0.1\ **i** -B5 -I1/1p,blue
-    -I2/0.25p,blue -N1/0.25p,- -W0.25p,white -Ggreen -Sblue -P > africa.ps
+   ::
+
+    gmt pscoast -R-30/30/-40/40 -Jm0.1i -B5 -I1/1p,blue -N1/0.25p,- \
+                -I2/0.25p,blue -W0.25p,white -Ggreen -Sblue -P > africa.ps
 
 To plot Iceland using the lava pattern (# 28) at 100 dots per inch, on a
 Mercator map at scale 1 cm/degree, run
 
-    pscoast -R-30/-10/60/65 **-Jm**\ 1\ **c** -B5 -Gp100/28 > iceland.ps
+   ::
+
+    gmt pscoast -R-30/-10/60/65 -Jm1c -B5 -Gp100/28 > iceland.ps
 
 To initiate a clip path for Africa so that the subsequent colorimage of
 gridded topography is only seen over land, using a Mercator map at scale
 0.1 inch/degree, use
 
-    pscoast -R-30/30/-40/40 **-Jm**\ 0.1\ **i** -B5 -Gc -P -K > africa.ps
+   ::
 
-    grdimage **-Jm**\ 0.1\ **i** etopo5.nc -Ccolors.cpt -O -K >> africa.ps
-
-    pscoast -Q -O >> africa.ps
+    gmt pscoast  -R-30/30/-40/40 -Jm0.1i -B5 -Gc -P -K > africa.ps
+    gmt grdimage -Jm0.1i etopo5.nc -Ccolors.cpt -O -K >> africa.ps
+    gmt pscoast  -Q -O >> africa.ps
 
 **pscoast** will first look for coastline files in directory
-**$GMT\_SHAREDIR**/coast If the desired file is not found, it will look
-for the file **$GMT\_SHAREDIR**/coastline.conf. This file may contain
+**$GMT_SHAREDIR**/coast If the desired file is not found, it will look
+for the file **$GMT_SHAREDIR**/coastline.conf. This file may contain
 any number of records that each holds the full pathname of an
 alternative directory. Comment lines (#) and blank lines are allowed.
 The desired file is then sought for in the alternate directories. 
