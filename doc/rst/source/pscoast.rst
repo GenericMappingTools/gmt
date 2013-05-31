@@ -97,7 +97,7 @@ Optional Arguments
     outward by adding these increments instead [no extension].
     Append **+p**\ *pen* to draw polygon outlines [no outline] and
     **+g**\ *fill* to fill them [no fill].  One of **+p**\|\ **g** must be
-    specified unless **-M** is in effect.
+    specified unless **-M** is in effect, and only one **-F** option can be given.
 
 **-G**\ *fill*\ \|\ **c**
     Select filling or clipping of "dry" areas. Append the shade, color,
