@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-05-31	pwessel
+	* gmt_plot.c:		Did not check for map-jumping in GMT_plot_rectangle (psxy -SJ).
+
 2013-05-26	pwessel
 	* dbase/grdraster.c:	As generic tool it is now in the GMT core
 
