@@ -28,8 +28,8 @@
  * To add another data format:
  *
  *	1. Write the five required routines (see below).
- *	2. Place prototypes in the gmt_customio.h file.
- *	3. Provide another text entry in Grdformats.txt
+ *  2. Edit gmt_grdio.h and add one entry to the Gmt_grid_id enum
+ *  3. Increment GMT_N_GRD_FORMATS (in gmt_grdio.h too)
  *
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
