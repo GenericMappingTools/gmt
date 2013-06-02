@@ -19,15 +19,15 @@
  *
  *	G M T _ C U S T O M I O . C   R O U T I N E S
  *
- * Takes care of all custom format gridfile input/output.  The
- * industrious user may supply his/her own code to read specific data
- * formats.  Five functions must be supplied, and they must conform
- * to the GMT standard and return the same arguments as the generic
- * GMT grdio functions.  See gmt_cdf.c for details.
+ * GMT has built-in support for several grid formats, which is extended
+ * to a broad selection of formats via GDAL.  If there are very unusual
+ * and custom formats you wish to see supported by GMT then please make
+ * your case on the GMT trac website and we can start a dialog of whether
+ * or not we should support your suggested format.
  *
- * To add another data format:
+ * For gurus: To add another data format:
  *
- *	1. Write the five required routines (see below).
+ *  1. Write the five required routines (see below).
  *  2. Edit gmt_grdio.h and add one entry to the Gmt_grid_id enum
  *  3. Increment GMT_N_GRD_FORMATS (in gmt_grdio.h too)
  *
@@ -46,7 +46,7 @@
  * where * is a tag specific to a particular data format
  *
  * NOTE:  1. GMT assumes that GMT_read_grd_info has been called before calls
- *	     to GMT_read_grd.
+ *	     to GMT_read_grd.  This normally is done via GMT_Read_Data.
  *	  2. Some formats may permit pipes to be used.  In that case GMT
  *	     expects the filename to be "=" (the equal sign).  It is the
  *	     responsibility of the custom routines to test for "=" and
