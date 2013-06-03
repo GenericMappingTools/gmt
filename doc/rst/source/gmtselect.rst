@@ -4,33 +4,34 @@ gmtselect
 
 gmtselect - Select data table subsets based on multiple spatial criteria
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtselect** [ *table* ] [
-**-A**\ *min\_area*\ [/*min\_level*/*max\_level*][\ **+r**\ \|\ **l**][\ **p**\ *percent*]
-] [ **-C**\ *dist*\ [*unit*\ ]/\ *ptfile* ] [
-**-D**\ *resolution*\ [**+**\ ] ] [ **-E**\ [**fn**\ ] ] [
-**-F**\ *polygonfile* ] [ **-I**\ [**cflrsz**\ ] ] [
-**-J**\ *parameters* ] [
-**-L**\ [**p**\ ]\ *dist*\ [*unit*\ ]/\ *linefile* ] [
-**-N**\ *maskvalues* ] [
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-V**\ [*level*\ ]
-] [ **-Z**\ *min*\ [/*max*]\ [**+c**\ *col*] ] [
-**-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
-**-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
-] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-o**\ *cols*\ [,*...*] ] [ **-s**\ [*cols*\ ][\ **a**\ \|\ **r**]
-] [ **-:**\ [**i**\ \|\ **o**] ]
+**gmtselect** [ *table* ]
+[ **-A**\ *min_area*\ [/*min_level*/*max_level*][\ **+r**\ \|\ **l**][\ **p**\ *percent*] ]
+[ **-C**\ *dist*\ [*unit*]/\ *ptfile* ]
+[ **-D**\ *resolution*\ [**+**] ] [ **-E**[**fn**] ]
+[ **-F**\ *polygonfile* ] [ **-I**\ [**cflrsz**] ]
+[ |SYN_OPT-J| ]
+[ **-L**\ [**p**]\ *dist*\ [*unit*]/\ *linefile* ]
+[ **-N**\ *maskvalues* ]
+[ |SYN_OPT-R| ]
+[ **-Z**\ *min*\ [/*max*]\ [**+c**\ *col*] ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-b| ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-g| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-o| ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **gmtselect** is a filter that reads (longitude, latitude) positions
 from the first 2 columns of *infiles* [or standard input] and uses a
@@ -44,13 +45,13 @@ sense of the tests can be reversed for each of these 6 criteria by using
 the **-I** option. See option **-:** on how to read (latitude,longitude)
 files. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 None
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
@@ -58,7 +59,7 @@ None
 .. |Add_-A| replace:: Ignored unless **-N** is set.
 .. include:: explain_-A.rst_
 
-**-C**\ *dist*\ [*unit*\ ]/\ *ptfile*
+**-C**\ *dist*\ [*unit*]/\ *ptfile*
     Pass all records whose location is within *dist* of any of the
     points in the ASCII file *ptfile*. If *dist* is zero then the 3rd
     column of *ptfile* must have each point’s individual radius of
@@ -68,7 +69,8 @@ None
     geographic coordinates are projected to map coordinates (in cm,
     inch, or points, as determined by **PROJ\_LENGTH\_UNIT**) before
     Cartesian distances are compared to *dist*.
-**-D**\ *resolution*\ [**+**\ ]
+
+**-D**\ *resolution*\ [**+**]
     Ignored unless **-N** is set. Selects the resolution of the
     coastline data set to use ((**f**)ull, (**h**)igh,
     (**i**)ntermediate, (**l**)ow, or (**c**)rude). The resolution drops
@@ -77,19 +79,22 @@ None
     be available [abort if not found]. Note that because the coastlines
     differ in details it is not guaranteed that a point will remain
     inside [or outside] when a different resolution is selected.
-**-E**\ [**fn**\ ]
+
+**-E**\ [**fn**]
     Specify how points exactly on a polygon boundary should be
     considered. By default, such points are considered to be inside the
     polygon. Append **n** and/or **f** to change this behavior for the
     **-F** and **-N** options, respectively, so that boundary points are
     considered to be outside.
+
 **-F**\ *polygonfile*
     Pass all records whose location is within one of the closed polygons
     in the multiple-segment file *polygonfile*. For spherical polygons
     (lon, lat), make sure no consecutive points are separated by 180
     degrees or more in longitude. Note that *polygonfile* must be in
-    ASCII regardless of whether **-bi**\ [*ncols*\ ][*type*\ ] is used.
-**-I**\ [**cflrsz**\ ]
+    ASCII regardless of whether **-bi**\ [*ncols*][*type*] is used.
+
+**-I**\ [**cflrsz**]
     Reverses the sense of the test for each of the criteria specified:
 
     **c** select records NOT inside any point's circle of influence.
@@ -107,7 +112,7 @@ None
      
 .. include:: explain_-J.rst_
 
-**-L**\ [**p**\ ]\ *dist*\ [*unit*\ ]/\ *linefile*
+**-L**\ [**p**]\ *dist*\ [*unit*]/\ *linefile*
     Pass all records whose location is within *dist* of any of the line
     segments in the ASCII multiple-segment file *linefile*. If *dist* is
     zero then we will scan each sub-header in the *ptfile* for an
@@ -121,6 +126,7 @@ None
     whose orthogonal projections onto the nearest line-segment fall
     within the segments endpoints [Default considers points "beyond" the
     line’s endpoints.
+
 **-N**\ *maskvalues*
     Pass all records whose location is inside specified geographical
     features. Specify if records should be skipped (s) or kept (k) using
@@ -180,24 +186,24 @@ None
 This note applies to ASCII output only in combination with binary or
 netCDF input or the **-:** option. See also the note below.
 
-`Note On Processing Ascii Input Records <#toc8>`_
--------------------------------------------------
+Note On Processing Ascii Input Records
+--------------------------------------
 
 Unless you are using the **-:** option, selected ASCII input records are
 copied verbatim to output. That means that options like **-foT** and
-settings like **FORMAT\_FLOAT\_OUT** and **FORMAT\_GEO\_OUT** will not
+settings like **FORMAT_FLOAT_OUT** and **FORMAT_GEO_OUT** will not
 have any effect on the output. On the other hand, it allows selecting
 records with diverse content, including character strings, quoted or
 not, comments, and other non-numerical content.
 
-`Note On Distances <#toc9>`_
-----------------------------
+Note On Distances
+-----------------
 
 If options **-C** or **-L** are selected then distances are Cartesian
 and in user units; use **-fg** to imply spherical distances in km and
 geographical (lon, lat) coordinates. Alternatively, specify **-R** and
 **-J** to measure projected Cartesian distances in map units (cm, inch,
-or points, as determined by **PROJ\_LENGTH\_UNIT**).
+or points, as determined by **PROJ_LENGTH_UNIT**).
 
 This program has evolved over the years. Originally, the **-R** and
 **-J** were mandatory in order to handle geographic data, but now there
@@ -206,20 +212,22 @@ used if you want the tests to be applied on projected data and not the
 original coordinates. If **-J** is used the distances given via **-C**
 and **-L** are projected distances.
 
-`Note On Segments <#toc10>`_
-----------------------------
+Note On Segments
+----------------
 
 Segment headers in the input files are copied to output if one or more
 records from a segment passes the test. Selection is always done point
 by point, not by segment.
 
-`Examples <#toc11>`_
---------------------
+Examples
+--------
 
 To extract the subset of data set that is within 300 km of any of the
 points in pts.d but more than 100 km away from the lines in lines.d, run
 
-    gmtselect lonlatfile -fg -C300k/pts.d -L100/lines.d -Il > subset
+   ::
+
+    gmt gmtselect lonlatfile -fg -C300k/pts.d -L100/lines.d -Il > subset
 
 Here, you must specify **-fg** so the program knows you are processing
 geographical data.
@@ -227,23 +235,29 @@ geographical data.
 To keep all points in data.d within the specified region, except the
 points on land (as determined by the high-resolution coastlines), use
 
-    gmtselect data.d -R120/121/22/24 -Dh -Nk/s > subset
+   ::
+
+    gmt gmtselect data.d -R120/121/22/24 -Dh -Nk/s > subset
 
 To return all points in quakes.d that are inside or on the spherical
 polygon lonlatpath.d, try
 
-    gmtselect quakes.d -Flonlatpath.d -fg > subset1
+   ::
+
+    gmt gmtselect quakes.d -Flonlatpath.d -fg > subset1
 
 To return all points in stations.d that are within 5 cm of the point in
 origin.d for a certain projection, try
 
-    gmtselect stations.d -C5/origin.d -R20/50/-10/20 -JM20c --PROJ\_LENGTH\_UNIT=cm > subset2
+   ::
+
+    gmt gmtselect stations.d -C5/origin.d -R20/50/-10/20 -JM20c --PROJ_LENGTH_UNIT=cm > subset2
 
 .. include:: explain_gshhs.rst_
 
 
-`See Also <#toc13>`_
---------------------
+See Also
+--------
 
 `gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_, `grdlandmask <grdlandmask.html>`_,
 `pscoast <pscoast.html>`_
