@@ -691,7 +691,7 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 
 		case 'A':	/* GSHHG specification */
 		
-		 	GMT_message (GMT, "\t-A Place limits on coastline features from the GSHHG data base.");
+		 	GMT_message (GMT, "\t-A Place limits on coastline features from the GSHHG data base.\n");
 			GMT_message (GMT, "\t   Features smaller than <min_area> (in km^2) or of levels (0-4) outside the min-max levels\n");
 			GMT_message (GMT, "\t   will be skipped [0/4 (4 means lake inside island inside lake)].\n");
 			GMT_message (GMT, "\t   Append +r to only get riverlakes from level 2, or +l to only get lakes [both].\n");

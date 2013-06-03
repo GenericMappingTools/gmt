@@ -49,7 +49,7 @@ Optional Arguments
 **-N**\ [**i**]\ *nodata* 
     Output this z-value where the latter equals NaN [Default writes NaN].
     Alternatively prepend **i** to do the inverse. That is, to replace the
-    *nodata* values in grid with NaN. Useful to use with **-s** option.
+    *nodata* values in grid with NaN. Useful to use with the **-s** option.
 
 .. |Add_-R| replace:: Using the **-R** option
     will select a subsection of the grid. If this subsection exceeds the
