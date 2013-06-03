@@ -4,49 +4,52 @@ grd2xyz
 
 grd2xyz - Convert grid file to data table
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
-**grd2xyz** *grid* [ **-C**\ [**f**\ \|\ **i**] ] [ **-N**\ *nodata* ] [
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-V**\ [*level*\ ]
-] [ **-W**\ [*weight*\ ] ] [ **-Z**\ [*flags*\ ] ] [
-**-bo**\ [*ncols*\ ][*type*\ ] ] [ **-f**\ *colinfo* ] [
-**-ho**\ [*n*\ ] ] [ **-o**\ *cols*\ [,*...*] ] [
-**-s**\ [*cols*\ ][\ **a**\ \|\ **r**] ]
+**grd2xyz** *grid* [ **-C**\ [**f**\ \|\ **i**] ] [ **-N**\ [**i**]\ *nodata* ]
+[ |SYN_OPT-R| ] [ |SYN_OPT-V| ]
+[ **-W**\ [*weight*\ ] ] [ **-Z**\ [*flags*\ ] ]
+[ **-bo**\ [*ncols*\ ][*type*] ] [ |SYN_OPT-f| ]
+[ **-ho**\ [*n*] ] [ |SYN_OPT-o| ]
+[ |SYN_OPT-s| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **grd2xyz** reads one or more binary 2-D grid files and writes out
 xyz-triplets in ASCII [or binary] format to standard output. Modify the
 precision of the ASCII output format by editing the
-**FORMAT\_FLOAT\_OUT** parameter in your `gmt.conf <gmt.conf.html>`_ file or use
-**--D\_FORMAT**\ =\ *format* on the command line, or choose binary
+**FORMAT_FLOAT_OUT** parameter in your `gmt.conf <gmt.conf.html>`_ file or use
+**--D_FORMAT**\ =\ *format* on the command line, or choose binary
 output using single or double precision storage. As an option you may
 output z-values without the (x,y) coordinates; see **-Z** below. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *grid*
     Names of 2-D binary grid files to be converted. (See GRID FILE
     FORMATS below.)
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-C**\ [**f**\ \|\ **i**]
     Replace the x- and y-coordinates on output with the corresponding
     column and row numbers. These start at 0 (C-style counting); append
     **f** to start at 1 (Fortran-style counting). Alternatively, append
     **i** to write just the two columns *index* and *z*, where *index*
-    is the 1-D indexing that GMT users when referring to grid nodes.
-**-N**
-    Output this z-value where the latter equals NaN [Default writes NaN]. 
+    is the 1-D indexing that GMT uses when referring to grid nodes.
+
+**-N**\ [**i**]\ *nodata* 
+    Output this z-value where the latter equals NaN [Default writes NaN].
+    Alternatively prepend **i** to do the inverse. That is, to replace the
+    *nodata* values in grid with NaN. Useful to use with **-s** option.
 
 .. |Add_-R| replace:: Using the **-R** option
     will select a subsection of the grid. If this subsection exceeds the
@@ -56,10 +59,11 @@ output z-values without the (x,y) coordinates; see **-Z** below.
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 ..  include:: explain_-V.rst_
 
-**-W**\ [*weight*\ ]
+**-W**\ [*weight*]
     Write out x,y,z,w, where w is the supplied *weight* (or 1 if not
     supplied) [Default writes x,y,z only].
-**-Z**\ [*flags*\ ]
+
+**-Z**\ [*flags*]
     Write a 1-column ASCII [or binary] table. Output will be organized
     according to the specified ordering convention contained in *flags*.
     If data should be written by rows, make *flags* start with
@@ -77,21 +81,21 @@ output z-values without the (x,y) coordinates; see **-Z** below.
 
     **a** ASCII representation of a single item per record
 
-    **c** int8\_t, signed 1-byte character
+    **c** int8_t, signed 1-byte character
 
-    **u** uint8\_t, unsigned 1-byte character
+    **u** uint8_t, unsigned 1-byte character
 
-    **h** int16\_t, short 2-byte integer
+    **h** int16_t, short 2-byte integer
 
-    **H** uint16\_t, unsigned short 2-byte integer
+    **H** uint16_t, unsigned short 2-byte integer
 
-    **i** int32\_t, 4-byte integer
+    **i** int32_t, 4-byte integer
 
-    **I** uint32\_t, unsigned 4-byte integer
+    **I** uint32_t, unsigned 4-byte integer
 
-    **l** int64\_t, long (8-byte) integer
+    **l** int64_t, long (8-byte) integer
 
-    **L** uint64\_t, unsigned long (8-byte) integer
+    **L** uint64_t, unsigned long (8-byte) integer
 
     **f** 4-byte floating point single precision
 
@@ -120,33 +124,36 @@ output z-values without the (x,y) coordinates; see **-Z** below.
 
 .. include:: explain_grd_input.rst_
 
-`Time Coordinates <#toc8>`_
----------------------------
+Time Coordinates
+----------------
 
 Time coordinates in netCDF grids, be it the x, y, or z coordinate, will
 be recognized as such. The variable’s BD(unit) attribute is parsed to
 determine the unit and epoch of the time coordinate in the grid. Values
 are then converted to the internal time system specified by
-**TIME\_UNIT** and **TIME\_EPOCH** in the `gmt.conf <gmt.conf.html>`_ file or on the
+**TIME_UNIT** and **TIME_EPOCH** in the `gmt.conf <gmt.conf.html>`_ file or on the
 command line. The default output is relative time in that time system,
 or absolute time when using the option **-f0T**, **-f1T**, or **-f2T**
 for x, y, or z coordinate, respectively.
 
-`Examples <#toc9>`_
--------------------
+Examples
+--------
 
-To edit individual values in the 5’ by 5’ hawaii\_grv.nc file, dump the
-.nc to ASCII:
+To edit individual values in the 5’ by 5’ hawaii_grv.nc file, dump the .nc to ASCII:
 
-    grd2xyz hawaii\_grv.nc > hawaii\_grv.xyz
+   ::
+
+    grd2xyz hawaii_grv.nc > hawaii_grv.xyz
 
 To write a single precision binary file without the x,y positions from
-the file raw\_data.nc file, using scanline orientation, run
+the file raw_data.nc file, using scanline orientation, run
 
-    grd2xyz raw\_data.nc -ZTLf > hawaii\_grv.b
+   ::
 
-`See Also <#toc10>`_
---------------------
+    grd2xyz raw_data.nc -ZTLf > hawaii_grv.b
+
+See Also
+--------
 
 `gmt.conf <gmt.conf.html>`_ , `gmt <gmt.html>`_ ,
 `grdedit <grdedit.html>`_ ,
