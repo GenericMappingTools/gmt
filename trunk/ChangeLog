@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-06-03	jluis
+	* grd2xyz.c:		Enhanced -N[i]<nodata> to replace grid values on output with NaN.
+
 2013-05-31	pwessel
 	* gmt_plot.c:		Did not check for map-jumping in GMT_plot_rectangle (psxy -SJ).
 	* meca/psvelo.c:	Did not honor the -N setting.
