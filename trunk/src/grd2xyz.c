@@ -32,20 +32,21 @@
 #define GMT_PROG_OPTIONS "-:>RVbfhos" GMT_OPT("H")
 
 struct GRD2XYZ_CTRL {
-	struct C {	/* -C[f|i] */
+	struct GRD2XYZ_C {	/* -C[f|i] */
 		bool active;
 		unsigned int mode;
 	} C;
-	struct E {	/* -E[f][<nodata>] */
+	struct GRD2XYZ_E {	/* -E[f][<nodata>] */
 		bool active;
 		bool floating;
 		double nodata;
 	} E;
-	struct N {	/* -N<nodata> */
+	struct GRD2XYZ_N {	/* -N<nodata> */
 		bool active;
+		bool inverse;	/* To the inverse, that is: turn a particular value into NaN */
 		double value;
 	} N;
-	struct W {	/* -W[<weight>] */
+	struct GRD2XYZ_W {	/* -W[<weight>] */
 		bool active;
 		double weight;
 	} W;
@@ -73,7 +74,7 @@ void Free_grd2xyz_Ctrl (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *C) {	/* Deall
 
 int GMT_grd2xyz_usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_module_show_name_and_purpose (API, THIS_MODULE);
-	GMT_Message (API, GMT_TIME_NONE, "usage: grd2xyz <grid> [-C[f]] [-N<nodata>] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: grd2xyz <grid> [-C[f]] [-N[i]<nodata>] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[<weight>]] [-Z[<flags>]] [%s] [%s] [%s]\n\t[%s] [%s] [%s] > xyzfile\n",
 		GMT_bo_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
@@ -83,6 +84,7 @@ int GMT_grd2xyz_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Write row, col instead of x,y.  Append f to start at 1, else 0 [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Replace z-values that equal NaN with this value [Default writes NaN].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Ni Do the inverse. If grid contains <nodata> values, replace them with NaN.\n");
 	GMT_Option (API, "R,V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Write xyzw using supplied weight (or 1 if not given) [Default is xyz].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set exact specification of resulting 1-column output z-table.\n");
@@ -164,8 +166,14 @@ int GMT_grd2xyz_parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct G
 				break;
 			case 'N':	/* Nan-value */
 				Ctrl->N.active = true;
-				if (opt->arg[0])
+				if (opt->arg[0]) {
+					if (opt->arg[0] == 'i') {	/* Do the inverse: turn value into NaN */
+						Ctrl->N.inverse = true;
+						(opt->arg)++;
+					}
 					Ctrl->N.value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.d_NaN : atof (opt->arg);
+					if (Ctrl->N.inverse) (opt->arg)--;	/* Need to reset it otherwise it crashes at freeing */
+				}
 				else {
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N option: Must specify value or NaN\n");
 					n_errors++;
@@ -297,7 +305,10 @@ int GMT_grd2xyz (void *V_API, int mode, void *args)
 				gmt_ij = io.get_gmt_ij (&io, G, ij);	/* Get the corresponding grid node */
 				d_value = G->data[gmt_ij];
 				if ((io.x_missing && io.gmt_i == io.x_period) || (io.y_missing && io.gmt_j == 0)) continue;
-				if (Ctrl->N.active && GMT_is_dnan (d_value)) d_value = Ctrl->N.value;
+				if (Ctrl->N.active && !Ctrl->N.inverse && GMT_is_dnan (d_value))
+					d_value = Ctrl->N.value;
+				else if (Ctrl->N.active && Ctrl->N.inverse && d_value == Ctrl->N.value)
+					d_value = GMT->session.d_NaN;
 				write_error = GMT_Put_Record (API, GMT_WRITE_DOUBLE, &d_value);
 				if (write_error) n_suppressed++;	/* Bad value caught by -s[r] */
 			}
@@ -410,11 +421,17 @@ int GMT_grd2xyz (void *V_API, int mode, void *args)
 				if (Ctrl->C.mode == 2) {
 					out[GMT_X] = (double)GMT_IJ0 (G->header, row, col);
 					out[GMT_Y] = G->data[ij];
-					if (Ctrl->N.active && GMT_is_dnan (out[GMT_Y])) out[GMT_Y] = Ctrl->N.value;
+					if (Ctrl->N.active && !Ctrl->N.inverse && GMT_is_dnan (out[GMT_Y]))
+						out[GMT_Y] = Ctrl->N.value;
+					else if (Ctrl->N.active && Ctrl->N.inverse && out[GMT_Y] == Ctrl->N.value)
+						out[GMT_Y] = GMT->session.f_NaN;
 				}
 				else {
 					out[GMT_X] = x[col];	out[GMT_Y] = y[row];	out[GMT_Z] = G->data[ij];
-					if (Ctrl->N.active && GMT_is_dnan (out[GMT_Z])) out[GMT_Z] = Ctrl->N.value;
+					if (Ctrl->N.active && !Ctrl->N.inverse && GMT_is_dnan (out[GMT_Z]))
+						out[GMT_Z] = Ctrl->N.value;
+					else if (Ctrl->N.active && Ctrl->N.inverse && out[GMT_Z] == Ctrl->N.value)
+						out[GMT_Z] = GMT->session.f_NaN;
 				}
 				write_error = GMT_Put_Record (API, GMT_WRITE_DOUBLE, out);		/* Write this to output */
 				if (write_error) n_suppressed++;	/* Bad value caught by -s[r] */
