@@ -84,7 +84,7 @@ int GMT_grd2xyz_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Write row, col instead of x,y.  Append f to start at 1, else 0 [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Replace z-values that equal NaN with this value [Default writes NaN].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Ni Do the inverse. If grid contains <nodata> values, replace them with NaN.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ni to do the inverse: If grid contains <nodata> values, replace them with NaN.\n");
 	GMT_Option (API, "R,V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Write xyzw using supplied weight (or 1 if not given) [Default is xyz].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set exact specification of resulting 1-column output z-table.\n");
@@ -120,7 +120,7 @@ int GMT_grd2xyz_parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, n_files = 0, k = 0;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -169,10 +169,9 @@ int GMT_grd2xyz_parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct G
 				if (opt->arg[0]) {
 					if (opt->arg[0] == 'i') {	/* Do the inverse: turn value into NaN */
 						Ctrl->N.inverse = true;
-						(opt->arg)++;
+						k = 1;
 					}
-					Ctrl->N.value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.d_NaN : atof (opt->arg);
-					if (Ctrl->N.inverse) (opt->arg)--;	/* Need to reset it otherwise it crashes at freeing */
+					Ctrl->N.value = (opt->arg[k] == 'N' || opt->arg[k] == 'n') ? GMT->session.d_NaN : atof (&opt->arg[k]);
 				}
 				else {
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -N option: Must specify value or NaN\n");
