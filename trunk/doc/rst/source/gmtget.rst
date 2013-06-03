@@ -9,8 +9,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtget** [ **-G**\ *defaultsfile* ] [ **-L** ] *PARAMETER1* [
-*PARAMETER2* *PARAMETER3* ... ]
+**gmtget** [ **-G**\ *defaultsfile* ] [ **-L** ] *PARAMETER1* [ *PARAMETER2* *PARAMETER3* ... ]
 
 |No-spaces|
 
@@ -44,12 +43,16 @@ Example
 
 To list the value of the parameter PS_COMMENTS:
 
-    gmtget PS_COMMENTS
+   ::
+
+    gmt get PS_COMMENTS
 
 To get both the values of the parameter
 MAP_GRID_CROSS_SIZE_PRIMARY and MAP_GRID_CROSS_SIZE_SECONDARY on one line, try
 
-    gmtget MAP_GRID_CROSS_SIZE_PRIMARY MAP_GRID_CROSS_SIZE_SECONDARY
+   ::
+
+    gmt get MAP_GRID_CROSS_SIZE_PRIMARY MAP_GRID_CROSS_SIZE_SECONDARY
 
 See Also
 --------

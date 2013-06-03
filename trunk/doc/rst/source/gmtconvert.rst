@@ -9,24 +9,27 @@ gmtconvert - Convert, Paste, and/or Extract columns from data tables
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtconvert** [ *table* ] [ **-A** ] [ **-D**\ [*template*\ ] ] [
-**-E**\ [**f**\ \|\ **l**\ \|\ **m**\ *stride*] ] [ **-L** ] [
-**-I**\ [**tsr**\ ] ] [ **-N** ] [ **-Q**\ *seg* ] [
-**-S**\ [**~**\ ]\ *"search string"* \|
-**-S**\ [**~**\ ]/\ *regexp*/[**i**\ ] ] [ **-T** ] [
-**-V**\ [*level*\ ] ] [ **-a**\ *col*\ =\ *name*\ [*...*\ ] ] [
-**-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
-**-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
-] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-o**\ *cols*\ [,*...*] ] [ **-s**\ [*cols*\ ][\ **a**\ \|\ **r**]
-] [ **-:**\ [**i**\ \|\ **o**] ]
+**gmtconvert** [ *table* ] [ **-A** ] [ **-D**\ [*template*] ]
+[ **-E**\ [**f**\ \|\ **l**\ \|\ **m**\ *stride*] ] [ **-L** ]
+[ **-I**\ [**tsr**\ ] ] [ **-N** ] [ **-Q**\ *seg* ]
+[ **-S**\ [**~**\ ]\ *"search string"* \|
+**-S**\ [**~**\ ]/\ *regexp*/[**i**\ ] ]
+[ **-T** ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-a| ]
+[ |SYN_OPT-b| ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-g| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-o| ]
+[ |SYN_OPT-s| ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **gmtconvert** reads its standard input [or input files] and writes out
 the desired information to standard output. It can do a combination of
@@ -39,13 +42,13 @@ data record for each segment, `and (7) <and.7.html>`_ reverse the order
 of items on output. Input (and hence output) may have multiple
 sub-headers, and ASCII tables may have regular headers as well. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 None
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
@@ -55,9 +58,9 @@ None
     appended vertically [Default]. All files must have the same number
     of segments and number of rows per segment. Note for binary input,
     all the files you want to paste must have the same number of columns
-    (as set with **-bi**\ [*ncols*\ ][*type*\ ]); ascii tables can have
+    (as set with **-bi**\ [*ncols*][*type*]); ascii tables can have
     different number of columns.
-**-D**\ [*template*\ ]
+**-D**\ [*template*]
     For multiple segment data, dump each segment to a separate output
     file [Default writes a multiple segment file to stdout]. Append a
     format template for the individual file names; this template
@@ -65,7 +68,7 @@ None
     argument (the running segment number across all tables); this is
     usually %d but could be %08d which gives leading zeros, etc.
     [Default is gmtconvert\_segment\_%d.{txt\|bin}, depending on
-    **-bo**\ [*ncols*\ ][*type*\ ]]. Alternatively, give a template with
+    **-bo**\ [*ncols*][*type*]]. Alternatively, give a template with
     two C format specifiers and we will supply the table number and the
     segment number within the table to build the file name.
 **-E**\ [**f**\ \|\ **l**\ \|\ **m**\ *stride*]
@@ -90,7 +93,7 @@ None
 **-Q**\ *seg*
     Only write segment number *seg* and skip all others. Cannot be used
     with **-S**.
-**-S**\ [**~**\ ]\ *"search string"* or **-S**\ [**~**\ ]/\ *regexp*/[**i**\ ]
+**-S**\ [**~**]\ *"search string"* or **-S**\ [**~**]/\ *regexp*/[**i**]
     Only output those segments whose header record contains the
     specified text string. To reverse the search, i.e., to output
     segments whose headers do *not* contain the specified pattern, use
@@ -140,50 +143,64 @@ None
 .. include:: explain_precision.rst_
 
 
-`Examples <#toc7>`_
--------------------
+Examples
+--------
 
 To convert the binary file test.b (single precision) with 4 columns to ASCII:
 
+   ::
+
     gmtconvert test.b -bi4f > test.dat
 
-To convert the multiple segment ASCII table test.d to a double precision
-binary file:
+To convert the multiple segment ASCII table test.d to a double precision binary file:
+
+   ::
 
     gmtconvert test.d -bo > test.b
 
-You have an ASCII table with 6 columns and you want to plot column 5
-versus column 0. Try
+You have an ASCII table with 6 columns and you want to plot column 5 versus column 0. Try
 
-    gmtconvert table.d -o5,0 \| psxy ...
+   ::
+
+    gmtconvert table.d -o5,0 | psxy ...
 
 If the file instead is the binary file results.b which has 9
 single-precision values per record, we extract the last column and
 columns 4-6 and write ASCII with the command
 
-    gmtconvert results.b -o8,4-6 -bi9s \| psxy ...
+   ::
+
+    gmtconvert results.b -o8,4-6 -bi9s | psxy ...
 
 You want to plot the 2nd column of a 2-column file left.d versus the
 first column of a file right.d:
 
-    gmtconvert left.d right.d -A -o1,2 \| psxy ...
+   ::
 
-To extract all segments in the file big\_file.d whose headers contain
+    gmtconvert left.d right.d -A -o1,2 | psxy ...
+
+To extract all segments in the file big_file.d whose headers contain
 the string "RIDGE AXIS", try
 
-    gmtconvert big\_file.d -S"RIDGE AXIS" > subset.d
+   ::
+
+    gmtconvert big_file.d -S"RIDGE AXIS" > subset.d
 
 To invert the selection of segments whose headers begin with "profile "
 followed by an integer number and any letter between "g" and "l", try
+
+   ::
 
     gmtconvert -S~"/^profile [0-9]+[g-l]$/"
 
 To reverse the order of segments in a file without reversing the order
 of records within each segment, try
 
-    gmtconvert lots of segments.txt -Is > last\_segment\_first.txt
+   ::
 
-`See Also <#toc8>`_
--------------------
+    gmtconvert lots of segments.txt -Is > last_segment_first.txt
+
+See Also
+--------
 
 `gmt <gmt.html>`_ , `minmax <minmax.html>`_

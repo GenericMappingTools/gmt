@@ -2,26 +2,27 @@
 fitcircle
 *********
 
-fitcircle - find mean position and pole of best-fit great [or small]
-circle to points on a sphere.
+fitcircle - find mean position and pole of best-fit great [or small] circle to points on a sphere.
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
-**fitcircle** [ *table* ] **-L**\ *norm* [ **-S**\ [*lat*\ ] ] [
-**-V**\ [*level*\ ] ] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [
-**-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
-] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-o**\ *cols*\ [,*...*] ] [ **-:**\ [**i**\ \|\ **o**] ]
+**fitcircle** [ *table* ] **-L**\ *norm* [ **-S**\ [*lat*] ]
+[ |SYN_OPT-V| ]
+[ **-bi**\ [*ncols*][*type*] ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-g| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-o| ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **fitcircle** reads lon,lat [or lat,lon] values from the first two
 columns on standard input [or *xyfile*]. These are converted to
@@ -51,22 +52,23 @@ are thousands of data. The pole is given by the eigenvector
 corresponding to the smallest eigenvalue; it is the least-well
 represented factor in the data and is not easily estimated by either method. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 **-L**\ *norm*
     Specify the desired *norm* as 1 or 2, or use **-L** or **-L3** to
     see both solutions.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 *table*
-    One or more ASCII [or binary, see **-bi**\ [*ncols*\ ][*type*\ ]]
+    One or more ASCII [or binary, see **-bi**\ [*ncols*][*type*]]
     files containing lon,lat [or lat,lon; see
     **-:**\ [**i**\ \|\ **o**]] values in the first 2 columns. If no
     file is specified, **fitcircle** will read from standard input.
-**-S**\ [*lat*\ ]
+
+**-S**\ [*lat*]
     Attempt to fit a small circle instead of a great circle. The pole
     will be constrained to lie on the great circle connecting the pole
     of the best-fit great circle and the mean location of the data.
@@ -99,25 +101,25 @@ represented factor in the data and is not easily estimated by either method.
 .. include:: explain_precision.rst_
 
 
-`Examples <#toc7>`_
--------------------
+Examples
+--------
 
 Suppose you have lon,lat,grav data along a twisty ship track in the file
 ship.xyg. You want to project this data onto a great circle and resample
 it in distance, in order to filter it or check its spectrum. Do the
 following:
 
-    fitcircle ship.xyg -L2
+   ::
 
-    project ship.xyg -Cox/oy -Tpx/py -S -Fpz \| sample1d -S-100 -I1 > output.pg
+    gmt fitcircle ship.xyg -L2
+    gmt project ship.xyg -Cox/oy -Tpx/py -S -Fpz | sample1d -S-100 -I1 > output.pg
 
 Here, *ox*/*oy* is the lon/lat of the mean from **fitcircle**, and
 *px*/*py* is the lon/lat of the pole. The file output.pg has distance,
 gravity data sampled every 1 km along the great circle which best fits
 ship.xyg
 
-`See Also <#toc8>`_
--------------------
+See Also
+--------
 
-`gmt <gmt.html>`_ , `project <project.html>`_ ,
-`sample1d <sample1d.html>`_
+`gmt <gmt.html>`_, `project <project.html>`_, `sample1d <sample1d.html>`_

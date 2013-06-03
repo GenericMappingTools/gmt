@@ -9,17 +9,17 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**filter1d** [ *table* ] **-F**\ *type<width>*\ [*mode*\ ] [
-**-D**\ *increment* ] [ **-E** ] [ **-I**\ *ignore\_val* ] [
-**-L**\ *lack\_width* ] [ **-N**\ *t\_col* ] [ **-Q**\ *q\_factor* ] [
-**-S**\ *symmetry\_factor* ] [ **-T**\ *t\_min/t\_max/t\_inc*\ [**+**\ ]
-] [ **-V**\ [*level*\ ] ] [
-**-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
-**-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
-] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-o**\ *cols*\ [,*...*] ]
+**filter1d** [ *table* ] **-F**\ *type<width>*\ [*mode*\ ]
+[ **-D**\ *increment* ] [ **-E** ] [ **-I**\ *ignore\_val* ]
+[ **-L**\ *lack\_width* ] [ **-N**\ *t\_col* ] [ **-Q**\ *q\_factor* ]
+[ **-S**\ *symmetry\_factor* ] [ **-T**\ *t\_min/t\_max/t\_inc*\ [**+**] ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-b| ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-g| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-o| ]
 
 |No-spaces|
 
@@ -36,7 +36,7 @@ options **-L**, **-Q**, and **-S** for unevenly sampled data with gaps.
 Required Arguments
 ------------------
 
-**-F**\ *type<width>*\ [*mode*\ ]
+**-F**\ *type<width>*\ [*mode*]
     Sets the filter *type*. Choose among convolution and non-convolution
     filters. Append the filter code followed by the full filter
     *<width>* in same units as time column. Available convolution
@@ -86,33 +86,36 @@ Optional Arguments
     *increment* will be the abscissae resolution, i.e., all abscissae
     will be rounded off to a multiple of *increment*. Alternatively,
     resample data with **sample1d**.
+
 **-E**
     Include Ends of time series in output. Default loses half the
     filter-width of data at each end.
+
 **-I**\ *ignore\_val*
-    To ignore values; If an input value equals *ignore\_val* it will be
-    set to NaN.
-**-L**\ *lack\_width*
+    To ignore values; If an input value equals *ignore\_val* it will be set to NaN.
+
+**-L**\ *lack_width*
     Checks for Lack of data condition. If input data has a gap exceeding
-    *width* then no output will be given at that point [Default does not
-    check Lack].
-**-N**\ *t\_col*
+    *width* then no output will be given at that point [Default does not check Lack].
+
+**-N**\ *t_col*
     Indicates which column contains the independent variable (time). The
-    left-most column is # 0, the right-most is # (*n\_cols* - 1).
-    [Default is 0].
-**-Q**\ *q\_factor*
+    left-most column is # 0, the right-most is # (*n_cols* - 1).  [Default is 0].
+
+**-Q**\ *q_factor*
     assess Quality of output value by checking mean weight in
-    convolution. Enter *q\_factor* between 0 and 1. If mean weight <
-    *q\_factor*, output is suppressed at this point [Default does not
-    check Quality].
-**-S**\ *symmetry\_factor*
+    convolution. Enter *q_factor* between 0 and 1. If mean weight <
+    *q_factor*, output is suppressed at this point [Default does not check Quality].
+
+**-S**\ *symmetry_factor*
     Checks symmetry of data about window center. Enter a factor between
-    0 and 1. If ( (abs(n\_left - n\_right)) / (n\_left + n\_right) ) >
+    0 and 1. If ( (abs(n_left - n_right)) / (n_left + n_right) ) >
     *factor*, then no output will be given at this point [Default does
     not check Symmetry].
-**-T**\ *t\_min/t\_max/t\_inc*\ [**+**\ ]
-    Make evenly spaced time-steps from *t\_min* to *t\_max* by *t\_inc*
-    [Default uses input times]. Append **+** to *t\_inc* if you are
+
+**-T**\ *t_min/t_max/t_inc*\ [**+**\ ]
+    Make evenly spaced time-steps from *t\_min* to *t_max* by *t_inc*
+    [Default uses input times]. Append **+** to *t_inc* if you are
     specifying the number of equidistant points instead. 
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
@@ -149,14 +152,18 @@ gravity, magnetics, topography, and distance (in m) with a 10 km
 Gaussian filter, removing outliers, and output a filtered value every 2
 km between 0 and 100 km:
 
-    filter1d cruise.gmtd -T0/1.0e5/2000 -FG10000 -N3 -V > filtered\_cruise.gmtd
+   ::
+
+    gmt filter1d cruise.gmtd -T0/1.0e5/2000 -FG10000 -N3 -V > filtered_cruise.gmtd
 
 Data along track often have uneven sampling and gaps which we do not
 want to interpolate using `sample1d <sample1d.html>`_. To find the median depth in a 50
 km window every 25 km along the track of cruise v3312, stored in
 v3312.dt, checking for gaps of 10km and asymmetry of 0.3:
 
-    filter1d v3312.dt -FM50 -T0/100000/25 -L10 -S0.3 > v3312\_filt.dt
+   ::
+
+    gmt filter1d v3312.dt -FM50 -T0/100000/25 -L10 -S0.3 > v3312_filt.dt
 
 See Also
 --------
