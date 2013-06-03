@@ -999,8 +999,10 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 							GMT_parse_symbol_option (GMT, s_args, &S, 0, false);
 							if (change & 1) change -= 1;	/* Don't want polygon to be true later for these symbols */
 						}
-						else
+						else if (S.symbol == GMT_SYMBOL_QUOTED_LINE || S.symbol == GMT_SYMBOL_FRONT)
 							GMT_Report (API, GMT_MSG_NORMAL, "Segment header tries to switch from -S%c to another symbol (%s) - ignored\n", S.symbol, s_args);
+						else	/* Probably just junk -S in header */
+							GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Segment header contained -S%s - ignored\n", s_args);
 					}
 				}
 

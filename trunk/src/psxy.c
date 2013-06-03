@@ -1069,13 +1069,15 @@ int GMT_psxy (void *V_API, int mode, void *args)
 				if (L->header && L->header[0]) {
 					char s_args[GMT_BUFSIZ];
 					PSL_comment (PSL, "Segment header: %s\n", L->header);
-					if (GMT_parse_segment_item (GMT, L->header, "-S", s_args)) {	/* Found -S */
+					if (GMT_parse_segment_item (GMT, L->header, "-S", s_args)) {	/* Found -S, which only can apply to front or quoted line */
 						if ((S.symbol == GMT_SYMBOL_QUOTED_LINE && s_args[0] == 'q') || (S.symbol == GMT_SYMBOL_FRONT && s_args[0] == 'f')) { /* Update parameters */
 							GMT_parse_symbol_option (GMT, s_args, &S, 0, false);
 							if (change & 1) change -= 1;	/* Don't want polygon to be true later */
 						}
-						else
+						else if (S.symbol == GMT_SYMBOL_QUOTED_LINE || S.symbol == GMT_SYMBOL_FRONT)
 							GMT_Report (API, GMT_MSG_NORMAL, "Segment header tries to switch from -S%c to another symbol (%s) - ignored\n", S.symbol, s_args);
+						else	/* Probably just junk -S in header */
+							GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Segment header contained -S%s - ignored\n", s_args);
 					}
 				}
 
