@@ -14,7 +14,7 @@ Synopsis
 [ **-C**\ *dist*\ [*unit*]/\ *ptfile* ]
 [ **-D**\ *resolution*\ [**+**] ] [ **-E**[**fn**] ]
 [ **-F**\ *polygonfile* ] [ **-I**\ [**cflrsz**] ]
-[ |SYN_OPT-J| ]
+[ **-J**\ *parameters* ]
 [ **-L**\ [**p**]\ *dist*\ [*unit*]/\ *linefile* ]
 [ **-N**\ *maskvalues* ]
 [ |SYN_OPT-R| ]
