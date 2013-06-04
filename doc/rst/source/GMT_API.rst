@@ -6,7 +6,7 @@
 
 **Pål (Paul) Wessel**
 
-**SOEST, University of Hawai’i at Mānoa**
+**SOEST, University of Hawai’i at Manoa**
 
 **Walter H. F. Smith**
 
@@ -1046,6 +1046,14 @@ To read an entire resource from a file, stream, or file handle, use
 * :ref:`method <tbl-methods>`
 * :ref:`geometry <tbl-geometry>`
 * :ref:`wesn <tbl-wesn>`
+
+   .. function::  void *GMT_Read_Data (void *API, unsigned int family, unsigned int method,
+                         unsigned int geometry, unsigned int mode, double wesn[],
+                         char *input, void *ptr);
+
+      :param API: None of your business
+      :param family: :ref:`family <tbl-family>`
+      :rtype: None (void)
 
 where ``ptr`` is NULL except when reading grids in two steps (i.e.,
 first get a grid structure with a header, then read the data). Most of
