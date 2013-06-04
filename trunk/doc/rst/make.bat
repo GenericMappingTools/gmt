@@ -5,7 +5,7 @@ REM Command file for Sphinx documentation
 if "%SPHINXBUILD%" == "" (
 	set SPHINXBUILD=sphinx-build
 )
-set BUILDDIR=../../../build/doc/rst
+set BUILDDIR=build
 set ALLSPHINXOPTS=-d %BUILDDIR%/doctrees %SPHINXOPTS% source
 if NOT "%PAPER%" == "" (
 	set ALLSPHINXOPTS=-D latex_paper_size=%PAPER% %ALLSPHINXOPTS%
@@ -165,6 +165,13 @@ if "%1" == "doctest" (
 	echo.Testing of doctests in the sources finished, look at the ^
 results in %BUILDDIR%/doctest/output.txt.
 	goto end
+)
+
+if "%1" == "pdf" (
+    %SPHINXBUILD% -b pdf %ALLSPHINXOPTS% %BUILDDIR%/pdf
+    echo.
+    echo.Build finished. The PDF files are in %BUILDDIR%/pdf
+    goto end
 )
 
 :end
