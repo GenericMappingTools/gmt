@@ -6,7 +6,7 @@
 
 **Pål (Paul) Wessel**
 
-**SOEST, University of Hawai'i at Mānoa**
+**SOEST, University of Hawai'i at Manoa**
 
 **Walter H. F. Smith**
 
@@ -3789,7 +3789,7 @@ Some examples of escape sequences and embedded octal codes in
 | ``2@~p@~r@+2@+h@-0@- E\363tv\363s`` = 2\ :math:`\pi r^2h_0` Eötvös
 | ``10@+-3 @Angstr@om`` = 10\ :math:`^{-3}` Ångstrøm
 | ``Se@nor Gar@con`` = Señor Garçon
-| ``M@!\305anoa stra@se`` = Mānoa straße
+| ``M@!\305anoa stra@se`` = Manoa straße
 | ``A@\#cceleration@\# (ms@+-2@+)`` =
 
 The option in `pstext <pstext.html>`_ to draw a
