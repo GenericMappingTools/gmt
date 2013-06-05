@@ -21,6 +21,7 @@
 				compatibility we will still recognize gmtdp.
 	* sph/*.c:		These generic spherical tools are now in the GMT core.
 				Two new examples have been added to the suite.
+	* xgrid:		No longer in GMT5 since requires X11.
 
 2013-05-21	pwessel
 	* pscontour.c:		Added -St to skip triangles whose 3 vertices are outside domain;
