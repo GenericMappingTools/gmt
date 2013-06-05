@@ -122,11 +122,11 @@ struct GREENSPLINE_CTRL {
 #define MITASOVA_MITAS_1993_3D		7
 #define PARKER_1994			8
 #define WESSEL_BECKER_2008		9
-#define WESSEL_BECKER_2008_OLD		99
 #define LINEAR_1D			10
 #define LINEAR_2D			11
+#define WESSEL_BECKER_2008_REV		12
 
-#define N_METHODS			12
+#define N_METHODS			13
 
 #ifndef M_LOG_2
 #define M_LOG_2 0.69314718055994530942
@@ -141,11 +141,12 @@ struct GREENSPLINE_CTRL {
 #define M_INV_SQRT_PI (1.0 / M_SQRT_PI)
 #endif
 
-#define N_X 	100001
+#define N_X 	10001
 
 #define RLP_ERROR 1.0e-7	/* Max error in Parker's simplified sum for WB'08 */
 
 struct GREENSPLINE_LOOKUP {	/* Used to spline interpolation of precalculated function */
+	unsigned int n;		/* Number of values in the spline setup */
 	double *y;		/* Function values */
 	double *c;		/* spline  coefficients */
 	double *A, *B, *C;	/* power/ratios of order l terms */
@@ -420,7 +421,7 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 						Ctrl->S.mode = PARKER_1994;
 						break;
 					case 'Q':	/* Spherical minimum curvature spline in tension */
-						Ctrl->S.mode = WESSEL_BECKER_2008_OLD;
+						Ctrl->S.mode = WESSEL_BECKER_2008;
 						Ctrl->S.fast = true; 
 						if (strchr (opt->arg, '/')) {
 							n_items = sscanf (&opt->arg[1], "%lf/%lf/%lf/%lf", &Ctrl->S.value[0], &Ctrl->S.value[1], &Ctrl->S.rval[0], &Ctrl->S.rval[1]);
@@ -435,14 +436,14 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 						}
 						break;
 					case 'z':	/* Spherical minimum curvature spline in tension [Testing Parker's series solution] */
-						Ctrl->S.mode = WESSEL_BECKER_2008;
+						Ctrl->S.mode = WESSEL_BECKER_2008_REV;
 						Ctrl->S.value[0] = atof (&opt->arg[1]);
 						if (Ctrl->S.value[0] == 0.0) {
 							Ctrl->S.mode = PARKER_1994;
 						}
 						break;
 					case 'q':	/* Spherical minimum curvature spline in tension */
-						Ctrl->S.mode = WESSEL_BECKER_2008_OLD;
+						Ctrl->S.mode = WESSEL_BECKER_2008;
 						Ctrl->S.value[0] = atof (&opt->arg[1]);
 						if (Ctrl->S.value[0] == 0.0) {
 							Ctrl->S.mode = PARKER_1994;
@@ -472,7 +473,7 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 		}
 	}
 	
-	if (Ctrl->S.mode == PARKER_1994 || Ctrl->S.mode == WESSEL_BECKER_2008 || Ctrl->S.mode == WESSEL_BECKER_2008_OLD) Ctrl->D.mode = 4;	/* Automatically set */
+	if (Ctrl->S.mode == PARKER_1994 || Ctrl->S.mode == WESSEL_BECKER_2008_REV || Ctrl->S.mode == WESSEL_BECKER_2008) Ctrl->D.mode = 4;	/* Automatically set */
 	dimension = (Ctrl->D.mode == 0) ? 1 : ((Ctrl->D.mode == 5) ? 3 : 2);
 	if (dimension == 2 && Ctrl->R3.mode) {	/* Set -R via a gridfile */
 		/* Here, -R<grdfile> was used and we will use the settings supplied by the grid file (unless overridden) */
@@ -789,17 +790,19 @@ double spline2d_Wessel_Becker (struct GMT_CTRL *GMT, double x, double par[], str
 }
 
 void series_prepare (struct GMT_CTRL *GMT, double p, unsigned int L, struct GREENSPLINE_LOOKUP *Lz)
-{
+{	/* Precalculate Legendre series terms involving various powers/ratios of l and p */
 	unsigned int l;
-	double pp;
+	double pp, t1, t2;
 	Lz->A = GMT_memory (GMT, NULL, L+1, double);
 	Lz->B = GMT_memory (GMT, NULL, L+1, double);
 	Lz->C = GMT_memory (GMT, NULL, L+1, double);
 	pp = p * p;
 	for (l = 1; l <= L; l++) {
-		Lz->A[l] = (2.0*l+1.0) * pp / (l*(l+1.0)*(l*(l+1.0)+pp));
-		Lz->B[l] = (2.0*l+1.0) / (l+1.0);
-		Lz->C[l] = l / (l+1.0);
+		t1 = l + 1.0;
+		t2 = 2.0 * l + 1.0;
+		Lz->A[l] = t2 * pp / (l*t1*(l*t1+pp));
+		Lz->B[l] = t2 / t1;
+		Lz->C[l] = l / t1;
 	}
 }
 
@@ -809,7 +812,7 @@ unsigned int get_max_L (struct GMT_CTRL *GMT, double p, double err)
 }
 
 void free_lookup (struct GMT_CTRL *GMT, struct GREENSPLINE_LOOKUP **Lptr)
-{
+{	/* Free all items allocated under the lookup structure */
 	struct GREENSPLINE_LOOKUP *L = *Lptr;
 	if (L == NULL) return;	/* Nothing to free */
 	if (L->y) GMT_free (GMT, L->y);
@@ -821,7 +824,7 @@ void free_lookup (struct GMT_CTRL *GMT, struct GREENSPLINE_LOOKUP **Lptr)
 	*Lptr = NULL;
 }
 
-double spline2d_Wessel_Becker_Rev (struct GMT_CTRL *GMT, double x, double par[], struct GREENSPLINE_LOOKUP *Lz)
+double spline2d_Wessel_Becker_Revised (struct GMT_CTRL *GMT, double x, double par[], struct GREENSPLINE_LOOKUP *Lz)
 {	/* g = M_PI * Pv(-x)/sin (v*x) - log (1-x) */
 	unsigned int L_max, l;
 	double s, c, p, pp, Lf, gam, lam, P0, P1, P2, S;
@@ -845,9 +848,9 @@ double spline2d_Wessel_Becker_Rev (struct GMT_CTRL *GMT, double x, double par[],
 	else if (c == 0.0)
 		Lf = pow (pp / RLP_ERROR, 0.333333333);
 	else {
-		gam = 0.0063326 * pow (pp * s * s / RLP_ERROR, 2.0) / c;
+		gam = 0.00633262522 * pow (pp * s * s / RLP_ERROR, 2.0) / c;
 		if (gam <= 1.0) lam = pow (gam / (1.0 + pow (gam, 0.4)), 0.2);
-		else lam = pow (gam / (1.0 + 1.0 / pow (gam, 0.2857)), 0.142857);
+		else lam = pow (gam / (1.0 + 1.0 / pow (gam, 0.2857)), 0.142857143);
 		Lf = 1.75 * lam / s;
 	}
 
@@ -922,14 +925,14 @@ double csplint (double *y, double *c, double b, double h, uint64_t klo)
 double spline2d_lookup (struct GMT_CTRL *GMT, double x, double par[], struct GREENSPLINE_LOOKUP *L)
 {
 	int k;
-	double f, f0, df, y;
+	double f, f0, df, y, dx = par[8];
 	
 	f = (x - par[10]) * par[9];	/* Floating point index */
 	f0 = floor (f);
 	df = f - f0;
 	k = irint (f0);
 	if (df == 0.0) return (L->y[k]);		/* Right on a node */
-	y = csplint (L->y, L->c, df, par[8], k);	/* Call special cubic spline evaluator */
+	y = csplint (L->y, L->c, df, dx, k);	/* Call special cubic spline evaluator */
 	
 	// y1 = L->y[k]*(1.0 - df) + L->y[k+1] * df;	/* Linear fit [just for comparison] */
 	return (y);
@@ -947,15 +950,14 @@ double gradspline2d_Wessel_Becker_lookup (struct GMT_CTRL *GMT, double x, double
 
 void spline2d_Wessel_Becker_splineinit (struct GMT_CTRL *GMT, double par[], double *x, struct GREENSPLINE_LOOKUP *L)
 {	/* Set up cubic spline interpolation given the precomputed x,y values of the function */
-	int nx = irint (par[7]);
-	L->c = GMT_memory (GMT, NULL, 3*nx, double);
-	GMT_cspline (GMT, x, L->y, nx, L->c);
+	L->c = GMT_memory (GMT, NULL, 3*L->n, double);
+	GMT_cspline (GMT, x, L->y, L->n, L->c);
 }
 
 void spline2d_Wessel_Becker_init (struct GMT_CTRL *GMT, double par[], struct GREENSPLINE_LOOKUP *Lz, struct GREENSPLINE_LOOKUP *Lg)
 {
 	int i, nx;
-	double *x = NULL;
+	double *x = NULL, dx = par[8];
 #ifdef DUMP
 	FILE *fp = NULL;
 	uint64_t n_out;
@@ -964,11 +966,15 @@ void spline2d_Wessel_Becker_init (struct GMT_CTRL *GMT, double par[], struct GRE
 	n_out = (Lg) ? 3 : 2;
 #endif
 	nx = irint (par[7]);
+	Lz->n = nx;
 	x = GMT_memory (GMT, NULL, nx, double);
 	Lz->y = GMT_memory (GMT, NULL, nx, double);
-	if (Lg) Lg->y = GMT_memory (GMT, NULL, nx, double);
+	if (Lg) {
+		Lg->y = GMT_memory (GMT, NULL, nx, double);
+		Lg->n = nx;
+	}
 	for (i = 0; i < nx; i++) {
-		x[i] = par[10] + i * par[8];
+		x[i] = par[10] + i * dx;
 		Lz->y[i] = spline2d_Wessel_Becker (GMT, x[i], par, NULL);
 		if (Lg) Lg->y[i] = gradspline2d_Wessel_Becker (GMT, x[i], par, NULL);
 #ifdef DUMP
@@ -1250,9 +1256,10 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 		"regularized Cartesian spline in tension [2-D]",
 		"regularized Cartesian spline in tension [3-D]",
 		"minimum curvature spherical spline",
+		"continuous curvature spherical spline in tension",
 		"linear Cartesian spline [1-D]",
 		"bilinear Cartesian spline [2-D]",
-		"continuous curvature spherical spline in tension"};
+		"continuous curvature spherical spline in tension [revised]"};
 	char *mem_unit[3] = {"kb", "Mb", "Gb"};
 	
 	double *obs = NULL, **D = NULL, **X = NULL, *alpha = NULL, *in = NULL;
@@ -1629,9 +1636,9 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 			if (TEST) x0 = -1.0, x1 = 1.0;
 #endif
 			break;
-		case WESSEL_BECKER_2008:
+		case WESSEL_BECKER_2008_REV:
 			par[0] = sqrt (Ctrl->S.value[0] / (1.0 - Ctrl->S.value[0]));
-			G = &spline2d_Wessel_Becker_Rev;
+			G = &spline2d_Wessel_Becker_Revised;
 			dGdr = &gradspline2d_Wessel_Becker;
 			Lz = GMT_memory (GMT, NULL, 1, struct GREENSPLINE_LOOKUP);
 			L_Max = get_max_L (GMT, par[0], RLP_ERROR);
@@ -1641,7 +1648,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 			if (TEST) x0 = -1.0, x1 = 1.0;
 #endif
 			break;
-		case WESSEL_BECKER_2008_OLD:
+		case WESSEL_BECKER_2008:
 			par[0] = -0.5;
 			p_val = sqrt (Ctrl->S.value[0] / (1.0 - Ctrl->S.value[0]));
 			GMT_Report (API, GMT_MSG_VERBOSE, "Old scheme p = %g\n", p_val);
@@ -1672,10 +1679,11 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 			if (Ctrl->S.fast) {
 				int nx;
 				par[7] = Ctrl->S.value[1];
+				nx = irint (par[7]);
 				par[8] = (Ctrl->S.rval[1] - Ctrl->S.rval[0]) / (par[7] - 1.0);
 				par[9] = 1.0 / par[8];
 				par[10] = Ctrl->S.rval[0];
-				nx = irint (par[7]);
+				
 				GMT_Report (API, GMT_MSG_VERBOSE, "Precalculate -SQ lookup table with %d items from %g to %g...", nx, Ctrl->S.rval[0], Ctrl->S.rval[1]);
 				Lz = GMT_memory (GMT, NULL, 1, struct GREENSPLINE_LOOKUP);
 #ifdef DEBUG
