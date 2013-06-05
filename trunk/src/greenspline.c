@@ -143,7 +143,7 @@ struct GREENSPLINE_CTRL {
 
 #define N_X 	10001
 
-#define RLP_ERROR 1.0e-7	/* Max error in Parker's simplified sum for WB'08 */
+#define RLP_ERROR_DEF 1.0e-7	/* Max error in Parker's simplified sum for WB'08 */
 
 struct GREENSPLINE_LOOKUP {	/* Used to spline interpolation of precalculated function */
 	unsigned int n;		/* Number of values in the spline setup */
@@ -160,6 +160,8 @@ struct ZGRID {
 #ifdef DEBUG
 bool TEST = false;	/* Global variable used for undocumented testing [under -DDEBUG only] */
 #endif
+
+double RLP_ERROR = RLP_ERROR_DEF;
 
 void *New_greenspline_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct GREENSPLINE_CTRL *C;
@@ -268,7 +270,7 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 
 	int n_items;
 	unsigned int n_errors = 0, dimension, k;
-	char txt[6][GMT_TEXT_LEN64];
+	char txt[6][GMT_TEXT_LEN64], *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -437,6 +439,10 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 						break;
 					case 'z':	/* Spherical minimum curvature spline in tension [Testing Parker's series solution] */
 						Ctrl->S.mode = WESSEL_BECKER_2008_REV;
+						if ((c = strchr (opt->arg, '+'))) {
+							RLP_ERROR = atof (&c[1]);
+							c[0] = 0;
+						}
 						Ctrl->S.value[0] = atof (&opt->arg[1]);
 						if (Ctrl->S.value[0] == 0.0) {
 							Ctrl->S.mode = PARKER_1994;
@@ -793,6 +799,7 @@ void series_prepare (struct GMT_CTRL *GMT, double p, unsigned int L, struct GREE
 {	/* Precalculate Legendre series terms involving various powers/ratios of l and p */
 	unsigned int l;
 	double pp, t1, t2;
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Precalculate %u terms for Legendre summation\n", L+1);
 	Lz->A = GMT_memory (GMT, NULL, L+1, double);
 	Lz->B = GMT_memory (GMT, NULL, L+1, double);
 	Lz->C = GMT_memory (GMT, NULL, L+1, double);
@@ -1241,7 +1248,7 @@ double get_dircosine (struct GMT_CTRL *GMT, double *D, double *X0, double *X1, u
 
 int GMT_greenspline (void *V_API, int mode, void *args)
 {
-	uint64_t row, p, k, i, j, seg, m, n, nm, nxy, n_ok = 0, ij, ji, ii;
+	uint64_t col, row, p, k, i, j, seg, m, n, nm, n_ok = 0, ij, ji, ii;
 	unsigned int dimension = 0, normalize = 1, unit = 0, n_cols, L_Max = 0;
 	size_t old_n_alloc, n_alloc;
 	int error, out_ID, way;
@@ -1530,8 +1537,8 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 		new_grid = GMT_set_outgrid (GMT, Ctrl->T.file, Grid, &Out);	/* true if input is a read-only array; otherwise Out is just a pointer to Grid */
-		nxy = n_ok = Grid->header->size;
-		for (ij = 0; ij < nxy; ij++) if (GMT_is_fnan (Grid->data[ij])) n_ok--;
+		n_ok = Grid->header->nm;
+		GMT_grd_loop (GMT, Grid, row, col, ij) if (GMT_is_fnan (Grid->data[ij])) n_ok--;
 		Z.nz = 1;
 	}
 	else if (Ctrl->N.active) {	/* Read output locations from file */
@@ -1561,8 +1568,8 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 		}
 		else
 			Grid->header->nx = GMT_grd_get_nx (GMT, Grid->header);
-		nxy = n_ok = Grid->header->size * Z.nz;
-		if (dimension == 2) Grid->data = GMT_memory_aligned (GMT, NULL, nxy, float);
+		n_ok = Grid->header->nm * Z.nz;
+		if (dimension == 2) Grid->data = GMT_memory_aligned (GMT, NULL, Grid->header->size * Z.nz, float);
 		Out = Grid;	/* Just point since we created Grid */
 	}
 
@@ -1684,14 +1691,13 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 				par[9] = 1.0 / par[8];
 				par[10] = Ctrl->S.rval[0];
 				
-				GMT_Report (API, GMT_MSG_VERBOSE, "Precalculate -SQ lookup table with %d items from %g to %g...", nx, Ctrl->S.rval[0], Ctrl->S.rval[1]);
+				GMT_Report (API, GMT_MSG_VERBOSE, "Precalculate -SQ lookup table with %d items from %g to %g\n", nx, Ctrl->S.rval[0], Ctrl->S.rval[1]);
 				Lz = GMT_memory (GMT, NULL, 1, struct GREENSPLINE_LOOKUP);
 #ifdef DEBUG
 				if (TEST) Lg = GMT_memory (GMT, NULL, 1, struct GREENSPLINE_LOOKUP);
 #endif
 				if (Ctrl->A.active) Lg = GMT_memory (GMT, NULL, 1, struct GREENSPLINE_LOOKUP);
 				spline2d_Wessel_Becker_init (GMT, par, Lz, Lg);
-				GMT_Report (API, GMT_MSG_VERBOSE, "done\n");
 				G = &spline2d_Wessel_Becker_lookup;
 				dGdr = &gradspline2d_Wessel_Becker_lookup;
 			}
