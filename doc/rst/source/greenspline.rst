@@ -180,7 +180,7 @@ None.
     pre-calculating G(\ **x’**; **x’**) for a dense set of **x** values
     (e.g., 100,001 nodes between -1 to +1) and store them in look-up
     tables. Optionally append /*N* (an odd integer) to specify how many
-    points in the spline to set [100001]
+    points in the spline to set [10001]
 **-T**\ *maskgrid*
     For 2-D interpolation only. Only evaluate the solution at the nodes
     in the *maskgrid* that are not equal to NaN. This option eliminates
