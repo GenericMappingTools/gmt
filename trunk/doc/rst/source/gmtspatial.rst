@@ -4,44 +4,46 @@ gmtspatial
 
 gmtspatial - Do geospatial operations on lines and polygons
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtspatial** [ *table* ] [ **-A**\ [**a**\ *min_dist*][*unit*]] [ **-C** ] [
-**-D**\ [**+f**\ *file*][\ **+a**\ *amax*][\ **+d**\ *dmax*][\ **+c\|C**\ *cmax*][\ **+s**\ *fact*]
-] [ **-E**\ **+**\ \|\ **-** ] [ **-I**\ [**e**\ \|\ **i**] ] [
-**-N**\ *pfile*\ [**+a**\ ][\ **+p**\ *start*][**+r**\ ][**+z**\ ] ] [
-**-Q**\ [**+**\ [*unit*\ ]] ] [
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
-**-S**\ **i**\ \|\ **u**\ \|\ **s**\ \|\ **j** ] [
-**-T**\ [*clippolygon*\ ] ] [[ **-V**\ [*level*\ ] ] [
-**-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
-**-bo**\ [*ncols*\ ][*type*\ ] ] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo*
-] [
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
-] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-o**\ *cols*\ [,*...*] ] [ **-:**\ [**i**\ \|\ **o**] ]
+**gmtspatial** [ *table* ] [ **-A**\ [**a**\ *min_dist*][*unit*]] [ **-C** ]
+[ **-D**\ [**+f**\ *file*][\ **+a**\ *amax*][\ **+d**\ *dmax*][\ **+c\|C**\ *cmax*][\ **+s**\ *fact*] ]
+[ **-E**\ **+**\ \|\ **-** ] [ **-I**\ [**e**\ \|\ **i**] ]
+[ **-N**\ *pfile*\ [**+a**][\ **+p**\ *start*][**+r**\ ][**+z**] ]
+[ **-Q**\ [**+**\ [*unit*\ ]] ]
+[ |SYN_OPT-R| ]
+[ **-S**\ **i**\ \|\ **u**\ \|\ **s**\ \|\ **j** ]
+[ **-T**\ [*clippolygon*] ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-b| ]
+**-bo**\ [*ncols*\ ][*type*\ ] ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-g| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-o| ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **gmtspatial** reads one or more data files (which may be multisegment
 files) that contains closed polygons and operates of these polygons in
 the specified way. Operations include area calculation, handedness
 reversals, and polygon intersections. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 None.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
@@ -56,10 +58,12 @@ None.
    negative point number means the original point was replaced by a weighted
    average (the absolute ID value gives the ID of the first original point
    ID to be included in the average.)
+
 **-C**
     Clips polygons to the map region, including map boundary to the
     polygon as needed. The result is a closed polygon (see **-T** for
     truncation instead). Requires **-R**.
+
 **-D**\ [**+f**\ *file*][\ **+a**\ *amax*][\ **+d**\ *dmax*][\ **+c\|C**\ *cmax*][\ **+s**\ *fact*]
     Check for duplicates among the input lines or polygons, or, if
     *file* is given via **+f**, check if the input features already
@@ -83,15 +87,18 @@ None.
     points on one line and another. Append **-+p** to limit the
     comparison to points that project perpendicularly to points on the
     other line (and not its extension).
+
 **-E**\ **+**\ \|\ **-** ]
     Reset the handedness of all polygons to match the given **+**
     (counter-clockwise) or **-** (clockwise). Implies **-Q+**.
+
 **-I**\ [**e**\ \|\ **i**]
     Determine the intersection locations between all pairs of polygons.
     Append **i** to only compute internal (i.e., self-intersecting
     polygons) crossovers or **e** to only compute external (i.e.,
     between paris of polygons) crossovers [Default is both].
-**-N**\ *pfile*\ [**+a**\ ][\ **+p**\ *start*][**+r**\ ][**+z**\ ]
+
+**-N**\ *pfile*\ [**+a**][\ **+p**\ *start*][**+r**][**+z**]
     Determine if one (or all, with **+a**) points of each feature in the
     input data are inside any of the polygons given in the *pfile*. If
     inside, then report which polygon it is; the polygon ID is either
@@ -105,14 +112,15 @@ None.
     extra data column on output. Segments that fail to be inside a
     polygon are not written out. If more than one polygon contains the
     same segment we skip the second (and further) scenario.
-**-Q**\ [**+**\ [*unit*\ ]]
+
+**-Q**\ [**+**\ [*unit*]]
     Measure the area of all polygons or length of line segments. Use
     **-Q+** to append the area to each polygons segment header [Default
     simply writes the area to stdout]. For polygons we also compute the
     centroid location while for line data we compute the mid-point
     (half-length) position. Append a distance unit to select the unit
     used (see UNITS). Note that the area will depend on the current
-    setting of PROJ\_ELLIPSOID; this should be a recent ellipsoid to get
+    setting of PROJ_ELLIPSOID; this should be a recent ellipsoid to get
     accurate results. 
 
 .. |Add_-Rgeo| replace:: Clips polygons to the map
@@ -126,13 +134,13 @@ None.
     union of polygons (closed), **-Ss** which will split polygons that
     straddle the Dateline, and **-Sj** which will join polygons that
     were split by the Dateline.
-**-T**\ [*clippolygon*\ ]
+
+**-T**\ [*clippolygon*]
     Truncate polygons against the specified polygon given, possibly
     resulting in open polygons. If no argument is given to **-T** we
     create a clipping polygon from **-R** which then is required. Note
     that when the **-R** clipping is in effect we will also look for
-    polygons of length 4 or 5 that exactly match the **-R** clipping
-    polygon. 
+    polygons of length 4 or 5 that exactly match the **-R** clipping polygon. 
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
@@ -164,24 +172,30 @@ None.
 
 .. include:: explain_precision.rst_
 
-`Example <#toc8>`_
-------------------
+Example
+-------
 
 To compute the area of all geographic polygons in the multisegment file
 polygons.d, run
+
+   ::
 
     gmtspatial polygons.d -Q > areas.d
 
 Same data, but now orient all polygons to go counter-clockwise and write
 their areas to the segment headers, run
 
+   ::
+
     gmtspatial polygons.d -Q+ -E+ > areas.d
 
 To determine the intersections between the polygons A.d and B.d, run
 
+   ::
+
     gmtspatial A.d B.d -Ce > crossovers.d
 
-`See Also <#toc9>`_
--------------------
+See Also
+--------
 
 `gmt <gmt.html>`_

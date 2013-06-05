@@ -4,8 +4,8 @@ psxy
 
 psxy - Plot lines, polygons, and symbols on maps
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
@@ -26,17 +26,18 @@ psxy - Plot lines, polygons, and symbols on maps
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-a| ] 
 [ **-bi**\ [*ncols*][*type*] ] [ **-c**\ *copies* ] 
-[ **-f**\ *colinfo* ]
+[ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-p| ]
-[ **-t**\ [*transp*] ] [ **-:**\ [**i**\ \|\ **o**] ]
+[ |SYN_OPT-t| ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **psxy** reads (*x*,\ *y*) pairs from *files* [or standard input] and
 generates *PostScript* code that will plot lines, polygons, or symbols
@@ -51,8 +52,8 @@ whether the polygon outline is drawn or not. If a symbol is selected,
 **-G** and **-W** determines the fill and outline/no outline,
 respectively. The *PostScript* code is written to standard output. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 .. include:: explain_-J.rst_
 
@@ -62,8 +63,8 @@ respectively. The *PostScript* code is written to standard output.
 .. |Add_-Rz| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-Rz.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_intables| replace:: Use **-T** to ignore all input files, including standard input (see below).
 .. include:: explain_intables.rst_
@@ -90,12 +91,12 @@ respectively. The *PostScript* code is written to standard output.
     Offset the plot symbol or line locations by the given amounts *dx/dy*
     [Default is no offset]. If *dy* is not given it is set equal to *dx*.
 
-**-E**\ [**x**\ \|\ **y**\ \|\ **X**\ \|\ **Y**][**n**\ ][*cap*\ ][/[\ **-**\ \|\ **+**]\ *pen*]
+**-E**\ [**x**\ \|\ **y**\ \|\ **X**\ \|\ **Y**][**n**][*cap*][/[\ **-**\ \|\ **+**]\ *pen*]
     Draw error bars. Append **x** and/or **y** to indicate which bars you
     want to draw (Default is both x and y). The x and/or y errors must be
     stored in the columns after the (x,y) pair [or (x,y,size) triplet]. The
     *cap* parameter indicates the length of the end-cap on the error bars
-    [7**p**]. Pen attributes for error bars may also be set [Defaults: width
+    [7\ **p**]. Pen attributes for error bars may also be set [Defaults: width
     = default, color = black, style = solid]. A leading **+** will use the
     lookup color (via **-C**) for both symbol fill and error pen color,
     while a leading **-** will set error pen color and turn off symbol fill.
@@ -190,36 +191,44 @@ respectively. The *PostScript* code is written to standard output.
 
 .. include:: explain_vectors.rst_
 
-`Examples <#toc7>`_
--------------------
+Examples
+--------
 
 To plot solid red circles (diameter = 0.25 cm) at the positions listed
 in the file DSDP.xy on a Mercator map at 5 cm/degree of the area 150E to
 154E, 18N to 23N, with tickmarks every 1 degree and gridlines every 15
 minutes, use
 
-    psxy DSDP.xy R150/154/18/23 -Jm5c -Sc0.25c -Gred -B1g15m > map.ps
+   ::
+
+    gmt psxy DSDP.xy R150/154/18/23 -Jm5c -Sc0.25c -Gred -B1g15m > map.ps
 
 To plot the xyz values in the file quakes.xyzm as circles with size
 given by the magnitude in the 4th column and color based on the depth in
 the third using the color palette cpt on a linear map, use
 
-    psxy quakes.xyzm -R0/1000/0/1000 -JX6i -Sc -Ccpt -B200 > map.ps
+   ::
+
+    gmt psxy quakes.xyzm -R0/1000/0/1000 -JX6i -Sc -Ccpt -B200 > map.ps
 
 To plot the file trench.xy on a Mercator map, with white triangles with
 sides 0.25 inch on the left side of the line, spaced every 0.8 inch, use
 
-    psxy trench.xy -R150/200/20/50 -Jm0.15i -Sf0.8i/0.1i+l+t -Gwhite -W -B10 > map.ps
+   ::
+
+    gmt psxy trench.xy -R150/200/20/50 -Jm0.15i -Sf0.8i/0.1i+l+t -Gwhite -W -B10 > map.ps
 
 To plot the data in the file misc.d as symbols determined by the code in
 the last column, and with size given by the magnitude in the 4th column,
 and color based on the third column via the color palette cpt on a
 linear map, use
 
-    psxy misc.d -R0/100/-50/100 -JX6i -S -Ccpt -B20 > map.ps
+   ::
 
-`Segment Header Parsing <#toc8>`_
----------------------------------
+    gmt psxy misc.d -R0/100/-50/100 -JX6i -S -Ccpt -B20 > map.ps
+
+Segment Header Parsing
+----------------------
 
 Segment header records may contain one of more of the following options:
 
@@ -241,8 +250,8 @@ Segment header records may contain one of more of the following options:
 **-Z**\ *NaN* 
     Get the NaN color from the cpt file
 
-`Custom Symbols <#toc9>`_
--------------------------
+Custom Symbols
+--------------
 
 **psxy** allows users to define and plot their own custom symbols. This
 is done by encoding the symbol using our custom symbol macro code
@@ -259,8 +268,8 @@ circles) can be designed - these polygons can be painted and filled with
 a pattern. Other standard geometric symbols can also be used. See
 Appendix N for macro definitions.
 
-`See Also <#toc10>`_
---------------------
+See Also
+--------
 
 `gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
 `gmtcolors <gmtcolors.html>`_,
