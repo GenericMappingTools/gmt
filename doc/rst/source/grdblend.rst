@@ -2,25 +2,24 @@
 grdblend
 ********
 
-grdblend - Blend several partially over-lapping grids into one large
-grid
+grdblend - Blend several partially over-lapping grids into one large grid
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
 **grdblend** [ *blendfile* \| *grid1* *grid2* ... ] **-G**\ *outgrid*
-**-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [
-**-C**\ **f**\ \|\ **l**\ \|\ **o**\ \|\ **u** ] [ **-N**\ *nodata* ] [
-**-Q** ] [ **-Z**\ *scale* ] [ **-V**\ [*level*\ ] ] [ **-W** ] [
-**-f**\ *colinfo* ] [ **-r** ]
+[ |SYN_OPT-I| ]
+[ |SYN_OPT-R| ]
+[ **-C**\ **f**\ \|\ **l**\ \|\ **o**\ \|\ **u** ] [ **-N**\ *nodata* ]
+[ **-Q** ] [ **-Z**\ *scale* ] [ |SYN_OPT-V| ] [ **-W** ]
+[ |SYN_OPT-f| ] [ **-r** ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **grdblend** reads a listing of grid files and blend parameters and
 creates a binary grid file by blending the other grids using
@@ -33,8 +32,8 @@ automatically be resampled via calls to grdsample. Note: Due to the
 row-by-row i/o nature of operations in grdblend we only support the
 netCDF and native binary grid formats for both input and output. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 **-G**\ *outgrid*
     *outgrid* is the name of the binary output grid file. (See GRID FILE
@@ -47,8 +46,8 @@ netCDF and native binary grid formats for both input and output.
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 *blendfile*
     ASCII file with one record per grid file to include in the blend.
@@ -74,6 +73,7 @@ netCDF and native binary grid formats for both input and output.
     first be resampled via **grdsample**. Also, grids that are not in
     netCDF or native binary format will first be reformatted via
     **grdreformat**.
+
 **-C**
     Clobber mode: Instead of blending, simply pick the value of one of
     the grids that covers a node. Select from the following modes: **f**
@@ -83,21 +83,21 @@ netCDF and native binary grid formats for both input and output.
     ordering of grids in the *blendfile* will dictate which grid
     contributes to the final result. Weights and cosine tapering are not
     considered when clobber mode is active.
+
 **-N**\ *nodata*
-    No data. Set nodes with no input grid to this value [Default is
-    NaN].
+    No data. Set nodes with no input grid to this value [Default is NaN].
+
 **-Q**
     Create a header-less grid file suitable for use with **grdraster**.
-    Requires that the output grid file is a native format (i.e., not
-    netCDF). 
+    Requires that the output grid file is a native format (i.e., not netCDF). 
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
 **-W**
     Do not blend, just output the weights used for each node. This
-    option is valid when only one input grid is provided [Default makes
-    the blend].
+    option is valid when only one input grid is provided [Default makes the blend].
+
 **-Z**\ *scale*
     Scale output values by *scale* before writing to file. [1]. 
 
@@ -114,30 +114,33 @@ netCDF and native binary grid formats for both input and output.
 .. include:: explain_grd_coord.rst_
 
 
-`Examples <#toc8>`_
--------------------
+Examples
+--------
 
 To create a grid file from the four grid files piece\_?.nc, giving them each the different
 weights, make the blendfile like this
 
-    piece\_1.nc -R<subregion\_1> 1
+   ::
 
-    piece\_2.nc -R<subregion\_2> 1.5
-
-    piece\_3.nc -R<subregion\_3> 0.9
-
-    piece\_4.nc -R<subregion\_4> 1
+    piece_1.nc -R<subregion_1> 1
+    piece_2.nc -R<subregion_2> 1.5
+    piece_3.nc -R<subregion_3> 0.9
+    piece_4.nc -R<subregion_4> 1
 
 Then run
 
-    grdblend blend.job -Gblend.nc -R<full\_region> -I<dx/dy> -V
+   ::
+
+    gmt grdblend blend.job -Gblend.nc -R<full_region> -I<dx/dy> -V
 
 To blend all the grids called MB\_\*.nc given them all equal weight, try
 
-    grdblend MB\_\*.nc -Gblend.nc -R<full\_region> -I<dx/dy> -V
+   ::
 
-`See Also <#toc9>`_
--------------------
+    gmt grdblend MB_*.nc -Gblend.nc -R<full_region> -I<dx/dy> -V
+
+See Also
+--------
 
 `gmt <gmt.html>`_, `grd2xyz <grd2xyz.html>`_,
 `grdedit <grdedit.html>`_ `grdraster <grdraster.html>`_

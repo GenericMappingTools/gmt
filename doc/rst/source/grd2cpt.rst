@@ -9,20 +9,21 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grd2cpt** *grid* [ **-A**\ [**+**\ ]\ *transparency* ] [
-**-C**\ *cptmaster* ] [ **-D**\ [**i**\ \|\ **o**] ] [ **-E**\ *nlevels*
-] [ **-F**\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c** ] [ **-I** ] [
-**-L**\ *minlimit/maxlimit* ] [ **-M** ] [ **-N** ] [
-**-Q**\ [**i**\ \|\ **o**] ]
+**grd2cpt** *grid* [ **-A**\ [**+**\ ]\ *transparency* ]
+[ **-C**\ *cptmaster* ] [ **-D**\ [**i**\ \|\ **o**] ] [ **-E**\ *nlevels* ]
+[ **-F**\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c** ] [ **-I** ]
+[ **-L**\ *minlimit/maxlimit* ] [ **-M** ] [ **-N** ]
+[ **-Q**\ [**i**\ \|\ **o**] ]
 [ |SYN_OPT-R| ]
-[ **-S**\ *zstart/zstop/zinc* ] [
-**-T**\ **-**\ \|\ **+**\ \|\ **\_**\ \|\ **=** ] [ |SYN_OPT-V| ]
+[ **-S**\ *zstart/zstop/zinc* ]
+[ **-T**\ **-**\ \|\ **+**\ \|\ **\_**\ \|\ **=** ]
+[ |SYN_OPT-V| ]
 [ **-W** ] [ **-Z** ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **grd2cpt** reads one or more grid files and writes a color palette
 (cpt) file to standard output. The cpt file is based on an existing
@@ -49,61 +50,69 @@ behavior can be overruled using the options **-D**, **-M** or **-N**.
 
 The color model (RGB, HSV or CMYK) of the palette created by **makecpt**
 will be the same as specified in the header of the master cpt file. When
-there is no **COLOR\_MODEL** entry in the master cpt file, the
-**COLOR\_MODEL** specified in the `gmt.conf <gmt.conf.html>`_ file or on the command
+there is no **COLOR_MODEL** entry in the master cpt file, the
+**COLOR_MODEL** specified in the `gmt.conf <gmt.conf.html>`_ file or on the command
 line will be used. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *grid*
     Names of one or more grid files used to derive the color palette
     table. All grids need to have the same size and dimensions. (See
     GRID FILE FORMATS below).
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-A**\ [**+**\ ]\ *transparency*
     Sets a constant level of transparency (0-100) for all color slices.
     Prepend **+** to also affect the fore-, back-, and nan-colors
     [Default is no transparency, i.e., 0 (opaque)].
+
 **-C**\ *cptmaster*
     Selects the master color table to use in the interpolation. Choose
     among the built-in tables (type **grd2cpt** to see the list) or give
     the name of an existing cpt file [Default gives a rainbow cpt file].
+
 **-D**\ [**i**\ \|\ **o**]
     Select the back- and foreground colors to match the colors for
     lowest and highest *z*-values in the output cpt file [Default uses
     the colors specified in the master file, or those defined by the
-    parameters **COLOR\_BACKGROUND**, **COLOR\_FOREGROUND**, and
+    parameters **COLOR_BACKGROUND**, **COLOR_FOREGROUND**, and
     **COLOR\_NAN**]. Append **i** to match the colors for the lowest and
     highest values in the input (instead of the output) cpt file.
+
 **-E**\ *nlevels*
     Create a linear color table by dividing the grid z-range into
     *nlevels* equidistant slices.
+
 **-F**\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c**]
     Force output cpt file to written with r/g/b codes, gray-scale values
     or color name (**R**, default) or r/g/b codes only (**r**), or h-s-v
     codes (**h**), or c/m/y/k codes (**c**).
+
 **-I**
     Reverses the sense of color progression in the master cpt file. Also
     exchanges the foreground and background colors, including those
     specified by the parameters **COLOR\_BACKGROUND** and
     **COLOR\_FOREGROUND**.
+
 **-L**\ *minlimit/maxlimit*
-    Limit range of cpt file to *minlimit/maxlimit*, and don’t count data
-    outside range when estimating CDF(Z). [Default uses min and max of
-    data.]
+    Limit range of cpt file to *minlimit/maxlimit*, and don't count data
+    outside range when estimating CDF(Z). [Default uses min and max of data.]
+
 **-M**
     Overrule background, foreground, and NaN colors specified in the
     master cpt file with the values of the parameters
-    **COLOR\_BACKGROUND**, **COLOR\_FOREGROUND**, and **COLOR\_NAN**
+    **COLOR_BACKGROUND**, **COLOR_FOREGROUND**, and **COLOR_NAN**
     specified in the `gmt.conf <gmt.conf.html>`_ file or on the command line. When
-    combined with **-D**, only **COLOR\_NAN** is considered.
+    combined with **-D**, only **COLOR_NAN** is considered.
+
 **-N**
     Do not write out the background, foreground, and NaN-color fields
     [Default will write them].
+
 **-Q**\ [**i**\ \|\ **o**]
     Selects a logarithmic interpolation scheme [Default is linear].
     **-Qi** expects input z-values to be log10(z), assigns colors, and
@@ -118,19 +127,23 @@ line will be used.
     to *zstop* in steps of (*zinc*). Default chooses arbitrary values by
     a crazy scheme. Use **-S**\ *n* to select *n* points from a
     cumulative normal distribution.
+
 **-T**\ **-**\ \|\ **+**\ \|\ **\_**\ \|\ **=**
     Force the color table to be symmetric about zero (from -R to +R).
     Append flag to set the range R: **-** for R =\|zmin\|, **+** for R =
     \|zmax\|, **\_** for R = min(\|zmin\|, \|zmax\|), or **=** for R =
     max(\|zmin\|, \|zmax\|).
+
 **-V**
     Verbose operation. This will write CDF(Z) estimates to stderr.
     [Default is silent.]
+
 **-W**
     Do not interpolate the input color table but pick the output colors
     starting at the beginning of the map. This is particularly useful in
     combination with a categorical color table. Cannot be used in
     combination with **-Z**.
+
 **-Z**
     Will create a continuous color palette. [Default is discontinuous,
     i.e., constant color intervals] 
@@ -139,24 +152,28 @@ line will be used.
 
 .. include:: explain_grd_input.rst_
 
-`Examples <#toc7>`_
--------------------
+Examples
+--------
 
 Sometimes you don't want to make a cpt file (yet) but would find it
 helpful to know that 90% of your data lie between z1 and z2, something
 you cannot learn from `grdinfo <grdinfo.thml>`__. So you can do this to see some points
 on the CDF(Z) curve (use **-V** option to see more):
 
-    grd2cpt mydata.nc -V > /dev/null
+   ::
+
+    gmt grd2cpt mydata.nc -V > /dev/null
 
 To make a cpt file with entries from 0 to 200 in steps of 20, and ignore
 data below zero in computing CDF(Z), and use the built-in master cpt
 file relief, run
 
-    grd2cpt mydata.nc -Crelief -L0/10000 -S0/200/20 > mydata.cpt
+   ::
 
-`See Also <#toc8>`_
--------------------
+    gmt grd2cpt mydata.nc -Crelief -L0/10000 -S0/200/20 > mydata.cpt
+
+See Also
+--------
 
 `gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
-`grdhisteq <grdhisteq.html>`_, `grdinfo <grdinfo.html>`__ , `makecpt <makecpt.html>`_
+`grdhisteq <grdhisteq.html>`_, `grdinfo <grdinfo.html>`__, `makecpt <makecpt.html>`_
