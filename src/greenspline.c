@@ -48,6 +48,7 @@ void gmt_Cdiv (double A[], double B[], double C[]);
 void gmt_Ccot (double Z[], double cotZ[]);
 double GMT_geodesic_dist_cos (struct GMT_CTRL *GMT, double lonS, double latS, double lonE, double latE);
 double GMT_great_circle_dist_cos (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2);
+EXTERN_MSC int GMT_cspline (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double *c);
 
 /* Control structure for greenspline */
 
@@ -146,7 +147,7 @@ struct GREENSPLINE_CTRL {
 
 struct GREENSPLINE_LOOKUP {	/* Used to spline interpolation of precalculated function */
 	double *y;		/* Function values */
-	double *a, *b;		/* spline  coefficients */
+	double *c;		/* spline  coefficients */
 	double *A, *B, *C;	/* power/ratios of order l terms */
 };
 
@@ -812,8 +813,7 @@ void free_lookup (struct GMT_CTRL *GMT, struct GREENSPLINE_LOOKUP **Lptr)
 	struct GREENSPLINE_LOOKUP *L = *Lptr;
 	if (L == NULL) return;	/* Nothing to free */
 	if (L->y) GMT_free (GMT, L->y);
-	if (L->a) GMT_free (GMT, L->a);
-	if (L->b) GMT_free (GMT, L->b);
+	if (L->c) GMT_free (GMT, L->c);
 	if (L->A) GMT_free (GMT, L->A);
 	if (L->B) GMT_free (GMT, L->B);
 	if (L->C) GMT_free (GMT, L->C);
@@ -822,8 +822,8 @@ void free_lookup (struct GMT_CTRL *GMT, struct GREENSPLINE_LOOKUP **Lptr)
 }
 
 double spline2d_Wessel_Becker_Rev (struct GMT_CTRL *GMT, double x, double par[], struct GREENSPLINE_LOOKUP *Lz)
-{	/* g = M_PI * Pv(-x)/sin (v*x) - log (1-x) normalized to 0-1 */
-	unsigned int L, l;
+{	/* g = M_PI * Pv(-x)/sin (v*x) - log (1-x) */
+	unsigned int L_max, l;
 	double s, c, p, pp, Lf, gam, lam, P0, P1, P2, S;
 
 //	if (doubleAlmostEqual(x, 1.0))
@@ -831,39 +831,40 @@ double spline2d_Wessel_Becker_Rev (struct GMT_CTRL *GMT, double x, double par[],
 //	if (doubleAlmostEqual(x, -1.0))
 //		return (0.0);
 
-	/*  Get all the trig functions needed; x is cos(theta)*/
+	/*  Get all the trig functions needed; x is cos(theta), but we need */
 	/* s = sin (theta/2); c=cos(theta/2); */
-	/* x = 1.0 - 2.0 *s^2; */
+	/* cos(theta) = x = 1.0 - 2.0 *s^2, so */
 	s = sqrt (0.5 * (1 - x));
 	c = sqrt (0.5 * (1 + x));
 	p = par[0];
 	pp = p * p;
 
+	/* Approximate the highest order L_max we need to sum given specified RLP_ERROR limit */
 	if (s == 0.0)
 		Lf = p / sqrt (RLP_ERROR);
 	else if (c == 0.0)
-		Lf = pow (pp/RLP_ERROR, 0.333333333);
+		Lf = pow (pp / RLP_ERROR, 0.333333333);
 	else {
-		gam = 0.0063326 * pow (pp * s * s /RLP_ERROR, 2.0) / c;
-		if (gam <= 1.0) lam = pow (gam / (1.0+pow (gam, 0.4)), 0.2);
-		else lam = pow (gam / (1.0 +1.0 / pow (gam, 0.2857)), 0.142857);
-		Lf = 1.75 * lam  /s;
+		gam = 0.0063326 * pow (pp * s * s / RLP_ERROR, 2.0) / c;
+		if (gam <= 1.0) lam = pow (gam / (1.0 + pow (gam, 0.4)), 0.2);
+		else lam = pow (gam / (1.0 + 1.0 / pow (gam, 0.2857)), 0.142857);
+		Lf = 1.75 * lam / s;
 	}
 
-	Lf = MIN (p / sqrt(RLP_ERROR), Lf);
-	L = lrint (Lf + 10.0);
+	Lf = MIN (p / sqrt (RLP_ERROR), Lf);
+	L_max = lrint (Lf + 10.0);
 
-	P0 = 1.0;
+	P0 = 1.0;	/* Initialize the P0 and P1 Legendre polynomials */
 	P1 = x;
-	S = -log (2.0) + (pp - 1.0) / pp;
+	S = -log (2.0) + (pp - 1.0) / pp;	/* Do the l = 0 term separately */
 
 	/* Sum the series */
-	for (l = 1; l <= L; l++) {
-		/* In a final version all the coeffs in l should be stored */
-		//S += (2*l+1)*pp/(l*(l+1)*(l*(l+1)+pp)) * P1;
-		//P2 = x*(2*l+1)/(l+1) * P1 - l*P0/(l+1);
-		S += Lz->A[l] * P1;
-		P2 = x * Lz->B[l] * P1 - Lz->C[l] * P0;
+	for (l = 1; l <= L_max; l++) {
+		/* All the coeffs in l have been precomputed by series_prepare.
+		 * S += (2*l+1)*pp/(l*(l+1)*(l*(l+1)+pp)) * P1;
+		 * P2 = x*(2*l+1)/(l+1) * P1 - l*P0/(l+1); */
+		S += Lz->A[l] * P1;	/* Update sum */
+		P2 = x * Lz->B[l] * P1 - Lz->C[l] * P0;	/* Get next Legendre polynomial value */
 		P0 = P1;
 		P1 = P2;
 	}
@@ -905,21 +906,33 @@ double gradspline2d_Wessel_Becker (struct GMT_CTRL *GMT, double x, double par[],
  *	 par[10] is min x
  */
 
+double csplint (double *y, double *c, double b, double h, uint64_t klo)
+{	/* Special version of GMT_csplint where x is equidistant with spacing h
+ 	 * and b is the distance relative to x[klo], so x is not needed here. */
+	uint64_t khi;
+	double a, yp;
+
+	khi = klo + 1;
+	a = 1.0 - b;
+	yp = a * y[klo] + b * y[khi] + ((a*a*a - a) * c[klo] + (b*b*b - b) * c[khi]) * (h*h) / 6.0;
+
+	return (yp);
+}
+
 double spline2d_lookup (struct GMT_CTRL *GMT, double x, double par[], struct GREENSPLINE_LOOKUP *L)
 {
 	int k;
-	double f, f0, df, y1, y2;
+	double f, f0, df, y;
 	
 	f = (x - par[10]) * par[9];	/* Floating point index */
 	f0 = floor (f);
 	df = f - f0;
 	k = irint (f0);
-	if (df == 0.0) return (L->y[k]);	/* Right on a node */
-	y1 = L->y[k]*(1.0 - df) + L->y[k+1] * df;	/* Linear fit */
-	/* Do the quadratic test */
-	if (k == 0) {k++, df -= 1.0 ;}	/* Make sure k is an inner node */
-	y2 = L->y[k] + (L->a[k] + L->b[k] * df) * df;	/* Quadratic fit */
-	return (y1);
+	if (df == 0.0) return (L->y[k]);		/* Right on a node */
+	y = csplint (L->y, L->c, df, par[8], k);	/* Call special cubic spline evaluator */
+	
+	// y1 = L->y[k]*(1.0 - df) + L->y[k+1] * df;	/* Linear fit [just for comparison] */
+	return (y);
 }
 
 double spline2d_Wessel_Becker_lookup (struct GMT_CTRL *GMT, double x, double par[], struct GREENSPLINE_LOOKUP *L)
@@ -932,23 +945,17 @@ double gradspline2d_Wessel_Becker_lookup (struct GMT_CTRL *GMT, double x, double
 	return (spline2d_lookup (GMT, x, par, L));
 }
 
-void spline2d_Wessel_Becker_splineinit (struct GMT_CTRL *GMT, double par[], struct GREENSPLINE_LOOKUP *L)
-{	/* Use dx = 1.0 since we use fractional index in evaluation */
-	int i, nx, nx1;
-	nx = irint (par[7]) - 1;
-	L->a = GMT_memory (GMT, NULL, nx, double);
-	L->b = GMT_memory (GMT, NULL, nx, double);
-	nx1 = nx - 1;
-	for (i = 1; i < nx1; i++) {
-		L->a[i] = 0.5 * (L->y[i+1] - L->y[i-1]);
-		L->b[i] = 0.5 * (L->y[i+1] - 2.0 * L->y[i] + L->y[i-1]);
-	}
+void spline2d_Wessel_Becker_splineinit (struct GMT_CTRL *GMT, double par[], double *x, struct GREENSPLINE_LOOKUP *L)
+{	/* Set up cubic spline interpolation given the precomputed x,y values of the function */
+	int nx = irint (par[7]);
+	L->c = GMT_memory (GMT, NULL, 3*nx, double);
+	GMT_cspline (GMT, x, L->y, nx, L->c);
 }
 
 void spline2d_Wessel_Becker_init (struct GMT_CTRL *GMT, double par[], struct GREENSPLINE_LOOKUP *Lz, struct GREENSPLINE_LOOKUP *Lg)
 {
 	int i, nx;
-	double x;
+	double *x = NULL;
 #ifdef DUMP
 	FILE *fp = NULL;
 	uint64_t n_out;
@@ -957,22 +964,24 @@ void spline2d_Wessel_Becker_init (struct GMT_CTRL *GMT, double par[], struct GRE
 	n_out = (Lg) ? 3 : 2;
 #endif
 	nx = irint (par[7]);
+	x = GMT_memory (GMT, NULL, nx, double);
 	Lz->y = GMT_memory (GMT, NULL, nx, double);
 	if (Lg) Lg->y = GMT_memory (GMT, NULL, nx, double);
 	for (i = 0; i < nx; i++) {
-		x = par[10] + i * par[8];
-		Lz->y[i] = spline2d_Wessel_Becker (GMT, x, par, NULL);
-		if (Lg) Lg->y[i] = gradspline2d_Wessel_Becker (GMT, x, par, NULL);
+		x[i] = par[10] + i * par[8];
+		Lz->y[i] = spline2d_Wessel_Becker (GMT, x[i], par, NULL);
+		if (Lg) Lg->y[i] = gradspline2d_Wessel_Becker (GMT, x[i], par, NULL);
 #ifdef DUMP
-		out[0] = x;	out[1] = Lz->y[i];	if (Lg) out[2] = Lg->y[i];
+		out[0] = x[i];	out[1] = Lz->y[i];	if (Lg) out[2] = Lg->y[i];
 		fwrite (out, sizeof (double), n_out, fp);
 #endif
 	}
 #ifdef DUMP
 	fclose (fp);
 #endif
-	spline2d_Wessel_Becker_splineinit (GMT, par, Lz);
-	if (Lg) spline2d_Wessel_Becker_splineinit (GMT, par, Lg);
+	spline2d_Wessel_Becker_splineinit (GMT, par, x, Lz);
+	if (Lg) spline2d_Wessel_Becker_splineinit (GMT, par, x, Lg);
+	GMT_free (GMT, x);	/* Done with x array */
 }
 
 /*----------------------  THREE DIMENSIONS ---------------------- */
