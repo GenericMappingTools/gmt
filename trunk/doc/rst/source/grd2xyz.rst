@@ -133,14 +133,14 @@ To edit individual values in the 5’ by 5’ hawaii_grv.nc file, dump the .nc t
 
    ::
 
-    grd2xyz hawaii_grv.nc > hawaii_grv.xyz
+    gmt grd2xyz hawaii_grv.nc > hawaii_grv.xyz
 
 To write a single precision binary file without the x,y positions from
 the file raw_data.nc file, using scanline orientation, run
 
    ::
 
-    grd2xyz raw_data.nc -ZTLf > hawaii_grv.b
+    gmt grd2xyz raw_data.nc -ZTLf > hawaii_grv.b
 
 See Also
 --------
