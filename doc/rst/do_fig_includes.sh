@@ -58,104 +58,104 @@ echo "" >> ${pato}/fig_${name}.rst_
 }
 
 name=example_01;	from_examples 01
-echo "   Figure ex_01: Contour maps of gridded data." >> ${pato}/fig_${name}.rst_
+echo "   Contour maps of gridded data." >> ${pato}/fig_${name}.rst_
 name=example_02;	from_examples 02
-echo "   Figure ex_02: Color images from gridded data." >> ${pato}/fig_${name}.rst_
+echo "   Color images from gridded data." >> ${pato}/fig_${name}.rst_
 name=example_03;	from_examples 03
-echo "   Figure ex_03: Spectral estimation and x=y-plots." >> ${pato}/fig_${name}.rst_
+echo "   Spectral estimation and x=y-plots." >> ${pato}/fig_${name}.rst_
 name=example_04;	from_examples 04
-echo "   Figure ex_04: 3-D perspective mesh plot (left) and colored version (right)." >> ${pato}/fig_${name}.rst_
+echo "   3-D perspective mesh plot (left) and colored version (right)." >> ${pato}/fig_${name}.rst_
 name=example_05;	from_examples 05
-echo "   Figure ex_05: 3-D illuminated surface." >> ${pato}/fig_${name}.rst_
+echo "   3-D illuminated surface." >> ${pato}/fig_${name}.rst_
 name=example_06;	from_examples 06
-echo "   Figure ex_06: Two kinds of histograms." >> ${pato}/fig_${name}.rst_
+echo "   Two kinds of histograms." >> ${pato}/fig_${name}.rst_
 name=example_07;	from_examples 07
-echo "   Figure ex_07: A typical location map." >> ${pato}/fig_${name}.rst_
+echo "   A typical location map." >> ${pato}/fig_${name}.rst_
 name=example_08;	from_examples 08
-echo "   Figure ex_08: A 3-D histogram." >> ${pato}/fig_${name}.rst_
+echo "   A 3-D histogram." >> ${pato}/fig_${name}.rst_
 name=example_09;	from_examples 09
-echo "   Figure ex_09: Time-series as "wiggles" along a track." >> ${pato}/fig_${name}.rst_
+echo "   Time-series as "wiggles" along a track." >> ${pato}/fig_${name}.rst_
 name=example_10;	from_examples 10
-echo "   Figure ex_10: Geographical bar graph." >> ${pato}/fig_${name}.rst_
+echo "   Geographical bar graph." >> ${pato}/fig_${name}.rst_
 name=example_11;	from_examples 11
-echo "   Figure ex_11: The RGB color cube." >> ${pato}/fig_${name}.rst_
+echo "   The RGB color cube." >> ${pato}/fig_${name}.rst_
 name=example_12;	from_examples 12
-echo "   Figure ex_12: Optimal triangulation of data." >> ${pato}/fig_${name}.rst_
+echo "   Optimal triangulation of data." >> ${pato}/fig_${name}.rst_
 name=example_13;	from_examples 13
-echo "   Figure ex_13: Display of vector fields in GMT." >> ${pato}/fig_${name}.rst_
+echo "   Display of vector fields in GMT." >> ${pato}/fig_${name}.rst_
 name=example_14;	from_examples 14
-echo "   Figure ex_14: Gridding of data and trend surfaces." >> ${pato}/fig_${name}.rst_
+echo "   Gridding of data and trend surfaces." >> ${pato}/fig_${name}.rst_
 name=example_15;	from_examples 15
-echo "   Figure ex_15: Gridding, contouring, and masking of data." >> ${pato}/fig_${name}.rst_
+echo "   Gridding, contouring, and masking of data." >> ${pato}/fig_${name}.rst_
 name=example_16;	from_examples 16
-echo "   Figure ex_16: More ways to grid data." >> ${pato}/fig_${name}.rst_
+echo "   More ways to grid data." >> ${pato}/fig_${name}.rst_
 name=example_17;	from_examples 17
-echo "   Figure ex_17: Clipping of images using coastlines." >> ${pato}/fig_${name}.rst_
+echo "   Clipping of images using coastlines." >> ${pato}/fig_${name}.rst_
 name=example_18;	from_examples 18
-echo "   Figure ex_18: Volumes and geo-spatial selections." >> ${pato}/fig_${name}.rst_
+echo "   Volumes and geo-spatial selections." >> ${pato}/fig_${name}.rst_
 name=example_19;	from_examples 19
-echo "   Figure ex_19: Using color patterns and additional PostScript material in illustrations." >> ${pato}/fig_${name}.rst_
+echo "   Using color patterns and additional PostScript material in illustrations." >> ${pato}/fig_${name}.rst_
 name=example_20;	from_examples 20
-echo "   Figure ex_20: Using custom symbols in GMT." >> ${pato}/fig_${name}.rst_
+echo "   Using custom symbols in GMT." >> ${pato}/fig_${name}.rst_
 name=example_21;	from_examples 21
-echo "   Figure ex_21: Time-series of RedHat stock price since IPO." >> ${pato}/fig_${name}.rst_
+echo "   Time-series of RedHat stock price since IPO." >> ${pato}/fig_${name}.rst_
 name=example_22;	from_examples 22
-echo "   Figure ex_22: World-wide seismicity the last 7 days." >> ${pato}/fig_${name}.rst_
+echo "   World-wide seismicity the last 7 days." >> ${pato}/fig_${name}.rst_
 name=example_23;	from_examples 23
-echo "   Figure ex_23: All great-circle paths lead to Rome." >> ${pato}/fig_${name}.rst_
+echo "   All great-circle paths lead to Rome." >> ${pato}/fig_${name}.rst_
 name=example_24;	from_examples 24
-echo "   Figure ex_24: Data selection based on geospatial criteria." >> ${pato}/fig_${name}.rst_
+echo "   Data selection based on geospatial criteria." >> ${pato}/fig_${name}.rst_
 name=example_25;	from_examples 25
-echo "   Figure ex_25: Global distribution of antipodes." >> ${pato}/fig_${name}.rst_
+echo "   Global distribution of antipodes." >> ${pato}/fig_${name}.rst_
 name=example_26;	from_examples 26
-echo "   Figure ex_26: General vertical perspective projection." >> ${pato}/fig_${name}.rst_
+echo "   General vertical perspective projection." >> ${pato}/fig_${name}.rst_
 name=example_27;	from_examples 27
-echo "   Figure ex_27: Plotting Sandwell/Smith Mercator img grids." >> ${pato}/fig_${name}.rst_
+echo "   Plotting Sandwell/Smith Mercator img grids." >> ${pato}/fig_${name}.rst_
 name=example_28;	from_examples 28
-echo "   Figure ex_28: Mixing UTM and geographic data sets requires knowledge of the map region domain in" >> ${pato}/fig_${name}.rst_
+echo "   Mixing UTM and geographic data sets requires knowledge of the map region domain in" >> ${pato}/fig_${name}.rst_
 echo "   both UTM and lon/lat coordinates and consistent use of the same map scale." >> ${pato}/fig_${name}.rst_
 name=example_29;	from_examples 29
-echo "   Figure ex_29: Gridding of spherical surface data using Green's function splines." >> ${pato}/fig_${name}.rst_
+echo "   Gridding of spherical surface data using Green's function splines." >> ${pato}/fig_${name}.rst_
 name=example_30;	from_examples 30
-echo "   Figure ex_30: Trigonometric functions plotted in graph mode." >> ${pato}/fig_${name}.rst_
+echo "   Trigonometric functions plotted in graph mode." >> ${pato}/fig_${name}.rst_
 name=example_31;	from_examples 31
-echo "   Figure ex_31: Using non-default fonts in *PostScript*." >> ${pato}/fig_${name}.rst_
+echo "   Using non-default fonts in *PostScript*." >> ${pato}/fig_${name}.rst_
 name=example_32;	from_examples 32
-echo "   Figure ex_32: Draping an image over topography." >> ${pato}/fig_${name}.rst_
+echo "   Draping an image over topography." >> ${pato}/fig_${name}.rst_
 name=example_33;	from_examples 33
-echo "   Figure ex_33: Stacking automatically generated cross-profiles." >> ${pato}/fig_${name}.rst_
+echo "   Stacking automatically generated cross-profiles." >> ${pato}/fig_${name}.rst_
 name=example_34;	from_examples 34
-echo "   Figure ex_34: Using country polygons for plotting and shading." >> ${pato}/fig_${name}.rst_
+echo "   Using country polygons for plotting and shading." >> ${pato}/fig_${name}.rst_
 name=example_35;	from_examples 35
-echo "   Figure ex_35: Spherical triangulation and distance calculations" >> ${pato}/fig_${name}.rst_
+echo "   Spherical triangulation and distance calculations" >> ${pato}/fig_${name}.rst_
 name=example_36;	from_examples 36
-echo "   Figure ex_36: Spherical gridding using Renka\'s algorithms." >> ${pato}/fig_${name}.rst_
+echo "   Spherical gridding using Renka\'s algorithms." >> ${pato}/fig_${name}.rst_
 name=example_37;	from_examples 37
-echo "   Figure ex_37: Spectral coherence between gravity and bathymetry grids." >> ${pato}/fig_${name}.rst_
+echo "   Spectral coherence between gravity and bathymetry grids." >> ${pato}/fig_${name}.rst_
 name=example_38;	from_examples 38
-echo "   Figure ex_38: Histogram equalization of bathymetry grids." >> ${pato}/fig_${name}.rst_
+echo "   Histogram equalization of bathymetry grids." >> ${pato}/fig_${name}.rst_
 name=example_39;	from_examples 39
-echo "   Figure ex_39: Evaluation of spherical harmonics coefficients." >> ${pato}/fig_${name}.rst_
+echo "   Evaluation of spherical harmonics coefficients." >> ${pato}/fig_${name}.rst_
 
 name=GMT_App_E;			from_scripts
 name=GMT_App_F_dingbats;	from_scripts
 name=GMT_App_F_iso+;		from_scripts
 name=GMT_App_F_stand+;		from_scripts
 name=GMT_App_F_symbol;		from_scripts
-echo "    Figure F.1: Octal codes and corresponding symbols for StandardEncoding (left) and ISOLatin1Encoding (right) fonts." >> ${pato}/fig_${name}.rst_
+echo "    Octal codes and corresponding symbols for StandardEncoding (left) and ISOLatin1Encoding (right) fonts." >> ${pato}/fig_${name}.rst_
 
 name=GMT_App_G;			from_scripts
 echo "    The standard 35 **PS** fonts recognized by *GMT*." >> ${pato}/fig_${name}.rst_
 
 name=GMT_App_M_1;		from_scripts
-echo "    Figure M.1: The standard 22 CPT files supported by GMT" >> ${pato}/fig_${name}.rst_
+echo "    The standard 22 CPT files supported by GMT" >> ${pato}/fig_${name}.rst_
 
 name=GMT_App_M_2;		from_scripts
 name=GMT_App_P_2;		from_scripts
-echo "    Figure P.1: Example created in isolation mode" >> ${pato}/fig_${name}.rst_
+echo "    Example created in isolation mode" >> ${pato}/fig_${name}.rst_
 
 name=GMT_color_interpolate;	from_scripts
-echo "    Figure I.4: When interpolating colors, the color system matters. The polar palette on the left needs to" >> ${pato}/fig_${name}.rst_
+echo "    When interpolating colors, the color system matters. The polar palette on the left needs to" >> ${pato}/fig_${name}.rst_
 echo "    be interpolated in RGB, otherwise hue will change between blue (240) and white (0). The rainbow" >> ${pato}/fig_${name}.rst_
 echo "    palette should be interpolated in HSV, since only hue should change between magenta (300) and red (0)." >> ${pato}/fig_${name}.rst_
 echo "    Diamonds indicate which colors are defined in the palettes; they are fixed, the rest is interpolated." >> ${pato}/fig_${name}.rst_
@@ -163,7 +163,7 @@ echo "    Diamonds indicate which colors are defined in the palettes; they are f
 name=GMT_coverlogo;		from_scripts
 
 name=GMT_RGBchart_a4;		from_scripts
-echo "    Figure I.2: The 555 unique color names that can be used in GMT. Lower, upper, or mixed cases, as well as" >> ${pato}/fig_${name}.rst_
+echo "    The 555 unique color names that can be used in GMT. Lower, upper, or mixed cases, as well as" >> ${pato}/fig_${name}.rst_
 echo "    the british spelling of "grey" are allowed. A4, Letter, and Tabloid sized versions of this RGB chart can be" >> ${pato}/fig_${name}.rst_
 echo "    found in the GMT documentation directory." >> ${pato}/fig_${name}.rst_
 
@@ -173,7 +173,7 @@ name=GMT_Defaults_1a;		from_scripts
 echo "    Some *GMT* parameters that affect plot appearance." >> ${pato}/fig_${name}.rst_
 
 name=GMT_Defaults_1b;		from_scripts
-echo "    Figure: More *GMT* parameters that affect plot appearance." >> ${pato}/fig_${name}.rst_
+echo "    More *GMT* parameters that affect plot appearance." >> ${pato}/fig_${name}.rst_
 
 name=GMT_Defaults_1c;		from_scripts
 echo "    Even more *GMT* parameters that affect plot appearance." >> ${pato}/fig_${name}.rst_
@@ -443,23 +443,23 @@ echo "    in particular New York. Should a catastrophic landslide occur it is po
 echo "    that New York will experience a large tsunami about 8 hours after the event." >> ${pato}/fig_${name}.rst_
 
 name=GMT5_Summit_2011.jpg;	from_fig
-echo "    Figure 1: The four horsemen of the GMT apocalypse: Remko Scharroo, Paul Wessel, Walter H.F. Smith," >> ${pato}/fig_${name}.rst_
+echo "    The four horsemen of the GMT apocalypse: Remko Scharroo, Paul Wessel, Walter H.F. Smith," >> ${pato}/fig_${name}.rst_
 echo "    and Joaquim Luis at the GMT Developer Summit in Honolulu, Hawaii during February 14-18, 2011." >> ${pato}/fig_${name}.rst_
 
 name=hsv-cone.png;	from_fig
-echo "    Figure I.1: The HSV color space" >> ${pato}/fig_${name}.rst_ 
+echo "    The HSV color space" >> ${pato}/fig_${name}.rst_ 
 
 name=rendering.png;		from_fig
-echo "    Figure C.1: Examples of rendered images in a PowerPoint presentation" >> ${pato}/fig_${name}.rst_ 
+echo "    Examples of rendered images in a PowerPoint presentation" >> ${pato}/fig_${name}.rst_ 
 
 name=formatpicture.png;	from_fig
-echo "    Figure C.2: **PowerPoint**'s "Format Picture" dialogue to set scale and rotation." >> ${pato}/fig_${name}.rst_
+echo "    **PowerPoint**'s "Format Picture" dialogue to set scale and rotation." >> ${pato}/fig_${name}.rst_
 
 name=GMT4_mode.png;	from_fig
-echo "    Figure 1: GMT 4 programs contain all the high-level functionality." >> ${pato}/fig_${name}.rst_ 
+echo "    GMT 4 programs contain all the high-level functionality." >> ${pato}/fig_${name}.rst_ 
 
 name=GMT5_mode.png;	from_fig
-echo "    Figure 2: GMT 5 programs contain all the high-level functionality." >> ${pato}/fig_${name}.rst_ 
+echo "    GMT 5 programs contain all the high-level functionality." >> ${pato}/fig_${name}.rst_ 
 
 name=gimp-sliders.png;	from_fig
 
