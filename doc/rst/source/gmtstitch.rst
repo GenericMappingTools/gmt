@@ -2,30 +2,30 @@
 gmtstitch
 *********
 
-gmtstitch - Join individual lines whose end points match within
-tolerance
+gmtstitch - Join individual lines whose end points match within tolerance
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtstitch** [ *table* ] [ **-C**\ [*closed*\ ] ] [
-**-D**\ [*template*\ ] ] [ **-L**\ [*linkfile*\ ] ] [
-**-Q**\ [*template*\ ] ] [ **-T**\ *cutoff*\ [*unit*\ ][/\ *nn\_dist*] ]
-[ **-V**\ [*level*\ ] ] [
-**-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
-**-bo**\ [*ncols*\ ][*type*\ ] ] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo*
-] [
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
-] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-o**\ *cols*\ [,*...*] ] [ **-:**\ [**i**\ \|\ **o**] ]
+**gmtstitch** [ *table* ] [ **-C**\ [*closed*] ]
+[ **-D**\ [*template*] ] [ **-L**\ [*linkfile*] ]
+[ **-Q**\ [*template*] ] [ **-T**\ *cutoff*\ [*unit*][/\ *nn\_dist*] ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-b| ]
+[ **-bo**\ [*ncols*][*type*] ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-g| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-o| ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **gmtstitch** reads standard input or one or more data files, which may
 be multisegment files, and examines the coordinates of the end points of
@@ -38,25 +38,25 @@ file. If it is not clear what the separation tolerance should be then
 use **-L** to get a list of all separation distances and analyze them to
 determine a suitable cutoff. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 None.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
 
-**-C**\ [*closed*\ ]
-    Write all the closed polygons to *closed* [gmtstitch\_closed.txt]
+**-C**\ [*closed*]
+    Write all the closed polygons to *closed* [gmtstitch_closed.txt]
     and all other segments as they are to stdout. No stitching takes
     place. Use **-T**\ *cutoff* to set a minimum separation [0], and if
-    *cutoff* is > 0 then we also explicitly close the polygons on
-    output.
-**-D**\ [*template*\ ]
+    *cutoff* is > 0 then we also explicitly close the polygons on output.
+
+**-D**\ [*template*]
     For multiple segment data, dump each segment to a separate output
     file [Default writes a single multiple segment file]. Append a
     format template for the individual file names; this template
@@ -65,30 +65,33 @@ None.
     which gives leading zeros, etc. Optionally, it may also contain the
     format %c *before* the integer; this will then be replaced by C
     (closed) or O (open) to indicate segment type. [Default is
-    gmtstitch\_segment\_%d.txt]. Note that segment headers will be
+    gmtstitch_segment_%d.txt]. Note that segment headers will be
     written in either case. For composite segments, a generic segment
     header will be written and the segment headers of individual pieces
     will be written out as comments to make it possible to identify
     where the stitched pieces came from.
-**-L**\ [*linkfile*\ ]
+
+**-L**\ [*linkfile*]
     Writes the link information to the specified file
-    [gmtstitch\_link.txt]. For each segment we write the original
+    [gmtstitch_link.txt]. For each segment we write the original
     segment id, and for the beginning and end point of the segment we
     report the id of the closest segment, whether it is the beginning
     (B) or end (E) point that is closest, and the distance between those
     points in units determined by **-T**.
-**-Q**\ [*template*\ ]
+
+**-Q**\ [*template*]
     Used with **-D** to a list file with the names of the individual
     output files. Optionally, append a filename template for the
     individual file names; this template **may** contain a C format
     specifier that can format an character (C or O for closed or open,
-    respectively). [Default is gmtstitch\_list.txt].
-**-T**\ *cutoff*\ [*unit*\ ][/\ *nn\_dist*]
+    respectively). [Default is gmtstitch_list.txt].
+
+**-T**\ *cutoff*\ [*unit*][/\ *nn\_dist*]
     Specifies the separation tolerance in the data coordinate units [0];
     append distance unit (see UNITS). If two lines has end-points that
     are closer than this cutoff they will be joined. Optionally, append
-    /*nn\_dist* which adds the requirement that a link will only be made
-    if the second closest connection exceeds the *nn\_dist*. The latter
+    /*nn_dist* which adds the requirement that a link will only be made
+    if the second closest connection exceeds the *nn_dist*. The latter
     distance must be given in the same units as *cutoff*. 
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
@@ -121,25 +124,29 @@ None.
 
 .. include:: explain_precision.rst_
 
-`Examples <#toc8>`_
--------------------
+Examples
+--------
 
-To combine the digitized segment lines segment\_\*.txt (whose
+To combine the digitized segment lines segment_\*.txt (whose
 coordinates are in cm) into as few complete lines as possible, assuming
 the end points slop could be up to 0.1 mm, run
 
-    gmtstitch segment\_\*.txt -Tf0.1 > new\_segments.txt
+   ::
 
-To combine the digitized segments in the multisegment file my\_lines.txt
+    gmt gmtstitch segment_*.txt -Tf0.1 > new_segments.txt
+
+To combine the digitized segments in the multisegment file my_lines.txt
 (whose coordinates are in lon,lat) into as few complete lines as
 possible, assuming the end points slop could be up to 150 m, and write
-the complete segments to separate files called Map\_segment\_0001.dat,
-Map\_segment\_0002.dat, etc., run
+the complete segments to separate files called Map_segment_0001.dat,
+Map_segment_0002.dat, etc., run
 
-    gmtstitch my\_lines.txt -T150e -DMap\_segment\_%04d.dat
+   ::
 
-`Bugs <#toc9>`_
----------------
+    gmt gmtstitch my_lines.txt -T150e -DMap_segment_%04d.dat
+
+Bugs
+----
 
 The line connection does not work if a line only has a single point.
 However, gmtstitch will correctly add the point to the nearest segment.

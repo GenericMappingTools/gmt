@@ -4,25 +4,26 @@ gmtdp
 
 gmtdp - Line reduction using the Douglas-Peucker algorithm
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtdp** [ *table* ] **-T**\ *tolerance*\ [*unit*\ ] [
-**-V**\ [*level*\ ] ] [
-**-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
-**-bo**\ [*ncols*\ ][*type*\ ] ] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo*
-] [
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
-] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-o**\ *cols*\ [,*...*] ] [ **-:**\ [**i**\ \|\ **o**] ]
+**gmtdp** [ *table* ] **-T**\ *tolerance*\ [*unit*]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-b| ]
+[ **-bo**\ [*ncols*][*type*] ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-g| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-o| ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **gmtdp** reads one or more data files and apply the Douglas-Peucker
 line simplification algorithm. The method recursively subdivides a
@@ -32,15 +33,15 @@ more than the tolerance. Have a look at this site to get a visual
 insight on how the algorithm works
 (http://geometryalgorithms.com/Archive/algorithm\_0205/algorithm\_0205.htm)
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
-**-T**\ *tolerance*\ [*unit*\ ]
+**-T**\ *tolerance*\ [*unit*]
     Specifies the maximum mismatch tolerance in the user units. If the
     data is not Cartesian then append the distance unit (see UNITS).
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
@@ -75,20 +76,24 @@ insight on how the algorithm works
 
 .. include:: explain_precision.rst_
 
-`Examples <#toc8>`_
--------------------
+Examples
+--------
 
 To reduce the geographic line segment.d using a tolerance of 2 km, run
 
-    gmtdp segment.d -T2k > new\_segment.d
+   ::
+
+    gmtdp segment.d -T2k > new_segment.d
 
 To reduce the Cartesian lines xylines.d using a tolerance of 0.45 and
-write the reduced lines to file new\_xylines.d, run
+write the reduced lines to file new_xylines.d, run
 
-    gmtdp xylines.d -T0.45 > new\_xylines.d
+   ::
 
-`Bugs <#toc9>`_
----------------
+    gmtdp xylines.d -T0.45 > new_xylines.d
+
+Bugs
+----
 
 One known issue with the Douglas-Peucker has to do with crossovers.
 Specifically, it cannot be guaranteed that the reduced line does not
@@ -98,8 +103,8 @@ the current implementation only does Flat Earth calculations even if you
 specify spherical; **gmtdp** will issue a warning and reset the
 calculation mode to Flat Earth.
 
-`References <#toc10>`_
-----------------------
+References
+----------
 
 Douglas, D. H., and T. K. Peucker, Algorithms for the reduction of the
 number of points required to represent a digitized line of its
@@ -110,7 +115,7 @@ Gary J. Robinson, Environmental Systems Science Centre, University of
 Reading, Reading, UK (gazza@mail.nerc-essc.ac.uk); his subroutine forms
 the basis for this program.
 
-`See Also <#toc11>`_
---------------------
+See Also
+--------
 
 `gmt <gmt.html>`_

@@ -11,7 +11,7 @@ Synopsis
 
 **grd2xyz** *grid* [ **-C**\ [**f**\ \|\ **i**] ] [ **-N**\ [**i**]\ *nodata* ]
 [ |SYN_OPT-R| ] [ |SYN_OPT-V| ]
-[ **-W**\ [*weight*\ ] ] [ **-Z**\ [*flags*\ ] ]
+[ **-W**\ [*weight*] ] [ **-Z**\ [*flags*] ]
 [ **-bo**\ [*ncols*\ ][*type*] ] [ |SYN_OPT-f| ]
 [ **-ho**\ [*n*] ] [ |SYN_OPT-o| ]
 [ |SYN_OPT-s| ]
@@ -67,8 +67,8 @@ Optional Arguments
     Write a 1-column ASCII [or binary] table. Output will be organized
     according to the specified ordering convention contained in *flags*.
     If data should be written by rows, make *flags* start with
-    `**T**\ (op) <T.op.html>`_ if first row is y = ymax or
-    `**B**\ (ottom) <B.ottom.html>`_ if first row is y = ymin. Then,
+    **T** (op) if first row is y = ymax or
+    **B** (ottom) if first row is y = ymin. Then,
     append **L** or **R** to indicate that first element should start at
     left or right end of row. Likewise for column formats: start with
     **L** or **R** to position first column, and then append **T** or
@@ -79,27 +79,17 @@ Optional Arguments
     appending **y**. If the byte-order needs to be swapped, append
     **w**. Select one of several data types (all binary except **a**):
 
-    **a** ASCII representation of a single item per record
-
-    **c** int8_t, signed 1-byte character
-
-    **u** uint8_t, unsigned 1-byte character
-
-    **h** int16_t, short 2-byte integer
-
-    **H** uint16_t, unsigned short 2-byte integer
-
-    **i** int32_t, 4-byte integer
-
-    **I** uint32_t, unsigned 4-byte integer
-
-    **l** int64_t, long (8-byte) integer
-
-    **L** uint64_t, unsigned long (8-byte) integer
-
-    **f** 4-byte floating point single precision
-
-    **d** 8-byte floating point double precision
+    * **a** ASCII representation of a single item per record
+    * **c** int8_t, signed 1-byte character
+    * **u** uint8_t, unsigned 1-byte character
+    * **h** int16_t, short 2-byte integer
+    * **H** uint16_t, unsigned short 2-byte integer
+    * **i** int32_t, 4-byte integer
+    * **I** uint32_t, unsigned 4-byte integer
+    * **l** int64_t, long (8-byte) integer
+    * **L** uint64_t, unsigned long (8-byte) integer
+    * **f** 4-byte floating point single precision
+    * **d** 8-byte floating point double precision
 
     Default format is scanline orientation of ASCII numbers: **-ZTLa**.
     Note that **-Z** only applies to 1-column output. 
@@ -155,7 +145,6 @@ the file raw_data.nc file, using scanline orientation, run
 See Also
 --------
 
-`gmt.conf <gmt.conf.html>`_ , `gmt <gmt.html>`_ ,
-`grdedit <grdedit.html>`_ ,
-`grdreformat <grdreformat.html>`_ ,
+`gmt.conf <gmt.conf.html>`_, `gmt <gmt.html>`_,
+`grdedit <grdedit.html>`_, `grdreformat <grdreformat.html>`_,
 `xyz2grd <xyz2grd.html>`_
