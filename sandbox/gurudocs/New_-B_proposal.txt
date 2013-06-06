@@ -24,11 +24,12 @@ this proposal ELIMINATES the slash as an axes item separator.
 -Bf<args> sets parameters for the entire map frame.
    <args> is [WESNZwesnz[1234][+b]][+g<fill>][+t<title>]
    Append +g<fill> to paint frame interior [none].
+   Append +o<lon/lat> to specify pole for oblique gridlines [NP].
    Append +t<title> to plot title [none].
      Lower case w,e,s,n,z will draw those axes, while
      upper case versions will both draw and annotate.
      If no axes are given we default to MAP_FRAME_AXES.
-     For 3-D plots, add q to draw 3-D wire box. While
+     For 3-D plots, add d to draw 3-D wire box. While
      z|Z automatically selects the vertical axis position
      you can override this by appending one or more of
      axes positions 1,2,3,4.
@@ -45,8 +46,6 @@ this proposal ELIMINATES the slash as an axes item separator.
     Append +l<label> to add label to this axis [none].
     Append +s<suffix> to set annotation suffix [none].
     Append +p<prefix> to set annotation prefix [none].
-    A leading - in <prefix>, <suffix> closes gap between
-    the text item and the annotation [Default adds a space].
   <intervals> is itself a concatenation of one or more
   items of the form [t][<stride>][+|-<phase>][unit].
   t is from a,i,f,g and unit is <time-units> or m|s,
@@ -82,9 +81,9 @@ A: We scan to the first + not preceded by a valid number, then
    and the optional modifiers are then parsed separately.
 
 Q: What if a user uses a slash (/) to separate x and y information?
-A: Under --enable-compat this will work as before provided the user
+A: Under GMT_COMPATIBILITY=4 this will work as before provided the user
    otherwise use GMT 4 syntax.  You cannot mix and match GMT4 and GMT5
-   syntax.  Without --enable-compat a slash might simply be part of
+   syntax.  Without GMT_COMPATIBILITY=4 a slash might simply be part of
    a title or label, or else it is an error.
 
 Q: Will the changes break any backwards compatibility?
@@ -104,9 +103,9 @@ Example of -B option with old and new syntax:
 
 Old: -B1000f250g250:"Topography (m)":/2f1g1:"Frequency"::",-%"::."My histogram":WEsn+glightblue
 
-New: -Bf+t"My histogram"+fWEsn+glightblue -Bx1000f250g250+l"Topography (m)" -By2f1g1+l"Frequency"+s"-%"
+New: -BWEsn+t"My histogram"+glightblue -Bx1000f250g250+l"Topography (m)" -By2f1g1+l"Frequency"+s"%"
 
-or   -Bf+t"My histogram"+fWEsn+glightblue -Bx+l"Topography (m)" -By+l"Frequency"+s"-%" -Bx1000f250g250 -By2f1g1
+or   -BWEsn+t"My histogram"+glightblue -Bx+l"Topography (m)" -By+l"Frequency"+s"%" -Bx1000f250g250 -By2f1g1
 
 --------------------- cut cut cut ----------------------------
 3-D z-Axis background information:
@@ -125,11 +124,11 @@ GMT_xyz_to_xy (C, nesw[xcorner], nesw[ycorner], C->common.R.wesn[ZLO], &xx, &yy)
 
 So these are the results from that obscure logic:
 quadrant:	xcorner	ycorner	corner		corner_ID
---------------------------------------------------------
-1		1	2	(XHI,YLO)	2
-2		3	2	(XLO,YLO)	1
-3		3	0	(XLO,YHI)	4
-4		1	0	(XHI,YHI)	3
+----------------------------------------------------------
+1		1	2	(XHI,YLO)	2	
+2		3	2	(XLO,YLO)	1	
+3		3	0	(XLO,YHI)	4	
+4		1	0	(XHI,YHI)	3	
 
 Here, corner_ID is our preferred order for reference, going counter-clockwise
 from lower left.
