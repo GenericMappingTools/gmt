@@ -84,9 +84,17 @@ required resources by configuring *cmake/ConfigUser.cmake*.
 Finding GSHHG:
 ~~~~~~~~~~~~~~
 
-GSHHG shorelines are searched in FindGSHHG.cmake and a little helper programm
+GSHHG shorelines are searched in FindGSHHG.cmake and a little helper program
 tests the version (gshhg_version.c). If CMake cannot find the shorelines you
 have to configure _GSHHG_ROOT_ in cmake/ConfigUser.cmake.
+
+Finding DCW:
+~~~~~~~~~~~~~~
+
+DCW (Digital Chart of the World) country polygons are searched in FindDCW.cmake.
+THe DCW data are optional; they are currently used in pscoast -F for painting
+individual countries only.  If CMake cannot auto-find DCW for you then you can
+configure _DCW_ROOT_ in cmake/ConfigUser.cmake.
 
 Documentation:
 ~~~~~~~~~~~~~~

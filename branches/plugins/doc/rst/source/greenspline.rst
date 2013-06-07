@@ -175,12 +175,12 @@ None.
     surface splines and both imply **-D**\ 4: (**p**) Minimum
     curvature spline [*Parker*, 1994], (**q**) Continuous curvature
     spline in tension [*Wessel and Becker*, 2008]; append *tension*. The
-    G(\ **x’**; **x’**) for the last method is slower to compute; by
-    specifying **-SQ** you can speed up calculations by first
-    pre-calculating G(\ **x’**; **x’**) for a dense set of **x** values
-    (e.g., 100,001 nodes between -1 to +1) and store them in look-up
-    tables. Optionally append /*N* (an odd integer) to specify how many
-    points in the spline to set [100001]
+    G(\ **x’**; **x’**) for the last method is slower to compute (a series solution) so we
+    pre-calculate values and use cubic spline interpolation lookup instead.
+    Optionally append **+n**\ *N* (an odd integer) to change how many
+    points to use in the spline setup [10001].  The finite Legendre sum has
+    a truncation error [1e-6]; you can lower that by appending **+e**\ *limit*
+    at the expense of longer run-time.
 **-T**\ *maskgrid*
     For 2-D interpolation only. Only evaluate the solution at the nodes
     in the *maskgrid* that are not equal to NaN. This option eliminates
@@ -279,10 +279,9 @@ assuming the data are in file mag\_obs\_1990.d, try
 
     greenspline -V -Rg -Sp -D3 -I1 -GP1994.nc mag\_obs\_1990.d
 
-To do the same problem but applying tension and use pre-calculated Green
-functions, use
+To do the same problem but applying tension of 0.85, use
 
-    greenspline -V -Rg -SQ0.85 -D3 -I1 -GWB2008.nc mag\_obs\_1990.d
+    greenspline -V -Rg -Sq0.85 -D3 -I1 -GWB2008.nc mag\_obs\_1990.d
 
 `Considerations <#toc10>`_
 --------------------------
@@ -303,6 +302,8 @@ place restrictions on how large data sets you can process with
 may also control the size of *n*. For information, if *n* = 1024 then
 only 8 Mb memory is needed, but for *n* = 10240 we need 800 Mb. Note
 that **greenspline** is fully 64-bit compliant if compiled as such.
+For spherical data you may consider decimating using **gmtspatial**
+nearest neighbor reduction.
 
 (3) The inversion for coefficients can become numerically unstable when
 data neighbors are very close compared to the overall span of the data.
@@ -310,6 +311,10 @@ You can remedy this by pre-processing the data, e.g., by averaging
 closely spaced neighbors. Alternatively, you can improve stability by
 using the SVD solution and discard information associated with the
 smallest eigenvalues (see **-C**).
+
+(4) The series solution implemented for **-Sq** was developed by
+Robert L. Parker, Scripps Institution of Oceanography, which we
+gratefully acknowledge.
 
 `Tension <#toc11>`_
 -------------------

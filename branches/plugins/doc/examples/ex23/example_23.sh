@@ -28,8 +28,8 @@ cat << END > cities.d
 28.20	-25.75	PRETORIA	LM
 END
 
-gmt pscoast -Rg -JH90/9i -Glightgreen -Sblue -U"Example 23 in Cookbook" -A1000 \
-	-Bg30 -B+t"Distances from $name to the World" -K -Dc -Wthinnest > $ps
+gmt pscoast -Rg -JH90/9i -Glightgreen -Sblue -A1000 -Dc -Bg30 \
+	-B+t"Distances from $name to the World" -K -Wthinnest > $ps
 
 gmt grdcontour dist.nc -A1000+v+u" km"+fwhite -Glz-/z+ -S8 -C500 -O -K -J \
 	-Wathin,white -Wcthinnest,white,- >> $ps

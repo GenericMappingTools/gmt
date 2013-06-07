@@ -38,6 +38,7 @@
  */
  
 #define THIS_MODULE GMT_ID_GRDVIEW /* I am grdview */
+#define MODULE_USAGE "Create 3-D perspective image or surface mesh from a grid"
 
 #include "gmt_dev.h"
 

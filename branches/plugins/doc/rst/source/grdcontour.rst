@@ -11,29 +11,28 @@ grdcontour - Make contour map using a grid
 
 **grdcontour** *grid* **-C**\ [+]\ *cont\_int*\ \|\ *cpt*
 **-J**\ *parameters* [ **-A**\ [**-**\ \|\ [+]\ *annot\_int*][*labelinfo*] ]
-[ **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-D**\ *template* ] [
-**-F**\ [**l**\ \|\ **r**] ]
+[ |SYN_OPT-B| ]
+[ **-F**\ [**l**\ \|\ **r**] ]
 [ **-G**\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ] 
 [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [ **-L**\ *low/high* ]
-[ **-O** ] [ **-P** ] [ **-Q**\ *cut* ] [
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**] ] [
-**-S**\ *smoothfactor* ] [
-**-T**\ [**+\|-**][*gap/length*][\ **:**\ [*labels*]] ] [
-**-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*]
-] [ **-W**\ [**+**\ ][*type*\ ]\ *pen* ] [
-**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\]
-] [
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**]]
-] [ **-Z**\ [*factor*\ [/*shift*]][**p**] ] [
-**-bo**\ [*ncols*\ ][*type*\ ] ] [ **-c**\ *copies* ] [ **-ho**\ [*n*]
-] [
-**-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
-] [ **-t**\ [*transp*] ]
+[ **-O** ] [ **-P** ] [ **-Q**\ *cut* ]
+[ |SYN_OPT-Rz| ]
+[ **-S**\ *smoothfactor* ]
+[ **-T**\ [**+\|-**][*gap/length*][\ **:**\ [*labels*]] ]
+[ |SYN_OPT-U| ]
+[ |SYN_OPT-V| ]
+[ **-W**\ [**+**\ ][*type*]\ *pen* ]
+[ |SYN_OPT-X| ]
+[ |SYN_OPT-Y| ]
+[ **-Z**\ [*factor*\ [/*shift*]][**p**] ]
+[ **-bo**\ [*ncols*\ ][*type*] ] [ **-c**\ *copies* ] [ **-ho**\ [*n*] ]
+[ |SYN_OPT-p| ]
+[ |SYN_OPT-t| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **grdcontour** reads a 2-D grid file and produces a contour map by
 tracing each contour through the grid. *PostScript* code is generated
@@ -41,8 +40,8 @@ and sent to standard output. Various options that affect the plotting
 are available. Alternatively, the x/y/z positions of the contour lines
 may be saved to one or more output files (or stdout) and no plot is produced. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *grid*
     2-D gridded data set to be contoured. (See GRID FILE FORMATS below).
@@ -79,8 +78,8 @@ may be saved to one or more output files (or stdout) and no plot is produced.
 
 .. include:: explain_-J.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-A**\ [**-**\ \|\ [+]\ *annot\_int*][*labelinfo*]
     *annot_int* is annotation interval in data units; it is ignored if
@@ -158,7 +157,7 @@ may be saved to one or more output files (or stdout) and no plot is produced.
 
 .. include:: explain_-XY.rst_
 
-**-Z**\ [*factor*\ [/*shift*]][**p**\ ]
+**-Z**\ [*factor*\ [/*shift*]][**p**]
     Use to subtract *shift* from the data and multiply the results by
     *factor* before contouring starts [1/0]. (Numbers in **-A**, **-C**,
     **-L** refer to values after this scaling has occurred.) Append
@@ -189,12 +188,14 @@ may be saved to one or more output files (or stdout) and no plot is produced.
 
 .. include:: explain_grd_input.rst_
 
-`Examples <#toc8>`_
--------------------
+Examples
+--------
 
 To contour the file hawaii\_grav.nc every 25 mGal on a Mercator map at
 0.5 inch/degree, annotate every 50 mGal (using fontsize = 10p), using 1
 degree tickmarks, and draw 30 minute gridlines:
+
+   ::
 
     grdcontour hawaii_grav.nc -Jm0.5i -C25 -A50+f10p -B1g30m > hawaii_grav.ps
 
@@ -204,8 +205,10 @@ linear projection at 0.1 cm/x-unit and 50 cm/y-unit, using 20 (x) and
 plot-title, use a thick red pen for annotated contours, and a thin,
 dashed, blue pen for the rest, and send the output to the default printer:
 
-    grdcontour image.nc -Jx0.1c/50.0c -Ccont.d -S4 -B20/0.1:."RMS
-    Misfit":-Wathick,red -Wcthinnest,blue,- \| lp
+   ::
+
+    gmt grdcontour image.nc -Jx0.1c/50.0c -Ccont.d -S4 -B20/0.1:."RMS \
+               Misfit":-Wathick,red -Wcthinnest,blue,- | lp
 
 The labeling of local highs and lows may plot outside the innermost
 contour since only the mean value of the contour coordinates is used to
@@ -215,10 +218,12 @@ To save the smoothed 100-m contour lines in topo.nc and separate them
 into two multisegment files: contours_C.txt for closed and
 contours_O.txt for open contours, try
 
-    grdcontour topo.nc -C100 -S4 -Dcontours_%c.txt
+   ::
 
-`See Also <#toc9>`_
--------------------
+    gmt grdcontour topo.nc -C100 -S4 -Dcontours_%c.txt
+
+See Also
+--------
 
 `gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
 `gmtcolors <gmtcolors.html>`_,

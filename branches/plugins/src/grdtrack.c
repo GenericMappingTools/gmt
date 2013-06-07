@@ -26,6 +26,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GRDTRACK /* I am grdtrack */
+#define MODULE_USAGE "Sample grids at specified (x,y) locations"
 
 #include "gmt_dev.h"
 

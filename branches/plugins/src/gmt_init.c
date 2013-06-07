@@ -691,7 +691,7 @@ void GMT_explain_options (struct GMT_CTRL *GMT, char *options)
 
 		case 'A':	/* GSHHG specification */
 		
-		 	GMT_message (GMT, "\t-A Place limits on coastline features from the GSHHG data base.");
+		 	GMT_message (GMT, "\t-A Place limits on coastline features from the GSHHG data base.\n");
 			GMT_message (GMT, "\t   Features smaller than <min_area> (in km^2) or of levels (0-4) outside the min-max levels\n");
 			GMT_message (GMT, "\t   will be skipped [0/4 (4 means lake inside island inside lake)].\n");
 			GMT_message (GMT, "\t   Append +r to only get riverlakes from level 2, or +l to only get lakes [both].\n");
@@ -1571,10 +1571,12 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 			p[0] += shift;	p[1] += shift;
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning -R: Given west and east values [%g %g] were adjusted so not exceed multiples of 360 [%g %g]\n", w, e, p[0], p[1]);
 		}
+#if 0	/* This causes too much trouble: Better to annoy the person wishing this to work vs annoy all those who made an honest error.  We cannot be mind-readers here so we insist on e > w */
 		else if (p[0] > p[1]) {	/* Arrange so geographic region always has w < e */
 			if (GMT->current.io.geo.range == GMT_IS_M180_TO_P180_RANGE) p[0] -= 360.0; else p[1] += 360.0;
 			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning -R: Given west and east values [%g %g] were adjusted so west < east [%g %g]\n", w, e, p[0], p[1]);
 		}
+#endif
 	}
 	if (i < 4 || i > 6 || ((!GMT->common.R.oblique && GMT_check_region (GMT, p)) || (i == 6 && p[4] >= p[5]))) error++;
 	GMT_memcpy (GMT->common.R.wesn, p, 6, double);	/* This will probably be reset by GMT_map_setup */

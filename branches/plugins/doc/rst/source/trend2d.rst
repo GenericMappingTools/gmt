@@ -2,22 +2,21 @@
 trend2d
 *******
 
-trend2d - Fit a [weighted] [robust] polynomial model for z = f(x,y) to
-xyz[w] data
+trend2d - Fit a [weighted] [robust] polynomial model for z = f(x,y) to xyz[w] data
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**trend2d** [ *table* ] **-F**\ **xyzmrw** **-N**\ *n\_model*\ [**r**\ ]
-[ *xyz[w]file* ] [ **-C**\ *condition\_number* ] [
-**-I**\ [*confidence\_level*\ ] ] [ **-V**\ [*level*\ ] ] [ **-W** ] [
-**-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
-**-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
-**-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-:**\ [**i**\ \|\ **o**] ]
+**trend2d** [ *table* ] **-F**\ **xyzmrw** **-N**\ *n\_model*\ [**r**]
+[ *xyz[w]file* ] [ **-C**\ *condition\_number* ]
+[ **-I**\ [*confidence\_level*] ] [ |SYN_OPT-V| ] [ **-W** ] [
+[ |SYN_OPT-b| ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
@@ -32,8 +31,8 @@ number of terms in f(x,y) which significantly reduce the variance in z.
 n\_model may be in [1,10] to fit a model of the following form (similar
 to grdtrend):
 
-m1 + m2\*x + m3\*y + m4\*x\*y + m5\*x\*x + m6\*y\*y + m7\*x\*x\*x +
-m8\*x\*x\*y + m9\*x\*y\*y + m10\*y\*y\*y.
+  m1 + m2\*x + m3\*y + m4\*x\*y + m5\*x\*x + m6\*y\*y + m7\*x\*x\*x +
+  m8\*x\*x\*y + m9\*x\*y\*y + m10\*y\*y\*y.
 
 The user must specify **-N**\ *n\_model*, the number of model parameters
 to use; thus, **-N**\ *4* fits a bilinear trend, **-N**\ *6* a quadratic
@@ -134,7 +133,7 @@ number of terms in a model is not significant at a very high degree of
 confidence. For example, with 120 degrees of freedom, Chi-Squared must
 decrease by 26% or more to be significant at the 95% confidence level.
 If you want to keep iterating as long as Chi-Squared is decreasing, set
-*confidence\_level* to zero.
+*confidence_level* to zero.
 
 A low confidence limit (such as the default value of 0.51) is needed to
 make the robust method work. This method iteratively reweights the data
@@ -154,16 +153,22 @@ Examples
 
 To remove a planar trend from data.xyz by ordinary least squares, use:
 
-    trend2d data.xyz -Fxyr -N2 > detrended\_data.xyz
+   ::
+
+    gmt trend2d data.xyz -Fxyr -N2 > detrended_data.xyz
 
 To make the above planar trend robust with respect to outliers, use:
 
-    trend2d data.xzy -Fxyr -N2r > detrended\_data.xyz
+   ::
+
+    gmt trend2d data.xzy -Fxyr -N2r > detrended_data.xyz
 
 To find out how many terms (up to 10 in a robust interpolant are
 significant in fitting data.xyz, use:
 
-    trend2d data.xyz -N10r -I -V
+   ::
+
+    gmt trend2d data.xyz -N10r -I -V
 
 See Also
 --------

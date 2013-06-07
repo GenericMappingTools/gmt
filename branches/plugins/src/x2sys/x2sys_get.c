@@ -28,6 +28,7 @@
  */
 
 #define THIS_MODULE GMT_ID_X2SYS_GET /* I am x2sys_get */
+#define MODULE_USAGE "Get track listing from track index database"
 
 #include "x2sys.h"
 

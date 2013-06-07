@@ -24,8 +24,8 @@ R="-R$w/$e/$s/$n"
 
 # Lay down the basemap:
 
-gmt psbasemap $R -JX9i/6i -K -U"Example 21 in Cookbook" -Bsx1Y \
-   -Bpxa3Of1o -Bpy50+p"$ " -BWSen+t"RedHat (RHT) Stock Price Trend since IPO"+glightgreen > $ps
+gmt psbasemap $R -JX9i/6i -K -Bsx1Y -Bpxa3Of1o -Bpy50+p"$ " \
+	-BWSen+t"RedHat (RHT) Stock Price Trend since IPO"+glightgreen > $ps
 
 # Plot main window with open price as red line over yellow envelope of low/highs
 

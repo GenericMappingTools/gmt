@@ -4,24 +4,23 @@ ps2raster
 
 ps2raster - Convert [E]PS file(s) to other formats using GhostScript
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
-**ps2raster** *psfile(s)* [ **-A**\ [**u**\ [*margins*\ ]\|-] ] [
-**-C**\ *gs\_option* ] [ **-D**\ *outdir* ] [ **-E**\ *resolution* ] [
+**ps2raster** *psfile(s)* [ **-A**\ [**u**\ [*margins*]\|-] ] [
+**-C**\ *gs_option* ] [ **-D**\ *outdir* ] [ **-E**\ *resolution* ] [
 **-G**\ *ghost\_path* ] [ **-L**\ *listfile* ] [ **-P** ] [
 **-Q**\ [**g**\ \|\ **t**][1\|2\|4] ] [ **-S** ] [
-**-Tb**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **F**\ \|\ **j**\ \|\ **g**\ \|\ **G**\ \|\ **m**\ \|\ **t**
-] [ **-V** ] [
-**-W**\ [**+g**\ ][\ **+t**\ *docname*][\ **+n**\ *layername*][\ **+o**\ *foldername*][\ **+a**\ *altmode*\ [*alt*\ ]][\ **+l**\ *minLOD/maxLOD*][\ **+f**\ *minfade/maxfade*][\ **+u**\ *URL*]
-]
+**-Tb**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **F**\ \|\ **j**\ \|\ **g**\ \|\ **G**\ \|\ **m**\ \|\ **t** ]
+[ |SYN_OPT-V| ]
+[ **-W**\ [**+g**\ ][\ **+t**\ *docname*][\ **+n**\ *layername*][\ **+o**\ *foldername*][\ **+a**\ *altmode*\ [*alt*\ ]][\ **+l**\ *minLOD/maxLOD*][\ **+f**\ *minfade/maxfade*][\ **+u**\ *URL*] ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **ps2raster** converts one or more *PostScript* files to other formats
 (BMP, EPS, JPEG, PDF, PNG, PPM, TIFF) using GhostScript. Input file
@@ -32,8 +31,8 @@ may be computed first. As another option, it can compute ESRI type world
 files used to reference, for instance, tif files and make them be
 recognized as geotiff. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *psfiles*
     Names of *PostScript* files to be converted. The output files will
@@ -42,10 +41,10 @@ recognized as geotiff.
     jpeg format). Use **-D** to redirect the output to a different
     directory.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
-**-A**\ [**u**\ ][*margins*\ ][**-**\ ]
+**-A**\ [**u**\ ][*margins*\ ][**-**]
     Adjust the BoundingBox and HiResBoundingBox to the minimum required
     by the image content. Append **u** to first remove any GMT-produced
     time-stamps. Optionally, append extra margins to the bounding box.
@@ -53,20 +52,25 @@ recognized as geotiff.
     margins; append unit [Default is set by PROJ\_LENGTH\_UNIT].
     Alternatively, use **-A-** to override any automatic setting of
     **-A** by **-W**.
+
 **-C**\ *gs\_option*
     Specify a single, custom option that will be passed on to
     GhostScript as is. Repeat to add several options [none].
+
 **-D**\ *outdir*
     Sets an alternative output directory (which must exist) [Default is
     the same directory as the PS files]. Use **-D.** to place the output
     in the current directory instead.
+
 **-E**\ *resolution*
     Set raster resolution in dpi [default = 720 for PDF, 300 for others].
+
 **-F**
     Force the output file name. By default output names are constructed
     using the input names as base, which are appended with an
     appropriate extension. Use this option to provide a different name,
     but without extension. Extension is still determined automatically.
+
 **-G**\ *ghost\_path*
     Full path to your GhostScript executable. NOTE: For Unix systems
     this is generally not necessary. Under Windows, the ghostscript path
@@ -77,25 +81,29 @@ recognized as geotiff.
     cannot satisfy both the 32 and 64 bits ghostscript executable names.
     So in case of ’get from registry’ failure the default name (when no
     **-G** is used) is the one of the 64 bits version, or gswin64c
+
 **-L**\ *listfile*
     The *listfile* is an ASCII file with the names of the *PostScript*
     files to be converted.
+
 **-N**
     This option is obsolete. Use **-S** to print the GhostScript
-    command, if applicable. Use **-Te** to save the intermediate EPS
-    file.
+    command, if applicable. Use **-Te** to save the intermediate EPS file.
+
 **-P**
     Force Portrait mode. All Landscape mode plots will be rotated back
     so that they show unrotated in Portrait mode. This is practical when
     converting to image formats or preparing EPS or PDF plots for
     inclusion in documents.
+
 **-Q**\ [**g**\ \|\ **t**][1\|2\|4]
     Set the anti-aliasing options for **g**\ raphics or **t**\ ext.
     Append the size of the subsample box (1, 2, or 4) [4]. Default is no
     anti-aliasing (same as *bits* = 1).
+
 **-S**
-    Print to standard output the GhostScript command after it has been
-    executed.
+    Print to standard output the GhostScript command after it has been executed.
+
 **-Tb**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **F**\ \|\ **j**\ \|\ **g**\ \|\ **G**\ \|\ **m**\ \|\ **t**
     Sets the output format, where **b** means BMP, **e** means EPS,
     **E** means EPS with PageSize command, **f** means PDF, **F** means
@@ -128,7 +136,7 @@ recognized as geotiff.
     slightly off-white color.
 
     Together with **-V** it prints on screen the gdal\_translate
-    (gdal\_translate is a command line tool from the GDAL package)
+    (gdal_translate is a command line tool from the GDAL package)
     command that reads the raster + world file and creates a true
     geotiff file. Use **-W+g** to do a system call to gdal\_translate
     and create a geoTIFF image right away. The output file will have a
@@ -146,7 +154,7 @@ recognized as geotiff.
     customize the KML file in the form of **+**\ *opt* strings. Append
     **+t**\ *title* to set the document title [GMT KML Document],
     **+n**\ *layername* to set the layer name, and
-    **+a**\ */altmode*\ [*altitude*\ ] to select one of 5 altitude modes
+    **+a**\ */altmode*\ [*altitude*] to select one of 5 altitude modes
     recognized by Google Earth that determines the altitude (in m) of
     the image: **G** clamped to the ground, **g** append altitude
     relative to ground, **a** append absolute altitude, **s** append
@@ -173,13 +181,13 @@ recognized as geotiff.
     **ps2raster** requires by manually editing a line into the
     *PostScript* file, prefixed with %%PROJ.
 
-    For example the command **pscoast** **-JM0/12c** **-R**-10/-4/37/43
-    **-W1** **-Di** **-Bg30m** --MAP\_FRAME\_TYPE=inside > cara.ps
+    For example the command gmt pscoast -JM0/12c -R-10/-4/37/43
+    -W1 -Di -Bg30m --MAP_FRAME_TYPE=inside > cara.ps
 
     adds this comment line
 
     %%PROJ: merc -10.0 -4.0 37.0 43.0 -1113194.908 -445277.963
-    4413389.889 5282821.824 +proj=merc +lon\_0=0 +k=-1 +x\_0=0 +y\_0=0
+    4413389.889 5282821.824 +proj=merc +lon_0=0 +k=-1 +x_0=0 +y_0=0
     +a=6378137.0 +b=6356752.314245
 
     where ’merc’ is the keyword for the coordinate conversion; the 2 to
@@ -189,8 +197,8 @@ recognized as geotiff.
 
 .. include:: explain_help.rst_
 
-`Notes <#toc6>`_
-----------------
+Notes
+-----
 
 The conversion to raster images (BMP, JPEG, PNG, PPM or TIFF) inherently
 results in loss of details that are available in the original
@@ -224,60 +232,64 @@ See Appendix C of the **GMT Technical Reference and Cookbook** for more
 information on how **ps2raster** is used to produce graphics that can be
 inserted into other documents (articles, presentations, posters, etc.).
 
-`Examples <#toc7>`_
--------------------
+Examples
+--------
 
 To convert the file psfile.ps to PNG using a tight BoundingBox and
 rotating it back to normal orientation in case it was in Landscape mode:
 
-    ps2raster psfile.ps -A -P -Tg
+   ::
+
+    gmt ps2raster psfile.ps -A -P -Tg
 
 To create a 3 pages PDF file from 3 individual PS files
 
-    ps2raster -TF -Fabc a.ps b.ps c.ps
+   ::
+
+    gmt ps2raster -TF -Fabc a.ps b.ps c.ps
 
 To create a simple linear map with pscoast and convert it to tif with a
 .tfw the tight BoundingBox computation.
 
-    pscoast -JX12cd -R-10/-4/37/43 -W1 -Di -Bg30m -P -G200
-    --MAP\_FRAME\_TYPE=inside > cara.ps
+   ::
 
-    ps2raster cara -Tt -W
+    gmt pscoast -JX12cd -R-10/-4/37/43 -W1 -Di -Bg30m -P -G200 --MAP_FRAME_TYPE=inside > cara.ps
+    gmt ps2raster cara -Tt -W
 
 To create a Mercator version of the above example and use GDAL to
 produce a true geotiff file.
 
-    pscoast -JM0/12c -R-10/-4/37/43 -W1 -Di -Bg30m -P -G200
-    --MAP\_FRAME\_TYPE=inside > cara.ps
+   ::
 
-    gdalwarp -s\_srs +proj=merc cara.tif carageo.tiff
+    gmt pscoast -JM0/12c -R-10/-4/37/43 -W1 -Di -Bg30m -P -G200 --MAP_FRAME_TYPE=inside > cara.ps
+    gdalwarp -s_srs +proj=merc cara.tif carageo.tiff
 
 To create a Polar Stereographic geotiff file of Patagonia
 
-    pscoast -JS-55/-60/15c -R-77/-55/-57.5/-48r -Di -Gred -P -Bg2
-    --MAP\_FRAME\_TYPE=inside > patagonia.ps
+   ::
 
-    ps2raster patagonia.ps -Tt -W+g -V
+    gmt pscoast -JS-55/-60/15c -R-77/-55/-57.5/-48r -Di -Gred -P -Bg2 --MAP_FRAME_TYPE=inside > patagonia.ps
+    gmt ps2raster patagonia.ps -Tt -W+g -V
 
 To create a simple KMZ file for use in Google Earth, try
 
-    grdimage lonlatgrid.nc -Jx1 -Ccolors.cpt -P -B0g2
-    --MAP\_FRAME\_TYPE=inside > tile.ps
+   ::
 
-    ps2raster tile.ps -Tg -W+k+t"my title"+l256/-1 -V
+    gmt grdimage lonlatgrid.nc -Jx1 -Ccolors.cpt -P -B0g2 --MAP_FRAME_TYPE=inside > tile.ps
+    gmt ps2raster tile.ps -Tg -W+k+t"my title"+l256/-1 -V
 
 (These commands assume that GhostScript can be found in your system's path.)
 
-`Binary Data <#toc8>`_
-----------------------
+Binary Data
+-----------
 
 **GMT** programs can produce binary *PostScript* image data and this is
 determined by the default setting PS\_IMAGE\_FORMAT. Because
 **ps2raster** needs to process the input files on a line-by-line basis
 you need to make sure the image format is set to *ascii* and not *bin*.
 
-`Ghostscript Options <#toc9>`_
-------------------------------
+Ghostscript Options
+-------------------
 
 Most of the conversions done in **ps2raster** are handled by
 GhostScript. On most Unixes this program is available as **gs**; for
@@ -292,7 +304,7 @@ quality for scaled images at the expense of speed, use
 **-C**-dDOINTERPOLATE. See www.ghostscript.com for complete
 documentation.
 
-`See Also <#toc10>`_
---------------------
+See Also
+--------
 
 `gmt <gmt.html>`_

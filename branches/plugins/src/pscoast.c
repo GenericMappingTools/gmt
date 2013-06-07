@@ -52,6 +52,7 @@
  */
 
 #define THIS_MODULE GMT_ID_PSCOAST /* I am pscoast */
+#define MODULE_USAGE "Plot continents, countries, shorelines, rivers, and borders on maps"
 
 #include "gmt_dev.h"
 
@@ -452,11 +453,12 @@ int GMT_pscoast_parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct G
 	if (Ctrl->C.active && !(Ctrl->G.active || Ctrl->S.active || Ctrl->W.active)) {	/* Just lakes, fix -A */
 		if (Ctrl->A.info.low < 2) Ctrl->A.info.low = 2;
 	}
-
+	if (!GMT->common.R.active && Ctrl->F.active && Ctrl->M.active && !Ctrl->F.info.region) Ctrl->F.info.region = true;	/* For -M and -F with no plotting, get -R from pols */
 	if (!GMT->common.R.active && Ctrl->F.info.region) {	/* Must pick up region from chosen polygons */
 		(void) GMT_DCW_operation (GMT, &Ctrl->F.info, GMT->common.R.wesn, GMT_DCW_REGION);
 		GMT->common.R.active = true;
 	}
+
 	/* Check that the options selected are mutually consistent */
 
 	clipping = (Ctrl->G.clip || Ctrl->S.clip);

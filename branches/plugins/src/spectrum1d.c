@@ -37,6 +37,7 @@
  */
 
 #define THIS_MODULE GMT_ID_SPECTRUM1D /* I am spectrum1d */
+#define MODULE_USAGE "Compute auto- [and cross-] spectra from one [or two] timeseries"
 
 #include "gmt_dev.h"
 

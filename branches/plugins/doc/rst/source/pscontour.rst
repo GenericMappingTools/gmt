@@ -24,10 +24,12 @@ Synopsis
 [ |SYN_OPT-X| ] 
 [ |SYN_OPT-Y| ] 
 [ |SYN_OPT-b| ]
-[ **-c**\ *copies* ] [ |SYN_OPT-h| ]
+[ |SYN_OPT-c| ]
+[ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ] 
 [ |SYN_OPT-p| ] 
-[ |SYN_OPT-t| ] [ |SYN_OPT-:| ]
+[ |SYN_OPT-t| ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
@@ -201,7 +203,7 @@ map at 0.5 inch/degree along the standard parallels 18 and 24, use
 
    ::
 
-    pscontour topo.xyz -R320/330/20/30 -Jl18/24/0.5i -Ctopo.cpt -W0.5p > topo.ps
+    gmt pscontour topo.xyz -R320/330/20/30 -Jl18/24/0.5i -Ctopo.cpt -W0.5p > topo.ps
 
 To create a color *PostScript* plot of the numerical temperature
 solution obtained on a triangular mesh whose node coordinates and
@@ -210,19 +212,21 @@ file mesh.ijk, using the colors in temp.cpt, run
 
    ::
 
-    pscontour temp.xyz -R0/150/0/100 -Jx0.1i -Ctemp.cpt -G -W0.25p > temp.ps
+    gmt pscontour temp.xyz -R0/150/0/100 -Jx0.1i -Ctemp.cpt -G -W0.25p > temp.ps
 
 Bugs
 ----
 
 Sometimes there will appear to be thin lines of the wrong color in the
 image. This is a round-off problem which may be remedied by using a
-higher value of **PS\_DPI** in the `gmt.conf <gmt.conf.html>`_ file.
+higher value of **PS_DPI** in the `gmt.conf <gmt.conf.html>`_ file.
 
 To save the triangulated 100-m contour lines in topo.txt and separate
 them into multisegment files (one for each contour level), try
 
-pscontour topo.txt -C100 -Dcontours\_%.0f.txt
+   ::
+
+    gmt pscontour topo.txt -C100 -Dcontours_%.0f.txt
 
 See Also
 --------

@@ -22,6 +22,7 @@
  */
  
 #define THIS_MODULE GMT_ID_MGD77CONVERT /* I am mgd77convert */
+#define MODULE_USAGE "Convert MGD77 data to other file formats"
 
 #include "gmt_dev.h"
 #include "mgd77.h"

@@ -124,6 +124,7 @@
  */
  
 #define THIS_MODULE GMT_ID_HOTSPOTTER /* I am hotspotter */
+#define MODULE_USAGE "Create CVA image from seamount locations"
 
 #include "spotter.h"
 

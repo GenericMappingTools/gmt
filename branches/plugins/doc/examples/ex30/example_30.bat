@@ -10,7 +10,7 @@ echo GMT EXAMPLE 30
 set ps=example_30.ps
 gmt gmtset PS_CHAR_ENCODING	Standard+
 
-gmt psbasemap -R0/360/-1.25/1.75 -JX8i/6i -B90f30:,-\312:/1g10:."Two Trigonometric Functions":WS -K -U"Example 30 in Cookbook" --MAP_FRAME_TYPE=graph --MAP_VECTOR_SHAPE=0.5 > %ps%
+gmt psbasemap -R0/360/-1.25/1.75 -JX8i/6i -Bx90f30+u"\\312" -By1g10 -BWS+t"Two Trigonometric Functions" -K --MAP_FRAME_TYPE=graph --MAP_VECTOR_SHAPE=0.5 > %ps%
 
 REM Draw sine an cosine curves
 
@@ -57,7 +57,7 @@ echo 0.22 0.27 12p,Symbol -30 CB a >> tmp
 echo -0.33333 0.6 12p,Times-Roman 30 LB 120\312 >> tmp
 gmt pstext -R -J -O -K -Dj0.05i tmp -F+f+a+j >> %ps%
 
-echo 0 0 0 120 | gmt psxy -R -J -O -Sml1i -W1p -Gblack >> %ps%
+echo 0 0 0.5i 0 120 | gmt psxy -R -J -O -Sm0.15i+e -W1p -Gblack >> %ps%
 
 REM Clean up
 del .gmt*

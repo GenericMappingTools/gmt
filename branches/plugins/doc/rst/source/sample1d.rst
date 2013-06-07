@@ -4,27 +4,27 @@ sample1d
 
 sample1d - Resample 1-D table data using splines
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
-**sample1d** [ *table* ] [
-**-A**\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**\ ] ] [
-**-Fl**\ \|\ **a**\ \|\ **c**\ \|\ **n** ] [ **-I**\ *inc*\ [*unit*\ ] ]
+**sample1d** [ *table* ]
+[ **-A**\ **f**\ \|\ **p**\ \|\ **m**\ \|\ **r**\ \|\ **R**\ [**+l**] ]
+[ **-Fl**\ \|\ **a**\ \|\ **c**\ \|\ **n** ] [ **-I**\ *inc*\ [*unit*] ]
 [ **-N**\ *knotfile* ] [ **-S**\ *start*\ [/*stop*] ] [ **-T**\ *col* ]
-[ **-V**\ [*level*\ ] ] [
-**-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
-**-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
-] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-o**\ *cols*\ [,*...*] ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-b| ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-g| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-o| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **sample1d** reads a multi-column ASCII [or binary] data set from file
 [or standard input] and interpolates the timeseries/profile at locations
@@ -35,13 +35,13 @@ are resampled based on the new sampling interval. Several interpolation
 schemes are available. Extrapolation outside the range of the input data
 is not supported. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 None.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 *table*
     This is one or more ASCII [of binary, see
@@ -117,43 +117,53 @@ None.
 
 .. include:: explain_precision.rst_
 
-`Calendar Time Sampling <#toc8>`_
----------------------------------
+Calendar Time Sampling
+----------------------
 
 If the abscissa are calendar times then you must use the **-f** option
 to indicate this. Furthermore, **-I** then expects an increment in the
-current **TIME\_UNIT** units. There is not yet support for variable
+current **TIME_UNIT** units. There is not yet support for variable
 intervals such as months.
 
-`Examples <#toc9>`_
--------------------
+Examples
+--------
 
 To resample the file profiles.tdgmb, which contains
 (time,distance,gravity,magnetics,bathymetry) records, at 1km equidistant
 intervals using Akima’s spline, use
 
-    sample1d profiles.tdgmb -I1 -Fa -T1 > profiles\_equi\_d.tdgmb
+   ::
+
+    gmt sample1d profiles.tdgmb -I1 -Fa -T1 > profiles_equi_d.tdgmb
 
 To resample the file depths.dt at positions listed in the file
-grav\_pos.dg, using a cubic spline for the interpolation, use
+grav_pos.dg, using a cubic spline for the interpolation, use
 
-    sample1d depths.dt -Ngrav\_pos.dg -Fc > new\_depths.dt
+   ::
+
+    gmt sample1d depths.dt -Ngrav_pos.dg -Fc > new_depths.dt
 
 To resample the file track.txt which contains lon, lat, depth every 2
 nautical miles, use
 
-    sample1d track.txt -I2n -AR > new\_track.dt
+   ::
+
+    gmt sample1d track.txt -I2n -AR > new_track.dt
 
 To do approximately the same, but make sure the original points are
 included, use
 
-    sample1d track.txt -I2n -Af > new\_track.dt
+   ::
+
+    gmt sample1d track.txt -I2n -Af > new_track.dt
 
 To obtain a rhumb line (loxodrome) sampled every 5 km instead, use
 
-    sample1d track.txt -I5k -AR+l > new\_track.dt
+   ::
 
-`See Also <#toc10>`_
---------------------
+    gmt sample1d track.txt -I5k -AR+l > new_track.dt
+
+See Also
+--------
 
 `gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_, `filter1d <filter1d.html>`_

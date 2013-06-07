@@ -77,7 +77,6 @@
  *  gmt_xyz_to_lab          Convert CIELAB XYZ to LAB
  */
 
-#define GMT_WITH_NO_PS
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 
@@ -4260,7 +4259,8 @@ int GMT_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 		G->xp = GMT_make_profile (GMT, G->flag, G->option, G->do_interpolate, true, false, 0.0, GMT_TRACK_FILL, xyz);
 	}
 	else if (G->crossing == GMT_CONTOUR_XCURVE) {
-		G->xp = GMT_read_table (GMT, G->file, GMT_IS_FILE, false, false, false);
+		unsigned int geometry = GMT_IS_LINE;
+		G->xp = GMT_read_table (GMT, G->file, GMT_IS_FILE, false, &geometry, false);
 		for (k = 0; k < G->xp->n_segments; k++) {
 			for (i = 0; i < G->xp->segment[k]->n_rows; i++) {	/* Project */
 				GMT_geo_to_xy (GMT, G->xp->segment[k]->coord[GMT_X][i], G->xp->segment[k]->coord[GMT_Y][i], &x, &y);

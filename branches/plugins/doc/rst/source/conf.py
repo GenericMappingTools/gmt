@@ -13,6 +13,8 @@
 
 import sys, os
 
+sys.path.append(os.path.abspath('.'))
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
@@ -178,7 +180,7 @@ htmlhelp_basename = 'GMT5doc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'GMT5.tex', u'GMT5 Documentation',
+  ('GMT_Docs', 'GMT5.tex', u'GMT5 Documentation',
    u'GMT\\_TEAM', 'manual'),
 ]
 
@@ -227,11 +229,13 @@ import os
 man_pages = [] 
 for dirpath, dirnames, filenames in os.walk('.'): 
     for f in filenames: 
-        if f.endswith('.rst'): 
+        if f.endswith('.rst') and not f.startswith('B') and not f.startswith('C') and not f.startswith('F') \
+            and not f.startswith('G') and not f.startswith('I') and not f.startswith('K') and not f.startswith('M') \
+            and not f.startswith('N') and not f.startswith('P') and not f.startswith('T') and not f.startswith('S') \
+            and not f.startswith('X') and not f.startswith('index') and not f.startswith('api') and not f.startswith('cook'): 
             srcfile = os.path.normpath(os.path.join(dirpath, f[:-4])) 
             outfile = srcfile.replace(os.sep, '-') 
             outfile = outfile.replace('supplements-', '') 
-            outfile = outfile.replace('dbase-', '') 
             outfile = outfile.replace('gshhg-', '') 
             outfile = outfile.replace('imgsrc-', '') 
             outfile = outfile.replace('meca-', '') 

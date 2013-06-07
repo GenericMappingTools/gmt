@@ -25,6 +25,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GMTVECTOR /* I am gmtvector */
+#define MODULE_USAGE "Basic manipulation of Cartesian vectors"
 
 #include "gmt_dev.h"
 

@@ -2,6 +2,33 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-06-05	pwessel
+	* greenspline.c:	Improved the accuracy of the spherical spline in tension with
+				lots of help from Bob Parker, Scripps Inst. Oceanography.
+				Also added cubic spline interpolation rather than linear for
+				the lookup, and eliminated -SQ (-Sq does that instead now).
+
+2013-06-03	jluis
+	* grd2xyz.c:		Enhanced -N[i]<nodata> to replace grid values on output with NaN.
+
+2013-05-31	pwessel
+	* gmt_plot.c:		Did not check for map-jumping in GMT_plot_rectangle (psxy -SJ).
+	* meca/psvelo.c:	Did not honor the -N setting.
+
+2013-05-26	pwessel
+	* dbase/grdraster.c:	As generic tool it is now in the GMT core
+
+2013-05-25	pwessel
+	* pstext.c:		Added -F...+l|+h modifiers to select text from current
+				segment header instead of data record.
+
+2013-05-24	pwessel
+	* gmtsimplify.c:	The new name of the former gmtdp.c program; under GMT 4
+				compatibility we will still recognize gmtdp.
+	* sph/*.c:		These generic spherical tools are now in the GMT core.
+				Two new examples have been added to the suite.
+	* xgrid:		No longer in GMT5 since requires X11.
+
 2013-05-21	pwessel
 	* pscontour.c:		Added -St to skip triangles whose 3 vertices are outside domain;
 				in contrast, -S or -Sp skips all points outside domain before

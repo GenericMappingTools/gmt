@@ -18,7 +18,7 @@ echo 62 | gawk "{printf \"%%c\n\", $1}" > dateline.d
 echo 180 0 >> dateline.d
 echo 180 -90 >> dateline.d
 set R=-R100/200/-60/0
-gmt pscoast %R% -JM9i -K -Gtan -Sdarkblue -Wthin,white -Dl -A500 -Ba20f10g10WeSn -U"Example 24 in Cookbook" > %ps%
+gmt pscoast %R% -JM9i -K -Gtan -Sdarkblue -Wthin,white -Dl -A500 -Ba20f10g10 -BWeSn > %ps%
 gmt psxy -R -J -O -K oz_quakes.d -Sc0.05i -Gred >> %ps%
 gmt gmtselect oz_quakes.d -L1000k/dateline.d -Nk/s -C3000k/point.d -fg -R -Il | gmt psxy -R -JM -O -K -Sc0.05i -Ggreen >> %ps%
 echo {print $1, $2, 0, 2*$3, 2*$3} > awk.txt

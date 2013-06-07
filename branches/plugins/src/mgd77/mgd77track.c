@@ -22,6 +22,7 @@
  */
  
 #define THIS_MODULE GMT_ID_MGD77TRACK /* I am mgd77track */
+#define MODULE_USAGE "Plot track-line map of MGD77 cruises"
 
 #include "gmt_dev.h"
 #include "mgd77.h"

@@ -76,8 +76,8 @@
 # Enable file locking [FALSE]:
 #set (FLOCK TRUE)
 
-# Enable building of static library [FALSE]:
-#set (BUILD_SHARED_LIBS false)
+# Enable building of shared libraries [TRUE] (uncomment to use static libraries):
+#set (BUILD_SHARED_LIBS FALSE)
 
 # Install convenience links for GMT modules [FALSE]:
 #set (INSTALL_MODULE_LINKS TRUE)
@@ -91,7 +91,7 @@
 ##
 
 # Install monolithic tree instead of distribution type layout (doc and share
-# separated) [on]:
+# separated) [ON]:
 #set (GMT_INSTALL_MONOLITHIC OFF)
 
 # Set install name suffix used for directories and main gmt executable
@@ -139,7 +139,7 @@
 #set (N_TEST_JOBS 4)
 
 # Enable this option to run GMT programs from within ${GMT_BINARY_DIR} without
-# installing or setting GMT_SHAREDIR and GMT_USERDIR first [unset]:
+# installing or setting GMT_SHAREDIR and GMT_USERDIR first [OFF]:
 #set (SUPPORT_EXEC_IN_BINARY_DIR ON)
 
 # Set build type can be: empty, Debug, Release, RelWithDebInfo or MinSizeRel [Release]:

@@ -338,6 +338,7 @@ int GMT_set_levels (struct GMT_CTRL *GMT, char *info, struct GMT_SHORE_SELECT *I
 	if ((p = strstr (info, "+p"))) {	/* Requested percentage limit on small features */
 		I->fraction = irint (1e6 * 0.01 * atoi (&p[2]));	/* Convert to integer microfraction */
 	}
+	if (info[0] == '+') return (GMT_OK);	/* No area, etc, just modifiers that we just processed */
 	n = sscanf (info, "%lf/%d/%d", &I->area, &I->low, &I->high);
 	if (n == 0) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -A option: No area given\n");

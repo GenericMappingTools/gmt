@@ -27,6 +27,7 @@
  */
  
 #define THIS_MODULE GMT_ID_GRDMASK /* I am grdmask */
+#define MODULE_USAGE "Create mask grid from polygons or point coverage"
 
 #include "gmt_dev.h"
 

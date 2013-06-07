@@ -27,6 +27,7 @@
  */
 
 #define THIS_MODULE GMT_ID_PSCLIP /* I am psclip */
+#define MODULE_USAGE "Initialize or terminate polygonal clip paths"
 
 #include "gmt_dev.h"
 

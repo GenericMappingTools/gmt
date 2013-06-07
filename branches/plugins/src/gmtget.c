@@ -24,8 +24,8 @@
  *
  */
  
-#define GMT_WITH_NO_PS
 #define THIS_MODULE GMT_ID_GMTGET /* I am gmtget */
+#define MODULE_USAGE "Get individual GMT default parameters"
 
 #include "gmt_dev.h"
 

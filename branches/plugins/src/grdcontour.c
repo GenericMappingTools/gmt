@@ -26,6 +26,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GRDCONTOUR /* I am grdcontour */
+#define MODULE_USAGE "Make contour map using a grid"
 
 #include "gmt_dev.h"
 

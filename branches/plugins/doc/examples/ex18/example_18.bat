@@ -24,14 +24,14 @@ gmt makecpt -Crainbow -T-60/60/120 -Z > grav.cpt
 gmt grdgradient AK_gulf_grav.nc -Nt1 -A45 -GAK_gulf_grav_i.nc
 gmt grdimage AK_gulf_grav.nc -IAK_gulf_grav_i.nc -JM5.5i -Cgrav.cpt -B2f1 -P -K -X1.5i -Y5.85i > %ps%
 gmt pscoast -RAK_gulf_grav.nc -J -O -K -Di -Ggray -Wthinnest >> %ps%
-gmt psscale -D2.75i/-0.4i/4i/0.15ih -Cgrav.cpt -B20f10/:mGal: -O -K >> %ps%
+gmt psscale -D2.75i/-0.4i/4i/0.15ih -Cgrav.cpt -Bx20f10 -By+l"mGal" -O -K >> %ps%
 echo {print $1, $2, "Pratt"} > t
 gawk -f t pratt.d | gmt pstext -R -J -O -K -D0.1i/0.1i -F+f12p,Helvetica-Bold+jLB >> %ps%
 gawk "{print $1, $2, 0, 400, 400}" pratt.d | gmt psxy -R -J -O -K -SE -Wthinnest >> %ps%
 
 REM Then draw 10 mGal contours and overlay 50 mGal contour in green
 
-gmt grdcontour AK_gulf_grav.nc -J -C20 -B2f1WSEn -O -K -Y-4.85i -UL/-1.25i/-0.75i/"Example 18 in Cookbook" >> %ps%
+gmt grdcontour AK_gulf_grav.nc -J -C20 -B2f1 -BWSEn -O -K -Y-4.85i >> %ps%
 REM Save 50 mGal contours to individual files, then plot them
 gmt grdcontour AK_gulf_grav.nc -C10 -L49/51 -Dsm_%%d_%%c.txt
 gmt psxy -R -J -O -K -Wthin,green sm_*.txt >> %ps%

@@ -36,7 +36,7 @@ REM The next step is the plotting of the image.
 REM We use gmt grdview to plot the topography, euflag.nc to give the color, and illum.nc to give the shading.
 
 set Rplot=%Rflag%/-10/790
-gmt grdview topo.nc -JM13c %Rplot% -Ceuflag.cpt -Geuflag.nc -Iillum.nc -Qc -JZ1c -p157.5/30 -P -K -U"Example 32 in Cookbook" > %ps%
+gmt grdview topo.nc -JM13c %Rplot% -Ceuflag.cpt -Geuflag.nc -Iillum.nc -Qc -JZ1c -p157.5/30 -P -K > %ps%
 
 REM We now add borders. Because we have a 3-D plot, we want them to be plotted "at elevation".
 REM So we write out the borders, pipe them through grdtrack and then plot them with psxyz.
@@ -50,7 +50,7 @@ echo 05:41:27 50:51:05 Maastricht  > cities.txt
 echo 04:21:00 50:51:00 Bruxelles  >> cities.txt
 echo 07:07:03 50:43:09 Bonn       >> cities.txt
 
-gmt grdtrack -Gtopo.nc -sa cities.txt | gmt gmt psxyz -i0,1,3 %Rplot% -J -JZ -p -Sc7p -W1p,white -Gred -K -O >> %ps%
+gmt grdtrack -Gtopo.nc -sa cities.txt | gmt psxyz -i0,1,3 %Rplot% -J -JZ -p -Sc7p -W1p,white -Gred -K -O >> %ps%
 gmt pstext %Rplot% -J -JZ -p -F+f12p,Helvetica-Bold,red+jRM -Dj0.1i/0.0i -O cities.txt >> %ps%
 
 REM Cleanup

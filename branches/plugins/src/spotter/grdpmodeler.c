@@ -25,6 +25,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GRDPMODELER /* I am grdpmodeler */
+#define MODULE_USAGE "Evaluate a plate model on a geographic grid"
 
 #include "spotter.h"
 

@@ -30,6 +30,7 @@
 #define BLOCKMODE	/* Since mean, median, mode share near-similar macros we require this setting */
 
 #define THIS_MODULE GMT_ID_BLOCKMODE /* I am blockmode */
+#define MODULE_USAGE "Block average (x,y,z) data tables by mode estimation"
 
 #include "gmt_dev.h"
 #include "block_subs.h"

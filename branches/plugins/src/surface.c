@@ -40,6 +40,7 @@
  */
 
 #define THIS_MODULE GMT_ID_SURFACE /* I am surface */
+#define MODULE_USAGE "Grid table data using adjustable tension continuous curvature splines"
 
 #include "gmt_dev.h"
 

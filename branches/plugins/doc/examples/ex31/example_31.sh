@@ -33,8 +33,8 @@ MAP_ANNOT_OBLIQUE 42
 
 # map of countries
 gmt pscoast -Dl -R-7/31/64/66/r -JL15/50/40/60/16c -P \
--Bx10g10 -By5g5 -B+t"Europe\072 Countries and Capital Cities" -A250 \
--U"Example 31 in Cookbook" -Slightblue -Glightgreen -W0.25p -N1/1p,white -K > $ps
+	-Bx10g10 -By5g5 -B+t"Europe\072 Countries and Capital Cities" -A250 \
+	-Slightblue -Glightgreen -W0.25p -N1/1p,white -K > $ps
 
 # mark capitals
 gmt psxy europe-capitals-ru.csv -R -J -i0,1 \

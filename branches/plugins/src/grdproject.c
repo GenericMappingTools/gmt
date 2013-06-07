@@ -27,6 +27,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GRDPROJECT /* I am grdproject */
+#define MODULE_USAGE "Forward and inverse map transformation of grids"
 
 #include "gmt_dev.h"
 

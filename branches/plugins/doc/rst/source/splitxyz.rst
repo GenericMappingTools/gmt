@@ -10,15 +10,15 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **splitxyz** [ *table* ] **-C**\ *course_change*
-[ **-A**\ *azimuth*/*tolerance* ] [ **-D**\ *minimum\_distance* ]
+[ **-A**\ *azimuth*/*tolerance* ] [ **-D**\ *minimum_distance* ]
 [ **-F**\ *xy\_filter*/*z\_filter* ] [ **-N**\ *template* ]
 [ **-Q**\ *flags* ] [ **-S** ] [ |SYN_OPT-V| ] [ **-Z** ]
-[ **-b**\ [*ncol*][**t**][\ **+L**\ \|\ **+B**] ]
-[ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ]
+[ |SYN_OPT-b| ]
+[ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
-[ **-h**\ [**i**\ \|\ **o**][*n*] ]
+[ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
-[ **-:**\ [**i**\ \|\ **o**] ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
@@ -119,8 +119,8 @@ Optional Arguments
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
-    Do not let a segment have a gap exceeding *gap*; instead, split it into two segments. [Default ignores gaps]. 
+.. |Add_-g| replace:: Do not let a segment have a gap exceeding *gap*; instead, split it into two segments. [Default ignores gaps]. 
+.. include:: explain_-g.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
@@ -133,8 +133,8 @@ Optional Arguments
 
 .. include:: explain_precision.rst_
 
-`Distance Calculations <#toc7>`_
---------------------------------
+Distance Calculations
+---------------------
 
 The type of input data is dictated by the **-f** option. If **-fg** is
 given then x,y are in degrees of longitude, latitude, distances are in
@@ -150,9 +150,11 @@ region **-R**\ 300/315/12/20. You want to use a 100km low-pass filter to
 smooth the tracks and a 500km high-pass filter to detrend the magnetic
 anomalies. Try this:
 
-    gmtlist cag71 -R300/315/12/20 -Fxyzdh \| splitxyz -A90/15 -F100/-500
-    -D100 -S -V -fg \| pswiggle -R300/315/12/20 -Jm0.6 -Ba5f1:.cag71: -T1
-    -W0.75p -Ggray -Z200 > cag71\_wiggles.ps
+   ::
+
+    gmt gmtlist cag71 -R300/315/12/20 -Fxyzdh | gmt splitxyz -A90/15 -F100/-500 \
+        -D100 -S -V -fg | gmt pswiggle -R300/315/12/20 -Jm0.6 -Ba5f1:.cag71: -T1 \
+        -W0.75p -Ggray -Z200 > cag71_wiggles.ps
 
 MGD-77 users: For this application we recommend that you extract d, h
 from `mgd77list <./supplements/mgd77/mgd77list.html>`__ rather than have **splitxyz** compute them
@@ -160,10 +162,11 @@ separately.
 
 Suppose you have been given a binary, double-precision file containing
 lat, lon, gravity values from a survey, and you want to split it into
-profiles named *survey*\ \_\ *###.txt* (when gap exceeds 100 km). Try
-this:
+profiles named *survey*\ \_\ *###.txt* (when gap exceeds 100 km). Try this:
 
-    splitxyz survey.bin -Nsurvey\_%03d.txt -V -gd100k -D100 -: -fg -bi3d
+   ::
+
+    gmt splitxyz survey.bin -Nsurvey_%03d.txt -V -gd100k -D100 -: -fg -bi3d
 
 See Also
 --------

@@ -15,16 +15,17 @@ Synopsis
 [ **-T**\ **a**\ \|\ **d**\ \|\ **D**\ \|\ **p**\ *az*\ \|\ **r**\ [*arg*\ \|\ **s**\ \|\ **x**] ] 
 [ |SYN_OPT-V| ]
 [ **-bi**\ [*ncols*][*type*] ] 
-[ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] 
+[ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
-[ **-o**\ *cols*\ [,*...*] ] [ **-:**\ [**i**\ \|\ **o**] ]
+[ |SYN_OPT-o| ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **gmtvector** reads either (x, y), (x, y, z), (r, theta) or (lon, lat)
 [or (lat,lon); see **-:**] coordinates from the first 2-3 columns on
@@ -41,13 +42,13 @@ require a single second vector, provided via **-S**. The output vectors
 will be converted back to (lon, lat) or (r, theta) unless **-Co** is set
 which requests (x, y[, z]) Cartesian coordinates. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 None.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 *table*
     One or more ASCII [or binary, see **-bi**\ [*ncols*\ ][*type*\ ]]
@@ -81,7 +82,7 @@ None.
     Normalize the resultant vectors prior to reporting the output [No
     normalization]. This only has an effect if **-Co** is selected.
 
-**-S**\ [*vector*\ ]
+**-S**\ [*vector*]
     Specify a single, secondary vector in the same format as the first
     vector. Required by operations in **-T** that need two vectors
     (average, bisector, dot product, cross product, and sum).
@@ -131,34 +132,48 @@ Suppose you have a file with lon, lat called points.txt. You want to
 compute the spherical angle between each of these points and the
 location 133/34. Try
 
+   ::
+
     gmtvector points.txt -S133/34 -TD -fg > angles.txt
 
 To rotate the same points 35 degrees around a pole at 133/34, and output
 Cartesian 3-D vectors, use
+
+   ::
 
     gmtvector points.txt -Tr133/34 -Co -fg > reconstructed.txt
 
 To compute the cross-product between the two Cartesian vectors 0.5/1/2
 and 1/0/0.4, and normalizing the result, try
 
+   ::
+
     gmtvector -A0.5/1/2 -Tx -S1/0/0.4 -N -C > cross.txt
 
 To rotate the 2-D vector, given in polar form as r = 2 and theta = 35,
 by an angle of 120, try
 
+   ::
+
     gmtvector -A2/35 -Tr120 > rotated.txt
 
 To find the mid-point along the great circle connecting the points 123/35 and -155/-30, use
+
+   ::
 
     gmtvector -A123/35 -S-155/-30 -Ta -fg > midpoint.txt
 
 To find the mean location of the geographical points listed in
 points.txt, with its 99% confidence ellipse, use
 
+   ::
+
     gmtvector points.txt -Am99 -fg > centroid.txt
 
 To find the pole corresponding to the great circle that goes through
 the point -30/60 at an azimuth of 105 degrees, use
+
+   ::
 
     gmtvector -A-30/60 -Tp105 -fg > pole.txt
 

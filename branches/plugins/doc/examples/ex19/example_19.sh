@@ -33,7 +33,7 @@ gmt psimage -C3.25i/1.625i/CM -W3i GMT_covertext.eps -O -K >> $ps
 
 # Finally repeat 1st plot but exchange the patterns
 
-gmt grdimage lon.nc -J -Clon.cpt -O -K -Y-3.25i -B0 -U"Example 19 in Cookbook" -nl >> $ps
+gmt grdimage lon.nc -J -Clon.cpt -O -K -Y-3.25i -B0 -nl >> $ps
 gmt pscoast -R -J -O -K -Dc -A5000 -Gc >> $ps
 gmt grdimage lat.nc -J -Clat.cpt -O -K -nl >> $ps
 gmt pscoast -R -J -O -K -Q >> $ps

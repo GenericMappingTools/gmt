@@ -27,6 +27,7 @@
  */
  
 #define THIS_MODULE GMT_ID_GRDLANDMASK /* I am grdlandmask */
+#define MODULE_USAGE "Create a \"wet-dry\" mask grid from shoreline data base"
 
 #include "gmt_dev.h"
 

@@ -25,7 +25,7 @@
 
 #include "gmt_dev.h"
 
-/* sorted array with program paramerters for all GMT modules */
+/* sorted array with program parameters for all GMT modules */
 struct Gmt_moduleinfo g_module[] = {
 	{"backtracker", "spotter", "Generate forward and backward flowlines and hotspot tracks", &GMT_backtracker},
 	{"blockmean", "core", "Block average (x,y,z) data tables by L2 norm", &GMT_blockmean},
@@ -38,13 +38,13 @@ struct Gmt_moduleinfo g_module[] = {
 	{"gmt2kml", "core", "Convert GMT data tables to KML files for Google Earth", &GMT_gmt2kml},
 	{"gmtconvert", "core", "Convert, paste, or extract columns from data tables", &GMT_gmtconvert},
 	{"gmtdefaults", "core", "List current GMT default parameters", &GMT_gmtdefaults},
-	{"gmtdp", "core", "Line reduction using the Douglas-Peucker algorithm", &GMT_gmtdp},
 	{"gmtget", "core", "Get individual GMT default parameters", &GMT_gmtget},
 	{"gmtgravmag3d", "potential", "Compute the gravity/magnetic anomaly of a body by the method of Okabe", &GMT_gmtgravmag3d},
 	{"gmtmath", "core", "Reverse Polish Notation (RPN) calculator for data tables", &GMT_gmtmath},
 	{"gmtread", "core", "Read from file into memory location [API only]", &GMT_gmtread},
 	{"gmtselect", "core", "Select data table subsets based on multiple spatial criteria", &GMT_gmtselect},
 	{"gmtset", "core", "Change individual GMT default parameters", &GMT_gmtset},
+	{"gmtsimplify", "core", "Line reduction using the Douglas-Peucker algorithm", &GMT_gmtsimplify},
 	{"gmtspatial", "core", "Do geospatial operations on lines and polygons", &GMT_gmtspatial},
 	{"gmtstitch", "core", "Join individual lines whose end points match within tolerance", &GMT_gmtstitch},
 	{"gmtvector", "core", "Basic manipulation of Cartesian vectors", &GMT_gmtvector},
@@ -72,7 +72,7 @@ struct Gmt_moduleinfo g_module[] = {
 	{"grdpaste", "core", "Join two grids along their common edge", &GMT_grdpaste},
 	{"grdpmodeler", "spotter", "Evaluate a plate model on a geographic grid", &GMT_grdpmodeler},
 	{"grdproject", "core", "Forward and inverse map transformation of grids", &GMT_grdproject},
-	{"grdraster", "dbase", "Extract subregion from a binary raster and save as a GMT grid", &GMT_grdraster},
+	{"grdraster", "core", "Extract subregion from a binary raster and save as a GMT grid", &GMT_grdraster},
 	{"grdredpol", "potential", "Compute the Continuous Reduction To the Pole, AKA differential RTP", &GMT_grdredpol},
 	{"grdreformat", "core", "Convert between different grid formats", &GMT_grdreformat},
 	{"grdrotater", "spotter", "Finite rotation reconstruction of geographic grid", &GMT_grdrotater},
@@ -103,7 +103,7 @@ struct Gmt_moduleinfo g_module[] = {
 	{"nearneighbor", "core", "Grid table data using a \"Nearest neighbor\" algorithm", &GMT_nearneighbor},
 	{"originator", "spotter", "Associate seamounts with nearest hotspot point sources", &GMT_originator},
 	{"project", "core", "Project table data onto lines or great circles, generate tracks, or translate coordinates", &GMT_project},
-	{"ps2raster", "core", "Convert [E]PS file(s) to other formats using GhostScript.", &GMT_ps2raster},
+	{"ps2raster", "core", "Convert [E]PS file(s) to other formats using GhostScript", &GMT_ps2raster},
 	{"psbasemap", "core", "Plot PostScript base maps", &GMT_psbasemap},
 	{"psclip", "core", "Initialize or terminate polygonal clip paths", &GMT_psclip},
 	{"pscoast", "core", "Plot continents, shorelines, rivers, and borders on maps", &GMT_pscoast},
@@ -129,9 +129,9 @@ struct Gmt_moduleinfo g_module[] = {
 	{"segy2grd", "segy", "Converting SEGY data to a GMT grid", &GMT_segy2grd},
 	{"spectrum1d", "core", "Compute auto- [and cross-] spectra from one [or two] timeseries", &GMT_spectrum1d},
 	{"sph2grd", "core", "Compute grid from spherical harmonic coefficients", &GMT_sph2grd},
-	{"sphdistance", "sph", "Make grid of distances to nearest points on a sphere", &GMT_sphdistance},
-	{"sphinterpolate", "sph", "Spherical gridding in tension of data on a sphere", &GMT_sphinterpolate},
-	{"sphtriangulate", "sph", "Delaunay or Voronoi construction of spherical lon,lat data", &GMT_sphtriangulate},
+	{"sphdistance", "core", "Make grid of distances to nearest points on a sphere", &GMT_sphdistance},
+	{"sphinterpolate", "core", "Spherical gridding in tension of data on a sphere", &GMT_sphinterpolate},
+	{"sphtriangulate", "core", "Delaunay or Voronoi construction of spherical lon,lat data", &GMT_sphtriangulate},
 	{"splitxyz", "core", "Split xyz[dh] data tables into individual segments", &GMT_splitxyz},
 	{"surface", "core", "Grid table data using adjustable tension continuous curvature splines", &GMT_surface},
 	{"trend1d", "core", "Fit a [weighted] [robust] polynomial [or Fourier] model for y = f(x) to xy[w] data", &GMT_trend1d},
@@ -150,6 +150,48 @@ struct Gmt_moduleinfo g_module[] = {
 	{"xyz2grd", "core", "Convert data table to a grid file", &GMT_xyz2grd},
 	{NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */
 };
+
+/* sorted array with shorter aliases for modules starting with "gmt" */
+struct Gmt_alias gmt_alias[] =
+{	/* Alias:	Full name */
+	{"2kml", 	"gmt2kml"},
+	{"convert",	"gmtconvert"},
+	{"defaults",	"gmtdefaults"},
+	{"get",		"gmtget"},
+	{"math",	"gmtmath"},
+	{"select",	"gmtselect"},
+	{"set",		"gmtset"},
+	{"simplify",	"gmtsimplify"},
+	{"spatial",	"gmtspatial"},
+	{"stitch",	"gmtstitch"},
+	{"vector",	"gmtvector"},
+	{"which",	"gmtwhich"},
+	{NULL,		NULL}
+};
+
+/* sorted array with replacement names for some modules */
+struct Gmt_alias gmt_oldname[] =
+{	/* Old:		New: */
+	{"gmtdp",	"gmtsimplify"},
+	{NULL,		NULL}
+};
+
+/* Look out for modules given by their aliases */
+const char * gmt_formal_name (struct GMTAPI_CTRL *API, const char *module) {
+	int i = 0;
+	while (gmt_alias[i].alias != NULL) {
+		if (!strcmp (module, gmt_alias[i].alias)) return gmt_alias[i].name;
+		i++;
+	}
+	if (GMT_compat_check (API->GMT, 4)) {
+		i = 0;
+		while (gmt_oldname[i].alias != NULL) {
+			if (!strcmp (module, gmt_oldname[i].alias)) return gmt_oldname[i].name;
+			i++;
+		}
+	}
+	return module;
+}
 
 /* Pretty print all module names and their purposes */
 void gmt_module_show_all(struct GMTAPI_CTRL *API) {
@@ -180,12 +222,13 @@ void gmt_module_show_name_and_purpose(struct GMTAPI_CTRL *API, enum GMT_MODULE_I
 }
 
 /* Lookup module id by name */
-enum GMT_MODULE_ID gmt_module_lookup (const char *candidate) {
+enum GMT_MODULE_ID gmt_module_lookup (struct GMTAPI_CTRL *API, const char *candidate) {
 	enum GMT_MODULE_ID module_id = 0; /* Module ID */
+	const char *actual_name = gmt_formal_name (API, candidate);
 
-	/* Match candidate against g_module[module_id].name */
+	/* Match actual_name against g_module[module_id].name */
 	while ( g_module[module_id].name != NULL &&
-			strcmp (candidate, g_module[module_id].name) )
+			strcmp (actual_name, g_module[module_id].name) )
 		++module_id;
 
 	/* Return matching Module ID or GMT_ID_NONE */

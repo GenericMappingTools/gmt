@@ -33,6 +33,7 @@
 /* #define DEBUGX */	/* Uncomment for testing */
 
 #define THIS_MODULE GMT_ID_X2SYS_SOLVE /* I am x2sys_solve */
+#define MODULE_USAGE "Determine least-squares systematic correction from crossovers"
 
 #include "x2sys.h"
 

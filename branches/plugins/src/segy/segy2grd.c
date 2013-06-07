@@ -26,6 +26,7 @@
  */
  
 #define THIS_MODULE GMT_ID_SEGY2GRD /* I am segy2grd */
+#define MODULE_USAGE "Converting SEGY data to a GMT grid"
 
 #include "gmt_dev.h"
 #include "segy_io.h"

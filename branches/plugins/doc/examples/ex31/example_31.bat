@@ -21,7 +21,7 @@ REM common settings
 gmt gmtset FORMAT_GEO_MAP ddd:mm:ssF MAP_DEGREE_SYMBOL colon MAP_TITLE_OFFSET 20p MAP_GRID_CROSS_SIZE_PRIMARY 0.4c PS_LINE_JOIN round PS_CHAR_ENCODING ISO-8859-1 FONT LinBiolinumO FONT_TITLE 24p,LinLibertineOB MAP_ANNOT_OBLIQUE 42
 
 REM map of countries
-gmt pscoast -Dl -R-7/31/64/66/r -JL15/50/40/60/16c -P -B10g10/5g5:."Europe\072 Countries and Capital Cities": -A250 -U"Example 31 in Cookbook" -Slightblue -Glightgreen -W0.25p -N1/1p,white -K > %ps%
+gmt pscoast -Dl -R-7/31/64/66/r -JL15/50/40/60/16c -P -Bx10g10 -By5g5 -B+t"Europe\072 Countries and Capital Cities" -A250 -Slightblue -Glightgreen -W0.25p -N1/1p,white -K > %ps%
 
 REM mark capitals
 gmt psxy europe-capitals.csv -R -J -i0,1 -Sc0.15c -G196/80/80 -O -K >> %ps%
@@ -54,7 +54,7 @@ REM reduce annotation font size for legend
 gmt gmtset FONT_ANNOT_PRIMARY 8p
 
 REM plot legend
-gmt pslegend -R -J -Dx7.9c/12.6c/8.0c/3.4c/BL -C0.3c/0.4c -L1.2 -F+p+fwhite -O legend.txt >> %ps%
+gmt pslegend -R -J -Dx7.9c/12.6c/8.0c/3.4c/BL -C0.3c/0.4c -L1.2 -F+p+gwhite -O legend.txt >> %ps%
 
 REM make a PostScript and a PDF file with outlined fonts
 REM unfortunately gmt ps2raster won't be able to crop that file correctly anymore

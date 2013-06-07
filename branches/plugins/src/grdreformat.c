@@ -24,6 +24,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GRDREFORMAT /* I am grdreformat */
+#define MODULE_USAGE "Convert between different grid formats"
 
 #include "gmt_dev.h"
 

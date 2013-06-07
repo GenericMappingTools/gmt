@@ -33,6 +33,7 @@
  */
  
 #define THIS_MODULE GMT_ID_MGD77LIST /* I am mgd77list */
+#define MODULE_USAGE "Extract data from MGD77 files"
 
 #include "gmt_dev.h"
 #include "mgd77.h"

@@ -28,6 +28,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GMTSTITCH /* I am gmtstitch */
+#define MODULE_USAGE "Join individual lines whose end points match within tolerance"
 
 #include "gmt_dev.h"
 

@@ -33,6 +33,7 @@
  */
 
 #define THIS_MODULE GMT_ID_TREND2D /* I am trend2d */
+#define MODULE_USAGE "Fit a [weighted] [robust] polynomial for z = f(x,y) to xyz[w] data"
 
 #include "gmt_dev.h"
 

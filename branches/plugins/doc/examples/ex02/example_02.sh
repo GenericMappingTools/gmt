@@ -10,7 +10,7 @@ ps=example_02.ps
 gmt gmtset FONT_TITLE 30p MAP_ANNOT_OBLIQUE 0
 gmt makecpt -Crainbow -T-2/14/2 > g.cpt
 gmt grdimage HI_geoid2.nc -R160/20/220/30r -JOc190/25.5/292/69/4.5i -E50 -K -P \
-	-UL/-1.25i/-1i/"Example 2 in Cookbook" -B10 -Cg.cpt -X1.5i -Y1.25i > $ps
+	-B10 -Cg.cpt -X1.5i -Y1.25i > $ps
 gmt psscale -Cg.cpt -D5.1i/1.35i/2.88i/0.4i -O -K -Ac -Bx2+lGEOID -By+lm -E >> $ps
 gmt grd2cpt HI_topo2.nc -Crelief -Z > t.cpt
 gmt grdgradient HI_topo2.nc -A0 -Nt -GHI_topo2_int.nc

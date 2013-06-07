@@ -30,6 +30,7 @@
 #define BLOCKMEDIAN	/* Since mean, median, mode share near-similar macros we require this setting */
 
 #define THIS_MODULE GMT_ID_BLOCKMEDIAN /* I am blockmedian */
+#define MODULE_USAGE "Block average (x,y,z) data tables by L1 norm (spatial median)"
 
 #include "gmt_dev.h"
 #include "block_subs.h"

@@ -9,6 +9,8 @@
 # Run this script after adding a new GMT module and updating the file
 # gmt_moduleinfo.txt in order to generate the three files:
 # gmt_module.h, gmt_module_private.h and gmt_module.c.
+# Any new aliases or namechanges (with backwards compabitility)
+# should be added below to the gmt_alias[] and gmt_oldname[] arrays.
 #
 # Note: gmt_module.h, gmt_module_private.h and gmt_module.c are in svn
 #
@@ -87,7 +89,12 @@ struct Gmt_moduleinfo {
 	int (*p_func)(void*, int, void*);
 };
 
-/* external array with program paramerters for all GMT modules */
+struct Gmt_alias {
+	const char *alias;
+	const char *name;
+};
+
+/* external array with program parameters for all GMT modules */
 EXTERN_MSC struct Gmt_moduleinfo g_module[];
 
 EOF
@@ -146,7 +153,7 @@ EXTERN_MSC void gmt_module_show_all(struct GMTAPI_CTRL *API);
 EXTERN_MSC void gmt_module_show_name_and_purpose(struct GMTAPI_CTRL *API, enum GMT_MODULE_ID module);
 
 /* Lookup module id by name */
-EXTERN_MSC enum GMT_MODULE_ID gmt_module_lookup (const char *candidate);
+EXTERN_MSC enum GMT_MODULE_ID gmt_module_lookup (struct GMTAPI_CTRL *API, const char *candidate);
 
 /* Get module name */
 EXTERN_MSC const char *gmt_module_name (struct GMT_CTRL *gmt_ctrl);
@@ -190,7 +197,7 @@ cat << EOF > ${FILE_GMT_MODULE_C}
 
 #include "gmt_dev.h"
 
-/* sorted array with program paramerters for all GMT modules */
+/* sorted array with program parameters for all GMT modules */
 struct Gmt_moduleinfo g_module[] = {
 EOF
 
@@ -206,6 +213,48 @@ gawk '
 cat << EOF >> ${FILE_GMT_MODULE_C}
 	{NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */
 };
+
+/* sorted array with shorter aliases for modules starting with "gmt" */
+struct Gmt_alias gmt_alias[] =
+{	/* Alias:	Full name */
+	{"2kml", 	"gmt2kml"},
+	{"convert",	"gmtconvert"},
+	{"defaults",	"gmtdefaults"},
+	{"get",		"gmtget"},
+	{"math",	"gmtmath"},
+	{"select",	"gmtselect"},
+	{"set",		"gmtset"},
+	{"simplify",	"gmtsimplify"},
+	{"spatial",	"gmtspatial"},
+	{"stitch",	"gmtstitch"},
+	{"vector",	"gmtvector"},
+	{"which",	"gmtwhich"},
+	{NULL,		NULL}
+};
+
+/* sorted array with replacement names for some modules */
+struct Gmt_alias gmt_oldname[] =
+{	/* Old:		New: */
+	{"gmtdp",	"gmtsimplify"},
+	{NULL,		NULL}
+};
+
+/* Look out for modules given by their aliases */
+const char * gmt_formal_name (struct GMTAPI_CTRL *API, const char *module) {
+	int i = 0;
+	while (gmt_alias[i].alias != NULL) {
+		if (!strcmp (module, gmt_alias[i].alias)) return gmt_alias[i].name;
+		i++;
+	}
+	if (GMT_compat_check (API->GMT, 4)) {
+		i = 0;
+		while (gmt_oldname[i].alias != NULL) {
+			if (!strcmp (module, gmt_oldname[i].alias)) return gmt_oldname[i].name;
+			i++;
+		}
+	}
+	return module;
+}
 
 /* Pretty print all module names and their purposes */
 void gmt_module_show_all(struct GMTAPI_CTRL *API) {
@@ -236,12 +285,13 @@ void gmt_module_show_name_and_purpose(struct GMTAPI_CTRL *API, enum GMT_MODULE_I
 }
 
 /* Lookup module id by name */
-enum GMT_MODULE_ID gmt_module_lookup (const char *candidate) {
+enum GMT_MODULE_ID gmt_module_lookup (struct GMTAPI_CTRL *API, const char *candidate) {
 	enum GMT_MODULE_ID module_id = 0; /* Module ID */
+	const char *actual_name = gmt_formal_name (API, candidate);
 
-	/* Match candidate against g_module[module_id].name */
+	/* Match actual_name against g_module[module_id].name */
 	while ( g_module[module_id].name != NULL &&
-			strcmp (candidate, g_module[module_id].name) )
+			strcmp (actual_name, g_module[module_id].name) )
 		++module_id;
 
 	/* Return matching Module ID or GMT_ID_NONE */

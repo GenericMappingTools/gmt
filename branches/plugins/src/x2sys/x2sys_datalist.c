@@ -27,6 +27,7 @@
  */
 
 #define THIS_MODULE GMT_ID_X2SYS_DATALIST /* I am x2sys_datalist */
+#define MODULE_USAGE "Extract content of track data files"
 
 #include "x2sys.h"
 

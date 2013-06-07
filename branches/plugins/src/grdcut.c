@@ -27,6 +27,7 @@
  */
  
 #define THIS_MODULE GMT_ID_GRDCUT /* I am grdcut */
+#define MODULE_USAGE "Extract subregion from a grid"
 
 #include "gmt_dev.h"
 

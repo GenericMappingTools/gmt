@@ -6,7 +6,7 @@
 
 **Pål (Paul) Wessel**
 
-**SOEST, University of Hawai’i at Mānoa**
+**SOEST, University of Hawai’i at Manoa**
 
 **Walter H. F. Smith**
 
@@ -24,11 +24,7 @@
 
 **Alfred Wegener Institute, Germany**
 
-.. image:: _images/GMT_coverlogo.png
-   :height: 543 px
-   :width: 1093 px
-   :align: center
-   :scale: 70 %
+.. include:: fig_includes/fig_GMT_coverlogo.rst_
 
 .. contents:: Table of Contents
 
@@ -38,13 +34,7 @@ Introduction
 Preamble
 --------
 
-.. figure:: _images/GMT4_mode.png
-   :height: 535 px
-   :width: 1013 px
-   :align: center
-   :scale: 50 %
-
-   Figure 1: GMT 4 programs contain all the high-level functionality. 
+.. include:: fig_includes/fig_GMT4_mode.png.rst_
 
 Prior to version 5, the bulk of *GMT* functionality was coded directly
 in the standard *GMT* C program modules (e.g., ``surface.c``, ``psxy.c``, ``grdimage.c``, etc.). The
@@ -63,13 +53,7 @@ make extensive use of system calls to `psxy <psxy.html>`_ and
 symbols and text that make up a map legend, making it a very awkward
 program to maintain.
 
-.. figure:: _images/GMT5_mode.png
-   :height: 569 px
-   :width: 1013 px
-   :align: center
-   :scale: 50 %
-
-   Figure 2: GMT 5 programs contain all the high-level functionality. 
+.. include:: fig_includes/fig_GMT5_mode.png.rst_
 
 Starting with *GMT* version 5, all standard *GMT* programs have been
 split into a short driver program (the “new” *GMT*  programs) and a
@@ -302,11 +286,6 @@ data set *via* a ``struct GMT_VECTOR`` it will know how to read the data correct
     };
 
 
-.. figure:: _images/GMT5_mode.png
-   :height: 569 px
-   :width: 1013 px
-   :scale: 0 %
-
    Table 1.1: Definition of the GMT_UNIVECTOR union that holds a pointer to any array type.
 
 [tbl:univector]
@@ -386,29 +365,29 @@ Table [tbl:types].
 
 .. _tbl-types:
 
-+--------------+-------+-------------------------------------------+
-| constant     | value | description                               |
-+==============+=======+===========================================+
-| GMT_CHAR     | 0     | int8\_t, 1-byte signed integer type       |
-+--------------+-------+-------------------------------------------+
-| GMT_UCHAR    | 1     | int8\_t, 1-byte unsigned integer type     |
-+--------------+-------+-------------------------------------------+
-| GMT_SHORT    | 2     | int16\_t, 2-byte signed integer type      |
-+--------------+-------+-------------------------------------------+
-| GMT_USHORT   | 3     | uint16\_t, 2-byte unsigned integer type   |
-+--------------+-------+-------------------------------------------+
-| GMT_INT      | 4     | int32\_t, 4-byte signed integer type      |
-+--------------+-------+-------------------------------------------+
-| GMT_UINT     | 5     | uint32\_t, 4-byte unsigned integer type   |
-+--------------+-------+-------------------------------------------+
-| GMT_LONG     | 6     | int64\_t, 8-byte signed integer type      |
-+--------------+-------+-------------------------------------------+
-| GMT_ULONG    | 7     | uint64\_t, 8-byte unsigned integer type   |
-+--------------+-------+-------------------------------------------+
-| GMT_FLOAT    | 8     | 4-byte data float type                    |
-+--------------+-------+-------------------------------------------+
-| GMT_DOUBLE   | 9     | 8-byte data float type                    |
-+--------------+-------+-------------------------------------------+
++--------------+-------+------------------------------------------+
+| constant     | value | description                              |
++==============+=======+==========================================+
+| GMT_CHAR     | 0     | int8_t, 1-byte signed integer type       |
++--------------+-------+------------------------------------------+
+| GMT_UCHAR    | 1     | int8_t, 1-byte unsigned integer type     |
++--------------+-------+------------------------------------------+
+| GMT_SHORT    | 2     | int16_t, 2-byte signed integer type      |
++--------------+-------+------------------------------------------+
+| GMT_USHORT   | 3     | uint16_t, 2-byte unsigned integer type   |
++--------------+-------+------------------------------------------+
+| GMT_INT      | 4     | int32_t, 4-byte signed integer type      |
++--------------+-------+------------------------------------------+
+| GMT_UINT     | 5     | uint32_t, 4-byte unsigned integer type   |
++--------------+-------+------------------------------------------+
+| GMT_LONG     | 6     | int64_t, 8-byte signed integer type      |
++--------------+-------+------------------------------------------+
+| GMT_ULONG    | 7     | uint64_t, 8-byte unsigned integer type   |
++--------------+-------+------------------------------------------+
+| GMT_FLOAT    | 8     | 4-byte data float type                   |
++--------------+-------+------------------------------------------+
+| GMT_DOUBLE   | 9     | 8-byte data float type                   |
++--------------+-------+------------------------------------------+
 
 [tbl:types]
 
@@ -465,8 +444,7 @@ simply command-line files then things simplify considerably.
 
 #. We terminate the GMT session by calling ``GMT_Destroy_Session``.
 
-The steps a–d collapse into a single step if data are simply read from
-files.
+The steps a–d collapse into a single step if data are simply read from files.
 
 Advanced programs may be calling more than one *GMT* session and thus
 run several sessions, perhaps concurrently as different threads on
@@ -826,7 +804,7 @@ what we do if no resources have been registered. The choices are
     **8** (or GMT_ADD_STDIO_ALWAYS) means "always add std\* even if
     resources have been registered".
 
-The standard behavior is 5 (or GMT\_REG\_DEFAULT). Next, ``n_args`` is 0
+The standard behavior is 5 (or GMT_REG_DEFAULT). Next, ``n_args`` is 0
 if ``args`` is the head of a linked list of options (further discussed
 in Section [sec:func]); otherwise ``args`` is an array of ``n_args``
 strings (i.e., the int argc, char \*argv[] model)
@@ -844,11 +822,11 @@ Dimension parameters for user 1-D column vectors
 We refer to Table [tbl:vector]. The ``type`` array must hold the data
 type of each data column in the user’s program. All types other than
 GMT_DOUBLE will be converted internally in *GMT* to ``double``, thus
-possibly increasing memory requirements. If the type is GMT\_DOUBLE then
+possibly increasing memory requirements. If the type is GMT_DOUBLE then
 *GMT* will be able to use the column directly by reference. The
 ``n_columns`` and ``n_rows`` parameters indicate the number of vectors
 and their common length. If these are not yet known you may pass 0 for
-these values and set ``alloc_mode`` to GMT\_REFERENCE (1); this will
+these values and set ``alloc_mode`` to GMT_REFERENCE (1); this will
 make sure *GMT* will allocate the necessary memory to the variable you
 specify.
 
@@ -1069,6 +1047,14 @@ To read an entire resource from a file, stream, or file handle, use
 * :ref:`geometry <tbl-geometry>`
 * :ref:`wesn <tbl-wesn>`
 
+   .. function::  void *GMT_Read_Data (void *API, unsigned int family, unsigned int method,
+                         unsigned int geometry, unsigned int mode, double wesn[],
+                         char *input, void *ptr);
+
+      :param API: None of your business
+      :param family: :ref:`family <tbl-family>`
+      :rtype: None (void)
+
 where ``ptr`` is NULL except when reading grids in two steps (i.e.,
 first get a grid structure with a header, then read the data). Most of
 these arguments have been discussed earlier. This function can be called
@@ -1145,8 +1131,7 @@ GMT_Read_Data_ above), while ``ptr`` is NULL except when reading
 grids in two steps (i.e., first get a grid structure with a header, then
 read the data). Other arguments have been discussed earlier. Space will
 be allocated to hold the results, if needed, and a pointer to the object
-is returned. If there are errors we simply return NULL and report the
-error.
+is returned. If there are errors we simply return NULL and report the error.
 
 Retrieve an allocated result
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -1193,16 +1178,16 @@ identify segment headers we return a NULL pointer. The ``nfields``
 pointer will return the number of fields returned; pass NULL if your
 program should ignore this information.
 
-Normally (``mode`` == GMT\_READ\_DOUBLE or 0), we return a pointer to
+Normally (``mode`` == GMT_READ_DOUBLE or 0), we return a pointer to
 the double array. To read text records, supply instead ``mode`` ==
-GMT\_READ\_TEXT (or 1) and we instead return a pointer to the text
+GMT_READ_TEXT (or 1) and we instead return a pointer to the text
 record. However, if you have input records that mixes organized
 floating-point columns with text items you could pass ``mode`` ==
-GMT\_READ\_MIXED (2). Then, *GMT* will attempt to extract the
+GMT_READ_MIXED (2). Then, *GMT* will attempt to extract the
 floating-point values; you can still access the record string, as
 discussed below. Finally, if your application needs to be notified when
-*GMT* closes one file and opens the next, add GMT\_FILE\_BREAK to
-``mode`` and check for the status code GMT\_IO\_NEXT\_FILE (by default,
+*GMT* closes one file and opens the next, add GMT_FILE_BREAK to
+``mode`` and check for the status code GMT_IO_NEXT_FILE (by default,
 we treat the concatenation of many input files as a single virtual
 file). Using ``GMT_Get_Record`` requires you to first initialize the
 source(s) with ``GMT_Init_IO``. For certain records, ``GMT_Get_Record``
@@ -1384,7 +1369,7 @@ Manipulate data tables
 ~~~~~~~~~~~~~~~~~~~~~~
 
 Another common application is to process the records in a data table.
-Because *GMT* consider the GMT\_DATASET resources to contain one or more
+Because *GMT* consider the GMT_DATASET resources to contain one or more
 tables, each of which may contain one or more segments, all of which may
 contain one or more columns, you will need to have multiple loops to
 visit all entries. The following code snippet will visit all data
@@ -1413,7 +1398,7 @@ Manipulate text tables
 ~~~~~~~~~~~~~~~~~~~~~~
 
 When data file contain text mixed in with numbers you must open the file
-as a GMT\_TEXTSET and do your own parsing of the data records. The
+as a GMT_TEXTSET and do your own parsing of the data records. The
 following code snippet will visit all text records and print them out:
 
   ::
@@ -1459,21 +1444,21 @@ lower or equal to the **-V**\ *level* will be printed.
 
 .. _tbl-verbosity:
 
-+---------------------------+-------+--------------------------------------------------+
-| constant                  | value | description                                      |
-+===========================+=======+==================================================+
-| GMT\_MSG\_QUIET           | 0     | No messages whatsoever                           |
-+---------------------------+-------+--------------------------------------------------+
-| GMT\_MSG\_NORMAL          | 1     | Default output, e.g., warnings and errors only   |
-+---------------------------+-------+--------------------------------------------------+
-| GMT\_MSG\_COMPAT          | 2     | Compatibility warnings                           |
-+---------------------------+-------+--------------------------------------------------+
-| GMT\_MSG\_VERBOSE         | 3     | Verbose level                                    |
-+---------------------------+-------+--------------------------------------------------+
-| GMT\_MSG\_LONG\_VERBOSE   | 4     | Longer verbose                                   |
-+---------------------------+-------+--------------------------------------------------+
-| GMT\_MSG\_DEBUG           | 5     | Debug messages for developers mostly             |
-+---------------------------+-------+--------------------------------------------------+
++-------------------------+-------+--------------------------------------------------+
+| constant                | value | description                                      |
++=========================+=======+==================================================+
+| GMT_MSG_QUIET           | 0     | No messages whatsoever                           |
++-------------------------+-------+--------------------------------------------------+
+| GMT_MSG_NORMAL          | 1     | Default output, e.g., warnings and errors only   |
++-------------------------+-------+--------------------------------------------------+
+| GMT_MSG_COMPAT          | 2     | Compatibility warnings                           |
++-------------------------+-------+--------------------------------------------------+
+| GMT_MSG_VERBOSE         | 3     | Verbose level                                    |
++-------------------------+-------+--------------------------------------------------+
+| GMT_MSG_LONG_VERBOSE    | 4     | Longer verbose                                   |
++-------------------------+-------+--------------------------------------------------+
+| GMT_MSG_DEBUG           | 5     | Debug messages for developers mostly             |
++-------------------------+-------+--------------------------------------------------+
 
 [tbl:verbosity]
 
@@ -1490,17 +1475,17 @@ Table [tbl:timemodes] for the various modes.
 
 .. _tbl-timemodes:
 
-+----------------------+-------+-----------------------------------------+
-| constant             | value | description                             |
-+======================+=======+=========================================+
-| GMT\_TIME\_NONE      | 0     | Display no time information             |
-+----------------------+-------+-----------------------------------------+
-| GMT\_TIME\_CLOCK     | 1     | Display current local time              |
-+----------------------+-------+-----------------------------------------+
-| GMT\_TIME\_ELAPSED   | 2     | Display elapsed time since last reset   |
-+----------------------+-------+-----------------------------------------+
-| GMT\_TIME\_RESET     | 3     | Reset the elapsed time to 0             |
-+----------------------+-------+-----------------------------------------+
++--------------------+-------+-----------------------------------------+
+| constant           | value | description                             |
++====================+=======+=========================================+
+| GMT_TIME_NONE      | 0     | Display no time information             |
++--------------------+-------+-----------------------------------------+
+| GMT_TIME_CLOCK     | 1     | Display current local time              |
++--------------------+-------+-----------------------------------------+
+| GMT_TIME_ELAPSED   | 2     | Display elapsed time since last reset   |
++--------------------+-------+-----------------------------------------+
+| GMT_TIME_RESET     | 3     | Reset the elapsed time to 0             |
++--------------------+-------+-----------------------------------------+
 
 [tbl:timemodes]
 
@@ -1553,7 +1538,7 @@ where ``args`` is a string of the common *GMT* options your program may
 use. An error will be reported if any of the common *GMT* options fail
 to parse, and if so we return TRUE; if not errors we return FALSE. All
 other options, including file names, will be silently ignored. The
-parsing will update the internal *GMT*\ information structure that
+parsing will update the internal *GMT* information structure that
 affects program operations.
 
 Inquiring about the GMT common options
@@ -1612,7 +1597,7 @@ obtain the two coordinates as decimal degrees by calling
 
 Your program can now check that ``n`` equals 2 and then use the values
 in ``pairs``. Note: Dimensions given with units of inches, cm, or points
-are converted to the *GMT* default length unit (**GMT\_PROJ\_LENGTH**)
+are converted to the *GMT* default length unit (**GMT_PROJ_LENGTH**)
 [cm], while distances given in km, nautical miles, miles, feet, or
 survey feet are returned in meters. Arc lengths in minutes and seconds
 are returned in decimal degrees, and date/time values are returned in
@@ -1630,11 +1615,10 @@ If your program needs to determine one or more of the current
 
     int GMT_Get_Default (void *API, char *keyword, char *value);
 
-where ``keyword`` is one such keyword (e.g., **GMT\_PROJ\_LENGTH**) and
+where ``keyword`` is one such keyword (e.g., **GMT_PROJ_LENGTH**) and
 ``value`` must be a character array long enough to hold the answer.
 Depending on what parameter you selected you could further convert it to
-a numerical value with ``GMT_Get_Value`` or just use it in a text
-comparison.
+a numerical value with ``GMT_Get_Value`` or just use it in a text comparison.
 
 Prepare module options
 ----------------------
@@ -1669,8 +1653,7 @@ passed to the module:
     *mode == 0*
         Expects ``args`` to be a single text string with all required options.
 
-If module name rather than module ID is available, you can obtain the latter
-via a call to
+If module name rather than module ID is available, you can obtain the latter via a call to
 
 .. _GMT_Get_Module:
 
@@ -1701,7 +1684,7 @@ When ``mode > 0`` we expect an array ``args`` of character
 strings that each holds a single command line options (e.g.,
 “-R120:30/134:45/8S/3N”) and interpret ``mode`` to be the count of how
 many options are passed. This, of course, is almost exactly how the
-stand-alone *GMT*\ programs are called (and reflects how they themselves
+stand-alone *GMT* programs are called (and reflects how they themselves
 are activated internally). We call this the “argc–argv” mode. Depending
 on how your program obtains the necessary options you may find that this
 interface offers all you need.
@@ -1991,7 +1974,7 @@ you call GMT_Begin_IO_
 +===========================+=======+======================================================+
 | GMT_COMMENT_IS_TEXT       | 0     | Comment is a text string                             |
 +---------------------------+-------+------------------------------------------------------+
-| GMT_COMMENT_IS_OPTION     | 1     | Comment is a linked list of GMT\_OPTION structures   |
+| GMT_COMMENT_IS_OPTION     | 1     | Comment is a linked list of GMT_OPTION structures    |
 +---------------------------+-------+------------------------------------------------------+
 | GMT_COMMENT_IS_COMMAND    | 2     | Comment is the command                               |
 +---------------------------+-------+------------------------------------------------------+
@@ -2012,7 +1995,7 @@ you call GMT_Begin_IO_
 
 [tbl:comments]
 
-The named modes (*command*, *remark*, *title*, *name\_x,y,z* and
+The named modes (*command*, *remark*, *title*, *name_x,y,z* and
 *colnames* are used to distinguish regular text comments from specific
 fields in the header structures of the data resources, such as
 ``GMT_GRID``. For the various table resources (e.g., ``GMT_DATASET``)
@@ -2039,7 +2022,7 @@ setting is common to all types: By default, you are only allowed to
 write a data resource once; the resource is then flagged to have been
 written and subsequent attempts to write to the same resource will
 quietly be ignored. In the unlikely event you need to re-write a
-resource you can override this default behavior by adding GMT\_IO\_RESET
+resource you can override this default behavior by adding GMT_IO_RESET
 to your ``mode`` parameter.
 
 Enable Data Export
@@ -2093,7 +2076,7 @@ previously. Again, the ``mode`` parameter is specific to each data type:
         Each table in the data set is written to individual files [1].
         You can either specify an output file name that *must* contain
         one C-style format specifier for a int variable (e.g.,
-        "New_Table\_%06d.txt"), which will be replaced with the table
+        "New_Table_%06d.txt"), which will be replaced with the table
         number (a running number from 0) *or* you must assign to each
         table *i* a unique output file name via the
         ``D->table[i]->file[GMT_OUT]`` variables prior to calling the
@@ -2108,7 +2091,7 @@ previously. Again, the ``mode`` parameter is specific to each data type:
         Each segment in the data set is written to an individual file
         [3]. You can either specify an output file name that *must*
         contain two C-style format specifiers for two int variables
-        (e.g., "New\_Table\_%06d\_Segment\_%03d.txt"), which will be
+        (e.g., "New_Table_%06d_Segment_%03d.txt"), which will be
         replaced with the table and segment numbers, *or* you must
         assign to each segment *j* in each table *i* a unique output
         file name via the ``D->table[i]->segment[j]->file[GMT_OUT]``
@@ -2225,7 +2208,7 @@ row-by-row writing with ``GMT_Read_Data`` and then use the
 where ``row`` is a pointer to a single-precision array with the current
 row, ``G`` is the grid in question, and ``row_no`` is the number of the
 current row to be written. Note this value is only considered if the
-row-by-row mode was initialized with GMT\_GRID\_ROW\_BY\_ROW\_MANUAL.
+row-by-row mode was initialized with GMT_GRID_ROW_BY_ROW_MANUAL.
 
 Disable Data Export
 ~~~~~~~~~~~~~~~~~~~
@@ -2234,7 +2217,7 @@ Once the record-by-record output has completed we disable further output
 to prevent accidental writing from occurring (due to poor program
 structure, bugs, etc.). We do so by calling ``GMT_End_IO``. This
 function disables further record-by-record data export; here, we
-obviously pass ``direction`` as GMT\_OUT.
+obviously pass ``direction`` as GMT_OUT.
 
 Destroy allocated resources
 ---------------------------
@@ -2369,9 +2352,9 @@ Now that everything has been set up you can perform the transform with
 
     void *GMT_FFT (void *API, void *X, int direction, unsigned int mode, void *K);
 
-which takes as ``direction`` either GMT\_FFT\_FWD or GMT\_FFT\_INV. The
-mode is used to specify if we pass a real (GMT\_FFT\_REAL) or complex
-(GMT\_FFT\_COMPLEX) data set, and ``K`` is the opaque pointer returned
+which takes as ``direction`` either GMT_FFT_FWD or GMT_FFT_INV. The
+mode is used to specify if we pass a real (GMT_FFT_REAL) or complex
+(GMT_FFT_COMPLEX) data set, and ``K`` is the opaque pointer returned
 by ``GMT_FFT_Create``. The transform is performed in place and returned
 via ``X``. When done with your manipulations (below) you can call it
 again with the inverse flag to recover the corresponding space-domain
@@ -2453,7 +2436,7 @@ FORTRAN interfaces
 FORTRAN 90 developers who wish to use the *GMT* API may use the same
 API functions as discussed in Chapter 2. As we do not have much (i.e., any) experience
 with modern Fortran we are not sure to what extent you are able to access
-the members of the various structures, such as the GMT\_GRID structure. Thus,
+the members of the various structures, such as the GMT_GRID structure. Thus,
 this part will depend on feedback and for the time being is to be considered
 preliminary and subject to change.  We encourage you to take contact should you
 wish to use the API with your Fortran 90 programs.

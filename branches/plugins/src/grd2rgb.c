@@ -27,6 +27,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GRD2RGB /* I am grd2rgb */
+#define MODULE_USAGE "Write r/g/b grid files from a grid file, a raw RGB file, or SUN rasterfile"
 
 #include "gmt_dev.h"
 

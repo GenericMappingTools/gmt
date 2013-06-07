@@ -10,29 +10,33 @@ pstext - Plot or typeset text on maps
 .. include:: common_SYN_OPTs.rst_
 
 **pstext** [ *textfiles* ] **-J**\ *parameters*
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ] [
-**-A** ] [ **-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ *dx/dy*
-] [ **-D**\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **v**\ [*pen*\ ]] ]
-[ **-F**\ [**+a**\ [*angle*\ ]][\ **+f**\ [*font*\ ]][\ **+j**\ [*justify*\ ]][\ **+c**\ [*justify*]] ] 
-[ **-G**\ *color* ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [
-**-L** ] [ **-M** ] [ **-N** ] [ **-O** ] [ **-P** ] [
+|SYN_OPT-Rz|
+[ **-A** ]
+|SYN_OPT-B|
+[ **-D**\ [**j**\ \|\ **J**]\ *dx*\ [/*dy*][\ **v**\ [*pen*\ ]] ]
+[ **-F**\ [**+a**\ [*angle*]][\ **+c**\ [*justify*]][\ **+f**\ [*font*]][\ **+h**][\ **+j**\ [*justify*]][\ **+l**] ] 
+[ **-G**\ *color* ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ]
+[ **-L** ] [ **-M** ] [ **-N** ] [ **-O** ] [ **-P** ] [
 **-Q**\ **l**\ \|\ **u** ] [
 **-T**\ **o**\ \|\ **O**\ \|\ **c**\ \|\ **C** ] [
-**-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*\ ]
-] [ **-W**\ *pen* ] [
-**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-] [
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-] [ **-Z** ] [ **-a**\ *col*\ =\ *name*\ [*...*\ ] ] [ **-c**\ *copies*
-] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
-**-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
-] [ **-t**\ [*transp*\ ] ] [ **-:**\ [**i**\ \|\ **o**] ]
+[ **-W**\ *pen* ]
+[ |SYN_OPT-X| ]
+[ |SYN_OPT-Y| ]
+[ |SYN_OPT-U| ]
+[ **-Z** ] [ **-a**\ *col*\ =\ *name*\ [...] ]
+[ |SYN_OPT-c| ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-p| ]
+[ |SYN_OPT-t| ]
+[ |SYN_OPT-o| ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **pstext** plots text strings of variable size, font type, and
 orientation. Various map projections are provided, with the option to
@@ -56,8 +60,8 @@ Appendix F in the **GMT** Technical Reference and Cookbook. Note that
 (does not work for strings with sub/super scripts, symbols, or composite
 characters, except in paragraph mode (**-M**)). 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 .. include:: explain_-J.rst_
 
@@ -67,8 +71,8 @@ characters, except in paragraph mode (**-M**)).
 .. |Add_-Rz| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-Rz.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 *textfiles*
     This is one or more files containing 1 or more records with (*x*,
@@ -108,7 +112,7 @@ characters, except in paragraph mode (**-M**)).
     a line from the original point to the shifted point; append a *pen*
     to change the attributes for this line.
 
-**-F**\ [**+a**\ [*angle*]][\ **+f**\ [*font*]][\ **+j**\ [*justify*]][\ **+c**\ [*justify*]] 
+**-F**\ [**+a**\ [*angle*\ ]][\ **+c**\ [*justify*]][\ **+f**\ [*font*\ ]][\ **+h**][\ **+j**\ [*justify*\ ]][\ **+l**] 
     By default, text will be placed horizontally, using the primary
     annotation font attributes (**FONT_ANNOT_PRIMARY**), and centered
     on the data point. Use this option to override these defaults by
@@ -127,7 +131,9 @@ characters, except in paragraph mode (**-M**)).
     The **+c** justification lets us use x,y coordinates extracted from the
     **-R** string instead of providing them from file. For example **-F+c**\ TL
     gets the *x_min*, *y_max* from the **-R** string and plots the text
-    at the Upper Left corner of the map.  
+    at the Upper Left corner of the map.  Normally, the text to be plotted
+    comes from the data record.  Use **+h** or **+l** to instead select the
+    text as the most recent segment header or segment label, respectively.
 
 **-G**\ *color*
     Sets the shade or color used for filling the text box [Default is no
@@ -210,34 +216,40 @@ characters, except in paragraph mode (**-M**)).
 
 .. include:: explain_help.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
 To plot just the red outlines of the (lon at text strings) stored in the
 file text.d on a Mercator plot with the given specifications, use
 
-    pstext text.d -R-30/30/-10/20 -Jm0.1i -P -F+f18p,Helvetica,-=0.5p,red -B5 > plot.ps
+   ::
+
+    gmt pstext text.d -R-30/30/-10/20 -Jm0.1i -P -F+f18p,Helvetica,-=0.5p,red -B5 > plot.ps
 
 To plot a text at the upper left corner of a 10 cm map
 
-    echo TopLeft | pstext -R1/10/1/10 -JX10 -F+cTL -P > plot.ps
+   ::
+
+    echo TopLeft | gmt pstext -R1/10/1/10 -JX10 -F+cTL -P > plot.ps
 
 To add a typeset figure caption for a 3-inch wide illustration, use
 
-    pstext -R0/3/0/5 -JX3i -O -H -M -N << EOF >> figure.ps
+   ::
+
+    gmt pstext -R0/3/0/5 -JX3i -O -H -M -N << EOF >> figure.ps
 
 This is an optional header record
 
-    > 0 -0.5 12 0 4 LT 13p 3i j
+   ::
 
+    > 0 -0.5 12 0 4 LT 13p 3i j
     @%5%Figure 1.@%% This illustration shows nothing useful, but it still needs
     a figure caption. Highlighted in @;255/0/0;red@;; you can see the locations
     of cities where it is @\_impossible@\_ to get any good Thai food; these are to be avoided.
-
     EOF
 
-`Windows Remarks <#toc7>`_
---------------------------
+Windows Remarks
+---------------
 
 Note that under Windows, the percent sign (%) is a variable indicator
 (like $ under Unix). To indicate a plain percentage sign in a batch
@@ -247,8 +259,8 @@ This only applies to text inside a script or that otherwise is processed
 by DOS. Data files that are opened and read by **pstext** do not need
 such duplication.
 
-`Limitations <#toc8>`_
-----------------------
+Limitations
+-----------
 
 In paragraph mode, the presence of composite characters and other escape
 sequences may lead to unfortunate word splitting. Also, if a font is

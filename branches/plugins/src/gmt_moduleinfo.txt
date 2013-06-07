@@ -14,13 +14,13 @@ fitcircle	core	Find mean position and best-fitting great- or small-circle to poi
 gmt2kml	core	Convert GMT data tables to KML files for Google Earth
 gmtconvert	core	Convert, paste, or extract columns from data tables
 gmtdefaults	core	List current GMT default parameters
-gmtdp	core	Line reduction using the Douglas-Peucker algorithm
 gmtget	core	Get individual GMT default parameters
 gmtgravmag3d	potential	Compute the gravity/magnetic anomaly of a body by the method of Okabe
 gmtmath	core	Reverse Polish Notation (RPN) calculator for data tables
 gmtread	core	Read from file into memory location [API only]
 gmtselect	core	Select data table subsets based on multiple spatial criteria
 gmtset	core	Change individual GMT default parameters
+gmtsimplify	core	Line reduction using the Douglas-Peucker algorithm
 gmtspatial	core	Do geospatial operations on lines and polygons
 gmtstitch	core	Join individual lines whose end points match within tolerance
 gmtvector	core	Basic manipulation of Cartesian vectors
@@ -48,7 +48,7 @@ grdmath	core	Reverse Polish Notation (RPN) calculator for grids (element by elem
 grdpaste	core	Join two grids along their common edge
 grdpmodeler	spotter	Evaluate a plate model on a geographic grid
 grdproject	core	Forward and inverse map transformation of grids
-grdraster	dbase	Extract subregion from a binary raster and save as a GMT grid
+grdraster	core	Extract subregion from a binary raster and save as a GMT grid
 grdredpol	potential	Compute the Continuous Reduction To the Pole, AKA differential RTP
 grdreformat	core	Convert between different grid formats
 grdrotater	spotter	Finite rotation reconstruction of geographic grid
@@ -79,7 +79,7 @@ minmax	core	Find extreme values in data tables
 nearneighbor	core	Grid table data using a \"Nearest neighbor\" algorithm
 originator	spotter	Associate seamounts with nearest hotspot point sources
 project	core	Project table data onto lines or great circles, generate tracks, or translate coordinates
-ps2raster	core	Convert [E]PS file(s) to other formats using GhostScript.
+ps2raster	core	Convert [E]PS file(s) to other formats using GhostScript
 psbasemap	core	Plot PostScript base maps
 psclip	core	Initialize or terminate polygonal clip paths
 pscoast	core	Plot continents, shorelines, rivers, and borders on maps
@@ -105,9 +105,9 @@ sample1d	core	Resample 1-D table data using splines
 segy2grd	segy	Converting SEGY data to a GMT grid
 spectrum1d	core	Compute auto- [and cross-] spectra from one [or two] timeseries
 sph2grd	core	Compute grid from spherical harmonic coefficients
-sphdistance	sph	Make grid of distances to nearest points on a sphere
-sphinterpolate	sph	Spherical gridding in tension of data on a sphere
-sphtriangulate	sph	Delaunay or Voronoi construction of spherical lon,lat data
+sphdistance	core	Make grid of distances to nearest points on a sphere
+sphinterpolate	core	Spherical gridding in tension of data on a sphere
+sphtriangulate	core	Delaunay or Voronoi construction of spherical lon,lat data
 splitxyz	core	Split xyz[dh] data tables into individual segments
 surface	core	Grid table data using adjustable tension continuous curvature splines
 trend1d	core	Fit a [weighted] [robust] polynomial [or Fourier] model for y = f(x) to xy[w] data

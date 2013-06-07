@@ -105,6 +105,7 @@
  */
  
 #define THIS_MODULE GMT_ID_ORIGINATOR /* I am originator */
+#define MODULE_USAGE "Associate seamounts with nearest hotspot point sources"
 
 #include "spotter.h"
 

@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:48:34) [64-bit] [C4] Document from GMT_psxyz
-%%Creator: GMT
-%%For: remko
+%%Title: GMT v5.0.1b_r11640M [64-bit] Document from psxyz
+%%Creator: GMT5
+%%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 23 12:49:27 2011
+%%CreationDate: Thu Jun  6 15:25:59 2013
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -60,7 +60,7 @@
 /Si {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR FO}!
 /Sj {M MS R dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D MR FO}!
 /Sn {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR FO}!
-/Sp {N 3 -1 roll 0 360 arc F}!
+/Sp {N 3 -1 roll 0 360 arc fs N}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
 /SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
@@ -110,6 +110,11 @@
   count PSL_op_count sub {pop} repeat
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
+}!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -571,46 +576,9 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT:  psxyz -B1/1/1000:Topography (m)::.ETOPO5:WSneZ+ -R-0.1/5.1/-0.1/5.1/-5000/0 -JM5i -JZ6i -p200/30 -So0.0833333ub-5000 -P -UExample 8 in Cookbook \
-%%GMT:+ -Wthinnest -Glightgreen -K
+%%GMT: psxyz -B1 -Bz1000+lTopography (m) -BWSneZ+b+tETOPO5 -R-0.1/5.1/-0.1/5.1/-5000/0 -JM5i -JZ6i -p200/30 -So0.0833333ub-5000 -P -Wthinnest -Glightgreen -K
 %%PROJ: merc -0.10000000 5.10000000 -0.10000000 5.10000000 -289430.676 289430.676 -11057.433 564684.941 +proj=merc +lon_0=2.5 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
-% Begin GMT time-stamp
-V
--900 -900 T
-4 W
-/PSL_g_w 438 def
-/PSL_g_h 180 def
-PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-133 F0
-(  Version 5  ) V MU 0 0 M E /PSL_b_w edef FP pathbbox N /PSL_b_h edef /PSL_b_x1 edef /PSL_b_d edef /PSL_b_x0 edef U
-{0 A} FS
-O1
-180 438 219 90 Sr
-V N 0 0 T 438 180 scale /DeviceGray setcolorspace
-<< /ImageType 1 /Decode [0 1] /Width 220 /Height 90 /BitsPerComponent 1
-   /ImageMatrix [220 0 0 -90 0 90] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
->> image
-J,g]g3$]7K"p`!':q.Jl)%V>:U(KAL:*14/6K8ZF4Dm.kO2E3j(_i!%-BQ@pnu,^j&L7Inhrk=kZ47tE4smR$r5nrRL<0ttk
-N)mVs):=Qdjb>!2a*mc!&OBb9u0JPcDf/oSB@m'YIl@rkq#;P1]c5O<LOp\Bc*Gj!#CoS%K?:8c`&X&mE4[:ISM>9=KKO7!1
-;>f&,5QWYsjPq0,=sjg&Hf'f&1X,"NKa^W8dC>9>,3h;khe)=q%db!$BS+VDOA8s&Z&)eLB'B/.-A!+3q.GbnW-H7b['N2!e
-gYBkc0eX"Z7-$GF"(<9^XQ:=ES$J)-Ic>@27O1"UX6ce4j\s5VAk+kZ!+=4ci=Vt!:W,WfE1\5-RIr39"$2$5eZdpT1@NhWn
-95Dcr@"s;oQ6N=Ab;@;]j$CiZ%W[LNJ#nQ;ndgr7Vj@&^7cE'XK_Q=(S'h/^-!=5eMH\g^_DaYimY,b6.J]ER?Go!"^>%8_g
-mgOOj8J4rSi[lZ3GdOA$qs>9CObBha9+IGks2S%(X!aQ=$l"(_L\/h=8CIWg21b$C@5lC$8r2rV9mQOs9bDtg4!,.%X"MJuX
-T[)!lQ_$Gaf?qc1siTSO!%3',\]ig%f;:c;_^nf&_!naWtNo6gNsAYe0CW^<A;?6nl/>;?=5tAoKn+"$*))!.V&m9>_!AAr5
-CAu,jSj8FsVIZ;@bpTU7^QdB4nZVm3<f;1sN&igC$rih)Ua9(1Yb;bB/LhaDJM_O61c1(XYq*C;hpG"Yr<5pOeGR,!c$]S27
-X,VffM*Q1EfZ?p5"1`Ka%@^Y#Ob*K$EqRp?.@Y%rrRVl'Tnc.7]R6S'2p!e(0[QQdp"-cYtuQ8SGQH&XfpEdVMk)5D\>bLt'
-RT,@CkIr<*i%IB7U`#an<"7IOmV<:AE!dju+RpOeRme3W;]K4#rSSP/8rhd0',1EA4aRB_I,:U(TOs+%m.Cpb9_I'u(Hfg$q
-DTIS7MsoF"n\M"l#Q~>
-U
-{1 A} FS
-PSL_g_h PSL_b_w PSL_g_w 0 Sb
-438 38 M (  Version 5  ) Z
-117 F0
-(   Example 8 in Cookbook) Z
-U
-% End GMT time-stamp
-FQ
-O0
+%%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -621,7 +589,8 @@ PSL_GPP setmatrix [0.939693 0.17101 0 0.866025 0 2803.89] concat
 PSL_GPP setmatrix [-0.34202 0.469846 0 0.866025 7679.22 1026.06] concat
 7200 5968 0 0 Sb
 PSL_GPP setmatrix
-3840 10299 M 400 F0
+3840 10299 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+400 F0
 (ETOPO5) bc Z
 /PSL_GPP matrix currentmatrix def [0.939693 0.17101 -0.34202 0.469846 2041.06 0] concat
 8 W
@@ -715,6 +684,7 @@ PSL_GPP setmatrix
 0 6051 M 0 -6134 D S
 -83 6051 M 0 -6134 D S
 4 W
+V
 {0.565 0.933 0.565 C} FS
 {0.443 0.847 0.443 C} FS
 PSL_GPP setmatrix [-0.34202 0.469846 0 0.866025 7525.62 998.107] concat
@@ -37925,6 +37895,7 @@ PSL_GPP setmatrix [0.939693 0.17101 0 0.866025 2018.2 31.4126] concat
 {0.601 0.941 0.601 C} FS
 PSL_GPP setmatrix [0.939693 0.17101 -0.34202 0.469846 2041.06 154.637] concat
 95 96 67 67 Sb
+U
 PSL_GPP setmatrix
 FQ
 /PSL_GPP matrix currentmatrix def [0.939693 0.17101 0 0.866025 2041.06 0] concat
@@ -37972,14 +37943,16 @@ V 90 R (0) bc Z U
 V 90 R (Topography \(m\)) bc Z U
 0 -6000000 T
 PSL_GPP setmatrix
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  pstext -R-0.1/5.1/-0.1/5.1/-5000/0 -JM5i -JZ6i -Z0 -F+f24p,Helvetica-Bold+jTL -p200/30 -O
+%%GMT: pstext -R-0.1/5.1/-0.1/5.1/-5000/0 -JM5i -JZ6i -Z0 -F+f24p,Helvetica-Bold+jTL -p200/30 -O
 %%PROJ: merc -0.10000000 5.10000000 -0.10000000 5.10000000 -289430.676 289430.676 -11057.433 564684.941 +proj=merc +lon_0=2.5 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -37995,6 +37968,7 @@ PSL_eoclip N
 (This is the surface of cube) tl Z
 PSL_cliprestore
 PSL_GPP setmatrix
+%%EndObject
 %%PageTrailer
 U
 showpage

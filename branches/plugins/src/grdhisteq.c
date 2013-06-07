@@ -25,6 +25,7 @@
  */
  
 #define THIS_MODULE GMT_ID_GRDHISTEQ /* I am grdhisteq */
+#define MODULE_USAGE "Perform histogram equalization for a grid"
 
 #include "gmt_dev.h"
 

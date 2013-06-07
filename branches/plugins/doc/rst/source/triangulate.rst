@@ -10,17 +10,18 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**triangulate** [ *table* ] [ **-Dx**\ \|\ **y** ] [ **-E**\ *empty* ] [
-**-G**\ *grdfile* ]
+**triangulate** [ *table* ] [ **-Dx**\ \|\ **y** ] [ **-E**\ *empty* ]
+[ **-G**\ *grdfile* ]
 [ |SYN_OPT-I| ]
 [ **-J**\ *parameters* ] [ **-M** ] [ **-Q** ]
 [ |SYN_OPT-R| ] [ **-S** ]
 [ |SYN_OPT-V| ] [ **-Z** ]
-[ **-b**\ [*ncol*][**t**][\ **+L**\ \|\ **+B**] ]
-[ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ]
+[ |SYN_OPT-b| ]
+[ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
-[ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
+[ **-r** ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
@@ -127,18 +128,24 @@ Examples
 To triangulate the points in the file samples.xyz, store the triangle
 information in a binary file, and make a grid for the given area and spacing, use
 
-    triangulate samples.xyz -bo -R0/30/0/30 -I2 -Gsurf.nc > samples.ijk
+   ::
+
+    gmt triangulate samples.xyz -bo -R0/30/0/30 -I2 -Gsurf.nc > samples.ijk
 
 To draw the optimal Delaunay triangulation network based on the same
 file using a 15-cm-wide Mercator map, use
 
-    triangulate samples.xyz -M -R-100/-90/30/34 -JM15c \| psxy
-    -R-100/-90/30/34 -JM15c -W0.5p -B1 > network.ps
+   ::
+
+    gmt triangulate samples.xyz -M -R-100/-90/30/34 -JM15c | gmt psxy \
+        -R-100/-90/30/34 -JM15c -W0.5p -B1 > network.ps
 
 To instead plot the Voronoi cell outlines, try
 
-    triangulate samples.xyz -M -Q -R-100/-90/30/34 -JM15c \|
-    psxy -R-100/-90/30/34 -JM15c -W0.5p -B1 > cells.ps
+   ::
+
+    gmt triangulate samples.xyz -M -Q -R-100/-90/30/34 -JM15c | \
+        gmt psxy -R-100/-90/30/34 -JM15c -W0.5p -B1 > cells.ps
 
 See Also
 --------

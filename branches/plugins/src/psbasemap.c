@@ -27,6 +27,7 @@
  */
 
 #define THIS_MODULE GMT_ID_PSBASEMAP /* I am psbasemap */
+#define MODULE_USAGE "Plot PostScript base maps"
 
 #include "gmt_dev.h"
 

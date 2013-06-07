@@ -12,13 +12,13 @@ GM
    gmtcolors
    gmtconvert
    gmtdefaults
-   gmtdp
    gmtget
    gmtlogo
    gmtmath
    gmtselect
    gmtset
    gmt_shell_functions
+   gmtsimplify
    gmtspatial
    gmtstitch
    gmtswitch

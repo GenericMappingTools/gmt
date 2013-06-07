@@ -26,6 +26,7 @@
  */
 
 #define THIS_MODULE GMT_ID_GRDINFO /* I am grdinfo */
+#define MODULE_USAGE "Extract information from grids"
 
 #include "gmt_dev.h"
 

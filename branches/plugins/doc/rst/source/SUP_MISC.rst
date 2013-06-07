@@ -6,4 +6,3 @@ MISC
    :maxdepth: 1
 
    supplements/misc/dimfilter
-   supplements/misc/gmtdigitize
