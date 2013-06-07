@@ -2,8 +2,7 @@
 sphtriangulate
 **************
 
-sphtriangulate - Delaunay or Voronoi construction of spherical lon,lat
-data
+sphtriangulate - Delaunay or Voronoi construction of spherical lon,lat data
 
 Synopsis
 --------
@@ -135,7 +134,7 @@ diagram via **psxy**, use
 
    ::
 
-    sphtriangulate testdata.txt -Qv | psxy -Rg -JG30/30/6i -L -P -W1p -B0g30 | gv -
+    gmt sphtriangulate testdata.txt -Qv | psxy -Rg -JG30/30/6i -L -P -W1p -B0g30 | gv -
 
 To compute the optimal Delaunay triangulation network based on the
 multiple segment file globalnodes.d and save the area of each triangle
@@ -143,7 +142,7 @@ in the header record, try
 
    ::
 
-    sphtriangulate globalnodes.d -Qd -A > global_tri.d
+    gmt sphtriangulate globalnodes.d -Qd -A > global_tri.d
 
 See Also
 --------

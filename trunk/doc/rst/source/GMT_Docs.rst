@@ -5680,9 +5680,12 @@ widths (140\ :math:`\cdot`\ 0.014 and 80\ :math:`\cdot`\ 0.014):
 
    ::
 
-     pscoast -R200/340/-90/90 -Ji0.014i -Bxg30 -Byg15 -A10000 -Dc -Gblack -K -P > GMT_sinus_int.ps  
-     pscoast -R-20/60/-90/90 -Ji0.014i -Bxg30 -Byg15 -Dc -A10000 -Gblack -X1.96i -O -K >> GMT_sinus_int.ps  
-     pscoast -R60/200/-90/90 -Ji0.014i -Bxg30 -Byg15 -Dc -A10000 -Gblack -X1.12i -O >> GMT_sinus_int.ps  
+     gmt pscoast -R200/340/-90/90 -Ji0.014i -Bxg30 -Byg15 -A10000 -Dc \
+                 -Gblack -K -P > GMT_sinus_int.ps  
+     gmt pscoast -R-20/60/-90/90 -Ji0.014i -Bxg30 -Byg15 -Dc -A10000 \
+                 -Gblack -X1.96i -O -K >> GMT_sinus_int.ps  
+     gmt pscoast -R60/200/-90/90 -Ji0.014i -Bxg30 -Byg15 -Dc -A10000 \
+                 -Gblack -X1.12i -O >> GMT_sinus_int.ps  
 
 .. include:: fig_includes/fig_GMT_sinus_int.rst_
 
@@ -5707,7 +5710,8 @@ Centered on the Dateline, the example below was created by this command:
 
     ::
 
-      pscoast -Rg -JV4i -Bxg30 -Byg15 -Dc -Glightgray -A10000 -Wthinnest -P > GMT_grinten.ps 
+      gmt pscoast -Rg -JV4i -Bxg30 -Byg15 -Dc -Glightgray -A10000 \
+                  -Wthinnest -P > GMT_grinten.ps 
 
 .. include:: fig_includes/fig_GMT_grinten.rst_
 
@@ -5776,16 +5780,16 @@ rectangular frame surrounding the two maps. This is how it is done:
     # Unix progs: rm
     #
     ps=../example_01.ps
-    gmtset MAP_GRID_CROSS_SIZE_PRIMARY 0 FONT_ANNOT_PRIMARY 10p
-    psbasemap -R0/6.5/0/9 -Jx1i -B0 -P -K -U"Example 1 in Cookbook" > $ps
-    pscoast -Rg -JH0/6i -X0.25i -Y0.5i -O -K -Bg30 -Dc -Glightbrown -Slightblue >> $ps
-    grdcontour osu91a1f_16.nc -J -C10 -A50+f7p -Gd4i -L-1000/-1 -Wcthinnest,- -Wathin,- -O -K \
-               -T0.1i/0.02i >> $ps
-    grdcontour osu91a1f_16.nc -J -C10 -A50+f7p -Gd4i -L-1/1000 -O -K -T0.1i/0.02i >> $ps
-    pscoast -Rg -JH6i -Y4i -O -K -Bg30 -B+t"Low Order Geoid" -Dc -Glightbrown -Slightblue >> $ps
-    grdcontour osu91a1f_16.nc -J -C10 -A50+f7p -Gd4i -L-1000/-1 -Wcthinnest,- -Wathin,- -O -K \
-               -T0.1i/0.02i:-+ >> $ps
-    grdcontour osu91a1f_16.nc -J -C10 -A50+f7p -Gd4i -L-1/1000 -O -T0.1i/0.02i:-+ >> $ps
+    gmt set MAP_GRID_CROSS_SIZE_PRIMARY 0 FONT_ANNOT_PRIMARY 10p
+    gmt psbasemap -R0/6.5/0/9 -Jx1i -B0 -P -K -U"Example 1 in Cookbook" > $ps
+    gmt pscoast -Rg -JH0/6i -X0.25i -Y0.5i -O -K -Bg30 -Dc -Glightbrown -Slightblue >> $ps
+    gmt grdcontour osu91a1f_16.nc -J -C10 -A50+f7p -Gd4i -L-1000/-1 -Wcthinnest,- -Wathin,- \
+                   -O -K -T0.1i/0.02i >> $ps
+    gmt grdcontour osu91a1f_16.nc -J -C10 -A50+f7p -Gd4i -L-1/1000 -O -K -T0.1i/0.02i >> $ps
+    gmt pscoast -Rg -JH6i -Y4i -O -K -Bg30 -B+t"Low Order Geoid" -Dc -Glightbrown -Slightblue >> $ps
+    gmt grdcontour osu91a1f_16.nc -J -C10 -A50+f7p -Gd4i -L-1000/-1 -Wcthinnest,- -Wathin,- \
+                   -O -K -T0.1i/0.02i:-+ >> $ps
+    gmt grdcontour osu91a1f_16.nc -J -C10 -A50+f7p -Gd4i -L-1/1000 -O -T0.1i/0.02i:-+ >> $ps
 
 The first command draws a box surrounding the maps. This is followed by
 two sequences of `pscoast <pscoast.html>`_, `grdcontour <grdcontour.html>`_,
@@ -5829,17 +5833,17 @@ the lower left and upper right corner of region. In our case we choose
     # Unix progs: rm
     #
     ps=../example_02.ps
-    gmtset FONT_TITLE 30p MAP_ANNOT_OBLIQUE 0
-    makecpt -Crainbow -T-2/14/2 > g.cpt
-    grdimage HI_geoid2.nc -R160/20/220/30r -JOc190/25.5/292/69/4.5i -E50 -K -P \
-            -U/-1.25i/-1i/"Example 2 in Cookbook" -B10 -Cg.cpt -X1.5i -Y1.25i > $ps
-    psscale -Cg.cpt -D5.1i/1.35i/2.88i/0.4i -O -K -Ac -Bx2+lGEOID -By+lm -E >> $ps
-    grd2cpt HI_topo2.nc -Crelief -Z > t.cpt
-    grdgradient HI_topo2.nc -A0 -Nt -GHI_topo2_int.nc
-    grdimage HI_topo2.nc -IHI_topo2_int.nc -R -J -E50 -B10 -B+t"H@#awaiian@# T@#opo and @#G@#eoid" -O -K \
-            -Ct.cpt -Y4.5i --MAP_TITLE_OFFSET=0.5i >> $ps
-    psscale -Ct.cpt -D5.1i/1.35i/2.88i/0.4i -O -K -I0.3 -Ac -Bx2+lTOPO -By+lkm >> $ps
-    pstext -R0/8.5/0/11 -Jx1i -F+f30p,Helvetica-Bold+jCB -O -N -Y-4.5i >> $ps << END
+    gmt set FONT_TITLE 30p MAP_ANNOT_OBLIQUE 0
+    gmt makecpt -Crainbow -T-2/14/2 > g.cpt
+    gmt grdimage HI_geoid2.nc -R160/20/220/30r -JOc190/25.5/292/69/4.5i -E50 -K -P \
+                 -U/-1.25i/-1i/"Example 2 in Cookbook" -B10 -Cg.cpt -X1.5i -Y1.25i > $ps
+    gmt psscale -Cg.cpt -D5.1i/1.35i/2.88i/0.4i -O -K -Ac -Bx2+lGEOID -By+lm -E >> $ps
+    gmt grd2cpt HI_topo2.nc -Crelief -Z > t.cpt
+    gmt grdgradient HI_topo2.nc -A0 -Nt -GHI_topo2_int.nc
+    gmt grdimage HI_topo2.nc -IHI_topo2_int.nc -R -J -E50 -B+t"H@#awaiian@# T@#opo and @#G@#eoid" \
+                 -B10 -O -K -Ct.cpt -Y4.5i --MAP_TITLE_OFFSET=0.5i >> $ps
+    gmt psscale -Ct.cpt -D5.1i/1.35i/2.88i/0.4i -O -K -I0.3 -Ac -Bx2+lTOPO -By+lkm >> $ps
+    gmt pstext -R0/8.5/0/11 -Jx1i -F+f30p,Helvetica-Bold+jCB -O -N -Y-4.5i >> $ps << END
     -0.4 7.5 a)
     -0.4 3.0 b)
     END
@@ -5946,18 +5950,18 @@ specify positions in inches directly. Thus, the complete automated script reads:
     # the great circle. We use -Q to get the p distance in kilometers, and -S
     # to sort the output into increasing p values.
     #
-    project sat.xyg -C$cposx/$cposy -T$pposx/$pposy -S -Fpz -Q > sat.pg
-    project ship.xyg -C$cposx/$cposy -T$pposx/$pposy -S -Fpz -Q > ship.pg
+    gmt project sat.xyg -C$cposx/$cposy -T$pposx/$pposy -S -Fpz -Q > sat.pg
+    gmt project ship.xyg -C$cposx/$cposy -T$pposx/$pposy -S -Fpz -Q > ship.pg
     #
     # The minmax utility will report the minimum and maximum values for all columns.
     # We use this information first with a large -I value to find the appropriate -R
     # to use to plot the .pg data.
     #
     R=`cat sat.pg ship.pg | minmax -I100/25`
-    psxy $R -U/-1.75i/-1.25i/"Example 3a in Cookbook" \
-         -Bxa500f100+l"Distance along great circle" -Bya100f25+l"Gravity anomaly (mGal)" -BWeSn \
-         -JX8i/5i -X2i -Y1.5i -K -Wthick sat.pg > ../example_03a.ps
-    psxy -R -JX -O -Sp0.03i ship.pg >> ../example_03a.ps
+    gmt psxy $R -U/-1.75i/-1.25i/"Example 3a in Cookbook" \
+             -Bxa500f100+l"Distance along great circle" -Bya100f25+l"Gravity anomaly (mGal)" \
+             -BWeSn -JX8i/5i -X2i -Y1.5i -K -Wthick sat.pg > ../example_03a.ps
+    gmt psxy -R -JX -O -Sp0.03i ship.pg >> ../example_03a.ps
     #
     # From this plot we see that the ship data have some "spikes" and also greatly
     # differ from the satellite data at a point about p ~= +250 km, where both of
@@ -5968,10 +5972,10 @@ specify positions in inches directly. Thus, the complete automated script reads:
     # typically spaced using awk to get the delta-p between points and view it with
     # "pshistogram".
     #
-    awk '{ if (NR > 1) print $1 - last1; last1=$1; }' ship.pg | pshistogram -W0.1 -Gblack -JX3i -K \
-         -X2i -Y1.5i -B+t"Ship" -U/-1.75i/-1.25i/"Example 3b in Cookbook" > ../example_03b.ps
-    awk '{ if (NR > 1) print $1 - last1; last1=$1; }' sat.pg | pshistogram -W0.1 -Gblack -JX3i -O \
-         -X5i -B+t"Sat" >> ../example_03b.ps
+    awk '{ if (NR > 1) print $1 - last1; last1=$1; }' ship.pg | gmt pshistogram -W0.1 -Gblack -JX3i \
+         -K -X2i -Y1.5i -B+t"Ship" -U/-1.75i/-1.25i/"Example 3b in Cookbook" > ../example_03b.ps
+    awk '{ if (NR > 1) print $1 - last1; last1=$1; }' sat.pg | gmt pshistogram -W0.1 -Gblack -JX3i \
+         -O -X5i -B+t"Sat" >> ../example_03b.ps
     #
     # This experience shows that the satellite values are spaced fairly evenly, with
     # delta-p between 3.222 and 3.418. The ship values are spaced quite unevelnly, with
@@ -5986,35 +5990,35 @@ specify positions in inches directly. Thus, the complete automated script reads:
     #
     head -1 ship.pg > tmp
     head -1 sat.pg >> tmp
-    sampr1=‘gmtmath tmp -Ca -Sf -o0 UPPER CEIL =‘
+    sampr1=‘gmt gmtmath tmp -Ca -Sf -o0 UPPER CEIL =‘
     tail -1 ship.pg > tmp
     tail -1 sat.pg >> tmp
-    sampr2=‘gmtmath tmp -Ca -Sf -o0 LOWER FLOOR =‘
+    sampr2=‘gmt gmtmath tmp -Ca -Sf -o0 LOWER FLOOR =‘
     #
     # Now we can use sampr1|2 in gmtmath to make a sampling points file for sample1d:
-    gmtmath -T$sampr1/$sampr2/1 -N1/0 T = samp.x
+    gmt gmtmath -T$sampr1/$sampr2/1 -N1/0 T = samp.x
     #
     # Now we can resample the projected satellite data:
     #
-    sample1d sat.pg -Nsamp.x > samp_sat.pg
+    gmt sample1d sat.pg -Nsamp.x > samp_sat.pg
     #
     # For reasons above, we use filter1d to pre-treat the ship data. We also need to sample it
     # because of the gaps > 1 km we found. So we use filter1d | sample1d. We also use the -E
     # on filter1d to use the data all the way out to sampr1/sampr2 :
     #
-    filter1d ship.pg -Fm1 -T$sampr1/$sampr2/1 -E | sample1d -Nsamp.x > samp_ship.pg
+    gmt filter1d ship.pg -Fm1 -T$sampr1/$sampr2/1 -E | sample1d -Nsamp.x > samp_ship.pg
     #
     # Now we plot them again to see if we have done the right thing:
     #
-    psxy $R -JX8i/5i -X2i -Y1.5i -K -Wthick samp_sat.pg \
-         -Bxa500f100+l"Distance along great circle" -Bya100f25+l"Gravity anomaly (mGal)" -BWeSn \
-         -U/-1.75i/-1.25i/"Example 3c in Cookbook" > ../example_03c.ps
-    psxy -R -JX -O -Sp0.03i samp_ship.pg >> ../example_03c.ps
+    gmt psxy $R -JX8i/5i -X2i -Y1.5i -K -Wthick samp_sat.pg \
+             -Bxa500f100+l"Distance along great circle" -Bya100f25+l"Gravity anomaly (mGal)" \
+             -BWeSn -U/-1.75i/-1.25i/"Example 3c in Cookbook" > ../example_03c.ps
+    gmt psxy -R -JX -O -Sp0.03i samp_ship.pg >> ../example_03c.ps
     #
     # Now to do the cross-spectra, assuming that the ship is the input and the sat is the output
     # data, we do this:
     #
-    gmtconvert -A samp_ship.pg samp_sat.pg -o1,3 | spectrum1d -S256 -D1 -W -C > /dev/null
+    gmt gmtconvert -A samp_ship.pg samp_sat.pg -o1,3 | spectrum1d -S256 -D1 -W -C > /dev/null
     #
     # Now we want to plot the spectra. The following commands will plot the ship and sat
     # power in one diagram and the coherency on another diagram, both on the same page.
@@ -9393,25 +9397,25 @@ header structure is outline in Table [tbl:sunheader].
 
 [H]
 
-+----------------------------+--------------------------------------+
-| **Parameter**              | **Description**                      |
-+============================+======================================+
-| **int** *ras\_magic*       | Magic number                         |
-+----------------------------+--------------------------------------+
-| **int** *ras\_width*       | Width (pixels) of image              |
-+----------------------------+--------------------------------------+
-| **int** *ras\_height*      | Height (pixels) of image             |
-+----------------------------+--------------------------------------+
-| **int** *ras\_depth*       | Depth (1, 8, 24, 32 bits) of pixel   |
-+----------------------------+--------------------------------------+
-| **int** *ras\_length*      | Length (bytes) of image              |
-+----------------------------+--------------------------------------+
-| **int** *ras\_type*        | Type of file; see RT\_ below         |
-+----------------------------+--------------------------------------+
-| **int** *ras\_maptype*     | Type of colormap; see RMT\_ below    |
-+----------------------------+--------------------------------------+
-| **int** *ras\_maplength*   | Length (bytes) of following map      |
-+----------------------------+--------------------------------------+
++---------------------------+-------------------------------------+
+| **Parameter**             | **Description**                     |
++===========================+=====================================+
+| **int** *ras_magic*       | Magic number                        |
++---------------------------+-------------------------------------+
+| **int** *ras_width*       | Width (pixels) of image             |
++---------------------------+-------------------------------------+
+| **int** *ras_height*      | Height (pixels) of image            |
++---------------------------+-------------------------------------+
+| **int** *ras_depth*       | Depth (1, 8, 24, 32 bits) of pixel  |
++---------------------------+-------------------------------------+
+| **int** *ras_length*      | Length (bytes) of image             |
++---------------------------+-------------------------------------+
+| **int** *ras_type*        | Type of file; see RT\_ below        |
++---------------------------+-------------------------------------+
+| **int** *ras_maptype*     | Type of colormap; see RMT\_ below   |
++---------------------------+-------------------------------------+
+| **int** *ras_maplength*   | Length (bytes) of following map     |
++---------------------------+-------------------------------------+
 
 [tbl:sunheader]
 
@@ -9419,8 +9423,6 @@ After the header, the color map (if *ras_maptype* is not RMT_NONE)
 follows for *ras_maplength* bytes, followed by an image of
 *ras_length* bytes. Some related definitions are given in
 Table [tbl:sundef].
-
-[H]
 
 +---------------------+-------------------------------------------+
 | **Macro name**      | **Description**                           |
@@ -9682,7 +9684,7 @@ option. Simply run
 
    ::
 
-    ps2raster -A -P -Tf *.ps
+    gmt ps2raster -A -P -Tf *.ps
 
 to convert all *PostScript* files to PDF while cropping it to the
 smallest possible BoundingBox. Or use the **-Tg** option to convert your
@@ -9952,7 +9954,7 @@ you can set the *GMT* font parameters to your non-standard fonts:
 
    ::
 
-    gmtset FONT LinBiolinumO \
+    gmt set FONT LinBiolinumO \
     FONT_TITLE 28p,LinLibertineOB \
     PS_CHAR_ENCODING ISO-8859-1 \
     MAP_DEGREE_SYMBOL degree
@@ -10135,8 +10137,7 @@ these are the RGB colors; the other three are the CMY colors which are
 the complement of RGB and are used in many color hardcopy devices (see
 below). The only cube corners you did not visit on this path are the
 black and white corners. They lie on the vertical axis where hue is
-undefined and *r = g = b*. Any point on this axis is a shade of
-gray.
+undefined and *r = g = b*. Any point on this axis is a shade of gray.
 
 Let us call the points where *s = v = 1* (points along the RYGCBM
 path described above) the "pure" colors. If we start at a pure color and
@@ -10554,10 +10555,10 @@ total file size of the coastlines, rivers, and borders database is only
 
   ::
 
-    gmtset MAP_GRID_CROSS_SIZE_PRIMARY 0 MAP_ANNOT_OBLIQUE 22 MAP_ANNOT_MIN_SPACING 0.3i
-    pscoast -Rk-9000/9000/-9000/9000 -JE130.35/-0.2/3.5i -P -Dc -A500 \
-            -Gburlywood -Sazure -Wthinnest -N1/thinnest,- -B20g20 -BWSne -K > GMT_App_K_1.ps
-    psbasemap -R -J -O -Dk2000+c130.35/-0.2+pthicker >> GMT_App_K_1.ps
+    gmt set MAP_GRID_CROSS_SIZE_PRIMARY 0 MAP_ANNOT_OBLIQUE 22 MAP_ANNOT_MIN_SPACING 0.3i
+    gmt pscoast -Rk-9000/9000/-9000/9000 -JE130.35/-0.2/3.5i -P -Dc -A500 \
+                -Gburlywood -Sazure -Wthinnest -N1/thinnest,- -B20g20 -BWSne -K > GMT_App_K_1.ps
+    gmt psbasemap -R -J -O -Dk2000+c130.35/-0.2+pthicker >> GMT_App_K_1.ps
 
 .. include:: fig_includes/fig_GMT_App_K_1.rst_
 
@@ -10581,9 +10582,9 @@ resolution in *GMT*. The plot is generated by the script:
 
   ::
 
-    pscoast -Rk-2000/2000/-2000/2000 -JE130.35/-0.2/3.5i -P -Dl -A100 -Gburlywood \
-            -Sazure -Wthinnest -N1/thinnest,- -B10g5 -BWSne -K > GMT_App_K_2.ps
-    psbasemap -R -J -O -Dk500+c130.35/-0.2+pthicker >> GMT_App_K_2.ps
+    gmt pscoast -Rk-2000/2000/-2000/2000 -JE130.35/-0.2/3.5i -P -Dl -A100 -Gburlywood \
+                -Sazure -Wthinnest -N1/thinnest,- -B10g5 -BWSne -K > GMT_App_K_2.ps
+    gmt psbasemap -R -J -O -Dk500+c130.35/-0.2+pthicker >> GMT_App_K_2.ps
 
 .. include:: fig_includes/fig_GMT_App_K_2.rst_
 
@@ -10603,12 +10604,12 @@ borders now exceeds 3.35 Mbytes. The plot is generated by the script:
 
   ::
 
-    pscoast -Rk-500/500/-500/500 -JE130.35/-0.2/3.5i -P -Di -A20 -Gburlywood \
-            -Sazure -Wthinnest -N1/thinnest,- -B2g1 -BWSne -K > GMT_App_K_3.ps
-    echo 133 2 | psxy -R -J -O -K -Sc1.4i -Gwhite >> GMT_App_K_3.ps
-    psbasemap -R -J -O -K -Tm133/2/1i::+45/10/5 --FONT_TITLE=12p --MAP_TICK_LENGTH_PRIMARY=0.05i \
-              --FONT_ANNOT_SECONDARY=8p >> GMT_App_K_3.ps
-    psbasemap -R -J -O -Dk100+c130.35/-0.2+pthicker >> GMT_App_K_3.ps
+    gmt pscoast -Rk-500/500/-500/500 -JE130.35/-0.2/3.5i -P -Di -A20 -Gburlywood \
+                -Sazure -Wthinnest -N1/thinnest,- -B2g1 -BWSne -K > GMT_App_K_3.ps
+    echo 133 2 | gmt psxy -R -J -O -K -Sc1.4i -Gwhite >> GMT_App_K_3.ps
+    gmt psbasemap -R -J -O -K --FONT_TITLE=12p --MAP_TICK_LENGTH_PRIMARY=0.05i \
+                  -Tm133/2/1i::+45/10/5 --FONT_ANNOT_SECONDARY=8p >> GMT_App_K_3.ps
+    gmt psbasemap -R -J -O -Dk100+c130.35/-0.2+pthicker >> GMT_App_K_3.ps
 
 .. include:: fig_includes/fig_GMT_App_K_3.rst_
 
@@ -10627,9 +10628,9 @@ generated by these commands:
 
   ::
 
-    pscoast -Rk-100/100/-100/100 -JE130.35/-0.2/3.5i -P -Dh -A1 -Gburlywood \
-            -Sazure -Wthinnest -N1/thinnest,- -B30mg10m -BWSne -K > GMT_App_K_4.ps
-    psbasemap -R -J -O -Dk20+c130.35/-0.2+pthicker >> GMT_App_K_4.ps
+    gmt pscoast -Rk-100/100/-100/100 -JE130.35/-0.2/3.5i -P -Dh -A1 -Gburlywood \
+                -Sazure -Wthinnest -N1/thinnest,- -B30mg10m -BWSne -K > GMT_App_K_4.ps
+    gmt psbasemap -R -J -O -Dk20+c130.35/-0.2+pthicker >> GMT_App_K_4.ps
 
 .. include:: fig_includes/fig_GMT_App_K_4.rst_
 
@@ -10647,8 +10648,8 @@ reproduced by the single command:
 
   ::
 
-    pscoast -Rk-20/20/-20/20 -JE130.35/-0.2/3.5i -P -Df -Gburlywood \
-            -Sazure -Wthinnest -N1/thinnest,- -B10mg2m -BWSne > GMT_App_K_5.ps
+    gmt pscoast -Rk-20/20/-20/20 -JE130.35/-0.2/3.5i -P -Df -Gburlywood \
+                -Sazure -Wthinnest -N1/thinnest,- -B10mg2m -BWSne > GMT_App_K_5.ps
 
 .. include:: fig_includes/fig_GMT_App_K_5.rst_
 
@@ -10691,8 +10692,7 @@ Redhat, Inc.). This free version works on any Windows version and it
 comes with both the Bourne Again shell **bash** and the **tcsh**.
 You also have access to most standard GNU development tools such as
 compilers and text processing tools (**awk**, **grep**, **sed**,
-etc.). Note that executables prepared for Windows will also run under
-Cygwin.
+etc.). Note that executables prepared for Windows will also run under Cygwin.
 
 Follow the instructions on the Cygwin page [48]_ on how to install the
 package; note you must explicitly add all the development tool packages
@@ -10875,8 +10875,6 @@ fill and/or pen, and include basic geometric symbols as part of the
 overall design (e.g., circles, triangles, etc.). The available commands
 are listed in Table [tbl:custsymb].
 
-[H]
-
 +---------------+------------+----------------------------------------+--------------------------------------------+
 | **Name**      | **Code**   | **Purpose**                            | **Arguments**                              |
 +===============+============+========================================+============================================+
@@ -10946,8 +10944,6 @@ There are two types of conditional statements in the macro language: A
 simple condition preceding a single command, or a more elaborate
 if-then-elseif-else construct. In any test you may use one (and only
 one) of many logical operators, as listed in Table [tbl:custop].
-
-[H]
 
 +----------------+----------------------------------------------------------+
 | **Operator**   | **Purpose**                                              |
@@ -11699,8 +11695,6 @@ The words and characters used to specify the geometry type (preceded by
 the **@G** code sequence on the header comment line), are listed in
 Table [tbl:geometries].
 
-[h]
-
 +----------+-----------------+---------------------------------------------------------------------------------------+
 | **Code** | **Geometry**    | **Description**                                                                       |
 +==========+=================+=======================================================================================+
@@ -11759,8 +11753,6 @@ Projection information will be represented as four optional strings,
 prefixed by **@J** (J being the *GMT* character for projection
 information. The **@J** code will be followed by a character identifying
 the format, as shown in Table [tbl:projectspec].
-
-[H]
 
 +------------+-------------------------------------------------------------------------------------------------+
 | **Code**   | **Projection Specification**                                                                    |
