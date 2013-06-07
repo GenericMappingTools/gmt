@@ -133,8 +133,8 @@ the positive or the negative wiggle may be shaded. The resulting
 
 .. include:: explain_help.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
 To plot the magnetic anomaly stored in the file track.xym along track @
 1000 nTesla/cm (after removing a mean value of 32000 nTesla), using a
@@ -142,11 +142,13 @@ To plot the magnetic anomaly stored in the file track.xym along track @
 mode, with positive anomalies in red on a blue track of width 0.25
 points, use
 
-    pswiggle track.xym -R-20/10/-80/-60 **-JS**\ 0/90/15\ **c** -Z1000 -B5
-    -C32000 -P -Gred -T0.25p,blue -S1000 -V > track\_xym.ps
+   ::
 
-`Bugs <#toc7>`_
----------------
+    gmt pswiggle track.xym -R-20/10/-80/-60 -JS0/90/15c -Z1000 -B5 \
+                 -C32000 -P -Gred -T0.25p,blue -S1000 -V > track_xym.ps
+
+Bugs
+----
 
 Sometimes the (x,y) coordinates are not printed with enough significant
 digits, so the local perpendicular to the track swings around a lot. To
@@ -158,12 +160,12 @@ see if this is the problem, you should do this:
 this). Then if these numbers jump around a lot, you may do this:
 
     awk '{ print NR, $0 }’ yourdata.xyz \| filter1d -Fb5 -N4/0
-    --FORMAT\_FLOAT\_OUT=%.12g > smoothed.xyz
+    --FORMAT_FLOAT_OUT=%.12g > smoothed.xyz
 
 and plot this data set instead.
 
-`See Also <#toc8>`_
--------------------
+See Also
+--------
 
 `gmt <gmt.html>`_, `gmtcolors <gmtcolors.html>`_,
 `filter1d <filter1d.html>`_,

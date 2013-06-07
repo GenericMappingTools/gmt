@@ -4,33 +4,36 @@ psrose
 
 psrose - Plot a polar histogram (rose, sector, windrose diagrams)
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
-**psrose** [ *table* ] [ **-A**\ [**r**]*sector\_width* ] [
-**-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ [*mode\_file*\ ] ]
-[ **-D** ] [ **-I** ] [ **-G**\ *fill* ] [ **-I** ] [ **-K** ] [
-**-L**\ [*wlabel*/*elabel*/*slabel*/*nlabel*] ] [ **-M**\ *parameters* ]
-[ **-O** ] [ **-P** ] [ **-R**\ *r0*/*r1*/*az\_0*/*az\_1* ] [
-**-S**\ [**n**]*radial\_scale* ] [ **-T** ] [
-**-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*\ ]
-] [ **-W**\ [**v**\ ]\ *pen* ] [
-**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-] [
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-] [ **-Z**\ **u**\ \|\ *scale* ] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [
-**-c**\ *copies* ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [
-**-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
-] [ **-t**\ [*transp*\ ] ] [ **-:**\ [**i**\ \|\ **o**] ]
+**psrose** [ *table* ] [ **-A**\ [**r**]*sector\_width* ]
+[ |SYN_OPT-B| ]
+[ **-C**\ [*mode_file*] ]
+[ **-D** ] [ **-I** ] [ **-G**\ *fill* ] [ **-I** ] [ **-K** ]
+[ **-L**\ [*wlabel*/*elabel*/*slabel*/*nlabel*] ] [ **-M**\ *parameters* ]
+[ **-O** ] [ **-P** ]
+[ **-R**\ *r0*/*r1*/*az_0*/*az_1* ]
+[ **-S**\ [**n**]*radial\_scale* ] [ **-T** ]
+[ |SYN_OPT-U| ]
+[ |SYN_OPT-V| ]
+[ **-W**\ [**v**]\ *pen* ]
+[ |SYN_OPT-X| ]
+[ |SYN_OPT-Y| ]
+[ **-Z**\ **u**\ \|\ *scale* ] [ **-bi**\ [*ncols*\ ][*type*\ ] ]
+[ |SYN_OPT-c| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-p| ]
+[ |SYN_OPT-t| ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **psrose** reads (length,azimuth) pairs from *file* [or standard input]
 and generates *PostScript* code that will plot a windrose diagram.
@@ -39,13 +42,13 @@ or rose diagram). Options include full circle and half circle plots. The
 *PostScript* code is written to standard output. The outline of the
 windrose is drawn with the same color as **MAP\_DEFAULT\_PEN**. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 None.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_intables| replace:: If a file with only
     azimuths are given, use **-i** to indicate the single column with
@@ -63,7 +66,7 @@ None.
 |   Remember that "x" here is
 |   radial distance and "y" is azimuth. The ylabel may be used to plot a figure caption.
 
-**-C**\ [*mode\_file*\ ]
+**-C**\ [*mode_file*]
     Plot vectors showing the principal directions given in the *modes*
     file. If no file is given, compute and plot mean direction. See
     **-M** to control vector attributes.
@@ -87,6 +90,7 @@ None.
     full-circle plot the default is WEST/EAST/SOUTH/NORTH and for
     half-circle the default is 90W/90E/-/0. A - in any entry disables
     that label. Use **-L** with no argument to disable all four labels
+
 **-M**\ *parameters*
     Used with **-C** to modify vector parameters. For vector heads,
     append vector head *size* [Default is 0, i.e., a line]. See VECTOR
@@ -100,9 +104,11 @@ None.
     Specifies the ’region’ of interest in (r,azimuth) space. r0 is 0, r1
     is max length in units. For azimuth, specify either -90/90 or 0/180
     for half circle plot or 0/360 for full circle.
-**-S**\ [**n**]*radial\_scale*
+
+**-S**\ [**n**]*radial_scale*
     Specifies radius of circle. Use **-Sn** to normalize input radii to
     go from 0 to 1.
+
 **-T**
     Specifies that the input data is orientation data (has a 180 degree
     ambiguity) instead of true 0-360 degree directions [Default]. 
@@ -147,38 +153,41 @@ None.
 
 .. include:: explain_vectors.rst_
 
-`Examples <#toc7>`_
--------------------
+Examples
+--------
 
 To plot a half circle rose diagram of the data in the file
-fault\_segments.az\_r (containing pairs of (azimuth, length in meters),
+fault_segments.az_r (containing pairs of (azimuth, length in meters),
 using a 10 degree bin sector width, on a circle of radius = 3 inch, grid
 going out to radius = 150 km in steps of 25 km with a 30 degree sector
 interval, radial direction annotated every 50 km, using a light blue
 shading outlined by a solid red pen (width = 0.75 points), draw the mean
 azimuth, and shown in Portrait orientation, use:
 
-    psrose fault\_segments.az\_r -R0/150/-90/90 -B50g25:"Fault
-    length":/g30:."Rose diagram":-S3i -Ar10 -Glightblue
-    -W0.75p,red -Z0.001 -C -P -T -: \| lpr
+   ::
+
+    gmt psrose fault_segments.az_r -R0/150/-90/90 -B50g25:"Fault
+               length":/g30:."Rose diagram":-S3i -Ar10 -Glightblue
+               -W0.75p,red -Z0.001 -C -P -T -: > half_rose.ps
 
 To plot a full circle wind rose diagram of the data in the file
-lines.r\_az, on a circle of radius = 5 cm, grid going out to radius =
+lines.r_az, on a circle of radius = 5 cm, grid going out to radius =
 500 units in steps of 100 with a 45 degree sector interval, using a
 solid pen (width = 0.5 point, and shown in landscape [Default]
 orientation with UNIX timestamp and command line plotted, use:
 
-    psrose lines.az\_r -R0/500/0/360 -S5c -Bg100/g45:."Windrose
-    diagram": -W0.5p -Uc \| lpr
+   ::
 
-`Bugs <#toc8>`_
----------------
+    gmt psrose lines.az_r -R0/500/0/360 -S5c -Bg100/g45:."Windrose diagram": -W0.5p -Uc | lpr
+
+Bugs
+----
 
 No default radial scale and grid settings for polar histograms. User
 must run **psrose** **-I** to find max length in binned data set.
 
-`See Also <#toc9>`_
--------------------
+See Also
+--------
 
 `gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
 `gmtcolors <gmtcolors.html>`_, `pshistogram <pshistogram.html>`_

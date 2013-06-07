@@ -4,37 +4,39 @@ psmask
 
 psmask - Use data tables to clip or mask map areas with no coverage
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
 **psmask** [ *table* ]
-**-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
+|SYN_OPT-I|
 **-J**\ *parameters*
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ] [
-**-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-D**\ *dumpfile* ] [
-**-G**\ *fill* ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [
-**-N** ] [ **-O** ] [ **-P** ] [ **-Q**\ *cut* ] [
-**-S**\ *search\_radius*\ [*unit*\ ] ] [ **-T** ] [
-**-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*\ ]
-] [
-**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-] [
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [ **-c**\ *copies* ] [
-**-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [
-**-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
-] [ **-r** ] [ **-t**\ [*transp*\ ] ] [ **-:**\ [**i**\ \|\ **o**] ]
+|SYN_OPT-R|
+[ |SYN_OPT-B| ]
+[ **-D**\ *dumpfile* ]
+[ **-G**\ *fill* ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ]
+[ **-N** ] [ **-O** ] [ **-P** ] [ **-Q**\ *cut* ]
+[ **-S**\ *search\_radius*\ [*unit*] ] [ **-T** ]
+[ |SYN_OPT-U| ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-X| ]
+[ |SYN_OPT-Y| ]
+[ **-bi**\ [*ncols*\ ][*type*\ ] ]
+[ |SYN_OPT-c| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-p| ]
+[ **-r** ]
+[ |SYN_OPT-t| ]
+[ |SYN_OPT-:| ]
 
 **psmask** **-C** [ **-K** ] [ **-O** ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **psmask** reads a (*x*,\ *y*,\ *z*) file [or standard input] and uses
 this information to find out which grid cells are reliable. Only grid
@@ -48,8 +50,8 @@ contouring to create polygons that will clip out regions of no interest.
 When clipping is initiated, it will stay in effect until turned off by a
 second call to **psmask** using the **-C** option. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required
+--------
 
 .. include:: explain_-I.rst_
 
@@ -61,8 +63,8 @@ second call to **psmask** using the **-C** option.
 .. |Add_-Rz| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-Rz.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
@@ -142,25 +144,31 @@ second call to **psmask** using the **-C** option.
 
 .. include:: explain_distunits.rst_
 
-`Examples <#toc7>`_
--------------------
+Examples
+--------
 
 To make an overlay *PostScript* file that will mask out the regions of a
 contour map where there is no control data using clip polygons, use:
 
-    psmask africa\_grav.xyg -R20/40/20/40 -I5m -JM10i -O -K > mask.ps
+   ::
+
+    gmt psmask africa_grav.xyg -R20/40/20/40 -I5m -JM10i -O -K > mask.ps
 
 We do it again, but this time we wish to save the clipping polygons to
-file all\_pols.txt:
+file all_pols.txt:
 
-    psmask africa\_grav.xyg -R20/40/20/40 -I5m -Dall\_pols.txt
+   ::
+
+    gmt psmask africa_grav.xyg -R20/40/20/40 -I5m -Dall_pols.txt
 
 A repeat of the first example but this time we use white tiling:
 
-    psmask africa\_grav.xyg -R20/40/20/40 -I5m -JM10i -T -O -K -Gwhite > mask.ps
+   ::
 
-`See Also <#toc8>`_
--------------------
+    gmt psmask africa_grav.xyg -R20/40/20/40 -I5m -JM10i -T -O -K -Gwhite > mask.ps
+
+See Also
+--------
 
 `gmt <gmt.html>`_, `gmtcolors <gmtcolors.html>`_,
 `grdmask <grdmask.html>`_, `surface <surface.html>`_,

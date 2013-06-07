@@ -4,66 +4,68 @@ psscale
 
 psscale - Plot a gray or color scale-bar on maps
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
-**psscale** **-D**\ *xpos*/*ypos*/*length*/*width*\ [**h**\ ] [
-**-A**\ [**a**\ \|\ **l**\ \|\ **c**] ] [
-**-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ *cpt\_file* ] [
-**-E**\ [**b**\ \|\ **f**][*length*\ ][\ **+n**\ [*text*\ ]] ] [
-**-I**\ [*max\_intens*\ \|\ *low\_i*/*high\_i*] ] [ **-J**\ *parameters*
-] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [
-**-L**\ [**i**\ ][*gap*\ ] ] [ **-M** ] [ **-N**\ *dpi* ] [ **-O** ] [
-**-P** ] [ **-Q** ] [
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ] ] [
-**-S** ] [
-**-T**\ [**+p**\ *pen*][\ **+g**\ *fill*][\ **+l**\ \|\ **r**\ \|\ **b**\ \|\ **t**\ *off*]
-] [ **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [
-**-V**\ [*level*\ ] ] [
-**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-] [
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-] [ **-Z**\ *zfile* ] [ **-c**\ *copies* ] [
-**-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
-] [ **-t**\ [*transp*\ ] ]
+**psscale** **-D**\ *xpos*/*ypos*/*length*/*width*\ [**h**\ ]
+[ **-A**\ [**a**\ \|\ **l**\ \|\ **c**] ]
+[ |SYN_OPT-B| ]
+[ **-C**\ *cpt\_file* ]
+[ **-E**\ [**b**\ \|\ **f**][*length*\ ][\ **+n**\ [*text*\ ]] ]
+[ **-I**\ [*max\_intens*\ \|\ *low\_i*/*high\_i*] ]
+[ **-J**\ *parameters* ]
+[ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ]
+[ **-L**\ [**i**\ ][*gap*\ ] ] [ **-M** ] [ **-N**\ *dpi* ] [ **-O** ]
+[ **-P** ] [ **-Q** ]
+[ |SYN_OPT-R| ]
+[ **-S** ]
+[ **-T**\ [**+p**\ *pen*][\ **+g**\ *fill*][\ **+l**\ \|\ **r**\ \|\ **b**\ \|\ **t**\ *off*] ]
+[ |SYN_OPT-U| ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-X| ]
+[ |SYN_OPT-Y| ]
+[ **-Z**\ *zfile* ]
+[ |SYN_OPT-c| ]
+[ |SYN_OPT-p| ]
+[ |SYN_OPT-t| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **psscale** plots gray scales or color scales on maps. Both horizontal
-and vertical scales are supported. For cpt\_files with gradational
+and vertical scales are supported. For cpt_files with gradational
 colors (i.e., the lower and upper boundary of an interval have different
 colors) **psscale** will interpolate to give a continuous scale.
 Variations in intensity due to shading/illumination may be displayed by
 setting the option **-I**. Colors may be spaced according to a linear
 scale, all be equal size, or by providing a file with individual tile
 widths. The font used for the annotations along the scale and optional
-units is specified by **FONT\_ANNOT\_PRIMARY**. If a label is requested,
-it is plotted with **FONT\_LABEL** 
+units is specified by **FONT_ANNOT_PRIMARY**. If a label is requested,
+it is plotted with **FONT_LABEL** 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
-**-D**\ *xpos*/*ypos*/*length*/*width*\ [**h**\ ]
+**-D**\ *xpos*/*ypos*/*length*/*width*\ [**h**]
     Defines the position of the center/top (for horizontal scale) or
     center/left (for vertical scale) and the dimensions of the scale.
     Give a negative length to reverse the scalebar. Append *h* to get a
     horizontal scale [Default is vertical].
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-A**\ [**a**\ \|\ **l**\ \|\ **c**]
     Place annotations and labels above (instead of below) horizontal
     scalebars and to the left (instead of the right) of vertical
     scalebars. Append **a** or **l** to move only the annotations or the
     label to the other side. Append **c** if you want to print a
-    vertical label as a column of characters (does not work with special
-    characters).
+    vertical label as a column of characters (does not work with special characters).
+
 **-B**\ [**p**\ \|\ **s**]\ *parameters*
     Set annotation, tick, and gridline interval for the colorbar. The
     x-axis label will plot beneath a horizontal bar (or vertically to
@@ -75,21 +77,23 @@ it is plotted with **FONT\_LABEL**
     provided, the default is to annotate every color level based on the
     numerical entries in the cpt file (which may be overridden by ULB
     flags in the cpt file). To specify custom text annotations for
-    intervals, you must append ;\ *annotation* to each z-slice in the
-    cpt file.
-**-C**\ *cpt\_file*
+    intervals, you must append ;\ *annotation* to each z-slice in the cpt file.
+
+**-C**\ *cpt_file*
     *cpt\_file* is the color palette file to be used. By default all
     color changes are annotated. To use a subset, add an extra column to
     the cpt-file with a L, U, or B to annotate Lower, Upper, or Both
     color segment boundaries (but see **-B**). If not given, **psscale**
     will read stdin. Like **grdview**, **psscale** can understand
     pattern specifications in the cpt file.
-**-E**\ [**b**\ \|\ **f**][*length*\ ][\ **+n**\ [*text*\ ]]
+
+**-E**\ [**b**\ \|\ **f**][*length*][\ **+n**\ [*text*]]
     Add sidebar triangles for **b**\ ack- and/or **f**\ oreground
     colors. Add **f** or **b** for only one sidebar triangle [Default
     gives both]. Optionally, append triangle height [Default is half the
     barwidth]. Finally, you can plot a rectangle with the NaN color at
     the start of the bar, labeled with *text* [NaN].
+
 **-I**\ [*max\_intens*\ \|\ *low\_i*/*high\_i*]
     Add illumination effects. Optionally, set the range of intensities
     from - to + *max\_intens*. If not specified, 1 is used.
@@ -166,24 +170,26 @@ it is plotted with **FONT\_LABEL**
 
 .. include:: explain_help.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
 To append a vertical color scale (7.5 cm long; 1.25 cm wide) to the
 right of a plot that is 6 inch wide and 4 inch high, using illumination,
 and show back- and foreground colors, and annotating every 5 units, use
 
-    psscale -D6.5i/2i/7.5c/1.25c -O -Ccolors.cpt -I -E -B5:BATHYMETRY:/:m: >> map.ps
+   ::
 
-`Notes <#toc7>`_
-----------------
+    gmt psscale -D6.5i/2i/7.5c/1.25c -O -Ccolors.cpt -I -E -B5:BATHYMETRY:/:m: > map.ps
+
+Notes
+-----
 
 When the cpt file is discrete and no illumination is specified, the
 color bar will be painted using polygons. For all other cases we must
 paint with an image. Some color printers may give slightly different
 colors for the two methods given identical RGB values.
 
-`See Also <#toc8>`_
--------------------
+See Also
+--------
 
 `gmt <gmt.html>`_, `makecpt <makecpt.html>`_, `grd2cpt <grd2cpt.html>`_

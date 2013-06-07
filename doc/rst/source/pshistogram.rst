@@ -144,13 +144,15 @@ histogram. A cumulative histogram may also be specified.
 
 .. include:: explain_help.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
 To draw a histogram of the data v3206.t containing seafloor depths,
 using a 250 meter bin width, center bars, and draw bar outline, use:
 
-    pshistogram v3206.t -JXh -W250 -F -LP0.5p -V > plot.ps
+   ::
+
+    gmt pshistogram v3206.t -JXh -W250 -F -LP0.5p -V > plot.ps
 
 If you know the distribution of your data, you may explicitly specify
 range and scales. E.g., to plot a histogram of the y-values (2nd column)
@@ -158,22 +160,24 @@ in the file errors.xy using a 1 meter bin width, plot from -10 to +10
 meters @ 0.75 cm/m, annotate every 2 m and 100 counts, and use black
 bars, run:
 
-    pshistogram errors.xy -W1 -R-10/10/0/0 **-Jx**\ LENBD(c)/0.01\ **c**
-    -B2:Error:/100:Counts: -Gblack -i1 -V > plot.ps
+   ::
+
+    gmt pshistogram errors.xy -W1 -R-10/10/0/0 -JxLENBD(c)/0.01c \
+                    -B2:Error:/100:Counts: -Gblack -i1 -V > plot.ps
 
 Since no y-range was specified, pshistogram will calculate ymax in even
 increments of 100.
 
-`Bugs <#toc7>`_
----------------
+Bugs
+----
 
 The **-W** option does not yet work properly with time series data
 (e.g., **-f**\ 0T). Thus, such variable intervals as months and years
 are not calculated. Instead, specify your interval in the same units as
-the current setting of **TIME\_UNIT**.
+the current setting of **TIME_UNIT**.
 
-`See Also <#toc8>`_
--------------------
+See Also
+--------
 
 `gmt <gmt.html>`_, `gmtcolors <gmtcolors.html>`_,
 `psbasemap <psbasemap.html>`_, `psrose <psrose.html>`_,

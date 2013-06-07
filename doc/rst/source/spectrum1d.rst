@@ -4,24 +4,24 @@ spectrum1d
 
 spectrum1d - Compute auto- [and cross- ] spectra from one [or two] time-series
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
 **spectrum1d** [ *table* ] **-S**\ *segment\_size*] [
 **-C**\ [**xycnpago**\ ] ] [ **-D**\ *dt* ] [ **-L**\ [**h**\ \|\ **m**]
-] [ **-N**\ [**+**\ ]\ *name\_stem* ] [ **-V**\ [*level*\ ] ] [ **-W** ]
-[ **-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
-**-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
-] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] ]
+] [ **-N**\ [**+**\ ]\ *name\_stem* ] [ |SYN_OPT-b| ] [ **-W** ]
+[ |SYN_OPT-b| ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-g| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **spectrum1d** reads X [and Y] values from the first [and second]
 columns on standard input [or *x[y]file*]. These values are treated as
@@ -60,8 +60,8 @@ ASCII unless **-bo**\ [*ncols*\ ][*type*\ ] is set) are as follows:
     function of frequency. Dimensionless number in [0, 1]. The
     Signal-to-Noise-Ratio (SNR) is coh / (1 - coh). SNR = 1 when coh = 0.5. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 **-S**\ *segment\_size*]
     *segment\_size* is a radix-2 number of samples per window for
@@ -73,14 +73,14 @@ ASCII unless **-bo**\ [*ncols*\ ][*type*\ ] is set) are as follows:
     Cross-spectral error bars are larger and more complicated, being a
     function also of the coherency.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 *table*
     One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ])
     files holding X(t) [Y(t)] samples in the first 1 [or 2] columns. If
-    no files are specified, **spectrum1d** will read from standard
-    input.
+    no files are specified, **spectrum1d** will read from standard input.
+
 **-C**\ [**xycnpago**\ ]
     Read the first two columns of input as samples of two time-series,
     X(t) and Y(t). Consider Y(t) to be the output and X(t) the input in
@@ -91,13 +91,16 @@ ASCII unless **-bo**\ [*ncols*\ ][*type*\ ] is set) are as follows:
     o** } in any order to create only those output files instead of the
     default [all]. **x** = xpower, **y** = ypower, **c** = cpower, **n**
     = npower, **p** = phase, **a** = admit, **g** = gain, **o** = coh.
+
 **-D**\ *dt*
     *dt* Set the spacing between samples in the time-series [Default = 1].
+
 **-L**
     Leave trend alone. By default, a linear trend will be removed prior
     to the transform. Alternatively, append **m** to just remove the
     mean value or **h** to remove the mid-value.
-**-N**\ [**+**\ ]\ *name\_stem*
+
+**-N**\ [**+**]\ *name\_stem*
     *name\_stem* Supply the name stem to be used for output files
     [Default = "spectrum"]. To place all the computed output columns in
     a single table, use **-N+**. 
@@ -130,28 +133,32 @@ ASCII unless **-bo**\ [*ncols*\ ][*type*\ ] is set) are as follows:
 
 .. include:: explain_precision.rst_
 
-`Examples <#toc7>`_
--------------------
+Examples
+--------
 
 Suppose data.g is gravity data in mGal, sampled every 1.5 km. To write
 its power spectrum, in mGal\*\*2-km, to the file data.xpower, use
 
-    spectrum1d data.g -S256 -D1.5 -Ndata
+   ::
+
+    gmt spectrum1d data.g -S256 -D1.5 -Ndata
 
 Suppose in addition to data.g you have data.t, which is topography in
 meters sampled at the same points as data.g. To estimate various
 features of the transfer function, considering data.t as input and
 data.g as output, use
 
-    paste data.t data.g \| spectrum1d -S256 -D1.5 -Ndata -C
+   ::
 
-`See Also <#toc8>`_
--------------------
+    paste data.t data.g | gmt spectrum1d -S256 -D1.5 -Ndata -C
+
+See Also
+--------
 
 `gmt <gmt.html>`_, `grdfft <grdfft.html>`_
 
-`References <#toc9>`_
----------------------
+References
+----------
 
 Bendat, J. S., and A. G. Piersol, 1986, Random Data, 2nd revised ed.,
 John Wiley & Sons.

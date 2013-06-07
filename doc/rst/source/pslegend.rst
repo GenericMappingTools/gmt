@@ -226,13 +226,13 @@ Mathangle: Angles are -10 and 45 degrees, with arrow head size 30% of symbol siz
 
 Wedge: Angles are -30 and 30 degrees.
 
-`Examples <#toc8>`_
--------------------
+Examples
+--------
 
 To add an example of a legend to a Mercator plot (map.ps) with the given
 specifications, use
 
-    pslegend -R-10/10/-10/10 -JM6i -F+gazure1 -Dx0.5i/0.5i/5i/3.3i/BL
+    gmt pslegend -R-10/10/-10/10 -JM6i -F+gazure1 -Dx0.5i/0.5i/5i/3.3i/BL \
     -C0.1i/0.1i -L1.2 -B5f1 << EOF >> map.ps
 
     # Legend test for pslegend
@@ -277,7 +277,7 @@ specifications, use
 
     G 0.05i
 
-    I SOEST\_logo.ras 3i CT
+    I SOEST_logo.ras 3i CT
 
     G 0.05i
 

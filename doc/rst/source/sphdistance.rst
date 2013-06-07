@@ -131,14 +131,14 @@ and then calculate distances from the data to a global 1x1 degree grid, use
 
    ::
 
-    sphdistance testdata.txt -Rg -I1 -Gglobedist.nc
+    gmt sphdistance testdata.txt -Rg -I1 -Gglobedist.nc
 
 To generate the same grid in two steps using **sphtriangulate** separately, try
 
    ::
 
-    sphtriangulate testdata.txt -Qv > voronoi.d
-    sphdistance -Qvoronoi.d -Rg -I1 -Gglobedist.nc
+    gmt sphtriangulate testdata.txt -Qv > voronoi.d
+    gmt sphdistance -Qvoronoi.d -Rg -I1 -Gglobedist.nc
 
 See Also
 --------

@@ -46,8 +46,7 @@ Projections are defined in any (but only) one of three ways:
 (Definition 1) By a Center **-C** and an Azimuth **-A** in degrees
 clockwise from North.
 
-(Definition 2) By a Center **-C** and end point E of the projection path
-**-E**.
+(Definition 2) By a Center **-C** and end point E of the projection path **-E**.
 
 (Definition 3) By a Center **-C** and a roTation pole position **-T**.
 
@@ -187,47 +186,61 @@ Examples
 
 To generate points every 10km along a great circle from 10N,50W to 30N,10W:
 
-    project -C-50/10 -E-10/30 -G10 -Q > great\_circle\_points.xyp
+   ::
 
-(Note that great\_circle\_points.xyp could now be used as input for **grdtrack**, etc. ).
+    gmt project -C-50/10 -E-10/30 -G10 -Q > great_circle_points.xyp
+
+(Note that great_circle_points.xyp could now be used as input for **grdtrack**, etc. ).
 
 To generate points every 10km along a small circle of colatitude 60 from 10N,50W to 30N,10W:
 
-    project -C-50/10 -E-10/30 -G10/60 -Q > small\_circle\_points.xyp
+   ::
+
+    gmt project -C-50/10 -E-10/30 -G10/60 -Q > small_circle_points.xyp
 
 To create a partial small circle of colatitude 80 about a pole at
 40E,85N, with extent of 45 degrees to either side of the meridian
 defined by the great circle from the pole to a point 15E,15N, try
 
-    project -C15/15 -T40/85 -G1/80 -L-45/45 > some\_circle.xyp
+   ::
+
+    gmt project -C15/15 -T40/85 -G1/80 -L-45/45 > some_circle.xyp
 
 To project the shiptrack gravity, magnetics, and bathymetry in
 c2610.xygmb along a great circle through an origin at 30S, 30W, the
 great circle having an azimuth of N20W at the origin, keeping only the
 data from NE of the profile and within +/- 500 km of the origin, run:
 
-    project c2610.xygmb -C-30/-30 -A-20 -W-10000/0 -L-500/500 -Fpz -Q > c2610\_projected.pgmb
+   ::
+
+    gmt project c2610.xygmb -C-30/-30 -A-20 -W-10000/0 -L-500/500 -Fpz -Q > c2610_projected.pgmb
 
 (Note in this example that **-W**-10000/0 is used to admit any value
 with a large negative *q* coordinate. This will take those points which
 are on our right as we walk along the great circle path, or to the NE in this example.)
 
 To make a Cartesian coordinate transformation of mydata.xy so that the
-new origin is at 5,3 and the new *x* `axis (*p*) <axis.p.html>`_ makes
+new origin is at 5,3 and the new *x* axis (*p*) makes
 an angle of 20 degrees with the old *x* axis, use:
 
-    project mydata.xy -C5/3 -A70 -Fpq > mydata.pq
+   ::
+
+    gmt project mydata.xy -C5/3 -A70 -Fpq > mydata.pq
 
 To take data in the file pacific.lonlat and transform it into oblique
 coordinates using a pole from the hotspot reference frame and placing
 the oblique zero meridian (*p* = 0 line) through Tahiti, run:
 
-    project pacific.lonlat -T-75/68 -C-149:26/-17:37 -Fpq > pacific.pq
+   ::
 
-Suppose that pacific\_topo.nc is a grid file of bathymetry, and you want
+    gmt project pacific.lonlat -T-75/68 -C-149:26/-17:37 -Fpq > pacific.pq
+
+Suppose that pacific_topo.nc is a grid file of bathymetry, and you want
 to make a file of flowlines in the hotspot reference frame. If you run:
 
-    grd2xyz pacific\_topo.nc \| project -T-75/68 -C0/-90 -Fxyq \| xyz2grd -Retc -Ietc -Cflow.nc
+   ::
+
+    gmt grd2xyz pacific_topo.nc | project -T-75/68 -C0/-90 -Fxyq | xyz2grd -Retc -Ietc -Cflow.nc
 
 then flow.nc is a file in the same area as pacific\_topo.nc, but flow
 contains the latitudes about the pole of the projection. You now can use
