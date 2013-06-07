@@ -4,34 +4,35 @@ surface
 
 surface - Grid table data using adjustable tension continuous curvature splines
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
 **surface** [ *table* ] **-G**\ *outputfile.nc*
-**-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [
-**-A**\ *aspect\_ratio* ] [ **-C**\ *convergence\_limit* ] [
-**-Ll**\ *lower* ] [ **-Lu**\ *upper* ] [ **-N**\ *max\_iterations* ] [
-**-Q** ] [ **-S**\ *search\_radius*\ [**m**\ \|\ **s**] ] [
-**-T**\ [**i**\ \|\ **b**] ]\ *tension\_factor* [ **-V**\ [*level*\ ] ]
-[ **-Z**\ *over-relaxation\_factor* ] [
-**-a**\ *col*\ =\ *name*\ [*...*\ ] ] [ **-bi**\ [*ncols*\ ][*type*\ ] ]
-[ **-f**\ *colinfo* ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-:**\ [**i**\ \|\ **o**] ]
+|SYN_OPT-I|
+|SYN_OPT-R|
+[ **-A**\ *aspect_ratio* ] [ **-C**\ *convergence_limit* ]
+[ **-Ll**\ *lower* ] [ **-Lu**\ *upper* ] [ **-N**\ *max_iterations* ]
+[ **-Q** ] [ **-S**\ *search_radius*\ [**m**\ \|\ **s**] ]
+[ **-T**\ [**i**\ \|\ **b**] ]\ *tension_factor* [ **-V**\ [*level*] ]
+[ **-Z**\ *over-relaxation_factor* ]
+[ **-a**\ *col*\ =\ *name*\ [*...*\ ] ] [ **-bi**\ [*ncols*\ ][*type*] ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **surface** reads randomly-spaced (x,y,z) triples from standard input
 [or *table*] and produces a binary grid file of gridded values z(x,y) by
 solving:
 
-(1 - T) \* L (L (z)) + T \* L (z) = 0
+   (1 - T) \* L (L (z)) + T \* L (z) = 0
 
 where T is a tension factor between 0 and 1, and L indicates the
 Laplacian operator. T = 0 gives the "minimum curvature" solution which
@@ -119,7 +120,7 @@ boundary conditions in the longitude direction.
     **-V** will report only after each regional grid is converged.
 .. include:: explain_-V.rst_
 
-**-Z**\ *over-relaxation\_factor*
+**-Z**\ *over-relaxation_factor*
     Over-relaxation factor. This parameter is used to accelerate the
     convergence; it is a number between 1 and 2. A value of 1 iterates
     the equations exactly, and will always assure stable convergence.
@@ -149,18 +150,20 @@ boundary conditions in the longitude direction.
 .. include:: explain_float.rst_
 
 
-`Examples <#toc7>`_
--------------------
+Examples
+--------
 
 To grid 5 by 5 minute gravity block means from the ASCII data in
-hawaii\_5x5.xyg, using a *tension\_factor* = 0.25, a
-*convergence\_limit* = 0.1 milligal, writing the result to a file called
-hawaii\_grd.nc, and monitoring each iteration, try:
+hawaii_5x5.xyg, using a *tension_factor* = 0.25, a
+*convergence_limit* = 0.1 milligal, writing the result to a file called
+hawaii_grd.nc, and monitoring each iteration, try:
 
-    surface hawaii\_5x5.xyg -R198/208/18/25 -I5m -Ghawaii\_grd.nc -T0.25 -C0.1 -Vl
+   ::
 
-`Bugs <#toc8>`_
----------------
+    gmt surface hawaii_5x5.xyg -R198/208/18/25 -I5m -Ghawaii_grd.nc -T0.25 -C0.1 -Vl
+
+Bugs
+----
 
 **surface** will complain when more than one data point is found for any
 node and suggest that you run **blockmean**, **blockmedian**, or
@@ -185,8 +188,8 @@ grid using `grdsample <grdsample.html>`_ **-T**.
 `nearneighbor <nearneighbor.html>`_,
 `triangulate <triangulate.html>`_
 
-`References <#toc10>`_
-----------------------
+References
+----------
 
 Smith, W. H. F, and P. Wessel, 1990, Gridding with continuous curvature
 splines in tension, *Geophysics*, 55, 293-305.

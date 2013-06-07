@@ -5,25 +5,25 @@ trend1d
 trend1d - Fit a [weighted] [robust] polynomial [or Fourier] model for y
 = f(x) to xy[w] data
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
 **trend1d** [ *table* ] **-F**\ **xymrw\|p**
-**-N**\ [**f**\ ]\ *n\_model*\ [**r**\ ] [ *xy[w]file* ] [
-**-C**\ *condition\_number* ] [ **-I**\ [*confidence\_level*\ ] ] [
-**-V**\ [*level*\ ] ] [ **-W** ] [
-**-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
-**-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
-**-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-:**\ [**i**\ \|\ **o**] ]
+**-N**\ [**f**]\ *n\_model*\ [**r**] [ *xy[w]file* ]
+[ **-C**\ *condition\_number* ] [ **-I**\ [*confidence\_level*] ]
+[ |SYN_OPT-V| ] [ **-W** ]
+[ |SYN_OPT-b| ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **trend1d** reads x,y [and w] values from the first two [three] columns
 on standard input [or *file*] and fits a regression model y = f(x) + e
@@ -32,8 +32,8 @@ as polynomial or Fourier, and the fit may be made robust by iterative
 reweighting of the data. The user may also search for the number of
 terms in f(x) which significantly reduce the variance in y. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 **-F**\ **xymrw\|p**
     Specify up to five letters from the set {**x y m r w**\ } in any
@@ -48,8 +48,8 @@ terms in f(x) which significantly reduce the variance in y.
     to do a robust fit. E.g., a robust quadratic model is
     **-N**\ *3*\ **r**.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 *table*
     One or more ASCII [or binary, see **-bi**\ [*ncols*\ ][*type*\ ]]
@@ -97,8 +97,8 @@ terms in f(x) which significantly reduce the variance in y.
 
 .. include:: explain_precision.rst_
 
-`Remarks <#toc7>`_
-------------------
+Remarks
+-------
 
 If a Fourier model is selected, the domain of x will be shifted and
 scaled to [-pi, pi] and the basis functions used will be 1, cos(x),
@@ -124,7 +124,7 @@ terms in a model is not significant at a very high degree of confidence.
 For example, with 120 degrees of freedom, Chi-Squared must decrease by
 26% or more to be significant at the 95% confidence level. If you want
 to keep iterating as long as Chi-Squared is decreasing, set
-*confidence\_level* to zero.
+*confidence_level* to zero.
 
 A low confidence limit (such as the default value of 0.51) is needed to
 make the robust method work. This method iteratively reweights the data
@@ -137,30 +137,36 @@ significant. If the procedure needs a few iterations to successfully
 attenuate their effect, the significance level of the F test must be
 kept low.
 
-`Examples <#toc8>`_
--------------------
+Examples
+--------
 
 To remove a linear trend from data.xy by ordinary least squares, use:
 
-    trend1d data.xy -Fxr -N2 > detrended\_data.xy
+   ::
+
+    gmt trend1d data.xy -Fxr -N2 > detrended_data.xy
 
 To make the above linear trend robust with respect to outliers, use:
 
-    trend1d data.xy -Fxr -N2r > detrended\_data.xy
+   ::
+
+    gmt trend1d data.xy -Fxr -N2r > detrended_data.xy
 
 To find out how many terms (up to 20, say in a robust Fourier
 interpolant are significant in fitting data.xy, use:
 
-    trend1d data.xy -Nf20r -I -V
+   ::
 
-`See Also <#toc9>`_
--------------------
+    gmt trend1d data.xy -Nf20r -I -V
+
+See Also
+--------
 
 `gmt <gmt.html>`_, `gmtmath <gmtmath.html>`_,
 `grdtrend <grdtrend.html>`_, `trend2d <trend2d.html>`_
 
-`References <#toc10>`_
-----------------------
+References
+----------
 
 Huber, P. J., 1964, Robust estimation of a location parameter, *Ann.
 Math. Stat.*, **35**, 73-101.
