@@ -4,8 +4,8 @@ psxyz
 
 psxyz - Plot lines, polygons, and symbols in 3-D
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
@@ -18,22 +18,24 @@ psxyz - Plot lines, polygons, and symbols in 3-D
 [ **-S**\ [*symbol*][\ *size*\ \|\ **+s**\ *scale*\ [**u**][/*origin*][**l**]][/*size_y*] ] 
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
-[ **-W**\ [**-**\ \|\ **+**][*pen*\ ] ] 
+[ **-W**\ [**-**\ \|\ **+**][*pen*] ] 
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-a| ] 
-[ **-bi**\ [*ncols*\ ][*type*\ ] ] [ **-c**\ *copies* ] 
-[ **-f**\ *colinfo* ] 
+[ **-bi**\ [*ncols*\ ][*type*\ ] ]
+[ |SYN_OPT-c| ]
+[ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-p| ]
-[ **-t**\ [*transp*] ] [ **-:**\ [**i**\ \|\ **o**] ]
+[ |SYN_OPT-t| ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **psxyz** reads (x,y,z) triplets from *files* [or standard input] and
 generates *PostScript* code that will plot lines, polygons, or symbols
@@ -48,8 +50,8 @@ whether the polygon outline is drawn or not. If a symbol is selected,
 **-G** and **-W** determines the fill and outline/no outline,
 respectively. The *PostScript* code is written to standard output. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 .. include:: explain_-J.rst_
 
@@ -61,8 +63,8 @@ respectively. The *PostScript* code is written to standard output.
 .. |Add_-Rz| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-Rz.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
@@ -78,7 +80,7 @@ respectively. The *PostScript* code is written to standard output.
     **-Z**\ *val* string. The *val* will control the color of the line or
     polygon (if **-L** is set) via the cpt file.
 
-**-D**\ *dx*/*dy*\ [/*dz*\ ]
+**-D**\ *dx*/*dy*\ [/*dz*]
     Offset the plot symbol or line locations by the given amounts
     *dx/dy*\ [*dz*\ ] [Default is no offset].
 
@@ -154,17 +156,19 @@ respectively. The *PostScript* code is written to standard output.
 
 .. include:: explain_vectors.rst_
 
-`Examples <#toc7>`_
--------------------
+Examples
+--------
 
 To plot blue columns (width = 1.25 cm) at the positions listed in the
 file heights.xyz on a 3-D projection of the space (0-10), (0-10),
 (0-100), with tickmarks every 2, 2, and 10, viewing it from the
 southeast at 30 degree elevation, use:
 
-    psxyz heights.xyz -R0/10/0/10/0/100 -Jx1.25c -Jz0.125c -So1.25c -Gblue
-    -B2:XLABEL:/2:YLABEL:/10:ZLABEL::."3-D PLOT":15 -p135/30 -Uc -W -P >
-    heights.ps
+   ::
+
+    gmt psxyz heights.xyz -R0/10/0/10/0/100 -Jx1.25c -Jz0.125c -So1.25c \
+              -Gblue -B2:XLABEL:/2:YLABEL:/10:ZLABEL::."3-D PLOT":15 -p135/30 \
+              -Uc -W -P > heights.ps
 
 Segment Header Parsing
 ----------------------

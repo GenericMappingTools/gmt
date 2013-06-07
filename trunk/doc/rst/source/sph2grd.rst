@@ -18,14 +18,14 @@ Synopsis
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **sph2grd** reads a spherical harmonics coefficient table with records of
 L, M, C[L,M], S[L,M] and evaluates the spherical harmonic model on the specified grid. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 **-G**\ *grdfile*
     *grdfile* is the name of the binary output grid file. (See GRID FILE FORMAT below.) 
@@ -93,7 +93,9 @@ Examples
 To create a 1 x 1 degree global grid file from the ASCII
 coefficients in EGM96_to_360.txt, use
 
-    sph2grd EGM96_to_360.txt -GEGM96_to_360.nc -Rg -I1 -V
+   ::
+
+    gmt sph2grd EGM96_to_360.txt -GEGM96_to_360.nc -Rg -I1 -V
 
 Reference
 ---------

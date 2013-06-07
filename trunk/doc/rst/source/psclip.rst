@@ -4,8 +4,8 @@ psclip
 
 psclip - Initialize or terminate polygonal clip paths
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
@@ -32,8 +32,8 @@ psclip - Initialize or terminate polygonal clip paths
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **psclip** reads (x,y) file(s) [or standard input] and draws polygons
 that are activated as clipping paths. Several files may be read to
@@ -49,8 +49,8 @@ along the map boundary. After subsequent plotting, which will be clipped
 against these paths, the clipping may be deactivated by running
 **psclip** a second time with the **-C** option only. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 **-C**\ [**c**\ \|\ **s**\ [**a**\ \|\ *n*]
     Mark end of existing clip path(s). No input file will be processed.
@@ -75,8 +75,8 @@ against these paths, the clipping may be deactivated by running
 .. |Add_-Rz| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-Rz.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
@@ -134,28 +134,32 @@ against these paths, the clipping may be deactivated by running
 
 .. include:: explain_help.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
 To make an overlay *PostScript* file that will set up a complex clip
 area to which subsequent plotting will be confined, run:
 
-    psclip my\_region.xy -R0/40/0/40 -Jm0.3i -O -K > clip\_mask\_on.ps
+   ::
+
+    gmt psclip my_region.xy -R0/40/0/40 -Jm0.3i -O -K > clip_mask_on.ps
 
 To deactivate the clipping in an existing plotfile, run:
 
-    psclip -C -O >> complex\_plot.ps
+   ::
 
-`Bugs <#toc7>`_
----------------
+    gmt psclip -C -O >> complex_plot.ps
+
+Bugs
+----
 
 **psclip** cannot handle polygons that contain the south or north pole.
 For such polygons, you should split them into two and make each
 explicitly contain the polar point. The two clip polygons will combine
 to give the desired effect.
 
-`See Also <#toc8>`_
--------------------
+See Also
+--------
 
 `gmt <gmt.html>`_, `grdmask <grdmask.html>`_,
 `psbasemap <psbasemap.html>`_, `psmask <psmask.html>`_
