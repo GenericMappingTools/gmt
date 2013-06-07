@@ -22,7 +22,7 @@ gmt grdgradient $G.nc -A0 -Nt1 -G${G}_int.nc
 gmt grdgradient $T.nc -A0 -Nt1 -G${T}_int.nc
 scl=1.4e-5
 sclkm=1.4e-2
-gmt grdimage $T.nc -I${T}_int.nc -Jx${scl}i -Cz.cpt -P -K -X1.474i -Y1i -U/-1.224i/-0.75i/"Example 37 in Cookbook" > $ps
+gmt grdimage $T.nc -I${T}_int.nc -Jx${scl}i -Cz.cpt -P -K -X1.474i -Y1i > $ps
 gmt psbasemap -R-84/75/-78/81 -Jx${sclkm}i -O -K -Ba -BWSne+t"Multibeam bathymetry" >> $ps
 gmt grdimage $G.nc -I${G}_int.nc -Jx${scl}i -Cg.cpt -O -K -X3.25i >> $ps
 gmt psbasemap -R-84/75/-78/81 -Jx${sclkm}i -O -K -Ba -BWSne+t"Satellite gravity" >> $ps

@@ -13,8 +13,7 @@ ps=example_33.ps
 # gmt grdcut etopo1m_grd.nc -R118W/107W/49S/42S -Gspac.nc
 gmt makecpt -Crainbow -T-5000/-2000/500 -Z > z.cpt
 gmt grdgradient spac.nc -A15 -Ne0.75 -Gspac_int.nc
-gmt grdimage spac.nc -Ispac_int.nc -Cz.cpt -JM6i -P -Baf -K -Xc --FORMAT_GEO_MAP=dddF \
-	-U"Example 33 in Cookbook" > $ps
+gmt grdimage spac.nc -Ispac_int.nc -Cz.cpt -JM6i -P -Baf -K -Xc --FORMAT_GEO_MAP=dddF > $ps
 # Select two points along the ridge
 cat << EOF > ridge.txt
 -111.6	-43.0

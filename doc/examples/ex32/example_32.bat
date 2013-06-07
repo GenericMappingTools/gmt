@@ -36,7 +36,7 @@ REM The next step is the plotting of the image.
 REM We use gmt grdview to plot the topography, euflag.nc to give the color, and illum.nc to give the shading.
 
 set Rplot=%Rflag%/-10/790
-gmt grdview topo.nc -JM13c %Rplot% -Ceuflag.cpt -Geuflag.nc -Iillum.nc -Qc -JZ1c -p157.5/30 -P -K -U"Example 32 in Cookbook" > %ps%
+gmt grdview topo.nc -JM13c %Rplot% -Ceuflag.cpt -Geuflag.nc -Iillum.nc -Qc -JZ1c -p157.5/30 -P -K > %ps%
 
 REM We now add borders. Because we have a 3-D plot, we want them to be plotted "at elevation".
 REM So we write out the borders, pipe them through grdtrack and then plot them with psxyz.

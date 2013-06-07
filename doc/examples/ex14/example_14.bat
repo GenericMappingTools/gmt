@@ -33,7 +33,7 @@ gmt grdtrack track -Gtrend.nc -o2,3 > trend.d
 REM gmt minmax data.d trend.d -I0.5/25
 REM Use result of gmt minmax manually in -R below:
 gmt psxy -R0/10/775/1050 -JX6.3i/1.4i data.d -Wthick -O -K -X-3.25i -Y-1.9i -Bx1 -By50 -BWSne >> %ps%
-gmt psxy -R -J trend.d -Wthinner,- -O -U"Example 14 in Cookbook" >> %ps%
+gmt psxy -R -J trend.d -Wthinner,- -O >> %ps%
 del mean.xyz
 del track
 del *.nc

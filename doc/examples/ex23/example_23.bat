@@ -29,7 +29,7 @@ echo 178.42	-18.13	SUVA		LM >> cities.d
 echo 237.67	47.58	SEATTLE		RM >> cities.d
 echo 28.20	-25.75	PRETORIA	LM >> cities.d
 
-gmt pscoast -Rg -JH90/9i -Glightgreen -Sblue -U"Example 23 in Cookbook" -A1000 -Bg30 -B+t"Distances from $name to the World" -K -Dc -Wthinnest > %ps%
+gmt pscoast -Rg -JH90/9i -Glightgreen -Sblue -A1000 -Bg30 -B+t"Distances from $name to the World" -K -Dc -Wthinnest > %ps%
 
 gmt grdcontour dist.nc -A1000+v+ukm+fwhite -Glz-/z+ -S8 -C500 -O -K -J -Wathin,white -Wcthinnest,white,- >> %ps%
 

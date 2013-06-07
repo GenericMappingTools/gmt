@@ -8,7 +8,7 @@ REM DOS calls:	del, echo
 REM
 echo GMT EXAMPLE 07
 set ps=example_07.ps
-gmt pscoast -R-50/0/-10/20 -JM9i -K -Slightblue -GP300/26:FtanBdarkbrown -Dl -Wthinnest -B10 -U"Example 7 in Cookbook" --FORMAT_GEO_MAP=dddF > %ps%
+gmt pscoast -R-50/0/-10/20 -JM9i -K -Slightblue -GP300/26:FtanBdarkbrown -Dl -Wthinnest -B10 --FORMAT_GEO_MAP=dddF > %ps%
 gmt psxy -R -J -O -K fz.xy -Wthinner,- >> %ps%
 gmt psxy quakes.xym -R -J -O -K -h1 -Sci+s0.01 -Gred -Wthinnest >> %ps%
 gmt psxy -R -J -O -K isochron.xy -Wthin,blue >> %ps%

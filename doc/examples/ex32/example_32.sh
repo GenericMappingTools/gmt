@@ -41,8 +41,7 @@ EOF
 # the shading.
 
 Rplot=$Rflag/-10/790
-gmt grdview topo.nc -JM13c $Rplot -Ceuflag.cpt -Geuflag.nc -Iillum.nc -Qc -JZ1c -p157.5/30 -P \
-	-K -U"Example 32 in Cookbook" > $ps
+gmt grdview topo.nc -JM13c $Rplot -Ceuflag.cpt -Geuflag.nc -Iillum.nc -Qc -JZ1c -p157.5/30 -P -K > $ps
 
 # We now add borders. Because we have a 3-D plot, we want them to be plotted "at elevation".
 # So we write out the borders, pipe them through grdtack and then plot them with psxyz.

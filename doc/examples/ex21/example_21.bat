@@ -23,7 +23,7 @@ set R=-R1999-08-04T12:00:00/2008-01-29T12:00:00/0/300
 
 REM Lay down the basemap:
 
-gmt psbasemap %R% -JX9i/6i -K -U"Example 21 in Cookbook" -Bsx1Y -Bpxa3Of1o -Bpy50+p"$ " -BWSen+t"RedHat (RHT) Stock Price Trend since IPO"+glightgreen > %ps%
+gmt psbasemap %R% -JX9i/6i -K -Bsx1Y -Bpxa3Of1o -Bpy50+p"$ " -BWSen+t"RedHat (RHT) Stock Price Trend since IPO"+glightgreen > %ps%
 
 REM Plot main window with open price as red line over yellow envelope of low/highs
 

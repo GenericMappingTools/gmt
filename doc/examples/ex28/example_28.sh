@@ -13,8 +13,7 @@ gmt grdgradient Kilauea.utm.nc -Nt1 -A45 -GKilauea.utm_i.nc
 gmt makecpt -Ccopper -T0/1500/100 -Z > Kilauea.cpt
 # Lay down the UTM topo grid using a 1:16,000 scale
 gmt grdimage Kilauea.utm.nc -IKilauea.utm_i.nc -CKilauea.cpt -Jx1:160000 -P -K \
-	-U"Example 28 in Cookbook" --FORMAT_FLOAT_OUT=%.10g --FONT_ANNOT_PRIMARY=9p \
-	> $ps
+	--FORMAT_FLOAT_OUT=%.10g --FONT_ANNOT_PRIMARY=9p > $ps
 # Overlay geographic data and coregister by using correct region and gmt projection with the same scale
 gmt pscoast -RKilauea.utm.nc -Ju5Q/1:160000 -O -K -Df+ -Slightblue -W0.5p -B5mg5m -BNE \
 	--FONT_ANNOT_PRIMARY=12p --FORMAT_GEO_MAP=ddd:mmF >> $ps

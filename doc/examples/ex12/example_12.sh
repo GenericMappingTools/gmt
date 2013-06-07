@@ -26,7 +26,7 @@ gmt pstext table_5.11 -R -J -F+f6p+jLM -O -K -Gwhite -W -C0.01i -D0.08i/0i -N >>
 T=`gmt minmax -T25/2 table_5.11`
 gmt makecpt -Cjet $T > topo.cpt
 gmt pscontour -R -J table_5.11 -B2f1 -BWSne -Wthin -Ctopo.cpt -Lthinnest,- -Gd1i -X-3.25i -Y-3.65i \
-	-O -K -U"Example 12 in Cookbook" >> $ps
+	-O -K >> $ps
 #
 # Finally color the topography
 #

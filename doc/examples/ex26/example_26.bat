@@ -36,5 +36,5 @@ set Height=30.0
 
 set PROJ=-JG%longitude%/%latitude%/%altitude%/%azimuth%/%tilt%/%twist%/%Width%/%Height%/5i
 
-gmt pscoast -R %PROJ% -B5g5 -Glightbrown -Slightblue -W -Ia/blue -Di -Na -O -X1i -Y-4i -UL/-1.75i/-0.75i/"Example 26 in Cookbook" >> %ps%
+gmt pscoast -R %PROJ% -B5g5 -Glightbrown -Slightblue -W -Ia/blue -Di -Na -O -X1i -Y-4i >> %ps%
 del .gmt*
