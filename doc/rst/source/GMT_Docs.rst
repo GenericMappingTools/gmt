@@ -66,36 +66,6 @@ Honolulu, HI, Silver Spring, MD, Cornish, NH, Faro, Portugal, and
 Bremerhaven, Germany Feb 2013
 
 
-The GMT Documentation Project
-=============================
-
-Starting with *GMT* version 3.2, all *GMT* documentation was converted
-from Microsoft **Word** to LaTeX files. This step was taken for a
-number of reasons:
-
-#. Having all the documentation source available in ASCII format makes
-   it easier to access by several *GMT* developers working on different
-   platforms in different countries.
-
-#. *GMT* scripts can now be included directly into the text so that the
-   documentation is automatically up-to-date when scripts are modified.
-
-#. All figures are generated on the fly and included as *GMT* EPS files
-   which thus are always up-to-date.
-
-#. It is easy to convert the LaTeX files to other formats, such as HTML,
-   SGML, *PostScript*, and PDF.
-
-#. The whole task of assembling the pieces, be it generating figures or
-   extracting text portions from the master archive under Subversion
-   control, is automated by a makefile.
-
-#. Only free software are used to maintain the *GMT* Documentation.
-
-Please send email to (subscription required; see Appendix 
-`D. Availability of GMT and related code`_) if you find
-errors or inconsistencies in the documentation.
-
 A Reminder
 ==========
 
@@ -599,8 +569,8 @@ correctly with a warning under compatibility mode:
    there is no longer a **-m** (or the older **-M** option).
 
 #. **Front symbol**: The syntax for the front symbol has changed from
-   **-Sf**\ *spacing/size*\ [**+d**\ ][**+t**\ ][:\ *offset*] to
-   **-Sf**\ *spacing*\ [/*size*][**+r+l**\ ][**+f+t+s+c+b**\ ][\ **+o**\ *offset*].
+   **-Sf**\ *spacing/size*\ [**+d**][**+t**][:\ *offset*] to
+   **-Sf**\ *spacing*\ [/*size*][**+r+l**][**+f+t+s+c+b**][\ **+o**\ *offset*].
 
 #. **Vector symbol**: With the introduction of geo-vectors there are
    three kinds of vectors that can be drawn: Cartesian (straight)
@@ -608,7 +578,7 @@ correctly with a warning under compatibility mode:
    **-S=**, and circular vectors with **-Sm**. These are all composed of
    a line (controlled by pen settings) and 0-2 arrow heads (control by
    fill and outline settings). Many modifiers common to all arrows have
-   been introduced using the **+key**\ [*arg*\ ] format. The *size* of a
+   been introduced using the **+key**\ [*arg*] format. The *size* of a
    vector refers to the length of its head; all other quantities are
    given via modifiers (which have sensible default values). In
    particular, giving size as *vectorwidth/headlength/headwidth* is
@@ -2335,49 +2305,47 @@ Table [tbl:units]. Almost all of these units are time-axis specific.
 However, the **m** and **s** units will be interpreted as arc minutes
 and arc seconds, respectively, when a map projection is in effect.
 
-[h]
-
-+------------+------------------+----------------------------------------------------------------------------+
-| **Flag**   | **Unit**         | **Description**                                                            |
-+============+==================+============================================================================+
-| **Y**      | year             | Plot using all 4 digits                                                    |
-+------------+------------------+----------------------------------------------------------------------------+
-| **y**      | year             | Plot using last 2 digits                                                   |
-+------------+------------------+----------------------------------------------------------------------------+
-| **O**      | month            | Format annotation using **FORMAT\_DATE\_MAP**                              |
-+------------+------------------+----------------------------------------------------------------------------+
-| **o**      | month            | Plot as 2-digit integer (1-12)                                             |
-+------------+------------------+----------------------------------------------------------------------------+
-| **U**      | ISO week         | Format annotation using **FORMAT\_DATE\_MAP**                              |
-+------------+------------------+----------------------------------------------------------------------------+
-| **u**      | ISO week         | Plot as 2-digit integer (1-53)                                             |
-+------------+------------------+----------------------------------------------------------------------------+
-| **r**      | Gregorian week   | 7-day stride from start of week (see **TIME\_WEEK\_START**)                |
-+------------+------------------+----------------------------------------------------------------------------+
-| **K**      | ISO weekday      | Plot name of weekday in selected language                                  |
-+------------+------------------+----------------------------------------------------------------------------+
-| **k**      | weekday          | Plot number of day in the week (1-7) (see **TIME\_WEEK\_START**)           |
-+------------+------------------+----------------------------------------------------------------------------+
-| **D**      | date             | Format annotation using **FORMAT\_DATE\_MAP**                              |
-+------------+------------------+----------------------------------------------------------------------------+
-| **d**      | day              | Plot day of month (1-31) or day of year (1-366)                            |
-+------------+------------------+----------------------------------------------------------------------------+
-|            |                  | (see **FORMAT_DATE_MAP**                                                   |
-+------------+------------------+----------------------------------------------------------------------------+
-| **R**      | day              | Same as **d**; annotations aligned with week (see **TIME\_WEEK\_START**)   |
-+------------+------------------+----------------------------------------------------------------------------+
-| **H**      | hour             | Format annotation using **FORMAT\_CLOCK\_MAP**                             |
-+------------+------------------+----------------------------------------------------------------------------+
-| **h**      | hour             | Plot as 2-digit integer (0-24)                                             |
-+------------+------------------+----------------------------------------------------------------------------+
-| **M**      | minute           | Format annotation using **FORMAT\_CLOCK\_MAP**                             |
-+------------+------------------+----------------------------------------------------------------------------+
-| **m**      | minute           | Plot as 2-digit integer (0-60)                                             |
-+------------+------------------+----------------------------------------------------------------------------+
-| **S**      | seconds          | Format annotation using **FORMAT\_CLOCK\_MAP**                             |
-+------------+------------------+----------------------------------------------------------------------------+
-| **s**      | seconds          | Plot as 2-digit integer (0-60)                                             |
-+------------+------------------+----------------------------------------------------------------------------+
++------------+------------------+--------------------------------------------------------------------------+
+| **Flag**   | **Unit**         | **Description**                                                          |
++============+==================+==========================================================================+
+| **Y**      | year             | Plot using all 4 digits                                                  |
++------------+------------------+--------------------------------------------------------------------------+
+| **y**      | year             | Plot using last 2 digits                                                 |
++------------+------------------+--------------------------------------------------------------------------+
+| **O**      | month            | Format annotation using **FORMAT_DATE_MAP**                              |
++------------+------------------+--------------------------------------------------------------------------+
+| **o**      | month            | Plot as 2-digit integer (1-12)                                           |
++------------+------------------+--------------------------------------------------------------------------+
+| **U**      | ISO week         | Format annotation using **FORMAT_DATE_MAP**                              |
++------------+------------------+--------------------------------------------------------------------------+
+| **u**      | ISO week         | Plot as 2-digit integer (1-53)                                           |
++------------+------------------+--------------------------------------------------------------------------+
+| **r**      | Gregorian week   | 7-day stride from start of week (see **TIME_WEEK_START**)                |
++------------+------------------+--------------------------------------------------------------------------+
+| **K**      | ISO weekday      | Plot name of weekday in selected language                                |
++------------+------------------+--------------------------------------------------------------------------+
+| **k**      | weekday          | Plot number of day in the week (1-7) (see **TIME_WEEK_START**)           |
++------------+------------------+--------------------------------------------------------------------------+
+| **D**      | date             | Format annotation using **FORMAT_DATE_MAP**                              |
++------------+------------------+--------------------------------------------------------------------------+
+| **d**      | day              | Plot day of month (1-31) or day of year (1-366)                          |
++------------+------------------+--------------------------------------------------------------------------+
+|            |                  | (see **FORMAT_DATE_MAP**                                                 |
++------------+------------------+--------------------------------------------------------------------------+
+| **R**      | day              | Same as **d**; annotations aligned with week (see **TIME_WEEK_START**)   |
++------------+------------------+--------------------------------------------------------------------------+
+| **H**      | hour             | Format annotation using **FORMAT_CLOCK_MAP**                             |
++------------+------------------+--------------------------------------------------------------------------+
+| **h**      | hour             | Plot as 2-digit integer (0-24)                                           |
++------------+------------------+--------------------------------------------------------------------------+
+| **M**      | minute           | Format annotation using **FORMAT_CLOCK_MAP**                             |
++------------+------------------+--------------------------------------------------------------------------+
+| **m**      | minute           | Plot as 2-digit integer (0-60)                                           |
++------------+------------------+--------------------------------------------------------------------------+
+| **S**      | seconds          | Format annotation using **FORMAT_CLOCK_MAP**                             |
++------------+------------------+--------------------------------------------------------------------------+
+| **s**      | seconds          | Plot as 2-digit integer (0-60)                                           |
++------------+------------------+--------------------------------------------------------------------------+
 
 [tbl:units]
 
@@ -2480,8 +2448,8 @@ Our first example shows a time period of almost two months in Spring
 
    ::
 
-     gmtset FORMAT_DATE_MAP=-o FONT_ANNOT_PRIMARY +9p
-     psbasemap -R2000-4-1T/2000-5-25T/0/1 -JX5i/0.2i -Bpa7Rf1d -Bsa1O -BS -P > GMT_-B_time1.ps
+     gmt set FORMAT_DATE_MAP=-o FONT_ANNOT_PRIMARY +9p
+     gmt psbasemap -R2000-4-1T/2000-5-25T/0/1 -JX5i/0.2i -Bpa7Rf1d -Bsa1O -BS -P > GMT_-B_time1.ps
 
 These commands result in Figure . Note the leading hyphen in the
 **FORMAT_DATE_MAP** removes leading zeros from calendar items (e.g.,
@@ -2493,9 +2461,9 @@ The next example shows two different ways to annotate an axis portraying 2 days 
 
    ::
 
-     gmtset FORMAT_DATE_MAP "o dd" FORMAT_CLOCK_MAP hh:mm FONT_ANNOT_PRIMARY +9p
-     psbasemap -R1969-7-21T/1969-7-23T/0/1 -JX5i/0.2i -Bpa6Hf1h -Bsa1K -BS -P -K > GMT_-B_time2.ps
-     psbasemap -R -J -Bpa6Hf1h -Bsa1D -BS -O -Y0.65i >> GMT_-B_time2.ps  
+     gmt set FORMAT_DATE_MAP "o dd" FORMAT_CLOCK_MAP hh:mm FONT_ANNOT_PRIMARY +9p
+     gmt psbasemap -R1969-7-21T/1969-7-23T/0/1 -JX5i/0.2i -Bpa6Hf1h -Bsa1K -BS -P -K > GMT_-B_time2.ps
+     gmt psbasemap -R -J -Bpa6Hf1h -Bsa1D -BS -O -Y0.65i >> GMT_-B_time2.ps  
 
 The lower example (Figure ) chooses to annotate the weekdays (by
 specifying **a**\ 1\ **K**) while the upper example choses dates (by
@@ -2509,8 +2477,8 @@ The third example presents two years, annotating both the years and every 3rd mo
 
    ::
 
-     gmtset FORMAT_DATE_MAP o FORMAT_TIME_PRIMARY_MAP Character FONT_ANNOT_PRIMARY +9p
-     psbasemap -R1997T/1999T/0/1 -JX5i/0.2i -Bpa3Of1o -Bsa1Y -BS -P > GMT_-B_time3.ps 
+     gmt set FORMAT_DATE_MAP o FORMAT_TIME_PRIMARY_MAP Character FONT_ANNOT_PRIMARY +9p
+     gmt psbasemap -R1997T/1999T/0/1 -JX5i/0.2i -Bpa3Of1o -Bsa1Y -BS -P > GMT_-B_time3.ps 
 
 Note that while the year annotation is centered on the 1-year interval,
 the month annotations must be centered on the corresponding month and
@@ -2528,8 +2496,8 @@ annotations, ask for a 12-hour clock, and let time go from right to left:
 
    ::
 
-     gmtset FORMAT_CLOCK_MAP=-hham FONT_ANNOT_PRIMARY +9p
-     psbasemap -R0.2t/0.35t/0/1 -JX-5i/0.2i -Bpa15mf5m -Bsa1H -BS -P > GMT_-B_time4.ps 
+     gmt set FORMAT_CLOCK_MAP=-hham FONT_ANNOT_PRIMARY +9p
+     gmt psbasemap -R0.2t/0.35t/0/1 -JX-5i/0.2i -Bpa15mf5m -Bsa1H -BS -P > GMT_-B_time4.ps 
 
 .. include:: fig_includes/fig_GMT_-B_time4.rst_
 
@@ -2540,11 +2508,11 @@ The upper uses Gregorian weeks (which start at the day chosen by
 
    ::
 
-    gmtset FORMAT_DATE_MAP u FORMAT_TIME_PRIMARY_MAP Character \
+    gmt set FORMAT_DATE_MAP u FORMAT_TIME_PRIMARY_MAP Character \
            FORMAT_TIME_SECONDARY_MAP full FONT_ANNOT_PRIMARY +9p
-    psbasemap -R1969-7-21T/1969-8-9T/0/1 -JX5i/0.2i -Bpa1K -Bsa1U -BS -P -K > GMT_-B_time5.ps
-    gmtset FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_TIME_SECONDARY_MAP Chararacter
-    psbasemap -R -J -Bpa3Kf1k -Bsa1r -BS -O -Y0.65i >> GMT_-B_time5.ps 
+    gmt psbasemap -R1969-7-21T/1969-8-9T/0/1 -JX5i/0.2i -Bpa1K -Bsa1U -BS -P -K > GMT_-B_time5.ps
+    gmt set FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_TIME_SECONDARY_MAP Chararacter
+    gmt psbasemap -R -J -Bpa3Kf1k -Bsa1r -BS -O -Y0.65i >> GMT_-B_time5.ps 
 
 .. include:: fig_includes/fig_GMT_-B_time5.rst_
 
@@ -2554,8 +2522,8 @@ year. Only the primary axes information is specified.
 
    ::
 
-    gmtset FORMAT_DATE_MAP "o yy" FORMAT_TIME_PRIMARY_MAP Abbreviated
-    psbasemap -R1996T/1996-6T/0/1 -JX5i/0.2i -Ba1Of1d -BS -P > GMT_-B_time6.ps 
+    gmt set FORMAT_DATE_MAP "o yy" FORMAT_TIME_PRIMARY_MAP Abbreviated
+    gmt psbasemap -R1996T/1996-6T/0/1 -JX5i/0.2i -Ba1Of1d -BS -P > GMT_-B_time6.ps 
 
 .. include:: fig_includes/fig_GMT_-B_time6.rst_
 
@@ -2568,8 +2536,8 @@ least half of a full interval.
 
    ::
 
-    gmtset FORMAT_DATE_MAP jjj TIME_INTERVAL_FRACTION 0.05 FONT_ANNOT_PRIMARY +9p
-    psbasemap -R2000-12-15T/2001-1-15T/0/1 -JX5i/0.2i -Bpa5Df1d -Bsa1Y -BS -P > GMT_-B_time7.ps
+    gmt set FORMAT_DATE_MAP jjj TIME_INTERVAL_FRACTION 0.05 FONT_ANNOT_PRIMARY +9p
+    gmt psbasemap -R2000-12-15T/2001-1-15T/0/1 -JX5i/0.2i -Bpa5Df1d -Bsa1Y -BS -P > GMT_-B_time7.ps
 
 .. include:: fig_includes/fig_GMT_-B_time7.rst_
 
@@ -2615,10 +2583,10 @@ annotations on the *x*-axis and irregular annotations on the *y*-axis.
     6 f
     6.2831852 ag 2@~p@~
     EOF
-    psbasemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bpx25f5g25+u" Ma" -Bpycyannots.txt -BWS+glightblue \
-              -P -K > GMT_-B_custom.ps
-    psbasemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bsxcxannots.txt -BWS -O \
-              --MAP_ANNOT_OFFSET_SECONDARY=10p --MAP_GRID_PEN_SECONDARY=2p >> GMT_-B_custom.ps
+    gmt psbasemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bpx25f5g25+u" Ma" -Bpycyannots.txt \
+                  -BWS+glightblue -P -K > GMT_-B_custom.ps
+    gmt psbasemap -R416/542/0/6.2831852 -JX-5i/2.5i -Bsxcxannots.txt -BWS -O \
+                  --MAP_ANNOT_OFFSET_SECONDARY=10p --MAP_GRID_PEN_SECONDARY=2p >> GMT_-B_custom.ps
     rm -f [xy]annots.txt
 
 .. include:: fig_includes/fig_GMT_-B_custom.rst_
@@ -3107,8 +3075,7 @@ These are called "multi-segment files". For binary table data the **-h**
 option may specify how many bytes should be skipped before the data
 section is reached. Binary files may also contain segment-headers
 separating data segments. These segment-headers are simply data records
-whose fields are all set to NaN; see Appendix [app:B] for complete
-documentation.
+whose fields are all set to NaN; see Appendix [app:B] for complete documentation.
 
 If filenames are given for reading, *GMT* programs will first look for
 them in the current directory. If the file is not found, the programs
@@ -3826,8 +3793,6 @@ number of predefined formats. Technical information on this topic can be
 found in the source file ``gmtcustom_io.c``. Users who are considering this approach
 should contact the *GMT* team.
 
-[H]
-
 +----------+---------------------------------------------------------------+
 | **ID**   | **Explanation**                                               |
 +==========+===============================================================+
@@ -4025,7 +3990,7 @@ get information on the variable "slp" in file , use:
 
    ::
 
-    grdinfo "file.nc?slp"
+    gmt grdinfo "file.nc?slp"
 
 Since COARDS-compliant netCDF files are the default, the additional
 suffix "=nf" can be omitted.
@@ -4063,13 +4028,13 @@ depth 10 and at time 24, one would use:
 
    ::
 
-    grdinfo "file.nc?pressure[2,1]"
+    gmt grdinfo "file.nc?pressure[2,1]"
 
 or (only in case the coordinates increase linearly):
 
    ::
 
-    grdinfo "file.nc?pressure(24,10)"
+    gmt grdinfo "file.nc?pressure(24,10)"
 
 Programs that generally deal with columns of one-dimensional data, like
 or can use multi-dimensional netCDF files in a very similar way. If a
@@ -4078,8 +4043,8 @@ needed than name the variables on the command line. For example:
 
    ::
 
-    psxy "file.nc?lon/lat" ...
-    gmtconvert "file.nc?time/lat/lon"
+    gmt psxy "file.nc?lon/lat" ...
+    gmt gmtconvert "file.nc?time/lat/lon"
 
 If one or more of the selected variables are two-dimensional, and have
 the same leading dimension as the other selected variables they will be
@@ -4097,7 +4062,7 @@ time steps recording temperature at 4 points, and the variable ``tmp`` is a 6 by
     2012-06-27T12:00:00 27.2 27.2 27.5 27.5
 
 If, for example, only the second temperature column is needed, use
-``gmtconvert "file.nc?time/temp"`` (indices start counting at 0).
+``gmt gmtconvert "file.nc?time/temp"`` (indices start counting at 0).
 
 The COARDS conventions set restrictions on the names that can be used
 for the units of the variables and coordinates. For example, the units
@@ -4165,14 +4130,14 @@ starts at zero), or it could be a comma-separated list of bands. For example
 
    ::
 
-    psimage jpeg_image_with_three_bands.jpg+b0
+    gmt psimage jpeg_image_with_three_bands.jpg+b0
 
 will plot only the first band (i.e., the red band) of the jpeg image as
 a gray-scale image, and
 
    ::
 
-    psimage jpeg_image_with_three_bands.jpg+b2,1,0
+    gmt psimage jpeg_image_with_three_bands.jpg+b2,1,0
 
 will plot the same image in color but where the RGB band order has been reversed.
 
@@ -4185,8 +4150,8 @@ which is defined as NDVI = (NIR - R) / (NIR + R), as
 
    ::
 
-    grdmath multiband=gd+b3 multiband=gd+b2 SUB multiband=gd+b3 \
-    	    multiband=gd+b2 ADD DIV = ndvi.nc
+    gmt grdmath multiband=gd+b3 multiband=gd+b2 SUB multiband=gd+b3 \
+    	        multiband=gd+b2 ADD DIV = ndvi.nc
 
 The resulting grid ``ndvi.nc`` can then be plotted as usual.
 
@@ -4253,8 +4218,8 @@ via `grdmath <grdmath.html>`_ first, i.e.,
 
    ::
 
-    grdmath A20030012003365.L3m_YR_NSST_9=gd?HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9:0" \
-            0.000717185 MUL -2 ADD = sst.nc
+    gmt grdmath A20030012003365.L3m_YR_NSST_9=gd?HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9:0" \
+                0.000717185 MUL -2 ADD = sst.nc
 
 then plot the ``sst.nc`` directly.
 
@@ -4459,8 +4424,8 @@ The complete commands given to produce this plot were
 
    ::
 
-    psxy -R0/100/0/10 -JX3i/1.5i -Bag -BWSne+gsnow -Wthick,blue,- -P -K sqrt.d > GMT_linear.ps
-    psxy -R -J -St0.1i -N -Gred -Wfaint -O sqrt.d10 >> GMT_linear.ps  
+    gmt psxy -R0/100/0/10 -JX3i/1.5i -Bag -BWSne+gsnow -Wthick,blue,- -P -K sqrt.d > GMT_linear.ps
+    gmt psxy -R -J -St0.1i -N -Gred -Wfaint -O sqrt.d10 >> GMT_linear.ps  
 
 Normally, the user's *x*-values will increase to the right and the
 *y*-values will increase upwards. It should be noted that in many
@@ -4493,9 +4458,9 @@ option. As an example, we want to plot a crude world map centered on
 
   ::
 
-    gmtset MAP_GRID_CROSS_SIZE_PRIMARY 0.1i MAP_FRAME_TYPE FANCY FORMAT_GEO_MAP ddd:mm:ssF
-    pscoast -Rg-55/305/-90/90 -Jx0.014i -Bagf -BWSen -Dc -A1000 -Glightbrown -Wthinnest -P \
-            -Slightblue > GMT_linear_d.ps  
+    gmt set MAP_GRID_CROSS_SIZE_PRIMARY 0.1i MAP_FRAME_TYPE FANCY FORMAT_GEO_MAP ddd:mm:ssF
+    gmt pscoast -Rg-55/305/-90/90 -Jx0.014i -Bagf -BWSen -Dc -A1000 -Glightbrown -Wthinnest \
+            -P -Slightblue > GMT_linear_d.ps  
 
 with the result reproduced in
 Figure [fig:GMT\ :sub:`l`\ inear\ :sub:`d`].
@@ -4532,10 +4497,10 @@ general, the options provided with **-JX** will prevail.
 
    ::
 
-    gmtset FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_CLOCK_MAP=-hham \
-           FORMAT_TIME_PRIMARY_MAP full
-    psbasemap -R2001-9-24T/2001-9-29T/T07:0/T15:0 -JX4i/-2i -Bxa1Kf1kg1d -Bya1Hg1h \
-              -BWsNe+glightyellow -P > GMT_linear_cal.ps
+    gmt set FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_CLOCK_MAP=-hham \
+            FORMAT_TIME_PRIMARY_MAP full
+    gmt psbasemap -R2001-9-24T/2001-9-29T/T07:0/T15:0 -JX4i/-2i -Bxa1Kf1kg1d \
+                  -Bya1Hg1h -BWsNe+glightyellow -P > GMT_linear_cal.ps
 
 Cartesian logarithmic projection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4550,9 +4515,9 @@ Hence, to produce a plot in which the *x*-axis is logarithmic (the
 
    ::
 
-    psxy -R1/100/0/10 -Jx1.5il/0.15i -Bx2g3 -Bya2f1g2 -BWSne+gbisque -Wthick,blue,- \
-         -P -K -h sqrt.d > GMT_log.ps
-    psxy -R -J -Ss0.1i -N -Gred -W -O -h sqrt.d10 >> GMT_log.ps
+    gmt psxy -R1/100/0/10 -Jx1.5il/0.15i -Bx2g3 -Bya2f1g2 -BWSne+gbisque \
+             -Wthick,blue,- -P -K -h sqrt.d > GMT_log.ps
+    gmt psxy -R -J -Ss0.1i -N -Gred -W -O -h sqrt.d10 >> GMT_log.ps
 
 Note that if *x*- and *y*-scaling are different and a
 log\ :math:`_{10}`-log:math:`_{10}` plot is desired, the **l** must be
@@ -4575,9 +4540,9 @@ to the linear transformation. Thus our command becomes
 
    ::
 
-    psxy -R0/100/0/10 -Jx0.3ip0.5/0.15i -Bxa1p -Bya2f1 -BWSne+givory \
-         -Wthick -P -K sqrt.d > GMT_pow.ps
-    psxy -R -J -Sc0.075i -Ggreen -W -O sqrt.d10 >> GMT_pow.ps
+    gmt psxy -R0/100/0/10 -Jx0.3ip0.5/0.15i -Bxa1p -Bya2f1 -BWSne+givory \
+             -Wthick -P -K sqrt.d > GMT_pow.ps
+    gmt psxy -R -J -Sc0.075i -Ggreen -W -O sqrt.d10 >> GMT_pow.ps
 
 Linear projection with polar (:math:`\theta, r`) coordinates (**-Jp** **-JP**)
 -------------------------------------------------------------------------------
@@ -4626,8 +4591,8 @@ operates on or creates grid files.
 
    ::
 
-    grdmath -R0/360/2/4 -I6/0.1 X 4 MUL PI MUL 180 DIV COS Y 2 POW MUL = $$.nc
-    grdcontour $$.nc -JP3i -B30 -BNs+ghoneydew -P -C2 -S4 --FORMAT_GEO_MAP=+ddd > GMT_polar.ps
+    gmt grdmath -R0/360/2/4 -I6/0.1 X 4 MUL PI MUL 180 DIV COS Y 2 POW MUL = $$.nc
+    gmt grdcontour $$.nc -JP3i -B30 -BNs+ghoneydew -P -C2 -S4 --FORMAT_GEO_MAP=+ddd > GMT_polar.ps
     rm -f $$.nc
 
 We used `grdcontour <grdcontour.html>`_ to make a
@@ -4717,9 +4682,9 @@ therefore given by:
 
    ::
 
-    gmtset MAP_GRID_CROSS_SIZE_PRIMARY 0
-    pscoast -R110/140/20/35 -JB125/20/25/45/5i -Bag -Dl -Ggreen -Wthinnest -A250 \
-            -P > GMT_albers.ps
+    gmt set MAP_GRID_CROSS_SIZE_PRIMARY 0
+    gmt pscoast -R110/140/20/35 -JB125/20/25/45/5i -Bag -Dl -Ggreen -Wthinnest \
+                -A250 -P > GMT_albers.ps
 
 .. include:: fig_includes/fig_GMT_albers.rst_
 
@@ -4737,17 +4702,16 @@ projection, i.e.,
 
 -  Two standard parallels.
 
--  Map scale in inch/degree or 1:xxxxx notation (**-Jd**), or map width
-   (**-JD**).
+-  Map scale in inch/degree or 1:xxxxx notation (**-Jd**), or map width (**-JD**).
 
 The equidistant conic projection is often used for atlases with maps of
 small countries. As an example, we generate a map of Cuba:
 
    ::
 
-    gmtset FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0.05i
-    pscoast -R-88/-70/18/24 -JD-79/21/19/23/4.5i -Bag -Di -N1/thick,red -Glightgreen \
-            -Wthinnest -P > GMT_equidistant_conic.ps
+    gmt set FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0.05i
+    gmt pscoast -R-88/-70/18/24 -JD-79/21/19/23/4.5i -Bag -Di -N1/thick,red \
+                -Glightgreen -Wthinnest -P > GMT_equidistant_conic.ps
 
 .. include:: fig_includes/fig_GMT_equidistant_conic.rst_
 
@@ -4780,9 +4744,9 @@ use degrees west for longitudes. The generating commands used were
 
    ::
 
-    gmtset MAP_FRAME_TYPE FANCY FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0.05i
-    pscoast -R-130/-70/24/52 -Jl-100/35/33/45/1:50000000 -Bag -Dl -N1/thick,red \
-            -N2/thinner -A500 -Gtan -Wthinnest,white -Sblue -P > GMT_lambert_conic.ps
+    gmt set MAP_FRAME_TYPE FANCY FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0.05i
+    gmt pscoast -R-130/-70/24/52 -Jl-100/35/33/45/1:50000000 -Bag -Dl -N1/thick,red \
+                -N2/thinner -A500 -Gtan -Wthinnest,white -Sblue -P > GMT_lambert_conic.ps
 
 .. include:: fig_includes/fig_GMT_lambert_conic.rst_
 
@@ -4817,8 +4781,8 @@ every 10 and annotations only every 30 in longitude:
 
    ::
 
-    pscoast -R-180/-20/0/90 -JPoly/4i -Bx30g10 -By10g10 -Dc -A1000 -Glightgray -Wthinnest \
-            -P > GMT_polyconic.ps
+    gmt pscoast -R-180/-20/0/90 -JPoly/4i -Bx30g10 -By10g10 -Dc -A1000 -Glightgray \
+                -Wthinnest -P > GMT_polyconic.ps
 
 .. include:: fig_includes/fig_GMT_polyconic.rst_
 
@@ -4861,9 +4825,9 @@ rectangular by defining the corners of a rectangular map boundary. Using
 
    ::
 
-    gmtset FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0
-    pscoast -R0/-40/60/-10r -JA30/-30/4.5i -Bag -Dl -A500 -Gp300/10 -Wthinnest \
-            -P > GMT_lambert_az_rect.ps
+    gmt set FORMAT_GEO_MAP ddd:mm:ssF MAP_GRID_CROSS_SIZE_PRIMARY 0
+    gmt pscoast -R0/-40/60/-10r -JA30/-30/4.5i -Bag -Dl -A500 -Gp300/10 \
+                -Wthinnest -P > GMT_lambert_az_rect.ps
 
 .. include:: fig_includes/fig_GMT_lambert_az_rect.rst_
 
@@ -4880,7 +4844,7 @@ Hemisphere map
 
    ::
 
-    pscoast -Rg -JA280/30/3.5i -Bg -Dc -A1000 -Gnavy -P > GMT_lambert_az_hemi.ps
+    gmt pscoast -Rg -JA280/30/3.5i -Bg -Dc -A1000 -Gnavy -P > GMT_lambert_az_hemi.ps
 
 .. include:: fig_includes/fig_GMT_lambert_az_hemi.rst_
 
@@ -4927,8 +4891,8 @@ An example is given by
 
    ::
 
-    pscoast -R-30/30/60/72 -Js0/90/4.5i/60 -B10g -Dl -A250 -Groyalblue -Sseashell \
-            -P > GMT_stereographic_polar.ps
+    gmt pscoast -R-30/30/60/72 -Js0/90/4.5i/60 -B10g -Dl -A250 -Groyalblue \
+                -Sseashell -P > GMT_stereographic_polar.ps
 
 .. include:: fig_includes/fig_GMT_stereographic_polar.rst_
 
@@ -4944,9 +4908,9 @@ Figure [fig:GMT\ :sub:`s`\ tereographic\ :sub:`r`\ ect]:
 
    ::
 
-    gmtset MAP_ANNOT_OBLIQUE 30
-    pscoast -R-25/59/70/72r -JS10/90/11c -B20g -Dl -A250 -Gdarkbrown -Wthinnest -Slightgray \
-            -P > GMT_stereographic_rect.ps
+    gmt set MAP_ANNOT_OBLIQUE 30
+    gmt pscoast -R-25/59/70/72r -JS10/90/11c -B20g -Dl -A250 -Gdarkbrown -Wthinnest \
+                -Slightgray -P > GMT_stereographic_rect.ps
 
 .. include:: fig_includes/fig_GMT_stereographic_rect.rst_
 
@@ -4960,9 +4924,9 @@ hemispheric maps. Our example shows Australia using a projection pole at
 
    ::
 
-    gmtset MAP_ANNOT_OBLIQUE 0
-    pscoast -R100/-42/160/-8r -JS130/-30/4i -Bag -Dl -A500 -Ggreen -Slightblue -Wthinnest \
-            -P > GMT_stereographic_general.ps
+    gmt set MAP_ANNOT_OBLIQUE 0
+    gmt pscoast -R100/-42/160/-8r -JS130/-30/4i -Bag -Dl -A500 -Ggreen -Slightblue \
+                -Wthinnest -P > GMT_stereographic_general.ps
 
 .. include:: fig_includes/fig_GMT_stereographic_general.rst_
 
@@ -5012,8 +4976,8 @@ looking due east is thus accomplished by the following
 
    ::
 
-    pscoast -Rg -JG4/52/230/90/60/180/60/60/5i -Bx2g2 -By1g1 -Ia -Di -Glightbrown -Wthinnest \
-            -P -Slightblue --MAP_ANNOT_MIN_SPACING=0.25i > GMT_perspective.ps
+    gmt pscoast -Rg -JG4/52/230/90/60/180/60/60/5i -Bx2g2 -By1g1 -Ia -Di -Glightbrown \
+                -Wthinnest -P -Slightblue --MAP_ANNOT_MIN_SPACING=0.25i > GMT_perspective.ps
 
 .. include:: fig_includes/fig_GMT_perspective.rst_
 
@@ -5047,7 +5011,7 @@ generated by the following `pscoast <pscoast.html>`_ command:
 
    ::
 
-    pscoast -Rg -JG-75/41/4.5i -Bg -Dc -A5000 -Gpink -Sthistle -P > GMT_orthographic.ps
+    gmt pscoast -Rg -JG-75/41/4.5i -Bg -Dc -A5000 -Gpink -Sthistle -P > GMT_orthographic.ps
 
 .. include:: fig_includes/fig_GMT_orthographic.rst_
 
@@ -5080,8 +5044,8 @@ in this projection this point plots as the entire map perimeter:
 
    ::
 
-    pscoast -Rg -JE-100/40/4.5i -Bg -Dc -A10000 -Glightgray -Wthinnest -P \
-            > GMT_az_equidistant.ps
+    gmt pscoast -Rg -JE-100/40/4.5i -Bg -Dc -A10000 -Glightgray -Wthinnest -P \
+                > GMT_az_equidistant.ps
 
 .. include:: fig_includes/fig_GMT_az_equidistant.rst_
 
@@ -5114,8 +5078,8 @@ Using a horizon of 60, our example of this projection centered on
 
    ::
 
-    pscoast -Rg -JF-120/35/60/4.5i -B30g15 -Dc -A10000 -Gtan -Scyan -Wthinnest \
-            -P > GMT_gnomonic.ps
+    gmt pscoast -Rg -JF-120/35/60/4.5i -B30g15 -Dc -A10000 -Gtan -Scyan -Wthinnest \
+                -P > GMT_gnomonic.ps
 
 .. include:: fig_includes/fig_GMT_gnomonic.rst_
 
@@ -5173,9 +5137,9 @@ which will give a map 4.32 inch wide. It was created with the command:
 
    ::
 
-    gmtset MAP_FRAME_TYPE fancy
-    pscoast -R0/360/-70/70 -Jm1.2e-2i -Bxa60f15 -Bya30f15 -Dc -A5000 -Gred \
-            -P > GMT_mercator.ps
+    gmt set MAP_FRAME_TYPE fancy
+    gmt pscoast -R0/360/-70/70 -Jm1.2e-2i -Bxa60f15 -Bya30f15 -Dc -A5000 -Gred \
+                -P > GMT_mercator.ps
 
 .. include:: fig_includes/fig_GMT_mercator.rst_
 
@@ -5209,8 +5173,8 @@ central meridian:
 
    ::
 
-    pscoast -R20/30/50/45r -Jt35/0.18i -Bag -Dl -A250 -Glightbrown -Wthinnest \
-            -P -Sseashell > GMT_transverse_merc.ps
+    gmt pscoast -R20/30/50/45r -Jt35/0.18i -Bag -Dl -A250 -Glightbrown -Wthinnest \
+                -P -Sseashell > GMT_transverse_merc.ps
 
 .. include:: fig_includes/fig_GMT_transverse_merc.rst_
 
@@ -5219,8 +5183,8 @@ equivalent of the 360 Mercator map. Using the command
 
    ::
 
-    pscoast -R0/360/-80/80 -JT330/-45/3.5i -Ba30g -BWSne -Dc -A2000 \
-            -Slightblue -G0 -P > GMT_TM.ps
+    gmt pscoast -R0/360/-80/80 -JT330/-45/3.5i -Ba30g -BWSne -Dc -A2000 \
+                -Slightblue -G0 -P > GMT_TM.ps
 
 we made the map illustrated in Figure [fig:GMT\ :sub:`T`\ M]. Note that
 when a world map is given (indicated by **-R**\ *0/360/s/n*), the
@@ -5308,9 +5272,9 @@ Our example was produced by the command
 
    ::
 
-    pscoast -R270/20/305/25r -JOc280/25.5/22/69/4.8i -Bag -Di -A250 -Gburlywood \
-            -Wthinnest -P -Tf301.5/23/0.4i/2 -Sazure --FONT_TITLE=8p \
-            --MAP_TITLE_OFFSET=0.05i > GMT_obl_merc.ps
+    gmt pscoast -R270/20/305/25r -JOc280/25.5/22/69/4.8i -Bag -Di -A250 -Gburlywood \
+                -Wthinnest -P -Tf301.5/23/0.4i/2 -Sazure --FONT_TITLE=8p \
+                --MAP_TITLE_OFFSET=0.05i > GMT_obl_merc.ps
 
 .. include:: fig_includes/fig_GMT_obl_merc.rst_
 
@@ -5345,8 +5309,8 @@ using the Cassini projection can be obtained by running the command:
 
    ::
 
-    pscoast -R7:30/38:30/10:30/41:30r -JC8.75/40/2.5i -Bafg -Lf9.5/38.8/40/60 -Dh -Gspringgreen \
-            -Sazure -Wthinnest -Ia/thinner -P --FONT_LABEL=12p > GMT_cassini.ps
+    gmt pscoast -R7:30/38:30/10:30/41:30r -JC8.75/40/2.5i -Bafg -Lf9.5/38.8/40/60 -Gspringgreen \
+                -Dh -Sazure -Wthinnest -Ia/thinner -P --FONT_LABEL=12p > GMT_cassini.ps
 
 .. include:: fig_includes/fig_GMT_cassini.rst_
 
@@ -5376,7 +5340,7 @@ obtained by running the command:
 
    ::
 
-    pscoast -Rg -JQ4.5i -B60f30g30 -Dc -A5000 -Gtan4 -Slightcyan -P > GMT_equi_cyl.ps
+    gmt pscoast -Rg -JQ4.5i -B60f30g30 -Dc -A5000 -Gtan4 -Slightcyan -P > GMT_equi_cyl.ps
 
 .. include:: fig_includes/fig_GMT_equi_cyl.rst_
 
@@ -5384,8 +5348,6 @@ Different relative scalings of longitudes and latitudes can be obtained
 by selecting a standard parallel different from the equator. Some
 selections for standard parallels have practical properties as shown in
 Table [tbl:JQ].
-
-[h]
 
 +-----------------------------------------------------+--------+
 +=====================================================+========+
@@ -5423,8 +5385,6 @@ own personal projection, there are seven choices of standard parallels
 that result in known (or named) projections. These are listed in
 Table [tbl:JY].
 
-[h]
-
 +-------------------+---------------------+
 +===================+=====================+
 | Balthasart        | 50                  |
@@ -5450,8 +5410,8 @@ obtained by running the command:
 
    ::
 
-    pscoast -R-145/215/-90/90 -JY35/30/4.5i -B45g45 -Dc -A10000 -Sdodgerblue -Wthinnest -P > \
-            GMT_general_cyl.ps
+    gmt pscoast -R-145/215/-90/90 -JY35/30/4.5i -B45g45 -Dc -A10000 -Sdodgerblue \
+                -Wthinnest -P > GMT_general_cyl.ps
 
 .. include:: fig_includes/fig_GMT_general_cyl.rst_
 
@@ -5480,8 +5440,8 @@ follows:
 
    ::
 
-    pscoast -R-90/270/-80/90 -Jj1:400000000 -Bx45g45 -By30g30 -Dc -A10000 -Gkhaki \
-            -Wthinnest -P -Sazure > GMT_miller.ps
+    gmt pscoast -R-90/270/-80/90 -Jj1:400000000 -Bx45g45 -By30g30 -Dc -A10000 \
+                -Gkhaki -Wthinnest -P -Sazure > GMT_miller.ps
 
 .. include:: fig_includes/fig_GMT_miller.rst_
 
@@ -5509,8 +5469,6 @@ Some of the selections of the standard parallel are named for the
 cartographer or publication that popularized the projection
 (Table [tbl:JCylstere]).
 
-[h]
-
 +---------------------------------------------------------+-------------+
 +=========================================================+=============+
 | Miller's modified Gall                                  | 66.159467   |
@@ -5532,9 +5490,9 @@ Figure [fig:GMT\ :sub:`g`\ all\ :sub:`s`\ tereo]), is obtained as follows:
 
    ::
 
-    gmtset FORMAT_GEO_MAP dddA
-    pscoast -R-180/180/-60/80 -JCyl_stere/0/45/4.5i -Bxa60f30g30 -Bya30g30 -Dc -A5000 -Wblack \
-            -Gseashell4 -Santiquewhite1 -P > GMT_gall_stereo.ps
+    gmt set FORMAT_GEO_MAP dddA
+    gmt pscoast -R-180/180/-60/80 -JCyl_stere/0/45/4.5i -Bxa60f30g30 -Bya30g30 -Dc -A5000 \
+                -Wblack -Gseashell4 -Santiquewhite1 -P > GMT_gall_stereo.ps
 
 .. include:: fig_includes/fig_GMT_gall_stereo.rst_
 
@@ -5569,7 +5527,7 @@ A view of the Pacific ocean using the Dateline as central meridian is accomplish
 
    ::
 
-    pscoast -Rg -JH4.5i -Bg -Dc -A10000 -Gblack -Scornsilk -P > GMT_hammer.ps
+    gmt pscoast -Rg -JH4.5i -Bg -Dc -A10000 -Gblack -Scornsilk -P > GMT_hammer.ps
 
 .. include:: fig_includes/fig_GMT_hammer.rst_
 
@@ -5594,7 +5552,7 @@ An example centered on Greenwich can be generated thus:
 
    ::
 
-    pscoast -Rd -JW4.5i -Bg -Dc -A10000 -Gtomato1 -Sskyblue -P > GMT_mollweide.ps
+    gmt pscoast -Rd -JW4.5i -Bg -Dc -A10000 -Gtomato1 -Sskyblue -P > GMT_mollweide.ps
 
 .. include:: fig_includes/fig_GMT_mollweide.rst_
 
@@ -5626,7 +5584,7 @@ was created by this command:
 
    ::
 
-    pscoast -Rd -JR4.5i -Bg -Dc -A10000 -Gburlywood4 -Swheat1 -P > GMT_winkel.ps
+    gmt pscoast -Rd -JR4.5i -Bg -Dc -A10000 -Gburlywood4 -Swheat1 -P > GMT_winkel.ps
 
 .. include:: fig_includes/fig_GMT_winkel.rst_
 
@@ -5652,7 +5610,7 @@ Again centered on Greenwich, the example below was created by this command:
 
    ::
 
-    pscoast -Rd -JN4.5i -Bg -Dc -A10000 -Ggoldenrod -Ssnow2 -P > GMT_robinson.ps
+    gmt pscoast -Rd -JN4.5i -Bg -Dc -A10000 -Ggoldenrod -Ssnow2 -P > GMT_robinson.ps
 
 .. include:: fig_includes/fig_GMT_robinson.rst_
 
@@ -5679,7 +5637,7 @@ this command:
 
    ::
 
-    pscoast -Rg -JKf4.5i -Bg -Dc -A10000 -Wthinnest -Givory -Sbisque3 -P > GMT_eckert4.ps
+    gmt pscoast -Rg -JKf4.5i -Bg -Dc -A10000 -Wthinnest -Givory -Sbisque3 -P > GMT_eckert4.ps
 
 .. include:: fig_includes/fig_GMT_eckert4.rst_
 
@@ -5706,7 +5664,7 @@ A simple world map using the sinusoidal projection is therefore obtained by
 
    ::
 
-     pscoast -Rd -JI4.5i -Bxg30 -Byg15 -Dc -A10000 -Ggray -P > GMT_sinusoidal.ps         
+     gmt pscoast -Rd -JI4.5i -Bxg30 -Byg15 -Dc -A10000 -Ggray -P > GMT_sinusoidal.ps         
 
 .. include:: fig_includes/fig_GMT_sinusoidal.rst_
 
