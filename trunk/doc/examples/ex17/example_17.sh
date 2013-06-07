@@ -12,8 +12,7 @@ ps=example_17.ps
 
 gmt grd2cpt india_geoid.nc -Crainbow > geoid.cpt
 gmt grdgradient india_geoid.nc -Nt1 -A45 -Gindia_geoid_i.nc
-gmt grdimage india_geoid.nc -Iindia_geoid_i.nc -JM6.5i -Cgeoid.cpt -P -K \
-	-U"Example 17 in Cookbook" > $ps
+gmt grdimage india_geoid.nc -Iindia_geoid_i.nc -JM6.5i -Cgeoid.cpt -P -K > $ps
 
 # Then use gmt pscoast to initiate clip path for land
 

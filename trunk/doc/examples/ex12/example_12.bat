@@ -25,7 +25,7 @@ REM
 REM Then contour the data and draw triangles using dashed pen; use "gmt minmax" and "gmt makecpt" to make a color palette (.cpt) file
 REM
 gmt makecpt -Cjet -T675/975/25 > topo.cpt
-gmt pscontour -R -J table_5.11 -B2f1 -BWSne -Wthin -Ctopo.cpt -Lthinnest,- -Gd1i -X-3.25i -Y-3.65i -O -K -U"Example 12 in Cookbook" >> %ps%
+gmt pscontour -R -J table_5.11 -B2f1 -BWSne -Wthin -Ctopo.cpt -Lthinnest,- -Gd1i -X-3.25i -Y-3.65i -O -K >> %ps%
 REM
 REM Finally color the topography
 REM

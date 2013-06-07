@@ -13,7 +13,7 @@ REM Interpolate data of Mars radius from Mariner9 and Viking Orbiter spacecrafts
 gmt makecpt -Crainbow -T-7000/15000/1000 -Z > tt.cpt
 REM Piecewise linear interpolation; no tension
 gmt sphinterpolate mars370.txt -Rg -I1 -Q0 -Gtt.nc
-gmt grdimage tt.nc -JH0/6i -Bag -Ctt.cpt -P -Xc -Y7.25i -K -U/-1i/-7i/"Example 36 in Cookbook" > %ps%
+gmt grdimage tt.nc -JH0/6i -Bag -Ctt.cpt -P -Xc -Y7.25i -K  > %ps%
 gmt psxy -Rg -J -O -K mars370.txt -Sc0.05i -G0 -B30g30 -Y-3.25i >> %ps%
 REM Smoothing
 gmt sphinterpolate mars370.txt -Rg -I1 -Q3 -Gtt.nc

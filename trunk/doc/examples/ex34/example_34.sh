@@ -8,8 +8,7 @@
 #
 ps=example_34.ps
 gmt gmtset FORMAT_GEO_MAP dddF
-gmt pscoast -JM4.5i -R-6/20/35/52 -FFR,IT+gP300/8 -Glightgray -Baf -BWSne -P -K \
-	-X2i -U-1.75i/-0.75i/"Example 34 in Cookbook" > $ps
+gmt pscoast -JM4.5i -R-6/20/35/52 -FFR,IT+gP300/8 -Glightgray -Baf -BWSne -P -K -X2i > $ps
 # Extract a subset of ETOPO2m for this part of Europe
 # gmt grdcut etopo2m_grd.nc -R -GFR+IT.nc=ns
 gmt makecpt -Cglobe -T-5000/5000/500 -Z > z.cpt

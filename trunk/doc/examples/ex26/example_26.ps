@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:48:34) [64-bit] [C4] Document from GMT_pscoast
-%%Creator: GMT
-%%For: remko
+%%Title: GMT v5.0.1b_r11640M [64-bit] Document from pscoast
+%%Creator: GMT5
+%%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 23 12:49:43 2011
+%%CreationDate: Thu Jun  6 17:04:53 2013
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -60,7 +60,7 @@
 /Si {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR FO}!
 /Sj {M MS R dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D MR FO}!
 /Sn {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR FO}!
-/Sp {N 3 -1 roll 0 360 arc F}!
+/Sp {N 3 -1 roll 0 360 arc fs N}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
 /SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
@@ -110,6 +110,11 @@
   count PSL_op_count sub {pop} repeat
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
+}!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -571,8 +576,9 @@ O0
 1200 6000 TM
 
 % PostScript produced by:
-%%GMT:  pscoast -Rg -JG-74.0/41.5/160.0/0/0/0/0.0/0.0/4i -X1i -B5g5/5g5 -Glightbrown -Slightblue -W -Dl -N1/1p,red -N2,0.5p -P -K -Y5i
-%%PROJ: nsper 0.00000000 360.00000000 -90.00000000 90.00000000 -709478.731 709478.731 -709478.731 709478.731 +unavailable +a=6371008.771 +b=6371008.771415
+%%GMT: pscoast -Rg -JG-74.0/41.5/160.0/0/0/0/0.0/0.0/4i -X1i -B5g5 -Glightbrown -Slightblue -W -Dl -N1/1p,red -N2,0.5p -P -K -Y5i
+%%PROJ: nsper 0.00000000 360.00000000 -90.00000000 90.00000000 -709478.641 709478.641 -709478.641 709478.641 +unavailable +a=6371007.181 +b=6371007.180918
+%%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -1082,8 +1088,8 @@ FO
 0 -1 9 0 2 2488 4793 SP
 -30 2 -3 -1 32 -1 3 2513 4793 SP
 13 1 -22 0 7 -1 3 2397 4795 SP
-17 7 -37 -6 2 2088 4681 SP
 25 7 -54 -9 28 2 3 2099 4761 SP
+17 7 -37 -6 2 2088 4681 SP
 22 3 -34 -3 10 0 3 2213 4739 SP
 -16 3 10 -4 5 1 3 2867 4745 SP
 9 -2 30 1 2 2427 4781 SP
@@ -1354,8 +1360,8 @@ FO
 0 -1 9 0 2 2488 4793 SP
 -30 2 -3 -1 32 -1 3 2513 4793 SP
 13 1 -22 0 7 -1 3 2397 4795 SP
-17 7 -37 -6 2 2088 4681 SP
 25 7 -54 -9 28 2 3 2099 4761 SP
+17 7 -37 -6 2 2088 4681 SP
 22 3 -34 -3 10 0 3 2213 4739 SP
 -16 3 10 -4 5 1 3 2867 4745 SP
 9 -2 30 1 2 2427 4781 SP
@@ -1746,13 +1752,13 @@ P S
 7 -1 D
 -22 0 D
 P S
-2088 4681 M
--37 -6 D
-17 7 D
-P S
 2099 4761 M
 28 2 D
 -54 -9 D
+P S
+2088 4681 M
+-37 -6 D
+17 7 D
 P S
 2213 4739 M
 10 0 D
@@ -2749,8 +2755,8 @@ FO
 -8 -12 1 1223 4302 SP
 -18 -14 1 0 2 817 4194 SP
 7 15 -7 -14 2 405 3605 SP
--7 -16 0 1 2 266 3482 SP
 0 9 0 -8 2 1438 4482 SP
+-7 -16 0 1 2 266 3482 SP
 2 -2 1 387 3664 SP
 -5 4 3 -4 2 1327 4420 SP
 10 8 -9 -7 2 882 4197 SP
@@ -3166,8 +3172,8 @@ FO
 -8 -12 1 1223 4302 SP
 -18 -14 1 0 2 817 4194 SP
 7 15 -7 -14 2 405 3605 SP
--7 -16 0 1 2 266 3482 SP
 0 9 0 -8 2 1438 4482 SP
+-7 -16 0 1 2 266 3482 SP
 2 -2 1 387 3664 SP
 -5 4 3 -4 2 1327 4420 SP
 10 8 -9 -7 2 882 4197 SP
@@ -3622,11 +3628,11 @@ P S
 405 3605 M
 -7 -14 D
 P S
-266 3482 M
--7 -15 D
-P S
 1438 4482 M
 0 1 D
+P S
+266 3482 M
+-7 -15 D
 P S
 387 3664 M
 2 -2 D
@@ -8489,7 +8495,7 @@ FO
 28 24 1 2012 1156 SP
 12 -21 -13 21 2 1856 1189 SP
 16 -13 1 1830 1256 SP
--24 -21 25 22 2 2282 1625 SP
+-24 -21 25 21 2 2282 1626 SP
 9 6 1 1916 667 SP
 -16 -26 16 27 2 2182 1509 SP
 -13 -17 13 18 2 2294 1647 SP
@@ -8838,7 +8844,7 @@ FO
 28 24 1 2012 1156 SP
 12 -21 -13 21 2 1856 1189 SP
 16 -13 1 1830 1256 SP
--24 -21 25 22 2 2282 1625 SP
+-24 -21 25 21 2 2282 1626 SP
 9 6 1 1916 667 SP
 -16 -26 16 27 2 2182 1509 SP
 -13 -17 13 18 2 2294 1647 SP
@@ -9185,8 +9191,8 @@ P S
 1830 1256 M
 16 -13 D
 P S
-2282 1625 M
-25 22 D
+2282 1626 M
+25 21 D
 P S
 1916 667 M
 9 6 D
@@ -11188,51 +11194,16 @@ S
 118 5 D
 39 0 D
 S
+%%EndObject
 0 A
 FQ
 O0
 1200 -4800 TM
 
 % PostScript produced by:
-%%GMT:  pscoast -Rg -JG-74.0/41.5/160.0/210/55/45/30.0/30.0/5i -B5g5/5g5 -Glightbrown -Slightblue -W -Ia/blue -Di -Na -O -X1i -Y-4i -U/-1.75i/-0.75i/Example 26 in Cookbook
-%%PROJ: nsper 271.32455291 300.89093436 28.69139086 54.05523794 -74148.974 74148.974 -74148.974 74148.974 +unavailable +a=6371008.771 +b=6371008.771415
-% Begin GMT time-stamp
-V
--2100 -900 T
-4 W
-/PSL_g_w 438 def
-/PSL_g_h 180 def
-PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-133 F0
-(  Version 5  ) V MU 0 0 M E /PSL_b_w edef FP pathbbox N /PSL_b_h edef /PSL_b_x1 edef /PSL_b_d edef /PSL_b_x0 edef U
-{0 A} FS
-O1
-180 438 219 90 Sr
-V N 0 0 T 438 180 scale /DeviceGray setcolorspace
-<< /ImageType 1 /Decode [0 1] /Width 220 /Height 90 /BitsPerComponent 1
-   /ImageMatrix [220 0 0 -90 0 90] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
->> image
-J,g]g3$]7K"p`!':q.Jl)%V>:U(KAL:*14/6K8ZF4Dm.kO2E3j(_i!%-BQ@pnu,^j&L7Inhrk=kZ47tE4smR$r5nrRL<0ttk
-N)mVs):=Qdjb>!2a*mc!&OBb9u0JPcDf/oSB@m'YIl@rkq#;P1]c5O<LOp\Bc*Gj!#CoS%K?:8c`&X&mE4[:ISM>9=KKO7!1
-;>f&,5QWYsjPq0,=sjg&Hf'f&1X,"NKa^W8dC>9>,3h;khe)=q%db!$BS+VDOA8s&Z&)eLB'B/.-A!+3q.GbnW-H7b['N2!e
-gYBkc0eX"Z7-$GF"(<9^XQ:=ES$J)-Ic>@27O1"UX6ce4j\s5VAk+kZ!+=4ci=Vt!:W,WfE1\5-RIr39"$2$5eZdpT1@NhWn
-95Dcr@"s;oQ6N=Ab;@;]j$CiZ%W[LNJ#nQ;ndgr7Vj@&^7cE'XK_Q=(S'h/^-!=5eMH\g^_DaYimY,b6.J]ER?Go!"^>%8_g
-mgOOj8J4rSi[lZ3GdOA$qs>9CObBha9+IGks2S%(X!aQ=$l"(_L\/h=8CIWg21b$C@5lC$8r2rV9mQOs9bDtg4!,.%X"MJuX
-T[)!lQ_$Gaf?qc1siTSO!%3',\]ig%f;:c;_^nf&_!naWtNo6gNsAYe0CW^<A;?6nl/>;?=5tAoKn+"$*))!.V&m9>_!AAr5
-CAu,jSj8FsVIZ;@bpTU7^QdB4nZVm3<f;1sN&igC$rih)Ua9(1Yb;bB/LhaDJM_O61c1(XYq*C;hpG"Yr<5pOeGR,!c$]S27
-X,VffM*Q1EfZ?p5"1`Ka%@^Y#Ob*K$EqRp?.@Y%rrRVl'Tnc.7]R6S'2p!e(0[QQdp"-cYtuQ8SGQH&XfpEdVMk)5D\>bLt'
-RT,@CkIr<*i%IB7U`#an<"7IOmV<:AE!dju+RpOeRme3W;]K4#rSSP/8rhd0',1EA4aRB_I,:U(TOs+%m.Cpb9_I'u(Hfg$q
-DTIS7MsoF"n\M"l#Q~>
-U
-{1 A} FS
-PSL_g_h PSL_b_w PSL_g_w 0 Sb
-438 38 M (  Version 5  ) Z
-117 F0
-(   Example 26 in Cookbook) Z
-U
-% End GMT time-stamp
-FQ
-O0
+%%GMT: pscoast -Rg -JG-74.0/41.5/160.0/210/55/45/30.0/30.0/5i -B5g5 -Glightbrown -Slightblue -W -Ia/blue -Di -Na -O -X1i -Y-4i
+%%PROJ: nsper 271.32455105 300.89093668 28.69138912 54.05523964 -74148.975 74148.975 -74148.975 74148.975 +unavailable +a=6371007.181 +b=6371007.180918
+%%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -12234,9 +12205,10 @@ FO
 -396 37 D
 -39 -83 D
 -122 -258 D
--159 -339 D
--152 -330 D
--36 -77 D
+-154 -330 D
+-25 -53 D
+-119 -257 D
+-49 -106 D
 FO
 -2 -5 -3 -2 7 11 3 2637 1456 SP
 3720 774 M
@@ -13076,8 +13048,8 @@ FO
 -32 -40 D
 9 7 D
 8 -2 D
-3 7 D
-9 3 D
+3 6 D
+9 4 D
 13 19 D
 -6 -2 D
 17 15 D
@@ -14334,7 +14306,7 @@ FO
 -7 6 8 -6 2 2947 3164 SP
 -7 -5 6 5 2 1433 3077 SP
 -4 -6 1 1856 3204 SP
-6 9 -5 -9 2 2202 3323 SP
+5 9 -4 -9 2 2202 3323 SP
 7 -7 -8 7 2 3059 3649 SP
 4 4 -3 -4 2 1413 3250 SP
 12 11 -11 -11 2 2094 3279 SP
@@ -14819,8 +14791,8 @@ FO
 -32 -40 D
 9 7 D
 8 -2 D
-3 7 D
-9 3 D
+3 6 D
+9 4 D
 13 19 D
 -6 -2 D
 17 15 D
@@ -16108,7 +16080,7 @@ FO
 -7 6 8 -6 2 2947 3164 SP
 -7 -5 6 5 2 1433 3077 SP
 -4 -6 1 1856 3204 SP
-6 9 -5 -9 2 2202 3323 SP
+5 9 -4 -9 2 2202 3323 SP
 7 -7 -8 7 2 3059 3649 SP
 4 4 -3 -4 2 1413 3250 SP
 12 11 -11 -11 2 2094 3279 SP
@@ -16581,8 +16553,8 @@ FO
 -32 -40 D
 9 7 D
 8 -2 D
-3 7 D
-9 3 D
+3 6 D
+9 4 D
 13 19 D
 -6 -2 D
 17 15 D
@@ -18192,8 +18164,8 @@ P S
 -4 -6 D
 P S
 2202 3323 M
--5 -9 D
-6 9 D
+-4 -9 D
+5 9 D
 P S
 3059 3649 M
 -8 7 D
@@ -18759,8 +18731,10 @@ FO
 26 21 D
 -9 -29 D
 27 58 D
-161 349 D
-215 458 D
+157 341 D
+9 17 D
+96 206 D
+114 243 D
 84 177 D
 21 45 D
 -584 52 D
@@ -22474,8 +22448,8 @@ S
 -60 -14 D
 -27 2 D
 4 13 D
--12 5 D
-17 14 D
+-11 5 D
+16 14 D
 43 28 D
 12 12 D
 -38 -6 D
@@ -23882,8 +23856,8 @@ S
 -58 -15 D
 -27 2 D
 4 13 D
--12 5 D
-17 14 D
+-11 5 D
+16 14 D
 43 28 D
 12 12 D
 -38 -6 D
@@ -23945,8 +23919,8 @@ S
 -58 -15 D
 -27 2 D
 4 13 D
--12 5 D
-17 14 D
+-11 5 D
+16 14 D
 43 28 D
 12 12 D
 -38 -6 D
@@ -25078,7 +25052,8 @@ S
 0 1365 M -48 -68 D S
 5023 6000 M 47 69 D S
 1983 0 M -34 -76 D S
-4428 6093 M 200 F0
+4428 6093 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
 V 33.9 R (-85Ê) ml Z U
 5515 6074 M V 26.3 R (-80Ê) ml Z U
 6166 2321 M V -5.93 R (-75Ê) ml Z U
@@ -25118,6 +25093,7 @@ V 33.9 R (-85Ê) ml Z U
 1809 0 D
 0 -6000 D
 S
+%%EndObject
 %%PageTrailer
 U
 showpage

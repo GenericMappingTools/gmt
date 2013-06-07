@@ -5,7 +5,8 @@
 2013-06-05	pwessel
 	* greenspline.c:	Improved the accuracy of the spherical spline in tension with
 				lots of help from Bob Parker, Scripps Inst. Oceanography.
-				Also added cubic spline interpolation rather than linear for -SQ.
+				Also added cubic spline interpolation rather than linear for
+				the lookup, and eliminated -SQ (-Sq does that instead now).
 
 2013-06-03	jluis
 	* grd2xyz.c:		Enhanced -N[i]<nodata> to replace grid values on output with NaN.

@@ -28,7 +28,7 @@ echo 104.50 59.92 -42 1.65 | gmt psxy -R -J -O -K -SV0.1i+e -W1p -Gblack --MAP_V
 
 # Repeat for Wessel&Becker's solution with t = 0.99
 
-gmt greenspline -Rg -I1 mag_obs_1990.d -SQ0.99 -GFig_2_p5.nc
+gmt greenspline -Rg -I1 mag_obs_1990.d -Sq0.99 -GFig_2_p5.nc
 
 gmt pscoast -R0/360/0/90 -J -O -Glightgray -K -B30 -X2.5i -Y-5i --MAP_FRAME_WIDTH=0.025i \
 	--FORMAT_GEO_MAP=dddF --FONT_ANNOT_PRIMARY=10 >> $ps

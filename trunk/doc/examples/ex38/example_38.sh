@@ -12,7 +12,7 @@ gmt makecpt -Crainbow -T0/1700/100 -Z > t.cpt
 gmt makecpt -Crainbow -T0/15/1 > c.cpt
 gmt grdgradient topo.nc -Nt1 -fg -A45 -Gitopo.nc
 gmt grdhisteq topo.nc -Gout.nc -C16
-gmt grdimage topo.nc -Iitopo.nc -Ct.cpt -JM3i -Y6i -K -P -B5 -BWSne -U/-0.75i/-5.75i/"Example 38 in Cookbook" > $ps
+gmt grdimage topo.nc -Iitopo.nc -Ct.cpt -JM3i -Y6i -K -P -B5 -BWSne > $ps
 echo "315 -10 Original" | gmt pstext -Rtopo.nc -J -O -K -F+jTR+f14p -T -Gwhite -W1p -Dj0.1i >> $ps
 gmt grdimage out.nc -Cc.cpt -J -X3.5i -K -O -B5 -BWSne >> $ps
 echo "315 -10 Equalized" | gmt pstext -R -J -O -K -F+jTR+f14p -T -Gwhite -W1p -Dj0.1i >> $ps

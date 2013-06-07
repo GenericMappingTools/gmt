@@ -31,8 +31,7 @@ cat << END > key.cpt
 END
 # Create the final plot and overlay coastlines
 gmt gmtset FONT_ANNOT_PRIMARY +10p FORMAT_GEO_MAP dddF
-gmt grdimage key.nc -JKs180/9i -Bx60 -By30 -BWsNE+t"Antipodal comparisons" -K -Ckey.cpt -Y1.2i \
-	-UL/-0.75i/-0.95i/"Example 25 in Cookbook" -nn > $ps
+gmt grdimage key.nc -JKs180/9i -Bx60 -By30 -BWsNE+t"Antipodal comparisons" -K -Ckey.cpt -Y1.2i -nn > $ps
 gmt pscoast -R -J -O -K -Wthinnest -Dc -A500 >> $ps
 # Place an explanatory legend below
 gmt pslegend -R0/9/0/0.5 -Jx1i -O -Dx4.5i/0/6i/TC -Y-0.2i -F+pthick >> $ps << END

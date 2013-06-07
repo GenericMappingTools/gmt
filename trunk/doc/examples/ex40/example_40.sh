@@ -9,7 +9,7 @@
 ps=example_40.ps
 
 gmt gmtspatial GSHHS_h_Australia.txt -fg -Qk > centroid.txt
-gmt psbasemap -R112/154/-40/-10 -JM5.5i -P -K -B20 -BWSne+g240/255/240 -Xc -U/-1.25i/-0.75i/"Example 40 in Cookbook" > $ps
+gmt psbasemap -R112/154/-40/-10 -JM5.5i -P -K -B20 -BWSne+g240/255/240 -Xc > $ps
 gmt psxy GSHHS_h_Australia.txt -R -J -O -Wfaint -G240/240/255 -K >> $ps
 gmt psxy GSHHS_h_Australia.txt -R -J -O -Sc0.01c -Gred -K >> $ps
 gmt gmtsimplify GSHHS_h_Australia.txt -T500k > T500k.txt

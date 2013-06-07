@@ -11,7 +11,7 @@ set ps=example_11.ps
 
 gmt gmtset MAP_TICK_LENGTH_PRIMARY 0
 
-gmt psxy cut-here.dat -Wthinnest,. -R-51/306/0/1071 -JX3.5i/10.5i -X2.5i -Y0.5i -P -UL/-2.0i/-0.2i/"Example 11 in Cookbook" -K > %ps%
+gmt psxy cut-here.dat -Wthinnest,. -R-51/306/0/1071 -JX3.5i/10.5i -X2.5i -Y0.5i -P -K > %ps%
 
 REM First, create grids of ascending X and Y and constant 0.
 REM These are to be used to represent R, G and B values of the darker 3 faces of the cube.

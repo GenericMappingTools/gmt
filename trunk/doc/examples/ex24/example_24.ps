@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612 792
-%%Title: GMT v5.0.0a (CVS Jun 23 2011 12:48:34) [64-bit] [C4] Document from GMT_pscoast
-%%Creator: GMT
-%%For: remko
+%%Title: GMT v5.0.1b_r11640M [64-bit] Document from pscoast
+%%Creator: GMT5
+%%For: pwessel
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 23 12:49:41 2011
+%%CreationDate: Thu Jun  6 15:28:08 2013
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Landscape
@@ -60,7 +60,7 @@
 /Si {M MS dup neg 0 exch G 60 R 1.732050808 mul dup 0 D 120 R 0 D MR FO}!
 /Sj {M MS R dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D MR FO}!
 /Sn {M MS dup 0 exch G -36 R 1.175570505 mul dup 0 D 3 {-72 R dup 0 D} repeat pop MR FO}!
-/Sp {N 3 -1 roll 0 360 arc F}!
+/Sp {N 3 -1 roll 0 360 arc fs N}!
 /SP {M {D} repeat FO}!
 /Sr {M dup -2 div 2 index -2 div G dup 0 D exch 0 exch D neg 0 D FO}!
 /SR {MS T /BoxR edef /BoxW edef /BoxH edef BoxR BoxW -2 div BoxH -2 div T BoxR 0 M
@@ -110,6 +110,11 @@
   count PSL_op_count sub {pop} repeat
   countdictstack PSL_dict_count sub {end} repeat
   PSL_eps_state restore
+}!
+/PSL_transp {
+  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
+  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
+  {pop pop} ifelse} ifelse
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -571,45 +576,9 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%%GMT:  pscoast -R100/200/-60/0 -JM9i -K -Gtan -Sdarkblue -Wthin,white -Dl -A500 -Ba20f10g10WeSn -UExample 24 in Cookbook
+%%GMT: pscoast -R100/200/-60/0 -JM9i -K -Gtan -Sdarkblue -Wthin,white -Dl -A500 -Ba20f10g10 -BWeSn
 %%PROJ: merc 100.00000000 200.00000000 -60.00000000 0.00000000 -5565974.540 5565974.540 -8362698.549 0.000 +proj=merc +lon_0=150 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
-% Begin GMT time-stamp
-V
--900 -900 T
-4 W
-/PSL_g_w 438 def
-/PSL_g_h 180 def
-PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-133 F0
-(  Version 5  ) V MU 0 0 M E /PSL_b_w edef FP pathbbox N /PSL_b_h edef /PSL_b_x1 edef /PSL_b_d edef /PSL_b_x0 edef U
-{0 A} FS
-O1
-180 438 219 90 Sr
-V N 0 0 T 438 180 scale /DeviceGray setcolorspace
-<< /ImageType 1 /Decode [0 1] /Width 220 /Height 90 /BitsPerComponent 1
-   /ImageMatrix [220 0 0 -90 0 90] /DataSource currentfile /ASCII85Decode filter /LZWDecode filter
->> image
-J,g]g3$]7K"p`!':q.Jl)%V>:U(KAL:*14/6K8ZF4Dm.kO2E3j(_i!%-BQ@pnu,^j&L7Inhrk=kZ47tE4smR$r5nrRL<0ttk
-N)mVs):=Qdjb>!2a*mc!&OBb9u0JPcDf/oSB@m'YIl@rkq#;P1]c5O<LOp\Bc*Gj!#CoS%K?:8c`&X&mE4[:ISM>9=KKO7!1
-;>f&,5QWYsjPq0,=sjg&Hf'f&1X,"NKa^W8dC>9>,3h;khe)=q%db!$BS+VDOA8s&Z&)eLB'B/.-A!+3q.GbnW-H7b['N2!e
-gYBkc0eX"Z7-$GF"(<9^XQ:=ES$J)-Ic>@27O1"UX6ce4j\s5VAk+kZ!+=4ci=Vt!:W,WfE1\5-RIr39"$2$5eZdpT1@NhWn
-95Dcr@"s;oQ6N=Ab;@;]j$CiZ%W[LNJ#nQ;ndgr7Vj@&^7cE'XK_Q=(S'h/^-!=5eMH\g^_DaYimY,b6.J]ER?Go!"^>%8_g
-mgOOj8J4rSi[lZ3GdOA$qs>9CObBha9+IGks2S%(X!aQ=$l"(_L\/h=8CIWg21b$C@5lC$8r2rV9mQOs9bDtg4!,.%X"MJuX
-T[)!lQ_$Gaf?qc1siTSO!%3',\]ig%f;:c;_^nf&_!naWtNo6gNsAYe0CW^<A;?6nl/>;?=5tAoKn+"$*))!.V&m9>_!AAr5
-CAu,jSj8FsVIZ;@bpTU7^QdB4nZVm3<f;1sN&igC$rih)Ua9(1Yb;bB/LhaDJM_O61c1(XYq*C;hpG"Yr<5pOeGR,!c$]S27
-X,VffM*Q1EfZ?p5"1`Ka%@^Y#Ob*K$EqRp?.@Y%rrRVl'Tnc.7]R6S'2p!e(0[QQdp"-cYtuQ8SGQH&XfpEdVMk)5D\>bLt'
-RT,@CkIr<*i%IB7U`#an<"7IOmV<:AE!dju+RpOeRme3W;]K4#rSSP/8rhd0',1EA4aRB_I,:U(TOs+%m.Cpb9_I'u(Hfg$q
-DTIS7MsoF"n\M"l#Q~>
-U
-{1 A} FS
-PSL_g_h PSL_b_w PSL_g_w 0 Sb
-438 38 M (  Version 5  ) Z
-117 F0
-(   Example 24 in Cookbook) Z
-U
-% End GMT time-stamp
-FQ
-O0
+%%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -12397,7 +12366,8 @@ S
 10800 5922 M 83 0 D S
 0 8113 M -83 0 D S
 10800 8113 M 83 0 D S
-0 -167 M 200 F0
+0 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
 (100Ê) tc Z
 2160 -167 M (120Ê) tc Z
 4320 -167 M (140Ê) tc Z
@@ -12466,14 +12436,16 @@ S
 10883 8197 M -10966 0 D S
 0 8197 M 0 -8280 D S
 -83 8197 M 0 -8280 D S
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R100/200/-60/0 -JM9i -O -K oz_quakes.d -Sc0.05i -Gred
+%%GMT: psxy -R100/200/-60/0 -JM9i -O -K oz_quakes.d -Sc0.05i -Gred
 %%PROJ: merc 100.00000000 200.00000000 -60.00000000 0.00000000 -5565974.540 5565974.540 -8362698.549 0.000 +proj=merc +lon_0=150 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -12484,6 +12456,7 @@ clipsave
 -10800 0 D
 PSL_eoclip N
 4 W
+V
 {1 0 0 C} FS
 30 8122 3206 Sc
 30 10044 5102 Sc
@@ -24708,15 +24681,18 @@ PSL_eoclip N
 30 174 7662 Sc
 30 3600 8040 Sc
 30 251 7540 Sc
+U
 PSL_cliprestore
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R100/200/-60/0 -JM9i -O -K -Sc0.05i -Ggreen
+%%GMT: psxy -R100/200/-60/0 -JM9i -O -K -Sc0.05i -Ggreen
 %%PROJ: merc 100.00000000 200.00000000 -60.00000000 0.00000000 -5565974.540 5565974.540 -8362698.549 0.000 +proj=merc +lon_0=150 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -24727,6 +24703,7 @@ clipsave
 -10800 0 D
 PSL_eoclip N
 4 W
+V
 {0 1 0 C} FS
 30 5076 815 Sc
 30 5184 815 Sc
@@ -25003,15 +24980,18 @@ PSL_eoclip N
 30 2412 2034 Sc
 30 7050 2330 Sc
 30 7062 2269 Sc
+U
 PSL_cliprestore
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R100/200/-60/0 -JM9i -O -K -SE -Wfat,white
+%%GMT: psxy -R100/200/-60/0 -JM9i -O -K -SE -Wfat,white
 %%PROJ: merc 100.00000000 200.00000000 -60.00000000 0.00000000 -5565974.540 5565974.540 -8362698.549 0.000 +proj=merc +lon_0=150 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -25023,6 +25003,7 @@ clipsave
 PSL_eoclip N
 50 W
 1 A
+V
 O1
 5099 6396 M
 -254 -9 D
@@ -25085,15 +25066,18 @@ O1
 -254 25 D
 -255 9 D
 S
+U
 PSL_cliprestore
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  pstext -R100/200/-60/0 -JM9i -O -K -F+f14p,Helvetica-Bold,white+jLT -D0.1i/-0.1i
+%%GMT: pstext -R100/200/-60/0 -JM9i -O -K -F+f14p,Helvetica-Bold,white+jLT -D0.1i/-0.1i
 %%PROJ: merc 100.00000000 200.00000000 -60.00000000 0.00000000 -5565974.540 5565974.540 -8362698.549 0.000 +proj=merc +lon_0=150 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -25108,14 +25092,16 @@ PSL_eoclip N
 233 F1
 (Hobart) tl Z
 PSL_cliprestore
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R100/200/-60/0 -JM9i -O -K point.d -Wfat,white -S+0.2i
+%%GMT: psxy -R100/200/-60/0 -JM9i -O -K point.d -Wfat,white -S+0.2i
 %%PROJ: merc 100.00000000 200.00000000 -60.00000000 0.00000000 -5565974.540 5565974.540 -8362698.549 0.000 +proj=merc +lon_0=150 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -25127,17 +25113,21 @@ clipsave
 PSL_eoclip N
 50 W
 1 A
+V
 O1
 120 5099 3017 S+
+U
 PSL_cliprestore
+%%EndObject
 0 A
 FQ
 O0
 0 0 TM
 
 % PostScript produced by:
-%%GMT:  psxy -R100/200/-60/0 -JM9i -O dateline.d -Wfat,white -A
+%%GMT: psxy -R100/200/-60/0 -JM9i -O dateline.d -Wfat,white -A
 %%PROJ: merc 100.00000000 200.00000000 -60.00000000 0.00000000 -5565974.540 5565974.540 -8362698.549 0.000 +proj=merc +lon_0=150 +k=-1 +x_0=0 +y_0=0 +a=6378137.000 +b=6356752.314245
+%%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
 3.32551 setmiterlimit
@@ -25146,6 +25136,7 @@ O0
 8640 8113 M
 0 -8113 D
 S
+%%EndObject
 %%PageTrailer
 U
 showpage

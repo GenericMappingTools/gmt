@@ -40,7 +40,7 @@ REM power in one diagram and the coherency on another diagram,  both on the same
 REM Note the extended use of gmt pstext and gmt psxy to put labels and legends directly on the plots.  
 REM For that purpose we often use -Jx1i and specify positions in inches directly:
 REM
-gmt psxy spectrum.coh -Bxa1f3p+l"Wavelength (km)" -Bya0.25f0.05+l"Coherency@+2@+" -BWeSn+g240/255/240 -JX-4il/3.75i -R1/1000/0/1 -UL/-2.25i/-1.25i/"Example 3 in Cookbook" -P -K -X2.5i -Sc0.07i -G0 -Ey/0.5p -Y1.5i > %ps%
+gmt psxy spectrum.coh -Bxa1f3p+l"Wavelength (km)" -Bya0.25f0.05+l"Coherency@+2@+" -BWeSn+g240/255/240 -JX-4il/3.75i -R1/1000/0/1 -P -K -X2.5i -Sc0.07i -G0 -Ey/0.5p -Y1.5i > %ps%
 echo 3.85 3.6 Coherency@+2@+ | gmt pstext -R0/4/0/3.75 -Jx1i -F+f18p,Helvetica-Bold+jTR -O -K >> %ps%
 echo 2.375 3.75 > box.d
 echo 2.375 3.25 >> box.d
