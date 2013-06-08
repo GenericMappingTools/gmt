@@ -156,7 +156,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to find or open the Digital Chart of the World for GMT\n");
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Perhaps you did not install this file in DIR_DCW, the shared dir, or the user dir?\n");
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Use your package manager to install package dcw-gmt.\n");
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Alternatively, get the latest dcw-gmt.tar.gz or dcw-gmt.tar.zip from the %s.\n", DCW_SITE);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Alternatively, get the latest dcw-gmt-<version>.tar.gz or dcw-gmt-<version>.zip from the %s.\n", DCW_SITE);
 		return NULL;
 	}
 
