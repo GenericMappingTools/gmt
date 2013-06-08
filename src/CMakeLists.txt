@@ -114,7 +114,7 @@ find_package (DCW)
 if (DO_EXAMPLES OR DO_TESTS AND NOT DCW_FOUND)
 	message (FATAL_ERROR "Cannot proceed without DCW polygons. "
 		"Need to either set DCW_ROOT or disable tests."
-		"Obtain dcw-gmt-1.0.0.tar.gz or dcw-gmt-1.0.0.zip from ftp.soest.hawaii.edu://pub/pwessel/dcw-gmt and make DCW_ROOT variable point to the directory where it sits")
+		"Obtain dcw-gmt-<version>.tar.gz or dcw-gmt-<version>.zip from ftp.soest.hawaii.edu://pub/pwessel/dcw-gmt and make DCW_ROOT variable point to the directory where it sits")
 endif (DO_EXAMPLES OR DO_TESTS AND NOT DCW_FOUND)
 
 # These lines are temporarily here for the beta release
