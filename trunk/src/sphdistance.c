@@ -314,7 +314,7 @@ int GMT_sphdistance (void *V_API, int mode, void *args)
 			}
 			GMT_memcpy (lon, NTable->segment[0]->coord[GMT_X], NTable->n_records, double);
 			GMT_memcpy (lat, NTable->segment[0]->coord[GMT_Y], NTable->n_records, double);
-			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Nin) != GMT_OK) {
+			if (GMT_Destroy_Data (API, &Nin) != GMT_OK) {
 				Return (API->error);
 			}
 			GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " records\n", NTable->n_records);

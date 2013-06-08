@@ -1052,7 +1052,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 				GMT_free (GMT, yp);
 			}
 		}
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &D) != GMT_OK) {
 			Return (API->error);
 		}
 	}

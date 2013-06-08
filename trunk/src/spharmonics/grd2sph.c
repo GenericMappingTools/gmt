@@ -253,7 +253,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 			S[L][M]  = S->coord[3][row]
 		}
 	}
-	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
+	if (GMT_Destroy_Data (API, &D) != GMT_OK) {
 		Return (API->error);
 	}
 	

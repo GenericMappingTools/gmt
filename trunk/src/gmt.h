@@ -83,7 +83,7 @@ EXTERN_MSC int GMT_Status_IO		(void *API, unsigned int mode);
 EXTERN_MSC int GMT_End_IO		(void *API, unsigned int direction, unsigned int mode);
 EXTERN_MSC int GMT_Put_Data		(void *API, int object_ID, unsigned int mode, void *data);
 EXTERN_MSC int GMT_Write_Data		(void *API, unsigned int family, unsigned int method, unsigned int geometry, unsigned int mode, double wesn[], char *output, void *data);
-EXTERN_MSC int GMT_Destroy_Data		(void *API, unsigned int mode, void *object);
+EXTERN_MSC int GMT_Destroy_Data		(void *API, void *object);
 EXTERN_MSC int GMT_Put_Record		(void *API, unsigned int mode, void *record);
 EXTERN_MSC int GMT_Encode_ID		(void *API, char *string, int object_ID);
 EXTERN_MSC int GMT_Get_Row		(void *API, int rec_no, struct GMT_GRID *G, float *row);

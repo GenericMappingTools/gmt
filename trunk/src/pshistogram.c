@@ -690,7 +690,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 			if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_STREAM, GMT_IS_POINT, D->io_mode, NULL, Ctrl->Out.file, D) != GMT_OK) {
 				Return (API->error);
 			}
-			if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &D) != GMT_OK) {
+			if (GMT_Destroy_Data (GMT->parent, &D) != GMT_OK) {
 				Return (API->error);
 			}
 		}

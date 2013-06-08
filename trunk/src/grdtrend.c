@@ -632,7 +632,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
-	else if (GMT_Destroy_Data (API, GMT_ALLOCATED, &T) != GMT_OK) {
+	else if (GMT_Destroy_Data (API, &T) != GMT_OK) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free T\n");
 	}
 	if (Ctrl->D.file) {
@@ -643,7 +643,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 		}
 	}
 	else if (Ctrl->D.active || Ctrl->N.robust) {
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &R) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &R) != GMT_OK) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to free R\n");
 		}
 	}
@@ -654,7 +654,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
-	else if (set_ones && GMT_Destroy_Data (API, GMT_ALLOCATED, &W) != GMT_OK) {
+	else if (set_ones && GMT_Destroy_Data (API, W) != GMT_OK) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free W\n");
 	}
 

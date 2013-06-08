@@ -1424,7 +1424,7 @@ int GMT_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rect[], double ou
 	if (get_R) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Region selection -R%s is replaced by the equivalent geographic region -R%.12g/%.12g/%.12g/%.12gr\n", GMT->common.R.string, out_wesn[XLO], out_wesn[YLO], out_wesn[XHI], out_wesn[YHI]);
 
 	GMT_free_dataset (GMT, &Out);
-	if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &In) != GMT_OK) {
+	if (GMT_Destroy_Data (GMT->parent, &In) != GMT_OK) {
 		return (GMT->parent->error);
 	}
 	
@@ -1462,7 +1462,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 			return (GMT->parent->error);
 		}
 		GMT_memcpy (&(GMT->current.io.grd_info.grd), G->header, 1, struct GMT_GRID_HEADER);
-		if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &G) != GMT_OK) {
+		if (GMT_Destroy_Data (GMT->parent, &G) != GMT_OK) {
 			return (GMT->parent->error);
 		}
 		if ((GMT->current.proj.projection == GMT_UTM || GMT->current.proj.projection == GMT_TM || GMT->current.proj.projection == GMT_STEREO)) {	/* Perhaps we got an [U]TM or stereographic grid? */

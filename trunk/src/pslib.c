@@ -4608,14 +4608,15 @@ int PSL_initerr (struct PSL_CTRL *C, const char *format, ...) {
 
 int PSL_message (struct PSL_CTRL *C, int level, const char *format, ...) {
 	va_list args;
-	if (level > C->internal.verbose) return (0);
+	FILE *fp = (C == NULL) ? stderr : C->init.err;
+	if (C && level > C->internal.verbose) return (0);
 #ifdef DEBUG
-	fprintf (C->init.err, "PSL:%s:%d: ", __FILE__, __LINE__);
+	fprintf (fp, "PSL:%s:%d: ", __FILE__, __LINE__);
 #else
-	fprintf (C->init.err, "PSL: ");
+	fprintf (fp, "PSL: ");
 #endif
 	va_start (args, format);
-	vfprintf (C->init.err, format, args);
+	vfprintf (fp, format, args);
 	va_end (args);
 	return (0);
 }

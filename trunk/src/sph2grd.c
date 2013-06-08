@@ -341,7 +341,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 	}
 
 	/* We are done with the input table; remove it to free up memory */
-	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
+	if (GMT_Destroy_Data (API, &D) != GMT_OK) {
 		Return (API->error);
 	}
 	

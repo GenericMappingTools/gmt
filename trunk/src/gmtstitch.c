@@ -608,7 +608,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 		if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->L.file, LNK) != GMT_OK) {
 			Return (API->error);
 		}
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &LNK) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &LNK) != GMT_OK) {
 			Return (API->error);
 		}
 	}

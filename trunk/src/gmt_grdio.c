@@ -1964,7 +1964,7 @@ struct GMT_GRID * GMT_create_grid (struct GMT_CTRL *GMT)
 	G = GMT_memory (GMT, NULL, 1, struct GMT_GRID);
 	G->header = GMT_memory (GMT, NULL, 1, struct GMT_GRID_HEADER);
 	GMT_grd_init (GMT, G->header, NULL, false); /* Set default values */
-	G->alloc_mode = GMT_ALLOCATED;			/* So GMT_* modules can free this memory. */
+	G->alloc_mode = GMT_ALLOC_BY_GMT;			/* So GMT_* modules can free this memory. */
 	return (G);
 }
 
@@ -1993,9 +1993,9 @@ struct GMT_GRID *GMT_duplicate_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 unsigned int GMT_free_grid_ptr (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool free_grid)
 {	/* By taking a reference to the grid pointer we can set it to NULL when done */
 	if (!G) return 0;	/* Nothing to deallocate */
-	if (G->data && free_grid && G->alloc_mode != GMT_NO_CLOBBER) GMT_free_aligned (GMT, G->data);
+	if (G->data && free_grid && G->alloc_mode != GMT_ALLOC_BY_OTHERS) GMT_free_aligned (GMT, G->data);
 	if (G->extra) gmt_close_grd (GMT, G);	/* Close input file used for row-by-row i/o */
-	if (G->header && G->alloc_mode != GMT_NO_CLOBBER) GMT_free (GMT, G->header);
+	if (G->header && G->alloc_mode != GMT_ALLOC_BY_OTHERS) GMT_free (GMT, G->header);
 	return (G->alloc_mode);
 }
 
@@ -2015,7 +2015,7 @@ int GMT_set_outgrid (struct GMT_CTRL *GMT, char *file, struct GMT_GRID *G, struc
 
 	if (GMT_File_Is_Memory (file) || G->alloc_mode == GMT_READONLY) {	/* Cannot store results in the read-only input array */
 		*Out = GMT_duplicate_grid (GMT, G, GMT_DUPLICATE_DATA);
-		(*Out)->alloc_mode = GMT_ALLOCATED;
+		(*Out)->alloc_mode = GMT_ALLOC_BY_GMT;
 		return (true);
 	}
 	/* Here we may overwrite the input grid and just pass the pointer back */

@@ -1118,14 +1118,14 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		}
 	}
 
-	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &In) != GMT_OK) {
+	if (GMT_Destroy_Data (API, &In) != GMT_OK) {
 		Return (API->error);
 	}
 
 	/* Reset the flag */
 	if (GMT_compat_check (GMT, 4)) GMT->current.setting.io_seg_marker[GMT_IN] = save_EOF;
 
-	if (Front && GMT_Destroy_Data (API, GMT_ALLOCATED, &Front) != GMT_OK) {
+	if (Front && GMT_Destroy_Data (API, &Front) != GMT_OK) {
 		Return (API->error);
 	}
 	
@@ -1171,7 +1171,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	}
 
 	for (id = 0; id < 3; id++) {
-		if (D[id] && GMT_Destroy_Data (API, GMT_ALLOCATED, &D[id]) != GMT_OK) {
+		if (D[id] && GMT_Destroy_Data (API, &D[id]) != GMT_OK) {
 			Return (API->error);
 		}
 	}
