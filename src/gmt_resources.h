@@ -141,11 +141,10 @@ enum GMT_enum_dest {
 	GMT_WRITE_TABLE_SEGMENT};	/* Same as 2 but if no filenames we use both tbl and seg with format */
 
 enum GMT_enum_alloc {
-	GMT_ALLOCATED = 0, /* Item was allocated so GMT_* modules should free when GMT_Destroy_Data is called */
-	GMT_REFERENCE,     /* Item was not allocated so GMT_* modules should NOT free when GMT_Destroy_Data is called, but may realloc if needed */
-	GMT_READONLY,      /* Item was not allocated so GMT_* modules should NOT free when GMT_Destroy_Data is called. Consider read-only data */
-	GMT_CLOBBER,       /* Free item no matter what its allocation status */
-	GMT_NO_CLOBBER};   /* Never free as item was allocated outside GMT */
+	GMT_ALLOC_BY_GMT = 0,		/* Item was allocated by GMT in current module so GMT_Destroy_Data may free them */
+	GMT_REFERENCE,			/* Item was not allocated in current module so MT_Destroy_Data may not freen them, but we may reallocate size */
+	GMT_READONLY,			/* As GMT_REFERENCE, but no realloc. Consider as read-only data */
+	GMT_ALLOC_BY_OTHERS};		/* Never free as item was allocated outside GMT */
 
 enum GMT_enum_shape {
 	GMT_ALLOC_NORMAL = 0,	/* Normal allocation of new dataset based on shape of input dataset */

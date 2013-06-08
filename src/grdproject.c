@@ -328,7 +328,7 @@ int GMT_grdproject (void *V_API, int mode, void *args)
 			GMT_parse_common_options (GMT, "R", 'R', opt_R);
 			GMT_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Load up our best wesn setting - it will be used below if -I */
 		}
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &G) != GMT_OK) {
 			Return (API->error);
 		}
 	}

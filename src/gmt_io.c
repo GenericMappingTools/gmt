@@ -5158,7 +5158,7 @@ int gmt_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 		for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment in the table */
 			if ((T->ogr->geometry == GMT_IS_POLYGON || T->ogr->geometry == GMT_IS_MULTIPOLYGON) && GMT_polygon_is_open (GMT, T->segment[seg]->coord[GMT_X], T->segment[seg]->coord[GMT_Y], T->segment[seg]->n_rows)) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The -a option specified [M]POLY but open segments were detected!\n");
-				GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &D[GMT_OUT]);
+				GMT_Destroy_Data (GMT->parent, &D[GMT_OUT]);
 				return (GMT_RUNTIME_ERROR);
 			}
 			gmt_alloc_ogr_seg (GMT, T->segment[seg], T->ogr->n_aspatial);	/* Copy over any feature-specific values */
@@ -5695,7 +5695,7 @@ struct GMT_TEXTSET * GMT_create_textset (struct GMT_CTRL *GMT, uint64_t n_tables
 			T->segment[seg]->n_alloc = n_rows;
 		}
 	}
-	D->alloc_mode = GMT_ALLOCATED;	/* So GMT_* modules can free this memory. */
+	D->alloc_mode = GMT_ALLOC_BY_GMT;	/* So GMT_* modules can free this memory. */
 	
 	return (D);
 }
@@ -5892,7 +5892,7 @@ struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *GMT, uint64_t n_tables
 	if (!alloc_only) D->n_segments = D->n_tables * n_segments;
 	if (!alloc_only) D->n_records = D->n_segments * n_rows;
 	for (tbl = 0; tbl < n_tables; tbl++) if ((D->table[tbl] = GMT_create_table (GMT, n_segments, n_columns, n_rows, alloc_only)) == NULL) return (NULL);
-	D->alloc_mode = GMT_ALLOCATED;	/* So GMT_* modules can free this memory. */
+	D->alloc_mode = GMT_ALLOC_BY_GMT;	/* So GMT_* modules can free this memory. */
 	
 	return (D);
 }
@@ -6450,7 +6450,7 @@ struct GMT_VECTOR * GMT_create_vector (struct GMT_CTRL *GMT, uint64_t n_columns)
 	V->data = GMT_memory_aligned (GMT, NULL, n_columns, union GMT_UNIVECTOR);
 	V->type = GMT_memory (GMT, NULL, n_columns, enum GMT_enum_type);
 	V->n_columns = n_columns;
-	V->alloc_mode = GMT_ALLOCATED;	/* So GMT_* modules can free this memory. */
+	V->alloc_mode = GMT_ALLOC_BY_GMT;	/* So GMT_* modules can free this memory. */
 
 	return (V);
 }
@@ -6511,7 +6511,7 @@ unsigned int GMT_free_vector_ptr (struct GMT_CTRL *GMT, struct GMT_VECTOR *V, bo
 {	/* By taking a reference to the vector pointer we can set it to NULL when done */
 	/* free_vector = false means the vectors are not to be freed but the data array itself will be */
 	if (!V) return 0;	/* Nothing to deallocate */
-	if (V->data && free_vector && V->alloc_mode != GMT_NO_CLOBBER) {
+	if (V->data && free_vector && V->alloc_mode != GMT_ALLOC_BY_OTHERS) {
 		uint64_t col;
 		for (col = 0; col < V->n_columns; col++) GMT_free_univector (GMT, &(V->data[col]), V->type[col]);
 	}
@@ -6549,7 +6549,7 @@ struct GMT_MATRIX * GMT_create_matrix (struct GMT_CTRL *GMT, uint64_t layers)
 {	/* Allocates space for a new matrix container. */
 	struct GMT_MATRIX *M = NULL;
 	M = GMT_memory (GMT, NULL, 1, struct GMT_MATRIX);
-	M->alloc_mode = GMT_ALLOCATED;	/* So GMT_* modules can free this memory. */
+	M->alloc_mode = GMT_ALLOC_BY_GMT;	/* So GMT_* modules can free this memory. */
 	M->n_layers = (layers) ? layers : 1;
 	return (M);
 }
@@ -6581,7 +6581,7 @@ struct GMT_MATRIX * GMT_duplicate_matrix (struct GMT_CTRL *GMT, struct GMT_MATRI
 unsigned int GMT_free_matrix_ptr (struct GMT_CTRL *GMT, struct GMT_MATRIX *M, bool free_matrix)
 {	/* Free everything but the struct itself  */
 	if (!M) return 0;	/* Nothing to deallocate */
-	if (free_matrix && M->alloc_mode != GMT_NO_CLOBBER) GMT_free_univector (GMT, &(M->data), M->type);
+	if (free_matrix && M->alloc_mode != GMT_ALLOC_BY_OTHERS) GMT_free_univector (GMT, &(M->data), M->type);
 	return (M->alloc_mode);
 }
 

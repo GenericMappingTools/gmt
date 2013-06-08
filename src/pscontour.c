@@ -788,7 +788,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 
  		if (Tin->n_columns < 3) {	/* Trouble */
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Q: %s does not have at least 3 columns with indices\n", Ctrl->Q.file);
-			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Tin) != GMT_OK) {
+			if (GMT_Destroy_Data (API, &Tin) != GMT_OK) {
 				Return (API->error);
 			}
 			Return (EXIT_FAILURE);
@@ -801,7 +801,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 				for (col = 0; col < 3; col++) ind[ij++] = irint (T->segment[seg]->coord[col][row]);
 			}
 		}
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Tin) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &Tin) != GMT_OK) {
 			Return (API->error);
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Read %d indices triplets from %s.\n", np, Ctrl->Q.file);

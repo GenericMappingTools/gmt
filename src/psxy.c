@@ -1127,7 +1127,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 				}
 			}
 		}
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &D) != GMT_OK) {
 			Return (API->error);
 		}
 	}

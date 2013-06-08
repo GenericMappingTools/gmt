@@ -326,7 +326,7 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 			}
 			strncpy (B[n].file, buffer, GMT_TEXT_LEN256);	/* Use the temporary file instead */
 			B[n].delete = true;		/* Flag to delete this temporary file when done */
-			if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &B[n].G)) return (-1);
+			if (GMT_Destroy_Data (GMT->parent, B[n].G)) return (-1);
 			if ((B[n].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[n].file, NULL)) == NULL) {
 				return (-1);
 			}
@@ -374,7 +374,7 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Blend file %s in %g/%g/%g/%g with %s weight %g [%d-%d]\n",
 			B[n].G->header->name, B[n].wesn[XLO], B[n].wesn[XHI], B[n].wesn[YLO], B[n].wesn[YHI], sense[B[n].invert], B[n].weight, B[n].out_j0, B[n].out_j1);
 
-		if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &B[n].G)) return (-1);
+		if (GMT_Destroy_Data (GMT->parent, &B[n].G)) return (-1);
 	}
 
 	for (n = 0; n < n_files; n++) {
@@ -395,7 +395,7 @@ int sync_input_rows (struct GMT_CTRL *GMT, int row, struct GRDBLEND_INFO *B, uns
 		if (row < B[k].out_j0 || row > B[k].out_j1) {	/* Either done with grid or haven't gotten to this range yet */
 			B[k].outside = true;
 			if (B[k].open) {
-				if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &B[k].G)) return GMT_OK;
+				if (GMT_Destroy_Data (GMT->parent, &B[k].G)) return GMT_OK;
 				B[k].open = false;
 				GMT_free (GMT, B[k].z);
 				if (B[k].delete) remove (B[k].file);	/* Delete the temporary resampled file */
@@ -775,13 +775,13 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 		if (!Ctrl->Q.active && (error = GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, mode, NULL, Ctrl->G.file, Grid))) {
 			Return (error);
 		}
-		if ((error = GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid)) != GMT_OK) Return (error);
+		if ((error = GMT_Destroy_Data (API, &Grid)) != GMT_OK) Return (error);
 	}
 	GMT_free (GMT, z);
 
 	for (k = 0; k < n_blend; k++) if (blend[k].open) {
 		GMT_free (GMT, blend[k].z);
-		if ((error = GMT_Destroy_Data (API, GMT_ALLOCATED, &blend[k].G)) != GMT_OK) Return (error);
+		if ((error = GMT_Destroy_Data (API, &blend[k].G)) != GMT_OK) Return (error);
 	}
 
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {

@@ -807,7 +807,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 			GMT_plane_perspective (GMT, -1, 0.0);
 			GMT_plotend (GMT);
 		}
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &G) != GMT_OK) {
 			Return (API->error);
 		}
 		Return (GMT_OK);
@@ -858,7 +858,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 	if (Ctrl->L.high < G->header->z_max) G->header->z_max = Ctrl->L.high;
 	if (Ctrl->L.active && G->header->z_max < G->header->z_min) {	/* Specified contour range outside range of data - quit */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Warning: No contours within specified -L range\n");
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &G) != GMT_OK) {
 			Return (API->error);
 		}
 		Return (GMT_OK);
@@ -1011,10 +1011,10 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 		GMT_free (GMT, cont_type);
 		GMT_free (GMT, cont_angle);
 		GMT_free (GMT, cont_do_tick);
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &G) != GMT_OK) {
 			Return (API->error);
 		}
-		if (Ctrl->C.cpt && GMT_Destroy_Data (API, GMT_ALLOCATED, &P) != GMT_OK) {
+		if (Ctrl->C.cpt && GMT_Destroy_Data (API, &P) != GMT_OK) {
 			Return (API->error);
 		}
 		Return (EXIT_SUCCESS);
@@ -1193,7 +1193,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, io_mode, NULL, Ctrl->D.file, D) != GMT_OK) {
 			Return (API->error);
 		}
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &D) != GMT_OK) {
 			Return (API->error);
 		}
 		GMT_free (GMT, n_seg_alloc);
@@ -1246,7 +1246,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 	
 	if (make_plot || Ctrl->contour.save_labels) GMT_contlabel_free (GMT, &Ctrl->contour);
 
-	if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &G_orig) != GMT_OK) {
+	if (GMT_Destroy_Data (GMT->parent, &G_orig) != GMT_OK) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free G_orig\n");
 	}
 	GMT_free (GMT, edge);

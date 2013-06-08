@@ -1619,7 +1619,7 @@ void grd_INSIDE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH
 
 	/* Free memory used for pol */
 
-	if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &D) != GMT_OK) {
+	if (GMT_Destroy_Data (GMT->parent, &D) != GMT_OK) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in operator INSIDE destroying allocated data from %s!\n", info->ASCII_file);
 		info->error = GMT->parent->error;
 		return;
@@ -1845,7 +1845,7 @@ struct GMT_DATASET *ASCII_read (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info,
 
 int ASCII_free (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GMT_DATASET **D, char *op)
 {
-	if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, D) != GMT_OK) {
+	if (GMT_Destroy_Data (GMT->parent, D) != GMT_OK) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error in operator %s destroying allocated data from %s!\n", op, info->ASCII_file);
 		info->error = GMT->parent->error;
 		return 1;
@@ -3299,7 +3299,7 @@ void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[], struct G
 	unsigned int k;
 	
 	for (k = 0; k < GRDMATH_STACK_SIZE; k++) {
-		if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &stack[k]->G) != GMT_OK) {
+		if (GMT_Destroy_Data (GMT->parent, stack[k]->G) != GMT_OK) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free stack item %d\n", k);
 		}
 		
@@ -3308,13 +3308,13 @@ void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[], struct G
 	for (k = 0; k < GRDMATH_STORE_SIZE; k++) {
 		if (recall[k] == NULL) continue;
 		if (recall[k] && !recall[k]->stored.constant) {
-			if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &recall[k]->stored.G) != GMT_OK) {
+			if (GMT_Destroy_Data (GMT->parent, &recall[k]->stored.G) != GMT_OK) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free recall item %d\n", k);
 			}
 		}
 		GMT_free (GMT, recall[k]);
 	}
-	if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &info->G) != GMT_OK) {
+	if (GMT_Destroy_Data (GMT->parent, &info->G) != GMT_OK) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free info.G\n");
 	}
 	GMT_free (GMT, info->d_grd_x);
@@ -3450,7 +3450,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 			}
 		}
 		if ((info.G = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_NONE, G_in)) == NULL) Return (API->error);
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G_in) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &G_in) != GMT_OK) {
 			Return (API->error);
 		}
 	}
@@ -3649,7 +3649,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 					GMT_Report (API, GMT_MSG_NORMAL, "No stored memory item with label %s exists!\n", label);
 					Return (EXIT_FAILURE);
 				}
-				if (recall[k]->stored.G && GMT_Destroy_Data (API, GMT_ALLOCATED, &recall[k]->stored.G) != GMT_OK) {
+				if (recall[k]->stored.G && GMT_Destroy_Data (API, recall[k]->stored.G) != GMT_OK) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Failed to free recall item %d\n", k);
 				}
 				

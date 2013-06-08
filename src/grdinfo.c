@@ -323,7 +323,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 			scale = (n%2) ? 1.4826 * G2->data[n/2] : 0.7413 * (G2->data[n/2-1] + G2->data[n/2]);
 			if (new_grid) {	/* Now preserve info and free the temporary grid */
 				/* copy over stat info to G */
-				if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G2) != GMT_OK) {
+				if (GMT_Destroy_Data (API, &G2) != GMT_OK) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Failed to free G2\n");
 				}
 			}
@@ -563,7 +563,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 			if (G->header->wesn[YLO] < global_ymin) global_ymin = G->header->wesn[YLO];
 			if (G->header->wesn[YHI] > global_ymax) global_ymax = G->header->wesn[YHI];
 		}
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &G) != GMT_OK) {
 			Return (API->error);
 		}
 	}

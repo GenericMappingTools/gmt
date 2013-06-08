@@ -536,7 +536,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 		/* Expand with dist,az columns (mode = 2) (and posibly make space for more) and optionally resample */
 		if ((Dtmp = GMT_resample_data (GMT, Din, Ctrl->C.spacing, 2, (Ctrl->D.active) ? Ctrl->G.n_grids : 0, Ctrl->A.mode)) == NULL) Return (API->error);
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Din) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &Din) != GMT_OK) {
 			Return (API->error);
 		}
 		if (Ctrl->D.active) {	/* Also want to sample grids along the original resampled trace */
@@ -565,7 +565,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		}
 		if ((Dout = GMT_crosstracks (GMT, Dtmp, Ctrl->C.length, Ctrl->C.ds, n_cols, Ctrl->C.alternate)) == NULL) Return (API->error);
 		if (Ctrl->D.active) {
-			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Dtmp) != GMT_OK) {
+			if (GMT_Destroy_Data (API, &Dtmp) != GMT_OK) {
 				Return (API->error);
 			}
 		}
@@ -680,7 +680,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, Dout->io_mode, NULL, Ctrl->Out.file, Dout) != GMT_OK) {
 			Return (API->error);
 		}
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Dout) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &Dout) != GMT_OK) {
 			Return (API->error);
 		}
 	}
@@ -813,7 +813,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	for (g = 0; g < Ctrl->G.n_grids; g++) {
 		GMT_Report (API, GMT_MSG_VERBOSE, "Sampled %" PRIu64 " points from grid %s (%d x %d)\n",
 			n_points, Ctrl->G.file[g], GC[g].G->header->nx, GC[g].G->header->ny);
-		if (Ctrl->G.type[g] == 0 && GMT_Destroy_Data (API, GMT_ALLOCATED, &GC[g].G) != GMT_OK) {
+		if (Ctrl->G.type[g] == 0 && GMT_Destroy_Data (API, &GC[g].G) != GMT_OK) {
 			Return (API->error);
 		}
 		else

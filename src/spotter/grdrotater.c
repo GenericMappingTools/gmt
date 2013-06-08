@@ -440,7 +440,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 		}
 	}
 	if (Ctrl->S.active) {
-		if (Ctrl->F.active && GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
+		if (Ctrl->F.active && GMT_Destroy_Data (API, &D) != GMT_OK) {
 			Return (API->error);
 		}
 		else if (not_global)
@@ -549,7 +549,7 @@ int GMT_grdrotater (void *V_API, int mode, void *args)
 	GMT_free (GMT, grd_y);
 	GMT_free (GMT, grd_yc);
 	
-	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK)
+	if (GMT_Destroy_Data (API, &D) != GMT_OK)
 		Return (API->error);
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");

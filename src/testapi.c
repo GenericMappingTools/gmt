@@ -345,7 +345,7 @@ int GMT_testapi (void *V_API, int mode, void *args)
 		if (GMT_Call_Module (API, GMT_ID_PSIMAGE, 0, buffer) != GMT_OK) {	/* Plot the image */
 			Return (API->error);
 		}
-		if (GMT_Destroy_Data (API, GMT_CLOBBER, &Intmp) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &Intmp) != GMT_OK) {
 			Return (API->error);
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");
@@ -447,16 +447,16 @@ int GMT_testapi (void *V_API, int mode, void *args)
 		}
 	}
 	
-	if (GMT_Destroy_Data (API, GMT_CLOBBER, &Intmp) != GMT_OK) {
+	if (GMT_Destroy_Data (API, &Intmp) != GMT_OK) {
 		Return (API->error);
 	}
-	if (GMT_Destroy_Data (API, GMT_CLOBBER, &M) != GMT_OK) {
+	if (GMT_Destroy_Data (API, &M) != GMT_OK) {
 		Return (API->error);
 	}
-	if (GMT_Destroy_Data (API, GMT_CLOBBER, &V) != GMT_OK) {
+	if (GMT_Destroy_Data (API, &V) != GMT_OK) {
 		Return (API->error);
 	}
-	if (!(Ctrl->I.mode == GMT_IS_REFERENCE && Ctrl->W.mode == GMT_IS_REFERENCE) && GMT_Destroy_Data (API, GMT_CLOBBER, &Out) != GMT_OK) {
+	if (!(Ctrl->I.mode == GMT_IS_REFERENCE && Ctrl->W.mode == GMT_IS_REFERENCE) && GMT_Destroy_Data (API, &Out) != GMT_OK) {
 		Return (API->error);
 	}
 	GMT_Report (API, GMT_MSG_VERBOSE, "Done!\n");

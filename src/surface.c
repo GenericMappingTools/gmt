@@ -767,10 +767,10 @@ int write_output_surface (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, char *gr
 	if (GMT_Write_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, grdfile, C->Grid) != GMT_OK) {
 		return (GMT->parent->error);
 	}
-	if ((C->set_low  > 0 && C->set_low  < 3) && GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &C->Low) != GMT_OK) {
+	if ((C->set_low  > 0 && C->set_low  < 3) && GMT_Destroy_Data (GMT->parent, &C->Low) != GMT_OK) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free C->Low\n");
 	}
-	if ((C->set_high > 0 && C->set_high < 3) && GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &C->High) != GMT_OK) {
+	if ((C->set_high > 0 && C->set_high < 3) && GMT_Destroy_Data (GMT->parent, &C->High) != GMT_OK) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free C->High\n");
 	}
 	return (0);
@@ -1844,10 +1844,10 @@ int GMT_surface (void *V_API, int mode, void *args)
 	GMT_free (GMT, C.data);
 	GMT_free (GMT, C.briggs);
 	GMT_free (GMT, C.iu);
-	if ((C.set_low  > 0 && C.set_low  < 3) && GMT_Destroy_Data (API, GMT_ALLOCATED, &C.Low) != GMT_OK) {
+	if ((C.set_low  > 0 && C.set_low  < 3) && GMT_Destroy_Data (API, C.Low) != GMT_OK) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free C.Low\n");
 	}
-	if ((C.set_high > 0 && C.set_high < 3) && GMT_Destroy_Data (API, GMT_ALLOCATED, &C.High) != GMT_OK) {
+	if ((C.set_high > 0 && C.set_high < 3) && GMT_Destroy_Data (API, &C.High) != GMT_OK) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free C.High\n");
 	}
 

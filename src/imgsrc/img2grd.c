@@ -656,7 +656,7 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 	if (GMT_Call_Module (API, GMT_ID_GRDPROJECT, 0, cmd)!= GMT_OK) {	/* Inverse project the grid or fail */
 		Return (API->error);
 	}
-	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Merc) != GMT_OK) {
+	if (GMT_Destroy_Data (API, &Merc) != GMT_OK) {
 		Return (API->error);
 	}
 	if (Ctrl->E.active) {	/* Resample again using the given -R and the dx/dy in even minutes */

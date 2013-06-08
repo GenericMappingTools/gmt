@@ -95,7 +95,7 @@ int main (int argc, char *argv[]) {
 	printf ("nx,ny = %d %d\n", G->header->nx, G->header->ny);
 	GMT_grd_loop (API->GMT, G, xrow, col, ij) if (!GMT_is_fnan (G->data[ij])) printf ("%g\n", G->data[ij]);
 	
-	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G) != GMT_OK) {
+	if (GMT_Destroy_Data (API, &G) != GMT_OK) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free G\n");
 	}
 

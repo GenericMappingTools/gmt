@@ -573,7 +573,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 	GMT_free (GMT, z);
 	for (k = 0; k < ngrd; k++) {
 		free (grdfile[k]);
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G[k]) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &G[k]) != GMT_OK) {
 			Return (API->error);
 		}
 	}

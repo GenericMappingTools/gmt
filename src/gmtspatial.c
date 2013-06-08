@@ -966,7 +966,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 	
 	if (D->n_records == 0) {	/* Empty files, nothing to do */
 		GMT_Report (API, GMT_MSG_VERBOSE, "No data records found.\n");
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
+		if (GMT_Destroy_Data (API, D) != GMT_OK) {
 			Return (API->error);
 		}
 		Return (EXIT_SUCCESS);
@@ -987,7 +987,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 		
 		NN_dist = NNA_init_dist (GMT, D, &n_points);		/* Return array of NN results sorted on smallest distances */		
 		NN_info = NNA_update_info (GMT, NN_info, NN_dist, n_points);	/* Return array of NN ID record look-ups */
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {	/* All data now in NN_dist so free original dataset */
+		if (GMT_Destroy_Data (API, &D) != GMT_OK) {	/* All data now in NN_dist so free original dataset */
 			Return (API->error);
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
@@ -1138,7 +1138,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 			}
 					
 		}
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &D) != GMT_OK) {
 			Return (API->error);
 		}
 		Return (EXIT_SUCCESS);
@@ -1220,7 +1220,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 			Return (API->error);
 		}
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &D) != GMT_OK) {
 			Return (API->error);
 		}
 		Return (EXIT_SUCCESS);
@@ -1401,11 +1401,11 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 			Return (API->error);
 		}
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &D) != GMT_OK) {
 			Return (API->error);
 		}
 		if (Ctrl->S.mode == POL_CLIP) {
-			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &C) != GMT_OK) {
+			if (GMT_Destroy_Data (API, &C) != GMT_OK) {
 				Return (API->error);
 			}
 		}
@@ -1494,10 +1494,10 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 			Return (API->error);
 		}
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &D) != GMT_OK) {
 			Return (API->error);
 		}
-		if (Ctrl->D.file && GMT_Destroy_Data (API, GMT_ALLOCATED, &C) != GMT_OK) {
+		if (Ctrl->D.file && GMT_Destroy_Data (API, &C) != GMT_OK) {
 			Return (API->error);
 		}
 		Return (EXIT_SUCCESS);
@@ -1626,10 +1626,10 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " segments found to be inside polygons, %" PRIu64 " were outside and skipped\n", n_inside, D->n_segments - n_inside);
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &D) != GMT_OK) {
 			Return (API->error);
 		}
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &C) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &C) != GMT_OK) {
 			Return (API->error);
 		}
 		Return (EXIT_SUCCESS);
@@ -1679,7 +1679,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " segments split across the Dateline\n", n_split);
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Dout) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &Dout) != GMT_OK) {
 			Return (API->error);
 		}
 	}

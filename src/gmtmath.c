@@ -3150,9 +3150,9 @@ void table_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 
 #include "gmtmath.h"
 
-#define Free_Stack { for (i = 0; i < GMTMATH_STACK_SIZE; i++) { if (stack[i]->alloc_mode == 2) GMT_Destroy_Data (API, GMT_ALLOCATED, &stack[i]->D); else if (stack[i]->alloc_mode == 1) GMT_free_dataset (GMT, &stack[i]->D); GMT_free (GMT, stack[i]); } }
+#define Free_Stack { for (i = 0; i < GMTMATH_STACK_SIZE; i++) { if (stack[i]->alloc_mode == 2) GMT_Destroy_Data (API, &stack[i]->D); else if (stack[i]->alloc_mode == 1) GMT_free_dataset (GMT, &stack[i]->D); GMT_free (GMT, stack[i]); } }
 #define Free_Store { for (i = 0; i < GMTMATH_STORE_SIZE; i++) { if (recall[i] && !recall[i]->stored.constant) { GMT_free_dataset (GMT, &recall[i]->stored.D); GMT_free (GMT, recall[i]); } } }
-#define Free_Misc {if (T_in) GMT_Destroy_Data (API, GMT_ALLOCATED, &T_in); GMT_Destroy_Data (API, GMT_ALLOCATED, &Template); GMT_Destroy_Data (API, GMT_ALLOCATED, &Time); if (read_stdin) GMT_Destroy_Data (API, GMT_ALLOCATED, &D_stdin); }
+#define Free_Misc {if (T_in) GMT_Destroy_Data (API, &T_in); GMT_Destroy_Data (API, &Template); GMT_Destroy_Data (API, &Time); if (read_stdin) GMT_Destroy_Data (API, &D_stdin); }
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return1(code) {GMT_Destroy_Options (API, &list); Free_gmtmath_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code); }
 #define Return(code) {GMT_Destroy_Options (API, &list); Free_gmtmath_Ctrl (GMT, Ctrl); Free_Stack; Free_Store; Free_Misc;  GMT_end_module (GMT, GMT_cpy); bailout (code); }
@@ -3478,7 +3478,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 			}
 			for (row = 1; row < info.T->segment[seg]->n_rows && !info.irregular; row++) if (fabs (fabs (info.T->segment[seg]->coord[0][row] - info.T->segment[seg]->coord[0][row-1]) - fabs (Ctrl->T.inc)) > t_noise) info.irregular = true;
 		}
-		if (!read_stdin && GMT_Destroy_Data (API, GMT_ALLOCATED, &D_in) != GMT_OK) {
+		if (!read_stdin && GMT_Destroy_Data (API, &D_in) != GMT_OK) {
 			Return (API->error);
 		}
 	}
@@ -3505,7 +3505,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 	if (Ctrl->A.active) {
 		load_column (stack[0]->D, n_columns-1, rhs, 1);	/* Put the r.h.s of the Ax = b equation in the last column of the item on the stack */
 		GMT_set_tbl_minmax (GMT, stack[0]->D->table[0]);
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &A_in) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &A_in) != GMT_OK) {
 			Return (API->error);
 		}
 		nstack = 1;
@@ -3770,7 +3770,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 		if (GMT_Write_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_NONE, stack[0]->D->io_mode, NULL, Ctrl->Out.file, R) != GMT_OK) {
 			Return (API->error);
 		}
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &R) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &R) != GMT_OK) {
 			Return (API->error);
 		}
 	}
@@ -3804,7 +3804,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 			if (GMT_Write_Data (API, GMT_IS_DATASET, (Ctrl->Out.file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_NONE, N->io_mode, NULL, Ctrl->Out.file, N) != GMT_OK) {
 				Return (API->error);
 			}
-			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &N) != GMT_OK) {
+			if (GMT_Destroy_Data (API, &N) != GMT_OK) {
 				Return (API->error);
 			}
 		}

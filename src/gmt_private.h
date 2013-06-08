@@ -87,6 +87,7 @@ struct GMTAPI_DATA_OBJECT {
 	bool selected;				/* true if requested by current module, false otherwise */
 	bool close_file;			/* true if we opened source as a file and thus need to close it when done */
 	bool region;				/* true if wesn was passed, false otherwise */
+	bool no_longer_owner;			/* true if the data pointed to by the object was passed on to another object */
 	size_t n_alloc;				/* Number of items allocated so far if writing to memory */
 	unsigned int alloc_mode;		/* GMTAPI_REFERENCE or GMTAPI_ALLOCATED */
 	unsigned int direction;			/* GMT_IN or GMT_OUT */
