@@ -2231,13 +2231,9 @@ function, whose prototype is
 
   ::
 
-    int GMT_Destroy_Data (void *API, unsigned int mode, void *data);
+    int GMT_Destroy_Data (void *API, void *data);
 
-where ``data`` is the address of the pointer to a data container. Pass
-``mode`` either as GMT_ALLOCATED or GMT_REFERENCE. The former is used
-internally by the *GMT* modules since they can only free resources that
-are not destined to live on in the memory of their calling program. The
-latter mode is used to free resources in your calling program. Note that
+where ``data`` is the address of the pointer to a data container.  Note that
 when each module completes it will automatically free memory created by
 the API; similarly, when the session is destroyed we also automatically
 free up memory. Thus, ``GMT_Destroy_Data`` is therefore generally only
