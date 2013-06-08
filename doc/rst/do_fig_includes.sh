@@ -136,6 +136,8 @@ name=example_38;	from_examples 38
 echo "   Histogram equalization of bathymetry grids." >> ${pato}/fig_${name}.rst_
 name=example_39;	from_examples 39
 echo "   Evaluation of spherical harmonics coefficients." >> ${pato}/fig_${name}.rst_
+name=example_40;	from_examples 40
+echo "   Illustrate line simplification and area calculations." >> ${pato}/fig_${name}.rst_
 
 name=GMT_App_E;			from_scripts
 name=GMT_App_F_dingbats;	from_scripts
