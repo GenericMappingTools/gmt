@@ -1,0 +1,58 @@
+.. _example_16:
+
+(16) Gridding of data, continued
+--------------------------------
+
+`pscontour <../pscontour.html>`_ (for contouring) and
+`triangulate <../triangulate.html>`_ (for gridding) use the
+simplest method of interpolating data: a Delaunay triangulation (see
+Section [sec:example\ :sub:`1`\ 2]) which forms *z(x, y)* as a
+union of planar triangular facets. One advantage of this method is that
+it will not extrapolate *z(x, y)* beyond the convex hull of the
+input (*x, y*) data. Another is that it will not estimate a *z* value
+above or below the local bounds on any triangle. A disadvantage is that
+the *z(x, y)* surface is not differentiable, but has sharp kinks
+at triangle edges and thus also along contours. This may not look
+physically reasonable, but it can be filtered later (last panel below).
+`surface <../surface.html>`_ can be used to generate a
+higher-order (smooth and differentiable) interpolation of
+*z(x, y)* onto a grid, after which the grid may be illustrated
+(`grdcontour <../grdcontour.html>`_, `grdimage <../grdimage.html>`_,
+`grdview <../grdview.html>`_).
+`surface <../surface.html>`_ will interpolate to all (*x,
+y*) points in a rectangular region, and thus will extrapolate beyond the
+convex hull of the data. However, this can be masked out in various ways
+(see Section [sec:example\ :sub:`1`\ 5]).
+
+A more serious objection is that `surface <../surface.html>`_ may estimate *z* values
+outside the local range of the data (note area near *x* = 0.8, *y* =
+5.3). This commonly happens when the default tension value of zero is
+used to create a "minimum curvature" (most smooth) interpolant.
+`surface <../surface.html>`_ can be used with non-zero
+tension to partially overcome this problem. The limiting value
+*tension = 1* should approximate the triangulation, while a value
+between 0 and 1 may yield a good compromise between the above two cases.
+A value of 0.5 is shown here (Figure [fig:example:sub:`1`\ 6]). A side
+effect of the tension is that it tends to make the contours turn near
+the edges of the domain so that they approach the edge from a
+perpendicular direction. A solution is to use
+`surface <../surface.html>`_ in a larger area and then use
+`grdcut <../grdcut.html>`_ to cut out the desired smaller
+area. Another way to achieve a compromise is to interpolate the data to
+a grid and then filter the grid using `grdfft <../grdfft.html>`_ or
+`grdfilter <../grdfilter.html>`_. The latter can handle
+grids containing "NaN" values and it can do median and mode filters as
+well as convolutions. Shown here is `triangulate <../triangulate.html>`_ followed by
+`grdfilter <../grdfilter.html>`_. Note that the filter has
+done some extrapolation beyond the convex hull of the original *x, y*
+values. The "best" smooth approximation of *z(x, y)* depends on
+the errors in the data and the physical laws obeyed by *z*. *GMT* cannot
+always do the "best" thing but it offers great flexibility through its
+combinations of tools. We illustrate all four solutions using a CPT file
+that contains color fills, predefined patterns for interval (900,925)
+and NaN, an image pattern for interval (875,900), and a "skip slice"
+request for interval (700,725).
+
+.. literalinclude:: ../../../examples/ex16/example_16.sh
+
+.. include:: fig_example_16.rst_
