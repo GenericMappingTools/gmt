@@ -560,6 +560,7 @@ endif (UNIX AND NOT GMT_INSTALL_MONOLITHIC)
 install (PROGRAMS
 	${CMAKE_CURRENT_BINARY_DIR}/isogmt
 	${CMAKE_CURRENT_BINARY_DIR}/gmt-config
+	gmt5convert
 	gmtlogo
 	gmtswitch
 	gmt_shell_functions.sh
