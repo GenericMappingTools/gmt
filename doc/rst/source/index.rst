@@ -45,6 +45,15 @@ Welcome to GMT5's documentation!
 |    SUP_SPOTTER  |    SUP_X2SYS    |                 |                 |
 +-----------------+-----------------+-----------------+-----------------+
 
++----------------------------+
+| -- THE Examples Galery --  |
++============================+
+| .. toctree::               |
+|    :maxdepth: 2            |
+|                            |
+|    Galery                  |
++----------------------------+
+
 +--------------------+
 | -- THE CookBook -- |
 +====================+
@@ -64,7 +73,7 @@ Welcome to GMT5's documentation!
 +--------------------+
 
 .. toctree::
-.. :maxdepth: 2
+..   :maxdepth: 2
 
 .. api
 .. cookbook
