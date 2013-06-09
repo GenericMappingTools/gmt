@@ -1105,6 +1105,12 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 
 		GMT_init_distaz (GMT, GMT_MAP_DIST_UNIT, 2, GMT_MAP_DIST);	/* Default is m using great-circle distances */
 		
+		if (GMT_Init_IO (API, GMT_IS_DATASET, geometry, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default output destination, unless already set */
+			Return (API->error);
+		}
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_OK) {	/* Enables data output and sets access mode */
+			Return (API->error);
+		}
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 				S = D->table[tbl]->segment[seg];
@@ -1125,7 +1131,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 						prev_OK = false;
 					}
 					else {
-						if (first) {
+						if (first && S->header) {
 							strncpy (GMT->current.io.segment_header, S->header, GMT_BUFSIZ);
 							GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);
 						}
@@ -1137,6 +1143,9 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 				if (!gap) write_record (GMT, S->coord, S->n_columns, row-1);
 			}
 					
+		}
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
+			Return (API->error);
 		}
 		if (GMT_Destroy_Data (API, &D) != GMT_OK) {
 			Return (API->error);
