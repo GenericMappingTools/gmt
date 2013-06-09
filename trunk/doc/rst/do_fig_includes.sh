@@ -15,6 +15,7 @@ DPI=200
 path_build=../../build/docfigs		# Path to where ps2raster dumps the converted PNGs
 com="-A -E${DPI} -P -Tg -D${path_build}"
 pato=source/fig_includes/		# Path to where the to-be-included files will be created
+pato2=source/gallery/			# Path to where the to-be-included files will be created (For GALERY)
 
 if [ ! -d "${path_build}" ]; then
 	mkdir -p ${path_build}
@@ -36,14 +37,17 @@ function from_examples {
 gmt ps2raster ../examples/ex$1/example_$1.ps $com
 W=`gmt grdinfo -C ${path_build}/${name}.png | awk '{print $3}'`
 H=`gmt grdinfo -C ${path_build}/${name}.png | awk '{print $5}'`
-echo ".. figure:: ../${path_build}/${name}.png" > ${pato}/fig_${name}.rst_
-echo "   :height: $H px" >> ${pato}/fig_${name}.rst_
-echo "   :width: $W px" >> ${pato}/fig_${name}.rst_
-echo "   :align: center" >> ${pato}/fig_${name}.rst_
+echo ".. figure:: ../../${path_build}/${name}.png" > ${pato2}/fig_${name}.rst_
+echo "   :height: $H px" >> ${pato2}/fig_${name}.rst_
+echo "   :width: $W px" >> ${pato2}/fig_${name}.rst_
+echo "   :align: center" >> ${pato2}/fig_${name}.rst_
 # Compute scale such image ~= 15 cm Width on a 96 DPI screen
 scale=`echo | awk -v D=$DPI -v W=$W '{printf "%d",  15 / (W / D * 2.54) * 96 / D * 100}'`
-echo "   :scale: $scale %" >> ${pato}/fig_${name}.rst_
-echo "" >> ${pato}/fig_${name}.rst_
+echo "   :scale: $scale %" >> ${pato2}/fig_${name}.rst_
+echo "" >> ${pato2}/fig_${name}.rst_
+
+echo ".. |ex$1| image:: ../${path_build}/${name}.png" > ${pato2}/img_${name}.rst_
+echo "   :width: 150 px" >> ${pato2}/img_${name}.rst_
 }
 
 function from_fig {
@@ -58,86 +62,86 @@ echo "" >> ${pato}/fig_${name}.rst_
 }
 
 name=example_01;	from_examples 01
-echo "   Contour maps of gridded data." >> ${pato}/fig_${name}.rst_
+echo "   Contour maps of gridded data." >> ${pato2}/fig_${name}.rst_
 name=example_02;	from_examples 02
-echo "   Color images from gridded data." >> ${pato}/fig_${name}.rst_
+echo "   Color images from gridded data." >> ${pato2}/fig_${name}.rst_
 name=example_03;	from_examples 03
-echo "   Spectral estimation and x=y-plots." >> ${pato}/fig_${name}.rst_
+echo "   Spectral estimation and x=y-plots." >> ${pato2}/fig_${name}.rst_
 name=example_04;	from_examples 04
-echo "   3-D perspective mesh plot (left) and colored version (right)." >> ${pato}/fig_${name}.rst_
+echo "   3-D perspective mesh plot (left) and colored version (right)." >> ${pato2}/fig_${name}.rst_
 name=example_05;	from_examples 05
-echo "   3-D illuminated surface." >> ${pato}/fig_${name}.rst_
+echo "   3-D illuminated surface." >> ${pato2}/fig_${name}.rst_
 name=example_06;	from_examples 06
-echo "   Two kinds of histograms." >> ${pato}/fig_${name}.rst_
+echo "   Two kinds of histograms." >> ${pato2}/fig_${name}.rst_
 name=example_07;	from_examples 07
-echo "   A typical location map." >> ${pato}/fig_${name}.rst_
+echo "   A typical location map." >> ${pato2}/fig_${name}.rst_
 name=example_08;	from_examples 08
-echo "   A 3-D histogram." >> ${pato}/fig_${name}.rst_
+echo "   A 3-D histogram." >> ${pato2}/fig_${name}.rst_
 name=example_09;	from_examples 09
-echo "   Time-series as "wiggles" along a track." >> ${pato}/fig_${name}.rst_
+echo "   Time-series as "wiggles" along a track." >> ${pato2}/fig_${name}.rst_
 name=example_10;	from_examples 10
-echo "   Geographical bar graph." >> ${pato}/fig_${name}.rst_
+echo "   Geographical bar graph." >> ${pato2}/fig_${name}.rst_
 name=example_11;	from_examples 11
-echo "   The RGB color cube." >> ${pato}/fig_${name}.rst_
+echo "   The RGB color cube." >> ${pato2}/fig_${name}.rst_
 name=example_12;	from_examples 12
-echo "   Optimal triangulation of data." >> ${pato}/fig_${name}.rst_
+echo "   Optimal triangulation of data." >> ${pato2}/fig_${name}.rst_
 name=example_13;	from_examples 13
-echo "   Display of vector fields in GMT." >> ${pato}/fig_${name}.rst_
+echo "   Display of vector fields in GMT." >> ${pato2}/fig_${name}.rst_
 name=example_14;	from_examples 14
-echo "   Gridding of data and trend surfaces." >> ${pato}/fig_${name}.rst_
+echo "   Gridding of data and trend surfaces." >> ${pato2}/fig_${name}.rst_
 name=example_15;	from_examples 15
-echo "   Gridding, contouring, and masking of data." >> ${pato}/fig_${name}.rst_
+echo "   Gridding, contouring, and masking of data." >> ${pato2}/fig_${name}.rst_
 name=example_16;	from_examples 16
-echo "   More ways to grid data." >> ${pato}/fig_${name}.rst_
+echo "   More ways to grid data." >> ${pato2}/fig_${name}.rst_
 name=example_17;	from_examples 17
-echo "   Clipping of images using coastlines." >> ${pato}/fig_${name}.rst_
+echo "   Clipping of images using coastlines." >> ${pato2}/fig_${name}.rst_
 name=example_18;	from_examples 18
-echo "   Volumes and geo-spatial selections." >> ${pato}/fig_${name}.rst_
+echo "   Volumes and geo-spatial selections." >> ${pato2}/fig_${name}.rst_
 name=example_19;	from_examples 19
-echo "   Using color patterns and additional PostScript material in illustrations." >> ${pato}/fig_${name}.rst_
+echo "   Using color patterns and additional PostScript material in illustrations." >> ${pato2}/fig_${name}.rst_
 name=example_20;	from_examples 20
-echo "   Using custom symbols in GMT." >> ${pato}/fig_${name}.rst_
+echo "   Using custom symbols in GMT." >> ${pato2}/fig_${name}.rst_
 name=example_21;	from_examples 21
-echo "   Time-series of RedHat stock price since IPO." >> ${pato}/fig_${name}.rst_
+echo "   Time-series of RedHat stock price since IPO." >> ${pato2}/fig_${name}.rst_
 name=example_22;	from_examples 22
-echo "   World-wide seismicity the last 7 days." >> ${pato}/fig_${name}.rst_
+echo "   World-wide seismicity the last 7 days." >> ${pato2}/fig_${name}.rst_
 name=example_23;	from_examples 23
-echo "   All great-circle paths lead to Rome." >> ${pato}/fig_${name}.rst_
+echo "   All great-circle paths lead to Rome." >> ${pato2}/fig_${name}.rst_
 name=example_24;	from_examples 24
-echo "   Data selection based on geospatial criteria." >> ${pato}/fig_${name}.rst_
+echo "   Data selection based on geospatial criteria." >> ${pato2}/fig_${name}.rst_
 name=example_25;	from_examples 25
-echo "   Global distribution of antipodes." >> ${pato}/fig_${name}.rst_
+echo "   Global distribution of antipodes." >> ${pato2}/fig_${name}.rst_
 name=example_26;	from_examples 26
-echo "   General vertical perspective projection." >> ${pato}/fig_${name}.rst_
+echo "   General vertical perspective projection." >> ${pato2}/fig_${name}.rst_
 name=example_27;	from_examples 27
-echo "   Plotting Sandwell/Smith Mercator img grids." >> ${pato}/fig_${name}.rst_
+echo "   Plotting Sandwell/Smith Mercator img grids." >> ${pato2}/fig_${name}.rst_
 name=example_28;	from_examples 28
-echo "   Mixing UTM and geographic data sets requires knowledge of the map region domain in" >> ${pato}/fig_${name}.rst_
-echo "   both UTM and lon/lat coordinates and consistent use of the same map scale." >> ${pato}/fig_${name}.rst_
+echo "   Mixing UTM and geographic data sets requires knowledge of the map region domain in" >> ${pato2}/fig_${name}.rst_
+echo "   both UTM and lon/lat coordinates and consistent use of the same map scale." >> ${pato2}/fig_${name}.rst_
 name=example_29;	from_examples 29
-echo "   Gridding of spherical surface data using Green's function splines." >> ${pato}/fig_${name}.rst_
+echo "   Gridding of spherical surface data using Green's function splines." >> ${pato2}/fig_${name}.rst_
 name=example_30;	from_examples 30
-echo "   Trigonometric functions plotted in graph mode." >> ${pato}/fig_${name}.rst_
+echo "   Trigonometric functions plotted in graph mode." >> ${pato2}/fig_${name}.rst_
 name=example_31;	from_examples 31
-echo "   Using non-default fonts in *PostScript*." >> ${pato}/fig_${name}.rst_
+echo "   Using non-default fonts in *PostScript*." >> ${pato2}/fig_${name}.rst_
 name=example_32;	from_examples 32
-echo "   Draping an image over topography." >> ${pato}/fig_${name}.rst_
+echo "   Draping an image over topography." >> ${pato2}/fig_${name}.rst_
 name=example_33;	from_examples 33
-echo "   Stacking automatically generated cross-profiles." >> ${pato}/fig_${name}.rst_
+echo "   Stacking automatically generated cross-profiles." >> ${pato2}/fig_${name}.rst_
 name=example_34;	from_examples 34
-echo "   Using country polygons for plotting and shading." >> ${pato}/fig_${name}.rst_
+echo "   Using country polygons for plotting and shading." >> ${pato2}/fig_${name}.rst_
 name=example_35;	from_examples 35
-echo "   Spherical triangulation and distance calculations" >> ${pato}/fig_${name}.rst_
+echo "   Spherical triangulation and distance calculations" >> ${pato2}/fig_${name}.rst_
 name=example_36;	from_examples 36
-echo "   Spherical gridding using Renka\'s algorithms." >> ${pato}/fig_${name}.rst_
+echo "   Spherical gridding using Renka\'s algorithms." >> ${pato2}/fig_${name}.rst_
 name=example_37;	from_examples 37
-echo "   Spectral coherence between gravity and bathymetry grids." >> ${pato}/fig_${name}.rst_
+echo "   Spectral coherence between gravity and bathymetry grids." >> ${pato2}/fig_${name}.rst_
 name=example_38;	from_examples 38
-echo "   Histogram equalization of bathymetry grids." >> ${pato}/fig_${name}.rst_
+echo "   Histogram equalization of bathymetry grids." >> ${pato2}/fig_${name}.rst_
 name=example_39;	from_examples 39
-echo "   Evaluation of spherical harmonics coefficients." >> ${pato}/fig_${name}.rst_
+echo "   Evaluation of spherical harmonics coefficients." >> ${pato2}/fig_${name}.rst_
 name=example_40;	from_examples 40
-echo "   Illustrate line simplification and area calculations." >> ${pato}/fig_${name}.rst_
+echo "   Illustrate line simplification and area calculations." >> ${pato2}/fig_${name}.rst_
 
 name=GMT_App_E;			from_scripts
 name=GMT_App_F_dingbats;	from_scripts
