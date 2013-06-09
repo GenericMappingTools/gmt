@@ -5802,7 +5802,7 @@ option causes tick marks pointing in the downhill direction to be drawn
 on the innermost, closed contours. For the upper panel we also added -
 and + to the local lows and highs. You can find this illustration as
 
-.. include:: fig_includes/fig_example_01.rst_
+.. .. include:: fig_includes/fig_example_01.rst_
 
 Image presentations
 -------------------
@@ -5875,7 +5875,7 @@ image with `psscale <psscale.html>`_. Similarly, we run
 plot above the previous image. Adding scale and label the two plots a)
 and b) completes the illustration.
 
-.. include:: fig_includes/fig_example_02.rst_
+.. .. include:: fig_includes/fig_example_02.rst_
 
 Spectral estimation and xy-plots
 --------------------------------
@@ -6116,7 +6116,7 @@ ship gravity anomalies have more power than altimetry derived gravity
 for short wavelengths and that the coherency between the two signals
 improves dramatically for wavelengths > 20 km.
 
-.. include:: fig_includes/fig_example_03.rst_
+.. .. include:: fig_includes/fig_example_03.rst_
 
 A 3-D perspective mesh plot
 ---------------------------
@@ -6172,7 +6172,7 @@ The purpose of the color palette file ``zero.cpt`` is to have the positive topog
 mesh painted light gray (the remainder is white). The left side of
 Figure shows the complete illustration.
 
-.. include:: fig_includes/fig_example_04.rst_
+.. .. include:: fig_includes/fig_example_04.rst_
 
 The second part of the script shows how to make the color version of
 this figure that was printed in our first article in *EOS Trans. AGU* (8
@@ -6238,7 +6238,7 @@ the output of `grdgradient <grdgradient.html>`_ to
 `grdhisteq <grdhisteq.html>`_. The shell-script above
 will result in a plot like the one in Figure [fig:example\ :sub:`0`\ 5].
 
-.. include:: fig_includes/fig_example_05.rst_
+.. .. include:: fig_includes/fig_example_05.rst_
 
 Plotting of histograms
 ----------------------
@@ -6268,7 +6268,7 @@ this script:
     pshistogram -Bxa2000f1000+l"Topography (m)" -Bya10f5+l"Frequency"+u% -BWSne+t"Histograms"+glightblue \
     	v3206.t -R-6000/0/0/30 -JX4.8i/2.4i -Gorange -O -Y5.5i -X-0.5i -L1p -Z1 -W250 >> $ps
 
-.. include:: fig_includes/fig_example_06.rst_
+.. .. include:: fig_includes/fig_example_06.rst_
 
 A simple location map
 ---------------------
@@ -6321,7 +6321,7 @@ digitized from available maps [25]_. We create the final location map
      -7 11 AFRICA
     END
 
-.. include:: fig_includes/fig_example_07.rst_
+.. .. include:: fig_includes/fig_example_07.rst_
 
 The same figure could equally well be made in color, which could be
 rasterized and made into a slide for a meeting presentation. The script
@@ -6358,7 +6358,7 @@ Figure [fig:example\ :sub:`0`\ 8] by running this script:
     echo '0.1 4.9 This is the surface of cube' | pstext -R -J -JZ -Z0 \
     	-F+f24p,Helvetica-Bold+jTL -p -O >> $ps
 
-.. include:: fig_includes/fig_example_08.rst_
+.. .. include:: fig_includes/fig_example_08.rst_
 
 Plotting time-series along tracks
 ---------------------------------
@@ -6409,7 +6409,7 @@ The output shows the sea-surface slopes along 42 descending Geosat
 tracks in the Eltanin and Udintsev fracture zone region in a Mercator
 projection.
 
-.. include:: fig_includes/fig_example_09.rst_
+.. .. include:: fig_includes/fig_example_09.rst_
 
 A geographical bar graph plot
 -----------------------------
@@ -6444,7 +6444,7 @@ Our script that produces Figure ex_10 reads:
     	--FONT_TITLE=30p,Times-Bold --MAP_TITLE_OFFSET=-0.7i \
     	-Bx60g60 -By30g30 -Bza1p+lMemberships" -BWSneZ+t"AGU 2008 Membership Distribution" -O -p >> $ps
 
-.. include:: fig_includes/fig_example_10.rst_
+.. .. include:: fig_includes/fig_example_10.rst_
 
 Making a 3-D RGB color cube
 ---------------------------
@@ -6573,7 +6573,7 @@ Here is the shell script to generate the RGB cube in Figure [fig:example\ :sub:`
     
     rm -f *.nc gmt.conf
 
-.. include:: fig_includes/fig_example_11.rst_
+.. .. include:: fig_includes/fig_example_11.rst_
 
 Optimal triangulation of data
 -----------------------------
@@ -6632,7 +6632,7 @@ image the data. We use a color palette table ``topo.cpt`` (created via
     #
     rm -f net.xy topo.cpt
 
-.. include:: fig_includes/fig_example_12.rst_
+.. .. include:: fig_includes/fig_example_12.rst_
 
 Plotting of vector fields
 -------------------------
@@ -6675,7 +6675,7 @@ the plot (Figure [fig:example:sub:`1`\ 3]:
     	| pstext -R0/6/0/4.5 -Jx1i -F+f40p,Times-Italic+jCB -O -X-3.45i >> $ps
     rm -f z.nc dzdx.nc dzdy.nc
 
-.. include:: fig_includes/fig_example_13.rst_
+.. .. include:: fig_includes/fig_example_13.rst_
 
 Gridding of data and trend surfaces
 -----------------------------------
@@ -6752,7 +6752,7 @@ transect using `psxy <psxy.html>`_
     
     rm -f mean.xyz track *.nc *.d gmt.conf
 
-.. include:: fig_includes/fig_example_14.rst_
+.. .. include:: fig_includes/fig_example_14.rst_
 
 Gridding, contouring, and masking of unconstrained areas
 --------------------------------------------------------
@@ -6815,7 +6815,7 @@ grid files using `grdinfo <grdinfo.html>`_.
     	-F+f24p,Helvetica-Bold+jCB -O -N >> $ps
     rm -f ship.b ship_10m.b ship.nc ship_clipped.nc
 
-.. include:: fig_includes/fig_example_15.rst_
+.. .. include:: fig_includes/fig_example_15.rst_
 
 Gridding of data, continued
 ---------------------------
@@ -6906,7 +6906,7 @@ request for interval (700,725).
     #
     rm -f *.nc gmt.conf
 
-.. include:: fig_includes/fig_example_16.rst_
+.. .. include:: fig_includes/fig_example_16.rst_
 
 Images clipped by coastlines
 ----------------------------
@@ -6987,7 +6987,7 @@ color palettes and ways to draw color legends.
     
     rm -f geoid.cpt gray.cpt *_i.nc
 
-.. include:: fig_includes/fig_example_17.rst_
+.. .. include:: fig_includes/fig_example_17.rst_
 
 Volumes and Spatial Selections
 ------------------------------
@@ -7088,7 +7088,7 @@ illustration is presented in Figure [fig:example\ :sub:`1`\ 8].
     
     rm -f grav.cpt sm_*.txt *_i.nc tmp.nc mask.nc pratt.d center* gmt.conf
 
-.. include:: fig_includes/fig_example_18.rst_
+.. .. include:: fig_includes/fig_example_18.rst_
 
 Color patterns on maps
 ----------------------
@@ -7159,7 +7159,7 @@ have changed places (Figure [fig:example:sub:`1`\ 9]).
     
     rm -f l*.nc l*.cpt gmt.conf
 
-.. include:: fig_includes/fig_example_19.rst_
+.. .. include:: fig_includes/fig_example_19.rst_
 
 Custom plot symbols
 -------------------
@@ -7180,7 +7180,7 @@ The following recipe is used when designing a new symbol.
    description of symbol design). In this Section we will create two new
    symbols: a volcano and a bulls eye.
 
-.. include:: fig_includes/fig_GMT_volcano.rst_
+.. .. include:: fig_includes/fig_GMT_volcano.rst_
 
 #. After designing the symbol we will encode it using a simple set of
    rules. In our case we describe our volcano and bulls eye using these
@@ -7280,7 +7280,7 @@ Here is our final map script that produces Figure [fig:example\ :sub:`2`\ 0]:
     
     rm -f hotspots.d cities.d
 
-.. include:: fig_includes/fig_example_20.rst_
+.. .. include:: fig_includes/fig_example_20.rst_
 
 Given these guidelines you can easily make your own symbols. Symbols
 with more than one color can be obtained by making several symbol
@@ -7417,7 +7417,7 @@ which produces the plot in Figure [fig:example\ :sub:`2`\ 1], suggesting
 Wessel has missed a few trains if he had hoped to cash in on the
 Internet bubble...
 
-.. include:: fig_includes/fig_example_21.rst_
+.. .. include:: fig_includes/fig_example_21.rst_
 
 World-wide seismicity the last 7 days
 -------------------------------------
@@ -7539,7 +7539,7 @@ giving the URL where these and similar data can be obtained.
     
     rm -f neis.* gmt.conf
 
-.. include:: fig_includes/fig_example_22.rst_
+.. .. include:: fig_includes/fig_example_22.rst_
 
 All great-circle paths lead to Rome
 -----------------------------------
@@ -7626,7 +7626,7 @@ Section [sec:example\ :sub:`2`\ 5]).
     
     rm -f cities.d dist.nc
 
-.. include:: fig_includes/fig_example_23.rst_
+.. .. include:: fig_includes/fig_example_23.rst_
 
 Data selection based on geospatial criteria
 -------------------------------------------
@@ -7687,7 +7687,7 @@ distortion) and not the actual distance which remains constant at 1000 km.
     psxy -R -J -O dateline.d -Wfat,white -A >> $ps
     rm -f point.d dateline.d
 
-.. include:: fig_includes/fig_example_24.rst_
+.. .. include:: fig_includes/fig_example_24.rst_
 
 Global distribution of antipodes
 --------------------------------
@@ -7776,7 +7776,7 @@ categorical data, like these, that should not be interpolated.
     END
     rm -f *.nc key.* gmt.conf
 
-.. include:: fig_includes/fig_example_25.rst_
+.. .. include:: fig_includes/fig_example_25.rst_
 
 General vertical perspective projection
 ---------------------------------------
@@ -7839,7 +7839,7 @@ further and extend the availability of the full projection to all of the
     pscoast -R $PROJ -B5g5-Glightbrown -Slightblue -W -Ia/blue -Di -Na -O -X1i -Y-4i \
     	-UL/-1.75i/-0.75i/"Example 26 in Cookbook" >> $ps
 
-.. include:: fig_includes/fig_example_26.rst_
+.. .. include:: fig_includes/fig_example_26.rst_
 
 Plotting Sandwell/Smith Mercator img grids
 ------------------------------------------
@@ -7919,7 +7919,7 @@ painted black. A color scale bar was then added to complete the illustration.
     
     rm -f grav.cpt *_i.nc
 
-.. include:: fig_includes/fig_example_27.rst_
+.. .. include:: fig_includes/fig_example_27.rst_
 
 Mixing UTM and geographic data sets
 -----------------------------------
@@ -7976,7 +7976,7 @@ label Kilauea crater to complete the figure.
     # Clean up
     rm -f Kilauea.utm_i.nc Kilauea.cpt tmp.txt
 
-.. include:: fig_includes/fig_example_28.rst_
+.. .. include:: fig_includes/fig_example_28.rst_
 
 Gridding spherical surface data using splines
 ---------------------------------------------
@@ -8048,7 +8048,7 @@ imaged with `grdimage <grdimage.html>`_ and
     # Clean up
     rm -f *.nc mars.cpt
 
-.. include:: fig_includes/fig_example_29.rst_
+.. .. include:: fig_includes/fig_example_29.rst_
 
 Trigonometric functions plotted in graph mode
 ---------------------------------------------
@@ -8129,7 +8129,7 @@ the given angle.
     
     echo 0 0 0.5i 0 120 | psxy -R -J -O -Sm0.15i+e -W1p -Gblack >> $ps
 
-.. include:: fig_includes/fig_example_30.rst_
+.. .. include:: fig_includes/fig_example_30.rst_
 
 Using non-default fonts in *PostScript*
 ---------------------------------------
@@ -8262,7 +8262,7 @@ outlined fonts or to convert to a PDF-file.
     # clean up
     rm -f .gmtcommands* gmt.conf CUSTOM_font_info.d legend.txt ex31CropNoLogo.eps
 
-.. include:: fig_includes/fig_example_31.rst_
+.. .. include:: fig_includes/fig_example_31.rst_
     
 Draping an image over topography
 --------------------------------
@@ -8376,7 +8376,7 @@ did not want to store the 58 MB DEM file, whose location is mentioned in the scr
     
     rm -f gmt.conf euflag.cpt illum.nc cities.txt
 
-.. include:: fig_includes/fig_example_32.rst_
+.. .. include:: fig_includes/fig_example_32.rst_
 
 Stacking automatically generated cross-profiles
 -----------------------------------------------
@@ -8430,7 +8430,7 @@ variations about the stacked median profile.
     # cleanup
     rm -f gmt.conf z.cpt spac_int.nc ridge.txt table.txt env.txt stack.txt
 
-.. include:: fig_includes/fig_example_33.rst_
+.. .. include:: fig_includes/fig_example_33.rst_
 
 Using country polygons for plotting and shading
 -----------------------------------------------
@@ -8466,7 +8466,7 @@ will continue to debate for some time.
     # cleanup
     rm -f gmt.conf FR+IT_int.nc z.cpt
 
-.. include:: fig_includes/fig_example_34.rst_
+.. .. include:: fig_includes/fig_example_34.rst_
 
 Spherical triangulation and distance calculations
 -------------------------------------------------
@@ -8509,7 +8509,7 @@ placed on top.
     # cleanup
     rm -f gmt.conf tt.pol tt.nc t.cpt
 
-.. include:: fig_includes/fig_example_35.rst_
+.. .. include:: fig_includes/fig_example_35.rst_
 
 Spherical gridding using Renka's algorithms
 -------------------------------------------
@@ -8549,7 +8549,7 @@ with `greenspline <greenspline.html>`_.
     # cleanup
     rm -f gmt.conf tt.cpt tt.nc
 
-.. include:: fig_includes/fig_example_36.rst_
+.. .. include:: fig_includes/fig_example_36.rst_
 
 Spectral coherence between gravity and bathymetry grids
 -------------------------------------------------------
@@ -8615,7 +8615,7 @@ the grids being extended and padded to a suitable dimension.
     gmt psxy -R -J -O -T >> $ps
     rm -f cross.txt *_tmp.nc *_int.nc ?.cpt bbox
 
-.. include:: fig_includes/fig_example_37.rst_
+.. .. include:: fig_includes/fig_example_37.rst_
 
 Histogram equalization of bathymetry grids
 ------------------------------------------
@@ -8657,7 +8657,7 @@ used here is `grdhisteq <grdhisteq.html>`_.
     gmt psscale -D0i/-0.4i/5i/0.15ih -O -Cc.cpt -Bx1 -By+lz -E+n >> $ps
     rm -f itopo.nc out.nc ?.cpt
 
-.. include:: fig_includes/fig_example_38.rst_
+.. .. include:: fig_includes/fig_example_38.rst_
 
 Evaluation of spherical harmonics coefficients
 ----------------------------------------------
@@ -8708,7 +8708,7 @@ used here is `sph2grd <sph2grd.html>`_.
         -F+f24p+jCM -N >> $ps
     rm -f v*.nc t.cpt
 
-.. include:: fig_includes/fig_example_39.rst_
+.. .. include:: fig_includes/fig_example_39.rst_
 
 Creating GMT Animations
 =======================
