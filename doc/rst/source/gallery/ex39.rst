@@ -1,0 +1,15 @@
+.. _example_39:
+
+(39) Evaluation of spherical harmonics coefficients
+---------------------------------------------------
+
+We use a spherical harmonic model for the topography of Venus and evaluate
+the resulting global grid for three sets of upper order/degrees, here 30,
+90, and 180; the original file (see below) goes to order and degree 720.
+We use the coefficients to evaluate the grids and make perspective globes
+of the different resolutions.  The key tool
+used here is `sph2grd <../sph2grd.html>`_.
+
+.. literalinclude:: ../../../examples/ex39/example_39.sh
+
+.. include:: fig_example_39.rst_
