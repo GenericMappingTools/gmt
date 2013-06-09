@@ -8,11 +8,12 @@ Example gallery
 The GMT historical collection
 -----------------------------
 
-These are the examples of the mlab plotting functions. They are
-copied out here for convenience. Please refer to the corresponding
-section of the user guide for more information
-
-.. currentmodule:: mayavi.mlab
+In this section we will be giving numerous examples of typical usage of
+*GMT* programs. In general, we will start with a raw data set,
+manipulate the numbers in various ways, then display the results in
+diagram or map view. The resulting plots will have in common that they
+are all made up of simpler plots that have been overlaid to create a
+complex illustration.
 
 +------------------+--------------------+---------------------+
 |:ref:`example_01` | :ref:`example_02`  | :ref:`example_03`   |
