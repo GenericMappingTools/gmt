@@ -2559,8 +2559,9 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned 
 	X->n_colors = n;
 
 	if (X->categorical) {	/* Set up fake ranges so CPT is continuous */
+		dz = 1.0;	/* This will presumably get reset in the loop */
 		for (i = 0; i < X->n_colors; i++) {
-			X->range[i].z_high = (i == (X->n_colors-1)) ? X->range[i].z_low + 1.0 : X->range[i+1].z_low;
+			X->range[i].z_high = (i == (X->n_colors-1)) ? X->range[i].z_low + dz : X->range[i+1].z_low;
 			dz = X->range[i].z_high - X->range[i].z_low;
 			if (dz == 0.0) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Z-slice with dz = 0\n");
