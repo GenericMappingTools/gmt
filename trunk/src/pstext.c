@@ -602,7 +602,7 @@ int GMT_pstext (void *V_API, int mode, void *args)
 	double plot_x = 0.0, plot_y = 0.0, save_angle = 0.0, xx[2] = {0.0, 0.0}, yy[2] = {0.0, 0.0}, *in = NULL;
 	double offset[2], tmp, *c_x = NULL, *c_y = NULL, *c_angle = NULL;
 
-	char text[GMT_BUFSIZ], buffer[GMT_BUFSIZ], label[GMT_BUFSIZ], pjust_key[5], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
+	char text[GMT_BUFSIZ], buffer[GMT_BUFSIZ] = "", label[GMT_BUFSIZ], pjust_key[5], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
 	char *paragraph = NULL, *line = NULL, *curr_txt = NULL, *in_txt = NULL, **c_txt = NULL;
 	char this_size[GMT_TEXT_LEN256], this_font[GMT_TEXT_LEN256], just_key[5], txt_f[GMT_TEXT_LEN256];
 	int input_format_version = GMT_NOTSET;
