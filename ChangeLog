@@ -2,6 +2,11 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-06-10	jluis
+	* ps2raster.c:		Add -A+s<newsize> option to force a specific image size at
+				the given DPI. This is accomplished via gs re-interpolation.
+
+
 2013-06-05	pwessel
 	* greenspline.c:	Improved the accuracy of the spherical spline in tension with
 				lots of help from Bob Parker, Scripps Inst. Oceanography.
