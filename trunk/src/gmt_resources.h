@@ -324,6 +324,7 @@ struct GMT_GRID_HEADER {
 
 struct GMT_GRID {	/* To hold a GMT float grid and its header in one container */
 	unsigned int id;		/* The internal number of the grid */
+	unsigned int alloc_level;	/* The level it was allocated at */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0] */
 	struct GMT_GRID_HEADER *header;	/* Pointer to full GMT header for the grid */
 	float *data;			/* Pointer to the float grid */
@@ -441,8 +442,9 @@ struct GMT_DATASET {	/* Single container for an array of GMT tables (files) */
 	struct GMT_DATATABLE **table;	/* Pointer to array of tables */
 /* ---- Variables "hidden" from the API ---- */
 	uint64_t id;			/* The internal number of the data set */
-	unsigned int geometry;		/* The geometry of this dataset */
 	size_t n_alloc;			/* The current allocation length of tables */
+	unsigned int geometry;		/* The geometry of this dataset */
+	unsigned int alloc_level;	/* The level it was allocated at */
 	enum GMT_enum_dest io_mode;	/* -1 means write OGR format (requires proper -a),
 					 * 0 means write everything to one destination [Default],
 					 * 1 means use table->file[GMT_OUT] to write separate table,
@@ -492,8 +494,9 @@ struct GMT_TEXTSET {	/* Single container for an array of GMT text tables (files)
 	struct GMT_TEXTTABLE **table;	/* Pointer to array of tables */
 /* ---- Variables "hidden" from the API ---- */
 	uint64_t id;			/* The internal number of the data set */
-	unsigned int geometry;		/* The geometry of this dataset */
 	size_t n_alloc;			/* The current allocation length of tables */
+	unsigned int geometry;		/* The geometry of this dataset */
+	unsigned int alloc_level;	/* The level it was allocated at */
 	enum GMT_enum_dest io_mode;	/* -1 means write OGR format (requires proper -a),
 					 * 0 means write everything to one destination [Default],
 					 * 1 means use table->file[GMT_OUT] to write separate table,
@@ -551,6 +554,7 @@ struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
 	char **header;			/* Array with all CPT file header records, if any) */		/* Content not counted by sizeof (struct) */
 /* ---- Variables "hidden" from the API ---- */
 	uint64_t id;			/* The internal number of the data set */
+	unsigned int alloc_level;	/* The level it was allocated at */
 	unsigned int alloc_mode;	/* Allocation info [0] */
 	unsigned int model;		/* RGB, HSV, CMYK */
 	unsigned int is_gray;		/* true if only grayshades are needed */
@@ -579,6 +583,7 @@ struct GMT_IMAGE {	/* Single container for a user image of data */
 	unsigned char *data;		/* Pointer to actual image */
 /* ---- Variables "hidden" from the API ---- */
 	uint64_t id;			/* The internal number of the data set */
+	unsigned int alloc_level;	/* The level it was allocated at */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0] */
 	const char	*ProjRefPROJ4;
 	const char	*ProjRefWKT;
@@ -620,6 +625,7 @@ struct GMT_VECTOR {	/* Single container for user vector(s) of data */
 	char remark[GMT_GRID_REMARK_LEN160];   /* comments re this data set */
 /* ---- Variables "hidden" from the API ---- */
 	uint64_t id;			/* The internal number of the data set */
+	unsigned int alloc_level;	/* The level it was allocated at */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0 = allocated, 1 = allocate as needed] */
 };
 
@@ -649,6 +655,7 @@ struct GMT_MATRIX {	/* Single container for a user matrix of data */
 	char remark[GMT_GRID_REMARK_LEN160];   /* comments re this data set */
 /* ---- Variables "hidden" from the API ---- */
 	uint64_t id;			/* The internal number of the data set */
+	unsigned int alloc_level;	/* The level it was allocated at */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0] */
 };
 

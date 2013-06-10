@@ -1289,6 +1289,7 @@ int GMTAPI_Export_CPT (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode
 			if (S_obj->resource) return (GMTAPI_report_error (API, GMT_PTR_NOT_NULL));	/* The output resource must be NULL */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing CPT table to GMT_PALETTE memory location\n");
 			P_obj->alloc_mode = GMT_REFERENCE;	/* To avoid accidental freeing by GMT_* modules since nothing was allocated */
+			P_obj->alloc_level = S_obj->level;	/* Since we are passing it up to the caller */
 			S_obj->resource = P_obj;	/* Set resource pointer from object to this palette */
 			break;
 		default:
@@ -1591,6 +1592,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 			if (S_obj->resource) return (GMTAPI_report_error (API, GMT_PTR_NOT_NULL));	/* The output resource must be NULL */
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing data table to GMT_DATASET memory location\n");
 			D_obj->alloc_mode = GMT_REFERENCE;	/* To avoid accidental freeing upstream */
+			D_obj->alloc_level = S_obj->level;	/* Since we are passing it up to the caller */
 			S_obj->resource = D_obj;		/* Set resource pointer from object to this dataset */
 			break;
 			
@@ -1850,6 +1852,7 @@ int GMTAPI_Export_Textset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Referencing data table to GMT_TEXTSET memory location\n");
 			if (S_obj->resource) return (GMTAPI_report_error (API, GMT_PTR_NOT_NULL));	/* The output resource must be NULL */
 			T_obj->alloc_mode = GMT_REFERENCE;	/* To avoid accidental freeing */
+			T_obj->alloc_level = S_obj->level;	/* Since we are passing it up to the caller */
 			S_obj->resource = T_obj;		/* Set resource pointer from object to this textset */
 			break;
 	 	case GMT_IS_DUPLICATE + GMT_VIA_MATRIX:
@@ -2431,6 +2434,7 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mod
 			S_obj->resource = G_obj;	/* Set resource pointer to the grid */
 			if ((a_mode = GMTAPI_get_alloc_mode (API, GMT_IS_GRID, S_obj->data)) == GMT_ALLOC_BY_OTHERS)
 				S_obj->alloc_mode = G_obj->alloc_mode = GMT_ALLOC_BY_OTHERS;
+			G_obj->alloc_level = S_obj->level;	/* Since we are passing it up to the caller */
 			break;
 			
 	 	case GMT_IS_DUPLICATE + GMT_VIA_MATRIX:	/* The user's 2-D grid array of some sort, + info in the args [NOT FULLY TESTED] */
@@ -2721,6 +2725,7 @@ int GMTAPI_Destroy_Image (struct GMTAPI_CTRL *API, struct GMT_IMAGE **I_obj)
 		return (GMT_PTR_IS_NULL);
 	}
 	if ((*I_obj)->alloc_mode != GMT_ALLOC_BY_GMT) return (GMT_MEMORY_MODE_ERROR);	/* Not allowed to free here */
+	if ((*I_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_OK);	/* Not the right level */
 	
 	GMT_free_image (API->GMT, I_obj, true);
 	return GMT_OK;
@@ -2736,6 +2741,7 @@ int GMTAPI_Destroy_Grid (struct GMTAPI_CTRL *API, struct GMT_GRID **G_obj)
 		return (GMT_PTR_IS_NULL);
 	}
 	if ((*G_obj)->alloc_mode != GMT_ALLOC_BY_GMT) return (GMT_MEMORY_MODE_ERROR);	/* Not allowed to free here */
+	if ((*G_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_OK);	/* Not the right level */
 	
 	GMT_free_grid (API->GMT, G_obj, true);
 	return GMT_OK;
@@ -2750,6 +2756,7 @@ int GMTAPI_Destroy_Dataset (struct GMTAPI_CTRL *API, struct GMT_DATASET **D_obj)
 		return (GMT_PTR_IS_NULL);
 	}
 	if ((*D_obj)->alloc_mode != GMT_ALLOC_BY_GMT) return (GMT_MEMORY_MODE_ERROR);	/* Not allowed to free here */
+	if ((*D_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_OK);	/* Not the right level */
 
 	GMT_free_dataset (API->GMT, D_obj);
 	return GMT_OK;
@@ -2764,6 +2771,7 @@ int GMTAPI_Destroy_Textset (struct GMTAPI_CTRL *API, struct GMT_TEXTSET **T_obj)
 		return (GMT_PTR_IS_NULL);
 	}
 	if ((*T_obj)->alloc_mode != GMT_ALLOC_BY_GMT) return (GMT_MEMORY_MODE_ERROR);	/* Not allowed to free here */
+	if ((*T_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_OK);	/* Not the right level */
 
 	GMT_free_textset (API->GMT, T_obj);
 	return GMT_OK;
@@ -2778,6 +2786,7 @@ int GMTAPI_Destroy_CPT (struct GMTAPI_CTRL *API, struct GMT_PALETTE **P_obj)
 		return (GMT_PTR_IS_NULL);
 	}
 	if ((*P_obj)->alloc_mode != GMT_ALLOC_BY_GMT) return (GMT_MEMORY_MODE_ERROR);	/* Not allowed to free here */
+	if ((*P_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_OK);	/* Not the right level */
 
 	GMT_free_palette (API->GMT, P_obj);
 	return GMT_OK;
@@ -2792,6 +2801,7 @@ int GMTAPI_Destroy_Matrix (struct GMTAPI_CTRL *API, struct GMT_MATRIX **M_obj)
 		return (GMT_PTR_IS_NULL);
 	}
 	if ((*M_obj)->alloc_mode != GMT_ALLOC_BY_GMT) return (GMT_MEMORY_MODE_ERROR);	/* Not allowed to free here */
+	if ((*M_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_OK);	/* Not the right level */
 
 	GMT_free_matrix (API->GMT, M_obj, true);
 	return GMT_OK;
@@ -2806,6 +2816,7 @@ int GMTAPI_Destroy_Vector (struct GMTAPI_CTRL *API, struct GMT_VECTOR **V_obj)
 		return (GMT_PTR_IS_NULL);
 	}
 	if ((*V_obj)->alloc_mode != GMT_ALLOC_BY_GMT) return (GMT_MEMORY_MODE_ERROR);	/* Not allowed to free here */
+	if ((*V_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_OK);	/* Not the right level */
 
 	GMT_free_vector (API->GMT, V_obj, true);
 	return GMT_OK;
