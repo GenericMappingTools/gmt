@@ -3299,7 +3299,7 @@ void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[], struct G
 	unsigned int k;
 	
 	for (k = 0; k < GRDMATH_STACK_SIZE; k++) {
-		if (GMT_Destroy_Data (GMT->parent, stack[k]->G) != GMT_OK) {
+		if (GMT_Destroy_Data (GMT->parent, &stack[k]->G) != GMT_OK) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free stack item %d\n", k);
 		}
 		
