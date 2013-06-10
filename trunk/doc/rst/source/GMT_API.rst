@@ -247,6 +247,7 @@ support via ``GMT_grdimage`` [4]_.
         /* ---- Variables "hidden" from the API ---- */
         unsigned int id;                /* The internal number of the data set */
         enum GMT_enum_alloc alloc_mode; /* Allocation info [0] */
+        unsigned int alloc_level;           /* Level of initial allocation */
         const char      *ProjRefPROJ4;
         const char      *ProjRefWKT;
         const char      *ColorInterp;
@@ -303,6 +304,7 @@ data set *via* a ``struct GMT_VECTOR`` it will know how to read the data correct
         union GMT_UNIVECTOR *data;          /* Array with unions for each column */
         unsigned int         id;            /* An identification number */
         enum GMT_enum_alloc  alloc_mode;    /* Determines if we may free the vectors or not */
+        unsigned int alloc_level;           /* Level of initial allocation */
     };
 
 
@@ -328,6 +330,7 @@ User data matrices (GMT matrices)
         union GMT_UNIVECTOR data;           /* Union with pointers a data matrix of any type */
         /* ---- Variables "hidden" from the API ---- */
         unsigned int id;                    /* An identification number */
+        unsigned int alloc_level;           /* Level of initial allocation */
         enum GMT_enum_type type;            /* The matrix data type */
     };
 
@@ -349,17 +352,13 @@ Table [tbl:types].
 
 .. _tbl-enums:
 
-+-----------------+-------+----------------------------------------------------------------+
-| constant        | value | description                                                    |
-+=================+=======+================================================================+
-| GMT_ALLOCATED   | 0     | Normal case; free item when done                               |
-+-----------------+-------+----------------------------------------------------------------+
-| GMT_REFERENCE   | 1     | Item was *not* allocated so do not free, but reallocate is ok  |
-+-----------------+-------+----------------------------------------------------------------+
-| GMT_READONLY    | 2     | Do not allocate or reallocate                                  |
-+-----------------+-------+----------------------------------------------------------------+
-| GMT_CLOBBER     | 3     | Free item no matter what its allocation status                 |
-+-----------------+-------+----------------------------------------------------------------+
++---------------------------+-------+----------------------------------------------------------------+
+| constant                  | value | description                                                    |
++===========================+=======+================================================================+
+| GMT_ALLOCATED_EXTERNALLY  | 0     | Item was *not* allocated by GMT so do not reallocate or free   |
++---------------------------+-------+----------------------------------------------------------------+
+| GMT_ALLOCATED_BY_GMT      | 1     | GMT allocated the memory; reallocate and free as needed        |
++---------------------------+-------+----------------------------------------------------------------+
 
 [tbl:enums]
 
@@ -704,9 +703,7 @@ it returns FALSE (0).
 +--------------------+-------+---------------------------------------------------------------+
 | GMT_IS_DUPLICATE   | 3     | Pointer to memory we may *duplicate* data from                |
 +--------------------+-------+---------------------------------------------------------------+
-| GMT_IS_REFERENCE   | 4     | Pointer to memory we may *reference* data from (realloc OK)   |
-+--------------------+-------+---------------------------------------------------------------+
-| GMT_IS_READONLY    | 5     | Pointer to memory we may *read* data from (no realloc)        |
+| GMT_IS_REFERENCE   | 4     | Pointer to memory we may *reference* data from   |
 +--------------------+-------+---------------------------------------------------------------+
 
 [tbl:methods]
@@ -826,7 +823,7 @@ possibly increasing memory requirements. If the type is GMT_DOUBLE then
 *GMT* will be able to use the column directly by reference. The
 ``n_columns`` and ``n_rows`` parameters indicate the number of vectors
 and their common length. If these are not yet known you may pass 0 for
-these values and set ``alloc_mode`` to GMT_REFERENCE (1); this will
+these values and set ``alloc_mode`` to GMT_ALLOCATED_BY_GMT (1); this will
 make sure *GMT* will allocate the necessary memory to the variable you
 specify.
 
@@ -840,7 +837,7 @@ possibly increasing memory requirements. If the type is GMT_FLOAT then
 *GMT* may be able to use the matrix directly by reference. The
 ``n_rows`` and ``n_columns`` parameters indicate the dimensions of the
 matrix. If these are not yet known you may pass 0 for these values and
-set ``alloc_mode`` to GMT_REFERENCE 1; this will make sure *GMT* will
+set ``alloc_mode`` to GMT_ALLOCATED_BY_GMT (1); this will make sure *GMT* will
 allocate the necessary memory at the location you specify. Fortran users
 will instead have to specify a size large enough to hold the anticipated
 output data. The ``registration`` and ``range`` gives the grid

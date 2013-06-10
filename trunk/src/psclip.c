@@ -264,7 +264,7 @@ int GMT_psclip (void *V_API, int mode, void *args)
 			for (tbl = 0; tbl < D->n_tables; tbl++) {
 				for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 					S = D->table[tbl]->segment[seg];		/* Current segment */
-					if (D->alloc_mode == GMT_READONLY) {	/* Cannot store results in the read-only input array */
+					if (D->alloc_mode == GMT_ALLOCATED_EXTERNALLY) {	/* Cannot store results in the read-only input array */
 						x = GMT_memory (GMT, NULL, S->n_rows, double);
 						y = GMT_memory (GMT, NULL, S->n_rows, double);
 					}
@@ -278,7 +278,7 @@ int GMT_psclip (void *V_API, int mode, void *args)
 					}
 					PSL_beginclipping (PSL, x, y, (int)S->n_rows, GMT->session.no_rgb, first);
 					first = 0;
-					if (D->alloc_mode == GMT_READONLY) {	/* Free temp arrays */
+					if (D->alloc_mode == GMT_ALLOCATED_EXTERNALLY) {	/* Free temp arrays */
 						GMT_free (GMT, x);	GMT_free (GMT, y);
 					}
 				}

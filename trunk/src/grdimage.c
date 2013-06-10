@@ -596,12 +596,10 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 			if ((G2 = GMT_Retrieve_Data (API, object_ID)) == NULL) {
 				Return (API->error);
 			}
-			Intens_orig->alloc_mode = GMT_ALLOC_BY_GMT;	/* So we may destroy it */
 			if (GMT_Destroy_Data (API, &Intens_orig) != GMT_OK) {
 				Return (API->error);
 			}
 			Intens_orig = G2;
-			Intens_orig->alloc_mode = GMT_ALLOC_BY_GMT;	/* So we may destroy at the end */
 		}
 #endif
 
@@ -856,7 +854,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 	}
 	if (use_intensity_grid) {
 		if (need_to_project || !n_grids) {
-			if (GMT_Destroy_Data (API, Intens_proj) != GMT_OK) {
+			if (GMT_Destroy_Data (API, &Intens_proj) != GMT_OK) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Failed to free Intens_proj\n");
 			}
 		}

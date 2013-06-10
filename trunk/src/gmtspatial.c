@@ -966,7 +966,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 	
 	if (D->n_records == 0) {	/* Empty files, nothing to do */
 		GMT_Report (API, GMT_MSG_VERBOSE, "No data records found.\n");
-		if (GMT_Destroy_Data (API, D) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &D) != GMT_OK) {
 			Return (API->error);
 		}
 		Return (EXIT_SUCCESS);

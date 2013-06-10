@@ -82,19 +82,19 @@ struct GMTAPI_DATA_OBJECT {
 	uint64_t n_rows;			/* Number or rows in this array [GMT_DATASET and GMT_TEXTSET to/from MATRIX/VETOR only] */
 	uint64_t n_columns;			/* Number of columns to process in this dataset [GMT_DATASET only] */
 	uint64_t n_expected_fields;		/* Number of expected columns for this dataset [GMT_DATASET only] */
+	size_t n_alloc;				/* Number of items allocated so far if writing to memory */
 	unsigned int ID;			/* Unique identifier which is >= 0 */
-	unsigned int level;			/* Nested module level when object was allocated */
+	unsigned int alloc_level;		/* Nested module level when object was allocated */
+	unsigned int status;			/* 0 when first registered, 1 after reading/writing has started, 2 when finished */
 	bool selected;				/* true if requested by current module, false otherwise */
 	bool close_file;			/* true if we opened source as a file and thus need to close it when done */
 	bool region;				/* true if wesn was passed, false otherwise */
 	bool no_longer_owner;			/* true if the data pointed to by the object was passed on to another object */
-	size_t n_alloc;				/* Number of items allocated so far if writing to memory */
-	unsigned int alloc_mode;		/* GMTAPI_REFERENCE or GMTAPI_ALLOCATED */
-	unsigned int direction;			/* GMT_IN or GMT_OUT */
-	unsigned int family;			/* One of GMT_IS_{DATASET|TEXTSET|CPT|IMAGE|GMTGRID} */
-	unsigned int method;			/* One of GMT_IS_{FILE,STREAM,FDESC,ARRAY,GRID,COPY,REF|READONLY} */
-	unsigned int geometry;			/* One of GMT_POINT, GMT_LINE, GMT_POLY, GMT_SURF */
-	unsigned int status;			/* 0 when first registered, 1 after reading/writing has started, 2 when finished */
+	enum GMT_enum_alloc alloc_mode;		/* GMT_ALLOCATED_{BY_GMT|EXTERNALLY} */
+	enum GMT_io_enum direction;		/* GMT_IN or GMT_OUT */
+	enum GMT_enum_family family;		/* One of GMT_IS_{DATASET|TEXTSET|CPT|IMAGE|GRID|MATRIX|VECTOR|COORD} */
+	enum GMT_enum_method method;		/* One of GMT_IS_{FILE,STREAM,FDESC,DUPLICATE,REFERENCE} */
+	enum GMT_enum_geometry geometry;	/* One of GMT_IS_{POINT|LINE|POLY|PLP|SURFACE|NONE} */
 	double wesn[GMTAPI_N_GRID_ARGS];	/* Grid domain limits */
 	void *resource;				/* Points to registered data container (if appropriate) */
 	void *data;				/* Points to container associated with this object [for garbage collection purposes] */

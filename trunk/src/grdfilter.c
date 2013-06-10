@@ -1085,7 +1085,6 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 			if ((L = GMT_Retrieve_Data (API, object_ID)) == NULL) {	/* Load in the resampled grid */
 				Return (API->error);
 			}
-			Gout->alloc_mode = L->alloc_mode = GMT_ALLOC_BY_GMT;	/* So we may destroy it */
 			if (GMT_Destroy_Data (API, &Gout) != GMT_OK) {
 				Return (API->error);
 			}

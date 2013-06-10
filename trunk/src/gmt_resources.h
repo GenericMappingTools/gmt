@@ -42,14 +42,12 @@
 
 /* These are the 6 methods for i/o */
 
-enum GMT_enum_methods {
+enum GMT_enum_method {
 	GMT_IS_FILE = 0,	/* Entity is a filename */
 	GMT_IS_STREAM,		/* Entity is an open stream */
 	GMT_IS_FDESC,		/* Entity is an open file descriptor */
 	GMT_IS_DUPLICATE,	/* Entity is a memory location that should be duplicated */
-	GMT_IS_REFERENCE,	/* Entity is a memory location and we just pass the ref (no copying) */
-	GMT_IS_READONLY,	/* As GMT_IS_REFERENCE, but we are not allowed to change the data in any way. */
-	GMT_N_METHODS};		/* Number of methods we recognize */
+	GMT_IS_REFERENCE};	/* Entity is a memory location and we just pass the ref (no copying) */
 
 /* A Grid can come from a GMT grid OR User Matrix, and Data can come from DATASET or via Vectors|Matrix, and Text from TEXTSET or Matrix */
 
@@ -59,7 +57,7 @@ enum GMT_enum_via {
 	GMT_VIA_OUTPUT = 2048};	/* For GMT_Create_Data mode to set dir = output */
 
 /* These are the 5 families of data types, + a coordinate array + 2 help containers for vector and matrix */
-enum GMT_enum_families {
+enum GMT_enum_family {
 	GMT_IS_DATASET = 0,	/* Entity is data table */
 	GMT_IS_TEXTSET,		/* Entity is a Text table */
 	GMT_IS_GRID,		/* Entity is a GMT grid */
@@ -67,11 +65,10 @@ enum GMT_enum_families {
 	GMT_IS_IMAGE,		/* Entity is a 1- or 3-layer unsigned char image */
 	GMT_IS_VECTOR,		/* Entity is user vectors */
 	GMT_IS_MATRIX,		/* Entity is user matrix */
-	GMT_IS_COORD,		/* Entity is a double coordinate array */
-	GMT_N_FAMILIES};
+	GMT_IS_COORD};		/* Entity is a double coordinate array */
 
 /* These are modes for handling comments */
-enum GMT_enum_comments {
+enum GMT_enum_comment {
 	GMT_COMMENT_IS_TEXT	= 0,	/* Comment is a text string */
 	GMT_COMMENT_IS_OPTION	= 1,	/* Comment is a linked list of GMT_OPTION structures */
 	GMT_COMMENT_IS_COMMAND	= 2,	/* Comment replaces header->command */
@@ -141,10 +138,8 @@ enum GMT_enum_dest {
 	GMT_WRITE_TABLE_SEGMENT};	/* Same as 2 but if no filenames we use both tbl and seg with format */
 
 enum GMT_enum_alloc {
-	GMT_ALLOC_BY_GMT = 0,		/* Item was allocated by GMT in current module so GMT_Destroy_Data may free them */
-	GMT_REFERENCE,			/* Item was not allocated in current module so MT_Destroy_Data may not freen them, but we may reallocate size */
-	GMT_READONLY,			/* As GMT_REFERENCE, but no realloc. Consider as read-only data */
-	GMT_ALLOC_BY_OTHERS};		/* Never free as item was allocated outside GMT */
+	GMT_ALLOCATED_EXTERNALLY = 0,	/* Allocated outside of GMT: We cannot reallocate or free this memory */
+	GMT_ALLOCATED_BY_GMT = 1};	/* Allocated by GMT: We may reallocate as needed and free when no longer needed */
 
 enum GMT_enum_shape {
 	GMT_ALLOC_NORMAL = 0,	/* Normal allocation of new dataset based on shape of input dataset */
@@ -162,7 +157,7 @@ enum GMT_enum_out {
 	GMT_WRITE_SKIP};	/* Entirely skip this entity on output (table or segment) */
 
 /* Various directions and modes to call the FFT */
-enum GMT_FFT_modes {
+enum GMT_FFT_mode {
 	GMT_FFT_FWD     = 0U, /* forward Fourier transform */
 	GMT_FFT_INV     = 1U, /* inverse Fourier transform */
 	GMT_FFT_REAL    = 0U, /* real-input FT (currently unsupported) */
@@ -170,7 +165,7 @@ enum GMT_FFT_modes {
 };
 
 /* Various modes to select time in GMT_Message */
-enum GMT_time_modes {
+enum GMT_time_mode {
 	GMT_TIME_NONE    = 0U, /* Do not report time */
 	GMT_TIME_CLOCK   = 1U, /* Report absolute time formatted via FORMAT_TIME_STAMP */
 	GMT_TIME_ELAPSED = 2U, /* Report elapsed time since last time mark reset */
@@ -336,14 +331,13 @@ struct GMT_GRID {	/* To hold a GMT float grid and its header in one container */
 /*============================================================ */
 
 /* GIS geometries, with GMT_IS_NONE as 16 for no such thing */
-enum GMT_enum_geometries {
+enum GMT_enum_geometry {
 	GMT_IS_POINT	= 1,
 	GMT_IS_LINE	= 2,
 	GMT_IS_POLY	= 4,
 	GMT_IS_PLP	= 7,	/* Could be any one of POINT, LINE, POLY */
 	GMT_IS_SURFACE	= 8,
-	GMT_IS_NONE	= 16,	/* Non-geographical items like CPT and text */
-	GMT_N_GEOMETRIES = 6};
+	GMT_IS_NONE	= 16};	/* Non-geographical items like CPT and text */
 
 /* These are two polygon modes */
 enum GMT_enum_pol {
