@@ -818,8 +818,8 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 	/* Determine if some triangles are outside the region and should be removed entirely */
 	
 	if (skip_triangles) {	/* Must check if triangles are outside plot region */
-		for (i = k = 0; i < np; i++) {	/* For all triangles */
-			k2 = k;
+		for (k = i = 0; i < np; i++) {	/* For all triangles */
+			k2 = (unsigned int)k;
 			for (k3 = n_out = 0; k3 < 3; k3++, k++) {
 				if (GMT_cart_outside (GMT, x[ind[k]], y[ind[k]])) n_out++;	/* Count how many vertices are outside */
 			}

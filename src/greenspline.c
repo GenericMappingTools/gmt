@@ -489,7 +489,7 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 	
 	if (Ctrl->S.mode == WESSEL_BECKER_2008) {	/* Check that nodes is an odd integer */
 		double fn = rint (Ctrl->S.value[3]);
-		long n = lrint (fn);
+		int64_t n = lrint (fn);
 		if (!doubleAlmostEqual (Ctrl->S.value[3], fn) || ((n%2) == 0)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Sq option +n<N> modifier: Must be an odd integer\n");
 			n_errors++;
@@ -845,7 +845,7 @@ unsigned int get_L (double x, double p, double err)
 	}
 
 	Lf = MIN (p / sqrt (err), Lf);
-	L_max = lrint (Lf + 10.0);
+	L_max = (unsigned int)lrint (Lf + 10.0);
 	return (L_max);
 }
 
