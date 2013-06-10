@@ -636,6 +636,8 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     `mapproject <mapproject.html>`_ man page for further details and how to view
     ellipsoid and datum parameters.
 
+.. _PROJ_LENGTH_UNIT:
+
 **PROJ_LENGTH_UNIT**
     Sets the unit length. Choose between **c**\ m, **i**\ nch, or
     **p**\ oint [c (or i)]. Note that, in **GMT**, one point is defined

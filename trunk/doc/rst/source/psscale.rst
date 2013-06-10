@@ -9,15 +9,15 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**psscale** **-D**\ *xpos*/*ypos*/*length*/*width*\ [**h**\ ]
+**psscale** **-D**\ *xpos*/*ypos*/*length*/*width*\ [**h**]
 [ **-A**\ [**a**\ \|\ **l**\ \|\ **c**] ]
 [ |SYN_OPT-B| ]
 [ **-C**\ *cpt\_file* ]
-[ **-E**\ [**b**\ \|\ **f**][*length*\ ][\ **+n**\ [*text*\ ]] ]
+[ **-E**\ [**b**\ \|\ **f**][*length*][\ **+n**\ [*text*]] ]
 [ **-I**\ [*max\_intens*\ \|\ *low\_i*/*high\_i*] ]
 [ **-J**\ *parameters* ]
 [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ]
-[ **-L**\ [**i**\ ][*gap*\ ] ] [ **-M** ] [ **-N**\ *dpi* ] [ **-O** ]
+[ **-L**\ [**i**][*gap*] ] [ **-M** ] [ **-N**\ *dpi* ] [ **-O** ]
 [ **-P** ] [ **-Q** ]
 [ |SYN_OPT-R| ]
 [ **-S** ]
@@ -106,7 +106,7 @@ Optional Arguments
 
 .. include:: explain_-K.rst_
 
-**-L**\ [**i**\ ][*gap*\ ]
+**-L**\ [**i**][*gap*]
     Gives equal-sized color rectangles. Default scales rectangles
     according to the z-range in the cpt-file (Also see **-Z**). If set,
     any equal interval annotation set with **-B** will be ignored. If
@@ -115,12 +115,13 @@ Optional Arguments
     the annotation. If **i** is prepended we annotate the interval range
     instead. If **-I** is used then each rectangle will have its
     constant color modified by the specified intensity.
+
 **-M**
-    Force a monochrome graybar using the (television) YIQ
-    transformation.
+    Force a monochrome graybar using the (television) YIQ transformation.
+
 **-N**\ *dpi*
-    Effective dots-per-inch for the rectangular image making up the
-    color scale [600]. 
+    Effective dots-per-inch for rasterization of continuous color scales [600].
+    Ignored for discrete color tables.
 
 .. include:: explain_-O.rst_
 
@@ -140,6 +141,7 @@ Optional Arguments
 
 **-S**
     Do not separate different color intervals with black grid lines.
+
 **-T**\ [**+p**\ *pen*][\ **+g**\ *fill*][\ **+l**\ \|\ **r**\ \|\ **b**\ \|\ **t**\ *off*]
     Place a rectangle as background to the color scale. You must specify
     either a pen outline (with modifier **+p**\ *pen*) or a fill (with

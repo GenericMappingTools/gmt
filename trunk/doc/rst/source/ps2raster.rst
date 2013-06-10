@@ -9,13 +9,14 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**ps2raster** *psfile(s)* [ **-A**\ [**u**\ [*margins*]\|-] ] [
-**-C**\ *gs_option* ] [ **-D**\ *outdir* ] [ **-E**\ *resolution* ] [
-**-G**\ *ghost\_path* ] [ **-L**\ *listfile* ] [ **-P** ] [
-**-Q**\ [**g**\ \|\ **t**][1\|2\|4] ] [ **-S** ] [
-**-Tb**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **F**\ \|\ **j**\ \|\ **g**\ \|\ **G**\ \|\ **m**\ \|\ **t** ]
+**ps2raster** *psfile(s)*
+[ **-A**\ [**u**][*margins*][**-**][**+r**][**+s**\ *width*\ [**u**]/\ *height*\ [**u**]] ]
+[ **-C**\ *gs_option* ] [ **-D**\ *outdir* ] [ **-E**\ *resolution* ]
+[ **-G**\ *ghost_path* ] [ **-L**\ *listfile* ] [ **-P** ]
+[ **-Q**\ [**g**\ \|\ **t**][1\|2\|4] ] [ **-S** ]
+[ **-Tb**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **F**\ \|\ **j**\ \|\ **g**\ \|\ **G**\ \|\ **m**\ \|\ **t** ]
 [ |SYN_OPT-V| ]
-[ **-W**\ [**+g**\ ][\ **+t**\ *docname*][\ **+n**\ *layername*][\ **+o**\ *foldername*][\ **+a**\ *altmode*\ [*alt*\ ]][\ **+l**\ *minLOD/maxLOD*][\ **+f**\ *minfade/maxfade*][\ **+u**\ *URL*] ]
+[ **-W**\ [**+g**][\ **+t**\ *docname*][**+n**\ *layername*][**+o**\ *foldername*][**+a**\ *altmode*\ [*alt*]][**+l**\ *minLOD/maxLOD*][**+f**\ *minfade/maxfade*][**+u**\ *URL*] ]
 
 |No-spaces|
 
@@ -44,16 +45,26 @@ Required Arguments
 Optional Arguments
 ------------------
 
-**-A**\ [**u**\ ][*margins*\ ][**-**]
+**-A**\ [**u**][*margins*][**-**][**+r**][**+s**\ *width*\ [**u**]/\ *height*\ [**u**]]
     Adjust the BoundingBox and HiResBoundingBox to the minimum required
     by the image content. Append **u** to first remove any GMT-produced
     time-stamps. Optionally, append extra margins to the bounding box.
     Give either one (uniform), two (x and y) or four (individual sides)
-    margins; append unit [Default is set by PROJ\_LENGTH\_UNIT].
+    margins; append unit [Default is set by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`].
     Alternatively, use **-A-** to override any automatic setting of
     **-A** by **-W**.
 
-**-C**\ *gs\_option*
+    Use the **-A+s**\ *new_width* to resize the output image to exactly *new_width* units.
+    The default is to use what is set by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`]
+    but you can append a new unit and/or impose different width and height. What happens
+    here is that ghostscript will do the re-interpolation work and the final image will
+    retain the DPI resolution set by **-E**.
+
+    Use the **-A+r** to round the HighRes BoundingBox instead of using the `ceil` function.
+    This is going against Adobe Law but can be useful when creating very small images
+    where the difference of one pixel might matter.
+
+**-C**\ *gs_option*
     Specify a single, custom option that will be passed on to
     GhostScript as is. Repeat to add several options [none].
 
@@ -71,7 +82,7 @@ Optional Arguments
     appropriate extension. Use this option to provide a different name,
     but without extension. Extension is still determined automatically.
 
-**-G**\ *ghost\_path*
+**-G**\ *ghost_path*
     Full path to your GhostScript executable. NOTE: For Unix systems
     this is generally not necessary. Under Windows, the ghostscript path
     is now fetched from the registry. If this fails you can still add
@@ -119,7 +130,7 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-**-W**\ [**+g**\ ][\ **+t**\ *docname*][\ **+n**\ *layername*][\ **+o**\ *foldername*][\ **+a**\ *altmode*\ [*alt*\ ]][\ **+l**\ *minLOD/maxLOD*][\ **+f**\ *minfade/maxfade*][\ **+u**\ *URL*]
+**-W**\ [**+g**][**+t**\ *docname*][**+n**\ *layername*][**+o**\ *foldername*][**+a**\ *altmode*\ [*alt*]][**+l**\ *minLOD/maxLOD*][**+f**\ *minfade/maxfade*][**+u**\ *URL*]
     Write a ESRI type world file suitable to make (e.g) .tif files be
     recognized as geotiff by softwares that know how to do it. Be aware,
     however, that different results are obtained depending on the image
@@ -127,7 +138,7 @@ Optional Arguments
     with the **-B** option is that it creates a frame and very likely
     its annotations. That introduces pixels outside the map data extent,
     and therefore the map extents estimation will be wrong. To avoid
-    this problem use --MAP\_FRAME\_TYPE=inside option which plots all
+    this problem use --MAP_FRAME_TYPE=inside option which plots all
     annotations and ticks inside the image and therefore does not
     compromise the coordinate computations. Pay attention also to the
     cases when the plot has any of the sides with whites only because
@@ -135,10 +146,10 @@ Optional Arguments
     by the GhostScript. In that case you really must use **-B** or use a
     slightly off-white color.
 
-    Together with **-V** it prints on screen the gdal\_translate
+    Together with **-V** it prints on screen the gdal_translate
     (gdal_translate is a command line tool from the GDAL package)
     command that reads the raster + world file and creates a true
-    geotiff file. Use **-W+g** to do a system call to gdal\_translate
+    geotiff file. Use **-W+g** to do a system call to gdal_translate
     and create a geoTIFF image right away. The output file will have a
     .tiff extension.
 
@@ -190,7 +201,7 @@ Optional Arguments
     4413389.889 5282821.824 +proj=merc +lon_0=0 +k=-1 +x_0=0 +y_0=0
     +a=6378137.0 +b=6356752.314245
 
-    where ’merc’ is the keyword for the coordinate conversion; the 2 to
+    where 'merc' is the keyword for the coordinate conversion; the 2 to
     5th elements contain the map limits, 6 to 9th the map limits in
     projected coordinates and the rest of the line has the regular proj4
     string for this projection. 
@@ -242,6 +253,12 @@ rotating it back to normal orientation in case it was in Landscape mode:
 
     gmt ps2raster psfile.ps -A -P -Tg
 
+To create a 5 cm PNG version at 300 dpi of our example_01.ps file
+
+   ::
+
+    gmt ps2raster example_01.ps -A+s5c -Tg
+
 To create a 3 pages PDF file from 3 individual PS files
 
    ::
@@ -284,7 +301,7 @@ Binary Data
 -----------
 
 **GMT** programs can produce binary *PostScript* image data and this is
-determined by the default setting PS\_IMAGE\_FORMAT. Because
+determined by the default setting PS_IMAGE_FORMAT. Because
 **ps2raster** needs to process the input files on a line-by-line basis
 you need to make sure the image format is set to *ascii* and not *bin*.
 
