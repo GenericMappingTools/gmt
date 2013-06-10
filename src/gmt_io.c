@@ -5695,7 +5695,8 @@ struct GMT_TEXTSET * GMT_create_textset (struct GMT_CTRL *GMT, uint64_t n_tables
 			T->segment[seg]->n_alloc = n_rows;
 		}
 	}
-	D->alloc_mode = GMT_ALLOC_BY_GMT;	/* So GMT_* modules can free this memory. */
+	D->alloc_mode = GMT_ALLOC_BY_GMT;		/* Memory can be freed by GMT. */
+	D->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	
 	return (D);
 }
@@ -5892,6 +5893,7 @@ struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *GMT, uint64_t n_tables
 	if (!alloc_only) D->n_segments = D->n_tables * n_segments;
 	if (!alloc_only) D->n_records = D->n_segments * n_rows;
 	for (tbl = 0; tbl < n_tables; tbl++) if ((D->table[tbl] = GMT_create_table (GMT, n_segments, n_columns, n_rows, alloc_only)) == NULL) return (NULL);
+	D->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	D->alloc_mode = GMT_ALLOC_BY_GMT;	/* So GMT_* modules can free this memory. */
 	
 	return (D);
@@ -6386,6 +6388,8 @@ struct GMT_IMAGE *GMT_create_image (struct GMT_CTRL *GMT)
 {	/* Allocates space for a new image container. */
 	struct GMT_IMAGE *I = GMT_memory (GMT, NULL, 1, struct GMT_IMAGE);
 	I->header = GMT_memory (GMT, NULL, 1, struct GMT_GRID_HEADER);
+	I->alloc_mode = GMT_ALLOC_BY_GMT;		/* Memory can be freed by GMT. */
+	I->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	GMT_grd_init (GMT, I->header, NULL, false); /* Set default values */
 	return (I);
 }
@@ -6450,7 +6454,8 @@ struct GMT_VECTOR * GMT_create_vector (struct GMT_CTRL *GMT, uint64_t n_columns)
 	V->data = GMT_memory_aligned (GMT, NULL, n_columns, union GMT_UNIVECTOR);
 	V->type = GMT_memory (GMT, NULL, n_columns, enum GMT_enum_type);
 	V->n_columns = n_columns;
-	V->alloc_mode = GMT_ALLOC_BY_GMT;	/* So GMT_* modules can free this memory. */
+	V->alloc_mode = GMT_ALLOC_BY_GMT;		/* Memory can be freed by GMT. */
+	V->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 
 	return (V);
 }
@@ -6549,7 +6554,8 @@ struct GMT_MATRIX * GMT_create_matrix (struct GMT_CTRL *GMT, uint64_t layers)
 {	/* Allocates space for a new matrix container. */
 	struct GMT_MATRIX *M = NULL;
 	M = GMT_memory (GMT, NULL, 1, struct GMT_MATRIX);
-	M->alloc_mode = GMT_ALLOC_BY_GMT;	/* So GMT_* modules can free this memory. */
+	M->alloc_mode = GMT_ALLOC_BY_GMT;		/* Memory can be freed by GMT. */
+	M->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	M->n_layers = (layers) ? layers : 1;
 	return (M);
 }

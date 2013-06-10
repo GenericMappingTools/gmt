@@ -169,7 +169,7 @@ int GMT_grdreformat (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the grdreformat main code ----------------------------*/
 
-	if ((Grid = GMT_create_grid (API->GMT)) == NULL) Return (API->error);
+	if ((Grid = GMT_create_grid (API->GMT)) == NULL) Return (API->error);	/* Tmp grid only, no i/o is used */
 	GMT_grd_init (GMT, Grid->header, options, false);
 	hmode = (Ctrl->N.active) ? GMT_GRID_NO_HEADER : 0;
 	GMT_err_fail (GMT, GMT_grd_get_format (GMT, Ctrl->IO.file[0], Grid->header, true), Ctrl->IO.file[0]);
@@ -178,6 +178,7 @@ int GMT_grdreformat (void *V_API, int mode, void *args)
 	GMT_err_fail (GMT, GMT_grd_get_format (GMT, Ctrl->IO.file[1], Grid->header, false), Ctrl->IO.file[1]);
 	type[1] = Grid->header->type;
 	strncpy (fname[1], Grid->header->name, GMT_BUFSIZ);
+	GMT_free_grid (GMT, &Grid, true);	/* Free temp grid, Grid is now NULL */
 
 	if (type[1] == GMT_GRID_IS_SD) {
 		/* Golden Surfer format 7 is read-only */
@@ -191,7 +192,6 @@ int GMT_grdreformat (void *V_API, int mode, void *args)
 		GMT_Report (API, GMT_MSG_VERBOSE, "Translating file %s (format %s)\nto file %s (format %s)\n", fname[0], GMT->session.grdformat[type[0]], fname[1], GMT->session.grdformat[type[1]]);
 		if (hmode && GMT->session.grdformat[type[1]][0] != 'c' && GMT->session.grdformat[type[1]][0] != 'n') GMT_Report (API, GMT_MSG_NORMAL, "No grd header will be written\n");
 	}
-	GMT_free_grid (GMT, &Grid, true);
 
 	if ((Grid = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY, NULL, Ctrl->IO.file[0], NULL)) == NULL) {	/* Get header only */
 		Return (API->error);

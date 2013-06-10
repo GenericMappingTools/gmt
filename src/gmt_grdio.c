@@ -1964,7 +1964,8 @@ struct GMT_GRID * GMT_create_grid (struct GMT_CTRL *GMT)
 	G = GMT_memory (GMT, NULL, 1, struct GMT_GRID);
 	G->header = GMT_memory (GMT, NULL, 1, struct GMT_GRID_HEADER);
 	GMT_grd_init (GMT, G->header, NULL, false); /* Set default values */
-	G->alloc_mode = GMT_ALLOC_BY_GMT;			/* So GMT_* modules can free this memory. */
+	G->alloc_mode = GMT_ALLOC_BY_GMT;		/* Memory can be freed by GMT. */
+	G->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	return (G);
 }
 

@@ -2046,7 +2046,8 @@ struct GMT_PALETTE * GMT_create_palette (struct GMT_CTRL *GMT, uint64_t n_colors
 	P = GMT_memory (GMT, NULL, 1, struct GMT_PALETTE);
 	if (n_colors > 0) P->range = GMT_memory (GMT, NULL, n_colors, struct GMT_LUT);
 	P->n_colors = (unsigned int)n_colors;
-	P->alloc_mode = GMT_ALLOC_BY_GMT;	/* So GMT_* modules can free this memory. */
+	P->alloc_mode = GMT_ALLOC_BY_GMT;		/* Memory can be freed by GMT. */
+	P->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	
 	return (P);
 }
