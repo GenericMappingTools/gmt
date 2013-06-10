@@ -883,15 +883,6 @@ int populate_metadata (struct GMT_CTRL *GMT, struct GD_CTRL *Ctrl, char *gdal_fi
 	else
 		Ctrl->GEOGCorners.LL[0] = Ctrl->GEOGCorners.LL[1] = GMT->session.d_NaN;
 
-#if 0
-	/* This chunk should give us info is a GeoTiff file is grid registered but I lack one
-	   example file to test it. The example mentioned in issue http://gmtrac.soest.hawaii.edu/issues/254
-	   (where all this (re)started) not only is bugged as does not carry the AREA_OR_POINT metadata */
-	if (GDALGetMetadataItem(hDriver, "AREA_OR_POINT", NULL) && 
-		!strcmp(GDALGetMetadataItem(hDriver, "AREA_OR_POINT", NULL), "Point"))
-		pixel_reg = 0;
-#endif
-
 	/* ------------------------------------------------------------------------- */
 	/* Fill in the rest of the GMT header values (If ...) */
 	if (raster_count > 0) {
@@ -923,6 +914,15 @@ int populate_metadata (struct GMT_CTRL *GMT, struct GD_CTRL *Ctrl, char *gdal_fi
 			Ctrl->hdr[0] = dfULX;	Ctrl->hdr[1] = dfLRX;
 			Ctrl->hdr[2] = dfLRY;	Ctrl->hdr[3] = dfULY;
 		}
+
+#if 0
+		/* This chunk should give us info is a GeoTiff GRID (not image) file is grid registered but I lack one
+		   example file to test it. The example mentioned in issue http://gmtrac.soest.hawaii.edu/issues/254
+		   (where all this (re)started) not only is bugged as does not carry the AREA_OR_POINT metadata */
+		if (!pixel_reg && GDALGetMetadataItem(hDataset, "AREA_OR_POINT", NULL) && 
+			!strcmp(GDALGetMetadataItem(hDataset, "AREA_OR_POINT", NULL), "Point"))
+			fprintf(stderr, "IT's point\n");
+#endif
 	}
 
 	GDALClose (hDataset);
