@@ -293,28 +293,6 @@ unsigned int GMTAPI_get_alloc_mode (struct GMTAPI_CTRL *API, unsigned int family
 	return (mode);
 }
 
-#if 0
-void GMTAPI_set_alloc_mode (struct GMTAPI_CTRL *API, unsigned int family, void *data)
-{	/* Sets the alloc mode of the container, given the family type, to GMT_REFERENCE,
-	 * as long as the container pointer *data is not NULL */
-	struct GMT_DATASET *D = NULL;
-	struct GMT_GRID *G = NULL;
-	struct GMT_TEXTSET *T = NULL;
-	struct GMT_PALETTE *P = NULL;
-	struct GMT_MATRIX *M = NULL;
-	struct GMT_VECTOR *V = NULL;
-	if (data == NULL) return;
-	switch (family) {
-		case GMT_IS_GRID:	G = data; if (G->alloc_mode == GMT_ALLOCATED_EXTERNALLY) G->alloc_mode = GMT_REFERENCE; break;
-		case GMT_IS_DATASET:	D = data; if (D->alloc_mode == GMT_ALLOCATED_EXTERNALLY) D->alloc_mode = GMT_REFERENCE; break;
-		case GMT_IS_TEXTSET:	T = data; if (T->alloc_mode == GMT_ALLOCATED_EXTERNALLY) T->alloc_mode = GMT_REFERENCE; break;
-		case GMT_IS_CPT:	P = data; if (P->alloc_mode == GMT_ALLOCATED_EXTERNALLY) P->alloc_mode = GMT_REFERENCE; break;
-		case GMT_IS_MATRIX:	M = data; if (M->alloc_mode == GMT_ALLOCATED_EXTERNALLY) M->alloc_mode = GMT_REFERENCE; break;
-		case GMT_IS_VECTOR:	V = data; if (V->alloc_mode == GMT_ALLOCATED_EXTERNALLY) V->alloc_mode = GMT_REFERENCE; break;
-	}
-}
-#endif
-
 double GMTAPI_get_val (struct GMTAPI_CTRL *API, union GMT_UNIVECTOR *u, uint64_t row, unsigned int type)
 {	/* Returns a double value from the <type> column array pointed to by the union pointer *u, at row position row.
  	 * Used in GMTAPI_Import_Dataset and GMTAPI_Import_Grid. */
@@ -488,33 +466,6 @@ int GMTAPI_init_image (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, double *
 	gmt_init_grdheader (API->GMT, I->header, opt, range, inc, registration, mode);
 	return (GMT_OK);
 }
-
-#if 0
-int GMTAPI_init_matrix (struct GMTAPI_CTRL *API, double *range, double *inc, int registration, struct GMT_MATRIX *M)
-{
-	double off = 0.5 * registration;
-	int dims = (M->n_layers > 1) ? 3 : 2;
-	GMT_memcpy (M->range, range, 2 * dims, double);
-	M->n_columns = GMT_get_n (API->GMT, range[XLO], range[XHI], inc[GMT_X], off);
-	M->n_rows = GMT_get_n (API->GMT, range[YLO], range[YHI], inc[GMT_Y], off);
-	return (GMT_OK);
-}
-
-int GMTAPI_init_vector (struct GMTAPI_CTRL *API, double *range, double *inc, int registration, struct GMT_VECTOR *V)
-{
-	if (range == NULL && inc == NULL) {	/* Not an equidistant vector arrangement, use dim */
-		double dummy_range[2] = {0.0, 0.0};	/* Flag vector as such */
-		V->n_rows = registration;	/* If so, n_rows is passed via registration */
-		GMT_memcpy (V->range, dummy_range, 2, double);
-	}
-	else {	/* Equidistant vector */
-		double off = 0.5 * registration;
-		V->n_rows = GMT_get_n (API->GMT, range[XLO], range[XHI], inc[GMT_X], off);
-		GMT_memcpy (V->range, range, 2, double);
-	}
-	return (GMT_OK);
-}
-#endif
 
 int GMTAPI_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *range, double *inc, int registration, struct GMT_MATRIX *M)
 {
@@ -2867,38 +2818,6 @@ int GMTAPI_destroy_data_ptr (struct GMTAPI_CTRL *API, unsigned int family, void 
 	return (GMT_OK);	/* Null pointer */
 }
 
-#if 0
-void GMTAPI_update_allocmode (struct GMTAPI_CTRL *API, int level)
-{
-	/* Ensure that if any objects are flagged with alloc_mode = GMT_ALLOCATED_EXTERNALLY
-	 * then objects with duplicate container pointers must have their alloc_mode
-	 * reset to GMT_ALLOCATED_EXTERNALLY as well.  This can happen when an external API wishes
-	 * to read a file into memory, and the "writing" to memory is set to NO_CLOBBER,
-	 * but the "write" function will see this as a GMT_REFERENCE initially. */
-	unsigned int i, j;
-	
-	if (level == GMT_NOTSET) {	/* Time to change all GMT_ALLOCATED_EXTERNALLY to GMT_REFERENCE so they can be destroyed */
-		for (i = 0; i < API->n_objects; i++) {
-			if (API->object[i]->alloc_mode != GMT_ALLOCATED_EXTERNALLY) continue;	/* Not set to clobber so nothing to do */
-			API->object[i]->alloc_mode = GMT_REFERENCE;
-			GMTAPI_set_alloc_mode (API, API->object[i]->family, API->object[i]->data);
-		}
-	}
-	else {
-		for (i = 0; i < API->n_objects; i++) {
-			if (API->object[i]->alloc_mode != GMT_ALLOCATED_EXTERNALLY) continue;	/* Not set to clobber so nothing to do */
-			for (j = 0; j < API->n_objects; j++) {
-				if (j == i) continue;	/* No self-serving stuff, please */
-				if (API->object[j]->alloc_mode == GMT_REFERENCE && API->object[j]->data == API->object[i]->data) {	/* Same container */
-					API->object[j]->alloc_mode = GMT_ALLOCATED_EXTERNALLY;
-					GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_update_allocmode: Objects %u and %u share same container and has alloc_mode == GMT_ALLOCATED_EXTERNALLY\n", i, j);
-				}
-			}
-		}
-	}
-}
-#endif
-
 void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level)
 {
 	/* GMT_Garbage_Collection frees all registered memory associated with the current module level,
@@ -2914,8 +2833,6 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level)
 	 * the API->object array, reducing API->n_objects by one we must
 	 * be aware that API->n_objects changes in the loop below, hence the while loop */
 	
-	// GMTAPI_update_allocmode (API, level);	/* See if any alloc_modes need updating */
-
 	i = n_free = 0;
 	if (level != GMT_NOTSET) u_level = level;
 	while (i < API->n_objects) {	/* While there are more objects to consider */
@@ -3831,17 +3748,6 @@ int GMT_Write_Data (void *V_API, unsigned int family, unsigned int method, unsig
 				API->object[in_item]->no_longer_owner = true;	/* Since we have passed the content onto an output object */
 			}
 		}
-		
-#if 0		/* This is unresolved but seems obsolete now */
-		if ((out_ID = GMTAPI_Memory_Registered (API, family, GMT_OUT, output)) != GMT_NOTSET) {	/* Output is a memory resource */
-			int in_ID, item = GMTAPI_Get_Object (API, GMT_NOTSET, data);
-			if (item == GMT_NOTSET) {	/* Register this resource since it otherwise wont get destroyed */
-				if ((in_ID = GMT_Register_IO (API, family, GMT_IS_REFERENCE, geometry, GMT_IN, wesn, data)) == GMT_NOTSET) return_error (API, API->error);
-				if ((item = GMTAPI_Validate_ID (API, family, in_ID, GMT_IN)) == GMT_NOTSET) return_error (API, API->error);
-				API->object[item]->data = data;	/* Hook the resources to be written to memory here so it can be destroyed later */
-			}
-		}
-#endif
 		else if ((out_ID = GMT_Register_IO (API, family, method, geometry, GMT_OUT, wesn, output)) == GMT_NOTSET) return_error (API, API->error);
 	}
 	else if (output == NULL && geometry) {	/* Case 2: Save to stdout.  Register stdout first. */
@@ -4949,7 +4855,7 @@ struct GMT_FFT_WAVENUMBER * GMTAPI_FFT_init_1d (struct GMTAPI_CTRL *API, struct 
 {
 	struct GMT_FFT_WAVENUMBER *K = NULL;
 	
-#if 0
+#if 0	/* Have not finalized 1-D FFT usage in general */
 	unsigned n_cols = 1;
 	struct GMT_FFT_INFO *F = gmt_get_fftinfo_ptr (v_info);
 	/* Determine number of columns in [t] x [y] input */
