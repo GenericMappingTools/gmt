@@ -326,7 +326,7 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 			}
 			strncpy (B[n].file, buffer, GMT_TEXT_LEN256);	/* Use the temporary file instead */
 			B[n].delete = true;		/* Flag to delete this temporary file when done */
-			if (GMT_Destroy_Data (GMT->parent, B[n].G)) return (-1);
+			if (GMT_Destroy_Data (GMT->parent, &B[n].G)) return (-1);
 			if ((B[n].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[n].file, NULL)) == NULL) {
 				return (-1);
 			}
