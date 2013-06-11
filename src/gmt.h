@@ -21,6 +21,7 @@
  * The single include file for users who wish to develop applications
  * that require building blocks from the GMT Application Program Interface
  * library (the GMT API), which also depends on the GMT Core library.
+ * For documentation, see the GMT API docs.
  *
  * Author: 	Paul Wessel
  * Date:	10-JUN-2013
@@ -92,7 +93,7 @@ EXTERN_MSC int GMT_Encode_ID		(void *API, char *string, int object_ID);
 EXTERN_MSC int GMT_Get_Row		(void *API, int rec_no, struct GMT_GRID *G, float *row);
 EXTERN_MSC int GMT_Put_Row		(void *API, int rec_no, struct GMT_GRID *G, float *row);
 EXTERN_MSC int GMT_Set_Comment		(void *API, unsigned int family, unsigned int mode, void *arg, void *data);
-EXTERN_MSC int GMT_Get_ID (void *V_API, unsigned int family, unsigned int direction, void *resource);
+EXTERN_MSC int GMT_Get_ID 		(void *V_API, unsigned int family, unsigned int direction, void *resource);
 
 /* 2 functions to relate (row,col) to a 1-D index and to precompute equidistant coordinates for grids and images */
 
