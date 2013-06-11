@@ -750,161 +750,159 @@ correctly with a warning under compatibility mode:
 #. `x2sys/x2sys_datalist <supplements/x2sys/x2sys_datalist.html>`_:
    The unit **m** is deprecated; use **M** for statute miles.
 
-+------------------------------------+---------------------------------------------+
-| **Old Name**                       | **New Name**                                |
-+====================================+=============================================+
-| **INPUT_CLOCK_FORMAT**             | **FORMAT_CLOCK_IN**                         |
-+------------------------------------+---------------------------------------------+
-| **INPUT\_DATE\_FORMAT**            | **FORMAT\_DATE\_IN**                        |
-+------------------------------------+---------------------------------------------+
-| **OUTPUT\_CLOCK\_FORMAT**          | **FORMAT\_CLOCK\_OUT**                      |
-+------------------------------------+---------------------------------------------+
-| **OUTPUT\_DATE\_FORMAT**           | **FORMAT\_DATE\_OUT**                       |
-+------------------------------------+---------------------------------------------+
-| **OUTPUT\_CLOCK\_FORMAT**          | **FORMAT\_CLOCK\_OUT**                      |
-+------------------------------------+---------------------------------------------+
-| **OUTPUT\_DEGREE\_FORMAT**         | **FORMAT\_GEO\_OUT**                        |
-+------------------------------------+---------------------------------------------+
-| **PLOT\_CLOCK\_FORMAT**            | **FORMAT\_CLOCK\_MAP**                      |
-+------------------------------------+---------------------------------------------+
-| **PLOT\_DATE\_FORMAT**             | **FORMAT\_DATE\_MAP**                       |
-+------------------------------------+---------------------------------------------+
-| **PLOT\_DEGREE\_FORMAT**           | **FORMAT\_GEO\_MAP**                        |
-+------------------------------------+---------------------------------------------+
-| **TIME\_FORMAT\_PRIMARY**          | **FORMAT\_TIME\_PRIMARY\_MAP**              |
-+------------------------------------+---------------------------------------------+
-| **TIME\_FORMAT\_SECONDARY**        | **FORMAT\_TIME\_SECONDARY\_MAP**            |
-+------------------------------------+---------------------------------------------+
-| **D\_FORMAT**                      | **FORMAT\_FLOAT\_OUT**                      |
-+------------------------------------+---------------------------------------------+
-| **UNIX\_TIME\_FORMAT**             | **FORMAT\_TIME\_STAMP**                     |
-+------------------------------------+---------------------------------------------+
-| **ANNOT\_FONT\_PRIMARY**           | **FONT\_ANNOT\_PRIMARY**                    |
-+------------------------------------+---------------------------------------------+
-| **ANNOT\_FONT\_SECONDARY**         | **FONT\_ANNOT\_SECONDARY**                  |
-+------------------------------------+---------------------------------------------+
-| **HEADER\_FONT**                   | **FONT\_TITLE**                             |
-+------------------------------------+---------------------------------------------+
-| **LABEL\_FONT**                    | **FONT\_LABEL**                             |
-+------------------------------------+---------------------------------------------+
-| **ANNOT\_FONT\_SIZE\_PRIMARY**     | **FONT\_ANNOT\_PRIMARY**                    |
-+------------------------------------+---------------------------------------------+
-| **ANNOT\_FONT\_SIZE\_SECONDARY**   | **FONT\_ANNOT\_SECONDARY**                  |
-+------------------------------------+---------------------------------------------+
-| **HEADER\_FONT\_SIZE**             | **FONT\_TITLE**                             |
-+------------------------------------+---------------------------------------------+
-| **ANNOT\_OFFSET\_PRIMARY**         | **MAP\_ANNOT\_OFFSET\_PRIMARY**             |
-+------------------------------------+---------------------------------------------+
-| **ANNOT\_OFFSET\_SECONDARY**       | **MAP\_ANNOT\_OFFSET\_SECONDARY**           |
-+------------------------------------+---------------------------------------------+
-| **OBLIQUE\_ANNOTATION**            | **MAP\_ANNOT\_OBLIQUE**                     |
-+------------------------------------+---------------------------------------------+
-| **ANNOT\_MIN\_ANGLE**              | **MAP\_ANNOT\_MIN\_SPACING**                |
-+------------------------------------+---------------------------------------------+
-| **Y\_AXIS\_TYPE**                  | **MAP\_ANNOT\_ORTHO**                       |
-+------------------------------------+---------------------------------------------+
-| **DEGREE\_SYMBOL**                 | **MAP\_DEGREE\_SYMBOL**                     |
-+------------------------------------+---------------------------------------------+
-| **BASEMAP\_AXES**                  | **MAP\_FRAME\_AXES**                        |
-+------------------------------------+---------------------------------------------+
-| **BASEMAP\_FRAME\_RGB**            | **MAP\_DEFAULT\_PEN**                       |
-+------------------------------------+---------------------------------------------+
-| **FRAME\_PEN**                     | **MAP\_FRAME\_PEN**                         |
-+------------------------------------+---------------------------------------------+
-| **BASEMAP\_TYPE**                  | **MAP\_FRAME\_TYPE**                        |
-+------------------------------------+---------------------------------------------+
-| **FRAME\_WIDTH**                   | **MAP\_FRAME\_WIDTH**                       |
-+------------------------------------+---------------------------------------------+
-| **GRID\_CROSS\_SIZE\_PRIMARY**     | **MAP\_GRID\_CROSS\_SIZE\_PRIMARY**         |
-+------------------------------------+---------------------------------------------+
-| **GRID\_CROSS\_SIZE\_SECONDARY**   | **MAP\_GRID\_CROSS\_SIZE\_SECONDARY**       |
-+------------------------------------+---------------------------------------------+
-| **GRID\_PEN\_PRIMARY**             | **MAP\_GRID\_PEN\_PRIMARY**                 |
-+------------------------------------+---------------------------------------------+
-| **GRID\_PEN\_SECONDARY**           | **MAP\_GRID\_PEN\_SECONDARY**               |
-+------------------------------------+---------------------------------------------+
-| **LABEL\_OFFSET**                  | **MAP\_LABEL\_OFFSET**                      |
-+------------------------------------+---------------------------------------------+
-| **LINE\_STEP**                     | **MAP\_LINE\_STEP**                         |
-+------------------------------------+---------------------------------------------+
-| **UNIX\_TIME**                     | **MAP\_LOGO**                               |
-+------------------------------------+---------------------------------------------+
-| **UNIX\_TIME\_POS**                | **MAP\_LOGO\_POS**                          |
-+------------------------------------+---------------------------------------------+
-| **X\_ORIGIN**                      | **MAP\_ORIGIN\_X**                          |
-+------------------------------------+---------------------------------------------+
-| **Y\_ORIGIN**                      | **MAP\_ORIGIN\_Y**                          |
-+------------------------------------+---------------------------------------------+
-| **POLAR\_CAP**                     | **MAP\_POLAR\_CAP**                         |
-+------------------------------------+---------------------------------------------+
-| **TICK\_LENGTH**                   | **MAP\_TICK\_LENGTH\_PRIMARY\|SECONDARY**   |
-+------------------------------------+---------------------------------------------+
-| **TICK\_PEN**                      | **MAP\_TICK\_PEN\_PRIMARY\|SECONDARY**      |
-+------------------------------------+---------------------------------------------+
++---------------------------------+-----------------------------------------+
+| **Old Name**                    | **New Name**                            |
++=================================+=========================================+
+| **INPUT_CLOCK_FORMAT**          | **FORMAT_CLOCK_IN**                     |
++---------------------------------+-----------------------------------------+
+| **INPUT_DATE_FORMAT**           | **FORMAT_DATE_IN**                      |
++---------------------------------+-----------------------------------------+
+| **OUTPUT_CLOCK_FORMAT**         | **FORMAT_CLOCK_OUT**                    |
++---------------------------------+-----------------------------------------+
+| **OUTPUT_DATE_FORMAT**          | **FORMAT_DATE_OUT**                     |
++---------------------------------+-----------------------------------------+
+| **OUTPUT_CLOCK_FORMAT**         | **FORMAT_CLOCK_OUT**                    |
++---------------------------------+-----------------------------------------+
+| **OUTPUT_DEGREE_FORMAT**        | **FORMAT_GEO_OUT**                      |
++---------------------------------+-----------------------------------------+
+| **PLOT_CLOCK_FORMAT**           | **FORMAT_CLOCK_MAP**                    |
++---------------------------------+-----------------------------------------+
+| **PLOT_DATE_FORMAT**            | **FORMAT_DATE_MAP**                     |
++---------------------------------+-----------------------------------------+
+| **PLOT_DEGREE_FORMAT**          | **FORMAT_GEO_MAP**                      |
++---------------------------------+-----------------------------------------+
+| **TIME_FORMAT_PRIMARY**         | **FORMAT_TIME_PRIMARY_MAP**             |
++---------------------------------+-----------------------------------------+
+| **TIME_FORMAT_SECONDARY**       | **FORMAT_TIME_SECONDARY_MAP**           |
++---------------------------------+-----------------------------------------+
+| **D_FORMAT**                    | **FORMAT_FLOAT_OUT**                    |
++---------------------------------+-----------------------------------------+
+| **UNIX_TIME_FORMAT**            | **FORMAT_TIME_STAMP**                   |
++---------------------------------+-----------------------------------------+
+| **ANNOT_FONT_PRIMARY**          | **FONT_ANNOT_PRIMARY**                  |
++---------------------------------+-----------------------------------------+
+| **ANNOT_FONT_SECONDARY**        | **FONT_ANNOT_SECONDARY**                |
++---------------------------------+-----------------------------------------+
+| **HEADER_FONT**                 | **FONT_TITLE**                          |
++---------------------------------+-----------------------------------------+
+| **LABEL_FONT**                  | **FONT_LABEL**                          |
++---------------------------------+-----------------------------------------+
+| **ANNOT_FONT_SIZE_PRIMARY**     | **FONT_ANNOT_PRIMARY**                  |
++---------------------------------+-----------------------------------------+
+| **ANNOT_FONT_SIZE_SECONDARY**   | **FONT_ANNOT_SECONDARY**                |
++---------------------------------+-----------------------------------------+
+| **HEADER_FONT_SIZE**            | **FONT_TITLE**                          |
++---------------------------------+-----------------------------------------+
+| **ANNOT_OFFSET_PRIMARY**        | **MAP_ANNOT_OFFSET_PRIMARY**            |
++---------------------------------+-----------------------------------------+
+| **ANNOT_OFFSET_SECONDARY**      | **MAP_ANNOT_OFFSET_SECONDARY**          |
++---------------------------------+-----------------------------------------+
+| **OBLIQUE_ANNOTATION**          | **MAP_ANNOT_OBLIQUE**                   |
++---------------------------------+-----------------------------------------+
+| **ANNOT_MIN_ANGLE**             | **MAP_ANNOT_MIN_SPACING**               |
++---------------------------------+-----------------------------------------+
+| **Y_AXIS_TYPE**                 | **MAP_ANNOT_ORTHO**                     |
++---------------------------------+-----------------------------------------+
+| **DEGREE_SYMBOL**               | **MAP_DEGREE_SYMBOL**                   |
++---------------------------------+-----------------------------------------+
+| **BASEMAP_AXES**                | **MAP_FRAME_AXES**                      |
++---------------------------------+-----------------------------------------+
+| **BASEMAP_FRAME_RGB**           | **MAP_DEFAULT_PEN**                     |
++---------------------------------+-----------------------------------------+
+| **FRAME_PEN**                   | **MAP_FRAME_PEN**                       |
++---------------------------------+-----------------------------------------+
+| **BASEMAP_TYPE**                | **MAP_FRAME_TYPE**                      |
++---------------------------------+-----------------------------------------+
+| **FRAME_WIDTH**                 | **MAP_FRAME_WIDTH**                     |
++---------------------------------+-----------------------------------------+
+| **GRID_CROSS_SIZE_PRIMARY**     | **MAP_GRID_CROSS_SIZE_PRIMARY**         |
++---------------------------------+-----------------------------------------+
+| **GRID_CROSS_SIZE_SECONDARY**   | **MAP_GRID_CROSS_SIZE_SECONDARY**       |
++---------------------------------+-----------------------------------------+
+| **GRID_PEN_PRIMARY**            | **MAP_GRID_PEN_PRIMARY**                |
++---------------------------------+-----------------------------------------+
+| **GRID_PEN_SECONDARY**          | **MAP_GRID_PEN_SECONDARY**              |
++---------------------------------+-----------------------------------------+
+| **LABEL_OFFSET**                | **MAP_LABEL_OFFSET**                    |
++---------------------------------+-----------------------------------------+
+| **LINE_STEP**                   | **MAP_LINE_STEP**                       |
++---------------------------------+-----------------------------------------+
+| **UNIX_TIME**                   | **MAP_LOGO**                            |
++---------------------------------+-----------------------------------------+
+| **UNIX_TIME_POS**               | **MAP_LOGO_POS**                        |
++---------------------------------+-----------------------------------------+
+| **X_ORIGIN**                    | **MAP_ORIGIN_X**                        |
++---------------------------------+-----------------------------------------+
+| **Y_ORIGIN**                    | **MAP_ORIGIN_Y**                        |
++---------------------------------+-----------------------------------------+
+| **POLAR_CAP**                   | **MAP_POLAR_CAP**                       |
++---------------------------------+-----------------------------------------+
+| **TICK_LENGTH**                 | **MAP_TICK_LENGTH_PRIMARY\|SECONDARY**  |
++---------------------------------+-----------------------------------------+
+| **TICK_PEN**                    | **MAP_TICK_PEN_PRIMARY\|SECONDARY**     |
++---------------------------------+-----------------------------------------+
 
 [tbl:obsoletedefs1]
 
-[H]
-
-+----------------------------+-------------------------------+
-| **Old Name**               | **New Name**                  |
-+============================+===============================+
-| **HEADER\_OFFSET**         | **MAP\_TITLE\_OFFSET**        |
-+----------------------------+-------------------------------+
-| **VECTOR\_SHAPE**          | **MAP\_VECTOR\_SHAPE**        |
-+----------------------------+-------------------------------+
-| **HSV\_MIN\_SATURATION**   | **COLOR\_HSV\_MIN\_S**        |
-+----------------------------+-------------------------------+
-| **HSV\_MAX\_SATURATION**   | **COLOR\_HSV\_MAX\_S**        |
-+----------------------------+-------------------------------+
-| **HSV\_MIN\_VALUE**        | **COLOR\_HSV\_MIN\_V**        |
-+----------------------------+-------------------------------+
-| **HSV\_MAX\_VALUE**        | **COLOR\_HSV\_MAX\_V**        |
-+----------------------------+-------------------------------+
-| **CHAR\_ENCODING**         | **PS\_CHAR\_ENCODING**        |
-+----------------------------+-------------------------------+
-| **PS\_COLOR**              | **COLOR\_HSV\_MAX\_V**        |
-+----------------------------+-------------------------------+
-| **PAGE\_COLOR**            | **PS\_PAGE\_COLOR**           |
-+----------------------------+-------------------------------+
-| **PAGE\_ORIENTATION**      | **PS\_PAGE\_ORIENTATION**     |
-+----------------------------+-------------------------------+
-| **PAPER\_MEDIA**           | **PS\_MEDIA**                 |
-+----------------------------+-------------------------------+
-| **GLOBAL\_X\_SCALE**       | **PS\_SCALE\_X**              |
-+----------------------------+-------------------------------+
-| **GLOBAL\_Y\_SCALE**       | **PS\_SCALE\_X**              |
-+----------------------------+-------------------------------+
-| **FIELD\_DELIMITER**       | **IO\_COL\_SEPARATOR**        |
-+----------------------------+-------------------------------+
-| **GRIDFILE\_FORMAT**       | **IO\_GRIDFILE\_FORMAT**      |
-+----------------------------+-------------------------------+
-| **GRIDFILE\_SHORTHAND**    | **IO\_GRIDFILE\_SHORTHAND**   |
-+----------------------------+-------------------------------+
-| **NAN\_RECORDS**           | **IO\_NAN\_RECORDS**          |
-+----------------------------+-------------------------------+
-| **XY\_TOGGLE**             | **IO\_LONLAT\_TOGGLE**        |
-+----------------------------+-------------------------------+
-| **ELLIPSOID**              | **PROJ\_ELLIPSOID**           |
-+----------------------------+-------------------------------+
-| **MEASURE\_UNIT**          | **PROJ\_LENGTH\_UNIT**        |
-+----------------------------+-------------------------------+
-| **MAP\_SCALE\_FACTOR**     | **PROJ\_SCALE\_FACTOR**       |
-+----------------------------+-------------------------------+
-| **HISTORY**                | **GMT\_HISTORY**              |
-+----------------------------+-------------------------------+
-| **INTERPOLANT**            | **GMT\_INTERPOLANT**          |
-+----------------------------+-------------------------------+
-| **VERBOSE**                | **GMT\_VERBOSE**              |
-+----------------------------+-------------------------------+
-| **INTERPOLANT**            | **GMT\_INTERPOLANT**          |
-+----------------------------+-------------------------------+
-| **WANT\_LEAP\_SECONDS**    | **TIME\_LEAP\_SECONDS**       |
-+----------------------------+-------------------------------+
-| **Y2K\_OFFSET\_YEAR**      | **TIME\_Y2K\_OFFSET\_YEAR**   |
-+----------------------------+-------------------------------+
-| **INTERPOLANT**            | **GMT\_INTERPOLANT**          |
-+----------------------------+-------------------------------+
++--------------------------+----------------------------+
+| **Old Name**             | **New Name**               |
++==========================+============================+
+| **HEADER_OFFSET**        | **MAP_TITLE_OFFSET**       |
++--------------------------+----------------------------+
+| **VECTOR_SHAPE**         | **MAP_VECTOR_SHAPE**       |
++--------------------------+----------------------------+
+| **HSV_MIN_SATURATION**   | **COLOR_HSV_MIN_S**        |
++--------------------------+----------------------------+
+| **HSV_MAX_SATURATION**   | **COLOR_HSV_MAX_S**        |
++--------------------------+----------------------------+
+| **HSV_MIN_VALUE**        | **COLOR_HSV_MIN_V**        |
++--------------------------+----------------------------+
+| **HSV_MAX_VALUE**        | **COLOR_HSV_MAX_V**        |
++--------------------------+----------------------------+
+| **CHAR_ENCODING**        | **PS_CHAR_ENCODING**       |
++--------------------------+----------------------------+
+| **PS_COLOR**             | **COLOR_HSV_MAX_V**        |
++--------------------------+----------------------------+
+| **PAGE_COLOR**           | **PS_PAGE_COLOR**          |
++--------------------------+----------------------------+
+| **PAGE_ORIENTATION**     | **PS_PAGE_ORIENTATION**    |
++--------------------------+----------------------------+
+| **PAPER_MEDIA**          | **PS_MEDIA**               |
++--------------------------+----------------------------+
+| **GLOBAL\_X_SCALE**      | **PS_SCALE_X**             |
++--------------------------+----------------------------+
+| **GLOBAL_Y_SCALE**       | **PS_SCALE_X**             |
++--------------------------+----------------------------+
+| **FIELD_DELIMITER**      | **IO_COL_SEPARATOR**       |
++--------------------------+----------------------------+
+| **GRIDFILE_FORMAT**      | **IO_GRIDFILE_FORMAT**     |
++--------------------------+----------------------------+
+| **GRIDFILE_SHORTHAND**   | **IO_GRIDFILE_SHORTHAND**  |
++--------------------------+----------------------------+
+| **NAN_RECORDS**          | **IO_NAN_RECORDS**         |
++--------------------------+----------------------------+
+| **XY_TOGGLE**            | **IO_LONLAT_TOGGLE**       |
++--------------------------+----------------------------+
+| **ELLIPSOID**            | **PROJ_ELLIPSOID**         |
++--------------------------+----------------------------+
+| **MEASURE_UNIT**         | **PROJ_LENGTH_UNIT**       |
++--------------------------+----------------------------+
+| **MAP_SCALE_FACTOR**     | **PROJ_SCALE_FACTOR**      |
++--------------------------+----------------------------+
+| **HISTORY**              | **GMT_HISTORY**            |
++--------------------------+----------------------------+
+| **INTERPOLANT**          | **GMT_INTERPOLANT**        |
++--------------------------+----------------------------+
+| **VERBOSE**              | **GMT_VERBOSE**            |
++--------------------------+----------------------------+
+| **INTERPOLANT**          | **GMT_INTERPOLANT**        |
++--------------------------+----------------------------+
+| **WANT_LEAP_SECONDS**    | **TIME_LEAP_SECONDS**      |
++--------------------------+----------------------------+
+| **Y2K_OFFSET_YEAR**      | **TIME_Y2K_OFFSET_YEAR**   |
++--------------------------+----------------------------+
+| **INTERPOLANT**          | **GMT_INTERPOLANT**        |
++--------------------------+----------------------------+
 
 [tbl:obsoletedefs2]
 
@@ -1120,7 +1118,7 @@ References
 
 #. Wessel, P., and W. H. F. Smith, New version of the Generic Mapping
    Tools released, *EOS electronic supplement*,
-   http://www.agu.org/eos\_elec/95154e.html, 1995b.
+   http://www.agu.org/eos_elec/95154e.html, 1995b.
 
 #. Wessel, P., and W. H. F. Smith, Free software helps map and display
    data, *EOS trans. AGU*, 72, 441 & 445-446, 1991.
@@ -1847,7 +1845,7 @@ two ways to ensure that *GMT* understands which unit you intend to use:
    **-X**\ 4\ **c** means the length being passed to the **-X** switch
    is 4 cm.
 
-#. Set the parameter **PROJ\_LENGTH\_UNIT** to the desired unit. Then,
+#. Set the parameter **PROJ_LENGTH_UNIT** to the desired unit. Then,
    all dimensions without explicit unit will be interpreted accordingly.
 
 The latter method is less secure as other users may have a different
@@ -2813,7 +2811,7 @@ segmentation. Typically, data segments are separated by multiple segment
 header records (see Appendix `B. GMT file formats`_). However, if key data columns contain a
 NaN we may also use that information to break lines into multiple
 segments. This behavior is modified by the parameter
-**IO\_NAN\_RECORDS** which by default is set to *skip*, meaning such
+**IO_NAN_RECORDS** which by default is set to *skip*, meaning such
 records are considered bad and simply skipped. If you wish such records
 to indicate a segment boundary then set this parameter to *pass*.
 Finally, you may wish to indicate gaps based on the data values
@@ -2830,18 +2828,18 @@ miles. For programs that map data to map coordinates you can optionally
 specify these criteria to apply to the projected coordinates (by using
 upper-case **-gX**, **-gY** or **-gD**). In that case, choose from
 **c**\ entimeter, **i**\ nch or **p**\ oint [Default unit is controlled
-by **PROJ\_LENGTH\_UNIT**]. Note: For **-gx** or **-gy** with time data
-the unit is instead controlled by **TIME\_UNIT**.
+by **PROJ_LENGTH_UNIT**]. Note: For **-gx** or **-gy** with time data
+the unit is instead controlled by **TIME_UNIT**.
 
 Header data records: The **-h** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 [sec:header] The **-h**\ [**i**\ \|\ **o**][*n_recs*] option
-lets *GMT* know that input file(s) have *n\_recs* header records [0]. If
+lets *GMT* know that input file(s) have *n_recs* header records [0]. If
 there are more than one header record you must specify the number after
 the **-h** option, e.g., **-h**\ 4. Note that blank lines and records
 that start with the character # are automatically considered header
-records and skipped. Thus, *n\_recs* refers to general text lines that
+records and skipped. Thus, *n_recs* refers to general text lines that
 do *not* start with # and thus must specifically be skipped in order for
 the programs to function properly. The default number of such header
 records if **-h** is used is one of the many parameters in the ``gmt.conf`` file
@@ -3168,14 +3166,14 @@ data like UTM coordinates.
 
 Because of the widespread use of incompatible and ambiguous formats, the
 processing of input date components is guided by the template
-**FORMAT\_DATE\_IN** in your ``gmt.conf`` file; it is by default set to *yyyy-mm-dd*.
+**FORMAT_DATE_IN** in your ``gmt.conf`` file; it is by default set to *yyyy-mm-dd*.
 Y2K-challenged input data such as 29/05/89 can be processed by setting
-**FORMAT\_DATE\_IN** to dd/mm/yy. A complete description of possible
+**FORMAT_DATE_IN** to dd/mm/yy. A complete description of possible
 formats is given in the `gmt.conf <gmt.conf.html>`_ man
 page. The *clock* string is more standardized but issues like 12- or
 24-hour clocks complicate matters as well as the presence or absence of
 delimiters between fields. Thus, the processing of input clock
-coordinates is guided by the template **FORMAT\_CLOCK\_IN** which
+coordinates is guided by the template **FORMAT_CLOCK_IN** which
 defaults to *hh:mm:ss.xxx*.
 
 *GMT* programs that require a map projection argument will implicitly
@@ -3314,7 +3312,7 @@ option argument, with commas separating the given attributes, e.g.,
     0.1 cm that alternates between long dashes (4 points), an 8 point
     gap, then a 5 point dash, then another 8 point gap, with pattern
     offset by 2 points from the origin, specify
-    **-W**\ 0.1c,yellow,4\_8\_5\_8:2p. Just as with pen width, the
+    **-W**\ 0.1c,yellow,4_8_5_8:2p. Just as with pen width, the
     default style units are points, but can also be explicitly specified
     in cm, inch, or points (see *width* discussion above).
 
@@ -3340,13 +3338,13 @@ suitable for, say, `psxy <psxy.html>`_.
 
 In addition to these pen settings there are several
 *PostScript* settings that can affect the appearance of lines. These are
-controlled via the *GMT* defaults settings **PS\_LINE\_CAP**,
-**PS\_LINE\_JOIN**, and **PS\_MITER\_LIMIT**. They determine how a line
+controlled via the *GMT* defaults settings **PS_LINE_CAP**,
+**PS_LINE_JOIN**, and **PS_MITER_LIMIT**. They determine how a line
 segment ending is rendered, be it at the termination of a solid line or
 at the end of all dashed line segments making up a line, and how a
 straight lines of finite thickness should behave when joined at a common
 point. By default, line segments have rectangular ends, but this can
-change to give rounded ends. When **PS\_LINE\_CAP** is set to round the
+change to give rounded ends. When **PS_LINE_CAP** is set to round the
 a segment length of zero will appear as a circle. This can be used to
 created circular dotted lines, and by manipulating the phase shift in
 the *style* attribute and plotting the same line twice one can even
@@ -3473,7 +3471,7 @@ layer-by-layer basis using the **-t** option. However, we may also set
 transparency as an attribute of stroke or fill (including for fonts)
 settings. Here, transparency is requested by appending @\ *transparency*
 to colors or pattern fills. The transparency *mode* can be changed by
-using the *GMT* default parameter **PS\_TRANSPARENCY**; the default is
+using the *GMT* default parameter **PS_TRANSPARENCY**; the default is
 Normal but you can choose among Color, ColorBurn, ColorDodge, Darken,
 Difference, Exclusion, HardLight, Hue, Lighten, Luminosity, Multiply,
 Normal, Overlay, Saturation, SoftLight, and Screen. For more
@@ -4211,7 +4209,7 @@ simple example using `grdinfo <grdinfo.html>`_ would be
 
 Be warned, however, that things are not yet completed because while the
 data are scaled according to the equation printed above ("Scaling
-Equation=(Slope\*l3m\_data) + Intercept = Parameter value"), this
+Equation=(Slope\*l3m_data) + Intercept = Parameter value"), this
 scaling is not applied by GDAL on reading so it cannot be done
 automatically by *GMT*. One solution is to do the reading and scaling
 via `grdmath <grdmath.html>`_ first, i.e.,
@@ -4317,7 +4315,7 @@ $GMT_USERDIR
     `grdmath <grdmath.html>`_, and shorthands for
     gridfile extensions via ``.gmt.io``). Users may also place their own data files
     in this directory as *GMT* programs will search for files given on
-    the command line in both **$GMT\_DATADIR** and **$GMT\_USERDIR**.
+    the command line in both **$GMT_DATADIR** and **$GMT_USERDIR**.
 
 $GMT_TMPDIR
     is where *GMT* will write its state parameters via the two files ``.gmtcommands`` and
@@ -4485,7 +4483,7 @@ given as *yyyy*\ [-*mm*\ [-*dd*]], *yyyy*\ [-*jjj*], or
 *yyyy*\ [-**W**\ *ww*\ [-*d*]], and *clock* using the
 *hh*\ [:*mm*\ [:*ss*\ [*.xxx*]]] 24-hour clock format) whereas the
 relative time is simply given as the units of time since the epoch
-followed by **t** (see **TIME\_UNIT** and **TIME\_EPOCH** for
+followed by **t** (see **TIME_UNIT** and **TIME_EPOCH** for
 information on specifying the time unit and the epoch). As a simple
 example, we will make a plot of a school week calendar
 (Figure [fig:GMT:sub:`l`\ inear\ :sub:`c`\ al]).
@@ -4876,7 +4874,7 @@ center of projection. The requirements are
    oblique] latitude (**-Js**), or simply map width (**-JS**).
 
 A default map scale factor of 0.9996 will be applied by default
-(although you may change this with **PROJ\_SCALE\_FACTOR**). However,
+(although you may change this with **PROJ_SCALE_FACTOR**). However,
 the setting is ignored when a standard parallel has been specified since
 the scale is then implicitly given. We will look at two different types
 of maps.
@@ -5167,7 +5165,7 @@ specifying:
 
 The optional latitude of origin defaults to Equator if not specified.
 Although defaulting to 1, you can change the map scale factor via the
-**PROJ\_SCALE\_FACTOR** parameter. Our example shows a transverse
+**PROJ_SCALE_FACTOR** parameter. Our example shows a transverse
 Mercator map of south-east Europe and the Middle East with 35E as the
 central meridian:
 
@@ -5223,7 +5221,7 @@ When selecting UTM you must specify:
 
 In order to minimize the distortion in any given zone, a scale factor of
 0.9996 has been factored into the formulae. (although a standard, you
-can change this with **PROJ\_SCALE\_FACTOR**). This makes the UTM
+can change this with **PROJ_SCALE_FACTOR**). This makes the UTM
 projection a *secant* projection and not a *tangent* projection like the
 transverse Mercator above. The scale only varies by 1 part in 1,000 from
 true scale at equator. The ellipsoidal projection expressions are
@@ -8785,7 +8783,7 @@ example.
    your frame counter equals the desired number of frames. You must use
    your frame counter to create a unique file name for each frame image
    so that the series of images can be lexically arranged. We recommend
-   using the *GMT* shell function **gmt\_set\_framename** to format
+   using the *GMT* shell function **gmt_set_framename** to format
    the frame counter with an adequate number of leading zeros; see our
    examples for details. The bulk of your main loop involves create the
    single *PostScript* plot for this particular frame (time). This can
@@ -8795,7 +8793,7 @@ example.
    recommend you use `ps2raster <ps2raster.html>`_ to
    generate a TIFF image at the agreed-upon resolution. We also
    recommend that you place all frame images in a sub-directory. You may
-   increment your frame counter using **gmt\_set\_framenext**.
+   increment your frame counter using **gmt_set_framenext**.
 
 #. Once you have all your frames you are ready to combine them into an
    animation. There are two general approaches. (a) If your image
@@ -8811,7 +8809,9 @@ example.
    MovieMaker can ingest still images and let you specify the frame
    duration. Under OS X we prefer to use Quicktime. [30]_ Free tools
    exist to call the Quicktime library functions from the command line
-   as we prefer to do in our scripts. You will find yourself
+   as we prefer to do in our scripts. Another choice is to use the free
+   `mencoder <http://www.mplayerhq.hu/design7/news.html>`_.
+   You will find yourself
    experimenting with compression settings and movie formats so that the
    final movie has the resolution and portability you require.
 
@@ -8835,6 +8835,8 @@ we convert them to a single animated GIF file and write a plain HTML
 wrapper with a simple legend. Opening the HTML page in ``anim01.html`` the browser will
 display the animation.
 
+.. literalinclude:: ../../examples/anim01/anim_01.sh
+
 Make sure you understand the purpose of all the steps in our script. In
 this case we did some trial-and-error to determine the exact values to
 use for the map projection, the region, the spacing around the frame,
@@ -8852,6 +8854,8 @@ entire horizon. The resulting animation illustrates how changing the
 illumination azimuth can bring out subtle features (or artifacts) in the
 gridded data. The red arrow points in the direction of the illumination.
 
+.. literalinclude:: ../../examples/anim02/anim_02.sh
+
 As you can see, these sorts of animations are not terribly difficult to
 put together, especially since our vantage point is fixed. In the next
 example we will move the "camera" around and must therefore deal with
@@ -8866,6 +8870,8 @@ angle around the full 360. We use
 image sequence using the new enhanced **-E** option. No additional
 information is plotted on the image. As before we produce an animated
 GIF image and a simple HTML wrapper for it.
+
+.. literalinclude:: ../../examples/anim03/anim_03.sh
 
 Flying over topography
 ----------------------
@@ -8883,6 +8889,8 @@ image sequence into a MPEG-4 movie [31]_. Note: At the moment,
 `grdview <grdview.html>`_ cannot use general perspective
 view projection to allow "fly-through" animations like Fledermaus; we
 expect to add this functionality in a future version.
+
+.. literalinclude:: ../../examples/anim04/anim_04.sh
 
 Mailing lists, updates, and bug reports
 =======================================
@@ -8982,8 +8990,8 @@ This package contains the programs
 `psvelo <supplements/meca/psvelo.html>`_ which are used by seismologists
 and geodesists for plotting focal mechanisms (including cross-sections
 and polarities), error ellipses, velocity arrows, rotational wedges, and
-more. The package was developed by Kurt Feigl [34]_ and Genevieve
-Patau [35]_ but is now maintained by the *GMT* team.
+more. The package was developed by Kurt Feigl and Genevieve
+Patau but is now maintained by the *GMT* team.
 
 mgd77: MGD77 extractor and plotting tools
 -----------------------------------------
@@ -9108,8 +9116,7 @@ number or a geographic coordinate string using the
 [+\ \|\ -]dd[:mm[:ss]][W:\ \|\ S\ \|\ N\ \|\ E\ \|\ w\ \|\ s\ \|\ n\ \|\ e]
 format. Thus, 12:30:44.5W, 17.5S, 1:00:05, and 200:45E are all valid
 input strings. On output, fields will be separated by the character
-given by the parameter **IO_COL_SEPARATOR**, which by default is a
-TAB.
+given by the parameter **IO_COL_SEPARATOR**, which by default is a TAB.
 
 Optional segment header records
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -12098,12 +12105,6 @@ Finally we show an example of a polygon file:
    For data bases, see
    http://topex.ucsd.edu/marine_grav/mar_grav.html.
 
-.. [34]
-   Kurt.Feigl@cnes.fr
-
-.. [35]
-   patau@ipgp.jussieu.fr
-
 .. [36]
    The ASCII MGD77 data are available on CD-ROM from NGDC
    (www.ngdc.noaa.gov).
@@ -12148,10 +12149,6 @@ Finally we show an example of a polygon file:
    GSHHG (Wessel, P., and W. H. F. Smith, 1996, A Global,
    self-consistent, hierarchical, high-resolution shoreline database,
    *J. Geophys. Res. 101*, 8741-8743).
-
-.. [47]
-   Microsoft Services for *UNIX* is formerly known as Interix, in the
-   distant past known as OpenNT.
 
 .. [48]
    cygwin.com

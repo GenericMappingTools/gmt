@@ -4,21 +4,25 @@ grdvolume
 
 grdvolume - Calculate grid volume and area constrained by a contour
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdvolume** *grdfile* [ **-C**\ *cval* or **-C**\ *low/high/delta* ] [
-**-L**\ *base* ] [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
-**-S**\ [*unit*\ ] ] [ **-T**\ [**c**\ \|\ **h**] ] [
-**-V**\ [*level*\ ] ] [ **-Z**\ *fact*\ [/*shift*] ] [ **-f**\ *colinfo*
-] [ **-o**\ *cols*\ [,*...*] ]
+**grdvolume** *grdfile* [ **-C**\ *cval* or **-C**\ *low/high/delta* ]
+[ **-L**\ *base* ]
+[ |SYN_OPT-R| ]
+[ **-S**\ [*unit*\ ] ] [ **-T**\ [**c**\ \|\ **h**] ]
+[ |SYN_OPT-V| ]
+[ **-Z**\ *fact*\ [/*shift*] ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-o| ]
+
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **grdvolume** reads a 2-D binary grid file and calculates the volume
 contained between the surface and the plane specified by the given
@@ -30,21 +34,20 @@ the maximum mean height (or maximum curvature of heights vs contour
 value) is reported as well. This feature may be used with **grdfilter**
 in designing an Optimal Robust Separator [*Wessel*, 1998]. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *grdfile*
     The name of the input 2-D binary grid file. (See GRID FILE FORMAT below.)
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-C**\ *cval* or **-C**\ *low/high/delta*
     find area, volume and mean height (volume/area) inside the *cval*
     contour. Alternatively, search using all contours from *low* to
     *high* in steps of *delta*. [Default returns area, volume and mean
-    height of the entire grid]. The area is measured in the plane of the
-    contour.
+    height of the entire grid]. The area is measured in the plane of the contour.
 **-L**\ *base*
     Also add in the volume from the level of the contour down to *base*
     [Default base is contour].
@@ -78,30 +81,37 @@ in designing an Optimal Robust Separator [*Wessel*, 1998].
 
 .. include:: explain_grd_input.rst_
 
-`Examples <#toc7>`_
--------------------
+Examples
+--------
 
 To determine the volume in km^3 under the surface hawaii\_topo.nc
 (height in km), use
 
-    grdvolume hawaii\_topo.nc -Sk
+   ::
+
+    gmt grdvolume hawaii_topo.nc -Sk
 
 To find the volume between the surface peaks.nc and the contour z = 250, use
 
-    grdvolume peaks.nc -Sk -C250
+   ::
+
+    gmt grdvolume peaks.nc -Sk -C250
 
 To search for the contour, between 100 and 300 in steps of 10, that
 maximizes the ratio of volume to surface area for the file peaks.nc, use
 
-    grdvolume peaks.nc -Sk -C100/300/10 -Th > results.d
+   ::
 
-To see the areas and volumes for all the contours in the previous
-example, use
+    gmt grdvolume peaks.nc -Sk -C100/300/10 -Th > results.d
 
-    grdvolume peaks.nc -Sk -C100/300/10 > results.d
+To see the areas and volumes for all the contours in the previous example, use
 
-`Notes <#toc8>`_
-----------------
+   ::
+
+    gmt grdvolume peaks.nc -Sk -C100/300/10 > results.d
+
+Notes
+-----
 
 **grdvolume** distinguishes between gridline and pixel-registered grids.
 In both cases the area and volume are computed up to the grid
@@ -112,13 +122,13 @@ second case all grid cells are fully used. The exception is when the
 grid point, both grid types are treated the same. That means the outer
 rim in pixel oriented grids is ignored when using the **-C** flag.
 
-`See Also <#toc9>`_
--------------------
+See Also
+--------
 
 `gmt <gmt.html>`_, `grdfilter <grdfilter.html>`_
 
-`References <#toc10>`_
-----------------------
+References
+----------
 
 Wessel, P., 1998, An empirical method for optimal robust
 regional-residual separation of geophysical data, *Math. Geol.*, **30**\ (4), 391-408.

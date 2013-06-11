@@ -5,33 +5,35 @@ mapproject
 mapproject - Do forward and inverse map transformations, datum
 conversions and geodesy
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
 **mapproject** [ *table* ] **-J**\ *parameters*
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [
-**-Ab**\ \|\ **B**\ \|\ **f**\ \|\ **F**\ \|\ **o**\ \|\ **O**\ [*lon0*/*lat0*]
-] [ **-C**\ [*dx*/*dy*] ] [ **-Dc**\ \|\ **i**\ \|\ **p** ] [
-**-E**\ [*datum*\ ] ] [ **-F**\ [*unit*\ ] ] [
-**-G**\ [*x0*/*y0*/][[**+**\ \|\ **-**]\ *unit*][\ **+**\ \|\ **-**] ] [
-**-I** ] [ **-L**\ *line.xy*\ [/[**+**\ \|\ **-**]\ *unit*][**+**\ ] ] [
-**-N**\ [**a**\ \|\ **c**\ \|\ **g**\ \|\ **m**] ] [
-**-Q**\ [**d**\ \|\ **e** ] [ **-S** ] [
-**-T**\ [**h**\ ]\ *from*\ [/*to*] ] [ **-V**\ [*level*\ ] ] [
-**-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
-**-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
-] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-o**\ *cols*\ [,*...*] ] [ **-s**\ [*cols*\ ][\ **a**\ \|\ **r**]
-] [ **-:**\ [**i**\ \|\ **o**] ]
+|SYN_OPT-R|
+[ **-Ab**\ \|\ **B**\ \|\ **f**\ \|\ **F**\ \|\ **o**\ \|\ **O**\ [*lon0*/*lat0*] ]
+[ **-C**\ [*dx*/*dy*] ] [ **-Dc**\ \|\ **i**\ \|\ **p** ]
+[ **-E**\ [*datum*\ ] ] [ **-F**\ [*unit*\ ] ]
+[ **-G**\ [*x0*/*y0*/][[**+**\ \|\ **-**]\ *unit*][\ **+**\ \|\ **-**] ]
+[ **-I** ] [ **-L**\ *line.xy*\ [/[**+**\ \|\ **-**]\ *unit*][**+**] ]
+[ **-N**\ [**a**\ \|\ **c**\ \|\ **g**\ \|\ **m**] ]
+[ **-Q**\ [**d**\ \|\ **e** ] [ **-S** ]
+[ **-T**\ [**h**\ ]\ *from*\ [/*to*] ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-b| ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-g| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-o| ]
+[ |SYN_OPT-s| ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **mapproject** reads (longitude, latitude) positions from *infiles* [or
 standard input] and computes (x,y) coordinates using the specified map
@@ -45,8 +47,8 @@ Additional data fields are permitted after the first 2 columns which
 must have (longitude,latitude) or (x,y). See option **-:** on how to
 read (latitude,longitude) files. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 .. include:: explain_-J.rst_
 
@@ -56,8 +58,8 @@ read (latitude,longitude) files.
     the full ellipsoidal solution (See RESTRICTIONS for more information).
 .. include:: explain_-R.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
@@ -177,35 +179,43 @@ read (latitude,longitude) files.
 .. include:: explain_precision.rst_
 
 
-`Examples <#toc8>`_
--------------------
+Examples
+--------
 
 To transform a file with (longitude,latitude) into (x,y) positions in cm
 on a Mercator grid for a given scale of 0.5 cm per degree, run
 
-    mapproject lonlatfile -R20/50/12/25 **-Jm**\ 0.5\ **c** > xyfile
+   ::
+
+    gmt mapproject lonlatfile -R20/50/12/25 -Jm0.5c > xyfile
 
 To transform several 2-column, binary, double precision files with
 (latitude,longitude) into (x,y) positions in inch on a Transverse
 Mercator grid (central longitude 75W) for scale = 1:500000 and suppress
 those points that would fall outside the map area, run
 
-    mapproject tracks.\* -R-80/-70/20/40 -Jt-75/1:500000 -: -S -Di -bo -bi2 > tmfile.b
+   ::
+
+    gmt mapproject tracks.* -R-80/-70/20/40 -Jt-75/1:500000 -: -S -Di -bo -bi2 > tmfile.b
 
 To convert the geodetic coordinates (lon, lat, height) in the file
 old.dat from the NAD27 CONUS datum (Datum ID 131 which uses the
 Clarke-1866 ellipsoid) to WGS 84, run
 
-    mapproject old.dat -Th131 > new.dat
+   ::
+
+    gmt mapproject old.dat -Th131 > new.dat
 
 To compute the closest distance (in km) between each point in the input
 file quakes.dat and the line segments given in the multisegment ASCII
 file coastline.xy, run
 
-    mapproject quakes.dat -Lcoastline.xy/k > quake\_dist.dat
+   ::
 
-`Restrictions <#toc9>`_
------------------------
+    gmt mapproject quakes.dat -Lcoastline.xy/k > quake_dist.dat
+
+Restrictions
+------------
 
 The rectangular input region set with **-R** will in general be mapped
 into a non-rectangular grid. Unless **-C** is set, the leftmost point on
@@ -228,8 +238,8 @@ either the west or east boundary given in **-R** is more than 10 degrees
 from the central meridian, `and (3) <and.html>`_ same for Cassini
 (**-JC**) but with a limit of only 4 degrees.
 
-`Ellipsoids And Spheroids <#toc10>`_
-------------------------------------
+Ellipsoids And Spheroids
+------------------------
 
 **GMT** will use ellipsoidal formulae if they are implemented and the
 user have selected an ellipsoid as the reference shape (see
@@ -261,13 +271,13 @@ aware that **PROJ\_SCALE\_FACTOR** have certain default values for some
 projections so you may have to override the setting in order to match
 results produced with other settings.
 
-`See Also <#toc11>`_
---------------------
+See Also
+--------
 
 `gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_, `project <project.html>`_
 
-`References <#toc12>`_
-----------------------
+References
+----------
 
 Bomford, G., 1952, Geodesy, Oxford U. Press.
 

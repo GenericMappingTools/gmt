@@ -9,27 +9,27 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdvector** *compx.nc* *compy.nc* **-J**\ *parameters* [ **-A** ] [
-**-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ [*cptfile*] ] [
-**-G**\ *fill* ] [
-**-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
-] [ **-K** ] [ **-N** ] [ **-O** ] [ **-P** ] [ **-Q**\ *parameters* ]
-[ **-R**\ *west*/*east*/*south*/*north*\ [**r**] ] [
-**-S**\ [**i**\ \|\ **l**\ ]\ *scale* ] [ **-T** ] [
-**-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*]
-] [ **-W**\ *pen* ] [
-**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**]]
-] [
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**]]
-] [ **-Z** ] [ **-c**\ *copies* ] [
-**-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
-**-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
-] [ **-t**\ [*transp*] ]
+**grdvector** *compx.nc* *compy.nc* **-J**\ *parameters* [ **-A** ]
+[ |SYN_OPT-B| ]
+[ **-G**\ *fill* ]
+[ |SYN_OPT-I| ]
+[ **-K** ] [ **-N** ] [ **-O** ] [ **-P** ] [ **-Q**\ *parameters* ]
+[ |SYN_OPT-R| ]
+[ **-S**\ [**i**\ \|\ **l**\ ]\ *scale* ] [ **-T** ]
+[ |SYN_OPT-U| ]
+[ **-W**\ *pen* ]
+[ |SYN_OPT-X| ]
+[ |SYN_OPT-Y| ]
+[ **-Z** ]
+[ |SYN_OPT-c| ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-p| ]
+[ |SYN_OPT-t| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **grdvector** reads two 2-D grid files which represents the x- and
 y-components of a vector field and produces a vector field plot by
@@ -38,8 +38,8 @@ in the files. Alternatively, polar coordinate components may be used (r,
 theta). **grdvector** is basically a short-hand for using 2 calls to
 `grd2xyz <grd2xyz.html>`_ and pasting the output through **psxy -SV**. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *compx.nc*
     Contains the x-component of the vector field.
@@ -48,8 +48,8 @@ theta). **grdvector** is basically a short-hand for using 2 calls to
 
 .. include:: explain_-J.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-A**
     Means grid files have polar (r, theta) components instead of
@@ -138,12 +138,16 @@ linear plot with scale 5 cm per data unit, using vector rather than
 stick plot, scale vector magnitudes so that 10 units equal 1 inch, and
 center vectors on the node locations, run
 
-    grdvector r.nc theta.nc -Jx5c -A -Q0.1i+e+jc -S10i > gradient.ps
+   ::
+
+    gmt grdvector r.nc theta.nc -Jx5c -A -Q0.1i+e+jc -S10i > gradient.ps
 
 To plot a geographic data sets given the files com_x.nc and comp_y.nc,
 using a scale of 200 km per data unit, try
 
-    grdvector comp_x.nc comp_y.nc -JH0/20c -Q0.1i+e+jc -S200 > globe.ps
+   ::
+
+    gmt grdvector comp_x.nc comp_y.nc -JH0/20c -Q0.1i+e+jc -S200 > globe.ps
 
 See Also
 --------
