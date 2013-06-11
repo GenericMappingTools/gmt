@@ -5089,7 +5089,7 @@ int gmt_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 		return (GMT->parent->error);	/* Make filename with embedded object ID */
 	}
 	sprintf (buffer, "-C -fg -<%s ->%s", in_string, out_string);
-	if (GMT_Call_Module (GMT->parent, GMT_ID_MINMAX, 0, buffer) != GMT_OK) {	/* Get the extent via minmax */
+	if (GMT_Call_Module (GMT->parent, "minmax", 0, buffer) != GMT_OK) {	/* Get the extent via minmax */
 		return (GMT->parent->error);
 	}
 	if ((M = GMT_Retrieve_Data (GMT->parent, object_ID)) == NULL) {
@@ -5697,6 +5697,7 @@ struct GMT_TEXTSET * GMT_create_textset (struct GMT_CTRL *GMT, uint64_t n_tables
 	}
 	D->alloc_mode = GMT_ALLOCATED_BY_GMT;		/* Memory can be freed by GMT. */
 	D->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
+	D->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 	
 	return (D);
 }
@@ -5894,7 +5895,8 @@ struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *GMT, uint64_t n_tables
 	if (!alloc_only) D->n_records = D->n_segments * n_rows;
 	for (tbl = 0; tbl < n_tables; tbl++) if ((D->table[tbl] = GMT_create_table (GMT, n_segments, n_columns, n_rows, alloc_only)) == NULL) return (NULL);
 	D->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
-	D->alloc_mode = GMT_ALLOCATED_BY_GMT;	/* So GMT_* modules can free this memory. */
+	D->alloc_mode = GMT_ALLOCATED_BY_GMT;		/* So GMT_* modules can free this memory. */
+	D->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 	
 	return (D);
 }
@@ -6390,6 +6392,7 @@ struct GMT_IMAGE *GMT_create_image (struct GMT_CTRL *GMT)
 	I->header = GMT_memory (GMT, NULL, 1, struct GMT_GRID_HEADER);
 	I->alloc_mode = GMT_ALLOCATED_BY_GMT;		/* Memory can be freed by GMT. */
 	I->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
+	I->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 	GMT_grd_init (GMT, I->header, NULL, false); /* Set default values */
 	return (I);
 }
@@ -6456,6 +6459,7 @@ struct GMT_VECTOR * GMT_create_vector (struct GMT_CTRL *GMT, uint64_t n_columns)
 	V->n_columns = n_columns;
 	V->alloc_mode = GMT_ALLOCATED_BY_GMT;		/* Memory can be freed by GMT. */
 	V->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
+	V->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 
 	return (V);
 }
@@ -6556,6 +6560,7 @@ struct GMT_MATRIX * GMT_create_matrix (struct GMT_CTRL *GMT, uint64_t layers)
 	M = GMT_memory (GMT, NULL, 1, struct GMT_MATRIX);
 	M->alloc_mode = GMT_ALLOCATED_BY_GMT;		/* Memory can be freed by GMT. */
 	M->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
+	M->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 	M->n_layers = (layers) ? layers : 1;
 	return (M);
 }

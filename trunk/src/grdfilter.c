@@ -1078,7 +1078,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 			sprintf (cmd, "%s -G%s -R%s -V%d", in_string, out_string, Ctrl->In.file, GMT->current.setting.verbose);
 			if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Highpass requires us to resample the lowpass result at original registration via grdsample %s\n", cmd);
-			if (GMT_Call_Module (GMT->parent, GMT_ID_GRDSAMPLE, 0, cmd) != GMT_OK) {	/* Resample the file */
+			if (GMT_Call_Module (GMT->parent, "grdsample", 0, cmd) != GMT_OK) {	/* Resample the file */
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to resample the lowpass result - exiting\n");
 				Return (API->error);
 			}

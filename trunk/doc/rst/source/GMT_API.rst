@@ -2,7 +2,7 @@
 
 **C/C++ Application Programming Interface**
 
-**Version 5.0.1b (r), Feb 2013**
+**Version 5.0.1b (r), July 2013**
 
 **Pål (Paul) Wessel**
 
@@ -464,7 +464,7 @@ Table [tbl:API] gives a list of all the functions and their purpose.
 +-------------------------+---------------------------------------------------+
 | GMT_Begin_IO_           | Enable record-by-record i/o                       |
 +-------------------------+---------------------------------------------------+
-| GMT_Call_Module_        | Call any of the GMT_N_MODULES (120) GMT modules   |
+| GMT_Call_Module_        | Call any of the GMT modules                       |
 +-------------------------+---------------------------------------------------+
 | GMT_Create_Args_        | Convert linked list of options to text array      |
 +-------------------------+---------------------------------------------------+
@@ -1631,12 +1631,12 @@ interfaces are identical are looks like
 
   ::
 
-    int GMT_Call_Module (void *API, int module_ID, int mode, void *args);
+    int GMT_Call_Module (void *API, const char *module, int mode, void *args);
 
-The ``module_ID`` is an integer that selects which module to execute.
-All GMT modules may be called with one of three sets of ``args``
-depending on ``mode``. The three modes differ in how the options are
-passed to the module:
+Here, ``module`` can be any of the *GMT* modules, such as
+``psxy`` or ``grdvolume``.  All GMT modules may be called with one of
+three sets of ``args`` depending on ``mode``. The three modes differ in
+how the options are passed to the module:
 
     *mode > 0*
         Expects ``args`` to be an array of text options and ``mode`` to be a count of how many
@@ -1650,28 +1650,18 @@ passed to the module:
     *mode == 0*
         Expects ``args`` to be a single text string with all required options.
 
-If module name rather than module ID is available, you can obtain the latter via a call to
-
-.. _GMT_Get_Module:
-
-  ::
-
-    int GMT_Get_Module (void *API, char *module_name);
-
-
-Here, ``module_name`` can be any of the *GMT* modules, such as
-``psxy`` or ``grdvolume``.  The ID return can then be used in
-GMT_Call_Module.  If no module by the given name is found we
-return GMT_NO_MODULE (-1).  Should your program need to display
+If no module by the given name is found we
+return -1.  Should your program need to display
 the purpose of a particular module you can call
 
 .. _GMT_List_Module:
 
   ::
 
-    int GMT_List_Module (void *API, int module_ID);
+    int GMT_List_Module (void *API, const char *module);
 
-and a brief one-line summary is presented.  If ``module_ID`` equals -1
+and a brief one-line summary is presented.  If no module by the given name
+is found we return -1.  If ``module`` equals NULL
 then we list summaries for all the modules.
 
 Set program options via text array arguments
