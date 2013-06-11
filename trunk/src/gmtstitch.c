@@ -628,7 +628,8 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 		done = false;
 		id = start_id;	/* This is the first line segment in a new chain */
 		end_order = 0;
-		n_steps = n_alloc_pts = 0;	/* Nothing appended yet to this single line segment */
+		n_steps = 1;			/* Nothing appended yet to this single line segment */
+		n_alloc_pts = segment[id].n;	/* Number of points needed so far is just those from the first (id) segment */
 #ifdef DEBUG2
 		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 "\n", segment[id].orig_id);
 #endif
@@ -653,8 +654,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 		/* Here we either have closed a polygon or still have a (possibly much longer) open line segment */
 		/* This id should be the beginning of a segment.  Now trace forward and dump out the chain */
 
-		//T[CLOSED][out_seg] = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);		/* Get a new segment structure... */
-		T[OPEN][out_seg] = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);		/* Get a new segment structure... */
+		T[CLOSED][out_seg] = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);		/* Get a new segment structure... */
 		GMT_alloc_segment (GMT, T[OPEN][out_seg], n_alloc_pts, n_columns, true);	/* ...with enough rows */
 
 		if (n_steps == 1)
