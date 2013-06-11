@@ -16,14 +16,17 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * Public function prototypes for GMT API session manipulations and data i/o.
+ * Public functions for the GMT C/C++ API.  The API consist of functions
+ * in gmt_api.c, gmt_parse.c, and all the GMT modules.
  *
  * Author: 	Paul Wessel
- * Date:	1-JAN-2010
- * Version:	1.1
+ * Date:	1-JUN-2013
+ * Version:	5
  *
- * The API consists of 21 functions plus all the GMT modules accessible
- * via GMT_Call_Module.
+ * The API presently consists of 52 documented functions.  For a full
+ * description of the API, see the GMT_API documentation.
+ * These functions have Fortran bindings as well, provided you add
+ * -DFORTRAN_API to the C preprocessor flags [in ConfigUser.cmake].
  *
  * There are 2 public functions used for GMT API session handling.
  * This part of the API helps the developer create and delete GMT sessions:
@@ -37,7 +40,7 @@
  * GMT_Report		: Report an error given an error code
  * GMT_Message		: Report an message given a verbosity level
  *
- * There are 13 further public functions used for GMT i/o activities:
+ * There are 20 further public functions used for GMT i/o activities:
  *
  * GMT_Encode_ID	: Encode a resource ID in a file name
  * GMT_Register_IO	: Register a source or destination for i/o use
@@ -58,18 +61,53 @@
  * GMT_Get_Row		: Read one row from a grid
  * GMT_Put_Row		: Write one row to a grid
  * GMT_Set_Comment	: Update a comment for a data set
+ * GMT_Get_ID		: Get the registered object ID for a data set
  *
+ * There are 4 functions that deal with options, defaults and arguments:
+ *
+ * GMT_Option		: Display syntax for one or more GMT common options
+ * GMT_Get_Common	: Checks for and returns values for GMT common options
+ * GMT_Get_Default	: Return the value of a GMT parameter as string
+ * GMT_Get_Value	: Convert string to one or more coordinates or dimensions
+ *
+ * Two functions handle the listing of modules and the calling of any GMT module:
+ *
+ * GMT_List_Module	: Display purpose of given module (or all if NULL)
+ * GMT_Call_Module	: Call the specifiec GMT module
+ *
+ * Two functions are used to get grid index from row, col, and to obtain coordinates
+ *
+ * GMT_Get_Index	: Return 2-D grid index given row, col
+ * GMT_Get_Coord	: Return array of coordinates for one dimension
+ *
+ * For FFT operations we add 8 additional API functions:
+ *
+ * GMT_FFT_Option	: Display the syntax of the GMT FFT option settings
+ * GMT_FFT_Parse	: Parse the GMT FFT option
+ * GMT_FFT_Create	: Initialize the FFT machinery for given dimension
+ * GMT_FFT_Wavenumber	: Return selected wavenumber type
+ * GMT_FFT		: Call the forward or inverse FFT
+ * GMT_FFT_Destroy	: Destroy FFT machinery
+ * GMT_fft_1d		: Lower-level 1-d FFT call
+ * GMT_fft_2d		: Lower-level 2-d FFT call
+ *
+ * There are also 12 functions for argument and option parsing.  See gmt_parse.c
+ *
+ * Finally, three low-level F77-callable functions for grid i/o are given:
+ *
+ * GMT_F77_readgrdinfo_	: Read the header of a GMT grid
+ * GMT_F77_readgrd_	: Read a GMT grid from file
+ * GMT_F77_writegrd_	: Write a GMT grid to file
+
  * The above functions deal with registration of input sources (files,
  * streams, file handles, or memory locations) and output destinations
  * (same flavors as input), the setup of the i/o, and generic functions
  * to access the data either in one go (GMT_Get|Put_Data) or on a
  * record-by-record basis (GMT_Get|Put_Record).  Finally, data sets that
  * are allocated can then be destroyed when no longer needed.
- * These 14 functions have Fortran bindings as well, provided you run
- * configure with --enable-fapi.
  *
  * --------------------------------------------------------------------------------------------
- * Notes on memory management: Paul Wessel, June 2013.
+ * Guru notes on memory management: Paul Wessel, June 2013.
  *
  * GMT maintains control over allocating, reallocating, and freeing of GMT objects created by GMT.
  * Because GMT_modules may be given files, memory locations, streams, etc. as input and output we
@@ -757,7 +795,7 @@ char * GMT_create_header_item (struct GMTAPI_CTRL *API, unsigned int mode, void 
 }
 
 int GMTAPI_add_comment (struct GMTAPI_CTRL *API, unsigned int mode, char *txt)
-{	/* Update common.h's various text items */
+{	/* Update common.h's various text items; return 1 if successful else 0 */
 	unsigned int k = 0;
 	struct GMT_COMMON *C = &API->GMT->common;	/* Short-hand */
 	
@@ -773,7 +811,7 @@ void GMTAPI_dataset_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *a
 	struct GMT_DATATABLE *T = NULL;
 	char *txt = GMT_create_header_item (API, mode, arg);
 	
-	if (GMTAPI_add_comment (API, mode, txt)) return;	/* Updated one -h item */
+	if (!GMTAPI_add_comment (API, mode, txt)) return;	/* Updated one -h item, or nothing */
 
 	/* Here we process free-form comments; these go into the dataset's header structures */
 	for (tbl = 0; tbl < D->n_tables; tbl++) {	/* For each table in the dataset */
@@ -793,7 +831,7 @@ void GMTAPI_textset_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *a
 	struct GMT_TEXTTABLE *T = NULL;
 	char *txt = GMT_create_header_item (API, mode, arg);
 	
-	if (GMTAPI_add_comment (API, mode, txt)) return;	/* Updated one -h item */
+	if (!GMTAPI_add_comment (API, mode, txt)) return;	/* Updated one -h item or nothing */
 
 	/* Here we process free-form comments; these go into the textset's header structures */
 	for (tbl = 0; tbl < D->n_tables; tbl++) {	/* For each table in the dataset */
@@ -812,7 +850,7 @@ void GMTAPI_cpt_comment (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, 
 	unsigned int k;
 	char *txt = GMT_create_header_item (API, mode, arg);
 	
-	if (GMTAPI_add_comment (API, mode, txt)) return;	/* Updated one -h item */
+	if (!GMTAPI_add_comment (API, mode, txt)) return;	/* Updated one -h item or nothing */
 
 	/* Here we process free-form comments; these go into the CPT's header structures */
 	if (mode & GMT_COMMENT_IS_RESET) {	/* Eliminate all existing headers */
