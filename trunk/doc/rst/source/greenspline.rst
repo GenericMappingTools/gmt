@@ -2,7 +2,7 @@
 greenspline
 ***********
 
-greenspline - Interpolate using Green’s functions for splines in 1-3 dimensions
+greenspline - Interpolate using Green's functions for splines in 1-3 dimensions
 
 Synopsis
 --------
@@ -18,13 +18,13 @@ Synopsis
 [ **-S**\ **c\|l\|t\|g\|p\|q**\ [*pars*] ] [ **-T**\ *maskgrid* ]
 [ |SYN_OPT-V| ] [ **-W** ]  [ **-bi**\ [*ncols*][*type*] ]
 [ **-bo**\ [*ncols*][*type*] ] [ **-h**\ [**i**\ \|\ **o**][*n*] ]
-[ |SYN_OPT-i| ]
-[ **-o**\ *cols*\ [,\ *...*] ] [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
+[ |SYN_OPT-o| ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **greenspline** uses the Green’s function G(\ **x**; **x’**) for the
 chosen spline and geometry to interpolate data at regular [or arbitrary]
@@ -46,13 +46,13 @@ Alternatively, you may choose to perform a singular value decomposition
 approach yields an approximate solution. Trends and scales are restored
 when evaluating the output. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 None.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 *table*
     The name of one or more ASCII [or binary, see
@@ -100,7 +100,7 @@ None.
     interpolation: **-D**\ 1 means (*x*,\ *y*) in user units, Cartesian
     distances, **-D**\ 2 for (*x*,\ *y*) in degrees, Flat Earth
     distances, and **-D**\ 3 for (*x*,\ *y*) in degrees, Spherical
-    distances in km. Then, if **PROJ\_ELLIPSOID** is spherical, we
+    distances in km. Then, if **PROJ_ELLIPSOID** is spherical, we
     compute great circle arcs, otherwise geodesics. Option *mode* = 4
     applies to spherical surface spline interpolation only: **-D**\ 4
     for (*x*,\ *y*) in degrees, use cosine of great circle (or geodesic)
@@ -213,78 +213,91 @@ None.
 
 .. include:: explain_help.rst_
 
-`1-d Examples <#toc6>`_
------------------------
+1-d Examples
+------------
 
 To resample the *x*,\ *y* Gaussian random data created by **gmtmath**
 and stored in 1D.txt, requesting output every 0.1 step from 0 to 10, and
 using a minimum cubic spline, try
 
-    gmtmath -T0/10/1 0 1 NRAND = 1D.txt
+   ::
 
-    psxy -R0/10/-5/5 -JX6i/3i -B2f1/1 -Sc0.1 -Gblack 1D.txt -K > 1D.ps
-
-    greenspline 1D.txt -R0/10 -I0.1 -Sc -V \| psxy -R -J -O -Wthin >> 1D.ps
+    gmt gmtmath -T0/10/1 0 1 NRAND = 1D.txt
+    gmt psxy -R0/10/-5/5 -JX6i/3i -B2f1/1 -Sc0.1 -Gblack 1D.txt -K > 1D.ps
+    gmt greenspline 1D.txt -R0/10 -I0.1 -Sc -V | psxy -R -J -O -Wthin >> 1D.ps
 
 To apply a spline in tension instead, using a tension of 0.7, try
 
-    psxy -R0/10/-5/5 -JX6i/3i -B2f1/1 -Sc0.1 -Gblack 1D.txt -K > 1Dt.ps
+   ::
 
-    greenspline 1D.txt -R0/10 -I0.1 -St0.7 -V \| psxy -R -J -O -Wthin >> 1Dt.ps
+    gmt psxy -R0/10/-5/5 -JX6i/3i -B2f1/1 -Sc0.1 -Gblack 1D.txt -K > 1Dt.ps
+    gmt greenspline 1D.txt -R0/10 -I0.1 -St0.7 -V | psxy -R -J -O -Wthin >> 1Dt.ps
 
-`2-d Examples <#toc7>`_
------------------------
+2-d Examples
+------------
 
 To make a uniform grid using the minimum curvature spline for the same
 Cartesian data set from Davis (1986) that is used in the GMT Technical
 Reference and Cookbook example 16, try
 
-    greenspline table\_5.11 -R0/6.5/-0.2/6.5 -I0.1 -Sc -V -D1 -GS1987.nc
+   ::
 
-    psxy -R0/6.5/-0.2/6.5 -JX6i -B2f1 -Sc0.1 -Gblack table\_5.11 -K > 2D.ps
-
-    grdcontour -JX6i -B2f1 -O -C25 -A50 S1987.nc >> 2D.ps
+    gmt greenspline table_5.11 -R0/6.5/-0.2/6.5 -I0.1 -Sc -V -D1 -GS1987.nc
+    gmt psxy -R0/6.5/-0.2/6.5 -JX6i -B2f1 -Sc0.1 -Gblack table_5.11 -K > 2D.ps
+    gmt grdcontour -JX6i -B2f1 -O -C25 -A50 S1987.nc >> 2D.ps
 
 To use Cartesian splines in tension but only evaluate the solution where
 the input mask grid is not NaN, try
 
-    greenspline table\_5.11 -Tmask.nc -St0.5 -V -D1 -GWB1998.nc
+   ::
+
+    gmt greenspline table_5.11 -Tmask.nc -St0.5 -V -D1 -GWB1998.nc
 
 To use Cartesian generalized splines in tension and return the magnitude
 of the surface slope in the NW direction, try
 
-    greenspline table\_5.11 -R0/6.5/-0.2/6.5 -I0.1 -Sr0.95 -V -D1 -Q-45 -Gslopes.nc
+   ::
+
+    gmt greenspline table_5.11 -R0/6.5/-0.2/6.5 -I0.1 -Sr0.95 -V -D1 -Q-45 -Gslopes.nc
 
 Finally, to use Cartesian minimum curvature splines in recovering a
 surface where the input data is a single surface value (pt.d) and the
 remaining constraints specify only the surface slope and direction
 (slopes.d), use
 
-    greenspline pt.d -R-3.2/3.2/-3.2/3.2 -I0.1 -Sc -V -D1 -A1,slopes.d -Gslopes.nc
+   ::
 
-`3-d Examples <#toc8>`_
------------------------
+    gmt greenspline pt.d -R-3.2/3.2/-3.2/3.2 -I0.1 -Sc -V -D1 -A1,slopes.d -Gslopes.nc
+
+3-d Examples
+------------
 
 To create a uniform 3-D Cartesian grid table based on the data in
-table\_5.23 in Davis (1986) that contains *x*,\ *y*,\ *z* locations and
+table_5.23 in Davis (1986) that contains *x*,\ *y*,\ *z* locations and
 a measure of uranium oxide concentrations (in percent), try
 
-    greenspline table\_5.23 -R5/40/-5/10/5/16 -I0.25 -Sr0.85 -V -D5 -G3D\_UO2.txt
+   ::
 
-`2-d Spherical Surface Examples <#toc9>`_
------------------------------------------
+    gmt greenspline table_5.23 -R5/40/-5/10/5/16 -I0.25 -Sr0.85 -V -D5 -G3D_UO2.txt
+
+2-d Spherical Surface Examples
+------------------------------
 
 To recreate Parker’s [1994] example on a global 1x1 degree grid,
-assuming the data are in file mag\_obs\_1990.d, try
+assuming the data are in file mag_obs_1990.d, try
 
-    greenspline -V -Rg -Sp -D3 -I1 -GP1994.nc mag\_obs\_1990.d
+   ::
+
+    greenspline -V -Rg -Sp -D3 -I1 -GP1994.nc mag_obs_1990.d
 
 To do the same problem but applying tension of 0.85, use
 
-    greenspline -V -Rg -Sq0.85 -D3 -I1 -GWB2008.nc mag\_obs\_1990.d
+   ::
 
-`Considerations <#toc10>`_
---------------------------
+    greenspline -V -Rg -Sq0.85 -D3 -I1 -GWB2008.nc mag_obs_1990.d
+
+Considerations
+--------------
 
 (1) For the Cartesian cases we use the free-space Green functions, hence
 no boundary conditions are applied at the edges of the specified domain.
@@ -316,8 +329,8 @@ smallest eigenvalues (see **-C**).
 Robert L. Parker, Scripps Institution of Oceanography, which we
 gratefully acknowledge.
 
-`Tension <#toc11>`_
--------------------
+Tension
+-------
 
 Tension is generally used to suppress spurious oscillations caused by
 the minimum curvature requirement, in particular when rapid gradient
@@ -331,8 +344,8 @@ stable for a finite range of *scale* values; you must experiment to find
 the valid range and a useful setting. For more information on tension
 see the references below.
 
-`References <#toc12>`_
-----------------------
+References
+----------
 
 Davis, J. C., 1986, *Statistics and Data Analysis in Geology*, 2nd
 Edition, 646 pp., Wiley, New York,
@@ -357,8 +370,8 @@ Int*, **174**, 21-28.
 Wessel, P., 2009, A general-purpose Green's function interpolator,
 *Computers & Geosciences*, **35**, 1247-1254, doi:10.1016/j.cageo.2008.08.012.
 
-`See Also <#toc13>`_
---------------------
+See Also
+--------
 
 `gmt <gmt.html>`_, `gmtmath <gmtmath.html>`_,
 `nearneighbor <nearneighbor.html>`_, `psxy <psxy.html>`_,

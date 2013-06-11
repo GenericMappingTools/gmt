@@ -11,18 +11,19 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **project** [ *table* ] **-C**\ *cx*/*cy* [ **-A**\ *azimuth* ] [
-**-E**\ *bx*/*by* ] [ **-F**\ *flags* ] [
-**-G**\ *dist*\ [/*colat*][**+**\ ] ] [
-**-L**\ [**w**\ ][\ *l\_min*/*l\_max*] ] [ **-N** ] [ **-Q** ] [ **-S**
-] [ **-T**\ *px*/*py* ] [ **-V**\ [*level*\ ] ] [
-**-W**\ *w\_min*/*w\_max* ] [
-**-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
-**-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
-] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-s**\ [*cols*\ ][\ **a**\ \|\ **r**] ] [
-**-:**\ [**i**\ \|\ **o**] ]
+**-E**\ *bx*/*by* ] [ **-F**\ *flags* ]
+[ **-G**\ *dist*\ [/*colat*][**+**] ]
+[ **-L**\ [**w**\ ][\ *l\_min*/*l\_max*] ] [ **-N** ] [ **-Q** ] [ **-S** ]
+[ **-T**\ *px*/*py* ]
+[ |SYN_OPT-V| ]
+[ **-W**\ *w\_min*/*w\_max* ]
+[ |SYN_OPT-b| ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-g| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-s| ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
@@ -242,7 +243,7 @@ to make a file of flowlines in the hotspot reference frame. If you run:
 
     gmt grd2xyz pacific_topo.nc | project -T-75/68 -C0/-90 -Fxyq | xyz2grd -Retc -Ietc -Cflow.nc
 
-then flow.nc is a file in the same area as pacific\_topo.nc, but flow
+then flow.nc is a file in the same area as pacific_topo.nc, but flow
 contains the latitudes about the pole of the projection. You now can use
 grdcontour on flow.nc to draw lines of constant oblique latitude, which
 are flow lines in the hotspot frame.

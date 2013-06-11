@@ -4,22 +4,23 @@ grdsample
 
 grdsample - Resample a grid onto a new lattice
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdsample** *in\_grdfile* **-G**\ *out\_grdfile* [
-**-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
-] [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-T** ] [
-**-V**\ [*level*\ ] ] [ **-f**\ *colinfo* ] [
-**-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*]
-] [ **-r** ]
+**grdsample** *in_grdfile* **-G**\ *out_grdfile*
+[ |SYN_OPT-I| ]
+[ |SYN_OPT-R| ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-n| ]
+[ **-r** ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **grdsample** reads a grid file and interpolates it to create a new grid
 file with either: a different registration (**-r** or **-T**); or, a new
@@ -37,17 +38,17 @@ grid will be the same as the input grid. Either **-r** or **-T** can be
 used to change the grid registration. When omitted, the output grid will
 have the same registration as the input grid. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *in\_grdfile*
-    The name of the input 2-D binary grid file. (See GRID FILE FORMAT
-    below.)
+    The name of the input 2-D binary grid file. (See GRID FILE FORMAT below.)
+
 **-G**\ *out\_grdfile*
     The name of the output grid file. (See GRID FILE FORMAT below.)
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. include:: explain_-I.rst_
 
@@ -67,31 +68,35 @@ have the same registration as the input grid.
 
 .. include:: explain_grd_inout.rst_
 
-`Hints <#toc8>`_
-----------------
+Hints
+-----
 
 If an interpolation point is not on a node of the input grid, then a NaN
 at any node in the neighborhood surrounding the point will yield an
 interpolated NaN. Bicubic interpolation [default] yields continuous
 first derivatives but requires a neighborhood of 4 nodes by 4 nodes.
-Bilinear interpolation [**-n**\ ] uses only a 2 by 2 neighborhood, but
+Bilinear interpolation [**-n**] uses only a 2 by 2 neighborhood, but
 yields only zero-order continuity. Use bicubic when smoothness is
 important. Use bilinear to minimize the propagation of NaNs.
 
-`Examples <#toc9>`_
--------------------
+Examples
+--------
 
-To resample the 5 x 5 minute grid in hawaii\_5by5\_topo.nc onto a 1 minute grid:
+To resample the 5 x 5 minute grid in hawaii_5by5_topo.nc onto a 1 minute grid:
 
-    grdsample hawaii\_5by5\_topo.nc -I1m -Ghawaii\_1by1\_topo.nc
+   ::
+
+    gmt grdsample hawaii_5by5_topo.nc -I1m -Ghawaii_1by1_topo.nc
 
 To translate the gridline-registered file surface.nc to pixel
 registration while keeping the same region and grid interval:
 
-    grdsample surface.nc -T -Gpixel.nc
+   ::
 
-`See Also <#toc10>`_
---------------------
+    gmt grdsample surface.nc -T -Gpixel.nc
+
+See Also
+--------
 
 `gmt <gmt.html>`_, `grdedit <grdedit.html>`_,
 `grdfft <grdfft.html>`_, `grdfilter <grdfilter.html>`_

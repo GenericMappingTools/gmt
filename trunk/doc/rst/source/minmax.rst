@@ -15,12 +15,13 @@ Synopsis
 [ **-S**\ [**x**\ ][**y**] ] [ **-T**\ *dz*\ [/*col*] ]
 [ |SYN_OPT-V| ]
 [ **-bi**\ [*ncols*\ ][*type*\ ] ]
-[ **-f**\ [\ **i**\ \|\ **o**]\ *colinfo* ]
+[ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
-[ **-h**\ [**i**\ \|\ **o**][*n*] ]
+[ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
-[ **-o**\ *cols*\ [,\ *...*] ]
-[ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
+[ |SYN_OPT-o| ]
+[ **-r** ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
@@ -38,13 +39,13 @@ and *dy* are needed), or the output will be in column form for as many
 columns as there are increments provided. A similar option (**-T**) will
 provide a **-T**\ *zmin/zmax/dz* string for makecpt. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 None.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
@@ -121,8 +122,8 @@ None.
 
 .. include:: explain_precision.rst_
 
-`Examples <#toc7>`_
--------------------
+Examples
+--------
 
 To find the extreme values in the file ship\_gravity.xygd:
 
@@ -141,7 +142,7 @@ and use this region to draw a line using psxy, run
 
   ::
 
-    psxy `minmax -I5 track.xy` track.xy -Jx1 -B5 -P > track.ps
+    gmt psxy `minmax -I5 track.xy` track.xy -Jx1 -B5 -P > track.ps
 
 To find the min and max values for each of the first 4 columns, but
 rounded to integers, and return the result individually for each data
@@ -149,7 +150,7 @@ file, use
 
   ::
 
-    minmax profile_*.txt -C -I1/1/1/1
+    gmt minmax profile_*.txt -C -I1/1/1/1
 
 Bugs
 ----
