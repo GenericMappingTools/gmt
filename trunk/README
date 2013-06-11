@@ -25,12 +25,13 @@ more portable.  This is likely to mean that your platform is not
 POSIX compliant.  For a non-UNIX solution, see Appendix L for options
 and installation details.
 
-Note there are two GMT tar archives available:
+Note there are three GMT tar archives available:
 
-1. gmt-5.0.0b.tar.bz2:          The GMT distribution
-2. gshhg-gmt-nc4-2.2.1.tar.bz2: All five resolutions of GSHHG coastline data
+1. gmt-5.0.0b.tar.bz2:          The GMT 5 distribution
+2. gshhg-gmt-nc4-2.2.3.tar.gz:	All five resolutions of GSHHG coastline data
+2. dcw-gmt-1.0.2.tar.bz2: 	Digital Chart of the World polygon data
 
-The archives are available in bzip2 (*.bz2) format.
+The archives are available in bzip2 (*.bz2) and gzip (*.gz) formats.
 If you do not have bzip2 installed you can obtain source or executables
 from http://www.bzip.org.
 
@@ -124,13 +125,13 @@ it is inconvenient to convert, say, 1" to 2.54 cm; we use 2.5 cm
 instead.  Although strongly discouraged, if you want to make
 permanent changes to some of the defaults you can edit the
 gmtdefaults_{SI,US} files directly.  A much better approach is to
-create a .gmtdefaults4 file in your home directory and edit those
+create a gmt.conf file in your home directory and edit those
 settings since GMT will check for that file before loading system
 defaults (actually, it will first look in the current directory,
 then the home directory, and then finally in share).  See the gmtdefaults
 man page for a description of all defaults.
 
-To prevent two GMT processes writing to the same .gmtcommands4 file
+To prevent two GMT processes writing to the same gmt.conf file
 simultaneously (thereby corrupting it), GMT can implement the POSIX
 advisory file locking scheme and sets and releases locks on these
 files.  Under GNU/Linux, this does not work when the files reside
@@ -138,20 +139,6 @@ in directories mounted with NFS.  Since it works with NFS under
 other UNIX systems we suspect this is a [temporary] limitation of GNU
 NSF.  If you want to activate file locking you may enable it in
 cmake/ConfigUser.cmake.
-
-GMT can produce either Freeform PostScript (suitable to be sent to
-various printers) or Encapsulated PostScript (suitable to be included
-in another document).  True PS files will use the setpagedevice
-PostScript command to manipulate paper trays and manual feeds
-on selected printers.  Some PostScript previewers (such as Sun's
-old pageview) do not understand these commands and will abort; this
-is also true of some PS to raster conversion utilities.  On the other
-hand, EPS files are intended to be included in another document and
-are not allowed to use setpagedevice.  To simplify printing, EPS files
-are allowed to contain a showpage operator which means EPS files will
-print if sent to a printer.  The PAPER_MEDIA setting in .gmtdefaults4
-can be set to one or the other format (see man gmtdefaults).  By
-default GMT will produce PS files.
 
 We provide two install modes via CMake: You have the choice between a
 monolithic installation (GMT_INSTALL_MONOLITHIC=ON) where everything goes
@@ -246,21 +233,15 @@ GMT or simply perform data manipulation.  In addition, misc.
 code developed by us depend on GMT libraries.
 Currently, the supplemental archive include the directories:
 
-  dbase     - Data extractor for global gridded data sets such
-              as those on CD-ROM from NGDC.
   gshhs     - Data extractor for GSHHS shoreline polygons.
   imgsrc    - Data extractor for Smith/Sandwell altimetry grids.
   meca      - Plotting of focal mechanisms, velocity arrows,
               and error ellipses on maps.
-  mgg       - Programs for MGD-77 data in .gmt format.
   mgd77     - Programs for handling of native MGD77 files.
-  misc      - psmegaplot, makepattern, gmtdigitize,
-              gmtstitch, gmtdp, and nc2xy
+  misc      - dimfilter
   segyprogs - Plotting SEGY seismic data sets.
-  sph       - Spherical interpolation and triangulation.
   spotter   - Plate tectonic & kinematics applications.
   x2sys     - Track intersection (crossover) tools.
-  x_system  - Track intersection (crossover) tools (old version).
 
 Example Scripts
 ---------------
@@ -284,13 +265,6 @@ Before running programs, there are a few things you should do/know:
     understanding of how gmt "works", its option lists, I/O, and composite
     plot mechanisms.  Then, before running individual gmt programs, read
     the associated man page.
-
-  - Do not confuse the GMT-system with the GMT-database that was
-    initiated at Lamont-Doherty Earth Observatory.  These
-    marine geophysical data files (Gravity, Magnetics, Topography)
-    are NOT distributed with the GMT-system!  [However, programs that
-    deal with gmt-files can be found in the supplemental tar archive.
-
 
 A reminder
 ----------

@@ -1071,15 +1071,15 @@ int GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, int family, int object_ID, int 
 	 /* Search for the object in the active list.  However, if object_ID == GMT_NOTSET we pick the first in that direction */
 	
 	for (i = 0, item = GMT_NOTSET; item == GMT_NOTSET && i < API->n_objects; i++) {
-		if (!API->object[i]) continue;	/* Empty object */
-		if (direction != GMT_NOTSET && API->object[i]->status != GMT_IS_UNUSED) continue;	/* Already used this object */
-		if (!(family == GMT_NOTSET || (s_value = API->object[i]->family) == family)) continue;	/* Not the required data type */
+		if (!API->object[i]) continue;									/* Empty object */
+		if (direction != GMT_NOTSET && API->object[i]->status != GMT_IS_UNUSED) continue;		/* Already used this object */
+		if (!(family == GMT_NOTSET || (s_value = API->object[i]->family) == family)) continue;		/* Not the required data type */
 		if (object_ID == GMT_NOTSET && (s_value = API->object[i]->direction) == direction) item = i;	/* Pick the first object with the specified direction */
 		if (object_ID == GMT_NOTSET && !(API->object[i]->family == GMT_IS_DATASET || API->object[i]->family == GMT_IS_TEXTSET)) continue;	/* Must be data/text-set */
 		else if (direction == GMT_NOTSET && (s_value = API->object[i]->ID) == object_ID) item = i;	/* Pick the requested object regardless of direction */
 		else if ((s_value = API->object[i]->ID) == object_ID) item = i;					/* Pick the requested object */
 	}
-	if (item == GMT_NOTSET) { API->error = GMT_NOT_A_VALID_ID; return (GMT_NOTSET); }		/* No such object found */
+	if (item == GMT_NOTSET) { API->error = GMT_NOT_A_VALID_ID; return (GMT_NOTSET); }			/* No such object found */
 
 	/* OK, we found the object; is it the right kind (input or output)? */
 	if (direction != GMT_NOTSET && (s_value = API->object[item]->direction) != direction) {
@@ -3785,7 +3785,7 @@ int GMT_Write_Data (void *V_API, unsigned int family, unsigned int method, unsig
 		if ((out_ID = GMTAPI_Memory_Registered (API, family, GMT_OUT, output)) != GMT_NOTSET) {	/* Output is a memory resource */
 			int in_ID = GMT_NOTSET,  in_item = GMT_NOTSET;
 			in_ID = GMTAPI_Get_Object (API, family, data);	/* Get the object ID of the input source */
-			if (in_ID != GMT_NOTSET) in_item = GMTAPI_Validate_ID (API, family, in_ID, GMT_IN);	/* Get the item in the API array */
+			if (in_ID != GMT_NOTSET) in_item = GMTAPI_Validate_ID (API, family, in_ID, GMT_NOTSET);	/* Get the item in the API array */
 			if (in_item != GMT_NOTSET) {
 				GMT_Report (API, GMT_MSG_DEBUG, "GMT_Write_Data: Writing %s to memory object %d from object %d which transfers ownership\n", GMT_family[family], out_ID, in_ID);
 				API->object[in_item]->no_longer_owner = true;	/* Since we have passed the content onto an output object */
@@ -5494,13 +5494,13 @@ int GMT_copy (struct GMTAPI_CTRL *API, unsigned int family, unsigned int directi
 		case GMT_IS_DATASET:	/* Pass geometry as point since PLP or POLY would auto-close the polygons */
 			if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, ifile, NULL)) == NULL)
 				return (API->error);
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, D->geometry, D->io_mode, NULL, ofile, D) != GMT_OK)
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, D->geometry, D->io_mode | GMT_IO_RESET, NULL, ofile, D) != GMT_OK)
 				return (API->error);
 			break;
 		case GMT_IS_TEXTSET:
 			if ((T = GMT_Read_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, ifile, NULL)) == NULL)
 				return (API->error);
-			if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, T->io_mode, NULL, ofile, T) != GMT_OK)
+			if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, T->io_mode | GMT_IO_RESET, NULL, ofile, T) != GMT_OK)
 				return (API->error);
 			break;
 		case GMT_IS_GRID:
@@ -5508,7 +5508,7 @@ int GMT_copy (struct GMTAPI_CTRL *API, unsigned int family, unsigned int directi
 			if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_READ_NORMAL, wesn, ifile, NULL)) == NULL)
 				return (API->error);
 			wesn = (direction == GMT_OUT && API->GMT->common.R.active) ? API->GMT->common.R.wesn : NULL;
-			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, wesn, ofile, G) != GMT_OK)
+			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL | GMT_IO_RESET, wesn, ofile, G) != GMT_OK)
 				return (API->error);
 			break;
 		case GMT_IS_IMAGE:
@@ -5516,13 +5516,13 @@ int GMT_copy (struct GMTAPI_CTRL *API, unsigned int family, unsigned int directi
 			if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_READ_NORMAL, wesn, ifile, NULL)) == NULL)
 				return (API->error);
 			wesn = (direction == GMT_OUT && API->GMT->common.R.active) ? API->GMT->common.R.wesn : NULL;
-			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, wesn, ofile, I) != GMT_OK)
+			if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL | GMT_IO_RESET, wesn, ofile, I) != GMT_OK)
 				return (API->error);
 			break;
 		case GMT_IS_CPT:
 			if ((C = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, ifile, NULL)) == NULL)
 				return (API->error);
-			if (GMT_Write_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, C->cpt_flags, NULL, ofile, C) != GMT_OK)
+			if (GMT_Write_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, C->cpt_flags | GMT_IO_RESET, NULL, ofile, C) != GMT_OK)
 				return (API->error);
 			break;
 	}
