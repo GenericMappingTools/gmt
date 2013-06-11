@@ -653,7 +653,8 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 		/* Here we either have closed a polygon or still have a (possibly much longer) open line segment */
 		/* This id should be the beginning of a segment.  Now trace forward and dump out the chain */
 
-		T[CLOSED][out_seg] = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);		/* Get a new segment structure... */
+		//T[CLOSED][out_seg] = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);		/* Get a new segment structure... */
+		T[OPEN][out_seg] = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);		/* Get a new segment structure... */
 		GMT_alloc_segment (GMT, T[OPEN][out_seg], n_alloc_pts, n_columns, true);	/* ...with enough rows */
 
 		if (n_steps == 1)
