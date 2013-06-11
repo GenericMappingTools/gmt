@@ -152,7 +152,7 @@ struct GRDVIEW_POINT *get_point (struct GMT_CTRL *GMT, double x, double y)
 }
 
 #if 0
-/* Removed this because it yields unpredictable results, making it impossible to line up different 3D plots */
+/* RS: Removed this because it yields unpredictable results, making it impossible to line up different 3D plots */
 
 void grdview_init_setup (struct GMT_CTRL *GMT, struct GMT_GRID *Topo, int draw_plane, double plane_level)
 {

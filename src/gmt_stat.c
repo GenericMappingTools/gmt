@@ -1255,62 +1255,6 @@ double GMT_zcrit (struct GMT_CTRL *GMT, double alpha)
 	return (sign * M_SQRT2 * GMT_erfinv (GMT, 1.0 - alpha));
 }
 
-#if 0
-/* double qsnorm(p)
- * double	p;
- *
- * Function to invert the cumulative normal probability
- * function.  If z is a standardized normal random deviate,
- * and Q(z) = p is the cumulative Gaussian probability
- * function, then z = qsnorm(p).
- *
- * Note that 0.0 < p < 1.0.  Data values outside this range
- * will return +/- a large number (1.0e6).
- * To compute p from a sample of data to test for Normalcy,
- * sort the N samples into non-decreasing order, label them
- * i=[1, N], and then compute p = i/(N+1).
- *
- * Author:	Walter H. F. Smith
- * Date:	19 February, 1991.
- *
- * Based on a Fortran subroutine by R. L. Parker.  I had been
- * using IMSL library routine DNORIN(DX) to do what qsnorm(p)
- * does, when I was at the Lamont-Doherty Geological Observatory
- * which had a site license for IMSL.  I now need to invert the
- * gaussian CDF without calling IMSL; hence, this routine.
- *
- */
-
-double qsnorm (double p)
-{
-	double	t, z;
-
-	if (p <= 0.0) {
-		fprintf (stderr, "qsnorm:  Bad probability.\n");
-		return (-1.0e6);
-	}
-	else if (p >= 1.0) {
-		fprintf (stderr, "qsnorm:  Bad probability.\n");
-		return (1.0e6);
-	}
-	else if (p == 0.5) {
-		return (0.0);
-	}
-	else if (p > 0.5) {
-		t = sqrt(-2.0 * log(1.0 - p) );
-		z = t - (2.515517 +t*(0.802853 +t*0.010328))/
-			(1.0 + t*(1.432788 + t*(0.189269+ t*0.001308)));
-		return (z);
-	}
-	else {
-		t = sqrt(-2.0 * log(p) );
-		z = t - (2.515517 +t*(0.802853 +t*0.010328))/
-			(1.0 + t*(1.432788 + t*(0.189269+ t*0.001308)));
-		return (-z);
-	}
-}
-#endif
-
 double GMT_tcrit (struct GMT_CTRL *GMT, double alpha, double nu)
 {
 	/* Critical values for Student t-distribution */
