@@ -2048,6 +2048,7 @@ struct GMT_PALETTE * GMT_create_palette (struct GMT_CTRL *GMT, uint64_t n_colors
 	P->n_colors = (unsigned int)n_colors;
 	P->alloc_mode = GMT_ALLOCATED_BY_GMT;		/* Memory can be freed by GMT. */
 	P->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
+	P->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 	
 	return (P);
 }

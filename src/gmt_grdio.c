@@ -1966,6 +1966,7 @@ struct GMT_GRID * GMT_create_grid (struct GMT_CTRL *GMT)
 	GMT_grd_init (GMT, G->header, NULL, false); /* Set default values */
 	G->alloc_mode = GMT_ALLOCATED_BY_GMT;		/* Memory can be freed by GMT. */
 	G->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
+	G->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 	return (G);
 }
 

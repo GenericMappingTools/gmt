@@ -176,8 +176,8 @@ int Gmtaverage_Parse (void *API, struct PROG_CTRL *Ctrl, struct GMT_OPTION *opti
 
 int main (int argc, char *argv[])
 {
-	int error = 0, mod_ID;
-
+	int error = 0;
+	char *module = NULL;
 	struct GMT_OPTION *options = NULL, *t_ptr = NULL;
 	struct PROG_CTRL *Ctrl = NULL;
 	void *API = NULL;
@@ -204,23 +204,23 @@ int main (int argc, char *argv[])
 	switch (t_ptr->arg[0]) {	/* Determine what GMT_block* module we need */
 		case 'm': case 'n': case 's': case 'w':	/* Call blockmean */
 			t_ptr->option = 'S';	/* Since blockmean uses -S, not -T to select type */
-			mod_ID = GMT_ID_BLOCKMEAN;
+			module = "blockmean";
 			break;
 		case 'e':	/* Call blockmedian */
 			GMT_Delete_Option (API, t_ptr);	/* Since -Te = -T0.5 is the default */
-			mod_ID = GMT_ID_BLOCKMEDIAN;
+			module = "blockmedian";
 			break;
 		case 'o':	/* Call blockmode */
 			GMT_Delete_Option (API, t_ptr);	/* Since no special option -T is known to blockmode */
-			mod_ID = GMT_ID_BLOCKMODE;
+			module = "blockmode";
 			break;
 		default:	/* Call blockmedian for some arbitrary quantile by passing the given -T<q> */
-			mod_ID = GMT_ID_BLOCKMEDIAN;
+			module = "blockmedian";
 			break;
 	}
 	
 	/* Do the main work via the chosen module */
-	if ((error = GMT_Call_Module (API, mod_ID, -1, options))) Exit (error); 	/* If errors then we return that next */
+	if ((error = GMT_Call_Module (API, module, -1, options))) Exit (error); 	/* If errors then we return that next */
 
  	/* Free option list */
 	if (GMT_Destroy_Options (API, &options)) Exit (EXIT_FAILURE);

@@ -23,7 +23,7 @@
  * library (the GMT API), which also depends on the GMT Core library.
  *
  * Author: 	Paul Wessel
- * Date:	20-FEB-2013
+ * Date:	10-JUN-2013
  * Version:	5 API
  */
 
@@ -34,6 +34,10 @@
 extern "C" {
 #endif
 
+/*
+ * We only include the basic include files needed by the API. Users may
+ * need to include others, such as <math.h>, etc.
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -55,19 +59,18 @@ extern "C" {
 #	endif /* _WIN32 */
 #endif /* EXTERN_MSC */
 
-/* Include GMT constants, resources, and module prototypes */
+/* Include GMT constants, option, and resources definitions */
 
 #include "gmt_define.h"
 #include "gmt_option.h"
 #include "gmt_resources.h"
-#include "gmt_module.h"
 
 /*=====================================================================================
  *	GMT API FUNCTION PROTOTYPES
  *=====================================================================================
  */
 
-/* 21 Primary API functions */
+/* 22 Primary API functions */
 EXTERN_MSC void * GMT_Create_Session	(char *tag, unsigned int pad, unsigned int mode, int (*print_func) (FILE *, const char *));
 EXTERN_MSC void * GMT_Create_Data	(void *API, unsigned int family, unsigned int geometry, unsigned int mode, uint64_t dim[], double *wesn, double *inc, unsigned int registration, int pad, void *data);
 EXTERN_MSC void * GMT_Get_Data		(void *API, int object_ID, unsigned int mode, void *data);
@@ -96,7 +99,7 @@ EXTERN_MSC int GMT_Get_ID (void *V_API, unsigned int family, unsigned int direct
 EXTERN_MSC int64_t GMT_Get_Index	(void *API, struct GMT_GRID_HEADER *header, int row, int col);
 EXTERN_MSC double * GMT_Get_Coord	(void *API, unsigned int family, unsigned int dim, void *container);
 
-/* 6 functions to show and inquire about GMT common options, GMT default settings, convert strings to double, and message and report printing */
+/* 6 functions to show and inquire about GMT common options, GMT default settings, convert strings to doubles, and message and report printing */
 
 EXTERN_MSC void GMT_Option		(void *API, char *options);
 EXTERN_MSC int GMT_Get_Common		(void *API, unsigned int option, double *par);
@@ -105,11 +108,10 @@ EXTERN_MSC int GMT_Get_Value		(void *API, char *arg, double *par);
 EXTERN_MSC int GMT_Report		(void *API, unsigned int level, char *message, ...);
 EXTERN_MSC int GMT_Message		(void *API, unsigned int mode, char *format, ...);
 
-/* 3 functions to find, list, and call the GMT_N_MODULES GMT modules */
+/* 2 functions to list and call the GMT_N_MODULES GMT modules */
 
-EXTERN_MSC int GMT_Get_Module		(void *API, char *module_name);
-EXTERN_MSC void GMT_List_Module		(void *API, int module_id);
-EXTERN_MSC int GMT_Call_Module		(void *API, int module_id, int mode, void *args);
+EXTERN_MSC int GMT_List_Module		(void *API, const char *module);
+EXTERN_MSC int GMT_Call_Module		(void *API, const char *module, int mode, void *args);
 
 /* 12 secondary functions for argument and option parsing */
 
