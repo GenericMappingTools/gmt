@@ -159,6 +159,30 @@ complex illustration.
    gallery/ex40.rst
 
 
+Animations
+----------
+
+.. toctree::
+   :maxdepth: 2
+
+   gallery/anim_introduction.rst
+
++------------------+----------------+
+|:ref:`anim_01`    | :ref:`anim_02` |
+|                  |                |
+| |anim01|         | |anim02|       |
++------------------+----------------+
+|:ref:`anim_03`    | :ref:`anim_04` |
+|                  |                |
+| |anim03|         | |anim04|       |
++------------------+----------------+
+
+.. include:: gallery/img_anim_01.rst_
+.. include:: gallery/img_anim_02.rst_
+.. include:: gallery/img_anim_03.rst_
+.. include:: gallery/img_anim_04.rst_
+
+
 Users Contributions
 -----------------------
 
@@ -166,6 +190,10 @@ Users Contributions
    :hidden:
 
    gallery/vertical_slice.rst
+   gallery/anim01.rst
+   gallery/anim02.rst
+   gallery/anim03.rst
+   gallery/anim04.rst
 
 ======= =============================================
 ======= =============================================

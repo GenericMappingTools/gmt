@@ -50,6 +50,17 @@ echo ".. |ex$1| image:: ../${path_build}/${name}.png" > ${pato2}/img_${name}.rst
 echo "   :width: 150 px" >> ${pato2}/img_${name}.rst_
 }
 
+function from_animations {
+gmt ps2raster ../examples/anim$1/anim_$1.ps $com
+echo ".. figure:: ../../${path_build}/${name}.png" > ${pato2}/fig_${name}.rst_
+echo "   :width: 400 px" >> ${pato2}/fig_${name}.rst_
+echo "   :align: center" >> ${pato2}/fig_${name}.rst_
+echo "" >> ${pato2}/fig_${name}.rst_
+
+echo ".. |anim$1| image:: ../${path_build}/${name}.png" > ${pato2}/img_${name}.rst_
+echo "   :width: 150 px" >> ${pato2}/img_${name}.rst_
+}
+
 function from_fig {
 W=`gmt grdinfo -C ../fig/${name} | awk '{print $3}'`
 H=`gmt grdinfo -C ../fig/${name} | awk '{print $5}'`
@@ -60,6 +71,15 @@ echo "    :align: center" >> ${pato}/fig_${name}.rst_
 echo "    :scale: 50 %" >> ${pato}/fig_${name}.rst_
 echo "" >> ${pato}/fig_${name}.rst_
 }
+
+name=anim_01;	from_animations 01
+echo "   Animation of a simple sine function." >> ${pato2}/fig_${name}.rst_
+name=anim_02;	from_animations 02
+echo "   Animation of a DEM using variable illumination." >> ${pato2}/fig_${name}.rst_
+name=anim_03;	from_animations 03
+echo "   Orbiting a static map." >> ${pato2}/fig_${name}.rst_
+name=anim_04;	from_animations 04
+echo "   Flying over topography." >> ${pato2}/fig_${name}.rst_
 
 name=example_01;	from_examples 01
 echo "   Contour maps of gridded data." >> ${pato2}/fig_${name}.rst_
