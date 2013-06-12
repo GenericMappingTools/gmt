@@ -96,8 +96,8 @@ struct GMTAPI_DATA_OBJECT {
 	enum GMT_enum_method method;		/* One of GMT_IS_{FILE,STREAM,FDESC,DUPLICATE,REFERENCE} */
 	enum GMT_enum_geometry geometry;	/* One of GMT_IS_{POINT|LINE|POLY|PLP|SURFACE|NONE} */
 	double wesn[GMTAPI_N_GRID_ARGS];	/* Grid domain limits */
-	void *resource;				/* Points to registered data container (if appropriate) */
-	void *data;				/* Points to container associated with this object [for garbage collection purposes] */
+	void *resource;				/* Points to registered filename, memory location, etc. where data will be obtained from */
+	void *data;				/* Points to GMT object that was read or written */
 	FILE *fp;				/* Pointer to source/destination stream [For rec-by-rec procession, NULL if memory location] */
 	char *filename;				/* Filename, stream, of file handle (otherwise NULL) */
 	void * (*import) (struct GMT_CTRL *, FILE *, uint64_t *, int *);	/* Pointer to input function (for DATASET/TEXTSET only) */

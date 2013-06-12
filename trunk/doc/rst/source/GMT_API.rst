@@ -398,7 +398,7 @@ Overview of the GMT C Application Program Interface
 Users who wish to create their own *GMT* application based on the API
 must make sure their program goes through the steps below; details for
 each step will be revealed in the following chapter. We have kept the
-API simple: In addition to the *GMT* modules, there are only 20 public
+API simple: In addition to the *GMT* modules, there are only 52 public
 functions to become familiar with, but most applications will only use a
 small subset of this selection. Functions either return an integer error
 code (when things go wrong; otherwise it is set to GMT_OK (0)), or they
@@ -514,11 +514,17 @@ Table [tbl:API] gives a list of all the functions and their purpose.
 +-------------------------+---------------------------------------------------+
 | GMT_Get_Data_           | Import a registered data resources                |
 +-------------------------+---------------------------------------------------+
+| GMT_Get_Default_        | Obtain as string one of the GMT default settings  |
++-------------------------+---------------------------------------------------+
+| GMT_Get_ID_             | Obtain the ID of a given resource                 |
++-------------------------+---------------------------------------------------+
 | GMT_Get_Index_          | Convert row, col into a grid or image index       |
 +-------------------------+---------------------------------------------------+
 | GMT_Get_Record_         | Import a single data record                       |
 +-------------------------+---------------------------------------------------+
 | GMT_Get_Row_            | Import a single grid row                          |
++-------------------------+---------------------------------------------------+
+| GMT_Get_Value_          | Convert string into coordinates or dimensions      |
 +-------------------------+---------------------------------------------------+
 | GMT_Init_IO_            | Initialize i/o given registered resources         |
 +-------------------------+---------------------------------------------------+
@@ -532,7 +538,7 @@ Table [tbl:API] gives a list of all the functions and their purpose.
 +-------------------------+---------------------------------------------------+
 | GMT_Parse_Common_       | Parse the GMT common options                      |
 +-------------------------+---------------------------------------------------+
-| GMT_Put_Data_           | Export to a registered data resource              |
+| GMT_Put_Data_           | Export to a registered data resource given by ID  |
 +-------------------------+---------------------------------------------------+
 | GMT_Put_Record_         | Export a data record                              |
 +-------------------------+---------------------------------------------------+
@@ -544,7 +550,7 @@ Table [tbl:API] gives a list of all the functions and their purpose.
 +-------------------------+---------------------------------------------------+
 | GMT_Report_             | Issue a message contingent upon verbosity level   |
 +-------------------------+---------------------------------------------------+
-| GMT_Retrieve_Data_      | Obtained link to data in memory                   |
+| GMT_Retrieve_Data_      | Obtained link to data in memory via ID            |
 +-------------------------+---------------------------------------------------+
 | GMT_Set_Comment_        | Assign a comment to a data resource               |
 +-------------------------+---------------------------------------------------+
@@ -917,7 +923,10 @@ space for the array. Alternatively, you can pass
 and call a second time, passing ``GMT_GRID_DATA_ONLY``, to allocate
 space for the array. In that second call you pass the pointer returned
 by the first call as ``data`` and specify the family; all other
-arguments should be NULL or 0. The function returns a pointer to the
+arguments should be NULL or 0. Normally, resources created by this
+function are considered to be input (i.e., have a direction that is GMT_IN).
+You can change that to GMT_OUT by adding in the bit flag GMT_VIA_OUTPUT.
+The function returns a pointer to the
 data container. In case of an error we return a NULL pointer and pass an
 error code via ``API->error``.
 
@@ -942,9 +951,33 @@ are addressed by
 
 which returns a pointer to the allocated resource. Specify which
 ``family`` and select ``mode`` from ``GMT_DUPLICATE_DATA``,
-``GMT_DUPLICATE_ALLOC``, and ``GMT_DUPLICATE_NONE``, as discussed above.
+``GMT_DUPLICATE_ALLOC``, and ``GMT_DUPLICATE_NONE``, as discussed above
+(also see ``mode`` discussion above).
 The ``data`` is a pointer to the resource you wish to duplicate. In case
 of an error we return a NULL pointer and pass an error code via
+``API->error``.
+
+Get resource ID
+---------------
+
+[sec:getID]
+
+Resources created by these two methods can be used as in various ways.
+Sometimes you want to pass them as input to other modules, in which
+case you need to registration ID of that resource. This task
+are performed by
+
+.. _GMT_Get_ID:
+
+  ::
+
+    void *GMT_Get_ID (void *API, unsigned int family,
+                              unsigned int direction, void *data);
+
+which returns the ID number of the allocated resource. Specify which
+``family`` and select ``direction`` from ``GMT_IN`` or ``GMT_OUT``.
+The ``data`` is a pointer to the resource you whose ID you need. In case
+of an error we return GMT_NOTSET (-1) and pass an error code via
 ``API->error``.
 
 Import Data
@@ -1510,7 +1543,7 @@ You can have your program menu display the standard usage message for a
 
   ::
 
-    void GMT_Option (void *API, char *options);
+    int GMT_Option (void *API, char *options);
 
 where ``options`` is a comma-separated list of *GMT* common options
 (e.g., “R,J,O,X”). You can repeat this function with different sets of
@@ -1579,7 +1612,7 @@ tedious to program. You can simplify this by using
     int GMT_Get_Value (void *API, char *arg, double par[]);
 
 where ``arg`` is the text item with one or more values that are
-separated by commas, space, or slashes, and ``par`` is an array long
+separated by commas, spaces, or slashes, and ``par`` is an array long
 enough to hold all the items you are parsing. The function returns the
 number of items parsed, or -1 if there is an error. For instance, assume
 the character string ``origin`` was given by the user as two geographic
