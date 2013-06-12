@@ -2354,8 +2354,8 @@ int GMT_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I) 
 	}
 
 	I->ColorInterp  = from_gdalread->ColorInterp;		/* Must find out how to release this mem */
-	I->ProjRefPROJ4 = from_gdalread->ProjectionRefPROJ4;
-	I->ProjRefWKT   = from_gdalread->ProjectionRefWKT;
+	I->header->ProjRefPROJ4 = from_gdalread->ProjectionRefPROJ4;
+	I->header->ProjRefWKT   = from_gdalread->ProjectionRefWKT;
 	I->header->inc[GMT_X] = from_gdalread->hdr[7];
 	I->header->inc[GMT_Y] = from_gdalread->hdr[8];
 	I->header->nx = from_gdalread->RasterXsize;

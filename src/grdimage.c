@@ -466,7 +466,8 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 		Ctrl->In.do_rgb = (I->header->n_bands >= 3);
 		n_grids = 0;	/* Flag that we are using a GMT_IMAGE */
 
-		if (I->ProjRefPROJ4 != NULL) GMT_Report (API, GMT_MSG_VERBOSE, "Data projection (Proj4 type)\n\t%s\n", I->ProjRefPROJ4);
+		if (I->header->ProjRefPROJ4 != NULL)
+			GMT_Report (API, GMT_MSG_VERBOSE, "Data projection (Proj4 type)\n\t%s\n", I->header->ProjRefPROJ4);
 
 		header_work = I->header;	/* OK, that's what what we'll use to send to GMT_grd_setregion */
 	}
