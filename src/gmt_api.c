@@ -2813,8 +2813,9 @@ int GMTAPI_Destroy_Coord (struct GMTAPI_CTRL *API, double **ptr)
 int GMTAPI_destroy_data_ptr (struct GMTAPI_CTRL *API, unsigned int family, void *ptr, unsigned int *alloc_mode)
 {
 	/* Like GMT_Destroy_Data but takes pointer to data rather than address of pointer.
-	 * We pass true to make sure we free the memory.  SOme objects (grid, matrix, vector) may
+	 * We pass true to make sure we free the memory.  Some objects (grid, matrix, vector) may
 	 * point to externally allocated memory so we return the alloc_mode for those items.
+	 * However, the containers are always allocated by GMT so those can be freed.
 	 */
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
@@ -2854,7 +2855,8 @@ int GMTAPI_destroy_data_ptr (struct GMTAPI_CTRL *API, unsigned int family, void 
 			return (GMTAPI_report_error (API, GMT_NOT_A_VALID_FAMILY));
 			break;		
 	}
-	if (*alloc_mode == GMT_ALLOCATED_BY_GMT) GMT_free (API->GMT, ptr);	/* OK to free our own memory */
+	//if (*alloc_mode == GMT_ALLOCATED_BY_GMT) GMT_free (API->GMT, ptr);	/* OK to free our own memory */
+	GMT_free (API->GMT, ptr);	/* OK to free container */
 	return (GMT_OK);	/* Null pointer */
 }
 
@@ -3779,8 +3781,18 @@ int GMT_Write_Data (void *V_API, unsigned int family, unsigned int method, unsig
 	
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 
-	if (output) {	/* Case 1: Save to a single specified destination.  Register it first. */
-		if ((out_ID = GMTAPI_Memory_Registered (API, family, GMT_OUT, output)) != GMT_NOTSET) {	/* Output is a memory resource */
+	if (output) {	/* Case 1: Save to a single specified destination (file or memory).  Register it first. */
+		if ((out_ID = GMTAPI_Memory_Registered (API, family, GMT_OUT, output)) != GMT_NOTSET) {
+			/* Output is a memory resource, passed via a @GMTAPI@-###### file name, and ###### is the out_ID.
+			   In this case we must make some further checks.  We need to find the API object that holds data.
+			   We do this below and get in_ID (the id of the data to write), whie out_ID is the id of where
+			   things go (the output "memory").  Having the in_ID we get the array index in_item that matches
+			   this ID and of the correct family.  We set direction to GMT_NOTSET since otherwise we may be
+			   denied a hit as we dont really know what the direction is for in_ID.  Once in_item has been
+			   secured we transfer ownership of this data from the in_ID object to the out_ID object.  That
+			   way we avoid accidental premature freeing of the data object via the in_ID object since it now
+			   will live on via out_ID and outlive the current module.
+			    */
 			int in_ID = GMT_NOTSET,  in_item = GMT_NOTSET;
 			in_ID = GMTAPI_Get_Object (API, family, data);	/* Get the object ID of the input source */
 			if (in_ID != GMT_NOTSET) in_item = GMTAPI_Validate_ID (API, family, in_ID, GMT_NOTSET);	/* Get the item in the API array; pass dir = GMT_NOTSET to bypass status check */
@@ -3788,7 +3800,7 @@ int GMT_Write_Data (void *V_API, unsigned int family, unsigned int method, unsig
 				GMT_Report (API, GMT_MSG_DEBUG, "GMT_Write_Data: Writing %s to memory object %d from object %d which transfers ownership\n", GMT_family[family], out_ID, in_ID);
 				API->object[in_item]->no_longer_owner = true;	/* Since we have passed the content onto an output object */
 			}
-		}
+		}	/* else it is a regular file and we jsut register it and get the new out_ID needed below */
 		else if ((out_ID = GMT_Register_IO (API, family, method, geometry, GMT_OUT, wesn, output)) == GMT_NOTSET) return_error (API, API->error);
 	}
 	else if (output == NULL && geometry) {	/* Case 2: Save to stdout.  Register stdout first. */
@@ -3798,6 +3810,7 @@ int GMT_Write_Data (void *V_API, unsigned int family, unsigned int method, unsig
 	else {	/* Case 3: output == NULL && geometry == 0, so use the previously registered destination */
 		if ((n_reg = GMTAPI_n_items (API, family, geometry, GMT_OUT, &out_ID)) != 1) return_error (API, GMT_NO_OUTPUT);	/* There is no registered output */
 	}
+	/* With out_ID in hand we can now put the data where it should go */
 	if (GMT_Put_Data (API, out_ID, mode, data) != GMT_OK) return_error (API, API->error);
 
 	return (GMT_OK);	/* No error encountered */
