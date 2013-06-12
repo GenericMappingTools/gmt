@@ -1997,7 +1997,8 @@ unsigned int GMT_free_grid_ptr (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool f
 	if (!G) return 0;	/* Nothing to deallocate */
 	if (G->data && free_grid && G->alloc_mode == GMT_ALLOCATED_BY_GMT) GMT_free_aligned (GMT, G->data);
 	if (G->extra) gmt_close_grd (GMT, G);	/* Close input file used for row-by-row i/o */
-	if (G->header && G->alloc_mode == GMT_ALLOCATED_BY_GMT) GMT_free (GMT, G->header);
+	//if (G->header && G->alloc_mode == GMT_ALLOCATED_BY_GMT) GMT_free (GMT, G->header);
+	if (G->header) GMT_free (GMT, G->header);
 	return (G->alloc_mode);
 }
 
