@@ -111,7 +111,7 @@ EXTERN_MSC int GMT_Message		(void *API, unsigned int mode, char *format, ...);
 
 /* 2 functions to list and call the GMT_N_MODULES GMT modules */
 
-EXTERN_MSC int GMT_List_Module		(void *API, const char *module);
+EXTERN_MSC int GMT_Probe_Module		(void *API, const char *module, unsigned int mode);
 EXTERN_MSC int GMT_Call_Module		(void *API, const char *module, int mode, void *args);
 
 /* 12 secondary functions for argument and option parsing */

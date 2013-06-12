@@ -72,7 +72,7 @@
  *
  * Two functions handle the listing of modules and the calling of any GMT module:
  *
- * GMT_List_Module	: Display purpose of given module (or all if NULL)
+ * GMT_Probe_Module	: Display purpose of given module (or all if NULL)
  * GMT_Call_Module	: Call the specifiec GMT module
  *
  * Two functions are used to get grid index from row, col, and to obtain coordinates
@@ -5168,27 +5168,30 @@ int GMT_FFT_Destroy_ (void *v_K)
 
 /* Module Extension: Allow listing and calling modules by name */
 
-int GMT_List_Module (void *V_API, const char *module)
-{	/* List the usage of this module, or all modules if NULL */
+int GMT_Probe_Module (void *V_API, const char *module, unsigned int mode)
+{	/* mode = GMT_MODULE_EXIST (0):   Return GMT_NOERROR (0) if module exists, GMT_NOT_A_VALID_MODULE otherwise.
+	 * mode = GMT_MODULE_PURPOSE (1): List the usage of module, or all modules if module = NULL */
 	int error = GMT_NOERROR;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
-	if (module == NULL)
+	if (module == NULL) {	/* Did not specify any specific module */
+		if (mode == GMT_MODULE_EXIST) return_error (API, GMT_NOT_A_VALID_ARG);	/* Cannot return status unless module is given */
 		gmt_module_show_all (API);
-	else {
+	}
+	else {	/* Specific module given */
 		enum GMT_MODULE_ID module_id = gmt_module_lookup (API, module);
 		if (module_id == GMT_ID_NONE)
 			error = GMT_NOT_A_VALID_MODULE;
-		else
+		else if (mode == GMT_MODULE_PURPOSE)
 			gmt_module_show_name_and_purpose (API, module_id);
 	}
 	return (error);
 }
 
 #ifdef FORTRAN_API
-int GMT_List_Module_ (const char *module, int *length)
+int GMT_Probe_Module_ (const char *module, unsigned int *mode, int *length)
 {
-	return (GMT_List_Module (GMT_FORTRAN, module));
+	return (GMT_Probe_Module (GMT_FORTRAN, module, *mode));
 }
 #endif
 

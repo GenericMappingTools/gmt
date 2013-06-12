@@ -84,6 +84,10 @@ enum GMT_api_err_enum {
 	GMT_NOTSET  = -1,	/* When something is not set */
 	GMT_NOERROR = 0};	/* Return code when all is well */
 
+enum GMT_module_enum {
+	GMT_MODULE_EXIST  = 0,		/* mode for GMT_Probe_Module to return 0 if it exists */
+	GMT_MODULE_PURPOSE  = 1};	/* mode for GMT_Probe_Module to print purpose of module, or all modules */
+
 /* Array indices for input/output/stderr variables */
 
 enum GMT_io_enum {
