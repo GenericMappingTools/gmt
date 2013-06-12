@@ -244,8 +244,10 @@ struct GMT_GRID_HEADER {
 	unsigned int pad[4];             /* Padding on west, east, south, north sides [2,2,2,2] */
 	unsigned int BC[4];              /* Boundary condition applied on each side via pad [0 = not set, 1 = natural, 2 = periodic, 3 = data] */
 	unsigned int grdtype;            /* 0 for Cartesian, > 0 for geographic and depends on 360 periodicity [see GMT_enum_grdtype above] */
-	char name[GMT_GRID_NAME_LEN256];     /* Actual name of the file after any ?<varname> and =<stuff> has been removed */
+	char name[GMT_GRID_NAME_LEN256]; /* Actual name of the file after any ?<varname> and =<stuff> has been removed */
 	char varname[GMT_GRID_VARNAME_LEN80];/* NetCDF: variable name */
+	const char  *ProjRefPROJ4;       /* To store a referencing system string in PROJ.4 format */
+	const char  *ProjRefWKT;         /* To store a referencing system string in WKT format */
 	int row_order;                   /* NetCDF: k_nc_start_south if S->N, k_nc_start_north if N->S */
 	int z_id;                        /* NetCDF: id of z field */
 	int ncid;                        /* NetCDF: file ID */
@@ -577,8 +579,6 @@ struct GMT_IMAGE {	/* Single container for a user image of data */
 	uint64_t id;			/* The internal number of the data set */
 	unsigned int alloc_level;	/* The level it was allocated at */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0] */
-	const char	*ProjRefPROJ4;
-	const char	*ProjRefWKT;
 	const char	*ColorInterp;
 };
 
