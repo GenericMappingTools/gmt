@@ -91,8 +91,8 @@ have to configure _GSHHG_ROOT_ in cmake/ConfigUser.cmake.
 Finding DCW:
 ~~~~~~~~~~~~~~
 
-DCW (Digital Chart of the World) country polygons are searched in FindDCW.cmake.
-THe DCW data are optional; they are currently used in pscoast -F for painting
+DCW (Digital Chart of the World) country polygons are searched at compile time.
+The DCW data are optional; they are currently used in pscoast -F for painting
 individual countries only.  If CMake cannot auto-find DCW for you then you can
 configure _DCW_ROOT_ in cmake/ConfigUser.cmake.
 
@@ -124,6 +124,9 @@ during installation. You have the choice between a monolithic installation
 subdirectory or a distribution-like installation (PREFIX/bin/gmt-VERSION,
 PREFIX/lib/gmt-VERSION/, PREFIX/share/gmt-VERSION/,
 PREFIX/share/doc/gmt-VERSION/).
+
+GMT is shipped as a single executable.  To install convenience links for GMT
+modules set GMT_INSTALL_EXTERNAL_DOC in cmake/ConfigUser.cmake.
 
 Updating:
 ~~~~~~~~~
