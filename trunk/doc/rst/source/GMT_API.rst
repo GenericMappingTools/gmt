@@ -247,9 +247,7 @@ support via ``GMT_grdimage`` [4]_.
         /* ---- Variables "hidden" from the API ---- */
         unsigned int id;                /* The internal number of the data set */
         enum GMT_enum_alloc alloc_mode; /* Allocation info [0] */
-        unsigned int alloc_level;           /* Level of initial allocation */
-        const char      *ProjRefPROJ4;
-        const char      *ProjRefWKT;
+        unsigned int alloc_level;       /* Level of initial allocation */
         const char      *ColorInterp;
     };
 
@@ -524,7 +522,7 @@ Table [tbl:API] gives a list of all the functions and their purpose.
 +-------------------------+---------------------------------------------------+
 | GMT_Get_Row_            | Import a single grid row                          |
 +-------------------------+---------------------------------------------------+
-| GMT_Get_Value_          | Convert string into coordinates or dimensions      |
+| GMT_Get_Value_          | Convert string into coordinates or dimensions     |
 +-------------------------+---------------------------------------------------+
 | GMT_Init_IO_            | Initialize i/o given registered resources         |
 +-------------------------+---------------------------------------------------+
