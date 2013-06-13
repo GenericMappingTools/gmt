@@ -10,9 +10,11 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **grdraster** [ *filenumber* \| *"text pattern"* ]
-|SYN_OPT-R| [ **-G**\ *grdfile* ]
-[ **-I**\ *xinc*\ [**m**\ \|\ **s**][/\ *yinc*\ [**m**\ \|\ **s**]] ]
-[ **-J**\ *parameters* ] [ |SYN_OPT-V| ]
+|SYN_OPT-R|
+[ **-G**\ *grdfile* ]
+[ |SYN_OPT-I| ]
+[ **-J**\ *parameters* ]
+[ |SYN_OPT-V| ]
 [ **-bo**\ [*ncols*][*type*] ] [ **-o**\ *cols*\ [,...] ]
 
 |No-spaces|
@@ -87,7 +89,7 @@ area extended beyond 360 degrees to allow later filtering, run
 
    ::
 
-    grdraster 1 -R-4/364/-62/62 -I30m -Gdata.nc
+    gmt grdraster 1 -R-4/364/-62/62 -I30m -Gdata.nc
 
 To obtain data for an oblique Mercator projection we need to extract
 more data that is actually used. This is necessary because the output of
@@ -98,14 +100,14 @@ lower left and upper right corners and the desired projection, use
 
    ::
 
-    grdraster ETOPO2 -R160/20/220/30r -Joc190/25.5/292/69/1 -Gdata.nc
+    gmt grdraster ETOPO2 -R160/20/220/30r -Joc190/25.5/292/69/1 -Gdata.nc
 
 To extract data from the 2 min Geoware relief blend and write it as
 binary double precision xyz-triplets to standard output:
 
    ::
 
-    grdraster "2 min Geoware" -R20/25/-10/5 -bo > triplets.b
+    gmt grdraster "2 min Geoware" -R20/25/-10/5 -bo > triplets.b
 
 See Also
 --------
