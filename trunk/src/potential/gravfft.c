@@ -558,7 +558,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 					Grid[0]->data[GMT_IJP(Grid[0]->header,j,i)] += (float)Ctrl->A.z_offset;
 		}
 
-		FFT_info[k] = GMT_FFT_Create (API, Grid[k], GMT_FFT_DIM, 0U, GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);
+		FFT_info[k] = GMT_FFT_Create (API, Grid[k], GMT_FFT_DIM, GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);
 	}
 	
 	K = FFT_info[0];	/* We only need one of these anyway; K is a shorthand */

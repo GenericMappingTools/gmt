@@ -37,7 +37,8 @@ extern "C" {
 
 /*
  * We only include the basic include files needed by the API. Users may
- * need to include others, such as <math.h>, etc.
+ * need to include others, such as <math.h>, etc. In order to be portable
+ * we use uint64_t and int64_t for unsigned and signed long integers.
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -93,7 +94,7 @@ EXTERN_MSC int GMT_Encode_ID		(void *API, char *string, int object_ID);
 EXTERN_MSC int GMT_Get_Row		(void *API, int rec_no, struct GMT_GRID *G, float *row);
 EXTERN_MSC int GMT_Put_Row		(void *API, int rec_no, struct GMT_GRID *G, float *row);
 EXTERN_MSC int GMT_Set_Comment		(void *API, unsigned int family, unsigned int mode, void *arg, void *data);
-EXTERN_MSC int GMT_Get_ID 		(void *V_API, unsigned int family, unsigned int direction, void *resource);
+EXTERN_MSC int GMT_Get_ID 		(void *API, unsigned int family, unsigned int direction, void *resource);
 
 /* 2 functions to relate (row,col) to a 1-D index and to precompute equidistant coordinates for grids and images */
 
@@ -132,14 +133,14 @@ EXTERN_MSC int GMT_Parse_Common				(void *API, char *given_options, struct GMT_O
 /* 8 GMT_FFT_* functions */
 EXTERN_MSC unsigned int GMT_FFT_Option	(void *API, char option, unsigned int dim, char *string);
 EXTERN_MSC void * GMT_FFT_Parse		(void *API, char option, unsigned int dim, char *args);
-EXTERN_MSC void * GMT_FFT_Create	(void *API, void *X, unsigned int dim, unsigned int subdivide, unsigned int mode, void *F);
+EXTERN_MSC void * GMT_FFT_Create	(void *API, void *X, unsigned int dim, unsigned int mode, void *F);
 EXTERN_MSC double GMT_FFT_Wavenumber	(void *API, uint64_t k, unsigned int mode, void *K);
 EXTERN_MSC int GMT_FFT			(void *API, void *X, int direction, unsigned int mode, void *K);
 EXTERN_MSC int GMT_FFT_Destroy		(void *API, void *K);
 EXTERN_MSC int GMT_fft_1d		(void *API, float *data, uint64_t n, int direction, unsigned int mode);
 EXTERN_MSC int GMT_fft_2d		(void *API, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode);
 
-/* 3 F77 basic grid i/ functions */
+/* 3 F77 basic grid i/ functions.  These give basic Fortran programs the ability to read and write any GMT-accessible grid */
 
 EXTERN_MSC int GMT_F77_readgrdinfo_	(unsigned int dim[], double wesn[], double inc[], char *title, char *remark, char *file);
 EXTERN_MSC int GMT_F77_readgrd_		(float *array, unsigned int dim[], double wesn[], double inc[], char *title, char *remark, char *file);

@@ -434,9 +434,10 @@ int gmt_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 	 * style arguments.  We return 5 for GMT5 style, 4 for GMT4 style, 9
 	 * if no decision could be make and -1 if mixing of GMT4 & 5 styles are
 	 * ound = that is an error. */
-	size_t k, last;
+	size_t k, j, last;
 	int gmt4 = 0, gmt5 = 0, n_colons = 0, n_slashes = 0, colon_text = 0, wesn_at_end = 0;
 	bool ignore = false;	/* true if inside a colon-separated string under GMT4 style assumption */
+	bool custom = false;	/* True if -B[p|s][x|y|z]c<filename> was given; then we relax checing for .c (old second) */
 	char mod = 0;
 	
 	if (!in || in[0] == 0) return (9);	/* Just a safety precaution, 9 means "GMT5" syntax but is is an empty string */
@@ -444,7 +445,9 @@ int gmt_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 	k = (in[0] == 'p' || in[0] == 's') ? 1 : 0;	/* Skip p|s in -Bp|s */
 	if (strchr ("xyz", in[k])) gmt5++;		/* Definitively GMT5 */
 	if (k == 0 && !isdigit (in[0]) && strchr ("WESNwesn", in[1])) gmt5++;		/* Definitively GMT5 */
-	
+	j = k;
+	while (j < last && in[j] == 'x' || in[j] == 'y' || in[j] == 'z') j++;
+	custom = (in[j] == 'c');	/* Got -B[p|s][xyz]c<customfile> */
 	for (k = 0; k <= last; k++) {
 		if (k && in[k] == '+' && in[k-1] == '@') {	/* Found a @+ PSL sequence, just skip */
 			continue;	/* Resume processing */
@@ -478,7 +481,7 @@ int gmt_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 				else if (k && (in[k-1] == 'Z' || in[k-1] == 'z')) gmt4++;	/* Z-axis with 3-D box */
 				break;
 			case 'c':	/* If following a number this is unit c for seconds in GMT4 */
-				if (k && (in[k-1] == '.' || isdigit (in[k-1]))) gmt4++;	/* Old-style second unit */
+				if (!custom && k && (in[k-1] == '.' || isdigit (in[k-1]))) gmt4++;	/* Old-style second unit */
 			case 'W': case 'E': case 'S': case 'N': case 'Z': case 'w': case 'e': case 'n': case 'z':	/* Not checking s as confusion with seconds */
 				if (k > 1) wesn_at_end++;	/* GMT5 has -B<WESNwesn> up front while GMT4 usually has them at the end */
 				break;

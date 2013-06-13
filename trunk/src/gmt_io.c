@@ -94,9 +94,9 @@
 #include "gmt_internals.h"
 #include "common_byteswap.h"
 
-unsigned int GMTAPI_n_items (struct GMTAPI_CTRL *API, unsigned int family, unsigned int direction, int *first_ID);
-int GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, int object_ID, unsigned int direction);
-int GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, int family, int object_ID, int direction);
+EXTERN_MSC unsigned int GMTAPI_count_objects (struct GMTAPI_CTRL *API, unsigned int family, unsigned int direction, int *first_ID);
+EXTERN_MSC int GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, int object_ID, unsigned int direction);
+EXTERN_MSC int GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, int family, int object_ID, int direction);
 
 #ifdef HAVE_DIRENT_H_
 #	include <dirent.h>
@@ -5066,7 +5066,7 @@ int gmt_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 	 * prevent us from register the data set separately in order to call GMT_minmax.  We must temporarily
 	 * unregister the output, do our thing, then reregister again. */
 
-	n_reg = GMTAPI_n_items (GMT->parent, GMT_IS_DATASET, GMT_OUT, &object_ID);	/* Are there outputs registered already? */
+	n_reg = GMTAPI_count_objects (GMT->parent, GMT_IS_DATASET, GMT_OUT, &object_ID);	/* Are there outputs registered already? */
 	if (n_reg == 1) {	/* Yes, must save and unregister, then reregister later */
 		if ((item = GMTAPI_Validate_ID (GMT->parent, GMT_IS_DATASET, object_ID, GMT_OUT)) == GMT_NOTSET) return (GMTAPI_report_error (GMT->parent, error));
 		GMT_memcpy (&O, GMT->parent->object[item], 1, struct GMTAPI_DATA_OBJECT);
