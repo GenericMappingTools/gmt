@@ -4,24 +4,24 @@ grdproject
 
 grdproject - Forward and inverse map transformation of grids
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
 **grdproject** *in\_grdfile* **-G**\ *out\_grdfile* **-J**\ *parameters*
-[ **-A**\ [**c\|i\|p\|e\|f\|k\|M\|n\|u**\ ] ] [ **-C**\ [*dx/dy*\ ] ] [
-**-D**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
+[ **-A**\ [**c\|i\|p\|e\|f\|k\|M\|n\|u**\ ] ] [ **-C**\ [*dx/dy*] ] [
+**-D**\ *xinc*\ [*unit*][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
 ] [ **-E**\ *dpi* ] [ **-I** ] [ **-Mc**\ \|\ **i**\ \|\ **p** ] [
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-V**\ [*level*\ ]
-] [
-**-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*]
-] [ **-r** ]
+[ |SYN_OPT-R| ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-n| ]
+[ **-r** ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **grdproject** will do one of two things depending whether **-I** has
 been set. If set, it will transform a gridded data set from a
@@ -42,8 +42,8 @@ NaN.
 The **-R** option can be used to select a map region larger or smaller
 than that implied by the extent of the grid file. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *in\_grdfile*
     2-D binary grid file to be transformed. (See GRID FILE FORMATS below.)
@@ -52,8 +52,8 @@ than that implied by the extent of the grid file.
 
 .. include:: explain_-J.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-A**\ [**c\|i\|p\|e\|f\|k\|M\|n\|u**\ ]
     Force 1:1 scaling, i.e., output (or input, see **-I**) data are in
@@ -98,29 +98,35 @@ than that implied by the extent of the grid file.
 
 .. include:: explain_grd_inout.rst_
 
-`Examples <#toc7>`_
--------------------
+Examples
+--------
 
 To transform the geographical grid dbdb5.nc onto a pixel Mercator grid
 at 300 dpi, run
 
-    grdproject dbdb5.nc -R20/50/12/25 -Jm0.25i -E300 -r -Gdbdb5\_merc.nc
+   ::
 
-To inversely transform the file topo\_tm.nc back onto a geographical grid, use
+    gmt grdproject dbdb5.nc -R20/50/12/25 -Jm0.25i -E300 -r -Gdbdb5_merc.nc
 
-    grdproject topo\_tm.nc -R-80/-70/20/40 -Jt-75/1:500000 -I -D5m -V -Gtopo.nc
+To inversely transform the file topo_tm.nc back onto a geographical grid, use
 
-This assumes, of course, that the coordinates in topo\_tm.nc were
+   ::
+
+    gmt grdproject topo_tm.nc -R-80/-70/20/40 -Jt-75/1:500000 -I -D5m -V -Gtopo.nc
+
+This assumes, of course, that the coordinates in topo_tm.nc were
 created with the same projection parameters.
 
 To inversely transform the file topo\_utm.nc (which is in UTM meters)
 back to a geographical grid we specify a one-to-one mapping with meter
 as the measure unit:
 
-    grdproject topo\_utm.nc -R203/205/60/65 -Ju5/1:1 -I -Mm -Gtopo.nc -V
+   ::
 
-`Restrictions <#toc8>`_
------------------------
+    gmt grdproject topo_utm.nc -R203/205/60/65 -Ju5/1:1 -I -Mm -Gtopo.nc -V
+
+Restrictions
+------------
 
 The boundaries of a projected (rectangular) data set will not
 necessarily give rectangular geographical boundaries (Mercator is one
@@ -128,7 +134,7 @@ exception). In those cases some nodes may be unconstrained (set to NaN).
 To get a full grid back, your input grid may have to cover a larger area
 than you are interested in.
 
-`See Also <#toc9>`_
--------------------
+See Also
+--------
 
 `gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_, `mapproject <mapproject.html>`_

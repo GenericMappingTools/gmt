@@ -11,25 +11,27 @@ Synopsis
 
 **grdimage** *grd\_z* \| *grd\_r grd\_g grd\_b*
 [ **-A**\ *out_img*\ **=**\ *driver* ] [ **-C**\ *cptfile* ]
-[ **-D**\ [**r**\ ] ] **-J**\ *parameters* [
-**-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-Ei**\ [\|\ *dpi*] ] [
-**-G**\ [**f**\ \|\ **b**]\ *color* ] [ **-I**\ *intensfile*\ \|\ *intensity* ] [
-**-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [ **-M** ] [ **-N** ] [
-**-O** ] [ **-P** ] [ **-Q** ]
+[ **-D**\ [**r**\ ] ] **-J**\ *parameters*
+[ |SYN_OPT-U| ]
+[ **-G**\ [**f**\ \|\ **b**]\ *color* ] [ **-I**\ *intensfile*\ \|\ *intensity* ]
+[ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [ **-M** ] [ **-N** ]
+[ **-O** ] [ **-P** ] [ **-Q** ]
 [ |SYN_OPT-Rz| ]
-[ **-T** ] [ **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ]
+[ **-T** ]
+[ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ **-c**\ *copies* ] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ]
+[ |SYN_OPT-c| ]
+[ |SYN_OPT-f| ]
 [ |SYN_OPT-n| ]
 [ |SYN_OPT-p| ]
 [ **-tr** ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **grdimage** reads one 2-D grid file and produces a gray-shaded (or
 colored) map by plotting rectangles centered on each grid node and
@@ -41,7 +43,7 @@ intensities in the (-1,+1) range. Values outside this range will be
 clipped. Such intensity files can be created from the grid using
 **grdgradient** and, optionally, modified by **grdmath** or
 **grdhisteq**. Yet as a third alternative available when GMT is build
-with GDAL support the grd\_z file can be an image referenced or not
+with GDAL support the grd_z file can be an image referenced or not
 (than see **-Dr**). In this case the images can be illuminated with the
 file provided via the **-I** option. Here if image has no coordinates
 those of the intensity file will be used.
@@ -62,8 +64,8 @@ than that implied by the extent of the grid.
 
 A (color) *PostScript* file is output. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *grd\_z* \| *grd\_r grd\_g grd\_b*
     2-D gridded data set (or red, green, blue grids) to be imaged (See
@@ -71,8 +73,8 @@ A (color) *PostScript* file is output.
 
 .. include:: explain_-J.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-A**\ *out\_img*\ **=**\ *driver*
     With GDAL aware versions: save image in a raster format instead of
@@ -89,8 +91,8 @@ A (color) *PostScript* file is output.
     Name of the color palette table (for *grd\_z* only). Alternatively,
     supply the name of a GMT color master CPT [rainbow] and let
     **grdimage** automatically determine a 16-level continuous CPT from
-    the grid’s z-range.
-**-D**\ [**r**\ ]
+    the grid's z-range.
+**-D**\ [**r**]
     Specifies that the grid supplied is an image file to be read via
     GDAL. Obviously this option will work only with **GMT** versions
     built with GDAL support. The image can be indexed or true color
@@ -175,8 +177,8 @@ A (color) *PostScript* file is output.
 .. include:: explain_grd_input.rst_
 
 
-`Imaging Grids With Nans <#toc7>`_
-----------------------------------
+Imaging Grids With Nans
+-----------------------
 
 Be aware that if your input grid contains patches of NaNs, these patches
 can become larger as a consequence of the resampling that must take
@@ -184,47 +186,58 @@ place with most map projections. Because **grdimage** uses the
 *PostScript* colorimage operator, for most non-linear projections we
 must resample your grid onto an equidistant rectangular lattice. If you
 find that the NaN areas are not treated adequately, consider (a) use a
-linear projection, or (b) use **grdview** **-Ts** instead.
+linear projection, or (b) use `grdview <grdview.html>`__ **-Ts** instead.
 
-`Examples <#toc8>`_
--------------------
+Examples
+--------
 
 For a quick-and-dirty color map of the data in the file stuff.nc, with
 the maximum map dimension limited to be 6 inches, try
 
-    grdimage stuff.nc -JX6i+ > quick.ps
+   ::
 
-To gray-shade the file hawaii\_grav.nc with shades given in shades.cpt
+    gmt grdimage stuff.nc -JX6i+ > quick.ps
+
+To gray-shade the file hawaii_grav.nc with shades given in shades.cpt
 on a Lambert map at 1.5 cm/degree along the standard parallels 18 and
 24, and using 1 degree tickmarks:
 
-    grdimage hawaii\_grav.nc **-Jl**\ 18/24/1.5\ **c** -Cshades.cpt -B1 > hawaii\_grav\_image.ps
+   ::
+
+    gmt grdimage hawaii_grav.nc -Jl18/24/1.5c -Cshades.cpt -B1 > hawaii_grav_image.ps
 
 To create an illuminated color *PostScript* plot of the gridded data set
 image.nc, using the intensities provided by the file intens.nc, and
 color levels in the file colors.cpt, with linear scaling at 10
 inch/x-unit, tickmarks every 5 units:
 
-    grdimage image.nc **-Jx**\ 10\ **i** -Ccolors.cpt -Iintens.nc -B5 > image.ps
+   ::
+
+    gmt grdimage image.nc -Jx10i -Ccolors.cpt -Iintens.nc -B5 > image.ps
 
 To create an false color *PostScript* plot from the three grid files
 red.nc, green.nc, and blue.nc, with linear scaling at 10 inch/x-unit,
 tickmarks every 5 units:
 
-    grdimage red.nc green.nc blue.nc **-Jx**\ 10\ **i** -B5 > rgbimage.ps
+   ::
+
+    gmt grdimage red.nc green.nc blue.nc -Jx10i -B5 > rgbimage.ps
 
 When GDAL support is built in: To create a sinusoidal projection of a
 remotely located Jessica Rabbit
 
-    grdimage -JI15c -Rd -Dr
-    `http://larryfire.files.wordpress.com/2009/07/untooned\_jessicarabbit.jpg <http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg>`_
-    -P > jess.ps
+   ::
 
-`See Also <#toc9>`_
--------------------
+    gmt grdimage -JI15c -Rd -Dr
+        `http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg \
+        <http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg>`_
+        -P > jess.ps
+
+See Also
+--------
 
 `gmt <gmt.html>`_, `grd2rgb <grd2rgb.html>`_,
 `grdcontour <grdcontour.html>`_,
-`grdview <grdview.html>`_,
+`grdview <grdview.html>`__,
 `grdgradient <grdgradient.html>`_,
 `grdhisteq <grdhisteq.html>`_

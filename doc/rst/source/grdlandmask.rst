@@ -4,8 +4,8 @@ grdlandmask
 
 grdlandmask - Create a "wet-dry" mask grid from shoreline data base
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
@@ -18,21 +18,21 @@ grdlandmask - Create a "wet-dry" mask grid from shoreline data base
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **grdlandmask** reads the selected shoreline database and uses that
 information to decide which nodes in the specified grid are over land or
 over water. The nodes defined by the selected region and lattice spacing
-will be set according to one of two criteria: (1) land vs water, `or
-(2) <or.2.html>`_ the more detailed (hierarchical) ocean vs land vs lake
+will be set according to one of two criteria: (1) land vs water, or
+(2) the more detailed (hierarchical) ocean vs land vs lake
 vs island vs pond. The resulting mask may be used in subsequent
 operations involving **grdmath** to mask out data from land [or water] areas. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
-**-G**\ *mask\_grd\_file*]
+**-G**\ *mask_grd_file*]
     Name of resulting output mask grid file. (See GRID FILE FORMATS below). 
 
 .. include:: explain_-I.rst_
@@ -40,8 +40,8 @@ operations involving **grdmath** to mask out data from land [or water] areas.
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-Rgeo.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_-A| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-A.rst_
@@ -77,23 +77,23 @@ operations involving **grdmath** to mask out data from land [or water] areas.
 
 .. include:: explain_grd_output.rst_
 
-`Examples <#toc7>`_
--------------------
+Examples
+--------
 
 To set all nodes on land to NaN, and nodes over water to 1, using the
 high resolution data set, do
 
-    grdlandmask -R-60/-40/-40/-30 -Dh -I5m -N1/NaN -Gland\_mask.nc -V
+    gmt grdlandmask -R-60/-40/-40/-30 -Dh -I5m -N1/NaN -Gland_mask.nc -V
 
 To make a 1x1 degree global grid with the hierarchical levels of the
 nodes based on the low resolution data:
 
-    grdlandmask -R0/360/-90/90 -Dl -I1 -N0/1/2/3/4 -Glevels.nc -V
+    gmt grdlandmask -R0/360/-90/90 -Dl -I1 -N0/1/2/3/4 -Glevels.nc -V
  
 .. include:: explain_gshhs.rst_
 
-`See Also <#toc9>`_
--------------------
+See Also
+--------
 
 `gmt <gmt.html>`_, `grdmath <grdmath.html>`_,
 `grdclip <grdclip.html>`_, `psmask <psmask.html>`_,

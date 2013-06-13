@@ -4,38 +4,39 @@ grdpaste
 
 grdpaste - Join two grids along their common edge
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdpaste** *file\_a.nc file\_b.nc* **-G**\ *outfile.nc* [
-**-V**\ [*level*\ ] ] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ]
+**grdpaste** *file_a.nc file_b.nc* **-G**\ *outfile.nc*
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-f| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
-**grdpaste** will combine *file\_a.nc* and *file\_b.nc* into
+**grdpaste** will combine *file_a.nc* and *file_b.nc* into
 *outfile.nc* by pasting them together along their common edge. Files
-*file\_a.nc* and *file\_b.nc* must have the same dx, dy and have one
+*file_a.nc* and *file_b.nc* must have the same dx, dy and have one
 edge in common. If in doubt, check with **grdinfo** and use **grdcut**
 and/or **grdsample** if necessary to prepare the edge joint. For
 geographical grids, use **-f** to handle periodic longitudes. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
-*file\_a.nc*
+*file_a.nc*
     One of two files to be pasted together.
-*file\_b.nc*
+*file_b.nc*
     The other of two files to be pasted together.
 **-G**\ *outfile.nc*
     The name for the combined output.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
@@ -47,17 +48,19 @@ geographical grids, use **-f** to handle periodic longitudes.
 
 .. include:: explain_grd_inout.rst_
 
-`Examples <#toc7>`_
--------------------
+Examples
+--------
 
-Suppose file\_a.nc is 150E - 180E and 0 - 30N, and file\_b.nc is 150E -
+Suppose file_a.nc is 150E - 180E and 0 - 30N, and file_b.nc is 150E -
 180E, -30S - 0, then you can make outfile.nc which will be 150 - 180 and
 -30S - 30N by:
 
-    grdpaste file\_a.nc file\_b.nc -Goutfile.nc -V -fg
+   ::
 
-`See Also <#toc8>`_
--------------------
+    gmt grdpaste file_a.nc file_b.nc -Goutfile.nc -V -fg
+
+See Also
+--------
 
 `gmt <gmt.html>`_, `grdblend <grdblend.html>`_,
 `grdcut <grdcut.html>`_, `grdinfo <grdinfo.html>`_,

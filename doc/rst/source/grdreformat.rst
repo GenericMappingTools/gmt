@@ -9,22 +9,24 @@ grdreformat - Convert between different grid formats
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdreformat** *ingrdfile*\ [*=id*\ [*/scale/offset*\ [*/NaNvalue*\ ]]]
-*outgrdfile*\ [*=id*\ [*/scale/offset*\ [*/NaNvalue*\ ]][\ *:driver*\ [*/datatype*\ ]]]
-[ **-N** ] [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
-**-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [ **-V**\ [*level*\ ] ]
+**grdreformat** *ingrdfile*\ [*=id*\ [*/scale/offset*\ [*/NaNvalue*]]]
+*outgrdfile*\ [*=id*\ [*/scale/offset*\ [*/NaNvalue*]][\ *:driver*\ [*/datatype*]]]
+[ **-N** ]
+[ |SYN_OPT-R| ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-f| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **grdreformat** reads a grid file in one format and writes it out using
 another format. As an option the user may select a subset of the data to
 be written and to specify scaling, translation, and NaN-value. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *ingrdfile*
     The grid file to be read. Append format =\ *id* code if not a
@@ -69,8 +71,8 @@ be written and to specify scaling, translation, and NaN-value.
     working with subsets of global grids, masks, and grids with
     repeating grid values, the improvement is usually significant.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-N**
     Suppress the writing of the **GMT** header structure. This is useful
@@ -88,8 +90,8 @@ be written and to specify scaling, translation, and NaN-value.
 
 .. include:: explain_help.rst_
 
-`Format Identifier <#toc6>`_
-----------------------------
+Format Identifier
+-----------------
 
 By default, grids will be written as floating point data stored in
 binary files using the netCDF format and meta-data structure. This
@@ -155,8 +157,8 @@ fails you may append the =\ *id* suffix to the filename *ingrdfile*.
 | **gd**   | Import/export through GDAL                                    |
 +----------+---------------------------------------------------------------+
 
-`Gmt Standard Netcdf Files <#toc7>`_
-------------------------------------
+Gmt Standard Netcdf Files
+-------------------------
 
 The standard format used for grdfiles is based on netCDF and conforms to
 the COARDS conventions. Files written in this format can be read by
@@ -195,8 +197,8 @@ Since question marks, brackets and parentheses have special meanings on
 the command line, escape these meanings by placing the full filename and
 suffix between quotes.
 
-`Native Binary Files <#toc8>`_
-------------------------------
+Native Binary Files
+-------------------
 
 For binary native **GMT** files the size of the **GMT** grdheader block
 is *hsize* = 892 bytes, and the total size of the file is *hsize* + *nx*
@@ -214,38 +216,50 @@ ints or unsigned bytes). For header and grid details, see Appendix B.
 
 .. include:: explain_float.rst_
 
-`Examples <#toc10>`_
---------------------
+Examples
+--------
 
 To extract the second layer from a 3-dimensional grid named temp from a
 COARDS-compliant netCDF file climate.nc:
 
-    grdreformat climate.nc?temp[1] temp.nc -V
+   ::
+
+    gmt grdreformat climate.nc?temp[1] temp.nc -V
 
 To create a 4-byte native floating point grid from the COARDS-compliant
 netCDF file data.nc:
 
-    grdreformat data.nc ras\_data.b4=bf -V
+   ::
+
+    gmt grdreformat data.nc ras_data.b4=bf -V
 
 To make a 2-byte short integer file, scale it by 10, subtract 32000,
 setting NaNs to -9999, do
 
-    grdreformat values.nc shorts.i2=bs/10/-32000/-9999 -V
+   ::
+
+    gmt grdreformat values.nc shorts.i2=bs/10/-32000/-9999 -V
 
 To create a Sun standard 8-bit rasterfile for a subset of the data file
 image.nc, assuming the range in image.nc is 0-1 and we need 0-255, run
 
-    grdreformat image.nc -R-60/-40/-40/-30 image.ras8=rb/255/0 -V
+   ::
+
+    gmt grdreformat image.nc -R-60/-40/-40/-30 image.ras8=rb/255/0 -V
 
 To convert etopo2.nc to etopo2.i2 that can be used by **grdraster**, try
 
-    grdreformat etopo2.nc etopo2.i2=bs -N -V
+   ::
+
+    gmt grdreformat etopo2.nc etopo2.i2=bs -N -V
 
 To creat a dumb file saved as a 32 bits float GeoTiff using GDAL, run
 
-    grdmath -Rd -I10 X Y MUL = lixo.tiff=gd:GTiff
+   ::
 
-`See Also <#toc11>`_
---------------------
+    gmt grdmath -Rd -I10 X Y MUL = lixo.tiff=gd:GTiff
+
+See Also
+--------
 
 `gmt.conf <gmt.conf.html>`_, `gmt <gmt.html>`_, `grdmath <grdmath.html>`_

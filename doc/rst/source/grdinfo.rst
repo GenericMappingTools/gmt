@@ -4,22 +4,23 @@ grdinfo
 
 grdinfo - Extract information from grids
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdinfo** *grdfiles* [ **-C** ] [ **-F** ] [
-**-I**\ [*dx*\ [/*dy*]\|\ **-**\ \|\ **b**] ] [
-**-L**\ [**0**\ \|\ **1**\ \|\ **2**] ] [ **-M** ] [
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
-**-T**\ [**s**]\ *dz* ] [ **-V**\ [*level*\ ] ] [
-**-f**\ [**i**\ \|\ **o**]\ *colinfo* ]
+**grdinfo** *grdfiles* [ **-C** ] [ **-F** ]
+[ **-I**\ [*dx*\ [/*dy*]\|\ **-**\ \|\ **b**] ]
+[ **-L**\ [**0**\ \|\ **1**\ \|\ **2**] ] [ **-M** ]
+[ |SYN_OPT-R| ]
+**-T**\ [**s**]\ *dz* ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-f| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **grdinfo** reads a 2-D binary grid file and reports metadata and
 various statistics for the (*x*,\ *y*,\ *z*) data in the grid file(s).
@@ -30,15 +31,14 @@ deviation, and/or the median, L1 scale of *z*, and number of nodes set
 to NaN. We also report if the grid is pixel- or gridline-registered and
 if it is a Cartesian or Geographic data set (based on metadata in the file). 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *grdfile*
-    The name of one or several 2-D grid files. (See GRID FILE FORMATS
-    below.)
+    The name of one or several 2-D grid files. (See GRID FILE FORMATS below.)
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-C**
     Formats the report using tab-separated fields on a single line. The
@@ -92,15 +92,17 @@ if it is a Cartesian or Geographic data set (based on metadata in the file).
 
 .. include:: explain_grd_input.rst_
 
-`Examples <#toc7>`_
--------------------
+Examples
+--------
 
 To obtain all the information about the data set in file hawaii\_topo.nc:
 
-    grdinfo -L1 -L2 -M hawaii\_topo.nc
+   ::
 
-`See Also <#toc8>`_
--------------------
+    gmt grdinfo -L1 -L2 -M hawaii_topo.nc
+
+See Also
+--------
 
 `gmt <gmt.html>`_, `grd2cpt <grd2cpt.html>`_,
 `grd2xyz <grd2xyz.html>`_, `grdedit <grdedit.html>`_
