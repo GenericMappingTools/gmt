@@ -70,7 +70,6 @@ EOF
 fi
 REGHOME4=/Volumes/MacNutHD3/UH/RESEARCH/CVSPROJECTS/GMTdev/gmtadmin/registration	# Where to do the work
 REGHOME5=$GMTHOME5/sandbox/registration	# Where to do the work
-gmtswitch gmt5
 
 cd $REGHOME5
 verbose=0
@@ -154,5 +153,4 @@ if [ $key = "all" ] || [ $key = "map" ]; then
 	date +%x | awk '{print 0.05, 0.05, $1}' | pstext -R0/5/0/5 -Jx1i -F+f10p,Helvetica+jLB -O -Gcornsilk -TO -W0.25p -X-3.08i >> gmt_usage.ps
 	ps2raster -E150 -A -TG gmt_usage.ps
 	rm -f gmt_usage.ps
-	gmtswitch gmt4
 fi
