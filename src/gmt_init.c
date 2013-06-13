@@ -4149,6 +4149,36 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 				GMT->current.setting.compatibility = ival;
 			break;
 
+		case GMTCASE_GMT_CUSTOM_LIBS:
+			if (*value) {
+				if (GMT->session.CUSTOM_LIBS)
+					free (GMT->session.CUSTOM_LIBS);
+				/* Set Extension shared libraries */
+				GMT->session.CUSTOM_LIBS = strdup (value);
+			}
+			break;
+
+		case GMTCASE_GMT_EXTRAPOLATE_VAL:
+			if (!strcmp (lower_value, "nan"))
+				GMT->current.setting.extrapolate_val[0] = GMT_EXTRAPOLATE_NONE;
+			else if (!strcmp (lower_value, "extrap"))
+				GMT->current.setting.extrapolate_val[0] = GMT_EXTRAPOLATE_SPLINE;
+			else if (!strncmp (lower_value, "extrapval",9)) {
+				GMT->current.setting.extrapolate_val[0] = GMT_EXTRAPOLATE_CONSTANT;
+				GMT->current.setting.extrapolate_val[1] = atof (&lower_value[10]);
+				if (lower_value[9] != ',') {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error decoding GMT_EXTRAPOLATE_VAL for 'val' value. Comma out of place.\n");
+					error = true;
+				}
+			}
+			else
+				error = true;
+			if (error) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_EXTRAPOLATE_VAL: resetting to 'extrapolated is NaN' to avoid later crash.\n");
+				GMT->current.setting.extrapolate_val[0] = GMT_EXTRAPOLATE_NONE;
+			}
+			break;
+			
 		case GMTCASE_GMT_FFT:
 			if (!strncmp (lower_value, "auto", 4))
 				GMT->current.setting.fft = k_fft_auto;
@@ -4213,26 +4243,6 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 				GMT->current.setting.interpolant = GMT_SPLINE_NONE;
 			else
 				error = true;
-			break;
-		case GMTCASE_GMT_EXTRAPOLATE_VAL:
-			if (!strcmp (lower_value, "nan"))
-				GMT->current.setting.extrapolate_val[0] = GMT_EXTRAPOLATE_NONE;
-			else if (!strcmp (lower_value, "extrap"))
-				GMT->current.setting.extrapolate_val[0] = GMT_EXTRAPOLATE_SPLINE;
-			else if (!strncmp (lower_value, "extrapval",9)) {
-				GMT->current.setting.extrapolate_val[0] = GMT_EXTRAPOLATE_CONSTANT;
-				GMT->current.setting.extrapolate_val[1] = atof (&lower_value[10]);
-				if (lower_value[9] != ',') {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error decoding GMT_EXTRAPOLATE_VAL for 'val' value. Comma out of place.\n");
-					error = true;
-				}
-			}
-			else
-				error = true;
-			if (error) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_EXTRAPOLATE_VAL: resetting to 'extrapolated is NaN' to avoid later crash.\n");
-				GMT->current.setting.extrapolate_val[0] = GMT_EXTRAPOLATE_NONE;
-			}
 			break;
 		case GMTCASE_GMT_TRIANGULATE:
 			if (!strcmp (lower_value, "watson"))
@@ -5166,6 +5176,17 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, char *keyword)
 			sprintf (value, "%u", GMT->current.setting.compatibility);
 			break;
 			
+		case GMTCASE_GMT_CUSTOM_LIBS:
+			strncpy (value, (GMT->session.CUSTOM_LIBS) ? GMT->session.CUSTOM_LIBS : "", GMT_TEXT_LEN256);
+			break;
+		case GMTCASE_GMT_EXTRAPOLATE_VAL:
+			if (GMT->current.setting.extrapolate_val[0] == GMT_EXTRAPOLATE_NONE)
+				strcpy (value, "NaN");
+			else if (GMT->current.setting.extrapolate_val[0] == GMT_EXTRAPOLATE_SPLINE)
+				strcpy (value, "extrap");
+			else if (GMT->current.setting.extrapolate_val[0] == GMT_EXTRAPOLATE_CONSTANT)
+				sprintf (value, "extrapval,%g", GMT->current.setting.extrapolate_val[1]);
+			break;
 		case GMTCASE_GMT_FFT:
 			switch (GMT->current.setting.fft) {
 				case k_fft_auto:
@@ -5229,14 +5250,6 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, char *keyword)
 				strcpy (value, "none");
 			else
 				strcpy (value, "undefined");
-			break;
-		case GMTCASE_GMT_EXTRAPOLATE_VAL:
-			if (GMT->current.setting.extrapolate_val[0] == GMT_EXTRAPOLATE_NONE)
-				strcpy (value, "NaN");
-			else if (GMT->current.setting.extrapolate_val[0] == GMT_EXTRAPOLATE_SPLINE)
-				strcpy (value, "extrap");
-			else if (GMT->current.setting.extrapolate_val[0] == GMT_EXTRAPOLATE_CONSTANT)
-				sprintf (value, "extrapval,%g", GMT->current.setting.extrapolate_val[1]);
 			break;
 		case GMTCASE_GMT_TRIANGULATE:
 			if (GMT->current.setting.triangulate == GMT_TRIANGLE_WATSON)
@@ -6046,6 +6059,8 @@ void GMT_end (struct GMT_CTRL *GMT)
 		free (GMT->session.DATADIR);
 	if (GMT->session.TMPDIR)
 		free (GMT->session.TMPDIR);
+	if (GMT->session.CUSTOM_LIBS)
+		free (GMT->session.CUSTOM_LIBS);
 	for (i = 0; i < GMT_N_PROJ4; i++)
 		free (GMT->current.proj.proj4[i].name);
 	GMT_free (GMT, GMT->current.proj.proj4);
