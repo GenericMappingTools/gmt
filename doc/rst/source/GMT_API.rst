@@ -803,6 +803,8 @@ what we do if no resources have been registered. The choices are
     **8** (or GMT_ADD_STDIO_ALWAYS) means "always add std\* even if
     resources have been registered".
 
+    **16** (or GMT_ADD_EXISTING) means "only use already registered resources".
+
 The standard behavior is 5 (or GMT_REG_DEFAULT). Next, ``n_args`` is 0
 if ``args`` is the head of a linked list of options (further discussed
 in Section [sec:func]); otherwise ``args`` is an array of ``n_args``
@@ -2341,11 +2343,10 @@ conveniently performed for you by
   ::
 
     void *GMT_FFT_Create (void *API, void *X, unsigned int dim,
-                          unsigned int subdivide, unsigned int mode, void *F);
+                          unsigned int mode, void *F);
 
 Here, ``X`` is either your dataset or grid pointer, ``dim`` is the
-dimension of the transform (1 or 2 only), ``subdivide`` is not yet used
-by the API, ``mode`` passes various flags to the setup, such as whether
+dimension of the transform (1 or 2 only), ``mode`` passes various flags to the setup, such as whether
 the data is real, imaginary, or complex, and ``F`` is the opaque pointer
 returned by ``GMT_FFT_Parse``. Depending on the options you chose to
 pass to ``GMT_FFT_Parse``, the data may have a constant or a trend
