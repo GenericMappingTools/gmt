@@ -42,19 +42,19 @@
 #define GMT_DCW_N_CONTINENTS		8
 
 struct GMT_DCW_COUNTRY {	/* Information per country */
-	char continent[3];	/* 2-char continent code (EU, NA, SA, AF, AU, AN) */
-	char code[3];		/* 2-char country code ISO 3166-1 (e.g., NO, US) */
+	char continent[4];	/* 2-char continent code (EU, NA, SA, AF, AU, AN) */
+	char code[4];		/* 2-char country code ISO 3166-1 (e.g., NO, US) */
 	char name[80];		/* Full name of the country */
 };
 
 struct GMT_DCW_STATE {		/* Information per state */
-	char country[3];	/* 2-char country code ISO 3166-1 (e.g., BR, US) */
-	char code[3];		/* 2-char state codes for US, Canada, Australia, Brazil (e.g., TX) */
+	char country[4];	/* 2-char country code ISO 3166-1 (e.g., BR, US) */
+	char code[4];		/* 2-char state codes for US, Canada, Australia, Brazil (e.g., TX) */
 	char name[80];		/* Full name of the state */
 };
 
 struct GMT_DCW_COUNTRY_STATE {		/* Information per country with state */
-	char country[3];		/* 2-char country code ISO 3166-1 (e.g., BR, US) for countries with states */
+	char country[4];		/* 2-char country code ISO 3166-1 (e.g., BR, US) for countries with states */
 };
 
 /* Compile in read-only structures and arrays with the information */
@@ -150,9 +150,9 @@ int gmt_load_dcw_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **C, struct
 	dim[2] = n;	/* Number of countries with states */
 	if (CS) {	/* Wants list returned */
 		Country_State = GMT_memory (GMT, NULL, n, struct GMT_DCW_COUNTRY_STATE);
-		GMT_memcpy (Country_State[0].country, State[0].country, 2, char);
+		GMT_memcpy (Country_State[0].country, State[0].country, 4, char);
 		for (k = n = 1; k < dim[1]; k++) {
-			if (strcmp (State[k].country, State[k-1].country)) GMT_memcpy (Country_State[n++].country, State[k].country, 2, char);
+			if (strcmp (State[k].country, State[k-1].country)) GMT_memcpy (Country_State[n++].country, State[k].country, 4, char);
 		}
 		*CS = Country_State;
 	}
