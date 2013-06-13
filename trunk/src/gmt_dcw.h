@@ -17,7 +17,7 @@
  *--------------------------------------------------------------------*/
 /*
  * gmt_dwc.h contains definitions for using the DCW in GMT.
- * DCW - THe Digital Chart of the World
+ * DCW - The Digital Chart of the World
  *
  * Author:	Paul Wessel
  * Date:	10-MAR-2013
