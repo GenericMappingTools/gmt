@@ -10,10 +10,13 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **grd2xyz** *grid* [ **-C**\ [**f**\ \|\ **i**] ] [ **-N**\ [**i**]\ *nodata* ]
-[ |SYN_OPT-R| ] [ |SYN_OPT-V| ]
+[ |SYN_OPT-R| ]
+[ |SYN_OPT-V| ]
 [ **-W**\ [*weight*] ] [ **-Z**\ [*flags*] ]
-[ **-bo**\ [*ncols*\ ][*type*] ] [ |SYN_OPT-f| ]
-[ **-ho**\ [*n*] ] [ |SYN_OPT-o| ]
+[ **-bo**\ [*ncols*\ ][*type*] ]
+[ |SYN_OPT-f| ]
+[ **-ho**\ [*n*] ]
+[ |SYN_OPT-o| ]
 [ |SYN_OPT-s| ]
 
 |No-spaces|

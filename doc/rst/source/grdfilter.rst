@@ -4,23 +4,24 @@ grdfilter
 
 grdfilter - Filter a grid in the space (or time) domain
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
 **grdfilter** *ingrid* **-D**\ *distance\_flag*
-**-Fx**\ *width*\ [/*width2*][*mode*\ ][\ **+q**\ *quantile*]
-**-G**\ *outgrid* [
-**-I**\ *xinc*\ [*unit*][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*][\ **=**\ \|\ **+**]]
-] [ **-N**\ **i**\ \|\ **p**\ \|\ **r** ]
+**-Fx**\ *width*\ [/*width2*][*mode*][\ **+q**\ *quantile*]
+**-G**\ *outgrid*
+[ |SYN_OPT-I| ]
+[ **-N**\ **i**\ \|\ **p**\ \|\ **r** ]
 [ |SYN_OPT-R| ] [ **-T** ]
-[ |SYN_OPT-V| ] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-f| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **grdfilter** will filter a *.nc* file in the time domain using one of
 the selected convolution or non-convolution isotropic or rectangular
@@ -32,8 +33,8 @@ the input data so that the edges will not be used and the output can be
 within one-half- width of the input edges. If the filter is low-pass,
 then the output may be less frequently sampled than the input. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *ingrid*
     The grid file of points to be filtered. (See GRID FILE FORMATS below).
@@ -115,8 +116,8 @@ then the output may be less frequently sampled than the input.
 **-G**\ *outgrid*
     *outgrid* is the output grid file of the filter. (See GRID FILE FORMATS below).
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
     *x\_inc* [and optionally *y\_inc*] is the output Increment. Append
@@ -152,26 +153,32 @@ then the output may be less frequently sampled than the input.
 
 .. include:: explain_grd_coord.rst_
 
-`Examples <#toc8>`_
--------------------
+Examples
+--------
 
-Suppose that north\_pacific\_etopo5.nc is a file of 5 minute bathymetry
+Suppose that north_pacific_etopo5.nc is a file of 5 minute bathymetry
 from 140E to 260E and 0N to 50N, and you want to find the medians of
 values within a 300km radius (600km full width) of the output points,
 which you choose to be from 150E to 250E and 10N to 40N, and you want
 the output values every 0.5 degree. Using spherical distance
 calculations, you need:
 
-    grdfilter north\_pacific\_etopo5.nc -Gfiltered\_pacific.nc -Fm600 -D4 -R150/250/10/40 -I0.5 -V
+   ::
+
+    gmt grdfilter north_pacific_etopo5.nc -Gfiltered_pacific.nc -Fm600 \
+                  -D4 -R150/250/10/40 -I0.5 -V
 
 If we instead wanted a high-pass result then one can perform the
 corresponding low-pass filter using a coarse grid interval as grdfilter
 will resample the result to the same resolution as the input grid so we
 can compute the residuals, e.g.,
 
-    grdfilter north\_pacific\_etopo5.nc -Gresidual\_pacific.nc -Fm-600 -D4 -R150/250/10/40 -I0.5 -V
+   ::
 
-Here, the residual\_pacific.nc grid will have the same 5 minute
+    gmt grdfilter north_pacific_etopo5.nc -Gresidual_pacific.nc -Fm-600 \
+                  -D4 -R150/250/10/40 -I0.5 -V
+
+Here, the residual_pacific.nc grid will have the same 5 minute
 resolution as the original.
 
 To filter the dataset in ripples.nc using a custom anisotropic Gaussian
@@ -179,20 +186,20 @@ filter exp (-0.5\*r^2) whose distances r from the center is given by
 (2x^2 + y^2 -2xy)/6, with major axis at an angle of 63 degrees with the
 horizontal, try
 
-    grdmath -R-10/10/-10/10 -I1 X 2 POW 2 MUL Y 2 POW ADD X Y MUL 2 MUL SUB
+   ::
 
-    6 DIV NEG 2 DIV EXP DUP SUM DIV = gfilter.nc
+    gmt grdmath -R-10/10/-10/10 -I1 X 2 POW 2 MUL Y 2 POW ADD X Y MUL 2 MUL \
+                SUB 6 DIV NEG 2 DIV EXP DUP SUM DIV = gfilter.nc
+    gmt grdfilter ripples.nc -Ffgfilter.nc -D0 -Gsmooth.nc -V
 
-    grdfilter ripples.nc -Ffgfilter.nc -D0 -Gsmooth.nc -V
-
-`Limitations <#toc9>`_
-----------------------
+Limitations
+-----------
 
 To use the **-D**\ 5 option the input Mercator grid must be created by
 img2mercgrd using the **-C** option so the origin of the y-values is the
 Equator (i.e., x = y = 0 correspond to lon = lat = 0).
 
-`See Also <#toc10>`_
---------------------
+See Also
+--------
 
 `gmt <gmt.html>`_, `grdfft <grdfft.html>`_ `img2mercgrd <img2mercgrd.html>`_
