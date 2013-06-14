@@ -446,7 +446,7 @@ int gmt_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 	if (strchr ("xyz", in[k])) gmt5++;		/* Definitively GMT5 */
 	if (k == 0 && !isdigit (in[0]) && strchr ("WESNwesn", in[1])) gmt5++;		/* Definitively GMT5 */
 	j = k;
-	while (j < last && in[j] == 'x' || in[j] == 'y' || in[j] == 'z') j++;
+	while (j < last && (in[j] == 'x' || in[j] == 'y' || in[j] == 'z')) j++;
 	custom = (in[j] == 'c');	/* Got -B[p|s][xyz]c<customfile> */
 	for (k = 0; k <= last; k++) {
 		if (k && in[k] == '+' && in[k-1] == '@') {	/* Found a @+ PSL sequence, just skip */
