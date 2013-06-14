@@ -4,24 +4,26 @@ grdedit
 
 grdedit - Modify header or content of a grid
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdedit** *grid* [ **-A** ] [
-**-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*title*/*remark* ] [
-**-E** ] [ **-N**\ *table* ] [
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-S** ] [ **-T** ]
-[ **-V**\ [*level*\ ] ] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [
-**-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-:**\ [**i**\ \|\ **o**] ]
+**grdedit** *grid* [ **-A** ]
+[ **-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*title*/*remark* ]
+[ **-E** ] [ **-N**\ *table* ]
+[ |SYN_OPT-R| ]
+[ **-S** ] [ **-T** ]
+[ |SYN_OPT-V| ]
+[ **-bi**\ [*ncols*][*type*] ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **grdedit** reads the header information in a binary 2-D grid file and
 replaces the information with values provided on the command line [if
@@ -32,8 +34,8 @@ values. **grdedit** only operates on files containing a grdheader. Note:
 If it is important to retain the original data you should work on a copy
 of that file. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *grid*
     Name of the 2-D grid file to modify. (See GRID FILE FORMATS below).
@@ -98,32 +100,40 @@ of that file.
 
 .. include:: explain_grd_coord.rst_
 
-`Examples <#toc8>`_
--------------------
+Examples
+--------
 
 Let us assume the file data.nc covers the area 300/310/10/30. We want to
 change the boundaries from geodetic longitudes to geographic and put a
 new title in the header. We accomplish this by
 
-    grdedit data.nc -R-60/-50/10/30 -D=/=/=/=/=/"Gravity Anomalies"/=
+   ::
+
+    gmt grdedit data.nc -R-60/-50/10/30 -D=/=/=/=/=/"Gravity Anomalies"/=
 
 The grid world.nc has the limits 0/360/-72/72. To shift the data so that
 the limits would be -180/180/-72/72, use
 
-    grdedit world.nc -R-180/180/-72/72 -S
+   ::
+
+    gmt grdedit world.nc -R-180/180/-72/72 -S
 
 The file junk.nc was created prior to **GMT** 3.1 with incompatible
 **-R** and **-I** arguments. To reset the x- and y-increments we run
 
-    grdedit junk.nc -A
+   ::
+
+    gmt grdedit junk.nc -A
 
 The file junk.nc was created prior to **GMT** 4.1.3 and does not contain
 the required information to indicate that the grid is geographic. To add
 this information, run
 
-    grdedit junk.nc -fg
+   ::
 
-`See Also <#toc9>`_
--------------------
+    gmt grdedit junk.nc -fg
+
+See Also
+--------
 
 `gmt <gmt.html>`_, `grd2xyz <grd2xyz.html>`_, `xyz2grd <xyz2grd.html>`_

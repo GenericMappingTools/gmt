@@ -4,20 +4,21 @@ grdhisteq
 
 grdhisteq - Perform histogram equalization for a grid
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdhisteq** *in\_grdfile* [ **-G**\ *out\_grdfile* ] [
-**-C**\ *n\_cells* ] [ **-D**\ [*file*\ ] ] [ **-N**\ [*norm*\ ] ] [
-**-Q** ] [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
-**-V**\ [*level*\ ] ]
+**grdhisteq** *in\_grdfile* [ **-G**\ *out\_grdfile* ]
+[ **-C**\ *n_cells* ] [ **-D**\ [*file*] ] [ **-N**\ [*norm*] ]
+[ **-Q** ]
+|SYN_OPT-R|
+|SYN_OPT-V|
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **grdhisteq** allows the user to find the data values which divide a
 given grid file into patches of equal area. One common use of
@@ -28,7 +29,7 @@ grdimage/grdview) with a linear mapping from topography to graytone will
 result in most of the image being very dark gray, with the mountain
 being almost white. One could use **grdhisteq** to write to stdout or file an
 ASCII list of those data values which divide the range of the data into
-*n\_cells* segments, each of which has an equal area in the image. Using
+*n_cells* segments, each of which has an equal area in the image. Using
 **awk** or **makecpt** one can take this output and build a cpt file;
 using the cptfile with grdimage will result in an image with all levels
 of gray occurring equally. Alternatively, see **grd2cpt**.
@@ -39,7 +40,7 @@ this application, the output has relative highs and lows in the same
 (x,y) locations as the input file, but the values are changed to reflect
 their place in some cumulative distribution. One example would be to
 find the lowest 10% of the data: Take a grid, run **grdhisteq** and make
-a grid using *n\_cells* = 10, and then contour the result to trace the 1
+a grid using *n_cells* = 10, and then contour the result to trace the 1
 contour. This will enclose the lowest 10% of the data, regardless of
 their original values. Another example is in equalizing the output of
 **grdgradient**. For shading purposes it is desired that the data have a
@@ -51,14 +52,14 @@ The locations of these values will correspond to the locations of the
 input; that is, the most negative output value will be in the (x,y)
 location of the most negative input value, and so on. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *in_grdfile*
     2-D binary grid file to be equalized. (See GRID FILE FORMATS below).
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-C**\ *n\_cells*
     Sets how many cells (or divisions) of data range to make [16].
@@ -87,21 +88,25 @@ location of the most negative input value, and so on.
 
 .. include:: explain_grd_inout.rst_
 
-`Examples <#toc7>`_
--------------------
+Examples
+--------
 
 To find the height intervals that divide the file heights.nc into 16
 divisions of equal area:
 
-    grdhisteq heights.nc -C16 -D > levels.d
+   ::
 
-To make the poorly distributed intensities in the file raw\_intens.nc
+    gmt grdhisteq heights.nc -C16 -D > levels.d
+
+To make the poorly distributed intensities in the file raw_intens.nc
 suitable for use with **grdimage** or **grdview**, run
 
-    grdhisteq raw\_intens.nc -Gsmooth\_intens.nc -N -V
+   ::
 
-`Restrictions <#toc8>`_
------------------------
+    gmt grdhisteq raw_intens.nc -Gsmooth_intens.nc -N -V
+
+Restrictions
+------------
 
 If you use **grdhisteq** to make a Gaussian output for gradient shading
 in **grdimage** or **grdview**, you should be aware of the following:
@@ -120,8 +125,8 @@ dark, you should take the output of **grdhisteq** and rescale it using
 range of the values, thus bringing more than 68% of the image into the
 range [-1, 1]. Alternatively, supply a normalization factor with **-N**.
 
-`See Also <#toc9>`_
--------------------
+See Also
+--------
 
 `gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
 `grd2cpt <grd2cpt.html>`_,

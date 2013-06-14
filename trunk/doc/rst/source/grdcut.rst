@@ -12,7 +12,8 @@ Synopsis
 **grdcut** *ingrid* **-G**\ *outgrid*
 |SYN_OPT-R|
 [ **-N**\ [*nodata*] ]
-[ **-S**\ [**n**]\ *lon/lat/radius*\ [*unit*] ] [ **-V**\ [*level*] ]
+[ **-S**\ [**n**]\ *lon/lat/radius*\ [*unit*] ]
+[ |SYN_OPT-V| ]
 [ **-Z**\ [**n**]\ *min/max*] ]
 [ |SYN_OPT-f| ]
 

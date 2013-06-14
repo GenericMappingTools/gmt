@@ -15,7 +15,8 @@ Synopsis
 [ **-L**\ *flag* ] 
 [ **-N**\ [**e**\ ][**t**][*amp*][/\ *sigma*\ [/*offset*]] ]
 [ |SYN_OPT-R| ] [ **-S**\ *slopefile* ]
-[ |SYN_OPT-V| ] [ **-fg** ] [ |SYN_OPT-n| ]
+[ |SYN_OPT-V| ] [ **-fg** ]
+[ |SYN_OPT-n| ]
 
 |No-spaces|
 
@@ -159,11 +160,15 @@ To make a file for illuminating the data in geoid.nc using exp-
 normalized gradients in the range [-0.6,0.6] imitating light sources in
 the north and west directions:
 
-    grdgradient geoid.nc -A0/270 -Ggradients.nc=nb/a -Ne0.6 -V
+   ::
+
+    gmt grdgradient geoid.nc -A0/270 -Ggradients.nc=nb/a -Ne0.6 -V
 
 To find the azimuth orientations of seafloor fabric in the file topo.nc:
 
-    grdgradient topo.nc -Dno -Gazimuths.nc -V
+   ::
+
+    gmt grdgradient topo.nc -Dno -Gazimuths.nc -V
 
 References
 ----------

@@ -16,7 +16,8 @@ Synopsis
 [ **-F**\ [**r**\ \|\ **x**\ \|\ **y**]\ *params* ]
 [ **-I**\ [*scale*\ \|\ **g**] ]
 [ **-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][\ **+a**\ \|\ **d**\ \|\ **h**\ \|\ **l**][\ **+e**\ \|\ **n**\ \|\ **m**][\ **+t**\ *width*][\ **+w**\ [*suffix*]][\ **+z**\ [**p**]] ]
-[ **-S**\ *scale* ] [ |SYN_OPT-V| ]
+[ **-S**\ *scale* ]
+[ |SYN_OPT-V| ]
 [ **-fg** ]
 
 |No-spaces|
@@ -161,14 +162,14 @@ mag_0.nc to a level 800 m above sealevel:
 
    ::
 
-    grdfft mag_0.nc -C800 -V -Gmag_800.nc
+    gmt grdfft mag_0.nc -C800 -V -Gmag_800.nc
 
 To transform geoid heights in m (geoid.nc) on a geographical grid to
 free-air gravity anomalies in mGal:
 
    ::
 
-    grdfft geoid.nc -Dg -V -Ggrav.nc
+    gmt grdfft geoid.nc -Dg -V -Ggrav.nc
 
 To transform gravity anomalies in mGal (faa.nc) to deflections of the
 vertical (in micro-radians) in the 038 direction, we must first
@@ -177,7 +178,7 @@ and finally scale radians to micro-radians:
 
    ::
 
-    grdfft faa.nc -Ig -A38 -S1e6 -V -Gdefl_38.nc
+    gmt grdfft faa.nc -Ig -A38 -S1e6 -V -Gdefl_38.nc
 
 Second vertical derivatives of gravity anomalies are related to the
 curvature of the field. We can compute these as mGal/m^2 by
@@ -185,14 +186,14 @@ differentiating twice:
 
    ::
 
-    grdfft gravity.nc -D -D -V -Ggrav_2nd_derivative.nc
+    gmt grdfft gravity.nc -D -D -V -Ggrav_2nd_derivative.nc
 
 To compute cross-spectral estimates for co-registered bathymetry and
 gravity grids, and report result as functions of wavelengths in km, try
 
    ::
 
-    grdfft bathymetry.nc gravity.grd -Ewk -fg -V > cross_spectra.txt
+    gmt grdfft bathymetry.nc gravity.grd -Ewk -fg -V > cross_spectra.txt
 
 To examine the pre-FFT grid after detrending, point-symmetry reflection,
 and tapering has been applied, as well as saving the real and imaginary
@@ -200,7 +201,7 @@ components of the raw spectrum of the data in topo.nc, try
 
    ::
 
-    grdfft topo.nc -N+w+z -fg -V
+    gmt grdfft topo.nc -N+w+z -fg -V
 
 You can now make plots of the data in topo_taper.nc, topo_real.nc, and topo_imag.nc.
 
