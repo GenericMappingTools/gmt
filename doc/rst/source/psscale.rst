@@ -17,7 +17,7 @@ Synopsis
 [ **-I**\ [*max\_intens*\ \|\ *low\_i*/*high\_i*] ]
 [ **-J**\ *parameters* ]
 [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ]
-[ **-L**\ [**i**][*gap*] ] [ **-M** ] [ **-N**\ *dpi* ] [ **-O** ]
+[ **-L**\ [**i**][*gap*] ] [ **-M** ] [ **-N**\ [**p**\ |\ *dpi* ]] [ **-O** ]
 [ **-P** ] [ **-Q** ]
 [ |SYN_OPT-R| ]
 [ **-S** ]
@@ -119,9 +119,11 @@ Optional Arguments
 **-M**
     Force a monochrome graybar using the (television) YIQ transformation.
 
-**-N**\ *dpi*
-    Effective dots-per-inch for rasterization of continuous color scales [600].
-    Ignored for discrete color tables.
+**-N**\ [**p**\ |\ *dpi* ]
+    Controls how the color scale is represented by the PostScript language.
+    To preferentially draw color rectangles (e.g., for discrete colors), append **p**.
+    Otherwise we will preferentially draw images (e.g., for continuous colors).
+    Optionally append effective dots-per-inch for rasterization of color scales [600].
 
 .. include:: explain_-O.rst_
 

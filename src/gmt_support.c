@@ -6081,6 +6081,8 @@ uint64_t gmt_delaunay_shewchuk (struct GMT_CTRL *GMT, double *x_in, double *y_in
 	uint64_t i, j;
 	struct triangulateio In, Out, vorOut;
 
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Delaunay triangulation calculated by Jonathan Shewchuk's Triangle [http://www.cs.cmu.edu/~quake/triangle.html]\n");
+
 	/* Set everything to 0 and NULL */
 
 	GMT_memset (&In,     1, struct triangulateio);
@@ -6131,6 +6133,8 @@ uint64_t gmt_voronoi_shewchuk (struct GMT_CTRL *GMT, double *x_in, double *y_in,
 	uint64_t i, j, k, j2, n_edges;
 	struct triangulateio In, Out, vorOut;
 	double *x_edge = NULL, *y_edge = NULL, dy;
+
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Voronoi partitioning calculated by Jonathan Shewchuk's Triangle [http://www.cs.cmu.edu/~quake/triangle.html]\n");
 
 	/* Set everything to 0 and NULL */
 
@@ -6194,11 +6198,11 @@ uint64_t gmt_voronoi_shewchuk (struct GMT_CTRL *GMT, double *x_in, double *y_in,
 /* Dummy functions since not installed */
 uint64_t gmt_delaunay_shewchuk (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, int **link)
 {
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "unavailable: Shewchuk's triangle option was not selected during GMT installation");
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "unavailable: Shewchuk's triangle option was not selected during GMT installation\n");
 	return (0);
 }
 uint64_t gmt_voronoi_shewchuk (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, double *we, double **x_out, double **y_out) {
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "unavailable: Shewchuk's triangle option was not selected during GMT installation");
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "unavailable: Shewchuk's triangle option was not selected during GMT installation\n");
 	return (0);
 }
 #endif
@@ -6227,6 +6231,7 @@ uint64_t gmt_delaunay_watson (struct GMT_CTRL *GMT, double *x_in, double *y_in, 
 	double det[2][3], *x_circum = NULL, *y_circum = NULL, *r2_circum = NULL, *x = NULL, *y = NULL;
 	double xmin, xmax, ymin, ymax, datax, dx, dy, dsq, dd;
 
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Delaunay triangulation calculated by Dave Watson's ACORD [Computers & Geosciences, 8, 97-101, 1982]\n");
 	size = 10 * n + 1;
 	n += 3;
 
@@ -6378,7 +6383,7 @@ uint64_t gmt_delaunay_watson (struct GMT_CTRL *GMT, double *x_in, double *y_in, 
 
 uint64_t gmt_voronoi_watson (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, double *we, double **x_out, double **y_out)
 {
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No Voronoi unless you select Shewchuk's triangle option during GMT installation");
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No Voronoi unless you select Shewchuk's triangle option during GMT installation\n");
 	return (0);
 }
 
