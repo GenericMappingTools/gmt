@@ -949,7 +949,8 @@ void GMT_syntax (struct GMT_CTRL *GMT, char option)
 	switch (option) {
 
 		case 'B':	/* Tickmark option */
-			GMT_message (GMT, "\t-B[p|s][a|f|g]<tick>[m][l|p][:\"label\":][:,\"unit\":][/.../...]:.\"Title\":[W|w|E|e|S|s|N|n][Z|z]\n");
+			GMT_message (GMT, "\t-B[p|s][x|y|z]<intervals>[+l<label>][+p<prefix>][+u<unit>] -B[<axes>][+b][+g<fill>][+o<lon>/<lat>][+t<title>] OR\n");
+			GMT_message (GMT, "\t-B[p|s][x|y|z][a|f|g]<tick>[m][l|p] -B[p|s][x|y|z][+l<label>][+p<prefix>][+u<unit>] -B[<axes>][+b][+g<fill>][+o<lon>/<lat>][+t<title>]\n");
 			break;
 
 		case 'J':	/* Map projection option */
@@ -2937,13 +2938,20 @@ int gmt4_decode_wesnz (struct GMT_CTRL *GMT, const char *in, unsigned int side[]
 	return (i+1);	/* Return remaining string length */
 }
 
-int gmt5_decode_wesnz (struct GMT_CTRL *GMT, const char *in) {
+int gmt5_decode_wesnz (struct GMT_CTRL *GMT, const char *in, bool check) {
 	/* Scans the WESNZ[1234]wesnz[1234] flags and sets the side/drawbox parameters
 	 * and returns the length of the remaining string.
 	 */
 
 	unsigned int k, error = 0, f_side[5] = {0, 0, 0, 0, 0}, z_axis[4] = {0, 0, 0, 0};
 	bool s_given = false;
+	if (check) {	/* true if comingvia -B, false if parsing gmt.conf */
+		if (GMT->current.map.frame.set_frame) {
+			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error: -B<WESN-framesettings> given more than once!\n");
+			return (1);
+		}
+		GMT->current.map.frame.set_frame = true;
+	}
 	
 	for (k = 0; in[k]; k++) {
 		switch (in[k]) {
@@ -3361,7 +3369,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 			strncpy (GMT->current.setting.map_frame_axes, value, 5U);
 			for (i = 0; i < 5; i++) GMT->current.map.frame.side[i] = 0;	/* Unset default settings */
 			GMT->current.map.frame.draw_box = false;
-			error += gmt5_decode_wesnz (GMT, value);
+			error += gmt5_decode_wesnz (GMT, value, false);
 			break;
 
 		case GMTCASE_BASEMAP_FRAME_RGB:
@@ -7120,7 +7128,7 @@ int gmt5_parse_B_frame_setting (struct GMT_CTRL *GMT, char *in)
 	}
 	
 	/* Now parse the frame choices, if any */
-	error += gmt5_decode_wesnz (GMT, text);
+	error += gmt5_decode_wesnz (GMT, text, true);
 	
 	return (error);
 }
@@ -7177,6 +7185,7 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 		GMT->common.B.string[0][0] = GMT->common.B.string[1][0] = '\0';
 		GMT->current.map.frame.init = true;
 		GMT->current.map.frame.draw = false;
+		GMT->current.map.frame.set_frame = false;
 	}
 
 	if ((error = gmt5_parse_B_frame_setting (GMT, in)) >= 0) return (error);	/* Parsed the -B frame settings separately */

@@ -463,11 +463,12 @@ struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundar
 	bool init;			/* true if -B was used */
 	bool draw;			/* true if -B<int> was used, even -B0, as sign to draw axes */
 	bool paint;			/* true if -B +g<fill> was used */
-	bool draw_box;		/* true is a 3-D Z-box is desired */
+	bool draw_box;			/* true is a 3-D Z-box is desired */
 	bool check_side;		/* true if lon and lat annotations should be on x and y axis only */
-	bool primary;		/* true if current axis is primary, false if secondary */
+	bool primary;			/* true if current axis is primary, false if secondary */
 	bool slash;			/* true if slashes were used in the -B argument */
 	bool obl_grid;			/* true if +o was given to draw oblique gridlines */
+	bool set_frame;			/* true if a -B<frame> setting was given */
 	unsigned int horizontal;	/* 1 is S/N annotations should be parallel to axes, 2 if forced */
 	unsigned int side[5];		/* Which sides (0-3 in plane; 4 = z) to plot. 2 is annot/draw, 1 is draw, 0 is not */
 	unsigned int z_axis[4];		/* Which axes to use for the 3-D z-axis [auto] */
