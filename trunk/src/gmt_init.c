@@ -2894,7 +2894,7 @@ int gmt_load_encoding (struct GMT_CTRL *GMT)
 	return (GMT_NOERROR);
 }
 
-int gmt4_decode_wesnz (struct GMT_CTRL *GMT, const char *in, unsigned int side[], bool *draw_box) {
+int gmt4_decode_wesnz (struct GMT_CTRL *GMT, const char *in, unsigned int side[], bool *draw_box, int part) {
 	/* Scans the WESNZwesnz+ flags at the end of string "in" and sets the side/drawbox parameters
 	 * and returns the length of the remaining string.  Assumes any +g<fill> has been removed from in.
 	 */
@@ -2902,11 +2902,17 @@ int gmt4_decode_wesnz (struct GMT_CTRL *GMT, const char *in, unsigned int side[]
 	int i, k;
 	bool go = true;
 
+	if (part == 2) GMT->current.map.frame.set_frame[0]++, GMT->current.map.frame.set_frame[1]++;
+	else GMT->current.map.frame.set_frame[part]++;
+	if (GMT->current.map.frame.set_frame[0] > 1 || GMT->current.map.frame.set_frame[1] > 1) {
+		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error -B: <WESN-framesettings> given more than once!\n");
+		return (1);
+	}
 	i = (int)strlen (in);
 	if (i == 0) return (0);
 	
 	for (k = 0, i--; go && i >= 0 && strchr ("WESNZwesnz+", in[i]); i--) {
-		if (k == 0) {	/* Wipe out default values when the first flag is found */
+		if (k == 0 && part == 2) {	/* Wipe out default values when the first flag is found */
 			for (k = 0; k < 5; k++) side[k] = 0;
 			*draw_box = false;
 		}
@@ -2945,12 +2951,12 @@ int gmt5_decode_wesnz (struct GMT_CTRL *GMT, const char *in, bool check) {
 
 	unsigned int k, error = 0, f_side[5] = {0, 0, 0, 0, 0}, z_axis[4] = {0, 0, 0, 0};
 	bool s_given = false;
-	if (check) {	/* true if comingvia -B, false if parsing gmt.conf */
-		if (GMT->current.map.frame.set_frame) {
-			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error: -B<WESN-framesettings> given more than once!\n");
+	if (check) {	/* true if coming via -B, false if parsing gmt.conf */
+		GMT->current.map.frame.set_frame[0]++, GMT->current.map.frame.set_frame[1]++;
+		if (GMT->current.map.frame.set_frame[0] > 1 || GMT->current.map.frame.set_frame[1] > 1) {
+			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error -B: <WESN-framesettings> given more than once!\n");
 			return (1);
 		}
-		GMT->current.map.frame.set_frame = true;
 	}
 	
 	for (k = 0; in[k]; k++) {
@@ -6877,17 +6883,17 @@ int gmt4_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 
 	char out1[GMT_BUFSIZ] = "", out2[GMT_BUFSIZ] = "", out3[GMT_BUFSIZ] = "", info[3][GMT_BUFSIZ] = {""};
 	struct GMT_PLOT_AXIS *A = NULL;
-	int i, j, k, ignore, g = 0, o = 0, error = 0;
+	int i, j, k, ignore, g = 0, o = 0, part, error = 0;
 
 	if (!in || !in[0]) return (GMT_PARSE_ERROR);	/* -B requires an argument */
 
 	switch (in[0]) {
 		case 's':
-			GMT->current.map.frame.primary = false; k = 1; break;
+			GMT->current.map.frame.primary = false; k = 1; part = 1; break;
 		case 'p':
-			GMT->current.map.frame.primary = true; k = 1; break;
+			GMT->current.map.frame.primary = true; k = 1; part = 0; break;
 		default:
-			GMT->current.map.frame.primary = true; k = 0; break;
+			GMT->current.map.frame.primary = true; k = 0; part = 2; break;
 	}
 	i = (GMT->current.map.frame.primary) ? 0 : 1;
 	strncpy (GMT->common.B.string[i], in, GMT_TEXT_LEN256);	/* Keep a copy of the actual option(s) */
@@ -6904,6 +6910,7 @@ int gmt4_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 		GMT->current.map.frame.header[0] = '\0';
 		GMT->current.map.frame.init = true;
 		GMT->current.map.frame.draw = false;
+		GMT->current.map.frame.set_frame[0] = GMT->current.map.frame.set_frame[1] = 0;
 	}
 
 #ifdef _WIN32
@@ -6948,7 +6955,7 @@ int gmt4_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 	error += gmt_strip_colonitem (GMT, 0, &in[k], ":.", GMT->current.map.frame.header, out1);	/* Extract header string, if any */
 	GMT_enforce_rgb_triplets (GMT, GMT->current.map.frame.header, GMT_TEXT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 
-	i = gmt4_decode_wesnz (GMT, out1, GMT->current.map.frame.side, &GMT->current.map.frame.draw_box);		/* Decode WESNZwesnz+ flags, if any */
+	i = gmt4_decode_wesnz (GMT, out1, GMT->current.map.frame.side, &GMT->current.map.frame.draw_box, part);		/* Decode WESNZwesnz+ flags, if any */
 	out1[i] = '\0';	/* Strip the WESNZwesnz+ flags off */
 
 	gmt_split_info_strings (GMT, out1, info[0], info[1], info[2]);	/* Chop/copy the three axis strings */
@@ -7185,7 +7192,7 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 		GMT->common.B.string[0][0] = GMT->common.B.string[1][0] = '\0';
 		GMT->current.map.frame.init = true;
 		GMT->current.map.frame.draw = false;
-		GMT->current.map.frame.set_frame = false;
+		GMT->current.map.frame.set_frame[0] = GMT->current.map.frame.set_frame[1] = 0;
 	}
 
 	if ((error = gmt5_parse_B_frame_setting (GMT, in)) >= 0) return (error);	/* Parsed the -B frame settings separately */
