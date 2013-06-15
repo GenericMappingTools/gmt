@@ -127,7 +127,7 @@ Optional Arguments
 Examples
 --------
 
-To combine the digitized segment lines segment_\*.txt (whose
+To combine the digitized segment lines segment\_\*.txt (whose
 coordinates are in cm) into as few complete lines as possible, assuming
 the end points slop could be up to 0.1 mm, run
 
