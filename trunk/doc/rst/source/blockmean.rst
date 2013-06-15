@@ -11,13 +11,18 @@ Synopsis
 
 **blockmean** [ *table* ]
 |SYN_OPT-I|
-|SYN_OPT-R| [ **-C** ]
+|SYN_OPT-R|
+[ **-C** ]
 [ **-E**\ [**p**] ] [ **-S**\ [**m**\ \|\ **n**\ \|\ **s**\ \|\ **w**] ]
-[ |SYN_OPT-V| ] [ **-W**\ [**i**\ \|\ **o**] ]
+[ |SYN_OPT-V| ]
+[ **-W**\ [**i**\ \|\ **o**] ]
 [ |SYN_OPT-b| ]
-[ |SYN_OPT-f| ] [ |SYN_OPT-h| ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
-[ |SYN_OPT-o| ] [ **-r** ] [ |SYN_OPT-:| ]
+[ |SYN_OPT-o| ]
+[ **-r** ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
@@ -52,9 +57,10 @@ Optional Arguments
     **-bi**\ [*ncols*][*type*]] holding (*x*,\ *y*,\ *z*\ [,\ *w*])
     data values. [\ *w*] is an optional weight for the data. If no file
     is specified, **blockmean** will read from standard input.
+
 **-C**
-    Use the center of the block as the output location [Default uses the
-    mean location].
+    Use the center of the block as the output location [Default uses the mean location].
+
 **-E**\ [**p**]
     Provide Extended report which includes **s** (the standard deviation
     about the mean), **l**, the lowest value, and **h**, the high value
@@ -63,6 +69,7 @@ Optional Arguments
     *x*,\ *y*,\ *z*\ [,\ *w*]. See **-W** for *w* output.
     If **-Ep** is used we assume weights are 1/(sigma squared) and *s*
     becomes the propagated error of the mean.
+
 **-S**\ [**m**\ \|\ **n**\ \|\ **s**\ \|\ **w**]
     Use **-Sn** to report the number of points inside each block,
     **-Ss** to report the sum of all *z*-values inside a block, **-Sw**
@@ -114,7 +121,7 @@ To find 5 by 5 minute block mean values from the ASCII data in hawaii.xyg, run
 
    ::
 
-    blockmean hawaii.xyg -R198/208/18/25 -I5m > hawaii_5x5.xyg
+    gmt blockmean hawaii.xyg -R198/208/18/25 -I5m > hawaii_5x5.xyg
 
 See Also
 --------
