@@ -228,28 +228,31 @@ man_pages = [
 import os 
 man_pages = [] 
 for dirpath, dirnames, filenames in os.walk('.'): 
-    for f in filenames: 
-        if f.endswith('.rst') and not f.startswith('B') and not f.startswith('C') and not f.startswith('F') \
-            and not f.startswith('G') and not f.startswith('I') and not f.startswith('K') and not f.startswith('M') \
-            and not f.startswith('N') and not f.startswith('P') and not f.startswith('T') and not f.startswith('S') \
-            and not f.startswith('X') and not f.startswith('index') and not f.startswith('api') and not f.startswith('cook'): 
-            srcfile = os.path.normpath(os.path.join(dirpath, f[:-4])) 
-            outfile = srcfile.replace(os.sep, '-') 
-            outfile = outfile.replace('supplements-', '') 
-            outfile = outfile.replace('gshhg-', '') 
-            outfile = outfile.replace('imgsrc-', '') 
-            outfile = outfile.replace('meca-', '') 
-            outfile = outfile.replace('mgd77-', '') 
-            outfile = outfile.replace('misc-', '') 
-            outfile = outfile.replace('potential-', '') 
-            outfile = outfile.replace('segy-', '') 
-            outfile = outfile.replace('sph-', '') 
-            outfile = outfile.replace('spotter-', '') 
-            outfile = outfile.replace('x2sys-', '') 
-            man_pages.append((srcfile, 
-                              outfile, 
-                              'description of %s' % outfile, 
-                             'A. Author', 1)) 
+    for d in dirnames: 
+        if d.startswith('gallery') or d.startswith('fig_'):
+            continue
+        for f in filenames: 
+            if f.endswith('.rst') and not f.startswith('B') and not f.startswith('C') and not f.startswith('F') \
+                and not f.startswith('G') and not f.startswith('I') and not f.startswith('K') and not f.startswith('M') \
+                and not f.startswith('N') and not f.startswith('P') and not f.startswith('T') and not f.startswith('S') \
+                and not f.startswith('X') and not f.startswith('index') and not f.startswith('api') and not f.startswith('cook'): 
+                srcfile = os.path.normpath(os.path.join(dirpath, f[:-4])) 
+                outfile = srcfile.replace(os.sep, '-') 
+                outfile = outfile.replace('supplements-', '') 
+                outfile = outfile.replace('gshhg-', '') 
+                outfile = outfile.replace('imgsrc-', '') 
+                outfile = outfile.replace('meca-', '') 
+                outfile = outfile.replace('mgd77-', '') 
+                outfile = outfile.replace('misc-', '') 
+                outfile = outfile.replace('potential-', '') 
+                outfile = outfile.replace('segy-', '') 
+                outfile = outfile.replace('sph-', '') 
+                outfile = outfile.replace('spotter-', '') 
+                outfile = outfile.replace('x2sys-', '') 
+                man_pages.append((srcfile, 
+                                  outfile, 
+                                  'description of %s' % outfile, 
+                                  'A. Author', 1))
 
 
 # -- Options for Epub output ---------------------------------------------------
