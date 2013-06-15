@@ -127,7 +127,7 @@ Optional Arguments
 Examples
 --------
 
-To combine the digitized segment lines segment\_\*.txt (whose
+To combine the digitized segment lines segment_\*.txt (whose
 coordinates are in cm) into as few complete lines as possible, assuming
 the end points slop could be up to 0.1 mm, run
 
@@ -153,7 +153,7 @@ However, gmtstitch will correctly add the point to the nearest segment.
 Running gmtstitch again on the new set of lines will eventually connect
 all close lines.
 
-`See Also <#toc10>`_
---------------------
+See Also
+--------
 
 `gmt <gmt.html>`_ , `mapproject <mapproject.html>`_

@@ -12,7 +12,6 @@ Synopsis
 **gmtdp** [ *table* ] **-T**\ *tolerance*\ [*unit*]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
-[ **-bo**\ [*ncols*][*type*] ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
@@ -31,7 +30,7 @@ polygon until a run of points can be replaced by a straight line
 segment, with no point in that run deviating from the straight line by
 more than the tolerance. Have a look at this site to get a visual
 insight on how the algorithm works
-(http://geometryalgorithms.com/Archive/algorithm\_0205/algorithm\_0205.htm)
+(http://geometryalgorithms.com/Archive/algorithm_0205/algorithm_0205.htm)
 
 Required Arguments
 ------------------
@@ -83,14 +82,14 @@ To reduce the geographic line segment.d using a tolerance of 2 km, run
 
    ::
 
-    gmtdp segment.d -T2k > new_segment.d
+    gmt gmtsimplify segment.d -T2k > new_segment.d
 
 To reduce the Cartesian lines xylines.d using a tolerance of 0.45 and
 write the reduced lines to file new_xylines.d, run
 
    ::
 
-    gmtdp xylines.d -T0.45 > new_xylines.d
+    gmt gmtsimplify xylines.d -T0.45 > new_xylines.d
 
 Bugs
 ----

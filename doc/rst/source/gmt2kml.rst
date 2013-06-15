@@ -9,21 +9,23 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt2kml** [ *table* ] [
-**-A**\ **a**\ \|\ **g**\ \|\ **s**\ [*alt*\ \|\ **x**\ *scale*] ] [
-**-C**\ *cpt* ] [ **-D**\ *descriptfile* ] [ **-E**\ [*altitude*\ ] ] [
-**-F**\ **e**\ \|\ **s**\ \|\ **t**\ \|\ **l**\ \|\ **p** ] [
-**-G**\ **f\|n**\ **-**\ \|\ *fill* ] [ **-I**\ *icon* ] [ **-K**] [
-**-L**\ *col1:name1*,\ *col2:name2*,... ] [
-**-N**\ [+\|*name\_template*\ \|\ *name*] ] [ **-O**] [
-**-Ra**\ \|\ *w/e/s/n* ] [ **-S**\ **c**\ \|\ **n**\ *scale*] ] [
-**-T**\ *title*\ [/*foldername*] ] [ **-V**\ [*level*\ ] ] [
-**-W**\ [**-**\ \|\ **+**]\ *pen* ] [ **-Z**\ *args* ] [
-**-bi**\ [*ncols*\ ][*type*\ ] ] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo*
-] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
-**-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-:**\ [**i**\ \|\ **o**] ] [ > *output.kml* ]
+**gmt2kml** [ *table* ]
+[ **-A**\ **a**\ \|\ **g**\ \|\ **s**\ [*alt*\ \|\ **x**\ *scale*] ]
+[ **-C**\ *cpt* ] [ **-D**\ *descriptfile* ] [ **-E**\ [*altitude*] ]
+[ **-F**\ **e**\ \|\ **s**\ \|\ **t**\ \|\ **l**\ \|\ **p** ]
+[ **-G**\ **f\|n**\ **-**\ \|\ *fill* ] [ **-I**\ *icon* ] [ **-K**]
+[ **-L**\ *col1:name1*,\ *col2:name2*,... ]
+[ **-N**\ [+\|*name\_template*\ \|\ *name*] ] [ **-O**]
+[ **-Ra**\ \|\ *w/e/s/n* ] [ **-S**\ **c**\ \|\ **n**\ *scale*] ]
+[ **-T**\ *title*\ [/*foldername*] ]
+[ |SYN_OPT-V| ]
+[ **-W**\ [**-**\ \|\ **+**]\ *pen* ] [ **-Z**\ *args* ]
+[ **-bi**\ [*ncols*\ ][*type*\ ] ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-:| ]
+[ > *output.kml* ]
 
 |No-spaces|
 
@@ -65,20 +67,23 @@ Optional Arguments
     features to the chosen reference surface. Append **x**\ *scale* to
     scale the altitude from the input file by that factor. If no value
     is appended, the altitude (in m) is read from the 3rd column of the
-    input file. [By default the features are clamped to the sea surface
-    or ground].
+    input file. [By default the features are clamped to the sea surface or ground].
+
 **-C**\ *cpt*
     Use color palette for assigning colors to the symbol, event, or
     timespan icons, based on the value in the 3rd column of the input
     file. For lines or polygons we examine the segment header for
     -Z<value> statements and obtain the color via the cpt lookup. Note
     only discrete colors are possible.
+
 **-D**\ *descriptfile*
     File with HTML snippets that will be included as part of the main
     description content for the KML file [no description]. See SEGMENT
     INFORMATION below for feature-specific descriptions.
-**-E**\ [*altitude*\ ]
+
+**-E**\ [*altitude*]
     Extrude feature down to ground level [no extrusion].
+
 **-F**\ **e**\ \|\ **s**\ \|\ **t**\ \|\ **l**\ \|\ **p**
     Sets the feature type. Choose from points (**e**\ vent,
     **s**\ ymbol, or **t**\ imespan), **l**\ ine, or **p**\ olygon
@@ -91,30 +96,32 @@ Optional Arguments
     that should only be active during a particular time period indicated
     by the next two columns (*timestart*, *timestop*). Use NaN to
     indicate unbounded time limits. If used, times should be in ISO
-    format yyyy-mm-ddThh:mm:ss[.xxx] or in GMT relative time format (see
-    **-f**).
+    format yyyy-mm-ddThh:mm:ss[.xxx] or in GMT relative time format (see **-f**).
+
 **-G**\ **f\|n**\ *fill*
     Set fill color for symbols, extrusions and polygons (**-Gf**)
     [Default is light orange at 75% transparency] or text labels
     (**-Gn**) [Default is white]. Optionally, use **-Gf-** to turn off
     polygon fill, and **-Gn-** to disable labels.
+
 **-I**\ *icon*
     Specify the URL to an alternative icon that should be used for the
     symbol [Default is a Google Earth circle]. If the URL starts with +
     then we will prepend
     `http://maps.google.com/mapfiles/kml/ <http://maps.google.com/mapfiles/kml/>`_
     to the name. To turn off icons entirely (e.g., when just wanting a
-    text label), use **-I**-. [Default is a local icon with no directory
-    path].
+    text label), use **-I**-. [Default is a local icon with no directory path].
+
 **-K**
-    Allow more KML code to be appended to the output later [finalize the
-    KML file].
+    Allow more KML code to be appended to the output later [finalize the KML file].
+
 **-L**\ *name1*,\ *name2*,...
     Extended data given. Append one or more column names separated by
     commas. We will expect the listed data columns to exist in the input
     immediately following the data coordinates and they will be encoded
     in the KML file as Extended Data sets, whose attributes will be
     available in the Google Earth balloon when the item is selected.
+
 **-N**\ [-\|+\|\ *name\_template*\ \|\ *name*]
     By default, if segment headers contain a **-L**"label string" then
     we use that for the name of the KML feature (polygon, line segment
@@ -134,17 +141,20 @@ Optional Arguments
     arguments to turn symbol labeling off; line segments will still be
     named. Note: if **-N-** is used with **-L** then the label must
     appear before the extended data columns.
+
 **-O**
-    Appended KML code to an existing KML file [initialize a new KML
-    file].
+    Appended KML code to an existing KML file [initialize a new KML file].
+
 **-Ra**\ \|\ *w/e/s/n*
     Issue a single Region tag. Append *w/e/s/n* to set a particular
     region (will ignore points outside the region), or append **a** to
     determine and use the actual domain of the data (single file only)
     [no region tags issued].
+
 **-S**\ **c**\ \|\ **n**\ *scale*]
     Scale icons or labels. Here, **-Sc** sets a scale for the symbol
     icon, whereas **-Sn** sets a scale for the name labels [1 for both].
+
 **-T**\ *title*\ [/*foldername*]
     Sets the document title [GMT Data Document]. Optionally, append
     /*FolderName*; this allows you, with **-O**, **-K**, to group
@@ -199,11 +209,15 @@ Examples
 To convert a file with point locations (lon, lat) into a KML file with
 red circle symbols, try
 
+   ::
+
     gmt2kml mypoints.txt -Gfred -Fs > mypoints.kml
 
 To convert a multisegment file with lines (lon, lat) separated by
 segment headers that contain a **-L**\ labelstring with the feature
 name, selecting a thick white pen, and title the document, try
+
+   ::
 
     gmt2kml mylines.txt -Wthick,white -Fl -T"Lines from here to there" > mylines.kml
 
@@ -213,28 +227,34 @@ name, selecting a thick black pen and semi-transparent yellow fill,
 giving a title to the document, and prescribing a particular region
 limit, try
 
-    gmt2kml mypolygons.txt -Gfyellow+t0.5 -Fp -T"My polygons" -R30/90/-20/40 > mypolygons.kml
+   ::
+
+    gmt gmt2kml mypolygons.txt -Gfyellow+t0.5 -Fp -T"My polygons" -R30/90/-20/40 > mypolygons.kml
 
 To convert a file with point locations (lon, lat, time) into a KML file
 with green circle symbols that will go active at the specified time and
 stay active going forward, try
 
-    awk '{print $1, $2, $3, "NaN"}' mypoints.txt \| gmt2kml -Gfgreen -Ft > mytimepoints.kml
+   ::
+
+    awk '{print $1, $2, $3, "NaN"}' mypoints.txt | gmt gmt2kml -Gfgreen -Ft > mytimepoints.kml
 
 To extract contours and labels every 10 units from the grid temp.nc and
 plot them in KML, using red lines at 75% transparency and red labels (no
 transparency), try
 
-    grdcontour temp.nc -Jx1id -A10+tlabel.txt -C10 -Dcontours.txt
+   ::
 
-    gmt2kml contours.txt -Fl -W1p,red@75 -K > contours.kml
-
-    gmt2kml -O -N+ -Fs -Sn2 -Gnred@0 label.txt -I- >> contours.kml
+    gmt grdcontour temp.nc -Jx1id -A10+tlabel.txt -C10 -Dcontours.txt
+    gmt gmt2kml    contours.txt -Fl -W1p,red@75 -K > contours.kml
+    gmt gmt2kml    -O -N+ -Fs -Sn2 -Gnred@0 label.txt -I- >> contours.kml
 
 To instead plot the contours as lines with colors taken from the cpt
 file contours.cpt, try
 
-    gmt2kml contours.txt -Fl -Ccontours.cpt > contours.kml
+   ::
+
+    gmt gmt2kml contours.txt -Fl -Ccontours.cpt > contours.kml
 
 Limitations
 -----------

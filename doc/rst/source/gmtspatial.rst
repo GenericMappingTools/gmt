@@ -12,14 +12,14 @@ Synopsis
 **gmtspatial** [ *table* ] [ **-A**\ [**a**\ *min_dist*][*unit*]] [ **-C** ]
 [ **-D**\ [**+f**\ *file*][\ **+a**\ *amax*][\ **+d**\ *dmax*][\ **+c\|C**\ *cmax*][\ **+s**\ *fact*] ]
 [ **-E**\ **+**\ \|\ **-** ] [ **-I**\ [**e**\ \|\ **i**] ]
-[ **-N**\ *pfile*\ [**+a**][\ **+p**\ *start*][**+r**\ ][**+z**] ]
+[ **-N**\ *pfile*\ [**+a**][\ **+p**\ *start*][**+r**][**+z**] ]
 [ **-Q**\ [**+**\ [*unit*\ ]] ]
 [ |SYN_OPT-R| ]
 [ **-S**\ **i**\ \|\ **u**\ \|\ **s**\ \|\ **j** ]
 [ **-T**\ [*clippolygon*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
-**-bo**\ [*ncols*\ ][*type*\ ] ]
+[ **-bo**\ [*ncols*\ ][*type*] ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
@@ -180,20 +180,20 @@ polygons.d, run
 
    ::
 
-    gmtspatial polygons.d -Q > areas.d
+    gmt gmtspatial polygons.d -Q > areas.d
 
 Same data, but now orient all polygons to go counter-clockwise and write
 their areas to the segment headers, run
 
    ::
 
-    gmtspatial polygons.d -Q+ -E+ > areas.d
+    gmt gmtspatial polygons.d -Q+ -E+ > areas.d
 
 To determine the intersections between the polygons A.d and B.d, run
 
    ::
 
-    gmtspatial A.d B.d -Ce > crossovers.d
+    gmt gmtspatial A.d B.d -Ce > crossovers.d
 
 See Also
 --------

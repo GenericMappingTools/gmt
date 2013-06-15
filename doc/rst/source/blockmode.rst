@@ -11,14 +11,19 @@ Synopsis
 
 **blockmode** [ *table* ]
 |SYN_OPT-I|
-|SYN_OPT-R| [ **-C** ]
+|SYN_OPT-R|
+[ **-C** ]
 [ **-D**\ [*width*]\ [**+c**][**+l**\ \|\ **+h** ]
 [ **-E**\ **r**\ \|\ **s**\ [**-**] ] [ **-Q** ]
-[ |SYN_OPT-V| ] [ **-W**\ [**i**\ \|\ **o**] ]
+[ |SYN_OPT-V| ]
+[ **-W**\ [**i**\ \|\ **o**] ]
 [ |SYN_OPT-b| ]
-[ |SYN_OPT-f| ] [ |SYN_OPT-h| ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
-[ |SYN_OPT-o| ] [ **-r** ] [ |SYN_OPT-:| ]
+[ |SYN_OPT-o| ]
+[ **-r** ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
@@ -135,14 +140,14 @@ binary data in hawaii_b.xyg and output an ASCII table, run:
 
    ::
 
-    blockmode hawaii_b.xyg -R198/208/18/25 -I5m -bi3d > hawaii_5x5.xyg
+    gmt blockmode hawaii_b.xyg -R198/208/18/25 -I5m -bi3d > hawaii_5x5.xyg
 
 To determine the most frequently occurring values per 5x5 block using histogram binning, with
 data representing integer counts, try
 
    ::
 
-    blockmode data.txt -R0/100/0/100 -I5 -r -C -D
+    gmt blockmode data.txt -R0/100/0/100 -I5 -r -C -D
 
 See Also
 --------

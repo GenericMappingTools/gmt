@@ -21,14 +21,13 @@ Description
 Use the command `gmtset <gmtset.html>`_, (2) use any texteditor to edit the file
 `gmt.conf <gmt.conf.html>`_ in your home, ~/.gmt or current directory (if you do not
 have this file, run `gmtset <gmtset.html>`_ **-D** to get one with the system default
-settings), `or (3) <or.html>`_ override any parameter by specifying one
+settings), or (3) override any parameter by specifying one
 or more **--PARAMETER**\ =\ *VALUE* statements on the commandline of any
 **GMT** command (**PARAMETER** and *VALUE* are any combination listed
 below). The first two options are permanent changes until explicitly
 changed back, while the last option is ephemeral and only applies to the
 single **GMT** command that received the override. **GMT** can provide
-default values in US or SI units. This choice is determined at compile
-time.
+default values in US or SI units. This choice is determined at compile time.
 
 Required Arguments
 ------------------
