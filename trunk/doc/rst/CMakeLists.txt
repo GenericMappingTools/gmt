@@ -45,6 +45,14 @@ if (SPHINX_FOUND)
 		${CMAKE_CURRENT_SOURCE_DIR}/source
 		${CMAKE_CURRENT_BINARY_DIR}/man
 		COMMENT "Building manpages")
+
+	add_custom_target (docs_rst_latex
+		${SPHINX_EXECUTABLE} -q -b latex
+		-c "${SPHINX_CONFIG_DIR}"
+		-d "${SPHINX_CACHE_DIR}"
+		${CMAKE_CURRENT_SOURCE_DIR}/source
+		${CMAKE_CURRENT_BINARY_DIR}/latex
+		COMMENT "Building CookBook PDF")
 endif (SPHINX_FOUND)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
