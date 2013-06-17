@@ -2902,8 +2902,7 @@ int gmt4_decode_wesnz (struct GMT_CTRL *GMT, const char *in, unsigned int side[]
 	int i, k;
 	bool go = true;
 
-	if (part == 2) GMT->current.map.frame.set_frame[0]++, GMT->current.map.frame.set_frame[1]++;
-	else GMT->current.map.frame.set_frame[part]++;
+	GMT->current.map.frame.set_frame[part]++;
 	if (GMT->current.map.frame.set_frame[0] > 1 || GMT->current.map.frame.set_frame[1] > 1) {
 		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error -B: <WESN-framesettings> given more than once!\n");
 		return (1);
@@ -6893,7 +6892,7 @@ int gmt4_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 		case 'p':
 			GMT->current.map.frame.primary = true; k = 1; part = 0; break;
 		default:
-			GMT->current.map.frame.primary = true; k = 0; part = 2; break;
+			GMT->current.map.frame.primary = true; k = 0; part = 0; break;
 	}
 	i = (GMT->current.map.frame.primary) ? 0 : 1;
 	strncpy (GMT->common.B.string[i], in, GMT_TEXT_LEN256);	/* Keep a copy of the actual option(s) */
