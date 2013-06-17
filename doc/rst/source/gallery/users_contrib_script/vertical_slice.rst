@@ -66,7 +66,7 @@ Facultad de Ciencias Astronomicas y Geofisicas - UNLP
  #
  # re-grid slice
  #
- gmt surface points.d -Gslice.nc -R$lMin/$lMax/0/999 -I1500+/2000+ -C0.1 -T0.25
+ gmt surface points.d -Gslice_cut.nc -R$lMin/$lMax/0/999 -I1500+/2000+ -C0.1 -T0.25
  #
  # create color palette
  #
@@ -123,3 +123,9 @@ Facultad de Ciencias Astronomicas y Geofisicas - UNLP
  gmt ps2raster -Tg -Qt4 -Qg4 -E300 -P mag.ps
  #
  rm -f base.nc points.d slice.nc slice_cut.nc.gmtcommands gmt.conf
+
+.. figure:: images/vertical_slice.png
+   :width: 500 px
+   :align: center
+
+   A vertical slice ...
