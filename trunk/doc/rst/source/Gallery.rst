@@ -1,12 +1,10 @@
-
 .. _example_gallery:
 
-Example gallery
-=================
-
-
 The GMT historical collection
------------------------------
+=============================
+
+The 40 Examples
+----------------
 
 In this section we will be giving numerous examples of typical usage of
 *GMT* programs. In general, we will start with a raw data set,
@@ -182,24 +180,11 @@ Animations
 .. include:: gallery/img_anim_03.rst_
 .. include:: gallery/img_anim_04.rst_
 
-
-Users Contributions
------------------------
-
 .. toctree::
    :hidden:
 
-   gallery/vertical_slice.rst
    gallery/anim01.rst
    gallery/anim02.rst
    gallery/anim03.rst
    gallery/anim04.rst
-
-======= =============================================
-======= =============================================
-.       :ref:`vertical_slice`
-         A script to plot a vertical slice of a
-         function p=f(x, y, z)
-
-======= =============================================
 

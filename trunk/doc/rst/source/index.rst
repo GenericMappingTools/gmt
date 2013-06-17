@@ -52,6 +52,7 @@ Welcome to GMT5's documentation!
 |    :maxdepth: 2            |
 |                            |
 |    Gallery                 |
+|    Users_contrib_script    |
 +----------------------------+
 
 +--------------------+
