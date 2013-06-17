@@ -11,9 +11,18 @@ Version Jul 1, 2013
 
 We have removed gshhg_dp.c and gshhgtograss.c from gshhg in GMT5.
 The reason is that the Douglas-Peucker algorithm is not ideal for
-coastline polygons as it tends to create self-intersections. The
+coastline polygons as it tends to create self-intersections. For
+users who still need D-P reduction, see gmtdp in the GMT core.  The
 GRASS formatter is no longer needed since GSHHG is also distributed
-as shapefiles.
+as shapefiles.  Work with the latest GSHHG data set version 2.2.3.
+
+Version Jan 1, 2013
+No source code changes but expected to work with the latest GSHHG
+data set version 2.2.2
+
+Version Apr 1, 2012
+No source code changes but expected to work with the latest GSHHG
+data set version 2.2.1
 
 Version Jul 15, 2011
 Work with the latest GSHHG data set version 2.2.0.  Here, the
