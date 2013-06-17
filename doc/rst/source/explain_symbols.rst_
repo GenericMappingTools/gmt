@@ -112,11 +112,12 @@
         may add their own custom \*.def files; see CUSTOM SYMBOLS below.
 
     **-Sl**
-        **l**\ etter or text string (less than 64 characters). Give size, and
-        append /*string* after the size. Note that the size is only approximate;
+        **l**\ etter or text string (less than 256 characters). Give size, and
+        append **+t**\ *string* after the size. Note that the size is only approximate;
         no individual scaling is done for different characters. Remember to
-        escape special characters like \*. Optionally, you may append %\ *font*
-        to select a particular font [Default is **FONT\_ANNOT\_PRIMARY**].
+        escape special characters like \*. Optionally, you may append **f**\ *font*
+        to select a particular font [Default is **FONT\_ANNOT\_PRIMARY**] and
+	**j**\ *justify* to change justification [CM].
 
     **-Sm**
         **m**\ ath angle arc, optionally with one or two arrow heads [Default is

@@ -321,7 +321,7 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t     <symbolname>.def in the current directory, in $GMT_USERDIR,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     or in $GMT_SHAREDIR (searched in that order).\n");
 	GMT_list_custom_symbols (API->GMT);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Letter: append /<string> after symbol size, and optionally %%<font>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Letter: append +t<string> after symbol size, and optionally +f<font> and +j<justify>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Mathangle: radius, start, and stop directions of math angle must be in columns 3-5.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If -SM rather than -Sm is used, we draw straight angle symbol if 90 degrees.\n");
 	GMT_vector_syntax (API->GMT, 0);
@@ -552,6 +552,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 	S.base = GMT->session.d_NaN;
 	S.font = GMT->current.setting.font_annot[0];
 	S.u = GMT->current.setting.proj_length_unit;
+	S.justify = PSL_MC;
 	Ctrl = New_psxy_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_psxy_parse (GMT, Ctrl, options, &S))) Return (error);
 
@@ -941,7 +942,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 					else if (!Ctrl->G.active)
 						PSL_setfill (PSL, GMT->session.no_rgb, outline_active);
 					(void) GMT_setfont (GMT, &S.font);
-					PSL_plottext (PSL, plot_x, plot_y, dim[0] * PSL_POINTS_PER_INCH, S.string, 0.0, PSL_MC, outline_active);
+					PSL_plottext (PSL, plot_x, plot_y, dim[0] * PSL_POINTS_PER_INCH, S.string, 0.0, S.justify, outline_active);
 					break;
 				case GMT_SYMBOL_VECTOR:
 					GMT_init_vector_param (GMT, &S, false, false, NULL, false, NULL);	/* Update vector head parameters */

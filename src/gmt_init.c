@@ -8281,6 +8281,64 @@ int GMT_parse_front (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *S)
 	return (error);
 }
 
+int gmt_parse_text (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *S)
+{	/* Parse the arguments given to -Sl.  The allowed syntax is:
+ 	 * -Sl<size>[unit]+t<text>[+f<font<][+j<justify>] */
+	
+	unsigned int pos = 0, k, j, slash, error = 0;
+	if ((!strstr (text, "+t") && strchr (text, '/')) || strchr (text, '%')) {	/* GMT4 syntax */
+		char *c = NULL;
+		if (GMT_compat_check (GMT, 4)) {
+			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning in Option -Sl: Sl<size>/<string>[%<font>] is deprecated syntax\n");
+			if ((c = strchr (text, '%'))) {	/* Gave font name or number, too */
+				*c = 0;	/* Chop off the %font info */
+				c++;		/* Go to next character */
+				if (GMT_getfont (GMT, c, &S->font)) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-Sl contains bad font (set to %s)\n", GMT_putfont (GMT, S->font));
+			}
+			/* Look for a slash that separates size and string: */
+			for (j = 1, slash = 0; text[j] && !slash; j++) if (text[j] == '/') slash = j;
+			/* Set j to the first char in the string: */
+			j = slash + 1;
+			/* Copy string characters */
+			k = 0;
+			while (text[j] && text[j] != ' ' && k < (GMT_TEXT_LEN256-1)) S->string[k++] = text[j++];
+			S->string[k] = '\0';
+			if (!k) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -Sl option: No string given\n");
+				error++;
+			}
+		}
+		else {	/* Not accept it unless under compatibility mode 4 */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -Sl option: Usage is -Sl[<size>]+t<string>[+f<font>][+j<justify]\n");
+			error++;
+		}
+	}
+	else {	/* GMT5 syntax */
+		char p[GMT_BUFSIZ];
+		for (k = 0; text[k] && text[k] != '+'; k++);	/* Either find the first plus or run out or chars; should at least find +t */
+		if (!text[k]) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -Sl option: No string information given\n");
+			return (1);
+		}
+		while ((GMT_strtok (&text[k], "+", &pos, p))) {	/* Parse any +<modifier> statements */
+			switch (p[0]) {
+				case 'f':	/* Change font */
+					if (GMT_getfont (GMT, &p[1], &S->font))
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-Sl contains bad +<font> modifier (set to %s)\n", GMT_putfont (GMT, S->font));
+					break;
+				case 'j':	S->justify = GMT_just_decode (GMT, &p[1], 12);	break;	/* text justification */
+				case 't':	strncpy (S->string, &p[1], GMT_TEXT_LEN256);	break;	/* Get the symbol text */
+				default:
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error option -Sl: Bad modifier +%c\n", p[0]);
+					error++;
+					break;	
+			}
+		}
+	}
+		
+	return (error);
+}
+
 #define GMT_VECTOR_CODES "mMvV="	/* The vector symbol codes */
 
 int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *p, unsigned int mode, bool cmd)
@@ -8339,7 +8397,29 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		if (cmd) p->read_symbol_cmd = true;
 	}
 	else if (text[0] == 'l') {	/* Letter symbol is special case */
-		strncpy (text_cp, text, GMT_TEXT_LEN256);
+		strncpy (text_cp, text, GMT_TEXT_LEN256);	/* Copy for processing later */
+		symbol_type = 'l';
+		if (!text[1]) {	/* No size or text given */
+			if (p->size_x == 0.0) p->size_x = p->given_size_x;
+			if (p->size_y == 0.0) p->size_y = p->given_size_y;
+			if (cmd) p->read_size_cmd = true;
+			col_off++;
+		}
+		else if (text[1] == '+' || (text[1] == '/' && GMT_compat_check (GMT, 4))) {	/* No size given */
+			/* Any deprecate message comes below so no need here */
+			if (p->size_x == 0.0) p->size_x = p->given_size_x;
+			if (p->size_y == 0.0) p->size_y = p->given_size_y;
+			col_off++;
+		}
+		else {
+			n = sscanf (&text_cp[1], "%[^+]+%*s", txt_a);
+			p->size_x = p->given_size_x = GMT_to_inch (GMT, txt_a);
+			decode_error = (n != 1);
+		}
+	}
+#if 0	/* Original code */
+	else if (text[0] == 'l') {	/* Letter symbol is special case */
+		strncpy (text_cp, text, GMT_TEXT_LEN256);	/* Copy for processing later */
 		if ((c = strchr (text_cp, '%'))) {	/* Gave font name or number, too */
 			*c = ' ';	/* Make the % a space */
 			c++;		/* Go to next character */
@@ -8357,6 +8437,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			decode_error = (n != 3);
 		}
 	}
+#endif
 	else if (text[0] == 'k') {	/* Custom symbol spec */
 		for (j = (int)strlen (text); j > 0 && text[j] != '/'; --j);
 		if (j == 0) {	/* No slash, i.e., no symbol size given */
@@ -8657,18 +8738,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			break;
 		case 'l':
 			p->symbol = GMT_SYMBOL_TEXT;
-			/* Look for a slash that separates size and string: */
-			for (j = 1, slash = 0; text_cp[j] && !slash; j++) if (text_cp[j] == '/') slash = j;
-			/* Set j to the first char in the string: */
-			j = slash + 1;
-			/* Copy string characters */
-			k = 0;
-			while (text_cp[j] && text_cp[j] != ' ' && k < 63) p->string[k++] = text_cp[j++];
-			if (!k) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -Sl option: No string given\n");
-				decode_error++;
-			}
-			p->string[k] = 0;
+			if (gmt_parse_text (GMT, text_cp, p)) decode_error++;
 			break;
 		case 'M':
 		case 'm':

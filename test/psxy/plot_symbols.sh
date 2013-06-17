@@ -21,7 +21,7 @@ gmt psxy -R0/4/1/6 -Jx1i -P -Bg1 -Gred -W0.25p -S1i -X2i -Y2i << EOF > $ps
 0.5	3.5	i
 1.5	3.5	90	1	0.5	j
 > Do orange -Gorange
-2.5	3.5	l/M
+2.5	3.5	l+tM
 3.5	3.5	n
 > Do yellowized pattern # 20 -Gp100/20:Fyellow
 0.5	2.5	1	0.5	r
