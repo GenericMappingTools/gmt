@@ -4,20 +4,20 @@ gshhg
 
 gshhg - Extract data tables from binary GSHHG or WDBII data files
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gshhg** *binaryfile.b* [ **-A**\ *min* ] [ **-G** ] [ **-I**\ *id* ] [
 **-L** ] [ **-N**\ *level* ] [ **-Qe**\ \|\ **i** ] [
-**-bo**\ [*ncols*\ ][*type*\ ] ] [ **-o**\ *cols*\ [,*...*] ] >
-*asciifile.txt*
+**-bo**\ [*ncols*\ ][*type*] ]
+[ |SYN_OPT-o| ] > *asciifile.txt*
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **gshhg** reads the binary coastline (GSHHG) or political boundary or
 river (WDBII) files and extracts an ASCII listing. It automatically
@@ -37,16 +37,16 @@ ancestor). For line data the header is simply *ID npoints
 hierarchical-level source west east south north*. For more information
 about the file formats, see TECHNICAL INFORMATION below.
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *binaryfile.b*
     GSHHG or WDBII binary data file as distributed with the GSHHG data
     supplement. Any of the 5 standard resolutions (full, high,
     intermediate, low, crude) can be used.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-A**\ *min*
     Only output information for the polygon if its area equals or
@@ -75,26 +75,32 @@ about the file formats, see TECHNICAL INFORMATION below.
 
 .. include:: ../../explain_-ocols.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
 To convert the entire intermediate GSHHG binary data to ASCII files for
 Octave/Mathlab, run
 
-    gshhg gshhs\_i.b --IO\_SEGMENT\_MARKER=N > gshhs\_i.txt
+   ::
+
+    gmt gshhg gshhs_i.b --IO_SEGMENT_MARKER=N > gshhs_i.txt
 
 To only get a listing of the headers for the river data set at full
 resolution, try
 
-    gshhg wdb\_rivers\_f.b -L > riverlisting.txt
+   ::
+
+    gmt gshhg wdb_rivers_f.b -L > riverlisting.txt
 
 To only extract lakes, excluding river-lakes, from the high resolution
 file, try
 
-    gshhg gshhs\_h.b -Ee -N2 > all\_lakes.txt
+   ::
 
-`Technical Information <#toc7>`_
---------------------------------
+    gmt gshhg gshhs_h.b -Ee -N2 > all_lakes.txt
+
+Technical Information
+---------------------
 
 Users who wish to access the GSHHG or WDBII data directly from their
 custom programs should consult the gshhg.c and gshhg.h source code and
@@ -146,8 +152,8 @@ domestic boundaries (2), and international
 maritime boundaries (3). Individual levels or
 classes may be extracted via **-N**.
 
-`References <#toc8>`_
----------------------
+References
+----------
 
 Douglas, D. H., and T. K. Peucker, 1973, Algorithms for the reduction of
 the number of points required to represent a digitized line of its
@@ -163,8 +169,8 @@ Wessel, P., and W. H. F. Smith, 1996, A global, self-consistent,
 hierarchical, high-resolution shoreline database, *J. Geophys. Res.,
 101(B4)*, 8741-8743.*
 
-`See Also <#toc9>`_
--------------------
+See Also
+--------
 
 `GMT <GMT.html>`_, `gshhg_dp <gshhg_dp.html>`_,
 `gshhgtograss <gshhgtograss.html>`_
