@@ -6882,17 +6882,17 @@ int gmt4_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 
 	char out1[GMT_BUFSIZ] = "", out2[GMT_BUFSIZ] = "", out3[GMT_BUFSIZ] = "", info[3][GMT_BUFSIZ] = {""};
 	struct GMT_PLOT_AXIS *A = NULL;
-	int i, j, k, ignore, g = 0, o = 0, part, error = 0;
+	int i, j, k, ignore, g = 0, o = 0, part = 0, error = 0;
 
 	if (!in || !in[0]) return (GMT_PARSE_ERROR);	/* -B requires an argument */
 
 	switch (in[0]) {
 		case 's':
-			GMT->current.map.frame.primary = false; k = 1; part = 1; break;
+			GMT->current.map.frame.primary = false; k = part = 1; break;
 		case 'p':
-			GMT->current.map.frame.primary = true; k = 1; part = 0; break;
+			GMT->current.map.frame.primary = true; k = 1; break;
 		default:
-			GMT->current.map.frame.primary = true; k = 0; part = 0; break;
+			GMT->current.map.frame.primary = true; k = 0; break;
 	}
 	i = (GMT->current.map.frame.primary) ? 0 : 1;
 	strncpy (GMT->common.B.string[i], in, GMT_TEXT_LEN256);	/* Keep a copy of the actual option(s) */
