@@ -136,10 +136,11 @@ struct GMT_VECT_ATTR {
 struct GMT_SYMBOL {
 	/* Voodoo: If next line is not the first member in this struct, psxy -Sl<size>/Text will have corrupt 'Text'
 		   in non-debug binaries compiled with VS2010 */
-	char string[GMT_TEXT_LEN64];	/* Character code to plot (could be octal) */
+	char string[GMT_TEXT_LEN256];	/* Character code to plot (could be octal) */
 
 	int symbol;	/* Symbol id */
 	unsigned int n_required;	/* Number of additional columns necessary to decode chosen symbol */
+	unsigned int justify;	/* Justification of text item for -Sl symbol [PSL_MC = centered] */
 	unsigned int u;		/* Measure unit id (0 = cm, 1 = inch, 2 = m, 3 = point */
 	bool u_set;		/* true if u was set */
 	double size_x;		/* Current symbol size in x */

@@ -9395,11 +9395,12 @@ int GMT_flip_justify (struct GMT_CTRL *GMT, unsigned int justify)
 	return (j);
 }
 
-int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *name, struct GMT_CUSTOM_SYMBOL **S) {
+int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUSTOM_SYMBOL **S) {
 	unsigned int k, nc = 0, error = 0;
 	int last;
+	size_t length;
 	bool do_fill, do_pen, first = true;
-	char file[GMT_BUFSIZ], buffer[GMT_BUFSIZ], col[8][GMT_TEXT_LEN64], var[8], OP[8], constant[GMT_TEXT_LEN64];
+	char name[GMT_BUFSIZ], file[GMT_BUFSIZ], buffer[GMT_BUFSIZ], col[8][GMT_TEXT_LEN64], var[8], OP[8], constant[GMT_TEXT_LEN64];
 	char *fill_p = NULL, *pen_p = NULL;
 	FILE *fp = NULL;
 	struct GMT_CUSTOM_SYMBOL *head = NULL;
@@ -9410,6 +9411,12 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *name, struct GMT_CUSTOM_
 
 	/* Parse the *.def files.  Note: PS_MACRO is off and will be worked on later.  For now the
 	 * extended macro language works well and can handle most situations. PW 10/11/10 */
+	length = strlen (in_name);
+	GMT_memset (name, GMT_BUFSIZ, char);
+	if (length > 4 && !strcmp (&in_name[length-4], ".def"))	/* User gave trailing .def extension (not needed) - just chop */
+		strncpy (name, in_name, length-4);
+	else	/* Use as is */
+		strcpy (name, in_name);
 
 	GMT_getsharepath (GMT, "custom", name, ".def", file);
 #ifdef PS_MACRO
