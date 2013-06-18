@@ -16,12 +16,12 @@ Synopsis
 [ **-G**\ *fieldabbrev*,\ *grid* ] [ **-H** ]
 [ **-I**\ *fieldabbrev*,\ *rec1*,\ *recN* ] [ **-K** ]
 [ **-L**\ *custom-limits-file* ] [ **-N** ]
-[ **-R**\ *west*/*east*/*south*/*north*\ [**r**] ]
+[ |SYN_OPT-R| ]
 [ **-S**\ **d**\ \|\ **s**\ \|\ **t** ] [ **-T**\ *gap* ]
-[ **-V**\ [*level*\ ] ]
+[ |SYN_OPT-V| ]
 [ **-W**\ **c**\ \|\ **g**\ \|\ **o**\ \|\ **s**\ \|\ **t**\ \|\ **v**\ \|\ **x** ]
 [ **-bo**\ [*ncols*][*type*] ]
-[ **-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**][\ **+b**\ *BC*][\ **+t**\ *threshold*] ]
+[ |SYN_OPT-n| ]
 
 |No-spaces|
 
@@ -309,7 +309,7 @@ i2  2  -  -  32767
 
    ::
 
-    grdraster 1 -R0/359:55/-90/90 -Getopo5_hdr.i2
+    gmt grdraster 1 -R0/359:55/-90/90 -Getopo5_hdr.i2
 
 The new grid, etopo5_hdr.i2 in this example, contains a GMT header and
 can be used in the **-G** option to compare cruise depth with grid values.
@@ -464,21 +464,21 @@ To scan for excessive values or gradients, try
 
    ::
 
-    mgd77sniffer 08010001
+    gmt mgd77sniffer 08010001
 
 To dump cruise gradients, try
 
    ::
 
-    mgd77sniffer 08010001 -Ds
+    gmt mgd77sniffer 08010001 -Ds
 
 To compare cruise depth with ETOPO5 bathymetry and gravity with
 Sandwell/Smith 2 min gravity version 11, try
 
    ::
 
-    mgd77sniffer 08010001 -Gdepth,/data/GRIDS/etopo5_hdr.i2 \
-                 -gfaa,/data/GRIDS/grav.11.2.img,0.1,1
+    gmt mgd77sniffer 08010001 -Gdepth,/data/GRIDS/etopo5_hdr.i2 \
+                     -gfaa,/data/GRIDS/grav.11.2.img,0.1,1
 
 See Also
 --------

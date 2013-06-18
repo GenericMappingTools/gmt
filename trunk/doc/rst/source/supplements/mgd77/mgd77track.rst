@@ -4,41 +4,41 @@ mgd77track
 
 mgd77track - Plot track-line map of MGD77 cruises
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
 **mgd77track** *NGDC-ids*
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] **-J**\ *parameters* [
-**-A**\ [**c**\ ][*size*\ ][,\ *spacing*] ] [
-**-B**\ [**p**\ \|\ **s**]\ *parameters* ] [
-**-C**\ **f**\ \|\ **g**\ \|\ **e** ] [ **-Da**\ *startdate* ] [
-**-Db**\ *stopdate* ] [ **-F** ] [ **-G**\ **d**\ \|\ **t**\ *gap* ] [
-**-I**\ *ignore* ] [ **-K** ] [ **-L**\ *trackticks* ] [ **-O** ] [
-**-P** ] [ **-Sa**\ *startdist*\ [**u**\ ] ] [
-**-Sb**\ *stopdist*\ [**u**\ ] ] [
-**-TT**\ \|\ **t**\ \|\ **d**\ *ms*,\ *mc*,\ *mfs*,\ *mf*,\ *mfc* ] [
-**-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*\ ]
-] [ **-W**\ *pen* ] [
-**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-] [
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-] [ **-c**\ *copies* ] [
-**-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
-] [ **-t**\ [*transp*\ ] ]
+|SYN_OPT-R|
+**-J**\ *parameters*
+[ **-A**\ [**c**\ ][*size*\ ][,\ *spacing*] ]
+[ |SYN_OPT-B| ]
+[ **-C**\ **f**\ \|\ **g**\ \|\ **e** ] [ **-Da**\ *startdate* ] 
+[ **-Db**\ *stopdate* ] [ **-F** ] [ **-G**\ **d**\ \|\ **t**\ *gap* ]
+[ **-I**\ *ignore* ] [ **-K** ] [ **-L**\ *trackticks* ] [ **-O** ]
+[ **-P** ] [ **-Sa**\ *startdist*\ [**u**\ ] ]
+[ **-Sb**\ *stopdist*\ [**u**\ ] ]
+[ **-TT**\ \|\ **t**\ \|\ **d**\ *ms*,\ *mc*,\ *mfs*,\ *mf*,\ *mfc* ]
+[ |SYN_OPT-U| ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-X| ]
+[ |SYN_OPT-Y| ]
+[ |SYN_OPT-c| ]
+[ |SYN_OPT-p| ]
+[ |SYN_OPT-t| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **mgd77track** reads NGDC MGD77 cruises and creates *PostScript* code
 that will plot one or more ship tracks on a map using the specified
 projection. The *PostScript* code is written to standard output.
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 .. include:: explain_ncid.rst_
 
@@ -47,8 +47,8 @@ projection. The *PostScript* code is written to standard output.
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-A**\ [**c**\ ][*size*\ ][,\ *spacing*]
     Append **c** to annotate using the MGD77 cruise ID [Default uses the
@@ -135,8 +135,8 @@ projection. The *PostScript* code is written to standard output.
     
 .. include:: ../../explain_help.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
 To generate a Mercator plot of the track of the cruise 01010007 in the
 area 70W to 20E, 40S to 20N, using a Mercator scale of 0.1inch/degree,
@@ -145,18 +145,20 @@ every 10 degrees, draw gridlines every 5 degrees, and mark the track
 every day and 1000 km, with ticks every 6 hours and 250 km, and send the
 plot to the default printer, enter the following command:
 
-    mgd77track 01010007 -R70W/20E/40S/20N **-Jm**\ 0.1 -B10g5 -A10
-    -La1da1000kf6hf250k \| lpr
+   ::
 
-`See Also <#toc7>`_
--------------------
+    gmt mgd77track 01010007 -R70W/20E/40S/20N -Jm0.1 -B10g5 -A10 \
+                            -La1da1000kf6hf250k \| lpr
+
+See Also
+--------
 
 `mgd77info <mgd77info.html>`_,
 `psbasemap <psbasemap.html>`_,
 `mgd77list <mgd77list.html>`_
 
-`References <#toc8>`_
----------------------
+References
+----------
 
 The Marine Geophysical Data Exchange Format - MGD77, see
 `*http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt* <http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_

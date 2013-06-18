@@ -4,29 +4,31 @@ mgd77list
 
 mgd77list - Extract data from MGD77 files
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**mgd77list** *NGDC-ids* **-F**\ *columns*\ [,*logic*][:\ *bittests*] [
-**-A**\ [**+**\ ]\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **m**\ \|\ **t**\ *code*
-] [ **-C**\ **f**\ \|\ **g**\ \|\ **e** ] [
-**-D**\ **A**\ \|\ **a**\ *startdate* ] [
-**-D**\ **B**\ \|\ **b**\ *stopdate* ] [ **-E** ] [ **-Ga**\ *startrec*
-] [ **-Gb**\ *stoprec* ] [ **-I**\ *ignore* ] [ **-L**\ [*corrtable*\ ]
-] [ **-Nd**\ \|\ **s**\ *unit* ] [
-**-Q**\ **a**\ \|\ **c**\ \|\ **v**\ *min*/*max* ] [
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
-**-Sa**\ *startdist*\ [unit] ] [ **-Sb**\ *stopdist*\ [unit] ] [
-**-T**\ [**m**\ \|\ **e**] ] [ **-V**\ [*level*\ ] ] [ **-W**\ *weight*
-] [ **-Z**\ *+*\ \|\ **-** ] [ **-bo**\ [*ncols*\ ][*type*\ ] ] [ **-h**
-]
+**mgd77list** *NGDC-ids* **-F**\ *columns*\ [,*logic*][:\ *bittests*]
+[ **-A**\ [**+**\ ]\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **m**\ \|\ **t**\ *code* ]
+[ **-C**\ **f**\ \|\ **g**\ \|\ **e** ]
+[ **-D**\ **A**\ \|\ **a**\ *startdate* ]
+[ **-D**\ **B**\ \|\ **b**\ *stopdate* ] [ **-E** ] [ **-Ga**\ *startrec* ]
+[ **-Gb**\ *stoprec* ] [ **-I**\ *ignore* ] [ **-L**\ [*corrtable*] ]
+[ **-Nd**\ \|\ **s**\ *unit* ]
+[ **-Q**\ **a**\ \|\ **c**\ \|\ **v**\ *min*/*max* ]
+[ |SYN_OPT-R| ]
+[ **-Sa**\ *startdist*\ [unit] ] [ **-Sb**\ *stopdist*\ [unit] ]
+[ **-T**\ [**m**\ \|\ **e**] ] [ **-V**\ [*level*] ]
+[ |SYN_OPT-V| ]
+[ **-W**\ *weight* ]
+[ **-Z**\ *+*\ \|\ **-** ] [ **-bo**\ [*ncols*][*type*] ]
+[ |SYN_OPT-h| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **mgd77list** reads <NGDC-id>.[mgd77\|nc] files and produces an ASCII
 [or binary] table. The <NGDC-id>.[mgd77\|nc] files contain track
@@ -46,8 +48,8 @@ region. Finally, each output record may be required to pass any number
 of logical tests involving data values or bit flags. If multiple cruises
 are requested then they are separated by segment headers.
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 .. include:: explain_ncid.rst_
 
@@ -219,8 +221,8 @@ are requested then they are separated by segment headers.
     information to turn this behavior off (i.e., no bit flags will be
     consulted).
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-A**\ [**+**\ ]\ **c**\ \|\ **d**\ \|\ **f**\ \|\ **m**\ \|\ **t**\ *code*
     By default, corrected depth (**depth**), magnetic residual anomaly
@@ -422,56 +424,69 @@ are requested then they are separated by segment headers.
 |   string-fields cannot be selected. Note that if time is one of the
 |   binary output columns it will be stored as Unix-time (seconds since
 |   1970). To read this information in GMT to obtain absolute calendar
-|   time will require you to use --TIME\_SYSTEM=1.
+|   time will require you to use --TIME_SYSTEM=1.
 
-**-h**
-    Issue a header record with names for each data field. 
+
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_-h.rst_
 
 .. include:: ../../explain_help.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
 To get a (distance, heading, gravity, bathymetry) listing from
 01010047.mgd77, starting at June 3 1971 20:45 and ending at distance =
 5000 km, use the following command:
 
-    mgd77list 01010047 -Da1971-06-03T20:45 -Sb5000 -Fdist,azim,faa,depth > myfile.d
+   ::
+
+    gmt mgd77list 01010047 -Da1971-06-03T20:45 -Sb5000 -Fdist,azim,faa,depth > myfile.d
 
 To make input for **blockmean** and **surface** using free-air anomalies
 from all the cruises listed in the file cruises.lis, but only the data
 that are inside the specified area, and make the output binary:
 
-    mgd77list `cat cruises.lis` -Flon,lat,faa -R-40/-30/25/35 -bo > allgrav.b
+   ::
+
+    gmt mgd77list `cat cruises.lis` -Flon,lat,faa -R-40/-30/25/35 -bo > allgrav.b
 
 To extract the locations of depths exceeding 9000 meter that were not
 interpolated (**btc** != 1) from all the cruises listed in the file
 cruises.lis:
 
-    mgd77list ‘cat cruises.lis‘ -F"depth,DEPTH>9000,BTC!=1" > really\_deep.d
+   ::
+
+    gmt mgd77list ‘cat cruises.lis‘ -F"depth,DEPTH>9000,BTC!=1" > really_deep.d
 
 To extract dist, faa, and grav12\_2 from records whose depths are
 shallower than 3 km and where none of the requested fields are NaN, from
 all the MGD77+ netCDF files whose cruise ids are listed in the file
 cruises.lis, we try
 
-    mgd77list ‘cat cruises.lis‘ -E -Ia -F"dist,faa,grav12\_2,depth<3000" >
-    shallow\_grav.d
+   ::
 
-To extract dist, faa, and grav12\_2 from all the MGD77+ netCDF files
+    gmt mgd77list ‘cat cruises.lis‘ -E -Ia -F"dist,faa,grav12_2,depth<3000" > \
+        shallow_grav.d
+
+To extract dist, faa, and grav12_2 from all the MGD77+ netCDF files
 whose cruise ids are listed in the file cruises.lis, but only retrieve
 records whose bitflag for faa indicates BAD values, we try
 
-    mgd77list ‘cat cruises.lis‘ -E -Ia -F"dist,faa,grav12\_2:+faa" > bad\_grav.d
+   ::
+
+    gmt mgd77list ‘cat cruises.lis‘ -E -Ia -F"dist,faa,grav12_2:+faa" > bad_grav.d
 
 To output lon, lat, mag, and faa from all the cruises listed in the file
 cruises.lis, but recalculate the two residuals based on the latest
 reference fields, try:
 
-    mgd77list ‘cat cruises.lis‘ -Flon,lat,mag,faa -Af2,4 -Am2 > data.d
+   ::
 
-`Recalculated Anomalies <#toc7>`_
----------------------------------
+    gmt mgd77list ‘cat cruises.lis‘ -Flon,lat,mag,faa -Af2,4 -Am2 > data.d
+
+Recalculated Anomalies
+----------------------
 
 When recalculated anomalies are requested (either explicitly via the
 **-A** option or implicitly via E77 metadata in the MGD77+ file) we only
@@ -480,15 +495,15 @@ restriction is implemented since many anomaly columns contains
 corrections, usually in the form of hand-edited changes, that cannot be
 duplicated from the corresponding observation.
 
-`Igrf <#toc8>`_
----------------
+Igrf
+----
 
 The IGRF calculations are based on a Fortran program written by Susan
 Macmillan, British Geological Survey, translated to C via f2c by Joaquim
 Luis, U Algarve, and adapted to GMT-style by Paul Wessel.
 
-`Igf <#toc9>`_
---------------
+Igf
+---
 
 The equations used are reproduced here using coefficients extracted
 directly from the source code (let us know if you find errors):
@@ -505,8 +520,8 @@ sin^2(2\*lat)]
 (4) g = 978032.67714 \* [(1 + 0.00193185138639 \* sin^2(lat)) / sqrt (1
 - 0.00669437999013 \* sin^2(lat))]
 
-`Corrections <#toc10>`_
------------------------
+Corrections
+-----------
 
 The correction table is an ASCII file with coefficients and parameters
 needed to carry out corrections. Comment records beginning with # are
@@ -520,7 +535,7 @@ and *correction* consists of one or more *term*\ s that will be summed
 up and then **subtracted** from the observation before output. Each
 *term* must have this exact syntax:
 
-*factor*\ [\*[*function*\ ]([*scale*\ ](\ *abbrev*\ [-*origin*]))[^\ *power*]]
+*factor*\ [\*[*function*]([*scale*](\ *abbrev*\ [-*origin*]))[^\ *power*]]
 
 where terms in brackets are optional (the brackets themselves are not
 used but regular parentheses must be used as indicated). No spaces are
@@ -548,16 +563,16 @@ corrected by a strange dependency on ship heading and latitude, and
 
 99999999 gobs -10
 
-`See Also <#toc11>`_
---------------------
+See Also
+--------
 
 `mgd77convert <mgd77convert.html>`_,
 `mgd77info <mgd77info.html>`_,
 `mgd77manage <mgd77manage.html>`_,
 `mgd77track <mgd77track.html>`_
 
-`References <#toc12>`_
-----------------------
+References
+----------
 
 The Marine Geophysical Data Exchange Format - MGD77, see
 `http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt <http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_
