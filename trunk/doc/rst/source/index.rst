@@ -3,12 +3,11 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to GMT5's documentation!
-================================
+
+GMT5 Mains
+==========
 
 +-----------------+-----------------+-----------------+-----------------+
-| -- MAINS --                                                           |
-+=================+=================+=================+=================+
 | .. toctree::    | .. toctree::    | .. toctree::    | .. toctree::    |
 |    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |
 |                 |                 |                 |                 |
@@ -26,28 +25,27 @@ Welcome to GMT5's documentation!
 |    X            |                 |                 |                 |
 +-----------------+-----------------+-----------------+-----------------+
 
-+-----------------------------------+-----------------+-----------------+
-| -- SUPPLEMENTS --                                                     |
-+=================+=================+=================+=================+
-|                 | .. toctree::    | .. toctree::    | .. toctree::    |
-|                 |    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |
-|                 |                 |                 |                 |
-|                 |    SUP_GSHHS    |    SUP_IMGSRC   |    SUP_MECA     |
+Supplements
+===========
+
 +-----------------+-----------------+-----------------+-----------------+
 | .. toctree::    | .. toctree::    | .. toctree::    | .. toctree::    |
 |    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |
 |                 |                 |                 |                 |
-|    SUP_MGD77    |    SUP_MISC     |    SUP_POTENTIAL|    SUP_SEGY     |
+|    SUP_GSHHS    |    SUP_MECA     |    SUP_POTENTIAL|    SUP_SEGY     |
+|    SUP_IMGSRC   |                 |                 |                 |
+|    SUP_MISC     |                 |                 |                 |
 +-----------------+-----------------+-----------------+-----------------+
-| .. toctree::    | .. toctree::    |                 |                 |
-|    :maxdepth: 2 |    :maxdepth: 2 |                 |                 |
+| .. toctree::    | .. toctree::    | .. toctree::    |                 |
+|    :maxdepth: 2 |    :maxdepth: 2 |    :maxdepth: 2 |                 |
 |                 |                 |                 |                 |
-|    SUP_SPOTTER  |    SUP_X2SYS    |                 |                 |
+|    SUP_MGD77    |    SUP_SPOTTER  |    SUP_X2SYS    |                 |
 +-----------------+-----------------+-----------------+-----------------+
 
+Gallery
+=======
+
 +----------------------------+
-| -- THE Examples Gallery -- |
-+============================+
 | .. toctree::               |
 |    :maxdepth: 2            |
 |                            |
@@ -56,36 +54,23 @@ Welcome to GMT5's documentation!
 |    Users_contrib_symbols   |
 +----------------------------+
 
+The CookBook
+============
+
 +--------------------+
-| -- THE CookBook -- |
-+====================+
 | .. toctree::       |
 |    :maxdepth: 2    |
 |                    |
 |    cookbook        |
 +--------------------+
 
+API Reference
+=============
+
 +--------------------+
-| -- THE API DOC --  |
-+====================+
 | .. toctree::       |
 |    :maxdepth: 2    |
 |                    |
 |    api             |
 +--------------------+
-
-.. toctree::
-..   :maxdepth: 2
-
-.. api
-.. cookbook
-.. mains
-.. supplements/supplements
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 
