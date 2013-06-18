@@ -7590,7 +7590,7 @@ in a relative coordinate system centered on (0,0). This point will be
 mapped to the actual location specified by your data coordinates.
 Furthermore, your symbol should be constructed within the domain
 :math:`{-\frac{1}{2},+\frac{1}{2},-\frac{1}{2},+\frac{1}{2}}`, resulting
-in a 1 by 1 relative canvas. This 1 x 1 box will be scaled by your
+in a 1 by 1 relative canvas area. This 1 x 1 square will be scaled to your
 actual symbol size when plotted.
 
 Comment lines
@@ -7628,7 +7628,11 @@ l
     per **PROJ_LENGTH_UNIT**) in addition to the given symbol size.
 
 o
-    : Other, i.e., a quantity to be passed to the custom symbol as is.
+    : Other, i.e., a numerical quantity to be passed to the custom symbol as is.
+
+s
+    : String, i.e., a single column of text to be placed by the **l** command.
+    Use octal \\040 to include spaces while still remaining a single word.
 
 To use the extra parameters in your macro you address them as $1, $2,
 etc.
@@ -7638,7 +7642,7 @@ Macro commands
 
 The custom symbol language contains commands to rotate the relative
 coordinate system, draw free-form polygons and lines, change the current
-fill and/or pen, and include basic geometric symbols as part of the
+fill and/or pen, place text, and include basic geometric symbols as part of the
 overall design (e.g., circles, triangles, etc.). The available commands
 are listed in Table [tbl:custsymb].
 
@@ -7703,6 +7707,31 @@ append specific pens (with **-W**\ *pen*) and fills (with
 **-G**\ *pen*). These settings will override the pens and fills you may
 have specified on the command line. Passing **-G**- or **-W**- means no
 fill or outline, respectively.
+
+Text substitution
+~~~~~~~~~~~~~~~~~
+
+Normally, the **l** macro code will place a hard-wired text string.  However,
+you can also obtain the entire string from your input file via a single symbol
+variable that must be declared with type  **s** (string).  The string read
+from your input file must be a single word, so if you need spaces you must
+use the octal \\040 code.  Similarly, to place the dollar sign $ you must
+use octal \\044 so as to not confuse the parser with a symbol variable.
+The string itself, if obtained from the symbol definition file,
+may contain special codes that will be expanded given the current record.  You
+can embed %X or %Y to add the current longitude (or x) and latitude (or y) in
+your label string. You may also use $n to embed a numerical symbol variable as text.
+It will be formatted according to FORMAT\_FLOAT\_MAP,
+unless you append the modifiers **+X** (longitude via FORMAT\_GEO\_MAP),
+**+Y** (latitude via FORMAT\_GEO\_MAP), or **+T** (calendar time via FORMAT\_DATE\_MAP
+and FORMAT\_CLOCK\_MAP.
+
+Text alignment and font
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Like the **Sl** symbol in `psxy.c <psxy.html>`_, you can change the current
+font by appending to **l** the modifier **+f**\ *font* and the text justification
+by appending the modifier **+j**\ *justify*.
 
 Conditional statements
 ~~~~~~~~~~~~~~~~~~~~~~
