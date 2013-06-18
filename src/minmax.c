@@ -79,7 +79,7 @@ int strip_blanks_and_output (struct GMT_CTRL *GMT, char *text, double x, int col
 
 	int k;
 
-	GMT_ascii_format_col (GMT, text, x, col);
+	GMT_ascii_format_col (GMT, text, x, GMT_OUT, col);
 	for (k = 0; text[k] && text[k] == ' '; k++);
 	return (k);	/* This is the position in text that we should start reporting from */
 }
@@ -450,10 +450,10 @@ int GMT_minmax (void *V_API, int mode, void *args)
 					}
 					else {
 						if (brackets) strcat (record, "<");
-						GMT_ascii_format_col (GMT, buffer, low, col);
+						GMT_ascii_format_col (GMT, buffer, low, GMT_OUT, col);
 						strcat (record, buffer);
 						strcat (record, delimeter);
-						GMT_ascii_format_col (GMT, buffer, high, col);
+						GMT_ascii_format_col (GMT, buffer, high, GMT_OUT, col);
 						strcat (record, buffer);
 						if (brackets) strcat (record, ">");
 						if (col < (ncol - 1)) strcat (record, "\t");

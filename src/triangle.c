@@ -12,9 +12,9 @@
  */
 
 #if defined(_WIN64) || defined(__MINGW64__)
-#define LONG __int64 	/* A signed 8-byte integer */
+#define LONG __int64 	/* A signed 8-byte integer, under Windows64 */
 #else
-#define LONG long 	/* A signed 8-byte integer */
+#define LONG long 	/* A signed 4 or 8-byte integer */
 #endif
 
 /*****************************************************************************/
