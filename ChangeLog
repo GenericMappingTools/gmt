@@ -2,6 +2,11 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-06-18	pwessel
+	* gmt_plot.c:		Expanded "l" symbol macro to handle variable text and template-ing.
+	* psxy[z].c:		The -Sl symbol now takes modifiers +f<font> and +j<justify>.
+				The old %font suffix is supported under compatibility.
+	
 2013-06-16	pwessel
 	* The latest version of GSHHG is 2.2.3
 
