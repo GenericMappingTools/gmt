@@ -4,26 +4,29 @@ mgd77convert
 
 mgd77convert - Convert MGD77 data to other file formats
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
 **mgd77convert** *NGDC-ids* **-Fa**\ \|\ **c**\ \|\ **t**
-**-T**\ [**+**\ ]\ **a**\ \|\ **b**\ \|\ **t** [ **-C** ] [ **-D** ] [
-**-L**\ [**w**\ ][**e**\ ][**+**\ ] ] [ **-V**\ [*level*\ ] ]
+**-T**\ [**+**\ ]\ **a**\ \|\ **b**\ \|\ **t**
+[ **-C** ]
+[ **-D** ]
+[ **-L**\ [**w**][**e**][**+**] ]
+[ |SYN_OPT-V| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **mgd77convert** reads versions of MGD77 files and writes the same data
 in (probably) another format to a new file in the current directory.
 Both pre- and post-Y2K MGD77 formats can be processed.
 
-`Required Arguments <#toc3>`_
------------------------------
+Required Arguments
+------------------
 
 .. include:: explain_ncid.rst_
 
@@ -42,8 +45,8 @@ Both pre- and post-Y2K MGD77 formats can be processed.
     to create the file(s) if they already exist in the current
     directory. Prepend **+** to override this policy.
 
-`Optional Arguments <#toc4>`_
------------------------------
+Optional Arguments
+------------------
 
 **-C**
     Convert from NGDC two-file data sets \*.h77, \*.a77 to single file
@@ -68,39 +71,47 @@ Both pre- and post-Y2K MGD77 formats can be processed.
     
 .. include:: ../../explain_help.rst_
 
-`Examples <#toc5>`_
--------------------
+Examples
+--------
 
 To convert a large set of a77,h77 pairs to proper mgd77 files, try
 
-    mgd77convert -C \*.h77
+   ::
+
+    gmt mgd77convert -C *.h77
 
 To convert 01010047.mgd77 and 01010008.mgd77 to new netCDF .nc files,
 and capture all verification messages, try
 
-    mgd77convert 01010047 01010008 -Fa -Tc -V -Lew+ > log.lis
+   ::
+
+    gmt mgd77convert 01010047 01010008 -Fa -Tc -V -Lew+ > log.lis
 
 To convert 01010047.nc back to MGD77 ASCII and make sure it is identical
 to the original file, try (Bourne shell syntax)
 
-    orig=‘mgd77path 01010047 -Ic‘
+   ::
 
-    mgd77convert 01010047 -Fc -Ta -V
-
+    orig=`gmt mgd77path 01010047 -Ic`
+    gmt mgd77convert 01010047 -Fc -Ta -V
     diff $orig 01010047.mgd77
 
 To convert 01010047.nc to a plain ASCII table for manual editing,
 overwriting any existing table, try
 
-    mgd77convert 01010047 -Fc -T+t -V
+   ::
+
+    gmt mgd77convert 01010047 -Fc -T+t -V
 
 To recover the original NGDC MGD77 version of 01020051.nc and ignore any
 E77 corrections, use
 
-    mgd77convert 01020051 -FC -Ta -V
+   ::
 
-`File Formats <#toc6>`_
------------------------
+    gmt mgd77convert 01020051 -FC -Ta -V
+
+File Formats
+------------
 
 **mgd77convert** handles three different formats. (1) The MGD77 ASCII
 tables are the established standard for distribution of underway
@@ -117,14 +128,14 @@ manually edit the content of a MGD77 file. This is usually easier to do
 when the columns are tab-separated than when they are all crunched
 together in the MGD77 punch-card format.
 
-`Other Tools <#toc7>`_
-----------------------
+Other Tools
+-----------
 
 The MGD77+ netCDF files are CF-1.0 and COARDS compliant and can be
 examined with general-purpose tools such as ncBrowse and ncView.
 
-`See Also <#toc8>`_
--------------------
+See Also
+--------
 
 `mgd77manage <mgd77manage.html>`_,
 `mgd77list <mgd77list.html>`_,
@@ -132,8 +143,8 @@ examined with general-purpose tools such as ncBrowse and ncView.
 `mgd77track <mgd77track.html>`_
 `x2sys_init <x2sys_init.html>`_
 
-`References <#toc9>`_
----------------------
+References
+----------
 
 ncBrowse, see
 `http://www.epic.noaa.gov/java/ncBrowse/ <http://www.epic.noaa.gov/java/ncBrowse/>`_

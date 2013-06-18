@@ -15,7 +15,8 @@ Synopsis
 [ **-G** ] [ **-Sc**\ \|\ **l**\ *low/high* ] [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-f| ]
-[ |SYN_OPT-h| ] [ |SYN_OPT-:| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
@@ -198,13 +199,13 @@ lithospheric and toroidal field at a one point location and decimal time
 
    ::
 
-    echo -28 38 0 2000.0 | mgd77magref -A+y -Ftdi/13456
+    echo -28 38 0 2000.0 | gmt mgd77magref -A+y -Ftdi/13456
 
 To do the same as above but at noon (Universal Time) of first May 2001, try
 
    ::
 
-    echo -28 38 0 2001-05-01T12:00:00 | mgd77magref -Ftdi/13456
+    echo -28 38 0 2001-05-01T12:00:00 | gmt mgd77magref -Ftdi/13456
 
 See Also
 --------
