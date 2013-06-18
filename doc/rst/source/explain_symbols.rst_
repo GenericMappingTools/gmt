@@ -104,8 +104,8 @@
         which we assume the dimensions are given in the same units as **-R**.
 
     **-Sk**
-        **k**\ ustom symbol. Append <name>/*size*, and we will look for a
-        definition file called <name>.def `in (1) <in.1.html>`_ the current
+        **k**\ ustom symbol. Append *name*\ /\ *size*, and we will look for a
+        definition file called *name*\ .def `in (1) <in.1.html>`_ the current
         directory `or (2) <or.2.html>`_ in ~/.gmt `or (3) <or.3.html>`_ in
         **$GMT\_SHAREDIR**/custom. The symbol as defined in that file is of size
         1.0 by default; the appended *size* will scale symbol accordingly. Users
@@ -115,16 +115,16 @@
         **l**\ etter or text string (less than 256 characters). Give size, and
         append **+t**\ *string* after the size. Note that the size is only approximate;
         no individual scaling is done for different characters. Remember to
-        escape special characters like \*. Optionally, you may append **f**\ *font*
+        escape special characters like \*. Optionally, you may append **+f**\ *font*
         to select a particular font [Default is **FONT\_ANNOT\_PRIMARY**] and
-	**j**\ *justify* to change justification [CM].
+	**+j**\ *justify* to change justification [CM].
 
     **-Sm**
         **m**\ ath angle arc, optionally with one or two arrow heads [Default is
         no arrow heads]. The *size* is the length of the vector head. Arc width
         is set by **-W**. The radius of the arc and its start and stop
         directions (in degrees counter-clockwise from horizontal) must be given
-        in columns 3-5. See VECTOR ATTRIBUTES for specifying attributes.
+        in columns 3-5. See VECTOR ATTRIBUTES for specifying other attributes.
 
     **-SM**
         Same as **-Sm** but switches to straight angle symbol if angles subtend
@@ -300,12 +300,12 @@
         **v**\ ector. Direction (in degrees counter-clockwise from
         horizontal) and length must be found in columns 3 and 4. The *size*
         is the length of the vector head. Vector width is set by **-W**. See
-        VECTOR ATTRIBUTES for specifying attributes.
+        VECTOR ATTRIBUTES for specifying other attributes.
     **-SV**
         Same as **-Sv**, except azimuth (in degrees east of north) should be
         given instead of direction. The azimuth will be mapped into an angle
         based on the chosen map projection (**-Sv** leaves the directions
-        unchanged.) See VECTOR ATTRIBUTES for specifying attributes.
+        unchanged.) See VECTOR ATTRIBUTES for specifying other attributes.
     **-Sw**
         pie **w**\ edge. Start and stop directions (in degrees
         counter-clockwise from horizontal) for pie slice must be found in
