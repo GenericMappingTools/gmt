@@ -1164,7 +1164,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 						if (data_is_time) {
 							double tval = (use_t_offset) ? cval - t_offset : cval;
 							char *c = NULL;
-							GMT_ascii_format_col (GMT, cont_label, tval, GMT_Z);
+							GMT_ascii_format_col (GMT, cont_label, tval, GMT_OUT, GMT_Z);
 							if ((c = strchr (cont_label, 'T'))) c[0] = ' ';	/* Replace ISO T with space for plots */
 						}
 						else {

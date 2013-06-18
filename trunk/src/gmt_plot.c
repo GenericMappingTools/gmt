@@ -3166,6 +3166,55 @@ void gmt_flush_symbol_piece (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double 
 	*n = 0;
 }
 
+void gmt_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_ITEM *s, double size[], char *text)
+{	/* Returns the [possibly reformatted] string to use for the letter macro */
+	if (s->action == GMT_SYMBOL_TEXT)	/* Constant text */
+		strcpy (text, s->string);
+	else {	/* Must replace special items */
+		unsigned int n_skip, in, out, col;
+		char tmp[GMT_TEXT_LEN64];
+		GMT_memset (text, GMT_TEXT_LEN256, char);
+		for (in = out = 0; s->string[in]; in++) {
+			switch (s->string[in]) {
+				case '%':	/* Possibly a special %X, %Y request */
+					if (s->string[in+1] == 'X' || s->string[in+1] == 'Y') {	/* Yes it was */
+						col = (s->string[in+1] == 'X') ? GMT_X : GMT_Y;
+						GMT_ascii_format_col (GMT, tmp, GMT->current.io.curr_rec[col], GMT_IN, col);
+						strcat (text, tmp);
+						in++;	/* Skip past the X or Y */
+						out += strlen (tmp);
+					}
+					else /* Just a % sign */
+						text[out++] = s->string[in];
+					break;
+				case '$':	/* Possibly a variable $n */
+					if (isdigit (s->string[in+1])) {	/* Yes it was */
+						col = (s->string[in+1] - '0');
+						n_skip = 1;
+						if (s->string[in+2] == '+' && strchr ("TXY", s->string[in+3])) {	/* Specific formatting requested */
+							if (s->string[in+3] == 'X') GMT_ascii_format_col (GMT, tmp, size[col], GMT_IN, GMT_X);
+							else if (s->string[in+3] == 'Y') GMT_ascii_format_col (GMT, tmp, size[col], GMT_IN, GMT_Y);
+							else if (s->string[in+3] == 'T') gmt_format_abstime_output (GMT, size[col], GMT_IN, tmp);
+							n_skip += 2;
+						}
+						else
+							sprintf (tmp, GMT->current.setting.format_float_out, size[col]);
+						strcat (text, tmp);
+						in += n_skip;	/* Skip past the $n[+X|Y|T] */
+						out += strlen (tmp);
+					}
+					else
+						text[out++] = s->string[in];
+					break;
+				default:
+					text[out++] = s->string[in];
+					break;
+			}
+		}
+		
+	}
+}
+
 int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double size[], struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, unsigned int outline)
 {
 	unsigned int na, i, level = 0;
@@ -3173,7 +3222,7 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 	uint64_t n = 0;
 	size_t n_alloc = 0;
 	double x, y, lon, lat, angle, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL, dim[3];
-	char *c = NULL;
+	char *c = NULL, user_text[GMT_TEXT_LEN256];
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL;
 	struct GMT_FILL *f = NULL, *current_fill = fill;
 	struct GMT_PEN *p = NULL, *current_pen = pen;
@@ -3366,18 +3415,20 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 				break;
 
 			case GMT_SYMBOL_TEXT:
+			case GMT_SYMBOL_VARTEXT:
 				if (flush) gmt_flush_symbol_piece (GMT, PSL, xx, yy, &n, p, f, this_outline, &flush);
 				f = (s->fill) ? s->fill : current_fill;
 				p = (s->pen)  ? s->pen  : current_pen;
 				this_outline = (p && p->rgb[0] == -1) ? false : outline;
 				if (this_outline) GMT_setpen (GMT, p);
-
-				if ((c = strchr (s->string, '%'))) {	/* Gave font name or number, too */
+				if ((c = strchr (s->string, '%')) && !(c[1] == 'X' || c[1] == 'Y') && GMT_compat_check (GMT, 4)) {	/* Gave font name or number, too */
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning in macro l: <string>[%<font>] is deprecated syntax\n");
 					*c = 0;		/* Replace % with the end of string NUL indicator */
 					c++;		/* Go to next character */
 					if (GMT_getfont (GMT, c, &font)) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Custom symbol subcommand l contains bad font (set to %s)\n", GMT_putfont (GMT, GMT->current.setting.font_annot[0]));
 					(void) GMT_setfont (GMT, &font);
 				}
+				gmt_format_symbol_string (GMT, s, size, user_text);
 				font.size = s->p[0] * size[0] * PSL_POINTS_PER_INCH;
 				if (f && this_outline)
 					GMT_setfill (GMT, f, this_outline);
@@ -3385,7 +3436,7 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 					PSL_setcolor (PSL, f->rgb, PSL_IS_FILL);
 				else
 					PSL_setfill (PSL, GMT->session.no_rgb, this_outline);
-				PSL_plottext (PSL, x, y, font.size, s->string, 0.0, PSL_MC, this_outline);
+				PSL_plottext (PSL, x, y, font.size, user_text, 0.0, s->justify, this_outline);
 				break;
 
 			default:
@@ -3415,14 +3466,14 @@ void GMT_write_label_record (struct GMT_CTRL *GMT, double x, double y, double an
 	double geo[2];
 	record[0] = 0;	/* Start with blank record */
 	GMT_xy_to_geo (GMT, &geo[GMT_X], &geo[GMT_Y], x, y);
-	GMT_ascii_format_col (GMT, word, geo[GMT_X], GMT_X);
+	GMT_ascii_format_col (GMT, word, geo[GMT_X], GMT_OUT, GMT_X);
 	strcat (record, word);
 	strcat (record, GMT->current.setting.io_col_separator);
-	GMT_ascii_format_col (GMT, word, geo[GMT_Y], GMT_Y);
+	GMT_ascii_format_col (GMT, word, geo[GMT_Y], GMT_OUT, GMT_Y);
 	strcat (record, word);
 	strcat (record, GMT->current.setting.io_col_separator);
 	if (save_angle) {	/* Also output the label angle */
-		GMT_ascii_format_col (GMT, word, angle, GMT_Z);
+		GMT_ascii_format_col (GMT, word, angle, GMT_OUT, GMT_Z);
 		strcat (record, word);
 		strcat (record, GMT->current.setting.io_col_separator);
 }

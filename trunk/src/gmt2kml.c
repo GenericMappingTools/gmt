@@ -517,7 +517,7 @@ int ascii_output_one (struct GMT_CTRL *GMT, double x, int col)
 {	/* Used instead of GMT_ascii_output_col since Windoze has trouble with GMT->session.std[GMT_OUT] and stdout mixing */
 	char text[GMT_TEXT_LEN256];
 
-	GMT_ascii_format_col (GMT, text, x, col);
+	GMT_ascii_format_col (GMT, text, x, GMT_OUT, col);
 	return (printf ("%s", text));
 }
 

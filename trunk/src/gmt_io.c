@@ -1696,7 +1696,7 @@ int GMT_ascii_output_col (struct GMT_CTRL *GMT, FILE *fp, double x, uint64_t col
 {	/* Formats x according to to output column number */
 	char text[GMT_TEXT_LEN256];
 
-	GMT_ascii_format_col (GMT, text, x, col);
+	GMT_ascii_format_col (GMT, text, x, GMT_OUT, col);
 	return (fprintf (fp, "%s", text));
 }
 
@@ -1787,13 +1787,13 @@ void gmt_format_abstime_output (struct GMT_CTRL *GMT, double dt, char *text)
 		sprintf (text, "%sT%s", date, tclock);
 }
 
-void GMT_ascii_format_col (struct GMT_CTRL *GMT, char *text, double x, uint64_t col)
-{	/* Format based on column position */
+void GMT_ascii_format_col (struct GMT_CTRL *GMT, char *text, double x, unsigned int direction, uint64_t col)
+{	/* Format based on column position in in or out direction */
 	if (GMT_is_dnan (x)) {	/* NaN, just write it as a string */
 		sprintf (text, "NaN");
 		return;
 	}
-	switch (GMT->current.io.col_type[GMT_OUT][col]) {
+	switch (GMT->current.io.col_type[direction][col]) {
 		case GMT_IS_LON:
 			gmt_format_geo_output (GMT, false, x, text);
 			break;
@@ -2063,7 +2063,7 @@ void GMT_add_to_record (struct GMT_CTRL *GMT, char *record, double val, uint64_t
 	 * If sep is 1|2 do both [0 means no separator].
 	 */
 	char word[GMT_TEXT_LEN64];
-	GMT_ascii_format_col (GMT, word, val, col);
+	GMT_ascii_format_col (GMT, word, val, GMT_OUT, col);
 	if (sep & 1) strcat (record, GMT->current.setting.io_col_separator);
 	strcat (record, word);
 	if (sep & 2) strcat (record, GMT->current.setting.io_col_separator);
@@ -4917,7 +4917,7 @@ void gmt_write_formatted_ogr_value (struct GMT_CTRL *GMT, FILE *fp, int col, int
 			break;
 		case GMT_DOUBLE:
 		case GMT_FLOAT:
-			GMT_ascii_format_col (GMT, text, G->dvalue[col], GMT_Z);
+			GMT_ascii_format_col (GMT, text, G->dvalue[col], GMT_OUT, GMT_Z);
 			fprintf (fp, "%s", text);
 			break;
 		case GMT_CHAR:
@@ -4934,7 +4934,7 @@ void gmt_write_formatted_ogr_value (struct GMT_CTRL *GMT, FILE *fp, int col, int
 			break;
 		default:
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad type passed to gmt_write_formatted_ogr_value - assumed to be double\n");
-			GMT_ascii_format_col (GMT, text, G->dvalue[col], GMT_Z);
+			GMT_ascii_format_col (GMT, text, G->dvalue[col], GMT_OUT, GMT_Z);
 			fprintf (fp, "%s", text);
 			break;
 	}

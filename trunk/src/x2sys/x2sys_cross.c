@@ -809,9 +809,9 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args)
 						for (k = 0; k < 2; k++) {
 							if (has_time[k]) {	/* Find first and last record times */
 								for (j = 0; j < n_rec[k] && GMT_is_dnan (time[k][j]); j++);	/* Find first non-NaN time */
-								GMT_ascii_format_col (GMT, start[k], time[k][j], 2);
+								GMT_ascii_format_col (GMT, start[k], time[k][j], GMT_OUT, 2);
 								for (j = n_rec[k]-1; j > 0 && GMT_is_dnan (time[k][j]); j--);	/* Find last non-NaN time */
-								GMT_ascii_format_col (GMT, stop[k], time[k][j], 3);
+								GMT_ascii_format_col (GMT, stop[k], time[k][j], GMT_OUT, 3);
 							}
 							else {
 								strcpy (start[k], "NaN");

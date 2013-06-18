@@ -9401,7 +9401,7 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 	size_t length;
 	bool do_fill, do_pen, first = true;
 	char name[GMT_BUFSIZ], file[GMT_BUFSIZ], buffer[GMT_BUFSIZ], col[8][GMT_TEXT_LEN64], var[8], OP[8], constant[GMT_TEXT_LEN64];
-	char *fill_p = NULL, *pen_p = NULL;
+	char *fill_p = NULL, *pen_p = NULL, *c = NULL;
 	FILE *fp = NULL;
 	struct GMT_CUSTOM_SYMBOL *head = NULL;
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL, *previous = NULL;
@@ -9455,6 +9455,11 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 						case 'a':	head->type[k] = GMT_IS_GEOANGLE; break;		/* Angle that needs to be converted via the map projection */
 						case 'l':	head->type[k] = GMT_IS_DIMENSION; break;	/* Length that will be in the current measure unit */
 						case 'o':	head->type[k] = GMT_IS_FLOAT; break;		/* Other, i.e, non-dimensional quantity not to be changed */
+						case 's':	head->type[k] = GMT_IS_STRING; break;		/* A text string */
+						default:	
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Custom symbol %s has unrecognized <types> declaration in %s\n", name, flags);
+							GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+							break;
 					}
 				}
 			}
@@ -9613,6 +9618,30 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 				s->p[0] = atof (col[2]);
 				s->string = GMT_memory (GMT, NULL, strlen (col[3]) + 1, char);
 				strcpy (s->string, col[3]);
+				if ((c = strchr (s->string, '$')) && isdigit (c[1])) {	/* Got a text string containing one or more variables */
+					s->action = GMT_SYMBOL_VARTEXT;
+				}
+				s->font = GMT->current.setting.font_annot[0];
+				s->justify = PSL_MC;
+				k = 1;
+				while (col[last][k] && col[last][k] != '+') k++;
+				if (col[last][k]) {	/* Gave modifiers */
+					unsigned int pos = 0;
+					char p[GMT_BUFSIZ];
+					while ((GMT_strtok (&col[last][k], "+", &pos, p))) {	/* Parse any +<modifier> statements */
+						switch (p[0]) {
+							case 'f':	/* Change font */
+								if (GMT_getfont (GMT, &p[1], &s->font))
+									GMT_Report (GMT->parent, GMT_MSG_NORMAL, "macro code l contains bad +<font> modifier (set to %s)\n", GMT_putfont (GMT, s->font));
+								break;
+							case 'j':	s->justify = GMT_just_decode (GMT, &p[1], 12);	break;	/* text justification */
+							default:
+								GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error option -Sl: Bad modifier +%c\n", p[0]);
+								error++;
+								break;	
+						}
+					}
+				}
 				break;
 
 			case 'r':		/* Draw rect symbol */
