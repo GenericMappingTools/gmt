@@ -1,7 +1,7 @@
 .. _users_gallery:
 
-Users Contributions
--------------------
+Users Script Contributions
+---------------------------
 
 .. toctree::
    :hidden:

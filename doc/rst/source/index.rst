@@ -53,6 +53,7 @@ Welcome to GMT5's documentation!
 |                            |
 |    Gallery                 |
 |    Users_contrib_script    |
+|    Users_contrib_symbols   |
 +----------------------------+
 
 +--------------------+
