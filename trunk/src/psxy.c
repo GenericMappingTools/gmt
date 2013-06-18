@@ -1029,6 +1029,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 					for (j = 0; S.custom->type && j < S.n_required; j++) {	/* Deal with any geo-angles first */
 						dim[j+1] = (S.custom->type[j] == GMT_IS_GEOANGLE) ? GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, 90.0 - in[ex1+S.read_size+j]) : in[ex1+S.read_size+j];
 					}
+					if (!S.custom->start) S.custom->start = (get_rgb) ? 3 : 2;
 					GMT_draw_custom_symbol (GMT, plot_x, plot_y, dim, S.custom, &current_pen, &current_fill, outline_active);
 					break;
 			}

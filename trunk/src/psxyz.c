@@ -955,6 +955,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 					for (j = 0; S.custom->type && j < S.n_required; j++) {	/* Deal with any geo-angles first */
 						dim[j+1] = (S.custom->type[j] == GMT_IS_GEOANGLE) ? GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, 90.0 - data[i].dim[j]) : data[i].dim[j];
 					}
+					if (!S.custom->start) S.custom->start = (get_rgb) ? 4 : 3;
 					GMT_draw_custom_symbol (GMT, data[i].x, data[i].y, dim, data[i].custom, &data[i].p, &data[i].f, data[i].outline);
 					GMT_free (GMT, data[i].custom);
 					break;
