@@ -3165,21 +3165,28 @@ void gmt_flush_symbol_piece (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double 
 	*flush = false;
 	*n = 0;
 }
+EXTERN_MSC void gmt_format_abstime_output (struct GMT_CTRL *GMT, double dt, char *text);
 
-void gmt_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_ITEM *s, double size[], char *text)
+void gmt_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_ITEM *s, double size[], unsigned int *type, char *text)
 {	/* Returns the [possibly reformatted] string to use for the letter macro */
+	unsigned int n;
 	if (s->action == GMT_SYMBOL_TEXT)	/* Constant text */
 		strcpy (text, s->string);
-	else {	/* Must replace special items */
-		unsigned int n_skip, in, out, col;
+	else if (s->string[0] == '$' && strlen (s->string) == 2 && isdigit (s->string[1]) && type[n=(s->string[1]-'0')] == GMT_IS_STRING) {	/* Get entire string from input */
+		/* Tricky, how do we know which column in the input goes with this variable $n, i.e. how is n related to record col?.  Then,
+		   we must scan the GMT->io.current.current_record for the col'th item and strcpy that into text.  The reason n -> col is
+		   tricky is while we may now this is the 3rd extra variable, we dont know if -C<cpt< was used or if this is psxyz, no? */
+	}
+	else {	/* Must replace special items within a template string */
+		unsigned int n_skip, in, out;
 		char tmp[GMT_TEXT_LEN64];
 		GMT_memset (text, GMT_TEXT_LEN256, char);
 		for (in = out = 0; s->string[in]; in++) {
 			switch (s->string[in]) {
 				case '%':	/* Possibly a special %X, %Y request */
 					if (s->string[in+1] == 'X' || s->string[in+1] == 'Y') {	/* Yes it was */
-						col = (s->string[in+1] == 'X') ? GMT_X : GMT_Y;
-						GMT_ascii_format_col (GMT, tmp, GMT->current.io.curr_rec[col], GMT_IN, col);
+						n = (s->string[in+1] == 'X') ? GMT_X : GMT_Y;
+						GMT_ascii_format_col (GMT, tmp, GMT->current.io.curr_rec[n], GMT_IN, n);
 						strcat (text, tmp);
 						in++;	/* Skip past the X or Y */
 						out += strlen (tmp);
@@ -3189,35 +3196,34 @@ void gmt_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_IT
 					break;
 				case '$':	/* Possibly a variable $n */
 					if (isdigit (s->string[in+1])) {	/* Yes it was */
-						col = (s->string[in+1] - '0');
+						n = (s->string[in+1] - '0');
 						n_skip = 1;
 						if (s->string[in+2] == '+' && strchr ("TXY", s->string[in+3])) {	/* Specific formatting requested */
-							if (s->string[in+3] == 'X') GMT_ascii_format_col (GMT, tmp, size[col], GMT_IN, GMT_X);
-							else if (s->string[in+3] == 'Y') GMT_ascii_format_col (GMT, tmp, size[col], GMT_IN, GMT_Y);
-							else if (s->string[in+3] == 'T') gmt_format_abstime_output (GMT, size[col], GMT_IN, tmp);
+							if (s->string[in+3] == 'X') GMT_ascii_format_col (GMT, tmp, size[n], GMT_IN, GMT_X);
+							else if (s->string[in+3] == 'Y') GMT_ascii_format_col (GMT, tmp, size[n], GMT_IN, GMT_Y);
+							else if (s->string[in+3] == 'T') gmt_format_abstime_output (GMT, size[n], tmp);
 							n_skip += 2;
 						}
 						else
-							sprintf (tmp, GMT->current.setting.format_float_out, size[col]);
+							sprintf (tmp, GMT->current.setting.format_float_out, size[n]);
 						strcat (text, tmp);
 						in += n_skip;	/* Skip past the $n[+X|Y|T] */
 						out += strlen (tmp);
 					}
-					else
+					else	/* Just pass regular text along */
 						text[out++] = s->string[in];
 					break;
-				default:
+				default:	/* Just pass regular text along */
 					text[out++] = s->string[in];
 					break;
 			}
 		}
-		
 	}
 }
 
 int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double size[], struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, unsigned int outline)
 {
-	unsigned int na, i, level = 0;
+	unsigned int na, i, level = 0, *type = NULL;
 	bool flush = false, this_outline = false, found_elseif = false, skip[11];
 	uint64_t n = 0;
 	size_t n_alloc = 0;
@@ -3251,6 +3257,8 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 	PSL_command (PSL, "V ");
 	PSL_setorigin (PSL, x0, y0, 0.0, PSL_FWD);
 	GMT_set_meminc (GMT, GMT_SMALL_CHUNK);
+	type = symbol->type;	/* Link to top level head info */
+	
 	s = symbol->first;
 	while (s) {
 		if (s->conditional > 1) {	/* Process if/elseif/else and } by updating level and skip array, then go to next item */
@@ -3428,7 +3436,7 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 					if (GMT_getfont (GMT, c, &font)) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Custom symbol subcommand l contains bad font (set to %s)\n", GMT_putfont (GMT, GMT->current.setting.font_annot[0]));
 					(void) GMT_setfont (GMT, &font);
 				}
-				gmt_format_symbol_string (GMT, s, size, user_text);
+				gmt_format_symbol_string (GMT, s, size, type, user_text);
 				font.size = s->p[0] * size[0] * PSL_POINTS_PER_INCH;
 				if (f && this_outline)
 					GMT_setfill (GMT, f, this_outline);
