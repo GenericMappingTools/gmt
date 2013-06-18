@@ -5781,8 +5781,7 @@ A. GMT supplemental packages
 These packages are for the most part written and supported by us, but
 there are some exceptions. They provide extensions of *GMT* that are
 needed for particular rather than general applications. The software is
-provided in a separate, supplemental archive (GMT_suppl.tar.gz (or
-.bz2); see Appendix `D. Availability of GMT and related code`_).
+provided in a separate, supplemental archive (GMT_suppl.tar.gz (or .bz2)).
 Questions or bug reports for this software
 should be addressed to the person(s) listed in the ``README`` file associated with
 the particular program. It is not guaranteed that these programs are
@@ -6634,74 +6633,6 @@ These examples do not constitute endorsements of the products mentioned
 above; they only represent our limited experience with adding
 *PostScript* to various types of documents. For other solutions and
 further help, please post messages to.
-
-D. Availability of GMT and related code
-=======================================
-
-
-Source distribution
--------------------
-
-All the source code, support data, PDF and HTML versions of all
-documentation (including *UNIX* manual pages) can be obtained by
-anonymous ftp from several mirror sites. We also maintain a *GMT* page
-on the World Wide Web (http://gmt.soest.hawaii.edu); see this page for
-installation directions which allow for a simplified, automatic install
-procedure (for the purchase of CD-R and DVD-R media, see http://www.geoware-online.com)
-
-The *GMT* compressed tar archives requires **bzip2** to expand. If
-this utility is not installed on your system, you must obtained it by
-your system's package manager or install it separately [40]_. The GMT
-archives are as follows:
-
-    gmt-5.0.1b (r).tar.bz2
-        Contains all *GMT* and supplemental source code needed for
-        compilation, support files needed at run-time (cpt files, symbols
-        and *PostScript* patterns), and all documentation (man pages,
-        Cookbook and Technical Reference, and the tutorial), the data files
-        used in the tutorial, and all the shell scripts and support data
-        used in the Cookbook section.
-
-    gshhg-gmt-nc4-2.2.0.tar.bz2
-        Contains all resolutions (full, high, intermediate, low, and crude)
-        of the GSHHG coastline database. Required to run *GMT*.
-
-The netCDF library that makes up the backbone of the grid file i/o
-operations can be obtained from Unidata by downloading the file ``netcdf.tar.gz`` from the
-anonymous FTP directory of http://unidata.ucar.edu
-
-Install via subversion
-----------------------
-
-The *GMT* development tree can be installed via subversion. Simply run
-
-   ::
-
-    svn checkout svn://gmtserver.soest.hawaii.edu/gmt5
-
-Pre-compiled Executables
-------------------------
-
-For Windows users who just want executables we have three Windows
-installers available. Choose one of the first two and *optionally* the
-third:
-
-gmt-5.0.1b (r)_install32.exe
-    The 32-bit install with all *GMT* executables (including
-    supplements), the netCDF DLL, the complete set of GSHHG coastlines,
-    rivers, and borders, the example batch scripts and data, and all
-    documentation in HTML format.
-
-gmt-5.0.1b (r)_install64.exe
-    The 64-bit install with all *GMT* executables (including
-    supplements), the netCDF DLL, the complete set of GSHHG coastlines,
-    rivers, and borders, the example batch scripts and data, and all
-    documentation in HTML format.
-
-gmt-5.0.1b (r)_pdf_install.exe
-    Installer for the optional *GMT* documentation in PDF format.
-
-Usually, only one of the 32- or 64-bit installers will be needed.
 
 E. Predefined bit and hachure patterns in GMT
 =============================================
