@@ -10,11 +10,12 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**grdgravmag3d** [ **-C**\ *density* ] [ **-D** ] [ **-F**\ *xy\_file* ]
-[ **-G**\ *outputgrid.nc* ] [ **-L**\ *z\_observation* ] [ **-M** ]
-**-R**\ *west*/*east*/*south*/*north*\ [**r**] [ **-S**\ *radius* ] [
-**-Z**\ *level* ] [ **-V**\ [*level*] ] [
-**-fg**\ ]
+**grdgravmag3d** [ **-C**\ *density* ] [ **-D** ] [ **-F**\ *xy_file* ]
+[ **-G**\ *outputgrid.nc* ] [ **-L**\ *z_observation* ] [ **-M** ]
+|SYN_OPT-V|
+[ **-Z**\ *level* ]
+[ |SYN_OPT-V| ]
+[ **-fg** ]
 
 |No-spaces|
 
@@ -74,7 +75,10 @@ Examples
 Suppose you want to compute the gravity effect of the phantom "Sandy
 Island" together with its not phantom seamount
 
-    grdgravmag3d sandy\_bat.grd -C1700 -Z-4300 -M -I1m -Gsandy\_okb.grd -V
+
+   ::
+
+    gmt grdgravmag3d sandy_bat.grd -C1700 -Z-4300 -M -I1m -Gsandy_okb.grd -V
 
 See Also
 --------
