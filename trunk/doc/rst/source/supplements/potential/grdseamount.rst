@@ -4,22 +4,26 @@ grdseamount
 
 grdseamount - Compute synthetic seamount (Gaussian or cone, circular or elliptical) bathymetry
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**grdseamount** [ *intable* ] **-R**\ *west*/*east*/*south*/*north*
-**-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
+**grdseamount** [ *intable* ]
+|SYN_OPT-I|
+|SYN_OPT-R|
 [ **-A**\ [*out/in*\ ] ] [ **-C** ] [ **-G**\ *grdfile* ] [ **-L**\ [*cut*] ]
 [ **-N**\ *norm* ] [ **-S**\ *scale* ] [ **-T**\ [*flattening*] ] [ **-Z**\ *level* ]
-[ **-V**\ [*level*\ ] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [ **-fg** ]
-[ **-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*] [ **r** ] 
+[ |SYN_OPT-V| ]
+[ **-bi**\ [*ncols*][*type* ] ]
+[ **-fg** ]
+[ |SYN_OPT-i| ]
+[ **-r** ] 
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **grdseamount** will compute the bathymetry for synthetic seamounts given their shape
 parameters.  We read a list with seamount locations and sizes and can evaluate either
@@ -30,34 +34,41 @@ For elliptical features (**-E**) we expect *lon, lat, azimuth, semi-major, semi-
 radius, height* instead.  If flattening is specified (**TT**) then a final column with
 flattening is expected.
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 .. include:: ../../explain_-I.rst_
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-R.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-A**\ [*out/in*\ ]
     Build a mask grid, append outside/inside values [1/NaN].
     Here, height is ignored and **-L**, **-N** and **-Z** are disallowed
+
 **-C**
     Cone model [Default is Gaussian].
+
 **-G**\ *outgrid*
     Sets name of output gridfile. 
-**-L**\ [*cut*\ ]
+
+**-L**\ [*cut*]
     List area, volume, and mean height for each seamount; NO grid is created.
     Optionally, append the noise-floor cutoff level [0].
+
 **-N**\ *norm*
     Normalize grid so maximum grid height equals *norm*.
+
 **-S**\ *scale*
     Sets optional scale factor for radii [1].
-**-T**\ [*flattening*\ ]
+
+**-T**\ [*flattening*]
     Seamounts are to be truncated.  Append *flattening*, otherwise we expect
     it in last input column [no truncation].
+
 **-Z**\ *level*
     Add in background depth [0].
 
@@ -85,13 +96,13 @@ flattening is expected.
 .. include:: ../../explain_help.rst_
 
 
-`Examples <#toc9>`_
--------------------
+Examples
+--------
 
 To be added.
 
-`See Also <#toc10>`_
---------------------
+See Also
+--------
 
 `gmt.conf <../../gmt.conf.html>`_, `gmt <../../gmt.html>`_,
 `grdmath <../../grdmath.html>`_, `gravfft <gravfft.html>`_

@@ -14,7 +14,9 @@ Synopsis
 [ **-C**\ <n/wavelength/mean\_depth/tbw> ] [ **-A**\ *z\_offset* ] [ **-D**\ <density> ]
 [ **-E**\ <n\_terms> ] [ **-F**\ [f\|g\|v\|n\|e] ] [ **-I**\ <wbctk> ]
 **-N**\ [**f**\ \|\ **q**\ \|\ **s**\ \|\ *nx/ny*][**+a**\ \|\ **d**\ \|\ **h** \|\ **l**][**+e**\ \|\ **n**\ \|\ **m**][**+t**\ *width*][**+w**\ [*suffix*]][\ **+z**\ [**p**]]
-[ **-Q** ] [ **-T**\ <te/rl/rm/rw>[+m] ] [ |SYN_OPT-V| ] [ **-Z**\ <zm>[/<zl>] ]
+[ **-Q** ] [ **-T**\ <te/rl/rm/rw>[+m] ]
+[ |SYN_OPT-V| ]
+[ **-Z**\ <zm>[/<zl>] ]
 [ **-fg** ]
 
 |No-spaces|
@@ -155,7 +157,7 @@ in Parker expansion):
 
    ::
 
-    gravfft bat.grd -D1665 -Gwater_g.grd -E4
+    gmt gravfft bat.grd -D1665 -Gwater_g.grd -E4
 
 Now subtract it to your free-air anomaly faa.grd and you’ll get the
 Bouguer anomaly. You may wonder why we are subtracting and not adding.
@@ -167,7 +169,7 @@ using the FFT.
 
    ::
 
-    grdmath faa.grd water_g.grd SUB = bouguer.grd
+    gmt grdmath faa.grd water_g.grd SUB = bouguer.grd
 
 Want an MBA anomaly? Well compute the crust mantle contribution and add
 it to the sea-bottom anomaly. Assuming a 6 km thick crust of density
@@ -181,13 +183,13 @@ directly from data. (notice also the negative sign of the argument to
 
    ::
 
-    gravfft bat.grd -D600 -Gmoho_g.grd -A-6000
+    gmt gravfft bat.grd -D600 -Gmoho_g.grd -A-6000
 
 Now, add it to the sea-bottom anomaly to obtain the MBA anomaly. That is:
 
    ::
 
-    grdmath water_g.grd moho_g.grd ADD = mba.grd
+    gmt grdmath water_g.grd moho_g.grd ADD = mba.grd
 
 To compute the Moho gravity effect of an elastic plate bat.grd with Te =
 7 km, density of 2700, over a mantle of density 3300, at an averge depth
@@ -195,7 +197,7 @@ of 9 km
 
    ::
 
-    gravfft bat.grd -Gelastic.grd -T7000/2700/3300/1035+m -Z9000
+    gmt gravfft bat.grd -Gelastic.grd -T7000/2700/3300/1035+m -Z9000
 
 If you add now the sea-bottom and Moho’s effects, you’ll get the full
 gravity response of your isostatic model. We will use here only the
@@ -203,9 +205,9 @@ first term in Parker expansion (default).
 
    ::
 
-    gravfft bat.grd -D1665 -Gwater_g.grd
-    gravfft bat.grd -Gelastic.grd -T7000/2700/3300/1035+m -Z9000
-    grdmath water_g.grd elastic.grd ADD = model.grd
+    gmt gravfft bat.grd -D1665 -Gwater_g.grd
+    gmt gravfft bat.grd -Gelastic.grd -T7000/2700/3300/1035+m -Z9000
+    gmt grdmath water_g.grd elastic.grd ADD = model.grd
 
 The same result can be obtained directly by the next command. However,
 PAY ATTENTION to the following. I don't yet know if it's because of a
@@ -216,7 +218,7 @@ only the above example seams to give the correct result.
 
    ::
 
-    gravfft bat.grd -Gmodel.grd -T7000/2700/3300/1035 -Z9000
+    gmt gravfft bat.grd -Gmodel.grd -T7000/2700/3300/1035 -Z9000
 
 And what would be the geoid anomaly produced by a load at 50 km depth,
 below the a region whose bathymetry is given by bat.grd, a Moho at 9 km
@@ -224,7 +226,7 @@ depth and the same densities as before?
 
    ::
 
-    gravfft topo.grd -Gswell_geoid.grd -T7000/2700/3300/1035 -Fg -Z9000/50000 -S
+    gmt gravfft topo.grd -Gswell_geoid.grd -T7000/2700/3300/1035 -Fg -Z9000/50000 -S
 
 To compute the admittance between the topo.grd bathymetry and faa.grd
 free-air anomaly grid using the elastic plate model of a crust of 6 km
@@ -233,7 +235,7 @@ mean water depth:
 
    ::
 
-    gravfft topo.grd faa.grd -It -T10000/2700/3300/1035 -Z9000
+    gmt gravfft topo.grd faa.grd -It -T10000/2700/3300/1035 -Z9000
 
 To compute the admittance between the topo.grd bathymetry and geoid.grd
 geoid grid with the "loading from below" (LFB) model with the same as
@@ -242,14 +244,14 @@ geographic and we want wavelengths instead of frequency:
 
    ::
 
-    gravfft topo.grd geoid.grd -Ibw -T10000/2700/3300/1035 -Z9000/40000 -fg
+    gmt gravfft topo.grd geoid.grd -Ibw -T10000/2700/3300/1035 -Z9000/40000 -fg
 
 To compute the gravity theoretical admittance of a LFB along a 1000 km
 long profile using the same parameters as above
 
    ::
 
-    gravfft -C400/5000/3000/b -T10000/2700/3300/1035 -Z9000/40000
+    gmt gravfft -C400/5000/3000/b -T10000/2700/3300/1035 -Z9000/40000
 
 References
 ----------

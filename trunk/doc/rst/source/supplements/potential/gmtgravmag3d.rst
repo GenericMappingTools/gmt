@@ -10,14 +10,17 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmtgravmag3d** [ **-C**\ *density* ] [ **-D** ] [ **-E**\ *thickness*
-] [ **-F**\ *xy\_file* ] [ **-G**\ *outputgrid.nc* ] [
-**-H**\ *f\_dec*/*f\_dip*/*m\_int*/*m\_dec*/*m\_dip* ] [
-**-L**\ *z\_observation* ]
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [ **-S**\ *radius* ] [
-**-T**\ [[*d*\ ]\ *xyz\_file*/*vert\_file*\ [*/m*\ ]]\|[*r\|s*\ ]\ *raw\_file*
-] [ **-Z**\ *level* ] [ **-V**\ [*level*\ ] ] [
-**-fg**\ ]
+**gmtgravmag3d** [ **-C**\ *density* ] [ **-D** ] [ **-E**\ *thickness* ]
+[ **-F**\ *xy_file* ]
+[ **-G**\ *outputgrid.nc* ]
+[ **-H**\ *f_dec*/*f_dip*/*m_int*/*m_dec*/*m_dip* ]
+[ **-L**\ *z_observation* ]
+|SYN_OPT-V|
+[ **-S**\ *radius* ]
+[ **-T**\ [[*d*]\ *xyz_file*/*vert_file*\ [*/m*]]\|[*r\|s*]\ *raw_file* ]
+[ **-Z**\ *level* ]
+[ |SYN_OPT-V| ]
+[ **-fg**\ ]
 
 |No-spaces|
 
@@ -33,16 +36,18 @@ Required Arguments
 ------------------
 
 **-C**\ *density*
-    Sets body density in SI. This option is mutually exclusive with
-    **-H**.
-**-H**\ *f\_dec*/*f\_dip*/*m\_int*/*m\_dec*/*m\_dip*
+    Sets body density in SI. This option is mutually exclusive with **-H**.
+
+**-H**\ *f_dec*/*f_dip*/*m_int*/*m_dec*/*m_dip*
     Sets parameters for computing a magnetic anomally. Use
-    *f\_dec*/*f\_dip* to set the geomagnetic declination/inclination in
-    degrees. *m\_int*/*m\_dec*/*m\_dip* are the body magnetic intensity
+    *f_dec*/*f_dip* to set the geomagnetic declination/inclination in
+    degrees. *m_int*/*m_dec*/*m_dip* are the body magnetic intensity
     declination and inclination.
-**-F**\ *xy\_file*
+
+**-F**\ *xy_file*
     Provide locations where the anomaly will be computed. Note this
     option is mutually exlusive with **-G**.
+
 **-G**\ *outgrid.nc*
     Output the gravity or magnetic anomaly at nodes of this grid file.
 
@@ -59,15 +64,18 @@ Optional Arguments
     give layer thickness in m [Default = 0 m]. Use this option only when
     the triangles describe a non-closed surface and you want the anomaly
     of a constant thickness layer.
-**-L**\ [*z\_observation*]
+
+**-L**\ [*z_observation*]
     sets level of observation [Default = 0]. That is the height (z) at
     which anomalies are computed.
+
 **-S**\ *radius*
     search radius in km. Triangle centroids that are further away than
     *radius* from current output point will not be taken into account.
     Use this option to speed up computation at expenses of a less
     accurate result.
-**-T**\ [[*d*\ ]\ *xyz\_file*/*vert\_file*\ [*/m*\ ]]\|[*r\|s*\ ]\ *raw\_file*]
+
+**-T**\ [[*d*]\ *xyz_file*/*vert_file*\ [*/m*]]\|[*r\|s*]\ *raw_file*]
     Give either names of xyz[m] and *vertex* files or of a *raw* or
     *stl* file defining a close surface. In the first case append a *d*
     imediatly after **-T** and optionaly a */m* after the vertex file
@@ -86,7 +94,8 @@ Optional Arguments
     Alternatively, the ’s’ flag indicates that the surface file is in
     the ascii STL (Stereo Lithographic) format. These two type of files
     are used to provide a closed surface.
-**-Z**\ [*level*\ ]
+
+**-Z**\ [*level*]
     level of reference plane [Default = 0]. Use this option when the
     triangles describe a non-closed surface and the volume is deffined
     from each triangle and this reference level. An example will be the
@@ -109,7 +118,9 @@ Examples
 
 Suppose you ...
 
-**gmtgravmag3d**
+   ::
+
+    gmt gmtgravmag3d ...
 
 See Also
 --------
