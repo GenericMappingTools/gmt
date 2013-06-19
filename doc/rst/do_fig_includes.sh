@@ -17,7 +17,7 @@
 # This script creates a sub-directory 'docfigs' under 'build'. If there is no 'build'
 # dir, it will be created as well.
 
-DPI=200		# Resolution
+DPI=150		# Resolution
 frmt=g		# Format
 ext=png
 
@@ -65,7 +65,7 @@ echo "" >> ${pato}/fig_${name}.rst_
 function from_examples {
 gmt ps2raster ../examples/ex$1/example_$1.ps $com
 if [ "$ext" = "pdf" ]; then
-	echo ".. figure:: ../../${path_build}/${name}.${ext}" > ${pato}/fig_${name}.rst_
+	echo ".. figure:: ../${path_build}/${name}.${ext}" > ${pato}/fig_${name}.rst_
 else
 	echo ".. figure:: ../../${path_build}/${name}.${ext}" > ${pato2}/fig_${name}.rst_
 	echo "   :width: 500 px" >> ${pato2}/fig_${name}.rst_
@@ -80,7 +80,7 @@ fi
 function from_animations {
 gmt ps2raster ../examples/anim$1/anim_$1.ps $com
 if [ "$ext" = "pdf" ]; then
-	echo ".. figure:: ../../${path_build}/${name}.${ext}" > ${pato}/fig_${name}.rst_
+	echo ".. figure:: ../${path_build}/${name}.${ext}" > ${pato}/fig_${name}.rst_
 else
 	echo ".. figure:: ../../${path_build}/${name}.${ext}" > ${pato2}/fig_${name}.rst_
 	echo "   :width: 400 px" >> ${pato2}/fig_${name}.rst_
