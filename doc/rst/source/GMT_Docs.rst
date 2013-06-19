@@ -5717,14 +5717,13 @@ Centered on the Dateline, the example below was created by this command:
 
 .. include:: fig_includes/fig_GMT_grinten.rst_
 
+.. only:: latex
 
-.. include:: gallery/examples_chapter_opt.rst_
+   .. include:: examples_chapter.rst_
 
 
 Mailing lists, updates, and bug reports
 =======================================
-
-[ch:9]
 
 Most public-domain (and commercial) software comes with bugs, and
 the speed with which such bugs are detected and removed depends to a
