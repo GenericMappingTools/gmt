@@ -18,4 +18,4 @@ S
 0.025	0.20	D
 # Annotate the dip in blue, embedding the coordinates of the point
 T	-Gblue -W-
-0	0.3	0.1	[%Y,\040%X]:\040dip\040=\040$2\232	l+jBC
+0	0.3	0.1	[%Y,\040%X]:\040dip\040=\040$2\312	l+jBC
