@@ -510,7 +510,7 @@ void GMT_vlamb (struct GMT_CTRL *GMT, double rlong0, double rlat0, double pha, d
 		(1.0 + GMT->current.proj.ECC * sind (rlat0)), GMT->current.proj.half_ECC);
 
 	if (doubleAlmostEqualZero (pha, phb))
-		GMT->current.proj.l_N = sin (pha);
+		GMT->current.proj.l_N = sind (pha);
 	else
 		GMT->current.proj.l_N = (d_log (GMT, m_pha) - d_log (GMT, m_phb))/(d_log (GMT, t_pha) - d_log (GMT, t_phb));
 
