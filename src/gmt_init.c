@@ -7775,7 +7775,6 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args)
 			error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_c, GMT_IS_LAT, &GMT->current.proj.pars[2]), txt_c);
 			error += GMT_verify_expectations (GMT, GMT_IS_LAT, GMT_scanf (GMT, txt_d, GMT_IS_LAT, &GMT->current.proj.pars[3]), txt_d);
 			error += gmt_scale_or_width (GMT, txt_e, &GMT->current.proj.pars[4]);
-			error += (GMT->current.proj.pars[2] == GMT->current.proj.pars[3]);
 			error += !(n_slashes == 4 && n == 5);
 			GMT->current.proj.lon0 = GMT->current.proj.pars[0];	GMT->current.proj.lat0 = GMT->current.proj.pars[1];
 			break;
