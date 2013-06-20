@@ -13,12 +13,11 @@ Synopsis
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ **-A**\ *agegrid* ]
-[ **-B**\ *n_try* ]
 [ **-D**\ *DIgrid* ] [ **-L**\ *IDgrid* ] [ **-M** ]
 [ **-N**\ *upper_age* ] [ **-P**\ *PAgrid* ] [ **-Q**\ *IDinfo* ] [
 **-S** ] [ **-T**\ **t**\ \|\ **u**\ *fixed_val* ] [
 [ |SYN_OPT-V| ]
-[ **-Z**\ *z_min*\ [/*z_max*\ [/*z_inc*]] ] [
+[ **-W**\ *n\_try* ]] [ **-Z**\ *z_min*\ [/*z_max*\ [/*z_inc*]] ] [
 **-r** ]
 
 |No-spaces|
@@ -80,11 +79,6 @@ Optional Arguments
     flowlines [Default extend flowlines back to oldest age found in the
     rotation file; but see **-N**].
 
-**-B**\ *n_try*
-    Get *n_try* bootstrap estimates of the maximum CVA location; the
-    longitude and latitude results are written to stdout [Default is no
-    bootstrapping]. Cannot be used with **-M**.
-
 **-D**\ *DIgrid*
     Use flowlines to determine the maximum CVA encountered along each
     flowline and create a Data Importance (DI) grid with these values at
@@ -99,7 +93,7 @@ Optional Arguments
     and/or **-P**. Should you run out of memory you can use this option
     to compute flowlines on-the-fly. It will be slower as we no longer
     can reuse the flowlines calculated for the CVA step. Cannot be used
-    with **-B** or the multi-slice mode in **-Z**.
+    with **-W** or the multi-slice mode in **-Z**.
 
 **-N**\ *upper_age*
     Set the upper age to assign to nodes whose crustal age is unknown
@@ -132,6 +126,11 @@ Optional Arguments
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
+
+**-W**\ *n\_try*
+    Get *n\_try* bootstrap estimates of the maximum CVA location; the
+    longitude and latitude results are written to stdout [Default is no
+    bootstrapping]. Cannot be used with **-M**.
 
 **-Z**\ *z_min*\ [/*z_max*\ [/*z_inc*]]
     Ignore nodes with z-values lower than *z_min* [0] and optionally
