@@ -3192,7 +3192,7 @@ void gmt_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_IT
 						GMT_ascii_format_col (GMT, tmp, GMT->current.io.curr_rec[n], GMT_IN, n);
 						strcat (text, tmp);
 						in++;	/* Skip past the X or Y */
-						out += strlen (tmp);
+						out += (unsigned int)strlen (tmp);
 					}
 					else /* Just a % sign */
 						text[out++] = s->string[in];
@@ -3211,7 +3211,7 @@ void gmt_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_IT
 							sprintf (tmp, GMT->current.setting.format_float_out, size[n]);
 						strcat (text, tmp);
 						in += n_skip;	/* Skip past the $n[+X|Y|T] */
-						out += strlen (tmp);
+						out += (unsigned int)strlen (tmp);
 					}
 					else	/* Just pass regular text along */
 						text[out++] = s->string[in];
