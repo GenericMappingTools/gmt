@@ -29,7 +29,7 @@ supply a clipping polygon in multiple-segment format; then, only the
 part of the grid inside the polygon is used to determine the model
 prediction; the remainder of the grid is set to NaN.
 
-`Required Arguments
+Required Arguments
 ------------------
 
 *ingrdfile*

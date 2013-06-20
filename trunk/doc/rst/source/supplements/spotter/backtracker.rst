@@ -36,7 +36,7 @@ additional data fields after the first 3 columns which must have
 (longitude,latitude,age). See option **-:** on how to read
 (latitude,longitude,age) files.
 
-`Required Arguments
+Required Arguments
 ------------------
 
 **-E**\ *rotfile*
