@@ -178,8 +178,6 @@ from correct *or* incorrect use of these programs.
 Preface
 =======
 
-[ch:1]
-
 While *GMT* has served the map-making and data processing needs of
 scientists since 1988 [1]_, the current global use was heralded by the
 first official release in *EOS Trans. AGU* in the fall of 1991. Since
@@ -234,7 +232,7 @@ learning the new rules and defaults. However, to ease the transition to
 thus allowing the use of many obsolete default names and command
 switches (you will receive a warning instead).
 
-Overview of 5.0.0 [Jan-1, 2013]
+Overview of 5.0.0 [Jul-1, 2013]
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 This version shares the same bug fixes applied to *GMT* 4.5.9, released
@@ -242,27 +240,26 @@ Jan 1, 2013. Several new programs have been added; some have been
 promoted from earlier supplements:
 
 `gmt2kml <gmt2kml.html>`_
-    : A `psxy <psxy.html>`_ -like tool to produce KML
+    A `psxy <psxy.html>`_ -like tool to produce KML
     overlays for Google Earth.
 
 `gmtsimplify <gmtsimplify.html>`_
-    : A line-reduction tool for coastlines and similar lines.
+    A line-reduction tool for coastlines and similar lines.
 
 `gmtstitch <gmtstitch.html>`_
-    : Join individual lines whose end points match within given
-    tolerance.
+    Join individual lines whose end points match within given tolerance.
 
 `gmtwhich <gmtwhich.html>`_
-    : Return the full path to specified data files.
+    Return the full path to specified data files.
 
 `kml2gmt <kml2gmt.html>`_
-    : Extract GMT data tables from Google Earth KML files.
+    Extract GMT data tables from Google Earth KML files.
 
 `gmtspatial <gmtspatial.html>`_
-    : Perform geospatial operations on lines and polygons.
+    Perform geospatial operations on lines and polygons.
 
 `gmtvector <gmtvector.html>`_
-    : Perform basic vector manipulation in 2-D and 3-D.
+    Perform basic vector manipulation in 2-D and 3-D.
 
 Below is a list of improvements that affect several
 `GMT <http://gmt.soest.hawaii.edu>`_ programs equally:
@@ -425,8 +422,7 @@ Here is a list of recent enhancements to specific programs:
 #. `mapproject <mapproject.html>`_ has a new **-N**
    option to do geodetic/geocentric conversions; it combines with **-I**
    for inverse conversions. Also, we have extended **-A** to accept
-   **-A**\ **o**\ \| \ **O** to compute line orientations
-   (-90/90).
+   **-A**\ **o**\ \| \ **O** to compute line orientations (-90/90).
 
 #. `makecpt <makecpt.html>`_ and `grd2cpt <grd2cpt.html>`_ has a new **-F** option to
    specify output color representation, e.g., to output the CPT table in
@@ -919,8 +915,6 @@ correctly with a warning under compatibility mode:
 Introduction
 ============
 
-[ch:2]
-
 Most scientists are familiar with the sequence: *raw data
 :math:`\rightarrow` processing :math:`\rightarrow` final illustration*.
 In order to finalize papers for submission to scientific journals,
@@ -1135,8 +1129,6 @@ References
 
 GMT overview and quick reference
 ================================
-
-[ch:3]
 
 GMT summary
 -----------
@@ -1727,8 +1719,6 @@ Finally, the rest of the *GMT* common options are given below:
 General features
 ================
 
-[ch:4]
-
 This section explains features common to all the programs in *GMT* and
 summarizes the philosophy behind the system. Some of the features
 described here may make more sense once you reach the cook-book section
@@ -1944,7 +1934,9 @@ ways in which this can be accomplished.
    can be used. E.g., to change the primary annotation font to 12 point
    Times-Bold in red we run
 
-   ``gmtset FONT_ANNOT_PRIMARY 12p,Times-Bold,red``
+   ::
+
+    gmt gmtset FONT_ANNOT_PRIMARY 12p,Times-Bold,red
 
    These changes will remain in effect until they are overridden.
 
@@ -1982,12 +1974,12 @@ see below), followed by a letter, and sometimes a number or character
 string immediately after the letter. *Do not* space between the hyphen,
 letter, and number or string. *Do* space between options. Example:
 
-``pscoast -R0/20/0/20 -Ggray -JM6i -Wthin -B5 -V -P > map.ps``
+   ::
+
+    gmt pscoast -R0/20/0/20 -Ggray -JM6i -Wthin -B5 -V -P > map.ps
 
 Standardized command line options
 ---------------------------------
-
-[sec:stopt]
 
 Most of the programs take many of the same arguments like those related
 to setting the data region, the map projection, etc. The 24 switches in
@@ -2052,8 +2044,6 @@ importance (some are use a lot more than others).
 
 Data domain or map region: The **-R** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-[sec:R]
 
 The **-R** option defines the map region or data domain of interest. It
 may be specified in one of three ways (Figure ):
@@ -2157,7 +2147,7 @@ Other coordinates:
     These are simply any coordinates that are not related to geographic
     or calendar time or relative time and are expected to be simple
     floating point values such as
-    []*xxx.xxx*\ [E: \| \ e\ \| \ D\ \| \ d[]xx], i.e.,
+    []\ *xxx.xxx*\ [E: \| \ e\ \| \ D\ \| \ d[]xx], i.e.,
     regular or exponential notations, with the enhancement to understand
     FORTRAN double precision output which may use D instead of E for
     exponents. These values are simply converted as they are to internal
@@ -2169,13 +2159,13 @@ Coordinate transformations and map projections: The **-J** option
 This option selects the coordinate transformation or map projection. The
 general format is
 
--  **-J**\ :math:`\delta`\ [*parameters*/]*scale*. Here, :math:`\delta`
+-  **-J**\ :math:`\delta`\ [*parameters*/]\ *scale*. Here, :math:`\delta`
    is a *lower-case* letter of the alphabet that selects a particular
    map projection, the *parameters* is zero or more slash-delimited
    projection parameter, and *scale* is map scale given in distance
    units per degree or as 1:xxxxx.
 
--  **-J**\ :math:`\Delta`\ [*parameters*/]*width*. Here, :math:`\Delta`
+-  **-J**\ :math:`\Delta`\ [*parameters*/]\ *width*. Here, :math:`\Delta`
    is an *upper-case* letter of the alphabet that selects a particular
    map projection, the *parameters* is zero or more slash-delimited
    projection parameter, and *width* is map width (map height is
@@ -2185,13 +2175,13 @@ Since *GMT* version 4.3.0, there is an alternative way to specify the
 projections: use the same abbreviation as in the mapping package
 **Proj4**. The options thus either look like:
 
--  **-J**\ *abbrev*/[*parameters*/]*scale*. Here, **abbrev** is a
+-  **-J**\ *abbrev*/[*parameters*/]\ *scale*. Here, **abbrev** is a
    *lower-case* abbreviation that selects a particular map projection,
    the *parameters* is zero or more slash-delimited projection
    parameter, and *scale* is map scale given in distance units per
    degree or as 1:xxxxx.
 
--  **-J**\ *Abbrev*/[*parameters*/]*width*. Here, **Abbrev** is an
+-  **-J**\ *Abbrev*/[*parameters*/]\ *width*. Here, **Abbrev** is an
    *capitalized* abbreviation that selects a particular map projection,
    the *parameters* is zero or more slash-delimited projection
    parameter, and *width* is map width (map height is automatically
@@ -2731,8 +2721,6 @@ features that straddle the Dateline.
 Binary table i/o: The **-b** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[sec:b:sub:`o`\ ption]
-
 All *GMT* programs that accept table data input may read ASCII, native
 binary, or netCDF data. Native binary files may have a header section
 and the **-h**\ *n* option (see Section [sec:header]) can be used to
@@ -2788,8 +2776,6 @@ issue the chosen number of copies without respooling.
 Data type selection: The **-f** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[sec:fg:sub:`o`\ ption]
-
 When map projections are not required we must explicitly state what kind
 of data each input or output column contains. This is accomplished with
 the **-f** option. Following an optional **i** (for input only) or **o**
@@ -2816,7 +2802,7 @@ information, see Sections [sec:input data] and [sec:output data].
 Data gap detection: The **-g** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[sec:gap] *GMT* has several mechanisms that can determine line
+*GMT* has several mechanisms that can determine line
 segmentation. Typically, data segments are separated by multiple segment
 header records (see Appendix `B. GMT file formats`_). However, if key data columns contain a
 NaN we may also use that information to break lines into multiple
@@ -2844,7 +2830,7 @@ the unit is instead controlled by **TIME_UNIT**.
 Header data records: The **-h** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[sec:header] The **-h**\ [**i**\ \|\ **o**][*n_recs*] option
+The **-h**\ [**i**\ \|\ **o**][*n_recs*] option
 lets *GMT* know that input file(s) have *n_recs* header records [0]. If
 there are more than one header record you must specify the number after
 the **-h** option, e.g., **-h**\ 4. Note that blank lines and records
@@ -2868,7 +2854,7 @@ character (on output).
 Input columns selection: The **-i** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[sec:incols] The **-i**\ *columns* option allows you to specify which
+The **-i**\ *columns* option allows you to specify which
 input file data columns to use and in what order. By default, *GMT* will
 read all the data columns in the file, starting with the first column
 (0). Using **-i** modifies that process. For instance, to use the 4th,
@@ -2886,7 +2872,7 @@ add in the specified *offset* [0].
 Grid interpolation parameters: The **-n** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[sec:resample] The **-n**\ *type* option controls parameters used for
+The **-n**\ *type* option controls parameters used for
 2-D grids resampling. You can select the type of spline used (**-nb**
 for B-spline smoothing, **-nc** for bicubic [Default], **-nl** for
 bilinear, or **-nn** for nearest-node value). For programs that support
@@ -2907,7 +2893,7 @@ will go about 90% of the way, etc.
 Output columns selection: The **-o** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[sec:outcols] The **-o**\ *columns* option allows you to specify which
+The **-o**\ *columns* option allows you to specify which
 columns to write on output and in what order. By default, *GMT* will
 write all the data columns produced by the program. Using **-o**
 modifies that process. For instance, to write just the 4th and 2nd data
@@ -2935,7 +2921,7 @@ arguments, the values from the last use of **-p** in a previous
 Grid registration: The **-r** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[sec:grid:sub:`r`\ egistration] All 2-D grids in *GMT* have their nodes
+All 2-D grids in *GMT* have their nodes
 organized in one of two ways, known as *gridline*- and *pixel*
 registration. The *GMT* default is gridline registration; programs that
 allow for the creation of grids can use the **-r** option to select
@@ -2996,8 +2982,6 @@ consider for this NaN test.
 Layer PDF transparency: The **-t** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-[sec:ltransp]
-
 While the *PostScript* language does not support transparency, PDF does,
 and via *PostScript* extensions one can manipulate the transparency
 levels of objects. The **-t** option allows you to change the
@@ -3019,8 +3003,6 @@ grids are expected to have the longitude as first (minor) dimension.
 
 Command line history
 --------------------
-
-[sec:gmtcommands]
 
 *GMT* programs "remember" the standardized command line options (See
 Section [sec:stopt]) given during their previous invocations and this
@@ -3119,20 +3101,15 @@ remains separate from your data output. You may optionally choose among
 five models of *verbosity*; each mode adds more messages with an
 increasing level of details. The modes are
 
-q
-    : Complete silence, not even fatal error messages.
+  **q** Complete silence, not even fatal error messages.
 
-n
-    : Warnings and progress messages [Default].
+  **n** Warnings and progress messages [Default].
 
-c
-    : Warnings about deprecated usage (if compiled for compatibility).
+  **c** Warnings about deprecated usage (if compiled for compatibility).
 
-l
-    : Detailed progress messages.
+  **l** Detailed progress messages.
 
-d
-    : Debugging messages.
+  **d** Debugging messages.
 
 The verbosity is cumulative, i.e., mode **l** means all messages of mode
 **n** as well. will be reported.
@@ -3155,8 +3132,6 @@ limited in DOS.
 
 Input data formats
 ------------------
-
-[sec:input data]
 
 Most of the time, *GMT* will know what kind of *x* and *y*
 coordinates it is reading because you have selected a particular
@@ -3205,8 +3180,6 @@ details, see the man page for the program you need to use.
 Output data formats
 -------------------
 
-[sec:output data]
-
 The numerical output from *GMT* programs can be binary (when **-bo** is
 used) or ASCII [Default]. In the latter case the issue of formatting
 becomes important. *GMT* provides extensive machinery for allowing just
@@ -3248,7 +3221,7 @@ embellishment, simply run `ps2raster <ps2raster.html>`_
 Specifying pen attributes
 -------------------------
 
-[sec:pen] A pen in *GMT* has three attributes: *width*, *color*, and
+A pen in *GMT* has three attributes: *width*, *color*, and
 *style*. Most programs will accept pen attributes in the form of an
 option argument, with commas separating the given attributes, e.g.,
 
@@ -3361,8 +3334,6 @@ fashion. See the `gmt.conf <gmt.conf.html>`_ man page for more information.
 Specifying area fill attributes
 -------------------------------
 
-[sec:fill]
-
 Many plotting programs will allow the user to draw filled polygons or
 symbols. The fill specification may take two forms:
 
@@ -3414,8 +3385,6 @@ may not* solve the problem!
 
 Table [tbl:fillex] contains a few examples of fill specifications.
 
-[h]
-
 +---------------------------+-----------------------------------------------------+
 +===========================+=====================================================+
 | **-G**\ 128               | Solid gray                                          |
@@ -3439,8 +3408,6 @@ Table [tbl:fillex] contains a few examples of fill specifications.
 
 [tbl:fillex]
 
-[sec:fonts]
-
 Specifying Fonts
 ----------------
 
@@ -3462,8 +3429,6 @@ Appendix `G. PostScript fonts used by GMT`_ for a list of all fonts recognized b
 
 Stroke, Fill and Font Transparency
 ----------------------------------
-
-[sec:transp]
 
 The *PostScript* language has no built-in mechanism for transparency.
 However, *PostScript*\ extensions make it possible to request
@@ -3528,11 +3493,11 @@ semi-colon. Keys must be monotonically increasing but do not need to be
 consecutive. The format is
 
 +-----------------+--------+--------------+
-| :math:`key_1`   | *Fill* | [;\ *label*] |
+| key\ :sub:`1`   | *Fill* | [;\ *label*] |
 +-----------------+--------+--------------+
 | ...             |        |              |
 +-----------------+--------+--------------+
-| :math:`key_n`   | *Fill* | [;\ *label*] |
+| key\ :sub:`n`   | *Fill* | [;\ *label*] |
 +-----------------+--------+--------------+
 
 The *Fill* information follows the format given in Section [sec:fill].
@@ -3556,12 +3521,14 @@ Regular CPT files
 Suitable for continuous data types and allowing for color
 interpolations, the format of the regular CPT files is:
 
-llllll :math:`z_0` & Color\ :math:`_{min}` & :math:`z_1` &
-Color\ :math:`_{max}` & [**A] & [;*label*]
-& & & & &
-z\ :math:`_{n-2}` & Color\ :math:`_{min}` & :math:`z_{n-1}` &
-Color\ :math:`_{max}` & [**A**] & [;*label*]
-**
++---------------+-------------------+---------------+-------------------+----------+--------------+
+| z\ :sub:`0`   | Color\ :sub:`min` | z\ :sub:`1`   | Color\ :sub:`max` | [**A**]  | [;\ *label*] |
++---------------+-------------------+---------------+-------------------+----------+--------------+
+| ...                                                                                             |
++---------------+-------------------+---------------+-------------------+----------+--------------+
+| z\ :sub:`n-2` | Color\ :sub:`min` | z\ :sub:`n-1` | Color\ :sub:`max` | [**A**]  | [;\ *label*] |
++---------------+-------------------+---------------+-------------------+----------+--------------+
+
 
 Thus, for each "*z*-slice", defined as the interval between two
 boundaries (e.g., :math:`z_0` to :math:`z_1`), the color can be
@@ -3611,10 +3578,15 @@ of gray-shades. You must specify the pattern as in Section [sec:fill]
 some programs let you skip features whose *z*-slice in the CPT
 file has gray-shades set to -. As an example, consider
 
-| lllll 30 & p200/16 & 80 & -
-| 80 & - & 100 & -
-| 100 & 200/0/0 & 200/255/255 & 0
-| 200 & yellow & 300 & green
++-----+---------+-------------+-------+
+| 30  | p200/16 | 80          | \-    |
++-----+---------+-------------+-------+
+| 80  | \-      | 100         | \-    |
++-----+---------+-------------+-------+
+| 100 | 200/0/0 | 200/255/255 | 0     |
++-----+---------+-------------+-------+
+| 200 | yellow  | 300         | green |
++-----+---------+-------------+-------+
 
 where slice 30 < z < 80 is painted with pattern # 16 at 200 dpi,
 slice 80 < z < 100 is skipped, slice 100 < z < 200 is
@@ -3645,8 +3617,6 @@ on topography by using the former for colors and the latter for shading.
 
 The Drawing of Vectors
 ----------------------
-
-[sec:vectors]
 
 *GMT* supports plotting vectors in various forms. A vector is one of
 many symbols that may be plotted by `psxy <psxy.html>`_
@@ -3680,8 +3650,6 @@ relevant manual pages.
 
 Character escape sequences
 --------------------------
-
-[sec:escape]
 
 For annotation labels or text strings plotted with
 `pstext <pstext.html>`_, *GMT* provides several escape
@@ -3769,7 +3737,7 @@ Appendix [app:F].
 Grid file format specifications
 -------------------------------
 
-[sec:grdformats] *GMT* has the ability to read and write grids using
+*GMT* has the ability to read and write grids using
 more than one grid file format (see Table [tbl:grdformats] for supported
 format and their IDs). For reading, *GMT* will automatically determine
 the format of grid files, while for writing you will normally have to
@@ -3923,18 +3891,30 @@ to specify the various file formats. The user may create a file called
 ``~/.gmt`` and define any number of custom formats. The following is an example of
 a ``.gmt_io`` file:
 
-| # suffix format_id scale offset NaNxxxComments # GMT i/o shorthand file
-| # It can have any number of comment lines like this one anywhere
-| # suffix format\_id scale offset NaNComments
-| grd nf - - - Default format
-| b bf - - - Native binary floats
-| i2 bs - - 32767 2-byte integers with NaN value
-| ras rb - - - Sun raster files
-| byte bb - - 255 Native binary 1-byte grids
-| bit bm - - - Native binary 0 or 1 grids
-| mask bm - - 0 Native binary 1 or NaN masks
-| faa bs 0.1 - 32767 Native binary gravity in 0.1 mGal
-| ns ns a a - 16-bit integer netCDF grid with auto-scale and auto-offset
++---------------------------------------------------------------------------+
+| # suffix format_id scale offset NaNxxxComments # GMT i/o shorthand file   |
+| # It can have any number of comment lines like this one anywhere          |
+| # suffix format\_id scale offset NaNComments                              |
++-------+-----+-----+---+-------+-------------------------------------------+
+| grd   | nf  | \-  | \-| \-    | Default format                            |
++-------+-----+-----+---+-------+-------------------------------------------+
+| b     | bf  | \-  | \-| \-    | Native binary floats                      |
++-------+-----+-----+---+-------+-------------------------------------------+
+| i2    | bs  | \-  | \-| 32767 | 2-byte integers with NaN value            |
++-------+-----+-----+---+-------+-------------------------------------------+
+| ras   | rb  | \-  | \-| \-    | Sun raster files                          |
++-------+-----+-----+---+-------+-------------------------------------------+
+| byte  | bb  | \-  | \-| 255   | Native binary 1-byte grids                |
++-------+-----+-----+---+-------+-------------------------------------------+
+| bit   | bm  | \-  | \-| \-    | Native binary 0 or 1 grids                |
++-------+-----+-----+---+-------+-------------------------------------------+
+| mask  | bm  | \-  | \-| 0     | Native binary 1 or NaN masks              |
++-------+-----+-----+---+-------+-------------------------------------------+
+| faa   | bs  | 0.1 | \-| 32767 | Native binary gravity in 0.1 mGal         |
++-------+-----+-----+---+-------+-------------------------------------------+
+| ns    | ns  | a   | a | \-    | 16-bit integer netCDF grid with           |
+|       |     |     |   |       | auto-scale and auto-offset                |
++-------+-----+-----+---+-------+-------------------------------------------+
 
 These suffices can be anything that makes sense to the user. To activate
 this mechanism, set parameter **IO_GRIDFILE_SHORTHAND** to TRUE in
@@ -3945,8 +3925,6 @@ small as 1/32 the size of the corresponding grid float format file.
 
 Modifiers for changing the grid coordinates
 -------------------------------------------
-
-[sec:grdcoordinates]
 
 A few *GMT* tools require that the two horizontal dimensions be
 specified in meters. One example is
@@ -3981,8 +3959,6 @@ These modifiers are only allowed when map projections are not selected
 
 Modifiers for COARDS-compliant netCDF files
 -------------------------------------------
-
-[sec:netcdf]
 
 When the netCDF grid file contains more than one 2-dimensional variable,
 *GMT* programs will load the first such variable in the file and ignore
@@ -4111,8 +4087,6 @@ unit of the z-coordinate. The default is simply "z".
 
 Modifiers to read and write grids and images via GDAL
 -----------------------------------------------------
-
-[sec:GDAL]
 
 If the support has been configured during installation, then *GMT* can
 read and write a variety of grid and image formats via GDAL. This
@@ -4333,8 +4307,6 @@ any of these directories.
 GMT Coordinate Transformations
 ==============================
 
-[ch:5]
-
 *GMT* programs read real-world coordinates and convert them to positions
 on a plot. This is achieved by selecting one of several coordinate
 transformations or projections. We distinguish between three sets of
@@ -4443,8 +4415,6 @@ do this, simply specify the length to be recomputed as 0.
 Geographic coordinates
 ^^^^^^^^^^^^^^^^^^^^^^
 
-[sec:linear]
-
 .. include:: fig_includes/fig_GMT_linear_d.rst_
 
 While the Cartesian linear projection is primarily designed for regular
@@ -4469,8 +4439,6 @@ Figure [fig:GMT\ :sub:`l`\ inear\ :sub:`d`].
 
 Calendar time coordinates
 ^^^^^^^^^^^^^^^^^^^^^^^^^
-
-[sec:time]
 
 .. include:: fig_includes/fig_GMT_linear_cal.rst_
 
@@ -4604,8 +4572,6 @@ Figure [fig:GMT\ :sub:`p`\ olar].
 
 GMT Map Projections
 ===================
-
-[ch:6]
 
 *GMT* implements more than 30 different projections. They all project
 the input coordinates longitude and latitude to positions on a map. In
@@ -4841,7 +4807,7 @@ an error since *'east'* < *'west'*.
 Hemisphere map
 ^^^^^^^^^^^^^^
 
-[sec:lamb] Here, you must specify the world as your region (**-Rg** or
+Here, you must specify the world as your region (**-Rg** or
 **-Rd**). E.g., to obtain a hemisphere view that shows the Americas, try
 
    ::
@@ -5972,61 +5938,42 @@ Table [tbl:netcdf-format]) to describe the content. The routine that
 deals with netCDF grid files is sufficiently flexible so that grid files
 slightly deviating from the standards used by *GMT* can also be read.
 
-+----------------------+--------------------------------------------------------------+
-| **Atributte**        |      **Description**                                         |
-+======================+==============================================================+
-|                       *Global attributes*                                           |
-+----------------------+--------------------------------------------------------------+
-| Conventions          | COARDS, CF-1.0 (optional)                                    |
-+----------------------+--------------------------------------------------------------+
-| title                | Title (optional)                                             |
-+----------------------+--------------------------------------------------------------+
-| source               |                                                              |
-+----------------------+--------------------------------------------------------------+
-| registration         |                                                              |
-+----------------------+--------------------------------------------------------------+
-| long_name            |                                                              |
-+----------------------+--------------------------------------------------------------+
-| units                |                                                              |
-+----------------------+--------------------------------------------------------------+
-| actual range         |                                                              |
-| (or valid range)     |                                                              |
-+----------------------+--------------------------------------------------------------+
-| long_name            |                                                              |
-+----------------------+--------------------------------------------------------------+
-| units                |                                                              |
-+----------------------+--------------------------------------------------------------+
-| scale_factor         |                                                              |
-+----------------------+--------------------------------------------------------------+
-| add_offset           |                                                              |
-+----------------------+--------------------------------------------------------------+
-| actual_range         |                                                              |
-+----------------------+--------------------------------------------------------------+
-| \_FillValue          |                                                              |
-| (or missing_value)   |                                                              |
-+----------------------+--------------------------------------------------------------+
-|                      |                                                              |
-+----------------------+--------------------------------------------------------------+
-|                      |                                                              |
-+----------------------+--------------------------------------------------------------+
-
-| lp0.8 **Attribute** & **Description**
-| & *Global attributes*
-| Conventions & COARDS, CF-1.5 (optional)
-| title & Title (optional)
-| source & How file was created (optional)
-| node_offset & absent or 0 for gridline node registration (default), 1 for pixel registration
-| & *x*- and *y*-variable attributes
-| long_name & Coordinate name (e.g., "Longitude" and "Latitude")
-| units & Unit of the coordinate (e.g., "degrees_east" and "degrees_north")
-| actual_range & Minimum and maximum *x* and *y* of region; if absent the first and last *x*- and *y*-values are queried
-| & *z-variable attributes*
-| long_name & Name of the variable (default: "z")
-| units & Unit of the variable
-| scale_factor & Factor to multiply *z* with (default: 1)
-| add_offset & Offset to add to scaled *z* (default: 0)
-| actual_range & Minimum and maximum *z* (in unpacked units, optional) and *z*
-| _FillValue & Value associated with missing or invalid data points; if absent an appropriate default value is assumed, depending on data type.
++----------------------+--------------------------------------------------------------------+
+| **Atributte**        |      **Description**                                               |
++======================+===========================+========================================+
+|                      | *Global attributes*       |                                        |
++----------------------+---------------------------+----------------------------------------+
+| Conventions          | COARDS, CF-1.0 (optional)                                          |
++----------------------+--------------------------------------------------------------------+
+| title                | Title (optional)                                                   |
++----------------------+--------------------------------------------------------------------+
+| source               | How file was created (optional)                                    |
++----------------------+--------------------------------------------------------------------+
+| registration         | 0 for gridline node registration (default) ,                       |
+|                      | 1 for pixel registration                                           |
++----------------------+--------------------------------------------------------------------+
+| long_name            | Coordinate name (default: "Longitude" and "Latitude")              |
++----------------------+--------------------------------------------------------------------+
+| units                | Unit of the coordinate (e.g., "degrees_east" and "degrees_north")  |
++----------------------+--------------------------------------------------------------------+
+| actual range         | Minimum and maximum *x* and *y* of region; if absent the           |
+| (or valid range)     | first and last *x*- and *y*-values are queried                     |
++----------------------+---------------------------+----------------------------------------+
+|                      |  *z-variable attributes*  |                                        |
++----------------------+---------------------------+----------------------------------------+
+| long_name            | Name of the variable (default: "z")                                |
++----------------------+--------------------------------------------------------------------+
+| units                | Unit of the variable                                               |
++----------------------+--------------------------------------------------------------------+
+| scale_factor         | Factor to multiply *z* with (default: 1)                           |
++----------------------+--------------------------------------------------------------------+
+| add_offset           | Offset to add to scaled *z* (default: 0)                           |
++----------------------+--------------------------------------------------------------------+
+| actual_range         | Minimum and maximum *z* (in unpacked units, optional) and *z*      |
++----------------------+--------------------------------------------------------------------+
+| \_FillValue          | Value associated with missing or invalid data points; if absent an |
+| (or missing_value)   | appropriate default value is assumed, depending on data type.      |
++----------------------+--------------------------------------------------------------------+
 
 [tbl:netcdf-format]
 
@@ -6305,8 +6252,6 @@ results.
 
 Making GMT Encapsulated *PostScript* Files
 ------------------------------------------
-
-[sec:eps]
 
 *GMT* produces freeform *PostScript* files. Note that a freeform
 *PostScript* file may contain special operators (such as
@@ -6677,8 +6622,6 @@ plotting of text-strings, see the man page for `pstext <pstext.html>`_.
 Using non-default fonts with GMT
 --------------------------------
 
-[sec:non-default-fonts]
-
 To add additional fonts that you may have purchased or that are
 available freely in the internet or at your institution, see the
 instructions in the ``CUSTOM_font_info.d`` under the ``share/pslib`` directory and continue reading. *GMT* does
@@ -6712,8 +6655,7 @@ you can set the *GMT* font parameters to your non-standard fonts:
 
 After setting the encoding and the degree symbol, the configuration part
 for *GMT* is finished and you can proceed to create *GMT*-maps as usual.
-An example script is discussed in
-Section [sec:non-default-fonts-example].
+An example script is discussed in Section [sec:non-default-fonts-example].
 
 Embedding fonts in *PostScript* and PDF
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -7414,7 +7356,7 @@ K. GMT on non-\ *UNIX* platforms
 Introduction
 ------------
 
-While *GMT* can be ported to non-\ *UNIX* systems such as Windows, it is
+While *GMT* was ported to non-\ *UNIX* systems such as Windows, it is
 also true that one of the strengths of *GMT* lies its symbiotic
 relationship with *UNIX*. We therefore recommend that *GMT* be installed
 in a POSIX-compliant *UNIX* environment such as traditional
@@ -7477,15 +7419,6 @@ limit to 1024 Mb:
     regtool -v list /HKLM/Software/Cygnus\ Solutions/Cygwin
 
 For more installation details see the general README file.
-
-
-WIN32/64 and GMT
-----------------
-
-*GMT* will compile and install using the Microsoft Visual C/C++
-compiler. We expect other WIN32/64 C compilers to give similar results
-(e.g., the Intel compiler). If you just need to run *GMT* and do not want to
-mess with compilations, get the precompiled binaries from the *GMT* ftp sites.
 
 MINGW|MSYS and GMT
 ------------------
@@ -7551,7 +7484,7 @@ Background
 The *GMT* tools `psxy.c <psxy.html>`_ and `psxyz.c <psxyz.html>`_ are capable of using custom
 symbols as alternatives to the built-in, standard geometrical shapes
 like circles, triangles, and many others. One the command line, custom
-symbols are selected via the **-Sk**\ *symbolname*\ [.*size*] symbol
+symbols are selected via the **-Sk**\ *symbolname*\ [*size*] symbol
 selection, where *symbolname* refers to a special symbol definition file
 called ``symbolname.def`` that must be available via the standard *GMT* user paths. Several
 custom symbols comes pre-configured with *GMT*\ (see
@@ -7594,7 +7527,7 @@ symbols, such as the ellipse or vector symbols, may require more
 parameters. If your custom symbol requires more than the single size
 parameter you must include the line
 
-    **N**: *n_extra_parameters* [*types*\ ]
+    **N**: *n_extra_parameters* [*types*]
 
 before any other macro commands. It is an optional statement in that
 *n_extra_parameters* will default to 0 unless explicitly set. By
@@ -7603,23 +7536,18 @@ be passed directly to the symbol machinery. However, you can use the
 *types* argument to specify different types of parameters. The available
 types are
 
-a
-    : Geographic angle, to be converted to map angle given the current
-    map projection.
+  **a** Geographic angle, to be converted to map angle given the current
+  map projection.
 
-l
-    : Length, i.e., an additional length scale (in cm, inch, or point as
-    per **PROJ_LENGTH_UNIT**) in addition to the given symbol size.
+  **l** Length, i.e., an additional length scale (in cm, inch, or point as
+  per **PROJ_LENGTH_UNIT**) in addition to the given symbol size.
 
-o
-    : Other, i.e., a numerical quantity to be passed to the custom symbol as is.
+  **o** Other, i.e., a numerical quantity to be passed to the custom symbol as is.
 
-s
-    : String, i.e., a single column of text to be placed by the **l** command.
-    Use octal \\040 to include spaces while still remaining a single word.
+  **s** String, i.e., a single column of text to be placed by the **l** command.
+  Use octal \\040 to include spaces while still remaining a single word.
 
-To use the extra parameters in your macro you address them as $1, $2,
-etc.
+To use the extra parameters in your macro you address them as $1, $2, etc.
 
 Macro commands
 ~~~~~~~~~~~~~~
@@ -8259,7 +8187,7 @@ O. Special Operations
 Running GMT in *isolation mode*
 -------------------------------
 
-[sec:isolationmode] In Chapter [ch:4] it is described how *GMT* creates
+In Chapter [ch:4] it is described how *GMT* creates
 several (temporary) files to communicate between the different commands
 that make up the script that finally creates a plot. Among those files
 are:
