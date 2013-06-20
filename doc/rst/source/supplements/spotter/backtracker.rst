@@ -4,26 +4,28 @@ backtracker
 
 backtracker - Generate forward and backward flowlines and hotspot tracks
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**backtracker** [ *table* ] **-E**\ *rot\_file* \|
+**backtracker** [ *table* ] **-E**\ *rot_file* \|
 **-e**\ *lon*/*lat*/*angle* [ **-A**\ [*young*/*old*] ] [
 **-Df**\ \|\ **b** ] [ **-F**\ *drift.txt* ] [
-**-Lf**\ \|\ **b**\ *step* ] [ **-N**\ *upper\_age* ] [
-**-Q**\ *fixed\_age* ] [ **-S**\ *filestem* ] [ **-T**\ *zero\_age* ] [
-**-V**\ [*level*\ ] ] [ **-W**\ [**a**\ \|\ **t**] ] [
-**-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
-**-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-o**\ *cols*\ [,*...*] ] [ **-:**\ [**i**\ \|\ **o**] ]
+**-Lf**\ \|\ **b**\ *step* ] [ **-N**\ *upper_age* ] [
+**-Q**\ *fixed_age* ] [ **-S**\ *filestem* ] [ **-T**\ *zero_age* ]
+[ |SYN_OPT-V| ]
+[ **-W**\ [**a**\ \|\ **t**] ]
+[ |SYN_OPT-b| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-o| ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **backtracker** reads (longitude, latitude, age) positions from
 *infiles* [or standard input] and computes rotated (x,y,t) coordinates
@@ -34,8 +36,8 @@ additional data fields after the first 3 columns which must have
 (longitude,latitude,age). See option **-:** on how to read
 (latitude,longitude,age) files.
 
-`Required Arguments <#toc4>`_
------------------------------
+`Required Arguments
+------------------
 
 **-E**\ *rotfile*
     Give file with rotation parameters. This file must contain one
@@ -68,8 +70,8 @@ additional data fields after the first 3 columns which must have
     reconstruction rotation that should be applied to all input points
     (input ages, if present, are ignored).
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
@@ -102,10 +104,10 @@ additional data fields after the first 3 columns which must have
     **-LB** is used, the third output column will contain the stage id
     (1 is youngest) [Default is along-track predicted ages]. You can
     control the direction of the paths by using **-D**.
-**-N**\ *upper\_age*
+**-N**\ *upper_age*
     Set the maximum age to extend the oldest stage rotation back in time
     [Default is no extension].
-**-Q**\ *fixed\_age*
+**-Q**\ *fixed_age*
     Assign a fixed age to all positions. Only lon, lat input is expected
     [Default expects longitude, latitude, age]. Useful when the input
     are points defining isochrons.
@@ -114,7 +116,7 @@ additional data fields after the first 3 columns which must have
     multisegment file. Specify a *filestem* to have each track written
     to *filestem.#*, where *#* is the track number. The track number is
     also copied to the 4th output column.
-**-T**\ *zero\_age*
+**-T**\ *zero_age*
     Set the current time [Default is 0 Ma].
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
@@ -144,28 +146,34 @@ additional data fields after the first 3 columns which must have
 .. include:: ../../explain_colon.rst_
 .. include:: ../../explain_help.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
 To backtrack the (x,y,t) points in the file seamounts.d to their origin
 (presumably the hotspot), using the DC85.d Euler poles, run
 
-    backtracker seamounts.d -Db -EDC85.d > newpos.d
+   ::
+
+    gmt backtracker seamounts.d -Db -EDC85.d > newpos.d
 
 To project flowlines forward from the (x,y,t) points stored in several
 3-column, binary, double precision files, run
 
-    backtracker points.\* -Df -EDC85.d -Lf25 -bo -bi3 > lines.b
+   ::
+
+    gmt backtracker points.gmt \* -Df -EDC85.d -Lf25 -bo -bi3 > lines.b
 
 This file can then be plotted with **psxy**.
 To compute the predicted Hawaiian hotspot track from 0 to 80 Ma every 1
 Ma, given a history of hotspot motion file (HIdrift.txt) and a set of
-total reconstruction rotations for the plate (PAC\_APM.d), try
+total reconstruction rotations for the plate (PAC_APM.d), try
 
-    echo 204 19 80 \| backtracker -Df -EPAC\_APM.d -Lb1 > path.d
+   ::
 
-`See Also <#toc7>`_
--------------------
+    echo 204 19 80 | gmt backtracker -Df -EPAC_APM.d -Lb1 > path.d
+
+See Also
+--------
 
 `GMT <GMT.html>`_ , `project <project.html>`_ ,
 `grdrotater <grdrotater.html>`_,
@@ -174,8 +182,8 @@ total reconstruction rotations for the plate (PAC\_APM.d), try
 `hotspotter <hotspotter.html>`_,
 `originator <originator.html>`_
 
-`References <#toc8>`_
----------------------
+References
+----------
 
 Wessel, P., 1999, "Hotspotting" tools released, EOS Trans. AGU, 80 (29),
 p. 319.
