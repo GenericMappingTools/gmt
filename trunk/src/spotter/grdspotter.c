@@ -230,7 +230,7 @@ int GMT_grdspotter_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Dp<file> Use flowlines to estimate predicted ages at node locations.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Co-registered grid with chain ID for each node [Default ignores IDs].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Do flowline calculations as needed rather than storing in memory.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   You may have to use this option if -R is too large. Cannot be used with -B or -Z-slicing.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   You may have to use this option if -R is too large. Cannot be used with -W or -Z-slicing.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Set upper age in m.y. for nodes whose plate age is NaN [180].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Either single ID to use or file with list of IDs [Default uses all IDs].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Each line would be TAG ID [w e s n] with optional zoom box.\n");
@@ -379,7 +379,7 @@ int GMT_grdspotter_parse (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *Ctrl, st
 	n_errors += GMT_check_condition (GMT, !(Ctrl->G.active || Ctrl->G.file), "Syntax error -G: Must specify output file\n");
 	n_errors += GMT_check_condition (GMT, !(Ctrl->In.active || Ctrl->In.file), "Syntax error -Z: Must give name of topo gridfile\n");
 	n_errors += GMT_check_condition (GMT, Ctrl->L.file && !Ctrl->Q.mode, "Syntax error: Must specify both -L and -Q if one is present\n");
-	n_errors += GMT_check_condition (GMT, Ctrl->M.active && (Ctrl->W.active || Ctrl->Z.mode), "Syntax error: Cannot use -M with -B or -Z (slicing)\n");
+	n_errors += GMT_check_condition (GMT, Ctrl->M.active && (Ctrl->W.active || Ctrl->Z.mode), "Syntax error: Cannot use -M with -W or -Z (slicing)\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
