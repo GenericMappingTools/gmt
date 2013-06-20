@@ -4,26 +4,27 @@ grdrotater
 
 grdrotater - Finite rotation reconstruction of geographic grid
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
 **grdrotate** *ingrdfile* **-E**\ *rotfile* \|
-**-e**\ *lon*/*lat*/*angle* **-G**\ *outgrdfile* [ **-F**\ *polygonfile*
-] [ **-N** ] [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
-**-S** ] [ **-T**\ *age* ] [ **-V**\ [*level*\ ] ] [
-**-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
-**-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [
-**-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**\ ][\ **+b**\ *BC*][\ **+t**\ *threshold*]
-] [ **-:**\ [**i**\ \|\ **o**] ]
+**-e**\ *lon*/*lat*/*angle* **-G**\ *outgrdfile* [ **-F**\ *polygonfile* ]
+[ **-N** ]
+[ |SYN_OPT-R| ]
+[ **-S** ] [ **-T**\ *age* ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-b| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-n| ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **grdrotater** reads a geographical grid and reconstructs it given a
 total reconstruction rotation. Optionally, the user may supply a
@@ -32,8 +33,8 @@ grid inside the polygon is used to determine the return grid region. The
 outline of the projected region is returned on stdout provided the
 rotated region is not the entire globe.
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *ingrdfile*
     Name of a grid file in geographical (lon, lat) coordinates.
@@ -70,8 +71,8 @@ rotated region is not the entire globe.
     Name of output grid. This is the grid with the data reconstructed
     according to the specified rotation.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-F**\ *polygonfile*
     Specify a multisegment closed polygon file that describes the inside
@@ -106,40 +107,47 @@ rotated region is not the entire globe.
 .. include:: ../../explain_-n.rst_
 .. include:: ../../explain_help.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
 To rotate the data defined by grid topo.nc and the polygon outline
-clip\_path.d, using a total reconstruction rotation with pole at (135.5,
--33.0) and a rotation angle of 37.3 degrees and bicubic interpolation,
-try
+clip_path.d, using a total reconstruction rotation with pole at (135.5,
+-33.0) and a rotation angle of 37.3 degrees and bicubic interpolation, try
 
-    grdrotater topo.nc -e135.5/-33/37.3 -V -Fclip\_path.d -Grot\_topo.nc > rot\_clip\_path.d
+   ::
+
+    gmt grdrotater topo.nc -e135.5/-33/37.3 -V -Fclip_path.d -Grot_topo.nc > rot_clip_path.d
 
 To rotate the entire grid faa.nc back to 32 Ma using the rotation file
 *rotations.txt* and a bilinear interpolation, try
 
-    grdrotater faa.nc -Erotations.txt -T32 -V -Grot\_faa.nc -nl > rot\_faa\_path.d
+   ::
+
+    gmt grdrotater faa.nc -Erotations.txt -T32 -V -Grot_faa.nc -nl > rot_faa_path.d
 
 To just see how the outline of the grid large.nc will plot after the
 same rotation, try
 
-    grdrotater large.nc -Erotations.txt -T32 -V -S \| psxy -Rg -JH180/6i -B30 -W0.5p \| gv -
+   ::
+
+    gmt grdrotater large.nc -Erotations.txt -T32 -V -S \| psxy -Rg -JH180/6i -B30 -W0.5p \| gv -
 
 Let say you have rotated gridA.nc and gridB.nc, restricting each
 rotation to nodes inside polygons polyA.d and polyB.d, respectively,
 using rotation A = (123W,22S,16,4) and rotation B = (108W, 16S, -14.5),
-yielding rotated grids rot\_gridA.nc and rot\_gridB.nc. To determine the
+yielding rotated grids rot_gridA.nc and rot_gridB.nc. To determine the
 region of overlap between the rotated grids, we use grdmath:
 
-    grdmath 1 rot\_gridA.nc ISNAN SUB 1 rot\_gridB.nc ISNAN SUB 2 EQ = overlap.nc
+   ::
+
+    gmt grdmath 1 rot_gridA.nc ISNAN SUB 1 rot_gridB.nc ISNAN SUB 2 EQ = overlap.nc
 
 The grid overlap.nc now has 1s in the regions of overlap and 0
 elsewhere. You can use it as a mask or use grdcontour **-D** to extract
 a polygon (contour).
 
-`See Also <#toc7>`_
--------------------
+See Also
+--------
 
 `backtracker <backtracker.html>`_,
 `grdspotter <grdspotter.html>`_,

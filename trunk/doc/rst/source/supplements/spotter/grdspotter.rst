@@ -9,13 +9,16 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**grdspotter** [*grdfile*\ ] **-E**\ *rotfile* **-G**\ *CVAgrid*
-**-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [ **-A**\ *agegrid* ] [
-**-B**\ *n\_try* ] [ **-D**\ *DIgrid* ] [ **-L**\ *IDgrid* ] [ **-M** ]
-[ **-N**\ *upper\_age* ] [ **-P**\ *PAgrid* ] [ **-Q**\ *IDinfo* ] [
-**-S** ] [ **-T**\ **t**\ \|\ **u**\ *fixed\_val* ] [
-**-V**\ [*level*\ ] ] [ **-Z**\ *z\_min*\ [/*z\_max*\ [/*z\_inc*]] ] [
+**grdspotter** [*grdfile*] **-E**\ *rotfile* **-G**\ *CVAgrid*
+|SYN_OPT-I|
+|SYN_OPT-R|
+[ **-A**\ *agegrid* ]
+[ **-B**\ *n_try* ]
+[ **-D**\ *DIgrid* ] [ **-L**\ *IDgrid* ] [ **-M** ]
+[ **-N**\ *upper_age* ] [ **-P**\ *PAgrid* ] [ **-Q**\ *IDinfo* ] [
+**-S** ] [ **-T**\ **t**\ \|\ **u**\ *fixed_val* ] [
+[ |SYN_OPT-V| ]
+[ **-Z**\ *z_min*\ [/*z_max*\ [/*z_inc*]] ] [
 **-r** ]
 
 |No-spaces|
@@ -33,8 +36,8 @@ Required Arguments
 ------------------
 
 *grdfile*
-    Data grid to be processed, typically residual bathymetry or free-air
-    anomalies.
+    Data grid to be processed, typically residual bathymetry or free-air anomalies.
+
 **-E**\ *rotfile*
     Give file with rotation parameters. This file must contain one
     record for each rotation; each record must be of the following
@@ -77,8 +80,8 @@ Optional Arguments
     flowlines [Default extend flowlines back to oldest age found in the
     rotation file; but see **-N**].
 
-**-B**\ *n\_try*
-    Get *n\_try* bootstrap estimates of the maximum CVA location; the
+**-B**\ *n_try*
+    Get *n_try* bootstrap estimates of the maximum CVA location; the
     longitude and latitude results are written to stdout [Default is no
     bootstrapping]. Cannot be used with **-M**.
 
@@ -98,7 +101,7 @@ Optional Arguments
     can reuse the flowlines calculated for the CVA step. Cannot be used
     with **-B** or the multi-slice mode in **-Z**.
 
-**-N**\ *upper\_age*
+**-N**\ *upper_age*
     Set the upper age to assign to nodes whose crustal age is unknown
     (i.e., NaN) [no upper age]. Also see **-A**.
 
@@ -119,20 +122,20 @@ Optional Arguments
     Normalize the resulting CVA grid to percentages of the CVA maximum.
     This also normalizes the DI grid (if requested).
 
-**-T**\ **t**\ \|\ **u**\ *fixed\_val*
+**-T**\ **t**\ \|\ **u**\ *fixed_val*
     Selects ways to adjust ages; repeatable. Choose from **-Tt** to
     truncate crustal ages given via the **-A** option that exceed the
-    upper age set with **-N** [no truncation], or **-Tu**\ *fixed\_val*
+    upper age set with **-N** [no truncation], or **-Tu**\ *fixed_val*
     which means that after a node passes the test implied by **-Z**, we
-    use this *fixed\_val* instead in the calculations. [Default uses
+    use this *fixed_val* instead in the calculations. [Default uses
     individual node values].
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
-**-Z**\ *z\_min*\ [/*z\_max*\ [/*z\_inc*]]
-    Ignore nodes with z-values lower than *z\_min* [0] and optionally
-    larger than *z\_max* [Inf]. Give *z\_min/z\_max/z\_inc* to make
+**-Z**\ *z_min*\ [/*z_max*\ [/*z_inc*]]
+    Ignore nodes with z-values lower than *z_min* [0] and optionally
+    larger than *z_max* [Inf]. Give *z_min/z_max/z_inc* to make
     separate CVA grids for each *z*-slice [Default makes one CVA grid].
     Multi-slicing cannot be used with **-M**.
 
@@ -150,7 +153,7 @@ for the specified domain, run
 
    ::
 
-    grdspotter Pac_res_topo.nc -EDC85.d -GCVA.nc -R190/220/15/25 -I2m -N145 -Tt -V
+    gmt grdspotter Pac_res_topo.nc -EDC85.d -GCVA.nc -R190/220/15/25 -I2m -N145 -Tt -V
 
 This file can then be plotted with `grdimage <../../grdimage.html>`__.
 
