@@ -1,7 +1,44 @@
 	$Id$
 
 Distributed under the GNU Lesser Public License; see file
-LICENSE.TXT in main GMT directory.
+LICENSE.TXT in main GMT directory.  Permission to move from GPL to
+Lesser GPL was given my author Tim Henstock: Email excerpt:
+#------------------------------------------------------------------
+>>>Hi Paul,
+>>>
+>>>yes, I have no problems with that. I keep hoping that I will have time to tweak a few bits
+>>>of the code, but seem to end up with an endless stream of different deadlines....
+>>>
+>>>Tim
+>>>
+>>>------------------------------------------------------
+>>>Tim Henstock, Reader in Geophysics
+>>>National Oceanography Centre Southampton
+>>>University of Southampton
+>>>European Way
+>>>Southampton
+>>>
+>>>then@noc.soton.ac.uk
+>>>+44 (0)23 8059 6491
+>>>________________________________________
+>>>From: Paul Wessel [pwessel@hawaii.edu]
+>>>Sent: 19 June 2013 17:10
+>>>To: Henstock T.J.
+>>>Cc: Paul Wessel
+>>>Subject: segy in GMT5
+>>>
+>>>Hi Tim,
+>>>
+>>>We are getting close to releasing GMT 5, and I need to ask you if you would you willing
+>>>to release your segy  supplement under the new Lesser GPL  license  (in GMT 4, we used
+>>>the standard GPL  license). I have made the various changes necessary to the code to work
+>>>with GMT 5 libraries, but more testing is probably needed.
+>>>
+>>>Let me know if you are okay with the license change, otherwise we will have to remove
+>>>segy for now from GMT 5.
+>>>
+>>>Cheers, Paul Wessel
+#------------------------------------------------------------------
 
 GMT 5 Released made these into modules.
 
