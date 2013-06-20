@@ -17,7 +17,7 @@
  *--------------------------------------------------------------------*/
 /*
  * gmt_dwc.h contains definitions for using the DCW in GMT.
- * DCW - THe Digital Chart of the World
+ * DCW - The Digital Chart of the World
  *
  * Author:	Paul Wessel
  * Date:	10-MAR-2013
@@ -26,12 +26,6 @@
 
 #ifndef _GMT_DCW_H
 #define _GMT_DCW_H
-
-#define GMT_DCW_DIR			"DCW"
-#define GMT_DCW_COUNTRIES		231
-#define GMT_DCW_STATES			97
-#define GMT_DCW_N_CONTINENTS		8
-#define GMT_DCW_N_COUNTRIES_WITH_STATES	4
 
 #define DCW_OPT "-F<code1,code2,...>[+l|L][+g<fill>][+p<pen>][+r|R[<incs>]]"
 

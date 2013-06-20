@@ -79,7 +79,10 @@ struct PS2RASTER_CTRL {
 		bool round;        /* Round HiRes BB instead of ceil */
 		bool strip;        /* Remove the -U time-stamp */
 		bool reset;        /* The -A- turns -A off, overriding any automode in effect */
+		bool resize;       /* Resize to a user selected size */
+		double new_size[2];
 		double margin[4];
+		double new_dpi_x, new_dpi_y;
 	} A;
 	struct C {	/* -C<option> */
 		bool active;
@@ -139,6 +142,74 @@ struct PS2RASTER_CTRL {
 		double altitude;
 	} W;
 };
+
+int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *Ctrl) {
+	/* Syntax: -A[u][<margins>][-][+r][+s<width>[u][/<height>[u]]] */
+	
+	bool error = false;
+	unsigned int pos = 0;
+	int j, k = 0;
+	char txt[GMT_TEXT_LEN128], p[GMT_TEXT_LEN128];
+	char txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64], txt_c[GMT_TEXT_LEN64], txt_d[GMT_TEXT_LEN64];
+	
+	Ctrl->A.active = true;
+
+	if (arg[k] == 'u') {Ctrl->A.strip = true; k++;}
+	if (arg[strlen(arg)-1] == '-') {
+		Ctrl->A.reset = true;
+		return (error);
+	}
+
+	if (arg[k] && arg[k] != '+') {	/* Also specified margin(s) */
+		j = sscanf (&arg[k], "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
+		switch (j) {
+			case 1:	/* Got uniform margin */
+				Ctrl->A.margin[XLO] = Ctrl->A.margin[XHI] = Ctrl->A.margin[YLO] = Ctrl->A.margin[YHI] = GMT_to_points (GMT, txt_a);
+				break;
+			case 2:	/* Got seprate x/y margins */
+				Ctrl->A.margin[XLO] = Ctrl->A.margin[XHI] = GMT_to_points (GMT, txt_a);
+				Ctrl->A.margin[YLO] = Ctrl->A.margin[YHI] = GMT_to_points (GMT, txt_b);
+				break;
+			case 4:	/* Got uniform margin */
+				Ctrl->A.margin[XLO] = GMT_to_points (GMT, txt_a);
+				Ctrl->A.margin[XHI] = GMT_to_points (GMT, txt_b);
+				Ctrl->A.margin[YLO] = GMT_to_points (GMT, txt_c);
+				Ctrl->A.margin[YHI] = GMT_to_points (GMT, txt_d);
+				break;
+			default:
+				error++;
+				GMT_Report (Ctrl, GMT_MSG_NORMAL, "-A: Give 1, 2, or 4 margins\n");
+				break;
+		}
+	}
+
+	strncpy (txt, arg, GMT_TEXT_LEN128);
+	while (!error && (GMT_strtok (txt, "+", &pos, p))) {
+		switch (p[0]) {
+			case 'r':	/* Round */
+				Ctrl->A.round = true;
+				break;
+			case 's':	/* Set fading options in KML */
+				Ctrl->A.resize = true;
+				j = sscanf (&p[1], "%[^/]/%s", txt_a, txt_b);
+				switch (j) {
+					case 1:	/* Got width only. Height will be computed later */
+						Ctrl->A.new_size[0] = GMT_to_points (GMT, txt_a);
+						break;
+					case 2:	/* Got seprate width/height */
+						Ctrl->A.new_size[0] = GMT_to_points (GMT, txt_a);
+						Ctrl->A.new_size[1] = GMT_to_points (GMT, txt_b);
+						break;
+					default:
+						GMT_Report (Ctrl, GMT_MSG_NORMAL, "GMT ERROR -A+s<width[/height]>: Wrong size parameters\n");
+						error++;
+						break;
+					}
+				break;
+		}
+	}
+	return (error);
+}
 
 int parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *C)
 {
@@ -253,9 +324,9 @@ void Free_ps2raster_Ctrl (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {	/* D
 int GMT_ps2raster_usage (struct GMTAPI_CTRL *API, int level)
 {
 	gmt_module_show_name_and_purpose (API, THIS_MODULE);
-	GMT_Message (API, GMT_TIME_NONE, "usage: ps2raster <psfile1> <psfile2> <...> [-A[u][-][<margin(s)>]] [-C<gs_command>] [-D<dir>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E<resolution>] [-F<out_name>] [-G<gs_path>] [-L<listfile>] [-N] [-P] [-Q[g|t]1|2|4] [-S]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Tb|e|f|F|g|G|j|m|p|t] [%s]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: ps2raster <psfile1> <psfile2> <...> -A[u][<margins>][-][+r][+s<width[u]>[/<height>[u]]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C<gs_command>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-L<listfile>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-N] [-P] [-Q[g|t]1|2|4] [-S] [-Tb|e|f|F|g|G|j|m|p|t] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]\n\n");
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -272,7 +343,10 @@ int GMT_ps2raster_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t     -A<off>[u] sets uniform margin for all 4 sides.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -A<xoff>[u]/<yoff>[u] set separate x- and y-margins.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     -A<woff>[u]/<eoff>[u]/<soff>[u]/<noff>[u] set separate w-,e-,s-,n-margins.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use the -A+s<width[u]>[/<height>[u]] option the select a new image size\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   but maintaining the DPI set by -E (ghostscript does the re-interpolation work).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append unit u (%s) [%c].\n", GMT_DIM_UNITS_DISPLAY, API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit][0]);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -A+r to force rounding of HighRes BoundingBox instead of ceil.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Specify a single, custom option that will be passed on to GhostScript\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   as is. Repeat to add several options [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Set an alternative output directory (which must exist)\n");
@@ -373,12 +447,11 @@ int GMT_ps2raster_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, stru
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int k, n_errors = 0, mode;
+	unsigned int n_errors = 0, mode;
 	int j;
 	bool grayscale;
-	char text[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64], txt_c[GMT_TEXT_LEN64], txt_d[GMT_TEXT_LEN64], *anti = NULL;
+	char text[GMT_TEXT_LEN64], *anti = NULL;
 	struct GMT_OPTION *opt = NULL;
-	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -389,35 +462,8 @@ int GMT_ps2raster_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, stru
 
 			/* Processes program-specific parameters */
 
-			case 'A':	/* Adjust BoundingBox: -A[u][<margins>] or -A- */
-				Ctrl->A.active = true;
-				k = 0;
-				if (opt->arg[k] == 'u') {Ctrl->A.strip = true; k++;}
-				if (opt->arg[k] == 'r') {Ctrl->A.round = true; k++;}
-				if (opt->arg[strlen(opt->arg)-1] == '-')
-					Ctrl->A.reset = true;
-				else if (opt->arg[k]) {	/* Also specified margin(s) */
-					j = sscanf (&opt->arg[k], "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
-					switch (j) {
-						case 1:	/* Got uniform margin */
-							Ctrl->A.margin[XLO] = Ctrl->A.margin[XHI] = Ctrl->A.margin[YLO] = Ctrl->A.margin[YHI] = GMT_to_points (GMT, txt_a);
-							break;
-						case 2:	/* Got seprate x/y margins */
-							Ctrl->A.margin[XLO] = Ctrl->A.margin[XHI] = GMT_to_points (GMT, txt_a);
-							Ctrl->A.margin[YLO] = Ctrl->A.margin[YHI] = GMT_to_points (GMT, txt_b);
-							break;
-						case 4:	/* Got uniform margin */
-							Ctrl->A.margin[XLO] = GMT_to_points (GMT, txt_a);
-							Ctrl->A.margin[XHI] = GMT_to_points (GMT, txt_b);
-							Ctrl->A.margin[YLO] = GMT_to_points (GMT, txt_c);
-							Ctrl->A.margin[YHI] = GMT_to_points (GMT, txt_d);
-							break;
-						default:
-							n_errors++;
-							GMT_Report (API, GMT_MSG_NORMAL, "-A: Give 1, 2, or 4 margins\n");
-							break;
-					}
-				}
+			case 'A':	/* Adjust BoundingBox: -A[u][<margins>][-][+r][+s<width>[u][/<height>[u]]] or -A- */
+				n_errors = parse_A_settings (GMT, opt->arg, Ctrl);
 				break;
 			case 'C':	/* Append extra custom GS options */
 				add_to_list (Ctrl->C.arg, opt->arg);	/* Append to list of extra GS options */
@@ -558,9 +604,9 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 	int sys_retval = 0, r, pos_file, pos_ext, error = 0;
 	size_t len;
 	bool got_BB, got_HRBB, got_BBatend, file_has_HRBB, got_end, landscape;
-	bool excessK, setup, found_proj = false, isGMT_PS = false;
+	bool excessK, setup, found_proj = false, isGMT_PS = false, BeginPageSetup_here = false;
 
-	double xt, yt, w, h, x0 = 0.0, x1 = 612.0, y0 = 0.0, y1 = 828.0;
+	double xt, yt, xt_bak, yt_bak, w, h, x0 = 0.0, x1 = 612.0, y0 = 0.0, y1 = 828.0;
 	double west = 0.0, east = 0.0, south = 0.0, north = 0.0;
 
 	size_t n_alloc = GMT_SMALL_CHUNK;
@@ -915,7 +961,11 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 		else
 			xt = -x0, yt = -y0, w = x1-x0, h = y1-y0, r = 0;
 
-		/* Rewind the input file and start copying and replacing */
+		xt_bak = xt;	yt_bak = yt;		/* Needed when Ctrl->A.resize */
+
+		/* ****************************************************************** */
+		/*         Rewind the input file and start copying and replacing      */
+		/* ****************************************************************** */
 
 		rewind (fp);
 		while (GMT_fgets_chop (GMT, line, GMT_BUFSIZ, fp) != NULL) {
@@ -1005,6 +1055,39 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 				xt = yt = 0.0;
 				r = 0;
 			}
+			else if (Ctrl->A.resize) {
+				/* We are going to trick ghostscript to do what -dEPSFitPage was supposed to do but doesn't
+				   because it's bugged. For that we recompute a new scale, offsets and DPIs such that at the
+				   end we will end up with an image with the imposed size and the current -E dpi setting.
+				*/
+				double old_scale_x, old_scale_y, new_scale_x, new_scale_y, new_off_x, new_off_y, r_x, r_y;
+				if (!strncmp (line, "%%BeginPageSetup", 16)) {
+					char line_[128];
+					BeginPageSetup_here = true;             /* Signal that on next line the job must be done */
+					GMT_fgets_chop (GMT, line_, 128, fp);   /* Read also next line which is to overwrite */
+					sscanf (line_, "%s %s %s",c1,c2,c3);
+					old_scale_x = atof (c2);		old_scale_y = atof (c3);
+				}
+				else if (BeginPageSetup_here) {
+					BeginPageSetup_here = false;
+					Ctrl->A.resize = false;       /* Need to reset so it doesn't keep checking inside this branch */ 
+					/* Now we must calculate the new scale */
+					r_x = Ctrl->A.new_size[0] / w;
+					new_scale_x = new_scale_y = old_scale_x * r_x;
+					new_off_x = -xt_bak + xt_bak * r_x;     /* Need to recompute the new offsets as well */
+					new_off_y = -yt_bak + yt_bak * r_x;
+					Ctrl->A.new_dpi_x = Ctrl->A.new_dpi_y = Ctrl->E.dpi * r_x;
+					if (Ctrl->A.new_size[1]) {
+						r_y = Ctrl->A.new_size[1] / h;
+						new_scale_y = old_scale_y * r_y;
+						new_off_y = -yt_bak + yt_bak * r_y;
+						Ctrl->A.new_dpi_y = Ctrl->E.dpi * r_y;
+					}
+					fprintf (fpo, "%% Recalculate translation and scale to obtain a resized image\n");
+					fprintf (fpo, "%g %g translate\n", new_off_x, new_off_y);
+					fprintf (fpo, "V %g %g scale\n", new_scale_x, new_scale_y);
+				}
+			}
 			else if (!strncmp (line, "%%Page:", 7)) {
 				if (r != 0)
 					fprintf (fpo, "%d rotate\n", r);
@@ -1014,7 +1097,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 				r = 0;
 			}
 #ifdef HAVE_GDAL
-			else if (!strncmp (line, "%%PageTrailer", 13) && found_proj) {
+			else if (found_proj && !strncmp (line, "%%PageTrailer", 13)) {
 				GMT_fgets_chop (GMT, line, GMT_BUFSIZ, fp);
 				fprintf (fpo, "%%%%PageTrailer\n");
 				fprintf (fpo, "%s\n", line);
@@ -1079,8 +1162,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 			fprintf (fpo, "%s\n", line);
 		}
 
-		/* Recede a bit to test the contents of last line. -7 for when
-		 * PS has CRLF endings */
+		/* Recede a bit to test the contents of last line. -7 for when PS has CRLF endings */
 		fseek (fp, (off_t)-7, SEEK_END);
 		/* Read until last line is encountered */
 		while ( GMT_fgets (GMT, line, BUFSIZ, fp) );
@@ -1106,8 +1188,16 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 			else
 				strncpy (out_file, Ctrl->F.file, GMT_BUFSIZ);
 			strcat (out_file, ext[Ctrl->T.device]);
-			pix_w = urint (ceil (w * Ctrl->E.dpi / 72.0));
-			pix_h = urint (ceil (h * Ctrl->E.dpi / 72.0));
+
+			if (Ctrl->A.new_dpi_x) {	/* We have a resize request (wsa Ctrl->A.resize = true;) */
+				pix_w = urint (ceil (w * Ctrl->A.new_dpi_x / 72.0));
+				pix_h = urint (ceil (h * Ctrl->A.new_dpi_y / 72.0));
+			}
+			else {
+				pix_w = urint (ceil (w * Ctrl->E.dpi / 72.0));
+				pix_h = urint (ceil (h * Ctrl->E.dpi / 72.0));
+			}
+
 			sprintf (cmd, "%s%s %s %s -sDEVICE=%s -g%dx%d -r%d -sOutputFile=%s -f%s",
 				at_sign, Ctrl->G.file, gs_params, Ctrl->C.arg, device[Ctrl->T.device],
 				pix_w, pix_h, Ctrl->E.dpi, out_file, tmp_file);

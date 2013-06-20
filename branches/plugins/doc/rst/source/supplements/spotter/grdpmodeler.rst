@@ -4,23 +4,24 @@ grdpmodeler
 
 grdpmodeler - Evaluate a plate model on a geographic grid
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**grdpmodeler** *agegrdfile* **-E**\ *rot\_file* **-G**\ *outgrdfile*
+**grdpmodeler** *agegrdfile* **-E**\ *rot_file* **-G**\ *outgrdfile*
 **-S**\ **a**\ \|\ **d**\ \|\ **r**\ \|\ **w**\ \|\ **x**\ \|\ **y**\ \|\ **X**\ \|\ **Y**
-[ **-F**\ *polygonfile* ] [ **-T**\ *age* ] [ **-V**\ [*level*\ ] ] [
-**-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
-**-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-:**\ [**i**\ \|\ **o**] ]
+[ **-F**\ *polygonfile* ] [ **-T**\ *age* ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-b| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **grdpmodeler** reads a geographical age grid and a plate motion model
 and evaluates one of several model predictions. Optionally, the user may
@@ -28,8 +29,8 @@ supply a clipping polygon in multiple-segment format; then, only the
 part of the grid inside the polygon is used to determine the model
 prediction; the remainder of the grid is set to NaN.
 
-`Required Arguments <#toc4>`_
------------------------------
+`Required Arguments
+------------------
 
 *ingrdfile*
     Name of a grid file in geographical (lon, lat) coordinates with ages
@@ -71,8 +72,8 @@ prediction; the remainder of the grid is set to NaN.
     latitude relative to location of crust formation, **X** longitude of
     crust formation, and **Y** latitude of crust formation.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-F**\ *polygonfile*
     Specify a multisegment closed polygon file that describes the inside
@@ -94,36 +95,44 @@ prediction; the remainder of the grid is set to NaN.
 .. include:: ../../explain_-icols.rst_
 .. include:: ../../explain_help.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
-We will use a grid with Pacific crust ages (pac\_age.nc), a plate motion
-model (Pac\_APM.d), and a polygon that contains the outline of the
-present Pacific plate (pac\_clip\_path.d). To evaluate the plate motion
+We will use a grid with Pacific crust ages (pac_age.nc), a plate motion
+model (Pac_APM.d), and a polygon that contains the outline of the
+present Pacific plate (pac_clip_path.d). To evaluate the plate motion
 azimuths at the present time for the Pacific, try
 
-    grdpmodeler pac\_age.nc -EPac\_APM.d -V -Fpac\_clip\_path.d
-    -Gpac\_dir\_0.nc -Sa -T0
+   ::
+
+    gmt grdpmodeler pac_age.nc -EPac_APM.d -V -Fpac_clip_path.d \
+                    -Gpac_dir_0.nc -Sa -T0
 
 To determine the changes in latitude since crust formation for the
 entire Pacific, try
 
-    grdpmodeler pac\_age.nc -EPac\_APM.d -V -Fpac\_clip\_path.d
-    -Gpac\_dlat.nc -Sy
+   ::
+
+    gmt grdpmodeler pac_age.nc -EPac_APM.d -V -Fpac_clip_path.d \
+                    -Gpac_dlat.nc -Sy
 
 To determine the plate motion rates in effect when the Pacific crust was
 formed, try
 
-    grdpmodeler pac\_age.nc -EPac\_APM.d -V -Fpac\_clip\_path.d
-    -Gpac\_vel.nc -Sr
+   ::
+
+    gmt grdpmodeler pac_age.nc -EPac_APM.d -V -Fpac_clip_path.d \
+                    -Gpac_vel.nc -Sr
 
 To determine how far the crust has moved since formation, try
 
-    grdpmodeler pac\_age.nc -EPac\_APM.d -V -Fpac\_clip\_path.d
-    -Gpac\_dist.nc -Sd
+   ::
 
-`See Also <#toc7>`_
--------------------
+    gmt grdpmodeler pac_age.nc -EPac_APM.d -V -Fpac_clip_path.d \
+                    -Gpac_dist.nc -Sd
+
+See Also
+--------
 
 `backtracker <backtracker.html>`_,
 `grdrotater <grdrotater.html>`_,

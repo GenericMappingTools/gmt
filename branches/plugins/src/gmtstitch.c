@@ -608,7 +608,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 		if (GMT_Write_Data (API, GMT_IS_TEXTSET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->L.file, LNK) != GMT_OK) {
 			Return (API->error);
 		}
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &LNK) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &LNK) != GMT_OK) {
 			Return (API->error);
 		}
 	}
@@ -628,7 +628,8 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 		done = false;
 		id = start_id;	/* This is the first line segment in a new chain */
 		end_order = 0;
-		n_steps = n_alloc_pts = 0;	/* Nothing appended yet to this single line segment */
+		n_steps = 1;			/* Nothing appended yet to this single line segment */
+		n_alloc_pts = segment[id].n;	/* Number of points needed so far is just those from the first (id) segment */
 #ifdef DEBUG2
 		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 "\n", segment[id].orig_id);
 #endif

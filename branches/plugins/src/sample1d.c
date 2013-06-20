@@ -329,7 +329,7 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 		m_supplied = m;
 		t_out = GMT_memory (GMT, NULL, m_supplied, double);
 		GMT_Report (API, GMT_MSG_VERBOSE, "Read %" PRIu64 " knots from file\n", m_supplied);
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Cin) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &Cin) != GMT_OK) {
 			Return (API->error);
 		}
 	}

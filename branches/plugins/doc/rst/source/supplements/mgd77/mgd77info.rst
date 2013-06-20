@@ -4,20 +4,22 @@ mgd77info
 
 mgd77info - Extract information about MGD77 files
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**mgd77info** *NGDC-ids* [ **-C**\ [**m**\ \|\ **e**] ] [
-**-E**\ [**m**\ \|\ **e**] ] [ **-I**\ *ignore* ] [
-**-Mf**\ [*item*\ ]\|\ **r**\ \|\ **e**\ \|\ **h** ] [ **-L**\ [**v**\ ]
-] [ **-V**\ [*level*\ ] ]
+**mgd77info** *NGDC-ids*
+[ **-C**\ [**m**\ \|\ **e**] ]
+[ **-E**\ [**m**\ \|\ **e**] ] [ **-I**\ *ignore* ]
+[ **-Mf**\ [*item*]\|\ **r**\ \|\ **e**\ \|\ **h** ]
+[ **-L**\ [**v**\ ] ]
+[ |SYN_OPT-V| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **mgd77info** reads <legid>.[mgd77\|nc] files and produces a single
 record of information about each cruise specified. The information
@@ -31,21 +33,23 @@ what kinds of geophysical observations are available, consider using the
 x2sys tools to set up a tracks index data base (see **x2sys\_init** for
 more information). 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 .. include:: explain_ncid.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-C**\ [**m**\ \|\ **e**]
     List abbreviations for all columns present in the MGD77[+] files.
     Append **m** or **e** to limit the display to the MGD77 standard or
     MGD77+ extended set only.
+
 **-E**\ [**m**\ \|\ **e**]
     Give a one-line summary for each cruise listed.
-**-Mf**\ [*item*\ ]\|\ **r**\ \|\ **e**\ \|\ **h**
+
+**-Mf**\ [*item*]\|\ **r**\ \|\ **e**\ \|\ **h**
     List the meta-data (header) and (if present) the MGD77+ history for
     each cruise. Append **f** for a formatted display. This will list
     individual parameters and their values, one entry per output line,
@@ -57,11 +61,13 @@ more information).
     the raw, punchcard-formatted MGD77 original header block, append
     **r** instead. For the MGD77+ E77 status, append **e** instead.
     Finally, for the MGD77+ history, append **h** instead.
+
 **-I**\ *ignore*
     Ignore certain data file formats from consideration. Append
     **a\|c\|t** to ignore MGD77 ASCII, MGD77+ netCDF, or plain
     tab-separated ASCII table files, respectively. The option may be
     repeated to ignore more than one format. [Default ignores none].
+
 **-L**\ [**v**\ ]
     No cruise information is listed. Instead, we just display a list of
     the GEODAS institution 2-character codes and their names.
@@ -88,49 +94,58 @@ more information).
     
 .. include:: ../../explain_help.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
 To get one-line summary information about the cruises 01010047.mgd77 and
 01010008.mgd77, try
 
-    mgd77info 01010047 01010008 -E > listing.lis
+   ::
 
-To see the original raw MGD77 header meta-data for cruise
-01010047.mgd77, run
+    gmt mgd77info 01010047 01010008 -E > listing.lis
 
-    mgd77info 01010047 -Mr
+To see the original raw MGD77 header meta-data for cruise 01010047.mgd77, run
 
-To determine all the parameters related to Gravity during cruise
-01010047.mgd77, run
+   ::
 
-    mgd77info 01010047 -Mf \| grep Gravity
+    gmt mgd77info 01010047 -Mr
 
-To determine the Magnetic sampling rate used during cruise
-01010047.mgd77, run
+To determine all the parameters related to Gravity during cruise 01010047.mgd77, run
 
-    mgd77info 01010047 -MfMagnetics\_Sampling\_Rate
+   ::
+
+    gmt mgd77info 01010047 -Mf | grep Gravity
+
+To determine the Magnetic sampling rate used during cruise 01010047.mgd77, run
+
+   ::
+
+    gmt mgd77info 01010047 -MfMagnetics_Sampling_Rate
 
 To see all the columns that the MGD77+ cruise 01010047.nc contains, run
 
-    mgd77info 01010047 -C
+   ::
+
+    gmt mgd77info 01010047 -C
 
 To see the E77 status of all MGD77+ cruises collected by the University
 of Hawaii (institution 08), run
 
-    mgd77info 08 -Ia -Me
+   ::
 
-`See Also <#toc7>`_
--------------------
+    gmt mgd77info 08 -Ia -Me
+
+See Also
+--------
 
 `mgd77list <mgd77list.html>`_,
 `mgd77manage <mgd77manage.html>`_,
 `mgd77path <mgd77path.html>`_,
 `mgd77track <mgd77track.html>`_,
-`x2sys\_init <x2sys_init.html>`_
+`x2sys_init <x2sys_init.html>`_
 
-`References <#toc8>`_
----------------------
+References
+----------
 
 The Marine Geophysical Data Exchange Format - MGD77, see
 `http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt. <http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt.>`_

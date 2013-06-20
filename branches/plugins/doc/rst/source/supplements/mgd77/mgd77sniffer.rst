@@ -12,16 +12,16 @@ Synopsis
 **mgd77sniffer** *NGDC-ids* [ **-A**\ *fieldabbrev*,\ *scale*,\ *offset* ]
 [ **-C**\ *maxspd* ]
 [ **-D**\ **d**\ \|\ **e**\ \|\ **E**\ \|\ **f**\ \|\ **l**\ \|\ **m**\ \|\ **s**\ \|\ **v**\ [*r*] ]
-[ **-g**\ *fieldabbrev*,\ *imggrid*,\ *scale*,\ *mode* ]
-[ **-G**\ *fieldabbrev*,\ *grid* ] [ **-H** ]
+[ **-G**\ *fieldabbrev*,\ *imggrid*,\ *scale*,\ *mode* or
+**-G**\ *fieldabbrev*,\ *grid* ] [ **-H** ]
 [ **-I**\ *fieldabbrev*,\ *rec1*,\ *recN* ] [ **-K** ]
 [ **-L**\ *custom-limits-file* ] [ **-N** ]
-[ **-R**\ *west*/*east*/*south*/*north*\ [**r**] ]
+[ |SYN_OPT-R| ]
 [ **-S**\ **d**\ \|\ **s**\ \|\ **t** ] [ **-T**\ *gap* ]
-[ **-V**\ [*level*\ ] ]
+[ |SYN_OPT-V| ]
 [ **-W**\ **c**\ \|\ **g**\ \|\ **o**\ \|\ **s**\ \|\ **t**\ \|\ **v**\ \|\ **x** ]
 [ **-bo**\ [*ncols*][*type*] ]
-[ **-n**\ [**b**\ \|\ **c**\ \|\ **l**\ \|\ **n**][**+a**][\ **+b**\ *BC*][\ **+t**\ *threshold*] ]
+[ |SYN_OPT-n| ]
 
 |No-spaces|
 
@@ -109,8 +109,8 @@ Optional Arguments
 
     **-Dm** output MGD77 format records in Y2K-compliant MGD77 format
 
-    **-Dn** output distance to coast for each record. Requires **-Gnav**
-    or **-gnav** option. Output columns include:
+    **-Dn** output distance to coast for each record. Requires the **-Gnav**
+    option. Output columns include:
 
     *lat lon dist distToCoast*
 
@@ -129,7 +129,9 @@ Optional Arguments
 
     See below for **MGD77 FIELD INFO**.
 
-**-g**\ *fieldabbrev*,\ *imggrid*,\ *scale*,\ *mode*
+**-G**\ *information*
+    Compare cruise data to GMT or IMG grids. Use one of the formats below.
+    **-G**\ *fieldabbrev*,\ *imggrid*,\ *scale*,\ *mode*
     Compare cruise data to the specified grid in Sandwell/Smith Mercator
     format. Requires a valid MGD77 field abbreviation (see **MGD77 FIELD
     INFO** below) followed by a comma, the path (if not in current
@@ -140,13 +142,12 @@ Optional Arguments
     constraints coded, return data only at constrained points and NaN
     elsewhere, and (3) Img file with constraints coded,
     return 1 at constraints and 0 elsewhere.
-
-**-G**\ *fieldabbrev*,\ *grid*
+    **-G**\ *fieldabbrev*,\ *grid*
     Compare cruise data to the specified grid. Requires a valid MGD77
     field abbreviation (see **MGD77 FIELD INFO** below) followed by a
     comma, then the path (if not in current directory) and grid
     filename. Multiple grid comparison is supported by using separate
-    **-g** or **-G** calls for each grid. See **GRID FILE INFO** below.
+    **-G** calls for each grid. See **GRID FILE INFO** below.
 
     Grid comparison activates several additional error checks. (1)
     Re-weighted Least Squares Regression of ship versus grid data
@@ -289,9 +290,9 @@ Mgd77 Field Info
 Grid File Info
 --------------
 
-For **-g** the grids must be in the format used by Sandwell & Smith,
-which is a spherical Mercator 2-byte grid with no header. For **-G** the
-grid files can be of any grid type supported by GMT and therefore must
+For **-G** the grids must eitehr be in the format used by Sandwell & Smith,
+which is a spherical Mercator 2-byte grid with no header, or any grid type
+supported by GMT and therefore must
 contain a GMT header. A correctly formatted \*.i2 grid file can be
 generated using grdraster as shown below.
 
@@ -309,7 +310,7 @@ i2  2  -  -  32767
 
    ::
 
-    grdraster 1 -R0/359:55/-90/90 -Getopo5_hdr.i2
+    gmt grdraster 1 -R0/359:55/-90/90 -Getopo5_hdr.i2
 
 The new grid, etopo5_hdr.i2 in this example, contains a GMT header and
 can be used in the **-G** option to compare cruise depth with grid values.
@@ -464,13 +465,13 @@ To scan for excessive values or gradients, try
 
    ::
 
-    mgd77sniffer 08010001
+    gmt mgd77sniffer 08010001
 
 To dump cruise gradients, try
 
    ::
 
-    mgd77sniffer 08010001 -Ds
+    gmt mgd77sniffer 08010001 -Ds
 
 To compare cruise depth with ETOPO5 bathymetry and gravity with
 Sandwell/Smith 2 min gravity version 11, try
@@ -478,7 +479,7 @@ Sandwell/Smith 2 min gravity version 11, try
    ::
 
     mgd77sniffer 08010001 -Gdepth,/data/GRIDS/etopo5_hdr.i2 \
-                 -gfaa,/data/GRIDS/grav.11.2.img,0.1,1
+                 -Gfaa,/data/GRIDS/grav.11.2.img,0.1,1
 
 See Also
 --------

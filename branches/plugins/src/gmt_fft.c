@@ -662,7 +662,7 @@ void gmt_grd_save_fft (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_FFT_
 			return;
 		}
 	}
-	if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &Grid) != GMT_OK) {
+	if (GMT_Destroy_Data (GMT->parent, &Grid) != GMT_OK) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error freeing temporary grid\n");
 	}
 		

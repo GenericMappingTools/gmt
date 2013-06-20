@@ -103,6 +103,14 @@
 #include "gmt_dev.h"
 #include "gmt_internals.h"
 
+/* Basic error reporting when things go badly wrong. This Return macro can be
+ * used in stead of regular return(code) to print out what the code is before
+ * it returns.  We assume the GMT pointer is available in the function!
+ */
+#define VAR_TO_STR(arg)      #arg
+#define Return(err) { GMT_Report(GMT->parent,GMT_MSG_NORMAL,"Internal Error = %s\n",VAR_TO_STR(err)); return (err);}
+
+
 /* Note by P. Wessel, 18-Oct-2012:
  * In the olden days, GMT only did great circle distances.  In GMT 4 we implemented geodesic
  * distances by Rudoe's formula as given in Bomford [1971].  However, that geodesic is not
@@ -7692,15 +7700,15 @@ int GMT_map_setup (struct GMT_CTRL *GMT, double wesn[])
 	unsigned int i;
 	bool search, double_auto[6];
 
-	if (!GMT->common.J.active) return (GMT_MAP_NO_PROJECTION);
-	if (wesn[XHI] == wesn[XLO] && wesn[YHI] == wesn[YLO]) return (GMT_MAP_NO_REGION);	/* Since -R may not be involved if there are grids */
+	if (!GMT->common.J.active) Return (GMT_MAP_NO_PROJECTION);
+	if (wesn[XHI] == wesn[XLO] && wesn[YHI] == wesn[YLO]) Return (GMT_MAP_NO_REGION);	/* Since -R may not be involved if there are grids */
 
 	GMT_init_ellipsoid (GMT);	/* Set parameters depending on the ellipsoid since the latter could have been set explicitly */
 
 	if (GMT_x_is_lon (GMT, GMT_IN)) {
 		/* Limit east-west range to 360 and make sure east > -180 and west < 360 */
 		if (wesn[XHI] < wesn[XLO]) wesn[XHI] += 360.0;
-		if ((fabs (wesn[XHI] - wesn[XLO]) - 360.0) > GMT_SMALL) return (GMT_MAP_EXCEEDS_360);
+		if ((fabs (wesn[XHI] - wesn[XLO]) - 360.0) > GMT_SMALL) Return (GMT_MAP_EXCEEDS_360);
 		while (wesn[XHI] < -180.0) {
 			wesn[XLO] += 360.0;
 			wesn[XHI] += 360.0;
@@ -7711,12 +7719,12 @@ int GMT_map_setup (struct GMT_CTRL *GMT, double wesn[])
 		}
 	}
 	if (GMT->current.proj.got_elevations) {
-		if (wesn[YLO] < 0.0 || wesn[YLO] >= 90.0) return (GMT_MAP_BAD_ELEVATION_MIN);
-		if (wesn[YHI] <= 0.0 || wesn[YHI] > 90.0) return (GMT_MAP_BAD_ELEVATION_MAX);
+		if (wesn[YLO] < 0.0 || wesn[YLO] >= 90.0) Return (GMT_MAP_BAD_ELEVATION_MIN);
+		if (wesn[YHI] <= 0.0 || wesn[YHI] > 90.0) Return (GMT_MAP_BAD_ELEVATION_MAX);
 	}
 	if (GMT_y_is_lat (GMT, GMT_IN)) {
-		if (wesn[YLO] < -90.0 || wesn[YLO] > 90.0) return (GMT_MAP_BAD_LAT_MIN);
-		if (wesn[YHI] < -90.0 || wesn[YHI] > 90.0) return (GMT_MAP_BAD_LAT_MAX);
+		if (wesn[YLO] < -90.0 || wesn[YLO] > 90.0) Return (GMT_MAP_BAD_LAT_MIN);
+		if (wesn[YHI] < -90.0 || wesn[YHI] > 90.0) Return (GMT_MAP_BAD_LAT_MAX);
 	}
 
 	if (GMT->common.R.wesn != wesn)		/* In many cases they are both copies of same pointer */
@@ -7852,7 +7860,7 @@ int GMT_map_setup (struct GMT_CTRL *GMT, double wesn[])
 			break;
 
 		default:	/* No projection selected, return to a horrible death */
-			return (GMT_MAP_NO_PROJECTION);
+			Return (GMT_MAP_NO_PROJECTION);
 	}
 
 	/* If intervals are not set specifically, round them to some "nice" values

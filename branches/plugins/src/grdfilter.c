@@ -805,7 +805,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 			weight[ij_wt++] = Fin->data[ij_in];
 			wt_sum += Fin->data[ij_in];
 		}
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Fin) != GMT_OK) {	/* Done with this grid */
+		if (GMT_Destroy_Data (API, &Fin) != GMT_OK) {	/* Done with this grid */
 			Return (API->error);
 		}
 		if (GMT_IS_ZERO (wt_sum)) {	/* The custom filter is an operator; should have used -Fo */
@@ -1051,7 +1051,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 
 	GMT_free (GMT, col_origin);
 	if (!fast_way) GMT_free (GMT, x_shift);
-	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &A) != GMT_OK) {
+	if (GMT_Destroy_Data (API, &A) != GMT_OK) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free A\n");
 	}
 
@@ -1078,15 +1078,14 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 			sprintf (cmd, "%s -G%s -R%s -V%d", in_string, out_string, Ctrl->In.file, GMT->current.setting.verbose);
 			if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Highpass requires us to resample the lowpass result at original registration via grdsample %s\n", cmd);
-			if (GMT_Call_Module (GMT->parent, GMT_ID_GRDSAMPLE, 0, cmd) != GMT_OK) {	/* Resample the file */
+			if (GMT_Call_Module (GMT->parent, "grdsample", 0, cmd) != GMT_OK) {	/* Resample the file */
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to resample the lowpass result - exiting\n");
 				Return (API->error);
 			}
 			if ((L = GMT_Retrieve_Data (API, object_ID)) == NULL) {	/* Load in the resampled grid */
 				Return (API->error);
 			}
-			Gout->alloc_mode = L->alloc_mode = GMT_ALLOCATED;	/* So we may destroy it */
-			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Gout) != GMT_OK) {
+			if (GMT_Destroy_Data (API, &Gout) != GMT_OK) {
 				Return (API->error);
 			}
 			GMT_grd_loop (GMT, L, row_out, col_out, ij_out) L->data[ij_out] = Gin->data[ij_out] - L->data[ij_out];
@@ -1108,7 +1107,7 @@ int GMT_grdfilter (void *V_API, int mode, void *args)
 		if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, Ctrl->G.file, Gin) != GMT_OK) {
 			Return (API->error);
 		}
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Gout) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &Gout) != GMT_OK) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to free Gout\n");
 		}
 	}

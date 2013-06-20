@@ -134,48 +134,48 @@ location 133/34. Try
 
    ::
 
-    gmtvector points.txt -S133/34 -TD -fg > angles.txt
+    gmt gmtvector points.txt -S133/34 -TD -fg > angles.txt
 
 To rotate the same points 35 degrees around a pole at 133/34, and output
 Cartesian 3-D vectors, use
 
    ::
 
-    gmtvector points.txt -Tr133/34 -Co -fg > reconstructed.txt
+    gmt gmtvector points.txt -Tr133/34 -Co -fg > reconstructed.txt
 
 To compute the cross-product between the two Cartesian vectors 0.5/1/2
 and 1/0/0.4, and normalizing the result, try
 
    ::
 
-    gmtvector -A0.5/1/2 -Tx -S1/0/0.4 -N -C > cross.txt
+    gmt gmtvector -A0.5/1/2 -Tx -S1/0/0.4 -N -C > cross.txt
 
 To rotate the 2-D vector, given in polar form as r = 2 and theta = 35,
 by an angle of 120, try
 
    ::
 
-    gmtvector -A2/35 -Tr120 > rotated.txt
+    gmt gmtvector -A2/35 -Tr120 > rotated.txt
 
 To find the mid-point along the great circle connecting the points 123/35 and -155/-30, use
 
    ::
 
-    gmtvector -A123/35 -S-155/-30 -Ta -fg > midpoint.txt
+    gmt gmtvector -A123/35 -S-155/-30 -Ta -fg > midpoint.txt
 
 To find the mean location of the geographical points listed in
 points.txt, with its 99% confidence ellipse, use
 
    ::
 
-    gmtvector points.txt -Am99 -fg > centroid.txt
+    gmt gmtvector points.txt -Am99 -fg > centroid.txt
 
 To find the pole corresponding to the great circle that goes through
 the point -30/60 at an azimuth of 105 degrees, use
 
    ::
 
-    gmtvector -A-30/60 -Tp105 -fg > pole.txt
+    gmt gmtvector -A-30/60 -Tp105 -fg > pole.txt
 
 Rotations
 ---------

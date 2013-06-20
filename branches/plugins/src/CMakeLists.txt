@@ -114,7 +114,7 @@ find_package (DCW)
 if (DO_EXAMPLES OR DO_TESTS AND NOT DCW_FOUND)
 	message (FATAL_ERROR "Cannot proceed without DCW polygons. "
 		"Need to either set DCW_ROOT or disable tests."
-		"Obtain dcw-gmt-1.0.0.tar.gz or dcw-gmt-1.0.0.zip from ftp.soest.hawaii.edu://pub/pwessel/dcw-gmt and make DCW_ROOT variable point to the directory where it sits")
+		"Obtain dcw-gmt-<version>.tar.gz or dcw-gmt-<version>.zip from ftp.soest.hawaii.edu://gmt5 and make DCW_ROOT variable point to the directory where you unarchived the files")
 endif (DO_EXAMPLES OR DO_TESTS AND NOT DCW_FOUND)
 
 # These lines are temporarily here for the beta release
@@ -167,7 +167,7 @@ set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	gmt_colors.h gmt_common.h gmt_constants.h gmt_contour.h gmt_crossing.h
 	gmt_customio.h gmt_dcw.h gmt_defaults.h gmt_error.h gmt_gdalread.h gmt_grd.h
 	gmt_grdio.h gmt_hash.h gmt_init.h gmt_internals.h gmt_io.h gmt_macros.h
-	gmt_map.h gmt_media_name.h gmt_media_size.h gmt_mgg_header2.h gmt_module.h gmt_module_private.h
+	gmt_map.h gmt_media_name.h gmt_media_size.h gmt_mgg_header2.h gmt_module.h
 	gmt_nan.h gmt_notposix.h gmt_option.h gmt_pennames.h gmt_plot.h gmt_project.h
 	gmt_prototypes.h gmt_ps.h gmt_shore.h gmt_stat.h gmt_support.h gmt_symbol.h
 	gmt_synopsis.h gmt_texture.h gmt_time.h gmt_types.h gmt_unique.h
@@ -526,7 +526,7 @@ install_module_symlink (${_gmt_modules})
 #endif (UNIX)
 
 # Install public headers
-install (FILES gmt.h gmt_define.h gmt_option.h gmt_resources.h gmt_module.h declspec.h
+install (FILES gmt.h gmt_define.h gmt_option.h gmt_resources.h declspec.h
 	DESTINATION ${GMT_INCDIR}
 	COMPONENT Runtime)
 
@@ -568,6 +568,7 @@ endif (UNIX AND NOT GMT_INSTALL_MONOLITHIC)
 install (PROGRAMS
 	${CMAKE_CURRENT_BINARY_DIR}/isogmt
 	${CMAKE_CURRENT_BINARY_DIR}/gmt-config
+	gmt5convert
 	gmtlogo
 	gmtswitch
 	gmt_shell_functions.sh

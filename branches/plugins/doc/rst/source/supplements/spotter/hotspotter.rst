@@ -10,12 +10,15 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **hotspotter** [*table*\ ] **-E**\ *rotfile* **-G**\ *CVAgrid*
-**-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [ **-D**\ *factor* ] [
-**-N**\ *upper\_age* ] [ **-S** ] [ **-T** ] [ **-V**\ [*level*\ ] ] [
-**-bi**\ [*ncols*\ ][*type*\ ] ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-o**\ *cols*\ [,*...*] ] [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
+|SYN_OPT-I|
+|SYN_OPT-R|
+[ **-N**\ *upper_age* ] [ **-S** ] [ **-T** ]
+[ |SYN_OPT-V| ]
+[ **-bi**\ [*ncols*][*type*] ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-o| ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
@@ -76,7 +79,7 @@ Optional Arguments
     approximately 2 points within each grid box. Smaller factors gives
     higher resolutions at the expense of longer processing time.
 
-**-N**\ *upper\_age*
+**-N**\ *upper_age*
     Set the upper age to assign seamounts whose crustal age is unknown
     (i.e., NaN) [no upper age].
 
@@ -111,7 +114,9 @@ Examples
 To create a CVA image from the Pacific (x,y,z,r,t) data in the file
 seamounts.d, using the DC85.d Euler poles, run
 
-    hotspotter seamounts.d -EDC85.d -GCVA.nc -R130/260/-66/60 -I10m -N145 -T -V
+   ::
+
+    gmt hotspotter seamounts.d -EDC85.d -GCVA.nc -R130/260/-66/60 -I10m -N145 -T -V
 
 This file can then be plotted with `grdimage <../../grdimage.html>`__.
 

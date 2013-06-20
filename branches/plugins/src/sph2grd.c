@@ -341,7 +341,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 	}
 
 	/* We are done with the input table; remove it to free up memory */
-	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
+	if (GMT_Destroy_Data (API, &D) != GMT_OK) {
 		Return (API->error);
 	}
 	
@@ -424,7 +424,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 				GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Finished %3.3d %% of evaluation\n", next_10_percent);
 				next_10_percent = urint (ceil (percent / 10.0)) * 10;
 			}
-			GMT_ascii_format_col (GMT, text, lat, GMT_Y);
+			GMT_ascii_format_col (GMT, text, lat, GMT_OUT, GMT_Y);
 			GMT_Report (API, GMT_MSG_DEBUG, "Working on latitude: %s\n", text);
 		}
 		for (col = 0, node = node_L = GMT_IJP (Grid->header, row, 0); col < nx; col++, node++) {	/* For each longitude along this parallel */

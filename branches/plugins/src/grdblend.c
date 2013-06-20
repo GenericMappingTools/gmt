@@ -309,7 +309,7 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 				sprintf (cmd, "%s %s %s %s -G%s -V%c", B[n].file, Targs, Iargs, Rargs, buffer, V_level[GMT->current.setting.verbose]);
 				if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Resample %s via grdsample %s\n", B[n].file, cmd);
-				if ((status = GMT_Call_Module (GMT->parent, GMT_ID_GRDSAMPLE, 0, cmd))) {	/* Resample the file */
+				if ((status = GMT_Call_Module (GMT->parent, "grdsample", 0, cmd))) {	/* Resample the file */
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to resample file %s - exiting\n", B[n].file);
 					GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 				}
@@ -319,14 +319,14 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 				sprintf (cmd, "%s %s %s -V%c", B[n].file, Rargs, buffer, V_level[GMT->current.setting.verbose]);
 				if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Reformat %s via grdreformat %s\n", B[n].file, cmd);
-				if ((status = GMT_Call_Module (GMT->parent, GMT_ID_GRDREFORMAT, 0, cmd))) {	/* Resample the file */
+				if ((status = GMT_Call_Module (GMT->parent, "grdreformat", 0, cmd))) {	/* Resample the file */
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to resample file %s - exiting\n", B[n].file);
 					GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 				}
 			}
 			strncpy (B[n].file, buffer, GMT_TEXT_LEN256);	/* Use the temporary file instead */
 			B[n].delete = true;		/* Flag to delete this temporary file when done */
-			if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &B[n].G)) return (-1);
+			if (GMT_Destroy_Data (GMT->parent, &B[n].G)) return (-1);
 			if ((B[n].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[n].file, NULL)) == NULL) {
 				return (-1);
 			}
@@ -374,7 +374,7 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Blend file %s in %g/%g/%g/%g with %s weight %g [%d-%d]\n",
 			B[n].G->header->name, B[n].wesn[XLO], B[n].wesn[XHI], B[n].wesn[YLO], B[n].wesn[YHI], sense[B[n].invert], B[n].weight, B[n].out_j0, B[n].out_j1);
 
-		if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &B[n].G)) return (-1);
+		if (GMT_Destroy_Data (GMT->parent, &B[n].G)) return (-1);
 	}
 
 	for (n = 0; n < n_files; n++) {
@@ -395,7 +395,7 @@ int sync_input_rows (struct GMT_CTRL *GMT, int row, struct GRDBLEND_INFO *B, uns
 		if (row < B[k].out_j0 || row > B[k].out_j1) {	/* Either done with grid or haven't gotten to this range yet */
 			B[k].outside = true;
 			if (B[k].open) {
-				if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &B[k].G)) return GMT_OK;
+				if (GMT_Destroy_Data (GMT->parent, &B[k].G)) return GMT_OK;
 				B[k].open = false;
 				GMT_free (GMT, B[k].z);
 				if (B[k].delete) remove (B[k].file);	/* Delete the temporary resampled file */
@@ -775,13 +775,13 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 		if (!Ctrl->Q.active && (error = GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, mode, NULL, Ctrl->G.file, Grid))) {
 			Return (error);
 		}
-		if ((error = GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid)) != GMT_OK) Return (error);
+		if ((error = GMT_Destroy_Data (API, &Grid)) != GMT_OK) Return (error);
 	}
 	GMT_free (GMT, z);
 
 	for (k = 0; k < n_blend; k++) if (blend[k].open) {
 		GMT_free (GMT, blend[k].z);
-		if ((error = GMT_Destroy_Data (API, GMT_ALLOCATED, &blend[k].G)) != GMT_OK) Return (error);
+		if ((error = GMT_Destroy_Data (API, &blend[k].G)) != GMT_OK) Return (error);
 	}
 
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
@@ -805,7 +805,7 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 		char cmd[GMT_BUFSIZ], *V_level = "qncvld";
 		sprintf (cmd, "%s %s -V%c", outfile, Ctrl->G.file, V_level[GMT->current.setting.verbose]);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reformat %s via grdreformat %s\n", outfile, cmd);
-		if ((status = GMT_Call_Module (GMT->parent, GMT_ID_GRDREFORMAT, 0, cmd))) {	/* Resample the file */
+		if ((status = GMT_Call_Module (GMT->parent, "grdreformat", 0, cmd))) {	/* Resample the file */
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to resample file %s.\n", outfile);
 		}
 	}

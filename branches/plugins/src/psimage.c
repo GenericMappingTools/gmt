@@ -392,7 +392,7 @@ int GMT_psimage (void *V_API, int mode, void *args)
 		if (known) PSL_free (picture); /* EPS or Sun raster file */
 #ifdef HAVE_GDAL
 		else {	/* Got it via GMT_Read_Data */
-			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &I) != GMT_OK) {
+			if (GMT_Destroy_Data (API, &I) != GMT_OK) {
 				Return (API->error);
 			}
 		}
@@ -411,7 +411,7 @@ int GMT_psimage (void *V_API, int mode, void *args)
 		for (i = 0; i < j; i++) buffer[i] = (unsigned char)Ctrl->G.t_rgb[i];
 		GMT_memcpy (&(buffer[j]), picture, n, unsigned char);
 #ifdef HAVE_GDAL
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &I) != GMT_OK) {	/* If I is NULL then nothing is done */
+		if (GMT_Destroy_Data (API, &I) != GMT_OK) {	/* If I is NULL then nothing is done */
 			Return (API->error);
 		}
 #else
@@ -485,7 +485,7 @@ int GMT_psimage (void *V_API, int mode, void *args)
 	GMT_plotend (GMT);
 
 #ifdef HAVE_GDAL
-	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &I) != GMT_OK) {
+	if (GMT_Destroy_Data (API, &I) != GMT_OK) {
 		Return (API->error);	/* If I is NULL then nothing is done */
 	}
 #endif

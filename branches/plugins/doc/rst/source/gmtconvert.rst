@@ -4,8 +4,8 @@ gmtconvert
 
 gmtconvert - Convert, Paste, and/or Extract columns from data tables
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
@@ -38,7 +38,7 @@ corresponding records from multiple files horizontally into a single
 file, (3) extract a subset of the available columns, (4) only extract
 segments whose header record matches a text pattern search, (5) only
 list segment headers and no data records, (6) extract first and/or last
-data record for each segment, `and (7) <and.7.html>`_ reverse the order
+data record for each segment, and (7) reverse the order
 of items on output. Input (and hence output) may have multiple
 sub-headers, and ASCII tables may have regular headers as well. 
 
@@ -60,6 +60,7 @@ Optional Arguments
     all the files you want to paste must have the same number of columns
     (as set with **-bi**\ [*ncols*][*type*]); ascii tables can have
     different number of columns.
+
 **-D**\ [*template*]
     For multiple segment data, dump each segment to a separate output
     file [Default writes a multiple segment file to stdout]. Append a
@@ -67,16 +68,17 @@ Optional Arguments
     **must** contain a C format specifier that can format an integer
     argument (the running segment number across all tables); this is
     usually %d but could be %08d which gives leading zeros, etc.
-    [Default is gmtconvert\_segment\_%d.{txt\|bin}, depending on
+    [Default is gmtconvert_segment\_%d.{txt\|bin}, depending on
     **-bo**\ [*ncols*][*type*]]. Alternatively, give a template with
     two C format specifiers and we will supply the table number and the
     segment number within the table to build the file name.
+
 **-E**\ [**f**\ \|\ **l**\ \|\ **m**\ *stride*]
     Only extract the first and last record for each segment of interest
     [Default extracts all records]. Optionally, append **f** or **l** to
     only extract the first or last record of each segment, respectively.
-    Alternatively, append **m**\ *stride* to extract only one out of
-    *stride* records.
+    Alternatively, append **m**\ *stride* to extract only one out of *stride* records.
+
 **-I**
     Invert the order of items, i.e., output the items in reverse order,
     starting with the last and ending up with the first item [Default
@@ -84,15 +86,17 @@ Optional Arguments
     reversed: **t** will reverse the order of tables, **s** will reverse
     the order of segments within each table, and **r** will reverse the
     order of records within each segment [Default].
+
 **-L**
     Only output a listing of all segment header records and no data
     records (requires ASCII data).
+
 **-N**
-    Do not write records that only contain NaNs in every field [Default
-    writes all records].
+    Do not write records that only contain NaNs in every field [Default writes all records].
+
 **-Q**\ *seg*
-    Only write segment number *seg* and skip all others. Cannot be used
-    with **-S**.
+    Only write segment number *seg* and skip all others. Cannot be used with **-S**.
+
 **-S**\ [**~**]\ *"search string"* or **-S**\ [**~**]/\ *regexp*/[**i**]
     Only output those segments whose header record contains the
     specified text string. To reverse the search, i.e., to output
@@ -107,6 +111,7 @@ Optional Arguments
     associated polygon holes will also be matched. For matching segment
     headers against extended regular expressions enclose the expression
     in slashes. Append **i** for caseless matching.
+
 **-T**
     Suppress the writing of segment headers on output. 
 
@@ -150,19 +155,19 @@ To convert the binary file test.b (single precision) with 4 columns to ASCII:
 
    ::
 
-    gmtconvert test.b -bi4f > test.dat
+    gmt gmtconvert test.b -bi4f > test.dat
 
 To convert the multiple segment ASCII table test.d to a double precision binary file:
 
    ::
 
-    gmtconvert test.d -bo > test.b
+    gmt gmtconvert test.d -bo > test.b
 
 You have an ASCII table with 6 columns and you want to plot column 5 versus column 0. Try
 
    ::
 
-    gmtconvert table.d -o5,0 | psxy ...
+    gmt gmtconvert table.d -o5,0 | psxy ...
 
 If the file instead is the binary file results.b which has 9
 single-precision values per record, we extract the last column and
@@ -170,35 +175,35 @@ columns 4-6 and write ASCII with the command
 
    ::
 
-    gmtconvert results.b -o8,4-6 -bi9s | psxy ...
+    gmt gmtconvert results.b -o8,4-6 -bi9s | psxy ...
 
 You want to plot the 2nd column of a 2-column file left.d versus the
 first column of a file right.d:
 
    ::
 
-    gmtconvert left.d right.d -A -o1,2 | psxy ...
+    gmt gmtconvert left.d right.d -A -o1,2 | psxy ...
 
 To extract all segments in the file big_file.d whose headers contain
 the string "RIDGE AXIS", try
 
    ::
 
-    gmtconvert big_file.d -S"RIDGE AXIS" > subset.d
+    gmt gmtconvert big_file.d -S"RIDGE AXIS" > subset.d
 
 To invert the selection of segments whose headers begin with "profile "
 followed by an integer number and any letter between "g" and "l", try
 
    ::
 
-    gmtconvert -S~"/^profile [0-9]+[g-l]$/"
+    gmt gmtconvert -S~"/^profile [0-9]+[g-l]$/"
 
 To reverse the order of segments in a file without reversing the order
 of records within each segment, try
 
    ::
 
-    gmtconvert lots of segments.txt -Is > last_segment_first.txt
+    gmt gmtconvert lots of segments.txt -Is > last_segment_first.txt
 
 See Also
 --------

@@ -4,39 +4,42 @@ originator
 
 originator - Associate seamounts with nearest hotspot point sources
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**originator** [ *table* ] **-E**\ [**+**\ ]\ *rotfile*
-**-F**\ [**+**\ ]\ *hs\_file* [ **-D**\ *d\_km* ] [ **-L**\ [*flag*\ ] ]
-[ **-N**\ *upper\_age* ] [ **-Q**\ *r/t* ] [ **-S**\ [*n\_hs*\ ] ] [
-**-T** ] [ **-V**\ [*level*\ ] ] **-W**\ *maxdist* ] [ **-Z** ] [
-**-bi**\ [*ncols*\ ][*type*\ ] ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-:**\ [**i**\ \|\ **o**] ]
+**originator** [ *table* ] **-E**\ [**+**]\ *rotfile*
+**-F**\ [**+**]\ *hs_file* [ **-D**\ *d_km* ] [ **-L**\ [*flag*] ]
+[ **-N**\ *upper_age* ] [ **-Q**\ *r/t* ] [ **-S**\ [*n_hs*] ]
+[ **-T** ]
+[ |SYN_OPT-V| ]
+[ **-W**\ *maxdist* ] [ **-Z** ]
+[ **-bi**\ [*ncols*\ ][*type*] ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
-**originator** reads (longitude, latitude, height, radius, crustal\_age)
+**originator** reads (longitude, latitude, height, radius, crustal_age)
 records from *infiles* [or standard input] and uses the given Absolute
 Plate Motion (APM) stage or total reconstruction rotation file and the
 list of hotspot locations to determine the most likely origin (hotspot)
 for each seamount. It does so by calculating flowlines back in time and
 determining the closest approach to all hotspots. The output consists of
 the input records with four additional fields added for each of the
-*n\_hs* closest hotspots. The four fields are the hotspot id (e.g.,
+*n_hs* closest hotspots. The four fields are the hotspot id (e.g.,
 HWI), the stage id of the flowline segment that came closest, the
 pseudo-age of the seamount, and the closest distance to the hotspot (in
 km). See option **-:** on how to read (latitude, longitude,height,
-radius, crustal\_age) files.
+radius, crustal_age) files.
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 **-E**\ *rotfile*
     Give file with rotation parameters. This file must contain one
@@ -69,7 +72,7 @@ radius, crustal\_age) files.
     for each hotspot to be considered; each record must be of the
     following format:
 
-    lon lat hs\_abbrev hs\_id r t\_off t\_on create fit plot name
+    lon lat hs_abbrev hs_id r t_off t_on create fit plot name
 
     E.g., for Hawaii this may look like
 
@@ -79,7 +82,7 @@ radius, crustal\_age) files.
     represents the minimal hotspot information record type. The
     abbreviation may be maximum 3 characters long. The id must be an
     integer from 1-32. The positional uncertainty of the hotspot is
-    given by r (in km). The t\_off and t\_on variables are used to
+    given by r (in km). The t_off and t_on variables are used to
     indicate the active time-span of the hotspot. The create, fit, and
     plot indicators are either Y or N and are used by some programs to
     indicate if the hotspot is included in the ID-grids used to
@@ -88,33 +91,37 @@ radius, crustal\_age) files.
     The name is a 32-character maximum text string with the full hotspot
     name. Blank lines and records whose first column contains # will be
     ignored. Prepend **+** if we should look for hotspot drift tables
-    whose name must be *hs\_abbrev*\ \_drift.txt. Such files may be
-    located in the current directory, the same directory as *hs\_file*,
-    or in the directories pointed to by GMT\_DATADIR. If found then we
+    whose name must be *hs_abbrev*\ \_drift.txt. Such files may be
+    located in the current directory, the same directory as *hs_file*,
+    or in the directories pointed to by GMT_DATADIR. If found then we
     interpolate to get hotspot location as a function of time [fixed].
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
 
-**-D**\ *d\_km*
+**-D**\ *d_km*
     Sets the flowline sampling interval in km. [Default is 5].
+
 **-L**\ [*flag*\ ]
     Output closest approach for nearest hotspot only (ignores **-S**).
     Choose **-Lt** for (*time*, *dist*, *z*) [Default], **-Lw** for
     (*omega*, *dist*, *z*), and **-Ll** for (lon, lat, time, dist, z).
     Normally, *dist* is in km; use upper case modifiers **TWL** to get
     *dist* in spherical degrees.
-**-N**\ *upper\_age*
-    Set the maximum age to extend the oldest stage back in time [no
-    extension].
+
+**-N**\ *upper_age*
+    Set the maximum age to extend the oldest stage back in time [no extension].
+
 **-Q**\ *r/t*
     Input files only has (*x*,\ *y*,\ *z*); specify constant values for *r*,\ *t* that
     will be implied for each record.
-**-S**\ [*n\_hs*\ ]
+
+**-S**\ [*n_hs*\ ]
     Set the number of closest hotspots to report [Default is 1].
+
 **-T**
     Truncate seamount ages exceeding the upper age set with **-N** [no truncation].
 
@@ -137,34 +144,40 @@ radius, crustal\_age) files.
 .. include:: ../../explain_colon.rst_
 .. include:: ../../explain_help.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
 To find the likely (hotspot) origins of the seamounts represented by the
 (x,y,z,r,tc) points in the file seamounts.d, using the DC85.d Euler
-poles and the pac\_hs.d list of possible hotspots, and report the 2 most
+poles and the pac_hs.d list of possible hotspots, and report the 2 most
 likely hotspot candidates for each seamount, run
 
-    originator seamounts.d -S2 -EDC85.d -Fpac\_hs.d > origins.d
+   ::
+
+    gmt originator seamounts.d -S2 -EDC85.d -Fpac_hs.d > origins.d
 
 To determine the predicted age of a seamount, distances to the closest
 hotspot, and echo the observed age given its location, observed age, and
 a rotation model, try
 
-    echo "1.55 -8.43 52.3" \| originator -FONeill\_2005\_hotspots.txt
-    -EOMS2005\_APM\_fixed.txt -Q1/120 -Lt
+   ::
+
+    echo "1.55 -8.43 52.3" | gmt originator -FONeill_2005_hotspots.txt \
+    -EOMS2005_APM_fixed.txt -Q1/120 -Lt
 
 where 52.3 Ma is observed age. The output is 70 -95.486 52.3. To repeat
 the same exercise with a moving hotspot model, try
 
-    echo "1.55 -8.43 52.3" \| originator -F+ONeill\_2005\_hotspots.txt
-    -EOMS2005\_APM\_smooth.txt -Q1/120 -Lt
+   ::
+
+    echo "1.55 -8.43 52.3" | gmt originator -F+ONeill_2005_hotspots.txt \
+    -EOMS2005_APM_smooth.txt -Q1/120 -Lt
 
 Now the output is 80 -213.135 52.3. Negative distances means the closest
 approach was east of the hotspot.
 
-`See Also <#toc7>`_
--------------------
+See Also
+--------
 
 `GMT <GMT.html>`_, `grdrotater <grdrotater.html>`_,
 `grdspotter <grdspotter.html>`_,
@@ -173,8 +186,8 @@ approach was east of the hotspot.
 `backtracker <backtracker.html>`_,
 `hotspotter <hotspotter.html>`_
 
-`References <#toc8>`_
----------------------
+References
+----------
 
 Wessel, P., 1999, "Hotspotting" tools released, EOS Trans. AGU, 80 (29), p. 319.
 

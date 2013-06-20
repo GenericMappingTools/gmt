@@ -79,8 +79,9 @@
 # Enable building of shared libraries [TRUE] (uncomment to use static libraries):
 #set (BUILD_SHARED_LIBS FALSE)
 
-# Install convenience links for GMT modules [FALSE]:
-#set (INSTALL_MODULE_LINKS TRUE)
+# Install convenience links for GMT modules [TRUE]:
+# Uncomment to install only the main gmt program and access modules as: gmt modulename options
+#set (INSTALL_MODULE_LINKS FALSE)
 
 
 ## Advanced configuration begins here. Usually it is not necessary to edit any

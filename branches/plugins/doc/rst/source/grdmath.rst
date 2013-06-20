@@ -554,14 +554,14 @@ To take log10 of the average of 2 files, use
 
    ::
 
-    grdmath file1.nc file2.nc ADD 0.5 MUL LOG10 = file3.nc
+    gmt grdmath file1.nc file2.nc ADD 0.5 MUL LOG10 = file3.nc
 
 Given the file ages.nc, which holds seafloor ages in m.y., use the
 relation depth(in m) = 2500 + 350 \* sqrt (age) to estimate normal seafloor depths:
 
    ::
 
-    grdmath ages.nc SQRT 350 MUL 2500 ADD = depths.nc
+    gmt grdmath ages.nc SQRT 350 MUL 2500 ADD = depths.nc
 
 To find the angle a (in degrees) of the largest principal stress from
 the stress tensor given by the three files s_xx.nc s_yy.nc, and
@@ -569,7 +569,7 @@ s_xy.nc from the relation tan (2\*a) = 2 \* s_xy / (s_xx - s_yy), use
 
    ::
 
-    grdmath 2 s_xy.nc MUL s_xx.nc s_yy.nc SUB DIV ATAN2 2 DIV = direction.nc
+    gmt grdmath 2 s_xy.nc MUL s_xx.nc s_yy.nc SUB DIV ATAN2 2 DIV = direction.nc
 
 To calculate the fully normalized spherical harmonic of degree 8 and
 order 4 on a 1 by 1 degree world map, using the real amplitude 0.4 and
@@ -577,21 +577,21 @@ the imaginary amplitude 1.1:
 
    ::
 
-    grdmath -R0/360/-90/90 -I1 8 4 YML 1.1 MUL EXCH 0.4 MUL ADD = harm.nc
+    gmt grdmath -R0/360/-90/90 -I1 8 4 YML 1.1 MUL EXCH 0.4 MUL ADD = harm.nc
 
 To extract the locations of local maxima that exceed 100 mGal in the file faa.nc:
 
    ::
 
-    grdmath faa.nc DUP EXTREMA 2 EQ MUL DUP 100 GT MUL 0 NAN = z.nc
-    grd2xyz z.nc -s > max.xyz
+    gmt grdmath faa.nc DUP EXTREMA 2 EQ MUL DUP 100 GT MUL 0 NAN = z.nc
+    gmt grd2xyz z.nc -s > max.xyz
 
 To demonstrate the use of named variables, consider this radial wave
 where we store and recall the normalized radial arguments in radians:
 
    ::
 
-    grdmath -R0/10/0/10 -I0.25 5 5 CDIST 2 MUL PI MUL 5 DIV STO@r COS @r SIN MUL = wave.nc
+    gmt grdmath -R0/10/0/10 -I0.25 5 5 CDIST 2 MUL PI MUL 5 DIV STO@r COS @r SIN MUL = wave.nc
 
 References
 ----------

@@ -788,7 +788,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 		if (make_plot) GMT_plane_perspective (GMT, -1, 0.0);
 
 		GMT_free (GMT, grd);
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &Grid) != GMT_OK) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to free Grid\n");
 		}
 		if (Ctrl->S.active) GMT_free (GMT, d_col);

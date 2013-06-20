@@ -19,17 +19,22 @@
  * Public function prototypes for GMT API option parsing.
  *
  * Author: 	Paul Wessel
- * Date:	1-JAN-2010
- * Version:	1.0
+ * Date:	1-JUN-2010
+ * Version:	5
  *
- * Here lie the public functions used for GMT API command parsing.
- * They are:
+ * The API presently consists of 52 documented functions.  For a full
+ * description of the API, see the GMT_API documentation.
+ * These functions have Fortran bindings as well, provided you add
+ * -DFORTRAN_API to the C preprocessor flags [in ConfigUser.cmake].
+ *
+ * Here lie the 12 public functions used for GMT API command parsing:
  *
  * GMT_Create_Options	: Convert an array of text args to a linked option list
  * GMT_Destroy_Options	: Delete the linked option list
  * GMT_Create_Args	: Convert a struct option list back to an array of text args
  * GMT_Destroy_Args	: Delete the array of text args
  * GMT_Create_Cmd	: Convert a struct option list to a single command text. 
+ * GMT_Destroy_Cmd	: Delete the command string
  * GMT_Make_Option	: Create a single option structure given arguments
  * GMT_Find_Option	: Find a specified option in the linked option list
  * GMT_Update_Option	: Update the arguments of the specified option in the list
@@ -129,6 +134,8 @@ struct GMT_OPTION * GMT_Create_Options (void *V_API, int n_args_in, void *in)
 		args = (char **)in;	/* Gave an argv[] argument */
 		n_args = n_args_in;
 	}
+	if (args == NULL && n_args) return_null (API, GMT_ARGV_LIST_NULL);	/* Conflict between # of args and args being NULL */
+	
 	for (arg = 0; arg < n_args; arg++) {	/* Loop over all command arguments */
 
 		if (!args[arg]) continue;	/* Skip any NULL arguments quietly */
@@ -303,6 +310,7 @@ int GMT_Destroy_Cmd (void *V_API, char **cmd)
 
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);		/* GMT_Create_Session has not been called */
+	if (*cmd == NULL) return_error (API, GMT_ARG_IS_NULL);		/* No command was given */
 	GMT_free (API->GMT, *cmd);
 	return (GMT_OK);	/* No error encountered */
 }
@@ -426,16 +434,20 @@ int gmt_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 	 * style arguments.  We return 5 for GMT5 style, 4 for GMT4 style, 9
 	 * if no decision could be make and -1 if mixing of GMT4 & 5 styles are
 	 * ound = that is an error. */
-	size_t k, last;
+	size_t k, j, last;
 	int gmt4 = 0, gmt5 = 0, n_colons = 0, n_slashes = 0, colon_text = 0, wesn_at_end = 0;
 	bool ignore = false;	/* true if inside a colon-separated string under GMT4 style assumption */
+	bool custom = false;	/* True if -B[p|s][x|y|z]c<filename> was given; then we relax checing for .c (old second) */
 	char mod = 0;
 	
+	if (!in || in[0] == 0) return (9);	/* Just a safety precaution, 9 means "GMT5" syntax but is is an empty string */
 	last = strlen (in);
 	k = (in[0] == 'p' || in[0] == 's') ? 1 : 0;	/* Skip p|s in -Bp|s */
 	if (strchr ("xyz", in[k])) gmt5++;		/* Definitively GMT5 */
 	if (k == 0 && !isdigit (in[0]) && strchr ("WESNwesn", in[1])) gmt5++;		/* Definitively GMT5 */
-	
+	j = k;
+	while (j < last && (in[j] == 'x' || in[j] == 'y' || in[j] == 'z')) j++;
+	custom = (in[j] == 'c');	/* Got -B[p|s][xyz]c<customfile> */
 	for (k = 0; k <= last; k++) {
 		if (k && in[k] == '+' && in[k-1] == '@') {	/* Found a @+ PSL sequence, just skip */
 			continue;	/* Resume processing */
@@ -469,7 +481,7 @@ int gmt_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 				else if (k && (in[k-1] == 'Z' || in[k-1] == 'z')) gmt4++;	/* Z-axis with 3-D box */
 				break;
 			case 'c':	/* If following a number this is unit c for seconds in GMT4 */
-				if (k && (in[k-1] == '.' || isdigit (in[k-1]))) gmt4++;	/* Old-style second unit */
+				if (!custom && k && (in[k-1] == '.' || isdigit (in[k-1]))) gmt4++;	/* Old-style second unit */
 			case 'W': case 'E': case 'S': case 'N': case 'Z': case 'w': case 'e': case 'n': case 'z':	/* Not checking s as confusion with seconds */
 				if (k > 1) wesn_at_end++;	/* GMT5 has -B<WESNwesn> up front while GMT4 usually has them at the end */
 				break;
@@ -514,7 +526,7 @@ int gmt_check_b_options (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	int verdict;
 	
 	for (opt = options; opt; opt = opt->next) {	/* Loop over all given options */
-		if (opt->option != 'B') continue;	/* But skip anything but -B options */
+		if (opt->option != 'B') continue;	/* Skip anything but -B options */
 		n_B++;					/* Count how many (max 2 in GMT4 if -Bp|s given) */
 		k = (opt->arg[0] == 'p' || opt->arg[0] == 's') ? 1 : 0;	/* Step over any p|s designation */
 		if (k == 1) n4_expected++;		/* Count how many -Bp or -Bs were given */
@@ -582,44 +594,3 @@ int GMT_Parse_Common (void *V_API, char *given_options, struct GMT_OPTION *optio
 	if (n_errors) return_error (API, GMT_PARSE_ERROR);	/* One or more options failed to parse */
 	return (GMT_OK);
 }
-#if 0
-int GMT_Parse_Common (void *V_API, char *sorted, char *unsorted, struct GMT_OPTION *options)
-{
-	/* GMT_Parse_Common parses the option list for two types of common options:
-	 * sorted   = list of options to be processed in the order they appear in sorted_list
-	 * unsorted = list of options to be processed in the order they appear in options
-	 * The settings will override values set previously by other commands.
-	 * It ignores filenames and only return errors if GMT common options are misused.
-	 */
-
-	struct GMT_OPTION *opt = NULL;
-	char list[2] = {0, 0};
-	int i, n_errors = 0;
-	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
-
-	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
-
-	/* Check if there are short-hand commands present (e.g., -J with no arguments); if so complete these to full options
-	 * by consulting the current GMT history machinery.  If not possible then we have an error to report */
-
-	if (GMT_Complete_Options (API->GMT, options)) return_error (API, GMT_OPTION_HISTORY_ERROR);	/* Replace shorthand failed */
-
-	/* Parse the common options in the order they appear in "sorted" */
-
-	for (i = 0; sorted[i]; i++) {
-		list[0] = sorted[i];	/* Just look for this particular option */
-		for (opt = options; opt; opt = opt->next)
-			n_errors += GMT_parse_common_options (API->GMT, list, opt->option, opt->arg);
-	}
-
-	/* Parse the common options in "unsorted" in the order they appear in the options list */
-
-	for (opt = options; opt; opt = opt->next)
-		n_errors += GMT_parse_common_options (API->GMT, unsorted, opt->option, opt->arg);
-
-	/* Update [read-only] pointer to the current option list */
-	API->GMT->current.options = options;
-	if (n_errors) return_error (API, GMT_PARSE_ERROR);	/* One or more options failed to parse */
-	return (GMT_OK);
-}
-#endif

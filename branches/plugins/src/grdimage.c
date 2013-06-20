@@ -466,7 +466,8 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 		Ctrl->In.do_rgb = (I->header->n_bands >= 3);
 		n_grids = 0;	/* Flag that we are using a GMT_IMAGE */
 
-		if (I->ProjRefPROJ4 != NULL) GMT_Report (API, GMT_MSG_VERBOSE, "Data projection (Proj4 type)\n\t%s\n", I->ProjRefPROJ4);
+		if (I->header->ProjRefPROJ4 != NULL)
+			GMT_Report (API, GMT_MSG_VERBOSE, "Data projection (Proj4 type)\n\t%s\n", I->header->ProjRefPROJ4);
 
 		header_work = I->header;	/* OK, that's what what we'll use to send to GMT_grd_setregion */
 	}
@@ -592,16 +593,14 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 			}
 
 			sprintf (cmd, "%s -G%s -I%d+/%d+", in_string, out_string, nx, ny);
-			if (GMT_Call_Module (GMT->parent, GMT_ID_GRDSAMPLE, 0, cmd) != GMT_OK) return (API->error);	/* Do the resampling */
+			if (GMT_Call_Module (GMT->parent, "grdsample", 0, cmd) != GMT_OK) return (API->error);	/* Do the resampling */
 			if ((G2 = GMT_Retrieve_Data (API, object_ID)) == NULL) {
 				Return (API->error);
 			}
-			Intens_orig->alloc_mode = GMT_ALLOCATED;	/* So we may destroy it */
-			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Intens_orig) != GMT_OK) {
+			if (GMT_Destroy_Data (API, &Intens_orig) != GMT_OK) {
 				Return (API->error);
 			}
 			Intens_orig = G2;
-			Intens_orig->alloc_mode = GMT_ALLOCATED;	/* So we may destroy at the end */
 		}
 #endif
 
@@ -627,7 +626,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 			GMT_set_grddim (GMT, Img_proj->header);
 			if (GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Img_proj) == NULL) Return (API->error);
 			GMT_img_project (GMT, I, Img_proj, false);
-			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &I) != GMT_OK) {
+			if (GMT_Destroy_Data (API, &I) != GMT_OK) {
 				Return (API->error);
 			}
 		}
@@ -642,7 +641,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 			GMT_set_grddim (GMT, Grid_proj[k]->header);
 			if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Grid_proj[k]) == NULL) Return (API->error);
 			GMT_grd_project (GMT, Grid_orig[k], Grid_proj[k], false);
-			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid_orig[k]) != GMT_OK) {
+			if (GMT_Destroy_Data (API, &Grid_orig[k]) != GMT_OK) {
 				Return (API->error);
 			}
 		}
@@ -662,7 +661,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 			GMT_set_grddim (GMT, Intens_proj->header);
 			if (GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_GRID_DATA_ONLY, NULL, NULL, NULL, 0, 0, Intens_proj) == NULL) Return (API->error);
 			GMT_grd_project (GMT, Intens_orig, Intens_proj, false);
-			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Intens_orig) != GMT_OK) {
+			if (GMT_Destroy_Data (API, &Intens_orig) != GMT_OK) {
 				Return (API->error);
 			}
 		}
@@ -850,13 +849,13 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 	if (Ctrl->Q.active) GMT_free (GMT, rgb_used);
 	
 	for (k = 1; k < n_grids; k++) {	/* Not done with Grid_proj[0] yet, hence we start loop at k = 1 */
-		if (need_to_project && GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid_proj[k]) != GMT_OK) {
+		if (need_to_project && GMT_Destroy_Data (API, &Grid_proj[k]) != GMT_OK) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to free Grid_proj[k]\n");
 		}
 	}
 	if (use_intensity_grid) {
 		if (need_to_project || !n_grids) {
-			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Intens_proj) != GMT_OK) {
+			if (GMT_Destroy_Data (API, &Intens_proj) != GMT_OK) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Failed to free Intens_proj\n");
 			}
 		}
@@ -1001,7 +1000,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 	if (bitimage_8) GMT_free (GMT, bitimage_8);
 	if (bitimage_24) GMT_free (GMT, bitimage_24);
 
-	if (need_to_project && n_grids && GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid_proj[0]) != GMT_OK) {
+	if (need_to_project && n_grids && GMT_Destroy_Data (API, &Grid_proj[0]) != GMT_OK) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free Grid_proj[0]\n");
 	}
 
@@ -1012,10 +1011,10 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 			GMT_free (GMT, g_table);
 			GMT_free (GMT, b_table);
 		}
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Img_proj) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &Img_proj) != GMT_OK) {
 			Return (API->error);
 		}
-		if (!Ctrl->C.active && GMT_Destroy_Data (API, GMT_ALLOCATED, &P) != GMT_OK) {
+		if (!Ctrl->C.active && GMT_Destroy_Data (API, &P) != GMT_OK) {
 			Return (API->error);
 		}
 	}
@@ -1026,7 +1025,7 @@ int GMT_grdimage (void *V_API, int mode, void *args)
 		free(Ctrl->A.file);
 	}
 #endif
-	if (!Ctrl->C.active && GMT_Destroy_Data (API, GMT_ALLOCATED, &P) != GMT_OK) {
+	if (!Ctrl->C.active && GMT_Destroy_Data (API, &P) != GMT_OK) {
 		Return (API->error);
 	}
 	Return (EXIT_SUCCESS);

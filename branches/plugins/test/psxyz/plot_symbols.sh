@@ -21,7 +21,7 @@ gmt psxyz -R0/4/1/6 -Jx1i -P -Bg1 -Gred -W0.25p -p155/35 -S1i -X1i -Y1i -K << EO
 0.5	3.5	0	i
 1.5	3.5	0	90	1	0.5	j
 > Do orange -Gorange
-2.5	3.5	0	l/M
+2.5	3.5	0	l+tM
 3.5	3.5	0	n
 > Do yellowized pattern # 20 -Gp100/20:Fyellow
 0.5	2.5	0	1	0.5	r

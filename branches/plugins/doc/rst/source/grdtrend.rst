@@ -9,21 +9,21 @@ grdtrend - Fit trend surface to grids and compute residuals
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdtrend** *grdfile* **-N**\ *n\_model*\ [**r**\ ] [ **-D**\ *diff.nc*
-] [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [
-**-T**\ *trend.nc* ] [ **-V**\ [*level*\ ] ] [ **-W**\ *weight.nc* ]
+**grdtrend** *grdfile* **-N**\ *n\_model*\ [**r**] [ **-D**\ *diff.nc* ]
+[ |SYN_OPT-R| ]
+[ **-T**\ *trend.nc* ] [ |SYN_OPT-R| ] [ **-W**\ *weight.nc* ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **grdtrend** reads a 2-D grid file and fits a low-order polynomial trend
 to these data by [optionally weighted] least-squares. The trend surface
 is defined by:
 
-m1 + m2\*x + m3\*y + m4\*x\*y + m5\*x\*x + m6\*y\*y + m7\*x\*x\*x +
-m8\*x\*x\*y + m9\*x\*y\*y + m10\*y\*y\*y.
+   m1 + m2\*x + m3\*y + m4\*x\*y + m5\*x\*x + m6\*y\*y + m7\*x\*x\*x +
+   m8\*x\*x\*y + m9\*x\*y\*y + m10\*y\*y\*y.
 
 The user must specify **-N**\ *n\_model*, the number of model parameters
 to use; thus, **-N**\ *4* fits a bilinear trend, **-N**\ *6* a quadratic
@@ -38,8 +38,8 @@ If data file has values set to NaN, these will be ignored during
 fitting; if output files are written, these will also have NaN in the
 same locations. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *grdfile*
     The name of a 2-D binary grid file.
@@ -47,8 +47,8 @@ same locations.
     *n\_model* sets the number of model parameters to fit.
     Append **r** for robust fit.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-D**\ *diff.nc*
     Write the difference (input data - trend) to the file *diff.nc*. 
@@ -72,8 +72,8 @@ same locations.
 
 .. include:: explain_help.rst_
 
-`Remarks <#toc6>`_
-------------------
+Remarks
+-------
 
 The domain of x and y will be shifted and scaled to [-1, 1] and the
 basis functions are built from Legendre polynomials. These have a
@@ -87,20 +87,24 @@ using the reported coefficients.
 
 .. include:: explain_grd_inout.rst_
 
-`Examples <#toc8>`_
--------------------
+Examples
+--------
 
-To remove a planar trend from hawaii\_topo.nc and write result in hawaii\_residual.nc:
+To remove a planar trend from hawaii_topo.nc and write result in hawaii_residual.nc:
 
-    grdtrend hawaii\_topo.nc -N3 -Dhawaii\_residual.nc
+   ::
 
-To do a robust fit of a bicubic surface to hawaii\_topo.nc, writing the
-result in hawaii\_trend.nc and the weights used in hawaii\_weight.nc,
+    gmt grdtrend hawaii_topo.nc -N3 -Dhawaii_residual.nc
+
+To do a robust fit of a bicubic surface to hawaii_topo.nc, writing the
+result in hawaii_trend.nc and the weights used in hawaii_weight.nc,
 and reporting the progress:
 
-    grdtrend hawaii\_topo.nc -N10r -Thawaii\_trend.nc -Whawaii\_weight.nc -V
+   ::
 
-`See Also <#toc9>`_
--------------------
+    gmt grdtrend hawaii_topo.nc -N10r -Thawaii_trend.nc -Whawaii_weight.nc -V
+
+See Also
+--------
 
 `gmt <gmt.html>`_, `grdfft <grdfft.html>`_, `grdfilter <grdfilter.html>`_

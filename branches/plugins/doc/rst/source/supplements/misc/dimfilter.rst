@@ -4,22 +4,24 @@ dimfilter
 
 dimfilter - Directional filtering of 2-D gridded files in the space (or time) domain
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**dimfilter** *input\_file.nc* **-D**\ *distance\_flag*
-**-F**\ *<filtertype><width>*\ [*mode*\ ] **-G**\ *output\_file.nc*
-**-N**\ *<filtertype><n\_sectors>* [ **-Q**\ *cols* ] [
-**-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
-] [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-T** ] [
-**-V**\ [*level*\ ] ] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ]
+**dimfilter** *input_file.nc* **-D**\ *distance_flag*
+**-F**\ *<filtertype><width>*\ [*mode*] **-G**\ *output_file.nc*
+**-N**\ *<filtertype><n_sectors>* [ **-Q**\ *cols* ]
+[ |SYN_OPT-I| ]
+[ |SYN_OPT-R| ]
+[ **-T** ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-f| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **dimfilter** will filter a *.nc* file in the space (or time) domain by
 dividing the given filter circle into *n\_sectors*, applying one of the
@@ -39,8 +41,8 @@ sectors. The output can be rought unless the input data is noise-free.
 Thus, an additional filtering (e.g., Gaussian via **grdfilter**) of the
 DiM-filtered data is generally recommended.
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *input\_file.nc*
     The data grid to be filtered.
@@ -62,7 +64,7 @@ DiM-filtered data is generally recommended.
     *flag* = 4: grid (x,y) in degrees, *width* in km, Spherical distance
     calculation.
 
-**-F**\ *<filtertype><width>*\ [*mode*\ ]
+**-F**\ *<filtertype><width>*\ [*mode*]
     Sets the primary filter type. Choose among convolution and
     non-convolution filters. Append the filter code followed by the full
     diameter *width*. Available convolution filters are:
@@ -82,7 +84,7 @@ DiM-filtered data is generally recommended.
     value. Append - or + to the filter width if you rather want to
     return the smallest or largest of the modal values.
 
-**-N**\ *<filtertype><n\_sectors>*
+**-N**\ *<filtertype><n_sectors>*
     Sets the secondary filter type and the number of bow-tie sectors.
     *n\_sectors* must be integer and larger than 0. When *n\_sectors* is
     set to 1, the secondary filter is not effective. Available secondary
@@ -101,8 +103,8 @@ DiM-filtered data is generally recommended.
 **-G**\ *output\_file.nc*
     *output\_file.nc* is the output of the filter.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-I**
     *x\_inc* [and optionally *y\_inc*] is the output Increment. Append
@@ -137,8 +139,8 @@ DiM-filtered data is generally recommended.
 .. include:: ../../explain_grd_inout.rst_
 .. include:: ../../explain_grd_coord.rst_
 
-`Examples <#toc8>`_
--------------------
+Examples
+--------
 
 Suppose that north\_pacific\_dbdb5.nc is a file of 5 minute bathymetry
 from 140E to 260E and 0N to 50N, and you want to find the medians of
@@ -149,18 +151,21 @@ biased by the sloping plane, you want to divide the filter circle into 6
 sectors and to choose the lowest value among 6 medians. Using spherical
 distance calculations, you need:
 
-    dimfilter north\_pacific\_dbdb5.nc -Gfiltered\_pacific.nc -Fm600 -D4
-    -Nl6 -R150/250/10/40 -I0.5 -V
+   ::
 
-Suppose that cape\_verde.nc is a file of 0.5 minute bathymetry from 32W
+    gmt dimfilter north_pacific_dbdb5.nc -Gfiltered_pacific.nc -Fm600 -D4 \
+        -Nl6 -R150/250/10/40 -I0.5 -V
+
+Suppose that cape_verde.nc is a file of 0.5 minute bathymetry from 32W
 to 15W and 8N to 25N, and you want to remove small-length-scale features
 in order to define a swell in an area extending from 27.5W to 20.5W and
 12.5N to 19.5N, and you want the output value every 2 minute. Using
 cartesian distance calculations, you need:
 
-    dimfilter cape\_verde.nc -Gt.nc -Fm220 -Nl8 -D2 -R-27.5/-20.5/12.5/19.5 -I2m -V
+   ::
 
-    grdfilter t.nc -Gcape\_swell.nc -Fg50 -D2 -V
+    gmt dimfilter cape_verde.nc -Gt.nc -Fm220 -Nl8 -D2 -R-27.5/-20.5/12.5/19.5 -I2m -V
+    gmt grdfilter t.nc -Gcape_swell.nc -Fg50 -D2 -V
 
 Suppose that you found a range of filter widths for a given area, and
 you filtered the given bathymetric data using the range of filter widths
@@ -169,20 +174,17 @@ regional trend using the range of filter widths, and you want to obtain
 median absolute deviation (MAD) estimates at each data point. Then, you
 will need to do:
 
-    grd2xyz f100.nc -Z > f100.d
+   ::
 
-    grd2xyz f110.nc -Z > f110.d
-
-    grd2xyz f120.nc -Z > f120.d
-
-    grd2xyz f130.nc -Z > f130.d
-
+    gmt grd2xyz f100.nc -Z > f100.d
+    gmt grd2xyz f110.nc -Z > f110.d
+    gmt grd2xyz f120.nc -Z > f120.d
+    gmt grd2xyz f130.nc -Z > f130.d
     paste f100.d f110.d f120.d f130.d > depths.d
+    gmt dimfilter depths.d -Q4 > output.z
 
-    dimfilter depths.d -Q4 > output.z
-
-`Limitations <#toc9>`_
-----------------------
+Limitations
+-----------
 
 When working with geographic (lat, lon) grids, all three convolution
 filters (boxcar, cosine arch, and gaussian) will properly normalize the
@@ -195,20 +197,20 @@ grids (or at very low latitudes) only. If you want to apply such spatial
 filters you should project your data to an equal-area projection and run
 dimfilter on the resulting Cartesian grid.
 
-`Script Template <#toc10>`_
----------------------------
+Script Template
+---------------
 
 The dim.template.sh is a skeleton shell script that can be used to set
 up a complete DiM analysis, including the MAD analysis.
 
-`Reference <#toc11>`_
----------------------
+Reference
+---------
 
 Kim, S.-S., and Wessel, P. (2008), Directional Median Filtering for
 Regional-Residual Separation of Bathymetry, *Geochem. Geophys.
 Geosyst.*, **9**, Q03005, doi:10.1029/2007GC001850.
 
-`See Also <#toc12>`_
---------------------
+See Also
+--------
 
 `GMT <GMT.html>`_, `grdfilter <grdfilter.html>`_

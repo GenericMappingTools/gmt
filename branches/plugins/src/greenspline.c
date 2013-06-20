@@ -307,7 +307,7 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 					Ctrl->R3.offset = G->header->registration;
 					Ctrl->R3.dimension = 2;
 					Ctrl->R3.mode = true;
-					if (GMT_Destroy_Data (API, GMT_ALLOCATED, &G) != GMT_OK) {
+					if (GMT_Destroy_Data (API, &G) != GMT_OK) {
 						return (API->error);
 					}
 					break;
@@ -489,7 +489,7 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 	
 	if (Ctrl->S.mode == WESSEL_BECKER_2008) {	/* Check that nodes is an odd integer */
 		double fn = rint (Ctrl->S.value[3]);
-		long n = lrint (fn);
+		int64_t n = lrint (fn);
 		if (!doubleAlmostEqual (Ctrl->S.value[3], fn) || ((n%2) == 0)) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Sq option +n<N> modifier: Must be an odd integer\n");
 			n_errors++;
@@ -845,7 +845,7 @@ unsigned int get_L (double x, double p, double err)
 	}
 
 	Lf = MIN (p / sqrt (err), Lf);
-	L_max = lrint (Lf + 10.0);
+	L_max = (unsigned int)lrint (Lf + 10.0);
 	return (L_max);
 }
 
@@ -1491,7 +1491,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 				}
 			}
 		}
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Din) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &Din) != GMT_OK) {
 			Return (API->error);
 		}
 	}
@@ -1828,7 +1828,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 			Return (API->error);
 		}
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Nin) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &Nin) != GMT_OK) {
 			Return (API->error);
 		}
 		GMT_fclose (GMT, fp);
@@ -1896,13 +1896,13 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 		}
 		else if (delete_grid)
 			GMT_free_grid (GMT, &Grid, false);
-		else if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid) != GMT_OK) {
+		else if (GMT_Destroy_Data (API, &Grid) != GMT_OK) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Failed to free Orig\n");
 		}
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_OK) {	/* Disables further data output */
 			Return (API->error);
 		}
-		if (new_grid && GMT_Destroy_Data (API, GMT_ALLOCATED, &Out) != GMT_OK) {
+		if (new_grid && GMT_Destroy_Data (API, &Out) != GMT_OK) {
 			Return (API->error);
 		}
 			

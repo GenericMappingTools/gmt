@@ -13,8 +13,11 @@ Synopsis
 [ |SYN_OPT-I| ]
 [ |SYN_OPT-R| ]
 [ **-C**\ **f**\ \|\ **l**\ \|\ **o**\ \|\ **u** ] [ **-N**\ *nodata* ]
-[ **-Q** ] [ **-Z**\ *scale* ] [ |SYN_OPT-V| ] [ **-W** ]
-[ |SYN_OPT-f| ] [ **-r** ]
+[ **-Q** ] [ **-Z**\ *scale* ]
+[ |SYN_OPT-V| ]
+[ **-W** ]
+[ |SYN_OPT-f| ]
+[ **-r** ]
 
 |No-spaces|
 

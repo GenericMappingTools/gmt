@@ -9,7 +9,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdmask** *pathfiles* **-G**\ *mask\_grd\_file*]
+**grdmask** *pathfiles* **-G**\ *mask_grd_file*]
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ **-A**\ [**m**\ \|\ **p**] ]
@@ -19,7 +19,8 @@ Synopsis
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
-[ **-r** ] [ |SYN_OPT-:| ]
+[ **-r** ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
@@ -121,26 +122,26 @@ outside points to 1, do
 
    ::
 
-    grdmask coastline_*.xy -R-60/-40/-40/-30 -I5m -N1/0/0 -Gland_mask.nc=nb -V
+    gmt grdmask coastline_*.xy -R-60/-40/-40/-30 -I5m -N1/0/0 -Gland_mask.nc=nb -V
 
 To set nodes within 50 km of data points to 1 and other nodes to NaN, do
 
    ::
 
-    grdmask data.xyz -R-60/-40/-40/-30 -I5m -NNaN/1/1 -S50k -Gdata_mask.nc=nb -V
+    gmt grdmask data.xyz -R-60/-40/-40/-30 -I5m -NNaN/1/1 -S50k -Gdata_mask.nc=nb -V
 
 To assign polygon IDs to the gridnodes using the insides of the polygons
 in plates.gmt, based on the attribute POL_ID, do
 
    ::
 
-    grdmask plates.gmt -R-40/40/-40/40 -I2m -Nz -Gplate_IDs.nc -aZ=POL_ID -V
+    gmt grdmask plates.gmt -R-40/40/-40/40 -I2m -Nz -Gplate_IDs.nc -aZ=POL_ID -V
 
 Same exercise, but instead compute running polygon IDs starting at 100, do
 
    ::
 
-    grdmask plates.gmt -R-40/40/-40/40 -I2m -Np100 -Gplate_IDs.nc -V
+    gmt grdmask plates.gmt -R-40/40/-40/40 -I2m -Np100 -Gplate_IDs.nc -V
 
 See Also
 --------

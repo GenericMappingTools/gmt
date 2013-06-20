@@ -334,7 +334,7 @@ int main (int argc, char **argv)
 				if ((t_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_DUPLICATE, GMT_IS_NONE, GMT_OUT, NULL, T)) == GMT_NOTSET) exit (EXIT_FAILURE);
 				if (GMT_Encode_ID (API, t_file, t_ID) != GMT_NOERROR) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 				sprintf (cmd, "%s -R%s -Ts%g ->%s", file, region, TOPO_INC, t_file);			/* The grdinfo command line */
-				if (GMT_Call_Module (API, GMT_ID_GRDINFO, 0, cmd) != GMT_NOERROR) exit (EXIT_FAILURE);	/* This will return the -T<string> back via the T textset */
+				if (GMT_Call_Module (API, "grdinfo", 0, cmd) != GMT_NOERROR) exit (EXIT_FAILURE);	/* This will return the -T<string> back via the T textset */
 				if ((T = GMT_Retrieve_Data (API, t_ID)) == NULL) exit (EXIT_FAILURE);	/* Get pointer to that container with the input textset */
 				printf ("set T_opt=%s\n", T->table[0]->segment[0]->record[0]);
 				printf ("makecpt -C%s %%T_opt%% -Z > %s_color.cpt\n", get_var (Ctrl->D.mode, "cpt"), prefix);
@@ -384,13 +384,13 @@ int main (int argc, char **argv)
 	
 	GMT_Report (API, GMT_MSG_VERBOSE, "Compute artificial illumination grid from %s\n", file);
 	/* Register the topography as read-only input and register the output intensity surface to a memory location */
-	if ((z_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_READONLY|GMT_IO_RESET, GMT_IS_SURFACE, GMT_IN, NULL, G)) == GMT_NOTSET) Exit (EXIT_FAILURE);
+	if ((z_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE|GMT_IO_RESET, GMT_IS_SURFACE, GMT_IN, NULL, G)) == GMT_NOTSET) Exit (EXIT_FAILURE);
 	if ((i_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE, GMT_IS_SURFACE, GMT_OUT, NULL, NULL)) == GMT_NOTSET) Exit (EXIT_FAILURE);
 	if (GMT_Encode_ID (API, z_file, z_ID) != GMT_NOERROR) Exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	if (GMT_Encode_ID (API, i_file, i_ID) != GMT_NOERROR) Exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	memset (cmd, 0, BUFSIZ);
 	sprintf (cmd, "%s -G%s -Nt1 -A45 -fg", z_file, i_file);			/* The grdgradient command line */
-	if (GMT_Call_Module (API, GMT_ID_GRDGRADIENT, 0, cmd) != GMT_NOERROR) Exit (EXIT_FAILURE);	/* This will write the intensity grid to an internal allocated container */
+	if (GMT_Call_Module (API, "grdgradient", 0, cmd) != GMT_NOERROR) Exit (EXIT_FAILURE);	/* This will write the intensity grid to an internal allocated container */
 	if ((I = GMT_Retrieve_Data (API, i_ID)) == NULL) Exit (EXIT_FAILURE);	/* Get pointer to that container with the output grid */
 	
 	/* 5. Determine a reasonable color range based on TOPO_INC m intervals and retrieve a CPT */
@@ -406,18 +406,18 @@ int main (int argc, char **argv)
 	if (GMT_Encode_ID (API, c_file, c_ID) != GMT_NOERROR) Exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	memset (cmd, 0, BUFSIZ);
 	sprintf (cmd, "-C%s -T%g/%g/%g -Z ->%s", Ctrl->C.file, -z, z, TOPO_INC, c_file);	/* The makecpt command line */
-	if (GMT_Call_Module (API, GMT_ID_MAKECPT, 0, cmd) != GMT_NOERROR) Exit (EXIT_FAILURE);	/* This will write the output CPT to memory */
+	if (GMT_Call_Module (API, "makecpt", 0, cmd) != GMT_NOERROR) Exit (EXIT_FAILURE);	/* This will write the output CPT to memory */
 	if ((P = GMT_Retrieve_Data (API, c_ID)) == NULL) Exit (EXIT_FAILURE);	/* Get pointer to the CPT stored in the allocated memory */
 	
 	/* 6. Now make the map */
 	
 	GMT_Report (API, GMT_MSG_VERBOSE, "Generate the Mercator map\n");
 	/* Register the three input sources (2 grids and 1 CPT); output is PS that goes to stdout */
-	if ((z_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_READONLY|GMT_IO_RESET, GMT_IS_SURFACE, GMT_IN, NULL, G)) == GMT_NOTSET) Exit (EXIT_FAILURE);
+	if ((z_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE|GMT_IO_RESET, GMT_IS_SURFACE, GMT_IN, NULL, G)) == GMT_NOTSET) Exit (EXIT_FAILURE);
 	if (GMT_Encode_ID (API, z_file, z_ID) != GMT_NOERROR) Exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
-	if ((i_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_READONLY|GMT_IO_RESET, GMT_IS_SURFACE, GMT_IN, NULL, I)) == GMT_NOTSET) Exit (EXIT_FAILURE);
+	if ((i_ID = GMT_Register_IO (API, GMT_IS_GRID, GMT_IS_REFERENCE|GMT_IO_RESET, GMT_IS_SURFACE, GMT_IN, NULL, I)) == GMT_NOTSET) Exit (EXIT_FAILURE);
 	if (GMT_Encode_ID (API, i_file, i_ID) != GMT_NOERROR) Exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
-	if ((c_ID = GMT_Register_IO (API, GMT_IS_CPT, GMT_IS_READONLY|GMT_IO_RESET, GMT_IS_NONE, GMT_IN, NULL, P)) == GMT_NOTSET) Exit (EXIT_FAILURE);
+	if ((c_ID = GMT_Register_IO (API, GMT_IS_CPT, GMT_IS_REFERENCE|GMT_IO_RESET, GMT_IS_NONE, GMT_IN, NULL, P)) == GMT_NOTSET) Exit (EXIT_FAILURE);
 	if (GMT_Encode_ID (API, c_file, c_ID) != GMT_NOERROR) Exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	memset (cmd, 0, BUFSIZ);
 	sprintf (cmd, "%s -I%s -C%s -JM%gi -Ba -BWSne", z_file, i_file, c_file, Ctrl->W.width);	/* The grdimage command line */
@@ -428,7 +428,7 @@ int main (int argc, char **argv)
 	if (Ctrl->S.active) {	/* May need to add some vertical offset to account for the color scale */
 		if (!Y_active && !K_active) strcat (cmd, " -Y" MAP_OFFSET);	/* User gave neither -K nor -Y so we add 0.75i offset to fit the scale */
 	}
-	if (GMT_Call_Module (API, GMT_ID_GRDIMAGE, 0, cmd) != GMT_NOERROR) Exit (EXIT_FAILURE);	/* Lay down the Mercator image */
+	if (GMT_Call_Module (API, "grdimage", 0, cmd) != GMT_NOERROR) Exit (EXIT_FAILURE);	/* Lay down the Mercator image */
 	
 	/* 7. Plot the optional color scale */
 	
@@ -436,12 +436,12 @@ int main (int argc, char **argv)
 		double x = 0.5 * Ctrl->W.width;	/* Centered beneath the map */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Append color scale bar\n");
 		/* Register the CPT to be used by psscale */
-		if ((c_ID = GMT_Register_IO (API, GMT_IS_CPT, GMT_IS_READONLY|GMT_IO_RESET, GMT_IS_NONE, GMT_IN, NULL, P)) == GMT_NOTSET) Exit (EXIT_FAILURE);
+		if ((c_ID = GMT_Register_IO (API, GMT_IS_CPT, GMT_IS_REFERENCE|GMT_IO_RESET, GMT_IS_NONE, GMT_IN, NULL, P)) == GMT_NOTSET) Exit (EXIT_FAILURE);
 		if (GMT_Encode_ID (API, c_file, c_ID) != GMT_NOERROR) Exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 		memset (cmd, 0, BUFSIZ);
 		sprintf (cmd, "-C%s -D%gi/%s/%gi/%sh -Bxa -By+lm -O", c_file, x, MAP_BAR_GAP, 0.9*Ctrl->W.width, MAP_BAR_HEIGHT);	/* The psscale command line */
 		if (K_active) strcat (cmd, " -K");		/* Add optional user options */
-		if (GMT_Call_Module (API, GMT_ID_PSSCALE, 0, cmd) != GMT_NOERROR) Exit (EXIT_FAILURE);	/* Place the color bar */
+		if (GMT_Call_Module (API, "psscale", 0, cmd) != GMT_NOERROR) Exit (EXIT_FAILURE);	/* Place the color bar */
 	}
 	
 	/* 8. Let the GMT API garbage collection free the memory used */

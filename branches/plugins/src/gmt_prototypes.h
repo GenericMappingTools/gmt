@@ -151,7 +151,7 @@ EXTERN_MSC char * GMT_getsharepath (struct GMT_CTRL *GMT, const char *subdir, co
 EXTERN_MSC void GMT_write_tableheader (struct GMT_CTRL *GMT, FILE *fp, char *txt);
 EXTERN_MSC void GMT_write_segmentheader (struct GMT_CTRL *GMT, FILE *fp, uint64_t n_cols);		/* Write segment header back out */
 EXTERN_MSC void GMT_write_textrecord (struct GMT_CTRL *GMT, FILE *fp, char *txt);
-EXTERN_MSC void GMT_ascii_format_col (struct GMT_CTRL *GMT, char *text, double x, uint64_t col);
+EXTERN_MSC void GMT_ascii_format_col (struct GMT_CTRL *GMT, char *text, double x, unsigned int direction, uint64_t col);
 EXTERN_MSC void GMT_lon_range_adjust (unsigned int range, double *lon);		/* Adjust the longitude given the desired range */
 EXTERN_MSC void GMT_add_to_record (struct GMT_CTRL *GMT, char *record, double val, uint64_t col, unsigned int sep);
 EXTERN_MSC int GMT_scanf (struct GMT_CTRL *GMT, char *p, unsigned int expectation, double *val);	/* Convert strings to double, handling special formats [Data records only ] */

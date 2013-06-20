@@ -34,6 +34,9 @@
  *	15-JUL-2011.   PW: Data version is now 2.2.0. [Change in header format to store
  *			  area magnitude and let greenwich be 2-bit flag (0-3)].  Also
  *			  flag WDBII riverlakes with the river flag as used for GSHHG.
+ *	15-APR-2012.  PW: Data version is now 2.2.1. [no change to format]
+ *	1-JAN-2013.   PW: Data version is now 2.2.2. [no change to format]
+ *	1-JUL-2013.   PW: Data version is now 2.2.3. [no change to format]
  */
 
 #ifndef _GSHHG
@@ -57,8 +60,8 @@
 #define SEEK_CUR 1
 #endif
 
-#define GSHHG_DATA_RELEASE	9		/* For v2.2.0 data set */
-#define GSHHG_PROG_VERSION	"1.13"
+#define GSHHG_DATA_RELEASE	12		/* For v2.2.3 data set */
+#define GSHHG_PROG_VERSION	"1.16"
 
 #define GSHHG_MAXPOL	200000	/* Should never need to allocate more than this many polygons */
 #define GSHHG_SCL	1.0e-6	/* Convert micro-degrees to degrees */

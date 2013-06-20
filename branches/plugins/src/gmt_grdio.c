@@ -1964,7 +1964,9 @@ struct GMT_GRID * GMT_create_grid (struct GMT_CTRL *GMT)
 	G = GMT_memory (GMT, NULL, 1, struct GMT_GRID);
 	G->header = GMT_memory (GMT, NULL, 1, struct GMT_GRID_HEADER);
 	GMT_grd_init (GMT, G->header, NULL, false); /* Set default values */
-	G->alloc_mode = GMT_ALLOCATED;			/* So GMT_* modules can free this memory. */
+	G->alloc_mode = GMT_ALLOCATED_BY_GMT;		/* Memory can be freed by GMT. */
+	G->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
+	G->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 	return (G);
 }
 
@@ -1993,9 +1995,10 @@ struct GMT_GRID *GMT_duplicate_grid (struct GMT_CTRL *GMT, struct GMT_GRID *G, u
 unsigned int GMT_free_grid_ptr (struct GMT_CTRL *GMT, struct GMT_GRID *G, bool free_grid)
 {	/* By taking a reference to the grid pointer we can set it to NULL when done */
 	if (!G) return 0;	/* Nothing to deallocate */
-	if (G->data && free_grid && G->alloc_mode != GMT_NO_CLOBBER) GMT_free_aligned (GMT, G->data);
+	if (G->data && free_grid && G->alloc_mode == GMT_ALLOCATED_BY_GMT) GMT_free_aligned (GMT, G->data);
 	if (G->extra) gmt_close_grd (GMT, G);	/* Close input file used for row-by-row i/o */
-	if (G->header && G->alloc_mode != GMT_NO_CLOBBER) GMT_free (GMT, G->header);
+	//if (G->header && G->alloc_mode == GMT_ALLOCATED_BY_GMT) GMT_free (GMT, G->header);
+	if (G->header) GMT_free (GMT, G->header);
 	return (G->alloc_mode);
 }
 
@@ -2013,9 +2016,9 @@ int GMT_set_outgrid (struct GMT_CTRL *GMT, char *file, struct GMT_GRID *G, struc
 	 * Note we duplicate the grid if we must so that Out always has the input
 	 * data in it (directly or via the pointer).  */
 
-	if (GMT_File_Is_Memory (file) || G->alloc_mode == GMT_READONLY) {	/* Cannot store results in the read-only input array */
+	if (GMT_File_Is_Memory (file) || G->alloc_mode == GMT_ALLOCATED_EXTERNALLY) {	/* Cannot store results in a non-GMT read-only input array */
 		*Out = GMT_duplicate_grid (GMT, G, GMT_DUPLICATE_DATA);
-		(*Out)->alloc_mode = GMT_ALLOCATED;
+		(*Out)->alloc_mode = GMT_ALLOCATED_BY_GMT;
 		return (true);
 	}
 	/* Here we may overwrite the input grid and just pass the pointer back */
@@ -2351,8 +2354,8 @@ int GMT_read_image_info (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I) 
 	}
 
 	I->ColorInterp  = from_gdalread->ColorInterp;		/* Must find out how to release this mem */
-	I->ProjRefPROJ4 = from_gdalread->ProjectionRefPROJ4;
-	I->ProjRefWKT   = from_gdalread->ProjectionRefWKT;
+	I->header->ProjRefPROJ4 = from_gdalread->ProjectionRefPROJ4;
+	I->header->ProjRefWKT   = from_gdalread->ProjectionRefWKT;
 	I->header->inc[GMT_X] = from_gdalread->hdr[7];
 	I->header->inc[GMT_Y] = from_gdalread->hdr[8];
 	I->header->nx = from_gdalread->RasterXsize;

@@ -94,9 +94,9 @@
 #include "gmt_internals.h"
 #include "common_byteswap.h"
 
-unsigned int GMTAPI_n_items (struct GMTAPI_CTRL *API, unsigned int family, unsigned int direction, int *first_ID);
-int GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, int object_ID, unsigned int direction);
-int GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, int family, int object_ID, int direction);
+EXTERN_MSC unsigned int GMTAPI_count_objects (struct GMTAPI_CTRL *API, unsigned int family, unsigned int direction, int *first_ID);
+EXTERN_MSC int GMTAPI_Unregister_IO (struct GMTAPI_CTRL *API, int object_ID, unsigned int direction);
+EXTERN_MSC int GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, int family, int object_ID, int direction);
 
 #ifdef HAVE_DIRENT_H_
 #	include <dirent.h>
@@ -1696,7 +1696,7 @@ int GMT_ascii_output_col (struct GMT_CTRL *GMT, FILE *fp, double x, uint64_t col
 {	/* Formats x according to to output column number */
 	char text[GMT_TEXT_LEN256];
 
-	GMT_ascii_format_col (GMT, text, x, col);
+	GMT_ascii_format_col (GMT, text, x, GMT_OUT, col);
 	return (fprintf (fp, "%s", text));
 }
 
@@ -1787,13 +1787,13 @@ void gmt_format_abstime_output (struct GMT_CTRL *GMT, double dt, char *text)
 		sprintf (text, "%sT%s", date, tclock);
 }
 
-void GMT_ascii_format_col (struct GMT_CTRL *GMT, char *text, double x, uint64_t col)
-{	/* Format based on column position */
+void GMT_ascii_format_col (struct GMT_CTRL *GMT, char *text, double x, unsigned int direction, uint64_t col)
+{	/* Format based on column position in in or out direction */
 	if (GMT_is_dnan (x)) {	/* NaN, just write it as a string */
 		sprintf (text, "NaN");
 		return;
 	}
-	switch (GMT->current.io.col_type[GMT_OUT][col]) {
+	switch (GMT->current.io.col_type[direction][col]) {
 		case GMT_IS_LON:
 			gmt_format_geo_output (GMT, false, x, text);
 			break;
@@ -2063,7 +2063,7 @@ void GMT_add_to_record (struct GMT_CTRL *GMT, char *record, double val, uint64_t
 	 * If sep is 1|2 do both [0 means no separator].
 	 */
 	char word[GMT_TEXT_LEN64];
-	GMT_ascii_format_col (GMT, word, val, col);
+	GMT_ascii_format_col (GMT, word, val, GMT_OUT, col);
 	if (sep & 1) strcat (record, GMT->current.setting.io_col_separator);
 	strcat (record, word);
 	if (sep & 2) strcat (record, GMT->current.setting.io_col_separator);
@@ -4917,7 +4917,7 @@ void gmt_write_formatted_ogr_value (struct GMT_CTRL *GMT, FILE *fp, int col, int
 			break;
 		case GMT_DOUBLE:
 		case GMT_FLOAT:
-			GMT_ascii_format_col (GMT, text, G->dvalue[col], GMT_Z);
+			GMT_ascii_format_col (GMT, text, G->dvalue[col], GMT_OUT, GMT_Z);
 			fprintf (fp, "%s", text);
 			break;
 		case GMT_CHAR:
@@ -4934,7 +4934,7 @@ void gmt_write_formatted_ogr_value (struct GMT_CTRL *GMT, FILE *fp, int col, int
 			break;
 		default:
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad type passed to gmt_write_formatted_ogr_value - assumed to be double\n");
-			GMT_ascii_format_col (GMT, text, G->dvalue[col], GMT_Z);
+			GMT_ascii_format_col (GMT, text, G->dvalue[col], GMT_OUT, GMT_Z);
 			fprintf (fp, "%s", text);
 			break;
 	}
@@ -5066,7 +5066,7 @@ int gmt_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 	 * prevent us from register the data set separately in order to call GMT_minmax.  We must temporarily
 	 * unregister the output, do our thing, then reregister again. */
 
-	n_reg = GMTAPI_n_items (GMT->parent, GMT_IS_DATASET, GMT_OUT, &object_ID);	/* Are there outputs registered already? */
+	n_reg = GMTAPI_count_objects (GMT->parent, GMT_IS_DATASET, GMT_OUT, &object_ID);	/* Are there outputs registered already? */
 	if (n_reg == 1) {	/* Yes, must save and unregister, then reregister later */
 		if ((item = GMTAPI_Validate_ID (GMT->parent, GMT_IS_DATASET, object_ID, GMT_OUT)) == GMT_NOTSET) return (GMTAPI_report_error (GMT->parent, error));
 		GMT_memcpy (&O, GMT->parent->object[item], 1, struct GMTAPI_DATA_OBJECT);
@@ -5089,7 +5089,7 @@ int gmt_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 		return (GMT->parent->error);	/* Make filename with embedded object ID */
 	}
 	sprintf (buffer, "-C -fg -<%s ->%s", in_string, out_string);
-	if (GMT_Call_Module (GMT->parent, GMT_ID_MINMAX, 0, buffer) != GMT_OK) {	/* Get the extent via minmax */
+	if (GMT_Call_Module (GMT->parent, "minmax", 0, buffer) != GMT_OK) {	/* Get the extent via minmax */
 		return (GMT->parent->error);
 	}
 	if ((M = GMT_Retrieve_Data (GMT->parent, object_ID)) == NULL) {
@@ -5158,7 +5158,7 @@ int gmt_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 		for (seg = 0; seg < T->n_segments; seg++) {	/* For each segment in the table */
 			if ((T->ogr->geometry == GMT_IS_POLYGON || T->ogr->geometry == GMT_IS_MULTIPOLYGON) && GMT_polygon_is_open (GMT, T->segment[seg]->coord[GMT_X], T->segment[seg]->coord[GMT_Y], T->segment[seg]->n_rows)) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The -a option specified [M]POLY but open segments were detected!\n");
-				GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &D[GMT_OUT]);
+				GMT_Destroy_Data (GMT->parent, &D[GMT_OUT]);
 				return (GMT_RUNTIME_ERROR);
 			}
 			gmt_alloc_ogr_seg (GMT, T->segment[seg], T->ogr->n_aspatial);	/* Copy over any feature-specific values */
@@ -5695,7 +5695,9 @@ struct GMT_TEXTSET * GMT_create_textset (struct GMT_CTRL *GMT, uint64_t n_tables
 			T->segment[seg]->n_alloc = n_rows;
 		}
 	}
-	D->alloc_mode = GMT_ALLOCATED;	/* So GMT_* modules can free this memory. */
+	D->alloc_mode = GMT_ALLOCATED_BY_GMT;		/* Memory can be freed by GMT. */
+	D->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
+	D->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 	
 	return (D);
 }
@@ -5892,7 +5894,9 @@ struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *GMT, uint64_t n_tables
 	if (!alloc_only) D->n_segments = D->n_tables * n_segments;
 	if (!alloc_only) D->n_records = D->n_segments * n_rows;
 	for (tbl = 0; tbl < n_tables; tbl++) if ((D->table[tbl] = GMT_create_table (GMT, n_segments, n_columns, n_rows, alloc_only)) == NULL) return (NULL);
-	D->alloc_mode = GMT_ALLOCATED;	/* So GMT_* modules can free this memory. */
+	D->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
+	D->alloc_mode = GMT_ALLOCATED_BY_GMT;		/* So GMT_* modules can free this memory. */
+	D->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 	
 	return (D);
 }
@@ -6386,6 +6390,9 @@ struct GMT_IMAGE *GMT_create_image (struct GMT_CTRL *GMT)
 {	/* Allocates space for a new image container. */
 	struct GMT_IMAGE *I = GMT_memory (GMT, NULL, 1, struct GMT_IMAGE);
 	I->header = GMT_memory (GMT, NULL, 1, struct GMT_GRID_HEADER);
+	I->alloc_mode = GMT_ALLOCATED_BY_GMT;		/* Memory can be freed by GMT. */
+	I->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
+	I->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 	GMT_grd_init (GMT, I->header, NULL, false); /* Set default values */
 	return (I);
 }
@@ -6450,7 +6457,9 @@ struct GMT_VECTOR * GMT_create_vector (struct GMT_CTRL *GMT, uint64_t n_columns)
 	V->data = GMT_memory_aligned (GMT, NULL, n_columns, union GMT_UNIVECTOR);
 	V->type = GMT_memory (GMT, NULL, n_columns, enum GMT_enum_type);
 	V->n_columns = n_columns;
-	V->alloc_mode = GMT_ALLOCATED;	/* So GMT_* modules can free this memory. */
+	V->alloc_mode = GMT_ALLOCATED_BY_GMT;		/* Memory can be freed by GMT. */
+	V->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
+	V->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 
 	return (V);
 }
@@ -6511,7 +6520,7 @@ unsigned int GMT_free_vector_ptr (struct GMT_CTRL *GMT, struct GMT_VECTOR *V, bo
 {	/* By taking a reference to the vector pointer we can set it to NULL when done */
 	/* free_vector = false means the vectors are not to be freed but the data array itself will be */
 	if (!V) return 0;	/* Nothing to deallocate */
-	if (V->data && free_vector && V->alloc_mode != GMT_NO_CLOBBER) {
+	if (V->data && free_vector && V->alloc_mode == GMT_ALLOCATED_BY_GMT) {
 		uint64_t col;
 		for (col = 0; col < V->n_columns; col++) GMT_free_univector (GMT, &(V->data[col]), V->type[col]);
 	}
@@ -6549,7 +6558,9 @@ struct GMT_MATRIX * GMT_create_matrix (struct GMT_CTRL *GMT, uint64_t layers)
 {	/* Allocates space for a new matrix container. */
 	struct GMT_MATRIX *M = NULL;
 	M = GMT_memory (GMT, NULL, 1, struct GMT_MATRIX);
-	M->alloc_mode = GMT_ALLOCATED;	/* So GMT_* modules can free this memory. */
+	M->alloc_mode = GMT_ALLOCATED_BY_GMT;		/* Memory can be freed by GMT. */
+	M->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
+	M->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 	M->n_layers = (layers) ? layers : 1;
 	return (M);
 }
@@ -6581,7 +6592,7 @@ struct GMT_MATRIX * GMT_duplicate_matrix (struct GMT_CTRL *GMT, struct GMT_MATRI
 unsigned int GMT_free_matrix_ptr (struct GMT_CTRL *GMT, struct GMT_MATRIX *M, bool free_matrix)
 {	/* Free everything but the struct itself  */
 	if (!M) return 0;	/* Nothing to deallocate */
-	if (free_matrix && M->alloc_mode != GMT_NO_CLOBBER) GMT_free_univector (GMT, &(M->data), M->type);
+	if (free_matrix && M->alloc_mode == GMT_ALLOCATED_BY_GMT) GMT_free_univector (GMT, &(M->data), M->type);
 	return (M->alloc_mode);
 }
 

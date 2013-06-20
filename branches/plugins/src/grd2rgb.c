@@ -429,15 +429,15 @@ int GMT_grd2rgb (void *V_API, int mode, void *args)
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_ALL, NULL, grdfile, Out) != GMT_OK) {
 				Return (API->error);
 			}
-			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid) != GMT_OK) {
+			if (GMT_Destroy_Data (API, &Grid) != GMT_OK) {
 				Return (API->error);
 			}
-			if (new_grid && GMT_Destroy_Data (API, GMT_ALLOCATED, &Out) != GMT_OK) {
+			if (new_grid && GMT_Destroy_Data (API, &Out) != GMT_OK) {
 				Return (API->error);
 			}
 			free (grdfile);
 		}
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &P) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &P) != GMT_OK) {
 			Return (API->error);
 		}
 	}
@@ -528,7 +528,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args)
 			GMT_free (GMT, picture);
 		else
 			PSL_free (picture);
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Grid) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &Grid) != GMT_OK) {
 			Return (API->error);
 		}
 	}

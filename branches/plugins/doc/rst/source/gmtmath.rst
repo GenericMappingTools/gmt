@@ -4,28 +4,29 @@ gmtmath
 
 gmtmath - Reverse Polish Notation (RPN) calculator for data tables
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtmath** [ **-A**\ *t\_f(t).d* ] [ **-C**\ *cols* ] [ **-I** ] [
-**-N**\ *n\_col*\ [/*t\_col*] ] [ **-Q** ] [ **-S**\ [**f**\ \|\ **l**]
-] [ **-T**\ *t\_min*/*t\_max*/*t\_inc*\ [**+**\ ]\|\ *tfile* ] [
-**-V**\ [*level*\ ] ] [
-**-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
-**-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
-] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-o**\ *cols*\ [,*...*] ] [ **-s**\ [*cols*\ ][\ **a**\ \|\ **r**]
-] *operand* [ *operand* ] **OPERATOR** [ *operand* ] **OPERATOR** ...
+**gmtmath** [ **-A**\ *t_f(t).d* ] [ **-C**\ *cols* ] [ **-I** ]
+[ **-N**\ *n\_col*\ [/*t_col*] ] [ **-Q** ] [ **-S**\ [**f**\ \|\ **l**]
+] [ **-T**\ *t\_min*/*t_max*/*t_inc*\ [**+**\ ]\|\ *tfile* ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-b| ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-g| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-o| ]
+[ |SYN_OPT-s| ]
+*operand* [ *operand* ] **OPERATOR** [ *operand* ] **OPERATOR** ...
 **=** [ *outfile* ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **gmtmath** will perform operations like add, subtract, multiply, and
 divide on one or more table data files or constants using Reverse Polish
@@ -43,8 +44,8 @@ column are operated on, but this can be changed (see **-C**).
 Complicated or frequently occurring expressions may be coded as a macro
 for future use or stored and recalled via named memory locations. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *operand*
     If *operand* can be opened as a file it will be read as an ASCII (or
@@ -57,10 +58,10 @@ for future use or stored and recalled via named memory locations.
     The name of a table data file that will hold the final result. If
     not given then the output is sent to stdout.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
-**-A**\ *t\_f(t).d*
+**-A**\ *t_f(t).d*
     Requires **-N** and will partially initialize a table with values
     from the given file containing *t* and *f(t)* only. The *t* is
     placed in column *t\_col* while *f(t)* goes into column *n\_col* - 1
@@ -75,7 +76,7 @@ for future use or stored and recalled via named memory locations.
 **-I**
     Reverses the output row sequence from ascending time to descending
     [ascending].
-**-N**\ *n\_col*\ [/*t\_col*]
+**-N**\ *n_col*\ [/*t_col*]
     Select the number of columns and optionally the column number that
     contains the "time" variable [0]. Columns are numbered starting at 0
     [2/0]. If input files are specified then **-N** will add any missing
@@ -124,8 +125,8 @@ for future use or stored and recalled via named memory locations.
 
 .. include:: explain_help.rst_
 
-`Operators <#toc6>`_
---------------------
+Operators
+---------
 
 Choose among the following 143 operators. "args" are the number of input
 and output arguments.
@@ -420,8 +421,8 @@ and output arguments.
 | **ROOTS**       | 2 1    | Treats col A as f(t) = 0 and returns its roots                                             |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 
-`Symbols <#toc7>`_
-------------------
+Symbols
+-------
 
 The following symbols have special meaning:
 
@@ -446,8 +447,8 @@ The following symbols have special meaning:
 .. include:: explain_precision.rst_
 
 
-`Notes On Operators <#toc9>`_
------------------------------
+Notes On Operators
+------------------
 
 (1) The operators **PLM** and **PLMg** calculate the associated Legendre
 polynomial of degree L and order M in x which must satisfy -1 <= x <= +1
@@ -492,8 +493,8 @@ bit-settings <= 0.
 the time-axis, but if no time is provided (i.e., plain data tables) then
 the width is taken to be given in number of rows.
 
-`Macros <#toc11>`_
-------------------
+Macros
+------
 
 Users may save their favorite operator combinations as macros via the
 file *gmtmath.macros* in their current or user directory. The file may contain
@@ -508,51 +509,67 @@ in Myr and computes the predicted half-space bathymetry:
 **DEPTH** = **SQRT 350 MUL 2500 ADD NEG** : *usage: DEPTH to return
 half-space seafloor depths*
 
-`Examples <#toc12>`_
---------------------
+Examples
+--------
 
 To take the square root of the content of the second data column being
 piped through **gmtmath** by process1 and pipe it through a 3rd process, use
 
-    process1 \| gmtmath STDIN SQRT = \| process3
+   ::
+
+    process1 | gmtmath STDIN SQRT = | process3
 
 To take log10 of the average of 2 data files, use
 
-    gmtmath file1.d file2.d ADD 0.5 MUL LOG10 = file3.d
+   ::
+
+    gmt gmtmath file1.d file2.d ADD 0.5 MUL LOG10 = file3.d
 
 Given the file samples.d, which holds seafloor ages in m.y. and seafloor
 depth in m, use the relation depth(in m) = 2500 + 350 \* sqrt (age) to
 print the depth anomalies:
 
-    gmtmath samples.d T SQRT 350 MUL 2500 ADD SUB = \| lpr
+   ::
+
+    gmt gmtmath samples.d T SQRT 350 MUL 2500 ADD SUB = | lpr
 
 To take the average of columns 1 and 4-6 in the three data sets sizes.1,
 sizes.2, and sizes.3, use
 
-    gmtmath -C1,4-6 sizes.1 sizes.2 ADD sizes.3 ADD 3 DIV = ave.d
+   ::
+
+    gmt gmtmath -C1,4-6 sizes.1 sizes.2 ADD sizes.3 ADD 3 DIV = ave.d
 
 To take the 1-column data set ages.d and calculate the modal value and
 assign it to a variable, try
 
-    set mode\_age = ‘gmtmath -S -T ages.d MODE =‘
+   ::
+
+    gmt set mode_age = `gmt gmtmath -S -T ages.d MODE =`
 
 To evaluate the dilog(x) function for coordinates given in the file t.d:
 
-    gmtmath -Tt.d T DILOG = dilog.d
+   ::
+
+    gmt gmtmath -Tt.d T DILOG = dilog.d
 
 To demonstrate the use of stored variables, consider this sum of the
 first 3 cosine harmonics where we store and repeatedly recall the
 trigonometric argument (2\*pi\*T/360):
 
-    gmtmath -T0/360/1 2 PI MUL 360 DIV T MUL STO@kT COS @kT 2 MUL COS ADD
-    @kT 3 MUL COS ADD = harmonics.d
+   ::
+
+    gmt gmtmath -T0/360/1 2 PI MUL 360 DIV T MUL STO@kT COS @kT 2 MUL COS ADD \
+                @kT 3 MUL COS ADD = harmonics.d
 
 To use gmtmath as a RPN Hewlett-Packard calculator on scalars (i.e., no
 input files) and calculate arbitrary expressions, use the **-Q** option.
 As an example, we will calculate the value of Kei (((1 + 1.75)/2.2) +
 cos (60)) and store the result in the shell variable z:
 
-    set z = ‘gmtmath -Q 1 1.75 ADD 2.2 DIV 60 COSD ADD KEI =‘
+   ::
+
+    set z = `gmt gmtmath -Q 1 1.75 ADD 2.2 DIV 60 COSD ADD KEI =`
 
 To use **gmtmath** as a general least squares equation solver, imagine
 that the current table is the augmented matrix [ A \| b ] and you want
@@ -565,7 +582,9 @@ function for a given t0 = 1.55. Then, you need a 4-column augmented
 table loaded with t in column 0 and your observed y(t) in column 3. The
 calculation becomes
 
-    gmtmath -N4/1 -Aty.d -C0 1 ADD -C2 1.55 STEPT ADD -Ca LSQFIT = solution.d
+   ::
+
+    gmt gmtmath -N4/1 -Aty.d -C0 1 ADD -C2 1.55 STEPT ADD -Ca LSQFIT = solution.d
 
 Note we use the **-C** option to select which columns we are working on,
 then make active all the columns we need (here all of them, with
@@ -575,10 +594,12 @@ columns are zero. If you already have a pre-calculated table with the
 augmented matrix [ A \| b ] in a file (say lsqsys.d), the least squares
 solution is simply
 
-    gmtmath -T lsqsys.d LSQFIT = solution.d
+   ::
 
-`References <#toc13>`_
-----------------------
+    gmt gmtmath -T lsqsys.d LSQFIT = solution.d
+
+References
+----------
 
 Abramowitz, M., and I. A. Stegun, 1964, *Handbook of Mathematical
 Functions*, Applied Mathematics Series, vol. 55, Dover, New York.
@@ -594,7 +615,7 @@ Press, W. H., S. A. Teukolsky, W. T. Vetterling, and B. P. Flannery,
 Spanier, J., and K. B. Oldman, 1987, *An Atlas of Functions*, Hemisphere
 Publishing Corp.
 
-`See Also <#toc14>`_
---------------------
+See Also
+--------
 
 `gmt <gmt.html>`_, `grdmath <grdmath.html>`_

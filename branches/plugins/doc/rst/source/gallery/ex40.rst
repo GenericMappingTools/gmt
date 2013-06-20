@@ -1,0 +1,9 @@
+.. _example_40:
+
+(40) Line simplification
+------------------------
+
+
+.. literalinclude:: ../../../examples/ex40/example_40.sh
+
+.. include:: fig_example_40.rst_

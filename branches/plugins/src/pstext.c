@@ -207,7 +207,7 @@ void load_parameters_pstext (struct PSTEXT_INFO *T, struct PSTEXT_CTRL *C)
 	T->block_justify = C->F.justify;
 }
 
-bool check_for_old_format (struct GMT_CTRL *GMT, char *buffer, int mode)
+bool get_input_format_version (struct GMT_CTRL *GMT, char *buffer, int mode)
 {
 	/* Try to determine if input is the old GMT4-style format.
 	 * mode = 0 means normal textrec, mode = 1 means paragraph mode. */
@@ -215,6 +215,8 @@ bool check_for_old_format (struct GMT_CTRL *GMT, char *buffer, int mode)
 	int n, k;
 	char size[GMT_TEXT_LEN256], angle[GMT_TEXT_LEN256], font[GMT_TEXT_LEN256], just[GMT_TEXT_LEN256], txt[GMT_BUFSIZ];
 	char spacing[GMT_TEXT_LEN256], width[GMT_TEXT_LEN256], pjust[GMT_TEXT_LEN256];
+	
+	if (!buffer || !buffer[0]) return (false);	/* Nothing to work with */
 	
 	if (mode) {	/* Paragraph control record */
 		n = sscanf (buffer, "%s %s %s %s %s %s %s\n", size, angle, font, just, spacing, width, pjust);
@@ -533,6 +535,7 @@ int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, int
 	char txt_x[GMT_TEXT_LEN256], txt_y[GMT_TEXT_LEN256], txt_z[GMT_TEXT_LEN256];
 
 	ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
+	buffer[0] = '\0';	/* Initialize buffer to NULL */
 
 	if (Ctrl->Z.active) {	/* Expect z in 3rd column */
 		nscan = sscanf (record, "%s %s %s %[^\n]\n", txt_x, txt_y, txt_z, buffer);
@@ -599,10 +602,10 @@ int GMT_pstext (void *V_API, int mode, void *args)
 	double plot_x = 0.0, plot_y = 0.0, save_angle = 0.0, xx[2] = {0.0, 0.0}, yy[2] = {0.0, 0.0}, *in = NULL;
 	double offset[2], tmp, *c_x = NULL, *c_y = NULL, *c_angle = NULL;
 
-	char text[GMT_BUFSIZ], buffer[GMT_BUFSIZ], label[GMT_BUFSIZ], pjust_key[5], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
+	char text[GMT_BUFSIZ], buffer[GMT_BUFSIZ] = "", label[GMT_BUFSIZ], pjust_key[5], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
 	char *paragraph = NULL, *line = NULL, *curr_txt = NULL, *in_txt = NULL, **c_txt = NULL;
 	char this_size[GMT_TEXT_LEN256], this_font[GMT_TEXT_LEN256], just_key[5], txt_f[GMT_TEXT_LEN256];
-	int is_old_format = GMT_NOTSET;
+	int input_format_version = GMT_NOTSET;
 	struct PSTEXT_INFO T;
 	struct PSTEXT_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
@@ -700,9 +703,9 @@ int GMT_pstext (void *V_API, int mode, void *args)
 				pos = 0;
 
 				if (GMT_compat_check (GMT, 4)) {
-					if (is_old_format == GMT_NOTSET) is_old_format = check_for_old_format (GMT, buffer, 1);
+					if (input_format_version == GMT_NOTSET) input_format_version = get_input_format_version (GMT, buffer, 1);
 				}
-				if (is_old_format == 1) {	/* Old-style GMT 4 records */
+				if (input_format_version == 4) {	/* Old-style GMT 4 records */
 					nscan += sscanf (buffer, "%s %lf %s %s %s %s %s\n", this_size, &T.paragraph_angle, this_font, just_key, txt_a, txt_b, pjust_key);
 					T.block_justify = GMT_just_decode (GMT, just_key, 12);
 					T.line_spacing = GMT_to_inch (GMT, txt_a);
@@ -805,9 +808,9 @@ int GMT_pstext (void *V_API, int mode, void *args)
 			pos = 0;
 
 			if (GMT_compat_check (GMT, 4)) {
-				if (is_old_format == GMT_NOTSET) is_old_format = check_for_old_format (GMT, buffer, 0);
+				if (input_format_version == GMT_NOTSET) input_format_version = get_input_format_version (GMT, buffer, 0);
 			}
-			if (is_old_format == 1) {	/* Old-style GMT 4 records */
+			if (input_format_version == 4) {	/* Old-style GMT 4 records */
 				nscan--; /* Since we have already counted "text" */
 				nscan += sscanf (buffer, "%s %lf %s %s %[^\n]\n", this_size, &T.paragraph_angle, this_font, just_key, text);
 				T.block_justify = GMT_just_decode (GMT, just_key, 12);

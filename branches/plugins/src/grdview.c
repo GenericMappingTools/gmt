@@ -152,7 +152,7 @@ struct GRDVIEW_POINT *get_point (struct GMT_CTRL *GMT, double x, double y)
 }
 
 #if 0
-/* Removed this because it yields unpredictable results, making it impossible to line up different 3D plots */
+/* RS: Removed this because it yields unpredictable results, making it impossible to line up different 3D plots */
 
 void grdview_init_setup (struct GMT_CTRL *GMT, struct GMT_GRID *Topo, int draw_plane, double plane_level)
 {
@@ -782,13 +782,13 @@ int GMT_grdview (void *V_API, int mode, void *args)
 		/* Destroy original grid and use the copy in Z_orig instead */
 
 		if (Ctrl->G.active) {
-			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Drape[0]) != GMT_OK) {
+			if (GMT_Destroy_Data (API, &Drape[0]) != GMT_OK) {
 				Return (API->error);
 			}
 			Drape[0] = Z_orig;
 		}
 		else {
-			if (GMT_Destroy_Data (API, GMT_ALLOCATED, &Topo) != GMT_OK) {
+			if (GMT_Destroy_Data (API, &Topo) != GMT_OK) {
 				Return (API->error);
 			}
 			Topo = Z_orig;
@@ -1671,7 +1671,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 	if (Ctrl->G.active) for (k = 0; k < n_drape; k++) {
 		GMT_change_grdreg (GMT, Drape[k]->header, d_reg[k]);	/* Reset registration, if required */
 	}
-	if (get_contours && GMT_Destroy_Data (API, GMT_ALLOCATED, &Z) != GMT_OK) {
+	if (get_contours && GMT_Destroy_Data (API, &Z) != GMT_OK) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free Z\n");
 	}
 

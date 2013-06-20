@@ -179,7 +179,7 @@ htmlhelp_basename = 'GMT5doc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'GMT5.tex', u'GMT5 Documentation',
+  ('GMT_Docs', 'GMT5.tex', u'GMT5 Documentation',
    u'GMT\\_TEAM', 'manual'),
 ]
 
@@ -225,28 +225,32 @@ latex_documents = [
 
 man_pages = []
 for dirpath, dirnames, filenames in os.walk('@CMAKE_CURRENT_SOURCE_DIR@'):
-    for f in filenames:
-        if f.endswith('.rst') and not f.startswith('B') and not f.startswith('C') and not f.startswith('F') \
-            and not f.startswith('G') and not f.startswith('I') and not f.startswith('K') and not f.startswith('M') \
-            and not f.startswith('N') and not f.startswith('P') and not f.startswith('T') and not f.startswith('S') \
-            and not f.startswith('X') and not f.startswith('index') and not f.startswith('api') and not f.startswith('cook'): 
-            srcfile = os.path.relpath(os.path.join(dirpath, f[:-4]), '@CMAKE_CURRENT_SOURCE_DIR@/source')
-            outfile = srcfile.replace(os.sep, '-')
-            outfile = outfile.replace('supplements-', '')
-            outfile = outfile.replace('gshhg-', '')
-            outfile = outfile.replace('imgsrc-', '')
-            outfile = outfile.replace('meca-', '')
-            outfile = outfile.replace('mgd77-', '')
-            outfile = outfile.replace('misc-', '')
-            outfile = outfile.replace('potential-', '')
-            outfile = outfile.replace('segy-', '')
-            outfile = outfile.replace('sph-', '')
-            outfile = outfile.replace('spotter-', '')
-            outfile = outfile.replace('x2sys-', '')
-            man_pages.append((srcfile,
-                              outfile,
-                              'description of %s' % outfile,
-                              gmt_team, 1))
+    for d in dirnames: 
+        if d.startswith('gallery') or d.startswith('fig_'):
+            continue
+        for f in filenames: 
+            if f.endswith('.rst') and not f.startswith('B') and not f.startswith('C') and not f.startswith('F') \
+                and not f.startswith('G') and not f.startswith('I') and not f.startswith('K') and not f.startswith('M') \
+                and not f.startswith('N') and not f.startswith('P') and not f.startswith('T') and not f.startswith('S') \
+                and not f.startswith('X') and not f.startswith('U') and not f.startswith('index') \
+                and not f.startswith('api') and not f.startswith('cook'): 
+                srcfile = os.path.relpath(os.path.join(dirpath, f[:-4]), '@CMAKE_CURRENT_SOURCE_DIR@/source')
+                outfile = srcfile.replace(os.sep, '-') 
+                outfile = outfile.replace('supplements-', '') 
+                outfile = outfile.replace('gshhg-', '') 
+                outfile = outfile.replace('imgsrc-', '') 
+                outfile = outfile.replace('meca-', '') 
+                outfile = outfile.replace('mgd77-', '') 
+                outfile = outfile.replace('misc-', '') 
+                outfile = outfile.replace('potential-', '') 
+                outfile = outfile.replace('segy-', '') 
+                outfile = outfile.replace('sph-', '') 
+                outfile = outfile.replace('spotter-', '') 
+                outfile = outfile.replace('x2sys-', '') 
+                man_pages.append((srcfile, 
+                                  outfile, 
+                                  'description of %s' % outfile, 
+                                  'A. Author', 1)) 
 
 # check content of man_pages:
 # sys.stderr.write (', '.join(str(d) for d in man_pages))

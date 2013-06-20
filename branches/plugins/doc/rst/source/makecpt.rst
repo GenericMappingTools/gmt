@@ -4,22 +4,22 @@ makecpt
 
 makecpt - Make GMT color palette tables
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
-**makecpt** [ **-A**\ [**+**\ ]\ *transparency* ] [ **-C**\ *table* ] [
-**-D**\ [**i**\ \|\ **o**] ] [
-**-F**\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c** ] [ **-I** ] [ **-M** ]
-[ **-N** ] [ **-Q**\ [**i**\ \|\ **o**] ] [
-**-T**\ *z\_min*/*z\_max*\ [/*z\_inc*\ [+]] \| **-T**\ *ztable* ] [
-**-V**\ [*level*\ ] ] [ **-W** ] [ **-Z** ]
+**makecpt** [ **-A**\ [**+**\ ]\ *transparency* ] [ **-C**\ *table* ]
+[ **-D**\ [**i**\ \|\ **o**] ]
+[ **-F**\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c** ] [ **-I** ] [ **-M** ]
+[ **-N** ] [ **-Q**\ [**i**\ \|\ **o**] ]
+[ **-T**\ *z\_min*/*z\_max*\ [/*z\_inc*\ [+]] \| **-T**\ *ztable* ]
+[ **-V**\ [*level*\ ] ] [ **-W** ] [ **-Z** ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **makecpt** is a utility that will help you make color palette tables
 (cpt files). You define an equidistant set of contour intervals or pass
@@ -45,13 +45,13 @@ there is no **COLOR\_MODEL** entry in the master cpt file, the
 **COLOR\_MODEL** specified in the `gmt.conf <gmt.conf.html>`_ file or on the command
 line will be used. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 None.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-A**\ [**+**\ ]\ *transparency*
     Sets a constant level of transparency (0-100) for all color slices.
@@ -116,31 +116,37 @@ None.
 
 .. include:: explain_help.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
 To make a cpt file with z-values from -200 to 200, with discrete color
 changes every 25, and using a polar blue-white-red colortable:
 
-    makecpt -Cpolar -T-200/200/25 > colors.cpt
+   ::
+
+    gmt makecpt -Cpolar -T-200/200/25 > colors.cpt
 
 To make an equidistant cpt file from z = -2 to 6, in steps of 1, using
 continuous default rainbow colors:
 
-    makecpt -T-2/6/1 -Z > rainbow.cpt
+   ::
+
+    gmt makecpt -T-2/6/1 -Z > rainbow.cpt
 
 To make a GEBCO look-alike cpt file for bathymetry, run
 
-    makecpt -Cgebco > my\_gebco.cpt
+   ::
 
-`Bugs <#toc7>`_
----------------
+    gmt makecpt -Cgebco > my_gebco.cpt
+
+Bugs
+----
 
 Since **makecpt** will also interpolate from any existing .cpt file you
 may have in your directory, you cannot use one of the listed cpt names
 as an output filename; hence the my\_gebco.cpt in the example.
 
-`See Also <#toc8>`_
--------------------
+See Also
+--------
 
 `gmt <gmt.html>`_, `grd2cpt <grd2cpt.html>`_

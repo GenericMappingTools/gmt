@@ -59,6 +59,7 @@ GMT_COMPATIBILITY		# Oldest GMT version syntax to parse without error [4 and up]
 GMT_FFT				# Which FFT algorithm to use
 GMT_HISTORY			# Should we update the command history?
 GMT_INTERPOLANT			# Spline interpolant
+GMT_CUSTOM_LIBS			# List of custom GMT-compliant shared libraries
 GMT_EXTRAPOLATE_VAL		# How to deal with 1D extrapolated values
 GMT_TRIANGULATE			# Triangulation algorithm
 GMT_VERBOSE			# Verbosity level

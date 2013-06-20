@@ -38,6 +38,9 @@ double GMT_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS_ITEM *T)
 #define H_BORDER 16	/* 16p horizontal border space for -T */
 #define V_BORDER 8	/* 8p vertical border space for -T */
 
+#define N_FAVOR_IMAGE	1
+#define N_FAVOR_POLY	2
+
 /* Control structure for psscale */
 
 struct PSSCALE_CTRL {
@@ -67,8 +70,9 @@ struct PSSCALE_CTRL {
 	struct M {	/* -M */
 		bool active;
 	} M;
-	struct N {	/* -N<dpi> */
+	struct N {	/* -N<dpi>|p */
 		bool active;
+		unsigned int mode;
 		double dpi;
 	} N;
 	struct L {	/* -L[i][<gap>] */
@@ -125,7 +129,7 @@ int GMT_psscale_usage (struct GMTAPI_CTRL *API, int level)
 
 	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: psscale -D<xpos>/<ypos>/<length>/<width>[h] [-A[a|l|c]] [-C<cpt>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E[b|f][<length>][+n[<txt>]]] [%s] [-I[<max_intens>|<low_i>/<high_i>] [%s]\n\t[%s] [-K] [-L[i][<gap>[<unit>]]] [-M] [-O] [-P] [-Q]\n", GMT_B_OPT, GMT_J_OPT, GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-E[b|f][<length>][+n[<txt>]]] [%s] [-I[<max_intens>|<low_i>/<high_i>] [%s]\n\t[%s] [-K] [-L[i][<gap>[<unit>]]] [-M] [-N[p|<dpi>]] [-O] [-P] [-Q]\n", GMT_B_OPT, GMT_J_OPT, GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S]\n\t[-T[+p<pen>][+g<fill>][+l|r|b|t<off>]] [%s] [%s]\n", GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<zfile>] [%s]\n\t[%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
 
@@ -158,7 +162,11 @@ int GMT_psscale_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   lower (z0) annotation on the rectangle.  Ignored if not a discrete cpt table.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -I is used then each rectangle will have the illuminated constant color.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Force monochrome colorbar using GMT_YIQ transformation.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Set effective dots-per-inch for color scale [600].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Control how color-scale is represented by PostScript.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append p to indicate a preference for using polygons, if possible;\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   otherwise it indicates a preference for using colorimage, if possible.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default uses the method that produces the simplest PostScript code.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append preferred dots-per-inch for rasterization when colorimage is used [600].\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Plot colorbar using logarithmic scale and annotate powers of 10 [Default is linear].\n");
 	GMT_Option (API, "R");
@@ -289,7 +297,13 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 				break;
 			case 'N':
 				Ctrl->N.active = true;
-				Ctrl->N.dpi = atof (opt->arg);
+				/* Default will use image@600 dpi or polygons according to what is simplest */
+				if (opt->arg[0] == 'p')	/* Preferentially use polygon fill if at all possible */
+					Ctrl->N.mode = N_FAVOR_POLY;
+				else {			/* Preferentially use image if at all possible */
+					Ctrl->N.mode = N_FAVOR_IMAGE;
+					if (opt->arg[0]) Ctrl->N.dpi = atof (opt->arg);
+				}
 				break;
 			case 'Q':
 				Ctrl->Q.active = true;
@@ -400,8 +414,9 @@ void fix_format (char *unit, char *format)
 
 #define FONT_HEIGHT_PRIMARY (GMT->session.font[GMT->current.setting.font_annot[0].id].height)
 
-void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, double length, double width, double *z_width, double bit_dpi, unsigned int flip, \
-	bool B_set, bool equi, bool horizontal, bool logscl, bool intens, double *max_intens, bool skip_lines, unsigned int extend, \
+void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_PALETTE *P, double length, double width, double *z_width, \
+	double bit_dpi, unsigned int N_mode, unsigned int flip, bool B_set, bool equi, bool horizontal, bool logscl, bool intens, \
+	double *max_intens, bool skip_lines, unsigned int extend, \
 	double e_length, char *nan_text, double gap, bool interval_annot, bool monochrome, struct T Ctrl_T)
 {
 	unsigned int i, ii, id, j, nb, ndec = 0, dec, p_val, depth, Label_justify, form;
@@ -410,6 +425,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 	int this_just;
 	bool reverse, all = true, use_image, center = false, const_width = true, do_annot, use_labels, cpt_auto_fmt = true;
 	char format[GMT_TEXT_LEN256], text[GMT_TEXT_LEN256], test[GMT_TEXT_LEN256], unit[GMT_TEXT_LEN256], label[GMT_TEXT_LEN256];
+	static char *method[2] = {"polygons", "colorimage"};
 	unsigned char *bar = NULL, *tmp = NULL;
 	double off, annot_off, label_off, len, len2, size, x0, x1, dx, xx, dir, y_base, y_annot, y_label, xd = 0.0, yd = 0.0, xt = 0.0;
 	double z = 0.0, xleft, xright, inc_i, inc_j, start_val, stop_val, nan_off = 0.0, rgb[4], rrggbb[4], xp[4], yp[4], prev_del_z, this_del_z = 0.0;
@@ -488,10 +504,17 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 	reverse = (length < 0.0);
 	length = fabs (length);
 	xright = length;
-	use_image = (!P->has_pattern && gap <= 0.0 && (equi || const_width || P->is_continuous));
+	if (N_mode == N_FAVOR_IMAGE)	/* favor image if possible */
+		use_image = (!P->has_pattern && gap <= 0.0);
+	else if (N_mode == N_FAVOR_POLY)	/* favor polygon if possible */
+		use_image = P->is_continuous;
+	else	/* Auto mode */
+		use_image = (!P->has_pattern && gap <= 0.0 && (equi || const_width || P->is_continuous));
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Color bar will be plotted using %s\n", method[use_image]);
+	
 
 	if ((gap >= 0.0 || interval_annot) && !P->is_continuous) {	/* Want to center annotations for discrete colortable, using lower z0 value */
-		center = true;
+		center = (interval_annot || gap >= 0.0);
 		if (gap > 0.0) skip_lines = true;
 		gap *= 0.5;
 		if (interval_annot) {
@@ -502,8 +525,17 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 	if (gap < 0.0) gap = 0.0;
 
 	if (use_image || intens) {	/* Make bitimage for colorbar using bit_dpi */
-		nx = (P->is_continuous) ? urint (length * bit_dpi) : P->n_colors;
-		ny = (intens) ? urint (width * bit_dpi) : 1;
+		bool resample;
+		if (N_mode == N_FAVOR_IMAGE) {	/* Honor the given image dpi */
+			nx = (!use_image && gap > 0.0) ? P->n_colors : urint (length * bit_dpi);
+			ny = urint (width * bit_dpi);
+			resample = true;
+		}
+		else {	/* Do the smallest possible image */
+			resample = P->is_continuous;
+			nx = (P->is_continuous) ? urint (length * bit_dpi) : P->n_colors;
+			ny = (intens) ? urint (width * bit_dpi) : 1;
+		}
 		nm = nx * ny;
 		inc_i = length / nx;
 		inc_j = (ny > 1) ? (max_intens[1] - max_intens[0]) / (ny - 1) : 0.0;
@@ -513,7 +545,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 		/* Load bar image */
 
 		for (i = 0; i < nx; i++) {
-			z = (P->is_continuous) ? get_z (P, (i+0.5) * inc_i, z_width, P->n_colors) : P->range[i].z_low;
+			z = (resample) ? get_z (P, (i+0.5) * inc_i, z_width, P->n_colors) : P->range[i].z_low;
 			GMT_get_rgb_from_z (GMT, P, z, rrggbb);
 			ii = (reverse) ? nx - i - 1 : i;
 			for (j = 0; j < ny; j++) {
@@ -1196,7 +1228,7 @@ int GMT_psscale (void *V_API, int mode, void *args)
 	}
 	PSL_setorigin (PSL, Ctrl->D.x, Ctrl->D.y, 0.0, PSL_FWD);
 	
-	gmt_draw_colorbar (GMT, PSL, P, Ctrl->D.length, Ctrl->D.width, z_width, Ctrl->N.dpi, Ctrl->A.mode, 
+	gmt_draw_colorbar (GMT, PSL, P, Ctrl->D.length, Ctrl->D.width, z_width, Ctrl->N.dpi, Ctrl->N.mode, Ctrl->A.mode, 
 		GMT->current.map.frame.draw, Ctrl->L.active, Ctrl->D.horizontal, Ctrl->Q.active, Ctrl->I.active,
 		max_intens, Ctrl->S.active, Ctrl->E.mode, Ctrl->E.length, Ctrl->E.text, Ctrl->L.spacing,
 		Ctrl->L.interval, Ctrl->M.active, Ctrl->T);

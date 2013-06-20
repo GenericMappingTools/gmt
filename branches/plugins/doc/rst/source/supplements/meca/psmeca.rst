@@ -4,41 +4,42 @@ psmeca
 
 psmeca - Plot focal mechanisms on maps
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
 psmeca [ *table* ] **-J**\ *parameters*
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [
-**-B**\ [**p**\ \|\ **s**]\ *parameters* ] [
-**-C**\ [*pen*\ ][\ **P**\ *pointsize*] ] [ **-D**\ *depmin*/*depmax* ]
-[ **-E**\ *fill*] [ **-F**\ *mode*\ [*args*] ] [ **-G**\ *fill*] [ **-K** ] [ **-L**\ [*pen*\ ] ] [
-**-M** ] [ **-N** ] [ **-O** ] [ **-P** ] [
-**-S**\ *<format><scale>*\ [/**d**]] [
-**-T**\ *num\_of\_plane*\ [*pen*\ ] ] [
-**-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [ **-V**\ [*level*\ ]
-] [ **-W**\ *pen* ] [
-**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-] [
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-] [ **-Z**\ *cptfile*] [ **-c**\ *copies* ] [
-**-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-:**\ [**i**\ \|\ **o**] ]
+|SYN_OPT-R|
+[ |SYN_OPT-B| ]
+[ **-C**\ [*pen*\ ][\ **P**\ *pointsize*] ] [ **-D**\ *depmin*/*depmax* ]
+[ **-E**\ *fill*] [ **-F**\ *mode*\ [*args*] ] [ **-G**\ *fill*] [ **-K** ] [ **-L**\ [*pen*\ ] ]
+[ **-M** ] [ **-N** ] [ **-O** ] [ **-P** ]
+[ **-S**\ *<format><scale>*\ [/**d**]]
+[ **-T**\ *num\_of\_plane*\ [*pen*\ ] ]
+[ |SYN_OPT-U| ]
+[ |SYN_OPT-V| ]
+[ **-W**\ *pen* ]
+[ |SYN_OPT-X| ]
+[ |SYN_OPT-Y| ]
+[ **-Z**\ *cptfile*]
+[ |SYN_OPT-c| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **psmeca** reads data values from *files* [or standard input] and
 generates *PostScript* code that will plot focal mechanisms on a map.
 Most options are the same as for **psxy**. The *PostScript* code is
 written to standard output.
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
@@ -319,21 +320,20 @@ following columns:
 .. include:: ../../explain_colon.rst_
 .. include:: ../../explain_help.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
 The following file should give a normal-faulting CMT mechanism:
 
-    psmeca -R239/240/34/35.2 -Jm4c -Sc0.4 -h1 << END > test.ps
+   ::
 
+    gmt psmeca -R239/240/34/35.2 -Jm4c -Sc0.4 -h1 << END > test.ps
     lon lat depth str dip slip st dip slip mant exp plon plat
-
     239.384 34.556 12. 180 18 -88 0 72 -90 5.5 0 0 0
-
     END
 
-`See Also <#toc7>`_
--------------------
+See Also
+--------
 
 `GMT <GMT.html>`_, `psbasemap <psbasemap.html>`_, `psxy <psxy.html>`_
 

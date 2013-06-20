@@ -2,7 +2,7 @@
 
 **C/C++ Application Programming Interface**
 
-**Version 5.0.1b (r), Feb 2013**
+**Version 5.0.1b (r), July 2013**
 
 **Pål (Paul) Wessel**
 
@@ -247,8 +247,7 @@ support via ``GMT_grdimage`` [4]_.
         /* ---- Variables "hidden" from the API ---- */
         unsigned int id;                /* The internal number of the data set */
         enum GMT_enum_alloc alloc_mode; /* Allocation info [0] */
-        const char      *ProjRefPROJ4;
-        const char      *ProjRefWKT;
+        unsigned int alloc_level;       /* Level of initial allocation */
         const char      *ColorInterp;
     };
 
@@ -303,6 +302,7 @@ data set *via* a ``struct GMT_VECTOR`` it will know how to read the data correct
         union GMT_UNIVECTOR *data;          /* Array with unions for each column */
         unsigned int         id;            /* An identification number */
         enum GMT_enum_alloc  alloc_mode;    /* Determines if we may free the vectors or not */
+        unsigned int alloc_level;           /* Level of initial allocation */
     };
 
 
@@ -328,6 +328,7 @@ User data matrices (GMT matrices)
         union GMT_UNIVECTOR data;           /* Union with pointers a data matrix of any type */
         /* ---- Variables "hidden" from the API ---- */
         unsigned int id;                    /* An identification number */
+        unsigned int alloc_level;           /* Level of initial allocation */
         enum GMT_enum_type type;            /* The matrix data type */
     };
 
@@ -349,17 +350,13 @@ Table [tbl:types].
 
 .. _tbl-enums:
 
-+-----------------+-------+----------------------------------------------------------------+
-| constant        | value | description                                                    |
-+=================+=======+================================================================+
-| GMT_ALLOCATED   | 0     | Normal case; free item when done                               |
-+-----------------+-------+----------------------------------------------------------------+
-| GMT_REFERENCE   | 1     | Item was *not* allocated so do not free, but reallocate is ok  |
-+-----------------+-------+----------------------------------------------------------------+
-| GMT_READONLY    | 2     | Do not allocate or reallocate                                  |
-+-----------------+-------+----------------------------------------------------------------+
-| GMT_CLOBBER     | 3     | Free item no matter what its allocation status                 |
-+-----------------+-------+----------------------------------------------------------------+
++---------------------------+-------+----------------------------------------------------------------+
+| constant                  | value | description                                                    |
++===========================+=======+================================================================+
+| GMT_ALLOCATED_EXTERNALLY  | 0     | Item was *not* allocated by GMT so do not reallocate or free   |
++---------------------------+-------+----------------------------------------------------------------+
+| GMT_ALLOCATED_BY_GMT      | 1     | GMT allocated the memory; reallocate and free as needed        |
++---------------------------+-------+----------------------------------------------------------------+
 
 [tbl:enums]
 
@@ -399,7 +396,7 @@ Overview of the GMT C Application Program Interface
 Users who wish to create their own *GMT* application based on the API
 must make sure their program goes through the steps below; details for
 each step will be revealed in the following chapter. We have kept the
-API simple: In addition to the *GMT* modules, there are only 20 public
+API simple: In addition to the *GMT* modules, there are only 52 public
 functions to become familiar with, but most applications will only use a
 small subset of this selection. Functions either return an integer error
 code (when things go wrong; otherwise it is set to GMT_OK (0)), or they
@@ -465,7 +462,7 @@ Table [tbl:API] gives a list of all the functions and their purpose.
 +-------------------------+---------------------------------------------------+
 | GMT_Begin_IO_           | Enable record-by-record i/o                       |
 +-------------------------+---------------------------------------------------+
-| GMT_Call_Module_        | Call any of the GMT_N_MODULES (120) GMT modules   |
+| GMT_Call_Module_        | Call any of the GMT modules                       |
 +-------------------------+---------------------------------------------------+
 | GMT_Create_Args_        | Convert linked list of options to text array      |
 +-------------------------+---------------------------------------------------+
@@ -515,17 +512,19 @@ Table [tbl:API] gives a list of all the functions and their purpose.
 +-------------------------+---------------------------------------------------+
 | GMT_Get_Data_           | Import a registered data resources                |
 +-------------------------+---------------------------------------------------+
-| GMT_Get_Index_          | Convert row, col into a grid or image index       |
+| GMT_Get_Default_        | Obtain as string one of the GMT default settings  |
 +-------------------------+---------------------------------------------------+
-| GMT_Get_Module_         | Get the ID of a GMT module by its name            |
+| GMT_Get_ID_             | Obtain the ID of a given resource                 |
++-------------------------+---------------------------------------------------+
+| GMT_Get_Index_          | Convert row, col into a grid or image index       |
 +-------------------------+---------------------------------------------------+
 | GMT_Get_Record_         | Import a single data record                       |
 +-------------------------+---------------------------------------------------+
 | GMT_Get_Row_            | Import a single grid row                          |
 +-------------------------+---------------------------------------------------+
-| GMT_Init_IO_            | Initialize i/o given registered resources         |
+| GMT_Get_Value_          | Convert string into coordinates or dimensions     |
 +-------------------------+---------------------------------------------------+
-| GMT_List_Module_        | List the usage of one or all modules              |
+| GMT_Init_IO_            | Initialize i/o given registered resources         |
 +-------------------------+---------------------------------------------------+
 | GMT_Make_Option_        | Create an option structure                        |
 +-------------------------+---------------------------------------------------+
@@ -535,7 +534,9 @@ Table [tbl:API] gives a list of all the functions and their purpose.
 +-------------------------+---------------------------------------------------+
 | GMT_Parse_Common_       | Parse the GMT common options                      |
 +-------------------------+---------------------------------------------------+
-| GMT_Put_Data_           | Export to a registered data resource              |
+| GMT_Probe_Module_       | Probe a module for purpose or existence           |
++-------------------------+---------------------------------------------------+
+| GMT_Put_Data_           | Export to a registered data resource given by ID  |
 +-------------------------+---------------------------------------------------+
 | GMT_Put_Record_         | Export a data record                              |
 +-------------------------+---------------------------------------------------+
@@ -547,7 +548,7 @@ Table [tbl:API] gives a list of all the functions and their purpose.
 +-------------------------+---------------------------------------------------+
 | GMT_Report_             | Issue a message contingent upon verbosity level   |
 +-------------------------+---------------------------------------------------+
-| GMT_Retrieve_Data_      | Obtained link to data in memory                   |
+| GMT_Retrieve_Data_      | Obtained link to data in memory via ID            |
 +-------------------------+---------------------------------------------------+
 | GMT_Set_Comment_        | Assign a comment to a data resource               |
 +-------------------------+---------------------------------------------------+
@@ -693,21 +694,19 @@ it returns FALSE (0).
 
 .. _tbl-methods:
 
-+--------------------+-------+---------------------------------------------------------------+
-| method             | value | how to read/write data                                        | 
-+====================+=======+===============================================================+
-| GMT_IS_FILE        | 0     | Pointer to name of a file                                     |
-+--------------------+-------+---------------------------------------------------------------+
-| GMT_IS_STREAM      | 1     | Pointer to open stream (or process)                           |
-+--------------------+-------+---------------------------------------------------------------+
-| GMT_IS_FDESC       | 2     | Pointer to integer file descriptor                            |
-+--------------------+-------+---------------------------------------------------------------+
-| GMT_IS_DUPLICATE   | 3     | Pointer to memory we may *duplicate* data from                |
-+--------------------+-------+---------------------------------------------------------------+
-| GMT_IS_REFERENCE   | 4     | Pointer to memory we may *reference* data from (realloc OK)   |
-+--------------------+-------+---------------------------------------------------------------+
-| GMT_IS_READONLY    | 5     | Pointer to memory we may *read* data from (no realloc)        |
-+--------------------+-------+---------------------------------------------------------------+
++--------------------+-------+--------------------------------------------------+
+| method             | value | how to read/write data                           | 
++====================+=======+==================================================+
+| GMT_IS_FILE        | 0     | Pointer to name of a file                        |
++--------------------+-------+--------------------------------------------------+
+| GMT_IS_STREAM      | 1     | Pointer to open stream (or process)              |
++--------------------+-------+--------------------------------------------------+
+| GMT_IS_FDESC       | 2     | Pointer to integer file descriptor               |
++--------------------+-------+--------------------------------------------------+
+| GMT_IS_DUPLICATE   | 3     | Pointer to memory we may *duplicate* data from   |
++--------------------+-------+--------------------------------------------------+
+| GMT_IS_REFERENCE   | 4     | Pointer to memory we may *reference* data from   |
++--------------------+-------+--------------------------------------------------+
 
 [tbl:methods]
 
@@ -804,6 +803,8 @@ what we do if no resources have been registered. The choices are
     **8** (or GMT_ADD_STDIO_ALWAYS) means "always add std\* even if
     resources have been registered".
 
+    **16** (or GMT_ADD_EXISTING) means "only use already registered resources".
+
 The standard behavior is 5 (or GMT_REG_DEFAULT). Next, ``n_args`` is 0
 if ``args`` is the head of a linked list of options (further discussed
 in Section [sec:func]); otherwise ``args`` is an array of ``n_args``
@@ -826,7 +827,7 @@ possibly increasing memory requirements. If the type is GMT_DOUBLE then
 *GMT* will be able to use the column directly by reference. The
 ``n_columns`` and ``n_rows`` parameters indicate the number of vectors
 and their common length. If these are not yet known you may pass 0 for
-these values and set ``alloc_mode`` to GMT_REFERENCE (1); this will
+these values and set ``alloc_mode`` to GMT_ALLOCATED_BY_GMT (1); this will
 make sure *GMT* will allocate the necessary memory to the variable you
 specify.
 
@@ -840,7 +841,7 @@ possibly increasing memory requirements. If the type is GMT_FLOAT then
 *GMT* may be able to use the matrix directly by reference. The
 ``n_rows`` and ``n_columns`` parameters indicate the dimensions of the
 matrix. If these are not yet known you may pass 0 for these values and
-set ``alloc_mode`` to GMT_REFERENCE 1; this will make sure *GMT* will
+set ``alloc_mode`` to GMT_ALLOCATED_BY_GMT (1); this will make sure *GMT* will
 allocate the necessary memory at the location you specify. Fortran users
 will instead have to specify a size large enough to hold the anticipated
 output data. The ``registration`` and ``range`` gives the grid
@@ -922,7 +923,10 @@ space for the array. Alternatively, you can pass
 and call a second time, passing ``GMT_GRID_DATA_ONLY``, to allocate
 space for the array. In that second call you pass the pointer returned
 by the first call as ``data`` and specify the family; all other
-arguments should be NULL or 0. The function returns a pointer to the
+arguments should be NULL or 0. Normally, resources created by this
+function are considered to be input (i.e., have a direction that is GMT_IN).
+You can change that to GMT_OUT by adding in the bit flag GMT_VIA_OUTPUT.
+The function returns a pointer to the
 data container. In case of an error we return a NULL pointer and pass an
 error code via ``API->error``.
 
@@ -947,9 +951,33 @@ are addressed by
 
 which returns a pointer to the allocated resource. Specify which
 ``family`` and select ``mode`` from ``GMT_DUPLICATE_DATA``,
-``GMT_DUPLICATE_ALLOC``, and ``GMT_DUPLICATE_NONE``, as discussed above.
+``GMT_DUPLICATE_ALLOC``, and ``GMT_DUPLICATE_NONE``, as discussed above
+(also see ``mode`` discussion above).
 The ``data`` is a pointer to the resource you wish to duplicate. In case
 of an error we return a NULL pointer and pass an error code via
+``API->error``.
+
+Get resource ID
+---------------
+
+[sec:getID]
+
+Resources created by these two methods can be used as in various ways.
+Sometimes you want to pass them as input to other modules, in which
+case you need to registration ID of that resource. This task
+are performed by
+
+.. _GMT_Get_ID:
+
+  ::
+
+    void *GMT_Get_ID (void *API, unsigned int family,
+                              unsigned int direction, void *data);
+
+which returns the ID number of the allocated resource. Specify which
+``family`` and select ``direction`` from ``GMT_IN`` or ``GMT_OUT``.
+The ``data`` is a pointer to the resource you whose ID you need. In case
+of an error we return GMT_NOTSET (-1) and pass an error code via
 ``API->error``.
 
 Import Data
@@ -1515,7 +1543,7 @@ You can have your program menu display the standard usage message for a
 
   ::
 
-    void GMT_Option (void *API, char *options);
+    int GMT_Option (void *API, char *options);
 
 where ``options`` is a comma-separated list of *GMT* common options
 (e.g., “R,J,O,X”). You can repeat this function with different sets of
@@ -1584,7 +1612,7 @@ tedious to program. You can simplify this by using
     int GMT_Get_Value (void *API, char *arg, double par[]);
 
 where ``arg`` is the text item with one or more values that are
-separated by commas, space, or slashes, and ``par`` is an array long
+separated by commas, spaces, or slashes, and ``par`` is an array long
 enough to hold all the items you are parsing. The function returns the
 number of items parsed, or -1 if there is an error. For instance, assume
 the character string ``origin`` was given by the user as two geographic
@@ -1634,12 +1662,12 @@ interfaces are identical are looks like
 
   ::
 
-    int GMT_Call_Module (void *API, int module_ID, int mode, void *args);
+    int GMT_Call_Module (void *API, const char *module, int mode, void *args);
 
-The ``module_ID`` is an integer that selects which module to execute.
-All GMT modules may be called with one of three sets of ``args``
-depending on ``mode``. The three modes differ in how the options are
-passed to the module:
+Here, ``module`` can be any of the *GMT* modules, such as
+``psxy`` or ``grdvolume``.  All GMT modules may be called with one of
+three sets of ``args`` depending on ``mode``. The three modes differ in
+how the options are passed to the module:
 
     *mode > 0*
         Expects ``args`` to be an array of text options and ``mode`` to be a count of how many
@@ -1653,29 +1681,21 @@ passed to the module:
     *mode == 0*
         Expects ``args`` to be a single text string with all required options.
 
-If module name rather than module ID is available, you can obtain the latter via a call to
+If no module by the given name is found we
+return -1.  Should your program need to determine if a module exists or display
+the purpose of a particular module (or all) you can call
 
-.. _GMT_Get_Module:
-
-  ::
-
-    int GMT_Get_Module (void *API, char *module_name);
-
-
-Here, ``module_name`` can be any of the *GMT* modules, such as
-``psxy`` or ``grdvolume``.  The ID return can then be used in
-GMT_Call_Module.  If no module by the given name is found we
-return GMT_NO_MODULE (-1).  Should your program need to display
-the purpose of a particular module you can call
-
-.. _GMT_List_Module:
+.. _GMT_Probe_Module:
 
   ::
 
-    int GMT_List_Module (void *API, int module_ID);
+    int GMT_Probe_Module (void *API, const char *module, unsigned int mode);
 
-and a brief one-line summary is presented.  If ``module_ID`` equals -1
-then we list summaries for all the modules.
+If ``mode`` is GMT_MODULE_PURPOSE then a brief one-line summary is presented.
+If no module by the given name is found we return an error code.  If ``module`` equals NULL
+then we list summaries for all the modules.  However, if ``mode`` is GMT_MODULE_EXIST we
+do not list summaries and just return 0 if the module is found and an error code
+otherwise.
 
 Set program options via text array arguments
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2231,13 +2251,9 @@ function, whose prototype is
 
   ::
 
-    int GMT_Destroy_Data (void *API, unsigned int mode, void *data);
+    int GMT_Destroy_Data (void *API, void *data);
 
-where ``data`` is the address of the pointer to a data container. Pass
-``mode`` either as GMT_ALLOCATED or GMT_REFERENCE. The former is used
-internally by the *GMT* modules since they can only free resources that
-are not destined to live on in the memory of their calling program. The
-latter mode is used to free resources in your calling program. Note that
+where ``data`` is the address of the pointer to a data container.  Note that
 when each module completes it will automatically free memory created by
 the API; similarly, when the session is destroyed we also automatically
 free up memory. Thus, ``GMT_Destroy_Data`` is therefore generally only
@@ -2327,11 +2343,10 @@ conveniently performed for you by
   ::
 
     void *GMT_FFT_Create (void *API, void *X, unsigned int dim,
-                          unsigned int subdivide, unsigned int mode, void *F);
+                          unsigned int mode, void *F);
 
 Here, ``X`` is either your dataset or grid pointer, ``dim`` is the
-dimension of the transform (1 or 2 only), ``subdivide`` is not yet used
-by the API, ``mode`` passes various flags to the setup, such as whether
+dimension of the transform (1 or 2 only), ``mode`` passes various flags to the setup, such as whether
 the data is real, imaginary, or complex, and ``F`` is the opaque pointer
 returned by ``GMT_FFT_Parse``. Depending on the options you chose to
 pass to ``GMT_FFT_Parse``, the data may have a constant or a trend

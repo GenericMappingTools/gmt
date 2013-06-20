@@ -253,7 +253,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 			S[L][M]  = S->coord[3][row]
 		}
 	}
-	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
+	if (GMT_Destroy_Data (API, &D) != GMT_OK) {
 		Return (API->error);
 	}
 	
@@ -277,7 +277,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 	
 	GMT_row_loop (GMT, Grid, row) {	/* For each output latitude */
 		lat = GMT_grd_row_to_y (GMT, row, Grid->header);	/* Current latitude */
-		GMT_ascii_format_col (GMT, text, lat, GMT_Y);
+		GMT_ascii_format_col (GMT, text, lat, GMT_OUT, GMT_Y);
 		GMT_Report (API, GMT_MSG_VERBOSE, "Working on latitude: %s", text);
 		/* Compute all P_lm needed with GMT_set_Plm */
 		GMT_col_loop (GMT, Grid, row, col, node) {	/* For each longitude along this parallel */

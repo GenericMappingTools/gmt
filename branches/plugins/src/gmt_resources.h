@@ -40,16 +40,14 @@
  * the variables are accessible just like the "public" ones.
  */
 
-/* These are the 6 methods for i/o */
+/* These are the 5 methods for i/o */
 
-enum GMT_enum_methods {
+enum GMT_enum_method {
 	GMT_IS_FILE = 0,	/* Entity is a filename */
 	GMT_IS_STREAM,		/* Entity is an open stream */
 	GMT_IS_FDESC,		/* Entity is an open file descriptor */
 	GMT_IS_DUPLICATE,	/* Entity is a memory location that should be duplicated */
-	GMT_IS_REFERENCE,	/* Entity is a memory location and we just pass the ref (no copying) */
-	GMT_IS_READONLY,	/* As GMT_IS_REFERENCE, but we are not allowed to change the data in any way. */
-	GMT_N_METHODS};		/* Number of methods we recognize */
+	GMT_IS_REFERENCE};	/* Entity is a memory location and we just pass the ref (no copying) */
 
 /* A Grid can come from a GMT grid OR User Matrix, and Data can come from DATASET or via Vectors|Matrix, and Text from TEXTSET or Matrix */
 
@@ -59,7 +57,7 @@ enum GMT_enum_via {
 	GMT_VIA_OUTPUT = 2048};	/* For GMT_Create_Data mode to set dir = output */
 
 /* These are the 5 families of data types, + a coordinate array + 2 help containers for vector and matrix */
-enum GMT_enum_families {
+enum GMT_enum_family {
 	GMT_IS_DATASET = 0,	/* Entity is data table */
 	GMT_IS_TEXTSET,		/* Entity is a Text table */
 	GMT_IS_GRID,		/* Entity is a GMT grid */
@@ -67,11 +65,10 @@ enum GMT_enum_families {
 	GMT_IS_IMAGE,		/* Entity is a 1- or 3-layer unsigned char image */
 	GMT_IS_VECTOR,		/* Entity is user vectors */
 	GMT_IS_MATRIX,		/* Entity is user matrix */
-	GMT_IS_COORD,		/* Entity is a double coordinate array */
-	GMT_N_FAMILIES};
+	GMT_IS_COORD};		/* Entity is a double coordinate array */
 
 /* These are modes for handling comments */
-enum GMT_enum_comments {
+enum GMT_enum_comment {
 	GMT_COMMENT_IS_TEXT	= 0,	/* Comment is a text string */
 	GMT_COMMENT_IS_OPTION	= 1,	/* Comment is a linked list of GMT_OPTION structures */
 	GMT_COMMENT_IS_COMMAND	= 2,	/* Comment replaces header->command */
@@ -86,6 +83,10 @@ enum GMT_enum_comments {
 enum GMT_api_err_enum {
 	GMT_NOTSET  = -1,	/* When something is not set */
 	GMT_NOERROR = 0};	/* Return code when all is well */
+
+enum GMT_module_enum {
+	GMT_MODULE_EXIST  = 0,		/* mode for GMT_Probe_Module to return 0 if it exists */
+	GMT_MODULE_PURPOSE  = 1};	/* mode for GMT_Probe_Module to print purpose of module, or all modules */
 
 /* Array indices for input/output/stderr variables */
 
@@ -105,21 +106,21 @@ enum GMT_enum_freg {
 	GMT_ADD_FILES_ALWAYS = 2,	/* Tell GMT_Init_IO to always register all input files in the option list */
 	GMT_ADD_STDIO_IF_NONE = 4,	/* Tell GMT_Init_IO we conditionally want to register std(in|out) if nothing else has been registered */
 	GMT_ADD_STDIO_ALWAYS = 8,	/* Tell GMT_Init_IO to always register std(in|out) */
-	GMT_ADD_EXISTING = 16,		/* Tell GMT_Init_IO to only use alerady registered resources */
+	GMT_ADD_EXISTING = 16,		/* Tell GMT_Init_IO to only use already registered resources */
 	GMT_ADD_DEFAULT = 6};		/* Tell GMT_Init_IO to register files, and if none are found then std(in|out), but only if nothing was registered before this call */
 
 enum GMT_enum_ioset {
-	GMT_IO_DONE = 0,	/* Tell GMT_End_IO we are done but nothing special is to be done. */
+	GMT_IO_DONE = 0,		/* Tell GMT_End_IO we are done but nothing special is to be done. */
 	GMT_IO_ASCII = 512,		/* Force ASCII mode for reading (ignoring current io settings). */
 	GMT_IO_RESET = 32768,		/* Tell GMT_End_IO that accessed resources should be made read/write-able again. */
 	GMT_IO_UNREG = 16384};		/* Tell GMT_End_IO to unregister all accessed resources. */
 
 enum GMT_enum_read {
-	GMT_READ_DOUBLE = 0,	/* Read ASCII data record and return double array */
-	GMT_READ_NORMAL = 0,	/* Normal read mode [Default] */
-	GMT_READ_TEXT = 1,	/* Read ASCII data record and return text string */
-	GMT_READ_MIXED = 2,	/* Read ASCII data record and return double array but tolerate conversion errors */
-	GMT_FILE_BREAK = 4};	/* Add to mode to indicate we want to know when each file end is reached [continuous] */
+	GMT_READ_DOUBLE = 0,		/* Read ASCII data record and return double array */
+	GMT_READ_NORMAL = 0,		/* Normal read mode [Default] */
+	GMT_READ_TEXT = 1,		/* Read ASCII data record and return text string */
+	GMT_READ_MIXED = 2,		/* Read ASCII data record and return double array but tolerate conversion errors */
+	GMT_FILE_BREAK = 4};		/* Add to mode to indicate we want to know when each file end is reached [continuous] */
 
 enum GMT_enum_write {
 	GMT_WRITE_DOUBLE = 0,		/* Write double array to output */
@@ -141,50 +142,45 @@ enum GMT_enum_dest {
 	GMT_WRITE_TABLE_SEGMENT};	/* Same as 2 but if no filenames we use both tbl and seg with format */
 
 enum GMT_enum_alloc {
-	GMT_ALLOCATED = 0, /* Item was allocated so GMT_* modules should free when GMT_Destroy_Data is called */
-	GMT_REFERENCE,     /* Item was not allocated so GMT_* modules should NOT free when GMT_Destroy_Data is called, but may realloc if needed */
-	GMT_READONLY,      /* Item was not allocated so GMT_* modules should NOT free when GMT_Destroy_Data is called. Consider read-only data */
-	GMT_CLOBBER,       /* Free item no matter what its allocation status */
-	GMT_NO_CLOBBER};   /* Never free as item was allocated outside GMT */
+	GMT_ALLOCATED_EXTERNALLY = 0,	/* Allocated outside of GMT: We cannot reallocate or free this memory */
+	GMT_ALLOCATED_BY_GMT = 1};	/* Allocated by GMT: We may reallocate as needed and free when no longer needed */
 
 enum GMT_enum_shape {
-	GMT_ALLOC_NORMAL = 0,	/* Normal allocation of new dataset based on shape of input dataset */
-	GMT_ALLOC_VERTICAL,	/* Allocate a single table for data set to hold all input tables by vertical concatenation */
-	GMT_ALLOC_HORIZONTAL};	/* Alocate a single table for data set to hold all input tables by horizontal (paste) concatenations */
+	GMT_ALLOC_NORMAL = 0,		/* Normal allocation of new dataset based on shape of input dataset */
+	GMT_ALLOC_VERTICAL,		/* Allocate a single table for data set to hold all input tables by vertical concatenation */
+	GMT_ALLOC_HORIZONTAL};		/* Alocate a single table for data set to hold all input tables by horizontal (paste) concatenations */
 
 enum GMT_enum_duplicate {
-	GMT_DUPLICATE_NONE = 0,	/* Duplicate data set structure but no allocate&copy of data records|grid|image */
-	GMT_DUPLICATE_ALLOC,	/* Duplicate data set structure and allocate space for data records|grid|image, but no copy */
-	GMT_DUPLICATE_DATA};	/* Duplicate data set structure, allocate space for data records|grid|image, and copy */
+	GMT_DUPLICATE_NONE = 0,		/* Duplicate data set structure but no allocate&copy of data records|grid|image */
+	GMT_DUPLICATE_ALLOC,		/* Duplicate data set structure and allocate space for data records|grid|image, but no copy */
+	GMT_DUPLICATE_DATA};		/* Duplicate data set structure, allocate space for data records|grid|image, and copy */
 
 enum GMT_enum_out {
-	GMT_WRITE_NORMAL = 0,	/* Write header and contents of this entity (table or segment) */
-	GMT_WRITE_HEADER,	/* Only write header and not the contents of this entity (table or segment) */
-	GMT_WRITE_SKIP};	/* Entirely skip this entity on output (table or segment) */
+	GMT_WRITE_NORMAL = 0,		/* Write header and contents of this entity (table or segment) */
+	GMT_WRITE_HEADER,		/* Only write header and not the contents of this entity (table or segment) */
+	GMT_WRITE_SKIP};		/* Entirely skip this entity on output (table or segment) */
 
 /* Various directions and modes to call the FFT */
-enum GMT_FFT_modes {
-	GMT_FFT_FWD     = 0U, /* forward Fourier transform */
-	GMT_FFT_INV     = 1U, /* inverse Fourier transform */
-	GMT_FFT_REAL    = 0U, /* real-input FT (currently unsupported) */
-	GMT_FFT_COMPLEX = 1U  /* complex-input Fourier transform */
-};
+enum GMT_FFT_mode {
+	GMT_FFT_FWD     = 0U,		/* forward Fourier transform */
+	GMT_FFT_INV     = 1U,		/* inverse Fourier transform */
+	GMT_FFT_REAL    = 0U,		/* real-input FT (currently unsupported) */
+	GMT_FFT_COMPLEX = 1U};		/* complex-input Fourier transform */
 
 /* Various modes to select time in GMT_Message */
-enum GMT_time_modes {
-	GMT_TIME_NONE    = 0U, /* Do not report time */
-	GMT_TIME_CLOCK   = 1U, /* Report absolute time formatted via FORMAT_TIME_STAMP */
-	GMT_TIME_ELAPSED = 2U, /* Report elapsed time since last time mark reset */
-	GMT_TIME_RESET   = 4U  /* Reset time mark */
-};
+enum GMT_time_mode {
+	GMT_TIME_NONE    = 0U,		/* Do not report time */
+	GMT_TIME_CLOCK   = 1U,		/* Report absolute time formatted via FORMAT_TIME_STAMP */
+	GMT_TIME_ELAPSED = 2U,		/* Report elapsed time since last time mark reset */
+	GMT_TIME_RESET   = 4U};		/* Reset time mark */
 
 /* Verbosity levels */
 enum GMT_enum_verbose {GMT_MSG_QUIET = 0,	/* No messages whatsoever */
-	GMT_MSG_NORMAL,		/* Default output, e.g., warnings and errors only */
-	GMT_MSG_COMPAT,		/* Compatibility warnings */
-	GMT_MSG_VERBOSE,	/* Verbose level */
-	GMT_MSG_LONG_VERBOSE,	/* Longer verbose */
-	GMT_MSG_DEBUG};		/* Debug messages for developers mostly */
+	GMT_MSG_NORMAL,			/* Default output, e.g., warnings and errors only */
+	GMT_MSG_COMPAT,			/* Compatibility warnings */
+	GMT_MSG_VERBOSE,		/* Verbose level */
+	GMT_MSG_LONG_VERBOSE,		/* Longer verbose */
+	GMT_MSG_DEBUG};			/* Debug messages for developers mostly */
 
 /*============================================================ */
 /*===============+ GMT_GRID Public Declaration =============== */
@@ -193,7 +189,7 @@ enum GMT_enum_verbose {GMT_MSG_QUIET = 0,	/* No messages whatsoever */
 enum GMT_enum_reg {	/* Public constants for grid registration */
 	GMT_GRID_NODE_REG	= 0U,
 	GMT_GRID_PIXEL_REG	= 1U,
-	GMT_GRID_DEFAULT_REG	= 1024U};	/* Means select whatever is set via -r or not */
+	GMT_GRID_DEFAULT_REG	= 1024U};	/* Means select whatever is implied via -r */
 
 enum GMT_enum_gridindex {
         GMT_XLO = 0U,	/* Index for west or xmin value */
@@ -227,7 +223,7 @@ enum GMT_enum_grdlen {
 	GMT_GRID_HEADER_SIZE    = 892U};
 
 /* Note: GMT_GRID_HEADER_SIZE is 4 less than sizeof (struct GMT_GRID_HEADER) for 64 bit systems due to alignment.
-   Since the GMT_GRID_HEADER was designed during 32-bit era its sizeof is 892.  For backwards compatibility
+   Since the GMT_GRID_HEADER was designed during the 32-bit era its sizeof is 892.  For backwards compatibility
    we continue to enforce this header size by writing the structure components separately. */
 
 struct GMT_GRID_HEADER {
@@ -238,7 +234,7 @@ struct GMT_GRID_HEADER {
 	unsigned int registration;      /* GMT_GRID_NODE_REG (0) for node grids, GMT_GRID_PIXEL_REG (1) for pixel grids */
 	
 	/* ---- Variables "hidden" from the API ---- */
-/* This section is flexible. It is not copied to any grid header or stored in the file. It is considered private */
+/* This section is flexible. It is not copied to any grid header or stored in any file. It is considered private */
 	unsigned int type;               /* Grid format */
 	unsigned int bits;               /* Bits per data value (e.g., 32 for ints/floats; 8 for bytes) */
 	unsigned int complex_mode;       /* 0 = normal, GMT_GRID_IS_COMPLEX_REAL = real part of complex grid, GMT_GRID_IS_COMPLEX_IMAG = imag part of complex grid */
@@ -252,8 +248,10 @@ struct GMT_GRID_HEADER {
 	unsigned int pad[4];             /* Padding on west, east, south, north sides [2,2,2,2] */
 	unsigned int BC[4];              /* Boundary condition applied on each side via pad [0 = not set, 1 = natural, 2 = periodic, 3 = data] */
 	unsigned int grdtype;            /* 0 for Cartesian, > 0 for geographic and depends on 360 periodicity [see GMT_enum_grdtype above] */
-	char name[GMT_GRID_NAME_LEN256];     /* Actual name of the file after any ?<varname> and =<stuff> has been removed */
+	char name[GMT_GRID_NAME_LEN256]; /* Actual name of the file after any ?<varname> and =<stuff> has been removed */
 	char varname[GMT_GRID_VARNAME_LEN80];/* NetCDF: variable name */
+	const char  *ProjRefPROJ4;       /* To store a referencing system string in PROJ.4 format */
+	const char  *ProjRefWKT;         /* To store a referencing system string in WKT format */
 	int row_order;                   /* NetCDF: k_nc_start_south if S->N, k_nc_start_north if N->S */
 	int z_id;                        /* NetCDF: id of z field */
 	int ncid;                        /* NetCDF: file ID */
@@ -325,6 +323,7 @@ struct GMT_GRID_HEADER {
 
 struct GMT_GRID {	/* To hold a GMT float grid and its header in one container */
 	unsigned int id;		/* The internal number of the grid */
+	unsigned int alloc_level;	/* The level it was allocated at */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0] */
 	struct GMT_GRID_HEADER *header;	/* Pointer to full GMT header for the grid */
 	float *data;			/* Pointer to the float grid */
@@ -336,14 +335,13 @@ struct GMT_GRID {	/* To hold a GMT float grid and its header in one container */
 /*============================================================ */
 
 /* GIS geometries, with GMT_IS_NONE as 16 for no such thing */
-enum GMT_enum_geometries {
+enum GMT_enum_geometry {
 	GMT_IS_POINT	= 1,
 	GMT_IS_LINE	= 2,
 	GMT_IS_POLY	= 4,
 	GMT_IS_PLP	= 7,	/* Could be any one of POINT, LINE, POLY */
 	GMT_IS_SURFACE	= 8,
-	GMT_IS_NONE	= 16,	/* Non-geographical items like CPT and text */
-	GMT_N_GEOMETRIES = 6};
+	GMT_IS_NONE	= 16};	/* Non-geographical items like CPT and text */
 
 /* These are two polygon modes */
 enum GMT_enum_pol {
@@ -381,7 +379,7 @@ struct GMT_OGR {	/* Struct with all things GMT/OGR for a table */
 	double *dvalue;			/* @D: Same but converted to double (assumed possible) */
 };
 
-struct GMT_OGR_SEG {	/* Struct with GMT/OGR aspatial data for a segment*/
+struct GMT_OGR_SEG {	/* Struct with GMT/OGR aspatial data for a segment */
 	unsigned int pol_mode;		/* @P: Either GMT_IS_PERIMETER or GMT_IS_HOLE (for polygons only) */
 	unsigned int n_aspatial;	/* @T: The number of aspatial fields */
 	char **value;			/* @D: The values of the current aspatial fields (uses GMT_OGR's n_aspatial as length) */
@@ -423,8 +421,8 @@ struct GMT_DATATABLE {	/* To hold an array of line segment structures and header
 	struct GMT_DATASEGMENT **segment;	/* Pointer to array of segments */
 /* ---- Variables "hidden" from the API ---- */
 	uint64_t id;			/* The internal number of the table */
-	unsigned int mode;		/* 0 = output table, 1 = output header only, 2 = skip table */
 	size_t n_alloc;			/* The current allocation length of segments */
+	unsigned int mode;		/* 0 = output table, 1 = output header only, 2 = skip table */
 	struct GMT_OGR *ogr;		/* Pointer to struct with all things GMT/OGR (if MULTI-geometry and not MULTIPOINT) */
 	char *file[2];			/* Name of file or source [0 = in, 1 = out] */
 };
@@ -442,8 +440,9 @@ struct GMT_DATASET {	/* Single container for an array of GMT tables (files) */
 	struct GMT_DATATABLE **table;	/* Pointer to array of tables */
 /* ---- Variables "hidden" from the API ---- */
 	uint64_t id;			/* The internal number of the data set */
-	unsigned int geometry;		/* The geometry of this dataset */
 	size_t n_alloc;			/* The current allocation length of tables */
+	unsigned int geometry;		/* The geometry of this dataset */
+	unsigned int alloc_level;	/* The level it was allocated at */
 	enum GMT_enum_dest io_mode;	/* -1 means write OGR format (requires proper -a),
 					 * 0 means write everything to one destination [Default],
 					 * 1 means use table->file[GMT_OUT] to write separate table,
@@ -480,8 +479,8 @@ struct GMT_TEXTTABLE {	/* To hold an array of text segment structures and header
 	struct GMT_TEXTSEGMENT **segment;	/* Pointer to array of segments */
 /* ---- Variables "hidden" from the API ---- */
 	uint64_t id;			/* The internal number of the table */
-	unsigned int mode;		/* 0 = output table, 1 = output header only, 2 = skip table */
 	size_t n_alloc;			/* The current allocation length of segments */
+	unsigned int mode;		/* 0 = output table, 1 = output header only, 2 = skip table */
 	char *file[2];			/* Name of file or source [0 = in, 1 = out] */
 };
 
@@ -493,8 +492,9 @@ struct GMT_TEXTSET {	/* Single container for an array of GMT text tables (files)
 	struct GMT_TEXTTABLE **table;	/* Pointer to array of tables */
 /* ---- Variables "hidden" from the API ---- */
 	uint64_t id;			/* The internal number of the data set */
-	unsigned int geometry;		/* The geometry of this dataset */
 	size_t n_alloc;			/* The current allocation length of tables */
+	unsigned int geometry;		/* The geometry of this dataset */
+	unsigned int alloc_level;	/* The level it was allocated at */
 	enum GMT_enum_dest io_mode;	/* -1 means write OGR format (requires proper -a),
 					 * 0 means write everything to one destination [Default],
 					 * 1 means use table->file[GMT_OUT] to write separate table,
@@ -552,6 +552,7 @@ struct GMT_PALETTE {		/* Holds all pen, color, and fill-related parameters */
 	char **header;			/* Array with all CPT file header records, if any) */		/* Content not counted by sizeof (struct) */
 /* ---- Variables "hidden" from the API ---- */
 	uint64_t id;			/* The internal number of the data set */
+	unsigned int alloc_level;	/* The level it was allocated at */
 	unsigned int alloc_mode;	/* Allocation info [0] */
 	unsigned int model;		/* RGB, HSV, CMYK */
 	unsigned int is_gray;		/* true if only grayshades are needed */
@@ -580,9 +581,8 @@ struct GMT_IMAGE {	/* Single container for a user image of data */
 	unsigned char *data;		/* Pointer to actual image */
 /* ---- Variables "hidden" from the API ---- */
 	uint64_t id;			/* The internal number of the data set */
+	unsigned int alloc_level;	/* The level it was allocated at */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0] */
-	const char	*ProjRefPROJ4;
-	const char	*ProjRefWKT;
 	const char	*ColorInterp;
 };
 
@@ -621,6 +621,7 @@ struct GMT_VECTOR {	/* Single container for user vector(s) of data */
 	char remark[GMT_GRID_REMARK_LEN160];   /* comments re this data set */
 /* ---- Variables "hidden" from the API ---- */
 	uint64_t id;			/* The internal number of the data set */
+	unsigned int alloc_level;	/* The level it was allocated at */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0 = allocated, 1 = allocate as needed] */
 };
 
@@ -650,6 +651,7 @@ struct GMT_MATRIX {	/* Single container for a user matrix of data */
 	char remark[GMT_GRID_REMARK_LEN160];   /* comments re this data set */
 /* ---- Variables "hidden" from the API ---- */
 	uint64_t id;			/* The internal number of the data set */
+	unsigned int alloc_level;	/* The level it was allocated at */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0] */
 };
 

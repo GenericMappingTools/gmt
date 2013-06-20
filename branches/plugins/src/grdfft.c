@@ -456,7 +456,7 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *
 	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, file, D) != GMT_OK) {
 		return (GMT->parent->error);
 	}
-	if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &D) != GMT_OK) {
+	if (GMT_Destroy_Data (GMT->parent, &D) != GMT_OK) {
 		return (GMT->parent->error);
 	}
 	GMT_free (GMT, X_pow);
@@ -870,7 +870,7 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 		 * From here we address the first grid via Grid[0] and the 2nd grid (if given) as Grid[1];
 	 	 * we are done with using the addresses Orig[k] directly. */
 		(void) GMT_set_outgrid (GMT, Ctrl->In.file[k], Orig[k], &Grid[k]);
-		FFT_info[k] = GMT_FFT_Create (API, Grid[k], GMT_FFT_DIM, 0U, GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);
+		FFT_info[k] = GMT_FFT_Create (API, Grid[k], GMT_FFT_DIM, GMT_GRID_IS_COMPLEX_REAL, Ctrl->N.info);
 	}
 	K = FFT_info[0];	/* We only need one of these anyway; K is a shorthand */
 

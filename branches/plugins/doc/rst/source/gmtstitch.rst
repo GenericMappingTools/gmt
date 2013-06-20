@@ -153,7 +153,7 @@ However, gmtstitch will correctly add the point to the nearest segment.
 Running gmtstitch again on the new set of lines will eventually connect
 all close lines.
 
-`See Also <#toc10>`_
---------------------
+See Also
+--------
 
 `gmt <gmt.html>`_ , `mapproject <mapproject.html>`_

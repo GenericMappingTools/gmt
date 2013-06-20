@@ -4,25 +4,26 @@ colmath
 
 colmath - Do mathematics on columns from data tables
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
-**colmath** [ *table* ] [ **-A** ] [ **-N** ] [ **-Q**\ *seg* ] [
-**-S**\ [**~**\ ]\ *"search string"* ] [ **-T** ] [ **-V**\ [*level*\ ]
-] [ **-b**\ [*ncol*\ ][**t**\ ][\ **+L**\ \|\ **+B**] ] [
-**-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
-] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-o**\ *cols*\ [,*...*] ] [ **-s**\ [*cols*\ ][\ **a**\ \|\ **r**]
-] [ **-:**\ [**i**\ \|\ **o**] ]
+**colmath** [ *table* ] [ **-A** ] [ **-N** ] [ **-Q**\ *seg* ]
+[ **-S**\ [**~**\ ]\ *"search string"* ] [ **-T** ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-b| ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-g| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-o| ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **colmath** reads its standard input [or inputfiles] does mathematics in
 RPN on the columns and then writes the result to standard output. It can
@@ -33,11 +34,11 @@ columns, (4) do mathematics on the columns. Input (and hence output) may
 have multiple sub-headers, and ASCII tables may have regular headers as
 well. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
@@ -49,12 +50,13 @@ well.
     all the files you want to paste must have the same number of columns
     (as set with **-bi**\ [*ncols*\ ][*type*\ ]); ascii tables can have
     different number of columns.
+
 **-N**
-    Do not write records that only contain NaNs in every field [Default
-    writes all records].
+    Do not write records that only contain NaNs in every field [Default writes all records].
+
 **-Q**\ *seg*
-    Only write segment number *seg* and skip all others. Cannot be used
-    with **-S**.
+    Only write segment number *seg* and skip all others. Cannot be used with **-S**.
+
 **-S**\ [**~**\ ]\ *"search string"*
     Only output those segments whose header record contains the
     specified text string. To reverse the search, i.e., to output
@@ -62,6 +64,7 @@ well.
     **-S~**. Should your pattern happen to start with ~ you need to
     escape this character with a backslash  [Default output all
     segments]. Cannot be used with **-Q**.
+
 **-T**
     Suppress the writing of segment headers on output. 
 
@@ -95,39 +98,50 @@ well.
 
 .. include:: explain_precision.rst_
 
-`Examples <#toc7>`_
--------------------
+Examples
+--------
 
 To convert the binary file test.b (single precision) with 4 columns to ASCII:
 
-    colmath test.b -bi4f > test.dat
+   ::
+
+    gmt colmath test.b -bi4f > test.dat
 
 To convert the multiple segment ASCII table test.d to a double precision binary file:
 
-    colmath test.d -bo > test.b
+   ::
 
-You have an ASCII table with 6 columns and you want to plot column 5
-versus column 0. Try
+    gmt colmath test.d -bo > test.b
 
-    colmath table.d -o5,0 \| psxy ...
+You have an ASCII table with 6 columns and you want to plot column 5 versus column 0. Try
+
+   ::
+
+    gmt colmath table.d -o5,0 | psxy ...
 
 If the file instead is the binary file results.b which has 9
 single-precision values per record, we extract the last column and
 columns 4-6 and write ASCII with the command
 
-    colmath results.b -o8,4-6 -bi9s \| psxy ...
+   ::
+
+    gmt colmath results.b -o8,4-6 -bi9s | psxy ...
 
 You want to plot the 2nd column of a 2-column file left.d versus the
 first column of a file right.d:
 
-    colmath left.d right.d -A -o1,2 \| psxy ...
+   ::
 
-To extract all segments in the file big\_file.d whose headers contain
+    gmt colmath left.d right.d -A -o1,2 | psxy ...
+
+To extract all segments in the file big_file.d whose headers contain
 the string "RIDGE AXIS", try
 
-    colmath big\_file.d -S"RIDGE AXIS" > subset.d
+   ::
 
-`See Also <#toc8>`_
--------------------
+    gmt colmath big_file.d -S"RIDGE AXIS" > subset.d
+
+See Also
+--------
 
 `gmt <gmt.html>`_, `minmax <minmax.html>`_

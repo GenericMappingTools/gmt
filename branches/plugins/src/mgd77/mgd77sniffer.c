@@ -55,7 +55,7 @@ int GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *API, int level)
 {
 	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: mgd77sniffer <cruises> [-A<fieldabbrev>,<scale>,<offset>] [-Cmaxspd] [-Dd|e|E|f|l|m|s|v][r]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-g<fieldabbrev>,<imggrid>,<scale>,<mode>[,<latmax>]] [-G<fieldabbrev>,<grid>] [-H]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-G<fieldabbrev>,<imggrid>,<scale>,<mode>[,<latmax>] or -G<fieldabbrev>,<grid>] [-H]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<fieldabbrev>,<rec1>,<recN>] [-K] [-L<custom_limits_file> ] [-N]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sd|s|t] [-T<gap>] [-Wc|g|o|s|t|v|x] [-Wc|g|o|s|t|v|x]\n\t[%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_n_OPT);
 
@@ -78,29 +78,30 @@ int GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t  -Df for each field, output value change and distance (or time with -St) since last observation.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  -Dl print out mgd77sniffer default limits (requires no additional arguments).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  -Dm print out MGD77 format\n\t  -Ds print out gradients\n\t  -Dv print out values.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -Dn print out distance to coast for each record (requires -gnav or -Gnav).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  -Dn print out distance to coast for each record (requires -Gnav).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append r to include all records (default omits records where navigation errors were detected).\n");
 #ifdef DEBUG
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Test regression analysis. A simulated grid is created from the ship data using slope\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   and intercept passed through the -G option (i.e., -Gfield,m/b no grid name is passed).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   These factors are then reflected in regression output. Multiple -G calls allowed.\n");
 #endif
-	GMT_Message (API, GMT_TIME_NONE, "\t-g Compare cruise data to the specified Sandwell/Smith Mercator grid. Requires valid MGD77\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Compare cruise data to the specified GMT geographic grid or Sandwell/Smith Mercator img grid\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   a) Compare cruise data to the specified Sandwell/Smith Mercator grid. Requires valid MGD77\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   field abbreviation followed by a comma, the path (if not in current directory)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   and grid filename, scale (0.1 or 1), and mode (see mgd77manage for details).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append max latitude in the IMG file [72.0059773539]. Nav on land\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   test can be activated using -g or -G options and requires a distance to nearest\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   coast grid (i.e., -gnav,/data/GRIDS/dist_to_land.grd) with distance reported in cm.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Compare cruise data to the specified GMT geographic grid. Requires valid MGD77 field abbreviation\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   test can be activated using the -G option and requires a distance to nearest\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   coast grid (i.e., -Gnav,/data/GRIDS/dist_to_land.grd) with distance reported in cm.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   b) Compare cruise data to the specified GMT geographic grid. Requires valid MGD77 field abbreviation\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   followed by a comma, then the path (if not in current directory) and grid filename.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Excessive offsets are flagged according to maxArea threshold (use -L option to\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   adjust maxArea). Useful for comparing faa or depth to global grids though any MGD77\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   field can be compared to any GMT or IMG compatible grid. Multiple grid comparison is\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   supported by  using separate -G or -g calls for each grid.  See GRID FILE INFO below.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Nav on land test can be activated using -g or -G options and requires a distance to\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   supported by  using separate -G calls for each grid.  See GRID FILE INFO below.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Nav on land test can be activated using the -G option and requires a distance to\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   nearest coast grid (i.e., -Gnav,/data/GRIDS/dist_to_land.grd) with distance reported\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   in cm.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-H (with -G|g only) disable (or force) decimation during RLS analysis of ship and gridded data.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-H (with -G only) disable (or force) decimation during RLS analysis of ship and gridded data.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   By default mgd77sniffer analyses both the full and decimated data sets then reports\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   RLS statistics for the higher correlation regression.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  -Hb analyze both (default), report better of two.\n");
@@ -156,8 +157,8 @@ int GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\tEotvos Correction\teot\t\t\tmGal\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tfree-air Anomaly\tfaa\t\t\tmGal\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tGRID FILE INFO:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-g: Img files must be of Sandwell/Smith signed two-byte integer (i2) type with no header.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G: Grid files can be any type of GMT grid file (native or netCDF) with header\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  Img files must be of Sandwell/Smith signed two-byte integer (i2) type with no header.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t  Grid files can be any type of GMT grid file (native or netCDF) with header\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tA correctly formatted grid file can be generated as follows:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   e.g., gmtset GRIDFILE_SHORTHAND true\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t\tCreate/edit .gmt_io file to include the following rows:\n");
@@ -209,7 +210,7 @@ int GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\nEXAMPLES:\n\tAlong-track excessive value and gradient checking:\n\t\tmgd77sniffer 08010001\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tDump cruise gradients:\n\t\tmgd77sniffer 08010001 -Ds\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tTo compare cruise depth with ETOPO5 bathymetry and gravity with Sandwell/Smith 2 min gravity version 11, try\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t\tmgd77sniffer 08010001 -Gdepth,/data/GRIDS/etopo5_hdr.i2 -gfaa,/data/GRIDS/grav.11.2.img,0.1,1\n\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t\tmgd77sniffer 08010001 -Gdepth,/data/GRIDS/etopo5_hdr.i2 -Gfaa,/data/GRIDS/grav.11.2.img,0.1,1\n\n");
 	return (EXIT_FAILURE);
 }
 
@@ -254,7 +255,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 	int j, noTimeStart, timeErrorStart, distanceErrorStart, overLandStart, last_day, utc_offset;
 	unsigned int i, k, ju, m, curr = 0, nout, nvalues, n_nan, n, npts = 0, *offsetStart, rec = 0, n_wrap;
 	unsigned int noTimeCount, timeErrorCount, overLandCount, extreme, spike_amplitude, distanceErrorCount;
-	unsigned int duplicates[MGD77_N_NUMBER_FIELDS], n_bad, grav_formula;
+	unsigned int duplicates[MGD77_N_NUMBER_FIELDS], n_bad, grav_formula, n_comma;
 	size_t n_alloc = GMT_CHUNK;
 	unsigned int lowPrecision, lowPrecision5, MGD77_sign_bit[32];
 
@@ -434,35 +435,39 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 				simulate = true;
 				break;
 #endif
-			case 'g':	/* Get grid filename and geophysical field name to compare with grid */
-				this_grid[n_grids].format = 1; 	/* Mercator grid */
-				if (sscanf (opt->arg, "%[^,],%[^,],%lf,%d,%lf", this_grid[n_grids].abbrev, this_grid[n_grids].fname, &this_grid[n_grids].scale, &this_grid[n_grids].mode, &this_grid[n_grids].max_lat) < 4) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -g option: Give field abbreviation, grid file, scale, mode [, and optionally max lat]\n");
-					error = true;
-				}
 			case 'G':	/* Get grid filename and geophysical field name to compare with grid */
-				if (!error && this_grid[n_grids].format == 0 && sscanf (opt->arg, "%[^,],%s", this_grid[n_grids].abbrev, this_grid[n_grids].fname) != 2) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G option: Give field abbreviation and grid file\n");
-					error = true;
-				}
-				else {
-					/* Find what column number this field corresponds to (i.e. depth == 11) */
-					this_grid[n_grids].col = 0;
-					if (! strcmp (this_grid[n_grids].abbrev, "nav")) {
-						dist_to_coast = true;
-						dtc_index = n_grids;
-						n_grids++;
-						break;
-					}
-					while (strcmp (this_grid[n_grids].abbrev, mgd77defs[this_grid[n_grids].col].abbrev) && this_grid[n_grids].col < MGD77_N_NUMBER_FIELDS)
-						this_grid[n_grids].col++;
-					if (this_grid[n_grids].col == MGD77_N_NUMBER_FIELDS) {
-						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G option: invalid field abbreviation\n");
+				for (k = n_comma = 0; k < strlen (opt->arg); k++) if (opt->arg[k] == ',') n_comma++;
+				if (n_comma == 4) { 	/* Mercator grid */
+					this_grid[n_grids].format = 1;
+					if (sscanf (opt->arg, "%[^,],%[^,],%lf,%d,%lf", this_grid[n_grids].abbrev, this_grid[n_grids].fname, &this_grid[n_grids].scale, &this_grid[n_grids].mode, &this_grid[n_grids].max_lat) < 4) {
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G option: Give field abbreviation, img grid file, scale, mode [, and optionally max lat]\n");
 						error = true;
 					}
-					if (!strcmp (this_grid[n_grids].abbrev,"depth")) this_grid[n_grids].sign = -1;
-					else this_grid[n_grids].sign = 1;
-					n_grids++;
+				}
+				else {	/* Regular grid */
+					if (!error && this_grid[n_grids].format == 0 && sscanf (opt->arg, "%[^,],%s", this_grid[n_grids].abbrev, this_grid[n_grids].fname) != 2) {
+						GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G option: Give field abbreviation and grid file\n");
+						error = true;
+					}
+					else {
+						/* Find what column number this field corresponds to (i.e. depth == 11) */
+						this_grid[n_grids].col = 0;
+						if (! strcmp (this_grid[n_grids].abbrev, "nav")) {
+							dist_to_coast = true;
+							dtc_index = n_grids;
+							n_grids++;
+							break;
+						}
+						while (strcmp (this_grid[n_grids].abbrev, mgd77defs[this_grid[n_grids].col].abbrev) && this_grid[n_grids].col < MGD77_N_NUMBER_FIELDS)
+							this_grid[n_grids].col++;
+						if (this_grid[n_grids].col == MGD77_N_NUMBER_FIELDS) {
+							GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -G option: invalid field abbreviation\n");
+							error = true;
+						}
+						if (!strcmp (this_grid[n_grids].abbrev,"depth")) this_grid[n_grids].sign = -1;
+						else this_grid[n_grids].sign = 1;
+						n_grids++;
+					}
 				}
 				break;
 			case 'H':	/* Force to decimate or not during grid comparison */
@@ -585,7 +590,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 		bailout (EXIT_FAILURE);
 	}
 	else if (!strcmp(display,"DIFFS") && n_grids == 0) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: -Dd option requires -G|g.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: -Dd option requires -G.\n");
 		bailout (EXIT_FAILURE);
 	}
 	if (east < west || south > north) {
@@ -597,7 +602,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 		bailout (EXIT_FAILURE);
 	}
 	if (!strcmp(display,"DTC") && ! dist_to_coast) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error: -Dn option requires -Gnav or -gnav.\n");
+		GMT_Report (API, GMT_MSG_NORMAL, "Error: -Dn option requires -Gnav\n");
 		bailout (EXIT_FAILURE);
 	}
 	if (simulate && n_grids > 0) {
@@ -965,7 +970,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 							E[curr].utc_offset = utc_offset;
 							E[curr].flags[E77_NAV] |= NAV_TZ_ERROR;
 							if (warn[TIME_WARN]) {
-								GMT_ascii_format_col (GMT, timeStr, D[curr].time, MGD77_TIME);
+								GMT_ascii_format_col (GMT, timeStr, D[curr].time, GMT_OUT, MGD77_TIME);
 								sprintf (placeStr,"%s %s %d - Time zone adjustment error (Westbound)",list[argno],timeStr,curr+1);
 								if (D[curr].time-D[j].time < ((D[curr].time-3600.0*D[curr].number[MGD77_TZ])-(D[j].time-3600.0*D[j].number[MGD77_TZ])))
 									sprintf (placeStr,"%s %s %d - Time zone adjustment error (Eastbound)",list[argno],timeStr,curr+1);
@@ -1013,7 +1018,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 							nav_error = true;
 							n_bad++;
 							if (warn[TIME_WARN]) {
-								GMT_ascii_format_col (GMT, timeStr, D[curr].time, MGD77_TIME);
+								GMT_ascii_format_col (GMT, timeStr, D[curr].time, GMT_OUT, MGD77_TIME);
 								sprintf (placeStr,"%s %s %d",list[argno],timeStr,curr+1);
 								sprintf (text, GMT->current.setting.format_float_out, D[curr].time-D[j].time);
 								sprintf (buffer, "%s - Time not monotonically increasing (%s sec.)\n",placeStr, text);
@@ -1047,7 +1052,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 						if (fabs(speed)>max_speed) {
 							nav_error = true;
 							if (warn[SPEED_WARN]) {
-								GMT_ascii_format_col (GMT, timeStr, D[curr].time, MGD77_TIME);
+								GMT_ascii_format_col (GMT, timeStr, D[curr].time, GMT_OUT, MGD77_TIME);
 								sprintf (placeStr,"%s %s %d",list[argno],timeStr,curr+1);
 								sprintf (text, GMT->current.setting.format_float_out, speed);
 								sprintf (buffer, "%s - Excessive speed %s %s\n",placeStr, text, speed_units);
@@ -1896,9 +1901,9 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 
 			/* Create the current time string formatted according to gmtdefaults */
 			if (gotTime)
-				GMT_ascii_format_col (GMT, timeStr, D[curr].time, MGD77_TIME);
+				GMT_ascii_format_col (GMT, timeStr, D[curr].time, GMT_OUT, MGD77_TIME);
 			else
-				GMT_ascii_format_col (GMT, timeStr, distance[curr], GMT_Z);
+				GMT_ascii_format_col (GMT, timeStr, distance[curr], GMT_OUT, GMT_Z);
 
 			/* Create the location portion of the verbose data warning string (not for E77) */
 			sprintf (placeStr,"%s %s %d",list[argno],timeStr,curr+1);
@@ -2528,9 +2533,9 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 				}
 				if (!strcmp(errorStr,"0-0-0")) continue;
 				if (gotTime)
-					GMT_ascii_format_col (GMT, timeStr, D[rec].time, MGD77_TIME);
+					GMT_ascii_format_col (GMT, timeStr, D[rec].time, GMT_OUT, MGD77_TIME);
 				else
-					GMT_ascii_format_col (GMT, timeStr, distance[rec], GMT_Z);
+					GMT_ascii_format_col (GMT, timeStr, distance[rec], GMT_OUT, GMT_Z);
 				/* Version 1 data corrections apply crucial nav errors and not value and gradient errors */
 				sprintf (placeStr, "%s%s%s%s%d%s",list[argno],GMT->current.setting.io_col_separator,timeStr,GMT->current.setting.io_col_separator,rec+1,\
 				GMT->current.setting.io_col_separator);

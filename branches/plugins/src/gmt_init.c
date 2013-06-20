@@ -949,7 +949,8 @@ void GMT_syntax (struct GMT_CTRL *GMT, char option)
 	switch (option) {
 
 		case 'B':	/* Tickmark option */
-			GMT_message (GMT, "\t-B[p|s][a|f|g]<tick>[m][l|p][:\"label\":][:,\"unit\":][/.../...]:.\"Title\":[W|w|E|e|S|s|N|n][Z|z]\n");
+			GMT_message (GMT, "\t-B[p|s][x|y|z]<intervals>[+l<label>][+p<prefix>][+u<unit>] -B[<axes>][+b][+g<fill>][+o<lon>/<lat>][+t<title>] OR\n");
+			GMT_message (GMT, "\t-B[p|s][x|y|z][a|f|g]<tick>[m][l|p] -B[p|s][x|y|z][+l<label>][+p<prefix>][+u<unit>] -B[<axes>][+b][+g<fill>][+o<lon>/<lat>][+t<title>]\n");
 			break;
 
 		case 'J':	/* Map projection option */
@@ -1424,7 +1425,7 @@ int GMT_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rect[], double ou
 	if (get_R) GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Region selection -R%s is replaced by the equivalent geographic region -R%.12g/%.12g/%.12g/%.12gr\n", GMT->common.R.string, out_wesn[XLO], out_wesn[YLO], out_wesn[XHI], out_wesn[YHI]);
 
 	GMT_free_dataset (GMT, &Out);
-	if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &In) != GMT_OK) {
+	if (GMT_Destroy_Data (GMT->parent, &In) != GMT_OK) {
 		return (GMT->parent->error);
 	}
 	
@@ -1462,7 +1463,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 			return (GMT->parent->error);
 		}
 		GMT_memcpy (&(GMT->current.io.grd_info.grd), G->header, 1, struct GMT_GRID_HEADER);
-		if (GMT_Destroy_Data (GMT->parent, GMT_ALLOCATED, &G) != GMT_OK) {
+		if (GMT_Destroy_Data (GMT->parent, &G) != GMT_OK) {
 			return (GMT->parent->error);
 		}
 		if ((GMT->current.proj.projection == GMT_UTM || GMT->current.proj.projection == GMT_TM || GMT->current.proj.projection == GMT_STEREO)) {	/* Perhaps we got an [U]TM or stereographic grid? */
@@ -2893,7 +2894,7 @@ int gmt_load_encoding (struct GMT_CTRL *GMT)
 	return (GMT_NOERROR);
 }
 
-int gmt4_decode_wesnz (struct GMT_CTRL *GMT, const char *in, unsigned int side[], bool *draw_box) {
+int gmt4_decode_wesnz (struct GMT_CTRL *GMT, const char *in, unsigned int side[], bool *draw_box, int part) {
 	/* Scans the WESNZwesnz+ flags at the end of string "in" and sets the side/drawbox parameters
 	 * and returns the length of the remaining string.  Assumes any +g<fill> has been removed from in.
 	 */
@@ -2901,11 +2902,16 @@ int gmt4_decode_wesnz (struct GMT_CTRL *GMT, const char *in, unsigned int side[]
 	int i, k;
 	bool go = true;
 
+	GMT->current.map.frame.set_frame[part]++;
+	if (GMT->current.map.frame.set_frame[0] > 1 || GMT->current.map.frame.set_frame[1] > 1) {
+		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error -B: <WESN-framesettings> given more than once!\n");
+		return (1);
+	}
 	i = (int)strlen (in);
 	if (i == 0) return (0);
 	
 	for (k = 0, i--; go && i >= 0 && strchr ("WESNZwesnz+", in[i]); i--) {
-		if (k == 0) {	/* Wipe out default values when the first flag is found */
+		if (k == 0 && part == 2) {	/* Wipe out default values when the first flag is found */
 			for (k = 0; k < 5; k++) side[k] = 0;
 			*draw_box = false;
 		}
@@ -2937,13 +2943,20 @@ int gmt4_decode_wesnz (struct GMT_CTRL *GMT, const char *in, unsigned int side[]
 	return (i+1);	/* Return remaining string length */
 }
 
-int gmt5_decode_wesnz (struct GMT_CTRL *GMT, const char *in) {
+int gmt5_decode_wesnz (struct GMT_CTRL *GMT, const char *in, bool check) {
 	/* Scans the WESNZ[1234]wesnz[1234] flags and sets the side/drawbox parameters
 	 * and returns the length of the remaining string.
 	 */
 
 	unsigned int k, error = 0, f_side[5] = {0, 0, 0, 0, 0}, z_axis[4] = {0, 0, 0, 0};
 	bool s_given = false;
+	if (check) {	/* true if coming via -B, false if parsing gmt.conf */
+		GMT->current.map.frame.set_frame[0]++, GMT->current.map.frame.set_frame[1]++;
+		if (GMT->current.map.frame.set_frame[0] > 1 || GMT->current.map.frame.set_frame[1] > 1) {
+			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Error -B: <WESN-framesettings> given more than once!\n");
+			return (1);
+		}
+	}
 	
 	for (k = 0; in[k]; k++) {
 		switch (in[k]) {
@@ -3361,7 +3374,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 			strncpy (GMT->current.setting.map_frame_axes, value, 5U);
 			for (i = 0; i < 5; i++) GMT->current.map.frame.side[i] = 0;	/* Unset default settings */
 			GMT->current.map.frame.draw_box = false;
-			error += gmt5_decode_wesnz (GMT, value);
+			error += gmt5_decode_wesnz (GMT, value, false);
 			break;
 
 		case GMTCASE_BASEMAP_FRAME_RGB:
@@ -4149,6 +4162,36 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 				GMT->current.setting.compatibility = ival;
 			break;
 
+		case GMTCASE_GMT_CUSTOM_LIBS:
+			if (*value) {
+				if (GMT->session.CUSTOM_LIBS)
+					free (GMT->session.CUSTOM_LIBS);
+				/* Set Extension shared libraries */
+				GMT->session.CUSTOM_LIBS = strdup (value);
+			}
+			break;
+
+		case GMTCASE_GMT_EXTRAPOLATE_VAL:
+			if (!strcmp (lower_value, "nan"))
+				GMT->current.setting.extrapolate_val[0] = GMT_EXTRAPOLATE_NONE;
+			else if (!strcmp (lower_value, "extrap"))
+				GMT->current.setting.extrapolate_val[0] = GMT_EXTRAPOLATE_SPLINE;
+			else if (!strncmp (lower_value, "extrapval",9)) {
+				GMT->current.setting.extrapolate_val[0] = GMT_EXTRAPOLATE_CONSTANT;
+				GMT->current.setting.extrapolate_val[1] = atof (&lower_value[10]);
+				if (lower_value[9] != ',') {
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error decoding GMT_EXTRAPOLATE_VAL for 'val' value. Comma out of place.\n");
+					error = true;
+				}
+			}
+			else
+				error = true;
+			if (error) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_EXTRAPOLATE_VAL: resetting to 'extrapolated is NaN' to avoid later crash.\n");
+				GMT->current.setting.extrapolate_val[0] = GMT_EXTRAPOLATE_NONE;
+			}
+			break;
+			
 		case GMTCASE_GMT_FFT:
 			if (!strncmp (lower_value, "auto", 4))
 				GMT->current.setting.fft = k_fft_auto;
@@ -4213,26 +4256,6 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 				GMT->current.setting.interpolant = GMT_SPLINE_NONE;
 			else
 				error = true;
-			break;
-		case GMTCASE_GMT_EXTRAPOLATE_VAL:
-			if (!strcmp (lower_value, "nan"))
-				GMT->current.setting.extrapolate_val[0] = GMT_EXTRAPOLATE_NONE;
-			else if (!strcmp (lower_value, "extrap"))
-				GMT->current.setting.extrapolate_val[0] = GMT_EXTRAPOLATE_SPLINE;
-			else if (!strncmp (lower_value, "extrapval",9)) {
-				GMT->current.setting.extrapolate_val[0] = GMT_EXTRAPOLATE_CONSTANT;
-				GMT->current.setting.extrapolate_val[1] = atof (&lower_value[10]);
-				if (lower_value[9] != ',') {
-					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error decoding GMT_EXTRAPOLATE_VAL for 'val' value. Comma out of place.\n");
-					error = true;
-				}
-			}
-			else
-				error = true;
-			if (error) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "GMT_EXTRAPOLATE_VAL: resetting to 'extrapolated is NaN' to avoid later crash.\n");
-				GMT->current.setting.extrapolate_val[0] = GMT_EXTRAPOLATE_NONE;
-			}
 			break;
 		case GMTCASE_GMT_TRIANGULATE:
 			if (!strcmp (lower_value, "watson"))
@@ -5166,6 +5189,17 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, char *keyword)
 			sprintf (value, "%u", GMT->current.setting.compatibility);
 			break;
 			
+		case GMTCASE_GMT_CUSTOM_LIBS:
+			strncpy (value, (GMT->session.CUSTOM_LIBS) ? GMT->session.CUSTOM_LIBS : "", GMT_TEXT_LEN256);
+			break;
+		case GMTCASE_GMT_EXTRAPOLATE_VAL:
+			if (GMT->current.setting.extrapolate_val[0] == GMT_EXTRAPOLATE_NONE)
+				strcpy (value, "NaN");
+			else if (GMT->current.setting.extrapolate_val[0] == GMT_EXTRAPOLATE_SPLINE)
+				strcpy (value, "extrap");
+			else if (GMT->current.setting.extrapolate_val[0] == GMT_EXTRAPOLATE_CONSTANT)
+				sprintf (value, "extrapval,%g", GMT->current.setting.extrapolate_val[1]);
+			break;
 		case GMTCASE_GMT_FFT:
 			switch (GMT->current.setting.fft) {
 				case k_fft_auto:
@@ -5229,14 +5263,6 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, char *keyword)
 				strcpy (value, "none");
 			else
 				strcpy (value, "undefined");
-			break;
-		case GMTCASE_GMT_EXTRAPOLATE_VAL:
-			if (GMT->current.setting.extrapolate_val[0] == GMT_EXTRAPOLATE_NONE)
-				strcpy (value, "NaN");
-			else if (GMT->current.setting.extrapolate_val[0] == GMT_EXTRAPOLATE_SPLINE)
-				strcpy (value, "extrap");
-			else if (GMT->current.setting.extrapolate_val[0] == GMT_EXTRAPOLATE_CONSTANT)
-				sprintf (value, "extrapval,%g", GMT->current.setting.extrapolate_val[1]);
 			break;
 		case GMTCASE_GMT_TRIANGULATE:
 			if (GMT->current.setting.triangulate == GMT_TRIANGLE_WATSON)
@@ -6046,6 +6072,8 @@ void GMT_end (struct GMT_CTRL *GMT)
 		free (GMT->session.DATADIR);
 	if (GMT->session.TMPDIR)
 		free (GMT->session.TMPDIR);
+	if (GMT->session.CUSTOM_LIBS)
+		free (GMT->session.CUSTOM_LIBS);
 	for (i = 0; i < GMT_N_PROJ4; i++)
 		free (GMT->current.proj.proj4[i].name);
 	GMT_free (GMT, GMT->current.proj.proj4);
@@ -6854,13 +6882,13 @@ int gmt4_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 
 	char out1[GMT_BUFSIZ] = "", out2[GMT_BUFSIZ] = "", out3[GMT_BUFSIZ] = "", info[3][GMT_BUFSIZ] = {""};
 	struct GMT_PLOT_AXIS *A = NULL;
-	int i, j, k, ignore, g = 0, o = 0, error = 0;
+	int i, j, k, ignore, g = 0, o = 0, part = 0, error = 0;
 
 	if (!in || !in[0]) return (GMT_PARSE_ERROR);	/* -B requires an argument */
 
 	switch (in[0]) {
 		case 's':
-			GMT->current.map.frame.primary = false; k = 1; break;
+			GMT->current.map.frame.primary = false; k = part = 1; break;
 		case 'p':
 			GMT->current.map.frame.primary = true; k = 1; break;
 		default:
@@ -6881,6 +6909,7 @@ int gmt4_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 		GMT->current.map.frame.header[0] = '\0';
 		GMT->current.map.frame.init = true;
 		GMT->current.map.frame.draw = false;
+		GMT->current.map.frame.set_frame[0] = GMT->current.map.frame.set_frame[1] = 0;
 	}
 
 #ifdef _WIN32
@@ -6925,7 +6954,7 @@ int gmt4_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 	error += gmt_strip_colonitem (GMT, 0, &in[k], ":.", GMT->current.map.frame.header, out1);	/* Extract header string, if any */
 	GMT_enforce_rgb_triplets (GMT, GMT->current.map.frame.header, GMT_TEXT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 
-	i = gmt4_decode_wesnz (GMT, out1, GMT->current.map.frame.side, &GMT->current.map.frame.draw_box);		/* Decode WESNZwesnz+ flags, if any */
+	i = gmt4_decode_wesnz (GMT, out1, GMT->current.map.frame.side, &GMT->current.map.frame.draw_box, part);		/* Decode WESNZwesnz+ flags, if any */
 	out1[i] = '\0';	/* Strip the WESNZwesnz+ flags off */
 
 	gmt_split_info_strings (GMT, out1, info[0], info[1], info[2]);	/* Chop/copy the three axis strings */
@@ -7105,7 +7134,7 @@ int gmt5_parse_B_frame_setting (struct GMT_CTRL *GMT, char *in)
 	}
 	
 	/* Now parse the frame choices, if any */
-	error += gmt5_decode_wesnz (GMT, text);
+	error += gmt5_decode_wesnz (GMT, text, true);
 	
 	return (error);
 }
@@ -7162,6 +7191,7 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 		GMT->common.B.string[0][0] = GMT->common.B.string[1][0] = '\0';
 		GMT->current.map.frame.init = true;
 		GMT->current.map.frame.draw = false;
+		GMT->current.map.frame.set_frame[0] = GMT->current.map.frame.set_frame[1] = 0;
 	}
 
 	if ((error = gmt5_parse_B_frame_setting (GMT, in)) >= 0) return (error);	/* Parsed the -B frame settings separately */
@@ -8251,6 +8281,64 @@ int GMT_parse_front (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *S)
 	return (error);
 }
 
+int gmt_parse_text (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *S)
+{	/* Parse the arguments given to -Sl.  The allowed syntax is:
+ 	 * -Sl<size>[unit]+t<text>[+f<font<][+j<justify>] */
+	
+	unsigned int pos = 0, k, j, slash, error = 0;
+	if ((!strstr (text, "+t") && strchr (text, '/')) || strchr (text, '%')) {	/* GMT4 syntax */
+		char *c = NULL;
+		if (GMT_compat_check (GMT, 4)) {
+			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning in Option -Sl: Sl<size>/<string>[%<font>] is deprecated syntax\n");
+			if ((c = strchr (text, '%'))) {	/* Gave font name or number, too */
+				*c = 0;	/* Chop off the %font info */
+				c++;		/* Go to next character */
+				if (GMT_getfont (GMT, c, &S->font)) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-Sl contains bad font (set to %s)\n", GMT_putfont (GMT, S->font));
+			}
+			/* Look for a slash that separates size and string: */
+			for (j = 1, slash = 0; text[j] && !slash; j++) if (text[j] == '/') slash = j;
+			/* Set j to the first char in the string: */
+			j = slash + 1;
+			/* Copy string characters */
+			k = 0;
+			while (text[j] && text[j] != ' ' && k < (GMT_TEXT_LEN256-1)) S->string[k++] = text[j++];
+			S->string[k] = '\0';
+			if (!k) {
+				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -Sl option: No string given\n");
+				error++;
+			}
+		}
+		else {	/* Not accept it unless under compatibility mode 4 */
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -Sl option: Usage is -Sl[<size>]+t<string>[+f<font>][+j<justify]\n");
+			error++;
+		}
+	}
+	else {	/* GMT5 syntax */
+		char p[GMT_BUFSIZ];
+		for (k = 0; text[k] && text[k] != '+'; k++);	/* Either find the first plus or run out or chars; should at least find +t */
+		if (!text[k]) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -Sl option: No string information given\n");
+			return (1);
+		}
+		while ((GMT_strtok (&text[k], "+", &pos, p))) {	/* Parse any +<modifier> statements */
+			switch (p[0]) {
+				case 'f':	/* Change font */
+					if (GMT_getfont (GMT, &p[1], &S->font))
+						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-Sl contains bad +<font> modifier (set to %s)\n", GMT_putfont (GMT, S->font));
+					break;
+				case 'j':	S->justify = GMT_just_decode (GMT, &p[1], 12);	break;	/* text justification */
+				case 't':	strncpy (S->string, &p[1], GMT_TEXT_LEN256);	break;	/* Get the symbol text */
+				default:
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error option -Sl: Bad modifier +%c\n", p[0]);
+					error++;
+					break;	
+			}
+		}
+	}
+		
+	return (error);
+}
+
 #define GMT_VECTOR_CODES "mMvV="	/* The vector symbol codes */
 
 int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *p, unsigned int mode, bool cmd)
@@ -8309,7 +8397,29 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		if (cmd) p->read_symbol_cmd = true;
 	}
 	else if (text[0] == 'l') {	/* Letter symbol is special case */
-		strncpy (text_cp, text, GMT_TEXT_LEN256);
+		strncpy (text_cp, text, GMT_TEXT_LEN256);	/* Copy for processing later */
+		symbol_type = 'l';
+		if (!text[1]) {	/* No size or text given */
+			if (p->size_x == 0.0) p->size_x = p->given_size_x;
+			if (p->size_y == 0.0) p->size_y = p->given_size_y;
+			if (cmd) p->read_size_cmd = true;
+			col_off++;
+		}
+		else if (text[1] == '+' || (text[1] == '/' && GMT_compat_check (GMT, 4))) {	/* No size given */
+			/* Any deprecate message comes below so no need here */
+			if (p->size_x == 0.0) p->size_x = p->given_size_x;
+			if (p->size_y == 0.0) p->size_y = p->given_size_y;
+			col_off++;
+		}
+		else {
+			n = sscanf (&text_cp[1], "%[^+]+%*s", txt_a);
+			p->size_x = p->given_size_x = GMT_to_inch (GMT, txt_a);
+			decode_error = (n != 1);
+		}
+	}
+#if 0	/* Original code */
+	else if (text[0] == 'l') {	/* Letter symbol is special case */
+		strncpy (text_cp, text, GMT_TEXT_LEN256);	/* Copy for processing later */
 		if ((c = strchr (text_cp, '%'))) {	/* Gave font name or number, too */
 			*c = ' ';	/* Make the % a space */
 			c++;		/* Go to next character */
@@ -8327,6 +8437,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			decode_error = (n != 3);
 		}
 	}
+#endif
 	else if (text[0] == 'k') {	/* Custom symbol spec */
 		for (j = (int)strlen (text); j > 0 && text[j] != '/'; --j);
 		if (j == 0) {	/* No slash, i.e., no symbol size given */
@@ -8627,18 +8738,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			break;
 		case 'l':
 			p->symbol = GMT_SYMBOL_TEXT;
-			/* Look for a slash that separates size and string: */
-			for (j = 1, slash = 0; text_cp[j] && !slash; j++) if (text_cp[j] == '/') slash = j;
-			/* Set j to the first char in the string: */
-			j = slash + 1;
-			/* Copy string characters */
-			k = 0;
-			while (text_cp[j] && text_cp[j] != ' ' && k < 63) p->string[k++] = text_cp[j++];
-			if (!k) {
-				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -Sl option: No string given\n");
-				decode_error++;
-			}
-			p->string[k] = 0;
+			if (gmt_parse_text (GMT, text_cp, p)) decode_error++;
 			break;
 		case 'M':
 		case 'm':

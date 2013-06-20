@@ -4,4 +4,4 @@ To compute all distances to north pole:
 
     ::
 
-     grdmath -Rg -I1 0 90 SDIST = dist_to_NP.nc
+     gmt grdmath -Rg -I1 0 90 SDIST = dist_to_NP.nc

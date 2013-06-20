@@ -4,20 +4,22 @@ rotconverter
 
 rotconverter - Manipulate total reconstruction and stage rotations
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
 **rotconverter** [ **+**\ \|\ **-** ] *rotA* [ **+**\ \|\ **-** *rotB* ]
 [ **+**\ \|\ **-** *rotC* ] ... [ **-A** ] [ **-D** ] [
-**-E**\ [*fact*\ ] ] [ **-F**\ *out* ] [ **-G** ] [ **-N** ] [ **-S** ]
-[ **-T** ] [ **-V**\ [*level*\ ] ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ]
+**-E**\ [*fact*] ] [ **-F**\ *out* ] [ **-G** ] [ **-N** ] [ **-S** ]
+[ **-T** ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-h| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **rotconverter** reads one or more plate motion models (stage or total
 reconstruction rotations) stored in the given files. If more than one
@@ -27,8 +29,8 @@ rotation and then add it to the previous rotation. If a file cannot be
 opened we will attempt to decode the file name as a single rotation
 whose parameters are separated by slashes.
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *rotX*
     Name of a file with a plate motion model. Separate several files
@@ -39,19 +41,19 @@ whose parameters are separated by slashes.
     rotation between the two plates in the GPlates rotation file (e.g.,
     PAC-MBL). If any of the specified rotation models cannot be opened
     as a file, we will try to decode the file name as
-    *lon/lat/tstart*\ [*/tstop*\ ]/\ *angle* for a single rotation given
+    *lon/lat/tstart*\ [*/tstop*]/\ *angle* for a single rotation given
     on the command line. The *tstop* argument is required for stage
     poles only. For a single total reconstruction rotation without any
     time information, give *lon/lat/angle* only.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-A**
     Indicate that times are actually just opening angles [times in Myr].
 **-D**
     Report longitudes use the -180/+180 range [Default is 0/360].
-**-E**\ [*fact*\ ]
+**-E**\ [*fact*]
     Scale opening angles by *fact* on output. Requires stage pole output
     (see **-F**).
 **-F**\ *out*
@@ -76,45 +78,51 @@ whose parameters are separated by slashes.
 
 .. include:: ../../explain_help.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
 To convert the total reconstruction rotations in the file
-model\_total\_reconstruction.APM to stage poles, run
+model_total_reconstruction.APM to stage poles, run
 
-    rotconverter model\_total\_reconstruction.APM -Fs > model\_stages.APM
+   ::
+
+    gmt rotconverter model_total_reconstruction.APM -Fs > model_stages.APM
 
 To obtain Nazca motion relative to Pacific hotspots by adding the motion
 of Nazca relative to a fixed Pacific to the Pacific-Hotspot reference
-model DC85\_stages.d, and report the result as total reconstruction
+model DC85_stages.d, and report the result as total reconstruction
 reconstruction poles in the northern hemisphere, try
 
-    rotconverter DC85\_stages.APM + Pac\_Naz\_stages.RPM -N -Ft >
-    Naz\_HS\_total reconstruction.APM
+    gmt rotconverter DC85_stages.APM + Pac_Naz_stages.RPM -N -Ft > \
+                     Naz_HS_total reconstruction.APM
 
-To add the final rotations ROT(150.1, 70.5, -20.3) and ROT (145.0, 40.0,
-11.4), try
+To add the final rotations ROT(150.1, 70.5, -20.3) and ROT (145.0, 40.0, 11.4), try
 
-    rotconverter 150.1/70.5/-20.3 + 145/40/11.4
+   ::
+
+    gmt rotconverter 150.1/70.5/-20.3 + 145/40/11.4
 
 which prints out 157.32, -80.44, 11.97.
 
 To make stage rotations suitable for generating flowlines (fracture
 zones) from a model of relative plate motions PL1-PL2.RPM, assuming
-symmetric spreading,, try
+symmetric spreading, try
 
-    rotconverter PL1-PL2.RPM -E -Fs > PL1-PL2\_half.RPM
+   ::
 
-    rotconverter - PL1-PL2.RPM -E -Fs > PL2-PL1\_half.RPM
+    gmt rotconverter PL1-PL2.RPM -E -Fs > PL1-PL2_half.RPM
+    gmt rotconverter - PL1-PL2.RPM -E -Fs > PL2-PL1_half.RPM
 
 To compute rotations for India relative to a fixed Africa using the
 plate circuit India-Central Indian Basin-Antarctica-Africa, based on the
 GPlates rotations database, try
 
-    rotconverter IND-CIB CIB-ANT ANT-AFR > India\_AFrica.RPM
+   ::
 
-`See Also <#toc7>`_
--------------------
+    gmt rotconverter IND-CIB CIB-ANT ANT-AFR > India_AFrica.RPM
+
+See Also
+--------
 
 `backtracker <backtracker.html>`_,
 `grdrotater <grdrotater.html>`_,

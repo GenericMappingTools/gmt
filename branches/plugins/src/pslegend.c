@@ -649,7 +649,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						sscanf (&line[2], "%s %s %s %[^\n]", bar_cpt, bar_gap, bar_height, bar_opts);
 						x_off = GMT_to_inch (GMT, bar_gap);
 						sprintf (buffer, "-C%s -O -K -D%gi/%gi/%gi/%sh %s", bar_cpt, Ctrl->D.lon + 0.5 * Ctrl->D.width, y0, Ctrl->D.width - 2 * x_off, bar_height, bar_opts);
-						status = GMT_Call_Module (API, GMT_ID_PSSCALE, 0, buffer);	/* Plot the colorbar */
+						status = GMT_Call_Module (API, "psscale", 0, buffer);	/* Plot the colorbar */
 						if (status) {
 							GMT_Report (API, GMT_MSG_NORMAL, "GMT_psscale returned error %d.\n", status);
 							Return (EXIT_FAILURE);
@@ -714,7 +714,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						x_off = Ctrl->D.lon;
 						x_off += (justify%4 == 1) ? Ctrl->C.dx : ((justify%4 == 3) ? Ctrl->D.width - Ctrl->C.dx : 0.5 * Ctrl->D.width);
 						sprintf (buffer, "-O -K %s -W%s -C%gi/%gi/%s", image, size, x_off, y0, key);
-						status = GMT_Call_Module (API, GMT_ID_PSIMAGE, 0, buffer);	/* Plot the image */
+						status = GMT_Call_Module (API, "psimage", 0, buffer);	/* Plot the image */
 						if (status) {
 							GMT_Report (API, GMT_MSG_NORMAL, "GMT_psimage returned error %d.\n", status);
 							Return (EXIT_FAILURE);
@@ -787,7 +787,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							}
 							sprintf (buffer, "-R%s -J%s -O -K -L%s", r_ptr->arg, j_ptr->arg, &mapscale[k]);
 						}
-						status = GMT_Call_Module (API, GMT_ID_PSBASEMAP, 0, buffer);	/* Plot the scale */
+						status = GMT_Call_Module (API, "psbasemap", 0, buffer);	/* Plot the scale */
 						if (status) {
 							GMT_Report (API, GMT_MSG_NORMAL, "GMT_psbasemap returned error %d.\n", status);
 							Return (EXIT_FAILURE);
@@ -898,7 +898,8 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							F->coord[GMT_X][0] = x_off + off_ss-x;	F->coord[GMT_Y][0] = y0;
 							F->coord[GMT_X][1] = x_off + off_ss+x;	F->coord[GMT_Y][1] = y0;
 							Front->n_records = F->n_rows = 2;
-							if ((object_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_REFERENCE, GMT_IS_LINE, GMT_IN, NULL, Front)) == GMT_NOTSET) {
+							/* Get API ID of the Front object so we can create a file name */
+							if ((object_ID = GMT_Get_ID (API, GMT_IS_DATASET, GMT_IN, Front)) == GMT_NOTSET) {
 								Return (API->error);
 							}
 							if (GMT_Encode_ID (API, string, object_ID) != GMT_OK) {	/* Make filename with embedded object ID */
@@ -1118,14 +1119,14 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		}
 	}
 
-	if (GMT_Destroy_Data (API, GMT_ALLOCATED, &In) != GMT_OK) {
+	if (GMT_Destroy_Data (API, &In) != GMT_OK) {
 		Return (API->error);
 	}
 
 	/* Reset the flag */
 	if (GMT_compat_check (GMT, 4)) GMT->current.setting.io_seg_marker[GMT_IN] = save_EOF;
 
-	if (Front && GMT_Destroy_Data (API, GMT_ALLOCATED, &Front) != GMT_OK) {
+	if (Front && GMT_Destroy_Data (API, &Front) != GMT_OK) {
 		Return (API->error);
 	}
 	
@@ -1133,7 +1134,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 
 	if (S[SYM] && S[SYM]->n_rows) {
 		/* Create option list, register D[SYM] as input source */
-		if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REFERENCE, GMT_IS_POINT, GMT_IN, NULL, D[SYM])) == GMT_NOTSET) {
+		if ((object_ID = GMT_Get_ID (API, GMT_IS_TEXTSET, GMT_IN, D[SYM])) == GMT_NOTSET) {
 			Return (API->error);
 		}
 		if (GMT_Encode_ID (API, string, object_ID) != GMT_OK) {
@@ -1147,31 +1148,31 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	}
 	if (S[TXT] && S[TXT]->n_rows) {
 		/* Create option list, register D[TXT] as input source */
-		if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REFERENCE, GMT_IS_NONE, GMT_IN, NULL, D[TXT])) == GMT_NOTSET) {
+		if ((object_ID = GMT_Get_ID (API, GMT_IS_TEXTSET, GMT_IN, D[TXT])) == GMT_NOTSET) {
 			Return (API->error);
 		}
 		if (GMT_Encode_ID (API, string, object_ID) != GMT_OK) {
 			Return (API->error);	/* Make filename with embedded object ID */
 		}
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -F+f+j %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
-		if (GMT_Call_Module (API, GMT_ID_PSTEXT, 0, buffer) != GMT_OK) {
+		if (GMT_Call_Module (API, "pstext", 0, buffer) != GMT_OK) {
 			Return (API->error);	/* Plot the symbols */
 		}
 	}
 	if (S[PAR] && S[PAR]->n_rows) {
 		/* Create option list, register D[PAR] as input source */
-		if ((object_ID = GMT_Register_IO (API, GMT_IS_TEXTSET, GMT_IS_REFERENCE, GMT_IS_NONE, GMT_IN, NULL, D[PAR])) == GMT_NOTSET) {
+		if ((object_ID = GMT_Get_ID (API, GMT_IS_TEXTSET, GMT_IN, D[PAR])) == GMT_NOTSET) {
 			Return (API->error);
 		}
 		if (GMT_Encode_ID (API, string, object_ID) != GMT_OK) {
 			Return (API->error);	/* Make filename with embedded object ID */
 		}
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -M -F+f+a+j %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
-		if (GMT_Call_Module (API, GMT_ID_PSTEXT, 0, buffer) != GMT_OK) Return (API->error);	/* Plot the symbols */
+		if (GMT_Call_Module (API, "pstext", 0, buffer) != GMT_OK) Return (API->error);	/* Plot the symbols */
 	}
 
 	for (id = 0; id < 3; id++) {
-		if (D[id] && GMT_Destroy_Data (API, GMT_ALLOCATED, &D[id]) != GMT_OK) {
+		if (D[id] && GMT_Destroy_Data (API, &D[id]) != GMT_OK) {
 			Return (API->error);
 		}
 	}

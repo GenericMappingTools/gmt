@@ -156,7 +156,7 @@ int GMT_psxyz_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Symbols A, C, D, F, H, I, N, S, T are adjusted to have same area\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   of a circle of given dimater.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Bar (or Column): Append b[<base>] to give the y- (or z-) value of the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      base [Default = 0 (1 for log-scales) if b not given]. Use -SB for horizontal\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t      base [Default = 0 (1 for log-scales)]. Use -SB for horizontal\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      bars; then <base> value refers to the x location.  To read the <base>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      value from file, specify b with no trailing value.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Ellipses: Direction, major, and minor axis must be in columns 4-6.\n");
@@ -182,7 +182,7 @@ int GMT_psxyz_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t     <symbolname>.def in the current directory, in $GMT_USERDIR,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     or in $GMT_SHAREDIR (searched in that order).\n");
 	GMT_list_custom_symbols (API->GMT);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Letter: append /<string> after symbol size, and optionally %%<font>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Letter: append +t<string> after symbol size, and optionally +f<font> and +j<justify>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Mathangle: start/stop directions of math angle must be in columns 4-5.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If -SM rather than -Sm is used, we draw straight angle symbol if 90 degrees.\n");
 	GMT_vector_syntax (API->GMT, 0);
@@ -955,6 +955,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 					for (j = 0; S.custom->type && j < S.n_required; j++) {	/* Deal with any geo-angles first */
 						dim[j+1] = (S.custom->type[j] == GMT_IS_GEOANGLE) ? GMT_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, 90.0 - data[i].dim[j]) : data[i].dim[j];
 					}
+					if (!S.custom->start) S.custom->start = (get_rgb) ? 4 : 3;
 					GMT_draw_custom_symbol (GMT, data[i].x, data[i].y, dim, data[i].custom, &data[i].p, &data[i].f, data[i].outline);
 					GMT_free (GMT, data[i].custom);
 					break;
@@ -1052,7 +1053,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 				GMT_free (GMT, yp);
 			}
 		}
-		if (GMT_Destroy_Data (API, GMT_ALLOCATED, &D) != GMT_OK) {
+		if (GMT_Destroy_Data (API, &D) != GMT_OK) {
 			Return (API->error);
 		}
 	}

@@ -4,18 +4,19 @@ kml2gmt
 
 kml2gmt - Extract GMT table data from Google Earth KML files
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
-**kml2gmt** [ *kmlfiles* ] [ **-V**\ [*level*\ ] ] [ **-Z** ] [
-**-bo**\ [*ncols*\ ][*type*\ ] ] [ **-:**\ [**i**\ \|\ **o**] ]
+**kml2gmt** [ *kmlfiles* ] [ |SYN_OPT-V| ] [ **-Z** ]
+[ **-bo**\ [*ncols*\ ][*type*\ ] ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **kml2gmt** reads a Google Earth KML file and outputs a GMT table file.
 Only KML files that contain points, lines, or polygons can be processed.
@@ -26,13 +27,13 @@ reinsert the modified data into the original GMT data file. For a more
 complete reformatting, consider using **ogr2ogr -f** "GMT" somefile.gmt
 somefile.kml. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 None.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 *kmlfiles*
     Name of one or more KML files to work on. If not are given, then
@@ -51,15 +52,15 @@ None.
 
 .. include:: explain_help.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
 To extract the lon,lat values from the KML file google.kml, try
 
-    kml2gmt google.kml -V > google.txt
+    gmt kml2gmt google.kml -V > google.txt
 
-`See Also <#toc7>`_
--------------------
+See Also
+--------
 
 `gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
 `img2google <img2google.html>`_,

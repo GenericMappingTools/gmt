@@ -2046,7 +2046,9 @@ struct GMT_PALETTE * GMT_create_palette (struct GMT_CTRL *GMT, uint64_t n_colors
 	P = GMT_memory (GMT, NULL, 1, struct GMT_PALETTE);
 	if (n_colors > 0) P->range = GMT_memory (GMT, NULL, n_colors, struct GMT_LUT);
 	P->n_colors = (unsigned int)n_colors;
-	P->alloc_mode = GMT_ALLOCATED;	/* So GMT_* modules can free this memory. */
+	P->alloc_mode = GMT_ALLOCATED_BY_GMT;		/* Memory can be freed by GMT. */
+	P->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
+	P->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 	
 	return (P);
 }
@@ -2559,8 +2561,9 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned 
 	X->n_colors = n;
 
 	if (X->categorical) {	/* Set up fake ranges so CPT is continuous */
+		dz = 1.0;	/* This will presumably get reset in the loop */
 		for (i = 0; i < X->n_colors; i++) {
-			X->range[i].z_high = (i == (X->n_colors-1)) ? X->range[i].z_low + 1.0 : X->range[i+1].z_low;
+			X->range[i].z_high = (i == (X->n_colors-1)) ? X->range[i].z_low + dz : X->range[i+1].z_low;
 			dz = X->range[i].z_high - X->range[i].z_low;
 			if (dz == 0.0) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Z-slice with dz = 0\n");
@@ -6078,6 +6081,8 @@ uint64_t gmt_delaunay_shewchuk (struct GMT_CTRL *GMT, double *x_in, double *y_in
 	uint64_t i, j;
 	struct triangulateio In, Out, vorOut;
 
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Delaunay triangulation calculated by Jonathan Shewchuk's Triangle [http://www.cs.cmu.edu/~quake/triangle.html]\n");
+
 	/* Set everything to 0 and NULL */
 
 	GMT_memset (&In,     1, struct triangulateio);
@@ -6128,6 +6133,8 @@ uint64_t gmt_voronoi_shewchuk (struct GMT_CTRL *GMT, double *x_in, double *y_in,
 	uint64_t i, j, k, j2, n_edges;
 	struct triangulateio In, Out, vorOut;
 	double *x_edge = NULL, *y_edge = NULL, dy;
+
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Voronoi partitioning calculated by Jonathan Shewchuk's Triangle [http://www.cs.cmu.edu/~quake/triangle.html]\n");
 
 	/* Set everything to 0 and NULL */
 
@@ -6191,11 +6198,11 @@ uint64_t gmt_voronoi_shewchuk (struct GMT_CTRL *GMT, double *x_in, double *y_in,
 /* Dummy functions since not installed */
 uint64_t gmt_delaunay_shewchuk (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, int **link)
 {
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "unavailable: Shewchuk's triangle option was not selected during GMT installation");
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "unavailable: Shewchuk's triangle option was not selected during GMT installation\n");
 	return (0);
 }
 uint64_t gmt_voronoi_shewchuk (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, double *we, double **x_out, double **y_out) {
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "unavailable: Shewchuk's triangle option was not selected during GMT installation");
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "unavailable: Shewchuk's triangle option was not selected during GMT installation\n");
 	return (0);
 }
 #endif
@@ -6224,6 +6231,7 @@ uint64_t gmt_delaunay_watson (struct GMT_CTRL *GMT, double *x_in, double *y_in, 
 	double det[2][3], *x_circum = NULL, *y_circum = NULL, *r2_circum = NULL, *x = NULL, *y = NULL;
 	double xmin, xmax, ymin, ymax, datax, dx, dy, dsq, dd;
 
+	GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Delaunay triangulation calculated by Dave Watson's ACORD [Computers & Geosciences, 8, 97-101, 1982]\n");
 	size = 10 * n + 1;
 	n += 3;
 
@@ -6375,7 +6383,7 @@ uint64_t gmt_delaunay_watson (struct GMT_CTRL *GMT, double *x_in, double *y_in, 
 
 uint64_t gmt_voronoi_watson (struct GMT_CTRL *GMT, double *x_in, double *y_in, uint64_t n, double *we, double **x_out, double **y_out)
 {
-	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No Voronoi unless you select Shewchuk's triangle option during GMT installation");
+	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No Voronoi unless you select Shewchuk's triangle option during GMT installation\n");
 	return (0);
 }
 
@@ -9387,12 +9395,13 @@ int GMT_flip_justify (struct GMT_CTRL *GMT, unsigned int justify)
 	return (j);
 }
 
-int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *name, struct GMT_CUSTOM_SYMBOL **S) {
+int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUSTOM_SYMBOL **S) {
 	unsigned int k, nc = 0, error = 0;
 	int last;
+	size_t length;
 	bool do_fill, do_pen, first = true;
-	char file[GMT_BUFSIZ], buffer[GMT_BUFSIZ], col[8][GMT_TEXT_LEN64], var[8], OP[8], constant[GMT_TEXT_LEN64];
-	char *fill_p = NULL, *pen_p = NULL;
+	char name[GMT_BUFSIZ], file[GMT_BUFSIZ], buffer[GMT_BUFSIZ], col[8][GMT_TEXT_LEN64], var[8], OP[8], constant[GMT_TEXT_LEN64];
+	char *fill_p = NULL, *pen_p = NULL, *c = NULL;
 	FILE *fp = NULL;
 	struct GMT_CUSTOM_SYMBOL *head = NULL;
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL, *previous = NULL;
@@ -9402,6 +9411,12 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *name, struct GMT_CUSTOM_
 
 	/* Parse the *.def files.  Note: PS_MACRO is off and will be worked on later.  For now the
 	 * extended macro language works well and can handle most situations. PW 10/11/10 */
+	length = strlen (in_name);
+	GMT_memset (name, GMT_BUFSIZ, char);
+	if (length > 4 && !strcmp (&in_name[length-4], ".def"))	/* User gave trailing .def extension (not needed) - just chop */
+		strncpy (name, in_name, length-4);
+	else	/* Use as is */
+		strcpy (name, in_name);
 
 	GMT_getsharepath (GMT, "custom", name, ".def", file);
 #ifdef PS_MACRO
@@ -9440,6 +9455,11 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *name, struct GMT_CUSTOM_
 						case 'a':	head->type[k] = GMT_IS_GEOANGLE; break;		/* Angle that needs to be converted via the map projection */
 						case 'l':	head->type[k] = GMT_IS_DIMENSION; break;	/* Length that will be in the current measure unit */
 						case 'o':	head->type[k] = GMT_IS_FLOAT; break;		/* Other, i.e, non-dimensional quantity not to be changed */
+						case 's':	head->type[k] = GMT_IS_STRING; break;		/* A text string */
+						default:	
+							GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Custom symbol %s has unrecognized <types> declaration in %s\n", name, flags);
+							GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+							break;
 					}
 				}
 			}
@@ -9598,6 +9618,30 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *name, struct GMT_CUSTOM_
 				s->p[0] = atof (col[2]);
 				s->string = GMT_memory (GMT, NULL, strlen (col[3]) + 1, char);
 				strcpy (s->string, col[3]);
+				if ((c = strchr (s->string, '$')) && isdigit (c[1])) {	/* Got a text string containing one or more variables */
+					s->action = GMT_SYMBOL_VARTEXT;
+				}
+				s->font = GMT->current.setting.font_annot[0];
+				s->justify = PSL_MC;
+				k = 1;
+				while (col[last][k] && col[last][k] != '+') k++;
+				if (col[last][k]) {	/* Gave modifiers */
+					unsigned int pos = 0;
+					char p[GMT_BUFSIZ];
+					while ((GMT_strtok (&col[last][k], "+", &pos, p))) {	/* Parse any +<modifier> statements */
+						switch (p[0]) {
+							case 'f':	/* Change font */
+								if (GMT_getfont (GMT, &p[1], &s->font))
+									GMT_Report (GMT->parent, GMT_MSG_NORMAL, "macro code l contains bad +<font> modifier (set to %s)\n", GMT_putfont (GMT, s->font));
+								break;
+							case 'j':	s->justify = GMT_just_decode (GMT, &p[1], 12);	break;	/* text justification */
+							default:
+								GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error option -Sl: Bad modifier +%c\n", p[0]);
+								error++;
+								break;	
+						}
+					}
+				}
 				break;
 
 			case 'r':		/* Draw rect symbol */
