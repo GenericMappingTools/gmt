@@ -5972,6 +5972,44 @@ Table [tbl:netcdf-format]) to describe the content. The routine that
 deals with netCDF grid files is sufficiently flexible so that grid files
 slightly deviating from the standards used by *GMT* can also be read.
 
++----------------------+--------------------------------------------------------------+
+| **Atributte**        |      **Description**                                         |
++======================+==============================================================+
+|                       *Global attributes*                                           |
++----------------------+--------------------------------------------------------------+
+| Conventions          | COARDS, CF-1.0 (optional)                                    |
++----------------------+--------------------------------------------------------------+
+| title                | Title (optional)                                             |
++----------------------+--------------------------------------------------------------+
+| source               |                                                              |
++----------------------+--------------------------------------------------------------+
+| registration         |                                                              |
++----------------------+--------------------------------------------------------------+
+| long_name            |                                                              |
++----------------------+--------------------------------------------------------------+
+| units                |                                                              |
++----------------------+--------------------------------------------------------------+
+| actual range         |                                                              |
+| (or valid range)     |                                                              |
++----------------------+--------------------------------------------------------------+
+| long_name            |                                                              |
++----------------------+--------------------------------------------------------------+
+| units                |                                                              |
++----------------------+--------------------------------------------------------------+
+| scale_factor         |                                                              |
++----------------------+--------------------------------------------------------------+
+| add_offset           |                                                              |
++----------------------+--------------------------------------------------------------+
+| actual_range         |                                                              |
++----------------------+--------------------------------------------------------------+
+| \_FillValue          |                                                              |
+| (or missing_value)   |                                                              |
++----------------------+--------------------------------------------------------------+
+|                      |                                                              |
++----------------------+--------------------------------------------------------------+
+|                      |                                                              |
++----------------------+--------------------------------------------------------------+
+
 | lp0.8 **Attribute** & **Description**
 | & *Global attributes*
 | Conventions & COARDS, CF-1.5 (optional)
@@ -6020,11 +6058,10 @@ going from the "top" (:math:`y = y_{max}` (north)) to the "bottom"
 (:math:`y = y_{min}` (south)). Data within each row are ordered from
 "left" (:math:`x = x_{min}` (west)) to "right" (:math:`x = x_{max}`
 (east)). The *registration* signals how the nodes are laid out. The grid
-is always defined as the intersections of all *x* (
-:math:` x = x_{min}, x_{min} + x_{inc}, x_{min} + 2 \cdot x_{inc}, \ldots, x_{max} `
-) and *y* (
-:math:` y = y_{min}, y_{min} + y_{inc}, y_{min} + 2 \cdot y_{inc}, \ldots, y_{max} `
-) lines. The two scenarios differ as to which area each data point
+is always defined as the intersections of all
+*x* ( :math:`x = x_{min}, x_{min} + x_{inc}, x_{min} + 2 \cdot x_{inc}, \ldots, x_{max}` )
+and *y* ( :math:`y = y_{min}, y_{min} + y_{inc}, y_{min} + 2 \cdot y_{inc}, \ldots, y_{max}` )
+lines. The two scenarios differ as to which area each data point
 represents. The default node registration in *GMT* is gridline node
 registration. Most programs can handle both types, and for some programs
 like `grdimage <grdimage.html>`_ a pixel registered file
