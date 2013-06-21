@@ -27,8 +27,8 @@
  *		in gmt_fft.c, called GMT_fft_*.
  */
 
-#define THIS_MODULE GMT_ID_GRDFFT /* I am grdfft */
-#define MODULE_USAGE "Do mathematical operations on grids in the wavenumber (or frequency) domain"
+#define THIS_MODULE_NAME	"grdfft"
+#define THIS_MODULE_PURPOSE	"Do mathematical operations on grids in the wavenumber (or frequency) domain"
 
 #include "gmt_dev.h"
 
@@ -572,7 +572,8 @@ bool parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 
 int GMT_grdfft_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (API, THIS_MODULE);
+	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdfft <ingrid> [<ingrid2>] [-G<outgrid>|<table>] [-A<azimuth>] [-C<zlevel>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D[<scale>|g]] [-E[r|x|y][w[k]] [-F[r|x|y]<parameters>] [-I[<scale>|g]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N%s] [-S<scale>]\n", GMT_FFT_OPT);
@@ -824,6 +825,7 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
+	if (mode == GMT_PURPOSE) return (GMT_grdfft_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_grdfft_usage (API, GMT_USAGE));	/* Return the usage message */
@@ -831,7 +833,7 @@ int GMT_grdfft (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_gmt_module (API, NULL, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdfft_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdfft_parse (GMT, Ctrl, &f_info, options))) Return (error);

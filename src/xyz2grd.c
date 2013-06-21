@@ -25,8 +25,8 @@
  * Version:	5 API
  */
  
-#define THIS_MODULE GMT_ID_XYZ2GRD /* I am xyz2grd */
-#define MODULE_USAGE "Convert data table to a grid file"
+#define THIS_MODULE_NAME	"xyz2grd"
+#define THIS_MODULE_PURPOSE	"Convert data table to a grid file"
 
 #include "gmt_dev.h"
 
@@ -94,7 +94,8 @@ void Free_xyz2grd_Ctrl (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *C) {	/* Deall
 
 int GMT_xyz2grd_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (API, THIS_MODULE);
+	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: xyz2grd [<table>] -G<outgrid> %s\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A[f|l|m|n|r|s|u|z]]\n\t[%s]\n", GMT_Rgeo_OPT, GMT_GRDEDIT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N<nodata>] [-S[<zfile]] [%s] [-Z[<flags>]] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n",
@@ -313,6 +314,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
+	if (mode == GMT_PURPOSE) return (GMT_xyz2grd_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_xyz2grd_usage (API, GMT_USAGE));/* Return the usage message */
@@ -320,7 +322,7 @@ int GMT_xyz2grd (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_gmt_module (API, NULL, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_xyz2grd_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_xyz2grd_parse (GMT, Ctrl, &io, options))) Return (error);

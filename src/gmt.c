@@ -26,12 +26,12 @@
 #include "gmt_dev.h"
 
 int main (int argc, char *argv[]) {
-	int status = EXIT_SUCCESS;              /* Default status code */
+	int status = GMT_NOT_A_VALID_MODULE;     /* Default status code */
 	unsigned int modulename_arg_n = 0;      /* argument number that contains module name */
-	enum GMT_MODULE_ID module_id = 0;       /* Module ID */
 	struct GMTAPI_CTRL *api_ctrl = NULL;    /* GMT API control structure */
 	char gmt_module[16] = "gmt";
 	char *progname = NULL; /* Last component from the pathname */
+	char *module = NULL;			/* Module name */
 
 	/* Initialize new GMT session */
 	if ((api_ctrl = GMT_Create_Session (NULL, 2U, 0U, NULL)) == NULL)
@@ -40,22 +40,24 @@ int main (int argc, char *argv[]) {
 	progname = strdup (GMT_basename(argv[0])); /* Last component from the pathname */
 	/* remove any filename extensions added for example
 	 * by the MSYS shell when executing gmt via symlinks */
-	GMT_chop_ext(progname);
+	GMT_chop_ext (progname);
 
 	/* test if argv[0] contains module name: */
-	if ((module_id = gmt_module_lookup (api_ctrl, progname)) == GMT_ID_NONE && argc > 1) {
+	module = progname;	/* Try this module name */
+	if (argc > 1 && (status = GMT_Probe_Module (api_ctrl, module, GMT_MODULE_EXIST) == GMT_NOT_A_VALID_MODULE)) {
 		/* argv[0] does not contain a valid module name
 		 * argv[1] either holds the name of the module or an option: */
 		modulename_arg_n = 1;
-		module_id = gmt_module_lookup (api_ctrl, argv[1]); /* either valid id or GMT_ID_NONE */
-		if (module_id == GMT_ID_NONE) {
+		module = argv[1];	/* Try this module name */
+		if ((status = GMT_Probe_Module (api_ctrl, module, GMT_MODULE_EXIST) == GMT_NOT_A_VALID_MODULE)) {
 			/* argv[1] does not contain a valid module name; try prepending gmt: */
-			strncat (gmt_module, argv[1], 12);
-			module_id = gmt_module_lookup (api_ctrl, gmt_module); /* either valid id or GMT_ID_NONE */
+			strncat (gmt_module, argv[1], 12U);
+			module = gmt_module;	/* Try this module name */
+			status = GMT_Probe_Module (api_ctrl, module, GMT_MODULE_EXIST); /* either GMT_NOERROR or GMT_NOT_A_VALID_MODULE */
 		}
 	}
-
-	if (module_id == GMT_ID_NONE) {
+	
+	if (status == GMT_NOT_A_VALID_MODULE) {
 		/* neither argv[0] nor argv[1] contain a valid module name */
 
 		int arg_n;
@@ -64,7 +66,8 @@ int main (int argc, char *argv[]) {
 
 			/* Print module list */
 			if (!strcmp (argv[arg_n], "--help")) {
-				gmt_module_show_all(api_ctrl);
+				gmt_coremodule_show_all(api_ctrl);
+				gmt_supplmodule_show_all(api_ctrl);
 				goto exit;
 			}
 
@@ -105,17 +108,18 @@ int main (int argc, char *argv[]) {
 		fprintf (stderr, "  --show-bindir        Show directory of executables and exit\n");
 		status = EXIT_FAILURE;
 		goto exit;
-	} /* module_id == GMT_ID_NONE */
+	} /* status == GMT_NOT_A_VALID_MODULE */
 
 	/* OK, here we found a recognized GMT module and the API has been initialized
 	 * Now run selected GMT module: */
-	status = g_module[module_id].p_func (api_ctrl, argc-1-modulename_arg_n, argv+1+modulename_arg_n);
+	status = GMT_Call_Module (api_ctrl, module, argc-1-modulename_arg_n, argv+1+modulename_arg_n);
+	
 
 exit:
+	if (progname) free (progname);
 	/* Destroy GMT session */
 	if (GMT_Destroy_Session (api_ctrl))
 		return EXIT_FAILURE;
-	if (progname) free (progname);
 
 	return status; /* Return the status from the module */
 }

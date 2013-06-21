@@ -29,8 +29,8 @@
  * Version:	5 API
  */
  
-#define THIS_MODULE GMT_ID_GRDGRADIENT /* I am grdgradient */
-#define MODULE_USAGE "Compute directional gradients from a grid"
+#define THIS_MODULE_NAME	"grdgradient"
+#define THIS_MODULE_PURPOSE	"Compute directional gradients from a grid"
 
 #include "gmt_dev.h"
 
@@ -113,7 +113,8 @@ double specular (double nx, double ny, double nz, double *s) {
 
 int GMT_grdgradient_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (API, THIS_MODULE);
+	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdgradient <ingrid> -G<outgrid> [-A<azim>[/<azim2>]] [-D[a][o][n]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E[s|p|m]<azim>/<elev>[/<ambient>/<diffuse>/<specular>/<shine>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N[t|e][<amp>[/<sigma>[/<offset>]]]] [%s]\n\t[-S<slopegrid>] [%s] [-fg] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT);
@@ -341,6 +342,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
+	if (mode == GMT_PURPOSE) return (GMT_grdgradient_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_grdgradient_usage (API, GMT_USAGE));/* Return the usage message */
@@ -348,7 +350,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_gmt_module (API, NULL, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdgradient_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdgradient_parse (GMT, Ctrl, options))) Return (error);

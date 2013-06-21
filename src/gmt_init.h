@@ -40,7 +40,7 @@
 
 EXTERN_MSC struct GMT_CTRL * GMT_begin (struct GMTAPI_CTRL *API, char *session, unsigned int pad);
 EXTERN_MSC void GMT_end (struct GMT_CTRL *GMT);
-EXTERN_MSC struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, char *mod_name, struct GMT_CTRL **Ccopy);
+EXTERN_MSC struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, struct GMT_CTRL **Ccopy);
 EXTERN_MSC void GMT_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy);
 EXTERN_MSC int GMT_Complete_Options (struct GMT_CTRL *GMT, struct GMT_OPTION *options);
 EXTERN_MSC int GMT_init_time_system_structure (struct GMT_CTRL *GMT, struct GMT_TIME_SYSTEM *time_system);
@@ -107,12 +107,12 @@ EXTERN_MSC void GMT_end_for_mex (struct GMT_CTRL *GMT);
 /* Inline functions */
 
 /* Wrapper around GMT_begin_module for internally registered GMT modules */
-static inline struct GMT_CTRL* GMT_begin_gmt_module (struct GMTAPI_CTRL *api_ctrl, enum GMT_MODULE_ID module_id, struct GMT_CTRL **gmt_ctrl_copy)
+static inline struct GMT_CTRL* GMT_begin_gmt_module (struct GMTAPI_CTRL *api_ctrl, const char *lib, const char *module, struct GMT_CTRL **gmt_ctrl_copy)
 {
 	/* Init module with NULL-name */
-	struct GMT_CTRL *gmt_ctrl = GMT_begin_module (api_ctrl, NULL, gmt_ctrl_copy);
+	struct GMT_CTRL *gmt_ctrl = GMT_begin_module (api_ctrl, lib, module, gmt_ctrl_copy);
 	/* Set internal module_id */
-	gmt_ctrl->init.module_id = module_id;
+	//gmt_ctrl->init.module_id = module_id;
 	/* Return GMT_CTRL */
 	return gmt_ctrl;
 }

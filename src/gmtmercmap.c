@@ -168,7 +168,7 @@ int Gmtmercmap_Parse (void *API, struct PROG_CTRL *Ctrl, struct GMT_OPTION *opti
 #define ETOPO1M_LIMIT 100	/* ETOPO1 cut-offs in degrees squared for 1 arc min */
 #define ETOPO2M_LIMIT 10000	/* ETOPO2 cut-offs in degrees squared for 2 arc min */
 
-double inch2unit[4] = {2.54, 1.0, 0.0254, 72.0};
+double cm2unit[4] = {1.0, 1.0/2.54, 0.01, 72.0/2.54};
 
 void set_var (int mode, char *name, char *value)
 {	/* Assigns the text variable given the script mode */
@@ -182,7 +182,8 @@ void set_var (int mode, char *name, char *value)
 void set_dim (int mode, unsigned int length_unit, char *name, double value)
 {	/* Assigns the double value given the script mode and prevailing measure unit [value is passed in inches] */
 	static char unit[4] = "cimp", text[256];
-	double out = value * inch2unit[length_unit];
+	//double out = value * cm2unit[length_unit];
+	double out = value;
 	sprintf (text, "%g%c", out, unit[length_unit]);
 	set_var (mode, name, text);
 }
@@ -222,11 +223,6 @@ int main (int argc, char **argv)
 	if ((API = GMT_Create_Session (argv[0], 2U, 0U, NULL)) == NULL) exit (EXIT_FAILURE);
         /* Convert argc,argv to linked option list */
 	options = GMT_Create_Options (API, argc-1, (argv+1));
-	GMT_Get_Default (API, "PROJ_LENGTH_UNIT", def_unit);
-	if (!strcmp (def_unit, "cm")) length_unit = 0;
-	else if (!strcmp (def_unit, "inch")) length_unit = 1;
-	else if (!strcmp (def_unit, "m")) length_unit = 2;
-	else if (!strcmp (def_unit, "point")) length_unit = 3;
 
 	if (!options || options->option == GMT_OPT_USAGE) 
 		exit (Gmtmercmap_Usage (API, length_unit, GMT_USAGE));		/* Exit the usage message */
@@ -235,6 +231,12 @@ int main (int argc, char **argv)
 
 	/* Parse the common command-line arguments */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) exit (EXIT_FAILURE);	/* Parse the common options */
+	GMT_Get_Default (API, "PROJ_LENGTH_UNIT", def_unit);
+	if (!strcmp (def_unit, "cm")) length_unit = 0;
+	else if (!strcmp (def_unit, "inch")) length_unit = 1;
+	else if (!strcmp (def_unit, "m")) length_unit = 2;
+	else if (!strcmp (def_unit, "point")) length_unit = 3;
+
 	Ctrl = New_Prog_Ctrl (length_unit);	/* Allocate and initialize a new control structure */
 	if ((error = Gmtmercmap_Parse (API, Ctrl, options))) Exit (error);
 
@@ -372,8 +374,7 @@ int main (int argc, char **argv)
 	
 	GMT_Report (API, GMT_MSG_VERBOSE, "Create Mercator map of area %g/%g/%g/%g with width %g%c\n",
 		wesn[GMT_XLO], wesn[GMT_XHI], wesn[GMT_YLO], wesn[GMT_YHI], 
-		Ctrl->W.width * inch2unit[length_unit],
-		unit[length_unit]);
+		Ctrl->W.width, unit[length_unit]);
 		
 	/* 3. Load in the subset from the selected etopo?m.nc grid */
 	
@@ -420,7 +421,7 @@ int main (int argc, char **argv)
 	if ((c_ID = GMT_Register_IO (API, GMT_IS_CPT, GMT_IS_REFERENCE|GMT_IO_RESET, GMT_IS_NONE, GMT_IN, NULL, P)) == GMT_NOTSET) Exit (EXIT_FAILURE);
 	if (GMT_Encode_ID (API, c_file, c_ID) != GMT_NOERROR) Exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 	memset (cmd, 0, BUFSIZ);
-	sprintf (cmd, "%s -I%s -C%s -JM%gi -Ba -BWSne", z_file, i_file, c_file, Ctrl->W.width);	/* The grdimage command line */
+	sprintf (cmd, "%s -I%s -C%s -JM%g%c -Ba -BWSne", z_file, i_file, c_file, Ctrl->W.width, unit[length_unit]);	/* The grdimage command line */
 	if (O_active) strcat (cmd, " -O");	/* Add optional user options */
 	if (P_active) strcat (cmd, " -P");	/* Add optional user options */
 	if (Ctrl->S.active || K_active) strcat (cmd, " -K");	/* Either gave -K or it is implicit via -S */
@@ -433,13 +434,13 @@ int main (int argc, char **argv)
 	/* 7. Plot the optional color scale */
 	
 	if (Ctrl->S.active) {
-		double x = 0.5 * Ctrl->W.width;	/* Centered beneath the map */
+		double x = 0.5 * Ctrl->W.width;	/* Centered beneath the map in these units */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Append color scale bar\n");
 		/* Register the CPT to be used by psscale */
 		if ((c_ID = GMT_Register_IO (API, GMT_IS_CPT, GMT_IS_REFERENCE|GMT_IO_RESET, GMT_IS_NONE, GMT_IN, NULL, P)) == GMT_NOTSET) Exit (EXIT_FAILURE);
 		if (GMT_Encode_ID (API, c_file, c_ID) != GMT_NOERROR) Exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
 		memset (cmd, 0, BUFSIZ);
-		sprintf (cmd, "-C%s -D%gi/%s/%gi/%sh -Bxa -By+lm -O", c_file, x, MAP_BAR_GAP, 0.9*Ctrl->W.width, MAP_BAR_HEIGHT);	/* The psscale command line */
+		sprintf (cmd, "-C%s -D%g%c/%s/%g%c/%sh -Bxa -By+lm -O", c_file, x, unit[length_unit], MAP_BAR_GAP, 0.9*Ctrl->W.width, unit[length_unit], MAP_BAR_HEIGHT);	/* The psscale command line */
 		if (K_active) strcat (cmd, " -K");		/* Add optional user options */
 		if (GMT_Call_Module (API, "psscale", 0, cmd) != GMT_NOERROR) Exit (EXIT_FAILURE);	/* Place the color bar */
 	}

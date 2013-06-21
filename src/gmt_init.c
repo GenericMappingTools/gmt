@@ -6100,7 +6100,7 @@ void GMT_end (struct GMT_CTRL *GMT)
 	Free_GMT_Ctrl (GMT);	/* Deallocate control structure */
 }
 
-struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, char *mod_name, struct GMT_CTRL **Ccopy)
+struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, struct GMT_CTRL **Ccopy)
 {	/* All GMT modules (i.e. GMT_psxy, GMT_blockmean, ...) must call GMT_begin_module
 	 * as their first call and call GMT_end_module as their last call.  This
 	 * allows us to capture the GMT control structure so we can reset all
@@ -6163,16 +6163,19 @@ struct GMT_CTRL * GMT_begin_module (struct GMTAPI_CTRL *API, char *mod_name, str
 
 	*Ccopy = Csave; /* Pass back out for safe-keeping by the module until GMT_end_module is called */
 
+	GMT->init.module_name = mod_name;
+	GMT->init.module_lib  = lib_name;
+#if 0
 	if (mod_name != NULL) {
 		/* mod_name should only be set for non-GMT modules. For internally
 		 * registered modules: mod_name == NULL */
-		GMT->init.module_id = GMT_ID_NONE;
+		//GMT->init.module_id = GMT_ID_NONE;
 		GMT->init.module_name = strdup (mod_name);
 	}
 	else
 		/* Remove pointer to module name referenced by Csave->init.module_name */
 		GMT->init.module_name = NULL;
-
+#endif
 	return (GMT);
 }
 
@@ -6202,8 +6205,10 @@ void GMT_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy)
 
 	/* GMT_INIT */
 
+#if 0
 	if (GMT->init.module_name != NULL)
 		free (GMT->init.module_name); /* before GMT will be clobbered by Ccopy below */
+#endif
 
 	/* We treat the history explicitly since we accumulate the history regardless of nested level */
 #if 0
@@ -9655,11 +9660,8 @@ struct GMT_CTRL *New_GMT_Ctrl (char *session, unsigned int pad) {	/* Allocate an
 	GMT->session.max_meminc = GMT_MAX_MEMINC;
 #endif
 
-	/* We default to non-GMT module id */
-	GMT->init.module_id = GMT_ID_NONE;
-
-	/* We don't know the module name yet */
-	GMT->init.module_name = NULL;
+	/* We don't know the module or library names yet */
+	GMT->init.module_name = GMT->init.module_lib = NULL;
 
 	/* Set runtime bindir */
 	GMT_runtime_bindir (path, session);
@@ -9895,7 +9897,7 @@ int GMT_report_func (struct GMT_CTRL *GMT, unsigned int level, const char *sourc
 	if (level > GMT->current.setting.verbose)
 		return 0;
 	snprintf (message, GMT_BUFSIZ, "%s (%s): ",
-			gmt_module_name(GMT), GMT_basename (source_line));
+			GMT->init.module_name, GMT_basename (source_line));
 	source_info_len = strlen (message);
 	va_start (args, format);
 	/* append format to the message: */

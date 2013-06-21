@@ -24,8 +24,8 @@
  * or polygons in a 3-D perspective view.
  */
 
-#define THIS_MODULE GMT_ID_PSXYZ /* I am psxyz */
-#define MODULE_USAGE "Plot lines, polygons, and symbols in 3-D"
+#define THIS_MODULE_NAME	"psxyz"
+#define THIS_MODULE_PURPOSE	"Plot lines, polygons, and symbols in 3-D"
 
 #include "gmt_dev.h"
 
@@ -109,7 +109,8 @@ int GMT_psxyz_usage (struct GMTAPI_CTRL *API, int level)
 {
 	/* This displays the psxyz synopsis and optionally full usage information */
 
-	gmt_module_show_name_and_purpose (API, THIS_MODULE);
+	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: psxyz [<table>] %s %s [%s]\n", GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-D<dx>/<dy>[/<dz>]] [-G<fill>] [-I<intens>] [-K] [-L] [-N] [-O]\n", GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [-Q] [-S[<symbol>][<size>[<unit>]|+s<scale>[unit][/<origin>][l]][/size_y]]\n\t[%s] [%s] [-W[+|-][<pen>]]\n", GMT_U_OPT, GMT_V_OPT);
@@ -408,6 +409,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
+	if (mode == GMT_PURPOSE) return (GMT_psxyz_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_psxyz_usage (API, GMT_USAGE));	/* Return the usage message */
@@ -415,7 +417,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_gmt_module (API, NULL, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	/* Initialize GMT_SYMBOL structure */
 

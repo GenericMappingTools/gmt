@@ -28,8 +28,8 @@
  *
  */
 
-#define THIS_MODULE GMT_ID_MAKECPT /* I am makecpt */
-#define MODULE_USAGE "Make GMT color palette tables"
+#define THIS_MODULE_NAME	"makecpt"
+#define THIS_MODULE_PURPOSE	"Make GMT color palette tables"
 
 #include "gmt_dev.h"
 
@@ -106,7 +106,8 @@ void Free_makecpt_Ctrl (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *C) {	/* Deall
 
 int GMT_makecpt_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (API, THIS_MODULE);
+	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: makecpt [-A[+]<transparency>] [-C<cpt>] [-D[i|o]] [-F[R|r|h|c] [-I] [-M] [-N] [-Q[i|o]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "	[-T<z_min>/<z_max>[/<z_inc>[+]] | -T<table>] [%s] [-Z]\n\t[%s]\n", GMT_V_OPT, GMT_ho_OPT);
 
@@ -264,6 +265,7 @@ int GMT_makecpt (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
+	if (mode == GMT_PURPOSE) return (GMT_makecpt_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_makecpt_usage (API, GMT_USAGE));	/* Return the usage message */
@@ -271,7 +273,7 @@ int GMT_makecpt (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_gmt_module (API, NULL, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_makecpt_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_makecpt_parse (GMT, Ctrl, options))) Return (error);

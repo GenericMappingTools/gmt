@@ -32,8 +32,8 @@
  * Version:	5 API
  */
 
-#define THIS_MODULE GMT_ID_PS2RASTER /* I am ps2raster */
-#define MODULE_USAGE "Convert [E]PS file(s) to other formats using GhostScript"
+#define THIS_MODULE_NAME	"ps2raster"
+#define THIS_MODULE_PURPOSE	"Convert [E]PS file(s) to other formats using GhostScript"
 
 #include "gmt_dev.h"
 
@@ -323,7 +323,8 @@ void Free_ps2raster_Ctrl (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *C) {	/* D
 
 int GMT_ps2raster_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (API, THIS_MODULE);
+	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: ps2raster <psfile1> <psfile2> <...> -A[u][<margins>][-][+r][+s<width[u]>[/<height>[u]]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<gs_command>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-L<listfile>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N] [-P] [-Q[g|t]1|2|4] [-S] [-Tb|e|f|F|g|G|j|m|p|t] [%s]\n", GMT_V_OPT);
@@ -643,6 +644,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
+	if (mode == GMT_PURPOSE) return (GMT_ps2raster_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_ps2raster_usage (API, GMT_USAGE));/* Return the usage message */
@@ -650,7 +652,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_gmt_module (API, NULL, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_ps2raster_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_ps2raster_parse (GMT, Ctrl, options))) Return (error);

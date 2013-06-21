@@ -25,8 +25,8 @@
  *
  */
 
-#define THIS_MODULE GMT_ID_GRDINFO /* I am grdinfo */
-#define MODULE_USAGE "Extract information from grids"
+#define THIS_MODULE_NAME	"grdinfo"
+#define THIS_MODULE_PURPOSE	"Extract information from grids"
 
 #include "gmt_dev.h"
 
@@ -81,7 +81,8 @@ void Free_grdinfo_Ctrl (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *C) {	/* Deall
 }
 
 int GMT_grdinfo_usage (struct GMTAPI_CTRL *API, int level) {
-	gmt_module_show_name_and_purpose (API, THIS_MODULE);
+	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdinfo <grid> [-C] [-F] [-I[<dx>[/<dy>]|-|b]] [-L[0|1|2]] [-M]\n");
 	GMT_Message (API, GMT_TIME_NONE, "	[%s] [-T[s]<dz>] [%s] [%s]\n\t[%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT);
 
@@ -221,6 +222,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
+	if (mode == GMT_PURPOSE) return (GMT_grdinfo_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_grdinfo_usage (API, GMT_USAGE));	/* Return the usage message */
@@ -228,7 +230,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_gmt_module (API, NULL, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdinfo_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdinfo_parse (GMT, Ctrl, options))) Return (error);

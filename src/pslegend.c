@@ -25,8 +25,8 @@
  * Version:	5 API
  */
 
-#define THIS_MODULE GMT_ID_PSLEGEND /* I am pslegend */
-#define MODULE_USAGE "Plot legends on maps"
+#define THIS_MODULE_NAME	"pslegend"
+#define THIS_MODULE_PURPOSE	"Plot legends on maps"
 
 #include "gmt_dev.h"
 
@@ -92,7 +92,8 @@ int GMT_pslegend_usage (struct GMTAPI_CTRL *API, int level)
 {
 	/* This displays the pslegend synopsis and optionally full usage information */
 
-	gmt_module_show_name_and_purpose (API, THIS_MODULE);
+	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pslegend [<infofile>] -D[x]<x0>/<y0>/<w>[/<h>]/<just>[/<dx>/<dy>] [%s]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>/<dy>] [-F[+i[[<gap>/]<pen>]][+g<fill>][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<fill>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-K] [-L<spacing>] [-O] [-P] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT);
@@ -358,6 +359,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
+	if (mode == GMT_PURPOSE) return (GMT_pslegend_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_pslegend_usage (API, GMT_USAGE));	/* Return the usage message */
@@ -365,7 +367,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_gmt_module (API, NULL, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_pslegend_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_pslegend_parse (GMT, Ctrl, options))) Return (error);

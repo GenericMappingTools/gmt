@@ -27,8 +27,8 @@
  * between segment endpoints exceeds a specified threshold.
  */
 
-#define THIS_MODULE GMT_ID_GMTSTITCH /* I am gmtstitch */
-#define MODULE_USAGE "Join individual lines whose end points match within tolerance"
+#define THIS_MODULE_NAME	"gmtstitch"
+#define THIS_MODULE_PURPOSE	"Join individual lines whose end points match within tolerance"
 
 #include "gmt_dev.h"
 
@@ -113,7 +113,8 @@ void Free_gmtstitch_Ctrl (struct GMT_CTRL *GMT, struct GMTSTITCH_CTRL *C) {	/* D
 
 static int GMT_gmtstitch_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (API, THIS_MODULE);
+	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtstitch [<table>] [-C<closedfile>] [-D[<template>]] [-L[<linkfile>]] [-Q<listfile>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T%s[/<nn_dist>] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s]\n\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_DIST_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
@@ -275,6 +276,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
+	if (mode == GMT_PURPOSE) return (GMT_gmtstitch_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_gmtstitch_usage (API, GMT_USAGE));/* Return the usage message */
@@ -282,7 +284,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_gmt_module (API, NULL, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_gmtstitch_Ctrl (GMT);		/* Allocate and initialize defaults in a new control structure */
 	if ((error = GMT_gmtstitch_parse (GMT, Ctrl, options))) Return (error);

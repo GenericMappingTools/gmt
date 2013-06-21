@@ -71,7 +71,7 @@ int main (int argc, char *argv[]) {
 
 			/* Print module list */
 			if (!strcmp (argv[arg_n], "--help")) {
-				gmt_module_show_all(api_ctrl);
+				gmt_coremodule_show_all(api_ctrl);
 				goto exit;
 			}
 

@@ -27,8 +27,9 @@
  *
  */
 
-#define THIS_MODULE GMT_ID_X2SYS_GET /* I am x2sys_get */
-#define MODULE_USAGE "Get track listing from track index database"
+#define THIS_MODULE_NAME	"x2sys_get"
+#define THIS_MODULE_LIB		"suppl"
+#define THIS_MODULE_PURPOSE	"Get track listing from track index database"
 
 #include "x2sys.h"
 
@@ -86,7 +87,8 @@ void Free_x2sys_get_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *C) {	/* D
 }
 
 int GMT_x2sys_get_usage (struct GMTAPI_CTRL *API, int level) {
-	gmt_module_show_name_and_purpose (API, THIS_MODULE);
+	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_get -T<TAG> [-C] [-D] [-F<fflags>] [-G] [-L[+][list]] [-N<nflags>]\n\t[%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -212,6 +214,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
+	if (mode == GMT_PURPOSE) return (GMT_x2sys_get_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) bailout (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) 
@@ -221,7 +224,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_x2sys_get_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_x2sys_get_parse (GMT, Ctrl, options))) Return (error);
@@ -376,7 +379,7 @@ int GMT_x2sys_get (void *V_API, int mode, void *args)
 			GMT_Report (API, GMT_MSG_VERBOSE, "Found %d tracks\n", n_tracks_found);
 
 			if (!Ctrl->D.active) {
-				printf ("# Search command: %s", gmt_module_name(GMT));
+				printf ("# Search command: %s", THIS_MODULE_NAME);
 				for (opt = options; opt; opt = opt->next)
 					(opt->option == GMT_OPT_INFILE) ? printf (" %s", opt->arg) : printf (" -%c%s", opt->option, opt->arg);
 				printf ("\n#track_ID%s", GMT->current.setting.io_col_separator);
