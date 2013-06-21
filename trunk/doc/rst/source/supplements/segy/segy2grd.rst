@@ -4,24 +4,25 @@ segy2grd
 
 segy2grd - Converting SEGY data to a GMT grid
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
 **segy2grd** *segyfile* **-G**\ *grdfile*
-**-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] [
-**-A**\ [**n**\ \|\ **z**] ] [
-**-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*title*/*remark* ] [
-**-M**\ [*flags*\ ] ] [ **-N**\ *nodata* ] [ **-S**\ [*zfile*\ ] ] [
-**-V**\ [*level*\ ] ] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [ **-r** ] [
-**-:**\ [**i**\ \|\ **o**] ]
+|SYN_OPT-I|
+|SYN_OPT-R|
+[ **-A**\ [**n**\ \|\ **z**] ]
+[ **-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*title*/*remark* ]
+[ **-M**\ [*flags*\ ] ] [ **-N**\ *nodata* ] [ **-S**\ [*zfile*] ]
+[ |SYN_OPT-V| ]
+[ **-bi**\ [*ncols*][*type*] ] [ **-r** ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **segy2grd** reads an IEEE SEGY file and creates a binary grid file.
 Either a simple mapping (equivalent to xyz2grd -Z) or a more complicated
@@ -31,22 +32,22 @@ some of the nodes are not filled in with data. Such unconstrained nodes
 are set to a value specified by the user [Default is NaN]. Nodes with
 more than one value will be set to the average value.
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *segyfile* is an IEEE floating point SEGY file. Traces are all assumed to start at 0 time/depth.
 
 **-G**\ *grdfile*
     *grdfile* is the name of the binary output grid file.
 **-I**
-    *x\_inc* [and optionally *y\_inc*] is the grid spacing. Append **m**
+    *x_inc* [and optionally *y_inc*] is the grid spacing. Append **m**
     to indicate minutes or **c** to indicate seconds.
 
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-Rgeo.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-A**\ [**n**\ \|\ **z**]
     Add up multiple values that belong to the same node (same as
@@ -74,7 +75,7 @@ more than one value will be set to the average value.
     applies scalar *x-scale* to coordinates in trace header to match the
     coordinates specified in -R
 **-Y**
-    Specifies sample interval as *s\_int* if incorrect in the SEGY file
+    Specifies sample interval as *s_int* if incorrect in the SEGY file
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
@@ -84,29 +85,31 @@ more than one value will be set to the average value.
 
 .. include:: ../../explain_help.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
-To create a grid file from an even spaced SEGY file test.segy,
+To create a grid file from an even spaced SEGY file test.segy, try
 
-try
+   ::
 
-    segy2grd test.segy -I0.1/0.1 -Gtest.nc -R198/208/18/25 -V
+    gmt segy2grd test.segy -I0.1/0.1 -Gtest.nc -R198/208/18/25 -V
 
-    Note that this will read in 18-25s (or km) on each trace, but the
-    first trace will be assumed to be at X=198
+Note that this will read in 18-25s (or km) on each trace, but the
+first trace will be assumed to be at X=198
 
-    To create a grid file from the SEGY file test.segy, locating traces
-    according to the CDP number, where there are 10 CDPs per km and the
-    sample interval is 0.1, try
+To create a grid file from the SEGY file test.segy, locating traces
+according to the CDP number, where there are 10 CDPs per km and the
+sample interval is 0.1, try
 
-    segy2grd test.segy -Gtest.nc -R0/100/0/10 -I0.5/0.2 -V -X0.1 -Y0.1
+   ::
 
-    Because the grid interval is larger than the SEGY file sampling, the
-    individual samples will be averaged in bins
+    gmt segy2grd test.segy -Gtest.nc -R0/100/0/10 -I0.5/0.2 -V -X0.1 -Y0.1
 
-`See Also <#toc7>`_
--------------------
+Because the grid interval is larger than the SEGY file sampling, the
+individual samples will be averaged in bins
+
+See Also
+--------
 
 `GMT <../../GMT.html>`_, `grd2xyz <../../grd2xyz.html>`_,
 `grdedit <../../grdedit.html>`_, `pssegy <pssegy.html>`_

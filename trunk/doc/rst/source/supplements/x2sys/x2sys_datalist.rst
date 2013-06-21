@@ -2,46 +2,48 @@
 x2sys_datalist
 ****************
 
-x2sys\_datalist - Extract content of track data files
+x2sys_datalist - Extract content of track data files
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**x2sys\_datalist** *track(s)* **-T**\ *TAG* [ **-A** ] [ **-E** ] [
-**-F**\ *name1*,\ *name2*,...) ] [ **-I**\ [*list*\ ] ] [
-**-L**\ [*corrtable*\ ] ] [
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-S** ] [
-**-V**\ [*level*\ ] ] [ **-bo**\ [*ncols*\ ][*type*\ ] ] [
-**-h**\ [**i**\ \|\ **o**][*n*\ ] ]
+**x2sys_datalist** *track(s)* **-T**\ *TAG* [ **-A** ] [ **-E** ] [
+**-F**\ *name1*,\ *name2*,...) ] [ **-I**\ [*list*] ] [
+**-L**\ [*corrtable*] ]
+[ |SYN_OPT-R| ]
+[ **-S** ] [
+[ |SYN_OPT-V| ]
+[ **-bo**\ [*ncols*][*type*] ]
+[ |SYN_OPT-h| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
-**x2sys\_datalist** reads one or more files and produces a single ASCII
+**x2sys_datalist** reads one or more files and produces a single ASCII
 [or binary] table. The files can be of any format, which must be
 described and passed with the **-T** option. You may limit the output to
 a geographic region, and insist that the output from several files be
 separated by a multiple segment header. Only the named data fields will
 be output [Default selects all columns].
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 .. include:: explain_track.rst_
 .. include:: explain_tag.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-A**
     Eliminate COEs by distributing the COE between the two tracks in
     proportion to track weight. These (dist, adjustment) spline knots
     files for each track and data column are called *track.column*.adj
-    and are expected to be in the **$X2SYS\_HOME**/*TAG* directory. The
+    and are expected to be in the **$X2SYS_HOME**/*TAG* directory. The
     adjustments are only applied if the corresponding adjust file can be
     found [No residual adjustments]
 **-E**
@@ -57,7 +59,7 @@ be output [Default selects all columns].
     Apply optimal corrections to columns where such corrections are
     available. Append the correction table to use [Default uses the
     correction table *TAG*\ \_corrections.txt which is expected to
-    reside in the **$X2SYS\_HOME**/*TAG* directory]. For the format of
+    reside in the **$X2SYS_HOME**/*TAG* directory]. For the format of
     this file, see CORRECTIONS below.
 
 .. |Add_-Rgeo| replace:: For Cartesian
@@ -80,27 +82,31 @@ be output [Default selects all columns].
 
 .. include:: ../../explain_help.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
 To extract all data from the old-style MGG supplement file c2104.gmt,
 recognized by the tag GMT:
 
-    x2sys\_datalist c2104.gmt -TGMT > myfile
+   ::
+
+    gmt x2sys_datalist c2104.gmt -TGMT > myfile
 
 To make lon,lat, and depth input for **blockmean** and **surface** using
 all the files listed in the file tracks.lis and define by the tag TRK,
 but only the data that are inside the specified area, and make output
 binary, run
 
-    x2sys\_datalist =tracks.lis -TTRK -Fon,lat,depth -R40/-30/25/35 -bo > alltopo\_bin.xyz
+   ::
 
-`Corrections <#toc7>`_
-----------------------
+    gmt x2sys_datalist =tracks.lis -TTRK -Fon,lat,depth -R40/-30/25/35 -bo > alltopo_bin.xyz
+
+Corrections
+-----------
 
 The correction table is an ASCII file with coefficients and parameters
 needed to carry out corrections. This table is usually produced by
-**x2sys\_solve**. Comment records beginning with # are allowed. All
+**x2sys_solve**. Comment records beginning with # are allowed. All
 correction records are of the form
 
 *trackID observation correction*
@@ -144,15 +150,15 @@ ABC weight -1
 
 ABC fuel 0.02\*((dist))
 
-`See Also <#toc8>`_
--------------------
+See Also
+--------
 
 `blockmean <blockmean.html>`_, `GMT <GMT.html>`_,
 `surface <surface.html>`_,
-`x2sys\_init <x2sys_init.html>`_,
-`x2sys\_datalist <x2sys_datalist.html>`_,
-`x2sys\_get <x2sys_get.html>`_,
-`x2sys\_list <x2sys_list.html>`_,
-`x2sys\_put <x2sys_put.html>`_,
-`x2sys\_report <x2sys_report.html>`_,
-`x2sys\_solve <x2sys_solve.html>`_
+`x2sys_init <x2sys_init.html>`_,
+`x2sys_datalist <x2sys_datalist.html>`_,
+`x2sys_get <x2sys_get.html>`_,
+`x2sys_list <x2sys_list.html>`_,
+`x2sys_put <x2sys_put.html>`_,
+`x2sys_report <x2sys_report.html>`_,
+`x2sys_solve <x2sys_solve.html>`_

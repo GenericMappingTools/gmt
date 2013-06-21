@@ -2,22 +2,22 @@
 x2sys_binlist
 ***************
 
-x2sys\_binlist - Create bin index listing from track data files
+x2sys_binlist - Create bin index listing from track data files
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**x2sys\_binlist** *track(s)* **-T**\ *TAG* [ **-D** ] [ **-E** ] [
-**-V**\ [*level*\ ] ]
+**x2sys_binlist** *track(s)* **-T**\ *TAG* [ **-D** ] [ **-E** ]
+[ |SYN_OPT-V| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
-**x2sys\_binlist** reads one or more track data files and produces a
+**x2sys_binlist** reads one or more track data files and produces a
 multisegment ASCII track bin-index file (tbf) with the track name in the
 header and one data record per bin crossed; these records contain *lon*,
 *lat*, *index*, *flags*\ [, *dist*], where *lon*, *lat* are the
@@ -29,23 +29,23 @@ files can be of any format, which must be described and passed with the
 the track goes and is used by the data archivist to build an x2sys track
 data base for miscellaneous track queries, such as when needing to
 determine which tracks should be compared in a crossover analysis. You
-must run **x2sys\_init** to initialize the tag before you can run the
+must run **x2sys_init** to initialize the tag before you can run the
 indexing.
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 .. include:: explain_track.rst_
 .. include:: explain_tag.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-D**
     Calculate the length of trackline segments per bin [Default skips
     this step]. The length fragments are given as the 5th output column
     (after the *flags*). The length units are obtained via the TAB
-    setting (see **x2sys\_init**).
+    setting (see **x2sys_init**).
 **-E**
     Convert geographic data to a cylindrical equal-area projection prior
     to binning. Basically, we apply the projection
@@ -60,27 +60,31 @@ indexing.
 
 .. include:: ../../explain_help.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
 To create a bin index file from the MGD77 file 01030061.mgd77 using the
 settings associated with the tag MGD77, do
 
-    x2sys\_binlist 01030061.mgd77 -TMGD77 > 01030061.tbf
+   ::
+
+    gmt x2sys_binlist 01030061.mgd77 -TMGD77 > 01030061.tbf
 
 To create a track bin index file of all MGD77+ files residing in the
 current directory using the settings associated with the tag MGD77+ and
 calculate track distances, run
 
-    x2sys\_binlist \*.nc -TMGD77+ -D > all.tbf
+   ::
 
-`See Also <#toc7>`_
--------------------
+    gmt x2sys_binlist *.nc -TMGD77+ -D > all.tbf
 
-`x2sys\_cross <x2sys_cross.html>`_,
-`x2sys\_datalist <x2sys_datalist.html>`_,
-`x2sys\_get <x2sys_get.html>`_,
-`x2sys\_init <x2sys_init.html>`_,
-`x2sys\_put <x2sys_put.html>`_,
-`x2sys\_report <x2sys_report.html>`_,
-`x2sys\_solve <x2sys_solve.html>`_
+See Also
+--------
+
+`x2sys_cross <x2sys_cross.html>`_,
+`x2sys_datalist <x2sys_datalist.html>`_,
+`x2sys_get <x2sys_get.html>`_,
+`x2sys_init <x2sys_init.html>`_,
+`x2sys_put <x2sys_put.html>`_,
+`x2sys_report <x2sys_report.html>`_,
+`x2sys_solve <x2sys_solve.html>`_

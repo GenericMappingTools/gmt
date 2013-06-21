@@ -2,36 +2,36 @@
 x2sys_get
 *********
 
-x2sys\_get - Get track listing from the x2sys track index databases
+x2sys_get - Get track listing from the x2sys track index databases
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**x2sys\_get** **-T**\ *TAG* [ **-C** ] [ **-F**\ *flags* ] [ **-G** ] [
-**-L**\ [**+**\ ][*list*\ ] ] [ **-N**\ *flags* ] [
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ] ] [ **-V**\ [*level*\ ]
-] ]
+**x2sys_get** **-T**\ *TAG* [ **-C** ] [ **-F**\ *flags* ] [ **-G** ]
+[ **-L**\ [**+**\ ][*list*] ] [ **-N**\ *flags* ] [
+[ |SYN_OPT-R| ]
+[ |SYN_OPT-V| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
-**x2sys\_get** will return the names of the track data files in the
+**x2sys_get** will return the names of the track data files in the
 x2sys data base for this TAG that match the given requirements. You may
 choose a specific region and optionally ask only for tracks that meet
 certain data criteria. Finally, you may select an option to list all
 possible pairs that might generate crossovers.
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 .. include:: explain_tag.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-C**
     Instead of reporting the track names, just output the coordinates of
@@ -53,7 +53,7 @@ possible pairs that might generate crossovers.
     the data base. Append the name of a file with a list of tracks if
     you want to limit the output to those pairs that involve at least
     one of the track names in your list. The output is suitable for the
-    **-A** option in **x2sys\_cross**. By default, only external
+    **-A** option in **x2sys_cross**. By default, only external
     crossover pairs are listed. Use **-L+** to include internal pairs in
     the list.
 **-N**\ *flags*
@@ -70,42 +70,48 @@ possible pairs that might generate crossovers.
 
 .. include:: ../../explain_help.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
 To find all the tracks associated with the tag MGD77, restricted to
 occupy a certain region in the south Pacific, and have at least free air
 anomalies and bathymetry, try
 
-    x2sys\_get -V -TMGD77 -R180/240/-60/-30 -Ffaa,depth
+   ::
+
+    gmt x2sys_get -V -TMGD77 -R180/240/-60/-30 -Ffaa,depth
 
 To find all the tracks associated with the tag MGD77 that have depth but
 not twt, try
 
-    x2sys\_get -V -TMGD77 -Fdepth -Nwt
+   ::
+
+    gmt x2sys_get -V -TMGD77 -Fdepth -Nwt
 
 To find all the pairs associated with the tag MGD77 that might intersect
 each other, but only those pairs which involves tracks in your list
 new.lis, try
 
-    x2sys\_get -V -TMGD77 -Lnew.lis > xpairs.lis
+   ::
 
-`Note <#toc7>`_
----------------
+    gmt x2sys_get -V -TMGD77 -Lnew.lis > xpairs.lis
+
+Note
+----
 
 The tracks that are returned all have the requested data (**-F**) within
 the specified region (**-R**). Furthermore, the columns of Y and N for
 other data types also reflect the content of the track portion within
 the selected region, unless **-G** is set.
 
-`See Also <#toc8>`_
--------------------
+See Also
+--------
 
-`x2sys\_binlist <x2sys_binlist.html>`_,
-`x2sys\_cross <x2sys_cross.html>`_ 
-`x2sys\_datalist <x2sys_datalist.html>`_,
-`x2sys\_init <x2sys_init.html>`_,
-`x2sys\_list <x2sys_list.html>`_,
-`x2sys\_put <x2sys_put.html>`_,
-`x2sys\_report <x2sys_report.html>`_,
-`x2sys\_solve <x2sys_solve.html>`_
+`x2sys_binlist <x2sys_binlist.html>`_,
+`x2sys_cross <x2sys_cross.html>`_ 
+`x2sys_datalist <x2sys_datalist.html>`_,
+`x2sys_init <x2sys_init.html>`_,
+`x2sys_list <x2sys_list.html>`_,
+`x2sys_put <x2sys_put.html>`_,
+`x2sys_report <x2sys_report.html>`_,
+`x2sys_solve <x2sys_solve.html>`_
