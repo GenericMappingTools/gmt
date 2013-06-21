@@ -62,8 +62,9 @@
  * 265.37800	 55.69932	150.0000	 82.9957
  */
 
-#define THIS_MODULE GMT_ID_ROTCONVERTER /* I am rotconverter */
-#define MODULE_USAGE "Manipulate total reconstruction and stage rotations"
+#define THIS_MODULE_NAME	"rotconverter"
+#define THIS_MODULE_LIB		"suppl"
+#define THIS_MODULE_PURPOSE	"Manipulate total reconstruction and stage rotations"
 
 #include "spotter.h"
 
@@ -118,7 +119,8 @@ void Free_rotconverter_Ctrl (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *C) 
 
 int GMT_rotconverter_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (API, THIS_MODULE);
+	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: rotconverter [+][-] <rotA> [[+][-] <rotB>] [[+][-] <rotC>] ... [-A] [-D] [-E[<factor>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F<out>] [-G] [-N] [-S] [-T] [%s]\n\t[%s] > outfile\n\n", GMT_V_OPT, GMT_h_OPT);
 	
@@ -275,6 +277,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
+	if (mode == GMT_PURPOSE) return (GMT_rotconverter_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) bailout (API->error);	/* Set or get option list */
 
 	/* Special preprocessing since online rotations like -144/34/-9 and -.55/33/2 will
@@ -306,7 +309,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
 	Ctrl = New_rotconverter_Ctrl (GMT);	/* Allocate and initialize a new control structure */

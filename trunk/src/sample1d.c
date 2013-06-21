@@ -28,8 +28,8 @@
  * Version:	5 API
  */
  
-#define THIS_MODULE GMT_ID_SAMPLE1D /* I am sample1d */
-#define MODULE_USAGE "Resample 1-D table data using splines"
+#define THIS_MODULE_NAME	"sample1d"
+#define THIS_MODULE_PURPOSE	"Resample 1-D table data using splines"
 
 #include "gmt_dev.h"
 
@@ -96,7 +96,8 @@ int GMT_sample1d_usage (struct GMTAPI_CTRL *API, int level)
 {
 	char type[3] = {'l', 'a', 'c'};
 
-	gmt_module_show_name_and_purpose (API, THIS_MODULE);
+	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: sample1d [<table>] [-A[f|m|p|r|R]+l] [-Fl|a|c|n] [-I<inc>[<unit>]] [-N<knottable>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S<start>[/<stop]] [-T<time_col>] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT);
@@ -265,6 +266,7 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
+	if (mode == GMT_PURPOSE) return (GMT_sample1d_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_sample1d_usage (API, GMT_USAGE));/* Return the usage message */
@@ -272,7 +274,7 @@ int GMT_sample1d (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_gmt_module (API, NULL, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_sample1d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_sample1d_parse (GMT, Ctrl, options))) Return (error);

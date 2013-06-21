@@ -30,8 +30,8 @@
  *
  */
  
-#define THIS_MODULE GMT_ID_SPHTRIANGULATE /* I am sphtriangulate */
-#define MODULE_USAGE "Delaunay or Voronoi construction of spherical lon,lat data"
+#define THIS_MODULE_NAME	"sphtriangulate"
+#define THIS_MODULE_PURPOSE	"Delaunay or Voronoi construction of spherical lon,lat data"
 
 #include "gmt_dev.h"
 #include "gmt_sph.h"
@@ -103,7 +103,7 @@ int stripack_delaunay_output (struct GMT_CTRL *GMT, double *lon, double *lat, st
 			}
 			S[1] = Dout[1]->table[0]->segment[0];
 		}
-		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "%s: Output %d unique triangle polygons\n", gmt_module_name(GMT), D->n);
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Output %d unique triangle polygons\n", D->n);
 		for (k = ij = 0; k < D->n; k++, ij += TRI_NROW) {	/* For each triangle */
 			S[0] = Dout[0]->table[0]->segment[k];	/* Short hand for current triangle segment */
 			/* Write segment header with triangle # and the three node numbers */
@@ -391,7 +391,8 @@ void Free_sphtriangulate_Ctrl (struct GMT_CTRL *GMT, struct SPHTRIANGULATE_CTRL 
 
 int GMT_sphtriangulate_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (API, THIS_MODULE);
+	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
 	GMT_Message (API, GMT_TIME_NONE, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "usage: sphtriangulate [<table>] [-A] [-C] [-D] [-L<unit>] [-N<nodetable>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Qd|v] [-T] [%s] [%s]\n\t[%s] [%s]\n", GMT_V_OPT, GMT_b_OPT, GMT_h_OPT, GMT_i_OPT);
@@ -511,6 +512,7 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
+	if (mode == GMT_PURPOSE) return (GMT_sphtriangulate_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_sphtriangulate_usage (API, GMT_USAGE));/* Return the usage message */
@@ -518,7 +520,7 @@ int GMT_sphtriangulate (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_gmt_module (API, NULL, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg since this is spherical triangulation */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_sphtriangulate_Ctrl (GMT);	/* Allocate and initialize a new control structure */

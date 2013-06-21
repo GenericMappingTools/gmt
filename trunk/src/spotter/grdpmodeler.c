@@ -24,8 +24,9 @@
  * Ver:		5
  */
 
-#define THIS_MODULE GMT_ID_GRDPMODELER /* I am grdpmodeler */
-#define MODULE_USAGE "Evaluate a plate model on a geographic grid"
+#define THIS_MODULE_NAME	"grdpmodeler"
+#define THIS_MODULE_LIB		"suppl"
+#define THIS_MODULE_PURPOSE	"Evaluate a plate model on a geographic grid"
 
 #include "spotter.h"
 
@@ -94,7 +95,8 @@ void Free_grdpmodeler_Ctrl (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *C) {	/
 
 int GMT_grdpmodeler_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (API, THIS_MODULE);
+	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdpmodeler <agegrdfile> -E<rottable> -G<outgrid> [-F<polygontable>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Sa|d|r|w|x|y|X|Y]\n\t[-T<time>] [%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\n",
 		GMT_Id_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT);
@@ -249,6 +251,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
+	if (mode == GMT_PURPOSE) return (GMT_grdpmodeler_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_grdpmodeler_usage (API, GMT_USAGE));	/* Return the usage message */
@@ -256,7 +259,7 @@ int GMT_grdpmodeler (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if ((ptr = GMT_Find_Option (API, 'f', options)) == NULL) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Did not set -f, implicitly set -fg */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdpmodeler_Ctrl (GMT);	/* Allocate and initialize a new control structure */

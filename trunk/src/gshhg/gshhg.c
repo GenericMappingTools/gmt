@@ -45,8 +45,9 @@
  *
  *	Contact info: www.soest.hawaii.edu/pwessel */
 
-#define THIS_MODULE GMT_ID_GSHHG /* I am gshhg */
-#define MODULE_USAGE "Extract data tables from binary GSHHS or WDBII data files"
+#define THIS_MODULE_NAME	"gshhg"
+#define THIS_MODULE_LIB		"suppl"
+#define THIS_MODULE_PURPOSE	"Extract data tables from binary GSHHS or WDBII data files"
 
 #include "gmt_dev.h"
 #include "gshhg.h"
@@ -104,7 +105,8 @@ void Free_gshhg_Ctrl (struct GMT_CTRL *GMT, struct GSHHG_CTRL *C) {	/* Deallocat
 
 int GMT_gshhg_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (API, THIS_MODULE);
+	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gshhg gshhs|wdb_rivers|wdb_borders_[f|h|i|l|c].b [-A<area>] [-G] [-I<id>] [-L] [-N<level>]\n\t[-Qe|i] [%s] [%s] [%s] > table\n", GMT_V_OPT, GMT_bo_OPT, GMT_o_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -239,6 +241,7 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
+	if (mode == GMT_PURPOSE) return (GMT_gshhg_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_gshhg_usage (API, GMT_USAGE));	/* Return the usage message */
@@ -250,7 +253,7 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 	mem_track_enabled = g_mem_keeper.active;	/* Needed so we dont activate things that were never requested as we turn things on/off for convenience */
 	if (mem_track_enabled) GMT_memtrack_off (GMT, &g_mem_keeper);
 #endif
-	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg unless already set */
 	Ctrl = New_gshhg_Ctrl (GMT);	/* Allocate and initialize a new control structure */

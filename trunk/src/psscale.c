@@ -25,8 +25,8 @@
  *
  */
 
-#define THIS_MODULE GMT_ID_PSSCALE /* I am psscale */
-#define MODULE_USAGE "Plot a gray-scale or color-scale on maps"
+#define THIS_MODULE_NAME	"psscale"
+#define THIS_MODULE_PURPOSE	"Plot a gray-scale or color-scale on maps"
 
 #include "gmt_dev.h"
 
@@ -127,7 +127,8 @@ int GMT_psscale_usage (struct GMTAPI_CTRL *API, int level)
 {
 	/* This displays the psscale synopsis and optionally full usage information */
 
-	gmt_module_show_name_and_purpose (API, THIS_MODULE);
+	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: psscale -D<xpos>/<ypos>/<length>/<width>[h] [-A[a|l|c]] [-C<cpt>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E[b|f][<length>][+n[<txt>]]] [%s] [-I[<max_intens>|<low_i>/<high_i>] [%s]\n\t[%s] [-K] [-L[i][<gap>[<unit>]]] [-M] [-N[p|<dpi>]] [-O] [-P] [-Q]\n", GMT_B_OPT, GMT_J_OPT, GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S]\n\t[-T[+p<pen>][+g<fill>][+l|r|b|t<off>]] [%s] [%s]\n", GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT);
@@ -1115,6 +1116,7 @@ int GMT_psscale (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
+	if (mode == GMT_PURPOSE) return (GMT_psscale_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_psscale_usage (API, GMT_USAGE));	/* Return the usage message */
@@ -1122,7 +1124,7 @@ int GMT_psscale (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_gmt_module (API, NULL, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	/* Overrule GMT settings of MAP_FRAME_AXES. Use WESN */
 	GMT->current.map.frame.side[S_SIDE] = GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[N_SIDE] = GMT->current.map.frame.side[W_SIDE] = 3;
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);

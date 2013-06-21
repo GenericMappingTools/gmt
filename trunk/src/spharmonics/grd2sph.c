@@ -24,6 +24,9 @@
  
 #include "gmt_dev.h"
 
+#define THIS_MODULE_NAME	"grd2sph"
+#define THIS_MODULE_PURPOSE	"Compute spherical harmonic coefficients from grid"
+
 #define GMT_PROG_OPTIONS "->RVbhirs"
 
 struct SPH2GRD_CTRL {	/* All control options for this program (except common args) */
@@ -79,7 +82,6 @@ int GMT_sph2grd_usage (struct GMTAPI_CTRL *API, int level)
 	char type[3] = {'l', 'a', 'c'};
 
 	GMT_Message (API, GMT_TIME_NONE, "sph2grd - Evaluate spherical harmonic models on a grid\n\n");
-	gmt_module_show_name_and_purpose (API, THIS_MODULE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: sph2grd [coeff_file] %s %s [-Dg|n]\n", GMT_I_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E] [-F] [-G<grdfile>] [-L[d]<filter>] [-N<norm>] [-Q] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_h_OPT);
 
@@ -208,7 +210,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_gmt_module (API, NULL, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_sph2grd_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_sph2grd_parse (GMT, Ctrl, options))) Return (error);

@@ -39,8 +39,8 @@
  *		2. No support for periodic boundary conditions.
  */
 
-#define THIS_MODULE GMT_ID_SURFACE /* I am surface */
-#define MODULE_USAGE "Grid table data using adjustable tension continuous curvature splines"
+#define THIS_MODULE_NAME	"surface"
+#define THIS_MODULE_PURPOSE	"Grid table data using adjustable tension continuous curvature splines"
 
 #include "gmt_dev.h"
 
@@ -1483,7 +1483,8 @@ void Free_surface_Ctrl (struct GMT_CTRL *GMT, struct SURFACE_CTRL *C) {	/* Deall
 
 int GMT_surface_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (API, THIS_MODULE);
+	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: surface [<table>] -G<outgrid> %s\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A<aspect_ratio>] [-C<convergence_limit>]\n", GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D<breakline>] [-Ll<limit>] [-Lu<limit>] [-N<n_iterations>] ] [-S<search_radius>[m|s]]\n");
@@ -1702,6 +1703,7 @@ int GMT_surface (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
+	if (mode == GMT_PURPOSE) return (GMT_surface_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_surface_usage (API, GMT_USAGE));	/* Return the usage message */
@@ -1709,7 +1711,7 @@ int GMT_surface (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_gmt_module (API, NULL, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_surface_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_surface_parse (GMT, Ctrl, options))) Return (error);

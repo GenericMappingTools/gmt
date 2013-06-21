@@ -29,8 +29,8 @@
 
 #define BLOCKMODE	/* Since mean, median, mode share near-similar macros we require this setting */
 
-#define THIS_MODULE GMT_ID_BLOCKMODE /* I am blockmode */
-#define MODULE_USAGE "Block average (x,y,z) data tables by mode estimation"
+#define THIS_MODULE_NAME	"blockmode"
+#define THIS_MODULE_PURPOSE	"Block average (x,y,z) data tables by mode estimation"
 
 #include "gmt_dev.h"
 #include "block_subs.h"
@@ -56,7 +56,8 @@ struct BIN_MODE_INFO {	/* Used for histogram binning */
 
 int GMT_blockmode_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (API, THIS_MODULE);
+	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: blockmode [<table>] %s %s\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-C] [-D<width>[+c][+l|h]] [-E] [-Er|s[-]] [-Q]\n\t[%s] [-W[i][o]] [%s] [%s]\n\t[%s] [%s]\nt\t[%s] [%s] [%s] [%s]\n\n",
 		GMT_Rgeo_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_r_OPT, GMT_colon_OPT);
@@ -368,13 +369,14 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
+	if (mode == GMT_PURPOSE) return (GMT_blockmode_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_blockmode_usage (API, GMT_USAGE));	/* Return the usage message */
 	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_blockmode_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_gmt_module (API, NULL, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_blockmode_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_blockmode_parse (GMT, Ctrl, options))) Return (error);

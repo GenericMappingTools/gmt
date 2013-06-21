@@ -309,6 +309,59 @@ void GMT_list_API (struct GMTAPI_CTRL *API, char *txt)
 }
 #endif
 
+int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
+{
+	/* At the end of GMT_Create_Session we are done with processing gmt.conf.
+	 * We can now determine how many shared libraries to consider, and open the core lib */
+	unsigned int n_custom_libs = 0, k = 0, p, pos = 0;
+	char text[GMT_TEXT_LEN256];
+
+	if (API->GMT->session.CUSTOM_LIBS) {	/* We have custom shared libraries, count how many */
+		while (API->GMT->session.CUSTOM_LIBS[k]) {
+		 	if (API->GMT->session.CUSTOM_LIBS[k++] == ',') n_custom_libs++;
+		}
+		n_custom_libs++;	/* One more than the number of commas */
+	}
+	API->n_shared_libs = 2 + n_custom_libs;	/* Total number of shared libraries */
+	API->lib = GMT_memory (API->GMT, NULL, API->n_shared_libs, struct Gmt_libinfo);
+	/* Load in the GMT core library by default */
+	GMT_Report (API, GMT_MSG_DEBUG, "Load GMT shared library: core\n");
+	API->lib[0].name = strdup ("core");
+	if ((API->lib[0].handle = dlopen (NULL, 0)) == NULL) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Error loading core GMT shared library: %s\n", dlerror());
+		GMT_exit (API->do_not_exit, EXIT_FAILURE);
+	}
+	/* Add the GMT supplemental library to the list of libraries to consider [we dont know if we have it yet] */
+	GMT_Report (API, GMT_MSG_DEBUG, "Load GMT shared library: suppl\n");
+	API->lib[1].name = strdup ("suppl");	/* This will change once dynamic loading is used */
+
+	/* Add any GMT custom library to the list of libraries to consider */
+	for (k = 2; k < API->n_shared_libs; k++) {
+		GMT_strtok (API->GMT->session.CUSTOM_LIBS, ",", &pos, text);
+		API->lib[k].path = strdup (text);
+		GMT_Report (API, GMT_MSG_DEBUG, "Load GMT shared library: \n", API->lib[k].path);
+		p = 0;	while (text[p] && text[p] != '.') p++;	/* Find the period in the name */
+		text[p] = '\0';	/* Chop off library extension */
+		p = (strncmp (text, "lib", 3)) ? 0 : 3;	/* Do we have a leading "lib" or not ? */
+		API->lib[k].name = strdup (&text[p]);	/* Get the shared library tag */
+	}
+	dlerror(); /* Clear any existing error */
+	GMT_Report (API, GMT_MSG_DEBUG, "Done with loading GMT shared libraries\n");
+	return (GMT_NOERROR);
+}
+
+void GMTAPI_free_sharedlibs (struct GMTAPI_CTRL *API)
+{	/* Free items in the shared lib list */
+	unsigned int k = 0;
+	for (k = 0; k < API->n_shared_libs; k++) {
+		if (API->lib[k].handle && dlclose (API->lib[k].handle)) 
+			GMT_Report (API, GMT_MSG_NORMAL, "Error closing GMT %s shared library: %s\n", API->lib[k].name, dlerror());
+		if (API->lib[k].name) free (API->lib[k].name);
+		if (API->lib[k].path) free (API->lib[k].path);
+	}
+	GMT_free (API->GMT, API->lib);
+}
+
 /* Note: Many/all of these do not need to check if API == NULL since they are called from functions that do. */
 /* Private functions used by this library only.  These are not accessed outside this file. */
 
@@ -738,7 +791,7 @@ void update_txt_item (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, siz
 	GMT_memset (buffer, GMT_BUFSIZ, char);	/* Start with a clean slate */
 	if ((mode & GMT_COMMENT_IS_OPTION) == 0 && (mode & GMT_COMMENT_IS_RESET) == 0 && string[0]) strcat (buffer, string);	/* Use old text is we are not resetting */
 	if (mode & GMT_COMMENT_IS_OPTION) {	/* Must start with module name since it is not part of the option args */
-		strcat (buffer, gmt_module_name (API->GMT));
+		strcat (buffer, API->GMT->init.module_name);
 		strcat (buffer, " ");
 	}
 	strcat (buffer, txt);			/* Append new text */
@@ -788,7 +841,7 @@ char * GMT_create_header_item (struct GMTAPI_CTRL *API, unsigned int mode, void 
 	if (mode & GMT_COMMENT_IS_TITLE) strcat (buffer, "  Title :");
 	if (mode & GMT_COMMENT_IS_COMMAND) {
 		strcat (buffer, " Command : ");
-		strcat (buffer, gmt_module_name (API->GMT));
+		strcat (buffer, API->GMT->init.module_name);
 		strcat (buffer, " ");
 	}
 	if (mode & GMT_COMMENT_IS_REMARK) strcat (buffer, " Remark : ");
@@ -2986,6 +3039,9 @@ void * GMT_Create_Session (char *session, unsigned int pad, unsigned int mode, i
 	
 	API->session_ID = GMTAPI_session_counter++;		/* Guarantees each session ID will be unique and sequential from 0 up */
 	if (session) API->session_tag = strdup (session);	/* Only used in reporting and error messages */
+	API->GMT->init.module_name = API->session_tag;		/* So non-modules can report name of program */
+	
+	GMTAPI_init_sharedlibs (API);				/* Count how many shared libraries we should know about */
 	
 	return (API);	/* Pass the structure back out */
 }
@@ -3011,6 +3067,8 @@ int GMT_Destroy_Session (void *V_API)
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 	
 	GMT_Garbage_Collection (API, GMT_NOTSET);	/* Free any remaining memory from data registration during the session */
+	GMTAPI_free_sharedlibs (API);			/* Free list of shared libraries */
+	
 	/* Deallocate all remaining objects associated with NULL pointers (e.g., rec-by-rec i/o) */
 	for (i = 0; i < API->n_objects; i++) GMTAPI_Unregister_IO (API, API->object[i]->ID, GMT_NOTSET);
 	GMT_free (API->GMT, API->object);
@@ -5174,24 +5232,63 @@ int GMT_FFT_Destroy_ (void *v_K)
 }
 #endif
 
+/* Pretty print core module names and purposes */
+void GMT_show_name_and_purpose (struct GMTAPI_CTRL *API, const char *component, const char *name, const char *purpose) {
+	char message[GMT_TEXT_LEN256];
+	const char *lib = NULL;
+	static char *core = "core";
+	assert (name != NULL);
+	assert (purpose != NULL);
+	lib = (component) ? component : core;
+	sprintf (message, "%s(%s) %s - %s\n\n", name, lib, GMT_version(), purpose);
+	GMT_Message (API, GMT_TIME_NONE, message);
+}
+
 /* Module Extension: Allow listing and calling modules by name */
 
 int GMT_Probe_Module (void *V_API, const char *module, unsigned int mode)
 {	/* mode = GMT_MODULE_EXIST (0):   Return GMT_NOERROR (0) if module exists, GMT_NOT_A_VALID_MODULE otherwise.
 	 * mode = GMT_MODULE_PURPOSE (1): List the usage of module, or all modules if module = NULL */
 	int error = GMT_NOERROR;
+	unsigned int k;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
+	
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
-	if (module == NULL) {	/* Did not specify any specific module */
+	if (module == NULL) {	/* Did not specify any specific module, so list purpose of all modules in all shared libs */
+		int (*p_func)(void*);       /* function pointer to gmt_coremodule_show_all */
 		if (mode == GMT_MODULE_EXIST) return_error (API, GMT_NOT_A_VALID_ARG);	/* Cannot return status unless module is given */
-		gmt_module_show_all (API);
+		/* Here we list purpose of all the available modules */
+		for (k = 0; k < API->n_shared_libs; k++) {
+			/* NOTE: The k > 1 is just to avoid loading the nonexistent suppl shared lib for now since suppl is in the core  */
+			if (k > 1 && API->lib[k].handle == NULL && (API->lib[k].handle = dlopen (API->lib[k].path, RTLD_LAZY)) == NULL) {	/* Not opened this shared library yet */
+				GMT_Report (API, GMT_MSG_NORMAL, "Error loading GMT shared %s library: %s\n", API->lib[k].name, dlerror());
+				GMT_exit (API->do_not_exit, EXIT_FAILURE);
+			}
+			*(void **) (&p_func) = dlsym (API->lib[k].handle, "gmt_coremodule_show_all");
+			if (p_func == NULL) continue;	/* Not found in this shared library */
+			(*p_func) (V_API);
+		}
 	}
 	else {	/* Specific module given */
-		enum GMT_MODULE_ID module_id = gmt_module_lookup (API, module);
-		if (module_id == GMT_ID_NONE)
-			error = GMT_NOT_A_VALID_MODULE;
-		else if (mode == GMT_MODULE_PURPOSE)
-			gmt_module_show_name_and_purpose (API, module_id);
+		int (*p_func)(void*, int, void*);       /* function pointer to a GMT module */
+		char gmt_module[GMT_TEXT_LEN32] = "GMT_";
+		strncat (gmt_module, module, GMT_TEXT_LEN32-5); /* concatenate GMT_-prefix and module name to get function name */
+		if (mode == GMT_MODULE_PURPOSE)	{	/* Just call module with mode == GMT_PURPOSE */
+			error = GMT_Call_Module (API, gmt_module, GMT_PURPOSE, NULL);
+			if (error != GMT_NOT_A_VALID_MODULE) error = GMT_NOERROR;	/* usage message will return code EXIT_FAILURE, which here is OK */
+		}
+		else {	/* Here we are just looking for the existence of this module */
+			for (k = 0; k < API->n_shared_libs; k++) {
+				/* NOTE: The k > 1 is just to avoid loading the nonexistent suppl shared lib for now since suppl is in the core  */
+				if (k > 1 && API->lib[k].handle == NULL && (API->lib[k].handle = dlopen (API->lib[k].path, RTLD_LAZY)) == NULL) {	/* Not opened this shared library yet */
+					GMT_Report (API, GMT_MSG_NORMAL, "Error loading GMT shared %s library: %s\n", API->lib[k].name, dlerror());
+					GMT_exit (API->do_not_exit, EXIT_FAILURE);
+				}
+				*(void **) (&p_func) = dlsym (API->lib[k].handle, gmt_module);
+				if (p_func) return (GMT_NOERROR);	/* Found in this shared library */
+			}
+			error = GMT_NOT_A_VALID_MODULE;	/* Did not find it in this shared library */
+		}
 	}
 	return (error);
 }
@@ -5204,13 +5301,33 @@ int GMT_Probe_Module_ (const char *module, unsigned int *mode, int *length)
 #endif
 
 int GMT_Call_Module (void *V_API, const char *module, int mode, void *args)
-{	/* Call the specified module and pass the mode and args */
+{	/* Call the specified shared module and pass it the mode and args */
+	int status = GMT_NOERROR;
+	unsigned int k;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
-	enum GMT_MODULE_ID module_id;
+	char gmt_module[GMT_TEXT_LEN32] = "GMT_";
+	int (*p_func)(void*, int, void*);       /* function pointer */
+	
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
-	module_id = gmt_module_lookup (API, module);
-	if (module_id == GMT_ID_NONE) return_error (API, GMT_NOT_A_VALID_MODULE);
-	return (g_module[module_id].p_func (V_API, mode, args));
+	if (module == NULL) return_error (API, GMT_ARG_IS_NULL);
+	
+	strncat (gmt_module, module, GMT_TEXT_LEN32-5); /* concatenate GMT_-prefix and module name to get function name */
+	for (k = 0; k < API->n_shared_libs; k++) {	/* Look for gmt_module in any of the shared libs; first core, then suppl, then custom */
+		/* NOTE: The k > 1 is just to avoid loading the nonexistent suppl shared lib for now since suppl is in the core  */
+		if (k > 1 && API->lib[k].handle == NULL && (API->lib[k].handle = dlopen (API->lib[k].path, RTLD_LAZY)) == NULL) {	/* Not opened this shared library yet */
+			GMT_Report (API, GMT_MSG_NORMAL, "Error loading GMT shared %s library: %s\n", API->lib[k].name, dlerror());
+			GMT_exit (API->do_not_exit, EXIT_FAILURE);
+		}
+		*(void **) (&p_func) = dlsym (API->lib[k].handle, gmt_module);
+		if (p_func) break;	/* Found in this shared library */
+	}
+	if (p_func == NULL) {	/* Not in any of the libraries */
+		GMT_Report (API, GMT_MSG_NORMAL, "Shared GMT module not found: %s \n", module);
+		status = GMT_NOT_A_VALID_MODULE;
+	}
+	else
+		status = (*p_func) (V_API, mode, args);
+	return (status);
 }
 
 #ifdef FORTRAN_API
@@ -5439,7 +5556,7 @@ int GMT_Report (void *V_API, unsigned int level, char *format, ...)
 	sprintf (source_line, __func__);
 #endif
 	snprintf (message, GMT_BUFSIZ, "%s (%s): ",
-			gmt_module_name(API->GMT), GMT_basename (source_line));
+			API->GMT->init.module_name, GMT_basename (source_line));
 	source_info_len = strlen (message);
 	source_info_len = strlen (message);
 	va_start (args, format);
@@ -5467,7 +5584,7 @@ int GMT_Get_Value (void *V_API, char *arg, double par[])
 	 *
 	 * Dimensions are returned in current length unit [cm].
 	 * Distances are returned in meters.
-	 * Arc distasnces are returned in degrees.
+	 * Arc distances are returned in degrees.
 	 * Geographic dd:mm:ss[W|E|S|N] coordinates are returned in decimal degrees.
 	 * DateTtime moments are returned in time in chosen units [sec] since chosen epoch [1970] */
 

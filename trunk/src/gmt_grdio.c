@@ -1079,7 +1079,7 @@ int GMT_grd_RI_verify (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned
 
 	unsigned int error = 0;
 
-	if (!strcmp (gmt_module_name(GMT), "grdedit")) return (GMT_NOERROR);	/* Separate handling in grdedit to allow grdedit -A */
+	if (!strcmp (GMT->init.module_name, "grdedit")) return (GMT_NOERROR);	/* Separate handling in grdedit to allow grdedit -A */
 
 	switch (GMT_minmaxinc_verify (GMT, h->wesn[XLO], h->wesn[XHI], h->inc[GMT_X], GMT_SMALL)) {
 		case 3:
@@ -1338,7 +1338,7 @@ void GMT_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct 
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not create argc, argv from linked structure options!\n");
 			return;
 		}
-		strncpy (header->command, gmt_module_name(GMT), GMT_GRID_COMMAND_LEN320);
+		strncpy (header->command, GMT->init.module_name, GMT_GRID_COMMAND_LEN320);
 		len = strlen (header->command);
 		for (i = 0; len < GMT_GRID_COMMAND_LEN320 && i < argc; i++) {
 			len += strlen (argv[i]) + 1;
@@ -1347,7 +1347,7 @@ void GMT_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct 
 			strcat (header->command, argv[i]);
 		}
 		header->command[len] = 0;
-		sprintf (header->title, "Produced by %s", gmt_module_name(GMT));
+		sprintf (header->title, "Produced by %s", GMT->init.module_name);
 		GMT_Destroy_Args (API, argc, &argv);
 	}
 }

@@ -33,8 +33,8 @@
  * Version:	5 API
  */
  
-#define THIS_MODULE GMT_ID_SPHINTERPOLATE /* I am sphinterpolate */
-#define MODULE_USAGE "Spherical gridding in tension of data on a sphere"
+#define THIS_MODULE_NAME	"sphinterpolate"
+#define THIS_MODULE_PURPOSE	"Spherical gridding in tension of data on a sphere"
 
 #include "gmt_dev.h"
 #include "gmt_sph.h"
@@ -93,7 +93,8 @@ int get_args (struct GMT_CTRL *GMT, char *arg, double par[], char *msg)
 
 int GMT_sphinterpolate_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (API, THIS_MODULE);
+	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
 	GMT_Message (API, GMT_TIME_NONE, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "usage: sphinterpolate [<table>] -G<outgrid> %s\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Q<mode>][/<args>] [-T] [%s] [-Z] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
@@ -231,6 +232,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
+	if (mode == GMT_PURPOSE) return (GMT_sphinterpolate_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_sphinterpolate_usage (API, GMT_USAGE));/* Return the usage message */
@@ -238,7 +240,7 @@ int GMT_sphinterpolate (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_gmt_module (API, NULL, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg since this is spherical triangulation */
 	Ctrl = New_sphinterpolate_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);

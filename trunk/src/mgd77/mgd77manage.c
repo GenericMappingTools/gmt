@@ -18,8 +18,9 @@
  *
  */
 
-#define THIS_MODULE GMT_ID_MGD77MANAGE /* I am mgd77manage */
-#define MODULE_USAGE "Manage the content of MGD77+ files"
+#define THIS_MODULE_NAME	"mgd77manage"
+#define THIS_MODULE_LIB		"suppl"
+#define THIS_MODULE_PURPOSE	"Manage the content of MGD77+ files"
 
 #include "gmt_dev.h"
 #include "mgd77.h"
@@ -127,7 +128,8 @@ void Free_mgd77manage_Ctrl (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *C) {	
 
 int GMT_mgd77manage_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (API, THIS_MODULE);
+	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: mgd77manage <cruise(s)> [-A[+]a|c|d|D|e|E|g|i|n|t|T<info>] [-Cf|g|e] [-D<name1>,<name2>,...]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E<no_char>] [-F] [-I<abbrev>/<name>/<units>/<size>/<scale>/<offset>/\"comment\"]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N%s[+|-]] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_LEN_UNITS2_DISPLAY, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_n_OPT);
@@ -239,7 +241,7 @@ int decode_I_options (struct GMT_CTRL *GMT, char *line, char *abbrev, char *name
 					error++;
 				}
 				if (error) {
-					fprintf (GMT->session.std[GMT_ERR], "%s: Abbreviation name should only contain lower case letters, digits, and underscores\n", gmt_module_name(GMT));
+					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Abbreviation name should only contain lower case letters, digits, and underscores\n");
 					return (true);
 				}
 				break;
@@ -285,7 +287,7 @@ int decode_I_options (struct GMT_CTRL *GMT, char *line, char *abbrev, char *name
 			parameters[COL_TYPE] = NC_CHAR;
 			break;
 		default:
-			fprintf (GMT->session.std[GMT_ERR], "%s: Unknown data type flag %c\n", gmt_module_name(GMT), *size);
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unknown data type flag %c\n", *size);
 			parameters[COL_TYPE] = MGD77_NOT_SET;
 			break;
 	}
@@ -297,7 +299,7 @@ int skip_if_missing (struct GMT_CTRL *GMT, char *name, char *file, struct MGD77_
 	int id;
 
 	if ((id = MGD77_Get_Column (GMT, name, F)) == MGD77_NOT_SET) {
-		fprintf (GMT->session.std[GMT_ERR], "%s: Cruise %s is missing column %s which is required for selected operation - skipping\n", gmt_module_name(GMT), file, name);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cruise %s is missing column %s which is required for selected operation - skipping\n", file, name);
 		MGD77_Free_Dataset (GMT, D);	/* Free memory already allocated by MGD77_Read_File for this aborted effort */
 	}
 	return (id);
@@ -532,6 +534,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
+	if (mode == GMT_PURPOSE) return (GMT_mgd77manage_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_mgd77manage_usage (API, GMT_USAGE));	/* Return the usage message */
@@ -539,7 +542,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_mgd77manage_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_mgd77manage_parse (GMT, Ctrl, options))) Return (error);
@@ -1558,7 +1561,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 		if (n_bad) {	/* Report what we found */
 			if (In.verbose_level | 1)
 				fprintf (fp_err, "%s: %s [%s] had %" PRIu64 " values outside valid range <%g,%g> for the chosen type (set to NaN = %g)\n",
-				gmt_module_name(GMT), In.NGDC_id, Ctrl->I.c_abbrev, n_bad, MGD77_Low_val[c_nc_type], MGD77_High_val[c_nc_type], MGD77_NaN_val[c_nc_type]);
+				THIS_MODULE_NAME, In.NGDC_id, Ctrl->I.c_abbrev, n_bad, MGD77_Low_val[c_nc_type], MGD77_High_val[c_nc_type], MGD77_NaN_val[c_nc_type]);
 		}
 
 		MGD77_Close_File (GMT, &In);

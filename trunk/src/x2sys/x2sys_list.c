@@ -25,8 +25,9 @@
  *
  */
 
-#define THIS_MODULE GMT_ID_X2SYS_LIST /* I am x2sys_list */
-#define MODULE_USAGE "Extract subset from crossover data base"
+#define THIS_MODULE_NAME	"x2sys_list"
+#define THIS_MODULE_LIB		"suppl"
+#define THIS_MODULE_PURPOSE	"Extract subset from crossover data base"
 
 #include "x2sys.h"
 
@@ -110,7 +111,8 @@ void Free_x2sys_list_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *C) {	/*
 }
 
 int GMT_x2sys_list_usage (struct GMTAPI_CTRL *API, int level) {
-	gmt_module_show_name_and_purpose (API, THIS_MODULE);
+	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: x2sys_list -C<column> -T<TAG> [<COEdbase>] [-A<asymm_max] [-E] [-F<flags>] [-I<ignorelist>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L[<corrtable.txt>]] [-N<nx_min>] [-Qe|i] [-S[+]<track>]\n\t[%s] [%s] [-W<weight>] [-m]\n\n", GMT_Rgeo_OPT, GMT_V_OPT);
 
@@ -299,6 +301,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
+	if (mode == GMT_PURPOSE) return (GMT_x2sys_list_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_x2sys_list_usage (API, GMT_USAGE));	/* Return the usage message */
@@ -306,7 +309,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_x2sys_list_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_x2sys_list_parse (GMT, Ctrl, options))) Return (error);
@@ -477,7 +480,7 @@ int GMT_x2sys_list (void *V_API, int mode, void *args)
 		char *cmd = NULL;
 		fprintf (GMT->session.std[GMT_OUT], "# Tag: %s %s\n", Ctrl->T.TAG, Ctrl->C.col);
 		cmd = GMT_Create_Cmd (API, options);
-		fprintf (GMT->session.std[GMT_OUT], "# Command: %s %s\n", gmt_module_name(GMT), cmd);	/* Build command line argument string */
+		fprintf (GMT->session.std[GMT_OUT], "# Command: %s %s\n", THIS_MODULE_NAME, cmd);	/* Build command line argument string */
 		GMT_free (GMT, cmd);
 
 		fprintf (GMT->session.std[GMT_OUT], "#");

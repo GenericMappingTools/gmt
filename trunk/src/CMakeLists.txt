@@ -167,7 +167,7 @@ set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	gmt_colors.h gmt_common.h gmt_constants.h gmt_contour.h gmt_crossing.h
 	gmt_customio.h gmt_dcw.h gmt_defaults.h gmt_error.h gmt_gdalread.h gmt_grd.h
 	gmt_grdio.h gmt_hash.h gmt_init.h gmt_internals.h gmt_io.h gmt_macros.h
-	gmt_map.h gmt_media_name.h gmt_media_size.h gmt_mgg_header2.h gmt_module.h
+	gmt_map.h gmt_media_name.h gmt_media_size.h gmt_mgg_header2.h gmt_module.h gmt_coremodule.h gmt_supplmodule.h
 	gmt_nan.h gmt_notposix.h gmt_option.h gmt_pennames.h gmt_plot.h gmt_project.h
 	gmt_prototypes.h gmt_ps.h gmt_shore.h gmt_stat.h gmt_support.h gmt_symbol.h
 	gmt_synopsis.h gmt_texture.h gmt_time.h gmt_types.h gmt_unique.h
@@ -178,7 +178,7 @@ set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	gmt_shore.c gmt_sph.c gmt_stat.c gmt_support.c gmt_regexp.c gmt_vector.c
 	gmt_parse.c gmt_error_codes.c gshhg_version.c gmtread.c gmtwrite.c
 	common_math.c common_string.c common_runpath.c compat/qsort.c
-	gmt_module.c gmt_init.c gmt_map.c gmt_plot.c
+	gmt_module.c gmt_coremodule.c gmt_supplmodule.c gmt_init.c gmt_map.c gmt_plot.c
 	${GMT_PROGS_SRCS} ${GMT_TRIANGLE_SRCS})
 
 # dependencies on generated files

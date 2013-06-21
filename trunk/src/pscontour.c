@@ -25,8 +25,8 @@
  * Version:	5 API
  */
 
-#define THIS_MODULE GMT_ID_PSCONTOUR /* I am pscontour */
-#define MODULE_USAGE "Contour table data by direct triangulation"
+#define THIS_MODULE_NAME	"pscontour"
+#define THIS_MODULE_PURPOSE	"Contour table data by direct triangulation"
 
 #include "gmt_dev.h"
 
@@ -369,7 +369,8 @@ int GMT_pscontour_usage (struct GMTAPI_CTRL *API, int level)
 {
 	struct GMT_PEN P;
 
-	gmt_module_show_name_and_purpose (API, THIS_MODULE);
+	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pscontour <table> -C[+]<cont_int>|<cpt> %s\n", GMT_J_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A[-|[+]<annot_int>][<labelinfo>]\n\t[%s] [-D<template>] ", GMT_Rgeoz_OPT, GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-I] [%s] [-K] [-L<pen>] [-N]\n", GMT_CONTG, GMT_Jz_OPT);
@@ -666,6 +667,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
+	if (mode == GMT_PURPOSE) return (GMT_pscontour_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_pscontour_usage (API, GMT_USAGE));	/* Return the usage message */
@@ -673,7 +675,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments; return if errors are encountered */
 
-	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_gmt_module (API, NULL, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_pscontour_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_pscontour_parse (GMT, Ctrl, options))) Return (error);

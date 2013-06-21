@@ -14,8 +14,9 @@
  *
  */
 
-#define THIS_MODULE GMT_ID_MGD77MAGREF /* I am mgd77magref */
-#define MODULE_USAGE "Evaluate the IGRF or CM4 magnetic field models"
+#define THIS_MODULE_NAME	"mgd77magref"
+#define THIS_MODULE_LIB		"suppl"
+#define THIS_MODULE_PURPOSE	"Evaluate the IGRF or CM4 magnetic field models"
 
 #include "gmt_dev.h"
 #include "mgd77.h"
@@ -77,7 +78,8 @@ void Free_mgd77magref_Ctrl (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *C) {	
 
 int GMT_mgd77magref_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (API, THIS_MODULE);
+	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: mgd77magref [<table>] [-A+y+a<alt>+t<date>] [-C<cm4file>] [-D<dstfile>] [-E<f107file>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F<rthxyzdi[/[0|9]1234567]>] [-G] [-L<rtxyz[/1234]>] [-Sc|l<low>/<high>] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_h_OPT, GMT_colon_OPT);
@@ -426,6 +428,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
+	if (mode == GMT_PURPOSE) return (GMT_mgd77magref_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_mgd77magref_usage (API, GMT_USAGE));	/* Return the usage message */
@@ -433,7 +436,7 @@ int GMT_mgd77magref (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_mgd77magref_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	MGD77_Init (GMT, &M);			/* Initialize MGD77 Machinery */

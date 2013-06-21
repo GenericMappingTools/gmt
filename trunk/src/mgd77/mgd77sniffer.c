@@ -21,8 +21,9 @@
  *
  * ------------------------------------------------------------------*/
 
-#define THIS_MODULE GMT_ID_MGD77SNIFFER /* I am mgd77sniffer */
-#define MODULE_USAGE "Along-track quality control of MGD77 cruises"
+#define THIS_MODULE_NAME	"mgd77sniffer"
+#define THIS_MODULE_LIB		"suppl"
+#define THIS_MODULE_PURPOSE	"Along-track quality control of MGD77 cruises"
 
 #include "mgd77.h"
 #include "gmt_dev.h"
@@ -53,7 +54,8 @@ bool GMT_is_gleap (int gyear);
 
 int GMT_mgd77sniffer_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (API, THIS_MODULE);
+	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: mgd77sniffer <cruises> [-A<fieldabbrev>,<scale>,<offset>] [-Cmaxspd] [-Dd|e|E|f|l|m|s|v][r]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<fieldabbrev>,<imggrid>,<scale>,<mode>[,<latmax>] or -G<fieldabbrev>,<grid>] [-H]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-I<fieldabbrev>,<rec1>,<recN>] [-K] [-L<custom_limits_file> ] [-N]\n");
@@ -291,6 +293,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 	struct GMTAPI_CTRL *API = GMT_get_API_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
+	if (mode == GMT_PURPOSE) return (GMT_mgd77sniffer_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_mgd77sniffer_usage (API, GMT_USAGE));	/* Return the usage message */
@@ -298,7 +301,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) bailout (API->error);
 
 #ifdef MEMDEBUG

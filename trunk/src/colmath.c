@@ -27,8 +27,8 @@
  * and do math on those columns. Then report the combined result.
  */
 
-#define THIS_MODULE GMT_ID_COLMATH /* I am colmath */
-#define MODULE_USAGE "Do mathematics on columns from data tables"
+#define THIS_MODULE_NAME	"colmath"
+#define THIS_MODULE_PURPOSE	"Do mathematics on columns from data tables"
 
 #include "gmt_dev.h"
 
@@ -80,7 +80,8 @@ void Free_colmath_Ctrl (struct GMT_CTRL *GMT, struct COLMATH_CTRL *C) {	/* Deall
 
 int GMT_colmath_usage (struct GMTAPI_CTRL *API, int level)
 {
-	gmt_module_show_name_and_purpose (API, THIS_MODULE);
+	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: colmath [<table>] [-A] [-N] [-Q<seg>] [-S[~]\"search string\"] [-T] [%s]\n\t[%s] [%s]", GMT_V_OPT, GMT_b_OPT, GMT_f_OPT);
 	GMT_Message (API, GMT_TIME_NONE, " [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] OPERATORS\n\n", GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT);
 
@@ -182,6 +183,7 @@ int GMT_colmath (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
+	if (mode == GMT_PURPOSE) return (GMT_colmath_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_colmath_usage (API, GMT_USAGE));/* Return the usage message */
@@ -189,7 +191,7 @@ int GMT_colmath (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_gmt_module (API, NULL, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_colmath_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_colmath_parse (GMT, Ctrl, options))) Return (error);

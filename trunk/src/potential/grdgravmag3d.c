@@ -28,8 +28,9 @@
  *
  */
 
-#define THIS_MODULE GMT_ID_GRDGRAVMAG3D /* I am grdgravmag3d */
-#define MODULE_USAGE "Computes the gravity effect of one (or two) grids by the method of Okabe"
+#define THIS_MODULE_NAME	"grdgravmag3d"
+#define THIS_MODULE_LIB		"suppl"
+#define THIS_MODULE_PURPOSE	"Computes the gravity effect of one (or two) grids by the method of Okabe"
 
 #include "gmt_dev.h"
 #include "okbfuns.h"
@@ -124,7 +125,8 @@ void Free_grdgravmag3d_Ctrl (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *C) {	/* D
 }
 
 int GMT_grdgravmag3d_usage (struct GMTAPI_CTRL *API, int level) {
-	gmt_module_show_name_and_purpose (API, THIS_MODULE);
+	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdgravmag3d grdfile_up [grdfile_low] [-C<density>] [-D] [-F<xy_file>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<outfile>] [%s] [-L<z_obs>]\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Q[n<n_pad>]|[pad_dist]|[<w/e/s/n>]]\n");
@@ -319,6 +321,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
+	if (mode == GMT_PURPOSE) return (GMT_grdgravmag3d_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);
 	if (API->error) return (API->error);	/* Set or get option list */
 
@@ -329,7 +332,7 @@ int GMT_grdgravmag3d (void *V_API, int mode, void *args) {
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_gmt_module (API, THIS_MODULE, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_gmt_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_grdgravmag3d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_grdgravmag3d_parse (GMT, Ctrl, options))) Return (error);
