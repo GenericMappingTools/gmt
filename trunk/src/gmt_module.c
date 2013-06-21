@@ -79,4 +79,18 @@ char *dlerror(void)
 
 	return errstr;
 }
+/**dlopen_special: opens the dll file of the current process */
+void *dlopen_special()
+{	/* This is how it is done under Windows */
+	HMODULE this_process, this_process_again;
+	GetModuleHandleEx (0, 0, &this_process);
+	this_process_again = GetModuleHandle(0);
+	return (this_process_again);
+}
+#else
+/**dlopen_special: opens the shared library file of the current process  under *nix */
+void *dlopen_special()
+{	/* Just call dlopen with NULL and 0 */
+	return (dlopen (NULL, 0));
+}
 #endif
