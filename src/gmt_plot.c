@@ -376,7 +376,7 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	unsigned int axis = A->id;	/* Axis id (GMT_X, GMT_Y, GMT_Z) */
 	bool horizontal;		/* true if axis is horizontal */
 	bool neg = below;		/* true if annotations are to the left of or below the axis */
-	bool far;			/* true if the anchor point of annotations is on the far side of the axis */
+	bool faro;			/* true if the anchor point of annotations is on the far side of the axis */
 	bool is_interval;		/* true when the annotation is interval annotation and not tick annotation */
 	bool do_annot;		/* true unless we are dealing with Gregorian weeks */
 	bool do_tick;		/* true unless we are dealing with bits of weeks */
@@ -401,7 +401,7 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	np = GMT_coordinate_array (GMT, val0, val1, &A->item[primary], &knots_p, NULL);	/* Get all the primary tick annotation knots */
 	if (strchr (GMT->current.setting.map_annot_ortho, axis_chr[axis][below])) ortho = true;	/* Annotations are orthogonal */
 	if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE) neg = !neg;	/* Annotations go either below or above the axis */
-	far = (neg == (horizontal && !ortho));			/* Current point is at the far side of the tickmark? */
+	faro = (neg == (horizontal && !ortho));			/* Current point is at the far side of the tickmark? */
 	if (A->type != GMT_TIME) GMT_get_format (GMT, GMT_get_map_interval (GMT, &A->item[GMT_ANNOT_UPPER]), A->unit, A->prefix, format);	/* Set the annotation format template */
 
 	/* Ready to draw axis */
@@ -498,7 +498,7 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 				PSL_command (PSL, "/PSL_A0_y PSL_A0_y %d add ", psl_iz (PSL, GMT->current.setting.map_annot_offset[annot_pos])); 
 			else
 				PSL_command (PSL, "/PSL_A1_y PSL_A0_y PSL_A1_y mx %d add ", psl_iz (PSL, GMT->current.setting.map_annot_offset[annot_pos])); 
-			if (far) PSL_command (PSL, "PSL_AH%d add ", annot_pos);
+			if (faro) PSL_command (PSL, "PSL_AH%d add ", annot_pos);
 			PSL_command (PSL, "def\n");
 
 			for (i = 0; i < nx1; i++) {
@@ -515,7 +515,7 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 					GMT_get_coordinate_label (GMT, string, &GMT->current.plot.calclock, format, T, knots[i]);	/* Get annotation string */
 				PSL_plottext (PSL, 0.0, 0.0, -font.size, string, (ortho == horizontal) ? 90.0 : 0.0, ortho ? PSL_MR : PSL_BC, form);
 			}
-			if (!far) PSL_command (PSL, "/PSL_A%d_y PSL_A%d_y PSL_AH%d add def\n", annot_pos, annot_pos, annot_pos);
+			if (!faro) PSL_command (PSL, "/PSL_A%d_y PSL_A%d_y PSL_AH%d add def\n", annot_pos, annot_pos, annot_pos);
 		}
 
 		if (nx) GMT_free (GMT, knots);
