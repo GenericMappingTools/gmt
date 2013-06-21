@@ -912,7 +912,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							if (txt_d[0] != '-') {strcat (buffer, " -W"); strcat (buffer, txt_d);}
 							// fprintf (stderr, "%s\n", buffer);
 							
-							status = GMT_psxy (API, 0, buffer);	/* Plot the front */
+							status = GMT_Call_Module (API, "psxy", 0, buffer);	/* Plot the front */
 							if (status) {
 								GMT_Report (API, GMT_MSG_NORMAL, "GMT_psxy returned error %d.\n", status);
 								Return (EXIT_FAILURE);
@@ -1144,7 +1144,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		}
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -S %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
 		// fprintf (stderr, "%s", buffer);
-		if (GMT_psxy (API, 0, buffer) != GMT_OK) {
+		if (GMT_Call_Module (API, "psxy", 0, buffer) != GMT_OK) {
 			Return (API->error);	/* Plot the symbols */
 		}
 	}
