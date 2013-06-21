@@ -87,10 +87,9 @@ struct GMT_TIME_CONV {		/* Holds all time-related parameters */
 
 struct GMT_INIT { /* Holds misc run-time parameters */
 	unsigned int n_custom_symbols;
-	//enum GMT_MODULE_ID module_id; /* name, purpose, Api_mode, and function pointer of module */
+	const char *module_name;      /* Name of current module or NULL if not set */
+	const char *module_lib;       /* Name of current shared library or NULL if not set */
 	/* The rest of the struct contains pointers that may point to memory not included by this struct */
-	const char *module_name;           /* Name of current module or NULL if not set */
-	const char *module_lib;            /* Name of current shared library or NULL if not set */
 	char *runtime_bindir;         /* Directory that contains the main exe at run-time */
 	char *history[GMT_N_UNIQUE];  /* The internal .gmtcommands information */
 	struct GMT_CUSTOM_SYMBOL **custom_symbol; /* For custom symbol plotting in psxy[z]. */

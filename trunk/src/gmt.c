@@ -29,7 +29,7 @@ int main (int argc, char *argv[]) {
 	int status = GMT_NOT_A_VALID_MODULE;     /* Default status code */
 	unsigned int modulename_arg_n = 0;      /* argument number that contains module name */
 	struct GMTAPI_CTRL *api_ctrl = NULL;    /* GMT API control structure */
-	char gmt_module[16] = "gmt";
+	char gmt_module[GMT_TEXT_LEN16] = "gmt";
 	char *progname = NULL; /* Last component from the pathname */
 	char *module = NULL;			/* Module name */
 
@@ -51,7 +51,7 @@ int main (int argc, char *argv[]) {
 		module = argv[1];	/* Try this module name */
 		if ((status = GMT_Probe_Module (api_ctrl, module, GMT_MODULE_EXIST) == GMT_NOT_A_VALID_MODULE)) {
 			/* argv[1] does not contain a valid module name; try prepending gmt: */
-			strncat (gmt_module, argv[1], 12U);
+			strncat (gmt_module, argv[1], GMT_TEXT_LEN16-4U);
 			module = gmt_module;	/* Try this module name */
 			status = GMT_Probe_Module (api_ctrl, module, GMT_MODULE_EXIST); /* either GMT_NOERROR or GMT_NOT_A_VALID_MODULE */
 		}
