@@ -3597,7 +3597,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 			else if (op == GRDMATH_ARG_IS_STORE) {
 				/* Duplicate stack into stored memory location associated with specified label */
 				int last = nstack - 1;
-				bool new = false;
+				bool added_new = false;
 				if (nstack == 0) {
 					GMT_Report (API, GMT_MSG_NORMAL, "No items on stack to put into stored memory!\n");
 					Return (EXIT_FAILURE);
@@ -3612,13 +3612,13 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 					recall[k] = GMT_memory (GMT, NULL, 1, struct GRDMATH_STORE);
 					recall[k]->label = strdup (label);
 					if (!stack[last]->constant) recall[k]->stored.G = GMT_Duplicate_Data (API, GMT_IS_GRID, GMT_DUPLICATE_DATA, stack[last]->G);
-					new = true;
+					added_new = true;
 					GMT_Report (API, GMT_MSG_DEBUG, "Stored memory cell %d named %s is created with new information\n", k, label);
 				}
 				recall[k]->stored.constant = stack[last]->constant;
 				recall[k]->stored.factor = stack[last]->factor;
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "[--> %s] ", recall[n_stored]->label);
-				if (new) n_stored++;	/* We added a new item */
+				if (added_new) n_stored++;	/* We added a new item */
 				continue;	/* Just go back and process next item */
 			}
 			else if (op == GRDMATH_ARG_IS_RECALL) {

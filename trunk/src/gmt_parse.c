@@ -106,7 +106,7 @@ struct GMT_OPTION * GMT_Create_Options (void *V_API, int n_args_in, void *in)
 	int error = GMT_OK;
 	unsigned int arg, first_char, n_args;
 	char option, **args = NULL, **new_args = NULL;
-	struct GMT_OPTION *head = NULL, *new = NULL;
+	struct GMT_OPTION *head = NULL, *new_opt = NULL;
 	struct GMT_CTRL *G = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 
@@ -157,9 +157,9 @@ struct GMT_OPTION * GMT_Create_Options (void *V_API, int n_args_in, void *in)
 		else	/* Most likely found a regular option flag (e.g., -D45.0/3) */
 			first_char = 2, option = args[arg][1];
 
-		if ((new = GMT_Make_Option (API, option, &args[arg][first_char])) == NULL) return_null (API, error);	/* Create the new option structure given the args, or return the error */
+		if ((new_opt = GMT_Make_Option (API, option, &args[arg][first_char])) == NULL) return_null (API, error);	/* Create the new option structure given the args, or return the error */
 
-		head = GMT_Append_Option (API, new, head);		/* Hook new option to the end of the list (or initiate list if head == NULL) */
+		head = GMT_Append_Option (API, new_opt, head);		/* Hook new option to the end of the list (or initiate list if head == NULL) */
 	}
 	if (n_args_in == 0) {	/* Free up temporary arg list */
 		for (arg = 0; arg < n_args; arg++) free (new_args[arg]);
@@ -329,25 +329,25 @@ struct GMT_OPTION * GMT_prep_module_options (struct GMTAPI_CTRL *API, int mode, 
 struct GMT_OPTION *GMT_Make_Option (void *V_API, char option, char *arg)
 {
 	/* Create a structure option given the option character and the optional argument arg */
-	struct GMT_OPTION *new = NULL;
+	struct GMT_OPTION *new_opt = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 
 	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 
 	/* Here we have a program-specific option or a file name.  In either case we create a new option structure */
 
-	new = GMT_memory (API->GMT, NULL, 1, struct GMT_OPTION);
+	new_opt = GMT_memory (API->GMT, NULL, 1, struct GMT_OPTION);
 
-	new->option = option;		/* Assign which option character was used */
+	new_opt->option = option;		/* Assign which option character was used */
 	if (!arg)				/* If arg is a NULL pointer: */
-		new->arg = strdup ("");		/* Copy an empty string, such that new->arg[0] = '\0', which avoids */
+		new_opt->arg = strdup ("");	/* Copy an empty string, such that new_opt->arg[0] = '\0', which avoids */
 						/* segfaults later on since few functions check for NULL pointers  */
 	else {					/* If arg is set to something (may be an empty string): */
-		new->arg = strdup (arg);	/* Allocate space for the argument and duplicate it in the option structure */
-		GMT_chop (new->arg);		/* Get rid of any trailing \n \r from cross-binary use in Cygwin/Windows */
+		new_opt->arg = strdup (arg);	/* Allocate space for the argument and duplicate it in the option structure */
+		GMT_chop (new_opt->arg);	/* Get rid of any trailing \n \r from cross-binary use in Cygwin/Windows */
 	}
 
-	return (new);		/* Pass back the pointer to the allocated option structure */
+	return (new_opt);		/* Pass back the pointer to the allocated option structure */
 }
 
 struct GMT_OPTION * GMT_Find_Option (void *V_API, char option, struct GMT_OPTION *head)
@@ -379,21 +379,21 @@ int GMT_Update_Option (void *V_API, struct GMT_OPTION *opt, char *arg)
 	return (GMT_OK);	/* No error encountered */
 }
 
-struct GMT_OPTION * GMT_Append_Option (void *V_API, struct GMT_OPTION *new, struct GMT_OPTION *head)
+struct GMT_OPTION * GMT_Append_Option (void *V_API, struct GMT_OPTION *new_opt, struct GMT_OPTION *head)
 {
 	/* Append this entry to the end of the linked list */
 	struct GMT_OPTION *current = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 
 	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
-	if (!new) return_null (API, GMT_OPTION_IS_NULL);	/* No option was passed */
-	if (!new->arg) return_null (API, GMT_ARG_IS_NULL);	/* Option argument must not be null pointer */
+	if (!new_opt) return_null (API, GMT_OPTION_IS_NULL);	/* No option was passed */
+	if (!new_opt->arg) return_null (API, GMT_ARG_IS_NULL);	/* Option argument must not be null pointer */
 
-	if (head == NULL) return (new);				/* No list yet, let new become the start of the list */
+	if (head == NULL) return (new_opt);			/* No list yet, let new_opt become the start of the list */
 
 	/* Here the list already existed with head != NULL */
 
-	if (new->option == GMT_OPT_OUTFILE) {	/* Only allow one output file on command line */
+	if (new_opt->option == GMT_OPT_OUTFILE) {	/* Only allow one output file on command line */
 		/* Search for existing output option */
 		for (current = head; current->next && current->option != GMT_OPT_OUTFILE; current = current->next);
 		if (current->option == GMT_OPT_OUTFILE) return_null (API, GMT_ONLY_ONE_ALLOWED);	/* Cannot have > 1 output file */
@@ -402,9 +402,9 @@ struct GMT_OPTION * GMT_Append_Option (void *V_API, struct GMT_OPTION *new, stru
 	else {	/* Not an output file name so just go to end of list */
 		for (current = head; current->next; current = current->next);			/* Go to end of list */
 	}
-	/* Append new to the list */
-	current->next = new;
-	new->previous = current;
+	/* Append new_opt to the list */
+	current->next = new_opt;
+	new_opt->previous = current;
 
 	return (head);		/* Return head of list */
 }

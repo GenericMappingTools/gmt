@@ -486,7 +486,7 @@ int GMT_psmeca_parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT
 
 int GMT_psmeca (void *V_API, int mode, void *args)
 {	/* High-level function that implements the psmeca task */
-	int i, n, k, ix = 0, iy = 1, last = 0, form = 0, new;
+	int i, n, k, ix = 0, iy = 1, last = 0, form = 0, new_fmt;
 	int n_rec = 0, n_plane_old = 0, error;
 	bool transparence_old = false, not_defined = false;
 
@@ -614,8 +614,8 @@ int GMT_psmeca (void *V_API, int mode, void *args)
 		/* In new (psmeca) input format, third column is depth.
 		   Skip record when depth is out of range. Also read an extra column. */
 
-		new = Ctrl->O2.active ? 0 : 1;
-		if (new) {
+		new_fmt = Ctrl->O2.active ? 0 : 1;
+		if (new_fmt) {
 			depth = atof (col[GMT_Z]);
 			if (depth < Ctrl->D.depmin || depth > Ctrl->D.depmax) continue;
 			if (Ctrl->Z.active) GMT_get_rgb_from_z (GMT, CPT, depth, Ctrl->G.fill.rgb);
@@ -627,30 +627,30 @@ int GMT_psmeca (void *V_API, int mode, void *args)
 		/* Gather and transform the input records, depending on type */
 
 		if (Ctrl->S.readmode == READ_CMT) {
-			meca.NP1.str = atof (col[2+new]);
-			meca.NP1.dip = atof (col[3+new]);
-			meca.NP1.rake = atof (col[4+new]);
-			meca.NP2.str = atof (col[5+new]);
-			meca.NP2.dip = atof (col[6+new]);
-			meca.NP2.rake = atof (col[7+new]);
-			meca.moment.mant = atof (col[8+new]);
-			meca.moment.exponent = atoi(col[9+new]);
-			if (meca.moment.exponent == 0) meca.magms = atof (col[8+new]);
+			meca.NP1.str = atof (col[2+new_fmt]);
+			meca.NP1.dip = atof (col[3+new_fmt]);
+			meca.NP1.rake = atof (col[4+new_fmt]);
+			meca.NP2.str = atof (col[5+new_fmt]);
+			meca.NP2.dip = atof (col[6+new_fmt]);
+			meca.NP2.rake = atof (col[7+new_fmt]);
+			meca.moment.mant = atof (col[8+new_fmt]);
+			meca.moment.exponent = atoi(col[9+new_fmt]);
+			if (meca.moment.exponent == 0) meca.magms = atof (col[8+new_fmt]);
 		}
 		else if (Ctrl->S.readmode == READ_AKI) {
-			meca.NP1.str = atof (col[2+new]);
-			meca.NP1.dip = atof (col[3+new]);
-			meca.NP1.rake = atof (col[4+new]);
-			meca.magms = atof (col[5+new]);
+			meca.NP1.str = atof (col[2+new_fmt]);
+			meca.NP1.dip = atof (col[3+new_fmt]);
+			meca.NP1.rake = atof (col[4+new_fmt]);
+			meca.magms = atof (col[5+new_fmt]);
 			meca.moment.exponent = 0;
 			define_second_plane (meca.NP1, &meca.NP2);
 		}
 		else if (Ctrl->S.readmode == READ_PLANES) {
-			meca.NP1.str = atof (col[2+new]);
-			meca.NP1.dip = atof (col[3+new]);
-			meca.NP2.str = atof (col[4+new]);
-			fault = atof (col[5+new]);
-			meca.magms = atof (col[6+new]);
+			meca.NP1.str = atof (col[2+new_fmt]);
+			meca.NP1.dip = atof (col[3+new_fmt]);
+			meca.NP2.str = atof (col[4+new_fmt]);
+			fault = atof (col[5+new_fmt]);
+			meca.magms = atof (col[6+new_fmt]);
 			meca.moment.exponent = 0;
 			meca.NP2.dip = computed_dip2(meca.NP1.str, meca.NP1.dip, meca.NP2.str);
 			if (meca.NP2.dip == 1000.0) {
@@ -667,20 +667,20 @@ int GMT_psmeca (void *V_API, int mode, void *args)
 			meca.NP2.rake = computed_rake2(meca.NP1.str, meca.NP1.dip, meca.NP2.str, meca.NP2.dip, fault);
 		}
 		else if (Ctrl->S.readmode == READ_AXIS) {
-			T.val = atof (col[2+new]);
-			T.str = atof (col[3+new]);
-			T.dip = atof (col[4+new]);
-			T.e = atoi(col[11+new]);
+			T.val = atof (col[2+new_fmt]);
+			T.str = atof (col[3+new_fmt]);
+			T.dip = atof (col[4+new_fmt]);
+			T.e = atoi(col[11+new_fmt]);
 
-			N.val = atof (col[5+new]);
-			N.str = atof (col[6+new]);
-			N.dip = atof (col[7+new]);
-			N.e = atoi(col[11+new]);
+			N.val = atof (col[5+new_fmt]);
+			N.str = atof (col[6+new_fmt]);
+			N.dip = atof (col[7+new_fmt]);
+			N.e = atoi(col[11+new_fmt]);
 
-			P.val = atof (col[8+new]);
-			P.str = atof (col[9+new]);
-			P.dip = atof (col[10+new]);
-			P.e = atoi(col[11+new]);
+			P.val = atof (col[8+new_fmt]);
+			P.str = atof (col[9+new_fmt]);
+			P.dip = atof (col[10+new_fmt]);
+			P.e = atoi(col[11+new_fmt]);
 			/*
 			F. A. Dahlen and Jeroen Tromp, Theoretical Seismology, Princeton, 1998, p.167.
 			Definition of scalar moment.
@@ -697,7 +697,7 @@ int GMT_psmeca (void *V_API, int mode, void *args)
 			if (Ctrl->T.active || Ctrl->S.plotmode == PLOT_DC) axe2dc (T, P, &meca.NP1, &meca.NP2);
 		}
 		else if (Ctrl->S.readmode == READ_TENSOR) {
-			for (i = 2+new, n = 0; i < 8+new; i++, n++) mt.f[n] = atof (col[i]);
+			for (i = 2+new_fmt, n = 0; i < 8+new_fmt; i++, n++) mt.f[n] = atof (col[i]);
 			mt.expo = atoi(col[i]);
 			/*
 			F. A. Dahlen and Jeroen Tromp, Theoretical Seismology, Princeton, 1998, p.167.
@@ -722,8 +722,8 @@ int GMT_psmeca (void *V_API, int mode, void *args)
 		/* If option -C is used, read the new position */
 
 		if (Ctrl->C.active) {
-			xynew[ix] = atof (col[last-1+new]);
-			xynew[iy] = atof (col[last+new]);
+			xynew[ix] = atof (col[last-1+new_fmt]);
+			xynew[iy] = atof (col[last+new_fmt]);
 			if (fabs (xynew[ix]) > EPSIL || fabs (xynew[iy]) > EPSIL) {
 				GMT_setpen (GMT, &Ctrl->C.pen);
 				GMT_geo_to_xy (GMT, xynew[0], xynew[1], &plot_xnew, &plot_ynew);

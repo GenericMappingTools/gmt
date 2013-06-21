@@ -72,8 +72,8 @@
 #define GMT_COMPAT_INFO "Please see " GMT_TRAC_WIKI "Changes for more information.\n"
 
 #define GMT_COMPAT_WARN GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: parameter %s is deprecated.\n" GMT_COMPAT_INFO, GMT_keywords[case_val])
-#define GMT_COMPAT_CHANGE(new) GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: parameter %s is deprecated. Use %s instead.\n" GMT_COMPAT_INFO, GMT_keywords[case_val], new)
-#define GMT_COMPAT_OPT(new) if (strchr (list, new)) { GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -%c is deprecated. Use -%c instead.\n" GMT_COMPAT_INFO, option, new); option = new; }
+#define GMT_COMPAT_CHANGE(new_P) GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: parameter %s is deprecated. Use %s instead.\n" GMT_COMPAT_INFO, GMT_keywords[case_val], new_P)
+#define GMT_COMPAT_OPT(new_P) if (strchr (list, new_P)) { GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -%c is deprecated. Use -%c instead.\n" GMT_COMPAT_INFO, option, new_P); option = new_P; }
 
 int gmt_geo_C_format (struct GMT_CTRL *GMT);
 void GMT_grdio_init (struct GMT_CTRL *GMT);	/* Defined in gmt_customio.c and only used here */
@@ -6578,23 +6578,23 @@ int gmt_strip_colonitem (struct GMT_CTRL *GMT, int axis, const char *in, const c
 	return (GMT_NOERROR);
 }
 
-void gmt_handle_atcolon (struct GMT_CTRL *GMT, char *txt, int old)
+void gmt_handle_atcolon (struct GMT_CTRL *GMT, char *txt, int old_p)
 {	/* Way = 0: Replaces @:<size>: and @:: with @^<size>^ and @^^ to avoid trouble in -B:label: parsing;
 	 * Way = 1: Restores it the way it was. */
-	int new;
+	int new_p;
 	char *item[2] = {"@:", "@^"}, mark[2] = {':', '^'}, *s = NULL;
 
 	if (!txt || !txt[0]) return;	/* Nothing to do */
-	new = 1 - old;	/* The opposite of old */
-	while ((s = strstr (txt, item[old]))) {	/* As long as we keep finding these */
+	new_p = 1 - old_p;	/* The opposite of old */
+	while ((s = strstr (txt, item[old_p]))) {	/* As long as we keep finding these */
 		ptrdiff_t pos = ((size_t)s - (size_t)txt) + 1; /* Skip past the @ character */
-		if (txt[pos+1] == mark[old]) {			/* Either :: or ^^ */
-			txt[pos] = txt[pos+1] = mark[new];	/* Replace @:: with @^^ or vice versa */
+		if (txt[pos+1] == mark[old_p]) {			/* Either :: or ^^ */
+			txt[pos] = txt[pos+1] = mark[new_p];	/* Replace @:: with @^^ or vice versa */
 		}
 		else {	/* Found @:<size>: or @^<size>^ */
-			txt[pos] = mark[new];
-			while (txt[pos] && txt[pos] != mark[old]) pos++;
-			if (txt[pos] == mark[old]) txt[pos] = mark[new];
+			txt[pos] = mark[new_p];
+			while (txt[pos] && txt[pos] != mark[old_p]) pos++;
+			if (txt[pos] == mark[old_p]) txt[pos] = mark[new_p];
 		}
 	}
 }

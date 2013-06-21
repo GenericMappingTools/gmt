@@ -533,7 +533,7 @@ static inline void MGD77_do_scale_offset_after_read (struct GMT_CTRL *GMT, doubl
 
 }
 
-uint64_t MGD77_do_scale_offset_before_write (struct GMT_CTRL *GMT, double new[], const double x[], uint64_t n, double scale, double offset, int type)
+uint64_t MGD77_do_scale_offset_before_write (struct GMT_CTRL *GMT, double new_x[], const double x[], uint64_t n, double scale, double offset, int type)
 {	/* Here we apply the various scale/offsets to fit the data in a smaller data type.
 	 * We also replace NaNs with special values that represent NaNs for the saved data
 	 * type, and finally replace transformed values that fall outside the valid range
@@ -551,11 +551,11 @@ uint64_t MGD77_do_scale_offset_before_write (struct GMT_CTRL *GMT, double new[],
 			i_scale = 1.0 / scale;
 			for (k = 0; k < n; k++) {
 				if (GMT_is_dnan (x[k]))
-					new[k] = nan_val;
+					new_x[k] = nan_val;
 				else {
-					new[k] = (type < NC_FLOAT) ? rint (x[k] * i_scale) : x[k] * i_scale;
-					if (new[k] < lo_val || new[k] > hi_val) {
-						new[k] = nan_val;
+					new_x[k] = (type < NC_FLOAT) ? rint (x[k] * i_scale) : x[k] * i_scale;
+					if (new_x[k] < lo_val || new_x[k] > hi_val) {
+						new_x[k] = nan_val;
 						n_crap++;
 					}
 				}
@@ -564,11 +564,11 @@ uint64_t MGD77_do_scale_offset_before_write (struct GMT_CTRL *GMT, double new[],
 		else if (scale == 1.0) {	/* Just do offset */
 			for (k = 0; k < n; k++) {
 				if (GMT_is_dnan (x[k]))
-					new[k] = nan_val;
+					new_x[k] = nan_val;
 				else {
-					new[k] = (type < NC_FLOAT) ? rint (x[k] - offset) : x[k] - offset;
-					if (new[k] < lo_val || new[k] > hi_val) {
-						new[k] = nan_val;
+					new_x[k] = (type < NC_FLOAT) ? rint (x[k] - offset) : x[k] - offset;
+					if (new_x[k] < lo_val || new_x[k] > hi_val) {
+						new_x[k] = nan_val;
 						n_crap++;
 					}
 				}
@@ -578,11 +578,11 @@ uint64_t MGD77_do_scale_offset_before_write (struct GMT_CTRL *GMT, double new[],
 			i_scale = 1.0 / scale;
 			for (k = 0; k < n; k++) {
 				if (GMT_is_dnan (x[k]))
-					new[k] = nan_val;
+					new_x[k] = nan_val;
 				else {
-					new[k] = (type < NC_FLOAT) ? rint ((x[k] - offset) * i_scale) : (x[k] - offset) * i_scale;
-					if (new[k] < lo_val || new[k] > hi_val) {
-						new[k] = nan_val;
+					new_x[k] = (type < NC_FLOAT) ? rint ((x[k] - offset) * i_scale) : (x[k] - offset) * i_scale;
+					if (new_x[k] < lo_val || new_x[k] > hi_val) {
+						new_x[k] = nan_val;
 						n_crap++;
 					}
 				}
@@ -592,11 +592,11 @@ uint64_t MGD77_do_scale_offset_before_write (struct GMT_CTRL *GMT, double new[],
 	else {	/* Just replace NaNs and check range */
 		for (k = 0; k < n; k++) {
 			if (GMT_is_dnan (x[k]))
-				new[k] = nan_val;
+				new_x[k] = nan_val;
 			else {
-				new[k] = (type < NC_FLOAT) ? rint (x[k]) : x[k];
-				if (new[k] < lo_val || new[k] > hi_val) {
-					new[k] = nan_val;
+				new_x[k] = (type < NC_FLOAT) ? rint (x[k]) : x[k];
+				if (new_x[k] < lo_val || new_x[k] > hi_val) {
+					new_x[k] = nan_val;
 					n_crap++;
 				}
 			}

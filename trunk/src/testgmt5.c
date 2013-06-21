@@ -32,7 +32,7 @@
 int main (int argc, char *argv[]) {
 
 	int status = 0;				/* Status code from GMT API */
-	struct GMT_OPTION *head = NULL, *new = NULL;	/* Linked list of options */
+	struct GMT_OPTION *head = NULL, *new_opt = NULL;	/* Linked list of options */
 	struct GMTAPI_CTRL *API = NULL;			/* GMT API control structure */
 
 	int in_grdcut_ID, out_grdcut_ID;
@@ -55,16 +55,16 @@ int main (int argc, char *argv[]) {
 	/* 4. Create linked options for GMT_grdcut equivalent to "grdcut t.nc -R2/4/2/4 -Gnew.nc -V" */
 
 	if (GMT_Encode_ID (API, string, in_grdcut_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make filename with embedded object ID */
-	if ((new = GMT_Make_Option (API, '<', string)) == NULL) exit (EXIT_FAILURE);
-	if ((head = GMT_Append_Option (API, new, NULL)) == NULL) exit (EXIT_FAILURE);
+	if ((new_opt = GMT_Make_Option (API, '<', string)) == NULL) exit (EXIT_FAILURE);
+	if ((head = GMT_Append_Option (API, new_opt, NULL)) == NULL) exit (EXIT_FAILURE);
 	sprintf (string, "%g/%g/%g/%g", w, e, s, n);		/* Create argument for -R option */
-	if ((new = GMT_Make_Option (API, 'R', string)) == NULL) exit (EXIT_FAILURE);
-	if ((head = GMT_Append_Option (API, new, head)) == NULL) exit (EXIT_FAILURE);
+	if ((new_opt = GMT_Make_Option (API, 'R', string)) == NULL) exit (EXIT_FAILURE);
+	if ((head = GMT_Append_Option (API, new_opt, head)) == NULL) exit (EXIT_FAILURE);
 	if (GMT_Encode_ID (API, string, out_grdcut_ID) != GMT_OK) exit (EXIT_FAILURE);	/* Make -Gfilename with embedded object ID */
-	if ((new = GMT_Make_Option (API, 'G', string)) == NULL) exit (EXIT_FAILURE);
-	if ((head = GMT_Append_Option (API, new, head)) == NULL) exit (EXIT_FAILURE);
-	if ((new = GMT_Make_Option (API, 'V', NULL)) == NULL) exit (EXIT_FAILURE);	/* Add -V*/
-	if ((head = GMT_Append_Option (API, new, head)) == NULL) exit (EXIT_FAILURE);
+	if ((new_opt = GMT_Make_Option (API, 'G', string)) == NULL) exit (EXIT_FAILURE);
+	if ((head = GMT_Append_Option (API, new_opt, head)) == NULL) exit (EXIT_FAILURE);
+	if ((new_opt = GMT_Make_Option (API, 'V', NULL)) == NULL) exit (EXIT_FAILURE);	/* Add -V*/
+	if ((head = GMT_Append_Option (API, new_opt, head)) == NULL) exit (EXIT_FAILURE);
 
 	/* 5. Run GMT cmd function, or give usage message if errors arise during parsing */
 	status = GMT_Call_Module (API, "grdcut", -1, head);	/* This allocates memory for the export grid associated with the -G option */
