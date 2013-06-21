@@ -1410,7 +1410,7 @@ int GMT_rectR_to_geoR (struct GMT_CTRL *GMT, char unit, double rect[], double ou
 	}
 	sprintf (buffer, "-R%g/%g/%g/%g -J%s -I -F%c -C -bi2d -bo2d -<%s ->%s", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], GMT->common.J.string, unit, in_string, out_string);
 	if (get_R) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Obtain geographic corner coordinates via mapproject %s\n", buffer);
-	if (GMT_mapproject (GMT->parent, 0, buffer) != GMT_OK) {	/* Get the corners in degrees via mapproject */
+	if (GMT_Call_Module (GMT->parent, "mapproject", 0, buffer) != GMT_OK) {	/* Get the corners in degrees via mapproject */
 		return (GMT->parent->error);
 	}
 	GMT->common.R.active = was_R;	GMT->common.J.active = was_J;

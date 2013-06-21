@@ -74,21 +74,6 @@ extern "C" {
 /* Declaration modifiers for DLL support (MSC et al) */
 #include "declspec.h"
 
-/* external array with program parameters for all GMT modules */
-EXTERN_MSC struct Gmt_moduleinfo g_${L_TAG}module[];
-
-EOF
-# $1 = name, $2 = ${L_TAG}, $3 = Api_mode, $4 = purpose
-gawk '
-	BEGIN {
-		FS = "\t";
-	}
-	!/^[ \t]*#/ {
-		printf "EXTERN_MSC int GMT_%s (void *api_ctrl, int mode, void *args);\n", $1;
-	}' ${FILE_MODULEINFO} >> ${FILE_GMT_MODULE_H}
-
-cat << EOF >> ${FILE_GMT_MODULE_H}
-
 /* Pretty print all module names and their purposes */
 EXTERN_MSC void gmt_${L_TAG}module_show_all (struct GMTAPI_CTRL *API);
 

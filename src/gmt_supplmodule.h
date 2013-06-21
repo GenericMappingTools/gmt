@@ -24,50 +24,6 @@ extern "C" {
 /* Declaration modifiers for DLL support (MSC et al) */
 #include "declspec.h"
 
-/* external array with program parameters for all GMT modules */
-EXTERN_MSC struct Gmt_moduleinfo g_supplmodule[];
-
-EXTERN_MSC int GMT_backtracker (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_dimfilter (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_gmtgravmag3d (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_gravfft (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_grdgravmag3d (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_grdpmodeler (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_grdredpol (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_grdrotater (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_grdseamount (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_grdspotter (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_gshhg (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_hotspotter (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_img2grd (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_mgd77convert (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_mgd77info (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_mgd77list (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_mgd77magref (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_mgd77manage (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_mgd77path (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_mgd77sniffer (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_mgd77track (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_originator (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_pscoupe (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_psmeca (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_pspolar (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_pssegy (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_pssegyz (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_psvelo (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_rotconverter (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_segy2grd (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_x2sys_binlist (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_x2sys_cross (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_x2sys_datalist (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_x2sys_get (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_x2sys_init (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_x2sys_list (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_x2sys_merge (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_x2sys_put (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_x2sys_report (void *api_ctrl, int mode, void *args);
-EXTERN_MSC int GMT_x2sys_solve (void *api_ctrl, int mode, void *args);
-
 /* Pretty print all module names and their purposes */
 EXTERN_MSC void gmt_supplmodule_show_all (struct GMTAPI_CTRL *API);
 
