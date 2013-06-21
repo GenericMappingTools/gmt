@@ -119,13 +119,13 @@ int MGD77_nc_status (struct GMT_CTRL *GMT, int status)
 
 static inline void MGD77_Set_Home (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F)
 {
-	char *this = NULL;
+	char *this_c = NULL;
 
 	if (F->MGD77_HOME) return;	/* Already set elsewhere */
 
-	if ((this = getenv ("MGD77_HOME")) != NULL) {	/* MGD77_HOME was set */
-		F->MGD77_HOME = GMT_memory (GMT, NULL, strlen (this) + 1, char);
-		strcpy (F->MGD77_HOME, this);
+	if ((this_c = getenv ("MGD77_HOME")) != NULL) {	/* MGD77_HOME was set */
+		F->MGD77_HOME = GMT_memory (GMT, NULL, strlen (this_c) + 1, char);
+		strcpy (F->MGD77_HOME, this_c);
 	}
 	else {	/* Set default path via GMT->session.SHAREDIR */
 		F->MGD77_HOME = GMT_memory (GMT, NULL, strlen (GMT->session.SHAREDIR) + 7, char);

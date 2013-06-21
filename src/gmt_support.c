@@ -5842,9 +5842,9 @@ unsigned int GMT_non_zero_winding (struct GMT_CTRL *GMT, double xp, double yp, d
 	return ((crossing_count) ? GMT_INSIDE: GMT_OUTSIDE);
 }
 
-uint64_t gmt_getprevpoint (double plon, double lon[], uint64_t n, uint64_t this)
+uint64_t gmt_getprevpoint (double plon, double lon[], uint64_t n, uint64_t this_p)
 {	/* Return the previous point that does NOT equal plon */
-	uint64_t ip = (this == 0) ? n - 2 : this - 1;	/* Previous point (-2 because last is a duplicate of first) */
+	uint64_t ip = (this_p == 0) ? n - 2 : this_p - 1;	/* Previous point (-2 because last is a duplicate of first) */
 	while (doubleAlmostEqualZero (plon, lon[ip]) || doubleAlmostEqual (fabs(plon - lon[ip]), 360.0)) {	/* Same as plon */
 		if (ip == 0)
 			ip = n - 2;

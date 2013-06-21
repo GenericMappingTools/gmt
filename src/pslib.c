@@ -320,7 +320,7 @@ int PSL_beginsession (struct PSL_CTRL *PSL, unsigned int search, char *sharedir,
 	 * 		PSL_SHAREDIR and PSL_USERDIR; otherwise we assign then from the args (even if NULL).
 	 */
 	int i;
-	char *this = NULL;
+	char *this_c = NULL;
 
 	/* Initialize the PSL structure to default values unless already set */
 
@@ -336,13 +336,13 @@ int PSL_beginsession (struct PSL_CTRL *PSL, unsigned int search, char *sharedir,
 
 	/* Determine SHAREDIR (directory containing PSL and pattern subdirectories)
 	 * but only if not passed via argument list */
-	if ((this = sharedir) == NULL) {
-	 	if (search && (this = getenv ("PSL_SHAREDIR")) == NULL) {
+	if ((this_c = sharedir) == NULL) {
+	 	if (search && (this_c = getenv ("PSL_SHAREDIR")) == NULL) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Error: Could not locate PSL_SHAREDIR.\n");
 			PSL_exit (EXIT_FAILURE);
 		}
 	}
-	PSL->internal.SHAREDIR = strdup (this);
+	PSL->internal.SHAREDIR = strdup (this_c);
 	DOS_path_fix (PSL->internal.SHAREDIR);
 	if (access (PSL->internal.SHAREDIR, R_OK)) {
 		PSL_message (PSL, PSL_MSG_FATAL, "Error: Could not access PSL_SHAREDIR %s.\n", PSL->internal.SHAREDIR);
@@ -351,9 +351,9 @@ int PSL_beginsession (struct PSL_CTRL *PSL, unsigned int search, char *sharedir,
 	
 	/* Determine USERDIR (directory containing user replacements contents in SHAREDIR) */
 
-	if ((this = userdir) == NULL && search) this = getenv ("PSL_USERDIR");
-	if (this) {	/* Did find a user dir */
-		PSL->internal.USERDIR = strdup (this);
+	if ((this_c = userdir) == NULL && search) this_c = getenv ("PSL_USERDIR");
+	if (this_c) {	/* Did find a user dir */
+		PSL->internal.USERDIR = strdup (this_c);
 		DOS_path_fix (PSL->internal.USERDIR);
 		if (access (PSL->internal.USERDIR, R_OK)) {
 			PSL_message (PSL, PSL_MSG_FATAL, "Warning: Could not access PSL_USERDIR %s.\n", PSL->internal.USERDIR);

@@ -352,12 +352,12 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 	FILE *fp = NULL;
 	struct EULER *e = NULL;
 	char buffer[GMT_BUFSIZ], A[GMT_TEXT_LEN64], B[GMT_TEXT_LEN64], txt[GMT_TEXT_LEN64], comment[GMT_BUFSIZ];
-	char Plates[GMT_BUFSIZ], Rotations[GMT_BUFSIZ], *this = NULL;
+	char Plates[GMT_BUFSIZ], Rotations[GMT_BUFSIZ], *this_c = NULL;
 	double K[9];
 
 	if (spotter_GPlates_pair (file)) {	/* Got PLATE_A-PLATE_B specification for GPlates lookup, e.g., IND-CIB */
 		sscanf (file, "%[^-]-%s", A, B);
-		strncpy (Plates, ((this = getenv ("GPLATES_PLATES")) != NULL) ? this : GPLATES_PLATES, GMT_BUFSIZ);
+		strncpy (Plates, ((this_c = getenv ("GPLATES_PLATES")) != NULL) ? this_c : GPLATES_PLATES, GMT_BUFSIZ);
 #ifdef WIN32
 		DOS_path_fix (Plates);
 #endif
@@ -383,7 +383,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 			GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 		}
 		/* OK, here we have the two IDs */
-		strncpy (Rotations, ((this = getenv ("GPLATES_ROTATIONS")) != NULL) ? this : GPLATES_ROTATIONS, GMT_BUFSIZ);
+		strncpy (Rotations, ((this_c = getenv ("GPLATES_ROTATIONS")) != NULL) ? this_c : GPLATES_ROTATIONS, GMT_BUFSIZ);
 #ifdef WIN32
 		DOS_path_fix (Rotations);
 #endif
