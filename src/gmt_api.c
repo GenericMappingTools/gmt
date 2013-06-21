@@ -164,6 +164,7 @@ EXTERN_MSC double GMT_fft_kr (uint64_t k, struct GMT_FFT_WAVENUMBER *K);
 EXTERN_MSC void gmt_fft_save2d (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direction, struct GMT_FFT_WAVENUMBER *K);
 EXTERN_MSC void gmt_fft_taper (struct GMT_CTRL *GMT, struct GMT_GRID *Grid, struct GMT_FFT_INFO *F);
 EXTERN_MSC void gmt_fft_Singleton_list (struct GMTAPI_CTRL *API);
+EXTERN_MSC void *dlopen_special();	/* See gmt_module.c */
 
 #define GMTAPI_MAX_ID 999999	/* Largest integer that will fit in the %06d format */
 
@@ -324,22 +325,27 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 	}
 	API->n_shared_libs = 2U + n_custom_libs;	/* Total number of shared libraries */
 	API->lib = GMT_memory (API->GMT, NULL, API->n_shared_libs, struct Gmt_libinfo);
-	/* Load in the GMT core library by default */
+	
+	/* 1. Load in the GMT core library by default */
+	/* Note: To extract symbols from the currently executing process we need to load it as a special library.
+	 * This is done by passing NULL under Linux and by calling GetModuleHandleEx under Windows, hence we 
+	 * use the dlopen_special call which is defined in gmt_module.c */
+	
 	GMT_Report (API, GMT_MSG_DEBUG, "Load GMT shared library: core\n");
 	API->lib[0].name = strdup ("core");
-	if ((API->lib[0].handle = dlopen (NULL, 0)) == NULL) {
+	if ((API->lib[0].handle = dlopen_special ()) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error loading core GMT shared library: %s\n", dlerror());
 		GMT_exit (API->do_not_exit, EXIT_FAILURE);
 	}
 	/* Add the GMT supplemental library to the list of libraries to consider [we dont know if we have it yet] */
-	GMT_Report (API, GMT_MSG_DEBUG, "Load GMT shared library: suppl\n");
+	GMT_Report (API, GMT_MSG_DEBUG, "Preparing GMT shared supplemental library: \n", API->lib[1].path);
 	API->lib[1].name = strdup ("suppl");	/* This will change once dynamic loading is used */
 
 	/* Add any GMT custom library to the list of libraries to consider */
 	for (k = 2; k < API->n_shared_libs; k++) {
 		GMT_strtok (API->GMT->session.CUSTOM_LIBS, ",", &pos, text);
 		API->lib[k].path = strdup (text);
-		GMT_Report (API, GMT_MSG_DEBUG, "Load GMT shared library: \n", API->lib[k].path);
+		GMT_Report (API, GMT_MSG_DEBUG, "Preparing GMT shared library: \n", API->lib[k].path);
 		p = 0;	while (text[p] && text[p] != '.') p++;	/* Find the period in the name */
 		text[p] = '\0';	/* Chop off library extension */
 		p = (strncmp (text, "lib", 3)) ? 0 : 3;	/* Do we have a leading "lib" or not ? */
