@@ -2,31 +2,34 @@
 x2sys_list
 **********
 
-x2sys\_list - Extract subset from crossover data base
+x2sys_list - Extract subset from crossover data base
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**x2sys\_list** **-C**\ *column* **-T**\ *TAG* [ *coedbase.txt* ] [
-**-A**\ *asymm\_max* ] [ **-E** ] [ **-F**\ *acdhiInNtTvwxyz* ] [
-**-I**\ [*list*\ ] ] [ **-L**\ [*corrtable*\ ] ] [ **-N**\ *nx\_min* ] [
-**-Qe**\ \|\ **i** ] [ **-R**\ *west*/*east*/*south*/*north*\ [**r**\ ]
-] [ **-S**\ *track* ] [ **-V**\ [*level*\ ] ] [ **-W**\ [*list*\ ] ] [
-**-bo**\ [*ncols*\ ][*type*\ ] ]
+**x2sys_list** **-C**\ *column* **-T**\ *TAG* [ *coedbase.txt* ]
+[ **-A**\ *asymm_max* ] [ **-E** ] [ **-F**\ *acdhiInNtTvwxyz* ]
+[ **-I**\ [*list*] ] [ **-L**\ [*corrtable*] ] [ **-N**\ *nx_min* ]
+[ **-Qe**\ \|\ **i** ]
+[ |SYN_OPT-R| ]
+[ **-S**\ *track* ]
+[ |SYN_OPT-V| ]
+[ **-W**\ [*list*] ]
+[ **-bo**\ [*ncols*][*type*] ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
-**x2sys\_list** will read the crossover ASCII data base *coedbase.txt*
+**x2sys_list** will read the crossover ASCII data base *coedbase.txt*
 (or *stdin*) and extract a subset of the crossovers based on the other
 arguments. The output may be ASCII or binary.
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 **-C**\ *column*
     Specify which data column you want to process. Crossovers related to
@@ -34,17 +37,17 @@ arguments. The output may be ASCII or binary.
 
 .. include:: explain_tag.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 *coedbase.txt*
     The name of the input ASCII crossover error data base as produced by
-    **x2sys\_cross**. If not given we read standard input instead.
-**-A**\ *asymm\_max*
+    **x2sys_cross**. If not given we read standard input instead.
+**-A**\ *asymm_max*
     Specifies maximum asymmetry in the distribution of crossovers
     relative to the mid point in time (or distance, if not time is
-    available). Asymmetry is computed as (n\_right - n\_left)/(n\_right
-    + n\_left), referring the the number of crossovers that falls in the
+    available). Asymmetry is computed as (n_right - n_left)/(n_right
+    + n_left), referring the the number of crossovers that falls in the
     left or right half of the range. Symmetric distributions will have
     values close to zero. If specified, we exclude tracks whose
     asymmetry exceeds the specify cutoff in absolute value [1, i.e.,
@@ -77,7 +80,7 @@ arguments. The output may be ASCII or binary.
     specified track only (except for **n**,\ **N** which then refers to
     the other track). The sign convention for **c**,\ **i** is track one
     minus track two (lexically sorted). Time intervals will be returned
-    according to the **TIME\_UNIT** GMT defaults setting.
+    according to the **TIME_UNIT** GMT defaults setting.
 **-I**\ [*list*\ ]
     Name of ASCII file with a list of track names (one per record) that
     should be excluded from consideration [Default includes all tracks].
@@ -85,10 +88,10 @@ arguments. The output may be ASCII or binary.
     Apply optimal corrections to the chosen observable. Append the
     correction table to use [Default uses the correction table
     *TAG*\ \_corrections.txt which is expected to reside in the
-    **$X2SYS\_HOME**/*TAG* directory]. For the format of this file, see
-    **x2sys\_solve**.
-**-N**\ *nx\_min*
-    Only report data from pairs that generated at least *nx\_min*
+    **$X2SYS_HOME**/*TAG* directory]. For the format of this file, see
+    **x2sys_solve**.
+**-N**\ *nx_min*
+    Only report data from pairs that generated at least *nx_min*
     crossovers between them [use all pairs].
 **-Qe**\ \|\ **i**
     Append **e** for external crossovers or **i** for internal
@@ -118,29 +121,33 @@ arguments. The output may be ASCII or binary.
 
 .. include:: ../../explain_help.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
 To find all the magnetic crossovers associated with the tag MGD77 from
-the file COE\_data.txt, restricted to occupy a certain region in the
+the file COE_data.txt, restricted to occupy a certain region in the
 south Pacific, and return location, time, and crossover value, try
 
-    x2sys\_list COE\_data.txt -V -TMGD77 -R180/240/-60/-30 -Cmag -Fxytz > mag\_coe.txt
+   ::
+
+    gmt x2sys_list COE_data.txt -V -TMGD77 -R180/240/-60/-30 -Cmag -Fxytz > mag_coe.txt
 
 To find all the faa crossovers globally that involves track 12345678 and
 output time since start of the year, using a binary double precision
 format, try
 
-    x2sys\_list COE\_data.txt -V -TMGD77 -Cfaa -S12345678 -FTz -bod > faa\_coe.b
+   ::
 
-`See Also <#toc7>`_
--------------------
+    gmt x2sys_list COE_data.txt -V -TMGD77 -Cfaa -S12345678 -FTz -bod > faa_coe.b
 
-`x2sys\_binlist <x2sys_binlist.html>`_,
-`x2sys\_cross <x2sys_cross.html>`_,
-`x2sys\_datalist <x2sys_datalist.html>`_,
-`x2sys\_get <x2sys_get.html>`_,
-`x2sys\_init <x2sys_init.html>`_,
-`x2sys\_put <x2sys_put.html>`_,
-`x2sys\_report <x2sys_report.html>`_,
-`x2sys\_solve <x2sys_solve.html>`_
+See Also
+--------
+
+`x2sys_binlist <x2sys_binlist.html>`_,
+`x2sys_cross <x2sys_cross.html>`_,
+`x2sys_datalist <x2sys_datalist.html>`_,
+`x2sys_get <x2sys_get.html>`_,
+`x2sys_init <x2sys_init.html>`_,
+`x2sys_put <x2sys_put.html>`_,
+`x2sys_report <x2sys_report.html>`_,
+`x2sys_solve <x2sys_solve.html>`_

@@ -2,54 +2,56 @@
 x2sys_cross
 ***********
 
-**x2sys\_cross** - Calculate crossovers between track data files
+**x2sys_cross** - Calculate crossovers between track data files
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**x2sys\_cross** *track(s)* **-T**\ *TAG* [ **-A**\ *combi.lis* ] [
-**-C**\ [*runtimes*\ ] ] [ **-Il**\ \|\ **a**\ \|\ **c** ] [
-**-J**\ *parameters* ] [ **-Qe**\ \|\ **i** ] [
-**-Sl**\ \|\ **u**\ \|\ **h**\ *speed* ] [ **-V**\ [*level*\ ] ] [
-**-W**\ *size* ] [ **-Z** ] [ **-bo**\ [*ncols*\ ][*type*\ ] ]
+**x2sys_cross** *track(s)* **-T**\ *TAG* [ **-A**\ *combi.lis* ]
+[ **-C**\ [*runtimes*] ] [ **-Il**\ \|\ **a**\ \|\ **c** ]
+[ **-J**\ *parameters* ] [ **-Qe**\ \|\ **i** ]
+[ **-Sl**\ \|\ **u**\ \|\ **h**\ *speed* ]
+[ |SYN_OPT-V| ]
+[ **-W**\ *size* ] [ **-Z** ]
+[ **-bo**\ [*ncols*\ ][*type*\ ] ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
-**x2sys\_cross** is used to determine all intersections between
+**x2sys_cross** is used to determine all intersections between
 ("external cross-overs") or within ("internal cross-overs") tracks
 (Cartesian or geographic), and report the time, position, distance along
 track, heading and speed along each track segment, and the crossover
 error (COE) and mean values for all observables. The names of the tracks
-are passed on the command line. By default, **x2sys\_cross** will look
+are passed on the command line. By default, **x2sys_cross** will look
 for both external and internal COEs. As an option, you may choose to
 project all data using one of the map-projections prior to calculating
 the COE.
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 .. include:: explain_track.rst_
 .. include:: explain_tag.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-A**\ *combi.lis*
     Only process the pair-combinations found in the file *combi.lis*
     [Default process all possible combinations among the specified
-    files]. The file *combi.lis* created by x2sys\_get -L option
+    files]. The file *combi.lis* created by x2sys_get -L option
 **-C**\ [*runtimes*\ ]
     Compute and append the processing run-time for each pair to the
     progress message. Append a filename to save these run-times to file.
     The idea here is to use the knowledge of run-times to split the main
     process in a number of sub-processes that can each be launched in a
     different processor of your multi-core machine. See the MATLAB
-    function *split\_file4coes.m* that lives in the x2sys supplement
+    function *split_file4coes.m* that lives in the x2sys supplement
     source code.
 **-Il**\ \|\ **a**\ \|\ **c**
     Sets the interpolation mode for estimating values at the crossover.
@@ -99,13 +101,13 @@ the COE.
 
 .. include:: ../../explain_help.rst_
 
-`Remarks <#toc6>`_
-------------------
+Remarks
+-------
 
 The COEs found are printed out to standard output in ASCII format
 (unless **-bo**\ [*ncols*\ ][*type*\ ] is set). When ASCII is chosen,
 the output format depends on whether or not old-style XOVER output
-(**-L**) has been selected [See the **x\_over** man page for more
+(**-L**) has been selected [See the **x_over** man page for more
 details]. If ASCII, then the first record contains the name of the tag
 used, the second records specifies the exact command line used for this
 run, and the third record contains the names of each column. For each
@@ -122,36 +124,40 @@ spline is used instead of the natural cubic spline, since it is less
 sensitive to outliers that tend to introduce wild oscillations in the
 interpolation.
 
-`Sign Convention <#toc7>`_
---------------------------
+Sign Convention
+---------------
 
-If track\_a and track\_b are passed on the command line, then the COE
-value is Value (track\_a) - Value (track\_b).
+If track_a and track_b are passed on the command line, then the COE
+value is Value (track_a) - Value (track_b).
 
-`Precision And Format <#toc8>`_
--------------------------------
+Precision And Format
+--------------------
 
 The output format of individual columns are controlled by
-**FORMAT\_FLOAT\_OUT** except for geographic coordinates
-(**FORMAT\_GEO\_OUT**) and absolute calendar time
-(**FORMAT\_DATE\_OUT**, **FORMAT\_CLOCK\_OUT**). Make sure these are set
+**FORMAT_FLOAT_OUT** except for geographic coordinates
+(**FORMAT_GEO_OUT**) and absolute calendar time
+(**FORMAT_DATE_OUT**, **FORMAT_CLOCK_OUT**). Make sure these are set
 to give you enough significant digits to achieve the desired precision.
 
-`Examples <#toc9>`_
--------------------
+Examples
+--------
 
 To compute all internal crossovers in the gmt-formatted file c2104.gmt,
 and using the tag GMT, try
 
-    x2sys\_cross c2104.gmt -TGMT > c2104.d
+   ::
+
+    gmt x2sys_cross c2104.gmt -TGMT > c2104.d
 
 To find the crossover locations with bathymetry between the two MGD77
 files A13232.mgd77 and A99938.mgd77, using the MGD77 tag, try
 
-    x2sys\_cross A13232.mgd77 A99938.mgd77 -Qe -TMGD77 > crossovers.d
+   ::
 
-`References <#toc10>`_
-----------------------
+    gmt x2sys_cross A13232.mgd77 A99938.mgd77 -Qe -TMGD77 > crossovers.d
+
+References
+----------
 
 Wessel, P. (2010), Tools for analyzing intersecting tracks: the x2sys
 package. *Computers and Geosciences*, **36**, 348-354.
@@ -159,15 +165,15 @@ package. *Computers and Geosciences*, **36**, 348-354.
 Wessel, P. (1989), XOVER: A cross-over error detector for track data,
 *Computers and Geosciences*, **15**\ (3), 333-346.
 
-`See Also <#toc11>`_
---------------------
+See Also
+--------
 
-`GMT <GMT.html>`_, `x2sys\_binlist <x2sys_binlist.html>`_,
-`x2sys\_init <x2sys_init.html>`_,
-`x2sys\_datalist <x2sys_datalist.html>`_,
-`x2sys\_get <x2sys_get.html>`_,
-`x2sys\_list <x2sys_list.html>`_,
-`x2sys\_put <x2sys_put.html>`_,
-`x2sys\_report <x2sys_report.html>`_,
-`x2sys\_solve <x2sys_solve.html>`_,
-`x\_over <x_over.html>`_
+`GMT <GMT.html>`_, `x2sys_binlist <x2sys_binlist.html>`_,
+`x2sys_init <x2sys_init.html>`_,
+`x2sys_datalist <x2sys_datalist.html>`_,
+`x2sys_get <x2sys_get.html>`_,
+`x2sys_list <x2sys_list.html>`_,
+`x2sys_put <x2sys_put.html>`_,
+`x2sys_report <x2sys_report.html>`_,
+`x2sys_solve <x2sys_solve.html>`_,
+`x_over <x_over.html>`_

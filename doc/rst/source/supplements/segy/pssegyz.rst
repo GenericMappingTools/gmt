@@ -4,27 +4,30 @@ pssegyz
 
 pssegyz - Create imagemasked postscript from SEGY file
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
 **pssegyz** *SEGYfile* **-J**\ *parameters*
 **-Jz**\ \|\ **Z**\ *parameters*
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ]
-**-D**\ *deviation* **-F**\ [*rgb*\ \|\ *gray*] **-W** [ **-B**\ *bias*
-] [ **-C**\ *clip* ] [ **-I** ] [ **-K** ] [ **-L**\ *nsamp* ] [
-**-M**\ *ntrace* ] [ **-N** ] [ **-O** ] [ **-P** ] [
-**-S**\ *header\_x*/*header\_y* ] [ **-U**\ *redvel* ] [
-**-V**\ [*level*\ ] ] [ **-X**\ *scale* ] [ **-Y**\ *sample\_int* ] [
-**-Z** ] [
-**-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
-] [ **-t**\ [*transp*\ ] ]
+|SYN_OPT-Rz|
+**-D**\ *deviation* **-F**\ [*rgb*\ \|\ *gray*] **-W**
+[ **-B**\ *bias* ]
+[ **-C**\ *clip* ] [ **-I** ] [ **-K** ] [ **-L**\ *nsamp* ]
+[ **-M**\ *ntrace* ] [ **-N** ] [ **-O** ] [ **-P** ]
+[ **-S**\ *header_x*/*header_y* ]
+[ |SYN_OPT-U| ]
+[ |SYN_OPT-V| ]
+[ **-X**\ *scale* ] [ **-Y**\ *sample_int* ]
+[ **-Z** ]
+[ |SYN_OPT-p| ]
+[ |SYN_OPT-t| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **pssegyz** reads a native (IEEE) format SEGY file and produces a
 *PostScript* image of the seismic data. The *imagemask* operator is used
@@ -50,8 +53,8 @@ text header, which is ignored, 400 byte binary reel header, and 240 byte
 header for each trace) with samples as native real\*4 (IEEE real on all
 the platforms to which I have access)
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 *SEGYfile*
     Seismic data set to be imaged
@@ -73,8 +76,8 @@ the platforms to which I have access)
 
 You *must* specify at least one of **-W** and **-F**.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 **-A**
     Flip the default byte-swap state (default assumes data have a
@@ -101,7 +104,7 @@ You *must* specify at least one of **-W** and **-F**.
 .. include:: ../../explain_-O.rst_
 .. include:: ../../explain_-P.rst_
 
-**-S**\ *header\_x*/*header\_y*
+**-S**\ *header_x*/*header_y*
     Read trace locations from trace headers: header is either c for CDP,
     o for offset, b<num> to read a long starting at byte <num> in the
     header (first byte corresponds to num=0), or a number to fix the
@@ -118,7 +121,7 @@ You *must* specify at least one of **-W** and **-F**.
 
 **-X**\ *scale*
     Multiply trace locations by scale before plotting.
-**-Y**\ *sample\_int*
+**-Y**\ *sample_int*
     Override sample interval in reel header.
 **-Z**
     Do not plot traces with zero rms amplitude.
@@ -129,17 +132,20 @@ You *must* specify at least one of **-W** and **-F**.
 .. include:: ../../explain_-t.rst_
 .. include:: ../../explain_help.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
 To plot the SEGY file wa1.segy with normalized traces plotted at true
 offset locations, clipped at +-3 and with wiggle trace and positive
 variable area shading in black, use
 
-    pssegyz wa1.segy -JX5i/-5i -D1 -Jz0.05i -E180/5 -R0/100/0/10/0/10 -C3 -N -So -W -Fblack > segy.ps
+   ::
 
-`Bugs <#toc7>`_
----------------
+    pssegyz wa1.segy -JX5i/-5i -D1 -Jz0.05i -E180/5 -R0/100/0/10/0/10 \
+            -C3 -N -So -W -Fblack > segy.ps
+
+Bugs
+----
 
 Variable area involves filling four-sided figures of distressing
 generality. I *know* that some of the more complex degenerate cases are
@@ -147,7 +153,7 @@ not dealt with correctly or at all; the incidence of such cases
 increases as viewing angles become more oblique, and particularly as the
 viewing elevation increases. Wiggle-trace plotting is not affected.
 
-`See Also <#toc8>`_
--------------------
+See Also
+--------
 
 `GMT <GMT.html>`_, `pssegy <pssegy.html>`_

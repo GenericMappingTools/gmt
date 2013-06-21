@@ -4,32 +4,34 @@ x2sys_solve
 
 x2sys_solve - Determine least-squares systematic correction from crossovers
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**x2sys\_solve** **-C**\ *column* **-T**\ *TAG* **-E**\ *mode* [
-*COE\_list.d* ] [ **-V**\ [*level*\ ] ] [ **-W[u]** ] [
-**-bi**\ [*ncols*\ ][*type*\ ] ]
+**x2sys_solve** **-C**\ *column* **-T**\ *TAG* **-E**\ *mode*
+[ *COE\_list.d* ]
+[ |SYN_OPT-V| ]
+[ **-W[u]** ]
+[ **-bi**\ [*ncols*\ ][*type*] ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
-**x2sys\_solve** will use the supplied crossover information to solve
+**x2sys_solve** will use the supplied crossover information to solve
 for systematic corrections that can then be applied per track to improve
 data quality. Several systematic corrections can be solved for using a
 least-squares approach. Note: Only one data column can be processed at
 the time.
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
-*COE\_list.d*
+*COE_list.d*
     Name of file with the required crossover columns as produced by
-    **x2sys\_list**. NOTE: If **-bi**\ [*ncols*\ ][*type*\ ] is used
+    **x2sys_list**. NOTE: If **-bi**\ [*ncols*\ ][*type*\ ] is used
     then the first two columns are expected to hold the integer track
     IDs; otherwise we expect those columns to hold the text string names
     of the two tracks. If no file is given we will read from *stdin*.
@@ -39,7 +41,7 @@ the time.
 **-C**\ *column*
     Specify which data column you want to process. Needed for proper
     formatting of the output correction table and must match the same
-    option used in **x2sys\_list** when preparing the input data.
+    option used in **x2sys_list** when preparing the input data.
 **-E**\ *mode*
     The correction type you wish to model. Choose among the following
     functions `*f*\ (*p*) <f.p.html>`_ , where *p* are the *m*
@@ -69,8 +71,8 @@ the time.
     (linear drift; *t0* is the start time of the track); records must
     contain cruise ID1, ID2, t1-t0, t2-t0, COE.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
@@ -86,42 +88,46 @@ the time.
 
 .. include:: ../../explain_help.rst_
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
 To fit a simple bias offset to faa for all tracks under the MGD77 tag, try
 
-    x2sys\_list COE\_data.txt -V -TMGD77 -Cfaa -Fnc > faa\_coe.txt
+   ::
 
-    x2sys\_solve faa\_coe.txt -V -TMGD77 -Cfaa -Ec > coe\_table.txt
+    gmt x2sys_list COE_data.txt -V -TMGD77 -Cfaa -Fnc > faa_coe.txt
+    gmt x2sys_solve faa_coe.txt -V -TMGD77 -Cfaa -Ec > coe_table.txt
 
 To fit a faa linear drift with time instead, try
 
-    x2sys\_list COE\_data.txt -V -TMGD77 -Cfaa -FnTc > faa\_coe.txt
+   ::
 
-    x2sys\_solve faa\_coe.txt -V -TMGD77 -Cfaa -Et > coe\_table.txt
+    gmt x2sys_list COE_data.txt -V -TMGD77 -Cfaa -FnTc > faa_coe.txt
+    gmt x2sys_solve faa_coe.txt -V -TMGD77 -Cfaa -Et > coe_table.txt
 
 To estimate heading corrections based on magnetic crossovers associated
-with the tag MGD77 from the file COE\_data.txt, try
+with the tag MGD77 from the file COE_data.txt, try
 
-    x2sys\_list COE\_data.txt -V -TMGD77 -Cmag -Fnhc > mag\_coe.txt
+   ::
 
-    x2sys\_solve mag\_coe.txt -V -TMGD77 -Cmag -Eh > coe\_table.txt
+    gmt x2sys_list COE_data.txt -V -TMGD77 -Cmag -Fnhc > mag_coe.txt
+    gmt x2sys_solve mag_coe.txt -V -TMGD77 -Cmag -Eh > coe_table.txt
 
 To estimate unit scale corrections based on bathymetry crossovers, try
 
-    x2sys\_list COE\_data.txt -V -TMGD77 -Cdepth -Fnz > depth\_coe.txt
+   ::
 
-    x2sys\_solve depth\_coe.txt -V -TMGD77 -Cdepth -Es > coe\_table.txt
+    gmt x2sys_list COE_data.txt -V -TMGD77 -Cdepth -Fnz > depth_coe.txt
+    gmt x2sys_solve depth_coe.txt -V -TMGD77 -Cdepth -Es > coe_table.txt
 
-`See Also <#toc7>`_
--------------------
+See Also
+--------
 
-`x2sys\_binlist <x2sys_binlist.html>`_,
-`x2sys\_cross <x2sys_cross.html>`_,
-`x2sys\_datalist <x2sys_datalist.html>`_,
-`x2sys\_get <x2sys_get.html>`_,
-`x2sys\_init <x2sys_init.html>`_,
-`x2sys\_list <x2sys_list.html>`_,
-`x2sys\_put <x2sys_put.html>`_,
-`x2sys\_report <x2sys_report.html>`_
+`x2sys_binlist <x2sys_binlist.html>`_,
+`x2sys_cross <x2sys_cross.html>`_,
+`x2sys_datalist <x2sys_datalist.html>`_,
+`x2sys_get <x2sys_get.html>`_,
+`x2sys_init <x2sys_init.html>`_,
+`x2sys_list <x2sys_list.html>`_,
+`x2sys_put <x2sys_put.html>`_,
+`x2sys_report <x2sys_report.html>`_

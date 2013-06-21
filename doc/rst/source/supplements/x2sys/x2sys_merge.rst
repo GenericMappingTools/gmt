@@ -2,22 +2,21 @@
 x2sys_merge
 ***********
 
-x2sys\_merge - Merge an updated COEs table (smaller) into the main table
-(bigger)
+x2sys_merge - Merge an updated COEs table (smaller) into the main table (bigger)
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**x2sys\_merge** **-A**\ *main\_COElist.d* **-M**\ *new\_COElist.d*
+**x2sys_merge** **-A**\ *main_COElist.d* **-M**\ *new_COElist.d*
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
-**x2sys\_merge** will read two crossovers data base and output the
+**x2sys_merge** will read two crossovers data base and output the
 contents of the main one updated with the COEs in the second one. The
 second file should only contain updated COEs relatively to the first
 one. That is, it MUST NOT contain any new two tracks intersections (This
@@ -26,35 +25,37 @@ good reason like file editing NAV correction or whatever, one had to
 recompute only the COEs between the edited files and the rest of the
 database.
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
-**-A**\ *main\_COElist.d*
-    Specify the file *main\_COElist.d* with the main crossover error
+**-A**\ *main_COElist.d*
+    Specify the file *main_COElist.d* with the main crossover error
     data base.
-**-M**\ *new\_COElist.d*
-    Specify the file *new\_COElist.d* with the newly computed crossover
+**-M**\ *new_COElist.d*
+    Specify the file *new_COElist.d* with the newly computed crossover
     error data base.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
-`Examples <#toc6>`_
--------------------
+Examples
+--------
 
-To update the main COE\_data.txt with the new COEs estimations saved in
-the smaller COE\_fresh.txt, try
+To update the main COE_data.txt with the new COEs estimations saved in
+the smaller COE_fresh.txt, try
 
-    x2sys\_merge -ACOE\_data.txt -MCOE\_fresh.txt > COE\_updated.txt
+   ::
 
-`See Also <#toc7>`_
--------------------
+    gmt x2sys_merge -ACOE_data.txt -MCOE_fresh.txt > COE_updated.txt
 
-`x2sys\_binlist <x2sys_binlist.html>`_,
-`x2sys\_cross <x2sys_cross.html>`_,
-`x2sys\_datalist <x2sys_datalist.html>`_,
-`x2sys\_get <x2sys_get.html>`_,
-`x2sys\_init <x2sys_init.html>`_,
-`x2sys\_list <x2sys_list.html>`_,
-`x2sys\_put <x2sys_put.html>`_,
-`x2sys\_report <x2sys_report.html>`_
+See Also
+--------
+
+`x2sys_binlist <x2sys_binlist.html>`_,
+`x2sys_cross <x2sys_cross.html>`_,
+`x2sys_datalist <x2sys_datalist.html>`_,
+`x2sys_get <x2sys_get.html>`_,
+`x2sys_init <x2sys_init.html>`_,
+`x2sys_list <x2sys_list.html>`_,
+`x2sys_put <x2sys_put.html>`_,
+`x2sys_report <x2sys_report.html>`_

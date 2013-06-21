@@ -9,7 +9,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**x2sys\_init** *TAG* **-D**\ *deffile*
+**x2sys_init** *TAG* **-D**\ *deffile*
 [ **-Cc**\ \|\ **f**\ \|\ **g**\ \|\ **e** ] [ **-E**\ *suffix* ] [ **-F** ]
 [ **-Gd**\ \|\ **g** ] [ **-I**\ *dx*\ [/*dy*] ]
 [ **-Nd**\ \|\ **s**\ *unit* ]
@@ -80,7 +80,7 @@ Optional Arguments
     [Default]). If not given we assume the data are Cartesian.
 
 **-I**\ *dx*\ [/*dy*]
-    *x\_inc* [and optionally *y\_inc*] is the grid spacing. Append **m**
+    *x_inc* [and optionally *y_inc*] is the grid spacing. Append **m**
     to indicate minutes or **c** to indicate seconds for geographic
     data. These spacings refer to the binning used in the track
     bin-index data base.
@@ -213,7 +213,7 @@ speeds given in knots, we may run
 
    ::
 
-    x2sys_init LINE -V -G -Dline -Rg -Ce -Ndk -NsN -I1/1 -Etrk
+    gmt x2sys_init LINE -V -G -Dline -Rg -Ce -Ndk -NsN -I1/1 -Etrk
 
 where we have selected LINE to be our x2sys tag. When x2sys tools try to
 read your line data files they will first look in the current directory
@@ -230,7 +230,7 @@ to find it.
 
 **Create tbf file(s):**
     Once the (empty) TAG databases have been initialized we go through a
-    two-step process to populate them. First we run **x2sys\_binlist**
+    two-step process to populate them. First we run **x2sys_binlist**
     on all our track files to create one (or more) multisegment track
     bin-index files (tbf). These contain information on which 1 x 1
     degree bins (or any other blocksize; see **-I**) each track has
@@ -241,7 +241,7 @@ to find it.
 
       ::
 
-       x2sys_binlist -V -TLINE :tracks.lis > tracks.tbf
+       gmt x2sys_binlist -V -TLINE :tracks.lis > tracks.tbf
 
 **Update index data base:**
     Next, the track bin-index files are fed to **x2sys_put** which will
@@ -249,7 +249,7 @@ to find it.
 
       ::
 
-       x2sys_put -V -TLINE tracks.tbf
+       gmt x2sys_put -V -TLINE tracks.tbf
 
 **Search for data:**
     You may now use **x2sys_get** to find all the tracks within a
@@ -259,7 +259,7 @@ to find it.
 
       ::
 
-       x2sys_get -V -TLINE -R20/40/-40/-20 -Fobs1,obs3 > tracks.tbf
+       gmt x2sys_get -V -TLINE -R20/40/-40/-20 -Fobs1,obs3 > tracks.tbf
 
 **MGD77[+] or GMT:**
     Definition files already exist for MGD77 files (both standard ASCII
@@ -272,7 +272,7 @@ to find it.
 
       ::
 
-       x2sys_init MGD77 -V -Dmgd77 -Emgd77 -Rd -Gd -Nsn -I1/1 -Wt900 -Wd5
+       gmt x2sys_init MGD77 -V -Dmgd77 -Emgd77 -Rd -Gd -Nsn -I1/1 -Wt900 -Wd5
 
     where we have chosen a 15 minute (900 sec) or 5 km threshold to
     indicate a data gap and selected knots as the speed; the other steps
@@ -337,10 +337,10 @@ to find it.
 See Also
 --------
 
-`x2sys\_binlist <x2sys_binlist.html>`_,
-`x2sys\_datalist <x2sys_datalist.html>`_,
-`x2sys\_get <x2sys_get.html>`_,
-`x2sys\_list <x2sys_list.html>`_,
-`x2sys\_put <x2sys_put.html>`_,
-`x2sys\_report <x2sys_report.html>`_,
-`x2sys\_solve <x2sys_solve.html>`_
+`x2sys_binlist <x2sys_binlist.html>`_,
+`x2sys_datalist <x2sys_datalist.html>`_,
+`x2sys_get <x2sys_get.html>`_,
+`x2sys_list <x2sys_list.html>`_,
+`x2sys_put <x2sys_put.html>`_,
+`x2sys_report <x2sys_report.html>`_,
+`x2sys_solve <x2sys_solve.html>`_
