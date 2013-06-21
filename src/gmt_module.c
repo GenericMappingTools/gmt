@@ -66,7 +66,7 @@ char *dlerror(void)
 		NULL,
 		error_code,
 		MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), /* Default language */
-		LPTSTR) errstr + len,
+		(LPTSTR) errstr + len,
 		sizeof(errstr) - len,
 		NULL 
 		);
