@@ -1738,7 +1738,7 @@ uint64_t GMT_wesn_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64_t
 	return (m);
 }
 
-uint64_t gmt_radial_boundary_arc (struct GMT_CTRL *GMT, int this, double end_x[], double end_y[], double **xarc, double **yarc) {
+uint64_t gmt_radial_boundary_arc (struct GMT_CTRL *GMT, int this_way, double end_x[], double end_y[], double **xarc, double **yarc) {
 	uint64_t n_arc, k, pt;
 	double az1, az2, d_az, da, xr, yr, da_try, *xx = NULL, *yy = NULL;
 
@@ -1758,7 +1758,7 @@ uint64_t gmt_radial_boundary_arc (struct GMT_CTRL *GMT, int this, double end_x[]
 	GMT_malloc2 (GMT, xx, yy, n_arc, NULL, double);
 	for (k = 1; k <= n_arc; k++) {	/* Create points along arc from first to second crossing point (k-loop excludes the end points) */
 		sincosd (az1 + k * da, &yr, &xr);
-		pt = (this) ? n_arc - k : k - 1;	/* The order we add the arc depends if we exited or entered the inside area */
+		pt = (this_way) ? n_arc - k : k - 1;	/* The order we add the arc depends if we exited or entered the inside area */
 		xx[pt] = GMT->current.proj.r * (1.0 + xr);
 		yy[pt] = GMT->current.proj.r * (1.0 + yr);
 	}
@@ -1791,7 +1791,7 @@ uint64_t gmt_radial_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64
 	uint64_t n = 0, n_arc;
 	unsigned int i, nx;
 	unsigned int sides[4];
-	bool this = false, add_boundary = false;
+	bool this_side = false, add_boundary = false;
 	double xlon[4], xlat[4], xc[4], yc[4], end_x[3], end_y[3], xr, yr;
 	double *xx = NULL, *yy = NULL, *xarc = NULL, *yarc = NULL;
 
@@ -1806,9 +1806,9 @@ uint64_t gmt_radial_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64
 	}
 	nx = 0;
 	for (i = 1; i < np; i++) {
-		this = GMT_map_outside (GMT, lon[i], lat[i]);
+		this_side = GMT_map_outside (GMT, lon[i], lat[i]);
 		if (gmt_map_crossing (GMT, lon[i-1], lat[i-1], lon[i], lat[i], xlon, xlat, xc, yc, sides)) {
-			if (this) {	/* Crossing boundary and leaving circle: Add exit point to the path */
+			if (this_side) {	/* Crossing boundary and leaving circle: Add exit point to the path */
 				if (n == n_alloc) GMT_malloc2 (GMT, xx, yy, n, &n_alloc, double);
 				xx[n] = xc[0];	yy[n] = yc[0];	n++;
 			}
@@ -1816,7 +1816,7 @@ uint64_t gmt_radial_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64
 			nx++;
 			(*total_nx) ++;
 			if (nx >= 2) {	/* Got a pair of entry+exit points */
-				add_boundary = !this;	/* We only add boundary arcs if we first exited and now entered the circle again */
+				add_boundary = !this_side;	/* We only add boundary arcs if we first exited and now entered the circle again */
 			}
 			if (add_boundary) {	/* Crossed twice.  Now add arc between the two crossing points */
 				/* PW: Currently, we make the assumption that the shortest arc is the one we want.  However,
@@ -1825,7 +1825,7 @@ uint64_t gmt_radial_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64
 				 * the circle boundary that lies on the bisector of az1,az2, and see which point lies
 				 * inside the polygon.  This would require that GMT_inonout_sphpol be called.
 				 */
-				if ((n_arc = gmt_radial_boundary_arc (GMT, this, &end_x[nx-2], &end_y[nx-2], &xarc, &yarc)) > 0) {
+				if ((n_arc = gmt_radial_boundary_arc (GMT, this_side, &end_x[nx-2], &end_y[nx-2], &xarc, &yarc)) > 0) {
 					if ((n + n_arc) >= n_alloc) GMT_malloc2 (GMT, xx, yy, n + n_arc, &n_alloc, double);
 					GMT_memcpy (&xx[n], xarc, n_arc, double);	/* Copy longitudes of arc */
 					GMT_memcpy (&yy[n], yarc, n_arc, double);	/* Copy latitudes of arc */
@@ -1835,20 +1835,20 @@ uint64_t gmt_radial_clip (struct GMT_CTRL *GMT, double *lon, double *lat, uint64
 				add_boundary = false;
 				nx -= 2;	/* Done with those two crossings */
 			}
-			if (!this) {	/* Crossing boundary and entering circle: Add entry point to the path */
+			if (!this_side) {	/* Crossing boundary and entering circle: Add entry point to the path */
 				if (n == n_alloc) GMT_malloc2 (GMT, xx, yy, n, &n_alloc, double);
 				xx[n] = xc[0];	yy[n] = yc[0];	n++;
 			}
 		}
 		GMT_geo_to_xy (GMT, lon[i], lat[i], &xr, &yr);
-		if (!this) {	/* Only add points actually inside the map to the path */
+		if (!this_side) {	/* Only add points actually inside the map to the path */
 			if (n == n_alloc) GMT_malloc2 (GMT, xx, yy, n, &n_alloc, double);
 			xx[n] = xr;	yy[n] = yr;	n++;
 		}
 	}
 
 	if (nx == 2) {	/* Must close polygon by adding boundary arc */
-		if ((n_arc = gmt_radial_boundary_arc (GMT, this, end_x, end_y, &xarc, &yarc)) > 0) {
+		if ((n_arc = gmt_radial_boundary_arc (GMT, this_side, end_x, end_y, &xarc, &yarc)) > 0) {
 			if ((n + n_arc) >= n_alloc) GMT_malloc2 (GMT, xx, yy, n + n_arc, &n_alloc, double);
 			GMT_memcpy (&xx[n], xarc, n_arc, double);	/* Copy longitudes of arc */
 			GMT_memcpy (&yy[n], yarc, n_arc, double);	/* Copy latitudes of arc */
@@ -7263,35 +7263,35 @@ void GMT_ECEF_inverse (struct GMT_CTRL *GMT, double in[], double out[])
 double * GMT_dist_array (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, bool cumulative)
 {	/* Returns distances in units set by GMT_distaz. It bypassed points where x and/or y are NaN.
 	 * If cumulative is false we just return the increments; otherwise we add up distances */
-	uint64_t this, prev;
+	uint64_t this_p, prev;
 	bool xy_not_NaN;
 	double *d = NULL, cum_dist = 0.0, inc = 0.0;
 
 	if (n == 0) return (NULL);
 	d = GMT_memory (GMT, NULL, n, double);
 	if (GMT_is_dnan (x[0]) || GMT_is_dnan (y[0])) d[0] = GMT->session.d_NaN;
-	for (this = 1, prev = 0; this < n; this++) {
-		xy_not_NaN = !(GMT_is_dnan (x[this]) || GMT_is_dnan (y[this]));
+	for (this_p = 1, prev = 0; this_p < n; this_p++) {
+		xy_not_NaN = !(GMT_is_dnan (x[this_p]) || GMT_is_dnan (y[this_p]));
 		if (xy_not_NaN) {	/* safe to calculate inc */
-			inc = GMT_distance (GMT, x[this], y[this], x[prev], y[prev]);
+			inc = GMT_distance (GMT, x[this_p], y[this_p], x[prev], y[prev]);
 			if (cumulative) {
 				cum_dist += inc;
-				d[this] = cum_dist;
+				d[this_p] = cum_dist;
 			}
 			else
-				d[this] = inc;
+				d[this_p] = inc;
 		}
 		else
-			d[this] = GMT->session.d_NaN;
+			d[this_p] = GMT->session.d_NaN;
 
-		if (xy_not_NaN) prev = this;	/* This was a record with OK x,y; make it the previous point for distance calculations */
+		if (xy_not_NaN) prev = this_p;	/* This was a record with OK x,y; make it the previous point for distance calculations */
 	}
 	return (d);
 }
 
 double * GMT_dist_array_2 (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, double scale, int dist_flag)
 {	/* Returns distances in meter; use scale to get other units */
-	uint64_t this, prev;
+	uint64_t this_p, prev;
 	bool cumulative = true, do_scale, xy_not_NaN;
 	double *d = NULL, cum_dist = 0.0, inc = 0.0;
 
@@ -7305,40 +7305,40 @@ double * GMT_dist_array_2 (struct GMT_CTRL *GMT, double x[], double y[], uint64_
 	do_scale = (scale != 1.0);
 	d = GMT_memory (GMT, NULL, n, double);
 	if (GMT_is_dnan (x[0]) || GMT_is_dnan (y[0])) d[0] = GMT->session.d_NaN;
-	for (this = 1, prev = 0; this < n; this++) {
-		xy_not_NaN = !(GMT_is_dnan (x[this]) || GMT_is_dnan (y[this]));
+	for (this_p = 1, prev = 0; this_p < n; this_p++) {
+		xy_not_NaN = !(GMT_is_dnan (x[this_p]) || GMT_is_dnan (y[this_p]));
 		if (xy_not_NaN) {	/* safe to calculate inc */
 			switch (dist_flag) {
 
 				case 0:	/* Cartesian distances */
 
-					inc = hypot (x[this] - x[prev], y[this] - y[prev]);
+					inc = hypot (x[this_p] - x[prev], y[this_p] - y[prev]);
 					break;
 
 				case 1:	/* Flat earth distances in meter */
 
-					inc = gmt_flatearth_dist_meter (GMT, x[this], y[this], x[prev], y[prev]);
+					inc = gmt_flatearth_dist_meter (GMT, x[this_p], y[this_p], x[prev], y[prev]);
 					break;
 
 				case 2:	/* Great circle distances in meter */
 
-					inc = GMT_great_circle_dist_meter (GMT, x[this], y[this], x[prev], y[prev]);
+					inc = GMT_great_circle_dist_meter (GMT, x[this_p], y[this_p], x[prev], y[prev]);
 					break;
 
 				case 3:	/* Geodesic distances in meter */
 
-					inc = gmt_geodesic_dist_meter (GMT, x[this], y[this], x[prev], y[prev]);
+					inc = gmt_geodesic_dist_meter (GMT, x[this_p], y[this_p], x[prev], y[prev]);
 					break;
 			}
 
 			if (do_scale) inc *= scale;
 			if (cumulative) cum_dist += inc;
-			d[this] = (cumulative) ? cum_dist : inc;
+			d[this_p] = (cumulative) ? cum_dist : inc;
 		}
 		else
-			d[this] = GMT->session.d_NaN;
+			d[this_p] = GMT->session.d_NaN;
 
-		if (xy_not_NaN) prev = this;	/* This was a record with OK x,y; make it the previous point for distance calculations */
+		if (xy_not_NaN) prev = this_p;	/* This was a record with OK x,y; make it the previous point for distance calculations */
 	}
 	return (d);
 }

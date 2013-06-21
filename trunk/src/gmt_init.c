@@ -2043,7 +2043,7 @@ int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg)
 int gmt_parse_dash_option (struct GMT_CTRL *GMT, char *text)
 {	/* parse any --PARAM[=value] arguments */
 	int n;
-	char *this = NULL, message[GMT_TEXT_LEN128];
+	char *this_c = NULL, message[GMT_TEXT_LEN128];
 	if (!text)
 		return (GMT_NOERROR);
 
@@ -2066,11 +2066,11 @@ int gmt_parse_dash_option (struct GMT_CTRL *GMT, char *text)
 		exit (EXIT_SUCCESS);
 	}
 
-	if ((this = strchr (text, '='))) {
+	if ((this_c = strchr (text, '='))) {
 		/* Got --PAR=VALUE */
-		this[0] = '\0';	/* Temporarily remove the '=' character */
-		n = gmt_setparameter (GMT, text, &this[1]);
-		this[0] = '=';	/* Put it back were it was */
+		this_c[0] = '\0';	/* Temporarily remove the '=' character */
+		n = gmt_setparameter (GMT, text, &this_c[1]);
+		this_c[0] = '=';	/* Put it back were it was */
 	}
 	else
 		/* Got --PAR */
@@ -6270,7 +6270,7 @@ void GMT_end_module (struct GMT_CTRL *GMT, struct GMT_CTRL *Ccopy)
 
 int GMT_set_env (struct GMT_CTRL *GMT)
 {
-	char *this = NULL, path[PATH_MAX+1];
+	char *this_c = NULL, path[PATH_MAX+1];
 
 #ifdef SUPPORT_EXEC_IN_BINARY_DIR
 	/* If SUPPORT_EXEC_IN_BINARY_DIR is defined we try to set the share dir to
@@ -6286,14 +6286,14 @@ int GMT_set_env (struct GMT_CTRL *GMT)
 
 	/* Determine GMT->session.SHAREDIR (directory containing coast, cpt, etc. subdirectories) */
 
-	if ((this = getenv ("GMT5_SHAREDIR")) != NULL
-			&& GMT_verify_sharedir_version (this) )
+	if ((this_c = getenv ("GMT5_SHAREDIR")) != NULL
+			&& GMT_verify_sharedir_version (this_c) )
 		/* GMT5_SHAREDIR was set */
-		GMT->session.SHAREDIR = strdup (this);
-	else if ((this = getenv ("GMT_SHAREDIR")) != NULL
-			&& GMT_verify_sharedir_version (this) )
+		GMT->session.SHAREDIR = strdup (this_c);
+	else if ((this_c = getenv ("GMT_SHAREDIR")) != NULL
+			&& GMT_verify_sharedir_version (this_c) )
 		/* GMT_SHAREDIR was set */
-		GMT->session.SHAREDIR = strdup (this);
+		GMT->session.SHAREDIR = strdup (this_c);
 #ifdef SUPPORT_EXEC_IN_BINARY_DIR
 	else if ( running_in_bindir_src && GMT_verify_sharedir_version (GMT_SHARE_PATH_DEBUG) )
 		/* Use ${GMT_SOURCE_DIR}/share to simplify debugging and running in GMT_BINARY_DIR */
@@ -6318,13 +6318,13 @@ int GMT_set_env (struct GMT_CTRL *GMT)
 
 	/* Determine HOMEDIR (user home directory) */
 
-	if ((this = getenv ("HOME")) != NULL)
+	if ((this_c = getenv ("HOME")) != NULL)
 		/* HOME was set */
-		GMT->session.HOMEDIR = strdup (this);
+		GMT->session.HOMEDIR = strdup (this_c);
 #ifdef WIN32
-	else if ((this = getenv ("HOMEPATH")) != NULL)
+	else if ((this_c = getenv ("HOMEPATH")) != NULL)
 		/* HOMEPATH was set */
-		GMT->session.HOMEDIR = strdup (this);
+		GMT->session.HOMEDIR = strdup (this_c);
 #endif
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Could not determine home directory!\n");
@@ -6334,9 +6334,9 @@ int GMT_set_env (struct GMT_CTRL *GMT)
 
 	/* Determine GMT_USERDIR (directory containing user replacements contents in GMT_SHAREDIR) */
 
-	if ((this = getenv ("GMT_USERDIR")) != NULL)
+	if ((this_c = getenv ("GMT_USERDIR")) != NULL)
 		/* GMT_USERDIR was set */
-		GMT->session.USERDIR = strdup (this);
+		GMT->session.USERDIR = strdup (this_c);
 #ifdef SUPPORT_EXEC_IN_BINARY_DIR
 	else if ( running_in_bindir_src && access (GMT_USER_PATH_DEBUG, R_OK|X_OK) == 0 )
 		/* Use ${GMT_BINARY_DIR}/share to simplify debugging and running in GMT_BINARY_DIR */
@@ -6357,7 +6357,7 @@ int GMT_set_env (struct GMT_CTRL *GMT)
 	if (GMT_compat_check (GMT, 4)) {
 		/* Check if obsolete GMT_CPTDIR was specified */
 
-		if ((this = getenv ("GMT_CPTDIR")) != NULL) {
+		if ((this_c = getenv ("GMT_CPTDIR")) != NULL) {
 			/* GMT_CPTDIR was set */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Environment variable GMT_CPTDIR was set but is no longer used by GMT.\n");
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: System-wide color tables are in %s/cpt.\n", GMT->session.SHAREDIR);
@@ -6367,26 +6367,26 @@ int GMT_set_env (struct GMT_CTRL *GMT)
 
 	/* Determine GMT_DATADIR (data directories) */
 
-	if ((this = getenv ("GMT_DATADIR")) != NULL) {
+	if ((this_c = getenv ("GMT_DATADIR")) != NULL) {
 		/* GMT_DATADIR was set */
-		if (strchr (this, PATH_SEPARATOR) || access (this, R_OK) == 0) {
+		if (strchr (this_c, PATH_SEPARATOR) || access (this_c, R_OK) == 0) {
 			/* A list of directories or a single directory that is accessible */
-			GMT->session.DATADIR = strdup (this);
+			GMT->session.DATADIR = strdup (this_c);
 			DOS_path_fix (GMT->session.DATADIR);
 		}
 	}
 
 	/* Determine GMT_TMPDIR (for isolation mode). Needs to exist use it. */
 
-	if ((this = getenv ("GMT_TMPDIR")) != NULL) {
+	if ((this_c = getenv ("GMT_TMPDIR")) != NULL) {
 		/* GMT_TMPDIR was set */
-		if (access (this, R_OK|W_OK|X_OK)) {
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Environment variable GMT_TMPDIR was set to %s, but directory is not accessible.\n", this);
+		if (access (this_c, R_OK|W_OK|X_OK)) {
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: Environment variable GMT_TMPDIR was set to %s, but directory is not accessible.\n", this_c);
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: GMT_TMPDIR needs to have mode rwx. Isolation mode switched off.\n");
 			GMT->session.TMPDIR = NULL;
 		}
 		else
-			GMT->session.TMPDIR = strdup (this);
+			GMT->session.TMPDIR = strdup (this_c);
 		DOS_path_fix (GMT->session.TMPDIR);
 	}
 	return GMT_OK;
@@ -6502,14 +6502,14 @@ int GMT_Complete_Options (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 /* Here is the new -B parser with all its sub-functions */
 
 #ifdef WIN32
-void gmt_handle_dosfile (struct GMT_CTRL *GMT, char *in, int this)
+void gmt_handle_dosfile (struct GMT_CTRL *GMT, char *in, int this_mark)
 {
 	/* Because (1) we use colons to indicate start/stop of text labels and
 	 * (2) under Windows, a colon can be part of a path (e.g., C:\dir\file)
 	 * we need to temporarily replace <drive>:\ with <drive>;\ so that this
 	 * path colon does not interfere with the rest of the parsing.  Once the
 	 * colon items have been parsed, we replace the ; back to : */
-	int i, len, other = 1 - this;
+	int i, len, other = 1 - this_mark;
 	char mark[2] = {':', ';'};
 
 	if (!in)
@@ -6520,8 +6520,8 @@ void gmt_handle_dosfile (struct GMT_CTRL *GMT, char *in, int this)
 	for (i = 1; i < len; ++i) {
 		/* Start at position 1 since we need the position before.
 		 * Look for "X:/<nocolon>" pattern, with X = A-Z */
-		if (in[i] == mark[this] && (in[i-1] >= 'A' && in[i-1] <= 'Z')
-				&& (in[i+1] == '/' || in[i+1] == '\\') && (in[i+2] != mark[this]))
+		if (in[i] == mark[this_mark] && (in[i-1] >= 'A' && in[i-1] <= 'Z')
+				&& (in[i+1] == '/' || in[i+1] == '\\') && (in[i+2] != mark[this_mark]))
 			in[i] = mark[other];
 	}
 }
