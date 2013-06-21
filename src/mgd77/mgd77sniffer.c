@@ -2959,7 +2959,7 @@ unsigned int sample_grid (struct GMT_CTRL *GMT, struct MGD77_GRID_INFO *info, st
 /* intervals for any ship grid comparisons by reducing excessive */
 /* number of degrees of freedom */
 /* Then create arrays for passing to RLS */
-int decimate (struct GMT_CTRL *GMT, double *new, double *orig, unsigned int nclean, double min, double max, double delta, double **dec_new, double **dec_orig, unsigned int *extreme, char *fieldTest) {
+int decimate (struct GMT_CTRL *GMT, double *new_val, double *orig, unsigned int nclean, double min, double max, double delta, double **dec_new, double **dec_orig, unsigned int *extreme, char *fieldTest) {
 
 	unsigned int n, j, k, npts, ship_bin, grid_bin;
 	int **bin2d = NULL;
@@ -2980,7 +2980,7 @@ int decimate (struct GMT_CTRL *GMT, double *new, double *orig, unsigned int ncle
 		/* Need to skip ship values that are outside of acceptable range */
 		if (orig[j] >= min && orig[j] <= max) {
 			ship_bin = urint ((orig[j] - min)/delta);
-			grid_bin = urint ((new[j] - min)/delta);
+			grid_bin = urint ((new_val[j] - min)/delta);
 			bin2d[ship_bin][grid_bin]++;    /* Add up # of pairs in this bin */
 		}
 		else *extreme=*extreme+1;

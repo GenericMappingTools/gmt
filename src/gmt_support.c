@@ -259,13 +259,13 @@ void gmt_memtrack_add (struct GMT_CTRL *GMT, struct MEMORY_TRACKER *M, const cha
 	/* Called from GMT_memory to update current list of memory allocated */
 	size_t old, diff;
 	void *use = NULL;
-	struct MEMORY_ITEM *entry = NULL, *new = NULL;
+	struct MEMORY_ITEM *entry = NULL, *new_entry = NULL;
 	static char *mode[3] = {"INI", "ADD", "SET"};
 	int kind;
 
 	use = (prev_ptr) ? prev_ptr : ptr;
 	entry = (M->search) ? gmt_memtrack_find (GMT, M, use) : NULL;
-	if (!entry) { /* Not found, must insert new entry at end */
+	if (!entry) { /* Not found, must insert new_entry entry at end */
 		entry = gmt_treeinsert (GMT, M, use);
 		entry->name = strdup ( GMT_basename (where) );
 		old = 0;
@@ -276,10 +276,10 @@ void gmt_memtrack_add (struct GMT_CTRL *GMT, struct MEMORY_TRACKER *M, const cha
 	else {	/* Found existing pointer, get its previous size */
 		old = entry->size;
 		if (entry->ptr != ptr) {	/* Must delete and add back since the address changed */
-			new = gmt_treeinsert (GMT, M, ptr);
-			new->name = strdup (entry->name);
+			new_entry = gmt_treeinsert (GMT, M, ptr);
+			new_entry->name = strdup (entry->name);
 			gmt_treedelete (GMT, M, entry->ptr);
-			entry = new;
+			entry = new_entry;
 		}
 		M->n_reallocated++;
 		kind = 1;

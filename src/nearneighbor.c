@@ -98,12 +98,12 @@ void Free_nearneighbor_Ctrl (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *C) 
 
 struct NEARNEIGHBOR_NODE *add_new_node (struct GMT_CTRL *GMT, unsigned int n)
 {	/* Allocate and initialize a new node to have -1 in all the n datum sectors */
-	struct NEARNEIGHBOR_NODE *new = GMT_memory (GMT, NULL, 1U, struct NEARNEIGHBOR_NODE);
-	new->distance = GMT_memory (GMT, NULL, n, float);
-	new->datum = GMT_memory (GMT, NULL, n, int64_t);
-	while (n > 0) new->datum[--n] = -1;
+	struct NEARNEIGHBOR_NODE *new_node = GMT_memory (GMT, NULL, 1U, struct NEARNEIGHBOR_NODE);
+	new_node->distance = GMT_memory (GMT, NULL, n, float);
+	new_node->datum = GMT_memory (GMT, NULL, n, int64_t);
+	while (n > 0) new_node->datum[--n] = -1;
 
-	return (new);
+	return (new_node);
 }
 
 void assign_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE **node, unsigned int n_sector, unsigned int sector, double distance, uint64_t id)

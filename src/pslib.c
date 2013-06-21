@@ -237,7 +237,7 @@ typedef struct {
 void *psl_memory (struct PSL_CTRL *PSL, void *prev_addr, size_t nelem, size_t size);
 char *psl_prepare_text (struct PSL_CTRL *PSL, char *text);
 void psl_def_font_encoding (struct PSL_CTRL *PSL);
-void psl_get_uppercase (char *new, char *old);
+void psl_get_uppercase (char *new_c, char *old_c);
 void psl_rle_decode (struct PSL_CTRL *PSL, struct imageinfo *h, unsigned char **in);
 unsigned char *psl_cmyk_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned char *input);
 unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned char *input);
@@ -2209,7 +2209,7 @@ struct PSL_WORD *psl_add_word_part (struct PSL_CTRL *PSL, char *word, int length
 	int c;
 	int tab = false;
 	double fs;
-	struct PSL_WORD *new = NULL;
+	struct PSL_WORD *new_word = NULL;
 
 	if (!length) length = (int)strlen (word);
 	while (word[i] && word[i] == '\t') {	/* Leading tab(s) means indent once */
@@ -2218,36 +2218,36 @@ struct PSL_WORD *psl_add_word_part (struct PSL_CTRL *PSL, char *word, int length
 		length--;
 	}
 
-	new = PSL_memory (PSL, NULL, 1, struct PSL_WORD);
-	new->txt = PSL_memory (PSL, NULL, length+1, char);
+	new_word = PSL_memory (PSL, NULL, 1, struct PSL_WORD);
+	new_word->txt = PSL_memory (PSL, NULL, length+1, char);
 	fs = fontsize * PSL->internal.dpp;
 
-	strncpy (new->txt, &word[i], (size_t)length);
-	new->font_no = fontno;
+	strncpy (new_word->txt, &word[i], (size_t)length);
+	new_word->font_no = fontno;
 	if (small) {	/* Small caps is on */
-		new->fontsize = (int)lrint (0.85 * fs);
-		for (i = 0; new->txt[i]; i++) {
-			c = (int)new->txt[i];
-			new->txt[i] = (char) toupper (c);
+		new_word->fontsize = (int)lrint (0.85 * fs);
+		for (i = 0; new_word->txt[i]; i++) {
+			c = (int)new_word->txt[i];
+			new_word->txt[i] = (char) toupper (c);
 		}
 	}
 	else if (super) {
-		new->fontsize = (int)lrint (0.7 * fs);
-		new->baseshift = (int)lrint (0.35 * fs);
+		new_word->fontsize = (int)lrint (0.7 * fs);
+		new_word->baseshift = (int)lrint (0.35 * fs);
 	}
 	else if (sub) {
-		new->fontsize = (int)lrint (0.7 * fs);
-		new->baseshift = (int)lrint (-0.25 * fs);
+		new_word->fontsize = (int)lrint (0.7 * fs);
+		new_word->baseshift = (int)lrint (-0.25 * fs);
 	}
 	else
-		new->fontsize = (int)lrint (fs);
+		new_word->fontsize = (int)lrint (fs);
 
-	new->flag = space;
-	if (tab) new->flag |= 4;	/* 3rd bit indicates tab, then add space after word */
-	if (under) new->flag |= 32;	/* 6rd bit indicates underline */
-	PSL_rgb_copy (new->rgb, rgb);
+	new_word->flag = space;
+	if (tab) new_word->flag |= 4;	/* 3rd bit indicates tab, then add space after word */
+	if (under) new_word->flag |= 32;	/* 6rd bit indicates underline */
+	PSL_rgb_copy (new_word->rgb, rgb);
 
-	return (new);
+	return (new_word);
 }
 
 int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char *paragraph)
@@ -3071,14 +3071,14 @@ int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix
 	return (k);
 }
 
-void psl_get_uppercase (char *new, char *old)
+void psl_get_uppercase (char *new_c, char *old_c)
 {
 	int i = 0, c;
-	while (old[i]) {
-	 	c = toupper ((int)old[i]);
-		new[i++] = (char)c;
+	while (old_c[i]) {
+	 	c = toupper ((int)old_c[i]);
+		new_c[i++] = (char)c;
 	}
-	new[i] = 0;
+	new_c[i] = 0;
 }
 
 int psl_encodefont (struct PSL_CTRL *PSL, int font_no)

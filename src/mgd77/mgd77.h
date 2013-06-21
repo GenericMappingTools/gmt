@@ -530,7 +530,7 @@ EXTERN_MSC int MGD77_Write_Header_Record_m77 (struct GMT_CTRL *GMT, char *file, 
 
 EXTERN_MSC bool MGD77_dbl_are_constant (struct GMT_CTRL *GMT, double x[], uint64_t n, double limits[]);
 EXTERN_MSC bool MGD77_txt_are_constant (struct GMT_CTRL *GMT, char *txt, uint64_t n, size_t width);
-EXTERN_MSC uint64_t MGD77_do_scale_offset_before_write (struct GMT_CTRL *GMT, double new[], const double x[], uint64_t n, double scale, double offset, int type);
+EXTERN_MSC uint64_t MGD77_do_scale_offset_before_write (struct GMT_CTRL *GMT, double new_x[], const double x[], uint64_t n, double scale, double offset, int type);
 EXTERN_MSC int MGD77_Match_List (struct GMT_CTRL *GMT, char *word, unsigned int n_fields, char **list);
 
 /* User functions for direct use of Carter corrections */

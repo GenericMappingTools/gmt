@@ -21,7 +21,7 @@
  * That is, it MUST NOT contain any new two tracks intersections. 
  *
  * Author:	Joaquim Luis
- * Date:	09-Juin-2009
+ * Date:	09-Jun-2009
  *
  */
 
