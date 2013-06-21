@@ -122,7 +122,7 @@ if(NOT DEFINED _GMT_HELPER_MACROS_CMAKE_)
 				add_executable (${_gmtmodule} ${GMT_PROGRAM})
 				string (TOUPPER "${_gmtmodule}" UCASEname)
 				set_target_properties (${_gmtmodule} PROPERTIES
-					COMPILE_DEFINITIONS "MODULE_ID=GMT_ID_${UCASEname}"
+					COMPILE_DEFINITIONS "MODULE=\"${_gmtmodule}\""
 					LINK_FLAGS " /MANIFEST:NO")
 				target_link_libraries (${_gmtmodule} gmtlib)
 			endforeach (_gmtmodule)
