@@ -322,7 +322,7 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 		}
 		n_custom_libs++;	/* One more than the number of commas */
 	}
-	API->n_shared_libs = 2 + n_custom_libs;	/* Total number of shared libraries */
+	API->n_shared_libs = 2U + n_custom_libs;	/* Total number of shared libraries */
 	API->lib = GMT_memory (API->GMT, NULL, API->n_shared_libs, struct Gmt_libinfo);
 	/* Load in the GMT core library by default */
 	GMT_Report (API, GMT_MSG_DEBUG, "Load GMT shared library: core\n");
@@ -352,7 +352,7 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 
 void GMTAPI_free_sharedlibs (struct GMTAPI_CTRL *API)
 {	/* Free items in the shared lib list */
-	unsigned int k = 0;
+	unsigned int k;
 	for (k = 0; k < API->n_shared_libs; k++) {
 		if (API->lib[k].handle && dlclose (API->lib[k].handle)) 
 			GMT_Report (API, GMT_MSG_NORMAL, "Error closing GMT %s shared library: %s\n", API->lib[k].name, dlerror());
@@ -360,6 +360,7 @@ void GMTAPI_free_sharedlibs (struct GMTAPI_CTRL *API)
 		if (API->lib[k].path) free (API->lib[k].path);
 	}
 	GMT_free (API->GMT, API->lib);
+	API->n_shared_libs = 0;
 }
 
 /* Note: Many/all of these do not need to check if API == NULL since they are called from functions that do. */
@@ -3018,6 +3019,7 @@ void * GMT_Create_Session (char *session, unsigned int pad, unsigned int mode, i
 	 */
 	
 	struct GMTAPI_CTRL *API = NULL;
+	static char *unknown = "unknown";
 
 	if ((API = calloc (1, sizeof (struct GMTAPI_CTRL))) == NULL) return_null (NULL, GMT_MEMORY_ERROR);	/* Failed to allocate the structure */
 	API->pad = pad;		/* Preserve the default pad value for this session */
@@ -3039,9 +3041,9 @@ void * GMT_Create_Session (char *session, unsigned int pad, unsigned int mode, i
 	
 	API->session_ID = GMTAPI_session_counter++;		/* Guarantees each session ID will be unique and sequential from 0 up */
 	if (session) API->session_tag = strdup (session);	/* Only used in reporting and error messages */
-	API->GMT->init.module_name = API->session_tag;		/* So non-modules can report name of program */
+	API->GMT->init.module_name = (session) ? API->session_tag : unknown;	/* So non-modules can report name of program, or unknown */
 	
-	GMTAPI_init_sharedlibs (API);				/* Count how many shared libraries we should know about */
+	GMTAPI_init_sharedlibs (API);				/* Count how many shared libraries we should know about, and get their names and paths */
 	
 	return (API);	/* Pass the structure back out */
 }
