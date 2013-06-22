@@ -1,8 +1,11 @@
 # $Id$
 #
-# Edit this file after adding a new supplemental GMT module and run
-# gmt_make_supplmodule_src.sh to generate gmtsuppl_module.h and gmtsuppl_module.c.
+# Edit this file after adding a new supplemental GMT module and then run
+#	gmt_make_module_src.sh suppl
+# to generate gmt_suppl_module.h and gmt_suppl_module.c.
 # NOTE: Only ONE TAB between items!
+#
+# LIB_STRING	="GMT suppl: The official supplements to the Generic Mapping Tools"
 #
 backtracker	spotter	Generate forward and backward flowlines and hotspot tracks
 dimfilter	misc	Directional filtering of grids in the Space domain

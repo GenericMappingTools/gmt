@@ -1,8 +1,11 @@
 # $Id$
 #
-# Edit this file after adding a new core GMT module and run gmt_make_coremodule_src.sh
-# to generate gmt_coremodule.h and gmt_coremodule.c.
+# Edit this file after adding a new core GMT module and then run
+#	gmt_make_module_src.sh core
+# to generate gmt_core_module.h and gmt_core_module.c.
 # NOTE: Only ONE TAB between items!
+#
+# LIB_STRING	="GMT core: The core of the Generic Mapping Tools"
 #
 blockmean	core	Block average (x,y,z) data tables by L2 norm
 blockmedian	core	Block average (x,y,z) data tables by L1 norm (spatial median)

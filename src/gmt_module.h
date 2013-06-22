@@ -26,11 +26,11 @@ extern "C" {
 struct Gmt_libinfo {
 	char *name;	/* Library tag name [without leading "lib" and extension], e.g. "gmt", "gmtsuppl" */
 	char *path;	/* Full path to library as given in GMT_CUSTOM_LIBS */
-	bool skip;	/* true if we tried open it and it was not available the first time */
-	void *handle;	/* Handle to the shared library, returned by dlopen */
+	bool skip;	/* true if we tried to open it and it was not available the first time */
+	void *handle;	/* Handle to the shared library, returned by dlopen or dlopen_special */
 };
 
-/* name, purpose, Api_mode, and function pointer for each GMT module */
+/* name, library, and purpose for each module */
 struct Gmt_moduleinfo {
 	const char *name;             /* Program name */
 	const char *component;        /* Component (core, supplement, custom) */
