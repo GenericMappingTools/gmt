@@ -28,6 +28,13 @@ include (GmtManpages)
 # Include CREATE_DEBUG_SYM macro
 include (CreateDebugSym)
 
+# On Windows do not prefix the DLLs with the 'lib' prefix
+if (WIN32)
+	set(LIB_PREFIX "")
+else (WIN32)
+	set(LIB_PREFIX "lib")
+endif (WIN32)
+
 # Find libraries
 message (STATUS "Searching dependent libraries. This may take a few minutes...")
 find_package (NETCDF REQUIRED)
@@ -329,8 +336,8 @@ endif (HAVE_M_LIBRARY)
 set_target_properties (pslib
 	PROPERTIES
 	OUTPUT_NAME psl
-	PREFIX lib
-	IMPORT_PREFIX lib
+	PREFIX "${LIB_PREFIX}"
+	IMPORT_PREFIX "${LIB_PREFIX}"
 	VERSION ${GMT_PACKAGE_VERSION}
 	SOVERSION ${GMT_PACKAGE_VERSION_MAJOR}
 	INSTALL_RPATH "${CMAKE_INSTALL_RPATH}"
@@ -399,8 +406,8 @@ endif (HAVE_M_LIBRARY)
 set_target_properties (gmtlib
 	PROPERTIES
 	OUTPUT_NAME gmt
-	PREFIX lib
-	IMPORT_PREFIX lib
+	PREFIX "${LIB_PREFIX}"
+	IMPORT_PREFIX "${LIB_PREFIX}"
 	VERSION ${GMT_PACKAGE_VERSION}
 	SOVERSION ${GMT_PACKAGE_VERSION_MAJOR}
 	INSTALL_RPATH "${CMAKE_INSTALL_RPATH}"
