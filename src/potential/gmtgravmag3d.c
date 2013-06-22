@@ -887,7 +887,7 @@ int read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 	unsigned int ndata_s;
 	size_t n_alloc;
 	double in[3];
-	char line[GMT_TEXT_LEN256], text[128], ver_txt[128];
+	char line[GMT_TEXT_LEN256], text[128], ver_txt[128], *dumb;
 	FILE *fp = NULL;
 
 	if ((fp = fopen (fname, "r")) == NULL) return (-1);
@@ -899,19 +899,19 @@ int read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 	while (fgets (line, GMT_TEXT_LEN256, fp)) {
 		sscanf (line, "%s", text);
 		if (strcmp (text, "outer") == 0) {
-			fgets (line, GMT_TEXT_LEN256, fp); /* get first vertex */
+			dumb = fgets (line, GMT_TEXT_LEN256, fp); /* get first vertex */
 			if(sscanf (line, "%s %lg %lg %lg", ver_txt, &in[0], &in[1], &in[2]) !=4)
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR deciphering triangle %d of %s\n", ndata_s+1, fname);
 			raw_mesh[ndata_s].t1[0] = in[0];
 			raw_mesh[ndata_s].t1[1] = -in[1];
 			raw_mesh[ndata_s].t1[2] = in[2] * z_dir;
-			fgets (line, GMT_TEXT_LEN256, fp); /* get second vertex */
+			dumb = fgets (line, GMT_TEXT_LEN256, fp); /* get second vertex */
 			if(sscanf (line, "%s %lg %lg %lg", ver_txt, &in[0], &in[1], &in[2]) !=4)
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR deciphering triangle %d of %s\n", ndata_s+1, fname);
 			raw_mesh[ndata_s].t2[0] = in[0];
 			raw_mesh[ndata_s].t2[1] = -in[1];
 			raw_mesh[ndata_s].t2[2] = in[2] * z_dir;
-			fgets (line, GMT_TEXT_LEN256, fp); /* get third vertex */
+			dumb = fgets (line, GMT_TEXT_LEN256, fp); /* get third vertex */
 			if(sscanf (line, "%s %lg %lg %lg", ver_txt, &in[0], &in[1], &in[2]) !=4)
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR deciphering triangle %d of %s\n", ndata_s+1, fname);
 			raw_mesh[ndata_s].t3[0] = in[0];
