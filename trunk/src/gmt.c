@@ -66,8 +66,7 @@ int main (int argc, char *argv[]) {
 
 			/* Print module list */
 			if (!strcmp (argv[arg_n], "--help")) {
-				gmt_coremodule_show_all(api_ctrl);
-				gmt_supplmodule_show_all(api_ctrl);
+				GMT_Probe_Module (api_ctrl, NULL, GMT_MODULE_PURPOSE);
 				goto exit;
 			}
 
