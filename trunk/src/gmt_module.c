@@ -91,6 +91,6 @@ void *dlopen_special()
 /**dlopen_special: opens the shared library file of the current process  under *nix */
 void *dlopen_special()
 {	/* Just call dlopen with NULL and 0 */
-	return (dlopen (NULL, 0));
+	return (dlopen (NULL, RTLD_LAZY));
 }
 #endif
