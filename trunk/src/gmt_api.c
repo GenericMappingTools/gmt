@@ -5332,7 +5332,7 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args)
 	unsigned int lib;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 	char gmt_module[GMT_TEXT_LEN32] = "GMT_";
-	int (*p_func)(void*, int, void*);       /* function pointer */
+	int (*p_func)(void*, int, void*) = NULL;       /* function pointer */
 	
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 	if (module == NULL) return_error (API, GMT_ARG_IS_NULL);
