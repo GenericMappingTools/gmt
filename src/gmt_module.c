@@ -14,7 +14,7 @@
 
 #if defined(_WIN32)
 /**dlopen: opens a dll file*/
-void *dlopen(const char *module_name, int mode)
+void *dlopen (const char *module_name, int mode)
 {
 	UINT err_code;
 	HINSTANCE dll_handle;
@@ -34,20 +34,20 @@ void *dlopen(const char *module_name, int mode)
 }
 
 /** dlclose: closes handle*/
-int dlclose(void *handle)
+int dlclose (void *handle)
 {
 	/*POSIX call returns zero for success, non-zero for failure*/
 	return (!FreeLibrary(handle)); 
 }
 
 /** dlsym: get a symbol from dll*/
-void *dlsym(void *handle, const char *name)
+void *dlsym (void *handle, const char *name)
 {
 	return GetProcAddress(handle, name);
 }
 
 /**dlerror: reports last error occured*/
-char *dlerror(void)
+char *dlerror (void)
 {
 	int len, error_code;
 	static char errstr[128];
@@ -84,12 +84,12 @@ void *dlopen_special()
 {	/* This is how it is done under Windows */
 	HMODULE this_process, this_process_again;
 	GetModuleHandleEx (0, 0, &this_process);
-	this_process_again = GetModuleHandle(0);
+	this_process_again = GetModuleHandle (0);
 	return (this_process_again);
 }
 #else
 /**dlopen_special: opens the shared library file of the current process  under *nix */
-void *dlopen_special()
+void *dlopen_special(void)
 {	/* Just call dlopen with NULL and 0 */
 	return (dlopen (NULL, RTLD_LAZY));
 }

@@ -26,6 +26,7 @@ extern "C" {
 struct Gmt_libinfo {
 	char *name;	/* Library tag name [without leading "lib" and extension], e.g. "gmt", "gmtsuppl" */
 	char *path;	/* Full path to library as given in GMT_CUSTOM_LIBS */
+	bool skip;	/* true if we tried open it and it was not available the first time */
 	void *handle;	/* Handle to the shared library, returned by dlopen */
 };
 
