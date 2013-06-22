@@ -78,13 +78,22 @@ char *dlerror (void)
 }
 
 /* Extra convenience function for opening DLL of current process */
+HINSTANCE GetMyModuleHandle() {
+	/* http://stackoverflow.com/questions/846044/how-to-get-the-filename-of-a-dll */
+	MEMORY_BASIC_INFORMATION mbi;
+	VirtualQuery(GetMyModuleHandle, &mbi, sizeof(mbi));
+	return (HINSTANCE) (mbi.AllocationBase);
+}
 void *dlopen_special()
 {	/* Opens the dll file of the current process.  This is how it is done
 	 * under Windows, per http://en.wikipedia.org/wiki/Dynamic_loading */
-	HMODULE this_process, this_process_again;
+	/*HMODULE this_process, this_process_again;
 	GetModuleHandleEx (0, 0, &this_process);
 	this_process_again = GetModuleHandle (NULL);
-	return (this_process_again);
+	return (this_process_again);*/
+	HINSTANCE this_dll_process;
+	this_dll_process = GetMyModuleHandle();
+	return (this_dll_process);
 }
 #else
 
