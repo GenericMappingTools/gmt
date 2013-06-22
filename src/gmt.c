@@ -44,7 +44,7 @@ int main (int argc, char *argv[]) {
 
 	/* test if argv[0] contains module name: */
 	module = progname;	/* Try this module name */
-	if (argc > 1 && (status = GMT_Probe_Module (api_ctrl, module, GMT_MODULE_EXIST) == GMT_NOT_A_VALID_MODULE)) {
+	if ((status = GMT_Probe_Module (api_ctrl, module, GMT_MODULE_EXIST)) == GMT_NOT_A_VALID_MODULE && argc > 1) {
 		/* argv[0] does not contain a valid module name
 		 * argv[1] either holds the name of the module or an option: */
 		modulename_arg_n = 1;
