@@ -761,7 +761,11 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 		sprintf (cmd2, "%s%s -q -dNOPAUSE -dBATCH -sDEVICE=pdfwrite %s -r%d -sOutputFile=%s.pdf %s",
 			at_sign, Ctrl->G.file, Ctrl->C.arg, Ctrl->E.dpi, Ctrl->F.file, all_names_in);
 
-		system (cmd2);		/* Execute the GhostScript command */
+		sys_retval = system (cmd2);		/* Execute the GhostScript command */
+		if (sys_retval) {
+			GMT_Report (API, GMT_MSG_NORMAL, "System call [%s] returned error %d.\n", cmd2, sys_retval);
+			Return (EXIT_FAILURE);
+		}
 		if (Ctrl->S.active) {
 			API->print_func (stdout, cmd2);
 			API->print_func (stdout, "\n");
@@ -1062,7 +1066,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 				   because it's bugged. For that we recompute a new scale, offsets and DPIs such that at the
 				   end we will end up with an image with the imposed size and the current -E dpi setting.
 				*/
-				double old_scale_x, old_scale_y, new_scale_x, new_scale_y, new_off_x, new_off_y, r_x, r_y;
+				double old_scale_x = 1, old_scale_y = 1, new_scale_x, new_scale_y, new_off_x, new_off_y, r_x, r_y;
 				if (!strncmp (line, "%%BeginPageSetup", 16)) {
 					char line_[128];
 					BeginPageSetup_here = true;             /* Signal that on next line the job must be done */
