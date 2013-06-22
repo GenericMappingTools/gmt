@@ -6,8 +6,8 @@
     **-bi**\ [*ncols*][*type*]. Optionally, append **c**, **i**, or
     **p** to indicate that the size information in the input data is in
     units of cm, inch, or point, respectively [Default is
-    **PROJ\_LENGTH\_UNIT**]. Note: if you give both size and symbol via the
-    input file you must use **PROJ\_LENGTH\_UNIT** to indicate the units
+    **PROJ_LENGTH_UNIT**]. Note: if you give both size and symbol via the
+    input file you must use **PROJ_LENGTH_UNIT** to indicate the units
     used for the symbol size or append the units to the size in the file.
     If the symbol size is expected via the third
     data column then you may convert those values to symbol sizes by
@@ -32,14 +32,14 @@
     **-Sa**
         st\ **a**\ r. *size* is diameter of circumscribing circle.
 
-    **-Sb**\ [*size*\ [**c**\|**i**\|**p**\|**u**]][**b**\ [*base*]]
+    **-Sb**\ [*size*\ [**c**\ \|\ **i**\ \|\ **p**\ \|\ **u**]][**b**\ [*base*]]
         Vertical **b**\ ar extending from *base* to y. *size* is bar width.
         Append **u** if *size* is in x-units [Default is plot-distance units].
         By default, *base* = ymin. Append **b**\ [*base*\ ] to change this
         value. If *base* is not appended then we read it from the last input
         data column.
 
-    **-SB**\ [*size*\ [**c**\|**i**\|**p**\|**u**]][**b**\ [*base*]]
+    **-SB**\ [*size*\ [**c**\ \|\ **i**\ \|\ **p**\ \|\ **u**]][**b**\ [*base*]]
         Horizontal **b**\ ar extending from *base* to x. *size* is bar width.
         Append **u** if *size* is in y-units [Default is plot-distance units].
         By default, *base* = xmin. Append **b**\ [*base*\ ] to change this
@@ -54,7 +54,7 @@
 
     **-Se**
         **e**\ llipse. Direction (in degrees counter-clockwise from horizontal),
-        major\_axis, and minor\_axis must be found in columns 3, 4, and 5.
+        major_axis, and minor_axis must be found in columns 3, 4, and 5.
 
     **-SE**
         Same as **-Se**, except azimuth (in degrees east of north) should be
@@ -105,9 +105,9 @@
 
     **-Sk**
         **k**\ ustom symbol. Append *name*\ /\ *size*, and we will look for a
-        definition file called *name*\ .def `in (1) <in.1.html>`_ the current
-        directory `or (2) <or.2.html>`_ in ~/.gmt `or (3) <or.3.html>`_ in
-        **$GMT\_SHAREDIR**/custom. The symbol as defined in that file is of size
+        definition file called *name*\ .def in (1) the current
+        directory or (2) in ~/.gmt or (3) in
+        **$GMT_SHAREDIR**/custom. The symbol as defined in that file is of size
         1.0 by default; the appended *size* will scale symbol accordingly. Users
         may add their own custom \*.def files; see CUSTOM SYMBOLS below.
 
@@ -116,7 +116,7 @@
         append **+t**\ *string* after the size. Note that the size is only approximate;
         no individual scaling is done for different characters. Remember to
         escape special characters like \*. Optionally, you may append **+f**\ *font*
-        to select a particular font [Default is **FONT\_ANNOT\_PRIMARY**] and
+        to select a particular font [Default is **FONT_ANNOT_PRIMARY**] and
 	**+j**\ *justify* to change justification [CM].
 
     **-Sm**
@@ -167,13 +167,13 @@
             justification format employed in **pstext** to indicate a point on
             the map, given as [LCR][BMT]. **L** will interpret the point pairs
             as defining great circles [Default is straight line].
-            **n**\ *n\_label*
+            **n**\ *n_label*
             Specifies the number of equidistant labels for quoted lines line
             [1]. Upper case **N** starts labeling exactly at the start of the
             line [Default centers them along the line]. **N**-1 places one
             justified label at start, while **N**\ +1 places one justified label
             at the end of quoted lines. Optionally, append
-            /*min\_dist*\ [**c**\ \|\ **i**\ \|\ **p**] to enforce that a
+            /*min_dist*\ [**c**\ \|\ **i**\ \|\ **p**] to enforce that a
             minimum distance separation between successive labels is enforced.
             **x\|X**\ *xfile.d*
             Reads the multisegment file *xfile.d* and places labels at the
@@ -207,12 +207,12 @@
                 finally plots the original text.
 
             **+f**\ *font*
-                Sets the desired font [Default **FONT\_ANNOT\_PRIMARY** with its
+                Sets the desired font [Default **FONT_ANNOT_PRIMARY** with its
                 size changed to 9p].
 
             **+g**\ [*color*\ ]
                 Selects opaque text boxes [Default is transparent]; optionally
-                specify the color [Default is **PS\_PAGE\_COLOR**].
+                specify the color [Default is **PS_PAGE_COLOR**].
 
             **+j**\ *just*
                 Sets label justification [Default is MC]. Ignored when
@@ -232,7 +232,7 @@
                 **+Ld**
                 Take the Cartesian plot distances along the line as the label;
                 append **c**\ \|\ **i**\ \|\ **p** as the unit [Default is
-                **PROJ\_LENGTH\_UNIT**].
+                **PROJ_LENGTH_UNIT**].
                 **+LD**
                 Calculate actual map distances; append
                 **d\|e\|f\|k\|n\|M\|n\|s** as the unit [Default is
@@ -261,11 +261,11 @@
                 Draws the outline of text boxes [Default is no outline];
                 optionally specify pen for outline [Default is width = 0.25p,
                 color = black, style = solid].
-            **+r**\ *min\_rad*
+            **+r**\ *min_rad*
                 Will not place labels where the line’s radius of curvature is
-                less than *min\_rad* [Default is 0].
+                less than *min_rad* [Default is 0].
             **+t**\ [*file*\ ]
-                Saves line label x, y, and text to *file* [Line\_labels.txt].
+                Saves line label x, y, and text to *file* [Line_labels.txt].
                 Use **+T** to save x, y, angle, text instead.
             **+u**\ *unit*
                 Appends *unit* to all line labels. If *unit* starts with a
