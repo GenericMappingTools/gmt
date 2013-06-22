@@ -16,21 +16,24 @@
  *	Contact info: gmt.soest.hawaii.edu
  *--------------------------------------------------------------------*/
 /*
- * Launcher for any GMT5 program via the corresponding function.
+ * Launcher for any GMT5 module via the corresponding function.
+ * Modules are loaded dynamically from the GMT core library, the
+ * optional supplemental library, and any number of custom libraries
+ * listed via GMT_CUSTOM_LIBS in gmt.conf.
  *
  * Version:	5
- * Created:	17-Feb-2010
+ * Created:	17-June-2013
  *
  */
 
 #include "gmt_dev.h"
 
 int main (int argc, char *argv[]) {
-	int status = GMT_NOT_A_VALID_MODULE;     /* Default status code */
-	unsigned int modulename_arg_n = 0;      /* argument number that contains module name */
-	struct GMTAPI_CTRL *api_ctrl = NULL;    /* GMT API control structure */
+	int status = GMT_NOT_A_VALID_MODULE;	/* Default status code */
+	unsigned int modulename_arg_n = 0;	/* Argument number in argv[] that contains module name */
+	struct GMTAPI_CTRL *api_ctrl = NULL;	/* GMT API control structure */
 	char gmt_module[GMT_TEXT_LEN16] = "gmt";
-	char *progname = NULL; /* Last component from the pathname */
+	char *progname = NULL;			/* Last component from the pathname */
 	char *module = NULL;			/* Module name */
 
 	/* Initialize new GMT session */
@@ -38,14 +41,14 @@ int main (int argc, char *argv[]) {
 		return EXIT_FAILURE;
 
 	progname = strdup (GMT_basename(argv[0])); /* Last component from the pathname */
-	/* remove any filename extensions added for example
+	/* Remove any filename extensions added for example
 	 * by the MSYS shell when executing gmt via symlinks */
 	GMT_chop_ext (progname);
 
-	/* test if argv[0] contains module name: */
+	/* Test if argv[0] contains a module name: */
 	module = progname;	/* Try this module name */
 	if ((status = GMT_Probe_Module (api_ctrl, module, GMT_MODULE_EXIST)) == GMT_NOT_A_VALID_MODULE && argc > 1) {
-		/* argv[0] does not contain a valid module name
+		/* argv[0] does not contain a valid module name, and
 		 * argv[1] either holds the name of the module or an option: */
 		modulename_arg_n = 1;
 		module = argv[1];	/* Try this module name */
@@ -91,7 +94,7 @@ int main (int argc, char *argv[]) {
 
 		/* If we get here, we were called without a recognized modulename or option
 		 *
-		 * gmt.c is not a module and hence can use fprintf (stderr, ...). Any API needing a
+		 * gmt.c is itself not a module and hence can use fprintf (stderr, ...). Any API needing a
 		 * gmt-like application will write one separately [see mex API] */
 		fprintf (stderr, "GMT - The Generic Mapping Tools, Version %s\n", GMT_VERSION);
 		fprintf (stderr, "Copyright 1991-%d Paul Wessel, Walter H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe\n\n", GMT_VERSION_YEAR);
@@ -109,10 +112,10 @@ int main (int argc, char *argv[]) {
 		goto exit;
 	} /* status == GMT_NOT_A_VALID_MODULE */
 
-	/* OK, here we found a recognized GMT module and the API has been initialized
-	 * Now run selected GMT module: */
-	status = GMT_Call_Module (api_ctrl, module, argc-1-modulename_arg_n, argv+1+modulename_arg_n);
+	/* Here we have found a recognized GMT module and the API has been initialized.
+	 * Now run the specified GMT module: */
 	
+	status = GMT_Call_Module (api_ctrl, module, argc-1-modulename_arg_n, argv+1+modulename_arg_n);
 
 exit:
 	if (progname) free (progname);
