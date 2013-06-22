@@ -34,7 +34,7 @@ int main (int argc, char *argv[]) {
 	char *module = NULL;			/* Module name */
 
 	/* Initialize new GMT session */
-	if ((api_ctrl = GMT_Create_Session (NULL, 2U, 0U, NULL)) == NULL)
+	if ((api_ctrl = GMT_Create_Session ("gmt", 2U, 0U, NULL)) == NULL)
 		return EXIT_FAILURE;
 
 	progname = strdup (GMT_basename(argv[0])); /* Last component from the pathname */
