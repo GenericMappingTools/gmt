@@ -2911,7 +2911,7 @@ int gmt4_decode_wesnz (struct GMT_CTRL *GMT, const char *in, unsigned int side[]
 	if (i == 0) return (0);
 	
 	for (k = 0, i--; go && i >= 0 && strchr ("WESNZwesnz+", in[i]); i--) {
-		if (k == 0 && part == 2) {	/* Wipe out default values when the first flag is found */
+		if (k == 0 && part == 0) {	/* Wipe out default values when the first flag is found */
 			for (k = 0; k < 5; k++) side[k] = 0;
 			*draw_box = false;
 		}
