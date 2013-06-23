@@ -184,6 +184,7 @@ set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 	gmt_parse.c gmt_error_codes.c gshhg_version.c gmtread.c gmtwrite.c
 	common_math.c common_string.c common_runpath.c compat/qsort.c
 	gmt_module.c gmt_core_module.c gmt_suppl_module.c gmt_init.c gmt_map.c gmt_plot.c
+	kiss_fft/_kiss_fft_guts.h kiss_fft/kiss_fft.c kiss_fft/kiss_fft.h kiss_fft/kiss_fftnd.c kiss_fft/kiss_fftnd.h
 	${GMT_PROGS_SRCS} ${GMT_TRIANGLE_SRCS})
 
 # dependencies on generated files
@@ -349,7 +350,7 @@ if (WIN32 AND PSL_DLL_RENAME)
 endif ()
 
 # supplement directories (only those, which are to be included in gmtlib)
-set (GMT_SUPPL_DIRS gshhg imgsrc kiss_fft meca mgd77 misc potential segy
+set (GMT_SUPPL_DIRS gshhg imgsrc meca mgd77 misc potential segy
 	spotter x2sys)
 
 # path to all binary dirs (used to set PATH in test scripts)
