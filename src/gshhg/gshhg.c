@@ -201,7 +201,7 @@ int GMT_gshhg_parse (struct GMT_CTRL *GMT, struct GSHHG_CTRL *Ctrl, struct GMT_O
 
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #ifdef DEBUG
-#define Return(code) {Free_gshhg_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); GMT_memtrack_on (GMT, &g_mem_keeper); bailout (code);}
+#define Return(code) {Free_gshhg_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); GMT_memtrack_on (GMT); bailout (code);}
 #else
 #define Return(code) {Free_gshhg_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 #endif
@@ -250,8 +250,8 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 	/* Parse the command-line arguments */
 
 #ifdef MEMDEBUG
-	mem_track_enabled = g_mem_keeper.active;	/* Needed so we dont activate things that were never requested as we turn things on/off for convenience */
-	if (mem_track_enabled) GMT_memtrack_off (GMT, &g_mem_keeper);
+	mem_track_enabled = GMT->hidden.mem_keeper->active;	/* Needed so we dont activate things that were never requested as we turn things on/off for convenience */
+	if (mem_track_enabled) GMT_memtrack_off (GMT);
 #endif
 	GMT = GMT_begin_gmt_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
@@ -441,7 +441,7 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 	if (Ctrl->G.active) GMT->current.setting.io_seg_marker[GMT_OUT] = marker;
 
 #ifdef MEMDEBUG
-	if (mem_track_enabled) GMT_memtrack_on (GMT, &g_mem_keeper);
+	if (mem_track_enabled) GMT_memtrack_on (GMT);
 #endif
 	Return (GMT_OK);
 }
