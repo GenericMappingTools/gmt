@@ -2461,8 +2461,8 @@ FORTRAN 77 Grid i/o
 
 Because of a lack of structure pointers we can only provide a low level of
 support for Fortran 77. This API is limited to help you inquire, read and write
-GMT grids directly from Fortran.  To
-inquire about the range of information in a grid, use
+GMT grids directly from Fortran 77.
+To inquire about the range of information in a grid, use
 
 .. _GMT_F77_readgrdinfo:
 
@@ -2474,6 +2474,7 @@ inquire about the range of information in a grid, use
 where ``dim`` returns the grid width, height, and registration, ``limits`` returns the min and max values for x, y, and z
 as three consecutive pairs, ``inc`` returns the x and y increment, the ``title`` and ``remark`` returns the values of these strings.  The ``file``
 argument is the name of the file we wish to inquire about.  The function returns 0 unless there is an error.
+Note that you must declare your variables so that ``limits`` has at least 6 elements and ``inc`` and ``dime`` have at least 2 each.
 
 To actually read the grid, we use
 
