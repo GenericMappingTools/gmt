@@ -39,8 +39,8 @@
 
 /* Use b, f, h, when applies to both i and o, else use only the bi, bo, fi, fo variants */
 
-#define GMT_bi_OPT	"-bi[i|o][<ncol>][t][w][+L|B]"
-#define GMT_bo_OPT	"-bo[i|o][<ncol>][t][w][+L|B]"
+#define GMT_bi_OPT	"-bi[<ncol>][t][w][+L|B]"
+#define GMT_bo_OPT	"-bo[<ncol>][t][w][+L|B]"
 #define GMT_fi_OPT	"-f<info>"
 #define GMT_fo_OPT	"-f<info>"
 #define GMT_ho_OPT	"-ho[<nrecs>][+c][+d][+r<remark>][+t<title>]"
