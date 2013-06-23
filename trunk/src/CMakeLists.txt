@@ -190,7 +190,8 @@ set (GMT_LIB_SRCS block_subs.h common_byteswap.h common_math.h
 
 if (BUILD_SUPPLEMENTS)
 	# Needed in supplib, + supplements themselves
-	set (GMT_SUPPL_SRCS gmt_suppl_module.h gmt_suppl_module.c)
+	set (GMT_SUPPL_SRCS gmt_suppl_module.h gmt_suppl_module.c gmt_support.c gmt_support.h
+		gmt_map.c gmt_error.c ${GMT_TRIANGLE_SRCS})
 endif (BUILD_SUPPLEMENTS)
 
 # dependencies on generated files
