@@ -83,6 +83,8 @@
 # Uncomment to install only the main gmt program and access modules as: gmt modulename options
 #set (INSTALL_MODULE_LINKS FALSE)
 
+# Build GMT shared lib with supplemental modules [TRUE]:
+# set (BUILD_SUPPLEMENTS FALSE)
 
 ## Advanced configuration begins here. Usually it is not necessary to edit any
 ## settings below. You should know what you are doing if you do though.

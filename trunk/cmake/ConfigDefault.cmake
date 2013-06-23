@@ -71,6 +71,9 @@ if (NOT DEFINED FLOCK)
 	set (FLOCK off)
 endif (NOT DEFINED FLOCK)
 
+# Build supplements is on
+set (BUILD_SUPPLEMENTS TRUE)
+
 # Monolithic install on
 if (NOT DEFINED GMT_INSTALL_MONOLITHIC)
 	set (GMT_INSTALL_MONOLITHIC ON)

@@ -27,6 +27,7 @@
  */
 
 #include "gmt_dev.h"
+#define PROGRAM_NAME	"gmt"
 
 int main (int argc, char *argv[]) {
 	int status = GMT_NOT_A_VALID_MODULE;	/* Default status code */
@@ -40,14 +41,14 @@ int main (int argc, char *argv[]) {
 	if ((api_ctrl = GMT_Create_Session ("gmt", 2U, 0U, NULL)) == NULL)
 		return EXIT_FAILURE;
 
-	progname = strdup (GMT_basename(argv[0])); /* Last component from the pathname */
+	progname = strdup (GMT_basename (argv[0])); /* Last component from the pathname */
 	/* Remove any filename extensions added for example
 	 * by the MSYS shell when executing gmt via symlinks */
 	GMT_chop_ext (progname);
 
 	/* Test if argv[0] contains a module name: */
-	module = progname;	/* Try this module name */
-	if ((status = GMT_Probe_Module (api_ctrl, module, GMT_MODULE_EXIST)) == GMT_NOT_A_VALID_MODULE && argc > 1) {
+	module = progname;	/* Try this module name unless it equals PROGRAM_NAME in which case we just enter the test if argc > 1 */
+	if ((!strcmp (module, PROGRAM_NAME) || (status = GMT_Probe_Module (api_ctrl, module, GMT_MODULE_EXIST)) == GMT_NOT_A_VALID_MODULE) && argc > 1) {
 		/* argv[0] does not contain a valid module name, and
 		 * argv[1] either holds the name of the module or an option: */
 		modulename_arg_n = 1;
@@ -103,7 +104,7 @@ int main (int argc, char *argv[]) {
 		fprintf (stderr, "You may redistribute copies of this program under the terms of the\n");
 		fprintf (stderr, "GNU Lesser General Public License.\n");
 		fprintf (stderr, "For more information about these matters, see the file named LICENSE.TXT.\n\n");
-		fprintf (stderr, "usage: %s [options] <module name> [module options]\n\n", progname);
+		fprintf (stderr, "usage: %s [options] <module name> [module options]\n\n", PROGRAM_NAME);
 		fprintf (stderr, "  --help               List and description of GMT modules\n");
 		fprintf (stderr, "  --version            Print version and exit\n");
 		fprintf (stderr, "  --show-sharedir      Show share directory and exit\n");
