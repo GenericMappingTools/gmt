@@ -347,13 +347,12 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 		GMT_Report (API, GMT_MSG_NORMAL, "Error loading core GMT shared library: %s\n", dlerror());
 		GMT_exit (API->do_not_exit, EXIT_FAILURE);
 	}
-	/* Add the GMT supplemental library to the list of libraries to consider [we dont know if we have it yet] */
+	/* Add the GMT supplemental library to the list of libraries to consider [will find when trying to open if it is available] */
 	API->lib[1].name = strdup ("suppl");
 	GMT_Report (API, GMT_MSG_DEBUG, "Preparing GMT shared supplemental library %s [%s]\n", API->lib[1].name, API->lib[1].path);
-	API->lib[1].handle = API->lib[0].handle;	/* This will change once dynamic loading is used */
-	//API->lib[1].path = strdup ("/Volumes/MacNutHD3/UH/RESEARCH/CVSPROJECTS/GMTdev/gmt5/trunk/build/gmt5/lib/libgmtsuppl.dylib");
+	API->lib[1].path = strdup (GMT_SUPPL_LIB_NAME);
 
-	/* Add any GMT custom library to the list of libraries to consider */
+	/* Add any GMT custom library to the list of libraries to consider [will find when trying to open if it is available] */
 	for (k = 2; k < API->n_shared_libs; k++) {
 		GMT_strtok (API->GMT->session.CUSTOM_LIBS, ",", &pos, text);
 		API->lib[k].path = strdup (text);

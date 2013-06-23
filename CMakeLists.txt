@@ -108,6 +108,15 @@ if (SVN AND HAVE_SVN_VERSION)
 	endif (GNUTAR)
 endif (SVN AND HAVE_SVN_VERSION)
 
+if (BUILD_SUPPLEMENTS)
+	# Get name of shared supplemental library
+	get_property(GMT_SUPPL_LIB_PATH TARGET supplib PROPERTY LOCATION)
+	GET_FILENAME_COMPONENT (GMT_SUPPL_LIB_NAME ${GMT_SUPPL_LIB_PATH} NAME)
+	set (SUPPL "yes [${GMT_SUPPL_LIB_NAME}]")
+else (BUILD_SUPPLEMENTS)
+	set (SUPPL "no")
+endif (BUILD_SUPPLEMENTS)
+
 # Configure a header file to pass some of the CMake settings to the source code
 configure_file (
 	"${PROJECT_SOURCE_DIR}/config.h.in"
@@ -126,6 +135,7 @@ message(
 	"*  File locking               : ${FLOCK}\n"
 	"*  License restriction        : ${LICENSE_RESTRICTED}\n"
 	"*  Triangulation method       : ${GMT_TRIANGULATE}\n"
+	"*  Build GMT supplements      : ${SUPPL}\n"
 	"*\n"                          
 	"*  Locations:\n"              
 	"*  Installing GMT in          : ${CMAKE_INSTALL_PREFIX}\n"
