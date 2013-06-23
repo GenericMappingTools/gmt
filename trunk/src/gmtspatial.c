@@ -761,7 +761,7 @@ int GMT_gmtspatial_parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, st
 					if (!GMT_is_geographic (GMT, GMT_IN)) Ctrl->A.smode = 0;
 					Ctrl->A.unit = (Ctrl->A.smode == 2) ? opt->arg[0] : opt->arg[1];
 				}
-				else {
+				else if (opt->arg[0]) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax Error: Bad modifier in %c in -A option\n", opt->arg[0]);
 					n_errors++;
 				}
