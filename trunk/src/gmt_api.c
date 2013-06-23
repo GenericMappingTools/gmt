@@ -341,7 +341,6 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 	 * This is done by passing NULL under Linux and by calling GetModuleHandleEx under Windows, hence we 
 	 * use the dlopen_special call which is defined in gmt_module.c */
 	
-	GMT_Report (API, GMT_MSG_DEBUG, "Load GMT shared library: core\n");
 	API->lib[0].name = strdup ("core");
 	if ((API->lib[0].handle = dlopen_special ()) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error loading core GMT shared library: %s\n", dlerror());
@@ -349,21 +348,18 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 	}
 	/* Add the GMT supplemental library to the list of libraries to consider [will find when trying to open if it is available] */
 	API->lib[1].name = strdup ("suppl");
-	GMT_Report (API, GMT_MSG_DEBUG, "Preparing GMT shared supplemental library %s [%s]\n", API->lib[1].name, API->lib[1].path);
 	API->lib[1].path = strdup (GMT_SUPPL_LIB_NAME);
 
 	/* Add any GMT custom library to the list of libraries to consider [will find when trying to open if it is available] */
 	for (k = 2; k < API->n_shared_libs; k++) {
 		GMT_strtok (API->GMT->session.CUSTOM_LIBS, ",", &pos, text);
 		API->lib[k].path = strdup (text);
-		GMT_Report (API, GMT_MSG_DEBUG, "Preparing GMT shared library: \n", API->lib[k].path);
-		p = 0;	while (text[p] && text[p] != '.') p++;	/* Find the period in the name */
+		p = 0;	while (text[p] && text[p] != '.') p++;	/* Find the first period in the name */
 		text[p] = '\0';	/* Chop off library extension */
 		p = (strncmp (text, "lib", 3)) ? 0 : 3;	/* Do we have a leading "lib" or not ? */
 		API->lib[k].name = strdup (&text[p]);	/* Get the shared library tag */
 	}
-	dlerror(); /* Clear any existing error */
-	GMT_Report (API, GMT_MSG_DEBUG, "Done with loading GMT shared libraries\n");
+	dlerror (); /* Clear any existing error */
 	return (GMT_NOERROR);
 }
 
