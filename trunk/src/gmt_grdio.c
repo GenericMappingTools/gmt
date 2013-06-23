@@ -2064,6 +2064,7 @@ int gmt_init_grdheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, st
 	GMT_err_pass (GMT, GMT_grd_RI_verify (GMT, header, 1), "");
 	GMT_grd_setpad (GMT, header, GMT->current.io.pad);	/* Assign default GMT pad */
 	GMT_set_grddim (GMT, header);	/* Set all dimensions before returning */
+	GMT_BC_init (GMT, header);	/* Initialize grid interpolation and boundary condition parameters */
 	return (GMT_NOERROR);
 }
 
