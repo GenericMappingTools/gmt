@@ -1,0 +1,20 @@
+#!/bin/sh
+# Switch between CMakeLists.txt for splitting the libs or not.
+# Just say split on or split off
+# This will go away as soon as our experiment is over.
+
+if [ $# -eq 0 ]; then
+	on=1
+elif [ "$1 = "on" ]; then
+	on=1
+else
+	on=0
+fi
+
+if [ $on -eq 1 ]; then
+	echo "Selecting splitting CMakeLists.txt"
+	cp -f CMakeLists.split.txt CMakeLists.txt
+else
+	echo "Selecting regular CMakeLists.txt"
+	cp -f CMakeLists.regular.txt CMakeLists.txt
+fi
