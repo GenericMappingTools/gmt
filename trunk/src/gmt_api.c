@@ -351,6 +351,7 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 	API->lib[1].name = strdup ("suppl");
 	GMT_Report (API, GMT_MSG_DEBUG, "Preparing GMT shared supplemental library %s [%s]\n", API->lib[1].name, API->lib[1].path);
 	API->lib[1].handle = API->lib[0].handle;	/* This will change once dynamic loading is used */
+	//API->lib[1].path = strdup ("/Volumes/MacNutHD3/UH/RESEARCH/CVSPROJECTS/GMTdev/gmt5/trunk/build/gmt5/lib/libgmtsuppl.dylib");
 
 	/* Add any GMT custom library to the list of libraries to consider */
 	for (k = 2; k < API->n_shared_libs; k++) {
