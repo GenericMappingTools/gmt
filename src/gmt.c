@@ -29,6 +29,15 @@
 #include "gmt_dev.h"
 #define PROGRAM_NAME	"gmt"
 
+/* Determine the system environmetal parameter that leads to shared libraries */
+#if defined _WIN32
+#define LIB_PATH "%%PATH%%"
+#elif defined __APPLE__
+#define LIB_PATH "DYLD_LIBRARY_PATH"
+#else
+#define LIB_PATH "LD_LIBRARY_PATH"
+#endif
+
 int main (int argc, char *argv[]) {
 	int status = GMT_NOT_A_VALID_MODULE;	/* Default status code */
 	unsigned int modulename_arg_n = 0;	/* Argument number in argv[] that contains module name */
@@ -56,8 +65,7 @@ int main (int argc, char *argv[]) {
 		if ((status = GMT_Probe_Module (api_ctrl, module, GMT_MODULE_EXIST) == GMT_NOT_A_VALID_MODULE)) {
 			/* argv[1] does not contain a valid module name; try prepending gmt: */
 			strncat (gmt_module, argv[1], GMT_TEXT_LEN16-4U);
-			module = gmt_module;	/* Try this module name */
-			status = GMT_Probe_Module (api_ctrl, module, GMT_MODULE_EXIST); /* either GMT_NOERROR or GMT_NOT_A_VALID_MODULE */
+			status = GMT_Probe_Module (api_ctrl, gmt_module, GMT_MODULE_EXIST); /* either GMT_NOERROR or GMT_NOT_A_VALID_MODULE */
 		}
 	}
 	
@@ -97,7 +105,7 @@ int main (int argc, char *argv[]) {
 		 *
 		 * gmt.c is itself not a module and hence can use fprintf (stderr, ...). Any API needing a
 		 * gmt-like application will write one separately [see mex API] */
-		fprintf (stderr, "GMT - The Generic Mapping Tools, Version %s\n", GMT_VERSION);
+		fprintf (stderr, "\nGMT - The Generic Mapping Tools, Version %s\n", GMT_VERSION);
 		fprintf (stderr, "Copyright 1991-%d Paul Wessel, Walter H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe\n\n", GMT_VERSION_YEAR);
 
 		fprintf (stderr, "This program comes with NO WARRANTY, to the extent permitted by law.\n");
@@ -108,7 +116,18 @@ int main (int argc, char *argv[]) {
 		fprintf (stderr, "  --help               List and description of GMT modules\n");
 		fprintf (stderr, "  --version            Print version and exit\n");
 		fprintf (stderr, "  --show-sharedir      Show share directory and exit\n");
-		fprintf (stderr, "  --show-bindir        Show directory of executables and exit\n");
+		fprintf (stderr, "  --show-bindir        Show directory of executables and exit\n\n");
+		fprintf (stderr, "ERROR: No module named %s was found,  This could mean:\n", module);
+		fprintf (stderr, "  1. There actually is no such module; check your spelling.\n");
+		if (strlen (GMT_SUPPL_LIB_NAME))
+			fprintf (stderr, "  2. The module exists in the GMT supplemental library, but the library could not be found.\n");
+		else
+			fprintf (stderr, "  2. The module exists in the GMT supplemental library, but the library was not installed.\n");
+		if (api_ctrl->n_shared_libs > 2)
+			fprintf (stderr, "  3. The module exists in a GMT custom library, but the library could not be found.\n");
+		else
+			fprintf (stderr, "  3. The module exists in a GMT custom library, but none was specified via GMT_CUSTOM_LIBS.\n");
+		fprintf (stderr, "Shared libraries must be in standard system paths or set via environmental parameter %s.\n\n", LIB_PATH);
 		status = EXIT_FAILURE;
 		goto exit;
 	} /* status == GMT_NOT_A_VALID_MODULE */
