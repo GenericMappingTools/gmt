@@ -346,8 +346,8 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 	x_wrap = Grid->header->nx - 1;				/* Add to node index to go to right column */
 	y_wrap = (Grid->header->ny - 1) * Grid->header->nx;	/* Add to node index to go to bottom row */
 #ifdef MEMDEBUG
-	mem_track_enabled = g_mem_keeper.active;	/* Needed so we dont activate things that were never requested as we turn things on/off for convenience */
-	if (mem_track_enabled) GMT_memtrack_off (GMT, &g_mem_keeper);
+	mem_track_enabled = GMT->hidden.mem_keeper->active;	/* Needed so we dont activate things that were never requested as we turn things on/off for convenience */
+	if (mem_track_enabled) GMT_memtrack_off (GMT);
 #endif
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
@@ -445,13 +445,13 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 		if (n == n_alloc) {
 			size_t old_n_alloc = n_alloc;
 #ifdef MEMDEBUG
-			if (mem_track_enabled) GMT_memtrack_on (GMT, &g_mem_keeper);
+			if (mem_track_enabled) GMT_memtrack_on (GMT);
 #endif
 			n_alloc <<= 1;
 			point = GMT_memory (GMT, point, n_alloc, struct NEARNEIGHBOR_POINT);
 			GMT_memset (&(point[old_n_alloc]), n_alloc - old_n_alloc, struct NEARNEIGHBOR_POINT);	/* Set to NULL/0 */
 #ifdef MEMDEBUG
-			if (mem_track_enabled) GMT_memtrack_off (GMT, &g_mem_keeper);
+			if (mem_track_enabled) GMT_memtrack_off (GMT);
 #endif
 		}
 	} while (true);
@@ -462,7 +462,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processed record %10ld\n", n);
 
 #ifdef MEMDEBUG
-	if (mem_track_enabled) GMT_memtrack_on (GMT, &g_mem_keeper);
+	if (mem_track_enabled) GMT_memtrack_on (GMT);
 #endif
 	if (n < n_alloc) point = GMT_memory (GMT, point, n, struct NEARNEIGHBOR_POINT);
 	/* Compute weighted averages based on the nearest neighbors */
@@ -475,7 +475,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 	three_over_radius = 3.0 / Ctrl->S.radius;
 
 #ifdef MEMDEBUG
-	if (mem_track_enabled) GMT_memtrack_off (GMT, &g_mem_keeper);
+	if (mem_track_enabled) GMT_memtrack_off (GMT);
 #endif
 	ij0 = 0;
 	GMT_row_loop (GMT, Grid, row) {
@@ -517,7 +517,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 	}
 	GMT_Report (API, GMT_MSG_VERBOSE, "Gridded row %10ld\n", row);
 #ifdef MEMDEBUG
-	if (mem_track_enabled) GMT_memtrack_on (GMT, &g_mem_keeper);
+	if (mem_track_enabled) GMT_memtrack_on (GMT);
 #endif
 
 	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid)) Return (API->error);

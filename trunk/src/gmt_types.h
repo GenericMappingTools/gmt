@@ -127,6 +127,9 @@ struct GMT_INTERNAL {
 	 * many GMT functions.  These may change during execution but are not
 	 * modified directly by user interaction. */
 	unsigned int func_level;	/* Keeps track of what level in a nested GMT_func calling GMT_func etc we are.  0 is top function */
+#ifdef MEMDEBUG
+	struct MEMORY_TRACKER *mem_keeper;
+#endif
 };
 
 struct GMT_SHORTHAND {	/* Holds information for each grid extension shorthand read from the user's .gmtio file */

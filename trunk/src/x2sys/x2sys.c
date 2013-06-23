@@ -1276,8 +1276,8 @@ int x2sys_bix_read_tracks (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, struct X2
 	if ((ftrack = fopen (track_path, "r")) == NULL) return (GMT_GRDIO_FILE_NOT_FOUND);
 
 #ifdef MEMDEBUG
-	mem_track_enabled = g_mem_keeper.active;	/* Needed so we dont activate things that were never requested as we turn things on/off for convenience */
-	if (mem_track_enabled) GMT_memtrack_off (GMT, &g_mem_keeper);
+	mem_track_enabled = GMT->hidden.mem_keeper->active;	/* Needed so we dont activate things that were never requested as we turn things on/off for convenience */
+	if (mem_track_enabled) GMT_memtrack_off (GMT);
 #endif
 	if (mode == 1)
 		B->head = GMT_memory (GMT, NULL, n_alloc, struct X2SYS_BIX_TRACK_INFO);
@@ -1317,7 +1317,7 @@ int x2sys_bix_read_tracks (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, struct X2
 	last_id++;
 	if (mode == 1) B->head = GMT_memory (GMT, B->head, last_id, struct X2SYS_BIX_TRACK_INFO);
 #ifdef MEMDEBUG
-	if (mem_track_enabled) GMT_memtrack_on (GMT, &g_mem_keeper);
+	if (mem_track_enabled) GMT_memtrack_on (GMT);
 #endif
 
 	*ID = last_id;
@@ -1343,8 +1343,8 @@ int x2sys_bix_read_index (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, struct X2S
 		return (GMT_GRDIO_OPEN_FAILED);
 	}
 #ifdef MEMDEBUG
-	mem_track_enabled = g_mem_keeper.active;	/* Needed so we dont activate things that were never requested as we turn things on/off for convenience */
-	if (mem_track_enabled) GMT_memtrack_off (GMT, &g_mem_keeper);
+	mem_track_enabled = GMT->hidden.mem_keeper->active;	/* Needed so we dont activate things that were never requested as we turn things on/off for convenience */
+	if (mem_track_enabled) GMT_memtrack_off (GMT);
 #endif
 	B->base = GMT_memory (GMT, NULL, B->nm_bin, struct X2SYS_BIX_DATABASE);
 
@@ -1377,7 +1377,7 @@ int x2sys_bix_read_index (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, struct X2S
 		}
 	}
 #ifdef MEMDEBUG
-	if (mem_track_enabled) GMT_memtrack_on (GMT, &g_mem_keeper);
+	if (mem_track_enabled) GMT_memtrack_on (GMT);
 #endif
 	fclose (fbin);
 	return (X2SYS_NOERROR);

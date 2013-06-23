@@ -6093,7 +6093,8 @@ void GMT_end (struct GMT_CTRL *GMT)
 	/* Terminate PSL machinery (if used) */
 	PSL_endsession (GMT->PSL);
 #ifdef MEMDEBUG
-	GMT_memtrack_report (GMT, &g_mem_keeper);
+	GMT_memtrack_report (GMT);
+	free (GMT->hidden.mem_keeper);
 #endif
 	GMT_fft_cleanup (GMT); /* Clean FFT resources */
 
@@ -9655,7 +9656,7 @@ struct GMT_CTRL *New_GMT_Ctrl (char *session, unsigned int pad) {	/* Allocate an
 	GMT->current.setting.verbose = GMT_MSG_COMPAT;
 
 #ifdef MEMDEBUG
-	GMT_memtrack_init (GMT, &g_mem_keeper);	/* Helps us determine memory leaks */
+	GMT_memtrack_init (GMT);	/* Helps us determine memory leaks */
 	GMT->session.min_meminc = GMT_MIN_MEMINC;
 	GMT->session.max_meminc = GMT_MAX_MEMINC;
 #endif

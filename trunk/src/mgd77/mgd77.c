@@ -4077,8 +4077,8 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 #endif
 #ifdef MEMDEBUG
 	/* Since the sorting throws this machinery off */
-	mem_track_enabled = g_mem_keeper.active;	/* Needed so we dont activate things that were never requested as we turn things on/off for convenience */
-	if (mem_track_enabled) GMT_memtrack_off (GMT, &g_mem_keeper);
+	mem_track_enabled = GMT->hidden.mem_keeper->active;	/* Needed so we dont activate things that were never requested as we turn things on/off for convenience */
+	if (mem_track_enabled) GMT_memtrack_off (GMT);
 #endif
 
 	for (opt = options; opt; opt = opt->next) {
@@ -4189,7 +4189,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 	if (n != n_alloc) L = GMT_memory (GMT, L, n, char *);
 	*list = L;
 #ifdef MEMDEBUG
-	if (mem_track_enabled) GMT_memtrack_on (GMT, &g_mem_keeper);
+	if (mem_track_enabled) GMT_memtrack_on (GMT);
 #endif
 	return (n);
 }
@@ -4206,13 +4206,13 @@ void MGD77_Path_Free (struct GMT_CTRL *GMT, uint64_t n, char **list)
 
 #ifdef MEMDEBUG
 	/* Since the sorting throws this machinery off */
-	mem_track_enabled = g_mem_keeper.active;	/* Needed so we dont activate things that were never requested as we turn things on/off for convenience */
-	if (mem_track_enabled) GMT_memtrack_off (GMT, &g_mem_keeper);
+	mem_track_enabled = GMT->hidden.mem_keeper->active;	/* Needed so we dont activate things that were never requested as we turn things on/off for convenience */
+	if (mem_track_enabled) GMT_memtrack_off (GMT);
 #endif
 	for (i = 0; i < n; i++) GMT_free (GMT, list[i]);
 	GMT_free (GMT, list);
 #ifdef MEMDEBUG
-	if (mem_track_enabled) GMT_memtrack_on (GMT, &g_mem_keeper);
+	if (mem_track_enabled) GMT_memtrack_on (GMT);
 #endif
 }
 

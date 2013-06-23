@@ -25,11 +25,11 @@ more portable.  This is likely to mean that your platform is not
 POSIX compliant.  For a non-UNIX solution, see Appendix L for options
 and installation details.
 
-Note there are three GMT tar archives available:
+Note there are three GMT tar archives available (#3 is optional):
 
-1. gmt-5.0.0b.tar.bz2:          The GMT 5 distribution
+1. gmt-5.0.0.tar.bz2:           The GMT 5 distribution
 2. gshhg-gmt-nc4-2.2.3.tar.gz:	All five resolutions of GSHHG coastline data
-2. dcw-gmt-1.0.2.tar.bz2: 	Digital Chart of the World polygon data
+3. dcw-gmt-1.0.5.tar.bz2: 	Digital Chart of the World polygon data
 
 The archives are available in bzip2 (*.bz2) and gzip (*.gz) formats.
 If you do not have bzip2 installed you can obtain source or executables
@@ -139,6 +139,9 @@ in directories mounted with NFS.  Since it works with NFS under
 other UNIX systems we suspect this is a [temporary] limitation of GNU
 NSF.  If you want to activate file locking you may enable it in
 cmake/ConfigUser.cmake.
+
+By default, both GMT and all its supplements are built.  You can turn
+off all supplements via the BUILD_SUPPLEMENTS setting in ConfigUsers.cmake
 
 We provide two install modes via CMake: You have the choice between a
 monolithic installation (GMT_INSTALL_MONOLITHIC=ON) where everything goes
