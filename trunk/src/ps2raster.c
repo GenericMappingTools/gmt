@@ -80,6 +80,8 @@ struct PS2RASTER_CTRL {
 		bool strip;        /* Remove the -U time-stamp */
 		bool reset;        /* The -A- turns -A off, overriding any automode in effect */
 		bool resize;       /* Resize to a user selected size */
+		bool rescale;      /* Resize to a user selected scale factor */
+		double scale;      /* Scale factor to go along with the 'rescale' option */
 		double new_size[2];
 		double margin[4];
 		double new_dpi_x, new_dpi_y;
@@ -189,7 +191,11 @@ int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *Ct
 			case 'r':	/* Round */
 				Ctrl->A.round = true;
 				break;
-			case 's':	/* Set fading options in KML */
+			case 'S':	/* New size via a scale factor */
+				Ctrl->A.rescale = true;
+				Ctrl->A.scale = atof(&p[1]);
+				break;
+			case 's':	/* New size */
 				Ctrl->A.resize = true;
 				j = sscanf (&p[1], "%[^/]/%s", txt_a, txt_b);
 				switch (j) {
@@ -208,6 +214,14 @@ int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *Ct
 				break;
 		}
 	}
+
+	if (Ctrl->A.rescale && Ctrl->A.resize) {
+		GMT_Report (Ctrl, GMT_MSG_NORMAL, "GMT ERROR -A+s|S: Cannot set both -A+s and -A+S\n");
+		error++;
+	}
+	else if (Ctrl->A.rescale)    /* But we can. This makes the coding simpler later on */
+		Ctrl->A.resize = true;
+
 	return (error);
 }
 
@@ -325,7 +339,7 @@ int GMT_ps2raster_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
-	GMT_Message (API, GMT_TIME_NONE, "usage: ps2raster <psfile1> <psfile2> <...> -A[u][<margins>][-][+r][+s<width[u]>[/<height>[u]]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: ps2raster <psfile1> <psfile2> <...> -A[u][<margins>][-][+r][+s|S<width[u]>[/<height>[u]]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<gs_command>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-L<listfile>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N] [-P] [-Q[g|t]1|2|4] [-S] [-Tb|e|f|F|g|G|j|m|p|t] [%s]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]\n\n");
@@ -347,6 +361,7 @@ int GMT_ps2raster_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use the -A+s<width[u]>[/<height>[u]] option the select a new image size\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   but maintaining the DPI set by -E (ghostscript does the re-interpolation work).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append unit u (%s) [%c].\n", GMT_DIM_UNITS_DISPLAY, API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit][0]);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively use -A+S<scale> to scale the image by the <scale> factor.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -A+r to force rounding of HighRes BoundingBox instead of ceil.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Specify a single, custom option that will be passed on to GhostScript\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   as is. Repeat to add several options [none].\n");
@@ -609,6 +624,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 
 	double xt, yt, xt_bak, yt_bak, w, h, x0 = 0.0, x1 = 612.0, y0 = 0.0, y1 = 828.0;
 	double west = 0.0, east = 0.0, south = 0.0, north = 0.0;
+	double old_scale_x = 1, old_scale_y = 1;
 
 	size_t n_alloc = GMT_SMALL_CHUNK;
 
@@ -1066,7 +1082,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 				   because it's bugged. For that we recompute a new scale, offsets and DPIs such that at the
 				   end we will end up with an image with the imposed size and the current -E dpi setting.
 				*/
-				double old_scale_x = 1, old_scale_y = 1, new_scale_x, new_scale_y, new_off_x, new_off_y, r_x, r_y;
+				double new_scale_x, new_scale_y, new_off_x, new_off_y, r_x, r_y;
 				if (!strncmp (line, "%%BeginPageSetup", 16)) {
 					char line_[128];
 					BeginPageSetup_here = true;             /* Signal that on next line the job must be done */
@@ -1078,7 +1094,11 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 					BeginPageSetup_here = false;
 					Ctrl->A.resize = false;       /* Need to reset so it doesn't keep checking inside this branch */ 
 					/* Now we must calculate the new scale */
-					r_x = Ctrl->A.new_size[0] / w;
+					if (Ctrl->A.rescale)          /* except if it was set as an option */
+						r_x = Ctrl->A.scale;
+					else
+						r_x = Ctrl->A.new_size[0] / w;
+
 					new_scale_x = new_scale_y = old_scale_x * r_x;
 					new_off_x = -xt_bak + xt_bak * r_x;     /* Need to recompute the new offsets as well */
 					new_off_y = -yt_bak + yt_bak * r_x;
