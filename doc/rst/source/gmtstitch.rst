@@ -14,7 +14,6 @@ Synopsis
 [ **-Q**\ [*template*] ] [ **-T**\ *cutoff*\ [*unit*][/\ *nn\_dist*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
-[ **-bo**\ [*ncols*][*type*] ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]

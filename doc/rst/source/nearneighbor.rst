@@ -4,25 +4,30 @@ nearneighbor
 
 nearneighbor - Grid table data using a "Nearest neighbor" algorithm
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
-**nearneighbor** [ *table* ] **-G**\ *out\_grdfile*
-**-I**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
-**-N**\ *sectors*\ [/*min\_sectors*]
-**-R**\ *west*/*east*/*south*/*north*\ [**r**\ ]
-**-S**\ *search\_radius*\ [*unit*\ ] [ **-E**\ *empty* ] [
-**-V**\ [*level*\ ] ] [ **-W** ] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [
-**-f**\ *colinfo* ] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [ **-n**\ [**+b**\ *BC*] ] [ **-r** ] [ **-:**\ [**i**\ \|\ **o**] ]
+**nearneighbor** [ *table* ] **-G**\ *out_grdfile*
+|SYN_OPT-I|
+**-N**\ *sectors*\ [/*min_sectors*]
+|SYN_OPT-R|
+[ **-S**\ *search_radius*\ [*unit*\ ] [ **-E**\ *empty* ]
+[ |SYN_OPT-V| ]
+[ **-W** ]
+[ |SYN_OPT-bi| ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-n| ]
+[ **-r** ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **nearneighbor** reads arbitrarily located (x,y,z[,w]) triples
 [quadruplets] from standard input [or *table*] and uses a nearest
@@ -30,42 +35,42 @@ neighbor algorithm to assign an average value to each node that have one
 or more points within a radius centered on the node. The average value
 is computed as a weighted mean of the nearest point from each sector
 inside the search radius. The weighting function used is w(r) = 1 / (1 +
-d ^ 2), where d = 3 \* r / search\_radius and r is distance from the
+d ^ 2), where d = 3 \* r / search_radius and r is distance from the
 node. This weight is modulated by the observation points’ weights [if
 supplied]. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
-**-G**\ *out\_grdfile*
+**-G**\ *out_grdfile*
     Give the name of the output grid file. 
 
 .. include:: explain_-I.rst_
 
-**-N**\ *sectors*\ [/*min\_sectors*]
+**-N**\ *sectors*\ [/*min_sectors*]
     The circular area centered on each node is divided into *sectors*
     sectors. Average values will only be computed if there is at least
-    one value inside at least *min\_sectors* of the sectors for a given
+    one value inside at least *min_sectors* of the sectors for a given
     node. Nodes that fail this test are assigned the value NaN (but see
-    **-E**). If *min\_sectors* is omitted, each sector needs to have at
+    **-E**). If *min_sectors* is omitted, each sector needs to have at
     least one value inside it. [Default is quadrant search with 50%
-    coverage, i.e., *sectors* = 4 and *min\_sectors* = 2]. Note that
+    coverage, i.e., *sectors* = 4 and *min_sectors* = 2]. Note that
     only the nearest value per sector enters into the averaging, not all
     values inside the circle. 
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
-**-S**\ *search\_radius*\ [*unit*]
-    Sets the *search\_radius* that determines which data points are
+**-S**\ *search_radius*\ [*unit*]
+    Sets the *search_radius* that determines which data points are
     considered close to a node. Append the distance unit (see UNITS).
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 *table*
     3 [or 4, see **-W**] column ASCII file(s) [or binary, see
-    **-bi**\ [*ncols*\ ][*type*\ ]] holding (x,y,z[,w]) data values. If
+    **-bi**] holding (x,y,z[,w]) data values. If
     no file is specified, **nearneighbor** will read from standard
     input.
 **-E**\ *empty*
@@ -108,25 +113,29 @@ supplied].
 
 .. include:: explain_float.rst_
 
-`Examples <#toc8>`_
--------------------
+Examples
+--------
 
-To create a gridded data set from the file seaMARCII\_bathy.lon\_lat\_z
+To create a gridded data set from the file seaMARCII_bathy.lon_lat_z
 using a 0.5 min grid, a 5 km search radius, using an octant search, and
 set empty nodes to -9999:
 
-    nearneighbor seaMARCII\_bathy.lon\_lat\_z -R242/244/-22/-20 -I0.5m
-    -E-9999 -Gbathymetry.nc -S5k -N8
+   ::
+
+    gmt nearneighbor seaMARCII_bathy.lon_lat_z -R242/244/-22/-20 -I0.5m \
+                     -E-9999 -Gbathymetry.nc -S5k -N8
 
 To make a global grid file from the data in geoid.xyz using a 1 degree
 grid, a 200 km search radius, spherical distances, using an quadrant
 search, and set nodes to NaN only when fewer than two quadrants contain
 at least one value:
 
-    nearneighbor geoid.xyz -R0/360/-90/90 -I1 -Lg -Ggeoid.nc -S200k -N4/2
+   ::
 
-`See Also <#toc9>`_
--------------------
+    gmt nearneighbor geoid.xyz -R0/360/-90/90 -I1 -Lg -Ggeoid.nc -S200k -N4/2
+
+See Also
+--------
 
 `blockmean <blockmean.html>`_,
 `blockmedian <blockmedian.html>`_,

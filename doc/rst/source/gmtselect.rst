@@ -92,7 +92,7 @@ Optional Arguments
     in the multiple-segment file *polygonfile*. For spherical polygons
     (lon, lat), make sure no consecutive points are separated by 180
     degrees or more in longitude. Note that *polygonfile* must be in
-    ASCII regardless of whether **-bi**\ [*ncols*][*type*] is used.
+    ASCII regardless of whether **-bi** is used.
 
 **-I**\ [**cflrsz**]
     Reverses the sense of the test for each of the criteria specified:

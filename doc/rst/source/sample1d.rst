@@ -45,7 +45,7 @@ Optional Arguments
 
 *table*
     This is one or more ASCII [of binary, see
-    **-bi**\ [*ncols*\ ][*type*\ ]] files with one column containing the
+    **-bi**] files with one column containing the
     independent variable (which must be monotonically in/de-creasing)
     and the remaining columns holding other data values. If no file is
     provided, **sample1d** reads from standard input.

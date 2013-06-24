@@ -36,7 +36,7 @@ frequency or wavelength, p is the spectral density estimate, and e is
 the one standard deviation error bar size. These files are named based
 on *name\_stem*. If the **-C** option is used, up to eight files are
 created; otherwise only one (xpower) is written. The files (which are
-ASCII unless **-bo**\ [*ncols*\ ][*type*\ ] is set) are as follows:
+ASCII unless **-bo** is set) are as follows:
 
 *name\_stem*.xpower
     Power spectral density of X(t). Units of X \* X \* *dt*.
@@ -77,7 +77,7 @@ Optional Arguments
 ------------------
 
 *table*
-    One or more ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ])
+    One or more ASCII (or binary, see **-bi**)
     files holding X(t) [Y(t)] samples in the first 1 [or 2] columns. If
     no files are specified, **spectrum1d** will read from standard input.
 

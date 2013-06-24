@@ -1,6 +1,6 @@
 .. _-bi_full:
 
-**-bi**\ [*ncols*\ ][*type*\ ]
+**-bi**\ [*ncols*][*type*]
     Select binary input. Append one or more comma-separated combinations
     of *ncols*\ *type*, where *ncols* is the actual number of data
     columns and *type* must be one of **c** (int8\_t, aka char), **u**

@@ -17,7 +17,7 @@ Synopsis
 [ **-N**\ *unit* ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
-[ **-bi**\ [*ncols*\ ][*type*] ]
+[ |SYN_OPT-bi| ]
 [ |SYN_OPT-n| ]
 
 |No-spaces|
@@ -29,7 +29,7 @@ Description
 netCDF files. You can either delete one or more columns, add a new
 column, update an existing column with new data, or supply error
 correction information (\*.e77 files). New data may come from a table
-(ASCII unless **-bi**\ [*ncols*\ ][*type*\ ] is used), be based on
+(ASCII unless **-bi** is used), be based on
 existing columns and certain theoretical expressions, or they may be
 obtained by sampling a grid (choose between GMT grid or a Sandwell/Smith
 Mercator \*.img grid) along track. The new data will be appended to the

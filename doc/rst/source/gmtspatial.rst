@@ -19,7 +19,6 @@ Synopsis
 [ **-T**\ [*clippolygon*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
-[ **-bo**\ [*ncols*\ ][*type*] ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]

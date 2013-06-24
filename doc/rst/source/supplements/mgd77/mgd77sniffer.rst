@@ -20,7 +20,7 @@ Synopsis
 [ **-S**\ **d**\ \|\ **s**\ \|\ **t** ] [ **-T**\ *gap* ]
 [ |SYN_OPT-V| ]
 [ **-W**\ **c**\ \|\ **g**\ \|\ **o**\ \|\ **s**\ \|\ **t**\ \|\ **v**\ \|\ **x** ]
-[ **-bo**\ [*ncols*][*type*] ]
+[ |SYN_OPT-bo| ]
 [ |SYN_OPT-n| ]
 
 |No-spaces|
@@ -253,8 +253,8 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-V.rst_
 
-**-bo**\ [*ncols*][*type*]
-    Output binary data for **-D**\ d\|f\|s\|v option. 
+.. |Add_-bo| replace:: Output binary data for **-D**\ d\|f\|s\|v option.
+.. include:: ../../explain_-bo.rst_
 
 .. include:: ../../explain_-n.rst_
 

@@ -13,7 +13,7 @@ Synopsis
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ **-W**\ [*weight*] ] [ **-Z**\ [*flags*] ]
-[ **-bo**\ [*ncols*\ ][*type*] ]
+[ |SYN_OPT-bo| ]
 [ |SYN_OPT-f| ]
 [ **-ho**\ [*n*] ]
 [ |SYN_OPT-o| ]

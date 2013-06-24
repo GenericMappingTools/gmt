@@ -17,7 +17,7 @@ Synopsis
 [ **-S**\ *track* ]
 [ |SYN_OPT-V| ]
 [ **-W**\ [*list*] ]
-[ **-bo**\ [*ncols*][*type*] ]
+[ |SYN_OPT-bo| ]
 
 |No-spaces|
 
@@ -60,7 +60,7 @@ Optional Arguments
     Specify your desired output using any combination of
     *acdhiInNtTvwxyz*, in any order. Do not use space between the
     letters, and note your selection is case-sensitive. The output will
-    be ASCII (or binary, **-bo**\ [*ncols*\ ][*type*\ ]) columns of
+    be ASCII (or binary, **-bo**) columns of
     values. Description of codes: **a** is the angle (< 90) defined by
     the crossing tracks, **c** is crossover value of chosen observation
     (see **-C**), **d** is distance along track, **h** is heading along

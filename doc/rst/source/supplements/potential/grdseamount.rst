@@ -15,7 +15,7 @@ Synopsis
 [ **-A**\ [*out/in*\ ] ] [ **-C** ] [ **-G**\ *grdfile* ] [ **-L**\ [*cut*] ]
 [ **-N**\ *norm* ] [ **-S**\ *scale* ] [ **-T**\ [*flattening*] ] [ **-Z**\ *level* ]
 [ |SYN_OPT-V| ]
-[ **-bi**\ [*ncols*][*type* ] ]
+[ |SYN_OPT-bi| ]
 [ **-fg** ]
 [ |SYN_OPT-i| ]
 [ **-r** ] 

@@ -15,7 +15,8 @@ Synopsis
 [ |SYN_OPT-I| ]
 [ **-J**\ *parameters* ]
 [ |SYN_OPT-V| ]
-[ **-bo**\ [*ncols*][*type*] ] [ **-o**\ *cols*\ [,...] ]
+[ |SYN_OPT-bo| ]
+[ |SYN_OPT-o| ]
 
 |No-spaces|
 
@@ -62,7 +63,7 @@ Optional Arguments
 
 **-G**\ *grdfile*
     Name of output grid file. If not set, the grid will be written as
-    ASCII (or binary; see **-bo**\ [*ncols*][*type*]) xyz-triplets
+    ASCII (or binary; see **-bo**) xyz-triplets
     to stdout instead. 
 
 .. include:: explain_-I.rst_

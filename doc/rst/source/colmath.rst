@@ -48,8 +48,7 @@ Optional Arguments
     appended vertically [Default]. All files must have the same number
     of segments and number of rows per segment. Note for binary input,
     all the files you want to paste must have the same number of columns
-    (as set with **-bi**\ [*ncols*\ ][*type*\ ]); ascii tables can have
-    different number of columns.
+    (as set with **-bi**); ascii tables can have different number of columns.
 
 **-N**
     Do not write records that only contain NaNs in every field [Default writes all records].

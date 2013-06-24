@@ -15,7 +15,7 @@ Synopsis
 [ **-Sl**\ \|\ **u**\ \|\ **h**\ *speed* ]
 [ |SYN_OPT-V| ]
 [ **-W**\ *size* ] [ **-Z** ]
-[ **-bo**\ [*ncols*\ ][*type*\ ] ]
+[ |SYN_OPT-bo| ]
 
 |No-spaces|
 
@@ -105,7 +105,7 @@ Remarks
 -------
 
 The COEs found are printed out to standard output in ASCII format
-(unless **-bo**\ [*ncols*\ ][*type*\ ] is set). When ASCII is chosen,
+(unless **-bo** is set). When ASCII is chosen,
 the output format depends on whether or not old-style XOVER output
 (**-L**) has been selected [See the **x_over** man page for more
 details]. If ASCII, then the first record contains the name of the tag

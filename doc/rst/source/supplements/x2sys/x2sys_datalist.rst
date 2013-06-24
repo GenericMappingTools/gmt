@@ -9,13 +9,13 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**x2sys_datalist** *track(s)* **-T**\ *TAG* [ **-A** ] [ **-E** ] [
-**-F**\ *name1*,\ *name2*,...) ] [ **-I**\ [*list*] ] [
-**-L**\ [*corrtable*] ]
+**x2sys_datalist** *track(s)* **-T**\ *TAG* [ **-A** ] [ **-E** ]
+[ **-F**\ *name1*,\ *name2*,...) ] [ **-I**\ [*list*] ]
+[ **-L**\ [*corrtable*] ]
 [ |SYN_OPT-R| ]
 [ **-S** ] [
 [ |SYN_OPT-V| ]
-[ **-bo**\ [*ncols*][*type*] ]
+[ |SYN_OPT-bo| ]
 [ |SYN_OPT-h| ]
 
 |No-spaces|

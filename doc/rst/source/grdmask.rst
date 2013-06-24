@@ -15,7 +15,8 @@ Synopsis
 [ **-A**\ [**m**\ \|\ **p**] ]
 [ **-N**\ [**z**\ \|\ **Z**\ \|\ **p**\ \|\ **P**]\ *values* ]
 [ **-S**\ *search\_radius*\ [*unit*] ] [ |SYN_OPT-V| ]
-[ **-bi**\ [*ncols*][*type*] ] [ **-f**\ *colinfo* ]
+[ |SYN_OPT-bi| ]
+[ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
@@ -44,7 +45,7 @@ Required Arguments
 
 *pathfiles*
     The name of 1 or more ASCII [or binary, see
-    **-bi**\ [*ncols*][*type*]] files holding the polygon(s) or data points.
+    **-bi**] files holding the polygon(s) or data points.
 
 **-G**\ *mask_grd_file*]
     Name of resulting output mask grid file. (See GRID FILE FORMATS below). 

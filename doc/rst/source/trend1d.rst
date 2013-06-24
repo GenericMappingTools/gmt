@@ -52,7 +52,7 @@ Optional Arguments
 ------------------
 
 *table*
-    One or more ASCII [or binary, see **-bi**\ [*ncols*\ ][*type*\ ]]
+    One or more ASCII [or binary, see **-bi**]
     files containing x,y [w] values in the first 2 [3] columns. If no
     files are specified, **trend1d** will read from standard input.
 **-C**\ *condition\_number*

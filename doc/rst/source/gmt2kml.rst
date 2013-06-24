@@ -20,7 +20,7 @@ Synopsis
 [ **-T**\ *title*\ [/*foldername*] ]
 [ |SYN_OPT-V| ]
 [ **-W**\ [**-**\ \|\ **+**]\ *pen* ] [ **-Z**\ *args* ]
-[ **-bi**\ [*ncols*\ ][*type*\ ] ]
+[ |SYN_OPT-bi| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]

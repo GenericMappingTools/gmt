@@ -60,7 +60,7 @@ Optional Arguments
 
 *xyz[w]file(s)*
     3 [or 4, see **-W**] column ASCII data table file(s) [or binary, see
-    **-bi**\ [*ncols*\ ][*type*]] holding (*x*,\ *y*,\ *z*\ [,*w*])
+    **-bi**] holding (*x*,\ *y*,\ *z*\ [,*w*])
     data values. [*w*] is an optional weight for the data. If no file
     is specified, **gmtaverage** will read from standard input.
 

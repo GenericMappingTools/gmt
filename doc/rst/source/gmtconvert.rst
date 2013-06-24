@@ -58,8 +58,7 @@ Optional Arguments
     appended vertically [Default]. All files must have the same number
     of segments and number of rows per segment. Note for binary input,
     all the files you want to paste must have the same number of columns
-    (as set with **-bi**\ [*ncols*][*type*]); ascii tables can have
-    different number of columns.
+    (as set with **-bi**); ascii tables can have different number of columns.
 
 **-D**\ [*template*]
     For multiple segment data, dump each segment to a separate output
@@ -69,7 +68,7 @@ Optional Arguments
     argument (the running segment number across all tables); this is
     usually %d but could be %08d which gives leading zeros, etc.
     [Default is gmtconvert_segment\_%d.{txt\|bin}, depending on
-    **-bo**\ [*ncols*][*type*]]. Alternatively, give a template with
+    **-bo**]. Alternatively, give a template with
     two C format specifiers and we will supply the table number and the
     segment number within the table to build the file name.
 

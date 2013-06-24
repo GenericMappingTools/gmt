@@ -22,7 +22,7 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ **-bi**\ [*ncols*\ ][*type*\ ] ]
+[ |SYN_OPT-bi| ]
 [ |SYN_OPT-c| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
@@ -82,7 +82,7 @@ Optional Arguments
     (including modifications like %05d) then polygons will be written to
     different files; otherwise all polygons are written to the specified
     file (*template*). The files are ASCII unless
-    **-bo**\ [*ncols*\ ][*type*\ ] is used. See **-Q** to exclude small
+    **-bo** is used. See **-Q** to exclude small
     polygons from consideration. 
 
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code

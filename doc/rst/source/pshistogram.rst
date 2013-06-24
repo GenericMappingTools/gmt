@@ -4,35 +4,37 @@ pshistogram
 
 pshistogram - Calculate and plot histograms
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
 **pshistogram** [ *table* ] **-Jx**\ \|\ **X**\ *parameters*
-**-W**\ *bin\_width* [ **-A** ] [
-**-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ *cptfile* ] [
-**-F** ] [ **-G**\ *fill* ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [
-**-I**\ [**o**\ \|\ **O**] ] [ **-K** ] [ **-L**\ *pen* ] 
-[ **-N**\ [*mode*][**+p**\ *pen*] ] [ **-O** ] [**-P** ] [ **-Q** ] [
-**-R**\ [*unit*\ ]\ *xmin*/*xmax*/*ymin*/*ymax*\ [**r**\ ] ] [ **-S** ]
-[ **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [
-**-V**\ [*level*\ ] ] [
-**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-] [
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-] [ **-Z**\ *type* ] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [
-**-c**\ *copies* ] [ **-f**\ [**i**\ \|\ **o**]\ *colinfo* ] [
-**-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [
-**-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
-] [ **-t**\ [*transp*\ ] ]
+**-W**\ *bin_width* [ **-A** ]
+[ |SYN_OPT-B| ]
+[ **-C**\ *cptfile* ]
+[ **-F** ] [ **-G**\ *fill* ] [ **-Jz**\ \|\ **Z**\ *parameters* ]
+[ **-I**\ [**o**\ \|\ **O**] ] [ **-K** ] [ **-L**\ *pen* ] 
+[ **-N**\ [*mode*][**+p**\ *pen*] ] [ **-O** ] [**-P** ] [ **-Q** ]
+[ |SYN_OPT-R| ]
+[ **-S** ]
+[ |SYN_OPT-U| ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-X| ]
+[ |SYN_OPT-Y| ]
+[ **-Z**\ *type* ]
+[ |SYN_OPT-bi| ]
+[ |SYN_OPT-c| ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-p| ]
+[ |SYN_OPT-t| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **pshistogram** reads *file* [or standard input] and examines the first
 data column (or use **-i**) to calculate histogram parameters based on
@@ -40,16 +42,16 @@ the bin-width provided. Using these parameters, scaling, and optional
 range parameters it will generate *PostScript* code that plots a
 histogram. A cumulative histogram may also be specified. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 **-Jx**
     *xscale[/yscale]* (Linear scale(s) in distance unit/data unit).
-**-W**\ *bin\_width*
+**-W**\ *bin_width*
     Sets the bin width used for histogram calculations.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
@@ -118,11 +120,11 @@ histogram. A cumulative histogram may also be specified.
     Choose between 6 types of histograms: 
 
     * 0 = counts [Default] 
-    * 1 = frequency\_percent 
+    * 1 = frequency_percent 
     * 2 = log (1.0 + count) 
-    * 3 = log (1.0 + frequency\_percent) 
+    * 3 = log (1.0 + frequency_percent) 
     * 4 = log10 (1.0 + count) 
-    * 5 = log10 (1.0 + frequency\_percent). 
+    * 5 = log10 (1.0 + frequency_percent). 
 
 .. |Add_-bi| replace:: [Default is 2 input columns]. 
 .. include:: explain_-bi.rst_
@@ -162,7 +164,7 @@ bars, run:
 
    ::
 
-    gmt pshistogram errors.xy -W1 -R-10/10/0/0 -JxLENBD(c)/0.01c \
+    gmt pshistogram errors.xy -W1 -R-10/10/0/0 -Jxc/0.01c \
                     -B2:Error:/100:Counts: -Gblack -i1 -V > plot.ps
 
 Since no y-range was specified, pshistogram will calculate ymax in even

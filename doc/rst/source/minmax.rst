@@ -14,7 +14,7 @@ Synopsis
 [ **-I**\ [**p**\ \|\ **f**\ \|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...] ]
 [ **-S**\ [**x**\ ][**y**] ] [ **-T**\ *dz*\ [/*col*] ]
 [ |SYN_OPT-V| ]
-[ **-bi**\ [*ncols*\ ][*type*\ ] ]
+[ |SYN_OPT-bi| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
