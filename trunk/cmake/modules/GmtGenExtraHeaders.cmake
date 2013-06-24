@@ -55,33 +55,33 @@ macro (gen_gmt_colors_h)
 	string (REPLACE ";" ",\n" _colors_rgb "${_colors_rgb}")
 	file (WRITE gmt_color_rgb.h "${_colors_rgb}\n")
 
-	# Colors.i
-	list_regex_replace (
-		"^([0-9]+)[ \t]+([0-9]+)[ \t]+([0-9]+)[ \t]+([a-z]+[0-9]*).*"
-		"\\\\1\t\\\\2\t\\\\3\t\\\\4"
-		_colors_man ${_color_file}
-		MATCHES_ONLY)
-	string (REPLACE ";" "\n.br\n" _colors_man "${_colors_man}")
-	file (WRITE Colors.i ".br\n${_colors_man}\n")
+#	# Colors.i
+#	list_regex_replace (
+#		"^([0-9]+)[ \t]+([0-9]+)[ \t]+([0-9]+)[ \t]+([a-z]+[0-9]*).*"
+#		"\\\\1\t\\\\2\t\\\\3\t\\\\4"
+#		_colors_man ${_color_file}
+#		MATCHES_ONLY)
+#	string (REPLACE ";" "\n.br\n" _colors_man "${_colors_man}")
+#	file (WRITE Colors.i ".br\n${_colors_man}\n")
 endmacro (gen_gmt_colors_h)
 
 # Fonts.i
-macro (gen_ps_font_info)
-	file2list (_fonts_file ${GMT_SRC}/share/pslib/PS_font_info.d)
-	list_regex_replace (
-		"^([^# \t]+).*"
-		"\\\\1"
-		_fonts_list ${_fonts_file}
-		MATCHES_ONLY)
-	set (_fonts_man)
-	set (_fontnum 0)
-	foreach (_font ${_fonts_list})
-		list (APPEND _fonts_man "${_fontnum}\t${_font}")
-		math (EXPR _fontnum "${_fontnum} + 1")
-	endforeach (_font ${_fonts_list})
-	string (REPLACE ";" "\n.br\n" _fonts_man "${_fonts_man}")
-	file (WRITE Fonts.i ".br\n${_fonts_man}\n")
-endmacro (gen_ps_font_info)
+#macro (gen_ps_font_info)
+#	file2list (_fonts_file ${GMT_SRC}/share/pslib/PS_font_info.d)
+#	list_regex_replace (
+#		"^([^# \t]+).*"
+#		"\\\\1"
+#		_fonts_list ${_fonts_file}
+#		MATCHES_ONLY)
+#	set (_fonts_man)
+#	set (_fontnum 0)
+#	foreach (_font ${_fonts_list})
+#		list (APPEND _fonts_man "${_fontnum}\t${_font}")
+#		math (EXPR _fontnum "${_fontnum} + 1")
+#	endforeach (_font ${_fonts_list})
+#	string (REPLACE ";" "\n.br\n" _fonts_man "${_fonts_man}")
+#	file (WRITE Fonts.i ".br\n${_fonts_man}\n")
+#endmacro (gen_ps_font_info)
 
 macro (gen_gmt_ellipsoids)
 	# gmt_ellipsoids.h
@@ -96,15 +96,15 @@ macro (gen_gmt_ellipsoids)
 	string (REPLACE ";" ",\n" _ellipsnames "${_ellipsnames}")
 	file (WRITE gmt_ellipsoids.h "${_ellipsnames}\n")
 
-	# Ellipsoids.i
-	list_regex_replace (
-		"^([^#\t]+)[ \t]+([0-9]+)[ \t]+[0-9.]+[ \t]+[0-9.]+[ \t]+:[ \t]+(.*)"
-		"\\\\1: \\\\3 (\\\\2)"
-		_ellipsnames ${_ellipsnames_file}
-		MATCHES_ONLY)
-	list (REMOVE_DUPLICATES _ellipsnames)
-	string (REPLACE ";" "\n.br\n" _ellipsnames "${_ellipsnames}")
-	file (WRITE Ellipsoids.i "${_ellipsnames}\n")
+#	# Ellipsoids.i
+#	list_regex_replace (
+#		"^([^#\t]+)[ \t]+([0-9]+)[ \t]+[0-9.]+[ \t]+[0-9.]+[ \t]+:[ \t]+(.*)"
+#		"\\\\1: \\\\3 (\\\\2)"
+#		_ellipsnames ${_ellipsnames_file}
+#		MATCHES_ONLY)
+#	list (REMOVE_DUPLICATES _ellipsnames)
+#	string (REPLACE ";" "\n.br\n" _ellipsnames "${_ellipsnames}")
+#	file (WRITE Ellipsoids.i "${_ellipsnames}\n")
 endmacro (gen_gmt_ellipsoids)
 
 macro (gen_gmt_keywords_h)
@@ -224,18 +224,18 @@ macro (gen_gmt_math_h)
 
 	configure_file (${GMT_SRC}/src/gmtmath_explain.h.in gmtmath_explain.h)
 
-	# gmtmath_man.i
-	list_regex_replace (
-		"^[^:]+:[ ]+([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+(.+)[.][ *]+/.*"
-		"#BfB\\\\1#BfP\t\\\\2  \\\\3\t\\\\4"
-		_op_man ${_raw_op_descriptions}
-		MATCHES_ONLY)
-	string (REPLACE ";" "\n" _op_man "${_op_man}")
-	string_unescape (_op_man "${_op_man}" NOESCAPE_SEMICOLON)
-	set (_op_man "Choose among the following ${GMTMATH_N_OPERATORS} operators.\n"
-	"\"args\" are the number of input and output arguments.\n"
-	".TS\nl l l .\nOperator\targs\tReturns\n${_op_man}\n.TE\n")
-	file (WRITE gmtmath_man.i ${_op_man})
+#	# gmtmath_man.i
+#	list_regex_replace (
+#		"^[^:]+:[ ]+([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+(.+)[.][ *]+/.*"
+#		"#BfB\\\\1#BfP\t\\\\2  \\\\3\t\\\\4"
+#		_op_man ${_raw_op_descriptions}
+#		MATCHES_ONLY)
+#	string (REPLACE ";" "\n" _op_man "${_op_man}")
+#	string_unescape (_op_man "${_op_man}" NOESCAPE_SEMICOLON)
+#	set (_op_man "Choose among the following ${GMTMATH_N_OPERATORS} operators.\n"
+#	"\"args\" are the number of input and output arguments.\n"
+#	".TS\nl l l .\nOperator\targs\tReturns\n${_op_man}\n.TE\n")
+#	file (WRITE gmtmath_man.i ${_op_man})
 endmacro (gen_gmt_math_h)
 
 # grdmath.h grdmath_op.h grdmath_explain.h grdmath_man.i
@@ -299,18 +299,18 @@ macro (gen_grd_math_h)
 
 	configure_file (${GMT_SRC}/src/grdmath_explain.h.in grdmath_explain.h)
 
-	# grdmath_man.i
-	list_regex_replace (
-		"^[^:]+:[ ]+([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+(.+)[.][ *]+/.*"
-		"#BfB\\\\1#BfP\t\\\\2  \\\\3\t\\\\4"
-		_op_man ${_raw_op_descriptions}
-		MATCHES_ONLY)
-	string (REPLACE ";" "\n" _op_man "${_op_man}")
-	string_unescape (_op_man "${_op_man}" NOESCAPE_SEMICOLON)
-	set (_op_man "Choose among the following ${GRDMATH_N_OPERATORS} operators.\n"
-	"\"args\" are the number of input and output arguments.\n"
-	".TS\nl l l .\nOperator\targs\tReturns\n${_op_man}\n.TE\n")
-	file (WRITE grdmath_man.i ${_op_man})
+#	# grdmath_man.i
+#	list_regex_replace (
+#		"^[^:]+:[ ]+([^ ]+)[ ]+([0-9]+)[ ]+([0-9]+)[ ]+(.+)[.][ *]+/.*"
+#		"#BfB\\\\1#BfP\t\\\\2  \\\\3\t\\\\4"
+#		_op_man ${_raw_op_descriptions}
+#		MATCHES_ONLY)
+#	string (REPLACE ";" "\n" _op_man "${_op_man}")
+#	string_unescape (_op_man "${_op_man}" NOESCAPE_SEMICOLON)
+#	set (_op_man "Choose among the following ${GRDMATH_N_OPERATORS} operators.\n"
+#	"\"args\" are the number of input and output arguments.\n"
+#	".TS\nl l l .\nOperator\targs\tReturns\n${_op_man}\n.TE\n")
+#	file (WRITE grdmath_man.i ${_op_man})
 endmacro (gen_grd_math_h)
 
 # Get something done
