@@ -10,7 +10,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **ps2raster** *psfile(s)*
-[ **-A**\ [**u**][*margins*][**-**][**+r**][**+s**\ *width*\ [**u**]/\ *height*\ [**u**]] ]
+[ **-A**\ [**u**][*margins*][**-**][**+r**][**+s**\ \|\ **S**\ *width*\ [**u**]/\ *height*\ [**u**]] ]
 [ **-C**\ *gs_option* ] [ **-D**\ *outdir* ] [ **-E**\ *resolution* ]
 [ **-G**\ *ghost_path* ] [ **-L**\ *listfile* ] [ **-P** ]
 [ **-Q**\ [**g**\ \|\ **t**][1\|2\|4] ] [ **-S** ]
@@ -45,20 +45,20 @@ Required Arguments
 Optional Arguments
 ------------------
 
-**-A**\ [**u**][*margins*][**-**][**+r**][**+s**\ *width*\ [**u**]/\ *height*\ [**u**]]
+**-A**\ [**u**][*margins*][**-**][**+r**][**+s**\ \|\ **S**\ *width*\ [**u**]/\ *height*\ [**u**]]
     Adjust the BoundingBox and HiResBoundingBox to the minimum required
     by the image content. Append **u** to first remove any GMT-produced
     time-stamps. Optionally, append extra margins to the bounding box.
     Give either one (uniform), two (x and y) or four (individual sides)
     margins; append unit [Default is set by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`].
-    Alternatively, use **-A-** to override any automatic setting of
-    **-A** by **-W**.
+    Alternatively, use **-A-** to override any automatic setting of **-A** by **-W**.
 
     Use the **-A+s**\ *new_width* to resize the output image to exactly *new_width* units.
-    The default is to use what is set by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`]
+    The default is to use what is set by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`
     but you can append a new unit and/or impose different width and height. What happens
     here is that ghostscript will do the re-interpolation work and the final image will
     retain the DPI resolution set by **-E**.
+    Alternatively use **-A+S**\ *scale* to scale the image by a constant factor.
 
     Use the **-A+r** to round the HighRes BoundingBox instead of using the `ceil` function.
     This is going against Adobe Law but can be useful when creating very small images
@@ -86,7 +86,7 @@ Optional Arguments
     Full path to your GhostScript executable. NOTE: For Unix systems
     this is generally not necessary. Under Windows, the ghostscript path
     is now fetched from the registry. If this fails you can still add
-    the GS path to system’s path or give the full path here. (e.g.,
+    the GS path to system's path or give the full path here. (e.g.,
     **-G**\ c:\\programs\\gs\\gs9.02\\bin\\gswin64c). WARNING: because
     of the poor decision of embedding the bits on the gs exe name we
     cannot satisfy both the 32 and 64 bits ghostscript executable names.
@@ -124,8 +124,7 @@ Optional Arguments
     append - to get a grayscale image only. The EPS format can be
     combined with any of the other formats. For example, **-Tef**
     creates both an EPS and a PDF file. The **-TF** creates a multi-page
-    PDF file from the list of input PS or PDF files. It requires **-F**
-    option. 
+    PDF file from the list of input PS or PDF files. It requires **-F** option. 
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
