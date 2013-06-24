@@ -255,7 +255,7 @@ available isochrons. We have obtained one file, ``quakes.xym``, which contains t
 position and magnitude of available earthquakes in the region. We choose
 to use magnitude/100 for the symbol-size in inches. The digital fracture
 zone traces (``fz.xy``) and isochrons (0 isochron as ``ridge.xy``, the rest as ``isochrons.xy``) were
-digitized from available maps [25]_. We create the final location map
+digitized from available maps [24]_. We create the final location map
 (Figure [fig:example:sub:`0`\ 7]) with the following script:
 
 .. literalinclude:: ../../examples/ex07/example_07.sh
