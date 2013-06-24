@@ -38,7 +38,6 @@ fi
 
 FILE_GMT_MODULE_C=gmt_${L_TAG}_module.c
 FILE_GMT_MODULE_H=gmt_${L_TAG}_module.h
-FILE_GMT_MODULE_TROFF=explain_gmt_${L_TAG}_modules.txt
 COPY_YEAR=$(date +%Y)
 LIB_STRING=`grep LIB_STRING $FILE_MODULEINFO | awk -F= '{print $NF}'`
 #

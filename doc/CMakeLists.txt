@@ -19,27 +19,27 @@
 include (GmtHelperMacros)
 
 # TeX output PDFs
-set (_docs_output GMT_Docs.pdf GMT_Tutorial.pdf GMT_API.pdf)
+#set (_docs_output GMT_Docs.pdf GMT_Tutorial.pdf GMT_API.pdf)
 
 # TeX files
-set (_docs_inputs GMT_Appendix_A.tex GMT_Appendix_B.tex GMT_Appendix_C.tex
-	GMT_Appendix_D.tex GMT_Appendix_E.tex GMT_Appendix_F.tex GMT_Appendix_G.tex
-	GMT_Appendix_H.tex GMT_Appendix_I.tex GMT_Appendix_J.tex GMT_Appendix_K.tex
-	GMT_Appendix_L.tex GMT_Appendix_M.tex GMT_Appendix_N.tex GMT_Appendix_O.tex
-	GMT_Appendix_P.tex GMT_Chapter_1.tex GMT_Chapter_2.tex
-	GMT_Chapter_3.tex GMT_Chapter_4.tex GMT_Chapter_5.tex GMT_Chapter_6.tex
-	GMT_Chapter_7.tex GMT_Chapter_8.tex GMT_Chapter_9.tex GMT_Frontmatter.tex
-	)
+#set (_docs_inputs GMT_Appendix_A.tex GMT_Appendix_B.tex GMT_Appendix_C.tex
+#	GMT_Appendix_D.tex GMT_Appendix_E.tex GMT_Appendix_F.tex GMT_Appendix_G.tex
+#	GMT_Appendix_H.tex GMT_Appendix_I.tex GMT_Appendix_J.tex GMT_Appendix_K.tex
+#	GMT_Appendix_L.tex GMT_Appendix_M.tex GMT_Appendix_N.tex GMT_Appendix_O.tex
+#	GMT_Appendix_P.tex GMT_Chapter_1.tex GMT_Chapter_2.tex
+#	GMT_Chapter_3.tex GMT_Chapter_4.tex GMT_Chapter_5.tex GMT_Chapter_6.tex
+#	GMT_Chapter_7.tex GMT_Chapter_8.tex GMT_Chapter_9.tex GMT_Frontmatter.tex
+#	)
 
-set (_common_inputs GMT.ist GMT.sty GMT_macros.tex GMT_Cover.tex)
+#set (_common_inputs GMT.ist GMT.sty GMT_macros.tex GMT_Cover.tex)
 
 set (_docs_depends
 	${_docs_inputs}
 	${_common_inputs}
 	${CMAKE_CURRENT_BINARY_DIR}/examples/done
 	#${CMAKE_CURRENT_BINARY_DIR}/fig/done
-	${CMAKE_CURRENT_BINARY_DIR}/scripts/done
-	${CMAKE_CURRENT_BINARY_DIR}/GMT_version.tex)
+	${CMAKE_CURRENT_BINARY_DIR}/scripts/done)
+#	${CMAKE_CURRENT_BINARY_DIR}/GMT_version.tex)
 
 add_custom_target (docs_depends DEPENDS
 	examples_done scripts_done)
@@ -92,7 +92,7 @@ else (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 #		endforeach (_input ${_docs_inputs} ${_common_inputs})
 
 		# Generate GMT_version.tex
-		configure_file (GMT_version.tex.in GMT_version.tex)
+#		configure_file (GMT_version.tex.in GMT_version.tex)
 
 		# Set TeX FLAGS
 		set (MAKEINDEX_COMPILER_FLAGS "-s ${CMAKE_CURRENT_SOURCE_DIR}/GMT.ist"

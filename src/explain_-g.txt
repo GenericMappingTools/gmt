@@ -1,3 +1,0 @@
-.TP
-GMT_g_OPT (*)
-Determine data gaps and line breaks.

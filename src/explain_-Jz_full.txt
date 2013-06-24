@@ -1,3 +1,0 @@
-.TP
-GMT_Jz_OPT
-Set z-axis scaling; same syntax as OPT(Jx).
