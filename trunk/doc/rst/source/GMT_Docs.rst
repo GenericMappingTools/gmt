@@ -8740,7 +8740,7 @@ Finally we show an example of a polygon file:
    Convert other graphics formats to Sun ras format using ImageMagick's
    **convert** program.
 
-.. [20]
+.. [19]
    Requires building *GMT* with GDAL.
 
 .. [21]
