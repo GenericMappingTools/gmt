@@ -10,7 +10,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **kml2gmt** [ *kmlfiles* ] [ |SYN_OPT-V| ] [ **-Z** ]
-[ |SYN_OPT-bo ]
+[ |SYN_OPT-bo| ]
 [ |SYN_OPT-:| ]
 
 |No-spaces|
