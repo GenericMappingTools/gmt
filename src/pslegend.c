@@ -93,7 +93,7 @@ int GMT_pslegend_usage (struct GMTAPI_CTRL *API, int level)
 	/* This displays the pslegend synopsis and optionally full usage information */
 
 	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
-	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
+	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: pslegend [<infofile>] -D[x]<x0>/<y0>/<w>[/<h>]/<just>[/<dx>/<dy>] [%s]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>/<dy>] [-F[+i[[<gap>/]<pen>]][+g<fill>][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<fill>]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-K] [-L<spacing>] [-O] [-P] [%s]\n", GMT_J_OPT, GMT_Rgeo_OPT);
@@ -359,7 +359,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_PURPOSE) return (GMT_pslegend_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (GMT_pslegend_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_pslegend_usage (API, GMT_USAGE));	/* Return the usage message */
@@ -651,7 +651,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						sscanf (&line[2], "%s %s %s %[^\n]", bar_cpt, bar_gap, bar_height, bar_opts);
 						x_off = GMT_to_inch (GMT, bar_gap);
 						sprintf (buffer, "-C%s -O -K -D%gi/%gi/%gi/%sh %s", bar_cpt, Ctrl->D.lon + 0.5 * Ctrl->D.width, y0, Ctrl->D.width - 2 * x_off, bar_height, bar_opts);
-						status = GMT_Call_Module (API, "psscale", 0, buffer);	/* Plot the colorbar */
+						status = GMT_Call_Module (API, "psscale", GMT_MODULE_CMD, buffer);	/* Plot the colorbar */
 						if (status) {
 							GMT_Report (API, GMT_MSG_NORMAL, "GMT_psscale returned error %d.\n", status);
 							Return (EXIT_FAILURE);
@@ -716,7 +716,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						x_off = Ctrl->D.lon;
 						x_off += (justify%4 == 1) ? Ctrl->C.dx : ((justify%4 == 3) ? Ctrl->D.width - Ctrl->C.dx : 0.5 * Ctrl->D.width);
 						sprintf (buffer, "-O -K %s -W%s -C%gi/%gi/%s", image, size, x_off, y0, key);
-						status = GMT_Call_Module (API, "psimage", 0, buffer);	/* Plot the image */
+						status = GMT_Call_Module (API, "psimage", GMT_MODULE_CMD, buffer);	/* Plot the image */
 						if (status) {
 							GMT_Report (API, GMT_MSG_NORMAL, "GMT_psimage returned error %d.\n", status);
 							Return (EXIT_FAILURE);
@@ -789,7 +789,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							}
 							sprintf (buffer, "-R%s -J%s -O -K -L%s", r_ptr->arg, j_ptr->arg, &mapscale[k]);
 						}
-						status = GMT_Call_Module (API, "psbasemap", 0, buffer);	/* Plot the scale */
+						status = GMT_Call_Module (API, "psbasemap", GMT_MODULE_CMD, buffer);	/* Plot the scale */
 						if (status) {
 							GMT_Report (API, GMT_MSG_NORMAL, "GMT_psbasemap returned error %d.\n", status);
 							Return (EXIT_FAILURE);
@@ -912,7 +912,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 							if (txt_d[0] != '-') {strcat (buffer, " -W"); strcat (buffer, txt_d);}
 							// fprintf (stderr, "%s\n", buffer);
 							
-							status = GMT_Call_Module (API, "psxy", 0, buffer);	/* Plot the front */
+							status = GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, buffer);	/* Plot the front */
 							if (status) {
 								GMT_Report (API, GMT_MSG_NORMAL, "GMT_psxy returned error %d.\n", status);
 								Return (EXIT_FAILURE);
@@ -1144,7 +1144,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 		}
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -S %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
 		// fprintf (stderr, "%s", buffer);
-		if (GMT_Call_Module (API, "psxy", 0, buffer) != GMT_OK) {
+		if (GMT_Call_Module (API, "psxy", GMT_MODULE_CMD, buffer) != GMT_OK) {
 			Return (API->error);	/* Plot the symbols */
 		}
 	}
@@ -1157,7 +1157,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 			Return (API->error);	/* Make filename with embedded object ID */
 		}
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -F+f+j %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
-		if (GMT_Call_Module (API, "pstext", 0, buffer) != GMT_OK) {
+		if (GMT_Call_Module (API, "pstext", GMT_MODULE_CMD, buffer) != GMT_OK) {
 			Return (API->error);	/* Plot the symbols */
 		}
 	}
@@ -1170,7 +1170,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 			Return (API->error);	/* Make filename with embedded object ID */
 		}
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -M -F+f+a+j %s", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
-		if (GMT_Call_Module (API, "pstext", 0, buffer) != GMT_OK) Return (API->error);	/* Plot the symbols */
+		if (GMT_Call_Module (API, "pstext", GMT_MODULE_CMD, buffer) != GMT_OK) Return (API->error);	/* Plot the symbols */
 	}
 
 	for (id = 0; id < 3; id++) {

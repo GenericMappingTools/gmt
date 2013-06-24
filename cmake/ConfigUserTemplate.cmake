@@ -34,28 +34,28 @@
 ## Section 1: Setting up PATHs
 ##
 
-# Installation path (ususally defaults to /usr/local) [auto]:
+# 1a) Installation path (usually defaults to /usr/local) [auto]:
 #set (CMAKE_INSTALL_PREFIX "prefix_path")
 
 ## The following should only be needed if CMake cannot automatically detect
 ## the right version or path.
 
-# Set path to GSHHG Shoreline Database [auto]:
+# 1b) Set path to GSHHG Shoreline Database [auto]:
 #set (GSHHG_ROOT "gshhg_path")
 
-# Set path to DCW Digital Chart of the World for GMT [auto]:
+# 1c) Set path to DCW Digital Chart of the World for GMT [auto]:
 #set (DCW_ROOT "dcw-gmt_path")
 
-# Set location of NetCDF (can be root directory, path to header file or path to nc-config) [auto]:
+# 1d) Set location of NetCDF (can be root directory, path to header file or path to nc-config) [auto]:
 #set (NETCDF_ROOT "netcdf_install_prefix")
 
-# Set location of GDAL (can be root directory, path to header file or path to gdal-config) [auto]:
+# 1e) Set location of GDAL (can be root directory, path to header file or path to gdal-config) [auto]:
 #set (GDAL_ROOT "gdal_install_prefix")
 
-# Set location of PCRE (can be root directory, path to header file or path to pcre-config) [auto]:
+# 1f) Set location of PCRE (can be root directory, path to header file or path to pcre-config) [auto]:
 #set (PCRE_ROOT "pcre_install_prefix")
 
-# Set location of single precision FFTW (can be root directory or path to header file) [auto]:
+# 1g) Set location of single precision FFTW (can be root directory or path to header file) [auto]:
 #set (FFTW3_ROOT "fftw_install_prefix")
 
 # List extra sub-dirs of 'src' with a CMakeList.txt to build non-module codes that link against gmt
@@ -65,25 +65,25 @@
 ## Section 2: GMT features
 ##
 
-# Enforce GPL or LGPL conformity. Use this to disable routines that cannot be
+# 2a) Enforce GPL or LGPL conformity. Use this to disable routines that cannot be
 # redistributed under the terms of the GPL or LGPL such as Shewchuk's
 # triangulation (valid values are GPL, LGPL and off) [off]:
 #set (LICENSE_RESTRICTED GPL)
 
-# Configure default units (possible values are SI and US) [SI]:
+# 2b) Configure default units (possible values are SI and US) [SI]:
 #set (UNITS "US")
 
-# Enable file locking [FALSE]:
+# 2c) Enable file locking [FALSE]:
 #set (FLOCK TRUE)
 
-# Enable building of shared libraries [TRUE] (uncomment to use static libraries):
+# 2d) Enable building of shared libraries [TRUE] (uncomment to use static libraries):
 #set (BUILD_SHARED_LIBS FALSE)
 
-# Install convenience links for GMT modules [TRUE]:
+# 2e) Install convenience links for GMT modules [TRUE]:
 # Uncomment to install only the main gmt program and access modules as: gmt modulename options
 #set (INSTALL_MODULE_LINKS FALSE)
 
-# Build GMT shared lib with supplemental modules [TRUE]:
+# 2f) Build GMT shared lib with supplemental modules [TRUE]:
 # set (BUILD_SUPPLEMENTS FALSE)
 
 ## Advanced configuration begins here. Usually it is not necessary to edit any
@@ -93,46 +93,46 @@
 ## Section 3: Advanced PATHs
 ##
 
-# Install monolithic tree instead of distribution type layout (doc and share
+# 3a) Install monolithic tree instead of distribution type layout (doc and share
 # separated) [ON]:
 #set (GMT_INSTALL_MONOLITHIC OFF)
 
-# Set install name suffix used for directories and main gmt executable
+# 3b) Set install name suffix used for directories and main gmt executable
 # [-${GMT_PACKAGE_VERSION_WITH_SVN_REVISION}]:
 #set (GMT_INSTALL_NAME_SUFFIX "suffix")
 
-# Set share installation path [${CMAKE_INSTALL_PREFIX}/share]:
+# 3c) Set share installation path [${CMAKE_INSTALL_PREFIX}/share]:
 #set (GMT_SHARE_PATH "share_path")
 
-# Set doc installation path [${CMAKE_INSTALL_PREFIX}/share/doc]:
+# 3d) Set doc installation path [${CMAKE_INSTALL_PREFIX}/share/doc]:
 #set (GMT_DOC_PATH "doc_path")
 
-# Set manpage installation path [${CMAKE_INSTALL_PREFIX}/share/man]:
+# 3e) Set manpage installation path [${CMAKE_INSTALL_PREFIX}/share/man]:
 #set (GMT_MAN_PATH "man_path")
 
-# Install documentation files from this external location instead of creating
+# 3f) Install documentation files from this external location instead of creating
 # new PDF and HTML documents from scratch [${GMT_SOURCE_DIR}/doc_release]:
 #set (GMT_INSTALL_EXTERNAL_DOC OFF)
 
-# Install manual pages from this external location instead of creating the
+# 3g) Install manual pages from this external location instead of creating the
 # manpages from scratch [${GMT_SOURCE_DIR}/man_release]:
 #set (GMT_INSTALL_EXTERNAL_MAN OFF)
 
-# Directory in which to install the release sources per default
+# 3h) Directory in which to install the release sources per default
 # [${GMT_BINARY_DIR}/GMT-${GMT_PACKAGE_VERSION}-src]:
 #set (GMT_RELEASE_PREFIX "release-src-prefix")
 
-# Copy GSHHG files to ${GMT_SHARE_PATH}/coast [FALSE]:
+# 3i) Copy GSHHG files to ${GMT_SHARE_PATH}/coast [FALSE]:
 # set (COPY_GSHHG TRUE)
 
-# Copy DCW file to ${GMT_SHARE_PATH}/dcw [FALSE]:
+# 3j) Copy DCW file to ${GMT_SHARE_PATH}/dcw [FALSE]:
 # set (COPY_DCW TRUE)
 
 ##
 ## Section 4: Advanced tweaking
 ##
 
-# Enable running examples/tests with "make check" (out-of-source)
+# 4a) Enable running examples/tests with "make check" (out-of-source)
 # Need to set either DO_EXAMPLES, DO_TESTS or both and uncomment
 # the following line:
 #enable_testing()
@@ -141,14 +141,14 @@
 # Number of parallel test jobs:
 #set (N_TEST_JOBS 4)
 
-# Enable this option to run GMT programs from within ${GMT_BINARY_DIR} without
-# installing or setting GMT_SHAREDIR and GMT_USERDIR first [OFF]:
+# 4b) Enable this option to run GMT programs from within ${GMT_BINARY_DIR}
+# without installing or setting GMT_SHAREDIR and GMT_USERDIR first [OFF]:
 #set (SUPPORT_EXEC_IN_BINARY_DIR ON)
 
-# Set build type can be: empty, Debug, Release, RelWithDebInfo or MinSizeRel [Release]:
+# 4c) Set build type can be: empty, Debug, Release, RelWithDebInfo or MinSizeRel [Release]:
 #set (CMAKE_BUILD_TYPE Debug)
 
-# Extra debugging for developers:
+# 4d) Extra debugging for developers:
 #add_definitions(-DDEBUG)
 #set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement") # recommended even for release build
 #set (CMAKE_C_FLAGS "-Wextra ${CMAKE_C_FLAGS}")            # extra warnings
@@ -156,25 +156,25 @@
 #set (CMAKE_C_FLAGS_RELEASE "-ggdb3 -O2 -Wuninitialized")  # check uninitialized variables
 #set (CMAKE_LINK_DEPENDS_DEBUG_MODE TRUE)                  # debug link dependencies
 
-# This is for GCC on Solaris to avoid "relocations remain against
+# 4e) This is for GCC on Solaris to avoid "relocations remain against
 # allocatable but non-writable sections" problems:
 #set (USER_GMTLIB_LINK_FLAGS -mimpure-text)
 
-# This may be needed to enable strdup and extended math functions with GCC and
-# Suncc on Solaris:
+# 4f) This may be needed to enable strdup and extended math functions
+# with GCC and Suncc on Solaris:
 #set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D__EXTENSIONS__")
 
-# Do not warn when building with Windows SDK or Visual Studio Express:
+# 4g) Do not warn when building with Windows SDK or Visual Studio Express:
 #set (CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS_NO_WARNINGS ON)
 
-# Manually select runtime library when compiling with Windows SDK or Visual
+# 4h) Manually select runtime library when compiling with Windows SDK or Visual
 # Studio Express:
 #set (CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS c:/Windows/System32/msvcr100.dll)
 
-# If your NetCDF library is static (not recommended, applies to Windows only)
+# 4i) If your NetCDF library is static (not recommended, applies to Windows only)
 #set (NETCDF_STATIC TRUE)
 
-# If want to rename the DLLs to something else than the default (e.g. to append the bitness - Windows only)
+# 4j) If want to rename the DLLs to something else than the default (e.g. to append the bitness - Windows only)
 # if (WIN32)
 #	set (BITAGE 32)
 #	# Detect if we are building a 32 or 64 bits version

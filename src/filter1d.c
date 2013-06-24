@@ -173,7 +173,7 @@ void Free_filter1d_Ctrl (struct GMT_CTRL *GMT,struct FILTER1D_CTRL *C) {	/* Deal
 int GMT_filter1d_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
-	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
+	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: filter1d [<table>] -F<type><width>[<mode>] [-D<increment>] [-E] [-I<ignore_val>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L<lack_width>] [-N<t_col>] [-Q<q_factor>] [-S<symmetry>] [-T<t_min>/<t_max>/<t_inc>[+]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s]\n\t[%s] [%s]\n\t[%s]\n\n",
@@ -825,7 +825,7 @@ int GMT_filter1d (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_PURPOSE) return (GMT_filter1d_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (GMT_filter1d_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_filter1d_usage (API, GMT_USAGE));	/* Return the usage message */

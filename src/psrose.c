@@ -130,7 +130,7 @@ int GMT_psrose_usage (struct GMTAPI_CTRL *API, int level)
 	/* This displays the psrose synopsis and optionally full usage information */
 
 	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
-	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
+	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: psrose [<table>] [-A[r]<sector_angle>] [%s] [-C[<modes>]] [-D] [-G<fill>] [-I] [-K]\n", GMT_B_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-L[<wlab>/<elab>/<slab>/<nlab>]] [-M[<size>][<modifiers>]] [-N] [-O] [-P]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-R<r0>/<r1>/<theta0>/<theta1>] [-S[n]<scale>] [-T] [%s]\n", GMT_U_OPT);
@@ -368,7 +368,7 @@ int GMT_psrose (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_PURPOSE) return (GMT_psrose_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (GMT_psrose_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_psrose_usage (API, GMT_USAGE));	/* Return the usage message */

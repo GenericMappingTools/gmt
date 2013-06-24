@@ -175,7 +175,7 @@ int GMT_gmt2kml_usage (struct GMTAPI_CTRL *API, int level)
 	/* This displays the gmt2kml synopsis and optionally full usage information */
 
 	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
-	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
+	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmt2kml [<table>] [-Aa|g|s[<altitude>|x<scale>]] [-C<cpt>] [-D<descriptfile>] [-E]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Fe|s|t|l|p] [-Gf|n[-|<fill>] [-I<icon>] [-K] [-L<name1>,<name2>,...]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-N-|+|<template>|<name>] [-O] [-Q[e|s|t|l|p|n]<transp>] [-Ra|<w>/<e>/<s>/n>] [-Sc|n<scale>]\n");
@@ -669,7 +669,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_PURPOSE) return (GMT_gmt2kml_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (GMT_gmt2kml_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_gmt2kml_usage (API, GMT_USAGE));/* Return the usage message */

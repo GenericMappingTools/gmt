@@ -309,7 +309,7 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 				sprintf (cmd, "%s %s %s %s -G%s -V%c", B[n].file, Targs, Iargs, Rargs, buffer, V_level[GMT->current.setting.verbose]);
 				if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Resample %s via grdsample %s\n", B[n].file, cmd);
-				if ((status = GMT_Call_Module (GMT->parent, "grdsample", 0, cmd))) {	/* Resample the file */
+				if ((status = GMT_Call_Module (GMT->parent, "grdsample", GMT_MODULE_CMD, cmd))) {	/* Resample the file */
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to resample file %s - exiting\n", B[n].file);
 					GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 				}
@@ -319,7 +319,7 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 				sprintf (cmd, "%s %s %s -V%c", B[n].file, Rargs, buffer, V_level[GMT->current.setting.verbose]);
 				if (GMT_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 				GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "Reformat %s via grdreformat %s\n", B[n].file, cmd);
-				if ((status = GMT_Call_Module (GMT->parent, "grdreformat", 0, cmd))) {	/* Resample the file */
+				if ((status = GMT_Call_Module (GMT->parent, "grdreformat", GMT_MODULE_CMD, cmd))) {	/* Resample the file */
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error: Unable to resample file %s - exiting\n", B[n].file);
 					GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 				}
@@ -446,7 +446,7 @@ void Free_grdblend_Ctrl (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *C) {	/* Dea
 int GMT_grdblend_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
-	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
+	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdblend [<blendfile> | <grid1> <grid2> ...] -G<outgrid>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t%s %s [-Cf|l|o|u]\n\t[-N<nodata>] [-Q] [%s] [-W] [-Z<scale>] [%s] [%s]\n", GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_r_OPT);
 
@@ -595,7 +595,7 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_PURPOSE) return (GMT_grdblend_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (GMT_grdblend_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_grdblend_usage (API, GMT_USAGE));	/* Return the usage message */
@@ -807,7 +807,7 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 		char cmd[GMT_BUFSIZ], *V_level = "qncvld";
 		sprintf (cmd, "%s %s -V%c", outfile, Ctrl->G.file, V_level[GMT->current.setting.verbose]);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reformat %s via grdreformat %s\n", outfile, cmd);
-		if ((status = GMT_Call_Module (GMT->parent, "grdreformat", 0, cmd))) {	/* Resample the file */
+		if ((status = GMT_Call_Module (GMT->parent, "grdreformat", GMT_MODULE_CMD, cmd))) {	/* Resample the file */
 			GMT_Report (API, GMT_MSG_NORMAL, "Error: Unable to resample file %s.\n", outfile);
 		}
 	}

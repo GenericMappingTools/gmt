@@ -37,12 +37,6 @@ struct Gmt_moduleinfo {
 	const char *purpose;          /* Program purpose */
 };
 
-/* Name and shorthand or replacement name for legacy module names */
-struct Gmt_alias {
-	const char *alias;
-	const char *name;
-};
-
 #ifdef __cplusplus
 }
 #endif

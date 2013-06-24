@@ -128,7 +128,7 @@ void free_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_NODE *node)
 int GMT_nearneighbor_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
-	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
+	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: nearneighbor [<table>] -G<outgrid> %s\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t-N<sectors>[/<min_sectors>] %s -S%s\n", GMT_Rgeo_OPT, GMT_RADIUS_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-E<empty>] [%s] [-W] [%s] [%s]\n", GMT_V_OPT, GMT_bi_OPT, GMT_f_OPT);
@@ -285,7 +285,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_PURPOSE) return (GMT_nearneighbor_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (GMT_nearneighbor_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_nearneighbor_usage (API, GMT_USAGE));	/* Return the usage message */

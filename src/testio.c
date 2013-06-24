@@ -60,7 +60,7 @@ int main (int argc, char *argv[]) {
 	sprintf (buffer, "-<%s -R0/5/0/5 -Jm1 -Fk -bi3 ->%s", i_string, o_string);
 	
 	/* 5. Run GMT cmd function, or give usage message if errors arise during parsing */
-	status = GMT_Call_Module (API, "mapproject", 0, buffer);
+	status = GMT_Call_Module (API, "mapproject", GMT_MODULE_CMD, buffer);
 	if (status) {
 		GMT_Report (API, GMT_MSG_NORMAL, "GMT_mapproject returned error %d\n", status);
 		exit (EXIT_FAILURE);
@@ -76,7 +76,7 @@ int main (int argc, char *argv[]) {
 	sprintf (buffer, "-<%s -R0/3/0/3 -I1 -G%s", i_string, o_string);
 	
 	/* 5. Run GMT cmd function, or give usage message if errors arise during parsing */
-	status = GMT_Call_Module (API, "xyz2grd", 0, buffer);
+	status = GMT_Call_Module (API, "xyz2grd", GMT_MODULE_CMD, buffer);
 	if (status) {
 		GMT_Report (API, GMT_MSG_NORMAL, "GMT_xyz2grd returned error %d\n", status);
 		exit (EXIT_FAILURE);
@@ -109,7 +109,7 @@ int main (int argc, char *argv[]) {
 	
 	/* 5. Run GMT cmd function, or give usage message if errors arise during parsing */
 	GMT_Message (API, GMT_TIME_NONE, "\ngmtselect output\n");
-	status = GMT_Call_Module (API, "gmtselect", 0, buffer);
+	status = GMT_Call_Module (API, "gmtselect", GMT_MODULE_CMD, buffer);
 	if (status) {
 		GMT_Report (API, GMT_MSG_NORMAL, "GMT_gmtselect returned error %d\n", status);
 		exit (EXIT_FAILURE);

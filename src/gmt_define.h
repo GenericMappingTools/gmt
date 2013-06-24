@@ -22,7 +22,6 @@
 enum GMT_enum_api {
 	GMT_USAGE	= 0,	/* Want to report full program usage message */
 	GMT_SYNOPSIS	= 1,	/* Just want the synopsis of usage */
-	GMT_PURPOSE	= -2,	/* Just want the program purpose */
 	GMT_STR16	= 16	/* Bytes needed to hold the @GMTAPI@-###### resource names */
 };
 

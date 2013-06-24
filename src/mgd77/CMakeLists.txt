@@ -16,6 +16,8 @@
 # Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
 #
+# To modify the cmake process: Edit your cmake/ConfigUser.cmake file
+#
 
 # source files
 set (SUPPL_LIB_SRCS mgd77.h mgd77_IGF_coeffs.h mgd77_codes.h mgd77_init.h

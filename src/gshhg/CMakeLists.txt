@@ -16,6 +16,8 @@
 # Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
 #
+# To modify the cmake process: Edit your cmake/ConfigUser.cmake file
+#
 
 # source files
 set (SUPPL_PROGS_SRCS gshhg.c)

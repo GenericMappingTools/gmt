@@ -319,9 +319,9 @@ int GMT_Destroy_Cmd (void *V_API, char **cmd)
 struct GMT_OPTION * GMT_prep_module_options (struct GMTAPI_CTRL *API, int mode, void *args)
 {	/* Either we passed the module an option struct list or we passed argc, argv and must convert to get option list */
 	struct GMT_OPTION *options = NULL;
-	if (mode < 0)	/* Gave a list of options already */	
+	if (mode == GMT_MODULE_OPT)	/* Gave a linked list of options already */	
 		options = args;
-	else		/* Build them from text arguments */
+	else		/* Build them from one or more text arguments */
 		options = GMT_Create_Options (API, mode, args);
 	return (options);
 }

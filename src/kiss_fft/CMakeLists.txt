@@ -16,6 +16,8 @@
 # Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
 #
+# To modify the cmake process: Edit your cmake/ConfigUser.cmake file
+#
 
 # lib sources
 set (LIB_SRCS _kiss_fft_guts.h kiss_fft.c kiss_fft.h kiss_fftnd.c
