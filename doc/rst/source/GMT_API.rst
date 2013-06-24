@@ -534,8 +534,6 @@ Table [tbl:API] gives a list of all the functions and their purpose.
 +-------------------------+---------------------------------------------------+
 | GMT_Parse_Common_       | Parse the GMT common options                      |
 +-------------------------+---------------------------------------------------+
-| GMT_Probe_Module_       | Probe a module for purpose or existence           |
-+-------------------------+---------------------------------------------------+
 | GMT_Put_Data_           | Export to a registered data resource given by ID  |
 +-------------------------+---------------------------------------------------+
 | GMT_Put_Record_         | Export a data record                              |
@@ -1669,15 +1667,19 @@ Here, ``module`` can be any of the *GMT* modules, such as
 three sets of ``args`` depending on ``mode``. The three modes differ in
 how the options are passed to the module:
 
-    *mode* == GMT_PURPOSE [-2]
-        Just prints the purpose of the module.  args should be NULL.
+    *mode* == GMT_MODULE_EXIST [-3]
+        Just print a brief one-line summary of the module; args should be NULL.
+	If ``module`` equals NULL then we list summaries for all the modules.
 
-    *mode* == GMT_GAVE_OPT [-1]
+    *mode* == GMT_MODULE_PURPOSE [-2]
+        Just prints the purpose of the module; args should be NULL.
+
+    *mode* == GMT_MODULE_OPT [-1]
         Expects ``args`` to be a pointer to a doubly-linked list of objects with individual
         options for the current program. We will see
         how API functions can help prepare such lists.
 
-    *mode* == GMT_GAVE_CMD [0]
+    *mode* == GMT_MODULE_CMD [0]
         Expects ``args`` to be a single text string with all required options.
 
     *mode > 0*
@@ -1685,21 +1687,7 @@ how the options are passed to the module:
         options are passed (i.e., the ``argc, argv[]`` model used by the *GMT* programs themselves).
 
 
-If no module by the given name is found we
-return -1.  Should your program need to determine if a module exists or display
-the purpose of a particular module (or all) you can call
-
-.. _GMT_Probe_Module:
-
-  ::
-
-    int GMT_Probe_Module (void *API, const char *module, unsigned int mode);
-
-If ``mode`` is GMT_MODULE_PURPOSE then a brief one-line summary is presented.
-If no module by the given name is found we return an error code.  If ``module`` equals NULL
-then we list summaries for all the modules.  However, if ``mode`` is GMT_MODULE_EXIST we
-do not list summaries and just return 0 if the module is found and an error code
-otherwise.
+If no module by the given name is found we return -1.
 
 Set program options via text array arguments
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
