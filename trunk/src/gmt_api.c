@@ -379,6 +379,10 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 	 * We can now determine how many shared libraries to consider, and open the core lib */
 	unsigned int n_custom_libs = 0, k, p, n_alloc = GMT_TINY_CHUNK;
 	char text[GMT_TEXT_LEN256];
+#ifdef WIN32
+	HANDLE hFind;
+	WIN32_FIND_DATA FindFileData;
+#endif
 
 	API->lib = GMT_memory (API->GMT, NULL, n_alloc, struct Gmt_libinfo);
 
@@ -403,8 +407,8 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 	/* 3. Add any custom GMT library to the list of libraries to consider, if specified [will find when trying to open if it is available] */
 
 	if (API->GMT->session.CUSTOM_LIBS) {	/* We have custom shared libraries */
-		k = strlen (API->GMT->session.CUSTOM_LIBS) - 1;	/* Index of last char in CUSTOM_LIBS */
-		if (API->GMT->session.CUSTOM_LIBS[k] == '/') {	/* We gave CUSTOM_LIBS as a subdirectory, add all files found inside it to shared libs */
+		k = (unsigned int)strlen (API->GMT->session.CUSTOM_LIBS) - 1;	/* Index of last char in CUSTOM_LIBS */
+		if (API->GMT->session.CUSTOM_LIBS[k] == '/' || API->GMT->session.CUSTOM_LIBS[k] == '\\') {	/* We gave CUSTOM_LIBS as a subdirectory, add all files found inside it to shared libs */
 #ifdef HAVE_DIRENT_H_
 			DIR *D = NULL;
 			struct dirent *F = NULL;
@@ -437,8 +441,28 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 				(void)closedir (D);
 			}
 			API->GMT->session.CUSTOM_LIBS[k] = '/';	/* Restore the trailing / */
+#elif defined(WIN32)
+			strcpy (text, API->GMT->session.CUSTOM_LIBS);
+			strcat (text, "*.dll");
+			if ((hFind = FindFirstFile(text, &FindFileData)) == INVALID_HANDLE_VALUE) {
+				GMT_Report (API, GMT_MSG_NORMAL, "Error opening directory with GMT shared libraries: %s\n", API->GMT->session.CUSTOM_LIBS);
+			}
+			else {
+				do {
+					API->lib[n_custom_libs].path = strdup (FindFileData.cFileName);	/* Save the library name */
+					API->lib[n_custom_libs].name = strdup (FindFileData.cFileName);	/* Save the library name */
+					n_custom_libs++;				/* Add up entries found */
+					if (n_custom_libs == n_alloc) {			/* Allocate more memory for list */
+						n_alloc <<= 1;
+						API->lib = GMT_memory (API->GMT, API->lib, n_alloc, struct Gmt_libinfo);
+					}
+					//printf("%s\n", FindFileData.cFileName);
+				} while (FindNextFile(hFind, &FindFileData));
+				FindClose(hFind);
+			}
 #else
-			GMT_Report (API, GMT_MSG_NORMAL, "Your operating system does not support opendir so GMT_CUSTOM_LIBS cannot be a directory\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Your OS does not support shared libs fetching so GMT_CUSTOM_LIBS cannot be a directory\n");
+
 #endif /* HAVE_DIRENT_H_ */
 		}
 		else {	/* Just a list with one or more comma-library paths */
