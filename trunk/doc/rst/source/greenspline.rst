@@ -16,8 +16,10 @@ Synopsis
 [ **-Q**\ *az*\ \|\ *x/y/z* ]
 [ |SYN_OPT-Rz| ]
 [ **-S**\ **c\|l\|t\|g\|p\|q**\ [*pars*] ] [ **-T**\ *maskgrid* ]
-[ |SYN_OPT-V| ] [ **-W** ]  [ **-bi**\ [*ncols*][*type*] ]
-[ **-bo**\ [*ncols*][*type*] ] [ **-h**\ [**i**\ \|\ **o**][*n*] ]
+[ |SYN_OPT-V| ]
+[ **-W** ]
+[ |SYN_OPT-b| ]
+[ |SYN_OPT-h| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-:| ]
 
@@ -56,7 +58,7 @@ Optional Arguments
 
 *table*
     The name of one or more ASCII [or binary, see
-    **-bi**\ [*ncols*\ ][*type*\ ]] files holding the **x**, *w* data
+    **-bi**] files holding the **x**, *w* data
     points. If no file is given then we read standard input instead.
 **-A**\ [**1**\ \|\ **2**\ \|\ **3**\ \|\ **4**\ \|\ **5**,]\ *gradfile*
     The solution will partly be constrained by surface gradients **v** =
@@ -115,7 +117,7 @@ Optional Arguments
     selected then **-G** is required and the output file is a 2-D binary
     grid file. Applies to 2-D interpolation only. (3) If **-N** is
     selected then the output is an ASCII (or binary; see
-    **-bo**\ [*ncols*\ ][*type*\ ]) table; if **-G** is not given then
+    **-bo**) table; if **-G** is not given then
     this table is written to standard output. Ignored if **-C** or
     **-C**\ 0 is given.
 **-I**\ *xinc*\ [/*yinc*\ [/*zinc*\ ]]
@@ -132,7 +134,7 @@ Optional Arguments
     ASCII file with coordinates of desired output locations **x** in the
     first column(s). The resulting *w* values are appended to each
     record and written to the file given in **-G** [or stdout if not
-    specified]; see **-bo**\ [*ncols*\ ][*type*\ ] for binary output
+    specified]; see **-bo** for binary output
     instead. This option eliminates the need to specify options **-R**,
     **-I**, and **-r**.
 **-Q**\ *az*\ \|\ *x/y/z*

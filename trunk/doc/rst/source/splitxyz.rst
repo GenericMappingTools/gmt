@@ -34,8 +34,7 @@ set a minimum length for series, and to high- or low-pass filter the z
 values and/or the x,y values. **splitxyz** is a useful filter between
 data extraction and **pswiggle** plotting, and can also be used to
 divide a large x,y,z dataset into segments. The output is always in the
-ASCII format; input may be ASCII or binary (see
-**-bi**\ [*ncols*\ ][*type*]). 
+ASCII format; input may be ASCII or binary (see **-bi**). 
 
 Required Arguments
 ------------------
@@ -48,7 +47,7 @@ Optional Arguments
 ------------------
 
 *table*
-    One or more ASCII [or binary, see **-bi**\ [*ncols*\ ][*type*\ ]]
+    One or more ASCII [or binary, see **-bi**]
     files with 3 (or 2, see **-Z**) [or 5] columns holding (x,y,z[,d,h])
     data values. To use (x,y,z,d,h) input, sorted so that d is
     non-decreasing, specify the **-S** option; default expects (x,y,z)
@@ -86,13 +85,13 @@ Optional Arguments
     number across all tables); this is usually %d but could be %08d
     which gives leading zeros, etc. [Default is
     splitxyz\_segment\_%d.{txt\|bin}, depending on
-    **-bo**\ [*ncols*\ ][*type*\ ]]. Alternatively, give a template with
+    **-bo**]. Alternatively, give a template with
     two C format specifiers and we will supply the table number and the
     segment number within the table to build the file name.
 **-Q**\ *flags*
     Specify your desired output using any combination of *xyzdh*, in any
     order. Do not space between the letters. Use lower case. The output
-    will be ASCII (or binary, see **-bo**\ [*ncols*\ ][*type*\ ])
+    will be ASCII (or binary, see **-bo**)
     columns of values corresponding to *xyzdh* [Default is
     **-Q**\ *xyzdh* (**-Q**\ *xydh* if **-Z** is set)].
 **-S**

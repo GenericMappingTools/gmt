@@ -66,7 +66,7 @@ Optional Arguments
 ------------------
 
 *xyfile*
-    This is an ASCII (or binary, see **-bi**\ [*ncols*\ ][*type*\ ])
+    This is an ASCII (or binary, see **-bi**)
     file where the first 2 columns hold the (x,y) positions where the
     user wants to sample the 2-D data set.
 **-A**\ **f**\ \|\ **p**\ **m**\ \|\ **r**\ \|\ **R**

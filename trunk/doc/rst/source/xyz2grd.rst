@@ -16,10 +16,13 @@ Synopsis
 [ **-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*title*/*remark* ]
 [ **-N**\ *nodata* ] [ **-S**\ [*zfile*] ]
 [ |SYN_OPT-V| ]
-[ **-Z**\ [*flags*\ ] ] [ **-bi**\ [*ncols*\ ][*type*] ]
-[ |SYN_OPT-f| ] [ |SYN_OPT-h| ]
+[ **-Z**\ [*flags*\ ] ]
+[ |SYN_OPT-bi| ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
-[ **-r** ] [ |SYN_OPT-:| ]
+[ **-r** ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
@@ -50,7 +53,7 @@ Optional Arguments
 ------------------
 
 *table*
-    One or more ASCII [or binary, see **-bi**\ [*ncols*\ ][*type*\ ]]
+    One or more ASCII [or binary, see **-bi**]
     files holding z or (x,y,z) values. The xyz triplets do not have to
     be sorted. One-column z tables must be sorted and the **-Z** must be
     set.

@@ -4,37 +4,39 @@ pswiggle
 
 pswiggle - Plot z = f(x,y) anomalies along tracks
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
 **pswiggle** [ *table* ] **-J**\ *parameters*
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ]
-**-Z**\ *scale* [ **-A**\ *azimuth* ] [
-**-B**\ [**p**\ \|\ **s**]\ *parameters* ] [ **-C**\ *center* ] [
-**-G**\ [**+**\ \|\ **-**\ \|\ **=**]\ *fill* ] [
-**-Jz**\ \|\ **Z**\ *parameters* ] [ **-I**\ *fix\_az* ] [ **-K** ] [
-**-O** ] [ **-P** ] [
-**-S**\ [**x**\ ]\ *lon0*/*lat0*/*length*\ [/*units*] ] [ **-T**\ *pen*
-] [ **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ] [
-**-V**\ [*level*\ ] ] [ **-W**\ *pen* ] [
-**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-] [
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [ **-c**\ *copies* ] [
-**-f**\ *colinfo* ] [
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
-] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [
-**-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
-] [ **-t**\ [*transp*\ ] ] [ **-:**\ [**i**\ \|\ **o**] ]
+|SYN_OPT-Rz|
+[ **-Z**\ *scale* [ **-A**\ *azimuth* ]
+[ |SYN_OPT-B| ]
+[ **-C**\ *center* ]
+[ **-G**\ [**+**\ \|\ **-**\ \|\ **=**]\ *fill* ]
+[ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-I**\ *fix\_az* ] [ **-K** ]
+[ **-O** ] [ **-P** ]
+[ **-S**\ [**x**\ ]\ *lon0*/*lat0*/*length*\ [/*units*] ] [ **-T**\ *pen* ]
+[ |SYN_OPT-U| ]
+[ |SYN_OPT-V| ]
+[ **-W**\ *pen* ] [
+[ |SYN_OPT-X| ]
+[ |SYN_OPT-Y| ]
+[ |SYN_OPT-bi| ]
+[ |SYN_OPT-c| ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-g| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-p| ]
+[ |SYN_OPT-t| ]
+[ |SYN_OPT-:| ]
 
 |No-spaces|
 
-`Description <#toc2>`_
-----------------------
+Description
+-----------
 
 **pswiggle** reads (*x*,\ *y*,\ *z*) triplets from files [or standard
 input] and plots z as a function of distance along track. This means
@@ -46,8 +48,8 @@ preferred direction, then 180 degrees are added to the direction. Either
 the positive or the negative wiggle may be shaded. The resulting
 *PostScript* code is written to standard output. 
 
-`Required Arguments <#toc4>`_
------------------------------
+Required Arguments
+------------------
 
 .. include:: explain_-J.rst_
 
@@ -60,8 +62,8 @@ the positive or the negative wiggle may be shaded. The resulting
 **-Z**\ *scale*
     Gives anomaly scale in data-units/distance-unit.
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_

@@ -14,7 +14,7 @@ Synopsis
 [ **-E** ] [ **-N** ] [ **-S**\ *vector* ]
 [ **-T**\ **a**\ \|\ **d**\ \|\ **D**\ \|\ **p**\ *az*\ \|\ **r**\ [*arg*\ \|\ **s**\ \|\ **x**] ] 
 [ |SYN_OPT-V| ]
-[ **-bi**\ [*ncols*][*type*] ] 
+[ |SYN_OPT-b| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
@@ -51,7 +51,7 @@ Optional Arguments
 ------------------
 
 *table*
-    One or more ASCII [or binary, see **-bi**\ [*ncols*\ ][*type*\ ]]
+    One or more ASCII [or binary, see **-bi**]
     file containing lon,lat [lat,lon if **-:**] values in the first 2
     columns (if **-fg** is given) or (r, theta), or perhaps (x, y[, z])
     if **-Ci** is given). If no file is specified, **gmtvector**, will

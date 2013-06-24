@@ -71,7 +71,7 @@ Optional Arguments
 **-Q**\ *voronoi.d*
     Append the name of a file with pre-calculated Voronoi polygons
     [Default performs the Voronoi construction on input data]. For
-    binary data **-bi**\ [*ncols*][*type*] you must specify the node
+    binary data **-bi** you must specify the node
     information separately (via **-N**).
 
 .. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code

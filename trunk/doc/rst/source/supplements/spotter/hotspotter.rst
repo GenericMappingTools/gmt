@@ -14,7 +14,7 @@ Synopsis
 |SYN_OPT-R|
 [ **-N**\ *upper_age* ] [ **-S** ] [ **-T** ]
 [ |SYN_OPT-V| ]
-[ **-bi**\ [*ncols*][*type*] ]
+[ |SYN_OPT-bi| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]

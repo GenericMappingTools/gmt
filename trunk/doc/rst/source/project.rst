@@ -117,7 +117,7 @@ Optional Arguments
 **-F**\ *flags*
     Specify your desired output using any combination of *xyzpqrs*, in
     any order. Do not space between the letters. Use lower case. The
-    output will be ASCII (or binary, see **-bo**\ [*ncols*\ ][*type*\ ])
+    output will be ASCII (or binary, see **-bo**)
     columns of values corresponding to *xyzpqrs* [Default]. If both
     input and output are using ASCII format then the *z* data are
     treated as textstring(s). If the **-G** option is selected, the

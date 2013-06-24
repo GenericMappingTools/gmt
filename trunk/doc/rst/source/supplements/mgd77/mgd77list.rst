@@ -19,10 +19,11 @@ Synopsis
 [ **-Q**\ **a**\ \|\ **c**\ \|\ **v**\ *min*/*max* ]
 [ |SYN_OPT-R| ]
 [ **-Sa**\ *startdist*\ [unit] ] [ **-Sb**\ *stopdist*\ [unit] ]
-[ **-T**\ [**m**\ \|\ **e**] ] [ **-V**\ [*level*] ]
+[ **-T**\ [**m**\ \|\ **e**] ]
 [ |SYN_OPT-V| ]
 [ **-W**\ *weight* ]
-[ **-Z**\ *+*\ \|\ **-** ] [ **-bo**\ [*ncols*][*type*] ]
+[ **-Z**\ *+*\ \|\ **-** ]
+[ |SYN_OPT-bo| ]
 [ |SYN_OPT-h| ]
 
 |No-spaces|
@@ -420,7 +421,7 @@ Optional Arguments
 
 .. include:: ../../explain_-bo_full.rst_
 |
-|   ignored if **-bo**\ [*ncols*][*type*] is selected. Likewise,
+|   ignored if **-bo** is selected. Likewise,
 |   string-fields cannot be selected. Note that if time is one of the
 |   binary output columns it will be stored as Unix-time (seconds since
 |   1970). To read this information in GMT to obtain absolute calendar

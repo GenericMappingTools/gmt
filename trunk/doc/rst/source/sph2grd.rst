@@ -11,10 +11,13 @@ Synopsis
 
 **sph2grd** [ *table* ] **-G**\ *grdfile*
 |SYN_OPT-I|
-|SYN_OPT-R| [ **-D**\ [**g**\ \|\ **n**\ ] ]
+|SYN_OPT-R|
+[ **-D**\ [**g**\ \|\ **n**\ ] ]
 [ **-E** ] [ **-F**\ [**k**]\ *filter* ] [ **-N**\ [*norm*\ ] ] [ **-Q** ] [ |SYN_OPT-V| ]
-[ **-bi**\ [*ncols*][*type*] ] [ |SYN_OPT-h| ]
-[ |SYN_OPT-i| ] [ **-r** ]
+[ |SYN_OPT-bi| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ **-r** ]
 
 |No-spaces|
 
@@ -39,7 +42,7 @@ Required Arguments
 -----------------------------
 
 *table*
-    One or more ASCII [or binary, see **-bi**\ [*ncols*][*type*]]
+    One or more ASCII [or binary, see **-bi**]
     files holding the spherical harmonic coefficients. We expect the
     first four columns to hold the degree L, the order M, followed by
     the cosine and sine coefficients.

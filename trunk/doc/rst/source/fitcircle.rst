@@ -11,7 +11,7 @@ Synopsis
 
 **fitcircle** [ *table* ] **-L**\ *norm* [ **-S**\ [*lat*] ]
 [ |SYN_OPT-V| ]
-[ **-bi**\ [*ncols*][*type*] ]
+[ |SYN_OPT-bi| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
@@ -63,8 +63,7 @@ Optional Arguments
 ------------------
 
 *table*
-    One or more ASCII [or binary, see **-bi**\ [*ncols*][*type*]]
-    files containing lon,lat [or lat,lon; see
+    One or more ASCII [or binary, see **-bi**] files containing lon,lat [or lat,lon; see
     **-:**\ [**i**\ \|\ **o**]] values in the first 2 columns. If no
     file is specified, **fitcircle** will read from standard input.
 

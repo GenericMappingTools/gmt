@@ -36,7 +36,7 @@ final result is written to an output file [or standard output]. Data
 operations are element-by-element, not matrix manipulations (except
 where noted). Some operators only require one operand (see below). If no
 data tables are used in the expression then options **-T**, **-N** can
-be set (and optionally **-bo**\ [*ncols*\ ][*type*\ ] to indicate the
+be set (and optionally **-bo** to indicate the
 data type for binary tables). If STDIN is given, the standard input will
 be read and placed on the stack as if a file with that content had been
 given on the command line. By default, all columns except the "time"
@@ -49,7 +49,7 @@ Required Arguments
 
 *operand*
     If *operand* can be opened as a file it will be read as an ASCII (or
-    binary, see **-bi**\ [*ncols*\ ][*type*\ ]) table data file. If not
+    binary, see **-bi**) table data file. If not
     a file, it is interpreted as a numerical constant or a special
     symbol (see below). The special argument STDIN means that *stdin*
     will be read and placed on the stack; STDIN can appear more than

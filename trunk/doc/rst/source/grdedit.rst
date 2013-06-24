@@ -15,7 +15,7 @@ Synopsis
 [ |SYN_OPT-R| ]
 [ **-S** ] [ **-T** ]
 [ |SYN_OPT-V| ]
-[ **-bi**\ [*ncols*][*type*] ]
+[ |SYN_OPT-bi| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-:| ]
@@ -61,7 +61,7 @@ Required Arguments
     Transpose the grid and exchange the *x* and *y* information.
     Incompatible with the other options.
 **-N**\ *table*
-    Read the ASCII (or binary; see **-bi**\ [*ncols*\ ][*type*\ ]) file
+    Read the ASCII (or binary; see **-bi**) file
     *table* and replace the corresponding nodal values in the grid with
     these *x*,\ *y*,\ *z* values. 
 

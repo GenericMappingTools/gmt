@@ -10,10 +10,10 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **x2sys_solve** **-C**\ *column* **-T**\ *TAG* **-E**\ *mode*
-[ *COE\_list.d* ]
+[ *COE_list.d* ]
 [ |SYN_OPT-V| ]
 [ **-W[u]** ]
-[ **-bi**\ [*ncols*\ ][*type*] ]
+[ |SYN_OPT-bi| ]
 
 |No-spaces|
 
@@ -31,7 +31,7 @@ Required Arguments
 
 *COE_list.d*
     Name of file with the required crossover columns as produced by
-    **x2sys_list**. NOTE: If **-bi**\ [*ncols*\ ][*type*\ ] is used
+    **x2sys_list**. NOTE: If **-bi** is used
     then the first two columns are expected to hold the integer track
     IDs; otherwise we expect those columns to hold the text string names
     of the two tracks. If no file is given we will read from *stdin*.

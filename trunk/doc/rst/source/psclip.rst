@@ -10,25 +10,25 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **psclip** [ *table* ] **-J**\ *parameters*
-**-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**r**\ ] [
-**-B**\ [**p**\ \|\ **s**]\ *parameters* ] [
-**-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [ **-N** ] [ **-O** ] [
-**-P** ] [ **-T** ] [ **-U**\ [*just*/*dx*/*dy*/][**c**\ \|\ *label*] ]
-[ **-V**\ [*level*\ ] ] [
-**-X**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *x-shift*\ [**u**\ ]]
-] [
-**-Y**\ [**a**\ \|\ **c**\ \|\ **f**\ \|\ **r**][\ *y-shift*\ [**u**\ ]]
-] [ **-bi**\ [*ncols*\ ][*type*\ ] ] [ **-c**\ *copies*] [
-**-f**\ *colinfo* ] [
-**-g**\ [**a**\ ]\ **x**\ \|\ **y**\ \|\ **d**\ \|\ **X**\ \|\ **Y**\ \|\ **D**\ \|[*col*\ ]\ **z**\ [+\|-]\ *gap*\ [**u**\ ]
-] [ **-h**\ [**i**\ \|\ **o**][*n*\ ] ] [
-**-i**\ *cols*\ [**l**\ ][\ **s**\ *scale*][\ **o**\ *offset*][,\ *...*]
-] [
-**-p**\ [**x**\ \|\ **y**\ \|\ **z**]\ *azim*/*elev*\ [/*zlevel*][\ **+w**\ *lon0*/*lat0*\ [/*z0*]][\ **+v**\ *x0*/*y0*]
-] [ **-t**\ [*transp*\ ] ] [ **-:**\ [**i**\ \|\ **o**] ]
+|SYN_OPT-Rz|
+[ |SYN_OPT-B| ]
+**-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [ **-N** ] [ **-O** ]
+[ **-P** ] [ **-T** ]
+[ |SYN_OPT-U| ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-X| ]
+[ |SYN_OPT-Y| ]
+[ |SYN_OPT-bi| ]
+[ |SYN_OPT-c| ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-g| ]
+[ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
+[ |SYN_OPT-p| ]
+[ |SYN_OPT-t| ]
+[ |SYN_OPT-:| ]
 
-**psclip** **-C**\ [**c**\ \|\ **s**\ \|[\ **a**\ \|\ *n*] [ **-K** ] [
-**-O** ]
+**psclip** **-C**\ [**c**\ \|\ **s**\ \|[\ **a**\ \|\ *n*] [ **-K** ] [ **-O** ]
 
 |No-spaces|
 

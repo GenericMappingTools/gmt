@@ -27,7 +27,8 @@ Synopsis
 [ **-W**\ [*level*/]*pen* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ **-bo**\ [*ncols*\ ][*type*\ ] ] [ **-c**\ *copies* ]
+[ |SYN_OPT-bo| ]
+[ |SYN_OPT-c| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
 
@@ -155,7 +156,7 @@ Optional Arguments
 
 **-M**
     Dumps a single multisegment ASCII (or binary, see
-    **-bo**\ [*ncols*][*type*]) file to standard output. No plotting
+    **-bo**) file to standard output. No plotting
     occurs. Specify any combination of **-F**, **-W**, **-I**, **-N**.
     Note: if **-M** is used with **-F** then **-R** or the **+r** modifier
     to **-F** are not required as we automatically determine the region

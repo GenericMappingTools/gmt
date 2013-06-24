@@ -9,9 +9,9 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gshhg** *binaryfile.b* [ **-A**\ *min* ] [ **-G** ] [ **-I**\ *id* ] [
-**-L** ] [ **-N**\ *level* ] [ **-Qe**\ \|\ **i** ] [
-**-bo**\ [*ncols*\ ][*type*] ]
+**gshhg** *binaryfile.b* [ **-A**\ *min* ] [ **-G** ] [ **-I**\ *id* ]
+[ **-L** ] [ **-N**\ *level* ] [ **-Qe**\ \|\ **i** ]
+[ |SYN_OPT-bo| ]
 [ |SYN_OPT-o| ] > *asciifile.txt*
 
 |No-spaces|

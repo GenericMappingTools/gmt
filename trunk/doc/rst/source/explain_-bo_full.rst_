@@ -1,6 +1,6 @@
 .. _-bo_full:
 
-**-bo**\ [*ncols*\ ][*type*\ ]
+**-bo**\ [*ncols*][*type*]
     Select binary output. Append one or more comma-separated
     combinations of *ncols*/*type*, where *ncols* is the actual number
     of data columns and *type* must be one of **c**, **u**, **h**,

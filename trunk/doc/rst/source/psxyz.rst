@@ -22,7 +22,7 @@ Synopsis
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-a| ] 
-[ **-bi**\ [*ncols*\ ][*type*\ ] ]
+[ |SYN_OPT-bi| ]
 [ |SYN_OPT-c| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-g| ]

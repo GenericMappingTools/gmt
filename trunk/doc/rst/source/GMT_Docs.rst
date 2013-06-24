@@ -2729,7 +2729,7 @@ different data types and even containing byte-swapped items. When using
 native binary data the user must be aware of the fact that *GMT* has no
 way of determining the actual number of columns in the file. You must
 therefore pass that information to *GMT* via the binary
-**-bi**\ [*n*]\ **t** option, where *n* is the actual number of data
+**-bi** option, where *n* is the actual number of data
 columns and **t** must be one of **c** (signed 1-byte character,
 int8_t), **u** (unsigned 1-byte character, uint8_t), **h** (signed
 2-byte int, int16_t), **H** (unsigned 2-byte int, uint16_t), **i**
@@ -2750,8 +2750,7 @@ not set]. If *n* < *m* an error is generated. Multiple segment
 files are allowed and the segment headers are assumed to be records
 where all the fields equal NaN.
 
-For binary output, use the **-bo**\ [*n*]\ **t** option; see **-bi**
-for further details.
+For binary output, use the **-bo** option; see **-bi** for further details.
 
 Because of its meta data, reading netCDF tables (i.e., netCDF files
 containing 1-dimensional arrays) is quite a bit less complex than
