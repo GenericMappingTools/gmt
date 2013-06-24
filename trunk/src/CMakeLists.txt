@@ -422,9 +422,15 @@ if (BUILD_SUPPLEMENTS)
 		# link the dynamic linking loader library
 		target_link_libraries (supplib dl)
 	endif (HAVE_DLADDR AND HAVE_LIBDL)
-	if (WIN32 AND GMT_DLL_RENAME)
+	if (WIN32 AND SUPP_DLL_RENAME)
 		set_target_properties (supplib PROPERTIES RUNTIME_OUTPUT_NAME ${SUPP_DLL_RENAME})
 	endif ()
+
+	if (HAVE_M_LIBRARY)
+		# link the math library
+		target_link_libraries (supplib m)
+	endif (HAVE_M_LIBRARY)
+
 endif (BUILD_SUPPLEMENTS)
 
 # make UNIX PATH variable
@@ -470,12 +476,21 @@ if (HAVE_DLADDR AND HAVE_LIBDL)
 	# link the dynamic linking loader library
 	target_link_libraries (pslib dl)
 	target_link_libraries (gmtlib dl)
+	if (BUILD_SUPPLEMENTS)
+		target_link_libraries (supplib dl)
+	endif (BUILD_SUPPLEMENTS)
 endif (HAVE_DLADDR AND HAVE_LIBDL)
 
 # If a renaming of the gmt dll has been set in ConfigUser.cmake
 if (WIN32 AND GMT_DLL_RENAME)
 	set_target_properties (gmtlib PROPERTIES RUNTIME_OUTPUT_NAME ${GMT_DLL_RENAME})
 endif ()
+
+# To expands the command line arguments in Windows, see:
+# http://msdn.microsoft.com/en-us/library/8bch7bkk.aspx
+if (MSVC)
+	set_target_properties(gmtlib PROPERTIES LINK_FLAGS "setargv.obj")
+endif(MSVC)
 
 # build targets for standalone gmt target and demos
 string (REPLACE ".c" "" GMT_PROGS "gmt.c;${GMT_DEMOS_SRCS}")
