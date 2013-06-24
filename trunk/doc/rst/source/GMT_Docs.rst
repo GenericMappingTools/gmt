@@ -2266,8 +2266,6 @@ Normally, equidistant annotations occur at multiples of *stride*; you
 can phase-shift this by appending *phase*, which can be a positive or
 negative number.
 
-[H]
-
 +------------+-------------------------------------+
 | **Flag**   | **Description**                     |
 +============+=====================================+
@@ -3819,7 +3817,7 @@ should contact the *GMT* team.
 +----------+---------------------------------------------------------------+
 | ef       | ESRI Arc/Info ASCII Grid Interchange format (ASCII float)     |
 +----------+---------------------------------------------------------------+
-| gd       | Import/export via GDAL [20]_                                  |
+| gd       | Import/export via GDAL [19]_                                  |
 +----------+---------------------------------------------------------------+
 
 [tbl:grdformats]
@@ -6160,8 +6158,6 @@ The predefined 1-bit patterns in *GMT* have dimensions of 64 by 64, but
 other sizes will be accepted when using the **-Gp|P** option. The Sun
 header structure is outline in Table [tbl:sunheader].
 
-[H]
-
 +---------------------------+-------------------------------------+
 | **Parameter**             | **Description**                     |
 +===========================+=====================================+
@@ -7425,13 +7421,8 @@ MINGW|MSYS and GMT
 Though one can install GMT natively using CMake, the simplest way of installing
 under MINGW|MSYS is to just install the Windows binaries and use them from
 the msys bash shell. As simple as that. Furthermore, GMT programs launch
-much faster here than on Cygwin so this is the recommended way of running
+faster here than on Cygwin so this is the recommended way of running
 GMT on Windows.
-
-Mac OS and GMT
---------------
-
-*GMT* will install directly under Mac OS X which is Unix-compliant.
 
 L. Of colors and color legends
 ==============================
@@ -8749,9 +8740,6 @@ Finally we show an example of a polygon file:
    Convert other graphics formats to Sun ras format using ImageMagick's
    **convert** program.
 
-.. [19]
-   Requires building *GMT* with GDAL.
-
 .. [20]
    Requires building *GMT* with GDAL.
 
@@ -8772,9 +8760,6 @@ Finally we show an example of a polygon file:
    file.
 
 .. [24]
-   These data are available on CD-ROM from NGDC (www.ngdc.noaa.gov).
-
-.. [25]
    These data are available on CD-ROM from NGDC (www.ngdc.noaa.gov).
 
 .. [26]
