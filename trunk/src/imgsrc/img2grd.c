@@ -131,7 +131,7 @@ void Free_img2grd_Ctrl (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *C) {	/* Deall
 
 int GMT_img2grd_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
-	if (level == GMT_PURPOSE) return (EXIT_FAILURE);
+	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: img2grd <world_image_filename> %s -G<outgrid> -T<type> [-C]\n", GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D[<minlat>/<maxlat>]] [-E] [-I<min>] [-M] [-N<navg>] [-S[<scale>]] [%s]\n\t[-W<maxlon>] [%s]\n\n", GMT_V_OPT, GMT_n_OPT);
 
@@ -311,7 +311,7 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_PURPOSE) return (GMT_img2grd_usage (API, GMT_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (GMT_img2grd_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);
 	if (API->error)
 		return (API->error); /* Set or get option list */
@@ -656,7 +656,7 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 	else	/* The output here is the final result */
 		strncpy (s_out_ID, Ctrl->G.file, GMT_TEXT_LEN256);
 	sprintf (cmd, "-R%g/%g/%g/%g -Jm1 -I %s -G%s --PROJ_ELLIPSOID=Sphere --PROJ_LENGTH_UNIT=inch", west, east, south2, north2, s_in_ID, s_out_ID);
-	if (GMT_Call_Module (API, "grdproject", 0, cmd)!= GMT_OK) {	/* Inverse project the grid or fail */
+	if (GMT_Call_Module (API, "grdproject", GMT_MODULE_CMD, cmd)!= GMT_OK) {	/* Inverse project the grid or fail */
 		Return (API->error);
 	}
 	if (GMT_Destroy_Data (API, &Merc) != GMT_OK) {
@@ -680,7 +680,7 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 		sprintf (cmd, "-R%g/%g/%g/%g -I%gm %s -G%s -fg", west, east, south, north, Ctrl->I.value, s_in_ID, Ctrl->G.file);
-		if (GMT_Call_Module (API, "grdsample", 0, cmd) != GMT_OK) {	/* Resample the grid or fail */
+		if (GMT_Call_Module (API, "grdsample", GMT_MODULE_CMD, cmd) != GMT_OK) {	/* Resample the grid or fail */
 			Return (API->error);
 		}
 	}

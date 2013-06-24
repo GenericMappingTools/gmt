@@ -1669,17 +1669,21 @@ Here, ``module`` can be any of the *GMT* modules, such as
 three sets of ``args`` depending on ``mode``. The three modes differ in
 how the options are passed to the module:
 
-    *mode > 0*
-        Expects ``args`` to be an array of text options and ``mode`` to be a count of how many
-        options are passed (i.e., the ``argc, argv[]`` model used by the *GMT* programs themselves).
+    *mode* == GMT_PURPOSE [-2]
+        Just prints the purpose of the module.  args should be NULL.
 
-    *mode < 0*
+    *mode* == GMT_GAVE_OPT [-1]
         Expects ``args`` to be a pointer to a doubly-linked list of objects with individual
         options for the current program. We will see
         how API functions can help prepare such lists.
 
-    *mode == 0*
+    *mode* == GMT_GAVE_CMD [0]
         Expects ``args`` to be a single text string with all required options.
+
+    *mode > 0*
+        Expects ``args`` to be an array of text options and ``mode`` to be a count of how many
+        options are passed (i.e., the ``argc, argv[]`` model used by the *GMT* programs themselves).
+
 
 If no module by the given name is found we
 return -1.  Should your program need to determine if a module exists or display

@@ -57,15 +57,16 @@ int main (int argc, char *argv[]) {
 
 	/* Test if argv[0] contains a module name: */
 	module = progname;	/* Try this module name unless it equals PROGRAM_NAME in which case we just enter the test if argc > 1 */
-	if ((!strcmp (module, PROGRAM_NAME) || (status = GMT_Probe_Module (api_ctrl, module, GMT_MODULE_EXIST)) == GMT_NOT_A_VALID_MODULE) && argc > 1) {
+	if ((!strcmp (module, PROGRAM_NAME) || (status = GMT_Call_Module (api_ctrl, module, GMT_MODULE_EXIST, NULL)) == GMT_NOT_A_VALID_MODULE) && argc > 1) {
 		/* argv[0] does not contain a valid module name, and
 		 * argv[1] either holds the name of the module or an option: */
 		modulename_arg_n = 1;
 		module = argv[1];	/* Try this module name */
-		if ((status = GMT_Probe_Module (api_ctrl, module, GMT_MODULE_EXIST) == GMT_NOT_A_VALID_MODULE)) {
+		if ((status = GMT_Call_Module (api_ctrl, module, GMT_MODULE_EXIST, NULL) == GMT_NOT_A_VALID_MODULE)) {
 			/* argv[1] does not contain a valid module name; try prepending gmt: */
 			strncat (gmt_module, argv[1], GMT_TEXT_LEN16-4U);
-			status = GMT_Probe_Module (api_ctrl, gmt_module, GMT_MODULE_EXIST); /* either GMT_NOERROR or GMT_NOT_A_VALID_MODULE */
+			module = gmt_module;
+			status = GMT_Call_Module (api_ctrl, module, GMT_MODULE_EXIST, NULL); /* either GMT_NOERROR or GMT_NOT_A_VALID_MODULE */
 		}
 	}
 	
@@ -78,7 +79,7 @@ int main (int argc, char *argv[]) {
 
 			/* Print module list */
 			if (!strcmp (argv[arg_n], "--help")) {
-				GMT_Probe_Module (api_ctrl, NULL, GMT_MODULE_PURPOSE);
+				GMT_Call_Module (api_ctrl, NULL, GMT_MODULE_PURPOSE, NULL);
 				goto exit;
 			}
 
@@ -117,17 +118,19 @@ int main (int argc, char *argv[]) {
 		fprintf (stderr, "  --version            Print version and exit\n");
 		fprintf (stderr, "  --show-sharedir      Show share directory and exit\n");
 		fprintf (stderr, "  --show-bindir        Show directory of executables and exit\n\n");
-		fprintf (stderr, "ERROR: No module named %s was found,  This could mean:\n", module);
-		fprintf (stderr, "  1. There actually is no such module; check your spelling.\n");
-		if (strlen (GMT_SUPPL_LIB_NAME))
-			fprintf (stderr, "  2. The module exists in the GMT supplemental library, but the library could not be found.\n");
-		else
-			fprintf (stderr, "  2. The module exists in the GMT supplemental library, but the library was not installed.\n");
-		if (api_ctrl->n_shared_libs > 2)
-			fprintf (stderr, "  3. The module exists in a GMT custom library, but the library could not be found.\n");
-		else
-			fprintf (stderr, "  3. The module exists in a GMT custom library, but none was specified via GMT_CUSTOM_LIBS.\n");
-		fprintf (stderr, "Shared libraries must be in standard system paths or set via environmental parameter %s.\n\n", LIB_PATH);
+		if (modulename_arg_n == 1) {
+			fprintf (stderr, "ERROR: No module named %s was found,  This could mean:\n", module);
+			fprintf (stderr, "  1. There actually is no such module; check your spelling.\n");
+			if (strlen (GMT_SUPPL_LIB_NAME))
+				fprintf (stderr, "  2. The module exists in the GMT supplemental library, but the library could not be found.\n");
+			else
+				fprintf (stderr, "  2. The module exists in the GMT supplemental library, but the library was not installed.\n");
+			if (api_ctrl->n_shared_libs > 2)
+				fprintf (stderr, "  3. The module exists in a GMT custom library, but the library could not be found.\n");
+			else
+				fprintf (stderr, "  3. The module exists in a GMT custom library, but none was specified via GMT_CUSTOM_LIBS.\n");
+			fprintf (stderr, "Shared libraries must be in standard system paths or set via environmental parameter %s.\n\n", LIB_PATH);
+		}
 		status = EXIT_FAILURE;
 		goto exit;
 	} /* status == GMT_NOT_A_VALID_MODULE */

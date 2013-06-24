@@ -16,6 +16,8 @@
 # Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
 #
+# To modify the cmake process: Edit your cmake/ConfigUser.cmake file
+#
 
 # misc is GPL only
 if (LICENSE_RESTRICTED AND NOT LICENSE_RESTRICTED STREQUAL GPL)

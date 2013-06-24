@@ -110,9 +110,8 @@ EXTERN_MSC int GMT_Get_Value		(void *API, char *arg, double *par);
 EXTERN_MSC int GMT_Report		(void *API, unsigned int level, char *message, ...);
 EXTERN_MSC int GMT_Message		(void *API, unsigned int mode, char *format, ...);
 
-/* 2 functions to list and call the GMT_N_MODULES GMT modules */
+/* 1 function to list or call the core and optional supplemental and custom GMT modules */
 
-EXTERN_MSC int GMT_Probe_Module		(void *API, const char *module, unsigned int mode);
 EXTERN_MSC int GMT_Call_Module		(void *API, const char *module, int mode, void *args);
 
 /* 12 secondary functions for argument and option parsing */

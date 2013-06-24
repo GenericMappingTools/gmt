@@ -13,8 +13,11 @@ CMake User Guide
 Build and runtime prerequisites
 -------------------------------
 
-You need Ghostscript, CMake (>=2.8.5), netCDF (>=4.0, netCDF-4/HDF5 support
-mandatory).  Optionally install PCRE and GDAL.
+1. Software:
+  You need Ghostscript, CMake (>=2.8.5), netCDF (>=4.0, netCDF-4/HDF5
+  support mandatory).  Optionally install PCRE, GDAL, and FFTW.
+2. Data:
+  You need gshhg (>=2.2.2); optionally install dcw-gmt (>=1.0.5)
 
 Information for building GMT 5 with CMake
 -----------------------------------------
@@ -28,24 +31,24 @@ Checkout GMT5 from its subversion repository:
   $ cd gmt5-dev
   $ cp cmake/ConfigUserTemplate.cmake cmake/ConfigUser.cmake
 
-Edit *cmake/ConfigUser.cmake*. Then:
+Edit *cmake/ConfigUser.cmake* [see comments in the file]. Then:
 
   $ mkdir build
   $ cd build
   $ cmake -DCMAKE_INSTALL_PREFIX=gmt5 -DCMAKE_BUILD_TYPE=RelWithDebInfo ..
-  $ make -j8
+  $ make -jx_
 
-will build out-of-source in the the directory _build_. 'CMAKE_BUILD_TYPE' can
-be one of: empty, Debug, Release, RelWithDebInfo or MinSizeRel
+where _x_ is the number of threads you want to use and depends on the number
+of cores in your CPU and if hyperthreading is available or not.
+cmake ill build out-of-source in the the directory _build_. 'CMAKE_BUILD_TYPE'
+can be one of: empty, Debug, Release, RelWithDebInfo or MinSizeRel
 
-  $ make -j8 install
+  $ make -jx_ install
 
 installs a basic gmt in _build/gmt5_.
 
 NOTE: All cmake command line options such as _-DCMAKE_INSTALL_PREFIX_ can be
-configured in *cmake/ConfigUser.cmake*. You can define the number of jobs to run
-simultaneously by make with the _-jx_ option, where _x_ is typically the
-number of CPUs.
+configured in *cmake/ConfigUser.cmake*.
 
 In more detail:
 ~~~~~~~~~~~~~~~
@@ -54,9 +57,9 @@ For CMake related questions refer to the CMake manual which is available
 online: http://www.cmake.org/cmake/help/cmake-2-8-docs.html
 
 To avoid CMake's lengthy command line options you can create your custom
-ConfigUser.cmake file in the cmake directory. Simply copy
-cmake/ConfigUserTemplate.cmake to cmake/ConfigUser.cmake and then make changes
-in cmake/ConfigUser.cmake. See additional comments in that file.
+ConfigUser.cmake file in the cmake directory. Simply duplicate the
+cmake/ConfigUserTemplate.cmake to cmake/ConfigUser.cmake and then make
+changes in cmake/ConfigUser.cmake. See additional comments in that file.
 
 There are two configuration files:
 
@@ -101,11 +104,11 @@ Documentation:
 
 Manpages are available in different formats and can be generated with:
 
-  $ make -j8 manpages_all
+  $ make -jx_ manpages_all
 
 To generate the PDF documentation you need LaTeX:
 
-  $ make -j8 gmt_doc
+  $ make -jx_ gmt_doc
 
 You can choose to install documentation files from an external location instead
 of generating the PDF and HTML files from the sources. This is convenient if
@@ -114,10 +117,11 @@ LaTeX is not available. Set GMT_INSTALL_EXTERNAL_DOC in cmake/ConfigUser.cmake.
 Installing:
 ~~~~~~~~~~~
 
-  $ make -j8 install
+  $ make -jx_ install
 
 will compile and install libps, libgmt, and all GMT modules. Optionally it
-will install the GSHHG shorelines (if found), manpages, and PDF documentation.
+will install the GSHHG shorelines (if found), DCW (if found), UNIX manpages,
+and HTML and PDF documentation.
 You have to explicitly make the latter two beforehand or they will be omitted
 during installation. You have the choice between a monolithic installation
 (_-DGMT_INSTALL_MONOLITHIC=ON_) where everything goes into a common
@@ -125,8 +129,9 @@ subdirectory or a distribution-like installation (PREFIX/bin/gmt-VERSION,
 PREFIX/lib/gmt-VERSION/, PREFIX/share/gmt-VERSION/,
 PREFIX/share/doc/gmt-VERSION/).
 
-GMT is shipped as a single executable.  To install convenience links for GMT
-modules set GMT_INSTALL_EXTERNAL_DOC in cmake/ConfigUser.cmake.
+GMT is shipped as a single executable.  By default we also set "classic mode"
+by installing convenience links for all GMT modules. New GMT users should set
+INSTALL_MODULE_LINKS to FALSE in cmake/ConfigUser.cmake.
 
 Updating:
 ~~~~~~~~~
@@ -137,7 +142,7 @@ working directory is the build directory this is just as simple as
   $ cd ..
   $ svn up
   $ cd -
-  $ make -j8 install
+  $ make -jx_ install
 
 CMake will detect any changes to the source files and will automatically
 reconfigure. If you deleted all files inside the build directory you have to
@@ -177,7 +182,7 @@ Examples and tests can be build inside GMT_BINARY_DIR *without* installing.
 This is very convenient for testing. Just _enable_testing()_, set _DO_EXAMPLES_
 and/or _DO_TESTS_ in ConfigUser.cmake and do:
 
-  $ make -j8
+  $ make -jx_
   $ make check
 
 Optionally set _N_TEST_JOBS_ to the number of ctest jobs to run
@@ -190,8 +195,6 @@ TODO list
 ---------
 
 * Replace GMT_(malloc|memory): perl -i -pe 's/(GMT_(malloc|memory)[^_].+, )([^,)]+)/$1sizeof($3)/g' files ...
-
-* Remove (void *) casts: perl -i -pe 's/(free.*[(])[(]void[ ]*[*][)][ ]*/$1/g' *.c
 
 * Clean up config.h.in gmt_version.h.in gmt_notposix.h.in.
   Right now this is a mixture of partly redundant defines that can be

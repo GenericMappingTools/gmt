@@ -220,7 +220,7 @@ int main (int argc, char *argv[])
 	}
 	
 	/* Do the main work via the chosen module */
-	if ((error = GMT_Call_Module (API, module, -1, options))) Exit (error); 	/* If errors then we return that next */
+	if ((error = GMT_Call_Module (API, module, GMT_MODULE_OPT, options))) Exit (error); 	/* If errors then we return that next */
 
  	/* Free option list */
 	if (GMT_Destroy_Options (API, &options)) Exit (EXIT_FAILURE);

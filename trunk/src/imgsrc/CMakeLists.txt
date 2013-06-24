@@ -16,6 +16,8 @@
 # Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
 #
+# To modify the cmake process: Edit your cmake/ConfigUser.cmake file
+#
 
 # source files
 set (SUPPL_LIB_SRCS gmt_imgsubs.h gmt_imgsubs.c)

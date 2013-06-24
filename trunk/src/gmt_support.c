@@ -2655,7 +2655,7 @@ struct GMT_PALETTE * GMT_Get_CPT (struct GMT_CTRL *GMT, char *file, enum GMT_enu
 		master = (file && file[0]) ? file : "rainbow";	/* Set master CPT prefix */
 		sprintf (buffer, "-C%s -T%g/%g/16+ -Z ->%s", master, zmin, zmax, out_string);	/* Build actual makecpt command */
 		GMT_Report (GMT->parent, GMT_MSG_LONG_VERBOSE, "No CPT given, providing default CPT via makecpt -C%s -T%g/%g/16+ -Z\n", master, zmin, zmax);
-		if (GMT_Call_Module (GMT->parent, "makecpt", 0, buffer) != GMT_OK) {	/* Build a CPT via makecpt */
+		if (GMT_Call_Module (GMT->parent, "makecpt", GMT_MODULE_CMD, buffer) != GMT_OK) {	/* Build a CPT via makecpt */
 			return (NULL);
 		}
 		if ((P = GMT_Retrieve_Data (GMT->parent, object_ID)) == NULL) {	/* Retrieve the CPT structure */

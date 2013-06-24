@@ -16,6 +16,8 @@
 #	Contact info: gmt.soest.hawaii.edu
 #-------------------------------------------------------------------------------
 #
+# To modify the cmake process: Edit your cmake/ConfigUser.cmake file
+#
 # To build out-of-source do (example):
 #
 #	mkdir build
@@ -72,7 +74,6 @@ endif (DO_EXAMPLES OR DO_TESTS AND NOT GRAPHICSMAGICK)
 
 # Add subdirectories
 set(_manfiles_ps "" CACHE INTERNAL "Global list of PS manpages")
-set(_manfiles_suppl_ps "" CACHE INTERNAL "Global list of supplement PS manpages")
 add_subdirectory (src)
 add_subdirectory (share)      # share must be processed *after* src (GSHHG_PATH)
 add_subdirectory (doc)        # share must be processed *after* src (PDF manpages)
@@ -113,6 +114,7 @@ if (BUILD_SUPPLEMENTS)
 	get_property(GMT_SUPPL_LIB_PATH TARGET supplib PROPERTY LOCATION)
 	GET_FILENAME_COMPONENT (GMT_SUPPL_LIB_NAME ${GMT_SUPPL_LIB_PATH} NAME)
 	set (SUPPL "yes [${GMT_SUPPL_LIB_NAME}]")
+	set(_manfiles_suppl_ps "" CACHE INTERNAL "Global list of supplement PS manpages")
 else (BUILD_SUPPLEMENTS)
 	set (SUPPL "no")
 endif (BUILD_SUPPLEMENTS)
