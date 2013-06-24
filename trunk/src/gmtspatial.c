@@ -758,8 +758,11 @@ int GMT_gmtspatial_parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, st
 						Ctrl->A.smode = 3;
 					else
 						Ctrl->A.smode = 2;	/* Great circle */
-					if (!GMT_is_geographic (GMT, GMT_IN)) Ctrl->A.smode = 0;
 					Ctrl->A.unit = (Ctrl->A.smode == 2) ? opt->arg[0] : opt->arg[1];
+					if (!GMT_is_geographic (GMT, GMT_IN)) {	/* Data was not geographic, revert to Cartesian settings */
+						Ctrl->A.smode = 0;
+						Ctrl->A.unit = 'X';
+					}
 				}
 				else if (opt->arg[0]) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax Error: Bad modifier in %c in -A option\n", opt->arg[0]);
