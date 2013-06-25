@@ -31,8 +31,9 @@ fi
 
 path_build=../../build/docfigs		# Path to where ps2raster dumps the converted PNGs
 com="-A -E${DPI} -P -T${frmt} -D${path_build} -Qt4"
+comPDF="-A+S0.6 -P -Tf -D${path_build}"	# Shrink example figures by 40%
 pato=source/fig_includes/		# Path to where the to-be-included files will be created
-pathGallery=source/gallery/			# Path to where the to-be-included files will be created (For GALLERY)
+pathGallery=source/gallery/		# Path to where the to-be-included files will be created (For GALLERY)
 
 
 if [ "$1" = "pdf" ]; then
@@ -62,10 +63,11 @@ echo "" >> ${pato}/fig_${name}.rst_
 }
 
 function from_examples {
-gmt ps2raster ../examples/ex$1/example_$1.ps $com
 if [ "$ext" = "pdf" ]; then
+	gmt ps2raster ../examples/ex$1/example_$1.ps $comPDF
 	echo ".. figure:: ../${path_build}/${name}.${ext}" > ${pato}/fig_${name}.rst_
 else
+	gmt ps2raster ../examples/ex$1/example_$1.ps $com
 	echo ".. figure:: ../../${path_build}/${name}.${ext}" > ${pathGallery}/fig_${name}.rst_
 	echo "   :width: 500 px" >> ${pathGallery}/fig_${name}.rst_
 	echo "   :align: center" >> ${pathGallery}/fig_${name}.rst_
