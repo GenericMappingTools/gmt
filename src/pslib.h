@@ -301,12 +301,12 @@ struct imageinfo {
 EXTERN_MSC struct PSL_CTRL *New_PSL_Ctrl (char *session);
 EXTERN_MSC int PSL_beginaxes (struct PSL_CTRL *PSL, double llx, double lly, double width, double height, double x0, double y0, double x1, double y1);
 EXTERN_MSC int PSL_beginclipping (struct PSL_CTRL *PSL, double *x, double *y, int n, double rgb[], int flag);
-EXTERN_MSC int PSL_beginlayer (struct PSL_CTRL *PSLSL, int layer);
+EXTERN_MSC int PSL_beginlayer (struct PSL_CTRL *PSL, int layer);
 EXTERN_MSC int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay, int color_mode, char origin[], double offset[], double page_size[], char *title, int font_no[]);
-EXTERN_MSC int PSL_beginsession (struct PSL_CTRL *PSLSL, unsigned int search, char *sharedir, char *userdir);
-EXTERN_MSC int PSL_endaxes (struct PSL_CTRL *PSLSL);
+EXTERN_MSC int PSL_beginsession (struct PSL_CTRL *PSL, unsigned int search, char *sharedir, char *userdir);
+EXTERN_MSC int PSL_endaxes (struct PSL_CTRL *PSL);
 EXTERN_MSC int PSL_endclipping (struct PSL_CTRL *PSL, int mode);
-EXTERN_MSC int PSL_endlayer (struct PSL_CTRL *PSLSL);
+EXTERN_MSC int PSL_endlayer (struct PSL_CTRL *PSL);
 EXTERN_MSC int PSL_endplot (struct PSL_CTRL *PSL, int lastpage);
 EXTERN_MSC int PSL_endsession (struct PSL_CTRL *PSL);
 EXTERN_MSC int PSL_plotarc (struct PSL_CTRL *PSL, double x, double y, double radius, double az1, double az2, int type);
@@ -340,14 +340,14 @@ EXTERN_MSC int PSL_setmiterlimit (struct PSL_CTRL *PSL, int limit);
 EXTERN_MSC int PSL_setorigin (struct PSL_CTRL *PSL, double x, double y, double angle, int mode);
 EXTERN_MSC int PSL_setparagraph (struct PSL_CTRL *PSL, double line_space, double par_width, int par_just);
 EXTERN_MSC int PSL_setpattern (struct PSL_CTRL *PSL, int image_no, char *imagefile, int image_dpi, double f_rgb[], double b_rgb[]);
-EXTERN_MSC int PSL_settransparencymode (struct PSL_CTRL *PSLSL, const char *mode);
+EXTERN_MSC int PSL_settransparencymode (struct PSL_CTRL *PSL, const char *mode);
 EXTERN_MSC int PSL_definteger (struct PSL_CTRL *PSL, const char *param, int value);
 EXTERN_MSC int PSL_defpen (struct PSL_CTRL *PSL, const char *param, double width, char *style, double offset, double rgb[]);
 EXTERN_MSC int PSL_defpoints (struct PSL_CTRL *PSL, const char *param, double fontsize);
 EXTERN_MSC int PSL_defcolor (struct PSL_CTRL *PSL, const char *param, double rgb[]);
 EXTERN_MSC int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char *text);
 EXTERN_MSC int PSL_defunits (struct PSL_CTRL *PSL, const char *param, double value);
-EXTERN_MSC unsigned char *psl_gray_encode (struct PSL_CTRL *PSLSL, int *nbytes, unsigned char *input);
+EXTERN_MSC unsigned char *psl_gray_encode (struct PSL_CTRL *PSL, int *nbytes, unsigned char *input);
 
 /* Other deep level routines that could be useful */
 EXTERN_MSC int psl_ix (struct PSL_CTRL *PSL, double value);
