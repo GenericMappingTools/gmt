@@ -30,7 +30,7 @@ elif [ "$1" = "jpg" ]; then
 fi
 
 path_build=../../build/docfigs		# Path to where ps2raster dumps the converted PNGs
-com="-A -E${DPI} -P -T${frmt} -D${path_build}"
+com="-A -E${DPI} -P -T${frmt} -D${path_build} -Qt4"
 pato=source/fig_includes/		# Path to where the to-be-included files will be created
 pathGallery=source/gallery/			# Path to where the to-be-included files will be created (For GALLERY)
 
