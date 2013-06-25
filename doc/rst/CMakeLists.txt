@@ -30,7 +30,7 @@ if (SPHINX_FOUND)
 	configure_file (conf.py.in "${SPHINX_CONFIG_DIR}/conf.py" @ONLY)
 
 	# Add build targets
-	add_custom_target (docs_rst_html
+	add_custom_target (docs_html
 		${SPHINX_EXECUTABLE} -q -b html
 		-c "${SPHINX_CONFIG_DIR}"
 		-d "${SPHINX_CACHE_DIR}"
@@ -38,7 +38,7 @@ if (SPHINX_FOUND)
 		${CMAKE_CURRENT_BINARY_DIR}/html
 		COMMENT "Building HTML documentation")
 
-	add_custom_target (docs_rst_man
+	add_custom_target (docs_man
 		${SPHINX_EXECUTABLE} -q -b man
 		-c "${SPHINX_CONFIG_DIR}"
 		-d "${SPHINX_CACHE_DIR}"
@@ -46,7 +46,7 @@ if (SPHINX_FOUND)
 		${CMAKE_CURRENT_BINARY_DIR}/man
 		COMMENT "Building manpages")
 
-	add_custom_target (docs_rst_latex
+	add_custom_target (docs_latex
 		${SPHINX_EXECUTABLE} -q -b latex
 		-c "${SPHINX_CONFIG_DIR}"
 		-d "${SPHINX_CACHE_DIR}"
