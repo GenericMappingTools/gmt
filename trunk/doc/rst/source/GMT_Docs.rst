@@ -2,7 +2,7 @@
 
 **Technical Reference and Cookbook**
 
-**Version 5.0.1b (r), Feb 2013**
+**Version 5.0.0, July 2013**
 
 **Pål (Paul) Wessel**
 
@@ -63,7 +63,7 @@ SOEST RCF staff (Ross Ishida, Pat Townsend, and Sharon Stahl) provided
 valuable help on Linux, web, and CGI script issues.
 
 Honolulu, HI, Silver Spring, MD, Cornish, NH, Faro, Portugal, and
-Bremerhaven, Germany Feb 2013
+Bremerhaven, Germany July 2013
 
 
 A Reminder
