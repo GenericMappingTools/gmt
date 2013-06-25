@@ -19,7 +19,7 @@ The following recipe is used when designing a new symbol.
    description of symbol design). In this Section we will create two new
    symbols: a volcano and a bulls eye.
 
-.. include:: fig_GMT_volcano.rst_
+   .. include:: fig_GMT_volcano.rst_
 
 #. After designing the symbol we will encode it using a simple set of
    rules. In our case we describe our volcano and bulls eye using these
