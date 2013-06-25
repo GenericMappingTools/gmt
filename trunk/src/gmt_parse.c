@@ -437,6 +437,7 @@ int gmt_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 	size_t k, j, last;
 	int gmt4 = 0, gmt5 = 0, n_colons = 0, n_slashes = 0, colon_text = 0, wesn_at_end = 0;
 	bool ignore = false;	/* true if inside a colon-separated string under GMT4 style assumption */
+	bool ignore5 = false;	/* true if label, title, prefix, suffix */
 	bool custom = false;	/* True if -B[p|s][x|y|z]c<filename> was given; then we relax checing for .c (old second) */
 	char mod = 0;
 	
@@ -452,6 +453,7 @@ int gmt_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 		if (k && in[k] == '+' && in[k-1] == '@') {	/* Found a @+ PSL sequence, just skip */
 			continue;	/* Resume processing */
 		}
+		if (ignore5) continue;	/* Don't look inside a GMT5 title, label, suffix, or prefix */
 		if (in[k] == ':') {
 #ifdef _WIN32		/* Filenames under Windows may be X:\<name> which should not trigger "colon" test */
 			if (!(k && isalpha (in[k-1]) && k < last && in[k+1] == '\\'))
@@ -471,14 +473,14 @@ int gmt_B_arg_inspector (struct GMT_CTRL *GMT, char *in) {
 		switch (in[k]) {
 			case '/': if (mod == 0) n_slashes++; break;	/* Only GMT4 uses slashes */
 			case '+':	/* Plus, might be GMT5 modifier switch */
-				if (k < last && in[k+1] == 's') {mod = 's'; gmt5++;}	/* suffix settings */
-				else if (k < last && in[k+1] == 'b') {mod = 'b'; gmt5++;}	/* 3-D box settings */
-				else if (k < last && in[k+1] == 'g') {mod = 'g'; gmt5++;}	/* fill settings */
-				else if (k < last && in[k+1] == 'o') {mod = 'o'; gmt5++;}	/* oblique pole settings */
-				else if (k < last && in[k+1] == 'p') {mod = 'p'; gmt5++;}	/* prefix settings */
-				else if (k < last && in[k+1] == 'l') {mod = 'l'; gmt5++;}	/* Label */
-				else if (k < last && in[k+1] == 't') {mod = 't'; gmt5++;}	/* title */
-				else if (k && (in[k-1] == 'Z' || in[k-1] == 'z')) gmt4++;	/* Z-axis with 3-D box */
+			if (k < last && in[k+1] == 's') {mod = 's'; ignore5 = true; gmt5++;}	/* suffix settings */
+				else if (k < last && in[k+1] == 'b') {mod = 'b'; ignore5 = false; gmt5++;}	/* 3-D box settings */
+				else if (k < last && in[k+1] == 'g') {mod = 'g'; ignore5 = false; gmt5++;}	/* fill settings */
+				else if (k < last && in[k+1] == 'o') {mod = 'o'; ignore5 = false; gmt5++;}	/* oblique pole settings */
+				else if (k < last && in[k+1] == 'p') {mod = 'p'; ignore5 = true; gmt5++;}	/* prefix settings */
+				else if (k < last && in[k+1] == 'l') {mod = 'l'; ignore5 = true; gmt5++;}	/* Label */
+				else if (k < last && in[k+1] == 't') {mod = 't'; ignore5 = true; gmt5++;}	/* title */
+				else if (k && (in[k-1] == 'Z' || in[k-1] == 'z')) {ignore5 = false; gmt4++;}	/* Z-axis with 3-D box */
 				break;
 			case 'c':	/* If following a number this is unit c for seconds in GMT4 */
 				if (!custom && k && (in[k-1] == '.' || isdigit (in[k-1]))) gmt4++;	/* Old-style second unit */
