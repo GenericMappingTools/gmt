@@ -194,11 +194,12 @@ name=example_40;	from_examples 40
 echo "   Illustrate line simplification and area calculations." >> ${pathGallery}/fig_${name}.rst_
 
 name=GMT_App_E;			from_scripts
-name=GMT_App_F_dingbats;	from_scripts
-name=GMT_App_F_iso+;		from_scripts
-name=GMT_App_F_stand+;		from_scripts
-name=GMT_App_F_symbol;		from_scripts
+
+name=GMT_App_F_stand+_iso+;	from_scripts 
 echo "   Octal codes and corresponding symbols for StandardEncoding (left) and ISOLatin1Encoding (right) fonts." >> ${pato}/fig_${name}.rst_
+
+name=GMT_App_F_symbol_dingbats;	from_scripts
+echo "   Octal codes and corresponding symbols for Symbol (left) and ZapfDingbats (right) fonts." >> ${pato}/fig_${name}.rst_
 
 name=GMT_App_G;			from_scripts
 echo "   The standard 35 **PS** fonts recognized by *GMT*." >> ${pato}/fig_${name}.rst_
