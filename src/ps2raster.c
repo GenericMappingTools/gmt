@@ -1085,7 +1085,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 				double new_scale_x, new_scale_y, new_off_x, new_off_y, r_x, r_y;
 				char t1[8], t2[8];	/* To hold the translate part when landscape */
 				if (!strncmp (line, "%%BeginPageSetup", 16)) {
-					char line_[128], *pch, dumb1[8], dumb2[8], dumb3[8];
+					char line_[128], dumb1[8], dumb2[8], dumb3[8];
 					BeginPageSetup_here = true;             /* Signal that on next line the job must be done */
 					GMT_fgets_chop (GMT, line_, 128, fp);   /* Read also next line which is to overwrite */
 					/* The trouble is that we can have things like "V 612 0 T 90 R 0.06 0.06 scale" or "V 0.06 0.06 scale" */
