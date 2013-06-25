@@ -37,7 +37,7 @@ pathGallery=source/gallery/			# Path to where the to-be-included files will be c
 
 if [ "$1" = "pdf" ]; then
 	# For LATEX/PDF we want to include the examples chapter
-	echo ".. include: ../examples_chapter_opt.rst_" > ${pathGallery}/examples_chapter_opt.rst_
+	echo ".. include:: examples_chapter.rst_" > ${pathGallery}/examples_chapter_opt.rst_
 else
 	# For HTML the examples chapter is NOT included
 	echo "" > ${pathGallery}/examples_chapter_opt.rst_
