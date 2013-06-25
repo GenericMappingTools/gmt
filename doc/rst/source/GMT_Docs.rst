@@ -5680,9 +5680,8 @@ Centered on the Dateline, the example below was created by this command:
 
 .. include:: fig_includes/fig_GMT_grinten.rst_
 
-.. only:: latex
 
-   .. include:: examples_chapter.rst_
+.. include:: gallery/examples_chapter_opt.rst_
 
 
 A. GMT supplemental packages
