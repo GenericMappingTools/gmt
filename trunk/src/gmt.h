@@ -43,23 +43,12 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
-#include "declspec.h"
-
 /*
  * When an application links to a DLL in Windows, the symbols that
  * are imported have to be identified as such.
  */
-#ifndef EXTERN_MSC
-#	ifdef _WIN32
-#		ifdef LIBRARY_EXPORTS
-#			define EXTERN_MSC extern __declspec(dllexport)
-#		else
-#			define EXTERN_MSC extern __declspec(dllimport)
-#		endif /* !LIBRARY_EXPORTS */
-#	else /* !_WIN32 */
-#		define EXTERN_MSC extern
-#	endif /* _WIN32 */
-#endif /* EXTERN_MSC */
+#include "declspec.h"
+
 
 /* Include GMT constants, option, and resources definitions */
 
