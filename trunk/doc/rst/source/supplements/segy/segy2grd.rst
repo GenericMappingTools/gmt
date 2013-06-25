@@ -16,7 +16,7 @@ Synopsis
 [ **-D**\ *xname*/*yname*/*zname*/*scale*/*offset*/*title*/*remark* ]
 [ **-M**\ [*flags*\ ] ] [ **-N**\ *nodata* ] [ **-S**\ [*zfile*] ]
 [ |SYN_OPT-V| ]
-[ |SYN_OPT-bi ]
+[ |SYN_OPT-bi| ]
 [ |SYN_OPT-:| ]
 
 |No-spaces|
