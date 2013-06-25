@@ -6580,9 +6580,7 @@ codes reserved for control characters. In order to use all the extended
 characters (shown in the light green boxes) you need to set
 **PS_CHAR_ENCODING** to Standard+ or ISOLatin1+ in your ``gmt.conf`` file [41]_.
 
-.. include:: fig_includes/fig_GMT_App_F_stand+.rst_
-
-.. include:: fig_includes/fig_GMT_App_F_iso+.rst_
+.. include:: fig_includes/fig_GMT_App_F_stand+_iso+.rst_
 
 The chart for the Symbol character set (*GMT* font number 12) and Pifont
 ZapfDingbats character set (font number 34) are presented in
@@ -6593,9 +6591,7 @@ font. The euro currency symbol is \\240 in the Symbol
 font and will print if your printer supports it (older printer's
 firmware will not know about the euro).
 
-.. include:: fig_includes/fig_GMT_App_F_symbol.rst_
-
-.. include:: fig_includes/fig_GMT_App_F_dingbats.rst_
+.. include:: fig_includes/fig_GMT_App_F_symbol_dingbats.rst_
 
 G. *PostScript* fonts used by GMT
 =================================
@@ -8783,9 +8779,6 @@ Finally we show an example of a polygon file:
 .. [31]
    QuickTime Pro can do this, as can most video-editing programs.
 
-.. [32]
-   Simon.Cox@csiro.au
-
 .. [33]
    For data bases, see
    http://topex.ucsd.edu/marine_grav/mar_grav.html.
@@ -8804,9 +8797,6 @@ Finally we show an example of a polygon file:
 
 .. [39]
    lloyd@must-have-coffee.gen.nz
-
-.. [40]
-   http://www.bzip.org
 
 .. [41]
    If you chose SI units during the installation then the default
