@@ -619,7 +619,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 	unsigned int i, j, k, pix_w = 0, pix_h = 0;
 	int sys_retval = 0, r, pos_file, pos_ext, error = 0;
 	size_t len;
-	bool got_BB, got_HRBB, got_BBatend, file_has_HRBB, got_end, landscape;
+	bool got_BB, got_HRBB, got_BBatend, file_has_HRBB, got_end, landscape, landscape_orig;
 	bool excessK, setup, found_proj = false, isGMT_PS = false, BeginPageSetup_here = false;
 
 	double xt, yt, xt_bak, yt_bak, w, h, x0 = 0.0, x1 = 612.0, y0 = 0.0, y1 = 828.0;
@@ -830,7 +830,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 			fp = fp2;	/* Set original file pointer to this file instead */
 		}
 
-		got_BB = got_HRBB = file_has_HRBB = got_BBatend = got_end = landscape = setup = false;
+		got_BB = got_HRBB = file_has_HRBB = got_BBatend = got_end = landscape = landscape_orig = setup = false;
 
 		len = strlen (ps_file);
 		j = (unsigned int)len - 1;
@@ -959,7 +959,7 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 			}
 			else if ((strstr (line, "%%Orientation:"))) {
 				if (!strncmp (&line[15], "Landscape", 9))
-					landscape = true;
+					landscape = landscape_orig = true;
 			}
 			else if ((strstr (line, "%%EndComments")))
 				got_end = true;
@@ -1083,19 +1083,16 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 				   end we will end up with an image with the imposed size and the current -E dpi setting.
 				*/
 				double new_scale_x, new_scale_y, new_off_x, new_off_y, r_x, r_y;
+				char t1[8], t2[8];	/* To hold the translate part when landscape */
 				if (!strncmp (line, "%%BeginPageSetup", 16)) {
-					char line_[128], *pch;
-					size_t k;
+					char line_[128], *pch, dumb1[8], dumb2[8], dumb3[8];
 					BeginPageSetup_here = true;             /* Signal that on next line the job must be done */
 					GMT_fgets_chop (GMT, line_, 128, fp);   /* Read also next line which is to overwrite */
-					/* The shit is that we can have things like "V 612 0 T 90 R 0.06 0.06 scale" or "V 0.06 0.06 scale" */
-					pch = strstr(line_, "scale");
-					pch[0] = '\0';
-					k = strlen(line_) - 1;
-					while (line_[k] == ' ') k--;	while (line_[k] != ' ') k--;
-					while (line_[k] == ' ') k--;	while (line_[k] != ' ') k--;
-					sscanf(&line_[k], "%s %s",c2,c3); 
-					/* But it still fails (image is cropped) in situations like first case */
+					/* The trouble is that we can have things like "V 612 0 T 90 R 0.06 0.06 scale" or "V 0.06 0.06 scale" */
+					if (landscape_orig)
+						sscanf(line_, "%s %s %s %s %s %s %s %s",c1, t1, t2, dumb1, dumb2, dumb3, c2, c3); 
+					else
+						sscanf(line_, "%s %s %s",c1, c2,c3); 
 					old_scale_x = atof (c2);		old_scale_y = atof (c3);
 				}
 				else if (BeginPageSetup_here) {
@@ -1119,7 +1116,11 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 					}
 					fprintf (fpo, "%% Recalculate translation and scale to obtain a resized image\n");
 					fprintf (fpo, "%g %g translate\n", new_off_x, new_off_y);
-					fprintf (fpo, "V %g %g scale\n", new_scale_x, new_scale_y);
+					if (landscape_orig) {
+						fprintf (fpo, "V %g %g T 90 R %g %g scale\n", atof(t1)*r_x, atof(t2)*r_y, new_scale_x, new_scale_y);
+					}
+					else
+						fprintf (fpo, "V %g %g scale\n", new_scale_x, new_scale_y);
 				}
 			}
 			else if (!strncmp (line, "%%Page:", 7)) {
