@@ -1084,10 +1084,18 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 				*/
 				double new_scale_x, new_scale_y, new_off_x, new_off_y, r_x, r_y;
 				if (!strncmp (line, "%%BeginPageSetup", 16)) {
-					char line_[128];
+					char line_[128], *pch;
+					size_t k;
 					BeginPageSetup_here = true;             /* Signal that on next line the job must be done */
 					GMT_fgets_chop (GMT, line_, 128, fp);   /* Read also next line which is to overwrite */
-					sscanf (line_, "%s %s %s",c1,c2,c3);
+					/* The shit is that we can have things like "V 612 0 T 90 R 0.06 0.06 scale" or "V 0.06 0.06 scale" */
+					pch = strstr(line_, "scale");
+					pch[0] = '\0';
+					k = strlen(line_) - 1;
+					while (line_[k] == ' ') k--;	while (line_[k] != ' ') k--;
+					while (line_[k] == ' ') k--;	while (line_[k] != ' ') k--;
+					sscanf(&line_[k], "%s %s",c2,c3); 
+					/* But it still fails (image is cropped) in situations like first case */
 					old_scale_x = atof (c2);		old_scale_y = atof (c3);
 				}
 				else if (BeginPageSetup_here) {
