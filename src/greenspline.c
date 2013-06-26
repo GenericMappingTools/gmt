@@ -1740,7 +1740,7 @@ int GMT_greenspline (void *V_API, int mode, void *args)
 		if ((error = GMT_svdcmp (GMT, A, (unsigned int)nm, (unsigned int)nm, s, v))) Return (error);
 		if (Ctrl->C.file) {	/* Save the eigen-values for study */
 			double *eig = GMT_memory (GMT, NULL, nm, double);
-			uint64_t e_dim[4] = {1, 1, 2, nm};
+			uint64_t e_dim[4] = {1, 1, nm, 2};
 			struct GMT_DATASET *E = NULL;
 			GMT_memcpy (eig, s, nm, double);
 			if ((E = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, e_dim, NULL, NULL, 0, 0, NULL)) == NULL) {

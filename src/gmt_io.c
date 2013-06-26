@@ -5850,7 +5850,7 @@ int GMT_alloc_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, uint64_t
 	return (GMT_OK);
 }
 
-struct GMT_DATATABLE * GMT_create_table (struct GMT_CTRL *GMT, uint64_t n_segments, uint64_t n_columns, uint64_t n_rows, bool alloc_only)
+struct GMT_DATATABLE * GMT_create_table (struct GMT_CTRL *GMT, uint64_t n_segments, uint64_t n_rows, uint64_t n_columns, bool alloc_only)
 {
 	/* Allocate the new Table structure given the specified dimensions.
 	 * If n_columns == 0 it means we don't know that dimension yet.
@@ -5877,7 +5877,7 @@ struct GMT_DATATABLE * GMT_create_table (struct GMT_CTRL *GMT, uint64_t n_segmen
 	return (T);
 }
 
-struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *GMT, uint64_t n_tables, uint64_t n_segments, uint64_t n_columns, uint64_t n_rows, unsigned int geometry, bool alloc_only)
+struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *GMT, uint64_t n_tables, uint64_t n_segments, uint64_t n_rows, uint64_t n_columns, unsigned int geometry, bool alloc_only)
 {	/* Create an empty data set structure with the required number of empty tables, all set to hold n_segments with n_columns */
 	uint64_t tbl;
 	struct GMT_DATASET *D = NULL;
@@ -5893,7 +5893,7 @@ struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *GMT, uint64_t n_tables
 	D->n_alloc = D->n_tables = n_tables;
 	if (!alloc_only) D->n_segments = D->n_tables * n_segments;
 	if (!alloc_only) D->n_records = D->n_segments * n_rows;
-	for (tbl = 0; tbl < n_tables; tbl++) if ((D->table[tbl] = GMT_create_table (GMT, n_segments, n_columns, n_rows, alloc_only)) == NULL) return (NULL);
+	for (tbl = 0; tbl < n_tables; tbl++) if ((D->table[tbl] = GMT_create_table (GMT, n_segments, n_rows, n_columns, alloc_only)) == NULL) return (NULL);
 	D->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	D->alloc_mode = GMT_ALLOCATED_BY_GMT;		/* So GMT_* modules can free this memory. */
 	D->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
@@ -6182,7 +6182,7 @@ struct GMT_DATASEGMENT * GMT_duplicate_segment (struct GMT_CTRL *GMT, struct GMT
 	return (Sout);
 }
 
-struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, uint64_t n_columns, uint64_t n_rows, unsigned int mode)
+struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, uint64_t n_rows, uint64_t n_columns, unsigned int mode)
 {
 	/* Allocate new dataset structure with same # of tables, segments and rows/segment as input data set.
 	 * However, n_columns is given separately and could differ.  Also, if n_rows > 0 we let that override the segment row counts.
@@ -6259,7 +6259,7 @@ struct GMT_DATASET * GMT_duplicate_dataset (struct GMT_CTRL *GMT, struct GMT_DAT
 {	/* Make an exact replica, return geometry if not NULL */
 	uint64_t tbl, seg;
 	struct GMT_DATASET *D = NULL;
-	D = GMT_alloc_dataset (GMT, Din, Din->n_columns, 0, mode);
+	D = GMT_alloc_dataset (GMT, Din, 0, Din->n_columns, mode);
 	GMT_memcpy (D->min, Din->min, Din->n_columns, double);
 	GMT_memcpy (D->max, Din->max, Din->n_columns, double);
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
@@ -6561,7 +6561,7 @@ struct GMT_MATRIX * GMT_create_matrix (struct GMT_CTRL *GMT, uint64_t layers)
 	M->alloc_mode = GMT_ALLOCATED_BY_GMT;		/* Memory can be freed by GMT. */
 	M->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
 	M->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
-	M->n_layers = (layers) ? layers : 1;
+	M->n_layers = (layers) ? layers : 1;		/* Default to 1 if not set */
 	return (M);
 }
 

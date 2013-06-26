@@ -161,12 +161,12 @@ EXTERN_MSC bool GMT_not_numeric (struct GMT_CTRL *GMT, char *text);				/* Rules 
 EXTERN_MSC bool GMT_parse_segment_item (struct GMT_CTRL *GMT, char *in_string, char *pattern, char *out_string);
 EXTERN_MSC int GMT_set_cols (struct GMT_CTRL *GMT, unsigned int direction, uint64_t expected);
 EXTERN_MSC uint64_t GMT_get_cols (struct GMT_CTRL *GMT, unsigned int direction);
-EXTERN_MSC struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *GMT, uint64_t n_tables, uint64_t n_segments, uint64_t n_columns, uint64_t n_rows, unsigned int geometry, bool alloc_only);
-EXTERN_MSC struct GMT_DATATABLE * GMT_create_table (struct GMT_CTRL *GMT, uint64_t n_segments, uint64_t n_columns, uint64_t n_rows, bool alloc_only);
+EXTERN_MSC struct GMT_DATASET * GMT_create_dataset (struct GMT_CTRL *GMT, uint64_t n_tables, uint64_t n_segments, uint64_t n_rows, uint64_t n_columns, unsigned int geometry, bool alloc_only);
+EXTERN_MSC struct GMT_DATATABLE * GMT_create_table (struct GMT_CTRL *GMT, uint64_t n_segments, uint64_t n_rows, uint64_t n_columns, bool alloc_only);
 EXTERN_MSC void GMT_free_textset (struct GMT_CTRL *GMT, struct GMT_TEXTSET **data);
 EXTERN_MSC struct GMT_TEXTSET * GMT_duplicate_textset (struct GMT_CTRL *GMT, struct GMT_TEXTSET *Din, unsigned int mode);
 EXTERN_MSC void GMT_adjust_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t n_columns);
-EXTERN_MSC struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, uint64_t n_columns, uint64_t n_rows, unsigned int mode);
+EXTERN_MSC struct GMT_DATASET * GMT_alloc_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, uint64_t n_rows, uint64_t n_columns, unsigned int mode);
 EXTERN_MSC struct GMT_DATASET * GMT_duplicate_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, unsigned int mode, unsigned int *geometry);
 EXTERN_MSC struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsigned int source_type, bool greenwich, unsigned int *geometry, bool use_GMT_io);
 EXTERN_MSC int GMT_write_dataset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, struct GMT_DATASET *D, bool use_GMT_io, int table);

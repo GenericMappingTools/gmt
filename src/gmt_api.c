@@ -4350,7 +4350,7 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 				struct GMT_DATASET *D_obj = S_obj->resource;
 				struct GMT_DATATABLE *T_obj = NULL;
 				if (!D_obj) {	/* First time allocation */
-					D_obj = GMT_create_dataset (API->GMT, 1, GMT_TINY_CHUNK, 0, 0, S_obj->geometry, true);	/* No cols or rows yet */
+					D_obj = GMT_create_dataset (API->GMT, 1, GMT_TINY_CHUNK, 0, 0, S_obj->geometry, true);	/* 1 table, chunk of segments; no cols or rows yet */
 					S_obj->resource = D_obj;
 					API->GMT->current.io.curr_pos[GMT_OUT][1] = 0;	/* Start at seg = 0 */
 					D_obj->n_columns = D_obj->table[0]->n_columns = API->GMT->common.b.ncol[GMT_OUT];
@@ -4726,10 +4726,14 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 	 * geometry should reflect the resource, e.g. GMT_IS_SURFACE for grid, etc.
 	 * There are two ways to define the dimensions needed to actually allocate memory:
 	 * (A) Via uint64_t dim[]:
-	 *   The dim array contains dimensions for tables (par[0] = number of tables,
-	 *   par[1] = number of segments per table, par[2] = number of columns,
-	 *   and par[3] = number of rows per segment). The array is ignored for
-	 *   CPT and GMT grids. For GMT_IS_VECTOR, par[0] holds the number of columns.
+	 *   The dim array contains up to 4 dimensions for:
+	 *	0: par[GMT_TBL] = number of tables,
+	 *	1: par[GMT_SEG] = number of segments per table
+	 *	2: par[GMT_ROW] = number of rows per segment.
+	 *	3: par[GMT_COL] = number of columns per row [ignored for GMT_TEXTSET].
+	 * The dim array is ignored for CPT and GMT grids.
+	 *   For GMT_IS_VECTOR, par[0] holds the number of columns.
+	 *   For GMT_IS_MATRIX, par[0] holds the number of layers (dim == NULL means just 1 layer).
 	 * (B) Via range, inc, registration:
 	 *   Convert user domain range, increments, and registration into dimensions
 	 *   for the container.  For grids and images we fill out the GMT_GRID_HEADER;
@@ -4807,13 +4811,13 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 #endif
 		case GMT_IS_DATASET:	/* GMT dataset, allocate the requested tables, segments, rows, and columns */
 			if (dim == NULL) return_null (API, GMT_PTR_IS_NULL);
-			if (dim[0] > UINT_MAX || dim[2] > UINT_MAX) return_null (API, GMT_DIM_TOO_LARGE);
-			if ((new_obj = GMT_create_dataset (API->GMT, dim[0], dim[1], dim[2], dim[3], geometry, false)) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
+			if (dim[GMT_TBL] > UINT_MAX || dim[GMT_ROW] > UINT_MAX) return_null (API, GMT_DIM_TOO_LARGE);
+			if ((new_obj = GMT_create_dataset (API->GMT, dim[GMT_TBL], dim[GMT_SEG], dim[GMT_ROW], dim[GMT_COL], geometry, false)) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 			break;
 		case GMT_IS_TEXTSET:	/* GMT text dataset, allocate the requested tables, segments, and rows */
 			if (dim == NULL) return_null (API, GMT_PTR_IS_NULL);
-			if (dim[0] > UINT_MAX) return_null (API, GMT_DIM_TOO_LARGE);
-			if ((new_obj = GMT_create_textset (API->GMT, dim[0], dim[1], dim[2], false)) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
+			if (dim[GMT_TBL] > UINT_MAX) return_null (API, GMT_DIM_TOO_LARGE);
+			if ((new_obj = GMT_create_textset (API->GMT, dim[GMT_TBL], dim[GMT_SEG], dim[GMT_ROW], false)) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 			break;
 		case GMT_IS_CPT:	/* GMT CPT table, allocate one with space for dim[0] color entries */
 			if (dim == NULL) return_null (API, GMT_PTR_IS_NULL);

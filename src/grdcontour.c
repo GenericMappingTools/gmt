@@ -1043,7 +1043,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 	edge = GMT_memory (GMT, NULL, n_edges, unsigned int);	/* Bit flags used to keep track of contours */
 
 	if (Ctrl->D.active) {
-		uint64_t dim[4] = {0, 0, 3, 0};
+		uint64_t dim[4] = {0, 0, 0, 3};
 		if (!Ctrl->D.file[0] || !strchr (Ctrl->D.file, '%'))	/* No file given or filename without C-format specifiers means a single output file */
 			io_mode = GMT_WRITE_SET;
 		else {	/* Must determine the kind of output organization */
@@ -1075,7 +1075,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 				two_only = true;
 			}
 		}
-		dim[0] = n_tables;
+		dim[GMT_TBL] = n_tables;
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, Ctrl->D.file)) == NULL) Return (API->error);	/* An empty dataset */
 		n_seg_alloc = GMT_memory (GMT, NULL, n_tables, size_t);
 		n_seg = GMT_memory (GMT, NULL, n_tables, uint64_t);

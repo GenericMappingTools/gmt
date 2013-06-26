@@ -43,7 +43,7 @@ struct GMTSTITCH_CTRL {
 	} Out;
 	struct C {	/* -C[<file>] */
 		bool active;
-		char *file;
+		char *file;	/* File for storing closed polygons */
 	} C;
 	struct D {	/* -D[<file>] */
 		bool active;
@@ -215,19 +215,18 @@ static int connect (struct LINK *S, uint64_t id, int order, double cutoff, bool 
 
 	if (S[S[id].buddy[order].id].used) return (false);		/* Segment has been used already */
 	if (S[id].buddy[order].dist > cutoff) return (false);		/* Exceeds minimum gap */
-	if (!nn_check) return (true);					/* Passed all requirements */
-	if (S[id].buddy[order].next_dist > nn_dist) return (true);	/* Next neighboor is far enough away */
+	if (!nn_check) return (true);					/* No other requirement specified, so done */
+	if (S[id].buddy[order].next_dist > nn_dist) return (true);	/* Next nearest neighboor is far enough away */
 	return (false);							/* Failed all tests */
 }
 
 static uint64_t Copy_This_Segment (struct GMT_DATASEGMENT *in, struct GMT_DATASEGMENT *out, uint64_t out_start, uint64_t in_start, uint64_t in_end)
 {
-	uint64_t row_in, row_out;
-	unsigned int col;
-	int inc;
+	uint64_t row_in, row_out, col;
+	int64_t inc;
 	bool done = false;
 
-	/* We will copy the records from the out segment from rows in_start up to and including in_end.
+	/* We will copy the records from the in segment from rows in_start up to and including in_end.
 	 * If in_start > in_end then we will end up reversing the order of the records.
 	 * The records are copied to the out segment starting at output record out_start (initially 0).
 	 * We return the next row number for output.
@@ -252,12 +251,11 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 	unsigned int nearest_end[2][2], j, n_qfiles = 0, end_order;
 	unsigned int io_mode = GMT_WRITE_SET, q_mode = GMT_WRITE_SET, d_mode = 0, ii, end;
 
-	uint64_t dim_tscr[4] = {1, 1, 0, 0};
-
 	size_t n_seg_alloc[2] = {0, 0}, n_alloc_pts;
 
-	uint64_t tbl, n_columns, n, k, n_rows, seg, np, ns, n_open, out_seg, out_p, id, id2, start_id, iseg, jseg;
-	uint64_t n_islands = 0, n_trouble = 0, n_closed = 0, chain = 0, match = 0, L, n_steps, n_seg_length, G;
+	uint64_t tbl, n_columns, n, k, n_rows, seg, np, ns, n_open, out_seg, out_p, id, id2;
+	uint64_t n_islands = 0, n_trouble = 0, n_closed = 0, chain = 0, match = 0, L, n_steps;
+	uint64_t dim_tscr[4] = {1, 1, 0, 0}, start_id, iseg, jseg, n_seg_length, G;
 
 	double dd[2][2], p_last_x, p_last_y, p_first_x, p_first_y, distance, closed_dist = 0.0;
 
@@ -276,7 +274,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 	/*----------------------- Standard module initialization and parsing ----------------------*/
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (mode == GMT_MODULE_PURPOSE) return (GMT_gmtstitch_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
+	if (mode == GMT_MODULE_PURPOSE) return (GMT_gmtstitch_usage (API, GMT_MODULE_PURPOSE));		/* Return the purpose of program */
 	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_gmtstitch_usage (API, GMT_USAGE));/* Return the usage message */
@@ -295,33 +293,36 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Processing input table data\n");
 
-	if (Ctrl->D.active) {	/* We want to output to go to individual files for each segment [Default writes to stdout] */
-		io_mode = GMT_WRITE_SEGMENT;	/* This means write segments to separate files */
+	if (Ctrl->D.active) {	/* We want output to go to individual files for each segment [Default writes to stdout] */
+		io_mode = GMT_WRITE_SEGMENT;	/* This means "write segments to separate files" */
 		if (!Ctrl->D.format) Ctrl->D.format = strdup ("gmtstitch_segment_%d.txt");	/* Default naming convention for segments */
-		if (strstr (Ctrl->D.format, "%c")) save_type = true;	/* Also add C (closed) or O (open) to the filename */
-		if (Ctrl->Q.active) {	/* We also want to build list(s) those files */
-			if (!Ctrl->Q.file) Ctrl->Q.file = strdup ("gmtstitch_list.txt");	/* Default -Q name if not given */
-			dim_tscr[0] = n_qfiles = (strstr (Ctrl->Q.file, "%c")) ? 2 : 1;	/* Build one or two tables (closed and open) */
+		if (strstr (Ctrl->D.format, "%c")) save_type = true;	/* Also add C (closed) or O (open) to the filenames */
+		if (Ctrl->Q.active) {	/* We also want to build a list file(s) */
+			if (!Ctrl->Q.file) Ctrl->Q.file = strdup ("gmtstitch_list.txt");	/* Default -Q list name if none was given */
+			dim_tscr[GMT_TBL] = n_qfiles = (strstr (Ctrl->Q.file, "%c")) ? 2 : 1;	/* Build one or two tables (closed and open) */
+			/* Allocate one or two tables with 1 segment each */
 			if ((Q = GMT_Create_Data (GMT->parent, GMT_IS_TEXTSET, GMT_IS_NONE, 0, dim_tscr, NULL, NULL, 0, 0, Ctrl->Q.file)) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a text set for segment lists\n");
 				Return (API->error);
 			}
-			if (dim_tscr[0] == 2) {	/* We want to build two lists (closed and open) */
+			if (n_qfiles == 2) {	/* We want to build two lists (closed and open) */
 				q_mode = GMT_WRITE_TABLE;	/* This means write tables to separate files */
-				dim_tscr[0] = 1;	/* Reset from 2 to 1 */
+				dim_tscr[GMT_TBL] = 1;	/* Reset from 2 to 1 */
+				/* Create the two filenames with C and O identifiers */
 				sprintf (buffer, Ctrl->Q.file, 'C');	Q->table[CLOSED]->file[GMT_OUT] = strdup (buffer);
 				sprintf (buffer, Ctrl->Q.file, 'O');	Q->table[OPEN]->file[GMT_OUT]   = strdup (buffer);
-				QT[CLOSED] = Q->table[CLOSED]->segment[0];		QT[OPEN] = Q->table[OPEN]->segment[0];
-				QT[OPEN]->n_alloc = QT[CLOSED]->n_alloc = GMT_CHUNK;
-				QT[OPEN]->record = GMT_memory (GMT, NULL, QT[OPEN]->n_alloc, char *);
-				QT[CLOSED]->record = GMT_memory (GMT, NULL, QT[CLOSED]->n_alloc, char *);
+				QT[OPEN]->n_alloc = QT[CLOSED]->n_alloc = GMT_CHUNK;	/* Initial allocation sizes */
+				QT[CLOSED] = Q->table[CLOSED]->segment[0];		/* Shorthand for segments in closed polygon list */
+				QT[CLOSED]->record = GMT_memory (GMT, NULL, QT[CLOSED]->n_alloc, char *);	/* Allocate n_alloc records for now */
+				QT[OPEN] = Q->table[OPEN]->segment[0];			/* Shorthand for segments in open polygon list */
+				QT[OPEN]->record = GMT_memory (GMT, NULL, QT[OPEN]->n_alloc, char *);		/* Allocate n_alloc records for now */
 			}
 			else {	/* A single list will do */
-				q_mode = GMT_WRITE_SET;
+				q_mode = GMT_WRITE_SET;	/* This means write tables to a single file */
 				Q->table[0]->file[GMT_OUT] = strdup (Ctrl->Q.file);
-				QT[OPEN] = QT[CLOSED] = Q->table[0]->segment[0];	/* Same table */
-				QT[OPEN]->n_alloc = GMT_CHUNK;
-				QT[OPEN]->record = GMT_memory (GMT, NULL, QT[OPEN]->n_alloc, char *);
+				QT[OPEN] = QT[CLOSED] = Q->table[0]->segment[0];	/* The two QT pointers point to the same table, which is 0 [OPEN] */
+				QT[OPEN]->n_alloc = GMT_CHUNK;				/* Initial allocation sizes */
+				QT[OPEN]->record = GMT_memory (GMT, NULL, QT[OPEN]->n_alloc, char *);		/* Allocate n_alloc records for now */
 			}
 		}
 	}
@@ -331,6 +332,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input assuming lines */
 		Return (API->error);
 	}
+	/* Read in all the input segments into one virtual dataset */
 	if ((D[GMT_IN] = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
@@ -343,15 +345,15 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 	/* Surely don't need any more segment space than the number of input segments */
 	segment = GMT_memory (GMT, NULL, D[GMT_IN]->n_segments, struct LINK);
 	id = ns = out_seg = 0;
-	GMT_Report (API, GMT_MSG_VERBOSE, "Check for closed polygons\n");
+	GMT_Report (API, GMT_MSG_VERBOSE, "Check for already closed polygons\n");
 
 	/* Closed polygons are already finished - just identify, write out, and move on */
 
 	/* Allocate D[GMT_OUT] and possibly C, both with nrows = ncolumns so just segment structs are allocated */
 
-	n_columns = dim_tscr[2] = D[GMT_IN]->n_columns;	/* Set the required columns for output to match that of input file */
+	n_columns = dim_tscr[GMT_COL] = D[GMT_IN]->n_columns;	/* Set the required columns for output to match that of input file */
 
-	dim_tscr[1] = 0;	/* Allocate no segments for now - we will do this as needed */
+	dim_tscr[GMT_SEG] = 0;	/* Allocate no segments for now - we will do this as needed */
 	if ((D[GMT_OUT] = GMT_Create_Data (API, GMT_IS_DATASET, D[GMT_IN]->geometry, 0, dim_tscr, NULL, NULL, 0, 0, Ctrl->Out.file)) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for output segments\n");
 		Return (API->error);
@@ -569,7 +571,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 		struct GMT_TEXTSET *LNK = NULL;
 		char name[GMT_BUFSIZ], name0[GMT_BUFSIZ], name1[GMT_BUFSIZ], fmt[GMT_BUFSIZ], *pp = NULL, *s = GMT->current.setting.io_col_separator;
 		if (!Ctrl->L.file) Ctrl->L.file = strdup ("gmtstitch_link.txt");	/* Use default output filename since none was provided */
-		dim_tscr[0] = 1;	dim_tscr[1] = 1;	dim_tscr[2] = ns;	/* Dimensions of single output table with single segment of ns rows */
+		dim_tscr[GMT_TBL] = 1;	dim_tscr[GMT_SEG] = 1;	dim_tscr[GMT_ROW] = ns;	/* Dimensions of single output table with single segment of ns rows */
 		if ((LNK = GMT_Create_Data (API, GMT_IS_TEXTSET, GMT_IS_NONE, 0, dim_tscr, NULL, NULL, 0, 0, Ctrl->L.file)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a text set for link lists\n");
 			Return (API->error);

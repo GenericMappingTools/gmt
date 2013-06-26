@@ -232,7 +232,7 @@ struct GMT_DATASET * get_grid_path (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER
 	 */
 
 	unsigned int np = 0, add, col, row;
-	uint64_t dim[4] = {1, 1, 2, 0};
+	uint64_t dim[4] = {1, 1, 0, 2};
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 	

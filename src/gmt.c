@@ -118,7 +118,7 @@ int main (int argc, char *argv[]) {
 		fprintf (stderr, "  --version            Print version and exit\n");
 		fprintf (stderr, "  --show-sharedir      Show share directory and exit\n");
 		fprintf (stderr, "  --show-bindir        Show directory of executables and exit\n\n");
-		if (modulename_arg_n == 1) {
+		if (modulename_arg_n == 1 || argc == 1) {
 			fprintf (stderr, "ERROR: No module named %s was found,  This could mean:\n", module);
 			fprintf (stderr, "  1. There actually is no such module; check your spelling.\n");
 			if (strlen (GMT_SUPPL_LIB_NAME))

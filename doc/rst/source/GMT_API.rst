@@ -893,12 +893,12 @@ For method (1), pass the ``par`` array, as indicated below:
 
 **GMT_IS_DATASET**
     An empty GMT_DATASET structure consisting of ``par[0]`` tables,
-    each with ``par[1]`` segments, each with ``par[2]`` columns, all
-    with ``par[3]`` rows, is allocated.
+    each with ``par[1]`` segments, each with ``par[2]`` rows, all
+    with ``par[3]`` columns, is allocated.
 
 **GMT_IS_TEXTSET**
     An empty GMT_TEXTSET structure consisting of ``par[0]`` tables,
-    each with ``par[1]`` segments, all with ``par[2]`` text record, is allocated.
+    each with ``par[1]`` segments, all with ``par[2]`` text records (rows), is allocated.
 
 **GMT_IS_CPT**
     An empty GMT_PALETTE structure with ``par[0]`` palette entries is allocated.

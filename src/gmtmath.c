@@ -3459,7 +3459,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 		Template = GMT_Duplicate_Data (API, GMT_IS_DATASET, GMT_DUPLICATE_DATA, D_in);
 		
 	else {		/* Must use -N -T etc to create single segment */
-		dim[2] = n_columns;	dim[3] = n_rows;
+		dim[GMT_COL] = n_columns;	dim[GMT_ROW] = n_rows;
 		if ((Template = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (GMT_MEMORY_ERROR);
 	}
 	stack[0]->alloc_mode = 1;	/* Allocated locally */
@@ -3468,7 +3468,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 	
 	/* Create the Time data structure with 2 cols: 0 is t, 1 is normalized tn */
 	if (D_in) {	/* Either D_in or D_stdin */
-		Time = GMT_alloc_dataset (GMT, D_in, 2, 0, GMT_ALLOC_NORMAL);
+		Time = GMT_alloc_dataset (GMT, D_in, 0, 2, GMT_ALLOC_NORMAL);
 		free_time = true;
 		info.T = Time->table[0];	D = D_in->table[0];
 		for (seg = 0, done = false; seg < D->n_segments; seg++) {
@@ -3485,7 +3485,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 		}
 	}
 	else {	/* Create orderly output */
-		dim[2] = 2;	dim[3] = n_rows;
+		dim[GMT_COL] = 2;	dim[GMT_ROW] = n_rows;
 		if ((Time = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (GMT_MEMORY_ERROR);
 		info.T = Time->table[0];
 		for (row = 0; row < info.T->segment[0]->n_rows; row++) info.T->segment[0]->coord[0][row] = (row == (info.T->segment[0]->n_rows-1)) ? Ctrl->T.max: Ctrl->T.min + row * Ctrl->T.inc;
@@ -3604,7 +3604,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 				else {/* Place the stored dataset on the stack */
 					stack[nstack]->constant = false;
 					if (!stack[nstack]->D) {
-						stack[nstack]->D = GMT_alloc_dataset (GMT, Template, n_columns, 0, GMT_ALLOC_NORMAL);
+						stack[nstack]->D = GMT_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 						stack[nstack]->alloc_mode = 1;
 					}
 					for (j = 0; j < n_columns; j++) load_column (stack[nstack]->D, j, recall[k]->stored.D->table[0], j);
@@ -3637,7 +3637,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 					Return (EXIT_FAILURE);
 				}
 				if (!stack[nstack]->D) {
-					stack[nstack]->D = GMT_alloc_dataset (GMT, Template, n_columns, 0, GMT_ALLOC_NORMAL);
+					stack[nstack]->D = GMT_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 					stack[nstack]->alloc_mode = 1;
 				}
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "T ");
@@ -3650,7 +3650,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 					Return (EXIT_FAILURE);
 				}
 				if (!stack[nstack]->D) {
-					stack[nstack]->D = GMT_alloc_dataset (GMT, Template, n_columns, 0, GMT_ALLOC_NORMAL);
+					stack[nstack]->D = GMT_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 					stack[nstack]->alloc_mode = 1;
 				}
 				if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "Tn ");
@@ -3661,7 +3661,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 				if (!strcmp (opt->arg, "STDIN")) {	/* stdin file */
 					if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "<stdin> ");
 					if (!stack[nstack]->D) {
-						stack[nstack]->D = GMT_alloc_dataset (GMT, Template, n_columns, 0, GMT_ALLOC_NORMAL);
+						stack[nstack]->D = GMT_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 						stack[nstack]->alloc_mode= 1;
 					}
 					for (j = 0; j < n_columns; j++) load_column (stack[nstack]->D, j, I, j);
@@ -3713,7 +3713,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 
 			/* Must make space for more */
 
-			stack[nstack+i-1]->D = GMT_alloc_dataset (GMT, Template, n_columns, 0, GMT_ALLOC_NORMAL);
+			stack[nstack+i-1]->D = GMT_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 			stack[nstack+i-1]->alloc_mode = 1;
 		}
 
@@ -3721,7 +3721,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 
 		for (j = 0, i = nstack - consumed_operands[op]; j < produced_operands[op]; j++, i++) {
 			if (stack[i]->constant && !stack[i]->D) {
-				stack[i]->D = GMT_alloc_dataset (GMT, Template, n_columns, 0, GMT_ALLOC_NORMAL);
+				stack[i]->D = GMT_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 				stack[i]->alloc_mode = 1;
 			}
 		}
@@ -3747,7 +3747,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 
 	if (stack[0]->constant) {	/* Only a constant provided, set table accordingly */
 		if (!stack[0]->D) {
-			stack[0]->D = GMT_alloc_dataset (GMT, Template, n_columns, 0, GMT_ALLOC_NORMAL);
+			stack[0]->D = GMT_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 			stack[0]->alloc_mode = 1;
 		}
 		for (j = 0; j < n_columns; j++) {
@@ -3763,9 +3763,9 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 
 	if (info.roots_found) {	/* Special treatment of root finding */
 		struct GMT_DATASEGMENT *S = stack[0]->D->table[0]->segment[0];
-		uint64_t dim[4] = {1, 1, 1, 0};
+		uint64_t dim[4] = {1, 1, 0, 1};
 		
-		dim[3] = info.n_roots;
+		dim[GMT_ROW] = info.n_roots;
 		if ((R = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error)
 		for (kk = 0; kk < info.n_roots; kk++) R->table[0]->segment[0]->coord[GMT_X][kk] = S->coord[info.r_col][kk];
 		GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, R);
@@ -3795,7 +3795,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 			uint64_t nr, c;
 			struct GMT_DATASET *N = NULL;
 			nr = (Ctrl->S.active) ? 1 : 0;
-			N = GMT_alloc_dataset (GMT, R, n_columns, nr, GMT_ALLOC_NORMAL);
+			N = GMT_alloc_dataset (GMT, R, nr, n_columns, GMT_ALLOC_NORMAL);
 			for (seg = 0; seg < R->table[0]->n_segments; seg++) {
 				for (r = 0; r < N->table[0]->segment[seg]->n_rows; r++) {
 					row = (Ctrl->S.active) ? ((Ctrl->S.mode == -1) ? 0 : R->table[0]->segment[seg]->n_rows - 1) : r;

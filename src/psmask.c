@@ -544,7 +544,7 @@ int GMT_psmask (void *V_API, int mode, void *args)
 	if (!Ctrl->C.active && make_plot && GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
 	if (Ctrl->D.active) {	/* Want to dump the x-y contour lines of the mask */
-		uint64_t dim[4] = {1, 0, 2, 0};
+		uint64_t dim[4] = {1, 0, 0, 2};
 		if (!Ctrl->D.file[0] || !strchr (Ctrl->D.file, '%'))	/* No file given or filename without C-format specifiers means a single output file */
 			io_mode = GMT_WRITE_SET;
 		else {	/* Must determine the kind of output organization */
