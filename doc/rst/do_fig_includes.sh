@@ -397,7 +397,7 @@ echo "   Figure : Universal Transverse Mercator zone layout." >> ${pato}/fig_${n
 
 name=GMT_obl_merc;		from_scripts
 echo "   Oblique Mercator map using **-Joc**. We make it clear which direction is North by" >> ${pato}/fig_${name}.rst_
-echo "   adding a star rose with the **-T** option.}" >> ${pato}/fig_${name}.rst_
+echo "   adding a star rose with the **-T** option." >> ${pato}/fig_${name}.rst_
 
 name=GMT_cassini;		from_scripts
 echo "   Cassini map over Sardinia." >> ${pato}/fig_${name}.rst_
