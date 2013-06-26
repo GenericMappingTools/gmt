@@ -30,13 +30,43 @@ if (SPHINX_FOUND)
 	configure_file (conf.py.in "${SPHINX_CONFIG_DIR}/conf.py" @ONLY)
 
 	# Add build targets
-	add_custom_target (docs_html
-		${SPHINX_EXECUTABLE} -q -b html
-		-c "${SPHINX_CONFIG_DIR}"
-		-d "${SPHINX_CACHE_DIR}"
-		${CMAKE_CURRENT_SOURCE_DIR}/source
-		${CMAKE_CURRENT_BINARY_DIR}/html
-		COMMENT "Building HTML documentation")
+	if (WIN32)
+		add_custom_target (docs_html
+			COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/do_fig_includes.bat
+			${SPHINX_EXECUTABLE} -q -b html
+			-c "${SPHINX_CONFIG_DIR}"
+			-d "${SPHINX_CACHE_DIR}"
+			${CMAKE_CURRENT_SOURCE_DIR}/source
+			${CMAKE_CURRENT_BINARY_DIR}/html
+			COMMENT "Building HTML documentation. Be patient, it takes more than 2 minutes")
+
+		add_custom_target (docs_latex
+			COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/do_fig_includes.bat pdf
+			${SPHINX_EXECUTABLE} -q -b latex
+			-c "${SPHINX_CONFIG_DIR}"
+			-d "${SPHINX_CACHE_DIR}"
+			${CMAKE_CURRENT_SOURCE_DIR}/source
+			${CMAKE_CURRENT_BINARY_DIR}/latex
+			COMMENT "Building CookBook PDF. Be patient, it takes more than 2 minutes")
+	else (WIN32)
+		add_custom_target (docs_html
+			COMMAND /bin/bash ${CMAKE_CURRENT_SOURCE_DIR}/do_fig_includes.sh
+			${SPHINX_EXECUTABLE} -q -b html
+			-c "${SPHINX_CONFIG_DIR}"
+			-d "${SPHINX_CACHE_DIR}"
+			${CMAKE_CURRENT_SOURCE_DIR}/source
+			${CMAKE_CURRENT_BINARY_DIR}/html
+			COMMENT "Building HTML documentation. Be patient, it takes more than 2 minutes")
+
+		add_custom_target (docs_latex
+			COMMAND /bin/bash ${CMAKE_CURRENT_SOURCE_DIR}/do_fig_includes.sh pdf
+			${SPHINX_EXECUTABLE} -q -b latex
+			-c "${SPHINX_CONFIG_DIR}"
+			-d "${SPHINX_CACHE_DIR}"
+			${CMAKE_CURRENT_SOURCE_DIR}/source
+			${CMAKE_CURRENT_BINARY_DIR}/latex
+			COMMENT "Building CookBook PDF. Be patient, it takes more than 2 minutes")
+	endif (WIN32)
 
 	add_custom_target (docs_man
 		${SPHINX_EXECUTABLE} -q -b man
@@ -45,14 +75,6 @@ if (SPHINX_FOUND)
 		${CMAKE_CURRENT_SOURCE_DIR}/source
 		${CMAKE_CURRENT_BINARY_DIR}/man
 		COMMENT "Building manpages")
-
-	add_custom_target (docs_latex
-		${SPHINX_EXECUTABLE} -q -b latex
-		-c "${SPHINX_CONFIG_DIR}"
-		-d "${SPHINX_CACHE_DIR}"
-		${CMAKE_CURRENT_SOURCE_DIR}/source
-		${CMAKE_CURRENT_BINARY_DIR}/latex
-		COMMENT "Building CookBook PDF")
 endif (SPHINX_FOUND)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
