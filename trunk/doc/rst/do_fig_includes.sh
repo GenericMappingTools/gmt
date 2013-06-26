@@ -29,11 +29,14 @@ elif [ "$1" = "jpg" ]; then
 	ext=jpg
 fi
 
-path_build=../../build/docfigs		# Path to where ps2raster dumps the converted PNGs
+# Give us the full directory name of the script no matter where it is being called from 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+path_build=${DIR}/../../build/docfigs		# Path to where ps2raster dumps the converted PNGs
 com="-A -E${DPI} -P -T${frmt} -D${path_build} -Qt4"
 comPDF="-A+S0.6 -P -Tf -D${path_build}"	# Shrink example figures by 40%
-pato=source/fig_includes/		# Path to where the to-be-included files will be created
-pathGallery=source/gallery/		# Path to where the to-be-included files will be created (For GALLERY)
+pato=${DIR}/source/fig_includes/		# Path to where the to-be-included files will be created
+pathGallery=${DIR}/source/gallery/		# Path to where the to-be-included files will be created (For GALLERY)
 
 
 if [ "$1" = "pdf" ]; then
@@ -49,14 +52,8 @@ if [ ! -d "${path_build}" ]; then
 fi
 
 function from_scripts {
-gmt ps2raster ../scripts/${name}.ps $com
-#W=`gmt grdinfo -C ${path_build}/${name}.${ext} | awk '{print $3}'`
-#H=`gmt grdinfo -C ${path_build}/${name}.${ext} | awk '{print $5}'`
-echo ".. figure:: ../${path_build}/${name}.${ext}" > ${pato}/fig_${name}.rst_
-#echo "   :height: $H px" >> ${pato}/fig_${name}.rst_
-#echo "   :width: $W px"  >> ${pato}/fig_${name}.rst_
-#echo "   :align: center" >> ${pato}/fig_${name}.rst_
-#echo "   :scale: 50 %"   >> ${pato}/fig_${name}.rst_
+gmt ps2raster ${DIR}/../scripts/${name}.ps $com
+echo ".. figure:: ${path_build}/${name}.${ext}" > ${pato}/fig_${name}.rst_
 echo "   :width: 500 px"  >> ${pato}/fig_${name}.rst_
 echo "   :align: center" >> ${pato}/fig_${name}.rst_
 echo "" >> ${pato}/fig_${name}.rst_
@@ -64,38 +61,39 @@ echo "" >> ${pato}/fig_${name}.rst_
 
 function from_examples {
 if [ "$ext" = "pdf" ]; then
-	gmt ps2raster ../examples/ex$1/example_$1.ps $comPDF
-	echo ".. figure:: ../${path_build}/${name}.${ext}" > ${pato}/fig_${name}.rst_
+	gmt ps2raster ${DIR}/../examples/ex$1/example_$1.ps $comPDF
+	echo ".. figure:: ${path_build}/${name}.${ext}" > ${pato}/fig_${name}.rst_
 else
-	gmt ps2raster ../examples/ex$1/example_$1.ps $com
-	echo ".. figure:: ../../${path_build}/${name}.${ext}" > ${pathGallery}/fig_${name}.rst_
+	gmt ps2raster ${DIR}/../examples/ex$1/example_$1.ps $com
+	echo ".. figure:: ${path_build}/${name}.${ext}" > ${pathGallery}/fig_${name}.rst_
 	echo "   :width: 500 px" >> ${pathGallery}/fig_${name}.rst_
 	echo "   :align: center" >> ${pathGallery}/fig_${name}.rst_
 	echo "" >> ${pathGallery}/fig_${name}.rst_
 
-	echo ".. |ex$1| image:: ../${path_build}/${name}.${ext}" > ${pathGallery}/img_${name}.rst_
+	echo ".. |ex$1| image:: ${path_build}/${name}.${ext}" > ${pathGallery}/img_${name}.rst_
 	echo "   :width: 150 px" >> ${pathGallery}/img_${name}.rst_
 fi
 }
 
 function from_animations {
-gmt ps2raster ../examples/anim$1/anim_$1.ps $com
 if [ "$ext" = "pdf" ]; then
-	echo ".. figure:: ../${path_build}/${name}.${ext}" > ${pato}/fig_${name}.rst_
+	gmt ps2raster ${DIR}/../examples/anim$1/anim_$1.ps $comPDF
+	echo ".. figure:: ${path_build}/${name}.${ext}" > ${pato}/fig_${name}.rst_
 else
-	echo ".. figure:: ../../${path_build}/${name}.${ext}" > ${pathGallery}/fig_${name}.rst_
+	#gmt ps2raster ${DIR}/../examples/anim$1/anim_$1.ps $com
+	echo ".. figure:: ${path_build}/${name}.${ext}" > ${pathGallery}/fig_${name}.rst_
 	echo "   :width: 400 px" >> ${pathGallery}/fig_${name}.rst_
 	echo "   :align: center" >> ${pathGallery}/fig_${name}.rst_
 	echo "" >> ${pathGallery}/fig_${name}.rst_
 
-	echo ".. |anim$1| image:: ../${path_build}/${name}.${ext}" > ${pathGallery}/img_${name}.rst_
+	echo ".. |anim$1| image:: ${path_build}/${name}.${ext}" > ${pathGallery}/img_${name}.rst_
 	echo "   :width: 150 px" >> ${pathGallery}/img_${name}.rst_
 fi
 }
 
 function from_fig {
-W=`gmt grdinfo -C ../fig/${name} | awk '{print $3}'`
-H=`gmt grdinfo -C ../fig/${name} | awk '{print $5}'`
+W=`gmt grdinfo -C ${DIR}/../fig/${name} | awk '{print $3}'`
+H=`gmt grdinfo -C ${DIR}/../fig/${name} | awk '{print $5}'`
 echo ".. figure:: ../../fig/${name}" > ${pato}/fig_${name}.rst_
 echo "   :height: $H px" >> ${pato}/fig_${name}.rst_
 echo "   :width: $W px" >> ${pato}/fig_${name}.rst_
@@ -228,7 +226,7 @@ echo "   found in the GMT documentation directory." >> ${pato}/fig_${name}.rst_
 
 name=GMT_volcano;		from_scripts
 # For this one we also need a copy in the gallery
-echo ".. figure:: ../../${path_build}/${name}.${ext}" > ${pathGallery}/fig_${name}.rst_
+echo ".. figure:: ${path_build}/${name}.${ext}" > ${pathGallery}/fig_${name}.rst_
 echo "   :width: 500 px"  >> ${pathGallery}/fig_${name}.rst_
 echo "   :align: center" >> ${pathGallery}/fig_${name}.rst_
 echo "" >> ${pathGallery}/fig_${name}.rst_
