@@ -43,6 +43,7 @@ set pathGallery=%~dp0source\gallery\
 
 
 IF %ext%=="pdf" (
+echo MERDA PDF
 	REM For LATEX/PDF we want to include the examples chapter
 	echo .. include: ../examples_chapter_opt.rst_ > %pathGallery%/examples_chapter_opt.rst_
 ) ELSE (
