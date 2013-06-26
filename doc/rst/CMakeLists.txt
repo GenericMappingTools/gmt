@@ -38,7 +38,7 @@ if (SPHINX_FOUND)
 			-d "${SPHINX_CACHE_DIR}"
 			${CMAKE_CURRENT_SOURCE_DIR}/source
 			${CMAKE_CURRENT_BINARY_DIR}/html
-			COMMENT "Building HTML documentation. Be patient, it takes more than 2 minutes")
+			COMMENT "Building HTML documentation. Be patient, it takes more than 2-3 minutes")
 
 		add_custom_target (docs_latex
 			COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/do_fig_includes.bat pdf
@@ -47,7 +47,8 @@ if (SPHINX_FOUND)
 			-d "${SPHINX_CACHE_DIR}"
 			${CMAKE_CURRENT_SOURCE_DIR}/source
 			${CMAKE_CURRENT_BINARY_DIR}/latex
-			COMMENT "Building CookBook PDF. Be patient, it takes more than 2 minutes")
+			COMMAND make -C ${CMAKE_CURRENT_BINARY_DIR}/latex all-pdf
+			COMMENT "Building CookBook PDF. Be patient, it takes more than 2-3 minutes")
 	else (WIN32)
 		add_custom_target (docs_html
 			COMMAND /bin/bash ${CMAKE_CURRENT_SOURCE_DIR}/do_fig_includes.sh
@@ -56,7 +57,7 @@ if (SPHINX_FOUND)
 			-d "${SPHINX_CACHE_DIR}"
 			${CMAKE_CURRENT_SOURCE_DIR}/source
 			${CMAKE_CURRENT_BINARY_DIR}/html
-			COMMENT "Building HTML documentation. Be patient, it takes more than 2 minutes")
+			COMMENT "Building HTML documentation. Be patient, it takes more than 2-3 minutes")
 
 		add_custom_target (docs_latex
 			COMMAND /bin/bash ${CMAKE_CURRENT_SOURCE_DIR}/do_fig_includes.sh pdf
@@ -65,7 +66,8 @@ if (SPHINX_FOUND)
 			-d "${SPHINX_CACHE_DIR}"
 			${CMAKE_CURRENT_SOURCE_DIR}/source
 			${CMAKE_CURRENT_BINARY_DIR}/latex
-			COMMENT "Building CookBook PDF. Be patient, it takes more than 2 minutes")
+			COMMAND make -C ${CMAKE_CURRENT_BINARY_DIR}/latex all-pdf
+			COMMENT "Building CookBook PDF. Be patient, it takes more than 2-3 minutes")
 	endif (WIN32)
 
 	add_custom_target (docs_man
