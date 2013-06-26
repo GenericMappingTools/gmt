@@ -33,7 +33,7 @@ if (SPHINX_FOUND)
 	if (WIN32)
 		add_custom_target (docs_html
 			COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/do_fig_includes.bat
-			${SPHINX_EXECUTABLE} -q -b html
+			COMMAND ${SPHINX_EXECUTABLE} -q -b html
 			-c "${SPHINX_CONFIG_DIR}"
 			-d "${SPHINX_CACHE_DIR}"
 			${CMAKE_CURRENT_SOURCE_DIR}/source
@@ -42,7 +42,7 @@ if (SPHINX_FOUND)
 
 		add_custom_target (docs_latex
 			COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/do_fig_includes.bat pdf
-			${SPHINX_EXECUTABLE} -q -b latex
+			COMMAND ${SPHINX_EXECUTABLE} -q -b latex
 			-c "${SPHINX_CONFIG_DIR}"
 			-d "${SPHINX_CACHE_DIR}"
 			${CMAKE_CURRENT_SOURCE_DIR}/source
@@ -51,7 +51,7 @@ if (SPHINX_FOUND)
 	else (WIN32)
 		add_custom_target (docs_html
 			COMMAND /bin/bash ${CMAKE_CURRENT_SOURCE_DIR}/do_fig_includes.sh
-			${SPHINX_EXECUTABLE} -q -b html
+			COMMAND ${SPHINX_EXECUTABLE} -q -b html
 			-c "${SPHINX_CONFIG_DIR}"
 			-d "${SPHINX_CACHE_DIR}"
 			${CMAKE_CURRENT_SOURCE_DIR}/source
@@ -60,7 +60,7 @@ if (SPHINX_FOUND)
 
 		add_custom_target (docs_latex
 			COMMAND /bin/bash ${CMAKE_CURRENT_SOURCE_DIR}/do_fig_includes.sh pdf
-			${SPHINX_EXECUTABLE} -q -b latex
+			COMMAND ${SPHINX_EXECUTABLE} -q -b latex
 			-c "${SPHINX_CONFIG_DIR}"
 			-d "${SPHINX_CACHE_DIR}"
 			${CMAKE_CURRENT_SOURCE_DIR}/source
