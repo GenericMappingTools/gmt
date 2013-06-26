@@ -210,7 +210,7 @@ static int GMT_gmtstitch_parse (struct GMT_CTRL *GMT, struct GMTSTITCH_CTRL *Ctr
 	return (n_errors ? GMT_PARSE_ERROR : GMT_OK);
 }
 
-static int connect (struct LINK *S, uint64_t id, int order, double cutoff, bool nn_check, double nn_dist)
+static int found_a_near_segment (struct LINK *S, uint64_t id, int order, double cutoff, bool nn_check, double nn_dist)
 {	/* Checks if OK to connect this segment to its nearest neighbor and returns true if OK */
 
 	if (S[S[id].buddy[order].id].used) return (false);		/* Segment has been used already */
@@ -264,7 +264,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 	struct LINK *segment = NULL;
 	struct GMT_DATASET *D[2] = {NULL, NULL}, *C = NULL;
 	struct GMT_TEXTSET *Q = NULL;
-	struct GMT_DATASEGMENT **T[2] = {NULL, NULL};
+	struct GMT_DATASEGMENT **T[2] = {NULL, NULL}, *S = NULL;
 	struct GMT_TEXTSEGMENT *QT[2] = {NULL, NULL};
 	struct GMTSTITCH_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
@@ -358,7 +358,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 		GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for output segments\n");
 		Return (API->error);
 	}
-	n_seg_alloc[OPEN] = D[GMT_IN]->n_segments;	/* Cannot end up with more segments than given on input so this is an upper limit  */
+	n_seg_alloc[OPEN] = D[GMT_IN]->n_segments;	/* Cannot end up with more open segments than given on input so this is an upper limit  */
 	T[OPEN] = GMT_memory (GMT, NULL, n_seg_alloc[OPEN], struct GMT_DATASEGMENT *);
 
 	if (Ctrl->C.active) {	/* Wish to return already-closed polygons via a separate file */
@@ -368,11 +368,11 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for closed segments\n");
 			Return (API->error);
 		}
-		n_seg_alloc[CLOSED] = n_seg_alloc[OPEN];	/* Cannot end up with more closed segments than given on input  */
+		n_seg_alloc[CLOSED] = n_seg_alloc[OPEN];	/* Cannot end up with more closed segments than given on input so this is an upper limit  */
 		T[CLOSED] = GMT_memory (GMT, NULL, n_seg_alloc[CLOSED], struct GMT_DATASEGMENT *);
 	}
 	else
-		T[CLOSED] = T[OPEN];	/* Everything returned via same dataset */
+		T[CLOSED] = T[OPEN];	/* Everything returned via the same dataset */
 
 	/* Start processing all the input segments in D[GMT_IN] */
 
@@ -383,8 +383,9 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 	for (tbl = 0; tbl < D[GMT_IN]->n_tables; tbl++) {	/* For each input data table */
 		for (seg = 0; seg < D[GMT_IN]->table[tbl]->n_segments; seg++) {	/* For each input segment */
 			np = D[GMT_IN]->table[tbl]->segment[seg]->n_rows;	/* Short-hand to avoid the full expression below */
+			S = D[GMT_IN]->table[tbl]->segment[seg];		/* Short hand to current in segment */
 			/* Get distance between first and last point in this segment */
-			distance = GMT_distance (GMT, D[GMT_IN]->table[tbl]->segment[seg]->coord[GMT_X][0], D[GMT_IN]->table[tbl]->segment[seg]->coord[GMT_Y][0], D[GMT_IN]->table[tbl]->segment[seg]->coord[GMT_X][np-1], D[GMT_IN]->table[tbl]->segment[seg]->coord[GMT_Y][np-1]);
+			distance = GMT_distance (GMT, S->coord[GMT_X][0], S->coord[GMT_Y][0], S->coord[GMT_X][np-1], S->coord[GMT_Y][np-1]);
 			if (np > 2 && distance <= closed_dist) {	/* Already a closed segment, just write out and forget in the rest of the program */
 				T[CLOSED][out_seg] = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);	/* Allocate one segment structure */
 				if (Ctrl->D.active) {	/* Write closed polygons to individual files */
@@ -392,16 +393,16 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 					T[CLOSED][out_seg]->file[GMT_OUT] = strdup (buffer);	/* Assign the name of this segment-file */
 					if (Ctrl->Q.active) {	/* Also maintain list of such files */
 						QT[CLOSED]->record[QT[CLOSED]->n_rows++] = strdup (buffer);
-						if (QT[CLOSED]->n_rows == QT[CLOSED]->n_alloc) QT[CLOSED]->record = GMT_memory (GMT, QT[CLOSED]->record, (QT[CLOSED]->n_alloc <<= 2), char *);
+						if (QT[CLOSED]->n_rows == QT[CLOSED]->n_alloc) QT[CLOSED]->record = GMT_memory (GMT, QT[CLOSED]->record, (QT[CLOSED]->n_alloc <<= 1), char *);
 					}
 				}
 				/* Allocate space for this segment */
 				n_rows = (Ctrl->C.active && distance > 0.0) ? np + 1 : np;	/* Add one extra row if closure is not exact */
 				GMT_alloc_segment (GMT, T[CLOSED][out_seg], n_rows, n_columns, true);	/* Allocate space for segment arrays */
 
-				if (D[GMT_IN]->table[tbl]->segment[seg]->header) T[CLOSED][out_seg]->header = strdup (D[GMT_IN]->table[tbl]->segment[seg]->header);
-				out_p = Copy_This_Segment (D[GMT_IN]->table[tbl]->segment[seg], T[CLOSED][out_seg], 0, 0, np-1);	/* Duplicate input to output */
-				if (Ctrl->C.active && distance > 0.0) out_p = Copy_This_Segment (D[GMT_IN]->table[tbl]->segment[seg], T[CLOSED][out_seg], out_p, 0, 0);	/* Close polygon explicitly */
+				if (S->header) T[CLOSED][out_seg]->header = strdup (S->header);
+				out_p = Copy_This_Segment (S, T[CLOSED][out_seg], 0, 0, np-1);	/* Duplicate input to output */
+				if (Ctrl->C.active && distance > 0.0) out_p = Copy_This_Segment (S, T[CLOSED][out_seg], out_p, 0, 0);	/* Close polygon explicitly */
 				n_islands++;	/* Number of originally closed polygons found in input */
 				out_seg++;	/* Number of closed segments placed in T[CLOSED] so far */
 				n_closed++;	/* Number of closed polygons (which will grow when we stitcha below) */
@@ -410,24 +411,25 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 				/* Allocate space for this segment */
 				T[OPEN][n_open] = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);	/* Allocate segment structure */
 				GMT_alloc_segment (GMT, T[OPEN][n_open], np, n_columns, true);		/* Allocate space for segment arrays */
-				if (D[GMT_IN]->table[tbl]->segment[seg]->header) T[OPEN][n_open]->header = strdup (D[GMT_IN]->table[tbl]->segment[seg]->header);	/* Duplicate segment header, if any */
-				out_p = Copy_This_Segment (D[GMT_IN]->table[tbl]->segment[seg], T[OPEN][n_open], 0, 0, np-1);	/* Duplicate input to output */
+				if (S->header) T[OPEN][n_open]->header = strdup (S->header);		/* Duplicate segment header, if any */
+				out_p = Copy_This_Segment (S, T[OPEN][n_open], 0, 0, np-1);		/* Duplicate input to output */
 				n_open++;	/* Number of open segments placed in T[OPEN] so far */
 			}
 			else { /* No -C was given: Here we have a segment that is not closed.  Store refs to D[GMT_IN]->table and copy end points; more work on linking takes place below */
-				/* Store information about this segment (end points, ID, etc) in the array of segment structures */
+				/* Store information about this segment (end points, ID, etc) in the array "segment" of segment structures */
 				if (np == 1) GMT_Report (API, GMT_MSG_VERBOSE, "Segment %" PRIu64 " only consists of a single point.  Stitching may require additional stitching.\n", id);
 				segment[id].id = id;		/* Running number ID starting at 0 for open segments only */
-				segment[id].orig_id = ns;	/* Running number ID starting at 0 for all segments */
+				segment[id].orig_id = ns;	/* ns is input segment number */
 				segment[id].group = tbl;	/* Remember which input table this segment came from */
 				segment[id].pos = seg;		/* Remember which input segment in this table it came from */
-				segment[id].n = np;		/* Number of points in segment */
+				segment[id].n = np;		/* Number of points in this segment */
 				/* Record start and end coordinates for this segment and initialze buddy structure to having no nearest neighbor segment yet */
-				segment[id].x_end[0] = D[GMT_IN]->table[tbl]->segment[seg]->coord[GMT_X][0];
-				segment[id].y_end[0] = D[GMT_IN]->table[tbl]->segment[seg]->coord[GMT_Y][0];
-				segment[id].x_end[1] = D[GMT_IN]->table[tbl]->segment[seg]->coord[GMT_X][np-1];
-				segment[id].y_end[1] = D[GMT_IN]->table[tbl]->segment[seg]->coord[GMT_Y][np-1];
-				segment[id].buddy[0].dist = segment[id].buddy[1].dist = segment[id].buddy[0].next_dist = segment[id].buddy[1].next_dist = DBL_MAX;
+				segment[id].x_end[END_A] = S->coord[GMT_X][0];
+				segment[id].y_end[END_A] = S->coord[GMT_Y][0];
+				segment[id].x_end[END_B] = S->coord[GMT_X][np-1];
+				segment[id].y_end[END_B] = S->coord[GMT_Y][np-1];
+				segment[id].buddy[END_A].dist = segment[id].buddy[END_B].dist = DBL_MAX;
+				segment[id].buddy[END_A].next_dist = segment[id].buddy[END_B].next_dist = DBL_MAX;
 				id++;	/* Increment open segment ID number */
 			}
 			ns++;	/* Increment running segment ID */
@@ -441,18 +443,18 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 		C->n_segments = C->table[0]->n_segments = n_closed;
 		/* With -C we only separate closed from open and then we are done */
 		GMT_Report (API, GMT_MSG_VERBOSE, "Separated %" PRIu64 " closed and %" PRIu64 " open segments\n", n_closed, n_open);
-		wrap_up = true;
+		wrap_up = true;	/* Means to quit once we have written those results to file - no nesting takes place */
 	}
 	else if (id == 0) {	/* All segments were already closed polygons */
 		GMT_Report (API, GMT_MSG_VERBOSE, "All segments already form closed polygons - no new segment file created\n");
-		wrap_up = true;
+		wrap_up = true;	/* Means to quit once we have written those results to file - no nesting possible */
 	}
 	
 	GMT_set_segmentheader (GMT, GMT_OUT, n_open > 1 || n_closed > 1);	/* Turn on segment headers on output if we have more than one segment */
 	if (wrap_up) {	/* Write out results and exit */
 		D[GMT_OUT]->table[0]->segment = GMT_memory (GMT, T[OPEN], n_open, struct GMT_DATASEGMENT *);	/* Finalize allocation */
 		D[GMT_OUT]->n_segments = D[GMT_OUT]->table[0]->n_segments = n_open;
-		if (Ctrl->C.active) { /* Write n_open segments to D[OUT] and n_closed to C */
+		if (Ctrl->C.active) { /* Write n_open segments to D[OUT] and n_closed to C; here we do C */
 			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_WRITE_SET, NULL, Ctrl->C.file, C) != GMT_OK) {
 				Return (API->error);
 			}
@@ -471,9 +473,9 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 		Return (GMT_OK);	/* That is it, we are done here */
 	}
 
-	/* Below here, -C was not given since those cases have already been dealt with.  Also T[OPEN] = T[CLOSED] and we already have found out_seg segments. */
-
-	/* Here we need to do the stitching work.  We already have n_closed polygons in D[GMT_OUT] at this point */
+	/* Below here, -C was NOT given since those cases have already been dealt with.
+	 * Also T[OPEN] = T[CLOSED] and we already have found out_seg segments.
+	 * Here we need to do the stitching work.  We already have n_closed polygons in D[GMT_OUT] at this point */
 
 	ns = id;	/* Number of open segments remaining, adjust necessary memory */
 	if (ns < D[GMT_IN]->n_segments) segment = GMT_memory (GMT, segment, ns, struct LINK);
@@ -489,10 +491,10 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 		for (jseg = iseg + 1; jseg < ns; jseg++) {	/* Loop over all other open lines */
 			if (skip[jseg]) continue;	/* Skip line that has been determined to be a duplicate line */
 			/* See if any pair of endpoints matches (duplicate line may be reversed so check both ways) */
-			if ((doubleAlmostEqualZero (segment[iseg].x_end[0], segment[jseg].x_end[0]) && doubleAlmostEqualZero (segment[iseg].y_end[0], segment[jseg].y_end[0])) ||
-			    (doubleAlmostEqualZero (segment[iseg].x_end[0], segment[jseg].x_end[1]) && doubleAlmostEqualZero (segment[iseg].y_end[0], segment[jseg].y_end[1])) ||
-			    (doubleAlmostEqualZero (segment[iseg].x_end[1], segment[jseg].x_end[0]) && doubleAlmostEqualZero (segment[iseg].y_end[1], segment[jseg].y_end[0])) ||
-			    (doubleAlmostEqualZero (segment[iseg].x_end[1], segment[jseg].x_end[1]) && doubleAlmostEqualZero (segment[iseg].y_end[1], segment[jseg].y_end[1]))) {	/* Yes, identical end points */
+			if ((doubleAlmostEqualZero (segment[iseg].x_end[END_A], segment[jseg].x_end[END_A]) && doubleAlmostEqualZero (segment[iseg].y_end[END_A], segment[jseg].y_end[END_A])) ||
+			    (doubleAlmostEqualZero (segment[iseg].x_end[END_A], segment[jseg].x_end[END_B]) && doubleAlmostEqualZero (segment[iseg].y_end[END_A], segment[jseg].y_end[END_B])) ||
+			    (doubleAlmostEqualZero (segment[iseg].x_end[END_B], segment[jseg].x_end[END_A]) && doubleAlmostEqualZero (segment[iseg].y_end[END_B], segment[jseg].y_end[END_A])) ||
+			    (doubleAlmostEqualZero (segment[iseg].x_end[END_B], segment[jseg].x_end[END_B]) && doubleAlmostEqualZero (segment[iseg].y_end[END_B], segment[jseg].y_end[END_B]))) {	/* Yes, identical end points */
 			    	if (segment[iseg].n == segment[jseg].n) {	/* and same number of points */
 					for (k = match = 0; k < segment[iseg].n && k == match; k++) {	/* Compute number of duplicate points */
 						match += (doubleAlmostEqualZero (D[GMT_IN]->table[segment[iseg].group]->segment[segment[iseg].pos]->coord[GMT_X][k], D[GMT_IN]->table[segment[jseg].group]->segment[segment[jseg].pos]->coord[GMT_X][k]) &&
@@ -522,13 +524,13 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 
 	/* We determine the distance from each segment's two endpoints to the two endpoints on every other
 	 * segment; this yields four distances per segment.  We then assign the nearest endpoint to each end
-	 * of a segment to the buddy structure which keeps the id of the nearest segment so far.
+	 * of a segment to the buddy structure which keeps the id of the nearest segment found so far.
 	 */
 
 	for (iseg = 0; iseg < ns; iseg++) {	/* Loop over all open line segments and their two endpoints... */
 		for (jseg = iseg; jseg < ns; jseg++) {	/* ...and compare distances to all other open line segments' two endpoints  */
 			/* nearest_end indicates which end is closest to this end */
-			if (iseg == jseg) {	/* Store offset between the endpoints of a single segment (should be 0 if closed but those polygons have already been dealt with) */
+			if (iseg == jseg) {	/* Store offset between the endpoints of a single segment (would be 0 if closed but those polygons have already been dealt with) */
 				dd[SEG_I][END_A] = dd[SEG_J][END_B] = DBL_MAX;	/* Flag as single line segment so two ends are not used */
 				dd[SEG_I][END_B] = dd[SEG_J][END_A] = (segment[iseg].n == 1) ? DBL_MAX : GMT_distance (GMT, segment[iseg].x_end[END_A], segment[iseg].y_end[END_A], segment[iseg].x_end[END_B], segment[iseg].y_end[END_B]);
     				nearest_end[SEG_I][END_A] = nearest_end[SEG_J][END_A] = END_B;	/* Duplicate the nearest ID info since it is a single line segment compared to itself */
@@ -546,16 +548,16 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
     			/* Update list of closest matches for both ends */
     			for (ii = 0; ii < 2; ii++) {	/* For each end of the segment */
     				end = nearest_end[SEG_I][ii];	/* The end of segment jseg that was closest to segment iseg's end ii */
-    				if (dd[ii][end] < segment[iseg].buddy[ii].dist) {	/* This distance is shorter than the previous shortest distance */
-					segment[iseg].buddy[ii].next_dist = segment[iseg].buddy[ii].dist;	/* Previous closest distance */
+    				if (dd[ii][end] < segment[iseg].buddy[ii].dist) {	/* This distance is shorter than the previous shortest distance, so time to update */
+					segment[iseg].buddy[ii].next_dist = segment[iseg].buddy[ii].dist;	/* Previous closest distance becomes the next-nearest distance */
 					segment[iseg].buddy[ii].orig_id = segment[jseg].orig_id;
 					segment[iseg].buddy[ii].id = jseg;
 					segment[iseg].buddy[ii].dist = dd[ii][end];
 					segment[iseg].buddy[ii].end_order = end;
     				}
     				end = nearest_end[SEG_J][ii];	/* The end of segment iseg that was closest to segment jseg's end ii */
-    				if (dd[end][ii] < segment[jseg].buddy[ii].dist) {	/* This distance is shorter than the previous shortest distance */
- 					segment[jseg].buddy[ii].next_dist = segment[jseg].buddy[ii].dist;	/* Previous closest distance */
+    				if (dd[end][ii] < segment[jseg].buddy[ii].dist) {	/* This distance is shorter than the previous shortest distance, so time to update */
+ 					segment[jseg].buddy[ii].next_dist = segment[jseg].buddy[ii].dist;	/* Previous closest distance becomes the next-nearest distance */
 					segment[jseg].buddy[ii].orig_id = segment[iseg].orig_id;
  					segment[jseg].buddy[ii].id = iseg;
 					segment[jseg].buddy[ii].dist = dd[end][ii];
@@ -567,7 +569,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 	
 	/* Done determining distances from endpoints to nearest endpoints for all line segments */
 	
-	if (Ctrl->L.active) {	/* We can now write out the link information */
+	if (Ctrl->L.active) {	/* We can now write out the link information we found */
 		struct GMT_TEXTSET *LNK = NULL;
 		char name[GMT_BUFSIZ], name0[GMT_BUFSIZ], name1[GMT_BUFSIZ], fmt[GMT_BUFSIZ], *pp = NULL, *s = GMT->current.setting.io_col_separator;
 		if (!Ctrl->L.file) Ctrl->L.file = strdup ("gmtstitch_link.txt");	/* Use default output filename since none was provided */
@@ -585,7 +587,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 		sprintf (buffer, "#segid%sbegin_id%sb_pt%sb_dist%sb_nndist%send_id%se_pt%se_dist%se_nndist", s, s, s, s, s, s, s, s);
 		if (GMT_Set_Comment (API, GMT_IS_TEXTSET, GMT_COMMENT_IS_COLNAMES, buffer, LNK)) Return (API->error);
 		for (iseg = 0; iseg < ns; iseg++) {	/* Loop over open segments */
-			G = segment[iseg].group;	L = segment[iseg].pos;
+			G = segment[iseg].group;	L = segment[iseg].pos;	/* Short hand notation */
 			/* If -L is in the segment header, extract the ID from that, else use the input running number as ID */
 			if (D[GMT_IN]->table[G]->segment[L]->header && (pp = strstr (D[GMT_IN]->table[G]->segment[L]->header, "-L"))) {
 				strncpy (name, &pp[2], GMT_BUFSIZ);
@@ -622,40 +624,41 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Assemble new closed polygons\n");
 
-	/* We start at the very first open line segment (start_id) and trace through its nearest line segments until closed or running out of new line segments */
+	/* We start at the very first open line segment (start_id = 0) and trace through its nearest line segments
+	 * until closed or running out of new line segments */
 	while (!done) {
 
 		/* Find the 'beginning' of the chain that this segment belongs to by tracing the connections
 		 * until we either reappear at the starting point (a closed loop) or we reach an end (i.e.,
 		 * the nearest next endpoint is beyond the separation threshold. */
 
-		done = false;
 		id = start_id;	/* This is the first line segment in a new chain */
 		end_order = 0;
 		n_steps = 1;			/* Nothing appended yet to this single line segment */
-		n_alloc_pts = segment[id].n;	/* Number of points needed so far is just those from the first (id) segment */
+		n_alloc_pts = segment[id].n;	/* Number of points needed so far is just those from this first (start_id) segment */
 #ifdef DEBUG2
 		GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 "\n", segment[id].orig_id);
 #endif
-		while (!done && connect (segment, id, end_order, Ctrl->T.dist[0], Ctrl->T.active[1], Ctrl->T.dist[1])) {	/* connect returns true if nearest segment is close enough */
+		while (!done && found_a_near_segment (segment, id, end_order, Ctrl->T.dist[0], Ctrl->T.active[1], Ctrl->T.dist[1])) {	/* found_a_near_segment returns true if nearest segment is close enough */
 			id2 = segment[id].buddy[end_order].id;	/* ID of nearest segment at end 0 */
 #ifdef DEBUG2
 			GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 "\n", segment[id2].orig_id);
 #endif
 			if (id2 == start_id)	/* Ended up at the starting polygon so it is now a closed polygon */
 				done = true;
-			if (id2 == id || n_steps > ns) {	/* Not good... [NOT SURE WHAT THIS MEANS] */
+			if (id2 == id || n_steps > ns) {	/* Not good... [NOT SURE WHAT THIS MEANS BUT SEEMS LIKE A CRAZY SAFETY VALVE AND SHOULD NEVER HAPPEN] */
 				done = true;
 				n_trouble++;
 			}
-			else {	/* Trace the connection to the next segment */
-				end_order = !segment[id].buddy[end_order].end_order;	/* Having hooked line segment to current end_order, we flip to the other end for next connection */
+			else {	/* Good. Trace the connection to the next segment */
+				/* Having hooked line segment to current end_order, we must flip to the other end for the next connection */
+				end_order = !segment[id].buddy[end_order].end_order;
 				id = id2;	/* Update what is the current segment */
 				n_alloc_pts += segment[id].n;		/* Update length of combined line segment so far */
 			}
-			n_steps++;
+			n_steps++;	/* Number of segments in this growing chain */
 		}
-		/* Here we either have closed a polygon or still have a (possibly much longer) open line segment */
+		/* Here we either have closed a polygon or still have a (possibly much longer) open line segment. */
 		/* This id should be the beginning of a segment.  Now trace forward and dump out the chain */
 
 		T[CLOSED][out_seg] = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);		/* Get a new segment structure... */
@@ -664,7 +667,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 		if (n_steps == 1)
 			sprintf (buffer, "Single segment not enlarged by stitching");
 		else
-			sprintf (buffer, "Composite segment combined from %" PRIu64 " line segments", n_steps);
+			sprintf (buffer, "Composite segment made from %" PRIu64 " line segments", n_steps);
 		T[OPEN][out_seg]->header = strdup (buffer);
 
 		start_id = id;	/* Having reached the end of a chain, we let the last line segment be our starting line segment for the output */
@@ -677,7 +680,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 			T[OPEN][out_seg]->file[GMT_OUT] = strdup (buffer);
 		}
 
-		/* Initialize values of previous point coordinates */
+		/* Initialize values of previous end point coordinates */
 		p_first_x = p_last_x = DBL_MAX;
 		p_first_y = p_last_y = DBL_MAX;
 		k = out_p = n_seg_length = 0;
@@ -686,9 +689,10 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 		do {
 			G = segment[id].group;	/* This is which table this line segment came from */
 			L = segment[id].pos;	/* This is the segment number in that table */
-			np = segment[id].n;	/* Length of line segment */
+			np = segment[id].n;	/* Length of this line segment */
+			S = D[GMT_IN]->table[G]->segment[L];	/* Short hand for the current segment */
 			if (end_order == 0) {	/* Already in the right order */
-				if (doubleAlmostEqualZero (D[GMT_IN]->table[G]->segment[L]->coord[GMT_X][0], p_last_x) && doubleAlmostEqualZero (D[GMT_IN]->table[G]->segment[L]->coord[GMT_Y][0], p_last_y)) {	/* Skip duplicate anchor point */
+				if (doubleAlmostEqualZero (S->coord[GMT_X][0], p_last_x) && doubleAlmostEqualZero (S->coord[GMT_Y][0], p_last_y)) {	/* Skip duplicate anchor point */
 					j = 1;		/* Start at 1 instead of 0 to skip this point */
 					n = np - 1;	/* Hence there is one less point to copy */
 				}
@@ -696,16 +700,15 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 					j = 0;
 					n = np;
 				}
-				n_seg_length += n;	/* Length of combined line segment after adding this one */
 				GMT_Report (API, GMT_MSG_DEBUG, "Forward Segment no %d-%" PRIu64 " ", G, L);
-				out_p = Copy_This_Segment (D[GMT_IN]->table[G]->segment[L], T[OPEN][out_seg], out_p, j, np-1);	/* Copy points, return array index where next point goes */
+				out_p = Copy_This_Segment (S, T[OPEN][out_seg], out_p, j, np-1);	/* Copy points, return array index where next point goes */
 				/* Remember the last point we copied as that is the end of the growing output line segment */
-				p_last_x = D[GMT_IN]->table[G]->segment[L]->coord[GMT_X][np-1];
-				p_last_y = D[GMT_IN]->table[G]->segment[L]->coord[GMT_Y][np-1];
-				if (first) p_first_x = D[GMT_IN]->table[G]->segment[L]->coord[GMT_X][0], p_first_y = D[GMT_IN]->table[G]->segment[L]->coord[GMT_Y][0];	/* Also remember start point of line segment */
+				p_last_x = S->coord[GMT_X][np-1];
+				p_last_y = S->coord[GMT_Y][np-1];
+				if (first) p_first_x = S->coord[GMT_X][0], p_first_y = S->coord[GMT_Y][0];	/* Also remember start point of this chain */
 			}
 			else {	/* Must reverse the segment's order of points */
-				if (doubleAlmostEqualZero (D[GMT_IN]->table[G]->segment[L]->coord[GMT_X][np-1], p_last_x) && doubleAlmostEqualZero (D[GMT_IN]->table[G]->segment[L]->coord[GMT_Y][np-1], p_last_y)) {	/* Skip duplicate anchor point */
+				if (doubleAlmostEqualZero (S->coord[GMT_X][np-1], p_last_x) && doubleAlmostEqualZero (S->coord[GMT_Y][np-1], p_last_y)) {	/* Skip duplicate anchor point */
 					j = 1;		/* Start at the penultimate rather than last point to skip this duplicate point */
 					n = np - 1;	/* Hence there is one less point to copy */
 				}
@@ -713,16 +716,16 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 					j = 0;
 					n = np;
 				}
-				n_seg_length += n;	/* Length of combined line segment after adding this one */
 				GMT_Report (API, GMT_MSG_DEBUG, "Reverse Segment %d-%" PRIu64 " ", G, L);
-				out_p = Copy_This_Segment (D[GMT_IN]->table[G]->segment[L], T[OPEN][out_seg], out_p, np-1-j, 0);	/* Copy points in reverse order, return array index where next point goes */
+				out_p = Copy_This_Segment (S, T[OPEN][out_seg], out_p, np-1-j, 0);	/* Copy points in reverse order, return array index where next point goes */
 				/* Remember the last point we copied as that is the end of the growing output line segment */
-				p_last_x = D[GMT_IN]->table[G]->segment[L]->coord[GMT_X][0];
-				p_last_y = D[GMT_IN]->table[G]->segment[L]->coord[GMT_Y][0];
+				p_last_x = S->coord[GMT_X][0];
+				p_last_y = S->coord[GMT_Y][0];
 				/* Note for next line: Could use [np-1-j] but if j == 1 then the entry in [np-1] is a duplicate of [np-2] so no need */
-				if (first) p_first_x = D[GMT_IN]->table[G]->segment[L]->coord[GMT_X][np-1], p_first_y = D[GMT_IN]->table[G]->segment[L]->coord[GMT_Y][np-1];	/* Also remember start point of line segment */
+				if (first) p_first_x = S->coord[GMT_X][np-1], p_first_y = S->coord[GMT_Y][np-1];	/* Also remember start point of line segment */
 			}
-			first = false;	/* Done with setting the very first line segment in the composite output line segment */
+			n_seg_length += n;	/* Length of combined line segment after adding this one */
+			first = false;		/* Done with setting the very first line segment in the composite output chain */
 			end_order = !end_order;		/* Go to the other end of the line segment */
 			segment[id].used = true;	/* Finished appending this line segment to our output line segmnent */
 			if (segment[id].buddy[end_order].dist <= Ctrl->T.dist[0] && !segment[segment[id].buddy[end_order].id].used) {
@@ -736,6 +739,9 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 				done = true;
 			k++;	/* Count of number of pieces being stitched into this single line segment */
 		} while (!done);
+		if (k != n_steps) {
+			GMT_Report (API, GMT_MSG_NORMAL, "\nTrouble: The two separate calculations of n_steps differ!\n");
+		}
 		GMT_Report (API, GMT_MSG_DEBUG, "\n");
 		GMT_Report (API, GMT_MSG_VERBOSE, "Segment %" PRIu64 " made from %" PRIu64 " pieces\n", out_seg, k);
 		if (n_seg_length < n_alloc_pts) GMT_alloc_segment (GMT, T[OPEN][out_seg], n_seg_length, n_columns, false);	/* Trim memory allocation */
@@ -751,10 +757,10 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 		}
 		if (Ctrl->Q.active) {	/* Add this polygon info to the info list */
 			QT[d_mode]->record[QT[d_mode]->n_rows++] = strdup (buffer);
-			if (QT[d_mode]->n_rows == QT[d_mode]->n_alloc) QT[d_mode]->record = GMT_memory (GMT, QT[d_mode]->record, (QT[d_mode]->n_alloc <<= 2), char *);
+			if (QT[d_mode]->n_rows == QT[d_mode]->n_alloc) QT[d_mode]->record = GMT_memory (GMT, QT[d_mode]->record, (QT[d_mode]->n_alloc <<= 1), char *);
 		}
 
-		chain++;	/* Number of composite line segment (closed or open) processed via stitching */
+		chain++;	/* Number of composite line segments (closed or open) processed via stitching */
 		out_seg++;	/* Number of output segment so far */
 
 		/* Wind to the next unused segments to start the connection search again */
