@@ -516,11 +516,15 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 		if (iseg > jseg) segment[jseg] = segment[iseg];
 		jseg++;
 	}
+	GMT_Report (API, GMT_MSG_VERBOSE, "Found %" PRIu64 " duplicate segments\n", ns - jseg);
 	if (jseg < ns) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " duplicate segment removed\n", ns - jseg);
 	ns = jseg;	/* The new number of open segments after duplicates have been removed */
 	GMT_free (GMT, skip);	/* Done with this array */
 
-	GMT_Report (API, GMT_MSG_VERBOSE, "Calculate and rank end point separations [cutoff = %g nn_dist = %g]\n", Ctrl->T.dist[0], Ctrl->T.dist[1]);
+	if (Ctrl->T.unit == 'X')
+		GMT_Report (API, GMT_MSG_VERBOSE, "Calculate and rank end point separations [cutoff = %g nn_dist = %g]\n", Ctrl->T.dist[0], Ctrl->T.dist[1]);
+	else
+		GMT_Report (API, GMT_MSG_VERBOSE, "Calculate and rank end point separations [cutoff = %g%c nn_dist = %g%c]\n", Ctrl->T.dist[0], Ctrl->T.unit, Ctrl->T.dist[1], Ctrl->T.unit);
 
 	/* We determine the distance from each segment's two endpoints to the two endpoints on every other
 	 * segment; this yields four distances per segment.  We then assign the nearest endpoint to each end
@@ -619,7 +623,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 		}
 	}
 
-	start_id = n_closed = 0;	/* Initialize counters for the stitching of line segments into closed polygons */
+	start_id = n_closed = n_open = 0;	/* Initialize counters for the stitching of line segments into closed polygons */
 	done = false;
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Assemble new closed polygons\n");
@@ -642,7 +646,7 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 		while (!done && found_a_near_segment (segment, id, end_order, Ctrl->T.dist[0], Ctrl->T.active[1], Ctrl->T.dist[1])) {	/* found_a_near_segment returns true if nearest segment is close enough */
 			id2 = segment[id].buddy[end_order].id;	/* ID of nearest segment at end 0 */
 #ifdef DEBUG2
-			GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 "\n", segment[id2].orig_id);
+			GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 "\n", segment[id].orig_id);
 #endif
 			if (id2 == start_id)	/* Ended up at the starting polygon so it is now a closed polygon */
 				done = true;
@@ -652,20 +656,24 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 			}
 			else {	/* Good. Trace the connection to the next segment */
 				/* Having hooked line segment to current end_order, we must flip to the other end for the next connection */
+				GMT_Report (API, GMT_MSG_VERBOSE, "Connecting segment %" PRIu64 " to segment %" PRIu64 "\n", id, id2);
 				end_order = !segment[id].buddy[end_order].end_order;
 				id = id2;	/* Update what is the current segment */
 				n_alloc_pts += segment[id].n;		/* Update length of combined line segment so far */
 			}
 			n_steps++;	/* Number of segments in this growing chain */
 		}
+
 		/* Here we either have closed a polygon or still have a (possibly much longer) open line segment. */
 		/* This id should be the beginning of a segment.  Now trace forward and dump out the chain */
 
 		T[CLOSED][out_seg] = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);		/* Get a new segment structure... */
 		GMT_alloc_segment (GMT, T[OPEN][out_seg], n_alloc_pts, n_columns, true);	/* ...with enough rows */
 
-		if (n_steps == 1)
-			sprintf (buffer, "Single segment not enlarged by stitching");
+		if (n_steps == 1) {
+			GMT_Report (API, GMT_MSG_VERBOSE, "Connecting segment %" PRIu64 " to none\n", id);
+			sprintf (buffer, "Single open segment not enlarged by stitching");
+		}
 		else
 			sprintf (buffer, "Composite segment made from %" PRIu64 " line segments", n_steps);
 		T[OPEN][out_seg]->header = strdup (buffer);
@@ -743,10 +751,10 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 			GMT_Report (API, GMT_MSG_NORMAL, "\nTrouble: The two separate calculations of n_steps differ!\n");
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "\n");
-		GMT_Report (API, GMT_MSG_VERBOSE, "Segment %" PRIu64 " made from %" PRIu64 " pieces\n", out_seg, k);
 		if (n_seg_length < n_alloc_pts) GMT_alloc_segment (GMT, T[OPEN][out_seg], n_seg_length, n_columns, false);	/* Trim memory allocation */
 
 		if (doubleAlmostEqualZero (p_first_x, p_last_x) && doubleAlmostEqualZero (p_first_y, p_last_y)) {	/* Definitively closed polygon resulting from stitching */
+			GMT_Report (API, GMT_MSG_VERBOSE, "Closed segment %" PRIu64 " made from %" PRIu64 " pieces\n", out_seg, k);
 			if (Ctrl->D.active && save_type) {	/* Ended up closed, rename output filename with the C type instead of O set above */
 				sprintf (buffer, Ctrl->D.format, 'C', out_seg);
 				free (T[OPEN][out_seg]->file[GMT_OUT]);
@@ -754,6 +762,10 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 				d_mode = CLOSED;	/* Mode is used with -Q only */
 			}
 			n_closed++;	/* Another closed polygon completed */
+		}
+		else {
+			n_open++;	/* This one remained open */
+			GMT_Report (API, GMT_MSG_VERBOSE, "Open segment %" PRIu64 " made from %" PRIu64 " pieces\n", out_seg, k);
 		}
 		if (Ctrl->Q.active) {	/* Add this polygon info to the info list */
 			QT[d_mode]->record[QT[d_mode]->n_rows++] = strdup (buffer);
@@ -789,10 +801,11 @@ int GMT_gmtstitch (void *V_API, int mode, void *args)
 
 	/* Tell us some statistics of what we found, if -V */
 	
-	GMT_Report (API, GMT_MSG_VERBOSE, "Segments in: %" PRIu64 " Segments out: %" PRIu64 "\n", ns + n_islands, chain + n_islands);
+	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " segments read\n", ns + n_islands);
+	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " new open segments\n", n_open);
+	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " new closed segments\n", n_closed);
+	GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " were already closed\n", n_islands);
 	if (n_trouble) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " trouble spots\n", n_trouble);
-	if (n_closed) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " new closed segments\n", n_closed);
-	if (n_islands) GMT_Report (API, GMT_MSG_VERBOSE, "%" PRIu64 " were already closed\n", n_islands);
 
 	Return (GMT_OK);
 }
