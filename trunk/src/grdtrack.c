@@ -488,10 +488,10 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 	}
 	
 	if (Ctrl->E.active) {	/* Create profiles rather than read them */
-		// uint64_t dim[4] = {1, 0, 3, 0};
+		// uint64_t dim[4] = {1, 0, 0, 3};
 		double xyz[2][3];
 		
-		if ((Din = GMT_create_dataset (GMT, 1, 0, 3, 0, GMT_IS_LINE, true)) == NULL) Return (API->error);
+		if ((Din = GMT_create_dataset (GMT, 1, 0, 0, 3, GMT_IS_LINE, true)) == NULL) Return (API->error);
 		GMT_free_table (GMT, Din->table[0]);	/* Since we will add our own below */
 		
 		//if ((Din = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty dataset with 1 table */
@@ -602,10 +602,10 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 			unsigned int n_step = (Ctrl->S.mode < STACK_LOWER) ? 6 : 4;	/* Number of columns per gridded data in stack file */
 			unsigned int GMT_mode_selection = 0, GMT_n_multiples = 0;
 			double **stack = NULL, *stacked_val = NULL, *stacked_dev = NULL, *stacked_hi = NULL, *stacked_lo = NULL, *dev = NULL;
-			dim[0] = 1;				/* One table */
-			dim[1] = Dout->n_tables;		/* Number of stacks */
-			dim[2] = 1 + n_step * Ctrl->G.n_grids;	/* Number of columns needed in stack file */
-			dim[3] = n_rows = Dout->table[0]->segment[0]->n_rows;	/* Number of rows */
+			dim[GMT_TBL] = 1;			/* One table */
+			dim[GMT_SEG] = Dout->n_tables;		/* Number of stacks */
+			dim[GMT_COL] = 1 + n_step * Ctrl->G.n_grids;	/* Number of columns needed in stack file */
+			dim[GMT_ROW] = n_rows = Dout->table[0]->segment[0]->n_rows;	/* Number of rows */
 			if ((Stack = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);	/* An empty table for stacked results */
 			
 			stack = GMT_memory (GMT, NULL, Ctrl->G.n_grids, double *);
@@ -692,7 +692,7 @@ int GMT_grdtrack (void *V_API, int mode, void *args) {
 		uint64_t col, n_cols = Din->n_columns + Ctrl->G.n_grids, row, seg;
 		struct GMT_DATASEGMENT *Sin = NULL, *Sout = NULL;
 		
-		Dout = GMT_alloc_dataset (GMT, Din, n_cols, 0, GMT_ALLOC_NORMAL);	/* Same table length as Din, but with up to n_cols columns (lon, lat, dist, g1, g2, ...) */
+		Dout = GMT_alloc_dataset (GMT, Din, 0, n_cols, GMT_ALLOC_NORMAL);	/* Same table length as Din, but with up to n_cols columns (lon, lat, dist, g1, g2, ...) */
 		if (Din->table[0]->n_segments > 1) GMT_set_segmentheader (GMT, GMT_OUT, true);	/* More than one segment triggers -mo */
 		
 		for (seg = 0; seg < Din->table[0]->n_segments; seg++) {	/* For each segment to resample */

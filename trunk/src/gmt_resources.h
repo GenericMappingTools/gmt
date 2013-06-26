@@ -202,6 +202,13 @@ enum GMT_enum_gridindex {
         GMT_ZHI		/* Index for zmax value */
 };
 
+enum GMT_enum_dimindex {
+        GMT_TBL = 0U,	/* Index for number of tables in dimension array */
+        GMT_SEG,	/* Index for number of segments in dimension array */
+        GMT_ROW,	/* Index for number of tables in dimension array */
+        GMT_COL		/* Index for number of tables in dimension array [DATASET only] */
+};
+
 enum GMT_enum_gridio {
 	GMT_GRID_IS_REAL		= 0U,	/* Read|write a normal real-valued grid */
 	GMT_GRID_ALL			= 0U,	/* Read|write both grid header and the entire grid (no subset) */

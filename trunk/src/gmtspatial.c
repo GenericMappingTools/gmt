@@ -1257,7 +1257,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 				}
 			}
 			else {	/* Design a table based on -Rw/e/s/n */
-				uint64_t dim[4] = {1, 1, 2, 5};
+				uint64_t dim[4] = {1, 1, 5, 2};
 				if ((C = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (API->error);
 				S1 = C->table[0]->segment[0];
 				S1->coord[GMT_X][0] = S1->coord[GMT_X][3] = S1->coord[GMT_X][4] = GMT->common.R.wesn[XLO];
@@ -1656,7 +1656,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 		struct GMT_DATATABLE *T = NULL;
 		struct GMT_DATASEGMENT **L = NULL;
 		
-		dim[0] = D->n_tables;	dim[2] = D->n_columns;
+		dim[GMT_TBL] = D->n_tables;	dim[GMT_COL] = D->n_columns;
 		if ((Dout = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, Ctrl->Out.file)) == NULL) Return (API->error);
 		Dout->n_segments = 0;
 		for (tbl = 0; tbl < D->n_tables; tbl++) {

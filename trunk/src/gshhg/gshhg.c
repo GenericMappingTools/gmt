@@ -217,7 +217,7 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 	bool mem_track_enabled;
 #endif
 	
-	uint64_t dim[4] = {1, 0, 2, 0};
+	uint64_t dim[4] = {1, 0, 0, 2};
 	
 	size_t n_alloc = 0;
 
@@ -278,15 +278,15 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 	else
 		GMT->current.setting.io_header[GMT_OUT] = true;	/* Turn on -ho explicitly */
 	if (Ctrl->L.active) {	/* Want a text set of headers back */
-		dim[1] = 1;
-		dim[2] = n_alloc = (Ctrl->I.active) ? ((Ctrl->I.mode) ? 6 : 1) : GSHHG_MAXPOL;
+		dim[GMT_SEG] = 1;
+		dim[GMT_ROW] = n_alloc = (Ctrl->I.active) ? ((Ctrl->I.mode) ? 6 : 1) : GSHHG_MAXPOL;
 		if ((X = GMT_Create_Data (API, GMT_IS_TEXTSET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, Ctrl->Out.file)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a text set for GSHHG header features.\n");
 			return (API->error);
 		}
 	}
 	else {
-		dim[1] = n_alloc = 0;
+		dim[GMT_SEG] = n_alloc = 0;
 		if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, Ctrl->Out.file)) == NULL) {
 			GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for GSHHG features.\n");
 			return (API->error);
@@ -359,7 +359,7 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 			}
 		}
 		else {
-			dim[3] = h.n + Ctrl->G.active;	/* Number of data records to allocate for this segment/polygon*/
+			dim[GMT_ROW] = h.n + Ctrl->G.active;	/* Number of data records to allocate for this segment/polygon*/
 			if (seg_no == n_alloc) {	/* Must add more segments to this table first */
 				size_t old_n_alloc = n_alloc;
 				n_alloc <<= 1;
@@ -395,7 +395,7 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 			else
 				T[seg_no]->range = (greenwich & 2) ? GMT_IS_0_TO_P360_RANGE : GMT_IS_M180_TO_P180_RANGE;
 			/* Allocate h.n number of data records */
-			GMT_alloc_segment (GMT, T[seg_no], dim[3], dim[2], true);
+			GMT_alloc_segment (GMT, T[seg_no], dim[GMT_ROW], dim[GMT_COL], true);
 			for (row = 0; row < h.n; row++) {
 				if (fread (&p, sizeof (struct POINT), 1U, fp) != 1) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Error reading file %s for %s %d, point %d.\n", Ctrl->In.file, name[is_line], h.id, row);

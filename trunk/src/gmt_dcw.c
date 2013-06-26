@@ -256,7 +256,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	}
 
 	if (mode & GMT_DCW_EXTRACT) {	/* Plan to return a dataset */
-		uint64_t dim[4] = {n_items, 0, 2, 0};
+		uint64_t dim[4] = {n_items, 0, 0, 2};	/* n_items tables whose records (to be allocated) will have 2 columns */
 		if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_POLY, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create empty dataset for DCW polygons\n");
 			return NULL;
@@ -359,7 +359,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			lat[k] = (dy[k] == 65535U) ? 0.0 : dy[k] * yscl + south;
 		}
 		if (mode & GMT_DCW_EXTRACT) {	/* Allocate a table with the right number of segments */
-			D->table[tbl] = GMT_create_table (GMT, n_segments, 2, 0, false);
+			D->table[tbl] = GMT_create_table (GMT, n_segments, 0, 2, false);
 		}
 	        /* Extract the pieces into separate segments */
 		k = seg = 0;

@@ -327,9 +327,9 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 
-	dim[2] = (GridY) ? 17 : 3;	/* Either 3 or 17 estimates */
+	dim[GMT_COL] = (GridY) ? 17 : 3;	/* Either 3 or 17 estimates */
 #ifdef DEBUG
-	if (show_n) dim[2]++;		/* Also write out nused[k] so add one more column */
+	if (show_n) dim[GMT_COL]++;		/* Also write out nused[k] so add one more column */
 #endif
 	if (*par > 0.0) {	/* X spectrum desired  */
 		delta_k = K->delta_kx;	nk = K->nx2 / 2;
@@ -381,7 +381,7 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *
 	
 	delta_k /= (2.0 * M_PI);	/* Write out frequency, not wavenumber  */
 	powfactor = 4.0 / pow ((double)GridX->header->size, 2.0);	/* Squared normalization of FFT */
-	dim[3] = nk;
+	dim[GMT_ROW] = nk;
 	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, file)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Unable to create a data set for spectral estimates\n");
 		return (GMT->parent->error);

@@ -472,7 +472,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args)
 	/* Read input data set */
 	
 	if (Ctrl->A.active) {	/* Want a single primary vector */
-		uint64_t dim[4] = {1, 1, 3, 1};
+		uint64_t dim[4] = {1, 1, 1, 3};
 		GMT_Report (API, GMT_MSG_VERBOSE, "Processing single input vector; no files are read\n");
 		if (Ctrl->A.mode) {	/* Compute the mean of all input vectors */
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Registers default input sources, unless already set */
@@ -522,7 +522,7 @@ int GMT_gmtvector (void *V_API, int mode, void *args)
 	else if (Ctrl->C.active[GMT_OUT] || !GMT_is_geographic (GMT, GMT_OUT))	/* Override types since output is Cartesian or polar coordinates, not lon/lat */
 		GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;
 
-	Dout = GMT_alloc_dataset (GMT, Din, n_out + add_cols, 0, GMT_ALLOC_NORMAL);
+	Dout = GMT_alloc_dataset (GMT, Din, 0, n_out + add_cols, GMT_ALLOC_NORMAL);
 	GMT_memset (out, 3, double);
 
 	/* OK, with data in hand we can do some damage */

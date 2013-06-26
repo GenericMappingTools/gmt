@@ -296,7 +296,7 @@ void drawbase (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, double x1,
 
 struct GMT_TEXTSET *alloc_if_not_done_already (struct GMTAPI_CTRL *API, struct GMT_TEXTSET *Din, unsigned int geometry)
 {
-	uint64_t dim[4] = {1, 1, GMT_SMALL_CHUNK, 2};
+	uint64_t dim[3] = {1, 1, GMT_SMALL_CHUNK};
 	struct GMT_TEXTSET *D = NULL;
 	if (Din) return Din;	/* Already done this */
 	if ((D = GMT_Create_Data (API, GMT_IS_TEXTSET, geometry, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {

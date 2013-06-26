@@ -646,7 +646,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 	if (Ctrl->I.active) {	/* Only info requested, quit before plotting */
 		if (Ctrl->I.mode) {
 			uint64_t n_boxes = 0;
-			uint64_t dim[4] = {1, 1, 2, 0}, ibox, row;
+			uint64_t dim[4] = {1, 1, 0, 2}, ibox, row;
 			double xx, yy;
 			struct GMT_DATASET *D = NULL;
 			struct GMT_DATASEGMENT *S = NULL;
@@ -660,7 +660,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 			else
 				n_boxes = F.n_boxes;
 			
-			dim[3] = n_boxes;
+			dim[GMT_ROW] = n_boxes;
 			if ((D = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, Ctrl->Out.file)) == NULL) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Unable to create a data set for histogram\n");
 				Return (API->error);
