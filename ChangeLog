@@ -2,6 +2,11 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-06-27	pwessel
+	* gmtstitch.c:		Search in both directions for connections in order to avoid a
+				two-pass operation. Fixes problem with back-tracking from end
+				since there might be more connections going backwards.
+
 2013-06-18	pwessel
 	* gmt_plot.c:		Expanded "l" symbol macro to handle variable text and template-ing.
 	* psxy[z].c:		The -Sl symbol now takes modifiers +f<font> and +j<justify>.
