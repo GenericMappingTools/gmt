@@ -2116,8 +2116,7 @@ Calendar time coordinates:
     day-of-month) or *yyyy*\ [*-jjj*] (year and day-of-year) for
     Gregorian calendars and *yyyy*\ [*-*\ **W**\ *ww*\ [*-d*]] (year,
     week, and day-of-week) for the ISO calendar. If no *date* is given
-    we assume the present day. Following the [optional] *date* string we
-    require the **T** flag.
+    we assume day 1. The **T** flag is required if a *clock* is given.
 
     The optional *clock* string is a 24-hour clock in
     *hh*\ [*:mm*\ [*:ss*\ [*.xxx*]]] format. If no *clock* is given it
