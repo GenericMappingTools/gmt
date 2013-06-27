@@ -42,157 +42,155 @@ REM Path to where the to-be-included files will be created (For GALLERY)
 set pathGallery=%~dp0source\gallery\
 
 
-IF %ext%=="pdf" (
-echo MERDA PDF
+IF "%ext%"=="pdf" (
 	REM For LATEX/PDF we want to include the examples chapter
-	echo .. include: ../examples_chapter_opt.rst_ > %pathGallery%/examples_chapter_opt.rst_
+	echo .. include:: examples_chapter.rst_ > %pathGallery%/examples_chapter_opt.rst_
 ) ELSE (
 	REM For HTML the examples chapter is NOT included
 	echo.   > %pathGallery%/examples_chapter_opt.rst_
 )
-
 
 IF NOT EXIST %path_build% (
 	md %path_build%
 )
 
 set name=anim_01
-call %~dp0fromAnimations 01 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromAnimations 01 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Animation of a simple sine function. >> %pathGallery%/fig_%name%.rst_
 set name=anim_02
-call %~dp0fromAnimations 02 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromAnimations 02 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Animation of a DEM using variable illumination. >> %pathGallery%/fig_%name%.rst_
 set name=anim_03
-call %~dp0fromAnimations 03 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromAnimations 03 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Orbiting a static map. >> %pathGallery%/fig_%name%.rst_
 set name=anim_04
-call %~dp0fromAnimations 04 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromAnimations 04 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Flying over topography. >> %pathGallery%/fig_%name%.rst_
 
 
 set name=example_01
-call %~dp0fromExamples 01 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 01 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Contour maps of gridded data. >> %pathGallery%/fig_%name%.rst_
 set name=example_02
-call %~dp0fromExamples 02 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 02 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Color images from gridded data. >> %pathGallery%/fig_%name%.rst_
 set name=example_03
-call %~dp0fromExamples 03 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 03 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Spectral estimation and x=y-plots. >> %pathGallery%/fig_%name%.rst_
 set name=example_04
-call %~dp0fromExamples 04 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 04 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    3-D perspective mesh plot (left) and colored version (right). >> %pathGallery%/fig_%name%.rst_
 set name=example_05
-call %~dp0fromExamples 05 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 05 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    3-D illuminated surface. >> %pathGallery%/fig_%name%.rst_
 set name=example_06
-call %~dp0fromExamples 06 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 06 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Two kinds of histograms. >> %pathGallery%/fig_%name%.rst_
 set name=example_07
-call %~dp0fromExamples 07 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 07 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    A typical location map. >> %pathGallery%/fig_%name%.rst_
 set name=example_08
-call %~dp0fromExamples 08 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 08 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    A 3-D histogram. >> %pathGallery%/fig_%name%.rst_
 set name=example_09
-call %~dp0fromExamples 09 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 09 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Time-series as "wiggles" along a track. >> %pathGallery%/fig_%name%.rst_
 set name=example_10
-call %~dp0fromExamples 10 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 10 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Geographical bar graph. >> %pathGallery%/fig_%name%.rst_
 
 set name=example_11
-call %~dp0fromExamples 11 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 11 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    The RGB color cube. >> %pathGallery%/fig_%name%.rst_
 set name=example_12
-call %~dp0fromExamples 12 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 12 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Optimal triangulation of data. >> %pathGallery%/fig_%name%.rst_
 set name=example_13
-call %~dp0fromExamples 13 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 13 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Display of vector fields in GMT. >> %pathGallery%/fig_%name%.rst_
 set name=example_14
-call %~dp0fromExamples 14 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 14 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Gridding of data and trend surfaces. >> %pathGallery%/fig_%name%.rst_
 set name=example_15
-call %~dp0fromExamples 15 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 15 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Gridding, contouring, and masking of data. >> %pathGallery%/fig_%name%.rst_
 set name=example_16
-call %~dp0fromExamples 16 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 16 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    More ways to grid data. >> %pathGallery%/fig_%name%.rst_
 set name=example_17
-call %~dp0fromExamples 17 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 17 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Clipping of images using coastlines. >> %pathGallery%/fig_%name%.rst_
 set name=example_18
-call %~dp0fromExamples 18 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 18 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Volumes and geo-spatial selections. >> %pathGallery%/fig_%name%.rst_
 set name=example_19
-call %~dp0fromExamples 19 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 19 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Using color patterns and additional PostScript material in illustrations. >> %pathGallery%/fig_%name%.rst_
 set name=example_20
-call %~dp0fromExamples 20 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 20 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Using custom symbols in GMT. >> %pathGallery%/fig_%name%.rst_
 
 set name=example_21
-call %~dp0fromExamples 21 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 21 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Time-series of RedHat stock price since IPO. >> %pathGallery%/fig_%name%.rst_
 set name=example_22
-call %~dp0fromExamples 22 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 22 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    World-wide seismicity the last 7 days. >> %pathGallery%/fig_%name%.rst_
 set name=example_23
-call %~dp0fromExamples 23 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 23 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    All great-circle paths lead to Rome. >> %pathGallery%/fig_%name%.rst_
 set name=example_24
-call %~dp0fromExamples 24 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 24 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Data selection based on geospatial criteria. >> %pathGallery%/fig_%name%.rst_
 set name=example_25
-call %~dp0fromExamples 25 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 25 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Global distribution of antipodes. >> %pathGallery%/fig_%name%.rst_
 set name=example_26
-call %~dp0fromExamples 26 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 26 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    General vertical perspective projection. >> %pathGallery%/fig_%name%.rst_
 set name=example_27
-call %~dp0fromExamples 27 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 27 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Plotting Sandwell/Smith Mercator img grids. >> %pathGallery%/fig_%name%.rst_
 set name=example_28
-call %~dp0fromExamples 28 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 28 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Mixing UTM and geographic data sets requires knowledge of the map region domain in >> %pathGallery%/fig_%name%.rst_
 echo    both UTM and lon/lat coordinates and consistent use of the same map scale. >> %pathGallery%/fig_%name%.rst_
 set name=example_29
-call %~dp0fromExamples 29 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 29 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Gridding of spherical surface data using Green's function splines. >> %pathGallery%/fig_%name%.rst_
 set name=example_30
-call %~dp0fromExamples 30 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 30 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Trigonometric functions plotted in graph mode. >> %pathGallery%/fig_%name%.rst_
 
 set name=example_31
-call %~dp0fromExamples 31 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 31 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Using non-default fonts in *PostScript*. >> %pathGallery%/fig_%name%.rst_
 set name=example_32
-call %~dp0fromExamples 32 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 32 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Draping an image over topography. >> %pathGallery%/fig_%name%.rst_
 set name=example_33
-call %~dp0fromExamples 33 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 33 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Stacking automatically generated cross-profiles. >> %pathGallery%/fig_%name%.rst_ %path_build% %pathGallery%
 set name=example_34
-call %~dp0fromExamples 34 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 34 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Using country polygons for plotting and shading. >> %pathGallery%/fig_%name%.rst_
 set name=example_35
-call %~dp0fromExamples 35 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 35 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Spherical triangulation and distance calculations >> %pathGallery%/fig_%name%.rst_
 set name=example_36
-call %~dp0fromExamples 36 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 36 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Spherical gridding using Renka's algorithms. >> %pathGallery%/fig_%name%.rst_
 set name=example_37
-call %~dp0fromExamples 37 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 37 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Spectral coherence between gravity and bathymetry grids. >> %pathGallery%/fig_%name%.rst_
 set name=example_38
-call %~dp0fromExamples 38 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 38 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Histogram equalization of bathymetry grids. >> %pathGallery%/fig_%name%.rst_
 set name=example_39
-call %~dp0fromExamples 39 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 39 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Evaluation of spherical harmonics coefficients. >> %pathGallery%/fig_%name%.rst_
 set name=example_40
-call %~dp0fromExamples 40 %name% %ext% %frmt% %path_build% %pathGallery%
+call %~dp0fromExamples 40 %name% %ext% %frmt% %path_build% %pathGallery% %pato%
 echo    Illustrate line simplification and area calculations. >> %pathGallery%/fig_%name%.rst_
 
 
