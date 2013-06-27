@@ -4417,7 +4417,12 @@ int GMT_scanf (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *
 		if (callen < 2) return (GMT_IS_NAN);	/* Maybe should be more than 2  */
 
 		//if ((p = strchr ( s, (int)('T'))) == NULL) {	/* This was too naive, being tricked by data like 12-OCT-20 (no trailing T, so OCT was it) */
-		if (callen <= GMT->current.io.date_input.T_pos) {	/* There is no trailing T.  Put all of s in calstring.  */
+		if (s[0] == 'T') {	/* Got T<clock> presumably */
+			strncpy (clockstring, &s[1], GMT_TEXT_LEN64);
+			clocklen = callen - 1;
+			callen = 0;
+		}
+		else if (callen <= GMT->current.io.date_input.T_pos) {	/* There is no trailing T.  Put all of s in calstring.  */
 			clocklen = 0;
 			strncpy (calstring, s, GMT_TEXT_LEN64);
 		}

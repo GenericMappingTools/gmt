@@ -3,6 +3,9 @@
 -----------------------------------------------------------------------------------------
 
 2013-06-27	pwessel
+	* gmt_io.c:	Fix a side-effect of the 2013-04-18 correction.
+
+2013-06-27	pwessel
 	* gmtstitch.c:		Search in both directions for connections in order to avoid a
 				two-pass operation. Fixes problem with back-tracking from end
 				since there might be more connections going backwards.
@@ -64,7 +67,7 @@
 	* share/x2sys:		Added dat.def for mgd77 ASCII DAT format.
 
 2013-04-21	remko
-	* pslegend.c:		Honour the use of fill without frame (-G without -F).
+	* pslegend.c:		Honor the use of fill without frame (-G without -F).
 				Return pen to black (and no transparency) after drawing frame box.
 	* pslib.c:		Avoid that fill takes transparency of frame.
 
@@ -73,6 +76,10 @@
 	* grdview.c:		The -C with no argument [rainbow] or master CPT name is accepted
 				and results in an automatic CPT given the data range.
 	* grdvector.c:		Same -C setup as grdview.c
+
+2013-04-18	pwessel
+	* gmt_io.c:		Could not properly decode yyodd (no delimiter) time coordinates
+				like 12Oct24.
 
 2013-04-17	pwessel
 	* filter1d.c:		Susceptible to round-off when determining t of first and last output
