@@ -40,6 +40,7 @@
 
 int main (int argc, char *argv[]) {
 	int status = GMT_NOT_A_VALID_MODULE;	/* Default status code */
+	unsigned int gmt_main = 0;		/* Set to 1 if no module specified */
 	unsigned int modulename_arg_n = 0;	/* Argument number in argv[] that contains module name */
 	struct GMTAPI_CTRL *api_ctrl = NULL;	/* GMT API control structure */
 	char gmt_module[GMT_TEXT_LEN16] = "gmt";
@@ -57,7 +58,9 @@ int main (int argc, char *argv[]) {
 
 	/* Test if argv[0] contains a module name: */
 	module = progname;	/* Try this module name unless it equals PROGRAM_NAME in which case we just enter the test if argc > 1 */
-	if ((!strcmp (module, PROGRAM_NAME) || (status = GMT_Call_Module (api_ctrl, module, GMT_MODULE_EXIST, NULL)) == GMT_NOT_A_VALID_MODULE) && argc > 1) {
+	gmt_main = !strcmp (module, PROGRAM_NAME);	/* 1 if running the main program */
+	
+	if ((gmt_main || (status = GMT_Call_Module (api_ctrl, module, GMT_MODULE_EXIST, NULL)) == GMT_NOT_A_VALID_MODULE) && argc > 1) {
 		/* argv[0] does not contain a valid module name, and
 		 * argv[1] either holds the name of the module or an option: */
 		modulename_arg_n = 1;
@@ -118,7 +121,7 @@ int main (int argc, char *argv[]) {
 		fprintf (stderr, "  --version            Print version and exit\n");
 		fprintf (stderr, "  --show-sharedir      Show share directory and exit\n");
 		fprintf (stderr, "  --show-bindir        Show directory of executables and exit\n\n");
-		if (modulename_arg_n == 1 || argc == 1) {
+		if (modulename_arg_n == 1) {
 			fprintf (stderr, "ERROR: No module named %s was found,  This could mean:\n", module);
 			fprintf (stderr, "  1. There actually is no such module; check your spelling.\n");
 			if (strlen (GMT_SUPPL_LIB_NAME))
