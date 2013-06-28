@@ -84,6 +84,7 @@ struct BLOCK_CTRL {	/* All control options for this program (except common args)
 	} W;
 };
 
+#if 0
 enum GMT_grdval_blks {	/* mode for selected item for gridding */
 	BLK_ITEM_MEAN = 0,
 	BLK_ITEM_MEDIAN,
@@ -102,7 +103,6 @@ enum GMT_grdval_blks {	/* mode for selected item for gridding */
 	BLK_ITEM_LMSSCL,
 	BLK_N_ITEMS};
 
-#if 0
 static char *blk_name[BLK_N_ITEMS] =
 {
 	"mean",
