@@ -4311,8 +4311,8 @@ int gmt_scanf_argtime (struct GMT_CTRL *GMT, char *s, double *t)
 	k = 0;
 	while (s[k] && s[k] == ' ') k++;
 	if (s[k] == '-') negate_year = true;
-	if (s[k] == 'T') {	/* There is no calendar.  Set day to 1 and use that */
-		*t = GMT_rdc2dt (GMT, (int64_t)1, x);
+	if (s[k] == 'T') {	/* There is no calendar.  Set day to today and use that */
+		*t = GMT_rdc2dt (GMT, GMT->current.time.today_rata_die, x);
 		return (GMT_IS_ABSTIME);
 	}
 
@@ -4441,9 +4441,9 @@ int GMT_scanf (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *
 			strncpy (clockstring, p, GMT_TEXT_LEN64);
 			if (clocklen) clocklen--;
 		}
-		x = 0.0;
+		x = 0.0;	/* Default to 00:00:00 if no clock is given */
 		if (clocklen && gmt_scanf_clock (GMT, clockstring, &x)) return (GMT_IS_NAN);
-		rd = 1;
+		rd = GMT->current.time.today_rata_die;	/* Default to today if no date is given */
 		if (callen && gmt_scanf_calendar (GMT, calstring, &rd)) return (GMT_IS_NAN);
 		*val = GMT_rdc2dt (GMT, rd, x);
 		if (GMT->current.setting.time_is_interval) {	/* Must truncate and center on time interval */

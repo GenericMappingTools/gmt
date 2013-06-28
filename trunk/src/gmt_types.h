@@ -83,6 +83,7 @@ struct GMT_TIME_CONV {		/* Holds all time-related parameters */
 	struct GMT_Y2K_FIX Y2K_fix;		/* Used to convert 2-digit years to 4-digit years */
 	struct GMT_TIME_LANGUAGE language;	/* For time axis */
 	time_t tic;				/* Last system time marker */
+	int64_t today_rata_die;			/* The rata die of current day at start of program */
 };
 
 struct GMT_INIT { /* Holds misc run-time parameters */
