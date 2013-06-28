@@ -1,15 +1,15 @@
-*********
-gmtstitch
-*********
+**********
+gmtconnect
+**********
 
-gmtstitch - Join individual lines whose end points match within tolerance
+gmtconnect - Connect individual lines whose end points match within tolerance
 
 Synopsis
 --------
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtstitch** [ *table* ] [ **-C**\ [*closed*] ]
+**gmtconnect** [ *table* ] [ **-C**\ [*closed*] ]
 [ **-D**\ [*template*] ] [ **-L**\ [*linkfile*] ]
 [ **-Q**\ [*template*] ] [ **-T**\ *cutoff*\ [*unit*][/\ *nn\_dist*] ]
 [ |SYN_OPT-V| ]
@@ -26,7 +26,7 @@ Synopsis
 Description
 -----------
 
-**gmtstitch** reads standard input or one or more data files, which may
+**gmtconnect** reads standard input or one or more data files, which may
 be multisegment files, and examines the coordinates of the end points of
 all line segments. If a pair of end points are identical or closer to
 each other than the specified separation tolerance then the two line
@@ -50,8 +50,8 @@ Optional Arguments
 
 
 **-C**\ [*closed*]
-    Write all the closed polygons to *closed* [gmtstitch_closed.txt]
-    and all other segments as they are to stdout. No stitching takes
+    Write all the closed polygons to *closed* [gmtconnect_closed.txt]
+    and all other segments as they are to stdout. No connection takes
     place. Use **-T**\ *cutoff* to set a minimum separation [0], and if
     *cutoff* is > 0 then we also explicitly close the polygons on output.
 
@@ -64,15 +64,15 @@ Optional Arguments
     which gives leading zeros, etc. Optionally, it may also contain the
     format %c *before* the integer; this will then be replaced by C
     (closed) or O (open) to indicate segment type. [Default is
-    gmtstitch_segment_%d.txt]. Note that segment headers will be
+    gmtconnect_segment_%d.txt]. Note that segment headers will be
     written in either case. For composite segments, a generic segment
     header will be written and the segment headers of individual pieces
     will be written out as comments to make it possible to identify
-    where the stitched pieces came from.
+    where the connected pieces came from.
 
 **-L**\ [*linkfile*]
     Writes the link information to the specified file
-    [gmtstitch_link.txt]. For each segment we write the original
+    [gmtconnect_link.txt]. For each segment we write the original
     segment id, and for the beginning and end point of the segment we
     report the id of the closest segment, whether it is the beginning
     (B) or end (E) point that is closest, and the distance between those
@@ -83,7 +83,7 @@ Optional Arguments
     output files. Optionally, append a filename template for the
     individual file names; this template **may** contain a C format
     specifier that can format an character (C or O for closed or open,
-    respectively). [Default is gmtstitch_list.txt].
+    respectively). [Default is gmtconnect_list.txt].
 
 **-T**\ *cutoff*\ [*unit*][/\ *nn\_dist*]
     Specifies the separation tolerance in the data coordinate units [0];
@@ -132,7 +132,7 @@ the end points slop could be up to 0.1 mm, run
 
    ::
 
-    gmt gmtstitch segment_*.txt -Tf0.1 > new_segments.txt
+    gmt connect segment_*.txt -Tf0.1 > new_segments.txt
 
 To combine the digitized segments in the multisegment file my_lines.txt
 (whose coordinates are in lon,lat) into as few complete lines as
@@ -142,14 +142,14 @@ Map_segment_0002.dat, etc., run
 
    ::
 
-    gmt gmtstitch my_lines.txt -T150e -DMap_segment_%04d.dat
+    gmt connect my_lines.txt -T150e -DMap_segment_%04d.dat
 
 Bugs
 ----
 
 The line connection does not work if a line only has a single point.
-However, gmtstitch will correctly add the point to the nearest segment.
-Running gmtstitch again on the new set of lines will eventually connect
+However, gmtconnect will correctly add the point to the nearest segment.
+Running gmtconnect again on the new set of lines will eventually connect
 all close lines.
 
 See Also

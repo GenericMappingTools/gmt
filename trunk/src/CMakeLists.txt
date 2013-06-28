@@ -143,7 +143,7 @@ endif (NOT LICENSE_RESTRICTED)
 set (GMT_PROGS_SRCS blockmean.c blockmedian.c blockmode.c
 	colmath.c filter1d.c fitcircle.c gmt2kml.c
 	gmtconvert.c gmtmath.c gmtselect.c gmtsimplify.c
-	gmtspatial.c gmtstitch.c gmtvector.c gmtwhich.c
+	gmtspatial.c gmtconnect.c gmtvector.c gmtwhich.c
 	grd2cpt.c grd2rgb.c grd2xyz.c grdblend.c
 	grdclip.c grdcut.c grdedit.c grdfft.c
 	grdfilter.c grdgradient.c grdhisteq.c grdinfo.c

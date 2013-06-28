@@ -14,6 +14,7 @@ colmath	core	Do mathematics on columns from data tables
 filter1d	core	Do time domain filtering of 1-D data tables
 fitcircle	core	Find mean position and best-fitting great- or small-circle to points on sphere
 gmt2kml	core	Convert GMT data tables to KML files for Google Earth
+gmtconnect	core	Connect individual lines whose end points match within tolerance
 gmtconvert	core	Convert, paste, or extract columns from data tables
 gmtdefaults	core	List current GMT default parameters
 gmtget	core	Get individual GMT default parameters
@@ -23,7 +24,6 @@ gmtselect	core	Select data table subsets based on multiple spatial criteria
 gmtset	core	Change individual GMT default parameters
 gmtsimplify	core	Line reduction using the Douglas-Peucker algorithm
 gmtspatial	core	Do geospatial operations on lines and polygons
-gmtstitch	core	Join individual lines whose end points match within tolerance
 gmtvector	core	Basic manipulation of Cartesian vectors
 gmtwhich	core	Find full path to specified files
 gmtwrite	core	Write to file from memory location [API only]
