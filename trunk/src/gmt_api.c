@@ -492,7 +492,7 @@ void GMTAPI_free_sharedlibs (struct GMTAPI_CTRL *API)
 {	/* Free items in the shared lib list */
 	unsigned int k;
 	for (k = 0; k < API->n_shared_libs; k++) {
-		if (API->lib[k].handle && dlclose (API->lib[k].handle)) 
+		if (k > 0 && API->lib[k].handle && dlclose (API->lib[k].handle)) 
 			GMT_Report (API, GMT_MSG_NORMAL, "Error closing GMT %s shared library: %s\n", API->lib[k].name, dlerror());
 		if (API->lib[k].name) free (API->lib[k].name);
 		if (API->lib[k].path) free (API->lib[k].path);
