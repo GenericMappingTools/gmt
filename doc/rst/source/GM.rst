@@ -10,6 +10,7 @@ GM
    gmt2kml
    gmtaverage
    gmtcolors
+   gmtconnect
    gmtconvert
    gmtdefaults
    gmtget
@@ -20,7 +21,6 @@ GM
    gmt_shell_functions
    gmtsimplify
    gmtspatial
-   gmtstitch
    gmtswitch
    gmtvector
    gmtwhich

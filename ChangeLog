@@ -3,10 +3,10 @@
 -----------------------------------------------------------------------------------------
 
 2013-06-27	pwessel
-	* gmt_io.c:	Fix a side-effect of the 2013-04-18 correction.
+	* gmt_io.c:		Fix a side-effect of the 2013-04-18 correction.
 
 2013-06-27	pwessel
-	* gmtstitch.c:		Search in both directions for connections in order to avoid a
+	* gmtconnect.c:		Search in both directions for connections in order to avoid a
 				two-pass operation. Fixes problem with back-tracking from end
 				since there might be more connections going backwards.
 
@@ -685,7 +685,7 @@
 	* grdview.c:		Also, when nodes are adjusted by small to avoid matching a
 				contour value exactly (during contouring), the same adjustment
 				must be made later when those nodes are used to determine how
-				to stitch together polygons for fill.
+				to connect together polygons for fill.
 
 2011-11-19	jluis
 	* mgd77/mgd77.c:	Fix memory allocation bug in MGD77_Read_Header_Sequence() where 
@@ -997,7 +997,7 @@
 	* gmt*.c:		Make sure we don't pass ints to funcs expecting GMT_LONG.
 
 2011-07-18	pwessel
-	* gmtstitch_func.c:	Warn that segment with a single point will not connect both
+	* gmtconnect_func.c:	Warn that segment with a single point will not connect both
 				ends properly - you will need to rerun the task on the new
 				sets of segments.  We now give a warning.
 	* grdhisteq_func.c:	Fixed porting bugs for -D; also allow -D<file> instead of just
@@ -1056,7 +1056,7 @@
 				etc.)  Added api test suite for this purpose.
 
 2011-06-28	pwessel
-	* gmtstitch_func.c:	Fixed some porting bugs.  Got stitch.sh example to run.
+	* gmtconnect_func.c:	Fixed some porting bugs.  Got connect.sh example to run.
 	* sph/sphdistance_func.c:	Fixed some porting bugs.  Got all sph examples to run.
 
 2011-06-27	pwessel
@@ -2851,7 +2851,7 @@
 	* gmtconvert_func.c:	Added -s[r] as option.
 
 2010-05-02	pwessel
-	* gmtstitch_func.c:	Promoted from supplement misc. Compiles, not tested.
+	* gmtconnect_func.c:	Promoted from supplement misc. Compiles, not tested.
 	* gmtdp_func.c:		Promoted from supplement misc. Compiles, not tested.
 
 2010-04-25	pwessel
@@ -4061,9 +4061,9 @@
 				Changed default for OUTPUT_DEGREE_FORMAT to D (-180/180) so it
 				is the same as that for PLOT_DEGREE_FORMAT.
 2009-06-18	pwessel
-	* misc/gmtstitch.c:	Enhanced -T option to eliminate connections when the 2nd closest
+	* misc/gmtconnect.c:	Enhanced -T option to eliminate connections when the 2nd closest
 				pair is too close.  Also added -C option to simply separate the
-				open from the closed polygons (no stitching).
+				open from the closed polygons (no connecting).
 
 2009-06-17	pwessel
 	* grdfft.c:		Now also has Butterworth band-pass filter.
@@ -4104,7 +4104,7 @@
 2009-06-15	pwessel
 	* gmt_init.c:		Allow negative integer interval (-n) for annotating log axis; this means
 				annotate every n'th power of 10.
-	* misc/gmtstitch.c:	Now honors -V properly.
+	* misc/gmtconnect.c:	Now honors -V properly.
 
 2009-06-11	remko
 	* gmt_nc.c:		No longer write node_offset = 0 to file (not essential, only confusing).
@@ -4161,7 +4161,7 @@
 
 2009-05-31	pwessel
 	* gmt_io.c:		Option -g must force -mo; fixed bug that reset point number in segment.
-	* misc/gmtstitch.c:	Added -L option to write out segment-link information.
+	* misc/gmtconnect.c:	Added -L option to write out segment-link information.
 
 2009-05-29	jluis
 	* gmt_init.c:		Do not create empty .gmtcommands4 files
@@ -4172,7 +4172,7 @@
 				that using -fit and -foT would require reformatting.
 
 2009-05-27	pwessel
-	* misc/gmtstitch.c:	Did not read standard input if no files were given.
+	* misc/gmtconnect.c:	Did not read standard input if no files were given.
 
 2009-05-26	pwessel
 	* gmtconvert.c:		With -S, did not report the number of output segments.  Now allows
@@ -4932,7 +4932,7 @@
 
 2008-06-13	pwessel
 	* grdimage.c:	Failed to determine boundary of projected grid with enough precision.
-	* misc/gmtstitch.c:	Check to see if format was set was wrong.
+	* misc/gmtconnect.c:	Check to see if format was set was wrong.
 	* mgd77/mgd77track.c:	Missing newline after last source line
 
 2008-06-12	pwessel
@@ -6921,7 +6921,7 @@
 	* gmt_support.h:	New include file for extern functions in gmt_support.c
 	* gmt_vector.h:		New include file for extern functions in gmt_vector.c
 	* misc/gmtdigitize.c:	New tool added to misc supplement for digitizing line segments
-	* misc/gmtstitch.c:	New tool added to misc supplement for combining line segments
+	* misc/gmtconnect.c:	New tool added to misc supplement for combining line segments
 
 2006-03-21
 	* gmt_support.c:	Fixed problem in GMT_get_grd_region which would sometimes return

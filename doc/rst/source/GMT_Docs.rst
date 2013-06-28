@@ -246,8 +246,9 @@ promoted from earlier supplements:
 `gmtsimplify <gmtsimplify.html>`_
     A line-reduction tool for coastlines and similar lines.
 
-`gmtstitch <gmtstitch.html>`_
-    Join individual lines whose end points match within given tolerance.
+`gmtconnect <gmtconnect.html>`_
+    Connect individual lines whose end points match within given tolerance.
+    Previously known as gmtstitch in the misc supplement.
 
 `gmtwhich <gmtwhich.html>`_
     Return the full path to specified data files.
@@ -1153,6 +1154,8 @@ listing sorted by program purpose, see Section [sec:purpose].
 +-----------------------------------------------------+---------------------------------------------------------------------+
 |  **gmt2kml** `(...) <gmt2kml.html>`__               | Like  **psxy** but plots KML for use in Google Earth                |
 +-----------------------------------------------------+---------------------------------------------------------------------+
+|  **gmtconnect** `(...) <gmtconnect.html>`__         | Connect segments into more complete lines or polygons               |
++-----------------------------------------------------+---------------------------------------------------------------------+
 |  **gmtconvert** `(...) <gmtconvert.html>`__         | Convert data tables from one format to another                      |
 +-----------------------------------------------------+---------------------------------------------------------------------+
 |  **gmtdefaults** `(...) <gmtdefaults.html>`__       | List the current default settings                                   |
@@ -1168,8 +1171,6 @@ listing sorted by program purpose, see Section [sec:purpose].
 |  **gmtsimplify** `(...) <gmtsimplify.html>`__       | Line reduction using the Douglas-Peucker algorithm                  |
 +-----------------------------------------------------+---------------------------------------------------------------------+
 |  **gmtspatial** `(...) <gmtspatial.html>`__         | Geospatial operations on lines and polygons                         |
-+-----------------------------------------------------+---------------------------------------------------------------------+
-|  **gmtstitch** `(...) <gmtstitch.html>`__           | Join segments into more complete lines or polygons                  |
 +-----------------------------------------------------+---------------------------------------------------------------------+
 |  **gmtvector** `(...) <gmtvector.html>`__           | Basic operations on vectors in 2-D and 3-D                          |
 +-----------------------------------------------------+---------------------------------------------------------------------+
@@ -1431,13 +1432,13 @@ summary of the standard command line options and a breakdown of the
 +=====================================================+=====================================================================+
 |  **gmt2kml** `(...) <gmt2kml.html>`__               | Like  **psxy** but plots KML for use in Google Earth                |
 +-----------------------------------------------------+---------------------------------------------------------------------+
+|  **gmtconnect** `(...) <gmtconnect.html>`__         | Connect segments into more complete lines or polygons               |
++-----------------------------------------------------+---------------------------------------------------------------------+
 |  **gmtconvert** `(...) <gmtconvert.html>`__         | Convert data tables from one format to another                      |
 +-----------------------------------------------------+---------------------------------------------------------------------+
 |  **gmtselect** `(...) <gmtselect.html>`__           | Select subsets of table data based on multiple spatial criteria     |
 +-----------------------------------------------------+---------------------------------------------------------------------+
 |  **gmtspatial** `(...) <gmtspatial.html>`__         | Geospatial operations on lines and polygons                         |
-+-----------------------------------------------------+---------------------------------------------------------------------+
-|  **gmtstitch** `(...) <gmtstitch.html>`__           | Join segments into more complete lines or polygons                  |
 +-----------------------------------------------------+---------------------------------------------------------------------+
 |  **gmtvector** `(...) <gmtvector.html>`__           | Basic operations on vectors in 2-D and 3-D                          |
 +-----------------------------------------------------+---------------------------------------------------------------------+
