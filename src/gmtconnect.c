@@ -617,7 +617,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args)
 				for (j = 0; name1[j]; j++) if (name1[j] == ' ') name1[j] = '\0';	/* Just truncate after 1st word */
 			} else sprintf (name1, "%" PRIu64, segment[iseg].buddy[1].orig_id);
 			/* OK, compose the output record using the format and information provided */
-			sprintf (buffer, fmt, iseg, name, name0, BE[segment[iseg].buddy[0].end_order], segment[iseg].buddy[0].dist, segment[iseg].buddy[0].next_dist, name1, \
+			sprintf (buffer, fmt, segment[iseg].orig_id, name, name0, BE[segment[iseg].buddy[0].end_order], segment[iseg].buddy[0].dist, segment[iseg].buddy[0].next_dist, name1, \
 				BE[segment[iseg].buddy[1].end_order], segment[iseg].buddy[1].dist, segment[iseg].buddy[1].next_dist);
 			LNK->table[0]->segment[0]->record[iseg] = strdup (buffer);
 		}
@@ -643,15 +643,15 @@ int GMT_gmtconnect (void *V_API, int mode, void *args)
 		 * until we either reappear at the starting point (a closed loop) or we reach an end (i.e.,
 		 * the nearest next endpoint is beyond the separation threshold. */
 
-		sprintf (buffer, "%" PRIu64, start_id);
 		id = start_id;	/* This is the first line segment in a new chain */
+		sprintf (buffer, "%" PRIu64, segment[id].orig_id);
 		end_order = 0;	/* Start at the start point of segment */
 		closed = false;
 		n_steps_pass_1 = 1;		/* Nothing appended yet to this single line segment */
 		n_alloc_pts = segment[id].n;	/* Number of points needed so far is just those from this first (start_id) segment */
 		while (!done && found_a_near_segment (segment, id, end_order, Ctrl->T.dist[0], Ctrl->T.active[1], Ctrl->T.dist[1])) {	/* found_a_near_segment returns true if nearest segment is close enough */
 			id2 = segment[id].buddy[end_order].id;	/* ID of nearest segment at end 0 */
-			sprintf (text, " -> %" PRIu64, id2);
+			sprintf (text, " -> %" PRIu64, segment[id2].orig_id);
 			strcat (buffer, text);
 			if (id2 == start_id)	/* Ended up at the starting polygon so it is now a closed polygon */
 				done = closed = true;
@@ -674,7 +674,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args)
 			end_order = 1;	/* Now start at the end point of segment */
 			while (!done && found_a_near_segment (segment, id, end_order, Ctrl->T.dist[0], Ctrl->T.active[1], Ctrl->T.dist[1])) {	/* found_a_near_segment returns true if nearest segment is close enough */
 				id2 = segment[id].buddy[end_order].id;	/* ID of nearest segment at end 0 */
-				sprintf (text, "%" PRIu64 " <- ", id2);
+				sprintf (text, "%" PRIu64 " <- ", segment[id2].orig_id);
 				strcat (text, buffer);	/* Prepend to message */
 				strcpy (buffer, text);
 				if (id2 == start_id)	/* Ended up at the starting polygon so it is now a closed polygon */
@@ -740,7 +740,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args)
 					j = 0;
 					n = np;
 				}
-				GMT_Report (API, GMT_MSG_DEBUG, "Forward Segment no %" PRIu64 " [Table %d Segment %" PRIu64 "]\n", id, G, L);
+				GMT_Report (API, GMT_MSG_DEBUG, "Forward Segment no %" PRIu64 " [Table %d Segment %" PRIu64 "]\n", segment[id].orig_id, G, L);
 				out_p = Copy_This_Segment (S, T[OPEN][out_seg], out_p, j, np-1);	/* Copy points, return array index where next point goes */
 				/* Remember the last point we copied as that is the end of the growing output line segment */
 				p_last_x = S->coord[GMT_X][np-1];
@@ -756,7 +756,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args)
 					j = 0;
 					n = np;
 				}
-				GMT_Report (API, GMT_MSG_DEBUG, "Reverse Segment no %" PRIu64 " [Table %d Segment %" PRIu64 "]\n", id, G, L);
+				GMT_Report (API, GMT_MSG_DEBUG, "Reverse Segment no %" PRIu64 " [Table %d Segment %" PRIu64 "]\n", segment[id].orig_id, G, L);
 				out_p = Copy_This_Segment (S, T[OPEN][out_seg], out_p, np-1-j, 0);	/* Copy points in reverse order, return array index where next point goes */
 				/* Remember the last point we copied as that is the end of the growing output line segment */
 				p_last_x = S->coord[GMT_X][0];
