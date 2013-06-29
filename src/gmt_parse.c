@@ -111,7 +111,8 @@ struct GMT_OPTION * GMT_Create_Options (void *V_API, int n_args_in, void *in)
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 
 	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
-	if (in == NULL) return_null (API, GMT_ARG_IS_NULL);	/* Gave no argument pointer*/
+	if (in == NULL && n_args_in) return_null (API, GMT_ARGV_LIST_NULL);	/* Gave no argument pointer but said we had at least 1 */
+	if (in == NULL) return (NULL);	/* Gave no argument pointer so a null struct is returned */
 
 	G = API->GMT;	/* GMT control structure */
 	if (n_args_in == 0) {	/* Check if a single command line, if so break into tokens */
