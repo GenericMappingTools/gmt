@@ -398,7 +398,7 @@ int GMT_project_parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct G
 
 	unsigned int n_errors = 0, j, k;
 	size_t len;
-	char txt_a[GMT_TEXT_LEN64] = {""}, txt_b[GMT_TEXT_LEN64] = {""};
+	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 

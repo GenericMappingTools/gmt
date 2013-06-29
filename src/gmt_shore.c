@@ -301,7 +301,7 @@ void gmt_shore_check (struct GMT_CTRL *GMT, bool ok[5])
  * resolution (f, h, i, l, c) */
 {
 	int i, j, n_found;
-	char stem[GMT_TEXT_LEN64] = {""}, path[GMT_BUFSIZ] = {""}, *res = "clihf", *kind[3] = {"GSHHS", "river", "border"};
+	char stem[GMT_LEN64] = {""}, path[GMT_BUFSIZ] = {""}, *res = "clihf", *kind[3] = {"GSHHS", "river", "border"};
 
 	for (i = 0; i < 5; i++) {
 		/* For each resolution... */
@@ -398,7 +398,7 @@ int GMT_init_shore (struct GMT_CTRL *GMT, char res, struct GMT_SHORE *c, double 
 	short *stmp = NULL;
 	int *itmp = NULL;
 	size_t start[1], count[1];
-	char stem[GMT_TEXT_LEN64] = {""}, path[GMT_BUFSIZ] = {""};
+	char stem[GMT_LEN64] = {""}, path[GMT_BUFSIZ] = {""};
 
 	sprintf (stem, "binned_GSHHS_%c", res);
 
@@ -685,7 +685,7 @@ int GMT_init_br (struct GMT_CTRL *GMT, char which, char res, struct GMT_BR *c, d
 	short *stmp = NULL;
 	int *itmp = NULL;
 	size_t start[1], count[1];
-	char stem[GMT_TEXT_LEN64] = {""}, path[GMT_BUFSIZ] = {""};
+	char stem[GMT_LEN64] = {""}, path[GMT_BUFSIZ] = {""};
 
 	/* zap structure (nc_get_att_text does not null-terminate strings!) */
 	GMT_memset (c, 1, struct GMT_BR);

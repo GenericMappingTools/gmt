@@ -199,8 +199,8 @@ int GMT_grdtrack_parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct
 
 	int j, mode;
 	unsigned int pos, n_errors = 0, ng = 0, n_files = 0, n_units = 0, n_modes = 0;
-	char line[GMT_BUFSIZ] = {""}, ta[GMT_TEXT_LEN64] = {""}, tb[GMT_TEXT_LEN64] = {""};
-	char tc[GMT_TEXT_LEN64] = {""}, p[GMT_TEXT_LEN256] = {""}, *c = NULL, X;
+	char line[GMT_BUFSIZ] = {""}, ta[GMT_LEN64] = {""}, tb[GMT_LEN64] = {""};
+	char tc[GMT_LEN64] = {""}, p[GMT_LEN256] = {""}, *c = NULL, X;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 

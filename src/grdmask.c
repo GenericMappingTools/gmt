@@ -237,7 +237,7 @@ int GMT_grdmask (void *V_API, int mode, void *args)
 	
 	uint64_t ij, k, seg;
 	
-	char text_item[GMT_TEXT_LEN64] = {""};
+	char text_item[GMT_LEN64] = {""};
 
 	float mask_val[3];
 	

@@ -185,7 +185,7 @@ int GMT_pssegyz_parse (struct GMTAPI_CTRL *C, struct PSSEGYZ_CTRL *Ctrl, struct 
 	 */
 
 	unsigned int k, n_errors = 0, n_files = 0;
-	char *txt[2], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
+	char *txt[2], txt_a[GMT_LEN256], txt_b[GMT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMT_CTRL *GMT = C->GMT;
 

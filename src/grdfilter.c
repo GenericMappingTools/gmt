@@ -70,7 +70,7 @@ struct GRDFILTER_CTRL {
 	struct I {	/* -Idx[/dy] */
 		bool active;
 		double inc[2];
-		char string[GMT_TEXT_LEN256];
+		char string[GMT_LEN256];
 	} I;
 	struct N {	/* -Np|i|r */
 		bool active;
@@ -411,7 +411,7 @@ int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, stru
 	 */
 
 	unsigned int n_errors = 0, n_files = 0;
-	char c, a[GMT_TEXT_LEN64] = {""}, b[GMT_TEXT_LEN64] = {""}, txt[GMT_TEXT_LEN256] = {""}, *p = NULL;
+	char c, a[GMT_LEN64] = {""}, b[GMT_LEN64] = {""}, txt[GMT_LEN256] = {""}, *p = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -448,7 +448,7 @@ int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, stru
 				if (strchr (GRDFILTER_FILTERS, opt->arg[0])) {	/* OK filter code */
 					Ctrl->F.active = true;
 					Ctrl->F.filter = opt->arg[0];
-					strncpy (txt, opt->arg, GMT_TEXT_LEN256);	/* Work on a copy */
+					strncpy (txt, opt->arg, GMT_LEN256);	/* Work on a copy */
 					if (Ctrl->F.filter == 'm') {
 						if ((p = strchr (txt, 'q'))) {	/* Requested another quantile */
 							*(--p) = 0;	/* Chop off the +q modifier */
@@ -493,7 +493,7 @@ int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, stru
 				break;
 			case 'I':	/* New grid spacings */
 				Ctrl->I.active = true;
-				strncpy (Ctrl->I.string, opt->arg, GMT_TEXT_LEN256);	/* Verbatim copy */
+				strncpy (Ctrl->I.string, opt->arg, GMT_LEN256);	/* Verbatim copy */
 				if (GMT_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					GMT_inc_syntax (GMT, 'I', 1);
 					n_errors++;

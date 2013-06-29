@@ -254,7 +254,7 @@ int GMT_gmt2kml_parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct G
 
 	unsigned int n_errors = 0, pos = 0, k, n_files = 0;
 	size_t n_alloc = 0;
-	char buffer[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""}, T[4][GMT_TEXT_LEN64], *c = NULL;
+	char buffer[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""}, T[4][GMT_LEN64], *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -516,7 +516,7 @@ void print_altmode (int extrude, int fmode, int altmode, int ntabs)
 
 int ascii_output_one (struct GMT_CTRL *GMT, double x, int col)
 {	/* Used instead of GMT_ascii_output_col since Windoze has trouble with GMT->session.std[GMT_OUT] and stdout mixing */
-	char text[GMT_TEXT_LEN256] = {""};
+	char text[GMT_LEN256] = {""};
 
 	GMT_ascii_format_col (GMT, text, x, GMT_OUT, col);
 	return (printf ("%s", text));
@@ -601,7 +601,7 @@ int get_data_region (struct GMT_CTRL *GMT, struct GMT_TEXTSET *D, double wesn[])
 	/* Because we read as textset we must determine the data extent the hard way */
 	unsigned int tbl, ix, iy, way;
 	uint64_t row, seg;
-	char T[2][GMT_TEXT_LEN64];
+	char T[2][GMT_LEN64];
 	double x, y, y_min = 90.0, y_max = -90.0;
 	struct GMT_QUAD *Q = GMT_quad_init (GMT, 1);	/* Allocate and initialize one QUAD structure */
 	ix = GMT->current.setting.io_lonlat_toggle[GMT_IN];	iy = 1 - ix;
@@ -652,7 +652,7 @@ int GMT_gmt2kml (void *V_API, int mode, void *args)
 	uint64_t row, seg;
 	int set_nr = 0, index = -4, N = 1, error = 0;
 	
-	char extra[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, description[GMT_BUFSIZ] = {""}, item[GMT_TEXT_LEN128] = {""}, C[5][GMT_TEXT_LEN64];
+	char extra[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, description[GMT_BUFSIZ] = {""}, item[GMT_LEN128] = {""}, C[5][GMT_LEN64];
 	char *feature[5] = {"Point", "Point", "Point", "LineString", "Polygon"}, *Document[2] = {"Document", "Folder"};
 	char *name[5] = {"Point", "Event", "Timespan", "Line", "Polygon"};
 

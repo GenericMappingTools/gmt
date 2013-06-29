@@ -263,7 +263,7 @@ int GMT_psmeca_parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT
 
 	unsigned int n_errors = 0;
 	bool no_size_needed;
-	char txt[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], *p = NULL;
+	char txt[GMT_LEN256], txt_b[GMT_LEN256], txt_c[GMT_LEN256], *p = NULL;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -278,7 +278,7 @@ int GMT_psmeca_parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT
 			case 'C':	/* Change position [set line attributes] */
 				Ctrl->C.active = true;
 				if (!opt->arg[0]) break;
-				strncpy (txt, opt->arg, GMT_TEXT_LEN256);
+				strncpy (txt, opt->arg, GMT_LEN256);
 				if ((p = strchr (txt, 'P'))) Ctrl->C.size = GMT_to_inch (GMT, (p+1));
 				if (txt[0] != 'P') {	/* Have a pen up front */
 					if (p) p[0] = '\0';
@@ -304,7 +304,7 @@ int GMT_psmeca_parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT
 				switch (opt->arg[0]) {
 					case 'a':	/* plot axis */
 						Ctrl->A2.active = true;
-						strncpy (txt, &opt->arg[2], GMT_TEXT_LEN256);
+						strncpy (txt, &opt->arg[2], GMT_LEN256);
 						if ((p = strchr (txt, '/'))) p[0] = '\0';
 						if (txt[0]) Ctrl->A2.size = GMT_to_inch (GMT, txt);
 						p++;
@@ -494,7 +494,7 @@ int GMT_psmeca (void *V_API, int mode, void *args)
 	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, xy[2], xynew[2];
 	double angle = 0.0, fault, depth, size, P_x, P_y, T_x, T_y;
 
-	char string[GMT_BUFSIZ], event_title[GMT_BUFSIZ], *line = NULL, *p = NULL, col[15][GMT_TEXT_LEN64];
+	char string[GMT_BUFSIZ], event_title[GMT_BUFSIZ], *line = NULL, *p = NULL, col[15][GMT_LEN64];
 
 	st_me meca;
 	struct MOMENT moment;

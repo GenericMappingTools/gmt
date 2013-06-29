@@ -847,8 +847,8 @@ int GMT_mgd77list (void *V_API, int mode, void *args)
 		if (n_items) GMT_free (GMT, item_names);
 		MGD77_Free_Table (GMT, n_items, item_names);
 	}
-	aux_tvalue[MGD77_AUX_ID] = GMT_memory (GMT, NULL, GMT_TEXT_LEN64, char);	/* Just in case */
-	aux_tvalue[MGD77_AUX_DA] = GMT_memory (GMT, NULL, GMT_TEXT_LEN64, char);	/* Just in case */
+	aux_tvalue[MGD77_AUX_ID] = GMT_memory (GMT, NULL, GMT_LEN64, char);	/* Just in case */
+	aux_tvalue[MGD77_AUX_DA] = GMT_memory (GMT, NULL, GMT_LEN64, char);	/* Just in case */
 	use = (M.original) ? MGD77_ORIG : MGD77_REVISED;
 	
 	/* Most auxillary columns depend on values in the data columns.  If the user did not specify the
@@ -1063,7 +1063,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args)
 			GMT_write_segmentheader (GMT, GMT->session.std[GMT_OUT], n_out_columns);
 		}
 		aux_dvalue[MGD77_AUX_DS] = cumulative_dist = ds = 0.0;
-		if (auxlist[MGD77_AUX_ID].requested) strncpy (aux_tvalue[MGD77_AUX_ID], M.NGDC_id, GMT_TEXT_LEN64);
+		if (auxlist[MGD77_AUX_ID].requested) strncpy (aux_tvalue[MGD77_AUX_ID], M.NGDC_id, GMT_LEN64);
 	
 		t_col = MGD77_Get_Column (GMT, "time",   &M);
 		x_col = MGD77_Get_Column (GMT, "lon",    &M);

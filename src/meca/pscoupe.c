@@ -57,7 +57,7 @@ struct PSCOUPE_CTRL {
 		double xlonref, ylatref;
 		struct GMT_PEN pen;
 		struct nodal_plane PREF;
-		char newfile[GMT_TEXT_LEN256], extfile[GMT_TEXT_LEN256];
+		char newfile[GMT_LEN256], extfile[GMT_LEN256];
 	} A;
  	struct E {	/* -E<fill> */
 		bool active;
@@ -526,7 +526,7 @@ int GMT_pscoupe_parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct G
 	 */
 
 	unsigned int n_errors = 0;
-	char txt[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], *p = NULL;
+	char txt[GMT_LEN256], txt_b[GMT_LEN256], txt_c[GMT_LEN256], *p = NULL;
 	struct GMT_OPTION *opt = NULL;
 	double lon1, lat1, lon2, lat2;
 
@@ -584,7 +584,7 @@ int GMT_pscoupe_parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct G
 				switch (opt->arg[0]) {
 					case 'a':	/* plot axis */
 						Ctrl->A2.active = true;
-						strncpy (txt, &opt->arg[2], GMT_TEXT_LEN256);
+						strncpy (txt, &opt->arg[2], GMT_LEN256);
 						if ((p = strchr (txt, '/'))) p[0] = '\0';
 						if (txt[0]) Ctrl->A2.size = GMT_to_inch (GMT, txt);
 						if (p) {
@@ -787,7 +787,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args)
 	double size, xy[2], plot_x, plot_y, angle = 0.0, n_dep, distance, fault, depth;
 	double P_x, P_y, T_x, T_y;
 
-	char event_title[GMT_BUFSIZ], *line = NULL, *p = NULL, col[15][GMT_TEXT_LEN64];
+	char event_title[GMT_BUFSIZ], *line = NULL, *p = NULL, col[15][GMT_LEN64];
 
 	st_me meca, mecar;
 	struct MOMENT moment;

@@ -137,7 +137,7 @@ struct GMT_VECT_ATTR {
 struct GMT_SYMBOL {
 	/* Voodoo: If next line is not the first member in this struct, psxy -Sl<size>/Text will have corrupt 'Text'
 		   in non-debug binaries compiled with VS2010 */
-	char string[GMT_TEXT_LEN256];	/* Character code to plot (could be octal) */
+	char string[GMT_LEN256];	/* Character code to plot (could be octal) */
 
 	int symbol;	/* Symbol id */
 	unsigned int n_required;	/* Number of additional columns necessary to decode chosen symbol */

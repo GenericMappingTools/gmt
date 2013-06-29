@@ -731,7 +731,7 @@ int read_poly__ (struct GMT_CTRL *GMT, char *fname, bool switch_xy) {
 	unsigned int ndata, ix = 0, iy = 1;
 	size_t n_alloc;
 	double in[2];
-	char line[GMT_TEXT_LEN256];
+	char line[GMT_LEN256];
 	FILE *fp = NULL;
 
 	if ((fp = fopen (fname, "r")) == NULL) return (-1);
@@ -742,7 +742,7 @@ int read_poly__ (struct GMT_CTRL *GMT, char *fname, bool switch_xy) {
 
 	data = GMT_memory (GMT, NULL, n_alloc, struct DATA);
 
-	while (fgets (line, GMT_TEXT_LEN256, fp)) {
+	while (fgets (line, GMT_LEN256, fp)) {
 		if (sscanf (line, "%lg %lg", &in[0], &in[1]) !=2)
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR deciphering line %d of polygon file\n", ndata+1);
 		if (ndata == n_alloc) {

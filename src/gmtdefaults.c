@@ -118,7 +118,7 @@ int GMT_gmtdefaults (void *V_API, int mode, void *args)
 {
 	int error;
 	
-	char path[GMT_TEXT_LEN256] = {""};
+	char path[GMT_LEN256] = {""};
 	
 	struct GMTDEFAULTS_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;

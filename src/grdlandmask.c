@@ -127,7 +127,7 @@ int GMT_grdlandmask_parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, 
 	 */
 
 	unsigned int n_errors = 0, j, pos, n_files = 0;
-	char line[GMT_TEXT_LEN256] = {""}, ptr[GMT_BUFSIZ] = {""};
+	char line[GMT_LEN256] = {""}, ptr[GMT_BUFSIZ] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -166,7 +166,7 @@ int GMT_grdlandmask_parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, 
 				break;
 			case 'N':	/* Mask values */
 				Ctrl->N.active = true;
-				strncpy (line, opt->arg,  GMT_TEXT_LEN256);
+				strncpy (line, opt->arg,  GMT_LEN256);
 				if (line[strlen(line)-1] == 'o' && GMT_compat_check (GMT, 4)) { /* Edge is considered outside */
 					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -N...o is deprecated; use -E instead\n");
 					Ctrl->E.active = true;
@@ -212,7 +212,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args)
 	
 	uint64_t ij;
 
-	char line[GMT_TEXT_LEN256] = {""};
+	char line[GMT_LEN256] = {""};
 	char *shore_resolution[5] = {"full", "high", "intermediate", "low", "crude"};
 
 	double xmin, xmax, ymin, ymax, west_border, east_border, i_dx_inch, i_dy_inch;

@@ -171,7 +171,7 @@ int GMT_psvelo_parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT
 	unsigned int n_errors = 0;
 	int n;
 	bool no_size_needed, n_set, got_A = false;
-	char txt[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256];
+	char txt[GMT_LEN256], txt_b[GMT_LEN256], txt_c[GMT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -232,7 +232,7 @@ int GMT_psvelo_parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT
 			case 'S':	/* Get symbol [and size] */
  				txt_b[0] = '\0';
  				if (opt->arg[0] == 'e' || opt->arg[0] == 'r') {
-					strncpy (txt, &opt->arg[1], GMT_TEXT_LEN256);
+					strncpy (txt, &opt->arg[1], GMT_LEN256);
 					n = 0; while (txt[n] && txt[n] != '/') n++; txt[n] = 0;
 					Ctrl->S.scale = GMT_to_inch (GMT, txt);
 					sscanf (strchr(&opt->arg[1],'/')+1, "%lf/%s", &Ctrl->S.confidence, txt_b);
@@ -242,7 +242,7 @@ int GMT_psvelo_parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT
 				}
 				if (opt->arg[0] == 'n' || opt->arg[0] == 'x' ) Ctrl->S.scale = GMT_to_inch (GMT, &opt->arg[1]);
 				if (opt->arg[0] == 'w' && strlen(opt->arg) > 3) {
-					strncpy(txt, &opt->arg[1], GMT_TEXT_LEN256);
+					strncpy(txt, &opt->arg[1], GMT_LEN256);
 					n=0; while (txt[n] && txt[n] != '/') n++; txt[n]=0;
 					Ctrl->S.scale = GMT_to_inch (GMT, txt);
 					sscanf(strchr(&opt->arg[1],'/')+1, "%lf", &Ctrl->S.wedge_amp);
@@ -313,7 +313,7 @@ int GMT_psvelo (void *V_API, int mode, void *args)
 	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, hl, hw, vw, ssize;
 
 	char *station_name = NULL, *p = NULL;
-	char *line = NULL, col[12][GMT_TEXT_LEN64];
+	char *line = NULL, col[12][GMT_LEN64];
 
 	struct PSVELO_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */

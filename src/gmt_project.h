@@ -242,7 +242,7 @@ struct GMT_PROJ {
 	struct GMT_LATSWAP_CONSTS GMT_lat_swap_vals;
 
 	enum GMT_enum_units inv_coord_unit;		/* Index to scale that converts input map coordinates to meter before inverting for lon,lat */
-	char unit_name[GMT_N_UNITS][GMT_TEXT_LEN16];	/* Names of the various distance units */
+	char unit_name[GMT_N_UNITS][GMT_LEN16];	/* Names of the various distance units */
 	double m_per_unit[GMT_N_UNITS];	/* Meters in various units.  Use to scale units to meters */
 	double origin[3];		/* Projected values of the logical origin for the projection (x, y, z) */
 	double rect[4], zmin, zmax;	/* Extreme projected values */
@@ -449,15 +449,15 @@ struct GMT_PLOT_AXIS {		/* Information for one time axis */
 	unsigned int special;		/* 0, GMT_CUSTOM, GMT_CPT */
 	struct GMT_PLOT_AXIS_ITEM item[6];	/* see above defines for which is which */
 	double phase;			/* Phase offset for strides: (knot-phase)%interval = 0  */
-	char label[GMT_TEXT_LEN256];	/* Label of the axis */
-	char unit[GMT_TEXT_LEN64];	/* Axis unit appended to annotations */
-	char prefix[GMT_TEXT_LEN64];	/* Axis prefix starting all annotations */
+	char label[GMT_LEN256];	/* Label of the axis */
+	char unit[GMT_LEN64];	/* Axis unit appended to annotations */
+	char prefix[GMT_LEN64];	/* Axis prefix starting all annotations */
 	char *file_custom;		/* File with custom annotations */
 };
 
 struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundaries */
 	struct GMT_PLOT_AXIS axis[3];	/* One each for x, y, and z */
-	char header[GMT_TEXT_LEN256];	/* Plot title */
+	char header[GMT_LEN256];	/* Plot title */
 	struct GMT_FILL fill;		/* Fill for the basemap inside, if paint == true */
 	bool plotted_header;		/* true if header has been plotted */
 	bool init;			/* true if -B was used */

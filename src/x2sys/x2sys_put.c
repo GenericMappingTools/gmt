@@ -191,7 +191,7 @@ int GMT_x2sys_put (void *V_API, int mode, void *args)
 	struct X2SYS_BIX_TRACK_INFO *this_info = NULL, *new_info = NULL;
 	struct X2SYS_BIX_TRACK *this_track = NULL;
 
-	char track[GMT_TEXT_LEN64], line[GMT_BUFSIZ];
+	char track[GMT_LEN64], line[GMT_BUFSIZ];
 	char track_file[GMT_BUFSIZ], index_file[GMT_BUFSIZ], old_track_file[GMT_BUFSIZ], old_index_file[GMT_BUFSIZ];
 	char track_path[GMT_BUFSIZ], index_path[GMT_BUFSIZ], old_track_path[GMT_BUFSIZ], old_index_path[GMT_BUFSIZ];
 

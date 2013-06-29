@@ -338,7 +338,7 @@ int GMT_blockmean (void *V_API, int mode, void *args)
 
 	if (GMT->common.h.add_colnames) {	/* Create meaningful column header */
 		unsigned int k = 3;
-		char header[GMT_BUFSIZ] = {""}, txt[GMT_TEXT_LEN16] = {""}, *names[4] = {"\tmean_z", "\tsum_z", "\twsum_z", "\tn_z"};
+		char header[GMT_BUFSIZ] = {""}, txt[GMT_LEN16] = {""}, *names[4] = {"\tmean_z", "\tsum_z", "\twsum_z", "\tn_z"};
 		GMT_set_xycolnames (GMT, header);
 		strcat (header, names[Ctrl->S.mode]);	strcat (header, "[2]");
 		if (Ctrl->E.active) { strcat (header, "\tstd_z[3]\tlow_z[4]\thigh_z[5]"); k = 6; }

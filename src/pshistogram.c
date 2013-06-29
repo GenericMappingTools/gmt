@@ -754,14 +754,14 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 	}
 
 	if (Ctrl->A.active) {
-		char buffer[GMT_TEXT_LEN256] = {""};
+		char buffer[GMT_LEN256] = {""};
 		double_swap (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval, GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval);
 		double_swap (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_LOWER].interval, GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_LOWER].interval);
 		double_swap (GMT->current.map.frame.axis[GMT_X].item[GMT_TICK_UPPER].interval,  GMT->current.map.frame.axis[GMT_Y].item[GMT_TICK_UPPER].interval);
 		double_swap (GMT->current.map.frame.axis[GMT_X].item[GMT_TICK_LOWER].interval,  GMT->current.map.frame.axis[GMT_Y].item[GMT_TICK_LOWER].interval);
-		strncpy (buffer, GMT->current.map.frame.axis[GMT_X].label, GMT_TEXT_LEN256);
-		strncpy (GMT->current.map.frame.axis[GMT_X].label, GMT->current.map.frame.axis[GMT_Y].label, GMT_TEXT_LEN256);
-		strncpy (GMT->current.map.frame.axis[GMT_Y].label, buffer, GMT_TEXT_LEN256);
+		strncpy (buffer, GMT->current.map.frame.axis[GMT_X].label, GMT_LEN256);
+		strncpy (GMT->current.map.frame.axis[GMT_X].label, GMT->current.map.frame.axis[GMT_Y].label, GMT_LEN256);
+		strncpy (GMT->current.map.frame.axis[GMT_Y].label, buffer, GMT_LEN256);
 		GMT_err_fail (GMT, GMT_map_setup (GMT, F.wesn), "");
 	}
 	else

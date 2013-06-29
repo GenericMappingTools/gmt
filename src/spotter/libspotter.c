@@ -329,8 +329,8 @@ void spotter_total_to_fwstages (struct GMT_CTRL *GMT, struct EULER p[], unsigned
 bool spotter_GPlates_pair (char *file)
 {	/* Check if given file is actually a GPlates plate pair */
 	unsigned int i;
-	char A[GMT_TEXT_LEN64], B[GMT_TEXT_LEN64];
-	if (strlen (file) > GMT_TEXT_LEN64) return (false);	/* Cannot be two pairs of tags */
+	char A[GMT_LEN64], B[GMT_LEN64];
+	if (strlen (file) > GMT_LEN64) return (false);	/* Cannot be two pairs of tags */
 	if (sscanf (file, "%[^-]-%s", A, B) != 2) return (false);
 	i = 0;	while (A[i]) if (!isupper ((int)A[i++])) return (false);	/* Not all upper case tag */
 	i = 0;	while (B[i]) if (!isupper ((int)B[i++])) return (false);	/* Not all upper case tag */
@@ -351,7 +351,7 @@ unsigned int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, b
 	double lon, lat, rot, t, last_t = -DBL_MAX;
 	FILE *fp = NULL;
 	struct EULER *e = NULL;
-	char buffer[GMT_BUFSIZ], A[GMT_TEXT_LEN64], B[GMT_TEXT_LEN64], txt[GMT_TEXT_LEN64], comment[GMT_BUFSIZ];
+	char buffer[GMT_BUFSIZ], A[GMT_LEN64], B[GMT_LEN64], txt[GMT_LEN64], comment[GMT_BUFSIZ];
 	char Plates[GMT_BUFSIZ], Rotations[GMT_BUFSIZ], *this_c = NULL;
 	double K[9];
 

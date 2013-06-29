@@ -235,7 +235,7 @@ int GMT_filter1d_parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct
 
 	unsigned int n_errors = 0;
 	int sval;
-	char c, txt_a[GMT_TEXT_LEN64] = {""}, txt_b[GMT_TEXT_LEN64] = {""};
+	char c, txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 

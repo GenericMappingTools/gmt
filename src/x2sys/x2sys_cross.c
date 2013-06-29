@@ -807,7 +807,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args)
 					}
 
 					if (first_crossover) {
-						char info[GMT_BUFSIZ], start[2][GMT_TEXT_LEN64], stop[2][GMT_TEXT_LEN64];
+						char info[GMT_BUFSIZ], start[2][GMT_LEN64], stop[2][GMT_LEN64];
 						GMT_memset (info, GMT_BUFSIZ, char);
 						for (k = 0; k < 2; k++) {
 							if (has_time[k]) {	/* Find first and last record times */

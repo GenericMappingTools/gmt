@@ -545,10 +545,10 @@ int GMT_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 				strncpy (tmp, &header->name[i+3], pch - &header->name[i+3] + 1);
 				strcat (tmp, "\"");	strncat(tmp, header->name, i-1);	strcat(tmp, "\"");
 				strcat (tmp, &pch[1]);
-				strncpy (header->name, tmp, GMT_TEXT_LEN256);
+				strncpy (header->name, tmp, GMT_LEN256);
 			}
 			else
-				strncpy (header->name, &header->name[i+3], GMT_TEXT_LEN256);
+				strncpy (header->name, &header->name[i+3], GMT_LEN256);
 			magic = 0;	/* We don't want it to try to prepend any path */
 		} /* if (header->type == GMT_GRID_IS_GD && header->name[i+2] && header->name[i+2] == '?') */
 		else if (header->type == GMT_GRID_IS_GD && header->name[i+2] && header->name[i+2] == '+' && header->name[i+3] == 'b') { /* A Band request for GDAL */
@@ -572,7 +572,7 @@ int GMT_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 					return (GMT_GRDIO_FILE_NOT_FOUND);
 		}
 		else		/* Writing: store truncated pathname */
-			strncpy (header->name, tmp, GMT_TEXT_LEN256);
+			strncpy (header->name, tmp, GMT_LEN256);
 	} /* if (header->name[i]) */
 	else if (magic) {	/* Reading: determine file format automatically based on grid content */
 		sscanf (header->name, "%[^?]?%s", tmp, header->varname);    /* Strip off variable name */
@@ -611,7 +611,7 @@ int GMT_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 	}
 	else {			/* Writing: get format type, scale, offset and missing value from GMT->current.setting.io_gridfile_format */
 		if (sscanf (header->name, "%[^?]?%s", tmp, header->varname) > 1)
-			strncpy (header->name, tmp, GMT_TEXT_LEN256);    /* Strip off variable name */
+			strncpy (header->name, tmp, GMT_LEN256);    /* Strip off variable name */
 		/* parse grid format string: */
 		if ((val = parse_grd_format_scale (GMT, header, GMT->current.setting.io_gridfile_format)) != GMT_NOERROR)
 			return val;
@@ -628,7 +628,7 @@ void gmt_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	*/
 	unsigned int i;
 	char *string[3] = {NULL, NULL, NULL}, unit[GMT_GRID_UNIT_LEN80] = {""};
-	char date[GMT_TEXT_LEN16] = {""}, clock[GMT_TEXT_LEN16] = {""};
+	char date[GMT_LEN16] = {""}, clock[GMT_LEN16] = {""};
 
 	/* Copy pointers to unit strings */
 	string[0] = header->x_units;
@@ -691,7 +691,7 @@ void gmt_grd_get_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	   When "Time": transform the data scale and offset to match the current time system.
 	*/
 	unsigned int i;
-	char string[3][GMT_TEXT_LEN256], *units = NULL;
+	char string[3][GMT_LEN256], *units = NULL;
 	double scale = 1.0, offset = 0.0;
 	struct GMT_TIME_SYSTEM time_system;
 
@@ -1541,7 +1541,7 @@ int GMT_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 
 	bool global, error = false;
 	double val, dx, small;
-	char format[GMT_TEXT_LEN64] = {""};
+	char format[GMT_LEN64] = {""};
 
 	switch (GMT_minmaxinc_verify (GMT, wesn[XLO], wesn[XHI], header->inc[GMT_X], GMT_SMALL)) {	/* Check if range is compatible with x_inc */
 		case 3:

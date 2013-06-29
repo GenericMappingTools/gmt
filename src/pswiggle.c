@@ -153,7 +153,7 @@ void GMT_draw_z_scale (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 {	/* Draws a basic vertical scale bar at (x0,y0) and labels it as specified */
 	int form;
 	double dy, off, xx[4], yy[4];
-	char txt[GMT_TEXT_LEN256] = {""};
+	char txt[GMT_LEN256] = {""};
 
 	GMT_setpen (GMT, &GMT->current.setting.map_tick_pen[0]);
 
@@ -251,7 +251,7 @@ int GMT_pswiggle_parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct
 
 	unsigned int j, k, wantx, wanty, n_errors = 0;
 	bool N_active = false;
-	char txt_a[GMT_TEXT_LEN256] = {""}, txt_b[GMT_TEXT_LEN256] = {""}, *units = NULL;
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, *units = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 

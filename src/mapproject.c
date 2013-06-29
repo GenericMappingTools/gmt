@@ -206,7 +206,7 @@ int GMT_mapproject_parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, st
 	int n;
 	size_t last;
 	bool geodetic_calc = false;
-	char c, d, txt_a[GMT_TEXT_LEN256] = {""}, txt_b[GMT_TEXT_LEN256] = {""}, from[GMT_TEXT_LEN256] = {""}, to[GMT_TEXT_LEN256] = {""};
+	char c, d, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, from[GMT_LEN256] = {""}, to[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -367,7 +367,7 @@ int GMT_mapproject_parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, st
 				}
 				else {	/* to not given, set to - which means WGS-84 */
 					strcpy (to, "-");
-					strncpy (from, &opt->arg[k], GMT_TEXT_LEN256);
+					strncpy (from, &opt->arg[k], GMT_LEN256);
 				}
 				n_errors += GMT_check_condition (GMT, GMT_set_datum (GMT, to, &Ctrl->T.to) == -1 || GMT_set_datum (GMT, from, &Ctrl->T.from) == -1, "Syntax error -T: Usage -T[h]<from>[/<to>]\n");
 				break;
@@ -431,7 +431,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 	double x_in_min, x_in_max, y_in_min, y_in_max, x_out_min, x_out_max, y_out_max;
 	double xnear = 0.0, ynear = 0.0, lon_prev = 0, lat_prev = 0, **coord = NULL, *in = NULL;
 
-	char format[GMT_BUFSIZ] = {""}, unit_name[GMT_TEXT_LEN64] = {""}, scale_unit_name[GMT_TEXT_LEN64] = {""};
+	char format[GMT_BUFSIZ] = {""}, unit_name[GMT_LEN64] = {""}, scale_unit_name[GMT_LEN64] = {""};
 	char line[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""}, record[GMT_BUFSIZ] = {""};
 
 	struct GMT_DATATABLE *xyline = NULL;
@@ -564,7 +564,7 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 		ymin = (Ctrl->C.active) ? GMT->current.proj.rect[YLO] - GMT->current.proj.origin[GMT_Y] : GMT->current.proj.rect[YLO];
 		ymax = (Ctrl->C.active) ? GMT->current.proj.rect[YHI] - GMT->current.proj.origin[GMT_Y] : GMT->current.proj.rect[YHI];
 		if (Ctrl->F.active) {	/* Convert to GMT inches */
-			strncpy (unit_name, scale_unit_name, GMT_TEXT_LEN64);
+			strncpy (unit_name, scale_unit_name, GMT_LEN64);
 			xmin /= GMT->current.proj.scale[GMT_X];
 			xmax /= GMT->current.proj.scale[GMT_X];
 			ymin /= GMT->current.proj.scale[GMT_Y];

@@ -3024,7 +3024,7 @@ int MGD77_Verify_Header (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct M
 {
 	int i, k, ix, iy, w, e, s, n, n_block, kind = 0, ref_field_code, y, yr1, rfStart, yr2, rfEnd;
 	unsigned int pos;
-	char copy[151], p[GMT_TEXT_LEN128], text[GMT_TEXT_LEN64];
+	char copy[151], p[GMT_LEN128], text[GMT_LEN64];
 	char *pscode[5] = {"Bathy", "Magnetics", "Gravity", "3.5 kHz", "Seismics"};
 	time_t now;
 	struct tm *T;
@@ -3866,7 +3866,7 @@ int MGD77_Select_Columns (struct GMT_CTRL *GMT, char *arg, struct MGD77_CONTROL 
 	 * If option == 0 then we wont bitch about repeated columns.
 	 */
 
-	char p[GMT_BUFSIZ], cstring[GMT_BUFSIZ], bstring[GMT_BUFSIZ], word[GMT_TEXT_LEN256], value[GMT_TEXT_LEN256];
+	char p[GMT_BUFSIZ], cstring[GMT_BUFSIZ], bstring[GMT_BUFSIZ], word[GMT_LEN256], value[GMT_LEN256];
 	int k;
 	size_t n;
 	unsigned int pos, i, j, constraint, ku;
@@ -3923,10 +3923,10 @@ int MGD77_Select_Columns (struct GMT_CTRL *GMT, char *arg, struct MGD77_CONTROL 
 			strncpy (word, p, (size_t)(k-1));
 			word[k-1] = '\0';
 			while (p[k] && strchr ("><=!", p[k])) k++;
-			strncpy (value, &p[k], GMT_TEXT_LEN256);
+			strncpy (value, &p[k], GMT_LEN256);
 		}
 		else			/* Just copy the word */
-			strncpy (word, p, GMT_TEXT_LEN256);
+			strncpy (word, p, GMT_LEN256);
 
 		/* Turn word into lower case if upper case */
 
@@ -3954,7 +3954,7 @@ int MGD77_Select_Columns (struct GMT_CTRL *GMT, char *arg, struct MGD77_CONTROL 
 
 		if (constraint) {	/* Got a column constraint, just key it by name for now */
 			strncpy (F->Constraint[F->n_constraints].name, word, MGD77_COL_ABBREV_LEN);
-			strncpy (F->Constraint[F->n_constraints].c_constraint, value, GMT_TEXT_LEN64);
+			strncpy (F->Constraint[F->n_constraints].c_constraint, value, GMT_LEN64);
 			F->Constraint[F->n_constraints].code = constraint;
 			F->Constraint[F->n_constraints].exact = exact;
 			F->n_constraints++;
@@ -5466,8 +5466,8 @@ unsigned int MGD77_Scan_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char *
 	bool sorted;
 	int id, cruise_id;
 	size_t n_alloc = GMT_SMALL_CHUNK;
-	char line[GMT_BUFSIZ], name[GMT_TEXT_LEN64], factor[GMT_TEXT_LEN64], origin[GMT_TEXT_LEN64], basis[GMT_BUFSIZ];
-	char arguments[GMT_BUFSIZ], cruise[GMT_TEXT_LEN64], word[GMT_BUFSIZ], *p = NULL, *f = NULL;
+	char line[GMT_BUFSIZ], name[GMT_LEN64], factor[GMT_LEN64], origin[GMT_LEN64], basis[GMT_BUFSIZ];
+	char arguments[GMT_BUFSIZ], cruise[GMT_LEN64], word[GMT_BUFSIZ], *p = NULL, *f = NULL;
 	char **list = NULL;
 	FILE *fp = NULL;
 
@@ -5565,8 +5565,8 @@ int MGD77_Parse_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char **cruises
 	unsigned int i, n_aux, rec = 0, pos;
 	int id, cruise_id;
 	bool sorted, mgd77;
-	char line[GMT_BUFSIZ], name[GMT_TEXT_LEN64], factor[GMT_TEXT_LEN64], origin[GMT_TEXT_LEN64], basis[GMT_BUFSIZ];
-	char arguments[GMT_BUFSIZ], cruise[GMT_TEXT_LEN64], word[GMT_BUFSIZ], *p = NULL, *f = NULL;
+	char line[GMT_BUFSIZ], name[GMT_LEN64], factor[GMT_LEN64], origin[GMT_LEN64], basis[GMT_BUFSIZ];
+	char arguments[GMT_BUFSIZ], cruise[GMT_LEN64], word[GMT_BUFSIZ], *p = NULL, *f = NULL;
 	struct MGD77_CORRTABLE **C_table = NULL;
 	struct MGD77_CORRECTION *c = NULL, **previous = NULL;
 	FILE *fp = NULL;
