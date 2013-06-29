@@ -9730,11 +9730,11 @@ struct GMT_CTRL *New_GMT_Ctrl (char *session, unsigned int pad) {	/* Allocate an
 
 void gmt_set_today (struct GMT_CTRL *GMT)
 {	/* Gets the rata die of today */
-	char today[GMT_TEXT_LEN16];
+	char today[GMT_TEXT_LEN16] = {""};
 	time_t right_now;
 	int64_t rd;
 	right_now = time (NULL);	/* Unix time right now */
-	strftime (today, GMT_TEXT_LEN16, "%F", gmtime (&right_now));	/* Request time as yyyy-mm-dd */
+	strftime (today, GMT_TEXT_LEN16, "%Y-%m-%d", gmtime (&right_now));	/* Request time as yyyy-mm-dd */
 	if (gmt_scanf_calendar (GMT, today, &rd)) {	/* Convert to rata die */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot get today's rata die - default to 1\n");
 		rd = 1;
