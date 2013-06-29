@@ -70,11 +70,11 @@ enum GMT_enum_length {
 	GMT_TINY_CHUNK  = 8U,
 	GMT_SMALL_CHUNK = 64U,
 	GMT_CHUNK       = 2048U,
-	GMT_TEXT_LEN16	= 16U,		/* All strings used to format date/clock output must be this length */
-	GMT_TEXT_LEN32  = 32U,          /* Small length of texts */
-	GMT_TEXT_LEN64  = 64U,          /* Intermediate length of texts */
-	GMT_TEXT_LEN128 = 128U,         /* Double of 64 */
-	GMT_TEXT_LEN256 = 256U,         /* Max size of some text items */
+	GMT_LEN16	= 16U,		/* All strings used to format date/clock output must be this length */
+	GMT_LEN32  = 32U,          /* Small length of texts */
+	GMT_LEN64  = 64U,          /* Intermediate length of texts */
+	GMT_LEN128 = 128U,         /* Double of 64 */
+	GMT_LEN256 = 256U,         /* Max size of some text items */
 	GMT_MAX_COLUMNS = 4096U,        /* Limit on number of columns in data tables (not grids) */
 	GMT_BUFSIZ      = 4096U,        /* Size of char record for i/o */
 	GMT_MIN_MEMINC  = 2048U,        /* E.g., 16 kb of 8-byte doubles */

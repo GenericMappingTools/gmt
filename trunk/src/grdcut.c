@@ -121,7 +121,7 @@ int GMT_grdcut_parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT
 	 */
 
 	unsigned int n_errors = 0, k, n_files = 0;
-	char za[GMT_TEXT_LEN64] = {""}, zb[GMT_TEXT_LEN64] = {""}, zc[GMT_TEXT_LEN64] = {""};
+	char za[GMT_LEN64] = {""}, zb[GMT_LEN64] = {""}, zc[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {

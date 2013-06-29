@@ -1444,7 +1444,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *item) {
 	/* Parse the -R option.  Full syntax: -R<grdfile> or -Rg or -Rd or -R[g|d]w/e/s/n[/z0/z1][r] */
 	length = strlen (item) - 1;
 	
-	strncpy (GMT->common.R.string, item, GMT_TEXT_LEN256);	/* Verbatim copy */
+	strncpy (GMT->common.R.string, item, GMT_LEN256);	/* Verbatim copy */
 	if ((item[0] == 'g' || item[0] == 'd') && item[1] == '\0') {	/* Check -Rd|g separately in case user has files called d or g */
 		if (item[0] == 'g') {	/* -Rg is shorthand for -R0/360/-90/90 */
 			GMT->common.R.wesn[XLO] = 0.0, GMT->common.R.wesn[XHI] = 360.0;
@@ -1947,7 +1947,7 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg)
 	/* Routine will decode the -i<col>|<colrange>[l][s<scale>][o<offset>],... arguments */
 
 	char copy[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""}, *c = NULL;
-	char txt_a[GMT_TEXT_LEN256] = {""}, txt_b[GMT_TEXT_LEN256] = {""};
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
 	unsigned int k = 0, pos = 0;
 	int i, start = -1, stop = -1, convert;
 	double scale, offset;
@@ -2044,7 +2044,7 @@ int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg)
 int gmt_parse_dash_option (struct GMT_CTRL *GMT, char *text)
 {	/* parse any --PARAM[=value] arguments */
 	int n;
-	char *this_c = NULL, message[GMT_TEXT_LEN128] = {""};
+	char *this_c = NULL, message[GMT_LEN128] = {""};
 	if (!text)
 		return (GMT_NOERROR);
 
@@ -2136,7 +2136,7 @@ int GMT_check_binary_io (struct GMT_CTRL *GMT, uint64_t n_req) {
 
 int gmt_parse_U_option (struct GMT_CTRL *GMT, char *item) {
 	int i, just, n = 0, n_slashes, error = 0;
-	char txt_j[GMT_TEXT_LEN256] = {""}, txt_x[GMT_TEXT_LEN256] = {""}, txt_y[GMT_TEXT_LEN256] = {""};
+	char txt_j[GMT_LEN256] = {""}, txt_x[GMT_LEN256] = {""}, txt_y[GMT_LEN256] = {""};
 
 	/* Parse the -U option.  Full syntax: -U[<just>/<dx>/<dy>/][c|<label>] */
 
@@ -2434,7 +2434,7 @@ int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt)
 int gmt_parse_n_option (struct GMT_CTRL *GMT, char *item)
 {	/* Parse the -n option for 2-D grid resampling parameters -n[b|c|l|n][+a][+t<BC>][+<threshold>] */
 	unsigned int pos = 0, j, k = 1;
-	char p[GMT_TEXT_LEN256] = {""};
+	char p[GMT_LEN256] = {""};
 
 	switch (item[0]) {
 		case '+':	/* Means no mode was specified so we get the default */
@@ -2492,7 +2492,7 @@ int gmt_parse_p_option (struct GMT_CTRL *GMT, char *item)
 {
 	unsigned int k, l = 0, s, pos = 0, error = 0;
 	double az, el, z;
-	char p[GMT_TEXT_LEN256] = {""}, txt_a[GMT_TEXT_LEN256] = {""}, txt_b[GMT_TEXT_LEN256] = {""}, txt_c[GMT_TEXT_LEN256] = {""};
+	char p[GMT_LEN256] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
 
 	if (!GMT->common.J.active) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning -p option works best in consort with -J (and -R or a grid)\n");
 	switch (item[0]) {
@@ -2648,7 +2648,7 @@ int GMT_loaddefaults (struct GMT_CTRL *GMT, char *file)
 {
 	static int gmt_version_major = GMT_PACKAGE_VERSION_MAJOR;
 	unsigned int error = 0, rec = 0;
-	char line[GMT_BUFSIZ] = {""}, keyword[GMT_TEXT_LEN256] = {""}, value[GMT_TEXT_LEN256] = {""};
+	char line[GMT_BUFSIZ] = {""}, keyword[GMT_LEN256] = {""}, value[GMT_LEN256] = {""};
 	FILE *fp = NULL;
 
 	if ((fp = fopen (file, "r")) == NULL) return (-1);
@@ -2811,7 +2811,7 @@ unsigned int gmt_load_user_media (struct GMT_CTRL *GMT) {	/* Load any user-speci
 	size_t n_alloc = 0;
 	unsigned int n = 0;
 	double w, h;
-	char line[GMT_BUFSIZ] = {""}, file[GMT_BUFSIZ] = {""}, media[GMT_TEXT_LEN64] = {""};
+	char line[GMT_BUFSIZ] = {""}, file[GMT_BUFSIZ] = {""}, media[GMT_LEN64] = {""};
 	FILE *fp = NULL;
 
 	GMT_getsharepath (GMT, "conf", "gmt_custom_media", ".conf", file);
@@ -2856,7 +2856,7 @@ unsigned int gmt_load_user_media (struct GMT_CTRL *GMT) {	/* Load any user-speci
  */
 int gmt_load_encoding (struct GMT_CTRL *GMT)
 {
-	char line[GMT_TEXT_LEN256] = {""}, symbol[GMT_TEXT_LEN256] = {""};
+	char line[GMT_LEN256] = {""}, symbol[GMT_LEN256] = {""};
 	unsigned int code = 0, pos;
 	FILE *in = NULL;
 	struct gmt_encoding *enc = &GMT->current.setting.ps_encoding;
@@ -2867,7 +2867,7 @@ int gmt_load_encoding (struct GMT_CTRL *GMT)
 		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 	}
 
-	while (fgets (line, GMT_TEXT_LEN256, in))
+	while (fgets (line, GMT_LEN256, in))
 	{
 		pos = 0;
 		while ((GMT_strtok (line, " /\t\n", &pos, symbol)))
@@ -3002,7 +3002,7 @@ int gmt5_decode_wesnz (struct GMT_CTRL *GMT, const char *in, bool check) {
 void gmt_parse_format_float_out (struct GMT_CTRL *GMT, char *value)
 {
 	unsigned int pos = 0, col = 0, start = 0, stop = 0, k, error = 0;
-	char fmt[GMT_TEXT_LEN64] = {""}, *p = NULL;
+	char fmt[GMT_LEN64] = {""}, *p = NULL;
 	/* Look for multiple comma-separated format statements of type [<cols>:]<format> */
 	while ((GMT_strtok (value, ",", &pos, fmt))) {
 		if ((p = strchr (fmt, ':'))) {	/* Must decode which columns */
@@ -3020,7 +3020,7 @@ void gmt_parse_format_float_out (struct GMT_CTRL *GMT, char *value)
 		}
 		else {	/* No columns, set the default format */
 			/* Last format without cols also becomes the default for unspecified columns */
-			strncpy (GMT->current.setting.format_float_out, fmt, GMT_TEXT_LEN64);
+			strncpy (GMT->current.setting.format_float_out, fmt, GMT_LEN64);
 		}
 	}
 }
@@ -3037,7 +3037,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 	size_t len;
 	int i, ival, case_val, manual;
 	bool error = false, tf_answer;
-	char txt_a[GMT_TEXT_LEN256] = {""}, txt_b[GMT_TEXT_LEN256] = {""}, txt_c[GMT_TEXT_LEN256] = {""}, lower_value[GMT_BUFSIZ] = {""};
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, lower_value[GMT_BUFSIZ] = {""};
 
 	double dval;
 
@@ -3056,7 +3056,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 
 		case GMTCASE_FORMAT_CLOCK_IN:
-			strncpy (GMT->current.setting.format_clock_in, value, GMT_TEXT_LEN64);
+			strncpy (GMT->current.setting.format_clock_in, value, GMT_LEN64);
 			gmt_clock_C_format (GMT, GMT->current.setting.format_clock_in, &GMT->current.io.clock_input, 0);
 			break;
 		case GMTCASE_INPUT_DATE_FORMAT:
@@ -3065,7 +3065,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 
 		case GMTCASE_FORMAT_DATE_IN:
-			strncpy (GMT->current.setting.format_date_in, value, GMT_TEXT_LEN64);
+			strncpy (GMT->current.setting.format_date_in, value, GMT_LEN64);
 			gmt_date_C_format (GMT, GMT->current.setting.format_date_in, &GMT->current.io.date_input, 0);
 			break;
 		case GMTCASE_OUTPUT_CLOCK_FORMAT:
@@ -3074,7 +3074,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 
 		case GMTCASE_FORMAT_CLOCK_OUT:
-			strncpy (GMT->current.setting.format_clock_out, value, GMT_TEXT_LEN64);
+			strncpy (GMT->current.setting.format_clock_out, value, GMT_LEN64);
 			gmt_clock_C_format (GMT, GMT->current.setting.format_clock_out, &GMT->current.io.clock_output, 1);
 			break;
 		case GMTCASE_OUTPUT_DATE_FORMAT:
@@ -3083,7 +3083,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 
 		case GMTCASE_FORMAT_DATE_OUT:
-			strncpy (GMT->current.setting.format_date_out, value, GMT_TEXT_LEN64);
+			strncpy (GMT->current.setting.format_date_out, value, GMT_LEN64);
 			gmt_date_C_format (GMT, GMT->current.setting.format_date_out, &GMT->current.io.date_output, 1);
 			break;
 		case GMTCASE_OUTPUT_DEGREE_FORMAT:
@@ -3092,7 +3092,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 
 		case GMTCASE_FORMAT_GEO_OUT:
-			strncpy (GMT->current.setting.format_geo_out, value, GMT_TEXT_LEN64);
+			strncpy (GMT->current.setting.format_geo_out, value, GMT_LEN64);
 			gmt_geo_C_format (GMT);	/* Can fail if FORMAT_FLOAT_OUT not yet set, but is repeated at the end of GMT_begin */
 			break;
 		case GMTCASE_PLOT_CLOCK_FORMAT:
@@ -3101,7 +3101,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 
 		case GMTCASE_FORMAT_CLOCK_MAP:
-			strncpy (GMT->current.setting.format_clock_map, value, GMT_TEXT_LEN64);
+			strncpy (GMT->current.setting.format_clock_map, value, GMT_LEN64);
 			gmt_clock_C_format (GMT, GMT->current.setting.format_clock_map, &GMT->current.plot.calclock.clock, 2);
 			break;
 		case GMTCASE_PLOT_DATE_FORMAT:
@@ -3110,7 +3110,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 
 		case GMTCASE_FORMAT_DATE_MAP:
-			strncpy (GMT->current.setting.format_date_map, value, GMT_TEXT_LEN64);
+			strncpy (GMT->current.setting.format_date_map, value, GMT_LEN64);
 			gmt_date_C_format (GMT, GMT->current.setting.format_date_map, &GMT->current.plot.calclock.date, 2);
 			break;
 		case GMTCASE_PLOT_DEGREE_FORMAT:
@@ -3119,7 +3119,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 
 		case GMTCASE_FORMAT_GEO_MAP:
-			strncpy (GMT->current.setting.format_geo_map, value, GMT_TEXT_LEN64);
+			strncpy (GMT->current.setting.format_geo_map, value, GMT_LEN64);
 			gmt_plot_C_format (GMT);	/* Can fail if FORMAT_FLOAT_OUT not yet set, but is repeated at the end of GMT_begin */
 			break;
 		case GMTCASE_TIME_FORMAT_PRIMARY:
@@ -3128,9 +3128,9 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 
 		case GMTCASE_FORMAT_TIME_MAP:
-			strncpy (GMT->current.setting.format_time[1], value, GMT_TEXT_LEN64);
+			strncpy (GMT->current.setting.format_time[1], value, GMT_LEN64);
 		case GMTCASE_FORMAT_TIME_PRIMARY_MAP:
-			strncpy (GMT->current.setting.format_time[0], value, GMT_TEXT_LEN64);
+			strncpy (GMT->current.setting.format_time[0], value, GMT_LEN64);
 			break;
 		case GMTCASE_TIME_FORMAT_SECONDARY:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: Warn then fall through to other case */
@@ -3138,7 +3138,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 
 		case GMTCASE_FORMAT_TIME_SECONDARY_MAP:
-			strncpy (GMT->current.setting.format_time[1], value, GMT_TEXT_LEN64);
+			strncpy (GMT->current.setting.format_time[1], value, GMT_LEN64);
 			break;
 		case GMTCASE_D_FORMAT:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: Warn then fall through to other case */
@@ -3149,7 +3149,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 			gmt_parse_format_float_out (GMT, value);
 			break;
 		case GMTCASE_FORMAT_FLOAT_MAP:
-			strncpy (GMT->current.setting.format_float_map, value, GMT_TEXT_LEN64);
+			strncpy (GMT->current.setting.format_float_map, value, GMT_LEN64);
 			break;
 		case GMTCASE_UNIX_TIME_FORMAT:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: Warn then fall through to other case */
@@ -3157,7 +3157,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 
 		case GMTCASE_FORMAT_TIME_STAMP:
-			strncpy (GMT->current.setting.format_time_stamp, value, GMT_TEXT_LEN256);
+			strncpy (GMT->current.setting.format_time_stamp, value, GMT_LEN256);
 			break;
 
 		/* FONT GROUP */
@@ -3729,7 +3729,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 
 		case GMTCASE_PS_CHAR_ENCODING:
-			strncpy (GMT->current.setting.ps_encoding.name, value, GMT_TEXT_LEN64);
+			strncpy (GMT->current.setting.ps_encoding.name, value, GMT_LEN64);
 			gmt_load_encoding (GMT);
 			break;
 		case GMTCASE_PS_COLOR:
@@ -3956,7 +3956,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 				GMT_COMPAT_CHANGE ("IO_GRIDFILE_FORMAT");
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_IO_GRIDFILE_FORMAT:
-			strncpy (GMT->current.setting.io_gridfile_format, value, GMT_TEXT_LEN64);
+			strncpy (GMT->current.setting.io_gridfile_format, value, GMT_LEN64);
 			break;
 		case GMTCASE_GRIDFILE_SHORTHAND:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
@@ -4045,12 +4045,12 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 				GMT->current.setting.io_seg_marker[GMT_OUT] = GMT->current.setting.io_seg_marker[GMT_IN] = '>';
 			else {
 				int dir, k;
-				char txt[2][GMT_TEXT_LEN256];
+				char txt[2][GMT_LEN256];
 				if (strchr (value, ',')) {	/* Got separate markers for input,output */
 					sscanf (value, "%[^,],%s", txt[GMT_IN], txt[GMT_OUT]);
 				}
 				else {	/* Just duplicate */
-					strncpy (txt[GMT_IN], value, GMT_TEXT_LEN256);	strncpy (txt[GMT_OUT], value, GMT_TEXT_LEN256);
+					strncpy (txt[GMT_IN], value, GMT_LEN256);	strncpy (txt[GMT_OUT], value, GMT_LEN256);
 				}
 				for (dir = 0; dir < 2; dir++) {
 					switch (txt[dir][0]) {
@@ -4320,7 +4320,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 		/* TIME GROUP */
 
 		case GMTCASE_TIME_EPOCH:
-			strncpy (GMT->current.setting.time_system.epoch, value, GMT_TEXT_LEN64);
+			strncpy (GMT->current.setting.time_system.epoch, value, GMT_LEN64);
 			(void) GMT_init_time_system_structure (GMT, &GMT->current.setting.time_system);
 			break;
 		case GMTCASE_TIME_IS_INTERVAL:
@@ -4346,7 +4346,7 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 			GMT->current.setting.time_interval_fraction = atof (value);
 			break;
 		case GMTCASE_TIME_LANGUAGE:
-			strncpy (GMT->current.setting.time_language, lower_value, GMT_TEXT_LEN64);
+			strncpy (GMT->current.setting.time_language, lower_value, GMT_LEN64);
 			gmt_get_time_language (GMT);	/* Load in names and abbreviations of time units in chosen language */
 			break;
 		case GMTCASE_WANT_LEAP_SECONDS:
@@ -4413,12 +4413,12 @@ unsigned int gmt_setparameter (struct GMT_CTRL *GMT, char *keyword, char *value)
 
 char *GMT_putparameter (struct GMT_CTRL *GMT, char *keyword)
 {	/* value must hold at least GMT_BUFSIZ chars */
-	static char value[GMT_TEXT_LEN256] = {""}, txt[8];
+	static char value[GMT_LEN256] = {""}, txt[8];
 	int case_val;
 	bool error = false;
 	char pm[2] = {'+', '-'}, *ft[2] = {"false", "true"};
 
-	GMT_memset (value, GMT_TEXT_LEN256, char);
+	GMT_memset (value, GMT_LEN256, char);
 	if (!keyword) return (value);		/* keyword argument missing */
 
 	case_val = GMT_hash_lookup (GMT, keyword, keys_hashnode, GMT_N_KEYS, GMT_N_KEYS);
@@ -4430,87 +4430,87 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, char *keyword)
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FORMAT_CLOCK_IN:
-			strncpy (value, GMT->current.setting.format_clock_in,  GMT_TEXT_LEN256);
+			strncpy (value, GMT->current.setting.format_clock_in,  GMT_LEN256);
 			break;
 		case GMTCASE_INPUT_DATE_FORMAT:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FORMAT_DATE_IN:
-			strncpy (value, GMT->current.setting.format_date_in, GMT_TEXT_LEN256);
+			strncpy (value, GMT->current.setting.format_date_in, GMT_LEN256);
 			break;
 		case GMTCASE_OUTPUT_CLOCK_FORMAT:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FORMAT_CLOCK_OUT:
-			strncpy (value, GMT->current.setting.format_clock_out, GMT_TEXT_LEN256);
+			strncpy (value, GMT->current.setting.format_clock_out, GMT_LEN256);
 			break;
 		case GMTCASE_OUTPUT_DATE_FORMAT:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FORMAT_DATE_OUT:
-			strncpy (value, GMT->current.setting.format_date_out, GMT_TEXT_LEN256);
+			strncpy (value, GMT->current.setting.format_date_out, GMT_LEN256);
 			break;
 		case GMTCASE_OUTPUT_DEGREE_FORMAT:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FORMAT_GEO_OUT:
-			strncpy (value, GMT->current.setting.format_geo_out, GMT_TEXT_LEN256);
+			strncpy (value, GMT->current.setting.format_geo_out, GMT_LEN256);
 			break;
 		case GMTCASE_PLOT_CLOCK_FORMAT:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FORMAT_CLOCK_MAP:
-			strncpy (value, GMT->current.setting.format_clock_map, GMT_TEXT_LEN256);
+			strncpy (value, GMT->current.setting.format_clock_map, GMT_LEN256);
 			break;
 		case GMTCASE_PLOT_DATE_FORMAT:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FORMAT_DATE_MAP:
-			strncpy (value, GMT->current.setting.format_date_map, GMT_TEXT_LEN256);
+			strncpy (value, GMT->current.setting.format_date_map, GMT_LEN256);
 			break;
 		case GMTCASE_PLOT_DEGREE_FORMAT:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FORMAT_GEO_MAP:
-			strncpy (value, GMT->current.setting.format_geo_map, GMT_TEXT_LEN256);
+			strncpy (value, GMT->current.setting.format_geo_map, GMT_LEN256);
 			break;
 		case GMTCASE_TIME_FORMAT_PRIMARY:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FORMAT_TIME_PRIMARY_MAP:
-			strncpy (value, GMT->current.setting.format_time[0], GMT_TEXT_LEN256);
+			strncpy (value, GMT->current.setting.format_time[0], GMT_LEN256);
 			break;
 		case GMTCASE_TIME_FORMAT_SECONDARY:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FORMAT_TIME_SECONDARY_MAP:
-			strncpy (value, GMT->current.setting.format_time[1], GMT_TEXT_LEN256);
+			strncpy (value, GMT->current.setting.format_time[1], GMT_LEN256);
 			break;
 		case GMTCASE_D_FORMAT:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FORMAT_FLOAT_OUT:
-			strncpy (value, GMT->current.setting.format_float_out, GMT_TEXT_LEN256);
+			strncpy (value, GMT->current.setting.format_float_out, GMT_LEN256);
 			break;
 		case GMTCASE_FORMAT_FLOAT_MAP:
-			strncpy (value, GMT->current.setting.format_float_map, GMT_TEXT_LEN256);
+			strncpy (value, GMT->current.setting.format_float_map, GMT_LEN256);
 			break;
 		case GMTCASE_UNIX_TIME_FORMAT:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FORMAT_TIME_STAMP:
-			strncpy (value, GMT->current.setting.format_time_stamp, GMT_TEXT_LEN256);
+			strncpy (value, GMT->current.setting.format_time_stamp, GMT_LEN256);
 			break;
 
 		/* FONT GROUP */
@@ -4520,32 +4520,32 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, char *keyword)
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FONT_ANNOT_PRIMARY:
-			strncpy (value, GMT_putfont (GMT, GMT->current.setting.font_annot[0]), GMT_TEXT_LEN256);
+			strncpy (value, GMT_putfont (GMT, GMT->current.setting.font_annot[0]), GMT_LEN256);
 			break;
 		case GMTCASE_ANNOT_FONT_SECONDARY:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FONT_ANNOT_SECONDARY:
-			strncpy (value, GMT_putfont (GMT, GMT->current.setting.font_annot[1]), GMT_TEXT_LEN256);
+			strncpy (value, GMT_putfont (GMT, GMT->current.setting.font_annot[1]), GMT_LEN256);
 			break;
 		case GMTCASE_HEADER_FONT:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FONT_TITLE:
-			strncpy (value, GMT_putfont (GMT, GMT->current.setting.font_title), GMT_TEXT_LEN256);
+			strncpy (value, GMT_putfont (GMT, GMT->current.setting.font_title), GMT_LEN256);
 			break;
 		case GMTCASE_LABEL_FONT:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_FONT_LABEL:
-			strncpy (value, GMT_putfont (GMT, GMT->current.setting.font_label), GMT_TEXT_LEN256);
+			strncpy (value, GMT_putfont (GMT, GMT->current.setting.font_label), GMT_LEN256);
 			break;
 
 		case GMTCASE_FONT_LOGO:
-			strncpy (value, GMT_putfont (GMT, GMT->current.setting.font_logo), GMT_TEXT_LEN256);
+			strncpy (value, GMT_putfont (GMT, GMT->current.setting.font_logo), GMT_LEN256);
 			break;
 
 		/* FONT GROUP ... obsolete options */
@@ -4625,7 +4625,7 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, char *keyword)
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_ANNOT_ORTHO:
-			strncpy (value, GMT->current.setting.map_annot_ortho, GMT_TEXT_LEN256);
+			strncpy (value, GMT->current.setting.map_annot_ortho, GMT_LEN256);
 			break;
 		case GMTCASE_DEGREE_SYMBOL:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
@@ -4645,7 +4645,7 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, char *keyword)
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_MAP_FRAME_AXES:
-			strncpy (value, GMT->current.setting.map_frame_axes, GMT_TEXT_LEN256);
+			strncpy (value, GMT->current.setting.map_frame_axes, GMT_LEN256);
 			break;
 		case GMTCASE_BASEMAP_FRAME_RGB:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
@@ -4871,7 +4871,7 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, char *keyword)
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_PS_CHAR_ENCODING:
-			strncpy (value, GMT->current.setting.ps_encoding.name, GMT_TEXT_LEN256);
+			strncpy (value, GMT->current.setting.ps_encoding.name, GMT_LEN256);
 			break;
 		case GMTCASE_PS_COLOR:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
@@ -5025,14 +5025,14 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, char *keyword)
 			else if (!GMT->current.setting.io_col_separator[0])
 				strcpy (value, "none");
 			else
-				strncpy (value, GMT->current.setting.io_col_separator, GMT_TEXT_LEN256);
+				strncpy (value, GMT->current.setting.io_col_separator, GMT_LEN256);
 			break;
 		case GMTCASE_GRIDFILE_FORMAT:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmt_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 		case GMTCASE_IO_GRIDFILE_FORMAT:
-			strncpy (value, GMT->current.setting.io_gridfile_format, GMT_TEXT_LEN256);
+			strncpy (value, GMT->current.setting.io_gridfile_format, GMT_LEN256);
 			break;
 		case GMTCASE_GRIDFILE_SHORTHAND:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
@@ -5191,7 +5191,7 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, char *keyword)
 			break;
 			
 		case GMTCASE_GMT_CUSTOM_LIBS:
-			strncpy (value, (GMT->session.CUSTOM_LIBS) ? GMT->session.CUSTOM_LIBS : "", GMT_TEXT_LEN256);
+			strncpy (value, (GMT->session.CUSTOM_LIBS) ? GMT->session.CUSTOM_LIBS : "", GMT_LEN256);
 			break;
 		case GMTCASE_GMT_EXTRAPOLATE_VAL:
 			if (GMT->current.setting.extrapolate_val[0] == GMT_EXTRAPOLATE_NONE)
@@ -5292,24 +5292,24 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, char *keyword)
 
 		case GMTCASE_DIR_DCW:
 			/* Force update of session.DCWDIR before copying the string */
-			strncpy (value, (GMT->session.DCWDIR) ? GMT->session.DCWDIR : "", GMT_TEXT_LEN256);
+			strncpy (value, (GMT->session.DCWDIR) ? GMT->session.DCWDIR : "", GMT_LEN256);
 			break;
 		case GMTCASE_DIR_GSHHG:
 			/* Force update of session.GSHHGDIR before copying the string */
 			GMT_shore_adjust_res (GMT, 'c');
-			strncpy (value, (GMT->session.GSHHGDIR) ? GMT->session.GSHHGDIR : "", GMT_TEXT_LEN256);
+			strncpy (value, (GMT->session.GSHHGDIR) ? GMT->session.GSHHGDIR : "", GMT_LEN256);
 			break;
 		case GMTCASE_DIR_TMP:
-			strncpy (value, (GMT->session.TMPDIR) ? GMT->session.TMPDIR : "", GMT_TEXT_LEN256);
+			strncpy (value, (GMT->session.TMPDIR) ? GMT->session.TMPDIR : "", GMT_LEN256);
 			break;
 		case GMTCASE_DIR_USER:
-			strncpy (value, (GMT->session.USERDIR) ? GMT->session.USERDIR : "", GMT_TEXT_LEN256);
+			strncpy (value, (GMT->session.USERDIR) ? GMT->session.USERDIR : "", GMT_LEN256);
 			break;
 
 		/* TIME GROUP */
 
 		case GMTCASE_TIME_EPOCH:
-			strncpy (value, GMT->current.setting.time_system.epoch, GMT_TEXT_LEN64);
+			strncpy (value, GMT->current.setting.time_system.epoch, GMT_LEN64);
 			break;
 		case GMTCASE_TIME_IS_INTERVAL:
 			if (GMT->current.setting.time_is_interval)
@@ -5321,7 +5321,7 @@ char *GMT_putparameter (struct GMT_CTRL *GMT, char *keyword)
 			sprintf (value, "%g", GMT->current.setting.time_interval_fraction);
 			break;
 		case GMTCASE_TIME_LANGUAGE:
-			strncpy (value, GMT->current.setting.time_language, GMT_TEXT_LEN64);
+			strncpy (value, GMT->current.setting.time_language, GMT_LEN64);
 			break;
 		case GMTCASE_WANT_LEAP_SECONDS:
 			if (GMT_compat_check (GMT, 4))	/* GMT4: */
@@ -5370,7 +5370,7 @@ void GMT_pickdefaults (struct GMT_CTRL *GMT, bool lines, struct GMT_OPTION *opti
 int GMT_savedefaults (struct GMT_CTRL *GMT, char *file)
 {
 	unsigned int error = 0, rec = 0;
-	char line[GMT_BUFSIZ] = {""}, keyword[GMT_TEXT_LEN256] = {""}, string[GMT_TEXT_LEN256] = {""};
+	char line[GMT_BUFSIZ] = {""}, keyword[GMT_LEN256] = {""}, string[GMT_LEN256] = {""};
 	FILE *fpi = NULL, *fpo = NULL;
 
 	if (file[0] == '-' && !file[1])
@@ -5450,7 +5450,7 @@ void GMT_getdefaults (struct GMT_CTRL *GMT, char *this_file)	/* Read user's gmt.
 
 void gmt_append_trans (char *text, double transparency)
 {
-	char trans[GMT_TEXT_LEN64] = {""};
+	char trans[GMT_LEN64] = {""};
 	if (!GMT_IS_ZERO (transparency) && text[0] != '-') {	/* Append nonzero transparency */
 		sprintf (trans, "@%ld", lrint (100.0 * transparency));
 		strcat (text, trans);
@@ -5463,7 +5463,7 @@ char *GMT_putfill (struct GMT_CTRL *GMT, struct GMT_FILL *F)
 	 * Example: GMT_putfill (GMT, fill) may produce "white" or "1/2/3" or "p300/7"
 	 */
 
-	static char text[GMT_TEXT_LEN256] = {""};
+	static char text[GMT_LEN256] = {""};
 	int i;
 
 	if (F->use_pattern) {
@@ -5490,7 +5490,7 @@ char *GMT_putcolor (struct GMT_CTRL *GMT, double *rgb)
 	 * Example: GMT_putcolor (GMT, rgb) may produce "white" or "1/2/3"
 	 */
 
-	static char text[GMT_TEXT_LEN256] = {""};
+	static char text[GMT_LEN256] = {""};
 	int i;
 
 	if (rgb[0] < -0.5)
@@ -5509,7 +5509,7 @@ char *GMT_putrgb (struct GMT_CTRL *GMT, double *rgb)
 {
 	/* Creates t the string r/g/b corresponding to the RGB triplet */
 
-	static char text[GMT_TEXT_LEN256] = {""};
+	static char text[GMT_LEN256] = {""};
 
 	if (rgb[0] < -0.5)
 		sprintf (text, "-");
@@ -5523,7 +5523,7 @@ char *GMT_putcmyk (struct GMT_CTRL *GMT, double *cmyk)
 {
 	/* Creates the string c/m/y/k corresponding to the CMYK quadruplet */
 
-	static char text[GMT_TEXT_LEN256] = {""};
+	static char text[GMT_LEN256] = {""};
 
 	if (cmyk[0] < -0.5)
 		sprintf (text, "-");
@@ -5537,7 +5537,7 @@ char *GMT_puthsv (struct GMT_CTRL *GMT, double *hsv)
 {
 	/* Creates the string h/s/v corresponding to the HSV triplet */
 
-	static char text[GMT_TEXT_LEN256] = {""};
+	static char text[GMT_LEN256] = {""};
 
 	if (hsv[0] < -0.5)
 		sprintf (text, "-");
@@ -5798,7 +5798,7 @@ bool GMT_get_time_system (struct GMT_CTRL *GMT, char *name, struct GMT_TIME_SYST
 	}
 	else if ((epoch = strstr (name, "since"))) {
 		epoch += 6;
-		strncpy (time_system->epoch, epoch, GMT_TEXT_LEN64);
+		strncpy (time_system->epoch, epoch, GMT_LEN64);
 		time_system->unit = name[0];
 		if (!strncmp (name, "mon", 3U)) time_system->unit = 'o';
 	}
@@ -5819,8 +5819,8 @@ int gmt_setshorthand (struct GMT_CTRL *GMT) {
 	/* Read user's .gmt_io file and initialize shorthand notation */
 	unsigned int id, n = 0;
 	size_t n_alloc = 0;
-	char file[GMT_BUFSIZ] = {""}, line[GMT_BUFSIZ] = {""}, a[GMT_TEXT_LEN64] = {""}, b[GMT_TEXT_LEN64] = {""};
-	char c[GMT_TEXT_LEN64] = {""}, d[GMT_TEXT_LEN64] = {""}, e[GMT_TEXT_LEN64] = {""};
+	char file[GMT_BUFSIZ] = {""}, line[GMT_BUFSIZ] = {""}, a[GMT_LEN64] = {""}, b[GMT_LEN64] = {""};
+	char c[GMT_LEN64] = {""}, d[GMT_LEN64] = {""}, e[GMT_LEN64] = {""};
 	FILE *fp = NULL;
 
 	GMT->session.n_shorthands = 0; /* By default there are no shorthands unless .gmt_io is found */
@@ -5908,7 +5908,7 @@ int gmt_get_history (struct GMT_CTRL *GMT)
 	int id;
 	bool done = false;
 	char line[GMT_BUFSIZ] = {""}, hfile[GMT_BUFSIZ] = {""}, cwd[GMT_BUFSIZ] = {""};
-	char option[GMT_TEXT_LEN64] = {""}, value[GMT_BUFSIZ] = {""};
+	char option[GMT_LEN64] = {""}, value[GMT_BUFSIZ] = {""};
 	FILE *fp = NULL; /* For .gmtcommands file */
 	static struct GMT_HASH unique_hashnode[GMT_N_UNIQUE];
 #ifdef FLOCK
@@ -6903,7 +6903,7 @@ int gmt4_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 			GMT->current.map.frame.primary = true; k = 0; break;
 	}
 	i = (GMT->current.map.frame.primary) ? 0 : 1;
-	strncpy (GMT->common.B.string[i], in, GMT_TEXT_LEN256);	/* Keep a copy of the actual option(s) */
+	strncpy (GMT->common.B.string[i], in, GMT_LEN256);	/* Keep a copy of the actual option(s) */
 
 	/* GMT->current.map.frame.side[] may be set already when parsing gmt.conf flags */
 
@@ -6929,7 +6929,7 @@ int gmt4_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 		if (ignore) continue;	/* Not look inside text items */
 		if (in[i] == '+' && in[i+1] == 'o') {	/* Found +o<plon>/<plat> */
 			double lon, lat;
-			char A[GMT_TEXT_LEN64] = {""}, B[GMT_TEXT_LEN64] = {""};
+			char A[GMT_LEN64] = {""}, B[GMT_LEN64] = {""};
 			if (GMT->current.proj.projection == GMT_OBLIQUE_MERC) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -B option: Cannot specify oblique gridlines for the oblique Mercator projection\n");
 				error++;
@@ -6960,7 +6960,7 @@ int gmt4_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 	}
 	/* Note that gmt_strip_colonitem calls gmt_handle_dosfile so that the item return has been processed for DOS path restoration */
 	error += gmt_strip_colonitem (GMT, 0, &in[k], ":.", GMT->current.map.frame.header, out1);	/* Extract header string, if any */
-	GMT_enforce_rgb_triplets (GMT, GMT->current.map.frame.header, GMT_TEXT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
+	GMT_enforce_rgb_triplets (GMT, GMT->current.map.frame.header, GMT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 
 	i = gmt4_decode_wesnz (GMT, out1, GMT->current.map.frame.side, &GMT->current.map.frame.draw_box, part);		/* Decode WESNZwesnz+ flags, if any */
 	out1[i] = '\0';	/* Strip the WESNZwesnz+ flags off */
@@ -6985,26 +6985,26 @@ int gmt4_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 		gmt_handle_atcolon (GMT, GMT->current.map.frame.axis[i].unit, 1);	/* Restore any @^ to @: */
 		
 		if (GMT->current.map.frame.axis[i].prefix[0]) {	/* Deal with space/no space before prefix */
-			char workspace[GMT_TEXT_LEN64] = {""};
-			GMT_memset (workspace, GMT_TEXT_LEN64, char);
+			char workspace[GMT_LEN64] = {""};
+			GMT_memset (workspace, GMT_LEN64, char);
 			if (GMT->current.map.frame.axis[i].prefix[0] == '-') /* Dont want a space */
 				strcpy (workspace, &GMT->current.map.frame.axis[i].prefix[1]);
 			else {	/* Want a space */
 				workspace[0] = ' ';	/* The leading space */
 				strcpy (&workspace[1], GMT->current.map.frame.axis[i].prefix);
 			}
-			GMT_memcpy (GMT->current.map.frame.axis[i].prefix, workspace, GMT_TEXT_LEN64, char);
+			GMT_memcpy (GMT->current.map.frame.axis[i].prefix, workspace, GMT_LEN64, char);
 		}
 		if (GMT->current.map.frame.axis[i].unit[0]) {	/* Deal with space/no space before unit */
-			char workspace[GMT_TEXT_LEN64] = {""};
-			GMT_memset (workspace, GMT_TEXT_LEN64, char);
+			char workspace[GMT_LEN64] = {""};
+			GMT_memset (workspace, GMT_LEN64, char);
 			if (GMT->current.map.frame.axis[i].unit[0] == '-') /* Dont want a space */
 				strcpy (workspace, &GMT->current.map.frame.axis[i].unit[1]);
 			else {	/* Want a space */
 				workspace[0] = ' ';	/* The leading space */
 				strcpy (&workspace[1], GMT->current.map.frame.axis[i].unit);
 			}
-			GMT_memcpy (GMT->current.map.frame.axis[i].unit, workspace, GMT_TEXT_LEN64, char);
+			GMT_memcpy (GMT->current.map.frame.axis[i].unit, workspace, GMT_LEN64, char);
 		}
 		
 		/* Parse the annotation/tick info string */
@@ -7129,7 +7129,7 @@ int gmt5_parse_B_frame_setting (struct GMT_CTRL *GMT, char *in)
 					else {
 						strcpy (GMT->current.map.frame.header, &p[1]);
 						gmt5_handle_plussign (GMT, GMT->current.map.frame.header, 1);	/* Revert to ++ */
-						GMT_enforce_rgb_triplets (GMT, GMT->current.map.frame.header, GMT_TEXT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
+						GMT_enforce_rgb_triplets (GMT, GMT->current.map.frame.header, GMT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 					}
 					break;
 				default:
@@ -7217,7 +7217,7 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 		strcat (GMT->common.B.string[no], in);
 	}
 	else
-		strncpy (GMT->common.B.string[no], in, GMT_TEXT_LEN256);	/* Keep a copy of the actual option(s) */
+		strncpy (GMT->common.B.string[no], in, GMT_LEN256);	/* Keep a copy of the actual option(s) */
 
 	/* Set which axes this option applies to */
 	while (in[k] && strchr ("xyz", in[k])) {	/* As long as there are leading x,y,z axes specifiers */
@@ -7258,7 +7258,7 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 						else {
 							strcpy (GMT->current.map.frame.axis[no].label, &p[1]);
 							gmt5_handle_plussign (GMT, GMT->current.map.frame.axis[no].label, 1);	/* Revert to ++ */
-							GMT_enforce_rgb_triplets (GMT, GMT->current.map.frame.axis[no].label, GMT_TEXT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
+							GMT_enforce_rgb_triplets (GMT, GMT->current.map.frame.axis[no].label, GMT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 						}
 						break;
 					case 'p':	/* Annotation prefix */
@@ -7269,7 +7269,7 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 						else {
 							strcpy (GMT->current.map.frame.axis[no].prefix, &p[1]);
 							gmt5_handle_plussign (GMT, GMT->current.map.frame.axis[no].prefix, 1);	/* Revert to ++ */
-							GMT_enforce_rgb_triplets (GMT, GMT->current.map.frame.axis[no].prefix, GMT_TEXT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
+							GMT_enforce_rgb_triplets (GMT, GMT->current.map.frame.axis[no].prefix, GMT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 						}
 						break;
 					case 'u':	/* Annotation unit */
@@ -7280,7 +7280,7 @@ int gmt5_parse_B_option (struct GMT_CTRL *GMT, char *in) {
 						else {
 							strcpy (GMT->current.map.frame.axis[no].unit, &p[1]);
 							gmt5_handle_plussign (GMT, GMT->current.map.frame.axis[no].unit, 1);	/* Revert to ++ */
-							GMT_enforce_rgb_triplets (GMT, GMT->current.map.frame.axis[no].unit, GMT_TEXT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
+							GMT_enforce_rgb_triplets (GMT, GMT->current.map.frame.axis[no].unit, GMT_LEN256);	/* If @; is used, make sure the color information passed on to ps_text is in r/b/g format */
 						}
 						break;
 					default:
@@ -7483,15 +7483,15 @@ bool gmt_parse_J_option (struct GMT_CTRL *GMT, char *args)
 	unsigned int mod_flag = 0;
 	bool width_given = false, skip = false;
 	double c, az, GMT_units[3] = {0.01, 0.0254, 1.0};      /* No of meters in a cm, inch, m */
-	char mod, args_cp[GMT_BUFSIZ] = {""}, txt_a[GMT_TEXT_LEN256] = {""}, txt_b[GMT_TEXT_LEN256] = {""}, txt_c[GMT_TEXT_LEN256] = {""};
-	char txt_d[GMT_TEXT_LEN256] = {""}, txt_e[GMT_TEXT_LEN256] = {""}, last_char;
-	char txt_arr[11][GMT_TEXT_LEN256];
+	char mod, args_cp[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
+	char txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""}, last_char;
+	char txt_arr[11][GMT_LEN256];
 
 	GMT_memset (l_pos, 3, int);	GMT_memset (p_pos, 3, int);
 	GMT_memset (t_pos, 3, int);	GMT_memset (d_pos, 3, int);
 	GMT->current.proj.lon0 = GMT->current.proj.lat0 = GMT->session.d_NaN;	/* Projection center, to be set via -J */
 
-	strncpy (GMT->common.J.string, args, GMT_TEXT_LEN256);	/* Verbatim copy */
+	strncpy (GMT->common.J.string, args, GMT_LEN256);	/* Verbatim copy */
 	project = gmt_project_type (args, &i, &width_given);
 	if (project == GMT_NO_PROJ) return (true);	/* No valid projection specified */
 	args += i;
@@ -8252,7 +8252,7 @@ int GMT_parse_front (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *S)
 	
 	unsigned int pos = 0, k, error = 0;
 	int mods, n;
-	char p[GMT_BUFSIZ] = {""}, txt_a[GMT_TEXT_LEN256] = {""}, txt_b[GMT_TEXT_LEN256] = {""};
+	char p[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
 	
 	for (k = 0; text[k] && text[k] != '+'; k++);	/* Either find the first plus or run out or chars */
 	strncpy (p, text, k); p[k] = 0;
@@ -8308,7 +8308,7 @@ int gmt_parse_text (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *S)
 			j = slash + 1;
 			/* Copy string characters */
 			k = 0;
-			while (text[j] && text[j] != ' ' && k < (GMT_TEXT_LEN256-1)) S->string[k++] = text[j++];
+			while (text[j] && text[j] != ' ' && k < (GMT_LEN256-1)) S->string[k++] = text[j++];
 			S->string[k] = '\0';
 			if (!k) {
 				GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error -Sl option: No string given\n");
@@ -8334,7 +8334,7 @@ int gmt_parse_text (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL *S)
 						GMT_Report (GMT->parent, GMT_MSG_NORMAL, "-Sl contains bad +<font> modifier (set to %s)\n", GMT_putfont (GMT, S->font));
 					break;
 				case 'j':	S->justify = GMT_just_decode (GMT, &p[1], 12);	break;	/* text justification */
-				case 't':	strncpy (S->string, &p[1], GMT_TEXT_LEN256);	break;	/* Get the symbol text */
+				case 't':	strncpy (S->string, &p[1], GMT_LEN256);	break;	/* Get the symbol text */
 				default:
 					GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error option -Sl: Bad modifier +%c\n", p[0]);
 					error++;
@@ -8354,7 +8354,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	int decode_error = 0, bset = 0, j, n, k, slash = 0, colon, col_off = mode, len;
 	bool check = true;
 	unsigned int ju;
-	char symbol_type, txt_a[GMT_TEXT_LEN256] = {""}, txt_b[GMT_TEXT_LEN256] = {""}, text_cp[GMT_TEXT_LEN256] = {""}, *c = NULL, *s = NULL;
+	char symbol_type, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, text_cp[GMT_LEN256] = {""}, *c = NULL, *s = NULL;
 	static char *allowed_symbols[2] = {"=-+AaBbCcDdEefGgHhIiJjMmNnpqRrSsTtVvWwxy", "=-+AabCcDdEefGgHhIiJjMmNnOopqRrSsTtUuVvWwxy"};
 	static char *bar_symbols[2] = {"Bb", "-BbOoUu"};
 	if (cmd) {
@@ -8404,7 +8404,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		if (cmd) p->read_symbol_cmd = true;
 	}
 	else if (text[0] == 'l') {	/* Letter symbol is special case */
-		strncpy (text_cp, text, GMT_TEXT_LEN256);	/* Copy for processing later */
+		strncpy (text_cp, text, GMT_LEN256);	/* Copy for processing later */
 		symbol_type = 'l';
 		if (!text[1]) {	/* No size or text given */
 			if (p->size_x == 0.0) p->size_x = p->given_size_x;
@@ -8426,7 +8426,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	}
 #if 0	/* Original code */
 	else if (text[0] == 'l') {	/* Letter symbol is special case */
-		strncpy (text_cp, text, GMT_TEXT_LEN256);	/* Copy for processing later */
+		strncpy (text_cp, text, GMT_LEN256);	/* Copy for processing later */
 		if ((c = strchr (text_cp, '%'))) {	/* Gave font name or number, too */
 			*c = ' ';	/* Make the % a space */
 			c++;		/* Go to next character */
@@ -8465,13 +8465,13 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		}
 	}
 	else if (strchr (GMT_VECTOR_CODES, text[0])) {	/* Vectors gets separate treatment because of optional modifiers [+j<just>+b+e+s+l+r+a<angle>+n<norm>] */
-		char arg[GMT_TEXT_LEN64] = {""};
+		char arg[GMT_LEN64] = {""};
 		n = sscanf (text, "%c%[^+]", &symbol_type, arg);	/* arg should be symbols size with no +<modifiers> at the end */
-		if (n == 1) strncpy (arg, &text[1], GMT_TEXT_LEN64);	/* No modifiers present, set arg to text following symbol code */
+		if (n == 1) strncpy (arg, &text[1], GMT_LEN64);	/* No modifiers present, set arg to text following symbol code */
 		k = 1;
 		if (GMT_compat_check (GMT, 4)) {
 			int one;
-			char txt_c[GMT_TEXT_LEN256] = {""};
+			char txt_c[GMT_LEN256] = {""};
 			p->v.parsed_v4 = false;
 			if (strchr (text, '/') && !strstr (text, "+o")) {	/* Gave old-style arrow dimensions; cannot exactly reproduce GMT 4 arrows since those were polygons */
 				p->v.status |= GMT_VEC_END;		/* Default is head at end */
@@ -8490,7 +8490,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: bhstBHST vector modifiers is deprecated; see -S%c syntax.\n", text[0]);
 				p->v.status |= GMT_VEC_END;		/* Default is head at end */
 				k = 2;
-				strncpy (arg, &text[2], GMT_TEXT_LEN64);
+				strncpy (arg, &text[2], GMT_LEN64);
 			}	
 		}
 		if (text[k] && strchr (GMT_DIM_UNITS, (int) text[k])) {	/* No size given, only unit information */
@@ -8535,7 +8535,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			if (text[j] == '/') slash = j;
 			if (text[j] == 'b') bset = j;
 		}
-		strncpy (text_cp, text, GMT_TEXT_LEN256);
+		strncpy (text_cp, text, GMT_LEN256);
 		if (bset) text_cp[bset] = 0;	/* Chop off the b<base> from copy to avoid confusion when parsing.  <base> is always in user units */
 		if (slash) {	/* Separate x/y sizes */
 			n = sscanf (text_cp, "%c%[^/]/%s", &symbol_type, txt_a, txt_b);
@@ -8646,7 +8646,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		case 'f':	/* Fronts: -Sf<spacing>[/<size>][+r+l][+f+t+s+c+b][+o<offset>]	[WAS: -Sf<spacing>/<size>[dir][type][:<offset>]	*/
 			p->symbol = GMT_SYMBOL_FRONT;
 			p->f.f_off = 0.0;	p->f.f_symbol = GMT_FRONT_FAULT;	p->f.f_sense = GMT_FRONT_CENTERED;
-			strncpy (text_cp, text, GMT_TEXT_LEN256);
+			strncpy (text_cp, text, GMT_LEN256);
 			if (GMT_compat_check (GMT, 4)) {
 				len = (int)strlen (text_cp) - 1;
 				if (strchr (text_cp, ':') || (!strchr (text_cp, '+') && len > 0 && strchr ("bcflrst", text_cp[len]))) {	/* Old style */
@@ -8885,7 +8885,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 					text[j] = 0;	/* Chop off the shrink part */
 				}
 				if (text[one]) {
-					char txt_c[GMT_TEXT_LEN256] = {""};
+					char txt_c[GMT_LEN256] = {""};
 					/* It is possible that the user have appended a unit modifier after
 					 * the <size> argument (which here are vector attributes).  We use that
 					 * to set the unit, but only if the vector attributes themselves have
@@ -9731,11 +9731,11 @@ struct GMT_CTRL *New_GMT_Ctrl (char *session, unsigned int pad) {	/* Allocate an
 
 void gmt_set_today (struct GMT_CTRL *GMT)
 {	/* Gets the rata die of today */
-	char today[GMT_TEXT_LEN16] = {""};
+	char today[GMT_LEN16] = {""};
 	time_t right_now;
 	int64_t rd;
 	right_now = time (NULL);	/* Unix time right now */
-	strftime (today, GMT_TEXT_LEN16, "%Y-%m-%d", gmtime (&right_now));	/* Request time as yyyy-mm-dd */
+	strftime (today, GMT_LEN16, "%Y-%m-%d", gmtime (&right_now));	/* Request time as yyyy-mm-dd */
 	if (gmt_scanf_calendar (GMT, today, &rd)) {	/* Convert to rata die */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot get today's rata die - default to 1\n");
 		rd = 1;
@@ -9764,7 +9764,7 @@ struct GMT_CTRL *GMT_begin (struct GMTAPI_CTRL *API, char *session, unsigned int
 	 * API->do_not_exit have not been modified by external API yet.
 	 */
 
-	char path[GMT_TEXT_LEN256] = {""};
+	char path[GMT_LEN256] = {""};
 	struct GMT_CTRL *GMT = NULL;
 
 #ifdef __FreeBSD__

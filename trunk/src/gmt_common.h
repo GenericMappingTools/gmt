@@ -54,7 +54,7 @@ struct GMT_COMMON {
 	struct B {	/* -B<params> */
 		bool active[2];	/* 0 = primary annotation, 1 = secondary annotations */
 		int mode;	/* 5 = GMT 5 syntax, 4 = GMT 4 syntax, 1 = Either, -1 = mix (error), 0 = not set yet */
-		char string[2][GMT_TEXT_LEN256];
+		char string[2][GMT_LEN256];
 	} B;	
 	struct API_I {	/* -I<xinc>[/<yinc>] grids only, and for API use only */
 		bool active;
@@ -64,7 +64,7 @@ struct GMT_COMMON {
 		bool active, zactive;
 		unsigned int id;
 		double par[6];
-		char string[GMT_TEXT_LEN256];
+		char string[GMT_LEN256];
 	} J;		
 	struct K {	/* -K */
 		bool active;
@@ -79,7 +79,7 @@ struct GMT_COMMON {
 		bool active;
 		bool oblique;	/* true when -R...r was given (oblique map, probably), else false (map borders are meridians/parallels) */
 		double wesn[6];		/* Boundaries of west, east, south, north, low-z and hi-z */
-		char string[GMT_TEXT_LEN256];
+		char string[GMT_LEN256];
 	} R;
 	struct U {	/* -U */
 		bool active;

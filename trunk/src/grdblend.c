@@ -96,7 +96,7 @@ struct GRDBLEND_INFO {	/* Structure with info about each input grid file */
 	bool invert;					/* true if weight was given as negative and we want to taper to zero INSIDE the grid region */
 	bool open;					/* true if file is currently open */
 	bool delete;					/* true if file was produced by grdsample to deal with different registration/increments */
-	char file[GMT_TEXT_LEN256];			/* Name of grid file */
+	char file[GMT_LEN256];			/* Name of grid file */
 	double weight, wt_y, wxr, wxl, wyu, wyd;	/* Various weighting factors used for cosine-taper weights */
 	double wesn[4];					/* Boundaries of inner region */
 	float *z;					/* Row vector holding the current row from this file */
@@ -177,7 +177,7 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 	unsigned int one_or_zero = !h->registration, n = 0, nr;
 	struct GRDBLEND_INFO *B = NULL;
 	char *sense[2] = {"normal", "inverse"}, *V_level = "qncvld", buffer[GMT_BUFSIZ] = {""};
-	char Targs[GMT_TEXT_LEN256] = {""}, Iargs[GMT_TEXT_LEN256] = {""}, Rargs[GMT_TEXT_LEN256] = {""}, cmd[GMT_BUFSIZ] = {""};
+	char Targs[GMT_LEN256] = {""}, Iargs[GMT_LEN256] = {""}, Rargs[GMT_LEN256] = {""}, cmd[GMT_BUFSIZ] = {""};
 	struct BLEND_LIST {
 		char *file;
 		char *region;
@@ -194,7 +194,7 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 	}
 	else {	/* Must read blend file */
 		size_t n_alloc = 0;
-		char *line = NULL, r_in[GMT_TEXT_LEN256] = {""}, file[GMT_TEXT_LEN256] = {""};
+		char *line = NULL, r_in[GMT_LEN256] = {""}, file[GMT_LEN256] = {""};
 		double weight;
 		GMT_set_meminc (GMT, GMT_SMALL_CHUNK);
 		do {	/* Keep returning records until we reach EOF */
@@ -231,7 +231,7 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 	B = GMT_memory (GMT, NULL, n_files, struct GRDBLEND_INFO);
 	
 	for (n = 0; n < n_files; n++) {	/* Process each input grid */
-		strncpy (B[n].file, L[n].file, GMT_TEXT_LEN256);
+		strncpy (B[n].file, L[n].file, GMT_LEN256);
 		if ((B[n].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[n].file, NULL)) == NULL) {
 			return (-1);
 		}
@@ -324,7 +324,7 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 					GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
 				}
 			}
-			strncpy (B[n].file, buffer, GMT_TEXT_LEN256);	/* Use the temporary file instead */
+			strncpy (B[n].file, buffer, GMT_LEN256);	/* Use the temporary file instead */
 			B[n].delete = true;		/* Flag to delete this temporary file when done */
 			if (GMT_Destroy_Data (GMT->parent, &B[n].G)) return (-1);
 			if ((B[n].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_GRID_HEADER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[n].file, NULL)) == NULL) {
@@ -787,7 +787,7 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 	}
 
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
-		char empty[GMT_TEXT_LEN64] = {""};
+		char empty[GMT_LEN64] = {""};
 		GMT_Report (API, GMT_MSG_VERBOSE, "Blended grid size of %s is %d x %d\n", Ctrl->G.file, nx_final, ny_final);
 		if (n_fill == n_tot)
 			GMT_Report (API, GMT_MSG_VERBOSE, "All nodes assigned values\n");

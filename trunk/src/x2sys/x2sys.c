@@ -523,7 +523,7 @@ int x2sys_read_record (struct GMT_CTRL *GMT, FILE *fp, double *data, struct X2SY
 	unsigned int j, k, i, pos;
 	int is;
 	size_t n_read = 0;
-	char line[GMT_BUFSIZ], buffer[GMT_TEXT_LEN64], p[GMT_BUFSIZ], c;
+	char line[GMT_BUFSIZ], buffer[GMT_LEN64], p[GMT_BUFSIZ], c;
 	unsigned char u;
 	short int h;
 	float f;
@@ -939,7 +939,7 @@ int x2sys_read_list (struct GMT_CTRL *GMT, char *file, char ***list, unsigned in
 {
 	unsigned int n = 0;
 	size_t n_alloc = GMT_CHUNK;
-	char **p = NULL, line[GMT_BUFSIZ], name[GMT_TEXT_LEN64];
+	char **p = NULL, line[GMT_BUFSIZ], name[GMT_LEN64];
 	FILE *fp = NULL;
 
 	*list = NULL;	*nf = 0;
@@ -974,7 +974,7 @@ int x2sys_read_weights (struct GMT_CTRL *GMT, char *file, char ***list, double *
 {
 	unsigned int n = 0;
 	size_t n_alloc = GMT_CHUNK;
-	char **p = NULL, line[GMT_BUFSIZ], name[GMT_TEXT_LEN64];
+	char **p = NULL, line[GMT_BUFSIZ], name[GMT_LEN64];
 	double *W = NULL, this_w;
 	FILE *fp = NULL;
 
@@ -1562,9 +1562,9 @@ uint64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char 
 
 	FILE *fp = NULL;
 	struct X2SYS_COE_PAIR *P = NULL;
-	char line[GMT_BUFSIZ], txt[GMT_BUFSIZ], kind[GMT_BUFSIZ], fmt[GMT_BUFSIZ], trk[2][GMT_TEXT_LEN64], t_txt[2][GMT_TEXT_LEN64], start[2][GMT_TEXT_LEN64];
-	char x_txt[GMT_TEXT_LEN64], y_txt[GMT_TEXT_LEN64], d_txt[2][GMT_TEXT_LEN64], h_txt[2][GMT_TEXT_LEN64], v_txt[2][GMT_TEXT_LEN64], z_txt[2][GMT_TEXT_LEN64];
-	char stop[2][GMT_TEXT_LEN64], info[2][3*GMT_TEXT_LEN64], **trk_list = NULL, **ignore = NULL, *t = NULL;
+	char line[GMT_BUFSIZ], txt[GMT_BUFSIZ], kind[GMT_BUFSIZ], fmt[GMT_BUFSIZ], trk[2][GMT_LEN64], t_txt[2][GMT_LEN64], start[2][GMT_LEN64];
+	char x_txt[GMT_LEN64], y_txt[GMT_LEN64], d_txt[2][GMT_LEN64], h_txt[2][GMT_LEN64], v_txt[2][GMT_LEN64], z_txt[2][GMT_LEN64];
+	char stop[2][GMT_LEN64], info[2][3*GMT_LEN64], **trk_list = NULL, **ignore = NULL, *t = NULL;
 	int i, year[2], our_item = -1, n_items, s_id;
 	unsigned int id[2], n_ignore = 0, n_tracks = 0;
 	bool more, skip, two_values = false, check_box, keep = true, no_time = false;

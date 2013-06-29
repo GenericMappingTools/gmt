@@ -279,8 +279,8 @@ int GMT_mgd77track_parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, st
 	unsigned int n_errors = 0, mrk = 0;
 	bool error = false;
 	int j;
-	char ms[GMT_TEXT_LEN64], mc[GMT_TEXT_LEN64], tmp[GMT_TEXT_LEN64], mfs[GMT_TEXT_LEN64], mf[GMT_TEXT_LEN64];
-	char comment[GMT_BUFSIZ], mfc[GMT_TEXT_LEN64], *t = NULL;
+	char ms[GMT_LEN64], mc[GMT_LEN64], tmp[GMT_LEN64], mfs[GMT_LEN64], mf[GMT_LEN64];
+	char comment[GMT_BUFSIZ], mfc[GMT_LEN64], *t = NULL;
 	double dist_scale;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -550,8 +550,8 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 	
 	size_t n_alloc_c = GMT_SMALL_CHUNK;
 	
-       	char label[GMT_TEXT_LEN256], date[GMT_TEXT_LEN64], clock[GMT_TEXT_LEN64];
-	char name[GMT_TEXT_LEN64], **list = NULL;
+       	char label[GMT_LEN256], date[GMT_LEN64], clock[GMT_LEN64];
+	char name[GMT_LEN64], **list = NULL;
 
 	double x, y, annot_dist[2] = {0, 0}, tick_dist[2] = {0, 0}, annot_time[2] = {0, 0};
 	double *track_dist = NULL, angle, plot_x, plot_y, *lon = NULL, *lat = NULL, *track_time = NULL;
@@ -641,9 +641,9 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 		last_julian = -1;
 		
 		if (abs (Ctrl->A.mode) == 2)	/* Use MGD77 cruise ID */
-			strncpy (name, D->H.mgd77[use]->Survey_Identifier, GMT_TEXT_LEN64);
+			strncpy (name, D->H.mgd77[use]->Survey_Identifier, GMT_LEN64);
 		else {			/* Use file name prefix */
-			strncpy (name, list[argno], GMT_TEXT_LEN64);
+			strncpy (name, list[argno], GMT_LEN64);
 			for (i = 0; i < strlen (name); i++) if (name[i] == '.') name[i] = '\0';
 		}
 	

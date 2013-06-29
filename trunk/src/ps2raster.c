@@ -151,8 +151,8 @@ int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *Ct
 	bool error = false;
 	unsigned int pos = 0;
 	int j, k = 0;
-	char txt[GMT_TEXT_LEN128] = {""}, p[GMT_TEXT_LEN128] = {""};
-	char txt_a[GMT_TEXT_LEN64] = {""}, txt_b[GMT_TEXT_LEN64] = {""}, txt_c[GMT_TEXT_LEN64] = {""}, txt_d[GMT_TEXT_LEN64] = {""};
+	char txt[GMT_LEN128] = {""}, p[GMT_LEN128] = {""};
+	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""}, txt_d[GMT_LEN64] = {""};
 	
 	Ctrl->A.active = true;
 
@@ -185,7 +185,7 @@ int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *Ct
 		}
 	}
 
-	strncpy (txt, arg, GMT_TEXT_LEN128);
+	strncpy (txt, arg, GMT_LEN128);
 	while (!error && (GMT_strtok (txt, "+", &pos, p))) {
 		switch (p[0]) {
 			case 'r':	/* Round */
@@ -466,7 +466,7 @@ int GMT_ps2raster_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, stru
 	unsigned int n_errors = 0, mode;
 	int j;
 	bool grayscale;
-	char text[GMT_TEXT_LEN64] = {""}, *anti = NULL;
+	char text[GMT_LEN64] = {""}, *anti = NULL;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {

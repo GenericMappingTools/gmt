@@ -209,7 +209,7 @@ int GMT_grdinfo (void *V_API, int mode, void *args)
 	double global_xmin, global_xmax, global_ymin, global_ymax, global_zmin, global_zmax;
 	double mean = 0.0, median = 0.0, sum2 = 0.0, stdev = 0.0, scale = 0.0, rms = 0.0, x;
 
-	char format[GMT_BUFSIZ] = {""}, text[GMT_TEXT_LEN64] = {""}, record[GMT_BUFSIZ] = {""};
+	char format[GMT_BUFSIZ] = {""}, text[GMT_LEN64] = {""}, record[GMT_BUFSIZ] = {""};
 	char *type[2] = { "Gridline", "Pixel"}, *sep = NULL;
 
 	struct GRDINFO_CTRL *Ctrl = NULL;

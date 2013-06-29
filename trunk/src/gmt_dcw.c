@@ -217,9 +217,9 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	unsigned short int *dx = NULL, *dy = NULL;
 	unsigned int GMT_DCW_COUNTRIES = 0, GMT_DCW_STATES = 0, n_bodies[3] = {0, 0, 0};
 	bool done, want_state, outline = (F->mode & 4), fill = (F->mode & 8);
-	char TAG[GMT_TEXT_LEN16] = {""}, dim[GMT_TEXT_LEN16] = {""}, xname[GMT_TEXT_LEN16] = {""};
-	char yname[GMT_TEXT_LEN16] = {""}, code[GMT_TEXT_LEN16] = {""}, state[GMT_TEXT_LEN16] = {""};
-	char file[GMT_TEXT_LEN16] = {""}, msg[GMT_BUFSIZ] = {""}, segment[GMT_TEXT_LEN32] = {""}, path[GMT_BUFSIZ] = {""};
+	char TAG[GMT_LEN16] = {""}, dim[GMT_LEN16] = {""}, xname[GMT_LEN16] = {""};
+	char yname[GMT_LEN16] = {""}, code[GMT_LEN16] = {""}, state[GMT_LEN16] = {""};
+	char file[GMT_LEN16] = {""}, msg[GMT_BUFSIZ] = {""}, segment[GMT_LEN32] = {""}, path[GMT_BUFSIZ] = {""};
 	double west, east, south, north, xscl, yscl, out[2], *lon = NULL, *lat = NULL;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *P = NULL, *S = NULL;
@@ -271,10 +271,10 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 
 	/* Get global attributes */
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
-		char version[GMT_TEXT_LEN16] = {""}, source[GMT_TEXT_LEN256] = {""}, title[GMT_TEXT_LEN256] = {""};
-		GMT_memset (version, GMT_TEXT_LEN16, char);
-		GMT_memset (source, GMT_TEXT_LEN256, char);
-		GMT_memset (title, GMT_TEXT_LEN256, char);
+		char version[GMT_LEN16] = {""}, source[GMT_LEN256] = {""}, title[GMT_LEN256] = {""};
+		GMT_memset (version, GMT_LEN16, char);
+		GMT_memset (source, GMT_LEN256, char);
+		GMT_memset (title, GMT_LEN256, char);
 		retval = nc_get_att_text (ncid, NC_GLOBAL, "version", version);
 		retval = nc_get_att_text (ncid, NC_GLOBAL, "title", title);
 		retval = nc_get_att_text (ncid, NC_GLOBAL, "source", source);
@@ -287,7 +287,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	while (GMT_strtok (F->codes, ",", &pos, code)) {	/* Loop over countries */
 		want_state = false;
 		if (code[2] == '.') {	/* Requesting a state */
-			GMT_memset (state, GMT_TEXT_LEN16, char);
+			GMT_memset (state, GMT_LEN16, char);
 			strcpy (state, &code[3]);
 			code[2] = '\0';
 			want_state = true;

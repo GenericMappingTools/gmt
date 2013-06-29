@@ -482,11 +482,11 @@ bool parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 	unsigned int i, j, n_tokens, pos;
 	bool descending;
 	double fourvals[4];
-	char line[GMT_TEXT_LEN256] = {""}, p[GMT_TEXT_LEN256] = {""};
+	char line[GMT_LEN256] = {""}, p[GMT_LEN256] = {""};
 
 	/* Syntax is either -F[r|x|y]lc/hc/lp/hp (Cosine taper), -F[r|x|y]lo/hi (Gaussian), or -F[r|x|y]lo/hi/order (Butterworth) */
 
-	strncpy (line, c,  GMT_TEXT_LEN256);
+	strncpy (line, c,  GMT_LEN256);
 	i =  0;
 	f_info->k_type = GMT_FFT_K_IS_KR;	/* j is Filter type: r=2, x=0, y=1  [r] */
 
@@ -646,7 +646,7 @@ int GMT_grdfft_parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_I
 	unsigned int j, k, n_errors = 0, filter_type = 0;
 	int n_scan;
 	double par[5];
-	char combined[GMT_BUFSIZ] = {""}, argument[GMT_TEXT_LEN16] = {""};
+	char combined[GMT_BUFSIZ] = {""}, argument[GMT_LEN16] = {""};
 	struct GMT_OPTION *opt = NULL, *ptr = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -654,7 +654,7 @@ int GMT_grdfft_parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_I
 		char *mod = NULL;
 		if ((ptr = GMT_Find_Option (API, 'L', options))) {	/* Gave old -L */
 			mod = ptr->arg; /* Gave old -L option */
-			GMT_memset (argument, GMT_TEXT_LEN16, char);
+			GMT_memset (argument, GMT_LEN16, char);
 			if (mod[0] == '\0') strcat (argument, "+l");		/* Leave trend alone -L */
 			else if (mod[0] == 'm') strcat (argument, "+a");	/* Remove mean -Lm */
 			else if (mod[0] == 'h') strcat (argument, "+h");	/* Remove mid-value -Lh */

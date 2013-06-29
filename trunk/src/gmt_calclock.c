@@ -841,7 +841,7 @@ void GMT_format_calendar (struct GMT_CTRL *GMT, char *date, char *clock, struct 
 	 * but skip either string if it is a NULL pointer */
 	 
 	int i_sec, m_sec, ap, ival[3];
-	char text[GMT_TEXT_LEN16] = {""};
+	char text[GMT_LEN16] = {""};
 	double step;
 	struct GMT_gcal calendar;
 
@@ -867,12 +867,12 @@ void GMT_format_calendar (struct GMT_CTRL *GMT, char *date, char *clock, struct 
 			if (D->item_pos[1] != -1) ival[D->item_pos[1]] = calendar.month;
 			if (D->item_pos[2] != -1) ival[D->item_pos[2]] = calendar.day_m;
 		}
-		GMT_memset (date, GMT_TEXT_LEN16, char);			/* To set all to zero */
+		GMT_memset (date, GMT_LEN16, char);			/* To set all to zero */
 		if (D->mw_text)	{						/* Must write month or week name */
 			if (D->iso_calendar)
-				strncpy (text, GMT->current.time.language.week_name[kind], GMT_TEXT_LEN16);
+				strncpy (text, GMT->current.time.language.week_name[kind], GMT_LEN16);
 			else
-				strncpy (text, GMT->current.time.language.month_name[kind][ival[D->item_pos[1]]-1], GMT_TEXT_LEN16);
+				strncpy (text, GMT->current.time.language.month_name[kind][ival[D->item_pos[1]]-1], GMT_LEN16);
 			if (upper) GMT_str_toupper (text);
 			if (D->item_pos[1] == 0)		/* Month/week first */
 				sprintf (date, D->format, text, ival[1], ival[2]);
@@ -888,7 +888,7 @@ void GMT_format_calendar (struct GMT_CTRL *GMT, char *date, char *clock, struct 
 	if (clock) clock[0] = 0;
 	if (!clock || W->skip) return;	/* Do not want a formatted clock string - return here */
 	
-	GMT_memset (clock, GMT_TEXT_LEN16, char);			/* To set all to zero */
+	GMT_memset (clock, GMT_LEN16, char);			/* To set all to zero */
 	i_sec = irint (floor (calendar.sec));
 	m_sec = irint (floor (W->f_sec_to_int * (calendar.sec - i_sec)));
 	

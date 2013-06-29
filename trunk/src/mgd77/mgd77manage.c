@@ -92,8 +92,8 @@ struct MGD77MANAGE_CTRL {	/* All control options for this program (except common
 	} F;
 	struct I {	/* -I */
 		bool active;
-		char c_abbrev[GMT_TEXT_LEN64];
-		char c_units[GMT_TEXT_LEN64];
+		char c_abbrev[GMT_LEN64];
+		char c_units[GMT_LEN64];
 		char c_name[MGD77_COL_NAME_LEN];
 		char c_comment[MGD77_COL_COMMENT_LEN];
 		char c_size;
@@ -514,7 +514,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 	nc_type c_nc_type;
 	
 	char line[GMT_BUFSIZ], p[GMT_BUFSIZ], history[GMT_BUFSIZ], **list = NULL;
-	char not_given[GMT_TEXT_LEN64], word[GMT_BUFSIZ], **tmp_string = NULL, *text = NULL;
+	char not_given[GMT_LEN64], word[GMT_BUFSIZ], **tmp_string = NULL, *text = NULL;
 	signed char LEN = 0, OLDLEN = 0;
 	
 	double x, y, match_value, single_val, dist_scale = 1.0;
@@ -574,8 +574,8 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 	}
 	MGD77_Set_Unit (GMT, Ctrl->N.code, &dist_scale, -1);	/* Gets scale which multiplies meters to chosen distance unit */
 
-	memset (not_given, (int)Ctrl->E.value, GMT_TEXT_LEN64);	/* Text representing "no text value" */
-	not_given[GMT_TEXT_LEN64-1] = '\0';
+	memset (not_given, (int)Ctrl->E.value, GMT_LEN64);	/* Text representing "no text value" */
+	not_given[GMT_LEN64-1] = '\0';
 	fp_err = (In.verbose_dest == 1) ? GMT->session.std[GMT_OUT] : GMT->session.std[GMT_ERR];
 	
 	if (Ctrl->A.mode == MODE_c) {	/* Calculate values to be stored */
@@ -1060,7 +1060,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 			 */
 			FILE *fp_e = NULL;
 			int cdf_var_id, cdf_adjust;
-			char ID[16], date[16], field[GMT_TEXT_LEN64], efile[GMT_BUFSIZ], E77[256], timestamp[GMT_TEXT_LEN64], answer[GMT_BUFSIZ], code[GMT_BUFSIZ], kind, YorN;
+			char ID[16], date[16], field[GMT_LEN64], efile[GMT_BUFSIZ], E77[256], timestamp[GMT_LEN64], answer[GMT_BUFSIZ], code[GMT_BUFSIZ], kind, YorN;
 			int number, type, it, id, key, n_E77_flags, day, month, year, item;
 			int n_E77_headers, n_E77_scales, n_E77_offsets, n_E77_recalcs, n_unprocessed, e_error = 0, old_flags;
 			uint64_t n_recs, rec, from, to;

@@ -119,7 +119,7 @@ struct SAVE {
 	struct GMT_PEN pen;
 	int do_it, high;
 	enum grdcontour_contour_type kind;
-	char label[GMT_TEXT_LEN64];
+	char label[GMT_LEN64];
 };
 
 void *New_grdcontour_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -252,7 +252,7 @@ int GMT_grdcontour_parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, st
 
 	unsigned int n_errors = 0, n_files = 0, id;
 	int j, k, n;
-	char txt_a[GMT_TEXT_LEN256] = {""}, txt_b[GMT_TEXT_LEN256] = {""};
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -741,7 +741,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 	size_t n_save = 0, n_alloc = 0, n_tmp, *n_seg_alloc = NULL;
 	
 	char *cont_type = NULL, *cont_do_tick = NULL;
-	char cont_label[GMT_TEXT_LEN256] = {""}, format[GMT_TEXT_LEN256] = {""};
+	char cont_label[GMT_LEN256] = {""}, format[GMT_LEN256] = {""};
 
 	double aval, cval, small, xyz[2][3], z_range, t_offset = 0.0, wesn[4], rgb[4];
 	double *xp = NULL, *yp = NULL, *contour = NULL, *x = NULL, *y = NULL, *cont_angle = NULL;
@@ -866,7 +866,7 @@ int GMT_grdcontour (void *V_API, int mode, void *args)
 		Return (GMT_OK);
 	}
 
-	if (!strcmp (Ctrl->contour.unit, "z")) strncpy (Ctrl->contour.unit, G->header->z_units, GMT_TEXT_LEN64);
+	if (!strcmp (Ctrl->contour.unit, "z")) strncpy (Ctrl->contour.unit, G->header->z_units, GMT_LEN64);
 	if (Ctrl->A.interval == 0.0) Ctrl->A.interval = Ctrl->C.interval;
 
 	if (Ctrl->contour.annot) {	/* Want annotated contours */

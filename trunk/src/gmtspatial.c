@@ -726,7 +726,7 @@ int GMT_gmtspatial_parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, st
 
 	unsigned int n_files[2] = {0, 0}, pos, n_errors = 0;
 	int n;
-	char txt_a[GMT_TEXT_LEN64] = {""}, txt_b[GMT_TEXT_LEN64] = {""}, txt_c[GMT_TEXT_LEN64] = {""}, p[GMT_TEXT_LEN256] = {""}, *s = NULL;
+	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""}, p[GMT_LEN256] = {""}, *s = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -1549,7 +1549,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 		uint64_t tbl, row, first, last, n, p, np, seg, seg2, n_inside;
 		unsigned int *count = NULL;
 		int ID = -1;
-		char seg_label[GMT_TEXT_LEN64] = {""}, record[GMT_BUFSIZ] = {""}, *kind[2] = {"Middle point", "All points"};
+		char seg_label[GMT_LEN64] = {""}, record[GMT_BUFSIZ] = {""}, *kind[2] = {"Middle point", "All points"};
 		struct GMT_DATASET *C = NULL;
 		struct GMT_DATATABLE *T = NULL;
 		struct GMT_DATASEGMENT *S = NULL, *S2 = NULL;
@@ -1618,7 +1618,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 						if (GMT_parse_segment_item (GMT, S->header, "-Z", NULL))
 							GMT_Report (API, GMT_MSG_NORMAL, "Segment header %d-%" PRIu64 " already has a -Z flag, skipped\n", tbl, seg);
 						else {	/* Add -Z<ID< to the segment header */
-							char buffer[GMT_BUFSIZ] = {""}, txt[GMT_TEXT_LEN64] = {""};
+							char buffer[GMT_BUFSIZ] = {""}, txt[GMT_LEN64] = {""};
 							buffer[0] = txt[0] = 0;
 							if (S->header) { strncpy (buffer, S->header, GMT_BUFSIZ); free (S->header); }
 							sprintf (txt, " -Z%d", ID);

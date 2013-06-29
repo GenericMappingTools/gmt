@@ -133,7 +133,7 @@ int GMT_grdrotater_parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, st
 	 */
 
 	unsigned int n_errors = 0, n, n_files = 0;
-	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256];
+	char txt_a[GMT_LEN256], txt_b[GMT_LEN256], txt_c[GMT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 

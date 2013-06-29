@@ -106,7 +106,7 @@ struct GMT_PLOT {		/* Holds all plotting-related parameters */
 	/* The rest of the struct contains pointers that may point to memory not included by this struct */
 	double *x;			/* Holds the x/y (inches) of a line to be plotted */
 	double *y;
-	char format[3][2][GMT_TEXT_LEN256];	/* Keeps the 6 formats for dd:mm:ss plot output */
+	char format[3][2][GMT_LEN256];	/* Keeps the 6 formats for dd:mm:ss plot output */
 };
 
 struct GMT_CURRENT {

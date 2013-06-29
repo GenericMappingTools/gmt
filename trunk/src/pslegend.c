@@ -140,8 +140,8 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 
 	unsigned int k, n_errors = 0, pos;
 	unsigned int n;
-	char txt_a[GMT_TEXT_LEN256] = {""}, txt_b[GMT_TEXT_LEN256] = {""}, txt_c[GMT_TEXT_LEN256] = {""};
-	char txt_d[GMT_TEXT_LEN256] = {""}, txt_e[GMT_TEXT_LEN256] = {""}, txt_f[GMT_TEXT_LEN256] = {""}, p[GMT_BUFSIZ] = {""};
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
+	char txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""}, txt_f[GMT_LEN256] = {""}, p[GMT_BUFSIZ] = {""};
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -180,8 +180,8 @@ int GMT_pslegend_parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct
 				Ctrl->D.width   = GMT_to_inch (GMT, txt_c);
 				if (n == 4 || n == 6) {	/* Did not give height, so shuffle the following 3 items */
 					Ctrl->D.height  = 0.0;
-					strncpy (txt_f, txt_e, GMT_TEXT_LEN256);
-					strncpy (txt_e, Ctrl->D.justify, GMT_TEXT_LEN256);
+					strncpy (txt_f, txt_e, GMT_LEN256);
+					strncpy (txt_e, Ctrl->D.justify, GMT_LEN256);
 					strncpy (Ctrl->D.justify, txt_d, 3U);
 				}
 				else
@@ -326,14 +326,14 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 	uint64_t seg, row;
 	size_t n_char = 0;
 	 
-	char txt_a[GMT_TEXT_LEN256] = {""}, txt_b[GMT_TEXT_LEN256] = {""}, txt_c[GMT_TEXT_LEN256] = {""}, txt_d[GMT_TEXT_LEN256] = {""};
-	char txt_e[GMT_TEXT_LEN256] = {""}, txt_f[GMT_TEXT_LEN256] = {""}, key[GMT_TEXT_LEN256] = {""}, sub[GMT_TEXT_LEN256] = {""}, just;
-	char tmp[GMT_TEXT_LEN256] = {""}, symbol[GMT_TEXT_LEN256] = {""}, text[GMT_BUFSIZ] = {""}, image[GMT_BUFSIZ] = {""}, xx[GMT_TEXT_LEN256] = {""};
-	char yy[GMT_TEXT_LEN256] = {""}, size[GMT_TEXT_LEN256] = {""}, angle[GMT_TEXT_LEN256] = {""}, mapscale[GMT_TEXT_LEN256] = {""};
-	char font[GMT_TEXT_LEN256] = {""}, lspace[GMT_TEXT_LEN256] = {""}, tw[GMT_TEXT_LEN256] = {""}, jj[GMT_TEXT_LEN256] = {""};
-	char bar_cpt[GMT_TEXT_LEN256] = {""}, bar_gap[GMT_TEXT_LEN256] = {""}, bar_height[GMT_TEXT_LEN256] = {""}, bar_opts[GMT_BUFSIZ] = {""};
-	char *opt = NULL, sarg[GMT_TEXT_LEN256] = {""}, txtcolor[GMT_TEXT_LEN256] = {""}, buffer[GMT_BUFSIZ] = {""}, A[GMT_TEXT_LEN32] = {""};
-	char B[GMT_TEXT_LEN32] = {""}, C[GMT_TEXT_LEN32] = {""};
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""};
+	char txt_e[GMT_LEN256] = {""}, txt_f[GMT_LEN256] = {""}, key[GMT_LEN256] = {""}, sub[GMT_LEN256] = {""}, just;
+	char tmp[GMT_LEN256] = {""}, symbol[GMT_LEN256] = {""}, text[GMT_BUFSIZ] = {""}, image[GMT_BUFSIZ] = {""}, xx[GMT_LEN256] = {""};
+	char yy[GMT_LEN256] = {""}, size[GMT_LEN256] = {""}, angle[GMT_LEN256] = {""}, mapscale[GMT_LEN256] = {""};
+	char font[GMT_LEN256] = {""}, lspace[GMT_LEN256] = {""}, tw[GMT_LEN256] = {""}, jj[GMT_LEN256] = {""};
+	char bar_cpt[GMT_LEN256] = {""}, bar_gap[GMT_LEN256] = {""}, bar_height[GMT_LEN256] = {""}, bar_opts[GMT_BUFSIZ] = {""};
+	char *opt = NULL, sarg[GMT_LEN256] = {""}, txtcolor[GMT_LEN256] = {""}, buffer[GMT_BUFSIZ] = {""}, A[GMT_LEN32] = {""};
+	char B[GMT_LEN32] = {""}, C[GMT_LEN32] = {""};
 	char *line = NULL, string[GMT_STR16] = {""}, save_EOF = 0;
 #ifdef DEBUG
 	int guide = 0;
@@ -472,7 +472,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						d_off = FONT_HEIGHT_LABEL * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH + fabs(GMT->current.setting.map_label_offset);
 
 						if ((opt = strchr (txt_c, '+'))) {	/* Specified alternate label (could be upper case, hence 0.85) and justification */
-							char txt_cpy[GMT_BUFSIZ] = {""}, p[GMT_TEXT_LEN256] = {""};
+							char txt_cpy[GMT_BUFSIZ] = {""}, p[GMT_LEN256] = {""};
 							unsigned int pos = 0;
 							strncpy (txt_cpy, opt, GMT_BUFSIZ);
 							while ((GMT_strtok (txt_cpy, "+", &pos, p))) {
@@ -761,7 +761,7 @@ int GMT_pslegend (void *V_API, int mode, void *args)
 						d_off = FONT_HEIGHT_LABEL * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH + fabs(GMT->current.setting.map_label_offset);
 
 						if ((opt = strchr (txt_c, '+'))) {	/* Specified alternate label (could be upper case, hence 0.85) and justification */
-							char txt_cpy[GMT_BUFSIZ] = {""}, p[GMT_TEXT_LEN256] = {""};
+							char txt_cpy[GMT_BUFSIZ] = {""}, p[GMT_LEN256] = {""};
 							unsigned int pos = 0;
 							strncpy (txt_cpy, opt, GMT_BUFSIZ);
 							while ((GMT_strtok (txt_cpy, "+", &pos, p))) {

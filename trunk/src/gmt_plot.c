@@ -386,8 +386,8 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	double x, t_use;			/* Misc. variables */
 	struct GMT_FONT font;			/* Annotation font (FONT_ANNOT_PRIMARY or FONT_ANNOT_SECONDARY) */
 	struct GMT_PLOT_AXIS_ITEM *T = NULL;	/* Pointer to the current axis item */
-	char string[GMT_TEXT_LEN256] = {""};	/* Annotation string */
-	char format[GMT_TEXT_LEN256] = {""};	/* format used for non-time annotations */
+	char string[GMT_LEN256] = {""};	/* Annotation string */
+	char format[GMT_LEN256] = {""};	/* format used for non-time annotations */
 	char *axis_chr[3] = {"ns", "ew", "zz"};	/* Characters corresponding to axes */
 	char **label_c = NULL;
 	double (*xyz_fwd) (struct GMT_CTRL *, double) = NULL;
@@ -487,7 +487,7 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 				if (GMT->current.setting.map_frame_type == GMT_IS_INSIDE && (fabs (knots[i] - val0) < GMT_CONV_LIMIT || fabs (knots[i] - val1) < GMT_CONV_LIMIT)) continue;	/* Skip annotation on edges when MAP_FRAME_TYPE = inside */
 				if (!is_interval && gmt_skip_second_annot (k, knots[i], knots_p, np, primary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
 				if (label_c && label_c[i] && label_c[i][0])
-					strncpy (string, label_c[i], GMT_TEXT_LEN256);
+					strncpy (string, label_c[i], GMT_LEN256);
 				else
 					GMT_get_coordinate_label (GMT, string, &GMT->current.plot.calclock, format, T, knots[i]);	/* Get annotation string */
 				PSL_deftextdim (PSL, ortho ? "-w" : "-h", font.size, string);
@@ -510,7 +510,7 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 				/* Move to new anchor point */
 				PSL_command (PSL, "%d PSL_A%d_y MM\n", psl_iz (PSL, x), annot_pos);
 				if (label_c && label_c[i] && label_c[i][0])
-					strncpy (string, label_c[i], GMT_TEXT_LEN256);
+					strncpy (string, label_c[i], GMT_LEN256);
 				else
 					GMT_get_coordinate_label (GMT, string, &GMT->current.plot.calclock, format, T, knots[i]);	/* Get annotation string */
 				PSL_plottext (PSL, 0.0, 0.0, -font.size, string, (ortho == horizontal) ? 90.0 : 0.0, ortho ? PSL_MR : PSL_BC, form);
@@ -1925,7 +1925,7 @@ void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 	unsigned int i, k, nx, ny, form, remove[2] = {0,0}, add;
 	bool do_minutes, do_seconds, done_Greenwich, done_Dateline;
 	bool full_lat_range, proj_A, proj_B, annot_0_and_360 = false, dual[2], is_dual, annot, is_world_save, lon_wrap_save;
-	char label[GMT_TEXT_LEN256] = {""};
+	char label[GMT_LEN256] = {""};
 	char **label_c = NULL;
 	double *val = NULL, dx[2], dy[2], w2, s2, del;
 
@@ -2012,7 +2012,7 @@ void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 				if (doubleAlmostEqual (val[i], -180.0))
 					done_Dateline = true;	/* OK, want to plot -180 */
 				if (label_c && label_c[i] && label_c[i][0])
-					strncpy (label, label_c[i], GMT_TEXT_LEN256);
+					strncpy (label, label_c[i], GMT_LEN256);
 				else
 					GMT_get_annot_label (GMT, val[i], label, do_minutes, do_seconds, 0, is_world_save);
 				/* Only annotate val[i] if
@@ -2071,7 +2071,7 @@ void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 				if ((GMT->current.proj.polar || GMT->current.proj.projection == GMT_VANGRINTEN) && doubleAlmostEqual (fabs (val[i]), 90.0))
 					continue;
 				if (label_c && label_c[i] && label_c[i][0])
-					strncpy (label, label_c[i], GMT_TEXT_LEN256);
+					strncpy (label, label_c[i], GMT_LEN256);
 				else
 					GMT_get_annot_label (GMT, tval[i], label, do_minutes, do_seconds, lonlat, is_world_save);
 				annot = true;
@@ -2436,7 +2436,7 @@ void gmt_timestamp (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double
 	 */
 
 	time_t right_now;
-	char label[GMT_TEXT_LEN256] = {""}, text[GMT_TEXT_LEN256] = {""};
+	char label[GMT_LEN256] = {""}, text[GMT_LEN256] = {""};
 	double dim[3] = {0.365, 0.15, 0.032};	/* Predefined dimensions in inches */
 	double unset_rgb[4] = {-1.0, -1.0, -1.0, 0.0};
 
@@ -2684,7 +2684,7 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 	enum GMT_enum_units unit;
 	double dlon, x1, x2, y1, y2, a0, tx, ty, off, f_len, a_len, x_left, x_right, bar_length, x_label, y_label;
 	double base, d_base, width, half, bar_width, dx, dx_f, dx_a;
-	char txt[GMT_TEXT_LEN256] = {""}, *this_label = NULL;
+	char txt[GMT_LEN256] = {""}, *this_label = NULL;
 	char *label[GMT_N_UNITS] = {"m", "km", "miles", "nautical miles", "inch", "cm", "pt", "feet", "survey feet"};
 	char *units[GMT_N_UNITS] = {"m", "km", "mi", "nm", "in", "cm", "pt", "ft", "usft"}, measure;
 	struct PSL_CTRL *PSL= GMT->PSL;
@@ -3182,8 +3182,8 @@ void gmt_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_IT
 	}
 	else {	/* Must replace special items within a template string */
 		unsigned int n_skip, in, out;
-		char tmp[GMT_TEXT_LEN64] = {""};
-		GMT_memset (text, GMT_TEXT_LEN256, char);
+		char tmp[GMT_LEN64] = {""};
+		GMT_memset (text, GMT_LEN256, char);
 		for (in = out = 0; s->string[in]; in++) {
 			switch (s->string[in]) {
 				case '%':	/* Possibly a special %X, %Y request */
@@ -3231,7 +3231,7 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 	uint64_t n = 0;
 	size_t n_alloc = 0;
 	double x, y, lon, lat, angle, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL, dim[3];
-	char *c = NULL, user_text[GMT_TEXT_LEN256] = {""};
+	char *c = NULL, user_text[GMT_LEN256] = {""};
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL;
 	struct GMT_FILL *f = NULL, *current_fill = fill;
 	struct GMT_PEN *p = NULL, *current_pen = pen;
@@ -3474,7 +3474,7 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 
 void GMT_write_label_record (struct GMT_CTRL *GMT, double x, double y, double angle, char *label, bool save_angle)
 {
-	char word[GMT_TEXT_LEN64] = {""}, record[GMT_BUFSIZ] = {""};
+	char word[GMT_LEN64] = {""}, record[GMT_BUFSIZ] = {""};
 	double geo[2];
 	record[0] = 0;	/* Start with blank record */
 	GMT_xy_to_geo (GMT, &geo[GMT_X], &geo[GMT_Y], x, y);

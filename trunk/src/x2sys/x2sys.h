@@ -202,7 +202,7 @@ struct X2SYS_COE {	/* Holds the information for a single crossover */
 };
 
 struct X2SYS_COE_PAIR {	/* Holds the information for COE between a pair of tracks */
-	char trk[2][GMT_TEXT_LEN64];	/* Track names */
+	char trk[2][GMT_LEN64];	/* Track names */
 	int year[2];		/* Start year for each track */
 	unsigned int id[2];		/* Internal ID track numbers */
 	unsigned int nx;		/* Number of crossovers */

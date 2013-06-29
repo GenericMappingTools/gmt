@@ -49,7 +49,7 @@ struct GMT_CUSTOM_SYMBOL_ITEM {
 };
 
 struct GMT_CUSTOM_SYMBOL {
-	char name[GMT_TEXT_LEN64];
+	char name[GMT_LEN64];
 	char *PS_macro;		/* Contains all the PS commands if PS is true */
 	unsigned int n_required;	/* Number of additional columns necessary to decode chosen symbol */
 	unsigned int start;	/* Column number of first additional column [2-4 depending on -C and psxy vs psxyz] */
@@ -88,7 +88,7 @@ struct GMT_MAP_SCALE {	/* Used to plot a map scale in psbasemap and pscoast */
 	bool do_label;	/* true if we should plot a label for the scale */
 	char measure;		/* The unit, i.e., m (miles), n (nautical miles), or k (kilometers) */
 	char justify;		/* Placement of label: t(op), b(ottom), l(eft), r(ight) */
-	char label[GMT_TEXT_LEN64];	/* Alternative user-specified label */
+	char label[GMT_LEN64];	/* Alternative user-specified label */
 	struct GMT_FILL fill;	/* Fill to use for background rectangle */
 	struct GMT_PEN pen;	/* Pen to use for background rectangle */
 };
@@ -105,8 +105,8 @@ struct GMT_MAP_ROSE {	/* Used to plot a map direction "rose" in psbasemap and ps
 	bool gave_xy;	/* true if x0, y0 was given in cartesian map coordinates and not lon/lat */
 	unsigned int type;	/* 0 for plain directional rose, 1 for a fancy directional map rose, 2 for magnetic rose */
 	unsigned int kind;	/* 0 : 90 degrees, 1 : 45 degrees, 2 : 22.5 degrees between points */
-	char label[4][GMT_TEXT_LEN64];	/* User-changable labels for W, E, S, N point */
-	char dlabel[GMT_TEXT_LEN256];	/* Magnetic declination label */
+	char label[4][GMT_LEN64];	/* User-changable labels for W, E, S, N point */
+	char dlabel[GMT_LEN256];	/* Magnetic declination label */
 };
 
 #endif	/* _GMT_SYMBOLS_H */

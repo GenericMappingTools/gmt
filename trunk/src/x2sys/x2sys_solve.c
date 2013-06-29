@@ -293,7 +293,7 @@ int x2sys_read_namedatelist (struct GMT_CTRL *GMT, char *file, char ***list, dou
 	/* Reads a list with track names and their origin times (needed for -Et) */
 	size_t n_alloc = GMT_CHUNK;
 	int n = 0;
-	char **p, line[GMT_BUFSIZ], name[GMT_TEXT_LEN64], date[GMT_TEXT_LEN64];
+	char **p, line[GMT_BUFSIZ], name[GMT_LEN64], date[GMT_LEN64];
 	double *T;
 	FILE *fp;
 
@@ -338,7 +338,7 @@ int x2sys_read_namedatelist (struct GMT_CTRL *GMT, char *file, char ***list, dou
 int GMT_x2sys_solve (void *V_API, int mode, void *args)
 {
 	char **trk_list = NULL;
-	char trk[2][GMT_TEXT_LEN64], t_txt[2][GMT_TEXT_LEN64], z_txt[GMT_TEXT_LEN64], w_txt[GMT_TEXT_LEN64], line[GMT_BUFSIZ];
+	char trk[2][GMT_LEN64], t_txt[2][GMT_LEN64], z_txt[GMT_LEN64], w_txt[GMT_LEN64], line[GMT_BUFSIZ];
 	bool grow_list = false, normalize = false, active_col[N_COE_PARS];
 	int *ID[2] = {NULL, NULL}, ks, t;
 	uint64_t n_par = 0, n, m, n_tracks = 0, n_active;
@@ -546,7 +546,7 @@ int GMT_x2sys_solve (void *V_API, int mode, void *args)
 		}
 	}
 	else {	/* Ascii input with track names */
-		char file_TAG[GMT_TEXT_LEN64], file_column[GMT_TEXT_LEN64];
+		char file_TAG[GMT_LEN64], file_column[GMT_LEN64];
 		if (!GMT_fgets (GMT, line, GMT_BUFSIZ, fp)) {	/* Read first line with TAG and column */
 			GMT_Report (API, GMT_MSG_NORMAL, "Read error in 1st line of track file\n");
 			Return (EXIT_FAILURE);

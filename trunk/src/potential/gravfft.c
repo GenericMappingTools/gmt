@@ -170,12 +170,12 @@ int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct G
 	int n, override_mode = GMT_FFT_REMOVE_MEAN;
 	struct GMT_OPTION *opt = NULL,  *popt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
-	char   ptr[GMT_BUFSIZ], t_or_b[4], argument[GMT_TEXT_LEN16], combined[GMT_BUFSIZ];
+	char   ptr[GMT_BUFSIZ], t_or_b[4], argument[GMT_LEN16], combined[GMT_BUFSIZ];
 	if (GMT_compat_check (GMT, 4)) {
 		char *mod = NULL;
 		if ((popt = GMT_Find_Option (API, 'L', options))) {	/* Gave old -L */
 			mod = popt->arg; /* Gave old -L option */
-			GMT_memset (argument, GMT_TEXT_LEN16, char);
+			GMT_memset (argument, GMT_LEN16, char);
 			if (mod[0] == '\0') strcat (argument, "+l");		/* Leave trend alone -L */
 			else if (mod[0] == 'm') strcat (argument, "+a");	/* Remove mean -Lm */
 			else if (mod[0] == 'h') strcat (argument, "+h");	/* Remove mid-value -Lh */

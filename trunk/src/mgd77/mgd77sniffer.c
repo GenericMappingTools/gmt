@@ -266,7 +266,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 	double thisLon, thisLat, lastLon, lastLat, *MaxDiff = NULL, **diff = NULL, *decimated_orig, wrapsum, tcrit, se,  n_days;
 	double *offsetLength, *decimated_new, recommended_scale, *new_anom = NULL, *old_anom = NULL, IGRF[8], lastCorr = 0.0;
 
-	char timeStr[32], placeStr[128], errorStr[128], outfile[32], abbrev[8], fstats[MGD77_N_STATS][GMT_TEXT_LEN64], text[GMT_TEXT_LEN64];
+	char timeStr[32], placeStr[128], errorStr[128], outfile[32], abbrev[8], fstats[MGD77_N_STATS][GMT_LEN64], text[GMT_LEN64];
 
 	bool *prevOffsetSign, prevFlag, prevType, decimated = false;
 	bool gotTime, landcruise, *offsetSign, newScale = false, mtf1, nav_error;
@@ -309,7 +309,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 	if (mem_track_enabled) GMT_memtrack_off (GMT);
 #endif
 
-	strncpy (GMT->current.setting.format_clock_out, "hh:mm:ss.xx", GMT_TEXT_LEN64);
+	strncpy (GMT->current.setting.format_clock_out, "hh:mm:ss.xx", GMT_LEN64);
 	gmt_clock_C_format (GMT, GMT->current.setting.format_clock_out, &GMT->current.io.clock_output, 1);
 
 	MGD77_Init (GMT, &M);
@@ -1161,7 +1161,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 					diff[i][k] = D[k].number[this_grid[i].col] - G[i][k];
 
 				/* Initialize variables */
-				for (k=0; k<MGD77_N_STATS; k++) { stats[k] = stats2[k] = 0.0; for (j=0; j<GMT_TEXT_LEN64; j++) fstats[k][j]='\0'; }
+				for (k=0; k<MGD77_N_STATS; k++) { stats[k] = stats2[k] = 0.0; for (j=0; j<GMT_LEN64; j++) fstats[k][j]='\0'; }
 				tcrit = se = 0;
 				newScale = false;
 				MaxDiff[i] = 0.0;

@@ -404,7 +404,7 @@ int GMT_originator (void *V_API, int mode, void *args)
 		hotspot[spot].h = &orig_hotspot[spot];	/* Point to the original hotspot structures */
 		hotspot[spot].np_dist = 1.0e100;
 		if (Ctrl->F.mode) {	/* See if there is a drift file for this hotspot */
-			char path[GMT_BUFSIZ], file[GMT_TEXT_LEN64];
+			char path[GMT_BUFSIZ], file[GMT_LEN64];
 			uint64_t row;
 			sprintf (file, "%s_drift.txt", hotspot[spot].h->abbrev);
 			strncpy (path, file, GMT_BUFSIZ);

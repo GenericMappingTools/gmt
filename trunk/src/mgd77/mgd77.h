@@ -338,7 +338,7 @@ struct MGD77_AUXLIST {
 	unsigned int type;
 	bool text;
 	bool requested;
-	char header[GMT_TEXT_LEN64];
+	char header[GMT_LEN64];
 };
 
 struct MGD77_AUX_INFO {
@@ -389,7 +389,7 @@ struct MGD77_CONSTRAINT {
 	int code;				/* Which test this is */
 	bool exact;				/* If true we MUST pass this test */
 	double d_constraint;			/* Value for testing */
-	char c_constraint[GMT_TEXT_LEN64];	/* String value for testing */
+	char c_constraint[GMT_LEN64];	/* String value for testing */
 	int (*double_test) (double, double);		/* Pointer to function performing the chosen limit test on a double */
 	int (*string_test) (char *, char *, size_t);	/* Pointer to function performing the chosen limit test on a string */
 };

@@ -153,7 +153,7 @@ static int GMT_gmtconnect_parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *C
 
 	unsigned int n_errors = 0, n_files = 0;
 	int n = 0;
-	char A[GMT_TEXT_LEN64] = {""}, B[GMT_TEXT_LEN64] = {""};
+	char A[GMT_LEN64] = {""}, B[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -259,7 +259,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args)
 
 	double dd[2][2], p_last_x, p_last_y, p_first_x, p_first_y, distance, closed_dist = 0.0;
 
-	char buffer[GMT_BUFSIZ] = {""}, msg[GMT_BUFSIZ] = {""}, text[GMT_TEXT_LEN64] = {""}, *BE = "BE", *ofile = NULL;
+	char buffer[GMT_BUFSIZ] = {""}, msg[GMT_BUFSIZ] = {""}, text[GMT_LEN64] = {""}, *BE = "BE", *ofile = NULL;
 
 	struct LINK *segment = NULL;
 	struct GMT_DATASET *D[2] = {NULL, NULL}, *C = NULL;

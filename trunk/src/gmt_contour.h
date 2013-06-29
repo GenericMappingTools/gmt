@@ -122,8 +122,8 @@ struct GMT_CONTOUR {
 	char option[GMT_BUFSIZ];	/* Copy of the option string */
 	char label[GMT_BUFSIZ];		/* Fixed label */
 	char label_file[GMT_BUFSIZ];	/* Output files for text dump of label locations */
-	char unit[GMT_TEXT_LEN64];	/* Unit for labels */
-	char prefix[GMT_TEXT_LEN64];	/* prefix for labels */
+	char unit[GMT_LEN64];	/* Unit for labels */
+	char prefix[GMT_LEN64];	/* prefix for labels */
 	char line_name[16];		/* Name of line: contour or line */
 	char flag;			/* Char for the option key */
 	char **f_label;			/* Array for fixed labels */

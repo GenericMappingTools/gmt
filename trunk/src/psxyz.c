@@ -225,7 +225,7 @@ int GMT_psxyz_parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_O
 
 	unsigned int j, n_errors = 0;
 	int n;
-	char txt_a[GMT_TEXT_LEN256] = {""}, txt_b[GMT_TEXT_LEN256] = {""}, txt_c[GMT_TEXT_LEN256] = {""};
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 

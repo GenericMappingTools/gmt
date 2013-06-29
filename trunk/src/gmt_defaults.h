@@ -32,21 +32,21 @@
 
 struct ELLIPSOID {	/* Information about a particular ellipsoid */
 	/* Table taken from Snyder "Map projection - a working manual", p 12 Table 1 */
-	char name[GMT_TEXT_LEN64];
+	char name[GMT_LEN64];
 	int date;
 	double eq_radius;
 	double flattening;
 };
 
 struct DATUM {	/* Information about a particular datum */
-	char name[GMT_TEXT_LEN64];	/* Datum name */
-	char ellipsoid[GMT_TEXT_LEN64];	/* Ellipsoid GMT ID name */
-	char region[GMT_TEXT_LEN256];	/* Region of use */
+	char name[GMT_LEN64];	/* Datum name */
+	char ellipsoid[GMT_LEN64];	/* Ellipsoid GMT ID name */
+	char region[GMT_LEN256];	/* Region of use */
 	double xyz[3];		/* Coordinate shifts in meter for x, y, and z */
 };
 
 struct gmt_encoding {
-	char name[GMT_TEXT_LEN64];
+	char name[GMT_LEN64];
 	int code[5]; /* Codes for symbols we print. */
 };
 
@@ -66,18 +66,18 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	struct GMT_FONT font_logo;		/* Font for GMT logo [8p,Helvetica,black] */
 	struct GMT_FONT font_title;		/* Font for headers [36p,Helvetica,black] */
 	/* FORMAT group */
-	char format_clock_in[GMT_TEXT_LEN64];	/* How to decode an incoming clock string [hh:mm:ss] */
-	char format_clock_out[GMT_TEXT_LEN64];	/* Controls how clocks are written on output [hh:mm:ss] */
-	char format_clock_map[GMT_TEXT_LEN64];	/* Controls how clocks are plotted on maps [hh:mm:ss] */
-	char format_date_in[GMT_TEXT_LEN64];	/* How to decode an incoming date string [yyyy-mm-dd] */
-	char format_date_out[GMT_TEXT_LEN64];	/* Controls how dates are written on output [yyyy-mm-dd] */
-	char format_date_map[GMT_TEXT_LEN64];	/* Controls how dates are plotted on maps [yyyy-mm-dd] */
-	char format_geo_out[GMT_TEXT_LEN64];	/* Controls how degrees are written on output [000 = dd.xxxx] */
-	char format_geo_map[GMT_TEXT_LEN64];	/* Controls how degrees are plotted on maps [020 = dd:mm:ss as in old DEGREE_FORMAT = 0] */
-	char format_float_out[GMT_TEXT_LEN64];	/* Default double output format [%g] */
-	char format_float_map[GMT_TEXT_LEN64];	/* Default double plot format [%g] */
-	char format_time[2][GMT_TEXT_LEN64];	/* Controls annotation format for Months/Weeks/Weekdays for primary and secondary axes */
-	char format_time_stamp[GMT_TEXT_LEN256];	/* Specify the format for writing time stamps (see strftime) */
+	char format_clock_in[GMT_LEN64];	/* How to decode an incoming clock string [hh:mm:ss] */
+	char format_clock_out[GMT_LEN64];	/* Controls how clocks are written on output [hh:mm:ss] */
+	char format_clock_map[GMT_LEN64];	/* Controls how clocks are plotted on maps [hh:mm:ss] */
+	char format_date_in[GMT_LEN64];	/* How to decode an incoming date string [yyyy-mm-dd] */
+	char format_date_out[GMT_LEN64];	/* Controls how dates are written on output [yyyy-mm-dd] */
+	char format_date_map[GMT_LEN64];	/* Controls how dates are plotted on maps [yyyy-mm-dd] */
+	char format_geo_out[GMT_LEN64];	/* Controls how degrees are written on output [000 = dd.xxxx] */
+	char format_geo_map[GMT_LEN64];	/* Controls how degrees are plotted on maps [020 = dd:mm:ss as in old DEGREE_FORMAT = 0] */
+	char format_float_out[GMT_LEN64];	/* Default double output format [%g] */
+	char format_float_map[GMT_LEN64];	/* Default double plot format [%g] */
+	char format_time[2][GMT_LEN64];	/* Controls annotation format for Months/Weeks/Weekdays for primary and secondary axes */
+	char format_time_stamp[GMT_LEN256];	/* Specify the format for writing time stamps (see strftime) */
 	/* GMT group */
 	unsigned int compatibility; /* Choose between 4 (GMT4) and up to latest version (5 for now) */
 	unsigned int interpolant; /* Choose between 0 (Linear), 1 (Akima), or 2 (Cubic spline) */
@@ -101,7 +101,7 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	bool io_blankline[2];		/* true means blank lines should be treated as segment breaks [false,false] */
 	bool io_nanline[2];			/* true means lines with all NaNs should be treated as segment breaks [false,false] */
 	char io_col_separator[8];		/* Separator between output ascii data columns [tab] */
-	char io_gridfile_format[GMT_TEXT_LEN64];	/* Default grid file format */
+	char io_gridfile_format[GMT_LEN64];	/* Default grid file format */
 	char io_seg_marker[2];			/* Character used to recognize and write segment headers [>,>] */
 	/* MAP group */
 	double map_annot_offset[2];		/* Distance between primary or secondary annotation and tickmarks [5p/5p] */
@@ -157,7 +157,7 @@ struct GMT_DEFAULTS {	/* Holds all variables directly controlled by GMT Default 
 	unsigned int time_week_start;		/* Which day (Sun = 0, Sat = 7) is start of week */
 	unsigned int time_Y2K_offset_year;	/* Cutoff for making 4-digit years from 2-digit years (1900 vs 2000) */
 	struct GMT_TIME_SYSTEM time_system;	/* All the information about the selected time system */
-	char time_language[GMT_TEXT_LEN64];	/* Language file for time support */
+	char time_language[GMT_LEN64];	/* Language file for time support */
 	/* Related parameters */
 	char given_unit[GMT_N_KEYS];		/* Unit given or implied for each setting */
 };

@@ -204,7 +204,7 @@ int GMT_backtracker_parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, 
 
 	unsigned int n_errors = 0;
 	int k;
-	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
+	char txt_a[GMT_LEN256], txt_b[GMT_LEN256];
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 

@@ -171,7 +171,7 @@ struct GMT_CLOCK_IO {
 	bool compact;		/* true if we do not want leading zeros in items (e.g., 03) */
 	bool twelve_hr_clock;	/* true if we are doing am/pm on output */
 	char ampm_suffix[2][8];		/* Holds the strings to append am or pm */
-	char format[GMT_TEXT_LEN64];	/* Actual C format used to output clock */
+	char format[GMT_LEN64];	/* Actual C format used to output clock */
 	char delimiter[2][2];		/* Delimiter strings in clock, e.g. ":" */
 };
 
@@ -186,7 +186,7 @@ struct GMT_DATE_IO {
 	bool day_of_year;		/* true if we do day-of-year rather than month/day */
 	bool mw_text;		/* true if we must plot the month name or Week rather than a numeral */
 	bool compact;		/* true if we do not want leading zeros in items (e.g., 03) */
-	char format[GMT_TEXT_LEN64];	/* Actual C format used to input/output date */
+	char format[GMT_LEN64];	/* Actual C format used to input/output date */
 	char delimiter[2][2];		/* Delimiter strings in date, e.g. "-" */
 };
 
@@ -198,8 +198,8 @@ struct GMT_GEO_IO {			/* For geographic output and plotting */
 	bool decimal;		/* true if we want to use the D_FORMAT for decimal degrees only */
 	bool wesn;		/* true if we want sign encoded with suffix W, E, S, N */
 	bool no_sign;		/* true if we want absolute values (plot only) */
-	char x_format[GMT_TEXT_LEN64];	/* Actual C format used to plot/output longitude */
-	char y_format[GMT_TEXT_LEN64];	/* Actual C format used to plot/output latitude */
+	char x_format[GMT_LEN64];	/* Actual C format used to plot/output longitude */
+	char y_format[GMT_LEN64];	/* Actual C format used to plot/output latitude */
 	char delimiter[2][2];		/* Delimiter strings in date, e.g. "-" */
 };
 

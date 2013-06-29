@@ -132,7 +132,7 @@ int GMT_grdclip_parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct G
 	unsigned int n_errors = 0, n_files = 0, n_class = 0;
 	int n, n_to_expect;
 	size_t n_alloc = GMT_TINY_CHUNK;
-	char txt[GMT_TEXT_LEN64] = {""};
+	char txt[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
