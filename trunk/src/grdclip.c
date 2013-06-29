@@ -132,7 +132,7 @@ int GMT_grdclip_parse (struct GMT_CTRL *GMT, struct GRDCLIP_CTRL *Ctrl, struct G
 	unsigned int n_errors = 0, n_files = 0, n_class = 0;
 	int n, n_to_expect;
 	size_t n_alloc = GMT_TINY_CHUNK;
-	char txt[GMT_TEXT_LEN64];
+	char txt[GMT_TEXT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -335,7 +335,7 @@ int GMT_grdclip (void *V_API, int mode, void *args) {
 	}
 
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
-		char format[GMT_BUFSIZ], format2[GMT_BUFSIZ], buffer[GMT_BUFSIZ];
+		char format[GMT_BUFSIZ] = {""}, format2[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""};
 		strcpy (format, "%" PRIu64 " values ");
 		if (Ctrl->S.mode & GRDCLIP_BELOW) {
 			sprintf (buffer, "< %s set to %s\n", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);

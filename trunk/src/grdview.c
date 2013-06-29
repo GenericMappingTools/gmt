@@ -410,7 +410,7 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 				Ctrl->G.active = true;
 				for (k = 0, n_commas = 0; opt->arg[k]; k++) if (opt->arg[k] == ',') n_commas++;
 				if (n_commas == 2) {	/* Three r,g,b grids for draping */
-					char A[GMT_TEXT_LEN256], B[GMT_TEXT_LEN256], C[GMT_TEXT_LEN256];
+					char A[GMT_TEXT_LEN256] = {""}, B[GMT_TEXT_LEN256] = {""}, C[GMT_TEXT_LEN256] = {""};
 					sscanf (opt->arg, "%[^,],%[^,],%s", A, B, C);
 					Ctrl->G.file[0] = strdup (A);
 					Ctrl->G.file[1] = strdup (B);
@@ -448,7 +448,7 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 				break;
 			case 'N':	/* Facade */
 				if (opt->arg[0]) {
-					char colors[GMT_TEXT_LEN64];
+					char colors[GMT_TEXT_LEN64] = {""};
 					Ctrl->N.active = true;
 					n = sscanf (opt->arg, "%lf/%s", &Ctrl->N.level, colors);
 					if (n == 2) {
@@ -515,7 +515,7 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 				j = (opt->arg[0] == 'm' || opt->arg[0] == 'c' || opt->arg[0] == 'f');
 				id = 0;
 				if (j == 1) {	/* First check that the m or c is not part of a color name instead */
-					char txt_a[GMT_TEXT_LEN256];
+					char txt_a[GMT_TEXT_LEN256] = {""};
 					n = j+1;
 					while (opt->arg[n] && opt->arg[n] != ',' && opt->arg[n] != '/') n++;	/* Wind until end or , or / */
 					strncpy (txt_a, opt->arg, n);	txt_a[n] = '\0';

@@ -262,7 +262,7 @@ int GMT_minmax (void *V_API, int mode, void *args)
 	unsigned int fixed_phase[2] = {1, 1}, min_cols;
 	uint64_t col, ncol = 0, n = 0;
 
-	char file[GMT_BUFSIZ], chosen[GMT_BUFSIZ], record[GMT_BUFSIZ], buffer[GMT_BUFSIZ], delimeter[2];
+	char file[GMT_BUFSIZ] = {""}, chosen[GMT_BUFSIZ] = {""}, record[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, delimeter[2] = {""};
 
 	double *xyzmin = NULL, *xyzmax = NULL, *in = NULL, phase[2] = {0.0, 0.0}, this_phase, off;
 	double west, east, south, north, low, high, value, e_min = DBL_MAX, e_max = -DBL_MAX;

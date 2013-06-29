@@ -366,7 +366,7 @@ int GMT_grd2rgb (void *V_API, int mode, void *args)
 	uint64_t ij, k, k3;
 	
 	char rgb[3] = {'r', 'g', 'b'}, *comp[3] = {"red", "green", "blue"};
-	char buffer[GMT_BUFSIZ], *grdfile = NULL;
+	char buffer[GMT_BUFSIZ] = {""}, *grdfile = NULL;
 	
 	unsigned char *picture = NULL;
 	

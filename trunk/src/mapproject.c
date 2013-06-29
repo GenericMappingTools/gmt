@@ -206,7 +206,7 @@ int GMT_mapproject_parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, st
 	int n;
 	size_t last;
 	bool geodetic_calc = false;
-	char c, d, txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], from[GMT_TEXT_LEN256], to[GMT_TEXT_LEN256];
+	char c, d, txt_a[GMT_TEXT_LEN256] = {""}, txt_b[GMT_TEXT_LEN256] = {""}, from[GMT_TEXT_LEN256] = {""}, to[GMT_TEXT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -431,8 +431,8 @@ int GMT_mapproject (void *V_API, int mode, void *args)
 	double x_in_min, x_in_max, y_in_min, y_in_max, x_out_min, x_out_max, y_out_max;
 	double xnear = 0.0, ynear = 0.0, lon_prev = 0, lat_prev = 0, **coord = NULL, *in = NULL;
 
-	char line[GMT_BUFSIZ], format[GMT_BUFSIZ], unit_name[GMT_TEXT_LEN64], scale_unit_name[GMT_TEXT_LEN64];
-	char p[GMT_BUFSIZ], record[GMT_BUFSIZ];
+	char format[GMT_BUFSIZ] = {""}, unit_name[GMT_TEXT_LEN64] = {""}, scale_unit_name[GMT_TEXT_LEN64] = {""};
+	char line[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""}, record[GMT_BUFSIZ] = {""};
 
 	struct GMT_DATATABLE *xyline = NULL;
 	struct GMT_DATASET *Lin = NULL;

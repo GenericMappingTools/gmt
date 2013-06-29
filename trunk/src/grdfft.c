@@ -443,7 +443,7 @@ int do_spectrum (struct GMT_CTRL *GMT, struct GMT_GRID *GridX, struct GMT_GRID *
 	}
 	
 	if (GMT->common.h.add_colnames) {
-		char header[GMT_BUFSIZ], *name[2] = {"freq", "wlength"};
+		char header[GMT_BUFSIZ] = {""}, *name[2] = {"freq", "wlength"};
 		if (GridY) {	/* Long header record - number in [] is GMT column; useful for -i option */
 			sprintf (header, "#%s[0]\txpow[1]\tstd_xpow[2]\typow[3]\tstd_ypow[4]\tcpow[5]\tstd_cpow[6]\tnpow[7]\tstd_npow[8]\t" \
 			"phase[9]\tstd_phase[10]\tadm[11]\tstd_ad[12]\tgain[13]\tstd_gain[14]\tcoh[15]\tstd_coh[16]", name[give_wavelength]);
@@ -482,7 +482,7 @@ bool parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_info, char *c)
 	unsigned int i, j, n_tokens, pos;
 	bool descending;
 	double fourvals[4];
-	char line[GMT_TEXT_LEN256], p[GMT_TEXT_LEN256];
+	char line[GMT_TEXT_LEN256] = {""}, p[GMT_TEXT_LEN256] = {""};
 
 	/* Syntax is either -F[r|x|y]lc/hc/lp/hp (Cosine taper), -F[r|x|y]lo/hi (Gaussian), or -F[r|x|y]lo/hi/order (Butterworth) */
 
@@ -646,7 +646,7 @@ int GMT_grdfft_parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_I
 	unsigned int j, k, n_errors = 0, filter_type = 0;
 	int n_scan;
 	double par[5];
-	char combined[GMT_BUFSIZ], argument[GMT_TEXT_LEN16];
+	char combined[GMT_BUFSIZ] = {""}, argument[GMT_TEXT_LEN16] = {""};
 	struct GMT_OPTION *opt = NULL, *ptr = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 

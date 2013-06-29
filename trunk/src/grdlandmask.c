@@ -127,7 +127,7 @@ int GMT_grdlandmask_parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, 
 	 */
 
 	unsigned int n_errors = 0, j, pos, n_files = 0;
-	char line[GMT_TEXT_LEN256], ptr[GMT_BUFSIZ];
+	char line[GMT_TEXT_LEN256] = {""}, ptr[GMT_BUFSIZ] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -212,7 +212,7 @@ int GMT_grdlandmask (void *V_API, int mode, void *args)
 	
 	uint64_t ij;
 
-	char line[GMT_TEXT_LEN256];
+	char line[GMT_TEXT_LEN256] = {""};
 	char *shore_resolution[5] = {"full", "high", "intermediate", "low", "crude"};
 
 	double xmin, xmax, ymin, ymax, west_border, east_border, i_dx_inch, i_dy_inch;

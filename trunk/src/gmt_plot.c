@@ -386,8 +386,8 @@ void GMT_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	double x, t_use;			/* Misc. variables */
 	struct GMT_FONT font;			/* Annotation font (FONT_ANNOT_PRIMARY or FONT_ANNOT_SECONDARY) */
 	struct GMT_PLOT_AXIS_ITEM *T = NULL;	/* Pointer to the current axis item */
-	char string[GMT_TEXT_LEN256];		/* Annotation string */
-	char format[GMT_TEXT_LEN256];		/* format used for non-time annotations */
+	char string[GMT_TEXT_LEN256] = {""};	/* Annotation string */
+	char format[GMT_TEXT_LEN256] = {""};	/* format used for non-time annotations */
 	char *axis_chr[3] = {"ns", "ew", "zz"};	/* Characters corresponding to axes */
 	char **label_c = NULL;
 	double (*xyz_fwd) (struct GMT_CTRL *, double) = NULL;
@@ -1925,7 +1925,7 @@ void gmt_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, dou
 	unsigned int i, k, nx, ny, form, remove[2] = {0,0}, add;
 	bool do_minutes, do_seconds, done_Greenwich, done_Dateline;
 	bool full_lat_range, proj_A, proj_B, annot_0_and_360 = false, dual[2], is_dual, annot, is_world_save, lon_wrap_save;
-	char label[GMT_TEXT_LEN256];
+	char label[GMT_TEXT_LEN256] = {""};
 	char **label_c = NULL;
 	double *val = NULL, dx[2], dy[2], w2, s2, del;
 
@@ -2436,7 +2436,7 @@ void gmt_timestamp (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x, double
 	 */
 
 	time_t right_now;
-	char label[GMT_TEXT_LEN256], text[GMT_TEXT_LEN256];
+	char label[GMT_TEXT_LEN256] = {""}, text[GMT_TEXT_LEN256] = {""};
 	double dim[3] = {0.365, 0.15, 0.032};	/* Predefined dimensions in inches */
 	double unset_rgb[4] = {-1.0, -1.0, -1.0, 0.0};
 
@@ -2502,7 +2502,7 @@ void gmt_echo_command (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_OP
 	 * add in the missing double quotes that the shell ate.
 	 */
 	size_t length = 0, i, k, in, start;
-	char outstring[GMT_BUFSIZ], tmpstring[GMT_BUFSIZ];
+	char outstring[GMT_BUFSIZ] = {""}, tmpstring[GMT_BUFSIZ] = {""};
 	struct GMT_OPTION *opt = NULL;
 
 	GMT_memset (outstring, GMT_BUFSIZ, char);
@@ -2684,7 +2684,7 @@ int GMT_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms)
 	enum GMT_enum_units unit;
 	double dlon, x1, x2, y1, y2, a0, tx, ty, off, f_len, a_len, x_left, x_right, bar_length, x_label, y_label;
 	double base, d_base, width, half, bar_width, dx, dx_f, dx_a;
-	char txt[GMT_TEXT_LEN256], *this_label = NULL;
+	char txt[GMT_TEXT_LEN256] = {""}, *this_label = NULL;
 	char *label[GMT_N_UNITS] = {"m", "km", "miles", "nautical miles", "inch", "cm", "pt", "feet", "survey feet"};
 	char *units[GMT_N_UNITS] = {"m", "km", "mi", "nm", "in", "cm", "pt", "ft", "usft"}, measure;
 	struct PSL_CTRL *PSL= GMT->PSL;
@@ -3182,7 +3182,7 @@ void gmt_format_symbol_string (struct GMT_CTRL *GMT, struct GMT_CUSTOM_SYMBOL_IT
 	}
 	else {	/* Must replace special items within a template string */
 		unsigned int n_skip, in, out;
-		char tmp[GMT_TEXT_LEN64];
+		char tmp[GMT_TEXT_LEN64] = {""};
 		GMT_memset (text, GMT_TEXT_LEN256, char);
 		for (in = out = 0; s->string[in]; in++) {
 			switch (s->string[in]) {
@@ -3231,7 +3231,7 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 	uint64_t n = 0;
 	size_t n_alloc = 0;
 	double x, y, lon, lat, angle, *xx = NULL, *yy = NULL, *xp = NULL, *yp = NULL, dim[3];
-	char *c = NULL, user_text[GMT_TEXT_LEN256];
+	char *c = NULL, user_text[GMT_TEXT_LEN256] = {""};
 	struct GMT_CUSTOM_SYMBOL_ITEM *s = NULL;
 	struct GMT_FILL *f = NULL, *current_fill = fill;
 	struct GMT_PEN *p = NULL, *current_pen = pen;
@@ -3474,7 +3474,7 @@ int GMT_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 
 void GMT_write_label_record (struct GMT_CTRL *GMT, double x, double y, double angle, char *label, bool save_angle)
 {
-	char word[GMT_TEXT_LEN64], record[GMT_BUFSIZ];
+	char word[GMT_TEXT_LEN64] = {""}, record[GMT_BUFSIZ] = {""};
 	double geo[2];
 	record[0] = 0;	/* Start with blank record */
 	GMT_xy_to_geo (GMT, &geo[GMT_X], &geo[GMT_Y], x, y);
@@ -3498,7 +3498,7 @@ int GMT_contlabel_save_begin (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G)
 	int error, kind, object_ID;
 	uint64_t k, seg;
 	bool write_angle = (G->save_labels == 2);
-	char record[GMT_BUFSIZ], *name = strdup (G->label_file);
+	char record[GMT_BUFSIZ] = {""}, *name = strdup (G->label_file);
 	char *xname[2] = {"x", "lon"}, *yname[2] = {"y", "lat"};
 	double angle = 0.0;
 	struct GMT_CONTOUR_LINE *L = NULL;

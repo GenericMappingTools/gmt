@@ -398,7 +398,7 @@ int GMT_project_parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct G
 
 	unsigned int n_errors = 0, j, k;
 	size_t len;
-	char txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64];
+	char txt_a[GMT_TEXT_LEN64] = {""}, txt_b[GMT_TEXT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -542,7 +542,7 @@ int write_one_segment (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, double t
 	bool pure_ascii;
 	uint64_t col, n_items, rec, k;
 	double sin_theta, cos_theta, e[9], x[3], xt[3], *out = NULL;
-	char record[GMT_BUFSIZ], text[GMT_BUFSIZ];
+	char record[GMT_BUFSIZ] = {""}, text[GMT_BUFSIZ] = {""};
 
 	if (Ctrl->S.active) qsort (p_data, P->n_used, sizeof (struct PROJECT_DATA), compare_distances);
 

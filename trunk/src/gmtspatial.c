@@ -726,7 +726,7 @@ int GMT_gmtspatial_parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, st
 
 	unsigned int n_files[2] = {0, 0}, pos, n_errors = 0;
 	int n;
-	char txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64], txt_c[GMT_TEXT_LEN64], p[GMT_TEXT_LEN256], *s = NULL;
+	char txt_a[GMT_TEXT_LEN64] = {""}, txt_b[GMT_TEXT_LEN64] = {""}, txt_c[GMT_TEXT_LEN64] = {""}, p[GMT_TEXT_LEN256] = {""}, *s = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -1044,7 +1044,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 		if (Ctrl->A.mode) {	/* Output the revised data set plus NN analysis results */
 			if ((error = GMT_set_cols (GMT, GMT_OUT, 7))) Return (error);
 			if (GMT->common.h.add_colnames) {
-				char header[GMT_BUFSIZ], *name[2][2] = {{"x", "y"}, {"lon", "lat"}};
+				char header[GMT_BUFSIZ] = {""}, *name[2][2] = {{"x", "y"}, {"lon", "lat"}};
 				k = (GMT_is_geographic (GMT, GMT_IN)) ? 1 : 0;
 				sprintf (header, "#%s[0]\t%s[1]\tz[2]\tweight[3]\tNN_dist[4]\tID[5]\tNN_ID[6]", name[k][GMT_X], name[k][GMT_Y]);
 				GMT_Put_Record (API, GMT_WRITE_TABLE_HEADER, header);	
@@ -1246,7 +1246,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 		uint64_t tbl1, tbl2, col, nx, row, seg1, seg2;
 		struct GMT_XSEGMENT *ylist1 = NULL, *ylist2 = NULL;
 		struct GMT_XOVER XC;
-		char T1[GMT_BUFSIZ], T2[GMT_BUFSIZ], fmt[GMT_BUFSIZ];
+		char T1[GMT_BUFSIZ] = {""}, T2[GMT_BUFSIZ] = {""}, fmt[GMT_BUFSIZ] = {""};
 		struct GMT_DATASET *C = NULL;
 		struct GMT_DATASEGMENT *S1 = NULL, *S2 = NULL;
 		
@@ -1431,7 +1431,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 		uint64_t tbl, tbl2, col, seg, seg2;
 		bool same_feature = false;
 		char *kind[9] = {"approximate-reversed-superset", "approximate-reversed-subset", "approximate-reversed", "exact-reversed" , "", "exact", "approximate", "approximate-subset", "approximate-superset"};
-		char record[GMT_BUFSIZ], format[GMT_BUFSIZ], src[GMT_BUFSIZ], dup[GMT_BUFSIZ], *feature[2] = {"polygon", "line"}, *from = NULL;
+		char record[GMT_BUFSIZ] = {""}, format[GMT_BUFSIZ] = {""}, src[GMT_BUFSIZ] = {""}, dup[GMT_BUFSIZ] = {""}, *feature[2] = {"polygon", "line"}, *from = NULL;
 		char *in = "the same data set", *verdict = "NY~-+";	/* No, Yes, Approximate, Subsection, Supersection */
 		struct GMT_DATASET *C = NULL;
 		struct GMT_DATASEGMENT *S1 = NULL, *S2 = NULL;
@@ -1549,7 +1549,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 		uint64_t tbl, row, first, last, n, p, np, seg, seg2, n_inside;
 		unsigned int *count = NULL;
 		int ID = -1;
-		char seg_label[GMT_TEXT_LEN64], record[GMT_BUFSIZ], *kind[2] = {"Middle point", "All points"};
+		char seg_label[GMT_TEXT_LEN64] = {""}, record[GMT_BUFSIZ] = {""}, *kind[2] = {"Middle point", "All points"};
 		struct GMT_DATASET *C = NULL;
 		struct GMT_DATATABLE *T = NULL;
 		struct GMT_DATASEGMENT *S = NULL, *S2 = NULL;
@@ -1618,7 +1618,7 @@ int GMT_gmtspatial (void *V_API, int mode, void *args)
 						if (GMT_parse_segment_item (GMT, S->header, "-Z", NULL))
 							GMT_Report (API, GMT_MSG_NORMAL, "Segment header %d-%" PRIu64 " already has a -Z flag, skipped\n", tbl, seg);
 						else {	/* Add -Z<ID< to the segment header */
-							char buffer[GMT_BUFSIZ], txt[GMT_TEXT_LEN64];
+							char buffer[GMT_BUFSIZ] = {""}, txt[GMT_TEXT_LEN64] = {""};
 							buffer[0] = txt[0] = 0;
 							if (S->header) { strncpy (buffer, S->header, GMT_BUFSIZ); free (S->header); }
 							sprintf (txt, " -Z%d", ID);

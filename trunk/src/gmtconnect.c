@@ -153,7 +153,7 @@ static int GMT_gmtconnect_parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *C
 
 	unsigned int n_errors = 0, n_files = 0;
 	int n = 0;
-	char A[GMT_TEXT_LEN64], B[GMT_TEXT_LEN64];
+	char A[GMT_TEXT_LEN64] = {""}, B[GMT_TEXT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -259,7 +259,7 @@ int GMT_gmtconnect (void *V_API, int mode, void *args)
 
 	double dd[2][2], p_last_x, p_last_y, p_first_x, p_first_y, distance, closed_dist = 0.0;
 
-	char buffer[GMT_BUFSIZ], msg[GMT_BUFSIZ], text[GMT_TEXT_LEN64], *BE = "BE", *ofile = NULL;
+	char buffer[GMT_BUFSIZ] = {""}, msg[GMT_BUFSIZ] = {""}, text[GMT_TEXT_LEN64] = {""}, *BE = "BE", *ofile = NULL;
 
 	struct LINK *segment = NULL;
 	struct GMT_DATASET *D[2] = {NULL, NULL}, *C = NULL;
@@ -582,7 +582,9 @@ int GMT_gmtconnect (void *V_API, int mode, void *args)
 	
 	if (Ctrl->L.active) {	/* We can now write out the link information we found */
 		struct GMT_TEXTSET *LNK = NULL;
-		char name[GMT_BUFSIZ], name0[GMT_BUFSIZ], name1[GMT_BUFSIZ], fmt[GMT_BUFSIZ], *pp = NULL, *s = GMT->current.setting.io_col_separator;
+		char name[GMT_BUFSIZ] = {""}, name0[GMT_BUFSIZ] = {""}, name1[GMT_BUFSIZ] = {""}, fmt[GMT_BUFSIZ] = {""};
+		char *pp = NULL, *s = GMT->current.setting.io_col_separator;
+
 		if (!Ctrl->L.file) Ctrl->L.file = strdup ("gmtconnect_link.txt");	/* Use default output filename since none was provided */
 		dim_tscr[GMT_TBL] = 1;	dim_tscr[GMT_SEG] = 1;	dim_tscr[GMT_ROW] = ns;	/* Dimensions of single output table with single segment of ns rows */
 		if ((LNK = GMT_Create_Data (API, GMT_IS_TEXTSET, GMT_IS_NONE, 0, dim_tscr, NULL, NULL, 0, 0, Ctrl->L.file)) == NULL) {

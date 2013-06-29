@@ -452,7 +452,7 @@ int GMT_pscontour_parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, stru
 
 	unsigned int n_errors = 0, id;
 	int k, j, n;
-	char txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64];
+	char txt_a[GMT_TEXT_LEN64] = {""}, txt_b[GMT_TEXT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -650,7 +650,7 @@ int GMT_pscontour (void *V_API, int mode, void *args)
 	double *xc = NULL, *yc = NULL, *zc = NULL, *x = NULL, *y = NULL, *z = NULL;
 	double current_contour = -DBL_MAX, *in = NULL, *xp = NULL, *yp = NULL;
 
-	char cont_label[GMT_TEXT_LEN256], format[GMT_TEXT_LEN256];
+	char cont_label[GMT_TEXT_LEN256] = {""}, format[GMT_TEXT_LEN256] = {""};
 	char *tri_algorithm[2] = {"Watson", "Shewchuk"};
 
 	struct PSCONTOUR *cont = NULL;

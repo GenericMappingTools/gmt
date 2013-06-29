@@ -151,8 +151,8 @@ int parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *Ct
 	bool error = false;
 	unsigned int pos = 0;
 	int j, k = 0;
-	char txt[GMT_TEXT_LEN128], p[GMT_TEXT_LEN128];
-	char txt_a[GMT_TEXT_LEN64], txt_b[GMT_TEXT_LEN64], txt_c[GMT_TEXT_LEN64], txt_d[GMT_TEXT_LEN64];
+	char txt[GMT_TEXT_LEN128] = {""}, p[GMT_TEXT_LEN128] = {""};
+	char txt_a[GMT_TEXT_LEN64] = {""}, txt_b[GMT_TEXT_LEN64] = {""}, txt_c[GMT_TEXT_LEN64] = {""}, txt_d[GMT_TEXT_LEN64] = {""};
 	
 	Ctrl->A.active = true;
 
@@ -231,7 +231,7 @@ int parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PS2RASTER_CTRL *C
 	
 	bool error = false;
 	unsigned int pos = 0;
-	char txt[GMT_BUFSIZ], p[GMT_BUFSIZ];
+	char txt[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""};
 	
 	C->W.active = true;
 	strncpy (txt, arg, GMT_BUFSIZ);
@@ -466,7 +466,7 @@ int GMT_ps2raster_parse (struct GMT_CTRL *GMT, struct PS2RASTER_CTRL *Ctrl, stru
 	unsigned int n_errors = 0, mode;
 	int j;
 	bool grayscale;
-	char text[GMT_TEXT_LEN64], *anti = NULL;
+	char text[GMT_TEXT_LEN64] = {""}, *anti = NULL;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -632,8 +632,8 @@ int GMT_ps2raster (void *V_API, int mode, void *args)
 	char ps_file[GMT_BUFSIZ] = "", no_U_file[GMT_BUFSIZ] = "",
 			clean_PS_file[GMT_BUFSIZ] = "", tmp_file[GMT_BUFSIZ] = "",
 			out_file[GMT_BUFSIZ] = "", BB_file[GMT_BUFSIZ] = "";
-	char line[GMT_BUFSIZ], c1[20], c2[20], c3[20], c4[20],
-			cmd[GMT_BUFSIZ], proj4_name[20], *quiet = NULL;
+	char line[GMT_BUFSIZ] = {""}, c1[20] = {""}, c2[20] = {""}, c3[20] = {""}, c4[20] = {""},
+			cmd[GMT_BUFSIZ] = {""}, proj4_name[20] = {""}, *quiet = NULL;
 	char *gs_params = NULL, *gs_BB = NULL, *proj4_cmd = NULL;
 	char *device[N_GS_DEVICES] = {"", "pdfwrite", "jpeg", "png16m", "ppmraw", "tiff24nc", "bmp16m", "pngalpha", "jpeggray", "pnggray", "tiffgray", "bmpgray"};
 	char *ext[N_GS_DEVICES] = {".eps", ".pdf", ".jpg", ".png", ".ppm", ".tif", ".bmp", ".png", ".jpg", ".png", ".tif", ".bmp"};
@@ -1458,7 +1458,7 @@ int ghostbuster(struct GMTAPI_CTRL *API, struct PS2RASTER_CTRL *C) {
 	   and http://juknull.wordpress.com/tag/regenumkeyex-example */
 
 	HKEY hkey;              /* Handle to registry key */
-	char data[GMT_BUFSIZ], ver[8], *ptr;
+	char data[GMT_BUFSIZ] = {""}, ver[8] = {""}, *ptr;
 	char key[32] = "SOFTWARE\\GPL Ghostscript\\";
 	unsigned long datalen = GMT_BUFSIZ;
 	unsigned long datatype;

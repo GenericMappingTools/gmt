@@ -228,7 +228,7 @@ int GMT_gmtselect_parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, stru
 	 */
 
 	unsigned int n_errors = 0, pos, j, k, col, n_z_alloc = 0;
-	char ptr[GMT_BUFSIZ], buffer[GMT_BUFSIZ], za[GMT_TEXT_LEN64], zb[GMT_TEXT_LEN64], *c = NULL;
+	char ptr[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, za[GMT_TEXT_LEN64] = {""}, zb[GMT_TEXT_LEN64] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 	bool fix = false;

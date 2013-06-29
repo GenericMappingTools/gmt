@@ -627,7 +627,8 @@ void gmt_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	   output data types for columns 0, 1, and 2.
 	*/
 	unsigned int i;
-	char *string[3] = {NULL, NULL, NULL}, unit[GMT_GRID_UNIT_LEN80], date[GMT_TEXT_LEN16], clock[GMT_TEXT_LEN16];
+	char *string[3] = {NULL, NULL, NULL}, unit[GMT_GRID_UNIT_LEN80] = {""};
+	char date[GMT_TEXT_LEN16] = {""}, clock[GMT_TEXT_LEN16] = {""};
 
 	/* Copy pointers to unit strings */
 	string[0] = header->x_units;
@@ -1202,7 +1203,7 @@ void GMT_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_H
 		 This routine is usually called if -D<input> was given by user,
 		 and after GMT_grd_init() has been called. */
 
-	char ptr[GMT_BUFSIZ], sep[] = "/";
+	char ptr[GMT_BUFSIZ] = {""}, sep[] = "/";
 	unsigned int entry = 0, pos = 0;
 
 	if (input[0] != input[strlen(input)-1]) {}
@@ -1540,7 +1541,7 @@ int GMT_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 
 	bool global, error = false;
 	double val, dx, small;
-	char format[GMT_TEXT_LEN64];
+	char format[GMT_TEXT_LEN64] = {""};
 
 	switch (GMT_minmaxinc_verify (GMT, wesn[XLO], wesn[XHI], header->inc[GMT_X], GMT_SMALL)) {	/* Check if range is compatible with x_inc */
 		case 3:

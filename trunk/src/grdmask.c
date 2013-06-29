@@ -131,7 +131,7 @@ int GMT_grdmask_parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct G
 	 */
 
 	unsigned int n_errors = 0, j, pos;
-	char ptr[GMT_BUFSIZ], *c = NULL;
+	char ptr[GMT_BUFSIZ] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -237,7 +237,7 @@ int GMT_grdmask (void *V_API, int mode, void *args)
 	
 	uint64_t ij, k, seg;
 	
-	char text_item[GMT_TEXT_LEN64];
+	char text_item[GMT_TEXT_LEN64] = {""};
 
 	float mask_val[3];
 	
@@ -278,7 +278,7 @@ int GMT_grdmask (void *V_API, int mode, void *args)
 	z_value = Ctrl->N.mask[GMT_INSIDE];	/* Starting value if using running IDs */
 
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
-		char line[GMT_BUFSIZ], *msg[2] = {"polygons", "search radius"};
+		char line[GMT_BUFSIZ] = {""}, *msg[2] = {"polygons", "search radius"};
 		k = (Ctrl->S.active) ? 1 : 0; 
 		if (Ctrl->N.mode == 1) {
 			GMT_Report (API, GMT_MSG_VERBOSE, "Nodes completely inside the polygons will be set to the chosen z-value\n");

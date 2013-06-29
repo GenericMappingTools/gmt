@@ -374,7 +374,7 @@ int GMT_esri_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 
 int write_esri_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HEADER *header)
 {
-	char record[GMT_BUFSIZ], item[GMT_TEXT_LEN64];
+	char record[GMT_BUFSIZ] = {""}, item[GMT_TEXT_LEN64] = {""};
 
 	sprintf (record, "ncols %d\nnrows %d\n", header->nx, header->ny);
 	GMT_fputs (record, fp);		/* Write a text record */

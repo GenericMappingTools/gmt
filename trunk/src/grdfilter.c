@@ -411,7 +411,7 @@ int GMT_grdfilter_parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, stru
 	 */
 
 	unsigned int n_errors = 0, n_files = 0;
-	char c, a[GMT_TEXT_LEN64], b[GMT_TEXT_LEN64], txt[GMT_TEXT_LEN256], *p = NULL;
+	char c, a[GMT_TEXT_LEN64] = {""}, b[GMT_TEXT_LEN64] = {""}, txt[GMT_TEXT_LEN256] = {""}, *p = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 

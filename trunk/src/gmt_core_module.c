@@ -110,7 +110,7 @@ struct Gmt_moduleinfo g_core_module[] = {
 /* Pretty print all GMT core module names and their purposes */
 void gmt_core_module_show_all (struct GMTAPI_CTRL *API) {
 	unsigned int module_id = 0;
-	char module_name_comp[GMT_TEXT_LEN64], message[GMT_TEXT_LEN256];
+	char module_name_comp[GMT_TEXT_LEN64] = {""}, message[GMT_TEXT_LEN256] = {""};
 
 	GMT_Message (API, GMT_TIME_NONE, "\n" "GMT core: The core of the Generic Mapping Tools" "\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "Program                 Purpose of Program\n");

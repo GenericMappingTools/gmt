@@ -283,7 +283,7 @@ int write_output_separate (struct GMT_CTRL *GMT, struct SPECTRUM1D_INFO *C, char
 {	/* Writes separate files for each output type.  Does NOT use GMT_Put_* functions */
 	int i, j;
 	double delta_f, eps_pow, out[3], *f_or_w = NULL;
-	char fname[GMT_TEXT_LEN256];
+	char fname[GMT_TEXT_LEN256] = {""};
 	FILE *fpout = NULL;
 
 	delta_f = 1.0 / (C->window * C->dt);

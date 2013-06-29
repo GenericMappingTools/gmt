@@ -273,7 +273,7 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 
 	int n_items;
 	unsigned int n_errors = 0, dimension, k, pos = 0;
-	char txt[6][GMT_TEXT_LEN64], p[GMT_BUFSIZ], *c = NULL;
+	char txt[6][GMT_TEXT_LEN64], p[GMT_BUFSIZ] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 

@@ -364,7 +364,7 @@ int GMT_psxy_parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPT
 
 	unsigned int j0, n_errors = 0;
 	int j;
-	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
+	char txt_a[GMT_TEXT_LEN256] = {""}, txt_b[GMT_TEXT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 

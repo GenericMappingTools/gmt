@@ -133,7 +133,7 @@ int GMT_gmtset (void *V_API, int mode, void *args)
 {
 	int error = 0;
 
-	char path[GMT_TEXT_LEN256];
+	char path[GMT_TEXT_LEN256] = {""};
 	char* gmtconf_file;
 
 	struct GMTSET_CTRL *Ctrl = NULL;

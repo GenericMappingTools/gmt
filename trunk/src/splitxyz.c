@@ -200,7 +200,7 @@ int GMT_splitxyz_parse (struct GMT_CTRL *GMT, struct SPLITXYZ_CTRL *Ctrl, struct
 
 	unsigned int j, n_errors = 0, n_outputs = 0, n_files = 0;
 	bool z_selected = false;
-	char txt_a[GMT_TEXT_LEN256];
+	char txt_a[GMT_TEXT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -319,7 +319,7 @@ int GMT_splitxyz (void *V_API, int mode, void *args)
 	double dy, dx, last_c, last_s, csum, ssum, this_c, this_s, dotprod;
 	double mean_azim, *fwork = NULL;
 	
-	char header[GMT_TEXT_LEN64];
+	char header[GMT_TEXT_LEN64] = {""};
 
 	struct GMT_DATASET *D[2] = {NULL, NULL};
 	struct GMT_DATATABLE *T = NULL;

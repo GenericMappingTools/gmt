@@ -135,7 +135,7 @@ int GMT_sph2grd_parse (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *Ctrl, struct G
 	 */
 
 	unsigned int n_errors = 0, k, n;
-	char A[GMT_TEXT_LEN32], B[GMT_TEXT_LEN32], D[GMT_TEXT_LEN32], E[GMT_TEXT_LEN32];
+	char A[GMT_TEXT_LEN32] = {""}, B[GMT_TEXT_LEN32] = {""}, D[GMT_TEXT_LEN32] = {""}, E[GMT_TEXT_LEN32] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -224,7 +224,7 @@ int GMT_sph2grd (void *V_API, int mode, void *args)
 	int error, L_sign = 1, L, L_min = 0, L_max = 0, M, M_max = 0;
 	unsigned int row, col, nx, n_PLM, n_CS, n_CS_nx, next_10_percent = 10;
 	uint64_t tbl, seg, drow, node, node_L, k;
-	char text[GMT_TEXT_LEN32];
+	char text[GMT_TEXT_LEN32] = {""};
 	double lon, lat, sum, lo, hi, filter, percent_inc, percent = 0;
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_DATASET *D = NULL;
