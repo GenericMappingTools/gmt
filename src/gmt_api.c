@@ -335,7 +335,7 @@ int GMTAPI_init_sharedlibs_old (struct GMTAPI_CTRL *API)
 	/* At the end of GMT_Create_Session we are done with processing gmt.conf.
 	 * We can now determine how many shared libraries to consider, and open the core lib */
 	unsigned int n_custom_libs = 0, k = 0, p, pos = 0;
-	char text[GMT_TEXT_LEN256];
+	char text[GMT_TEXT_LEN256] = {""};
 
 	if (API->GMT->session.CUSTOM_LIBS) {	/* We have custom shared libraries, count how many */
 		while (API->GMT->session.CUSTOM_LIBS[k]) {
@@ -5034,7 +5034,7 @@ unsigned int GMT_FFT_Option_ (char *option, unsigned int *dim, char *string, int
 void * GMT_FFT_Parse (void *V_API, char option, unsigned int dim, char *args)
 {	/* Parse the 1-D or 2-D FFT options such as -N in grdfft */
 	unsigned int n_errors = 0, pos = 0;
-	char p[GMT_BUFSIZ], *c = NULL;
+	char p[GMT_BUFSIZ] = {""}, *c = NULL;
 	struct GMT_FFT_INFO *info = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 	
@@ -5384,7 +5384,7 @@ int GMT_FFT_Destroy_ (void *v_K)
 
 /* Pretty print core module names and purposes */
 void GMT_show_name_and_purpose (struct GMTAPI_CTRL *API, const char *component, const char *name, const char *purpose) {
-	char message[GMT_TEXT_LEN256];
+	char message[GMT_TEXT_LEN256] = {""};
 	const char *lib = NULL;
 	static char *core = "core";
 	assert (name != NULL);
@@ -5429,7 +5429,7 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args)
 	if (module == NULL && mode != GMT_MODULE_PURPOSE) return_error (API, GMT_ARG_IS_NULL);
 	
 	if (module == NULL) {	/* Did not specify any specific module, so list purpose of all modules in all shared libs */
-		char gmt_module[GMT_TEXT_LEN32];	/* To form gmt_<lib>_module_show_all */
+		char gmt_module[GMT_TEXT_LEN32] = {""};	/* To form gmt_<lib>_module_show_all */
 		int (*l_func)(void*);       /* function pointer to gmt_<lib>_module_show_all which takes one arg (the API) */
 
 		/* Here we list purpose of all the available modules in each shared library */
@@ -5568,7 +5568,7 @@ int GMT_Get_Default_ (char *keyword, char *value, int len1, int len2)
 int GMT_Option (void *V_API, char *options)
 {	/* Take comma-separated GMT options and print the usage message(s). */
 	unsigned int pos = 0, k = 0, n = 0;
-	char p[GMT_TEXT_LEN64], arg[GMT_TEXT_LEN64];
+	char p[GMT_TEXT_LEN64] = {""}, arg[GMT_TEXT_LEN64] = {""};
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
@@ -5628,7 +5628,7 @@ int GMT_Message (void *V_API, unsigned int mode, char *format, ...)
 	time_t toc, S;
 	size_t source_info_len;
 	unsigned int H, M;
-	char message[4*GMT_BUFSIZ], stamp[GMT_TEXT_LEN256];
+	char message[4*GMT_BUFSIZ] = {""}, stamp[GMT_TEXT_LEN256] = {""};
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 	va_list args;
 	
@@ -5672,7 +5672,7 @@ int GMT_Message_ (void *V_API, unsigned int *mode, char *message, int len)
 int GMT_Report (void *V_API, unsigned int level, char *format, ...)
 {	/* Message whose output depends on verbosity setting */
 	size_t source_info_len;
-	char message[GMT_BUFSIZ], source_line[GMT_BUFSIZ];
+	char message[GMT_BUFSIZ] = {""}, source_line[GMT_BUFSIZ] = {""};
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 	va_list args;
 
@@ -5719,7 +5719,7 @@ int GMT_Get_Value (void *V_API, char *arg, double par[])
 
 	unsigned int pos = 0, n_arg = 0, mode, col_type_save[2][2];
 	size_t len;
-	char p[GMT_BUFSIZ], unit;
+	char p[GMT_BUFSIZ] = {""}, unit;
 	double value;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);
 	struct GMT_CTRL *GMT = API->GMT;

@@ -95,7 +95,7 @@ int gmt_load_dcw_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **C, struct
 {	/* Open and read list of countries and states and return via two struct and one char arrays plus dimensions in dim */
 	size_t n_alloc = 300;
 	unsigned int k, n;
-	char path[GMT_BUFSIZ], line[BUFSIZ];
+	char path[GMT_BUFSIZ] = {""}, line[BUFSIZ] = {""};
 	FILE *fp = NULL;
 	struct GMT_DCW_COUNTRY *Country = NULL;
 	struct GMT_DCW_STATE *State = NULL;
@@ -217,8 +217,9 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	unsigned short int *dx = NULL, *dy = NULL;
 	unsigned int GMT_DCW_COUNTRIES = 0, GMT_DCW_STATES = 0, n_bodies[3] = {0, 0, 0};
 	bool done, want_state, outline = (F->mode & 4), fill = (F->mode & 8);
-	char TAG[GMT_TEXT_LEN16], dim[GMT_TEXT_LEN16], xname[GMT_TEXT_LEN16], yname[GMT_TEXT_LEN16], code[GMT_TEXT_LEN16];
-	char state[GMT_TEXT_LEN16], file[GMT_TEXT_LEN16], msg[GMT_BUFSIZ], segment[GMT_TEXT_LEN32], path[GMT_BUFSIZ];
+	char TAG[GMT_TEXT_LEN16] = {""}, dim[GMT_TEXT_LEN16] = {""}, xname[GMT_TEXT_LEN16] = {""};
+	char yname[GMT_TEXT_LEN16] = {""}, code[GMT_TEXT_LEN16] = {""}, state[GMT_TEXT_LEN16] = {""};
+	char file[GMT_TEXT_LEN16] = {""}, msg[GMT_BUFSIZ] = {""}, segment[GMT_TEXT_LEN32] = {""}, path[GMT_BUFSIZ] = {""};
 	double west, east, south, north, xscl, yscl, out[2], *lon = NULL, *lat = NULL;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATASEGMENT *P = NULL, *S = NULL;
@@ -270,7 +271,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 
 	/* Get global attributes */
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
-		char version[GMT_TEXT_LEN16], source[GMT_TEXT_LEN256], title[GMT_TEXT_LEN256];
+		char version[GMT_TEXT_LEN16] = {""}, source[GMT_TEXT_LEN256] = {""}, title[GMT_TEXT_LEN256] = {""};
 		GMT_memset (version, GMT_TEXT_LEN16, char);
 		GMT_memset (source, GMT_TEXT_LEN256, char);
 		GMT_memset (title, GMT_TEXT_LEN256, char);
@@ -506,7 +507,7 @@ void GMT_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot)
 unsigned int GMT_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struct GMT_DCW_SELECT *F)
 {	/* Parse the F option in pscoast */
 	unsigned int n_errors = 0, pos = 0, n;
-	char p[GMT_BUFSIZ], *c = NULL, *a = NULL;
+	char p[GMT_BUFSIZ] = {""}, *c = NULL, *a = NULL;
 
 	if (F->codes) {	/* Cannot be called more than once */
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error -%c: May only be called once\n", option);

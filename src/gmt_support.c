@@ -971,7 +971,7 @@ bool GMT_getfill (struct GMT_CTRL *GMT, char *line, struct GMT_FILL *fill)
 	int n, end, pos, i, len;
 	bool error = false;
 	double fb_rgb[4];
-	char f, word[GMT_TEXT_LEN256];
+	char f, word[GMT_TEXT_LEN256] = {""};
 
 	if (!line) { GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No argument given to GMT_getfill\n"); GMT_exit (GMT->parent->do_not_exit, false); }
 
@@ -1073,7 +1073,7 @@ int GMT_colorname2index (struct GMT_CTRL *GMT, char *name)
 	/* Return index into structure with colornames and r/g/b */
 
 	int k;
-	char Lname[GMT_TEXT_LEN64];
+	char Lname[GMT_TEXT_LEN64] = {""};
 
 	strncpy (Lname, name, GMT_TEXT_LEN64);
 	GMT_str_tolower (Lname);
@@ -1086,7 +1086,7 @@ bool GMT_getrgb (struct GMT_CTRL *GMT, char *line, double rgb[])
 {
 	int n, i, count, irgb[3], c = 0;
 	double hsv[4], cmyk[5];
-	char buffer[GMT_TEXT_LEN64], *t = NULL;
+	char buffer[GMT_TEXT_LEN64] = {""}, *t = NULL;
 
 	if (!line) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No argument given to GMT_getrgb\n");
@@ -1176,7 +1176,7 @@ bool gmt_gethsv (struct GMT_CTRL *GMT, char *line, double hsv[])
 {
 	int n, i, count, irgb[3], c = 0;
 	double rgb[4], cmyk[5];
-	char buffer[GMT_TEXT_LEN64], *t = NULL;
+	char buffer[GMT_TEXT_LEN64] = {""}, *t = NULL;
 
 	if (!line) { GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No argument given to gmt_gethsv\n"); GMT_exit (GMT->parent->do_not_exit, false); }
 	if (!line[0]) return (false);	/* Nothing to do - accept default action */
@@ -1269,7 +1269,7 @@ void GMT_enforce_rgb_triplets (struct GMT_CTRL *GMT, char *text, unsigned int si
 
 	unsigned int i, j, k = 0, n, last = 0, n_slash;
 	double rgb[4];
-	char buffer[GMT_BUFSIZ], color[GMT_TEXT_LEN256], *p = NULL;
+	char buffer[GMT_BUFSIZ] = {""}, color[GMT_TEXT_LEN256] = {""}, *p = NULL;
 
 	if (!strchr (text, '@')) return;	/* Nothing to do since no espace sequence in string */
 
@@ -1378,7 +1378,7 @@ int GMT_getfont (struct GMT_CTRL *GMT, char *buffer, struct GMT_FONT *F)
 	unsigned int i, n;
 	int k;
 	double pointsize;
-	char size[GMT_TEXT_LEN256], name[GMT_TEXT_LEN256], fill[GMT_TEXT_LEN256], line[GMT_BUFSIZ], *s = NULL;
+	char size[GMT_TEXT_LEN256] = {""}, name[GMT_TEXT_LEN256] = {""}, fill[GMT_TEXT_LEN256] = {""}, line[GMT_BUFSIZ] = {""}, *s = NULL;
 
 	if (!buffer) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "No argument given to GMT_getfont\n");
@@ -1488,7 +1488,7 @@ int gmt_name2pen (char *name)
 	/* Return index into structure with pennames and width, for given name */
 
 	int i, k;
-	char Lname[GMT_TEXT_LEN64];
+	char Lname[GMT_TEXT_LEN64] = {""};
 
 	strncpy (Lname, name, GMT_TEXT_LEN64);
 	GMT_str_tolower (Lname);
@@ -1538,7 +1538,7 @@ int gmt_getpenwidth (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P) {
 int gmt_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P) {
 	unsigned int i, n, pos, unit = GMT_PT;
 	double width;
-	char tmp[GMT_TEXT_LEN256], string[GMT_BUFSIZ], ptr[GMT_BUFSIZ];
+	char tmp[GMT_TEXT_LEN256] = {""}, string[GMT_BUFSIZ] = {""}, ptr[GMT_BUFSIZ] = {""};
 
 	if (!line || !line[0]) return (GMT_NOERROR);	/* Nothing to do */
 	n = (int)strlen (line) - 1;
@@ -1621,7 +1621,7 @@ bool gmt_is_penstyle (char *word)
 bool GMT_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P)
 {
 	int i, n;
-	char width[GMT_TEXT_LEN256], color[GMT_TEXT_LEN256], style[GMT_TEXT_LEN256], line[GMT_BUFSIZ];
+	char width[GMT_TEXT_LEN256] = {""}, color[GMT_TEXT_LEN256] = {""}, style[GMT_TEXT_LEN256] = {""}, line[GMT_BUFSIZ] = {""};
 
 	if (!buffer || !buffer[0]) return (false);		/* Nothing given: return silently, leaving P in tact */
 
@@ -1861,7 +1861,7 @@ int GMT_get_distance (struct GMT_CTRL *GMT, char *line, double *dist, char *unit
 	 * Distances computed will be in the unit selected.
 	 */
 	int last, d_flag = 1, start = 1, way;
-	char copy[GMT_TEXT_LEN64];
+	char copy[GMT_TEXT_LEN64] = {""};
 
 	/* Syntax:  -S[-|+]<radius>[d|e|f|k|m|M|n|s|u]  */
 
@@ -2229,9 +2229,9 @@ struct GMT_PALETTE * GMT_read_cpt (struct GMT_CTRL *GMT, void *source, unsigned 
 	bool gap, error = false, close_file = false, check_headers = true, master = false;
 	size_t n_alloc = GMT_SMALL_CHUNK, n_hdr_alloc = 0;
 	double dz;
-	char T0[GMT_TEXT_LEN64], T1[GMT_TEXT_LEN64], T2[GMT_TEXT_LEN64], T3[GMT_TEXT_LEN64], T4[GMT_TEXT_LEN64];
-	char T5[GMT_TEXT_LEN64], T6[GMT_TEXT_LEN64], T7[GMT_TEXT_LEN64], T8[GMT_TEXT_LEN64], T9[GMT_TEXT_LEN64];
-	char line[GMT_BUFSIZ], clo[GMT_TEXT_LEN64], chi[GMT_TEXT_LEN64], c, cpt_file[GMT_BUFSIZ];
+	char T0[GMT_TEXT_LEN64] = {""}, T1[GMT_TEXT_LEN64] = {""}, T2[GMT_TEXT_LEN64] = {""}, T3[GMT_TEXT_LEN64] = {""}, T4[GMT_TEXT_LEN64] = {""};
+	char T5[GMT_TEXT_LEN64] = {""}, T6[GMT_TEXT_LEN64] = {""}, T7[GMT_TEXT_LEN64] = {""}, T8[GMT_TEXT_LEN64] = {""}, T9[GMT_TEXT_LEN64] = {""};
+	char line[GMT_BUFSIZ] = {""}, clo[GMT_TEXT_LEN64] = {""}, chi[GMT_TEXT_LEN64] = {""}, c, cpt_file[GMT_BUFSIZ] = {""};
 	FILE *fp = NULL;
 	struct GMT_PALETTE *X = NULL;
 	struct CPT_Z_SCALE *Z = NULL;	/* For unit manipulations */
@@ -2630,7 +2630,7 @@ struct GMT_PALETTE * GMT_Get_CPT (struct GMT_CTRL *GMT, char *file, enum GMT_enu
 		P = GMT_Read_Data (GMT->parent, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, file, NULL);
 	}
 	else {	/* Create a roughly equidistant, continuous 16-level CPT on the fly */
-		char out_string[GMT_STR16], buffer[GMT_BUFSIZ], *master = NULL;
+		char out_string[GMT_STR16] = {""}, buffer[GMT_BUFSIZ] = {""}, *master = NULL;
 		int object_ID;
 		double noise;
 
@@ -2904,7 +2904,7 @@ int GMT_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, uns
 	unsigned int i;
 	bool close_file = false;
 	double cmyk[5];
-	char format[GMT_BUFSIZ], cpt_file[GMT_BUFSIZ], code[3] = {'B', 'F', 'N'};
+	char format[GMT_BUFSIZ] = {""}, cpt_file[GMT_BUFSIZ] = {""}, code[3] = {'B', 'F', 'N'};
 	FILE *fp = NULL;
 	struct CPT_Z_SCALE *Z = NULL;	/* For unit manipulations */
 
@@ -3659,7 +3659,7 @@ void GMT_contlabel_init (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, unsigned i
 int GMT_contlabel_specs (struct GMT_CTRL *GMT, char *txt, struct GMT_CONTOUR *G)
 {
 	unsigned int k, bad = 0, pos = 0;
-	char p[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], c;
+	char p[GMT_BUFSIZ] = {""}, txt_a[GMT_TEXT_LEN256] = {""}, txt_b[GMT_TEXT_LEN256] = {""}, c;
 	char *specs = NULL;
 
 	/* Decode [+a<angle>|n|p[u|d]][+c<dx>[/<dy>]][+d][+e][+f<font>][+g<fill>][+j<just>][+l<label>][+n|N<dx>[/<dy>]][+o][+p[<pen>]][+r<min_rc>][+t|T[<file>]][+u<unit>][+v][+w<width>][+=<prefix>] strings */
@@ -3852,7 +3852,7 @@ int GMT_contlabel_info (struct GMT_CTRL *GMT, char flag, char *txt, struct GMT_C
 {
 	/* Interpret the contour-label information string and set structure items */
 	int k, j = 0, error = 0;
-	char txt_a[GMT_TEXT_LEN256], c, *p = NULL;
+	char txt_a[GMT_TEXT_LEN256] = {""}, c, *p = NULL;
 
 	L->spacing = false;	/* Turn off the default since we gave an option */
 	strncpy (L->option, &txt[1], GMT_BUFSIZ);	 /* May need to process L->option later after -R,-J have been set */
@@ -4074,8 +4074,8 @@ struct GMT_DATATABLE *GMT_make_profile (struct GMT_CTRL *GMT, char option, char 
 	int n, error = 0;
 	double L, az = 0.0, length = 0.0, r = 0.0;
 	size_t n_alloc = GMT_SMALL_CHUNK, len;
-	char p[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256];
-	char modifiers[GMT_BUFSIZ], p2[GMT_BUFSIZ];
+	char p[GMT_BUFSIZ] = {""}, txt_a[GMT_TEXT_LEN256] = {""}, txt_b[GMT_TEXT_LEN256] = {""}, txt_c[GMT_TEXT_LEN256] = {""}, txt_d[GMT_TEXT_LEN256] = {""};
+	char modifiers[GMT_BUFSIZ] = {""}, p2[GMT_BUFSIZ] = {""};
 	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 
@@ -4237,7 +4237,7 @@ int GMT_contlabel_prep (struct GMT_CTRL *GMT, struct GMT_CONTOUR *G, double xyz[
 	uint64_t k, i;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	double x, y;
-	char buffer[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256];
+	char buffer[GMT_BUFSIZ] = {""}, txt_a[GMT_TEXT_LEN256] = {""}, txt_b[GMT_TEXT_LEN256] = {""}, txt_c[GMT_TEXT_LEN256] = {""};
 
 	if (G->clearance_flag) {	/* Gave a percentage of fontsize as clearance */
 		G->clearance[GMT_X] = 0.01 * G->clearance[GMT_X] * G->font_label.size * GMT->session.u2u[GMT_PT][GMT_INCH];
@@ -5175,7 +5175,7 @@ bool gmt_label_is_OK (struct GMT_CTRL *GMT, struct GMT_LABEL *L, char *this_labe
 {	/* Determines if the proposed label passes various tests.  Return true if we should go ahead and add this label to the list */
 	bool label_OK = true;
 	uint64_t seg, k;
-	char format[GMT_TEXT_LEN256];
+	char format[GMT_TEXT_LEN256] = {""};
 	struct GMT_CONTOUR_LINE *S = NULL;
 
 	if (G->isolate) {	/* Must determine if the proposed label is withing radius distance of any other label already accepted */
@@ -7564,7 +7564,7 @@ int GMT_getinsert (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP
 {	/* Parse the map insert option: 
 	 * -D[unit]<xmin/xmax/ymin/ymax>|<width>[/<height>][+c<clon>/<clat>][+p<pen>][+g<fill>] */
 	unsigned int col_type[2], k = 0, i, start = 0, pos = 0, error = 0, n;
-	char p[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256];
+	char p[GMT_BUFSIZ] = {""}, txt_a[GMT_TEXT_LEN256] = {""}, txt_b[GMT_TEXT_LEN256] = {""}, txt_c[GMT_TEXT_LEN256] = {""}, txt_d[GMT_TEXT_LEN256] = {""};
 	
 	if (!text) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error option %c: No argument given\n", option);
@@ -7665,7 +7665,7 @@ int GMT_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	/* Pass text as &argv[i][2] */
 
 	int j = 0, i, n_slash, error = 0, k = 0, options;
-	char txt_cpy[GMT_BUFSIZ], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_sx[GMT_TEXT_LEN256], txt_sy[GMT_TEXT_LEN256], txt_len[GMT_TEXT_LEN256];
+	char txt_cpy[GMT_BUFSIZ] = {""}, txt_a[GMT_TEXT_LEN256] = {""}, txt_b[GMT_TEXT_LEN256] = {""}, txt_sx[GMT_TEXT_LEN256] = {""}, txt_sy[GMT_TEXT_LEN256] = {""}, txt_len[GMT_TEXT_LEN256] = {""};
 
 	if (!text) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Syntax error %c: No argument given\n", option);
@@ -7811,7 +7811,7 @@ int GMT_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_R
 {
 	int plus;
 	unsigned int j = 0, i, error = 0, colon, slash, k, pos, order[4] = {3,1,0,2};
-	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256], tmpstring[GMT_TEXT_LEN256], p[GMT_TEXT_LEN256];
+	char txt_a[GMT_TEXT_LEN256] = {""}, txt_b[GMT_TEXT_LEN256] = {""}, txt_c[GMT_TEXT_LEN256] = {""}, txt_d[GMT_TEXT_LEN256] = {""}, tmpstring[GMT_TEXT_LEN256] = {""}, p[GMT_TEXT_LEN256] = {""};
 
 	/* SYNTAX is -?[f|m][x]<lon0>/<lat0>/<size>[/<info>][:label:][+<aint>/<fint>/<gint>[/<aint>/<fint>/<gint>]], where <info> is
 	 * 1)  -?f: <info> is <kind> = 1,2,3 which is the level of directions [1].
@@ -8204,7 +8204,7 @@ void GMT_list_custom_symbols (struct GMT_CTRL *GMT)
 	/* Opens up GMT->init.custom_symbols.lis and dislays the list of custom symbols */
 
 	FILE *fp = NULL;
-	char list[GMT_TEXT_LEN256], buffer[GMT_BUFSIZ];
+	char list[GMT_TEXT_LEN256] = {""}, buffer[GMT_BUFSIZ] = {""};
 
 	/* Open the list in $GMT->session.SHAREDIR */
 
@@ -8881,7 +8881,7 @@ unsigned int gmt_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS *
  	unsigned int k = 0, n_annot = 0, n_int = 0;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	double *x = NULL;
-	char **L = NULL, line[GMT_BUFSIZ], str[GMT_TEXT_LEN64], type[8], txt[GMT_BUFSIZ];
+	char **L = NULL, line[GMT_BUFSIZ] = {""}, str[GMT_TEXT_LEN64] = {""}, type[8] = {""}, txt[GMT_BUFSIZ] = {""};
 	FILE *fp = GMT_fopen (GMT, A->file_custom, "r");
 
 	text = ((item == 'a' || item == 'i') && labels);
@@ -9218,7 +9218,7 @@ void GMT_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool do
 	int sign, d, m, s, m_sec;
 	unsigned int k, n_items, h_pos = 0, level, type;
 	bool zero_fix = false;
-	char hemi[3], format[GMT_TEXT_LEN64];
+	char hemi[3], format[GMT_TEXT_LEN64] = {""};
 
 	/* Must override do_minutes and/or do_seconds if format uses decimal notation for that item */
 
@@ -9406,7 +9406,7 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 	int last;
 	size_t length;
 	bool do_fill, do_pen, first = true;
-	char name[GMT_BUFSIZ], file[GMT_BUFSIZ], buffer[GMT_BUFSIZ], col[8][GMT_TEXT_LEN64], var[8], OP[8], constant[GMT_TEXT_LEN64];
+	char name[GMT_BUFSIZ] = {""}, file[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, col[8][GMT_TEXT_LEN64], var[8] = {""}, OP[8] = {""}, constant[GMT_TEXT_LEN64] = {""};
 	char *fill_p = NULL, *pen_p = NULL, *c = NULL;
 	FILE *fp = NULL;
 	struct GMT_CUSTOM_SYMBOL *head = NULL;
@@ -9448,7 +9448,7 @@ int GMT_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUST
 		GMT_chop (buffer);	/* Get rid of \n \r */
 		if (buffer[0] == '#' || buffer[0] == '\0') continue;	/* Skip comments or blank lines */
 		if (buffer[0] == 'N' && buffer[1] == ':') {	/* Got extra parameter specs. This is # of data columns expected beyond the x,y[,z] stuff */
-			char flags[GMT_TEXT_LEN64];
+			char flags[GMT_TEXT_LEN64] = {""};
 			nc = sscanf (&buffer[2], "%d %s", &head->n_required, flags);
 			head->type = GMT_memory (GMT, NULL, head->n_required, unsigned int);
 			if (nc == 2) {	/* Got optional types argument */
@@ -9860,7 +9860,7 @@ int gmt_load_macros (struct GMT_CTRL *GMT, char *mtype, struct MATH_MACRO **M)
 
 	unsigned int n = 0, k = 0, pos = 0;
 	size_t n_alloc = 0;
-	char line[GMT_BUFSIZ], name[GMT_TEXT_LEN64], item[GMT_TEXT_LEN64], args[GMT_BUFSIZ];
+	char line[GMT_BUFSIZ] = {""}, name[GMT_TEXT_LEN64] = {""}, item[GMT_TEXT_LEN64] = {""}, args[GMT_BUFSIZ] = {""};
 	struct MATH_MACRO *macro = NULL;
 	FILE *fp = NULL;
 
@@ -10066,7 +10066,7 @@ struct GMT_DATASET * gmt_resample_data_spherical (struct GMT_CTRL *GMT, struct G
 	bool resample;
 	uint64_t tbl, col, n_cols;
 	uint64_t row, seg, seg_no;
-	char buffer[GMT_BUFSIZ], ID[GMT_BUFSIZ];
+	char buffer[GMT_BUFSIZ] = {""}, ID[GMT_BUFSIZ] = {""};
 	double along_dist, azimuth, dist_inc;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATATABLE *Tin = NULL, *Tout = NULL;
@@ -10122,7 +10122,7 @@ struct GMT_DATASET * gmt_resample_data_cartesian (struct GMT_CTRL *GMT, struct G
 	bool resample;
 	uint64_t tbl, col, n_cols;
 	uint64_t row, seg, seg_no;
-	char buffer[GMT_BUFSIZ], ID[GMT_BUFSIZ];
+	char buffer[GMT_BUFSIZ] = {""}, ID[GMT_BUFSIZ] = {""};
 	double along_dist, azimuth, dist_inc;
 	struct GMT_DATASET *D = NULL;
 	struct GMT_DATATABLE *Tin = NULL, *Tout = NULL;
@@ -10218,7 +10218,7 @@ struct GMT_DATASET * gmt_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT
 	
 	bool skip_seg_no;
 
-	char buffer[GMT_BUFSIZ], seg_name[GMT_BUFSIZ], ID[GMT_BUFSIZ];
+	char buffer[GMT_BUFSIZ] = {""}, seg_name[GMT_BUFSIZ] = {""}, ID[GMT_BUFSIZ] = {""};
 
 	double dist_inc, cross_half_width, d_shift, orientation, sign, az_cross, x, y;
 	double dist_across_seg, angle_radians, across_ds_radians;
@@ -10358,7 +10358,7 @@ struct GMT_DATASET * gmt_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT
 	uint64_t dim[4] = {0, 0, 0, 0};
 	size_t n_x_seg = 0, n_x_seg_alloc = 0;
 
-	char buffer[GMT_BUFSIZ], seg_name[GMT_BUFSIZ], ID[GMT_BUFSIZ];
+	char buffer[GMT_BUFSIZ] = {""}, seg_name[GMT_BUFSIZ] = {""}, ID[GMT_BUFSIZ] = {""};
 
 	double dist_across_seg, orientation, sign, az_cross, x, y, sa, ca;
 
@@ -10486,7 +10486,7 @@ unsigned int GMT_split_line_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASE
 	 * GMT_split_line_at_dateline should ONLY be called when we KNOW we must split. */
 	unsigned int n_split;
 	uint64_t k, col, seg, row, start, length, *pos = GMT_memory (GMT, NULL, S->n_rows, uint64_t);
-	char label[GMT_BUFSIZ], *txt = NULL, *feature = "Line";
+	char label[GMT_BUFSIZ] = {""}, *txt = NULL, *feature = "Line";
 	double r;
 	struct GMT_DATASEGMENT **L = NULL, *Sx = GMT_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
 	

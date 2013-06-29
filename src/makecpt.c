@@ -253,7 +253,7 @@ int GMT_makecpt (void *V_API, int mode, void *args)
 
 	double *z = NULL;
 
-	char CPT_file[GMT_BUFSIZ], *file = NULL, *l = NULL;
+	char CPT_file[GMT_BUFSIZ] = {""}, *file = NULL, *l = NULL;
 
 	struct MAKECPT_CTRL *Ctrl = NULL;
 	struct GMT_PALETTE *Pin = NULL, *Pout = NULL;

@@ -213,8 +213,8 @@ bool get_input_format_version (struct GMT_CTRL *GMT, char *buffer, int mode)
 	 * mode = 0 means normal textrec, mode = 1 means paragraph mode. */
 	
 	int n, k;
-	char size[GMT_TEXT_LEN256], angle[GMT_TEXT_LEN256], font[GMT_TEXT_LEN256], just[GMT_TEXT_LEN256], txt[GMT_BUFSIZ];
-	char spacing[GMT_TEXT_LEN256], width[GMT_TEXT_LEN256], pjust[GMT_TEXT_LEN256];
+	char size[GMT_TEXT_LEN256] = {""}, angle[GMT_TEXT_LEN256] = {""}, font[GMT_TEXT_LEN256] = {""}, just[GMT_TEXT_LEN256] = {""}, txt[GMT_BUFSIZ] = {""};
+	char spacing[GMT_TEXT_LEN256] = {""}, width[GMT_TEXT_LEN256] = {""}, pjust[GMT_TEXT_LEN256] = {""};
 	
 	if (!buffer || !buffer[0]) return (false);	/* Nothing to work with */
 	
@@ -351,7 +351,7 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 	int j, k;
 	unsigned int pos, n_errors = 0;
 	bool explicit_justify = false;
-	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], p[GMT_BUFSIZ];
+	char txt_a[GMT_TEXT_LEN256] = {""}, txt_b[GMT_TEXT_LEN256] = {""}, p[GMT_BUFSIZ] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -533,7 +533,7 @@ int GMT_pstext_parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT
 int validate_coord_and_text (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, int rec_no, char *record, char buffer[])
 {	/* Parse x,y [and z], check for validity, and return the rest of the text in buffer */
 	int ix, iy, nscan;
-	char txt_x[GMT_TEXT_LEN256], txt_y[GMT_TEXT_LEN256], txt_z[GMT_TEXT_LEN256];
+	char txt_x[GMT_TEXT_LEN256] = {""}, txt_y[GMT_TEXT_LEN256] = {""}, txt_z[GMT_TEXT_LEN256] = {""};
 
 	ix = (GMT->current.setting.io_lonlat_toggle[GMT_IN]);	iy = 1 - ix;
 	buffer[0] = '\0';	/* Initialize buffer to NULL */
@@ -603,9 +603,9 @@ int GMT_pstext (void *V_API, int mode, void *args)
 	double plot_x = 0.0, plot_y = 0.0, save_angle = 0.0, xx[2] = {0.0, 0.0}, yy[2] = {0.0, 0.0}, *in = NULL;
 	double offset[2], tmp, *c_x = NULL, *c_y = NULL, *c_angle = NULL;
 
-	char text[GMT_BUFSIZ], buffer[GMT_BUFSIZ] = "", label[GMT_BUFSIZ], pjust_key[5], txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256];
+	char text[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = "", label[GMT_BUFSIZ] = {""}, pjust_key[5] = {""}, txt_a[GMT_TEXT_LEN256] = {""}, txt_b[GMT_TEXT_LEN256] = {""};
 	char *paragraph = NULL, *line = NULL, *curr_txt = NULL, *in_txt = NULL, **c_txt = NULL;
-	char this_size[GMT_TEXT_LEN256], this_font[GMT_TEXT_LEN256], just_key[5], txt_f[GMT_TEXT_LEN256];
+	char this_size[GMT_TEXT_LEN256] = {""}, this_font[GMT_TEXT_LEN256] = {""}, just_key[5] = {""}, txt_f[GMT_TEXT_LEN256] = {""};
 	int input_format_version = GMT_NOTSET;
 	struct PSTEXT_INFO T;
 	struct PSTEXT_CTRL *Ctrl = NULL;

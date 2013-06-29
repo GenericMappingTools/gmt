@@ -176,8 +176,8 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 	bool do_sample, not_supported;
 	unsigned int one_or_zero = !h->registration, n = 0, nr;
 	struct GRDBLEND_INFO *B = NULL;
-	char *sense[2] = {"normal", "inverse"}, *V_level = "qncvld", buffer[GMT_BUFSIZ];
-	char Targs[GMT_TEXT_LEN256], Iargs[GMT_TEXT_LEN256], Rargs[GMT_TEXT_LEN256], cmd[GMT_BUFSIZ];
+	char *sense[2] = {"normal", "inverse"}, *V_level = "qncvld", buffer[GMT_BUFSIZ] = {""};
+	char Targs[GMT_TEXT_LEN256] = {""}, Iargs[GMT_TEXT_LEN256] = {""}, Rargs[GMT_TEXT_LEN256] = {""}, cmd[GMT_BUFSIZ] = {""};
 	struct BLEND_LIST {
 		char *file;
 		char *region;
@@ -194,7 +194,7 @@ int init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, st
 	}
 	else {	/* Must read blend file */
 		size_t n_alloc = 0;
-		char *line = NULL, r_in[GMT_TEXT_LEN256], file[GMT_TEXT_LEN256];
+		char *line = NULL, r_in[GMT_TEXT_LEN256] = {""}, file[GMT_TEXT_LEN256] = {""};
 		double weight;
 		GMT_set_meminc (GMT, GMT_SMALL_CHUNK);
 		do {	/* Keep returning records until we reach EOF */
@@ -787,7 +787,7 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 	}
 
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
-		char empty[GMT_TEXT_LEN64];
+		char empty[GMT_TEXT_LEN64] = {""};
 		GMT_Report (API, GMT_MSG_VERBOSE, "Blended grid size of %s is %d x %d\n", Ctrl->G.file, nx_final, ny_final);
 		if (n_fill == n_tot)
 			GMT_Report (API, GMT_MSG_VERBOSE, "All nodes assigned values\n");
@@ -804,7 +804,7 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 
 	if (reformat) {	/* Must reformat the output grid to the non-supported format */
 		int status;
-		char cmd[GMT_BUFSIZ], *V_level = "qncvld";
+		char cmd[GMT_BUFSIZ] = {""}, *V_level = "qncvld";
 		sprintf (cmd, "%s %s -V%c", outfile, Ctrl->G.file, V_level[GMT->current.setting.verbose]);
 		GMT_Report (API, GMT_MSG_LONG_VERBOSE, "Reformat %s via grdreformat %s\n", outfile, cmd);
 		if ((status = GMT_Call_Module (GMT->parent, "grdreformat", GMT_MODULE_CMD, cmd))) {	/* Resample the file */

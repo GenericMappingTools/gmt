@@ -411,12 +411,13 @@ FILE *gmt_nc_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode
  * Also asigns GMT->current.io.col_type[GMT_IN] based on the variable attributes.
  */
 {
-	char file[GMT_BUFSIZ], path[GMT_BUFSIZ];
+	char file[GMT_BUFSIZ] = {""}, path[GMT_BUFSIZ] = {""};
 	int i, j, nvars, dimids[5] = {-1, -1, -1, -1, -1}, ndims, in, id;
 	size_t n, item[2];
 	size_t tmp_pointer; /* To avoid "cast from pointer to integer of different size" */
 	double t_value[5], dummy[2];
-	char varnm[20][GMT_TEXT_LEN64], long_name[GMT_TEXT_LEN256], units[GMT_TEXT_LEN256], varname[GMT_TEXT_LEN64], dimname[GMT_TEXT_LEN64];
+	char varnm[20][GMT_TEXT_LEN64], long_name[GMT_TEXT_LEN256] = {""}, units[GMT_TEXT_LEN256] = {""};
+	char varname[GMT_TEXT_LEN64] = {""}, dimname[GMT_TEXT_LEN64] = {""};
 	struct GMT_TIME_SYSTEM time_system;
 	bool by_value;
 
@@ -583,7 +584,7 @@ FILE *GMT_fopen (struct GMT_CTRL *GMT, const char *filename, const char *mode)
 int GMT_io_banner (struct GMT_CTRL *GMT, unsigned int direction)
 {	/* Write verbose message about binary record i/o format */
 	static const char *gmt_direction[2] = {"Input", "Output"};
-	char message[GMT_TEXT_LEN256], skip[GMT_TEXT_LEN64];
+	char message[GMT_TEXT_LEN256] = {""}, skip[GMT_TEXT_LEN64] = {""};
 	char *letter = "cuhHiIlLfditTn", s[2] = {0, 0};	/* letter order matches the type order in GMT_enum_type */
 	uint64_t col;
 	uint64_t n_bytes;
@@ -900,7 +901,7 @@ char *GMT_getsharepath (struct GMT_CTRL *GMT, const char *subdir, const char *st
 
 int GMT_access (struct GMT_CTRL *GMT, const char* filename, int mode)
 {	/* Like access but also checks the GMT_*DIR places */
-	char file[GMT_BUFSIZ], *c = NULL;
+	char file[GMT_BUFSIZ] = {""}, *c = NULL;
 	
 	if (GMT_File_Is_Memory (filename)) return (0);	/* Memory location always exists */
 	file[0] = '\0';		/* 'Initialize' it so we can test if it's still 'empty' after the sscanf below */
@@ -956,7 +957,7 @@ unsigned int gmt_ogr_decode_aspatial_values (struct GMT_CTRL *GMT, char *record,
  	 * both the text representation (value) and attempt to convert to double in dvalue.
  	 * We use S->n_aspatial to know how many values there are .*/
 	unsigned int col = 0;
-	char buffer[GMT_BUFSIZ], *token, *stringp;
+	char buffer[GMT_BUFSIZ] = {""}, *token, *stringp;
 
 	if (S->n_aspatial == 0) return (0);	/* Nothing to do */
 	if (S->value == NULL) {			/* First time, allocate space */
@@ -995,7 +996,7 @@ unsigned int gmt_ogr_decode_aspatial_types (struct GMT_CTRL *GMT, char *record, 
 {	/* Parse @T aspatial types; this is done once per dataset and follows @N */
 	unsigned int pos = 0, col = 0;
 	size_t n_alloc;
-	char buffer[GMT_BUFSIZ], p[GMT_BUFSIZ];
+	char buffer[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ];
 
 	n_alloc = (S->type) ? GMT_BUFSIZ : 0;
 	gmt_copy_and_truncate (buffer, record);
@@ -1015,7 +1016,7 @@ unsigned int gmt_ogr_decode_aspatial_names (struct GMT_CTRL *GMT, char *record, 
 {	/* Decode @N aspatial names; this is done once per dataset */
 	unsigned int pos = 0, col = 0;
 	size_t n_alloc;
-	char buffer[GMT_BUFSIZ], p[GMT_BUFSIZ];
+	char buffer[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""};
 
 	n_alloc = (S->type) ? GMT_BUFSIZ : 0;
 	gmt_copy_and_truncate (buffer, record);
@@ -1298,7 +1299,7 @@ char *GMT_trim_segheader (struct GMT_CTRL *GMT, char *line) {
 bool GMT_is_a_NaN_line (struct GMT_CTRL *GMT, char *line)
 {	/* Returns true if record is NaN NaN [NaN NaN] etc */
 	unsigned int pos = 0;
-	char p[GMT_TEXT_LEN256];
+	char p[GMT_TEXT_LEN256] = {""};
 	
 	while ((GMT_strtok (line, " \t,", &pos, p))) {
 		GMT_str_tolower (p);
@@ -1325,7 +1326,7 @@ void * gmt_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status
 	uint64_t pos, col_no = 0, col_pos, n_convert, n_ok = 0, kind, add, n_use = 0;
 	int64_t in_col;
 	bool done = false, bad_record, set_nan_flag = false;
-	char line[GMT_BUFSIZ], *p = NULL, *token, *stringp;
+	char line[GMT_BUFSIZ] = {""}, *p = NULL, *token, *stringp;
 	double val;
 
 	/* gmt_ascii_input will skip blank lines and shell comment lines which start
@@ -1481,7 +1482,7 @@ void * gmt_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status
 void * GMT_ascii_textinput (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, int *status)
 {
 	bool more = true;
-	char line[GMT_BUFSIZ], *p = NULL;
+	char line[GMT_BUFSIZ] = {""}, *p = NULL;
 
 	/* GMT_ascii_textinput will read one text line and return it, setting
 	 * header or segment flags in the process.
@@ -1694,7 +1695,7 @@ void GMT_set_bin_input (struct GMT_CTRL *GMT)
 
 int GMT_ascii_output_col (struct GMT_CTRL *GMT, FILE *fp, double x, uint64_t col)
 {	/* Formats x according to to output column number */
-	char text[GMT_TEXT_LEN256];
+	char text[GMT_TEXT_LEN256] = {""};
 
 	GMT_ascii_format_col (GMT, text, x, GMT_OUT, col);
 	return (fprintf (fp, "%s", text));
@@ -1776,7 +1777,7 @@ void gmt_format_geo_output (struct GMT_CTRL *GMT, bool is_lat, double geo, char 
 
 void gmt_format_abstime_output (struct GMT_CTRL *GMT, double dt, char *text)
 {
-	char date[GMT_TEXT_LEN16], tclock[GMT_TEXT_LEN16];
+	char date[GMT_TEXT_LEN16] = {""}, tclock[GMT_TEXT_LEN16] = {""};
 
 	GMT_format_calendar (GMT, date, tclock, &GMT->current.io.date_output, &GMT->current.io.clock_output, false, 1, dt);
 	if (date[0] == '\0')	/* No date wanted hence dont use T */
@@ -2062,7 +2063,7 @@ void GMT_add_to_record (struct GMT_CTRL *GMT, char *record, double val, uint64_t
 	 * If sep is 2 we append col separator
 	 * If sep is 1|2 do both [0 means no separator].
 	 */
-	char word[GMT_TEXT_LEN64];
+	char word[GMT_TEXT_LEN64] = {""};
 	GMT_ascii_format_col (GMT, word, val, GMT_OUT, col);
 	if (sep & 1) strcat (record, GMT->current.setting.io_col_separator);
 	strcat (record, word);
@@ -2155,7 +2156,7 @@ int gmt_A_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 
 int gmt_a_read (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 { /* Only reads one item regardless of *n */
-	char line[GMT_TEXT_LEN64], *p;
+	char line[GMT_TEXT_LEN64] = {""}, *p;
 	if (!fgets (line, GMT_TEXT_LEN64, fp)) {
 		/* Read was unsuccessful */
 		GMT->current.io.status = GMT_IO_EOF;
@@ -2722,7 +2723,7 @@ int gmt_d_write_swab (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *d)
 static inline void fwrite_check (struct GMT_CTRL *GMT, const void *ptr,
 		size_t size, size_t nitems, FILE *stream) {
 	if (fwrite (ptr, size, nitems, stream) != nitems) {
-		char message[GMT_TEXT_LEN256];
+		char message[GMT_TEXT_LEN256] = {""};
 		sprintf (message, "%s: error writing %" PRIuS " bytes to stream.\n",
 				__func__, size * nitems);
 			GMT_Message (GMT->parent, GMT_TIME_NONE, message);
@@ -2777,7 +2778,7 @@ bool gmt_byteswap_file (struct GMT_CTRL *GMT,
 	uint64_t bytes_read = 0;
 	size_t nbytes, chunk, extrabytes = 0;
 	static const size_t chunksize = 0x1000000; /* 16 MiB */
-	char *buffer, message[GMT_TEXT_LEN256];
+	char *buffer, message[GMT_TEXT_LEN256] = {""};
 
 	/* length must be a multiple SwapWidth */
 	if ( length%swapwidth != 0 ) {
@@ -3608,7 +3609,7 @@ void gmt_clock_C_format (struct GMT_CTRL *GMT, char *form, struct GMT_CLOCK_IO *
 	/* Craft the actual C-format to use for input/output clock strings */
 
 	if (S->order[0] >= 0) {	/* OK, at least hours is needed */
-		char fmt[GMT_TEXT_LEN256];
+		char fmt[GMT_TEXT_LEN256] = {""};
 		if (S->compact)
 			sprintf (S->format, "%%d");
 		else
@@ -3648,7 +3649,7 @@ void gmt_date_C_format (struct GMT_CTRL *GMT, char *form, struct GMT_DATE_IO *S,
 
 	int k, ywidth;
 	bool no_delim;
-	char fmt[GMT_TEXT_LEN256];
+	char fmt[GMT_TEXT_LEN256] = {""};
 
 	S->skip = false;
 	if (mode && strlen (form) == 1 && form[0] == '-') {	/* Do not want date output or plotted */
@@ -3760,7 +3761,7 @@ int gmt_geo_C_format (struct GMT_CTRL *GMT)
 		sprintf (S->y_format, "%s", GMT->current.setting.format_float_out);
 	}
 	else {			/* Some form of dd:mm:ss */
-		char fmt[GMT_TEXT_LEN256];
+		char fmt[GMT_TEXT_LEN256] = {""};
 		sprintf (S->x_format, "%%03d");
 		sprintf (S->y_format, "%%02d");
 		if (S->order[1] >= 0) {	/* Need minutes too */
@@ -3819,7 +3820,7 @@ void gmt_plot_C_format (struct GMT_CTRL *GMT)
 		strcat (S->y_format, "%s");
 	}
 	else {			/* Must cover all the 6 forms of dd[:mm[:ss]][.xxx] */
-		char fmt[GMT_TEXT_LEN256];
+		char fmt[GMT_TEXT_LEN256] = {""};
 
 		/* Level 0: degrees only. index 0 is integer degrees, index 1 is [possibly] fractional degrees */
 
@@ -4083,7 +4084,7 @@ int gmt_scanf_geo (char *s, double *val)
 	bool negate = false;
 	unsigned int ncolons;
 	size_t k;
-	char scopy[GMT_TEXT_LEN64], suffix, *p = NULL, *p2 = NULL;
+	char scopy[GMT_TEXT_LEN64] = {""}, suffix, *p = NULL, *p2 = NULL;
 	double dd, dm, ds;
 
 	k = strlen (s);
@@ -4186,7 +4187,7 @@ int gmt_scanf_float (char *s, double *val)
 	On failure, return GMT_IS_NAN and do not touch val.
 	*/
 
-	char scopy[GMT_TEXT_LEN64], *p = NULL;
+	char scopy[GMT_TEXT_LEN64] = {""}, *p = NULL;
 	double x;
 	size_t j, k;
 
@@ -4367,7 +4368,7 @@ int GMT_scanf (struct GMT_CTRL *GMT, char *s, unsigned int expectation, double *
 		GMT_IS_FLOAT	we expect an uncomplicated float.
 	*/
 
-	char calstring[GMT_TEXT_LEN64], clockstring[GMT_TEXT_LEN64], *p = NULL;
+	char calstring[GMT_TEXT_LEN64] = {""}, clockstring[GMT_TEXT_LEN64] = {""}, *p = NULL;
 	double x;
 	int64_t rd;
 	size_t callen, clocklen;
@@ -4516,7 +4517,7 @@ struct GMT_TEXTTABLE * GMT_read_texttable (struct GMT_CTRL *GMT, void *source, u
 	int status;
 	size_t n_row_alloc = GMT_CHUNK, n_seg_alloc = GMT_CHUNK, n_head_alloc = GMT_TINY_CHUNK;
 	uint64_t row = 0, n_read = 0, seg = 0, ncol = 0;
-	char file[GMT_BUFSIZ], *in = NULL;
+	char file[GMT_BUFSIZ] = {""}, *in = NULL;
 	FILE *fp = NULL;
 	struct GMT_TEXTTABLE *T = NULL;
 
@@ -4736,7 +4737,7 @@ int GMT_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 	 */
 
 	unsigned int processed = 0, change = 0, col;
-	char line[GMT_BUFSIZ], *txt = NULL;
+	char line[GMT_BUFSIZ] = {""}, *txt = NULL;
 	double z;
 	struct GMT_FILL test_fill;
 	struct GMT_PEN test_pen;
@@ -4914,7 +4915,7 @@ void GMT_write_ogr_header (FILE *fp, struct GMT_OGR *G)
 
 void gmt_write_formatted_ogr_value (struct GMT_CTRL *GMT, FILE *fp, int col, int type, struct GMT_OGR_SEG *G)
 {
-	char text[GMT_TEXT_LEN64];
+	char text[GMT_TEXT_LEN64] = {""};
 	
 	switch (type) {
 		case GMT_TEXT:
@@ -5061,7 +5062,7 @@ int gmt_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 
 	int object_ID, col, stop, n_reg, item, error = 0;
 	uint64_t row, seg, seg1, seg2, k;
-	char buffer[GMT_BUFSIZ], in_string[GMT_STR16], out_string[GMT_STR16];
+	char buffer[GMT_BUFSIZ] = {""}, in_string[GMT_STR16] = {""}, out_string[GMT_STR16] = {""};
 	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATASET *M = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
@@ -5212,7 +5213,7 @@ int gmt_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 
 void gmt_write_multilines (struct GMT_CTRL *GMT, FILE *fp, char *text, char *prefix) {
 	/* Optional title(s) or remarks provided; could be several lines separated by \n */
-	char p[GMT_BUFSIZ], line[GMT_BUFSIZ];
+	char p[GMT_BUFSIZ] = {""}, line[GMT_BUFSIZ] = {""};
 	unsigned int pos = 0, k = 0;
 
 	while (GMT_strtok (text, "\\", &pos, p)) {
@@ -5239,7 +5240,7 @@ void GMT_write_newheaders (struct GMT_CTRL *GMT, FILE *fp, uint64_t n_cols)
 			GMT_write_tableheader (GMT, fp, GMT->common.h.colnames);
 		else if (n_cols) {	/* Generate names col1[0], col2[1] etc */
 			uint64_t col, first = 1;
-			char record[GMT_BUFSIZ], txt[GMT_TEXT_LEN64];
+			char record[GMT_BUFSIZ] = {""}, txt[GMT_TEXT_LEN64] = {""};
 			if (n_cols >= 2) {	/* Place x and y first */
 				GMT_set_xycolnames (GMT, record);
 				first++;
@@ -5275,7 +5276,7 @@ int GMT_write_table (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, s
 	unsigned int k;
 	uint64_t row = 0, seg, col;
 	int *fd = NULL;
-	char open_mode[4], file[GMT_BUFSIZ], tmpfile[GMT_BUFSIZ], *out_file = tmpfile;
+	char open_mode[4] = {""}, file[GMT_BUFSIZ] = {""}, tmpfile[GMT_BUFSIZ] = {""}, *out_file = tmpfile;
 	double *out = NULL;
 	FILE *fp = NULL;
 	int (*psave) (struct GMT_CTRL *, FILE *, uint64_t, double *) = NULL;	/* Pointer to function writing tables */
@@ -5389,7 +5390,7 @@ int GMT_write_dataset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type,
 	bool close_file = false;
 	int error, append = 0;
 	int *fd = NULL;
-	char file[GMT_BUFSIZ], tmpfile[GMT_BUFSIZ], open_mode[4], *out_file = tmpfile;
+	char file[GMT_BUFSIZ] = {""}, tmpfile[GMT_BUFSIZ] = {""}, open_mode[4] = {""}, *out_file = tmpfile;
 	FILE *fp = NULL;
 
 	if (dest_type == GMT_IS_FILE && dest && ((char *)dest)[0] == '>') append = 1;	/* Want to append to existing file */
@@ -5477,7 +5478,7 @@ int gmt_write_texttable (struct GMT_CTRL *GMT, void *dest, int dest_type, struct
 	uint64_t row = 0, seg;
 	unsigned int hdr, append;
 	int *fd = NULL;	/* Must be int, not int */
-	char file[GMT_BUFSIZ], tmpfile[GMT_BUFSIZ], *out_file = tmpfile;
+	char file[GMT_BUFSIZ] = {""}, tmpfile[GMT_BUFSIZ] = {""}, *out_file = tmpfile;
 	FILE *fp = NULL;
 
 	if (table->mode == GMT_WRITE_SKIP) return (0);	/* Skip this table */
@@ -5569,7 +5570,7 @@ int GMT_write_textset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type,
 	unsigned int tbl, u_table, append = 0;
 	bool close_file = false;
 	int *fd = NULL;	/* Must be int */
-	char file[GMT_BUFSIZ], tmpfile[GMT_BUFSIZ], *out_file = tmpfile;
+	char file[GMT_BUFSIZ] = {""}, tmpfile[GMT_BUFSIZ] = {""}, *out_file = tmpfile;
 	FILE *fp = NULL;
 
 	/* Convert any destination type to stream */
@@ -5915,7 +5916,7 @@ struct GMT_DATATABLE * GMT_read_table (struct GMT_CTRL *GMT, void *source, unsig
 	uint64_t n_expected_fields;
 	uint64_t n_read = 0, row = 0, seg = 0, col;
 	size_t n_row_alloc, n_head_alloc = GMT_TINY_CHUNK;
-	char open_mode[4], file[GMT_BUFSIZ], line[GMT_TEXT_LEN64];
+	char open_mode[4] = {""}, file[GMT_BUFSIZ] = {""}, line[GMT_TEXT_LEN64] = {""};
 	double d, *in = NULL;
 	FILE *fp = NULL;
 	struct GMT_DATATABLE *T = NULL;

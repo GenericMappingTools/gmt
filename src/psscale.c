@@ -199,8 +199,8 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 
 	unsigned int n, pos, n_errors = 0, n_files = 0;
 	int j;
-	char flag, txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], *c = NULL;
-	char txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256], p[GMT_TEXT_LEN256];
+	char flag, txt_a[GMT_TEXT_LEN256] = {""}, txt_b[GMT_TEXT_LEN256] = {""}, *c = NULL;
+	char txt_c[GMT_TEXT_LEN256] = {""}, txt_d[GMT_TEXT_LEN256] = {""}, p[GMT_TEXT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -391,7 +391,7 @@ double get_z (struct GMT_PALETTE *P, double x, double *width, unsigned int n)
 void fix_format (char *unit, char *format)
 {
 	unsigned int i, j;
-	char text[GMT_TEXT_LEN64], new_format[GMT_BUFSIZ];
+	char text[GMT_TEXT_LEN64] = {""}, new_format[GMT_BUFSIZ] = {""};
 
 	/* Check if annotation units should be added */
 
@@ -425,7 +425,7 @@ void gmt_draw_colorbar (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_P
 	unsigned int nx = 0, ny = 0, nm, barmem, k, justify, l_justify, n_use_labels = 0;
 	int this_just;
 	bool reverse, all = true, use_image, center = false, const_width = true, do_annot, use_labels, cpt_auto_fmt = true;
-	char format[GMT_TEXT_LEN256], text[GMT_TEXT_LEN256], test[GMT_TEXT_LEN256], unit[GMT_TEXT_LEN256], label[GMT_TEXT_LEN256];
+	char format[GMT_TEXT_LEN256] = {""}, text[GMT_TEXT_LEN256] = {""}, test[GMT_TEXT_LEN256] = {""}, unit[GMT_TEXT_LEN256] = {""}, label[GMT_TEXT_LEN256] = {""};
 	static char *method[2] = {"polygons", "colorimage"};
 	unsigned char *bar = NULL, *tmp = NULL;
 	double off, annot_off, label_off, len, len2, size, x0, x1, dx, xx, dir, y_base, y_annot, y_label, xd = 0.0, yd = 0.0, xt = 0.0;
@@ -1099,7 +1099,7 @@ int GMT_psscale (void *V_API, int mode, void *args)
 	int error = 0;
 	unsigned int i;
 
-	char text[GMT_TEXT_LEN256];
+	char text[GMT_TEXT_LEN256] = {""};
 
 	double max_intens[2], dz, *z_width = NULL;
 	double start_val, stop_val, wesn[4];

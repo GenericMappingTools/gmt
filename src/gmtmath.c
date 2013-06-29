@@ -3162,7 +3162,7 @@ int decode_gmt_argument (struct GMT_CTRL *GMT, char *txt, double *value, struct 
 	unsigned int expect;
 	int key;
 	bool check = GMT_IS_NAN, possible_number = false;
-	char copy[GMT_TEXT_LEN256];
+	char copy[GMT_TEXT_LEN256] = {""};
 	char *mark = NULL;
 	double tmp = 0.0;
 

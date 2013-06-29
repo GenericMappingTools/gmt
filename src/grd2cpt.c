@@ -312,7 +312,7 @@ int GMT_grd2cpt (void *V_API, int mode, void *args)
 	int signed_levels, error = 0;
 	size_t n_alloc = GMT_TINY_CHUNK;
 
-	char CPT_file[GMT_BUFSIZ], format[GMT_BUFSIZ], *file = NULL, *l = NULL, **grdfile = NULL;
+	char CPT_file[GMT_BUFSIZ] = {""}, format[GMT_BUFSIZ] = {""}, *file = NULL, *l = NULL, **grdfile = NULL;
 
 	double *z = NULL, wesn[4], mean, sd;
 

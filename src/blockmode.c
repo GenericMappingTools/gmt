@@ -101,7 +101,7 @@ int GMT_blockmode_parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, stru
 
 	unsigned int n_errors = 0, pos = 0;
 	struct GMT_OPTION *opt = NULL;
-	char p[GMT_BUFSIZ], *c = NULL;
+	char p[GMT_BUFSIZ] = {""}, *c = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -356,7 +356,7 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 
 	double out[7], wesn[4], i_n_in_cell, d_intval, weight, half_dx, *in = NULL, *z_tmp = NULL;
 
-	char format[GMT_BUFSIZ], *old_format = NULL;
+	char format[GMT_BUFSIZ] = {""}, *old_format = NULL;
 
 	struct GMT_OPTION *options = NULL;
 	struct GMT_GRID *Grid = NULL;

@@ -82,7 +82,7 @@ int Singleton_list[N_SINGLETON_LIST] = {
 
 void gmt_fft_Singleton_list (struct GMTAPI_CTRL *API) {
 	unsigned int k;
-	char message[GMT_TEXT_LEN16];
+	char message[GMT_TEXT_LEN16] = {""};
 	GMT_Message (API, GMT_TIME_NONE, "\t\"Good\" numbers for FFT dimensions [Singleton, 1967]:\n");
 	for (k = 0; k < N_SINGLETON_LIST; k++) {
 		sprintf (message, "\t%d", Singleton_list[k]);

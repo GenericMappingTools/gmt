@@ -326,7 +326,7 @@ int GMT_fitcircle (void *V_API, int mode, void *args)
 	uint64_t i, n_data;
 	size_t n_alloc;
 
-	char format[GMT_BUFSIZ], record[GMT_BUFSIZ], item[GMT_BUFSIZ];
+	char format[GMT_BUFSIZ] = {""}, record[GMT_BUFSIZ] = {""}, item[GMT_BUFSIZ] = {""};
 	char *type[2] = {"great", "small"}, *way[3] = {"L1","L2","L1 and L2"};
 
 	double lonsum, latsum, rad, *work = NULL, *in = NULL;

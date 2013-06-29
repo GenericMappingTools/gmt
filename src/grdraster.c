@@ -217,7 +217,7 @@ int load_rasinfo (struct GMT_CTRL *GMT, struct GRDRASTER_INFO **ras, char endian
 	size_t length, i, j, stop_point;
 	off_t delta;
 	double global_lon, lon_tol;
-	char path[GMT_BUFSIZ], buf[GMT_GRID_REMARK_LEN160], *record = NULL, *file = "grdraster.info";
+	char path[GMT_BUFSIZ] = {""}, buf[GMT_GRID_REMARK_LEN160] = {""}, *record = NULL, *file = "grdraster.info";
 	struct GRDRASTER_INFO *rasinfo = NULL;
 	struct GMT_TEXTSET *In = NULL;
 	struct stat F;

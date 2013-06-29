@@ -754,7 +754,7 @@ int GMT_pshistogram (void *V_API, int mode, void *args)
 	}
 
 	if (Ctrl->A.active) {
-		char buffer[GMT_TEXT_LEN256];
+		char buffer[GMT_TEXT_LEN256] = {""};
 		double_swap (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval, GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval);
 		double_swap (GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_LOWER].interval, GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_LOWER].interval);
 		double_swap (GMT->current.map.frame.axis[GMT_X].item[GMT_TICK_UPPER].interval,  GMT->current.map.frame.axis[GMT_Y].item[GMT_TICK_UPPER].interval);

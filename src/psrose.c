@@ -190,7 +190,7 @@ int GMT_psrose_parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT
 	int n;
 	unsigned int n_errors = 0, n_files = 0, k;
 	double range;
-	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], txt_c[GMT_TEXT_LEN256], txt_d[GMT_TEXT_LEN256];
+	char txt_a[GMT_TEXT_LEN256] = {""}, txt_b[GMT_TEXT_LEN256] = {""}, txt_c[GMT_TEXT_LEN256] = {""}, txt_d[GMT_TEXT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -348,7 +348,7 @@ int GMT_psrose (void *V_API, int mode, void *args)
 	
 	size_t n_alloc = GMT_CHUNK;
 
-	char text[GMT_BUFSIZ], format[GMT_BUFSIZ];
+	char text[GMT_BUFSIZ] = {""}, format[GMT_BUFSIZ] = {""};
 
 	double max = 0.0, radius, az, x_origin, y_origin, tmp, one_or_two = 1.0, s, c;
 	double angle1, angle2, angle, x, y, mean_theta, mean_radius, xr = 0.0, yr = 0.0;
@@ -762,7 +762,7 @@ int GMT_psrose (void *V_API, int mode, void *args)
 		GMT_get_format (GMT, GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER].interval, GMT->current.map.frame.axis[GMT_X].unit, GMT->current.map.frame.axis[GMT_X].prefix, format);
 
 		if (half_only) {
-			char text[GMT_TEXT_LEN64];
+			char text[GMT_TEXT_LEN64] = {""};
 			if (!Ctrl->L.active) {	/* Use default labels */
 				free (Ctrl->L.w);	free (Ctrl->L.e);	free (Ctrl->L.n);
 				if (GMT->current.setting.map_degree_symbol == gmt_none) {

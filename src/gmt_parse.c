@@ -119,7 +119,7 @@ struct GMT_OPTION * GMT_Create_Options (void *V_API, int n_args_in, void *in)
 		unsigned int pos = 0;
 		uint32_t new_n_args = 0;
 		size_t n_alloc = GMT_SMALL_CHUNK;
-		char p[GMT_BUFSIZ], *txt_in = in;	/* Passed a single text string */
+		char p[GMT_BUFSIZ] = {""}, *txt_in = in;	/* Passed a single text string */
 		new_args = GMT_memory (G, NULL, n_alloc, char *);
 
 		while ((GMT_strtok (txt_in, " ", &pos, p))) {	/* Break up string into separate words */

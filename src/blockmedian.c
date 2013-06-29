@@ -247,7 +247,7 @@ int GMT_blockmedian (void *V_API, int mode, void *args)
 	
 	double out[8], wesn[4], quantile[3] = {0.25, 0.5, 0.75}, extra[8], weight, half_dx, *in = NULL, *z_tmp = NULL;
 
-	char format[GMT_BUFSIZ], *old_format = NULL;
+	char format[GMT_BUFSIZ] = {""}, *old_format = NULL;
 
 	struct GMT_OPTION *options = NULL;
 	struct GMT_GRID *Grid = NULL;

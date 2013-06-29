@@ -325,7 +325,7 @@ int GMT_grdgradient (void *V_API, int mode, void *args)
 	unsigned int row, col, n;
 	uint64_t ij, ij0, index, n_used = 0;
 	
-	char format[GMT_BUFSIZ], buffer[GMT_GRID_REMARK_LEN160];
+	char format[GMT_BUFSIZ] = {""}, buffer[GMT_GRID_REMARK_LEN160] = {""};
 	
 	double dx_grid, dy_grid, x_factor, y_factor, dzdx, dzdy, ave_gradient, wesn[4];
 	double azim, denom, max_gradient = 0.0, min_gradient = 0.0, rpi, lat, output;

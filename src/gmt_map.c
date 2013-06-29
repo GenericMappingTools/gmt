@@ -1382,7 +1382,7 @@ unsigned int GMT_split_poly_at_dateline (struct GMT_CTRL *GMT, struct GMT_DATASE
 	int side, j, np, cross = 0;
 	uint64_t row, m;
 	size_t n_alloc = 0;
-	char label[GMT_BUFSIZ], *part = "EW";
+	char label[GMT_BUFSIZ] = {""}, *part = "EW";
 	double xx[2], yy[2];
 	struct GMT_DATASEGMENT **L = NULL;
 	bool (*inside[2]) (double, double);
@@ -7142,7 +7142,7 @@ int GMT_set_datum (struct GMT_CTRL *GMT, char *text, struct GMT_DATUM *D)
 		D->ellipsoid_id = 0;
 	}
 	else if (strchr (text, ':')) {	/* Has colons, must get ellipsoid and dr separately */
-		char ellipsoid[GMT_TEXT_LEN256], dr[GMT_TEXT_LEN256];
+		char ellipsoid[GMT_TEXT_LEN256] = {""}, dr[GMT_TEXT_LEN256] = {""};
 		if (sscanf (text, "%[^:]:%s", ellipsoid, dr) != 2) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Malformed <ellipsoid>:<dr> argument!\n");
 			return (-1);

@@ -116,7 +116,7 @@ int GMT_gmtwhich (void *V_API, int mode, void *args)
 {
 	int error = 0;
 	
-	char path[GMT_BUFSIZ], *Yes = "Y", *No = "N", cwd[GMT_BUFSIZ], *p = NULL;
+	char path[GMT_BUFSIZ] = {""}, *Yes = "Y", *No = "N", cwd[GMT_BUFSIZ] = {""}, *p = NULL;
 	
 	struct GMTWHICH_CTRL *Ctrl = NULL;
 	struct GMT_OPTION *opt = NULL;

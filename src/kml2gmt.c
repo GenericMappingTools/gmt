@@ -128,7 +128,7 @@ int GMT_kml2gmt (void *V_API, int mode, void *args)
 	size_t length;
 	bool scan = true, first = true;
 	
-	char line[GMT_BUFSIZ], buffer[GMT_BUFSIZ], header[GMT_BUFSIZ], name[GMT_BUFSIZ], description[GMT_BUFSIZ];
+	char line[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, header[GMT_BUFSIZ] = {""}, name[GMT_BUFSIZ] = {""}, description[GMT_BUFSIZ] = {""};
 
 	double out[3];
 	

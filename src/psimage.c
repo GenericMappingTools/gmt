@@ -141,7 +141,7 @@ int GMT_psimage_parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct G
 
 	unsigned int n_errors = 0, n_files = 0;
 	int n;
-	char txt_a[GMT_TEXT_LEN256], txt_b[GMT_TEXT_LEN256], letter;
+	char txt_a[GMT_TEXT_LEN256] = {""}, txt_b[GMT_TEXT_LEN256] = {""}, letter;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
