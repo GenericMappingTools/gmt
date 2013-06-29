@@ -378,7 +378,7 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 	/* At the end of GMT_Create_Session we are done with processing gmt.conf.
 	 * We can now determine how many shared libraries to consider, and open the core lib */
 	unsigned int n_custom_libs = 0, k, p, n_alloc = GMT_TINY_CHUNK;
-	char text[GMT_TEXT_LEN256];
+	char text[GMT_TEXT_LEN256] = {""};
 #ifdef WIN32
 	HANDLE hFind;
 	WIN32_FIND_DATA FindFileData;
@@ -421,28 +421,34 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 				API->GMT->session.CUSTOM_LIBS[k] = '/';	/* Restore the trailing / */
 				while ((F = readdir (D)) != NULL) {	/* For each directory entry until end or ok becomes true */
 					d_namlen = strlen (F->d_name);
-					if (d_namlen == 1U && F->d_name[0] == '.') continue;				/* Skip current dir */
+					if (d_namlen == 1U && F->d_name[0] == '.') continue;			/* Skip current dir */
 					if (d_namlen == 2U && F->d_name[0] == '.' && F->d_name[1] == '.') continue;	/* Skip parent dir */
 #ifdef HAVE_SYS_DIR_H_
-					if (F->d_type == DT_DIR) continue;		/* Entry is a directory; skip it */
+					if (F->d_type == DT_DIR) continue;              /* Entry is a directory; skip it */
 #endif
-					strcpy (text, F->d_name);			/* Make a copy we can edit */
+					strcpy (text, F->d_name);                       /* Make a copy we can edit */
 					API->lib[n_custom_libs].path = strdup (text);	/* Save the library name */
 					p = 0;	while (text[p] && text[p] != '.') p++;	/* Find the first period in the name */
-					text[p] = '\0';					/* Chop off library extension */
-					p = (strncmp (text, "lib", 3U)) ? 0 : 3;	/* Do we have a leading "lib" or not ? */
-					API->lib[n_custom_libs].name = strdup (&text[p]);	/* Get the shared library tag */
-					n_custom_libs++;				/* Add up entries found */
-					if (n_custom_libs == n_alloc) {			/* Allocate more memory for list */
+					text[p] = '\0';                                 /* Chop off library extension */
+					p = (strncmp (text, "lib", 3U)) ? 0 : 3;	    /* Do we have a leading "lib" or not ? */
+					API->lib[n_custom_libs].name = strdup (&text[p]); /* Get the shared library tag */
+					n_custom_libs++;                                /* Add up entries found */
+					if (n_custom_libs == n_alloc) {                 /* Allocate more memory for list */
 						n_alloc <<= 1;
 						API->lib = GMT_memory (API->GMT, API->lib, n_alloc, struct Gmt_libinfo);
 					}
 				}
 				(void)closedir (D);
 			}
-			API->GMT->session.CUSTOM_LIBS[k] = '/';	/* Restore the trailing / */
+			API->GMT->session.CUSTOM_LIBS[k] = '/';		/* Restore the trailing / */
 #elif defined(WIN32)
-			strcpy (text, API->GMT->session.CUSTOM_LIBS);
+			if (k == 0) {
+				/* Given a slash only. Means GMTCUSTOMS sub dir of the directory that contains the 'gmt' executable */
+				strcpy (text, API->GMT->init.runtime_bindir);
+				strcat (text, "/gmtcustoms/");
+			}
+			else
+				strcpy (text, API->GMT->session.CUSTOM_LIBS);
 			strcat (text, "*.dll");
 			if ((hFind = FindFirstFile(text, &FindFileData)) == INVALID_HANDLE_VALUE) {
 				GMT_Report (API, GMT_MSG_NORMAL, "Error opening directory with GMT shared libraries: %s\n", API->GMT->session.CUSTOM_LIBS);
