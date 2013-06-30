@@ -58,7 +58,7 @@ int main (int argc, char *argv[]) {
 
 	/* Test if argv[0] contains a module name: */
 	module = progname;	/* Try this module name unless it equals PROGRAM_NAME in which case we just enter the test if argc > 1 */
-	gmt_main = !strcmp (module, PROGRAM_NAME);	/* 1 if running the main program */
+	gmt_main = !strcmp (module, PROGRAM_NAME);	/* 1 if running the main program, 0 otherwise */
 	
 	if ((gmt_main || (status = GMT_Call_Module (api_ctrl, module, GMT_MODULE_EXIST, NULL)) == GMT_NOT_A_VALID_MODULE) && argc > 1) {
 		/* argv[0] does not contain a valid module name, and
@@ -77,6 +77,10 @@ int main (int argc, char *argv[]) {
 		/* neither argv[0] nor argv[1] contain a valid module name */
 
 		int arg_n;
+		
+		if (argv[1+modulename_arg_n] && !strcmp (argv[1+modulename_arg_n], "=") && argv[2+modulename_arg_n] == NULL)	/* Just wanted to know if module exists */
+			goto exit;
+
 		for (arg_n = 1; arg_n < argc; ++arg_n) {
 			/* Try all remaining arguments: */
 
@@ -116,32 +120,37 @@ int main (int argc, char *argv[]) {
 		fprintf (stderr, "You may redistribute copies of this program under the terms of the\n");
 		fprintf (stderr, "GNU Lesser General Public License.\n");
 		fprintf (stderr, "For more information about these matters, see the file named LICENSE.TXT.\n\n");
-		fprintf (stderr, "usage: %s [options] <module name> [module options]\n\n", PROGRAM_NAME);
-		fprintf (stderr, "  --help               List and description of GMT modules\n");
-		fprintf (stderr, "  --version            Print version and exit\n");
-		fprintf (stderr, "  --show-sharedir      Show share directory and exit\n");
-		fprintf (stderr, "  --show-bindir        Show directory of executables and exit\n\n");
+		fprintf (stderr, "usage: %s [options]\n", PROGRAM_NAME);
+		fprintf (stderr, "       %s <module name> [<module options>]\n\n", PROGRAM_NAME);
+		fprintf (stderr, "options:\n");
+		fprintf (stderr, "  --help            List and description of GMT modules.\n");
+		fprintf (stderr, "  --version         Print version and exit.\n");
+		fprintf (stderr, "  --show-sharedir   Show share directory and exit.\n");
+		fprintf (stderr, "  --show-bindir     Show directory of executables and exit.\n\n");
+		fprintf (stderr, "if <module options> is \'=\' we call exit (0) if module exist and non-zero otherwise.\n\n");
 		if (modulename_arg_n == 1) {
 			fprintf (stderr, "ERROR: No module named %s was found,  This could mean:\n", module);
 			fprintf (stderr, "  1. There actually is no such module; check your spelling.\n");
 			if (strlen (GMT_SUPPL_LIB_NAME))
-				fprintf (stderr, "  2. The module exists in the GMT supplemental library, but the library could not be found.\n");
+				fprintf (stderr, "  2. Module exists in the GMT supplemental library, but the library could not be found.\n");
 			else
-				fprintf (stderr, "  2. The module exists in the GMT supplemental library, but the library was not installed.\n");
+				fprintf (stderr, "  2. Module exists in the GMT supplemental library, but the library was not installed.\n");
 			if (api_ctrl->n_shared_libs > 2)
-				fprintf (stderr, "  3. The module exists in a GMT custom library, but the library could not be found.\n");
+				fprintf (stderr, "  3. Module exists in a GMT custom library, but the library could not be found.\n");
 			else
-				fprintf (stderr, "  3. The module exists in a GMT custom library, but none was specified via GMT_CUSTOM_LIBS.\n");
+				fprintf (stderr, "  3. Module exists in a GMT custom library, but none was specified via GMT_CUSTOM_LIBS.\n");
 			fprintf (stderr, "Shared libraries must be in standard system paths or set via environmental parameter %s.\n\n", LIB_PATH);
 		}
 		status = EXIT_FAILURE;
 		goto exit;
 	} /* status == GMT_NOT_A_VALID_MODULE */
 
-	/* Here we have found a recognized GMT module and the API has been initialized.
-	 * Now run the specified GMT module: */
+	/* Here we have found a recognized GMT module and the API has been initialized. */
 	
-	status = GMT_Call_Module (api_ctrl, module, argc-1-modulename_arg_n, argv+1+modulename_arg_n);
+	if (argv[1+modulename_arg_n] && !strcmp (argv[1+modulename_arg_n], "=") && argv[2+modulename_arg_n] == NULL)	/* Just want to know if module exists */
+		status = 0;
+	else	/* Now run the specified GMT module: */
+		status = GMT_Call_Module (api_ctrl, module, argc-1-modulename_arg_n, argv+1+modulename_arg_n);
 
 exit:
 	if (progname) free (progname);
