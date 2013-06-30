@@ -1,12 +1,16 @@
 # $Id$
-Various demonstrations of how to use the API, including templates for programs that need
-to perform typical operations like:
 
-1. Basic input/output
-2. Visiting nodes in grids and records in tables
-3. Using the FFT machinery
+How to use the SIO F77 C extensions in GMT 5.
+We have a C layer called SIO_GMT_io.c which sits between
+SIO Fortran program needed to read/write GMT files and
+the F77 extensions in the GMT 5 shared lib.
 
-For now I am imagining that these developers have installed GMT5 and just wish to use
-the API in their code. I assume they can just use the example configure.ac, config.mk.in
-and Makefile to do their development.  However, we may consider providing a cmake
-template for a GMT User Supplement.
+Programs must be linked with SIO_GMT_io.o and with the
+shared GMT5 library.
+
+Dave Sandwell, SIO wrote SIO_GMT_io.c; Paul Wessel modified
+it to work with GMT 5.
+
+The Makefile shows what to do.
+
+Paul Wessel, June 2013

@@ -33,7 +33,7 @@ dnl -----------------------------------------------------------------
 dnl The remainder should need no editing
 dnl -----------------------------------------------------------------
 dnl
-AC_CONFIG_SRCDIR(grd_fft_template.c)
+AC_CONFIG_SRCDIR(SIO_GMT_io.c)
 AC_CONFIG_AUX_DIR(`pwd`)
 AC_CYGWIN
 AC_CANONICAL_SYSTEM
