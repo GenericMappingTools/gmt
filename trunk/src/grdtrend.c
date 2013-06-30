@@ -656,7 +656,7 @@ int GMT_grdtrend (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
-	else if (set_ones && GMT_Destroy_Data (API, W) != GMT_OK) {
+	else if (set_ones && GMT_Destroy_Data (API, &W) != GMT_OK) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Failed to free W\n");
 	}
 
