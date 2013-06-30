@@ -43,12 +43,6 @@
 #	define GMT_VER_64 ""
 #endif
 
-#ifdef GMT_COMPAT
-#	define GMT_VER_COMPAT " [C4]"
-#else
-#	define GMT_VER_COMPAT ""
-#endif
-
 #ifdef _OPENMP /* Open MP Parallelization is on */
 #	define GMT_MP " [MP]"
 #else
@@ -59,7 +53,7 @@
 #	define GMT_VERSION GMT_version()
 	static inline char *GMT_version () {
 		/* final string returned by GMT_version() */
-		static char version[] = GMT_STRING GMT_VER_64 GMT_VER_COMPAT GMT_MP;
+		static char version[] = GMT_STRING GMT_VER_64 GMT_MP;
 		return version;
 	}
 #endif /* !GMT_MANPAGE */

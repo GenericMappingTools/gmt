@@ -410,7 +410,7 @@ int GMT_dimfilter (void *V_API, int mode, void *args)
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	if (mode == GMT_MODULE_PURPOSE) return (GMT_dimfilter_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
-        options = GMT_prep_module_options (API, mode, args);	if (API->error) bailout (API->error);   /* Set or get option list */
+        options = GMT_Create_Options (API, mode, args);	if (API->error) bailout (API->error);   /* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_dimfilter_usage (API, GMT_USAGE));/* Return the usage message */
 	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_dimfilter_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */

@@ -278,7 +278,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args)
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	if (mode == GMT_MODULE_PURPOSE) return (GMT_rotconverter_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
-	options = GMT_prep_module_options (API, mode, args);	if (API->error) bailout (API->error);	/* Set or get option list */
+	options = GMT_Create_Options (API, mode, args);	if (API->error) bailout (API->error);	/* Set or get option list */
 
 	/* Special preprocessing since online rotations like -144/34/-9 and -.55/33/2 will
 	 * have been decoded as options -4 and option -., respectively.  Here we simply
