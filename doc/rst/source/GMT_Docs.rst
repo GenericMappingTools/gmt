@@ -7377,7 +7377,7 @@ You also have access to most standard GNU development tools such as
 compilers and text processing tools (**awk**, **grep**, **sed**,
 etc.). Note that executables prepared for Windows will also run under Cygwin.
 
-Follow the instructions on the Cygwin page [48]_ on how to install the
+Follow the instructions on the Cygwin page on how to install the
 package; note you must explicitly add all the development tool packages
 (e.g., **gcc** etc) as the basic installation does not include them by
 default. Once you are up and running under Cygwin, you may install
@@ -8670,8 +8670,7 @@ Finally we show an example of a polygon file:
    Programs now also allow for fast, binary multicolumn file i/o.
 
 .. [6]
-   While the netCDF format is the default, other formats are also
-   possible, including user-defined formats.
+   While the netCDF format is the default, many other formats are also possible.
 
 .. [7]
    Vicenty, T. (1975), Direct and inverse solutions of geodesics on the
@@ -8760,16 +8759,9 @@ Finally we show an example of a polygon file:
 .. [26]
    See http://topex.ucsd.edu/marine_grav/mar_grav.html.
 
-.. [27]
-   You can also use the utility **curl**
-
 .. [28]
    Pedants who wish to argue about the "other" arc going the long way
    should consider using it.
-
-.. [29]
-   You could also use `img2mercgrd <img2mercgrd.html>`_
-   directly - your only option under DOS
 
 .. [30]
    While Quicktime is free you must upgrade to QuickTime Pro (USD 30) to
@@ -8823,9 +8815,6 @@ Finally we show an example of a polygon file:
    GSHHG (Wessel, P., and W. H. F. Smith, 1996, A Global,
    self-consistent, hierarchical, high-resolution shoreline database,
    *J. Geophys. Res. 101*, 8741-8743).
-
-.. [48]
-   cygwin.com
 
 .. [49]
    The 23rd palette is called *random* and produces a random set of

@@ -733,7 +733,7 @@ World-wide seismicity the last 7 days
 -------------------------------------
 
 The next example uses the command-line tool **wget** to obtain a data
-file from a specified URL [27]_. In the example script this line is
+file from a specified URL. In the example script this line is
 commented out so the example will run even if you do not have **wget**
 (we use the supplied ``neic_quakes.d`` which normally would be created by **wget**);
 remove the comment to get the actual current seismicity plot using the
@@ -895,7 +895,7 @@ desired map projection. However, if you want to make a Mercator map then
 you can save time and preserve data quality by avoiding to re-project
 the data set twice since it is already in a Mercator projection. This
 example shows how this is accomplished. We use the **-M** option in
-`img2grd <supplements/imgsrc/img2grd.html>`_\  [29]_ to pull out the grid
+`img2grd <supplements/imgsrc/img2grd.html>`_ to pull out the grid
 in Mercator units (i.e., do *not* invert the Mercator projection) and
 then simply plot the grid using a linear projection with a suitable
 scale (here 0.25 inches per degrees of longitude). To overlay basemaps
