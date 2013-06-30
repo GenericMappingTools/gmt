@@ -8,7 +8,6 @@ GM
    gmt.conf
    gmt
    gmt2kml
-   gmtaverage
    gmtcolors
    gmtconnect
    gmtconvert
