@@ -75,7 +75,6 @@
 #define GMT_COMPAT_CHANGE(new_P) GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: parameter %s is deprecated. Use %s instead.\n" GMT_COMPAT_INFO, GMT_keywords[case_val], new_P)
 #define GMT_COMPAT_OPT(new_P) if (strchr (list, new_P)) { GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Warning: Option -%c is deprecated. Use -%c instead.\n" GMT_COMPAT_INFO, option, new_P); option = new_P; }
 
-extern int gmt_scanf_calendar (struct GMT_CTRL *GMT, char *s, int64_t *rd);
 extern int gmt_geo_C_format (struct GMT_CTRL *GMT);
 extern void GMT_grdio_init (struct GMT_CTRL *GMT);	/* Defined in gmt_customio.c and only used here */
 
@@ -9731,16 +9730,11 @@ struct GMT_CTRL *New_GMT_Ctrl (char *session, unsigned int pad) {	/* Allocate an
 
 void gmt_set_today (struct GMT_CTRL *GMT)
 {	/* Gets the rata die of today */
-	char today[GMT_LEN16] = {""};
-	time_t right_now;
-	int64_t rd;
-	right_now = time (NULL);	/* Unix time right now */
-	strftime (today, GMT_LEN16, "%Y-%m-%d", gmtime (&right_now));	/* Request time as yyyy-mm-dd */
-	if (gmt_scanf_calendar (GMT, today, &rd)) {	/* Convert to rata die */
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Cannot get today's rata die - default to 1\n");
-		rd = 1;
-	}
-	GMT->current.time.today_rata_die = rd;
+	time_t right_now = time (NULL);			/* Unix time right now */
+	struct tm *moment = gmtime (&right_now);	/* Convert time to a TM structure */
+	/* Calculate rata die from yy, mm, and dd */
+	/* tm_mon is 0-11, so add 1 for 1-12 range, tm_year is years since 1900, so add 1900, but tm_mday is 1-31 so use as is */
+	GMT->current.time.today_rata_die = GMT_rd_from_gymd (GMT, 1900 + moment->tm_year, moment->tm_mon + 1, moment->tm_mday);
 }
 
 struct GMT_CTRL *GMT_begin (struct GMTAPI_CTRL *API, char *session, unsigned int pad)
