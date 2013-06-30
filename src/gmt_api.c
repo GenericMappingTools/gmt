@@ -482,9 +482,9 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 				p = 0;	while (libname[p] && libname[p] != '.') p++;	/* Find the first period in the name */
 				libname[p] = '\0';					/* Chop off library extension */
 				p = (strncmp (libname, "lib", 3)) ? 0 : 3U;		/* Do we have a leading "lib" or not ? */
+				API->lib[n_custom_libs].name = strdup (&libname[p]);	/* Get the shared library tag */
 				libname[p] = '.';					/* Chop off library extension */
 				free (libname);
-				API->lib[n_custom_libs].name = strdup (&libname[p]);	/* Get the shared library tag */
 				n_custom_libs++;					/* Add up entries found */
 				if (n_custom_libs == n_alloc) {				/* Allocate more memory for list */
 					n_alloc <<= 1;

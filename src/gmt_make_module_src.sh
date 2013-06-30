@@ -146,7 +146,7 @@ void gmt_${L_TAG}_module_show_all (void *API) {
 	while (g_${L_TAG}_module[module_id].name != NULL) {
 		snprintf (module_name_comp, 64U, "%s [%s]",
 				g_${L_TAG}_module[module_id].name, g_${L_TAG}_module[module_id].component);
-		sprintf (message, "%-23s %s\n",
+		sprintf (message, "%-24s %s\n",
 				module_name_comp, g_${L_TAG}_module[module_id].purpose);
 		GMT_Message (API, GMT_TIME_NONE, message);
 		++module_id;
