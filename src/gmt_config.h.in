@@ -61,9 +61,6 @@
 #	define TRIANGLE_D
 #endif
 
-/* enable compatibility mode */
-#cmakedefine GMT_COMPAT
-
 /* applies only #ifdef _WIN32 */
 #cmakedefine USE_MEM_ALIGNED
 

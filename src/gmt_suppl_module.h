@@ -68,7 +68,7 @@ EXTERN_MSC int GMT_x2sys_report (void *API, int mode, void *args);
 EXTERN_MSC int GMT_x2sys_solve (void *API, int mode, void *args);
 
 /* Pretty print all modules in the GMT suppl library and their purposes */
-EXTERN_MSC void gmt_suppl_module_show_all (struct GMTAPI_CTRL *API);
+EXTERN_MSC void gmt_suppl_module_show_all (void *API);
 
 #ifdef __cplusplus
 }

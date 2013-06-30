@@ -101,6 +101,7 @@ struct GMT_OPTION * GMT_Create_Options (void *V_API, int n_args_in, void *in)
 	 * a structure allocated by this function.  Note: If n_args_in == 0 we assume in
 	 * is a string with many options (e.g., "-R0/2/0/5 -Jx1 -O -m > file") and we must
 	 * first break this command string into separate words.
+	 * If n_args_in is < 0 we assume it is already a linked list and we just return it.
 	 */
 
 	int error = GMT_OK;
@@ -113,7 +114,7 @@ struct GMT_OPTION * GMT_Create_Options (void *V_API, int n_args_in, void *in)
 	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);	/* GMT_Create_Session has not been called */
 	if (in == NULL && n_args_in) return_null (API, GMT_ARGV_LIST_NULL);	/* Gave no argument pointer but said we had at least 1 */
 	if (in == NULL) return (NULL);	/* Gave no argument pointer so a null struct is returned */
-
+	if (n_args_in < 0) return (in);	/* Already converted to linked list */
 	G = API->GMT;	/* GMT control structure */
 	if (n_args_in == 0) {	/* Check if a single command line, if so break into tokens */
 		unsigned int pos = 0;
@@ -315,17 +316,6 @@ int GMT_Destroy_Cmd (void *V_API, char **cmd)
 	if (*cmd == NULL) return_error (API, GMT_ARG_IS_NULL);		/* No command was given */
 	GMT_free (API->GMT, *cmd);
 	return (GMT_OK);	/* No error encountered */
-}
-
-
-struct GMT_OPTION * GMT_prep_module_options (struct GMTAPI_CTRL *API, int mode, void *args)
-{	/* Either we passed the module an option struct list or we passed argc, argv and must convert to get option list */
-	struct GMT_OPTION *options = NULL;
-	if (mode == GMT_MODULE_OPT)	/* Gave a linked list of options already */	
-		options = args;
-	else		/* Build them from one or more text arguments */
-		options = GMT_Create_Options (API, mode, args);
-	return (options);
 }
 
 struct GMT_OPTION *GMT_Make_Option (void *V_API, char option, char *arg)

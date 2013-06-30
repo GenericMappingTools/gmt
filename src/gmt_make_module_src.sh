@@ -84,7 +84,7 @@ gawk '
 cat << EOF >> ${FILE_GMT_MODULE_H}
 
 /* Pretty print all modules in the GMT ${L_TAG} library and their purposes */
-EXTERN_MSC void gmt_${L_TAG}_module_show_all (struct GMTAPI_CTRL *API);
+EXTERN_MSC void gmt_${L_TAG}_module_show_all (void *API);
 
 #ifdef __cplusplus
 }
@@ -118,7 +118,7 @@ cat << EOF > ${FILE_GMT_MODULE_C}
 #include <stdio.h>
 #include <string.h>
 
-#include "gmt_dev.h"
+#include "gmt.h"
 
 /* Sorted array with information for all GMT ${L_TAG} modules */
 
@@ -139,14 +139,14 @@ cat << EOF >> ${FILE_GMT_MODULE_C}
 };
 
 /* Pretty print all GMT ${L_TAG} module names and their purposes */
-void gmt_${L_TAG}_module_show_all (struct GMTAPI_CTRL *API) {
+void gmt_${L_TAG}_module_show_all (void *API) {
 	unsigned int module_id = 0;
-	char module_name_comp[GMT_TEXT_LEN64], message[GMT_TEXT_LEN256];
+	char module_name_comp[64], message[256];
 
 	GMT_Message (API, GMT_TIME_NONE, "\n" $LIB_STRING "\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "Program                 Purpose of Program\n");
 	while (g_${L_TAG}_module[module_id].name != NULL) {
-		snprintf (module_name_comp, GMT_TEXT_LEN64, "%s [%s]",
+		snprintf (module_name_comp, 64U, "%s [%s]",
 				g_${L_TAG}_module[module_id].name, g_${L_TAG}_module[module_id].component);
 		sprintf (message, "%-23s %s\n",
 				module_name_comp, g_${L_TAG}_module[module_id].purpose);

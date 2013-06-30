@@ -370,7 +370,7 @@ int GMT_blockmode (void *V_API, int mode, void *args)
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	if (mode == GMT_MODULE_PURPOSE) return (GMT_blockmode_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
-	options = GMT_prep_module_options (API, mode, args);	if (API->error) return (API->error);
+	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_blockmode_usage (API, GMT_USAGE));	/* Return the usage message */
 	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_blockmode_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
 

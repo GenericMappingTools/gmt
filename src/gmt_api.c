@@ -378,7 +378,7 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 	/* At the end of GMT_Create_Session we are done with processing gmt.conf.
 	 * We can now determine how many shared libraries to consider, and open the core lib */
 	unsigned int n_custom_libs = 0, k, p, n_alloc = GMT_TINY_CHUNK;
-	char text[GMT_LEN256] = {""};
+	char text[GMT_LEN256] = {""}, *libname = NULL;
 #ifdef WIN32
 	HANDLE hFind;
 	WIN32_FIND_DATA FindFileData;
@@ -428,10 +428,13 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 #endif
 					strcpy (text, F->d_name);                       /* Make a copy we can edit */
 					API->lib[n_custom_libs].path = strdup (text);	/* Save the library name */
-					p = 0;	while (text[p] && text[p] != '.') p++;	/* Find the first period in the name */
-					text[p] = '\0';                                 /* Chop off library extension */
-					p = (strncmp (text, "lib", 3U)) ? 0 : 3;	    /* Do we have a leading "lib" or not ? */
-					API->lib[n_custom_libs].name = strdup (&text[p]); /* Get the shared library tag */
+					libname = strdup (GMT_basename (text));		/* Last component from the pathname */
+					p = 0; while (libname[p] && libname[p] != '.') p++;	/* Find the first period in the name */
+					libname[p] = '\0';                                 /* Chop off library extension */
+					p = (strncmp (libname, "lib", 3U)) ? 0 : 3;	   /* Do we have a leading "lib" or not ? */
+					API->lib[n_custom_libs].name = strdup (&libname[p]); /* Get the shared library tag */
+					libname[p] = '.';					/* Chop off library extension */
+					free (libname);
 					n_custom_libs++;                                /* Add up entries found */
 					if (n_custom_libs == n_alloc) {                 /* Allocate more memory for list */
 						n_alloc <<= 1;
@@ -475,10 +478,13 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 			unsigned int pos = 0;
 			while (GMT_strtok (API->GMT->session.CUSTOM_LIBS, ",", &pos, text)) {
 				API->lib[n_custom_libs].path = strdup (text);
-				p = 0;	while (text[p] && text[p] != '.') p++;		/* Find the first period in the name */
-				text[p] = '\0';						/* Chop off library extension */
-				p = (strncmp (text, "lib", 3)) ? 0 : 3U;		/* Do we have a leading "lib" or not ? */
-				API->lib[n_custom_libs].name = strdup (&text[p]);	/* Get the shared library tag */
+				libname = strdup (GMT_basename (text));		/* Last component from the pathname */
+				p = 0;	while (libname[p] && libname[p] != '.') p++;	/* Find the first period in the name */
+				libname[p] = '\0';					/* Chop off library extension */
+				p = (strncmp (libname, "lib", 3)) ? 0 : 3U;		/* Do we have a leading "lib" or not ? */
+				libname[p] = '.';					/* Chop off library extension */
+				free (libname);
+				API->lib[n_custom_libs].name = strdup (&libname[p]);	/* Get the shared library tag */
 				n_custom_libs++;					/* Add up entries found */
 				if (n_custom_libs == n_alloc) {				/* Allocate more memory for list */
 					n_alloc <<= 1;
@@ -3569,7 +3575,7 @@ int GMT_Init_IO (void *V_API, unsigned int family, unsigned int geometry, unsign
 	if (n_args == 0) /* Passed the head of linked option structures */
 		head = args;
 	else		/* Passed argc, argv, likely from Fortran */
-		head = GMT_prep_module_options (API, n_args, args);
+		head = GMT_Create_Options (API, n_args, args);
 	GMT_io_banner (API->GMT, direction);	/* Message for binary i/o */
 	if (direction == GMT_IN)
 		object_ID = GMTAPI_Init_Import (API, family, geometry, mode, head);
@@ -5383,7 +5389,7 @@ int GMT_FFT_Destroy_ (void *v_K)
 #endif
 
 /* Pretty print core module names and purposes */
-void GMT_show_name_and_purpose (struct GMTAPI_CTRL *API, const char *component, const char *name, const char *purpose) {
+void GMT_show_name_and_purpose (void *API, const char *component, const char *name, const char *purpose) {
 	char message[GMT_LEN256] = {""};
 	const char *lib = NULL;
 	static char *core = "core";

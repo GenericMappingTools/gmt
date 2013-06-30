@@ -664,4 +664,13 @@ struct GMT_MATRIX {	/* Single container for a user matrix of data */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation info [0] */
 };
 
+/* ONLY FOR DEVELOPERS OF NEW CUSTOM GMT SHARED LIBRARIES: */
+
+/* name, library, and purpose for each module */
+struct Gmt_moduleinfo {
+	const char *name;             /* Program name */
+	const char *component;        /* Component (core, supplement, custom) */
+	const char *purpose;          /* Program purpose */
+};
+
 #endif /* _GMT_RESOURCES_H */

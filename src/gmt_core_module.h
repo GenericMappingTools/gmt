@@ -109,7 +109,7 @@ EXTERN_MSC int GMT_triangulate (void *API, int mode, void *args);
 EXTERN_MSC int GMT_xyz2grd (void *API, int mode, void *args);
 
 /* Pretty print all modules in the GMT core library and their purposes */
-EXTERN_MSC void gmt_core_module_show_all (struct GMTAPI_CTRL *API);
+EXTERN_MSC void gmt_core_module_show_all (void *API);
 
 #ifdef __cplusplus
 }

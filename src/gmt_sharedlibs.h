@@ -30,13 +30,6 @@ struct Gmt_libinfo {
 	void *handle;	/* Handle to the shared library, returned by dlopen or dlopen_special */
 };
 
-/* name, library, and purpose for each module */
-struct Gmt_moduleinfo {
-	const char *name;             /* Program name */
-	const char *component;        /* Component (core, supplement, custom) */
-	const char *purpose;          /* Program purpose */
-};
-
 #ifdef __cplusplus
 }
 #endif

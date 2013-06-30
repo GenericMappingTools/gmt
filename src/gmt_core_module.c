@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "gmt_dev.h"
+#include "gmt.h"
 
 /* Sorted array with information for all GMT core modules */
 
@@ -108,14 +108,14 @@ struct Gmt_moduleinfo g_core_module[] = {
 };
 
 /* Pretty print all GMT core module names and their purposes */
-void gmt_core_module_show_all (struct GMTAPI_CTRL *API) {
+void gmt_core_module_show_all (void *API) {
 	unsigned int module_id = 0;
-	char module_name_comp[GMT_LEN64] = {""}, message[GMT_LEN256] = {""};
+	char module_name_comp[64], message[256];
 
 	GMT_Message (API, GMT_TIME_NONE, "\n" "GMT core: The core of the Generic Mapping Tools" "\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "Program                 Purpose of Program\n");
 	while (g_core_module[module_id].name != NULL) {
-		snprintf (module_name_comp, GMT_LEN64, "%s [%s]",
+		snprintf (module_name_comp, 64U, "%s [%s]",
 				g_core_module[module_id].name, g_core_module[module_id].component);
 		sprintf (message, "%-23s %s\n",
 				module_name_comp, g_core_module[module_id].purpose);

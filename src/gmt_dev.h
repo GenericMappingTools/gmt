@@ -99,7 +99,7 @@ struct GMT_CTRL; /* forward declaration of GMT_CTRL */
 #include "gmt_error.h"          /* Only contains error codes */
 #include "gmt_synopsis.h"       /* Only contains macros for synopsis lines */
 #include "gmt_version.h"        /* Only contains the current GMT version number */
-#include "gmt_module.h" 	/* Common module structures */
+#include "gmt_sharedlibs.h" 	/* Common shared libs structures */
 #include "gmt_core_module.h" 	/* Core module modes and properties */
 #include "gmt_suppl_module.h" 	/* Suppl module modes and properties */
 #include "gmt_project.h"        /* Define GMT->current.proj and GMT->current.map.frame structures */
