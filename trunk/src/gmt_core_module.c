@@ -20,6 +20,12 @@
 
 #include "gmt.h"
 
+#if !defined snprintf && defined HAVE__SNPRINTF_ && !defined HAVE_SNPRINTF_
+#	define snprintf _snprintf
+#elif !defined snprintf && !defined HAVE_SNPRINTF_
+#	define snprintf(s, n, format , ...) sprintf(s, format , ##__VA_ARGS__)
+#endif
+
 /* Sorted array with information for all GMT core modules */
 
 struct Gmt_moduleinfo g_core_module[] = {
