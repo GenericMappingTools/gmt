@@ -20,6 +20,13 @@
 
 #include "gmt.h"
 
+/* This is defined in gmt_notposix.h but that is only included when we use gmt_dev.h */
+#if !defined snprintf && defined HAVE__SNPRINTF_ && !defined HAVE_SNPRINTF_
+#	define snprintf _snprintf
+#elif !defined snprintf && !defined HAVE_SNPRINTF_
+#	define snprintf(s, n, format , ...) sprintf(s, format , ##__VA_ARGS__)
+#endif
+
 /* Sorted array with information for all GMT suppl modules */
 
 struct Gmt_moduleinfo g_suppl_module[] = {
