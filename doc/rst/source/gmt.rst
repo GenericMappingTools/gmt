@@ -19,12 +19,16 @@ completely general and will handle any (x,y) or (x,y,z) data as input.
 Synopsis
 --------
 
-**gmt** is a wrapper program that can start any of the programs:
+**gmt** is the main program that can start any of the modules:
 
 **gmt** module module-options
 
-where module is the name of a **GMT** program and the options are those
-that pertain to that particular program.
+where module is the name of a **GMT** module and the options are those
+that pertain to that particular module.  In addition to all the regular
+module-options that the various modules support, you can also give the
+special option **=**.  It will check if that module exist and if so the
+program will exit with status of 0; otherwise the status of exit will
+be non-zero.
 
 GMT Overview
 ------------
@@ -34,6 +38,13 @@ a very short description of their purpose. Detailed information about
 each program can be found in the separate manual pages.
 
 .. include:: explain_gmt_modules.rst_
+
+Custom Modules
+--------------
+
+The **gmt** program can also load custom modules from shared libraries
+built as specified in the GMT API documentation.  This way your modules
+can benefit form the GMT infrastructure and extend GMT in specific ways.
 
 The Common GMT Options
 ----------------------
