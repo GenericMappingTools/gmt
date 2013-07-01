@@ -259,7 +259,7 @@ int GMT_minmax (void *V_API, int mode, void *args)
 	bool got_stuff = false, first_data_record, give_r_string = false;
 	bool brackets = false, work_on_abs_value, do_report, save_range, done;
 	int i, j, error = 0, col_type[GMT_MAX_COLUMNS];
-	unsigned int fixed_phase[2] = {1, 1}, min_cols;
+	unsigned int fixed_phase[2] = {1, 1}, min_cols, o_mode;
 	uint64_t col, ncol = 0, n = 0;
 
 	char file[GMT_BUFSIZ] = {""}, chosen[GMT_BUFSIZ] = {""}, record[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""}, delimeter[2] = {""};
@@ -314,17 +314,18 @@ int GMT_minmax (void *V_API, int mode, void *args)
 	}
 
 	if ((error = GMT_set_cols (GMT, GMT_IN, 0))) Return (error);
+	o_mode = (Ctrl->C.active) ? GMT_IS_DATASET : GMT_IS_TEXTSET;
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN,  GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data input */
 		Return (API->error);
 	}
-	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
+	if (GMT_Init_IO (API, o_mode, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 		Return (API->error);
 	}
 
 	if (GMT_Begin_IO (API, GMT_IS_DATASET,  GMT_IN, GMT_HEADER_ON) != GMT_OK) {	/* Enables data input and sets access mode */
 		Return (API->error);	/* Enables data output and sets access mode */
 	}
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_OK) {
+	if (GMT_Begin_IO (API, o_mode, GMT_OUT, GMT_HEADER_OFF) != GMT_OK) {
 		Return (API->error);
 	}
 
