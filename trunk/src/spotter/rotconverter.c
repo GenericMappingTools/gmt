@@ -265,7 +265,7 @@ int GMT_rotconverter (void *V_API, int mode, void *args)
 	char *start_text[2] = {"tstart(My)", "astart(deg)"};	/* Misc. column titles for rates or angles */
 	char *end_text[2] = {"tend(My)", "aend(deg)"};
 	char *time_text[2] = {"ttime(My)", "tangle(deg)"};
-	char record[GMT_BUFSIZ];
+	char record[GMT_BUFSIZ] = {""};
 	
 
 	struct GMT_OPTION *ptr = NULL, *opt = NULL;

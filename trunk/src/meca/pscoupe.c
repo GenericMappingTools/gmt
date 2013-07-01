@@ -526,7 +526,7 @@ int GMT_pscoupe_parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct G
 	 */
 
 	unsigned int n_errors = 0;
-	char txt[GMT_LEN256], txt_b[GMT_LEN256], txt_c[GMT_LEN256], *p = NULL;
+	char txt[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, *p = NULL;
 	struct GMT_OPTION *opt = NULL;
 	double lon1, lat1, lon2, lat2;
 
@@ -787,7 +787,7 @@ int GMT_pscoupe (void *V_API, int mode, void *args)
 	double size, xy[2], plot_x, plot_y, angle = 0.0, n_dep, distance, fault, depth;
 	double P_x, P_y, T_x, T_y;
 
-	char event_title[GMT_BUFSIZ], *line = NULL, *p = NULL, col[15][GMT_LEN64];
+	char event_title[GMT_BUFSIZ] = {""}, *line = NULL, *p = NULL, col[15][GMT_LEN64];
 
 	st_me meca, mecar;
 	struct MOMENT moment;
@@ -819,9 +819,9 @@ int GMT_pscoupe (void *V_API, int mode, void *args)
 
 	/*---------------------------- This is the pscoupe main code ----------------------------*/
 
-	event_title[0] = 0;
 	GMT_memset (&meca, 1, meca);
 	GMT_memset (&moment, 1, moment);
+	GMT_memset (col, GMT_LEN64*15, char);
 
 	if (Ctrl->Z.active) {
 		if ((CPT = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->Z.file, NULL)) == NULL) {

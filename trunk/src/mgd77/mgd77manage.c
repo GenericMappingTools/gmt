@@ -226,7 +226,7 @@ int decode_A_options (int mode, char *line, char *file, double parameters[])
 int decode_I_options (struct GMT_CTRL *GMT, char *line, char *abbrev, char *name, char *units, char *size, char *comment, double parameters[])
 {	/* -I<abbrev>/<name>/<units>/<size>/<scale>/<offset>/\"comment\" */
 	unsigned int i = 0, k, error, pos = 0;
-	char p[GMT_BUFSIZ];
+	char p[GMT_BUFSIZ] = {""};
 	
 	while (i < 7 && GMT_strtok (line, "/", &pos, p)) {	/* Process the 7 items */
 		switch (i) {
@@ -329,11 +329,9 @@ int GMT_mgd77manage_parse (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *Ctrl, 
 	unsigned int n_errors = 0, k, n_cruises = 0;
 	bool got_table, got_grid, strings;
 	nc_type c_nc_type;
-	char file[GMT_BUFSIZ];
+	char file[GMT_BUFSIZ] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
-
-	GMT_memset (file, GMT_BUFSIZ, char);
 	
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -513,8 +511,8 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 	
 	nc_type c_nc_type;
 	
-	char line[GMT_BUFSIZ], p[GMT_BUFSIZ], history[GMT_BUFSIZ], **list = NULL;
-	char not_given[GMT_LEN64], word[GMT_BUFSIZ], **tmp_string = NULL, *text = NULL;
+	char line[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""}, history[GMT_BUFSIZ] = {""}, **list = NULL;
+	char not_given[GMT_LEN64] = {""}, word[GMT_BUFSIZ] = {""}, **tmp_string = NULL, *text = NULL;
 	signed char LEN = 0, OLDLEN = 0;
 	
 	double x, y, match_value, single_val, dist_scale = 1.0;
@@ -769,7 +767,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 		if (Ctrl->D.active) {	/* Must create a new file with everything except the fields to be deleted */
 			int id, c;
 			bool reset_column = false;
-			char oldfile[GMT_BUFSIZ];
+			char oldfile[GMT_BUFSIZ] = {""};
 			
 			if (column != MGD77_NOT_SET) {	/* Get info about this existing column to see if it is compatible with new data */
 				n_dims = (D->H.info[In.order[column].set].col[In.order[column].item].constant) ? 0 : 1;
@@ -918,7 +916,7 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 		else if (c_kind == ADD_RMAG) {	/* Append recomputed residual mag column */
 			int ix, iy, it, im;
 			double date, *xvar = NULL, *yvar = NULL, *tvar = NULL, *mvar = NULL, IGRF[7];
-			char field[5];
+			char field[5] = {""};
 			
 			if ((ix = skip_if_missing (GMT, "lon",  list[argno], &In, &D)) == MGD77_NOT_SET) continue;
 			if ((iy = skip_if_missing (GMT, "lat",  list[argno], &In, &D)) == MGD77_NOT_SET) continue;
@@ -1060,7 +1058,8 @@ int GMT_mgd77manage (void *V_API, int mode, void *args)
 			 */
 			FILE *fp_e = NULL;
 			int cdf_var_id, cdf_adjust;
-			char ID[16], date[16], field[GMT_LEN64], efile[GMT_BUFSIZ], E77[256], timestamp[GMT_LEN64], answer[GMT_BUFSIZ], code[GMT_BUFSIZ], kind, YorN;
+			char ID[16] = {""}, date[16] = {""}, field[GMT_LEN64] = {""}, efile[GMT_BUFSIZ] = {""};
+			char E77[256] = {""}, timestamp[GMT_LEN64] = {""}, answer[GMT_BUFSIZ] = {""}, code[GMT_BUFSIZ] = {""}, kind, YorN;
 			int number, type, it, id, key, n_E77_flags, day, month, year, item;
 			int n_E77_headers, n_E77_scales, n_E77_offsets, n_E77_recalcs, n_unprocessed, e_error = 0, old_flags;
 			uint64_t n_recs, rec, from, to;

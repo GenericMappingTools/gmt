@@ -456,7 +456,7 @@ int GMT_pssegy (void *V_API, int mode, void *args)
 
 	unsigned char *bitmap = NULL;
 
-	char reelhead[3200];
+	char reelhead[3200] = {""};
 	SEGYHEAD *header = NULL;
 	SEGYREEL binhead;
 

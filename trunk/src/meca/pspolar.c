@@ -202,7 +202,7 @@ int GMT_pspolar_parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct G
 	 */
 
 	unsigned int n_errors = 0, n;
-	char txt[GMT_LEN64],txt_b[GMT_LEN64],txt_c[GMT_LEN64], txt_d[GMT_LEN64];
+	char txt[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""}, txt_d[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -382,8 +382,8 @@ int GMT_pspolar (void *V_API, int mode, void *args)
 	double plot_x, plot_y, symbol_size2 = 0, plot_x0, plot_y0, azS = 0, si, co;
 	double new_plot_x0, new_plot_y0, radius, azimut = 0, ih = 0, plongement = 0.0;
 
-	char *line, col[4][GMT_LEN64];
-	char pol, stacode[GMT_LEN64];
+	char *line = NULL, col[4][GMT_LEN64];
+	char pol, stacode[GMT_LEN64] = {""};
 
 	struct PSPOLAR_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT interal parameters */
@@ -409,6 +409,7 @@ int GMT_pspolar (void *V_API, int mode, void *args)
   
 	/*---------------------------- This is the pspolar main code ----------------------------*/
 
+	GMT_memset (col, GMT_LEN64*4, char);
 	if (GMT_err_pass (GMT, GMT_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_RUNTIME_ERROR);
 
 	PSL = GMT_plotinit (GMT, options);

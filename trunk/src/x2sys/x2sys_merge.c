@@ -128,7 +128,7 @@ int GMT_x2sys_merge (void *V_API, int mode, void *args)
 	uint64_t *map_base_start = NULL, *map_base_end = NULL, *map_merge_start = NULL;
 	int error;
 	size_t n_alloc;
-	char line[GMT_BUFSIZ], **pairs_base = NULL, **pairs_merge = NULL;
+	char line[GMT_BUFSIZ] = {""}, **pairs_base = NULL, **pairs_merge = NULL;
 	FILE *fp_base = NULL, *fp_merge = NULL;
 	struct X2SYS_MERGE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;

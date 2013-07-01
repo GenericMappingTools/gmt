@@ -245,8 +245,7 @@ int GMT_grdgravmag3d_parse (struct GMT_CTRL *GMT, struct GRDOKB_CTRL *Ctrl, stru
 				}
 				else {
 					int n = 0;
-					char *pch;
-					pch = strchr(opt->arg, '/');
+					char *pch = strchr(opt->arg, '/');
 					while (pch != NULL) {
 						n++;
 						pch = strchr(pch+1,'/');
@@ -731,7 +730,7 @@ int read_poly__ (struct GMT_CTRL *GMT, char *fname, bool switch_xy) {
 	unsigned int ndata, ix = 0, iy = 1;
 	size_t n_alloc;
 	double in[2];
-	char line[GMT_LEN256];
+	char line[GMT_LEN256] = {""};
 	FILE *fp = NULL;
 
 	if ((fp = fopen (fname, "r")) == NULL) return (-1);

@@ -237,7 +237,7 @@ int GMT_x2sys_binlist (void *V_API, int mode, void *args)
 
 	if (Ctrl->E.active) {
 		double mid;
-		char proj[80];
+		char proj[80] = {""};
 		/* Do the equal area map projection so W = 360 and H = 180 */
 		if (!(doubleAlmostEqual (B.wesn[XHI] - B.wesn[XLO], 360.0)
 					&& doubleAlmostEqualZero (B.wesn[YHI] - B.wesn[YLO], 180.0))) {

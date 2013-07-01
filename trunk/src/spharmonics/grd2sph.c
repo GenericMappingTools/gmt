@@ -124,7 +124,7 @@ int GMT_sph2grd_parse (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *Ctrl, struct G
 
 	unsigned int n_errors = 0, n_files = 0;
 	int col;
-	char A[GMT_LEN64], B[GMT_LEN64], *c = NULL;
+	char A[GMT_LEN64] = {""}, B[GMT_LEN64] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 

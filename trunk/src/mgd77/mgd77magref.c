@@ -163,7 +163,7 @@ int GMT_mgd77magref_parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, 
 
 	unsigned int n_errors = 0, pos, n_out, lfval = 0, pos_slash = 0, nval = 0, nfval = 0, lval = 0;
 	int j;
-	char p[GMT_BUFSIZ], tfixed[GMT_LEN64];
+	char p[GMT_BUFSIZ] = {""}, tfixed[GMT_LEN64] = {""};
 	bool do_CM4core = false;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;

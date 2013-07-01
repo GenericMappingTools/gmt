@@ -239,12 +239,12 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 	double percent_limit, sim_m[8], sim_b[8], nav_on_land_threshold;
 	time_t clock;
 
-	char c, tmp_min[16], tmp_max[16], tmp_maxSlope[16], tmp_area[16], *derivative;
-	char *custom_limit_file = NULL, custom_limit_line[GMT_BUFSIZ], arguments[GMT_BUFSIZ], buffer[GMT_BUFSIZ];
-	char field_abbrev[8], *speed_units = "m/s";
-	char *display = NULL, fpercent_limit[8], **list;
+	char c, tmp_min[16] = {""}, tmp_max[16] = {""}, tmp_maxSlope[16] = {""}, tmp_area[16] = {""}, *derivative = NULL;
+	char *custom_limit_file = NULL, custom_limit_line[GMT_BUFSIZ] = {""}, arguments[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""};
+	char field_abbrev[8] = {""}, *speed_units = "m/s";
+	char *display = NULL, fpercent_limit[8] = {""}, **list = NULL;
 
-	FILE *custom_fp, *fpout = NULL;
+	FILE *custom_fp = NULL, *fpout = NULL;
 
 	struct MGD77_SNIFFER_DEFAULTS mgd77snifferdefs[MGD77_N_DATA_FIELDS] = {
 #include "mgd77snifferdefaults.h"
@@ -266,7 +266,7 @@ int GMT_mgd77sniffer (void *V_API, int mode, void *args)
 	double thisLon, thisLat, lastLon, lastLat, *MaxDiff = NULL, **diff = NULL, *decimated_orig, wrapsum, tcrit, se,  n_days;
 	double *offsetLength, *decimated_new, recommended_scale, *new_anom = NULL, *old_anom = NULL, IGRF[8], lastCorr = 0.0;
 
-	char timeStr[32], placeStr[128], errorStr[128], outfile[32], abbrev[8], fstats[MGD77_N_STATS][GMT_LEN64], text[GMT_LEN64];
+	char timeStr[32] = {""}, placeStr[128] = {""}, errorStr[128] = {""}, outfile[32] = {""}, abbrev[8] = {""}, fstats[MGD77_N_STATS][GMT_LEN64], text[GMT_LEN64] = {""};
 
 	bool *prevOffsetSign, prevFlag, prevType, decimated = false;
 	bool gotTime, landcruise, *offsetSign, newScale = false, mtf1, nav_error;
@@ -2965,7 +2965,7 @@ int decimate (struct GMT_CTRL *GMT, double *new_val, double *orig, unsigned int 
 	int **bin2d = NULL;
 	double *dorig, *dnew = NULL;
 #ifdef DUMP_DECIMATE
-	char buffer[GMT_BUFSIZ];
+	char buffer[GMT_BUFSIZ] = {""};
 #endif
 
 	/* Create a 2-D bin table */

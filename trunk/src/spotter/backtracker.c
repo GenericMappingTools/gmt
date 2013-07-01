@@ -204,7 +204,7 @@ int GMT_backtracker_parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, 
 
 	unsigned int n_errors = 0;
 	int k;
-	char txt_a[GMT_LEN256], txt_b[GMT_LEN256];
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -396,8 +396,8 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 	double R[3][3];			/* Rotation matrix */
 	double x[3], y[3];		/* Two 3-D unit vectors */
 
-	char type[50];			/* What kind of line (flowline or hotspot track) */
-	char dir[8];			/* From or To */
+	char type[50] = {""};		/* What kind of line (flowline or hotspot track) */
+	char dir[8] = {""};		/* From or To */
 
 	struct GMT_OPTION *ptr = NULL;
 	struct GMT_DATASET *F = NULL;

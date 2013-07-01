@@ -221,7 +221,7 @@ int comp_structs (const void *point_1, const void *point_2) { /* Sort ADJ struct
 
 int GMT_x2sys_report (void *V_API, int mode, void *args)
 {
-	char **trk_name = NULL, *c = NULL, fmt[GMT_BUFSIZ], record[GMT_BUFSIZ], word[GMT_BUFSIZ];
+	char **trk_name = NULL, *c = NULL, fmt[GMT_BUFSIZ] = {""}, record[GMT_BUFSIZ] = {""}, word[GMT_BUFSIZ] = {""};
 	struct X2SYS_INFO *s = NULL;
 	struct X2SYS_BIX B;
 	struct X2SYS_COE_PAIR *P = NULL;
@@ -389,7 +389,7 @@ int GMT_x2sys_report (void *V_API, int mode, void *args)
 	
 	if (Ctrl->A.active) {	/* Create track adjustment spline files for each track */
 		unsigned int n_out, n1;
-		char file[GMT_BUFSIZ];
+		char file[GMT_BUFSIZ] = {""};
 		double out[2], z[2], z_ij;
 		FILE *fp = NULL;
 		struct COE_ADJLIST *adj = NULL;

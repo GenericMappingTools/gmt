@@ -177,7 +177,7 @@ bool x2sys_load_adjustments (struct GMT_CTRL *GMT, char *DIR, char *TAG, char *t
 	uint64_t n = 0, n_expected_fields = 2;
 	size_t n_alloc = GMT_CHUNK;
 	double *in = NULL;
-	char file[GMT_BUFSIZ];
+	char file[GMT_BUFSIZ] = {""};
 	FILE *fp = NULL;
 	struct X2SYS_ADJUST *adj = NULL;
 	

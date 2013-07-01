@@ -660,7 +660,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 			FILE *fp = NULL;
 			int Qid;
 			double wq, eq, sq, nq;
-			char line[GMT_BUFSIZ];
+			char line[GMT_BUFSIZ] = {""};
 			
 			if ((fp = fopen (Ctrl->Q.file, "r")) == NULL) {	/* Oh, oh... */
 				GMT_Report (API, GMT_MSG_NORMAL, "Error: -Q info file unreadable/nonexistent\n");
@@ -810,7 +810,7 @@ int GMT_grdspotter (void *V_API, int mode, void *args)
 	if (Ctrl->Z.mode) {	/* Do CVA calculations for each z-slice using stored flowlines */
 		unsigned int layer, nz;
 		size_t len;
-		char file[GMT_BUFSIZ], format[GMT_BUFSIZ];
+		char file[GMT_BUFSIZ] = {""}, format[GMT_BUFSIZ] = {""};
 		double z0, z1;
 		float *CVA_inc = NULL, *old = G->data;
 		

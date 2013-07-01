@@ -154,7 +154,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 	double *essq;		/* was [13680] */
 	double *ecto;		/* was [16416] */
 	double *hyto;		/* was [49248] */
-	char line[GMT_BUFSIZ], *c_unused = NULL;
+	char line[GMT_BUFSIZ] = {""}, *c_unused = NULL;
 
 	FILE *fp;
 

@@ -263,7 +263,7 @@ int GMT_psmeca_parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT
 
 	unsigned int n_errors = 0;
 	bool no_size_needed;
-	char txt[GMT_LEN256], txt_b[GMT_LEN256], txt_c[GMT_LEN256], *p = NULL;
+	char txt[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, *p = NULL;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -494,7 +494,7 @@ int GMT_psmeca (void *V_API, int mode, void *args)
 	double t11 = 1.0, t12 = 0.0, t21 = 0.0, t22 = 1.0, xy[2], xynew[2];
 	double angle = 0.0, fault, depth, size, P_x, P_y, T_x, T_y;
 
-	char string[GMT_BUFSIZ], event_title[GMT_BUFSIZ], *line = NULL, *p = NULL, col[15][GMT_LEN64];
+	char string[GMT_BUFSIZ] = {""}, event_title[GMT_BUFSIZ] = {""}, *line = NULL, *p = NULL, col[15][GMT_LEN64];
 
 	st_me meca;
 	struct MOMENT moment;
@@ -528,7 +528,7 @@ int GMT_psmeca (void *V_API, int mode, void *args)
 	
 	GMT_memset (event_title, GMT_BUFSIZ, char);
 	GMT_memset (&meca, 1, st_me);
-	string[0] = '\0';
+	GMT_memset (col, GMT_LEN64*15, char);
 
 	if (Ctrl->Z.active) {
 		if ((CPT = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->Z.file, NULL)) == NULL) {

@@ -277,7 +277,7 @@ static inline void MGD77_Init_Columns (struct GMT_CTRL *GMT, struct MGD77_CONTRO
 static inline void MGD77_Path_Init (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F)
 {
 	size_t n_alloc = GMT_SMALL_CHUNK;
-	char file[GMT_BUFSIZ], line[GMT_BUFSIZ];
+	char file[GMT_BUFSIZ] = {""}, line[GMT_BUFSIZ] = {""};
 	FILE *fp = NULL;
 
 	MGD77_Set_Home (GMT, F);
@@ -1002,11 +1002,12 @@ static int MGD77_Order_Columns (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, s
 
 static int MGD77_Read_Header_Record_m77 (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 {	/* Applies to MGD77 files */
-	char *MGD77_header[MGD77_N_HEADER_RECORDS], line[GMT_BUFSIZ];
+	char *MGD77_header[MGD77_N_HEADER_RECORDS], line[GMT_BUFSIZ] = {""};
 	int i, sequence, err, n_eols, c, n;
 	struct stat buf;
 
 	n_eols = c = n = 0;	/* Also shuts up the boring compiler warnings */
+	GMT_memset (MGD77_header, MGD77_N_HEADER_RECORDS, char *);
 
 	/* argument file is generally ignored since file is already open */
 
@@ -1061,7 +1062,7 @@ static int MGD77_Read_Header_Record_m77 (struct GMT_CTRL *GMT, char *file, struc
 
 static int MGD77_Read_Header_Record_m77t (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)
 {	/* Applies to MGD77T files */
-	char *MGD77_header, line[BUFSIZ];
+	char *MGD77_header = NULL, line[BUFSIZ] = {""};
 	int i, err;
 
 	/* argument file is generally ignored since file is already open */
@@ -1197,7 +1198,7 @@ static int MGD77_Read_Data_Record_m77 (struct GMT_CTRL *GMT, struct MGD77_CONTRO
 	int i, nwords, value, yyyy, mm, dd, nconv;
 	int64_t rata_die, k;
 	size_t len;
-	char line[GMT_BUFSIZ], currentField[10];
+	char line[GMT_BUFSIZ] = {""}, currentField[10] = {""};
 	int may_convert;
 	double secs, tz;
 
@@ -1278,7 +1279,7 @@ static int MGD77_Read_Data_Record_m77 (struct GMT_CTRL *GMT, struct MGD77_CONTRO
 static int get_integer (char *text, unsigned int start, unsigned int length)
 {
 	unsigned int k;
-	char tmp[16];
+	char tmp[16] = {""};
 	GMT_memset (tmp, 16, char);
 	for (k = 0; k < length; k++) tmp[k] = text[start+k];
 	return (atoi (tmp));
@@ -1291,7 +1292,7 @@ static int MGD77_Read_Data_Record_m77t (struct GMT_CTRL *GMT, struct MGD77_CONTR
 {
 	int k = 1, yyyy, mm, dd;
 	int64_t rata_die;
-	char line[GMT_BUFSIZ], r_date[9], *stringp = NULL, *p = NULL;
+	char line[GMT_BUFSIZ] = {""}, r_date[9] = {""}, *stringp = NULL, *p = NULL;
 	double tz, secs, r_time = 0.0;
 
 	if (!(fgets (line, GMT_BUFSIZ, F->fp))) return (MGD77_ERROR_READ_ASC_DATA);		/* End of file? */
@@ -1359,7 +1360,7 @@ static int MGD77_Read_Data_Record_txt (struct GMT_CTRL *GMT, struct MGD77_CONTRO
 	int j, n9, nwords, k, yyyy, mm, dd;
 	unsigned int pos, i;
 	int64_t rata_die;
-	char line[GMT_BUFSIZ], p[GMT_BUFSIZ];
+	char line[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""};
 	double tz, secs;
 
 	if (!(fgets (line, GMT_BUFSIZ, F->fp))) return (MGD77_ERROR_READ_ASC_DATA);		/* End of file? */
@@ -1433,6 +1434,8 @@ static int MGD77_Read_Data_asc (struct GMT_CTRL *GMT, char *file, struct MGD77_C
 	if (n_txt > 3) return (MGD77_ERROR_READ_ASC_DATA);
 	GMT_memset (values, MGD77_N_NUMBER_FIELDS+1, double *);
 	GMT_memset (text, MGD77_N_STRING_FIELDS, char *);
+	GMT_memset (mgd77_col, MGD77_SET_COLS, int);
+	GMT_memset (&MGD77Record, 1, struct MGD77_DATA_RECORD);
 
 	for (k = 0; k < F->n_out_columns - n_txt; k++) values[k] = GMT_memory (GMT, NULL, S->H.n_records, double);
 	for (k = 0; k < n_txt; k++) text[k] = GMT_memory (GMT, NULL, S->H.n_records*Clength[k], char);
@@ -1510,7 +1513,7 @@ static int MGD77_Write_Data_Record_txt (struct GMT_CTRL *GMT, struct MGD77_CONTR
 	
 static int MGD77_Write_Data_Record_m77t (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_DATA_RECORD *MGD77Record)	  /* Will read a single tabular MGD77T record */
 {
-	char buffer[BUFSIZ], line[BUFSIZ], *end;
+	char buffer[BUFSIZ] = {""}, line[BUFSIZ] = {""}, *end = NULL;
 	double r_time;
 
 	/* Because some values may be 9 or 99 as that was used in the old sMGD77 ystem, these should now become NaN/NULL to prevent their output */
@@ -1615,6 +1618,7 @@ static int MGD77_Write_Data_asc (struct GMT_CTRL *GMT, char *file, struct MGD77_
 	char *text[MGD77_N_DATA_FIELDS+1];
 	struct GMT_gcal cal;
 
+	GMT_memset (col, MGD77_N_DATA_FIELDS+1, int);
 	for (k = 0; k < F->n_out_columns; k++) {
 		text[k] = S->values[k];
 		values[k] = S->values[k];
@@ -1675,8 +1679,8 @@ int MGD77_Prep_Header_cdf (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct
 	int id, t_id, set, t_set = MGD77_NOT_SET, entry;
 	uint64_t rec;
 	bool crossed_dateline = false, crossed_greenwich = false;
-	char *text;
-	double *values, dx;
+	char *text = NULL;
+	double *values = NULL, dx;
 
 	entry = MGD77_Info_from_Abbrev (GMT, "time", &S->H, &t_set, &t_id);
 	if (entry != MGD77_NOT_SET) {	/* Supposedly has time, but we we'll check again */
@@ -1757,7 +1761,7 @@ static int MGD77_Write_Header_Record_cdf (struct GMT_CTRL *GMT, char *file, stru
 	int id, j, set, entry, use;
 	size_t k, k0;
 	time_t now;
-	char string[128];
+	char string[128] = {""};
 
 	if (!F->path[0] && MGD77_Open_File (GMT, file, F, MGD77_WRITE_MODE)) return (-1);	/* Basically creates the full path */
 
@@ -1956,6 +1960,7 @@ static int MGD77_Read_Data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_C
 
 	if (!F->path[0] && MGD77_Open_File (GMT, file, F, MGD77_READ_MODE)) return (-1);	/* Basically sets the path */
 
+	GMT_memset (apply_bits, MGD77_N_SETS, bool);
 	GMT_memset (&E, 1, struct MGD77_E77_APPLY);
 	count[0] = S->H.n_records;
 	for (col = 0; col < F->n_out_columns; col++) {	/* Only loop over columns that are desired */
@@ -2286,10 +2291,10 @@ static int MGD77_Free_Header_Record_cdf (struct GMT_CTRL *GMT, struct MGD77_HEAD
 
 static int MGD77_Read_Header_Record_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_CONTROL *F, struct MGD77_HEADER *H)  /* Will read the entire 24-section header structure */
 {
-	int n_vars, n_dims, dims[2];
-	int id, c, i, c_id[2], err;
+	int n_vars, n_dims, dims[2] = {0, 0};
+	int id, c, i, c_id[2] = {0, 0}, err;
 	size_t count[2] = {0, 0}, length;
-	char name[32], text[GMT_BUFSIZ];
+	char name[32] = {""}, text[GMT_BUFSIZ] = {""};
 
 	if (!F->path[0] && MGD77_Open_File (GMT, file, F, MGD77_READ_MODE)) return (-1);			/* Basically sets the path */
 
@@ -2683,7 +2688,7 @@ int MGD77_Get_Path (struct GMT_CTRL *GMT, char *track_path, char *track, struct 
 	int has_suffix = MGD77_NOT_SET;
 	unsigned int id, fmt, f_start, f_stop;
 	bool append = false, hard_path;
-	char geo_path[GMT_BUFSIZ];
+	char geo_path[GMT_BUFSIZ] = {""};
 
 	for (fmt = 0; fmt < MGD77_FORMAT_ANY; fmt++) {	/* Determine if given track name contains one of the 3 possible extensions */
 		if (strchr (track, '.') && (strlen(track)-strlen(MGD77_suffix[fmt])) > 0 && !strncmp (&track[strlen(track)-strlen(MGD77_suffix[fmt])], MGD77_suffix[fmt], strlen(MGD77_suffix[fmt]))) has_suffix = fmt;
@@ -2778,7 +2783,7 @@ int MGD77_Open_File (struct GMT_CTRL *GMT, char *leg, struct MGD77_CONTROL *F, i
 	 */
 
 	int len, start, stop;
-	char mode[2];
+	char mode[2] = {""};
 
 	mode[1] = '\0';	/* Thus mode will be a 1-char string */
 
@@ -3024,12 +3029,12 @@ int MGD77_Verify_Header (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct M
 {
 	int i, k, ix, iy, w, e, s, n, n_block, kind = 0, ref_field_code, y, yr1, rfStart, yr2, rfEnd;
 	unsigned int pos;
-	char copy[151], p[GMT_LEN128], text[GMT_LEN64];
+	char copy[151] = {""}, p[GMT_LEN128] = {""}, text[GMT_LEN64] = {""};
 	char *pscode[5] = {"Bathy", "Magnetics", "Gravity", "3.5 kHz", "Seismics"};
 	time_t now;
-	struct tm *T;
-	FILE *fp_err;
-	struct MGD77_HEADER_PARAMS *P;
+	struct tm *T = NULL;
+	FILE *fp_err = NULL;
+	struct MGD77_HEADER_PARAMS *P = NULL;
 
 	if (!F->verbose_level) return GMT_OK;	/* No verbosity desired */
 
@@ -3312,7 +3317,7 @@ int MGD77_Verify_Header (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct M
 	yr2 = (H->meta.Arrival[0]) ? H->meta.Arrival[0] : atoi (P->Survey_Arrival_Year);
 
 	if (yr1 && yr2 && ref_field_code != -1 && ref_field_code != 99) {
-		char m_model[16];
+		char m_model[16] = {""};
 		if (ref_field_code == 88) {
 			if (!strncmp(P->Magnetics_Ref_Field,"IGRF",4U)) {
 				for (k = 0; P->Magnetics_Ref_Field[k] != 'F'; k++);
@@ -3650,6 +3655,7 @@ int MGD77_Select_Header_Item (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, cha
 	unsigned int i, id, match, pick[MGD77_N_HEADER_ITEMS];
 	size_t length;
 
+	GMT_memset (pick, MGD77_N_HEADER_ITEMS, unsigned int);
 	GMT_memset (F->Want_Header_Item, MGD77_N_HEADER_ITEMS, bool);
 
 	if (item && item[0] == '-') return 1;	/* Just wants a listing */
@@ -3866,7 +3872,7 @@ int MGD77_Select_Columns (struct GMT_CTRL *GMT, char *arg, struct MGD77_CONTROL 
 	 * If option == 0 then we wont bitch about repeated columns.
 	 */
 
-	char p[GMT_BUFSIZ], cstring[GMT_BUFSIZ], bstring[GMT_BUFSIZ], word[GMT_LEN256], value[GMT_LEN256];
+	char p[GMT_BUFSIZ] = {""}, cstring[GMT_BUFSIZ] = {""}, bstring[GMT_BUFSIZ] = {""}, word[GMT_LEN256] = {""}, value[GMT_LEN256] = {""};
 	int k;
 	size_t n;
 	unsigned int pos, i, j, constraint, ku;
@@ -4068,7 +4074,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 #endif
 	size_t n_alloc = 0, length;
 	struct GMT_OPTION *opt = NULL;
-	char **L = NULL, *d_name = NULL, line[GMT_BUFSIZ], this_arg[GMT_BUFSIZ], *flist = NULL;
+	char **L = NULL, *d_name = NULL, line[GMT_BUFSIZ] = {""}, this_arg[GMT_BUFSIZ] = {""}, *flist = NULL;
 #ifdef HAVE_DIRENT_H_
 	DIR *dir = NULL;
 	struct dirent *entry = NULL;
@@ -4237,8 +4243,8 @@ bool MGD77_Pass_Record (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MG
 	unsigned int i, col, c, id, n_passed;
 	int match;
 	bool pass;
-	double *value;
-	char *text;
+	double *value = NULL;
+	char *text = NULL;
 
 	if (F->no_checking) return (true);	/* Nothing to check for - get outa here */
 
@@ -4433,7 +4439,7 @@ int MGD77_carter_init (struct GMT_CTRL *GMT, struct MGD77_CARTER *C)
 	and returns 0.  If failure occurs, it returns -1.  */
 
 	FILE *fp = NULL;
-	char buffer [GMT_BUFSIZ];
+	char buffer [GMT_BUFSIZ] = {""};
 	int  i;
 
 	GMT_memset (C, 1, struct MGD77_CARTER);
@@ -5466,8 +5472,8 @@ unsigned int MGD77_Scan_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char *
 	bool sorted;
 	int id, cruise_id;
 	size_t n_alloc = GMT_SMALL_CHUNK;
-	char line[GMT_BUFSIZ], name[GMT_LEN64], factor[GMT_LEN64], origin[GMT_LEN64], basis[GMT_BUFSIZ];
-	char arguments[GMT_BUFSIZ], cruise[GMT_LEN64], word[GMT_BUFSIZ], *p = NULL, *f = NULL;
+	char line[GMT_BUFSIZ] = {""}, name[GMT_LEN64] = {""}, factor[GMT_LEN64] = {""}, origin[GMT_LEN64] = {""}, basis[GMT_BUFSIZ] = {""};
+	char arguments[GMT_BUFSIZ] = {""}, cruise[GMT_LEN64] = {""}, word[GMT_BUFSIZ] = {""}, *p = NULL, *f = NULL;
 	char **list = NULL;
 	FILE *fp = NULL;
 
@@ -5565,8 +5571,8 @@ int MGD77_Parse_Corrtable (struct GMT_CTRL *GMT, char *tablefile, char **cruises
 	unsigned int i, n_aux, rec = 0, pos;
 	int id, cruise_id;
 	bool sorted, mgd77;
-	char line[GMT_BUFSIZ], name[GMT_LEN64], factor[GMT_LEN64], origin[GMT_LEN64], basis[GMT_BUFSIZ];
-	char arguments[GMT_BUFSIZ], cruise[GMT_LEN64], word[GMT_BUFSIZ], *p = NULL, *f = NULL;
+	char line[GMT_BUFSIZ] = {""}, name[GMT_LEN64] = {""}, factor[GMT_LEN64] = {""}, origin[GMT_LEN64] = {""}, basis[GMT_BUFSIZ] = {""};
+	char arguments[GMT_BUFSIZ] = {""}, cruise[GMT_LEN64] = {""}, word[GMT_BUFSIZ] = {""}, *p = NULL, *f = NULL;
 	struct MGD77_CORRTABLE **C_table = NULL;
 	struct MGD77_CORRECTION *c = NULL, **previous = NULL;
 	FILE *fp = NULL;
@@ -5846,7 +5852,7 @@ bool MGD77_fake_times (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD
 
 void MGD77_CM4_init (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct MGD77_CM4 *CM4)
 {
-	char file[GMT_BUFSIZ];
+	char file[GMT_BUFSIZ] = {""};
 	MGD77_Set_Home (GMT, F);
 
 	GMT_memset (CM4, 1, struct MGD77_CM4);	/* All is set to 0/false */
