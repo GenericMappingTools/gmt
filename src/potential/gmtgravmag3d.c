@@ -197,7 +197,7 @@ int GMT_gmtgravmag3d_parse (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, stru
 	 */
 
 	unsigned int j, pos = 0, n_errors = 0, n_files = 0;
-	char	ptr[GMT_LEN256];
+	char	ptr[GMT_LEN256] = {""};
 	struct	GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -660,7 +660,7 @@ int GMT_gmtgravmag3d (void *V_API, int mode, void *args) {
 	}
 	else {
 		double out[3];
-		char save[GMT_LEN64];
+		char save[GMT_LEN64] = {""};
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Establishes data output */
 			Return (API->error);
 		}
@@ -718,7 +718,7 @@ int read_xyz (struct GMT_CTRL *GMT, struct XYZOKB_CTRL *Ctrl, char *fname, doubl
 	size_t n_alloc;
 	float x_min = FLT_MAX, x_max = -FLT_MAX, y_min = FLT_MAX, y_max = -FLT_MAX;
 	double in[8];
-	char line[GMT_LEN256];
+	char line[GMT_LEN256] = {""};
 	FILE *fp = NULL;
 
 	if ((fp = fopen (fname, "r")) == NULL) return (-1);
@@ -814,7 +814,7 @@ int read_t (struct GMT_CTRL *GMT, char *fname) {
 	unsigned int ndata_t;
 	size_t n_alloc;
 	int in[3];
-	char line[GMT_LEN256];
+	char line[GMT_LEN256] = {""};
 	FILE *fp = NULL;
 
 	if ((fp = fopen (fname, "r")) == NULL) return (-1);
@@ -849,7 +849,7 @@ int read_raw (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 	unsigned int ndata_r;
 	size_t n_alloc;
 	double in[9];
-	char line[GMT_LEN256];
+	char line[GMT_LEN256] = {""};
 	FILE *fp = NULL;
 
 	if ((fp = fopen (fname, "r")) == NULL) return (-1);
@@ -887,7 +887,7 @@ int read_stl (struct GMT_CTRL *GMT, char *fname, double z_dir) {
 	unsigned int ndata_s;
 	size_t n_alloc;
 	double in[3];
-	char line[GMT_LEN256], text[128], ver_txt[128], *dumb;
+	char line[GMT_LEN256] = {""}, text[128] = {""}, ver_txt[128] = {""}, *dumb = NULL;
 	FILE *fp = NULL;
 
 	if ((fp = fopen (fname, "r")) == NULL) return (-1);
@@ -936,7 +936,7 @@ int read_poly (struct GMT_CTRL *GMT, char *fname, bool switch_xy) {
 	unsigned int ndata, ix = 0, iy = 1;
 	size_t n_alloc;
 	double in[2];
-	char line[GMT_LEN256];
+	char line[GMT_LEN256] = {""};
 	FILE *fp = NULL;
 
 	if ((fp = fopen (fname, "r")) == NULL) return (-1);

@@ -128,7 +128,7 @@ int GMT_grdseamount_parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, 
 	 */
 
 	unsigned int n_errors = 0, n_files = 0, n_expected_fields;
-	char T1[GMT_LEN32], T2[GMT_LEN32];
+	char T1[GMT_LEN32] = {""}, T2[GMT_LEN32] = {""};
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {

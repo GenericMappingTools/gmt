@@ -1026,7 +1026,7 @@ int GMT_grdredpol_parse (struct GMT_CTRL *GMT, struct REDPOL_CTRL *Ctrl, struct 
 
 	unsigned int n_errors = 0, n_files = 0, pos = 0;
 	int j;
-	char	p[GMT_LEN256];
+	char	p[GMT_LEN256] = {""};
 	struct	GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 

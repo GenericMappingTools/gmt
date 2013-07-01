@@ -190,7 +190,7 @@ GMT_LONG MGD77_Get_Param (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char *nam
 	GMT_LONG got_rev = FALSE;
 
 	if (!F->original) { /* Must look for revised attribute unless explicitly turned off [ e.g, mgd77convert -FC] */
-		char Att[64];
+		char Att[64] = {""};
 		sprintf (Att, "%s_REVISED", name); /* Revised attributes have _REVISED at the end of their names */
 		if (nc_get_att_text (F->nc_id, NC_GLOBAL, Att, value_rev) == NC_NOERR) got_rev = TRUE;	/* Found a revised attribute */
 	}
@@ -212,7 +212,7 @@ void MGD77_Put_Param (struct GMT_CTRL *C, struct MGD77_CONTROL *F, char *name, s
 
 	if (revised == 2 || revised == 0) MGD77_nc_status (C, nc_put_att_text (F->nc_id, NC_GLOBAL, name, length_orig, value_orig));
 	if (revised) { /* Write revised attribute */
-		char Att[64];
+		char Att[64] = {""};
 		sprintf (Att, "%s_REVISED", name); /* Revised attributes have _REVISED at the end of their names */
 		MGD77_nc_status (C, nc_put_att_text (F->nc_id, NC_GLOBAL, Att, length_rev, value_revised));
 	}

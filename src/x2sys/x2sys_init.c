@@ -260,8 +260,8 @@ int GMT_x2sys_init_parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, st
 int GMT_x2sys_init (void *V_API, int mode, void *args)
 {
 	time_t right_now;
-	char tag_file[GMT_BUFSIZ], track_file[GMT_BUFSIZ], bin_file[GMT_BUFSIZ], def_file[GMT_BUFSIZ];
-	char path_file[GMT_BUFSIZ], path[GMT_BUFSIZ], line[GMT_BUFSIZ];
+	char tag_file[GMT_BUFSIZ] = {""}, track_file[GMT_BUFSIZ] = {""}, bin_file[GMT_BUFSIZ] = {""}, def_file[GMT_BUFSIZ] = {""};
+	char path_file[GMT_BUFSIZ] = {""}, path[GMT_BUFSIZ] = {""}, line[GMT_BUFSIZ] = {""};
 
 	int error = 0;
 

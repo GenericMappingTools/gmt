@@ -295,8 +295,8 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 	int16_t *row = NULL;
 	uint16_t *u2 = NULL;
 
-	char infile[GMT_BUFSIZ], cmd[GMT_BUFSIZ], s_in_ID[GMT_STR16], s_out_ID[GMT_LEN256];
-	char z_units[GMT_GRID_UNIT_LEN80];
+	char infile[GMT_BUFSIZ] = {""}, cmd[GMT_BUFSIZ] = {""}, s_in_ID[GMT_STR16] = {""}, s_out_ID[GMT_LEN256] = {""};
+	char z_units[GMT_GRID_UNIT_LEN80] = {""};
 
 	FILE *fp = NULL;
 

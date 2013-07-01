@@ -186,7 +186,7 @@ int find_leg (char *name, struct X2SYS_BIX *B, unsigned int n)
 
 int GMT_x2sys_get (void *V_API, int mode, void *args)
 {
-	char *y_match = NULL, *n_match = NULL, line[GMT_BUFSIZ], *p = NULL;
+	char *y_match = NULL, *n_match = NULL, line[GMT_BUFSIZ] = {""}, *p = NULL;
 	
 	uint64_t *ids_in_bin = NULL, ij, n_pairs, jj, kk, ID;
 

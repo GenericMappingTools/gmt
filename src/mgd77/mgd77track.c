@@ -279,8 +279,8 @@ int GMT_mgd77track_parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, st
 	unsigned int n_errors = 0, mrk = 0;
 	bool error = false;
 	int j;
-	char ms[GMT_LEN64], mc[GMT_LEN64], tmp[GMT_LEN64], mfs[GMT_LEN64], mf[GMT_LEN64];
-	char comment[GMT_BUFSIZ], mfc[GMT_LEN64], *t = NULL;
+	char ms[GMT_LEN64] = {""}, mc[GMT_LEN64] = {""}, tmp[GMT_LEN64] = {""}, mfs[GMT_LEN64] = {""}, mf[GMT_LEN64] = {""};
+	char comment[GMT_BUFSIZ] = {""}, mfc[GMT_LEN64] = {""}, *t = NULL;
 	double dist_scale;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -550,8 +550,8 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 	
 	size_t n_alloc_c = GMT_SMALL_CHUNK;
 	
-       	char label[GMT_LEN256], date[GMT_LEN64], clock[GMT_LEN64];
-	char name[GMT_LEN64], **list = NULL;
+       	char label[GMT_LEN256] = {""}, the_date[GMT_LEN64] = {""}, the_clock[GMT_LEN64] = {""};
+	char name[GMT_LEN64] = {""}, **list = NULL;
 
 	double x, y, annot_dist[2] = {0, 0}, tick_dist[2] = {0, 0}, annot_time[2] = {0, 0};
 	double *track_dist = NULL, angle, plot_x, plot_y, *lon = NULL, *lat = NULL, *track_time = NULL;
@@ -755,15 +755,15 @@ int GMT_mgd77track (void *V_API, int mode, void *args)
 					angle -= 90.0;
 				if (annot_tick[ANNOT] & 1) {	/* Time mark */
 					GMT_gcal_from_dt (GMT, annot_time[ANNOT], &calendar);			/* Convert t to a complete calendar structure */
-					GMT_format_calendar (GMT, date, clock, &GMT->current.plot.calclock.date, &GMT->current.plot.calclock.clock, false, 1, annot_time[ANNOT]);
+					GMT_format_calendar (GMT, the_date, the_clock, &GMT->current.plot.calclock.date, &GMT->current.plot.calclock.clock, false, 1, annot_time[ANNOT]);
 					this_julian = calendar.day_y;
 					if (this_julian != last_julian) {
 						mrk = MGD77TRACK_MARK_NEWDAY;
-						sprintf (label, "%s+%s", date, clock);
+						sprintf (label, "%s+%s", the_date, the_clock);
 					}
 					else {
 						mrk = MGD77TRACK_MARK_SAMEDAY;
-						sprintf (label, "+%s", clock);
+						sprintf (label, "+%s", the_clock);
 					}
 					GMT_setfill (GMT, &Ctrl->T.marker[mrk].s, true);
 					PSL_plotsymbol (PSL, x, y, &(Ctrl->T.marker[mrk].marker_size), GMT_SYMBOL_CIRCLE);

@@ -171,7 +171,7 @@ int GMT_psvelo_parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT
 	unsigned int n_errors = 0;
 	int n;
 	bool no_size_needed, n_set, got_A = false;
-	char txt[GMT_LEN256], txt_b[GMT_LEN256], txt_c[GMT_LEN256];
+	char txt[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -344,6 +344,7 @@ int GMT_psvelo (void *V_API, int mode, void *args)
 	PSL = GMT_plotinit (GMT, options);
 	GMT_plotcanvas (GMT);	/* Fill canvas if requested */
 
+	GMT_memset (col, GMT_LEN64*12, char);
 	GMT_setpen (GMT, &Ctrl->W.pen);
 	PSL_setfont (PSL, GMT->current.setting.font_annot[0].id);
 	if (Ctrl->E.active) Ctrl->L.active = true;

@@ -146,7 +146,7 @@ int GMT_mgd77path (void *V_API, int mode, void *args)
 	unsigned int i, n_cruises = 0, n_paths;
 	int error = 0;
 	
-	char path[GMT_BUFSIZ], **list = NULL;
+	char path[GMT_BUFSIZ] = {""}, **list = NULL;
 	
 	struct MGD77_CONTROL M;
 	struct MGD77PATH_CTRL *Ctrl = NULL;

@@ -212,7 +212,7 @@ int GMT_mgd77convert (void *V_API, int mode, void *args)
 {
 	int i, argno, n_cruises = 0, n_paths, error = 0;
 	
-	char file[GMT_BUFSIZ], **list = NULL, *fcode = "actm";
+	char file[GMT_BUFSIZ] = {""}, **list = NULL, *fcode = "actm";
 	char *format_name[MGD77_N_FORMATS] = {"MGD77 ASCII", "MGD77+ netCDF", "ASCII table", "MGD77T ASCII"};
 
 	struct MGD77_CONTROL M;
@@ -241,10 +241,10 @@ int GMT_mgd77convert (void *V_API, int mode, void *args)
 	/*---------------------------- This is the mgd77convert main code ----------------------------*/
 
 	if (Ctrl->C.active) {	/* Just build *.mgd77 from *.h77 and *.a77 */
-		char a77_file[GMT_BUFSIZ], h77_file[GMT_BUFSIZ], mgd77_file[GMT_BUFSIZ], prefix[GMT_BUFSIZ];
+		char a77_file[GMT_BUFSIZ] = {""}, h77_file[GMT_BUFSIZ] = {""}, mgd77_file[GMT_BUFSIZ] = {""}, prefix[GMT_BUFSIZ] = {""};
 		int pos, c, n_files = 0;
 		struct GMT_OPTION *opt = NULL;
-		FILE *fpa77, *fph77, *fpout;
+		FILE *fpa77 = NULL, *fph77 = NULL, *fpout = NULL;
 		
 		for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */ 
 

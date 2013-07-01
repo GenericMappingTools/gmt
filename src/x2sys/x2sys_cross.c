@@ -261,10 +261,10 @@ int combo_ok (char *name_1, char *name_2, struct PAIR *pair, uint64_t n_pairs)
 int GMT_x2sys_cross (void *V_API, int mode, void *args)
 {
 	char **trk_name = NULL;			/* Name of tracks */
-	char line[GMT_BUFSIZ];			/* buffer */
-	char item[GMT_BUFSIZ];			/* buffer */
+	char line[GMT_BUFSIZ] = {""};		/* buffer */
+	char item[GMT_BUFSIZ] = {""};		/* buffer */
 	char t_or_i;				/* t = time, i = dummy node time */
-	char name1[80], name2[80];		/* Name of two files to be examined */
+	char name1[80] = {""}, name2[80] = {""};		/* Name of two files to be examined */
 	char *x2sys_header = "%s %d %s %d %s";
 
 	uint64_t n_rec[2];			/* Number of data records for both files */
@@ -807,8 +807,7 @@ int GMT_x2sys_cross (void *V_API, int mode, void *args)
 					}
 
 					if (first_crossover) {
-						char info[GMT_BUFSIZ], start[2][GMT_LEN64], stop[2][GMT_LEN64];
-						GMT_memset (info, GMT_BUFSIZ, char);
+						char info[GMT_BUFSIZ] = {""}, start[2][GMT_LEN64], stop[2][GMT_LEN64];
 						for (k = 0; k < 2; k++) {
 							if (has_time[k]) {	/* Find first and last record times */
 								for (j = 0; j < n_rec[k] && GMT_is_dnan (time[k][j]); j++);	/* Find first non-NaN time */

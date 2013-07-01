@@ -277,14 +277,14 @@ int GMT_segy2grd (void *V_API, int mode, void *args)
 	
 	double idy, x0, yval;
 
-	char line[GMT_BUFSIZ];
+	char line[GMT_BUFSIZ] = {""};
 
 	FILE *fpi = NULL;
 
 	struct GMT_GRID *Grid = NULL;
 
 /* SEGY parameters */
-	char reelhead[3200];
+	char reelhead[3200] = {""};
 	float *data = NULL;
 	SEGYHEAD *header = NULL;
 	SEGYREEL binhead;

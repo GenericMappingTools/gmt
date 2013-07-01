@@ -334,7 +334,7 @@ int GMT_mgd77list_parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, stru
 
 	unsigned int n_errors = 0, k;
 	int code;
-	char *t = NULL, buffer[GMT_BUFSIZ];
+	char *t = NULL, buffer[GMT_BUFSIZ] = {""};
 	double dist_scale;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -731,7 +731,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args)
 	bool need_date, need_sound = false, lonlat_not_NaN, first_warning = true;
 	bool first_time_on_sensor_offset = true;
 	
-	char fx_setting[GMT_BUFSIZ], **list = NULL, **item_names = NULL;
+	char fx_setting[GMT_BUFSIZ] = {""}, **list = NULL, **item_names = NULL;
 	char *tvalue[MGD77_MAX_COLS], *aux_tvalue[N_MGD77_AUX];
 	
 	double IGRF[7], correction, prev_twt = 0, d_twt, twt_pdrwrap_corr, this_cc;
@@ -822,7 +822,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args)
 	if (M.adjust_time) Ctrl->D.start = MGD77_time2utime (GMT, &M, Ctrl->D.start);	/* Convert to Unix time if need be */
 	if (M.adjust_time) Ctrl->D.stop  = MGD77_time2utime (GMT, &M, Ctrl->D.stop);
 	if (Ctrl->L.active) {	/* Scan the ephemeral correction table for needed auxilliary columns */
-		char path[GMT_BUFSIZ];
+		char path[GMT_BUFSIZ] = {""};
 		if (!Ctrl->L.file) {	/* Try default correction table */
 			sprintf (path, "%s/mgd77_corrections.txt", M.MGD77_HOME);
 			if (access (path, R_OK)) {
@@ -958,7 +958,7 @@ int GMT_mgd77list (void *V_API, int mode, void *args)
 	
 
 	if (Ctrl->L.active) {	/* Load an ephemeral correction table */
-		char path[GMT_BUFSIZ];
+		char path[GMT_BUFSIZ] = {""};
 		if (!Ctrl->L.file) {	/* Try default correction table */
 			sprintf (path, "%s/mgd77_corrections.txt", M.MGD77_HOME);
 			if (access (path, R_OK)) {

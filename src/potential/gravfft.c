@@ -170,7 +170,7 @@ int GMT_gravfft_parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct G
 	int n, override_mode = GMT_FFT_REMOVE_MEAN;
 	struct GMT_OPTION *opt = NULL,  *popt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
-	char   ptr[GMT_BUFSIZ], t_or_b[4], argument[GMT_LEN16], combined[GMT_BUFSIZ];
+	char   ptr[GMT_BUFSIZ] = {""}, t_or_b[4] = {""}, argument[GMT_LEN16] = {""}, combined[GMT_BUFSIZ] = {""};
 	if (GMT_compat_check (GMT, 4)) {
 		char *mod = NULL;
 		if ((popt = GMT_Find_Option (API, 'L', options))) {	/* Gave old -L */
@@ -449,7 +449,7 @@ int GMT_gravfft (void *V_API, int mode, void *args) {
 	unsigned int i, j, k, n;
 	int error = 0;
 	uint64_t m;
-	char	format[64], buffer[256];
+	char	format[64] = {""}, buffer[256] = {""};
 	float	*topo = NULL, *raised = NULL;
 	double	delta_pt, freq;
 
@@ -813,7 +813,7 @@ void do_admittance (struct GMT_CTRL *GMT, struct GMT_GRID *GridA, struct GMT_GRI
 	uint64_t	k, k_0 = 0, nk, ifreq;
 	unsigned int *nused = NULL;
 	size_t n_alloc;
-	char	format[64], buffer[256];
+	char	format[64] = {""}, buffer[256] = {""};
 	double	delta_k, r_delta_k, freq;
 	double	*out = NULL, *err_bar = NULL, *coh = NULL, *b_pow = NULL, *g_pow = NULL, *co_spec = NULL, *quad = NULL;
 	float	*datac = GridA->data;

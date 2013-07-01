@@ -223,7 +223,7 @@ int GMT_gshhg (void *V_API, int mode, void *args)
 
 	double w, e, s, n, area, f_area, scale = 10.0;
 
-	char source, marker = 0, container[8], ancestor[8], header[GMT_BUFSIZ], *name[2] = {"polygon", "line"};
+	char source, marker = 0, container[8] = {""}, ancestor[8] = {""}, header[GMT_BUFSIZ] = {""}, *name[2] = {"polygon", "line"};
 
 	FILE *fp = NULL;
 
