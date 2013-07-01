@@ -1537,7 +1537,7 @@ int GMTAPI_Export_CPT (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode
 			break;		
 	}
 	S_obj->status = GMT_IS_USED;	/* Mark as written */
-	S_obj->data = P_obj;			/* Retain pointer to the allocated data so we use garbage collection later */
+	S_obj->data = P_obj;		/* Retain pointer to the allocated data so we can find the object via its data pointer */
 	
 	return GMT_OK;
 }
@@ -1895,7 +1895,7 @@ int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 	}
 	S_obj->alloc_mode = D_obj->alloc_mode;	/* Clarify allocation mode for this entity */
 	S_obj->status = GMT_IS_USED;	/* Mark as written */
-	S_obj->data = D_obj;		/* Retain pointer to the allocated data so we use garbage collection later */
+	S_obj->data = D_obj;		/* Retain pointer to the allocated data so we can find its object via the data pointer later */
 	
 	return GMT_OK;
 }
@@ -2121,7 +2121,7 @@ int GMTAPI_Export_Textset (struct GMTAPI_CTRL *API, int object_ID, unsigned int 
 	}
 	S_obj->alloc_mode = T_obj->alloc_mode;	/* Clarify allocation mode for this entity */
 	S_obj->status = GMT_IS_USED;	/* Mark as read */
-	S_obj->data = T_obj;		/* Retain pointer to the allocated data so we use garbage collection later */
+	S_obj->data = T_obj;		/* Retain pointer to the allocated data so we can find the object via its pointer later */
 	
 	return GMT_OK;
 }
@@ -2653,7 +2653,7 @@ int GMTAPI_Export_Grid (struct GMTAPI_CTRL *API, int object_ID, unsigned int mod
 	}
 
 	if (done) S_obj->status = GMT_IS_USED;	/* Mark as written (unless we only updated header) */
-	S_obj->data = G_obj;		/* Retain pointer to the allocated data so we use garbage collection later */
+	S_obj->data = G_obj;		/* Retain pointer to the allocated data so we can find the object via its pointer later */
 
 	return (GMT_OK);		
 }
@@ -3106,6 +3106,10 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level)
 			S_obj->data = S_obj->resource = NULL;
 			S_obj->alloc_level = u_level;			/* To ensure it will be Unregistered below */
 			S_obj->alloc_mode = GMT_ALLOCATED_BY_GMT;	/* To ensure it will be Unregistered below */
+			i++;	continue;
+		}
+		else if (S_obj->direction == GMT_OUT) {	/* Do not free data pointers for output objects */
+			S_obj->data = S_obj->resource = NULL;
 			i++;	continue;
 		}
 		/* Here we will try to free the memory pointed to by S_obj->resource */
