@@ -118,7 +118,8 @@
  *    modules called by top-level modules, etc.
  * 2. Memory not allocated by GMT will have an implicit alloc_mode = GMT_ALLOCATED_EXTERNALLY [0]
  *    and alloc_mode = 0 (i.e., gmt executable level) but it does not matter since such memory is
- *    only used for reading and we may never free it or reallocate it within GMT.
+ *    only used for reading and we may never free it or reallocate it within GMT. This alloc_mode
+ *    only applies to data arrays inside objects (e.g., G->data), not GMT objects themselves.
  * 3. Memory passed into modules as "input files" requires no special treatment since its level
  *    will be lower than that of the module it is used in, and when the module tries to free it
  *    (directly with GMT_Destroy_Data or via end-of-module GMT_Garbage_Collection) it will skip
@@ -137,9 +138,10 @@
  *	c) The API object originally pointing to the GMT object is flagged by having its variable
  *         no_longer_owner set to true (this is how we avoid freeing something twice).
  *    When the module ends there are two API objects with references to the GMT object: the internal
- *    module object and the output object.  The first is ignored by GMT_Garbage_Collection because
- *    it is no longer the owner. The second is ignored because its level is too low. After that
- *    any empty API objects are removed (so the no_longer_owner one is removed).
+ *    module object and the output object.  The first is set to NULL by GMT_Garbage_Collection because
+ *    it is no longer the owner of the data. The second is ignored because its level is too low. After
+ *    that any empty API objects are removed (so the no_longer_owner one is removed), whire to second
+ *    survices the life of the module.
  *
  * Thus, at the session (gmt) level all GMT objects have alloc_level = 0 since anything higher will
  * have been freed by a module.  GMT_Destroy_Session finally calls GMT_Garbage_Collection a final
@@ -2895,13 +2897,13 @@ int GMTAPI_Begin_IO (struct GMTAPI_CTRL *API, unsigned int direction)
 int GMTAPI_Destroy_Image (struct GMTAPI_CTRL *API, struct GMT_IMAGE **I_obj)
 {
 	/* Delete the given image resource.
-	 * Mode 0 means we don't free objects whose allocation mode flag == GMT_ALLOCATED_EXTERNALLY */
+	 * Mode 0 means we don't free images whose allocation mode flag == GMT_ALLOCATED_EXTERNALLY */
 
 	if (!(*I_obj)) {	/* Probably not a good sign */
 		GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_Destroy_Image: Passed NULL pointer - skipped\n");
 		return (GMT_PTR_IS_NULL);
 	}
-	if ((*I_obj)->alloc_mode == GMT_ALLOCATED_EXTERNALLY) return (GMT_FREE_EXTERNAL_NOT_ALLOWED);	/* Not allowed to free here */
+	//if ((*I_obj)->alloc_mode == GMT_ALLOCATED_EXTERNALLY) return (GMT_FREE_EXTERNAL_NOT_ALLOWED);	/* Not allowed to free here */
 	if ((*I_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
 	
 	GMT_free_image (API->GMT, I_obj, true);
@@ -2917,7 +2919,7 @@ int GMTAPI_Destroy_Grid (struct GMTAPI_CTRL *API, struct GMT_GRID **G_obj)
 		GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_Destroy_Grid: Passed NULL pointer - skipped\n");
 		return (GMT_PTR_IS_NULL);
 	}
-	if ((*G_obj)->alloc_mode != GMT_ALLOCATED_BY_GMT) return (GMT_FREE_EXTERNAL_NOT_ALLOWED);	/* Not allowed to free here */
+	//if ((*G_obj)->alloc_mode == GMT_ALLOCATED_EXTERNALLY) return (GMT_FREE_EXTERNAL_NOT_ALLOWED);	/* Not allowed to free here */
 	if ((*G_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
 	
 	GMT_free_grid (API->GMT, G_obj, true);
@@ -3023,7 +3025,9 @@ int GMTAPI_destroy_data_ptr (struct GMTAPI_CTRL *API, unsigned int family, void 
 	/* Like GMT_Destroy_Data but takes pointer to data rather than address of pointer.
 	 * We pass true to make sure we free the memory.  Some objects (grid, matrix, vector) may
 	 * point to externally allocated memory so we return the alloc_mode for those items.
-	 * However, the containers are always allocated by GMT so those can be freed.
+	 * This is mostly for information since the pointers to such external memory have now
+	 * been set to NULL instead of being freed.
+	 * The containers are always allocated by GMT so those are freed at the end.
 	 */
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
@@ -3114,11 +3118,13 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level)
 			GMT_Report (API, GMT_MSG_NORMAL, "GMT_Garbage_Collection failed to destroy memory for object % d [Bug?]\n", i++);
 			/* Skip it for now; but this is possibly a fatal error [Bug]? */
 		}
+#if 0
 		else if (alloc_mode == GMT_ALLOCATED_EXTERNALLY && level != GMT_NOTSET) {	/* Something allocated outside of GMT, leave until final Destroy_Session */
 			GMT_Report (API, GMT_MSG_DEBUG, "GMT_Garbage_Collection: Delay free due to external memory for object: C=%d A=%d ID=%d W=%s F=%s M=%s S=%s P=%" PRIxS " D=%" PRIxS " N=%s\n",
 				S_obj->close_file, S_obj->alloc_mode, S_obj->ID, GMT_direction[S_obj->direction], GMT_family[S_obj->family], GMT_method[S_obj->method], GMT_status[S_obj->status], (size_t)S_obj->resource, (size_t)S_obj->data, S_obj->filename);
 			S_obj->alloc_mode = GMT_ALLOCATED_EXTERNALLY;
 		}
+#endif
 		else  {	/* Successfully freed.  See if this address occurs more than once (e.g., both for in and output); if so just set repeated data pointer to NULL */
 			S_obj->data = NULL;
 			for (j = i; j < API->n_objects; j++) if (API->object[j]->data == address) API->object[j]->data = NULL;	/* Yes, set to NULL so we don't try to free twice */
@@ -3132,7 +3138,8 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level)
 	i = 0;
 	while (i < API->n_objects) {	/* While there are more objects to consider */
 		S_obj = API->object[i];	/* Shorthand for the the current object */
-		if (S_obj && (level == GMT_NOTSET || (S_obj->alloc_level == u_level && S_obj->alloc_mode != GMT_ALLOCATED_EXTERNALLY)))	/* Yes, this object was added in this module (or we dont care), get rid of it; leave i where it is */
+		//if (S_obj && (level == GMT_NOTSET || (S_obj->alloc_level == u_level && S_obj->alloc_mode != GMT_ALLOCATED_EXTERNALLY)))	/* Yes, this object was added in this module (or we dont care), get rid of it; leave i where it is */
+		if (S_obj && (level == GMT_NOTSET || (S_obj->alloc_level == u_level)))	/* Yes, this object was added at this level, get rid of it; do not increment i */
 			GMTAPI_Unregister_IO (API, S_obj->ID, GMT_NOTSET);	/* This shuffles the object array and reduces n_objects */
 		else
 			i++;	/* Was allocated higher up, leave alone and go to next */

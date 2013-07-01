@@ -6439,7 +6439,6 @@ void GMT_free_image (struct GMT_CTRL *GMT, struct GMT_IMAGE **I, bool free_image
 
 void GMT_free_univector (struct GMT_CTRL *GMT, union GMT_UNIVECTOR *u, unsigned int type)
 {	/* By taking a reference to the vector pointer we can set it to NULL when done */
-	/* free_vector = false means the vectors are not to be freed but the data array itself will be */
 	if (!u) return;	/* Nothing to deallocate */
 	switch (type) {
 		case GMT_UCHAR:	GMT_free (GMT, u->uc1); break;
@@ -6452,6 +6451,23 @@ void GMT_free_univector (struct GMT_CTRL *GMT, union GMT_UNIVECTOR *u, unsigned 
 		case GMT_LONG:	GMT_free (GMT, u->si8); break;
 		case GMT_FLOAT:	GMT_free (GMT, u->f4);  break;
 		case GMT_DOUBLE:	GMT_free (GMT, u->f8);  break;
+	}
+}
+
+void GMT_null_univector (struct GMT_CTRL *GMT, union GMT_UNIVECTOR *u, unsigned int type)
+{	/* Here we just set the type pointer to NULL as it was pointing to external memory */
+	if (!u) return;	/* Nothing to deal with */
+	switch (type) {
+		case GMT_UCHAR:	 u->uc1 = NULL; break;
+		case GMT_CHAR:	 u->sc1 = NULL; break;
+		case GMT_USHORT: u->ui2 = NULL; break;
+		case GMT_SHORT:	 u->si2 = NULL; break;
+		case GMT_UINT:	 u->ui4 = NULL; break;
+		case GMT_INT:	 u->si4 = NULL; break;
+		case GMT_ULONG:	 u->ui8 = NULL; break;
+		case GMT_LONG:	 u->si8 = NULL; break;
+		case GMT_FLOAT:	 u->f4 = NULL;  break;
+		case GMT_DOUBLE: u->f8 = NULL;  break;
 	}
 }
 
@@ -6526,9 +6542,13 @@ unsigned int GMT_free_vector_ptr (struct GMT_CTRL *GMT, struct GMT_VECTOR *V, bo
 {	/* By taking a reference to the vector pointer we can set it to NULL when done */
 	/* free_vector = false means the vectors are not to be freed but the data array itself will be */
 	if (!V) return 0;	/* Nothing to deallocate */
-	if (V->data && free_vector && V->alloc_mode == GMT_ALLOCATED_BY_GMT) {
+	/* Only free V->data if allocated by GMT AND free_vector is true */
+	if (V->data && free_vector) {
 		uint64_t col;
-		for (col = 0; col < V->n_columns; col++) GMT_free_univector (GMT, &(V->data[col]), V->type[col]);
+		for (col = 0; col < V->n_columns; col++) {
+			if (V->alloc_mode == GMT_ALLOCATED_BY_GMT) GMT_free_univector (GMT, &(V->data[col]), V->type[col]);
+			GMT_null_univector (GMT, &(V->data[col]), V->type[col]);
+		}
 	}
 	GMT_free (GMT, V->data);
 	GMT_free (GMT, V->type);
@@ -6598,7 +6618,11 @@ struct GMT_MATRIX * GMT_duplicate_matrix (struct GMT_CTRL *GMT, struct GMT_MATRI
 unsigned int GMT_free_matrix_ptr (struct GMT_CTRL *GMT, struct GMT_MATRIX *M, bool free_matrix)
 {	/* Free everything but the struct itself  */
 	if (!M) return 0;	/* Nothing to deallocate */
-	if (free_matrix && M->alloc_mode == GMT_ALLOCATED_BY_GMT) GMT_free_univector (GMT, &(M->data), M->type);
+	/* Only free M->data if allocated by GMT AND free_matrix is true */
+	if (&(M->data) && free_matrix) {
+		if (M->alloc_mode == GMT_ALLOCATED_BY_GMT) GMT_free_univector (GMT, &(M->data), M->type);
+		GMT_null_univector (GMT, &(M->data), M->type);
+	}
 	return (M->alloc_mode);
 }
 
