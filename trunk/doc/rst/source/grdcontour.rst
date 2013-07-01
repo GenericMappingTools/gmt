@@ -4,14 +4,15 @@ grdcontour
 
 grdcontour - Make contour map using a grid
 
-`Synopsis <#toc1>`_
--------------------
+Synopsis
+--------
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdcontour** *grid* **-C**\ [+]\ *cont\_int*\ \|\ *cpt*
-**-J**\ *parameters* [ **-A**\ [**-**\ \|\ [+]\ *annot\_int*][*labelinfo*] ]
+**grdcontour** *grid* **-C**\ [+]\ *cont_int*\ \|\ *cpt*
+**-J**\ *parameters* [ **-A**\ [**-**\ \|\ [+]\ *annot_int*][*labelinfo*] ]
 [ |SYN_OPT-B| ]
+[ **-D**\ *<template>* ]
 [ **-F**\ [**l**\ \|\ **r**] ]
 [ **-G**\ [**d**\ \|\ **f**\ \|\ **n**\ \|\ **l**\ \|\ **L**\ \|\ **x**\ \|\ **X**]\ *params* ] 
 [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ] [ **-L**\ *low/high* ]
@@ -48,7 +49,7 @@ Required Arguments
 *grid*
     2-D gridded data set to be contoured. (See GRID FILE FORMATS below).
 
-**-C**\ [+]\ *cont\_int*
+**-C**\ [+]\ *cont_int*
     The contours to be drawn may be specified in one of three possible ways:
 
     (1) If *cont_int* has the suffix ".cpt" and can be opened as a
@@ -83,7 +84,7 @@ Required Arguments
 Optional Arguments
 ------------------
 
-**-A**\ [**-**\ \|\ [+]\ *annot\_int*][*labelinfo*]
+**-A**\ [**-**\ \|\ [+]\ *annot_int*][*labelinfo*]
     *annot_int* is annotation interval in data units; it is ignored if
     contour levels are given in a file. [Default is no annotations]. Append
     **-** to disable all annotations implied by **-C**. Alternatively prepend
@@ -94,6 +95,19 @@ Optional Arguments
 .. include:: explain_labelinfo.rst_
 
 .. include:: explain_-B.rst_
+
+**-D**\ *<template>* 
+    Dump contours as data line segments; no plotting takes place.
+    Append filename template which may contain C-format specifiers.
+    If no filename template is given we write all lines to stdout.
+    If filename has no specifiers then we write all lines to a single file.
+    If a float format (e.g., %6.2f) is found we substitute the contour z-value.
+    If an integer format (e.g., %06d) is found we substitute a running segment count.
+    If an char format (%c) is found we substitute C or O for closed and open contours.
+    The 1-3 specifiers may be combined and appear in any order to produce the
+    the desired number of output files (e.g., just %c gives two files, just %f would.
+    separate segments into one file per contour level, and %d would write all segments.
+    to individual files; see manual page for more examples.
 
 **-F**\ [**l**\ \|\ **r**]
     Force dumped contours to be oriented so that higher z-values are to the
@@ -127,8 +141,8 @@ Optional Arguments
 
 **-S**\ *smoothfactor*
     Used to resample the contour lines at roughly every
-    (gridbox\_size/*smoothfactor*) interval.
-**-T**\ [**+\|-**\ ][*gap/length*\ ][\ **:**\ [*labels*\ ]]
+    (gridbox_size/*smoothfactor*) interval.
+**-T**\ [**+\|-**\ ][*gap/length*][\ **:**\ [*labels*]]
     Will draw tickmarks pointing in the downward direction every *gap*
     along the innermost closed contours. Append *gap* and tickmark
     length (append units as **c**, **i**, or **p**) or use defaults
@@ -148,7 +162,7 @@ Optional Arguments
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
 
-**-W**\ [**+**\ ][*type*\ ]\ *pen* :ref:`(more ...) <set-pens>`
+**-W**\ [**+**][*type*]\ *pen* :ref:`(more ...) <set-pens>`
     *type*, if present, can be **a** for annotated contours or **c** for
     regular contours [Default]. *pen* sets the attributes for the
     particular line. Default pen for annotated contours: 0.75p,black.
@@ -193,7 +207,7 @@ Optional Arguments
 Examples
 --------
 
-To contour the file hawaii\_grav.nc every 25 mGal on a Mercator map at
+To contour the file hawaii_grav.nc every 25 mGal on a Mercator map at
 0.5 inch/degree, annotate every 50 mGal (using fontsize = 10p), using 1
 degree tickmarks, and draw 30 minute gridlines:
 
