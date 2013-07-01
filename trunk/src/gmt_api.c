@@ -3501,8 +3501,8 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 				return_value (API, GMT_PTR_IS_NULL, GMT_NOTSET);	/* Matrix container must be given for both input and output */
 			}
 			if (direction == GMT_IN) {	/* For input we can check if the GMT_MATRIX structure has proper parameters. */
-				if (M_obj->n_rows <= 0 || M_obj->n_columns <= 0 || GMT_check_region (API->GMT, M_obj->range)) {
-					GMT_Report (API, GMT_MSG_NORMAL, "Error in GMT_Register_IO (%s): Matrix parameters not set.\n", GMT_direction[direction]);
+				if (M_obj->n_rows <= 0 || M_obj->n_columns <= 0) {
+					GMT_Report (API, GMT_MSG_NORMAL, "Error in GMT_Register_IO (%s): Matrix dimensions not set.\n", GMT_direction[direction]);
 					return_value (API, GMT_NO_PARAMETERS, GMT_NOTSET);
 				}
 			}
@@ -4805,7 +4805,9 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 	 *	   for dim, wesn,inc,registration,pad but let data be your grid|image returned
 	 *	   to you after step 1.
 	 * By default, the created resource is consider an input resource (direction == GMT_IN).
-	 * However, you can change that by adding GMT_VIA_OUTPUT to the mode.
+	 * However, you can change that by adding GMT_VIA_OUTPUT to the mode. This means you
+	 * are passing in a blank container that a GMT module will fill in with results so
+	 * that you can access this data outside of the module.
 	 *
 	 * Return: Pointer to resource, or NULL if an error (set via API->error).
 	 */
