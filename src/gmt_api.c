@@ -715,10 +715,11 @@ int GMTAPI_init_image (struct GMTAPI_CTRL *API, struct GMT_OPTION *opt, double *
 	return (GMT_OK);
 }
 
-int GMTAPI_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *range, double *inc, int registration, struct GMT_MATRIX *M)
+int GMTAPI_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], double *range, double *inc, int registration, unsigned int mode, struct GMT_MATRIX *M)
 {
 	double off = 0.5 * registration;
 	unsigned int dims = (M->n_layers > 1) ? 3 : 2;
+	if ((mode & GMT_VIA_OUTPUT) && dim == NULL && range == NULL && inc == NULL) return (GMT_NOERROR);	/* OK for creating blank container for output */
 	if (range == NULL && inc == NULL) {	/* Not an equidistant vector arrangement, use dim */
 		double dummy_range[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};	/* Flag vector as such */
 		GMT_memcpy (M->range, dummy_range, 2 * dims, double);
@@ -4880,7 +4881,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 			n_layers = (dim == NULL) ? 0U : dim[0];
 		 	new_obj = GMT_create_matrix (API->GMT, n_layers);
 			if (pad) GMT_Report (API, GMT_MSG_VERBOSE, "Pad argument (%d) ignored in initialization of %s\n", pad, GMT_family[family]);
-			error = GMTAPI_init_matrix (API, dim, range, inc, registration, new_obj);
+			error = GMTAPI_init_matrix (API, dim, range, inc, registration, mode, new_obj);
 			break;
 		case GMT_IS_VECTOR:	/* GMT vector container, allocate one with the requested number of columns & rows */
 			if (dim == NULL) return_null (API, GMT_PTR_IS_NULL);
