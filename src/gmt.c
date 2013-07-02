@@ -54,7 +54,7 @@ int main (int argc, char *argv[]) {
 		int k;
 		v_argc = argc - 5;
 		v_argv[0] = argv[0];
-		for (k = 1; k < v_argv; k++) v_argv[k] = argv[k+5];
+		for (k = 1; k < v_argc; k++) v_argv[k] = argv[k+5];
 	}
 #endif
 	/* Initialize new GMT session */
