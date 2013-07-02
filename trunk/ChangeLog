@@ -3,6 +3,7 @@
 -----------------------------------------------------------------------------------------
 
 2013-07-02	pwessel
+	* gmt.c:		Works with shared libs under Cygwin as well.
 	* pshistogram.c:	Fixed porting bug in -A and added -D for count labels.
 
 2013-06-27	pwessel
