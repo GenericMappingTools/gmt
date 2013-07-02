@@ -25,6 +25,7 @@
  */
 
 #define THIS_MODULE_NAME	"gmtvector"
+#define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Basic manipulation of Cartesian vectors"
 
 #include "gmt_dev.h"
@@ -100,7 +101,7 @@ void Free_gmtvector_Ctrl (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *C) {	/* D
 }
 
 int GMT_gmtvector_usage (struct GMTAPI_CTRL *API, int level) {
-	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtvector [<table>] [-Am[<conf>]|<vector>] [-C[i|o]] [-E] [-N] [-S<vector>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Ta|b|d|D|p<az>|s|r<rot>|x] [%s] [%s]\n\t[%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",

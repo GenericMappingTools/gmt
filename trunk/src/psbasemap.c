@@ -27,6 +27,7 @@
  */
 
 #define THIS_MODULE_NAME	"psbasemap"
+#define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot PostScript base maps"
 
 #include "gmt_dev.h"
@@ -71,7 +72,7 @@ int GMT_psbasemap_usage (struct GMTAPI_CTRL *API, int level)
 {
 	/* This displays the psbasemap synopsis and optionally full usage information */
 
-	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: psbasemap %s %s %s\n", GMT_B_OPT, GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D%s]\n\t[%s] [-K]\n", GMT_INSERT, GMT_Jz_OPT);

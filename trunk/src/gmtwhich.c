@@ -25,6 +25,7 @@
  */
 
 #define THIS_MODULE_NAME	"gmtwhich"
+#define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Find full path to specified files"
 
 #include "gmt_dev.h"
@@ -57,7 +58,7 @@ void Free_gmtwhich_Ctrl (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *C) {	/* Dea
 
 int GMT_gmtwhich_usage (struct GMTAPI_CTRL *API, int level)
 {
-	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtwhich [files] [-C] [-D] [%s]\n", GMT_V_OPT);
      

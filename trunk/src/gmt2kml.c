@@ -27,6 +27,7 @@
  */
  
 #define THIS_MODULE_NAME	"gmt2kml"
+#define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Convert GMT data tables to KML files for Google Earth"
 
 #include "gmt_dev.h"
@@ -174,7 +175,7 @@ int GMT_gmt2kml_usage (struct GMTAPI_CTRL *API, int level)
 {
 	/* This displays the gmt2kml synopsis and optionally full usage information */
 
-	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmt2kml [<table>] [-Aa|g|s[<altitude>|x<scale>]] [-C<cpt>] [-D<descriptfile>] [-E]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Fe|s|t|l|p] [-Gf|n[-|<fill>] [-I<icon>] [-K] [-L<name1>,<name2>,...]\n");

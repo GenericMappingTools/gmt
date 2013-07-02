@@ -30,6 +30,7 @@
 #define BLOCKMODE	/* Since mean, median, mode share near-similar macros we require this setting */
 
 #define THIS_MODULE_NAME	"blockmode"
+#define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Block average (x,y,z) data tables by mode estimation"
 
 #include "gmt_dev.h"
@@ -56,7 +57,7 @@ struct BIN_MODE_INFO {	/* Used for histogram binning */
 
 int GMT_blockmode_usage (struct GMTAPI_CTRL *API, int level)
 {
-	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: blockmode [<table>] %s %s\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-C] [-D<width>[+c][+l|h]] [-E] [-Er|s[-]] [-Q]\n\t[%s] [-W[i][o]] [%s] [%s]\n\t[%s] [%s]\nt\t[%s] [%s] [%s] [%s]\n\n",
