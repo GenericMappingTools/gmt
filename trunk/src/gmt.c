@@ -63,6 +63,8 @@ int main (int argc, char *argv[]) {
 		}
 		v_argc = k;
 	}
+	for (k = 0; k < v_argc; k++) fprintf (stderr, "%s ", v_argv[k]);
+	fprintf (stder, "\n\n");
 #endif
 	/* Initialize new GMT session */
 	if ((api_ctrl = GMT_Create_Session ("gmt", 2U, 0U, NULL)) == NULL)
