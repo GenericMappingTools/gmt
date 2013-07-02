@@ -25,6 +25,7 @@
  */
 
 #define THIS_MODULE_NAME	"grdpaste"
+#define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Join two grids along their common edge"
 
 #include "gmt_dev.h"
@@ -62,7 +63,7 @@ void Free_grdpaste_Ctrl (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *C) {	/* Dea
 
 int GMT_grdpaste_usage (struct GMTAPI_CTRL *API, int level)
 {
-	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdpaste <grid1> <grid2> -G<outgrid> [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT);
 

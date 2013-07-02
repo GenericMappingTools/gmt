@@ -29,6 +29,7 @@
  */
  
 #define THIS_MODULE_NAME	"sample1d"
+#define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Resample 1-D table data using splines"
 
 #include "gmt_dev.h"
@@ -96,7 +97,7 @@ int GMT_sample1d_usage (struct GMTAPI_CTRL *API, int level)
 {
 	char type[3] = {'l', 'a', 'c'};
 
-	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: sample1d [<table>] [-A[f|m|p|r|R]+l] [-Fl|a|c|n] [-I<inc>[<unit>]] [-N<knottable>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-S<start>[/<stop]] [-T<time_col>] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",

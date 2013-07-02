@@ -42,6 +42,7 @@
  */
  
 #define THIS_MODULE_NAME	"gmtselect"
+#define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Select data table subsets based on multiple spatial criteria"
 
 #include "gmt_dev.h"
@@ -159,7 +160,7 @@ int compare_x (const void *point_1, const void *point_2)
 
 int GMT_gmtselect_usage (struct GMTAPI_CTRL *API, int level)
 {
-	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtselect [<table>] [%s]\n", GMT_A_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-C%s/<ptfile>] [-D<resolution>][+] [-E[f][n]] [-F<polygon>] [%s]\n", GMT_DIST_OPT, GMT_J_OPT);

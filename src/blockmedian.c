@@ -30,6 +30,7 @@
 #define BLOCKMEDIAN	/* Since mean, median, mode share near-similar macros we require this setting */
 
 #define THIS_MODULE_NAME	"blockmedian"
+#define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Block average (x,y,z) data tables by L1 norm (spatial median)"
 
 #include "gmt_dev.h"
@@ -39,7 +40,7 @@
 
 int GMT_blockmedian_usage (struct GMTAPI_CTRL *API, int level)
 {
-	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: blockmedian [<table>] %s\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-C] [-E[b]] [-Er|s[-]] [-Q] [-T<q>] [%s]\n\t[-W[i][o]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",

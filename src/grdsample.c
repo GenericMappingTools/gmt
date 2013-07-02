@@ -30,6 +30,7 @@
  */
 
 #define THIS_MODULE_NAME	"grdsample"
+#define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Resample a grid onto a new lattice"
 
 #include "gmt_dev.h"
@@ -71,7 +72,7 @@ void Free_grdsample_Ctrl (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *C) {	/* D
 }
 
 int GMT_grdsample_usage (struct GMTAPI_CTRL *API, int level) {
-	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdsample <ingrid> -G<outgrid> [%s]\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T] [%s] [%s]\n\t[%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT, GMT_r_OPT);

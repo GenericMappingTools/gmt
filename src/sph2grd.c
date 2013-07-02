@@ -23,6 +23,7 @@
  */
  
 #define THIS_MODULE_NAME	"sph2grd"
+#define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Compute grid from spherical harmonic coefficients"
 
 #include "gmt_dev.h"
@@ -92,7 +93,7 @@ void Free_sph2grd_Ctrl (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *C) {	/* Deall
 
 int GMT_sph2grd_usage (struct GMTAPI_CTRL *API, int level)
 {
-	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: sph2grd [coeff_file] -G<grdfile> %s\n", GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-Dg|n] [-E] [-F[k]<filter>] [-N<norm>] [-Q]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",

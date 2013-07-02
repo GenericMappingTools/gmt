@@ -27,6 +27,7 @@
  */
 
 #define THIS_MODULE_NAME	"grdproject"
+#define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Forward and inverse map transformation of grids"
 
 #include "gmt_dev.h"
@@ -86,7 +87,7 @@ void Free_grdproject_Ctrl (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *C) {	/*
 
 int GMT_grdproject_usage (struct GMTAPI_CTRL *API, int level)
 {
-	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdproject <ingrid> -G<outgrid> %s [-A[%s|%s]] [-C[<dx>/<dy>]]\n", GMT_J_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D%s] [-E<dpi>] [-I] [-M%s]\n", GMT_LEN_UNITS2_DISPLAY, GMT_DIM_UNITS_DISPLAY, GMT_inc_OPT, GMT_DIM_UNITS_DISPLAY);

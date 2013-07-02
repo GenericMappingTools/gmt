@@ -27,6 +27,7 @@
  */
 
 #define THIS_MODULE_NAME	"grd2rgb"
+#define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Write r/g/b grid files from a grid file, a raw RGB file, or SUN rasterfile"
 
 #include "gmt_dev.h"
@@ -230,7 +231,7 @@ int guess_width (struct GMT_CTRL *GMT, char *file, unsigned int byte_per_pixel, 
 }
 
 int GMT_grd2rgb_usage (struct GMTAPI_CTRL *API, int level) {
-	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grd2rgb <infile> [-C<cpt>] [-G<template>] [%s] [-L<layer>]\n", GMT_Id_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<width>/<height>[/<n_bytes>]] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_r_OPT);

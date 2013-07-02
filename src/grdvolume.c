@@ -27,6 +27,7 @@
  */
 
 #define THIS_MODULE_NAME	"grdvolume"
+#define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Calculate grid volume and area constrained by a contour"
 
 #include "gmt_dev.h"
@@ -297,7 +298,7 @@ void Free_grdvolume_Ctrl (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *C) {	/* D
 
 int GMT_grdvolume_usage (struct GMTAPI_CTRL *API, int level)
 {
-	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdvolume <ingrid> [-C<cval> or -C<low>/<high>/<delta>] [-L<base>] [-S<unit>] [-T[c|h]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<fact>[/<shift>]] [%s]\n\t[%s] [%s]\n",

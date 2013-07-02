@@ -25,6 +25,7 @@
  */
 
 #define THIS_MODULE_NAME	"gmtspatial"
+#define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Do geospatial operations on lines and polygons"
 
 #include "gmt_dev.h"
@@ -653,7 +654,7 @@ struct NN_INFO * NNA_update_info (struct GMT_CTRL *GMT, struct NN_INFO * I, stru
 }
 
 int GMT_gmtspatial_usage (struct GMTAPI_CTRL *API, int level) {
-	GMT_show_name_and_purpose (API, NULL, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
+	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 #ifdef PW_TESTING
 	GMT_Message (API, GMT_TIME_NONE, "usage: gmtspatial [<table>] [-A[a<min_dist>][unit]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+s<sfact>][+p]]\n\t[-E+|-] [-I[i|e]]\n\t[-L%s/<pnoise>/<offset>] [-Q[<unit>][+]]\n", GMT_DIST_OPT, GMT_DIST_OPT);
