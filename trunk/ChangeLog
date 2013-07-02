@@ -2,6 +2,9 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-07-02	pwessel
+	* pshistogram.c:	Fixed porting bug in -A and added -D for count labels.
+
 2013-06-27	pwessel
 	* gmt_io.c:		Fix a side-effect of the 2013-04-18 correction.
 
