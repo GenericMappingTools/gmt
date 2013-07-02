@@ -46,68 +46,78 @@ int main (int argc, char *argv[]) {
 	char gmt_module[GMT_LEN16] = "gmt";
 	char *progname = NULL;			/* Last component from the pathname */
 	char *module = NULL;			/* Module name */
-
+	char **v_argv  = argv;
+	int v_argc = argc;
+#ifdef __CYGWIN__
+	/* Cygwin is insane and [sometimes?] inserts < /dev/pty4 > /dev/pty4 2>&1 after argv[0] */
+	if (argc > 5 && !strcmp (argv[1], "<")) {
+		int k;
+		v_argc = argc - 5;
+		v_argv[0] = argv[0];
+		for (k = 1; k < v_argv; k++) v_argv[k] = argv[k+5];
+	}
+#endif
 	/* Initialize new GMT session */
 	if ((api_ctrl = GMT_Create_Session ("gmt", 2U, 0U, NULL)) == NULL)
 		return EXIT_FAILURE;
 
-	progname = strdup (GMT_basename (argv[0])); /* Last component from the pathname */
+	progname = strdup (GMT_basename (v_argv[0])); /* Last component from the pathname */
 	/* Remove any filename extensions added for example
 	 * by the MSYS shell when executing gmt via symlinks */
 	GMT_chop_ext (progname);
 
-	/* Test if argv[0] contains a module name: */
-	module = progname;	/* Try this module name unless it equals PROGRAM_NAME in which case we just enter the test if argc > 1 */
+	/* Test if v_argv[0] contains a module name: */
+	module = progname;	/* Try this module name unless it equals PROGRAM_NAME in which case we just enter the test if v_argc > 1 */
 	gmt_main = !strcmp (module, PROGRAM_NAME);	/* 1 if running the main program, 0 otherwise */
 	
-	if ((gmt_main || (status = GMT_Call_Module (api_ctrl, module, GMT_MODULE_EXIST, NULL)) == GMT_NOT_A_VALID_MODULE) && argc > 1) {
-		/* argv[0] does not contain a valid module name, and
-		 * argv[1] either holds the name of the module or an option: */
+	if ((gmt_main || (status = GMT_Call_Module (api_ctrl, module, GMT_MODULE_EXIST, NULL)) == GMT_NOT_A_VALID_MODULE) && v_argc > 1) {
+		/* v_argv[0] does not contain a valid module name, and
+		 * v_argv[1] either holds the name of the module or an option: */
 		modulename_arg_n = 1;
-		module = argv[1];	/* Try this module name */
+		module = v_argv[1];	/* Try this module name */
 		if ((status = GMT_Call_Module (api_ctrl, module, GMT_MODULE_EXIST, NULL) == GMT_NOT_A_VALID_MODULE)) {
-			/* argv[1] does not contain a valid module name; try prepending gmt: */
-			strncat (gmt_module, argv[1], GMT_LEN16-4U);
-			module = gmt_module;
+			/* v_argv[1] does not contain a valid module name; try prepending gmt: */
+			strncat (gmt_module, v_argv[1], GMT_LEN16-4U);
+			// module = gmt_module;
 			status = GMT_Call_Module (api_ctrl, module, GMT_MODULE_EXIST, NULL); /* either GMT_NOERROR or GMT_NOT_A_VALID_MODULE */
 		}
 	}
 	
 	if (status == GMT_NOT_A_VALID_MODULE) {
-		/* neither argv[0] nor argv[1] contain a valid module name */
+		/* neither v_argv[0] nor v_argv[1] contain a valid module name */
 
 		int arg_n;
 		
-		if (argv[1+modulename_arg_n] && !strcmp (argv[1+modulename_arg_n], "=") && argv[2+modulename_arg_n] == NULL)	/* Just wanted to know if module exists */
+		if (v_argv[1+modulename_arg_n] && !strcmp (v_argv[1+modulename_arg_n], "=") && v_argv[2+modulename_arg_n] == NULL)	/* Just wanted to know if module exists */
 			goto exit;
 
-		for (arg_n = 1; arg_n < argc; ++arg_n) {
+		for (arg_n = 1; arg_n < v_argc; ++arg_n) {
 			/* Try all remaining arguments: */
 
 			/* Print module list */
-			if (!strcmp (argv[arg_n], "--help")) {
+			if (!strcmp (v_argv[arg_n], "--help")) {
 				GMT_Call_Module (api_ctrl, NULL, GMT_MODULE_PURPOSE, NULL);
 				goto exit;
 			}
 
 			/* Print version and exit */
-			if (!strcmp (argv[arg_n], "--version")) {
+			if (!strcmp (v_argv[arg_n], "--version")) {
 				fprintf (stdout, "%s\n", GMT_PACKAGE_VERSION_WITH_SVN_REVISION);
 				goto exit;
 			}
 
 			/* Show share directory */
-			if (!strcmp (argv[arg_n], "--show-sharedir")) {
+			if (!strcmp (v_argv[arg_n], "--show-sharedir")) {
 				fprintf (stdout, "%s\n", api_ctrl->GMT->session.SHAREDIR);
 				goto exit;
 			}
 
 			/* Show the directory that contains the 'gmt' executable */
-			if (!strcmp (argv[arg_n], "--show-bindir")) {
+			if (!strcmp (v_argv[arg_n], "--show-bindir")) {
 				fprintf (stdout, "%s\n", api_ctrl->GMT->init.runtime_bindir);
 				goto exit;
 			}
-		} /* for (arg_n = 1; arg_n < argc; ++arg_n) */
+		} /* for (arg_n = 1; arg_n < v_argc; ++arg_n) */
 
 		/* If we get here, we were called without a recognized modulename or option
 		 *
@@ -147,10 +157,10 @@ int main (int argc, char *argv[]) {
 
 	/* Here we have found a recognized GMT module and the API has been initialized. */
 	
-	if (argv[1+modulename_arg_n] && !strcmp (argv[1+modulename_arg_n], "=") && argv[2+modulename_arg_n] == NULL)	/* Just want to know if module exists */
+	if (v_argv[1+modulename_arg_n] && !strcmp (v_argv[1+modulename_arg_n], "=") && v_argv[2+modulename_arg_n] == NULL)	/* Just want to know if module exists */
 		status = 0;
 	else	/* Now run the specified GMT module: */
-		status = GMT_Call_Module (api_ctrl, module, argc-1-modulename_arg_n, argv+1+modulename_arg_n);
+		status = GMT_Call_Module (api_ctrl, module, v_argc-1-modulename_arg_n, v_argv+1+modulename_arg_n);
 
 exit:
 	if (progname) free (progname);
