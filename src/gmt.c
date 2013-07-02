@@ -57,6 +57,7 @@ int main (int argc, char *argv[]) {
 		for (k = in = 0; in < argc; in++) {
 			if (!strcmp (argv[in], "<")) continue;	/* Cannot see "<" on a normal unix line */
 			if (!strcmp (argv[in], ">")) continue;	/* Cannot see ">" on a normal unix line */
+			if (!strcmp (argv[in], "2>&1")) continue;	/* Cannot see "2>&1" on a normal unix line */
 			if (!strncmp (argv[in], "/dev/", 5U)) continue;	/* Get rid of cygwin redirect terminal stuff */
 			v_argv[k++] = argv[in];
 		}
