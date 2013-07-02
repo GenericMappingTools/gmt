@@ -173,7 +173,7 @@ EXTERN_MSC void *dlopen (const char *module_name, int mode);
 EXTERN_MSC int dlclose (void *handle);
 EXTERN_MSC void *dlsym (void *handle, const char *name);
 EXTERN_MSC char *dlerror (void);
-EXTERN_MSC void *dlopen_special (void);
+EXTERN_MSC void *dlopen_special (const char *name);
 
 EXTERN_MSC int gmt_alloc_grid (struct GMT_CTRL *GMT, struct GMT_GRID *Grid);
 EXTERN_MSC int gmt_alloc_image (struct GMT_CTRL *GMT, struct GMT_IMAGE *Image);
@@ -351,15 +351,12 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 	 * use the dlopen_special call which is defined in gmt_module.c */
 	
 	API->lib[0].name = strdup ("core");
-#ifdef __CYGWIN__
 	API->lib[0].path = strdup (GMT_CORE_LIB_NAME);
-#else
-	if ((API->lib[0].handle = dlopen_special ()) == NULL) {
+	if ((API->lib[0].handle = dlopen_special (API->lib[0].path)) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error loading core GMT shared library: %s\n", dlerror());
 		GMT_exit (API->do_not_exit, EXIT_FAILURE);
 	}
 	dlerror (); /* Clear any existing error */
-#endif
 
 	/* 2. Add the GMT supplemental library to the list of libraries to consider [will find when trying to open if it is available] */
 	API->lib[1].name = strdup ("suppl");

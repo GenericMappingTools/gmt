@@ -84,7 +84,7 @@ HINSTANCE GetMyModuleHandle() {
 	VirtualQuery(GetMyModuleHandle, &mbi, sizeof(mbi));
 	return (HINSTANCE) (mbi.AllocationBase);
 }
-void *dlopen_special()
+void *dlopen_special(const char *name)
 {	/* Opens the dll file of the current process.  This is how it is done
 	 * under Windows, per http://en.wikipedia.org/wiki/Dynamic_loading */
 	/*HMODULE this_process, this_process_again;
@@ -95,11 +95,18 @@ void *dlopen_special()
 	this_dll_process = GetMyModuleHandle();
 	return (this_dll_process);
 }
+#elif defined(__CYGWIN__)
+	/* Cygwin behaves differently than most Unix and we must use regular dlopen with library name */
+void *dlopen_special(const char *name)
+{	/* Opens the shared library file of the current process under *nix.
+	 * Just call dlopen with NULL and RTLD_LAZY */
+	return (dlopen (name, RTLD_LAZY));
+}
 #else
 
 /* Extra convenience function for opening shared library of current process */
 
-void *dlopen_special(void)
+void *dlopen_special(const char *name)
 {	/* Opens the shared library file of the current process under *nix.
 	 * Just call dlopen with NULL and RTLD_LAZY */
 	return (dlopen (NULL, RTLD_LAZY));
