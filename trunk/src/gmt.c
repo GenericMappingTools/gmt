@@ -50,6 +50,7 @@ int main (int argc, char *argv[]) {
 	int v_argc = argc;
 #ifdef __CYGWIN__
 	/* Cygwin is insane and [sometimes?] inserts < /dev/pty4 > /dev/pty4 2>&1 after argv[0] or even later... */
+	unsigned int crazy = 0;
 	int in, k;
 	for (in = 0; in < argc; in++) if (!strcmp (argv[in], "<")) crazy = 1;	/* Flag that argv is crazy */
 	if (crazy) {	/* Must avoid all those /dev and redirect args */
