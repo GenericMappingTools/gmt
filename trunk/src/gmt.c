@@ -166,8 +166,12 @@ int main (int argc, char *argv[]) {
 	
 	if (v_argv[1+modulename_arg_n] && !strcmp (v_argv[1+modulename_arg_n], "=") && v_argv[2+modulename_arg_n] == NULL)	/* Just want to know if module exists */
 		status = 0;
-	else	/* Now run the specified GMT module: */
-		status = GMT_Call_Module (api_ctrl, module, v_argc-1-modulename_arg_n, v_argv+1+modulename_arg_n);
+	else {	/* Now run the specified GMT module: */
+		if ((v_argc-1-modulename_arg_n) == 0)	/* No args, call explicitly with NULL because under Cygwin v_argv[2] will not be NULL */
+			status = GMT_Call_Module (api_ctrl, module, 0, NULL);
+		else
+			status = GMT_Call_Module (api_ctrl, module, v_argc-1-modulename_arg_n, v_argv+1+modulename_arg_n);
+	}
 
 exit:
 	if (progname) free (progname);
