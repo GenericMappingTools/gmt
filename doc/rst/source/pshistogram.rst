@@ -12,7 +12,7 @@ Synopsis
 **pshistogram** [ *table* ] **-Jx**\ \|\ **X**\ *parameters*
 **-W**\ *bin_width* [ **-A** ]
 [ |SYN_OPT-B| ]
-[ **-C**\ *cptfile* ]
+[ **-C**\ *cptfile* ] [ **-D**\ [**+b**][**+f**\ *font*][**+o**\ *off*][**+r**] ]
 [ **-F** ] [ **-G**\ *fill* ] [ **-Jz**\ \|\ **Z**\ *parameters* ]
 [ **-I**\ [**o**\ \|\ **O**] ] [ **-K** ] [ **-L**\ *pen* ] 
 [ **-N**\ [*mode*][**+p**\ *pen*] ] [ **-O** ] [**-P** ] [ **-Q** ]
@@ -65,6 +65,12 @@ Optional Arguments
 **-C**\ *cptfile*
     Give a color palette file. The mid x-value for each bar is used to
     look-up the bar color.
+**-D**\ [**+b**][**+f**\ *font*][**+o**\ *off*][**+r**]
+    Annotate each bar with the count it represents.  Append any of the
+    following modifiers: Use **+b** to place the labels beneath the bars
+    instead of above; use **+f** to change to another font than the default
+    annotation font; use **+o** to change the offset between bar and label [6p];
+    use **+r** to rotate the labels from horizontal to vertical.
 **-F**
     Center bin on each value. [Default is left edge].
 **-G**\ *fill*
