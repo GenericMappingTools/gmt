@@ -332,49 +332,6 @@ void GMT_list_API (struct GMTAPI_CTRL *API, char *txt)
 }
 #endif
 
-int GMTAPI_init_sharedlibs_old (struct GMTAPI_CTRL *API)
-{
-	/* At the end of GMT_Create_Session we are done with processing gmt.conf.
-	 * We can now determine how many shared libraries to consider, and open the core lib */
-	unsigned int n_custom_libs = 0, k = 0, p, pos = 0;
-	char text[GMT_LEN256] = {""};
-
-	if (API->GMT->session.CUSTOM_LIBS) {	/* We have custom shared libraries, count how many */
-		while (API->GMT->session.CUSTOM_LIBS[k]) {
-		 	if (API->GMT->session.CUSTOM_LIBS[k++] == ',') n_custom_libs++;
-		}
-		n_custom_libs++;	/* One more than the number of commas */
-	}
-	API->n_shared_libs = 2U + n_custom_libs;	/* Total number of shared libraries */
-	API->lib = GMT_memory (API->GMT, NULL, API->n_shared_libs, struct Gmt_libinfo);
-	
-	/* 1. Load in the GMT core library by default */
-	/* Note: To extract symbols from the currently executing process we need to load it as a special library.
-	 * This is done by passing NULL under Linux and by calling GetModuleHandleEx under Windows, hence we 
-	 * use the dlopen_special call which is defined in gmt_module.c */
-	
-	API->lib[0].name = strdup ("core");
-	if ((API->lib[0].handle = dlopen_special ()) == NULL) {
-		GMT_Report (API, GMT_MSG_NORMAL, "Error loading core GMT shared library: %s\n", dlerror());
-		GMT_exit (API->do_not_exit, EXIT_FAILURE);
-	}
-	/* Add the GMT supplemental library to the list of libraries to consider [will find when trying to open if it is available] */
-	API->lib[1].name = strdup ("suppl");
-	API->lib[1].path = strdup (GMT_SUPPL_LIB_NAME);
-
-	/* Add any GMT custom library to the list of libraries to consider [will find when trying to open if it is available] */
-	for (k = 2; k < API->n_shared_libs; k++) {
-		GMT_strtok (API->GMT->session.CUSTOM_LIBS, ",", &pos, text);
-		API->lib[k].path = strdup (text);
-		p = 0;	while (text[p] && text[p] != '.') p++;	/* Find the first period in the name */
-		text[p] = '\0';	/* Chop off library extension */
-		p = (strncmp (text, "lib", 3)) ? 0 : 3;	/* Do we have a leading "lib" or not ? */
-		API->lib[k].name = strdup (&text[p]);	/* Get the shared library tag */
-	}
-	dlerror (); /* Clear any existing error */
-	return (GMT_NOERROR);
-}
-
 int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 {
 	/* At the end of GMT_Create_Session we are done with processing gmt.conf.
@@ -5459,7 +5416,7 @@ void * gmt_get_module_func (struct GMTAPI_CTRL *API, const char *module, unsigne
 		API->lib[lib_no].skip = true;	/* Not bother the next time... */
 		return (NULL);			/* ...and obviously no function would be found */
 	}
-	/* Here the library handle is avaiable; try to get pointer to specified module */
+	/* Here the library handle is available; try to get pointer to specified module */
 	*(void **) (&p_func) = dlsym (API->lib[lib_no].handle, module);
 	return (p_func);
 }
