@@ -49,12 +49,17 @@ int main (int argc, char *argv[]) {
 	char **v_argv  = argv;
 	int v_argc = argc;
 #ifdef __CYGWIN__
-	/* Cygwin is insane and [sometimes?] inserts < /dev/pty4 > /dev/pty4 2>&1 after argv[0] */
-	if (argc > 5 && !strcmp (argv[1], "<")) {
-		int k;
-		v_argc = argc - 5;
-		v_argv[0] = argv[0];
-		for (k = 1; k < v_argc; k++) v_argv[k] = argv[k+5];
+	/* Cygwin is insane and [sometimes?] inserts < /dev/pty4 > /dev/pty4 2>&1 after argv[0] or even later... */
+	int in, k;
+	for (in = 0; in < argc; in++) if (!strcmp (argv[in], "<")) crazy = 1;	/* Flag that argv is crazy */
+	if (crazy) {	/* Must avoid all those /dev and redirect args */
+		for (k = in = 0; in < argc; in++) {
+			if (!strcmp (argv[in], "<")) continue;	/* Cannot see "<" on a normal unix line */
+			if (!strcmp (argv[in], ">")) continue;	/* Cannot see ">" on a normal unix line */
+			if (!strncmp (argv[in], "/dev/", 5U)) continue;	/* Get rid of cygwin redirect terminal stuff */
+			v_argv[k++] = argv[in];
+		}
+		v_argc = k;
 	}
 #endif
 	/* Initialize new GMT session */
@@ -78,8 +83,8 @@ int main (int argc, char *argv[]) {
 		if ((status = GMT_Call_Module (api_ctrl, module, GMT_MODULE_EXIST, NULL) == GMT_NOT_A_VALID_MODULE)) {
 			/* v_argv[1] does not contain a valid module name; try prepending gmt: */
 			strncat (gmt_module, v_argv[1], GMT_LEN16-4U);
-			// module = gmt_module;
-			status = GMT_Call_Module (api_ctrl, module, GMT_MODULE_EXIST, NULL); /* either GMT_NOERROR or GMT_NOT_A_VALID_MODULE */
+			status = GMT_Call_Module (api_ctrl, gmt_module, GMT_MODULE_EXIST, NULL); /* either GMT_NOERROR or GMT_NOT_A_VALID_MODULE */
+			if (status != GMT_NOT_A_VALID_MODULE) module = gmt_module;
 		}
 	}
 	
