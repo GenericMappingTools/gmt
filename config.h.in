@@ -56,7 +56,10 @@
 #define GSHHG_MIN_REQUIRED_VERSION {@MIN_REQUIRED_GSHHG_VERSION_MAJOR@, @MIN_REQUIRED_GSHHG_VERSION_MINOR@, @MIN_REQUIRED_GSHHG_VERSION_PATCH@}
 #define GSHHG_EXT "@GSHHG_EXT@"
 
-/* path to supplemental library */
+/* Name of core library */
+#define GMT_CORE_LIB_NAME "@GMT_CORE_LIB_NAME@"
+
+/* Name of supplemental library */
 #define GMT_SUPPL_LIB_NAME "@GMT_SUPPL_LIB_NAME@"
 
 

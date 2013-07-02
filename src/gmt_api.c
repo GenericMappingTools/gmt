@@ -354,10 +354,14 @@ int GMTAPI_init_sharedlibs_old (struct GMTAPI_CTRL *API)
 	 * use the dlopen_special call which is defined in gmt_module.c */
 	
 	API->lib[0].name = strdup ("core");
+#ifdef __CYGWIN__
+	API->lib[0].path = strdup (GMT_CORE_LIB_NAME);
+#else
 	if ((API->lib[0].handle = dlopen_special ()) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error loading core GMT shared library: %s\n", dlerror());
 		GMT_exit (API->do_not_exit, EXIT_FAILURE);
 	}
+#endif
 	/* Add the GMT supplemental library to the list of libraries to consider [will find when trying to open if it is available] */
 	API->lib[1].name = strdup ("suppl");
 	API->lib[1].path = strdup (GMT_SUPPL_LIB_NAME);
