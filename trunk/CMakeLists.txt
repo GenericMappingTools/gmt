@@ -140,6 +140,7 @@ message(
 	"*  File locking               : ${FLOCK}\n"
 	"*  License restriction        : ${LICENSE_RESTRICTED}\n"
 	"*  Triangulation method       : ${GMT_TRIANGULATE}\n"
+	"*  Build GMT core             : yes [${GMT_CORE_LIB_NAME}]\n"
 	"*  Build GMT supplements      : ${SUPPL}\n"
 	"*\n"                          
 	"*  Locations:\n"              

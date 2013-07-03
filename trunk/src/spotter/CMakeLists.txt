@@ -26,7 +26,7 @@ set (SUPPL_PROGS_SRCS backtracker.c grdpmodeler.c grdrotater.c
 
 # example files
 set (SUPPL_EXAMPLE_FILES README.spotter
-	DC85.d WK97.d euler.txt pac_hs.d seamounts.d)
+	DC85.d WK97.d pac_hs.d seamounts.d)
 set (SUPPL_EXAMPLE_PROGS spotter.bat spotter.sh)
 
 # lib sources
