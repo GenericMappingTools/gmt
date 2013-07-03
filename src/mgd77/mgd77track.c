@@ -22,7 +22,7 @@
  */
  
 #define THIS_MODULE_NAME	"mgd77track"
-#define THIS_MODULE_LIB		"suppl"
+#define THIS_MODULE_LIB		"mgd77"
 #define THIS_MODULE_PURPOSE	"Plot track-line map of MGD77 cruises"
 
 #include "gmt_dev.h"

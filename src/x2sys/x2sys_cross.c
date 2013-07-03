@@ -29,7 +29,7 @@
  */
 
 #define THIS_MODULE_NAME	"x2sys_cross"
-#define THIS_MODULE_LIB		"suppl"
+#define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Calculate crossovers between track data files"
 
 #include "x2sys.h"

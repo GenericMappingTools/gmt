@@ -10,7 +10,7 @@
  */
 
 #define THIS_MODULE_NAME	"grdseamount"
-#define THIS_MODULE_LIB		"suppl"
+#define THIS_MODULE_LIB		"potential"
 #define THIS_MODULE_PURPOSE	"Compute synthetic seamount (Gaussian or cone, circular or elliptical) bathymetry"
 
 #include "gmt_dev.h"

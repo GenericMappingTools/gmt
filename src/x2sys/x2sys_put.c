@@ -30,7 +30,7 @@
  */
 
 #define THIS_MODULE_NAME	"x2sys_put"
-#define THIS_MODULE_LIB		"suppl"
+#define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Update track index database from track bin file"
 
 #include "x2sys.h"

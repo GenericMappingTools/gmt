@@ -33,7 +33,7 @@
 /* #define DEBUGX */	/* Uncomment for testing */
 
 #define THIS_MODULE_NAME	"x2sys_solve"
-#define THIS_MODULE_LIB		"suppl"
+#define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Determine least-squares systematic correction from crossovers"
 
 #include "x2sys.h"

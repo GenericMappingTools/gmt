@@ -111,8 +111,6 @@ static inline struct GMT_CTRL* GMT_begin_gmt_module (struct GMTAPI_CTRL *api_ctr
 {
 	/* Init module with NULL-name */
 	struct GMT_CTRL *gmt_ctrl = GMT_begin_module (api_ctrl, lib, module, gmt_ctrl_copy);
-	/* Set internal module_id */
-	//gmt_ctrl->init.module_id = module_id;
 	/* Return GMT_CTRL */
 	return gmt_ctrl;
 }

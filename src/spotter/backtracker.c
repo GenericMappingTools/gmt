@@ -71,7 +71,7 @@
  */
 
 #define THIS_MODULE_NAME	"backtracker"
-#define THIS_MODULE_LIB		"suppl"
+#define THIS_MODULE_LIB		"spotter"
 #define THIS_MODULE_PURPOSE	"Generate forward and backward flowlines and hotspot tracks"
 
 #include "spotter.h"

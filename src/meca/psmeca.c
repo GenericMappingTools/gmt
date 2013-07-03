@@ -20,7 +20,7 @@ PostScript code is written to stdout.
  */
 
 #define THIS_MODULE_NAME	"psmeca"
-#define THIS_MODULE_LIB		"suppl"
+#define THIS_MODULE_LIB		"meca"
 #define THIS_MODULE_PURPOSE	"Plot focal mechanisms on maps"
 
 #include "gmt_dev.h"

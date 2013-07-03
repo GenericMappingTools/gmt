@@ -21,7 +21,7 @@ PostScript code is written to stdout.
  */
 
 #define THIS_MODULE_NAME	"pscoupe"
-#define THIS_MODULE_LIB		"suppl"
+#define THIS_MODULE_LIB		"meca"
 #define THIS_MODULE_PURPOSE	"Plot cross-sections of focal mechanisms"
 
 #include "gmt_dev.h"
