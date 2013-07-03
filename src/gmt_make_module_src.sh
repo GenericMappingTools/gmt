@@ -149,7 +149,7 @@ cat << EOF >> ${FILE_GMT_MODULE_C}
 /* Pretty print all GMT ${L_TAG} module names and their purposes */
 void gmt_${L_TAG}_module_show_all (void *API) {
 	unsigned int module_id = 0;
-	char module_name_comp[64], message[256];
+	char message[256];
 
 	GMT_Message (API, GMT_TIME_NONE, "\n=== " $LIB_STRING " ===\n");
 	while (g_${L_TAG}_module[module_id].name != NULL) {
