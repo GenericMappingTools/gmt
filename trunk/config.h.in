@@ -62,6 +62,9 @@
 /* Name of supplemental library */
 #define GMT_SUPPL_LIB_NAME "@GMT_SUPPL_LIB_NAME@"
 
+/* Name of PSL library */
+#define PSL_LIB_NAME "@PSL_LIB_NAME@"
+
 
 #endif /* !_CONFIG_H */
 

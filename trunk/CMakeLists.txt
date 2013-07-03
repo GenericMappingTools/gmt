@@ -112,6 +112,9 @@ endif (SVN AND HAVE_SVN_VERSION)
 get_property(GMT_CORE_LIB_PATH TARGET gmtlib PROPERTY LOCATION)
 GET_FILENAME_COMPONENT (GMT_CORE_LIB_NAME ${GMT_CORE_LIB_PATH} NAME)
 
+get_property(PSL_LIB_PATH TARGET pslib PROPERTY LOCATION)
+GET_FILENAME_COMPONENT (PSL_LIB_NAME ${PSL_LIB_PATH} NAME)
+
 if (BUILD_SUPPLEMENTS)
 	# Get name of shared supplemental library
 	get_property(GMT_SUPPL_LIB_PATH TARGET supplib PROPERTY LOCATION)
@@ -136,11 +139,15 @@ message(
 	"*  NetCDF include dir         : ${NETCDF_INCLUDE_DIR}\n"
 	"*  GDAL library               : ${GDAL_LIBRARY}\n"
 	"*  GDAL include dir           : ${GDAL_INCLUDE_DIR}\n"
+	"*  FFTW include dir           : ${FFTW3_INCLUDE_DIR}\n"
+	"*  FFTW library               : ${FFTW3F_LIBRARIES}\n"
+	"*  Accelerate Framework       : ${ACCELERATE_FRAMEWORK}\n"
 	"*  Regex support              : ${GMT_CONFIG_REGEX_MESSAGE}\n"
 	"*  File locking               : ${FLOCK}\n"
 	"*  License restriction        : ${LICENSE_RESTRICTED}\n"
 	"*  Triangulation method       : ${GMT_TRIANGULATE}\n"
-	"*  Build GMT core             : yes [${GMT_CORE_LIB_NAME}]\n"
+	"*  Build GMT core             : always [${GMT_CORE_LIB_NAME}]\n"
+	"*  Build PSL library          : always [${PSL_LIB_NAME}]\n"
 	"*  Build GMT supplements      : ${SUPPL}\n"
 	"*\n"                          
 	"*  Locations:\n"              
