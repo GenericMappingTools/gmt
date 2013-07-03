@@ -24,7 +24,7 @@
  */
 
 #define THIS_MODULE_NAME	"grdrotater"
-#define THIS_MODULE_LIB		"suppl"
+#define THIS_MODULE_LIB		"spotter"
 #define THIS_MODULE_PURPOSE	"Finite rotation reconstruction of geographic grid"
 
 #include "spotter.h"

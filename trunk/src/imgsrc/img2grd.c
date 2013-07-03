@@ -53,7 +53,7 @@
  */
 
 #define THIS_MODULE_NAME	"img2grd"
-#define THIS_MODULE_LIB		"suppl"
+#define THIS_MODULE_LIB		"img"
 #define THIS_MODULE_PURPOSE	"Extract a subset from an img file in Mercator or Geographic format"
 
 #include "gmt_imgsubs.h"

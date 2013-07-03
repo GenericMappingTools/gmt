@@ -22,7 +22,7 @@
  * ------------------------------------------------------------------*/
 
 #define THIS_MODULE_NAME	"mgd77sniffer"
-#define THIS_MODULE_LIB		"suppl"
+#define THIS_MODULE_LIB		"mgd77"
 #define THIS_MODULE_PURPOSE	"Along-track quality control of MGD77 cruises"
 
 #include "mgd77.h"

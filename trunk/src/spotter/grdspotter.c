@@ -103,7 +103,7 @@
  */
  
 #define THIS_MODULE_NAME	"grdspotter"
-#define THIS_MODULE_LIB		"suppl"
+#define THIS_MODULE_LIB		"spotter"
 #define THIS_MODULE_PURPOSE	"Create CVA image from a gravity or topography grid"
 
 #include "spotter.h"

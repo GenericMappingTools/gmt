@@ -124,7 +124,7 @@
  */
  
 #define THIS_MODULE_NAME	"hotspotter"
-#define THIS_MODULE_LIB		"suppl"
+#define THIS_MODULE_LIB		"spotter"
 #define THIS_MODULE_PURPOSE	"Create CVA image from seamount locations"
 
 #include "spotter.h"

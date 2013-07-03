@@ -16,7 +16,7 @@
  */
  
 #define THIS_MODULE_NAME	"mgd77path"
-#define THIS_MODULE_LIB		"suppl"
+#define THIS_MODULE_LIB		"mgd77"
 #define THIS_MODULE_PURPOSE	"Return paths to MGD77 cruises and directories"
 
 #include "gmt_dev.h"

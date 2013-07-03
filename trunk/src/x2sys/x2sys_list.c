@@ -26,7 +26,7 @@
  */
 
 #define THIS_MODULE_NAME	"x2sys_list"
-#define THIS_MODULE_LIB		"suppl"
+#define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Extract subset from crossover data base"
 
 #include "x2sys.h"

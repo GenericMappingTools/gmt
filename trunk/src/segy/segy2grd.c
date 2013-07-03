@@ -26,7 +26,7 @@
  */
  
 #define THIS_MODULE_NAME	"segy2grd"
-#define THIS_MODULE_LIB		"suppl"
+#define THIS_MODULE_LIB		"segy"
 #define THIS_MODULE_PURPOSE	"Converting SEGY data to a GMT grid"
 
 #include "gmt_dev.h"

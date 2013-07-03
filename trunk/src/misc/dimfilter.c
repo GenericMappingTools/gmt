@@ -21,7 +21,7 @@
  */
 
 #define THIS_MODULE_NAME	"dimfilter"
-#define THIS_MODULE_LIB		"suppl"
+#define THIS_MODULE_LIB		"misc"
 #define THIS_MODULE_PURPOSE	"Directional filtering of grids in the space domain"
 
 #include "gmt_dev.h"

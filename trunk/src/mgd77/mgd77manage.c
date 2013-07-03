@@ -19,7 +19,7 @@
  */
 
 #define THIS_MODULE_NAME	"mgd77manage"
-#define THIS_MODULE_LIB		"suppl"
+#define THIS_MODULE_LIB		"mgd77"
 #define THIS_MODULE_PURPOSE	"Manage the content of MGD77+ files"
 
 #include "gmt_dev.h"

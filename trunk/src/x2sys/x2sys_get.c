@@ -28,7 +28,7 @@
  */
 
 #define THIS_MODULE_NAME	"x2sys_get"
-#define THIS_MODULE_LIB		"suppl"
+#define THIS_MODULE_LIB		"x2sys"
 #define THIS_MODULE_PURPOSE	"Get track listing from track index database"
 
 #include "x2sys.h"

@@ -31,7 +31,7 @@
  */
 
 #define THIS_MODULE_NAME	"pssegy"
-#define THIS_MODULE_LIB		"suppl"
+#define THIS_MODULE_LIB		"segy"
 #define THIS_MODULE_PURPOSE	"Plot a SEGY file on a map"
 
 #include "gmt_dev.h"

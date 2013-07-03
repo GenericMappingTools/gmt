@@ -46,7 +46,7 @@
  *	Contact info: www.soest.hawaii.edu/pwessel */
 
 #define THIS_MODULE_NAME	"gshhg"
-#define THIS_MODULE_LIB		"suppl"
+#define THIS_MODULE_LIB		"gshhg"
 #define THIS_MODULE_PURPOSE	"Extract data tables from binary GSHHS or WDBII data files"
 
 #include "gmt_dev.h"
