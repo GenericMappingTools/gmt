@@ -237,7 +237,7 @@ code developed by us depend on GMT libraries.
 Currently, the supplemental archive include the directories:
 
   gshhs     - Data extractor for GSHHS shoreline polygons.
-  imgsrc    - Data extractor for Smith/Sandwell altimetry grids.
+  img       - Data extractor for Smith/Sandwell altimetry grids.
   meca      - Plotting of focal mechanisms, velocity arrows,
               and error ellipses on maps.
   mgd77     - Programs for handling of native MGD77 files.
