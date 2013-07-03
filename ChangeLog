@@ -5,6 +5,7 @@
 2013-07-02	pwessel
 	* gmt.c:		Works with shared libs under Cygwin as well.
 	* pshistogram.c:	Fixed porting bug in -A and added -D for count labels.
+	* imgsrc:		Supplement group "imgsrc" renamed "img"
 
 2013-06-27	pwessel
 	* gmt_io.c:		Fix a side-effect of the 2013-04-18 correction.
