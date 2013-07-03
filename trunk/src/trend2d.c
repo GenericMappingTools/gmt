@@ -552,7 +552,7 @@ int GMT_trend2d (void *V_API, int mode, void *args)
 
 	/* Parse the command-line arguments */
 
-	GMT = GMT_begin_gmt_module (API, NULL, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
+	GMT = GMT_begin_module (API, THIS_MODULE_LIB, THIS_MODULE_NAME, &GMT_cpy); /* Save current state */
 	if (GMT_Parse_Common (API, GMT_PROG_OPTIONS, options)) Return (API->error);
 	Ctrl = New_trend2d_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = GMT_trend2d_parse (GMT, Ctrl, options))) Return (error);
