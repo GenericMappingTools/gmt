@@ -1731,6 +1731,58 @@ struct GMT_DATASET * GMTAPI_Import_Dataset (struct GMTAPI_CTRL *API, int object_
 	return (D_obj);		
 }
 
+int GMTAPI_destroy_data_ptr (struct GMTAPI_CTRL *API, unsigned int family, void *ptr, unsigned int *alloc_mode)
+{
+	/* Like GMT_Destroy_Data but takes pointer to data rather than address of pointer.
+	 * We pass true to make sure we free the memory.  Some objects (grid, matrix, vector) may
+	 * point to externally allocated memory so we return the alloc_mode for those items.
+	 * This is mostly for information since the pointers to such external memory have now
+	 * been set to NULL instead of being freed.
+	 * The containers are always allocated by GMT so those are freed at the end.
+	 */
+
+	if (API == NULL) return (GMT_NOT_A_SESSION);
+	if (!ptr) return (GMT_OK);	/* Null pointer */
+	*alloc_mode = GMT_ALLOCATED_BY_GMT;	/* Default is the memory was allocated by GMT */
+	
+	switch (family) {	/* dataset, cpt, text table or grid */
+		case GMT_IS_GRID:	/* GMT grid; return alloc mode of data array in case it was allocated externally */
+			*alloc_mode = GMT_free_grid_ptr (API->GMT, ptr, true);
+			break;
+		case GMT_IS_DATASET:
+			GMT_free_dataset_ptr (API->GMT, ptr);
+			break;
+		case GMT_IS_TEXTSET:
+			GMT_free_textset_ptr (API->GMT, ptr);
+			break;
+		case GMT_IS_CPT:
+			GMT_free_cpt_ptr (API->GMT, ptr);
+			break;
+#ifdef HAVE_GDAL
+		case GMT_IS_IMAGE:
+			GMT_free_image_ptr (API->GMT, ptr, true);
+			break;
+#endif
+		case GMT_IS_COORD:
+			/* Nothing to do as GMT_free below will do it */
+			break;
+			
+		/* Also allow destoying of intermediate vector and matrix containers */
+		case GMT_IS_MATRIX:	/* GMT matrix; return alloc mode of data array in case it was allocated externally */
+			*alloc_mode = GMT_free_matrix_ptr (API->GMT, ptr, true);
+			break;
+		case GMT_IS_VECTOR:	/* GMT vector; return alloc mode of data array in case it was allocated externally */
+			*alloc_mode = GMT_free_vector_ptr (API->GMT, ptr, true);
+			break;
+		default:
+			return (GMTAPI_report_error (API, GMT_NOT_A_VALID_FAMILY));
+			break;		
+	}
+	//if (*alloc_mode == GMT_ALLOCATED_BY_GMT) GMT_free (API->GMT, ptr);	/* OK to free our own memory */
+	GMT_free (API->GMT, ptr);	/* OK to free container */
+	return (GMT_OK);	/* Null pointer */
+}
+
 int GMTAPI_Export_Dataset (struct GMTAPI_CTRL *API, int object_ID, unsigned int mode, struct GMT_DATASET *D_obj)
 {	/* Does the actual work of writing out the specified data set to one destination.
 	 * If object_ID == GMT_NOTSET we use the first registered output destination, otherwise we just use the one requested.
@@ -2677,6 +2729,13 @@ int GMTAPI_Export_Data (struct GMTAPI_CTRL *API, unsigned int family, int object
 	/* The case where object_ID is not set but a virtual (memory) file is found is a special case: we must supply the correct object_ID */
 	if (object_ID == GMT_NOTSET && item && API->object[item]->method != GMT_IS_FILE) object_ID = API->object[item]->ID;	/* Found virtual file; set actual object_ID */
 
+	/* Check if this is a container passed from the outside to capture output */
+	if (API->object[item]->messenger && API->object[item]->data) {	/* Need to destroy the dummy container before passing data out */
+		enum GMT_enum_alloc alloc_mode;
+		error = GMTAPI_destroy_data_ptr (API, API->object[item]->family, API->object[item]->data, &alloc_mode);	/* Do the dirty deed */
+		API->object[item]->messenger = false;	/* OK, now clean for output */
+	}
+
 	switch (family) {	/* CPT, Dataset, Textfile, or Grid */
 		case GMT_IS_CPT:	/* Export a CPT */
 			error = GMTAPI_Export_CPT (API, object_ID, mode, data);
@@ -2977,58 +3036,6 @@ int GMTAPI_Destroy_Coord (struct GMTAPI_CTRL *API, double **ptr)
 {
 	GMT_free (API->GMT, *ptr);
 	return GMT_OK;
-}
-
-int GMTAPI_destroy_data_ptr (struct GMTAPI_CTRL *API, unsigned int family, void *ptr, unsigned int *alloc_mode)
-{
-	/* Like GMT_Destroy_Data but takes pointer to data rather than address of pointer.
-	 * We pass true to make sure we free the memory.  Some objects (grid, matrix, vector) may
-	 * point to externally allocated memory so we return the alloc_mode for those items.
-	 * This is mostly for information since the pointers to such external memory have now
-	 * been set to NULL instead of being freed.
-	 * The containers are always allocated by GMT so those are freed at the end.
-	 */
-
-	if (API == NULL) return (GMT_NOT_A_SESSION);
-	if (!ptr) return (GMT_OK);	/* Null pointer */
-	*alloc_mode = GMT_ALLOCATED_BY_GMT;	/* Default is the memory was allocated by GMT */
-	
-	switch (family) {	/* dataset, cpt, text table or grid */
-		case GMT_IS_GRID:	/* GMT grid; return alloc mode of data array in case it was allocated externally */
-			*alloc_mode = GMT_free_grid_ptr (API->GMT, ptr, true);
-			break;
-		case GMT_IS_DATASET:
-			GMT_free_dataset_ptr (API->GMT, ptr);
-			break;
-		case GMT_IS_TEXTSET:
-			GMT_free_textset_ptr (API->GMT, ptr);
-			break;
-		case GMT_IS_CPT:
-			GMT_free_cpt_ptr (API->GMT, ptr);
-			break;
-#ifdef HAVE_GDAL
-		case GMT_IS_IMAGE:
-			GMT_free_image_ptr (API->GMT, ptr, true);
-			break;
-#endif
-		case GMT_IS_COORD:
-			/* Nothing to do as GMT_free below will do it */
-			break;
-			
-		/* Also allow destoying of intermediate vector and matrix containers */
-		case GMT_IS_MATRIX:	/* GMT matrix; return alloc mode of data array in case it was allocated externally */
-			*alloc_mode = GMT_free_matrix_ptr (API->GMT, ptr, true);
-			break;
-		case GMT_IS_VECTOR:	/* GMT vector; return alloc mode of data array in case it was allocated externally */
-			*alloc_mode = GMT_free_vector_ptr (API->GMT, ptr, true);
-			break;
-		default:
-			return (GMTAPI_report_error (API, GMT_NOT_A_VALID_FAMILY));
-			break;		
-	}
-	//if (*alloc_mode == GMT_ALLOCATED_BY_GMT) GMT_free (API->GMT, ptr);	/* OK to free our own memory */
-	GMT_free (API->GMT, ptr);	/* OK to free container */
-	return (GMT_OK);	/* Null pointer */
 }
 
 /* Also called in gmt_init.c and prototyped in gmt_internals.h: */
@@ -4859,7 +4866,8 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 		direction = (object_ID == GMT_NOTSET) ? def_direction : GMT_NOTSET;	/* Do not consider direction if pre-registered */
 		if (object_ID == GMT_NOTSET && (object_ID = GMT_Register_IO (API, family, GMT_IS_REFERENCE, geometry, def_direction, range, new_obj)) == GMT_NOTSET) return_null (API, API->error);	/* Failure to register */
 		if ((item = GMTAPI_Validate_ID (API, family, object_ID, direction)) == GMT_NOTSET) return_null (API, API->error);
-		API->object[item]->data = new_obj;		/* Retain pointer to the allocated data so we use garbage collection later */
+		API->object[item]->data = new_obj;	/* Retain pointer to the allocated data so we use garbage collection later */
+		if (mode & GMT_VIA_OUTPUT) API->object[item]->messenger = true;	/* We are passing a dummy container that should be destroyed before returning data */
 		GMT_Report (API, GMT_MSG_DEBUG, "Successfully created a new %s container\n", GMT_family[family]);
 	}
 	else
