@@ -240,7 +240,7 @@ for dirpath, dirnames, filenames in os.walk('.'):
             outfile = srcfile.replace(os.sep, '-') 
             outfile = outfile.replace('supplements-', '') 
             outfile = outfile.replace('gshhg-', '') 
-            outfile = outfile.replace('imgsrc-', '') 
+            outfile = outfile.replace('img-', '') 
             outfile = outfile.replace('meca-', '') 
             outfile = outfile.replace('mgd77-', '') 
             outfile = outfile.replace('misc-', '') 
