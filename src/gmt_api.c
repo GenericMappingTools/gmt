@@ -4749,12 +4749,13 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 	 *	3: par[GMT_COL] = number of columns per row [ignored for GMT_TEXTSET].
 	 * The dim array is ignored for CPT and GMT grids.
 	 *   For GMT_IS_VECTOR, par[0] holds the number of columns.
-	 *   For GMT_IS_MATRIX, par[0] holds the number of layers (dim == NULL means just 1 layer).
+	 *   For GMT_IS_MATRIX, par[GMT_Z] = GMT[2] holds the number of layers (dim == NULL means just 1 layer).
 	 * (B) Via range, inc, registration:
 	 *   Convert user domain range, increments, and registration into dimensions
 	 *   for the container.  For grids and images we fill out the GMT_GRID_HEADER;
 	 *   for vectors and matrices we fill out their internal parameters.
 	 *   For complex grids pass registration + GMT_GRID_IS_COMPLEX_{REAL|IMAG}
+	 *   For GMT_IS_MATRIX, par[GMT_Z] = holds the number of layers (dim == NULL means just 1 layer).
 	 * pad sets the padding for grids and images, ignored for other resources.
 	 * Some default actions for grids:
 	 * range = NULL: Select current -R setting if present.
@@ -4843,7 +4844,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 		 	if ((new_obj = GMT_create_palette (API->GMT, dim[0])) == NULL) return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 			break;
 		case GMT_IS_MATRIX:	/* GMT matrix container, allocate one with the requested number of layers, rows & columns */
-			n_layers = (dim == NULL) ? 0U : dim[0];
+			n_layers = (dim == NULL) ? 1U : dim[GMT_Z];
 		 	new_obj = GMT_create_matrix (API->GMT, n_layers);
 			if (pad) GMT_Report (API, GMT_MSG_VERBOSE, "Pad argument (%d) ignored in initialization of %s\n", pad, GMT_family[family]);
 			error = GMTAPI_init_matrix (API, dim, range, inc, registration, mode, new_obj);
