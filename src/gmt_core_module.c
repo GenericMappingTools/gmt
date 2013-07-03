@@ -107,7 +107,7 @@ struct Gmt_moduleinfo g_core_module[] = {
 /* Pretty print all GMT core module names and their purposes */
 void gmt_core_module_show_all (void *API) {
 	unsigned int module_id = 0;
-	char module_name_comp[64], message[256];
+	char message[256];
 
 	GMT_Message (API, GMT_TIME_NONE, "\n=== " "GMT core: The main section of the Generic Mapping Tools" " ===\n");
 	while (g_core_module[module_id].name != NULL) {
