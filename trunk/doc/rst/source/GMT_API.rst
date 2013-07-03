@@ -907,7 +907,7 @@ For method (1), pass the ``par`` array, as indicated below:
     An empty GMT_VECTOR structure with ``par[0]`` column entries is allocated.
 
 **GMT_IS_MATRIX**
-    An empty GMT_MATRIX structure is allocated. ``par[0]`` indicates
+    An empty GMT_MATRIX structure is allocated. ``par[3]`` indicates
     the number of layers for a 3-D matrix, or pass 0, 1, or NULL for a 2-D matrix.
 
 In this case, pass ``wesn``, ``inc`` as NULL. For method (2), you
