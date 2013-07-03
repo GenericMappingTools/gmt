@@ -7,6 +7,7 @@ LICENSE.TXT in main GMT directory.
 ==> CHANGES IN GMT 5 <==
 
 img2mercgrd and img2mgrd are now a single C module (and executable).
+Much of the discussion on install below is obsolete.
 
 ==> CHANGES IN GMT 4.4.1 <==
 
@@ -65,18 +66,18 @@ will not work under WIN32 since binary stdout is not supported.
 
 W H F Smith, 14 October 1998, for GMT version 3.1
 
-1.  What is the imgsrc distribution?
+1.  What is the img distribution?
 
-imgsrc is a GMT supplement sub-directory which may be optionally 
+img is a GMT supplement sub-directory which may be optionally 
 installed under the GMT src directory.  It contains code to manipulate 
 "img" format files of marine gravity anomalies and estimated seafloor 
 depths produced from satellite altimeter data by D T Sandwell and W H F 
 Smith in several versions since the early 1990s.  If you are not a user 
-of these files, you do not need to install the imgsrc supplement.
+of these files, you do not need to install the img supplement.
 
-The imgsrc supplement distribution contains the following files:
+The img supplement distribution contains the following files:
 
-README.imgsrc:		this file.
+README.img:		this file.
 gmt_imgsubs.c:		source code for img subroutines.
 gmt_imgsubs.h:		header file for gmt_imgsubs.c and img2mercgrd.c
 img2mercgrd.c:		source code for a main program.
@@ -84,10 +85,10 @@ makefile:		make file for these programs.
 img2mercgrd.1:		the img2mercgrd man page.
 
 
-2.  How do I make and install the imgsrc supplement?
+2.  How do I make and install the img supplement?
 
 These files are intended for installation in a sub-directory below the 
-primary GMT src directory.  If the imgsrc files are placed somewhere 
+primary GMT src directory.  If the img files are placed somewhere 
 else, the user will have to change the paths to "gmt.h" in 
 "gmt_imgsubs.h" and to "-lgmt", "-lpsl", and "config.mk" in 
 "makefile".
@@ -95,7 +96,7 @@ else, the user will have to change the paths to "gmt.h" in
 makefile uses "../config.mk" which also control the "make" of 
 programs in the primary GMT src directory.
 
-Assuming you have installed the imgsrc files in src/imgsrc within the 
+Assuming you have installed the img files in src/img within the 
 GMT src dir, and you have already compiled GMT successfully in the src 
 dir, then all you need to do is
 
@@ -243,7 +244,7 @@ automatic generation of customized map views of these data.
 
 
 6.  More details of the img coordinate system; compatibility of the 
-current imgsrc with past, current, and future img files.
+current img with past, current, and future img files.
 
 All of these files have used a spherical Mercator coordinate system in 
 which the following features have been true:  the stream of bytes 
@@ -253,7 +254,7 @@ of longitude is an integer number when measured in pixels; the pixels
 are square; the vertical alignment of pixels is such that the Equator 
 falls on an edge between pixels; the horizontal alignment of the pixels 
 is such that the first pixel in each row has its left edge on the 
-Greenwich meridian.  The present edition of the imgsrc supplement 
+Greenwich meridian.  The present edition of the img supplement 
 assumes that these things will continue to be true in the future.  These 
 features allow an analytic description of the transformations between 
 pixel row location in the array and latitude in terms of the forward and 
@@ -306,7 +307,7 @@ an integer.  But <nyrow> should be close to an integer, and rounding
 <nyrow> to the nearest int should yield a calculation that makes sense.
 
 
-7.  Backward compatibility of the present imgsrc distribution with 
+7.  Backward compatibility of the present img distribution with 
 previous GMT supplements.
 
 "img2mercgrd" and another program "img2latlongrd" were previously (in 

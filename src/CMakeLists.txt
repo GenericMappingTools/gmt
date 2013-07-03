@@ -368,8 +368,8 @@ endif ()
 
 if (BUILD_SUPPLEMENTS)
 	# supplement directories (only those, which are to be included in gmtlib)
-	#set (GMT_SUPPL_DIRS gshhg imgsrc kiss_fft meca mgd77 misc potential segy
-	set (GMT_SUPPL_DIRS gshhg imgsrc meca mgd77 misc potential segy
+	#set (GMT_SUPPL_DIRS gshhg img kiss_fft meca mgd77 misc potential segy
+	set (GMT_SUPPL_DIRS gshhg img meca mgd77 misc potential segy
 		spotter x2sys)
 endif (BUILD_SUPPLEMENTS)
 
