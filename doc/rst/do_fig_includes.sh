@@ -30,7 +30,8 @@ elif [ "$1" = "jpg" ]; then
 fi
 
 # Give us the full directory name of the script no matter where it is being called from 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+# Prefix it with a leading slash because shinx is bugged and will eat the first of the double slashes 
+DIR=/"$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 path_build=${DIR}/../../build/docfigs		# Path to where ps2raster dumps the converted PNGs
 com="-A -E${DPI} -P -T${frmt} -D${path_build} -Qt4"
