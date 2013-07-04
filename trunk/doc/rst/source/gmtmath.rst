@@ -450,7 +450,7 @@ The following symbols have special meaning:
 Notes On Operators
 ------------------
 
-(1) The operators **PLM** and **PLMg** calculate the associated Legendre
+1. The operators **PLM** and **PLMg** calculate the associated Legendre
 polynomial of degree L and order M in x which must satisfy -1 <= x <= +1
 and 0 <= M <= L. x, L, and M are the three arguments preceding the
 operator. **PLM** is not normalized and includes the Condon-Shortley
@@ -459,27 +459,26 @@ used in geophysics. The C-S phase can be added by using -M as argument.
 **PLM** will overflow at higher degrees, whereas **PLMg** is stable
 until ultra high degrees (at least 3000).
 
-(2) Files that have the same names as some operators, e.g., **ADD**,
+2. Files that have the same names as some operators, e.g., **ADD**,
 **SIGN**, **=**, etc. should be identified by prepending the current
 directory (i.e., ./).
 
-(3) The stack depth limit is hard-wired to 100.
+3. The stack depth limit is hard-wired to 100.
 
-(4) All functions expecting a positive radius (e.g., **LOG**, **KEI**,
+4. All functions expecting a positive radius (e.g., **LOG**, **KEI**,
 etc.) are passed the absolute value of their argument.
 
-(5) The **DDT** and **D2DT2** functions only work on regularly spaced
-data.
+5. The **DDT** and **D2DT2** functions only work on regularly spaced data.
 
-(6) All derivatives are based on central finite differences, with
+6. All derivatives are based on central finite differences, with
 natural boundary conditions.
 
-(7) **ROOTS** must be the last operator on the stack, only followed by **=**. 
+7. **ROOTS** must be the last operator on the stack, only followed by **=**. 
 
 .. include:: explain_sto_rcl_clr.rst_
 
 
-(8) The bitwise operators
+8. The bitwise operators
 (**BITAND**, **BITLEFT**, **BITNOT**, **BITOR**, **BITRIGHT**,
 **BITTEST**, and **BITXOR**) convert a tables’s double precision values
 to unsigned 64-bit ints to perform the bitwise operations. Consequently,
@@ -489,7 +488,7 @@ to fit in the lower 54 bits.  Thus, bit operations are effectively limited
 to 54 bits.  All bitwise operators return NaN if given NaN arguments or
 bit-settings <= 0.
 
-(9) TAPER will interpret its argument to be a width in the same units as
+9. TAPER will interpret its argument to be a width in the same units as
 the time-axis, but if no time is provided (i.e., plain data tables) then
 the width is taken to be given in number of rows.
 
@@ -517,7 +516,7 @@ piped through **gmtmath** by process1 and pipe it through a 3rd process, use
 
    ::
 
-    process1 | gmtmath STDIN SQRT = | process3
+    process1 | gmt gmtmath STDIN SQRT = | process3
 
 To take log10 of the average of 2 data files, use
 
