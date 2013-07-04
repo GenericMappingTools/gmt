@@ -33,6 +33,7 @@ EXTERN_MSC const char* g_api_error_string[];
 
 enum Gmt_api_error_code {
 	GMT_OK = 0,
+	GMT_WRONG_MATRIX_SHAPE,
 	GMT_ACCESS_NOT_ENABLED,
 	GMT_ARGV_LIST_NULL,
 	GMT_ARG_IS_NULL,

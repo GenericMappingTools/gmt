@@ -4466,7 +4466,9 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 			M_obj = S_obj->resource;
 			if (S_obj->n_alloc == 0) {	/* Never allocated anything */
 				size_t size = S_obj->n_alloc = GMT_CHUNK;
-				M_obj->n_columns = M_obj->dim = API->GMT->common.b.ncol[GMT_OUT];	/* Set the number of columns */
+				M_obj->n_columns = API->GMT->common.b.ncol[GMT_OUT];	/* Set the number of columns */
+				if (M_obj->shape == GMT_IS_COL_FORMAT) return (GMTAPI_report_error (API, error));
+				M_obj->dim = M_obj->n_columns;
 				size *= M_obj->n_columns;
 				/* S_obj->n_rows is 0 which means we are allocating more space as we need it later */
 				if ((error = GMT_alloc_univector (API->GMT, &(M_obj->data), M_obj->type, size)) != GMT_OK) return (GMTAPI_report_error (API, error));
