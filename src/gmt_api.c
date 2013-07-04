@@ -1212,20 +1212,20 @@ int GMTAPI_Add_Data_Object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *
 
 bool GMTAPI_Validate_Geometry (struct GMTAPI_CTRL *API, int family, int geometry)
 {	/* Sanity check that geometry and family are compatible */
-	bool answer = false;
+	bool problem = false;
 	
 	if (geometry == GMT_NOTSET || family == GMT_NOTSET) return false;	/* No errors if nothing to check */
 	switch (family) {
-		case GMT_IS_TEXTSET: if (!(geometry == GMT_IS_NONE || (geometry & GMT_IS_PLP))) answer = true; break;	/* Textsets can hold many things... */
-		case GMT_IS_DATASET: if (!(geometry == GMT_IS_NONE || (geometry & GMT_IS_PLP))) answer = true; break;	/* Datasets can hold many things... */
-		case GMT_IS_GRID:    if (geometry != GMT_IS_SURFACE) answer = true; break;	/* Only surface is valid */
-		case GMT_IS_IMAGE:   if (geometry != GMT_IS_SURFACE) answer = true; break;	/* Only surface is valid */
-		case GMT_IS_CPT:     if (geometry != GMT_IS_NONE) answer = true;    break;	/* Only text is valid */
-		case GMT_IS_VECTOR:  if (geometry != GMT_IS_POINT) answer = true;   break;	/* Only point is valid */
-		case GMT_IS_MATRIX:  if (geometry != GMT_IS_SURFACE) answer = true; break;	/* Only surface is valid */
-		case GMT_IS_COORD:   if (geometry != GMT_IS_NONE) answer = true;    break;	/* Only text is valid */
+		case GMT_IS_TEXTSET: if (!(geometry == GMT_IS_NONE || (geometry & GMT_IS_PLP))) problem = true; break;	/* Textsets can hold many things... */
+		case GMT_IS_DATASET: if (!(geometry == GMT_IS_NONE || (geometry & GMT_IS_PLP))) problem = true; break;	/* Datasets can hold many things... */
+		case GMT_IS_GRID:    if (geometry != GMT_IS_SURFACE) problem = true; break;	/* Only surface is valid */
+		case GMT_IS_IMAGE:   if (geometry != GMT_IS_SURFACE) problem = true; break;	/* Only surface is valid */
+		case GMT_IS_CPT:     if (geometry != GMT_IS_NONE) problem = true;    break;	/* Only text is valid */
+		case GMT_IS_VECTOR:  if (geometry != GMT_IS_POINT) problem = true;   break;	/* Only point is valid */
+		case GMT_IS_MATRIX:  if (geometry == GMT_IS_NONE) problem = true;    break;	/* Matrix can hold surfaces or TEXTSETs */
+		case GMT_IS_COORD:   if (geometry != GMT_IS_NONE) problem = true;    break;	/* Only text is valid */
 	}
-	return (answer);
+	return (problem);
 }
 
 int GMTAPI_Validate_ID (struct GMTAPI_CTRL *API, int family, int object_ID, int direction)
@@ -2952,7 +2952,7 @@ int GMTAPI_Destroy_Dataset (struct GMTAPI_CTRL *API, struct GMT_DATASET **D_obj)
 		GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_Destroy_Dataset: Passed NULL pointer - skipped\n");
 		return (GMT_PTR_IS_NULL);
 	}
-	if ((*D_obj)->alloc_mode != GMT_ALLOCATED_BY_GMT) return (GMT_FREE_EXTERNAL_NOT_ALLOWED);	/* Not allowed to free here */
+	//if ((*D_obj)->alloc_mode != GMT_ALLOCATED_BY_GMT) return (GMT_FREE_EXTERNAL_NOT_ALLOWED);	/* Not allowed to free here */
 	if ((*D_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
 
 	GMT_free_dataset (API->GMT, D_obj);
@@ -2967,7 +2967,7 @@ int GMTAPI_Destroy_Textset (struct GMTAPI_CTRL *API, struct GMT_TEXTSET **T_obj)
 		GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_Destroy_Textset: Passed NULL pointer - skipped\n");
 		return (GMT_PTR_IS_NULL);
 	}
-	if ((*T_obj)->alloc_mode != GMT_ALLOCATED_BY_GMT) return (GMT_FREE_EXTERNAL_NOT_ALLOWED);	/* Not allowed to free here */
+	//if ((*T_obj)->alloc_mode != GMT_ALLOCATED_BY_GMT) return (GMT_FREE_EXTERNAL_NOT_ALLOWED);	/* Not allowed to free here */
 	if ((*T_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
 
 	GMT_free_textset (API->GMT, T_obj);
@@ -2982,7 +2982,7 @@ int GMTAPI_Destroy_CPT (struct GMTAPI_CTRL *API, struct GMT_PALETTE **P_obj)
 		GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_Destroy_CPT: Passed NULL pointer - skipped\n");
 		return (GMT_PTR_IS_NULL);
 	}
-	if ((*P_obj)->alloc_mode != GMT_ALLOCATED_BY_GMT) return (GMT_FREE_EXTERNAL_NOT_ALLOWED);	/* Not allowed to free here */
+	//if ((*P_obj)->alloc_mode != GMT_ALLOCATED_BY_GMT) return (GMT_FREE_EXTERNAL_NOT_ALLOWED);	/* Not allowed to free here */
 	if ((*P_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
 
 	GMT_free_palette (API->GMT, P_obj);
@@ -2997,7 +2997,7 @@ int GMTAPI_Destroy_Matrix (struct GMTAPI_CTRL *API, struct GMT_MATRIX **M_obj)
 		GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_Destroy_Matrix: Passed NULL pointer - skipped\n");
 		return (GMT_PTR_IS_NULL);
 	}
-	if ((*M_obj)->alloc_mode != GMT_ALLOCATED_BY_GMT) return (GMT_FREE_EXTERNAL_NOT_ALLOWED);	/* Not allowed to free here */
+	//if ((*M_obj)->alloc_mode != GMT_ALLOCATED_BY_GMT) return (GMT_FREE_EXTERNAL_NOT_ALLOWED);	/* Not allowed to free here */
 	if ((*M_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
 
 	GMT_free_matrix (API->GMT, M_obj, true);
@@ -3012,7 +3012,7 @@ int GMTAPI_Destroy_Vector (struct GMTAPI_CTRL *API, struct GMT_VECTOR **V_obj)
 		GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI_Destroy_Vector: Passed NULL pointer - skipped\n");
 		return (GMT_PTR_IS_NULL);
 	}
-	if ((*V_obj)->alloc_mode != GMT_ALLOCATED_BY_GMT) return (GMT_FREE_EXTERNAL_NOT_ALLOWED);	/* Not allowed to free here */
+	//if ((*V_obj)->alloc_mode != GMT_ALLOCATED_BY_GMT) return (GMT_FREE_EXTERNAL_NOT_ALLOWED);	/* Not allowed to free here */
 	if ((*V_obj)->alloc_level != API->GMT->hidden.func_level) return (GMT_FREE_WRONG_LEVEL);	/* Not the right level */
 
 	GMT_free_vector (API->GMT, V_obj, true);
@@ -3044,10 +3044,12 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level)
 	/* GMT_Garbage_Collection frees all registered memory associated with the current module level,
 	 * or for the entire session if level == GMT_NOTSET (-1) */
 	
-	unsigned int i, j, n_free, u_level = 0, alloc_mode = 0;
-	int error;
+	unsigned int i, j, n_free = 0, u_level = 0, alloc_mode = 0;
+	int error = GMT_NOERROR;
 	void *address = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
+	
+	if (API->n_objects == 0) return;	/* Nothing to do */
 	
 	/* Free memory allocated during data registration (e.g., via GMT_Get|Put_Data).
 	 * Because GMTAPI_Unregister_IO will delete an object and shuffle
@@ -4671,6 +4673,7 @@ int GMT_Destroy_Data (void *V_API, void *object)
 	 * Returns the error code.
 	 */
 	int error, item, object_ID;
+	enum GMT_enum_family family;
 	struct GMTAPI_CTRL *API = NULL;
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
@@ -4680,7 +4683,8 @@ int GMT_Destroy_Data (void *V_API, void *object)
 	if ((object_ID = GMTAPI_get_objectID_from_data_ptr (API, object)) == GMT_NOTSET) return_error (API, GMT_OBJECT_NOT_FOUND);	/* Could not find it */
 	if ((item = GMTAPI_Validate_ID (API, GMT_NOTSET, object_ID, GMT_NOTSET)) == GMT_NOTSET) return_error (API, API->error);
 	
-	switch (API->object[item]->family) {	/* dataset, cpt, text table or grid */
+	family = (API->object[item]->actual_family) ? API->object[item]->actual_family : API->object[item]->family;	/* So if dataset via matrix we want family = matrix */
+	switch (family) {	/* Standard 5 families, plus matrix/vector and coordinates */
 		case GMT_IS_GRID:	/* GMT grid */
 			error = GMTAPI_Destroy_Grid (API, object);
 			break;
@@ -4716,7 +4720,7 @@ int GMT_Destroy_Data (void *V_API, void *object)
 	if (!error) {	/* We successfully freed the items, now remove from IO list */
 		unsigned int j;
 		void *address = API->object[item]->data;
-		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Destroy_Data: freed memory for a %s for object %d\n", GMT_family[API->object[item]->family], object_ID);
+		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Destroy_Data: freed memory for a %s for object %d\n", GMT_family[family], object_ID);
 		if ((error = GMTAPI_Unregister_IO (API, object_ID, GMT_NOTSET))) return_error (API, error);	/* Did not find object */
 		for (j = 0; j < API->n_objects; j++) if (API->object[j]->data == address) API->object[j]->data = NULL;	/* Set repeated entries to NULL so we don't try to free twice */
 	}
@@ -4779,20 +4783,22 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 	 * Return: Pointer to resource, or NULL if an error (set via API->error).
 	 */
 	
-	int error = GMT_OK, object_ID = GMT_NOTSET, item;
-	uint64_t n_layers;
-	bool already_registered = false, has_ID;
+	int error = GMT_OK, object_ID = GMT_NOTSET;
+	uint64_t n_layers = 0;
+	bool already_registered = false, has_ID = false;
 	void *new_obj = NULL, *p_data = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
 	API = gmt_get_api_ptr (V_API);
 	
+#if 0	/* This seems wrong: Create should always CREATE data and has nothing to do with @GMTAPI@-###### */
 	if ((has_ID = GMT_File_Is_Memory (data))) {	/* In case a @GMTAPI@-###### reference is passed... */
 		object_ID = GMTAPI_Decode_ID (data);	/* Just get the ID */
 		p_data = NULL;				/* No data was actually passed */
 	}
 	else	/* No mem reference passed, pass on the given argument */
+#endif
 		p_data = data;	/* data can only be non-NULL for Grids/Images passing back G to get the data array */
 
 	switch (family) {	/* dataset, cpt, text, grid , image, vector, matrix */
@@ -4862,12 +4868,25 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 	if (API->error) return_null (API, API->error);
 	
 	if (!already_registered) {	/* Now register this dataset so it can be deleted by GMT_Destroy_Data or GMT_Garbage_Collection */
+		enum GMT_enum_via via = GMT_VIA_NONE;
+		enum GMT_enum_family actual_family = family;
 		int direction, def_direction = GMT_IN;	/* Default direction is GMT_IN unless mode & GMT_VIA_OUTPUT was passed */
+		int item = GMT_NOTSET;
 		if (mode & GMT_VIA_OUTPUT) def_direction = GMT_OUT;	/* Create item for output instead */
 		direction = (object_ID == GMT_NOTSET) ? def_direction : GMT_NOTSET;	/* Do not consider direction if pre-registered */
-		if (object_ID == GMT_NOTSET && (object_ID = GMT_Register_IO (API, family, GMT_IS_REFERENCE, geometry, def_direction, range, new_obj)) == GMT_NOTSET) return_null (API, API->error);	/* Failure to register */
-		if ((item = GMTAPI_Validate_ID (API, family, object_ID, direction)) == GMT_NOTSET) return_null (API, API->error);
+		if (object_ID == GMT_NOTSET) {	/* Must register this object */
+			if (family == GMT_IS_MATRIX) {
+				if (geometry & GMT_IS_PLP) actual_family = GMT_IS_DATASET, via = GMT_VIA_MATRIX;
+				if (geometry & GMT_IS_SURFACE) actual_family = GMT_IS_GRID, via = GMT_VIA_MATRIX;
+			}
+			else if (family == GMT_IS_VECTOR) {
+				actual_family = GMT_IS_DATASET, via = GMT_VIA_VECTOR;
+			}
+			if ((object_ID = GMT_Register_IO (API, actual_family, GMT_IS_REFERENCE + via, geometry, def_direction, range, new_obj)) == GMT_NOTSET) return_null (API, API->error);	/* Failure to register */
+		}
+		if ((item = GMTAPI_Validate_ID (API, actual_family, object_ID, direction)) == GMT_NOTSET) return_null (API, API->error);
 		API->object[item]->data = new_obj;	/* Retain pointer to the allocated data so we use garbage collection later */
+		API->object[item]->actual_family = family;	/* So that if we got a matrix posing as dataset we can destroy the matrix later */
 		if (mode & GMT_VIA_OUTPUT) API->object[item]->messenger = true;	/* We are passing a dummy container that should be destroyed before returning data */
 		GMT_Report (API, GMT_MSG_DEBUG, "Successfully created a new %s container\n", GMT_family[family]);
 	}

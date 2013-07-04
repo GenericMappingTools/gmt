@@ -94,6 +94,7 @@ struct GMTAPI_DATA_OBJECT {
 	enum GMT_enum_alloc alloc_mode;		/* GMT_ALLOCATED_{BY_GMT|EXTERNALLY} */
 	enum GMT_io_enum direction;		/* GMT_IN or GMT_OUT */
 	enum GMT_enum_family family;		/* One of GMT_IS_{DATASET|TEXTSET|CPT|IMAGE|GRID|MATRIX|VECTOR|COORD} */
+	enum GMT_enum_family actual_family;	/* May be GMT_IS_MATRIX|VECTOR when one of the others are created via those */
 	enum GMT_enum_method method;		/* One of GMT_IS_{FILE,STREAM,FDESC,DUPLICATE,REFERENCE} */
 	enum GMT_enum_geometry geometry;	/* One of GMT_IS_{POINT|LINE|POLY|PLP|SURFACE|NONE} */
 	double wesn[GMTAPI_N_GRID_ARGS];	/* Grid domain limits */
