@@ -12,8 +12,8 @@ Synopsis
 **img2grd** *imgfile* **-G**\ *grdfile*
 |SYN_OPT-R|
 **-T**\ *type* [ **-C** ]
-[ **-D**\ [*minlat/maxlat*\ ] ] [ **-E** ] [ **-I**\ *minutes* ]
-[ **-M** ] [ **-N**\ *navg* ] [ **-S**\ [*scale*\ ] ]
+[ **-D**\ [*minlat/maxlat*] ] [ **-E** ] [ **-I**\ *minutes* ]
+[ **-M** ] [ **-N**\ *navg* ] [ **-S**\ [*scale*] ]
 [ |SYN_OPT-V| ]
 [ **-W**\ *maxlon* ]
 [ |SYN_OPT-n| ]
@@ -36,8 +36,8 @@ Required Arguments
     A Mercator img format file such as the marine gravity or seafloor
     topography fields estimated from satellite altimeter data by
     Sandwell and Smith. If the user has set an environment variable
-    **$GMT\_DATADIR**, then **img2grd** will try to find *imgfile* in
-    **$GMT\_DATADIR**; else it will try to open *imgfile* directly.
+    **$GMT_DATADIR**, then **img2grd** will try to find *imgfile* in
+    **$GMT_DATADIR**; else it will try to open *imgfile* directly.
 **-G**\ *grdfile*
     *grdfile* is the name of the output grid file.
 
@@ -63,7 +63,7 @@ Optional Arguments
     range, and furthermore the grid increment in latitude does not match
     the longitude increment. However, the extra resampling introduces
     small interpolation errors and should only be used if the output
-    grid must match the requested region and have x\_inc = y\_inc. In
+    grid must match the requested region and have x_inc = y_inc. In
     this case the region set by **-R** must be given in multiples of the
     increment (.e.g, **-R**\ 0/45/45/72).
 **-I**
@@ -78,7 +78,7 @@ Optional Arguments
     groups of *navg* pixels]. The grid file header is set so that the x
     and y axis lengths represent distance from the west and south edges
     of the image, measured in user default units, with **-Jm**\ 1 and
-    the adjusted **-R**. By setting the default **PROJ\_ ELLIPSOID** =
+    the adjusted **-R**. By setting the default **PROJ_ ELLIPSOID** =
     Sphere, the user can make overlays with the adjusted **-R** so that
     they match. See **EXAMPLES** below. The adjusted **-R** is also
     written in the grdheader remark, so it can be found later. See
@@ -127,7 +127,7 @@ Geographic Examples
 
 The **-M** option should be excluded if you need the output grid to be
 in geographic coordinates. To extract data in the region
-**-R**-40/40/-70/-30 from *world\_grav.img.7.2* and reproject to yield
+**-R**-40/40/-70/-30 from *world_grav.img.7.2* and reproject to yield
 geographic coordinates, you can try
 
    ::
@@ -158,7 +158,7 @@ To extract data in the region **-R**-40/40/-70/-30 from
 
    ::
 
-    img2grd -M world_grav.img.7.2 -Gmerc_grav.nc -R-40/40/-70/-30 -V
+    gmt img2grd -M world_grav.img.7.2 -Gmerc_grav.nc -R-40/40/-70/-30 -V
 
 Note that the **-V** option tells us that the range was adjusted to
 **-R**-40/40/-70.0004681551/-29.9945810754. We can also use **grdinfo**
@@ -166,14 +166,14 @@ to find that the grid file header shows its region to be
 **-R**\ 0/80/0/67.9666667 This is the range of x,y we will get from a
 Spherical Mercator projection using
 **-R**-40/40/-70.0004681551/-29.9945810754 and **-Jm**\ 1. Thus, to take
-ship.lonlatgrav and use it to sample the merc\_grav.nc, we can do this:
+ship.lonlatgrav and use it to sample the merc_grav.nc, we can do this:
 
    ::
 
     gmtset PROJ_ ELLIPSOID Sphere
 
     gmt mapproject -R-40/40/-70.0004681551/-29.9945810754 -Jm1i ship.lonlatgrav | \
-              gmt grdtrack -Gmerc\_grav.nc | gmt mapproject \
+              gmt grdtrack -Gmerc_grav.nc | gmt mapproject \
               -R-40/40/-70.0004681551/-29.9945810754 -Jm1i -I > ship.lonlatgravsat
 
 It is recommended to use the above method of projecting and unprojecting
@@ -195,11 +195,11 @@ it may be always better to use)
    ::
 
     gmt grd2xyz merc_grav.nc | gmt mapproject \
-        -R-40/40/-70.0004681551/-29.994581075 -Jm1i -I | gmt surface \
-        -R-40/40/-70/70 -I2m -Ggrav.nc
+        -R-40/40/-70.0004681551/-29.994581075 -Jm1i -I | \
+        gmt surface -R-40/40/-70/70 -I2m -Ggrav.nc
 
 To make a Mercator map of the above region, suppose our gmt.conf value
-for **PROJ\_LENGTH\_UNIT** is inch. Then since the above merc\_grav.nc
+for **PROJ_LENGTH_UNIT** is inch. Then since the above merc_grav.nc
 file is projected with **-Jm**\ 1i it is 80 inches wide. We can make a
 map 8 inches wide by using **-Jx**\ 0.1i on any map programs applied to
 this grid (e.g., `grdcontour <grdcontour.html>`_, `grdimage <grdimage.html>`_, `grdview <grdview.html>`_), and then
@@ -209,7 +209,7 @@ match up.
 
 However, we can be smarter than this. Realizing that the input img file
 had pixels 2.0 minutes wide (or checking the nx and ny with grdinfo
-merc\_grav.nc) we realize that merc\_grav.nc used the full resolution of
+merc_grav.nc) we realize that merc_grav.nc used the full resolution of
 the img file and it has 2400 by 2039 pixels, and at 8 inches wide this
 is 300 pixels per inch. We decide we don’t need that many and we will be
 satisfied with 100 pixels per inch, so we want to average the data into
@@ -219,7 +219,7 @@ average the data much more (e.g., 6 by 6) to get smooth contours.) Since
 
    ::
 
-    img2grd -M world_grav.img.7.2 -Gmerc_grav_2.nc -R-40/40/-70/-30 -N3 -V
+    gmt img2grd -M world_grav.img.7.2 -Gmerc_grav_2.nc -R-40/40/-70/-30 -N3 -V
 
 This time we find the adjusted region is
 **-R**-40/40/-70.023256525/-29.9368261101 and the output is 800 by 601
