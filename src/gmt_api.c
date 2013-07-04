@@ -1112,22 +1112,17 @@ int GMTAPI_Next_IO_Source (struct GMTAPI_CTRL *API, unsigned int direction)
 				operation[direction], GMT_family[S_obj->family], dir[direction]);
 			break;
 
-	 	case GMT_IS_DUPLICATE + GMT_VIA_MATRIX:	/* This means reading a dataset record-by-record via a user matrix [PW: not tested] */
+	 	case GMT_IS_DUPLICATE + GMT_VIA_MATRIX:	/* This means reading or writing a dataset record-by-record via a user matrix [PW: not tested] */
 		case GMT_IS_REFERENCE + GMT_VIA_MATRIX:
 			if (S_obj->family != GMT_IS_DATASET) return (GMTAPI_report_error (API, GMT_NOT_A_VALID_TYPE));
 			GMT_Report (API, GMT_MSG_LONG_VERBOSE, "%s %s %s %s memory location via %s\n", 
 				operation[direction], GMT_family[S_obj->family], dir[direction], GMT_direction[direction], GMT_via[via]);
-			M_obj = S_obj->resource;
-			if (direction == GMT_OUT && M_obj->alloc_mode == 1) {	/* Must allocate output space */
-				S_obj->n_alloc = GMT_CHUNK * M_obj->n_columns;
-				/* S_obj->n_rows is 0 which means we are allocating more space as we need it */
-				if ((error = GMT_alloc_univector (API->GMT, &(M_obj->data), M_obj->type, S_obj->n_alloc)) != GMT_OK) return (GMTAPI_report_error (API, error));
-			}
-			else {
-				S_obj->n_rows = M_obj->n_rows;	/* Hard-wired limit as pass in from calling program */
+			if (direction == GMT_IN) {	/* Hard-wired limit as pass in from calling program */
+				M_obj = S_obj->resource;
+				S_obj->n_rows = M_obj->n_rows;
 				S_obj->n_columns = M_obj->n_columns;
+				API->GMT->common.b.ncol[direction] = M_obj->n_columns;	/* Basically, we are doing what GMT calls binary i/o */
 			}
-			API->GMT->common.b.ncol[direction] = M_obj->n_columns;	/* Basically, we are doing what GMT calls binary i/o */
 			API->GMT->common.b.active[direction] = true;
 			strcpy (API->GMT->current.io.current_filename[direction], "<memory>");
 			break;
@@ -3624,7 +3619,8 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode)
 	 * NOTE: 	Mode not yet implemented until we see a use.
 	 * Returns:	false if successfull, true if error.
 	 */
-	unsigned int item;
+	int error = 0;
+	unsigned int item, method = 0, via = 0;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 	
@@ -3634,14 +3630,18 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode)
 	
 	API = gmt_get_api_ptr (V_API);
 	GMT_free_ogr (API->GMT, &(API->GMT->current.io.OGR), 0);	/* Free segment-related array */
-	API->io_enabled[direction] = false;	/* No longer OK to access resources */
-	API->current_rec[direction] = 0;	/* Reset for next use */
 	if (direction == GMT_OUT) {		/* Finalize output issues */
 		S_obj = API->object[API->current_item[GMT_OUT]];	/* Shorthand for the data source we are working on */
 		if (S_obj) {	/* Dealt with file i/o */
 			S_obj->status = GMT_IS_USED;	/* Done writing to this destination */
-			if (S_obj->method == GMT_IS_DUPLICATE && API->io_mode[GMT_OUT] == GMT_BY_REC) {	/* GMT_Put_Record: Must realloc last segment and the tables segment array */
-				if (S_obj->family == GMT_IS_DATASET) {	/* Dataset type */
+			if (S_obj->method >= GMT_VIA_VECTOR) {
+				via = (S_obj->method / GMT_VIA_VECTOR) - 1;
+				method = S_obj->method - (via + 1) * GMT_VIA_VECTOR;	/* Array index that have any GMT_VIA_* removed */
+			}
+			else
+				method = S_obj->method;
+			if ((method == GMT_IS_DUPLICATE || method == GMT_IS_REFERENCE) && API->io_mode[GMT_OUT] == GMT_BY_REC) {	/* GMT_Put_Record: Must realloc last segment and the tables segment array */
+				if (S_obj->actual_family == GMT_IS_DATASET) {	/* Dataset type */
 					struct GMT_DATASET *D_obj = S_obj->resource;
 					if (D_obj && D_obj->table && D_obj->table[0]) {
 						struct GMT_DATATABLE *T_obj = D_obj->table[0];
@@ -3652,7 +3652,25 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode)
 						GMT_set_tbl_minmax (API->GMT, T_obj);
 					}
 				}
-				else {	/* Textset */
+				else if (S_obj->actual_family == GMT_IS_MATRIX) {	/* Matrix type */
+					if (S_obj->n_alloc != API->current_rec[GMT_OUT]) {	/* Must finalize memory */
+						struct GMT_MATRIX *M_obj = S_obj->resource;
+						size_t size = S_obj->n_alloc = API->current_rec[GMT_OUT];
+						size *= API->GMT->common.b.ncol[GMT_OUT];
+						if ((error = GMT_alloc_univector (API->GMT, &(M_obj->data), M_obj->type, size)) != GMT_OK)
+							return_error (V_API, error);
+					}
+				}
+				else if (S_obj->actual_family == GMT_IS_VECTOR) {	/* Vector type */
+					if (S_obj->n_alloc != API->current_rec[GMT_OUT]) {	/* Must finalize memory */
+						struct GMT_VECTOR *V_obj = S_obj->resource;
+						size_t size = S_obj->n_alloc = API->current_rec[GMT_OUT];
+						V_obj->n_rows = size;
+						if ((error = gmt_alloc_vectors (API->GMT, V_obj)) != GMT_OK)
+							return_error (V_API, error);
+					}
+				}
+				else if (S_obj->actual_family == GMT_IS_TEXTSET) {	/* Textset type */
 					struct GMT_TEXTSET *D_obj = S_obj->resource;
 					if (D_obj && D_obj->table && D_obj->table[0]) {
 						struct GMT_TEXTTABLE *T_obj = D_obj->table[0];
@@ -3669,6 +3687,8 @@ int GMT_End_IO (void *V_API, unsigned int direction, unsigned int mode)
 			}
 		}
 	}
+	API->io_enabled[direction] = false;	/* No longer OK to access resources */
+	API->current_rec[direction] = 0;	/* Reset for next use */
 	for (item = 0; item < API->n_objects; item++) {
 		if (!API->object[item]) continue;	/* Skip empty object */
 		if (API->object[item]->direction != direction) continue;	/* Not the required direction */
@@ -4436,24 +4456,28 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 			}
 			break;			
 		
-	 	case GMT_IS_DUPLICATE + GMT_VIA_MATRIX:	/* Data matrix only */
+		case GMT_IS_DUPLICATE + GMT_VIA_MATRIX:	/* Data matrix only */
+		case GMT_IS_REFERENCE + GMT_VIA_MATRIX:
+			/* At the first output record the output matrix has not been allocated.
+			 * So first we do that, then later we can increment its size.
+			 * The realloc to final size takes place in GMT_End_IO. */
 			d = record;
 			if (!record) GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record passed a NULL data pointer for method GMT_IS_DUPLICATE + GMT_VIA_MATRIX\n");
+			M_obj = S_obj->resource;
+			if (S_obj->n_alloc == 0) {	/* Never allocated anything */
+				size_t size = S_obj->n_alloc = GMT_CHUNK;
+				M_obj->n_columns = M_obj->dim = API->GMT->common.b.ncol[GMT_OUT];	/* Set the number of columns */
+				size *= M_obj->n_columns;
+				/* S_obj->n_rows is 0 which means we are allocating more space as we need it later */
+				if ((error = GMT_alloc_univector (API->GMT, &(M_obj->data), M_obj->type, size)) != GMT_OK) return (GMTAPI_report_error (API, error));
+			}
 			if (S_obj->n_rows && API->current_rec[GMT_OUT] >= S_obj->n_rows)
 				GMT_Report (API, GMT_MSG_NORMAL, "GMTAPI: GMT_Put_Record exceeding limits on rows(?)\n");
-			if (mode == GMT_WRITE_SEGMENT_HEADER && API->GMT->current.io.multi_segments[GMT_OUT]) {	/* Segment header - flag in data as NaNs */
+			if (mode == GMT_WRITE_SEGMENT_HEADER && API->GMT->current.io.multi_segments[GMT_OUT]) {	/* Segment header - flag in data as NaNs in current_record (d) */
 				for (col = 0; col < API->GMT->common.b.ncol[GMT_OUT]; col++) d[col] = API->GMT->session.d_NaN;
 			}
-			M_obj = S_obj->resource;
-			if (!M_obj) {	/* Was given a NULL pointer == First time allocation, default to double data type 2-D matrix */
-				if ((M_obj = GMT_create_matrix (API->GMT, 1U)) == NULL) {
-					return_error (API, GMT_MEMORY_ERROR);	
-				}
-				S_obj->resource = M_obj;
-				M_obj->type = GMT_DOUBLE;
-			}
 			GMT_2D_to_index = GMTAPI_get_2D_to_index (API, M_obj->shape, GMT_GRID_IS_REAL);
-			for (col = 0; col < API->GMT->common.b.ncol[GMT_OUT]; col++) {	/* Place the output items */
+			for (col = 0; col < M_obj->n_columns; col++) {	/* Place the output items */
 				ij = GMT_2D_to_index ((int)API->current_rec[GMT_OUT], (int)col, (int)M_obj->dim);
 				GMTAPI_put_val (API, &(M_obj->data), d[col], ij, M_obj->type);
 			}
@@ -4495,13 +4519,11 @@ int GMT_Put_Record (void *V_API, unsigned int mode, void *record)
 		size_t size;
 		S_obj->n_alloc += GMT_CHUNK;
 		size = S_obj->n_alloc;
-		size *= API->GMT->common.b.ncol[GMT_OUT];
 		if (S_obj->method == (GMT_IS_DUPLICATE + GMT_VIA_MATRIX)) {
-			M_obj = S_obj->resource;
+			size *= API->GMT->common.b.ncol[GMT_OUT];
 			if ((error = GMT_alloc_univector (API->GMT, &(M_obj->data), M_obj->type, size)) != GMT_OK) return (error);
 		}
 		else {
-			V_obj = S_obj->resource;
 			V_obj->n_rows = size;
 			if ((error = gmt_alloc_vectors (API->GMT, V_obj)) != GMT_OK) return (error);
 		}
