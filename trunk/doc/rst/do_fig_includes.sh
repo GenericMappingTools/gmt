@@ -81,7 +81,7 @@ if [ "$ext" = "pdf" ]; then
 	gmt ps2raster ${DIR}/../examples/anim$1/anim_$1.ps $comPDF
 	echo ".. figure:: ${path_build}/${name}.${ext}" > ${pato}/fig_${name}.rst_
 else
-	#gmt ps2raster ${DIR}/../examples/anim$1/anim_$1.ps $com
+	gmt ps2raster ${DIR}/../examples/anim$1/anim_$1.ps $com
 	echo ".. figure:: ${path_build}/${name}.${ext}" > ${pathGallery}/fig_${name}.rst_
 	echo "   :width: 400 px" >> ${pathGallery}/fig_${name}.rst_
 	echo "   :align: center" >> ${pathGallery}/fig_${name}.rst_
