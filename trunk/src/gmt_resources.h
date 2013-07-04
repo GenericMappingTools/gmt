@@ -52,6 +52,7 @@ enum GMT_enum_method {
 /* A Grid can come from a GMT grid OR User Matrix, and Data can come from DATASET or via Vectors|Matrix, and Text from TEXTSET or Matrix */
 
 enum GMT_enum_via {
+	GMT_VIA_NONE = 0,	/* No via anything */
 	GMT_VIA_VECTOR = 100,	/* Data passed via user matrix */
 	GMT_VIA_MATRIX = 200,	/* Data passed via user vectors */
 	GMT_VIA_OUTPUT = 2048};	/* For GMT_Create_Data mode to set dir = output */
