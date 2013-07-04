@@ -26,6 +26,7 @@
 
 const char *g_api_error_string[] = {
 	/* GMT_OK */				"GMT_OK",
+	/* GMT_WRONG_MATRIX_SHAPE */		"GMT_WRONG_MATRIX_SHAPE",
 	/* GMT_ACCESS_NOT_ENABLED */		"GMT_ACCESS_NOT_ENABLED",
 	/* GMT_ARGV_LIST_NULL */		"GMT_ARGV_LIST_NULL",
 	/* GMT_ARG_IS_NULL */			"GMT_ARG_IS_NULL",
