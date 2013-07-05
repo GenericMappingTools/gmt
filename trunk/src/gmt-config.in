@@ -21,7 +21,7 @@
 #--------------------------------------------------------------------*/
 #
 GMT_EXEDIR=`dirname $0`
-CONFIG_CFLAGS="-I@CMAKE_INSTALL_PREFIX@/include"
+CONFIG_CFLAGS="-I@CMAKE_INSTALL_PREFIX@/include/gmt"
 CONFIG_DATA=$($GMT_EXEDIR/gmt --show-sharedir)
 CONFIG_DEP_LIBS="@NETCDF_LIBRARIES@ @GMT_OPTIONAL_LIBRARIES@"
 CONFIG_GSHHG=$($GMT_EXEDIR/gmt gmtget DIR_GSHHG)

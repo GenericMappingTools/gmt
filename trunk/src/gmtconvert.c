@@ -376,7 +376,7 @@ int GMT_gmtconvert (void *V_API, int mode, void *args)
 			if (Ctrl->S.active) {		/* See if the combined segment header has text matching our search string */
 				if (match && GMT_polygon_is_hole (D[GMT_IN]->table[tbl_ver]->segment[seg])) match = true;	/* Extend a true match on a perimeter to the trailing holes */
 				else if (ogr_match)	/* Compare to aspatial value */
-					match = (D[GMT_IN]->table[tbl_ver]->segment[seg]->ogr && strstr (D[GMT_IN]->table[tbl_ver]->segment[seg]->ogr->value[ogr_item], Ctrl->S.pattern) != NULL);		/* true if we matched */
+					match = (D[GMT_IN]->table[tbl_ver]->segment[seg]->ogr && strstr (D[GMT_IN]->table[tbl_ver]->segment[seg]->ogr->tvalue[ogr_item], Ctrl->S.pattern) != NULL);		/* true if we matched */
 #if !defined(WIN32) || (defined(WIN32) && defined(HAVE_PCRE))
 				else if (Ctrl->S.regexp)	/* Compare to ERE */
 					match = (D[GMT_IN]->table[tbl_ver]->segment[seg]->header && gmt_regexp_match(GMT, D[GMT_IN]->table[tbl_ver]->segment[seg]->header, Ctrl->S.pattern, Ctrl->S.caseless));		/* true if we matched */

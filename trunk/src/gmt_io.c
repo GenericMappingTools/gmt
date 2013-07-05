@@ -960,8 +960,8 @@ unsigned int gmt_ogr_decode_aspatial_values (struct GMT_CTRL *GMT, char *record,
 	char buffer[GMT_BUFSIZ] = {""}, *token, *stringp;
 
 	if (S->n_aspatial == 0) return (0);	/* Nothing to do */
-	if (S->value == NULL) {			/* First time, allocate space */
-		S->value  = GMT_memory (GMT, S->value,  S->n_aspatial, char *);
+	if (S->tvalue == NULL) {			/* First time, allocate space */
+		S->tvalue = GMT_memory (GMT, S->tvalue, S->n_aspatial, char *);
 		S->dvalue = GMT_memory (GMT, S->dvalue, S->n_aspatial, double);
 	}
 	strncpy (buffer, record, GMT_BUFSIZ); /* working copy */
@@ -971,13 +971,13 @@ unsigned int gmt_ogr_decode_aspatial_values (struct GMT_CTRL *GMT, char *record,
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Bad OGR/GMT: @D record has more items than declared by @N\n");
 			continue;
 		}
-		if (S->value[col]) free (S->value[col]);	/* Free previous item */
-		S->value[col]  = strdup (token);
+		if (S->tvalue[col]) free (S->tvalue[col]);	/* Free previous item */
+		S->tvalue[col] = strdup (token);
 		S->dvalue[col] = gmt_convert_aspatial_value (GMT, S->type[col], token);
 		col++;
 	}
 	if (col == (S->n_aspatial-1)) {	/* Last item was blank and hence not returned by strsep */
-		S->value[col] = strdup ("");	/* Allocate space for blank string */
+		S->tvalue[col] = strdup ("");	/* Allocate space for blank string */
 	}
 	return (col);
 }
@@ -4745,7 +4745,7 @@ int GMT_parse_segment_header (struct GMT_CTRL *GMT, char *header, struct GMT_PAL
 	if (GMT->common.a.active) {	/* Use aspatial data instead */
 		for (col = 0; col < GMT->common.a.n_aspatial; col++) {
 			if (GMT->common.a.col[col] >= 0) continue;	/* Skip regular data column fillers */
-			txt = (G) ? G->value[col] : GMT->current.io.OGR->value[col];
+			txt = (G) ? G->tvalue[col] : GMT->current.io.OGR->tvalue[col];
 			z = (G) ? G->dvalue[col] : GMT->current.io.OGR->dvalue[col];
 			switch (GMT->common.a.col[col]) {
 				case GMT_IS_G:
@@ -4841,7 +4841,7 @@ void GMT_extract_label (struct GMT_CTRL *GMT, char *line, char *label, struct GM
 	unsigned int i = 0, k, j, j0;
 	char *p = NULL, q[2] = {'\"', '\''};
 
-	if (G && G->value && G->value[0]) { strcpy (label, G->value[0]); return ;}	/* Had an OGR segment label */
+	if (G && G->tvalue && G->tvalue[0]) { strcpy (label, G->tvalue[0]); return ;}	/* Had an OGR segment label */
 	if (GMT_parse_segment_item (GMT, line, "-L", label)) return;	/* Found -L */
 
 	label[0] = '\0';	/* Remove previous label */
@@ -4919,7 +4919,7 @@ void gmt_write_formatted_ogr_value (struct GMT_CTRL *GMT, FILE *fp, int col, int
 	
 	switch (type) {
 		case GMT_TEXT:
-			fprintf (fp, "%s", G->value[col]);
+			fprintf (fp, "%s", G->tvalue[col]);
 			break;
 		case GMT_DOUBLE:
 		case GMT_FLOAT:
@@ -5004,7 +5004,7 @@ void gmt_build_segheader_from_ogr (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT 
 				virt_col = abs (GMT->common.a.col[col]) - 1;	/* So -3 becomes 2 etc */
 				if (space) strcat (buffer, " ");
 				strcat (buffer, sflag[virt_col]);
-				strcat (buffer, S->ogr->value[GMT->common.a.ogr[col]]);
+				strcat (buffer, S->ogr->tvalue[GMT->common.a.ogr[col]]);
 				space = true;
 				break;
 			default:	/* Regular column cases are skipped */
@@ -5026,7 +5026,7 @@ void gmt_alloc_ogr_seg (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, int n_a
 	S->ogr = GMT_memory (GMT, NULL, 1, struct GMT_OGR_SEG);
 	S->ogr->n_aspatial = n_aspatial;
 	if (n_aspatial) {
-		S->ogr->value = GMT_memory (GMT, NULL, n_aspatial, char *);
+		S->ogr->tvalue = GMT_memory (GMT, NULL, n_aspatial, char *);
 		S->ogr->dvalue = GMT_memory (GMT, NULL, n_aspatial, double);
 	}
 }
@@ -5037,8 +5037,8 @@ void gmt_copy_ogr_seg (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, struct G
 
 	gmt_alloc_ogr_seg (GMT, S, G->n_aspatial);
 	for (col = 0; col < G->n_aspatial; col++) {
-		if (G->value != NULL && G->value[col])
-			S->ogr->value[col] = strdup (G->value[col]);
+		if (G->tvalue != NULL && G->tvalue[col])
+			S->ogr->tvalue[col] = strdup (G->tvalue[col]);
 		if (G->dvalue != NULL && G->dvalue[col])
 			S->ogr->dvalue[col] = G->dvalue[col];
 	}
@@ -5052,7 +5052,7 @@ void GMT_duplicate_ogr_seg (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S_to, 
 	if (!S_from->ogr) return;	/* No data */
 	gmt_alloc_ogr_seg (GMT, S_to, S_from->ogr->n_aspatial);
 	for (col = 0; col < S_from->ogr->n_aspatial; col++) {
-		if (S_from->ogr->value[col]) S_to->ogr->value[col] = strdup (S_from->ogr->value[col]);
+		if (S_from->ogr->tvalue[col]) S_to->ogr->tvalue[col] = strdup (S_from->ogr->tvalue[col]);
 		S_to->ogr->dvalue[col] = S_from->ogr->dvalue[col];
 	}
 	S_to->ogr->pol_mode = S_from->ogr->pol_mode;
@@ -6284,8 +6284,8 @@ void gmt_free_ogr_seg (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S)
 	unsigned int k, n;
 	n = (GMT->current.io.OGR) ? GMT->current.io.OGR->n_aspatial : GMT->common.a.n_aspatial; 
 	if (n) {
-		for (k = 0; S->ogr->value && k < n; k++) if (S->ogr->value[k]) free (S->ogr->value[k]);
-		GMT_free (GMT, S->ogr->value);
+		for (k = 0; S->ogr->tvalue && k < n; k++) if (S->ogr->tvalue[k]) free (S->ogr->tvalue[k]);
+		GMT_free (GMT, S->ogr->tvalue);
 		GMT_free (GMT, S->ogr->dvalue);
 	}
 	GMT_free (GMT, S->ogr);
@@ -6717,9 +6717,9 @@ void GMT_free_ogr (struct GMT_CTRL *GMT, struct GMT_OGR **G, unsigned int mode)
 	/* mode = 0 only frees the aspatial data value array, while mode = 1 frees the entire struct and contents */
 	for (k = 0; k < (*G)->n_aspatial; k++) {
 		if (mode == 1 && (*G)->name && (*G)->name[k]) free ((*G)->name[k]);
-		if ((*G)->value && (*G)->value[k]) free ((*G)->value[k]);
+		if ((*G)->tvalue && (*G)->tvalue[k]) free ((*G)->tvalue[k]);
 	}
-	if ((*G)->value) GMT_free (GMT, (*G)->value);
+	if ((*G)->tvalue) GMT_free (GMT, (*G)->tvalue);
 	if ((*G)->dvalue) GMT_free (GMT, (*G)->dvalue);
 	if (mode == 0) return;	/* That's all we do for now */
 	/* Here we free up everything */
@@ -6781,10 +6781,10 @@ int GMT_load_aspatial_values (struct GMT_CTRL *GMT, struct GMT_OGR *G)
 			case GMT_SHORT:
 			case GMT_UCHAR:
 			case GMT_CHAR:
-				GMT->current.io.curr_rec[GMT->common.a.col[k]] = atof (G->value[id]);
+				GMT->current.io.curr_rec[GMT->common.a.col[k]] = atof (G->tvalue[id]);
 				break;
 			case GMT_DATETIME:
-				GMT_scanf_arg (GMT, G->value[id], GMT_IS_ABSTIME, &GMT->current.io.curr_rec[GMT->common.a.col[k]]);
+				GMT_scanf_arg (GMT, G->tvalue[id], GMT_IS_ABSTIME, &GMT->current.io.curr_rec[GMT->common.a.col[k]]);
 				break;
 			default:	/* Do nothing (string) */
 				break;
@@ -6806,7 +6806,7 @@ double GMT_get_aspatial_value (struct GMT_CTRL *GMT, uint64_t col, struct GMT_DA
 	for (k = 0; k < GMT->common.a.n_aspatial; k++) {	/* For each item specified in -a */
 		if (scol != GMT->common.a.col[k]) continue;	/* Not the column we want */
 		id = gmt_get_ogr_id (GMT->current.io.OGR, GMT->common.a.name[k]);	/* Get the ID */
-		V = (S && S->ogr) ? S->ogr->value[id] : GMT->current.io.OGR->value[id];	/* Either from table or from segment (multi) */
+		V = (S && S->ogr) ? S->ogr->tvalue[id] : GMT->current.io.OGR->tvalue[id];	/* Either from table or from segment (multi) */
 		return (gmt_convert_aspatial_value (GMT, GMT->current.io.OGR->type[id], V));
 	}
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: No aspatial value found for column %d [Return NaN]\n", col);
@@ -6827,11 +6827,11 @@ int GMT_load_aspatial_string (struct GMT_CTRL *GMT, struct GMT_OGR *G, uint64_t 
 	if (id == GMT_NOTSET) return (0);
 	id = gmt_get_ogr_id (G, GMT->common.a.name[id]);
 	if (id == GMT_NOTSET) return (0);
-	len = strlen (G->value[id]);
+	len = strlen (G->tvalue[id]);
 	GMT_memset (out, GMT_BUFSIZ, char);
-	if (G->value[id][0] == '\"' && G->value[id][len-1] == '\"')	/* Skip opening and closing quotes */
-		strncpy (out, &G->value[id][1], len-2);
+	if (G->tvalue[id][0] == '\"' && G->tvalue[id][len-1] == '\"')	/* Skip opening and closing quotes */
+		strncpy (out, &G->tvalue[id][1], len-2);
 	else
-		strcpy (out, G->value[id]);
+		strcpy (out, G->tvalue[id]);
 	return (1);
 }
