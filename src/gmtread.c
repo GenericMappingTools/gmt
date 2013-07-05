@@ -41,7 +41,7 @@ struct GMTREAD_CTRL {
 	} IO;
 	struct T {	/* -T sets data type */
 		bool active;
-		int mode;
+		enum GMT_enum_family mode;
 	} T;
 };
 
@@ -146,7 +146,7 @@ int GMT_gmtread_parse (struct GMT_CTRL *GMT, struct GMTREAD_CTRL *Ctrl, struct G
 #define bailout(code) {GMT_Free_Options (mode); return (code);}
 #define Return(code) {Free_gmtread_Ctrl (GMT, Ctrl); GMT_end_module (GMT, GMT_cpy); bailout (code);}
 
-EXTERN_MSC int GMT_copy (struct GMTAPI_CTRL *API, unsigned int family, unsigned int direction, char *ifile, char *ofile);
+EXTERN_MSC int GMT_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile);
 
 int GMT_gmtread (void *V_API, int mode, void *args)
 {

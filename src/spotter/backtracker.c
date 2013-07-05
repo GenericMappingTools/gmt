@@ -374,18 +374,18 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 {
 	struct EULER *p = NULL;			/* Pointer to array of stage poles */
 
-	uint64_t n_points;			/* Number of data points read */
-	uint64_t n_track;			/* Number of points in a track segment */
+	uint64_t n_points;		/* Number of data points read */
+	uint64_t n_track;		/* Number of points in a track segment */
 	uint64_t n_segments;		/* Number of path segments written out */
 	uint64_t n_skipped = 0;		/* Number of points skipped because t < 0 */
 	uint64_t n_read = 0;		/* Number of records read */
 	uint64_t row;
 	uint64_t i, j;
 	uint64_t n_out, n_expected_fields, col;
-	unsigned int n_stages = 0;		/* Number of stage poles */
-	bool make_path = false;		/* true means create continuous path, false works on discrete points */
+	unsigned int n_stages = 0;	/* Number of stage poles */
 	int n_fields, error;		/* Misc. signed counters */
 	int spotter_way = 0;		/* Either SPOTTER_FWD or SPOTTER_BACK */
+	bool make_path = false;		/* true means create continuous path, false works on discrete points */
 	
 
 	double *c = NULL;		/* Array of track chunks returned by libeuler routines */
@@ -411,7 +411,7 @@ int GMT_backtracker (void *V_API, int mode, void *args)
 
 	if (API == NULL) return (GMT_NOT_A_SESSION);
 	if (mode == GMT_MODULE_PURPOSE) return (GMT_backtracker_usage (API, GMT_MODULE_PURPOSE));	/* Return the purpose of program */
-	options = GMT_Create_Options (API, mode, args);	if (API->error) return (API->error);	/* Set or get option list */
+	options = GMT_Create_Options (API, mode, args); if (API->error) return (API->error);	/* Set or get option list */
 
 	if (!options || options->option == GMT_OPT_USAGE) bailout (GMT_backtracker_usage (API, GMT_USAGE));	/* Return the usage message */
 	if (options->option == GMT_OPT_SYNOPSIS) bailout (GMT_backtracker_usage (API, GMT_SYNOPSIS));	/* Return the synopsis */
