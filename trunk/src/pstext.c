@@ -903,6 +903,10 @@ int GMT_pstext (void *V_API, int mode, void *args)
 
 			PSL_setfont (PSL, T.font.id);
 			GMT_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, in[GMT_Z]);
+			if (T.boxflag & 32) {	/* Draw line from original point to shifted location */
+				GMT_setpen (GMT, &T.vecpen);
+				PSL_plotsegment (PSL, xx[0], yy[0], xx[1], yy[1]);
+			}
 			if (!Ctrl->G.mode && T.boxflag & 3) {	/* Plot the box beneath the text */
 				if (T.space_flag) {	/* Meant % of fontsize */
 					offset[0] = 0.01 * T.x_space * T.font.size / PSL_POINTS_PER_INCH;
@@ -933,10 +937,6 @@ int GMT_pstext (void *V_API, int mode, void *args)
 			}
 			else {	
 				PSL_plottext (PSL, plot_x, plot_y, T.font.size, curr_txt, T.paragraph_angle, T.block_justify, fmode);
-				if (T.boxflag & 32) {	/* Draw line from original point to shifted location */
-					GMT_setpen (GMT, &T.vecpen);
-					PSL_plotsegment (PSL, xx[0], yy[0], xx[1], yy[1]);
-				}
 			}
 			if (Ctrl->A.active) T.paragraph_angle = save_angle;	/* Restore original angle */
 		}

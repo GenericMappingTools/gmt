@@ -213,6 +213,8 @@ EXTERN_MSC bool GMT_x_is_outside (struct GMT_CTRL *GMT, double *x, double left, 
 EXTERN_MSC void GMT_set_xy_domain (struct GMT_CTRL *GMT, double wesn_extended[], struct GMT_GRID_HEADER *h);
 EXTERN_MSC int GMT_BC_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h);
 EXTERN_MSC int GMT_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direction);
+EXTERN_MSC void GMT_inplace_transpose (float *A, unsigned int n_rows, unsigned int n_cols);
+
 #ifdef HAVE_GDAL
 EXTERN_MSC int GMT_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *I);
 #endif
