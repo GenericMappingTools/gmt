@@ -2482,7 +2482,8 @@ where ``array`` is the 1-D grid data array, ``dim`` returns the grid width, heig
 the ``title`` and ``remark`` returns the values of these strings.  The ``file``
 argument is the name of the file we wish to read from.  The function returns 0 unless there is an error.
 Note on input, ``dim[2]`` can be set to 1 which means we will allocate the array for you; otherwise
-we assume space has already been secured.
+we assume space has already been secured.  Also, if ``dim[3]`` is set to 1 we will in-place transpose
+the array from C-style row-major array order to Fortran column-major array order.
 
 Finally, to write a grid to file you cam use
 
@@ -2498,7 +2499,9 @@ where ``array`` is the 1-D grid data array, ``dim`` specifies the grid width, he
 the ``title`` and ``remark`` supplies the values of these strings.  The ``file``
 argument is the name of the file we wish to write to.  The function returns 0 unless there is an error.
 Note on input, ``dim[2]`` can be set to 1 which means we will allocate the array for you; otherwise
-we assume space has already been secured.
+we assume space has already been secured.  Also, if ``dim[3]`` is set to 1 we will in-place transpose
+the array from Fortran column-major array order to C-style row-major array order before writing. Note
+this means array will have been transposed when the function returns.
 
 
 .. [1]

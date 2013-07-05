@@ -5880,6 +5880,7 @@ int GMT_F77_readgrdinfo_ (unsigned int dim[], double limit[], double inc[], char
 
 int GMT_F77_readgrd_ (float *array, unsigned int dim[], double limit[], double inc[], char *title, char *remark, char *file)
 {	/* Note: When called, dim[2] is 1 we allocate the array, otherwise we assume it has enough space
+	 * Also, if dim[3] == 1 then we transpose the array before writing.
 	 * When returning, dim[2] holds the registration (0 = gridline, 1 = pixel).
 	 * limit[4-5] holds zmin/zmax. limit must thus at least have a length of 6.
 	 */
@@ -5905,6 +5906,8 @@ int GMT_F77_readgrd_ (float *array, unsigned int dim[], double limit[], double i
 		return EXIT_FAILURE;
 	}
 
+	if (dim[3] == 1) GMT_inplace_transpose (array, header.ny, header.nx);
+
 	/* Assign variables from header structure items */
 	dim[GMT_X] = header.nx;	dim[GMT_Y] = header.ny;
 	GMT_memcpy (limit, header.wesn, 4U, double);
@@ -5920,7 +5923,8 @@ int GMT_F77_readgrd_ (float *array, unsigned int dim[], double limit[], double i
 }
 
 int GMT_F77_writegrd_ (float *array, unsigned int dim[], double limit[], double inc[], char *title, char *remark, char *file)
-{	/* Note: When called, dim[2] holds the registration (0 = gridline, 1 = pixel). */
+{	/* Note: When called, dim[2] holds the registration (0 = gridline, 1 = pixel).
+	 * Also, if dim[3] == 1 then we transpose the array before writing.  */
  	unsigned int no_pad[4] = {0, 0, 0, 0};
 	char *argv = "GMT_F77_writegrd";
 	double no_wesn[4] = {0.0, 0.0, 0.0, 0.0};
@@ -5941,6 +5945,8 @@ int GMT_F77_writegrd_ (float *array, unsigned int dim[], double limit[], double 
 	header.registration = dim[GMT_Z];
 	strncpy (header.title, title, GMT_GRID_TITLE_LEN80); 
 	strncpy (header.remark, remark, GMT_GRID_REMARK_LEN160); 
+	
+	if (dim[3] == 1) GMT_inplace_transpose (array, header.ny, header.nx);
 	
 	/* Write the file */
 	

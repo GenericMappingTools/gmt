@@ -3446,6 +3446,60 @@ int GMT_intpol (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, uint64_t
 	return (GMT_NOERROR);
 }
 
+// Non-square matrix transpose of matrix of size r x c and base address A
+unsigned int is_set (unsigned int *mark, uint64_t k, unsigned int *bits)
+{	/* Return nonzero if this bit is set */
+	uint64_t w = k / 32ULL;
+	unsigned int b = (unsigned int)(k % 32ULL);
+	return (mark[w] & bits[b]);
+}
+
+void set_bit (unsigned int *mark, uint64_t k, unsigned int *bits)
+{	/* Set this bit */
+ 	uint64_t w = k / 32ULL;
+	unsigned int b = (unsigned int)(k % 32ULL);
+ 	mark[w] |= bits[b];
+}
+
+void GMT_inplace_transpose (float *A, unsigned int n_rows, unsigned int n_cols)
+{	/* In-place transpose of a float grid array.  Based on example
+	 * code from http://www.geeksforgeeks.org/inplace-m-x-n-size-matrix-transpose
+	 * Switched to C-style bit flag.
+	 */
+	uint64_t size = n_rows * n_cols - 1ULL;
+	float t;	/* holds element to be replaced, eventually becomes next element to move */
+	uint64_t next;	/* location of 't' to be moved */
+	uint64_t cycleBegin;	/* holds start of cycle */
+	uint64_t i;	/* iterator */
+	uint64_t word, n_words = ((size + 1ULL) / 32ULL) + 1ULL;
+	unsigned int *mark = NULL;
+	unsigned int bits[32];
+
+	mark = calloc (n_words, sizeof (unsigned int));
+	for (i = 1, bits[0] = 1; i < 32; i++) bits[i] = bits[i-1] << 1;
+	set_bit (mark, 0ULL, bits);
+	set_bit (mark, size, bits);
+	i = 1;	/* Note that A[0] and A[size-1] won't move */
+	while (i < size) {
+		cycleBegin = i;
+		t = A[i];
+		do {
+			// Input matrix [n_rows x n_cols]
+			// Output matrix 1
+			// i_new = (i*n_rows)%(N-1)
+			next = (i * n_rows) % size;
+			float_swap (A[next], t);
+			set_bit (mark, i, bits);
+			i = next;
+		}
+		while (i != cycleBegin);
+
+		/* Get Next Move (what about querying random location?) */
+		for (i = 1; i < size && is_set (mark, i, bits); i++);
+	}
+	free ((void *)mark);
+}
+
 int die_if_memfail (struct GMT_CTRL *GMT, size_t nelem, size_t size, const char *where)
 {	/* Handle reporting and aborting if memory allocation fails */
 	double mem = ((double)nelem) * ((double)size);
