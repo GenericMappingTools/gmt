@@ -168,7 +168,7 @@ endif (NOT GMT_MAN_PATH)
 # Install path for GMT binaries, headers and libraries
 include (GNUInstallDirs) # defines CMAKE_INSTALL_LIBDIR (lib/lib64)
 if (GMT_INSTALL_MONOLITHIC)
-	set (GMT_INCDIR include)
+	set (GMT_INCDIR include/gmt)
 	set (GMT_LIBDIR ${CMAKE_INSTALL_LIBDIR})
 	set (GMT_BINDIR bin)
 else (GMT_INSTALL_MONOLITHIC)
