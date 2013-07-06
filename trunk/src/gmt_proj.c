@@ -2617,10 +2617,17 @@ void GMT_icassini (struct GMT_CTRL *GMT, double *lon, double *lat, double x, dou
 /* Cassini functions for the Sphere */
 
 void GMT_cassini_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, double *y)
-{	/* Convert lon/lat to Cassini x/y */
+{	/* Convert lon/lat to Cassini x/y for spherical earth */
+
 	double slon, clon, clat, tlat, slat;
 
 	GMT_WIND_LON (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
+
+	if (GMT_PROJ_IS_ZERO (lat)) {	/* Quick when lat is zero */
+		*x = GMT->current.proj.EQ_RAD * lon * D2R;
+		*y = -GMT->current.proj.EQ_RAD * GMT->current.proj.c_p;
+		return;
+	}
 
 	sincosd (lon, &slon, &clon);
 	sincosd (lat, &slat, &clat);
@@ -2628,6 +2635,7 @@ void GMT_cassini_sph (struct GMT_CTRL *GMT, double lon, double lat, double *x, d
 	*x = GMT->current.proj.EQ_RAD * d_asin (clat * slon);
 	*y = GMT->current.proj.EQ_RAD * (atan (tlat / clon) - GMT->current.proj.c_p);
 }
+
 
 void GMT_icassini_sph (struct GMT_CTRL *GMT, double *lon, double *lat, double x, double y)
 {	/* Convert Cassini x/y to lon/lat */
