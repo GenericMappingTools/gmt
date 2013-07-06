@@ -13,8 +13,8 @@ ps=example_18.ps
 # Use spherical gmt projection since SS data define on sphere
 gmt gmtset PROJ_ELLIPSOID Sphere FORMAT_FLOAT_OUT %g
 
-# Define location of Pratt seamount
-echo "-142.65 56.25" > pratt.d
+# Define location of Pratt seamount and the 400 km diameter
+echo "-142.65 56.25 400" > pratt.d
 
 # First generate gravity image w/ shading, label Pratt, and draw a circle
 # of radius = 200 km centered on Pratt.
@@ -27,7 +27,7 @@ gmt pscoast -RAK_gulf_grav.nc -J -O -K -Di -Ggray -Wthinnest >> $ps
 gmt psscale -D2.75i/-0.4i/4i/0.15ih -Cgrav.cpt -Bx20f10 -By+l"mGal" -O -K >> $ps
 $AWK '{print $1, $2, "Pratt"}' pratt.d | gmt pstext -R -J -O -K -D0.1i/0.1i \
 	-F+f12p,Helvetica-Bold+jLB >> $ps
-$AWK '{print $1, $2, 0, 400, 400}' pratt.d | gmt psxy -R -J -O -K -SE -Wthinnest >> $ps
+gmt psxy pratt.d -R -J -O -K -SE- -Wthinnest >> $ps
 
 # Then draw 10 mGal contours and overlay 50 mGal contour in green
 
@@ -36,7 +36,7 @@ gmt grdcontour AK_gulf_grav.nc -J -C20 -B2f1 -BWSEn -O -K -Y-4.85i >> $ps
 gmt grdcontour AK_gulf_grav.nc -C10 -L49/51 -Dsm_%d_%c.txt
 gmt psxy -R -J -O -K -Wthin,green sm_*.txt >> $ps
 gmt pscoast -R -J -O -K -Di -Ggray -Wthinnest >> $ps
-$AWK '{print $1, $2, 0, 400, 400}' pratt.d | gmt psxy -R -J -O -K -SE -Wthinnest >> $ps
+gmt psxy pratt.d -R -J -O -K -SE- -Wthinnest >> $ps
 rm -f sm_*_O.txt	# Only consider the closed contours
 
 # Now determine centers of each enclosed seamount > 50 mGal but only plot

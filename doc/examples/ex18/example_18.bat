@@ -14,8 +14,8 @@ set ps=example_18.ps
 REM Use spherical projection since SS data define on sphere
 gmt gmtset PROJ_ELLIPSOID Sphere FORMAT_FLOAT_OUT %%g
 
-REM Define location of Pratt seamount
-echo -142.65 56.25 > pratt.d
+REM Define location of Pratt seamount and the 400 km diameter
+echo -142.65 56.25 400 > pratt.d
 
 REM First generate gravity image w/ shading, label Pratt, and draw a circle
 REM of radius = 200 km centered on Pratt.
@@ -27,7 +27,7 @@ gmt pscoast -RAK_gulf_grav.nc -J -O -K -Di -Ggray -Wthinnest >> %ps%
 gmt psscale -D2.75i/-0.4i/4i/0.15ih -Cgrav.cpt -Bx20f10 -By+l"mGal" -O -K >> %ps%
 echo {print $1, $2, "Pratt"} > t
 gawk -f t pratt.d | gmt pstext -R -J -O -K -D0.1i/0.1i -F+f12p,Helvetica-Bold+jLB >> %ps%
-gawk "{print $1, $2, 0, 400, 400}" pratt.d | gmt psxy -R -J -O -K -SE -Wthinnest >> %ps%
+gmt psxy pratt.d -R -J -O -K -SE- -Wthinnest >> %ps%
 
 REM Then draw 10 mGal contours and overlay 50 mGal contour in green
 
@@ -36,7 +36,7 @@ REM Save 50 mGal contours to individual files, then plot them
 gmt grdcontour AK_gulf_grav.nc -C10 -L49/51 -Dsm_%%d_%%c.txt
 gmt psxy -R -J -O -K -Wthin,green sm_*.txt >> %ps%
 gmt pscoast -R -J -O -K -Di -Ggray -Wthinnest >> %ps%
-gawk "{print $1, $2, 0, 400, 400}" pratt.d | gmt psxy -R -J -O -K -SE -Wthinnest >> %ps%
+gmt psxy pratt.d -R -J -O -K -SE- -Wthinnest >> %ps%
 REM Only consider closed contours
 del sm_*_O.txt
 
