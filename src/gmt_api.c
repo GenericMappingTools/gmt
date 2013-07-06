@@ -3030,7 +3030,7 @@ void GMT_Garbage_Collection (struct GMTAPI_CTRL *API, int level)
 			S_obj->alloc_mode = GMT_ALLOCATED_BY_GMT;	/* To ensure it will be Unregistered below */
 			i++;	continue;
 		}
-		else if (S_obj->direction == GMT_OUT) {	/* Do not free data pointers for output objects */
+		else if (S_obj->direction == GMT_OUT && S_obj->method == GMT_IS_REFERENCE) {	/* Do not free data pointers for output memory objects */
 			S_obj->data = S_obj->resource = NULL;
 			i++;	continue;
 		}
