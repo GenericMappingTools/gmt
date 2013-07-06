@@ -653,6 +653,9 @@ int GMT_grdblend (void *V_API, int mode, void *args)
 		GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -W option: Only applies when there is a single input grid file\n");
 		Return (EXIT_FAILURE);
 	}
+	if (!Ctrl->W.active && n_blend == 1) {
+		GMT_Report (API, GMT_MSG_NORMAL, "Warning: Only 1 grid found; no blending will take place\n");
+	}
 
 	no_data_f = (float)Ctrl->N.nodata;
 
