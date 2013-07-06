@@ -229,8 +229,7 @@ remotely located Jessica Rabbit
    ::
 
     gmt grdimage -JI15c -Rd -Dr
-        `http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg \
-        <http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg>`_
+        http://larryfire.files.wordpress.com/2009/07/untooned_jessicarabbit.jpg \
         -P > jess.ps
 
 See Also
