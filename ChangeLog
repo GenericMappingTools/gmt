@@ -2,6 +2,13 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-07-05	pwessel
+	* grdview.c:		Introduce new syntax for -N<level>[+<fill>] so we can handle
+				arbitrary fill, and -Q<args>[+m] as the old trailing g would
+				be confused by colors ending in 'g'.  Backwards compatible
+				under level 4.
+	* pstext.c:		The line in -D...v was plotted on top rather than beneath box.
+
 2013-07-02	pwessel
 	* gmt.c:		Works with shared libs under Cygwin as well.
 	* pshistogram.c:	Fixed porting bug in -A and added -D for count labels.
