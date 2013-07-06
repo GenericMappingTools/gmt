@@ -16,6 +16,9 @@ ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) sou
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
+	@echo "  pngfigs    to make PNG figures used by documentation"
+	@echo "  pdffigs    to make PDF figures used by documentation"
+	@echo "------------------------------------------------------"
 	@echo "  html       to make standalone HTML files"
 	@echo "  dirhtml    to make HTML files named index.html in directories"
 	@echo "  singlehtml to make a single large HTML file"
@@ -35,6 +38,12 @@ help:
 
 clean:
 	-rm -rf $(BUILDDIR)/*
+
+pdffigs:
+	sh do_fig_includes.sh pdf
+
+pngfigs:
+	sh do_fig_includes.sh
 
 html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
