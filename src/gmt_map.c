@@ -4643,6 +4643,10 @@ bool gmt_map_init_cassini (struct GMT_CTRL *GMT) {
 	double xmin, xmax, ymin, ymax;
 
 	if (GMT_is_dnan (GMT->current.proj.pars[0])) GMT->current.proj.pars[0] = 0.5 * (GMT->common.R.wesn[XLO] + GMT->common.R.wesn[XHI]);
+	if ((GMT->current.proj.pars[0] - GMT->common.R.wesn[XLO]) > 90.0 || (GMT->common.R.wesn[XHI] - GMT->current.proj.pars[0]) > 90.0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "ERROR: Max longitude extension away from central meridian is limited to +/- 90 degrees\n");
+		GMT_exit (GMT->parent->do_not_exit, EXIT_FAILURE);
+	}
 	too_big = gmt_quicktm (GMT, GMT->current.proj.pars[0], 4.0);
 	if (too_big) GMT_set_spherical (GMT, true);	/* Cannot use ellipsoidal series for this area */
 	GMT_vcassini (GMT, GMT->current.proj.pars[0], GMT->current.proj.pars[1]);
