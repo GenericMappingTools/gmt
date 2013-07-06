@@ -237,19 +237,19 @@ support via ``GMT_grdimage`` [4]_.
 
 .. _tbl-image:
 
-  ::
+::
 
-    struct GMT_IMAGE {
-        enum GMT_enum_type type;        /* Data type, e.g. GMT_FLOAT */
-        int		*ColorMap;      /* Array with color lookup values */
-        struct GMT_GRID_HEADER *header;	/* Pointer to full GMT header for the image */
-        unsigned char   *data;          /* Pointer to actual image */
-        /* ---- Variables "hidden" from the API ---- */
-        unsigned int id;                /* The internal number of the data set */
-        enum GMT_enum_alloc alloc_mode; /* Allocation info [0] */
-        unsigned int alloc_level;       /* Level of initial allocation */
-        const char      *ColorInterp;
-    };
+  struct GMT_IMAGE {
+      enum GMT_enum_type type;        /* Data type, e.g. GMT_FLOAT */
+      int		*ColorMap;      /* Array with color lookup values */
+      struct GMT_GRID_HEADER *header;	/* Pointer to full GMT header for the image */
+      unsigned char   *data;          /* Pointer to actual image */
+      /* ---- Variables "hidden" from the API ---- */
+      unsigned int id;                /* The internal number of the data set */
+      enum GMT_enum_alloc alloc_mode; /* Allocation info [0] */
+      unsigned int alloc_level;       /* Level of initial allocation */
+      const char      *ColorInterp;
+  };
 
 User data columns (GMT vectors)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -268,71 +268,66 @@ data set *via* a ``struct GMT_VECTOR`` it will know how to read the data correct
 
 .. _tbl-univector:
 
-  ::
+::
 
-    union GMT_UNIVECTOR { 
-        uint8_t  *uc1;       /* Pointer for unsigned 1-byte array */ 
-        uint8_t  *uc1;       /* Pointer for unsigned 1-byte array */ 
-        int8_t   *sc1;       /* Pointer for signed 1-byte array */
-        uint16_t *ui2;       /* Pointer for unsigned 2-byte array */
-        int16_t  *si2;       /* Pointer for signed 2-byte array */
-        uint32_t *ui4;       /* Pointer for unsigned 4-byte array */
-        int32_t  *si4;       /* Pointer for signed 4-byte array */
-        uint64_t *ui8;       /* Pointer for unsigned 8-byte array */
-        int64_t  *si8;       /* Pointer for signed 8-byte array */
-        float    *f4;        /* Pointer for float array */
-        double   *f8;        /* Pointer for double array */
-    };
+  union GMT_UNIVECTOR { 
+      uint8_t  *uc1;       /* Pointer for unsigned 1-byte array */ 
+      uint8_t  *uc1;       /* Pointer for unsigned 1-byte array */ 
+      int8_t   *sc1;       /* Pointer for signed 1-byte array */
+      uint16_t *ui2;       /* Pointer for unsigned 2-byte array */
+      int16_t  *si2;       /* Pointer for signed 2-byte array */
+      uint32_t *ui4;       /* Pointer for unsigned 4-byte array */
+      int32_t  *si4;       /* Pointer for signed 4-byte array */
+      uint64_t *ui8;       /* Pointer for unsigned 8-byte array */
+      int64_t  *si8;       /* Pointer for signed 8-byte array */
+      float    *f4;        /* Pointer for float array */
+      double   *f8;        /* Pointer for double array */
+  };
 
 
-   Table 1.1: Definition of the GMT_UNIVECTOR union that holds a pointer to any array type.
-
-[tbl:univector]
+Table 1.1: Definition of the GMT_UNIVECTOR union that holds a pointer to any array type.
 
 
 .. _tbl-vector:
 
-  ::
+::
 
-    struct GMT_VECTOR {
-        uint64_t             n_columns;     /* Number of vectors */
-        uint64_t             n_rows;        /* Number of rows in each vector */
-        enum GMT_enum_type  *type;          /* Array with data type for each vector */
-        double               range[2];      /* The min and max limits on t-range (or 0,0) */
-        union GMT_UNIVECTOR *data;          /* Array with unions for each column */
-        unsigned int         id;            /* An identification number */
-        enum GMT_enum_alloc  alloc_mode;    /* Determines if we may free the vectors or not */
-        unsigned int alloc_level;           /* Level of initial allocation */
-    };
+  struct GMT_VECTOR {
+      uint64_t             n_columns;     /* Number of vectors */
+      uint64_t             n_rows;        /* Number of rows in each vector */
+      enum GMT_enum_type  *type;          /* Array with data type for each vector */
+      double               range[2];      /* The min and max limits on t-range (or 0,0) */
+      union GMT_UNIVECTOR *data;          /* Array with unions for each column */
+      unsigned int         id;            /* An identification number */
+      enum GMT_enum_alloc  alloc_mode;    /* Determines if we may free the vectors or not */
+      unsigned int alloc_level;           /* Level of initial allocation */
+  };
 
-
-[tbl:vector]
 
 User data matrices (GMT matrices)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. _tbl-matrix:
 
-  ::
+::
 
-    struct GMT_MATRIX {
-        uint64_t n_rows;                    /* Number of rows in the matrix */
-        uint64_t n_columns;                 /* Number of columns in the matrix */
-        unsigned int n_layers;              /* Number of layers in a 3-D matrix */
-        unsigned int shape;                 /* 0 = C (rows) and 1 = Fortran (cols) */
-        unsigned int registration;          /* 0 for gridline and 1 for pixel registration */
-        size_t dim;                         /* Length of dimension for row (C) or column (Fortran) */
-        size_t size;                        /* Byte length of data */
-        enum GMT_enum_alloc alloc_mode;     /* Determines if we may free the vectors or not */
-        double range[6];                    /* The min and max limits on x-, y-, and z-ranges */
-        union GMT_UNIVECTOR data;           /* Union with pointers a data matrix of any type */
-        /* ---- Variables "hidden" from the API ---- */
-        unsigned int id;                    /* An identification number */
-        unsigned int alloc_level;           /* Level of initial allocation */
-        enum GMT_enum_type type;            /* The matrix data type */
-    };
+  struct GMT_MATRIX {
+      uint64_t n_rows;                    /* Number of rows in the matrix */
+      uint64_t n_columns;                 /* Number of columns in the matrix */
+      unsigned int n_layers;              /* Number of layers in a 3-D matrix */
+      unsigned int shape;                 /* 0 = C (rows) and 1 = Fortran (cols) */
+      unsigned int registration;          /* 0 for gridline and 1 for pixel registration */
+      size_t dim;                         /* Length of dimension for row (C) or column (Fortran) */
+      size_t size;                        /* Byte length of data */
+      enum GMT_enum_alloc alloc_mode;     /* Determines if we may free the vectors or not */
+      double range[6];                    /* The min and max limits on x-, y-, and z-ranges */
+      union GMT_UNIVECTOR data;           /* Union with pointers a data matrix of any type */
+      /* ---- Variables "hidden" from the API ---- */
+      unsigned int id;                    /* An identification number */
+      unsigned int alloc_level;           /* Level of initial allocation */
+      enum GMT_enum_type type;            /* The matrix data type */
+  };
 
-[tbl:matrix]
 
 Likewise, programs may have an integer 2-D matrix in memory and wish to
 use that as the input grid to the ``GMT_grdfilter`` module, which
@@ -340,13 +335,13 @@ normally expects a ``struct GMT_GRID`` with floating point data via a
 file or provided by memory reference. As for user vectors, we create a
 ``struct GMT_MATRIX`` (see section [sec:create]), assign the appropriate
 union pointer to your data matrix and provide information on dimensions
-and data type (see Table [tbl:matrix]). Let the *GMT* module know you
+and data type (see Table :ref:`matrix <tbl-matrix>`). Let the *GMT* module know you
 are passing a grid via a ``struct GMT_MATRIX`` and it will know how to
 read the matrix properly.
 
-The ``enum`` types referenced in Table [tbl:vector] and
-Table [tbl:matrix] and summarized in Table [tbl:enums] and
-Table [tbl:types].
+The ``enum`` types referenced in Table :ref:`vector <tbl-vector>` and
+Table :ref:`matrix <tbl-matrix>` and summarized in Table :ref:`enums <tbl-enums>`
+and Table :ref:`types <tbl-types>`.
 
 .. _tbl-enums:
 
@@ -357,8 +352,7 @@ Table [tbl:types].
 +---------------------------+-------+----------------------------------------------------------------+
 | GMT_ALLOCATED_BY_GMT      | 1     | GMT allocated the memory; reallocate and free as needed        |
 +---------------------------+-------+----------------------------------------------------------------+
-
-[tbl:enums]
++---------------------------+-------+----------------------------------------------------------------+
 
 .. _tbl-types:
 
@@ -386,12 +380,10 @@ Table [tbl:types].
 | GMT_DOUBLE   | 9     | 8-byte data float type                   |
 +--------------+-------+------------------------------------------+
 
-[tbl:types]
 
 Overview of the GMT C Application Program Interface
 ===================================================
 
-[ch:overview]
 
 Users who wish to create their own *GMT* application based on the API
 must make sure their program goes through the steps below; details for
@@ -557,7 +549,6 @@ Table [tbl:API] gives a list of all the functions and their purpose.
 | GMT_Write_Data_         | Export a data resource                            |
 +-------------------------+---------------------------------------------------+
 
-[tbl:API]
 
 The GMT C Application Program Interface
 =======================================
@@ -671,6 +662,7 @@ which accepts the unique ``ID`` and writes the corresponding
 16 bytes. The function returns TRUE (1) if there is an error; otherwise
 it returns FALSE (0).
 
+
 .. _tbl-family:
 
 +------------------+-------+--------------------------------+
@@ -686,8 +678,7 @@ it returns FALSE (0).
 +------------------+-------+--------------------------------+
 | GMT_IS_IMAGE     | 4     | A *GMT* image                  |
 +------------------+-------+--------------------------------+
-
-[tbl:family]
++------------------+-------+--------------------------------+
 
 
 .. _tbl-methods:
@@ -705,8 +696,8 @@ it returns FALSE (0).
 +--------------------+-------+--------------------------------------------------+
 | GMT_IS_REFERENCE   | 4     | Pointer to memory we may *reference* data from   |
 +--------------------+-------+--------------------------------------------------+
++--------------------+-------+--------------------------------------------------+
 
-[tbl:methods]
 
 
 .. _tbl-via:
@@ -718,8 +709,9 @@ it returns FALSE (0).
 +------------------+-------+--------------------------------------------------------------+
 | GMT_VIA_MATRIX   | 200   | User's matrix is accessed via a GMT_MATRIX structure         |
 +------------------+-------+--------------------------------------------------------------+
++------------------+-------+--------------------------------------------------------------+
 
-[tbl:via]
+
 
 .. _tbl-geometry:
 
@@ -736,8 +728,8 @@ it returns FALSE (0).
 +------------------+---------+-------------------------------------------+
 | GMT_IS_SURFACE   | 4       | 2-D gridded surface                       |
 +------------------+---------+-------------------------------------------+
++------------------+---------+-------------------------------------------+
 
-[tbl:geometry]
 
 .. _tbl-wesn:
 
@@ -757,7 +749,6 @@ it returns FALSE (0).
 | 5       | GMT_ZHI |  z_max (top) boundary of 3-D matrix subset      |
 +---------+---------+-------------------------------------------------+
 
-[tbl:wesn]
 
 Resource initialization
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -855,7 +846,6 @@ and data domain ``range``.
 Create empty resources
 ----------------------
 
-[sec:create]
 
 If your application needs to build and populate *GMT* resources in ways
 that do not depend on external resources (files, memory locations,
@@ -931,7 +921,6 @@ error code via ``API->error``.
 Duplicate resources
 -------------------
 
-[sec:duplicate]
 
 Often you have read or created a data resource and then need an
 identical copy, presumably to make modifications to. Or, you want a copy
@@ -958,7 +947,6 @@ of an error we return a NULL pointer and pass an error code via
 Get resource ID
 ---------------
 
-[sec:getID]
 
 Resources created by these two methods can be used as in various ways.
 Sometimes you want to pass them as input to other modules, in which
@@ -1073,13 +1061,13 @@ To read an entire resource from a file, stream, or file handle, use
 * :ref:`geometry <tbl-geometry>`
 * :ref:`wesn <tbl-wesn>`
 
-   .. function::  void *GMT_Read_Data (void *API, unsigned int family, unsigned int method,
-                         unsigned int geometry, unsigned int mode, double wesn[],
-                         char *input, void *ptr);
+.. function:: void *GMT_Read_Data (void *API, unsigned int family, unsigned int method,
+                      unsigned int geometry, unsigned int mode, double wesn[],
+                      char *input, void *ptr);
 
-      :param API: None of your business
-      :param family: :ref:`family <tbl-family>`
-      :rtype: None (void)
+   :param API: None of your business
+   :param family: :ref:`family <tbl-family>`
+   :rtype: None (void)
 
 where ``ptr`` is NULL except when reading grids in two steps (i.e.,
 first get a grid structure with a header, then read the data). Most of
@@ -1271,7 +1259,6 @@ say, ``blockmean.c`` or ``pstext.c``, to see examples of working code.
 |   GMT_IO_NEXT_FILE          | 1 if we finished one file but not the last               |
 +-----------------------------+----------------------------------------------------------+
 
-[tbl:iostatus]
 
 Importing a grid row
 ~~~~~~~~~~~~~~~~~~~~
@@ -1309,8 +1296,7 @@ function disables further record-by-record data import; its prototype is
 and we specify ``direction`` = GMT_IN. At the moment, ``mode`` is not
 used. This call will also reallocate any arrays obtained into their
 proper lengths. The function returns TRUE (1) if there is an error
-(which is passed back with ``API->error``), otherwise it returns FALSE
-(0).
+(which is passed back with ``API->error``), otherwise it returns FALSE (0).
 
 Manipulate data
 ---------------
@@ -1447,8 +1433,6 @@ following code snippet will visit all text records and print them out:
 Message and Verbose Reporting
 -----------------------------
 
-[sec:messages]
-
 The API provides two functions for your program to present information
 to the user during the run of the program. One is used for messages that
 are always written while the other is used for reports that must exceed
@@ -1468,6 +1452,7 @@ on the chosen run-time verbosity level set via **-V** your message may
 or may not be reported. Only messages whose stated verbosity level is
 lower or equal to the **-V**\ *level* will be printed.
 
+
 .. _tbl-verbosity:
 
 +-------------------------+-------+--------------------------------------------------+
@@ -1486,7 +1471,6 @@ lower or equal to the **-V**\ *level* will be printed.
 | GMT_MSG_DEBUG           | 5     | Debug messages for developers mostly             |
 +-------------------------+-------+--------------------------------------------------+
 
-[tbl:verbosity]
 
 .. _GMT_Message:
 
@@ -1497,7 +1481,8 @@ lower or equal to the **-V**\ *level* will be printed.
 This function always prints its message to the standard output. Use the
 ``mode`` value to control if a time stamp should preface the message.
 and if selected how the time information should be formatted. See
-Table [tbl:timemodes] for the various modes.
+Table :ref:`timemodes <tbl-timemodes>` for the various modes.
+
 
 .. _tbl-timemodes:
 
@@ -1513,7 +1498,6 @@ Table [tbl:timemodes] for the various modes.
 | GMT_TIME_RESET     | 3     | Reset the elapsed time to 0             |
 +--------------------+-------+-----------------------------------------+
 
-[tbl:timemodes]
 
 Presenting and accessing GMT options
 ------------------------------------
@@ -2005,7 +1989,6 @@ you call GMT_Begin_IO_
 | GMT_COMMENT_IS_RESET      | 8     | Comment replaces existing information                |
 +---------------------------+-------+------------------------------------------------------+
 
-[tbl:comments]
 
 The named modes (*command*, *remark*, *title*, *name_x,y,z* and
 *colnames* are used to distinguish regular text comments from specific
@@ -2474,8 +2457,8 @@ To actually read the grid, we use
 
   ::
 
-    int GMT_F77_readgrd (float *array, unsigned int dim[], double wesn[], double inc[],
-                         char *title, char *remark, char *file)
+    int GMT_F77_readgrd (float *array, unsigned int dim[], double wesn[],
+                         double inc[], char *title, char *remark, char *file)
 
 where ``array`` is the 1-D grid data array, ``dim`` returns the grid width, height, and registration,
 ``limits`` returns the min and max values for x, y, and z, ``inc`` returns the x and y increments,
@@ -2491,8 +2474,8 @@ Finally, to write a grid to file you can use
 
   ::
 
-    int GMT_F77_writegrd_(float *array, unsigned int dim[], double wesn[], double inc[],
-                          char *title, char *remark, char *file)
+    int GMT_F77_writegrd_(float *array, unsigned int dim[], double wesn[],
+                          double inc[], char *title, char *remark, char *file)
 
 where ``array`` is the 1-D grid data array, ``dim`` specifies the grid width, height, and registration,
 ``limits`` may be used to specify a subset (normally, just pass zeros), ``inc`` specifies the x and y increments,
