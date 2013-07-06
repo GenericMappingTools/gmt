@@ -8351,7 +8351,7 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 {
 	/* mode = 0 for 2-D (psxy) and = 1 for 3-D (psxyz); cmd = true when called to process command line options */
 	int decode_error = 0, bset = 0, j, n, k, slash = 0, colon, col_off = mode, len;
-	bool check = true;
+	bool check = true, degenerate = false;
 	unsigned int ju;
 	char symbol_type, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, text_cp[GMT_LEN256] = {""}, *c = NULL, *s = NULL;
 	static char *allowed_symbols[2] = {"=-+AaBbCcDdEefGgHhIiJjMmNnpqRrSsTtVvWwxy", "=-+AabCcDdEefGgHhIiJjMmNnOopqRrSsTtUuVvWwxy"};
@@ -8367,9 +8367,14 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 	p->user_unit[GMT_X] = p->user_unit[GMT_Y] = p->u_set = false;
 	p->font = GMT->current.setting.font_annot[0];
 	if (p->read_size)  p->given_size_x = p->given_size_y = p->size_x = p->size_y = 0.0;
+	
 	/* col_off is the col number of first parameter after (x,y) [or (x,y,z) if mode == 1)].
 	   However, if size is not given then that is requred too so col_off++ */
 	
+	if (!strcmp (text, "E-") || !strcmp (text, "e-")) {	/* Special degenerate ellipse symbol, remove the - to avoid parsing issues */
+		degenerate = true;
+		text[1] = 0;
+	}
 	if (!strchr (GMT_VECTOR_CODES "fq", text[0]) && (s = strstr (text, "+s"))) {	/* Gave a symbol size scaling relation */
 		k = (int)strlen (text) - 1;	/* Last character position */
 		s[0] = '\0';		/* Temporarily separate this modifer from the rest of the symbol option (restored at end of function) */
@@ -8631,14 +8636,29 @@ int GMT_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 			p->symbol = GMT_SYMBOL_DIAMOND;
 			break;
 		case 'E':	/* Expect axis in km to be scaled based on -J */
+			p->symbol = GMT_SYMBOL_ELLIPSE;
 			p->convert_angles = 1;
-			p->nondim_col[p->n_nondim++] = 2 + mode;	/* Angle */
-			p->nondim_col[p->n_nondim++] = 3 + mode;	/* Since they are in km, not inches or cm etc */
-			p->nondim_col[p->n_nondim++] = 4 + mode;
+			if (degenerate) {	/* Degenerate ellipse = circle */
+				p->n_required = 1;	/* Only expect diameter */
+				p->nondim_col[p->n_nondim++] = 2 + mode;	/* Since diamger is in km, not inches or cm etc */
+			}
+			else {
+				p->n_required = 3;
+				p->nondim_col[p->n_nondim++] = 2 + mode;	/* Angle */
+				p->nondim_col[p->n_nondim++] = 3 + mode;	/* Since they are in km, not inches or cm etc */
+				p->nondim_col[p->n_nondim++] = 4 + mode;
+			}
+			check = false;
+			break;
 		case 'e':
 			p->symbol = GMT_SYMBOL_ELLIPSE;
-			p->n_required = 3;
-			p->nondim_col[p->n_nondim++] = 2 + mode;	/* Angle */
+			if (degenerate) {	/* Degenerate ellipse = circle */
+				p->n_required = 1;	/* Only expect diameter */
+			}
+			else {	/* Expect angle in degrees, then major and major axes in plot units */
+				p->n_required = 3;
+				p->nondim_col[p->n_nondim++] = 2 + mode;	/* Angle */
+			}
 			check = false;
 			break;
 

@@ -165,6 +165,7 @@ int GMT_psxyz_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t     If -SE rather than -Se is selected, psxy will expect azimuth, and\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     axes in km, and convert azimuths based on map projection.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If projection is linear then we scale the axes by the map scale.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Use -SE- for a degenerate ellipse (circle) with only diameter in km given.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Rotatable Rectangle: Direction, x- and y-dimensions in columns 4-6.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If -SJ rather than -Sj is selected, psxy will expect azimuth, and\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     dimensions in km and convert azimuths based on map projection.\n");
@@ -553,6 +554,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 	in = GMT->current.io.curr_rec;
 
 	if (not_line) {	/* symbol part (not counting GMT_SYMBOL_FRONT and GMT_SYMBOL_QUOTED_LINE) */
+		double in2[7] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, *p_in = GMT->current.io.curr_rec;
 		if (GMT_Init_IO (API, set_type, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 			Return (API->error);
 		}
@@ -560,6 +562,7 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 			Return (API->error);
 		}
 		GMT->current.map.is_world = !(S.symbol == GMT_SYMBOL_ELLIPSE && S.convert_angles);
+		if (S.symbol == GMT_SYMBOL_ELLIPSE && S.n_required == 1) p_in = in2;
 		if (!read_symbol) API->object[API->current_item[GMT_IN]]->n_expected_fields = n_needed;
 		n = 0;
 		do {	/* Keep returning records until we reach EOF */
@@ -641,6 +644,10 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 			if (GMT_geo_to_xy (GMT, in[GMT_X], in[GMT_Y], &data[n].x, &data[n].y) || GMT_is_dnan(in[GMT_Z])) continue;	/* NaNs on input */
 			data[n].z = GMT_z_to_zz (GMT, in[GMT_Z]);
 
+			if (S.symbol == GMT_SYMBOL_ELLIPSE && S.n_required == 1) {	/* Degenerate ellipses */
+				in2[ex2] = in2[ex3] = in[ex1];	/* Duplicate diameter as major and minor axes */
+			}
+
 			if (S.base_set == 2) {	/* Got base from input column */
 				bcol = (S.read_size) ? ex2 : ex1;
 				S.base = in[bcol];
@@ -684,19 +691,19 @@ int GMT_psxyz (void *V_API, int mode, void *args)
 				case GMT_SYMBOL_ELLIPSE:
 				case GMT_SYMBOL_ROTRECT:
 					if (!S.convert_angles) {	/* Got axes in current plot units, change to inches */
-						data[n].dim[0] = in[ex1];	/* direction */
-						data[n].dim[1] = in[ex2];
-						data[n].dim[2] = in[ex3];
+						data[n].dim[0] = p_in[ex1];	/* direction */
+						data[n].dim[1] = p_in[ex2];
+						data[n].dim[2] = p_in[ex3];
 					}
 					else if (!GMT_is_geographic (GMT, GMT_IN)) {	/* Got axes in user units, change to inches */
-						data[n].dim[0] = 90.0 - in[ex1];	/* Cartesian azimuth */
-						data[n].dim[1] = in[ex2] * GMT->current.proj.scale[GMT_X];
-						data[n].dim[2] = in[ex3] * GMT->current.proj.scale[GMT_X];
+						data[n].dim[0] = 90.0 - p_in[ex1];	/* Cartesian azimuth */
+						data[n].dim[1] = p_in[ex2] * GMT->current.proj.scale[GMT_X];
+						data[n].dim[2] = p_in[ex3] * GMT->current.proj.scale[GMT_X];
 					}
 					else {				/* Got axis in km */
-						data[n].dim[0] = in[ex1];	/* Azimuth will be forwarded to GMT_geo_rectangle/ellipse */
-						data[n].dim[1] = in[ex2];
-						data[n].dim[2] = in[ex3];
+						data[n].dim[0] = p_in[ex1];	/* Azimuth will be forwarded to GMT_geo_rectangle/ellipse */
+						data[n].dim[1] = p_in[ex2];
+						data[n].dim[2] = p_in[ex3];
 						data[n].x = in[GMT_X];	/* Revert to longitude and latitude */
 						data[n].y = in[GMT_Y];
 						data[n].flag |= 2;	/* Signals to use GMT_geo_* routine */

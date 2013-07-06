@@ -304,6 +304,7 @@ int GMT_psxy_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t     If -SE rather than -Se is selected, psxy will expect azimuth, and\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     axes in km, and convert azimuths based on map projection.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If projection is linear then we scale the axes by the map scale.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     Use -SE- for a degenerate ellipse (circle) with only diameter in km given.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Rotatable Rectangle: Direction, x- and y-dimensions in columns 3-5.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     If -SJ rather than -Sj is selected, psxy will expect azimuth, and\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     dimensions in km and convert azimuths based on map projection.\n");
@@ -737,6 +738,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 	}
 
 	if (not_line) {	/* Symbol part (not counting GMT_SYMBOL_FRONT and GMT_SYMBOL_QUOTED_LINE) */
+		double in2[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, *p_in = GMT->current.io.curr_rec;
 		if (GMT_Init_IO (API, set_type, geometry, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {	/* Register data input */
 			Return (API->error);
 		}
@@ -745,6 +747,7 @@ int GMT_psxy (void *V_API, int mode, void *args)
 		}
 		PSL_command (GMT->PSL, "V\n");
 		GMT->current.map.is_world = !(S.symbol == GMT_SYMBOL_ELLIPSE && S.convert_angles);
+		if (S.symbol == GMT_SYMBOL_ELLIPSE && S.n_required == 1) p_in = in2;
 		do {	/* Keep returning records until we reach EOF */
 			if ((record = GMT_Get_Record (API, read_mode, NULL)) == NULL) {	/* Read next record, get NULL if special case */
 				if (GMT_REC_IS_ERROR (GMT)) 		/* Bail if there are any read errors */
@@ -859,6 +862,10 @@ int GMT_psxy (void *V_API, int mode, void *args)
 				GMT_setfill (GMT, &current_fill, outline_active);
 				GMT_setpen (GMT, &current_pen);
 			}
+			
+			if (S.symbol == GMT_SYMBOL_ELLIPSE && S.n_required == 1) {	/* Degenerate ellipses */
+				in2[ex2] = in2[ex3] = in[ex1];	/* Duplicate diameter as major and minor axes */
+			}
 
 			if (S.base_set == 2) {
 				bcol = (S.read_size) ? ex2 : ex1;
@@ -923,21 +930,21 @@ int GMT_psxy (void *V_API, int mode, void *args)
 				case GMT_SYMBOL_ROTRECT:
 				case GMT_SYMBOL_ELLIPSE:
 					if (!S.convert_angles) {	/* Got axes in current plot units, change to inches */
-						dim[0] = in[ex1];
-						dim[1] = in[ex2];
-						dim[2] = in[ex3];
+						dim[0] = p_in[ex1];
+						dim[1] = p_in[ex2];
+						dim[2] = p_in[ex3];
 						PSL_plotsymbol (PSL, plot_x, plot_y, dim, S.symbol);
 					}
 					else if (!GMT_is_geographic (GMT, GMT_IN)) {	/* Got axes in user units, change to inches */
-						dim[0] = 90.0 - in[ex1];	/* Cartesian azimuth */
-						dim[1] = in[ex2] * GMT->current.proj.scale[GMT_X];
-						dim[2] = in[ex3] * GMT->current.proj.scale[GMT_X];
+						dim[0] = 90.0 - p_in[ex1];	/* Cartesian azimuth */
+						dim[1] = p_in[ex2] * GMT->current.proj.scale[GMT_X];
+						dim[2] = p_in[ex3] * GMT->current.proj.scale[GMT_X];
 						PSL_plotsymbol (PSL, plot_x, plot_y, dim, S.symbol);
 					}
 					else if (S.symbol == GMT_SYMBOL_ELLIPSE)	/* Got axis in km */
-						GMT_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
+						GMT_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], p_in[ex2], p_in[ex3], p_in[ex1]);
 					else
-						GMT_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], in[ex2], in[ex3], in[ex1]);
+						GMT_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], p_in[ex2], p_in[ex3], p_in[ex1]);
 					break;
 				case GMT_SYMBOL_TEXT:
 					if (Ctrl->G.active && !outline_active)

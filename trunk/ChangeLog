@@ -2,6 +2,10 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-07-06	pwessel
+	* psxy[z].c:		Allow -SE- to indicate degenerate ellipse (circle) and only
+				the diameter in km is expected on input.
+
 2013-07-05	pwessel
 	* grdview.c:		Introduce new syntax for -N<level>[+<fill>] so we can handle
 				arbitrary fill, and -Q<args>[+m] as the old trailing g would
