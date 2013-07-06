@@ -14,8 +14,8 @@ grdview - Create 3-D perspective image or surface mesh from a grid
 [ **-C**\ [*cptfile*]]
 [ **-G**\ *drapefile* \| **-G**\ *grd\_r*,\ *grd\_g*,\ *grd\_b* ]
 [ **-I**\ *intensfile*\ \|\ *intensity* ] [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ]
-[ **-N**\ *level*\ [/*color*] ] [ **-O** ] [ **-P** ]
-[ **-Q**\ *type*\ [**g**] ]
+[ **-N**\ *level*\ [**+g**\ *fill*] ] [ **-O** ] [ **-P** ]
+[ **-Q**\ *args*\ [**+m**] ]
 [ |SYN_OPT-Rz| ]
 [ **-S**\ *smooth* ]
 [ **-T**\ [**s**][\ **o**\ [*pen*]] ]
@@ -82,8 +82,9 @@ Optional Arguments
 
 .. include:: explain_-K.rst_
 
-**-N**\ *level*\ [/*color*]
-    Draws a plane at this z-level. If the optional *color* is provided,
+**-N**\ *level*\ [**+g**\ *fill*]
+    Draws a plane at this z-level. If the optional *color* is provided
+   via the **+g** modifier,
     the frontal facade between the plane and the data perimeter is
     colored. See **-Wf** for setting the pen used for the outline. 
 
@@ -91,9 +92,9 @@ Optional Arguments
 
 .. include:: explain_-P.rst_
 
-**-Q**\ *type*\ [**g**\ ]
+**-Q**\ *args*\ [**g**\ ]
     Select one of four settings: 1. Specify **m** for mesh plot
-    [Default], and optionally append /*color* for a different mesh paint
+    [Default], and optionally append *color* for a different mesh paint
     [white]. 2. Specify **s** for surface plot, and optionally append
     **m** to have mesh lines drawn on top of surface. 3. Specify **i**
     for image plot, and optionally append the effective dpi resolution
@@ -101,8 +102,8 @@ Optional Arguments
     will make nodes with z = NaN transparent, using the colormasking
     feature in *PostScript* Level 3 (the PS device must support PS Level
     3). For any of these choices, you may force a monochrome image by
-    appending **g**. Colors are then converted to shades of gray using
-    the (television) YIQ transformation. 
+    appending the modifier **+m**. Colors are then converted to shades
+    of gray using the (monochrome television) YIQ transformation. 
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_

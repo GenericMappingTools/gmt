@@ -2485,7 +2485,7 @@ Note on input, ``dim[2]`` can be set to 1 which means we will allocate the array
 we assume space has already been secured.  Also, if ``dim[3]`` is set to 1 we will in-place transpose
 the array from C-style row-major array order to Fortran column-major array order.
 
-Finally, to write a grid to file you cam use
+Finally, to write a grid to file you can use
 
 .. _GMT_F77_writegrd:
 

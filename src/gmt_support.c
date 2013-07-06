@@ -3471,7 +3471,7 @@ void GMT_inplace_transpose (float *A, unsigned int n_rows, unsigned int n_cols)
 	uint64_t next;	/* location of 't' to be moved */
 	uint64_t cycleBegin;	/* holds start of cycle */
 	uint64_t i;	/* iterator */
-	uint64_t word, n_words = ((size + 1ULL) / 32ULL) + 1ULL;
+	uint64_t n_words = ((size + 1ULL) / 32ULL) + 1ULL;
 	unsigned int *mark = NULL;
 	unsigned int bits[32];
 

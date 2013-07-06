@@ -79,10 +79,10 @@ struct GRDVIEW_CTRL {
 		double value;
 		char *file;
 	} I;
-	struct N {	/* -N<level>[/<color>] */
+	struct N {	/* -N<level>[+g<fill>] */
 		bool active;
 		bool facade;
-		double rgb[4];
+		struct GMT_FILL fill;
 		double level;
 	} N;
 	struct Q {	/* -Q<type>[g] */
@@ -302,6 +302,7 @@ void *New_grdview_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	struct GRDVIEW_CTRL *C = GMT_memory (GMT, NULL, 1, struct GRDVIEW_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
+	GMT_init_fill (GMT, &C->N.fill, -1.0, -1.0, -1.0);	/* Default is no fill of facade */
 	C->T.pen = C->W.pen[0] = C->W.pen[1] = C->W.pen[2] = GMT->current.setting.map_default_pen;	/* Tile and mesh pens */
 	C->W.pen[0].width *= 3.0;	/* Contour pen */
 	C->W.pen[2].width *= 3.0;	/* Facade pen */
@@ -327,7 +328,7 @@ int GMT_grdview_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: grdview <topogrid> %s [%s] [-C[<cpt>]] [-G<drapegrid> | -G<grd_r>,<grd_g>,<grd_b>]\n", GMT_J_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I-I<intensgrid>|<value>] [%s] [-K] [-N<level>[/<color>]] [-O] [-P] [-Q<type>[g]]\n", GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I-I<intensgrid>|<value>] [%s] [-K] [-N<level>[+g<fill>]] [-O] [-P] [-Q<args>[+m]]\n", GMT_Jz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S<smooth>] [-T[s][o[<pen>]]]\n", GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<type><pen>] [%s]\n\t[%s] [%s] [%s]\n", GMT_c_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_f_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s]\n\t[%s] [%s]\n\n", GMT_n_OPT, GMT_p_OPT, GMT_t_OPT);
@@ -348,16 +349,16 @@ int GMT_grdview_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Use illumination. Append name of intensity grid file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For a constant intensity, just give the value instead.\n");
 	GMT_Option (API, "K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Draw a horizontal plane at z = level.  Append color [/<color>] to paint\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Draw a horizontal plane at z = <level>.  Append +g<fill> to paint\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   the facade between the plane and the data perimeter.\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Set plot request. Choose one of the following:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Qm for Mesh plot [Default].  Append /<color> for mesh paint [%s].\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Qm for Mesh plot [Default].  Append <color> for mesh paint [%s].\n",
 		GMT_putcolor (API->GMT, API->GMT->PSL->init.page_rgb));
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qs[m] for colored or shaded Surface.  Append m to draw meshlines on the surface.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qi for scanline converting polygons to rasterimage.  Append effective dpi [100].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qc. As -Qi but use PS Level 3 colormasking for nodes with z = NaN.  Append effective dpi [100].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To force a monochrome image using the GMT_YIQ transformation, append g.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To force a monochrome image using the GMT_YIQ transformation, append +m.\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Smooth contours first (see grdview for <smooth> value info) [no smoothing].\n");
 	GMT_pen_syntax (API->GMT, 'T', "Image the data without interpolation by painting polygonal tiles.\n\t   Append s to skip tiles for nodes with z = NaN [Default paints all tiles].\n\t   Append o[<pen>] to draw tile outline [Default uses no outline].");
@@ -389,6 +390,7 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 
 	unsigned int n_errors = 0, n_files = 0, q_set = 0, n_commas, j, k, n, id, n_drape;
 	int sval;
+	char *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -451,24 +453,43 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 				if (opt->arg[0]) {
 					char colors[GMT_LEN64] = {""};
 					Ctrl->N.active = true;
-					n = sscanf (opt->arg, "%lf/%s", &Ctrl->N.level, colors);
-					if (n == 2) {
-						n_errors += GMT_check_condition (GMT, GMT_getrgb (GMT, colors, Ctrl->N.rgb), "Syntax error option -N: Usage is -N<level>[/<color>]\n");
+					if ((c = strstr (opt->arg, "+g"))) {	/* Gave modifier +g<fill> */
+						c[0] = '\0';	/* Truncate string temporarily */
+						Ctrl->N.level = atof (opt->arg);
+						c[0] = '+';	/* Restore the + */
+						n_errors += GMT_check_condition (GMT, GMT_getfill (GMT, &c[2], &Ctrl->N.fill), "Syntax error option -N: Usage is -N<level>[+g<fill>]\n");
 						Ctrl->N.facade = true;
 					}
+					else if (GMT_compat_check (GMT, 4) && (c = strchr (opt->arg, '/'))) {	/* Deprecated <level>/<fill> */
+						GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -N<level>[/<fill>] is deprecated; use -N<level>[+g<fill>] in the future.\n");
+						c[0] = ' ';	/* Take out the slash for now */
+						n = sscanf (opt->arg, "%lf %s", &Ctrl->N.level, colors);
+						n_errors += GMT_check_condition (GMT, GMT_getfill (GMT, colors, &Ctrl->N.fill), "Syntax error option -N: Usage is -N<level>[+g<fill>]\n");
+						Ctrl->N.facade = true;
+						c[0] = '/';	/* Restore the slash */
+					}
+					else	/* Just got the level */
+						Ctrl->N.level = atof (opt->arg);
 				}
 				else {
-					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error option -N: Usage is -N<level>[/<color>]\n");
+					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error option -N: Usage is -N<level>[+g<fill>]\n");
 					n_errors++;
 				}
 				break;
 			case 'Q':	/* Plot mode */
 				Ctrl->Q.active = true;
 				q_set++;
+				if ((c = strstr (opt->arg, "+m")) != NULL) {
+					Ctrl->Q.monochrome = true;
+					c[0] = '\0';	/* Chop off +m */
+				}
 				switch (opt->arg[0]) {
 					case 'm':	/* Mesh plot */
 						Ctrl->Q.mode = GRDVIEW_MESH;
-						n_errors += GMT_check_condition (GMT, opt->arg[1] == '/' && GMT_getfill (GMT, &opt->arg[2], &Ctrl->Q.fill), "Syntax error -Qm option: To give mesh color, use -Qm/<color>\n");
+						if (opt->arg[1]) {	/* Appended /<color> or just <color> */
+							k = (opt->arg[1] == '/') ? 2 : 1;
+							n_errors += GMT_check_condition (GMT, GMT_getfill (GMT, &opt->arg[k], &Ctrl->Q.fill), "Syntax error -Qm option: To give mesh color, use -Qm<color>\n");
+						}
 						break;
 					case 's':	/* Color without contours */
 						Ctrl->Q.mode = GRDVIEW_SURF;
@@ -490,7 +511,12 @@ int GMT_grdview_parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct G
 						n_errors++;
 						break;
 				}
-				Ctrl->Q.monochrome = (opt->arg[strlen(opt->arg)-1] == 'g');
+				if (Ctrl->Q.monochrome)
+					c[0] = '+';	/* Restore the chopped off +m */
+				else if (GMT_compat_check (GMT, 4) && opt->arg[strlen(opt->arg)-1] == 'g') {
+					GMT_Report (API, GMT_MSG_COMPAT, "Warning: Option -Q<args>[g] is deprecated; use -Q<args>[+m] in the future.\n");
+					Ctrl->Q.monochrome = true;
+				}
 				break;
 			case 'S':	/* Smoothing of contours */
 				Ctrl->S.active = true;
@@ -1592,7 +1618,7 @@ int GMT_grdview (void *V_API, int mode, void *args)
 	if (Ctrl->N.facade) {	/* Cover the two front sides */
 		PSL_comment (PSL, "Painting the frontal facade\n");
 		GMT_setpen (GMT, &Ctrl->W.pen[2]);
-		PSL_setfill (PSL, Ctrl->N.rgb, true);
+		GMT_setfill (GMT, &Ctrl->N.fill, true);
 		if (!GMT->current.proj.z_project.draw[0])	{	/* Southern side */
 			for (col = 0, n = 0, ij = sw; col < Z->header->nx; col++, ij++) {
 				if (GMT_is_fnan (Topo->data[ij])) continue;
