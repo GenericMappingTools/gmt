@@ -2317,6 +2317,7 @@ bool GMT_check_url_name (char *fname) {
 	   are either meant to be accessed on the fly (http & ftp) or they are compressed. So, if any of
 	   the conditions holds true, returns true. All cases are read via GDAL support. */
 	if ( !strncmp(fname,"http:",5)        || 
+		!strncmp(fname,"https:",6)    || 
 		!strncmp(fname,"ftp:",4)      || 
 		!strncmp(fname,"/vsizip/",8)  || 
 		!strncmp(fname,"/vsigzip/",9) || 
