@@ -2974,33 +2974,43 @@ void grd_TAPER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "TAPER: Arguments A and B must both be constants\n");
 		return;
 	}
+	if (stack[last]->factor < 0.0 || stack[prev]->factor < 0.0) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "TAPER: Arguments A and B must both be >= 0\n");
+		return;
+	}
 
 	/* First compute and store x taper weights: Ramp 0 to 1 for left margin, constant 1, then ramp 1 to 0 for right margin */
-	strip = stack[prev]->factor;
-	scale = M_PI / strip;
-	start = strip + info->G->header->wesn[XLO];
-	stop  = strip - info->G->header->wesn[XHI];
-	w_x = GMT_memory (GMT, NULL, info->G->header->nx, double);
-	GMT_col_loop2 (GMT, info->G, col) {
-		from_start = start - info->d_grd_x[col];
-		if (from_start > 0.0) w_x[col] = 0.5 * (1.0 + cos (from_start * scale));
-		else if ((from_stop = stop  + info->d_grd_x[col]) > 0.0) w_x[col] = 0.5 * (1.0 + cos (from_stop * scale));
-		else w_x[col] = 1.0;	/* Inside non-tapered x-range */
+	w_x = GMT_memory (GMT, NULL, info->G->header->mx, double);
+	if (stack[prev]->factor == 0.0) {	/* No taper in x so set weights to 1 */
+		GMT_col_padloop2 (GMT, info->G, col) w_x[col] = 1.0;
+	}
+	else {
+		strip = stack[prev]->factor;
+		scale = M_PI / strip;
+		start = strip + info->G->header->wesn[XLO];
+		stop  = strip - info->G->header->wesn[XHI];
+		GMT_col_padloop2 (GMT, info->G, col) {
+			from_start = start - info->d_grd_x[col];
+			if (from_start > 0.0) w_x[col] = 0.5 * (1.0 + cos (from_start * scale));
+			else if ((from_stop = stop + info->d_grd_x[col]) > 0.0) w_x[col] = 0.5 * (1.0 + cos (from_stop * scale));
+			else w_x[col] = 1.0;	/* Inside non-tapered x-range */
+		}
 	}
 		
 	/* Now compute y taper weights: Ramp 0 to 1 for left margin, constant 1, then ramp 1 to 0 for right margin.
 	 * We apply these as we loop over rows and do the w_x * w_y taper */
 	strip = stack[last]->factor;
-	scale = M_PI / strip;
+	scale = (strip > 0.0) ? M_PI / strip : 0.0;
 	start = strip + info->G->header->wesn[YLO];
 	stop  = strip - info->G->header->wesn[YHI];
-	GMT_row_loop (GMT, info->G, row) {
+
+	GMT_row_padloop (GMT, info->G, row, node) {
 		from_start = start - info->d_grd_y[row];
-		if (from_start > 0.0) w_y = 0.5 * (1.0 + cos (from_start * scale));
+		if (stack[last]->factor == 0.0) w_y = 1.0;	/* No taper in y-range */
+		else if (from_start > 0.0) w_y = 0.5 * (1.0 + cos (from_start * scale));
 		else if ((from_stop = stop + info->d_grd_y[row]) > 0.0) w_y = 0.5 * (1.0 + cos (from_stop * scale));
 		else w_y = 1.0;	/* Inside non-tapered y-range */
-		GMT_col_loop (GMT, info->G, row, col, node) {
-			node = GMT_IJP (info->G->header, row, col);
+		GMT_col_padloop (GMT, info->G, col, node) {
 			stack[prev]->G->data[node] = (float)(w_y * w_x[col]);
 		}
 	}

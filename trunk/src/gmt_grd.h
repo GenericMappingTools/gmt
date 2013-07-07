@@ -164,6 +164,8 @@ enum GMT_enum_wesnIDs {
 #define GMT_row_padloop(C,G,row,ij) for (row = ij = 0; (int)row < (int)G->header->my; row++)
 #define GMT_col_padloop(C,G,col,ij) for (col = 0; (int)col < (int)G->header->mx; col++, ij++)
 #define GMT_grd_padloop(C,G,row,col,ij) GMT_row_padloop(C,G,row,ij) GMT_col_padloop(C,G,col,ij)
+/* Just a loop over columns */
+#define GMT_col_padloop2(C,G,col) for (col = 0; (int)col < (int)G->header->mx; col++)
 
 /* The usage could be:
 	GMT_grd_loop (GMT, Grid, row, col, node) fprintf (stderr, "Value at row = %d and col = %d is %g\n", row, col, Grid->data[node]);
