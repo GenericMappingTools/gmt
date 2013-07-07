@@ -117,6 +117,14 @@ Optional Arguments
 .. include:: explain_grd_coord.rst_
 
 
+Tapering
+--------
+
+While the weights computed are tapered from 1 to 0, we are computing weighted
+averages, so if there is only a single grid given then the weighted output
+will be identical to the input.  If you are looking for a way to taper your
+data grid, see grdmath's TAPER operator.
+
 Examples
 --------
 
