@@ -576,6 +576,14 @@ int GMT_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 	} /* if (header->name[i]) */
 	else if (magic) {	/* Reading: determine file format automatically based on grid content */
 		sscanf (header->name, "%[^?]?%s", tmp, header->varname);    /* Strip off variable name */
+#ifdef HAVE_GDAL
+		/* Check if file is an URL */
+		if (GMT_check_url_name(header->name)) {
+			/* Then check for GDAL grid */
+			if (GMT_is_gdal_grid (GMT, header) == GMT_NOERROR)
+				return (GMT_NOERROR);
+		}
+#endif
 		if (!GMT_getdatapath (GMT, tmp, header->name))
 			return (GMT_GRDIO_FILE_NOT_FOUND);	/* Possibly prepended a path from GMT_[GRID|DATA|IMG]DIR */
 		/* First check if we have a netCDF grid. This MUST be first, because ?var needs to be stripped off. */
