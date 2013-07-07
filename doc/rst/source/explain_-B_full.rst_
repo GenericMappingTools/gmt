@@ -1,5 +1,9 @@
 .. _-B_full:
 
+.. |br| raw:: html
+
+   <br />
+
 **-B**\ [**p**\ \|\ **s**]\ *parameters*
     Set map Frame and Axes parameters. The Frame parameters are specified by
 
@@ -56,52 +60,67 @@
     gridline spacing. *stride* is the desired stride interval. The
     optional *phase* shifts the annotation interval by that amount
     (positive or negative). The optional *unit* indicates the unit of
-    the *stride* and can be any of **Y** (year, plot with 4 digits),
-    **y** (year, plot with 2 digits), **O** (month, plot using
-    **FORMAT_DATE_MAP**), **o** (month, plot with 2 digits), **U**
-    (ISO week, plot using **FORMAT_DATE_MAP**), **u** (ISO week, plot
-    using 2 digits), **r** (Gregorian week, 7-day stride from start of
-    week **TIME_WEEK_START**), **K** (ISO weekday, plot name of day),
-    **D** (date, plot using **FORMAT_DATE_MAP**), **d** (day, plot day
-    of month 0-31 or year 1-366, via **FORMAT_DATE_MAP**), **R** (day,
-    same as **d**, aligned with **TIME_WEEK_START**), **H** (hour,
-    plot using **FORMAT_CLOCK_MAP**), **h** (hour, plot with 2
-    digits), **M** (minute, plot using **FORMAT_CLOCK_MAP**), **m**
-    (minute, plot with 2 digits), **S** (second, plot using
-    **FORMAT_CLOCK_MAP**), **s** (second, plot with 2 digits). Note
-    for geographic axes **m** and **s** instead mean arc minutes and arc
-    seconds. All entities that are language-specific are under control
-    by **TIME_LANGUAGE**.
-    Alternatively, for linear maps, we can omit *stride*, thus setting
+    the *stride* and can be any of
+
+    - **Y** (year, plot with 4 digits)
+    - **y** (year, plot with 2 digits)
+    - **O** (month, plot using **FORMAT_DATE_MAP**)
+    - **o** (month, plot with 2 digits)
+    - **U** (ISO week, plot using **FORMAT_DATE_MAP**)
+    - **u** (ISO week, plot using 2 digits)
+    - **r** (Gregorian week, 7-day stride from start of week **TIME_WEEK_START**)
+    - **K** (ISO weekday, plot name of day)
+    - **D** (date, plot using **FORMAT_DATE_MAP**)
+    - **d** (day, plot day of month 0-31 or year 1-366, via **FORMAT_DATE_MAP**)
+    - **R** (day, same as **d**, aligned with **TIME_WEEK_START**)
+    - **H** (hour, plot using **FORMAT_CLOCK_MAP**)
+    - **h** (hour, plot with 2 digits)
+    - **M** (minute, plot using **FORMAT_CLOCK_MAP**)
+    - **m** (minute, plot with 2 digits)
+    - **S** (second, plot using **FORMAT_CLOCK_MAP**)
+    - **s** (second, plot with 2 digits).
+
+    Note for geographic axes **m** and **s** instead mean arc minutes and arc seconds.
+    All entities that are language-specific are under control
+    by **TIME_LANGUAGE**. Alternatively, for linear maps, we can omit *stride*, thus setting
     *xinfo*, *yinfo*, or *zinfo* to **a** plots annotations at
-    automatically determined intervals, **ag** plots both annotations
-    and grid lines with the same spacing, **afg** adds suitable minor
-    tick intervals, **g** plots grid lines with the same interval as if
-    **-Bf** was used.
+    automatically determined intervals,
+
+    - **ag** plots both annotations and grid lines with the same spacing,
+    - **afg** adds suitable minor tick intervals,
+    - **g** plots grid lines with the same interval as if **-Bf** was used.
+
     For custom annotations and intervals, let *intervals* be given as
     **c**\ *intfile*, where *intfile* contains any number of
     records with *coord* *type* [*label*]. Here, *type* is one or more
     letters from **a**\ \|\ **i**, **f**, and **g**. For
     **a**\ \|\ **i** you must supply a *label* that will be plotted at
-    the *coord* location
+    the *coord* location. |br|
     For non-geographical projections: Give negative scale (in **-Jx**)
     or axis length (in **-JX**) to change the direction of increasing
-    coordinates (i.e., to make the y-axis positive down). For log10
-    axes: Annotations can be specified in one of three ways: (1)
-    *stride* can be 1, 2, 3, or -*n*. Annotations will then occur at 1,
-    1-2-5, or 1-2-3-4-...-9, respectively; for -*n* we annotate every
-    *n*\ ’t magnitude. This option can also be used for the frame and
-    grid intervals. (2) An **l** is appended to the *tickinfo* string.
-    Then, log10 of the tick value is plotted at every integer log10
-    value. (3) A **p** is appended to the *tickinfo* string. Then,
-    annotations appear as 10 raised to log10 of the tick value. For
-    power axes: Annotations can be specified in one of two ways: (1)
-    *stride* sets the regular annotation interval. (2) A **p** is
-    appended to the *tickinfo* string. Then, the annotation interval is
-    expected to be in transformed units, but the annotation value will
-    be plotted as untransformed units. E.g., if *stride* = 1 and *power*
-    = 0.5 (i.e., sqrt), then equidistant annotations labeled 1-4-9...
-    will appear.
+    coordinates (i.e., to make the y-axis positive down). |br|
+    For log10 axes: Annotations can be specified in one of three ways: 
+
+    1. *stride* can be 1, 2, 3, or -*n*. Annotations will then occur at 1,
+       1-2-5, or 1-2-3-4-...-9, respectively; for -*n* we annotate every
+       *n*\ 't magnitude. This option can also be used for the frame and
+       grid intervals. 
+
+    2. An **l** is appended to the *tickinfo* string. Then, log10 of the
+       tick value is plotted at every integer log10 value.
+
+    3. A **p** is appended to the *tickinfo* string. Then,
+       annotations appear as 10 raised to log10 of the tick value.
+
+    For power axes: Annotations can be specified in one of two ways:
+
+    1. *stride* sets the regular annotation interval.
+
+    2. A **p** is appended to the *tickinfo* string. Then, the annotation interval is
+       expected to be in transformed units, but the annotation value will
+       be plotted as untransformed units. E.g., if *stride* = 1 and *power*
+       = 0.5 (i.e., sqrt), then equidistant annotations labeled 1-4-9...  will appear.
+
     These GMT parameters can affect the appearance of the map boundary:
     **MAP_ANNOT_MIN_ANGLE**, **MAP_ANNOT_MIN_SPACING**,
     **FONT_ANNOT_PRIMARY**, **FONT_ANNOT_SECONDARY**,
