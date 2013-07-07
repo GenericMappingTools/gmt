@@ -22,7 +22,7 @@ if (DO_TESTS)
 	set (GMT_TEST_DIRS api byteswap blockmean blockmedian filter1d fitcircle genper gmt_core
 		gmtconvert gmtmath gmtselect gmtsimplify gmtspatial gmtconnect gmtvector grd2rgb
 		grd2xyz grdblend grdclip grdcontour grdcut grdedit grdfft grdfilter grdgradient
-		grdhisteq grdimage grdlandmask grdmask grdpaste grdproject grdreformat
+		grdhisteq grdimage grdlandmask grdmask grdmath grdpaste grdproject grdreformat
 		grdsample grdtrend grdvector grdview grdvolume greenspline img kml mapproject meca
 		mgd77 ogr potential project psbasemap pscoast pscontour pshistogram psimage pslegend
 		pslib psrose psscale pstext psxy psxyz sample1d spectrum1d sph sph2grd splitxyz
