@@ -3329,15 +3329,15 @@ void grdmath_free (struct GMT_CTRL *GMT, struct GRDMATH_STACK *stack[], struct G
 	if (GMT_Destroy_Data (GMT->parent, &info->G) != GMT_OK) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Failed to free info.G\n");
 	}
-	GMT_free (GMT, info->d_grd_x);
-	GMT_free (GMT, info->d_grd_y);
-	GMT_free (GMT, info->d_grd_xn);
-	GMT_free (GMT, info->d_grd_yn);
-	GMT_free (GMT, info->f_grd_x);
-	GMT_free (GMT, info->f_grd_y);
-	GMT_free (GMT, info->f_grd_xn);
-	GMT_free (GMT, info->f_grd_yn);
-	GMT_free (GMT, info->dx);
+	if (info->d_grd_x) GMT_free (GMT, info->d_grd_x);
+	if (info->d_grd_y) GMT_free (GMT, info->d_grd_y);
+	if (info->d_grd_xn) GMT_free (GMT, info->d_grd_xn);
+	if (info->d_grd_yn) GMT_free (GMT, info->d_grd_yn);
+	if (info->f_grd_x) GMT_free (GMT, info->f_grd_x);
+	if (info->f_grd_y) GMT_free (GMT, info->f_grd_y);
+	if (info->f_grd_xn) GMT_free (GMT, info->f_grd_xn);
+	if (info->f_grd_yn) GMT_free (GMT, info->f_grd_yn);
+	if (info->dx) GMT_free (GMT, info->dx);
 	if (info->ASCII_file) free (info->ASCII_file);
 }
 
