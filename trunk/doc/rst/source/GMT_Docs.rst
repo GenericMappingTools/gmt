@@ -710,7 +710,7 @@ correctly with a warning under compatibility mode:
    `GMT <http://gmt.soest.hawaii.edu>`_ header. Also, to output
    *x,y,z* triplets instead of writing a grid now requires **-T**.
 
-#. `img/img2grd <supplements/img/img2grd.html>`_: **-m**\ *inc* is
+#. `img/img2grd <supplements/img/img2grd.html>`__: **-m**\ *inc* is
    deprecated; use **-I**\ *inc* instead.
 
 #. `meca/psvelo <supplements/meca/psvelo.html>`_: Old vector
@@ -5713,7 +5713,7 @@ imgsrc: gridded altimetry extractor
 -----------------------------------
 
 This package consists of the program
-`img2grd <supplements/imgsrc/img2grd.html>`_ to extract subsets of the
+`img2grd <supplements/imgsrc/img2grd.html>`__ to extract subsets of the
 global gravity and predicted topography solutions derived from satellite
 altimetry [33]_. The package is maintained by Walter Smith and Paul Wessel.
 
