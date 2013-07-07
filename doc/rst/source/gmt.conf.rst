@@ -97,18 +97,31 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
 **FONT**
     Sets the default for all fonts, except FONT_LOGO. This setting is
     not included in the **gmt.conf** file.
+
+.. _FONT_ANNOT_PRIMARY:
+
 **FONT_ANNOT_PRIMARY**
     Font used for primary annotations, etc. [12p,Helvetica,black]. When
     **+** is prepended, scale fonts, offsets and tick-lengths relative
     to **FONT_ANNOT_PRIMARY**.
+
+.. _FONT_ANNOT_SECONDARY:
+
 **FONT_ANNOT_SECONDARY**
     Font to use for time axis secondary annotations
     [14p,Helvetica,black].
+
+.. _FONT_LABEL:
+
 **FONT_LABEL**
     Font to use when plotting labels below axes [16p,Helvetica,black].
+
 **FONT_LOGO**
     Font to use for text plotted as part of the GMT time logo
     [8p,Helvetica,black].
+
+.. _FONT_TITLE:
+
 **FONT_TITLE**
     Font to use when plotting titles over graphs [24p,Helvetica,black].
 
@@ -120,6 +133,9 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     strings in data fields. To properly decode 12-hour clocks, append am
     or pm (or upper case) to match your data records. As examples, try
     hh:mm, hh:mm:ssAM, etc. [hh:mm:ss].
+
+.. _FORMAT_CLOCK_MAP:
+
 **FORMAT_CLOCK_MAP**
     Formatting template that indicates how an output clock string is to
     be plotted. This template is then used to guide the formatting of
@@ -153,6 +169,9 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     week and d is ISO week day. Either template must be consistent,
     e.g., you cannot specify months if you do not specify years.
     Examples are yyyyWwwd, yyyy-Www, etc. [yyyy-mm-dd].
+
+.. _FORMAT_DATE_MAP:
+
 **FORMAT_DATE_MAP**
     Formatting template that indicates how an output date string is to
     be plotted. This template is then used to guide the plotting of date
@@ -393,15 +412,23 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
 
 .. _MAP Parameters:
 
+.. _MAP_ANNOT_MIN_ANGLE:
+
 **MAP_ANNOT_MIN_ANGLE**
     If the angle between the map boundary and the annotation baseline is
     less than this minimum value (in degrees), the annotation is not
     plotted (this may occur for certain oblique projections.) Give a
     value in the range [0,90]. [20]
+
+.. _MAP_ANNOT_MIN_SPACING:
+
 **MAP_ANNOT_MIN_SPACING**
     If an annotation would be plotted less than this minimum distance
     from its closest neighbor, the annotation is not plotted (this may
     occur for certain oblique projections.) [0p]
+
+.. _MAP_ANNOT_OBLIQUE:
+
 **MAP_ANNOT_OBLIQUE**
     This integer is a sum of 6 bit flags (most of which only are
     relevant for oblique projections): If bit 1 is set (1),
@@ -417,16 +444,28 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     to the border regardless of gridline angle. If bit 6 is set (32),
     then latitude annotations will be plotted parallel to the border. To
     set a combination of these, add up the values in parentheses. [1].
+
+.. _MAP_ANNOT_OFFSET_PRIMARY:
+
 **MAP_ANNOT_OFFSET_PRIMARY**
     Distance from end of tick-mark to start of annotation [5p].
+
+.. _MAP_ANNOT_OFFSET_SECONDARY:
+
 **MAP_ANNOT_OFFSET_SECONDARY**
     Distance from base of primary annotation to the top of the secondary
     annotation [5p] (Only applies to time axes with both primary and
     secondary annotations).
+
+.. _MAP_ANNOT_ORTHO:
+
 **MAP_ANNOT_ORTHO**
     Determines which axes will get their annotations (for linear
     projections) plotted orthogonally to the axes. Combine any **w**,
     **e**, **s**, **n**, **z** (uppercase allowed as well). [we].
+
+.. _MAP_DEFAULT_PEN:
+
 **MAP_DEFAULT_PEN**
     Sets the default of all pens related to **-W** options. Prepend
     **+** to overrule the color of the parameters
@@ -434,18 +473,30 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     **MAP_FRAME_PEN**, **MAP_TICK_PEN_PRIMARY**, and
     **MAP_TICK_PEN_SECONDARY** by the color of **MAP_DEFAULT_PEN**
     [default,black].
+
+.. _MAP_DEGREE_SYMBOL:
+
 **MAP_DEGREE_SYMBOL**
     Determines what symbol is used to plot the degree symbol on
     geographic map annotations. Choose between ring, degree, colon, or
     none [ring].
+
+.. _MAP_FRAME_AXES:
+
 **MAP_FRAME_AXES**
     Sets which axes to draw and annotate. Combine any uppercase **W**,
     **E**, **S**, **N**, **Z** to draw and annotate west, east, south,
     north and/or vertical (perspective view only) axis. Use lower case
     to draw the axis only, but not annotate. Add an optional **+** to
     draw a cube of axes in perspective view. [WESN].
+
+.. _MAP_FRAME_PEN:
+
 **MAP_FRAME_PEN**
     Pen attributes used to draw plain map frame [thicker,black].
+
+.. _MAP_FRAME_TYPE:
+
 **MAP_FRAME_TYPE**
     Choose between **inside**, **plain** and **fancy** (thick boundary,
     alternating black/white frame; append **+** for rounded corners)
@@ -456,8 +507,14 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     projections, polar projections). For situations where all boundary
     ticks and annotations must be inside the maps (e.g., for preparing
     geotiffs), chose **inside**.
+
+.. _MAP_FRAME_WIDTH:
+
 **MAP_FRAME_WIDTH**
     Width (> 0) of map borders for fancy map frame [5p].
+
+.. _MAP_GRID_CROSS_SIZE_PRIMARY:
+
 **MAP_GRID_CROSS_SIZE_PRIMARY**
     Size (>= 0) of grid cross at lon-lat intersections. 0 means draw
     continuous gridlines instead [0p].
@@ -800,6 +857,9 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     1999-12-15T12:00:00.0 (exactly middle of December), while if
     **TIME_IS_INTERVAL** = off then that date is interpreted to mean
     1999-12-01T00:00:00.0 (start of December) [off].
+
+.. _TIME_LANGUAGE:
+
 **TIME_LANGUAGE**
     Language to use when plotting calendar items such as months and
     days. Select from:
@@ -869,6 +929,9 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     **TIME_EPOCH**). Choose y (year - assumes all years are 365.2425
     days), o (month - assumes all months are of equal length y/12), d
     (day), h (hour), m (minute), or s (second) [s].
+
+.. _TIME_WEEK_START:
+
 **TIME_WEEK_START**
     When weeks are indicated on time axes, this parameter determines the
     first day of the week for Gregorian calendars. (The ISO weekly

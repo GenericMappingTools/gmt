@@ -64,20 +64,20 @@
 
     - **Y** (year, plot with 4 digits)
     - **y** (year, plot with 2 digits)
-    - **O** (month, plot using **FORMAT_DATE_MAP**)
+    - **O** (month, plot using :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>`)
     - **o** (month, plot with 2 digits)
-    - **U** (ISO week, plot using **FORMAT_DATE_MAP**)
+    - **U** (ISO week, plot using :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>`)
     - **u** (ISO week, plot using 2 digits)
-    - **r** (Gregorian week, 7-day stride from start of week **TIME_WEEK_START**)
+    - **r** (Gregorian week, 7-day stride from start of week :ref:`TIME_WEEK_START <TIME_WEEK_START>`)
     - **K** (ISO weekday, plot name of day)
-    - **D** (date, plot using **FORMAT_DATE_MAP**)
-    - **d** (day, plot day of month 0-31 or year 1-366, via **FORMAT_DATE_MAP**)
-    - **R** (day, same as **d**, aligned with **TIME_WEEK_START**)
-    - **H** (hour, plot using **FORMAT_CLOCK_MAP**)
+    - **D** (date, plot using :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>`)
+    - **d** (day, plot day of month 0-31 or year 1-366, via :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>`)
+    - **R** (day, same as **d**, aligned with :ref:`TIME_WEEK_START <TIME_WEEK_START>`)
+    - **H** (hour, plot using :ref:`FORMAT_CLOCK_MAP <FORMAT_CLOCK_MAP>`)
     - **h** (hour, plot with 2 digits)
-    - **M** (minute, plot using **FORMAT_CLOCK_MAP**)
+    - **M** (minute, plot using :ref:`FORMAT_CLOCK_MAP <FORMAT_CLOCK_MAP>`)
     - **m** (minute, plot with 2 digits)
-    - **S** (second, plot using **FORMAT_CLOCK_MAP**)
+    - **S** (second, plot using :ref:`FORMAT_CLOCK_MAP <FORMAT_CLOCK_MAP>`)
     - **s** (second, plot with 2 digits).
 
     Note for geographic axes **m** and **s** instead mean arc minutes and arc seconds.
@@ -122,16 +122,17 @@
        = 0.5 (i.e., sqrt), then equidistant annotations labeled 1-4-9...  will appear.
 
     These GMT parameters can affect the appearance of the map boundary:
-    **MAP_ANNOT_MIN_ANGLE**, **MAP_ANNOT_MIN_SPACING**,
-    **FONT_ANNOT_PRIMARY**, **FONT_ANNOT_SECONDARY**,
-    **MAP_ANNOT_OFFSET_PRIMARY**, **MAP_ANNOT_OFFSET_SECONDARY**,
-    **MAP_ANNOT_ORTHO**, **MAP_FRAME_AXES**, **MAP_DEFAULT_PEN**,
+    :ref:`MAP_ANNOT_MIN_ANGLE <MAP_ANNOT_MIN_ANGLE>`, :ref:`MAP_ANNOT_MIN_SPACING <MAP_ANNOT_MIN_SPACING>`,
+    :ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`, **FONT_ANNOT_SECONDARY**,
+    :ref:`MAP_ANNOT_OFFSET_PRIMARY <MAP_ANNOT_OFFSET_PRIMARY>`,
+    :ref:`MAP_ANNOT_OFFSET_SECONDARY <MAP_ANNOT_OFFSET_SECONDARY>`,
+    :ref:`MAP_ANNOT_ORTHO <MAP_ANNOT_ORTHO>`, **MAP_FRAME_AXES**, **MAP_DEFAULT_PEN**,
     **MAP_FRAME_TYPE**, **FORMAT_GEO_MAP**, **MAP_FRAME_PEN**,
     **MAP_FRAME_WIDTH**, **MAP_GRID_CROSS_SIZE_PRIMARY**,
     **MAP_GRID_PEN_PRIMARY**, **MAP_GRID_CROSS_SIZE_SECONDARY**,
     **MAP_GRID_PEN_SECONDARY**, **FONT_TITLE**, **FONT_LABEL**,
-    **MAP_LINE_STEP**, **MAP_ANNOT_OBLIQUE**,
+    **MAP_LINE_STEP**, :ref:`MAP_ANNOT_OBLIQUE <MAP_ANNOT_OBLIQUE>`,
     **FORMAT_CLOCK_MAP**, **FORMAT_DATE_MAP**,
     **FORMAT_TIME_PRIMARY_MAP**, **FORMAT_TIME_SECONDARY_MAP**,
-    **TIME_LANGUAGE**, **TIME_WEEK_START**, **MAP_TICK_LENGTH**,
-    and **MAP_TICK_PEN**; see the **gmt.conf** man page for details.
+    :ref:`TIME_LANGUAGE <TIME_LANGUAGE>`, :ref:`TIME_WEEK_START <TIME_WEEK_START>`, **MAP_TICK_LENGTH**,
+    and **MAP_TICK_PEN**; see the `gmt.conf <gmt.conf.html>`__ man page for details.
