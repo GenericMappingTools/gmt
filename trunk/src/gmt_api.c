@@ -2119,7 +2119,7 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, 
 	 */
 	
 	int item;
-	bool done = true;
+	bool done = true, new = false;
 	uint64_t i0, i1, j0, j1, ij, ij_orig, row, col;
 	size_t size;
 	enum GMT_enum_gridio both_set = (GMT_GRID_HEADER_ONLY | GMT_GRID_DATA_ONLY);
@@ -2143,14 +2143,17 @@ struct GMT_IMAGE * GMTAPI_Import_Image (struct GMTAPI_CTRL *API, int object_ID, 
 			if (image == NULL) {	/* Only allocate image struct when not already allocated */
 				if (mode & GMT_GRID_DATA_ONLY) return_null (API, GMT_NO_GRDHEADER);		/* For mode & GMT_GRID_DATA_ONLY grid must already be allocated */	
 				I_obj = GMT_create_image (API->GMT);
+				new = true;
 			}
 			else
 				I_obj = image;	/* We are passing in a image already allocated */
 			I_obj->header->complex_mode = mode;		/* Pass on any bitflags */
 			done = (mode & GMT_GRID_HEADER_ONLY) ? false : true;	/* Not done until we read grid */
 			if (! (mode & GMT_GRID_DATA_ONLY)) {		/* Must init header and read the header information from file */
-				if (GMT_err_pass (API->GMT, GMT_read_image_info (API->GMT, S_obj->filename, I_obj), S_obj->filename))
+				if (GMT_err_pass (API->GMT, GMT_read_image_info (API->GMT, S_obj->filename, I_obj), S_obj->filename)) {
+					if (new) GMT_free_image (API->GMT, &I_obj, false);
 					return_null (API, GMT_IMAGE_READ_ERROR);
+				}
 				if (mode & GMT_GRID_HEADER_ONLY) break;	/* Just needed the header, get out of here */
 			}
 			/* Here we will read the grid data themselves. */
@@ -2297,7 +2300,7 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, un
 	 */
 	
 	int item;
-	bool done = true, row_by_row;
+	bool done = true, new = false, row_by_row;
  	uint64_t row, col, i0, i1, j0, j1, ij, ij_orig;
 	size_t size;
 	enum GMT_enum_gridio both_set = (GMT_GRID_HEADER_ONLY | GMT_GRID_DATA_ONLY);
@@ -2329,6 +2332,7 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, un
 			if (grid == NULL) {	/* Only allocate grid struct when not already allocated */
 				if (mode & GMT_GRID_DATA_ONLY) return_null (API, GMT_NO_GRDHEADER);		/* For mode & GMT_GRID_DATA_ONLY grid must already be allocated */	
 				G_obj = GMT_create_grid (API->GMT);
+				new = true;
 			}
 			else
 				G_obj = grid;	/* We are working on a grid already allocated */
@@ -2338,11 +2342,15 @@ struct GMT_GRID * GMTAPI_Import_Grid (struct GMTAPI_CTRL *API, int object_ID, un
 					char r_mode = (mode & GMT_GRID_NO_HEADER) ? 'R' : 'r';
 					/* If we get here more than once we only allocate extra once */
 					if (G_obj->extra == NULL) G_obj->extra = GMT_memory (API->GMT, NULL, 1, struct GMT_GRID_ROWBYROW);
-					if (gmt_open_grd (API->GMT, S_obj->filename, G_obj, r_mode, mode))	/* Open the grid for incremental row reading */
+					if (gmt_open_grd (API->GMT, S_obj->filename, G_obj, r_mode, mode)) {	/* Open the grid for incremental row reading */
+						if (new) GMT_free_grid (API->GMT, &G_obj, false);
 						return_null (API, GMT_GRID_READ_ERROR);
+					}
 				}
-				else if (GMT_err_pass (API->GMT, GMT_read_grd_info (API->GMT, S_obj->filename, G_obj->header), S_obj->filename)) 
+				else if (GMT_err_pass (API->GMT, GMT_read_grd_info (API->GMT, S_obj->filename, G_obj->header), S_obj->filename)) {
+					if (new) GMT_free_grid (API->GMT, &G_obj, false);
 					return_null (API, GMT_GRID_READ_ERROR);
+				}
 				if (mode & GMT_GRID_HEADER_ONLY) break;	/* Just needed the header, get out of here */
 			}
 			/* Here we will read the grid data themselves. */
