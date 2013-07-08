@@ -135,9 +135,9 @@ int GMT_psscale_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: psscale -D<xpos>/<ypos>/<length>/<width>[h] [-A[a|l|c]] [-C<cpt>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E[b|f][<length>][+n[<txt>]]] [%s] [-I[<max_intens>|<low_i>/<high_i>] [%s]\n\t[%s] [-K] [-L[i][<gap>[<unit>]]] [-M] [-N[p|<dpi>]] [-O] [-P] [-Q]\n", GMT_B_OPT, GMT_J_OPT, GMT_Jz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S]\n\t[-T[+p<pen>][+g<fill>][+l|r|b|t<off>]] [%s] [%s]\n", GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: psscale -D<xpos>/<ypos>/<length>/<width>[h] [-A[a|l|c]] [%s] [-C<cpt>]\n", GMT_B_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-E[b|f][<length>][+n[<txt>]]] [-G<zlo>/<zhi>] [-I[<max_intens>|<low_i>/<high_i>]\n\t[%s] [%s] [-K] [-L[i][<gap>[<unit>]]] [-M] [-N[p|<dpi>]]\n", GMT_J_OPT, GMT_Jz_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-O] [-P] [-Q] [%s] [-S]\n\t[-T[+p<pen>][+g<fill>][+l|r|b|t<off>]] [%s] [%s]\n", GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<zfile>] [%s]\n\t[%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, GMT_c_OPT, GMT_p_OPT, GMT_t_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -160,6 +160,8 @@ int GMT_psscale_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   Specify b(ackground) or f(oreground) to get one only [Default is both].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append triangle height [Default is half the barwidth].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to draw rectangle with NaN color and label with <txt> [NaN].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Truncate incoming CPT to be limited to the z-range <zlo>/<zhi>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To accept one if the incoming limits, set to other to NaN.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Add illumination for +-<max_intens> or <low_i> to <high_i> [-1.0/1.0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, specify <lower>/<upper> intensity values.\n");
 	GMT_Option (API, "J-Z,K");
