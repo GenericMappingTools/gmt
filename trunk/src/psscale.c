@@ -64,6 +64,10 @@ struct PSSCALE_CTRL {
 		double length;
 		char *text;
 	} E;
+	struct G {	/* -Glow/high for input CPT truncation */
+		bool active;
+		double z_low, z_high;
+	} G;
 	struct I {	/* -I[<intens>|<min_i>/<max_i>] */
 		bool active;
 		double min, max;
@@ -106,6 +110,7 @@ void *New_psscale_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C = GMT_memory (GMT, NULL, 1, struct PSSCALE_CTRL);
 	
 	/* Initialize values whose defaults are not 0/false/NULL */
+	C->G.z_low = C->G.z_high = GMT->session.d_NaN;	/* No truncation */
 	C->N.dpi = 600.0;
 	C->I.min = -1.0;
 	C->I.max = +1.0;
@@ -273,6 +278,14 @@ int GMT_psscale_parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct G
 				if (j == 0) Ctrl->E.mode |= 3;	/* No b|f added */
 				if (opt->arg[j]) Ctrl->E.length = GMT_to_inch (GMT, &opt->arg[j]);
 				if (c) *c = '+';	/* Put back the + sign */
+				break;
+			case 'G':	/* truncate incoming CPT */
+				Ctrl->G.active = true;
+				j = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b);
+				n_errors += GMT_check_condition (GMT, j < 2, "Syntax error -G option: Must specify z_low/z_high\n");
+				if (!(txt_a[0] == 'N' || txt_a[0] == 'n') || !strcmp (txt_a, "-")) Ctrl->G.z_low = atof (txt_a);
+				if (!(txt_b[0] == 'N' || txt_b[0] == 'n') || !strcmp (txt_b, "-")) Ctrl->G.z_high = atof (txt_b);
+				n_errors += GMT_check_condition (GMT, GMT_is_dnan (Ctrl->G.z_low) && GMT_is_dnan (Ctrl->G.z_high), "Syntax error -G option: Both of z_low/z_high cannot be NaN\n");
 				break;
 			case 'I':
 				Ctrl->I.active = true;
@@ -1138,6 +1151,7 @@ int GMT_psscale (void *V_API, int mode, void *args)
 	if ((P = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
+	if (Ctrl->G.active) P = GMT_truncate_cpt (GMT, P, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
 
 	if (P->categorical) {
 		Ctrl->L.active = Ctrl->L.interval = true;

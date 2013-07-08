@@ -11,7 +11,7 @@ Synopsis
 
 **grd2cpt** *grid* [ **-A**\ [**+**\ ]\ *transparency* ]
 [ **-C**\ *cptmaster* ] [ **-D**\ [**i**\ \|\ **o**] ] [ **-E**\ *nlevels* ]
-[ **-F**\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c** ] [ **-I** ]
+[ **-F**\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c** ] [ **-G**\ *zlo*\ /\ *zhi* ] [ **-I** ]
 [ **-L**\ *minlimit/maxlimit* ] [ **-M** ] [ **-N** ]
 [ **-Q**\ [**i**\ \|\ **o**] ]
 [ |SYN_OPT-R| ]
@@ -92,6 +92,12 @@ Optional Arguments
     Force output cpt file to written with r/g/b codes, gray-scale values
     or color name (**R**, default) or r/g/b codes only (**r**), or h-s-v
     codes (**h**), or c/m/y/k codes (**c**).
+
+**-G**\ *zlo*\ /\ *zhi*
+    Truncate the incoming CPT so that the lowest and highest z-levels
+    are to *zlo* and *zhi*.  If one of these equal NaN then
+    we leave that end of the CPT alone.  The truncation takes place
+    before any resampling.
 
 **-I**
     Reverses the sense of color progression in the master cpt file. Also

@@ -214,6 +214,7 @@ EXTERN_MSC void GMT_set_xy_domain (struct GMT_CTRL *GMT, double wesn_extended[],
 EXTERN_MSC int GMT_BC_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h);
 EXTERN_MSC int GMT_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direction);
 EXTERN_MSC void GMT_inplace_transpose (float *A, unsigned int n_rows, unsigned int n_cols);
+EXTERN_MSC struct GMT_PALETTE * GMT_truncate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low, double z_high);
 
 #ifdef HAVE_GDAL
 EXTERN_MSC int GMT_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *I);

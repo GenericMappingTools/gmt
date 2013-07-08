@@ -89,7 +89,7 @@ enum GMT_profmode {
 	GMT_GOT_RADIUS	= 32,
 };
 
-struct CPT_Z_SCALE {	/* Intenral struct used in the processing of CPT z-scaling */
+struct CPT_Z_SCALE {	/* Internal struct used in the processing of CPT z-scaling and truncation */
 	unsigned int z_adjust;	/* 1 if +u<unit> was parsed and scale set, 3 if z has been adjusted, 0 otherwise */
 	unsigned int z_mode;	/* 1 if +U<unit> was parsed, 0 otherwise */
 	unsigned int z_unit;	/* Unit enum specified via +u<unit> */
@@ -2059,14 +2059,19 @@ struct GMT_PALETTE * GMT_create_palette (struct GMT_CTRL *GMT, uint64_t n_colors
 	return (P);
 }
 
+void GMT_free_range  (struct GMT_CTRL *GMT, struct GMT_LUT *S)
+{
+	if (S->label) GMT_free (GMT, S->label);
+	if (S->fill)  GMT_free (GMT, S->fill);
+}
+
 void GMT_free_cpt_ptr (struct GMT_CTRL *GMT, struct GMT_PALETTE *P)
 {
 	unsigned int i;
 	if (!P) return;
 	/* Frees all memory used by this palette but does not free the palette itself */
 	for (i = 0; i < P->n_colors; i++) {
-		if (P->range[i].label) GMT_free (GMT, P->range[i].label);
-		if (P->range[i].fill)  GMT_free (GMT, P->range[i].fill);
+		GMT_free_range (GMT, &P->range[i]);
 	}
 	for (i = 0; i < 3; i++) if (P->patch[i].fill) GMT_free (GMT, P->patch[i].fill);
 	if (P->range) GMT_free (GMT, P->range);
@@ -3034,6 +3039,64 @@ int GMT_write_cpt (struct GMT_CTRL *GMT, void *dest, unsigned int dest_type, uns
 	}
 	if (close_file) fclose (fp);
 	return (EXIT_SUCCESS);
+}
+
+void truncate_cpt_slice (struct GMT_CTRL *GMT, struct GMT_LUT *S, bool do_hsv, double z_cut, int side)
+{	/* Interpolate this slice to the new low or high value, depending on side */
+	double f = (z_cut - S->z_low) * S->i_dz, hsv[4], rgb[4];
+	unsigned int k;
+	if (do_hsv) {	/* Interpolation in HSV space */
+		for (k = 0; k < 4; k++) hsv[k] = S->hsv_low[k] + (S->hsv_high[k] - S->hsv_low[k]) * f;
+		gmt_hsv_to_rgb (GMT, rgb, hsv);
+	}
+	else {	/* Interpolation in RGB space */
+		for (k = 0; k < 4; k++) rgb[k] = S->rgb_low[k] + (S->rgb_high[k] - S->rgb_low[k]) * f;
+		gmt_rgb_to_hsv (GMT, rgb, hsv);
+	}
+	if (side == -1) {
+		GMT_memcpy (S->hsv_low, hsv, 4, double);
+		GMT_memcpy (S->rgb_low, rgb, 4, double);
+		S->z_low = z_cut;
+	}
+	else {	/* Last slice */
+		GMT_memcpy (S->hsv_high, hsv, 4, double);
+		GMT_memcpy (S->rgb_high, rgb, 4, double);
+		S->z_high = z_cut;
+	}
+	S->i_dz = 1.0 / (S->z_high - S->z_low);	/* Recompute inverse stepsize */
+}
+
+struct GMT_PALETTE * GMT_truncate_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double z_low, double z_high)
+{	/* Truncate this CPT table to start and end at z_low, z_high.  If either is NaN we do nothing at that end. */
+	
+	unsigned int k, j, first = 0, last = P->n_colors - 1;
+	
+	if (GMT_is_dnan (z_low) && GMT_is_dnan (z_high)) return (P);	/* No change */
+	
+	if (!GMT_is_dnan (z_low)) {	/* Find first slice fully or partially within range */
+		while (first < P->n_colors && P->range[first].z_high <= z_low) first++;
+		if (z_low > P->range[first].z_low)	/* Must truncate this slice */
+			truncate_cpt_slice (GMT, &P->range[first], P->model & GMT_HSV, z_low, -1);
+	}
+	if (!GMT_is_dnan (z_high)) {	/* Find last slice fully or partially within range */
+		while (last > 0 && P->range[last].z_low >= z_high) last--;
+		if (P->range[last].z_high > z_high)	/* Must truncate this slice */
+			truncate_cpt_slice (GMT, &P->range[last], P->model & GMT_HSV, z_high, +1);
+	}
+	
+	for (k = 0; k < first; k++)
+		GMT_free_range (GMT, &P->range[k]);	/* Free any char strings */
+	for (k = last + 1; k < P->n_colors; k++)
+		GMT_free_range (GMT, &P->range[k]);	/* Free any char strings */
+	
+	if (first) {	/* Shuffle CPT down */
+		for (k = 0, j = first; j <= last; k++, j++) {
+			P->range[k] = P->range[j];
+		}
+	}
+	P->n_colors = last - first + 1;
+	GMT_memory (GMT, P->range, P->n_colors, struct GMT_LUT);	/* Truncate */
+	return (P);
 }
 
 int GMT_get_index (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double value)
