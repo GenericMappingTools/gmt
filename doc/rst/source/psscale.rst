@@ -14,6 +14,7 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ **-C**\ *cpt\_file* ]
 [ **-E**\ [**b**\ \|\ **f**][*length*][\ **+n**\ [*text*]] ]
+[ **-G**\ *zlo*\ /\ *zhi* ]
 [ **-I**\ [*max\_intens*\ \|\ *low\_i*/*high\_i*] ]
 [ **-J**\ *parameters* ]
 [ **-Jz**\ \|\ **Z**\ *parameters* ] [ **-K** ]
@@ -93,6 +94,12 @@ Optional Arguments
     gives both]. Optionally, append triangle height [Default is half the
     barwidth]. Finally, you can plot a rectangle with the NaN color at
     the start of the bar, labeled with *text* [NaN].
+
+**-G**\ *zlo*\ /\ *zhi*
+    Truncate the incoming CPT so that the lowest and highest z-levels
+    are to *zlo* and *zhi*.  If one of these equal NaN then
+    we leave that end of the CPT alone.  The truncation takes place
+    before the plotting.
 
 **-I**\ [*max\_intens*\ \|\ *low\_i*/*high\_i*]
     Add illumination effects. Optionally, set the range of intensities

@@ -62,6 +62,10 @@ struct MAKECPT_CTRL {
 		bool active;
 		unsigned int model;
 	} F;
+	struct G {	/* -Glow/high for input CPT truncation */
+		bool active;
+		double z_low, z_high;
+	} G;
 	struct I {	/* -I */
 		bool active;
 	} I;
@@ -94,6 +98,7 @@ void *New_makecpt_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	C = GMT_memory (GMT, NULL, 1, struct MAKECPT_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
+	C->G.z_low = C->G.z_high = GMT->session.d_NaN;	/* No truncation */
 	return (C);
 }
 
@@ -109,7 +114,7 @@ int GMT_makecpt_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: makecpt [-A[+]<transparency>] [-C<cpt>] [-D[i|o]] [-F[R|r|h|c] [-I] [-M] [-N] [-Q[i|o]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: makecpt [-A[+]<transparency>] [-C<cpt>] [-D[i|o]] [-F[R|r|h|c] [-G<zlo>/<zhi>] [-I] [-M] [-N] [-Q[i|o]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "	[-T<z_min>/<z_max>[/<z_inc>[+]] | -T<table>] [%s] [-Z]\n\t[%s]\n", GMT_V_OPT, GMT_ho_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
@@ -122,6 +127,8 @@ int GMT_makecpt_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   bottom/top values in the input cpt file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Select the color model for output (R for r/g/b or grayscale or colorname,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   r for r/g/b only, h for h-s-v, c for c/m/y/k).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-G Truncate incoming CPT to be limited to the z-range <zlo>/<zhi>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To accept one if the incoming limits, set to other to NaN.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Reverse sense of color table as well as back- and foreground color.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Use GMT defaults to set back-, foreground, and NaN colors\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses the settings in the color table].\n");
@@ -153,7 +160,9 @@ int GMT_makecpt_parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct G
 	 * returned when registering these sources/destinations with the API.
 	 */
 
+	int n;
 	unsigned int n_errors = 0, n_files[2] = {0, 0};
+	char txt_a[GMT_LEN32] = {""}, txt_b[GMT_LEN32] = {""};
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -191,6 +200,14 @@ int GMT_makecpt_parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct G
 					default: Ctrl->F.model = GMT_RGB; break;
 				}
 				break;
+			case 'G':	/* truncate incoming CPT */
+				Ctrl->G.active = true;
+				n = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b);
+				n_errors += GMT_check_condition (GMT, n < 2, "Syntax error -G option: Must specify z_low/z_high\n");
+				if (!(txt_a[0] == 'N' || txt_a[0] == 'n') || !strcmp (txt_a, "-")) Ctrl->G.z_low = atof (txt_a);
+				if (!(txt_b[0] == 'N' || txt_b[0] == 'n') || !strcmp (txt_b, "-")) Ctrl->G.z_high = atof (txt_b);
+				n_errors += GMT_check_condition (GMT, GMT_is_dnan (Ctrl->G.z_low) && GMT_is_dnan (Ctrl->G.z_high), "Syntax error -G option: Both of z_low/z_high cannot be NaN\n");
+				break;
 			case 'I':	/* Invert table */
 				Ctrl->I.active = true;
 				break;
@@ -205,7 +222,6 @@ int GMT_makecpt_parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct G
 				if (!access (opt->arg, R_OK))
 					Ctrl->T.file = strdup (opt->arg);
 				else {
-					int n;
 					Ctrl->T.inc = 0.0;
 					n = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->T.low, &Ctrl->T.high, &Ctrl->T.inc);
 					n_errors += GMT_check_condition (GMT, n < 2, "Syntax error -T option: Must specify start/stop[/inc[+]]\n");
@@ -303,6 +319,8 @@ int GMT_makecpt (void *V_API, int mode, void *args)
 	if ((Pin = GMT_Read_Data (API, GMT_IS_CPT, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, file, NULL)) == NULL) {
 		Return (API->error);
 	}
+	if (Ctrl->G.active) Pin = GMT_truncate_cpt (GMT, Pin, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
+	
 	if (Pin->categorical) Ctrl->W.active = true;	/* Do not want to sample a categorical table */
 
 	/* Set up arrays */

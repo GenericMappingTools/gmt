@@ -2,6 +2,11 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-07-07	pwessel
+	* makecpt.c:		New option -Glo/hi to truncate the incoming CPT table first.
+	* grd2cpt.c:		---"---
+	* psscale.c:		---"---
+
 2013-07-06	pwessel
 	* psxy[z].c:		Allow -SE- to indicate degenerate ellipse (circle) and only
 				the diameter in km is expected on input.
