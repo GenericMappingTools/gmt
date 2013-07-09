@@ -3666,6 +3666,7 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 					GMT_Report (API, GMT_MSG_NORMAL, "Failed to free recall item %d\n", k);
 				}
 				
+				free ((void *)recall[k]->label);
 				GMT_free (GMT, recall[k]);
 				while (k && k == (int)(n_stored-1) && !recall[k]) k--, n_stored--;	/* Chop off trailing NULL cases */
 				continue;
@@ -3770,6 +3771,17 @@ int GMT_grdmath (void *V_API, int mode, void *args)
 		nstack = new_stack;
 		for (kk = 1; kk <= produced_operands[op]; kk++) stack[nstack-kk]->constant = false;	/* Now filled with grid */
 	}
+
+	/* Clean-up time */
+
+	for (kk = 0; kk < n_stored; kk++) {	/* Free up stored STO/RCL memory */
+		if (recall[kk]->stored.G && GMT_Destroy_Data (API, &recall[kk]->stored.G) != GMT_OK) {
+			GMT_Report (API, GMT_MSG_NORMAL, "Failed to free recall item %d\n", kk);
+		}
+		free ((void *)recall[kk]->label);
+		GMT_free (GMT, recall[kk]);
+	}
+
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) GMT_Message (API, GMT_TIME_NONE, "\n");
 
 	if (nstack > 0) GMT_Report (API, GMT_MSG_NORMAL, "Warning: %d more operands left on the stack!\n", nstack);

@@ -3662,6 +3662,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 					Return (EXIT_FAILURE);
 				}
 				if (recall[k]->stored.D) GMT_free_dataset (GMT, &recall[k]->stored.D);
+				free ((void *)recall[k]->label);
 				GMT_free (GMT, recall[k]);
 				while (k && k == (int)(n_stored-1) && !recall[k]) k--, n_stored--;	/* Chop off trailing NULL cases */
 				continue;	/* Just go back and process next item */
@@ -3864,9 +3865,15 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 		if (template_used) Template = NULL;	/* This prevents it from being freed twice (once from API registration via GMT_Write_Data and then again in Free_Misc) */
 	}
 
-	if (free_time) GMT_free_dataset (GMT, &Time);
 	/* Clean-up time */
 
+	if (free_time) GMT_free_dataset (GMT, &Time);
+	for (kk = 0; kk < n_stored; kk++) {	/* Free up stored STO/RCL memory */
+		if (recall[kk]->stored.D) GMT_free_dataset (GMT, &recall[kk]->stored.D);
+		free ((void *)recall[kk]->label);
+		GMT_free (GMT, recall[kk]);
+	}
+	
 	if (nstack > 1) GMT_Report (API, GMT_MSG_NORMAL, "Warning: %d more operands left on the stack!\n", nstack-1);
 
 	Return (EXIT_SUCCESS);
