@@ -88,5 +88,5 @@ gmt_set_framename() {
 # For animations: Increment frame counter by one
 
 gmt_set_framenext() {
-	gmt gmtmath -Q $1 1 ADD =
+	gmt math -Q $1 1 ADD =
 }

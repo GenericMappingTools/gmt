@@ -84,6 +84,10 @@ struct GMTMATH_CTRL {	/* All control options for this program (except common arg
 		bool active;
 		bool *cols;
 	} C;
+	struct E {	/* -E<min_eigenvalue> */
+		bool active;
+		double eigen;
+	} E;
 	struct I {	/* -I */
 		bool active;
 	} I;
@@ -139,6 +143,7 @@ void *New_gmtmath_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new
 	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->C.cols = GMT_memory (GMT, NULL, GMT_MAX_COLUMNS, bool);
+	C->E.eigen = 1e-7;	/* Default cutoff of small eigenvalues */
 	C->N.ncol = 2;
 
 	return (C);
@@ -197,25 +202,27 @@ int gmtmath_find_stored_item (struct GMT_CTRL *GMT, struct GMTMATH_STORED *recal
 
 /* ---------------------- start convenience functions --------------------- */
 
-int solve_LSQFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S, uint64_t n_col, bool skip[], char *file)
+int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S, uint64_t n_col, bool skip[], char *file, bool svd, double eigen_min, struct GMT_OPTION *options)
 {
 	/* Consider the current table the augmented matrix [A | b], making up the linear system Ax = b.
 	 * We will set up the normal equations, solve for x, and output the solution before quitting.
 	 * This function is special since it operates across columns and returns n_col scalars.
-	 * We try to solve this positive definite & symmetric matrix with Cholsky methods; if that fails
+	 * We try to solve this positive definite & symmetric matrix with Cholesky methods; if that fails
 	 * we do a full SVD decomposition and set small eigenvalues to zero, yielding an approximate solution.
+	 * However, if svd == true then we do the full SVD.
 	 */
 
 	unsigned int i, j, k, k0, i2, j2, n;
 	int ier;
-	uint64_t row, seg, rhs;
+	uint64_t row, seg, rhs, dim[4] = {1, 1, 0, 1};
 	double cond, *N = NULL, *B = NULL, *d = NULL, *x = NULL, *b = NULL, *z = NULL, *v = NULL, *lambda = NULL;
-	FILE *fp = NULL;
 	struct GMT_DATATABLE *T = S->D->table[0];
+	struct GMT_DATASET *D = NULL;
 
 	for (i = n = 0; i < n_col; i++) if (!skip[i]) n++;	/* Need to find how many active columns we have */
 	if (n < 2) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error, LSQFIT requires at least 2 active columns!\n");
+		char *pre[2] = {"LSQ", "SVD"};
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error, %sFIT requires at least 2 active columns!\n", pre[svd]);
 		return (EXIT_FAILURE);
 	}
 	rhs = n_col - 1;
@@ -243,13 +250,20 @@ int solve_LSQFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 		}
 		j++;
 	}
+	if (svd)
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Solve LS system via SVD decomposition and exclude eigenvalues < %g.\n", eigen_min);
+	else
+		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Solve LS system via Cholesky decomposition\n");
 
 	d = GMT_memory (GMT, NULL, n, double);
 	x = GMT_memory (GMT, NULL, n, double);
-	if ( (ier = GMT_chol_dcmp (GMT, N, d, &cond, n, n) ) != 0) {	/* Decomposition failed, use SVD method */
+	if (svd || ((ier = GMT_chol_dcmp (GMT, N, d, &cond, n, n) ) != 0)) {	/* Cholesky decomposition failed, use SVD method, or use SVD if specified */
 		unsigned int nrots;
-		GMT_chol_recover (GMT, N, d, n, n, ier, true);		/* Restore to former matrix N */
-		/* Solve instead using GMT_jacobi */
+		if (!svd) {
+			GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Cholesky decomposition failed, try SVD decomposition instead and exclude eigenvalues < %g.\n", eigen_min);
+			GMT_chol_recover (GMT, N, d, n, n, ier, true);	/* Restore to former matrix N */
+		}
+		/* Solve instead using the SVD of a square matrix via GMT_jacobi */
 		lambda = GMT_memory (GMT, NULL, n, double);
 		b = GMT_memory (GMT, NULL, n, double);
 		z = GMT_memory (GMT, NULL, n, double);
@@ -257,53 +271,61 @@ int solve_LSQFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 
 		if (GMT_jacobi (GMT, N, n, n, lambda, v, b, z, &nrots)) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Eigenvalue routine failed to converge in 50 sweeps.\n");
-			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The reported L2 positions might be garbage.\n");
+			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "The solution might be inaccurate.\n");
 		}
 		/* Solution x = v * lambda^-1 * v' * B */
 
 		/* First do d = V' * B, so x = v * lambda^-1 * d */
-		for (j = 0; j < n; j++) for (k = 0, d[j] = 0.0; k < n; k++) d[j] += v[k*n+j] * B[k];
+		for (j = 0; j < n; j++) for (k = 0, d[j] = 0.0; k < n; k++) d[j] += v[j*n+k] * B[k];
 		/* Then do d = lambda^-1 * d by setting small lambda's to zero */
 		for (j = k = 0; j < n; j++) {
-			if (lambda[j] < 1.0e7) {
+			if (lambda[j] < eigen_min) {
 				d[j] = 0.0;
 				k++;
 			}
 			else
 				d[j] /= lambda[j];
 		}
-		if (k) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%d eigenvalues < 1.0e-7 set to zero to yield a stable solution\n", k);
+		if (k) GMT_Report (GMT->parent, GMT_MSG_NORMAL, "%d eigenvalues < %g set to zero to yield a stable solution\n", k, eigen_min);
 
 		/* Finally do x = v * d */
-		for (j = 0; j < n; j++) for (k = 0; k < n; k++) x[j] += v[j*n+k] * d[k];
+		for (j = 0; j < n; j++) for (k = 0; k < n; k++) x[j] += v[k*n+j] * d[k];
 
 		GMT_free (GMT, b);
 		GMT_free (GMT, z);
 		GMT_free (GMT, v);
+		GMT_free (GMT, lambda);
 	}
 	else {	/* Decomposition worked, now solve system */
 		GMT_chol_solv (GMT, N, x, B, n, n);
 	}
 
-	if (!file) {
-		fp = GMT->session.std[GMT_OUT];
-#ifdef SET_IO_MODE
-		GMT_setmode (GMT, GMT_OUT);
-#endif
+	dim[GMT_ROW] = n;
+	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (GMT->parent->error);
+	for (k = 0; k < n; k++) D->table[0]->segment[0]->coord[GMT_X][k] = x[k];
+	GMT_Set_Comment (GMT->parent, GMT_IS_DATASET, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, D);
+	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, (file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_NONE, 0, NULL, file, D) != GMT_OK) {
+		return (GMT->parent->error);
 	}
-	else if ((fp = GMT_fopen (GMT, file, GMT->current.io.w_mode)) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Error creating file %s\n", file);
-		return (EXIT_FAILURE);
+	if (GMT_Destroy_Data (GMT->parent, &D) != GMT_OK) {
+		return (GMT->parent->error);
 	}
-
-	GMT->current.io.output (GMT, fp, n, x);
-	GMT_fclose (GMT, fp);
 
 	GMT_free (GMT, x);
 	GMT_free (GMT, d);
 	GMT_free (GMT, N);
 	GMT_free (GMT, B);
 	return (EXIT_SUCCESS);
+}
+
+int solve_LSQFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S, uint64_t n_col, bool skip[], double eigen, char *file, struct GMT_OPTION *options)
+{
+	return (solve_LS_system (GMT, info, S, n_col, skip, file, false, eigen, options));
+}
+
+int solve_SVDFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S, uint64_t n_col, bool skip[], double eigen, char *file, struct GMT_OPTION *options)
+{
+	return (solve_LS_system (GMT, info, S, n_col, skip, file, true, eigen, options));
 }
 
 void load_column (struct GMT_DATASET *to, uint64_t to_col, struct GMT_DATATABLE *from, uint64_t from_col)
@@ -378,6 +400,7 @@ int GMT_gmtmath_usage (struct GMTAPI_CTRL *API, int level)
 		"\t   No additional data files may be specified.\n"
 		"\t-C Change which columns to operate on [Default is all except time].\n"
 		"\t   -C reverts to the default, -Cr toggles current settings, and -Ca selects all columns.\n"
+		"\t-E Set minimum eigenvalue used by LSQFIT and SVDFIT [1e-7].\n"
 		"\t-I Reverse the output sequence into descending order [ascending].\n"
 		"\t-L Apply operators on a per-segment basis [cumulates operations across file].\n"
 		"\t-N Set the number of columns and optionally the id of the time column (0 is first) [2/0].\n"
@@ -428,11 +451,14 @@ int GMT_gmtmath_parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct G
 				
 			/* Processes program-specific parameters */
 
-			case 'A':	/* y(x) table for LSQFIT operations */
+			case 'A':	/* y(x) table for LSQFIT/SVDFIT operations */
 				Ctrl->A.active = true;
 				Ctrl->A.file = strdup (opt->arg);
 				break;
 			case 'C':	/* Processed in the main loop but not here; just skip */
+				break;
+			case 'E':	/* Set minimum eigenvalue cutoff */
+				Ctrl->E.eigen = atof (opt->arg);
 				break;
 			case 'F':	/* Now obsolete, using -o instead */
 				if (GMT_compat_check (GMT, 4)) {
@@ -1978,7 +2004,7 @@ void table_LRAND (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMAT
 }
 
 void table_LSQFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: LSQFIT 1 0 Let current table be [A | b]; return least squares solution x = A \\ b.  */
+/*OPERATOR: LSQFIT 1 0 Current table is [A | b]; return LS solution to A * x = b via Cholesky decomposition.  */
 {
 	/* Dummy routine needed since the automatically generated include file will have table_LSQFIT
 	 * with these parameters just like any other function.  However, when we find LSQFIT we will
@@ -2861,6 +2887,14 @@ void table_SUM (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_
 	}
 }
 
+void table_SVDFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: SVDFIT 1 0 Current table is [A | b]; return LS solution to A * x = B via SVD decomposition (see -E).  */
+{
+	/* Dummy routine needed since the automatically generated include file will have table_SVDFIT
+	 * with these parameters just like any other function.  However, when we find SVDFIT we will
+	 * instead call solve_SVDFIT which can be found at the end of these functions */
+}
+
 void table_TAN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: TAN 1 1 tan (A) (A in radians).  */
 {
@@ -3247,7 +3281,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 
 	double t_noise = 0.0, value, off, scale, special_symbol[GMTMATH_ARG_IS_PI-GMTMATH_ARG_IS_N+1];
 
-	char *outfile = NULL, *label = NULL;
+	char *label = NULL;
 #include "gmtmath_op.h"
 
 	void (*call_operator[GMTMATH_N_OPERATORS]) (struct GMT_CTRL *, struct GMTMATH_INFO *, struct GMTMATH_STACK **S, unsigned int, unsigned int);
@@ -3506,7 +3540,12 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 	GMT_set_tbl_minmax (GMT, info.T);
 
 	if (Ctrl->A.active) {
-		load_column (stack[0]->D, n_columns-1, rhs, 1);	/* Put the r.h.s of the Ax = b equation in the last column of the item on the stack */
+		if (!stack[0]->D) {
+			stack[0]->D = GMT_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
+			stack[0]->alloc_mode = 1;
+		}
+		load_column (stack[0]->D, n_columns-1, rhs, 1);		/* Put the r.h.s of the Ax = b equation in the last column of the item on the stack */
+		load_column (stack[0]->D, Ctrl->N.tcol, rhs, 0);	/* Put the t vector in the time column of the item on the stack */
 		GMT_set_tbl_minmax (GMT, stack[0]->D->table[0]);
 		if (GMT_Destroy_Data (API, &A_in) != GMT_OK) {
 			Return (API->error);
@@ -3532,7 +3571,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 
 		/* First check if we should skip optional arguments */
 
-		if (strchr ("AINQSTVbfghios-" GMT_OPT("FHMm"), opt->option)) continue;
+		if (strchr ("AEINQSTVbfghios-" GMT_OPT("FHMm"), opt->option)) continue;
 		if (opt->option == 'C') {	/* Change affected columns */
 			if (decode_columns (GMT, opt->arg, Ctrl->C.cols, n_columns, Ctrl->N.tcol)) touched_t_col = true;
 			continue;
@@ -3728,7 +3767,11 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 		}
 
 		if (!strcmp (operator[op], "LSQFIT")) {	/* Special case, solve LSQ system and return */
-			solve_LSQFIT (GMT, &info, stack[nstack-1], n_columns, Ctrl->C.cols, outfile);
+			solve_LSQFIT (GMT, &info, stack[nstack-1], n_columns, Ctrl->C.cols, Ctrl->E.eigen, Ctrl->Out.file, options);
+			Return (EXIT_SUCCESS);
+		}
+		else if (!strcmp (operator[op], "SVDFIT")) {	/* Special case, solve SVD system and return */
+			solve_SVDFIT (GMT, &info, stack[nstack-1], n_columns, Ctrl->C.cols, Ctrl->E.eigen, Ctrl->Out.file, options);
 			Return (EXIT_SUCCESS);
 		}
 
@@ -3743,7 +3786,7 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 	}
 
 	if (GMT_is_verbose (GMT, GMT_MSG_VERBOSE)) {
-		(outfile) ? GMT_Message (API, GMT_TIME_NONE, "= %s", outfile) : GMT_Message (API, GMT_TIME_NONE,  "= <stdout>");
+		(Ctrl->Out.file) ? GMT_Message (API, GMT_TIME_NONE, "= %s", Ctrl->Out.file) : GMT_Message (API, GMT_TIME_NONE,  "= <stdout>");
 	}
 
 	if (stack[0]->constant) {	/* Only a constant provided, set table accordingly */
