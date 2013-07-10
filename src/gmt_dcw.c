@@ -227,6 +227,7 @@ struct GMT_DATASET * GMT_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	struct GMT_DCW_STATE *GMT_DCW_state = NULL;
 	
 	if (!F->codes || F->codes[0] == '\0') return NULL;	/* No countries requested */
+	if (mode != GMT_DCW_REGION && F->region && (F->mode & 12) == 0) return NULL;	/* No plotting requested, just -R */
 
 	for (k = 0; k < strlen (F->codes); k++) if (F->codes[k] == ',') n_items++;	/* Determine how many items we specified */
 
