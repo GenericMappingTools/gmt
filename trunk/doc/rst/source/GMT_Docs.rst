@@ -3942,7 +3942,7 @@ the coordinates of the grid passed to such programs:
    modifier **+u**\ *unit*, where *unit* is one of non-arc units listed
    in Table [tbl:distunits]. For example, reading in the grid (which has
    distance units of km) and converting them to meters is done by
-   specifying the filename as . On output, any derived grids will revert
+   specifying the filename as *filename*\ **+u**\ k. On output, any derived grids will revert
    to their original units *unless* you specify another unit modifier to
    the output grid. This may be used, for instance, to save the original
    grid with distances in meters using some other unit.

@@ -86,7 +86,11 @@ Optional Arguments
     the cpt-file with a L, U, or B to annotate Lower, Upper, or Both
     color segment boundaries (but see **-B**). If not given, **psscale**
     will read stdin. Like **grdview**, **psscale** can understand
-    pattern specifications in the cpt file.
+    pattern specifications in the cpt file. For CPT files where the
+    *z* range is in meters, it may be useful to change to another unit
+    when plotting.  To do so, append **+U**\ *unit* to the file name.
+    Likewise, if the CPT file uses another unit than meter and you wish
+    to plot the CPT versus meters, append **+u**\ *unit*.
 
 **-E**\ [**b**\ \|\ **f**][*length*][\ **+n**\ [*text*]]
     Add sidebar triangles for **b**\ ack- and/or **f**\ oreground
