@@ -90,15 +90,16 @@ Optional Arguments
     Append one or more comma-separated countries using the 2-character
     ISO 3166-1 alpha-2 convention.  To select a state of a country
     (if available), append .state, e.g, US.TX for Texas.  Append **+l** to
-    just list the countries and their codes [no data extraction takes place].
-    Use **+L** to see states/territories for Australia, Brazil, Canada, and the US.
-    Use **+r** obtain the bounding box coordinates from the polygon(s).
+    just list the countries and their codes [no data extraction or plotting takes place].
+    Use **+L** to see states/territories for Argentina, Australia, Brazil, Canada, and the US.
+    Use **+r** to obtain the bounding box coordinates from the polygon(s).
     Append *inc*, *xinc*/*yinc*, or *winc*/*einc*/*sinc*/*ninc* to adjust the
     region to be a multiple of these steps [no adjustment]. Use **+R** to extend the region
     outward by adding these increments instead [no extension].
     Append **+p**\ *pen* to draw polygon outlines [no outline] and
     **+g**\ *fill* to fill them [no fill].  One of **+p**\|\ **g** must be
-    specified unless **-M** is in effect, and only one **-F** option can be given.
+    specified unless **+r**, **+R**, or **-M** is in effect, and only one **-F** option can be given.
+    To plot multiple countries in different colors, call pscoast multiple times.
 
 **-G**\ *fill*\ \|\ **c**
     Select filling or clipping of "dry" areas. Append the shade, color,
