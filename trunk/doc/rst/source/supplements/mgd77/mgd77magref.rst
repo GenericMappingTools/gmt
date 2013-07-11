@@ -48,15 +48,18 @@ Optional Arguments
     *Dst* and *F10.7* coefficient files. We extended here those
     coefficient files up to 2006, which means that one can compute
     external contributions up until 2006 but the Secular Variation will
-    be biased (non reliable). New indices files may be retrieved
+    be biased (non reliable). New indices files may be retrieved from
     from:ftp://ftp.ngdc.noaa.gov/STP/GEOMAGNETIC_DATA/INDICES/DST/ (the
     *Dst* coefficients) and
-    ftp://ftp.ngdc.noaa.gov/STP/SOLAR_DATA/SOLAR_RADIO/FLUX/ (The
-    *F10.7* index file is a MONTHPLT.ABS). NOTE: since the *Dst* files
-    in the .../DST/ directory are still only up to 2006, for GMT4.5.3 we
-    extended the *Dst* until August 2009 by reformatting the data in the
+    http://umbra.nascom.nasa.gov/sdb/yohkoh/ys_dbase/indices_flux_raw/Penticton_Absolute/monthly/MONTHPLT.ABS 
+    (The *F10.7* index file is a MONTHPLT.ABS). NOTE: since the *Dst* files
+    in the .../DST/ directory are still only up to 2006, for GMT4.5.3 and after
+    we extended the *Dst* until August 2009 by reformatting the data in the
     preliminary file Est_Ist_index_0_mean.pli, which is at
-    ftp://ftp.ngdc.noaa.gov/STP/GEOMAGNETIC_DATA/INDICES/EST_IST/
+    ftp://ftp.ngdc.noaa.gov/STP/GEOMAGNETIC_DATA/INDICES/EST_IST/. But since
+    this site is now also outdated, we now get the DST indices from 
+    http://wdc.kugi.kyoto-u.ac.jp/dstae/index.html However, for the most recent
+    dates those indices are "Quick Look" (the best are the "Definitive" type)
 
 **-A**\ [**+a**\ *alt*\ **+t**\ *date*\ **+y**]
     Adjusts how the input record is interpreted. Append **+a** to set a
