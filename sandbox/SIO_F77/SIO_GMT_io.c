@@ -52,8 +52,8 @@ int readgrd_(float *rdat, int *nx, int *ny, double *rlt0, double *rln0, \
 	 * filein = filename of input file
 	 */
 	uint64_t node, nm;
-	unsigned int dim[3];
-	double wesn[6], inc[2];
+	unsigned int dim[4] = {0, 0, 0, 0};
+	double wesn[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, inc[2] = {0.0, 0.0};
 	char remark[GMT_GRID_REMARK_LEN160];
 
 	/* Obtain the grid and header info */
@@ -103,8 +103,8 @@ int writegrd_(float *rdat, int *nx, int *ny, double *rlt0, double *rln0, \
 	 */
 	
 	uint64_t node, nm;
-	unsigned int dim[3];
-	double wesn[4], inc[2];
+	unsigned int dim[4] = {0, 0, 0, 0};
+	double wesn[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0}, inc[2] = {0.0, 0.0};
 
 	/* Calculate header parameters */
 	
@@ -119,8 +119,8 @@ int writegrd_(float *rdat, int *nx, int *ny, double *rlt0, double *rln0, \
 	}
 	inc[GMT_X] = fabs (*dln);
 	inc[GMT_Y] = fabs (*dlt);
-	wesn[GMT_YHI] = *rlt0 + *ny * *dlt;
-	wesn[GMT_YLO] = *rlt0;
+	wesn[GMT_YLO] = *rlt0 + *ny * *dlt;
+	wesn[GMT_YHI] = *rlt0;
 	if (wesn[GMT_YHI] < wesn[GMT_YLO]) {
 		wesn[GMT_YLO] = wesn[GMT_YHI];
 		wesn[GMT_YHI] = *rlt0;

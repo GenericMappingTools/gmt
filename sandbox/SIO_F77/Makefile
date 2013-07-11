@@ -25,9 +25,10 @@ uninstall:
 		cd ../../bin/$(OS); rm -f $(FPROGS)
 
 spotless::	clean
+		rm -rf config.mk configure autom4te.cache
 
 clean:	
-		rm -f *.o *% core tags $(FPROGS)
+		rm -f *.o *% core tags config.log config.status $(FPROGS)
 
 #-------------------------------------------------------------------------------
 #	program rules
