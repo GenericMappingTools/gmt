@@ -5951,6 +5951,7 @@ int GMT_F77_writegrd_ (float *array, unsigned int dim[], double limit[], double 
 	GMT_memcpy (header.inc, inc, 2U, double);
 	header.nx = dim[GMT_X];	header.ny = dim[GMT_Y];
 	header.registration = dim[GMT_Z];
+	GMT_set_grddim (API->GMT, &header);
 	strncpy (header.title, title, GMT_GRID_TITLE_LEN80); 
 	strncpy (header.remark, remark, GMT_GRID_REMARK_LEN160); 
 	

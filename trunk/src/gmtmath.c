@@ -68,6 +68,10 @@ EXTERN_MSC void gmt_free_macros (struct GMT_CTRL *GMT, unsigned int n_macros, st
 #define COL_T	0	/* These are the first and 2nd columns in the Time structure */
 #define COL_TN	1
 
+#define GMTMATH_COEFFICIENTS	0
+#define GMTMATH_EVALUATE	1
+#define GMTMATH_RESIDUALS	2
+
 #define DOUBLE_BIT_MASK (~(1023ULL << 54ULL))	/* This will be 00000000 00111111 11111111 .... and sets to 0 anything larger than 2^53 which is max integer in double */
 
 struct GMTMATH_CTRL {	/* All control options for this program (except common args) */
@@ -78,6 +82,7 @@ struct GMTMATH_CTRL {	/* All control options for this program (except common arg
 	} Out;
 	struct A {	/* -A<t_f(t).d> */
 		bool active;
+		unsigned int mode;	/* 0 save coefficients, 1 save predictions, 2 save residuals */
 		char *file;
 	} A;
 	struct C {	/* -C<cols> */
@@ -119,6 +124,7 @@ struct GMTMATH_INFO {
 	bool local;		/* Per segment operation (true) or global operation (false) */
 	bool notime;		/* No time-array avaible for operators who depend on that */
 	unsigned int n_roots;	/* Number of roots found */
+	unsigned int fit_mode;	/* Used for {LSQ|SVD}FIT */
 	uint64_t r_col;	/* The column used to find roots */
 	uint64_t n_col;	/* Number of columns */
 	double t_min, t_max, t_inc;
@@ -202,7 +208,8 @@ int gmtmath_find_stored_item (struct GMT_CTRL *GMT, struct GMTMATH_STORED *recal
 
 /* ---------------------- start convenience functions --------------------- */
 
-int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S, uint64_t n_col, bool skip[], char *file, bool svd, double eigen_min, struct GMT_OPTION *options)
+int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S, uint64_t n_col, bool skip[], \
+	char *file, bool svd, double eigen_min, struct GMT_OPTION *options, struct GMT_DATASET *A)
 {
 	/* Consider the current table the augmented matrix [A | b], making up the linear system Ax = b.
 	 * We will set up the normal equations, solve for x, and output the solution before quitting.
@@ -300,15 +307,48 @@ int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT
 		GMT_chol_solv (GMT, N, x, B, n, n);
 	}
 
-	dim[GMT_ROW] = n;
-	if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (GMT->parent->error);
-	for (k = 0; k < n; k++) D->table[0]->segment[0]->coord[GMT_X][k] = x[k];
-	GMT_Set_Comment (GMT->parent, GMT_IS_DATASET, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, D);
-	if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, (file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_NONE, 0, NULL, file, D) != GMT_OK) {
-		return (GMT->parent->error);
+	if (info->fit_mode == GMTMATH_COEFFICIENTS) {	/* Return coefficients */
+		dim[GMT_ROW] = n;
+		if ((D = GMT_Create_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) return (GMT->parent->error);
+		for (k = 0; k < n; k++) D->table[0]->segment[0]->coord[GMT_X][k] = x[k];
+		GMT_Set_Comment (GMT->parent, GMT_IS_DATASET, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, D);
+		if (GMT->common.h.add_colnames) {
+			char header[GMT_BUFSIZ] = {""};
+			sprintf (header, "#coefficients");
+			if (GMT_Set_Comment (GMT->parent, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, D)) return (GMT->parent->error);
+		}
+		if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, (file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_NONE, 0, NULL, file, D) != GMT_OK) {
+			return (GMT->parent->error);
+		}
+		if (GMT_Destroy_Data (GMT->parent, &D) != GMT_OK) {
+			return (GMT->parent->error);
+		}
 	}
-	if (GMT_Destroy_Data (GMT->parent, &D) != GMT_OK) {
-		return (GMT->parent->error);
+	else {	/* Return t, p(t)|r(t), where p(t) is the predicted solution and r(t) is the residuals */
+		double value;
+		for (seg = k = 0; seg < info->T->n_segments; seg++) {
+			for (row = 0; row < T->segment[seg]->n_rows; row++, k++) {
+				value = 0.0;
+				for (j2 = j = 0; j2 < n; j2++) {	/* j2 is table column, j is entry in x vector */
+					if (skip[j2]) continue;		/* Not included in the fit */
+					value += T->segment[seg]->coord[j2][row] * x[j];	/* Sum up the solution */
+					j++;
+				}
+				if (info->fit_mode == GMTMATH_RESIDUALS)
+					A->table[0]->segment[seg]->coord[1][row] -= value;
+				else
+					A->table[0]->segment[seg]->coord[1][row] = value;
+			}
+		}
+		/* We are recycling the A dataset here */
+		if (GMT->common.h.add_colnames) {
+			char header[GMT_BUFSIZ] = {""}, *type[2] = {"predict(t)", "residual(t)"};
+			sprintf (header, "#t[0]\t%s[1]", type[info->fit_mode-1]);
+			if (GMT_Set_Comment (GMT->parent, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, A)) return (GMT->parent->error);
+		}
+		if (GMT_Write_Data (GMT->parent, GMT_IS_DATASET, (file ? GMT_IS_FILE : GMT_IS_STREAM), GMT_IS_NONE, 0, NULL, file, A) != GMT_OK) {
+			return (GMT->parent->error);
+		}
 	}
 
 	GMT_free (GMT, x);
@@ -318,14 +358,14 @@ int solve_LS_system (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMT
 	return (EXIT_SUCCESS);
 }
 
-int solve_LSQFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S, uint64_t n_col, bool skip[], double eigen, char *file, struct GMT_OPTION *options)
+int solve_LSQFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S, uint64_t n_col, bool skip[], double eigen, char *file, struct GMT_OPTION *options, struct GMT_DATASET *A)
 {
-	return (solve_LS_system (GMT, info, S, n_col, skip, file, false, eigen, options));
+	return (solve_LS_system (GMT, info, S, n_col, skip, file, false, eigen, options, A));
 }
 
-int solve_SVDFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S, uint64_t n_col, bool skip[], double eigen, char *file, struct GMT_OPTION *options)
+int solve_SVDFIT (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S, uint64_t n_col, bool skip[], double eigen, char *file, struct GMT_OPTION *options, struct GMT_DATASET *A)
 {
-	return (solve_LS_system (GMT, info, S, n_col, skip, file, true, eigen, options));
+	return (solve_LS_system (GMT, info, S, n_col, skip, file, true, eigen, options, A));
 }
 
 void load_column (struct GMT_DATASET *to, uint64_t to_col, struct GMT_DATATABLE *from, uint64_t from_col)
@@ -367,7 +407,7 @@ int GMT_gmtmath_usage (struct GMTAPI_CTRL *API, int level)
 {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtmath [-A<ftable>] [-C<cols>] [-I] [-L] [-N<n_col>[/<t_col>]] [-Q] [-S[f|l]]\n");
+	GMT_Message (API, GMT_TIME_NONE, "usage: gmtmath [-A<ftable>[+s|r]] [-C<cols>] [-E<eigen>] [-I] [-L] [-N<n_col>[/<t_col>]] [-Q] [-S[f|l]]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T[<t_min>/<t_max>/<t_inc>[+]]] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\tA B op C op ... = [outfile]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_s_OPT);
 
@@ -397,7 +437,8 @@ int GMT_gmtmath_usage (struct GMTAPI_CTRL *API, int level)
 		"\n\tOPTIONS:\n\n"
 		"\t-A Require -N and will initialize table with file <ftable> containing t and f(t) only.\n"
 		"\t   t goes into column <t_col> while f(t) goes into column <n_col> - 1.\n"
-		"\t   No additional data files may be specified.\n"
+		"\t   No additional data files may be specified.  By default, output will be a single column with coefficients.\n"
+		"\t   Append +s to instead write the solution evaluated at given t, or +r to write the residuals instead.\n"
 		"\t-C Change which columns to operate on [Default is all except time].\n"
 		"\t   -C reverts to the default, -Cr toggles current settings, and -Ca selects all columns.\n"
 		"\t-E Set minimum eigenvalue used by LSQFIT and SVDFIT [1e-7].\n"
@@ -428,6 +469,7 @@ int GMT_gmtmath_parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct G
 
 	unsigned int n_errors = 0, n_files = 0;
 	bool missing_equal = true;
+	char *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 	int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg);
@@ -453,7 +495,18 @@ int GMT_gmtmath_parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct G
 
 			case 'A':	/* y(x) table for LSQFIT/SVDFIT operations */
 				Ctrl->A.active = true;
+				if ((c = strstr (opt->arg, "+s"))) {
+					Ctrl->A.mode = GMTMATH_EVALUATE;
+					c[0] = '\0';
+				}
+				else if ((c = strstr (opt->arg, "+r"))) {
+					Ctrl->A.mode = GMTMATH_RESIDUALS;
+					c[0] = '\0';
+				}
+				else
+					Ctrl->A.mode = GMTMATH_COEFFICIENTS;
 				Ctrl->A.file = strdup (opt->arg);
+				if (c) c[0] = '+';	/* Restore the modifier */
 				break;
 			case 'C':	/* Processed in the main loop but not here; just skip */
 				break;
@@ -3547,10 +3600,8 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 		load_column (stack[0]->D, n_columns-1, rhs, 1);		/* Put the r.h.s of the Ax = b equation in the last column of the item on the stack */
 		load_column (stack[0]->D, Ctrl->N.tcol, rhs, 0);	/* Put the t vector in the time column of the item on the stack */
 		GMT_set_tbl_minmax (GMT, stack[0]->D->table[0]);
-		if (GMT_Destroy_Data (API, &A_in) != GMT_OK) {
-			Return (API->error);
-		}
 		nstack = 1;
+		info.fit_mode = Ctrl->A.mode;
 	}
 	else
 		nstack = 0;
@@ -3768,11 +3819,11 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 		}
 
 		if (!strcmp (operator[op], "LSQFIT")) {	/* Special case, solve LSQ system and return */
-			solve_LSQFIT (GMT, &info, stack[nstack-1], n_columns, Ctrl->C.cols, Ctrl->E.eigen, Ctrl->Out.file, options);
+			solve_LSQFIT (GMT, &info, stack[nstack-1], n_columns, Ctrl->C.cols, Ctrl->E.eigen, Ctrl->Out.file, options, A_in);
 			Return (EXIT_SUCCESS);
 		}
 		else if (!strcmp (operator[op], "SVDFIT")) {	/* Special case, solve SVD system and return */
-			solve_SVDFIT (GMT, &info, stack[nstack-1], n_columns, Ctrl->C.cols, Ctrl->E.eigen, Ctrl->Out.file, options);
+			solve_SVDFIT (GMT, &info, stack[nstack-1], n_columns, Ctrl->C.cols, Ctrl->E.eigen, Ctrl->Out.file, options, A_in);
 			Return (EXIT_SUCCESS);
 		}
 
@@ -3866,6 +3917,10 @@ int GMT_gmtmath (void *V_API, int mode, void *args)
 	}
 
 	/* Clean-up time */
+
+	if (Ctrl->A.active && GMT_Destroy_Data (API, &A_in) != GMT_OK) {
+		Return (API->error);
+	}
 
 	if (free_time) GMT_free_dataset (GMT, &Time);
 	for (kk = 0; kk < n_stored; kk++) {	/* Free up stored STO/RCL memory */

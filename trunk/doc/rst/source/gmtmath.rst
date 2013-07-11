@@ -9,7 +9,8 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmtmath** [ **-A**\ *t_f(t).d* ] [ **-C**\ *cols* ] [ **-I** ]
+**gmtmath** [ **-A**\ *t_f(t).d*\ [**+s**\ \|\ **r**] ] [ **-C**\ *cols* ]
+[ **-E**\ *eigen* ] [ **-I** ]
 [ **-N**\ *n\_col*\ [/*t_col*] ] [ **-Q** ] [ **-S**\ [**f**\ \|\ **l**]
 ] [ **-T**\ *t\_min*/*t_max*/*t_inc*\ [**+**\ ]\|\ *tfile* ]
 [ |SYN_OPT-V| ]
@@ -65,7 +66,10 @@ Optional Arguments
     Requires **-N** and will partially initialize a table with values
     from the given file containing *t* and *f(t)* only. The *t* is
     placed in column *t\_col* while *f(t)* goes into column *n\_col* - 1
-    (see **-N**).
+    (see **-N**).  If used with operators LSQFIT and SVDFIT you can
+    optionally append the modifiers **+s** or **+r** which will write
+    out the model solution or the residuals, respectively [Default
+    writes one column with model coefficients].
 **-C**\ *cols*
     Select the columns that will be operated on until next occurrence of
     **-C**. List columns separated by commas; ranges like 1,3-5,7 are
@@ -73,6 +77,10 @@ Optional Arguments
     all columns except time column (see **-N**). **-Ca** selects all
     columns, including time column, while **-Cr** reverses (toggles) the
     current choices.
+**-E**\ *eigen*
+    Sets the minimum eigenvalue used by operators LSQFIT and SVDFIT [1e-7].
+    Smaller eigenvalues are set to zero and will not be considered in the
+    solution.
 **-I**
     Reverses the output row sequence from ascending time to descending
     [ascending].
