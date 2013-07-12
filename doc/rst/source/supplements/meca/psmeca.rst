@@ -335,7 +335,7 @@ The following file should give a normal-faulting CMT mechanism:
 See Also
 --------
 
-`GMT <GMT.html>`_, `psbasemap <psbasemap.html>`_, `psxy <psxy.html>`_
+`GMT <../../gmt.html>`_, `psbasemap <../../psbasemap.html>`_, `psxy <../../psxy.html>`_
 
 `References <#toc8>`_
 ---------------------

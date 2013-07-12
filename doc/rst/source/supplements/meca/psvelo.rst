@@ -253,7 +253,7 @@ gray wedges to represent the 2-sigma uncertainties.
 See Also
 --------
 
-`GMT <GMT.html>`_, `psbasemap <psbasemap.html>`_, `psxy <psxy.html>`__
+`GMT <../../gmt.html>`_, `psbasemap <../../psbasemap.html>`_, `psxy <../../psxy.html>`__
 
 References
 ----------
