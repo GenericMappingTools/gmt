@@ -19,11 +19,6 @@
 extern "C" {
 #endif
 
-#if 0
-/* CMake definitions: This must be first! */
-#include "gmt_config.h"
-#endif
-
 /* Declaration modifiers for DLL support (MSC et al) */
 #include "declspec.h"
 
@@ -40,14 +35,12 @@ EXTERN_MSC int GMT_gmtconvert (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gmtdefaults (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gmtget (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gmtmath (void *API, int mode, void *args);
-EXTERN_MSC int GMT_gmtread (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gmtselect (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gmtset (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gmtsimplify (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gmtspatial (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gmtvector (void *API, int mode, void *args);
 EXTERN_MSC int GMT_gmtwhich (void *API, int mode, void *args);
-EXTERN_MSC int GMT_gmtwrite (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grd2cpt (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grd2rgb (void *API, int mode, void *args);
 EXTERN_MSC int GMT_grd2xyz (void *API, int mode, void *args);
@@ -97,6 +90,7 @@ EXTERN_MSC int GMT_pstext (void *API, int mode, void *args);
 EXTERN_MSC int GMT_pswiggle (void *API, int mode, void *args);
 EXTERN_MSC int GMT_psxyz (void *API, int mode, void *args);
 EXTERN_MSC int GMT_psxy (void *API, int mode, void *args);
+EXTERN_MSC int GMT_read (void *API, int mode, void *args);
 EXTERN_MSC int GMT_sample1d (void *API, int mode, void *args);
 EXTERN_MSC int GMT_spectrum1d (void *API, int mode, void *args);
 EXTERN_MSC int GMT_sph2grd (void *API, int mode, void *args);
@@ -108,6 +102,7 @@ EXTERN_MSC int GMT_surface (void *API, int mode, void *args);
 EXTERN_MSC int GMT_trend1d (void *API, int mode, void *args);
 EXTERN_MSC int GMT_trend2d (void *API, int mode, void *args);
 EXTERN_MSC int GMT_triangulate (void *API, int mode, void *args);
+EXTERN_MSC int GMT_write (void *API, int mode, void *args);
 EXTERN_MSC int GMT_xyz2grd (void *API, int mode, void *args);
 
 /* Pretty print all modules in the GMT core library and their purposes */
