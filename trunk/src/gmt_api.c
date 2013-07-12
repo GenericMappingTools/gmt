@@ -352,12 +352,13 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 	
 	API->lib[0].name = strdup ("core");
 	API->lib[0].path = strdup (GMT_CORE_LIB_NAME);
+#ifdef BUILD_SHARED_LIBS
 	if ((API->lib[0].handle = dlopen_special (API->lib[0].path)) == NULL) {
 		GMT_Report (API, GMT_MSG_NORMAL, "Error loading core GMT shared library: %s\n", dlerror());
 		GMT_exit (API->do_not_exit, EXIT_FAILURE);
 	}
 	dlerror (); /* Clear any existing error */
-
+#endif
 	/* 2. Add the GMT supplemental library to the list of libraries to consider [will find when trying to open if it is available] */
 	API->lib[1].name = strdup ("suppl");
 	API->lib[1].path = strdup (GMT_SUPPL_LIB_NAME);
@@ -392,6 +393,7 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 					p = 0; while (libname[p] && libname[p] != '.') p++;	/* Find the first period in the name */
 					libname[p] = '\0';                                 /* Chop off library extension */
 					p = (strncmp (libname, "lib", 3U)) ? 0 : 3;	   /* Do we have a leading "lib" or not ? */
+					if (strcmp (&libname[p], "gmt")) p += 3;	   /* Skip passed gmt in gmt<tag> */
 					API->lib[n_custom_libs].name = strdup (&libname[p]); /* Get the shared library tag */
 					libname[p] = '.';					/* Chop off library extension */
 					free (libname);
@@ -442,6 +444,7 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 				p = 0;	while (libname[p] && libname[p] != '.') p++;	/* Find the first period in the name */
 				libname[p] = '\0';					/* Chop off library extension */
 				p = (strncmp (libname, "lib", 3)) ? 0 : 3U;		/* Do we have a leading "lib" or not ? */
+				if (strcmp (&libname[p], "gmt")) p += 3;	   /* Skip passed gmt in gmt<tag> */
 				API->lib[n_custom_libs].name = strdup (&libname[p]);	/* Get the shared library tag */
 				libname[p] = '.';					/* Chop off library extension */
 				free (libname);
@@ -5417,7 +5420,7 @@ void GMT_show_name_and_purpose (void *API, const char *component, const char *na
 
 /* Module Extension: Allow listing and calling modules by name */
 
-void * gmt_get_module_func (struct GMTAPI_CTRL *API, const char *module, unsigned int lib_no)
+void * gmt_get_shared_module_func (struct GMTAPI_CTRL *API, const char *module, unsigned int lib_no)
 {	/* Function that returns a pointer to the function named module in specified shared library lib_no, or NULL if not found  */
 	void *p_func = NULL;       /* function pointer */
 	if (API->lib[lib_no].skip) return (NULL);	/* Tried to open this shared library before and it was not available */
@@ -5429,6 +5432,20 @@ void * gmt_get_module_func (struct GMTAPI_CTRL *API, const char *module, unsigne
 	/* Here the library handle is available; try to get pointer to specified module */
 	*(void **) (&p_func) = dlsym (API->lib[lib_no].handle, module);
 	return (p_func);
+}
+
+#ifndef BUILD_SHARED_LIBS
+EXTERN_MSC void * gmt_core_module_lookup (struct GMTAPI_CTRL *API, const char *candidate);
+#endif
+
+void * gmt_get_module_func (struct GMTAPI_CTRL *API, const char *module, unsigned int lib_no)
+{
+#ifndef BUILD_SHARED_LIBS
+	if (lib_no == 0)	/* Get core module */
+		return (gmt_core_module_lookup (API, module));
+	/* Else we get custom module below */
+#endif
+	return (gmt_get_shared_module_func (API, module, lib_no));
 }
 
 int GMT_Call_Module (void *V_API, const char *module, int mode, void *args)
