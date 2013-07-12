@@ -125,6 +125,12 @@ else (BUILD_SUPPLEMENTS)
 	set (SUPPL "no")
 endif (BUILD_SUPPLEMENTS)
 
+if (BUILD_SHARED_LIBS)
+	set (BUILD_MODE "shared")
+else (BUILD_SHARED_LIBS)
+	set (BUILD_MODE "static")
+endif (BUILD_SHARED_LIBS)
+
 # Configure a header file to pass some of the CMake settings to the source code
 configure_file (
 	"${PROJECT_SOURCE_DIR}/config.h.in"
@@ -146,6 +152,7 @@ message(
 	"*  File locking               : ${FLOCK}\n"
 	"*  License restriction        : ${LICENSE_RESTRICTED}\n"
 	"*  Triangulation method       : ${GMT_TRIANGULATE}\n"
+	"*  Build mode                 : ${BUILD_MODE}\n"
 	"*  Build GMT core             : always [${GMT_CORE_LIB_NAME}]\n"
 	"*  Build PSL library          : always [${PSL_LIB_NAME}]\n"
 	"*  Build GMT supplements      : ${SUPPL}\n"
