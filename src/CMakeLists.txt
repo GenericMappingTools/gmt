@@ -385,6 +385,9 @@ endif (NOT GMT_INSTALL_MONOLITHIC)
 
 if (BUILD_SUPPLEMENTS)
 	# process supplement directories
+	if (UNIX)
+		set (CMAKE_SHARED_MODULE_SUFFIX .so)
+	endif (UNIX)
 	foreach (_dir ${GMT_SUPPL_DIRS})
 		add_subdirectory (${_dir})
 		list (APPEND GMT_BINARY_DIR_PATH
@@ -398,7 +401,7 @@ if (BUILD_SUPPLEMENTS)
 		include_directories (${CMAKE_CURRENT_BINARY_DIR}/${_dir})
 	endforeach (_dir)
 	# libgmtsuppl
-	add_library (supplib
+	add_library (supplib MODULE
 		${GMT_GEN_HDRS}
 		${GMT_SUPPL_SRCS}
 		${GMT_SUPPL_LIB_SRCS})
@@ -407,6 +410,7 @@ if (BUILD_SUPPLEMENTS)
 	add_dependencies (supplib pslib) # make supplib after pslib
 	add_dependencies (supplib gmtlib) # make supplib after pslib
 
+	# No SOVERSION & VERSION for a MODULE, only for SHARED libs
 	target_link_libraries (supplib
 		${NETCDF_LIBRARIES}
 		${GMT_OPTIONAL_LIBRARIES}
@@ -419,8 +423,6 @@ if (BUILD_SUPPLEMENTS)
 		OUTPUT_NAME gmtsuppl
 		PREFIX "${LIB_PREFIX}"
 		IMPORT_PREFIX "${LIB_PREFIX}"
-		VERSION ${GMT_PACKAGE_VERSION}
-		SOVERSION ${GMT_PACKAGE_VERSION_MAJOR}
 		INSTALL_RPATH "${CMAKE_INSTALL_RPATH}"
 		LINK_FLAGS "${USER_GMTLIB_LINK_FLAGS}"
 		DEFINE_SYMBOL "LIBRARY_EXPORTS")
