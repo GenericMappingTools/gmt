@@ -518,34 +518,53 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
 **MAP_GRID_CROSS_SIZE_PRIMARY**
     Size (>= 0) of grid cross at lon-lat intersections. 0 means draw
     continuous gridlines instead [0p].
+
+.. _MAP_GRID_CROSS_SIZE_SECONDARY:
+
 **MAP_GRID_CROSS_SIZE_SECONDARY**
     Size (>= 0) of grid cross at secondary lon-lat intersections. 0
     means draw continuous gridlines instead [0p].
+
+.. _MAP_GRID_PEN_PRIMARY:
+
 **MAP_GRID_PEN_PRIMARY**
     Pen attributes used to draw primary grid lines in dpi units or
     points (append p) [default,black].
+
+.. _MAP_GRID_PEN_SECONDARY:
+
 **MAP_GRID_PEN_SECONDARY**
     Pen attributes used to draw secondary grid lines in dpi units or
     points (append p) [thinner,black].
+
+.. _MAP_LABEL_OFFSET:
+
 **MAP_LABEL_OFFSET**
-    Distance from base of axis annotations to the top of the axis label
-    [8p].
+    Distance from base of axis annotations to the top of the axis label [8p].
+
+.. _MAP_LINE_STEP:
+
 **MAP_LINE_STEP**
     Determines the maximum length (> 0) of individual straight
     line-segments when drawing arcuate lines [0.75p]
+
 **MAP_LOGO**
     (**\* -U**) Specifies if a GMT logo with system timestamp should be
     plotted at the lower left corner of the plot [false].
+
 **MAP_LOGO_POS**
     (**\* -U**) Sets the justification and the position of the
     logo/timestamp box relative to the current plots lower left corner
     of the plot [BL/-54p/-54p].
+
 **MAP_ORIGIN_X**
     (**\* -X**) Sets the x-coordinate of the origin on the paper for a
     new plot [1i]. For an overlay, the default offset is 0i.
+
 **MAP_ORIGIN_Y**
     (**\* -Y**) Sets the y-coordinate of the origin on the paper for a
     new plot [1i]. For an overlay, the default offset is 0i.
+
 **MAP_POLAR_CAP**
     Controls the appearance of gridlines near the poles for all
     azimuthal projections and a few others in which the geographic poles
@@ -560,32 +579,52 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     at the center of the plot the meaning of the cap is reversed, i.e.,
     the default 85/90 will draw a r = 5 radius circle at the center of
     the map with less frequent radial lines there.
+
+.. _MAP_SCALE_HEIGHT:
+
 **MAP_SCALE_HEIGHT**
     Sets the height (> 0) on the map of the map scale bars drawn by
     various programs [5p].
+
+.. _MAP_TICK_LENGTH_PRIMARY:
+
 **MAP_TICK_LENGTH_PRIMARY**
     The length of a primary major/minor tick-marks [5p/2.5p]. If only
-    the first value is set, the second is assumed to be 50% of the
-    first.
+    the first value is set, the second is assumed to be 50% of the first.
+
+.. _MAP_TICK_LENGTH_SECONDARY:
+
 **MAP_TICK_LENGTH_SECONDARY**
     The length of a secondary major/minor tick-marks [15p/3.75p]. If
-    only the first value is set, the second is assumed to be 25% of the
-    first.
+    only the first value is set, the second is assumed to be 25% of the first.
+
+.. _MAP_TICK_PEN_PRIMARY:
+
 **MAP_TICK_PEN_PRIMARY**
     Pen attributes to be used for primary tick-marks in dpi units or
     points (append p) [thinner,black].
+
+.. _MAP_TICK_PEN_SECONDARY:
+
 **MAP_TICK_PEN_SECONDARY**
     Pen attributes to be used for secondary tick-marks in dpi units or
     points (append p) [thinner,black].
+
+.. _MAP_TITLE_OFFSET:
+
 **MAP_TITLE_OFFSET**
     Distance from top of axis annotations (or axis label, if present) to
     base of plot title [14p].
+
+.. _MAP_VECTOR_SHAPE:
+
 **MAP_VECTOR_SHAPE**
     Determines the shape of the head of a vector. Normally (i.e., for
     vector_shape = 0), the head will be triangular, but can be changed
     to an arrow (1) or an open V (2).
     Intermediate settings give something in between. Negative values (up
     to -2) are allowed as well [0].
+
 **PROJ_AUX_LATITUDE**
     Only applies when geodesics are approximated by great circle
     distances on an equivalent sphere. Select from authalic, geocentric,
@@ -831,17 +870,25 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
 
 .. _Calendar/Time Parameters:
 
+.. _TIME_EPOCH:
+
 **TIME_EPOCH**
     Specifies the value of the calendar and clock at the origin (zero
     point) of relative time units (see **TIME_UNIT**). It is a string
     of the form yyyy-mm-ddT[hh:mm:ss] (Gregorian) or
     yyyy-Www-ddT[hh:mm:ss] (ISO) Default is 1970-01-01T00:00:00, the
     origin of the UNIX time epoch.
+
+.. _TIME_INTERVAL_FRACTION:
+
 **TIME_INTERVAL_FRACTION**
     Determines if partial intervals at the start and end of an axis
     should be annotated. If the range of the partial interval exceeds
     the specified fraction of the normal interval stride we will place
     the annotation centered on the partial interval [0.5].
+
+.. _TIME_IS_INTERVAL:
+
 **TIME_IS_INTERVAL**
     Used when input calendar data should be truncated and adjusted to
     the middle of the relevant interval. In the following discussion,
@@ -900,6 +947,8 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     or ~/.gmt. Note: Some of these languages may require you to also
     change the **PS_CHAR_ENCODING** setting.
 
+.. _TIME_SYSTEM:
+
 **TIME_SYSTEM**
     Shorthand for a combination of **TIME_EPOCH** and **TIME_UNIT**,
     specifying which time epoch the relative time refers to and what the
@@ -924,6 +973,8 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     translated to the respective values of **TIME_EPOCH** and
     **TIME_UNIT**.
 
+.. _TIME_UNIT:
+
 **TIME_UNIT**
     Specifies the units of relative time data since epoch (see
     **TIME_EPOCH**). Choose y (year - assumes all years are 365.2425
@@ -936,6 +987,9 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     When weeks are indicated on time axes, this parameter determines the
     first day of the week for Gregorian calendars. (The ISO weekly
     calendar always begins weeks with Monday.) [Monday (or Sunday)].
+
+.. _TIME_Y2K_OFFSET_YEAR:
+
 **TIME_Y2K_OFFSET_YEAR**
     When 2-digit years are used to represent 4-digit years (see various
     **FORMAT_DATE**\ s), **TIME_Y2K_OFFSET_YEAR** gives the first

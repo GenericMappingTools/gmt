@@ -42,7 +42,8 @@ Optional Arguments
     contain altitude (in km) and time, respectively, but if one or both
     of these are constant for all records they can be supplied via the
     **-A** option instead and are thus not expected in the input file.
-    If no input file is given we read *stdin*. A note about the CM4
+    If no input file is given we read *stdin*. |br|
+    A note about the CM4
     validity domain. The core field of CM4 is valid from 1960-2002.5 but
     the ionospheric and magnetospheric fields are computed after the
     *Dst* and *F10.7* coefficient files. We extended here those
@@ -68,8 +69,9 @@ Optional Arguments
     Append **+t** to set a fixed *time* that should apply to all data
     records [Default expects *time* to be in the 4th column of all
     records]. Finally, append **+y** to indicate that all times are
-    specified as decimal years [Default is ISO *date*\ TIT(colck)
-    format].
+    specified as decimal years [Default is ISO *date*\ T\ *colck* format, see
+    :ref:`TIME_EPOCH <TIME_EPOCH>`].
+
 **-C**\ *cm4file*
     Specify an alternate CM4 coefficient file [umdl.CM4].
 
@@ -213,9 +215,9 @@ To do the same as above but at noon (Universal Time) of first May 2001, try
 See Also
 --------
 
-`GMT <GMT.html>`_, `mgd77info <mgd77info.html>`_,
+`GMT <../../gmt.html>`_, `mgd77info <mgd77info.html>`_,
 `mgd77list <mgd77list.html>`_, `mgd77manage <mgd77manage.html>`_,
-`mgd77track <mgd77track.html>`_
+`mgd77track <mgd77track.html>`_, `gmt.conf <../../gmt.conf.html>`_
 
 References
 ----------
