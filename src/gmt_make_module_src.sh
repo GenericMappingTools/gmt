@@ -126,6 +126,15 @@ cat << EOF > ${FILE_GMT_MODULE_C}
 
 #include "gmt.h"
 #include <string.h>
+EOF
+if [ "$U_TAG" = "CORE" ]; then
+	cat << EOF >> ${FILE_GMT_MODULE_C}
+#ifndef BUILD_SHARED_LIBS
+#include "${FILE_GMT_MODULE_H}"
+#endif
+EOF
+fi
+cat << EOF >> ${FILE_GMT_MODULE_C}
 
 /* Sorted array with information for all GMT ${L_TAG} modules */
 
@@ -134,7 +143,54 @@ struct Gmt_moduleinfo {
 	const char *name;             /* Program name */
 	const char *component;        /* Component (core, supplement, custom) */
 	const char *purpose;          /* Program purpose */
+EOF
+if [ "$U_TAG" = "CORE" ]; then
+	cat << EOF >> ${FILE_GMT_MODULE_C}
+#ifndef BUILD_SHARED_LIBS
+	/* gmt module function pointer: */
+	int (*p_func)(void*, int, void*);
+#endif
+EOF
+fi
+cat << EOF >> ${FILE_GMT_MODULE_C}
 };
+EOF
+
+if [ "$U_TAG" = "CORE" ]; then
+	cat << EOF >> ${FILE_GMT_MODULE_C}
+
+struct Gmt_moduleinfo g_${L_TAG}_module[] = {
+#ifdef BUILD_SHARED_LIBS
+EOF
+
+# $1 = name, $2 = ${L_TAG}, $3 = tab, $4 = purpose
+gawk '
+	BEGIN {
+		FS = "\t";
+	}
+	{ printf "\t{\"%s\", \"%s\", %s},\n", $1, $2, $4;
+}' /tmp/$LIB.txt >> ${FILE_GMT_MODULE_C}
+
+cat << EOF >> ${FILE_GMT_MODULE_C}
+	{NULL, NULL, NULL} /* last element == NULL detects end of array */
+#else
+EOF
+# $1 = name, $2 = core/supplement, $3 = Api_mode, $4 = purpose
+gawk '
+	BEGIN {
+		FS = "\t";
+	}
+	!/^[ \t]*#/ {
+		printf "\t{\"%s\", \"%s\", %s, &GMT_%s},\n", $1, $2, $4, $1;
+	}' /tmp/$LIB.txt >> ${FILE_GMT_MODULE_C}
+
+cat << EOF >> ${FILE_GMT_MODULE_C}
+	{NULL, NULL, NULL, NULL} /* last element == NULL detects end of array */
+#endif
+};
+EOF
+else
+	cat << EOF >> ${FILE_GMT_MODULE_C}
 
 struct Gmt_moduleinfo g_${L_TAG}_module[] = {
 EOF
@@ -150,6 +206,9 @@ gawk '
 cat << EOF >> ${FILE_GMT_MODULE_C}
 	{NULL, NULL, NULL} /* last element == NULL detects end of array */
 };
+EOF
+fi
+cat << EOF >> ${FILE_GMT_MODULE_C}
 
 /* Pretty print all GMT ${L_TAG} module names and their purposes */
 void gmt_${L_TAG}_module_show_all (void *API) {
@@ -172,6 +231,25 @@ void gmt_${L_TAG}_module_show_all (void *API) {
 }
 EOF
 
+if [ "$U_TAG" = "CORE" ]; then
+	cat << EOF >> ${FILE_GMT_MODULE_C}
+	
+#ifndef BUILD_SHARED_LIBS
+/* Lookup module id by name, return function pointer */
+void * gmt_${L_TAG}_module_lookup (void *API, const char *candidate) {
+	int module_id = 0;
+
+	/* Match actual_name against g_module[module_id].name */
+	while ( g_${L_TAG}_module[module_id].name != NULL &&
+			strcmp (candidate, g_${L_TAG}_module[module_id].name) )
+		++module_id;
+
+	/* Return Module function or NULL */
+	return (g_${L_TAG}_module[module_id].p_func);
+}
+#endif
+EOF
+fi
 exit 0
 
 # vim: set ft=c:

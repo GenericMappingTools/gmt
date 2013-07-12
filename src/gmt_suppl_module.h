@@ -19,11 +19,6 @@
 extern "C" {
 #endif
 
-#if 0
-/* CMake definitions: This must be first! */
-#include "gmt_config.h"
-#endif
-
 /* Declaration modifiers for DLL support (MSC et al) */
 #include "declspec.h"
 
