@@ -20,11 +20,11 @@
  * Date:	2-May-2013
  * Version:	5 API
  *
- * Brief synopsis: gmtwrite lets us (read from memory and) write any of the 5 GMT resources.
+ * Brief synopsis: gmt write lets us (read from memory and) write any of the 5 GMT resources.
  *
  */
 
-#define THIS_MODULE_NAME	"gmtwrite"
+#define THIS_MODULE_NAME	"write"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Write GMT objects from external API"
 
@@ -64,7 +64,7 @@ void Free_gmtwrite_Ctrl (struct GMT_CTRL *GMT, struct GMTWRITE_CTRL *C) {	/* Dea
 int GMT_gmtwrite_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtwrite <infile> <outfile> -Td|t|g|c|i [%s] [%s]\n", GMT_Rx_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: write <infile> <outfile> -Td|t|g|c|i [%s] [%s]\n", GMT_Rx_OPT, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -148,7 +148,7 @@ int GMT_gmtwrite_parse (struct GMT_CTRL *GMT, struct GMTWRITE_CTRL *Ctrl, struct
 
 EXTERN_MSC int GMT_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile);
 
-int GMT_gmtwrite (void *V_API, int mode, void *args)
+int GMT_write (void *V_API, int mode, void *args)
 {
 	int error = 0;
 	struct GMTWRITE_CTRL *Ctrl = NULL;

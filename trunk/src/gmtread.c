@@ -20,11 +20,11 @@
  * Date:	2-May-2013
  * Version:	5 API
  *
- * Brief synopsis: gmtread lets us read (and write to memory) any of the 5 GMT resources.
+ * Brief synopsis: gmt read lets us read (and write to memory) any of the 5 GMT resources.
  *
  */
 
-#define THIS_MODULE_NAME	"gmtread"
+#define THIS_MODULE_NAME	"read"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Read GMT objects into external API"
 
@@ -32,7 +32,7 @@
 
 #define GMT_PROG_OPTIONS "->RV"
 
-/* Control structure for gmtread */
+/* Control structure for read */
 
 struct GMTREAD_CTRL {
 	struct IO {	/* Need two args with filenames */
@@ -64,7 +64,7 @@ void Free_gmtread_Ctrl (struct GMT_CTRL *GMT, struct GMTREAD_CTRL *C) {	/* Deall
 int GMT_gmtread_usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: gmtread <infile> <outfile> -Td|t|g|c|i [%s] [%s]\n", GMT_Rx_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: read <infile> <outfile> -Td|t|g|c|i [%s] [%s]\n", GMT_Rx_OPT, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
@@ -148,7 +148,7 @@ int GMT_gmtread_parse (struct GMT_CTRL *GMT, struct GMTREAD_CTRL *Ctrl, struct G
 
 EXTERN_MSC int GMT_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int direction, char *ifile, char *ofile);
 
-int GMT_gmtread (void *V_API, int mode, void *args)
+int GMT_read (void *V_API, int mode, void *args)
 {
 	int error = 0;
 	struct GMTREAD_CTRL *Ctrl = NULL;
