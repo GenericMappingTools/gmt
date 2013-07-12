@@ -130,5 +130,6 @@
     :ref:`MAP_LINE_STEP <MAP_LINE_STEP>`, :ref:`MAP_ANNOT_OBLIQUE <MAP_ANNOT_OBLIQUE>`,
     **FORMAT_CLOCK_MAP**, **FORMAT_DATE_MAP**,
     **FORMAT_TIME_PRIMARY_MAP**, **FORMAT_TIME_SECONDARY_MAP**,
-    :ref:`TIME_LANGUAGE <TIME_LANGUAGE>`, :ref:`TIME_WEEK_START <TIME_WEEK_START>`, ref:`MAP_TICK_LENGTH <MAP_TICK_LENGTH>`,
-    and :ref:`MAP_TICK_PEN <MAP_TICK_PEN>`; see the `gmt.conf <gmt.conf.html>`__ man page for details.
+    :ref:`TIME_LANGUAGE <TIME_LANGUAGE>`, :ref:`TIME_WEEK_START <TIME_WEEK_START>`,
+    :ref:`MAP_TICK_LENGTH_PRIMARY <MAP_TICK_LENGTH_PRIMARY>`,
+    and :ref:`MAP_TICK_PEN_PRIMARY <MAP_TICK_PEN_PRIMARY>`; see the `gmt.conf <gmt.conf.html>`__ man page for details.
