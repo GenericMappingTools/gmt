@@ -23,10 +23,11 @@ if (DO_TESTS)
 		gmtconvert gmtmath gmtselect gmtsimplify gmtspatial gmtconnect gmtvector grd2rgb
 		grd2xyz grdblend grdclip grdcontour grdcut grdedit grdfft grdfilter grdgradient
 		grdhisteq grdimage grdlandmask grdmask grdmath grdpaste grdproject grdreformat
-		grdsample grdtrend grdvector grdview grdvolume greenspline img kml mapproject meca
-		mgd77 ogr potential project psbasemap pscoast pscontour pshistogram psimage pslegend
-		pslib psrose psscale pstext psxy psxyz sample1d spectrum1d sph sph2grd splitxyz
-		spotter surface time trend2d triangulate x2sys)
+		grdsample grdtrack grdtrend grdvector grdview grdvolume greenspline kml mapproject
+		ogr project psbasemap pscoast pscontour pshistogram psimage pslegend pslib psrose
+		psscale pstext psxy psxyz sample1d spectrum1d sph sph2grd splitxyz
+		surface time trend2d triangulate
+		img meca mgd77 potential spotter x2sys)
 
 	# export HAVE_GMT_DEBUG_SYMBOLS
 	get_directory_property (_dir_defs COMPILE_DEFINITIONS)
