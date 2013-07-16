@@ -314,7 +314,7 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 					}
 					break;
 				}
-
+				/* Only get here if the above cases did not trip */
 				n_items = sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%s", txt[0], txt[1], txt[2], txt[3], txt[4], txt[5]);
 				if (!(n_items == 2 || n_items == 4 || n_items == 6)) {
 					GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -R option: Give 2, 4, or 6 coordinates\n");
@@ -360,7 +360,7 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 				break;
 			case 'D':	/* Distance mode */
 				Ctrl->D.active = true;
-				Ctrl->D.mode = atoi (opt->arg);	/* Since I added 0 to be 1-D later so now it is -1 */
+				Ctrl->D.mode = atoi (opt->arg);	/* Since I added 0 to be 1-D later so now this is mode -1 */
 				break;
 			case 'G':	/* Output file */
 				Ctrl->G.active = true;
@@ -493,11 +493,11 @@ int GMT_greenspline_parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, 
 		double fn = rint (Ctrl->S.value[3]);
 		int64_t n = lrint (fn);
 		if (!doubleAlmostEqual (Ctrl->S.value[3], fn) || ((n%2) == 0)) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Sq option +n<N> modifier: Must be an odd integer\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Sq option +n<N> modifier: <N> must be an odd integer\n");
 			n_errors++;
 		}
 		if (Ctrl->S.value[2] < 0.0 || Ctrl->S.value[2] > 1.0e-4) {
-			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Sq option +e<err> modifier: Must be positive and < 1.0e-4\n");
+			GMT_Report (API, GMT_MSG_NORMAL, "Syntax error -Sq option +e<err> modifier: <err> must be positive and < 1.0e-4\n");
 			n_errors++;
 		}
 	}
@@ -589,7 +589,7 @@ double spline1d_linear (struct GMT_CTRL *GMT, double r, double par[], struct GRE
 }
 
 double gradspline1d_linear (struct GMT_CTRL *GMT, double r, double par[], struct GREENSPLINE_LOOKUP *unused)
-{
+{	/* d/dr of r is 1 */
 	return (1.0);
 }
 
@@ -760,7 +760,7 @@ double gradspline2d_Mitasova_Mitas (struct GMT_CTRL *GMT, double r, double par[]
 
 /*----------------------  TWO DIMENSIONS (SPHERE) ---------------------- */
 
-/* spline2d_Parker computes the  Green function for a 2-d surface spline
+/* spline2d_Parker computes the Green function for a 2-d surface spline
  * as per Parker [1994], G(x) = dilog(),
  * where x is cosine of distances. All x must be -1 <= x <= +1.
  * Parameters passed are:
@@ -1029,7 +1029,7 @@ double gradspline3d_Wessel_Bercovici (struct GMT_CTRL *GMT, double r, double par
 	if (r == 0.0) return (0.0);
 
 	cx = par[0] * r;
-	return ((1.0 - exp (-cx) * (cx + 1.0))/ (cx * r));
+	return ((1.0 - exp (-cx) * (cx + 1.0)) / (cx * r));
 }
 
 /* spline3d_Mitasova_Mitas computes the regularized Green function for a 3-d spline
@@ -1084,7 +1084,7 @@ void do_normalization_1d (double **X, double *obs, uint64_t n, unsigned int mode
 	}
 	coeff[GMT_Z] /= n;
 
-	if (mode & 2) {	/* Solve for LS linera trend using deviations from (0, 0, 0) */
+	if (mode & 2) {	/* Solve for LS linear trend using deviations from (0, 0, 0) */
 		double	xx, zz, sxx, sxz;
 		sxx = sxz = 0.0;
 		coeff[GMT_X] /= n;
