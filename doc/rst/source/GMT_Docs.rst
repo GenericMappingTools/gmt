@@ -7460,6 +7460,8 @@ and how to switch the color bar around (by using a negative length).
 
 .. include:: fig_includes/fig_GMT_App_M_2.rst_
 
+For additional color tables, visit `CPT-CITY <http://soliton.vm.bytemark.co.uk/pub/cpt-city>`_.
+
 M. Custom Plot Symbols
 ======================
 
