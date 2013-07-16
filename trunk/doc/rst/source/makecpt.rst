@@ -25,7 +25,8 @@ Description
 (cpt files). You define an equidistant set of contour intervals or pass
 your own z-table, and create a new cpt file based on an existing master
 cpt file. The resulting cpt file can be reversed relative to the master
-cpt, and can be made continuous or discrete.
+cpt, and can be made continuous or discrete.  For color tables beyond the
+standard GMT offerings, visit http://soliton.vm.bytemark.co.uk/pub/cpt-city.
 
 The color palette includes three additional colors beyond the range of
 z-values. These are the background color (B) assigned to values lower
