@@ -485,7 +485,11 @@ Table [tbl:API] gives a list of all the functions and their purpose.
 +-------------------------+---------------------------------------------------+
 | GMT_End_IO_             | Disable further record-by-record i/o              |
 +-------------------------+---------------------------------------------------+
-| GMT_FFT_                | Take the Fast Fourier Transform of data           |
+| GMT_FFT_                | Take the Fast Fourier Transform of data object    |
++-------------------------+---------------------------------------------------+
+| GMT_FFT_1D_             | Take the Fast Fourier Transform of 1-D float data |
++-------------------------+---------------------------------------------------+
+| GMT_FFT_2D_             | Take the Fast Fourier Transform of 2-D float data |
 +-------------------------+---------------------------------------------------+
 | GMT_FFT_Create_         | Initialize the FFT machinery                      |
 +-------------------------+---------------------------------------------------+
@@ -2351,7 +2355,55 @@ by ``GMT_FFT_Create``. The transform is performed in place and returned
 via ``X``. When done with your manipulations (below) you can call it
 again with the inverse flag to recover the corresponding space-domain
 version of your data. The FFT is fully normalized so that calling
-forward followed by inverse yields the original data set.
+forward followed by inverse yields the original data set. The information
+passed via ``K`` determines if a 1-D or 2-D transform takes place; the
+key work is done via ``GMT_FFT_1D`` or ``GMT_FFT_1D`` below.
+
+Taking the 1-D FFT
+------------------
+
+A lower-level 1-D FFT is also available via
+
+.. _GMT_FFT_1D:
+
+  ::
+
+    int GMT_FFT_1D (void *API, float *data, uint64_t n, int direction, unsigned int mode);
+
+which takes as ``direction`` either GMT_FFT_FWD or GMT_FFT_INV. The
+mode is used to specify if we pass a real (GMT_FFT_REAL) or complex
+(GMT_FFT_COMPLEX) data set, and ``data`` is the 1-D data array of length
+``n`` that we wish
+to transform. The transform is performed in place and returned
+via ``data``. When done with your manipulations (below) you can call it
+again with the inverse flag to recover the corresponding space-domain
+version of your data. The 1-D FFT is fully normalized so that calling
+forward followed by inverse yields the original data set.  Note that unlike
+``GMT_FFT``, this functions does not do any data extension, mirroring, detrending,
+etc. but operates directly on the data array given.
+
+Taking the 2-D FFT
+------------------
+
+A lower-level 2-D FFT is also available via
+
+.. _GMT_FFT_2D:
+
+  ::
+
+    int GMT_FFT_2D (void *API, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode);
+
+which takes as ``direction`` either GMT_FFT_FWD or GMT_FFT_INV. The
+mode is used to specify if we pass a real (GMT_FFT_REAL) or complex
+(GMT_FFT_COMPLEX) data set, and ``data`` is the 2-D data array in
+row-major format, with row length ``nx`` and column length ``ny``.
+The transform is performed in place and returned
+via ``data``. When done with your manipulations (below) you can call it
+again with the inverse flag to recover the corresponding space-domain
+version of your data. The 2-D FFT is fully normalized so that calling
+forward followed by inverse yields the original data set.  Note that unlike
+``GMT_FFT``, this functions does not do any data extension, mirroring, detrending,
+etc. but operates directly on the data array given.
 
 Wavenumber calculations
 -----------------------

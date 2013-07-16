@@ -1991,7 +1991,7 @@ int gmt_fft_2d_selection (struct GMT_CTRL *GMT, unsigned int nx, unsigned int ny
 	return k_fft_kiss; /* Default/fallback general-purpose FFT */
 }
 
-int GMT_fft_1d (void *V_API, float *data, uint64_t n, int direction, unsigned int mode) {
+int GMT_FFT_1D (void *V_API, float *data, uint64_t n, int direction, unsigned int mode) {
 	/* data is an array of length n (or 2*n for complex) data points
 	 * n is the number of data points
 	 * direction is either GMT_FFT_FWD (forward) or GMT_FFT_INV (inverse)
@@ -2011,7 +2011,7 @@ int GMT_fft_1d (void *V_API, float *data, uint64_t n, int direction, unsigned in
 	return status;
 }
 
-int GMT_fft_2d (void *V_API, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode) {
+int GMT_FFT_2D (void *V_API, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode) {
 	/* data is an array of length nx*ny (or 2*nx*ny for complex) data points
 	 * nx, ny is the number of data nodes
 	 * direction is either GMT_FFT_FWD (forward) or GMT_FFT_INV (inverse)

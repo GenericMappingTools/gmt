@@ -75,7 +75,7 @@ int GMT_List_Args (void *V_API, struct GMT_OPTION *head)
 	for (opt = head; opt; opt = opt->next) {
 		if (!opt->option) continue;			/* Skip all empty options */
 		if (opt != head) fprintf (stderr, " ");
-		if (opt->option == GMT_OPT_SYNOPSIS)			/* Produce special - command for synopsis */
+		if (opt->option == GMT_OPT_SYNOPSIS)		/* Produce special - command for synopsis */
 			fprintf (stderr, "-");
 		else if (opt->option == GMT_OPT_INFILE)		/* Option for input filename [or number] */
 			fprintf (stderr, "%s", opt->arg);
@@ -120,8 +120,7 @@ struct GMT_OPTION * GMT_Create_Options (void *V_API, int n_args_in, void *in)
 	API = gmt_get_api_ptr (V_API);	/* Convert API to a GMTAPI_CTRL pointer */
 	G = API->GMT;	/* GMT control structure */
 	if (n_args_in == 0) {	/* Check if a single command line, if so break into tokens */
-		unsigned int pos = 0;
-		uint32_t new_n_args = 0;
+		unsigned int pos = 0, new_n_args = 0;
 		size_t n_alloc = GMT_SMALL_CHUNK;
 		char p[GMT_BUFSIZ] = {""}, *txt_in = in;	/* Passed a single text string */
 		new_args = GMT_memory (G, NULL, n_alloc, char *);
@@ -202,7 +201,7 @@ char ** GMT_Create_Args (void *V_API, int *argc, struct GMT_OPTION *head)
 	 * The number of array strings is returned via *argc.
 	 */
 
-	char **txt = NULL, buffer[GMT_BUFSIZ];
+	char **txt = NULL, buffer[GMT_BUFSIZ] = {""};
 	unsigned int arg = 0;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	struct GMT_OPTION *opt = NULL;
@@ -272,7 +271,7 @@ char * GMT_Create_Cmd (void *V_API, struct GMT_OPTION *head)
 	 * correspond to the linked options provided.
 	 */
 
-	char *txt = NULL, buffer[GMT_BUFSIZ];
+	char *txt = NULL, buffer[GMT_BUFSIZ] = {""};
 	bool first = true;
 	size_t length = 0, inc, n_alloc = GMT_BUFSIZ;
 	struct GMT_OPTION *opt = NULL;
