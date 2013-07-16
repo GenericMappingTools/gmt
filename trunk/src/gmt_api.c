@@ -82,8 +82,8 @@
  * For FFT operations we add 8 additional API functions:
  *
  * GMT_FFT		: Call the forward or inverse FFT
- * GMT_fft_1d		: Lower-level 1-d FFT call
- * GMT_fft_2d		: Lower-level 2-d FFT call
+ * GMT_FFT_1D		: Lower-level 1-d FFT call
+ * GMT_FFT_2D		: Lower-level 2-d FFT call
  * GMT_FFT_Create	: Initialize the FFT machinery for given dimension
  * GMT_FFT_Destroy	: Destroy FFT machinery
  * GMT_FFT_Option	: Display the syntax of the GMT FFT option settings
@@ -4918,6 +4918,7 @@ double * GMT_Get_Coord (void *V_API, unsigned int family, unsigned int dim, void
 	struct GMTAPI_CTRL *API = NULL;
 
 	if (V_API == NULL) return_null (V_API, GMT_NOT_A_SESSION);
+	if (container == NULL) return_null (V_API, GMT_ARG_IS_NULL);
 	API = gmt_get_api_ptr (V_API);
 
 	switch (family) {	/* grid, image, or matrix */
@@ -4968,6 +4969,7 @@ int GMT_Set_Comment (void *V_API, unsigned int family, unsigned int mode, void *
 	struct GMTAPI_CTRL *API = NULL;
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (container == NULL) return_error (V_API, GMT_ARG_IS_NULL);
 	API = gmt_get_api_ptr (V_API);
 
 	switch (family) {	/* grid, image, or matrix */
@@ -5012,7 +5014,7 @@ unsigned int GMT_FFT_Option (void *V_API, char option, unsigned int dim, char *s
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	if (dim > 2) return_error (V_API, GMT_DIM_TOO_LARGE);
 	if (dim == 0) return_error (V_API, GMT_DIM_TOO_SMALL);
-	if (string[0] == ' ') GMT_Report (V_API, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
+	if (string && string[0] == ' ') GMT_Report (V_API, GMT_MSG_NORMAL, "Syntax error -%c option.  Correct syntax:\n", option);
 	if (string)
 		GMT_Message (V_API, GMT_TIME_NONE, "\t-%c %s\n", option, string);
 	else
@@ -5192,6 +5194,7 @@ struct GMT_FFT_WAVENUMBER * GMTAPI_FFT_init_2d (struct GMTAPI_CTRL *API, struct 
 	struct GMT_CTRL *GMT = NULL;
 	
 	if (API == NULL) return_null (API, GMT_NOT_A_SESSION);
+	if (G == NULL) return_null (API, GMT_ARG_IS_NULL);
 	GMT = API->GMT;
 	K = GMT_memory (GMT, NULL, 1, struct GMT_FFT_WAVENUMBER);
 
@@ -5352,7 +5355,7 @@ int GMTAPI_FFT_1d (struct GMTAPI_CTRL *API, struct GMT_DATASET *D, int direction
 				last = S->n_rows;
 			}
 			for (row = 0; S->n_rows; row++) data[row] = (float)S->coord[col][row];
-			status = GMT_fft_1d (API, data, S->n_rows, direction, mode);
+			status = GMT_FFT_1D (API, data, S->n_rows, direction, mode);
 			for (row = 0; S->n_rows; row++) S->coord[col][row] = data[row];
 		}
 	}
@@ -5366,7 +5369,7 @@ int GMTAPI_FFT_2d (struct GMTAPI_CTRL *API, struct GMT_GRID *G, int direction, u
 	if (K && direction == GMT_FFT_FWD) gmt_fft_save2d (API->GMT, G, GMT_IN, K);	/* Save intermediate grid, if requested, before interleaving */
 	GMT_grd_mux_demux (API->GMT, G->header, G->data, GMT_GRID_IS_INTERLEAVED);
 	grd_dump (API->GMT, G->header, G->data, true, "After demux");
-	status = GMT_fft_2d (API, G->data, G->header->mx, G->header->my, direction, mode);
+	status = GMT_FFT_2D (API, G->data, G->header->mx, G->header->my, direction, mode);
 	//grd_dump (API->GMT, G->header, G->data, true, "After FFT");
 	if (K && direction == GMT_FFT_FWD) gmt_fft_save2d (API->GMT, G, GMT_OUT, K);	/* Save complex grid, if requested */
 	return (status);
@@ -5618,7 +5621,7 @@ int GMT_Option (void *V_API, char *options)
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	if (options == NULL) return_error (V_API, GMT_NO_PARAMETERS);
 	API = gmt_get_api_ptr (V_API);
-	GMT_memset (arg, GMT_LEN64, char);
+	
 	/* The following does the translation between the rules for the option string and the convoluted items GMT_explain_options expects. */
 	while (GMT_strtok (options, ",", &pos, p) && k < GMT_LEN64) {
 		switch (p[0]) {
@@ -5684,7 +5687,6 @@ int GMT_Message (void *V_API, unsigned int mode, char *format, ...)
 	API = gmt_get_api_ptr (V_API);
 	if (mode) toc = time ((time_t *)0);
 	if (mode & 4) API->GMT->current.time.tic = toc;
-	GMT_memset (message, GMT_BUFSIZ, char);	/* Start with clean slate */
 
 	switch (mode) {
 		case 1:
@@ -5824,6 +5826,7 @@ int GMT_copy (struct GMTAPI_CTRL *API, enum GMT_enum_family family, unsigned int
 	struct GMT_GRID *G = NULL;
 	struct GMT_IMAGE *I = NULL;
 
+	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
 	GMT_Report (API, GMT_MSG_VERBOSE, "Read %s from %s and write to %s\n", GMT_family[family], ifile, ofile);
 
 	switch (family) {

@@ -18,10 +18,10 @@
  *--------------------------------------------------------------------*/
 
 /*
- * The single include file for users who wish to develop applications
- * that require building blocks from the GMT Application Program Interface
+ * Include file for users who wish to develop custom applications that
+ * require building blocks from the GMT Application Program Interface
  * library (the GMT API), which also depends on the GMT Core library.
- * For documentation, see the GMT API docs.
+ * For complete documentation, see the GMT API docs.
  *
  * Author: 	Paul Wessel
  * Date:	10-JUN-2013
@@ -37,18 +37,19 @@ extern "C" {
 
 /*
  * We only include the basic include files needed by the API. Users may
- * need to include others, such as <math.h>, etc. In order to be portable
- * we use uint64_t and int64_t for unsigned and signed long integers.
+ * need to include additional files, such as <math.h>, etc. In order to
+ * be portable we use uint64_t and int64_t for unsigned and signed long
+ * integers, hence the stdint.h below.
  */
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 /*
  * When an application links to a DLL in Windows, the symbols that
- * are imported have to be identified as such.
+ * are imported have to be identified as such.  MSC_EXTERN is used
+ * for all functions are is defined in the declspec.h include file.
  */
 #include "declspec.h"
-
 
 /* Include GMT constants, option, and resources definitions */
 
@@ -125,8 +126,8 @@ EXTERN_MSC void * GMT_FFT_Create	(void *API, void *X, unsigned int dim, unsigned
 EXTERN_MSC double GMT_FFT_Wavenumber	(void *API, uint64_t k, unsigned int mode, void *K);
 EXTERN_MSC int GMT_FFT			(void *API, void *X, int direction, unsigned int mode, void *K);
 EXTERN_MSC int GMT_FFT_Destroy		(void *API, void *K);
-EXTERN_MSC int GMT_fft_1d		(void *API, float *data, uint64_t n, int direction, unsigned int mode);
-EXTERN_MSC int GMT_fft_2d		(void *API, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode);
+EXTERN_MSC int GMT_FFT_1D		(void *API, float *data, uint64_t n, int direction, unsigned int mode);
+EXTERN_MSC int GMT_FFT_2D		(void *API, float *data, unsigned int nx, unsigned int ny, int direction, unsigned int mode);
 
 /* 3 F77 basic grid i/ functions.  These give basic Fortran programs the ability to read and write any GMT-accessible grid */
 
