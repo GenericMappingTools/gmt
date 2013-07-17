@@ -269,11 +269,17 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
 
 .. _GMT Miscellaneous Parameters:
 
+.. _GMT_COMPATIBILITY:
+
+
 **GMT_COMPATIBILITY**
     Determines if this GMT version should be able to parse command-line
     options for a prior major release.  Specify either 4 or 5. If 4 is
     set we will parse obsolete GMT 4 options and issue warnings; if 5
     is set then parsing GMT-4 only syntax will result in errors [4].
+
+.. _GMT_EXTRAPOLATE_VAL:
+
 **GMT_EXTRAPOLATE_VAL**
     Determines what to do if extrapolating beyond the data domain.
     Choose among 'NaN', 'extrap' or 'extrapval,val' (without quotes). In
@@ -282,10 +288,20 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     extrapolation values. Third case sets the extrapolation values to
     the constant value passed in 'val' (this value must off course be
     numeric).
+
+.. _GMT_CUSTOM_LIBS:
+
 **GMT_CUSTOM_LIBS**
     Comma-separated list of GMT-compliant shared libraries that extend
-    the capability of GMT with additional custom modules [none].  See
-    the API documentation for how to build your own shared modules.
+    the capability of GMT with additional custom modules [none]. Alternatively,
+    provide a directory name, that MUST end with a slash (or back slash),
+    to use all shared libraries in that directory. On Windows, if the dir
+    name is made up only of a single slash ('/') search inside a subdirectory
+    called 'gmt_plugins' of the directory that contains the 'gmt' executable.
+    See the API documentation for how to build your own shared modules.
+
+.. _GMT_FFT:
+
 **GMT_FFT**
     Determines which Fast Fourier Transform (FFT) should be used among
     those that have been configured during installation. Choose from
@@ -307,20 +323,32 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     given size only, the one-time cost of the smart planner becomes
     significant. In that case, stick to the default planner, *estimate*,
     based on heuristics.
+
+.. _GMT_HISTORY:
+
 **GMT_HISTORY**
     Passes the history of past common command options via the hidden
     .gmtcommands file. The different values for this setting are:
     **true**, **readonly**, **false**, to either read and write to the
     .gmtcommands file, only read, or not use the file at all [true].
+
+.. _GMT_INTERPOLANT:
+
 **GMT_INTERPOLANT**
     Determines if linear (linear), Akima's spline (akima), natural cubic
     spline (cubic) or no interpolation (none) should be used for 1-D
     interpolations in various programs [akima].
+
+.. _GMT_TRIANGULATE:
+
 **GMT_TRIANGULATE**
     Determines if we use the **Watson** [Default] or **Shewchuk**
     algorithm (if configured during installation) for triangulation.
     Note that Shewchuk is required for operations involving Voronoi
     constructions.
+
+.. _GMT_VERBOSE:
+
 **GMT_VERBOSE**
     (**\* -V**) Determines the level of verbosity used by **GMT**
     programs. Choose among 6 levels; each level adds to the verbosity of
