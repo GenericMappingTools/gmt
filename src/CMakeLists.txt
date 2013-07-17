@@ -401,10 +401,17 @@ if (BUILD_SUPPLEMENTS)
 		include_directories (${CMAKE_CURRENT_BINARY_DIR}/${_dir})
 	endforeach (_dir)
 	# libgmtsuppl
-	add_library (supplib MODULE
-		${GMT_GEN_HDRS}
-		${GMT_SUPPL_SRCS}
-		${GMT_SUPPL_LIB_SRCS})
+	if (WIN32)
+		add_library (supplib
+			${GMT_GEN_HDRS}
+			${GMT_SUPPL_SRCS}
+			${GMT_SUPPL_LIB_SRCS})
+	else (WIN32)
+		add_library (supplib MODULE
+			${GMT_GEN_HDRS}
+			${GMT_SUPPL_SRCS}
+			${GMT_SUPPL_LIB_SRCS})
+	endif (WIN32)
 
 	add_dependencies (supplib gen_gmt_headers) # make supplib after gen_gmt_headers
 	add_dependencies (supplib pslib) # make supplib after pslib
