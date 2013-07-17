@@ -408,9 +408,9 @@ int GMTAPI_init_sharedlibs (struct GMTAPI_CTRL *API)
 			API->GMT->session.CUSTOM_LIBS[k] = '/';		/* Restore the trailing / */
 #elif defined(WIN32)
 			if (k == 0) {
-				/* Given a slash only. Means GMTCUSTOMS sub dir of the directory that contains the 'gmt' executable */
+				/* Given a slash only. Means GMT_PLUGINS sub dir of the directory that contains the 'gmt' executable */
 				strcpy (text, API->GMT->init.runtime_bindir);
-				strcat (text, "/gmtcustoms/");
+				strcat (text, "/gmt_plugins/");
 			}
 			else
 				strcpy (text, API->GMT->session.CUSTOM_LIBS);
