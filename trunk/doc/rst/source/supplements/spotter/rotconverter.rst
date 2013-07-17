@@ -51,25 +51,30 @@ Optional Arguments
 
 **-A**
     Indicate that times are actually just opening angles [times in Myr].
+
 **-D**
     Report longitudes use the -180/+180 range [Default is 0/360].
+
 **-E**\ [*fact*]
-    Scale opening angles by *fact* on output. Requires stage pole output
-    (see **-F**).
+    Scale opening angles by *fact* on output [0.5]. 
+    Typically used to get half-rates needed for flowlines.
+    Requires stage pole output (see **-F**).
+
 **-F**\ *out*
     Specify the output format for rotations. The *out* flag must be
     either **t** or **s** for total reconstruction or stage rotations,
     respectively. [Default is **-Ft** (output contains total
     reconstruction rotations)].
+
 **-G**
-    Output final rotations in the Plates4 format used by GPlates
-    [Default is spotter format].
+    Output final rotations in the Plates4 format used by GPlates [Default is spotter format].
+
 **-N**
-    Place all output poles in the northern hemisphere [Default reports
-    positive rotation angles].
+    Place all output poles in the northern hemisphere [Default reports positive rotation angles].
+
 **-S**
-    Place all output poles in the southern hemisphere [Default reports
-    positive rotation angles].
+    Place all output poles in the southern hemisphere [Default reports positive rotation angles].
+
 **-T**
     Transpose the final result, i.e., change the sign of the rotation angles.
 
@@ -92,6 +97,8 @@ To obtain Nazca motion relative to Pacific hotspots by adding the motion
 of Nazca relative to a fixed Pacific to the Pacific-Hotspot reference
 model DC85_stages.d, and report the result as total reconstruction
 reconstruction poles in the northern hemisphere, try
+
+   ::
 
     gmt rotconverter DC85_stages.APM + Pac_Naz_stages.RPM -N -Ft > \
                      Naz_HS_total reconstruction.APM
