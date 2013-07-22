@@ -566,8 +566,8 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 		}
 		else if (job == 'u')
 			nc_del_att (ncid, z_id, "add_offset");
-		if (job == 'u' && header->is_netcdf4 && nc_vers[0] == 4 && nc_vers[1] < 3) {
-			/* netCDF-4 libs of versions < 4.3 have a bug and crash when
+		if (job == 'u' && header->is_netcdf4 && nc_vers[0] == 4 && nc_vers[1] <= 3) {
+			/* netCDF-4 libs of versions <= 4.3 have a bug and crash when
 			 * rewriting the _FillValue attribute in netCDF-4 files */
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: netCDF libraries < 4.3 cannot alter the _FillValue attribute in netCDF-4 files.\n");
 		}
