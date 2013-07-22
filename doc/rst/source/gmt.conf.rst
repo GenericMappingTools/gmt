@@ -141,6 +141,9 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     be plotted. This template is then used to guide the formatting of
     clock strings in plot annotations. See **FORMAT_CLOCK_OUT** for
     details. [hh:mm:ss].
+
+.. _FORMAT_CLOCK_OUT:
+
 **FORMAT_CLOCK_OUT**
     Formatting template that indicates how an output clock string is to
     be formatted. This template is then used to guide the writing of
@@ -155,6 +158,9 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     examples, try hh:mm, hh.mm.ss, hh:mm:ss.xxxx, hha.m., etc.
     [hh:mm:ss]. If the format is simply - then no clock is output and
     the ISO T divider between date and clock is omitted.
+
+.. _FORMAT_DATE_IN:
+
 **FORMAT_DATE_IN**
     Formatting template that indicates how an input date string is
     formatted. This template is then used to guide the reading of date
@@ -181,6 +187,9 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     strings will be affected by the **TIME_LANGUAGE**,
     **FORMAT_TIME_PRIMARY_MAP** and **FORMAT_TIME_SECONDARY_MAP**
     setting. [yyyy-mm-dd].
+
+.. _FORMAT_DATE_OUT:
+
 **FORMAT_DATE_OUT**
     Formatting template that indicates how an output date string is to
     be formatted. This template is then used to guide the writing of
@@ -199,6 +208,9 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     leading zeros (default uses fixed width formats) [yyyy-mm-dd]. If
     the format is simply - then no date is output and the ISO T divider
     between date and clock is omitted.
+
+.. _FORMAT_GEO_MAP:
+
 **FORMAT_GEO_MAP**
     Formatting template that indicates how an output geographical
     coordinate is to be plotted. This template is then used to guide the
@@ -207,6 +219,9 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     which plots the absolute value of the coordinate. The default is
     ddd:mm:ss. Not all items may be plotted as this depends on the
     annotation interval.
+
+.. _FORMAT_GEO_OUT:
+
 **FORMAT_GEO_OUT**
     Formatting template that indicates how an output geographical
     coordinate is to be formatted. This template is then used to guide
@@ -237,10 +252,15 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
 
     The default is D.
 
+.. _FORMAT_FLOAT_MAP:
+
 **FORMAT_FLOAT_MAP**
     Format (C language printf syntax) to be used when plotting double
     precision floating point numbers on maps. For geographic
     coordinates, see **FORMAT_GEO_MAP**. [%.12lg].
+
+.. _FORMAT_FLOAT_OUT:
+
 **FORMAT_FLOAT_OUT**
     Format (C language printf syntax) to be used when printing double
     precision floating point numbers to output files. For geographic
@@ -250,17 +270,25 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     (e.g., 5 for 6th since 0 is the first) or a range of columns (e.g.,
     3-7). The last specification without column information will
     override the format for all other columns.
+
+.. _FORMAT_TIME_PRIMARY_MAP:
+
 **FORMAT_TIME_PRIMARY_MAP**
     Controls how primary month-, week-, and weekday-names are formatted.
     Choose among **full**, **abbreviated**, and **character**. If the
     leading **f**, **a**, or **c** are replaced with **F**, **A**, and
     **C** the entire annotation will be in upper case [full].
+
+.. _FORMAT_TIME_SECONDARY_MAP:
+
 **FORMAT_TIME_SECONDARY_MAP**
     Controls how secondary month-, week-, and weekday-names are
     formatted. Choose among **full**, **abbreviated**, and
     **character**. If the leading **f**, **a**, or **c** are replaced
-    with **F**, **A**, and **C** the entire annotation will be in upper
-    case [full].
+    with **F**, **A**, and **C** the entire annotation will be in upper case [full].
+
+.. _FORMAT_TIME_STAMP:
+
 **FORMAT_TIME_STAMP**
     Defines the format of the time information in the UNIX time stamp.
     This format is parsed by the C function **strftime**, so that
@@ -576,22 +604,26 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     Determines the maximum length (> 0) of individual straight
     line-segments when drawing arcuate lines [0.75p]
 
+.. _MAP_LOGO:
+
 **MAP_LOGO**
-    (**\* -U**) Specifies if a GMT logo with system timestamp should be
+    (**-U**) Specifies if a GMT logo with system timestamp should be
     plotted at the lower left corner of the plot [false].
 
+.. _MAP_LOGO_POS:
+
 **MAP_LOGO_POS**
-    (**\* -U**) Sets the justification and the position of the
+    (**-U**) Sets the justification and the position of the
     logo/timestamp box relative to the current plots lower left corner
     of the plot [BL/-54p/-54p].
 
 **MAP_ORIGIN_X**
-    (**\* -X**) Sets the x-coordinate of the origin on the paper for a
-    new plot [1i]. For an overlay, the default offset is 0i.
+    (**-X**) Sets the x-coordinate of the origin on the paper for a
+    new plot [1i]. For an overlay, the default offset is 0.
 
 **MAP_ORIGIN_Y**
-    (**\* -Y**) Sets the y-coordinate of the origin on the paper for a
-    new plot [1i]. For an overlay, the default offset is 0i.
+    (**-Y**) Sets the y-coordinate of the origin on the paper for a
+    new plot [1i]. For an overlay, the default offset is 0.
 
 **MAP_POLAR_CAP**
     Controls the appearance of gridlines near the poles for all
