@@ -2,6 +2,11 @@
 	$Id$
 -----------------------------------------------------------------------------------------
 
+2013-07-23	pwessel
+	* nearneighbor.c:	Clarify how -N works, what the defaults are, and let the
+				minimum number of sectors default to 50% of sectors instead
+				of a hard-wired 2.  Addresses issue # 343.
+
 2013-07-07	pwessel
 	* makecpt.c:		New option -Glo/hi to truncate the incoming CPT table first.
 	* grd2cpt.c:		---"---

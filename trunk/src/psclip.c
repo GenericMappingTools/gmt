@@ -78,8 +78,7 @@ int GMT_psclip_usage (struct GMTAPI_CTRL *API, int level)
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Undo existing clip-path; no file is needed.  -R, -J are not required (unless -B is used).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append p to terminate polygon clipping; append how many clip levels to restore or a for all [1].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append t to terminate text clipping; append how many clip levels to restore or a for all [1].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Terminate polygon clipping; append how many clip levels to restore or a for all [1].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append c to plot text previously used to build a curved clip path set (restores 1 level).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to plot text previously used to build a straight-text clip path set (restores 1 level).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<xy-files> is one or more polygon files.  If none, standard input is read.\n");
