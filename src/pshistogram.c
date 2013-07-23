@@ -408,7 +408,6 @@ int GMT_pshistogram_usage (struct GMTAPI_CTRL *API, int level)
 	GMT_Message (API, GMT_TIME_NONE, "\t   The -N option may be repeated to draw several of these curves.\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Plot a cumulative histogram.\n");
-	GMT_Option (API, "A");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If neither -R nor -I are set, w/e/s/n will be based on input data.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Draw a stairs-step diagram [Default is bar histogram].\n");
 	GMT_Option (API, "U,V,X");
