@@ -40,7 +40,6 @@
 #define GMT_PROG_OPTIONS "-:RVbfhinrs" GMT_OPT("FH")
 
 #define NN_DEF_SECTORS	4
-#define NN_MIN_SECTORS	2
 
 struct NEARNEIGHBOR_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -56,7 +55,7 @@ struct NEARNEIGHBOR_CTRL {	/* All control options for this program (except commo
 		bool active;
 		char *file;
 	} G;
-	struct N {	/* -N<sectors> */
+	struct N {	/* -N[<sectors>[/<min_sectors>]] */
 		bool active;
 		unsigned int sectors, min_sectors;
 	} N;
@@ -86,8 +85,7 @@ void *New_nearneighbor_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize 
 	C = GMT_memory (GMT, NULL, 1U, struct NEARNEIGHBOR_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
-	C->N.sectors = NN_DEF_SECTORS;
-	C->N.min_sectors = NN_MIN_SECTORS;
+	C->N.sectors = C->N.min_sectors = NN_DEF_SECTORS;
 	return (C);
 }
 
@@ -139,8 +137,9 @@ int GMT_nearneighbor_usage (struct GMTAPI_CTRL *API, int level)
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Name of output grid.\n");
 	GMT_Option (API, "I");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Set number of sectors and minimum number to be filled.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default is quadrant search [%d], requiring at least %d to be filled.\n", NN_DEF_SECTORS, NN_MIN_SECTORS);
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Set number of sectors and the minimum number of sectors with data required for averaging.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If <min_sectors> is omitted it defaults to ~50%% of <sectors>\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default is -N%d/%d, i.e., a quadrant search, requiring all sectors to be filled.\n", NN_DEF_SECTORS, NN_DEF_SECTORS);
 	GMT_Option (API, "R");
 	GMT_dist_syntax (API->GMT, 'S', "Only consider points inside this search radius.");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
@@ -218,11 +217,11 @@ int GMT_nearneighbor_parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl
 				else
 					n_errors += GMT_default_error (GMT, opt->option);
 				break;
-			case 'N':	/* Sectors */
+			case 'N':	/* -N[sectors[/minsectors]] */
 				Ctrl->N.active = true;
 				n = sscanf (opt->arg, "%d/%d", &Ctrl->N.sectors, &Ctrl->N.min_sectors);
-				if (n < 1) Ctrl->N.sectors = NN_DEF_SECTORS;
-				if (n < 2) Ctrl->N.min_sectors = NN_MIN_SECTORS;
+				if (n < 1) Ctrl->N.sectors = NN_DEF_SECTORS;	/* Just gave -N with no args means -N4/4 */
+				if (n < 2) Ctrl->N.min_sectors = irint (Ctrl->N.sectors / 2.0);	/* Giving just -N<sectors> means -N<sectors>/(<sectors>/2) */
 				if (Ctrl->N.sectors < Ctrl->N.min_sectors) Ctrl->N.min_sectors = Ctrl->N.sectors;	/* Minimum cannot be larger than desired */
 				break;
 			case 'S':	/* Search radius */
@@ -315,6 +314,7 @@ int GMT_nearneighbor (void *V_API, int mode, void *args)
 	}
 
 	GMT_Report (API, GMT_MSG_VERBOSE, "Grid dimensions are nx = %d, ny = %d\n", Grid->header->nx, Grid->header->ny);
+	GMT_Report (API, GMT_MSG_VERBOSE, "Number of sectors = %d, minimum number of filled sectors = %d\n", Ctrl->N.sectors, Ctrl->N.min_sectors);
 
 	grid_node = GMT_memory (GMT, NULL, Grid->header->nm, struct NEARNEIGHBOR_NODE *);
 	point = GMT_memory (GMT, NULL, n_alloc, struct NEARNEIGHBOR_POINT);

@@ -50,13 +50,13 @@ Required Arguments
 **-N**\ *sectors*\ [/*min_sectors*]
     The circular area centered on each node is divided into *sectors*
     sectors. Average values will only be computed if there is at least
-    one value inside at least *min_sectors* of the sectors for a given
+    one value inside each of at least *min_sectors* of the sectors for a given
     node. Nodes that fail this test are assigned the value NaN (but see
-    **-E**). If *min_sectors* is omitted, each sector needs to have at
-    least one value inside it. [Default is quadrant search with 50%
-    coverage, i.e., *sectors* = 4 and *min_sectors* = 2]. Note that
-    only the nearest value per sector enters into the averaging, not all
-    values inside the circle. 
+    **-E**). If *Imin_sectors* is omitted it is set to be at least 50%
+    of *sectors* (i.e., rounded up to next integer).  [Default is a quadrant
+    search with 100% coverage, i.e., *sectors* = *min_sectors* = 4]. Note
+    that only the nearest value per sector enters into the averaging; the
+    more distant points are ignored. 
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
@@ -117,13 +117,13 @@ Examples
 --------
 
 To create a gridded data set from the file seaMARCII_bathy.lon_lat_z
-using a 0.5 min grid, a 5 km search radius, using an octant search, and
-set empty nodes to -9999:
+using a 0.5 min grid, a 5 km search radius, using an octant search with
+100% sector coverage, and set empty nodes to -9999:
 
    ::
 
     gmt nearneighbor seaMARCII_bathy.lon_lat_z -R242/244/-22/-20 -I0.5m \
-                     -E-9999 -Gbathymetry.nc -S5k -N8
+                     -E-9999 -Gbathymetry.nc -S5k -N8/8
 
 To make a global grid file from the data in geoid.xyz using a 1 degree
 grid, a 200 km search radius, spherical distances, using an quadrant
@@ -132,7 +132,7 @@ at least one value:
 
    ::
 
-    gmt nearneighbor geoid.xyz -R0/360/-90/90 -I1 -Lg -Ggeoid.nc -S200k -N4/2
+    gmt nearneighbor geoid.xyz -R0/360/-90/90 -I1 -Lg -Ggeoid.nc -S200k -N4
 
 See Also
 --------
