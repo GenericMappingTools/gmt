@@ -929,7 +929,7 @@ package that can be used to manipulate columns of tabular data,
 time-series, and gridded data sets, and display these data in a variety
 of forms ranging from simple *x*-*y* plots to maps and color,
 perspective, and shaded-relief illustrations. *GMT* uses the
-*PostScript*\ page description language [*Adobe Systems Inc.*, 1990].
+*PostScript* page description language [*Adobe Systems Inc.*, 1990].
 With *PostScript*, multiple plot files can easily be superimposed to
 create arbitrarily complex images in gray tones or 24-bit true color.
 Line drawings, bitmapped images, and text can be easily combined in one
@@ -2448,7 +2448,7 @@ Our first example shows a time period of almost two months in Spring
      gmt psbasemap -R2000-4-1T/2000-5-25T/0/1 -JX5i/0.2i -Bpa7Rf1d -Bsa1O -BS -P > GMT_-B_time1.ps
 
 These commands result in Figure . Note the leading hyphen in the
-**FORMAT_DATE_MAP** removes leading zeros from calendar items (e.g.,
+:ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>` removes leading zeros from calendar items (e.g.,
 02 becomes 2).
 
 .. include:: fig_includes/fig_GMT_-B_time1.rst_
@@ -2487,7 +2487,7 @@ case abbreviation of month names using the current language (selected by
 
 The fourth example (Figure ) only shows a few hours of a day, using
 relative time by specifying **t** in the **-R** option while the
-**TIME_UNIT** is **d** (for days). We select both primary and secondary
+:ref:`TIME_UNIT <TIME_UNIT>` is **d** (for days). We select both primary and secondary
 annotations, ask for a 12-hour clock, and let time go from right to left:
 
    ::
@@ -2500,7 +2500,7 @@ annotations, ask for a 12-hour clock, and let time go from right to left:
 The fifth example shows a few weeks of time (Figure ). The lower axis
 shows ISO weeks with week numbers and abbreviated names of the weekdays.
 The upper uses Gregorian weeks (which start at the day chosen by
-**TIME_WEEK_START**); they do not have numbers.
+:ref:`TIME_WEEK_START <TIME_WEEK_START>`); they do not have numbers.
 
    ::
 
@@ -2561,13 +2561,13 @@ annotations on the *x*-axis and irregular annotations on the *y*-axis.
 
    ::
 
-    cat << EOF >| xannots.txt
+    cat << EOF > xannots.txt
     416.0 ig Devonian
     443.7 ig Silurian
     488.3 ig Ordovician
     542 ig Cambrian
     EOF
-    cat << EOF >| yannots.txt
+    cat << EOF > yannots.txt
     0 a
     1 a
     2 f
@@ -2653,7 +2653,7 @@ Plot positioning and layout: The **-X** **-Y** options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The **-X** and **-Y** options shift origin of plot by (*xoff*,\ *yoff*)
-inches (Default is (**MAP_ORIGIN_X**, **MAP_ORIGIN_Y**) for new
+inches (Default is (:ref:`MAP_ORIGIN_X <MAP_ORIGIN_X>`, :ref:`MAP_ORIGIN_Y <MAP_ORIGIN_Y>`) for new
 plots [15]_ and (0,0) for overlays (**-O**)). By default, all
 translations are relative to the previous origin (see Figure ). Supply
 offset as **c** to center the plot in that direction relative to the
@@ -2822,7 +2822,7 @@ specify these criteria to apply to the projected coordinates (by using
 upper-case **-gX**, **-gY** or **-gD**). In that case, choose from
 **c**\ entimeter, **i**\ nch or **p**\ oint [Default unit is controlled
 by **PROJ_LENGTH_UNIT**]. Note: For **-gx** or **-gy** with time data
-the unit is instead controlled by **TIME_UNIT**.
+the unit is instead controlled by :ref:`TIME_UNIT <TIME_UNIT>`.
 
 Header data records: The **-h** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -3067,16 +3067,16 @@ whose fields are all set to NaN; see Appendix [app:B] for complete documentation
 If filenames are given for reading, *GMT* programs will first look for
 them in the current directory. If the file is not found, the programs
 will look in two other directories pointed to by environmental
-parameters (if set). These are **GMT_USERDIR** and **GMT_DATADIR**,
+parameters (if set). These are :ref:`GMT_USERDIR <GMT_USERDIR>` and :ref:`GMT_DATADIR <GMT_DATADIR>`,
 and they may be set by the user to point to directories that contain
-data sets of general use. Normally, the **GMT_DATADIR** directory (or
+data sets of general use. Normally, the :ref:`GMT_DATADIR <GMT_DATADIR>` directory (or
 directories: add multiple paths by separating them with colons
 (semi-colons under Windows)) will hold data sets of a general nature
 (tables, grids), although a particular use is to make available large
 grids accessible via
 `grdraster <grdraster.html>`__ or the supplemental program
 `img2grd <supplements/imgsrc/img2grd.html>`__; see Appendix [app:A] for
-information about these supplemental programs. The **GMT_USERDIR**
+information about these supplemental programs. The :ref:`GMT_USERDIR <GMT_USERDIR>`
 directory may hold miscellaneous data sets more specific to the user;
 this directory also stores *GMT* defaults and other configuration files.
 Any directory that ends in a trailing slash (/) will be searched
@@ -3148,14 +3148,14 @@ data like UTM coordinates.
 
 Because of the widespread use of incompatible and ambiguous formats, the
 processing of input date components is guided by the template
-**FORMAT_DATE_IN** in your ``gmt.conf`` file; it is by default set to *yyyy-mm-dd*.
+:ref:`FORMAT_DATE_IN <FORMAT_DATE_IN>` in your ``gmt.conf`` file; it is by default set to *yyyy-mm-dd*.
 Y2K-challenged input data such as 29/05/89 can be processed by setting
-**FORMAT_DATE_IN** to dd/mm/yy. A complete description of possible
+:ref:`FORMAT_DATE_IN <FORMAT_DATE_IN>` to dd/mm/yy. A complete description of possible
 formats is given in the `gmt.conf <gmt.conf.html>`_ man
 page. The *clock* string is more standardized but issues like 12- or
 24-hour clocks complicate matters as well as the presence or absence of
 delimiters between fields. Thus, the processing of input clock
-coordinates is guided by the template **FORMAT_CLOCK_IN** which
+coordinates is guided by the template :ref:`FORMAT_CLOCK_IN <FORMAT_CLOCK_IN>` which
 defaults to *hh:mm:ss.xxx*.
 
 *GMT* programs that require a map projection argument will implicitly
@@ -3182,13 +3182,13 @@ used) or ASCII [Default]. In the latter case the issue of formatting
 becomes important. *GMT* provides extensive machinery for allowing just
 about any imaginable format to be used on output. Analogous to the
 processing of input data, several templates guide the formatting
-process. These are **FORMAT_DATE_OUT** and **FORMAT_CLOCK_OUT** for
-calendar-time coordinates, **FORMAT_GEO_OUT** for geographical
-coordinates, and **FORMAT_FLOAT_OUT** for generic floating point data.
+process. These are :ref:`FORMAT_DATE_OUT <FORMAT_DATE_OUT>` and :ref:`FORMAT_CLOCK_OUT <FORMAT_CLOCK_OUT>` for
+calendar-time coordinates, :ref:`FORMAT_GEO_OUT <FORMAT_GEO_OUT>` for geographical
+coordinates, and :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` for generic floating point data.
 In addition, the user have control over how columns are separated via
-the **FIELD_SEPARATOR** parameter. Thus, as an example, it is possible
+the :ref:`FIELD_SEPARATOR <FIELD_SEPARATOR>` parameter. Thus, as an example, it is possible
 to create limited FORTRAN-style card records by setting
-**FORMAT_FLOAT_OUT** to %7.3lf and **FIELD_SEPARATOR** to none
+:ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` to %7.3lf and **FIELD_SEPARATOR** to none
 [Default is tab].
 
 *PostScript* features
@@ -3312,13 +3312,13 @@ suitable for, say, `psxy <psxy.html>`_.
 
 In addition to these pen settings there are several
 *PostScript* settings that can affect the appearance of lines. These are
-controlled via the *GMT* defaults settings **PS_LINE_CAP**,
-**PS_LINE_JOIN**, and **PS_MITER_LIMIT**. They determine how a line
+controlled via the *GMT* defaults settings :ref:`PS_LINE_CAP <PS_LINE_CAP>`****,
+:ref:`PS_LINE_JOIN <PS_LINE_JOIN>`, and :ref:`PS_MITER_LIMIT <PS_MITER_LIMIT>`. They determine how a line
 segment ending is rendered, be it at the termination of a solid line or
 at the end of all dashed line segments making up a line, and how a
 straight lines of finite thickness should behave when joined at a common
 point. By default, line segments have rectangular ends, but this can
-change to give rounded ends. When **PS_LINE_CAP** is set to round the
+change to give rounded ends. When :ref:`PS_LINE_CAP <PS_LINE_CAP>` is set to round the
 a segment length of zero will appear as a circle. This can be used to
 created circular dotted lines, and by manipulating the phase shift in
 the *style* attribute and plotting the same line twice one can even
@@ -3437,7 +3437,7 @@ layer-by-layer basis using the **-t** option. However, we may also set
 transparency as an attribute of stroke or fill (including for fonts)
 settings. Here, transparency is requested by appending @\ *transparency*
 to colors or pattern fills. The transparency *mode* can be changed by
-using the *GMT* default parameter **PS_TRANSPARENCY**; the default is
+using the *GMT* default parameter :ref:`PS_TRANSPARENCY <PS_TRANSPARENCY>`; the default is
 Normal but you can choose among Color, ColorBurn, ColorDodge, Darken,
 Difference, Exclusion, HardLight, Hue, Lighten, Luminosity, Multiply,
 Normal, Overlay, Saturation, SoftLight, and Screen. For more
@@ -3711,7 +3711,7 @@ added (Table [tbl:scand]):
 accented characters used in many European languages. To access these,
 you must specify the full octal code \\xxx allowed for
 your choice of character encodings determined by the
-**PS_CHAR_ENCODING** setting described in the
+:ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` setting described in the
 `gmt.conf <gmt.conf.html>`_ man page. Only the special
 characters belonging to a particular encoding will be available. Many
 characters not directly available by using single octal codes may be
@@ -3743,7 +3743,7 @@ than the default.
 
 By default, *GMT* will create new grid files using the **nf** format;
 however, this behavior can be overridden by setting the
-**IO_GRIDFILE_FORMAT** defaults parameter to any of the other
+:ref:`IO_GRIDFILE_FORMAT <IO_GRIDFILE_FORMAT>` defaults parameter to any of the other
 recognized values (or by appending *=ID*).
 
 *GMT* can also read netCDF grid files produced by other software
@@ -3844,7 +3844,7 @@ string (it cannot go by itself; note the nesting of the brackets!). The
 /*scale* and /*offset* modifiers may be left empty to select default
 values (scale = 1, offset = 0), or you may specify *a* for
 auto-adjusting the scale and/or offset of packed integer grids
-(=*ID*/*a* is a shorthand for =\ *ID*/*a*/*a*).
+(=\ *ID*/*a* is a shorthand for =\ *ID*/*a*/*a*).
 
 Some of the grid formats allow writing to standard output and reading
 from standard input which means you can connect *GMT* programs that
@@ -3914,7 +3914,7 @@ a ``.gmt_io`` file:
 +-------+-----+-----+---+-------+-------------------------------------------+
 
 These suffices can be anything that makes sense to the user. To activate
-this mechanism, set parameter **IO_GRIDFILE_SHORTHAND** to TRUE in
+this mechanism, set parameter :ref:`IO_GRIDFILE_SHORTHAND <IO_GRIDFILE_SHORTHAND>` to TRUE in
 your ``gmt.conf`` file. Then, using the filename ``stuff.i2`` is equivalent to saying ``stuff.i2=bs///32767``, and the
 filename ``wet.mask`` means wet.mask=bm/1/0/0. For a file intended for masking, i.e.,
 the nodes are either 1 or NaN, the bit or mask format file may be as
@@ -4249,7 +4249,7 @@ Data records that contain NaN values for the *x* or *y* columns (or the
 *z* column for cases when 3-D Cartesian data are expected) are usually
 skipped during reading. However, the presence of these bad records can
 be interpreted in two different ways, and this behavior is controlled by
-the **IO_NAN_RECORDS** defaults parameter. The default setting (*gap*)
+the :ref:`IO_NAN_RECORDS <IO_NAN_RECORDS>` defaults parameter. The default setting (*gap*)
 considers such records to indicate a gap in an otherwise continuous
 series of points (e.g., a line), and programs can act upon this
 information, e.g., not to draw a line across the gap or to break the
@@ -4452,7 +4452,7 @@ given as *yyyy*\ [-*mm*\ [-*dd*]], *yyyy*\ [-*jjj*], or
 *yyyy*\ [-**W**\ *ww*\ [-*d*]], and *clock* using the
 *hh*\ [:*mm*\ [:*ss*\ [*.xxx*]]] 24-hour clock format) whereas the
 relative time is simply given as the units of time since the epoch
-followed by **t** (see **TIME_UNIT** and **TIME_EPOCH** for
+followed by **t** (see :ref:`TIME_UNIT <TIME_UNIT>` and :ref:`TIME_EPOCH <TIME_EPOCH>` for
 information on specifying the time unit and the epoch). As a simple
 example, we will make a plot of a school week calendar
 (Figure [fig:GMT:sub:`l`\ inear\ :sub:`c`\ al]).
@@ -4841,7 +4841,7 @@ center of projection. The requirements are
    oblique] latitude (**-Js**), or simply map width (**-JS**).
 
 A default map scale factor of 0.9996 will be applied by default
-(although you may change this with **PROJ_SCALE_FACTOR**). However,
+(although you may change this with :ref:`PROJ_SCALE_FACTOR <PROJ_SCALE_FACTOR>`). However,
 the setting is ignored when a standard parallel has been specified since
 the scale is then implicitly given. We will look at two different types
 of maps.
@@ -5132,7 +5132,7 @@ specifying:
 
 The optional latitude of origin defaults to Equator if not specified.
 Although defaulting to 1, you can change the map scale factor via the
-**PROJ_SCALE_FACTOR** parameter. Our example shows a transverse
+:ref:`PROJ_SCALE_FACTOR <PROJ_SCALE_FACTOR>` parameter. Our example shows a transverse
 Mercator map of south-east Europe and the Middle East with 35E as the
 central meridian:
 
@@ -5188,7 +5188,7 @@ When selecting UTM you must specify:
 
 In order to minimize the distortion in any given zone, a scale factor of
 0.9996 has been factored into the formulae. (although a standard, you
-can change this with **PROJ_SCALE_FACTOR**). This makes the UTM
+can change this with :ref:`PROJ_SCALE_FACTOR <PROJ_SCALE_FACTOR>`). This makes the UTM
 projection a *secant* projection and not a *tangent* projection like the
 transverse Mercator above. The scale only varies by 1 part in 1,000 from
 true scale at equator. The ellipsoidal projection expressions are
@@ -5845,7 +5845,7 @@ The first data record may be preceded by one or more header records. Any
 records that begins with '#' is considered a header or comment line and
 are always processed correctly. If your data file has leading header
 records that do *not* start with '#' then you must make sure to use the
-**-h** option and set the parameter **IO_N_HEADER_RECS** in the ``gmt.conf`` file
+**-h** option and set the parameter :ref:`IO_N_HEADER_RECS <IO_N_HEADER_RECS>` in the ``gmt.conf`` file
 (*GMT* default is one header record if **-h** is given; you may also use
 **-h**\ *nrecs* directly). Fields within a record must be separated by
 spaces, tabs, or commas. Each field can be an integer or floating-point
@@ -5870,19 +5870,19 @@ outlined except that they have segment headers interspersed with data
 records that signal the start of a new segment. The segment headers may
 be of any format, but all must have the same character in the first
 column. The unique character is by default '\ >\ ', but you can
-override that by modifying the **IO_SEGMENT_MARKER** default setting.
+override that by modifying the :ref:`IO_SEGMENT_MARKER <IO_SEGMENT_MARKER>` default setting.
 Programs can examine the segment headers to see if they contain **-D**
 for a distance value, **-W** and **-G** options for specifying pen and
 fill attributes for individual segments, **-Z** to change color via a
 CPT file, **-L** for label specifications, or **-T** for general-purpose
 text descriptions. These settings (and occasionally others) will
 override the corresponding command line options. *GMT* also provides for
-two special values for **IO_SEGMENT_MARKER** that can make
+two special values for :ref:`IO_SEGMENT_MARKER <IO_SEGMENT_MARKER>` that can make
 interoperability with other software packages easier. Choose the marker
 **B** to have blank lines recognized as segment breaks, or use **N** to
 have data records whose fields equal NaN mean segment breaks (e.g., as
-used by GNU Octave or Matlab). When these markers are used then no other
-segment header will be considered. Note that **IO_SEGMENT_MARKER** can
+used by Matlab or Octave). When these markers are used then no other
+segment header will be considered. Note that :ref:`IO_SEGMENT_MARKER <IO_SEGMENT_MARKER>` can
 be set differently for input and output.
 
 Binary tables
@@ -6311,8 +6311,7 @@ accomplished.
    BoundingBox.
 
 If you do not want to modify your illustration but just include it in a
-text document: many word processors (such as Microsoft **Word**, Corel
-**WordPerfect**, and Apple **Pages**) will let you include a
+text document: many word processors (such as Microsoft **Word**  or Apple **Pages**) will let you include a
 *PostScript* file that you may place but not edit. Newer versions of
 those programs also allow you to include PDF versions of your graphics.
 Except for **Pages**, you will not be able to view the figure
@@ -6697,12 +6696,12 @@ Character encoding
 
 Since *PostScript* itself does not support Unicode fonts,
 **Ghostscript** will re-encode the fonts on the fly. You have to make
-sure to set the correct ``PS_CHAR_ENCODING`` with gmtset and save your
+sure to set the correct :ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` with gmtset and save your
 script file with the same character encoding. Alternatively, you can
 substitute all non ASCII characters with their corresponding octal
 codes, e.g., \\265 instead of . Note, that *PostScript* fonts support
 only a small range of glyphs and you may have to switch the
-``PS_CHAR_ENCODING`` within your script.
+:ref:`PS_CHAR_ENCODING <PS_CHAR_ENCODING>` within your script.
 
 H. Color Space: The final frontier
 ==================================
@@ -6924,9 +6923,9 @@ images (e.g., **-I** option in `grdimage <grdimage.html>`_) by changing the satu
 the intensity is non-zero, the color is either lightened or darkened
 depending on the illumination. The color is first converted to HSV (if
 necessary) and then darkened by moving (*sv*) toward
-(**COLOR_HSV_MIN_S**, **COLOR_HSV_MIN_V**) if the intensity is
+(:ref:`COLOR_HSV_MIN_S <COLOR_HSV_MIN_S>`, :ref:`COLOR_HSV_MIN_V <COLOR_HSV_MIN_V>`) if the intensity is
 negative, or lightened by sliding (*sv*) toward
-(**COLOR_HSV_MAX_S**, **COLOR_HSV_MAX_V**) if the illumination is
+(:ref:`COLOR_HSV_MAX_S <COLOR_HSV_MAX_S>`, :ref:`COLOR_HSV_MAX_V <COLOR_HSV_MAX_V>`) if the illumination is
 positive. The extremes of the *s* and *v* are defined in the
 ``gmt.conf`` file and are usually chosen so the corresponding points are nearly black
 (*s = 1*, *v = 0*) and white (*s = 0*, *v = 1*).
@@ -6981,7 +6980,7 @@ thesis, for example, it might be worth trying to save and print all your
 color plots using the CMYK system. Letting *GMT* do the conversion to
 CMYK may avoid some nasty surprises when it comes down to printing. To
 specify the color space of your *PostScript* file, set
-**PS_COLOR_MODEL** in the ``gmt.conf`` file to RGB, HSV, or CMYK.
+:ref:`PS_COLOR_MODEL <PS_COLOR_MODEL>` in the ``gmt.conf`` file to RGB, HSV, or CMYK.
 
 I. Filtering of data in GMT
 ===========================
@@ -7245,8 +7244,8 @@ total file size of the coastlines, rivers, and borders database is only
 
 .. include:: fig_includes/fig_GMT_App_K_1.rst_
 
-Here, we use the **MAP_ANNOT_OBLIQUE** bit flags to achieve horizontal
-annotations and set **MAP_ANNOT_MIN_SPACING** to suppress some
+Here, we use the :ref:`MAP_ANNOT_OBLIQUE <MAP_ANNOT_OBLIQUE>` bit flags to achieve horizontal
+annotations and set :ref:`MAP_ANNOT_MIN_SPACING <MAP_ANNOT_MIN_SPACING>` to suppress some
 longitudinal annotations near the S pole that otherwise would overprint.
 The square box indicates the outline of the next map.
 
@@ -7620,10 +7619,10 @@ The string itself, if obtained from the symbol definition file,
 may contain special codes that will be expanded given the current record.  You
 can embed %X or %Y to add the current longitude (or x) and latitude (or y) in
 your label string. You may also use $n to embed a numerical symbol variable as text.
-It will be formatted according to FORMAT\_FLOAT\_MAP,
-unless you append the modifiers **+X** (longitude via FORMAT\_GEO\_MAP),
-**+Y** (latitude via FORMAT\_GEO\_MAP), or **+T** (calendar time via FORMAT\_DATE\_MAP
-and FORMAT\_CLOCK\_MAP.
+It will be formatted according to :ref:`FORMAT_FLOAT_MAP <FORMAT_FLOAT_MAP>`,
+unless you append the modifiers **+X** (longitude via :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>`),
+**+Y** (latitude via :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>`), or **+T** (calendar time via
+:ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>` and :ref:`FORMAT_CLOCK_MAP <FORMAT_CLOCK_MAP>`.
 
 Text alignment and font
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -7801,7 +7800,7 @@ f:
     lines at which locations the labels should be placed. Labels will
     only be placed if the coordinates match the line coordinates to
     within a distance of *slop* (append unit or we use
-    **PROJ_LENGTH_UNIT**). The default *slop* is zero, meaning only
+    :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`). The default *slop* is zero, meaning only
     exact coordinate matches will do.
 
 l:
@@ -8773,12 +8772,10 @@ Finally we show an example of a polygon file:
    QuickTime Pro can do this, as can most video-editing programs.
 
 .. [33]
-   For data bases, see
-   http://topex.ucsd.edu/marine_grav/mar_grav.html.
+   For data bases, see http://topex.ucsd.edu/marine_grav/mar_grav.html.
 
 .. [36]
-   The ASCII MGD77 data are available on CD-ROM from NGDC
-   (www.ngdc.noaa.gov).
+   The ASCII MGD77 data are available on CD-ROM from NGDC (www.ngdc.noaa.gov).
 
 .. [37]
    Okabe, M., 1979, Analytical expressions for gravity anomalies due to
@@ -8787,9 +8784,6 @@ Finally we show an example of a polygon file:
 
 .. [38]
    Timothy.J.Henstock@soc.soton.ac.uk
-
-.. [39]
-   lloyd@must-have-coffee.gen.nz
 
 .. [41]
    If you chose SI units during the installation then the default
