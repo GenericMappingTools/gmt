@@ -235,6 +235,10 @@ int GMT_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GDALWRITE_CTRL *prh
 				              prhs->nXSizeFull * n_byteOffset );
 				break;
 		}
+
+		/* Compute and set image statistics (if possible) */
+		GDALComputeRasterStatistics(hBand, 0, NULL, NULL, NULL, NULL, NULL, NULL);
+
 	}
 
 	hOutDS = GDALCreateCopy( hDriverOut, fname, hDstDS, bStrict, papszOptions, pfnProgress, NULL );
