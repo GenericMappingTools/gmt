@@ -149,13 +149,12 @@ programs. No space between the option flag and the associated arguments.
 
 .. include:: explain_grd_input.rst_
 
-
 See Also
 --------
 
 Look up the individual man pages for more details and full syntax. Run
 **gmt --help** to list all GMT programs and to show all installation
 directories. For an explanation of the various **GMT** settings in this
-man page (like **FORMAT_FLOAT_OUT**), see the man page of the GMT
+man page (like :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>`), see the man page of the GMT
 configuration file `gmt.conf <gmt.conf.html>`_. Information is also available on the
 **GMT** home page gmt.soest.hawaii.edu

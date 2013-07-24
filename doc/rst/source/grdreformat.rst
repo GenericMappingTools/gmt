@@ -35,11 +35,12 @@ Required Arguments
     options will scale the data and then offset them with the specified
     amounts after reading.
     If *scale* and *offset* are supplied you may also append a value
-    that represents ’Not-a-Number’ (for floating-point grids this is
+    that represents 'Not-a-Number' (for floating-point grids this is
     unnecessary since the IEEE NaN is used; however integers need a
     value which means no data available). The *scale* and *offset*
     modifiers may be left empty to select default values (scale = 1,
     offset = 0).
+
 *outgrdfile*
     The grid file to be written. Append format =\ *id* code if not a
     standard COARDS-compliant netCDF grid file. If =\ *id* is set (see
@@ -51,12 +52,12 @@ Required Arguments
     round-offs).
 
     If *scale* and *offset* are supplied you may also append a value
-    that represents ’Not-a-Number’ (for floating-point grids this is
+    that represents 'Not-a-Number' (for floating-point grids this is
     unnecessary since the IEEE NaN is used; however integers need a
     value which means no data available). The *scale* and *offset*
     modifiers may be left empty to select default values (scale = 1,
     offset = 0), or you may specify *a* for auto-adjusting the scale
-    and/or offset of packed integer grids (=*id/a* is a shorthand for
+    and/or offset of packed integer grids (=\ *id/a* is a shorthand for
     =\ *id/a/a*). When *id*\ =\ *gd*, the file will be saved using the
     GDAL library. Append the format *:driver* and optionally the output
     *datatype*. The driver names are those used by GDAL itself (e.g.,
@@ -66,9 +67,9 @@ Required Arguments
     The default type is *float32*. Note also that both driver names and
     data types are case insensitive.
 
-    Consider setting **IO\_NC4\_DEFLATION\_LEVEL** to reduce file size
-    and to further increase read/write performace. Especially when
-    working with subsets of global grids, masks, and grids with
+    Consider setting :ref:`IO_NC4_DEFLATION_LEVEL <IO_NC4_DEFLATION_LEVEL>`
+    to reduce file size and to further increase read/write performace.
+    Especially when working with subsets of global grids, masks, and grids with
     repeating grid values, the improvement is usually significant.
 
 Optional Arguments
@@ -202,7 +203,7 @@ Native Binary Files
 
 For binary native **GMT** files the size of the **GMT** grdheader block
 is *hsize* = 892 bytes, and the total size of the file is *hsize* + *nx*
-\* *ny* \* *item\_size*, where *item\_size* is the size in bytes of each
+\* *ny* \* *item_size*, where *item_size* is the size in bytes of each
 element (1, 2, 4). Bit grids are stored using 4-byte integers, each
 holding 32 bits, so for these files the size equation is modified by
 using ceil (*nx* / 32) \* 4 instead of *nx*. Note that these files are
