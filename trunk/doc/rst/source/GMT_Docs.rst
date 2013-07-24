@@ -550,7 +550,7 @@ correctly with a warning under compatibility mode:
 #. **Contour labels**: The modifiers **+k**\ *fontcolor* and
    **+s**\ *fontsize* are obsolete, now being part of **+f**\ *font*.
 
-#. **Ellipsoids**: Assigning **PROJ_ELLIPSOID** a file name is
+#. **Ellipsoids**: Assigning :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>` a file name is
    deprecated, use comma-separated parameters *a, :math:`f^{-1}`* instead.
 
 #. **Custom symbol macros:** Circle macro symbol **C** is deprecated;
@@ -659,7 +659,7 @@ correctly with a warning under compatibility mode:
 #. `nearneighbor <nearneighbor.html>`_: **-L** is
    deprecated; use common option **-n** instead.
 
-#. `project <project.html>`_: **-D** is deprecated; use --FORMAT_GEO_OUT instead.
+#. `project <project.html>`_: **-D** is deprecated; use **-**\ **-**\ :ref:`FORMAT_GEO_OUT <FORMAT_GEO_OUT>` instead.
 
 #. `psbasemap <psbasemap.html>`_: **-G** is deprecated;
    specify canvas color via **-B** modifier **+g**\ *color*.
@@ -1767,7 +1767,7 @@ Distance calculations
 
 The calculation of distances on Earth (or other planetary bodies)
 depends on the ellipsoidal parameters of the body (via
-**PROJ_ELLIPSOID**) and the method of computation. *GMT* offers three
+:ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`) and the method of computation. *GMT* offers three
 alternatives that trade off accuracy and computation time.
 
 Flat Earth distances
@@ -1816,8 +1816,8 @@ Note: There are two additional
 `GMT <http://gmt.soest.hawaii.edu>`_ defaults that control how
 great circle (and Flat Earth) distances are computed. One concerns the
 selection of the "mean radius". This is selected by
-**PROJ_MEAN_RADIUS**, which selects one of several possible
-representative radii. The second is **PROJ_AUX_LATITUDE**, which
+:ref:`PROJ_MEAN_RADIUS <PROJ_MEAN_RADIUS>`, which selects one of several possible
+representative radii. The second is :ref:`PROJ_AUX_LATITUDE <PROJ_AUX_LATITUDE>`, which
 converts geodetic latitudes into one of several possible auxiliary
 latitudes that are better suited for the spherical approximation. While
 both settings have default values to best approximate geodesic distances
@@ -1846,7 +1846,7 @@ two ways to ensure that *GMT* understands which unit you intend to use:
    **-X**\ 4\ **c** means the length being passed to the **-X** switch
    is 4 cm.
 
-#. Set the parameter **PROJ_LENGTH_UNIT** to the desired unit. Then,
+#. Set the parameter :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` to the desired unit. Then,
    all dimensions without explicit unit will be interpreted accordingly.
 
 The latter method is less secure as other users may have a different
@@ -1944,10 +1944,10 @@ ways in which this can be accomplished.
 #. If all you want to achieve is to change a few parameters during the
    execution of a single command but otherwise leave the environment
    intact, consider passing the parameter changes on the command line
-   via the ``-``\ *PAR=value* mechanism. For instance, to temporarily
+   via the **-**\ **-**\ *PAR=value* mechanism. For instance, to temporarily
    set the output format for floating points to have lots of decimals,
    say, for map projection coordinate output, append
-   ``-``\ **FORMAT_FLOAT_OUT**\ =%.16lg to the command in question.
+   **-**\ **-**\ :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>`\ =%.16lg to the command in question.
 
 #. Finally, *GMT* provides to possibility to override the settings only
    during the running of a single script, reverting to the original
@@ -2133,8 +2133,8 @@ Calendar time coordinates:
 Relative time coordinates:
     These are coordinates which count seconds, hours, days or years
     relative to a given epoch. A combination of the parameters
-    **TIME_EPOCH** and **TIME_UNIT** define the epoch and time unit.
-    The parameter **TIME_SYSTEM** provides a few shorthands for common
+    :ref:`TIME_EPOCH <TIME_EPOCH>` and :ref:`TIME_UNIT <TIME_UNIT>` define the epoch and time unit.
+    The parameter :ref:`TIME_SYSTEM <TIME_SYSTEM>` provides a few shorthands for common
     combinations of epoch and unit, like **j2000** for days since noon
     of 1 Jan 2000. The default relative time coordinate is that of UNIX
     computers: seconds since 1 Jan 1970. Denote relative time
@@ -2202,7 +2202,7 @@ Map frame and axes annotations: The **-B** option
 but most examples of its usage are actually quite simple. We distinguish
 between to sets of information: Frame settings and Axes parameters.  These
 are set separately by their own **-B** invocations; hence multiple **-B**
-specifications may be specified.  The frame settings covers things such
+specifications may be specified. The frame settings covers things such
 as which axes should be plotted, canvas fill, plot title, and what type
 of gridlines be drawn, whereas the Axes settings deal with annotation,
 tick, and gridline intervals, axes labels, and annotation units.
@@ -2253,7 +2253,7 @@ each axis.  To add a label to an axis, just append **+l**\ *label*.  If the
 axis annotation should have a leading text prefix (e.g., dollar sign for those
 plots of your net worth) you can append **+p**\ *prefix*.  For geographic maps
 the addition of degree symbols, etc. is automatic (and controlled by the GMT
-default setting **FORMAT_GEO_MAP**).  However, for other plots you can add
+default setting :ref:`FORMAT_GEO_MAP <FORMAT_GEO_MAP>`).  However, for other plots you can add
 specific units by adding **+u**\ *unit*.  If any of these text strings contain
 spaces or special UNIX characters you will need to enclose them in quotes.
 The *intervals* specification is a concatenated string made up of substrings of the form
@@ -2378,14 +2378,14 @@ attributes for grid lines and grid crosses, see Figure .
 Cartesian linear axes
 ^^^^^^^^^^^^^^^^^^^^^
 
-For non-geographic axes, the **MAP_FRAME_TYPE** setting is implicitly
+For non-geographic axes, the :ref:`MAP_FRAME_TYPE <MAP_FRAME_TYPE>` setting is implicitly
 set to plain. Other than that, cartesian linear axes are very similar to
 geographic axes. The annotation format may be controlled with the
-**FORMAT_FLOAT_OUT** parameter. By default, it is set to "%g", which
+:ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` parameter. By default, it is set to "%g", which
 is a C language format statement for floating point numbers [13]_, and
 with this setting the various axis routines will automatically determine
 how many decimal points should be used by inspecting the *stride*
-settings. If **FORMAT_FLOAT_OUT** is set to another format it will be
+settings. If :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` is set to another format it will be
 used directly (.e.g, "%.2f" for a fixed, two decimals format). Note that
 for these axes you may use the *unit* setting to add a unit string to
 each annotation (see Figure ).
@@ -2478,10 +2478,10 @@ The third example presents two years, annotating both the years and every 3rd mo
 
 Note that while the year annotation is centered on the 1-year interval,
 the month annotations must be centered on the corresponding month and
-*not* the 3-month interval. The **FORMAT_DATE_MAP** selects month name
-only and **FORMAT_TIME_PRIMARY_MAP** selects the 1-character, upper
+*not* the 3-month interval. The :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>` selects month name
+only and :ref:`FORMAT_TIME_PRIMARY_MAP <FORMAT_TIME_PRIMARY_MAP>` selects the 1-character, upper
 case abbreviation of month names using the current language (selected by
-**TIME_LANGUAGE**).
+:ref:`TIME_LANGUAGE <TIME_LANGUAGE>`).
 
 .. include:: fig_includes/fig_GMT_-B_time3.rst_
 
@@ -2525,7 +2525,7 @@ year. Only the primary axes information is specified.
 
 Our seventh and final example illustrates annotation of year-days.
 Unless we specify the formatting with a leading hyphen in
-**FORMAT_DATE_MAP** we get 3-digit integer days. Note that in order to
+:ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>` we get 3-digit integer days. Note that in order to
 have the two years annotated we need to allow for the annotation of
 small fractional intervals; normally such truncated interval must be at
 least half of a full interval.
@@ -2598,9 +2598,9 @@ to have *Landscape* orientation. If the long dimension of the paper
 parallels the *y*-axis the orientation is called *Portrait* (think of
 taking pictures with a camera and these words make sense). The default
 Landscape orientation is obtained by translating the origin in the
-*x*-direction (by the width of the chosen paper **PS_MEDIA)** and then
+*x*-direction (by the width of the chosen paper :ref:`PS_MEDIA <PS_MEDIA>`) and then
 rotating the coordinate system counterclockwise by 90. By default the
-**PS_MEDIA** is set to Letter (or A4 if SI is chosen); this value must
+:ref:`PS_MEDIA <PS_MEDIA>` is set to Letter (or A4 if SI is chosen); this value must
 be changed when using different media, such as 11" x 17" or large format
 plotters (Figure ).
 

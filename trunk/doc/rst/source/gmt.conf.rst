@@ -378,7 +378,7 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
 .. _GMT_VERBOSE:
 
 **GMT_VERBOSE**
-    (**\* -V**) Determines the level of verbosity used by **GMT**
+    (**-V**) Determines the level of verbosity used by **GMT**
     programs. Choose among 6 levels; each level adds to the verbosity of
     the lower levels: **q**\ uiet, **n**\ normal (errors and warnings),
     **c**\ ompatibility warnings, (v)erbose progress reports, (l)ong
@@ -386,44 +386,64 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
 
 .. _I/O Parameters:
 
+.. _IO_COL_SEPARATOR:
+
 **IO_COL_SEPARATOR**
     This setting determines what character will separate ASCII output
     data columns written by **GMT**. Choose from tab, space, comma, and
     none [tab].
+
+.. _IO_GRIDFILE_FORMAT:
+
 **IO_GRIDFILE_FORMAT**
     Default file format for grids, with optional scale, offset and
     invalid value, written as *ff*/*scale*/*offset*/*invalid*. The
     2-letter format indicator can be one of
-    [**abcegnrs**\ ][**bsifd**\ ]. See
+    [**abcegnrs**][**bsifd**]. See
     `grdreformat <grdreformat.html>`_ and Section 4.20 of the
     GMT Technical Reference and Cookbook for more information. The
     *scale* and *offset* modifiers may be left empty to select default
     values (scale = 1, offset = 0), or you may specify *a* for
     auto-adjusting the scale and/or offset of packed integer grids
-    (=*id/a* is a shorthand for =\ *id/a/a*). When *invalid* is omitted
+    (=\ *id/a* is a shorthand for =\ *id/a/a*). When *invalid* is omitted
     the appropriate value for the given format is used (NaN or largest
     negative). [nf].
+
+.. _IO_GRIDFILE_SHORTHAND:
+
 **IO_GRIDFILE_SHORTHAND**
     If true, all grid file names are examined to see if they use the
     file extension shorthand discussed in Section 4.17 of the **GMT**
     Technical Reference and Cookbook. If false, no filename expansion is
     done [false].
+
+.. _IO_HEADER:
+
 **IO_HEADER**
-    (**\* -h**) Specifies whether input/output ASCII files have header
+    (**-h**) Specifies whether input/output ASCII files have header
     record(s) or not [false].
+
+.. _IO_LONLAT_TOGGLE:
+
 **IO_LONLAT_TOGGLE**
-    (**\* -:**) Set if the first two columns of input and output files
+    (**-:**) Set if the first two columns of input and output files
     contain (latitude,longitude) or (y,x) rather than the expected
     (longitude,latitude) or (x,y). false means we have (x,y) both on
     input and output. true means both input and output should be (y,x).
     IN means only input has (y,x), while OUT means only output should be
     (y,x). [false].
+
+.. _IO_N_HEADER_RECS:
+
 **IO_N_HEADER_RECS**
     Specifies how many header records to expect if **-h** is used [0].
     Note: This will skip the specified number of records regardless of
     what they are.  Since any records starting with # is automatically
     considered a header you will only specify a non-zero number in order
     to skip headers that do not conform to that convention.
+
+.. _IO_NAN_RECORDS:
+
 **IO_NAN_RECORDS**
     Determines what happens when input records containing NaNs for *x*
     or *y* (and in some cases *z*) are read. Choose between **skip**,
@@ -433,6 +453,9 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     NaNs as well, but some will interpret these NaN records to indicate
     gaps in a series; programs may then use that information to detect
     segmentation (if applicable).
+
+.. _IO_NC4_CHUNK_SIZE:
+
 **IO_NC4_CHUNK_SIZE**
     Sets the default chunk size for the **lat** and **lon** dimension of
     the **z** variable. This produces netCDF version 4 files which can
@@ -444,6 +467,9 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     separated by a comma, or **a**\ uto for optimally chosen chunk sizes
     in the range [128,256). Set IO_NC4_CHUNK_SIZE to **c**\ lassic
     for classic netCDF. [auto]
+
+.. _IO_NC4_DEFLATION_LEVEL:
+
 **IO_NC4_DEFLATION_LEVEL**
     Sets the compression level for netCDF4 files upon output. This
     produces netCDF version 4 files which can only be read with the
@@ -452,6 +478,9 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     1 can dramatically improve performance and reduce the size of
     certain data. While higher compression levels further reduce the
     data size, they do so at the cost of extra processing time. [0]
+
+.. _IO_SEGMENT_MARKER:
+
 **IO_SEGMENT_MARKER**
     This holds the character we expect to indicate a segment header in
     an incoming ASCII data or text table [>]. If this marker should be
@@ -685,6 +714,8 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     Intermediate settings give something in between. Negative values (up
     to -2) are allowed as well [0].
 
+.. _PROJ_AUX_LATITUDE:
+
 **PROJ_AUX_LATITUDE**
     Only applies when geodesics are approximated by great circle
     distances on an equivalent sphere. Select from authalic, geocentric,
@@ -694,6 +725,8 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     also **PROJ_MEAN_RADIUS**.
 
 .. _Projection Parameters:
+
+.. _PROJ_ELLIPSOID:
 
 **PROJ_ELLIPSOID**
     The (case sensitive) name of the ellipsoid used for the map projections [WGS-84]. Choose among:
@@ -804,11 +837,17 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     as 1/72 inch (the *PostScript* definition), while it is often
     defined as 1/72.27 inch in the typesetting industry. There is no
     universal definition.
+
+.. _PROJ_MEAN_RADIUS:
+
 **PROJ_MEAN_RADIUS**
     Applies when geodesics are approximated by great circle distances on
     an equivalent sphere or when surface areas are computed. Select from
     mean (R_1), authalic (R_2), volumetric (R_3), meridional, or
     quadratic [authalic]. See also PROJ_MEAN_RADIUS.
+
+.. _PROJ_SCALE_FACTOR:
+
 **PROJ_SCALE_FACTOR**
     Changes the default map scale factor used for the Polar
     Stereographic [0.9996], UTM [0.9996], and Transverse Mercator [1]
@@ -817,6 +856,8 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
 
 .. _PostScript Parameters:
 
+.. _PS_CHAR_ENCODING:
+
 **PS_CHAR_ENCODING**
     (static) Names the eight bit character set being used for text in
     files and in command line parameters. This allows **GMT** to ensure
@@ -824,23 +865,38 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     plot.. Choose from Standard, Standard+, ISOLatin1, ISOLatin1+, and
     ISO-8859-x (where x is in the ranges [1,10] or [13,15]). See
     Appendix F for details [ISOLatin1+ (or Standard+)].
+
+.. _PS_COLOR_MODEL:
+
 **PS_COLOR_MODEL**
     Determines whether *PostScript* output should use RGB, HSV, CMYK, or
     GRAY when specifying color [rgb]. Note if HSV is selected it does
     not apply to images which in that case uses RGB. When selecting
     GRAY, all colors will be converted to gray scale using YIQ
     (television) conversion.
+
+.. _PS_COMMENTS:
+
 **PS_COMMENTS**
     (static) If true we will issue comments in the *PostScript* file
     that explain the logic of operations. These are useful if you need
     to edit the file and make changes; otherwise you can set it to false
     which yields a somewhat slimmer *PostScript* file [false].
+
+.. _PS_COPIES:
+
 **PS_COPIES**
     (**\* -c**) Number of plot copies to make [1].
+
+.. _PS_IMAGE_COMPRESS:
+
 **PS_IMAGE_COMPRESS**
     (static) Determines if *PostScript* images are compressed using the
     Run-Length Encoding scheme (rle), Lempel-Ziv-Welch compression
     (lzw), or not at all (none) [lzw].
+
+.. _PS_LINE_CAP:
+
 **PS_LINE_CAP**
     Determines how the ends of a line segment will be drawn. Choose
     among a *butt* cap (default) where there is no projection beyond the
@@ -848,6 +904,9 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     diameter equal to the line-width is drawn around the end points, and
     *square* cap where a half square of size equal to the line-width
     extends beyond the end of the path [butt].
+
+.. _PS_LINE_JOIN:
+
 **PS_LINE_JOIN**
     Determines what happens at kinks in line segments. Choose among a
     *miter* join where the outer edges of the strokes for the two
@@ -855,8 +914,10 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     frame; if the angle is too acute, a bevel join is used instead, with
     threshold set by **PS_MITER_LIMIT**), *round* join where a
     circular arc is used to fill in the cracks at the kinks, and *bevel*
-    join which is a miter join that is cut off so kinks are triangular
-    in shape [miter].
+    join which is a miter join that is cut off so kinks are triangular in shape [miter].
+
+.. _PS_MEDIA:
+
 **PS_MEDIA**
     Sets the physical format of the current plot paper [a4 (or letter)].
     The following formats (and their widths and heights in points) are
@@ -902,6 +963,8 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     may also specify WxH, where W and H are in points unless you append
     a unit to each dimension (**c**, **i**, **m** or **p** [Default]).
 
+.. _PS_MITER_LIMIT:
+
 **PS_MITER_LIMIT**
     Sets the threshold angle in degrees (integer in range [0,180]) used
     for mitered joins only. When the angle between joining line segments
@@ -909,19 +972,34 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     mitered. The default threshold is 35 degrees. Setting the threshold
     angle to 0 implies the *PostScript* default of about 11 degrees.
     Setting the threshold angle to 180 causes all joins to be beveled.
+
+.. _PS_PAGE_COLOR:
+
 **PS_PAGE_COLOR**
     Sets the color of the imaging background, i.e., the paper [white].
+
+.. _PS_PAGE_ORIENTATION:
+
 **PS_PAGE_ORIENTATION**
     (**\* -P**) Sets the orientation of the page. Choose portrait or
     landscape [landscape].
+
+.. _PS_SCALE_X:
+
 **PS_SCALE_X**
     Global x-scale (> 0) to apply to plot-coordinates before plotting.
     Normally used to shrink the entire output down to fit a specific
     height/width [1.0].
+
+.. _PS_SCALE_Y:
+
 **PS_SCALE_Y**
     Global y-scale (> 0) to apply to plot-coordinates before plotting.
     Normally used to shrink the entire output down to fit a specific
     height/width [1.0].
+
+.. _PS_TRANSPARENCY:
+
 **PS_TRANSPARENCY**
     Sets the transparency mode to use when preparing PS for rendering to
     PDF. Choose from Color, ColorBurn, ColorDodge, Darken, Difference,
