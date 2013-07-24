@@ -3312,7 +3312,7 @@ suitable for, say, `psxy <psxy.html>`_.
 
 In addition to these pen settings there are several
 *PostScript* settings that can affect the appearance of lines. These are
-controlled via the *GMT* defaults settings :ref:`PS_LINE_CAP <PS_LINE_CAP>`****,
+controlled via the *GMT* defaults settings :ref:`PS_LINE_CAP <PS_LINE_CAP>`,
 :ref:`PS_LINE_JOIN <PS_LINE_JOIN>`, and :ref:`PS_MITER_LIMIT <PS_MITER_LIMIT>`. They determine how a line
 segment ending is rendered, be it at the termination of a solid line or
 at the end of all dashed line segments making up a line, and how a
