@@ -56,20 +56,40 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
 
 .. _COLOR Parameters:
 
+.. _COLOR_BACKGROUND:
+
 **COLOR_BACKGROUND**
     Color used for the background of images (i.e., when z < lowest color
     table entry) [black].
+
+.. _COLOR_FOREGROUND:
+
 **COLOR_FOREGROUND**
     Color used for the foreground of images (i.e., when z > highest
     color table entry) [white].
+
+.. _COLOR_HSV_MAX_SATURATION:
+
 **COLOR_HSV_MAX_SATURATION**
     Maximum saturation (0-1) assigned for most positive intensity value [0.1].
+
+.. _COLOR_HSV_MIN_SATURATION:
+
 **COLOR_HSV_MIN_SATURATION**
     Minimum saturation (0-1) assigned for most negative intensity value [1.0].
+
+.. _COLOR_HSV_MAX_VALUE:
+
 **COLOR_HSV_MAX_VALUE**
     Maximum value (0-1) assigned for most positive intensity value [1.0].
+
+.. _COLOR_HSV_MIN_VALUE:
+
 **COLOR_HSV_MIN_VALUE**
     Minimum value (0-1) assigned for most negative intensity value [0.3].
+
+.. _COLOR_MODEL:
+
 **COLOR_MODEL**
     Selects in which color space a color palette should be interpolated.
     By default, color interpolation takes place directly on the RGB
@@ -79,6 +99,9 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     color palette file demands), **rgb** (force interpolation in RGB),
     **hsv** (force interpolation in HSV), **cmyk** (assumes colors are
     in CMYK but interpolates in RGB).
+
+.. _COLOR_NAN:
+
 **COLOR_NAN**
     Color used for the non-defined areas of images (i.e., where z == NaN) [127.5].
 
@@ -86,8 +109,14 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
 
 **DIR_GSHHG**
     Path to GSHHG files. Defaults to **$GMT_SHAREDIR**/coast if empty.
+
+.. _DIR_TMP:
+
 **DIR_TMP**
     Replaces the session temp dir **$GMT_TMPDIR** from the environment.
+
+.. _DIR_USER:
+
 **DIR_USER**
     Replaces the session user dir **$GMT_USERDIR** from the
     environment.
@@ -115,6 +144,8 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
 
 **FONT_LABEL**
     Font to use when plotting labels below axes [16p,Helvetica,black].
+
+.. _FONT_LOGO:
 
 **FONT_LOGO**
     Font to use for text plotted as part of the GMT time logo
@@ -646,13 +677,19 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
     logo/timestamp box relative to the current plots lower left corner
     of the plot [BL/-54p/-54p].
 
+.. _MAP_ORIGIN_X:
+
 **MAP_ORIGIN_X**
     (**-X**) Sets the x-coordinate of the origin on the paper for a
     new plot [1i]. For an overlay, the default offset is 0.
 
+.. _MAP_ORIGIN_Y:
+
 **MAP_ORIGIN_Y**
     (**-Y**) Sets the y-coordinate of the origin on the paper for a
     new plot [1i]. For an overlay, the default offset is 0.
+
+.. _MAP_POLAR_CAP:
 
 **MAP_POLAR_CAP**
     Controls the appearance of gridlines near the poles for all
