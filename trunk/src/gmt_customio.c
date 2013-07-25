@@ -1405,11 +1405,10 @@ int GMT_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 #ifdef HAVE_GDAL
 		GMT_Message(GMT->parent, GMT_TIME_NONE, 
 			"Surfer 7 format in GMT is read-only but you can do it via GDAL by appending '=gd:GS7BG' to the file name");  
-		return (GMT_NOERROR);
 #else
 		GMT_Message(GMT->parent, GMT_TIME_NONE, "As mentioned in the manual, Surfer 7 format in GMT is read-only");  
-		return (GMT_NOERROR);
 #endif
+		return (GMT_NOERROR);
 	}
 
 	header->nan_value = 1.70141e38;	/* Test value in Surfer grids */
