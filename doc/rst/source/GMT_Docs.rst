@@ -3067,16 +3067,16 @@ whose fields are all set to NaN; see Appendix [app:B] for complete documentation
 If filenames are given for reading, *GMT* programs will first look for
 them in the current directory. If the file is not found, the programs
 will look in two other directories pointed to by environmental
-parameters (if set). These are :ref:`GMT_USERDIR <GMT_USERDIR>` and :ref:`GMT_DATADIR <GMT_DATADIR>`,
+parameters (if set). These are **GMT_USERDIR** and **GMT_DATADIR**,
 and they may be set by the user to point to directories that contain
-data sets of general use. Normally, the :ref:`GMT_DATADIR <GMT_DATADIR>` directory (or
+data sets of general use. Normally, the **GMT_DATADIR** directory (or
 directories: add multiple paths by separating them with colons
 (semi-colons under Windows)) will hold data sets of a general nature
 (tables, grids), although a particular use is to make available large
 grids accessible via
 `grdraster <grdraster.html>`__ or the supplemental program
 `img2grd <supplements/imgsrc/img2grd.html>`__; see Appendix [app:A] for
-information about these supplemental programs. The :ref:`GMT_USERDIR <GMT_USERDIR>`
+information about these supplemental programs. The **GMT_USERDIR**
 directory may hold miscellaneous data sets more specific to the user;
 this directory also stores *GMT* defaults and other configuration files.
 Any directory that ends in a trailing slash (/) will be searched
@@ -3186,9 +3186,9 @@ process. These are :ref:`FORMAT_DATE_OUT <FORMAT_DATE_OUT>` and :ref:`FORMAT_CLO
 calendar-time coordinates, :ref:`FORMAT_GEO_OUT <FORMAT_GEO_OUT>` for geographical
 coordinates, and :ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` for generic floating point data.
 In addition, the user have control over how columns are separated via
-the :ref:`FIELD_SEPARATOR <FIELD_SEPARATOR>` parameter. Thus, as an example, it is possible
+the :ref:`IO_COL_SEPARATOR <IO_COL_SEPARATOR>` parameter. Thus, as an example, it is possible
 to create limited FORTRAN-style card records by setting
-:ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` to %7.3lf and **FIELD_SEPARATOR** to none
+:ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` to %7.3lf and :ref:`IO_COL_SEPARATOR <IO_COL_SEPARATOR>` to none
 [Default is tab].
 
 *PostScript* features
@@ -4577,7 +4577,7 @@ general, *x' = f(x,y,z)* and *y' = g(x,y,z)*, where
 *(x,y)* point on the chosen ellipsoid. The functions *f* and
 *g* can be quite nasty and we will refrain from presenting details
 in this document. The interested read is referred to *Snyder*
-[1987] [21]_. We will mostly be using the
+[1987] [20]_. We will mostly be using the
 `pscoast <pscoast.html>`_ command to demonstrate each of
 the projections. *GMT* map projections are grouped into four categories
 depending on the nature of the projection. The groups are
@@ -5071,7 +5071,7 @@ equator. A major navigational feature of the projection is that a line
 of constant azimuth is straight. Such a line is called a rhumb line or
 *loxodrome*. Thus, to sail from one point to another one only had to
 connect the points with a straight line, determine the azimuth of the
-line, and keep this constant course for the entire voyage [22]_. The
+line, and keep this constant course for the entire voyage [21]_. The
 Mercator projection has been used extensively for world maps in which
 the distortion towards the polar regions grows rather large, thus
 incorrectly giving the impression that, for example, Greenland is larger
@@ -5561,7 +5561,7 @@ cartographer Arthur H. Robinson in 1963, is a modified cylindrical
 projection that is neither conformal nor equal-area. Central meridian
 and all parallels are straight lines; other meridians are curved. It
 uses lookup tables rather than analytic expressions to make the world
-map "look" right [23]_. The scale is true along latitudes 38. The
+map "look" right [22]_. The scale is true along latitudes 38. The
 projection was originally developed for use by Rand McNally and is
 currently used by the National Geographic Society. To use it you must
 enter
@@ -5853,7 +5853,7 @@ number or a geographic coordinate string using the
 [+\ \|\ -]dd[:mm[:ss]][W:\ \|\ S\ \|\ N\ \|\ E\ \|\ w\ \|\ s\ \|\ n\ \|\ e]
 format. Thus, 12:30:44.5W, 17.5S, 1:00:05, and 200:45E are all valid
 input strings. On output, fields will be separated by the character
-given by the parameter **IO_COL_SEPARATOR**, which by default is a TAB.
+given by the parameter :ref:`IO_COL_SEPARATOR <IO_COL_SEPARATOR>`, which by default is a TAB.
 
 Optional segment header records
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -6923,10 +6923,10 @@ images (e.g., **-I** option in `grdimage <grdimage.html>`_) by changing the satu
 the intensity is non-zero, the color is either lightened or darkened
 depending on the illumination. The color is first converted to HSV (if
 necessary) and then darkened by moving (*sv*) toward
-(:ref:`COLOR_HSV_MIN_S <COLOR_HSV_MIN_S>`, :ref:`COLOR_HSV_MIN_V <COLOR_HSV_MIN_V>`) if the intensity is
-negative, or lightened by sliding (*sv*) toward
-(:ref:`COLOR_HSV_MAX_S <COLOR_HSV_MAX_S>`, :ref:`COLOR_HSV_MAX_V <COLOR_HSV_MAX_V>`) if the illumination is
-positive. The extremes of the *s* and *v* are defined in the
+(:ref:`COLOR_HSV_MIN_SATURATION <COLOR_HSV_MIN_SATURATION>`, :ref:`COLOR_HSV_MIN_VALUE <COLOR_HSV_MIN_VALUE>`)
+if the intensity is negative, or lightened by sliding (*sv*) toward
+(:ref:`COLOR_HSV_MAX_SATURATION <COLOR_HSV_MAX_SATURATION>`, :ref:`COLOR_HSV_MAX_VALUE <COLOR_HSV_MAX_VALUE>`)
+if the illumination is positive. The extremes of the *s* and *v* are defined in the
 ``gmt.conf`` file and are usually chosen so the corresponding points are nearly black
 (*s = 1*, *v = 0*) and white (*s = 0*, *v = 1*).
 The reason this works is that the HSV system allows movements in color
@@ -7526,7 +7526,7 @@ types are
   map projection.
 
   **l** Length, i.e., an additional length scale (in cm, inch, or point as
-  per **PROJ_LENGTH_UNIT**) in addition to the given symbol size.
+  per :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) in addition to the given symbol size.
 
   **o** Other, i.e., a numerical quantity to be passed to the custom symbol as is.
 
@@ -7906,12 +7906,12 @@ universally. These codes are:
 +f:
     Specifies the desired label font, including size or color. See
     `pstext <pstext.html>`_ for font names or numbers.
-    The default font is given by **FONT_ANNOT_PRIMARY**.
+    The default font is given by ref:`FONT_ANNOT_PRIMARY <FONT_ANNOT_PRIMARY>`.
 
 +g:
     Selects opaque rather than the default transparent text boxes. You
     may optionally append the color you want to fill the label boxes;
-    the default is the same as **PS_PAGE_COLOR**.
+    the default is the same as ref:`PS_PAGE_COLOR <PS_PAGE_COLOR>`.
 
 +j:
     Selects the justification of the label relative to the placement
@@ -8726,7 +8726,7 @@ Finally we show an example of a polygon file:
 
 .. [16]
    To keep *PostScript* files small, such comments are by default turned
-   off; see **PS_COMMENTS** to enable them.
+   off; see :ref:`PS_COMMENTS <PS_COMMENTS>` to enable them.
 
 .. [17]
    For an overview of color systems such as HSV, see Appendix [app:I].
@@ -8738,20 +8738,20 @@ Finally we show an example of a polygon file:
 .. [19]
    Requires building *GMT* with GDAL.
 
-.. [21]
+.. [20]
    Snyder, J. P., 1987, Map Projections A Working Manual, U.S.
    Geological Survey Prof. Paper 1395.
 
-.. [22]
+.. [21]
    This is, however, not the shortest distance. It is given by the great
    circle connecting the two points.
 
-.. [23]
+.. [22]
    Robinson provided a table of *y*-coordinates for latitudes
    every 5. To project values for intermediate latitudes one must
    interpolate the table. Different interpolants may result in slightly
    different maps. `GMT <http://gmt.soest.hawaii.edu>`_ uses the
-   interpolant selected by the parameter **GMT_INTERPOLANT** in the
+   interpolant selected by the parameter :ref:`GMT_INTERPOLANT <GMT_INTERPOLANT>` in the
    file.
 
 .. [24]
