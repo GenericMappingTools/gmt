@@ -1296,7 +1296,7 @@ int GMT_srf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	size_t n_expected;		/* Length of a row */
 	FILE *fp = NULL;		/* File pointer to data or pipe */
 	void *tmp = NULL;		/* Array pointer for reading in rows of data */
-	header->nan_value = 0.1701410e39;	/* Test value in Surfer grids */
+	header->nan_value = 1.70141e38;	/* Test value in Surfer grids */
 
 	if (!strcmp (header->name, "=")) {	/* Read from pipe */
 #ifdef SET_IO_MODE
@@ -1401,7 +1401,7 @@ int GMT_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	void *tmp = NULL;		/* Array pointer for writing in rows of data */
 	struct srf_header6 h;
 
-	header->nan_value = 0.1701410e39;	/* Test value in Surfer grids */
+	header->nan_value = 1.70141e38;	/* Test value in Surfer grids */
 
 	if (!strcmp (header->name, "=")) {	/* Write to pipe */
 #ifdef SET_IO_MODE
@@ -1432,7 +1432,7 @@ int GMT_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		for (i = first_col, i2 = pad[XLO]; i <= last_col; i++, i2++) {
 			kk = ij + i2;
 			if (GMT_is_fnan (grid[kk]))
-				grid[ij] = (float)header->nan_value;
+				grid[kk] = (float)header->nan_value;
 			else {
 				header->z_min = MIN (header->z_min, (double)grid[kk]);
 				header->z_max = MAX (header->z_max, (double)grid[kk]);
