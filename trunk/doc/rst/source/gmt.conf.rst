@@ -158,6 +158,8 @@ fonts can be found in the `gmt <gmt.html>`__ man page.
 
 .. _FORMAT Parameters:
 
+.. _FORMAT_CLOCK_IN:
+
 **FORMAT_CLOCK_IN**
     Formatting template that indicates how an input clock string is
     formatted. This template is then used to guide the reading of clock
