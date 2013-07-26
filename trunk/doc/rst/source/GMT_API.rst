@@ -2124,7 +2124,11 @@ previously. Again, the ``mode`` parameter is specific to each data type:
     use GMT_GRID_ROW_BY_ROW_MANUAL instead.
 
 If successful the function returns FALSE (0); otherwise we return TRUE
-(1) and set ``API->error`` to reflect to cause.
+(1) and set ``API->error`` to reflect to cause.  Note: If ``method`` is
+GMT_IS_FILE, ``family`` is GMT_IS_GRID, and the filename implies a change
+from NaN to another value then the grid is modified accordingly.  If you
+continue to use that grid after writing please be aware that the changes
+you specified were applied to the grid.
 
 Exporting a data set to memory
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
