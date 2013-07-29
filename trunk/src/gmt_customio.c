@@ -1749,6 +1749,13 @@ int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	to_GDALW->nan_value = header->nan_value;
 	to_GDALW->command = header->command;
 
+	/* Lazy implementation of nodata value update as it doesn't check and apply on a eventual sub-region on output only */
+	if (!GMT_is_fnan (header->nan_value)) {
+		for (ij = 0; ij < header->mx * header->my; ij++)
+			if (GMT_is_fnan (grid[ij]))
+				grid[ij] = header->nan_value;
+	}
+
 	if (!type[0] || GMT_strlcmp(type, "float32")) {
 		/* We have to shift the grid pointer in order to use the GDALRasterIO ability to extract a subregion. */
 		/* See: osgeo-org.1560.n6.nabble.com/gdal-dev-writing-a-subregion-with-GDALRasterIO-td4960500.html */
