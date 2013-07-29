@@ -9,7 +9,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**grdproject** *in\_grdfile* **-G**\ *out\_grdfile* **-J**\ *parameters*
+**grdproject** *in_grdfile* **-G**\ *out_grdfile* **-J**\ *parameters*
 [ **-A**\ [**c\|i\|p\|e\|f\|k\|M\|n\|u**\ ] ] [ **-C**\ [*dx/dy*] ] [
 **-D**\ *xinc*\ [*unit*][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
 ] [ **-E**\ *dpi* ] [ **-I** ] [ **-Mc**\ \|\ **i**\ \|\ **p** ] [
@@ -45,9 +45,10 @@ than that implied by the extent of the grid file.
 Required Arguments
 ------------------
 
-*in\_grdfile*
+*in_grdfile*
     2-D binary grid file to be transformed. (See GRID FILE FORMATS below.)
-**-G**\ *out\_grdfile*
+
+**-G**\ *out_grdfile*
     Specify the name of the output grid file. (See GRID FILE FORMATS below.) 
 
 .. include:: explain_-J.rst_
@@ -61,25 +62,30 @@ Optional Arguments
     **f** (foot), **k** (km), **M** (statute mile), **n** (nautical
     mile), **u** (US survey foot), **i** (inch), **c** (cm), or **p**
     (point). Without **-A**, the output (or input, see **-I**) are in
-    the units specified by **PROJ\_LENGTH\_UNIT** (but see **-M**).
+    the units specified by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` (but see **-M**).
+
 **-C**\ [*dx/dy*\ ]
     Let projected coordinates be relative to projection center [Default
     is relative to lower left corner]. Optionally, add offsets in the
     projected units to be added (or subtracted when **-I** is set) to
     (from) the projected coordinates, such as false eastings and
     northings for particular projection zones [0/0].
+
 **-D**\ *xinc*\ [*unit*\ ][\ **=**\ \|\ **+**][/\ *yinc*\ [*unit*\ ][\ **=**\ \|\ **+**]]
     Set the grid spacing for the new grid. Append **m** for arc minute,
     **s** for arc second. If neither **-D** nor **-E** are set then we
     select the same number of output nodes as there are input nodes.
+
 **-E**\ *dpi*
     Set the resolution for the new grid in dots per inch.
+
 **-I**
     Do the Inverse transformation, from rectangular to geographical.
+
 **-Mc**\ \|\ **i**\ \|\ **p**
     Append **c**, **i**, or **p** to indicate that cm, inch, or point
     should be the projected measure unit [Default is set by
-    **PROJ\_LENGTH\_UNIT** in `gmt.conf <gmt.conf.html>`_]. Cannot be used with **-A**.
+    :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` in `gmt.conf <gmt.conf.html>`_]. Cannot be used with **-A**.
     
 .. |Add_-R| replace:: You may ask to project only
     a subset of the grid by specifying a smaller input *w/e/s/n* region
@@ -117,7 +123,7 @@ To inversely transform the file topo_tm.nc back onto a geographical grid, use
 This assumes, of course, that the coordinates in topo_tm.nc were
 created with the same projection parameters.
 
-To inversely transform the file topo\_utm.nc (which is in UTM meters)
+To inversely transform the file topo_utm.nc (which is in UTM meters)
 back to a geographical grid we specify a one-to-one mapping with meter
 as the measure unit:
 

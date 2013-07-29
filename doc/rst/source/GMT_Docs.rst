@@ -240,8 +240,7 @@ Jan 1, 2013. Several new programs have been added; some have been
 promoted from earlier supplements:
 
 `gmt2kml <gmt2kml.html>`_
-    A `psxy <psxy.html>`_ -like tool to produce KML
-    overlays for Google Earth.
+    A `psxy <psxy.html>`_ -like tool to produce KML overlays for Google Earth.
 
 `gmtsimplify <gmtsimplify.html>`_
     A line-reduction tool for coastlines and similar lines.
@@ -312,11 +311,11 @@ Below is a list of improvements that affect several
 
 #. There is new *GMT*  defaults
    parameters that control which algorithms to use for Fourier
-   transforms (GMT_FFT) and triangulation (GMT_TRIANGULATE).
+   transforms (:ref:`GMT_FFT <GMT_FFT>`) and triangulation (:ref:`GMT_TRIANGULATE <GMT_TRIANGULATE>`).
 
 #. Great circle distance approximations can now be fine-tuned via new
    *GMT* default parameters
-   PROJ_MEAN_RADIUS and PROJ_AUX_LATITUDE. Geodesics are now even
+   :ref:`PROJ_MEAN_RADIUS <PROJ_MEAN_RADIUS>` and :ref:`PROJ_AUX_LATITUDE <PROJ_AUX_LATITUDE>`. Geodesics are now even
    more accurate by using the Vincenty [1975] algorithm instead of
    Rudoe's method.
 
@@ -329,7 +328,7 @@ Below is a list of improvements that affect several
    and b) `ps2raster <ps2raster.html>`_ handles it exactly.
 
 #. The **-B** option can now handle irregular and custom annotations
-   (see Section [sec:custaxes]). It also has an automatic mode which
+   (see Section `Custom axes`_). It also has an automatic mode which
    will select optimal intervals. The 3-D base maps can now have
    horizontal gridlines on xz and yz back walls.
 
@@ -357,7 +356,7 @@ Below is a list of improvements that affect several
    outline pens. In the past, only
    `pstext <pstext.html>`_ could plot outline fonts via
    **-S**\ *pen*. Now, any text can be an outline text by manipulating
-   the corresponding FONT defaults (e.g., **FONT_TITLE**).
+   the corresponding FONT defaults (e.g., :ref:`FONT_TITLE <FONT_TITLE>`).
 
 #. All color or fill specifications may append @\ *transparency* to
    change the PDF transparency level for that item. See **-t** for
@@ -462,8 +461,7 @@ Here is a list of recent enhancements to specific programs:
    specify pen for vector (in **-C**). Added **-Zu** to set all radii to
    unity (i.e., for analysis of angles only).
 
-#. `psscale <psscale.html>`_ has a new option **-T**
-   that paints a rectangle behind the color bar.
+#. `psscale <psscale.html>`_ has a new option **-T** that paints a rectangle behind the color bar.
 
 #. `pstext <pstext.html>`_ has enhanced **-DJ** option
    to shorten diagonal offsets by :math:`\sqrt{2}` to maintain the same
@@ -486,17 +484,14 @@ Here is a list of recent enhancements to specific programs:
    then the input can simply be *x y text*.
 
 #. `triangulate <triangulate.html>`_ now offers **-S**
-   to write triangle polygons and can handle 2-column input if **-Z** is
-   given.
+   to write triangle polygons and can handle 2-column input if **-Z** is given.
 
-#. `xyz2grd <xyz2grd.html>`_ now also offers **-Am**
-   (mean, the default) and **-Ar** (rms).
+#. `xyz2grd <xyz2grd.html>`_ now also offers **-Am** (mean, the default) and **-Ar** (rms).
 
 Several supplements have new feature as well:
 
 #. `mgd77/mgd77convert.c <supplements/mgd77/mgd77convert.html>`_
-   added **-C** option to assemble \*.mgd77 files from \*.h77/\*.a77
-   pairs.
+   added **-C** option to assemble \*.mgd77 files from \*.h77/\*.a77 pairs.
 
 #. The spotter programs can now read Gplates rotations directly as well
    as write this format. Now,
@@ -537,7 +532,7 @@ correctly with a warning under compatibility mode:
 #. `GMT <http://gmt.soest.hawaii.edu>`_ **default names**: We have
    organized the default parameters logically by group and renamed
    several to be easier to remember and to group. Old and new names can
-   be found in Tables [tbl:obsoletedefs1] and [tbl:obsoletedefs2]. In
+   be found in Tables :ref:`obsolete1 <tbl-obsoletedefs1>` and :ref:`obsolete2 <tbl-obsoletedefs2>`. In
    addition, a few defaults are no longer recognized, such as N_COPIES,
    PS_COPIES, DOTS_PR_INCH, GMT_CPTDIR, PS_DPI, and PS_EPS,
    TRANSPARENCY. This also means the old common option **-c** for
@@ -553,8 +548,7 @@ correctly with a warning under compatibility mode:
 #. **Ellipsoids**: Assigning :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>` a file name is
    deprecated, use comma-separated parameters *a, :math:`f^{-1}`* instead.
 
-#. **Custom symbol macros:** Circle macro symbol **C** is deprecated;
-   use **c** instead.
+#. **Custom symbol macros:** Circle macro symbol **C** is deprecated; use **c** instead.
 
 #. **Map scale**: Used by `psbasemap <psbasemap.html>`_
    and others. Here, the unit **m** is deprecated; use **M** for statute miles.
@@ -757,6 +751,8 @@ correctly with a warning under compatibility mode:
 #. `x2sys/x2sys_datalist <supplements/x2sys/x2sys_datalist.html>`_:
    The unit **m** is deprecated; use **M** for statute miles.
 
+.. _tbl-obsoletedefs1:
+
 +---------------------------------+-----------------------------------------+
 | **Old Name**                    | **New Name**                            |
 +=================================+=========================================+
@@ -849,7 +845,7 @@ correctly with a warning under compatibility mode:
 | **TICK_PEN**                    | **MAP_TICK_PEN_PRIMARY\|SECONDARY**     |
 +---------------------------------+-----------------------------------------+
 
-[tbl:obsoletedefs1]
+.. _tbl-obsoletedefs2:
 
 +--------------------------+----------------------------+
 | **Old Name**             | **New Name**               |
@@ -910,8 +906,6 @@ correctly with a warning under compatibility mode:
 +--------------------------+----------------------------+
 | **INTERPOLANT**          | **GMT_INTERPOLANT**        |
 +--------------------------+----------------------------+
-
-[tbl:obsoletedefs2]
 
 Introduction
 ============
@@ -1137,7 +1131,7 @@ GMT summary
 The following is a summary of all the programs supplied with *GMT* and
 a very short description of their purpose. For more details, see the
 individual *UNIX* manual pages or the online web documentation. For a
-listing sorted by program purpose, see Section [sec:purpose].
+listing sorted by program purpose, see Section `GMT quick reference`_.
 
 +-----------------------------------------------------+---------------------------------------------------------------------+
 |                                                     |                                                                     |
@@ -1300,7 +1294,7 @@ listing sorted by program purpose, see Section [sec:purpose].
 GMT quick reference
 -------------------
 
-[sec:purpose] Instead of an alphabetical listing, this section
+Instead of an alphabetical listing, this section
 contains a summary sorted by program purpose. Also included is a quick
 summary of the standard command line options and a breakdown of the
 **-J** option for each of the over 30 projections available in *GMT*.
@@ -1737,6 +1731,8 @@ scripts, and remove any uncertainty as to what unit you thought you wanted.
 Distance units
 ~~~~~~~~~~~~~~
 
+.. _tbl-distunits:
+
 +---------+-------------------+---------+------------------+
 +=========+===================+=========+==================+
 | **d**   | Degree of arc     | **M**   | Statute mile     |
@@ -1750,14 +1746,12 @@ Distance units
 | **m**   | Minute of arc     |         |                  |
 +---------+-------------------+---------+------------------+
 
-[tbl:distunits]
-
 For Cartesian data and scaling the data units do not normally matter
 (they could be kg or Lumens for all we know) and are never entered.
 Geographic data are different as distances can be specified in a variety
 of ways. *GMT* programs that accept actual Earth length scales like
 search radii or distances can therefore handle a variety of units. These
-choices are listed in Table [tbl:distunits]; simply append the desired
+choices are listed in Table :ref:`distunits <tbl-distunits>`; simply append the desired
 unit to the distance value you supply. A value without a unit suffix
 will be consider to be in meters. For example, a distance of 30 nautical
 miles should be given as 30\ **n**.
@@ -1855,8 +1849,6 @@ recommend you always supply the desired unit explicitly.
 
 GMT defaults
 ------------
-
-[sec:gmt.conf]
 
 Overview and the gmt.conf file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1984,11 +1976,13 @@ Standardized command line options
 
 Most of the programs take many of the same arguments like those related
 to setting the data region, the map projection, etc. The 24 switches in
-Table [tbl:switches] have the same meaning in all the programs (although
+Table :ref:`switches <tbl-switches>` have the same meaning in all the programs (although
 some programs may not use all of them). These options will be described
 here as well as in the manual pages, as is vital that you understand how
 to use these options. We will present these options in order of
 importance (some are use a lot more than others).
+
+.. _tbl-switches:
 
 +----------+--------------------------------------------------------------------+
 +==========+====================================================================+
@@ -2041,8 +2035,6 @@ importance (some are use a lot more than others).
 | **-:**   | Assume input geographic data are (*lat,lon*) and not (*lon,lat*)   |
 +----------+--------------------------------------------------------------------+
 
-[tbl:switches]
-
 Data domain or map region: The **-R** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -2058,14 +2050,13 @@ may be specified in one of three ways (Figure ):
    parallels poor choices for map boundaries. Here, we instead specify
    the lower left corner and upper right corner geographic coordinates,
    followed by the suffix **r**. This form guarantees a rectangular map
-   even though lines of equal longitude and latitude are not straight
-   lines.
+   even though lines of equal longitude and latitude are not straight lines.
 
 #. **-R**\ *gridfile*. This will copy the domain settings found for the
    grid in specified file. Note that depending on the nature of the
    calling program, this mechanism will also set grid spacing and
    possibly the grid registration (see
-   Section [sec:grid\ :sub:`r`\ egistration]).
+   Section [sec:grid_registration]).
 
 .. include:: fig_includes/fig_GMT_-R.rst_
 
@@ -2108,7 +2099,7 @@ Projected coordinates:
     coordinates for the lower left and upper right corners. This form is
     convenient when you want to specify a region directly in the
     projected units (e.g., UTM meters). For allowable units, see
-    Table [tbl:distunits].
+    Table :ref:`distunits <tbl-distunits>`.
 
 Calendar time coordinates:
     These are absolute time coordinates referring to a Gregorian or ISO
@@ -2140,8 +2131,7 @@ Relative time coordinates:
     computers: seconds since 1 Jan 1970. Denote relative time
     coordinates by appending the optional lower case **t** after the
     value. When it is otherwise apparent that the coordinate is relative
-    time (for example by using the **-f** switch), the **t** can be
-    omitted.
+    time (for example by using the **-f** switch), the **t** can be omitted.
 
 Other coordinates:
     These are simply any coordinates that are not related to geographic
@@ -2261,10 +2251,12 @@ The *intervals* specification is a concatenated string made up of substrings of 
 [**t**]\ *stride*\ [*phase*][**u**].
 
 The **t** flag sets the axis
-item of interest; the available items are listed in Table [tbl:inttype].
+item of interest; the available items are listed in Table :ref:`inttype <tbl-inttype>`.
 Normally, equidistant annotations occur at multiples of *stride*; you
 can phase-shift this by appending *phase*, which can be a positive or
 negative number.
+
+.. _tbl-inttype:
 
 +------------+-------------------------------------+
 | **Flag**   | **Description**                     |
@@ -2275,8 +2267,6 @@ negative number.
 +------------+-------------------------------------+
 | **g**      | Grid line spacing                   |
 +------------+-------------------------------------+
-
-[tbl:inttype]
 
 Note that the appearance of certain time annotations (month-, week-, and
 day-names) may be affected by the **TIME_LANGUAGE**,
@@ -2297,9 +2287,11 @@ spacing; unless **g** is used in consort with **a**, then the grid lines
 are spaced the same as the annotations.
 
 The unit flag **u** can take on one of 18 codes; these are listed in
-Table [tbl:units]. Almost all of these units are time-axis specific.
+Table :ref:`units <tbl-units>`. Almost all of these units are time-axis specific.
 However, the **m** and **s** units will be interpreted as arc minutes
 and arc seconds, respectively, when a map projection is in effect.
+
+.. _tbl-units:
 
 +------------+------------------+--------------------------------------------------------------------------+
 | **Flag**   | **Unit**         | **Description**                                                          |
@@ -2342,8 +2334,6 @@ and arc seconds, respectively, when a map projection is in effect.
 +------------+------------------+--------------------------------------------------------------------------+
 | **s**      | seconds          | Plot as 2-digit integer (0-60)                                           |
 +------------+------------------+--------------------------------------------------------------------------+
-
-[tbl:units]
 
 As mentioned, there may be two levels of annotations. Here, "primary" refers to the
 annotation that is closest to the axis (this is the primary annotation),
@@ -2540,7 +2530,7 @@ least half of a full interval.
 Custom axes
 ^^^^^^^^^^^
 
-[sec:custaxes] Irregularly spaced annotations or annotations based on
+Irregularly spaced annotations or annotations based on
 look-up tables can be implemented using the *custom* annotation
 mechanism. Here, we given the **c** (custom) type to the **-B** option
 followed by a filename that contains the annotations (and
@@ -2645,7 +2635,7 @@ error and warning messages. This is the default or can be selected by
 using **-Vn**. If compiled with backward-compatibility support, the
 default is **-Vc**, which includes warnings about deprecated usage.
 Finally, **-Vq** can be used to run without any warnings or errors. This
-option can also be set by specifying the default **GMT_VERBOSE**, as
+option can also be set by specifying the default :ref:`GMT_VERBOSE <GMT_VERBOSE>`, as
 **quiet**, **normal**, **compat**, **verbose**, **long_verbose**, or
 **debug**, in order of increased verbosity.
 
@@ -2793,7 +2783,7 @@ coordinates). A special use of **-f** is to select **-fp**\ [*unit*],
 which *requires* **-J** and lets you use *projected* map coordinates
 (e.g., UTM meters) as data input. Such coordinates are automatically
 inverted to longitude, latitude during the data import. Optionally,
-append a length *unit* (see Table [tbl:distunits]) [meter]. For more
+append a length *unit* (see Table :ref:`distunits <tbl-distunits>`) [meter]. For more
 information, see Sections [sec:input data] and [sec:output data].
 
 Data gap detection: The **-g** option
@@ -3229,8 +3219,10 @@ option argument, with commas separating the given attributes, e.g.,
     respectively. Minimum-thickness pens can be achieved by giving zero
     width, but the result is device-dependent. Finally, a few predefined
     pen names can be used: default, faint, and {thin, thick,
-    fat}[er\ \|\ est], and obese. Table [tbl:pennames] shows this
+    fat}[er\ \|\ est], and obese. Table :ref:`pennames <tbl-pennames>` shows this
     list and the corresponding pen widths.
+
+.. _tbl-pennames:
 
     +------------+---------+------------+--------+
     +============+=========+============+========+
@@ -3246,8 +3238,6 @@ option argument, with commas separating the given attributes, e.g.,
     +------------+---------+------------+--------+
     | thick      | 1.0p    | obese      | 18p    |
     +------------+---------+------------+--------+
-
-    [tbl:pennames]
 
     The *color* can be specified in five different ways:
 
@@ -3290,8 +3280,10 @@ option argument, with commas separating the given attributes, e.g.,
     default style units are points, but can also be explicitly specified
     in cm, inch, or points (see *width* discussion above).
 
-Table [tbl:penex] contains additional examples of pen specifications
+Table :ref:`penex <tbl-penex>` contains additional examples of pen specifications
 suitable for, say, `psxy <psxy.html>`_.
+
+.. _tbl-penex:
 
 +-------------------------------+-----------------------------------------------------+
 +===============================+=====================================================+
@@ -3307,8 +3299,6 @@ suitable for, say, `psxy <psxy.html>`_.
 +-------------------------------+-----------------------------------------------------+
 | **-W**\ faint,100/0/0/0,..-   | Very thin, cyan (in c/m/y/k), dot-dot-dashed line   |
 +-------------------------------+-----------------------------------------------------+
-
-[tbl:penex]
 
 In addition to these pen settings there are several
 *PostScript* settings that can affect the appearance of lines. These are
@@ -3380,7 +3370,9 @@ Should that occur we recommend that you use a regular gray-shade fill
 instead of the patterns. Installing more memory in your printer *may or
 may not* solve the problem!
 
-Table [tbl:fillex] contains a few examples of fill specifications.
+Table :ref:`fillex <tbl-fillex>` contains a few examples of fill specifications.
+
+.. _tbl-fillex:
 
 +---------------------------+-----------------------------------------------------+
 +===========================+=====================================================+
@@ -3402,8 +3394,6 @@ Table [tbl:fillex] contains a few examples of fill specifications.
 +---------------------------+-----------------------------------------------------+
 | **-Gp**\ 100/marble.ras   | Using user image of marble as the fill at 100 dpi   |
 +---------------------------+-----------------------------------------------------+
-
-[tbl:fillex]
 
 Specifying Fonts
 ----------------
@@ -3654,10 +3644,12 @@ sequences that allow the user to temporarily switch to the symbol font,
 turn on sub- or superscript, etc., within words. These conditions are
 toggled on/off by the escape sequence @\ **x**, where **x** can be one
 of several types. The escape sequences recognized in *GMT* are listed in
-Table [tbl:escape]. Only one level of sub- or superscript is supported.
+Table :ref:`escape <tbl-escape>`. Only one level of sub- or superscript is supported.
 Note that under Windows the percent symbol indicates a batch variable,
 hence you must use two percent-signs for each one required in the escape
 sequence for font switching.
+
+.. _tbl-escape:
 
 +-------------------+----------------------------------------------------------------+
 +===================+================================================================+
@@ -3682,10 +3674,8 @@ sequence for font switching.
 | @@                | Prints the @ sign itself                                       |
 +-------------------+----------------------------------------------------------------+
 
-[tbl:escape]
+Shorthand notation for a few special European characters has also been added:
 
-Shorthand notation for a few special European characters has also been
-added (Table [tbl:scand]):
 
 +----------+------------+----------+------------+
 | *Code*   | *Effect*   | *Code*   | *Effect*   |
@@ -3704,8 +3694,6 @@ added (Table [tbl:scand]):
 +----------+------------+----------+------------+
 | @s       | ß          |          |            |
 +----------+------------+----------+------------+
-
-[tbl:scand]
 
 *PostScript* fonts used in *GMT* may be re-encoded to include several
 accented characters used in many European languages. To access these,
@@ -3731,11 +3719,13 @@ rectangle surrounding the text will not work for strings with escape
 sequences. A chart of characters and their octal codes is given in
 Appendix [app:F].
 
+.. _grid-file-format:
+
 Grid file format specifications
 -------------------------------
 
 *GMT* has the ability to read and write grids using
-more than one grid file format (see Table [tbl:grdformats] for supported
+more than one grid file format (see Table :ref:`grdformats <tbl-grdformats>` for supported
 format and their IDs). For reading, *GMT* will automatically determine
 the format of grid files, while for writing you will normally have to
 append *=ID* to the filename if you want *GMT* to use a different format
@@ -3759,6 +3749,8 @@ read/write functions and link them with the *GMT* library to extend the
 number of predefined formats. Technical information on this topic can be
 found in the source file ``gmtcustom_io.c``. Users who are considering this approach
 should contact the *GMT* team.
+
+.. _tbl-grdformats:
 
 +----------+---------------------------------------------------------------+
 | **ID**   | **Explanation**                                               |
@@ -3819,8 +3811,6 @@ should contact the *GMT* team.
 +----------+---------------------------------------------------------------+
 | gd       | Import/export via GDAL [19]_                                  |
 +----------+---------------------------------------------------------------+
-
-[tbl:grdformats]
 
 Because some formats have limitations on the range of values they can
 store it is sometimes necessary to provide more than simply the name of
@@ -3940,7 +3930,7 @@ the coordinates of the grid passed to such programs:
 -  You have a Cartesian grid but the units are not meters (e.g., they
    may perhaps be in km or miles). In this case you may append the file
    modifier **+u**\ *unit*, where *unit* is one of non-arc units listed
-   in Table [tbl:distunits]. For example, reading in the grid (which has
+   in Table :ref:`distunits <tbl-distunits>`. For example, reading in the grid (which has
    distance units of km) and converting them to meters is done by
    specifying the filename as *filename*\ **+u**\ k. On output, any derived grids will revert
    to their original units *unless* you specify another unit modifier to
@@ -4609,7 +4599,7 @@ the option to use the abbreviations used by the **Proj4** mapping
 package. Since some of the *GMT* projections are not in **Proj4**, we
 invented some of our own as well. For a full list of both the old 1- and
 2-letter codes, as well as the **Proj4**-equivalents see the quick
-reference cards in Section [sec:purpose]. For example, **-JM**\ 15c and
+reference cards in Section `GMT quick reference`_. For example, **-JM**\ 15c and
 **-JMerc**\ /15c have the same meaning.
 
 Conic projections
@@ -5312,7 +5302,9 @@ obtained by running the command:
 Different relative scalings of longitudes and latitudes can be obtained
 by selecting a standard parallel different from the equator. Some
 selections for standard parallels have practical properties as shown in
-Table [tbl:JQ].
+Table :ref:`JQ <tbl-JQ>`.
+
+.. _tbl-JQ:
 
 +-----------------------------------------------------+--------+
 +=====================================================+========+
@@ -5328,8 +5320,6 @@ Table [tbl:JQ].
 +-----------------------------------------------------+--------+
 | Plate Carrée, Simple Cylindrical, Plain/Plane       | 0      |
 +-----------------------------------------------------+--------+
-
-[tbl:JQ]
 
 Cylindrical equal-area projections (**-Jy** **-JY**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5347,8 +5337,9 @@ straight lines. The requirements to define this projection are:
 
 While you may choose any value for the standard parallel and obtain your
 own personal projection, there are seven choices of standard parallels
-that result in known (or named) projections. These are listed in
-Table [tbl:JY].
+that result in known (or named) projections. These are listed in Table :ref:`JY <tbl-JY>`.
+
+.. _tbl-JY:
 
 +-------------------+---------------------+
 +===================+=====================+
@@ -5366,8 +5357,6 @@ Table [tbl:JY].
 +-------------------+---------------------+
 | Lambert           | 0                   |
 +-------------------+---------------------+
-
-[tbl:JY]
 
 For instance, a world map centered on the 35E meridian using the Behrman
 projection (Figure [fig:GMT:sub:`g`\ eneral\ :sub:`c`\ yl]) can be
@@ -5432,7 +5421,9 @@ parallels, equidistant from the equator. The projections are defined by:
 
 Some of the selections of the standard parallel are named for the
 cartographer or publication that popularized the projection
-(Table [tbl:JCylstere]).
+(Table :ref:`JCylstere <tbl-JCylstere>`).
+
+.. _tbl-JCylstere:
 
 +---------------------------------------------------------+-------------+
 +=========================================================+=============+
@@ -5446,8 +5437,6 @@ cartographer or publication that popularized the projection
 +---------------------------------------------------------+-------------+
 | Braun's cylindrical                                     | 0           |
 +---------------------------------------------------------+-------------+
-
-[tbl:JCylstere]
 
 A map of the world, centered on the Greenwich meridian, using the Gall's
 stereographic projection (standard parallel is 45,
@@ -5930,9 +5919,11 @@ However, since CF-1.5 has more general application than COARDS, not all
 CF-1.5 compliant netCDF files can be read by *GMT*.
 
 The netCDF grid file in *GMT* has several attributes (See
-Table [tbl:netcdf-format]) to describe the content. The routine that
+Table :ref:`netcdf-format <tbl-netcdf-format>`) to describe the content. The routine that
 deals with netCDF grid files is sufficiently flexible so that grid files
 slightly deviating from the standards used by *GMT* can also be read.
+
+.. _tbl-netcdf-format:
 
 +----------------------+--------------------------------------------------------------------+
 | **Atributte**        |      **Description**                                               |
@@ -5970,8 +5961,6 @@ slightly deviating from the standards used by *GMT* can also be read.
 | \_FillValue          | Value associated with missing or invalid data points; if absent an |
 | (or missing_value)   | appropriate default value is assumed, depending on data type.      |
 +----------------------+--------------------------------------------------------------------+
-
-[tbl:netcdf-format]
 
 By default, the first 2-dimensional variable in a netCDF file will by
 read as the *z* variable and the coordinate axes *x* and
@@ -6092,7 +6081,7 @@ strongly recommended. The file starts with a header of 892 bytes
 containing a number of attributes defining the content. The
 `grdedit <grdedit.html>`_ utility program will allow you
 to edit parts of the header of an existing grid file. The attributes
-listed in Table [tbl:grdheader] are contained within the header record
+listed in Table :ref:`grdheader <tbl-grdheader>` are contained within the header record
 in the order given (except the *z*-array which is not part of the
 header structure, but makes up the rest of the file). As this header was
 designed long before 64-bit architectures became available, the jump
@@ -6100,6 +6089,8 @@ from the first three integers to the subsequent doubles in the structure
 does not occur on a 16-byte alignment. While *GMT* handles the reading
 of these structures correctly, enterprising programmers must take care
 to read this header correctly (see our code for details).
+
+.. _tbl-grdheader:
 
 +---------------------------------+--------------------------------------------------------+
 | **Parameter**                   | **Description**                                        |
@@ -6145,8 +6136,6 @@ to read this header correctly (see our code for details).
 | **TYPE** *z*\ [nx\*ny]          | 1-D array with *z*-values in scanline format           |
 +---------------------------------+--------------------------------------------------------+
 
-[tbl:grdheader]
-
 Sun raster files
 ----------------
 
@@ -6155,7 +6144,9 @@ unsigned 1-byte integers that represents the bit-pattern. Bits are
 scanline oriented, and each row must contain an even number of bytes.
 The predefined 1-bit patterns in *GMT* have dimensions of 64 by 64, but
 other sizes will be accepted when using the **-Gp|P** option. The Sun
-header structure is outline in Table [tbl:sunheader].
+header structure is outline in Table :ref:`sunheader <tbl-sunheader>`.
+
+.. _tbl-sunheader:
 
 +---------------------------+-------------------------------------+
 | **Parameter**             | **Description**                     |
@@ -6177,12 +6168,12 @@ header structure is outline in Table [tbl:sunheader].
 | **int** *ras_maplength*   | Length (bytes) of following map     |
 +---------------------------+-------------------------------------+
 
-[tbl:sunheader]
-
 After the header, the color map (if *ras_maptype* is not RMT_NONE)
 follows for *ras_maplength* bytes, followed by an image of
 *ras_length* bytes. Some related definitions are given in
-Table [tbl:sundef].
+Table :ref:`sundef <tbl-sundef>`.
+
+.. _tbl-sundef:
 
 +---------------------+-------------------------------------------+
 | **Macro name**      | **Description**                           |
@@ -6199,8 +6190,6 @@ Table [tbl:sundef].
 +---------------------+-------------------------------------------+
 | RMT_EQUAL_RGB       | 1 (red[ras_maplength/3],green[],blue[])   |
 +---------------------+-------------------------------------------+
-
-[tbl:sundef]
 
 Numerous public-domain programs exist, such as **xv** and
 **convert** (in the ImageMagick package), that will translate between
@@ -6241,8 +6230,7 @@ A large number of questions to the GMT-Help mailing list are related to
 these rendering issues, showing that something as seemingly
 straightforward as incorporating a *PostScript* file into a document is
 a far from trivial exercise. This Appendix will show how to include
-*GMT* graphics into documents and how to achieve the best quality
-results.
+*GMT* graphics into documents and how to achieve the best quality results.
 
 Making GMT Encapsulated *PostScript* Files
 ------------------------------------------
@@ -7542,7 +7530,9 @@ The custom symbol language contains commands to rotate the relative
 coordinate system, draw free-form polygons and lines, change the current
 fill and/or pen, place text, and include basic geometric symbols as part of the
 overall design (e.g., circles, triangles, etc.). The available commands
-are listed in Table [tbl:custsymb].
+are listed in Table :ref:`custsymb <tbl-custsymb>`.
+
+.. _tbl-custsymb:
 
 +---------------+------------+----------------------------------------+--------------------------------------------+
 | **Name**      | **Code**   | **Purpose**                            | **Arguments**                              |
@@ -7596,8 +7586,6 @@ are listed in Table [tbl:custsymb].
 | y-dash        | **y**      | Plot a y-dash                          | :math:`x, y`,\ *size*                      |
 +---------------+------------+----------------------------------------+--------------------------------------------+
 
-[tbl:custsymb]
-
 Note for **R**\: if an **a** is appended then :math:`\alpha` is considered
 to be a map azimuth; otherwise it is a Cartesian angle.
 For **M**, **T**, and all the lower-case symbol codes you may optionally
@@ -7637,7 +7625,9 @@ Conditional statements
 There are two types of conditional statements in the macro language: A
 simple condition preceding a single command, or a more elaborate
 if-then-elseif-else construct. In any test you may use one (and only
-one) of many logical operators, as listed in Table [tbl:custop].
+one) of many logical operators, as listed in Table :ref:`custop <tbl-custop>`.
+
+.. _tbl-custop:
 
 +----------------+----------------------------------------------------------+
 | **Operator**   | **Purpose**                                              |
@@ -7666,8 +7656,6 @@ one) of many logical operators, as listed in Table [tbl:custop].
 +----------------+----------------------------------------------------------+
 | [>             | Is *var* within the ex/in-clusive range of *constant*?   |
 +----------------+----------------------------------------------------------+
-
-[tbl:custop]
 
 Simple conditional test
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -8180,7 +8168,7 @@ are:
 
     **gmt.conf** This file covers about 100 different settings that influence the
        layout of your plot, from font sizes to tick lengths and date
-       formats (See Section [sec:gmt.conf]). Those settings can be altered
+       formats (See Section `GMT defaults`_). Those settings can be altered
        by editing the file, or by running the
        `gmtset <gmtset.html>`_ command. A problem may arise
        when those settings are changed half-way through the script: the
@@ -8371,8 +8359,6 @@ sequence.
 | V         | GMT1.0        | Data in this file is stored using v1.0 of the OGR/GMT data format  |
 +-----------+---------------+--------------------------------------------------------------------+
 
-[tbl:Q1]
-
 An OGR/GMT file must therefore begin with the line
 
    ::
@@ -8387,7 +8373,9 @@ Geometry types
 
 The words and characters used to specify the geometry type (preceded by
 the **@G** code sequence on the header comment line), are listed in
-Table [tbl:geometries].
+Table :ref:`geometries <tbl-geometries>`.
+
+.. _tbl-geometries:
 
 +----------+-----------------+---------------------------------------------------------------------------------------+
 | **Code** | **Geometry**    | **Description**                                                                       |
@@ -8423,8 +8411,6 @@ Table [tbl:geometries].
 |          |                 | (Similar to a *GMT* multiline file, except the feature is a closed multipolygon)      |
 +----------+-----------------+---------------------------------------------------------------------------------------+
 
-[tbl:geometries]
-
 An example *GMT* polygon file header using this specification (in format 1.0) is
 
    ::
@@ -8446,7 +8432,9 @@ code sequence marks the domain information. A sample region header is:
 Projection information will be represented as four optional strings,
 prefixed by **@J** (J being the *GMT* character for projection
 information. The **@J** code will be followed by a character identifying
-the format, as shown in Table [tbl:projectspec].
+the format, as shown in Table :ref:`projectspec <tbl-projectspec>`.
+
+.. _tbl-projectspec:
 
 +------------+-------------------------------------------------------------------------------------------------+
 | **Code**   | **Projection Specification**                                                                    |
@@ -8459,8 +8447,6 @@ the format, as shown in Table [tbl:projectspec].
 +------------+-------------------------------------------------------------------------------------------------+
 | @Jw        | A string comprising the OGR WKT (well known text) representation of the projection parameters   |
 +------------+-------------------------------------------------------------------------------------------------+
-
-[tbl:projectspec]
 
 Sample projection strings are:
 
@@ -8492,8 +8478,6 @@ features is flagged by the **@N** prefix.
 | N          | word\ \|\ word\ \|\ word    | A "\|" -separated string of names of the attribute field names  |
 +------------+-----------------------------+-----------------------------------------------------------------+
 
-[tbl:Q3]
-
 Any name containing a space must be quoted. The **@N** selection must be
 combined with a matching string specifying the data type for each of the
 named fields, using the **@T** prefix.
@@ -8503,8 +8487,6 @@ named fields, using the **@T** prefix.
 +============+=============================+=============================================================+
 | T          | word\ \|\ word\ \|\ word    | A "\|" -separated string of the attribute field data types  |
 +------------+-----------------------------+-------------------------------------------------------------+
-
-[tbl:Q4]
 
 Available datatypes should largely follow the shapefile (DB3)
 specification, including **string**, **integer**, **double**,
