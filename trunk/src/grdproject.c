@@ -171,6 +171,8 @@ int GMT_grdproject_parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, st
 			case 'M':	/* Directly specify units */
 				Ctrl->M.active = true;
 				Ctrl->M.unit = opt->arg[0];
+				n_errors += GMT_check_condition (GMT, !Ctrl->M.unit,
+							"Syntax error -M option: projected measure unit must be one of 'c', i', or 'p'\n");
 				break;
 			case 'N':	/* GMT4 Backwards compatible.  nx/ny can now be set with -D */
 				if (GMT_compat_check (GMT, 4)) {
