@@ -7456,8 +7456,15 @@ int gmt_scale_or_width (struct GMT_CTRL *GMT, char *scale_or_width, double *valu
 	   Return 1 upon error */
 	int n;
 	GMT->current.proj.units_pr_degree = strncmp (scale_or_width, "1:", 2U);	/* false if scale given as 1:xxxx */
-	if (GMT->current.proj.units_pr_degree)
+	if (GMT->current.proj.units_pr_degree) {
+		size_t k = strlen(scale_or_width);
+		if (k == 1 && scale_or_width[0] == '1') {
+			gmt_scale_or_width (GMT, strcat(scale_or_width,":1"), value);
+			return (GMT_NOERROR);
+		}
+
 		*value = GMT_to_inch (GMT, scale_or_width);
+	}
 	else {
 		n = sscanf (scale_or_width, "1:%lf", value);
 		if (n != 1 || *value < 0.0) return (1);
