@@ -240,14 +240,14 @@ support via ``GMT_grdimage`` [4]_.
 ::
 
   struct GMT_IMAGE {
-      enum GMT_enum_type type;        /* Data type, e.g. GMT_FLOAT */
+      enum GMT_enum_type type;          /* Data type, e.g. GMT_FLOAT */
       int		*ColorMap;      /* Array with color lookup values */
       struct GMT_GRID_HEADER *header;	/* Pointer to full GMT header for the image */
-      unsigned char   *data;          /* Pointer to actual image */
+      unsigned char   *data;            /* Pointer to actual image */
       /* ---- Variables "hidden" from the API ---- */
-      unsigned int id;                /* The internal number of the data set */
-      enum GMT_enum_alloc alloc_mode; /* Allocation info [0] */
-      unsigned int alloc_level;       /* Level of initial allocation */
+      unsigned int id;                  /* The internal number of the data set */
+      enum GMT_enum_alloc alloc_mode;   /* Allocation info [0] */
+      unsigned int alloc_level;         /* Level of initial allocation */
       const char      *ColorInterp;
   };
 
@@ -1613,7 +1613,7 @@ obtain the two coordinates as decimal degrees by calling
 
 Your program can now check that ``n`` equals 2 and then use the values
 in ``pairs``. Note: Dimensions given with units of inches, cm, or points
-are converted to the *GMT* default length unit (**GMT_PROJ_LENGTH**)
+are converted to the *GMT* default length unit (:ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`)
 [cm], while distances given in km, nautical miles, miles, feet, or
 survey feet are returned in meters. Arc lengths in minutes and seconds
 are returned in decimal degrees, and date/time values are returned in
@@ -1631,7 +1631,7 @@ If your program needs to determine one or more of the current
 
     int GMT_Get_Default (void *API, char *keyword, char *value);
 
-where ``keyword`` is one such keyword (e.g., **GMT_PROJ_LENGTH**) and
+where ``keyword`` is one such keyword (e.g., :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) and
 ``value`` must be a character array long enough to hold the answer.
 Depending on what parameter you selected you could further convert it to
 a numerical value with ``GMT_Get_Value`` or just use it in a text comparison.

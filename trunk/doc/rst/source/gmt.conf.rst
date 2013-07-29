@@ -14,10 +14,10 @@ defaults are given in brackets [ for SI (and US) ]. Those marked **\***
 can be set on the command line as well (the corresponding option is
 given in parentheses). Note that default distances and lengths below are
 given in both cm or inch; the chosen default depends on your choice of
-default unit (see **PROJ_LENGTH_UNIT**). You can explicitly specify
+default unit (see :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`). You can explicitly specify
 the unit used for distances and lengths by appending **c** (cm), **i**
 (inch), or **p** (points). When no unit is indicated the value will be
-assumed to be in the unit set by **PROJ_LENGTH_UNIT**. Several
+assumed to be in the unit set by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`. Several
 parameters take only **true** or **false**. Finally, most of these
 parameters can be changed on-the-fly via the **-**\ **-PARAMETER**\ =\ *VALUE*
 option to any **GMT** program. However, a few are static and are only
