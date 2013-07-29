@@ -147,7 +147,7 @@ programs. No space between the option flag and the associated arguments.
 
 .. include:: explain_precision.rst_
 
-.. include:: explain_grd_input.rst_
+.. include:: explain_grd_inout.rst_
 
 See Also
 --------
