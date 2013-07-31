@@ -208,11 +208,13 @@ int GMT_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GDALWRITE_CTRL *prh
 		}
 		switch( typeCLASS ) {
 			case GDT_Byte:
-				GDALSetRasterNoDataValue(hBand, prhs->nan_value);
+				if (rint(prhs->nan_value) == prhs->nan_value)
+					/* Only set NoData if nan_value contains an integer value */
+					GDALSetRasterNoDataValue(hBand, prhs->nan_value);
 				if (strcmp(prhs->type,"uint8")) {
 					/* This case arrives here from a separate path. It started in grdimage and an originaly
 					   data was in uchar but padded and possibly 3D (RGB) */
-			 		tmpByte = (unsigned char *)data;	
+					tmpByte = (unsigned char *)data;
 					for (nn = 0; nn < nx*ny; nn++) {
 						outByte[nn] = tmpByte[nn*n_bands + i];
 					}
@@ -226,7 +228,9 @@ int GMT_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GDALWRITE_CTRL *prh
 			case GDT_Int16:
 			case GDT_UInt32:
 			case GDT_Int32:
-				GDALSetRasterNoDataValue(hBand, prhs->nan_value);
+				if (rint(prhs->nan_value) == prhs->nan_value)
+					/* Only set NoData if nan_value contains an integer value */
+					GDALSetRasterNoDataValue(hBand, prhs->nan_value);
 				GDALRasterIO( hBand, GF_Write, 0, 0, nx, ny, data, nx, ny, typeCLASS, 0, 0 );
 				break;
 			case GDT_Float32:
