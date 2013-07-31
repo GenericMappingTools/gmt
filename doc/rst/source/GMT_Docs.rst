@@ -4204,7 +4204,9 @@ Generically, =\ **gd**\ [/*scale*/*offset*\ [/*nan*][:<*driver*\ >[/\ *dataType*
 where *driver* is the same as explained above and *dataType* is a 2 or 3
 chars code from: u8\|u16\|i16\|u32\|i32\|float32, and where i\|u denotes
 signed\|unsigned. If not provided the default type is float32. Both
-driver names and data types are case insensitive.
+driver names and data types are case insensitive. Note, that you have to
+specify *nan* for integer types unless you whish that all NaN data values
+are replaced by zero.
 
 The NaN data value
 ------------------
