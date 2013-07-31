@@ -210,6 +210,9 @@ if (UNIX AND NOT APPLE)
 	set (CPACK_GENERATOR TGZ TBZ2)
 endif (UNIX AND NOT APPLE)
 
+# Generators used for the source package (make package_source)
+set (CPACK_SOURCE_GENERATOR TGZ TBZ2 ZIP)
+
 # This must always be last:
 include (CPack)
 
