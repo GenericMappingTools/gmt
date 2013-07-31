@@ -19,7 +19,7 @@ the gray level 128. Thus, variations in shade are entirely due to
 variations in gradients, or illuminations. We choose to illuminate from
 the SW and view the surface from SE:
 
-.. literalinclude:: ../../../examples/ex05/example_05.sh
+.. literalinclude:: /_verbatim/example_05.txt
 
 The variations in intensity could be made more dramatic by using
 `grdmath <../grdmath.html>`_ to scale the intensity file

@@ -15,7 +15,7 @@ zone traces (``fz.xy``) and isochrons (0 isochron as ``ridge.xy``, the rest as `
 digitized from available maps [1]_. We create the final location map
 with the following script:
 
-.. literalinclude:: ../../../examples/ex07/example_07.sh
+.. literalinclude:: /_verbatim/example_07.txt
 
 The same figure could equally well be made in color, which could be
 rasterized and made into a slide for a meeting presentation. The script

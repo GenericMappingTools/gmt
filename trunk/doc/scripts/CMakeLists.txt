@@ -53,80 +53,93 @@ set (_scr_test GMT_RGBchart.sh)
 
 set (_scripts_tests ${_scr_nostrip} ${_scr_strip} ${_scr_other} ${_scr_test})
 
-set (_scripts_txt ${_scr_nostrip} ${_scr_strip})
-string (REPLACE ".sh" ".txt" _scripts_txt "${_scripts_txt}")
-
 set (_scripts_ps ${_scr_nostrip} ${_scr_strip} ${_scr_other}
 	GMT_-U.ps GMT_RGBchart_a4.ps GMT_RGBchart_letter.ps GMT_RGBchart_tabloid.ps)
 string (REPLACE ".sh" ".ps" _scripts_ps "${_scripts_ps}")
 
 set (_scripts_pdf)
 set (_scripts_png)
+set (_scripts_txt)
 set (_install_pdf GMT_RGBchart_a4.pdf GMT_RGBchart_tabloid.pdf GMT_RGBchart_letter.pdf)
 
 # Convert figures to PDF and PNG
 foreach (_fig ${_scripts_ps})
 	string (REPLACE ".ps" ".pdf" _pdf_fig ${_fig})
 	string (REPLACE ".ps" ".png" _png_fig ${_fig})
-	list (APPEND _scripts_pdf ${_pdf_fig})
-	list (APPEND _scripts_png ${_png_fig})
+	list (APPEND _scripts_pdf ${RST_BINARY_DIR}/_images/${_pdf_fig})
+	list (APPEND _scripts_png ${RST_BINARY_DIR}/_images/${_png_fig})
 	if (WIN32)
-		add_custom_command (
-			OUTPUT ${_pdf_fig} ${_png_fig}
+		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_pdf_fig}
 			COMMAND
 			set GMT_USERDIR=${GMT_BINARY_DIR}/share
 			set GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster -A -P -Tfg -E200
-			-D${CMAKE_CURRENT_BINARY_DIR}
+			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster -A -P -Tf -E200
+			-D${RST_BINARY_DIR}/_images
+			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+			DEPENDS gmt ${_fig})
+		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_png_fig}
+			COMMAND
+			set GMT_USERDIR=${GMT_BINARY_DIR}/share
+			set GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
+			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster -A -P -Tg -E200
+			-D${RST_BINARY_DIR}/_images
 			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 			DEPENDS gmt ${_fig})
 	else (WIN32)
-		add_custom_command (
-			OUTPUT ${_pdf_fig} ${_png_fig}
+		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_pdf_fig}
 			COMMAND
 			GMT_USERDIR=${GMT_BINARY_DIR}/share
 			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
-			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster -A -P -Tfg -E200
-			-D${CMAKE_CURRENT_BINARY_DIR}
+			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster -A -P -Tf -E200
+			-D${RST_BINARY_DIR}/_images
+			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+			DEPENDS gmt ${_fig})
+		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_png_fig}
+			COMMAND
+			GMT_USERDIR=${GMT_BINARY_DIR}/share
+			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
+			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster -A -P -Tg -E200
+			-D${RST_BINARY_DIR}/_images
 			${CMAKE_CURRENT_SOURCE_DIR}/${_fig}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 			DEPENDS gmt ${_fig})
 	endif (WIN32)
 endforeach (_fig ${_scripts_ps})
 
-if (PDFLATEX_COMPILER)
-	foreach (_script ${_scr_nostrip})
-		string (REPLACE ".sh" ".txt" _txt ${_script})
-		# Add command that triggers generator macro when output does not exist
-		add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_txt}
-			COMMAND ${CMAKE_COMMAND}
-			-D script=${CMAKE_CURRENT_SOURCE_DIR}/${_script}
-			-D txt=${CMAKE_CURRENT_BINARY_DIR}/${_txt}
-			-D no_strip=TRUE
-			-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
-			-P ${CMAKE_MODULE_PATH}/ScriptToVerbatim.cmake
-			DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_script})
-	endforeach (_script)
+foreach (_script ${_scr_nostrip})
+	string (REPLACE ".sh" ".txt" _txt ${_script})
+	list (APPEND _scripts_txt ${RST_BINARY_DIR}/_verbatim/${_txt})
+	# Add command that triggers generator macro when output does not exist
+	add_custom_command (OUTPUT ${RST_BINARY_DIR}/_verbatim/${_txt}
+		COMMAND ${CMAKE_COMMAND}
+		-D script=${CMAKE_CURRENT_SOURCE_DIR}/${_script}
+		-D txt=${RST_BINARY_DIR}/_verbatim/${_txt}
+		-D no_strip=TRUE
+		-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
+		-P ${CMAKE_MODULE_PATH}/ScriptToVerbatim.cmake
+		DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_script})
+endforeach (_script)
 
-	foreach (_script ${_scr_strip})
-		string (REPLACE ".sh" ".txt" _txt ${_script})
-		add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_txt}
-			COMMAND ${CMAKE_COMMAND}
-			-D SCRIPTS_COMMAND=script_to_verbatim
-			-D script=${CMAKE_CURRENT_SOURCE_DIR}/${_script}
-			-D txt=${CMAKE_CURRENT_BINARY_DIR}/${_txt}
-			-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
-			-P ${CMAKE_MODULE_PATH}/ScriptToVerbatim.cmake
-			DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_script})
-	endforeach (_script)
-endif (PDFLATEX_COMPILER)
+foreach (_script ${_scr_strip})
+	string (REPLACE ".sh" ".txt" _txt ${_script})
+	list (APPEND _scripts_txt ${RST_BINARY_DIR}/_verbatim/${_txt})
+	add_custom_command (OUTPUT ${RST_BINARY_DIR}/_verbatim/${_txt}
+		COMMAND ${CMAKE_COMMAND}
+		-D SCRIPTS_COMMAND=script_to_verbatim
+		-D script=${CMAKE_CURRENT_SOURCE_DIR}/${_script}
+		-D txt=${RST_BINARY_DIR}/_verbatim/${_txt}
+		-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
+		-P ${CMAKE_MODULE_PATH}/ScriptToVerbatim.cmake
+		DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/${_script})
+endforeach (_script)
 
 # Add build target
-add_custom_command (OUTPUT done
-	COMMAND touch done
-	DEPENDS ${_scripts_pdf} ${_scripts_png} ${_scripts_txt})
-add_custom_target (scripts_done DEPENDS done)
+add_custom_target (_docs_scripts_fig DEPENDS ${_scripts_pdf} ${_scripts_png})
+add_custom_target (_docs_scripts_verbatim DEPENDS ${_scripts_txt})
+add_depend_to_target (docs_depends _docs_scripts_fig _docs_scripts_verbatim)
 
 # run tests
 if (DO_TESTS)
@@ -134,7 +147,6 @@ if (DO_TESTS)
 	configure_file (gmtest.in gmtest @ONLY)
 
 	# Workaround cmake bug 3957: CRLF line ending
-	find_package (UnixCommands)
 	if (CYGWIN_INSTALL_PATH)
 		find_program (D2U d2u
 			${CYGWIN_INSTALL_PATH}/bin)

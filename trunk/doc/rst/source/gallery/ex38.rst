@@ -7,6 +7,6 @@ This example shows how to use histogram equalization to enhance various
 ranges of a grid depending on its frequency distribution. The key tool
 used here is `grdhisteq <../grdhisteq.html>`_.
 
-.. literalinclude:: ../../../examples/ex38/example_38.sh
+.. literalinclude:: /_verbatim/example_38.txt
 
 .. include:: fig_example_38.rst_

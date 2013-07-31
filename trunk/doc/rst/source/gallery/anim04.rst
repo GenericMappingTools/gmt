@@ -17,6 +17,6 @@ image sequence into a MPEG-4 movie. Note: At the moment,
 view projection to allow "fly-through" animations like Fledermaus; we
 expect to add this functionality in a future version.
 
-.. literalinclude:: ../../../examples/anim04/anim_04.sh
+.. literalinclude:: /_verbatim/anim_04.txt
 
 .. include:: fig_anim_04.rst_

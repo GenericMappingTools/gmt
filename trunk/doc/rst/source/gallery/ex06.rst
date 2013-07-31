@@ -13,7 +13,7 @@ file ``v3206.t`` contains all the bathymetry measurements from *Vema* cruise 320
 Our complete figure was made running
 this script:
 
-.. literalinclude:: ../../../examples/ex06/example_06.sh
+.. literalinclude:: /_verbatim/example_06.txt
 
 .. include:: fig_example_06.rst_
 

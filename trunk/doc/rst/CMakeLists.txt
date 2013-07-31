@@ -29,54 +29,53 @@ if (SPHINX_FOUND)
 	# Create configuration file
 	configure_file (conf.py.in "${SPHINX_CONFIG_DIR}/conf.py" @ONLY)
 
+	# Copy reST sources to build tree
+	include (CopyDirIfDifferent)
+	copy_dir_if_different (_docs_copy_rst_tree ${CMAKE_CURRENT_SOURCE_DIR}/source/
+		${CMAKE_CURRENT_BINARY_DIR}/_source)
+	add_depend_to_target (docs_depends _docs_copy_rst_tree)
+
 	# Add build targets
 	if (WIN32)
-		add_custom_target (docs_html
-			COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/do_fig_includes.bat
-			COMMAND ${SPHINX_EXECUTABLE} -q -b html
-			-c "${SPHINX_CONFIG_DIR}"
-			-d "${SPHINX_CACHE_DIR}"
-			${CMAKE_CURRENT_SOURCE_DIR}/source
-			${CMAKE_CURRENT_BINARY_DIR}/html
-			COMMENT "Building HTML documentation. Be patient, it takes more than 2-3 minutes")
-
-		add_custom_target (docs_latex
-			COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/do_fig_includes.bat pdf
-			COMMAND ${SPHINX_EXECUTABLE} -q -b latex
-			-c "${SPHINX_CONFIG_DIR}"
-			-d "${SPHINX_CACHE_DIR}"
-			${CMAKE_CURRENT_SOURCE_DIR}/source
-			${CMAKE_CURRENT_BINARY_DIR}/latex
-			COMMAND make -C ${CMAKE_CURRENT_BINARY_DIR}/latex all-pdf
-			COMMENT "Building CookBook PDF. Be patient, it takes more than 2-3 minutes")
+		# this is broken until includes genreated by do_fig_includes_in_build.sh
+		# are inserted verbatim into rst sources.
 	else (WIN32)
 		add_custom_target (docs_html
-			COMMAND /bin/bash ${CMAKE_CURRENT_SOURCE_DIR}/do_fig_includes.sh
+			# todo: remove do_fig_includes_in_build.sh
+			COMMAND ${BASH}
+			${CMAKE_CURRENT_SOURCE_DIR}/do_fig_includes_in_build.sh
+			png ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
 			COMMAND ${SPHINX_EXECUTABLE} -q -b html
 			-c "${SPHINX_CONFIG_DIR}"
 			-d "${SPHINX_CACHE_DIR}"
-			${CMAKE_CURRENT_SOURCE_DIR}/source
+			${CMAKE_CURRENT_BINARY_DIR}/_source
 			${CMAKE_CURRENT_BINARY_DIR}/html
-			COMMENT "Building HTML documentation. Be patient, it takes more than 2-3 minutes")
+			COMMENT "Building HTML documentation...")
 
 		add_custom_target (docs_latex
-			COMMAND /bin/bash ${CMAKE_CURRENT_SOURCE_DIR}/do_fig_includes.sh pdf
+			# todo: remove do_fig_includes_in_build.sh
+			COMMAND ${BASH} ${CMAKE_CURRENT_SOURCE_DIR}/do_fig_includes_in_build.sh
+			pdf ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
 			COMMAND ${SPHINX_EXECUTABLE} -q -b latex
 			-c "${SPHINX_CONFIG_DIR}"
 			-d "${SPHINX_CACHE_DIR}"
-			${CMAKE_CURRENT_SOURCE_DIR}/source
+			${CMAKE_CURRENT_BINARY_DIR}/_source
 			${CMAKE_CURRENT_BINARY_DIR}/latex
 			COMMAND make -C ${CMAKE_CURRENT_BINARY_DIR}/latex all-pdf
-			COMMENT "Building CookBook PDF. Be patient, it takes more than 2-3 minutes")
+			COMMENT "Building CookBook PDF...")
 	endif (WIN32)
 
 	add_custom_target (docs_man
 		${SPHINX_EXECUTABLE} -q -b man
 		-c "${SPHINX_CONFIG_DIR}"
 		-d "${SPHINX_CACHE_DIR}"
-		${CMAKE_CURRENT_SOURCE_DIR}/source
+		${CMAKE_CURRENT_BINARY_DIR}/_source
 		${CMAKE_CURRENT_BINARY_DIR}/man
-		COMMENT "Building manpages")
+		COMMENT "Building manpages...")
+
+	add_dependencies (docs_man docs_depends)
+	add_dependencies (docs_html docs_depends)
+	add_dependencies (docs_latex docs_depends)
 endif (SPHINX_FOUND)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2

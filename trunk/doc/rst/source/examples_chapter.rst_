@@ -51,7 +51,7 @@ occur for every 50 m contour level, and both contour maps should show
 the continents in light brown in the background. Finally, we want a
 rectangular frame surrounding the two maps. This is how it is done:
 
-.. literalinclude:: ../../examples/ex01/example_01.sh
+.. literalinclude:: /_verbatim/example_01.txt
 
 The first command draws a box surrounding the maps. This is followed by
 two sequences of `pscoast <pscoast.html>`_, `grdcontour <grdcontour.html>`_,
@@ -83,7 +83,7 @@ the lower left and upper right corner of region. In our case we choose
 (160, 20) and (220, 30) as the corners. We use
 `grdimage <grdimage.html>`_ to make the illustration:
 
-.. literalinclude:: ../../examples/ex02/example_02.sh
+.. literalinclude:: /_verbatim/example_02.txt
 
 The first step extracts the 2-D data sets from the local data base using
 `grdraster <grdraster.html>`__ that may be adapted to reflect
@@ -148,7 +148,7 @@ and `psxy <psxy.html>`_ to put labels and legends
 directly on the plots. For that purpose we often use **-Jx**\ 1i and
 specify positions in inches directly. Thus, the complete automated script reads:
 
-.. literalinclude:: ../../examples/ex03/example_03.sh
+.. literalinclude:: /_verbatim/example_03.txt
 
 The final illustration (Figure [fig:example:sub:`0`\ 3]) shows that the
 ship gravity anomalies have more power than altimetry derived gravity
@@ -170,7 +170,7 @@ second layer showing the 3-D mesh plot of the topography. We also add an
 arrow pointing north and some text. The first part of this script shows
 how to do it:
 
-.. literalinclude:: ../../examples/ex04/example_04.sh
+.. literalinclude:: /_verbatim/example_04.txt
 
 The purpose of the color palette file ``zero.cpt`` is to have the positive topography
 mesh painted light gray (the remainder is white). The left side of
@@ -214,7 +214,7 @@ the gray level 128. Thus, variations in shade are entirely due to
 variations in gradients, or illuminations. We choose to illuminate from
 the SW and view the surface from SE:
 
-.. literalinclude:: ../../examples/ex05/example_05.sh
+.. literalinclude:: /_verbatim/example_05.txt
 
 The variations in intensity could be made more dramatic by using
 `grdmath <grdmath.html>`_ to scale the intensity file
@@ -239,7 +239,7 @@ file ``v3206.t`` contains all the bathymetry measurements from *Vema* cruise 320
 Our complete figure (Figure [fig:example:sub:`0`\ 6]) was made running
 this script:
 
-.. literalinclude:: ../../examples/ex06/example_06.sh
+.. literalinclude:: /_verbatim/example_06.txt
 
 .. include:: fig_includes/fig_example_06.rst_
 
@@ -258,7 +258,7 @@ zone traces (``fz.xy``) and isochrons (0 isochron as ``ridge.xy``, the rest as `
 digitized from available maps [24]_. We create the final location map
 (Figure [fig:example:sub:`0`\ 7]) with the following script:
 
-.. literalinclude:: ../../examples/ex07/example_07.sh
+.. literalinclude:: /_verbatim/example_07.txt
 
 .. include:: fig_includes/fig_example_07.rst_
 
@@ -280,7 +280,7 @@ called ``guinea_bay.nc`` and covers the region from 0 to 5 E and 0 to 5 N. Depth
 from -5000 meter to sea-level. We produce the
 Figure [fig:example\ :sub:`0`\ 8] by running this script:
 
-.. literalinclude:: ../../examples/ex08/example_08.sh
+.. literalinclude:: /_verbatim/example_08.txt
 
 .. include:: fig_includes/fig_example_08.rst_
 
@@ -309,7 +309,7 @@ the output through `pstext <pstext.html>`_. Note we
 offset the positions by -0.05 inch with **-D** in order to have a small
 gap between the profile and the label:
 
-.. literalinclude:: ../../examples/ex09/example_09.sh
+.. literalinclude:: /_verbatim/example_09.txt
 
 The output shows the sea-surface slopes along 42 descending Geosat
 tracks in the Eltanin and Udintsev fracture zone region in a Mercator
@@ -331,7 +331,7 @@ the memberships vary by almost 3 orders of magnitude. We choose a plain
 linear projection for the basemap and add the columns and text on top.
 Our script that produces Figure ex_10 reads:
 
-.. literalinclude:: ../../examples/ex10/example_10.sh
+.. literalinclude:: /_verbatim/example_10.txt
 
 .. include:: fig_includes/fig_example_10.rst_
 
@@ -364,7 +364,7 @@ numbers indicate brightnesses between 0 and 1, with saturation fixed at 1.
 
 Here is the shell script to generate the RGB cube in Figure [fig:example\ :sub:`1`\ 1]:
 
-.. literalinclude:: ../../examples/ex11/example_11.sh
+.. literalinclude:: /_verbatim/example_11.txt
 
 .. include:: fig_includes/fig_example_11.rst_
 
@@ -384,7 +384,7 @@ image the data. We use a color palette table ``topo.cpt`` (created via
 `minmax <minmax.html>`_ and
 `makecpt <makecpt.html>`_). The script becomes:
 
-.. literalinclude:: ../../examples/ex12/example_12.sh
+.. literalinclude:: /_verbatim/example_12.txt
 
 .. include:: fig_includes/fig_example_12.rst_
 
@@ -405,7 +405,7 @@ the components of the gradient in separate windows. A
 `pstext <pstext.html>`_ call to place a header finishes
 the plot (Figure [fig:example:sub:`1`\ 3]:
 
-.. literalinclude:: ../../examples/ex13/example_13.sh
+.. literalinclude:: /_verbatim/example_13.txt
 
 .. include:: fig_includes/fig_example_13.rst_
 
@@ -434,7 +434,7 @@ the gridded (solid line) and bicubic trend (dashed line) along the
 transect using `psxy <psxy.html>`_
 (Figure [fig:example:sub:`1`\ 4]):
 
-.. literalinclude:: ../../examples/ex14/example_14.sh
+.. literalinclude:: /_verbatim/example_14.txt
 
 .. include:: fig_includes/fig_example_14.rst_
 
@@ -463,7 +463,7 @@ star at the deepest point on the map with
 `psxy <psxy.html>`_. This point was extracted from the
 grid files using `grdinfo <grdinfo.html>`_.
 
-.. literalinclude:: ../../examples/ex15/example_15.sh
+.. literalinclude:: /_verbatim/example_15.txt
 
 .. include:: fig_includes/fig_example_15.rst_
 
@@ -520,7 +520,7 @@ that contains color fills, predefined patterns for interval (900,925)
 and NaN, an image pattern for interval (875,900), and a "skip slice"
 request for interval (700,725).
 
-.. literalinclude:: ../../examples/ex16/example_16.sh
+.. literalinclude:: /_verbatim/example_16.txt
 
 .. include:: fig_includes/fig_example_16.rst_
 
@@ -553,7 +553,7 @@ For this image it is appropriate to use the **-I** option in
 similar to the geoid grid. See Appendix [app:M] to learn more about
 color palettes and ways to draw color legends.
 
-.. literalinclude:: ../../examples/ex17/example_17.sh
+.. literalinclude:: /_verbatim/example_17.txt
 
 .. include:: fig_includes/fig_example_17.rst_
 
@@ -575,7 +575,7 @@ this radius and use `grdvolume <grdvolume.html>`_ to
 determine the combined area and volumes of the chosen seamounts. Our
 illustration is presented in Figure [fig:example\ :sub:`1`\ 8].
 
-.. literalinclude:: ../../examples/ex18/example_18.sh
+.. literalinclude:: /_verbatim/example_18.txt
 
 .. include:: fig_includes/fig_example_18.rst_
 
@@ -600,7 +600,7 @@ that was overlaid using `psimage <psimage.html>`_. The
 final panel repeats the top panel except that the land and sea images
 have changed places (Figure [fig:example:sub:`1`\ 9]).
 
-.. literalinclude:: ../../examples/ex19/example_19.sh
+.. literalinclude:: /_verbatim/example_19.txt
 
 .. include:: fig_includes/fig_example_19.rst_
 
@@ -678,7 +678,7 @@ option, however, they get the colors defined in ``bullseye.def``.
 
 Here is our final map script that produces Figure [fig:example\ :sub:`2`\ 0]:
 
-.. literalinclude:: ../../examples/ex20/example_20.sh
+.. literalinclude:: /_verbatim/example_20.txt
 
 .. include:: fig_includes/fig_example_20.rst_
 
@@ -721,7 +721,7 @@ we must change the default input/output formats used by *GMT*. Finally,
 we want to prefix prices with the $ symbol to indicate the currency.
 Here is how it all comes out:
 
-.. literalinclude:: ../../examples/ex21/example_21.sh
+.. literalinclude:: /_verbatim/example_21.txt
 
 which produces the plot in Figure [fig:example\ :sub:`2`\ 1], suggesting
 Wessel has missed a few trains if he had hoped to cash in on the
@@ -750,7 +750,7 @@ Sun raster file, is used to spice up the legend.
 The script produces the plot in Figure [fig:example\ :sub:`2`\ 2],
 giving the URL where these and similar data can be obtained.
 
-.. literalinclude:: ../../examples/ex22/example_22.sh
+.. literalinclude:: /_verbatim/example_22.txt
 
 .. include:: fig_includes/fig_example_22.rst_
 
@@ -777,7 +777,7 @@ projection (Hammer). We also note that Rome's antipode lies somewhere
 near the Chatham plateau (antipodes will be revisited in
 Section [sec:example\ :sub:`2`\ 5]).
 
-.. literalinclude:: ../../examples/ex23/example_23.sh
+.. literalinclude:: /_verbatim/example_23.txt
 
 .. include:: fig_includes/fig_example_23.rst_
 
@@ -810,7 +810,7 @@ that the horizontal distance from the dateline seems to increase as we
 go south; however that is just the projected distance (Mercator
 distortion) and not the actual distance which remains constant at 1000 km.
 
-.. literalinclude:: ../../examples/ex24/example_24.sh
+.. literalinclude:: /_verbatim/example_24.txt
 
 .. include:: fig_includes/fig_example_24.rst_
 
@@ -853,7 +853,7 @@ The call to `grdimage <grdimage.html>`_ includes the
 nearest neighbor. This option is particularly practical for plotting
 categorical data, like these, that should not be interpolated.
 
-.. literalinclude:: ../../examples/ex25/example_25.sh
+.. literalinclude:: /_verbatim/example_25.txt
 
 .. include:: fig_includes/fig_example_25.rst_
 
@@ -877,7 +877,7 @@ projection is only implemented in
 further and extend the availability of the full projection to all of the
 *GMT* mapping programs.
 
-.. literalinclude:: ../../examples/ex26/example_26.sh
+.. literalinclude:: /_verbatim/example_26.txt
 
 .. include:: fig_includes/fig_example_26.rst_
 
@@ -912,7 +912,7 @@ remember two key issues:
 This map of the Tasman Sea shows the marine gravity anomalies with land
 painted black. A color scale bar was then added to complete the illustration.
 
-.. literalinclude:: ../../examples/ex27/example_27.sh
+.. literalinclude:: /_verbatim/example_27.txt
 
 .. include:: fig_includes/fig_example_27.rst_
 
@@ -941,7 +941,7 @@ We do some trickery by converting the UTM domain to km so that we can
 add custom annotations to the map. Finally, we place a scale bar and
 label Kilauea crater to complete the figure.
 
-.. literalinclude:: ../../examples/ex28/example_28.sh
+.. literalinclude:: /_verbatim/example_28.txt
 
 .. include:: fig_includes/fig_example_28.rst_
 
@@ -970,7 +970,7 @@ tension using the *Wessel and Becker* [2008] method. The grids are then
 imaged with `grdimage <grdimage.html>`_ and
 `grdcontour <grdcontour.html>`_ and a color scale is placed between them.
 
-.. literalinclude:: ../../examples/ex29/example_29.sh
+.. literalinclude:: /_verbatim/example_29.txt
 
 .. include:: fig_includes/fig_example_29.rst_
 
@@ -986,7 +986,7 @@ plots them as lines, then indicates on a circle that these quantities
 are simply the projections of an unit vector on the x- and y-axis, at
 the given angle.
 
-.. literalinclude:: ../../examples/ex30/example_30.sh
+.. literalinclude:: /_verbatim/example_30.txt
 
 .. include:: fig_includes/fig_example_30.rst_
 
@@ -1018,7 +1018,7 @@ Libertine (title) and Linux Biolinum (annotations). Uncomment the
 appropriate lines in the script to make a *PostScript*-file with
 outlined fonts or to convert to a PDF-file.
 
-.. literalinclude:: ../../examples/ex31/example_31.sh
+.. literalinclude:: /_verbatim/example_31.txt
 
 .. include:: fig_includes/fig_example_31.rst_
     
@@ -1064,7 +1064,7 @@ GDAL support. You will also see the
 `grdcut <grdcut.html>`_ command commented out because we
 did not want to store the 58 MB DEM file, whose location is mentioned in the script.
 
-.. literalinclude:: ../../examples/ex32/example_32.sh
+.. literalinclude:: /_verbatim/example_32.txt
 
 .. include:: fig_includes/fig_example_32.rst_
 
@@ -1079,7 +1079,7 @@ profiles; we also use the median stacking option to create a stacked
 profile, showed above the map, with the gray area representing the
 variations about the stacked median profile.
 
-.. literalinclude:: ../../examples/ex33/example_33.sh
+.. literalinclude:: /_verbatim/example_33.txt
 
 .. include:: fig_includes/fig_example_33.rst_
 
@@ -1094,7 +1094,7 @@ image and then place a transparent layer identifying the future
 Franco-Italian Union whose untimely breakup in 2045 the historians
 will continue to debate for some time.
 
-.. literalinclude:: ../../examples/ex34/example_34.sh
+.. literalinclude:: /_verbatim/example_34.txt
 
 .. include:: fig_includes/fig_example_34.rst_
 
@@ -1109,7 +1109,7 @@ We show a color image of the distances, highlighted with 500-km contours,
 and overlay the Voronoi polygons in green.  Finally, the continents are
 placed on top.
 
-.. literalinclude:: ../../examples/ex35/example_35.sh
+.. literalinclude:: /_verbatim/example_35.txt
 
 .. include:: fig_includes/fig_example_35.rst_
 
@@ -1127,7 +1127,7 @@ with large volumes of data we recommend `sphtinterpolate <sphtinterpolate.html>`
 while for small data sets (such as this one, actually) you have more flexibility
 with `greenspline <greenspline.html>`_.
 
-.. literalinclude:: ../../examples/ex36/example_36.sh
+.. literalinclude:: /_verbatim/example_36.txt
 
 .. include:: fig_includes/fig_example_36.rst_
 
@@ -1141,7 +1141,7 @@ and satellite-derived gravity.  The grids are detrended and tapered
 before the Fourier transform is computed; the intermediate plots show
 the grids being extended and padded to a suitable dimension.
 
-.. literalinclude:: ../../examples/ex37/example_37.sh
+.. literalinclude:: /_verbatim/example_37.txt
 
 .. include:: fig_includes/fig_example_37.rst_
 
@@ -1153,7 +1153,7 @@ This example shows how to use histogram equalization to enhance various
 ranges of a grid depending on its frequency distribution.  The key tool
 used here is `grdhisteq <grdhisteq.html>`_.
 
-.. literalinclude:: ../../examples/ex38/example_38.sh
+.. literalinclude:: /_verbatim/example_38.txt
 
 .. include:: fig_includes/fig_example_38.rst_
 
@@ -1168,14 +1168,14 @@ We use the coefficients to evaluate the grids and make perspective globes
 of the different resolutions.  The key tool
 used here is `sph2grd <sph2grd.html>`_.
 
-.. literalinclude:: ../../examples/ex39/example_39.sh
+.. literalinclude:: /_verbatim/example_39.txt
 
 .. include:: fig_includes/fig_example_39.rst_
 
 line simplification and area calculations
 ----------------------------------------------
 
-.. literalinclude:: ../../examples/ex40/example_40.sh
+.. literalinclude:: /_verbatim/example_40.txt
 
 .. include:: fig_includes/fig_example_40.rst_
 
@@ -1302,7 +1302,7 @@ we convert them to a single animated GIF file and write a plain HTML
 wrapper with a simple legend. Opening the HTML page in ``anim01.html`` the browser will
 display the animation.
 
-.. literalinclude:: ../../examples/anim01/anim_01.sh
+.. literalinclude:: /_verbatim/anim_01.txt
 
 Make sure you understand the purpose of all the steps in our script. In
 this case we did some trial-and-error to determine the exact values to
@@ -1321,7 +1321,7 @@ entire horizon. The resulting animation illustrates how changing the
 illumination azimuth can bring out subtle features (or artifacts) in the
 gridded data. The red arrow points in the direction of the illumination.
 
-.. literalinclude:: ../../examples/anim02/anim_02.sh
+.. literalinclude:: /_verbatim/anim_02.txt
 
 As you can see, these sorts of animations are not terribly difficult to
 put together, especially since our vantage point is fixed. In the next
@@ -1338,7 +1338,7 @@ image sequence using the new enhanced **-E** option. No additional
 information is plotted on the image. As before we produce an animated
 GIF image and a simple HTML wrapper for it.
 
-.. literalinclude:: ../../examples/anim03/anim_03.sh
+.. literalinclude:: /_verbatim/anim_03.txt
 
 Flying over topography
 ----------------------
@@ -1357,5 +1357,5 @@ image sequence into a MPEG-4 movie [31]_. Note: At the moment,
 view projection to allow "fly-through" animations like Fledermaus; we
 expect to add this functionality in a future version.
 
-.. literalinclude:: ../../examples/anim04/anim_04.sh
+.. literalinclude:: /_verbatim/anim_04.txt
 

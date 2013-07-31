@@ -4,6 +4,6 @@
 ------------------------
 
 
-.. literalinclude:: ../../../examples/ex40/example_40.sh
+.. literalinclude:: /_verbatim/example_40.txt
 
 .. include:: fig_example_40.rst_

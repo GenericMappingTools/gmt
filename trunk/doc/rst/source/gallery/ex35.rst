@@ -11,6 +11,6 @@ We show a color image of the distances, highlighted with 500-km contours,
 and overlay the Voronoi polygons in green. Finally, the continents are
 placed on top.
 
-.. literalinclude:: ../../../examples/ex35/example_35.sh
+.. literalinclude:: /_verbatim/example_35.txt
 
 .. include:: fig_example_35.rst_

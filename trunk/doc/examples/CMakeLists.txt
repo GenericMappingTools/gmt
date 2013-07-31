@@ -21,31 +21,55 @@
 file (GLOB _examples RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/*/*.ps")
 
 set (_examples_pdf)
+set (_examples_png)
 
+# Convert figures to PDF and PNG
 foreach (_ps ${_examples})
-	get_filename_component (_pdf ${_ps} NAME)
-	string (REPLACE ".ps" ".pdf" _pdf ${_pdf})
-	list (APPEND _examples_pdf ${CMAKE_CURRENT_BINARY_DIR}/${_pdf})
+	get_filename_component (_fig ${_ps} NAME)
+	string (REPLACE ".ps" ".pdf" _pdf_fig ${_fig})
+	string (REPLACE ".ps" ".png" _png_fig ${_fig})
+	list (APPEND _examples_pdf ${RST_BINARY_DIR}/_images/${_pdf_fig})
+	list (APPEND _examples_png ${RST_BINARY_DIR}/_images/${_png_fig})
 
 	if (WIN32)
-		add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_pdf}
+		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_pdf_fig}
 			COMMAND
 			set GMT_USERDIR=${GMT_BINARY_DIR}/share
 			set GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
 			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster -A -P -Tf
 			-C-sFONTPATH=${GMT_SOURCE_DIR}/doc/examples/ex31/fonts
-			-F${CMAKE_CURRENT_BINARY_DIR}/${_pdf}
+			-D${RST_BINARY_DIR}/_images
+			${CMAKE_CURRENT_SOURCE_DIR}/${_ps}
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+			DEPENDS gmt ${CMAKE_CURRENT_SOURCE_DIR}/${_ps})
+		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_png_fig}
+			COMMAND
+			set GMT_USERDIR=${GMT_BINARY_DIR}/share
+			set GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
+			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster -A -P -Tg
+			-C-sFONTPATH=${GMT_SOURCE_DIR}/doc/examples/ex31/fonts
+			-D${RST_BINARY_DIR}/_images
 			${CMAKE_CURRENT_SOURCE_DIR}/${_ps}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 			DEPENDS gmt ${CMAKE_CURRENT_SOURCE_DIR}/${_ps})
 	else (WIN32)
-		add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_pdf}
+		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_pdf_fig}
 			COMMAND
 			GMT_USERDIR=${GMT_BINARY_DIR}/share
 			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
 			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster -A -P -Tf
 			-C-sFONTPATH=${GMT_SOURCE_DIR}/doc/examples/ex31/fonts
-			-F${CMAKE_CURRENT_BINARY_DIR}/${_pdf}
+			-D${RST_BINARY_DIR}/_images
+			${CMAKE_CURRENT_SOURCE_DIR}/${_ps}
+			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+			DEPENDS gmt ${CMAKE_CURRENT_SOURCE_DIR}/${_ps})
+		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_png_fig}
+			COMMAND
+			GMT_USERDIR=${GMT_BINARY_DIR}/share
+			GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
+			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster -A -P -Tg
+			-C-sFONTPATH=${GMT_SOURCE_DIR}/doc/examples/ex31/fonts
+			-D${RST_BINARY_DIR}/_images
 			${CMAKE_CURRENT_SOURCE_DIR}/${_ps}
 			WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 			DEPENDS gmt ${CMAKE_CURRENT_SOURCE_DIR}/${_ps})
@@ -61,12 +85,12 @@ set (_examples_txt)
 foreach (_script ${_examples})
 	get_filename_component (_txt ${_script} NAME)
 	string (REPLACE ".sh" ".txt" _txt ${_txt})
-	list (APPEND _examples_txt ${CMAKE_CURRENT_BINARY_DIR}/${_txt})
+	list (APPEND _examples_txt ${RST_BINARY_DIR}/_verbatim/${_txt})
 
-	add_custom_command (OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${_txt}
+	add_custom_command (OUTPUT ${RST_BINARY_DIR}/_verbatim/${_txt}
 		COMMAND ${CMAKE_COMMAND}
 		-D script=${CMAKE_CURRENT_SOURCE_DIR}/${_script}
-		-D txt=${CMAKE_CURRENT_BINARY_DIR}/${_txt}
+		-D txt=${RST_BINARY_DIR}/_verbatim/${_txt}
 		-D nostrip=TRUE
 		-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
 		-P ${CMAKE_MODULE_PATH}/ScriptToVerbatim.cmake
@@ -75,8 +99,9 @@ foreach (_script ${_examples})
 endforeach (_script ${_examples})
 
 # Add build target
-add_custom_command (OUTPUT done COMMAND touch done DEPENDS ${_examples_txt} ${_examples_pdf})
-add_custom_target (examples_done DEPENDS done)
+add_custom_target (_docs_examples_fig DEPENDS ${_examples_pdf} ${_examples_png})
+add_custom_target (_docs_examples_verbatim DEPENDS ${_examples_txt})
+add_depend_to_target (docs_depends _docs_examples_fig _docs_examples_verbatim)
 
 # run examples (test)
 if (DO_EXAMPLES) # AND UNIX)

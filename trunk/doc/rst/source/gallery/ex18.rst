@@ -18,7 +18,7 @@ this radius and use `grdvolume <../grdvolume.html>`_ to
 determine the combined area and volumes of the chosen seamounts. Our
 illustration is presented in Figure.
 
-.. literalinclude:: ../../../examples/ex18/example_18.sh
+.. literalinclude:: /_verbatim/example_18.txt
 
 .. include:: fig_example_18.rst_
 

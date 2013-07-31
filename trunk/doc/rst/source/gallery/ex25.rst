@@ -39,6 +39,6 @@ The call to `grdimage <../grdimage.html>`_ includes the
 nearest neighbor. This option is particularly practical for plotting
 categorical data, like these, that should not be interpolated.
 
-.. literalinclude:: ../../../examples/ex25/example_25.sh
+.. literalinclude:: /_verbatim/example_25.txt
 
 .. include:: fig_example_25.rst_

@@ -14,7 +14,7 @@ we convert them to a single animated GIF file and write a plain HTML
 wrapper with a simple legend. Opening the HTML page in ``anim01.html``
 the browser will display the animation.
 
-.. literalinclude:: ../../../examples/anim01/anim_01.sh
+.. literalinclude:: /_verbatim/anim_01.txt
 
 Make sure you understand the purpose of all the steps in our script. In
 this case we did some trial-and-error to determine the exact values to

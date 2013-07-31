@@ -10,6 +10,6 @@ and satellite-derived gravity.  The grids are detrended and tapered
 before the Fourier transform is computed; the intermediate plots show
 the grids being extended and padded to a suitable dimension.
 
-.. literalinclude:: ../../../examples/ex37/example_37.sh
+.. literalinclude:: /_verbatim/example_37.txt
 
 .. include:: fig_example_37.rst_
