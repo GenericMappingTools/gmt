@@ -35,7 +35,7 @@ and `psxy <../psxy.html>`_ to put labels and legends
 directly on the plots. For that purpose we often use **-Jx**\ 1i and
 specify positions in inches directly. Thus, the complete automated script reads:
 
-.. literalinclude:: ../../../examples/ex03/example_03.sh
+.. literalinclude:: /_verbatim/example_03.txt
 
 The final illustration shows that the
 ship gravity anomalies have more power than altimetry derived gravity

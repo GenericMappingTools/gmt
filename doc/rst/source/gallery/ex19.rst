@@ -20,6 +20,6 @@ that was overlaid using `psimage <../psimage.html>`_. The
 final panel repeats the top panel except that the land and sea images
 have changed places.
 
-.. literalinclude:: ../../../examples/ex19/example_19.sh
+.. literalinclude:: /_verbatim/example_19.txt
 
 .. include:: fig_example_19.rst_

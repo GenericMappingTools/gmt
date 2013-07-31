@@ -10,6 +10,6 @@ image sequence using the new enhanced **-E** option. No additional
 information is plotted on the image. As before we produce an animated
 GIF image and a simple HTML wrapper for it.
 
-.. literalinclude:: ../../../examples/anim03/anim_03.sh
+.. literalinclude:: /_verbatim/anim_03.txt
 
 .. include:: fig_anim_03.rst_

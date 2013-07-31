@@ -10,6 +10,6 @@ We use the coefficients to evaluate the grids and make perspective globes
 of the different resolutions.  The key tool
 used here is `sph2grd <../sph2grd.html>`_.
 
-.. literalinclude:: ../../../examples/ex39/example_39.sh
+.. literalinclude:: /_verbatim/example_39.txt
 
 .. include:: fig_example_39.rst_

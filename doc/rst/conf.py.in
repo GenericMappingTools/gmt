@@ -186,7 +186,7 @@ latex_documents = [
 
 # The name of an image file (relative to this directory) to place at the top of
 # the title page.
-latex_logo = '../../../docfigs/GMT_coverlogo.pdf'
+latex_logo = '@CMAKE_CURRENT_BINARY_DIR@/_source/_images/GMT_coverlogo.pdf'
 
 # For "manual" documents, if this is true, then toplevel headings are parts,
 # not chapters.
@@ -225,7 +225,7 @@ latex_logo = '../../../docfigs/GMT_coverlogo.pdf'
 # 'list.rst' and others of the same kind used create the toctree.
 
 man_pages = []
-for dirpath, dirnames, filenames in os.walk('@CMAKE_CURRENT_SOURCE_DIR@'):
+for dirpath, dirnames, filenames in os.walk('@CMAKE_CURRENT_BINARY_DIR@/_source'):
     if 'gallery' in dirnames: 
         dirnames.remove('gallery')  # don't visit gallery directories
     for f in filenames: 
@@ -234,7 +234,7 @@ for dirpath, dirnames, filenames in os.walk('@CMAKE_CURRENT_SOURCE_DIR@'):
             and not f.startswith('N') and not f.startswith('P') and not f.startswith('T') and not f.startswith('S') \
             and not f.startswith('X') and not f.startswith('U') and not f.startswith('index') \
             and not f.startswith('api') and not f.startswith('cook'): 
-            srcfile = os.path.relpath(os.path.join(dirpath, f[:-4]), '@CMAKE_CURRENT_SOURCE_DIR@/source')
+            srcfile = os.path.relpath(os.path.join(dirpath, f[:-4]), '@CMAKE_CURRENT_BINARY_DIR@/_source')
             outfile = srcfile.replace(os.sep, '-') 
             outfile = outfile.replace('supplements-', '') 
             outfile = outfile.replace('gshhg-', '') 

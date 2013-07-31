@@ -14,6 +14,6 @@ the memberships vary by almost 3 orders of magnitude. We choose a plain
 linear projection for the basemap and add the columns and text on top.
 Our script that produces Figure ex_10 reads:
 
-.. literalinclude:: ../../../examples/ex10/example_10.sh
+.. literalinclude:: /_verbatim/example_10.txt
 
 .. include:: fig_example_10.rst_

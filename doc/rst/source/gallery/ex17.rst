@@ -29,6 +29,6 @@ For this image it is appropriate to use the **-I** option in
 similar to the geoid grid. See Appendix [app:M] to learn more about
 color palettes and ways to draw color legends.
 
-.. literalinclude:: ../../../examples/ex17/example_17.sh
+.. literalinclude:: /_verbatim/example_17.txt
 
 .. include:: fig_example_17.rst_

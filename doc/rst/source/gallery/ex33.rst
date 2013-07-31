@@ -12,6 +12,6 @@ profile, showed above the map, with the gray area representing the
 variations about the stacked median profile.
 
 
-.. literalinclude:: ../../../examples/ex33/example_33.sh
+.. literalinclude:: /_verbatim/example_33.txt
 
 .. include:: fig_example_33.rst_

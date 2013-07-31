@@ -14,6 +14,6 @@ with large volumes of data we recommend `sphtinterpolate <../sphtinterpolate.htm
 while for small data sets (such as this one, actually) you have more flexibility
 with `greenspline <../greenspline.html>`_.
 
-.. literalinclude:: ../../../examples/ex36/example_36.sh
+.. literalinclude:: /_verbatim/example_36.txt
 
 .. include:: fig_example_36.rst_

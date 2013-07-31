@@ -12,6 +12,6 @@ plots them as lines, then indicates on a circle that these quantities
 are simply the projections of an unit vector on the x- and y-axis, at
 the given angle.
 
-.. literalinclude:: ../../../examples/ex30/example_30.sh
+.. literalinclude:: /_verbatim/example_30.txt
 
 .. include:: fig_example_30.rst_

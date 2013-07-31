@@ -11,7 +11,7 @@ entire horizon. The resulting animation illustrates how changing the
 illumination azimuth can bring out subtle features (or artifacts) in the
 gridded data. The red arrow points in the direction of the illumination.
 
-.. literalinclude:: ../../../examples/anim02/anim_02.sh
+.. literalinclude:: /_verbatim/anim_02.txt
 
 As you can see, these sorts of animations are not terribly difficult to
 put together, especially since our vantage point is fixed. In the next

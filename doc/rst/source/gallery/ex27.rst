@@ -32,7 +32,7 @@ This map of the Tasman Sea shows the marine gravity anomalies with land
 painted black. A color scale bar was then added to complete the illustration.
 
 
-.. literalinclude:: ../../../examples/ex27/example_27.sh
+.. literalinclude:: /_verbatim/example_27.txt
 
 .. include:: fig_example_27.rst_
 

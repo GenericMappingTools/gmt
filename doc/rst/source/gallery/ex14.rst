@@ -24,6 +24,6 @@ files along a diagonal transect using
 the gridded (solid line) and bicubic trend (dashed line) along the
 transect using `psxy <../psxy.html>`_
 
-.. literalinclude:: ../../../examples/ex14/example_14.sh
+.. literalinclude:: /_verbatim/example_14.txt
 
 .. include:: fig_example_14.rst_

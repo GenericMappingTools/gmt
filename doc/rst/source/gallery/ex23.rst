@@ -23,7 +23,7 @@ projection (Hammer). We also note that Rome's antipode lies somewhere
 near the Chatham plateau (antipodes will be revisited in
 Section [sec:example\ :sub:`2`\ 5]).
 
-.. literalinclude:: ../../../examples/ex23/example_23.sh
+.. literalinclude:: /_verbatim/example_23.txt
 
 .. include:: fig_example_23.rst_
 

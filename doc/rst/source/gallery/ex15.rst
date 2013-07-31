@@ -25,6 +25,6 @@ star at the deepest point on the map with
 `psxy <../psxy.html>`_. This point was extracted from the
 grid files using `grdinfo <../grdinfo.html>`_.
 
-.. literalinclude:: ../../../examples/ex15/example_15.sh
+.. literalinclude:: /_verbatim/example_15.txt
 
 .. include:: fig_example_15.rst_

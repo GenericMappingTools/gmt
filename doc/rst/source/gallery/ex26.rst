@@ -20,6 +20,6 @@ projection is only implemented in
 further and extend the availability of the full projection to all of the
 *GMT* mapping programs.
 
-.. literalinclude:: ../../../examples/ex26/example_26.sh
+.. literalinclude:: /_verbatim/example_26.txt
 
 .. include:: fig_example_26.rst_
