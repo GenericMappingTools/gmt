@@ -347,7 +347,7 @@ int GMT_img2grd (void *V_API, int mode, void *args)
 		Return (GMT_GRDIO_FILE_NOT_FOUND);
 	}
 
-	if (! (Ctrl->I.active || Ctrl->D.active)) {
+	if (! (Ctrl->I.active && Ctrl->D.active)) {
 		int min;
 		double lat = 0.0;
 		struct stat buf;
