@@ -2,7 +2,9 @@
 kml2gmt
 *******
 
-kml2gmt - Extract GMT table data from Google Earth KML files
+.. only:: not man
+
+    kml2gmt - Extract GMT table data from Google Earth KML files
 
 Synopsis
 --------

@@ -2,7 +2,9 @@
 grdreformat
 ***********
 
-grdreformat - Convert between different grid formats
+.. only:: not man
+
+    grdreformat - Convert between different grid formats
 
 `Synopsis <#toc1>`_
 -------------------

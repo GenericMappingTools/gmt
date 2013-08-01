@@ -2,7 +2,9 @@
 pscoupe
 *******
 
-pscoupe - Plot cross-sections of focal mechanisms
+.. only:: not man
+
+    pscoupe - Plot cross-sections of focal mechanisms
 
 Synopsis
 --------

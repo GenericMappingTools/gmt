@@ -2,7 +2,9 @@
 psbasemap
 *********
 
-psbasemap - Plot *PostScript* base maps
+.. only:: not man
+
+    psbasemap - Plot *PostScript* base maps
 
 Synopsis
 --------

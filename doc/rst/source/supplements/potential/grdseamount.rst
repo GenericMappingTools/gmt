@@ -2,7 +2,9 @@
 grdseamount
 ***********
 
-grdseamount - Compute synthetic seamount (Gaussian or cone, circular or elliptical) bathymetry
+.. only:: not man
+
+    grdseamount - Compute synthetic seamount (Gaussian or cone, circular or elliptical) bathymetry
 
 Synopsis
 --------

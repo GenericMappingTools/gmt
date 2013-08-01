@@ -2,7 +2,9 @@
 pstext
 ******
 
-pstext - Plot or typeset text on maps
+.. only:: not man
+
+    pstext - Plot or typeset text on maps
 
 `Synopsis <#toc1>`_
 -------------------

@@ -2,7 +2,9 @@
 grdraster
 *********
 
-grdraster - Extract subregion from a binary raster and save as a GMT grid
+.. only:: not man
+
+    grdraster - Extract subregion from a binary raster and save as a GMT grid
 
 Synopsis
 --------

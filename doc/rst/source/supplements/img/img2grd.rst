@@ -2,7 +2,9 @@
 img2grd
 *******
 
-img2grd - Extract subset of img file in Mercator or Geographic format
+.. only:: not man
+
+    img2grd - Extract subset of img file in Mercator or Geographic format
 
 Synopsis
 --------

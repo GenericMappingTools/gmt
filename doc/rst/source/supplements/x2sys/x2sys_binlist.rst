@@ -2,7 +2,9 @@
 x2sys_binlist
 ***************
 
-x2sys_binlist - Create bin index listing from track data files
+.. only:: not man
+
+    x2sys_binlist - Create bin index listing from track data files
 
 Synopsis
 --------

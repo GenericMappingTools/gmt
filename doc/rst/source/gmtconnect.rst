@@ -2,7 +2,9 @@
 gmtconnect
 **********
 
-gmtconnect - Connect individual lines whose end points match within tolerance
+.. only:: not man
+
+    gmtconnect - Connect individual lines whose end points match within tolerance
 
 Synopsis
 --------

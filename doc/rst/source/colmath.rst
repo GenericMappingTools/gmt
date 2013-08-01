@@ -2,7 +2,9 @@
 colmath
 *******
 
-colmath - Do mathematics on columns from data tables
+.. only:: not man
+
+    colmath - Do mathematics on columns from data tables
 
 Synopsis
 --------

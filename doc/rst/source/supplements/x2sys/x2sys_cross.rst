@@ -2,7 +2,9 @@
 x2sys_cross
 ***********
 
-**x2sys_cross** - Calculate crossovers between track data files
+.. only:: not man
+
+    x2sys_cross - Calculate crossovers between track data files
 
 Synopsis
 --------

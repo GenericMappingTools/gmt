@@ -2,7 +2,9 @@
 grdhisteq
 *********
 
-grdhisteq - Perform histogram equalization for a grid
+.. only:: not man
+
+    grdhisteq - Perform histogram equalization for a grid
 
 Synopsis
 --------

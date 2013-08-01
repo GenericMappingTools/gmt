@@ -2,7 +2,9 @@
 hotspotter
 **********
 
-hotspotter - Create CVA image from seamount locations
+.. only:: not man
+
+    hotspotter - Create CVA image from seamount locations
 
 Synopsis
 --------

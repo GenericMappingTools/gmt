@@ -2,7 +2,9 @@
 grd2cpt
 *******
 
-grd2cpt - Make linear or histogram-equalized color palette table from grid
+.. only:: not man
+
+    grd2cpt - Make linear or histogram-equalized color palette table from grid
 
 Synopsis
 --------

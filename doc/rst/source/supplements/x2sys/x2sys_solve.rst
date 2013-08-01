@@ -2,7 +2,9 @@
 x2sys_solve
 ***********
 
-x2sys_solve - Determine least-squares systematic correction from crossovers
+.. only:: not man
+
+    x2sys_solve - Determine least-squares systematic correction from crossovers
 
 Synopsis
 --------

@@ -2,7 +2,9 @@
 segy2grd
 ********
 
-segy2grd - Converting SEGY data to a GMT grid
+.. only:: not man
+
+    segy2grd - Converting SEGY data to a GMT grid
 
 Synopsis
 --------

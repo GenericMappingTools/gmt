@@ -2,7 +2,9 @@
 backtracker
 ***********
 
-backtracker - Generate forward and backward flowlines and hotspot tracks
+.. only:: not man
+
+    backtracker - Generate forward and backward flowlines and hotspot tracks
 
 Synopsis
 --------

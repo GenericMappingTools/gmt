@@ -2,7 +2,9 @@
 psclip
 ******
 
-psclip - Initialize or terminate polygonal clip paths
+.. only:: not man
+
+    psclip - Initialize or terminate polygonal clip paths
 
 Synopsis
 --------

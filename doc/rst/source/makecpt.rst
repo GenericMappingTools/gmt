@@ -2,7 +2,9 @@
 makecpt
 *******
 
-makecpt - Make GMT color palette tables
+.. only:: not man
+
+    makecpt - Make GMT color palette tables
 
 Synopsis
 --------

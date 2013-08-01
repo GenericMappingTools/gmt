@@ -2,7 +2,9 @@
 psvelo
 ******
 
-psvelo - Plot velocity vectors, crosses, and wedges on maps
+.. only:: not man
+
+    psvelo - Plot velocity vectors, crosses, and wedges on maps
 
 Synopsis
 --------

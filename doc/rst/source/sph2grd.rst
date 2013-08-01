@@ -2,7 +2,9 @@
 sph2grd
 *******
 
-sph2grd - Compute grid from spherical harmonic coefficients
+.. only:: not man
+
+    sph2grd - Compute grid from spherical harmonic coefficients
 
 Synopsis
 --------

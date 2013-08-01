@@ -6000,7 +6000,7 @@ Centered on the Dateline, the example below was created by this command:
    World map using the Van der Grinten projection.
 
 
-.. include:: gallery/examples_chapter_opt.rst_
+.. include:: examples_chapter.rst_
 
 
 A. GMT supplemental packages
@@ -8709,7 +8709,7 @@ The example below shows how *isolation mode* works.
 The files ``gmt.conf`` and ``.gmtcommands`` are automatically created in the temporary directory
 ``$GMT_TMPDIR``. The script is also adjusted such that the temporary grid file ``lat.nc`` and colormap
 ``lat.cpt`` are created in that directory as well. To make things even more easy,
-*GMT* now provides a set of handy shell functions in `gmt_shell_functions.sh <gmt_shell_functions.html>`_:
+*GMT* now provides a set of handy shell functions in `gmt_shell_functions.sh <gmt_shell_functions.sh.html>`_:
 simply include that file in the script and the creation and the removal
 of the temporary directory is reduced to a single command.
 

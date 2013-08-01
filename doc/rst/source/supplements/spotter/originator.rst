@@ -2,7 +2,9 @@
 originator
 **********
 
-originator - Associate seamounts with nearest hotspot point sources
+.. only:: not man
+
+    originator - Associate seamounts with nearest hotspot point sources
 
 Synopsis
 --------

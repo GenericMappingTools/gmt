@@ -2,7 +2,9 @@
 grdgradient
 ***********
 
-grdgradient - Compute directional derivative or gradient from a grid
+.. only:: not man
+
+    grdgradient - Compute directional derivative or gradient from a grid
 
 Synopsis
 --------

@@ -2,7 +2,9 @@
 mgd77manage
 ***********
 
-mgd77manage - Manage the content of MGD77+ files
+.. only:: not man
+
+    mgd77manage - Manage the content of MGD77+ files
 
 Synopsis
 --------

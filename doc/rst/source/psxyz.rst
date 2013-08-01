@@ -2,7 +2,9 @@
 psxyz
 *****
 
-psxyz - Plot lines, polygons, and symbols in 3-D
+.. only:: not man
+
+    psxyz - Plot lines, polygons, and symbols in 3-D
 
 Synopsis
 --------

@@ -2,7 +2,9 @@
 xyz2grd
 *******
 
-xyz2grd - Convert data table to a grid file
+.. only:: not man
+
+    xyz2grd - Convert data table to a grid file
 
 Synopsis
 --------

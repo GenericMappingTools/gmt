@@ -2,7 +2,9 @@
 grdproject
 **********
 
-grdproject - Forward and inverse map transformation of grids
+.. only:: not man
+
+    grdproject - Forward and inverse map transformation of grids
 
 Synopsis
 --------

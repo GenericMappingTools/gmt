@@ -2,7 +2,9 @@
 pslib
 *****
 
-PSL 5.0 - A *PostScript* based plotting library
+.. only:: not man
+
+    PSL 5.0 - A *PostScript* based plotting library
 
 Description
 -----------

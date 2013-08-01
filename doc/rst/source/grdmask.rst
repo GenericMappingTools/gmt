@@ -2,7 +2,9 @@
 grdmask
 *******
 
-grdmask - Create mask grid from polygons or point coverage
+.. only:: not man
+
+    grdmask - Create mask grid from polygons or point coverage
 
 Synopsis
 --------

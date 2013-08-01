@@ -2,7 +2,9 @@
 testapi
 *******
 
-testapi - Test API i/o methods for any data type
+.. only:: not man
+
+    testapi - Test API i/o methods for any data type
 
 Synopsis
 --------

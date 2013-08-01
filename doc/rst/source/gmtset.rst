@@ -2,7 +2,9 @@
 gmtset
 ******
 
-gmtset - Change individual **GMT** default parameters
+.. only:: not man
+
+    gmtset - Change individual **GMT** default parameters
 
 Synopsis
 --------

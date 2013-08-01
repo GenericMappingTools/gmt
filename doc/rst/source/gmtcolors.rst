@@ -2,7 +2,9 @@
 gmtcolors
 *********
 
-gmtcolors - Explanation of color codes in **GMT**
+.. only:: not man
+
+    gmtcolors - Explanation of color codes in **GMT**
 
 Description
 -----------

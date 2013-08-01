@@ -2,7 +2,9 @@
 psxy
 ****
 
-psxy - Plot lines, polygons, and symbols on maps
+.. only:: not man
+
+    psxy - Plot lines, polygons, and symbols on maps
 
 Synopsis
 --------

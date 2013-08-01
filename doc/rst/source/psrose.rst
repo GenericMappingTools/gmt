@@ -2,7 +2,9 @@
 psrose
 ******
 
-psrose - Plot a polar histogram (rose, sector, windrose diagrams)
+.. only:: not man
+
+    psrose - Plot a polar histogram (rose, sector, windrose diagrams)
 
 Synopsis
 --------

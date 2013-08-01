@@ -2,7 +2,9 @@
 ps2raster
 *********
 
-ps2raster - Convert [E]PS file(s) to other formats using GhostScript
+.. only:: not man
+
+    ps2raster - Convert [E]PS file(s) to other formats using GhostScript
 
 Synopsis
 --------

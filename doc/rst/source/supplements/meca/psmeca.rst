@@ -2,7 +2,9 @@
 psmeca
 ******
 
-psmeca - Plot focal mechanisms on maps
+.. only:: not man
+
+    psmeca - Plot focal mechanisms on maps
 
 Synopsis
 --------

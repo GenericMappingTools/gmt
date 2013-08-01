@@ -2,7 +2,9 @@
 mgd77track
 **********
 
-mgd77track - Plot track-line map of MGD77 cruises
+.. only:: not man
+
+    mgd77track - Plot track-line map of MGD77 cruises
 
 Synopsis
 --------

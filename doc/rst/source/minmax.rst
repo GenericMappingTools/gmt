@@ -2,7 +2,9 @@
 minmax
 ******
 
-minmax - Find extreme values in data tables
+.. only:: not man
+
+    minmax - Find extreme values in data tables
 
 Synopsis
 --------

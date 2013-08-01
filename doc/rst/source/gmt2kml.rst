@@ -2,7 +2,9 @@
 gmt2kml
 *******
 
-gmt2kml - Convert GMT data tables to KML files for Google Earth
+.. only:: not man
+
+    gmt2kml - Convert GMT data tables to KML files for Google Earth
 
 Synopsis
 --------

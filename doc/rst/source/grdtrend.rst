@@ -2,7 +2,9 @@
 grdtrend
 ********
 
-grdtrend - Fit trend surface to grids and compute residuals
+.. only:: not man
+
+    grdtrend - Fit trend surface to grids and compute residuals
 
 `Synopsis <#toc1>`_
 -------------------

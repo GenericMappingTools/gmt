@@ -2,7 +2,9 @@
 grdsample
 *********
 
-grdsample - Resample a grid onto a new lattice
+.. only:: not man
+
+    grdsample - Resample a grid onto a new lattice
 
 Synopsis
 --------

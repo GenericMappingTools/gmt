@@ -2,7 +2,9 @@
 x2sys_init
 **********
 
-x2sys_init - Initialize a new x2sys track database
+.. only:: not man
+
+    x2sys_init - Initialize a new x2sys track database
 
 Synopsis
 --------

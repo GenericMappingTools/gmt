@@ -2,7 +2,9 @@
 gmt.conf
 ********
 
-gmt.conf - Configuration for **GMT**
+.. only:: not man
+
+    gmt.conf - Configuration for **GMT**
 
 Description
 -----------

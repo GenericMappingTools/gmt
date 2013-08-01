@@ -2,7 +2,9 @@
 grdpmodeler
 ***********
 
-grdpmodeler - Evaluate a plate model on a geographic grid
+.. only:: not man
+
+    grdpmodeler - Evaluate a plate model on a geographic grid
 
 Synopsis
 --------

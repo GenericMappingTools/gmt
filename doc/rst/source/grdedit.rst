@@ -2,7 +2,9 @@
 grdedit
 *******
 
-grdedit - Modify header or content of a grid
+.. only:: not man
+
+    grdedit - Modify header or content of a grid
 
 Synopsis
 --------

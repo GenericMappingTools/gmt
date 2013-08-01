@@ -2,7 +2,9 @@
 grdvector
 *********
 
-grdvector - Plot vector field from two component grids
+.. only:: not man
+
+    grdvector - Plot vector field from two component grids
 
 Synopsis
 --------

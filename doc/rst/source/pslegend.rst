@@ -2,7 +2,9 @@
 pslegend
 ********
 
-pslegend - Plot legends on maps
+.. only:: not man
+
+    pslegend - Plot legends on maps
 
 Synopsis
 --------

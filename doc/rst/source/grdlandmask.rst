@@ -2,7 +2,9 @@
 grdlandmask
 ***********
 
-grdlandmask - Create a "wet-dry" mask grid from shoreline data base
+.. only:: not man
+
+    grdlandmask - Create a "wet-dry" mask grid from shoreline data base
 
 Synopsis
 --------

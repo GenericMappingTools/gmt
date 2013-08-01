@@ -1,9 +1,10 @@
-*******************
-gmt_shell_functions
-*******************
+**********************
+gmt_shell_functions.sh
+**********************
 
-gmt_shell_functions.sh - Practical functions to be used in GMT bourne
-shell scripts
+.. only:: not man
+
+    gmt_shell_functions.sh - Practical functions to be used in GMT bourne shell scripts
 
 Synopsis
 --------
