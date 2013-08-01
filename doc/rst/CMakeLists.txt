@@ -53,39 +53,61 @@ if (SPHINX_FOUND)
 		#COMMAND make -C ${CMAKE_CURRENT_BINARY_DIR}/latex all-pdf
 		COMMENT "Building CookBook PDF...")
 
-	add_custom_target (docs_man
-		${SPHINX_EXECUTABLE} -q -b man
-		-c "${SPHINX_CONFIG_DIR}"
-		-d "${SPHINX_CACHE_DIR}"
-		${CMAKE_CURRENT_BINARY_DIR}/_source
-		${CMAKE_CURRENT_BINARY_DIR}/man
-		COMMENT "Building manpages...")
+	# Build and compress manpages
+	if (GZIP)
+		set (_gz ".gz")
+		add_custom_target (docs_man
+			COMMAND ${SPHINX_EXECUTABLE} -q -b man
+			-c "${SPHINX_CONFIG_DIR}"
+			-d "${SPHINX_CACHE_DIR}"
+			${CMAKE_CURRENT_BINARY_DIR}/_source
+			${CMAKE_CURRENT_BINARY_DIR}/man
+			COMMAND ${GZIP} -9 -r ${CMAKE_CURRENT_BINARY_DIR}/man
+			COMMENT "Building manpages...")
+	else (GZIP)
+		set (_gz)
+		add_custom_target (docs_man
+			COMMAND ${SPHINX_EXECUTABLE} -q -b man
+			-c "${SPHINX_CONFIG_DIR}"
+			-d "${SPHINX_CACHE_DIR}"
+			${CMAKE_CURRENT_BINARY_DIR}/_source
+			${CMAKE_CURRENT_BINARY_DIR}/man
+			COMMENT "Building manpages...")
+	endif (GZIP)
 
 	add_dependencies (docs_man docs_depends)
 	add_dependencies (docs_html docs_depends)
 	add_dependencies (docs_latex docs_depends)
+
+	# Install man (if available)
+	install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/man/
+		DESTINATION ${GMT_SHARE_PATH}/man/man1
+		COMPONENT Runtime
+		FILES_MATCHING PATTERN "*.1${_gz}")
+	install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/man/
+		DESTINATION ${GMT_SHARE_PATH}/man/man3
+		COMPONENT Runtime
+		FILES_MATCHING PATTERN "*.3${_gz}")
+	install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/man/
+		DESTINATION ${GMT_SHARE_PATH}/man/man5
+		COMPONENT Runtime
+		FILES_MATCHING PATTERN "*.5${_gz}")
+
+	# Install html (if available)
+	install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/
+		DESTINATION ${GMT_DOC_PATH}/html
+		COMPONENT Documentation
+		OPTIONAL)
+
+	# Install pdf (if available)
+	install (FILES
+		${CMAKE_CURRENT_BINARY_DIR}/latex/API.pdf
+		${CMAKE_CURRENT_BINARY_DIR}/latex/GMT5.pdf
+		${CMAKE_CURRENT_BINARY_DIR}/latex/man.pdf
+		DESTINATION ${GMT_DOC_PATH}/pdf
+		COMPONENT Documentation
+		OPTIONAL)
+
 endif (SPHINX_FOUND)
-
-# Install man (if available)
-# todo: gzip manpages and sort into share/man/man1, man3, and man5
-install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/man/
-	DESTINATION ${GMT_SHARE_PATH}/man/man1
-	COMPONENT Runtime
-	OPTIONAL)
-
-# Install html (if available)
-install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/
-	DESTINATION ${GMT_DOC_PATH}/html
-	COMPONENT Documentation
-	OPTIONAL)
-
-# Install pdf (if available)
-install (FILES
-	${CMAKE_CURRENT_BINARY_DIR}/latex/API.pdf
-	${CMAKE_CURRENT_BINARY_DIR}/latex/GMT5.pdf
-	${CMAKE_CURRENT_BINARY_DIR}/latex/man.pdf
-	DESTINATION ${GMT_DOC_PATH}/pdf
-	COMPONENT Documentation
-	OPTIONAL)
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
