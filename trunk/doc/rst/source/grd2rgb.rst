@@ -2,8 +2,9 @@
 grd2rgb
 *******
 
-grd2rgb - Write r/g/b grid files from a grid file, a raw RGB file, or
-SUN rasterfile
+.. only:: not man
+
+    grd2rgb - Write r/g/b grid files from a grid file, a raw RGB file, or SUN rasterfile
 
 Synopsis
 --------

@@ -2,7 +2,9 @@
 rotconverter
 **************
 
-rotconverter - Manipulate total reconstruction and stage rotations
+.. only:: not man
+
+    rotconverter - Manipulate total reconstruction and stage rotations
 
 Synopsis
 --------

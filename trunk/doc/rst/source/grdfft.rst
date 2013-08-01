@@ -2,8 +2,9 @@
 grdfft
 ******
 
-grdfft - Do mathematical operations on grids in the wavenumber (or
-frequency) domain
+.. only:: not man
+
+    grdfft - Do mathematical operations on grids in the wavenumber (or frequency) domain
 
 Synopsis
 --------

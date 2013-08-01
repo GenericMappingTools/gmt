@@ -2,7 +2,9 @@
 grdcut
 ******
 
-grdcut - Extract subregion from a grid
+.. only:: not man
+
+    grdcut - Extract subregion from a grid
 
 Synopsis
 --------

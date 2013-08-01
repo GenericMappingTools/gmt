@@ -2,7 +2,9 @@
 grdmath
 *******
 
-grdmath - Reverse Polish Notation (RPN) calculator for grids (element by element)
+.. only:: not man
+
+    grdmath - Reverse Polish Notation (RPN) calculator for grids (element by element)
 
 Synopsis
 --------

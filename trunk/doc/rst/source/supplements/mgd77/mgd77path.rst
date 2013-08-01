@@ -2,7 +2,9 @@
 mgd77path
 *********
 
-mgd77path - Return paths to MGD77 cruises and directories
+.. only:: not man
+
+    mgd77path - Return paths to MGD77 cruises and directories
 
 Synopsis
 -------------------

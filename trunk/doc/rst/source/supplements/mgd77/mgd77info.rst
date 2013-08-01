@@ -2,7 +2,9 @@
 mgd77info
 *********
 
-mgd77info - Extract information about MGD77 files
+.. only:: not man
+
+    mgd77info - Extract information about MGD77 files
 
 Synopsis
 --------

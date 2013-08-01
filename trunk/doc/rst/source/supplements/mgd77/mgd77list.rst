@@ -2,7 +2,9 @@
 mgd77list
 *********
 
-mgd77list - Extract data from MGD77 files
+.. only:: not man
+
+    mgd77list - Extract data from MGD77 files
 
 Synopsis
 --------

@@ -2,7 +2,9 @@
 grdrotater
 **********
 
-grdrotater - Finite rotation reconstruction of geographic grid
+.. only:: not man
+
+    grdrotater - Finite rotation reconstruction of geographic grid
 
 Synopsis
 --------

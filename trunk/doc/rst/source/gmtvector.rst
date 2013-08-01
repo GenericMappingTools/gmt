@@ -2,7 +2,9 @@
 gmtvector
 *********
 
-gmtvector - Basic manipulation of Cartesian vectors
+.. only:: not man
+
+    gmtvector - Basic manipulation of Cartesian vectors
 
 Synopsis
 --------

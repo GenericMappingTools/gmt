@@ -2,7 +2,9 @@
 gmtdefaults
 ***********
 
-gmtdefaults - List current **GMT** default parameters
+.. only:: not man
+
+    gmtdefaults - List current **GMT** default parameters
 
 Synopsis
 --------

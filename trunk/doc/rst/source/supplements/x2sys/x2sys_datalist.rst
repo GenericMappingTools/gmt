@@ -2,7 +2,9 @@
 x2sys_datalist
 ****************
 
-x2sys_datalist - Extract content of track data files
+.. only:: not man
+
+    x2sys_datalist - Extract content of track data files
 
 Synopsis
 --------

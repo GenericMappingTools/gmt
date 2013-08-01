@@ -2,7 +2,9 @@
 nearneighbor
 **************
 
-nearneighbor - Grid table data using a "Nearest neighbor" algorithm
+.. only:: not man
+
+    nearneighbor - Grid table data using a "Nearest neighbor" algorithm
 
 Synopsis
 --------

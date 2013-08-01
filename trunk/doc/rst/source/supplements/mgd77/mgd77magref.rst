@@ -2,7 +2,9 @@
 mgd77magref
 ***********
 
-mgd77magref - Evaluate the IGRF or CM4 magnetic field models
+.. only:: not man
+
+    mgd77magref - Evaluate the IGRF or CM4 magnetic field models
 
 Synopsis
 --------

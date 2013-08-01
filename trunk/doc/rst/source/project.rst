@@ -2,8 +2,9 @@
 project
 *******
 
-project - Project table data onto lines or great circles, generate
-tracks, or translate coordinates
+.. only:: not man
+
+    project - Project table data onto lines or great circles, generate tracks, or translate coordinates
 
 Synopsis
 --------

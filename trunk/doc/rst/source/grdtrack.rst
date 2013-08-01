@@ -2,7 +2,9 @@
 grdtrack
 ********
 
-grdtrack - Sample grids at specified (x,y) locations
+.. only:: not man
+
+    grdtrack - Sample grids at specified (x,y) locations
 
 Synopsis
 --------

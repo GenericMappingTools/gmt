@@ -2,7 +2,9 @@
 mgd77convert
 **************
 
-mgd77convert - Convert MGD77 data to other file formats
+.. only:: not man
+
+    mgd77convert - Convert MGD77 data to other file formats
 
 Synopsis
 --------

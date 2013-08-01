@@ -2,7 +2,9 @@
 gshhg
 *****
 
-gshhg - Extract data tables from binary GSHHG or WDBII data files
+.. only:: not man
+
+    gshhg - Extract data tables from binary GSHHG or WDBII data files
 
 Synopsis
 --------

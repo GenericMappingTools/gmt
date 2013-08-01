@@ -2,7 +2,9 @@
 x2sys_report
 **************
 
-x2sys_report - Report statistics from crossover data base
+.. only:: not man
+
+    x2sys_report - Report statistics from crossover data base
 
 Synopsis
 --------

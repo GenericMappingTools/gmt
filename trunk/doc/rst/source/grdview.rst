@@ -2,7 +2,9 @@
 grdview
 *******
 
-grdview - Create 3-D perspective image or surface mesh from a grid
+.. only:: not man
+
+    grdview - Create 3-D perspective image or surface mesh from a grid
 
 `Synopsis <#toc1>`_
 -------------------

@@ -2,7 +2,9 @@
 gmtwhich
 ********
 
-gmtwhich - Find full path to specified files
+.. only:: not man
+
+    gmtwhich - Find full path to specified files
 
 Synopsis
 --------

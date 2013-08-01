@@ -2,8 +2,9 @@
 gmtgravmag3d
 ************
 
-gmtgravmag3d - Compute the gravity/magnetic effect of a body by the
-method of Okabe
+.. only:: not man
+
+    gmtgravmag3d - Compute the gravity/magnetic effect of a body by the method of Okabe
 
 Synopsis
 --------

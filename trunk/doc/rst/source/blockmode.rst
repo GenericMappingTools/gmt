@@ -2,7 +2,9 @@
 blockmode
 *********
 
-blockmode - Block average (*x*,\ *y*,\ *z*) data tables by mode estimation
+.. only:: not man
+
+    blockmode - Block average (*x*,\ *y*,\ *z*) data tables by mode estimation
 
 Synopsis
 --------

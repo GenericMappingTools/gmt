@@ -2,7 +2,9 @@
 pswiggle
 ********
 
-pswiggle - Plot z = f(x,y) anomalies along tracks
+.. only:: not man
+
+    pswiggle - Plot z = f(x,y) anomalies along tracks
 
 Synopsis
 --------

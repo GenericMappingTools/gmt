@@ -2,7 +2,9 @@
 grdpaste
 ********
 
-grdpaste - Join two grids along their common edge
+.. only:: not man
+
+    grdpaste - Join two grids along their common edge
 
 Synopsis
 --------

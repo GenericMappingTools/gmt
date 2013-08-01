@@ -2,7 +2,9 @@
 mgd77sniffer
 **************
 
-mgd77sniffer - Along-track quality control of MGD77 cruises
+.. only:: not man
+
+    mgd77sniffer - Along-track quality control of MGD77 cruises
 
 Synopsis
 --------

@@ -2,7 +2,9 @@
 x2sys_get
 *********
 
-x2sys_get - Get track listing from the x2sys track index databases
+.. only:: not man
+
+    x2sys_get - Get track listing from the x2sys track index databases
 
 Synopsis
 --------

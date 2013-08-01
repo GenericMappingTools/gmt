@@ -2,7 +2,9 @@
 pspolar
 *******
 
-**pspolar** - Plot polarities on the inferior focal half-sphere on maps
+.. only:: not man
+
+    pspolar - Plot polarities on the inferior focal half-sphere on maps
 
 Synopsis
 --------

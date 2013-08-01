@@ -2,7 +2,9 @@
 grdredpol
 *********
 
-grdredpol - Compute the Continuous Reduction To the Pole, AKA differential RTP.
+.. only:: not man
+
+    grdredpol - Compute the Continuous Reduction To the Pole, AKA differential RTP.
 
 Synopsis
 --------

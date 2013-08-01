@@ -2,8 +2,9 @@
 mapproject
 **********
 
-mapproject - Do forward and inverse map transformations, datum
-conversions and geodesy
+.. only:: not man
+
+    mapproject - Do forward and inverse map transformations, datum conversions and geodesy
 
 Synopsis
 --------

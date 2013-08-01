@@ -2,7 +2,9 @@
 grdinfo
 *******
 
-grdinfo - Extract information from grids
+.. only:: not man
+
+    grdinfo - Extract information from grids
 
 Synopsis
 --------

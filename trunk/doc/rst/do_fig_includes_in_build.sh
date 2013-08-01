@@ -38,15 +38,6 @@ comPDF="-A+S0.6 -P -Tf -D${path_build}"	# Shrink example figures by 40%
 pato=${BIN_DIR}/_source/fig_includes/		# Path to where the to-be-included files will be created
 pathGallery=${BIN_DIR}/_source/gallery/		# Path to where the to-be-included files will be created (For GALLERY)
 
-
-if [ "$1" = "pdf" ]; then
-	# For LATEX/PDF we want to include the examples chapter
-	echo ".. include:: examples_chapter.rst_" > ${pathGallery}/examples_chapter_opt.rst_
-else
-	# For HTML the examples chapter is NOT included
-	echo "" > ${pathGallery}/examples_chapter_opt.rst_
-fi
-
 if [ ! -d "${path_build}" ]; then
 	mkdir -p ${path_build}
 fi

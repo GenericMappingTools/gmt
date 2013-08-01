@@ -2,7 +2,9 @@
 x2sys_list
 **********
 
-x2sys_list - Extract subset from crossover data base
+.. only:: not man
+
+    x2sys_list - Extract subset from crossover data base
 
 Synopsis
 --------

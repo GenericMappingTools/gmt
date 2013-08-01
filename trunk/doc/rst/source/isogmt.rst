@@ -2,7 +2,9 @@
 isogmt
 ******
 
-isogmt - Run GMT command or script in isolation mode
+.. only:: not man
+
+    isogmt - Run GMT command or script in isolation mode
 
 Synopsis
 --------

@@ -2,8 +2,9 @@
 grdgravmag3d
 ************
 
-grdgravmag3d - Compute the gravity effect of a grid by the method of
-Okabe
+.. only:: not man
+
+    grdgravmag3d - Compute the gravity effect of a grid by the method of Okabe
 
 Synopsis
 --------

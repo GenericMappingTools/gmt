@@ -2,7 +2,9 @@
 x2sys_put
 *********
 
-x2sys_put - Update track index database from track bin file
+.. only:: not man
+
+    x2sys_put - Update track index database from track bin file
 
 Synopsis
 --------

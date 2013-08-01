@@ -2,7 +2,9 @@
 pscontour
 *********
 
-pscontour - Contour table data by direct triangulation [method]
+.. only:: not man
+
+    pscontour - Contour table data by direct triangulation [method]
 
 Synopsis
 --------

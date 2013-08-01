@@ -2,7 +2,9 @@
 sphdistance
 ***********
 
-sphdistance - Make grid of distances to nearest points on a sphere
+.. only:: not man
+
+    sphdistance - Make grid of distances to nearest points on a sphere
 
 Synopsis
 --------

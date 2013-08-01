@@ -2,7 +2,9 @@
 pssegy
 ******
 
-pssegy - Plot a SEGY file on a map
+.. only:: not man
+
+    pssegy - Plot a SEGY file on a map
 
 Synopsis
 --------

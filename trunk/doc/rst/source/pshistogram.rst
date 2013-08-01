@@ -2,7 +2,9 @@
 pshistogram
 ***********
 
-pshistogram - Calculate and plot histograms
+.. only:: not man
+
+    pshistogram - Calculate and plot histograms
 
 Synopsis
 --------

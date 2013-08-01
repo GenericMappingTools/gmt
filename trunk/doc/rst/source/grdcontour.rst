@@ -2,7 +2,9 @@
 grdcontour
 **********
 
-grdcontour - Make contour map using a grid
+.. only:: not man
+
+    grdcontour - Make contour map using a grid
 
 Synopsis
 --------

@@ -2,7 +2,9 @@
 x2sys_merge
 ***********
 
-x2sys_merge - Merge an updated COEs table (smaller) into the main table (bigger)
+.. only:: not man
+
+    x2sys_merge - Merge an updated COEs table (smaller) into the main table (bigger)
 
 Synopsis
 --------

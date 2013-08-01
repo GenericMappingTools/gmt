@@ -2,7 +2,9 @@
 pscoast
 *******
 
-pscoast - Plot continents, shorelines, rivers, and borders on maps
+.. only:: not man
+
+    pscoast - Plot continents, shorelines, rivers, and borders on maps
 
 Synopsis
 --------

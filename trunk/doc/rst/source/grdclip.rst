@@ -2,7 +2,9 @@
 grdclip
 *******
 
-grdclip - Clip the range of grids
+.. only:: not man
+
+    grdclip - Clip the range of grids
 
 Synopsis
 --------

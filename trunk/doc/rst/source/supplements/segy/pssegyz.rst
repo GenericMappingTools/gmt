@@ -2,7 +2,9 @@
 pssegyz
 *******
 
-pssegyz - Create imagemasked postscript from SEGY file
+.. only:: not man
+
+    pssegyz - Create imagemasked postscript from SEGY file
 
 Synopsis
 --------

@@ -2,7 +2,9 @@
 splitxyz
 ********
 
-splitxyz - Split xyz[dh] data tables into individual segments
+.. only:: not man
+
+    splitxyz - Split xyz[dh] data tables into individual segments
 
 Synopsis
 --------

@@ -19,7 +19,7 @@
    gmtmath
    gmtselect
    gmtset
-   gmt_shell_functions
+   gmt_shell_functions.sh
    gmtsimplify
    gmtspatial
    gmtswitch

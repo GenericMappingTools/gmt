@@ -2,7 +2,9 @@
 gmtdp
 *****
 
-gmtdp - Line reduction using the Douglas-Peucker algorithm
+.. only:: not man
+
+    gmtdp - Line reduction using the Douglas-Peucker algorithm
 
 Synopsis
 --------

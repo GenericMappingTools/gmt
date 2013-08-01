@@ -2,7 +2,9 @@
 gmtswitch
 *********
 
-gmtswitch - Switching between different GMT versions
+.. only:: not man
+
+    gmtswitch - Switching between different GMT versions
 
 Synopsis
 --------

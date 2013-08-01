@@ -2,7 +2,9 @@
 gmtget
 ******
 
-gmtget - Get individual **GMT** default parameters
+.. only:: not man
+
+    gmtget - Get individual **GMT** default parameters
 
 Synopsis
 --------

@@ -2,7 +2,9 @@
 gmtlogo
 *******
 
-gmtlogo - Adding a GMT graphics logo overlay to an illustration
+.. only:: not man
+
+    gmtlogo - Adding a GMT graphics logo overlay to an illustration
 
 Synopsis
 --------

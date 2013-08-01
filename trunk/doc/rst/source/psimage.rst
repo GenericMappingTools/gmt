@@ -2,7 +2,9 @@
 psimage
 *******
 
-psimage - Place images or EPS files on maps
+.. only:: not man
+
+    psimage - Place images or EPS files on maps
 
 Synopsis
 --------

@@ -2,7 +2,9 @@
 greenspline
 ***********
 
-greenspline - Interpolate using Green's functions for splines in 1-3 dimensions
+.. only:: not man
+
+    greenspline - Interpolate using Green's functions for splines in 1-3 dimensions
 
 Synopsis
 --------

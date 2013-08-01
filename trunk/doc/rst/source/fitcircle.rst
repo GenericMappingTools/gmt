@@ -2,7 +2,9 @@
 fitcircle
 *********
 
-fitcircle - find mean position and pole of best-fit great [or small] circle to points on a sphere.
+.. only:: not man
+
+    fitcircle - find mean position and pole of best-fit great [or small] circle to points on a sphere.
 
 Synopsis
 --------

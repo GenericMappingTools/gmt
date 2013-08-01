@@ -2,8 +2,9 @@
 gravfft
 *******
 
-gravfft - Compute gravitational attraction of 3-D surfaces in the
-wavenumber (or frequency) domain
+.. only:: not man
+
+    gravfft - Compute gravitational attraction of 3-D surfaces in the wavenumber (or frequency) domain
 
 Synopsis
 --------
