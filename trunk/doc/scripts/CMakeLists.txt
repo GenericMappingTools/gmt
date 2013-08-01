@@ -169,7 +169,7 @@ endif (DO_TESTS)
 if (NOT EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 	# Install pdf figures (if found) when there is no external location
 	foreach (_fig ${_install_pdf})
-		install (FILES ${CMAKE_CURRENT_BINARY_DIR}/${_fig}
+		install (FILES ${RST_BINARY_DIR}/_images/${_fig}
 			DESTINATION ${GMT_DOC_PATH}/pdf
 			COMPONENT Documentation
 			OPTIONAL)
@@ -179,11 +179,12 @@ endif (NOT EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 # Install target for realease documentation
 if (SVN AND HAVE_SVN_VERSION)
 	foreach (_fig ${_install_pdf})
-		add_custom_target (${_fig}_release
+		add_custom_target (_${_fig}_release
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different
-			${_fig} ${GMT_RELEASE_PREFIX}/doc_release/pdf/${_fig}
-			DEPENDS ${_fig} svn_export_release)
-		add_depend_to_target (gmt_release ${_fig}_release)
+			${RST_BINARY_DIR}/_images/${_fig}
+			${GMT_RELEASE_PREFIX}/doc_release/pdf/${_fig}
+			DEPENDS ${RST_BINARY_DIR}/_images/${_fig} svn_export_release)
+		add_depend_to_target (gmt_release _${_fig}_release)
 	endforeach (_fig ${_install_pdf})
 endif (SVN AND HAVE_SVN_VERSION)
 

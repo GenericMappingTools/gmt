@@ -18,9 +18,6 @@
 
 include (GmtHelperMacros)
 
-#add_custom_target (docs_depends DEPENDS
-#	examples_done scripts_done)
-
 # Install license files
 if (NOT LICENSE_RESTRICTED STREQUAL GPL)
 	install (FILES
@@ -45,14 +42,12 @@ add_subdirectory (scripts)
 add_subdirectory (examples)
 
 if (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
-	# Install documentation files from external location without creating PDF
-	# documentation first
+	# Install documentation files from external location
 
 	install (DIRECTORY ${GMT_INSTALL_EXTERNAL_DOC}/
 		DESTINATION ${GMT_DOC_PATH}
 		COMPONENT Documentation
 		USE_SOURCE_PERMISSIONS)
-
 endif (EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 
 # Install target for examples
