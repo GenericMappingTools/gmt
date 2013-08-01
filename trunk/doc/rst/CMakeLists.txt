@@ -24,6 +24,9 @@ set (SPHINX_CACHE_DIR "${CMAKE_CURRENT_BINARY_DIR}/_doctrees")
 
 if (SPHINX_FOUND)
 	# Create configuration file
+	string (REPLACE "_" " "
+		GMT_PACKAGE_VERSION_WITH_SVN_REVISION_BLANK
+		${GMT_PACKAGE_VERSION_WITH_SVN_REVISION})
 	configure_file (conf.py.in conf.py @ONLY)
 
 	# Copy reST sources to build tree
@@ -40,15 +43,20 @@ if (SPHINX_FOUND)
 		${CMAKE_CURRENT_BINARY_DIR}/_source
 		${CMAKE_CURRENT_BINARY_DIR}/html
 		COMMENT "Building HTML documentation...")
+	add_dependencies (docs_html docs_depends)
 
-	add_custom_target (docs_latex
-		COMMAND ${SPHINX_EXECUTABLE} -q -b latex
-		-c "${CMAKE_CURRENT_BINARY_DIR}"
-		-d "${SPHINX_CACHE_DIR}"
-		${CMAKE_CURRENT_BINARY_DIR}/_source
-		${CMAKE_CURRENT_BINARY_DIR}/latex
-		#COMMAND make -C ${CMAKE_CURRENT_BINARY_DIR}/latex all-pdf
-		COMMENT "Building CookBook PDF...")
+	find_program(MAKE NAMES make gmake gnumake)
+	if (MAKE)
+		add_custom_target (docs_latex
+			COMMAND ${SPHINX_EXECUTABLE} -q -b latex
+			-c "${CMAKE_CURRENT_BINARY_DIR}"
+			-d "${SPHINX_CACHE_DIR}"
+			${CMAKE_CURRENT_BINARY_DIR}/_source
+			${CMAKE_CURRENT_BINARY_DIR}/latex
+			COMMAND ${MAKE} -C ${CMAKE_CURRENT_BINARY_DIR}/latex all-pdf
+			COMMENT "Building CookBook PDF...")
+	add_dependencies (docs_latex docs_depends)
+	endif (MAKE)
 
 	# Build and compress manpages
 	if (GZIP)
@@ -71,10 +79,7 @@ if (SPHINX_FOUND)
 			${CMAKE_CURRENT_BINARY_DIR}/man
 			COMMENT "Building manpages...")
 	endif (GZIP)
-
 	add_dependencies (docs_man docs_depends)
-	add_dependencies (docs_html docs_depends)
-	add_dependencies (docs_latex docs_depends)
 
 	# Install man (if available)
 	install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/man/
