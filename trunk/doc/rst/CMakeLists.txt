@@ -63,7 +63,6 @@ if (SPHINX_FOUND)
 
 	# Build and compress manpages
 	if (GZIP)
-		set (_gz ".gz")
 		add_custom_target (docs_man
 			COMMAND ${SPHINX_EXECUTABLE} -q -b man
 			-c "${CMAKE_CURRENT_BINARY_DIR}"
@@ -73,17 +72,8 @@ if (SPHINX_FOUND)
 			${CMAKE_CURRENT_BINARY_DIR}/man
 			COMMAND ${GZIP} -9 -f ${CMAKE_CURRENT_BINARY_DIR}/man/*.?
 			COMMENT "Building manpages...")
-	else (GZIP)
-		set (_gz)
-		add_custom_target (docs_man
-			COMMAND ${SPHINX_EXECUTABLE} -q -b man
-			-c "${CMAKE_CURRENT_BINARY_DIR}"
-			-d "${SPHINX_CACHE_DIR}"
-			${CMAKE_CURRENT_BINARY_DIR}/_source
-			${CMAKE_CURRENT_BINARY_DIR}/man
-			COMMENT "Building manpages...")
+		add_dependencies (docs_man docs_depends)
 	endif (GZIP)
-	add_dependencies (docs_man docs_depends)
 
 	# Install targets for realease documentation
 	if (SVN AND HAVE_SVN_VERSION)
@@ -147,14 +137,14 @@ endif (EXISTS ${GMT_INSTALL_EXTERNAL_MAN})
 install (DIRECTORY ${_man_source}/
 	DESTINATION ${GMT_MAN_PATH}/man1
 	COMPONENT Runtime
-	FILES_MATCHING PATTERN "*.1${_gz}")
+	FILES_MATCHING PATTERN "*.1.gz")
 install (DIRECTORY ${_man_source}/
 	DESTINATION ${GMT_MAN_PATH}/man3
 	COMPONENT Runtime
-	FILES_MATCHING PATTERN "*.3${_gz}")
+	FILES_MATCHING PATTERN "*.3.gz")
 install (DIRECTORY ${_man_source}/
 	DESTINATION ${GMT_MAN_PATH}/man5
 	COMPONENT Runtime
-	FILES_MATCHING PATTERN "*.5${_gz}")
+	FILES_MATCHING PATTERN "*.5.gz")
 
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
