@@ -78,4 +78,26 @@ if (SPHINX_FOUND)
 	add_dependencies (docs_latex docs_depends)
 endif (SPHINX_FOUND)
 
+# Install man (if available)
+# todo: gzip manpages and sort into share/man/man1, man3, and man5
+install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/man/
+	DESTINATION ${GMT_SHARE_PATH}/man/man1
+	COMPONENT Runtime
+	OPTIONAL)
+
+# Install html (if available)
+install (DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html/
+	DESTINATION ${GMT_DOC_PATH}/html
+	COMPONENT Documentation
+	OPTIONAL)
+
+# Install pdf (if available)
+install (FILES
+	${CMAKE_CURRENT_BINARY_DIR}/latex/API.pdf
+	${CMAKE_CURRENT_BINARY_DIR}/latex/GMT5.pdf
+	${CMAKE_CURRENT_BINARY_DIR}/latex/man.pdf
+	DESTINATION ${GMT_DOC_PATH}/pdf
+	COMPONENT Documentation
+	OPTIONAL)
+
 # vim: textwidth=78 noexpandtab tabstop=2 softtabstop=2 shiftwidth=2
