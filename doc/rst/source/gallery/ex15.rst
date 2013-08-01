@@ -27,4 +27,9 @@ grid files using `grdinfo <../grdinfo.html>`_.
 
 .. literalinclude:: /_verbatim/example_15.txt
 
-.. include:: fig_example_15.rst_
+.. figure:: /_images/example_15.*
+   :width: 500 px
+   :align: center
+
+   Gridding, contouring, and masking of data.
+

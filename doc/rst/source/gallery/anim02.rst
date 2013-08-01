@@ -18,4 +18,9 @@ put together, especially since our vantage point is fixed. In the next
 example we will move the "camera" around and must therefore deal with
 how to frame perspective views.
 
-.. include:: fig_anim_02.rst_
+.. figure:: /_images/anim_02.*
+   :width: 400 px
+   :align: center
+
+   Animation of a DEM using variable illumination.
+

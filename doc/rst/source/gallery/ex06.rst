@@ -15,5 +15,8 @@ this script:
 
 .. literalinclude:: /_verbatim/example_06.txt
 
-.. include:: fig_example_06.rst_
+.. figure:: /_images/example_06.*
+   :width: 500 px
+   :align: center
 
+   Two kinds of histograms.

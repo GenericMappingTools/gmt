@@ -12,4 +12,8 @@ GIF image and a simple HTML wrapper for it.
 
 .. literalinclude:: /_verbatim/anim_03.txt
 
-.. include:: fig_anim_03.rst_
+.. figure:: /_images/anim_03.*
+   :width: 400 px
+   :align: center
+
+   Orbiting a static map.

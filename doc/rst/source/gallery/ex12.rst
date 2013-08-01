@@ -17,4 +17,8 @@ image the data. We use a color palette table ``topo.cpt`` (created via
 
 .. literalinclude:: /_verbatim/example_12.txt
 
-.. include:: fig_example_12.rst_
+.. figure:: /_images/example_12.*
+   :width: 500 px
+   :align: center
+
+   Optimal triangulation of data.

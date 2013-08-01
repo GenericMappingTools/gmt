@@ -45,5 +45,8 @@ image with `psscale <../psscale.html>`_. Similarly, we run
 plot above the previous image. Adding scale and label the two plots a)
 and b) completes the illustration.
 
-.. include:: fig_example_02.rst_
+.. figure:: /_images/example_02.*
+   :width: 500 px
+   :align: center
 
+   Color images from gridded data.

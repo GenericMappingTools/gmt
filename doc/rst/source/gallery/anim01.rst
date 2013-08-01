@@ -22,5 +22,8 @@ use for the map projection, the region, the spacing around the frame,
 etc. so that the final result gave a reasonable layout. Do this planning
 on a single *PostScript* plot before running a lengthy animation script.
 
-.. include:: fig_anim_01.rst_
+.. figure:: /_images/anim_01.*
+   :width: 400 px
+   :align: center
 
+   Animation of a simple sine function.

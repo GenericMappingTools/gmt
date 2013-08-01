@@ -31,4 +31,8 @@ distortion) and not the actual distance which remains constant at 1000 km.
 
 .. literalinclude:: /_verbatim/example_24.txt
 
-.. include:: fig_example_24.rst_
+.. figure:: /_images/example_24.*
+   :width: 500 px
+   :align: center
+
+   Data selection based on geospatial criteria.

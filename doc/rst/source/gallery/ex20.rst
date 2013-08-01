@@ -19,7 +19,10 @@ The following recipe is used when designing a new symbol.
    description of symbol design). In this Section we will create two new
    symbols: a volcano and a bulls eye.
 
-   .. include:: fig_GMT_volcano.rst_
+.. figure:: /_images/GMT_volcano.*
+   :width: 500 px
+   :align: center
+
 
 #. After designing the symbol we will encode it using a simple set of
    rules. In our case we describe our volcano and bulls eye using these
@@ -76,7 +79,12 @@ Here is our final map script that produces the Figure:
 
 .. literalinclude:: /_verbatim/example_20.txt
 
-.. include:: fig_example_20.rst_
+.. figure:: /_images/example_20.*
+   :width: 500 px
+   :align: center
+
+   Using custom symbols in GMT.
+
 
 Given these guidelines you can easily make your own symbols. Symbols
 with more than one color can be obtained by making several symbol

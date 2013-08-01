@@ -12,4 +12,8 @@ used here is `sph2grd <../sph2grd.html>`_.
 
 .. literalinclude:: /_verbatim/example_39.txt
 
-.. include:: fig_example_39.rst_
+.. figure:: /_images/example_39.*
+   :width: 500 px
+   :align: center
+
+   Evaluation of spherical harmonics coefficients.

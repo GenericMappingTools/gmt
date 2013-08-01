@@ -22,4 +22,8 @@ further and extend the availability of the full projection to all of the
 
 .. literalinclude:: /_verbatim/example_26.txt
 
-.. include:: fig_example_26.rst_
+.. figure:: /_images/example_26.*
+   :width: 500 px
+   :align: center
+
+   General vertical perspective projection.

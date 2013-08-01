@@ -19,4 +19,8 @@ expect to add this functionality in a future version.
 
 .. literalinclude:: /_verbatim/anim_04.txt
 
-.. include:: fig_anim_04.rst_
+.. figure:: /_images/anim_04.*
+   :width: 400 px
+   :align: center
+
+   Flying over topography.

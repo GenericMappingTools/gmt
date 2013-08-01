@@ -26,4 +26,8 @@ transect using `psxy <../psxy.html>`_
 
 .. literalinclude:: /_verbatim/example_14.txt
 
-.. include:: fig_example_14.rst_
+.. figure:: /_images/example_14.*
+   :width: 500 px
+   :align: center
+
+   Gridding of data and trend surfaces.

@@ -30,4 +30,8 @@ gap between the profile and the label:
 The output shows the sea-surface slopes along 42 descending Geosat
 tracks in the Eltanin and Udintsev fracture zone region in a Mercator projection.
 
-.. include:: fig_example_09.rst_
+.. figure:: /_images/example_09.*
+   :width: 500 px
+   :align: center
+
+   Time-series as wiggles along a track.

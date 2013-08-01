@@ -64,7 +64,7 @@ option causes tick marks pointing in the downhill direction to be drawn
 on the innermost, closed contours. For the upper panel we also added -
 and + to the local lows and highs. You can find this illustration as
 
-.. include:: fig_includes/fig_example_01.rst_
+.. figure:: /_images/example_01.*
 
 Image presentations
 -------------------
@@ -111,7 +111,7 @@ image with `psscale <psscale.html>`_. Similarly, we run
 plot above the previous image. Adding scale and label the two plots a)
 and b) completes the illustration.
 
-.. include:: fig_includes/fig_example_02.rst_
+.. figure:: /_images/example_02.*
 
 Spectral estimation and xy-plots
 --------------------------------
@@ -155,7 +155,7 @@ ship gravity anomalies have more power than altimetry derived gravity
 for short wavelengths and that the coherency between the two signals
 improves dramatically for wavelengths > 20 km.
 
-.. include:: fig_includes/fig_example_03.rst_
+.. figure:: /_images/example_03.*
 
 A 3-D perspective mesh plot
 ---------------------------
@@ -176,7 +176,7 @@ The purpose of the color palette file ``zero.cpt`` is to have the positive topog
 mesh painted light gray (the remainder is white). The left side of
 Figure shows the complete illustration.
 
-.. include:: fig_includes/fig_example_04.rst_
+.. figure:: /_images/example_04.*
 
 The second part of the script shows how to make the color version of
 this figure that was printed in our first article in *EOS Trans. AGU* (8
@@ -224,7 +224,7 @@ the output of `grdgradient <grdgradient.html>`_ to
 `grdhisteq <grdhisteq.html>`_. The shell-script above
 will result in a plot like the one in Figure [fig:example\ :sub:`0`\ 5].
 
-.. include:: fig_includes/fig_example_05.rst_
+.. figure:: /_images/example_05.*
 
 Plotting of histograms
 ----------------------
@@ -241,7 +241,7 @@ this script:
 
 .. literalinclude:: /_verbatim/example_06.txt
 
-.. include:: fig_includes/fig_example_06.rst_
+.. figure:: /_images/example_06.*
 
 A simple location map
 ---------------------
@@ -260,7 +260,7 @@ digitized from available maps [24]_. We create the final location map
 
 .. literalinclude:: /_verbatim/example_07.txt
 
-.. include:: fig_includes/fig_example_07.rst_
+.. figure:: /_images/example_07.*
 
 The same figure could equally well be made in color, which could be
 rasterized and made into a slide for a meeting presentation. The script
@@ -282,7 +282,7 @@ Figure [fig:example\ :sub:`0`\ 8] by running this script:
 
 .. literalinclude:: /_verbatim/example_08.txt
 
-.. include:: fig_includes/fig_example_08.rst_
+.. figure:: /_images/example_08.*
 
 Plotting time-series along tracks
 ---------------------------------
@@ -315,7 +315,7 @@ The output shows the sea-surface slopes along 42 descending Geosat
 tracks in the Eltanin and Udintsev fracture zone region in a Mercator
 projection.
 
-.. include:: fig_includes/fig_example_09.rst_
+.. figure:: /_images/example_09.*
 
 A geographical bar graph plot
 -----------------------------
@@ -333,7 +333,7 @@ Our script that produces Figure ex_10 reads:
 
 .. literalinclude:: /_verbatim/example_10.txt
 
-.. include:: fig_includes/fig_example_10.rst_
+.. figure:: /_images/example_10.*
 
 Making a 3-D RGB color cube
 ---------------------------
@@ -366,7 +366,7 @@ Here is the shell script to generate the RGB cube in Figure [fig:example\ :sub:`
 
 .. literalinclude:: /_verbatim/example_11.txt
 
-.. include:: fig_includes/fig_example_11.rst_
+.. figure:: /_images/example_11.*
 
 Optimal triangulation of data
 -----------------------------
@@ -386,7 +386,7 @@ image the data. We use a color palette table ``topo.cpt`` (created via
 
 .. literalinclude:: /_verbatim/example_12.txt
 
-.. include:: fig_includes/fig_example_12.rst_
+.. figure:: /_images/example_12.*
 
 Plotting of vector fields
 -------------------------
@@ -407,7 +407,7 @@ the plot (Figure [fig:example:sub:`1`\ 3]:
 
 .. literalinclude:: /_verbatim/example_13.txt
 
-.. include:: fig_includes/fig_example_13.rst_
+.. figure:: /_images/example_13.*
 
 Gridding of data and trend surfaces
 -----------------------------------
@@ -436,7 +436,7 @@ transect using `psxy <psxy.html>`_
 
 .. literalinclude:: /_verbatim/example_14.txt
 
-.. include:: fig_includes/fig_example_14.rst_
+.. figure:: /_images/example_14.*
 
 Gridding, contouring, and masking of unconstrained areas
 --------------------------------------------------------
@@ -465,7 +465,7 @@ grid files using `grdinfo <grdinfo.html>`_.
 
 .. literalinclude:: /_verbatim/example_15.txt
 
-.. include:: fig_includes/fig_example_15.rst_
+.. figure:: /_images/example_15.*
 
 Gridding of data, continued
 ---------------------------
@@ -522,7 +522,7 @@ request for interval (700,725).
 
 .. literalinclude:: /_verbatim/example_16.txt
 
-.. include:: fig_includes/fig_example_16.rst_
+.. figure:: /_images/example_16.*
 
 Images clipped by coastlines
 ----------------------------
@@ -555,7 +555,7 @@ color palettes and ways to draw color legends.
 
 .. literalinclude:: /_verbatim/example_17.txt
 
-.. include:: fig_includes/fig_example_17.rst_
+.. figure:: /_images/example_17.*
 
 Volumes and Spatial Selections
 ------------------------------
@@ -577,7 +577,7 @@ illustration is presented in Figure [fig:example\ :sub:`1`\ 8].
 
 .. literalinclude:: /_verbatim/example_18.txt
 
-.. include:: fig_includes/fig_example_18.rst_
+.. figure:: /_images/example_18.*
 
 Color patterns on maps
 ----------------------
@@ -602,7 +602,7 @@ have changed places (Figure [fig:example:sub:`1`\ 9]).
 
 .. literalinclude:: /_verbatim/example_19.txt
 
-.. include:: fig_includes/fig_example_19.rst_
+.. figure:: /_images/example_19.*
 
 Custom plot symbols
 -------------------
@@ -623,7 +623,10 @@ The following recipe is used when designing a new symbol.
    description of symbol design). In this Section we will create two new
    symbols: a volcano and a bulls eye.
 
-.. include:: fig_includes/fig_GMT_volcano.rst_
+.. figure:: /_images/GMT_volcano.*
+   :width: 500 px
+   :align: center
+
 
 #. After designing the symbol we will encode it using a simple set of
    rules. In our case we describe our volcano and bulls eye using these
@@ -680,7 +683,7 @@ Here is our final map script that produces Figure [fig:example\ :sub:`2`\ 0]:
 
 .. literalinclude:: /_verbatim/example_20.txt
 
-.. include:: fig_includes/fig_example_20.rst_
+.. figure:: /_images/example_20.*
 
 Given these guidelines you can easily make your own symbols. Symbols
 with more than one color can be obtained by making several symbol
@@ -727,7 +730,7 @@ which produces the plot in Figure [fig:example\ :sub:`2`\ 1], suggesting
 Wessel has missed a few trains if he had hoped to cash in on the
 Internet bubble...
 
-.. include:: fig_includes/fig_example_21.rst_
+.. figure:: /_images/example_21.*
 
 World-wide seismicity the last 7 days
 -------------------------------------
@@ -752,7 +755,7 @@ giving the URL where these and similar data can be obtained.
 
 .. literalinclude:: /_verbatim/example_22.txt
 
-.. include:: fig_includes/fig_example_22.rst_
+.. figure:: /_images/example_22.*
 
 All great-circle paths lead to Rome
 -----------------------------------
@@ -779,7 +782,7 @@ Section [sec:example\ :sub:`2`\ 5]).
 
 .. literalinclude:: /_verbatim/example_23.txt
 
-.. include:: fig_includes/fig_example_23.rst_
+.. figure:: /_images/example_23.*
 
 Data selection based on geospatial criteria
 -------------------------------------------
@@ -812,7 +815,7 @@ distortion) and not the actual distance which remains constant at 1000 km.
 
 .. literalinclude:: /_verbatim/example_24.txt
 
-.. include:: fig_includes/fig_example_24.rst_
+.. figure:: /_images/example_24.*
 
 Global distribution of antipodes
 --------------------------------
@@ -855,7 +858,7 @@ categorical data, like these, that should not be interpolated.
 
 .. literalinclude:: /_verbatim/example_25.txt
 
-.. include:: fig_includes/fig_example_25.rst_
+.. figure:: /_images/example_25.*
 
 General vertical perspective projection
 ---------------------------------------
@@ -879,7 +882,7 @@ further and extend the availability of the full projection to all of the
 
 .. literalinclude:: /_verbatim/example_26.txt
 
-.. include:: fig_includes/fig_example_26.rst_
+.. figure:: /_images/example_26.*
 
 Plotting Sandwell/Smith Mercator img grids
 ------------------------------------------
@@ -914,7 +917,7 @@ painted black. A color scale bar was then added to complete the illustration.
 
 .. literalinclude:: /_verbatim/example_27.txt
 
-.. include:: fig_includes/fig_example_27.rst_
+.. figure:: /_images/example_27.*
 
 Mixing UTM and geographic data sets
 -----------------------------------
@@ -943,7 +946,7 @@ label Kilauea crater to complete the figure.
 
 .. literalinclude:: /_verbatim/example_28.txt
 
-.. include:: fig_includes/fig_example_28.rst_
+.. figure:: /_images/example_28.*
 
 Gridding spherical surface data using splines
 ---------------------------------------------
@@ -972,7 +975,7 @@ imaged with `grdimage <grdimage.html>`_ and
 
 .. literalinclude:: /_verbatim/example_29.txt
 
-.. include:: fig_includes/fig_example_29.rst_
+.. figure:: /_images/example_29.*
 
 Trigonometric functions plotted in graph mode
 ---------------------------------------------
@@ -988,7 +991,7 @@ the given angle.
 
 .. literalinclude:: /_verbatim/example_30.txt
 
-.. include:: fig_includes/fig_example_30.rst_
+.. figure:: /_images/example_30.*
 
 Using non-default fonts in *PostScript*
 ---------------------------------------
@@ -1020,7 +1023,7 @@ outlined fonts or to convert to a PDF-file.
 
 .. literalinclude:: /_verbatim/example_31.txt
 
-.. include:: fig_includes/fig_example_31.rst_
+.. figure:: /_images/example_31.*
     
 Draping an image over topography
 --------------------------------
@@ -1066,7 +1069,7 @@ did not want to store the 58 MB DEM file, whose location is mentioned in the scr
 
 .. literalinclude:: /_verbatim/example_32.txt
 
-.. include:: fig_includes/fig_example_32.rst_
+.. figure:: /_images/example_32.*
 
 Stacking automatically generated cross-profiles
 -----------------------------------------------
@@ -1081,7 +1084,7 @@ variations about the stacked median profile.
 
 .. literalinclude:: /_verbatim/example_33.txt
 
-.. include:: fig_includes/fig_example_33.rst_
+.. figure:: /_images/example_33.*
 
 Using country polygons for plotting and shading
 -----------------------------------------------
@@ -1096,7 +1099,7 @@ will continue to debate for some time.
 
 .. literalinclude:: /_verbatim/example_34.txt
 
-.. include:: fig_includes/fig_example_34.rst_
+.. figure:: /_images/example_34.*
 
 Spherical triangulation and distance calculations
 -------------------------------------------------
@@ -1111,7 +1114,7 @@ placed on top.
 
 .. literalinclude:: /_verbatim/example_35.txt
 
-.. include:: fig_includes/fig_example_35.rst_
+.. figure:: /_images/example_35.*
 
 Spherical gridding using Renka's algorithms
 -------------------------------------------
@@ -1129,7 +1132,7 @@ with `greenspline <greenspline.html>`_.
 
 .. literalinclude:: /_verbatim/example_36.txt
 
-.. include:: fig_includes/fig_example_36.rst_
+.. figure:: /_images/example_36.*
 
 Spectral coherence between gravity and bathymetry grids
 -------------------------------------------------------
@@ -1143,7 +1146,7 @@ the grids being extended and padded to a suitable dimension.
 
 .. literalinclude:: /_verbatim/example_37.txt
 
-.. include:: fig_includes/fig_example_37.rst_
+.. figure:: /_images/example_37.*
 
 Histogram equalization of bathymetry grids
 ------------------------------------------
@@ -1155,7 +1158,7 @@ used here is `grdhisteq <grdhisteq.html>`_.
 
 .. literalinclude:: /_verbatim/example_38.txt
 
-.. include:: fig_includes/fig_example_38.rst_
+.. figure:: /_images/example_38.*
 
 Evaluation of spherical harmonics coefficients
 ----------------------------------------------
@@ -1170,14 +1173,14 @@ used here is `sph2grd <sph2grd.html>`_.
 
 .. literalinclude:: /_verbatim/example_39.txt
 
-.. include:: fig_includes/fig_example_39.rst_
+.. figure:: /_images/example_39.*
 
 line simplification and area calculations
 ----------------------------------------------
 
 .. literalinclude:: /_verbatim/example_40.txt
 
-.. include:: fig_includes/fig_example_40.rst_
+.. figure:: /_images/example_40.*
 
 Creating GMT Animations
 =======================

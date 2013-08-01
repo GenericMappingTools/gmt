@@ -13,4 +13,8 @@ from -5000 meter to sea-level. We produce the Figure by running this script:
 
 .. literalinclude:: /_verbatim/example_08.txt
 
-.. include:: fig_example_08.rst_
+.. figure:: /_images/example_08.*
+   :width: 500 px
+   :align: center
+
+   A 3-D histogram.

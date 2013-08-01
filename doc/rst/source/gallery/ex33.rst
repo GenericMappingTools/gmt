@@ -14,4 +14,8 @@ variations about the stacked median profile.
 
 .. literalinclude:: /_verbatim/example_33.txt
 
-.. include:: fig_example_33.rst_
+.. figure:: /_images/example_33.*
+   :width: 500 px
+   :align: center
+
+   Stacking automatically generated cross-profiles.

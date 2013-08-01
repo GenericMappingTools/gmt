@@ -42,4 +42,8 @@ ship gravity anomalies have more power than altimetry derived gravity
 for short wavelengths and that the coherency between the two signals
 improves dramatically for wavelengths > 20 km.
 
-.. include:: fig_example_03.rst_
+.. figure:: /_images/example_03.*
+   :width: 500 px
+   :align: center
+
+   Spectral estimation and x=y-plots.

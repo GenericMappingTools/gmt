@@ -13,4 +13,8 @@ placed on top.
 
 .. literalinclude:: /_verbatim/example_35.txt
 
-.. include:: fig_example_35.rst_
+.. figure:: /_images/example_35.*
+   :width: 500 px
+   :align: center
+
+   Spherical triangulation and distance calculations

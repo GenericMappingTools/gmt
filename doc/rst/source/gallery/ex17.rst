@@ -31,4 +31,8 @@ color palettes and ways to draw color legends.
 
 .. literalinclude:: /_verbatim/example_17.txt
 
-.. include:: fig_example_17.rst_
+.. figure:: /_images/example_17.*
+   :width: 500 px
+   :align: center
+
+   Clipping of images using coastlines.

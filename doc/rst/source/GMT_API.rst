@@ -24,7 +24,10 @@
 
 **Alfred Wegener Institute, Germany**
 
-.. include:: fig_includes/fig_GMT_coverlogo.rst_
+.. figure:: /_images/GMT_coverlogo.*
+   :width: 500 px
+   :align: center
+
 
 .. contents:: Table of Contents
 
@@ -34,7 +37,14 @@ Introduction
 Preamble
 --------
 
-.. include:: fig_includes/fig_GMT4_mode.png.rst_
+.. figure:: /_images/GMT4_mode.png
+   :height: 535 px
+   :width: 1013 px
+   :align: center
+   :scale: 50 %
+
+   GMT 4 programs contain all the high-level functionality.
+
 
 Prior to version 5, the bulk of *GMT* functionality was coded directly
 in the standard *GMT* C program modules (e.g., ``surface.c``, ``psxy.c``, ``grdimage.c``, etc.). The
@@ -53,7 +63,14 @@ make extensive use of system calls to `psxy <psxy.html>`_ and
 symbols and text that make up a map legend, making it a very awkward
 program to maintain.
 
-.. include:: fig_includes/fig_GMT5_mode.png.rst_
+.. figure:: /_images/GMT5_mode.png
+   :height: 569 px
+   :width: 1013 px
+   :align: center
+   :scale: 50 %
+
+   GMT 5 programs contain all the high-level functionality.
+
 
 Starting with *GMT* version 5, all standard *GMT* programs have been
 split into a short driver program (the “new” *GMT*  programs) and a
