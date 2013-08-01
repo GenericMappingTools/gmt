@@ -39,7 +39,7 @@ if (SPHINX_FOUND)
 	if (WIN32)
 		# this is broken until includes genreated by do_fig_includes_in_build.sh
 		# are inserted verbatim into rst sources.
-	else (WIN32)
+		# But we need to have the targets deffined otherwise the whole build fails
 		add_custom_target (docs_html
 			# todo: remove do_fig_includes_in_build.sh
 			COMMAND ${BASH}
@@ -50,7 +50,7 @@ if (SPHINX_FOUND)
 			-d "${SPHINX_CACHE_DIR}"
 			${CMAKE_CURRENT_BINARY_DIR}/_source
 			${CMAKE_CURRENT_BINARY_DIR}/html
-			COMMENT "Building HTML documentation...")
+			COMMENT "Building HTML documentation... it takes more than 2-3 minutes")
 
 		add_custom_target (docs_latex
 			# todo: remove do_fig_includes_in_build.sh
@@ -62,7 +62,31 @@ if (SPHINX_FOUND)
 			${CMAKE_CURRENT_BINARY_DIR}/_source
 			${CMAKE_CURRENT_BINARY_DIR}/latex
 			COMMAND make -C ${CMAKE_CURRENT_BINARY_DIR}/latex all-pdf
-			COMMENT "Building CookBook PDF...")
+			COMMENT "Building CookBook PDF... it takes more than 2-3 minutes")
+	else (WIN32)
+		add_custom_target (docs_html
+			# todo: remove do_fig_includes_in_build.sh
+			COMMAND ${BASH}
+			${CMAKE_CURRENT_SOURCE_DIR}/do_fig_includes_in_build.sh
+			png ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
+			COMMAND ${SPHINX_EXECUTABLE} -q -b html
+			-c "${SPHINX_CONFIG_DIR}"
+			-d "${SPHINX_CACHE_DIR}"
+			${CMAKE_CURRENT_BINARY_DIR}/_source
+			${CMAKE_CURRENT_BINARY_DIR}/html
+			COMMENT "Building HTML documentation... it takes more than 2-3 minutes")
+
+		add_custom_target (docs_latex
+			# todo: remove do_fig_includes_in_build.sh
+			COMMAND ${BASH} ${CMAKE_CURRENT_SOURCE_DIR}/do_fig_includes_in_build.sh
+			pdf ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
+			COMMAND ${SPHINX_EXECUTABLE} -q -b latex
+			-c "${SPHINX_CONFIG_DIR}"
+			-d "${SPHINX_CACHE_DIR}"
+			${CMAKE_CURRENT_BINARY_DIR}/_source
+			${CMAKE_CURRENT_BINARY_DIR}/latex
+			COMMAND make -C ${CMAKE_CURRENT_BINARY_DIR}/latex all-pdf
+			COMMENT "Building CookBook PDF... it takes more than 2-3 minutes")
 	endif (WIN32)
 
 	add_custom_target (docs_man
