@@ -20,7 +20,12 @@ illustration is presented in Figure.
 
 .. literalinclude:: /_verbatim/example_18.txt
 
-.. include:: fig_example_18.rst_
+.. figure:: /_images/example_18.*
+   :width: 500 px
+   :align: center
+
+   Volumes and geo-spatial selections.
+
 
 .. [1]
    See http://topex.ucsd.edu/marine_grav/mar_grav.html.

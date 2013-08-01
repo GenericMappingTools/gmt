@@ -22,4 +22,8 @@ have changed places.
 
 .. literalinclude:: /_verbatim/example_19.txt
 
-.. include:: fig_example_19.rst_
+.. figure:: /_images/example_19.*
+   :width: 500 px
+   :align: center
+
+   Using color patterns and additional PostScript material in illustrations.

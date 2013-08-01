@@ -23,7 +23,12 @@ giving the URL where these and similar data can be obtained.
 
 .. literalinclude:: /_verbatim/example_22.txt
 
-.. include:: fig_example_22.rst_
+.. figure:: /_images/example_22.*
+   :width: 500 px
+   :align: center
+
+   World-wide seismicity the last 7 days.
+
 
 .. [1]
    You can also use the utility **curl**

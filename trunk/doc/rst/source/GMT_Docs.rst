@@ -24,7 +24,14 @@
 
 **Alfred Wegener Institute, Germany**
 
-.. include:: fig_includes/fig_GMT5_Summit_2011.jpg.rst_
+.. figure:: /_images/GMT5_Summit_2011.jpg
+   :height: 599 px
+   :width: 1013 px
+   :align: center
+   :scale: 50 %
+
+   The four horsemen of the GMT apocalypse: Remko Scharroo, Paul Wessel, Walter H.F. Smith,
+   and Joaquim Luis at the GMT Developer Summit in Honolulu, Hawaii during February 14-18, 2011.
 
 Acknowledgments
 ===============
@@ -1882,11 +1889,25 @@ command line (see below) will take precedent over the default values.
 E.g., if your ``gmt.conf`` file has *x* offset = 1\ **i** as default, the
 **-X**\ 1.5\ **i** option will override the default and set the offset to 1.5 inches.
 
-.. include:: fig_includes/fig_GMT_Defaults_1a.rst_
+.. figure:: /_images/GMT_Defaults_1a.*
+   :width: 500 px
+   :align: center
 
-.. include:: fig_includes/fig_GMT_Defaults_1b.rst_
+   Some *GMT* parameters that affect plot appearance.
 
-.. include:: fig_includes/fig_GMT_Defaults_1c.rst_
+
+.. figure:: /_images/GMT_Defaults_1b.*
+   :width: 500 px
+   :align: center
+
+   More *GMT* parameters that affect plot appearance.
+
+
+.. figure:: /_images/GMT_Defaults_1c.*
+   :width: 500 px
+   :align: center
+
+   Even more *GMT* parameters that affect plot appearance.
 
 There are at least two good reasons why the *GMT* default options are
 placed in a separate parameter file:
@@ -2058,7 +2079,12 @@ may be specified in one of three ways (Figure ):
    possibly the grid registration (see
    Section [sec:grid_registration]).
 
-.. include:: fig_includes/fig_GMT_-R.rst_
+.. figure:: /_images/GMT_-R.*
+   :width: 500 px
+   :align: center
+
+   The plot region can be specified in two different ways. (a) Extreme values
+   for each dimension, or (b) coordinates of lower left and upper right corners.
 
 For rectilinear projections the first two forms give identical results.
 Depending on the selected map projection (or the kind of expected input
@@ -2183,7 +2209,12 @@ on all *GMT* projections and the required parameters, see the
 show examples of every projection in the next Chapters, and a quick
 summary of projection syntax was given in Chapter [ch:3].
 
-.. include:: fig_includes/fig_GMT_-J.rst_
+.. figure:: /_images/GMT_-J.*
+   :width: 500 px
+   :align: center
+
+   The 30+ map projections and coordinate transformations available in *GMT*.
+
 
 Map frame and axes annotations: The **-B** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2354,7 +2385,14 @@ according to the **FORMAT_GEO_MAP** template and
 **MAP_DEGREE_SYMBOL** setting. A simple example of part of a basemap
 is shown in Figure .
 
-.. include:: fig_includes/fig_GMT_-B_geo_1.rst_
+.. figure:: /_images/GMT_-B_geo_1.*
+   :width: 500 px
+   :align: center
+
+   Geographic map border using separate selections for annotation,
+   frame, and grid intervals.  Formatting of the annotation is controlled by
+   the parameter **FORMAT_GEO_MAP** in your gmt.conf.
+
 
 The machinery for primary and secondary annotations introduced for
 time-series axes can also be utilized for geographic basemaps. This may
@@ -2363,7 +2401,11 @@ seconds-annotations. For a more complicated basemap example using
 several sets of intervals, including different intervals and pen
 attributes for grid lines and grid crosses, see Figure .
 
-.. include:: fig_includes/fig_GMT_-B_geo_2.rst_
+.. figure:: /_images/GMT_-B_geo_2.*
+   :width: 500 px
+   :align: center
+
+   Geographic map border with both primary (P) and secondary (S) components.
 
 Cartesian linear axes
 ^^^^^^^^^^^^^^^^^^^^^
@@ -2380,7 +2422,13 @@ used directly (.e.g, "%.2f" for a fixed, two decimals format). Note that
 for these axes you may use the *unit* setting to add a unit string to
 each annotation (see Figure ).
 
-.. include:: fig_includes/fig_GMT_-B_linear.rst_
+.. figure:: /_images/GMT_-B_linear.*
+   :width: 500 px
+   :align: center
+
+   Linear Cartesian projection axis.  Long tickmarks accompany
+   annotations, shorter ticks indicate frame interval. The axis label is
+   optional. For this example we used -R0/12/0/1 -JX3i/0.4i -Ba4f2g1:Frequency:
 
 Cartesian log\ :sub:`10` axes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -2401,7 +2449,18 @@ specific to log axes:
 #. Append **p** to *stride*. Then, annotations appear as 10 raised to
    log\ :sub:`10` of the value (e.g., 10\ :sup:`-5`).
 
-.. include:: fig_includes/fig_GMT_-B_log.rst_
+.. figure:: /_images/GMT_-B_log.*
+   :width: 500 px
+   :align: center
+
+   Logarithmic projection axis using separate values for annotation,
+   frame, and grid intervals.  (top) Here, we have chosen to annotate the actual
+   values.  Interval = 1 means every whole power of 10, 2 means 1, 2, 5 times
+   powers of 10, and 3 means every 0.1 times powers of 10.  We used
+   -R1/1000/0/1 -JX3il/0.4i -Ba1f2g3. (middle) Here, we have chosen to
+   annotate log :math:`_10` of the actual values, with -Ba1f2g3l.
+   (bottom) We annotate every power of 10 using log :math:`_10` of the actual values
+   as exponents, with -Ba1f2g3p.
 
 Cartesian exponential axes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -2415,7 +2474,15 @@ annotation itself will be plotted as un-transformed units. E.g., if
 *stride* = 1 and power = 0.5 (i.e., sqrt), then equidistant annotations
 labeled 1, 4, 9, ... will appear.
 
-.. include:: fig_includes/fig_GMT_-B_pow.rst_
+.. figure:: /_images/GMT_-B_pow.*
+   :width: 500 px
+   :align: center
+
+   Exponential or power projection axis. (top) Using an exponent of 0.5
+   yields a :math:`sqrt(x)` axis.  Here, intervals refer to actual data values, in
+   -R0/100/0/1 -JX3ip0.5/0.4i -Ba20f10g5.
+   (bottom) Here, intervals refer to projected values, although the annotation
+   uses the corresponding unprojected values, as in -Ba3f2g1p.
 
 Cartesian time axes
 ^^^^^^^^^^^^^^^^^^^
@@ -2441,7 +2508,11 @@ These commands result in Figure . Note the leading hyphen in the
 :ref:`FORMAT_DATE_MAP <FORMAT_DATE_MAP>` removes leading zeros from calendar items (e.g.,
 02 becomes 2).
 
-.. include:: fig_includes/fig_GMT_-B_time1.rst_
+.. figure:: /_images/GMT_-B_time1.*
+   :width: 500 px
+   :align: center
+
+   Cartesian time axis, example 1.
 
 The next example shows two different ways to annotate an axis portraying 2 days in July 1969:
 
@@ -2457,7 +2528,11 @@ specifying **a**\ 1\ **D**). Note how the clock format only selects
 hours and minutes (no seconds) and the date format selects a month name,
 followed by one space and a two-digit day-of-month number.
 
-.. include:: fig_includes/fig_GMT_-B_time2.rst_
+.. figure:: /_images/GMT_-B_time2.*
+   :width: 500 px
+   :align: center
+
+   Cartesian time axis, example 2.
 
 The third example presents two years, annotating both the years and every 3rd month.
 
@@ -2473,7 +2548,11 @@ only and :ref:`FORMAT_TIME_PRIMARY_MAP <FORMAT_TIME_PRIMARY_MAP>` selects the 1-
 case abbreviation of month names using the current language (selected by
 :ref:`TIME_LANGUAGE <TIME_LANGUAGE>`).
 
-.. include:: fig_includes/fig_GMT_-B_time3.rst_
+.. figure:: /_images/GMT_-B_time3.*
+   :width: 500 px
+   :align: center
+
+   Cartesian time axis, example 3.
 
 The fourth example (Figure ) only shows a few hours of a day, using
 relative time by specifying **t** in the **-R** option while the
@@ -2485,7 +2564,11 @@ annotations, ask for a 12-hour clock, and let time go from right to left:
      gmt set FORMAT_CLOCK_MAP=-hham FONT_ANNOT_PRIMARY +9p
      gmt psbasemap -R0.2t/0.35t/0/1 -JX-5i/0.2i -Bpa15mf5m -Bsa1H -BS -P > GMT_-B_time4.ps 
 
-.. include:: fig_includes/fig_GMT_-B_time4.rst_
+.. figure:: /_images/GMT_-B_time4.*
+   :width: 500 px
+   :align: center
+
+   Cartesian time axis, example 4.
 
 The fifth example shows a few weeks of time (Figure ). The lower axis
 shows ISO weeks with week numbers and abbreviated names of the weekdays.
@@ -2500,7 +2583,11 @@ The upper uses Gregorian weeks (which start at the day chosen by
     gmt set FORMAT_DATE_MAP o TIME_WEEK_START Sunday FORMAT_TIME_SECONDARY_MAP Chararacter
     gmt psbasemap -R -J -Bpa3Kf1k -Bsa1r -BS -O -Y0.65i >> GMT_-B_time5.ps 
 
-.. include:: fig_includes/fig_GMT_-B_time5.rst_
+.. figure:: /_images/GMT_-B_time5.*
+   :width: 500 px
+   :align: center
+
+   Cartesian time axis, example 5.
 
 Our sixth example shows the first five months of 1996, and we have
 annotated each month with an abbreviated, upper case name and 2-digit
@@ -2511,7 +2598,11 @@ year. Only the primary axes information is specified.
     gmt set FORMAT_DATE_MAP "o yy" FORMAT_TIME_PRIMARY_MAP Abbreviated
     gmt psbasemap -R1996T/1996-6T/0/1 -JX5i/0.2i -Ba1Of1d -BS -P > GMT_-B_time6.ps 
 
-.. include:: fig_includes/fig_GMT_-B_time6.rst_
+.. figure:: /_images/GMT_-B_time6.*
+   :width: 500 px
+   :align: center
+
+   Cartesian time axis, example 6.
 
 Our seventh and final example illustrates annotation of year-days.
 Unless we specify the formatting with a leading hyphen in
@@ -2525,7 +2616,11 @@ least half of a full interval.
     gmt set FORMAT_DATE_MAP jjj TIME_INTERVAL_FRACTION 0.05 FONT_ANNOT_PRIMARY +9p
     gmt psbasemap -R2000-12-15T/2001-1-15T/0/1 -JX5i/0.2i -Bpa5Df1d -Bsa1Y -BS -P > GMT_-B_time7.ps
 
-.. include:: fig_includes/fig_GMT_-B_time7.rst_
+.. figure:: /_images/GMT_-B_time7.*
+   :width: 500 px
+   :align: center
+
+   Cartesian time axis, example 7.
 
 Custom axes
 ^^^^^^^^^^^
@@ -2575,7 +2670,12 @@ annotations on the *x*-axis and irregular annotations on the *y*-axis.
                   --MAP_ANNOT_OFFSET_SECONDARY=10p --MAP_GRID_PEN_SECONDARY=2p >> GMT_-B_custom.ps
     rm -f [xy]annots.txt
 
-.. include:: fig_includes/fig_GMT_-B_custom.rst_
+.. figure:: /_images/GMT_-B_custom.*
+   :width: 500 px
+   :align: center
+
+   Custom and irregular annotations, tick-marks, and gridlines.
+
 
 Portrait plot orientation: The **-P** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2594,7 +2694,12 @@ rotating the coordinate system counterclockwise by 90. By default the
 be changed when using different media, such as 11" x 17" or large format
 plotters (Figure ).
 
-.. include:: fig_includes/fig_GMT_-P.rst_
+.. figure:: /_images/GMT_-P.*
+   :width: 500 px
+   :align: center
+
+   Users can specify Landscape [Default] or Portrait -P) orientation.
+
 
 Plot overlays: The **-K** **-O** options
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2614,7 +2719,12 @@ traced to the incorrect use of these options. If you run only one plot
 program, ignore both the **-O** and **-K** options; they are only used
 when stacking plots.
 
-.. include:: fig_includes/fig_GMT_-OK.rst_
+.. figure:: /_images/GMT_-OK.*
+   :width: 500 px
+   :align: center
+
+   A final **PS** file consists of any number of individual pieces.
+
 
 Timestamps on plots: The **-U** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2623,7 +2733,12 @@ The **-U** option draws *UNIX* System time stamp. Optionally, append an
 arbitrary text string (surrounded by double quotes), or the code **c**,
 which will plot the current command string (Figure ).
 
-.. include:: fig_includes/fig_GMT_-U.rst_
+.. figure:: /_images/GMT_-U.*
+   :width: 500 px
+   :align: center
+
+   The -U option makes it easy to date a plot.
+
 
 Verbose feedback: The **-V** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2655,7 +2770,11 @@ The offsets are measured in the current coordinates system (which can be
 rotated using the initial **-P** option; subsequent **-P** options for
 overlays are ignored).
 
-.. include:: fig_includes/fig_GMT_-XY.rst_
+.. figure:: /_images/GMT_-XY.*
+   :width: 500 px
+   :align: center
+
+   Plot origin can be translated freely with -X -Y.
 
 OGR/GMT GIS i/o: The **-a** option
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -2942,7 +3061,12 @@ within each cell (Figure [fig:GMT:sub:`r`\ egistration]). In the case of
 pixel registration the number of nodes are related to region and grid
 spacing by
 
-.. include:: fig_includes/fig_GMT_registration.rst_
+.. figure:: /_images/GMT_registration.*
+   :width: 500 px
+   :align: center
+
+   Gridline- and pixel-registration of data nodes.
+
 
 .. math::
 
@@ -3316,7 +3440,11 @@ alternate the color of adjacent items.
 Figure [fig:GMT\ :sub:`l`\ inecap] shows various lines made in this
 fashion. See the `gmt.conf <gmt.conf.html>`_ man page for more information.
 
-.. include:: fig_includes/fig_GMT_linecap.rst_
+.. figure:: /_images/GMT_linecap.*
+   :width: 500 px
+   :align: center
+
+   Line appearance can be varied by using **PS_LINE_CAP**
 
 Specifying area fill attributes
 -------------------------------
@@ -4363,7 +4491,12 @@ of data:
 
 #. Calendar time coordinates
 
-.. include:: fig_includes/fig_GMT_arrows.rst_
+.. figure:: /_images/GMT_arrows.*
+   :width: 500 px
+   :align: center
+
+   Examples of Cartesian (left), circular (middle), and geo-vectors (right) for different
+   attribute specifications. Note that both full and half arrow-heads can be specified, as well as no head at all.
 
 Regular floating point coordinates
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -4381,7 +4514,12 @@ lengths) by a slash, e.g., **-Jx**\ 0.1i/0.5i or **-JX**\ 8i/5i. Thus,
 our :math:`y = \sqrt{x}` data sets will plot as shown in
 Figure [fig:GMT\ :sub:`l`\ inear].
 
-.. include:: fig_includes/fig_GMT_linear.rst_
+.. figure:: /_images/GMT_linear.*
+   :width: 500 px
+   :align: center
+
+   Linear transformation of Cartesian coordinates.
+
 
 The complete commands given to produce this plot were
 
@@ -4404,7 +4542,12 @@ do this, simply specify the length to be recomputed as 0.
 Geographic coordinates
 ^^^^^^^^^^^^^^^^^^^^^^
 
-.. include:: fig_includes/fig_GMT_linear_d.rst_
+.. figure:: /_images/GMT_linear_d.*
+   :width: 500 px
+   :align: center
+
+   Linear transformation of map coordinates.
+
 
 While the Cartesian linear projection is primarily designed for regular
 floating point *x*,\ *y* data, it is sometimes necessary to plot
@@ -4429,7 +4572,12 @@ Figure [fig:GMT\ :sub:`l`\ inear\ :sub:`d`].
 Calendar time coordinates
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. include:: fig_includes/fig_GMT_linear_cal.rst_
+.. figure:: /_images/GMT_linear_cal.*
+   :width: 500 px
+   :align: center
+
+   Linear transformation of calendar coordinates.
+
 
 Several particular issues arise when we seek to make linear plots using
 calendar date/time as the input coordinates. As far as setting up the
@@ -4464,7 +4612,12 @@ general, the options provided with **-JX** will prevail.
 Cartesian logarithmic projection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: fig_includes/fig_GMT_log.rst_
+.. figure:: /_images/GMT_log.*
+   :width: 500 px
+   :align: center
+
+   Logarithmic transformation of hBcoordinates.
+
 
 The log\ :math:`_{10}` transformation is simply
 :math:`u' = a \log_{10}(u) + b` and is selected by appending an **l**
@@ -4486,7 +4639,12 @@ the *y*-scale.
 Cartesian power projection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: fig_includes/fig_GMT_pow.rst_
+.. figure:: /_images/GMT_pow.*
+   :width: 500 px
+   :align: center
+
+   Exponential or power transformation of hBcoordinates.
+
 
 This projection uses :math:`u' = a u^b + c` and allows us to explore
 exponential relationships like :math:`x^p` versus :math:`y^q`.
@@ -4506,7 +4664,12 @@ to the linear transformation. Thus our command becomes
 Linear projection with polar (:math:`\theta, r`) coordinates (**-Jp** **-JP**)
 -------------------------------------------------------------------------------
 
-.. include:: fig_includes/fig_GMT_polar.rst_
+.. figure:: /_images/GMT_polar.*
+   :width: 500 px
+   :align: center
+
+   Polar (Cylindrical) transformation of (:math:`\theta, r`) coordinates.
+
 
 This transformation converts polar coordinates (angle :math:`\theta` and
 radius *r*) to positions on a plot. Now :math:`x' = f(\theta,r)`
@@ -4643,7 +4806,12 @@ therefore given by:
     gmt pscoast -R110/140/20/35 -JB125/20/25/45/5i -Bag -Dl -Ggreen -Wthinnest \
                 -A250 -P > GMT_albers.ps
 
-.. include:: fig_includes/fig_GMT_albers.rst_
+.. figure:: /_images/GMT_albers.*
+   :width: 500 px
+   :align: center
+
+   Albers equal-area conic map projection.
+
 
 Equidistant conic projection (**-Jd** **-JD**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4670,7 +4838,12 @@ small countries. As an example, we generate a map of Cuba:
     gmt pscoast -R-88/-70/18/24 -JD-79/21/19/23/4.5i -Bag -Di -N1/thick,red \
                 -Glightgreen -Wthinnest -P > GMT_equidistant_conic.ps
 
-.. include:: fig_includes/fig_GMT_equidistant_conic.rst_
+.. figure:: /_images/GMT_equidistant_conic.*
+   :width: 500 px
+   :align: center
+
+   Equidistant conic map projection.
+
 
 Lambert conic conformal projection (**-Jl** **-JL**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4705,7 +4878,12 @@ use degrees west for longitudes. The generating commands used were
     gmt pscoast -R-130/-70/24/52 -Jl-100/35/33/45/1:50000000 -Bag -Dl -N1/thick,red \
                 -N2/thinner -A500 -Gtan -Wthinnest,white -Sblue -P > GMT_lambert_conic.ps
 
-.. include:: fig_includes/fig_GMT_lambert_conic.rst_
+.. figure:: /_images/GMT_lambert_conic.*
+   :width: 500 px
+   :align: center
+
+   Lambert conformal conic map projection.
+
 
 The choice for projection center does not affect the projection but it
 indicates which meridian (here 100W) will be vertical on the map. The
@@ -4741,7 +4919,12 @@ every 10 and annotations only every 30 in longitude:
     gmt pscoast -R-180/-20/0/90 -JPoly/4i -Bx30g10 -By10g10 -Dc -A1000 -Glightgray \
                 -Wthinnest -P > GMT_polyconic.ps
 
-.. include:: fig_includes/fig_GMT_polyconic.rst_
+.. figure:: /_images/GMT_polyconic.*
+   :width: 500 px
+   :align: center
+
+   (American) polyconic projection.
+
 
 Azimuthal projections
 ---------------------
@@ -4786,7 +4969,12 @@ rectangular by defining the corners of a rectangular map boundary. Using
     gmt pscoast -R0/-40/60/-10r -JA30/-30/4.5i -Bag -Dl -A500 -Gp300/10 \
                 -Wthinnest -P > GMT_lambert_az_rect.ps
 
-.. include:: fig_includes/fig_GMT_lambert_az_rect.rst_
+.. figure:: /_images/GMT_lambert_az_rect.*
+   :width: 500 px
+   :align: center
+
+   Rectangular map using the Lambert azimuthal equal-area projection.
+
 
 Note that an "r" is appended to the **-R** option to inform *GMT* that
 the region has been selected using the rectangle technique, otherwise it
@@ -4803,7 +4991,12 @@ Here, you must specify the world as your region (**-Rg** or
 
     gmt pscoast -Rg -JA280/30/3.5i -Bg -Dc -A1000 -Gnavy -P > GMT_lambert_az_hemi.ps
 
-.. include:: fig_includes/fig_GMT_lambert_az_hemi.rst_
+.. figure:: /_images/GMT_lambert_az_hemi.*
+   :width: 500 px
+   :align: center
+
+   Hemisphere map using the Lambert azimuthal equal-area projection.
+
 
 To geologists, the Lambert azimuthal equal-area projection (with origin
 at 0/0) is known as the *equal-area* (Schmidt) stereonet and used for
@@ -4811,7 +5004,12 @@ plotting fold axes, fault planes, and the like. An *equal-angle* (Wulff)
 stereonet can be obtained by using the stereographic projection
 (discussed later). The stereonets produced by these two projections appear below.
 
-.. include:: fig_includes/fig_GMT_stereonets.rst_
+.. figure:: /_images/GMT_stereonets.*
+   :width: 500 px
+   :align: center
+
+   Equal-Area (Schmidt) and Equal-Angle (Wulff) stereo nets.
+
 
 Stereographic Equal-Angle projection (**-Js** **-JS**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4851,7 +5049,12 @@ An example is given by
     gmt pscoast -R-30/30/60/72 -Js0/90/4.5i/60 -B10g -Dl -A250 -Groyalblue \
                 -Sseashell -P > GMT_stereographic_polar.ps
 
-.. include:: fig_includes/fig_GMT_stereographic_polar.rst_
+.. figure:: /_images/GMT_stereographic_polar.*
+   :width: 500 px
+   :align: center
+
+   Polar stereographic conformal projection.
+
 
 Rectangular stereographic map
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -4869,7 +5072,12 @@ Figure [fig:GMT\ :sub:`s`\ tereographic\ :sub:`r`\ ect]:
     gmt pscoast -R-25/59/70/72r -JS10/90/11c -B20g -Dl -A250 -Gdarkbrown -Wthinnest \
                 -Slightgray -P > GMT_stereographic_rect.ps
 
-.. include:: fig_includes/fig_GMT_stereographic_rect.rst_
+.. figure:: /_images/GMT_stereographic_rect.*
+   :width: 500 px
+   :align: center
+
+   Polar stereographic conformal projection with rectangular borders.
+
 
 General stereographic map
 ^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -4885,7 +5093,12 @@ hemispheric maps. Our example shows Australia using a projection pole at
     gmt pscoast -R100/-42/160/-8r -JS130/-30/4i -Bag -Dl -A500 -Ggreen -Slightblue \
                 -Wthinnest -P > GMT_stereographic_general.ps
 
-.. include:: fig_includes/fig_GMT_stereographic_general.rst_
+.. figure:: /_images/GMT_stereographic_general.*
+   :width: 500 px
+   :align: center
+
+   General stereographic conformal projection with rectangular borders.
+
 
 By choosing 0/0as the pole, we obtain the conformal stereonet presented
 next to its equal-area cousin in the Section [sec:lamb] on the Lambert
@@ -4936,7 +5149,12 @@ looking due east is thus accomplished by the following
     gmt pscoast -Rg -JG4/52/230/90/60/180/60/60/5i -Bx2g2 -By1g1 -Ia -Di -Glightbrown \
                 -Wthinnest -P -Slightblue --MAP_ANNOT_MIN_SPACING=0.25i > GMT_perspective.ps
 
-.. include:: fig_includes/fig_GMT_perspective.rst_
+.. figure:: /_images/GMT_perspective.*
+   :width: 500 px
+   :align: center
+
+   View from the Space Shuttle in Perspective projection.
+
 
 Orthographic projection (**-Jg** **-JG**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -4970,7 +5188,12 @@ generated by the following `pscoast <pscoast.html>`_ command:
 
     gmt pscoast -Rg -JG-75/41/4.5i -Bg -Dc -A5000 -Gpink -Sthistle -P > GMT_orthographic.ps
 
-.. include:: fig_includes/fig_GMT_orthographic.rst_
+.. figure:: /_images/GMT_orthographic.*
+   :width: 500 px
+   :align: center
+
+   Hemisphere map using the Orthographic projection.
+
 
 Azimuthal Equidistant projection (**-Je** **-JE**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5004,7 +5227,12 @@ in this projection this point plots as the entire map perimeter:
     gmt pscoast -Rg -JE-100/40/4.5i -Bg -Dc -A10000 -Glightgray -Wthinnest -P \
                 > GMT_az_equidistant.ps
 
-.. include:: fig_includes/fig_GMT_az_equidistant.rst_
+.. figure:: /_images/GMT_az_equidistant.*
+   :width: 500 px
+   :align: center
+
+   World map using the equidistant azimuthal projection.
+
 
 Gnomonic projection (**-Jf** **-JF**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5038,7 +5266,12 @@ Using a horizon of 60, our example of this projection centered on
     gmt pscoast -Rg -JF-120/35/60/4.5i -B30g15 -Dc -A10000 -Gtan -Scyan -Wthinnest \
                 -P > GMT_gnomonic.ps
 
-.. include:: fig_includes/fig_GMT_gnomonic.rst_
+.. figure:: /_images/GMT_gnomonic.*
+   :width: 500 px
+   :align: center
+
+   Gnomonic azimuthal projection.
+
 
 Cylindrical projections
 -----------------------
@@ -5098,7 +5331,12 @@ which will give a map 4.32 inch wide. It was created with the command:
     gmt pscoast -R0/360/-70/70 -Jm1.2e-2i -Bxa60f15 -Bya30f15 -Dc -A5000 -Gred \
                 -P > GMT_mercator.ps
 
-.. include:: fig_includes/fig_GMT_mercator.rst_
+.. figure:: /_images/GMT_mercator.*
+   :width: 500 px
+   :align: center
+
+   Simple Mercator map.
+
 
 While this example is centered on the Dateline, one can easily choose
 another configuration with the **-R** option. A map centered on
@@ -5133,7 +5371,12 @@ central meridian:
     gmt pscoast -R20/30/50/45r -Jt35/0.18i -Bag -Dl -A250 -Glightbrown -Wthinnest \
                 -P -Sseashell > GMT_transverse_merc.ps
 
-.. include:: fig_includes/fig_GMT_transverse_merc.rst_
+.. figure:: /_images/GMT_transverse_merc.*
+   :width: 500 px
+   :align: center
+
+   Rectangular Transverse Mercator map.
+
 
 The transverse Mercator can also be used to generate a global map - the
 equivalent of the 360 Mercator map. Using the command
@@ -5152,7 +5395,12 @@ longitude we want the plot to extend. These values correspond to
 latitudes in the regular Mercator projection and must therefore be less
 than 90.
 
-.. include:: fig_includes/fig_GMT_TM.rst_
+.. figure:: /_images/GMT_TM.*
+   :width: 500 px
+   :align: center
+
+   A global transverse Mercator map.
+
 
 Universal Transverse Mercator (UTM) projection (**-Ju** **-JU**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5166,7 +5414,12 @@ into latitude bands but these are not needed to specify the projection
 for most cases. See Figure [fig:GMT\ :sub:`u`\ tm\ :sub:`z`\ ones] for
 all zone designations.
 
-.. include:: fig_includes/fig_GMT_utm_zones.rst_
+.. figure:: /_images/GMT_utm_zones.*
+   :width: 500 px
+   :align: center
+
+   Figure : Universal Transverse Mercator zone layout.
+
 
 *GMT* implements both the transverse Mercator and the UTM projection.
 When selecting UTM you must specify:
@@ -5233,7 +5486,13 @@ Our example was produced by the command
                 -Wthinnest -P -Tf301.5/23/0.4i/2 -Sazure --FONT_TITLE=8p \
                 --MAP_TITLE_OFFSET=0.05i > GMT_obl_merc.ps
 
-.. include:: fig_includes/fig_GMT_obl_merc.rst_
+.. figure:: /_images/GMT_obl_merc.*
+   :width: 500 px
+   :align: center
+
+   Oblique Mercator map using **-Joc**. We make it clear which direction is North by
+   adding a star rose with the **-T** option.
+
 
 It uses definition 3 for an oblique view of some Caribbean islands. Note
 that we define our region using the rectangular system described
@@ -5269,7 +5528,12 @@ using the Cassini projection can be obtained by running the command:
     gmt pscoast -R7:30/38:30/10:30/41:30r -JC8.75/40/2.5i -Bafg -Lf9.5/38.8/40/60 -Gspringgreen \
                 -Dh -Sazure -Wthinnest -Ia/thinner -P --FONT_LABEL=12p > GMT_cassini.ps
 
-.. include:: fig_includes/fig_GMT_cassini.rst_
+.. figure:: /_images/GMT_cassini.*
+   :width: 500 px
+   :align: center
+
+   Cassini map over Sardinia.
+
 
 As with the previous projections, the user can choose between a
 rectangular boundary (used here) or a geographical (WESN) boundary.
@@ -5299,7 +5563,12 @@ obtained by running the command:
 
     gmt pscoast -Rg -JQ4.5i -B60f30g30 -Dc -A5000 -Gtan4 -Slightcyan -P > GMT_equi_cyl.ps
 
-.. include:: fig_includes/fig_GMT_equi_cyl.rst_
+.. figure:: /_images/GMT_equi_cyl.*
+   :width: 500 px
+   :align: center
+
+   World map using the Plate Carr\'{e}e projection.
+
 
 Different relative scalings of longitudes and latitudes can be obtained
 by selecting a standard parallel different from the equator. Some
@@ -5369,7 +5638,12 @@ obtained by running the command:
     gmt pscoast -R-145/215/-90/90 -JY35/30/4.5i -B45g45 -Dc -A10000 -Sdodgerblue \
                 -Wthinnest -P > GMT_general_cyl.ps
 
-.. include:: fig_includes/fig_GMT_general_cyl.rst_
+.. figure:: /_images/GMT_general_cyl.*
+   :width: 500 px
+   :align: center
+
+   World map using the Behrman cylindrical equal-area projection.
+
 
 As one can see there is considerable distortion at high latitudes since
 the poles map into lines.
@@ -5399,7 +5673,12 @@ follows:
     gmt pscoast -R-90/270/-80/90 -Jj1:400000000 -Bx45g45 -By30g30 -Dc -A10000 \
                 -Gkhaki -Wthinnest -P -Sazure > GMT_miller.ps
 
-.. include:: fig_includes/fig_GMT_miller.rst_
+.. figure:: /_images/GMT_miller.*
+   :width: 500 px
+   :align: center
+
+   World map using the Miller cylindrical projection.
+
 
 Cylindrical stereographic projections (**-Jcyl_stere** **-JCyl_stere**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5450,7 +5729,12 @@ Figure [fig:GMT\ :sub:`g`\ all\ :sub:`s`\ tereo]), is obtained as follows:
     gmt pscoast -R-180/180/-60/80 -JCyl_stere/0/45/4.5i -Bxa60f30g30 -Bya30g30 -Dc -A5000 \
                 -Wblack -Gseashell4 -Santiquewhite1 -P > GMT_gall_stereo.ps
 
-.. include:: fig_includes/fig_GMT_gall_stereo.rst_
+.. figure:: /_images/GMT_gall_stereo.*
+   :width: 500 px
+   :align: center
+
+   World map using Gall's stereographic projection.
+
 
 Miscellaneous projections
 -------------------------
@@ -5485,7 +5769,12 @@ A view of the Pacific ocean using the Dateline as central meridian is accomplish
 
     gmt pscoast -Rg -JH4.5i -Bg -Dc -A10000 -Gblack -Scornsilk -P > GMT_hammer.ps
 
-.. include:: fig_includes/fig_GMT_hammer.rst_
+.. figure:: /_images/GMT_hammer.*
+   :width: 500 px
+   :align: center
+
+   World map using the Hammer projection.
+
 
 Mollweide projection (**-Jw** **-JW**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5510,7 +5799,12 @@ An example centered on Greenwich can be generated thus:
 
     gmt pscoast -Rd -JW4.5i -Bg -Dc -A10000 -Gtomato1 -Sskyblue -P > GMT_mollweide.ps
 
-.. include:: fig_includes/fig_GMT_mollweide.rst_
+.. figure:: /_images/GMT_mollweide.*
+   :width: 500 px
+   :align: center
+
+   World map using the Mollweide projection.
+
 
 Winkel Tripel projection (**-Jr** **-JR**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5542,7 +5836,12 @@ was created by this command:
 
     gmt pscoast -Rd -JR4.5i -Bg -Dc -A10000 -Gburlywood4 -Swheat1 -P > GMT_winkel.ps
 
-.. include:: fig_includes/fig_GMT_winkel.rst_
+.. figure:: /_images/GMT_winkel.*
+   :width: 500 px
+   :align: center
+
+   World map using the Winkel Tripel projection.
+
 
 Robinson projection (**-Jn** **-JN**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5568,7 +5867,12 @@ Again centered on Greenwich, the example below was created by this command:
 
     gmt pscoast -Rd -JN4.5i -Bg -Dc -A10000 -Ggoldenrod -Ssnow2 -P > GMT_robinson.ps
 
-.. include:: fig_includes/fig_GMT_robinson.rst_
+.. figure:: /_images/GMT_robinson.*
+   :width: 500 px
+   :align: center
+
+   World map using the Robinson projection.
+
 
 Eckert IV and VI projection (**-Jk** **-JK**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5595,11 +5899,21 @@ this command:
 
     gmt pscoast -Rg -JKf4.5i -Bg -Dc -A10000 -Wthinnest -Givory -Sbisque3 -P > GMT_eckert4.ps
 
-.. include:: fig_includes/fig_GMT_eckert4.rst_
+.. figure:: /_images/GMT_eckert4.*
+   :width: 500 px
+   :align: center
+
+   World map using the Eckert IV projection.
+
 
 The same script, with **s** instead of **f**, yields the Eckert VI map:
 
-.. include:: fig_includes/fig_GMT_eckert6.rst_
+.. figure:: /_images/GMT_eckert6.*
+   :width: 500 px
+   :align: center
+
+   World map using the Eckert VI projection.
+
 
 Sinusoidal projection (**-Ji** **-JI**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -5622,7 +5936,12 @@ A simple world map using the sinusoidal projection is therefore obtained by
 
      gmt pscoast -Rd -JI4.5i -Bxg30 -Byg15 -Dc -A10000 -Ggray -P > GMT_sinusoidal.ps         
 
-.. include:: fig_includes/fig_GMT_sinusoidal.rst_
+.. figure:: /_images/GMT_sinusoidal.*
+   :width: 500 px
+   :align: center
+
+   World map using the Sinusoidal projection.
+
 
 To reduce distortion of shape the interrupted sinusoidal projection was
 introduced in 1927. Here, three symmetrical segments are used to cover
@@ -5643,7 +5962,12 @@ widths (140\ :math:`\cdot`\ 0.014 and 80\ :math:`\cdot`\ 0.014):
      gmt pscoast -R60/200/-90/90 -Ji0.014i -Bxg30 -Byg15 -Dc -A10000 \
                  -Gblack -X1.12i -O >> GMT_sinus_int.ps  
 
-.. include:: fig_includes/fig_GMT_sinus_int.rst_
+.. figure:: /_images/GMT_sinus_int.*
+   :width: 500 px
+   :align: center
+
+   World map using the Interrupted Sinusoidal projection.
+
 
 The usefulness of the interrupted sinusoidal projection is basically
 limited to display of global, discontinuous data distributions like
@@ -5669,7 +5993,11 @@ Centered on the Dateline, the example below was created by this command:
       gmt pscoast -Rg -JV4i -Bxg30 -Byg15 -Dc -Glightgray -A10000 \
                   -Wthinnest -P > GMT_grinten.ps 
 
-.. include:: fig_includes/fig_GMT_grinten.rst_
+.. figure:: /_images/GMT_grinten.*
+   :width: 500 px
+   :align: center
+
+   World map using the Van der Grinten projection.
 
 
 .. include:: gallery/examples_chapter_opt.rst_
@@ -6497,9 +6825,22 @@ will rotate the image 90 clockwise and scale it such that its width
 GMT graphics in **PowerPoint**
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-.. include:: fig_includes/fig_rendering.png.rst_
+.. figure:: /_images/rendering.png
+   :height: 540 px
+   :width: 720 px
+   :align: center
+   :scale: 50 %
 
-.. include:: fig_includes/fig_formatpicture.png.rst_
+   Examples of rendered images in a PowerPoint presentation
+
+
+.. figure:: /_images/formatpicture.png
+   :height: 516 px
+   :width: 545 px
+   :align: center
+   :scale: 50 %
+
+   **PowerPoint**'s Format Picture dialogue to set scale and rotation.
 
 In Figure C.1 we have attempted to include
 Figure [fig:example\ :sub:`2`\ 0] into a **PowerPoint** presentation.
@@ -6556,7 +6897,10 @@ The left side of each image was created using **-Gp**, the right side
 shows the inverted version using **-GP**. These patterns are reproduced
 below at 300 dpi using the default black and white shades.
 
-.. include:: fig_includes/fig_GMT_App_E.rst_
+.. figure:: /_images/GMT_App_E.*
+   :width: 500 px
+   :align: center
+
 
 F. Chart of octal codes for characters
 ======================================
@@ -6568,7 +6912,11 @@ codes reserved for control characters. In order to use all the extended
 characters (shown in the light green boxes) you need to set
 **PS_CHAR_ENCODING** to Standard+ or ISOLatin1+ in your ``gmt.conf`` file [41]_.
 
-.. include:: fig_includes/fig_GMT_App_F_stand+_iso+.rst_
+.. figure:: /_images/GMT_App_F_stand+_iso+.*
+   :width: 500 px
+   :align: center
+
+   Octal codes and corresponding symbols for StandardEncoding (left) and ISOLatin1Encoding (right) fonts.
 
 The chart for the Symbol character set (*GMT* font number 12) and Pifont
 ZapfDingbats character set (font number 34) are presented in
@@ -6579,7 +6927,12 @@ font. The euro currency symbol is \\240 in the Symbol
 font and will print if your printer supports it (older printer's
 firmware will not know about the euro).
 
-.. include:: fig_includes/fig_GMT_App_F_symbol_dingbats.rst_
+.. figure:: /_images/GMT_App_F_symbol_dingbats.*
+   :width: 500 px
+   :align: center
+
+   Octal codes and corresponding symbols for Symbol (left) and ZapfDingbats (right) fonts.
+
 
 G. *PostScript* fonts used by GMT
 =================================
@@ -6589,7 +6942,12 @@ G. *PostScript* fonts used by GMT
 these fonts, it will automatically substitute the default font (which is
 usually Courier). The following is a list of the *GMT* fonts:
 
-.. include:: fig_includes/fig_GMT_App_G.rst_
+.. figure:: /_images/GMT_App_G.*
+   :width: 500 px
+   :align: center
+
+   The standard 35 **PS** fonts recognized by *GMT*.
+
 
 For the special fonts Symbol (12) and ZapfDingbats (34), see the octal
 charts in Appendix [app:F]. When specifying fonts in *GMT*, you can
@@ -6724,9 +7082,24 @@ sliders will change the color. As Figure [fig:gimp]\ *a* shows: increase
 the red and you will get a more yellow color, while lowering the blue
 level will turn it into brown.
 
-.. include:: fig_includes/fig_gimp-sliders.png.rst_
+.. figure:: /_images/gimp-sliders.png
+   :height: 209 px
+   :width: 375 px
+   :align: center
+   :scale: 50 %
 
-.. include:: fig_includes/fig_gimp-panel.png.rst_
+
+.. figure:: /_images/gimp-panel.png
+   :height: 209 px
+   :width: 375 px
+   :align: center
+   :scale: 50 %
+
+   Chartreuse in *GIMP*. *(a)* Sliders indicate how the color is altered
+   when changing the H, S, V, R, G, or B levels. *(b)* For a constant hue (here 90)
+   value increases to the right and saturation increases up, so the pure
+   color is on the top right.
+
 
 Is chocolate your favorite color, but you do not know the RGB equivalent
 values? Then look them up in Figure [fig:RGBchart] or type **man
@@ -6740,7 +7113,14 @@ hash mark (``#``) and follow with the 2 hexadecimal characters for red,
 green, and blue. For example, you can use ``#79ff00`` for chartreuse,
 ``#D2691E`` for chocolate.
 
-.. include:: fig_includes/fig_GMT_RGBchart_a4.rst_
+.. figure:: /_images/GMT_RGBchart_a4.*
+   :width: 500 px
+   :align: center
+
+   The 555 unique color names that can be used in GMT. Lower, upper, or mixed cases, as well as
+   the british spelling of grey are allowed. A4, Letter, and Tabloid sized versions of this RGB chart can be
+   found in the GMT documentation directory.
+
 
 HSV color system
 ----------------
@@ -6870,7 +7250,13 @@ that *v* measures distance away from the black point, because
 Another representation of the HSV space is the color cone illustrated in
 Figure I.1
 
-.. include:: fig_includes/fig_hsv-cone.png.rst_
+.. figure:: /_images/hsv-cone.png
+   :height: 508 px
+   :width: 750 px
+   :align: center
+   :scale: 50 %
+
+   The HSV color space
 
 Color interpolation
 -------------------
@@ -6901,7 +7287,15 @@ Appendix [app:M]) interpolated in RGB and the palette interpolated in
 HSV. The bottom row of the Figure demonstrates how things can go
 terribly wrong when you do the interpolation in the other system.
 
-.. include:: fig_includes/fig_GMT_color_interpolate.rst_
+.. figure:: /_images/GMT_color_interpolate.*
+   :width: 500 px
+   :align: center
+
+   When interpolating colors, the color system matters. The polar palette on the left needs to
+   be interpolated in RGB, otherwise hue will change between blue (240) and white (0). The rainbow
+   palette should be interpolated in HSV, since only hue should change between magenta (300) and red (0).
+   Diamonds indicate which colors are defined in the palettes; they are fixed, the rest is interpolated.
+
 
 Artificial illumination
 -----------------------
@@ -7004,7 +7398,12 @@ of plotting. In this way the same graph can serve to illustrate both the
 diametrical cross-section through the filter weights
 (Figure [fig:GMT:sub:`A`\ pp\ :sub:`J1`]).
 
-.. include:: fig_includes/fig_GMT_App_J_1.rst_
+.. figure:: /_images/GMT_App_J_1.*
+   :width: 500 px
+   :align: center
+
+   Impulse responses for *GMT* filters.
+
 
 Although the impulse responses look the same in 1-d and 2-d, this is not
 true of the transfer functions; in 1-d the transfer function is the
@@ -7022,7 +7421,12 @@ filters are "better" in the sense that they do not have the "side lobes"
 filter has. However, they are correspondingly "worse" in the sense that
 they require more work (doubling the width to achieve the same cut-off wavelength).
 
-.. include:: fig_includes/fig_GMT_App_J_2.rst_
+.. figure:: /_images/GMT_App_J_2.*
+   :width: 500 px
+   :align: center
+
+   Transfer functions for 1-D *GMT* filters.
+
 
 One of the nice things about the gaussian filter is that its transfer
 functions are the same in 1-d and 2-d. Another nice property is that it
@@ -7034,7 +7438,12 @@ definition, the transfer function is :math:`\exp[-2(\pi\sigma f)^2]` and
 the wavelength at which the transfer function equals 0.5 is about 5.34
 :math:`\sigma`, or about 0.89 of the filter width.
 
-.. include:: fig_includes/fig_GMT_App_J_3.rst_
+.. figure:: /_images/GMT_App_J_3.*
+   :width: 500 px
+   :align: center
+
+   Transfer functions for 2-D (radial) *GMT* filters.
+
 
 J. The GMT High-Resolution Coastline Data
 =========================================
@@ -7232,7 +7641,12 @@ total file size of the coastlines, rivers, and borders database is only
                 -Gburlywood -Sazure -Wthinnest -N1/thinnest,- -B20g20 -BWSne -K > GMT_App_K_1.ps
     gmt psbasemap -R -J -O -Dk2000+c130.35/-0.2+pthicker >> GMT_App_K_1.ps
 
-.. include:: fig_includes/fig_GMT_App_K_1.rst_
+.. figure:: /_images/GMT_App_K_1.*
+   :width: 500 px
+   :align: center
+
+   Map using the crude resolution coastline data.
+
 
 Here, we use the :ref:`MAP_ANNOT_OBLIQUE <MAP_ANNOT_OBLIQUE>` bit flags to achieve horizontal
 annotations and set :ref:`MAP_ANNOT_MIN_SPACING <MAP_ANNOT_MIN_SPACING>` to suppress some
@@ -7258,7 +7672,12 @@ resolution in *GMT*. The plot is generated by the script:
                 -Sazure -Wthinnest -N1/thinnest,- -B10g5 -BWSne -K > GMT_App_K_2.ps
     gmt psbasemap -R -J -O -Dk500+c130.35/-0.2+pthicker >> GMT_App_K_2.ps
 
-.. include:: fig_includes/fig_GMT_App_K_2.rst_
+.. figure:: /_images/GMT_App_K_2.*
+   :width: 500 px
+   :align: center
+
+   Map using the low resolution coastline data.
+
 
 The intermediate resolution (**-Di**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -7283,7 +7702,13 @@ borders now exceeds 3.35 Mbytes. The plot is generated by the script:
                   -Tm133/2/1i::+45/10/5 --FONT_ANNOT_SECONDARY=8p >> GMT_App_K_3.ps
     gmt psbasemap -R -J -O -Dk100+c130.35/-0.2+pthicker >> GMT_App_K_3.ps
 
-.. include:: fig_includes/fig_GMT_App_K_3.rst_
+.. figure:: /_images/GMT_App_K_3.*
+   :width: 500 px
+   :align: center
+
+   Map using the intermediate resolution coastline data. We have added a compass
+   rose just because we have the power to do so.
+
 
 The high resolution (**-Dh**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -7304,7 +7729,12 @@ generated by these commands:
                 -Sazure -Wthinnest -N1/thinnest,- -B30mg10m -BWSne -K > GMT_App_K_4.ps
     gmt psbasemap -R -J -O -Dk20+c130.35/-0.2+pthicker >> GMT_App_K_4.ps
 
-.. include:: fig_includes/fig_GMT_App_K_4.rst_
+.. figure:: /_images/GMT_App_K_4.*
+   :width: 500 px
+   :align: center
+
+   Map using the high resolution coastline data.
+
 
 The full resolution (**-Df**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -7323,7 +7753,12 @@ reproduced by the single command:
     gmt pscoast -Rk-20/20/-20/20 -JE130.35/-0.2/3.5i -P -Df -Gburlywood \
                 -Sazure -Wthinnest -N1/thinnest,- -B10mg2m -BWSne > GMT_App_K_5.ps
 
-.. include:: fig_includes/fig_GMT_App_K_5.rst_
+.. figure:: /_images/GMT_App_K_5.*
+   :width: 500 px
+   :align: center
+
+   Map using the full resolution coastline data.
+
 
 We hope you will study these examples to enable you to make efficient
 and wise use of this vast data set.
@@ -7426,7 +7861,12 @@ some (like **globe**) are a mix of the two. The bottom half the color
 bar are built by using `makecpt <makecpt.html>`_
 **-T**-1/1/0.25, thus splitting the color scale into 8 discrete colors.
 
-.. include:: fig_includes/fig_GMT_App_M_1.rst_
+.. figure:: /_images/GMT_App_M_1.*
+   :width: 500 px
+   :align: center
+
+   The standard 22 CPT files supported by GMT
+
 
 Labeled and non-equidistant color legends
 -----------------------------------------
@@ -7447,7 +7887,10 @@ are centered. The example below also shows how to annotate ranges using
 **-Li** (in which case no name labels should appear in the CPT file),
 and how to switch the color bar around (by using a negative length).
 
-.. include:: fig_includes/fig_GMT_App_M_2.rst_
+.. figure:: /_images/GMT_App_M_2.*
+   :width: 500 px
+   :align: center
+
 
 For additional color tables, visit `CPT-CITY <http://soliton.vm.bytemark.co.uk/pub/cpt-city>`_.
 
@@ -7466,7 +7909,15 @@ called ``symbolname.def`` that must be available via the standard *GMT* user pat
 custom symbols comes pre-configured with *GMT*\ (see
 Figure [fig:GMT\ :sub:`A`\ pp\ :sub:`N1`])
 
-.. include:: fig_includes/fig_GMT_App_N_1.rst_
+.. figure:: /_images/GMT_App_N_1.*
+   :width: 500 px
+   :align: center
+
+   Custom plot symbols supported by *GMT*. Note that we only show
+   the symbol outline and not any fill. These are all single-parameter symbols.
+   Be aware that some symbols may have a hardwired fill or no-fill component,
+   while others duplicate what is already available as standard built-in symbols.
+
 
 You may find it convenient to examine some of these and use them as a
 starting point for your own design; they can be found in *GMT*\ 's
@@ -8027,7 +8478,13 @@ placed rather arbitrary. The string of contours for -40 to
 60 align well but that is a fortuitous consequence of reaching
 the 1.5 inch distance from the start at the bottom of the map.
 
-.. include:: fig_includes/fig_GMT_App_O_1.rst_
+.. figure:: /_images/GMT_App_O_1.*
+   :width: 500 px
+   :align: center
+
+   Equidistant contour label placement with **-Gd**, the only algorithm
+   available in previous *GMT* versions.
+
 
 Fixed number of labels
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -8039,7 +8496,12 @@ By selecting only one label per contour and requiring that labels only
 be placed on contour lines whose length exceed 1 inch, we achieve the
 effect shown in Figure [fig:GMT\ :sub:`A`\ pp\ :sub:`O2`].
 
-.. include:: fig_includes/fig_GMT_App_O_2.rst_
+.. figure:: /_images/GMT_App_O_2.*
+   :width: 500 px
+   :align: center
+
+   Placing one label per contour that exceed 1 inch in length, centered on the segment with **-Gn**.
+
 
 Prescribed label placements
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -8055,7 +8517,13 @@ the final result is shown in Figure [fig:GMT\ :sub:`A`\ pp\ :sub:`O3`].
 To aid in understanding the algorithm we chose to specify "debug" mode
 (**+d**) which placed a small circle at each of the fixed points.
 
-.. include:: fig_includes/fig_GMT_App_O_3.rst_
+.. figure:: /_images/GMT_App_O_3.*
+   :width: 500 px
+   :align: center
+
+   Four labels are positioned on the points along the contours that are
+   closest to the locations given in the file fix.txt in the **-Gf** option.
+
 
 Label placement at simple line intersections
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -8067,7 +8535,12 @@ between the contour lines and a well-placed straight line segment. The
 The obvious choice in this example is to specify a great circle between
 the high and the low, thus placing all labels between these extrema.
 
-.. include:: fig_includes/fig_GMT_App_O_4.rst_
+.. figure:: /_images/GMT_App_O_4.*
+   :width: 500 px
+   :align: center
+
+   Labels are placed at the intersections between contours and the great circle specified in the **-GL** option.
+
 
 The thin debug line in Figure [fig:GMT\ :sub:`A`\ pp\ :sub:`O4`] shows
 the great circle and the intersections where labels are plotted. Note
@@ -8083,7 +8556,13 @@ on the command line, or (2) we have another data set or lines whose
 intersections we wish to use, the general crossing algorithm makes more
 sense:
 
-.. include:: fig_includes/fig_GMT_App_O_5.rst_
+.. figure:: /_images/GMT_App_O_5.*
+   :width: 500 px
+   :align: center
+
+   Labels are placed at the intersections between contours and the
+   multi-segment lines specified in the **-GX** option.
+
 
 In this case, we have created three strands of lines whose intersections
 with the contours define the label placements, presented in
@@ -8107,7 +8586,12 @@ so that the label is more readable. We choose the place the labels every
 1000 km along the line and use that distance as the label. The labels
 are placed normal to the line:
 
-.. include:: fig_includes/fig_GMT_App_O_6.rst_
+.. figure:: /_images/GMT_App_O_6.*
+   :width: 500 px
+   :align: center
+
+   Labels attributes are controlled with the arguments to the **-Sq** option.
+
 
 The composite illustration in Figure [fig:GMT\ :sub:`A`\ pp\ :sub:`O6`]
 shows the new effects. Note that the line connecting the extrema does
@@ -8125,7 +8609,12 @@ inverse-video the label:
 
 The output is presented as Figure [fig:GMT\ :sub:`A`\ pp\ :sub:`O7`].
 
-.. include:: fig_includes/fig_GMT_App_O_7.rst_
+.. figure:: /_images/GMT_App_O_7.*
+   :width: 500 px
+   :align: center
+
+   Another label attribute example.
+
 
 Using a different data set for labels
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -8139,7 +8628,12 @@ labels. This is done with **awk**.
 
 The output is presented as Figure [fig:GMT\ :sub:`A`\ pp\ :sub:`O8`].
 
-.. include:: fig_includes/fig_GMT_App_O_8.rst_
+.. figure:: /_images/GMT_App_O_8.*
+   :width: 500 px
+   :align: center
+
+   Labels based on another data set (here bathymetry) while the placement is based on distances.
+
 
 Putting it all together
 -----------------------
@@ -8154,7 +8648,14 @@ well as a few quoted lines. The final script is
 
 with the complete illustration presented as Figure [fig:GMT\ :sub:`A`\ pp\ :sub:`O9`].
 
-.. include:: fig_includes/fig_GMT_App_O_9.rst_
+.. figure:: /_images/GMT_App_O_9.*
+   :width: 500 px
+   :align: center
+
+   Tsunami travel times from the Canary Islands to places in the Atlantic,
+   in particular New York. Should a catastrophic landslide occur it is possible
+   that New York will experience a large tsunami about 8 hours after the event.
+
 
 O. Special Operations
 =====================
@@ -8198,7 +8699,12 @@ temporary files that the script might create in the same directory.
 
 The example below shows how *isolation mode* works.
 
-.. include:: fig_includes/fig_GMT_App_P_2.rst_
+.. figure:: /_images/GMT_App_P_2.*
+   :width: 500 px
+   :align: center
+
+   Example created in isolation mode
+
 
 The files ``gmt.conf`` and ``.gmtcommands`` are automatically created in the temporary directory
 ``$GMT_TMPDIR``. The script is also adjusted such that the temporary grid file ``lat.nc`` and colormap

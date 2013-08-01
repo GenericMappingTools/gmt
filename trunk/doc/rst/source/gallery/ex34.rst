@@ -13,4 +13,8 @@ will continue to debate for some time.
 
 .. literalinclude:: /_verbatim/example_34.txt
 
-.. include:: fig_example_34.rst_
+.. figure:: /_images/example_34.*
+   :width: 500 px
+   :align: center
+
+   Using country polygons for plotting and shading.

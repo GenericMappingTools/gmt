@@ -23,7 +23,11 @@ is similar to the one outlined above, except we would choose a color for
 land and oceans, and select colored symbols and pens rather than black
 and white.
 
-.. include:: fig_example_07.rst_
+.. figure:: /_images/example_07.*
+   :width: 500 px
+   :align: center
+
+   A typical location map.
 
 .. [1]
    These data are available on CD-ROM from NGDC (www.ngdc.noaa.gov).

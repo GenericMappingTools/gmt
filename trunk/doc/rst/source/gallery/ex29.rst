@@ -27,4 +27,8 @@ imaged with `grdimage <../grdimage.html>`_ and
 
 .. literalinclude:: /_verbatim/example_29.txt
 
-.. include:: fig_example_29.rst_
+.. figure:: /_images/example_29.*
+   :width: 500 px
+   :align: center
+
+   Gridding of spherical surface data using Green's function splines.

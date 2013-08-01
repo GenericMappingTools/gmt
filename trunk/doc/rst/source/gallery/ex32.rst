@@ -44,4 +44,8 @@ did not want to store the 58 MB DEM file, whose location is mentioned in the scr
 
 .. literalinclude:: /_verbatim/example_32.txt
 
-.. include:: fig_example_32.rst_
+.. figure:: /_images/example_32.*
+   :width: 500 px
+   :align: center
+
+   Draping an image over topography.

@@ -16,4 +16,9 @@ with `greenspline <../greenspline.html>`_.
 
 .. literalinclude:: /_verbatim/example_36.txt
 
-.. include:: fig_example_36.rst_
+.. figure:: /_images/example_36.*
+   :width: 500 px
+   :align: center
+
+   Spherical gridding using Renka\'s algorithms.
+

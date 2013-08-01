@@ -29,4 +29,8 @@ the output of `grdgradient <../grdgradient.html>`_ to
 `grdhisteq <../grdhisteq.html>`_. The shell-script above
 will result in a plot like the one in Figure.
 
-.. include:: fig_example_05.rst_
+.. figure:: /_images/example_05.*
+   :width: 500 px
+   :align: center
+
+   3-D illuminated surface.

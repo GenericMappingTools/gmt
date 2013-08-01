@@ -26,4 +26,8 @@ option causes tick marks pointing in the downhill direction to be drawn
 on the innermost, closed contours. For the upper panel we also added -
 and + to the local lows and highs. You can find this illustration as
 
-.. include:: fig_example_01.rst_
+.. figure:: /_images/example_01.*
+   :width: 500 px
+   :align: center
+
+   Contour maps of gridded data.

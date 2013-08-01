@@ -34,7 +34,12 @@ painted black. A color scale bar was then added to complete the illustration.
 
 .. literalinclude:: /_verbatim/example_27.txt
 
-.. include:: fig_example_27.rst_
+.. figure:: /_images/example_27.*
+   :width: 500 px
+   :align: center
+
+   Plotting Sandwell/Smith Mercator img grids.
+
 
 .. [1]
    You could also use `img2mercgrd <img2mercgrd.html>`_

@@ -14,4 +14,8 @@ the given angle.
 
 .. literalinclude:: /_verbatim/example_30.txt
 
-.. include:: fig_example_30.rst_
+.. figure:: /_images/example_30.*
+   :width: 500 px
+   :align: center
+
+   Trigonometric functions plotted in graph mode.

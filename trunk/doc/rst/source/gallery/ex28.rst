@@ -27,4 +27,9 @@ label Kilauea crater to complete the figure.
 
 .. literalinclude:: /_verbatim/example_28.txt
 
-.. include:: fig_example_28.rst_
+.. figure:: /_images/example_28.*
+   :width: 500 px
+   :align: center
+
+   Mixing UTM and geographic data sets requires knowledge of the map region domain in
+   both UTM and lon/lat coordinates and consistent use of the same map scale.

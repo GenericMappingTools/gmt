@@ -16,4 +16,8 @@ Our script that produces Figure ex_10 reads:
 
 .. literalinclude:: /_verbatim/example_10.txt
 
-.. include:: fig_example_10.rst_
+.. figure:: /_images/example_10.*
+   :width: 500 px
+   :align: center
+
+   Geographical bar graph.

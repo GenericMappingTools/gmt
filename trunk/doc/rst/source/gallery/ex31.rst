@@ -28,4 +28,8 @@ outlined fonts or to convert to a PDF-file.
 
 .. literalinclude:: /_verbatim/example_31.txt
 
-.. include:: fig_example_31.rst_
+.. figure:: /_images/example_31.*
+   :width: 500 px
+   :align: center
+
+   Using non-default fonts in *PostScript*.

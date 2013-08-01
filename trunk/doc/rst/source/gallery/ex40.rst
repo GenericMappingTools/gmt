@@ -6,4 +6,8 @@
 
 .. literalinclude:: /_verbatim/example_40.txt
 
-.. include:: fig_example_40.rst_
+.. figure:: /_images/example_40.*
+   :width: 500 px
+   :align: center
+
+   Illustrate line simplification and area calculations.

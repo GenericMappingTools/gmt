@@ -34,4 +34,8 @@ which produces the plot in Figure, suggesting
 Wessel has missed a few trains if he had hoped to cash in on the
 Internet bubble...
 
-.. include:: fig_example_21.rst_
+.. figure:: /_images/example_21.*
+   :width: 500 px
+   :align: center
+
+   Time-series of RedHat stock price since IPO.

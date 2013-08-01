@@ -19,7 +19,11 @@ The purpose of the color palette file ``zero.cpt`` is to have the positive topog
 mesh painted light gray (the remainder is white). The left side of
 Figure shows the complete illustration.
 
-.. include:: fig_example_04.rst_
+.. figure:: /_images/example_04.*
+   :width: 500 px
+   :align: center
+
+   3-D perspective mesh plot (left) and colored version (right).
 
 The second part of the script shows how to make the color version of
 this figure that was printed in our first article in *EOS Trans. AGU* (8

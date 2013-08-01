@@ -30,4 +30,8 @@ numbers indicate brightnesses between 0 and 1, with saturation fixed at 1.
 .. literalinclude:: /_verbatim/example_11.txt
 
 
-.. include:: fig_example_11.rst_
+.. figure:: /_images/example_11.*
+   :width: 500 px
+   :align: center
+
+   The RGB color cube.
