@@ -187,7 +187,7 @@ void gmt_nc_put_units (int ncid, int varid, char *name_units)
 }
 
 void gmt_nc_check_step (struct GMT_CTRL *GMT, int n, double *x, char *varname, char *file)
-{	/* Check if all steps in range are the same (within 2%) */
+{	/* Check if all steps in range are the same (within 0.1%) */
 	double step, step_min, step_max;
 	int i;
 	if (n < 2) return;
@@ -197,9 +197,12 @@ void gmt_nc_check_step (struct GMT_CTRL *GMT, int n, double *x, char *varname, c
 		if (step < step_min) step_min = step;
 		if (step > step_max) step_max = step;
 	}
-	if (fabs (step_min-step_max)/(fabs (step_min)+fabs (step_max)) > 0.05) {
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: The step size of coordinate (%s) in grid %s is not constant.\n", varname, file);
-		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: GMT will use a constant step size of %g; the original ranges from %g to %g.\n", (x[n-1]-x[0])/(n-1), step_min, step_max);
+	if (fabs (step_min-step_max)/(fabs (step_min)*0.5 + fabs (step_max)*0.5) > 0.001) {
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL,
+			"Warning: The step size of coordinate (%s) in grid %s is not constant.\n", varname, file);
+		GMT_Report (GMT->parent, GMT_MSG_NORMAL,
+			"Warning: GMT will use a constant step size of %g; the original ranges from %g to %g.\n",
+			(x[n-1]-x[0])/(n-1), step_min, step_max);
 	}
 }
 
