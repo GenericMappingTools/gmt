@@ -35,7 +35,9 @@ foreach (_ps ${_examples})
 		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_pdf_fig}
 			COMMAND
 			set GMT_USERDIR=${GMT_BINARY_DIR}/share
+			COMMAND
 			set GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
+			COMMAND
 			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster -A -P -Tf
 			-C-sFONTPATH=${GMT_SOURCE_DIR}/doc/examples/ex31/fonts
 			-D${RST_BINARY_DIR}/_images
@@ -45,7 +47,9 @@ foreach (_ps ${_examples})
 		add_custom_command (OUTPUT ${RST_BINARY_DIR}/_images/${_png_fig}
 			COMMAND
 			set GMT_USERDIR=${GMT_BINARY_DIR}/share
+			COMMAND
 			set GMT_SHAREDIR=${GMT_SOURCE_DIR}/share
+			COMMAND
 			${GMT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src/gmt ps2raster -A -P -Tg
 			-C-sFONTPATH=${GMT_SOURCE_DIR}/doc/examples/ex31/fonts
 			-D${RST_BINARY_DIR}/_images
