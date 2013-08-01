@@ -138,7 +138,7 @@ endif (NOT EXISTS ${GMT_INSTALL_EXTERNAL_DOC})
 if (EXISTS ${GMT_INSTALL_EXTERNAL_MAN})
 	# Install manpages from external location
 	set (_man_source ${GMT_INSTALL_EXTERNAL_MAN})
-elseif (EXISTS ${GMT_INSTALL_EXTERNAL_MAN})
+else (EXISTS ${GMT_INSTALL_EXTERNAL_MAN})
 	# Install manpages from build tree
 	set (_man_source ${CMAKE_CURRENT_BINARY_DIR}/man)
 endif (EXISTS ${GMT_INSTALL_EXTERNAL_MAN})
