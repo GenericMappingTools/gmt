@@ -19,15 +19,12 @@
 # reST documentation
 find_package (Sphinx)
 
-# path where configuration file (conf.py) is located
-set (SPHINX_CONFIG_DIR "${CMAKE_CURRENT_BINARY_DIR}/_build")
-
 # path for the cached environment and doctree files
 set (SPHINX_CACHE_DIR "${CMAKE_CURRENT_BINARY_DIR}/_doctrees")
 
 if (SPHINX_FOUND)
 	# Create configuration file
-	configure_file (conf.py.in "${SPHINX_CONFIG_DIR}/conf.py" @ONLY)
+	configure_file (conf.py.in conf.py @ONLY)
 
 	# Copy reST sources to build tree
 	include (CopyDirIfDifferent)
@@ -38,7 +35,7 @@ if (SPHINX_FOUND)
 	# Add build targets
 	add_custom_target (docs_html
 		COMMAND ${SPHINX_EXECUTABLE} -q -b html
-		-c "${SPHINX_CONFIG_DIR}"
+		-c "${CMAKE_CURRENT_BINARY_DIR}"
 		-d "${SPHINX_CACHE_DIR}"
 		${CMAKE_CURRENT_BINARY_DIR}/_source
 		${CMAKE_CURRENT_BINARY_DIR}/html
@@ -46,7 +43,7 @@ if (SPHINX_FOUND)
 
 	add_custom_target (docs_latex
 		COMMAND ${SPHINX_EXECUTABLE} -q -b latex
-		-c "${SPHINX_CONFIG_DIR}"
+		-c "${CMAKE_CURRENT_BINARY_DIR}"
 		-d "${SPHINX_CACHE_DIR}"
 		${CMAKE_CURRENT_BINARY_DIR}/_source
 		${CMAKE_CURRENT_BINARY_DIR}/latex
@@ -58,17 +55,17 @@ if (SPHINX_FOUND)
 		set (_gz ".gz")
 		add_custom_target (docs_man
 			COMMAND ${SPHINX_EXECUTABLE} -q -b man
-			-c "${SPHINX_CONFIG_DIR}"
+			-c "${CMAKE_CURRENT_BINARY_DIR}"
 			-d "${SPHINX_CACHE_DIR}"
 			${CMAKE_CURRENT_BINARY_DIR}/_source
 			${CMAKE_CURRENT_BINARY_DIR}/man
-			COMMAND ${GZIP} -9 -r ${CMAKE_CURRENT_BINARY_DIR}/man
+			COMMAND ${GZIP} -9 -f ${CMAKE_CURRENT_BINARY_DIR}/man/*.?
 			COMMENT "Building manpages...")
 	else (GZIP)
 		set (_gz)
 		add_custom_target (docs_man
 			COMMAND ${SPHINX_EXECUTABLE} -q -b man
-			-c "${SPHINX_CONFIG_DIR}"
+			-c "${CMAKE_CURRENT_BINARY_DIR}"
 			-d "${SPHINX_CACHE_DIR}"
 			${CMAKE_CURRENT_BINARY_DIR}/_source
 			${CMAKE_CURRENT_BINARY_DIR}/man
