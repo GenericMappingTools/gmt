@@ -24,9 +24,6 @@ set (SPHINX_CACHE_DIR "${CMAKE_CURRENT_BINARY_DIR}/_doctrees")
 
 if (SPHINX_FOUND)
 	# Create configuration file
-	string (REPLACE "_" " "
-		GMT_PACKAGE_VERSION_WITH_SVN_REVISION_BLANK
-		${GMT_PACKAGE_VERSION_WITH_SVN_REVISION})
 	configure_file (conf.py.in conf.py @ONLY)
 
 	# Copy reST sources to build tree
@@ -50,7 +47,7 @@ if (SPHINX_FOUND)
 	find_program(MAKE NAMES make gmake gnumake)
 	if (MAKE)
 		add_custom_target (docs_latex
-			COMMAND ${SPHINX_EXECUTABLE} -q -b latex
+			COMMAND ${SPHINX_EXECUTABLE} -q -b latex -t tex
 			-c "${CMAKE_CURRENT_BINARY_DIR}"
 			-d "${SPHINX_CACHE_DIR}"
 			-w "${CMAKE_CURRENT_BINARY_DIR}/latex.log"
