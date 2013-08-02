@@ -95,7 +95,7 @@ foreach (_script ${_examples})
 		COMMAND ${CMAKE_COMMAND}
 		-D script=${CMAKE_CURRENT_SOURCE_DIR}/${_script}
 		-D txt=${RST_BINARY_DIR}/_verbatim/${_txt}
-		-D nostrip=TRUE
+		-D no_strip=TRUE
 		-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
 		-P ${CMAKE_MODULE_PATH}/ScriptToVerbatim.cmake
 		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
