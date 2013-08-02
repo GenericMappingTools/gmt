@@ -1,3 +1,5 @@
+.. index:: ! mgd77info
+
 *********
 mgd77info
 *********

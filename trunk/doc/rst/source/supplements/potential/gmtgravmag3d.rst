@@ -1,3 +1,5 @@
+.. index:: ! gmtgravmag3d
+
 ************
 gmtgravmag3d
 ************

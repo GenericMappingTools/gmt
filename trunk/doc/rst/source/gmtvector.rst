@@ -1,3 +1,5 @@
+.. index:: ! gmtvector
+
 *********
 gmtvector
 *********

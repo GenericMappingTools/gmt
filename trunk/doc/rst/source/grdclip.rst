@@ -1,3 +1,5 @@
+.. index:: ! grdclip
+
 *******
 grdclip
 *******

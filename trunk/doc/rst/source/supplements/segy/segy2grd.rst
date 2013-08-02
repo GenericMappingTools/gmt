@@ -1,3 +1,5 @@
+.. index:: ! segy2grd
+
 ********
 segy2grd
 ********

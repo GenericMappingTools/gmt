@@ -1,3 +1,5 @@
+.. index:: ! trend1d
+
 *******
 trend1d
 *******

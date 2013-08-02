@@ -1,3 +1,5 @@
+.. index:: ! psclip
+
 ******
 psclip
 ******

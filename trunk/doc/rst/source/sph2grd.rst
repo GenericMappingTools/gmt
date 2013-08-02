@@ -1,3 +1,5 @@
+.. index:: ! sph2grd
+
 *******
 sph2grd
 *******

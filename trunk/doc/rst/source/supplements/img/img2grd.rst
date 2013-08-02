@@ -1,3 +1,5 @@
+.. index:: ! img2grd
+
 *******
 img2grd
 *******

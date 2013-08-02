@@ -1,3 +1,5 @@
+.. index:: ! gmt2kml
+
 *******
 gmt2kml
 *******

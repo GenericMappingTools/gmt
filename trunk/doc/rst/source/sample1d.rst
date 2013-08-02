@@ -1,3 +1,5 @@
+.. index:: ! sample1d
+
 ********
 sample1d
 ********

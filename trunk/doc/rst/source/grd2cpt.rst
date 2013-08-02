@@ -1,3 +1,5 @@
+.. index:: ! grd2cpt
+
 *******
 grd2cpt
 *******

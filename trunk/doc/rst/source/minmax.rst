@@ -1,3 +1,5 @@
+.. index:: ! minmax
+
 ******
 minmax
 ******

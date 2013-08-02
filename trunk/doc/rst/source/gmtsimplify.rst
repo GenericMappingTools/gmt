@@ -1,3 +1,5 @@
+.. index:: ! gmtsimplify
+
 *****
 gmtdp
 *****

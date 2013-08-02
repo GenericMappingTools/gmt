@@ -1,3 +1,5 @@
+.. index:: ! gmt.conf
+
 ********
 gmt.conf
 ********

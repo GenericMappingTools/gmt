@@ -1,3 +1,5 @@
+.. index:: ! x2sys_solve
+
 ***********
 x2sys_solve
 ***********

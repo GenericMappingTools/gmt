@@ -1,3 +1,5 @@
+.. index:: ! blockmode
+
 *********
 blockmode
 *********

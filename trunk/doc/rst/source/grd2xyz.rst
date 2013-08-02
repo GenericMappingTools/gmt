@@ -1,3 +1,5 @@
+.. index:: ! grd2xyz
+
 *******
 grd2xyz
 *******

@@ -1,3 +1,5 @@
+.. index:: ! grdvolume
+
 *********
 grdvolume
 *********

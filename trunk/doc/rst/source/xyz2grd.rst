@@ -1,3 +1,5 @@
+.. index:: ! xyz2grd
+
 *******
 xyz2grd
 *******

@@ -1,3 +1,5 @@
+.. index:: ! x2sys_get
+
 *********
 x2sys_get
 *********

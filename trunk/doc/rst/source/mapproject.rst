@@ -1,3 +1,5 @@
+.. index:: ! mapproject
+
 **********
 mapproject
 **********

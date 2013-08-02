@@ -1,3 +1,5 @@
+.. index:: ! fitcircle
+
 *********
 fitcircle
 *********

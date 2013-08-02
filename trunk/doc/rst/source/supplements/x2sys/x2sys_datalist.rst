@@ -1,3 +1,5 @@
+.. index:: ! x2sys_datalist
+
 ****************
 x2sys_datalist
 ****************

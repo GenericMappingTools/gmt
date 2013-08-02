@@ -1,3 +1,5 @@
+.. index:: ! ps2raster
+
 *********
 ps2raster
 *********

@@ -1,3 +1,5 @@
+.. index:: ! mgd77list
+
 *********
 mgd77list
 *********
