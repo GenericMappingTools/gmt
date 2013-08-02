@@ -2,8 +2,6 @@
 
 **C/C++ Application Programming Interface**
 
-**Version 5.0.1b (r), July 2013**
-
 **Pål (Paul) Wessel**
 
 **SOEST, University of Hawai’i at Manoa**

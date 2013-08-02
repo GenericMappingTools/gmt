@@ -2,8 +2,6 @@
 
 **Technical Reference and Cookbook**
 
-**Version 5.0.0, July 2013**
-
 **Pål (Paul) Wessel**
 
 **SOEST, University of Hawai'i at Manoa**
@@ -9077,7 +9075,7 @@ Examples
 --------
 
 Sample point, line and polygon files are (the new data structures are in
-lines starting with "#" in strings prefixed with "@)". Here is a typical
+lines starting with "#" in strings prefixed with "@"). Here is a typical
 point file:
 
    ::
