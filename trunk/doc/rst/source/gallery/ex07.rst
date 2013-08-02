@@ -16,6 +16,7 @@ digitized from available maps [1]_. We create the final location map
 with the following script:
 
 .. literalinclude:: /_verbatim/example_07.txt
+   :language: bash
 
 The same figure could equally well be made in color, which could be
 rasterized and made into a slide for a meeting presentation. The script

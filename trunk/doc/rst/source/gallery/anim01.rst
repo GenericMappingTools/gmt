@@ -15,6 +15,7 @@ wrapper with a simple legend. Opening the HTML page in ``anim01.html``
 the browser will display the animation.
 
 .. literalinclude:: /_verbatim/anim_01.txt
+   :language: bash
 
 Make sure you understand the purpose of all the steps in our script. In
 this case we did some trial-and-error to determine the exact values to

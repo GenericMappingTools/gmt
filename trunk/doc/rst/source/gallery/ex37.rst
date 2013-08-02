@@ -11,6 +11,7 @@ before the Fourier transform is computed; the intermediate plots show
 the grids being extended and padded to a suitable dimension.
 
 .. literalinclude:: /_verbatim/example_37.txt
+   :language: bash
 
 .. figure:: /_images/example_37.*
    :width: 500 px

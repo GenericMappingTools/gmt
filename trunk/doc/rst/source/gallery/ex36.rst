@@ -15,6 +15,7 @@ while for small data sets (such as this one, actually) you have more flexibility
 with `greenspline <../greenspline.html>`_.
 
 .. literalinclude:: /_verbatim/example_36.txt
+   :language: bash
 
 .. figure:: /_images/example_36.*
    :width: 500 px

@@ -16,6 +16,7 @@ image the data. We use a color palette table ``topo.cpt`` (created via
 `minmax <../minmax.html>`_ and `makecpt <../makecpt.html>`_). The script becomes:
 
 .. literalinclude:: /_verbatim/example_12.txt
+   :language: bash
 
 .. figure:: /_images/example_12.*
    :width: 500 px

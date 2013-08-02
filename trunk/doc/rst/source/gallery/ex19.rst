@@ -21,6 +21,7 @@ final panel repeats the top panel except that the land and sea images
 have changed places.
 
 .. literalinclude:: /_verbatim/example_19.txt
+   :language: bash
 
 .. figure:: /_images/example_19.*
    :width: 500 px

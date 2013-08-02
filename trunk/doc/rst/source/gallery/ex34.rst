@@ -12,6 +12,7 @@ Franco-Italian Union whose untimely breakup in 2045 the historians
 will continue to debate for some time.
 
 .. literalinclude:: /_verbatim/example_34.txt
+   :language: bash
 
 .. figure:: /_images/example_34.*
    :width: 500 px

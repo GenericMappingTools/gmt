@@ -26,6 +26,7 @@ add custom annotations to the map. Finally, we place a scale bar and
 label Kilauea crater to complete the figure.
 
 .. literalinclude:: /_verbatim/example_28.txt
+   :language: bash
 
 .. figure:: /_images/example_28.*
    :width: 500 px

@@ -28,6 +28,7 @@ other 3 faces of the cube, around the black corner, the white decimal
 numbers indicate brightnesses between 0 and 1, with saturation fixed at 1.
 
 .. literalinclude:: /_verbatim/example_11.txt
+   :language: bash
 
 
 .. figure:: /_images/example_11.*

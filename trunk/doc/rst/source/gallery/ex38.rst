@@ -8,6 +8,7 @@ ranges of a grid depending on its frequency distribution. The key tool
 used here is `grdhisteq <../grdhisteq.html>`_.
 
 .. literalinclude:: /_verbatim/example_38.txt
+   :language: bash
 
 .. figure:: /_images/example_38.*
    :width: 500 px

@@ -26,6 +26,7 @@ imaged with `grdimage <../grdimage.html>`_ and
 `grdcontour <../grdcontour.html>`_ and a color scale is placed between them.
 
 .. literalinclude:: /_verbatim/example_29.txt
+   :language: bash
 
 .. figure:: /_images/example_29.*
    :width: 500 px

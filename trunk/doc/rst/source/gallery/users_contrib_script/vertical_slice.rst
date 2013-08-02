@@ -36,7 +36,7 @@ Regards, Eduardo.-
 Eduardo A. Suarez
 Facultad de Ciencias Astronomicas y Geofisicas - UNLP
 
-::
+.. code-block:: bash
 
  #!/bin/bash
  #

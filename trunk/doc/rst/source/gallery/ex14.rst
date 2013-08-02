@@ -25,6 +25,7 @@ the gridded (solid line) and bicubic trend (dashed line) along the
 transect using `psxy <../psxy.html>`_
 
 .. literalinclude:: /_verbatim/example_14.txt
+   :language: bash
 
 .. figure:: /_images/example_14.*
    :width: 500 px

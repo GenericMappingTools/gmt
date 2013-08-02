@@ -24,6 +24,7 @@ near the Chatham plateau (antipodes will be revisited in
 Section [sec:example\ :sub:`2`\ 5]).
 
 .. literalinclude:: /_verbatim/example_23.txt
+   :language: bash
 
 .. figure:: /_images/example_23.*
    :width: 500 px

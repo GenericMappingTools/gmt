@@ -22,6 +22,7 @@ The script produces the plot in Figure,
 giving the URL where these and similar data can be obtained.
 
 .. literalinclude:: /_verbatim/example_22.txt
+   :language: bash
 
 .. figure:: /_images/example_22.*
    :width: 500 px

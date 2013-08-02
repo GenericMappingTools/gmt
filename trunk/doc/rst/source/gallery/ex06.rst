@@ -14,6 +14,7 @@ Our complete figure was made running
 this script:
 
 .. literalinclude:: /_verbatim/example_06.txt
+   :language: bash
 
 .. figure:: /_images/example_06.*
    :width: 500 px
