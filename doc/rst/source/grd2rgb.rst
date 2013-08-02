@@ -1,3 +1,5 @@
+.. index:: ! grd2rgb
+
 *******
 grd2rgb
 *******

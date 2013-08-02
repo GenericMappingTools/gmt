@@ -1,3 +1,5 @@
+.. index:: ! x2sys_cross
+
 ***********
 x2sys_cross
 ***********

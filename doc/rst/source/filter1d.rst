@@ -1,3 +1,5 @@
+.. index:: ! filter1d
+
 ********
 filter1d
 ********

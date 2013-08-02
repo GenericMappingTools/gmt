@@ -1,3 +1,5 @@
+.. index:: ! mgd77sniffer
+
 **************
 mgd77sniffer
 **************

@@ -1,3 +1,5 @@
+.. index:: ! x2sys_binlist
+
 ***************
 x2sys_binlist
 ***************

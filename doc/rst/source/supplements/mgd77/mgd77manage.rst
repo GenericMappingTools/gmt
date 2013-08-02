@@ -1,3 +1,5 @@
+.. index:: ! mgd77manage
+
 ***********
 mgd77manage
 ***********

@@ -1,3 +1,5 @@
+.. index:: ! gmtconvert
+
 **********
 gmtconvert
 **********

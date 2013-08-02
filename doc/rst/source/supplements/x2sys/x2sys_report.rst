@@ -1,3 +1,5 @@
+.. index:: ! x2sys_report
+
 **************
 x2sys_report
 **************

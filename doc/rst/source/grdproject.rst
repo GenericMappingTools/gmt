@@ -1,3 +1,5 @@
+.. index:: ! grdproject
+
 **********
 grdproject
 **********

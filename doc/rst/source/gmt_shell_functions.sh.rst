@@ -1,3 +1,5 @@
+.. index:: ! gmt_shell_functions.sh
+
 **********************
 gmt_shell_functions.sh
 **********************

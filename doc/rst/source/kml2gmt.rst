@@ -1,3 +1,5 @@
+.. index:: ! kml2gmt
+
 *******
 kml2gmt
 *******

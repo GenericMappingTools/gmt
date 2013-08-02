@@ -4,8 +4,8 @@
    contain the root `toctree` directive.
 
 
-Index
-=====
+Man pages
+=========
 
 +-----------------+-----------------+-----------------+-----------------+
 | .. toctree::    | .. toctree::    | .. toctree::    | .. toctree::    |

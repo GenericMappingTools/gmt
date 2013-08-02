@@ -1,3 +1,5 @@
+.. index:: ! psxy
+
 ****
 psxy
 ****

@@ -1,3 +1,5 @@
+.. index:: ! gmtconnect
+
 **********
 gmtconnect
 **********

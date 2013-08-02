@@ -1,3 +1,5 @@
+.. index:: ! pssegy
+
 ******
 pssegy
 ******

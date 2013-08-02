@@ -1,3 +1,5 @@
+.. index:: ! mgd77path
+
 *********
 mgd77path
 *********

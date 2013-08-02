@@ -1,3 +1,5 @@
+.. index:: ! spectrum1d
+
 **********
 spectrum1d
 **********

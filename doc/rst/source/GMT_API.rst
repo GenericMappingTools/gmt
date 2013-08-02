@@ -22,15 +22,19 @@
 
 **Alfred Wegener Institute, Germany**
 
-.. figure:: /_images/GMT_coverlogo.*
-   :width: 500 px
-   :align: center
 
+.. only:: not latex
 
-.. contents:: Table of Contents
+    .. figure:: /_images/GMT_coverlogo.*
+       :width: 500 px
+       :align: center
+
+    .. contents:: Table of Contents
 
 Introduction
 ============
+
+.. index:: ! API
 
 Preamble
 --------

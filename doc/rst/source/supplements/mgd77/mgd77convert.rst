@@ -1,3 +1,5 @@
+.. index:: ! mgd77convert
+
 **************
 mgd77convert
 **************

@@ -1,3 +1,5 @@
+.. index:: ! mgd77track
+
 **********
 mgd77track
 **********

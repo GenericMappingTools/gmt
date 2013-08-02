@@ -1,3 +1,5 @@
+.. index:: ! x2sys_merge
+
 ***********
 x2sys_merge
 ***********

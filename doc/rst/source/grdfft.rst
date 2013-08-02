@@ -1,3 +1,5 @@
+.. index:: ! grdfft
+
 ******
 grdfft
 ******
