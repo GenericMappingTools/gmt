@@ -106,7 +106,7 @@ Optional Arguments
     interpolation: **-D**\ 1 means (*x*,\ *y*) in user units, Cartesian
     distances, **-D**\ 2 for (*x*,\ *y*) in degrees, Flat Earth
     distances, and **-D**\ 3 for (*x*,\ *y*) in degrees, Spherical
-    distances in km. Then, if **PROJ_ELLIPSOID** is spherical, we
+    distances in km. Then, if :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>` is spherical, we
     compute great circle arcs, otherwise geodesics. Option *mode* = 4
     applies to spherical surface spline interpolation only: **-D**\ 4
     for (*x*,\ *y*) in degrees, use cosine of great circle (or geodesic)
@@ -222,7 +222,7 @@ Optional Arguments
 1-d Examples
 ------------
 
-To resample the *x*,\ *y* Gaussian random data created by **gmtmath**
+To resample the *x*,\ *y* Gaussian random data created by `gmtmath <gmtmath.html>`__
 and stored in 1D.txt, requesting output every 0.1 step from 0 to 10, and
 using a minimum cubic spline, try
 
@@ -310,18 +310,18 @@ no boundary conditions are applied at the edges of the specified domain.
 For most applications this is fine as the region typically is
 arbitrarily set to reflect the extent of your data. However, if your
 application requires particular boundary conditions then you may
-consider using **surface** instead.
+consider using `surface <surface.html>`__ instead.
 
 (2) In all cases, the solution is obtained by inverting a *n* x *n*
 double precision matrix for the Green function coefficients, where *n*
-is the number of data constraints. Hence, your computer’s memory may
+is the number of data constraints. Hence, your computer's memory may
 place restrictions on how large data sets you can process with
-**greenspline**. Pre-processing your data with **blockmean**,
-**blockmedian**, or **blockmode** is recommended to avoid aliasing and
+`greenspline <greenspline.html>`. Pre-processing your data with `blockmean <blockmean.html>`,
+`blockmedian <blockmedian.html>`, or `blockmode <blockmode.html>` is recommended to avoid aliasing and
 may also control the size of *n*. For information, if *n* = 1024 then
 only 8 Mb memory is needed, but for *n* = 10240 we need 800 Mb. Note
-that **greenspline** is fully 64-bit compliant if compiled as such.
-For spherical data you may consider decimating using **gmtspatial**
+that `greenspline <greenspline.html>` is fully 64-bit compliant if compiled as such.
+For spherical data you may consider decimating using `gmtspatial <gmtspatial.html>`
 nearest neighbor reduction.
 
 (3) The inversion for coefficients can become numerically unstable when
@@ -379,7 +379,7 @@ Wessel, P., 2009, A general-purpose Green's function interpolator,
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmtmath <gmtmath.html>`_,
+`gmt <gmt.html>`_, `gmtmath <gmtmath.html>`__,
 `nearneighbor <nearneighbor.html>`_, `psxy <psxy.html>`_,
 `surface <surface.html>`_,
 `triangulate <triangulate.html>`_, `xyz2grd <xyz2grd.html>`_

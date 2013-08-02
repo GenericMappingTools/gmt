@@ -19,7 +19,8 @@ Synopsis
 [ **-C**\ [*dx*/*dy*] ] [ **-Dc**\ \|\ **i**\ \|\ **p** ]
 [ **-E**\ [*datum*\ ] ] [ **-F**\ [*unit*\ ] ]
 [ **-G**\ [*x0*/*y0*/][[**+**\ \|\ **-**]\ *unit*][\ **+**\ \|\ **-**] ]
-[ **-I** ] [ **-L**\ *line.xy*\ [/[**+**\ \|\ **-**]\ *unit*][**+**] ]
+[ **-I** ]
+[ **-L**\ *line.xy*\ [/[**+**\ \|\ **-**]\ *unit*][**+**] ]
 [ **-N**\ [**a**\ \|\ **c**\ \|\ **g**\ \|\ **m**] ]
 [ **-Q**\ [**d**\ \|\ **e** ] [ **-S** ]
 [ **-T**\ [**h**\ ]\ *from*\ [/*to*] ]
@@ -83,24 +84,24 @@ Optional Arguments
     (from) the projected coordinates, such as false eastings and
     northings for particular projection zones [0/0]. The unit used for
     the offsets is the plot distance unit in effect (see
-    **PROJ\_LENGTH\_UNIT**) unless **-F** is used, in which case the
+    :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`) unless **-F** is used, in which case the
     offsets are in meters.
 **-Dc**\ \|\ **i**\ \|\ **p**
-    Temporarily override **PROJ\_LENGTH\_UNIT** and use **c** (cm),
+    Temporarily override :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` and use **c** (cm),
     **i** (inch), or **p** (points) instead. Cannot be used with **-F**.
 **-E**\ [*datum*\ ]
     Convert from geodetic (lon, lat, height) to Earth Centered Earth
     Fixed (ECEF) (x,y,z) coordinates (add **-I** for the inverse
     conversion). Append datum ID (see **-Qd**) or give
     *ellipsoid*:*dx*,\ *dy*,\ *dz* where *ellipsoid* may be an ellipsoid
-    ID (see **-Qe**) or given as *a*\ [,*inv\_f*], where *a* is the
-    semi-major axis and *inv\_f* is the inverse flattening (0 if
+    ID (see **-Qe**) or given as *a*\ [,*inv_f*], where *a* is the
+    semi-major axis and *inv_f* is the inverse flattening (0 if
     omitted). If *datum* is - or not given we assume WGS-84.
 **-F**\ [*unit*\ ]
     Force 1:1 scaling, i.e., output (or input, see **-I**) data are in
     actual projected meters. To specify other units, append the desired
     unit (see UNITS). Without **-F**, the output (or input, see **-I**)
-    are in the units specified by **PROJ\_LENGTH\_UNIT** (but see
+    are in the units specified by :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` (but see
     **-D**).
 **-G**\ [*x0*/*y0*/][[**+**\ \|\ **-**]\ *unit*][\ **+**\ \|\ **-**]
     Calculate distances along track *or* to the optional point set with
@@ -125,7 +126,7 @@ Optional Arguments
     of lon/lat of the nearest point.
 **-N**\ [**a**\ \|\ **c**\ \|\ **g**\ \|\ **m**]
     Convert from geodetic latitudes (using the current ellipsoid; see
-    **PROJ\_ELLIPSOID**) to one of four different auxiliary latitudes
+    :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`) to one of four different auxiliary latitudes
     (longitudes are unaffected). Choose from **a**\ uthalic,
     **c**\ onformal, **g**\ eocentric, and **m**\ eridional latitudes
     [geocentric]. Use **-I** to convert from auxiliary latitudes to
@@ -141,13 +142,13 @@ Optional Arguments
     has height above ellipsoid [Default assumes height = 0, i.e., on the
     ellipsoid]. Specify datums using the datum ID (see **-Qd**) or give
     *ellipsoid*:*dx*,\ *dy*,\ *dz* where *ellipsoid* may be an ellipsoid
-    ID (see **-Qe**) or given as *a*\ [,*inv\_f*], where *a* is the
-    semi-major axis and *inv\_f* is the inverse flattening (0 if
+    ID (see **-Qe**) or given as *a*\ [,*inv_f*], where *a* is the
+    semi-major axis and *inv_f* is the inverse flattening (0 if
     omitted). If *datum* is - or not given we assume WGS-84. **-T** may
     be used in conjunction with **-R** **-J** to change the datum before
     coordinate projection (add **-I** to apply the datum conversion
     after the inverse projection). Make sure that the
-    **PROJ\_ELLIPSOID** setting is correct for your case. 
+    :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>` setting is correct for your case. 
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-V.rst_
@@ -246,7 +247,7 @@ Ellipsoids And Spheroids
 
 **GMT** will use ellipsoidal formulae if they are implemented and the
 user have selected an ellipsoid as the reference shape (see
-**PROJ\_ELLIPSOID** in `gmt.conf <gmt.conf.html>`_). The user needs to be aware of a
+**PROJ_ELLIPSOID** in `gmt.conf <gmt.conf.html>`_). The user needs to be aware of a
 few potential pitfalls: (1) For some projections, such as Transverse
 Mercator, Albers, and Lambert’s conformal conic we use the ellipsoidal
 expressions when the areas mapped are small, and switch to the spherical
@@ -259,7 +260,7 @@ central meridian. (2) When you are trying to match some historical data
 (e.g., coordinates obtained with a certain projection and a certain
 reference ellipsoid) you may find that **GMT** gives results that are
 slightly different. One likely source of this mismatch is that older
-calculations often used less significant digits. For instance, Snyder’s
+calculations often used less significant digits. For instance, Snyder's
 examples often use the Clarke 1866 ellipsoid (defined by him as having a
 flattening f = 1/294.98). From f we get the eccentricity squared to be
 0.00676862818 (this is what **GMT** uses), while Snyder rounds off and
@@ -270,7 +271,7 @@ same parameters as Clarke 1866, but with f = 1/294.97861076. Also, be
 aware that older data may be referenced to different datums, and unless
 you know which datum was used and convert all data to a common datum you
 may experience mismatches of tens to hundreds of meters. (3) Finally, be
-aware that **PROJ\_SCALE\_FACTOR** have certain default values for some
+aware that :ref:`PROJ_SCALE_FACTOR <PROJ_SCALE_FACTOR>` have certain default values for some
 projections so you may have to override the setting in order to match
 results produced with other settings.
 

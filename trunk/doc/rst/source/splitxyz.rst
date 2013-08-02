@@ -36,7 +36,7 @@ series has a nearly constant azimuth through the x,y plane. There are
 options to choose only those series which have a certain orientation, to
 set a minimum length for series, and to high- or low-pass filter the z
 values and/or the x,y values. **splitxyz** is a useful filter between
-data extraction and **pswiggle** plotting, and can also be used to
+data extraction and `pswiggle <pswiggle.html>`__ plotting, and can also be used to
 divide a large x,y,z dataset into segments. The output is always in the
 ASCII format; input may be ASCII or binary (see **-bi**). 
 
@@ -174,4 +174,4 @@ profiles named *survey*\ \_\ *###.txt* (when gap exceeds 100 km). Try this:
 See Also
 --------
 
-`gmt <gmt.html>`_, `mgd77list <mgd77list.html>`__, `pswiggle <pswiggle.html>`_
+`gmt <gmt.html>`_, `mgd77list <mgd77list.html>`__, `pswiggle <pswiggle.html>`__

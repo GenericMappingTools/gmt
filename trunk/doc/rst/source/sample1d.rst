@@ -68,7 +68,7 @@ Optional Arguments
     Choose from **l** (Linear), **a** (Akima spline), **c** (natural
     cubic spline), and **n** (no interpolation: nearest point) [Default
     is **-Fa**]. You may change the default interpolant; see
-    **GMT\_INTERPOLANT** in your `gmt.conf <gmt.conf.html>`_ file.
+    :ref:`GMT_INTERPOLANT <GMT_INTERPOLANT>` in your `gmt.conf <gmt.conf.html>`_ file.
 **-I**\ *inc*\ [*unit*\ ]
     *inc* defines the sampling interval [Default is the separation
     between the first and second abscissa point in the *infile*]. Append
@@ -126,7 +126,7 @@ Calendar Time Sampling
 
 If the abscissa are calendar times then you must use the **-f** option
 to indicate this. Furthermore, **-I** then expects an increment in the
-current **TIME_UNIT** units. There is not yet support for variable
+current :ref:`TIME_UNIT <TIME_UNIT>` units. There is not yet support for variable
 intervals such as months.
 
 Examples
@@ -134,7 +134,7 @@ Examples
 
 To resample the file profiles.tdgmb, which contains
 (time,distance,gravity,magnetics,bathymetry) records, at 1km equidistant
-intervals using Akima’s spline, use
+intervals using Akima's spline, use
 
    ::
 

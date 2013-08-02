@@ -17,7 +17,7 @@ Synopsis
 [ **-D**\ [**i**\ \|\ **o**] ]
 [ **-F**\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c** ] [ **-G**\ *zlo*\ /\ *zhi* ] [ **-I** ] [ **-M** ]
 [ **-N** ] [ **-Q**\ [**i**\ \|\ **o**] ]
-[ **-T**\ *z\_min*/*z\_max*\ [/*z\_inc*\ [+]] \| **-T**\ *ztable* ]
+[ **-T**\ *z_min*/*z_max*\ [/*z_inc*\ [+]] \| **-T**\ *ztable* ]
 [ **-V**\ [*level*\ ] ] [ **-W** ] [ **-Z** ]
 
 |No-spaces|
@@ -40,14 +40,15 @@ whereever values are undefined.
 
 If the master cpt file includes B, F, and N entries, these will be
 copied into the new master file. If not, the parameters
-**COLOR\_BACKGROUND**, **COLOR\_FOREGROUND**, and **COLOR\_NAN** from
+:ref:`COLOR_BACKGROUND <COLOR_BACKGROUND>`, :ref:`COLOR_FOREGROUND <COLOR_FOREGROUND>`,
+and :ref:`COLOR_NAN <COLOR_NAN>` from
 the `gmt.conf <gmt.conf.html>`_ file or the command line will be used. This default
 behavior can be overruled using the options **-D**, **-M** or **-N**.
 
 The color model (RGB, HSV or CMYK) of the palette created by **makecpt**
 will be the same as specified in the header of the master cpt file. When
-there is no **COLOR\_MODEL** entry in the master cpt file, the
-**COLOR\_MODEL** specified in the `gmt.conf <gmt.conf.html>`_ file or on the command
+there is no :ref:` <>`**COLOR_MODEL** entry in the master cpt file, the
+:ref:`COLOR_MODEL <COLOR_MODEL>` specified in the `gmt.conf <gmt.conf.html>`_ file or on the command
 line will be used. 
 
 Required Arguments
@@ -71,8 +72,8 @@ Optional Arguments
     Select the back- and foreground colors to match the colors for
     lowest and highest *z*-values in the output cpt file [Default uses
     the colors specified in the master file, or those defined by the
-    parameters **COLOR\_BACKGROUND**, **COLOR\_FOREGROUND**, and
-    **COLOR\_NAN**]. Append **i** to match the colors for the lowest and
+    parameters :ref:`COLOR_BACKGROUND <COLOR_BACKGROUND>`, :ref:`COLOR_FOREGROUND <COLOR_FOREGROUND>`, and
+    :ref:`COLOR_NAN <COLOR_NAN>`]. Append **i** to match the colors for the lowest and
     highest values in the input (instead of the output) cpt file.
 **-F**\ [**R**\ \|\ **r**\ \|\ **h**\ \|\ **c**]
     Force output cpt file to written with r/g/b codes, gray-scale values
@@ -86,14 +87,15 @@ Optional Arguments
 **-I**
     Reverses the sense of color progression in the master cpt file. Also
     exchanges the foreground and background colors, including those
-    specified by the parameters **COLOR\_BACKGROUND** and
-    **COLOR\_FOREGROUND**.
+    specified by the parameters :ref:`COLOR_BACKGROUND <COLOR_BACKGROUND>` and
+    :ref:`COLOR_FOREGROUND <COLOR_FOREGROUND>`.
 **-M**
     Overrule background, foreground, and NaN colors specified in the
     master cpt file with the values of the parameters
-    **COLOR\_BACKGROUND**, **COLOR\_FOREGROUND**, and **COLOR\_NAN**
+    :ref:`COLOR_BACKGROUND <COLOR_BACKGROUND>`, :ref:`COLOR_FOREGROUND <COLOR_FOREGROUND>`,
+    and :ref:`COLOR_NAN <COLOR_NAN>`
     specified in the `gmt.conf <gmt.conf.html>`_ file or on the command line. When
-    combined with **-D**, only **COLOR\_NAN** is considered.
+    combined with **-D**, only :ref:`COLOR_NAN <COLOR_NAN>` is considered.
 **-N**
     Do not write out the background, foreground, and NaN-color fields
     [Default will write them].
@@ -102,12 +104,12 @@ Optional Arguments
     **-Qi** expects input z-values to be log10(z), assigns colors, and
     writes out z [Default]. **-Qo** takes log10(z) first, assigns
     colors, and writes out z.
-**-T**\ *z\_min*/*z\_max*\ [/*z\_inc*\ [+]] \| **-T**\ *ztable*
+**-T**\ *z_min*/*z_max*\ [/*z_inc*\ [+]] \| **-T**\ *ztable*
     Defines the range of the new cpt file by giving the lowest and
-    highest z-value and interval. When used with **-C** and *z\_inc* is
+    highest z-value and interval. When used with **-C** and *z_inc* is
     not specified, the number of intervals remains the same as in the
-    input palette. If *z\_inc* is specified with a trailing ’+’ we
-    interpret *z\_inc* as the number of desired intervals instead.
+    input palette. If *z_inc* is specified with a trailing ’+’ we
+    interpret *z_inc* as the number of desired intervals instead.
     Alternatively, give the name of a ASCII file that has one z-value
     per record. If **-T** is not given, the existing range in the master
     cpt file will be used intact. 
@@ -154,7 +156,7 @@ Bugs
 
 Since **makecpt** will also interpolate from any existing .cpt file you
 may have in your directory, you cannot use one of the listed cpt names
-as an output filename; hence the my\_gebco.cpt in the example.
+as an output filename; hence the my_gebco.cpt in the example.
 
 See Also
 --------
