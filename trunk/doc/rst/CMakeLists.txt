@@ -46,7 +46,7 @@ if (SPHINX_FOUND)
 	# PDF build target
 	find_program(MAKE NAMES make gmake gnumake)
 	if (MAKE)
-		add_custom_target (docs_latex
+		add_custom_target (docs_pdf
 			COMMAND ${SPHINX_EXECUTABLE} -q -b latex -t tex
 			-c "${CMAKE_CURRENT_BINARY_DIR}"
 			-d "${SPHINX_CACHE_DIR}"
@@ -55,7 +55,7 @@ if (SPHINX_FOUND)
 			${CMAKE_CURRENT_BINARY_DIR}/latex
 			COMMAND ${MAKE} -C ${CMAKE_CURRENT_BINARY_DIR}/latex all-pdf
 			COMMENT "Building CookBook PDF...")
-	add_dependencies (docs_latex docs_depends)
+	add_dependencies (docs_pdf docs_depends)
 	endif (MAKE)
 
 	# Build and compress manpages
@@ -92,7 +92,7 @@ if (SPHINX_FOUND)
 			COMMAND ${CMAKE_COMMAND} -E copy_if_different
 			${CMAKE_CURRENT_BINARY_DIR}/latex/GMT_Manpages.pdf
 			${GMT_RELEASE_PREFIX}/doc_release/pdf/GMT_Manpages.pdf
-			DEPENDS docs_latex svn_export_release)
+			DEPENDS docs_pdf svn_export_release)
 		add_depend_to_target (gmt_release _pdf_release)
 		# Manpages
 		add_custom_target (_man_release
