@@ -89,7 +89,7 @@ Optional Arguments
     *increment* is used when series is NOT equidistantly sampled. Then
     *increment* will be the abscissae resolution, i.e., all abscissae
     will be rounded off to a multiple of *increment*. Alternatively,
-    resample data with **sample1d**.
+    resample data with `sample1d <sample1d.html>`__.
 
 **-E**
     Include Ends of time series in output. Default loses half the
@@ -172,4 +172,4 @@ v3312.dt, checking for gaps of 10km and asymmetry of 0.3:
 See Also
 --------
 
-`gmt <gmt.html>`_ , `sample1d <sample1d.html>`_
+`gmt <gmt.html>`_ , `sample1d <sample1d.html>`__

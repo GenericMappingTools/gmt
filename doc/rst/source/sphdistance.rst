@@ -35,7 +35,7 @@ polygons. These polygons are then processed to calculate the nearest
 distance to each node of the lattice and written to the specified grid.
 The Voronoi algorithm used is STRIPACK. As an option, you may provide
 pre-calculated Voronoi polygon file in the format written by
-**sphtriangulate**, thus bypassing the memory- and time-consuming
+`sphtriangulate <sphtriangulate.html>`__, thus bypassing the memory- and time-consuming
 triangularization.
 
 Required Arguments
@@ -103,17 +103,8 @@ Optional Arguments
 .. include:: explain_precision.rst_
 .. include:: explain_float.rst_
 
-Ascii Format Precision
-----------------------
+.. include:: explain_ascii_precision.rst_
 
-The ASCII output formats of numerical data are controlled by parameters
-in your `gmt.conf <gmt.conf.html>`_ file. Longitude and latitude are formatted
-according to **FORMAT_GEO_OUT**, whereas other values are formatted
-according to **FORMAT_FLOAT_OUT**. Be aware that the format in effect
-can lead to loss of precision in the output, which can lead to various
-problems downstream. If you find the output is not written with enough
-precision, consider switching to binary output (**-bo** if available) or
-specify more decimals using the **FORMAT_FLOAT_OUT** setting.
 
 Grid Values Precision
 ---------------------
@@ -148,7 +139,7 @@ See Also
 --------
 
 `GMT <GMT.html>`_, `sphinterpolate <sphinterpolate.html>`_,
-`sphtriangulate <sphtriangulate.html>`_, `triangulate <triangulate.html>`_
+`sphtriangulate <sphtriangulate.html>`__, `triangulate <triangulate.html>`_
 
 References
 ----------

@@ -43,7 +43,7 @@ and **-I** arguments. Either `blockmean <blockmean.html>`_, **blockmedian**, or
 `surface <surface.html>`_ to avoid aliasing short wavelengths. These routines are also
 generally useful for decimating or averaging (*x*,\ *y*,\ *z*) data. You
 can modify the precision of the output format by editing the
-**FORMAT_FLOAT_OUT** parameter in your `gmt.conf <gmt.conf.html>`_ file, or you may
+:ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` parameter in your `gmt.conf <gmt.conf.html>`_ file, or you may
 choose binary input and/or output to avoid loss of precision.
 
 Required Arguments

@@ -16,8 +16,8 @@ Synopsis
 **sph2grd** [ *table* ] **-G**\ *grdfile*
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ **-D**\ [**g**\ \|\ **n**\ ] ]
-[ **-E** ] [ **-F**\ [**k**]\ *filter* ] [ **-N**\ [*norm*\ ] ] [ **-Q** ] [ |SYN_OPT-V| ]
+[ **-D**\ [**g**\ \|\ **n**] ]
+[ **-E** ] [ **-F**\ [**k**]\ *filter* ] [ **-N**\ [*norm*] ] [ **-Q** ] [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
@@ -42,8 +42,8 @@ Required Arguments
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-R.rst_
 
-`Optional Arguments <#toc5>`_
------------------------------
+Optional Arguments
+------------------
 
 *table*
     One or more ASCII [or binary, see **-bi**]
