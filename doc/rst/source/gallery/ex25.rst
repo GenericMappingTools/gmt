@@ -40,6 +40,7 @@ nearest neighbor. This option is particularly practical for plotting
 categorical data, like these, that should not be interpolated.
 
 .. literalinclude:: /_verbatim/example_25.txt
+   :language: bash
 
 .. figure:: /_images/example_25.*
    :width: 500 px

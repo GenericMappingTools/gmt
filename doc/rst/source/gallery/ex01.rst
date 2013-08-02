@@ -14,6 +14,7 @@ the continents in light brown in the background. Finally, we want a
 rectangular frame surrounding the two maps. This is how it is done:
 
 .. literalinclude:: /_verbatim/example_01.txt
+   :language: bash
 
 The first command draws a box surrounding the maps. This is followed by
 two sequences of `pscoast <../pscoast.html>`_, `grdcontour <../grdcontour.html>`_,

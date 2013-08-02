@@ -11,6 +11,7 @@ information is plotted on the image. As before we produce an animated
 GIF image and a simple HTML wrapper for it.
 
 .. literalinclude:: /_verbatim/anim_03.txt
+   :language: bash
 
 .. figure:: /_images/anim_03.*
    :width: 400 px

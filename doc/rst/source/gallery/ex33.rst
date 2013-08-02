@@ -13,6 +13,7 @@ variations about the stacked median profile.
 
 
 .. literalinclude:: /_verbatim/example_33.txt
+   :language: bash
 
 .. figure:: /_images/example_33.*
    :width: 500 px

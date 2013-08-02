@@ -11,6 +11,7 @@ of the different resolutions.  The key tool
 used here is `sph2grd <../sph2grd.html>`_.
 
 .. literalinclude:: /_verbatim/example_39.txt
+   :language: bash
 
 .. figure:: /_images/example_39.*
    :width: 500 px

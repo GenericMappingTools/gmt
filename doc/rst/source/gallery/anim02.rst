@@ -12,6 +12,7 @@ illumination azimuth can bring out subtle features (or artifacts) in the
 gridded data. The red arrow points in the direction of the illumination.
 
 .. literalinclude:: /_verbatim/anim_02.txt
+   :language: bash
 
 As you can see, these sorts of animations are not terribly difficult to
 put together, especially since our vantage point is fixed. In the next

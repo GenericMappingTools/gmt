@@ -5,6 +5,7 @@
 
 
 .. literalinclude:: /_verbatim/example_40.txt
+   :language: bash
 
 .. figure:: /_images/example_40.*
    :width: 500 px

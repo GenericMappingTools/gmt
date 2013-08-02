@@ -14,6 +14,7 @@ arrow pointing north and some text. The first part of this script shows
 how to do it:
 
 .. literalinclude:: /_verbatim/example_04.txt
+   :language: bash
 
 The purpose of the color palette file ``zero.cpt`` is to have the positive topography
 mesh painted light gray (the remainder is white). The left side of

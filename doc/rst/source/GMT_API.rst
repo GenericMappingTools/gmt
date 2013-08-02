@@ -256,7 +256,7 @@ support via ``GMT_grdimage`` [4]_.
 
 .. _tbl-image:
 
-::
+.. code-block:: c
 
   struct GMT_IMAGE {
       enum GMT_enum_type type;          /* Data type, e.g. GMT_FLOAT */
@@ -287,7 +287,7 @@ data set *via* a ``struct GMT_VECTOR`` it will know how to read the data correct
 
 .. _tbl-univector:
 
-::
+.. code-block:: c
 
   union GMT_UNIVECTOR { 
       uint8_t  *uc1;       /* Pointer for unsigned 1-byte array */ 
@@ -309,7 +309,7 @@ Table 1.1: Definition of the GMT_UNIVECTOR union that holds a pointer to any arr
 
 .. _tbl-vector:
 
-::
+.. code-block:: c
 
   struct GMT_VECTOR {
       uint64_t             n_columns;     /* Number of vectors */
@@ -328,7 +328,7 @@ User data matrices (GMT matrices)
 
 .. _tbl-matrix:
 
-::
+.. code-block:: c
 
   struct GMT_MATRIX {
       uint64_t n_rows;                    /* Number of rows in the matrix */

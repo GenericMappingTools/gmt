@@ -30,6 +30,7 @@ similar to the geoid grid. See Appendix [app:M] to learn more about
 color palettes and ways to draw color legends.
 
 .. literalinclude:: /_verbatim/example_17.txt
+   :language: bash
 
 .. figure:: /_images/example_17.*
    :width: 500 px

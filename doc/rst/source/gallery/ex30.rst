@@ -13,6 +13,7 @@ are simply the projections of an unit vector on the x- and y-axis, at
 the given angle.
 
 .. literalinclude:: /_verbatim/example_30.txt
+   :language: bash
 
 .. figure:: /_images/example_30.*
    :width: 500 px

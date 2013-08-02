@@ -26,6 +26,7 @@ star at the deepest point on the map with
 grid files using `grdinfo <../grdinfo.html>`_.
 
 .. literalinclude:: /_verbatim/example_15.txt
+   :language: bash
 
 .. figure:: /_images/example_15.*
    :width: 500 px

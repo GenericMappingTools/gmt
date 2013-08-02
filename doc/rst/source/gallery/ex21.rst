@@ -29,6 +29,7 @@ we want to prefix prices with the $ symbol to indicate the currency.
 Here is how it all comes out:
 
 .. literalinclude:: /_verbatim/example_21.txt
+   :language: bash
 
 which produces the plot in Figure, suggesting
 Wessel has missed a few trains if he had hoped to cash in on the

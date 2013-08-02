@@ -58,6 +58,7 @@ Creating GMT Graphics
     rectangular frame surrounding the two maps. This is how it is done:
 
     .. literalinclude:: /_verbatim/example_01.txt
+       :language: bash
 
     The first command draws a box surrounding the maps. This is followed by
     two sequences of `pscoast <pscoast.html>`_, `grdcontour <grdcontour.html>`_,
@@ -90,6 +91,7 @@ Creating GMT Graphics
     `grdimage <grdimage.html>`_ to make the illustration:
 
     .. literalinclude:: /_verbatim/example_02.txt
+       :language: bash
 
     The first step extracts the 2-D data sets from the local data base using
     `grdraster <grdraster.html>`__ that may be adapted to reflect
@@ -155,6 +157,7 @@ Creating GMT Graphics
     specify positions in inches directly. Thus, the complete automated script reads:
 
     .. literalinclude:: /_verbatim/example_03.txt
+       :language: bash
 
     The final illustration (Figure [fig:example:sub:`0`\ 3]) shows that the
     ship gravity anomalies have more power than altimetry derived gravity
@@ -177,6 +180,7 @@ Creating GMT Graphics
     how to do it:
 
     .. literalinclude:: /_verbatim/example_04.txt
+       :language: bash
 
     The purpose of the color palette file ``zero.cpt`` is to have the positive topography
     mesh painted light gray (the remainder is white). The left side of
@@ -221,6 +225,7 @@ Creating GMT Graphics
     the SW and view the surface from SE:
 
     .. literalinclude:: /_verbatim/example_05.txt
+       :language: bash
 
     The variations in intensity could be made more dramatic by using
     `grdmath <grdmath.html>`_ to scale the intensity file
@@ -246,6 +251,7 @@ Creating GMT Graphics
     this script:
 
     .. literalinclude:: /_verbatim/example_06.txt
+       :language: bash
 
     .. figure:: /_images/example_06.*
 
@@ -265,6 +271,7 @@ Creating GMT Graphics
     (Figure [fig:example:sub:`0`\ 7]) with the following script:
 
     .. literalinclude:: /_verbatim/example_07.txt
+       :language: bash
 
     .. figure:: /_images/example_07.*
 
@@ -287,6 +294,7 @@ Creating GMT Graphics
     Figure [fig:example\ :sub:`0`\ 8] by running this script:
 
     .. literalinclude:: /_verbatim/example_08.txt
+       :language: bash
 
     .. figure:: /_images/example_08.*
 
@@ -316,6 +324,7 @@ Creating GMT Graphics
     gap between the profile and the label:
 
     .. literalinclude:: /_verbatim/example_09.txt
+       :language: bash
 
     The output shows the sea-surface slopes along 42 descending Geosat
     tracks in the Eltanin and Udintsev fracture zone region in a Mercator
@@ -338,6 +347,7 @@ Creating GMT Graphics
     Our script that produces Figure ex_10 reads:
 
     .. literalinclude:: /_verbatim/example_10.txt
+       :language: bash
 
     .. figure:: /_images/example_10.*
 
@@ -371,6 +381,7 @@ Creating GMT Graphics
     Here is the shell script to generate the RGB cube in Figure [fig:example\ :sub:`1`\ 1]:
 
     .. literalinclude:: /_verbatim/example_11.txt
+       :language: bash
 
     .. figure:: /_images/example_11.*
 
@@ -391,6 +402,7 @@ Creating GMT Graphics
     `makecpt <makecpt.html>`_). The script becomes:
 
     .. literalinclude:: /_verbatim/example_12.txt
+       :language: bash
 
     .. figure:: /_images/example_12.*
 
@@ -412,6 +424,7 @@ Creating GMT Graphics
     the plot (Figure [fig:example:sub:`1`\ 3]:
 
     .. literalinclude:: /_verbatim/example_13.txt
+       :language: bash
 
     .. figure:: /_images/example_13.*
 
@@ -441,6 +454,7 @@ Creating GMT Graphics
     (Figure [fig:example:sub:`1`\ 4]):
 
     .. literalinclude:: /_verbatim/example_14.txt
+       :language: bash
 
     .. figure:: /_images/example_14.*
 
@@ -470,6 +484,7 @@ Creating GMT Graphics
     grid files using `grdinfo <grdinfo.html>`_.
 
     .. literalinclude:: /_verbatim/example_15.txt
+       :language: bash
 
     .. figure:: /_images/example_15.*
 
@@ -527,6 +542,7 @@ Creating GMT Graphics
     request for interval (700,725).
 
     .. literalinclude:: /_verbatim/example_16.txt
+       :language: bash
 
     .. figure:: /_images/example_16.*
 
@@ -560,6 +576,7 @@ Creating GMT Graphics
     color palettes and ways to draw color legends.
 
     .. literalinclude:: /_verbatim/example_17.txt
+       :language: bash
 
     .. figure:: /_images/example_17.*
 
@@ -582,6 +599,7 @@ Creating GMT Graphics
     illustration is presented in Figure [fig:example\ :sub:`1`\ 8].
 
     .. literalinclude:: /_verbatim/example_18.txt
+       :language: bash
 
     .. figure:: /_images/example_18.*
 
@@ -607,6 +625,7 @@ Creating GMT Graphics
     have changed places (Figure [fig:example:sub:`1`\ 9]).
 
     .. literalinclude:: /_verbatim/example_19.txt
+       :language: bash
 
     .. figure:: /_images/example_19.*
 
@@ -688,6 +707,7 @@ Creating GMT Graphics
     Here is our final map script that produces Figure [fig:example\ :sub:`2`\ 0]:
 
     .. literalinclude:: /_verbatim/example_20.txt
+       :language: bash
 
     .. figure:: /_images/example_20.*
 
@@ -731,6 +751,7 @@ Creating GMT Graphics
     Here is how it all comes out:
 
     .. literalinclude:: /_verbatim/example_21.txt
+       :language: bash
 
     which produces the plot in Figure [fig:example\ :sub:`2`\ 1], suggesting
     Wessel has missed a few trains if he had hoped to cash in on the
@@ -760,6 +781,7 @@ Creating GMT Graphics
     giving the URL where these and similar data can be obtained.
 
     .. literalinclude:: /_verbatim/example_22.txt
+       :language: bash
 
     .. figure:: /_images/example_22.*
 
@@ -787,6 +809,7 @@ Creating GMT Graphics
     Section [sec:example\ :sub:`2`\ 5]).
 
     .. literalinclude:: /_verbatim/example_23.txt
+       :language: bash
 
     .. figure:: /_images/example_23.*
 
@@ -820,6 +843,7 @@ Creating GMT Graphics
     distortion) and not the actual distance which remains constant at 1000 km.
 
     .. literalinclude:: /_verbatim/example_24.txt
+       :language: bash
 
     .. figure:: /_images/example_24.*
 
@@ -863,6 +887,7 @@ Creating GMT Graphics
     categorical data, like these, that should not be interpolated.
 
     .. literalinclude:: /_verbatim/example_25.txt
+       :language: bash
 
     .. figure:: /_images/example_25.*
 
@@ -887,6 +912,7 @@ Creating GMT Graphics
     *GMT* mapping programs.
 
     .. literalinclude:: /_verbatim/example_26.txt
+       :language: bash
 
     .. figure:: /_images/example_26.*
 
@@ -922,6 +948,7 @@ Creating GMT Graphics
     painted black. A color scale bar was then added to complete the illustration.
 
     .. literalinclude:: /_verbatim/example_27.txt
+       :language: bash
 
     .. figure:: /_images/example_27.*
 
@@ -951,6 +978,7 @@ Creating GMT Graphics
     label Kilauea crater to complete the figure.
 
     .. literalinclude:: /_verbatim/example_28.txt
+       :language: bash
 
     .. figure:: /_images/example_28.*
 
@@ -980,6 +1008,7 @@ Creating GMT Graphics
     `grdcontour <grdcontour.html>`_ and a color scale is placed between them.
 
     .. literalinclude:: /_verbatim/example_29.txt
+       :language: bash
 
     .. figure:: /_images/example_29.*
 
@@ -996,6 +1025,7 @@ Creating GMT Graphics
     the given angle.
 
     .. literalinclude:: /_verbatim/example_30.txt
+       :language: bash
 
     .. figure:: /_images/example_30.*
 
@@ -1028,6 +1058,7 @@ Creating GMT Graphics
     outlined fonts or to convert to a PDF-file.
 
     .. literalinclude:: /_verbatim/example_31.txt
+       :language: bash
 
     .. figure:: /_images/example_31.*
         
@@ -1074,6 +1105,7 @@ Creating GMT Graphics
     did not want to store the 58 MB DEM file, whose location is mentioned in the script.
 
     .. literalinclude:: /_verbatim/example_32.txt
+       :language: bash
 
     .. figure:: /_images/example_32.*
 
@@ -1089,6 +1121,7 @@ Creating GMT Graphics
     variations about the stacked median profile.
 
     .. literalinclude:: /_verbatim/example_33.txt
+       :language: bash
 
     .. figure:: /_images/example_33.*
 
@@ -1104,6 +1137,7 @@ Creating GMT Graphics
     will continue to debate for some time.
 
     .. literalinclude:: /_verbatim/example_34.txt
+       :language: bash
 
     .. figure:: /_images/example_34.*
 
@@ -1119,6 +1153,7 @@ Creating GMT Graphics
     placed on top.
 
     .. literalinclude:: /_verbatim/example_35.txt
+       :language: bash
 
     .. figure:: /_images/example_35.*
 
@@ -1137,6 +1172,7 @@ Creating GMT Graphics
     with `greenspline <greenspline.html>`_.
 
     .. literalinclude:: /_verbatim/example_36.txt
+       :language: bash
 
     .. figure:: /_images/example_36.*
 
@@ -1151,6 +1187,7 @@ Creating GMT Graphics
     the grids being extended and padded to a suitable dimension.
 
     .. literalinclude:: /_verbatim/example_37.txt
+       :language: bash
 
     .. figure:: /_images/example_37.*
 
@@ -1163,6 +1200,7 @@ Creating GMT Graphics
     used here is `grdhisteq <grdhisteq.html>`_.
 
     .. literalinclude:: /_verbatim/example_38.txt
+       :language: bash
 
     .. figure:: /_images/example_38.*
 
@@ -1178,6 +1216,7 @@ Creating GMT Graphics
     used here is `sph2grd <sph2grd.html>`_.
 
     .. literalinclude:: /_verbatim/example_39.txt
+       :language: bash
 
     .. figure:: /_images/example_39.*
 
@@ -1185,6 +1224,7 @@ Creating GMT Graphics
     ----------------------------------------------
 
     .. literalinclude:: /_verbatim/example_40.txt
+       :language: bash
 
     .. figure:: /_images/example_40.*
 
@@ -1318,6 +1358,7 @@ Creating GMT Animations
     display the animation.
 
     .. literalinclude:: /_verbatim/anim_01.txt
+       :language: bash
 
     Make sure you understand the purpose of all the steps in our script. In
     this case we did some trial-and-error to determine the exact values to
@@ -1337,6 +1378,7 @@ Creating GMT Animations
     gridded data. The red arrow points in the direction of the illumination.
 
     .. literalinclude:: /_verbatim/anim_02.txt
+       :language: bash
 
     As you can see, these sorts of animations are not terribly difficult to
     put together, especially since our vantage point is fixed. In the next
@@ -1354,6 +1396,7 @@ Creating GMT Animations
     GIF image and a simple HTML wrapper for it.
 
     .. literalinclude:: /_verbatim/anim_03.txt
+       :language: bash
 
     Flying over topography
     ----------------------
@@ -1373,4 +1416,5 @@ Creating GMT Animations
     expect to add this functionality in a future version.
 
     .. literalinclude:: /_verbatim/anim_04.txt
+       :language: bash
 

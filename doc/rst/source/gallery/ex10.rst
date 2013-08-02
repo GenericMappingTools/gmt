@@ -15,6 +15,7 @@ linear projection for the basemap and add the columns and text on top.
 Our script that produces Figure ex_10 reads:
 
 .. literalinclude:: /_verbatim/example_10.txt
+   :language: bash
 
 .. figure:: /_images/example_10.*
    :width: 500 px

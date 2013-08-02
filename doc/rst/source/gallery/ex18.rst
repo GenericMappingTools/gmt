@@ -19,6 +19,7 @@ determine the combined area and volumes of the chosen seamounts. Our
 illustration is presented in Figure.
 
 .. literalinclude:: /_verbatim/example_18.txt
+   :language: bash
 
 .. figure:: /_images/example_18.*
    :width: 500 px

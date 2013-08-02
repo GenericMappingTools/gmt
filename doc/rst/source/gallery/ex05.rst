@@ -20,6 +20,7 @@ variations in gradients, or illuminations. We choose to illuminate from
 the SW and view the surface from SE:
 
 .. literalinclude:: /_verbatim/example_05.txt
+   :language: bash
 
 The variations in intensity could be made more dramatic by using
 `grdmath <../grdmath.html>`_ to scale the intensity file

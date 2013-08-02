@@ -18,6 +18,7 @@ view projection to allow "fly-through" animations like Fledermaus; we
 expect to add this functionality in a future version.
 
 .. literalinclude:: /_verbatim/anim_04.txt
+   :language: bash
 
 .. figure:: /_images/anim_04.*
    :width: 400 px
