@@ -459,7 +459,7 @@ int GMT_ras_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
  * Functions :	GMT_bit_read_grd, GMT_bit_write_grd
  *-----------------------------------------------------------*/
 
-/* sizeof the fist part of the native header */
+/* sizeof the first part of the native header */
 #define SIZEOF_NATIVE_GRD_HDR1  12 /* 3 * sizeof (unsigned) */
 /* sizeof the last part of the native header */
 #define SIZEOF_NATIVE_GRD_HDR2 880 /* sizeof (struct GMT_GRID_HEADER) - (size_t)header->wesn */
