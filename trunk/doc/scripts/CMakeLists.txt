@@ -133,7 +133,6 @@ foreach (_script ${_scr_strip})
 	list (APPEND _scripts_txt ${RST_BINARY_DIR}/_verbatim/${_txt})
 	add_custom_command (OUTPUT ${RST_BINARY_DIR}/_verbatim/${_txt}
 		COMMAND ${CMAKE_COMMAND}
-		-D SCRIPTS_COMMAND=script_to_verbatim
 		-D script=${CMAKE_CURRENT_SOURCE_DIR}/${_script}
 		-D txt=${RST_BINARY_DIR}/_verbatim/${_txt}
 		-D CMAKE_MODULE_PATH=${CMAKE_MODULE_PATH}
