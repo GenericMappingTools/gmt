@@ -232,19 +232,42 @@ enum GMT_enum_grdlen {
 	GMT_GRID_NAME_LEN256	= 256U,
 	GMT_GRID_HEADER_SIZE    = 892U};
 
-/* Note: GMT_GRID_HEADER_SIZE is 4 less than sizeof (struct GMT_GRID_HEADER) for 64 bit systems due to alignment.
-   Since the GMT_GRID_HEADER was designed during the 32-bit era its sizeof is 892.  For backwards compatibility
-   we continue to enforce this header size by writing the structure components separately. */
+/* Note: GMT_GRID_HEADER_SIZE is 4 less than sizeof (struct GMT_GRID_HEADER) on
+ * some 64 bit systems due to alignment.  Since the GMT_GRID_HEADER was designed
+ * during the 32-bit era its sizeof is 892.  For backwards compatibility we
+ * continue to enforce this header size by writing the structure components
+ * separately. */
 
 struct GMT_GRID_HEADER {
-/* Variables we document for the API: */
-/* ===== Do not change the first three items. They are copied verbatim to the native grid header and must be 4-byte unsigned ints */
-	unsigned int nx;                /* Number of columns */
-	unsigned int ny;                /* Number of rows */
-	unsigned int registration;      /* GMT_GRID_NODE_REG (0) for node grids, GMT_GRID_PIXEL_REG (1) for pixel grids */
-	
-	/* ---- Variables "hidden" from the API ---- */
-/* This section is flexible. It is not copied to any grid header or stored in any file. It is considered private */
+	/* Variables we document for the API:
+	 * == Do not change the type of the following three items.
+	 * == They are copied verbatim to the native grid header and must be 4-byte unsigned ints. */
+	uint32_t nx;                     /* Number of columns */
+	uint32_t ny;                     /* Number of rows */
+	uint32_t registration;           /* GMT_GRID_NODE_REG (0) for node grids, GMT_GRID_PIXEL_REG (1) for pixel grids */
+
+	/* -- Here is the possible location for data structure padding:
+	 *    A double is 8-byte aligned on Windows. */
+
+	/* == The types of the following 12 elements must not be changed.
+	 * == They are also copied verbatim to the native grid header. */
+	double wesn[4];                   /* Min/max x and y coordinates */
+	double z_min;                     /* Minimum z value */
+	double z_max;                     /* Maximum z value */
+	double inc[2];                    /* x and y increment */
+	double z_scale_factor;            /* grd values must be multiplied by this */
+	double z_add_offset;              /* After scaling, add this */
+	char x_units[GMT_GRID_UNIT_LEN80];     /* units in x-direction */
+	char y_units[GMT_GRID_UNIT_LEN80];     /* units in y-direction */
+	char z_units[GMT_GRID_UNIT_LEN80];     /* grid value units */
+	char title[GMT_GRID_TITLE_LEN80];      /* name of data set */
+	char command[GMT_GRID_COMMAND_LEN320]; /* name of generating command */
+	char remark[GMT_GRID_REMARK_LEN160];   /* comments re this data set */
+	/* == End of "untouchable" header. */
+
+	/* ---- Variables "hidden" from the API ----
+	 * This section is flexible.  It is not copied to any grid header
+	 * or stored in any file.  It is considered private */
 	unsigned int type;               /* Grid format */
 	unsigned int bits;               /* Bits per data value (e.g., 32 for ints/floats; 8 for bytes) */
 	unsigned int complex_mode;       /* 0 = normal, GMT_GRID_IS_COMPLEX_REAL = real part of complex grid, GMT_GRID_IS_COMPLEX_IMAG = imag part of complex grid */
@@ -293,21 +316,6 @@ struct GMT_GRID_HEADER {
 	unsigned int xy_mode[2];	 /* 1 if +U<unit> was parsed, 0 otherwise */
 	unsigned int xy_unit[2];	 /* Unit enum specified via +u<unit> */
 	double xy_unit_to_meter[2];	 /* Scale, given xy_unit, to convert xy from <unit> to meters */
-
-/* Variables we document for the API: */
-/* ===== The following elements must not be changed. They are copied verbatim to the native grid header */
-	double wesn[4];                   /* Min/max x and y coordinates */
-	double z_min;                     /* Minimum z value */
-	double z_max;                     /* Maximum z value */
-	double inc[2];                    /* x and y increment */
-	double z_scale_factor;            /* grd values must be multiplied by this */
-	double z_add_offset;              /* After scaling, add this */
-	char x_units[GMT_GRID_UNIT_LEN80];     /* units in x-direction */
-	char y_units[GMT_GRID_UNIT_LEN80];     /* units in y-direction */
-	char z_units[GMT_GRID_UNIT_LEN80];     /* grid value units */
-	char title[GMT_GRID_TITLE_LEN80];      /* name of data set */
-	char command[GMT_GRID_COMMAND_LEN320]; /* name of generating command */
-	char remark[GMT_GRID_REMARK_LEN160];   /* comments re this data set */
 };
 
 /* grd is stored in rows going from west (xmin) to east (xmax)
