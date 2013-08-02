@@ -551,7 +551,7 @@ correctly with a warning under compatibility mode:
    **+s**\ *fontsize* are obsolete, now being part of **+f**\ *font*.
 
 #. **Ellipsoids**: Assigning :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>` a file name is
-   deprecated, use comma-separated parameters *a, :math:`f^{-1}`* instead.
+   deprecated, use comma-separated parameters :math:`a, f^{-1}` instead.
 
 #. **Custom symbol macros:** Circle macro symbol **C** is deprecated; use **c** instead.
 
@@ -915,8 +915,8 @@ correctly with a warning under compatibility mode:
 Introduction
 ============
 
-Most scientists are familiar with the sequence: *raw data
-:math:`\rightarrow` processing :math:`\rightarrow` final illustration*.
+Most scientists are familiar with the sequence: *raw data*
+:math:`\rightarrow` *processing* :math:`\rightarrow` *final illustration*.
 In order to finalize papers for submission to scientific journals,
 prepare proposals, and create overheads and slides for various
 presentations, many scientists spend large amounts of time and money to
@@ -968,7 +968,7 @@ and 3-D perspective illustrations.
 1991], has no Year 2000 problems, and may be used with any hardware
 running some flavor of *UNIX*, possibly with minor modifications. In
 writing *GMT*, we have followed the modular design philosophy of *UNIX*:
-The *raw data :math:`\rightarrow` processing :math:`\rightarrow` final
+The *raw data* :math:`\rightarrow` *processing* :math:`\rightarrow` *final
 illustration* flow is broken down to a series of elementary steps; each
 step is accomplished by a separate *GMT* or *UNIX* tool. This modular
 approach brings several benefits: (1) only a few programs are needed,
