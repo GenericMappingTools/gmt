@@ -305,7 +305,7 @@
 #	define log1pf(x) (float)log1p((double)(x))
 #endif
 #ifndef HAVE_LRINT
-#	define lrint (int64_t)rint
+#	define lrint (long)rint
 #endif
 #ifndef HAVE_LRINTF
 #	define lrintf(x) lrint((double)(x))
