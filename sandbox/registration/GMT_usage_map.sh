@@ -153,4 +153,5 @@ if [ $key = "all" ] || [ $key = "map" ]; then
 	date +%x | awk '{print 0.05, 0.05, $1}' | pstext -R0/5/0/5 -Jx1i -F+f10p,Helvetica+jLB -O -Gcornsilk -TO -W0.25p -X-3.08i >> gmt_usage.ps
 	ps2raster -E150 -A -TG gmt_usage.ps
 	rm -f gmt_usage.ps
+	scp gmt_usage.png imina.soest.hawaii.edu:/export/imina2/httpd/htdocs/gmt5/gmt
 fi
