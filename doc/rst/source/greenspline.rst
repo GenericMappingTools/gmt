@@ -222,7 +222,7 @@ Optional Arguments
 1-d Examples
 ------------
 
-To resample the *x*,\ *y* Gaussian random data created by `gmtmath <gmtmath.html>`__
+To resample the *x*,\ *y* Gaussian random data created by :doc:`gmtmath`
 and stored in 1D.txt, requesting output every 0.1 step from 0 to 10, and
 using a minimum cubic spline, try
 
@@ -310,7 +310,7 @@ no boundary conditions are applied at the edges of the specified domain.
 For most applications this is fine as the region typically is
 arbitrarily set to reflect the extent of your data. However, if your
 application requires particular boundary conditions then you may
-consider using `surface <surface.html>`__ instead.
+consider using :doc:`surface` instead.
 
 (2) In all cases, the solution is obtained by inverting a *n* x *n*
 double precision matrix for the Green function coefficients, where *n*
@@ -379,7 +379,7 @@ Wessel, P., 2009, A general-purpose Green's function interpolator,
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmtmath <gmtmath.html>`__,
-`nearneighbor <nearneighbor.html>`_, `psxy <psxy.html>`_,
-`surface <surface.html>`_,
-`triangulate <triangulate.html>`_, `xyz2grd <xyz2grd.html>`_
+:doc:`gmt`, :doc:`gmtmath`,
+:doc:`nearneighbor`, :doc:`psxy`,
+:doc:`surface`,
+:doc:`triangulate`, :doc:`xyz2grd`

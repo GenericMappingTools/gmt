@@ -86,7 +86,7 @@ Island" together with its not phantom seamount
 See Also
 --------
 
-`GMT <../../GMT.html>`_, `gmtgravmag3d <gmtgravmag3d.html>`_
+:doc:`gmt </gmt>`, :doc:`gmtgravmag3d`
 
 Reference
 ---------

@@ -629,4 +629,4 @@ Publishing Corp.
 See Also
 --------
 
-`gmt <gmt.html>`_, `grdmath <grdmath.html>`_
+:doc:`gmt`, :doc:`grdmath`

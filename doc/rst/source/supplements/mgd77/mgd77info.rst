@@ -142,11 +142,11 @@ of Hawaii (institution 08), run
 See Also
 --------
 
-`mgd77list <mgd77list.html>`_,
-`mgd77manage <mgd77manage.html>`_,
-`mgd77path <mgd77path.html>`_,
-`mgd77track <mgd77track.html>`_,
-`x2sys_init <x2sys_init.html>`_
+:doc:`mgd77list`,
+:doc:`mgd77manage`,
+:doc:`mgd77path`,
+:doc:`mgd77track`,
+:doc:`x2sys_init <../x2sys/x2sys_init>`
 
 References
 ----------

@@ -89,7 +89,7 @@ Optional Arguments
     *increment* is used when series is NOT equidistantly sampled. Then
     *increment* will be the abscissae resolution, i.e., all abscissae
     will be rounded off to a multiple of *increment*. Alternatively,
-    resample data with `sample1d <sample1d.html>`__.
+    resample data with :doc:`sample1d`.
 
 **-E**
     Include Ends of time series in output. Default loses half the
@@ -161,7 +161,7 @@ km between 0 and 100 km:
     gmt filter1d cruise.gmtd -T0/1.0e5/2000 -FG10000 -N3 -V > filtered_cruise.gmtd
 
 Data along track often have uneven sampling and gaps which we do not
-want to interpolate using `sample1d <sample1d.html>`_. To find the median depth in a 50
+want to interpolate using :doc:`sample1d`. To find the median depth in a 50
 km window every 25 km along the track of cruise v3312, stored in
 v3312.dt, checking for gaps of 10km and asymmetry of 0.3:
 
@@ -172,4 +172,4 @@ v3312.dt, checking for gaps of 10km and asymmetry of 0.3:
 See Also
 --------
 
-`gmt <gmt.html>`_ , `sample1d <sample1d.html>`__
+:doc:`gmt` , :doc:`sample1d`

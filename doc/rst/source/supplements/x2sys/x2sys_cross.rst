@@ -111,7 +111,7 @@ Remarks
 The COEs found are printed out to standard output in ASCII format
 (unless **-bo** is set). When ASCII is chosen,
 the output format depends on whether or not old-style XOVER output
-(**-L**) has been selected [See the **x_over** man page for more
+(**-L**) has been selected [See the :manpage:`x_over(1)` man page for more
 details]. If ASCII, then the first record contains the name of the tag
 used, the second records specifies the exact command line used for this
 run, and the third record contains the names of each column. For each
@@ -172,12 +172,12 @@ Wessel, P. (1989), XOVER: A cross-over error detector for track data,
 See Also
 --------
 
-`GMT <GMT.html>`_, `x2sys_binlist <x2sys_binlist.html>`_,
-`x2sys_init <x2sys_init.html>`_,
-`x2sys_datalist <x2sys_datalist.html>`_,
-`x2sys_get <x2sys_get.html>`_,
-`x2sys_list <x2sys_list.html>`_,
-`x2sys_put <x2sys_put.html>`_,
-`x2sys_report <x2sys_report.html>`_,
-`x2sys_solve <x2sys_solve.html>`_,
-`x_over <x_over.html>`_
+:doc:`gmt </gmt>`, :doc:`x2sys_binlist`,
+:doc:`x2sys_init`,
+:doc:`x2sys_datalist`,
+:doc:`x2sys_get`,
+:doc:`x2sys_list`,
+:doc:`x2sys_put`,
+:doc:`x2sys_report`,
+:doc:`x2sys_solve`,
+:manpage:`x_over(1)`

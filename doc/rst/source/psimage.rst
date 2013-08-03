@@ -178,5 +178,7 @@ to be 1 cm wide, use
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmtcolors <gmtcolors.html>`_,
-`psxy <psxy.html>`_ `convert <convert.html>`_
+:doc:`gmt`,
+:doc:`gmtcolors`,
+:doc:`psxy`,
+:manpage:`convert(1)`

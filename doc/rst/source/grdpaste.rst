@@ -66,6 +66,6 @@ Suppose file_a.nc is 150E - 180E and 0 - 30N, and file_b.nc is 150E -
 See Also
 --------
 
-`gmt <gmt.html>`_, `grdblend <grdblend.html>`_,
-`grdcut <grdcut.html>`_, `grdinfo <grdinfo.html>`_,
-`grdsample <grdsample.html>`_
+:doc:`gmt`, :doc:`grdblend`,
+:doc:`grdcut`, :doc:`grdinfo`,
+:doc:`grdsample`

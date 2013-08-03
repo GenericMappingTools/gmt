@@ -6,15 +6,15 @@
 In many areas, such as fluid dynamics and elasticity, it is desirable to
 plot vector fields of various kinds. *GMT* provides a way to illustrate
 2-component vector fields using the
-`grdvector <../grdvector.html>`_ utility. The two
+:doc:`grdvector </grdvector>` utility. The two
 components of the field (Cartesian or polar components) are stored in
 separate grid files. In this example we use
-`grdmath <../grdmath.html>`_ to generate a surface
+:doc:`grdmath </grdmath>` to generate a surface
 :math:`z(x, y) = x \cdot \exp(-x^2 -y^2)` and to calculate
 :math:`\nabla z` by returning the *x*- and *y*-derivatives separately.
 We superpose the gradient vector field and the surface *z* and also plot
 the components of the gradient in separate windows. A
-`pstext <../pstext.html>`_ call to place a header finishes the plot
+:doc:`pstext </pstext>` call to place a header finishes the plot
 
 .. literalinclude:: /_verbatim/example_13.txt
    :language: bash

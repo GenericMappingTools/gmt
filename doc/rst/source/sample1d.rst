@@ -68,7 +68,7 @@ Optional Arguments
     Choose from **l** (Linear), **a** (Akima spline), **c** (natural
     cubic spline), and **n** (no interpolation: nearest point) [Default
     is **-Fa**]. You may change the default interpolant; see
-    :ref:`GMT_INTERPOLANT <GMT_INTERPOLANT>` in your `gmt.conf <gmt.conf.html>`_ file.
+    :ref:`GMT_INTERPOLANT <GMT_INTERPOLANT>` in your :doc:`gmt.conf` file.
 **-I**\ *inc*\ [*unit*\ ]
     *inc* defines the sampling interval [Default is the separation
     between the first and second abscissa point in the *infile*]. Append
@@ -170,4 +170,4 @@ To obtain a rhumb line (loxodrome) sampled every 5 km instead, use
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_, `filter1d <filter1d.html>`_
+:doc:`gmt`, :doc:`gmt.conf`, :doc:`filter1d`

@@ -44,5 +44,5 @@ Optional Arguments
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmtcolors <gmtcolors.html>`_,
-`psimage <psimage.html>`_
+:doc:`gmt`, :doc:`gmtcolors`,
+:doc:`psimage`

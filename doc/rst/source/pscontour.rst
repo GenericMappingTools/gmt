@@ -223,7 +223,7 @@ Bugs
 
 Sometimes there will appear to be thin lines of the wrong color in the
 image. This is a round-off problem which may be remedied by using a
-higher value of **PS_DPI** in the `gmt.conf <gmt.conf.html>`_ file.
+higher value of **PS_DPI** in the :doc:`gmt.conf` file.
 
 To save the triangulated 100-m contour lines in topo.txt and separate
 them into multisegment files (one for each contour level), try
@@ -235,14 +235,14 @@ them into multisegment files (one for each contour level), try
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
-`gmtcolors <gmtcolors.html>`_,
-`grdcontour <grdcontour.html>`_,
-`grdimage <grdimage.html>`_,
-`nearneighbor <nearneighbor.html>`_,
-`psbasemap <psbasemap.html>`_, `psscale <psscale.html>`_,
-`surface <surface.html>`_,
-`triangulate <triangulate.html>`_
+:doc:`gmt`, :doc:`gmt.conf`,
+:doc:`gmtcolors`,
+:doc:`grdcontour`,
+:doc:`grdimage`,
+:doc:`nearneighbor`,
+:doc:`psbasemap`, :doc:`psscale`,
+:doc:`surface`,
+:doc:`triangulate`
 
 References
 ----------

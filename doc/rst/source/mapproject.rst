@@ -239,7 +239,7 @@ Conic (**-JL**)and Albers Equal-Area (**-JB**) will use the spherical
 solution when the map scale exceeds 1.0E7. (2) Transverse Mercator
 (**-JT**) and UTM (**-JU**) will will use the spherical solution when
 either the west or east boundary given in **-R** is more than 10 degrees
-from the central meridian, `and (3) <and.html>`_ same for Cassini
+from the central meridian, and (3) same for Cassini
 (**-JC**) but with a limit of only 4 degrees.
 
 Ellipsoids And Spheroids
@@ -247,7 +247,7 @@ Ellipsoids And Spheroids
 
 **GMT** will use ellipsoidal formulae if they are implemented and the
 user have selected an ellipsoid as the reference shape (see
-**PROJ_ELLIPSOID** in `gmt.conf <gmt.conf.html>`_). The user needs to be aware of a
+**PROJ_ELLIPSOID** in :doc:`gmt.conf`). The user needs to be aware of a
 few potential pitfalls: (1) For some projections, such as Transverse
 Mercator, Albers, and Lambert’s conformal conic we use the ellipsoidal
 expressions when the areas mapped are small, and switch to the spherical
@@ -278,7 +278,7 @@ results produced with other settings.
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_, `project <project.html>`_
+:doc:`gmt`, :doc:`gmt.conf`, :doc:`project`
 
 References
 ----------

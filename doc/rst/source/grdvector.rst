@@ -40,7 +40,7 @@ y-components of a vector field and produces a vector field plot by
 drawing vectors with orientation and length according to the information
 in the files. Alternatively, polar coordinate components may be used (r,
 theta). **grdvector** is basically a short-hand for using 2 calls to
-`grd2xyz <grd2xyz.html>`_ and pasting the output through **psxy -SV**. 
+:doc:`grd2xyz` and pasting the output through **psxy -SV**. 
 
 Required Arguments
 ------------------
@@ -156,5 +156,5 @@ using a scale of 200 km per data unit, try
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmtcolors <gmtcolors.html>`_,
-`grdcontour <grdcontour.html>`_, `psxy <psxy.html>`_
+:doc:`gmt`, :doc:`gmtcolors`,
+:doc:`grdcontour`, :doc:`psxy`

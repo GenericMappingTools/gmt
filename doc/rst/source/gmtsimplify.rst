@@ -121,4 +121,4 @@ the basis for this program.
 See Also
 --------
 
-`gmt <gmt.html>`_
+:doc:`gmt`

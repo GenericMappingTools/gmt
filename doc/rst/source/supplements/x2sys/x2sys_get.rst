@@ -111,11 +111,11 @@ the selected region, unless **-G** is set.
 See Also
 --------
 
-`x2sys_binlist <x2sys_binlist.html>`_,
-`x2sys_cross <x2sys_cross.html>`_ 
-`x2sys_datalist <x2sys_datalist.html>`_,
-`x2sys_init <x2sys_init.html>`_,
-`x2sys_list <x2sys_list.html>`_,
-`x2sys_put <x2sys_put.html>`_,
-`x2sys_report <x2sys_report.html>`_,
-`x2sys_solve <x2sys_solve.html>`_
+:doc:`x2sys_binlist`,
+:doc:`x2sys_cross` 
+:doc:`x2sys_datalist`,
+:doc:`x2sys_init`,
+:doc:`x2sys_list`,
+:doc:`x2sys_put`,
+:doc:`x2sys_report`,
+:doc:`x2sys_solve`

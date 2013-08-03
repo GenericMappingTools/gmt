@@ -111,4 +111,4 @@ and reporting the progress:
 See Also
 --------
 
-`gmt <gmt.html>`_, `grdfft <grdfft.html>`_, `grdfilter <grdfilter.html>`_
+:doc:`gmt`, :doc:`grdfft`, :doc:`grdfilter`

@@ -157,12 +157,13 @@ ABC fuel 0.02\*((dist))
 See Also
 --------
 
-`blockmean <blockmean.html>`_, `GMT <GMT.html>`_,
-`surface <surface.html>`_,
-`x2sys_init <x2sys_init.html>`_,
-`x2sys_datalist <x2sys_datalist.html>`_,
-`x2sys_get <x2sys_get.html>`_,
-`x2sys_list <x2sys_list.html>`_,
-`x2sys_put <x2sys_put.html>`_,
-`x2sys_report <x2sys_report.html>`_,
-`x2sys_solve <x2sys_solve.html>`_
+:doc:`blockmean </blockmean>`,
+:doc:`gmt </gmt>`,
+:doc:`surface </surface>`,
+:doc:`x2sys_init`,
+:doc:`x2sys_datalist`,
+:doc:`x2sys_get`,
+:doc:`x2sys_list`,
+:doc:`x2sys_put`,
+:doc:`x2sys_report`,
+:doc:`x2sys_solve`

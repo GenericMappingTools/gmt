@@ -6,23 +6,23 @@
 This example shows how one goes from randomly spaced data points to an
 evenly sampled surface. First we plot the distribution and values of our
 raw data set (same as in Section [sec:example\ :sub:`1`\ 2]). We choose an equidistant grid and run
-`blockmean <../blockmean.html>`_ which preprocesses the
+:doc:`blockmean </blockmean>` which preprocesses the
 data to avoid aliasing. The dashed lines indicate the logical blocks
-used by `blockmean <../blockmean.html>`_; all points inside
+used by :doc:`blockmean </blockmean>`; all points inside
 a given bin will be averaged. The logical blocks are drawn from a
 temporary file we make on the fly within the shell script. The processed
-data is then gridded with the `surface <../surface.html>`_
+data is then gridded with the :doc:`surface </surface>`
 program and contoured every 25 units. A most important point here is
-that `blockmean <../blockmean.html>`_, `blockmedian <../blockmedian.html>`_, or
-`blockmode <../blockmode.html>`_ should always be run prior
-to running `surface <../surface.html>`_, and both of these
+that :doc:`blockmean </blockmean>`, :doc:`blockmedian </blockmedian>`, or
+:doc:`blockmode </blockmode>` should always be run prior
+to running :doc:`surface </surface>`, and both of these
 steps must use the same grid interval. We use
-`grdtrend <../grdtrend.html>`_ to fit a bicubic trend
+:doc:`grdtrend </grdtrend>` to fit a bicubic trend
 surface to the gridded data, contour it as well, and sample both grid
 files along a diagonal transect using
-`grdtrack <../grdtrack.html>`_. The bottom panel compares
+:doc:`grdtrack </grdtrack>`. The bottom panel compares
 the gridded (solid line) and bicubic trend (dashed line) along the
-transect using `psxy <../psxy.html>`_
+transect using :doc:`psxy </psxy>`
 
 .. literalinclude:: /_verbatim/example_14.txt
    :language: bash

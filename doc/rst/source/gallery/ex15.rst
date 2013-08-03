@@ -6,24 +6,24 @@
 This example demonstrates some off the
 different ways one can use to grid data in *GMT*, and how to deal with
 unconstrained areas. We first convert a large ASCII file to binary with
-`gmtconvert <gmtconvert.html>`_ since the binary file
+:doc:`gmtconvert </gmtconvert>` since the binary file
 will read and process much faster. Our lower left plot illustrates the
 results of gridding using a nearest neighbor technique
-(`nearneighbor <../nearneighbor.html>`_) which is a local
+(:doc:`nearneighbor </nearneighbor>`) which is a local
 method: No output is given where there are no data. Next (lower right),
 we use a minimum curvature technique
-(`surface <../surface.html>`_) which is a global method.
+(:doc:`surface </surface>`) which is a global method.
 Hence, the contours cover the entire map although the data are only
 available for portions of the area (indicated by the gray areas plotted
-using `psmask <../psmask.html>`_). The top left scenario
+using :doc:`psmask </psmask>`). The top left scenario
 illustrates how we can create a clip path (using
-`psmask <../psmask.html>`_) based on the data coverage to
+:doc:`psmask </psmask>`) based on the data coverage to
 eliminate contours outside the constrained area. Finally (top right) we
-simply employ `pscoast <../pscoast.html>`_ to overlay gray
+simply employ :doc:`pscoast </pscoast>` to overlay gray
 land masses to cover up the unwanted contours, and end by plotting a
 star at the deepest point on the map with
-`psxy <../psxy.html>`_. This point was extracted from the
-grid files using `grdinfo <../grdinfo.html>`_.
+:doc:`psxy </psxy>`. This point was extracted from the
+grid files using :doc:`grdinfo </grdinfo>`.
 
 .. literalinclude:: /_verbatim/example_15.txt
    :language: bash

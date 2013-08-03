@@ -120,7 +120,7 @@ Definition Files
 ----------------
 
 These \*.def files contain information about the data file format and
-have two sections: (1) header information `and (2) <and.2.html>`_ column
+have two sections: (1) header information and (2) column
 information. All header information starts with the character # in the
 first column, immediately followed by an upper-case directive. If the
 directive takes an argument it is separated by white-space. You may
@@ -341,10 +341,10 @@ to find it.
 See Also
 --------
 
-`x2sys_binlist <x2sys_binlist.html>`_,
-`x2sys_datalist <x2sys_datalist.html>`_,
-`x2sys_get <x2sys_get.html>`_,
-`x2sys_list <x2sys_list.html>`_,
-`x2sys_put <x2sys_put.html>`_,
-`x2sys_report <x2sys_report.html>`_,
-`x2sys_solve <x2sys_solve.html>`_
+:doc:`x2sys_binlist`,
+:doc:`x2sys_datalist`,
+:doc:`x2sys_get`,
+:doc:`x2sys_list`,
+:doc:`x2sys_put`,
+:doc:`x2sys_report`,
+:doc:`x2sys_solve`

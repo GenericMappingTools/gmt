@@ -201,4 +201,4 @@ To determine the intersections between the polygons A.d and B.d, run
 See Also
 --------
 
-`gmt <gmt.html>`_
+:doc:`gmt`

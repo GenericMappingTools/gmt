@@ -179,12 +179,13 @@ total reconstruction rotations for the plate (PAC_APM.d), try
 See Also
 --------
 
-`GMT <GMT.html>`_ , `project <project.html>`_ ,
-`grdrotater <grdrotater.html>`_,
-`grdspotter <grdspotter.html>`_,
-`mapproject <mapproject.html>`_,
-`hotspotter <hotspotter.html>`_,
-`originator <originator.html>`_
+:doc:`gmt </gmt>` ,
+:doc:`project </project>` ,
+:doc:`grdrotater`,
+:doc:`grdspotter`,
+:doc:`mapproject </mapproject>`,
+:doc:`hotspotter`,
+:doc:`originator`
 
 References
 ----------

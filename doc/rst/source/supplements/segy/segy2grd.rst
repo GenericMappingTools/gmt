@@ -115,5 +115,5 @@ individual samples will be averaged in bins
 See Also
 --------
 
-`GMT <../../GMT.html>`_, `grd2xyz <../../grd2xyz.html>`_,
-`grdedit <../../grdedit.html>`_, `pssegy <pssegy.html>`_
+:doc:`gmt </gmt>`, :doc:`grd2xyz </grd2xyz>`,
+:doc:`grdedit </grdedit>`, :doc:`pssegy`

@@ -28,13 +28,13 @@ Required Arguments
 PARAMETER
     Provide one or several parameters of interest. The current value of
     those parameters will be writen to *stdout*. For a complete listing
-    of available parameters and their meaning, see the `gmt.conf <gmt.conf.html>`_ man page.
+    of available parameters and their meaning, see the :doc:`gmt.conf` man page.
 
 Optional Arguments
 ------------------
 
 **-G**\ *defaultsfile*
-    Name of specific `gmt.conf <gmt.conf.html>`_ file to read [Default looks first in
+    Name of specific :doc:`gmt.conf` file to read [Default looks first in
     current directory, then in your home directory, then in ~/.gmt and
     finally in the system defaults].
 **-L**
@@ -61,4 +61,4 @@ MAP_GRID_CROSS_SIZE_PRIMARY and MAP_GRID_CROSS_SIZE_SECONDARY on one line, try
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_, `gmtset <gmtset.html>`_
+:doc:`gmt`, :doc:`gmt.conf`, :doc:`gmtset`

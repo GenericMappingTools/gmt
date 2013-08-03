@@ -229,12 +229,12 @@ combine to give the desired effect when filled; to draw outline use the
 original polygon.
 
 The **-N** option does not adjust the BoundingBox information so you may
-have to post-process the *PostScript* output with `ps2raster <ps2raster.html>`_ **-A**
+have to post-process the *PostScript* output with :doc:`ps2raster` **-A**
 to obtain the correct BoundingBox.
 
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
-`gmtcolors <gmtcolors.html>`_,
-`psbasemap <psbasemap.html>`_, `psxy <psxy.html>`_
+:doc:`gmt`, :doc:`gmt.conf`,
+:doc:`gmtcolors`,
+:doc:`psbasemap`, :doc:`psxy`

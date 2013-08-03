@@ -217,4 +217,4 @@ Geosyst.*, **9**, Q03005, doi:10.1029/2007GC001850.
 See Also
 --------
 
-`GMT <GMT.html>`_, `grdfilter <grdfilter.html>`_
+:doc:`gmt </gmt>`, :doc:`grdfilter </grdfilter>`

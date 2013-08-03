@@ -125,4 +125,4 @@ ship.xyg
 See Also
 --------
 
-`gmt <gmt.html>`_, `project <project.html>`_, `sample1d <sample1d.html>`_
+:doc:`gmt`, :doc:`project`, :doc:`sample1d`

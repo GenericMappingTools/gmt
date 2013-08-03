@@ -5,7 +5,7 @@
 
 Our third animation keeps a fixed gridded data set but moves the camera
 angle around the full 360. We use
-`grdview <grdview.html>`_ to generate a shaded-relief
+:doc:`grdview </grdview>` to generate a shaded-relief
 image sequence using the new enhanced **-E** option. No additional
 information is plotted on the image. As before we produce an animated
 GIF image and a simple HTML wrapper for it.

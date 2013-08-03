@@ -141,19 +141,16 @@ examined with general-purpose tools such as ncBrowse and ncView.
 See Also
 --------
 
-`mgd77manage <mgd77manage.html>`_,
-`mgd77list <mgd77list.html>`_,
-`mgd77sample <mgd77sample.html>`_,
-`mgd77track <mgd77track.html>`_
-`x2sys_init <x2sys_init.html>`_
+:doc:`mgd77manage`,
+:doc:`mgd77list`,
+:doc:`mgd77sample`,
+:doc:`mgd77track`
+:doc:`x2sys_init <../x2sys/x2sys_init>`
 
 References
 ----------
 
-ncBrowse, see
-`http://www.epic.noaa.gov/java/ncBrowse/ <http://www.epic.noaa.gov/java/ncBrowse/>`_
-ncView, see
-`http://meteora.ucsd.edu/~pierce/ncview\_home\_page.html <http://meteora.ucsd.edu/~pierce/ncview_home_page.html>`_
+ncBrowse, see `<http://www.epic.noaa.gov/java/ncBrowse/>`_
+ncView, see `<http://meteora.ucsd.edu/~pierce/ncview_home_page/>`_
 The Marine Geophysical Data Exchange Format - "MGD77", see
-`http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt <http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_
-
+`<http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_

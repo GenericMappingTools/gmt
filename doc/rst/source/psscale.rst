@@ -211,4 +211,4 @@ colors for the two methods given identical RGB values.
 See Also
 --------
 
-`gmt <gmt.html>`_, `makecpt <makecpt.html>`_, `grd2cpt <grd2cpt.html>`_
+:doc:`gmt`, :doc:`makecpt`, :doc:`grd2cpt`

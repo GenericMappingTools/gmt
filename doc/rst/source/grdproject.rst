@@ -89,7 +89,7 @@ Optional Arguments
 **-Mc**\ \|\ **i**\ \|\ **p**
     Append **c**, **i**, or **p** to indicate that cm, inch, or point
     should be the projected measure unit [Default is set by
-    :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` in `gmt.conf <gmt.conf.html>`_]. Cannot be used with **-A**.
+    :ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>` in :doc:`gmt.conf`]. Cannot be used with **-A**.
     
 .. |Add_-R| replace:: You may ask to project only
     a subset of the grid by specifying a smaller input *w/e/s/n* region
@@ -147,4 +147,4 @@ than you are interested in.
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_, `mapproject <mapproject.html>`_
+:doc:`gmt`, :doc:`gmt.conf`, :doc:`mapproject`

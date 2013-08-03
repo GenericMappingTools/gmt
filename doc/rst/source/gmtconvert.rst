@@ -211,4 +211,4 @@ of records within each segment, try
 See Also
 --------
 
-`gmt <gmt.html>`_ , `minmax <minmax.html>`_
+:doc:`gmt` , :doc:`minmax`

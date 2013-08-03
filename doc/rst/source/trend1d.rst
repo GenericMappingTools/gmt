@@ -105,7 +105,7 @@ Remarks
 
 If a Fourier model is selected, the domain of x will be shifted and
 scaled to [-pi, pi] and the basis functions used will be 1, cos(x),
-sin(x), `cos(2x) <cos.2x.html>`_ , `sin(2x) <sin.2x.html>`_ , ... If a
+sin(x), cos(2x), sin(2x), ... If a
 polynomial model is selected, the domain of x will be shifted and scaled
 to [-1, 1] and the basis functions will be Chebyshev polynomials. These
 have a numerical advantage in the form of the matrix which must be
@@ -165,8 +165,8 @@ interpolant are significant in fitting data.xy, use:
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmtmath <gmtmath.html>`_,
-`grdtrend <grdtrend.html>`_, `trend2d <trend2d.html>`_
+:doc:`gmt`, :doc:`gmtmath`,
+:doc:`grdtrend`, :doc:`trend2d`
 
 References
 ----------

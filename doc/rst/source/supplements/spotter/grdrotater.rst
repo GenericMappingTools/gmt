@@ -153,8 +153,8 @@ a polygon (contour).
 See Also
 --------
 
-`backtracker <backtracker.html>`_,
-`grdspotter <grdspotter.html>`_,
-`hotspotter <hotspotter.html>`_,
-`originator <originator.html>`_,
-`rotconverter <rotconverter.html>`_
+:doc:`backtracker`,
+:doc:`grdspotter`,
+:doc:`hotspotter`,
+:doc:`originator`,
+:doc:`rotconverter`

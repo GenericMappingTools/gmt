@@ -122,18 +122,18 @@ seamounts.d, using the DC85.d Euler poles, run
 
     gmt hotspotter seamounts.d -EDC85.d -GCVA.nc -R130/260/-66/60 -I10m -N145 -T -V
 
-This file can then be plotted with `grdimage <../../grdimage.html>`__.
+This file can then be plotted with :doc:`grdimage </grdimage>`.
 
 See Also
 --------
 
-`GMT <GMT.html>`_, `grdimage <grdimage.html>`__,
-`grdrotater <grdrotater.html>`_,
-`grdspotter <grdspotter.html>`_,
-`project <project.html>`_,
-`mapproject <mapproject.html>`_,
-`backtracker <backtracker.html>`_,
-`originator <originator.html>`_
+:doc:`gmt </gmt>`, :doc:`grdimage </grdimage>`,
+:doc:`grdrotater`,
+:doc:`grdspotter`,
+:doc:`project </project>`,
+:doc:`mapproject </mapproject>`,
+:doc:`backtracker`,
+:doc:`originator`
 
 References
 ----------

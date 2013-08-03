@@ -40,7 +40,7 @@ default, the output is triplets of point id numbers that make up each
 triangle and is written to standard output. The id numbers refer to the
 points position (line number, starting at 0 for the first line) in the
 input file. As an option, you may choose to create a multiple segment
-file that can be piped through `psxy <psxy.html>`_ to draw the triangulation
+file that can be piped through :doc:`psxy` to draw the triangulation
 network. If **-G** **-I** are set a grid will be calculated based on the
 surface defined by the planar triangles. The actual algorithm used in
 the triangulations is either that of Watson [1982] [Default] or Shewchuk
@@ -153,7 +153,7 @@ To instead plot the Voronoi cell outlines, try
 See Also
 --------
 
-`gmt <gmt.html>`_, `pscontour <pscontour.html>`_
+:doc:`gmt`, :doc:`pscontour`
 
 References
 ----------
@@ -165,4 +165,4 @@ Shewchuk, J. R., 1996, Triangle: Engineering a 2D Quality Mesh Generator
 and Delaunay Triangulator, First Workshop on Applied Computational
 Geometry (Philadelphia, PA), 124-133, ACM, May 1996.
 
-`<www.cs.cmu.edu/~quake/triangle.html>`_
+`Shewchuk's Homepage <http://www.cs.cmu.edu/~quake/triangle>`_

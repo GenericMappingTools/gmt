@@ -159,4 +159,4 @@ all close lines.
 See Also
 --------
 
-`gmt <gmt.html>`_ , `mapproject <mapproject.html>`_
+:doc:`gmt` , :doc:`mapproject`

@@ -34,4 +34,4 @@ Run the shell script *script.gmt* in isolation mode
 `See Also <#toc4>`_
 -------------------
 
-`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_
+:doc:`gmt`, :doc:`gmt.conf`

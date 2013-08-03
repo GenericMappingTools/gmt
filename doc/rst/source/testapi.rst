@@ -88,4 +88,4 @@ user matrix before saving to a grid file, try
 See Also
 --------
 
-`gmt <gmt.html>`_
+:doc:`gmt`

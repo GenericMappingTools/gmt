@@ -159,7 +159,7 @@ data.g as output, use
 See Also
 --------
 
-`gmt <gmt.html>`_, `grdfft <grdfft.html>`_
+:doc:`gmt`, :doc:`grdfft`
 
 References
 ----------

@@ -102,5 +102,5 @@ registration while keeping the same region and grid interval:
 See Also
 --------
 
-`gmt <gmt.html>`_, `grdedit <grdedit.html>`_,
-`grdfft <grdfft.html>`_, `grdfilter <grdfilter.html>`_
+:doc:`gmt`, :doc:`grdedit`,
+:doc:`grdfft`, :doc:`grdfilter`

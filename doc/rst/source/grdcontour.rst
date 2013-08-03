@@ -245,8 +245,8 @@ contours_O.txt for open contours, try
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
-`gmtcolors <gmtcolors.html>`_,
-`psbasemap <psbasemap.html>`_,
-`grdimage <grdimage.html>`_, `grdview <grdview.html>`_,
-`pscontour <pscontour.html>`_
+:doc:`gmt`, :doc:`gmt.conf`,
+:doc:`gmtcolors`,
+:doc:`psbasemap`,
+:doc:`grdimage`, :doc:`grdview`,
+:doc:`pscontour`

@@ -128,10 +128,10 @@ degree grid with no tension, use
 See Also
 --------
 
-`GMT <GMT.html>`_, `greenspline <greenspline.html>`_
-`sphdistance <sphdistance.html>`_
-`sphtriangulate <sphtriangulate.html>`_
-`triangulate <triangulate.html>`_
+:doc:`gmt`, :doc:`greenspline`
+:doc:`sphdistance`
+:doc:`sphtriangulate`
+:doc:`triangulate`
 
 `References <#toc10>`_
 ----------------------

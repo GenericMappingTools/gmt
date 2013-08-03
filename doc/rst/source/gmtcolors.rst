@@ -1072,14 +1072,14 @@ TECHNICAL REFERENCE AND COOKBOOK**.
 See Also
 --------
 
-`gmt.conf <gmt.conf.html>`_ , `gmtlogo <gmtlogo.html>`_ ,
-`grdcontour <grdcontour.html>`_ ,
-`grdvector <grdvector.html>`_ , `grdview <grdview.html>`_
-`psbasemap <psbasemap.html>`_ ,
-`pscoast <pscoast.html>`_ , `pscontour <pscontour.html>`_,
-`pshistogram <pshistogram.html>`_ ,
-`psimage <psimage.html>`_ , `pslegend <pslegend.html>`_ ,
-`psmask <psmask.html>`_ , `psrose <psrose.html>`_ ,
-`pstext <pstext.html>`_ , `pswiggle <pswiggle.html>`_ ,
-`psxy <psxy.html>`_ , `psxyz <psxyz.html>`_
+:doc:`gmt.conf` , :doc:`gmtlogo` ,
+:doc:`grdcontour` ,
+:doc:`grdvector` , :doc:`grdview`
+:doc:`psbasemap` ,
+:doc:`pscoast` , :doc:`pscontour`,
+:doc:`pshistogram` ,
+:doc:`psimage` , :doc:`pslegend` ,
+:doc:`psmask` , :doc:`psrose` ,
+:doc:`pstext` , :doc:`pswiggle` ,
+:doc:`psxy` , :doc:`psxyz`
 

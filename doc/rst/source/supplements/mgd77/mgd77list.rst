@@ -179,7 +179,7 @@ Required Arguments
     directly using **-Af** (see that option for more details).
 **ceot**
     Calculated Eotvos correction from navigation, using E =
-    7.5038\*V\*\ `cos(lat) <cos.lat.html>`_ \*sin(az) + 0.004154\*V^2
+    7.5038 \* V \* cos(lat) \* sin(az) + 0.004154 \* V^2
     (in mGal). Sign: Correction is to be added to uncorrected faa to
     yield a corrected faa.
 
@@ -571,16 +571,15 @@ corrected by a strange dependency on ship heading and latitude, and
 See Also
 --------
 
-`mgd77convert <mgd77convert.html>`_,
-`mgd77info <mgd77info.html>`_,
-`mgd77manage <mgd77manage.html>`_,
-`mgd77track <mgd77track.html>`_
+:doc:`mgd77convert`,
+:doc:`mgd77info`,
+:doc:`mgd77manage`,
+:doc:`mgd77track`
 
 References
 ----------
 
 The Marine Geophysical Data Exchange Format - MGD77, see
-`http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt <http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_
+`<http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_
 
-IGRF, see
-`http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html <http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html>`_
+IGRF, see `<http://www.ngdc.noaa.gov/IAGA/vmod/igrf/>`_

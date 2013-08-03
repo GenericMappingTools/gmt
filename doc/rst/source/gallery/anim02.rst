@@ -5,7 +5,7 @@
 
 Our next animation uses a gridded topography for parts of Colorado (US);
 the file is distributed with the tutorial examples. Here, we want to use
-`grdimage <grdimage.html>`_ to generate a shaded-relief
+:doc:`grdimage </grdimage>` to generate a shaded-relief
 image sequence in which we sweep the illumination azimuth around the
 entire horizon. The resulting animation illustrates how changing the
 illumination azimuth can bring out subtle features (or artifacts) in the

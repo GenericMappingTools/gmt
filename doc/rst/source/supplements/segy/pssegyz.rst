@@ -160,4 +160,4 @@ viewing elevation increases. Wiggle-trace plotting is not affected.
 See Also
 --------
 
-`GMT <GMT.html>`_, `pssegy <pssegy.html>`_
+:doc:`gmt </gmt>`, :doc:`pssegy`

@@ -619,6 +619,6 @@ Publishing Corp.
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmtmath <gmtmath.html>`_,
-`grd2xyz <grd2xyz.html>`_, `grdedit <grdedit.html>`_,
-`grdinfo <grdinfo.html>`_, `xyz2grd <xyz2grd.html>`_
+:doc:`gmt`, :doc:`gmtmath`,
+:doc:`grd2xyz`, :doc:`grdedit`,
+:doc:`grdinfo`, :doc:`xyz2grd`

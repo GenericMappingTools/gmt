@@ -109,8 +109,8 @@ Optional Arguments
     the originating nodes.
 
 **-Q**\ *IDinfo*
-    Either `give (1) <give.html>`_ a single ID to use `or
-    (2) <or.2.html>`_ the name of a file with a list of IDs to use
+    Either give (1) a single ID to use or (2)
+    the name of a file with a list of IDs to use
     [Default uses all IDs]. Each line would be TAG ID [w e s n]. The
     *w/e/s/n* zoom box is optional; if specified it means we only trace
     the flowline if inside this region [Default uses region set by
@@ -158,17 +158,18 @@ for the specified domain, run
 
     gmt grdspotter Pac_res_topo.nc -EDC85.d -GCVA.nc -R190/220/15/25 -I2m -N145 -Tt -V
 
-This file can then be plotted with `grdimage <../../grdimage.html>`__.
+This file can then be plotted with :doc:`grdimage </grdimage>`.
 
 See Also
 --------
 
-`GMT <GMT.html>`_, `grdimage <grdimage.html>`__,
-`project <project.html>`_,
-`mapproject <mapproject.html>`_,
-`backtracker <backtracker.html>`_,
-`hotspotter <hotspotter.html>`_,
-`originator <originator.html>`_
+:doc:`gmt </gmt>`,
+:doc:`grdimage </grdimage>`,
+:doc:`project </project>`,
+:doc:`mapproject </mapproject>`,
+:doc:`backtracker`,
+:doc:`hotspotter`,
+:doc:`originator`
 
 References
 ----------

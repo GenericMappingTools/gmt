@@ -117,5 +117,5 @@ binary double precision xyz-triplets to standard output:
 See Also
 --------
 
-`gmtdefaults <gmtdefaults.html>`__, `GMT <GMT.html>`__,
-`grdsample <grdsample.html>`__, `grdfilter <grdfilter.html>`__
+:doc:`gmtdefaults`, :doc:`gmt`,
+:doc:`grdsample`, :doc:`grdfilter`

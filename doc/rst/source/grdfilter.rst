@@ -206,4 +206,4 @@ Equator (i.e., x = y = 0 correspond to lon = lat = 0).
 See Also
 --------
 
-`gmt <gmt.html>`_, `grdfft <grdfft.html>`_ `img2mercgrd <img2mercgrd.html>`_
+:doc:`gmt`, :doc:`grdfft` :doc:`img2mercgrd`

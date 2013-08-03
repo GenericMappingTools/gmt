@@ -71,7 +71,7 @@ Optional Arguments
     we default to a weight of 1.  If the ASCII *blendfile* file is not
     given **grdblend** will read standard input. Alternatively, if you
     have more than one grid file to blend and you wish (a) all input
-    grids to have the same `weight (1) <weight.html>`_ and (b) all grids
+    grids to have the same weight (1) and (b) all grids
     should use their actual region as the interior region, then you may simply
     list all the grids on the command line instead of providing a
     *blendfile*. You must specify at least 2 input grids for this
@@ -157,5 +157,5 @@ To blend all the grids called MB\_\*.nc given them all equal weight, try
 See Also
 --------
 
-`gmt <gmt.html>`_, `grd2xyz <grd2xyz.html>`_,
-`grdedit <grdedit.html>`_ `grdraster <grdraster.html>`_
+:doc:`gmt`, :doc:`grd2xyz`,
+:doc:`grdedit` :doc:`grdraster`

@@ -173,7 +173,7 @@ and plot this data set instead.
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmtcolors <gmtcolors.html>`_,
-`filter1d <filter1d.html>`_,
-`psbasemap <psbasemap.html>`_,
-`splitxyz <splitxyz.html>`_
+:doc:`gmt`, :doc:`gmtcolors`,
+:doc:`filter1d`,
+:doc:`psbasemap`,
+:doc:`splitxyz`

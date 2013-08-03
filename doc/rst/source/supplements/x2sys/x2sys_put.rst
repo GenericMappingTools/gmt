@@ -81,4 +81,4 @@ Do not attempt to edit these files by hand.
 See Also
 --------
 
-`x2sys_binlist <x2sys_binlist.html>`_, `x2sys_get <x2sys_get.html>`_
+:doc:`x2sys_binlist`, :doc:`x2sys_get`

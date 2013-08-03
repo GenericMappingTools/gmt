@@ -60,7 +60,7 @@ functions made available are:
     of the temporary directory is returned as environment variable
     **GMT_TMPDIR**. This function also causes **GMT** to run in
     'isolation mode', i.e., all temporary files will be created in
-    **GMT_TMPDIR** and the `gmt.conf <gmt.conf.html>`_ file will not be adjusted.
+    **GMT_TMPDIR** and the :doc:`gmt.conf` file will not be adjusted.
 
 **gmt_remove_tmpdir**
     Removes the temporary directory and unsets the **GMT_TMPDIR**
@@ -133,5 +133,5 @@ so by mailing to the GMT mailing list: gmt-help@lists.hawaii.edu.
 See Also
 --------
 
-`gmt <gmt.html>`_ , `gmt.conf <gmt.conf.html>`_ ,
-`minmax <minmax.html>`_ , `grdinfo <grdinfo.html>`_
+:doc:`gmt` , :doc:`gmt.conf` ,
+:doc:`minmax` , :doc:`grdinfo`

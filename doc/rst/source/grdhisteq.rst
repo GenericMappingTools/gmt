@@ -132,8 +132,8 @@ range [-1, 1]. Alternatively, supply a normalization factor with **-N**.
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
-`grd2cpt <grd2cpt.html>`_,
-`grdgradient <grdgradient.html>`_,
-`grdimage <grdimage.html>`_, `grdmath <grdmath.html>`_,
-`grdview <grdview.html>`_, `makecpt <makecpt.html>`_
+:doc:`gmt`, :doc:`gmt.conf`,
+:doc:`grd2cpt`,
+:doc:`grdgradient`,
+:doc:`grdimage`, :doc:`grdmath`,
+:doc:`grdview`, :doc:`makecpt`

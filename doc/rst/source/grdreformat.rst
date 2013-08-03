@@ -190,7 +190,7 @@ the index associated with the layer (starting at zero) in the form:
 *ingrdfile*\ **?**\ *varname*\ **[**\ *layer*\ **]**. Alternatively,
 specify the value associated with that layer using parentheses in stead
 of brackets:
-*ingridfile*\ **?\ `*varname*\ **(**\ *level*\ **)** <varname.level.html>`_
+*ingridfile*\ **?\ :doc:`varname.level`
 .**
 
 In a similar way layers can be extracted from 4- or even 5-dimensional
@@ -267,4 +267,4 @@ To creat a dumb file saved as a 32 bits float GeoTiff using GDAL, run
 See Also
 --------
 
-`gmt.conf <gmt.conf.html>`_, `gmt <gmt.html>`_, `grdmath <grdmath.html>`_
+:doc:`gmt.conf`, :doc:`gmt`, :doc:`grdmath`

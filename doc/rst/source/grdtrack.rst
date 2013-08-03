@@ -59,7 +59,7 @@ Required Arguments
     following: (0) Img files with no constraint code, returns data at
     all points, (1) Img file with constraints coded, return data at all
     points, (2) Img file with constraints coded, return data only at
-    constrained points and NaN elsewhere, `and (3) <and.html>`_ Img file
+    constrained points and NaN elsewhere, and (3) Img file
     with constraints coded, return 1 at constraints and 0 elsewhere, and
     optionally the max latitude in the IMG file [80.738]. You may repeat
     **-G** as many times as you have grids you wish to sample. The grids
@@ -242,4 +242,4 @@ erecting cross-profiles every 25 km and sampling the grid every 3 km, try
 See Also
 --------
 
-`gmt <gmt.html>`_, `surface <surface.html>`_, `sample1d <sample1d.html>`_
+:doc:`gmt`, :doc:`surface`, :doc:`sample1d`

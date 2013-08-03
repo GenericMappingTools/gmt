@@ -51,13 +51,13 @@ standard GMT offerings, visit http://soliton.vm.bytemark.co.uk/pub/cpt-city.
 If the master cpt file includes B, F, and N entries, these will be
 copied into the new master file. If not, the parameters
 **COLOR_BACKGROUND**, **COLOR_FOREGROUND**, and **COLOR_NAN** from
-the `gmt.conf <gmt.conf.html>`_ file or the command line will be used. This default
+the :doc:`gmt.conf` file or the command line will be used. This default
 behavior can be overruled using the options **-D**, **-M** or **-N**.
 
 The color model (RGB, HSV or CMYK) of the palette created by **makecpt**
 will be the same as specified in the header of the master cpt file. When
 there is no **COLOR_MODEL** entry in the master cpt file, the
-**COLOR_MODEL** specified in the `gmt.conf <gmt.conf.html>`_ file or on the command
+**COLOR_MODEL** specified in the :doc:`gmt.conf` file or on the command
 line will be used. 
 
 Required Arguments
@@ -118,7 +118,7 @@ Optional Arguments
     Overrule background, foreground, and NaN colors specified in the
     master cpt file with the values of the parameters
     **COLOR_BACKGROUND**, **COLOR_FOREGROUND**, and **COLOR_NAN**
-    specified in the `gmt.conf <gmt.conf.html>`_ file or on the command line. When
+    specified in the :doc:`gmt.conf` file or on the command line. When
     combined with **-D**, only **COLOR_NAN** is considered.
 
 **-N**
@@ -187,5 +187,5 @@ file relief, run
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
-`grdhisteq <grdhisteq.html>`_, `grdinfo <grdinfo.html>`__, `makecpt <makecpt.html>`_
+:doc:`gmt`, :doc:`gmt.conf`,
+:doc:`grdhisteq`, :doc:`grdinfo`, :doc:`makecpt`

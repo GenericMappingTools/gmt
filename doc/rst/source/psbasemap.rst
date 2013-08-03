@@ -491,4 +491,4 @@ However, it is fairly simple for most applications (see examples).
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_, `gmtcolors <gmtcolors.html>`_
+:doc:`gmt`, :doc:`gmt.conf`, :doc:`gmtcolors`
