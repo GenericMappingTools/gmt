@@ -847,7 +847,7 @@ int gmt_open_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID *G, char mod
 	}
 
 	R->size = GMT_grd_data_size (GMT, G->header->type, &G->header->nan_value);
-	R->check = !GMT_is_dnan (G->header->nan_value);
+	R->check = !isnan (G->header->nan_value);
 	R->open = true;
 
 	if (fmt[1] == 'm')	/* Bit mask */
@@ -4574,8 +4574,9 @@ int GMT_Get_Row (void *V_API, int row_no, struct GMT_GRID *G, float *row)
 		}
 	}
 	if (R->check) {	/* Replace NaN-marker with actual NaN */
-		for (col = 0; col < G->header->nx; col++) if (row[col] == (float)G->header->nan_value) /* cast to avoid round-off errors */
-			row[col] = GMT->session.f_NaN;
+		for (col = 0; col < G->header->nx; col++)
+			if (row[col] == G->header->nan_value)
+				row[col] = GMT->session.f_NaN;
 	}
 	GMT_scale_and_offset_f (GMT, row, G->header->nx, G->header->z_scale_factor, G->header->z_add_offset);
 	if (R->auto_advance) R->row++;
@@ -4614,7 +4615,9 @@ int GMT_Put_Row (void *V_API, int rec_no, struct GMT_GRID *G, float *row)
 	R = gmt_get_rbr_ptr (G->extra);
 	GMT_scale_and_offset_f (GMT, row, G->header->nx, G->header->z_scale_factor, G->header->z_add_offset);
 	if (R->check) {	/* Replace NaNs with special value */
-		for (col = 0; col < G->header->nx; col++) if (GMT_is_fnan (row[col])) row[col] = (float)G->header->nan_value;
+		for (col = 0; col < G->header->nx; col++)
+			if (GMT_is_fnan (row[col]))
+				row[col] = G->header->nan_value;
 	}
 
 	switch (fmt[0]) {
