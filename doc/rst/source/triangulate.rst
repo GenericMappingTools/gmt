@@ -165,4 +165,4 @@ Shewchuk, J. R., 1996, Triangle: Engineering a 2D Quality Mesh Generator
 and Delaunay Triangulator, First Workshop on Applied Computational
 Geometry (Philadelphia, PA), 124-133, ACM, May 1996.
 
-`Shewchuk's Homepage <http://www.cs.cmu.edu/~quake/triangle>`_
+`Shewchuk's Homepage <http://www.cs.cmu.edu/~quake/triangle.html>`_

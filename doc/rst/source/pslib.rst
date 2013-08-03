@@ -541,8 +541,8 @@ Here are functions used to plot various geometric symbols or constructs.
     is a bit-flag being the sum of several possible contributions:
     PSL_VEC_RIGHT (2) = only draw right half
     of vector head, PSL_VEC_BEGIN (4) =
-    place vector head at beginning of vector, `PSL_VEC_END
-    (8) <PSL_VEC_END.8.html>`_ = place vector head at end of vector,
+    place vector head at beginning of vector,
+    PSL_VEC_END (8) = place vector head at end of vector,
     PSL_VEC_JUST_B (0) = align vector beginning at (x,y),
     PSL_VEC_JUST_C (16) = align vector center at (x,y),
     PSL_VEC_JUST_E (32) = align vector end at (x,y),

@@ -169,7 +169,7 @@ Examples
 
 Sometimes you don't want to make a cpt file (yet) but would find it
 helpful to know that 90% of your data lie between z1 and z2, something
-you cannot learn from `grdinfo <grdinfo.thml>`__. So you can do this to see some points
+you cannot learn from :doc:`grdinfo`. So you can do this to see some points
 on the CDF(Z) curve (use **-V** option to see more):
 
    ::
