@@ -35,7 +35,7 @@ polygons. These polygons are then processed to calculate the nearest
 distance to each node of the lattice and written to the specified grid.
 The Voronoi algorithm used is STRIPACK. As an option, you may provide
 pre-calculated Voronoi polygon file in the format written by
-`sphtriangulate <sphtriangulate.html>`__, thus bypassing the memory- and time-consuming
+:doc:`sphtriangulate`, thus bypassing the memory- and time-consuming
 triangularization.
 
 Required Arguments
@@ -138,8 +138,8 @@ To generate the same grid in two steps using **sphtriangulate** separately, try
 See Also
 --------
 
-`GMT <GMT.html>`_, `sphinterpolate <sphinterpolate.html>`_,
-`sphtriangulate <sphtriangulate.html>`__, `triangulate <triangulate.html>`_
+:doc:`gmt`, :doc:`sphinterpolate`,
+:doc:`sphtriangulate`, :doc:`triangulate`
 
 References
 ----------

@@ -61,10 +61,10 @@ Creating GMT Graphics
        :language: bash
 
     The first command draws a box surrounding the maps. This is followed by
-    two sequences of `pscoast <pscoast.html>`_, `grdcontour <grdcontour.html>`_,
-    `grdcontour <grdcontour.html>`_. They differ in that the
+    two sequences of :doc:`pscoast`, :doc:`grdcontour`,
+    :doc:`grdcontour`. They differ in that the
     first is centered on Greenwich; the second on the dateline. We use the
-    limit option (**-L**) in `grdcontour <grdcontour.html>`_
+    limit option (**-L**) in :doc:`grdcontour`
     to select negative contours only and plot those with a dashed pen, then
     positive contours only and draw with a solid pen [Default]. The **-T**
     option causes tick marks pointing in the downhill direction to be drawn
@@ -78,7 +78,7 @@ Creating GMT Graphics
 
     As our second example we will demonstrate how to make color images from
     gridded data sets (again, we will defer the actual making of grid files
-    to later examples). We will use `grdraster <grdraster.html>`__ to extract 2-D grid files
+    to later examples). We will use :doc:`grdraster` to extract 2-D grid files
     of bathymetry and Geosat geoid heights and put the two images on the
     same page. The region of interest is the Hawaiian islands, and due to
     the oblique trend of the island chain we prefer to rotate our
@@ -88,34 +88,34 @@ Creating GMT Graphics
     image a rectangular region defined by the longitudes and latitudes of
     the lower left and upper right corner of region. In our case we choose
     (160, 20) and (220, 30) as the corners. We use
-    `grdimage <grdimage.html>`_ to make the illustration:
+    :doc:`grdimage` to make the illustration:
 
     .. literalinclude:: /_verbatim/example_02.txt
        :language: bash
 
     The first step extracts the 2-D data sets from the local data base using
-    `grdraster <grdraster.html>`__ that may be adapted to reflect
+    :doc:`grdraster` that may be adapted to reflect
     the nature of your data base format. It automatically figures out the
     required extent of the region given the two corners points and the
     projection. The extreme meridians and parallels enclosing the oblique
     region is **-R**\ 159:50/220:10/3:10/47:35. This is the area extracted
-    by `grdraster <grdraster.html>`__. For your convenience
+    by :doc:`grdraster`. For your convenience
     we have commented out those lines and provided the two extracted files
-    so you do not need `grdraster <grdraster.html>`__ to try
+    so you do not need :doc:`grdraster` to try
     this example. By using the embedded grid file format mechanism we saved
     the topography using kilometers as the data unit. We now have two grid
     files with bathymetry and geoid heights, respectively. We use
-    `makecpt <makecpt.html>`_ to generate a linear color
+    :doc:`makecpt` to generate a linear color
     palette file ``geoid.cpt`` for the geoid and use
-    `grd2cpt <grd2cpt.html>`_ to get a histogram-equalized
+    :doc:`grd2cpt` to get a histogram-equalized
     cpt file ``topo.cpt`` for the topography data. To emphasize the structures in the
     data we calculate the slopes in the north-south direction using
-    `grdgradient <grdgradient.html>`_; these will be used to
+    :doc:`grdgradient`; these will be used to
     modulate the color image. Next we run
-    `grdimage <grdimage.html>`_ to create a color-code image
+    :doc:`grdimage` to create a color-code image
     of the Geosat geoid heights, and draw a color legend to the right of the
-    image with `psscale <psscale.html>`_. Similarly, we run
-    `grdimage <grdimage.html>`_ but specify **-Y**\ 4.5i to
+    image with :doc:`psscale`. Similarly, we run
+    :doc:`grdimage` but specify **-Y**\ 4.5i to
     plot above the previous image. Adding scale and label the two plots a)
     and b) completes the illustration.
 
@@ -125,21 +125,21 @@ Creating GMT Graphics
     --------------------------------
 
     In this example we will show how to use the *GMT* programs
-    `fitcircle <fitcircle.html>`_, `project <project.html>`_,
-    `sample1d <sample1d.html>`_, `spectrum1d <spectrum1d.html>`_,
-    `psxy <psxy.html>`_, and
-    `pstext <pstext.html>`_. Suppose you have (lon, lat,
+    :doc:`fitcircle`, :doc:`project`,
+    :doc:`sample1d`, :doc:`spectrum1d`,
+    :doc:`psxy`, and
+    :doc:`pstext`. Suppose you have (lon, lat,
     gravity) along a satellite track in a file called ``sat.xyg``, and (lon, lat,
     gravity) along a ship track in a file called ``ship.xyg``. You want to make a
     cross-spectral analysis of these data. First, you will have to get the
     two data sets into equidistantly sampled time-series form. To do this,
     it will be convenient to project these along the great circle that best
     fits the sat track. We must use
-    `fitcircle <fitcircle.html>`_ to find this great circle
+    :doc:`fitcircle` to find this great circle
     and choose the L\ :math:`_2` estimates of best pole. We project the data
-    using `project <project.html>`_ to find out what their
+    using :doc:`project` to find out what their
     ranges are in the projected coordinate. The
-    `minmax <minmax.html>`_ utility will report the minimum
+    :doc:`minmax` utility will report the minimum
     and maximum values for multi-column ASCII tables. Use this information
     to select the range of the projected distance coordinate they have in
     common. The script prompts you for that information after reporting the
@@ -151,8 +151,8 @@ Creating GMT Graphics
     steps that produce helpful plots showing the effect of the various
     processing steps (``example_03[a-f].ps``), while the final plot ``example_03.ps`` shows the ship and sat power
     in one diagram and the coherency on another diagram, both on the same
-    page. Note the extended use of `pstext <pstext.html>`_
-    and `psxy <psxy.html>`_ to put labels and legends
+    page. Note the extended use of :doc:`pstext`
+    and :doc:`psxy` to put labels and legends
     directly on the plots. For that purpose we often use **-Jx**\ 1i and
     specify positions in inches directly. Thus, the complete automated script reads:
 
@@ -172,7 +172,7 @@ Creating GMT Graphics
     This example will illustrate how to make a fairly complicated composite
     figure. We need a subset of the ETOPO5 bathymetry [24]_ and Geosat geoid
     data sets which we will extract from the local data bases using
-    `grdraster <grdraster.html>`__. We would like to show a
+    :doc:`grdraster`. We would like to show a
     2-layer perspective plot where layer one shows a contour map of the
     marine geoid with the location of the Hawaiian islands superposed, and a
     second layer showing the 3-D mesh plot of the topography. We also add an
@@ -190,13 +190,13 @@ Creating GMT Graphics
 
     The second part of the script shows how to make the color version of
     this figure that was printed in our first article in *EOS Trans. AGU* (8
-    October 1991). Using `grdview <grdview.html>`_ one can
+    October 1991). Using :doc:`grdview` one can
     choose to either plot a mesh surface (left) or a color-coded surface
     (right). We have also added artificial illumination from a light-source
     due north, which is simulated by computing the gradient of the surface
     grid in that direction though the
-    `grdgradient <grdgradient.html>`_ program. We choose to
-    use the **-Qc** option in `grdview <grdview.html>`_ to
+    :doc:`grdgradient` program. We choose to
+    use the **-Qc** option in :doc:`grdview` to
     achieve a high degree of smoothness. Here, we select 100 dpi since that
     will be the resolution of our final raster (The EOS raster was 300 dpi).
     Note that the size of the resulting output file is directly dependent on
@@ -210,14 +210,14 @@ Creating GMT Graphics
 
     Instead of a mesh plot we may choose to show 3-D surfaces using
     artificial illumination. For this example we will use
-    `grdmath <grdmath.html>`_ to make a grid file that
+    :doc:`grdmath` to make a grid file that
     contains the surface given by the function
     :math:`z(x, y) = \cos (2\pi r/8)\cdot e^{-r/10}`, where
     :math:`r^2 = (x^2 + y^2)`. The illumination is obtained by passing two
-    grid files to `grdview <grdview.html>`_: One with the
+    grid files to :doc:`grdview`: One with the
     *z*-values (the surface) and another with intensity values (which should
     be in the 1 range). We use
-    `grdgradient <grdgradient.html>`_ to compute the
+    :doc:`grdgradient` to compute the
     horizontal gradients in the direction of the artificial light source.
     The ``gray.cpt`` file only has one line that states that all *z* values should have
     the gray level 128. Thus, variations in shade are entirely due to
@@ -228,11 +228,11 @@ Creating GMT Graphics
        :language: bash
 
     The variations in intensity could be made more dramatic by using
-    `grdmath <grdmath.html>`_ to scale the intensity file
-    before running `grdview <grdview.html>`_. For very rough
+    :doc:`grdmath` to scale the intensity file
+    before running :doc:`grdview`. For very rough
     data sets one may improve the smoothness of the intensities by passing
-    the output of `grdgradient <grdgradient.html>`_ to
-    `grdhisteq <grdhisteq.html>`_. The shell-script above
+    the output of :doc:`grdgradient` to
+    :doc:`grdhisteq`. The shell-script above
     will result in a plot like the one in Figure [fig:example\ :sub:`0`\ 5].
 
     .. figure:: /_images/example_05.*
@@ -241,7 +241,7 @@ Creating GMT Graphics
     ----------------------
 
     *GMT* provides two tools to render histograms:
-    `pshistogram <pshistogram.html>`_ and `psrose <psrose.html>`_. The former takes care of
+    :doc:`pshistogram` and :doc:`psrose`. The former takes care of
     regular histograms whereas the latter deals with polar histograms (rose
     diagrams, sector diagrams, and wind rose diagrams). We will show an
     example that involves both programs. The file ``fractures.yx`` contains a compilation of
@@ -284,7 +284,7 @@ Creating GMT Graphics
     A 3-D histogram
     ---------------
 
-    The program `psxyz <psxyz.html>`_ allows us to plot
+    The program :doc:`psxyz` allows us to plot
     three-dimensional symbols, including columnar plots. As a simple
     demonstration, we will convert a gridded netCDF of bathymetry into an
     ASCII *xyz* table and use the height information to draw a 2-D
@@ -307,19 +307,19 @@ Creating GMT Graphics
     seismologists use the technique when plotting individual seismic traces.
     In our example we will show how a set of Geosat sea surface slope
     profiles from the south Pacific can be plotted as "wiggles" using the
-    `pswiggle <pswiggle.html>`_ program. We will embellish
+    :doc:`pswiggle` program. We will embellish
     the plot with track numbers, the location of the Pacific-Antarctic
     Ridge, recognized fracture zones in the area, and a "wiggle" scale. The
     Geosat tracks are stored in the file ``tracks.txt``, the ridge in ``ridge.xy``, and all the
     fracture zones are stored in the multiple segment file ``fz.xy``. The
     profile id is contained in the segment headers and we wish to use the
     last data point in each of the track segments to construct an input file
-    for `pstext <pstext.html>`_ that will label each profile
+    for :doc:`pstext` that will label each profile
     with the track number. We know the profiles trend approximately N40E so
     we want the labels to have that same orientation (i.e., the angle with
     the baseline must be 50). We do this by extracting the last record from
     each track and select segment header as textstring when running
-    the output through `pstext <pstext.html>`_. Note we
+    the output through :doc:`pstext`. Note we
     offset the positions by -0.05 inch with **-D** in order to have a small
     gap between the profile and the label:
 
@@ -365,7 +365,7 @@ Creating GMT Graphics
     black and white.
 
     The 6 color faces are generated by feeding
-    `grdimage <grdimage.html>`_ three grids, one for each
+    :doc:`grdimage` three grids, one for each
     color component (R, G, and B). In some cases the X or Y axes of a face
     are reversed by specifying a negative width or height in order to change
     the variation of the color value in that direction from ascending to
@@ -391,15 +391,15 @@ Creating GMT Graphics
     Our next example (Figure [fig:example:sub:`1`\ 2]) operates on a data
     set of topographic readings non-uniformly distributed in the plane
     (Table 5.11 in Davis: *Statistics and Data Analysis in Geology*, J.
-    Wiley). We use `triangulate <triangulate.html>`_ to
+    Wiley). We use :doc:`triangulate` to
     perform the optimal Delaunay triangulation, then use the output to draw
     the resulting network. We label the node numbers as well as the node
-    values, and call `pscontour <pscontour.html>`_ to make a
+    values, and call :doc:`pscontour` to make a
     contour map and image directly from the raw data. Thus, in this example
     we do not actually make grid files but still are able to contour and
     image the data. We use a color palette table ``topo.cpt`` (created via
-    `minmax <minmax.html>`_ and
-    `makecpt <makecpt.html>`_). The script becomes:
+    :doc:`minmax` and
+    :doc:`makecpt`). The script becomes:
 
     .. literalinclude:: /_verbatim/example_12.txt
        :language: bash
@@ -412,15 +412,15 @@ Creating GMT Graphics
     In many areas, such as fluid dynamics and elasticity, it is desirable to
     plot vector fields of various kinds. *GMT* provides a way to illustrate
     2-component vector fields using the
-    `grdvector <grdvector.html>`_ utility. The two
+    :doc:`grdvector` utility. The two
     components of the field (Cartesian or polar components) are stored in
     separate grid files. In this example we use
-    `grdmath <grdmath.html>`_ to generate a surface
+    :doc:`grdmath` to generate a surface
     :math:`z(x, y) = x \cdot \exp(-x^2 -y^2)` and to calculate
     :math:`\nabla z` by returning the *x*- and *y*-derivatives separately.
     We superpose the gradient vector field and the surface *z* and also plot
     the components of the gradient in separate windows. A
-    `pstext <pstext.html>`_ call to place a header finishes
+    :doc:`pstext` call to place a header finishes
     the plot (Figure [fig:example:sub:`1`\ 3]:
 
     .. literalinclude:: /_verbatim/example_13.txt
@@ -434,23 +434,23 @@ Creating GMT Graphics
     This example shows how one goes from randomly spaced data points to an
     evenly sampled surface. First we plot the distribution and values of our
     raw data set (same as in Section [sec:example\ :sub:`1`\ 2]). We choose an equidistant grid and run
-    `blockmean <blockmean.html>`_ which preprocesses the
+    :doc:`blockmean` which preprocesses the
     data to avoid aliasing. The dashed lines indicate the logical blocks
-    used by `blockmean <blockmean.html>`_; all points inside
+    used by :doc:`blockmean`; all points inside
     a given bin will be averaged. The logical blocks are drawn from a
     temporary file we make on the fly within the shell script. The processed
-    data is then gridded with the `surface <surface.html>`_
+    data is then gridded with the :doc:`surface`
     program and contoured every 25 units. A most important point here is
-    that `blockmean <blockmean.html>`_, `blockmedian <blockmedian.html>`_, or
-    `blockmode <blockmode.html>`_ should always be run prior
-    to running `surface <surface.html>`_, and both of these
+    that :doc:`blockmean`, :doc:`blockmedian`, or
+    :doc:`blockmode` should always be run prior
+    to running :doc:`surface`, and both of these
     steps must use the same grid interval. We use
-    `grdtrend <grdtrend.html>`_ to fit a bicubic trend
+    :doc:`grdtrend` to fit a bicubic trend
     surface to the gridded data, contour it as well, and sample both grid
     files along a diagonal transect using
-    `grdtrack <grdtrack.html>`_. The bottom panel compares
+    :doc:`grdtrack`. The bottom panel compares
     the gridded (solid line) and bicubic trend (dashed line) along the
-    transect using `psxy <psxy.html>`_
+    transect using :doc:`psxy`
     (Figure [fig:example:sub:`1`\ 4]):
 
     .. literalinclude:: /_verbatim/example_14.txt
@@ -464,24 +464,24 @@ Creating GMT Graphics
     This example (Figure [fig:example:sub:`1`\ 5]) demonstrates some off the
     different ways one can use to grid data in *GMT*, and how to deal with
     unconstrained areas. We first convert a large ASCII file to binary with
-    `gmtconvert <gmtconvert.html>`_ since the binary file
+    :doc:`gmtconvert` since the binary file
     will read and process much faster. Our lower left plot illustrates the
     results of gridding using a nearest neighbor technique
-    (`nearneighbor <nearneighbor.html>`_) which is a local
+    (:doc:`nearneighbor`) which is a local
     method: No output is given where there are no data. Next (lower right),
     we use a minimum curvature technique
-    (`surface <surface.html>`_) which is a global method.
+    (:doc:`surface`) which is a global method.
     Hence, the contours cover the entire map although the data are only
     available for portions of the area (indicated by the gray areas plotted
-    using `psmask <psmask.html>`_). The top left scenario
+    using :doc:`psmask`). The top left scenario
     illustrates how we can create a clip path (using
-    `psmask <psmask.html>`_) based on the data coverage to
+    :doc:`psmask`) based on the data coverage to
     eliminate contours outside the constrained area. Finally (top right) we
-    simply employ `pscoast <pscoast.html>`_ to overlay gray
+    simply employ :doc:`pscoast` to overlay gray
     land masses to cover up the unwanted contours, and end by plotting a
     star at the deepest point on the map with
-    `psxy <psxy.html>`_. This point was extracted from the
-    grid files using `grdinfo <grdinfo.html>`_.
+    :doc:`psxy`. This point was extracted from the
+    grid files using :doc:`grdinfo`.
 
     .. literalinclude:: /_verbatim/example_15.txt
        :language: bash
@@ -491,8 +491,8 @@ Creating GMT Graphics
     Gridding of data, continued
     ---------------------------
 
-    `pscontour <pscontour.html>`_ (for contouring) and
-    `triangulate <triangulate.html>`_ (for gridding) use the
+    :doc:`pscontour` (for contouring) and
+    :doc:`triangulate` (for gridding) use the
     simplest method of interpolating data: a Delaunay triangulation (see
     Section [sec:example\ :sub:`1`\ 2]) which forms *z(x, y)* as a
     union of planar triangular facets. One advantage of this method is that
@@ -502,21 +502,21 @@ Creating GMT Graphics
     the *z(x, y)* surface is not differentiable, but has sharp kinks
     at triangle edges and thus also along contours. This may not look
     physically reasonable, but it can be filtered later (last panel below).
-    `surface <surface.html>`_ can be used to generate a
+    :doc:`surface` can be used to generate a
     higher-order (smooth and differentiable) interpolation of
     *z(x, y)* onto a grid, after which the grid may be illustrated
-    (`grdcontour <grdcontour.html>`_, `grdimage <grdimage.html>`_,
-    `grdview <grdview.html>`_).
-    `surface <surface.html>`_ will interpolate to all (*x,
+    (:doc:`grdcontour`, :doc:`grdimage`,
+    :doc:`grdview`).
+    :doc:`surface` will interpolate to all (*x,
     y*) points in a rectangular region, and thus will extrapolate beyond the
     convex hull of the data. However, this can be masked out in various ways
     (see Section [sec:example\ :sub:`1`\ 5]).
 
-    A more serious objection is that `surface <surface.html>`_ may estimate *z* values
+    A more serious objection is that :doc:`surface` may estimate *z* values
     outside the local range of the data (note area near *x* = 0.8, *y* =
     5.3). This commonly happens when the default tension value of zero is
     used to create a "minimum curvature" (most smooth) interpolant.
-    `surface <surface.html>`_ can be used with non-zero
+    :doc:`surface` can be used with non-zero
     tension to partially overcome this problem. The limiting value
     *tension = 1* should approximate the triangulation, while a value
     between 0 and 1 may yield a good compromise between the above two cases.
@@ -524,14 +524,14 @@ Creating GMT Graphics
     effect of the tension is that it tends to make the contours turn near
     the edges of the domain so that they approach the edge from a
     perpendicular direction. A solution is to use
-    `surface <surface.html>`_ in a larger area and then use
-    `grdcut <grdcut.html>`_ to cut out the desired smaller
+    :doc:`surface` in a larger area and then use
+    :doc:`grdcut` to cut out the desired smaller
     area. Another way to achieve a compromise is to interpolate the data to
-    a grid and then filter the grid using `grdfft <grdfft.html>`_ or
-    `grdfilter <grdfilter.html>`_. The latter can handle
+    a grid and then filter the grid using :doc:`grdfft` or
+    :doc:`grdfilter`. The latter can handle
     grids containing "NaN" values and it can do median and mode filters as
-    well as convolutions. Shown here is `triangulate <triangulate.html>`_ followed by
-    `grdfilter <grdfilter.html>`_. Note that the filter has
+    well as convolutions. Shown here is :doc:`triangulate` followed by
+    :doc:`grdfilter`. Note that the filter has
     done some extrapolation beyond the convex hull of the original *x, y*
     values. The "best" smooth approximation of *z(x, y)* depends on
     the errors in the data and the physical laws obeyed by *z*. *GMT* cannot
@@ -549,29 +549,29 @@ Creating GMT Graphics
     Images clipped by coastlines
     ----------------------------
 
-    This example demonstrates how `pscoast <pscoast.html>`_
+    This example demonstrates how :doc:`pscoast`
     can be used to set up clip paths based on coastlines. This approach is
     well suited when different gridded data sets are to be merged on a plot
     using different color palette files. Merging the files themselves may
     not be doable since they may represent different data sets, as we show
     in this example. Here, we lay down a color map of the geoid field near
-    India with `grdimage <grdimage.html>`_, use
-    `pscoast <pscoast.html>`_ to set up land clip paths, and
+    India with :doc:`grdimage`, use
+    :doc:`pscoast` to set up land clip paths, and
     then overlay topography from the ETOPO5 data set with another call to
-    `grdimage <grdimage.html>`_. We finally undo the
-    clippath with a second call to `pscoast <pscoast.html>`_
+    :doc:`grdimage`. We finally undo the
+    clippath with a second call to :doc:`pscoast`
     with the option **-Q** (Figure [fig:example:sub:`1`\ 7]):
 
     We also plot a color legend on top of the land. So here we basically
     have three layers of "paint" stacked on top of each other: the
     underlaying geoid map, the land mask, and finally the color legend. This
-    legend makes clear how `grd2cpt <grd2cpt.html>`_
+    legend makes clear how :doc:`grd2cpt`
     distributed the colors over the range: they are not of equal length put
     are associated with equal amounts of area in the plot. Since the high
     amounts (in red) are not very prevalent, that color spans a long range.
 
     For this image it is appropriate to use the **-I** option in
-    `psscale <psscale.html>`_ so the legend gets shaded,
+    :doc:`psscale` so the legend gets shaded,
     similar to the geoid grid. See Appendix [app:M] to learn more about
     color palettes and ways to draw color legends.
 
@@ -584,17 +584,17 @@ Creating GMT Graphics
     ------------------------------
 
     To demonstrate potential usage of the new programs
-    `grdvolume <grdvolume.html>`_ and
-    `gmtselect <gmtselect.html>`_ we extract a subset of the
+    :doc:`grdvolume` and
+    :doc:`gmtselect` we extract a subset of the
     Sandwell & Smith altimetric gravity field [26]_ for the northern Pacific
     and decide to isolate all seamounts that (1) exceed 50 mGal in amplitude
     and (2) are within 200 km of the Pratt seamount. We do this by dumping
     the 50 mGal contours to disk, then making a simple **AWK** script ``center.awk`` that
     returns the mean location of the points making up each closed polygon,
     and then pass these locations to
-    `gmtselect <gmtselect.html>`_ which retains only the
+    :doc:`gmtselect` which retains only the
     points within 200 km of Pratt. We then mask out all the data outside
-    this radius and use `grdvolume <grdvolume.html>`_ to
+    this radius and use :doc:`grdvolume` to
     determine the combined area and volumes of the chosen seamounts. Our
     illustration is presented in Figure [fig:example\ :sub:`1`\ 8].
 
@@ -609,18 +609,18 @@ Creating GMT Graphics
     *GMT* 3.1 introduced color patterns and this examples give a few cases
     of how to use this new feature. We make a phony poster that advertises
     an international conference on *GMT*\ in Honolulu. We use
-    `grdmath <grdmath.html>`_,
-    `makecpt <makecpt.html>`_, and
-    `grdimage <grdimage.html>`_ to draw pleasing color
+    :doc:`grdmath`,
+    :doc:`makecpt`, and
+    :doc:`grdimage` to draw pleasing color
     backgrounds on maps, and overlay
-    `pscoast <pscoast.html>`_ clip paths to have the
+    :doc:`pscoast` clip paths to have the
     patterns change at the coastlines. The middle panel demonstrates a
-    simple `pscoast <pscoast.html>`_ call where the built-in
+    simple :doc:`pscoast` call where the built-in
     pattern # 86 is drawn at 100 dpi but with the black and white pixels
     replaced with color combinations. At the same time the ocean is filled
     with a repeating image of a circuit board (provides in Sun raster
     format). The text *GMT* in the center is an off-line *PostScript* file
-    that was overlaid using `psimage <psimage.html>`_. The
+    that was overlaid using :doc:`psimage`. The
     final panel repeats the top panel except that the land and sea images
     have changed places (Figure [fig:example:sub:`1`\ 9]).
 
@@ -635,16 +635,16 @@ Creating GMT Graphics
     One is often required to make special maps that shows the distribution
     of certain features but one would prefer to use a custom symbol instead
     of the built-in circles, squares, triangles, etc. in the *GMT* plotting
-    programs `psxy <psxy.html>`_ and
-    `psxyz <psxyz.html>`_. Here we demonstrate one approach
+    programs :doc:`psxy` and
+    :doc:`psxyz`. Here we demonstrate one approach
     that allows for a fair bit of flexibility in designing ones own symbols.
     The following recipe is used when designing a new symbol.
 
-    #. Use `psbasemap <psbasemap.html>`_ (or engineering
+    #. Use :doc:`psbasemap` (or engineering
        paper!) to set up an empty grid that goes from -0.5 to +0.5 in both
        *x* and *y*. Use ruler and compass to draw your new symbol using
        straight lines, arcs of circles, and stand-alone geometrical objects
-       (see `psxy <psxy.html>`_ man page for a full
+       (see :doc:`psxy` man page for a full
        description of symbol design). In this Section we will create two new
        symbols: a volcano and a bulls eye.
 
@@ -669,7 +669,7 @@ Creating GMT Graphics
        :math:`\alpha_1` to :math:`\alpha_2`
 
        We also add a few stand-alone circles (for other symbols, see
-       `psxy <psxy.html>`_ man page):
+       :doc:`psxy` man page):
 
        :math:`x_0` :math:`y_0` *r* **C** [ **-G**\ *fill* ] [
        **-W**\ *pen* ] Draw :math:`x_0` :math:`y_0` *r* **c** [
@@ -689,18 +689,18 @@ Creating GMT Graphics
        beyond the -0.5 to +0.5 range, as shown by the red lines. There is no
        limit in *GMT* to the size of the symbols. The center, however, will
        always be at (0,0). This is the point to which the coordinates in
-       `psxy <psxy.html>`_ refers.
+       :doc:`psxy` refers.
 
        The values refer to positions and dimensions illustrated in the
        Figure above.
 
     #. Given proper definition files we may now use them with
-       `psxy <psxy.html>`_ or `psxyz <psxyz.html>`_.
+       :doc:`psxy` or :doc:`psxyz`.
 
     We are now ready to give it a try. Based on the hotspot locations in the
     file ``hotspots.d`` (with a 3rd column giving the desired symbol sizes in inches) we
     lay down a world map and overlay red volcano symbols using our
-    custom-built volcano symbol and `psxy <psxy.html>`_. We
+    custom-built volcano symbol and :doc:`psxy`. We
     do something similar with the bulls eye symbols. Without the **-G**
     option, however, they get the colors defined in ``bullseye.def``.
 
@@ -770,7 +770,7 @@ Creating GMT Graphics
     live data. The main purpose of this script is not to show how to plot a
     map background and a few circles, but rather demonstrate how a map
     legend may be composed using the new tool
-    `pslegend <pslegend.html>`_. Some scripting is used to
+    :doc:`pslegend`. Some scripting is used to
     pull out information from the data file that is later used in the
     legend. The legend will normally have the email address of the script
     owner; here that command is commented out and the user is hardwired to
@@ -792,9 +792,9 @@ Creating GMT Graphics
     roads lead to Rome", aircraft pilots have known from the start that only
     one great-circle path connects the points of departure and
     arrival [28]_. This provides the inspiration for our next example which
-    uses `grdmath <grdmath.html>`_ to calculate distances
+    uses :doc:`grdmath` to calculate distances
     from Rome to anywhere on Earth and
-    `grdcontour <grdcontour.html>`_ to contour these
+    :doc:`grdcontour` to contour these
     distances. We pick five cities that we connect to Rome with great circle
     arcs, and label these cities with their names and distances (in km) from
     Rome, all laid down on top of a beautiful world map. Note that we
@@ -832,9 +832,9 @@ Creating GMT Graphics
     All remaining earthquakes should be plotted in red. Rather that doing
     the selection process twice we simply plot all quakes as red circles and
     then replot those that pass our criteria. Most of the work here is done
-    by `gmtselect <gmtselect.html>`_; the rest is carried
-    out by the usual `pscoast <pscoast.html>`_ and
-    `psxy <psxy.html>`_ workhorses. Note for our purposes
+    by :doc:`gmtselect`; the rest is carried
+    out by the usual :doc:`pscoast` and
+    :doc:`psxy` workhorses. Note for our purposes
     the Dateline is just a line along the 180 meridian.
 
     The script produces the plot in Figure [fig:example\ :sub:`2`\ 4]. Note
@@ -855,11 +855,11 @@ Creating GMT Graphics
     point at :math:`(-\phi, \lambda + 180)`. We seek an answer to the
     question that has plagued so many for so long: Given the distribution of
     land and ocean, how often is the antipode of a point on land also on
-    land? And what about marine antipodes? We use `grdlandmask <grdlandmask.html>`_ and
-    `grdmath <grdmath.html>`_ to map these distributions and
+    land? And what about marine antipodes? We use :doc:`grdlandmask` and
+    :doc:`grdmath` to map these distributions and
     calculate the area of the Earth (in percent) that goes with each of the
     three possibilities. To make sense of our
-    `grdmath <grdmath.html>`_ equations below, note that we
+    :doc:`grdmath` equations below, note that we
     first calculate a grid that is +1 when a point and its antipode is on
     land, -1 if both are in the ocean, and 0 elsewhere. We then seek to
     calculate the area distribution of dry antipodes by only pulling out the
@@ -881,7 +881,7 @@ Creating GMT Graphics
     not show up. If you want a more accurate map you can set the parameter
     *D* to a smaller increment (try 5 and wait a few minutes).
 
-    The call to `grdimage <grdimage.html>`_ includes the
+    The call to :doc:`grdimage` includes the
     ``-Sn`` to suspend interpolation and only return the value of the
     nearest neighbor. This option is particularly practical for plotting
     categorical data, like these, that should not be interpolated.
@@ -906,8 +906,8 @@ Creating GMT Graphics
     At this point the full projection has not been properly optimized and
     the map annotations will need additional work. Also, note that the
     projection is only implemented in
-    `pscoast <pscoast.html>`_ and
-    `grdimage <grdimage.html>`_. We hope to refine this
+    :doc:`pscoast` and
+    :doc:`grdimage`. We hope to refine this
     further and extend the availability of the full projection to all of the
     *GMT* mapping programs.
 
@@ -925,12 +925,12 @@ Creating GMT Graphics
     given on a spherical Mercator grid. The *GMT* supplement img has
     tools to extract subsets of these large grids. If you need to make a
     non-Mercator map then you must extract a geographic grid using
-    `img2grd <supplements/img/img2grd.html>`_ and then plot it using your
+    :doc:`supplements/img/img2grd <supplements/img/img2grd>` and then plot it using your
     desired map projection. However, if you want to make a Mercator map then
     you can save time and preserve data quality by avoiding to re-project
     the data set twice since it is already in a Mercator projection. This
     example shows how this is accomplished. We use the **-M** option in
-    `img2grd <supplements/img/img2grd.html>`_ to pull out the grid
+    :doc:`supplements/img/img2grd <supplements/img/img2grd>` to pull out the grid
     in Mercator units (i.e., do *not* invert the Mercator projection) and
     then simply plot the grid using a linear projection with a suitable
     scale (here 0.25 inches per degrees of longitude). To overlay basemaps
@@ -939,7 +939,7 @@ Creating GMT Graphics
 
     #. This is a *spherical* Mercator grid so we must use
        --**PROJ_ELLIPSOID**\ =Sphere with all commands that involve
-       projections (or use `gmtset <gmtset.html>`_ to change the setting).
+       projections (or use :doc:`gmtset` to change the setting).
 
     #. Select Mercator projection and use the same scale that was used with
        the linear projection.
@@ -989,12 +989,12 @@ Creating GMT Graphics
     accomplished using Green's functions of surface splines, with or without
     tension. Global gridding does not work particularly well in Cartesian
     coordinates hence the chosen approach. We use
-    `greenspline <greenspline.html>`_ to produce a crude
+    :doc:`greenspline` to produce a crude
     topography grid for Mars based on radii estimates from the Mariner 9 and
     Viking Orbiter spacecrafts. This data comes from *Smith and Zuber*
     [Science, 1996] and is used here as a small (*N* = 370) data set we can
     use to demonstrate spherical surface gridding. Since
-    `greenspline <greenspline.html>`_ must solve a *N* by
+    :doc:`greenspline` must solve a *N* by
     *N* matrix system your system memory may impose limits on how large data
     sets you can handle; also note that the spherical surface spline in
     tension is particularly slow to compute.
@@ -1004,8 +1004,8 @@ Creating GMT Graphics
     reference surface from the gridded radii. We run the gridding twice:
     First with no tension using *Parker*\ 's [1990] method and then with
     tension using the *Wessel and Becker* [2008] method. The grids are then
-    imaged with `grdimage <grdimage.html>`_ and
-    `grdcontour <grdcontour.html>`_ and a color scale is placed between them.
+    imaged with :doc:`grdimage` and
+    :doc:`grdcontour` and a color scale is placed between them.
 
     .. literalinclude:: /_verbatim/example_29.txt
        :language: bash
@@ -1067,7 +1067,7 @@ Creating GMT Graphics
 
     In some cases, it is nice to "drape" an arbitrary image over a
     topographic map. We have already seen how to use
-    `psimage <psimage.html>`_ to plot an image anywhere in
+    :doc:`psimage` to plot an image anywhere in
     out plot. But here are aim is different, we want to manipulate an image
     to shade it and plot it in 3-D over topography. This example was
     originally created by Stephan Eickschen for a flyer emphasizing the
@@ -1079,8 +1079,8 @@ Creating GMT Graphics
     already done. First we get the EU flag directly from the web and convert
     it to a grid with values ranging from 0 to 255, where the higher values
     will become yellow and the lower values blue. This use of
-    `grdreformat <grdreformat.html>`_ requires GDAL support.
-    `grdedit <grdedit.html>`_ then adds the right grid dimension.
+    :doc:`grdreformat` requires GDAL support.
+    :doc:`grdedit` then adds the right grid dimension.
 
     The second step is to reformat the GTOPO30 DEM file to a netCDF grid as
     well and then subsample it at the same pixels as the EU flag. We then
@@ -1088,20 +1088,20 @@ Creating GMT Graphics
     topography. The colors that we will use are those of the proper flag.
     Lower values will become blue and the upper values yellow.
 
-    The call the `grdview <grdview.html>`_ plots a
+    The call the :doc:`grdview` plots a
     topography map of northwest continental Europe, with the flagged draped
     over it and with shading to show the little topography there is.
-    `pscoast <pscoast.html>`_ is used in conjunction with
-    `grdtrack <grdtrack.html>`_ and *GMT*\ psxyz to plot
+    :doc:`pscoast` is used in conjunction with
+    :doc:`grdtrack` and *GMT*\ psxyz to plot
     borders "at altitude". Something similar is done at the end to plot some
     symbols and names for cities.
 
     The script produces the plot in Figure [fig:example\ :sub:`3`\ 2]. Note
     that the PNG image of the flag can be downloaded directly in the call
-    the `grdreformat <grdreformat.html>`_, but we have
+    the :doc:`grdreformat`, but we have
     commented that out in the example because it requires compilation with
     GDAL support. You will also see the
-    `grdcut <grdcut.html>`_ command commented out because we
+    :doc:`grdcut` command commented out because we
     did not want to store the 58 MB DEM file, whose location is mentioned in the script.
 
     .. literalinclude:: /_verbatim/example_32.txt
@@ -1113,7 +1113,7 @@ Creating GMT Graphics
     -----------------------------------------------
 
     The script produces the plot in Figure [fig:example\ :sub:`3`\ 3]. Here
-    we demonstrate how `grdtrack <grdtrack.html>`_ can be
+    we demonstrate how :doc:`grdtrack` can be
     used to automatically create a suite of crossing profiles of uniform
     spacing and length and then sample one or more grids along these
     profiles; we also use the median stacking option to create a stacked
@@ -1129,7 +1129,7 @@ Creating GMT Graphics
     -----------------------------------------------
 
     The script produces the plot in Figure [fig:example\ :sub:`3`\ 4]. Here
-    we demonstrate how `pscoast <pscoast.html>`_ can be used to extract
+    we demonstrate how :doc:`pscoast` can be used to extract
     and plot country polygons.  We show two panels; one in which we do
     a basic basemap and another where we lay down a color topography
     image and then place a transparent layer identifying the future
@@ -1145,8 +1145,8 @@ Creating GMT Graphics
     -------------------------------------------------
 
     The script produces the plot in Figure [fig:example\ :sub:`3`\ 5]. Here
-    we demonstrate how `sphtriangulate <sphtriangulate.html>`_ and
-    `sphdistance <sphdistance.html>`_ are used to compute the Delauney and
+    we demonstrate how :doc:`sphtriangulate` and
+    :doc:`sphdistance` are used to compute the Delauney and
     Voronoi information on a sphere, using a decimated GSHHG crude coastline.
     We show a color image of the distances, highlighted with 500-km contours,
     and overlay the Voronoi polygons in green.  Finally, the continents are
@@ -1161,15 +1161,15 @@ Creating GMT Graphics
     -------------------------------------------
 
     The next script produces the plot in Figure [fig:example\ :sub:`3`\ 6]. Here
-    we demonstrate how `sphinterpolate <sphinterpolate.html>`_ can be used
+    we demonstrate how :doc:`sphinterpolate` can be used
     to perform spherical gridding.  Our example uses early measurements of
     the radius of Mars from Mariner 9 and Viking Orbiter spacecrafts.  The
     middle panels shows the data distribution while the top and bottom panel
     are images of the interpolation using a piecewise linear interpolation
     and a smoothed spline interpolation, respectively.  For spherical gridding
-    with large volumes of data we recommend `sphinterpolate <sphinterpolate.html>`_
+    with large volumes of data we recommend :doc:`sphinterpolate`
     while for small data sets (such as this one, actually) you have more flexibility
-    with `greenspline <greenspline.html>`_.
+    with :doc:`greenspline`.
 
     .. literalinclude:: /_verbatim/example_36.txt
        :language: bash
@@ -1180,7 +1180,7 @@ Creating GMT Graphics
     -------------------------------------------------------
 
     The next script produces the plot in Figure [fig:example\ :sub:`3`\ 7].
-    We demonstrate how `grdfft <grdfft.html>`_ is used to compute the
+    We demonstrate how :doc:`grdfft` is used to compute the
     spectral coherence between two data sets, here multibeam bathymetry
     and satellite-derived gravity.  The grids are detrended and tapered
     before the Fourier transform is computed; the intermediate plots show
@@ -1197,7 +1197,7 @@ Creating GMT Graphics
     The next script produces the plot in Figure [fig:example\ :sub:`3`\ 8].
     This example shows how to use histogram equalization to enhance various
     ranges of a grid depending on its frequency distribution.  The key tool
-    used here is `grdhisteq <grdhisteq.html>`_.
+    used here is :doc:`grdhisteq`.
 
     .. literalinclude:: /_verbatim/example_38.txt
        :language: bash
@@ -1213,7 +1213,7 @@ Creating GMT Graphics
     90, and 180; the original file (see below) goes to order and degree 720.
     We use the coefficients to evaluate the grids and make perspective globes
     of the different resolutions.  The key tool
-    used here is `sph2grd <sph2grd.html>`_.
+    used here is :doc:`sph2grd`.
 
     .. literalinclude:: /_verbatim/example_39.txt
        :language: bash
@@ -1312,7 +1312,7 @@ Creating GMT Animations
        be trivial or a serious scripting exercise depending on what you want
        to show. We will give a few examples with increasing complexity. Once
        the *PostScript* plot is created you need to rasterize it; we
-       recommend you use `ps2raster <ps2raster.html>`_ to
+       recommend you use :doc:`ps2raster` to
        generate a TIFF image at the agreed-upon resolution. We also
        recommend that you place all frame images in a sub-directory. You may
        increment your frame counter using **gmt_set_framenext**.
@@ -1332,7 +1332,7 @@ Creating GMT Animations
        duration. Under OS X we prefer to use Quicktime. [30]_ Free tools
        exist to call the Quicktime library functions from the command line
        as we prefer to do in our scripts. Another choice is to use the free
-       `mencoder <http://www.mplayerhq.hu/design7/news.html>`_.
+       `mencoder <http://www.mplayerhq.hu/>`_.
        You will find yourself
        experimenting with compression settings and movie formats so that the
        final movie has the resolution and portability you require.
@@ -1371,7 +1371,7 @@ Creating GMT Animations
 
     Our next animation uses a gridded topography for parts of Colorado (US);
     the file is distributed with the tutorial examples. Here, we want to use
-    `grdimage <grdimage.html>`_ to generate a shaded-relief
+    :doc:`grdimage` to generate a shaded-relief
     image sequence in which we sweep the illumination azimuth around the
     entire horizon. The resulting animation illustrates how changing the
     illumination azimuth can bring out subtle features (or artifacts) in the
@@ -1390,7 +1390,7 @@ Creating GMT Animations
 
     Our third animation keeps a fixed gridded data set but moves the camera
     angle around the full 360. We use
-    `grdview <grdview.html>`_ to generate a shaded-relief
+    :doc:`grdview` to generate a shaded-relief
     image sequence using the new enhanced **-E** option. No additional
     information is plotted on the image. As before we produce an animated
     GIF image and a simple HTML wrapper for it.
@@ -1404,14 +1404,14 @@ Creating GMT Animations
     Our next animation simulates what an imaginary satellite might see as it
     passes in a great circle from New York to Miami at an altitude of 160
     km. We use the general perspective view projection with
-    `grdimage <grdimage.html>`_ and use
-    `project <project.html>`_ to create a great circle path
+    :doc:`grdimage` and use
+    :doc:`project` to create a great circle path
     between the two cities, sampled every 5 km. The main part of the script
     will make the DVD-quality frames from different view points, draw the
     path on the ground, and add frame numbers to each frame. As this
     animation generates 355 frames we can use 3rd party tools to turn the
     image sequence into a MPEG-4 movie [31]_. Note: At the moment,
-    `grdview <grdview.html>`_ cannot use general perspective
+    :doc:`grdview` cannot use general perspective
     view projection to allow "fly-through" animations like Fledermaus; we
     expect to add this functionality in a future version.
 

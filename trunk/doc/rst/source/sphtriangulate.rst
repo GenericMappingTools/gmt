@@ -124,7 +124,7 @@ Examples
 --------
 
 To triangulate the points in the file testdata.txt, and make a Voronoi
-diagram via `psxy <psxy.html>`_, use
+diagram via :doc:`psxy`, use
 
    ::
 
@@ -141,9 +141,9 @@ in the header record, try
 See Also
 --------
 
-`GMT <GMT.html>`_, `triangulate <triangulate.html>`_,
-`sphinterpolate <sphinterpolate.html>`_,
-`sphdistance <sphdistance.html>`_
+:doc:`gmt`, :doc:`triangulate`,
+:doc:`sphinterpolate`,
+:doc:`sphdistance`
 
 References
 ----------

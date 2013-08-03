@@ -126,7 +126,7 @@ with **-V** are Chebyshev coefficients; they are not numerically
 equivalent to the m#s in the equation described above. The description
 above is to allow the user to match **-N** with the order of the
 polynomial surface. For evaluating Chebyshev polynomials, see
-`grdmath <grdmath.html>`_.
+:doc:`grdmath`.
 
 The **-N**\ *n\_model*\ **r** (robust) and **-I** (iterative) options
 evaluate the significance of the improvement in model misfit Chi-Squared
@@ -177,8 +177,8 @@ significant in fitting data.xyz, use:
 See Also
 --------
 
-`gmt <gmt.html>`_, `grdmath <grdmath.html>`_,
-`grdtrend <grdtrend.html>`_, `trend1d <trend1d.html>`_
+:doc:`gmt`, :doc:`grdmath`,
+:doc:`grdtrend`, :doc:`trend1d`
 
 References
 ----------

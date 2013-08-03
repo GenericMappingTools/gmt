@@ -174,6 +174,6 @@ A repeat of the first example but this time we use white tiling:
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmtcolors <gmtcolors.html>`_,
-`grdmask <grdmask.html>`_, `surface <surface.html>`_,
-`psbasemap <psbasemap.html>`_, `psclip <psclip.html>`_
+:doc:`gmt`, :doc:`gmtcolors`,
+:doc:`grdmask`, :doc:`surface`,
+:doc:`psbasemap`, :doc:`psclip`

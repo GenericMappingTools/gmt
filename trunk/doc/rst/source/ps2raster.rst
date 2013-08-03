@@ -327,4 +327,4 @@ documentation.
 See Also
 --------
 
-`gmt <gmt.html>`_
+:doc:`gmt`

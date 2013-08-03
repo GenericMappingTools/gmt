@@ -140,4 +140,4 @@ this information, run
 See Also
 --------
 
-`gmt <gmt.html>`_, `grd2xyz <grd2xyz.html>`_, `xyz2grd <xyz2grd.html>`_
+:doc:`gmt`, :doc:`grd2xyz`, :doc:`xyz2grd`

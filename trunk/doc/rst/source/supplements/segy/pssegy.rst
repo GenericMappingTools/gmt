@@ -162,4 +162,4 @@ clipped at +-3, with bias -1 and negative variable area shaded red, use
 See Also
 --------
 
-`GMT <GMT.html>`_, `pssegyz <pssegyz.html>`_
+:doc:`gmt </gmt>`, :doc:`pssegyz`

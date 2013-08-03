@@ -38,13 +38,13 @@ Description
 optionally weighted quadruples (*x*,\ *y*,\ *z*,\ *w*)] from standard
 input [or *table*] and writes to standard output mode estimates of
 position and value for every non-empty block in a grid region defined by
-the **-R** and **-I** arguments. Either `blockmean <blockmean.html>`_, 
-`blockmedian <blockmedian.html>`_,
+the **-R** and **-I** arguments. Either :doc:`blockmean`, 
+:doc:`blockmedian`,
 or **blockmode** should be used as a pre-processor before running
-`surface <surface.html>`_ to avoid aliasing short wavelengths. These routines are also
+:doc:`surface` to avoid aliasing short wavelengths. These routines are also
 generally useful for decimating or averaging (*x*,\ *y*,\ *z*) data. You
 can modify the precision of the output format by editing the
-:ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` parameter in your `gmt.conf <gmt.conf.html>`_ file, or you may
+:ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` parameter in your :doc:`gmt.conf` file, or you may
 choose binary input and/or output to avoid loss of precision. 
 
 Required Arguments
@@ -156,9 +156,9 @@ data representing integer counts, try
 See Also
 --------
 
-`blockmean <blockmean.html>`_,
-`blockmedian <blockmedian.html>`_, `gmt <gmt.html>`_,
-`gmt.conf <gmt.conf.html>`_,
-`nearneighbor <nearneighbor.html>`_,
-`surface <surface.html>`_,
-`triangulate <triangulate.html>`_
+:doc:`blockmean`,
+:doc:`blockmedian`, :doc:`gmt`,
+:doc:`gmt.conf`,
+:doc:`nearneighbor`,
+:doc:`surface`,
+:doc:`triangulate`

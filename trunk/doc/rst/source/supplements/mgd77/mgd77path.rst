@@ -78,10 +78,10 @@ To see the list of active directories where MGD77 files might be stored, run
 See Also
 --------
 
-`GMT <GMT.html>`_ `mgd77info <mgd77info.html>`_
-`mgd77list <mgd77list.html>`_
-`mgd77manage <mgd77manage.html>`_
-`mgd77track <mgd77track.html>`_
+:doc:`gmt </gmt>` :doc:`mgd77info`
+:doc:`mgd77list`
+:doc:`mgd77manage`
+:doc:`mgd77track`
 
 `References <#toc8>`_
 ---------------------

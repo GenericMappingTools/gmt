@@ -206,7 +206,8 @@ To make a Mercator map of the above region, suppose our gmt.conf value
 for **PROJ_LENGTH_UNIT** is inch. Then since the above merc_grav.nc
 file is projected with **-Jm**\ 1i it is 80 inches wide. We can make a
 map 8 inches wide by using **-Jx**\ 0.1i on any map programs applied to
-this grid (e.g., `grdcontour <grdcontour.html>`_, `grdimage <grdimage.html>`_, `grdview <grdview.html>`_), and then
+this grid (e.g., :doc:`grdcontour </grdcontour>`,
+:doc:`grdimage </grdimage>`, :doc:`grdview </grdview>`), and then
 for overlays which work in lon,lat (e.g., **psxy**, **pscoast**) we can
 use the above adjusted **-R** and **-Jm**\ 0.1 to get the two systems to
 match up.
@@ -228,7 +229,7 @@ average the data much more (e.g., 6 by 6) to get smooth contours.) Since
 This time we find the adjusted region is
 **-R**-40/40/-70.023256525/-29.9368261101 and the output is 800 by 601
 pixels, a better size for us. Now we can create an artificial
-illumination file for this using `grdgradient <grdgradient.html>`_:
+illumination file for this using :doc:`grdgradient </grdgradient>`:
 
    ::
 
@@ -244,10 +245,10 @@ shaded relief map like this:
 
 Suppose you want to obtain only the constrained data values from an img
 file, in lat/lon coordinates. Then run **img2grd** with the **-T**\ 2
-option, use `grd2xyz <../../grd2xyz.html>`_ to dump the values, pipe through grep -v NaN to
-eliminate NaNs, and pipe through `mapproject <../../mapproject.html>`_ with the inverse projection as above.
+option, use :doc:`grd2xyz </grd2xyz>` to dump the values, pipe through grep -v NaN to
+eliminate NaNs, and pipe through :doc:`mapproject </mapproject>` with the inverse projection as above.
 
 See Also
 --------
 
-`GMT <../../GMT.html>`_
+:doc:`gmt </gmt>`

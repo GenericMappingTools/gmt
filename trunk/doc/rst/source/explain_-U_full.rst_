@@ -9,6 +9,6 @@
     *label*, or **c** (which will plot the command string.). The **GMT**
     parameters :ref:`MAP_LOGO <MAP_LOGO>`, :ref:`MAP_LOGO_POS <MAP_LOGO_POS>`, and
     :ref:`FORMAT_TIME_STAMP <FORMAT_TIME_STAMP>` can affect the appearance; see the
-    `gmt.conf <gmt.conf.html>`__ man page for details. The time string will be in the
+    :doc:`gmt.conf` man page for details. The time string will be in the
     locale set by the environment variable **TZ** (generally local
     time).

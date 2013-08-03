@@ -88,16 +88,16 @@ Optional Arguments
     Ignore certain data file formats from consideration. Append
     **a\|c\|t** to ignore MGD77 ASCII, MGD77+ netCDF, or plain table
     files, respectively. The option may be repeated to ignore more than
-    one format. [Default ignores none]. 
+    one format. [Default ignores none].
 
 .. include:: ../../explain_-K.rst_
 
 **-L**\ *trackticks*
     To put time/distance log-marks on the track. E.g.
     **a**\ 500\ **ka**\ 24\ **ht**\ 6\ **h** means (**a**)nnotate every
-    500 km (**k**) and 24 `**h**\ (ours) <h.ours.html>`_ , with
+    500 km (**k**) and 24 **h**(ours), with
     (**t**)ickmarks every 500 km and 6 hours. Alternatively you may use
-    the modifiers **d** (days) and **n** (nautical miles). 
+    the modifiers **d** (days) and **n** (nautical miles).
 
 .. include:: ../../explain_-O.rst_
 
@@ -157,12 +157,12 @@ plot to the default printer, enter the following command:
 See Also
 --------
 
-`mgd77info <mgd77info.html>`_,
-`psbasemap <psbasemap.html>`_,
-`mgd77list <mgd77list.html>`_
+:doc:`mgd77info`,
+:doc:`psbasemap </psbasemap>`,
+:doc:`mgd77list`
 
 References
 ----------
 
 The Marine Geophysical Data Exchange Format - MGD77, see
-`*http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt* <http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_
+`<http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_

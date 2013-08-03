@@ -7,9 +7,9 @@ While motorists recently have started to question the old saying "all
 roads lead to Rome", aircraft pilots have known from the start that only
 one great-circle path connects the points of departure and
 arrival [1]_. This provides the inspiration for our next example which
-uses `grdmath <../grdmath.html>`_ to calculate distances
+uses :doc:`grdmath </grdmath>` to calculate distances
 from Rome to anywhere on Earth and
-`grdcontour <../grdcontour.html>`_ to contour these
+:doc:`grdcontour </grdcontour>` to contour these
 distances. We pick five cities that we connect to Rome with great circle
 arcs, and label these cities with their names and distances (in km) from
 Rome, all laid down on top of a beautiful world map. Note that we

@@ -232,11 +232,11 @@ variations within polygons by using scanline conversion to image the polygons.
 See Also
 --------
 
-`gmt <gmt.html>`_, `grd2rgb <grd2rgb.html>`_,
-`gmtcolors <gmtcolors.html>`_,
-`grdcontour <grdcontour.html>`_,
-`grdimage <grdimage.html>`_,
-`nearneighbor <nearneighbor.html>`_,
-`psbasemap <psbasemap.html>`_,
-`pscontour <pscontour.html>`_, `pstext <pstext.html>`_,
-`surface <surface.html>`_
+:doc:`gmt`, :doc:`grd2rgb`,
+:doc:`gmtcolors`,
+:doc:`grdcontour`,
+:doc:`grdimage`,
+:doc:`nearneighbor`,
+:doc:`psbasemap`,
+:doc:`pscontour`, :doc:`pstext`,
+:doc:`surface`

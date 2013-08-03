@@ -194,5 +194,5 @@ must run **psrose** **-I** to find max length in binned data set.
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
-`gmtcolors <gmtcolors.html>`_, `pshistogram <pshistogram.html>`_
+:doc:`gmt`, :doc:`gmt.conf`,
+:doc:`gmtcolors`, :doc:`pshistogram`

@@ -292,7 +292,7 @@ or an existing column that have been filtered or manipulated for a
 particular purpose. The format supports up to 32 such extra columns. See
 this man page for how to add columns. You may later decide to remove
 some of these columns or update the data associated with a certain
-column. Data extraction tools such as `mgd77list <mgd77list.html>`__ can be used to
+column. Data extraction tools such as :doc:`mgd77list` can be used to
 extract a mix of standard MGD77 columns (navigation, time, and the usual
 geophysical observations) and your custom columns.
 
@@ -347,7 +347,7 @@ E77 settings or flags will be recreated based on the latest E77 log.
 
 **7. Error corrections**
 
-The extraction program `mgd77list <mgd77list.html>`__ allows for corrections to be
+The extraction program :doc:`mgd77list` allows for corrections to be
 applied on-the-fly when data are requested. First, data with BAD
 bitflags are suppressed. Second, data with fixed systematic correction
 terms are corrected accordingly. Third, data with ephemeral correction
@@ -368,18 +368,17 @@ Luis, and adapted to GMT style by Paul Wessel.
 See Also
 --------
 
-`gd77convert <mgd77convert.html>`_,
-`mgd77list <mgd77list.html>`_,
-`mgd77info <mgd77info.html>`_,
-`mgd77sniffer <mgd77sniffer.html>`_
-`mgd77track <mgd77track.html>`_
-`x2sys_init <x2sys_init.html>`_
+:doc:`mgd77convert`,
+:doc:`mgd77list`,
+:doc:`mgd77info`,
+:doc:`mgd77sniffer`
+:doc:`mgd77track`
+:doc:`x2sys_init <../x2sys/x2sys_init>`
 
 References
 ----------
 
 The Marine Geophysical Data Exchange Format - MGD77, see
-`http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt <http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_
+`<http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_
 
-IGRF, see
-`http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html <http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html>`_
+IGRF, see `<http://www.ngdc.noaa.gov/IAGA/vmod/igrf.html>`_

@@ -184,12 +184,13 @@ approach was east of the hotspot.
 See Also
 --------
 
-`GMT <GMT.html>`_, `grdrotater <grdrotater.html>`_,
-`grdspotter <grdspotter.html>`_,
-`project <project.html>`_,
-`mapproject <mapproject.html>`_,
-`backtracker <backtracker.html>`_,
-`hotspotter <hotspotter.html>`_
+:doc:`gmt </gmt>`,
+:doc:`grdrotater`,
+:doc:`grdspotter`,
+:doc:`project </project>`,
+:doc:`mapproject </mapproject>`,
+:doc:`backtracker`,
+:doc:`hotspotter`
 
 References
 ----------

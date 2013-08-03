@@ -129,7 +129,7 @@ rim in pixel oriented grids is ignored when using the **-C** flag.
 See Also
 --------
 
-`gmt <gmt.html>`_, `grdfilter <grdfilter.html>`_
+:doc:`gmt`, :doc:`grdfilter`
 
 References
 ----------

@@ -183,7 +183,7 @@ or
 See Also
 --------
 
-`GMT <../../gmt.html>`_, `psbasemap <../../psbasemap.html>`_, `psxy <../../psxy.html>`_
+:doc:`gmt </gmt>`, :doc:`psbasemap </psbasemap>`, :doc:`psxy </psxy>`
 
 References
 ----------

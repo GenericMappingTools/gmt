@@ -99,6 +99,6 @@ nodes based on the low resolution data:
 See Also
 --------
 
-`gmt <gmt.html>`_, `grdmath <grdmath.html>`_,
-`grdclip <grdclip.html>`_, `psmask <psmask.html>`_,
-`psclip <psclip.html>`_, `pscoast <pscoast.html>`_
+:doc:`gmt`, :doc:`grdmath`,
+:doc:`grdclip`, :doc:`psmask`,
+:doc:`psclip`, :doc:`pscoast`

@@ -43,7 +43,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
 
 **-D**\ [**x**\ ]\ *lon*/*lat*/*width*\ [/*height*]/\ *just*\ [/*dx*/*dy*]
     Positions the legend and specifies its size. The *just* is a 2-char
-    justification string (see `psxy <pstext.html>`__) that relates the given
+    justification string (see :doc:`pstext`) that relates the given
     position to a point on the rectangular legend box. If you want to
     specify the position in map plot units (i.e., inches or cm), use
     **-Dx**; in that case the **-R** and **-J** are optional (provided
@@ -173,14 +173,14 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     columns stay in effect until **N** is used again.
 **S** *dx1 symbol size fill pen* [ *dx2 text* ]
     Plots the selected symbol with specified diameter, fill, and outline
-    (see `psxy <psxy.html>`__). The symbol is centered at *dx1* from the left margin
+    (see :doc:`psxy`). The symbol is centered at *dx1* from the left margin
     of the column, with the optional explanatory *text* starting *dx2*
     from the margin, printed with **FONT\_ANNOT\_PRIMARY**. Use **-** if
     no *fill* or outline (*pen*) is required. When plotting just a
     symbol, without text, *dx2* and *text* can be omitted. Two **psxy**
     symbols may take special modifiers: front (**f**) and vector (**v**). 
     You can append modifiers to the symbol and affect how the fronts and
-    vectors are presented (see `psxy <psxy.html>`__ man page for modifiers).
+    vectors are presented (see :doc:`psxy` man page for modifiers).
     **pslegend** will determine default settings for all modifiers and
     secondary arguments if not provided.  A few other symbols (the rectangles,
     ellipse, wedge, mathangle) may take more than a single argument size.
@@ -188,7 +188,7 @@ annotation font and size in effect (i.e., FONT\_ANNOT\_PRIMARY)
     arguments to plot the symbol  (See `Defaults`_).
     Alternatively, combine the required
     arguments into a single, comma-separated string and use that as the
-    symbol size (again, see `psxy <psxy.html>`__ for details on the arguments needed).
+    symbol size (again, see :doc:`psxy` for details on the arguments needed).
 **T** *paragraph-text*
     One or more of these **T** records with *paragraph-text* printed
     with **FONT\_ANNOT\_PRIMARY**. To specify special positioning and
@@ -326,7 +326,7 @@ such duplication.
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
-`gmtcolors <gmtcolors.html>`_,
-`psbasemap <psbasemap.html>`_, `pstext <pstext.html>`_,
-`psxy <psxy.html>`__
+:doc:`gmt`, :doc:`gmt.conf`,
+:doc:`gmtcolors`,
+:doc:`psbasemap`, :doc:`pstext`,
+:doc:`psxy`

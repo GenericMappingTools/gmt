@@ -19,9 +19,9 @@ epicenters that satisfy the following three criteria:
 All remaining earthquakes should be plotted in red. Rather that doing
 the selection process twice we simply plot all quakes as red circles and
 then replot those that pass our criteria. Most of the work here is done
-by `gmtselect <../gmtselect.html>`_; the rest is carried
-out by the usual `pscoast <../pscoast.html>`_ and
-`psxy <../psxy.html>`_ workhorses. Note for our purposes
+by :doc:`gmtselect </gmtselect>`; the rest is carried
+out by the usual :doc:`pscoast </pscoast>` and
+:doc:`psxy </psxy>` workhorses. Note for our purposes
 the Dateline is just a line along the 180 meridian.
 
 The script produces the plot in Figure. Note

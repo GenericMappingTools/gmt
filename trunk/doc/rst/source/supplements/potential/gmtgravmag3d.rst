@@ -128,7 +128,7 @@ Suppose you ...
 See Also
 --------
 
-`GMT <../../GMT.html>`_, `grdgravmag3d <grdgravmag3d.html>`_
+:doc:`gmt </gmt>`, :doc:`grdgravmag3d`
 
 Reference
 ---------

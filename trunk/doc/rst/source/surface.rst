@@ -172,26 +172,26 @@ Bugs
 
 **surface** will complain when more than one data point is found for any
 node and suggest that you run **blockmean**, **blockmedian**, or
-`blockmode <blockmode.html>`_ first. If you did run **blockm\*** and still get this
+:doc:`blockmode` first. If you did run **blockm\*** and still get this
 message it usually means that your grid spacing is so small that you
 need more decimals in the output format used by **blockm\***. You may
 specify more decimal places by editing the parameter
-**FORMAT\_FLOAT\_OUT** in your `gmt.conf <gmt.conf.html>`_ file prior to running
+**FORMAT\_FLOAT\_OUT** in your :doc:`gmt.conf` file prior to running
 **blockm\***, or choose binary input and/or output using single or
 double precision storage.
 
 Note that only gridline registration is possible with **surface**. If
 you need a pixel-registered grid you can resample a gridline registered
-grid using `grdsample <grdsample.html>`_ **-T**.
+grid using :doc:`grdsample` **-T**.
 
 `See Also <#toc9>`_
 -------------------
 
-`blockmean <blockmean.html>`_,
-`blockmedian <blockmedian.html>`_,
-`blockmode <blockmode.html>`_, `gmt <gmt.html>`_,
-`nearneighbor <nearneighbor.html>`_,
-`triangulate <triangulate.html>`_
+:doc:`blockmean`,
+:doc:`blockmedian`,
+:doc:`blockmode`, :doc:`gmt`,
+:doc:`nearneighbor`,
+:doc:`triangulate`
 
 References
 ----------

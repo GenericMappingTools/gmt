@@ -165,5 +165,5 @@ to give the desired effect.
 See Also
 --------
 
-`gmt <gmt.html>`_, `grdmask <grdmask.html>`_,
-`psbasemap <psbasemap.html>`_, `psmask <psmask.html>`_
+:doc:`gmt`, :doc:`grdmask`,
+:doc:`psbasemap`, :doc:`psmask`

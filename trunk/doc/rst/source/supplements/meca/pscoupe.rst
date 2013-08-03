@@ -345,8 +345,8 @@ Optional Arguments
 See Also
 --------
 
-`GMT <../../gmt.html>`_, `psbasemap <../../psbasemap.html>`_,
-`psmeca <psmeca.html>`_, `psxy <../../psxy.html>`_
+:doc:`gmt </gmt>`, :doc:`psbasemap </psbasemap>`,
+:doc:`psmeca`, :doc:`psxy </psxy>`
 
 References
 ----------

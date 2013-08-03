@@ -138,9 +138,9 @@ To determine how far the crust has moved since formation, try
 See Also
 --------
 
-`backtracker <backtracker.html>`_,
-`grdrotater <grdrotater.html>`_,
-`grdspotter <grdspotter.html>`_,
-`hotspotter <hotspotter.html>`_,
-`originator <originator.html>`_,
-`rotconverter <rotconverter.html>`_
+:doc:`backtracker`,
+:doc:`grdrotater`,
+:doc:`grdspotter`,
+:doc:`hotspotter`,
+:doc:`originator`,
+:doc:`rotconverter`

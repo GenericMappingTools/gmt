@@ -59,9 +59,9 @@ environments since access to *GMT* tools could only be achieved via
 system calls [1]_. Consequently, all data i/o had to be done via
 temporary files. The design also prevented the *GMT* developers
 themselves from taking advantage of these modules directly. For
-instance, the tool `pslegend <pslegend.html>`_ needed to
-make extensive use of system calls to `psxy <psxy.html>`_ and
-`pstext <pstext.html>`_ in order to plot the lines,
+instance, the tool :doc:`pslegend` needed to
+make extensive use of system calls to :doc:`psxy` and
+:doc:`pstext` in order to plot the lines,
 symbols and text that make up a map legend, making it a very awkward
 program to maintain.
 
@@ -130,8 +130,8 @@ For the purpose of this documentation a few definitions are needed:
 
 #. "Standard *GMT* program" refers to one of the traditional stand-alone
    command-line executables known to all *GMT* users, e.g.,
-   `blockmean <blockmean.html>`_, `psxy <psxy.html>`_,
-   `grdimage <grdimage.html>`_, etc. Prior to version 5,
+   :doc:`blockmean`, :doc:`psxy`,
+   :doc:`grdimage`, etc. Prior to version 5,
    these were the only *GMT* executables available.
 
 #. "\ *GMT* module" refers to the function in the *GMT* API library that
@@ -155,9 +155,9 @@ For the purpose of this documentation a few definitions are needed:
 In version 5, the standard *GMT* programs are themselves specific but
 overly simple examples of *GMT* applications that only call the single
 *GMT* function they are associated with. However, some programs such as
-`pslegend <pslegend.html>`_, `gmtconvert <gmtconvert.html>`_,
-`grdblend <grdblend.html>`_,
-`grdfilter <grdfilter.html>`_ and others call several modules.
+:doc:`pslegend`, :doc:`gmtconvert`,
+:doc:`grdblend`,
+:doc:`grdfilter` and others call several modules.
 
 Recognized resources
 --------------------

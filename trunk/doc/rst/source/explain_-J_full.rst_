@@ -21,7 +21,7 @@ ellipsoids and spheroids are currently supported, and users may also
 specify their own custum ellipsoid parameters [Default is WGS-84].
 Several GMT parameters can affect the projection: :ref:`PROJ_ELLIPSOID <PROJ_ELLIPSOID>`,
 :ref:`GMT_INTERPOLANT <GMT_INTERPOLANT>`, :ref:`PROJ_SCALE_FACTOR <PROJ_SCALE_FACTOR>`, and
-:ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`; see the `gmt.conf <gmt.conf.html>`__ man page for details.
+:ref:`PROJ_LENGTH_UNIT <PROJ_LENGTH_UNIT>`; see the :doc:`gmt.conf` man page for details.
 Choose one of the following projections (The **E** or **C** after
 projection names stands for Equal-Area and Conformal, respectively):
 

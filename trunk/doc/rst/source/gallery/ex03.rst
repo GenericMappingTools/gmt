@@ -4,21 +4,21 @@
 ------------------------------------
 
 In this example we will show how to use the *GMT* programs
-`fitcircle <../fitcircle.html>`_, `project <../project.html>`_,
-`sample1d <../sample1d.html>`_, `spectrum1d <../spectrum1d.html>`_,
-`psxy <../psxy.html>`_, and
-`pstext <../pstext.html>`_. Suppose you have (lon, lat,
+:doc:`fitcircle </fitcircle>`, :doc:`project </project>`,
+:doc:`sample1d </sample1d>`, :doc:`spectrum1d </spectrum1d>`,
+:doc:`psxy </psxy>`, and
+:doc:`pstext </pstext>`. Suppose you have (lon, lat,
 gravity) along a satellite track in a file called ``sat.xyg``, and (lon, lat,
 gravity) along a ship track in a file called ``ship.xyg``. You want to make a
 cross-spectral analysis of these data. First, you will have to get the
 two data sets into equidistantly sampled time-series form. To do this,
 it will be convenient to project these along the great circle that best
 fits the sat track. We must use
-`fitcircle <../fitcircle.html>`_ to find this great circle
+:doc:`fitcircle </fitcircle>` to find this great circle
 and choose the L\ :sub:`2` estimates of best pole. We project the data
-using `project <../project.html>`_ to find out what their
+using :doc:`project </project>` to find out what their
 ranges are in the projected coordinate. The
-`minmax <../minmax.html>`_ utility will report the minimum
+:doc:`minmax </minmax>` utility will report the minimum
 and maximum values for multi-column ASCII tables. Use this information
 to select the range of the projected distance coordinate they have in
 common. The script prompts you for that information after reporting the
@@ -30,8 +30,8 @@ and the satellite is the output data. There are several intermediate
 steps that produce helpful plots showing the effect of the various
 processing steps (``example_03[a-f].ps``), while the final plot ``example_03.ps`` shows the ship and sat power
 in one diagram and the coherency on another diagram, both on the same
-page. Note the extended use of `pstext <../pstext.html>`_
-and `psxy <../psxy.html>`_ to put labels and legends
+page. Note the extended use of :doc:`pstext </pstext>`
+and :doc:`psxy </psxy>` to put labels and legends
 directly on the plots. For that purpose we often use **-Jx**\ 1i and
 specify positions in inches directly. Thus, the complete automated script reads:
 

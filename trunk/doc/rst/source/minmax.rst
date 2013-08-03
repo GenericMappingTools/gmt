@@ -167,4 +167,4 @@ the current setting of :ref:`TIME_UNIT <TIME_UNIT>`.
 See Also
 --------
 
-`gmt <gmt.html>`_
+:doc:`gmt`

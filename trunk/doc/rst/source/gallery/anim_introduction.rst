@@ -78,7 +78,7 @@ example.
    be trivial or a serious scripting exercise depending on what you want
    to show. We will give a few examples with increasing complexity. Once
    the *PostScript* plot is created you need to rasterize it; we
-   recommend you use `ps2raster <ps2raster.html>`_ to
+   recommend you use :doc:`ps2raster </ps2raster>` to
    generate a TIFF image at the agreed-upon resolution. We also
    recommend that you place all frame images in a sub-directory. You may
    increment your frame counter using **gmt_set_framenext**.
@@ -98,8 +98,7 @@ example.
    duration. Under OS X we prefer to use Quicktime. [1]_ Free tools
    exist to call the Quicktime library functions from the command line
    as we prefer to do in our scripts. Another choice is to use the free
-   `mencoder <http://www.mplayerhq.hu/design7/news.html>`_.
-   You will find yourself
+   `mencoder <http://www.mplayerhq.hu/>`_.  You will find yourself
    experimenting with compression settings and movie formats so that the
    final movie has the resolution and portability you require.
 

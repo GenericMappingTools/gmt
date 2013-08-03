@@ -204,5 +204,5 @@ swap the byte-order with
 See Also
 --------
 
-`gmt <gmt.html>`_, `grd2xyz <grd2xyz.html>`_, `grdedit <grdedit.html>`_,
-`grdreformat <grdreformat.html>`_
+:doc:`gmt`, :doc:`grd2xyz`, :doc:`grdedit`,
+:doc:`grdreformat`

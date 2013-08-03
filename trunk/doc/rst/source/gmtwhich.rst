@@ -54,4 +54,4 @@ Optional Arguments
 See Also
 --------
 
-`gmt <gmt.html>`_
+:doc:`gmt`

@@ -108,5 +108,5 @@ To be added.
 See Also
 --------
 
-`gmt.conf <../../gmt.conf.html>`_, `gmt <../../gmt.html>`_,
-`grdmath <../../grdmath.html>`_, `gravfft <gravfft.html>`_
+:doc:`gmt.conf </gmt.conf>`, :doc:`gmt </gmt>`,
+:doc:`grdmath </grdmath>`, :doc:`gravfft`

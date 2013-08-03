@@ -41,7 +41,8 @@ Optionally, the model admittance may also be calculated. The horizontal
 dimensions of the grdfiles are assumed to be in meters. Geographical
 grids may be used by specifying the **-fg** option that scales degrees
 to meters. If you have grids with dimensions in km, you could change
-this to meters using `grdedit <grdedit.html>`_ or scale the output with `grdmath <grdmath.html>`__.
+this to meters using :doc:`grdedit </grdedit>` or scale the output with
+:doc:`grdmath </grdmath>`.
 Given the number of choices this program offers, is difficult to state
 what are options and what are required arguments. It depends on what you
 are doing.
@@ -267,5 +268,5 @@ Vulc. Res. Volume 156, Issues 1-2, Pages 10-22,
 See Also
 --------
 
-`gmt <../../gmt.html>`_, `grdfft <../../grdfft.html>`_,
-`grdmath <../../grdmath.html>`__, `grdproject <../../grdproject.html>`_
+:doc:`gmt </gmt>`, :doc:`grdfft </grdfft>`,
+:doc:`grdmath </grdmath>`, :doc:`grdproject </grdproject>`

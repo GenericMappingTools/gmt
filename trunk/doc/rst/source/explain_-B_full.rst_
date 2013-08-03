@@ -132,4 +132,4 @@
     :ref:`FORMAT_TIME_PRIMARY_MAP <FORMAT_TIME_PRIMARY_MAP>`, :ref:`FORMAT_TIME_SECONDARY_MAP <FORMAT_TIME_SECONDARY_MAP>`,
     :ref:`TIME_LANGUAGE <TIME_LANGUAGE>`, :ref:`TIME_WEEK_START <TIME_WEEK_START>`,
     :ref:`MAP_TICK_LENGTH_PRIMARY <MAP_TICK_LENGTH_PRIMARY>`,
-    and :ref:`MAP_TICK_PEN_PRIMARY <MAP_TICK_PEN_PRIMARY>`; see the `gmt.conf <gmt.conf.html>`__ man page for details.
+    and :ref:`MAP_TICK_PEN_PRIMARY <MAP_TICK_PEN_PRIMARY>`; see the :doc:`gmt.conf` man page for details.

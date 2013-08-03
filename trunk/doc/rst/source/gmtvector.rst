@@ -190,4 +190,4 @@ reconstructions, see the GMT "spotter" supplement.
 See Also
 --------
 
-`gmt <gmt.html>`_, `project <project.html>`_, `mapproject <mapproject.html>`_
+:doc:`gmt`, :doc:`project`, :doc:`mapproject`

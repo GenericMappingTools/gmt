@@ -305,7 +305,7 @@ Institute, Lensfield Road, Cambridge CB2 1ER, United Kingdom.
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
-`gmtcolors <gmtcolors.html>`_,
-`grdlandmask <grdlandmask.html>`_,
-`psbasemap <psbasemap.html>`_
+:doc:`gmt`, :doc:`gmt.conf`,
+:doc:`gmtcolors`,
+:doc:`grdlandmask`,
+:doc:`psbasemap`

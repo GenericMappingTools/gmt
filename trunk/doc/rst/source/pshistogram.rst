@@ -191,6 +191,6 @@ the current setting of **TIME_UNIT**.
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmtcolors <gmtcolors.html>`_,
-`psbasemap <psbasemap.html>`_, `psrose <psrose.html>`_,
-`psxy <psxy.html>`_
+:doc:`gmt`, :doc:`gmtcolors`,
+:doc:`psbasemap`, :doc:`psrose`,
+:doc:`psxy`

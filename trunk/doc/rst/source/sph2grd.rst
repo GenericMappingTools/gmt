@@ -115,4 +115,4 @@ degree and order normalized associated Legendre functions:
 See Also
 --------
 
-`gmt <gmt.html>`_, `grdfft <grdfft.html>`_
+:doc:`gmt`, :doc:`grdfft`

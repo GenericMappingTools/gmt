@@ -8,11 +8,11 @@ antipodes. The antipode of a point at :math:`(\phi, \lambda)` is the
 point at :math:`(-\phi, \lambda + 180)`. We seek an answer to the
 question that has plagued so many for so long: Given the distribution of
 land and ocean, how often is the antipode of a point on land also on
-land? And what about marine antipodes? We use `grdlandmask <../grdlandmask.html>`_ and
-`grdmath <../grdmath.html>`_ to map these distributions and
+land? And what about marine antipodes? We use :doc:`grdlandmask </grdlandmask>` and
+:doc:`grdmath </grdmath>` to map these distributions and
 calculate the area of the Earth (in percent) that goes with each of the
 three possibilities. To make sense of our
-`grdmath <../grdmath.html>`_ equations below, note that we
+:doc:`grdmath </grdmath>` equations below, note that we
 first calculate a grid that is +1 when a point and its antipode is on
 land, -1 if both are in the ocean, and 0 elsewhere. We then seek to
 calculate the area distribution of dry antipodes by only pulling out the
@@ -34,7 +34,7 @@ hence several smaller land masses that do have terrestrial antipodes do
 not show up. If you want a more accurate map you can set the parameter
 *D* to a smaller increment (try 5 and wait a few minutes).
 
-The call to `grdimage <../grdimage.html>`_ includes the
+The call to :doc:`grdimage </grdimage>` includes the
 ``-Sn`` to suspend interpolation and only return the value of the
 nearest neighbor. This option is particularly practical for plotting
 categorical data, like these, that should not be interpolated.

@@ -35,7 +35,7 @@ the data before writing the new values to an output file. The horizontal
 dimensions of the grid are assumed to be in meters. Geographical grids
 may be used by specifying the **-fg** option that scales degrees to
 meters. If you have grids with dimensions in km, you could change this
-to meters using `grdedit <grdedit.html>`_ or scale the output with `grdmath <grdmath.html>`_. 
+to meters using :doc:`grdedit` or scale the output with :doc:`grdmath`. 
 
 Required Arguments
 ------------------
@@ -155,7 +155,7 @@ netCDF COARDS grids will automatically be recognized as geographic. For
 other grids geographical grids were you want to convert degrees into
 meters, select **-fg**. If the data are close to either pole, you should
 consider projecting the grid file onto a rectangular coordinate system
-using `grdproject. <grdproject.html>`_
+using :doc:`grdproject`
 
 Examples
 --------
@@ -211,5 +211,5 @@ You can now make plots of the data in topo_taper.nc, topo_real.nc, and topo_imag
 See Also
 --------
 
-`gmt <gmt.html>`_, `grdedit <grdedit.html>`_,
-`grdmath <grdmath.html>`_, `grdproject <grdproject.html>`_
+:doc:`gmt`, :doc:`grdedit`,
+:doc:`grdmath`, :doc:`grdproject`

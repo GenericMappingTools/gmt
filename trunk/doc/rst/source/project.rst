@@ -264,5 +264,5 @@ This gives coordinates for an oblique small circle.
 See Also
 --------
 
-`fitcircle <fitcircle.html>`_, `gmt <gmt.html>`_,
-`mapproject <mapproject.html>`_, `grdproject <grdproject.html>`_
+:doc:`fitcircle`, :doc:`gmt`,
+:doc:`mapproject`, :doc:`grdproject`

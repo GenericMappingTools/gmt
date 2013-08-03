@@ -37,12 +37,12 @@ Description
 optionally weighted quadruples (*x*,\ *y*,\ *z*,\ *w*)] from standard
 input [or *table*] and writes to standard output a mean position and
 value for every non-empty block in a grid region defined by the **-R**
-and **-I** arguments. Either **blockmean**, `blockmedian <blockmedian.html>`_, or
-`blockmode <blockmode.html>`_ should be used as a pre-processor before running
-`surface <surface.html>`_ to avoid aliasing short wavelengths. These routines are also
+and **-I** arguments. Either **blockmean**, :doc:`blockmedian`, or
+:doc:`blockmode` should be used as a pre-processor before running
+:doc:`surface` to avoid aliasing short wavelengths. These routines are also
 generally useful for decimating or averaging (*x*,\ *y*,\ *z*) data. You
 can modify the precision of the output format by editing the
-:ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` parameter in your `gmt.conf <gmt.conf.html>`_ file, or you may
+:ref:`FORMAT_FLOAT_OUT <FORMAT_FLOAT_OUT>` parameter in your :doc:`gmt.conf` file, or you may
 choose binary input and/or output to avoid loss of precision.
 
 Required Arguments
@@ -130,9 +130,10 @@ To find 5 by 5 minute block mean values from the ASCII data in hawaii.xyg, run
 See Also
 --------
 
-`blockmedian <blockmedian.html>`_,
-`blockmode <blockmode.html>`_, `gmt <gmt.html>`_,
-`gmt.conf <gmt.conf.html>`_,
-`nearneighbor <nearneighbor.html>`_,
-`surface <surface.html>`_,
-`triangulate <triangulate.html>`_
+:doc:`blockmedian`,
+:doc:`blockmode`,
+:doc:`gmt`,
+:doc:`gmt.conf`,
+:doc:`nearneighbor`,
+:doc:`surface`,
+:doc:`triangulate`

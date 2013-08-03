@@ -263,5 +263,5 @@ origin.d for a certain projection, try
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_, `grdlandmask <grdlandmask.html>`_,
-`pscoast <pscoast.html>`_
+:doc:`gmt`, :doc:`gmt.conf`, :doc:`grdlandmask`,
+:doc:`pscoast`

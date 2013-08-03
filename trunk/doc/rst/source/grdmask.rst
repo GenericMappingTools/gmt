@@ -151,6 +151,6 @@ Same exercise, but instead compute running polygon IDs starting at 100, do
 See Also
 --------
 
-`gmt <gmt.html>`_, `grdlandmask <grdlandmask.html>`_,
-`grdmath <grdmath.html>`_, `grdclip <grdclip.html>`_,
-`psmask <psmask.html>`_, `psclip <psclip.html>`_
+:doc:`gmt`, :doc:`grdlandmask`,
+:doc:`grdmath`, :doc:`grdclip`,
+:doc:`psmask`, :doc:`psclip`

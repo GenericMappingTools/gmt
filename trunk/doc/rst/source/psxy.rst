@@ -276,6 +276,6 @@ Appendix N for macro definitions.
 See Also
 --------
 
-`gmt <gmt.html>`_, `gmt.conf <gmt.conf.html>`_,
-`gmtcolors <gmtcolors.html>`_,
-`psbasemap <psbasemap.html>`_, `psxyz <psxyz.html>`_
+:doc:`gmt`, :doc:`gmt.conf`,
+:doc:`gmtcolors`,
+:doc:`psbasemap`, :doc:`psxyz`

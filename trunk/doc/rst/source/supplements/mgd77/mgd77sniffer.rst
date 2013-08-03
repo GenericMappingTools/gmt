@@ -488,12 +488,12 @@ Sandwell/Smith 2 min gravity version 11, try
 See Also
 --------
 
-`mgd77list <mgd77list.html>`_,
-`mgd77track <mgd77track.html>`_
-`x2sys_init <x2sys_init.html>`_
+:doc:`mgd77list`,
+:doc:`mgd77track`
+:doc:`x2sys_init <../x2sys/x2sys_init>`
 
 References
 ----------
 
 The Marine Geophysical Data Exchange Format - MGD77, see
-`*http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt*. <http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt.>`_
+`<http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt.>`_

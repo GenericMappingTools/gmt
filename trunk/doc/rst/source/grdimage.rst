@@ -190,7 +190,7 @@ place with most map projections. Because **grdimage** uses the
 *PostScript* colorimage operator, for most non-linear projections we
 must resample your grid onto an equidistant rectangular lattice. If you
 find that the NaN areas are not treated adequately, consider (a) use a
-linear projection, or (b) use `grdview <grdview.html>`__ **-Ts** instead.
+linear projection, or (b) use :doc:`grdview` **-Ts** instead.
 
 Examples
 --------
@@ -239,8 +239,8 @@ remotely located Jessica Rabbit
 See Also
 --------
 
-`gmt <gmt.html>`_, `grd2rgb <grd2rgb.html>`_,
-`grdcontour <grdcontour.html>`_,
-`grdview <grdview.html>`__,
-`grdgradient <grdgradient.html>`_,
-`grdhisteq <grdhisteq.html>`_
+:doc:`gmt`, :doc:`grd2rgb`,
+:doc:`grdcontour`,
+:doc:`grdview`,
+:doc:`grdgradient`,
+:doc:`grdhisteq`

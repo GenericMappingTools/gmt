@@ -141,8 +141,8 @@ at least one value:
 See Also
 --------
 
-`blockmean <blockmean.html>`_,
-`blockmedian <blockmedian.html>`_,
-`blockmode <blockmode.html>`_, `gmt <gmt.html>`_,
-`surface <surface.html>`_,
-`triangulate <triangulate.html>`_
+:doc:`blockmean`,
+:doc:`blockmedian`,
+:doc:`blockmode`, :doc:`gmt`,
+:doc:`surface`,
+:doc:`triangulate`

@@ -42,13 +42,13 @@ If the master cpt file includes B, F, and N entries, these will be
 copied into the new master file. If not, the parameters
 :ref:`COLOR_BACKGROUND <COLOR_BACKGROUND>`, :ref:`COLOR_FOREGROUND <COLOR_FOREGROUND>`,
 and :ref:`COLOR_NAN <COLOR_NAN>` from
-the `gmt.conf <gmt.conf.html>`_ file or the command line will be used. This default
+the :doc:`gmt.conf` file or the command line will be used. This default
 behavior can be overruled using the options **-D**, **-M** or **-N**.
 
 The color model (RGB, HSV or CMYK) of the palette created by **makecpt**
 will be the same as specified in the header of the master cpt file. When
 there is no :ref:` <>`**COLOR_MODEL** entry in the master cpt file, the
-:ref:`COLOR_MODEL <COLOR_MODEL>` specified in the `gmt.conf <gmt.conf.html>`_ file or on the command
+:ref:`COLOR_MODEL <COLOR_MODEL>` specified in the :doc:`gmt.conf` file or on the command
 line will be used. 
 
 Required Arguments
@@ -94,7 +94,7 @@ Optional Arguments
     master cpt file with the values of the parameters
     :ref:`COLOR_BACKGROUND <COLOR_BACKGROUND>`, :ref:`COLOR_FOREGROUND <COLOR_FOREGROUND>`,
     and :ref:`COLOR_NAN <COLOR_NAN>`
-    specified in the `gmt.conf <gmt.conf.html>`_ file or on the command line. When
+    specified in the :doc:`gmt.conf` file or on the command line. When
     combined with **-D**, only :ref:`COLOR_NAN <COLOR_NAN>` is considered.
 **-N**
     Do not write out the background, foreground, and NaN-color fields
@@ -161,4 +161,4 @@ as an output filename; hence the my_gebco.cpt in the example.
 See Also
 --------
 
-`gmt <gmt.html>`_, `grd2cpt <grd2cpt.html>`_
+:doc:`gmt`, :doc:`grd2cpt`

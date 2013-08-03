@@ -37,10 +37,10 @@ Description
 
 **psvelo** reads data values from *files* [or standard input] and
 generates *PostScript* code that will plot velocity arrows on a map.
-Most options are the same as for `psxy <../../psxy.html>`__, except **-S**. The
+Most options are the same as for :doc:`psxy </psxy>`, except **-S**. The
 *PostScript* code is written to standard output. The previous version
 (**psvelomeca**) is now obsolete. It has been replaced by **psvelo** and
-`psmeca <psmeca.html>`_.
+:doc:`psmeca`.
 
 Required Arguments
 ------------------
@@ -257,7 +257,7 @@ gray wedges to represent the 2-sigma uncertainties.
 See Also
 --------
 
-`GMT <../../gmt.html>`_, `psbasemap <../../psbasemap.html>`_, `psxy <../../psxy.html>`__
+:doc:`gmt </gmt>`, :doc:`psbasemap </psbasemap>`, :doc:`psxy </psxy>`
 
 References
 ----------
