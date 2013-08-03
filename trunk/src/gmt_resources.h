@@ -292,7 +292,7 @@ struct GMT_GRID_HEADER {
 	size_t t_index[3];               /* NetCDF: index of higher coordinates */
 	size_t data_offset;              /* NetCDF: distance from the beginning of the in-memory grid */
 	size_t stride;                   /* NetCDF: distance between two rows in the in-memory grid */
-	double nan_value;                /* Missing value as stored in grid file */
+	float nan_value;                 /* Missing value as stored in grid file */
 	double xy_off;                   /* 0.0 (registration == GMT_GRID_NODE_REG) or 0.5 ( == GMT_GRID_PIXEL_REG) */
 	double r_inc[2];                 /* Reciprocal incs, i.e. 1/inc */
 	char flags[4];                   /* Flags used for ESRI grids */

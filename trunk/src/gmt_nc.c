@@ -463,8 +463,8 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 		gmt_nc_get_units (GMT, ncid, z_id, header->z_units);
 		if (nc_get_att_double (ncid, z_id, "scale_factor", &header->z_scale_factor)) header->z_scale_factor = 1.0;
 		if (nc_get_att_double (ncid, z_id, "add_offset", &header->z_add_offset)) header->z_add_offset = 0.0;
-		if (nc_get_att_double (ncid, z_id, "_FillValue", &header->nan_value))
-		    nc_get_att_double (ncid, z_id, "missing_value", &header->nan_value);
+		if (nc_get_att_float (ncid, z_id, "_FillValue", &header->nan_value))
+		    nc_get_att_float (ncid, z_id, "missing_value", &header->nan_value);
 		if (!nc_get_att_double (ncid, z_id, "actual_range", dummy)) {
 			/* z-limits need to be converted from actual to internal grid units. */
 			header->z_min = (dummy[0] - header->z_add_offset) / header->z_scale_factor;
@@ -576,11 +576,11 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 		}
 		else {
 			if (z_type == NC_FLOAT || z_type == NC_DOUBLE) {
-				GMT_err_trap (nc_put_att_double (ncid, z_id, "_FillValue", z_type, 1U, &header->nan_value));
+				GMT_err_trap (nc_put_att_float (ncid, z_id, "_FillValue", z_type, 1U, &header->nan_value));
 			}
 			else {
-				i = irint (header->nan_value);
-				GMT_err_trap (nc_put_att_int (ncid, z_id, "_FillValue", z_type, 1U, &i));
+				long l = lrintf (header->nan_value);
+				GMT_err_trap (nc_put_att_long (ncid, z_id, "_FillValue", z_type, 1U, &l));
 			}
 		}
 
@@ -1210,7 +1210,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 	/* Set stride and offset if complex */
 	(void)GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 	pgrid = grid + imag_offset;	/* Start of this complex component (or start of non-complex grid) */
-	
+
 #ifdef NC4_DEBUG
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "      wesn: %g %g %g %g\n", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 	GMT_Report (GMT->parent, GMT_MSG_NORMAL, "head->wesn: %g %g %g %g\n", header->wesn[XLO], header->wesn[XHI], header->wesn[YLO], header->wesn[YHI]);
@@ -1268,7 +1268,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 		float *p_data = pgrid + row * (header->stride ? header->stride : width);
 		unsigned col;
 		for (col = 0; col < width; col ++) {
-			if (adj_nan_value && p_data[col] == (float)header->nan_value) { /* cast to avoid round-off errors */
+			if (adj_nan_value && p_data[col] == header->nan_value) {
 				p_data[col] = (float)NAN;
 				continue;
 			}
@@ -1302,7 +1302,7 @@ int GMT_nc_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, float
 
 	/* Add padding with border replication */
 	// pad_grid (grid, width, height, pad, sizeof(grid[0]) * inc, k_pad_fill_copy);
-		
+
 	pad_grid (pgrid, width, height, pad, sizeof(grid[0]), k_pad_fill_zero);
 
 #ifdef NC4_DEBUG
@@ -1411,10 +1411,10 @@ int GMT_nc_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	n = 0;
 	while (n < width * height) {
 		if (adj_nan_value && isnan (pgrid[n]))
-			pgrid[n] = (float)header->nan_value;
+			pgrid[n] = header->nan_value;
 		else if (!isnan (pgrid[n])) {
 			if (do_round)
-				pgrid[n] = (float)rint (pgrid[n]); /* round to int */
+				pgrid[n] = rintf (pgrid[n]); /* round to int */
 			header->z_min = MIN (header->z_min, pgrid[n]);
 			header->z_max = MAX (header->z_max, pgrid[n]);
 		}

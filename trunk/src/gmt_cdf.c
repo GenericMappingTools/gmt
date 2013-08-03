@@ -44,7 +44,7 @@
 int gmt_cdf_grd_info (struct GMT_CTRL *GMT, int ncid, struct GMT_GRID_HEADER *header, char job)
 {
 	int err;	/* Implicity by GMT_err_trap */
-	int i, nm[2];
+	int nm[2];
 	double dummy[2];
 	char text[GMT_GRID_COMMAND_LEN320+GMT_GRID_REMARK_LEN160];
 	nc_type z_type;
@@ -55,7 +55,7 @@ int gmt_cdf_grd_info (struct GMT_CTRL *GMT, int ncid, struct GMT_GRID_HEADER *he
 	/* Define and get dimensions and variables */
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Enter gmt_cdf_grd_info with argument %c\n", (int)job);
-	
+
 	if (job == 'w') {
 		GMT_err_trap (nc_def_dim (ncid, "side", 2U, &side_dim));
 		GMT_err_trap (nc_def_dim (ncid, "xysize", header->nm, &xysize_dim));
@@ -113,7 +113,7 @@ int gmt_cdf_grd_info (struct GMT_CTRL *GMT, int ncid, struct GMT_GRID_HEADER *he
 		GMT_err_trap (nc_get_att_double (ncid, z_id, "add_offset", &header->z_add_offset));
 		GMT_err_trap (nc_get_att_int (ncid, z_id, "node_offset", &reg));
 		header->registration = reg;
-		nc_get_att_double (ncid, z_id, "_FillValue", &header->nan_value);
+		nc_get_att_float (ncid, z_id, "_FillValue", &header->nan_value);
 		GMT_err_trap (nc_get_att_text (ncid, NC_GLOBAL, "title", header->title));
 		GMT_err_trap (nc_get_att_text (ncid, NC_GLOBAL, "source", text));
 		strncpy (header->command, text, GMT_GRID_COMMAND_LEN320);
@@ -146,11 +146,11 @@ int gmt_cdf_grd_info (struct GMT_CTRL *GMT, int ncid, struct GMT_GRID_HEADER *he
 		GMT_err_trap (nc_put_att_double (ncid, z_id, "scale_factor", NC_DOUBLE, 1U, &header->z_scale_factor));
 		GMT_err_trap (nc_put_att_double (ncid, z_id, "add_offset", NC_DOUBLE, 1U, &header->z_add_offset));
 		if (z_type == NC_FLOAT || z_type == NC_DOUBLE) {
-			GMT_err_trap (nc_put_att_double (ncid, z_id, "_FillValue", z_type, 1U, &header->nan_value));
+			GMT_err_trap (nc_put_att_float (ncid, z_id, "_FillValue", z_type, 1U, &header->nan_value));
 		}
 		else {
-			i = irint (header->nan_value);
-			GMT_err_trap (nc_put_att_int (ncid, z_id, "_FillValue", z_type, 1U, &i));
+			long l = lrintf (header->nan_value);
+			GMT_err_trap (nc_put_att_long (ncid, z_id, "_FillValue", z_type, 1U, &l));
 		}
 		reg = header->registration;
 		GMT_err_trap (nc_put_att_int (ncid, z_id, "node_offset", NC_LONG, 1U, &reg));
@@ -226,7 +226,7 @@ int GMT_cdf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	 * header values for nx and ny are reset to reflect the dimensions of the logical array,
 	 * not the physical size (i.e., the padding is not counted in nx and ny)
 	 */
-	 
+
 	int  ncid;
 	size_t start[1], edge[1];
 	bool check;
@@ -247,8 +247,8 @@ int GMT_cdf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	/* Open the NetCDF file */
 
 	if (!strcmp (header->name,"=")) return (GMT_GRDIO_NC_NO_PIPE);
- 	GMT_err_trap (nc_open (header->name, NC_NOWRITE, &ncid));
-	check = !GMT_is_dnan (header->nan_value);
+	GMT_err_trap (nc_open (header->name, NC_NOWRITE, &ncid));
+	check = !isnan (header->nan_value);
 
 	/* Load data row by row. The data in the file is stored in the same
 	 * "upside down" fashion as within GMT. The first row is the top row */
@@ -266,7 +266,7 @@ int GMT_cdf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 		for (i = 0; i < width_in; i++) {	/* Check for and handle NaN proxies */
 			kk = ij+i;
 			grid[kk] = tmp[actual_col[i]];
-			if (check && grid[kk] == (float)header->nan_value) /* cast to avoid round-off errors */
+			if (check && grid[kk] == header->nan_value)
 				grid[kk] = GMT->session.f_NaN;
 			if (GMT_is_fnan (grid[kk])) continue;
 			header->z_min = MIN (header->z_min, (double)grid[kk]);
@@ -296,29 +296,31 @@ int GMT_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	 */
 
 	size_t start[1], edge[1];
-	int ncid, old_fill_mode, *tmp_i = NULL;
+	int ncid, old_fill_mode;
+	long *tmp_i = NULL;
 	int err;
 	unsigned int i, *actual_col = NULL;
 	unsigned int j, width_out, height_out, width_in;
 	int first_col, last_col, first_row, last_row;
-	uint64_t ij, nr_oor = 0, imag_offset; 
+	uint64_t ij, nr_oor = 0, imag_offset;
 	float *tmp_f = NULL;
-	double limit[2] = {-FLT_MAX, FLT_MAX}, value;
+	double limit[2] = {-FLT_MAX, FLT_MAX};
+	float value;
 	nc_type z_type;
 
 	/* Determine the value to be assigned to missing data, if not already done so */
 
 	switch (header->type) {
 		case GMT_GRID_IS_CB:
-			if (GMT_is_dnan (header->nan_value)) header->nan_value = CHAR_MIN;
+			if (isnan (header->nan_value)) header->nan_value = CHAR_MIN;
 			limit[0] = CHAR_MIN - 0.5; limit[1] = CHAR_MAX + 0.5;
 			z_type = NC_BYTE; break;
 		case GMT_GRID_IS_CS:
-			if (GMT_is_dnan (header->nan_value)) header->nan_value = SHRT_MIN;
+			if (isnan (header->nan_value)) header->nan_value = SHRT_MIN;
 			limit[0] = SHRT_MIN - 0.5; limit[1] = SHRT_MAX + 0.5;
 			z_type = NC_SHORT; break;
 		case GMT_GRID_IS_CI:
-			if (GMT_is_dnan (header->nan_value)) header->nan_value = INT_MIN;
+			if (isnan (header->nan_value)) header->nan_value = INT_MIN;
 			limit[0] = INT_MIN - 0.5; limit[1] = INT_MAX + 0.5;
 			z_type = NC_INT; break;
 		case GMT_GRID_IS_CF:
@@ -362,14 +364,13 @@ int GMT_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 			start[0] = j * width_out;
 			for (i = 0; i < width_out; i++) {
 				value = grid[ij+actual_col[i]+imag_offset];
-				if (GMT_is_dnan (value))
-					tmp_f[i] = (float)header->nan_value;
-				else if (fabs(value) > FLT_MAX) {
-					tmp_f[i] = (float)header->nan_value;
-					nr_oor++;
+				if (!isfinite (value)) {
+					if (isinf(value))
+						nr_oor++; /* out of float range */
+					tmp_f[i] = header->nan_value;
 				}
 				else {
-					tmp_f[i] = (float)value;
+					tmp_f[i] = value;
 					header->z_min = MIN (header->z_min, (double)tmp_f[i]);
 					header->z_max = MAX (header->z_max, (double)tmp_f[i]);
 				}
@@ -379,24 +380,27 @@ int GMT_cdf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		GMT_free (GMT, tmp_f);
 	}
 	else {
-		tmp_i = GMT_memory (GMT, NULL, width_in, int);
+		tmp_i = GMT_memory (GMT, NULL, width_in, long);
 		for (j = 0; j < height_out; j++, ij += width_in) {
 			start[0] = j * width_out;
 			for (i = 0; i < width_out; i++) {
 				value = grid[ij+actual_col[i]+imag_offset];
-				if (GMT_is_dnan (value))
-					tmp_i[i] = irint (header->nan_value);
+				if (!isfinite (value)) {
+					if (isinf(value))
+						nr_oor++; /* out of float range */
+					tmp_i[i] = lrintf (header->nan_value);
+				}
 				else if (value <= limit[0] || value >= limit[1]) {
-					tmp_i[i] = irint (header->nan_value);
+					tmp_i[i] = lrintf (header->nan_value);
 					nr_oor++;
 				}
 				else {
-					tmp_i[i] = irint (value);
+					tmp_i[i] = lrintf (value);
 					header->z_min = MIN (header->z_min, (double)tmp_i[i]);
 					header->z_max = MAX (header->z_max, (double)tmp_i[i]);
 				}
 			}
-			GMT_err_trap (nc_put_vara_int (ncid, header->z_id, start, edge, tmp_i));
+			GMT_err_trap (nc_put_vara_long (ncid, header->z_id, start, edge, tmp_i));
 		}
 		GMT_free (GMT, tmp_i);
 	}

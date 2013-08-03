@@ -174,7 +174,7 @@ int read_esri_info_hdr (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	GMT_fgets (GMT, record, GMT_BUFSIZ, fp);
 	while (strncmp (record, "NODATA", 4) )		/* Keep reading till find this keyword */
 		GMT_fgets (GMT, record, GMT_BUFSIZ, fp);
-	if (sscanf (record, "%*s %lf", &header->nan_value) != 1) {
+	if (sscanf (record, "%*s %f", &header->nan_value) != 1) {
 		GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding nan_value_value record\n");
 		return (GMT_GRDIO_READ_FAILED);
 	}
@@ -253,9 +253,9 @@ int read_esri_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HEADER *head
 		
 		/* Different sign of NaN value between GTOPO30 and SRTM30 grids */
 		if (strstr (header->name, ".DEM") || strstr (header->name, ".dem"))
-			header->nan_value = -9999;
+			header->nan_value = -9999.0f;
 		else
-			header->nan_value = 9999;
+			header->nan_value = 9999.0f;
 		header->bits = 16;		/* Temp pocket to store number of bits */
 		if (!GMT_is_geographic (GMT, GMT_IN)) GMT_parse_common_options (GMT, "f", 'f', "g"); /* Implicitly set -fg unless already set */
 		return (GMT_NOERROR);
@@ -273,7 +273,7 @@ int read_esri_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HEADER *head
 		if ( header->title[len-7] == 'S' || header->title[len-7] == 's' ) header->wesn[YLO] *= -1; 
 		header->wesn[YHI] = header->wesn[YLO] + 1; 
 		header->wesn[XHI] = header->wesn[XLO] + 1; 
-		header->nan_value = -32768;
+		header->nan_value = -32768.0f;
 		header->bits = 16;		/* Temp pocket to store number of bits */
 		stat (header->name, &F);	/* Must finally find out if it is a 1 or 3 arcseconds file */
 		if (F.st_size < 3e6)		/* Actually the true size is 2884802 */
@@ -325,7 +325,7 @@ int read_esri_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HEADER *head
 	ungetc (c, fp);	/* ...and put it back where it came from */
 	if (c == 'n' || c == 'N') {	/*	Assume this is a nodata_value record since we found an 'n|N' */
 		GMT_fgets (GMT, record, GMT_BUFSIZ, fp);
-		if (sscanf (record, "%*s %lf", &header->nan_value) != 1) {
+		if (sscanf (record, "%*s %f", &header->nan_value) != 1) {
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Arc/Info ASCII Grid: Error decoding nan_value_value record\n");
 			return (GMT_GRDIO_READ_FAILED);
 		}
@@ -402,11 +402,11 @@ int write_esri_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID_HEADER *hea
 	sprintf (item, GMT->current.setting.format_float_out, header->inc[GMT_X]);
 	strcat  (record, item);	strcat  (record, "\n");
 	GMT_fputs (record, fp);		/* Write a text record */
-	if (GMT_is_dnan (header->nan_value)) {
+	if (isnan (header->nan_value)) {
 		GMT_Report (GMT->parent, GMT_MSG_VERBOSE, "Warning: ESRI Arc/Info ASCII Interchange file must use proxy for NaN; default to -9999\n");
-		header->nan_value = -9999.0;
+		header->nan_value = -9999.0f;
 	}
-	sprintf (record, "nodata_value %ld\n", lrint (header->nan_value));
+	sprintf (record, "nodata_value %ld\n", lrintf (header->nan_value));
 	GMT_fputs (record, fp);		/* Write a text record */
 
 	return (GMT_NOERROR);
@@ -526,7 +526,7 @@ int GMT_esri_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	 	 * NaNs are not allowed; they are represented by a nodata_value instead. */
 		col = row = 0;		/* For the entire file */
 		row2 = 0;	/* For the inside region */
-		check = !GMT_is_dnan (header->nan_value);
+		check = !isnan (header->nan_value);
 		in_nx = header->nx;
 		header->nx = width_in;	/* Needed to be set here due to GMT_IJP below */
 		header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
@@ -606,7 +606,7 @@ int GMT_esri_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 			if (i == last) c[0] = '\n';
 			kk = ij+actual_col[i];
 			if (GMT_is_fnan (grid[kk]))
-				sprintf (item, "%ld%c", lrint (header->nan_value), c[0]);
+				sprintf (item, "%ld%c", lrintf (header->nan_value), c[0]);
 			else if (floating) {
 				sprintf (item, GMT->current.setting.format_float_out, grid[kk]);
 				strcat (item, c);

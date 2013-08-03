@@ -148,7 +148,7 @@ int GMT_is_agc_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	if (predicted_size == buf.st_size) {
 		/* Yes, appears to be an AGC grid */
 		header->type = GMT_GRID_IS_AF;
-		header->nan_value = 0.0; /* NaN value for AGC format */
+		header->nan_value = 0.0f; /* NaN value for AGC format */
 		return GMT_NOERROR;
 	}
 	return GMT_GRDIO_BAD_VAL;

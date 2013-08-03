@@ -239,7 +239,8 @@ int GMT_grdedit (void *V_API, int mode, void *args) {
 	/* Decode grd information given, if any */
 
 	if (Ctrl->D.active) {
-		double scale_factor, add_offset, nan_value;
+		double scale_factor, add_offset;
+		float nan_value;
 		GMT_Report (API, GMT_MSG_VERBOSE, "Decode and change attributes in file %s\n", Ctrl->In.file);
 		scale_factor = G->header->z_scale_factor;
 		add_offset = G->header->z_add_offset;

@@ -313,7 +313,7 @@ int GMT_ras_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	n2 = lrint (ceil (header->nx / 2.0)) * 2;	/* Sun 8-bit rasters are stored using 16-bit words */
 	tmp = GMT_memory (GMT, NULL, n2, unsigned char);
 
-	check = !GMT_is_dnan (header->nan_value);
+	check = !isnan (header->nan_value);
 
 	GMT_err_pass (GMT, GMT_grd_prep_io (GMT, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &actual_row), header->name);
 
@@ -338,7 +338,7 @@ int GMT_ras_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 		for (i = 0; i < width_in; i++) {
 			kk = ij + i;
 			grid[kk] = (float) tmp[actual_row[i]];
-			if (check && grid[kk] == (float)header->nan_value) /* cast to avoid round-off errors */
+			if (check && grid[kk] == header->nan_value)
 				grid[kk] = GMT->session.f_NaN;
 			if (GMT_is_fnan (grid[kk])) continue;
 			/* Update z min/max */
@@ -402,7 +402,7 @@ int GMT_ras_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	n2 = irint (ceil (header->nx / 2.0)) * 2;
 	tmp = GMT_memory (GMT, NULL, n2, unsigned char);
 
-	check = !GMT_is_dnan (header->nan_value);
+	check = !isnan (header->nan_value);
 
 	GMT_err_pass (GMT, GMT_grd_prep_io (GMT, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
 
@@ -427,7 +427,7 @@ int GMT_ras_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		ij = imag_offset + j2 * width_in + i2;
 		for (i = 0; i < width_out; i++) {
 			kk = ij + actual_col[i];
-			if (check && GMT_is_fnan (grid[kk])) grid[kk] = (float)header->nan_value;
+			if (check && GMT_is_fnan (grid[kk])) grid[kk] = header->nan_value;
 			tmp[i] = (unsigned char) grid[kk];
 		}
 		if (GMT_fwrite (tmp, sizeof (unsigned char), n2, fp) < n2) return (GMT_GRDIO_WRITE_FAILED);
@@ -608,7 +608,7 @@ int GMT_bit_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	else
 		return (GMT_GRDIO_OPEN_FAILED);
 
-	check = !GMT_is_dnan (header->nan_value);
+	check = !isnan (header->nan_value);
 	mx = urint (ceil (header->nx / 32.0));	/* Whole multiple of 32-bit integers */
 
 	GMT_err_pass (GMT, GMT_grd_prep_io (GMT, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
@@ -637,7 +637,7 @@ int GMT_bit_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 			bit = actual_col[i] % 32;
 			ival = (tmp[word] >> bit) & 1;
 			grid[kk] = (float) ival;
-			if (check && grid[kk] == (float)header->nan_value) /* cast to avoid round-off errors */
+			if (check && grid[kk] == header->nan_value)
 				grid[kk] = GMT->session.f_NaN;
 			if (GMT_is_fnan (grid[kk])) continue;
 			/* Update z min/max */
@@ -688,7 +688,7 @@ int GMT_bit_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	else if ((fp = GMT_fopen (GMT, header->name, "wb")) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
 
-	check = !GMT_is_dnan (header->nan_value);
+	check = !isnan (header->nan_value);
 
 	GMT_err_pass (GMT, GMT_grd_prep_io (GMT, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
 	do_header = GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
@@ -706,7 +706,8 @@ int GMT_bit_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		for (i = first_col, i2 = pad[XLO]; i <= last_col; i++, i2++) {
 			ij = j2 * width_in + i2 + imag_offset;
 			if (GMT_is_fnan (grid[ij])) {
-				if (check) grid[ij] = (float)header->nan_value;
+				if (check)
+					grid[ij] = header->nan_value;
 			}
 			else {
 				ival = urint ((double)grid[ij]);
@@ -844,7 +845,7 @@ int GMT_native_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, f
 
 	type = GMT->session.grdformat[header->type][1];
 	size = GMT_grd_data_size (GMT, header->type, &header->nan_value);
-	check = !GMT_is_dnan (header->nan_value);
+	check = !isnan (header->nan_value);
 
 	(void)GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
 
@@ -875,7 +876,7 @@ int GMT_native_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, f
 		ij = imag_offset + (j2 + pad[YHI]) * width_out + pad[XLO];
 		for (i = 0, kk = ij; i < width_in; i++, kk++) {
 			grid[kk] = GMT_decode (GMT, tmp, k[i], type);	/* Convert whatever to float */
-			if (check && grid[kk] == (float)header->nan_value) /* cast to avoid round-off errors */
+			if (check && grid[kk] == header->nan_value)
 				grid[kk] = GMT->session.f_NaN;
 			if (GMT_is_fnan (grid[kk])) continue;
 			/* Update z_min, z_max */
@@ -937,7 +938,7 @@ int GMT_native_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, 
 
 	type = GMT->session.grdformat[header->type][1];
 	size = GMT_grd_data_size (GMT, header->type, &header->nan_value);
-	check = !GMT_is_dnan (header->nan_value);
+	check = !isnan (header->nan_value);
 
 	GMT_err_pass (GMT, GMT_grd_prep_io (GMT, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &k), header->name);
 	do_header = GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
@@ -955,7 +956,7 @@ int GMT_native_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, 
 		for (i = first_col, i2 = pad[XLO]; i <= last_col; i++, i2++) {
 			ij = imag_offset + (j2 * width_in + i2);
 			if (GMT_is_fnan (grid[ij])) {
-				if (check) grid[ij] = (float)header->nan_value;
+				if (check) grid[ij] = header->nan_value;
 			}
 			else {
 				header->z_min = MIN (header->z_min, (double)grid[ij]);
@@ -1296,7 +1297,9 @@ int GMT_srf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 	size_t n_expected;		/* Length of a row */
 	FILE *fp = NULL;		/* File pointer to data or pipe */
 	void *tmp = NULL;		/* Array pointer for reading in rows of data */
-	header->nan_value = 1.70141e38;	/* Test value in Surfer grids */
+
+	/* Fixed nan_value in Surfer grids */
+	header->nan_value = 1.70141e38f;
 
 	if (!strcmp (header->name, "=")) {	/* Read from pipe */
 #ifdef SET_IO_MODE
@@ -1355,7 +1358,8 @@ int GMT_srf_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, floa
 		for (i = 0; i < width_in; i++) {
 			kk = ij + i;
 			grid[kk] = GMT_decode (GMT, tmp, k[i], type);	/* Convert whatever to float */
-			if (grid[kk] >= header->nan_value) grid[kk] = GMT->session.f_NaN;
+			if (grid[kk] >= header->nan_value)
+				grid[kk] = GMT->session.f_NaN;
 			/* Update z_min, z_max */
 			header->z_min = MIN (header->z_min, (double)grid[kk]);
 			header->z_max = MAX (header->z_max, (double)grid[kk]);
@@ -1412,7 +1416,7 @@ int GMT_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		return (GMT_NOERROR);
 	}
 
-	header->nan_value = 1.70141e38;	/* Test value in Surfer grids */
+	header->nan_value = 1.70141e38f;	/* Fixed nan_value in Surfer grids */
 
 	if (!strcmp (header->name, "=")) {	/* Write to pipe */
 #ifdef SET_IO_MODE
@@ -1442,8 +1446,8 @@ int GMT_srf_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		ij = imag_offset + j2 * width_in;
 		for (i = first_col, i2 = pad[XLO]; i <= last_col; i++, i2++) {
 			kk = ij + i2;
-			if (GMT_is_fnan (grid[kk]))
-				grid[kk] = (float)header->nan_value;
+			if (isnan (grid[kk]))
+				grid[kk] = header->nan_value;
 			else {
 				header->z_min = MIN (header->z_min, (double)grid[kk]);
 				header->z_max = MAX (header->z_max, (double)grid[kk]);
@@ -1750,9 +1754,9 @@ int GMT_gdal_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	to_GDALW->command = header->command;
 
 	/* Lazy implementation of nodata value update as it doesn't check and apply on a eventual sub-region on output only */
-	if (!GMT_is_fnan (header->nan_value)) {
+	if (!isnan (header->nan_value)) {
 		for (ij = 0; ij < header->mx * header->my; ij++)
-			if (GMT_is_fnan (grid[ij]))
+			if (isnan (grid[ij]))
 				grid[ij] = header->nan_value;
 	}
 

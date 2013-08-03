@@ -373,7 +373,15 @@ int parse_grd_format_scale (struct GMT_CTRL *Ctrl, struct GMT_GRID_HEADER *heade
 	if (p != NULL && *p) {
 		++p;
 		/* parse invalid value */
-		sscanf (p, "%lf", &header->nan_value);
+		sscanf (p, "%f", &header->nan_value);
+
+		/* header->nan_value should be of same type as (float)*grid to avoid
+		 * round-off errors. For example, =gd///-3.4028234e+38:gtiff, would fail
+		 * otherwise because the GTiff'd NoData values are of type double but the
+		 * grid is truncated to float.
+		 * Don't allow infitiy: */
+		if (!isfinite (header->nan_value))
+			header->nan_value = NAN;
 	}
 
 	return GMT_NOERROR;
@@ -625,7 +633,7 @@ int GMT_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 			return val;
 	}
 	if (header->type == GMT_GRID_IS_AF)
-		header->nan_value = 0.0; /* NaN value for AGC format */
+		header->nan_value = 0.0f; /* NaN value for AGC format */
 	return (GMT_NOERROR);
 }
 
@@ -889,7 +897,8 @@ int GMT_read_grd_info (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER 
 	 */
 
 	int err;	/* Implied by GMT_err_trap */
-	double scale, offset, invalid;
+	double scale, offset;
+	float invalid;
 
 	/* Save parameters on file name suffix before issuing GMT->session.readinfo */
 	GMT_err_trap (GMT_grd_get_format (GMT, file, header, true));
@@ -1012,21 +1021,21 @@ int GMT_write_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *hea
 	return ((*GMT->session.writegrd[header->type]) (GMT, header, grid, wesn, pad, complex_mode));
 }
 
-size_t GMT_grd_data_size (struct GMT_CTRL *GMT, unsigned int format, double *nan_value)
+size_t GMT_grd_data_size (struct GMT_CTRL *GMT, unsigned int format, float *nan_value)
 {
 	/* Determine size of data type and set NaN value, if not yet done so (integers only) */
 
 	switch (GMT->session.grdformat[format][1]) {
 		case 'b':
-			if (GMT_is_dnan (*nan_value)) *nan_value = CHAR_MIN;
+			if (isnan (*nan_value)) *nan_value = CHAR_MIN;
 			return (sizeof (char));
 			break;
 		case 's':
-			if (GMT_is_dnan (*nan_value)) *nan_value = SHRT_MIN;
+			if (isnan (*nan_value)) *nan_value = SHRT_MIN;
 			return (sizeof (int16_t));
 			break;
 		case 'i':
-			if (GMT_is_dnan (*nan_value)) *nan_value = INT_MIN;
+			if (isnan (*nan_value)) *nan_value = INT_MIN;
 		case 'm':
 			return (sizeof (int32_t));
 			break;
@@ -1258,7 +1267,7 @@ void GMT_decode_grd_h_info (struct GMT_CTRL *GMT, char *input, struct GMT_GRID_H
 					h->z_add_offset = strtod (ptr, NULL);
 					break;
 				case 5:
-					h->nan_value = strtod (ptr, NULL);
+					h->nan_value = strtof (ptr, NULL);
 					break;
 				case 6:
 					if (strlen(ptr) >= GMT_GRID_TITLE_LEN80)
@@ -1323,7 +1332,7 @@ void GMT_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct 
 		header->n_bands        = 1; /* Grids have at least one band but images may have 3 (RGB) or 4 (RGBA) */
 		header->z_min          = GMT->session.d_NaN;
 		header->z_max          = GMT->session.d_NaN;
-		header->nan_value      = GMT->session.d_NaN;
+		header->nan_value      = GMT->session.f_NaN;
 		if (GMT_is_geographic (GMT, GMT_OUT)) {
 			strcpy (header->x_units, "longitude [degrees_east]");
 			strcpy (header->y_units, "latitude [degrees_north]");

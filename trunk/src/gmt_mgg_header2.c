@@ -102,18 +102,18 @@ int gmt_GMTtoMGG2 (struct GMT_GRID_HEADER *gmt, MGG_GRID_HEADER_2 *mgg)
 {
 	double f;
 	GMT_memset (mgg, 1, MGG_GRID_HEADER_2);
-	
+
 	mgg->version     = GRD98_MAGIC_NUM + GRD98_VERSION;
 	mgg->length      = sizeof (MGG_GRID_HEADER_2);
 	mgg->dataType    = 1;
-	
+
 	mgg->cellRegistration = gmt->registration;
 	mgg->lonNumCells = gmt->nx;
 	f  = gmt->inc[GMT_X] * SEC_PER_DEG;
 	mgg->lonSpacing  = irint(f);
 	if (fabs (f - (double)mgg->lonSpacing) > GMT_CONV_LIMIT) return (GMT_GRDIO_GRD98_XINC);
 	gmt_degrees2dms(gmt->wesn[XLO], &mgg->lonDeg, &mgg->lonMin, &mgg->lonSec);
-	
+
 	mgg->latNumCells = gmt->ny;
 	f  = gmt->inc[GMT_Y] * SEC_PER_DEG;
 	mgg->latSpacing  = irint(gmt->inc[GMT_Y] * SEC_PER_DEG);
@@ -149,9 +149,9 @@ int gmt_GMTtoMGG2 (struct GMT_GRID_HEADER *gmt, MGG_GRID_HEADER_2 *mgg)
 static void gmt_MGG2toGMT (MGG_GRID_HEADER_2 *mgg, struct GMT_GRID_HEADER *gmt)
 {
 	int one_or_zero;
-	
+
 	/* Do not memset the gmt header since it has the file name set */
-	
+
 	gmt->type = GMT_GRID_IS_RF;
 	gmt->registration = mgg->cellRegistration;
 	one_or_zero = 1 - gmt->registration;
@@ -225,9 +225,9 @@ int GMT_mgg2_read_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header
 	}
 
 	GMT_fclose (GMT, fp);
-	
+
 	gmt_MGG2toGMT (&mggHeader, header);
-	
+
 	return (GMT_NOERROR);
 }
 
@@ -236,18 +236,18 @@ int GMT_mgg2_write_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *heade
 	FILE *fp = NULL;
 	MGG_GRID_HEADER_2 mggHeader;
 	int err;
-	
+
 	if (!strcmp (header->name, "="))
 		fp = GMT->session.std[GMT_OUT];
 	else if ((fp = GMT_fopen (GMT, header->name, GMT->current.io.w_mode)) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
-	
+
 	if ((err = gmt_GMTtoMGG2 (header, &mggHeader))) return (err);
 
 	if (GMT_fwrite (&mggHeader, sizeof (MGG_GRID_HEADER_2), 1U, fp) != 1) return (GMT_GRDIO_WRITE_FAILED);
 
 	GMT_fclose (GMT, fp);
-	
+
 	return (GMT_NOERROR);
 }
 
@@ -267,7 +267,7 @@ int GMT_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	off_t long_offset;	/* For fseek only */
 	size_t n_expected;	/* Items in one row */
 	size_t size;		/* Item size */
-	
+
 	GMT_memset (&mggHeader, 1, MGG_GRID_HEADER_2);
 	if (!strcmp (header->name, "=")) {
 		fp = GMT->session.std[GMT_IN];
@@ -281,12 +281,12 @@ int GMT_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	}
 	else
 		return (GMT_GRDIO_OPEN_FAILED);
-	
+
 	is_float = (mggHeader.numType < 0 && abs (mggHeader.numType) == (int)sizeof (float));	/* Float file */
-	
+
 	GMT_err_pass (GMT, GMT_grd_prep_io (GMT, header, wesn, &width_in, &height_in, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
 	(void)GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
-			
+
 	width_out = width_in;		/* Width of output array */
 	if (pad[XLO] > 0) width_out += pad[XLO];
 	if (pad[XHI] > 0) width_out += pad[XHI];
@@ -295,14 +295,14 @@ int GMT_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	tLong  = GMT_memory (GMT, NULL, n_expected, int);
 	tShort = (short *)tLong;	tChar  = (char *)tLong;	tFloat  = (float *)tLong;
 	size = abs (mggHeader.numType);
-	
+
 	if (piping)	{ /* Skip data by reading it */
 		for (j = 0; j < first_row; j++) if (GMT_fread ( tLong, size, n_expected, fp) != n_expected) return (GMT_GRDIO_READ_FAILED);
 	} else if (first_row) { /* Simply seek by it */
 		long_offset = (off_t)first_row * (off_t)n_expected * size;
 		if (fseek (fp, long_offset, 1)) return (GMT_GRDIO_SEEK_FAILED);
 	}
-	
+
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 	for (j = first_row, j2 = 0; j <= last_row; j++, j2++) {
 		if (GMT_fread ( tLong, size, n_expected, fp) != n_expected) return (GMT_GRDIO_READ_FAILED);
@@ -319,13 +319,13 @@ int GMT_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 				if (tLong[actual_col[i]] == mggHeader.nanValue) grid[kk] = GMT->session.f_NaN;
 				else grid[kk] = tFloat[actual_col[i]];
 			}
-			
+
 			else if (mggHeader.numType == sizeof (short)) {
 				if (swap_all) gmt_swap_word(&tShort[actual_col[i]]);
 				if (tShort[actual_col[i]] == mggHeader.nanValue) grid[kk] = GMT->session.f_NaN;
 				else grid[kk] = (float) tShort[actual_col[i]] / (float) mggHeader.precision;
 			}
-			
+
 			else if (mggHeader.numType == sizeof (char)) {
 				if (tChar[actual_col[i]] == mggHeader.nanValue) grid[kk] = GMT->session.f_NaN;
 				else grid[kk] = (float) tChar[actual_col[i]] / (float) mggHeader.precision;
@@ -343,7 +343,7 @@ int GMT_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 		int ny = header->ny;
 		for (j = last_row + 1; j < ny; j++) if (GMT_fread ( tLong, size, n_expected, fp) != n_expected) return (GMT_GRDIO_READ_FAILED);
 	}
-		
+
 	GMT_free (GMT, tLong);
 	GMT_free (GMT, actual_col);
 
@@ -352,7 +352,7 @@ int GMT_mgg2_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 	GMT_memcpy (header->wesn, wesn, 4, double);
 
 	GMT_fclose (GMT, fp);
-	
+
 	return (GMT_NOERROR);
 }
 
@@ -365,38 +365,38 @@ int GMT_mgg2_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	int first_col, last_col, first_row, last_row;
 	uint64_t ij, kk, j2, imag_offset;
 	size_t size;
-	
+
 	int *tLong = NULL;
 	short *tShort = NULL;
 	char *tChar = NULL;
 	float *tFloat = NULL;
 	FILE *fp = NULL;
-	
+
 	if (!strcmp (header->name, "="))
 		fp = GMT->session.std[GMT_OUT];
 	else if ((fp = GMT_fopen (GMT, header->name, GMT->current.io.w_mode)) == NULL)
 		return (GMT_GRDIO_CREATE_FAILED);
-	
-	check = !GMT_is_dnan (header->nan_value);
+
+	check = !isnan (header->nan_value);
 
 	GMT_err_pass (GMT, GMT_grd_prep_io (GMT, header, wesn, &width_out, &height_out, &first_col, &last_col, &first_row, &last_row, &actual_col), header->name);
 	(void)GMT_init_complex (header, complex_mode, &imag_offset);	/* Set offset for imaginary complex component */
-	
+
 	width_in = width_out;		/* Physical width of input array */
 	if (pad[XLO] > 0) width_in += pad[XLO];
 	if (pad[XHI] > 0) width_in += pad[XHI];
-	
+
 	GMT_memcpy (header->wesn, wesn, 4, double);
-	
+
 	/* Find xmin/zmax */
-	
+
 	header->z_min = DBL_MAX;	header->z_max = -DBL_MAX;
 	for (j = first_row, j2 = pad[YHI]; j <= last_row; j++, j2++) {
 		ij = imag_offset + j2 * width_in;
 		for (i = first_col, i2 = pad[XLO]; i <= last_col; i++, i2++) {
 			kk = ij + i2;
-			if (GMT_is_fnan (grid[kk])) {
-				if (check) grid[kk] = (float)header->nan_value;
+			if (isnan (grid[kk])) {
+				if (check) grid[kk] = header->nan_value;
 			}
 			else {
 				header->z_min = MIN (header->z_min, (double)grid[kk]);
@@ -404,7 +404,7 @@ int GMT_mgg2_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 			}
 		}
 	}
-	
+
 	/* store header information and array */
 	if ((err = gmt_GMTtoMGG2(header, &mggHeader))) return (err);;
 	if (GMT_fwrite (&mggHeader, sizeof (MGG_GRID_HEADER_2), 1U, fp) != 1) return (GMT_GRDIO_WRITE_FAILED);
@@ -412,7 +412,7 @@ int GMT_mgg2_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 
 	tLong = GMT_memory (GMT, NULL, width_in, int);
 	tShort = (short *) tLong;	tChar = (char *)tLong;	tFloat = (float *) tLong;
-	
+
 	i2 = first_col + pad[XLO];
 	size = abs (mggHeader.numType);
 	for (ju = 0, j2 = first_row + pad[YHI]; ju < height_out; ju++, j2++) {
@@ -448,6 +448,6 @@ int GMT_mgg2_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, fl
 	GMT_free (GMT, actual_col);
 
 	GMT_fclose (GMT, fp);
-	
+
 	return (GMT_NOERROR);
 }

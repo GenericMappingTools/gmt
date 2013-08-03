@@ -37,7 +37,7 @@ struct GDALWRITE_CTRL {
 	int  registration;		/* Registration type. 0 -> grid registration; 1 -> pixel reg */
 	double	ULx, ULy;		/* x_min & y_max */
 	double	x_inc, y_inc;	/* Grid/Image increments */
-	double	nan_value;
+	double	nan_value; /* unlike the nan_value in struct GMT_GRID_HEADER this one is of type double */
 	void	*data;
 	struct GW_C {	/* Color map */
 		int active;
