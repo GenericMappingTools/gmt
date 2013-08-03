@@ -710,7 +710,7 @@ int GMT_bit_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 					grid[ij] = header->nan_value;
 			}
 			else {
-				ival = urint ((double)grid[ij]);
+				ival = (unsigned)lrintf (grid[ij]);
 				if (ival > 1) ival = 1;	/* Truncate to 1 */
 				header->z_min = MIN (header->z_min, (double)ival);
 				header->z_max = MAX (header->z_max, (double)ival);
@@ -733,7 +733,7 @@ int GMT_bit_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, flo
 			kk = ij + actual_col[iu];
 			word = iu / 32;
 			bit = iu % 32;
-			ival = urint ((double)grid[kk]);
+			ival = (unsigned)lrintf (grid[kk]);
 			if (ival > 1) ival = 1;	/* Truncate to 1 */
 			tmp[word] |= (ival << bit);
 		}
@@ -968,8 +968,8 @@ int GMT_native_write_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, 
 	/* Round off to chosen type */
 
 	if (type != 'f' && type != 'd') {
-		header->z_min = (double)lrint (header->z_min);
-		header->z_max = (double)lrint (header->z_max);
+		header->z_min = rint (header->z_min);
+		header->z_max = rint (header->z_max);
 	}
 
 	/* Store header information and array */
@@ -1000,14 +1000,14 @@ void GMT_encode (struct GMT_CTRL *GMT, void *vptr, uint64_t k, float z, unsigned
 {	/* Place the z value in the array location of the (type) pointer */
 	switch (type) {
 		case 'b':
-			((char *)vptr)[k] = (char)lrint ((double)z);
+			((char *)vptr)[k] = (char)lrintf (z);
 			break;
 		case 's':
-			((short int *)vptr)[k] = (short int)lrint ((double)z);
+			((short int *)vptr)[k] = (short int)lrintf (z);
 			break;
 		case 'i':
 		case 'm':
-			((int *)vptr)[k] = irint ((double)z);
+			((int *)vptr)[k] = (int)lrintf (z);
 			break;
 		case 'f':
 			((float *)vptr)[k] = z;

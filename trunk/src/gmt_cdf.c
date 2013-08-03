@@ -145,13 +145,9 @@ int gmt_cdf_grd_info (struct GMT_CTRL *GMT, int ncid, struct GMT_GRID_HEADER *he
 		GMT_err_trap (nc_put_att_text (ncid, z_range_id, "units", GMT_GRID_UNIT_LEN80, header->z_units));
 		GMT_err_trap (nc_put_att_double (ncid, z_id, "scale_factor", NC_DOUBLE, 1U, &header->z_scale_factor));
 		GMT_err_trap (nc_put_att_double (ncid, z_id, "add_offset", NC_DOUBLE, 1U, &header->z_add_offset));
-		if (z_type == NC_FLOAT || z_type == NC_DOUBLE) {
-			GMT_err_trap (nc_put_att_float (ncid, z_id, "_FillValue", z_type, 1U, &header->nan_value));
-		}
-		else {
-			long l = lrintf (header->nan_value);
-			GMT_err_trap (nc_put_att_long (ncid, z_id, "_FillValue", z_type, 1U, &l));
-		}
+		if (z_type != NC_FLOAT && z_type != NC_DOUBLE)
+			header->nan_value = rintf (header->nan_value); /* round to integer */
+		GMT_err_trap (nc_put_att_float (ncid, z_id, "_FillValue", z_type, 1U, &header->nan_value));
 		reg = header->registration;
 		GMT_err_trap (nc_put_att_int (ncid, z_id, "node_offset", NC_LONG, 1U, &reg));
 		GMT_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "title", GMT_GRID_TITLE_LEN80, header->title));

@@ -54,6 +54,8 @@
 /* Limit casting to one place (here) for dropping lrint output to signed or unsigned ints */
 #define irint(x) ((int)lrint(x))
 #define urint(x) ((unsigned int)lrint(x))
+#define irintf(x) ((int)lrintf(x))
+#define urintf(x) ((unsigned int)lrintf(x))
 
 /* Checking of h,m,s */
 
