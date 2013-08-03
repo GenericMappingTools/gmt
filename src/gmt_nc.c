@@ -575,13 +575,9 @@ int gmt_nc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char 
 			GMT_Report (GMT->parent, GMT_MSG_NORMAL, "Warning: netCDF libraries < 4.3 cannot alter the _FillValue attribute in netCDF-4 files.\n");
 		}
 		else {
-			if (z_type == NC_FLOAT || z_type == NC_DOUBLE) {
-				GMT_err_trap (nc_put_att_float (ncid, z_id, "_FillValue", z_type, 1U, &header->nan_value));
-			}
-			else {
-				long l = lrintf (header->nan_value);
-				GMT_err_trap (nc_put_att_long (ncid, z_id, "_FillValue", z_type, 1U, &l));
-			}
+			if (z_type != NC_FLOAT && z_type != NC_DOUBLE)
+				header->nan_value = rintf (header->nan_value); /* round to integer */
+			GMT_err_trap (nc_put_att_float (ncid, z_id, "_FillValue", z_type, 1U, &header->nan_value));
 		}
 
 		/* Limits need to be stored in actual, not internal grid, units */
